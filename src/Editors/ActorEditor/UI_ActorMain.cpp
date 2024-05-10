@@ -316,16 +316,25 @@ void CActorMain::OutInfo()
 	
 	//fraBottomBar->paSel->Caption = Tools->GetInfo();
 }
-//---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
+extern ECORE_API BOOL g_force16BitTransformQuant;
+extern ECORE_API BOOL g_force32BitTransformQuant;
+//---------------------------------------------------------------------------
+
+constexpr size_t ConfigVer = 1;
 
 void CAEPreferences::Load()
 {
+	PrefConfigVer = JSONData["ae_prefs"]["version"];
+
 	inherited::Load();
 
 	bAlwaysShowKeyBar12 = JSONData["ae_prefs"]["always_show_keybar12"];
 	bAlwaysShowKeyBar34 = JSONData["ae_prefs"]["always_show_keybar34"];
+
+	g_force16BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["16"];
+	g_force32BitTransformQuant = JSONData["ae_prefs"]["anims_bit"]["32"];
 }
 
 void CAEPreferences::Save()
@@ -335,8 +344,12 @@ void CAEPreferences::Save()
 	JSONData["ae_prefs"]["always_show_keybar12"] = bAlwaysShowKeyBar12;
 	JSONData["ae_prefs"]["always_show_keybar34"] = bAlwaysShowKeyBar34;
 
+	JSONData["ae_prefs"]["anims_bit"]["16"] = g_force16BitTransformQuant;
+	JSONData["ae_prefs"]["anims_bit"]["32"] = g_force32BitTransformQuant;
+
+	JSONData["ae_prefs"]["version"] = ConfigVer;
 }
-extern ECORE_API BOOL g_force16BitTransformQuant;
+
 void CAEPreferences::FillProp(PropItemVec& props)
 {
 	inherited::FillProp(props);
@@ -344,7 +357,10 @@ void CAEPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateBOOL	(props,"Keybar\\show footsteps 12",	&bAlwaysShowKeyBar12);
 	PHelper().CreateBOOL	(props,"Keybar\\show footsteps 34",	&bAlwaysShowKeyBar34);
 
+	/*
 	PHelper().CreateBOOL	(props,"Tools\\MotionExport\\Force 16bit MotionT",	&g_force16BitTransformQuant);
+	PHelper().CreateBOOL	(props,"Tools\\MotionExport\\Force 32bit MotionT",	&g_force32BitTransformQuant);
+	*/
 }
 
 

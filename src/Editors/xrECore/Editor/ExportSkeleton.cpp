@@ -27,28 +27,28 @@
 
 #define MAX_BONE 64
 
-ECORE_API BOOL g_force16BitTransformQuant = FALSE;
+ECORE_API BOOL g_force16BitTransformQuant = TRUE;
 ECORE_API BOOL g_force32BitTransformQuant = FALSE;
 ECORE_API float g_EpsSkelPositionDelta = EPS_L;
 
 u16 CSkeletonCollectorPacked::VPack(SSkelVert& V)
 {
-    u32 P 	= 0xffffffff;
+	u32 P 	= 0xffffffff;
 
   
-    if (0xffffffff==P)
-    {
-        P = m_Verts.size();
-        m_Verts.push_back(V);
-    }
-    VERIFY	(P<u16(-1));
-    return 	(u16)P;
+	if (0xffffffff==P)
+	{
+		P = m_Verts.size();
+		m_Verts.push_back(V);
+	}
+	VERIFY	(P<u16(-1));
+	return 	(u16)P;
 }
 
 CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox &_bb, int apx_vertices, int apx_faces)
 {
-    m_Verts.reserve	(apx_vertices);
-    m_Faces.reserve	(apx_faces);
+	m_Verts.reserve	(apx_vertices);
+	m_Faces.reserve	(apx_faces);
   
 }
 //----------------------------------------------------
@@ -56,10 +56,10 @@ CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox &_bb, int apx_vert
 CExportSkeleton::SSplit::SSplit(CSurface* surf, const Fbox& bb, u16 part):CSkeletonCollectorPacked(bb)
 {
 //.	m_b2Link	= FALSE;
-    m_SkeletonLinkType		= 1;
-    m_Shader				= surf->m_ShaderName;
-    m_Texture				= surf->m_Texture;
-    m_PartID 				= part;
+	m_SkeletonLinkType		= 1;
+	m_Shader				= surf->m_ShaderName;
+	m_Texture				= surf->m_Texture;
+	m_PartID 				= part;
 }
 //----------------------------------------------------
 
@@ -180,165 +180,165 @@ int xrSimulate (u16* indices, u32 i_cnt, int iCacheSize )
 
 void CExportSkeleton::SSplit::Save(IWriter& F)
 {
-    // Header
-    F.open_chunk		(OGF_HEADER);
-    ogf_header			H;
-    H.format_version	= xrOGF_FormatVersion;
-    H.type				= (m_SWR.size())?MT_SKELETON_GEOMDEF_PM:MT_SKELETON_GEOMDEF_ST;
-    H.shader_id			= 0;
-    H.bb.min			= m_Box.min;
-    H.bb.max			= m_Box.max;                    
-    m_Box.getsphere		(H.bs.c,H.bs.r);
-    F.w					(&H,sizeof(H));
-    F.close_chunk		();
-    
-    // Texture
-    F.open_chunk		(OGF_TEXTURE);
-    F.w_stringZ			(m_Texture);
-    F.w_stringZ			(m_Shader);
-    F.close_chunk		();
+	// Header
+	F.open_chunk		(OGF_HEADER);
+	ogf_header			H;
+	H.format_version	= xrOGF_FormatVersion;
+	H.type				= (m_SWR.size())?MT_SKELETON_GEOMDEF_PM:MT_SKELETON_GEOMDEF_ST;
+	H.shader_id			= 0;
+	H.bb.min			= m_Box.min;
+	H.bb.max			= m_Box.max;                    
+	m_Box.getsphere		(H.bs.c,H.bs.r);
+	F.w					(&H,sizeof(H));
+	F.close_chunk		();
+	
+	// Texture
+	F.open_chunk		(OGF_TEXTURE);
+	F.w_stringZ			(m_Texture);
+	F.w_stringZ			(m_Shader);
+	F.close_chunk		();
 
-    // Vertices
-    F.open_chunk		(OGF_VERTICES);
+	// Vertices
+	F.open_chunk		(OGF_VERTICES);
 	F.w_u32				(m_SkeletonLinkType);
-    F.w_u32				(m_Verts.size());
+	F.w_u32				(m_Verts.size());
 
-    if(m_SkeletonLinkType==1)
-    {
-        for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); ++v_it)
-        {
-            SSkelVert& pV 	= *v_it;
-            pV.sort_by_weight	();
-            F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
-            F.w			(&pV.norm,sizeof(Fvector));		// normal
-            F.w			(&pV.tang,sizeof(Fvector));		// T
-            F.w			(&pV.binorm,sizeof(Fvector));	// B
-            F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
-            F.w_u32		(pV.bones[0].id);
-        }
-    }else
-    if(m_SkeletonLinkType==2)
-    {
-        for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
-        {
-            SSkelVert& pV 	= *v_it;
-            pV.sort_by_weight	();
-            float _weight_b0		= 0.0f;
+	if(m_SkeletonLinkType==1)
+	{
+		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); ++v_it)
+		{
+			SSkelVert& pV 	= *v_it;
+			pV.sort_by_weight	();
+			F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
+			F.w			(&pV.norm,sizeof(Fvector));		// normal
+			F.w			(&pV.tang,sizeof(Fvector));		// T
+			F.w			(&pV.binorm,sizeof(Fvector));	// B
+			F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
+			F.w_u32		(pV.bones[0].id);
+		}
+	}else
+	if(m_SkeletonLinkType==2)
+	{
+		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+		{
+			SSkelVert& pV 	= *v_it;
+			pV.sort_by_weight	();
+			float _weight_b0		= 0.0f;
 
 			// write vertex
-            F.w_u16		(pV.bones[0].id);
+			F.w_u16		(pV.bones[0].id);
 
-            if(pV.bones.size()==2)
-            {
-            	F.w_u16			(pV.bones[1].id);
-                _weight_b0   	= pV.bones[1].w/(pV.bones[0].w+pV.bones[1].w);
-            }else
-            {
-                F.w_u16			(pV.bones[0].id);
+			if(pV.bones.size()==2)
+			{
+				F.w_u16			(pV.bones[1].id);
+				_weight_b0   	= pV.bones[1].w/(pV.bones[0].w+pV.bones[1].w);
+			}else
+			{
+				F.w_u16			(pV.bones[0].id);
 //.                Log				("filling up foo-bone");
-                _weight_b0		= 1.0f;
-            }
+				_weight_b0		= 1.0f;
+			}
 
-            F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
-            F.w			(&pV.norm,sizeof(Fvector));		// normal
-            F.w			(&pV.tang,sizeof(Fvector));		// T
-            F.w			(&pV.binorm,sizeof(Fvector));	// B
-            F.w_float	(_weight_b0);
-            F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
-        }
-    }else
-    if(m_SkeletonLinkType==3 || m_SkeletonLinkType==4)
-    {
+			F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
+			F.w			(&pV.norm,sizeof(Fvector));		// normal
+			F.w			(&pV.tang,sizeof(Fvector));		// T
+			F.w			(&pV.binorm,sizeof(Fvector));	// B
+			F.w_float	(_weight_b0);
+			F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
+		}
+	}else
+	if(m_SkeletonLinkType==3 || m_SkeletonLinkType==4)
+	{
 
-        for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
-        {
-            SSkelVert& pV 		= *v_it;
-            pV.sort_by_weight	();
-            u32 i				= 0;
+		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++)
+		{
+			SSkelVert& pV 		= *v_it;
+			pV.sort_by_weight	();
+			u32 i				= 0;
 
-            u32 _bones 			= pV.bones.size();
-            R_ASSERT			( m_SkeletonLinkType >= pV.bones.size() );
-            for(i=0; i<m_SkeletonLinkType; ++i)
-            {
-            	if(i<_bones)
-                {
-         			F.w_u16	(pV.bones[i].id);
-                }else
-                {
-            		F.w_u16			(pV.bones[0].id);
+			u32 _bones 			= pV.bones.size();
+			R_ASSERT			( m_SkeletonLinkType >= pV.bones.size() );
+			for(i=0; i<m_SkeletonLinkType; ++i)
+			{
+				if(i<_bones)
+				{
+					F.w_u16	(pV.bones[i].id);
+				}else
+				{
+					F.w_u16			(pV.bones[0].id);
 //                	Log				("filling up foo-bone");
-                }
-            }
+				}
+			}
 
 			// write vertex
-            F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
-            F.w			(&pV.norm,sizeof(Fvector));		// normal
-            F.w			(&pV.tang,sizeof(Fvector));		// T
-            F.w			(&pV.binorm,sizeof(Fvector));	// B
+			F.w			(&pV.offs,sizeof(Fvector));		// position (offset)
+			F.w			(&pV.norm,sizeof(Fvector));		// normal
+			F.w			(&pV.tang,sizeof(Fvector));		// T
+			F.w			(&pV.binorm,sizeof(Fvector));	// B
 
-            for(i=0; i<m_SkeletonLinkType-1; ++i)
-            {
-            	if(i<_bones)
-                {
-            		F.w_float	(pV.bones[i].w);
-                }else
-                {
-            		F.w_float		(0.0f);
-                }
-            }
-            F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
-        }
-    }
+			for(i=0; i<m_SkeletonLinkType-1; ++i)
+			{
+				if(i<_bones)
+				{
+					F.w_float	(pV.bones[i].w);
+				}else
+				{
+					F.w_float		(0.0f);
+				}
+			}
+			F.w			(&pV.uv,sizeof(Fvector2));		// tu,tv
+		}
+	}
 
-    F.close_chunk		();
+	F.close_chunk		();
 
-    // Faces
-    F.open_chunk		(OGF_INDICES);
-    F.w_u32				(m_Faces.size()*3);
-    F.w					(&m_Faces.front(),m_Faces.size()*3*sizeof(WORD));
-    F.close_chunk		();
+	// Faces
+	F.open_chunk		(OGF_INDICES);
+	F.w_u32				(m_Faces.size()*3);
+	F.w					(&m_Faces.front(),m_Faces.size()*3*sizeof(WORD));
+	F.close_chunk		();
 
-    // PMap
-    if (m_SWR.size()) {
-        F.open_chunk(OGF_SWIDATA);
-        F.w_u32			(0);			// reserved space 16 bytes
-        F.w_u32			(0);
-        F.w_u32			(0);
-        F.w_u32			(0);
-        F.w_u32			(m_SWR.size()); // num collapses
-        for (u32 swr_idx=0; swr_idx<m_SWR.size(); swr_idx++)
-        	F.w			(&m_SWR[swr_idx],sizeof(VIPM_SWR));
-        F.close_chunk();
-    }
+	// PMap
+	if (m_SWR.size()) {
+		F.open_chunk(OGF_SWIDATA);
+		F.w_u32			(0);			// reserved space 16 bytes
+		F.w_u32			(0);
+		F.w_u32			(0);
+		F.w_u32			(0);
+		F.w_u32			(m_SWR.size()); // num collapses
+		for (u32 swr_idx=0; swr_idx<m_SWR.size(); swr_idx++)
+			F.w			(&m_SWR[swr_idx],sizeof(VIPM_SWR));
+		F.close_chunk();
+	}
 // SMF
 /*
 	if (0){
-    	static u32 chunk_id = 0; chunk_id++;
+		static u32 chunk_id = 0; chunk_id++;
 		xr_string r=xr_string("x:\\import\\test")+chunk_id+".smf";
-        IWriter* W 	= FS._w_open(r.c_str());
-        for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++){
-            SSkelVert& pV 	= *v_it;
+		IWriter* W 	= FS._w_open(r.c_str());
+		for (SkelVertIt v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++){
+			SSkelVert& pV 	= *v_it;
 			// vertices
-            xr_string 		tmp;
-            tmp.sprintf		("v %f %f %f",pV.O.x,pV.O.y,-pV.O.z);
-            W->w_string		(tmp.c_str());
-        }
-        // face
-        for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
-            SSkelFace& pF 	= *f_it;
-            xr_string 		tmp;
-            tmp.sprintf		("f %d %d %d",pF.v[0]+1,pF.v[2]+1,pF.v[1]+1);
-            W->w_string		(tmp.c_str());
-        }
-        // normals
-        W->w_string			("bind n vertex");
-        for (v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++){
-            SSkelVert& pV 	= *v_it;
-            xr_string 		tmp;
-            tmp.sprintf		("n %f %f %f",pV.N.x,pV.N.y,-pV.N.z);
-            W->w_string		(tmp.c_str());
-        }
-        FS.w_close	(W);
+			xr_string 		tmp;
+			tmp.sprintf		("v %f %f %f",pV.O.x,pV.O.y,-pV.O.z);
+			W->w_string		(tmp.c_str());
+		}
+		// face
+		for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
+			SSkelFace& pF 	= *f_it;
+			xr_string 		tmp;
+			tmp.sprintf		("f %d %d %d",pF.v[0]+1,pF.v[2]+1,pF.v[1]+1);
+			W->w_string		(tmp.c_str());
+		}
+		// normals
+		W->w_string			("bind n vertex");
+		for (v_it=m_Verts.begin(); v_it!=m_Verts.end(); v_it++){
+			SSkelVert& pV 	= *v_it;
+			xr_string 		tmp;
+			tmp.sprintf		("n %f %f %f",pV.N.x,pV.N.y,-pV.N.z);
+			W->w_string		(tmp.c_str());
+		}
+		FS.w_close	(W);
 	}
 */    
 }
@@ -348,38 +348,38 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 void CExportSkeleton::SSplit::MakeProgressive()
 {
 	VIPM_Init	();
-    for (SkelVertIt vert_it=m_Verts.begin(); vert_it!=m_Verts.end(); vert_it++)
-    	VIPM_AppendVertex(vert_it->offs,vert_it->uv);
-    for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
-    	VIPM_AppendFace(f_it->v[0],f_it->v[1],f_it->v[2]);       
+	for (SkelVertIt vert_it=m_Verts.begin(); vert_it!=m_Verts.end(); vert_it++)
+		VIPM_AppendVertex(vert_it->offs,vert_it->uv);
+	for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
+		VIPM_AppendFace(f_it->v[0],f_it->v[1],f_it->v[2]);       
 
-    VIPM_Result* R = VIPM_Convert(u32(-1),1.f,1);
+	VIPM_Result* R = VIPM_Convert(u32(-1),1.f,1);
 
-    if (R){
-        // Permute vertices
-        SkelVertVec temp_list = m_Verts;
-        for(u32 i=0; i<temp_list.size(); i++)
-            m_Verts[R->permute_verts[i]]=temp_list[i];
-    
-        // Fill indices
-        m_Faces.resize	(R->indices.size()/3);
-        for (u32 f_idx=0; f_idx<m_Faces.size(); f_idx++){
-            SSkelFace& F= m_Faces[f_idx];
-            F.v[0]			= R->indices[f_idx*3+0];
-            F.v[1]			= R->indices[f_idx*3+1];
-            F.v[2]			= R->indices[f_idx*3+2];
-        }
+	if (R){
+		// Permute vertices
+		SkelVertVec temp_list = m_Verts;
+		for(u32 i=0; i<temp_list.size(); i++)
+			m_Verts[R->permute_verts[i]]=temp_list[i];
+	
+		// Fill indices
+		m_Faces.resize	(R->indices.size()/3);
+		for (u32 f_idx=0; f_idx<m_Faces.size(); f_idx++){
+			SSkelFace& F= m_Faces[f_idx];
+			F.v[0]			= R->indices[f_idx*3+0];
+			F.v[1]			= R->indices[f_idx*3+1];
+			F.v[2]			= R->indices[f_idx*3+2];
+		}
 
-        // Fill SWR
-        m_SWR.resize		(R->swr_records.size());
-        for (u32 swr_idx=0; swr_idx!=m_SWR.size(); swr_idx++)
-            m_SWR[swr_idx]	= R->swr_records[swr_idx];
+		// Fill SWR
+		m_SWR.resize		(R->swr_records.size());
+		for (u32 swr_idx=0; swr_idx!=m_SWR.size(); swr_idx++)
+			m_SWR[swr_idx]	= R->swr_records[swr_idx];
 	}else{
-    	Log("!..Can't make progressive.");
-    }
-    
-    // cleanup
-    VIPM_Destroy		();
+		Log("!..Can't make progressive.");
+	}
+	
+	// cleanup
+	VIPM_Destroy		();
 }
 
 void CExportSkeleton::SSplit::MakeStripify()
@@ -387,38 +387,38 @@ void CExportSkeleton::SSplit::MakeStripify()
 //	int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //	Log("SRC:",ccc);
 	// alternative stripification - faces
-    {
-        DWORD*		remap	= xr_alloc<DWORD>		(m_Faces.size());
-        HRESULT		rhr		= D3DXOptimizeFaces		(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-        R_CHK		(rhr);
-        SkelFaceVec	_source	= m_Faces;
-        for (u32 it=0; it<_source.size(); it++)
-            m_Faces[it] = _source[remap[it]];
+	{
+		DWORD*		remap	= xr_alloc<DWORD>		(m_Faces.size());
+		HRESULT		rhr		= D3DXOptimizeFaces		(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
+		R_CHK		(rhr);
+		SkelFaceVec	_source	= m_Faces;
+		for (u32 it=0; it<_source.size(); it++)
+			m_Faces[it] = _source[remap[it]];
 
-        xr_free		(remap);
+		xr_free		(remap);
 
 //	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //		Log("X:",ccc);
-    }
-    // alternative stripification - vertices
-    {
-        DWORD*		remap	= xr_alloc<DWORD>		(m_Verts.size());
-        HRESULT		rhr		= D3DXOptimizeVertices	(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-        R_CHK		(rhr);
-        SkelVertVec	_source = m_Verts;
+	}
+	// alternative stripification - vertices
+	{
+		DWORD*		remap	= xr_alloc<DWORD>		(m_Verts.size());
+		HRESULT		rhr		= D3DXOptimizeVertices	(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
+		R_CHK		(rhr);
+		SkelVertVec	_source = m_Verts;
 
-        for(u32 vit=0; vit<_source.size(); vit++)
-            m_Verts[remap[vit]]		= _source[vit];
+		for(u32 vit=0; vit<_source.size(); vit++)
+			m_Verts[remap[vit]]		= _source[vit];
 
-        for(u32 fit=0; fit<(u32)m_Faces.size(); ++fit)
-        	for (u32 j=0; j<3; j++)
-                m_Faces[fit].v[j]= remap[m_Faces[fit].v[j]];
-            
-        xr_free		(remap);
+		for(u32 fit=0; fit<(u32)m_Faces.size(); ++fit)
+			for (u32 j=0; j<3; j++)
+				m_Faces[fit].v[j]= remap[m_Faces[fit].v[j]];
+			
+		xr_free		(remap);
 
 //	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //		Log("Y:",ccc);
-    }
+	}
 }
 
 
@@ -435,43 +435,43 @@ extern BOOL RAPIDMinBox(Fobb& B, Fvector* vertices, u32 v_count);
 void ComputeOBB_RAPID	(Fobb &B, FvectorVec& V, u32 t_cnt)
 {
 	VERIFY	(t_cnt==(V.size()/3));
-    if ((t_cnt<1)||(V.size()<3)) 
+	if ((t_cnt<1)||(V.size()<3)) 
 	{ 
 		B.invalidate(); 
 		return; 
 	}
-    RAPIDMinBox			(B, &V.front(), V.size());
+	RAPIDMinBox			(B, &V.front(), V.size());
 
-    // Normalize rotation matrix (???? ???????? ContOrientedBox - ?????? ????? ???????)
-    B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
-    B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
+	// Normalize rotation matrix (???? ???????? ContOrientedBox - ?????? ????? ???????)
+	B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
+	B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
 
-    VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
+	VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
 }
 
 void ComputeOBB_WML		(Fobb &B, FvectorVec& V)
 {
-    if (V.size()<3) { B.invalidate(); return; }
-    float 	HV				= flt_max;
-    {
-        Wml::Box3<float> 	BOX;
-        Wml::MinBox3<float> mb(V.size(), (const Wml::Vector3<float>*) &V.front(), BOX);
-        float hv			= BOX.Extents()[0]*BOX.Extents()[1]*BOX.Extents()[2];
-        if (hv<HV){
-        	HV 				= hv;
-            B.m_rotate.i.set(BOX.Axis(0));
-            B.m_rotate.j.set(BOX.Axis(1));
-            B.m_rotate.k.set(BOX.Axis(2));
+	if (V.size()<3) { B.invalidate(); return; }
+	float 	HV				= flt_max;
+	{
+		Wml::Box3<float> 	BOX;
+		Wml::MinBox3<float> mb(V.size(), (const Wml::Vector3<float>*) &V.front(), BOX);
+		float hv			= BOX.Extents()[0]*BOX.Extents()[1]*BOX.Extents()[2];
+		if (hv<HV){
+			HV 				= hv;
+			B.m_rotate.i.set(BOX.Axis(0));
+			B.m_rotate.j.set(BOX.Axis(1));
+			B.m_rotate.k.set(BOX.Axis(2));
 
-            B.m_translate.set(BOX.Center());
-            B.m_halfsize.set(BOX.Extents()[0],BOX.Extents()[1],BOX.Extents()[2]);
-        }
-    }
+			B.m_translate.set(BOX.Center());
+			B.m_halfsize.set(BOX.Extents()[0],BOX.Extents()[1],BOX.Extents()[2]);
+		}
+	}
 
-    B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
-    B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
-    
-    VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
+	B.m_rotate.i.crossproduct(B.m_rotate.j,B.m_rotate.k);
+	B.m_rotate.j.crossproduct(B.m_rotate.k,B.m_rotate.i);
+	
+	VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
 }
 //----------------------------------------------------
 
@@ -479,252 +479,252 @@ int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 
 {
 	for (SplitIt it=m_Splits.begin(); it!=m_Splits.end(); it++)
 		if (	it->m_Shader.equal(shader) 		&&
-        		it->m_Texture.equal(texture) 	&&
-                (it->m_PartID==part_id)      	)
+				it->m_Texture.equal(texture) 	&&
+				(it->m_PartID==part_id)      	)
 
-        return it-m_Splits.begin();
-    return -1;
+		return it-m_Splits.begin();
+	return -1;
 }
 
 IC void BuildGroups(CBone* B, U16Vec& tgt, u16 id, u16& last_id)
 {
-    if (B->IK_data.ik_flags.is(SJointIKData::flBreakable)) id = ++last_id;
+	if (B->IK_data.ik_flags.is(SJointIKData::flBreakable)) id = ++last_id;
 	tgt[B->SelfID]	= id;
-    for (BoneIt bone_it=B->children.begin(); bone_it!=B->children.end(); bone_it++)
-    	BuildGroups	(*bone_it,tgt,id,last_id);
+	for (BoneIt bone_it=B->children.begin(); bone_it!=B->children.end(); bone_it++)
+		BuildGroups	(*bone_it,tgt,id,last_id);
 }
 #define TO_STRING(x) #x
 bool CExportSkeleton::PrepareGeometry(u8 influence)
 {
-    if( m_Source->MeshCount() == 0 ) return false;
+	if( m_Source->MeshCount() == 0 ) return false;
 
-    if (m_Source->BoneCount()<1){
-    	ELog.Msg(mtError,"There are no bones in the object.");
-     	return false;
-    }
+	if (m_Source->BoneCount()<1){
+		ELog.Msg(mtError,"There are no bones in the object.");
+		return false;
+	}
 
-    if (m_Source->BoneCount()>MAX_BONE){
-        ELog.Msg(mtError,"Object cannot handle more than" TO_STRING( MAX_BONE) " bones.");
-     	return false;
-    }
+	if (m_Source->BoneCount()>MAX_BONE){
+		ELog.Msg(mtError,"Object cannot handle more than" TO_STRING( MAX_BONE) " bones.");
+		return false;
+	}
 
-    // mem active motion
-    CSMotion* active_motion=m_Source->ResetSAnimation();
+	// mem active motion
+	CSMotion* active_motion=m_Source->ResetSAnimation();
 
-    R_ASSERT(m_Source->IsDynamic()&&m_Source->IsSkeleton());
+	R_ASSERT(m_Source->IsDynamic()&&m_Source->IsSkeleton());
 
 #if 1
-    SPBItem* pb = UI->ProgressStart(5+m_Source->MeshCount()*2+m_Source->SurfaceCount(),"..Prepare skeleton geometry");
-    pb->Inc		();
+	SPBItem* pb = UI->ProgressStart(5+m_Source->MeshCount()*2+m_Source->SurfaceCount(),"..Prepare skeleton geometry");
+	pb->Inc		();
 #endif
 
-    bool bBreakable		= false;
-    U16Vec   			bone_brk_parts(m_Source->BoneCount());
-    CBone* root 		= 0;
-    for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++){
-	    CBone* B 		= *bone_it;
-    	if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))	bBreakable 	= true;
-    	if (B->IsRoot()) 										root 		= B;
-    }
-    if (bBreakable){
-    	VERIFY 			(root);
-        u16 last_id		= 0;
+	bool bBreakable		= false;
+	U16Vec   			bone_brk_parts(m_Source->BoneCount());
+	CBone* root 		= 0;
+	for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++){
+		CBone* B 		= *bone_it;
+		if (B->IK_data.ik_flags.is(SJointIKData::flBreakable))	bBreakable 	= true;
+		if (B->IsRoot()) 										root 		= B;
+	}
+	if (bBreakable){
+		VERIFY 			(root);
+		u16 last_id		= 0;
 		BuildGroups    	(root,bone_brk_parts,0,last_id);
-    }
+	}
 
 	for (U16It uit=bone_brk_parts.begin(); uit!=bone_brk_parts.end(); uit++){
-    	Msg				("Bone: %s - Part: %d",*m_Source->GetBone(uit-bone_brk_parts.begin())->Name(),*uit);
-    }
-    
-    bool bRes			= true;
+		Msg				("Bone: %s - Part: %d",*m_Source->GetBone(uit-bone_brk_parts.begin())->Name(),*uit);
+	}
+	
+	bool bRes			= true;
 
 #if 1
 	UI->SetStatus		("..Split meshes");
 #endif
 
-    U16Vec				tmp_bone_lst;
+	U16Vec				tmp_bone_lst;
 
-    for(EditMeshIt mesh_it=m_Source->FirstMesh();mesh_it!=m_Source->LastMesh();mesh_it++)
-    {
-    	if (!bRes)		break;
+	for(EditMeshIt mesh_it=m_Source->FirstMesh();mesh_it!=m_Source->LastMesh();mesh_it++)
+	{
+		if (!bRes)		break;
 
-        CEditableMesh* MESH 							= *mesh_it;
-        // generate vertex offset
-        MESH->GenerateVNormals							(0);
-        MESH->GenerateFNormals							();
-        MESH->GenerateSVertices							(influence);
+		CEditableMesh* MESH 							= *mesh_it;
+		// generate vertex offset
+		MESH->GenerateVNormals							(0);
+		MESH->GenerateFNormals							();
+		MESH->GenerateSVertices							(influence);
 #if 1
-        pb->Inc											();
+		pb->Inc											();
 #endif
 		// fill faces
-        for (SurfFacesPairIt sp_it=MESH->m_SurfFaces.begin(); sp_it!=MESH->m_SurfFaces.end(); sp_it++)
-        {
-	    	if (!bRes)	break;
-            IntVec& face_lst 							= sp_it->second;
-            CSurface* surf 								= sp_it->first;
-            u32 dwTexCnt 								= ((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
-            R_ASSERT									(dwTexCnt==1);
+		for (SurfFacesPairIt sp_it=MESH->m_SurfFaces.begin(); sp_it!=MESH->m_SurfFaces.end(); sp_it++)
+		{
+			if (!bRes)	break;
+			IntVec& face_lst 							= sp_it->second;
+			CSurface* surf 								= sp_it->first;
+			u32 dwTexCnt 								= ((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
+			R_ASSERT									(dwTexCnt==1);
 
-            for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); f_it++)
-            {
-		    	if (!bRes)								break;
-            	int f_idx 								= *f_it;
+			for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); f_it++)
+			{
+				if (!bRes)								break;
+				int f_idx 								= *f_it;
 
-                {
-                    SSkelVert 							v[3];
+				{
+					SSkelVert 							v[3];
 					tmp_bone_lst.clear			();
-                   	u32 			link_type 			= _max(MESH->m_SVertices[f_idx*3+0].bones.size(),MESH->m_SVertices[f_idx*3+1].bones.size());
-                   	link_type 							= _max(link_type,MESH->m_SVertices[f_idx*3+2].bones.size());
-                    VERIFY								(link_type>0 && link_type<=(u32)influence);
+					u32 			link_type 			= _max(MESH->m_SVertices[f_idx*3+0].bones.size(),MESH->m_SVertices[f_idx*3+1].bones.size());
+					link_type 							= _max(link_type,MESH->m_SVertices[f_idx*3+2].bones.size());
+					VERIFY								(link_type>0 && link_type<=(u32)influence);
 
-                    for (int k=0; k<3; k++)
-                    {
-                        st_SVert& sv 					= MESH->m_SVertices[f_idx*3+k];
-                        VERIFY							(sv.bones.size()>0 && (u8)sv.bones.size()<=influence);
+					for (int k=0; k<3; k++)
+					{
+						st_SVert& sv 					= MESH->m_SVertices[f_idx*3+k];
+						VERIFY							(sv.bones.size()>0 && (u8)sv.bones.size()<=influence);
 
-                        if (link_type==1)
-                        {
-                        	st_SVert::bone 				b[2];
-                            b[0].id					    = sv.bones[0].id;
-                            b[1].id 				    = sv.bones[0].id;
-                            b[0].w					    = 1.f;
-                            b[1].w					    = 0.f;
-                            v[k].set				    (sv.offs,sv.norm,sv.uv,2,b);
-                            tmp_bone_lst.push_back	    (sv.bones[0].id);
-                        }else
-                        if(link_type==2)
-                        {
-                            {
-                                v[k].set				(sv.offs,sv.norm,sv.uv,(u8)sv.bones.size(),sv.bones.begin());
+						if (link_type==1)
+						{
+							st_SVert::bone 				b[2];
+							b[0].id					    = sv.bones[0].id;
+							b[1].id 				    = sv.bones[0].id;
+							b[0].w					    = 1.f;
+							b[1].w					    = 0.f;
+							v[k].set				    (sv.offs,sv.norm,sv.uv,2,b);
+							tmp_bone_lst.push_back	    (sv.bones[0].id);
+						}else
+						if(link_type==2)
+						{
+							{
+								v[k].set				(sv.offs,sv.norm,sv.uv,(u8)sv.bones.size(),sv.bones.begin());
 
-                                for(u32 i=0; i<sv.bones.size(); ++i)
-                                {
-                                    tmp_bone_lst.push_back	(sv.bones[i].id);
-                                }
-                            }
-                        }else
-                        if(link_type==4 || link_type==3)
-                        {
-                            v[k].set				(sv.offs,sv.norm,sv.uv,(u8)sv.bones.size(),sv.bones.begin());
+								for(u32 i=0; i<sv.bones.size(); ++i)
+								{
+									tmp_bone_lst.push_back	(sv.bones[i].id);
+								}
+							}
+						}else
+						if(link_type==4 || link_type==3)
+						{
+							v[k].set				(sv.offs,sv.norm,sv.uv,(u8)sv.bones.size(),sv.bones.begin());
 
-                            for(u32 i=0; i<sv.bones.size(); ++i)
-                                tmp_bone_lst.push_back	(sv.bones[i].id);
-                    	}
-                     }
-                    u16 bone_brk_part		= 0;
-                    if (bBreakable)
-                    {
-                        std::sort				(tmp_bone_lst.begin(),tmp_bone_lst.end());
-                        U16It ne				= std::unique(tmp_bone_lst.begin(),tmp_bone_lst.end());
-                        tmp_bone_lst.erase		(ne,tmp_bone_lst.end());
-                        U16It tit				= tmp_bone_lst.begin();
-                        bone_brk_part			= bone_brk_parts[*tit];
-                        tit++;
+							for(u32 i=0; i<sv.bones.size(); ++i)
+								tmp_bone_lst.push_back	(sv.bones[i].id);
+						}
+					 }
+					u16 bone_brk_part		= 0;
+					if (bBreakable)
+					{
+						std::sort				(tmp_bone_lst.begin(),tmp_bone_lst.end());
+						U16It ne				= std::unique(tmp_bone_lst.begin(),tmp_bone_lst.end());
+						tmp_bone_lst.erase		(ne,tmp_bone_lst.end());
+						U16It tit				= tmp_bone_lst.begin();
+						bone_brk_part			= bone_brk_parts[*tit];
+						tit++;
 
-                        for (; tit!=tmp_bone_lst.end(); tit++)
-                        	if (bone_brk_part!=bone_brk_parts[*tit])
-                            {
-                                ELog.Msg		(mtError,"Can't export object as breakable. Object have N-Link face(s).");
-                                bRes			= false;
-                            }                    	
-                    }
-                    // find split
-                    int mtl_idx 				= FindSplit(surf->m_ShaderName,surf->m_Texture,bone_brk_part);
-                    if (mtl_idx<0)
-                    {
-                        m_Splits.push_back					(SSplit(surf,m_Source->GetBox(),bone_brk_part));
-                        mtl_idx								= m_Splits.size()-1;
-                        m_Splits[mtl_idx].m_SkeletonLinkType = 0;
-                    }
+						for (; tit!=tmp_bone_lst.end(); tit++)
+							if (bone_brk_part!=bone_brk_parts[*tit])
+							{
+								ELog.Msg		(mtError,"Can't export object as breakable. Object have N-Link face(s).");
+								bRes			= false;
+							}                    	
+					}
+					// find split
+					int mtl_idx 				= FindSplit(surf->m_ShaderName,surf->m_Texture,bone_brk_part);
+					if (mtl_idx<0)
+					{
+						m_Splits.push_back					(SSplit(surf,m_Source->GetBox(),bone_brk_part));
+						mtl_idx								= m_Splits.size()-1;
+						m_Splits[mtl_idx].m_SkeletonLinkType = 0;
+					}
 
-                    SSplit& cur_split				= m_Splits[mtl_idx];
-                    cur_split.m_SkeletonLinkType 	= _max(link_type, cur_split.m_SkeletonLinkType);
+					SSplit& cur_split				= m_Splits[mtl_idx];
+					cur_split.m_SkeletonLinkType 	= _max(link_type, cur_split.m_SkeletonLinkType);
 
 
-                    cur_split.m_UsedBones.insert	(cur_split.m_UsedBones.end(),tmp_bone_lst.begin(),tmp_bone_lst.end());
+					cur_split.m_UsedBones.insert	(cur_split.m_UsedBones.end(),tmp_bone_lst.begin(),tmp_bone_lst.end());
 
-                    // append face
-                    cur_split.add_face				(v[0], v[1], v[2]);
+					// append face
+					cur_split.add_face				(v[0], v[1], v[2]);
 
-			        if (surf->m_Flags.is(CSurface::sf2Sided))
-                    {
-                    	v[0].norm.invert			();
-                        v[1].norm.invert			();
-                        v[2].norm.invert			();
-                    	cur_split.add_face			(v[0], v[2], v[1]);
-                    }
-                }
-            }
-        }
-        // mesh fin
-        MESH->UnloadSVertices();
-        MESH->UnloadVNormals();
-        MESH->UnloadFNormals();
+					if (surf->m_Flags.is(CSurface::sf2Sided))
+					{
+						v[0].norm.invert			();
+						v[1].norm.invert			();
+						v[2].norm.invert			();
+						cur_split.add_face			(v[0], v[2], v[1]);
+					}
+				}
+			}
+		}
+		// mesh fin
+		MESH->UnloadSVertices();
+		MESH->UnloadVNormals();
+		MESH->UnloadFNormals();
 #if 1
-        pb->Inc		();
+		pb->Inc		();
 #endif
 	}
 #if 1
-    UI->SetStatus	("..Calculate TB");
+	UI->SetStatus	("..Calculate TB");
 #endif
-        Msg				("Split statistic:");
-        for (int k=0; k<(int)m_Splits.size(); k++)
-        {
-    // check splits
-          if (bRes)
-          {
-              if (!m_Splits[k].valid())
-              {
-                  ELog.Msg		(mtError,"Empty split found (Shader/Texture: %s/%s). Removed.",*m_Splits[k].m_Shader,*m_Splits[k].m_Texture);
-                  m_Splits.erase	(m_Splits.begin()+k); k--;
-              }else
-              {
-                  SSplit& split	= m_Splits[k];
-                  std::sort		(split.m_UsedBones.begin(),split.m_UsedBones.end());
-                  U16It ne		= std::unique(split.m_UsedBones.begin(),split.m_UsedBones.end());
-                  split.m_UsedBones.erase	(ne,split.m_UsedBones.end());
-                  Msg				(" - Split %d: [Bones: %d, Links: %d, Faces: %d, Verts: %d, BrPart: %d, Shader/Texture: '%s'/'%s']",k,split.m_UsedBones.size(),split.m_SkeletonLinkType,split.getTS(),split.getVS(),split.m_PartID,*m_Splits[k].m_Shader,*m_Splits[k].m_Texture);
-              }
-         }
-       }
-        // calculate TB
-        for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
-        {
-            split_it->CalculateTB();
-            
+		Msg				("Split statistic:");
+		for (int k=0; k<(int)m_Splits.size(); k++)
+		{
+	// check splits
+		  if (bRes)
+		  {
+			  if (!m_Splits[k].valid())
+			  {
+				  ELog.Msg		(mtError,"Empty split found (Shader/Texture: %s/%s). Removed.",*m_Splits[k].m_Shader,*m_Splits[k].m_Texture);
+				  m_Splits.erase	(m_Splits.begin()+k); k--;
+			  }else
+			  {
+				  SSplit& split	= m_Splits[k];
+				  std::sort		(split.m_UsedBones.begin(),split.m_UsedBones.end());
+				  U16It ne		= std::unique(split.m_UsedBones.begin(),split.m_UsedBones.end());
+				  split.m_UsedBones.erase	(ne,split.m_UsedBones.end());
+				  Msg				(" - Split %d: [Bones: %d, Links: %d, Faces: %d, Verts: %d, BrPart: %d, Shader/Texture: '%s'/'%s']",k,split.m_UsedBones.size(),split.m_SkeletonLinkType,split.getTS(),split.getVS(),split.m_PartID,*m_Splits[k].m_Shader,*m_Splits[k].m_Texture);
+			  }
+		 }
+	   }
+		// calculate TB
+		for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
+		{
+			split_it->CalculateTB();
+			
 #if 1
-            pb->Inc		();
+			pb->Inc		();
 #endif
-        }
+		}
 
 #if 1
-        pb->Inc			();
+		pb->Inc			();
 #endif
-        // compute bounding
-        ComputeBounding	();
+		// compute bounding
+		ComputeBounding	();
 
 #if 1
-    UI->ProgressEnd(pb);
+	UI->ProgressEnd(pb);
 #endif
-    // restore active motion       6
-    m_Source->SetActiveSMotion(active_motion);
+	// restore active motion       6
+	m_Source->SetActiveSMotion(active_motion);
 
-    return bRes;
+	return bRes;
 }
 
 bool CExportSkeleton::ExportAsSimple(IWriter& F)
 {
 	if (!PrepareGeometry(2)) return false;
-    {
-        // Saving geometry...
-        if ( m_Splits.size()==1 )
-        {
-            // export as single mesh
-            m_Splits[0].Save(F);
-            return true;
-        } else
-        return false;
-    }
+	{
+		// Saving geometry...
+		if ( m_Splits.size()==1 )
+		{
+			// export as single mesh
+			m_Splits[0].Save(F);
+			return true;
+		} else
+		return false;
+	}
 
 }
 
@@ -735,578 +735,581 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 	if (!PrepareGeometry(infl)) return false;
 
 #if 1
-    SPBItem* pb = UI->ProgressStart(3+m_Splits.size(),"..Export skeleton geometry");
-    pb->Inc		("Make Progressive...");
+	SPBItem* pb = UI->ProgressStart(3+m_Splits.size(),"..Export skeleton geometry");
+	pb->Inc		("Make Progressive...");
 #endif
 	// fill per bone vertices
-    BoneVec& bones 			= m_Source->Bones();
-    xr_vector<FvectorVec>	bone_points;
+	BoneVec& bones 			= m_Source->Bones();
+	xr_vector<FvectorVec>	bone_points;
 	bone_points.resize		(m_Source->BoneCount());
 
-    for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); ++split_it)
+	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); ++split_it)
 	{
 		if (m_Source->m_objectFlags.is(CEditableObject::eoProgressive))
-        	split_it->MakeProgressive();
-        else
-        	split_it->MakeStripify();
+			split_it->MakeProgressive();
+		else
+			split_it->MakeStripify();
 
 		SkelVertVec& lst = split_it->getV_Verts();
-	    for (SkelVertIt sv_it=lst.begin(); sv_it!=lst.end(); sv_it++)
-        {
-		    bone_points		[sv_it->bones[0].id].push_back						(sv_it->offs);
-            bones			[sv_it->bones[0].id]->_RITransform().transform_tiny(bone_points[sv_it->bones[0].id].back());
-        }
+		for (SkelVertIt sv_it=lst.begin(); sv_it!=lst.end(); sv_it++)
+		{
+			bone_points		[sv_it->bones[0].id].push_back						(sv_it->offs);
+			bones			[sv_it->bones[0].id]->_RITransform().transform_tiny(bone_points[sv_it->bones[0].id].back());
+		}
 #if 1
-        pb->Inc		();
+		pb->Inc		();
 #endif
 	}
 
 	// create OGF
-    // Header
-    ogf_header 		H;
-    H.format_version= xrOGF_FormatVersion;
-    H.type			= m_Source->IsAnimated()?MT_SKELETON_ANIM:MT_SKELETON_RIGID;
-    H.shader_id		= 0;
-    H.bb.min		= m_Box.min;
-    H.bb.max		= m_Box.max;
-    m_Box.getsphere	(H.bs.c,H.bs.r);
-    F.w_chunk		(OGF_HEADER,&H,sizeof(H));
+	// Header
+	ogf_header 		H;
+	H.format_version= xrOGF_FormatVersion;
+	H.type			= m_Source->IsAnimated()?MT_SKELETON_ANIM:MT_SKELETON_RIGID;
+	H.shader_id		= 0;
+	H.bb.min		= m_Box.min;
+	H.bb.max		= m_Box.max;
+	m_Box.getsphere	(H.bs.c,H.bs.r);
+	F.w_chunk		(OGF_HEADER,&H,sizeof(H));
 
-    // Desc
-    ogf_desc		desc;
-    m_Source->PrepareOGFDesc(desc);
-    F.open_chunk	(OGF_S_DESC);
-    desc.Save		(F);
-    F.close_chunk	();
+	// Desc
+	ogf_desc		desc;
+	m_Source->PrepareOGFDesc(desc);
+	F.open_chunk	(OGF_S_DESC);
+	desc.Save		(F);
+	F.close_chunk	();
 
-    // OGF_CHILDREN
-    F.open_chunk	(OGF_CHILDREN);
-    int chield=0;
-    for (auto split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
-	    F.open_chunk(chield++);
-        split_it->Save(F);
-	    F.close_chunk();
-    }
-    F.close_chunk();
+	// OGF_CHILDREN
+	F.open_chunk	(OGF_CHILDREN);
+	int chield=0;
+	for (auto split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
+		F.open_chunk(chield++);
+		split_it->Save(F);
+		F.close_chunk();
+	}
+	F.close_chunk();
 
 #if 1
-    pb->Inc		("Compute bone bounding volume...");
+	pb->Inc		("Compute bone bounding volume...");
 #endif
 
-    // BoneNames
-    F.open_chunk(OGF_S_BONE_NAMES);
-    F.w_u32(m_Source->BoneCount());
-    int bone_idx=0;
-    for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++){
-        F.w_stringZ	((*bone_it)->Name());
+	// BoneNames
+	F.open_chunk(OGF_S_BONE_NAMES);
+	F.w_u32(m_Source->BoneCount());
+	int bone_idx=0;
+	for (BoneIt bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); bone_it++,bone_idx++){
+		F.w_stringZ	((*bone_it)->Name());
 		F.w_stringZ	((*bone_it)->Parent()?(*bone_it)->ParentName().c_str():"");
-        Fobb	obb;
-        ComputeOBB_WML	(obb,bone_points[bone_idx]);
-        F.w				(&obb,sizeof(Fobb));
-    }
-    F.close_chunk();
+		Fobb	obb;
+		ComputeOBB_WML	(obb,bone_points[bone_idx]);
+		F.w				(&obb,sizeof(Fobb));
+	}
+	F.close_chunk();
 
-    bool bRes = true;
-                    
-    F.open_chunk(OGF_S_IKDATA);
-    for (auto bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); ++bone_it,++bone_idx)
-        if (!(*bone_it)->ExportOGF(F)) 
+	bool bRes = true;
+					
+	F.open_chunk(OGF_S_IKDATA);
+	for (auto bone_it=m_Source->FirstBone(); bone_it!=m_Source->LastBone(); ++bone_it,++bone_idx)
+		if (!(*bone_it)->ExportOGF(F)) 
 			bRes=false; 
 
-    F.close_chunk();
+	F.close_chunk();
 
-    if (m_Source->GetClassScript().size())
+	if (m_Source->GetClassScript().size())
 	{
-        F.open_chunk	(OGF_S_USERDATA);
-        F.w_stringZ		(m_Source->GetClassScript());
-        F.close_chunk	();
-    }
+		F.open_chunk	(OGF_S_USERDATA);
+		F.w_stringZ		(m_Source->GetClassScript());
+		F.close_chunk	();
+	}
 
 #if 1
-    pb->Inc		();
+	pb->Inc		();
 #endif
-    if (m_Source->GetLODs() && xr_strlen(m_Source->GetLODs())>0 && bRes)
-    {
-        F.open_chunk	(OGF_S_LODS);
+	if (m_Source->GetLODs() && xr_strlen(m_Source->GetLODs())>0 && bRes)
+	{
+		F.open_chunk	(OGF_S_LODS);
 #ifndef _string_lod
-        	CEditableObject* lod_src = Lib.CreateEditObject( m_Source->GetLODs() );
-            if (0==lod_src)
-            {
-            	Log		("! Invalid LOD name:",m_Source->GetLODs());
-            	bRes	= false;
-            }else
-            {
-                CExportSkeleton	    E(lod_src);
+			CEditableObject* lod_src = Lib.CreateEditObject( m_Source->GetLODs() );
+			if (0==lod_src)
+			{
+				Log		("! Invalid LOD name:",m_Source->GetLODs());
+				bRes	= false;
+			}else
+			{
+				CExportSkeleton	    E(lod_src);
 #else
 
-                F.w_string          ( m_Source->GetLODs() );
+				F.w_string          ( m_Source->GetLODs() );
 #endif
 
 #ifndef _string_lod
-                if (!E.ExportAsSimple(F))
-                {
-                    Log		("! Invalid LOD object:",m_Source->GetLODs());
-                    bRes	= false;
-                }
+				if (!E.ExportAsSimple(F))
+				{
+					Log		("! Invalid LOD object:",m_Source->GetLODs());
+					bRes	= false;
+				}
 
-            	Lib.RemoveEditObject(lod_src);
-            }
+				Lib.RemoveEditObject(lod_src);
+			}
 #endif
-        F.close_chunk	();
-    }
+		F.close_chunk	();
+	}
 
 #if 1
-    UI->ProgressEnd(pb);
+	UI->ProgressEnd(pb);
 #endif
-    return bRes;
+	return bRes;
 }
 //----------------------------------------------------
 struct bm_item{
-    CKeyQR* 		_keysQR;
-    CKeyQR32*       _keysQR32;
-    CKeyQT8* 		_keysQT8; 
-    CKeyQT16* 		_keysQT16;
-    CKeyQT32*       _keysQT32;
-    Fvector* 		_keysT;
-    void create(u32 len)
-    {
-        _keysQR 	= xr_alloc<CKeyQR>(len);
-        _keysQR32   = xr_alloc<CKeyQR32>(len);
-        _keysQT8 	= xr_alloc<CKeyQT8>(len); 
-        _keysQT16 	= xr_alloc<CKeyQT16>(len);
-        _keysQT32   = xr_alloc<CKeyQT32>(len);
-        _keysT 		= xr_alloc<Fvector>(len);
-    }
-    void destroy()
-    {
-        xr_free		(_keysQR);
-        xr_free     (_keysQR32);
-        xr_free		(_keysQT8);
-        xr_free		(_keysQT16);
-        xr_free     (_keysQT32);
-        xr_free		(_keysT);
-    }
+	CKeyQR* 		_keysQR;
+	CKeyQR32*       _keysQR32;
+	CKeyQT8* 		_keysQT8; 
+	CKeyQT16* 		_keysQT16;
+	CKeyQT32*       _keysQT32;
+	Fvector* 		_keysT;
+	void create(u32 len)
+	{
+		_keysQR 	= xr_alloc<CKeyQR>(len);
+		_keysQR32   = xr_alloc<CKeyQR32>(len);
+		_keysQT8 	= xr_alloc<CKeyQT8>(len); 
+		_keysQT16 	= xr_alloc<CKeyQT16>(len);
+		_keysQT32   = xr_alloc<CKeyQT32>(len);
+		_keysT 		= xr_alloc<Fvector>(len);
+	}
+	void destroy()
+	{
+		xr_free		(_keysQR);
+		xr_free     (_keysQR32);
+		xr_free		(_keysQT8);
+		xr_free		(_keysQT16);
+		xr_free     (_keysQT32);
+		xr_free		(_keysT);
+	}
 };
 
 bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 {
-    if (!!m_Source->m_SMotionRefs.size()||(m_Source->SMotionCount()<1)){
-    	Msg("!..Object doesn't have own motion");
-     	return !!m_Source->m_SMotionRefs.size();
-    }
+	if (!!m_Source->m_SMotionRefs.size()||(m_Source->SMotionCount()<1)){
+		Msg("!..Object doesn't have own motion");
+		return !!m_Source->m_SMotionRefs.size();
+	}
 
 #if 1
 	SPBItem* pb = UI->ProgressStart(1+m_Source->SMotionCount(),"..Export skeleton motions keys");
-    pb->Inc		();
+	pb->Inc		();
 #endif
-    // mem active motion
-    CSMotion* active_motion=m_Source->ResetSAnimation();
+	// mem active motion
+	CSMotion* active_motion=m_Source->ResetSAnimation();
 
-    // Motions
-    F.open_chunk			(OGF_S_MOTIONS);
-    F.open_chunk			(0);
-    F.w_u32					(m_Source->SMotionCount());
-    F.close_chunk			();
-    int smot 				= 1;
+	// Motions
+	F.open_chunk			(OGF_S_MOTIONS);
+	F.open_chunk			(0);
+	F.w_u32					(m_Source->SMotionCount());
+	F.close_chunk			();
+	int smot 				= 1;
 
-    // use global transform
-    Fmatrix	mGT,mTranslate,mRotate;
-    mRotate.setHPB			(m_Source->a_vRotate.y, m_Source->a_vRotate.x, m_Source->a_vRotate.z);
-    mTranslate.translate	(m_Source->a_vPosition);
-    mGT.mul					(mTranslate,mRotate);
+	// use global transform
+	Fmatrix	mGT,mTranslate,mRotate;
+	mRotate.setHPB			(m_Source->a_vRotate.y, m_Source->a_vRotate.x, m_Source->a_vRotate.z);
+	mTranslate.translate	(m_Source->a_vPosition);
+	mGT.mul					(mTranslate,mRotate);
 
-    for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); motion_it++, smot++)
-    {
-        CSMotion* cur_motion = *motion_it;
-        
-    	if( cur_motion->m_Flags.test(esmRootMover) && !m_Source->AnimateRootObject(cur_motion) )
-        {
-            Msg("! %s has moveXform flag - but skeleton root has more than one child or has mesh! add special root bone please!", cur_motion->Name() );
-        	return false;
-        }
+	for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); motion_it++, smot++)
+	{
+		CSMotion* cur_motion = *motion_it;
+		
+		if( cur_motion->m_Flags.test(esmRootMover) && !m_Source->AnimateRootObject(cur_motion) )
+		{
+			Msg("! %s has moveXform flag - but skeleton root has more than one child or has mesh! add special root bone please!", cur_motion->Name() );
+			return false;
+		}
 //		if (motion->m_Flags.is(esmStopAtEnd)) Msg("%s - %d",motion->Name(),motion->m_Flags.is(esmStopAtEnd));
 
-        F.open_chunk		(smot);
-        F.w_stringZ			(cur_motion->Name());
-        F.w_u32				(cur_motion->Length());
+		F.open_chunk		(smot);
+		F.w_stringZ			(cur_motion->Name());
+		F.w_u32				(cur_motion->Length());
 
-        u32 dwLen			= cur_motion->Length();
-        BoneVec& b_lst 		= m_Source->Bones();
+		u32 dwLen			= cur_motion->Length();
+		BoneVec& b_lst 		= m_Source->Bones();
 
-        bm_item* items	 	= xr_alloc<bm_item>(b_lst.size());
-        for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++) 
-        	items[itm_idx].create(dwLen);
-        Fmatrix ro_anchor = Fidentity;
-        for (int frame=cur_motion->FrameStart(); frame<=cur_motion->FrameEnd(); ++frame)
-        {
+		bm_item* items	 	= xr_alloc<bm_item>(b_lst.size());
+		for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++) 
+			items[itm_idx].create(dwLen);
+		Fmatrix ro_anchor = Fidentity;
+		for (int frame=cur_motion->FrameStart(); frame<=cur_motion->FrameEnd(); ++frame)
+		{
 
-                
-            float t 		= (float)frame/cur_motion->FPS();
-	        int bone_id 	= 0;
+				
+			float t 		= (float)frame/cur_motion->FPS();
+			int bone_id 	= 0;
 
-            for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); ++b_it, ++bone_id)
-            {
-	            Fvector 				T,R;
-                if(cur_motion->BoneMotions().size()>bone_id)
-                	cur_motion->_Evaluate	(bone_id,t,T,R);
-                   else
-                   {
-                       T	= (*b_it)->_Offset();
-                       R	= (*b_it)->_Rotate();
-                   }
-                (*b_it)->_Update	(T,R);
-                
-                if(bone_id==0 && frame==(cur_motion->FrameEnd()) )
-                {
-                	Msg("motion [%s] end frame %f,%f,%f",cur_motion->Name(),T.x,T.y,T.z);
-                }
-            }
+			for(BoneIt b_it=b_lst.begin(); b_it!=b_lst.end(); ++b_it, ++bone_id)
+			{
+				Fvector 				T,R;
+				if(cur_motion->BoneMotions().size()>bone_id)
+					cur_motion->_Evaluate	(bone_id,t,T,R);
+				   else
+				   {
+					   T	= (*b_it)->_Offset();
+					   R	= (*b_it)->_Rotate();
+				   }
+				(*b_it)->_Update	(T,R);
+				
+				if(bone_id==0 && frame==(cur_motion->FrameEnd()) )
+				{
+					Msg("motion [%s] end frame %f,%f,%f",cur_motion->Name(),T.x,T.y,T.z);
+				}
+			}
 
-            m_Source->CalculateAnimation( cur_motion );
-            if(cur_motion->m_Flags.test(esmRootMover))
-            {
-              if( frame == cur_motion->FrameStart() )
-                    m_Source->GetAnchorForRootObjectAnimation( ro_anchor );
-                    
-              m_Source->CalculateRootObjectAnimation(  ro_anchor );
-            }
-	        bone_id 		= 0;
-            for(auto b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++, bone_id++)
-            {
-                CBone* B 			= *b_it;
-                Fmatrix mat			= B->_MTransform();
-	         	if (B->IsRoot()) mat.mulA_43(mGT);
+			m_Source->CalculateAnimation( cur_motion );
+			if(cur_motion->m_Flags.test(esmRootMover))
+			{
+			  if( frame == cur_motion->FrameStart() )
+					m_Source->GetAnchorForRootObjectAnimation( ro_anchor );
+					
+			  m_Source->CalculateRootObjectAnimation(  ro_anchor );
+			}
+			bone_id 		= 0;
+			for(auto b_it=b_lst.begin(); b_it!=b_lst.end(); b_it++, bone_id++)
+			{
+				CBone* B 			= *b_it;
+				Fmatrix mat			= B->_MTransform();
+				if (B->IsRoot()) mat.mulA_43(mGT);
 				Fquaternion			q;
-                q.set				(mat);
-                
-                Fvector&Kt 			= items[bone_id]._keysT [frame-cur_motion->FrameStart()];
-                // Quantize quaternion
+				q.set				(mat);
+				
+				Fvector&Kt 			= items[bone_id]._keysT [frame-cur_motion->FrameStart()];
+				// Quantize quaternion
 
-                if (g_force32BitTransformQuant)
-                {
-                    CKeyQR32& Kr = items[bone_id]._keysQR32[frame - cur_motion->FrameStart()];
+				if (g_force32BitTransformQuant)
+				{
+					CKeyQR32& Kr = items[bone_id]._keysQR32[frame - cur_motion->FrameStart()];
 
-                    Kr.x = q.x;
-                    Kr.y = q.y;
-                    Kr.z = q.z;
-                    Kr.w = q.w;
-                }
-                else
-                {
-                    CKeyQR& Kr = items[bone_id]._keysQR[frame - cur_motion->FrameStart()];
+					Kr.x = q.x;
+					Kr.y = q.y;
+					Kr.z = q.z;
+					Kr.w = q.w;
+				}
+				else
+				{
+					CKeyQR& Kr = items[bone_id]._keysQR[frame - cur_motion->FrameStart()];
 
-                    int	_x = int(q.x * KEY_Quant); clamp(_x, -32767, 32767); Kr.x = (s16)_x;
-                    int	_y = int(q.y * KEY_Quant); clamp(_y, -32767, 32767); Kr.y = (s16)_y;
-                    int	_z = int(q.z * KEY_Quant); clamp(_z, -32767, 32767); Kr.z = (s16)_z;
-                    int	_w = int(q.w * KEY_Quant); clamp(_w, -32767, 32767); Kr.w = (s16)_w;
-                }
+					int	_x = int(q.x * KEY_Quant); clamp(_x, -32767, 32767); Kr.x = (s16)_x;
+					int	_y = int(q.y * KEY_Quant); clamp(_y, -32767, 32767); Kr.y = (s16)_y;
+					int	_z = int(q.z * KEY_Quant); clamp(_z, -32767, 32767); Kr.z = (s16)_z;
+					int	_w = int(q.w * KEY_Quant); clamp(_w, -32767, 32767); Kr.w = (s16)_w;
+				}
 
-                Kt.set				(mat.c);//B->_Offset());
-            }
-        }
-        // free temp storage
-        for (int itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
-        {
-        	bm_item& BM 	= items[itm_idx];
-            // check T
-            R_ASSERT		(dwLen);
-            Fvector 		Mt={0,0,0};
-            Fvector 		Ct={0,0,0};
-            Fvector 		St={0,0,0};
-            BOOL			t_present = FALSE;
-            BOOL			r_present = FALSE;
-            Fvector At		= BM._keysT[0];
-            Fvector Bt		= BM._keysT[0];
-            for (u32 t_idx=0; t_idx<dwLen; ++t_idx)
-            {
-            	Fvector& t	= BM._keysT[t_idx];
-            	Mt.add		(t);
-                At.x		= _min(At.x,t.x);
-                At.y		= _min(At.y,t.y);
-                At.z		= _min(At.z,t.z);
-                Bt.x		= _max(Bt.x,t.x);
-                Bt.y		= _max(Bt.y,t.y);
-                Bt.z		= _max(Bt.z,t.z);
-            }
-            Mt.div			(dwLen);
-            Ct.add			(Bt,At);
-            Ct.mul			(0.5f);
-            St.sub			(Bt,At);
-            St.mul			(0.5f);
-            
+				Kt.set				(mat.c);//B->_Offset());
+			}
+		}
+		// free temp storage
+		for (int itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
+		{
+			bm_item& BM 	= items[itm_idx];
+			// check T
+			R_ASSERT		(dwLen);
+			Fvector 		Mt={0,0,0};
+			Fvector 		Ct={0,0,0};
+			Fvector 		St={0,0,0};
+			BOOL			t_present = FALSE;
+			BOOL			r_present = FALSE;
+			Fvector At		= BM._keysT[0];
+			Fvector Bt		= BM._keysT[0];
+			for (u32 t_idx=0; t_idx<dwLen; ++t_idx)
+			{
+				Fvector& t	= BM._keysT[t_idx];
+				Mt.add		(t);
+				At.x		= _min(At.x,t.x);
+				At.y		= _min(At.y,t.y);
+				At.z		= _min(At.z,t.z);
+				Bt.x		= _max(Bt.x,t.x);
+				Bt.y		= _max(Bt.y,t.y);
+				Bt.z		= _max(Bt.z,t.z);
+			}
+			Mt.div			(dwLen);
+			Ct.add			(Bt,At);
+			Ct.mul			(0.5f);
+			St.sub			(Bt,At);
+			St.mul			(0.5f);
+			
 
-            bool bTransform16Bit = false;
-            if(g_force16BitTransformQuant || St.magnitude()>1.5f)
-            {
-            	bTransform16Bit = true;
-                Msg("animation [%s] is 16bit-transform (%f)m", cur_motion->Name(), St.magnitude());
-            }
-            else if (g_force32BitTransformQuant)
-            {
-                Msg("animation [%s] is 32bit-transform (%f)m", cur_motion->Name(), St.magnitude());
-            }
-            
-            for (int t_idx=0; t_idx<dwLen; ++t_idx)
-            {
-                Fvector& t = BM._keysT[t_idx];
-                if (!Mt.similar(t, EPS_L))	t_present = TRUE;
+			bool bTransform16Bit = false;
+			if(g_force16BitTransformQuant || St.magnitude()>1.5f)
+			{
+				bTransform16Bit = true;
+				Msg("animation [%s] is 16bit-transform (%f)m", cur_motion->Name(), St.magnitude());
+			}
+			else if (g_force32BitTransformQuant)
+			{
+				Msg("animation [%s] is 32bit-transform (%f)m", cur_motion->Name(), St.magnitude());
+			}
+			
+			for (int t_idx=0; t_idx<dwLen; ++t_idx)
+			{
+				Fvector& t = BM._keysT[t_idx];
+				if (!Mt.similar(t, EPS_L))	t_present = TRUE;
 
-                if (g_force32BitTransformQuant)
-                {                    
-                    CKeyQR32& R = BM._keysQR32[0];
-                    CKeyQR32& r = BM._keysQR32[t_idx];
-                    if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
+				if (g_force32BitTransformQuant)
+				{                    
+					CKeyQR32& R = BM._keysQR32[0];
+					CKeyQR32& r = BM._keysQR32[t_idx];
+					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
 
-                    CKeyQT32& Kt = BM._keysQT32[t_idx];
+					CKeyQT32& Kt = BM._keysQT32[t_idx];
 
-                    Kt.x1 = t.x;
-                    Kt.y1 = t.y;
-                    Kt.z1 = t.z;
-                }
-                else
-                {
-                    CKeyQR& R = BM._keysQR[0];
-                    CKeyQR& r = BM._keysQR[t_idx];
-                    if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
+					Kt.x1 = t.x;
+					Kt.y1 = t.y;
+					Kt.z1 = t.z;
+				}
+				else
+				{
+					CKeyQR& R = BM._keysQR[0];
+					CKeyQR& r = BM._keysQR[t_idx];
+					if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
 
-                    if (bTransform16Bit)
-                    {
-                        CKeyQT16& Kt = BM._keysQT16[t_idx];
-                        int	_x = int(32767.f * (t.x - Ct.x) / St.x);
-                        clamp(_x, -32767, 32767);
-                        Kt.x1 = (s16)_x;
+					if (bTransform16Bit)
+					{
+						CKeyQT16& Kt = BM._keysQT16[t_idx];
+						int	_x = int(32767.f * (t.x - Ct.x) / St.x);
+						clamp(_x, -32767, 32767);
+						Kt.x1 = (s16)_x;
 
-                        int	_y = int(32767.f * (t.y - Ct.y) / St.y);
-                        clamp(_y, -32767, 32767);
+						int	_y = int(32767.f * (t.y - Ct.y) / St.y);
+						clamp(_y, -32767, 32767);
 
-                        Kt.y1 = (s16)_y;
+						Kt.y1 = (s16)_y;
 
-                        int	_z = int(32767.f * (t.z - Ct.z) / St.z);
-                        clamp(_z, -32767, 32767);
-                        Kt.z1 = (s16)_z;
-                    }
-                    else
-                    {
-                        CKeyQT8& Kt = BM._keysQT8[t_idx];
-                        int	_x = int(127.f * (t.x - Ct.x) / St.x);
-                        clamp(_x, -128, 127);
-                        Kt.x1 = (s16)_x;
+						int	_z = int(32767.f * (t.z - Ct.z) / St.z);
+						clamp(_z, -32767, 32767);
+						Kt.z1 = (s16)_z;
+					}
+					else
+					{
+						CKeyQT8& Kt = BM._keysQT8[t_idx];
+						int	_x = int(127.f * (t.x - Ct.x) / St.x);
+						clamp(_x, -128, 127);
+						Kt.x1 = (s16)_x;
 
-                        int	_y = int(127.f * (t.y - Ct.y) / St.y);
-                        clamp(_y, -128, 127);
+						int	_y = int(127.f * (t.y - Ct.y) / St.y);
+						clamp(_y, -128, 127);
 
-                        Kt.y1 = (s16)_y;
+						Kt.y1 = (s16)_y;
 
-                        int	_z = int(127.f * (t.z - Ct.z) / St.z);
-                        clamp(_z, -128, 127);
-                        Kt.z1 = (s16)_z;
-                    }
-                }
-            }
-            if(bTransform16Bit)
-            	St.div	(32767.f);
-            else
-            	St.div	(127.f);
-                
-            // save
-            F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)|(bTransform16Bit?flTKey16IsBit:0)|(g_force32BitTransformQuant ? flTKeyFFT_Bit : 0)));
-            if (r_present)
-            {	
-                if (g_force32BitTransformQuant)
-                {
-                    F.w_u32(crc32(BM._keysQR32, dwLen * sizeof(CKeyQR32)));
-                    F.w(BM._keysQR32, dwLen * sizeof(CKeyQR32));
-                }
-                else
-                {
-                    F.w_u32(crc32(BM._keysQR, dwLen * sizeof(CKeyQR)));
-                    F.w(BM._keysQR, dwLen * sizeof(CKeyQR));
-                }
+						int	_z = int(127.f * (t.z - Ct.z) / St.z);
+						clamp(_z, -128, 127);
+						Kt.z1 = (s16)_z;
+					}
+				}
+			}
+			if(bTransform16Bit)
+				St.div	(32767.f);
+			else
+				St.div	(127.f);
+				
+			// save
+			F.w_u8	(u8((t_present?flTKeyPresent:0)|(r_present?0:flRKeyAbsent)|(bTransform16Bit?flTKey16IsBit:0)|(g_force32BitTransformQuant ? flTKeyFFT_Bit : 0)));
+			if (r_present)
+			{	
+				if (g_force32BitTransformQuant)
+				{
+					F.w_u32(crc32(BM._keysQR32, dwLen * sizeof(CKeyQR32)));
+					F.w(BM._keysQR32, dwLen * sizeof(CKeyQR32));
+				}
+				else
+				{
+					F.w_u32(crc32(BM._keysQR, dwLen * sizeof(CKeyQR)));
+					F.w(BM._keysQR, dwLen * sizeof(CKeyQR));
+				}
 
-            }
-            else
-            {
-                if (g_force32BitTransformQuant)
-                    F.w		(&BM._keysQR32[0],sizeof(BM._keysQR32[0]));
-                else
-                    F.w     (&BM._keysQR[0],sizeof(BM._keysQR[0]));
-            }
-            if (t_present)
-            {
-                if (g_force32BitTransformQuant)
-                {
-                    F.w_u32(crc32(BM._keysQT32, u32(dwLen * sizeof(CKeyQT32))));
-                    F.w(BM._keysQT32, dwLen * sizeof(CKeyQT32));
-                }
-                else
-                {
-                    if (bTransform16Bit)
-                    {
-                        F.w_u32(crc32(BM._keysQT16, u32(dwLen * sizeof(CKeyQT16))));
-                        F.w(BM._keysQT16, dwLen * sizeof(CKeyQT16));
-                    }
-                    else
-                    {
-                        F.w_u32(crc32(BM._keysQT8, u32(dwLen * sizeof(CKeyQT8))));
-                        F.w(BM._keysQT8, dwLen * sizeof(CKeyQT8));
-                    }
-                    F.w_fvector3(St);
-                    F.w_fvector3(Ct);
-                }
-            }else
-            {
-                F.w_fvector3		(Mt);
-            }
+			}
+			else
+			{
+				if (g_force32BitTransformQuant)
+					F.w		(&BM._keysQR32[0],sizeof(BM._keysQR32[0]));
+				else
+					F.w     (&BM._keysQR[0],sizeof(BM._keysQR[0]));
+			}
+			if (t_present)
+			{
+				if (g_force32BitTransformQuant)
+				{
+					F.w_u32(crc32(BM._keysQT32, u32(dwLen * sizeof(CKeyQT32))));
+					F.w(BM._keysQT32, dwLen * sizeof(CKeyQT32));
+				}
+				else
+				{
+					if (bTransform16Bit)
+					{
+						F.w_u32(crc32(BM._keysQT16, u32(dwLen * sizeof(CKeyQT16))));
+						F.w(BM._keysQT16, dwLen * sizeof(CKeyQT16));
+					}
+					else
+					{
+						F.w_u32(crc32(BM._keysQT8, u32(dwLen * sizeof(CKeyQT8))));
+						F.w(BM._keysQT8, dwLen * sizeof(CKeyQT8));
+					}
+
+					F.w_fvector3(St);
+					F.w_fvector3(Ct);
+				}
+			}
+			else
+			{
+				F.w_fvector3(Mt);
+			}
+
 			BM.destroy				();
-        }
-        xr_free						(items);
+		}
+		xr_free						(items);
 
-        F.close_chunk				();
+		F.close_chunk				();
 #if 1
-    	pb->Inc						();
+		pb->Inc						();
 #endif
-    }
-    F.close_chunk					();
+	}
+	F.close_chunk					();
 #if 1
 	UI->ProgressEnd					(pb);
 #endif
-    // restore active motion
-    m_Source->SetActiveSMotion		(active_motion);
-    return 							true;
+	// restore active motion
+	m_Source->SetActiveSMotion		(active_motion);
+	return 							true;
 }
 
 bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 {
-    if (!m_Source->IsAnimated()){ 
-    	ELog.Msg(mtError,"Object doesn't have any motion or motion refs.");
-    	return false;
-    }
+	if (!m_Source->IsAnimated()){ 
+		ELog.Msg(mtError,"Object doesn't have any motion or motion refs.");
+		return false;
+	}
 
-    bool bRes=true;
+	bool bRes=true;
 
 #if 1
 	SPBItem* pb = UI->ProgressStart(3,"..Export skeleton motions defs");
-    pb->Inc		();
+	pb->Inc		();
 #endif
 
-    if (m_Source->m_SMotionRefs.size())
-    {
-	    F.open_chunk	(OGF_S_MOTION_REFS2);
-    	F.w_u32			(m_Source->m_SMotionRefs.size());
-        for(u32 i=0; i<m_Source->m_SMotionRefs.size(); ++i)
-        	F.w_stringZ	(m_Source->m_SMotionRefs[i].c_str());
+	if (m_Source->m_SMotionRefs.size())
+	{
+		F.open_chunk	(OGF_S_MOTION_REFS2);
+		F.w_u32			(m_Source->m_SMotionRefs.size());
+		for(u32 i=0; i<m_Source->m_SMotionRefs.size(); ++i)
+			F.w_stringZ	(m_Source->m_SMotionRefs[i].c_str());
 
-	    F.close_chunk	();
+		F.close_chunk	();
 #if 1
-	    pb->Inc		();
+		pb->Inc		();
 #endif
-    }else{
-        // save smparams
-        F.open_chunk	(OGF_S_SMPARAMS);
-        F.w_u16			(xrOGF_SMParamsVersion);
-        // bone parts
-        BPVec& bp_lst 	= m_Source->BoneParts();
-        if (bp_lst.size())
+	}else{
+		// save smparams
+		F.open_chunk	(OGF_S_SMPARAMS);
+		F.w_u16			(xrOGF_SMParamsVersion);
+		// bone parts
+		BPVec& bp_lst 	= m_Source->BoneParts();
+		if (bp_lst.size())
 		{
-            if (m_Source->VerifyBoneParts())
+			if (m_Source->VerifyBoneParts())
 			{
-                F.w_u16((u16)bp_lst.size());
-                for (BPIt bp_it=bp_lst.begin(); bp_it!=bp_lst.end(); ++bp_it)
+				F.w_u16((u16)bp_lst.size());
+				for (BPIt bp_it=bp_lst.begin(); bp_it!=bp_lst.end(); ++bp_it)
 				{
 					string512	buff;
 					strcpy		(buff, bp_it->alias.c_str());
 					strlwr		(buff);
-                    F.w_stringZ	(buff);
-                    F.w_u16		((u16)bp_it->bones.size());
-                    for (int i=0; i<int(bp_it->bones.size()); ++i)
+					F.w_stringZ	(buff);
+					F.w_u16		((u16)bp_it->bones.size());
+					for (int i=0; i<int(bp_it->bones.size()); ++i)
 					{
-                        F.w_stringZ	(bp_it->bones[i].c_str());
-                        int idx 	= m_Source->FindBoneByNameIdx(bp_it->bones[i].c_str()); 
+						F.w_stringZ	(bp_it->bones[i].c_str());
+						int idx 	= m_Source->FindBoneByNameIdx(bp_it->bones[i].c_str()); 
 						VERIFY(idx>=0);
-                        F.w_u32		(idx);
-                    }
-                }
-            }else
+						F.w_u32		(idx);
+					}
+				}
+			}else
 			{
-                ELog.Msg(mtError,"Invalid bone parts (missing or duplicate bones).");
-                bRes 	= false;
-            }
-        }else
+				ELog.Msg(mtError,"Invalid bone parts (missing or duplicate bones).");
+				bRes 	= false;
+			}
+		}else
 		{
-            F.w_u16(1);
-            F.w_stringZ("default");
-            F.w_u16((u16)m_Source->BoneCount());
-            for (int i=0; i<m_Source->BoneCount(); i++) 
+			F.w_u16(1);
+			F.w_stringZ("default");
+			F.w_u16((u16)m_Source->BoneCount());
+			for (int i=0; i<m_Source->BoneCount(); i++) 
 				F.w_u32(i);
-        }
+		}
 #if 1
-	    pb->Inc		();
+		pb->Inc		();
 #endif
-        // motion defs
-        SMotionVec& sm_lst	= m_Source->SMotions();
-        F.w_u16((u16)sm_lst.size());
-        for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); ++motion_it)
+		// motion defs
+		SMotionVec& sm_lst	= m_Source->SMotions();
+		F.w_u16((u16)sm_lst.size());
+		for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); ++motion_it)
 		{
-            CSMotion* motion = *motion_it;
-            // verify
-            if (!motion->m_Flags.is(esmFX))
+			CSMotion* motion = *motion_it;
+			// verify
+			if (!motion->m_Flags.is(esmFX))
 			{
-                if (!((motion->m_BoneOrPart==BI_NONE)||(motion->m_BoneOrPart<(int)bp_lst.size())))
+				if (!((motion->m_BoneOrPart==BI_NONE)||(motion->m_BoneOrPart<(int)bp_lst.size())))
 				{
-                    ELog.Msg(mtError,"Invalid Bone Part of motion: '%s'.",motion->Name());
-                    bRes=false;
-                    continue;
-                }
-            }
-            if (bRes)
+					ELog.Msg(mtError,"Invalid Bone Part of motion: '%s'.",motion->Name());
+					bRes=false;
+					continue;
+				}
+			}
+			if (bRes)
 			{
-                // export
-                F.w_stringZ	(motion->Name());
-                F.w_u32		(motion->m_Flags.get());
-                F.w_u16		(motion->m_BoneOrPart);
-                F.w_u16		(u16(motion_it-sm_lst.begin()));
-                F.w_float	(motion->fSpeed);
-                F.w_float	(motion->fPower);
-                F.w_float	(motion->fAccrue);
-                F.w_float	(motion->fFalloff);
+				// export
+				F.w_stringZ	(motion->Name());
+				F.w_u32		(motion->m_Flags.get());
+				F.w_u16		(motion->m_BoneOrPart);
+				F.w_u16		(u16(motion_it-sm_lst.begin()));
+				F.w_float	(motion->fSpeed);
+				F.w_float	(motion->fPower);
+				F.w_float	(motion->fAccrue);
+				F.w_float	(motion->fFalloff);
 
 #if 1
-    			u32 sz		= motion->marks.size();
+				u32 sz		= motion->marks.size();
 				F.w_u32		(sz);
-                for(u32 i=0; i<sz; ++i)
-                {
-                	motion->marks[i].Save(&F);
-                }
+				for(u32 i=0; i<sz; ++i)
+				{
+					motion->marks[i].Save(&F);
+				}
 #else
 				F.w_u32		(0);
 #endif
-            }
-        }
+			}
+		}
 #if 1
-	    pb->Inc		();
+		pb->Inc		();
 #endif
 		F.close_chunk();
-    }
-    
+	}
+	
 #if 1
 	UI->ProgressEnd(pb);
 #endif
-    return bRes;
+	return bRes;
 }
 
 bool CExportSkeleton::ExportMotions(IWriter& F)
 {
 	if (!ExportMotionKeys(F)) 	return false;
 	if (!ExportMotionDefs(F)) 	return false;
-    return true;
+	return true;
 }
 //----------------------------------------------------
 
 bool CExportSkeleton::Export(IWriter& F, u8 infl)
 {
-    if (!ExportGeometry(F,infl)) 					return false;
-    if (m_Source->IsAnimated()&&!ExportMotions(F))	return false;
-    return true;
+	if (!ExportGeometry(F,infl)) 					return false;
+	if (m_Source->IsAnimated()&&!ExportMotions(F))	return false;
+	return true;
 };
 //----------------------------------------------------
 
@@ -1318,37 +1321,37 @@ bool CBone::ExportOGF(IWriter& F)
 {
 	// check valid
 	if (!shape.Valid()){
-        ELog.Msg(mtError,"Bone '%s' has invalid shape.",*Name());
-    	return false;
-    }
+		ELog.Msg(mtError,"Bone '%s' has invalid shape.",*Name());
+		return false;
+	}
 #if 1
 	SGameMtl* M			= GameMaterialLibraryEditors->GetMaterial(game_mtl.c_str());
-    if (!M){
-        ELog.Msg(mtError,"Bone '%s' has invalid game material.",*Name());
-    	return false;
-    }
-    if (!M->Flags.is(SGameMtl::flDynamic)){
-        ELog.Msg(mtError,"Bone '%s' has non-dynamic game material.",*Name());
-    	return false;
-    }
+	if (!M){
+		ELog.Msg(mtError,"Bone '%s' has invalid game material.",*Name());
+		return false;
+	}
+	if (!M->Flags.is(SGameMtl::flDynamic)){
+		ELog.Msg(mtError,"Bone '%s' has non-dynamic game material.",*Name());
+		return false;
+	}
 #endif
 
-    F.w_u32		(OGF_IKDATA_VERSION);
-    
-    F.w_stringZ	(game_mtl);	
-    F.w			(&shape,sizeof(SBoneShape));
+	F.w_u32		(OGF_IKDATA_VERSION);
+	
+	F.w_stringZ	(game_mtl);	
+	F.w			(&shape,sizeof(SBoneShape));
 
-    IK_data.Export(F);
+	IK_data.Export(F);
 
 //	Fvector xyz;
 //	Fmatrix& R	= _RTransform();
 //	R.getXYZi	(xyz);
 
-    F.w_fvector3(rest_rotate);
-    F.w_fvector3(rest_offset);
-    F.w_float	(mass);
-    F.w_fvector3(center_of_mass);
-    return true;
+	F.w_fvector3(rest_rotate);
+	F.w_fvector3(rest_offset);
+	F.w_float	(mass);
+	F.w_fvector3(center_of_mass);
+	return true;
 }
 
 #endif

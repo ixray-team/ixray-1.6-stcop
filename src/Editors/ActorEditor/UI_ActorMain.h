@@ -27,10 +27,12 @@ enum {
 };
 //------------------------------------------------------------------------------
 
-class CActorMain: public TUI{
+class CActorMain: 
+    public TUI
+{
 	typedef TUI inherited;
-
     virtual void 	RealUpdateScene			();
+
 public:
     				CActorMain 				();
     virtual 		~CActorMain				();
@@ -58,11 +60,17 @@ protected:
 
     virtual Ivector2 GetRenderMousePosition()const;
 };    
+
 extern CActorMain*	AUI;
 
-class CAEPreferences :public CCustomPreferences
+class CAEPreferences :
+    public CCustomPreferences
 {
-typedef CCustomPreferences inherited;
+    typedef CCustomPreferences inherited;
+
+public:
+    size_t PrefConfigVer = 0;
+
 public:
 					CAEPreferences():bAlwaysShowKeyBar12(FALSE),bAlwaysShowKeyBar34(FALSE){}
     BOOL							bAlwaysShowKeyBar12;
