@@ -227,7 +227,7 @@ bool CUI_Camera::MoveEnd(TShiftState Shift)
 {
 	m_Shift = Shift;
 	if ((!Shift&ssLeft)||(!Shift&ssShift)){
-	    SetCursorPos(m_StartPos.x, m_StartPos.y);
+	    //SetCursorPos(m_StartPos.x, m_StartPos.y);
     	ShowCursor	(TRUE);
 		m_bMoving	= false;
         return true;
@@ -241,7 +241,7 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
         m_Shift = Shift;
 // camera move
         if( dx || dy ){
-        	SetCursorPos(m_StartPos.x,m_StartPos.y);
+        	//SetCursorPos(m_StartPos.x,m_StartPos.y);
             switch (m_Style){
             case csPlaneMove:
                 if ((m_Shift & ssLeft) && (m_Shift & ssRight)) 
@@ -277,7 +277,7 @@ bool CUI_Camera::KeyDown(WORD Key, TShiftState Shift)
 {
     if (m_bMoving){
     	switch (Key){
-        case VK_CONTROL:  m_Shift = ssCtrl | m_Shift; break;
+        case SDL_SCANCODE_LCTRL:  m_Shift = ssCtrl | m_Shift; break;
         default: return false;
         }
 	    return true;
@@ -289,8 +289,8 @@ bool CUI_Camera::KeyUp(WORD Key, TShiftState Shift)
 {
     if (m_bMoving){
     	switch (Key){
-        case VK_SHIFT:  m_Shift = ~ssShift & m_Shift; MoveEnd(m_Shift); break;
-        case VK_CONTROL: m_Shift = ~ssCtrl & m_Shift; break;
+        case SDL_SCANCODE_LSHIFT:  m_Shift = ~ssShift & m_Shift; MoveEnd(m_Shift); break;
+        case SDL_SCANCODE_LCTRL: m_Shift = ~ssCtrl & m_Shift; break;
         default: return false;
         }
 	    return true;

@@ -1,6 +1,7 @@
 ﻿// ActorEditor.cpp : Определяет точку входа для приложения.
 //
 #include "stdafx.h"
+#include "../../xrEngine/xr_input.h"
 
 #include "../xrEProps/UIFileLoad.h"
 CUFileOpen* FileOpen = nullptr;
@@ -52,6 +53,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case SDL_EVENT_WINDOW_MOUSE_LEAVE:
                 Device.b_is_Active = false;
                 //if (UI)UI->OnAppDeactivate();
+                break;
+
+            case SDL_EVENT_KEY_DOWN:
+                if (UI)UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
+                break;
+            case SDL_EVENT_KEY_UP:
+                if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+                break;
+
+            case SDL_EVENT_MOUSE_MOTION:
+                pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+                break;
+            case SDL_EVENT_MOUSE_WHEEL:
+                pInput->MouseScroll(Event.wheel.y);
                 break;
             }
 

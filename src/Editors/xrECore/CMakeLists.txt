@@ -21,7 +21,7 @@ file(GLOB_RECURSE ECORE_SOURCE_ERR_FILES CONFIGURE_DECORENDS
     "dxerr/*.*"
 )
 
-file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES
+file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
     "../../Layers/xrRenderDX9/dx9r_constants_cache.*"
     "../../Layers/xrRender/Animation.*"
     "../../Layers/xrRender/blenders/Blender.*"
@@ -112,7 +112,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES
     "../../Layers/xrRenderPC_R1/Blender_Vertex.*"
 )
 
-file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES
+file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DECORENDS
  #   "../../xrEngine/motion.cpp"
     "../../xrEngine/fmesh.cpp"
     "../../xrEngine/xrHemisphere.cpp"
