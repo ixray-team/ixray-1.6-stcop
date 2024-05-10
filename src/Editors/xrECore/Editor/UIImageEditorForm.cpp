@@ -8,7 +8,7 @@ UIImageEditorForm::UIImageEditorForm()
     m_ItemProps = xr_new<UIPropertiesForm>();
     m_ItemList = xr_new<UIItemListForm>();
     m_ItemList->SetOnItemFocusedEvent(TOnILItemFocused(this,&UIImageEditorForm::OnItemsFocused));
- //   m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
+    m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
     m_Texture = nullptr;
     m_bFilterImage = true;
     m_bFilterCube = true;
@@ -32,52 +32,66 @@ void UIImageEditorForm::Draw()
         m_TextureRemove->Release();
         m_TextureRemove = nullptr;
     }
-    ImGui::BeginChild("Left", ImVec2(200, 400), true);
+
+    ImGui::Columns(2);
     {
-        m_ItemList->Draw();
-    }
-    ImGui::EndChild();
-    ImGui::SameLine();
-    ImGui::BeginChild("Right", ImVec2(300, 400));
-    {
-        if (m_Texture == nullptr)
+        float MinWidth = ImGui::GetWindowWidth() * 0.35f;
+        if (ImGui::GetColumnWidth() < MinWidth)
+            ImGui::SetColumnOffset(1, MinWidth);
+
+        ImGui::BeginGroup();
+        ImGui::BeginChild("Left", ImVec2(0, -ImGui::GetFrameHeight() - (bImportMode ? 4 : 24)), true, ImGuiWindowFlags_HorizontalScrollbar);
         {
-            u32 mem = 0;
-            m_Texture = RImplementation.texture_load("ed\\ed_nodata", mem);
+            m_ItemList->Draw();
         }
-        ImGui::Image(m_Texture, ImVec2(128, 128));
-        m_ItemProps->Draw();
-    }
-    ImGui::EndChild();
-    ImGui::Separator();
-    if (!bImportMode)
-    {
-        if (ImGui::Checkbox("Image", &m_bFilterImage))FilterUpdate(); ImGui::SameLine();
-        if (ImGui::Checkbox("Cube", &m_bFilterCube))FilterUpdate(); ImGui::SameLine();
-        if (ImGui::Checkbox("Bump", &m_bFilterBump))FilterUpdate(); ImGui::SameLine();
-        if (ImGui::Checkbox("Normal", &m_bFilterNormal))FilterUpdate(); ImGui::SameLine();
-        if (ImGui::Checkbox("Terrain", &m_bFilterTerrain))FilterUpdate();
-        ImGui::Separator();
-    }
-    if (ImGui::Button("Close"))
-    {
-        HideLib();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Ok"))
-    {
-        UpdateLib();
-        HideLib();
-    }
-    if (!bImportMode)
-    {
+        ImGui::EndChild();
+
+        if (!bImportMode)
+        {
+            if (ImGui::Checkbox("Image", &m_bFilterImage))FilterUpdate(); ImGui::SameLine();
+            if (ImGui::Checkbox("Cube", &m_bFilterCube))FilterUpdate(); ImGui::SameLine();
+            if (ImGui::Checkbox("Bump", &m_bFilterBump))FilterUpdate(); ImGui::SameLine();
+            if (ImGui::Checkbox("Normal", &m_bFilterNormal))FilterUpdate(); ImGui::SameLine();
+            if (ImGui::Checkbox("Terrain", &m_bFilterTerrain))FilterUpdate();
+        }
+
+        if (ImGui::Button("Close"))
+        {
+            HideLib();
+        }
+
         ImGui::SameLine();
-        if (ImGui::Button("Remove Texture"))
+        if (ImGui::Button("Ok"))
         {
-        //    m_ItemList->RemoveSelectItem();
+            UpdateLib();
+            HideLib();
         }
+
+        if (!bImportMode)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Remove Texture"))
+            {
+                m_ItemList->RemoveSelectItem();
+            }
+        }
+        ImGui::EndGroup();
     }
 
+    ImGui::NextColumn();
+    {
+        ImGui::BeginChild("Right", ImVec2(0, 0));
+        {
+            if (m_Texture == nullptr)
+            {
+                u32 mem = 0;
+                m_Texture = RImplementation.texture_load("ed\\ed_nodata", mem);
+            }
+            ImGui::Image(m_Texture, ImVec2(128, 128));
+            m_ItemProps->Draw();
+        }
+        ImGui::EndChild();
+    }
 }
 
 void UIImageEditorForm::Update()
@@ -86,17 +100,18 @@ void UIImageEditorForm::Update()
     {
         if (!Form->IsClosed())
         {
-            if (ImGui::BeginPopupModal("ImageEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize, true))
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
+            if (ImGui::Begin("ImageEditor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
             {
                 Form->Draw();
-                ImGui::EndPopup();
             }
+            ImGui::PopStyleVar(1);
+            ImGui::End();
         }
         else
         {
             xr_delete(Form);
         }
-
     }
 }
 

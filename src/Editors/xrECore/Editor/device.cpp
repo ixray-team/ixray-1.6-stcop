@@ -363,7 +363,14 @@ void CEditorRenderDevice::Reset(bool)
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
 
-
+void CEditorRenderDevice::Reset(IReader* F, BOOL bKeepTextures)
+{
+	CTimer tm;
+	tm.Start();
+	_Destroy(bKeepTextures);
+	_Create(F);
+	Msg("*** RESET [%d ms]", tm.GetElapsed_ms());
+}
 
 bool CEditorRenderDevice::Begin()
 {
@@ -481,15 +488,6 @@ void CEditorRenderDevice::ReloadTextures()
 
 void CEditorRenderDevice::UnloadTextures()
 {
-}
-
-void CEditorRenderDevice::Reset(IReader* F, BOOL bKeepTextures)
-{
-	CTimer tm;
-    tm.Start();
-	_Destroy		(bKeepTextures);
-	_Create			(F);
-	Msg				("*** RESET [%d ms]",tm.GetElapsed_ms());
 }
 
 void CEditorRenderDevice::time_factor(float v)

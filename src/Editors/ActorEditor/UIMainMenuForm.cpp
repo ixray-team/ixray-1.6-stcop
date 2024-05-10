@@ -62,7 +62,7 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
-                if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
+                if (ImGui::MenuItem("Check New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Sounds"))
