@@ -2,7 +2,7 @@
 
 //#define COPY_ALL_TEXTURE_LIST
 //#define COPY_NORMAL_MAPS
-HANDLE hConsole = nullptr;
+void* hConsole = nullptr;
 
 void MyLog(const char* text)
 {

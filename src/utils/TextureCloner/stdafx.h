@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "..\..\xrCore\xrCore.h"
-#include "..\..\Layers\xrRender\ETextureParams.h"
-#include "..\..\xrEngine\xrLevel.h"
-#include "..\..\xrEngine\Fmesh.h"
+#include "../../xrCore/xrCore.h"
+#include "../../Layers/xrRender/ETextureParams.h"
+#include "../../xrEngine/xrLevel.h"
+#include "../../xrEngine/Fmesh.h"
