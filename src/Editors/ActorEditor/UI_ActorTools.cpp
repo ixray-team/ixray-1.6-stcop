@@ -574,7 +574,7 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 	{
 	case etaSelect: 	break;
 	case etaAdd: 	break;
-  /*  case etaMove:
+    case etaMove:
 	{
 		switch (m_EditMode)
 		{
@@ -619,7 +619,7 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 				OnBoneModified();
 			break;
 		}
-	}break;*/
+	}break;
 	}
 	return true;
 }
@@ -633,7 +633,7 @@ void  CActorTools::MouseMove(TShiftState Shift)
 	{
 	case etaSelect: 	break;
 	case etaAdd: 	break;
-	/*case etaMove:
+	case etaMove:
 	{
 		switch (m_EditMode)
 		{
@@ -726,7 +726,7 @@ void  CActorTools::MouseMove(TShiftState Shift)
 			}
 			break;
 		}
-	}break;*/
+	}break;
 	}
 }
 

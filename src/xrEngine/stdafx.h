@@ -36,7 +36,9 @@
 
 #include "../xrCore/API/xrAPI.h"
 
-#define ECORE_API
+#ifndef ECORE_API
+#	define ECORE_API
+#endif
 
 // Our headers
 #include "EngineExternal.h"

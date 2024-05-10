@@ -277,15 +277,15 @@ void XrUIManager::OnDrawUI()
 {
 }
 
-void XrUIManager::ApplyShortCut(DWORD Key)
+void XrUIManager::ApplyShortCutInput(DWORD Key)
 {
 	if ((ImGui::GetIO().WantTextInput))return;
 	bool IsFail = true;
-	if (Key >= 'A' && Key <= 'Z')
+	if (Key >= SDL_SCANCODE_A && Key <= SDL_SCANCODE_Z)
 	{
 		IsFail = false;
 	}
-	else if (Key >= '0' && Key <= '9')
+	else if (Key >= SDL_SCANCODE_0 && Key <= SDL_SCANCODE_9)
 	{
 		IsFail = false;
 	}
@@ -293,50 +293,50 @@ void XrUIManager::ApplyShortCut(DWORD Key)
 	{
 		switch (Key)
 		{
-		case VK_LEFT:
-		case VK_RIGHT:
-		case VK_UP:
-		case VK_DOWN:
-		case VK_NUMPAD0:
-		case VK_NUMPAD1:
-		case VK_NUMPAD2:
-		case VK_NUMPAD3:
-		case VK_NUMPAD4:
-		case VK_NUMPAD5:
-		case VK_NUMPAD6:
-		case VK_NUMPAD7:
-		case VK_NUMPAD8:
-		case VK_NUMPAD9:
-		case VK_F1:
-		case VK_F2:
-		case VK_F3:
-		case VK_F4:
-		case VK_F5:
-		case VK_F6:
-		case VK_F7:
-		case VK_F8:
-		case VK_F9:
-		case VK_F10:
-		case VK_F11:
-		case VK_F12:
-		case VK_DELETE:
-		case VK_ADD:
-		case VK_SUBTRACT:
-		case VK_MULTIPLY:
-		case VK_DIVIDE:
-		case VK_OEM_PLUS:
-		case VK_OEM_MINUS:
-		case VK_OEM_1:
-		case VK_OEM_COMMA:
-		case VK_OEM_PERIOD:
-		case VK_OEM_2:
-		case VK_OEM_4:
-		case VK_OEM_5:
-		case VK_OEM_6:
-		case VK_OEM_7:
-		case VK_SPACE:
-		case VK_CANCEL:
-		case VK_RETURN:
+		case SDL_SCANCODE_LEFT:
+		case SDL_SCANCODE_RIGHT:
+		case SDL_SCANCODE_UP:
+		case SDL_SCANCODE_DOWN:
+		case SDL_SCANCODE_KP_0:
+		case SDL_SCANCODE_KP_1:
+		case SDL_SCANCODE_KP_2:
+		case SDL_SCANCODE_KP_3:
+		case SDL_SCANCODE_KP_4:
+		case SDL_SCANCODE_KP_5:
+		case SDL_SCANCODE_KP_6:
+		case SDL_SCANCODE_KP_7:
+		case SDL_SCANCODE_KP_8:
+		case SDL_SCANCODE_KP_9:
+		case SDL_SCANCODE_F1:
+		case SDL_SCANCODE_F2:
+		case SDL_SCANCODE_F3:
+		case SDL_SCANCODE_F4:
+		case SDL_SCANCODE_F5:
+		case SDL_SCANCODE_F6:
+		case SDL_SCANCODE_F7:
+		case SDL_SCANCODE_F8:
+		case SDL_SCANCODE_F9:
+		case SDL_SCANCODE_F10:
+		case SDL_SCANCODE_F11:
+		case SDL_SCANCODE_F12:
+		case SDL_SCANCODE_DELETE:
+		//case SDL_SCANCODE_ADD:
+		//case SDL_SCANCODE_SUBTRACT:
+		//case SDL_SCANCODE_MULTIPLY:
+		//case SDL_SCANCODE_DIVIDE:
+		//case SDL_SCANCODE_OEM_PLUS:
+		//case SDL_SCANCODE_OEM_MINUS:
+		//case SDL_SCANCODE_OEM_1:
+		//case SDL_SCANCODE_OEM_COMMA:
+		//case SDL_SCANCODE_OEM_PERIOD:
+		//case SDL_SCANCODE_OEM_2:
+		//case SDL_SCANCODE_OEM_4:
+		//case SDL_SCANCODE_OEM_5:
+		//case SDL_SCANCODE_OEM_6:
+		//case SDL_SCANCODE_OEM_7:
+		case SDL_SCANCODE_SPACE:
+		case SDL_SCANCODE_CANCEL:
+		case SDL_SCANCODE_RETURN:
 			IsFail = false;
 			break;
 		default:

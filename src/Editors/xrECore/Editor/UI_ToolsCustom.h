@@ -21,11 +21,13 @@ enum ETAction{
     etaMaxActions
 };
 
-enum ETAxis{
-    etAxisX =0,
+enum ETAxis
+{
     etAxisY,
+    etAxisX,
     etAxisZ,
     etAxisZX,
+    etAxisUndefined,
 };
 
 
@@ -47,6 +49,9 @@ class ECORE_API CToolCustom
 protected:
     bool				m_bReady;
 
+    ETAxis              m_Axis;
+    ECameraStyle        m_Style;
+
     ETAction			m_Action;
     Flags32				m_Settings;
 
@@ -64,6 +69,11 @@ protected:
     Fvector				m_RotateVector;
     float				m_fRotateSnapValue;
     float				m_RotateAmount;
+public:
+    float               m_MoveSnap;
+    float               m_MoveSnapTo;
+    float               m_RotateSnapAngle;
+
 public:
     float 				fFogness;
     u32					dwFogColor;
@@ -222,10 +232,24 @@ public:
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
 
+    CEditableObject*    m_pAxisMoveObject;
 	Fmatrix				m_axis_xform;
     
     virtual bool		GetSelectionPosition	(Fmatrix& result) =0;
     virtual bool UpdateCamera() { return false; }
+
+    virtual void SetAxis(ETAxis axis);
+
+    ETAxis GetAxis() const
+    {
+        return m_Axis;
+    }
+
+    ECameraStyle GetStyle() const
+    {
+        return m_Style;
+    }
+
 };
 extern ECORE_API CToolCustom*	Tools;
 

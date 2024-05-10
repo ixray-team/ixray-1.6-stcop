@@ -65,8 +65,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 break;
 
             case SDL_EVENT_KEY_DOWN:
-                if (UI)UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
-                break;
+                if (UI)
+                {
+                    UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
+                    UI->ApplyShortCutInput(Event.key.keysym.scancode);
+                }break;
             case SDL_EVENT_KEY_UP:
                 if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
                 break;

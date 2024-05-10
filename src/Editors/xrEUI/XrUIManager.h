@@ -38,11 +38,15 @@ public:
 	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
 	inline TShiftState GetShiftState()const { return m_ShiftState; };
 	virtual bool IsPlayInEditor() { return false; }
+
 protected:
 	virtual void OnDrawUI();
+
+public:
+	void ApplyShortCutInput(DWORD Key);
+
 private:
 	float m_MenuBarHeight;
-	void ApplyShortCut(DWORD Key);
 	TShiftState m_ShiftState;
 	xr_vector<XrUI*> m_UIArray;
 	string_path m_name_ini;

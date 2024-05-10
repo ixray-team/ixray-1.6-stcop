@@ -4,6 +4,9 @@
 
 #include "UI_ActorMain.h"
 
+// FIXME
+#include "../xrECore/Editor/BoneEditor.cpp"
+
 #include "../xrEProps/UIFileLoad.h"
 extern CUFileOpen* FileOpen;
 
