@@ -292,7 +292,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 
 	texture_null.create("ed\\ed_not_existing_texture");
 	texture_null->Load();
-	UIChooseForm::SetNullTexture(texture_null->surface_get());
+	UIChooseForm::SetNullTexture(texture_null->pSurface);
 
 	// signal another objects
     UI->OnDeviceCreate			();           
@@ -341,7 +341,7 @@ void CEditorRenderDevice::Reset(bool)
 {
 	u32 tm_start = TimerAsync();
 
-	UIChooseForm::SetNullTexture(nullptr);
+	//UIChooseForm::SetNullTexture(nullptr);
 
 	Resources->reset_begin();
 	Resources->DeferredUnload();
@@ -352,6 +352,8 @@ void CEditorRenderDevice::Reset(bool)
 	SDL_SetWindowSize(g_AppInfo.Window, dwRealWidth, dwRealHeight);
 
 	Resources->reset_end();
+	Resources->DeferredUpload();
+
 	UI->ResetEnd(RDevice);
 	_SetupStates();
 

@@ -39,7 +39,7 @@ void UITopBarForm::Draw()
 	ImGui::Begin("TOOLBAR", NULL, window_flags);
 	{
 #define ADD_BUTTON_IMAGE_S(Name)\
-		if (ImGui::ImageButton(m_t##Name->surface_get(), ImVec2(20, 20), ImVec2(m_time##Name>EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_time##Name>EDevice->TimerAsync() ? 1 : 0.5, 1), 0))\
+		if (ImGui::ImageButton(m_t##Name->pSurface, ImVec2(20, 20), ImVec2(m_time##Name>EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_time##Name>EDevice->TimerAsync() ? 1 : 0.5, 1), 0))\
 		{\
 			m_time##Name = EDevice->TimerAsync() + 130;\
 			Click##Name();\
