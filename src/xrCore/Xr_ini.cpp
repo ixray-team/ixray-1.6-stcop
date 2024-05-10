@@ -1064,7 +1064,7 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 						"it with '!' (![%s]) or give it a unique name.\n\nCheck this file and its DLTX "
 						"mods:\n\"%s\",\nfile with section \"%s\",\nfile with duplicate \"%s\"",
 						*Current->Name, *Current->Name, m_file_name,
-						SectionToFilename[CurrentNameStr], DLTXCurrentFileName);
+						SectionToFilename[CurrentNameStr].c_str(), DLTXCurrentFileName);
 				}
 
 				// Overwrite existing override data
