@@ -1,6 +1,7 @@
 // ShaderEditor.cpp : Определяет точку входа для приложения.
 //
 #include "stdafx.h"
+#include "../../xrEngine/xr_input.h"
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     if (!IsDebuggerPresent()) Debug._initialize(false);
@@ -16,7 +17,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
 
-    while (true)
+    bool NeedExit = false;
+    while (!NeedExit)
     {
         SDL_Event Event;
         while (SDL_PollEvent(&Event))
@@ -24,7 +26,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             switch (Event.type)
             {
             case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-                return 0;
+                EPrefs->SaveConfig();
+                NeedExit = true;
+                break;
 
             case SDL_EVENT_WINDOW_RESIZED:
                 if (UI && REDevice)
@@ -44,6 +48,36 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 Device.b_is_Active = false;
                 //if (UI)UI->OnAppDeactivate();
                 break;
+
+            case SDL_EVENT_KEY_DOWN:
+                if (UI)UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
+                break;
+            case SDL_EVENT_KEY_UP:
+                if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+                break;
+
+            case SDL_EVENT_MOUSE_MOTION:
+                pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+                break;
+            case SDL_EVENT_MOUSE_WHEEL:
+                pInput->MouseScroll(Event.wheel.y);
+                break;
+
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                int mouse_button = 0;
+                if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
+                if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
+                if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+                if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                    pInput->MousePressed(mouse_button);
+                }
+                else {
+                    pInput->MouseReleased(mouse_button);
+                }
+            }
+            break;
             }
 
             if (!UI->ProcessEvent(&Event))
