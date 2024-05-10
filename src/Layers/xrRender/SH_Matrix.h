@@ -31,10 +31,11 @@ public:
 	WaveForm		scrollU,scrollV;
 
 	// Non-Copyable (mt-safe)
+#ifndef _EDITOR
 	CMatrix& operator=(const CMatrix& Other) = delete;
 	CMatrix& operator=(CMatrix&& Other) = delete;
 	CMatrix(const CMatrix& Other) = delete;
-
+#endif
 
 	CMatrix			()
 	{

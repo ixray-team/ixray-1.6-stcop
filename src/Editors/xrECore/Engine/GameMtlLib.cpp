@@ -40,6 +40,43 @@ void SGameMtl::Load(IReader& fs)
     	fInjuriousSpeed		= fs.r_float();
 }
 
+
+bool CGameMtlLibrary::Save()
+{
+    // save
+    CMemoryWriter fs;
+    fs.open_chunk(GAMEMTLS_CHUNK_VERSION);
+    fs.w_u16(GAMEMTL_CURRENT_VERSION);
+    fs.close_chunk();
+
+    fs.open_chunk(GAMEMTLS_CHUNK_AUTOINC);
+    fs.w_u32(material_index);
+    fs.w_u32(material_pair_index);
+    fs.close_chunk();
+
+    fs.open_chunk(GAMEMTLS_CHUNK_MTLS);
+    int count = 0;
+    for (GameMtlIt m_it = materials.begin(); m_it != materials.end(); m_it++) {
+        fs.open_chunk(count++);
+        (*m_it)->Save(fs);
+        fs.close_chunk();
+    }
+    fs.close_chunk();
+
+    fs.open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
+    count = 0;
+    for (GameMtlPairIt p_it = material_pairs.begin(); p_it != material_pairs.end(); p_it++) {
+        fs.open_chunk(count++);
+        (*p_it)->Save(fs);
+        fs.close_chunk();
+    }
+    fs.close_chunk();
+
+    string_path fn;
+    FS.update_path(fn, _game_data_, GAMEMTL_FILENAME);
+    return fs.save_to(fn);
+}
+
 void CGameMtlLibrary::Load()
 {
 	string_path			name;

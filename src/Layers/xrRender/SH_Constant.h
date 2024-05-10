@@ -22,9 +22,11 @@ public:
 	WaveForm		_A;
 
 	// Non-Copyable (mt-safe)
+#ifndef _EDITOR
 	CConstant& operator=(const CConstant& Other) = delete;
 	CConstant& operator=(CConstant&& Other) = delete;
 	CConstant(const CConstant& Other) = delete;
+#endif
 
 	CConstant()
 	{

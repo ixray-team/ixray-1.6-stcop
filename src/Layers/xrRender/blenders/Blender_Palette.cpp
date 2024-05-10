@@ -28,11 +28,11 @@ void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
 	palette.push_back(Create(B_SCREEN_GRAY));
 	palette.push_back(Create(B_EDITOR_WIRE));
 	palette.push_back(Create(B_EDITOR_SEL));
-	palette.push_back(Create(B_LIGHT));
+	//palette.push_back(Create(B_LIGHT));
 	palette.push_back(Create(B_LaEmB));
 	palette.push_back(Create(B_LmEbB));
 	palette.push_back(Create(B_BmmD));
-	palette.push_back(Create(B_B));
+	//palette.push_back(Create(B_B));
 	palette.push_back(Create(B_SHADOW_WORLD));
 	palette.push_back(Create(B_BLUR));
 	palette.push_back(Create(B_MODEL));
