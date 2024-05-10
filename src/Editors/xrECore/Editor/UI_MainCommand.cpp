@@ -237,7 +237,7 @@ CCommandVar 	TUI::CommandRenderResize(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 {
     EDevice = xr_new< CEditorRenderDevice>();
-    g_pDevice = EDevice;
+    DevicePtr = EDevice;
 	CCommandVar res		= TRUE;
     {
         string_path              fn;
@@ -249,7 +249,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
         string_path					fname;
         FS.update_path(fname, "$game_config$", "game.ltx");
         pGameIni = xr_new<CInifile>(fname, TRUE);
-        CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+        CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
     }
     // make interface
     //----------------
@@ -294,20 +294,21 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
     }
     return res;
 }             
-CCommandVar 	CommandDestroy(CCommandVar p1, CCommandVar p2)
+
+CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 {
-    ExecCommand			(COMMAND_SAVE_UI_BAR);
-    EPrefs->OnDestroy	();
-    ExecCommand			(COMMAND_CLEAR);
+    ExecCommand(COMMAND_SAVE_UI_BAR);
+    EPrefs->OnDestroy();
+    ExecCommand(COMMAND_CLEAR);
     EDevice->seqAppEnd.Process(rp_AppEnd);
-    xr_delete			(g_pGamePersistent);
-    LALib.OnDestroy		();
-    Tools->OnDestroy	();
-    SndLib->OnDestroy	();
-    xr_delete			(SndLib);
-   // DU_impl.DestroyObjects();
-    Lib.OnDestroy		();
-    UI->OnDestroy		();
+    xr_delete(g_pGamePersistent);
+    LALib.OnDestroy();
+    Tools->OnDestroy();
+    SndLib->OnDestroy();
+    xr_delete(SndLib);
+    // DU_impl.DestroyObjects();
+    Lib.OnDestroy();
+    UI->OnDestroy();
     {
         xr_delete(pSettings);
     }
@@ -320,10 +321,13 @@ CCommandVar 	CommandDestroy(CCommandVar p1, CCommandVar p2)
         xr_delete(item);
     }
     ECommands.clear();
+
     xr_delete(EDevice);
-    g_pDevice = nullptr;
+    DevicePtr = nullptr;
+
     return				TRUE;
-}             
+}
+
 CCommandVar 	CommandQuit(CCommandVar p1, CCommandVar p2)
 {
     if (UI->IsModified())

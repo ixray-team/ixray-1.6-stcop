@@ -17,10 +17,10 @@ inline void not_implemented()
 }
 #endif
 
-#include "..\XrEUI\stdafx.h"
-#include "..\..\XrEngine\stdafx.h"
+#include "..\xrEUI\stdafx.h"
+#include "..\..\xrEngine\stdafx.h"
 #include "..\Public\xrEProps.h"
-#include "..\..\XrCore\ChooseTypes.H"
+#include "ChooseTypes.H"
 #include "FolderLib.h"
 #include "Tree\Base\UITreeItem.h"
 #include "ItemListHelper.h"

@@ -158,13 +158,14 @@ public:
 using GameMtlVec = xr_vector<SGameMtl*>;
 using GameMtlIt = GameMtlVec::iterator;
 
-struct MTL_EXPORT_API SGameMtlPair{
+struct MTL_EXPORT_API SGameMtlPair
+{
 	friend class CGameMtlLibrary;
     CGameMtlLibrary*	m_Owner;
-private:
+
 	int					mtl0;
 	int					mtl1;
-protected:
+
 	int 				ID; 	// auto number
     int					ID_parent;
 public:

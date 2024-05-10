@@ -252,7 +252,7 @@ bool  PS::CPEDef::NameOnAfterEdit(PropValue* sender, shared_str& edit_val)
     return true;
 }
 
-void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner)
+void PS::CPEDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
 {
 	ButtonValue* B;
     PropValue* P = 0;

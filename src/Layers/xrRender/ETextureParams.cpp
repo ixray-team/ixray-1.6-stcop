@@ -154,8 +154,6 @@ void STextureParams::Save(IWriter& F)
 
 
 #ifdef _EDITOR
-#include "../../Editors/EditorProps/PropertiesListHelper.h"
-
 void STextureParams::OnTypeChange(PropValue* prop)
 {
 	switch (type){
@@ -185,7 +183,7 @@ void STextureParams::OnTypeChange(PropValue* prop)
 
 void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange on_type_change)
 {                             
-#if 0
+#if 1
 	OnTypeChangeEvent	            = on_type_change;
     PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
     P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);

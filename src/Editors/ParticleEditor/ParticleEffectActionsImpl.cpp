@@ -4,7 +4,7 @@
 
 #include "../XrECore/Editor/ParticleEffectActions.h"
 #include "../xrEProps/folderlib.h"
-#include "../../xrServerEntities/PropertiesListHelper.h"
+#include "../../Editors/Public/PropertiesListHelper.h"
 #include "../../xrParticles/particle_actions_collection.h"
 
 using namespace PAPI; 

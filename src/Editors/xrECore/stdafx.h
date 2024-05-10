@@ -4,13 +4,9 @@
 #pragma once
 // DirectX headers
 #include <d3d9.h>
-#include <d3dx9.h>
 #include "../xrEUI/stdafx.h"
 #include "..\..\Layers\xrRenderDX9\xrD3DDefs.h"
 
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
-//#include <dsound.h>
 #include "..\..\xrEngine\stdafx.h"
 #include "..\..\xrEngine\device.h"
 #include "..\xrEProps\stdafx.h"
@@ -131,6 +127,10 @@ using RStrVecIt = RStrVec::iterator;
 #include "..\..\Layers\xrRender\ETextureParams.h"
 #include "..\..\Layers\xrRender\\ResourceManager.h"
 
+#include "../../Layers/xrRender/blenders/Blender_Recorder.h"
+#include "../../Layers/xrRender/blenders/Blender.h"
+#include "../../Layers/xrRender/blenders/Blender_CLSID.h"
+
 #include "Editor/ImageManager.h"
 inline xr_string ChangeFileExt(const char* name, const char* e)
 {
@@ -164,6 +164,7 @@ inline u32 TColor(u32 r)
 {
 	return r;
 }
+
 #ifdef XRECORE_EXPORTS
 inline void not_implemented()
 {

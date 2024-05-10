@@ -143,7 +143,6 @@ public:
 		void* ppConstantTable);
 
 	virtual IDirect3DBaseTexture9* texture_load(LPCSTR	fname, u32& mem_size);
-	virtual IDirect3DBaseTexture9* texture_load_software(LPCSTR	fname, u32& mem_size);
 	virtual HRESULT					shader_compile(
 		LPCSTR							name,
 		LPCSTR                          pSrcData,

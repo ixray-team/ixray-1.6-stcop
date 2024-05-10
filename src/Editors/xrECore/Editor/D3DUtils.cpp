@@ -14,11 +14,6 @@
 #include "EditObject.h"
 #include "ui_main.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <d3dx9.h>
-#pragma warning(pop)
-
 ECORE_API CDrawUtilities DU_impl;
 
 #define LINE_DIVISION  32  // не меньше 6!!!!!
@@ -96,7 +91,7 @@ u32 m_ColorGridTh = 0xffb4b4b4;
 u32 m_SelectionRect=D3DCOLOR_RGBA(127,255,127,64);
 
 u32 m_ColorSafeRect = 0xffB040B0;
-
+#include <d3dx9.h>
 //void 			 SPrimitiveBuffer::RenderDIP() { DU_DRAW_DIP(p_type, pGeom, 0, 0, v_cnt, 0, p_cnt); }
 //void 			 SPrimitiveBuffer::RenderDP() { DU_DRAW_DP(p_type, pGeom, 0, p_cnt); }
 void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)

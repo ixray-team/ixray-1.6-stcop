@@ -311,6 +311,7 @@ class ECORE_API CBone:
 	public CBoneInstance,
 	public IBoneData
 {
+public:
 	shared_str			name;
 	shared_str			parent_name;
 	shared_str			wmap;
@@ -331,7 +332,7 @@ class ECORE_API CBone:
     //Fmatrix			    last_transform;
 
     //Fmatrix				render_transform;
-public:
+
 	int				    SelfID;
     CBone*			    parent;
     BoneVec				children;

@@ -151,6 +151,8 @@ public:
 	const file*					exist				(string_path& fn, LPCSTR path, LPCSTR name);
 	const file*					exist				(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
 
+	BOOL						file_find			(LPCSTR full_name, FS_File& f);
+
     BOOL 						can_write_to_folder	(LPCSTR path); 
     BOOL 						can_write_to_alias	(LPCSTR path); 
     BOOL						can_modify_file		(LPCSTR fname);

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
+#include "../../xrCore/doug_lea_allocator.h"
 
 #include	"../../xrEngine/Render.h"
 #include	"../xrRender/ResourceManager.h"

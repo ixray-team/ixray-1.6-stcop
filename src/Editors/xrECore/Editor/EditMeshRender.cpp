@@ -11,11 +11,7 @@
 #include "ui_main.h"
 #include "d3dutils.h"
 #include "render.h"
-
-#pragma warning(push)
-#pragma warning(disable:4995)
 #include <d3dx9.h>
-#pragma warning(pop)
 
 //----------------------------------------------------
 #define F_LIM (10000)
@@ -23,20 +19,6 @@
 //----------------------------------------------------
 void CEditableMesh::GenerateRenderBuffers()
 {
-//    CTimer T;
-//    T.Start();
-/*
-    CMemoryWriter 	F;
-    m_Parent->PrepareOGF(F,false,this);
-	IReader R		(F.pointer(), F.size());
-	m_Visual 		= ::Render->Models->Create(GetName(),&R);
-//    Log				("Time: ",T.GetElapsed_sec());
-//	string_path fn;
-//	strconcat		(fn,"_alexmx_\\",GetName(),".ogf");
-//	FS.update_path	(fn,_import_,fn);
-//	F.save_to		(fn);
-	return;
-*/
     if (m_RenderBuffers) return;
     m_RenderBuffers		= xr_new<RBMap>();
 

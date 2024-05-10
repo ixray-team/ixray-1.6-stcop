@@ -2,19 +2,16 @@
 #include "dxRenderFactory.h"
 
 #include "dxStatGraphRender.h"
-#ifndef _EDITOR
-	#include "dxLensFlareRender.h"
-#endif
-#ifndef _EDITOR
-	#include "dxThunderboltRender.h"
-	#include "dxThunderboltDescRender.h"
-	#include "dxRainRender.h"
-	#include "dxLensFlareRender.h"
-	#include "dxEnvironmentRender.h"
+#include "dxLensFlareRender.h"
 
-	#include "dxRenderDeviceRender.h"
-	#include "dxObjectSpaceRender.h"
-#endif // _EDITOR
+#include "dxThunderboltRender.h"
+#include "dxThunderboltDescRender.h"
+#include "dxRainRender.h"
+#include "dxLensFlareRender.h"
+#include "dxEnvironmentRender.h"
+
+#include "dxRenderDeviceRender.h"
+#include "dxObjectSpaceRender.h"
 
 #include "dxFontRender.h"
 #include "dxWallMarkArray.h"
@@ -36,26 +33,23 @@ dxRenderFactory RenderFactoryImpl;
 	xr_delete((dx##Class*&)pObject); \
 } \
 
-#ifndef _EDITOR
-	RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
-	RENDER_FACTORY_IMPLEMENT(UIShader)
-	RENDER_FACTORY_IMPLEMENT(StatGraphRender)
-	RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
+RENDER_FACTORY_IMPLEMENT(UISequenceVideoItem)
+RENDER_FACTORY_IMPLEMENT(UIShader)
+RENDER_FACTORY_IMPLEMENT(StatGraphRender)
+RENDER_FACTORY_IMPLEMENT(RenderDeviceRender)
 #	ifdef DEBUG
-		RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)
+RENDER_FACTORY_IMPLEMENT(ObjectSpaceRender)
 #	endif // DEBUG
-	RENDER_FACTORY_IMPLEMENT(WallMarkArray)
-	RENDER_FACTORY_IMPLEMENT(StatsRender)
-#endif // _EDITOR
+RENDER_FACTORY_IMPLEMENT(WallMarkArray)
+RENDER_FACTORY_IMPLEMENT(StatsRender)
 
-#ifndef _EDITOR
-    RENDER_FACTORY_IMPLEMENT(ThunderboltRender)
-    RENDER_FACTORY_IMPLEMENT(ThunderboltDescRender)
-    RENDER_FACTORY_IMPLEMENT(RainRender)
-    RENDER_FACTORY_IMPLEMENT(LensFlareRender)
-    RENDER_FACTORY_IMPLEMENT(EnvironmentRender)
-    RENDER_FACTORY_IMPLEMENT(EnvDescriptorMixerRender)
-    RENDER_FACTORY_IMPLEMENT(EnvDescriptorRender)
-    RENDER_FACTORY_IMPLEMENT(FlareRender)
-#endif
+RENDER_FACTORY_IMPLEMENT(ThunderboltRender)
+RENDER_FACTORY_IMPLEMENT(ThunderboltDescRender)
+RENDER_FACTORY_IMPLEMENT(RainRender)
+RENDER_FACTORY_IMPLEMENT(LensFlareRender)
+RENDER_FACTORY_IMPLEMENT(EnvironmentRender)
+RENDER_FACTORY_IMPLEMENT(EnvDescriptorMixerRender)
+RENDER_FACTORY_IMPLEMENT(EnvDescriptorRender)
+RENDER_FACTORY_IMPLEMENT(FlareRender)
+
 RENDER_FACTORY_IMPLEMENT(FontRender)

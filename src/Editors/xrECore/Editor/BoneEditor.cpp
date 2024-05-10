@@ -228,6 +228,7 @@ void CBone::ClampByLimits()
     mLocal.getXYZi(mot_rotate);
 }
 
+#if 0
 void motion_marks::Save(IWriter* W)
 {
     W->w_string(name.c_str());
@@ -240,39 +241,8 @@ void motion_marks::Save(IWriter* W)
         W->w_float(item.second);
     }
 }
+#endif
 
-#include "../xrEngine/LightAnimLibrary.h"
-
-void ELightAnimLibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)
-{
-    if (TYPE_FOLDER == type) {
-        res = true;
-        return;
-    }
-    else if (TYPE_OBJECT == type) {
-        LAItemIt it = FindItemI(_fname);
-        if (it != Items.end()) {
-            xr_delete(*it);
-            Items.erase(it);
-            res = true;
-            return;
-        }
-    }
-    else THROW;
-    res = false;
-}
-//---------------------------------------------------------------------------
-
-void ELightAnimLibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
-{
-    if (TYPE_FOLDER == type) {
-    }
-    else if (TYPE_OBJECT == type) {
-        CLAItem* I = FindItem(nm0); R_ASSERT(I);
-        I->cName = nm1;
-    }
-}
-//---------------------------------------------------------------------------
 #if 1
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"

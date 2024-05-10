@@ -12,7 +12,7 @@
 #include "UI_ToolsCustom.h"
 
 CEditorRenderDevice 	*	EDevice;
-extern ENGINE_API bool g_bIsEditor;
+bool g_bIsEditor;
 
 extern int	rsDVB_Size;
 extern int	rsDIB_Size;
@@ -62,7 +62,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	GameMaterialLibraryEditors = xr_new<XrGameMaterialLibraryEditors>();
 	PGMLib = GameMaterialLibraryEditors;
 
-	g_pDevice = this;
+	DevicePtr = this;
 	g_bIsEditor = true;
 }
 
@@ -73,7 +73,7 @@ CEditorRenderDevice::~CEditorRenderDevice(){
 }
 
 //extern void Surface_Init();
-#include "../../../Include/xrAPI/xrAPI.h"
+#include "../../../xrCore/API/xrAPI.h"
 #include "../../../Layers/xrRender/dxRenderFactory.h"
 #include "../../../Layers/xrRender/dxUIRender.h"
 #include "../../../Layers/xrRender/dxDebugRender.h"

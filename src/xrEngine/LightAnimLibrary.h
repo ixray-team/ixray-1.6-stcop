@@ -37,6 +37,8 @@ public:
 using LAItemVec = xr_vector<CLAItem*>;
 using LAItemIt = LAItemVec::iterator;
 
+#include "../../Editors/Public/xrEPropsTypes.h"
+
 class ENGINE_API ELightAnimLibrary{
 public:
     LAItemVec       Items;
@@ -45,10 +47,9 @@ public:
 public:
 					ELightAnimLibrary	();
 					~ELightAnimLibrary	();
-#ifdef _EDITOR       
+
     void  			RemoveObject		(LPCSTR fname, EItemType type, bool& res);
     void		 	RenameObject		(LPCSTR fn0, LPCSTR fn1, EItemType type);
-#endif
 
     void			OnCreate			();
     void			OnDestroy			();

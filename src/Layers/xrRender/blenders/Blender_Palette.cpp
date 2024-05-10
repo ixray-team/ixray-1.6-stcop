@@ -82,11 +82,11 @@ void		IBlender::Destroy	(IBlender*& B)
 #include "../../xrRenderPC_R1/blender_screen_gray.h"
 #include "../blender_editor_wire.h"
 #include "../blender_editor_selection.h"
-#include "blenders/blender_light.h"
+//#include "blenders/blender_light.h"
 #include "../../xrRenderPC_R1/blender_LaEmB.h"
 #include "../blender_Lm(EbB).h"
 #include "../blender_BmmD.h"
-#include "blenders/blender_B.h"
+//#include "blenders/blender_B.h"
 #include "../../xrRenderPC_R1/blender_shadow_world.h"
 #include "../../xrRenderPC_R1/blender_blur.h"
 #include "../../xrRenderPC_R1/blender_model.h"
@@ -107,10 +107,10 @@ IBlender*	IBlender::Create	(CLASS_ID cls)
 	case B_SCREEN_GRAY:		return new CBlender_Screen_GRAY();	
 	case B_EDITOR_WIRE:		return new CBlender_Editor_Wire();	
 	case B_EDITOR_SEL:		return new CBlender_Editor_Selection();
-	case B_LIGHT:			return new CBlender_LIGHT();		
+	//case B_LIGHT:			return new CBlender_LIGHT();		
 	case B_LaEmB:			return new CBlender_LaEmB();		
 	case B_LmEbB:			return new CBlender_LmEbB();		
-	case B_B:				return new CBlender_B();			
+	//case B_B:				return new CBlender_B();			
 	case B_BmmD:			return new CBlender_BmmD();			
 	case B_SHADOW_WORLD:	return new CBlender_ShWorld();		
 	case B_BLUR:			return new CBlender_Blur();			

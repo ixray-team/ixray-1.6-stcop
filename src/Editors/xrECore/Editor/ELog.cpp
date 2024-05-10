@@ -150,7 +150,7 @@ int CLog::DlgMsg (TMsgDlgType mt, int btn, LPCSTR _Format, ...)
 
 void CLog::Close()
 {
-	SetLogCB(0);
+	//SetLogCB(0);
 	UILogForm::Destroy();
 }
 

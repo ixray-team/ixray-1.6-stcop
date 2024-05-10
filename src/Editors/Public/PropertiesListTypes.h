@@ -45,7 +45,10 @@ using PropItemIt = PropItemVec::iterator;
 
 
 //------------------------------------------------------------------------------
-#include "../../xrcore/ChooseTypes.H"     
+#ifndef ImTextureID
+#include "..\xrEUI\stdafx.h"
+#endif
+#include "../xrEProps/ChooseTypes.H"
 //------------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> 	TOnDrawTextEvent; 
 typedef fastdelegate::FastDelegate1<PropItem*> 					TOnClick;

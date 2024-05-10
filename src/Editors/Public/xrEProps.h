@@ -6,13 +6,7 @@
 #	endif
 #include "PropertiesListTypes.h"
 #include "ItemListTypes.h"
-                                        
-enum EItemType{
-	TYPE_INVALID= -1,
-	TYPE_FOLDER	= 0,
-	TYPE_OBJECT	= 1
-};
-
+#include "xrEPropsTypes.h"
 
 typedef fastdelegate::FastDelegate2<LPCSTR, LPCSTR>	    TOnItemClone;
 typedef fastdelegate::FastDelegate1<LPCSTR>	            TOnItemCreate;

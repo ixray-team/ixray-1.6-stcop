@@ -9,8 +9,8 @@
 #include "ParticleGroup.h"
 
 #ifdef _EDITOR
-//#	include "ParticleEffectActions.h"
-//#include "../ECore/Editor/ui_main.h"
+#	include "../xrECore/Editor/ParticleEffectActions.h"
+#   include "../xrECore/Editor/ui_main.h"
 #endif
 
 #define _game_data_			"$game_data$"
@@ -24,11 +24,10 @@ bool pgd_find_pred	(const PS::CPGDef* a, 	LPCSTR b)				{	return xr_strcmp(a->m_N
 void CPSLibrary::OnCreate()
 {
 #ifdef _EDITOR
-#pragma todo(FX: Это я сломал)
-    //if(pCreateEAction)
-    //{
-    //    Load2();
-    //}else
+    if(pCreateEAction)
+    {
+        Load2();
+    }else
 #endif
     {
     	string_path		fn;
@@ -132,10 +131,9 @@ bool CPSLibrary::Load2()
 	FS.file_list				(files, _path, FS_ListFiles, "*.pe,*.pg");
 
 #ifdef _EDITOR
-#pragma todo(FX: Это я сломал)
-	//SPBItem* pb = nullptr;
-	//if(UI->m_bReady)
-    //pb 							= UI->ProgressStart(files.size(),"Loading particles...");
+	SPBItem* pb = nullptr;
+	if(UI->m_bReady)
+    pb 							= UI->ProgressStart(files.size(),"Loading particles...");
 #endif
 	FS_FileSet::iterator it		= files.begin();
 	FS_FileSet::iterator it_e	= files.end();
@@ -149,8 +147,7 @@ bool CPSLibrary::Load2()
         CInifile				ini (_path,TRUE,TRUE,FALSE);
 
 #ifdef _EDITOR
-#pragma todo(FX: Это я сломал)
-        //if(pb) pb->Inc					();
+        if(pb) pb->Inc					();
 #endif
 
         xr_sprintf				(_path, sizeof(_path),"%s%s",p_path, p_name);
@@ -184,8 +181,7 @@ bool CPSLibrary::Load2()
     	(*e_it)->CreateShader();
 
 #ifdef _EDITOR
-#pragma todo(FX: Это я сломал)
-    //if(pb) UI->ProgressEnd		(pb);
+    if(pb) UI->ProgressEnd		(pb);
 #endif
 	Msg				("Loaded particles :%d", files.size());
 	return true;

@@ -31,8 +31,6 @@
 #ifndef _EDITOR
 #include "../../xrEngine/igame_level.h"
 
-#include "../xrRender/blenders\blender.h"
-#include "../xrRender/blenders\blender_clsid.h"
 #include "../../xrParticles/psystem.h"
 #include "../xrRender/xrRender_console.h"
 #include "FStaticRender.h"
@@ -42,3 +40,6 @@
 #define		TEX_POINT_ATT	"internal\\internal_light_attpoint"
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"
 
+
+#include "../xrRender/blenders\blender.h"
+#include "../xrRender/blenders\blender_clsid.h"

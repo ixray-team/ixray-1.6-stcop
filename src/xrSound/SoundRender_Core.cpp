@@ -477,7 +477,6 @@ void CSoundRender_Core::object_relcase( CObject* obj )
     }
 }
 
-#ifdef _EDITOR
 void						CSoundRender_Core::set_user_env		( CSound_environment* E)
 {
 	if ((0 == E) && !bUserEnvironment) return;
@@ -512,28 +511,23 @@ void						CSoundRender_Core::refresh_sources()
 }
 void CSoundRender_Core::set_environment_size	(CSound_environment* src_env, CSound_environment** dst_env)
 {
-	if (bEAX){
-		CSoundRender_Environment* SE 	= static_cast<CSoundRender_Environment*>(src_env); 
-		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
-		// set environment
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &SE->EnvironmentSize, sizeof(SE->EnvironmentSize));
-		i_eax_listener_set				(SE);
-		i_eax_commit_setting			();
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &DE->EnvironmentSize, sizeof(DE->EnvironmentSize));
-		i_eax_listener_get				(DE);
-	}
+	//if (bEAX){
+	//	CSoundRender_Environment* SE 	= static_cast<CSoundRender_Environment*>(src_env); 
+	//	CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
+	//	// set environment
+	//	i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &SE->EnvironmentSize, sizeof(SE->EnvironmentSize));
+	//	i_eax_listener_set				(SE);
+	//	i_eax_commit_setting			();
+	//	i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &DE->EnvironmentSize, sizeof(DE->EnvironmentSize));
+	//	i_eax_listener_get				(DE);
+	//}
 }
 void CSoundRender_Core::set_environment	(u32 id, CSound_environment** dst_env)
 {
-	if (bEAX){
-		CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
-		// set environment
-		i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &id, sizeof(id));
-		i_eax_listener_get				(DE);
-	}
+	//if (bEAX){
+	//	CSoundRender_Environment* DE 	= static_cast<CSoundRender_Environment*>(*dst_env); 
+	//	// set environment
+	//	i_eax_set			    		(&DSPROPSETID_EAX_ListenerProperties, DSPROPERTY_EAXLISTENER_IMMEDIATE | DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE, &id, sizeof(id));
+	//	i_eax_listener_get				(DE);
+	//}
 }
-#endif
-
-
-
-

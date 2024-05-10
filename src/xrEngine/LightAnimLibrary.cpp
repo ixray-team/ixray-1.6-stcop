@@ -281,7 +281,6 @@ CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
 	return I;
 }
 
-#ifdef _EDITOR
 void ELightAnimLibrary::RemoveObject(LPCSTR _fname, EItemType type, bool& res)   
 {
 	if (TYPE_FOLDER==type){
@@ -308,5 +307,3 @@ void ELightAnimLibrary::RenameObject(LPCSTR nm0, LPCSTR nm1, EItemType type)
 		I->cName	= nm1;
 	}
 }
-//---------------------------------------------------------------------------
-#endif

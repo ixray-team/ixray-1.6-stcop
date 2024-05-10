@@ -2,13 +2,13 @@
 #define EditorChooseEventsH
 #include "SoundManager.h"
 #include "Library.h"
-#include "GameMtlLib.h"
-#include "LightAnimLibrary.h"
+#include "../../xrEngine/GameMtlLib.h"
+#include "../../xrEngine/LightAnimLibrary.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
 #include "../../Layers/xrRender/ResourceManager.h"
 #include "../../Layers/xrRender/ParticleEffect.h"
 #include "../../Layers/xrRender/ParticleGroup.h"
-#include "defines.h"
+#include "../../xrEngine/defines.h"
 #include "EditObject.h"
 ref_sound* choose_snd;
 

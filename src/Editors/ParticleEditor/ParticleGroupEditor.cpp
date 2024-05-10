@@ -123,7 +123,7 @@ void  PS::CPGDef::OnParamsChange(PropValue* sender)
 	PTools->SetCurrentPG	(this);
 }
 
-void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner)
+void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
 {                                   
     ButtonValue* B;
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"Control"),"Play,Stop,Stop...",ButtonValue::flFirstOnly);
@@ -131,7 +131,7 @@ void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, ::ListItem* owner)
     B=PHelper().CreateButton	(items,PrepareKey(pref,"Edit"),"Append Effect",ButtonValue::flFirstOnly);
     B->OnBtnClickEvent.bind		(this,&PS::CPGDef::OnEffectsEditClick);
     PropValue* V;
-	PHelper().CreateName		(items,PrepareKey(pref,"Name"),&m_Name,owner);
+	PHelper().CreateName		(items,PrepareKey(pref,"Name"),&m_Name,(::ListItem*)owner);
     V=PHelper().CreateFloat		(items,PrepareKey(pref,"Time Limit (s)"),	&m_fTimeLimit,	-1.f,1000.f);
     V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
 

@@ -18,7 +18,7 @@
 
 
 
-void resptrcode_texture::create(LPCSTR _name)
+void ECORE_API resptrcode_texture::create(LPCSTR _name)
 {
 	_set(DEV->_CreateTexture(_name));
 }

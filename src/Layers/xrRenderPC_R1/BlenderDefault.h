@@ -1,9 +1,6 @@
 // BlenderDefault.h: interface for the CBlenderDefault class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_BLENDERDEFAULT_H__C12F64EE_43E7_4483_9AC3_29272E0401E7__INCLUDED_)
-#define AFX_BLENDERDEFAULT_H__C12F64EE_43E7_4483_9AC3_29272E0401E7__INCLUDED_
 #pragma once
 
 class CBlender_default		: public IBlender  
@@ -24,5 +21,3 @@ public:
 private:
 	xrP_TOKEN	oTessellation;
 };
-
-#endif // !defined(AFX_BLENDERDEFAULT_H__C12F64EE_43E7_4483_9AC3_29272E0401E7__INCLUDED_)

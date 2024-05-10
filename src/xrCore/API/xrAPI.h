@@ -1,6 +1,5 @@
 #pragma once
 
-#ifndef _EDITOR
 class IRender_interface;
 extern XRCORE_API IRender_interface* Render;
 
@@ -23,11 +22,3 @@ extern XRCORE_API CGameMtlLibrary* PGMLib;
 	class IDebugRender;
 	extern XRCORE_API IDebugRender*	DRender;
 #endif // DEBUG
-
-#else
-	class	CRender;
-    extern ENGINE_API CRender* Render;
-
-   class IRenderFactory;
-    extern XRCORE_API IRenderFactory* RenderFactory;
-#endif

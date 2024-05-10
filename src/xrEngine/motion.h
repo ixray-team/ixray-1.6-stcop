@@ -103,17 +103,16 @@ public:
 #ifdef _LW_EXPORT
 	void			ParseObjectMotion(LWItemID object);
 #endif
-#ifdef _EDITOR
+
 	void 			FindNearestKey	(float t, float& min_k, float& max_k, float eps=EPS_L);
 	void			CreateKey		(float t, const Fvector& P, const Fvector& R);
 	void			DeleteKey		(float t);
     void			NormalizeKeys	();
     int				KeyCount		();
-	CEnvelope*		Envelope		(EChannelType et=ctPositionX){return envs[et];}
+	CEnvelope*		Envelope		(EChannelType et=ctPositionX);
     BOOL			ScaleKeys		(float from_time, float to_time, float scale_factor);
     BOOL			NormalizeKeys	(float from_time, float to_time, float speed);
     float			GetLength		(float* mn=0, float* mx=0);
-#endif
 };
 
 //--------------------------------------------------------------------------
@@ -132,7 +131,7 @@ enum ESMFlags{
 #if defined(_EDITOR) || defined(_MAX_EXPORT) || defined(_MAYA_EXPORT)
 	#include "SkeletonMotions.h"
 
-class ENGINE_API CSMotion: public CCustomMotion{
+class ECORE_API CSMotion: public CCustomMotion{
 	BoneMotionVec	bone_mots;
 public:
     u16			           	        m_BoneOrPart;
@@ -155,7 +154,7 @@ public:
     void			CopyMotion		(CSMotion* src);
 
     st_BoneMotion*	FindBoneMotion	(shared_str name);
-    BoneMotionVec&	BoneMotions		()				{return bone_mots;}
+    IC BoneMotionVec& BoneMotions		()				{return bone_mots;}
 	Flags8			GetMotionFlags	(int bone_idx)	{return bone_mots[bone_idx].m_Flags;}
 	void			add_empty_motion(shared_str const &bone_id);
 

@@ -1,6 +1,5 @@
-#ifndef BLENDER_BLUR_H
-#define BLENDER_BLUR_H
 #pragma once
+#include "../xrRender/blenders/Blender_Recorder.h"
 
 class CBlender_Blur : public IBlender  
 {
@@ -16,5 +15,3 @@ public:
 	CBlender_Blur();
 	virtual ~CBlender_Blur();
 };
-
-#endif //BLENDER_BLUR_H

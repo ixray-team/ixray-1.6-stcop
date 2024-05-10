@@ -1,14 +1,12 @@
 #pragma once
 #include "../xrCore/xrCore.h"
 
-
-
-
+#undef smart_cast
 #include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #define smart_cast fast_dynamic_cast
 
-#ifndef XRSE_FACTORY_EXPORTS
-#include "imgui.h"
+#if !defined(XRSE_FACTORY_EXPORTS) && !defined(_EDITOR)
+#	include "imgui.h"
 #endif
 
 #ifdef _DEBUG
@@ -72,4 +70,7 @@ extern ENGINE_API CInifile *pGameIni;
 	(((ltx)->line_exist(section, name)) ? ((ltx)->method(section, name)) : (default_value))
 
 #include "FontManager.h"
+
+#ifndef _EDITOR
 #include "ImGuiManager.h"
+#endif

@@ -8,6 +8,7 @@
 */
 #include "stdafx.h"
 #pragma hdrstop
+#include <dinput.h>
 
 static DIOBJECTDATAFORMAT rgodfDIKeyboard[] = {
     { &GUID_Key, 0, DIDFT_BUTTON | DIDFT_MAKEINSTANCE(0) | 0x80000000, 0 },

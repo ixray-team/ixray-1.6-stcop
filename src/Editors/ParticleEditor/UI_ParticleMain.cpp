@@ -4,7 +4,7 @@
 
 #include "UI_ParticleMain.h"
 #include "UI_ParticleTools.h"     
-#include "xr_input.h"
+#include "../xrEngine/xr_input.h"
 
 //---------------------------------------------------------------------------
 CParticleMain*	PUI=(CParticleMain*)UI;

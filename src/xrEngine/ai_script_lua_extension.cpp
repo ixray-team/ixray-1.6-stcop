@@ -23,7 +23,7 @@
 #define ENGINE_BUILD
 #endif	//	XRRENDER_R1_EXPORTS
 
-#ifndef ENGINE_BUILD
+#if !defined(ENGINE_BUILD) && !defined(_EDITOR)
 	#include "ai_space.h"
 #endif
 
@@ -31,7 +31,8 @@ using namespace Script;
 
 int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 {
-#ifndef ENGINE_BUILD
+#ifndef _EDITOR
+#if !defined(ENGINE_BUILD)
 	if (!psAI_Flags.test(aiLua))
 		return(0);
 #endif
@@ -105,9 +106,14 @@ int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 	va_end	(l_tMarker);
 
 	return	(l_iResult);
+
+#else
+
+	return 0;
+#endif
 }
 
-#ifndef ENGINE_BUILD
+#if !defined(ENGINE_BUILD) && !defined(_EDITOR)
 void Script::vfLoadStandardScripts(CLuaVirtualMachine *tpLuaVM)
 {
 	string256		S,S1;

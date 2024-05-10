@@ -90,6 +90,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES
     "../../Layers/xrRender/SH_Matrix.*"
     "../../Layers/xrRenderDX9/dx9SH_RT.*"
     "../../Layers/xrRenderDX9/dx9SH_Texture.*"
+    "../../Layers/xrRenderDX9/DDSTextureLoader9.*"
     "../../Layers/xrRender/SkeletonAnimated.*"
     "../../Layers/xrRender/SkeletonCustom.*"
     "../../Layers/xrRender/SkeletonRigid.*"
@@ -112,7 +113,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES
-    "../../xrEngine/motion.cpp"
+ #   "../../xrEngine/motion.cpp"
     "../../xrEngine/fmesh.cpp"
     "../../xrEngine/xrHemisphere.cpp"
     "../../xrEngine/ObjectAnimator.cpp"
@@ -152,7 +153,6 @@ target_compile_definitions(xrECore PRIVATE _USRDLL)
 target_compile_definitions(xrECore PUBLIC XR_EDITOR_NEW)
 target_compile_definitions(xrECore PUBLIC _EDITOR)
 
-add_compile_options(/fp:fast)
 target_compile_options(xrECore PRIVATE /W0)
 target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
@@ -168,7 +168,8 @@ target_link_libraries(xrECore PUBLIC ETools)
 target_link_libraries(xrECore PUBLIC xrAbstractions)
 target_link_libraries(xrECore PUBLIC xrPhysics)
 target_link_libraries(xrECore PUBLIC xrDXT)
-target_link_libraries(xrECore PUBLIC "MagicFM.lib")
+target_link_libraries(xrECore PUBLIC MagicFM)
+target_link_libraries(xrECore PUBLIC "d3d9.lib")
 
 # Move precompiled header
 set_target_properties(xrECore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
@@ -185,6 +186,10 @@ endif()
 
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+
+## DirectX SDK
+target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
+target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 # Nuget
 set(SNDE_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
@@ -203,8 +208,3 @@ target_include_directories(xrECore PRIVATE "${SNDE_VOB}/native/include/")
 ## OpenAL
 target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
 target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}MagicFM.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)

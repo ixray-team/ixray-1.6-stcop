@@ -69,5 +69,5 @@ public:
 	void			Update(void);
 };
 
-extern CHWCaps Caps;
+extern ECORE_API CHWCaps Caps;
 #endif

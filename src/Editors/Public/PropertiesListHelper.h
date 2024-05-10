@@ -1,7 +1,8 @@
 //---------------------------------------------------------------------------
 #ifndef PropertiesListHelperH
 #define PropertiesListHelperH
-                                                               
+#include "xrEProps.h"
+
 // refs
 class ListItem;
 

@@ -156,6 +156,21 @@ void ResizeBuffersD3D11(u16 Width, u16 Height);
 void DestroyD3D11();
 #endif
 
+bool CRenderDevice::InitRenderDeviceEditor()
+{
+	fill_vid_mode_list();
+
+	if (!CreateD3D9())
+	{
+		return false;
+	}
+
+	Device.TargetWidth = psCurrentVidMode[0];
+	Device.TargetHeight = psCurrentVidMode[1];
+	CurrentAPILevel = APILevel::DX9;
+
+	return true;
+}
 
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {

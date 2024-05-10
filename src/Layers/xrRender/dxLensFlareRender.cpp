@@ -13,13 +13,17 @@ void dxFlareRender::Copy(IFlareRender &_in)
 
 void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 {
+#ifndef _EDITOR
 	if (tex_name&&tex_name[0])	
 		hShader.create(sh_name,tex_name);
+#endif
 }
 
 void dxFlareRender::DestroyShader()
 {
+#ifndef _EDITOR
 	hShader.destroy();
+#endif
 }
 
 void dxLensFlareRender::Copy(ILensFlareRender &_in)
@@ -29,6 +33,7 @@ void dxLensFlareRender::Copy(ILensFlareRender &_in)
 
 void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL bGradient)
 {
+#ifndef _EDITOR
 	Fcolor				dwLight;
 	Fcolor				color;
 	Fvector				vec, vecSx, vecSy;
@@ -112,14 +117,19 @@ void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL 
 			RCache.Render			(D3DPT_TRIANGLELIST,vBase, 0,4,0,2);
 		}
 	}
+#endif
 }
 
 void dxLensFlareRender::OnDeviceCreate()
 {
+#ifndef _EDITOR
 	hGeom.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+#endif
 }
 
 void dxLensFlareRender::OnDeviceDestroy()
 {
+#ifndef _EDITOR
 	hGeom.destroy();
+#endif
 }

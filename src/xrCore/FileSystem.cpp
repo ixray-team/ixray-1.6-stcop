@@ -197,6 +197,27 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, xr_string& buffer, LPCSTR offset, i
 	return bRes;
 }
 
+xr_string EFS_Utils::AppendFolderToName(xr_string& tex_name, int depth, BOOL full_name)
+{
+	string1024 nm;
+	xr_strcpy(nm, tex_name.c_str());
+	tex_name = AppendFolderToName(nm, sizeof(nm), depth, full_name);
+	return tex_name;
+}
+
+void EFS_Utils::MarkFile(LPCSTR fn, bool bDeleteSource)
+{
+	xr_string ext = strext(fn);
+	ext.insert(1, "~");
+	xr_string backup_fn = EFS.ChangeFileExt(fn, ext.c_str());
+	if (bDeleteSource) {
+		FS.file_rename(fn, backup_fn.c_str(), true);
+	}
+	else {
+		FS.file_copy(fn, backup_fn.c_str());
+	}
+}
+
 //----------------------------------------------------
 LPCSTR EFS_Utils::AppendFolderToName(LPSTR tex_name, u32 const tex_name_size, int depth, BOOL full_name)
 {

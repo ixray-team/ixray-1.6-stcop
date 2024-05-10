@@ -49,7 +49,7 @@ private:
     virtual	Fvector&					_BCL	ObjectPosition			()														{  return m_object_xform.c;}
 
 #ifdef	DEBUG
-	virtual	std::string					_BCL	dump							( EDumpType type )const  { VERIFY(false); return std::string("ActorEditor!");}
+	virtual	xr_string					_BCL	dump							( EDumpType type )const  { VERIFY(false); return xr_string("ActorEditor!");}
 #endif
 };
 

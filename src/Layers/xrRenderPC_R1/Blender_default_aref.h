@@ -1,9 +1,6 @@
 // Blender_default_aref.h: interface for the CBlender_default_aref class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_BLENDER_DEFAULT_AREF_H__E17F011F_C371_4464_B75A_01D68F55FC4E__INCLUDED_)
-#define AFX_BLENDER_DEFAULT_AREF_H__E17F011F_C371_4464_B75A_01D68F55FC4E__INCLUDED_
 #pragma once
 
 class CBlender_default_aref : public IBlender  
@@ -24,5 +21,3 @@ public:
 	CBlender_default_aref();
 	virtual ~CBlender_default_aref();
 };
-
-#endif // !defined(AFX_BLENDER_DEFAULT_AREF_H__E17F011F_C371_4464_B75A_01D68F55FC4E__INCLUDED_)

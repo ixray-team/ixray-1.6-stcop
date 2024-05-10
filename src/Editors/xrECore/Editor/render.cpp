@@ -3,7 +3,7 @@
 
 #include "render.h"
 #include "../Layers/xrRender/ResourceManager.h"
-#include "../../../Include/xrAPI/xrAPI.h"
+#include "../../xrCore/API/xrAPI.h"
 #include "../../xrEngine/irenderable.h"
 #include "../../xrEngine/xr_object.h"
 #include "../../xrEngine/CustomHUD.h"

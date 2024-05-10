@@ -4,10 +4,13 @@
 UIMainForm* MainForm = nullptr;
 UIMainForm::UIMainForm()
 {
+#ifdef DEBUG
+    xrLogger::EnableFastDebugLog();
+#endif
     EnableReceiveCommands();
     if (!ExecCommand(COMMAND_INITIALIZE, (u32)0, (u32)0)) 
     {
-        FlushLog();
+        xrLogger::FlushLog();
         exit(-1);
     }
     ExecCommand(COMMAND_UPDATE_GRID);

@@ -1774,6 +1774,14 @@ void CLocatorAPI::check_pathes()
     }
 }
 
+BOOL CLocatorAPI::file_find(LPCSTR full_name, FS_File& f)
+{
+#pragma todo(FX: FIXME)
+	{
+		return FALSE;
+	}
+}
+
 BOOL CLocatorAPI::can_write_to_folder(LPCSTR path)
 {
 	if (path&&path[0]){

@@ -5,8 +5,8 @@
 
 #include "UI_ParticleTools.h"
 
-#include "ObjectAnimator.h"
-#include "..\XrECore\Editor\ParticleEffectActions.h"
+#include "../../xrEngine/ObjectAnimator.h"
+#include "../xrECore/Editor/ParticleEffectActions.h"
 //------------------------------------------------------------------------------
 CParticleTool*	PTools=(CParticleTool*)Tools;
 //------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void CParticleTool::OnItemModified()
     	CompileEffect				();
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
-#include "igame_persistent.h"
+#include "../../xrEngine/IGame_Persistent.h"
 
 void CParticleTool::RenderEnvironment()
 {

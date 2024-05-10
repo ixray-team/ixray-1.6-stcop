@@ -1,14 +1,10 @@
-#ifndef dxRenderDeviceRender_included
-#define dxRenderDeviceRender_included
 #pragma once
 
 #ifndef _EDITOR
-	#define DEV dxRenderDeviceRender::Instance().Resources
+#	define DEV dxRenderDeviceRender::Instance().Resources
 #else
-	#define DEV (ResourcesPtr)
+#	define DEV EDevice->Resources
 #endif
-
-#ifndef _EDITOR
 
 #include "..\..\Include\xrRender\RenderDeviceRender.h"
 #include "xr_effgamma.h"
@@ -65,8 +61,3 @@ public:
 private:
 	CGammaControl		m_Gamma;
 };
-
-#endif //ifndef _EDITOR
-
-
-#endif	//	RenderDeviceRender_included
