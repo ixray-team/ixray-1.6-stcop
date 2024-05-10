@@ -25,8 +25,6 @@
 #include "../xrEngine/igame_level.h"
 #include "../xrphysics/xrphysics.h"
 #include "smart_cast.h"
-#else
-#include "../../Editors/EditorRender/stdafx.h"
 #endif
 
 #undef min
