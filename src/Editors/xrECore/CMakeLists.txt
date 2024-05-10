@@ -170,6 +170,7 @@ target_link_libraries(xrECore PUBLIC xrPhysics)
 target_link_libraries(xrECore PUBLIC xrDXT)
 target_link_libraries(xrECore PUBLIC MagicFM)
 target_link_libraries(xrECore PUBLIC "d3d9.lib")
+target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
 # Move precompiled header
 set_target_properties(xrECore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

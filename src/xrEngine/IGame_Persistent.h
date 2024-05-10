@@ -4,19 +4,15 @@
 
 #include "..\xrServerEntities\gametype_chooser.h"
 #include "GameFont.h"
-#ifndef _EDITOR
 #include "Environment.h"
 #include "IGame_ObjectPool.h"
-#endif
 
 class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
 //-----------------------------------------------------------------------------------------------------------
 class ENGINE_API IGame_Persistent	: 
-#ifndef _EDITOR
 	public DLL_Pure,
-#endif
 	public pureAppStart, 
 	public pureAppEnd,
 	public pureAppActivate, 
@@ -62,12 +58,10 @@ public:
 	virtual void					PreStart			(LPCSTR op);
 	virtual void					Start				(LPCSTR op);
 	virtual void					Disconnect			();
-#ifndef _EDITOR
 	IGame_ObjectPool				ObjectPool;
-	CEnvironment*					pEnvironment;
+	class CEnvironment*				pEnvironment;
 	CEnvironment&					Environment()	{return *pEnvironment;};
 	void							Prefetch			( );
-#endif
 	IMainMenu*						m_pMainMenu;	
 
 			void					UpdateParticles();

@@ -483,16 +483,18 @@ void TUI::Redraw()
                 {
                     g_pGamePersistent->OnRenderPPUI_main();
                 }
-
+                
                 RCache.set_RT(RSwapchainTarget);
                 //RCache.set_ZB(RDepth);
             }
 
             try
             {
+                
                 EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
                 g_bRendering = FALSE;
                 EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+                RCache.set_RT(RSwapchainTarget);
                 //  Draw(); 
                   // end draw
                 UI->BeginFrame();

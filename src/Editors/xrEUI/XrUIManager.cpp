@@ -162,7 +162,7 @@ void XrUIManager::BeginFrame()
 
 void XrUIManager::EndFrame()
 {
-	//ImGui::GetForegroundDrawList()->AddCircle({ 66, 56 }, 55, 512351, 4);
+	ImGui::GetForegroundDrawList()->AddCircle({ 66, 56 }, 55, 512351, 4);
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 

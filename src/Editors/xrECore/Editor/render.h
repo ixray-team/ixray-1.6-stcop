@@ -130,31 +130,7 @@ public:
 	}
 
 
-	virtual HRESULT			CompileShader(
-		LPCSTR          	pSrcData,
-		UINT                SrcDataLen,
-		void* pDefines,
-		void* pInclude,
-		LPCSTR              pFunctionName,
-		LPCSTR              pTarget,
-		DWORD               Flags,
-		void* ppShader,
-		void* ppErrorMsgs,
-		void* ppConstantTable);
-
 	virtual IDirect3DBaseTexture9* texture_load(LPCSTR	fname, u32& mem_size);
-	virtual HRESULT					shader_compile(
-		LPCSTR							name,
-		LPCSTR                          pSrcData,
-		UINT                            SrcDataLen,
-		void* pDefines,
-		void* pInclude,
-		LPCSTR                          pFunctionName,
-		LPCSTR                          pTarget,
-		DWORD                           Flags,
-		void* ppShader,
-		void* ppErrorMsgs,
-		void* ppConstantTable);
 
 	virtual DWORD					get_dx_level();
 
@@ -221,7 +197,7 @@ public:
 
 protected:
 	virtual	void					ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
-	virtual HRESULT					shader_compile(
+	HRESULT					shader_compile(
 		LPCSTR							name,
 		DWORD const* pSrcData,
 		UINT                            SrcDataLen,
@@ -229,9 +205,7 @@ protected:
 		LPCSTR                          pTarget,
 		DWORD                           Flags,
 		void*& result
-	) {
-		return E_FAIL;
-	}
+	) override;
 	private:
 		xr_vector<ISpatial*> lstRenderables;
 };
