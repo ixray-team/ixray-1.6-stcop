@@ -16,7 +16,7 @@ endif()
 
 # Download packages
 execute_process(
-	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 )
 
 # Helper
@@ -70,14 +70,15 @@ set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 
-# Nvtt
+# Nuget
 set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
 
-# OneTBB
-if (WIN32)
-    set(ONETBB_PLATFORM win7-${NUGET_PACKAGE_PLATFORM})
-endif()
-set(ONETBB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0)
+# TBB
+set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0/)
+
+set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
+set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/)
+set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/)
 
 # AMD FidelityFX FSR2
 set(AMD_FSR2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FidelityFX.FSR2.DirectX11.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.2.1.1)
