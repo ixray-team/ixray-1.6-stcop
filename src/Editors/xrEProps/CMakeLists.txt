@@ -23,10 +23,9 @@ target_precompile_headers(xrEProps PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(xrEProps PRIVATE XREPROPS_EXPORTS)
 target_compile_definitions(xrEProps PRIVATE _WINDOWS)
-target_compile_definitions(xrEProps PRIVATE _USRDLL)
+target_compile_definitions(xrEProps PRIVATE _EDITOR)
 target_compile_definitions(xrEProps PUBLIC XR_EDITOR_NEW)
 
-add_compile_options(/fp:fast)
 target_compile_definitions(xrEProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list

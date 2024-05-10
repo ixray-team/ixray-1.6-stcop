@@ -11,7 +11,7 @@ add_subdirectory("dxerr")
 add_subdirectory("lzo")
 add_subdirectory("opcode")
 
-if(IXRAY_UTILS)
+if(IXRAY_UTILS OR IXRAY_EDITORS)
     add_subdirectory("MagicSoftware/FreeMagic/Source")
     set_target_properties(MagicFM PROPERTIES ${IXRAY_FOLDER_3RD})
 endif()

@@ -1,5 +1,6 @@
 set(IXRAY_FOLDER_EDITORS FOLDER "Editors/")
 set(IXRAY_FOLDER_EDITOR_CORE FOLDER "Editors/Core")
+set(IXRAY_FOLDER_EDITOR_EXCORE FOLDER "Editors/External")
 
 # Core libs 
 add_subdirectory("xrEUI")
@@ -21,3 +22,10 @@ set_target_properties(ParticlesEditor PROPERTIES ${IXRAY_FOLDER_EDITORS})
 set_target_properties(ActorEditor PROPERTIES ${IXRAY_FOLDER_EDITORS})
 set_target_properties(ShaderEditor PROPERTIES ${IXRAY_FOLDER_EDITORS})
 set_target_properties(LevelEditor PROPERTIES ${IXRAY_FOLDER_EDITORS})
+
+if (NOT IXRAY_UTILS)
+    set_target_properties(xrSE_Factory PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
+    set_target_properties(ETools PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
+    set_target_properties(xrDXT PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
+    set_target_properties(QSlim PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
+endif()

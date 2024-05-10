@@ -80,4 +80,6 @@ add_subdirectory("src/plugins")
 add_subdirectory("src/utils")
 
 # Editors
-add_subdirectory("src/Editors")
+if (IXRAY_EDITORS)
+    add_subdirectory("src/Editors")
+endif()

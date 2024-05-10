@@ -26,6 +26,13 @@ if(IXRAY_UTILS)
         add_subdirectory("mp_screenshots_info")
         add_subdirectory("mp_gpprof_server")
     endif()
+else() 
+    if (IXRAY_EDITORS)
+        add_subdirectory("xrSE_Factory")
+        add_subdirectory("ETools")
+        add_subdirectory("xrDXT")
+        add_subdirectory("xrQSlim")
+    endif()
 endif()
 
 # Setup properties
