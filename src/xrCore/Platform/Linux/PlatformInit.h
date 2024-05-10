@@ -14,6 +14,13 @@
 
 #include <linux/limits.h>
 
+#ifdef IXR_ARM64
+#	include <arm64_neon.h>
+#	include <sse2neon/sse2neon.h>
+#else
+#	include <xmmintrin.h>
+#endif
+
 #define __declspec(t)
 #define __forceinline inline
 #define _cdecl /* __attribute__((__cdecl__)) */
