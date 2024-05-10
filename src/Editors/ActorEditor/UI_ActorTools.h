@@ -194,6 +194,7 @@ protected:
 	void				RealUpdateProperties	();
 
 	void				PrepareLighting			();
+	bool				VerifyMotionRefs		();
 public:
 	EngineModel			m_RenderObject;
 	PreviewModel		m_PreviewObject;

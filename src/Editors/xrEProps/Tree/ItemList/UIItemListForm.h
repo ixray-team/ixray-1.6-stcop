@@ -20,7 +20,7 @@ public:
 	void                   ClearList();
 	void                   RemoveSelectItem();
 	void                   ClearSelected();
-	void                   SelectItem(const char* name);
+	void                   SelectItem(const char* name, bool ClearOld = true);
 	void                   AssignItems(ListItemsVec& items, const char* name_selection = nullptr, bool clear_Folder = true, bool save_selected = false);
 	IC const ListItemsVec& GetItems() const
 	{

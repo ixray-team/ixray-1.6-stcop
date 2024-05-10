@@ -247,6 +247,17 @@ void CActorTools::RealUpdateProperties()
 		appended_motions.clear();
 	}
 
+	auto Items = m_ObjectItems->m_SelectedItems;
+
+	if (!Items.empty())
+	{
+		m_ObjectItems->ClearSelected();
+
+		for (auto Item : Items)
+		{
+			m_ObjectItems->SelectItem(Item->Key(), false);
+		}
+	}
 }
 //------------------------------------------------------------------------------
 							   

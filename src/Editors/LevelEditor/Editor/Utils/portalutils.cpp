@@ -216,7 +216,7 @@ class sCollector
         }
         static int __cdecl compare( const void *arg1, const void *arg2 )
 		{
-        	return memcmp(arg1,arg2,2*2*4);
+            return memcmp(arg1, arg2, sizeof(s) + sizeof(v));
 		}
     };
    	struct sPortal

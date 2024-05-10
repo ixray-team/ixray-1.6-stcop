@@ -71,14 +71,20 @@ void UIItemListForm::ClearSelected()
 	}
 }
 
-void UIItemListForm::SelectItem(const char* name)
+void UIItemListForm::SelectItem(const char* name, bool ClearOld)
 {
 	if (name == nullptr)
 		return;
+
 	Node* N = SelectObject(&m_GeneralNode, name);
-	if (m_Flags.test(fMultiSelect))
+
+	if (ClearOld)
 	{
 		ClearSelectedItems();
+	}
+
+	if (m_Flags.test(fMultiSelect))
+	{
 		N->Object->selected = true;
 		if (N)
 			m_SelectedItems.push_back(N->Object);
@@ -89,7 +95,6 @@ void UIItemListForm::SelectItem(const char* name)
 	}
 	else
 	{
-		ClearSelectedItems();
 		if (N)
 			m_SelectedItems.push_back(N->Object);
 		if (!OnItemFocusedEvent.empty())

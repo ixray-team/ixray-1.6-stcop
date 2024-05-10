@@ -1374,3 +1374,24 @@ void CActorTools::PrepareLighting()
 	EDevice->SetLight(5, L);
 	EDevice->LightEnable(5, true);
 }
+
+bool CActorTools::VerifyMotionRefs()
+{
+	bool result = true;
+
+	if (m_pEditObject)
+	{
+		if (m_pEditObject->IsSkeleton() && !m_pEditObject->m_SMotionRefs.empty())
+		{
+			for (const shared_str& Path : m_pEditObject->m_SMotionRefs)
+			{
+				if (!FS.exist(_game_meshes_, Path.c_str()))
+				{
+					ELog.Msg(mtError, "! Can't find motion file '%s'.", Path.c_str());
+					result = false;
+				}
+			}
+		}
+	}
+	return result;
+}
