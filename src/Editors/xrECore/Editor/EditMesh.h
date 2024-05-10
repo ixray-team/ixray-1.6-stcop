@@ -274,6 +274,7 @@ protected:
 	u32*			m_SmoothGroups;		// |
     Fvector*		m_FaceNormals;	// |
     Fvector*		m_VertexNormals;	// | *3
+	Fvector*        m_Normals;    // | *3
     st_SVert*		m_SVertices;// | *3
     st_Face*	    m_Faces;    // + some array size!!!
     SurfFaces	    m_SurfFaces;

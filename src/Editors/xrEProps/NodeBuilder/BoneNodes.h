@@ -29,7 +29,17 @@ class CNodeShape :
 	bool FogCollider = true;
 	int Type = SBoneShape::stNone;
 
+	SBoneShape* ShapePtr = nullptr;
+
 public:
 	CNodeShape();
 	void Draw() override;
+
+	void SetShape(SBoneShape* Ptr);
+
+public:
+	inline bool operator==(const SBoneShape& Left)
+	{
+		return *ShapePtr == Left;
+	}
 };

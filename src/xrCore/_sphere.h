@@ -16,6 +16,13 @@ public:
 		rpOriginOutside	= 2,
 		fcv_forcedword = u32(-1)
 	};
+
+
+	bool operator==(const _sphere<T>& Left)
+	{
+		return P == Left.P && R == Left.R;
+	}
+
 	// Ray-sphere intersection
 	ICF ERP_Result intersect (const _vector3<T>& S, const _vector3<T>& D, T range, int& quantity, T afT[2]) const
 	{

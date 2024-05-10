@@ -9,11 +9,20 @@ public:
 	typedef _cylinder<T>Self;
 	typedef Self&		SelfRef;
 	typedef const Self&	SelfCRef;
+
 public:
 	_vector3<T>	m_center;
 	_vector3<T>	m_direction;
 	T			m_height;
 	T			m_radius;
+
+
+public:
+    IC bool operator==(SelfCRef Left)
+    {
+        return Left.m_center == m_center && Left.m_direction == m_direction && m_height == Left.m_height && m_radius == Left.m_radius;
+    }
+
 public:
 	IC SelfRef	invalidate	()	{ m_center.set(0,0,0); m_direction.set(0,0,0); m_height=0; m_radius=0; return *this; }
 	enum ecode { cyl_cap, cyl_wall, cyl_none };

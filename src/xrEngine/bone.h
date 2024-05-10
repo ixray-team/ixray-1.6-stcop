@@ -181,7 +181,25 @@ struct ECORE_API SBoneShape
   	Fobb			box;      	// 15*4
     Fsphere			sphere;		// 4*4
     Fcylinder		cylinder;	// 8*4
+
+	bool operator==(const SBoneShape& Left)
+	{
+		if (Left.type != type || Left.flags != flags)
+			return false;
+
+		switch (type)
+		{
+		case stBox:			return Left.box == box;
+		case stSphere:		return Left.sphere == sphere;
+		case stCylinder:	return Left.cylinder == cylinder;
+		default:			return false;
+		}
+
+		//return Left.type == type && Left.flags == flags && Left.box == box && Left.sphere == sphere && Left.cylinder == cylinder;
+	}
+
     SBoneShape		(){Reset();}
+
     void			Reset()
     {
 		flags.zero	();

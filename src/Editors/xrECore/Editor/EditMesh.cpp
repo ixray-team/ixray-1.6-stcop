@@ -31,7 +31,8 @@ void CEditableMesh::Construct()
     m_Adjs			= 0;
     m_Faces			= 0;
     m_FaceNormals	= 0;
-    m_VertexNormals	= 0;
+    m_VertexNormals	= 0;	
+	m_Normals		= 0;
     m_SVertices		= 0;
     m_SVertInfl		= 0;
     m_RenderBuffers	= 0;
@@ -55,6 +56,13 @@ void CEditableMesh::Clear()
 
     xr_free				(m_Vertices);
     xr_free				(m_Faces);
+	
+	if (m_Normals)
+	{
+		xr_free(m_Normals);
+		m_Normals = 0;
+	}
+
 	for (VMapIt vm_it=m_VMaps.begin(); vm_it!=m_VMaps.end(); vm_it++)
 		xr_delete		(*vm_it);
     m_VMaps.clear		();
@@ -118,7 +126,9 @@ BOOL CEditableMesh::m_bDraftMeshMode = FALSE;
 void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform)
 {
 	m_VNormalsRefs++;
-    if (m_VertexNormals)		return;
+    if (m_VertexNormals || m_Normals)
+		return;
+
 	m_VertexNormals				= xr_alloc<Fvector>(m_FaceCount*3);
 
 	// gen req    
@@ -308,16 +318,20 @@ void CEditableMesh::GenerateSVertices(u32 influence)
 	GenerateFNormals	();
 	GenerateVNormals	(0);
 
+
+	if (m_Normals)
+		Log("Export custom normals");
+
     for (u32 f_id=0; f_id<m_FaceCount; f_id++)
 	{
         st_Face& F 		= m_Faces[f_id];
 
         for (int k=0; k<3; ++k)
 		{
-	    	st_SVert& SV				= 	m_SVertices[f_id*3+k];
-	    	const Fvector&  N			= m_VertexNormals[f_id*3+k];
-            const st_FaceVert& fv 		= F.pv[k];
-	    	const Fvector&  P 			= m_Vertices[fv.pindex];
+	    	st_SVert& SV = 	m_SVertices[f_id*3+k];
+			const Fvector& N = m_Normals ? m_Normals[f_id * 3 + k] : m_VertexNormals[f_id * 3 + k];
+            const st_FaceVert& fv = F.pv[k];
+	    	const Fvector&  P = m_Vertices[fv.pindex];
 
             const st_VMapPtLst& vmpt_lst 	= m_VMRefs[fv.vmref];
 

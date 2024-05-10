@@ -279,7 +279,10 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
         if (0==split->m_CurrentPart) 
 			split->AppendPart(	(elapsed_faces>0xffff) ? 0xffff : elapsed_faces,
 								(elapsed_faces>0xffff) ? 0xffff : elapsed_faces);
-            
+
+        if (MESH->m_Normals)
+            Log("Export custom normals");
+
         do{
             for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); ++f_it)
 			{
@@ -307,7 +310,11 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
                         R_ASSERT2		(uv,"uv empty");
                         u32 norm_id 	= (*f_it)*3+k;
                         R_ASSERT2		(norm_id<MESH->GetFCount()*3,"Normal index out of range.");
-                        v[k].set		(MESH->m_Vertices[fv.pindex],MESH->m_VertexNormals[norm_id],*uv);
+
+                        if (MESH->m_Normals)
+                            v[k].set(MESH->m_Vertices[fv.pindex], MESH->m_Normals[norm_id], *uv);
+                        else
+                            v[k].set(MESH->m_Vertices[fv.pindex], MESH->m_VertexNormals[norm_id], *uv);
                     }   
                     --elapsed_faces;
                     if (!split->m_CurrentPart->add_face(v[0], v[1], v[2])) 		

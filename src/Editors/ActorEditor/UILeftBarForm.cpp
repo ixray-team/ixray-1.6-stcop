@@ -57,6 +57,12 @@ void UILeftBarForm::Draw()
 				UIBoneForm::Show(); 
 			}
 
+			ImGui::SameLine(0, 10);
+			if (ImGui::Button("Bone View")) 
+			{
+				ATools->BoneView->Show(true);
+			}
+
 			ImGui::Separator();
 			ImGui::Text("Animation:"); ImGui::SameLine();
 

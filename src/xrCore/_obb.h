@@ -47,6 +47,11 @@ public:
 	Tvector			m_translate;
 	Tvector			m_halfsize;
 
+	IC bool operator==(SelfCRef Left)
+	{
+		return Left.m_translate == m_translate && Left.m_rotate == m_rotate && Left.m_halfsize == m_halfsize;
+	}
+
 	IC SelfRef		invalidate() {
 		m_rotate.identity	();
 		m_translate.set		(0,0,0);

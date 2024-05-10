@@ -66,10 +66,11 @@ int INodeUnknown::GetContactLink(bool IsOut) const
 void INodeUnknown::DrawHeader()
 {
 	ImNodes::PushColorStyle(ImNodesCol_NodeBackground, Background);
+	ImNodes::PushColorStyle(ImNodesCol_TitleBar, Header);
 	ImNodes::BeginNode(NodeID);
 
 	ImNodes::BeginNodeTitleBar();
-	ImGui::TextUnformatted(NodeName.c_str());
+		ImGui::TextUnformatted(NodeName.c_str());
 	ImNodes::EndNodeTitleBar();
 
 	DrawLinks(true);
@@ -126,6 +127,7 @@ void INodeUnknown::DrawEnd()
 	DrawLinks(false);
 
 	ImNodes::EndNode();
+	ImNodes::PopColorStyle();
 	ImNodes::PopColorStyle();
 
 	int& Iterator = GetLinkDrawCounter();

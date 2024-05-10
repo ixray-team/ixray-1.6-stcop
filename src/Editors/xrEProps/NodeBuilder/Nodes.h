@@ -33,12 +33,14 @@ protected:
 
 	xr_vector<std::pair<int, int>> LinkStorage;
 
-	xr_vector<INodeUnknown*> Childs;
-
 	ImColor Background = { 32, 32, 32};
+	ImColor Header = { 32, 32, 132};
 	
 	bool WeStarted = false;
 	ImVec2 StartPostion = { 0, 0 };
+
+public:
+	xr_vector<INodeUnknown*> Childs;
 
 public:
 	INodeUnknown() = delete;

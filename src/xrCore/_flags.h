@@ -1,5 +1,4 @@
-#ifndef __FLAGS_H__
-#define __FLAGS_H__
+#pragma once
 
 template <class T>
 struct _flags {
@@ -10,6 +9,11 @@ public:
 	typedef const Self&	SelfCRef;
 public:
 	T 	flags;
+
+	//IC	bool	operator==(SelfCRef Left)
+	//{
+	//	return Left.flags == flags;
+	//}
 
     IC	TYPE	get		()									const	{ return flags;}
     IC	SelfRef	zero	()											{ flags=T(0);	return *this;	}
@@ -36,4 +40,5 @@ typedef _flags<u16>	Flags16;	typedef _flags<u16>	flags16;
 typedef _flags<u32>	Flags32;	typedef _flags<u32>	flags32;
 typedef _flags<u64>	Flags64;	typedef _flags<u64>	flags64;
 
-#endif //__FLAGS_H__
+template <class T>
+bool operator == (_flags<T> const& A, _flags<T>  const& B) { return A.flags == B.flags; }

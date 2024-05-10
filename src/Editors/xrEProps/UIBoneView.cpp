@@ -16,8 +16,11 @@ CUIBoneView::~CUIBoneView()
 
 void CUIBoneView::Draw()
 {
+	if (!IsOpen)
+		return;
+
 	int uniqueId = 1;
-	if (ImGui::Begin("Bones Node View"))
+	if (ImGui::Begin("Bones Node View", &IsOpen))
 	{
 		auto& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
@@ -47,6 +50,8 @@ void CUIBoneView::FillBones(const BoneVec& List)
 	if (List.empty())
 		return;
 
+	xr_vector <CNodeShape*> ShapeNodeList;
+
 	for (CBone* Bone : List)
 	{
 		CNodeBone* BoneNode = (CNodeBone*)Nodes.emplace_back(new CNodeBone(Bone->name.c_str()));
@@ -54,13 +59,31 @@ void CUIBoneView::FillBones(const BoneVec& List)
 
 		BonesData[Bone] = BoneNode;
 
+		CNodeShape* ShapeNode = nullptr;
 		auto& Shape = Bone->shape;
 
 		if (Shape.type == SBoneShape::EShapeType::stNone)
 			continue;
 
-		CNodeShape* ShapeNode = (CNodeShape*)Nodes.emplace_back(new CNodeShape());
+		for (auto ShapePtr : ShapeNodeList)
+		{
+			if (*ShapePtr == Shape)
+			{
+				ShapeNode = ShapePtr;
+				break;
+			}
+		}
+
+		if (ShapeNode == nullptr)
+		{
+			ShapeNode = (CNodeShape*)*Nodes.emplace(Nodes.begin(), new CNodeShape());
+			ShapeNode->SetShape(&Shape);
+
+			ShapeNodeList.push_back(ShapeNode);
+		}
+
 		BoneNode->AddChild(ShapeNode, ELinkType::eShape);
+
 	}
 
 	constexpr float NodeOffsetX = 200;
@@ -85,7 +108,12 @@ void CUIBoneView::FillBones(const BoneVec& List)
 		}
 	}
 
-	IterateChild(RootBone, { 250, 0 });
+	IterateChild(RootBone, { 350, 0 });
+}
+
+void CUIBoneView::Show(bool State)
+{
+	IsOpen = State;
 }
 
 float CUIBoneView::IterateChild(CBone* Bone, Fvector2 Offset)
@@ -97,13 +125,20 @@ float CUIBoneView::IterateChild(CBone* Bone, Fvector2 Offset)
 	{
 		BonesData[Child]->SetStartPos(NodeOffsetXIterator, NodeOffsetYIterator);
 
+		float ChildY = NodeOffsetYIterator + 150;
+		for (INodeUnknown* ChildNodePtr : BonesData[Child]->Childs)
+		{
+			ChildNodePtr->SetStartPos(NodeOffsetXIterator - 150, ChildY);
+			ChildY += 150;
+		}
+
 		if (Child->children.empty())
 		{
-			NodeOffsetYIterator += 250;
+			NodeOffsetYIterator += 350;
 		}
 		else
 		{
-			NodeOffsetYIterator = IterateChild(Child, { NodeOffsetXIterator + 250, NodeOffsetYIterator });
+			NodeOffsetYIterator = IterateChild(Child, { NodeOffsetXIterator + 350, NodeOffsetYIterator });
 		}
 	}
 

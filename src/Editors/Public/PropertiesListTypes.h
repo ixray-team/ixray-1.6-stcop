@@ -92,7 +92,7 @@ template <class T>
 class CustomValue: public PropValue
 {
 public:
-	typedef T			TYPE;
+	using TYPE = T;
 public:
 	TYPE				init_value;            
 	TYPE*				value;
@@ -112,7 +112,7 @@ public:
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText){return "";}
     virtual bool		Equal			(PropValue* val)
     {
-    	CustomValue<T>* prop = (CustomValue<T>*)val;
+    	CustomValue<TYPE>* prop = (CustomValue<TYPE>*)val;
         return (*value==*prop->value);
     }
     virtual const T&	GetValue		(){return *value; }
@@ -598,11 +598,8 @@ typedef FlagValue<Flags8>	Flag8Value;
 typedef FlagValue<Flags16>	Flag16Value;
 typedef FlagValue<Flags32>	Flag32Value;
 //------------------------------------------------------------------------------
-template <class T>
-bool operator == (_flags<T> const & A, _flags<T>  const & B){return A.flags==B.flags;}
-//------------------------------------------------------------------------------
-
-class TokenValueCustom{
+class TokenValueCustom
+{
 public:                                          
 	xr_token* 			token;
     					TokenValueCustom(xr_token* _token):token(_token){;}

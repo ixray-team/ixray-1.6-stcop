@@ -24,6 +24,7 @@
 #define EMESH_CHUNK_VMAPS_1		       	0x1011
 #define EMESH_CHUNK_VMAPS_2		       	0x1012
 #define EMESH_CHUNK_SG			       	0x1013
+#define EMESH_CHUNK_NORMALS             0x1014
 
 void CEditableMesh::SaveMesh(IWriter& F)
 {
@@ -56,6 +57,13 @@ void CEditableMesh::SaveMesh(IWriter& F)
         F.w				(GetSmoothGroups(), m_FaceCount*sizeof(u32));
         F.close_chunk  	();
     }
+	
+	if (m_Normals)
+	{
+		F.open_chunk(EMESH_CHUNK_NORMALS);
+		F.w(m_Normals, m_FaceCount * 3 * sizeof(Fvector));
+		F.close_chunk();
+	}
 
 	F.open_chunk	(EMESH_CHUNK_VMREFS);
 	F.w_u32			(m_VMRefs.size());
@@ -135,6 +143,14 @@ bool CEditableMesh::LoadMesh(IReader& F){
 	if (sg_chunk_size){
 		VERIFY			(m_FaceCount*sizeof(u32)==sg_chunk_size);
 		F.r				(m_SmoothGroups, m_FaceCount*sizeof(u32));
+	}
+
+	u32 normal_chunk_size = F.find_chunk(EMESH_CHUNK_NORMALS);
+	if (normal_chunk_size)
+	{
+		VERIFY(m_FaceCount * 3 * sizeof(Fvector) == normal_chunk_size);
+		m_Normals = xr_alloc<Fvector>(m_FaceCount * 3);
+		F.r(m_Normals, m_FaceCount * 3 * sizeof(Fvector));
 	}
 
     R_ASSERT(F.find_chunk(EMESH_CHUNK_VMREFS));

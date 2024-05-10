@@ -22,6 +22,12 @@ public:
         };
 		float m[3][3];					// Array
 	};
+
+    IC bool operator==(SelfCRef Left)
+    {
+        return Left.i == i && Left.j == j && Left.k == k;
+    }
+
 	// Class members
 	IC SelfRef set_rapid(const _matrix<T> &a) 
 	{
