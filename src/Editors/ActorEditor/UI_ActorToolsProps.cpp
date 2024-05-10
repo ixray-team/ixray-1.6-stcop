@@ -9,6 +9,8 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 {
     PropItemVec props;
     m_EditMode = emObject;
+    
+    m_Props->ClearProperties();
 
     // unselect
     if (m_pEditObject) {

@@ -22,6 +22,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     UIMainForm* MainForm = xr_new<UIMainForm>();
     ::MainForm = MainForm;
 
+    GameMaterialLibraryEditors->Load();
+
     FileOpen = new CUFileOpen;
     UI->Push(MainForm, false);
     UI->Push(FileOpen, false);
@@ -72,6 +74,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case SDL_EVENT_MOUSE_WHEEL:
                 pInput->MouseScroll(Event.wheel.y);
                 break;
+
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+            {
+                int mouse_button = 0;
+                if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
+                if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
+                if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+                if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                    pInput->MousePressed(mouse_button);
+                }
+                else {
+                    pInput->MouseReleased(mouse_button);
+                }
+            }
+            break;
             }
 
             if (!UI->ProcessEvent(&Event))

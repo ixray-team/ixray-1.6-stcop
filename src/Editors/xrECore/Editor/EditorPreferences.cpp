@@ -318,9 +318,10 @@ void CCustomPreferences::Save()
         JSONData["editor_prefs"][L.c_str()] = V.c_str();
     }
 
+    auto WndFlags = SDL_GetWindowFlags(g_AppInfo.Window);
 
     JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
-    JSONData["render"]["maximized"] = false;
+    JSONData["render"]["maximized"] = WndFlags & SDL_WINDOW_MAXIMIZED;
 
     JSONData["render"]["w"] = EDevice->dwRealWidth;
     JSONData["render"]["h"] = EDevice->dwRealHeight;

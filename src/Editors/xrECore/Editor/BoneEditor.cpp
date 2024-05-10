@@ -44,7 +44,7 @@ void SJointIKData::clamp_by_limits(Fvector& dest_xyz)
                 clamp(dest_xyz.z,limits[2].limit.x,limits[2].limit.y);		dest_xyz.x=0;
             break;
         */
-    }
+    } 
 }
 
 void CBone::ShapeScale(const Fvector& _amount)

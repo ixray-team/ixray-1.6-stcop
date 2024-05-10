@@ -44,6 +44,7 @@ void UILeftBarForm::Draw()
 		ImGui::TreePop();
 		
 	}
+	ImGui::Separator();
 	ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 	if (ImGui::TreeNode("Object Items"))
 	{
@@ -52,15 +53,17 @@ void UILeftBarForm::Draw()
 		ImGui::EndGroup();
 		ImGui::TreePop();
 	}
-	ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-	if (ImGui::TreeNode("Item Properties"))
+	ImGui::End();
+
+	if (ImGui::Begin("Item Properties", 0))
 	{
+		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		ImGui::BeginGroup();
 			ATools->m_Props->Draw();
 		ImGui::EndGroup();
-		ImGui::TreePop();
+
+		ImGui::End();
 	}
-	ImGui::End();
 }
 
 void UILeftBarForm::SetRenderMode(bool bEngineMode)

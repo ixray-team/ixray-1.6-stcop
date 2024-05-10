@@ -79,7 +79,7 @@ public:
 
     void 					RenderNearer	(float f_Near);
     void 					ResetNearer		();
-	bool 					Begin();
+	bool 					Begin			();
 	void 					End				();
 
 	void 					Initialize		(void);
@@ -123,8 +123,8 @@ public:
 	void 					InitTimer		();
 	// Mode control
 	virtual void	Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason) {}
-	virtual void PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input) {}
-	virtual void Clear() {}
+	virtual void	PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input) {}
+	virtual void	Clear();
 public:
     Shader_xrLC_LIB			ShaderXRLC;
 private:

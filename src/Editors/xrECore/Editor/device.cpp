@@ -114,7 +114,10 @@ void CEditorRenderDevice::Initialize()
 
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Width, &Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
-	SDL_MaximizeWindow(g_AppInfo.Window);
+
+	if (EPrefs->start_maximized)
+		SDL_MaximizeWindow(g_AppInfo.Window);
+	
 	SDL_ShowWindow(g_AppInfo.Window);
 //::ShowWindow(m_hWnd, EPrefs->start_maximized? SW_SHOWMAXIMIZED: SW_SHOWDEFAULT);
 }
@@ -155,6 +158,20 @@ void CEditorRenderDevice::InitTimer(){
 		Timer_MM_Delta			= time_system-time_local;
 	}
 }
+
+void CEditorRenderDevice::Clear()
+{
+	u32 ClearColor = 0x0;
+
+	if (EPrefs)
+	{
+		float color[3] = { color_get_B(EPrefs->scene_clear_color) / 255.f, color_get_G(EPrefs->scene_clear_color) / 255.f, color_get_R(EPrefs->scene_clear_color) / 255.f };
+		ClearColor = color_rgba_f(color[0], color[1], color[2], 1.f);
+	}
+
+	CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, ClearColor, 1, 0));
+}
+
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::RenderNearer(float n){
     mProject._43=m_fNearer-n;
@@ -332,6 +349,7 @@ void CEditorRenderDevice::Reset(bool)
 
 	Memory.mem_compact();
 	ResizeBuffers(dwRealWidth, dwRealHeight);
+	SDL_SetWindowSize(g_AppInfo.Window, dwRealWidth, dwRealHeight);
 
 	Resources->reset_end();
 	UI->ResetEnd(RDevice);
@@ -343,7 +361,9 @@ void CEditorRenderDevice::Reset(bool)
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
 
-bool CEditorRenderDevice::Begin	()
+
+
+bool CEditorRenderDevice::Begin()
 {
 	VERIFY(b_is_Ready);
 	mFullTransform_saved = mFullTransform;
@@ -351,31 +371,29 @@ bool CEditorRenderDevice::Begin	()
 	mView_saved = mView;
 	vCameraPosition_saved = vCameraPosition;
 	//HW.Validate		();
-	HRESULT	_hr		= REDevice->TestCooperativeLevel();
-    if (FAILED(_hr))
+	HRESULT	_hr = REDevice->TestCooperativeLevel();
+	if (FAILED(_hr))
 	{
 		// If the device was lost, do not render until we get it back
-		if		(D3DERR_DEVICELOST==_hr)		{
-			Sleep	(33);
+		if (D3DERR_DEVICELOST == _hr) {
+			Sleep(33);
 			return	FALSE;
 		}
 
 		// Check if the device is ready to be reset
-		if		(D3DERR_DEVICENOTRESET==_hr)
+		if (D3DERR_DEVICENOTRESET == _hr)
 		{
-			Reset	(false);
+			Reset(false);
 		}
 	}
 
-    VERIFY 					(FALSE==g_bRendering);
-	CHK_DX					(REDevice->BeginScene());
-	CHK_DX(REDevice->Clear(0,0,
-		D3DCLEAR_ZBUFFER|D3DCLEAR_TARGET|
-		(Caps.bStencil?D3DCLEAR_STENCIL:0),
-		EPrefs?EPrefs->scene_clear_color:0x0,1,0
-		));
-	RCache.OnFrameBegin		();
-	g_bRendering = 	TRUE;
+	VERIFY(FALSE == g_bRendering);
+	CHK_DX(REDevice->BeginScene());
+
+	Clear();
+
+	RCache.OnFrameBegin();
+	g_bRendering = TRUE;
 	return		TRUE;
 }
 

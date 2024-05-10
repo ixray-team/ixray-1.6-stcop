@@ -439,7 +439,7 @@ void TUI::Redraw()
                 RCache.set_RT(RT->pRT);
                 RCache.set_ZB(ZB->pRT);
 
-                CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, EPrefs ? EPrefs->scene_clear_color : 0xFFF, 1, 0));
+                EDevice->Clear();
 
                 //EDevice->Statistic->RenderDUMP_RT.Begin();
                 EDevice->UpdateView();
