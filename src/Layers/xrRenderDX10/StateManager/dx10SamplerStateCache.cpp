@@ -194,7 +194,9 @@ void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
 void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) {
 	clamp(mipMapLodBias, -3.0f, 3.0f);
 
-	mipMapLodBias += std::min(0.0f, log2(RCache.get_width() / RCache.get_target_width()) - 1.0f + EPS);
+	if (ps_r_scale_mode > 1) {
+		mipMapLodBias = std::min(0.0f, log2(RCache.get_width() / RCache.get_target_width()) - 1.0f + EPS);
+	}
 
 	if (m_mipLodBias == mipMapLodBias) {
 		return;
