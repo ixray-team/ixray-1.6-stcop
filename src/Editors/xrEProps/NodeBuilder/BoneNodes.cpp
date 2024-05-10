@@ -17,6 +17,8 @@ CNodeBone::CNodeBone(const char* Name) :
 
 void CNodeBone::Draw()
 {
+	INodeUnknown::Draw();
+
 	DrawHeader();
 
 	ImGui::Text("Name:");
@@ -70,6 +72,8 @@ CNodeShape::CNodeShape() :
 
 void CNodeShape::Draw()
 {
+	INodeUnknown::Draw();
+
 	DrawHeader();
 
 	ImGui::Checkbox("Pickable", &Pickable);

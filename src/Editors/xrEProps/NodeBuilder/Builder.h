@@ -13,6 +13,9 @@ protected:
 	xr_vector<INodeUnknown*> Nodes;
 	xr_vector<std::pair<int, int>> Links;
 
+public:
+	int LinkDrawCounter = 0;
+
 protected:
 	bool CanCreateLink(size_t LeftID, size_t RightID);
 

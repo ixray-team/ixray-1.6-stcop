@@ -2730,7 +2730,7 @@ namespace IMNODES_NAMESPACE
         }
     }
 
-    void SetNodeScreenSpacePos(const int node_id, const ImVec2& screen_space_pos)
+    IMGUI_API void SetNodeScreenSpacePos(const int node_id, const ImVec2& screen_space_pos)
     {
         ImNodesEditorContext& editor = EditorContextGet();
         ImNodeData& node = ObjectPoolFindOrCreateObject(editor.Nodes, node_id);

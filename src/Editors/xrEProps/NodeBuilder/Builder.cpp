@@ -12,6 +12,12 @@ void RegNode(size_t NodeID, ELinkType Type)
 	}
 }
 
+int& GetLinkDrawCounter()
+{
+	VERIFY(CurrentViewport);
+	return CurrentViewport->LinkDrawCounter;
+}
+
 bool CNodeViewport::CanCreateLink(size_t LinkID, size_t RightID)
 {
 	bool CheckLeft = LinksStorage.contains(LinkID);
@@ -41,6 +47,7 @@ CNodeViewport::~CNodeViewport()
 void CNodeViewport::Draw()
 {
 	CurrentViewport = this;
+	LinkDrawCounter = 0;
 
 	ImNodes::BeginNodeEditor();
 
@@ -49,12 +56,12 @@ void CNodeViewport::Draw()
 		Node->Draw();
 	}
 
-	for (int i = 0; i < Links.size(); ++i)
+	for (int i = 0; i < Links.size(); ++i, LinkDrawCounter++)
 	{
 		const std::pair<int, int>& p = Links[i];
 		// in this case, we just use the array index of the link
 		// as the unique identifier
-		ImNodes::Link(i, p.first, p.second);
+		ImNodes::Link(LinkDrawCounter, p.first, p.second);
 	}
 
 	ImNodes::MiniMap();

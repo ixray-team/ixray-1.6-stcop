@@ -339,7 +339,7 @@ namespace IMNODES_NAMESPACE
 
     // Use the following functions to get and set the node's coordinates in these coordinate systems.
 
-    void SetNodeScreenSpacePos(int node_id, const ImVec2& screen_space_pos);
+    IMGUI_API void SetNodeScreenSpacePos(int node_id, const ImVec2& screen_space_pos);
     void SetNodeEditorSpacePos(int node_id, const ImVec2& editor_space_pos);
     void SetNodeGridSpacePos(int node_id, const ImVec2& grid_pos);
 

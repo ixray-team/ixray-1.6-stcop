@@ -12,6 +12,7 @@ class CNodeBone:
 	Fvector3 MassPos = {};
 	Fvector3 Pos = {};
 	Fvector3 Rot = {};
+
 public:
 	CNodeBone(const char* Name);
 	void Draw() override;
