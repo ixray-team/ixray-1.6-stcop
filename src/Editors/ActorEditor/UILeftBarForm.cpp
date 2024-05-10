@@ -51,16 +51,19 @@ void UILeftBarForm::Draw()
 				UI->RedrawScene();
 			}
 
-			ImGui::SameLine(0, 10);
-			if (ImGui::Button("Bone Parts")) 
-			{
-				UIBoneForm::Show(); 
-			}
 
+			ImGui::Checkbox("Auto Smooth", &EPrefs->IsEdgeSmooth);
 			ImGui::SameLine(0, 10);
+
 			if (ImGui::Button("Bone View")) 
 			{
 				ATools->BoneView->Show(true);
+			}
+
+			ImGui::SameLine(0, 10);
+			if (ImGui::Button("Bone Parts"))
+			{
+				UIBoneForm::Show();
 			}
 
 			ImGui::Separator();
@@ -104,9 +107,8 @@ void UILeftBarForm::Draw()
 			ImGui::EndGroup();
 		//	ImGui::TreePop();
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 
 	if (ImGui::Begin("Item Properties", 0))
 	{

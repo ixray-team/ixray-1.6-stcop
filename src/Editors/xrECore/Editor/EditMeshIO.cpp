@@ -151,6 +151,12 @@ bool CEditableMesh::LoadMesh(IReader& F){
 		VERIFY(m_FaceCount * 3 * sizeof(Fvector) == normal_chunk_size);
 		m_Normals = xr_alloc<Fvector>(m_FaceCount * 3);
 		F.r(m_Normals, m_FaceCount * 3 * sizeof(Fvector));
+		
+		for (size_t i = 0; i < m_FaceCount * 3; i++)
+		{
+			m_Normals[i].x = -m_Normals[i].x;
+			m_Normals[i].z = -m_Normals[i].z;
+		}
 	}
 
     R_ASSERT(F.find_chunk(EMESH_CHUNK_VMREFS));

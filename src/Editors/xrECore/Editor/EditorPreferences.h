@@ -44,6 +44,8 @@ public:
     float			cam_fly_alt;
     float			cam_sens_rot;
     float			cam_sens_move;
+    bool            IsEdgeSmooth = true;
+
 	// tools mouse
     float			tools_sens_rot;
     float			tools_sens_move;

@@ -898,8 +898,13 @@ bool CActorTools::ExportCPP(LPCSTR name)
 		for (EditMeshIt m_it = meshes.begin(); m_it != meshes.end(); m_it++)
 		{
 			CEditableMesh* mesh = *m_it;
+			mesh->GenerateVNormals(0, true);
+
 			const st_Face* faces = mesh->GetFaces();
 			const Fvector* verts = mesh->GetVertices();
+			const Fvector* vnormals = mesh->GetVNormals();
+			const Fvector* normals = mesh->GetNormals();
+
 			sprintf(tmp, "MESH %s {", mesh->Name().c_str());
 			W->w_string(tmp);
 			sprintf(tmp, "\tVERTEX_COUNT %d", mesh->GetVCount());
@@ -917,6 +922,25 @@ bool CActorTools::ExportCPP(LPCSTR name)
 			for (u32 f_id = 0; f_id < mesh->GetFCount(); f_id++)
 			{
 				sprintf(tmp, "\t\t%-d,\t\t%-d,\t\t%-d,", faces[f_id].pv[0].pindex, faces[f_id].pv[1].pindex, faces[f_id].pv[2].pindex);
+				W->w_string(tmp);
+			}
+			W->w_string("\t}");
+
+			if (normals)
+			{
+				W->w_string("\tconst Fvector normals[FACE_COUNT*3] = {");
+				for (u32 n_id = 0; n_id < mesh->GetFCount() * 3; n_id++)
+				{
+					sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(normals[n_id]));
+					W->w_string(tmp);
+				}
+				W->w_string("\t}");
+			}
+
+			W->w_string("\tconst Fvector vnormals[FACE_COUNT*3] = {");
+			for (u32 vn_id = 0; vn_id < mesh->GetFCount() * 3; vn_id++)
+			{
+				sprintf(tmp, "\t\t{% 3.6f,\t% 3.6f,\t% 3.6f},", VPUSH(vnormals[vn_id]));
 				W->w_string(tmp);
 			}
 			W->w_string("\t}");

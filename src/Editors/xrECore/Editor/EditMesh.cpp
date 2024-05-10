@@ -123,60 +123,132 @@ void CEditableMesh::GenerateFNormals()
 }
 BOOL CEditableMesh::m_bDraftMeshMode = FALSE;
 
-void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform)
+void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform, bool force)
 {
 	m_VNormalsRefs++;
-    if (m_VertexNormals || m_Normals)
+	if ((m_VertexNormals || m_Normals) && !force)
 		return;
 
-	m_VertexNormals				= xr_alloc<Fvector>(m_FaceCount*3);
+	m_VertexNormals = xr_alloc<Fvector>(m_FaceCount * 3);
 
 	// gen req    
-	GenerateFNormals	();
-	GenerateAdjacency	();
+	GenerateFNormals();
+	GenerateAdjacency();
 
-	for (u32 f_i=0; f_i<m_FaceCount; f_i++ )
+	if (EPrefs->IsEdgeSmooth)
 	{
-			
-			for (int k=0; k<3; k++)
+		for (u32 f_i = 0; f_i < m_FaceCount; f_i++)
+		{
+			for (int k = 0; k < 3; k++)
 			{
-				Fvector& N 	= m_VertexNormals[f_i*3+k];
-				IntVec& a_lst=(*m_Adjs)[m_Faces[f_i].pv[k].pindex];
+				Fvector& N = m_VertexNormals[f_i * 3 + k];
+				IntVec& a_lst = (*m_Adjs)[m_Faces[f_i].pv[k].pindex];
 
-				IntIt face_adj_it = std::find( a_lst.begin(), a_lst.end(), f_i );
-				VERIFY( face_adj_it!=a_lst.end() );
-//
-				N.set	(m_FaceNormals[a_lst.front()]);
-                if(m_bDraftMeshMode)
-                  continue;
-                  
-				using  iterate_adj=  itterate_adjacents< itterate_adjacents_params_dynamic<st_FaceVert> >  ;
-				iterate_adj::recurse_tri_params p( N, m_SmoothGroups, m_FaceNormals, a_lst, m_Faces, m_FaceCount );
-				iterate_adj::RecurseTri( face_adj_it - a_lst.begin(), p );
-				float len 	= N.magnitude();
-				if (len>EPS_S)
+				IntIt face_adj_it = std::find(a_lst.begin(), a_lst.end(), f_i);
+				VERIFY(face_adj_it != a_lst.end());
+				//
+				N.set(m_FaceNormals[a_lst.front()]);
+				if (m_bDraftMeshMode)
+					continue;
+
+				using  iterate_adj = itterate_adjacents< itterate_adjacents_params_dynamic<st_FaceVert> >;
+				iterate_adj::recurse_tri_params p(N, m_SmoothGroups, m_FaceNormals, a_lst, m_Faces, m_FaceCount);
+				iterate_adj::RecurseTri(face_adj_it - a_lst.begin(), p);
+				float len = N.magnitude();
+				if (len > EPS_S)
 				{
-	                N.div	(len);
-                }else
+					N.div(len);
+				}
+				else
 				{
-//.                	Msg		("!Invalid smooth group found (Maya type). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]",m_Parent->GetName(),VPUSH(m_Vertices[m_Faces[f_i].pv[k].pindex]));
+					if (parent_xform)
+					{
+						Fvector p0;
+						parent_xform->transform_tiny(p0, m_Vertices[m_Faces[f_i].pv[k].pindex]);
+						Tools->m_DebugDraw.AppendPoint(p0, 0xffff0000, true, true, "invalid vNORMAL");
+					}
 
-					if(parent_xform)
-                    {
-					Fvector p0;
-                  	parent_xform->transform_tiny(p0, m_Vertices[m_Faces[f_i].pv[k].pindex]);
-                    Tools->m_DebugDraw.AppendPoint(p0, 0xffff0000, true, true, "invalid vNORMAL");
-                    }
-
-                    N.set	(m_FaceNormals[a_lst.front()]);
-                }
+					N.set(m_FaceNormals[a_lst.front()]);
+				}
 			}
+		}
+	}
+	else
+	{
+		if (m_Flags.is(flSGMask))
+		{
+			for (u32 f_i = 0; f_i < m_FaceCount; f_i++)
+			{
+				u32 sg = m_SmoothGroups[f_i];
+				Fvector& FN = m_FaceNormals[f_i];
+				for (int k = 0; k < 3; k++) {
+					Fvector& N = m_VertexNormals[f_i * 3 + k];
+					if (sg) {
+						N.set(0, 0, 0);
+						IntVec& a_lst = (*m_Adjs)[m_Faces[f_i].pv[k].pindex];
+						VERIFY(a_lst.size());
+						for (IntIt i_it = a_lst.begin(); i_it != a_lst.end(); i_it++)
+							if (sg & m_SmoothGroups[*i_it]) N.add(m_FaceNormals[*i_it]);
+						float len = N.magnitude();
+						if (len > EPS_S)
+						{
+							N.div(len);
+						}
+						else
+						{
+							Msg("!Invalid smooth group found (MAX type). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]", m_Parent->GetName(), VPUSH(m_Vertices[m_Faces[f_i].pv[k].pindex]));
+							N.set(m_FaceNormals[a_lst.front()]);
+						}
+					}
+					else
+					{
+						N.set(FN);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (u32 f_i = 0; f_i < m_FaceCount; f_i++)
+			{
+				u32 sg = m_SmoothGroups[f_i];
+				Fvector& FN = m_FaceNormals[f_i];
+				for (int k = 0; k < 3; k++)
+				{
+					Fvector& N = m_VertexNormals[f_i * 3 + k];
+					if (sg != -1)
+					{
+						N.set(0, 0, 0);
+						IntVec& a_lst = (*m_Adjs)[m_Faces[f_i].pv[k].pindex];
+						VERIFY(a_lst.size());
+						for (IntIt i_it = a_lst.begin(); i_it != a_lst.end(); i_it++)
+						{
+							if (sg != m_SmoothGroups[*i_it]) continue;
+							N.add(m_FaceNormals[*i_it]);
+						}
+						float len = N.magnitude();
+						if (len > EPS_S) {
+							N.div(len);
+						}
+						else
+						{
+							Msg("!Invalid smooth group found (Maya type). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]", m_Parent->GetName(), VPUSH(m_Vertices[m_Faces[f_i].pv[k].pindex]));
+							N.set(m_FaceNormals[a_lst.front()]);
+						}
+					}
+					else
+					{
+						N.set(FN);
+					}
+				}
+			}
+		}
 	}
 
-
-	UnloadFNormals		();
-    UnloadAdjacency		();
+	UnloadFNormals();
+	UnloadAdjacency();
 }
+
 /*
 void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform)
 {
