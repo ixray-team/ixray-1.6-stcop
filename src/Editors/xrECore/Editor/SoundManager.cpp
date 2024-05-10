@@ -421,8 +421,15 @@ void CSoundManager::ChangeFileAgeTo(FS_FileSet* tgt_map, int age)
 //------------------------------------------------------------------------------
 void CSoundManager::RefreshSounds(bool bSync)
 {
-    if (FS.can_write_to_alias(_sounds_)){
+    if (FS.can_write_to_alias(_sounds_))
+    {
         UI->SetStatus("Refresh sounds...");
+
+        string_path SoundDir = {};
+        FS.update_path(SoundDir, _sounds_, "");
+
+        FS.rescan_path(SoundDir, true);
+
         if (bSync){
             SynchronizeSounds	(true,true,false,0,0);
             CleanupSounds		();

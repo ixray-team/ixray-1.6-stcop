@@ -693,9 +693,19 @@ EImageThumbnail* CImageManager::CreateThumbnail(LPCSTR src_name, ECustomThumbnai
 //------------------------------------------------------------------------------
 void CImageManager::RefreshTextures(AStringVec* modif)
 {
-    if (FS.can_write_to_alias(_textures_)){
-        if (modif) EDevice->Resources->ED_UpdateTextures(modif);
-        else{
+    if (FS.can_write_to_alias(_textures_))
+    {
+        string_path ImageDir = {};
+        FS.update_path(ImageDir, _textures_, "");
+
+        FS.rescan_path(ImageDir, true);
+
+        if (modif)
+        {
+            EDevice->Resources->ED_UpdateTextures(modif);
+        }
+        else
+        {
             UI->SetStatus("Refresh textures...");
             AStringVec modif_files;
             ImageLib.SynchronizeTextures(true,true,false,0,&modif_files);

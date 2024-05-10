@@ -195,6 +195,10 @@ public:
 	// Render mode
 	virtual u32						memory_usage();
 
+	xr_string getShaderParams() { return ""; };
+	void addShaderOption(const char* name, const char* value) {};
+	void clearAllShaderOptions() {  }
+
 protected:
 	virtual	void					ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
 	HRESULT					shader_compile(

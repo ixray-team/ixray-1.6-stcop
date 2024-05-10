@@ -48,7 +48,7 @@ void CUIToolbar::Draw()
 		ImGui::SetNextWindowBgAlpha(0.4f);
 	}
 
-	if (ImGui::Begin("##ToolbarHor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar))
+	if (ImGui::Begin("##ToolbarHor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar))
 	{
 		bFocus = ImGui::IsWindowFocused();
 		constexpr ImVec2 SizeImg = { 14, 17 };
