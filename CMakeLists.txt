@@ -50,15 +50,15 @@ if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
 endif()
 
+# Download API from GitHub Releases
+include("cmake/github.cmake")
+
 # Configure NuGet
 if (WIN32)
     include("cmake/windows/nuget.cmake")
 else()
     include("cmake/linux/nuget.cmake")
 endif()
-
-# Download API from GitHub Releases
-include("cmake/github.cmake")
 
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)

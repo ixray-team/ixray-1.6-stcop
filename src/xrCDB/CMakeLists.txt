@@ -24,9 +24,6 @@ list(FILTER CDB_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
 # xrCDB project
 add_library(xrCDB SHARED ${CDB_SRC_FILES})
 target_include_directories(xrCDB PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-if (MSVC)
-    target_precompile_headers(xrCDB PRIVATE "stdafx.h")
-endif()
 
 # Project defines
 target_compile_definitions(xrCDB PRIVATE XRCDB_EXPORTS)

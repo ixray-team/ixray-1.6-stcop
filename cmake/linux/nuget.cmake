@@ -27,6 +27,9 @@ set(NUGET_PACKAGE_PLATFORM_EX x86_64)
 set(CORE_SDL3_PLATFORM linux-${NUGET_PACKAGE_PLATFORM})
 
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
+set(CORE_SDL3_LIB ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
+set(CORE_SDL3_BIN ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
+set(CORE_SDL3_NAME libSDL3.so.0)
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
@@ -56,7 +59,11 @@ set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
 # LuaJIT 
-set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
+set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/)
+
+set(LUAJIT_NAME libluajit.so)
+set(LUAJIT_LIB ${LUAJIT}runtimes/linux-x64/native/${LUAJIT_NAME})
+set(LUAJIT_BIN ${LUAJIT}runtimes/linux-x64/native/${LUAJIT_NAME})
 
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
@@ -68,5 +75,6 @@ set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.linux-x64.2024.3.26-open/)
 set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
 
-set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/linux-x64/native/Release/)
-set(IXR_TBB_BIN ${IXR_TBB_SDK})
+set(IXR_TBB_NAME libtbb.so.12.13)
+set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/linux-x64/native/Release/${IXR_TBB_NAME})
+set(IXR_TBB_BIN ${IXR_TBB_LIB})

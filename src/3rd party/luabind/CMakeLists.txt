@@ -32,7 +32,6 @@ target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
 
 ## LuaJIT
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT}native/bin/${NUGET_PACKAGE_PLATFORM}/Release/lua51.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${LUAJIT_NAME}
 )
-
-target_link_libraries(luabind PUBLIC ${LUAJIT}native/lib/${NUGET_PACKAGE_PLATFORM}/release/lua51.lib)
+target_link_libraries(luabind PUBLIC ${LUAJIT_LIB})

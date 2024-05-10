@@ -36,6 +36,10 @@ else()
 endif()
 
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
+set(CORE_SDL3_LIB ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
+
+set(CORE_SDL3_NAME SDL3.dll)
+set(CORE_SDL3_BIN ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/${CORE_SDL3_NAME})
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
@@ -65,7 +69,11 @@ set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
 # LuaJIT 
-set(LUAJIT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LuaJIT.2.1.0-beta3/)
+set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2023.8.23.1-open/)
+
+set(LUAJIT_NAME lua51.dll)
+set(LUAJIT_LIB ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/lua51.lib)
+set(LUAJIT_BIN ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/${LUAJIT_NAME})
 
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
@@ -77,8 +85,9 @@ set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0/)
 
 set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
-set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/)
-set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/)
+set(IXR_TBB_NAME tbb12.dll)
+set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
+set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/${IXR_TBB_NAME})
 
 # AMD FidelityFX FSR2
 set(AMD_FSR2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FidelityFX.FSR2.DirectX11.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.2.1.1)
