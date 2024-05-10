@@ -8,6 +8,7 @@
 #define stricmp strcasecmp
 #define _vsnprintf vsnprintf
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
+#define strlwr _strlwr
 
 inline const char* itoa(float val)
 {

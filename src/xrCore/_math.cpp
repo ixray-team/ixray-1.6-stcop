@@ -196,9 +196,10 @@ namespace CPU
 
 bool g_initialize_cpu_called = false;
 
-
+#ifdef IXR_WINDOWS
 using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
 static SetThreadDescriptionDesc SetThreadDescriptionProc;
+#endif
 
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 

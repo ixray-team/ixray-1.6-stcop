@@ -211,3 +211,17 @@ inline int _rmdir(const char *path)
     int result = rmdir(conv_fn);
     return result;
 }
+
+inline void _splitpath_s(
+    const char * path,
+    char * drive,
+    [[maybe_unused]] size_t driveNumberOfElements,
+    char * dir,
+    [[maybe_unused]] size_t dirNumberOfElements,
+    char * fname,
+    [[maybe_unused]] size_t nameNumberOfElements,
+    char * ext,
+    [[maybe_unused]] size_t extNumberOfElements)
+{
+    _splitpath(path, drive, dir, fname, ext);
+}

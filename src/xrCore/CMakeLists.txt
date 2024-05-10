@@ -172,8 +172,6 @@ endif()
 
 # Linker list
 target_link_libraries(xrCore PUBLIC lzo_static_lib)
-target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
-target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
 
 if (WIN32)
     if (NOT IXR_ARM_ENABLE)
@@ -182,6 +180,13 @@ if (WIN32)
 
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "winmm")
+    target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
+    target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/tbb12.lib")
+else()
+    target_link_libraries(xrCore PUBLIC "${IXR_TBB_LIB}/libtbb.so.12.13")
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
+    target_link_libraries(xrCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/discord.so)
 endif()
 
 target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
@@ -190,14 +195,10 @@ target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 include(gitver.cmake)
 
 # Copy SDK binaries
+if (WIN32)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN}tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
-
-# OneTBB
-target_include_directories(xrCore PUBLIC ${ONETBB}/build/native/include/)
-target_link_libraries(xrCore PUBLIC ${ONETBB}/runtimes/${ONETBB_PLATFORM}/native/Release/tbb12.lib)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ONETBB}/runtimes/${ONETBB_PLATFORM}/native/Release/tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+endif()

@@ -65,6 +65,7 @@
 #include <typeinfo>
 #include <algorithm>
 #include <limits>
+#include <regex>
 #include <vector>
 #include <queue>
 #include <stack>

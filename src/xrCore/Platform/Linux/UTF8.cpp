@@ -21,4 +21,9 @@ namespace Platform
 	{
 		return C;
 	}
+
+	XRCORE_API xr_string UTF8_to_CP1251(xr_string const& utf8)
+	{
+		return utf8;
+	}
 }

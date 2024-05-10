@@ -41,7 +41,7 @@ public:
 		B.count		+= count;
 		VERIFY		(B.count<NET_PacketSizeLimit);
 	}
-	IC void w_seek	(u32 pos, const void* p, u32 count);
+	void w_seek	(u32 pos, const void* p, u32 count);
 	IC u32	w_tell	()						{ return B.count; }
 
 	// read/write operators

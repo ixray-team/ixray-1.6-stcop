@@ -1133,7 +1133,8 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 				std::regex Pattern = std::regex(PatternString);
 				std::smatch MatchResult;
 
-				std::regex_search(InputString, MatchResult, Pattern);
+                                std::string searcher = InputString.c_str();
+				std::regex_search(searcher, MatchResult, Pattern);
 
 				if (MatchResult.begin() == MatchResult.end())
 				{
