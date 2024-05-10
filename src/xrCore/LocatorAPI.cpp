@@ -1526,6 +1526,7 @@ xr_string CLocatorAPI::fix_path(const xr_string& file)
 		}
 	}
 
+	xr_strlwr(TempPath);
 	return TempPath;
 }
 
@@ -1543,6 +1544,25 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
     files_it I		= m_files.find(desc_f);
 //	xr_free			(desc_f.name);
 	return			(I);
+}
+
+bool CLocatorAPI::TryLoad(const xr_string& File)
+{
+	bool Found = FS.exist(File.c_str());
+
+	if (!Found)
+	{
+		Found = std::filesystem::exists(File.c_str());
+
+		if (Found)
+		{
+			size_t FileSize = std::filesystem::file_size(File.c_str());
+			size_t FileModif = xr_chrono_to_time_t(std::filesystem::last_write_time(File.c_str()));
+			FS.Register(File.c_str(), 0xffffffff, 0, 0, FileSize, FileSize, FileModif);
+		}
+	}
+
+	return Found;
 }
 
 BOOL CLocatorAPI::dir_delete(LPCSTR path,LPCSTR nm,BOOL remove_files)

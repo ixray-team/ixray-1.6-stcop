@@ -226,12 +226,12 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 		m_MovedAmount.mul(m_MoveXVector, UI->m_MouseSM * UI->m_DeltaCpH.x);
 		m_MovedAmount.mad(m_MoveYVector, -UI->m_MouseSM * UI->m_DeltaCpH.y);
 
-		if (m_Settings.is(etfMSnap))
-		{
-			CHECK_SNAP(m_MoveReminder.x, m_MovedAmount.x, m_MoveSnap);
-			CHECK_SNAP(m_MoveReminder.y, m_MovedAmount.y, m_MoveSnap);
-			CHECK_SNAP(m_MoveReminder.z, m_MovedAmount.z, m_MoveSnap);
-		}
+		//if (m_Settings.is(etfMSnap))
+		//{
+		//	CHECK_SNAP(m_MoveReminder.x, m_MovedAmount.x, m_MoveSnap);
+		//	CHECK_SNAP(m_MoveReminder.y, m_MovedAmount.y, m_MoveSnap);
+		//	CHECK_SNAP(m_MoveReminder.z, m_MovedAmount.z, m_MoveSnap);
+		//}
 
 		if (!(etAxisX == m_Axis) && !(etAxisZX == m_Axis))
 			m_MovedAmount.x = 0.f;

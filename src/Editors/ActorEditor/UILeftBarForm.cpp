@@ -6,7 +6,7 @@ extern ECORE_API BOOL g_force32BitTransformQuant;
 UILeftBarForm::UILeftBarForm()
 {
 	m_RenderMode = Render_Editor;
-	m_PickMode = 0;
+	m_PickMode = 2;
 
 	if (g_force16BitTransformQuant)
 	{

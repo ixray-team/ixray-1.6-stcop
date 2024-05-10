@@ -681,6 +681,7 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
     	if (EFS.GetOpenName("$sbones$",fn))
         {
             fn = FS.fix_path(fn);
+            FS.TryLoad(fn);
 
         	IReader* R = FS.r_open(fn.c_str());
 	    	if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");

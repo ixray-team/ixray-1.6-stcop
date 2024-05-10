@@ -79,6 +79,11 @@ private:
 	bool						Recurse			(LPCSTR path);	
 
 	files_it					file_find_it	(LPCSTR n);
+
+public:
+	// Editor
+	bool TryLoad(const xr_string& File);
+
 public:
 	enum{
 		flNeedRescan			= (1<<0),

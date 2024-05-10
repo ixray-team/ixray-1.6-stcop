@@ -444,7 +444,7 @@ void TUI::Redraw()
 		{
 			if (psDeviceFlags.is(rsRenderRealTime))
 				m_Flags.set(flRedraw, TRUE);
-			if (m_Flags.is(flRedraw)||UI->IsPlayInEditor())
+			if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
 			{
 				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
@@ -460,7 +460,7 @@ void TUI::Redraw()
 				Tools->RenderEnvironment();
 
 				//. temporary reset filter (      )
-				for (u32 k = 0; k < Caps.raster.dwStages; k++) 
+				for (u32 k = 0; k < Caps.raster.dwStages; k++)
 				{
 					if (psDeviceFlags.is(rsFilterLinear)) {
 						EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
@@ -501,22 +501,23 @@ void TUI::Redraw()
 				{
 					g_pGamePersistent->OnRenderPPUI_main();
 				}
-				
+
 				RCache.set_RT(RSwapchainTarget);
 				RCache.set_ZB(RDepth);
 			}
 
 			try
 			{
-				
-			   EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+				ViewportFrameLines.clear();
+
+				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 				g_bRendering = FALSE;
-			   // 
-				//RCache.set_RT(RSwapchainTarget);
-				//  Draw(); 
-				  // end draw
+				// 
+				 //RCache.set_RT(RSwapchainTarget);
+				 //  Draw(); 
+				   // end draw
 				UI->BeginFrame();
-			   // UI->OnStats();
+				UI->OnStats();
 				Draw();
 
 				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
@@ -526,7 +527,6 @@ void TUI::Redraw()
 			catch (...) {
 				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
 			}
-
 		}
 	}catch(...){
 		ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
@@ -808,8 +808,43 @@ void TUI::RealResetUI()
 	}
 }
 
-void TUI::OnStats(CGameFont* font)
+void TUI::OnStats()
 {
+	auto& io = ImGui::GetIO();
+
+	DrawDebugString Str;
+	Str.Color = ImColor(0, 0, 0);
+	Str.Pos = { 15, 30 };
+
+	Str.Text.reserve(64);
+	sprintf(Str.Text.data(), "FPS: %.2f %.2gms", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
+	ViewportFrameLines.push_back(Str);
+
+	Str.Pos = { 15, 40 };
+
+	auto Mode = Tools->GetAction();
+	auto Axis = Tools->GetAxis();
+
+	switch (Mode)
+	{
+	case ETAction::etaAdd    : Str.Text = "Mode: Add"; break;
+	case ETAction::etaMove   : Str.Text = "Mode: Move"; break;
+	case ETAction::etaScale  : Str.Text = "Mode: Scale"; break;
+	case ETAction::etaSelect : Str.Text = "Mode: Select"; break;
+	case ETAction::etaRotate : Str.Text = "Mode: Rotate"; break;
+	default					 : Str.Text = "Mode: Select"; break;
+	}
+	 
+	switch (Axis)
+	{
+	case ETAxis::etAxisX : Str.Text += "[X]"; break;
+	case ETAxis::etAxisY : Str.Text += "[Y]"; break;
+	case ETAxis::etAxisZ : Str.Text += "[Z]"; break;
+	case ETAxis::etAxisZX: Str.Text += "[XZ]"; break;
+	default              : Str.Text += "[-]"; break;
+	}
+
+	ViewportFrameLines.push_back(Str);
 }
 
 void SPBItem::GetInfo			(xr_string& txt, float& p, float& m)

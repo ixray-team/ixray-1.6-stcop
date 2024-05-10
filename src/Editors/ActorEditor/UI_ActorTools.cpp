@@ -436,12 +436,13 @@ void CActorTools::ZoomObject(BOOL bSelOnly)
 
 bool CActorTools::Load(LPCSTR obj_name)
 {
-	xr_string 		full_name;
-	full_name = obj_name;
-
 	VERIFY(m_bReady);
 	CEditableObject* O = xr_new<CEditableObject>(obj_name);
-	if (FS.exist(full_name.c_str()) && O->Load(full_name.c_str())) 
+
+	xr_string Str = obj_name;
+	xr_strlwr(Str);
+
+	if (FS.TryLoad(Str) && O->Load(Str.c_str()))
 	{
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;

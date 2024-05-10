@@ -143,6 +143,16 @@ void UIRenderForm::Draw()
 			ImGui::TextColored(Color, Data.Text.c_str());
 		}
 
+		for (auto& Data : UI->ViewportFrameLines)
+		{
+			if (WndSize.x < Data.Pos.x || WndSize.y < Data.Pos.y)
+				continue;
+
+			ImColor Color = Data.Color;
+			ImGui::SetCursorPos(Data.Pos);
+			ImGui::TextColored(Color, Data.Text.c_str());
+		}
+
 	}
 	ImGui::End();
 }

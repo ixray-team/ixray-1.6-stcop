@@ -85,6 +85,7 @@ CCommandVar CActorTools::CommandImport(CCommandVar p1, CCommandVar p2)
 		{
 			xr_strlwr(temp_fn);
 			temp_fn = FS.fix_path(temp_fn);
+			FS.TryLoad(temp_fn);
 
 			if (!Tools->IfModified())
 				return;
@@ -498,7 +499,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 			if (!ATools->IfModified())
 				return;
 
-			if (!FS.exist(temp_fn.c_str()))
+			if (!FS.TryLoad(temp_fn))
 			{
 				Msg("#!Can't load file: %s", temp_fn.c_str());
 				return;
