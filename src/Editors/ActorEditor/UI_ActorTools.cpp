@@ -583,7 +583,7 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 	{
 	case etaSelect: 	break;
 	case etaAdd: 	break;
-    case etaMove:
+	case etaMove:
 	{
 		switch (m_EditMode)
 		{
@@ -965,9 +965,14 @@ bool CActorTools::ExportCPP(LPCSTR name)
 bool CActorTools::ExportDM(LPCSTR name)
 {
 	VERIFY(m_bReady);
-	if (m_pEditObject) {
-		EDetail DM;
-		if (!DM.Update(m_pEditObject->GetName())) return false;
+
+	if (m_pEditObject)
+	{
+		EDetail DM(false);
+
+		if (!DM.Update(m_pEditObject->GetName()))
+			return false;
+
 		DM.Export(name);
 		return true;
 	}
