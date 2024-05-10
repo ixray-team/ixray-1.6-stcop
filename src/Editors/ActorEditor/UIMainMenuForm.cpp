@@ -156,10 +156,10 @@ void UIMainMenuForm::Draw()
                 }
                 ImGui::Separator();
                 {
-                    bool selected = !HW.Caps.bForceGPU_SW;
+                    bool selected = !Caps.bForceGPU_SW;
                     if (ImGui::MenuItem("RenderHW", "", &selected))
                     {
-                        HW.Caps.bForceGPU_SW = !selected;
+                        Caps.bForceGPU_SW = !selected;
                         UI->Resize();
                     }
                 }

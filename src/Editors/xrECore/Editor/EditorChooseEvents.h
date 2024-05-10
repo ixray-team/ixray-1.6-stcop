@@ -404,15 +404,6 @@ namespace ChoseEvents
 
 void FillChooseEvents()
 {
-    {
-        ref_texture texture_null;
-        texture_null.create("ed\\ed_not_existing_texture");
-        texture_null->Load();
-        VERIFY(texture_null->surface_get());
-        texture_null->surface_get()->AddRef();
-        UIChooseForm::SetNullTexture(texture_null->surface_get());
-    }
-
     UIChooseForm::AppendEvents(smSoundSource, "Select Sound Source", ChoseEvents::FillSoundSource, ChoseEvents::SelectSoundSource, 0, ChoseEvents::CloseSoundSource, 0);
     UIChooseForm::AppendEvents(smSoundEnv, "Select Sound Environment", ChoseEvents::FillSoundEnv, 0, 0, 0, 0);
     UIChooseForm::AppendEvents(smObject, "Select Library Object", ChoseEvents::FillObject, ChoseEvents::SelectObject, ChoseEvents::UpdateObjectTHM, 0, 0);
@@ -434,6 +425,7 @@ void FillChooseEvents()
     UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, 0, 0, 0);
     choose_snd = xr_new<ref_sound>();
 }
+
 void ClearChooseEvents()
 {
 	UIChooseForm::ClearEvents	();

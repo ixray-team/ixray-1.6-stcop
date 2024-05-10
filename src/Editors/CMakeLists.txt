@@ -4,3 +4,4 @@ add_subdirectory("xrECore")
 
 # Main Editors
 add_subdirectory("ParticleEditor")
+add_subdirectory("ActorEditor")

@@ -114,7 +114,7 @@ void CEditorRenderDevice::Initialize()
 
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Width, &Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &PosX, &PosY);
-
+	SDL_MaximizeWindow(g_AppInfo.Window);
 	SDL_ShowWindow(g_AppInfo.Window);
 //::ShowWindow(m_hWnd, EPrefs->start_maximized? SW_SHOWMAXIMIZED: SW_SHOWDEFAULT);
 }
@@ -273,6 +273,10 @@ void CEditorRenderDevice::_Create(IReader* F)
     m_WireShader.create			("editor\\wire");
     m_SelectionShader.create	("editor\\selection");
 
+	texture_null.create("ed\\ed_not_existing_texture");
+	texture_null->Load();
+	UIChooseForm::SetNullTexture(texture_null->surface_get());
+
 	// signal another objects
     UI->OnDeviceCreate			();           
 //.	seqDevCreate.Process		(rp_DeviceCreate);
@@ -292,6 +296,7 @@ void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)
 
 	m_WireShader.destroy		();
 	m_SelectionShader.destroy	();
+	texture_null.destroy		();
 
 //.	seqDevDestroy.Process		(rp_DeviceDestroy);
 
@@ -308,28 +313,37 @@ void  CEditorRenderDevice::Resize(int w, int h, bool maximized)
 {
 	if (dwRealWidth == w && dwRealHeight == h)
 		return;
-    m_RenderArea	= w*h;
+
+	m_RenderArea = w * h;
 
 	dwRealWidth = w;
 	dwRealHeight = h;
 
-    Reset(false);
-    UI->RedrawScene	();
+	Reset(false);
+	UI->RedrawScene();
 }
 
-void CEditorRenderDevice::Reset  	(bool )
+void CEditorRenderDevice::Reset(bool)
 {
-    u32 tm_start			= TimerAsync();
-    Resources->reset_begin	();
-    Resources->DeferredUnload	();
+	u32 tm_start = TimerAsync();
+
+	UIChooseForm::SetNullTexture(nullptr);
+
+	Resources->reset_begin();
+	Resources->DeferredUnload();
 	UI->ResetBegin();
-    Memory.mem_compact		();
+
+	Memory.mem_compact();
 	ResizeBuffers(dwRealWidth, dwRealHeight);
-    Resources->reset_end	();
+
+	Resources->reset_end();
 	UI->ResetEnd(RDevice);
-    _SetupStates			();
-    u32 tm_end				= TimerAsync();
-    Msg						("*** RESET [%d ms]",tm_end-tm_start);
+	_SetupStates();
+
+	UIChooseForm::SetNullTexture(texture_null->pSurface);
+
+	u32 tm_end = TimerAsync();
+	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
 
 bool CEditorRenderDevice::Begin	()

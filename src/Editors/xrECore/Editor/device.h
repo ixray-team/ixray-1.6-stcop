@@ -45,6 +45,7 @@ public:
     ref_shader				m_WireShader;
     ref_shader				m_SelectionShader;
 
+	ref_texture				texture_null;
     Fmaterial				m_DefaultMat;
 public:
 	float RadiusRender;

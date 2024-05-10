@@ -139,7 +139,11 @@ public:
 	virtual void  DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel);
 	virtual void  DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
-	virtual void  DrawIndexedPrimitive	(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale=1.0f);
+    virtual void  DrawIndexedPrimitive(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f)
+#ifndef _EDITOR
+    {}
+#endif
+    ;
     virtual void  DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
     virtual void  DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
     virtual void  DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
@@ -151,4 +155,3 @@ public:
 extern ECORE_API CDrawUtilities DUImpl;
 //----------------------------------------------------
 #endif /*_INCDEF_D3DUtils_H_*/
-

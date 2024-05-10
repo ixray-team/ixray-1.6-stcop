@@ -218,6 +218,9 @@ void UIChooseForm::Draw()
 
 void UIChooseForm::SetNullTexture(ImTextureID Texture)
 {
+    if (NullTexture != nullptr)
+        NullTexture->Release();
+
     NullTexture = Texture;
 }
 void UIChooseForm::Update()

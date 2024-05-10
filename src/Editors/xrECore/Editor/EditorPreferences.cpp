@@ -245,8 +245,8 @@ void CCustomPreferences::Load(CInifile* I)
 
     start_w = R_U32_SAFE("render", "w", DisplayX);
     start_h = R_U32_SAFE("render", "h", DisplayY);
-    int x = R_U32_SAFE("render", "x", 0);
-    int y = R_U32_SAFE("render", "y", 0);
+    int x = R_U32_SAFE("render", "x", 50);
+    int y = R_U32_SAFE("render", "y", 50);
 
     SDL_SetWindowPosition(g_AppInfo.Window, x, y);
 

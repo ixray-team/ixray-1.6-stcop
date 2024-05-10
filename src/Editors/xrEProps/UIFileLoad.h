@@ -5,7 +5,7 @@ class XREPROPS_API CUFileOpen :
 	public XrUI
 {
 public:
-	using AfterLoadCallbackType = void(*)(const xr_string&);
+	using AfterLoadCallbackType = void(*)(xr_string);
 	AfterLoadCallbackType AfterLoadCallback = nullptr;
 
 public:

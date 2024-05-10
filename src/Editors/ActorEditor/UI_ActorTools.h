@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef UI_ActorToolsH
 #define UI_ActorToolsH
-#include "animation_motion.h"
+#include "../../Include/xrRender/animation_motion.h"
 // refs
 class UIPropertiesForm;
 class CEditableObject;

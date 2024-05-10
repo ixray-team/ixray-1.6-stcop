@@ -28,7 +28,6 @@ inline void not_implemented()
 #include "UINumericVectorForm.h"
 #include "Tree\Properties\UIPropertiesItem.h"
 #include "Tree\Properties\UIPropertiesForm.h"
-#include "Tree\ItemList\UIItemListFormItem.h"
 #include "Tree\ItemList\UIItemListForm.h"
 #include "Tree\Choose\UIChooseFormItem.h"
 #include "Tree\Choose\UIChooseForm.h"

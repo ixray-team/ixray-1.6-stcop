@@ -231,7 +231,12 @@ bool ImGui_ImplDX9_Init(IDirect3DDevice9* device)
 void ImGui_ImplDX9_Shutdown()
 {
     ImGui_ImplDX9_InvalidateDeviceObjects();
-    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
+
+    if (g_pd3dDevice)
+    {
+        auto RefCount = g_pd3dDevice->Release();
+        g_pd3dDevice = NULL;
+    }
 }
 
 static bool ImGui_ImplDX9_CreateFontsTexture()

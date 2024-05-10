@@ -29,7 +29,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     if (!IsDebuggerPresent()) Debug._initialize(false);
     const char* FSName = "fs.ltx";
 
+    CoInitialize(nullptr);
+
     Core._initialize("Patricle", ELogCallback, 1, FSName);
+
+    psDeviceFlags.set(rsFullscreen, false);
 
     Tools = xr_new<CParticleTool>();
     PTools = (CParticleTool*)Tools;
@@ -57,10 +61,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 case SDL_EVENT_WINDOW_RESIZED:
                    if (UI && REDevice)
                    {
-                       EDevice->dwRealWidth = Event.window.data1;
-                       EDevice->dwRealHeight = Event.window.data2;
+                       UI->Resize(Event.window.data1, Event.window.data2, true);
                        EPrefs->Save();
-                       //UI->Resize(Event.window.data1, Event.window.data2);
                    }
                     break;
                 case SDL_EVENT_WINDOW_SHOWN:
@@ -79,18 +81,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             if (!UI->ProcessEvent(&Event))
                 break;
         }
-       // UI->RedrawScene();
         MainForm->Frame();
-#if 0
-        UI->BeginFrame();
-        RDevice->SetRenderTarget(0, RSwapchainTarget);
-
-        UI->Draw();
-
-        BeginRender();
-        UI->EndFrame();
-        EndRender();
-#endif
     }
 
     xr_delete(MainForm);

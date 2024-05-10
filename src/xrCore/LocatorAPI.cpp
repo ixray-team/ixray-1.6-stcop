@@ -944,8 +944,8 @@ void CLocatorAPI::_destroy()
 
 const CLocatorAPI::file* CLocatorAPI::exist			(const char* fn)
 {
-	files_it it		= file_find_it(fn);
-	return (it!=m_files.end())?&(*it):0;
+	files_it it = file_find_it(fn);
+	return (it != m_files.end()) ? &(*it) : nullptr;
 }
 
 const CLocatorAPI::file* CLocatorAPI::exist			(const char* path, const char* name)
@@ -1511,6 +1511,22 @@ void	CLocatorAPI::w_close(IWriter* &S)
 			Register(fname, 0xffffffff, 0, 0, st.st_size, st.st_size, (u32)st.st_mtime);
 		}
     }
+}
+
+xr_string CLocatorAPI::fix_path(const xr_string& file)
+{
+	xr_string TempPath = file;
+	if (!exist(file.c_str()))
+	{
+		xr_string FSPath = get_path("$fs_root$")->m_Path;
+
+		if (TempPath.Contains(FSPath))
+		{
+			TempPath = TempPath.substr(FSPath.length());
+		}
+	}
+
+	return TempPath;
 }
 
 CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)

@@ -146,6 +146,8 @@ public:
 	IC IWriter*					w_open_ex			(LPCSTR N){return w_open_ex(0,N);}
 	void						w_close				(IWriter* &S);
 
+	xr_string					fix_path			(const xr_string& file);
+
 	const file*					exist				(LPCSTR N);
 	const file*					exist				(LPCSTR path, LPCSTR name);
 	const file*					exist				(string_path& fn, LPCSTR path, LPCSTR name);

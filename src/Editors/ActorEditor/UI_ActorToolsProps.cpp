@@ -1,8 +1,8 @@
 ﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
 #pragma hdrstop
-#include "..\..\XrRender\Private\KinematicAnimatedDefs.h"
-#include "SkeletonAnimated.h"
+#include "..\..\Layers\xrRender\KinematicAnimatedDefs.h"
+#include "..\..\Layers\xrRender\SkeletonAnimated.h"
 //------------------------------------------------------------------------------
 
 void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
@@ -87,7 +87,7 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
         case 1:
         { // import
             xr_string 		fname;
-            if(EFS.GetOpenName(EDevice->m_hWnd, _import_, fname, false))
+            if(EFS.GetOpenName(_import_, fname, false))
             {
                 CInifile ini( fname.c_str(), TRUE, TRUE, FALSE);
                 m_pEditObject->m_SMotionRefs.clear();
@@ -116,7 +116,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
     case 0:{ // append
         xr_string folder,nm,full_name;
         xr_string fnames;
-        if (EFS.GetOpenName(EDevice->m_hWnd, _smotion_,fnames,true)){
+        if (EFS.GetOpenName(_smotion_,fnames,true)){
             AStringVec lst;
             _SequenceToList(lst,fnames.c_str());
             bool bRes = false;
@@ -131,7 +131,8 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
     }break;
     case 1:{ // delete
     	ListItemsVec items;
-     if (m_ObjectItems->GetSelected(MOTIONS_PREFIX,items,true)){
+     if (m_ObjectItems->GetSelected(MOTIONS_PREFIX,items,true))
+     {
             if (ELog.DlgMsg(mtConfirmation,  mbYes |mbNo, "Delete selected %d item(s)?",items.size()) == mrYes){
             	for (ListItemsIt it=items.begin(); it!=items.end(); it++){
                 	VERIFY((*it)->m_Object);
@@ -280,7 +281,8 @@ void  CActorTools::OnCylinderAxisClick(ButtonValue* V, bool& bModif, bool& bSafe
 	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 }
 
-#include "envelope.h"
+#include "../../xrEngine/envelope.h"
+
 Fvector StartMotionPoint, EndMotionPoint;
 void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem* sender)
 {
@@ -294,16 +296,16 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
         if (MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
         {
             CKinematicsAnimated* V = PKinematicsAnimated(m_RenderObject.m_pVisual);
-            if (V) m_cnt = V->LL_CycleCount() + V->LL_FXCount();
+            if (V) m_cnt = xr_string::ToString(V->LL_CycleCount() + V->LL_FXCount());
         }
         else
         {
-            m_cnt = xr_string(m_pEditObject->SMotionCount()) + " (Inaccessible)";
+            m_cnt = xr_string::ToString(m_pEditObject->SMotionCount()) + " (Inaccessible)";
         }
     }
     else 
     {
-        m_cnt = m_pEditObject->SMotionCount();
+        m_cnt = xr_string::ToString(m_pEditObject->SMotionCount());
     }
                                             
     PHelper().CreateCaption			(items, PrepareKey(pref,"Global\\Motion count"),	m_cnt.c_str());
@@ -662,7 +664,8 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
     switch (V->btn_num){
     case 0:{ 
     	xr_string fn;
-    	if (EFS.GetOpenName(EDevice->m_hWnd, "$sbones$",fn)){
+    	if (EFS.GetOpenName("$sbones$",fn))
+        {
         	IReader* R = FS.r_open(fn.c_str());
 	    	if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");
             else                                    ELog.DlgMsg(mtError,"Failed to load bone data.");
@@ -671,9 +674,11 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
             bModif = false;
         }
     }break;
-    case 1:{ 
+    case 1:
+    { 
     	xr_string fn;
-    	if (EFS.GetSaveName("$sbones$",fn)){
+    	if (EFS.GetSaveName("$sbones$",fn))
+        {
         	IWriter* W = FS.w_open(fn.c_str());
             if (W){
 		    	m_pEditObject->SaveBoneData(*W);

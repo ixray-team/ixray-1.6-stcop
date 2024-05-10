@@ -20,7 +20,7 @@ void CActorTools::UndoSave()
 
 	UndoItem item;
 	item.m_FileName[0] = 0;
-	GetTempFileName( FS.get_path(_temp_)->m_Path, "undo",0, item.m_FileName );
+	GetTempFileNameA( FS.get_path(_temp_)->m_Path, "undo",0, item.m_FileName );
 
 	Save( item.m_FileName, true );
 	m_UndoStack.push_back( item );

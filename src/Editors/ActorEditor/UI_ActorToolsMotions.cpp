@@ -6,10 +6,10 @@
 #include "UI_ActorTools.h"
 #include "../xrECore/Editor/UI_Main.h"
 #include "../xrECore/Editor/EditObject.h"
-#include "motion.h"
-#include "bone.h"
-#include "SkeletonAnimated.h"
-#include "fmesh.h"
+#include "../../xrEngine/motion.h"
+#include "../../xrEngine/bone.h"
+#include "../../Layers/xrRender/SkeletonAnimated.h"
+#include "../../xrEngine/fmesh.h"
 #include "../xrEProps/folderlib.h"
 #include "../../xrphysics/physicsshell.h"
 //---------------------------------------------------------------------------
@@ -41,47 +41,40 @@ CMotion*	EngineModel::FindMotionKeys(LPCSTR name, u16 slot)
 
 void EngineModel::FillMotionList(LPCSTR pref, ListItemsVec& items, int modeID)
 {
-    LHelper().CreateItem			(items, pref,  modeID, 0);
-    if (IsRenderable()&& MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine){
-    	CKinematicsAnimated* SA		= PKinematicsAnimated(m_pVisual);
-		if (SA){
-            for (int k=SA->m_Motions.size()-1; k>=0; --k){
-            	xr_string slot_pref	= ATools->BuildMotionPref((u16)k,pref);
-			    LHelper().CreateItem(items, slot_pref.c_str(),  modeID, ListItem::flSorted);
-	            // cycles
-                accel_map::const_iterator I,E;
-                I = SA->m_Motions[k].motions.cycle()->begin(); 
-                E = SA->m_Motions[k].motions.cycle()->end();              
-                for ( ; I != E; ++I){
-                	shared_str tmp = PrepareKey(slot_pref.c_str(),*(*I).first);
-                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&MotionID((u16)k,I->second));
-            	}
+    LHelper().CreateItem(items, pref, modeID, 0);
+    if (IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine) 
+    {
+        CKinematicsAnimated* SA = PKinematicsAnimated(m_pVisual);
+        if (SA) {
+            for (int k = SA->m_Motions.size() - 1; k >= 0; --k) 
+            {
+                xr_string slot_pref = ATools->BuildMotionPref((u16)k, pref);
+                LHelper().CreateItem(items, slot_pref.c_str(), modeID, ListItem::flSorted);
+                // cycles
+                accel_map::const_iterator I, E;
+                I = SA->m_Motions[k].motions.cycle()->begin();
+                E = SA->m_Motions[k].motions.cycle()->end();
+
+                for (; I != E; ++I)
+                {
+                    shared_str tmp = PrepareKey(slot_pref.c_str(), *(*I).first);
+
+                    MotionID LocalMotion((u16)k, I->second);
+                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&LocalMotion);
+                }
                 // fxs
-                I = SA->m_Motions[k].motions.fx()->begin(); 
-                E = SA->m_Motions[k].motions.fx()->end(); 
-                for ( ; I != E; ++I){
-                	shared_str tmp = PrepareKey(slot_pref.c_str(),*(*I).first);
-                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&MotionID((u16)k,I->second));
+                I = SA->m_Motions[k].motions.fx()->begin();
+                E = SA->m_Motions[k].motions.fx()->end();
+                for (; I != E; ++I) 
+                {
+                    shared_str tmp = PrepareKey(slot_pref.c_str(), *(*I).first);
+                    MotionID LocalMotion((u16)k, I->second);
+                    LHelper().CreateItem(items, tmp.c_str(), modeID, 0, *(void**)&LocalMotion);
                 }
             }
         }
     }
 }
-/*
-void EngineModel::PlayCycle(LPCSTR name, int part, u16 slot)
-{
-    MotionID D = PKinematicsAnimated(m_pVisual)->ID_Motion(name,slot);
-    if (D.valid())
-        PKinematicsAnimated(m_pVisual)->LL_PlayCycle((u16)part,D,TRUE,0,0);
-}
-
-void EngineModel::PlayFX(LPCSTR name, float power, u16 slot)
-{
-    MotionID D = PKinematicsAnimated(m_pVisual)->ID_Motion(name,slot);
-    if (D.valid())
-    	PKinematicsAnimated(m_pVisual)->PlayFX(D,power);
-}
-*/
 
 void EngineModel::StopAnimation()
 {

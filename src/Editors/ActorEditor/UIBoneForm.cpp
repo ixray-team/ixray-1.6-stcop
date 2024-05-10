@@ -240,7 +240,7 @@ void UIBoneForm::SaveTo()
 void UIBoneForm::LoadFrom()
 {
 	xr_string temp_fn;
-	if (EFS.GetOpenName(EDevice->m_hWnd,_import_, temp_fn, false, NULL, 0))
+	if (EFS.GetOpenName(_import_, temp_fn, false, NULL, 0))
 	{
 		for (int k = 0; k < 4; k++) { m_List[k].clear(); m_Name[k][0] = 0; }
 		CInifile ini(temp_fn.c_str(), TRUE, TRUE, FALSE);

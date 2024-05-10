@@ -45,7 +45,7 @@ private:
 /*	virtual void DrawNode(Node* pNode);
 	virtual void DrawItem(Node* pNode);
 	virtual void DrawItem(const char*name,PropItem* Node);
-	virtual bool IsDrawFloder(Node* Node);
+	virtual bool IsDrawFolder(Node* Node);
 	virtual void DrawAfterFloderNode(bool is_open, Node* Node = 0);
 private:
 	

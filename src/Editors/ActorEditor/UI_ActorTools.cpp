@@ -3,11 +3,11 @@
 #include "stdafx.h"
 #pragma hdrstop
 #define dSINGLE
-#include "animation_blend.h"
+#include "../../Include/xrRender/animation_blend.h"
 #include "..\..\XrPhysics\Physics.h"
 #include "..\XrECore\Editor\EditMesh.h"
-#include "KinematicAnimatedDefs.h"
-#include "SkeletonAnimated.h"
+#include "../../Layers/xrRender/KinematicAnimatedDefs.h"
+#include "../../Layers/xrRender/SkeletonAnimated.h"
 CActorTools*	ATools=(CActorTools*)Tools;
 //------------------------------------------------------------------------------
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
@@ -164,7 +164,7 @@ CActorTools::~CActorTools()
 {
 }
 
-#include "igame_persistent.h"
+#include "../../xrEngine/IGame_Persistent.h"
 #include "..\xrECore\editor\d3dutils.h"
 
 const u32 color_bone_sel_color = 0xFFFFFFFF;
@@ -825,11 +825,16 @@ void CActorTools::ShowClipMaker()
 
 bool CActorTools::Import(LPCSTR initial, LPCSTR obj_name)
 {
-    string_path 	full_name;
+    string_path full_name;
+
     if (initial)
+    {
         FS.update_path(full_name, initial, obj_name);
+    }
     else
+    {
         strcpy(full_name, obj_name);
+    }
 
     VERIFY(m_bReady);
     CEditableObject* O = xr_new<CEditableObject>(obj_name);
@@ -1182,7 +1187,8 @@ void CActorTools::CreatePhysicsWorld()
     VERIFY(!os);
     VERIFY(!physics_world());
     os = create_object_space();
-    create_physics_world(false, os, 0, Device);
+
+    create_physics_world(false, os, 0);
 }
 
 void CActorTools::DestroyPhysicsWorld()

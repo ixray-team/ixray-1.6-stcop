@@ -485,20 +485,21 @@ void TUI::Redraw()
                 }
                 
                 RCache.set_RT(RSwapchainTarget);
-                //RCache.set_ZB(RDepth);
+                RCache.set_ZB(RDepth);
             }
 
             try
             {
                 
-                EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+               EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
                 g_bRendering = FALSE;
-                EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-                RCache.set_RT(RSwapchainTarget);
+               // 
+                //RCache.set_RT(RSwapchainTarget);
                 //  Draw(); 
                   // end draw
                 UI->BeginFrame();
                 Draw();
+                EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
                 UI->EndFrame();
                 EDevice->End();
             }

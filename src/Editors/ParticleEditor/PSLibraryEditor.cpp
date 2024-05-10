@@ -30,7 +30,7 @@ extern CUFileOpen* FileOpen;
 
 bool CPSLibrary::Save()
 {
-    FileOpen->AfterLoadCallback = [](const xr_string& filePathName)
+    FileOpen->AfterLoadCallback = [](xr_string filePathName)
     {
        RImplementation.PSLibrary.Save(filePathName.c_str());
     };

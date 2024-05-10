@@ -20,12 +20,6 @@
 #endif // ifdef _MSC_VER
 #endif // ifndef _WIN32_WINNT
 
-#ifdef __BORLANDC__
-	#include <vcl.h>
-	#include <mmsystem.h>
-	#include <stdint.h>
-#endif
-
 #define NOGDICAPMASKS
 #define NOMENUS
 #define NOICONS

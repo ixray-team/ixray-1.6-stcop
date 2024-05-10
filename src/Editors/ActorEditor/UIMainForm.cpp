@@ -7,7 +7,7 @@ UIMainForm::UIMainForm()
     EnableReceiveCommands();
     if (!ExecCommand(COMMAND_INITIALIZE, (u32)0, (u32)0)) 
     {
-        FlushLog();
+        xrLogger::FlushLog();
         exit(-1);
     }
     ExecCommand(COMMAND_UPDATE_GRID);

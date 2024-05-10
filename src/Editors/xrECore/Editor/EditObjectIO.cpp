@@ -72,7 +72,7 @@ bool CEditableObject::Save(const char* fname)
 
         m_LoadName 		= fname;
         m_ObjectVersion = (int)FS.get_file_age(fname); 
-		VERIFY3			(m_ObjectVersion>0,"Invalid file age:",fname);
+		//VERIFY3			(m_ObjectVersion>0,"Invalid file age:",fname);
         return			true;
     }else{
     	return 			false;

@@ -40,12 +40,11 @@ CCommandVar CParticleTool::CommandSaveXR(CCommandVar p1, CCommandVar p2)
 }
 
 #include "../xrEProps/UIFileLoad.h"
-using AfterLoadCallbackType = void(*)(const xr_string&);
-extern AfterLoadCallbackType AfterLoadCallback;
 extern CUFileOpen* FileOpen;
+
 CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
 {
-    FileOpen->AfterLoadCallback = [](const xr_string& filePathName)
+    FileOpen->AfterLoadCallback = [](xr_string filePathName)
     {
         if (!filePathName.empty())
         {
