@@ -1,4 +1,6 @@
 #pragma once
+#include "../xrECore/Editor/UIToolbar.h"
+
 class UIMainForm :public XrUI
 {
 public:
@@ -11,11 +13,13 @@ public:
 	IC UIKeyForm* GetKeyForm() { return m_KeyForm; }
 
 	IC UIRenderForm* GetRenderForm() { return m_Render; }
+
 private:
 	UITopBarForm *m_TopBar;
 	UIRenderForm* m_Render;
 	UIMainMenuForm* m_MainMenu;
 	UILeftBarForm* m_LeftBar;
 	UIKeyForm* m_KeyForm;
+	CUIToolbar* ToolBar = nullptr;
 };
 extern UIMainForm* MainForm;

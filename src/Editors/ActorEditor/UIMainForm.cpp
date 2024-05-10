@@ -12,7 +12,12 @@ UIMainForm::UIMainForm()
     }
     ExecCommand(COMMAND_UPDATE_GRID);
     ExecCommand(COMMAND_RENDER_FOCUS);
+
     FillChooseEvents();
+
+    ToolBar = new CUIToolbar();
+    ToolBar->OnCreate();
+
     m_TopBar = xr_new<UITopBarForm>();
     m_Render = xr_new<UIRenderForm>();
     m_MainMenu = xr_new<UIMainMenuForm>();
@@ -28,6 +33,8 @@ UIMainForm::~UIMainForm()
     xr_delete(m_MainMenu);
     xr_delete(m_Render);
     xr_delete(m_TopBar);
+    xr_delete(ToolBar);
+
     ExecCommand(COMMAND_DESTROY, (u32)0, (u32)0);
 }
 
@@ -39,6 +46,7 @@ void UIMainForm::Draw()
     m_KeyForm->Draw();
    // ImGui::ShowDemoWindow(&bOpen);
     m_Render->Draw();
+    ToolBar->Draw();
 }
 
 bool UIMainForm::Frame()

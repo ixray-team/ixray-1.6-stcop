@@ -243,9 +243,9 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 	break;
 	case etaRotate:
 	{
-		m_RotateAmount = -UI->m_DeltaCpH.x * UI->m_MouseSR;
-		if (m_Settings.is(etfASnap))
-			CHECK_SNAP(m_fRotateSnapValue, m_RotateAmount, m_RotateSnapAngle);
+		m_RotateAmount = -UI->m_DeltaCpH.x * UI->m_MouseSM;
+		//if (m_Settings.is(etfASnap))
+		//	CHECK_SNAP(m_fRotateSnapValue, m_RotateAmount, m_RotateSnapAngle);
 	}
 	break;
 	case etaScale:

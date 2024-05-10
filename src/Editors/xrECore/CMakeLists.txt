@@ -2,7 +2,8 @@ project(xrECore)
 
 # Files import
 file(GLOB_RECURSE ECORE_SOURCE_ALL_FILES CONFIGURE_DECORENDS
-    "*.*"
+    "*.h"
+    "*.cpp"
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_ENGINE_FILES CONFIGURE_DECORENDS
