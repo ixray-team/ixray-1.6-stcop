@@ -475,11 +475,11 @@ CCompressedReader::~CCompressedReader()
 CVirtualFileRW::CVirtualFileRW(const char *cFileName) 
 {
 	// Open the file
-	hSrcFile		= Platform::CreateFile(cFileName, true);
-	Size			= (int)Platform::GetFileSize(hSrcFile);
+	hSrcFile	= Platform::CreateFile(cFileName, true);
+	Size		= (int)Platform::GetFileSize(hSrcFile);
+	hSrcMap		= Platform::CreateMapData(hSrcFile, false);
 
 #ifdef IXR_WINDOWS
-	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READWRITE, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 #endif
 
@@ -510,15 +510,14 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 	// Open the file
     hSrcFile		= Platform::CreateFile(cFileName, false);
     Size			= (int)Platform::GetFileSize(hSrcFile);
-	if (Size == 0) {
+
+	if (Size == 0)
 		return;
-	}
+
+	hSrcMap = Platform::CreateMapData(hSrcFile, true);
 
 #ifdef IXR_WINDOWS
-	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
-#else
-	hSrcMap = hSrcFile;
 #endif
 
     data = (char*)Platform::MapFile(hSrcMap, Size, true);

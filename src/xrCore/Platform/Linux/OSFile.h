@@ -177,6 +177,11 @@ namespace Platform
         return file_info.st_size;
     }
 
+    IC FileHandle CreateMapData(FileHandle hSrcFile, [[maybe_unused]] bool ReadOnly = false)
+    {
+        return hSrcFile;
+    }
+
     IC void* MapFile(FileHandle hSrcFile, size_t Size, bool bRead = false, size_t Offset = 0)
     {
         auto flag = PROT_READ;

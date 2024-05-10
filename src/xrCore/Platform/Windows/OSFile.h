@@ -65,6 +65,12 @@ namespace Platform
         return ::GetFileSize(Src, NULL);
     }
 
+    IC void* CreateMapData(FileHandle hSrcFile, bool ReadOnly = false)
+    {
+        auto MapFlags = ReadOnly ? PAGE_READONLY : PAGE_READWRITE;
+        return CreateFileMapping(hSrcFile, 0, MapFlags, 0, 0, 0);
+    }
+
     IC void* MapFile(FileHandle hSrcFile, [[maybe_unused]] size_t Size, bool bRead = false, size_t Offset = 0)
     {
         return MapViewOfFile(hSrcFile, bRead ? FILE_MAP_READ: FILE_MAP_ALL_ACCESS, 0, (DWORD)Offset, 0);
