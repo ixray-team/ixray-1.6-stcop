@@ -378,7 +378,7 @@ CCommandVar 	CommandSoundEditor(CCommandVar p1, CCommandVar p2)
 CCommandVar 	CommandSyncSounds(CCommandVar p1, CCommandVar p2)
 {
    
-    if (ELog.DlgMsg(mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,"Are you sure to synchronize sounds?")==mrYes)
+    if (ELog.DlgMsg(mtConfirmation,1 << mbYes << mbNo,"Are you sure to synchronize sounds?")==mrYes)
         SndLib->RefreshSounds(true);
     return				TRUE;
 }
@@ -407,7 +407,7 @@ CCommandVar 	CommandCheckTextures(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar 	CommandRefreshTextures(CCommandVar p1, CCommandVar p2)
 {
-    if (ELog.DlgMsg(mtConfirmation,TMsgDlgButtons() << mbYes << mbNo,"Are you sure to synchronize textures?")==mrYes)
+    if (ELog.DlgMsg(mtConfirmation, 1 << mbYes << mbNo,"Are you sure to synchronize textures?")==mrYes)
         ImageLib.RefreshTextures(0);
     return				TRUE;
 }

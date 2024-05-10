@@ -1792,10 +1792,25 @@ void CLocatorAPI::check_pathes()
 
 BOOL CLocatorAPI::file_find(LPCSTR full_name, FS_File& f)
 {
-#pragma todo(FX: FIXME)
+	std::filesystem::path Path = full_name;
+	
+	if (!strchr(full_name, ':'))
 	{
-		return FALSE;
+		string_path FullPath = {};
+		FS.update_path(FullPath, "$fs_root$", full_name);
+		Path = FullPath;
 	}
+
+	if (std::filesystem::exists(Path))
+	{
+		f.name = full_name;
+		f.size = std::filesystem::file_size(Path);
+		f.time_write = xr_chrono_to_time_t(std::filesystem::last_write_time(Path));
+
+		return true;
+	}
+
+	return false;
 }
 
 BOOL CLocatorAPI::can_write_to_folder(LPCSTR path)

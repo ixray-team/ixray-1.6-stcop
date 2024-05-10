@@ -265,7 +265,13 @@ void UISoundEditorForm::PlaySound(LPCSTR name, u32& size, u32& time)
     FS_File F;
     if (FS.file_find(fname, F))
     {
-        m_Snd.create(name, st_Effect, sg_Undefined);
+        xr_string FileName = name;
+        if (FileName.Contains(".ogg"))
+        {
+            FileName += ".ogg";
+        }
+
+        m_Snd.create(FileName.c_str(), st_Effect, sg_Undefined);
         m_Snd.play(0, sm_2D);
         CSoundRender_Source* src = (CSoundRender_Source*)m_Snd._handle(); VERIFY(src);
         size = F.size;

@@ -240,7 +240,16 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
 	for (; it!=it_e; ++it)
     {
 	    BOOL bUpdated 			= FALSE;
+
+        string_path PathInitial = {};
+        FS.update_path(PathInitial, _sounds_, "");
+
         xr_string base_name		= EFS.ChangeFileExt(it->name,"");
+        if (base_name.Contains(PathInitial))
+        {
+            base_name = base_name.substr(strlen(PathInitial));
+        }
+
         xr_strlwr				(base_name);
         string_path				fn;
         FS.update_path			(fn,_sounds_,EFS.ChangeFileExt(base_name,".wav").c_str());
