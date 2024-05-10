@@ -86,7 +86,7 @@ void UIImageEditorForm::Update()
     {
         if (!Form->IsClosed())
         {
-            if (ImGui::BeginPopupModal("ImageEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize, true))
+            if (ImGui::BeginPopupModal("ImageEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize, true))
             {
                 Form->Draw();
                 ImGui::EndPopup();

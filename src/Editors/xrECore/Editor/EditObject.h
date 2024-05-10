@@ -503,7 +503,7 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	virtual IKinematicsAnimated* dcast_PKinematicsAnimated() 															{ VERIFY(false); return 0; }
 
 	// debug
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void						DebugRender			(Fmatrix& XFORM) 											{VERIFY(false);}
 	virtual shared_str	_BCL			getDebugName		() 															{return m_ModifName;}
 #endif

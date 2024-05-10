@@ -75,7 +75,9 @@ private:
 
 };
 
-class PreviewModel{
+class PreviewModel:
+    public XrUI
+{
     UIPropertiesForm*	m_Props;
     float			m_fSpeed;
     float			m_fSegment;
@@ -99,8 +101,9 @@ public:
     EScrollAxis		m_ScrollAxis;
 public:
                     PreviewModel		(){m_pObject=0;m_fSpeed=5.f;m_fSegment=50.f;m_Flags.zero();m_Props=0;m_vPosition.set(0,0,0);m_ScrollAxis=saZp;}
-    void			OnCreate			();
-    void			OnDestroy			();
+    virtual void	OnCreate			();
+    virtual void	OnDestroy			();
+    virtual void	Draw    			();
     void			Clear				();
     void			SelectObject		();
     void			SetPreferences		();

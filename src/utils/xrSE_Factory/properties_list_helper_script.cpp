@@ -13,7 +13,7 @@
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/exports/script_token_list.h"
 #include <luabind/out_value_policy.hpp>
-#include "../xrCore/ChooseTypesHelper.H"
+#include "../../Editors/xrEProps/ChooseTypesHelper.H"
 
 using namespace luabind;
 

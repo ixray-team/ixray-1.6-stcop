@@ -1,9 +1,10 @@
 #ifndef xrEPropsH
 #define xrEPropsH
 
-#	ifndef XREPROPS_API
-#		define XREPROPS_API __declspec(dllimport)
-#	endif
+#ifndef XREPROPS_API
+#	define XREPROPS_API __declspec(dllimport)
+#endif
+
 #include "PropertiesListTypes.h"
 #include "ItemListTypes.h"
 #include "xrEPropsTypes.h"

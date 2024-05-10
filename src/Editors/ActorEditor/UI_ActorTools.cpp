@@ -798,13 +798,16 @@ void CActorTools::GetStatTime(float& a, float& b, float& c)
 
 bool CActorTools::IsEngineMode()
 {
-    
     return MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine;
 }
 
 void CActorTools::SelectPreviewObject(bool bClear)
 {
-    if (bClear) { m_PreviewObject.Clear(); return; }
+    if (bClear)
+    {
+        m_PreviewObject.Clear(); return;
+    }
+    
     m_PreviewObject.SelectObject();
 }
 
@@ -1204,38 +1207,99 @@ bool CActorTools::GetSelectionPosition(Fmatrix& result)
     return true;
 }
 
-
+xr_token		sa_token[] = {
+    { "+Z",		PreviewModel::saZp	},
+    { "-Z",		PreviewModel::saZn	},
+    { "+X",		PreviewModel::saXp	},
+    { "-X",		PreviewModel::saXn	},
+    { 0,		0								}
+};
 
 void PreviewModel::OnCreate()
 {
-    
+    m_Props = new UIPropertiesForm;
 }
 
 void PreviewModel::OnDestroy()
 {
+    xr_delete(m_Props);
+}
+
+void PreviewModel::Draw()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 400));
+    if (!ImGui::Begin("Preview"))
+    {
+        ImGui::PopStyleVar();
+        ImGui::End();
+        return;
+    }
+    ImGui::PopStyleVar();
+
+    m_Props->Draw();
+
+    ImGui::End();
 }
 
 void PreviewModel::Clear()
 {
+    if (m_Props)
+        m_Props->ClearProperties();
 }
 
 void PreviewModel::SelectObject()
 {
+    UI->Push(this);
+#if 0
+    LPCSTR fn;
+    if (!TfrmChoseItem::SelectItem(smObject, fn, 1, m_LastObjectName.c_str())) return;
+    Lib.RemoveEditObject(m_pObject);
+    m_pObject = Lib.CreateEditObject(fn);
+    if (!m_pObject)	ELog.DlgMsg(mtError, "Object '%s' can't find in object library.", fn);
+    else			m_LastObjectName = fn;
+#endif
 }
 
 void PreviewModel::SetPreferences()
 {
+    PropItemVec items;
+    PHelper().CreateFlag32(items, "Scroll", &m_Flags, pmScroll);
+    PHelper().CreateFloat(items, "Speed (m/c)", &m_fSpeed, -10000.f, 10000.f, 0.01f, 2);
+    PHelper().CreateFloat(items, "Segment (m)", &m_fSegment, -10000.f, 10000.f, 0.01f, 2);
+    PHelper().CreateToken32(items, "Scroll axis", (u32*)&m_ScrollAxis, sa_token);
+    m_Props->AssignItems(items);
 }
 
 void PreviewModel::Render()
 {
+    if (m_pObject) 
+    {
+        float angle = 0.f;
+        switch (m_ScrollAxis) 
+        {
+        case saZp: angle = 0;		break;
+        case saZn: angle = PI;		break;
+        case saXp: angle = PI_DIV_2; break;
+        case saXn: angle = -PI_DIV_2; break;
+        default: THROW;
+        }
+
+        Fmatrix R, T;
+        R.rotateY(angle);
+        T.translate(m_vPosition);
+        T.mulA_43(R);
+        m_pObject->RenderSingle(T);
+    }
 }
 
 void PreviewModel::Update()
 {
+    if (m_Flags.is(pmScroll))
+    {
+        m_vPosition.z += m_fSpeed * EDevice->fTimeDelta;
+        if (m_vPosition.z > m_fSegment) m_vPosition.z -= m_fSegment;
+    }
 }
-
-
 
 void CActorTools::PrepareLighting()
 {

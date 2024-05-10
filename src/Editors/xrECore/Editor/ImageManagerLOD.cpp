@@ -128,8 +128,20 @@ BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 
     int U = iFloor(uv.x*float(surf->m_ImageData->w) + .5f);
     int V = iFloor(uv.y*float(surf->m_ImageData->h)+ .5f);
-    U %= surf->m_ImageData->w;	if (U<0) U+=surf->m_ImageData->w;
-    V %= surf->m_ImageData->h;	if (V<0) V+=surf->m_ImageData->h;
+
+    if (surf->m_ImageData->w != 0)
+    {
+        U %= surf->m_ImageData->w;
+        if (U < 0)
+            U += surf->m_ImageData->w;
+    }
+
+    if (surf->m_ImageData->h != 0)
+    {
+        V %= surf->m_ImageData->h;
+        if (V < 0)
+            V += surf->m_ImageData->h;
+    }
 
 /*    
 //	float filter_core[3][3]={{0.0125,0.0125,0.0125},{0.0125,0.9,0.0125},{0.0125,0.0125,0.0125}};
@@ -154,8 +166,14 @@ BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 //	if (0!=cnt)	C.div(cnt);
     color	= color_rgba(C.x,C.y,C.z,C.w);
 */
-	color = surf->m_ImageData->layers.back()[V*surf->m_ImageData->w+U];
-    alpha = color_get_A(color);
+    auto& Layer = surf->m_ImageData->layers.back();
+
+    if (!Layer.empty())
+    {
+        color = Layer[V * surf->m_ImageData->w + U];
+        alpha = color_get_A(color);
+    }
+
     return TRUE;
 }
 

@@ -73,6 +73,8 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
             xr_string 		fname;
             if(EFS.GetSaveName(_import_, fname))
             {
+                fname = FS.fix_path(fname);
+
                 CInifile ini( fname.c_str(), FALSE, FALSE, FALSE);
                 xr_vector<shared_str>::iterator it 		= m_pEditObject->m_SMotionRefs.begin();
                 xr_vector<shared_str>::iterator it_e 	= m_pEditObject->m_SMotionRefs.end();
@@ -88,9 +90,11 @@ void CActorTools::OnExportImportRefsClick(ButtonValue* V, bool& bModif, bool& bS
         }break;
         case 1:
         { // import
-            xr_string 		fname;
+            xr_string fname;
             if(EFS.GetOpenName(_import_, fname, false))
             {
+                fname = FS.fix_path(fname);
+
                 CInifile ini( fname.c_str(), TRUE, TRUE, FALSE);
                 m_pEditObject->m_SMotionRefs.clear();
 				CInifile::Sect& S = ini.r_section("refs");
@@ -115,21 +119,27 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	R_ASSERT(m_pEditObject);
     xr_string fn;
     switch (V->btn_num){
-    case 0:{ // append
-        xr_string folder,nm,full_name;
+    case 0: 
+    { 
+        // append
+        xr_string folder, nm, full_name;
         xr_string fnames;
-        if (EFS.GetOpenName(_smotion_,fnames,true)){
+        if (EFS.GetOpenName(_smotion_, fnames, true))
+        {
+            fnames = FS.fix_path(fnames);
+
             AStringVec lst;
-            _SequenceToList(lst,fnames.c_str());
+            _SequenceToList(lst, fnames.c_str());
             bool bRes = false;
-            for (AStringIt it=lst.begin(); it!=lst.end(); it++)
-                if (AppendMotion(it->c_str())) bRes=true;
-            ExecCommand	(COMMAND_UPDATE_PROPERTIES);
-			if (bRes)	OnMotionKeysModified();
-            else 		ELog.DlgMsg(mtError,"Append not completed.");
+            for (AStringIt it = lst.begin(); it != lst.end(); it++)
+                if (AppendMotion(it->c_str())) bRes = true;
+            ExecCommand(COMMAND_UPDATE_PROPERTIES);
+            if (bRes)	OnMotionKeysModified();
+            else 		ELog.DlgMsg(mtError, "Append not completed.");
             bModif = false;
-        }else
-        	bModif = false;
+        }
+        else
+            bModif = false;
     }break;
     case 1:{ // delete
     	ListItemsVec items;
@@ -668,6 +678,8 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
     	xr_string fn;
     	if (EFS.GetOpenName("$sbones$",fn))
         {
+            fn = FS.fix_path(fn);
+
         	IReader* R = FS.r_open(fn.c_str());
 	    	if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");
             else                                    ELog.DlgMsg(mtError,"Failed to load bone data.");

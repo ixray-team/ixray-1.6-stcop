@@ -45,10 +45,16 @@ using PropItemIt = PropItemVec::iterator;
 
 
 //------------------------------------------------------------------------------
+#ifdef _EDITOR
 #ifndef ImTextureID
 #include "..\xrEUI\stdafx.h"
 #endif
 #include "../xrEProps/ChooseTypes.H"
+#else
+#include "../xrEProps/ChooseTypesHelper.H"
+class UIPropertiesForm;
+class ChooseItemVec;
+#endif
 //------------------------------------------------------------------------------
 typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> 	TOnDrawTextEvent; 
 typedef fastdelegate::FastDelegate1<PropItem*> 					TOnClick;
@@ -419,7 +425,13 @@ public:
     //TOnDrawThumbnail	OnDrawThumbnailEvent;
     void*				m_FillParam;
 // utils
-    void				AppendChooseItem	(LPCSTR name, LPCSTR hint){VERIFY(m_Items); m_Items->push_back(SChooseItem(name,hint));}
+    void				AppendChooseItem	(LPCSTR name, LPCSTR hint)
+    {
+#ifdef _EDITOR
+        VERIFY(m_Items); 
+        m_Items->push_back(SChooseItem(name,hint));
+#endif
+}
 public:
 						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
 };

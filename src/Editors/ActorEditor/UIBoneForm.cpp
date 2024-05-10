@@ -242,24 +242,30 @@ void UIBoneForm::LoadFrom()
 	xr_string temp_fn;
 	if (EFS.GetOpenName(_import_, temp_fn, false, NULL, 0))
 	{
+		temp_fn = FS.fix_path(temp_fn);
+
 		for (int k = 0; k < 4; k++) { m_List[k].clear(); m_Name[k][0] = 0; }
 		CInifile ini(temp_fn.c_str(), TRUE, TRUE, FALSE);
 		string64		buff;
 		for (int i = 0; i < 4; ++i)
 		{
 			sprintf(buff, "part_%d", i);
-			xr_strcpy(m_Name[i], ini.r_string(buff, "partition_name"));
-			CInifile::Sect& S = ini.r_section(buff);
-			CInifile::SectCIt it = S.Data.begin();
-			CInifile::SectCIt e = S.Data.end();
-			for (; it != e; ++it)
+
+			xr_string Name = ini.r_string(buff, "partition_name");
+			if (!Name.empty())
 			{
-				if (0 != stricmp(it->first.c_str(), "partition_name"))
+				xr_strcpy(m_Name[i], Name.data());
+				CInifile::Sect& S = ini.r_section(buff);
+				CInifile::SectCIt it = S.Data.begin();
+				CInifile::SectCIt e = S.Data.end();
+				for (; it != e; ++it)
 				{
-					m_List[i].push_back(it->first);
+					if (0 != stricmp(it->first.c_str(), "partition_name"))
+					{
+						m_List[i].push_back(it->first);
+					}
 				}
 			}
-
 		}
 	}
 }

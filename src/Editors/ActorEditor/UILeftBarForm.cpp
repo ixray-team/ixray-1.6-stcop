@@ -38,7 +38,7 @@ void UILeftBarForm::Draw()
 			UI->RedrawScene();
 		}
 		ImGui::SameLine(0,10);
-		if (ImGui::Button("Clip Maker")) { UIBoneForm::Show(); }
+		if (ImGui::Button("Bone Parts")) { UIBoneForm::Show(); }
 		static const char* PickModeList[] = { "None","Surface","Bone" };
 		ImGui::Combo("Pick mode", &m_PickMode, PickModeList, 3, -1);
 		ImGui::TreePop();
