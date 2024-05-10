@@ -531,6 +531,10 @@ extern xr_string MakeFullBoneName(CBone* bone);
 bool  CActorTools::MouseStart(TShiftState Shift)
 {
 	inherited::MouseStart(Shift);
+
+	if (m_pEditObject == nullptr)
+		return false;
+
 	switch (m_Action) {
 	case etaSelect:
 		switch (MainForm->GetLeftBarForm()->GetPickMode())
@@ -571,6 +575,10 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 bool  CActorTools::MouseEnd(TShiftState Shift)
 {
 	inherited::MouseEnd(Shift);
+
+	if (m_pEditObject == nullptr)
+		return true;
+
 	switch (m_Action)
 	{
 	case etaSelect: 	break;
