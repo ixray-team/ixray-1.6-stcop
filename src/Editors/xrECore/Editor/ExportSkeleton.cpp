@@ -1033,7 +1033,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             Ct.mul			(0.5f);
             St.sub			(Bt,At);
             St.mul			(0.5f);
-            CKeyQR& R		= BM._keysQR[0];
+            
 
             bool bTransform16Bit = false;
             if(g_force16BitTransformQuant || St.magnitude()>1.5f)
@@ -1053,6 +1053,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 
                 if (g_force32BitTransformQuant)
                 {                    
+                    CKeyQR32& R = BM._keysQR32[0];
                     CKeyQR32& r = BM._keysQR32[t_idx];
                     if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
 
@@ -1064,6 +1065,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
                 }
                 else
                 {
+                    CKeyQR& R = BM._keysQR[0];
                     CKeyQR& r = BM._keysQR[t_idx];
                     if ((R.x != r.x) || (R.y != r.y) || (R.z != r.z) || (R.w != r.w)) r_present = TRUE;
 
