@@ -331,16 +331,12 @@ public:
 	float GetGameTime() { return fGameTime; }
 
 	// editor-related
-#ifdef _EDITOR
 public:
 	float					ed_from_time		;
 	float					ed_to_time			;
 public:
     void					ED_Reload			();
-#else // #ifdef _EDITOR
-
 	bool					m_paused;
-#endif // #ifdef _EDITOR
 
 	CInifile*				m_ambients_config;
 	CInifile*				m_sound_channels_config;

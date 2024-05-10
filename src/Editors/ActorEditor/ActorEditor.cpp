@@ -26,7 +26,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     UI->Push(MainForm, false);
     UI->Push(FileOpen, false);
 
-    while (true)
+    bool NeedExit = false;
+
+    while (!NeedExit)
     {
         SDL_Event Event;
         while (SDL_PollEvent(&Event))
@@ -34,13 +36,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             switch (Event.type)
             {
             case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-                return 0;
+                EPrefs->SaveConfig();
+                NeedExit = true;
+                break;
 
             case SDL_EVENT_WINDOW_RESIZED:
                 if (UI && REDevice)
                 {
                     UI->Resize(Event.window.data1, Event.window.data2, true);
-                    EPrefs->Save();
+                    EPrefs->SaveConfig();
                 }
                 break;
             case SDL_EVENT_WINDOW_SHOWN:

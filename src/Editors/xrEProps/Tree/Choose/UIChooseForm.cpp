@@ -422,7 +422,9 @@ void UIChooseForm::AppendEvents(u32 choose_ID, LPCSTR caption, TOnChooseFillItem
 
 void UIChooseForm::ClearEvents()
 {
-    NullTexture->Release();
+    if (NullTexture != nullptr)
+        NullTexture->Release();
+
     m_Events.clear();
 }
 

@@ -54,10 +54,10 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 
 	string256	name;
 
-#ifndef _EDITOR
+//#ifndef _EDITOR
 	// scripting
 	LS_Load					();
-#endif
+//#endif
 	IReader*	fs			= 0;
 	// Load constants
  	fs	 		  			= F->open_chunk	(0);

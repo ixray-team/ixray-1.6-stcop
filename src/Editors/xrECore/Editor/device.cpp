@@ -54,7 +54,7 @@ CEditorRenderDevice::CEditorRenderDevice()
     dwShadeMode		= D3DSHADE_GOURAUD;
 
     m_CurrentShader	= 0;
-    pSystemFont		= 0;
+    //pSystemFont		= 0;
 
 	fASPECT 		= 1.f;
 	fFOV 			= 60.f;
@@ -129,7 +129,7 @@ void CEditorRenderDevice::ShutDown()
 
 	// destroy context
 	Destroy				();
-	xr_delete			(pSystemFont);
+	//xr_delete			(pSystemFont);
 
 	//if (hPSGP)
 	//{
@@ -281,13 +281,13 @@ void CEditorRenderDevice::_Create(IReader* F)
     UI->OnDeviceCreate			();           
 //.	seqDevCreate.Process		(rp_DeviceCreate);
 
-	pSystemFont					= xr_new<CGameFont>("hud_font_small");
+	//pSystemFont					= xr_new<CGameFont>("hud_font_small");
 //	pSystemFont					= xr_new<CGameFont>("hud_font_medium");
 }
 
 void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)
 {
-	xr_delete					(pSystemFont);
+	//xr_delete					(pSystemFont);
 
 	b_is_Ready 						= FALSE;
     m_CurrentShader				= 0;
@@ -311,9 +311,6 @@ void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)
 //---------------------------------------------------------------------------
 void  CEditorRenderDevice::Resize(int w, int h, bool maximized)
 {
-	if (dwRealWidth == w && dwRealHeight == h)
-		return;
-
 	m_RenderArea = w * h;
 
 	dwRealWidth = w;

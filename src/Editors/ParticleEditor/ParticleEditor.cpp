@@ -62,7 +62,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                    if (UI && REDevice)
                    {
                        UI->Resize(Event.window.data1, Event.window.data2, true);
-                       EPrefs->Save();
+                       EPrefs->SaveConfig();
                    }
                     break;
                 case SDL_EVENT_WINDOW_SHOWN:

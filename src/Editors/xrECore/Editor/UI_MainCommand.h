@@ -141,8 +141,8 @@ ECORE_API void			    RegisterSubCommand 		(SECommand* cmd_impl, LPCSTR desc, CCo
 ECORE_API void			    EnableReceiveCommands	();
 ECORE_API ECommandVec&      GetEditorCommands		();
 ECORE_API SESubCommand* 	FindCommandByShortcut	(const xr_shortcut& val);
-ECORE_API BOOL				LoadShortcuts			(CInifile* ini);
-ECORE_API BOOL				SaveShortcuts			(CInifile* ini);
+ECORE_API BOOL				LoadShortcuts			(nlohmann::json&);
+ECORE_API BOOL				SaveShortcuts			(nlohmann::json&);
 ECORE_API BOOL				AllowLogCommands		();
 
 #define BIND_CMD_EVENT_S(a) 						TECommandEvent(a)

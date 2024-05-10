@@ -6,8 +6,8 @@ class CLevelPreferences: public CCustomPreferences
 	void 	OnEnabledChange		(PropValue* prop);
 	void 	OnReadonlyChange	(PropValue* prop);
 protected:
-    virtual void 	Load				(CInifile*);
-    virtual void 	Save				(CInifile*);
+    virtual void 	Load				();
+    virtual void 	Save				();
 public:
     virtual void	FillProp          	(PropItemVec& items);
 	bool OpenObjectList;

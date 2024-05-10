@@ -1,6 +1,15 @@
 #include "stdafx.h"
 #include "UIRenderForm.h"
 #include "ui_main.h"
+
+namespace ImGui
+{
+	XREUI_API ImFont* LightFont;
+	XREUI_API ImFont* RegularFont;
+	XREUI_API ImFont* MediumFont;
+	XREUI_API ImFont* BoldFont;
+}
+
 UIRenderForm::UIRenderForm()
 {
 	m_mouse_down = false;
@@ -15,8 +24,8 @@ UIRenderForm::~UIRenderForm()
 
 void UIRenderForm::Draw()
 {
+	ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-	ImGui::Begin("Render");
 	if (UI && UI->RT->pSurface)
 	{
 		int ShiftState = ssNone;
@@ -69,6 +78,8 @@ void UIRenderForm::Draw()
 		if(m_OnToolBar)
 			m_OnToolBar(canvas_size);
 
+		UI->ViewportPos = canvas_pos;
+
 		ImGui::SetCursorScreenPos(canvas_pos);
 		ImGui::InvisibleButton("canvas", canvas_size);
 
@@ -120,6 +131,17 @@ void UIRenderForm::Draw()
 			}
 		}
 
+		auto WndSize = ImGui::GetWindowSize();
+
+		for (auto& Data : UI->ViewportLines)
+		{
+			if (WndSize.x < Data.Pos.x || WndSize.y < Data.Pos.y)
+				continue;
+
+			ImColor Color = Data.Color;
+			ImGui::SetCursorPos(Data.Pos);
+			ImGui::TextColored(Color, Data.Text.c_str());
+		}
 
 	}
 	ImGui::End();

@@ -136,51 +136,61 @@ void	RegisterSubCommand(SECommand* cmd_impl, LPCSTR desc, CCommandVar p0, CComma
     VERIFY		(cmd_impl);
     cmd_impl->AppendSubCommand(desc,p0,p1);
 }
-BOOL	LoadShortcuts(CInifile* ini)
+
+BOOL LoadShortcuts(nlohmann::json& Data)
 {
-    for (u32 cmd_idx=0; cmd_idx<ECommands.size(); cmd_idx++){
-    	SECommand*& CMD		= ECommands[cmd_idx];
-        if (CMD&&CMD->editable){
-		    for (u32 sub_cmd_idx=0; sub_cmd_idx<CMD->sub_commands.size(); sub_cmd_idx++){
-            	SESubCommand*& SUB	 	= CMD->sub_commands[sub_cmd_idx];
-                string256 nm,tmp; 	
-                if (SUB->desc.size())	sprintf(nm,"%s.\"%s\"",CMD->Name(),SUB->desc.c_str());
-                else   					sprintf(nm,"%s",CMD->Name());
-                if (ini->line_exist("shortcuts",nm)){ 
-                	LPCSTR val			= ini->r_string("shortcuts",nm);
-                    int res 			= sscanf(val,"%d,%s",&SUB->shortcut.hotkey,tmp);
-                    if (2==res){
-                    	xr_string 		sp;
-                    	_GetItem		(tmp,0,sp);
-                        ParseParam		(sp,SUB->p0);
-                    	_GetItem		(tmp,1,sp);
-                        ParseParam		(sp,SUB->p1);
-                    }
+    for (u32 cmd_idx = 0; cmd_idx < ECommands.size(); cmd_idx++) 
+    {
+        SECommand*& CMD = ECommands[cmd_idx];
+
+        if (CMD && CMD->editable)
+        {
+            for (u32 sub_cmd_idx = 0; sub_cmd_idx < CMD->sub_commands.size(); sub_cmd_idx++)
+            {
+                SESubCommand*& SUB = CMD->sub_commands[sub_cmd_idx];
+                string256 nm, tmp;
+
+                if (SUB->desc.size())	sprintf(nm, "%s.\"%s\"", CMD->Name(), SUB->desc.c_str());
+                else   					sprintf(nm, "%s", CMD->Name());
+
+                std::string val = Data["shortcuts"][nm];
+                int res = sscanf(val.data(), "%d,%s", &SUB->shortcut.hotkey, tmp);
+
+                if (2 == res) 
+                {
+                    xr_string 		sp;
+                    _GetItem(tmp, 0, sp);
+                    ParseParam(sp, SUB->p0);
+                    _GetItem(tmp, 1, sp);
+                    ParseParam(sp, SUB->p1);
                 }
             }
         }
     }
-	return TRUE;
+    return TRUE;
 }
-BOOL	SaveShortcuts(CInifile* ini)
+
+BOOL SaveShortcuts(nlohmann::json& Data)
 {
-    for (u32 cmd_idx=0; cmd_idx<ECommands.size(); cmd_idx++){
-    	SECommand*& CMD		= ECommands[cmd_idx];
-        if (CMD&&CMD->editable){
-		    for (u32 sub_cmd_idx=0; sub_cmd_idx<CMD->sub_commands.size(); sub_cmd_idx++){
-            	SESubCommand*& SUB = CMD->sub_commands[sub_cmd_idx];
-                string256 nm,tmp; 	
-                if (SUB->desc.size())	sprintf(nm,"%s.\"%s\"",CMD->Name(),SUB->desc.c_str());
-                else   					sprintf(nm,"%s",CMD->Name());
-                if (SUB->p0.IsString()&&SUB->p1.IsString()) 		sprintf(tmp,"%d, \"%s\",\"%s\"",SUB->shortcut.hotkey,xr_string(SUB->p0).c_str(),xr_string(SUB->p1).c_str());
-                else if (SUB->p0.IsInteger()&&SUB->p1.IsInteger())	sprintf(tmp,"%d, %d,%d",		SUB->shortcut.hotkey,u32(SUB->p0),u32(SUB->p1));
-                else if (SUB->p0.IsInteger()&&SUB->p1.IsString()) 	sprintf(tmp,"%d, %d,\"%s\"",	SUB->shortcut.hotkey,u32(SUB->p0),xr_string(SUB->p1).c_str());
-                else if (SUB->p0.IsString()&&SUB->p1.IsInteger()) 	sprintf(tmp,"%d, \"%s\",%d",	SUB->shortcut.hotkey,xr_string(SUB->p0).c_str(),u32(SUB->p1));
-                ini->w_string	("shortcuts",nm,tmp);
+    for (u32 cmd_idx = 0; cmd_idx < ECommands.size(); cmd_idx++) 
+    {
+        SECommand*& CMD = ECommands[cmd_idx];
+        if (CMD && CMD->editable) {
+            for (u32 sub_cmd_idx = 0; sub_cmd_idx < CMD->sub_commands.size(); sub_cmd_idx++) 
+            {
+                SESubCommand*& SUB = CMD->sub_commands[sub_cmd_idx];
+                string256 nm, tmp;
+                if (SUB->desc.size())	sprintf(nm, "%s.\"%s\"", CMD->Name(), SUB->desc.c_str());
+                else   					sprintf(nm, "%s", CMD->Name());
+                if (SUB->p0.IsString() && SUB->p1.IsString()) 		sprintf(tmp, "%d, \"%s\",\"%s\"", SUB->shortcut.hotkey, xr_string(SUB->p0).c_str(), xr_string(SUB->p1).c_str());
+                else if (SUB->p0.IsInteger() && SUB->p1.IsInteger())	sprintf(tmp, "%d, %d,%d", SUB->shortcut.hotkey, u32(SUB->p0), u32(SUB->p1));
+                else if (SUB->p0.IsInteger() && SUB->p1.IsString()) 	sprintf(tmp, "%d, %d,\"%s\"", SUB->shortcut.hotkey, u32(SUB->p0), xr_string(SUB->p1).c_str());
+                else if (SUB->p0.IsString() && SUB->p1.IsInteger()) 	sprintf(tmp, "%d, \"%s\",%d", SUB->shortcut.hotkey, xr_string(SUB->p0).c_str(), u32(SUB->p1));
+                Data["shortcuts"][nm] = tmp;
             }
         }
     }
-	return TRUE;
+    return TRUE;
 }
 void	ClearCommands()
 {
@@ -268,7 +278,8 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
             if (Tools->OnCreate())
             {
                 if(EPrefs)
-                    EPrefs->Load();
+                    EPrefs->LoadConfig();
+
                 EDevice->seqAppStart.Process(rp_AppStart);
                 ExecCommand(COMMAND_RESTORE_UI_BAR);
                 ExecCommand(COMMAND_REFRESH_UI_BAR);

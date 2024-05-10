@@ -18,26 +18,25 @@ static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
 	string_path FullPath;
 	FS.update_path(FullPath, _game_fonts_, Font);
 	ImFontConfig FontConfig = {};
-	FontConfig.OversampleH = 2;
+	FontConfig.OversampleH = 3;
 
 	if (FS.exist(FullPath))
 	{
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		R_ASSERT(FontHandle);
 	}
 }
 
 namespace ImGui
 {
-	ImFont* LightFont = nullptr;
-	ImFont* RegularFont = nullptr;
-	ImFont* MediumFont = nullptr;
-	ImFont* BoldFont = nullptr;
+	XREUI_API ImFont* LightFont = nullptr;
+	XREUI_API ImFont* RegularFont = nullptr;
+	XREUI_API ImFont* MediumFont = nullptr;
+	XREUI_API ImFont* BoldFont = nullptr;
 }
 
 void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* ini_path)
 {
-#if 1
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
@@ -46,6 +45,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	xr_strcpy(m_name_ini, ini_path);
 	io.IniFilename = m_name_ini;
 	io.ConfigWindowsMoveFromTitleBarOnly = true;
+#if 1
 
 	ImGuiStyle& Style = ImGui::GetStyle();
 	Style.WindowPadding.x = 8;
@@ -123,9 +123,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-	ImFontConfig FontConfig = {};
-	FontConfig.OversampleH = 2;
-
+#endif
 	LoadImGuiFont(ImGui::RegularFont, "RobotoMono.ttf");
 	LoadImGuiFont(ImGui::LightFont, "RobotoMono-Light.ttf");
 	LoadImGuiFont(ImGui::MediumFont, "RobotoMono-Medium.ttf");
@@ -136,7 +134,6 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	//ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window);
 	ImGui_ImplDX9_Init(device);
-#endif
 }
 
 void XrUIManager::Destroy()

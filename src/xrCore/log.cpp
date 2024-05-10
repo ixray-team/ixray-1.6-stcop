@@ -142,7 +142,7 @@ void xrLogger::RemoveLogCallback(LogCallback logCb)
 
 void xrLogger::InternalCloseLog()
 {
-	while(!logData->empty()) {
+	while(!logData->empty() && hLogThread != nullptr) {
 		Sleep(1u);
 	}
 

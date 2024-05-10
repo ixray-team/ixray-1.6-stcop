@@ -20,7 +20,17 @@
 #include "UILogForm.h"
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
-TUI* 	UI			= 0;
+
+
+namespace ImGui
+{
+    XREUI_API ImFont* LightFont;
+    XREUI_API ImFont* RegularFont;
+    XREUI_API ImFont* MediumFont;
+    XREUI_API ImFont* BoldFont;
+}
+
+TUI* UI = nullptr;
 
 TUI::TUI()
 {
@@ -424,7 +434,7 @@ void TUI::Redraw()
                 m_Flags.set(flRedraw, TRUE);
             if (m_Flags.is(flRedraw)||UI->IsPlayInEditor())
             {
-               
+                ViewportLines.clear();
                 m_Flags.set(flRedraw, FALSE);
                 RCache.set_RT(RT->pRT);
                 RCache.set_ZB(ZB->pRT);
@@ -474,10 +484,6 @@ void TUI::Redraw()
 
                 //EDevice->Statistic->RenderDUMP_RT.End();
                 //->EStatistic->Show(EDevice->pSystemFont);
-                UI->OnStats(EDevice->pSystemFont);
-                EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-                EDevice->pSystemFont->OnRender();
-                EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
                 EDevice->seqRender.Process(rp_Render);
                 if (g_pGamePersistent->OnRenderPPUI_query())
                 {
@@ -498,7 +504,9 @@ void TUI::Redraw()
                 //  Draw(); 
                   // end draw
                 UI->BeginFrame();
+               // UI->OnStats();
                 Draw();
+
                 EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
                 UI->EndFrame();
                 EDevice->End();

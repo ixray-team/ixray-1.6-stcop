@@ -64,8 +64,6 @@ public:
 	CResourceManager*		Resources;	  
 	//CEStats*				EStatistic;
 
-	CGameFont* 				pSystemFont;
-
 public:
 							CEditorRenderDevice 	();
     virtual 				~CEditorRenderDevice	();

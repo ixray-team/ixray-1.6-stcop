@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef UI_MainH
 #define UI_MainH
+#include <json/json.hpp>
 
 #include "UI_MainCommand.h"
 #include "../../xrEngine/IInputReceiver.h"
@@ -122,6 +123,16 @@ protected:
     void			RealResize		();
     void			OnFrame			();
 public:
+    struct DrawDebugString
+    {
+        ImVec2 Pos;
+        u32 Color;
+        xr_string Text;
+    };
+
+    xr_vector<DrawDebugString> ViewportLines;
+    ImVec2 ViewportPos;
+
     				TUI				();
     virtual 		~TUI			();
 
@@ -224,8 +235,8 @@ public:
 	CCommandVar		CommandBreakLastOperation	(CCommandVar p1, CCommandVar p2);
 	CCommandVar		CommandRenderResize			(CCommandVar p1, CCommandVar p2);
 
-    virtual void	SaveSettings				(CInifile*){}
-    virtual void	LoadSettings				(CInifile*){}
+    virtual void	SaveSettings				(nlohmann::json&){}
+    virtual void	LoadSettings				(nlohmann::json&){}
 protected:    
 // progress bar
     using PBVec = xr_vector<SPBItem*>;

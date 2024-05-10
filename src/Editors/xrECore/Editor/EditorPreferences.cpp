@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+
 #include "ui_main.h"
 #include "ui_toolscustom.h"
 //---------------------------------------------------------------------------
@@ -98,25 +99,26 @@ void CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
 
 void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif, bool&)
 {
+#pragma todo(FIXME)
     bModif = false;
     xr_string fn;
-	switch(B->btn_num){
-    case 0:
-        if(EFS.GetOpenName("$import$", fn, false, NULL, 6)){
-            CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), TRUE, TRUE, TRUE);
-		    LoadShortcuts	(I);
-            xr_delete		(I);
-           // m_ItemProps->RefreshForm();
-        }
-    break;
-    case 1:
-        if(EFS.GetSaveName("$import$", fn, NULL, 6)){
-		    CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), FALSE, TRUE, TRUE);
-		    SaveShortcuts	(I);
-            xr_delete		(I);
-        }
-    break;
-	}
+	//switch(B->btn_num){
+    //case 0:
+    //    if(EFS.GetOpenName("$import$", fn, false, NULL, 6)){
+    //        CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), TRUE, TRUE, TRUE);
+	//	    LoadShortcuts	(I);
+    //        xr_delete		(I);
+    //       // m_ItemProps->RefreshForm();
+    //    }
+    //break;
+    //case 1:
+    //    if(EFS.GetSaveName("$import$", fn, NULL, 6)){
+	//	    CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), FALSE, TRUE, TRUE);
+	//	    SaveShortcuts	(I);
+    //        xr_delete		(I);
+    //    }
+    //break;
+	//}
 }
 
 void CCustomPreferences::FillProp(PropItemVec& props)
@@ -198,150 +200,142 @@ void CCustomPreferences::Edit()
 }
 //---------------------------------------------------------------------------
 extern bool bAllowLogCommands;
-void CCustomPreferences::Load(CInifile* I)
+void CCustomPreferences::Load()
 {
-    psDeviceFlags.flags		= R_U32_SAFE	("editor_prefs","device_flags",	psDeviceFlags.flags);
-    psSoundFlags.flags		= R_U32_SAFE	("editor_prefs","sound_flags",	psSoundFlags.flags)
+    psDeviceFlags.flags = JSONData["editor_prefs"]["device_flags"];
+    psSoundFlags.flags  = JSONData["editor_prefs"]["sound_flags"];
 
-    Tools->m_Settings.flags	= R_U32_SAFE	("editor_prefs","tools_settings",Tools->m_Settings.flags);
-    
-    view_np				= R_FLOAT_SAFE	("editor_prefs","view_np"			,view_np		 	);
-    view_fp				= R_FLOAT_SAFE	("editor_prefs","view_fp"			,view_fp		 	);
-    view_fov			= R_FLOAT_SAFE	("editor_prefs","view_fov"			,view_fov			);
+    Tools->m_Settings.flags	= JSONData["editor_prefs"]["tools_settings"],Tools->m_Settings.flags;
 
-    fog_color			= R_U32_SAFE	("editor_prefs","fog_color"			,fog_color			);
-    fog_fogness			= R_FLOAT_SAFE	("editor_prefs","fog_fogness"		,fog_fogness	 	);
+    view_np = JSONData["editor_prefs"]["view_np"];
+    view_fp = JSONData["editor_prefs"]["view_fp"];
+    view_fov = JSONData["editor_prefs"]["view_fov"];
+    fog_color = JSONData["editor_prefs"]["fog_color"];
+    fog_fogness = JSONData["editor_prefs"]["fog_fogness"];
+    cam_fly_speed = JSONData["editor_prefs"]["cam_fly_speed"];
+    cam_fly_alt = JSONData["editor_prefs"]["cam_fly_alt"];
+    cam_sens_rot = JSONData["editor_prefs"]["cam_sens_rot"];
+    cam_sens_move = JSONData["editor_prefs"]["cam_sens_move"];
+    tools_sens_move = JSONData["editor_prefs"]["tools_sens_move"];
+    tools_sens_rot = JSONData["editor_prefs"]["tools_sens_rot"];
+    tools_sens_scale = JSONData["editor_prefs"]["tools_sens_scale"];
+    tools_show_move_axis = JSONData["editor_prefs"]["tools_show_move_axis"];
+    bp_lim_depth = JSONData["editor_prefs"]["bp_lim_depth"];
+    bp_cull = JSONData["editor_prefs"]["bp_lim_depth"];
+    bp_depth_tolerance = JSONData["editor_prefs"]["tools_sens_rot"];
+    snap_angle = JSONData["editor_prefs"]["snap_angle"];
+    snap_move = JSONData["editor_prefs"]["snap_move"];
+    snap_moveto = JSONData["editor_prefs"]["snap_moveto"];
+    grid_cell_size = JSONData["editor_prefs"]["grid_cell_size"];
+    grid_cell_count = JSONData["editor_prefs"]["grid_cell_count"];
+    scene_undo_level = JSONData["editor_prefs"]["scene_undo_level"];
+    scene_recent_count = JSONData["editor_prefs"]["scene_recent_count"];
+    scene_clear_color = JSONData["editor_prefs"]["scene_clear_color"];
+    object_flags.flags = JSONData["editor_prefs"]["object_flags"];
+    EDevice->RadiusRender = JSONData["render"]["render_radius"];
 
-    cam_fly_speed		= R_FLOAT_SAFE	("editor_prefs","cam_fly_speed"		,cam_fly_speed		);
-    cam_fly_alt			= R_FLOAT_SAFE	("editor_prefs","cam_fly_alt"		,cam_fly_alt	 	);
-    cam_sens_rot		= R_FLOAT_SAFE	("editor_prefs","cam_sens_rot"		,cam_sens_rot		);
-    cam_sens_move		= R_FLOAT_SAFE	("editor_prefs","cam_sens_move"		,cam_sens_move		);
-
-    tools_sens_move		= R_FLOAT_SAFE	("editor_prefs","tools_sens_move"	,tools_sens_move  	);
-    tools_sens_rot		= R_FLOAT_SAFE	("editor_prefs","tools_sens_rot"	,tools_sens_rot		);
-    tools_sens_scale	= R_FLOAT_SAFE	("editor_prefs","tools_sens_scale"	,tools_sens_scale	);
-	tools_show_move_axis= R_BOOL_SAFE	("editor_prefs","tools_show_move_axis"	,tools_show_move_axis);
-    
-    bp_lim_depth		= R_BOOL_SAFE	("editor_prefs","bp_lim_depth"		,bp_lim_depth		);
-    bp_cull				= R_BOOL_SAFE	("editor_prefs","bp_lim_depth"		,bp_cull		  	);
-    bp_depth_tolerance	= R_FLOAT_SAFE	("editor_prefs","tools_sens_rot"	,bp_depth_tolerance	);
-
-    snap_angle			= R_FLOAT_SAFE	("editor_prefs","snap_angle"		,snap_angle			);
-    snap_move			= R_FLOAT_SAFE	("editor_prefs","snap_move"			,snap_move			);
-    snap_moveto			= R_FLOAT_SAFE	("editor_prefs","snap_moveto"		,snap_moveto	   	);
-
-    grid_cell_size		= R_FLOAT_SAFE	("editor_prefs","grid_cell_size"	,grid_cell_size		);
-    grid_cell_count		= R_U32_SAFE	("editor_prefs","grid_cell_count"	,grid_cell_count   	);
-
-    scene_undo_level	= R_U32_SAFE	("editor_prefs","scene_undo_level"	,scene_undo_level	);
-    scene_recent_count	= R_U32_SAFE	("editor_prefs","scene_recent_count",scene_recent_count	);
-    scene_clear_color	= R_U32_SAFE	("editor_prefs","scene_clear_color"	,scene_clear_color	);
-
-    object_flags.flags	= R_U32_SAFE	("editor_prefs","object_flags"		,object_flags.flags );
-    EDevice->RadiusRender = R_FLOAT_SAFE("render", "render_radius", EDevice->RadiusRender);
-
-    int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
-    int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
-
-    start_w = R_U32_SAFE("render", "w", DisplayX);
-    start_h = R_U32_SAFE("render", "h", DisplayY);
-    int x = R_U32_SAFE("render", "x", 50);
-    int y = R_U32_SAFE("render", "y", 50);
+    start_w = JSONData["render"]["w"];
+    start_h = JSONData["render"]["h"];
+    int x = JSONData["render"]["x"];
+    int y = JSONData["render"]["y"];
 
     SDL_SetWindowPosition(g_AppInfo.Window, x, y);
 
-    start_maximized = R_BOOL_SAFE("render", "maximized", false);
+    start_maximized = JSONData["render"]["maximized"];
 
-    bAllowLogCommands = R_BOOL_SAFE("windows", "log", false);
+    bAllowLogCommands = JSONData["windows"]["log"];
 	// read recent list    
     for (u32 i=0; i<scene_recent_count; i++)
     {
         string64 buffer = {};
         sprintf(buffer, "recent_files_%d", i);
 
-    	shared_str fn  	= R_STRING_SAFE	("editor_prefs", buffer,shared_str("") );
+    	std::string fn = JSONData["editor_prefs"][buffer];
         if (fn.size())
         {
         	AStringIt it =   std::find(scene_recent_list.begin(), scene_recent_list.end(), fn.c_str() ) ;
             if (it==scene_recent_list.end())
-	        	scene_recent_list.push_back(*fn);
+	        	scene_recent_list.push_back(fn.c_str());
         }
     }
-    sWeather = R_STRING_SAFE	("editor_prefs", "weather", shared_str("") );
+    sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
     // load shortcuts
 
-    LoadShortcuts		(I);
-
-    UI->LoadSettings	(I);
+    LoadShortcuts		(JSONData);
+    UI->LoadSettings	(JSONData);
 }
 
-void CCustomPreferences::Save(CInifile* I)
+void CCustomPreferences::Save()
 {
-    I->w_u32("editor_prefs", "device_flags", psDeviceFlags.flags);
-    I->w_u32("editor_prefs", "sound_flags", psSoundFlags.flags);
+    JSONData["editor_prefs"]["device_flags"] = psDeviceFlags.flags;
+    JSONData["editor_prefs"]["sound_flags"] = psSoundFlags.flags;
 
-    I->w_u32("editor_prefs", "tools_settings", Tools->m_Settings.flags);
+    JSONData["editor_prefs"]["tools_settings"]=Tools->m_Settings.flags;
 
-    I->w_float("editor_prefs", "view_np", view_np);
-    I->w_float("editor_prefs", "view_fp", view_fp);
-    I->w_float("editor_prefs", "view_fov", view_fov);
+    JSONData["editor_prefs"]["view_np"]=view_np;
+    JSONData["editor_prefs"]["view_fp"]=view_fp;
+    JSONData["editor_prefs"]["view_fov"]=view_fov;
 
-    I->w_u32("editor_prefs", "fog_color", fog_color);
-    I->w_float("editor_prefs", "fog_fogness", fog_fogness);
+    JSONData["editor_prefs"]["fog_color"]=fog_color;
+    JSONData["editor_prefs"]["fog_fogness"]=fog_fogness;
 
-    I->w_float("editor_prefs", "cam_fly_speed", cam_fly_speed);
-    I->w_float("editor_prefs", "cam_fly_alt", cam_fly_alt);
-    I->w_float("editor_prefs", "cam_sens_rot", cam_sens_rot);
-    I->w_float("editor_prefs", "cam_sens_move", cam_sens_move);
+    JSONData["editor_prefs"]["cam_fly_speed"]=cam_fly_speed;
+    JSONData["editor_prefs"]["cam_fly_alt"]=cam_fly_alt;
+    JSONData["editor_prefs"]["cam_sens_rot"]=cam_sens_rot;
+    JSONData["editor_prefs"]["cam_sens_move"]=cam_sens_move;
 
-    I->w_float("editor_prefs", "tools_sens_rot", tools_sens_rot);
-    I->w_float("editor_prefs", "tools_sens_move", tools_sens_move);
-    I->w_float("editor_prefs", "tools_sens_scale", tools_sens_scale);
-    I->w_bool("editor_prefs", "tools_show_move_axis", tools_show_move_axis);
+    JSONData["editor_prefs"]["tools_sens_rot"]=tools_sens_rot;
+    JSONData["editor_prefs"]["tools_sens_move"]=tools_sens_move;
+    JSONData["editor_prefs"]["tools_sens_scale"]=tools_sens_scale;
+    JSONData["editor_prefs"]["tools_show_move_axis"]=tools_show_move_axis;
 
-    I->w_bool("editor_prefs", "bp_lim_depth", bp_lim_depth);
-    I->w_bool("editor_prefs", "bp_lim_depth", bp_cull);
-    I->w_float("editor_prefs", "bp_depth_tolerance", bp_depth_tolerance);
+    JSONData["editor_prefs"]["bp_lim_depth"]=bp_lim_depth;
+    JSONData["editor_prefs"]["bp_lim_depth"]=bp_cull;
+    JSONData["editor_prefs"]["bp_depth_tolerance"]=bp_depth_tolerance;
 
-    I->w_float("editor_prefs", "snap_angle", snap_angle);
-    I->w_float("editor_prefs", "snap_move", snap_move);
-    I->w_float("editor_prefs", "snap_moveto", snap_moveto);
+    JSONData["editor_prefs"]["snap_angle"]=snap_angle;
+    JSONData["editor_prefs"]["snap_move"]=snap_move;
+    JSONData["editor_prefs"]["snap_moveto"]=snap_moveto;
 
-    I->w_float("editor_prefs", "grid_cell_size", grid_cell_size);
-    I->w_u32("editor_prefs", "grid_cell_count", grid_cell_count);
+    JSONData["editor_prefs"]["grid_cell_size"]=grid_cell_size;
+    JSONData["editor_prefs"]["grid_cell_count"]=grid_cell_count;
 
-    I->w_u32("editor_prefs", "scene_undo_level", scene_undo_level);
-    I->w_u32("editor_prefs", "scene_recent_count", scene_recent_count);
-    I->w_u32("editor_prefs", "scene_clear_color", scene_clear_color);
+    JSONData["editor_prefs"]["scene_undo_level"]=scene_undo_level;
+    JSONData["editor_prefs"]["scene_recent_count"]= scene_recent_list.size();
+    JSONData["editor_prefs"]["scene_clear_color"]=scene_clear_color;
 
-    I->w_u32("editor_prefs", "object_flags", object_flags.flags);
-    for (AStringIt it = scene_recent_list.begin(); it != scene_recent_list.end(); it++) 
+    JSONData["editor_prefs"]["object_flags"]=object_flags.flags;
+
+    for (AStringIt it = scene_recent_list.begin(); it != scene_recent_list.end(); it++)
     {
-        string64 buffer1 = {};
-        string64 buffer2 = {};
+        string256 buffer1 = {};
+        string256 buffer2 = {};
         sprintf(buffer1, "recent_files_%d", it - scene_recent_list.begin());
-        sprintf(buffer2, "\"%s\"", it->c_str());
+        sprintf(buffer2, "%s", it->c_str());
 
         xr_string L = buffer1;
         xr_string V = buffer2;
-        I->w_string("editor_prefs", L.c_str(), V.c_str());
+        JSONData["editor_prefs"][L.c_str()] = V.c_str();
     }
-    I->w_string("editor_prefs", "weather", sWeather.c_str());
-    I->w_bool("render", "maximized", false);
-    I->w_u32("render", "w", EDevice->dwRealWidth);
-    I->w_u32("render", "h", EDevice->dwRealHeight);
+
+
+    JSONData["editor_prefs"]["weather"] = sWeather.c_str() ? sWeather.c_str() : "";
+    JSONData["render"]["maximized"] = false;
+
+    JSONData["render"]["w"] = EDevice->dwRealWidth;
+    JSONData["render"]["h"] = EDevice->dwRealHeight;
 
     int X, Y;
     SDL_GetWindowPosition(g_AppInfo.Window, &X, &Y);
-    I->w_u32("render", "x", X);
-    I->w_u32("render", "y", Y);
+    JSONData["render"]["x"]=X;
+    JSONData["render"]["y"]=Y;
 
-    I->w_bool("windows", "log", bAllowLogCommands);
-    I->w_float("render", "render_radius", EDevice->RadiusRender);
+    JSONData["windows"]["log"]=bAllowLogCommands;
+    JSONData["render"]["render_radius"]=EDevice->RadiusRender;
 
     // load shortcuts
-    SaveShortcuts(I);
-    UI->SaveSettings(I);
+    SaveShortcuts(JSONData);
+    UI->SaveSettings(JSONData);
 }
 
 void CCustomPreferences::Draw()
@@ -363,46 +357,72 @@ void CCustomPreferences::Draw()
     ImGui::End();
 }
 
-void CCustomPreferences::Load()
+#include <fstream>
+void CCustomPreferences::LoadConfig()
 {
-	string_path			fn;
-	INI_NAME			(fn);
-    CInifile* I			= xr_new<CInifile>(fn, TRUE, TRUE, TRUE);
-    Load				(I);
-    xr_delete			(I);
+    string_path fn;
+    INI_NAME(fn);
+
+    string_path jfn;
+    JSON_NAME(jfn);
+
+    if (std::filesystem::exists(jfn))
+    {
+        std::ifstream f(jfn);
+        f >> JSONData;
+    }
+    else
+    {
+        int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
+        int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
+
+        EDevice->dwRealHeight = DisplayY;
+        EDevice->dwRealWidth = DisplayX;
+
+        Save();
+    }
+
+    Load				();
     ApplyValues			();
 
     UI->m_Size.set((int)start_w, (int)start_h);
 }
-void CCustomPreferences::Save()
+
+void CCustomPreferences::SaveConfig()
 {
 	string_path			fn;
 	INI_NAME			(fn);
-    CInifile* I 		= xr_new<CInifile>(fn, FALSE, TRUE, TRUE);
-    I->set_override_names(TRUE);
-	Save				(I);
-	xr_delete			(I);
+
+    string_path jfn;
+    JSON_NAME(jfn);
+
+    std::ofstream o(jfn);
+    o << JSONData;
+
+    Save();
 }
 
 void CCustomPreferences::AppendRecentFile(LPCSTR name)
 {
-    for (AStringIt it=scene_recent_list.begin(); it!=scene_recent_list.end(); it++){
-    	if (*it==name){
-        	scene_recent_list.erase	(it);
+    for (AStringIt it = scene_recent_list.begin(); it != scene_recent_list.end(); it++) 
+    {
+        if (*it == name) {
+            scene_recent_list.erase(it);
             break;
         }
     }
-	scene_recent_list.insert(scene_recent_list.begin(),name);
-	while (scene_recent_list.size()>=EPrefs->scene_recent_count) 
-    	scene_recent_list.pop_back();
 
-    ExecCommand				(COMMAND_REFRESH_UI_BAR);
+    scene_recent_list.insert(scene_recent_list.begin(), name);
+    while (scene_recent_list.size() > 10)
+        scene_recent_list.pop_back();
+
+    ExecCommand(COMMAND_REFRESH_UI_BAR);
 }
 //---------------------------------------------------------------------------
 
 void CCustomPreferences::OnCreate()
 {
-	Load				();
+	LoadConfig();
     m_ItemProps = xr_new<UIPropertiesForm>();
 	//m_ItemProps 		= TProperties::CreateModalForm("Editor Preferences",false,0,0,TOnCloseEvent(this,&CCustomPreferences::OnClose),TProperties::plItemFolders|TProperties::plFullSort); //TProperties::plFullExpand TProperties::plFullSort TProperties::plNoClearStore|TProperties::plFolderStore|
 }
@@ -412,7 +432,7 @@ void CCustomPreferences::OnDestroy()
 {
   
     xr_delete(m_ItemProps);
-    Save				();
+    SaveConfig();
 }
 //---------------------------------------------------------------------------
 

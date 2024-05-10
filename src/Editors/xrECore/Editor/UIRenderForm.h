@@ -10,6 +10,7 @@ public:
 	IC Ivector2 GetMousePos()const { return m_mouse_position; }
 	IC void		SetContextMenuEvent(TOnRenderContextMenu e) { m_OnContextMenu = e; }
 	IC void		SetToolBarEvent(TOnRenderToolBar e) { m_OnToolBar = e; }
+
 private:
 	Ivector2	m_mouse_position;
 	ref_texture m_rt;

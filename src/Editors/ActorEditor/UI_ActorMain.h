@@ -68,8 +68,8 @@ public:
     BOOL							bAlwaysShowKeyBar12;
     BOOL							bAlwaysShowKeyBar34;
 
-    virtual void 	Load			(CInifile*);
-    virtual void 	Save			(CInifile*);
+    virtual void 	Load			();
+    virtual void 	Save			();
     virtual void	FillProp        (PropItemVec& items);
 
 };

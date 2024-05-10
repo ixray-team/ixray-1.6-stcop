@@ -320,20 +320,20 @@ void CActorMain::OutInfo()
 
 //---------------------------------------------------------------------------
 
-void CAEPreferences::Load(CInifile* I)
+void CAEPreferences::Load()
 {
-	inherited::Load(I);
+	inherited::Load();
 
-	bAlwaysShowKeyBar12		= R_BOOL_SAFE	("ae_prefs","always_show_keybar12"		,bAlwaysShowKeyBar12		);
-	bAlwaysShowKeyBar34		= R_BOOL_SAFE	("ae_prefs","always_show_keybar34"		,bAlwaysShowKeyBar34		);
+	bAlwaysShowKeyBar12 = JSONData["ae_prefs"]["always_show_keybar12"];
+	bAlwaysShowKeyBar34 = JSONData["ae_prefs"]["always_show_keybar34"];
 }
 
-void CAEPreferences::Save(CInifile* I)
+void CAEPreferences::Save()
 {
-	inherited::Save(I);
+	inherited::Save();
 
-	I->w_bool	("ae_prefs","always_show_keybar12",		bAlwaysShowKeyBar12			);
-	I->w_bool	("ae_prefs","always_show_keybar34",		bAlwaysShowKeyBar34			);
+	JSONData["ae_prefs"]["always_show_keybar12"] = bAlwaysShowKeyBar12;
+	JSONData["ae_prefs"]["always_show_keybar34"] = bAlwaysShowKeyBar34;
 
 }
 extern ECORE_API BOOL g_force16BitTransformQuant;

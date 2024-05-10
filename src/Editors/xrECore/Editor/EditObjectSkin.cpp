@@ -9,6 +9,7 @@
 #include "EditMesh.h"
 #include "d3dutils.h"
 #include "../Public/PropertiesListHelper.h"
+#include "ui_main.h"
 
 // FX: link sphere symbols 
 #include <freemagic/MgcSphere.h>
@@ -113,6 +114,15 @@ void CEditableObject::RenderSkeletonSingle(const Fmatrix& parent)
     RenderBones(parent);
 }
 
+IC float _x2real(float x)
+{
+    return (x + 1) * Device.TargetWidth * 0.5f;
+}
+IC float _y2real(float y)
+{
+    return (y + 1) * Device.TargetHeight * 0.5f;
+}
+
 void CEditableObject::RenderBones(const Fmatrix& parent)
 {
 	if (IsSkeleton()){
@@ -158,6 +168,15 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
             	parent.transform_tiny(p1);
             	u32 c = (*b_it)->flags.is(CBone::flSelected)?0xFFFFFFFF:0xFF000000;
             	u32 s = (*b_it)->flags.is(CBone::flSelected)?0xFF000000:0xFF909090;
+
+                Fvector p;
+                float w = p1.x * EDevice->mFullTransform._14 + p1.y * EDevice->mFullTransform._24 + p1.z * EDevice->mFullTransform._34 + EDevice->mFullTransform._44;
+                if (w >= 0) 
+                {
+                    EDevice->mFullTransform.transform(p, p1);
+                    p.x = (float)iFloor(_x2real(p.x)); p.y = (float)iFloor(_y2real(-p.y));
+                }
+
             	DU_impl.OutText(p1,(*b_it)->Name().c_str(),c,s);
             }
 			if (EPrefs->object_flags.is(epoDrawBoneShapes)){

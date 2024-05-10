@@ -301,11 +301,9 @@ Shader*		CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_
 			}
 		}
 #else //USE_DX11
-#ifndef _EDITOR
 		if	(_lua_HasShader(s_shader))		
 			return	_lua_Create	(s_shader,s_textures);
-		else								
-#endif
+		else
 			return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
 #endif
 	}

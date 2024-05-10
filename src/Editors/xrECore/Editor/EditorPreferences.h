@@ -1,7 +1,8 @@
-//---------------------------------------------------------------------------
+#pragma once
 
-#ifndef EditorPreferencesH
-#define EditorPreferencesH
+#include <json/json.hpp>
+using json = nlohmann::json;
+
 //---------------------------------------------------------------------------
 // refs
 class UIPropertiesForm;
@@ -21,10 +22,12 @@ enum{
     epoDeffLoadCF		= (1<<10),
     epoSelectInGroup    = (1<<11),
 };
+
 class ECORE_API CCustomPreferences:protected XrUI
 {
-private:	// User declarations
+protected:	// User declarations
     UIPropertiesForm*	m_ItemProps;
+    json            JSONData;
 public:
     u32             start_w;
     u32             start_h;
@@ -70,8 +73,8 @@ protected:
 	void 	        OnClose();
     void			ApplyValues();
 
-    virtual void 	Load				(CInifile*);
-    virtual void 	Save				(CInifile*);
+    virtual void 	Load				();
+    virtual void 	Save				();
     virtual void    Draw();
 public:				// User declarations
     				CCustomPreferences	();
@@ -84,8 +87,8 @@ public:				// User declarations
 
     void			Edit				();
 
-    void 			Load				();
-    void 			Save				();
+    void 			LoadConfig			();
+    void 			SaveConfig			();
     
     void 			AppendRecentFile	(LPCSTR name);
     LPCSTR 			FirstRecentFile		(){return scene_recent_list.empty()?"":scene_recent_list.front().c_str();}
@@ -98,5 +101,3 @@ public:				// User declarations
 //---------------------------------------------------------------------------
 extern ECORE_API CCustomPreferences* 	EPrefs;
 //---------------------------------------------------------------------------
-
-#endif

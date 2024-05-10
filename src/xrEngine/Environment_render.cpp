@@ -255,7 +255,7 @@ void CEnvironment::OnDeviceDestroy()
 	/*
 	tsky0->surface_set						(nullptr);
 	tsky1->surface_set						(nullptr);
-	
+
 	sh_2sky.destroy							();
 	sh_2geom.destroy						();
 	clouds_sh.destroy						();
@@ -263,31 +263,29 @@ void CEnvironment::OnDeviceDestroy()
 	*/
 	// weathers
 	{
-		EnvsMapIt _I,_E;
-		_I		= WeatherCycles.begin();
-		_E		= WeatherCycles.end();
-		for (; _I!=_E; _I++)
-			for (EnvIt it=_I->second.begin(); it!=_I->second.end(); it++)
+		EnvsMapIt _I, _E;
+		_I = WeatherCycles.begin();
+		_E = WeatherCycles.end();
+		for (; _I != _E; _I++)
+			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
 	// effects
 	{
-		EnvsMapIt _I,_E;
-		_I		= WeatherFXs.begin();
-		_E		= WeatherFXs.end();
-		for (; _I!=_E; _I++)
-			for (EnvIt it=_I->second.begin(); it!=_I->second.end(); it++)
+		EnvsMapIt _I, _E;
+		_I = WeatherFXs.begin();
+		_E = WeatherFXs.end();
+		for (; _I != _E; _I++)
+			for (EnvIt it = _I->second.begin(); it != _I->second.end(); it++)
 				(*it)->on_device_destroy();
 	}
-	CurrentEnv->destroy();
 
+	if (CurrentEnv != nullptr)
+		CurrentEnv->destroy();
 }
 
-#ifdef _EDITOR
 void CEnvironment::ED_Reload()
 {
 	OnDeviceDestroy			();
 	OnDeviceCreate			();
 }
-#endif
-
