@@ -26,7 +26,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     PGMLib->Load();
 
     FileOpen = new CUFileOpen;
-    UI->Push(MainForm, false);
+    UI->PushBegin(MainForm, false);
     UI->Push(FileOpen, false);
 
     bool NeedExit = false;

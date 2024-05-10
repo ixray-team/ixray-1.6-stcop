@@ -15,6 +15,7 @@ class XREUI_API XrUIManager
 {
 public:
 	XrUIManager();
+	void PushBegin(XrUI*ui,bool need_deleted =true);
 	void Push(XrUI*ui,bool need_deleted =true);
 	void Draw();
 		

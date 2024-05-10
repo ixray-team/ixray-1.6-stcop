@@ -26,8 +26,8 @@ void  ELogCallback(LPCSTR txt)
 	}
 
 	UILogForm::AddMessage(txt);
-	if(UI)
-		UI->WriteConsole(mt, txt);
+	//if(UI)
+	//	UI->WriteConsole(mt, txt);
 
 }
 

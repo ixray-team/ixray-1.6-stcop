@@ -24,22 +24,22 @@
 
 namespace ImGui
 {
-    XREUI_API ImFont* LightFont;
-    XREUI_API ImFont* RegularFont;
-    XREUI_API ImFont* MediumFont;
-    XREUI_API ImFont* BoldFont;
+	XREUI_API ImFont* LightFont;
+	XREUI_API ImFont* RegularFont;
+	XREUI_API ImFont* MediumFont;
+	XREUI_API ImFont* BoldFont;
 }
 
 TUI* UI = nullptr;
 
 TUI::TUI()
 {
-    m_HConsole = 0;
+	m_HConsole = 0;
 	UI				= this;
-    m_AppClosed = false;
-    m_bAppActive 	= false;
+	m_AppClosed = false;
+	m_bAppActive 	= false;
 	m_bReady 		= false;
-    bNeedAbort   	= false;
+	bNeedAbort   	= false;
 
 	m_CurrentRStart.set(0,0,0);
 	m_CurrentRDir.set(0,0,0);
@@ -49,33 +49,33 @@ TUI::TUI()
 	m_Pivot.set		( 0, 0, 0 );
 
 	m_MouseCaptured = false;
-    m_MouseMultiClickCaptured = false;
- 	m_SelectionRect = false;
-    bMouseInUse		= false;
+	m_MouseMultiClickCaptured = false;
+	m_SelectionRect = false;
+	bMouseInUse		= false;
 
-    m_bHintShowing	= false;
+	m_bHintShowing	= false;
 	m_LastHint		= "";
 
-    int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
-    int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
+	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
+	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-       //RECT rect;
-       //HWND taskBar = FindWindow(L"Shell_traywnd", NULL);
-       //if (taskBar && GetWindowRect(taskBar, &rect)) 
-       //{
-       //    if (rect.top > 0)
-       //        DisplayY -= rect.bottom - rect.top;
-       //
-       //    DisplayX -= rect.right - rect.left;
-       //}
+	   //RECT rect;
+	   //HWND taskBar = FindWindow(L"Shell_traywnd", NULL);
+	   //if (taskBar && GetWindowRect(taskBar, &rect)) 
+	   //{
+	   //    if (rect.top > 0)
+	   //        DisplayY -= rect.bottom - rect.top;
+	   //
+	   //    DisplayX -= rect.right - rect.left;
+	   //}
 
-    m_Size.set(DisplayX, DisplayY);
+	m_Size.set(DisplayX, DisplayY);
 }
 //---------------------------------------------------------------------------
 TUI::~TUI()
 {
 	VERIFY(m_ProgressItems.size()==0);
-    VERIFY(m_EditorState.size()==0);
+	VERIFY(m_EditorState.size()==0);
 }
 
 void TUI::OnDeviceCreate()
@@ -109,24 +109,24 @@ void TUI::UpdateSelectionRect( const Ivector2& from, const Ivector2& to ){
 bool  TUI::KeyDown (WORD Key, TShiftState Shift)
 {
 	if (!m_bReady) return false;
-    if (Console->bVisible)
-    {
-        if (Key == 0xC0)
-        {
-            Console->Hide();
-        }
-        return true;
-    }
+	if (Console->bVisible)
+	{
+		if (Key == 0xC0)
+		{
+			Console->Hide();
+		}
+		return true;
+	}
    
-    if (Key == 0xC0)
-    {
-        Console->Show();
-        return true;
-    }
+	if (Key == 0xC0)
+	{
+		Console->Show();
+		return true;
+	}
 //	m_ShiftState = Shift;
 //	Log("Dn  ",Shift.Contains(ssShift)?"1":"0");
 	if (EDevice->m_Camera.KeyDown(Key,Shift)) return true;
-    return Tools->KeyDown(Key, Shift);
+	return Tools->KeyDown(Key, Shift);
 }
 
 bool  TUI::KeyUp   (WORD Key, TShiftState Shift)
@@ -134,145 +134,145 @@ bool  TUI::KeyUp   (WORD Key, TShiftState Shift)
 	if (!m_bReady) return false;
 //	m_ShiftState = Shift;
 	if (EDevice->m_Camera.KeyUp(Key,Shift)) return true;
-    return Tools->KeyUp(Key, Shift);
+	return Tools->KeyUp(Key, Shift);
 }
 
 bool  TUI::KeyPress(WORD Key, TShiftState Shift)
 {
 	if (!m_bReady) return false;
-    return Tools->KeyPress(Key, Shift);
+	return Tools->KeyPress(Key, Shift);
 }
 //----------------------------------------------------
 
 void TUI::MousePress(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
-    if (m_MouseCaptured) return;
+	if (m_MouseCaptured) return;
 
-    bMouseInUse = true;
+	bMouseInUse = true;
 
-    m_ShiftState = Shift;
+	m_ShiftState = Shift;
 
-    // camera activate
-    if(!EDevice->m_Camera.MoveStart(m_ShiftState)){
-    	if (Tools->Pick(Shift)) return;
-        if( !m_MouseCaptured ){
-            if(! Tools->HiddenMode() )
-            {
-                m_CurrentCp = GetRenderMousePosition();
-                m_StartCp = m_CurrentCp;
-                EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
-                m_StartRStart = m_CurrentRStart;
-                m_StartRDir = m_CurrentRDir;
-            }
-           
-            if(Tools->MouseStart(m_ShiftState))
-            {
-                if(Tools->HiddenMode()) ShowCursor( FALSE );
-                m_MouseCaptured = true;
-            }
+	// camera activate
+	if(!EDevice->m_Camera.MoveStart(m_ShiftState)){
+		if (Tools->Pick(Shift)) return;
+		if( !m_MouseCaptured ){
+			if(! Tools->HiddenMode() )
+			{
+				m_CurrentCp = GetRenderMousePosition();
+				m_StartCp = m_CurrentCp;
+				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
+				m_StartRStart = m_CurrentRStart;
+				m_StartRDir = m_CurrentRDir;
+			}
+		   
+			if(Tools->MouseStart(m_ShiftState))
+			{
+				if(Tools->HiddenMode()) ShowCursor( FALSE );
+				m_MouseCaptured = true;
+			}
 
-            if (Tools->HiddenMode())
-            {
-                IR_GetMousePosScreen(m_StartCpH);
-                m_DeltaCpH.set(0, 0);
-            }
-        }
-    }
-    RedrawScene();
+			if (Tools->HiddenMode())
+			{
+				IR_GetMousePosScreen(m_StartCpH);
+				m_DeltaCpH.set(0, 0);
+			}
+		}
+	}
+	RedrawScene();
 }
 
 void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
 
-    m_ShiftState = Shift;
+	m_ShiftState = Shift;
 
-    if( EDevice->m_Camera.IsMoving() ){
-        if (EDevice->m_Camera.MoveEnd(m_ShiftState)) bMouseInUse = false;
-    }else{
-	    bMouseInUse = false;
-        if( m_MouseCaptured ){
-            if( !Tools->HiddenMode() ){
-                m_CurrentCp = GetRenderMousePosition();
-                EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp );
-            }
-            bool bIsHiddenMode = Tools->HiddenMode();
-            if( Tools->MouseEnd(m_ShiftState) ){
-                if(bIsHiddenMode){
-                    SetCursorPos(m_StartCpH.x,m_StartCpH.y);
-                    ShowCursor( TRUE );
-                }
-                m_MouseCaptured = false;
-            }
-        }
-    }
-    // update tools (change action)
-    Tools->OnFrame	();
-    RedrawScene		();
+	if( EDevice->m_Camera.IsMoving() ){
+		if (EDevice->m_Camera.MoveEnd(m_ShiftState)) bMouseInUse = false;
+	}else{
+		bMouseInUse = false;
+		if( m_MouseCaptured ){
+			if( !Tools->HiddenMode() ){
+				m_CurrentCp = GetRenderMousePosition();
+				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp );
+			}
+			bool bIsHiddenMode = Tools->HiddenMode();
+			if( Tools->MouseEnd(m_ShiftState) ){
+				if(bIsHiddenMode){
+					SetCursorPos(m_StartCpH.x,m_StartCpH.y);
+					ShowCursor( TRUE );
+				}
+				m_MouseCaptured = false;
+			}
+		}
+	}
+	// update tools (change action)
+	Tools->OnFrame	();
+	RedrawScene		();
 }
 //----------------------------------------------------
 void TUI::MouseMove(TShiftState Shift, int X, int Y)
 {
 	if (!m_bReady) return;
-    m_ShiftState = Shift;
+	m_ShiftState = Shift;
 }
 //----------------------------------------------------
 void TUI::IR_OnMouseMove(int x, int y)
 {
 	if (!m_bReady) return;
 	if (!EDevice->m_Camera.Process(m_ShiftState,x,y))
-    {
-        if( m_MouseCaptured || m_MouseMultiClickCaptured )
-        {
-            if( Tools->HiddenMode() )
-            {
+	{
+		if( m_MouseCaptured || m_MouseMultiClickCaptured )
+		{
+			if( Tools->HiddenMode() )
+			{
 				m_DeltaCpH.set(x,y);
-                if( m_DeltaCpH.x || m_DeltaCpH.y )
-                {
-                	Tools->MouseMove(m_ShiftState);
-                }
-            }
-            else
-            {
-                m_CurrentCp = GetRenderMousePosition();
-                EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp);
-                Tools->MouseMove(m_ShiftState);
-            }
-		    RedrawScene();
-        }
-    }
-    {
-        m_CurrentCp = GetRenderMousePosition();
-        EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
-    }
-    // Out cursor pos
-    OutUICursorPos	();
+				if( m_DeltaCpH.x || m_DeltaCpH.y )
+				{
+					Tools->MouseMove(m_ShiftState);
+				}
+			}
+			else
+			{
+				m_CurrentCp = GetRenderMousePosition();
+				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp);
+				Tools->MouseMove(m_ShiftState);
+			}
+			RedrawScene();
+		}
+	}
+	{
+		m_CurrentCp = GetRenderMousePosition();
+		EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+	}
+	// Out cursor pos
+	OutUICursorPos	();
 }
 //---------------------------------------------------------------------------
 
 void TUI::OnAppActivate()
 {
-    m_bAppActive = true;
-    if (!m_bReady)return;
+	m_bAppActive = true;
+	if (!m_bReady)return;
 	if (pInput){
-        m_ShiftState = ssNone;
-     	pInput->OnAppActivate();
-        EDevice->seqAppActivate.Process	(rp_AppActivate);
-    }
+		m_ShiftState = ssNone;
+		pInput->OnAppActivate();
+		EDevice->seqAppActivate.Process	(rp_AppActivate);
+	}
 }
 //---------------------------------------------------------------------------
 
 void TUI::OnAppDeactivate()
 {
-    m_bAppActive = false;
-    if (!m_bReady)return;
+	m_bAppActive = false;
+	if (!m_bReady)return;
 	if (pInput){
 		pInput->OnAppDeactivate();
-        m_ShiftState = ssNone;
-        EDevice->seqAppDeactivate.Process(rp_AppDeactivate);
-    }
-    HideHint();
+		m_ShiftState = ssNone;
+		EDevice->seqAppDeactivate.Process(rp_AppDeactivate);
+	}
+	HideHint();
 }
 //---------------------------------------------------------------------------
 
@@ -280,62 +280,62 @@ bool TUI::ShowHint(const AStringVec& SS)
 {
 	VERIFY(m_bReady);
   /*  if (SS.size()){
-        xr_string S=_ListToSequence2(SS);
-        if (m_bHintShowing&&(S==m_LastHint)) return true;
-        m_LastHint = S;
-        m_bHintShowing = true;
-        if (!m_pHintWindow){
-            m_pHintWindow = xr_new<THintWindow>((TComponent*)0);
-            m_pHintWindow->Brush->Color = (TColor)0x0d9F2FF;
-        }
-        TRect rect = m_pHintWindow->CalcHintRect(320,S,0);
-        rect.Left+=m_HintPoint.x;    rect.Top+=m_HintPoint.y;
-        rect.Right+=m_HintPoint.x;   rect.Bottom+=m_HintPoint.y;
-        m_pHintWindow->ActivateHint(rect,S);
-    }else{
-    	m_bHintShowing = false;
-        m_LastHint = "";
-    }*/
-    not_implemented();
-    return m_bHintShowing;
+		xr_string S=_ListToSequence2(SS);
+		if (m_bHintShowing&&(S==m_LastHint)) return true;
+		m_LastHint = S;
+		m_bHintShowing = true;
+		if (!m_pHintWindow){
+			m_pHintWindow = xr_new<THintWindow>((TComponent*)0);
+			m_pHintWindow->Brush->Color = (TColor)0x0d9F2FF;
+		}
+		TRect rect = m_pHintWindow->CalcHintRect(320,S,0);
+		rect.Left+=m_HintPoint.x;    rect.Top+=m_HintPoint.y;
+		rect.Right+=m_HintPoint.x;   rect.Bottom+=m_HintPoint.y;
+		m_pHintWindow->ActivateHint(rect,S);
+	}else{
+		m_bHintShowing = false;
+		m_LastHint = "";
+	}*/
+	not_implemented();
+	return m_bHintShowing;
 }
 //---------------------------------------------------------------------------
 
 void TUI::HideHint()
 {
 	VERIFY(m_bReady);
-    m_bHintShowing = false;
+	m_bHintShowing = false;
 }
 //---------------------------------------------------------------------------
 
 void TUI::ShowHint(const xr_string& s)
 {
 	VERIFY			(m_bReady);
-    GetCursorPos	(&m_HintPoint);
+	GetCursorPos	(&m_HintPoint);
 	AStringVec 		SS;
-    SS.push_back	(s);
+	SS.push_back	(s);
 	Tools->OnShowHint(SS);
-    if (!ShowHint(SS)) HideHint();
+	if (!ShowHint(SS)) HideHint();
 }
 //---------------------------------------------------------------------------
 
 void TUI::ShowObjectHint()
 {
 	/*VERIFY(m_bReady);
-    if (!EPrefs->object_flags.is(epoShowHint)){
+	if (!EPrefs->object_flags.is(epoShowHint)){
 //    	if (m_bHintShowing) HideHint();
-    	return;
-    }
-    if (EDevice->m_Camera.IsMoving()||m_MouseCaptured) return;
-    if (!m_bAppActive) return;
+		return;
+	}
+	if (EDevice->m_Camera.IsMoving()||m_MouseCaptured) return;
+	if (!m_bAppActive) return;
 
-    GetCursorPos(&m_HintPoint);
-    TWinControl* ctr = FindVCLWindow(m_HintPoint);
-    if (ctr!=m_D3DWindow) return;
+	GetCursorPos(&m_HintPoint);
+	TWinControl* ctr = FindVCLWindow(m_HintPoint);
+	if (ctr!=m_D3DWindow) return;
 
 	AStringVec SS;
 	Tools->OnShowHint(SS);
-    if (!ShowHint(SS)&&m_pHintWindow) HideHint();*/
+	if (!ShowHint(SS)&&m_pHintWindow) HideHint();*/
 }
 //---------------------------------------------------------------------------
 void TUI::CheckWindowPos(HWND* form)
@@ -352,18 +352,18 @@ void TUI::PrepareRedraw()
 	VERIFY(m_bReady);
 	if (m_Flags.is(flResize)) 			RealResize();
 // set render state
-    EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
-    // fog
-    u32 fog_color;
+	EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
+	// fog
+	u32 fog_color;
 	float fog_start, fog_end;
-    Tools->GetCurrentFog	(fog_color, fog_start, fog_end);
+	Tools->GetCurrentFog	(fog_color, fog_start, fog_end);
 /*
-    if (0==g_pGamePersistent->Environment().GetWeather().size())
-    {
-        g_pGamePersistent->Environment().CurrentEnv->fog_color.set	(color_get_R(fog_color),color_get_G(fog_color),color_get_B(fog_color));
-        g_pGamePersistent->Environment().CurrentEnv->fog_far		= fog_end;
-        g_pGamePersistent->Environment().CurrentEnv->fog_near		= fog_start;
-    }
+	if (0==g_pGamePersistent->Environment().GetWeather().size())
+	{
+		g_pGamePersistent->Environment().CurrentEnv->fog_color.set	(color_get_R(fog_color),color_get_G(fog_color),color_get_B(fog_color));
+		g_pGamePersistent->Environment().CurrentEnv->fog_far		= fog_end;
+		g_pGamePersistent->Environment().CurrentEnv->fog_near		= fog_start;
+	}
 */    
 	EDevice->SetRS( D3DRS_FOGCOLOR,		fog_color			);
 	EDevice->SetRS( D3DRS_RANGEFOGENABLE,	FALSE				);
@@ -376,235 +376,235 @@ void TUI::PrepareRedraw()
 	}
 	EDevice->SetRS( D3DRS_FOGSTART,	*(DWORD *)(&fog_start)	);
 	EDevice->SetRS( D3DRS_FOGEND,		*(DWORD *)(&fog_end)	);
-    // filter
-    for (u32 k=0; k<Caps.raster.dwStages; k++){
-        if( psDeviceFlags.is(rsFilterLinear)){
-            EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_LINEAR);
-            EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_LINEAR);
-            EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_LINEAR);
-        } else {
-            EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_POINT);
-            EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_POINT);
-            EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_POINT);
-        }
-    }
+	// filter
+	for (u32 k=0; k<Caps.raster.dwStages; k++){
+		if( psDeviceFlags.is(rsFilterLinear)){
+			EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_LINEAR);
+			EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_LINEAR);
+			EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_LINEAR);
+		} else {
+			EDevice->SetSS(k,D3DSAMP_MAGFILTER,D3DTEXF_POINT);
+			EDevice->SetSS(k,D3DSAMP_MINFILTER,D3DTEXF_POINT);
+			EDevice->SetSS(k,D3DSAMP_MIPFILTER,D3DTEXF_POINT);
+		}
+	}
 	// ligthing
-    if (psDeviceFlags.is(rsLighting)) 	EDevice->SetRS(D3DRS_AMBIENT,0x00000000);
-    else                				EDevice->SetRS(D3DRS_AMBIENT,0xFFFFFFFF);
+	if (psDeviceFlags.is(rsLighting)) 	EDevice->SetRS(D3DRS_AMBIENT,0x00000000);
+	else                				EDevice->SetRS(D3DRS_AMBIENT,0xFFFFFFFF);
 
-    EDevice->SetRS			(D3DRS_FILLMODE, EDevice->dwFillMode);
-    EDevice->SetRS			(D3DRS_SHADEMODE,EDevice->dwShadeMode);
+	EDevice->SetRS			(D3DRS_FILLMODE, EDevice->dwFillMode);
+	EDevice->SetRS			(D3DRS_SHADEMODE,EDevice->dwShadeMode);
 
-    RCache.set_xform_world	(Fidentity);
+	RCache.set_xform_world	(Fidentity);
 }
 extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
 	PrepareRedraw();
-    try{
-    
-        if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
-        {
-            GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
-            GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
-            RT.destroy();
-            ZB.destroy();
-            RT.create("rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-            ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
-            m_Flags.set(flRedraw, TRUE);
-            EDevice->fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
-         
-            EDevice->m_fNearer = EDevice->mProject._43;
-           // EDevice->fWidth_2 = GetRenderWidth() / 2.f;
-           // EDevice->fHeight_2 = GetRenderHeight() / 2.f;
-            
-            EDevice->seqDeviceReset.Process(rp_DeviceReset);
-            EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
-            RCache.set_xform_project(EDevice->mProject);
-            RCache.set_xform_world(Fidentity);
-        }
-        if (!UI->IsPlayInEditor())
+	try{
+	
+		if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
+		{
+			GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
+			GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
+			RT.destroy();
+			ZB.destroy();
+			RT.create("rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+			ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+			m_Flags.set(flRedraw, TRUE);
+			EDevice->fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
+		 
+			EDevice->m_fNearer = EDevice->mProject._43;
+		   // EDevice->fWidth_2 = GetRenderWidth() / 2.f;
+		   // EDevice->fHeight_2 = GetRenderHeight() / 2.f;
+			
+			EDevice->seqDeviceReset.Process(rp_DeviceReset);
+			EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+			RCache.set_xform_project(EDevice->mProject);
+			RCache.set_xform_world(Fidentity);
+		}
+		if (!UI->IsPlayInEditor())
 		{
 			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
-        }
+		}
 
-        if (EDevice->Begin())
-        {
-            if (psDeviceFlags.is(rsRenderRealTime))
-                m_Flags.set(flRedraw, TRUE);
-            if (m_Flags.is(flRedraw)||UI->IsPlayInEditor())
-            {
-                ViewportLines.clear();
-                m_Flags.set(flRedraw, FALSE);
-                RCache.set_RT(RT->pRT);
-                RCache.set_ZB(ZB->pRT);
+		if (EDevice->Begin())
+		{
+			if (psDeviceFlags.is(rsRenderRealTime))
+				m_Flags.set(flRedraw, TRUE);
+			if (m_Flags.is(flRedraw)||UI->IsPlayInEditor())
+			{
+				ViewportLines.clear();
+				m_Flags.set(flRedraw, FALSE);
+				RCache.set_RT(RT->pRT);
+				RCache.set_ZB(ZB->pRT);
 
-                EDevice->Clear();
+				EDevice->Clear();
 
-                //EDevice->Statistic->RenderDUMP_RT.Begin();
-                EDevice->UpdateView();
-                EDevice->ResetMaterial();
+				//EDevice->Statistic->RenderDUMP_RT.Begin();
+				EDevice->UpdateView();
+				EDevice->ResetMaterial();
 
-                Tools->RenderEnvironment();
+				Tools->RenderEnvironment();
 
-                //. temporary reset filter (      )
-                for (u32 k = 0; k < Caps.raster.dwStages; k++) 
-                {
-                    if (psDeviceFlags.is(rsFilterLinear)) {
-                        EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-                        EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-                        EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-                    }
-                    else {
-                        EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-                        EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-                        EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
-                    }
-                }
+				//. temporary reset filter (      )
+				for (u32 k = 0; k < Caps.raster.dwStages; k++) 
+				{
+					if (psDeviceFlags.is(rsFilterLinear)) {
+						EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+						EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+						EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+					}
+					else {
+						EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+						EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+						EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+					}
+				}
 
-                // draw grid
-                if (psDeviceFlags.is(rsDrawGrid)) {
-                    DU_impl.DrawGrid();
-                    DU_impl.DrawPivot(m_Pivot);
-                }
+				// draw grid
+				if (psDeviceFlags.is(rsDrawGrid)) {
+					DU_impl.DrawGrid();
+					DU_impl.DrawPivot(m_Pivot);
+				}
 
-                try {
-                    Tools->Render();
-                }
-                catch (...) {
-                    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
-                }
+				try {
+					Tools->Render();
+				}
+				catch (...) {
+					ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
+				}
 
-                // draw selection rect
-                if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
+				// draw selection rect
+				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
 
-                // draw axis
-                DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
+				// draw axis
+				DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
 
 
-                //EDevice->Statistic->RenderDUMP_RT.End();
-                //->EStatistic->Show(EDevice->pSystemFont);
-                EDevice->seqRender.Process(rp_Render);
-                if (g_pGamePersistent->OnRenderPPUI_query())
-                {
-                    g_pGamePersistent->OnRenderPPUI_main();
-                }
-                
-                RCache.set_RT(RSwapchainTarget);
-                RCache.set_ZB(RDepth);
-            }
+				//EDevice->Statistic->RenderDUMP_RT.End();
+				//->EStatistic->Show(EDevice->pSystemFont);
+				EDevice->seqRender.Process(rp_Render);
+				if (g_pGamePersistent->OnRenderPPUI_query())
+				{
+					g_pGamePersistent->OnRenderPPUI_main();
+				}
+				
+				RCache.set_RT(RSwapchainTarget);
+				RCache.set_ZB(RDepth);
+			}
 
-            try
-            {
-                
-               EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-                g_bRendering = FALSE;
-               // 
-                //RCache.set_RT(RSwapchainTarget);
-                //  Draw(); 
-                  // end draw
-                UI->BeginFrame();
-               // UI->OnStats();
-                Draw();
+			try
+			{
+				
+			   EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+				g_bRendering = FALSE;
+			   // 
+				//RCache.set_RT(RSwapchainTarget);
+				//  Draw(); 
+				  // end draw
+				UI->BeginFrame();
+			   // UI->OnStats();
+				Draw();
 
-                EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-                UI->EndFrame();
-                EDevice->End();
-            }
-            catch (...) {
-                ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
-            }
+				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+				UI->EndFrame();
+				EDevice->End();
+			}
+			catch (...) {
+				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
+			}
 
-        }
-    }catch(...){
-    	ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
+		}
+	}catch(...){
+		ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
 //		_clear87();
 //		FPU::m24r();
 //    	ELog.DlgMsg(mtError, "Critical error has occured in render routine.\nEditor may work incorrectly.");
-        EDevice->End();
+		EDevice->End();
 //		EDevice->Resize(m_D3DWindow->Width,m_D3DWindow->Height);
-    }
+	}
 
 	OutInfo();
 }
 //---------------------------------------------------------------------------
 void TUI::RealResize()
 {
-    m_Flags.set			(flResize,FALSE);
-    if(m_Size.x&& m_Size.y)
-    EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
-    ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+	m_Flags.set			(flResize,FALSE);
+	if(m_Size.x&& m_Size.y)
+	EDevice->Resize(m_Size.x, m_Size.y,m_Size_Maximize);
+	ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 }
 void TUI::RealUpdateScene()
 {
-    Tools->UpdateProperties	(false);
-    m_Flags.set			(flUpdateScene,FALSE);
+	Tools->UpdateProperties	(false);
+	m_Flags.set			(flUpdateScene,FALSE);
 }
 void TUI::RealRedrawScene()
 {
 
-    Redraw				();         
+	Redraw				();         
 }
 void TUI::OnFrame()
 {
 	EDevice->FrameMove	();
-    SndLib->OnFrame		();
-    // tools on frame
-    if (m_Flags.is(flUpdateScene)) RealUpdateScene();
-    Tools->OnFrame		();
+	SndLib->OnFrame		();
+	// tools on frame
+	if (m_Flags.is(flUpdateScene)) RealUpdateScene();
+	Tools->OnFrame		();
 
 	// show hint
-    ShowObjectHint		();
+	ShowObjectHint		();
 	ResetBreak			();
 #if 0
 	// check mail
-    CheckMailslot		();
+	CheckMailslot		();
 #endif
-    // Progress
-    ProgressDraw		();
+	// Progress
+	ProgressDraw		();
 }
 bool TUI::Idle()         
 {
 	VERIFY(m_bReady);
    // EDevice->b_is_Active  = Application->Active;
 	// input
-    MSG msg;
-    do
-    {
-        ZeroMemory(&msg, sizeof(msg));
-        if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
-        {
-            ::TranslateMessage(&msg);
-            ::DispatchMessage(&msg);
-            if (msg.message == WM_QUIT)
-            {
-                UI->Quit();
-            }
-            continue;
-        }
+	MSG msg;
+	do
+	{
+		ZeroMemory(&msg, sizeof(msg));
+		if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+			if (msg.message == WM_QUIT)
+			{
+				UI->Quit();
+			}
+			continue;
+		}
 
-    } while (msg.message);
-    if (m_Flags.is(flResetUI))RealResetUI();
-    Sleep(1);
+	} while (msg.message);
+	if (m_Flags.is(flResetUI))RealResetUI();
+	Sleep(1);
 
-    OnFrame			();
-    if (EDevice->b_is_Active && !m_Flags.is(flNeedQuit) && !m_AppClosed)
-        RealRedrawScene();
+	OnFrame			();
+	if (EDevice->b_is_Active && !m_Flags.is(flNeedQuit) && !m_AppClosed)
+		RealRedrawScene();
 
-    {
-        for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
-            EDevice->seqParallel[pit]();
-        EDevice->seqParallel.clear();
-        EDevice->seqFrameMT.Process(rp_Frame);
-    }
-    // test quit
-    if (m_Flags.is(flNeedQuit))	RealQuit();
-    return !m_AppClosed;
+	{
+		for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
+			EDevice->seqParallel[pit]();
+		EDevice->seqParallel.clear();
+		EDevice->seqFrameMT.Process(rp_Frame);
+	}
+	// test quit
+	if (m_Flags.is(flNeedQuit))	RealQuit();
+	return !m_AppClosed;
 }
 //---------------------------------------------------------------------------
 void ResetActionToSelect()
 {
-    ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
+	ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
 }
 //---------------------------------------------------------------------------
 
@@ -618,181 +618,182 @@ bool TUI::OnCreate()
 
   //  m_D3DWindow 	= w;
   //  m_D3DPanel		= p;
-    EDevice->Initialize();
+	EDevice->Initialize();
 	// Creation
 	ETOOLS::ray_options	(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
-    pInput			= xr_new<CInput>(FALSE, all_device_key);
+	pInput			= xr_new<CInput>(FALSE, all_device_key);
 
-    Console = xr_new<CConsole>();
-    Console->Initialize();
+	Console = xr_new<CConsole>();
+	Console->Initialize();
 
-    UI->IR_Capture	();
+	UI->IR_Capture	();
 
-    m_bReady		= true;
+	m_bReady		= true;
 
 #if 0
-    if (!CreateMailslot()) {
-        ELog.DlgMsg(mtError, "Can't create mail slot.\nIt's possible two Editors started.");
-        return 		false;
-    }
+	if (!CreateMailslot()) {
+		ELog.DlgMsg(mtError, "Can't create mail slot.\nIt's possible two Editors started.");
+		return 		false;
+	}
 #endif
-    string_path log_path;
-    if (!FS.exist(log_path,_temp_,""))
-    {
-        VerifyPath(log_path);
-    }
-    if (!FS.path_exist(_local_root_)){
-    	ELog.DlgMsg	(mtError,"Undefined Editor local directory.");
-        return 		false;
-    }
+	string_path log_path;
+	if (!FS.exist(log_path,_temp_,""))
+	{
+		VerifyPath(log_path);
+	}
+	if (!FS.path_exist(_local_root_)){
+		ELog.DlgMsg	(mtError,"Undefined Editor local directory.");
+		return 		false;
+	}
 
 	BeginEState		(esEditScene);
-    GetRenderWidth() = 128;
-    GetRenderHeight() = 128;
-    RTSize = { GetRenderWidth(), GetRenderHeight() };
-    EDevice->fASPECT = (float)RTSize.x / (float)RTSize.y;
-    EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
-    EDevice->m_fNearer = EDevice->mProject._43;
+	GetRenderWidth() = 128;
+	GetRenderHeight() = 128;
+	RTSize = { GetRenderWidth(), GetRenderHeight() };
+	EDevice->fASPECT = (float)RTSize.x / (float)RTSize.y;
+	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
+	EDevice->m_fNearer = EDevice->mProject._43;
 
 
-    RCache.set_xform_project(EDevice->mProject);
-    RCache.set_xform_world(Fidentity);
-    RT.create("rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-    ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y* EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+	RCache.set_xform_project(EDevice->mProject);
+	RCache.set_xform_world(Fidentity);
+	RT.create("rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y* EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
 
-    return true;
+	return true;
 }
 
 void TUI::OnDestroy()
 {
-    Console->Destroy();
-    xr_delete(Console);
-    RT.destroy();
-    ZB.destroy();
+	Console->Destroy();
+	xr_delete(Console);
+	RT.destroy();
+	ZB.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady		= false;
 	UI->IR_Release	();
-    xr_delete		(pInput);
-    EndEState		();
+	xr_delete		(pInput);
+	EndEState		();
 
-    EDevice->ShutDown();    
+	EDevice->ShutDown();    
 }
 
 SPBItem* TUI::ProgressStart		(float max_val, LPCSTR text)
 {
 	VERIFY(m_bReady);
 	SPBItem* item 				= xr_new<SPBItem>(text,"",max_val);
-    m_ProgressItems.push_back	(item);
-    ELog.Msg					(mtInformation,text);
-    ProgressDraw				();
-    if (!m_HConsole)
-    {
-        AllocConsole();
-        m_HConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    }
+	m_ProgressItems.push_back	(item);
+	ELog.Msg					(mtInformation,text);
+	ProgressDraw				();
+	//if (!m_HConsole)
+	//{
+	//    AllocConsole();
+	//    m_HConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	//}
 	return item;
 }
 void TUI::ProgressEnd			(SPBItem*& pbi)
 {
 	VERIFY(m_bReady);
-    if (pbi){
-        PBVecIt it=std::find(m_ProgressItems.begin(),m_ProgressItems.end(),pbi); VERIFY(it!=m_ProgressItems.end());
-        m_ProgressItems.erase	(it);
-        xr_delete				(pbi);
-        ProgressDraw			();
-        if (m_ProgressItems.size() == 0)
-        {
-            FreeConsole();
-            m_HConsole = 0;
-        }
-    }
+	if (pbi){
+		PBVecIt it=std::find(m_ProgressItems.begin(),m_ProgressItems.end(),pbi); VERIFY(it!=m_ProgressItems.end());
+		m_ProgressItems.erase	(it);
+		xr_delete				(pbi);
+		ProgressDraw			();
+		//if (m_ProgressItems.size() == 0)
+		//{
+		//    FreeConsole();
+		//    m_HConsole = 0;
+		//}
+	}
 }
 
 void TUI::ProgressDraw()
 {
-    SPBItem* pbi = UI->ProgressLast();
-    if (pbi)
-    {
-        xr_string txt;
-        float 		p, m;
-        pbi->GetInfo(txt, p, m);
-        // progress
-        int val = fis_zero(m) ? 0 : (int)((p / m) * 100);
-        string2048 out;
-        xr_sprintf(out, sizeof(out), "[%d%%]%s\r\n", val, txt.c_str());
-        DWORD  dw;
-        SetConsoleTextAttribute(m_HConsole, 10);
-        ::WriteConsole(m_HConsole, out, xr_strlen(out), &dw, NULL);
-    }
+	SPBItem* pbi = UI->ProgressLast();
+	if (pbi)
+	{
+		xr_string txt;
+		float 		p, m;
+		pbi->GetInfo(txt, p, m);
+		// progress
+		int val = fis_zero(m) ? 0 : (int)((p / m) * 100);
+		//string2048 out;
+		//xr_sprintf(out, sizeof(out), "[%d%%]%s\r\n", val, txt.c_str());
+		//Msg("[%d%%]%s\r\n", val, txt.c_str());
+	   // DWORD  dw;
+	   // SetConsoleTextAttribute(m_HConsole, 10);
+	   // ::WriteConsoleA(m_HConsole, out, xr_strlen(out), &dw, NULL);
+	}
 }
 
 void TUI::ShowConsole()
 {
-	if (!m_HConsole)
-	{
-		AllocConsole();
-		m_HConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(m_HConsole, 15);
-	}
+	//if (!m_HConsole)
+	//{
+	//	AllocConsole();
+	//	m_HConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	//	SetConsoleTextAttribute(m_HConsole, 15);
+	//}
 }
 
 void TUI::WriteConsole(TMsgDlgType mt, const char* txt)
 {
-    if (m_HConsole)
-	{
-		switch (mt)
-		{
-		case mtError:
-			SetConsoleTextAttribute(m_HConsole, 12);
-            break;
-		case mtInformation:
-			SetConsoleTextAttribute(m_HConsole, 11);
-            break;
-		case mtConfirmation:
-			SetConsoleTextAttribute(m_HConsole, 14);
-            break;
-        default:
-            SetConsoleTextAttribute(m_HConsole,15);
-            break;
-        }
-
-		DWORD  dw;
-		::WriteConsole(m_HConsole, txt, xr_strlen(txt), &dw, NULL);
-		::WriteConsole(m_HConsole, "\r\n", 2, &dw, NULL);
-    }
+	//if (m_HConsole)
+	//{
+	//	switch (mt)
+	//	{
+	//	case mtError:
+	//		SetConsoleTextAttribute(m_HConsole, 12);
+	//		break;
+	//	case mtInformation:
+	//		SetConsoleTextAttribute(m_HConsole, 11);
+	//		break;
+	//	case mtConfirmation:
+	//		SetConsoleTextAttribute(m_HConsole, 14);
+	//		break;
+	//	default:
+	//		SetConsoleTextAttribute(m_HConsole,15);
+	//		break;
+	//	}
+	//
+	//	DWORD  dw;
+	//	::WriteConsole(m_HConsole, txt, xr_strlen(txt), &dw, NULL);
+	//	::WriteConsole(m_HConsole, "\r\n", 2, &dw, NULL);
+	//}
 }
 
 void TUI::CloseConsole()
 {
-	if (m_ProgressItems.size() == 0)
-	{
-		FreeConsole();
-		m_HConsole = 0;
-	}
+	//if (m_ProgressItems.size() == 0)
+	//{
+	//	FreeConsole();
+	//	m_HConsole = 0;
+	//}
 }
 
 void TUI::OnDrawUI()
 {
-    UIKeyPressForm::Update(EDevice->fTimeGlobal);
-    UIEditLightAnim::Update();
-    UIImageEditorForm::Update();
-    UISoundEditorForm::Update();
-    UIMinimapEditorForm::Update();
-    UILogForm::Update();
-    EDevice->seqDrawUI.Process(rp_DrawUI);
+	UIKeyPressForm::Update(EDevice->fTimeGlobal);
+	UIEditLightAnim::Update();
+	UIImageEditorForm::Update();
+	UISoundEditorForm::Update();
+	UIMinimapEditorForm::Update();
+	UILogForm::Update();
+	EDevice->seqDrawUI.Process(rp_DrawUI);
 }
 
 void TUI::RealResetUI()
 {
-    m_Flags.set(flResetUI, FALSE);
-    string_path 		ini_path;
-    if (FS.exist(ini_path, "$server_data_root$", UI->EditorName(), "_imgui_default.ini"))
-    {
-        UI->Resize(1280, 800);
-        ImGui::LoadIniSettingsFromDisk(ini_path);
-    }
+	m_Flags.set(flResetUI, FALSE);
+	string_path 		ini_path;
+	if (FS.exist(ini_path, "$server_data_root$", UI->EditorName(), "_imgui_default.ini"))
+	{
+		UI->Resize(1280, 800);
+		ImGui::LoadIniSettingsFromDisk(ini_path);
+	}
 }
 
 void TUI::OnStats(CGameFont* font)
@@ -801,35 +802,35 @@ void TUI::OnStats(CGameFont* font)
 
 void SPBItem::GetInfo			(xr_string& txt, float& p, float& m)
 {
-    string128 temp_buff = {};
+	string128 temp_buff = {};
 
-    if (info.size())sprintf(temp_buff, "%s (%s)",text.c_str(),info.c_str());
-    else			sprintf(temp_buff, "%s",text.c_str());
+	if (info.size())sprintf(temp_buff, "%s (%s)",text.c_str(),info.c_str());
+	else			sprintf(temp_buff, "%s",text.c_str());
 
-    txt = temp_buff;
+	txt = temp_buff;
 
-    p				= progress;
-    m				= max;
+	p				= progress;
+	m				= max;
 }  
 void SPBItem::Inc				(LPCSTR info, bool bWarn)
 {
-    Info						(info,bWarn);
-    Update						(progress+1.f);
+	Info						(info,bWarn);
+	Update						(progress+1.f);
 }
 void SPBItem::Update			(float val)
 {
-    progress					= val;
-    UI->ProgressDraw			();
+	progress					= val;
+	UI->ProgressDraw			();
 }
 void SPBItem::Info				(LPCSTR text, bool bWarn)
 {
 	if (text&&text[0]){
-    	info					= text;
-        xr_string 				txt;
-        float 					p,m;
-        GetInfo					(txt,p,m);
-	    ELog.Msg				(bWarn?mtError:mtInformation,txt.c_str());
-	    UI->ProgressDraw		();
-    }
+		info					= text;
+		xr_string 				txt;
+		float 					p,m;
+		GetInfo					(txt,p,m);
+		ELog.Msg				(bWarn?mtError:mtInformation,txt.c_str());
+		UI->ProgressDraw		();
+	}
 }
 
