@@ -4,7 +4,7 @@
 #include "CameraLook.h"
 #include "../xrEngine/Cameramanager.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "actor.h"
+#include "Actor.h"
 #include "object_broker.h"
 
 #include "../xrEngine/GameMtlLib.h"

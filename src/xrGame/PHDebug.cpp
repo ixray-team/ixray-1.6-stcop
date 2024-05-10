@@ -2,7 +2,7 @@
 
 #ifdef DEBUG_DRAW
 #include "PHDebug.h"
-#include "..\xrPhysics\PHWorld.h"
+#include "../xrPhysics/PHWorld.h"
 
 #include "ui_base.h"
 float	dbg_text_height_scale = 1.f;
@@ -140,11 +140,11 @@ void _cdecl DBG_OutText(LPCSTR s, ...)
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
 //#include "physics.h"
-#include "../xrphysics/MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 //#include "PHObject.h"
-#include "../xrphysics/ExtendedGeom.h"
-#include "../xrphysics/iphworld.h"
-#include "../xrphysics/physicsshell.h"
+#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/iphworld.h"
+#include "../xrPhysics/physicsshell.h"
 
 
 #include "Level.h"

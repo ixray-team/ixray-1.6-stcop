@@ -1,6 +1,6 @@
 #pragma once
 
-#include "weapon.h"
+#include "Weapon.h"
 #include "hudsound.h"
 #include "../xrSound/ai_sounds.h"
 

@@ -10,7 +10,7 @@
 #include "physicsshellholder.h"
 #include "attachable_item.h"
 #include "inventoryowner.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "../xrEngine/xr_input.h"
 #include "ui_base.h"
 

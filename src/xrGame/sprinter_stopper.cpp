@@ -2,9 +2,9 @@
 #include "sprinter_stopper.h"
 #include "game_state_accumulator.h"
 #include "game_cl_base.h"
-#include "level.h"
+#include "Level.h"
 #include "ammunition_groups.h"
-#include "actor.h"
+#include "Actor.h"
 
 namespace award_system
 {

@@ -4,9 +4,9 @@
 #include "xrMessages.h"
 #include "xrServer_Object_Base.h"
 #include "xrServer_Objects.h"
-#include "level.h"
-#include "xrserver_objects_alife_monsters.h"
-#include "actor.h"
+#include "Level.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "Actor.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/igame_persistent.h"
 #include "date_time.h"
@@ -49,7 +49,7 @@ int			g_sv_adm_menu_ping_limit		= 25;
 
 extern xr_token	round_end_result_str[];
 
-#include "ui\UIBuyWndShared.h"
+#include "ui/UIBuyWndShared.h"
 
 game_sv_mp::game_sv_mp() :inherited()
 {

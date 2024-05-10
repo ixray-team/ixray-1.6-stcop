@@ -14,7 +14,7 @@
 #include "../xrEngine/motion.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "script_entity_action.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "script_game_object.h"
 #include "../xrScripts/script_engine.h"
 #include "movement_manager_space.h"

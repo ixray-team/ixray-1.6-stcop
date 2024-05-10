@@ -21,8 +21,8 @@
 #include "cover_point.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
-#include "inventory.h"
-#include "weapon.h"
+#include "Inventory.h"
+#include "Weapon.h"
 
 using namespace StalkerDecisionSpace;
 

@@ -20,7 +20,7 @@
 #include "agent_member_manager.h"
 #include "ai_space.h"
 #include "profiler.h"
-#include "actor.h"
+#include "Actor.h"
 #include "../xrEngine/camerabase.h"
 #include "gamepersistent.h"
 #include "actor_memory.h"

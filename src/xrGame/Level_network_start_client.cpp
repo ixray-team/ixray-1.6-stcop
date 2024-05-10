@@ -1,7 +1,7 @@
 #include "stdafx.h"
 //#include "PHdynamicdata.h"
 //#include "Physics.h"
-#include "level.h"
+#include "Level.h"
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/igame_persistent.h"
 
@@ -9,9 +9,9 @@
 #include "game_cl_base.h"
 #include "NET_Queue.h"
 #include "file_transfer.h"
-#include "hudmanager.h"
+#include "HUDManager.h"
 
-#include "../xrphysics/iphworld.h"
+#include "../xrPhysics/iphworld.h"
 
 
 #include "phcommander.h"

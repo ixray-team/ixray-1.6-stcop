@@ -8,8 +8,8 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
-#include "../../../xrphysics/physicsshell.h"
-#include "../../../xrphysics/phvalide.h"
+#include "../../../xrPhysics/physicsshell.h"
+#include "../../../xrPhysics/phvalide.h"
 #include "ai_crow.h"
 #include "../../level.h"
 #include "../../../Include/xrRender/RenderVisual.h"
@@ -18,9 +18,9 @@
 #include "../../actor.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
-#include "hit.h"
+#include "Hit.h"
 #ifdef	DEBUG
-//#include "../xrphysics/phvalide.h"
+//#include "../xrPhysics/phvalide.h"
 #endif
 
 void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)

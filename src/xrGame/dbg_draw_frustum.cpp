@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "level.h"
+#include "Level.h"
 #include "../xrCDB/frustum.h"
 
 #ifdef DEBUG_DRAW

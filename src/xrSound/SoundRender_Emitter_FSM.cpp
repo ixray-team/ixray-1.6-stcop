@@ -4,7 +4,7 @@
 #include "SoundRender_Emitter.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
-#include "..\xrSound\ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 XRSOUND_API extern float psSoundCull;
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "bolt.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "../xrEngine/xr_level_controller.h"
 
 CBolt::CBolt(void) 

@@ -7,7 +7,7 @@
 #include "xrServer.h"
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife_All.h"
-#include "level.h"
+#include "Level.h"
 #include "game_cl_base.h"
 #include "game_sv_mp.h"
 #include "game_cl_base_weapon_usage_statistic.h"

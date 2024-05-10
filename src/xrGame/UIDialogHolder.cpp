@@ -3,8 +3,8 @@
 #include "ui/UIDialogWnd.h"
 #include "UIGameCustom.h"
 #include "UICursor.h"
-#include "level.h"
-#include "actor.h"
+#include "Level.h"
+#include "Actor.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/CustomHud.h"
 

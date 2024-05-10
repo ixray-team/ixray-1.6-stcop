@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "game_cl_base.h"
-#include "level.h"
+#include "Level.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
 #include "../xrScripts/script_engine.h"

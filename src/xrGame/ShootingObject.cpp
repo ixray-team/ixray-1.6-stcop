@@ -8,10 +8,10 @@
 #include "ShootingObject.h"
 #include "WeaponAmmo.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "spectator.h"
 #include "game_cl_base.h"
-#include "level.h"
+#include "Level.h"
 #include "level_bullet_manager.h"
 #include "game_cl_single.h"
 

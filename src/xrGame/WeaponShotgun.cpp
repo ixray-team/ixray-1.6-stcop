@@ -2,9 +2,9 @@
 #include "script_game_object.h"
 #include "weaponshotgun.h"
 #include "entity.h"
-#include "inventory.h"
-#include "level.h"
-#include "actor.h"
+#include "Inventory.h"
+#include "Level.h"
+#include "Actor.h"
 #include "script_game_object.h"
 
 CWeaponShotgun::CWeaponShotgun()

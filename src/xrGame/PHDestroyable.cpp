@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "phdestroyable.h"
 #include "physicsshellholder.h"
 #include "xrMessages.h"
 #include "object_factory.h"
 #include "xrServer_Objects_ALife.h"
 #include "Level.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "Actor.h"
 #include "CharacterPhysicsSupport.h"
 #include "ai_object_location.h"
@@ -15,9 +15,9 @@
 #include "game_graph.h"
 //#include "PHCollideValidator.h"
 //#include "PHShell.h"
-#include "../xrphysics/MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #ifdef DEBUG
-#include "../xrphysics/IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 #endif
 
 #include "../Include/xrRender/Kinematics.h"

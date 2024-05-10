@@ -4,7 +4,7 @@
 
 #include "ui/UIXmlInit.h"
 #include "ui/UIMApWnd.h"
-#include "level.h"
+#include "Level.h"
 #include "ui/UIInventoryUtilities.h"
 #include "../xrEngine/xr_object.h"
 #include "object_broker.h"

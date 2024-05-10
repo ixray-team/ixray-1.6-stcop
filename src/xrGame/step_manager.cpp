@@ -2,7 +2,7 @@
 #include "step_manager.h"
 #include "entity_alive.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "level.h"
+#include "Level.h"
 #include "gamepersistent.h"
 #include "material_manager.h"
 #include "profiler.h"

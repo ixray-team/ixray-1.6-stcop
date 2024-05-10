@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PHShellCreator.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
 #include "../Include/xrRender/Kinematics.h"

@@ -14,7 +14,7 @@
 #include "aimers_weapon.h"
 #include "aimers_bone.h"
 #include "stalker_animation_manager.h"
-#include "weapon.h"
+#include "Weapon.h"
 
 using MonsterSpace::SBoneRotation;
 
@@ -289,7 +289,7 @@ Fvector CSightManager::object_position				() const
 	return				(target);
 }
 
-//#include "actor.h"
+//#include "Actor.h"
 //CActor*			Actor()	;
 
 Fvector	CSightManager::aiming_position				() const

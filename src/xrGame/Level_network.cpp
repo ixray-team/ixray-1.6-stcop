@@ -3,7 +3,7 @@
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
 #include "xrserver.h"
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "game_cl_base.h"
 #include "PHCommander.h"
 #include "net_queue.h"
@@ -21,7 +21,7 @@
 #include "ui/UIPdaWnd.h"
 #include "../xrNetServer/NET_AuthCheck.h"
 
-#include "../xrphysics/physicscommon.h"
+#include "../xrPhysics/physicscommon.h"
 ENGINE_API bool g_dedicated_server;
 
 const int max_objects_size			= 2*1024;

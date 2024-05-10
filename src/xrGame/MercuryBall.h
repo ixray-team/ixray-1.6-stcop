@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////
 
 #pragma once
-#include "artefact.h"
+#include "Artefact.h"
 
 class CMercuryBall : public CArtefact 
 {

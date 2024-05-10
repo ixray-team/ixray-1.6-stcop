@@ -9,13 +9,13 @@
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"
-#include "level.h"
+#include "Level.h"
 #include "game_base_space.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 
 #include "ActorEffector.h"
-#include "actor.h"
+#include "Actor.h"
 #include "spectator.h"
 
 #include "UI/UItextureMaster.h"
@@ -25,7 +25,7 @@
 
 #include "holder_custom.h"
 #include "game_cl_base.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "UI/UIGameTutorial.h"
 
@@ -879,7 +879,7 @@ void CGamePersistent::RestoreEffectorDOF()
 {
 	SetEffectorDOF			(m_dof[3]);
 }
-#include "hudmanager.h"
+#include "HUDManager.h"
 
 //	m_dof		[4];	// 0-dest 1-current 2-from 3-original
 void CGamePersistent::UpdateDof()

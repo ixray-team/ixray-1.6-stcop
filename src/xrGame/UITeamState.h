@@ -5,7 +5,7 @@
 
 #include "game_cl_base.h"
 #include "game_base.h"
-#include "level.h"
+#include "Level.h"
 
 #include "../xrCore/associative_vector.h"
 

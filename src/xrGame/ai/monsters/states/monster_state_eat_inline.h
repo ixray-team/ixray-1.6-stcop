@@ -6,7 +6,7 @@
 #include "state_custom_action.h"
 #include "monster_state_eat_eat.h"
 #include "monster_state_eat_drag.h"
-#include "../../../../xrphysics/PhysicsShell.h"
+#include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../PHMovementControl.h"
 #include "../../../CharacterPhysicsSupport.h"
 #ifdef _DEBUG

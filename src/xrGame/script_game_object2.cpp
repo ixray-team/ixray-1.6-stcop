@@ -30,7 +30,7 @@
 #include "item_manager.h"
 #include "danger_manager.h"
 #include "memory_space.h"
-#include "actor.h"
+#include "Actor.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/CameraBase.h"
 #include "ai/stalker/ai_stalker.h"

@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
-#include "../../../../xrphysics/PhysicsShell.h"
+#include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../game_graph.h"
 #include "../../../../xrServerEntities/game_level_cross_table.h"
 #include "../../../../xrServerEntities/xrserver_objects_alife_monsters.h"

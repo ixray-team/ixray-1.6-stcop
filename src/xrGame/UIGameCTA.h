@@ -3,7 +3,7 @@
 
 #include "UIGameMP.h"
 #include "game_base.h"
-#include "inventory.h"
+#include "Inventory.h"
 
 
 class UITeamPanels;

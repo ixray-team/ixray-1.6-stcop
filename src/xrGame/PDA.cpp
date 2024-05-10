@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "pda.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "Entity.h"
-#include "actor.h"
+#include "Actor.h"
 
 #include "xrserver.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "level.h"
+#include "Level.h"
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"

@@ -21,7 +21,7 @@
 #include "inventoryBox.h"
 #include "ZoneCampfire.h"
 #include "physicobject.h"
-#include "artefact.h"
+#include "Artefact.h"
 #include "stalker_sound_data.h"
 
 class CWeapon;

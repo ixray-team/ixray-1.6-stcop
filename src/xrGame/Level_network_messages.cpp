@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "entity.h"
 #include "xrserver_objects.h"
-#include "level.h"
-#include "xrmessages.h"
+#include "Level.h"
+#include "xrMessages.h"
 #include "game_cl_base.h"
 #include "net_queue.h"
 //#include "Physics.h"
@@ -15,7 +15,7 @@
 #include "level_graph.h"
 #include "file_transfer.h"
 #include "message_filter.h"
-#include "../xrphysics/iphworld.h"
+#include "../xrPhysics/iphworld.h"
 
 extern LPCSTR map_ver_string;
 LPSTR remove_version_option(LPCSTR opt_str, LPSTR new_opt_str, u32 new_opt_str_size)

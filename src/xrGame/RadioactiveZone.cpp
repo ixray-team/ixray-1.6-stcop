@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "radioactivezone.h"
-#include "level.h"
-#include "xrmessages.h"
+#include "Level.h"
+#include "xrMessages.h"
 #include "../xrEngine/bone.h"
-#include "actor.h"
+#include "Actor.h"
 #include "game_base_space.h"
 #include "Hit.h"
 #include "../xrengine/xr_collide_form.h"
@@ -87,7 +87,7 @@ void CRadioactiveZone::feel_touch_new					(CObject* O	)
 	};
 };
 
-#include "actor.h"
+#include "Actor.h"
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 {
 

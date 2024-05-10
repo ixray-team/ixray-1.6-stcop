@@ -2,7 +2,7 @@
 
 #include "UIWindow.h"
 #include "gametype_chooser.h"
-#include "..\uiGameCustom.h"
+#include "../UIGameCustom.h"
 
 class CUIListBox;
 class CUIListBoxItem;

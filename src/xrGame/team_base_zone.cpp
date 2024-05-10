@@ -8,10 +8,10 @@
 
 #include "stdafx.h"
 #include "team_base_zone.h"
-#include "xrserver_objects_alife_monsters.h"
-#include "hit.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "Hit.h"
 #include "Actor.h"
-#include "level.h"
+#include "Level.h"
 #include "xrserver.h"
 #include "game_cl_base.h"
 #include "map_manager.h"

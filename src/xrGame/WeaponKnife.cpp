@@ -3,7 +3,7 @@
 #include "WeaponKnife.h"
 #include "Entity.h"
 #include "Actor.h"
-#include "level.h"
+#include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"

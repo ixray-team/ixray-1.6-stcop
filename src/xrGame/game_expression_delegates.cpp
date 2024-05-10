@@ -3,7 +3,7 @@
 #include "Actor.h"
 #include "CustomOutfit.h"
 #include "EntityCondition.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "ActorHelmet.h"
 #include "ActorCondition.h"
 #include "PDA.h"

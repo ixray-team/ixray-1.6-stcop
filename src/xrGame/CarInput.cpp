@@ -5,16 +5,16 @@
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "phdestroyable.h"
 #include "car.h"
-#include "actor.h"
+#include "Actor.h"
 #include "cameralook.h"
 #include "camerafirsteye.h"
 #include "script_entity_action.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "level.h"
+#include "Level.h"
 #include "CarWeapon.h"
 
 void	CCar::OnMouseMove(int dx, int dy)

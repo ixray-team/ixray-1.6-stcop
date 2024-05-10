@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "Helicopter.h"
-#include "level.h"
+#include "Level.h"
 #include "patrol_path.h"
 #include "patrol_path_storage.h"
 #include "script_game_object.h"

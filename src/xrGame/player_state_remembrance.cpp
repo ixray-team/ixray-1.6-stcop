@@ -2,9 +2,9 @@
 #include "player_state_remembrance.h"
 #include "kills_store.h"
 #include "game_cl_base.h"
-#include "level.h"
+#include "Level.h"
 #include "game_state_accumulator.h"
-#include "actor.h"
+#include "Actor.h"
 
 namespace award_system
 {

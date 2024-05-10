@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "actor.h"
-#include "weapon.h"
-#include "mercuryball.h"
-#include "inventory.h"
+#include "Actor.h"
+#include "Weapon.h"
+#include "MercuryBall.h"
+#include "Inventory.h"
 #include "character_info.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "UsableScriptObject.h"
-#include "customzone.h"
+#include "CustomZone.h"
 #include "../xrEngine/gamemtllib.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UIGameCustom.h"
@@ -16,7 +16,7 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "clsid_game.h"
-#include "hudmanager.h"
+#include "HUDManager.h"
 
 
 void CActor::feel_touch_new				(CObject* O)
@@ -65,7 +65,7 @@ BOOL CActor::feel_touch_on_contact	(CObject *O)
 	return		(FALSE);
 }
 
-#include "ai\monsters\ai_monster_utils.h"
+#include "ai/monsters/ai_monster_utils.h"
 #include "PickupManager.h"
 
 void CActor::PickupModeUpdate()

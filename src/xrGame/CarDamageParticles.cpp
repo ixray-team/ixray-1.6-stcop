@@ -5,11 +5,11 @@
 #include "PHDebug.h"
 #endif
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrphysics/IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 //#include "PHWorld.h"
 //extern CPHWorld*	ph_world;
 void read_bones(IKinematics *K, LPCSTR S , xr_vector<u16>& bones)

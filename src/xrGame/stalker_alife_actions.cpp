@@ -12,7 +12,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "inventory_item.h"
 #include "script_game_object.h"
-#include "inventory.h"
+#include "Inventory.h"
 #include "weaponmagazined.h"
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"

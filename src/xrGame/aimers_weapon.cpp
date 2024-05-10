@@ -13,7 +13,7 @@
 #include "game_object_space.h"
 #include "gameobject.h"
 #include "animation_movement_controller.h"
-#include "weapon.h"
+#include "Weapon.h"
 
 using aimers::weapon;
 

@@ -6,7 +6,7 @@
 #include "alife_simulator_header.h"
 #include "level_graph.h"
 #include "../xrEngine/fdemorecord.h"
-#include "level.h"
+#include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "stalker_movement_manager_smart_cover.h"
@@ -14,7 +14,7 @@
 #include "xrServer.h"
 #include "autosave_manager.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "huditem.h"
 #include "UIGameCustom.h"
 #include "UI/UIDialogWnd.h"

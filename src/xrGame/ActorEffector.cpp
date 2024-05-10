@@ -5,7 +5,7 @@
 #include "../xrEngine/effectorPP.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "object_broker.h"
-#include "actor.h"
+#include "Actor.h"
 
 void AddEffector		(CActor* A, int type, const shared_str& sect_name)
 {

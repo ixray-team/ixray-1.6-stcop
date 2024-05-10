@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
-#include "actor.h"
+#include "Actor.h"
 #include "level_changer.h"
 
 using namespace luabind;

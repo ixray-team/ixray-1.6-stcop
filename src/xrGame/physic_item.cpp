@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "physic_item.h"
-#include "../xrphysics/physicsshell.h"
+#include "../xrPhysics/physicsshell.h"
 #include "xrserver_objects.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/KinematicsAnimated.h"

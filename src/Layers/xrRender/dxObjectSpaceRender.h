@@ -4,8 +4,8 @@
 
 #ifdef DEBUG
 
-#include "..\..\Include\xrRender\ObjectSpaceRender.h"
-#include "..\..\xrengine\xr_collide_form.h"
+#include "../../Include/xrRender/ObjectSpaceRender.h"
+#include "../../xrEngine/xr_collide_form.h"
 class dxObjectSpaceRender : public IObjectSpaceRender
 {
 public:

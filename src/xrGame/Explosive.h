@@ -9,7 +9,7 @@
 #include "inventory_item.h"
 #include "../xrSound/ai_sounds.h"
 #include "../xrScripts/script_export_space.h"
-#include "../xrphysics/DamageSource.h"
+#include "../xrPhysics/DamageSource.h"
 #include "wallmark_manager.h"
 
 #include "../xrParticles/stdafx.h"

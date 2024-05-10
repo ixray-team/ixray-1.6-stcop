@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "mincer.h"
-#include "xrmessages.h"
-#include "level.h"
+#include "xrMessages.h"
+#include "Level.h"
 #include "CustomZone.h"
 #include "entity_alive.h"
 #include "PHDestroyableNotificate.h"
-#include "actor.h"
+#include "Actor.h"
 
 CMincer::CMincer(void) 
 {

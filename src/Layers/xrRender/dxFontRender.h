@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\Include\xrRender\FontRender.h"
+#include "../../Include/xrRender/FontRender.h"
 
 class dxFontRender : public IFontRender
 {

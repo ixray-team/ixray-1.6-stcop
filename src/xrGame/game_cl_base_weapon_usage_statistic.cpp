@@ -3,7 +3,7 @@
 #include "Level.h"
 #include "Weapon.h"
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "Actor.h"
 #include "ExplosiveItem.h"
 #include "xrServer.h"

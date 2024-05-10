@@ -6,7 +6,7 @@
 #include "../xrEngine/LightAnimLibrary.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
-#include "../xrphysics/MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 
 #include "Actor.h"
 #include "physics_game.h"
@@ -260,7 +260,7 @@ void CHelicopter::PHHit(SHit &H)
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 
-#include "../xrphysics/extendedgeom.h"
+#include "../xrPhysics/extendedgeom.h"
 void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	
 	do_colide=true; 

@@ -7,7 +7,7 @@
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 #include "script_game_object.h"
-#include "actor.h"
+#include "Actor.h"
 
 SPhraseDialogData::SPhraseDialogData ()
 {

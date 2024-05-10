@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CarWeapon.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "object_broker.h"

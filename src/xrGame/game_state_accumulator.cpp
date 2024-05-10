@@ -3,7 +3,7 @@
 #include "Level.h"
 #include "actor_mp_client.h"
 #include "CustomOutfit.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "game_cl_deathmatch.h"
 #include "UIGameCTA.h"
 #include "ui/UIMpTradeWnd.h"

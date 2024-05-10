@@ -31,7 +31,7 @@ void car_memory::reload(LPCSTR section)
 	m_aspect			= pSettings->r_float(section,"view_aspect");
 	m_far_plane			= pSettings->r_float(section,"view_far_plane");
 }
-#include "actor.h"
+#include "Actor.h"
 BOOL car_memory::feel_vision_isRelevant	(CObject *object)
 {
 	return (nullptr!=smart_cast<CActor*>(object));

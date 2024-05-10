@@ -7,8 +7,8 @@
 #include "map_spot.h"
 #include "map_manager.h"
 
-#include "level.h"
-#include "actor.h"
+#include "Level.h"
+#include "Actor.h"
 #include "../xrScripts/script_engine.h"
 #include "script_game_object.h"
 #include "ai_space.h"

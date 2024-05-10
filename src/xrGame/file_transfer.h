@@ -2,7 +2,7 @@
 #define FILETRANSFER
 
 #include "../xrCore/associative_vector.h"
-#include "..\xrEngine\StatGraph.h"
+#include "../xrEngine/StatGraph.h"
 #include "filetransfer_node.h"
 #include "filereceiver_node.h"
 

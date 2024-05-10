@@ -3,13 +3,13 @@
 
 #include "stdafx.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "actoreffector.h"
 #include "Missile.h"
-#include "inventory.h"
-#include "weapon.h"
+#include "Inventory.h"
+#include "Weapon.h"
 #include "map_manager.h"
-#include "level.h"
+#include "Level.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 #include "WeaponMagazined.h"

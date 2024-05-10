@@ -6,7 +6,7 @@
 #	include "PHDebug.h"
 #endif // DEBUG
 #include "Inventory.h"
-//#include "hit.h"
+//#include "Hit.h"
 #include "PHDestroyable.h"
 
 #include "cameralook.h"
@@ -15,10 +15,10 @@
 #include "ActorEffector.h"
 #include "math.h"
 #include "script_entity_action.h"
-#include "inventory.h"
-#include "xrserver_objects_alife_items.h"
+#include "Inventory.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "level.h"
+#include "Level.h"
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
 #include "game_object_space.h"

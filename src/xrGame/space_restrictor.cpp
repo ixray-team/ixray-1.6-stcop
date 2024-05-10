@@ -10,7 +10,7 @@
 #include "pch_script.h"
 #include "space_restrictor.h"
 #include "xrServer_Objects_ALife.h"
-#include "level.h"
+#include "Level.h"
 #include "space_restriction_manager.h"
 #include "restriction_space.h"
 #include "ai_space.h"
@@ -207,7 +207,7 @@ continue_loop:
 
 #ifdef DEBUG
 
-#include "customzone.h"
+#include "CustomZone.h"
 #include "ui_base.h"
 
 extern	Flags32	dbg_net_Draw_Flags;

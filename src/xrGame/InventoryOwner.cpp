@@ -3,15 +3,15 @@
 #include "InventoryOwner.h"
 #include "entity_alive.h"
 #include "pda.h"
-#include "actor.h"
+#include "Actor.h"
 #include "trade.h"
-#include "inventory.h"
-#include "xrserver_objects_alife_items.h"
+#include "Inventory.h"
+#include "xrServer_Objects_ALife_Items.h"
 #include "character_info.h"
 #include "script_game_object.h"
 #include "../xrScripts/script_engine.h"
 #include "AI_PhraseDialogManager.h"
-#include "level.h"
+#include "Level.h"
 #include "game_base_space.h"
 #include "PhraseDialog.h"
 #include "xrserver.h"
@@ -276,7 +276,7 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
 
 }
 #include "UIGameSP.h"
-#include "ui\UITalkWnd.h"
+#include "ui/UITalkWnd.h"
 
 void CInventoryOwner::StopTalk()
 {

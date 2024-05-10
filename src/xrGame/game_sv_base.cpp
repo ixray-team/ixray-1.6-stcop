@@ -4,7 +4,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/script_engine_space.h"
-#include "level.h"
+#include "Level.h"
 #include "xrserver.h"
 #include "ai_space.h"
 #include "game_sv_event_queue.h"

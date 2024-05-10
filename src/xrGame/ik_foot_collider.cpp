@@ -10,7 +10,7 @@
 #include "entity_alive.h"
 
 //#include "ode_include.h"
-#include "../xrphysics/MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 
 #include "ik_collide_data.h"
 

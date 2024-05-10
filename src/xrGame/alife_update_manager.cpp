@@ -16,7 +16,7 @@
 #include "alife_object_registry.h"
 #include "ef_storage.h"
 #include "xrserver.h"
-#include "level.h"
+#include "Level.h"
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"

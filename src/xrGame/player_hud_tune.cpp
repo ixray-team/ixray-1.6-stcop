@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "player_hud.h"
-#include "level.h"
+#include "Level.h"
 #include "debug_renderer.h"
 #include "../xrEngine/xr_input.h"
 #include "HudManager.h"

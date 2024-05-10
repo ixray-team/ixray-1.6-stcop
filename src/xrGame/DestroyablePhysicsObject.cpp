@@ -2,7 +2,7 @@
 #include "pch_script.h"
 #include "PHCollisionDamageReceiver.h"
 #include "PhysicObject.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "hit_immunity.h"
 #include "damage_manager.h"
@@ -13,9 +13,9 @@
 #include "game_object_space.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #ifdef DEBUG
-#include "../xrphysics/IPHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 //#include "PHWorld.h"
 //extern CPHWorld			*ph_world;
 #endif

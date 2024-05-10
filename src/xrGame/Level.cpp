@@ -7,7 +7,7 @@
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
 #include "Level.h"
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "xrServer.h"
 #include "net_queue.h"
 #include "game_cl_base.h"
@@ -43,7 +43,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "MainMenu.h"
 #include "../xrEngine/XR_IOConsole.h"
-#include "actor.h"
+#include "Actor.h"
 #include "player_hud.h"
 #include "UI/UIGameTutorial.h"
 #include "file_transfer.h"
@@ -52,8 +52,8 @@
 #include "demoinfo.h"
 #include "CustomDetector.h"
 
-#include "../xrphysics/iphworld.h"
-#include "../xrphysics/console_vars.h"
+#include "../xrPhysics/iphworld.h"
+#include "../xrPhysics/console_vars.h"
 #ifdef DEBUG_DRAW
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"

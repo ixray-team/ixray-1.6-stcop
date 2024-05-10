@@ -11,7 +11,7 @@
 #include "object_property_evaluators.h"
 #include "object_actions.h"
 #include "object_handler_space.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "object_handler_planner_impl.h"
 #include "ai/stalker/ai_stalker.h"
 

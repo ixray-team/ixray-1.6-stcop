@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "weaponammo.h"
 #include "PHShellCreator.h"
 

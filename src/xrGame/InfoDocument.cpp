@@ -4,10 +4,10 @@
 ///////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "InfoDocument.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "PDA.h"
 #include "inventoryowner.h"
-#include "xrserver_objects_alife_items.h"
+#include "xrServer_Objects_ALife_Items.h"
 
 CInfoDocument::CInfoDocument(void) 
 {

@@ -9,7 +9,7 @@
 #include "inventoryowner.h"
 #include "ai_debug.h"
 #include "ui/xrUIXmlParser.h"
-#include "actor.h"
+#include "Actor.h"
 
 
 //загрузка из XML файла

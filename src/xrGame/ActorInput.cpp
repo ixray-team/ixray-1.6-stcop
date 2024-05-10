@@ -8,12 +8,12 @@
 #	include "PHDebug.h"
 #endif
 
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "UIGameSP.h"
-#include "inventory.h"
-#include "level.h"
+#include "Inventory.h"
+#include "Level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "UsableScriptObject.h"
@@ -30,7 +30,7 @@
 #include "flare.h"
 #include "CustomDetector.h"
 #include "clsid_game.h"
-#include "hudmanager.h"
+#include "HUDManager.h"
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
 

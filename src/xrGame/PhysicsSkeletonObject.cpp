@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "physicsskeletonobject.h"
 //#include "PhysicsShell.h"
-#include "../xrphysics/physicsshell.h"
+#include "../xrPhysics/physicsshell.h"
 #include "phsynchronize.h"
-#include "xrserver_objects_alife.h"
+#include "xrServer_Objects_ALife.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/xr_collide_form.h"
 

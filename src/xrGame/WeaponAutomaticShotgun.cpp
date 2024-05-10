@@ -3,9 +3,9 @@
 #include "WeaponAutomaticShotgun.h"
 #include "entity.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "inventory.h"
-#include "level.h"
-#include "actor.h"
+#include "Inventory.h"
+#include "Level.h"
+#include "Actor.h"
 #include "script_game_object.h"
 
 CWeaponAutomaticShotgun::CWeaponAutomaticShotgun()

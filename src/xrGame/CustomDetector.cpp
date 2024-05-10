@@ -1,15 +1,15 @@
 #include "stdafx.h"
-#include "customdetector.h"
+#include "CustomDetector.h"
 #include "ui/ArtefactDetectorUI.h"
-#include "hudmanager.h"
-#include "inventory.h"
-#include "level.h"
+#include "HUDManager.h"
+#include "Inventory.h"
+#include "Level.h"
 #include "map_manager.h"
 #include "ActorEffector.h"
-#include "actor.h"
+#include "Actor.h"
 #include "ui/UIWindow.h"
 #include "player_hud.h"
-#include "weapon.h"
+#include "Weapon.h"
 
 ITEM_INFO::ITEM_INFO()
 {

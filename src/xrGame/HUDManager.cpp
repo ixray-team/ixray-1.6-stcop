@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HUDManager.h"
 #include "hudtarget.h"
-#include "actor.h"
+#include "Actor.h"
 #include "../xrEngine/igame_level.h"
 #include "../xrEngine/xr_input.h"
 #include "GamePersistent.h"
@@ -214,7 +214,7 @@ void CHUDManager::SetGrenadeMarkType( LPCSTR tex_name )
 
 // ------------------------------------------------------------------------------------
 
-#include "ui\UIMainInGameWnd.h"
+#include "ui/UIMainInGameWnd.h"
 extern CUIXml*			pWpnScopeXml;
 
 void CHUDManager::Load()

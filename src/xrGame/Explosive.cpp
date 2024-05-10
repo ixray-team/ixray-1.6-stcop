@@ -6,7 +6,7 @@
 
 #include "explosive.h"
 
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
@@ -14,11 +14,11 @@
 //для вызова статических функций поражения осколками
 #include "Weapon.h"
 
-#include "actor.h"
+#include "Actor.h"
 #include "actoreffector.h"
-#include "level.h"
+#include "Level.h"
 #include "level_bullet_manager.h"
-#include "xrmessages.h"
+#include "xrMessages.h"
 #include "../xrEngine/gamemtllib.h"
 
 #ifdef DEBUG
@@ -27,10 +27,10 @@
 #endif
 
 //#include "Physics.h"
-#include "../xrphysics/MathUtils.h"
-//#include "../xrphysics/phvalidevalues.h"
-#include "../xrphysics/iActivationShape.h"
-#include "../xrphysics/iphworld.h"
+#include "../xrPhysics/MathUtils.h"
+//#include "../xrPhysics/phvalidevalues.h"
+#include "../xrPhysics/iActivationShape.h"
+#include "../xrPhysics/iphworld.h"
 #include "game_base_space.h"
 #include "profiler.h"
 

@@ -2,7 +2,7 @@
 #ifdef DEBUG
 #include "PHDebug.h"
 #include "alife_space.h"
-#include "hit.h"
+#include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "Level.h"
