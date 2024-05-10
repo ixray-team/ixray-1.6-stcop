@@ -130,6 +130,7 @@ public:
         xr_string Text;
     };
 
+    xr_vector<std::function<void()>> CommandList;
     xr_vector<DrawDebugString> ViewportLines;
     xr_vector<DrawDebugString> ViewportFrameLines;
     ImVec2 ViewportPos;

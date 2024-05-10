@@ -413,6 +413,7 @@ extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
 	PrepareRedraw();
+
 	try{
 	
 		if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
@@ -524,18 +525,21 @@ void TUI::Redraw()
 				UI->EndFrame();
 				EDevice->End();
 			}
-			catch (...) {
+			catch (...)
+			{
 				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
 			}
 		}
-	}catch(...){
+	}catch(...)
+	{
 		ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
-//		_clear87();
-//		FPU::m24r();
-//    	ELog.DlgMsg(mtError, "Critical error has occured in render routine.\nEditor may work incorrectly.");
 		EDevice->End();
-//		EDevice->Resize(m_D3DWindow->Width,m_D3DWindow->Height);
 	}
+
+	for (auto Callback : CommandList)
+		Callback();
+
+	CommandList.clear();
 
 	OutInfo();
 }
