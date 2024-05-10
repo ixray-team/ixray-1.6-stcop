@@ -476,6 +476,11 @@ int CImageManager::GetTexturesRaw(FS_FileSet& files, BOOL bFolders)
 //------------------------------------------------------------------------------
 int CImageManager::GetLocalNewTextures(FS_FileSet& files)
 {
+    string_path ImportPath = {};
+
+    FS.update_path(ImportPath, _import_, "");
+    FS.rescan_path(ImportPath, true);
+
     return FS.file_list(files,_import_,FS_ListFiles|FS_RootOnly,"*.tga,*.bmp,*.dds,*.png,*.jpg");
 }
 //------------------------------------------------------------------------------
