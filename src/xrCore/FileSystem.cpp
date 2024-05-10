@@ -169,7 +169,7 @@ bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bo
 	}
 	if (bRes && bMulti)
 	{
-		int cnt = _GetItemCount(buffer, 0x0);
+		int cnt = _GetItemCount(ofn.lpstrFile, 0x0);
 		if (cnt > 1)
 		{
 			char 		dir[255 * 255];
@@ -179,14 +179,14 @@ bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bo
 			xr_strcpy(dir, buffer);
 			xr_strcpy(fns, dir);
 			xr_strcat(fns, "\\");
-			xr_strcat(fns, _GetItem(buffer, 1, buf, 0x0));
+			xr_strcat(fns, _GetItem(ofn.lpstrFile, 1, buf, sizeof(buf), 0x0));
 
 			for (int i = 2; i < cnt; i++)
 			{
 				xr_strcat(fns, ",");
 				xr_strcat(fns, dir);
 				xr_strcat(fns, "\\");
-				xr_strcat(fns, _GetItem(buffer, i, buf, 0x0));
+				xr_strcat(fns, _GetItem(ofn.lpstrFile, i, buf, sizeof(buf), 0x0));
 			}
 			xr_strcpy(buffer, sz_buf, fns);
 		}

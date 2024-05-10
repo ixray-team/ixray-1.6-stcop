@@ -124,14 +124,21 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 	case 0: 
 	{ 
 		// append
-		xr_string folder, nm, full_name;
 		xr_string fnames;
 		if (EFS.GetOpenName(_smotion_, fnames, true))
 		{
-			fnames = FS.fix_path(fnames);
-
 			AStringVec lst;
 			_SequenceToList(lst, fnames.c_str());
+
+			for (auto& str : lst)
+			{
+				str = FS.fix_path(str);
+				if (!FS.TryLoad(str))
+				{
+					Msg("Can't load motion: %s", str.c_str());
+				}
+			}
+
 			bool bRes = false;
 			for (AStringIt it = lst.begin(); it != lst.end(); it++)
 				if (AppendMotion(it->c_str())) bRes = true;
