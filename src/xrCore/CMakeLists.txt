@@ -120,6 +120,7 @@ if (MSVC)
     list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
 else()
     list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
+    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "discord/api/")
 endif()
 
 # xrCore project

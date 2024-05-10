@@ -1,5 +1,7 @@
 #pragma once
+#ifdef IXR_WINDOWS
 #include <discord_gamesdk/cpp/discord.h>
+#endif
 
 class XRCORE_API DiscordShared
 {
@@ -8,12 +10,14 @@ private:
     xr_string Status;
     xr_string Phase;
 
+#ifdef IXR_WINDOWS
 protected:
     discord::Activity Activity; 
     discord::Core* Core = nullptr;
+#endif
 
 public:
-    DiscordShared() : Activity({}) {}
+    DiscordShared();
     virtual ~DiscordShared();
 
     virtual void Init() noexcept;

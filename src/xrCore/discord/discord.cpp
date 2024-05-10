@@ -4,17 +4,24 @@
 
 XRCORE_API DiscordShared g_Discord;
 
+DiscordShared::DiscordShared()
+{
+#ifdef IXR_WINDOWS
+	Activity = {};
+#endif
+}
+
 DiscordShared::~DiscordShared()
 {
+#ifdef IXR_WINDOWS
 	xr_delete(Core);
+#endif
 }
 
 // Called when the game starts or when spawned
 void DiscordShared::Init() noexcept 
 {
-#ifndef IXR_WINDOWS
-	return;
-#endif
+#ifdef IXR_WINDOWS
 	auto result = discord::Core::Create(1174634951715594311, DiscordCreateFlags_NoRequireDiscord, &Core);
 
 	if (Core == nullptr)
@@ -45,11 +52,13 @@ void DiscordShared::Init() noexcept
 
 	xr_time_t start_time = xr_chrono_to_time_t(std::chrono::system_clock::now());
 	Activity.GetTimestamps().SetStart(start_time);
+#endif
 }
 
 // Called every frame
 void DiscordShared::Update() noexcept 
 {
+#ifdef IXR_WINDOWS
 	if (Core == nullptr)
 		return;
 
@@ -60,6 +69,7 @@ void DiscordShared::Update() noexcept
 	}
 
 	Core->RunCallbacks();
+#endif
 }
 
 void DiscordShared::SetStatus(const xr_string& Name) noexcept
@@ -77,6 +87,7 @@ void DiscordShared::SetPhase(const xr_string& Name) noexcept
 void DiscordShared::SyncActivity() noexcept 
 {
 	static bool isCorrect = true;
+#ifdef IXR_WINDOWS
 
 	Activity.SetDetails(Platform::ANSI_TO_UTF8(Status).c_str());
 	Activity.SetState(Platform::ANSI_TO_UTF8(Phase).c_str());
@@ -93,4 +104,5 @@ void DiscordShared::SyncActivity() noexcept
 			}
 		}
 	);
+#endif
 }
