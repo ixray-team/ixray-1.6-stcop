@@ -446,7 +446,7 @@ bool CActorTools::Load(LPCSTR obj_name)
 	{
 		xr_delete(m_pEditObject);
 		m_pEditObject = O;
-		///  m_pEditObject->Optimize ();
+		  m_pEditObject->Optimize ();
 		  // delete visual
 		m_RenderObject.Clear();
 		
