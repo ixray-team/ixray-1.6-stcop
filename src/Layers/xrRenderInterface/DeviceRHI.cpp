@@ -124,6 +124,20 @@ IRHIDepthStencilView* CRender_RHI::CreateAPIDepthStencilSurface(u32 Width, u32 H
     return Ptr;
 }
 
+IRHITexture* CRender_RHI::CreateAPITexture1D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
+{
+    switch (API)
+    {
+    case APILevel::DX9:
+        break;
+    case APILevel::DX11:
+        return CreateD3D11Texture1D( pTextureDesc, pSubresourceData );
+    }
+
+    R_ASSERT2(0, "Not Implemented for current API");
+    return nullptr;
+}
+
 IRHITexture* CRender_RHI::CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
 {
     IRHITexture* Ptr = nullptr;

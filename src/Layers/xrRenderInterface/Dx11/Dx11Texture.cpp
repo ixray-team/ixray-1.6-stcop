@@ -458,3 +458,172 @@ ID3D11Texture3D* CD3D11Texture3D::GetDXObj()
 {
 	return m_pTexture;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// CD3D11Texture1D implementation
+
+CD3D11Texture1D::CD3D11Texture1D() :
+	m_pTexture(nullptr), m_pTextureSRV(nullptr), m_Pitch(0)
+{
+	memset(&m_TextureDesc, 0, sizeof(m_TextureDesc));
+}
+
+CD3D11Texture1D::~CD3D11Texture1D()
+{
+	if (m_pTextureSRV)
+	{
+		m_pTextureSRV->Release();
+		m_pTextureSRV = nullptr;
+	}
+
+	if (m_pTexture)
+	{
+		m_pTexture->Release();
+		m_pTexture = nullptr;
+	}
+}
+
+HRESULT CD3D11Texture1D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	R_ASSERT(pTextureDesc);
+
+	m_TextureDesc = *pTextureDesc;
+
+	if (pSubresourceData)
+		m_Pitch = pSubresourceData->SysMemPitch;
+
+	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
+	R_ASSERT(pDevice);
+
+	D3D11_TEXTURE1D_DESC d3dTextureDesc = {};
+	d3dTextureDesc.Width = pTextureDesc->Width;
+	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
+	d3dTextureDesc.ArraySize = pTextureDesc->DepthOrSliceNum;
+	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
+	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;// (D3D11_USAGE)pTextureDesc->Usage;
+	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+
+	// Kirill: TODO !!!
+	if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+
+	if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+
+	d3dTextureDesc.CPUAccessFlags = 0;
+	d3dTextureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subresourceData = {};
+	if (pSubresourceData)
+	{
+		subresourceData.pSysMem = pSubresourceData->pSysMem;
+		subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+		subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
+	}
+
+	R_CHK(pDevice->CreateTexture1D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
+
+	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
+		DXGI_FORMAT typelessFormat = ConvertToTypelessFmt(d3dTextureDesc.Format);
+		DXGI_FORMAT srvFormat = ConvertToShaderResourceFmt(typelessFormat);
+		shaderResourceViewDesc.Format = typelessFormat == srvFormat ? d3dTextureDesc.Format : srvFormat;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		shaderResourceViewDesc.Texture2D.MipLevels = -1;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+
+		R_CHK(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
+	}
+
+	return S_OK;
+}
+
+bool CD3D11Texture1D::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect* pRect, eLockType Flags)
+{
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	D3D11_TEXTURE1D_DESC desc = {};
+	m_pTexture->GetDesc(&desc);
+
+	R_ASSERT2(desc.BindFlags == 0, "Failed to lock staging or static texture!");
+
+	// Map command 
+	D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
+	HRESULT hr = pImmediateContext->Map(m_pTexture, D3D11CalcSubresource(Level, 0, 0), GetD3D11Map(Flags), 0, &mappedSubresource);
+	if (FAILED(hr))
+	{
+		Msg("CD3D11Texture1D::Lock: Failed to lock texture. DirectX Error: %s", Debug.error2string(hr));
+		return false;
+	}
+
+	pLockedRect->Pitch = mappedSubresource.RowPitch;
+	pLockedRect->pBits = mappedSubresource.pData;
+
+	if (pRect)
+	{
+		u32 offset = pRect->top * mappedSubresource.RowPitch;
+		offset += BitsPerPixel(desc.Format) * pRect->left;
+		pLockedRect->pBits = ((byte*)pLockedRect->pBits) + offset;
+	}
+
+	return true;
+}
+
+bool CD3D11Texture1D::UnlockRect(u32 Level)
+{
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	pImmediateContext->Unmap(m_pTexture, 0);
+
+	return true;
+}
+
+void CD3D11Texture1D::SetStage(u32 Stage)
+{
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	pImmediateContext->PSSetShaderResources( Stage, 1, &m_pTextureSRV );
+}
+
+u32 CD3D11Texture1D::GetLevelCount()
+{
+	return m_TextureDesc.NumMips;
+}
+
+bool CD3D11Texture1D::GetSurfaceLevel(u32 Level, LPIRHISURFACE* ppSurfaceLevel)
+{
+	return false;
+}
+
+Ivector2 CD3D11Texture1D::GetTextureSize() const
+{
+	return Ivector2(m_TextureDesc.Width, m_TextureDesc.Height);
+}
+
+void CD3D11Texture1D::GetAPIData(SRHIAPIData* pAPIData)
+{
+	R_ASSERT(pAPIData);
+	pAPIData->pSRV = m_pTextureSRV;
+	pAPIData->pUAV = nullptr;
+}
+
+void CD3D11Texture1D::GetDesc(TextureDesc* pTextureDesc)
+{
+	R_ASSERT(pTextureDesc);
+	*pTextureDesc = m_TextureDesc;
+}
+
+void CD3D11Texture1D::QueryShaderResourceView(void** ppSRV)
+{
+	R_ASSERT(ppSRV);
+	*ppSRV = m_pTextureSRV;
+}
+
+ID3D11Texture1D* CD3D11Texture1D::GetDXObj()
+{
+	return m_pTexture;
+}

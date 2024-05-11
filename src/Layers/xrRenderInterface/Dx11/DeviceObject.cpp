@@ -41,6 +41,21 @@ IRHITexture* CreateD3D11Texture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_
 	return pTexture;
 }
 
+IRHITexture* CreateD3D11Texture1D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
+{
+	CD3D11Texture1D* pTexture = new CD3D11Texture1D();
+	R_CHK(pTexture->Create(pTextureDesc, pSubresourceData));
+
+	pTexture->AddRef();
+
+	return pTexture;
+}
+
+IRHITexture* CreateD3D11Texture2D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData )
+{
+	return nullptr;
+}
+
 IRHITexture* CreateD3D11Texture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData)
 {
 	CD3D11Texture3D* pTexture = new CD3D11Texture3D();

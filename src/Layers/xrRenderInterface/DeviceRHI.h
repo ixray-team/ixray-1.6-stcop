@@ -42,6 +42,8 @@ public:
 	virtual void* GetSwapchain();
 
 	IRHIDepthStencilView* CreateAPIDepthStencilSurface(u32 Width, u32 Height, ERHITextureFormat Format, u32 MultiSample, u32 MultisampleQuality, bool Discard) override;
+	
+	IRHITexture* CreateAPITexture1D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHITexture* CreateAPITexture3D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) override;
 	IRHIBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;

@@ -7,6 +7,8 @@ void DestroyD3D11();
 
 class IRHITexture;
 IRHITexture* CreateD3D11Texture(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData);
+IRHITexture* CreateD3D11Texture1D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData);
+IRHITexture* CreateD3D11Texture2D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData);
 IRHITexture* CreateD3D11Texture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData);
 
 class IRHIBuffer;
@@ -22,3 +24,11 @@ IRHISurface* CreateRenderTargetViewD3D11(IRHITexture* pTexture, const RenderTarg
 
 class IRHIDepthStencilView;
 IRHIDepthStencilView* CreateD3D11DepthStencilView(IRHITexture* pTexture, const RenderTargetCreationDesc* pDesc);
+
+class CAPIInstance_DX11
+{
+public:
+	CAPIInstance_DX11();
+	~CAPIInstance_DX11();
+};
+

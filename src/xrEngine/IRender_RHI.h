@@ -330,6 +330,7 @@ public:
 	virtual void FillModes() = 0;
 	virtual int GetFeatureLevel() = 0;
 
+	virtual IRHITexture* CreateAPITexture1D( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 	virtual IRHITexture* CreateAPITexture( const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData ) = 0;
 	virtual IRHITexture* CreateAPITexture3D(const TextureDesc* pTextureDesc, LPSUBRESOURCE_DATA pSubresourceData) = 0;
 	virtual IRHIBuffer*  CreateAPIBuffer( eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable ) = 0;
