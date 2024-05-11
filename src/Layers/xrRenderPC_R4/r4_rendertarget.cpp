@@ -765,7 +765,7 @@ CRenderTarget::CRenderTarget		()
 			static const int sampleSize = 4;
 			u32	tempData[TEX_jitter_count][TEX_jitter*TEX_jitter];
 
-			TextureDesc Desc;
+			TextureDesc Desc = {};
 			Desc.Width = TEX_jitter;
 			Desc.Height = TEX_jitter;
 			Desc.NumMips = 1;

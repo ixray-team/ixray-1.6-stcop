@@ -410,7 +410,7 @@ void dxRenderDeviceRender::End()
 	MyImGui.BeginRender();
 
 #ifdef USE_DX11
-	ID3D11RenderTargetView* RTV = RSwapchainTarget;
+	ID3D11RenderTargetView* RTV = (ID3D11RenderTargetView*)RSwapchainTarget;
 	RContext->OMSetRenderTargets(1, &RTV, nullptr);
 #else
 	RDevice->SetRenderTarget(0, RSwapchainTarget);
@@ -423,8 +423,8 @@ void dxRenderDeviceRender::End()
 #else
 
 #ifdef USE_DX11
-	ID3D11RenderTargetView* RTV = RTarget;
-	RContext->OMSetRenderTargets(1, &RTV, RDepth);
+	ID3D11RenderTargetView* RTV = (ID3D11RenderTargetView*)RTarget;
+	RContext->OMSetRenderTargets(1, &RTV, (ID3D11DepthStencilView*)RDepth);
 #else
 	RDevice->SetRenderTarget(0, RTarget);
 #endif

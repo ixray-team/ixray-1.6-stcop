@@ -55,7 +55,7 @@ void CTexture::surface_set(IRHITexture* surf)
 {
 	if (surf)			surf->AddRef();
 	_RELEASE(pSurface);
-	_RELEASE(m_pSRView);
+	//_RELEASE(m_pSRView);
 
 	pSurface = surf;
 
@@ -179,41 +179,49 @@ void CTexture::ProcessStaging()
 
 void CTexture::Apply(u32 dwStage)
 {
-	if (flags.bLoadedAsStaging)
-		ProcessStaging();
+	//if (flags.bLoadedAsStaging)
+	//	ProcessStaging();
 
-	if (m_pSRView != nullptr)
-		pSurface->QueryShaderResourceView((void**)&m_pSRView);
+//	if (m_pSRView == nullptr)
+//		pSurface->QueryShaderResourceView((void**)&m_pSRView);
 
 	if (dwStage < rstVertex)	//	Pixel shader stage resources
 	{
 		//RDevice->PSSetShaderResources(dwStage, 1, &m_pSRView);
-		SRVSManager.SetPSResource(dwStage, m_pSRView);
+		//SRVSManager.SetPSResource(dwStage, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage);
 	}
 	else if (dwStage < rstGeometry)	//	Vertex shader stage resources
 	{
 		//RDevice->VSSetShaderResources(dwStage-rstVertex, 1, &m_pSRView);
-		SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView);
+		//SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage - rstVertex);
 	}
 	else if (dwStage < rstHull)	//	Geometry shader stage resources
 	{
 		//RDevice->GSSetShaderResources(dwStage-rstGeometry, 1, &m_pSRView);
-		SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView);
+		//SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage - rstGeometry);
 	}
 	else if (dwStage < rstDomain)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView);
+		//SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage - rstHull);
 	}
 	else if (dwStage < rstCompute)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView);
+		//SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage - rstDomain);
 	}
 	else if (dwStage < rstInvalid)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView);
+		//SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView);
+		if (pSurface) pSurface->SetStage(dwStage - rstCompute);
 	}
 	else
 		VERIFY("Invalid stage");
+
+	m_pSRView = nullptr;
 }
 
 void CTexture::apply_theora(u32 dwStage)
@@ -266,12 +274,12 @@ void CTexture::apply_seq(u32 dwStage) {
 		u32	frame_id = frame % (frame_data * 2);
 		if (frame_id >= frame_data)	frame_id = (frame_data - 1) - (frame_id % frame_data);
 		pSurface = seqDATA[frame_id];
-		m_pSRView = m_seqSRView[frame_id];
+	//	m_pSRView = m_seqSRView[frame_id];
 	}
 	else {
 		u32	frame_id = frame % frame_data;
 		pSurface = seqDATA[frame_id];
-		m_pSRView = m_seqSRView[frame_id];
+		//m_pSRView = m_seqSRView[frame_id];
 	}
 	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 	Apply(dwStage);
@@ -334,8 +342,9 @@ void CTexture::Load()
 			Desc.Width = _w;
 			Desc.DefaultPool = false;
 			Desc.NumMips = 1;
-			Desc.Usage = eUsageStatic;
-			Desc.Format = ERHITextureFormat::FMT_A8R8G8B8;
+			Desc.DepthOrSliceNum = 1;
+			Desc.Usage = eUsageDynamic;
+			Desc.Format = ERHITextureFormat::FMT_R8G8B8;
 
 			pSurface = g_RenderRHI->CreateAPITexture(&Desc, nullptr);
 		}
@@ -438,7 +447,7 @@ void CTexture::Unload()
 		for (u32 I = 0; I < seqDATA.size(); I++)
 		{
 			_RELEASE(seqDATA[I]);
-			_RELEASE(m_seqSRView[I]);
+			//_RELEASE(m_seqSRView[I]);
 		}
 		seqDATA.clear();
 		m_seqSRView.clear();
@@ -450,7 +459,7 @@ void CTexture::Unload()
 	_SHOW_REF(msg_buff, pSurface);
 #endif // DEBUG
 	_RELEASE(pSurface);
-	_RELEASE(m_pSRView);
+	//_RELEASE(m_pSRView);
 
 	xr_delete(pAVI);
 	xr_delete(pTheora);

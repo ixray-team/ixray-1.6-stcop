@@ -141,7 +141,7 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.ArraySize = pTextureDesc->DepthOrSliceNum;
 	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
 	d3dTextureDesc.SampleDesc.Count = 1;
-	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT;// (D3D11_USAGE)pTextureDesc->Usage;
+	d3dTextureDesc.Usage = (pTextureDesc->Usage == eUsageDynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT);  // D3D11_USAGE_DEFAULT;// (D3D11_USAGE)pTextureDesc->Usage;
 	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
 	// Kirill: TODO !!!
@@ -150,18 +150,26 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	else if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
 		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
 
-	d3dTextureDesc.CPUAccessFlags = 0;
+	d3dTextureDesc.CPUAccessFlags = (pTextureDesc->Usage == eUsageDynamic ? D3D11_CPU_ACCESS_WRITE : 0);
 	d3dTextureDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA subresourceData = {};
+	D3D11_SUBRESOURCE_DATA subresourceData[16] = {};
 	if (pSubresourceData)
 	{
-		subresourceData.pSysMem = pSubresourceData->pSysMem;
-		subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
-		subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
+		for (int i = 0; i < pTextureDesc->NumMips; i++)
+		{
+			SUBRESOURCE_DATA* it = pSubresourceData + i;
+			subresourceData[i].pSysMem = it->pSysMem;
+			subresourceData[i].SysMemPitch = it->SysMemPitch;
+			subresourceData[i].SysMemSlicePitch = it->SysMemSlicePitch;
+		}
+
+		//subresourceData.pSysMem = pSubresourceData->pSysMem;
+		//subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+		//subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
 	}
-	
-	R_CHK(pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
+
+	R_CHK(pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture));
 
 	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
 	{
@@ -187,7 +195,7 @@ bool CD3D11Texture2D::LockRect(u32 Level, LOCKED_RECT* pLockedRect, const Irect*
 	D3D11_TEXTURE2D_DESC desc = {};
 	m_pTexture->GetDesc(&desc);
 
-	R_ASSERT2(desc.BindFlags == 0, "Failed to lock staging or static texture!");
+	R_ASSERT2(desc.BindFlags != 0, "Failed to lock staging or static texture!");
 
 	// Map command 
 	D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
@@ -526,6 +534,8 @@ HRESULT CD3D11Texture1D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	ID3D11Device* pDevice = ((ID3D11Device*)HWRenderDevice);
 	R_ASSERT(pDevice);
 
+	R_ASSERT(pTextureDesc->NumMips >= 16);
+
 	D3D11_TEXTURE1D_DESC d3dTextureDesc = {};
 	d3dTextureDesc.Width = pTextureDesc->Width;
 	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
@@ -544,15 +554,23 @@ HRESULT CD3D11Texture1D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.CPUAccessFlags = 0;
 	d3dTextureDesc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA subresourceData = {};
+	D3D11_SUBRESOURCE_DATA subresourceData[16] = {};
 	if (pSubresourceData)
 	{
-		subresourceData.pSysMem = pSubresourceData->pSysMem;
-		subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
-		subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
+		for (int i = 0; i < pTextureDesc->NumMips; i++)
+		{
+			SUBRESOURCE_DATA* it = pSubresourceData + i;
+			subresourceData[i].pSysMem = it->pSysMem;
+			subresourceData[i].SysMemPitch = it->SysMemPitch;
+			subresourceData[i].SysMemSlicePitch = it->SysMemSlicePitch;
+		}
+
+		//subresourceData.pSysMem = pSubresourceData->pSysMem;
+		//subresourceData.SysMemPitch = pSubresourceData->SysMemPitch;
+		//subresourceData.SysMemSlicePitch = pSubresourceData->SysMemSlicePitch;
 	}
 
-	R_CHK(pDevice->CreateTexture1D(&d3dTextureDesc, pSubresourceData ? &subresourceData : NULL, &m_pTexture));
+	R_CHK(pDevice->CreateTexture1D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture));
 
 	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
 	{
