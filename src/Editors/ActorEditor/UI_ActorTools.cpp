@@ -1384,19 +1384,23 @@ bool CActorTools::VerifyMotionRefs()
 {
 	bool result = true;
 
-	if (m_pEditObject)
+	if (m_pEditObject == nullptr)
+		return false;
+
+	if (m_pEditObject->IsSkeleton() && !m_pEditObject->m_SMotionRefs.empty())
 	{
-		if (m_pEditObject->IsSkeleton() && !m_pEditObject->m_SMotionRefs.empty())
+		for (const shared_str& Path : m_pEditObject->m_SMotionRefs)
 		{
-			for (const shared_str& Path : m_pEditObject->m_SMotionRefs)
+			xr_string FilePath = Path.c_str();
+			FilePath += ".omf";
+
+			if (!FS.exist(_game_meshes_, FilePath.c_str()))
 			{
-				if (!FS.exist(_game_meshes_, Path.c_str()))
-				{
-					ELog.Msg(mtError, "! Can't find motion file '%s'.", Path.c_str());
-					result = false;
-				}
+				ELog.Msg(mtError, "! Can't find motion file '%s'.", Path.c_str());
+				result = false;
 			}
 		}
 	}
+
 	return result;
 }
