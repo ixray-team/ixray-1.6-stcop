@@ -37,7 +37,3 @@ public:
 	void	get_AngularVel		(Fvector& velocity)	const	{ physics_impl().get_AngularVel( velocity ); }
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(cphysics_shell_scripted)
-#undef script_type_list
-#define script_type_list save_type_list(cphysics_shell_scripted)

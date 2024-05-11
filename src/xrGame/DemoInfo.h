@@ -48,10 +48,6 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; //class demo_player_info
 
-add_to_type_list(demo_player_info)
-#undef script_type_list
-#define script_type_list save_type_list(demo_player_info)
-
 class demo_info
 {
 private:
@@ -90,10 +86,5 @@ public:
 	static	u32 const			max_demo_info_size;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; //class DemoInfo
-
-add_to_type_list(demo_info)
-#undef script_type_list
-#define script_type_list save_type_list(demo_info)
-
 
 #endif //#ifndef DEMOINFO_H

@@ -37,8 +37,5 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptActionCondition)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptActionCondition)
 
 #include "script_action_condition_inline.h"

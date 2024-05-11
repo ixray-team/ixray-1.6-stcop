@@ -68,8 +68,5 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CALifeMonsterBrain)
-#undef script_type_list
-#define script_type_list save_type_list(CALifeMonsterBrain)
 
 #include "alife_monster_brain_inline.h"

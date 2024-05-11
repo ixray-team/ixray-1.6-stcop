@@ -106,7 +106,3 @@ public:
 	void		OnDisabled	(CActor* pA, bool play_sound=true);
 	void		PlaySounds	(EPlaySounds which);
 };
-
-add_to_type_list(CTorch)
-#undef script_type_list
-#define script_type_list save_type_list(CTorch)

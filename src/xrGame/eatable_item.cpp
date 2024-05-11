@@ -179,7 +179,7 @@ void CEatableItem::script_register(lua_State *L)
 {
 	module(L)
 		[
-			class_<CEatableItem, CInventoryItem>("CEatableItem")
+			class_<CEatableItem>("CEatableItem")
 			.def("Empty", &CEatableItem::Empty)
 			.def("CanDelete", &CEatableItem::CanDelete)
 			.def("GetMaxUses", &CEatableItem::GetMaxUses)

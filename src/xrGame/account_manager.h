@@ -188,26 +188,4 @@ typedef gamespy_gp::suggest_nicks_cb		gamespy_gp_suggest_nicks_cb;
 typedef gamespy_gp::account_operation_cb	gamespy_gp_account_operation_cb;
 typedef gamespy_gp::account_profiles_cb		gamespy_gp_account_profiles_cb;
 typedef gamespy_gp::found_email_cb			gamespy_gp_found_email_cb;
-
-add_to_type_list(gamespy_gp_suggest_nicks_cb)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_suggest_nicks_cb)
-
-add_to_type_list(gamespy_gp_account_operation_cb)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_account_operation_cb)
-
-add_to_type_list(gamespy_gp_account_profiles_cb)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_account_profiles_cb)
-
-add_to_type_list(gamespy_gp_found_email_cb)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_found_email_cb)
-
-add_to_type_list(gamespy_gp_account_manager)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_account_manager)
-
-
 #endif //#ifndef ACCOUNT_MANAGER

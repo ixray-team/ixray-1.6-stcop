@@ -12,6 +12,3 @@
 enum ESoundTypes;
 
 typedef enum_exporter_lib<ESoundTypes> SCRIPTS_API CScriptSoundType;
-add_to_type_list(CScriptSoundType)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptSoundType)
