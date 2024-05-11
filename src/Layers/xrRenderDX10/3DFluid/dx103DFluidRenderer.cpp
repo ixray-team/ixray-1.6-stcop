@@ -381,6 +381,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 
 	TextureDesc desc;
 	desc.Width = iNumSamples;
+	desc.Height = 1;
 	desc.NumMips = 1;
 	desc.DepthOrSliceNum = 1;
 	desc.Format = FMT_A16B16G16R16F;

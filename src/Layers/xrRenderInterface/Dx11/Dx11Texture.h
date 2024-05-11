@@ -17,6 +17,9 @@ public:
 
 	ID3D11Texture2D* GetDXObj();
 
+	u64 AddRef() override;
+	u64 Release() override;
+
 private:
 	ID3D11Texture2D*			m_pTexture;
 	ID3D11ShaderResourceView*	m_pTextureSRV;

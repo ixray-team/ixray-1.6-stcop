@@ -132,6 +132,7 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	ZeroMemory(&descFontAtlas, sizeof(descFontAtlas));
 	descFontAtlas.Width = width;
 	descFontAtlas.Height = height;
+	descFontAtlas.DepthOrSliceNum = 1;
 	descFontAtlas.NumMips = 1;
 	descFontAtlas.Format = FMT_A8R8G8B8;
 	descFontAtlas.DefaultPool = false;

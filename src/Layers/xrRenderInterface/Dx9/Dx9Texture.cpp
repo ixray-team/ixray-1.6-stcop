@@ -574,19 +574,8 @@ u64 CD3D9Texture::Release()
 			}
 
 			m_pTexture = nullptr;
-
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
-			//m_pTexture->Release();
 		}
 
-		//delete this;
 		return 0;
 	}
 
@@ -595,7 +584,6 @@ u64 CD3D9Texture::Release()
 
 u64 CD3D9Texture::AddRef()
 {
-	//m_pTexture->AddRef();
 	return IRHIUnknown::AddRef();
 }
 

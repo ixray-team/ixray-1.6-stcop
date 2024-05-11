@@ -44,7 +44,7 @@ static DX11TextureFormatPairs TextureFormatList[] =
     { FMT_DXT1      ,   DXGI_FORMAT_BC1_UNORM },
     { FMT_DXT2      ,   DXGI_FORMAT_BC2_UNORM },
     { FMT_DXT3      ,   DXGI_FORMAT_BC2_UNORM },
-    //{ FMT_DXT4      ,   DXGI_FORMAT_BC3_UNORM },
+    { FMT_DXT4      ,   DXGI_FORMAT_BC3_UNORM },
     { FMT_DXT5      ,   DXGI_FORMAT_BC3_UNORM },
 };
 
@@ -147,8 +147,7 @@ HRESULT CD3D11Texture2D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	// Kirill: TODO !!!
 	if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
 		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
-
-	if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
+	else if ((pTextureDesc->Usage & eUsageDepthStencil) != 0)
 		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
 
 	d3dTextureDesc.CPUAccessFlags = 0;
@@ -247,6 +246,38 @@ ID3D11Texture2D* CD3D11Texture2D::GetDXObj()
 	return m_pTexture;
 }
 
+u64 CD3D11Texture2D::AddRef()
+{
+	return IRHIUnknown::AddRef();
+}
+
+u64 CD3D11Texture2D::Release()
+{
+	if (this == nullptr)
+		return 0;
+
+	R_ASSERT(m_RefCount > 0);
+	--m_RefCount;
+
+	if (m_RefCount == 0)
+	{
+		if (m_pTexture != nullptr)
+		{
+			ULONG refCount = m_pTexture->AddRef();
+			while (refCount > 0)
+			{
+				refCount = m_pTexture->Release();
+			}
+
+			m_pTexture = nullptr;
+		}
+
+		return 0;
+	}
+
+	return m_RefCount;
+}
+
 EResourceType CD3D11Texture2D::GetType()
 {
 	return eResourceTexture2D;
@@ -323,11 +354,11 @@ HRESULT CD3D11Texture3D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 	d3dTextureDesc.Width = pTextureDesc->Width;
 	d3dTextureDesc.Height = pTextureDesc->Height;
 	d3dTextureDesc.MipLevels = pTextureDesc->NumMips;
+	d3dTextureDesc.Depth = pTextureDesc->Depth;
 	d3dTextureDesc.Format = ConvertTextureFormat(pTextureDesc->Format);
 	d3dTextureDesc.Usage = D3D11_USAGE_DEFAULT; //(D3D11_USAGE)pTextureDesc->Usage;
 	d3dTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	d3dTextureDesc.Depth = pTextureDesc->Depth;
-
+	
 	// Kirill: TODO !!!
 	//if ((pTextureDesc->Usage & eUsageRenderTarget) != 0)
 	//	d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
@@ -354,11 +385,11 @@ HRESULT CD3D11Texture3D::Create(const TextureDesc* pTextureDesc, LPSUBRESOURCE_D
 		DXGI_FORMAT typelessFormat = ConvertToTypelessFmt(d3dTextureDesc.Format);
 		DXGI_FORMAT srvFormat = ConvertToShaderResourceFmt(typelessFormat);
 		shaderResourceViewDesc.Format = typelessFormat == srvFormat ? d3dTextureDesc.Format : srvFormat;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MipLevels = -1;
-		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+		shaderResourceViewDesc.Texture3D.MipLevels = -1;
+		shaderResourceViewDesc.Texture3D.MostDetailedMip = 0;
 
-		R_ASSERT(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
+		R_CHK(pDevice->CreateShaderResourceView(m_pTexture, &shaderResourceViewDesc, &m_pTextureSRV));
 	}
 
 	return S_OK;
