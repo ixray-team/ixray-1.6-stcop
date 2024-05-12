@@ -396,7 +396,7 @@ ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 	}
 
 	compute_build_id			();
-	Core._initialize			("xray",nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
+	Core._initialize			("IXRay",nullptr, TRUE, fsgame[0] ? fsgame : nullptr);
 
 	InitSettings				();
 
