@@ -182,10 +182,10 @@ void xrLogger::InternalOpenLogFile()
 	string256 CurrentTime;
 	
 	Time time;
-	xr_strconcat(CurrentDate, time.GetDayString().c_str(), "." , time.GetMonthString().c_str(), "." , time.GetDayString().c_str());
+	xr_strconcat(CurrentDate, time.GetYearString().c_str(), ".", time.GetMonthString().c_str(), ".", time.GetDayString().c_str());
 	xr_strconcat(CurrentTime, time.GetHoursString().c_str(), ".", time.GetMinutesString().c_str(), ".", time.GetSecondsString().c_str());
 
-	xr_strconcat(logFileName, "[", CurrentDate, " " , CurrentTime, "] ", Core.ApplicationName, "_", Core.UserName, ".log");
+	xr_strconcat(logFileName, Core.ApplicationName, "-", CurrentDate, "-" , CurrentTime, "-", Core.UserName, ".log");
 	if (FS.path_exist("$logs$"))
 	{
 		FS.update_path(logFileName, "$logs$", logFileName);
