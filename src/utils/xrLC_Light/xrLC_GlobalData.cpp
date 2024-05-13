@@ -118,7 +118,7 @@ void	xrLC_GlobalData::mu_models_calc_materials()
   
 bool	xrLC_GlobalData	::			b_r_vertices	()		
 {
-	return true;
+	return false;
 }
  
 template<typename T>
