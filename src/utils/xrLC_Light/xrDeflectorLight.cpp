@@ -806,9 +806,10 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 
 	// Calculate and fill borders
 	L_Calculate			(DB,LightsSelected,H);
-	if(_net_session && !_net_session->test_connection())
-			 return;
-	for (u32 ref=254; ref>0; ref--) if (!ApplyBorders(layer,ref)) break;
+ 
+	for (u32 ref=254; ref>0; ref--) 
+	if (!ApplyBorders(layer,ref))
+		break;
 
 	// Compression
 	try {
@@ -819,9 +820,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 			// Reacalculate lightmap at lower resolution
 			layer.create	(w,h);
 			L_Calculate		(DB,LightsSelected,H);
-			if(_net_session && !_net_session->test_connection())
-			 return;
-		}
+ 		}
 	} catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - Compression");

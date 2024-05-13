@@ -2,12 +2,10 @@
 #define XRMUMODEL_REFERENCE_H
 
 #include "base_color.h"
-#include "serialize.h"
-
+ 
 class xrMU_Model;
 namespace CDB { class CollectorPacked; }
-class INetReader;
-class IWriter;
+  
 class XRLC_LIGHT_API xrMU_Reference
 {
 public:
@@ -27,21 +25,7 @@ public:
 	void					calc_lighting		();
 
 	void					export_cform_game	(CDB::CollectorPacked& CL);
-	void					export_cform_rcast	(CDB::CollectorPacked& CL);
-
-	void					read				( INetReader	&r );
-	void					write				( IWriter	&w ) const ;
-	void					receive_result		( INetReader	&r );
-	void					send_result			( IWriter	&w ) const;
-	static	xrMU_Reference* read_create()		{ return xr_new<xrMU_Reference>(); };
-
-
-//	void					export_ogf			();
+	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
 };
-
-typedef  vector_serialize< t_read<xrMU_Reference, get_id_standart<xrMU_Reference> >  >		tread_mu_refs;
-typedef  vector_serialize< t_write<xrMU_Reference, get_id_standart<xrMU_Reference> > >		twrite_mu_refs;
-
-extern	tread_mu_refs		*read_mu_refs		;
-extern	twrite_mu_refs		*write_mu_refs		;
+ 
 #endif

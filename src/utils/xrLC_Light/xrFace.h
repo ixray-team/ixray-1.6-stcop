@@ -32,9 +32,6 @@ public:
 
 	IC	BOOL	 similar			( Tvertex<DataVertex> &V, float eps );
 
-virtual	void		read	(INetReader	&r );
-virtual	void		write	(IWriter	&w )const;
-
 	DataVertex				(){};
 	virtual		~DataVertex				(){};
 };
@@ -61,9 +58,6 @@ public:
 
 	void		AddChannel			( Fvector2 &p1, Fvector2 &p2, Fvector2 &p3 ); 
 	BOOL		hasImplicitLighting	();
-
-	virtual	void		read	(INetReader	&r );
-	virtual	void		write	(IWriter	&w )const;
 
 	DataFace(){};
 	virtual ~DataFace(){};
@@ -101,13 +95,4 @@ extern "C" XRLC_LIGHT_API	void destroy_vertex			( Vertex* &v, bool unregister );
 
 							void destroy_face			( Face* &v, bool unregister );
 
-
-typedef  vector_serialize< t_read<Vertex, get_id_self_index<Vertex> > >			tread_vertices;
-typedef  vector_serialize< t_write<Vertex, get_id_self_index<Vertex> > >		twrite_vertices	;
-typedef  vector_serialize< t_read<Face, get_id_self_index<Face> >  >			tread_faces;
-typedef  vector_serialize< t_write<Face, get_id_self_index<Face> > >			twrite_faces;
-
-extern	twrite_faces		*write_faces		;
-extern	tread_faces			*read_faces			;
-extern	tread_vertices		*read_vertices		;
-extern	twrite_vertices		*write_vertices		;
+ 

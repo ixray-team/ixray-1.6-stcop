@@ -37,27 +37,4 @@ void	ImplicitDeflector::Bounds_Summary (Fbox2& bounds)
 		Bounds	(I,B);
 		bounds.merge(B);
 	}
-}
-
-
-	//b_BuildTexture*			texture;
-	//lm_layer					lmap;
-	//vecFace					faces;
-
-
-void	ImplicitDeflector::	read( INetReader &r )
-{
-	r_pointer( r, texture, inlc_global_data()->textures() );
-	lmap.read( r );
-	R_ASSERT( read_faces );
-	read_faces->read_ref( r, faces );
-	
-}
-
-void	ImplicitDeflector::	write( IWriter &w ) const 
-{
-	w_pointer( w, texture, inlc_global_data()->textures() );
-	lmap.write( w );
-	R_ASSERT( write_faces );
-	write_faces->write_ref( w, faces );
-}
+} 

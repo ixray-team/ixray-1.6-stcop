@@ -75,14 +75,12 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	// Lighting itself
 	DB->ray_options	(0);
 	
-	for (u32 V=0; V<lm.height; V++)	{
-	if(_net_session && !_net_session->test_connection())
-			 return;
-		for (u32 U=0; U<lm.width; U++)	{
-#ifdef NET_CMP
-			if(V*lm.width+U!=8335)
-				continue;
-#endif
+	for (u32 V=0; V<lm.height; V++)
+	{
+ 
+		for (u32 U=0; U<lm.width; U++)	
+		{
+ 
 			u32				Fcount	= 0;
 			base_color_c	C;
 			try {

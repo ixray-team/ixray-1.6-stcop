@@ -22,57 +22,52 @@ extern "C" bool __declspec(dllimport) __stdcall DXTCompress(LPCSTR out_name, u8*
 
 using Implicit = xr_map<u32, ImplicitDeflector>;
 using Implicit_it = Implicit::iterator;
+ 
 
-void		ImplicitExecute::read			( INetReader	&r )
+#include "../xrForms/xrThread.h"
+
+class ImplicitThread : public CThread
 {
-	y_start = r.r_u32();	
-	y_end	= r.r_u32();
-}
-void		ImplicitExecute::write			( IWriter	&w ) const 
+public:
+
+	ImplicitExecute		execute;
+	ImplicitThread(u32 ID, ImplicitDeflector* _DATA) :	CThread(ID), execute()
+	{
+
+	}
+	virtual void		Execute();
+
+
+};
+
+void	ImplicitThread::Execute()
 {
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	w.w_u32( y_start );
-	w.w_u32( y_end );
+	// Priority
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+	Sleep(0);
+	execute.Execute();
 }
 
+// 2 : Mainthread + UI thread
+#define	NUM_THREADS	 CPU::ID.n_threads - 1
 ImplicitCalcGlobs cl_globs;
 
-
-void	ImplicitExecute::	receive_result			( INetReader	&r )
+void RunImplicitMultithread(ImplicitDeflector& defl)
 {
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	ImplicitDeflector&		defl	= cl_globs.DATA();
-	for (u32 V=y_start; V<y_end; V++)
-		for (u32 U=0; U<defl.Width(); U++)
-	{
-				
-		r_pod<base_color>( r, defl.Lumel( U, V ) );
-		r_pod<u8>		 ( r, defl.Marker( U, V ) );
-
-	}
-}
-void	ImplicitExecute::	send_result				( IWriter	&w ) const 
-{
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	ImplicitDeflector&		defl	= cl_globs.DATA();
-	for (u32 V=y_start; V<y_end; V++)
-		for (u32 U=0; U<defl.Width(); U++)
-	{
-		w_pod<base_color>( w, defl.Lumel( U, V ) );
-		w_pod<u8>		 ( w, defl.Marker( U, V ) );
-	}
+	// Start threads
+	CThreadManager			tmanager;
+ 	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+		tmanager.start(xr_new<ImplicitThread>(thID, &defl));
+	tmanager.wait();
 }
 
+int ThreadTaskID = 0;
+xrCriticalSection csLockImplicit;
 
-void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
-	{
-		R_ASSERT( y_start != (u32(-1)) );
-		R_ASSERT( y_end != (u32(-1)) );
-		//R_ASSERT				(DATA);
-		ImplicitDeflector&		defl	= cl_globs.DATA();
+
+void	ImplicitExecute::	Execute	( )
+{
+  		ImplicitDeflector&		defl	= cl_globs.DATA();
 		CDB::COLLIDER			DB;
 		
 		// Setup variables
@@ -89,14 +84,23 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 		
 		// Lighting itself
 		DB.ray_options	(0);
-		for (u32 V=y_start; V<y_end; V++)
+		
+		while(true)
 		{
+			csLockImplicit.Enter();
+			int V = ThreadTaskID;
+			if (ThreadTaskID >= defl.Height())
+			{
+				csLockImplicit.Leave();
+				break;
+			}
+			ThreadTaskID++;
+			csLockImplicit.Leave();
+
 
 			for (u32 U=0; U<defl.Width(); U++)
 			{
-				if( net_callback && !net_callback->test_connection() )
-					return;
-				base_color_c	C;
+ 				base_color_c	C;
 				u32				Fcount	= 0;
 				
 				try {
@@ -144,41 +148,12 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 			}
 	//		thProgress	= float(V - y_start) / float(y_end-y_start);
 		}
-	}
+}
 
 //#pragma optimize( "g", off )
 
-
-
-void ImplicitLightingExec(BOOL b_net);
-void ImplicitLightingTreadNetExec( void *p );
-void ImplicitLighting(BOOL b_net)
-{
-	if (g_params().m_quality==ebqDraft) 
-		return;
-	if(!b_net)
-	{
-		ImplicitLightingExec(FALSE) ;
-		return;
-	}
-	thread_spawn	(ImplicitLightingTreadNetExec,"worker-thread",1024*1024,0);
-
-}
-xrCriticalSection implicit_net_lock;
-void XRLC_LIGHT_API ImplicitNetWait()
-{
-	implicit_net_lock.Enter();
-	implicit_net_lock.Leave();
-}
-void ImplicitLightingTreadNetExec( void *p  )
-{
-	implicit_net_lock.Enter();
-	ImplicitLightingExec(TRUE);
-	implicit_net_lock.Leave();
-}
-
 static xr_vector<u32> not_clear;
-void ImplicitLightingExec(BOOL b_net)
+void ImplicitLightingExec()
 {
 	
 	Implicit		calculator;
@@ -224,10 +199,8 @@ void ImplicitLightingExec(BOOL b_net)
 		// Setup cache
 		Progress					(0);
 		cl_globs.Initialize( defl );
-		if(b_net)
-			lc_net::RunImplicitnet( defl, not_clear );
-		else
-			RunImplicitMultithread(defl);
+
+		RunImplicitMultithread(defl);
 	
 		defl.faces.clear();
 
@@ -307,6 +280,13 @@ void ImplicitLightingExec(BOOL b_net)
 	not_clear.clear();
 	cl_globs.Deallocate();
 	calculator.clear	();
-	if(b_net)
-		inlc_global_data()->clear_build_textures_surface();
+ 
+}
+
+void ImplicitLighting()
+{
+	if (g_params().m_quality == ebqDraft)
+		return;
+
+	ImplicitLightingExec();
 }
