@@ -401,13 +401,4 @@ void DeflectorsStats ()
 	for( u32 i = 0; i <size ; i++ )
 			DumpDeflctor( i ); 
 }
-
-#ifdef	COLLECT_EXECUTION_STATS
-
-void	CDeflector::statistic_log			(  ) const
-{
-	time_stat.log();
-	DumpDeflctor( *this );
-}
-
-#endif
+ 

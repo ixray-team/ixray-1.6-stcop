@@ -133,10 +133,9 @@ public:
 };
 
 
-void	run_mu_base( bool net )
+void	run_mu_base( )
 {
-	
-	mu_base.start				(xr_new<CMUThread> (0));
+ 	mu_base.start				(xr_new<CMUThread> (0));
 }
 
 void	wait_mu_base_thread		()

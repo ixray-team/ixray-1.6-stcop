@@ -18,15 +18,7 @@ void	_TCF::barycentric	(Fvector2 &P, float &u, float &v, float &w)
 	v			= (fM00*fR1 - fM01*fR0)/fDet;
 	w			= 1.0f - u - v;
 }
-//	Fvector2			uv	[3];
-void	_TCF::read		( INetReader	&r )
-{
-	r.r(uv, sizeof(uv) );
-}
-void	_TCF::write		( IWriter	&w ) const
-{
-	w.w(uv, sizeof(uv) );
-}
+ 
 
 bool _TCF::similar(    const _TCF &_tc, float eps /*= EPS*/  ) const
 {

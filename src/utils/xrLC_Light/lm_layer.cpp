@@ -45,33 +45,6 @@ void lm_layer::Pixel	(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h)
 	h	= u8_clr(c.hemi);
 }
 
-/*
-	u32						width;
-	u32						height;
-	xr_vector<base_color>	surface;
-	xr_vector<u8>			marker;
-	LMODE					mode;	
-*/
-
-
-
-void lm_layer::read( INetReader	&r )
-{
-	width	=r.r_u32();
-	height	=r.r_u32();
-	r_pod_vector(r,surface);
-	r_pod_vector(r,marker);
-//	mode    =(LMODE)r.r_u8();	
-}
-void lm_layer::write( IWriter	&w ) const
-{
-	w.w_u32(width);
-	w.w_u32(height);
-	w_pod_vector(w,surface);
-	w_pod_vector(w,marker);
-//	w.w_u8((u8)mode);
-}
-
 bool	lm_layer::similar			( const lm_layer &layer, float eps/* =EPS*/ ) const
 {
 	//if( mode != layer.mode )

@@ -51,17 +51,20 @@ void	ImplicitThread::Execute()
 // 2 : Mainthread + UI thread
 #define	NUM_THREADS	 CPU::ID.n_threads - 1
 ImplicitCalcGlobs cl_globs;
+int ThreadTaskID_Implication = 0;
+
 
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 	// Start threads
+	ThreadTaskID_Implication = 0;
+
 	CThreadManager			tmanager;
  	for (u32 thID = 0; thID < NUM_THREADS; thID++)
 		tmanager.start(xr_new<ImplicitThread>(thID, &defl));
 	tmanager.wait();
 }
 
-int ThreadTaskID = 0;
 xrCriticalSection csLockImplicit;
 
 
@@ -88,13 +91,13 @@ void	ImplicitExecute::	Execute	( )
 		while(true)
 		{
 			csLockImplicit.Enter();
-			int V = ThreadTaskID;
-			if (ThreadTaskID >= defl.Height())
+			int V = ThreadTaskID_Implication;
+			if (ThreadTaskID_Implication >= defl.Height())
 			{
 				csLockImplicit.Leave();
 				break;
 			}
-			ThreadTaskID++;
+			ThreadTaskID_Implication++;
 			csLockImplicit.Leave();
 
 

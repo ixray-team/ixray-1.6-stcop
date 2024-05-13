@@ -67,13 +67,6 @@ static	CDeflector*		read_create					();
 	void	RemapUV				(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
  	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
-	
-#ifdef	COLLECT_EXECUTION_STATS
-public:
-			execute_time_statistics	time_stat;
-	void	statistic_log			(  )const;
-
-#endif
 };
 
 

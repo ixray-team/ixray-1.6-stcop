@@ -16,8 +16,7 @@ static const char* h_str =
 void Help(const char*);
 
 void xrLight();
-namespace lc_net { void xrNetDOLight(); }
-
+ 
 void StartupDO(LPSTR lpCmdLine) {
 	bClose = FALSE;
 
@@ -36,10 +35,7 @@ void StartupDO(LPSTR lpCmdLine) {
 		Help(h_str); 
 		return; 
 	}
-
-	if (strstr(cmd, "-net"))
-		bNet = true;
-
+ 
 	// Load project
 	name[0] = 0;
 	sscanf(strstr(cmd, "-f") + 2, "%s", name);
@@ -55,11 +51,7 @@ void StartupDO(LPSTR lpCmdLine) {
 	gl_data.xrLoad();
 
 	Phase("Lighting nodes...");
-
-	if (bNet)
-		lc_net::xrNetDOLight();
-	else
-		xrLight();
+ 	xrLight();
 
 	gl_data.slots_data.Free();
 }

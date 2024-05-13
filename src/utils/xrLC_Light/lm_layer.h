@@ -7,7 +7,6 @@
 #endif
 
 
-class INetReader;
 struct XRLC_LIGHT_API  lm_layer
 {
 /*
@@ -42,8 +41,7 @@ public:
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
 	void					Pack			(xr_vector<u32>& dest)const;
 	void					Pack_hemi		(xr_vector<u32>& dest)const;
-	void					read			( INetReader	&r );
-	void					write			( IWriter	&w ) const ;
+ 
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
 							lm_layer()				{ width=height=0; }
 

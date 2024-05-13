@@ -49,46 +49,7 @@ void	CBuild::TempSave( u32 stage )
 	CheckBeforeSave( stage );
 
 }
-
-	//Fbox								scene_bb;
-	//xr_vector<b_shader>				shader_render;
-	//xr_vector<b_shader>				shader_compile;
- //   xr_vector<b_light_dynamic>		L_dynamic;
-	//xr_vector<b_glow>					glows;
-	//xr_vector<b_portal>				portals;
-	//xr_vector<b_lod>					lods;
-	//string_path						path;
-	//xr_vector<LPCSTR>					g_Shaders;
-void	CBuild::read( INetReader &r )
-{
-	r_pod( r, g_build_options );
-
-	r_pod( r, scene_bb );
-	r_pod_vector( r, shader_render );
-	r_pod_vector( r, shader_compile );
-	r_pod_vector( r, L_dynamic );
-	r_pod_vector( r, glows );
-	r_pod_vector( r, portals );
-	r_pod_vector( r, lods );
-	r_pod( r, path );
-	r_pod_vector( r, g_Shaders );
-	
-}
-void	CBuild::write( IWriter	&w ) const 
-{
-	w_pod( w, g_build_options );
-	
-	w_pod( w, scene_bb );
-	w_pod_vector( w, shader_render );
-	w_pod_vector( w, shader_compile );
-	w_pod_vector(  w,L_dynamic );
-	w_pod_vector( w, glows );
-	w_pod_vector( w, portals );
-	w_pod_vector( w, lods );
-	w_pod( w, path );
-	w_pod_vector( w, g_Shaders );
-
-}
+ 
 
 
 //////////////////////////////////////////////////////////////////////
@@ -251,12 +212,9 @@ void CBuild::Run	(LPCSTR P)
 	Phase						("LIGHT: Starting MU...");
 	mem_Compact					();
 	Light_prepare				();
-	if(g_build_options.b_net_light)
-	{
-		lc_global_data()->mu_models_calc_materials();
-		RunNetCompileDataPrepare( );
-	}
 	StartMu						();
+
+
 	//****************************************** Resolve materials
 	FPU::m64r					();
 	Phase						("Resolving materials...");
@@ -285,21 +243,15 @@ void CBuild::Run	(LPCSTR P)
 	}
 
 	//****************************************** All lighting + lmaps building and saving
-#ifdef NET_CMP
-	mu_base.wait				(500);
-	mu_secondary.wait			(500);
-#endif
-	if(g_build_options.b_net_light)
-		SetGlobalLightmapsDataInitialized();
-		
+	 
+
 	Light						();
 	RunAfterLight				( fs );
-
 }
 void	CBuild::StartMu	()
 {
   //mu_base.start				(xr_new<CMUThread> (0));
-  run_mu_light( !!g_build_options.b_net_light );
+  run_mu_light(  );
 }
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
@@ -314,17 +266,6 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Phase						("Converting to OGFs...");
 	mem_Compact					();
 	Flex2OGF					();
-
-
-	//if( !g_build_options.b_net_light )
-	//	wait_mu_secondary();
-	
-///
-//	lc_global_data()->clear_mesh	();
-////
-
-//	mu_base.wait				(500);
-//	mu_secondary.wait			(500);
 
 	//****************************************** Export MU-models
 	FPU::m64r					();
