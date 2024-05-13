@@ -77,19 +77,22 @@ public:
 		while (true)
 		{
 			csMUMAPS_LOCKS.Enter();
+
 			int ID = ThreadTaskID;
- 			if (ThreadTaskID >= inlc_global_data()->mu_refs().size())
+ 			if (ThreadTaskID >= inlc_global_data()->mu_models().size())
 			{
 				csMUMAPS_LOCKS.Leave();
 				break;
 			}
  			ThreadTaskID++;
-			csMUMAPS_LOCKS.Leave();
- 
 			// Light references
 			inlc_global_data()->mu_models()[ID]->calc_materials();
+
+			csMUMAPS_LOCKS.Leave();
+ 
+			
 			inlc_global_data()->mu_models()[ID]->calc_lighting();
-			thProgress = (float(ID) / float(inlc_global_data()->mu_refs().size()));
+			thProgress = (float(ID) / float(inlc_global_data()->mu_models().size()));
 		}
 	}
 };
@@ -128,7 +131,7 @@ public:
 		for (u32 thID=0; thID < MU_THREADS; thID++)
 			mu_secondary.start	( xr_new<CMULight> (thID) );
 	
-		mu_materials.wait(100);
+		mu_secondary.wait(100);
 	}
 };
 

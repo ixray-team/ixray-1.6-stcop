@@ -23,7 +23,8 @@ void Help(const char*);
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 extern bool g_using_smooth_groups;
 
-void StartupLC(LPSTR lpCmdLine) {
+void StartupLC(LPSTR lpCmdLine) 
+{
 	create_global_data();
 	char cmd[512], name[256];
 
