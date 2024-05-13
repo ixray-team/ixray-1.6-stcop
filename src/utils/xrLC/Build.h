@@ -86,6 +86,8 @@ public:
 	void	xrPhase_UVmap			();
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
+
+
 	void	Light_prepare			();
 	void	Light					();
 	void	LMapsLocal				();

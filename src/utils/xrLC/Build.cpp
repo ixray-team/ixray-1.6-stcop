@@ -315,14 +315,9 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	mem_Compact					();
 	Flex2OGF					();
 
-	//****************************************** Wait for MU
-	FPU::m64r					();
-	Phase						("LIGHT: Waiting for MU-thread...");
-	mem_Compact					();
-	wait_mu_base				();
 
-	if( !g_build_options.b_net_light )
-						wait_mu_secondary();
+	//if( !g_build_options.b_net_light )
+	//	wait_mu_secondary();
 	
 ///
 //	lc_global_data()->clear_mesh	();
@@ -440,5 +435,5 @@ xr_vector<xrMU_Reference*>&CBuild::mu_refs()
 
 void CBuild::ImplicitLighting()
 {
-	::ImplicitLighting( g_build_options.b_net_light );
+	::ImplicitLighting( );
 }

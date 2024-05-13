@@ -16,14 +16,4 @@ void	wait_mu_base		()
 {
 	wait_mu_base_thread		();
 }
-void	wait_mu_secondary	()
-{
-	if(!mu_light_net)
-		wait_mu_secondary_thread();
-	else
-		lc_net::WaitRefModelsNet( );
-
-}
-
-
-
+ 

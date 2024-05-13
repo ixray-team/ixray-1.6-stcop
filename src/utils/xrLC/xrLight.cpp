@@ -121,6 +121,14 @@ void	CBuild::LMaps					()
 void XRLC_LIGHT_API ImplicitNetWait();
 void CBuild::Light()
 {
+ 
+	//****************************************** Wait for MU
+	FPU::m64r();
+	Phase("LIGHT: Waiting for MU-thread...");
+	mem_Compact();
+	wait_mu_base();
+
+
 	//****************************************** Implicit
 	{
 		FPU::m64r		();
@@ -143,11 +151,8 @@ void CBuild::Light()
 	
 
 	ImplicitNetWait();
-	WaitMuModelsLocalCalcLightening();
-	lc_net::get_task_manager().wait_all();
-	//	get_task_manager().wait_all();
-	lc_net::get_task_manager().release();
-//
+
+
 	//****************************************** Merge LMAPS
 	{
 		FPU::m64r		();
