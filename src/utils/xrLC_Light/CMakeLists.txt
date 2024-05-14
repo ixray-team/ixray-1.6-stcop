@@ -52,7 +52,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 target_link_libraries(xrLC_Light PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/LightPoint.obj")
 
 target_link_libraries(xrLC_Light PRIVATE "cuda.lib")
-target_link_libraries(xrLC_Light PRIVATE "optix_prime.1.lib")
+target_link_libraries(xrLC_Light PRIVATE "optix_prime.6.5.0.lib")
 target_link_libraries(xrLC_Light PRIVATE "cudart.lib")
 
 target_include_directories(xrLC_Light PUBLIC "${IXRAY_SDK_INC}/optix")
@@ -67,7 +67,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}optix_prime.1.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}optix_prime.6.5.0.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}cudart64_12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 # DirectX SDK

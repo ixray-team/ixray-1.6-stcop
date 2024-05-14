@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "optix\optix_primepp.h"
+#include "optix\optix_prime\optix_primepp.h"
 #include "xrFaceDefs.h"
 #include "xrFace.h"
 #include "xrHardwareLight.h"

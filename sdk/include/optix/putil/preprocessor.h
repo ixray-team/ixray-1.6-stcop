@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <optix_prime.h>
+#include <optix_prime\optix_prime.h>
 #include <cuda_runtime.h>
 #include <cstdlib>
 #include <iostream>
