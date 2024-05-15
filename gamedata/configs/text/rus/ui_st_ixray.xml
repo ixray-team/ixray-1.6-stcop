@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
     <string id="st_ixray_title">
-        <text>S.T.A.L.K.E.R.: Зов Припяти</text>
+        <text>S.T.A.L.K.E.R.: Р—РѕРІ РџСЂРёРїСЏС‚Рё</text>
     </string>
     <string id="st_discord_menu">
-        <text>Главное меню</text>
+        <text>Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ</text>
     </string>
     <string id="st_discord_level">
-        <text>Уровень:</text>
+        <text>РЈСЂРѕРІРµРЅСЊ:</text>
     </string>
     <string id="quicksave">
-        <text>быстрое сохранение</text>
+        <text>Р±С‹СЃС‚СЂРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ</text>
     </string>
     <string id="autosave">
-        <text>автоматическое сохранение</text>
+        <text>Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ</text>
+    </string>
+
+    <string id="ui_mm_r2_details_shadows">
+        <text>РўРµРЅСЊ РѕС‚ С‚СЂР°РІС‹</text>
     </string>
 </string_table>
