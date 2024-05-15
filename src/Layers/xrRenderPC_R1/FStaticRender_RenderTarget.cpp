@@ -171,8 +171,8 @@ void	CRenderTarget::calc_tc_noise		(Fvector2& p0, Fvector2& p1)
 	u32			shift_h				= im_noise_shift_h;
 	float		start_u				= (float(shift_w)+.5f)/(tw);
 	float		start_v				= (float(shift_h)+.5f)/(th);
-	u32			_w					=  RCache.get_width();
-	u32			_h					= RCache.get_height();
+	u32			_w = (u32)RCache.get_target_width();
+	u32			_h = (u32)RCache.get_target_height();
 	u32			cnt_w				= _w / tw;
 	u32			cnt_h				= _h / th;
 	float		end_u				= start_u + float(cnt_w) + 1;
@@ -213,7 +213,7 @@ BOOL CRenderTarget::NeedPostProcess()
 	bool	_gray	= (param_gray>0.001f);
 	bool	_noise	= (param_noise>0.001f);
 	bool	_dual	= (param_duality_h>0.001f)||(param_duality_v>0.001f);
-
+	
 	bool	_menu_pp= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 
 	bool	_cmap	= NeedColorMapping();
