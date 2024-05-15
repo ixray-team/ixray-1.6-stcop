@@ -263,6 +263,14 @@
             <options_item entry="r2_sun_details" group="mm_opt_video"/>
         </check_r2_sun_details>
 
+        <cap_r_actor_shadow x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r_actor_shadow</text>
+        </cap_r_actor_shadow>
+        <check_r_actor_shadow x="133" y="0" width="35" stretch="1" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r_actor_shadow" group="mm_opt_video" />
+        </check_r_actor_shadow>
+
         <cap_r4_hud_shadows x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r4_hud_shadows</text>
         </cap_r4_hud_shadows>
