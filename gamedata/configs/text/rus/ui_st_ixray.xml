@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
     <string id="st_ixray_title">
-        <text>S.T.A.L.K.E.R.: Р—РѕРІ РџСЂРёРїСЏС‚Рё</text>
+        <text>S.T.A.L.K.E.R.: Зов Припяти</text>
     </string>
     <string id="st_discord_menu">
-        <text>Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ</text>
+        <text>Главное меню</text>
     </string>
     <string id="st_discord_level">
-        <text>РЈСЂРѕРІРµРЅСЊ:</text>
+        <text>Уровень:</text>
     </string>
     <string id="quicksave">
-        <text>Р±С‹СЃС‚СЂРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ</text>
+        <text>быстрое сохранение</text>
     </string>
     <string id="autosave">
-        <text>Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ СЃРѕС…СЂР°РЅРµРЅРёРµ</text>
+        <text>автоматическое сохранение</text>
     </string>
 
     <string id="ui_mm_r2_details_shadows">
-        <text>РўРµРЅСЊ РѕС‚ С‚СЂР°РІС‹</text>
+        <text>Тень от травы</text>
+    </string>
+    <string id="ui_mm_r4_hud_shadows">
+        <text>Тени на руках</text>
     </string>
 </string_table>

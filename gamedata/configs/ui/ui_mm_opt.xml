@@ -247,8 +247,8 @@
             <options_item entry="r2_sun_quality" group="mm_opt_video" depend="vid"/>
             <list_font r="170" g="170" b="170" font="letterica16"/>
             <text_color>
-	            <e r="170" g="170" b="170"/>
-	            <d r="70" g="70" b="70"/>
+                <e r="170" g="170" b="170"/>
+                <d r="70" g="70" b="70"/>
             </text_color>
         </list_r2_sun_quality>
 
@@ -256,9 +256,17 @@
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_details_shadows</text>
         </cap_r2_sun_details>
         <check_r2_sun_details x="167" y="0" width="44" height="29">
-	        <texture>ui_inGame2_checkbox</texture>
+            <texture>ui_inGame2_checkbox</texture>
             <options_item entry="r2_sun_details" group="mm_opt_video"/>
         </check_r2_sun_details>
+
+        <cap_r4_hud_shadows x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r4_hud_shadows</text>
+        </cap_r4_hud_shadows>
+        <check_r4_hud_shadows x="167" y="0" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r4_hud_shadows" group="mm_opt_video" depend="vid"/>
+        </check_r4_hud_shadows>
 
         <cap_r3_dynamic_wet_surfaces x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r3_dynamic_wet_surfaces</text>
