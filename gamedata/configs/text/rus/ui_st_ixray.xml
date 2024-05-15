@@ -16,6 +16,9 @@
         <text>автоматическое сохранение</text>
     </string>
 
+    <string id="ui_mm_r_actor_shadow">
+        <text>Тени от протагониста</text>
+    </string>
     <string id="ui_mm_r2_details_shadows">
         <text>Тень от травы</text>
     </string>
