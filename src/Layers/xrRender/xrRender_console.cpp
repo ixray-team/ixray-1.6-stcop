@@ -159,15 +159,15 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	|R2FLAG_TONEMAP
 	|R2FLAG_VOLUMETRIC_LIGHTS
 	| RFLAG_CLOUD_SHADOWS
-	| R4FLAG_SCREEN_SPACE_HUD_SHADOWS
 	};	// r2-only
 
 Flags32		ps_r2_ls_flags_ext			= {
-		/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA
-		|R2FLAGEXT_ENABLE_TESSELLATION
-	};
+	R2FLAGEXT_SSAO_HALF_DATA
+	| R2FLAGEXT_ENABLE_TESSELLATION
+	| R4FLAG_SCREEN_SPACE_HUD_SHADOWS
+};
 
-Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES /*| RFLAG_MT_TEX_LOAD*/ };
+Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD };
 
 int opt_static = 1;
 int opt_dynamic = 1;
@@ -723,7 +723,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token, "r__smap_size", &ps_r__smapsize, qsmapsize_token);
 	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags, RFLAG_CLOUD_SHADOWS);	//Need restart
 
-	//CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
+	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 
 	// R1
 	CMD4(CCC_Float,		"r1_ssa_lod_a",			&ps_r1_ssaLOD_A,			16,		96		);
