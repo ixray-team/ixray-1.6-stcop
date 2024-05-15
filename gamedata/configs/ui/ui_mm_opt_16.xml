@@ -255,6 +255,14 @@
 		    </text_color>
         </list_r2_sun_quality>
 
+        <cap_r2_sun_details x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_details_shadows</text>
+        </cap_r2_sun_details>
+        <check_r2_sun_details x="133" y="0" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_sun_details" group="mm_opt_video"/>
+        </check_r2_sun_details>
+
         <cap_r3_dynamic_wet_surfaces x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r3_dynamic_wet_surfaces</text>
         </cap_r3_dynamic_wet_surfaces>
