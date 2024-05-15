@@ -137,10 +137,18 @@
             <options_item entry="rs_fullscreen" group="mm_opt_video" depend="vid"/>
         </check_fullscreen>
 
-        <cap_rs_device_active x="15" y="213" width="135" height="24">
+        <cap_vsync x="15" y="213" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_vsync</text>
+        </cap_vsync>
+        <check_vsync x="162" y="210" width="44" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="rs_v_sync" group="mm_opt_video" depend="vid"/>
+        </check_vsync>
+
+        <cap_rs_device_active x="15" y="243" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_rs_device_active</text>
         </cap_rs_device_active>
-        <check_rs_device_active x="162" y="210" width="44" height="29">
+        <check_rs_device_active x="162" y="240" width="44" height="29">
 	        <texture>ui_inGame2_checkbox</texture>
             <options_item entry="rs_device_active" group="mm_opt_video"/>
         </check_rs_device_active>
@@ -294,14 +302,6 @@
         <track_particles_distance x="180" y="6" width="235" height="16" step="0.1">
             <options_item entry="r2_ls_squality" group="mm_opt_video_adv"/>
         </track_particles_distance>
-
-        <cap_vsync x="20" y="3" width="135" height="24">
-            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_vsync</text>
-        </cap_vsync>
-        <check_vsync x="167" y="0" width="44" height="29">
-	        <texture>ui_inGame2_checkbox</texture>
-            <options_item entry="rs_v_sync" group="mm_opt_video_adv" depend="vid"/>
-        </check_vsync>
 
         <cap_mt_tex_load x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_mt_tex_load</text>
