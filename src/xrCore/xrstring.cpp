@@ -181,7 +181,7 @@ xr_string xr_string::ToString(unsigned int Value)
 xr_string xr_string::ToString(float Value) 
 {
 	string64 buf = { 0 };
-	sprintf(buf, "%f", Value);
+	sprintf(buf, "%.3f", Value);
 
 	xr_string buff = buf;
 

@@ -2,6 +2,7 @@
 
 #include "UIOptionsItem.h"
 #include "UI_IB_Static.h"
+#include "UIEditBox.h"
 
 class CUI3tButton;
 class CUITrackButton;
@@ -22,6 +23,7 @@ public:
 	virtual void	Update					();
 	virtual bool	OnMouseAction			(float x, float y, EUIMessages mouse_action);
 	virtual	void 	OnMessage				(LPCSTR message);
+
 	// CUIWindow
 			void	InitTrackBar			(Fvector2 pos, Fvector2 size);
 	virtual void	Enable					(bool status);
@@ -35,14 +37,20 @@ public:
 			float	GetFValue				(){return m_f_val;}
 			void	SetOptIBounds			(int imin, int imax);
 			void	SetOptFBounds			(float fmin, float fmax);
+
+public:
+		IC	void	SetupEditBox			(bool value) { m_b_use_editbox = value; }
+
 protected:
 			void 	UpdatePos				();
 			void 	UpdatePosRelativeToMouse();
 
     CUI3tButton*		m_pSlider;
+    CUIEditBox*			m_pEditBox = nullptr;
 	bool				m_b_invert;
 	bool				m_b_is_float;
 	bool				m_b_mouse_capturer;
+	bool				m_b_use_editbox = false;
 
 	union{
 		struct{
