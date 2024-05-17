@@ -1263,6 +1263,10 @@ bool CUIXmlInit::InitListBox(CUIXml& xml_doc, LPCSTR path, int index, CUIListBox
 bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackBar* pWnd)
 {
 	InitWindow			(xml_doc, path, 0, pWnd);
+
+	bool bUseEditBox = !!xml_doc.ReadAttribInt(path, index, "show_value", false);
+	pWnd->SetupEditBox(bUseEditBox);
+
 	pWnd->InitTrackBar	(pWnd->GetWndPos(),pWnd->GetWndSize());
 	int is_integer		= xml_doc.ReadAttribInt(path, index, "is_integer", 0);
 	pWnd->SetType		(!is_integer);

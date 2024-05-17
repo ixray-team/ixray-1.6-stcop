@@ -89,6 +89,7 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 {
+	const float EditBoxSize = 20.f * UI().get_current_kx();
 
 	CUIXml xml_doc;
 	xml_doc.Load			(CONFIG_PATH, UI_PATH, "trackbar.xml");
@@ -99,7 +100,14 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 	float					item_height;
 	float					item_width;
 
-	InitIB					(pos, size);
+	Fvector2 TrySize = size;
+
+	if (m_b_use_editbox)
+	{
+		TrySize.x -= EditBoxSize * 1.4f;
+	}
+
+	InitIB(pos, TrySize);
 
 	InitState				(S_Enabled, nodevalue_track);
 	InitState				(S_Disabled, nodevalue_track);
@@ -115,12 +123,26 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 	m_pSlider->m_background->SetStretchTexture(xml_doc.ReadInt("stretch", 0, TRUE));
 	
 	SetCurrentState(S_Enabled);
+
+	if (m_b_use_editbox)
+	{
+		Fvector2 InitPos = { size.x - EditBoxSize, 0 };
+		m_pEditBox = new CUIEditBox();
+		m_pEditBox->SetParent(this);
+		m_pEditBox->SetWndPos(InitPos);
+		m_pEditBox->SetWndSize({ EditBoxSize + 10, EditBoxSize });
+		m_pEditBox->TextItemControl()->SetFont(g_FontManager->GetFont("ui_font_arial_14"));
+		m_pEditBox->SetText(xr_string::ToString(m_f_val).c_str());
+	}
 }	
 
 void CUITrackBar::Draw()
 {
-	CUI_IB_FrameLineWnd::Draw	();
-	m_pSlider->Draw				();
+	CUI_IB_FrameLineWnd::Draw();
+	m_pSlider->Draw();
+
+	if (m_pEditBox != nullptr)
+		m_pEditBox->Draw();
 }
 
 void CUITrackBar::Update()
@@ -295,6 +317,11 @@ void CUITrackBar::UpdatePos()
 		pos.x					= free_space-pos.x;
 
 	m_pSlider->SetWndPos		(pos);
+
+	if (m_b_use_editbox)
+	{
+		m_pEditBox->SetText(xr_string::ToString(m_b_is_float ? m_f_val * 100 : m_i_val).c_str());
+	}
 }
 
 void CUITrackBar::OnMessage(LPCSTR message)
