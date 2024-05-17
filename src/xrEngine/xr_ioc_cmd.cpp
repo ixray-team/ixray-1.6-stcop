@@ -711,7 +711,7 @@ void CCC_Register()
 
 	// General video control
 	CMD1(CCC_VidMode, "vid_mode");
-	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.25f, 2.0f);
+	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
 
 #ifdef DEBUG
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );
