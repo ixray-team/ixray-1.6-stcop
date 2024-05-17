@@ -25,4 +25,7 @@
     <string id="ui_mm_r4_hud_shadows">
         <text>Тени на руках</text>
     </string>
+    <string id="ui_mm_vid_scale">
+        <text>Масштаб визуализации</text>
+    </string>
 </string_table>

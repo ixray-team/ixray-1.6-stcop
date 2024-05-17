@@ -24,6 +24,9 @@ function opt_video:InitControls(x, y, xml, handler)
 	xml:InitStatic                  ("tab_video:cap_vsync", self)
 	xml:InitCheck                   ("tab_video:check_vsync", self)
 
+	xml:InitStatic					("tab_video:cap_vid_scale",		self)
+	xml:InitTrackBar				("tab_video:track_vid_scale",		self)
+
 	xml:InitStatic					("tab_video:cap_brightness",		self)
 	xml:InitTrackBar				("tab_video:track_brightness",		self)
 
