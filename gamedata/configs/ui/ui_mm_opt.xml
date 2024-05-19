@@ -454,14 +454,14 @@
         <cap_mastervolume x="15" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_master_volume</text>
         </cap_mastervolume>
-        <track_mastervolume x="175" y="6" width="235" height="16">
+        <track_mastervolume x="175" y="6" width="235" height="16" step="0.01" show_value="1">
             <options_item entry="snd_volume_eff" group="mm_opt_sound"/>
         </track_mastervolume>
 
         <cap_musicvolume x="15" y="33" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_music_volume</text>
         </cap_musicvolume>
-        <track_musicvolume x="175" y="36" width="235" height="16">
+        <track_musicvolume x="175" y="36" width="235" height="16" step="0.01" show_value="1">
             <options_item entry="snd_volume_music" group="mm_opt_sound"/>
         </track_musicvolume>
 
