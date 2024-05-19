@@ -574,14 +574,6 @@
         <options_item entry="hud_draw" group="mm_opt_gameplay"/>
       </check_hud_draw>
 
-      <cap_check_autoreload x="12" y="273" width="108" height="24">
-        <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_st_autoreload</text>
-      </cap_check_autoreload>
-      <check_autoreload x="129" y="270" width="35" height="29" stretch="1">
-        <texture>ui_inGame2_checkbox</texture>
-        <options_item entry="g_autoreload" group="mm_opt_gameplay"/>
-      </check_autoreload>
-
       <btn_check_updates x="270" y="322" width="86" height="24" stretch="1">
             <text align="c" font="letterica16">ui_mm_check_updates</text>
             <texture>ui_inGame2_button</texture>
