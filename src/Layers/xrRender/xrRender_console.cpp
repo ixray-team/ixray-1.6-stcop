@@ -87,7 +87,7 @@ xr_token							qminmax_sm_token					[ ]={
 
 u32			ps_r2_aa_type			= 0;			//	=	0;
 xr_token							aa_type_token[] = {
-	{ "off",						0												},
+	{ "st_opt_off",						0												},
 	{ "fxaa",						1												},
 #if RENDER != R_R1
 	{ "smaa",						2												},
