@@ -303,6 +303,14 @@
             <options_item entry="r4_hud_shadows" group="mm_opt_video" depend="vid"/>
         </check_r4_hud_shadows>
 
+        <cap_r2_cloud_shadows x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_cloud_shadows</text>
+        </cap_r2_cloud_shadows>
+        <check_r2_cloud_shadows x="167" y="0" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_cloud_shadows" group="mm_opt_video" depend="vid"/>
+        </check_r2_cloud_shadows>
+
         <cap_r3_dynamic_wet_surfaces x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r3_dynamic_wet_surfaces</text>
         </cap_r3_dynamic_wet_surfaces>
