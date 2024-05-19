@@ -34,4 +34,19 @@
     <string id="smaa">
         <text>SMAA</text>
     </string>
+    <string id="ui_mm_r_scale_mode">
+        <text>Масштабирование</text>
+    </string>
+    <string id="st_filter_linear">
+        <text>Стандарное (Линейное)</text>
+    </string>
+    <string id="st_filter_point">
+        <text>Целочисленное</text>
+    </string>
+    <string id="st_filter_dlss">
+        <text>DLSS</text>
+    </string>
+    <string id="st_filter_fsr">
+        <text>FSR2</text>
+    </string>
 </string_table>
