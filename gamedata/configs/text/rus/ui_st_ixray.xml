@@ -17,13 +17,16 @@
     </string>
 
     <string id="ui_mm_r_actor_shadow">
-        <text>Тени от протагониста</text>
+        <text>Тень от протагониста</text>
     </string>
     <string id="ui_mm_r2_details_shadows">
         <text>Тень от травы</text>
     </string>
     <string id="ui_mm_r4_hud_shadows">
         <text>Тени на руках</text>
+    </string>
+    <string id="ui_mm_r2_cloud_shadows">
+        <text>Тени от облаков</text>
     </string>
     <string id="ui_mm_vid_scale">
         <text>Масштаб визуализации</text>
