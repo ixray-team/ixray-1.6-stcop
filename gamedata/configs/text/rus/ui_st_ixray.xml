@@ -28,4 +28,10 @@
     <string id="ui_mm_vid_scale">
         <text>Масштаб визуализации</text>
     </string>
+    <string id="fxaa">
+        <text>FXAA</text>
+    </string>
+    <string id="smaa">
+        <text>SMAA</text>
+    </string>
 </string_table>
