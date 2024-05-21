@@ -16,6 +16,7 @@
 #include "InventoryOwner.h"
 #include "UIGameCustom.h"
 #include "ui/UIActorMenu.h"
+#include "HUDAnimItem.h"
 
 CEatableItem::CEatableItem()
 {
@@ -41,6 +42,8 @@ DLL_Pure *CEatableItem::_construct	()
 void CEatableItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
+
+	bUseHUDAnim = (pSettings->line_exist(section, "anm_use"));
 
 	if (pSettings->line_exist(section, "eat_portions_num"))
 	{
@@ -139,6 +142,11 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 		--m_iPortionsMarker;
 	else
 		m_iPortionsMarker = 0;
+
+	if (bUseHUDAnim)
+	{
+		CHUDAnimItem::PlayHudAnim(m_section_id.c_str(), "anm_use");
+	}
 
 	return true;
 }

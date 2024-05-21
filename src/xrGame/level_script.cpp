@@ -37,6 +37,7 @@
 #include "ui/UIInventoryUtilities.h"
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "HUDAnimItem.h"
 
 using namespace luabind;
 
@@ -1131,6 +1132,11 @@ void CLevel::script_register(lua_State *L)
 		def("get",						&level_nearest::Get)
 	];
 	
+	module(L, "animslot")
+	[
+		def("play", &CHUDAnimItem::PlayHudAnim)
+	];
+
 	module(L,"actor_stats")
 	[
 		def("add_points",						&add_actor_points),

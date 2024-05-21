@@ -1,5 +1,6 @@
 #pragma once
 
+#define CLSID_OBJECT_ANINFAKE		MK_CLSID('F','_','A','N','M','I','T','M')
 #define CLSID_OBJECT_ACTOR			MK_CLSID('O','_','A','C','T','O','R',' ')
 #define CLSID_OBJECT_HLAMP			MK_CLSID('O','_','H','L','A','M','P',' ')
 #define CLSID_ENTITY				MK_CLSID('E','N','T','I','T','Y',' ',' ')

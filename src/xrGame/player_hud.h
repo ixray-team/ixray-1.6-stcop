@@ -127,7 +127,7 @@ public:
 	const shared_str& section_name		() const {return m_sect_name;}
 
 	attachable_hud_item* create_hud_item(const shared_str& sect);
-
+	void			RemoveHudItem		(const shared_str& sect);
 	void			attach_item			(CHudItem* item);
 	bool			allow_activation	(CHudItem* item);
 	attachable_hud_item* attached_item	(u16 item_idx)	{return m_attached_items[item_idx];};

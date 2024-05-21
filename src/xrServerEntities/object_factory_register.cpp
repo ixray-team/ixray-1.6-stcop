@@ -182,6 +182,7 @@
 #	include "actor_mp_server.h"
 #	include "actor_mp_client.h"
 #	include "smart_cover_object.h"
+#	include "HUDAnimItem.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -280,6 +281,8 @@ void CObjectFactory::register_classes	()
 
 	ADD(CHelicopter				,CSE_ALifeHelicopter			,CLSID_VEHICLE_HELICOPTER		,"helicopter");
 #endif // #ifndef NO_SINGLE
+
+	ADD(CHUDAnimItem			,CSE_ALifeItem					,CLSID_OBJECT_ANINFAKE,			"animfakeitem");
 
 	// Artefacts
 	ADD(CMercuryBall			,CSE_ALifeItemArtefact			,CLSID_AF_MERCURY_BALL			,"art_mercury_ball");
