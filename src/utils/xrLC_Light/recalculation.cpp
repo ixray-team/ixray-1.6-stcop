@@ -99,39 +99,4 @@ void	recalculation::close	()
 	if ( dtFS )	
 		xr_delete( dtFS );
 }
-
-	//const DetailHeader				&dtH;
-	//u8								*slots_flags;
-	//CVirtualFileRW					*dtFS;
-
-	//Frect	calculation_rect;
-	//bool	recalculate;
-	//bool	partial_calculate;
-	//bool	force_recalculate;
-void	recalculation::read( INetReader &r )
-{
-	R_ASSERT(!slots_flags);
-	R_ASSERT(dtH.version()!=u32(-1));
-	R_ASSERT(dtH.x_size()!=u32(-1));
-	R_ASSERT(dtH.z_size()!=u32(-1));
-	
-	u32 buff_size = dtH.slots_count( ) * sizeof( slots_flags[0] );
-	slots_flags = (u8*)xr_malloc( buff_size );
-
-	r.r( slots_flags, dtH.slots_count() );
-	r_pod( r, calculation_rect );
-	
-	r_pod( r, recalculate );
-	r_pod( r, partial_calculate );
-	r_pod( r, force_recalculate );
-}
-void	recalculation::write( IWriter	&w ) const 
-{
-	u32 buff_size = dtH.slots_count( ) * sizeof( slots_flags[0] );
-	w.w( slots_flags, buff_size );
-	w_pod( w, calculation_rect );
-	
-	w_pod( w, recalculate );
-	w_pod( w, partial_calculate );
-	w_pod( w, force_recalculate );
-}
+ 

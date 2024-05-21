@@ -19,49 +19,80 @@
 
 
 CThreadManager			mu_base;
+
+CThreadManager			mu_materials;
 CThreadManager			mu_secondary;
-#define		MU_THREADS	4
+#define		MU_THREADS	16
+
+xrCriticalSection csMUMAPS_LOCKS;
+
+int ThreadTaskID = 0;
+
 // mu-light
-bool mu_models_local_calc_lightening = false;
-xrCriticalSection		mu_models_local_calc_lightening_wait_lock;
-void WaitMuModelsLocalCalcLightening()
-{
-	for(;;)
-	{
-		bool complited = false;
-		Sleep(1000);
-		mu_models_local_calc_lightening_wait_lock.Enter();
-		complited = mu_models_local_calc_lightening;
-		mu_models_local_calc_lightening_wait_lock.Leave();
-		if(complited)
-			break;
-	}
-}
-void SetMuModelsLocalCalcLighteningCompleted()
-{
-	mu_models_local_calc_lightening_wait_lock.Enter();
-	mu_models_local_calc_lightening = true;
-	mu_models_local_calc_lightening_wait_lock.Leave();
-}
+ 
 class CMULight	: public CThread
 {
-	u32			low;
-	u32			high;
 public:
-	CMULight	(u32 ID, u32 _low, u32 _high) : CThread(ID)	{	thMessages	= FALSE; low=_low; high=_high;	}
+	CMULight	( u32 ID ) : CThread(ID)	{	thMessages	= FALSE; }
 
 	virtual void	Execute	()
 	{
-		// Priority
-		SetThreadPriority	(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
-		Sleep				(0);
 
-		// Light references
-		for (u32 m=low; m<high; m++)
+		// Priority
+		SetThreadPriority(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+		Sleep(0);
+		while (true)
 		{
-		
-			inlc_global_data()->mu_refs()[m]->calc_lighting	();
-			thProgress							= (float(m-low)/float(high-low));
+  			csMUMAPS_LOCKS.Enter();
+			int ID = ThreadTaskID;
+
+			if (ThreadTaskID >= inlc_global_data()->mu_refs().size())
+			{
+				csMUMAPS_LOCKS.Leave();
+				break;
+			}
+
+			ThreadTaskID++;
+			csMUMAPS_LOCKS.Leave();
+
+
+			// Light references
+			inlc_global_data()->mu_refs()[ID]->calc_lighting	();
+			thProgress							= (float(ID)/float(inlc_global_data()->mu_refs().size()));
+		}
+	}
+};
+
+class CMULightCalculation : public CThread
+{
+public:
+	CMULightCalculation(u32 ID) : CThread(ID) { thMessages = FALSE; }
+
+	virtual void	Execute()
+	{
+ 		// Priority
+		SetThreadPriority(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+		Sleep(0);
+
+		while (true)
+		{
+			csMUMAPS_LOCKS.Enter();
+
+			int ID = ThreadTaskID;
+ 			if (ThreadTaskID >= inlc_global_data()->mu_models().size())
+			{
+				csMUMAPS_LOCKS.Leave();
+				break;
+			}
+ 			ThreadTaskID++;
+			// Light references
+			inlc_global_data()->mu_models()[ID]->calc_materials();
+
+			csMUMAPS_LOCKS.Leave();
+ 
+			
+			inlc_global_data()->mu_models()[ID]->calc_lighting();
+			thProgress = (float(ID) / float(inlc_global_data()->mu_models().size()));
 		}
 	}
 };
@@ -77,57 +108,40 @@ public:
 	}
 	virtual void	Execute()
 	{
-
-
 		// Priority
 		SetThreadPriority	(Platform::GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 		Sleep				(0);
-
-		// Light models
-
-		
-		if(mu_light_net)
-		{
-			lc_net::RunBaseModelsNet( );
-			lc_net::RunRefModelsNet( );
-			return;
-			//lc_net::WaitRefModelsNet();
-		} 
-		
+ 
+		/*
 		for (u32 m=0; m<inlc_global_data()->mu_models().size(); m++)
 		{
 			inlc_global_data()->mu_models()[m]->calc_materials();
 			inlc_global_data()->mu_models()[m]->calc_lighting	();
 		}
+		*/
 
+		ThreadTaskID = 0;
+		for (u32 thID = 0; thID < MU_THREADS; thID++)
+			mu_materials.start(xr_new<CMULightCalculation>(thID));
 
-		SetMuModelsLocalCalcLighteningCompleted();
-
+		mu_materials.wait(100);
+ 
 		// Light references
-		u32	stride			= inlc_global_data()->mu_refs().size()/MU_THREADS;
-		u32	last			= inlc_global_data()->mu_refs().size()-stride*(MU_THREADS-1);
-		u32 threads = MU_THREADS;
-		get_intervals( MU_THREADS, inlc_global_data()->mu_refs().size(), threads, stride, last );
-
-		for (u32 thID=0; thID<threads; thID++)
-			mu_secondary.start	( xr_new<CMULight> (thID,thID*stride,thID*stride + stride ) );
-		if(last > 0)
-			mu_secondary.start	( xr_new<CMULight> (threads,threads*stride,threads*stride + last ) );
+		ThreadTaskID = 0;
+		for (u32 thID=0; thID < MU_THREADS; thID++)
+			mu_secondary.start	( xr_new<CMULight> (thID) );
+	
+		mu_secondary.wait(100);
 	}
 };
 
 
-void	run_mu_base( bool net )
+void	run_mu_base( )
 {
-	
-	mu_base.start				(xr_new<CMUThread> (0));
+ 	mu_base.start				(xr_new<CMUThread> (0));
 }
 
 void	wait_mu_base_thread		()
 {
 	mu_base.wait				(500);
-}
-void	wait_mu_secondary_thread	()
-{
-	mu_secondary.wait			(500);
-}
+} 

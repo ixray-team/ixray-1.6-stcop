@@ -16,42 +16,37 @@
 
 
 //void get_intervals( u32 max_threads, u32 num_items, u32 &threads, u32 &stride, u32 &rest );
-void SetMuModelsLocalCalcLighteningCompleted();
+ 
 namespace lc_net{
 	exec_pool *ref_models_pool = 0;
 	exec_pool *base_models_pool = 0;
 	void RunRefModelsNet( )
 	{
-			
+ 		SetRefModelLightDataInitialized();
 
-			SetRefModelLightDataInitialized();
+		const u32	num_tasks	= inlc_global_data()->mu_refs().size();
+		if( num_tasks == 0 )
+		{
+ 			return;
+		}
+		for (u32 thID=0; thID<num_tasks; thID++)
+		{
 
-			const u32	num_tasks	= inlc_global_data()->mu_refs().size();
-			if( num_tasks == 0 )
-			{
-				SetMuModelsLocalCalcLighteningCompleted();
-				return;
-			}
-			for (u32 thID=0; thID<num_tasks; thID++)
-			{
+			// Light references
+			//u32	stride				= 0;
+			//u32	last				= 0;
+			//u32 tasks				= 0;
+			//const u32 max_tasks		= 32;
+			//get_intervals( max_tasks, inlc_global_data()->mu_refs().size(), threads, stride, last );
 
-				// Light references
-				//u32	stride				= 0;
-				//u32	last				= 0;
-				//u32 tasks				= 0;
-				//const u32 max_tasks		= 32;
-				//get_intervals( max_tasks, inlc_global_data()->mu_refs().size(), threads, stride, last );
-
-				tnet_execution_base< et_mu_ref_light > *el = lc_net::execution_factory.create<et_mu_ref_light>();
-				el->implementation( ).construct(thID);
-				get_task_manager().add_task( el );
+			tnet_execution_base< et_mu_ref_light > *el = lc_net::execution_factory.create<et_mu_ref_light>();
+			el->implementation( ).construct(thID);
+			get_task_manager().add_task( el );
 				
-			}
+		}
 			
-			ref_models_pool = get_task_manager().run( "Net Models Lighting" );
-			SetMuModelsLocalCalcLighteningCompleted();
-
-			
+		ref_models_pool = get_task_manager().run( "Net Models Lighting" );
+	 
 	}
 	void WaitRefModelsNet()
 	{

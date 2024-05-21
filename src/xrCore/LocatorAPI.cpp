@@ -824,6 +824,8 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		string16		b_v;
 		string4096		temp;
 
+		Msg("pFSltx: %s", fs_name);
+
 		while (!pFSltx->eof())
 		{
 			pFSltx->r_string(buf, sizeof(buf));
@@ -836,7 +838,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 			_GetItem(buf, 1, temp, '=');
 			int cnt = _GetItemCount(temp, _delimiter);
+		
 			R_ASSERT2(cnt >= 3, temp);
+
 			u32 fl = 0;
 			_GetItem(temp, 0, b_v, _delimiter);
 

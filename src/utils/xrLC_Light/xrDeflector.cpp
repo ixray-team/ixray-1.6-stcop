@@ -1,14 +1,12 @@
 #include "stdafx.h"
-//#include "resource.h"
-//#include "build.h"
+ 
 #include "xrdeflector.h"
 #include "xrIsect.h"
 #include "xrlc_globaldata.h"
 
 #include "math.h"
 #include "xrface.h"
-#include "serialize.h"
-
+ 
 XRLC_LIGHT_API u32 c_LMAP_size = 1024;
 
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
@@ -108,7 +106,7 @@ IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
 	return T.isInside(P,B);
 }
 
-CDeflector::CDeflector(): _net_session(0)
+CDeflector::CDeflector() 
 {
 	//Deflector		= this;
 	normal.set		(0,1,0);
@@ -117,6 +115,7 @@ CDeflector::CDeflector(): _net_session(0)
 	bMerged			= FALSE;
 	UVpolys.reserve	(32);
 }
+
 CDeflector::~CDeflector()
 {
 }
@@ -335,77 +334,14 @@ u16	CDeflector:: GetBaseMaterial		()
 	return UVpolys.front().owner->dwMaterial;	
 }
 
-	/*
-	xr_vector<UVtri>			UVpolys;
-	Fvector						normal;
-	lm_layer					layer;
-	Fsphere						Sphere;
+/*
+xr_vector<UVtri>			UVpolys;
+Fvector						normal;
+lm_layer					layer;
+Fsphere						Sphere;
 	
-	BOOL						bMerged;
-	*/
-
-void	CDeflector::receive_result		( INetReader	&r )
-{
-	read( r );
-	layer.read( r );
-#ifdef	COLLECT_EXECUTION_STATS
-	time_stat.read( r );
-#endif
-}
-void	CDeflector::send_result			( IWriter	&w ) const
-{
-	write( w );
-	layer.write( w );
-#ifdef	COLLECT_EXECUTION_STATS
-	time_stat.write( w );
-#endif
-}
-
-void	CDeflector::read				( INetReader	&r )
-{
-	u32 sz_polys = r.r_u32();
-	UVpolys.resize( sz_polys );
-
-	for(u32 i = 0; i < sz_polys; ++i )
-	{
-		UVpolys[i].read( r );
-		VERIFY( UVpolys[i].owner );
-		//VERIFY( !UVpolys[i].owner->pDeflector );
-		UVpolys[i].owner->pDeflector = this;
-	}
-
-	r.r_fvector3( normal );
-
-	//layer.read( r );
-	layer.width =	r.r_u32 ();
-	layer.height =	r.r_u32 ();
-
-	r_sphere( r, Sphere );
-
-	 bMerged = (BOOL) r.r_u8( );
-}
-
-
-void	CDeflector::write				( IWriter	&w ) const
-{
-	
-	u32 sz_polys = UVpolys.size();
-	w.w_u32( sz_polys );
-	for(u32 i = 0; i < sz_polys; ++i )
-		UVpolys[i].write( w );
-
-	w.w_fvector3( normal );
-
-	//layer.write( w );
-	w.w_u32 ( layer.width );
-	w.w_u32 ( layer.height );
-	
-	w_sphere( w, Sphere );
-
-	w.w_u8( (u8) bMerged );
-}
-
-
+BOOL						bMerged;
+*/
 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 {
@@ -465,13 +401,4 @@ void DeflectorsStats ()
 	for( u32 i = 0; i <size ; i++ )
 			DumpDeflctor( i ); 
 }
-
-#ifdef	COLLECT_EXECUTION_STATS
-
-void	CDeflector::statistic_log			(  ) const
-{
-	time_stat.log();
-	DumpDeflctor( *this );
-}
-
-#endif
+ 

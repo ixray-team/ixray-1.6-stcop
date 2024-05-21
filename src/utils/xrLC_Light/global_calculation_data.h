@@ -7,6 +7,7 @@
 #include "b_build_texture.h"
 #include "global_slots_data.h"
 #include "../../xrcdb/xrcdb.h"
+
 class Shader_xrLC_LIB;
 //-----------------------------------------------------------------
 struct global_claculation_data
@@ -23,8 +24,7 @@ struct global_claculation_data
 	xr_vector<b_shader>				g_shader_compile;//-----==========
 	xr_vector<b_rc_face>			g_rc_faces;//---------===============
 ///////////////////////////////////////////////////////////////////////
-	void							read			( INetReader &r );
-	void							write			( IWriter	&w ) const ;
+ 
 //////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////

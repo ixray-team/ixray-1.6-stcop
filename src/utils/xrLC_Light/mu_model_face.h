@@ -1,9 +1,6 @@
 #ifndef _MU_MODEL_FACE_
 #define _MU_MODEL_FACE_
-
-
-
-class  INetReader;
+ 
 
 #include "base_face.h"
 #include "meshstructure.h"

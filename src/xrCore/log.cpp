@@ -18,6 +18,7 @@ void Log(const char* s)
 
 void Msg(const char *format, ...)
 {
+
 	va_list		mark;
 	va_start	(mark, format );
 	theLogger->Msg(format, mark);
@@ -57,7 +58,7 @@ void xrLogger::Msg(LPCSTR Msg, va_list argList)
 	return;
 #endif
 
-	if (IsDebuggerPresent() && bFastDebugLog)
+	//if (IsDebuggerPresent() && bFastDebugLog)
 	{
 		OutputDebugStringA(formattedMessage);
 		OutputDebugStringA("\n");

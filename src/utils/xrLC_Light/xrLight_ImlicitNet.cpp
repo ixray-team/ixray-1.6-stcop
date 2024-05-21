@@ -26,6 +26,7 @@ namespace lc_net{
 				el->implementation( ).construct(exec);
 				get_task_manager().add_task( el );
 	}
+
 	void RunImplicitnet(ImplicitDeflector& defl,  const xr_vector<u32> &exept )
 	{
 			
@@ -35,7 +36,7 @@ namespace lc_net{
 	
 			
 			//WaitNetCompileDataPrepare( );
-			WaitMuModelsLocalCalcLightening();
+			// WaitMuModelsLocalCalcLightening();
 			inlc_global_data()->clear_build_textures_surface(exept);
 			
 

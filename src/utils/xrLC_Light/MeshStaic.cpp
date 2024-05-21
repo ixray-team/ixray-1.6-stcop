@@ -59,6 +59,8 @@ void xrLC_GlobalData	::gl_mesh_clear	()
 
 void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 {
+	/*
+	
 	const u32 inital_verts_count = (u32)_g_vertices.size();
 	u32 not_empty_verts = 0;
 
@@ -75,8 +77,9 @@ void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 				::destroy_vertex(_g_vertices[i], false);
 				continue;
 			}
-
-			v.isolate_pool_clear_write(*file);
+			
+			// Se7kills Проверить для чего нужно было 
+			// v.isolate_pool_clear_write(*file);
 			::destroy_vertex(_g_vertices[i], false);
 			++not_empty_verts;
 		}
@@ -100,10 +103,13 @@ void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 		{
 			Vertex*& v = _g_vertices[i];
 			v = _VertexPool.create();
-			v->isolate_pool_clear_read(r_verts);
+
+			// Se7kills Проверить для чего нужно было 
+			// v->isolate_pool_clear_read(r_verts);
 		}
 		b_vert_not_register = false;
 	}
+	*/
 }
 
 

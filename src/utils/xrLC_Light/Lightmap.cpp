@@ -31,10 +31,7 @@ CLightmap::~CLightmap()
 {
 	
 }
-CLightmap*	CLightmap::read_create ( )
-{
-	return xr_new<CLightmap>();
-}
+ 
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
 	// Allocate 512x512 texture if needed
@@ -195,18 +192,4 @@ void CLightmap::Save( LPCSTR path )
 
 
 }
-/*
-	lm_layer					lm;
-	b_texture					lm_texture;
-*/
-void	CLightmap::read				( INetReader	&r )
-{
-	lm.read( r );
-	::read(r, lm_texture);
-	
-}
-void	CLightmap::write				( IWriter	&w )const
-{
-	lm.write( w );
-	::write( w, lm_texture );
-}
+ 
