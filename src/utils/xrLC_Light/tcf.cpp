@@ -1,6 +1,6 @@
-#include	"stdafx.h"
-#include	"tcf.h"
-#include	"net_stream.h"
+#include "stdafx.h"
+#include "tcf.h"
+
 void	_TCF::barycentric	(Fvector2 &P, float &u, float &v, float &w)
 {
 	Fvector2 	kV02; kV02.sub(uv[0],uv[2]);

@@ -6,7 +6,7 @@
 #include "xrlc_globaldata.h"
 #include "light_point.h"
 #include "xrface.h"
-#include "net_task.h"
+
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
 void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)

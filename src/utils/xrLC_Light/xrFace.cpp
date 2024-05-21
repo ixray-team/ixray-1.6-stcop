@@ -4,8 +4,8 @@
 //#include "build.h"
 #include "xrdeflector.h"
 #include "xrLC_globaldata.h"
-#include "serialize.h"
 #include "lightmap.h"
+
 volatile u32					dwInvalidFaces;//= 0;
 u32		InvalideFaces()
 {

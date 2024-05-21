@@ -8,7 +8,6 @@
 #include "base_face.h"
 
 #include "MeshStructure.h"
-#include "serialize.h"
 
 #pragma pack(push,4)
 

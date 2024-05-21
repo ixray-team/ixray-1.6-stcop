@@ -1,7 +1,5 @@
 #include "stdafx.h"
-
 #include "global_slots_data.h"
-#include "serialize.h"
 
 void	global_slots_data::	Load			( )
 {

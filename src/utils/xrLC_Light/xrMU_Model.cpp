@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "xrmu_model.h"
 
-#include "serialize.h"
 #include "mu_model_face.h"
 #include "vector_clear.h"
 #include "../../xrcore/xrPool.h"

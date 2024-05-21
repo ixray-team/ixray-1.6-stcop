@@ -60,7 +60,7 @@ virtual	void Execute()
 		{
 			csA.Enter();
 			int ID = ThreadWorkID_Adaptive;
-			if (ID > lc_global_data()->g_vertices().size())
+			if (ID >= lc_global_data()->g_vertices().size())
 			{
 				csA.Leave();
 				break;
