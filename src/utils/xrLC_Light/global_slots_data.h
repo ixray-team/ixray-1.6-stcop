@@ -3,8 +3,8 @@
 
 #include "detailformat.h"
 #include "recalculation.h"
-class INetReader;
-class IWriter;
+ 
+
 class global_slots_data
 {
 private:
@@ -19,9 +19,7 @@ public:
 	void				Free			();
 	
 	void				FreeOnAgent		();
-
-	void				read			( INetReader &r );
-	void				write			( IWriter	&w ) const ;
+ 
 
 	IC const DetailHeader &header( )const { return dtH; }
 

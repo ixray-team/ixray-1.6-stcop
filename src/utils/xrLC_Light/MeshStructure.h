@@ -25,25 +25,16 @@ struct MESHSTRUCTURE_API Tface: public DataVertexType::DataFaceType, public vect
 {
 	typedef	Tvertex<DataVertexType>	type_vertex;
 	typedef	Tface<DataVertexType>	type_face;
-//private:
 	type_vertex*	v[3];
-//	u32				m_self_index;
+
 public:
-//IC	void			set_index	( u32 idx )		{ m_self_index = idx; }
-//IC	u32				self_index	( )	const		{return m_self_index ;}
-///////////////////////////////////////////////////////////////////////////////////////////////////
-			Tface	();
-virtual		~Tface	();
-static	Tface* read_create();	
+				Tface	();
+	virtual		~Tface	();
+ 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	void	Verify		();
 	void 	Failure		();
 	void	OA_Unwarp	(CDeflector * d);
-
-virtual	void	read				( INetReader	&r );
-virtual	void	write				( IWriter	&w )const;
-virtual	void	read_vertices		( INetReader	&r );
-virtual	void	write_vertices		( IWriter	&w )const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	IC void				raw_set_vertex( u8 index, type_vertex* _v )
@@ -224,22 +215,13 @@ struct MESHSTRUCTURE_API Tvertex: public DataVertexType, public vector_item
 				Tvertex();
 virtual			~Tvertex();
 Tvertex*		CreateCopy_NOADJ( v_vertices& vertises_storage ) const;
-static	Tvertex* read_create();
-
-virtual	void	read		( INetReader	&r );
-virtual	void	write		( IWriter	&w )const;
+  
 
 //////////////////////////////////////////////////////////////
-		void	isolate_pool_clear_read		( INetReader	&r );
-		void	isolate_pool_clear_write	( IWriter	&w )const;
-
-		void	read_adjacents		( INetReader	&r );
-		void	write_adjacents		( IWriter	&w )const;
+ 
 ///////////////////////////////////////////////////////////////
 	v_faces							m_adjacents;
-	
-
-
+ 
 
 	IC	type_vertex* CreateCopy(v_vertices& vertises_storage)
 	{

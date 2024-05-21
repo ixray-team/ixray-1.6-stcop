@@ -89,6 +89,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		Status			("Lighting...");
 		CThreadManager	threads;
 		const	u32	thNUM	= CPU::ID.n_threads - 2;
+
 		CTimer	start_time;	start_time.Start();				
 		for				(int L=0; L<thNUM; L++)	threads.start(xr_new<CLMThread> (L));
 		threads.wait	(500);
@@ -99,28 +100,19 @@ void	CBuild::LMaps					()
 {
 		//****************************************** Lmaps
 	Phase			("LIGHT: LMaps...");
-	//DeflectorsStats ();
-#ifndef NET_CMP
-	if(g_build_options.b_net_light)
-
-		//net_light ();
-		lc_net::net_lightmaps ();
-	else{
-		LMapsLocal();
-	}
-#else
-	create_net_task_manager();
-	get_net_task_manager()->create_global_data_write(pBuild->path);
 	LMapsLocal();
-	get_net_task_manager()->run();
-	destroy_net_task_manager();
-	//net_light ();
-#endif
-
 }
-void XRLC_LIGHT_API ImplicitNetWait();
+ 
 void CBuild::Light()
 {
+ 
+	//****************************************** Wait for MU
+	FPU::m64r();
+	Phase("LIGHT: Waiting for MU-thread...");
+	mem_Compact();
+	wait_mu_base();
+
+
 	//****************************************** Implicit
 	{
 		FPU::m64r		();
@@ -139,15 +131,7 @@ void CBuild::Light()
 
 	LightVertex		();
 
-//
-	
 
-	ImplicitNetWait();
-	WaitMuModelsLocalCalcLightening();
-	lc_net::get_task_manager().wait_all();
-	//	get_task_manager().wait_all();
-	lc_net::get_task_manager().release();
-//
 	//****************************************** Merge LMAPS
 	{
 		FPU::m64r		();
@@ -160,5 +144,5 @@ void CBuild::Light()
 
 void CBuild::LightVertex	()
 {
-	::LightVertex(!!g_build_options.b_net_light);
+	::LightVertex();
 }

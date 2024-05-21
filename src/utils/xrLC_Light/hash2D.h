@@ -11,16 +11,10 @@ public:
 	{
 		bounds.invalidate	();
 		size.set			(0.f,0.f);
-
-		//for (u32 y=0; y<s_Y; y++)
-		//	for (u32 x=0; x<s_Y; x++)
-		//		table[y][x]	= xr_new<xr_vector<T> > ();
 	}
+
 	~hash2D()
 	{
-		//for (u32 y=0; y<s_Y; y++)
-		//	for (u32 x=0; x<s_X; x++)
-		//		xr_delete	(table[y][x]);
 	}
 
 	void		initialize	(Fbox2& R, u32 faces)
@@ -56,8 +50,6 @@ public:
 		return table[_y][_x];
 	};
 
-// vector_serialize< t_read<Face> >	
-// vector_serialize< t_write<Face> >	
 	template<typename TP>	
 	struct get_type
 	{
@@ -71,23 +63,5 @@ public:
 	};
 
 	typedef	 typename get_type<T>::type		type;
-
-	void	read				( INetReader	&r,  vector_serialize< t_read<type, get_id_self_index<type> > > &rd	 )
-	{
-		r_pod( r, bounds );
-			
-		r.r_fvector2( size );
-		for (u32 y=0; y<s_Y; y++)
-			for (u32 x=0; x<s_Y; x++)
-				rd.read_ref( r,  table[y][x] );
-	}
-	void	write				( IWriter	&w, vector_serialize< t_write<type, get_id_self_index<type> > > &wt  ) const 
-	{
-		w_pod( w, bounds );
-
-		w.w_fvector2( size );
-		for (u32 y=0; y<s_Y; y++)
-			for (u32 x=0; x<s_Y; x++)
-			 wt.write_ref( w,	table[y][x]	);
-	}
+ 
 };

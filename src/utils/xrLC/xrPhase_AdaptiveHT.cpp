@@ -11,8 +11,7 @@
 #include "../xrForms/xrThread.h"
 
 const	float	aht_max_edge	= c_SS_maxsize/2.5f;	// 2.0f;			// 2 m
-//const	float	aht_min_edge	= .2f;					// 20 cm
-//const	float	aht_min_err		= 16.f/255.f;			// ~10% error
+ 
 
 bool	is_CCW	(int _1, int _2)
 {
@@ -41,113 +40,40 @@ int		callback_edge_longest	( const Face* F)
 	}
 	return	max_id;
 }
-/*
-// Iterate on edges - select with maximum error
-int		callback_edge_error		(Face* F)
-{
-	float	max_err				= -1;
-	int		max_id				= -1;
-	for (u32 e=0; e<3; e++)
-	{
-		Vertex					*V1,*V2;
-		F->EdgeVerts			(e,&V1,&V2);
-		float len				= V1->P.distance_to	(V2->P);	// len
-		if (len<aht_min_edge)	continue;
-		if (len>max_err)
-		{
-			max_err = len;
-			max_id	= e;
-		}
-	}
-	if (max_id<0)				return max_id;
 
-	// There should be an edge larger than "min_edge"
-	base_color_c			c1; F->v[0]->C._get(c1);
-	base_color_c			c2; F->v[1]->C._get(c2);
-	base_color_c			c3; F->v[2]->C._get(c3);
-	bool	b1	= fsimilar	(c1.hemi,c2.hemi,aht_min_err);
-	bool	b2	= fsimilar	(c2.hemi,c3.hemi,aht_min_err);
-	bool	b3	= fsimilar	(c3.hemi,c1.hemi,aht_min_err);
-	if (b1 && b2 && b3)		return	-1;		// don't touch flat-shaded triangle
-	else					return	max_id;	// tesselate longest edge
-}
-void	callback_vertex_hemi	(Vertex* V)
-{
-	// calc vertex attributes
-	CDB::COLLIDER			DB;
-	DB.ray_options			(0);
-	base_color_c			vC;
-	LightPoint				(&DB, RCAST_Model, vC, V->P, V->N, pBuild->L_static, LP_dont_rgb+LP_dont_sun,0);
-	V->C._set				(vC);
-}
-int		smfVertex				(Vertex* V)
-{
-	return 1 + (std::lower_bound(g_vertices.begin(),g_vertices.end(),V)-g_vertices.begin());
-}
+xrCriticalSection csA;
+int ThreadWorkID_Adaptive = 0;
 
-void GSaveAsSMF					(LPCSTR fname)
-{
-	IWriter* W			= FS.w_open	(fname);
-	string256 			tmp;
-
-	// vertices
-	std::sort			(g_vertices.begin(),g_vertices.end());
-	for (u32 v_idx=0; v_idx<g_vertices.size(); v_idx++){
-		Fvector v		= g_vertices[v_idx]->P;
-		xr_sprintf			(tmp,"v %f %f %f",v.x,v.y,-v.z);
-		W->w_string		(tmp);
-	}
-
-	// transfer faces
-	for (u32 f_idx=0; f_idx<g_faces.size(); f_idx++){
-		Face*	t		= g_faces	[f_idx];
-		xr_sprintf			(tmp,"f %d %d %d",
-			smfVertex(t->v[0]), smfVertex(t->v[2]), smfVertex(t->v[1]) 
-			);
-		W->w_string		(tmp);
-	}
-
-	// colors
-	W->w_string			("bind c vertex");
-	for (u32 v_idx=0; v_idx<g_vertices.size(); v_idx++){
-		base_color_c	c;	g_vertices[v_idx]->C._get(c);
-		float			h	= c.hemi/2.f;
-		xr_sprintf			(tmp,"c %f %f %f",h,h,h);
-		W->w_string		(tmp);
-	}
-	
-	FS.w_close	(W);
-}
-*/
 class CPrecalcBaseHemiThread: 
 public CThread
 {
-	u32 _from, _to;
-	CDB::COLLIDER	DB;
+ 	CDB::COLLIDER	DB;
 	
 public:
-	CPrecalcBaseHemiThread(u32 ID, u32 from, u32 to ): CThread(ID), _from( from ), _to( to )
+	CPrecalcBaseHemiThread(u32 ID ): CThread(ID)
 	{
-		R_ASSERT(from!=u32(-1));
-		R_ASSERT(to!=u32(-1));
-		R_ASSERT( from < to );
-		R_ASSERT(from>=0);
-		R_ASSERT(to>0);
 	}
 virtual	void Execute()
 	{
 		DB.ray_options	(0);
-		for (u32 vit =_from; vit < _to; vit++)	
+		while (true)
 		{
+			csA.Enter();
+			int ID = ThreadWorkID_Adaptive;
+			if (ID > lc_global_data()->g_vertices().size())
+			{
+				csA.Leave();
+				break;
+			}
+			ThreadWorkID_Adaptive++;
+			csA.Leave();
+
 			base_color_c		vC;
-			R_ASSERT( vit != u32(-1) );
+		 
 			vecVertex			&verts = lc_global_data()->g_vertices();
-			R_ASSERT( vit>=0 );
-			R_ASSERT( vit<verts.size() );
-			Vertex*		V		= verts[vit];
+ 			Vertex*		V		= verts[ID];
 			
-			R_ASSERT( V );
-			V->normalFromAdj	();
+ 			V->normalFromAdj	();
 			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
 			vC.mul				(0.5f);
 			V->C._set			(vC);
@@ -156,6 +82,7 @@ virtual	void Execute()
 };
 
 CThreadManager	precalc_base_hemi;
+#define MAX_THREADS CPU::ID.n_threads - 2
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -199,6 +126,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		//	V->C._set			(vC);
 		//}
 
+		/* OLD CODE
 		u32	stride			= u32(-1);
 		
 		u32 threads			= u32(-1);
@@ -208,6 +136,12 @@ void CBuild::xrPhase_AdaptiveHT	()
 			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID,thID*stride,thID*stride + stride ) );
 		if(rest > 0)
 			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (threads,threads*stride,threads*stride + rest ) );
+		*/
+
+		ThreadWorkID_Adaptive = 0;
+		for (u32 thID = 0; thID < MAX_THREADS; thID++)
+			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(thID));
+
 		precalc_base_hemi.wait();
 		//precalc_base_hemi
 	}

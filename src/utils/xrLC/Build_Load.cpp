@@ -75,6 +75,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			F->r_fvector3		(pV->P);
 			pV->N.set			(0,0,0);
 			scene_bb.modify		(pV->P);
+			//Msg("Create Vertex: %d, Buffer: %d", i, lc_global_data()->g_vertices().size() );
 		}
 		Progress			(p_total+=p_cost);
 		clMsg				("* %16s: %d","vertices",lc_global_data()->g_vertices().size());
@@ -104,6 +105,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				for (u32 it=0; it<3; ++it)
 				{
 					int id			= B.v[it];
+				//	Msg("ID: %d : Loaded: %d", id, lc_global_data()->g_vertices().size());
 					R_ASSERT		(id<(int)lc_global_data()->g_vertices().size());
 					_F->SetVertex	(it,lc_global_data()->g_vertices()[id]);
 				}

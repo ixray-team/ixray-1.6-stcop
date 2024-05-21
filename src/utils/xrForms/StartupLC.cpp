@@ -23,7 +23,8 @@ void Help(const char*);
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 extern bool g_using_smooth_groups;
 
-void StartupLC(LPSTR lpCmdLine) {
+void StartupLC(LPSTR lpCmdLine) 
+{
 	create_global_data();
 	char cmd[512], name[256];
 
@@ -33,8 +34,7 @@ void StartupLC(LPSTR lpCmdLine) {
 	if (strstr(cmd, "-f") == 0) { Help(h_str); return; }
 	if (strstr(cmd, "-gi"))								g_build_options.b_radiosity = TRUE;
 	if (strstr(cmd, "-noise"))							g_build_options.b_noise = TRUE;
-	if (strstr(cmd, "-net"))							g_build_options.b_net_light = TRUE;
-	if (strstr(Core.Params, "-nosmg"))					g_using_smooth_groups = false;
+ 	if (strstr(Core.Params, "-nosmg"))					g_using_smooth_groups = false;
 
 	VERIFY(lc_global_data());
 	lc_global_data()->b_nosun_set(!!strstr(cmd, "-nosun"));
