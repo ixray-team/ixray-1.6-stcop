@@ -16,6 +16,7 @@
 #include "Grenade.h"
 #include "game_base_space.h"
 #include "Artefact.h"
+#include "HUDManager.h"
 
 static const float VEL_MAX		= 10.f;
 static const float VEL_A_MAX	= 10.f;
@@ -62,15 +63,38 @@ float CActor::GetWeaponAccuracy() const
 
 void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_dir)
 {
-	fire_pos		= Cameras().Position();
-	fire_dir		= Cameras().Direction();
-
-	const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
-	if (pMissile)
+	CWeapon* pWeap = smart_cast<CWeapon*>(pHudItem);
+	if(HUDview() || (pWeap && pWeap->render_item_ui_query()))
 	{
-		Fvector offset;
-		XFORM().transform_dir(offset, pMissile->throw_point_offset());
-		fire_pos.add(offset);
+		fire_pos		= Cameras().Position();
+		fire_dir		= Cameras().Direction();
+
+		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
+		if (pMissile)
+		{
+			Fvector offset;
+			XFORM().transform_dir(offset, pMissile->throw_point_offset());
+			fire_pos.add(offset);
+		}
+	}
+	else
+	{
+		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
+		if (pMissile)
+		{
+			fire_pos = pMissile->Position();
+			fire_dir = Cameras().Direction();
+		}
+		else
+		{
+			if(fire_dir.dotproduct(Cameras().Direction()) >= 0.7f)
+			{
+				float pick_dist = HUD().GetCurrentRayQuery().range;
+				clamp(pick_dist, 10.f, FLT_MAX);
+				Fvector picked_pos = Fvector(Cameras().Position()).mad(Cameras().Direction(), pick_dist); 
+				fire_dir		= Fvector().sub(picked_pos, fire_pos).normalize();
+			}
+		}
 	}
 }
 

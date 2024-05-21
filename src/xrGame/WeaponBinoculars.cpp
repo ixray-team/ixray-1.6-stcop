@@ -115,7 +115,7 @@ void	CWeaponBinoculars::UpdateCL()
 
 bool CWeaponBinoculars::render_item_ui_query()
 {
-	bool b_is_active_item = m_pInventory->ActiveItem()==this;
+	bool b_is_active_item = m_pInventory && m_pInventory->ActiveItem()==this;
 	return b_is_active_item && H_Parent() && IsZoomed() && !IsRotatingToZoom() && m_binoc_vision;
 }
 

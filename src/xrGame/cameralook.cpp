@@ -169,26 +169,26 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 }
 u32 dwFPS = 30;
 float inertion_factor	= 0.95f;
-void CCameraLook2::UpdateDistance(Fvector& world, Fvector& local)
+void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 {
 	Fvector des_dir;
 
-	des_dir.sub(local, world);
+	des_dir.sub(correction, pivot);
 	des_dir.add(Fvector(vDirection).invert());
 
 	float covariance = VIEWPORT_NEAR * 6.f;
 	float d;
 
-	collide::rq_result	RQ = GetPickResult(world, des_dir, dist + covariance, parent);
+	collide::rq_result	RQ = GetPickResult(pivot, des_dir, dist + covariance, parent);
 
 	float sl_inert = 0.f;
 	d = sl_inert * prev_d + (1.0f - sl_inert) * (RQ.range - covariance);
 	prev_d = d;
 
 	Fvector next_pos;
-	next_pos.set(local);
+	next_pos.set(correction);
 	next_pos.mul(des_dir.invert(), -d - VIEWPORT_NEAR);
-	next_pos.add(world);
+	next_pos.add(pivot);
 
 	if (Device.fTimeDelta > EPS_S)
 	{
@@ -209,7 +209,9 @@ void CCameraLook2::UpdateDistance(Fvector& world, Fvector& local)
 
 	vPosition.inertion(next_pos, inertion_factor);
 }
-
+#include "Actor.h"
+#include "inventory.h"
+#include "weapon.h"
 void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 {
 	Fmatrix mR, R;
@@ -230,25 +232,35 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 	vDirection.set					(mR.k);
 	vNormal.set						(mR.j);
 
-	Fmatrix							a_xform;
-	a_xform.setXYZ					(0, -yaw, 0);
-	a_xform.translate_over			(point);
-
-
-	if (psActorFlags.test(AF_RIGHT_SHOULDER))
+	CActor* pActor = smart_cast<CActor*>(parent);
+	if (pActor)
 	{
-		if(!m_cam_offset_curr.similar(m_cam_offset_r))
-			m_cam_offset_curr.inertion(m_cam_offset_r, 1.f-Device.fTimeDelta*15.f);
-	}
-	else
-	{
-		if(!m_cam_offset_curr.similar(m_cam_offset_l))
-			m_cam_offset_curr.inertion(m_cam_offset_l, 1.f-Device.fTimeDelta*15.f);
-	}
-	Fvector P;
-	a_xform.transform_tiny			(P, m_cam_offset_curr);
+		CWeapon* pWeap = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
+		if(pWeap && pWeap->render_item_ui_query())
+			vPosition.set(point);
+		else
+		{
+			Fmatrix							a_xform;
+			a_xform.setXYZ					(0, -yaw, 0);
+			a_xform.translate_over			(point);
 
-	UpdateDistance(point, P);
+
+			if (psActorFlags.test(AF_RIGHT_SHOULDER))
+			{
+				if(!m_cam_offset_curr.similar(m_cam_offset_r))
+					m_cam_offset_curr.inertion(m_cam_offset_r, 1.f-Device.fTimeDelta*15.f);
+			}
+			else
+			{
+				if(!m_cam_offset_curr.similar(m_cam_offset_l))
+					m_cam_offset_curr.inertion(m_cam_offset_l, 1.f-Device.fTimeDelta*15.f);
+			}
+			Fvector P;
+			a_xform.transform_tiny			(P, m_cam_offset_curr);
+
+			UpdateDistance(point, P);
+		}
+	}
 }
 
 void CCameraLook2::Load(LPCSTR section)

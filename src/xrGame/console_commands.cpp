@@ -1889,12 +1889,22 @@ public:
 	
 	virtual void	Execute				(LPCSTR args)
 	{
-		if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
+		int count = 1;
+		char nameSection[128] = {};
+		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
+		if (sc > 2) {
+			Msg("! Failed to parse input");
+			return;
+		}
+		for (size_t i = 0; i < count; i++)
 		{
-			string256 script_command;
-			xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", args, GetNearestSmartName());
+			if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
+			{
+				string256 script_command;
+				xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", nameSection, GetNearestSmartName());
 
-			ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command,true,true);
+				ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command,true,true);
+			}
 		}
 	}
 

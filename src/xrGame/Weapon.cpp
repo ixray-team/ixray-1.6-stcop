@@ -216,6 +216,14 @@ void CWeapon::UpdateFireDependencies_internal()
 		{
 			// 3rd person or no parent
 			Fmatrix& parent			= XFORM();
+
+			if(smart_cast<CActor*>(H_Parent()) && render_item_ui_query())
+			{
+				Level().Cameras().camera_Matrix(parent);
+				parent.j.invert();
+				parent.i.invert();
+			}
+
 			Fvector& fp				= vLoadedFirePoint;
 			Fvector& fp2			= vLoadedFirePoint2;
 			Fvector& sp				= vLoadedShellPoint;
@@ -1527,8 +1535,7 @@ void CWeapon::OnZoomIn()
 	else if (CurrentZoomFactor() != 0)
 		m_zoom_params.m_fCurrentZoomFactor = CurrentZoomFactor();
 
-	if (GetHUDmode())
-		GamePersistent().SetPickableEffectorDOF(true);
+	GamePersistent().SetPickableEffectorDOF(true);
 
 	if (m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && nullptr == m_zoom_params.m_pVision)
 		m_zoom_params.m_pVision = new CBinocularsVision(m_zoom_params.m_sUseBinocularVision);
@@ -1548,10 +1555,7 @@ void CWeapon::OnZoomOut()
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor	= g_fov;
 
-// 	GamePersistent().RestoreEffectorDOF	();
-
-	if(GetHUDmode())
-		GamePersistent().SetPickableEffectorDOF(false);
+	GamePersistent().SetPickableEffectorDOF(false);
 
 	ResetSubStateTime					();
 
@@ -1842,10 +1846,26 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 	auto pActor = smart_cast<const CActor*>(H_Parent());
 	if(!pActor)		return;
 
+	if(!GetHUDmode())
+	{
+		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
+			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
+		{
+			if(pActor->IsZoomAimingMode())
+				m_zoom_params.m_fZoomRotationFactor += Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
+			else
+				m_zoom_params.m_fZoomRotationFactor -= Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
+
+			clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
+		}
+		return;
+	}
+
 	u8 idx = GetCurrentHudOffsetIdx();
 
 	attachable_hud_item* hi = HudItemData();
-	R_ASSERT(hi);
+	if(!hi)
+		return;
 
 	if(		(IsZoomed() && m_zoom_params.m_fZoomRotationFactor<=1.f) ||
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f))
@@ -2190,7 +2210,7 @@ void CWeapon::modify_holder_params		(float &range, float &fov) const
 
 bool CWeapon::render_item_ui_query()
 {
-	bool b_is_active_item = (m_pInventory->ActiveItem()==this);
+	bool b_is_active_item = (m_pInventory && m_pInventory->ActiveItem()==this);
 	bool res = b_is_active_item && IsZoomed() && ZoomHideCrosshair() && ZoomTexture() && !IsRotatingToZoom();
 	return res;
 }
