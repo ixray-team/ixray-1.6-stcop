@@ -85,14 +85,17 @@ void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector 
 			fire_pos = pMissile->Position();
 			fire_dir = Cameras().Direction();
 		}
-		else
+		if (pWeap)
 		{
-			if(fire_dir.dotproduct(Cameras().Direction()) >= 0.7f)
+			fire_pos		= pWeap->get_LastFP();
+			fire_dir		= Cameras().Direction();
+
+			if(pWeap->get_LastFD().dotproduct(Cameras().Direction()) >= 0.7f)
 			{
 				float pick_dist = HUD().GetCurrentRayQuery().range;
-				clamp(pick_dist, 10.f, FLT_MAX);
-				Fvector picked_pos = Fvector(Cameras().Position()).mad(Cameras().Direction(), pick_dist); 
-				fire_dir		= Fvector().sub(picked_pos, fire_pos).normalize();
+				clamp(pick_dist, 10.f, 1000.f);
+				Fvector picked_pos = Fvector(Cameras().Position()).mad(Cameras().Direction(), pick_dist);
+				fire_dir		= Fvector().sub(picked_pos, fire_pos).normalize_safe();
 			}
 		}
 	}
