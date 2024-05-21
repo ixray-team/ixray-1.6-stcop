@@ -1096,20 +1096,7 @@ void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 	}
 	else if ( pEatableItem )
 	{
-		CObject*	pObj			= smart_cast<CObject*>		(item);
-		shared_str	section_name	= pObj->cNameSect();
-		if ( !xr_strcmp(section_name,"vodka") || !(xr_strcmp(section_name,"energy_drink")) )
-		{
-			act_str = "st_drink";
-		}
-		else if( !xr_strcmp(section_name,"bread") || !xr_strcmp(section_name,"kolbasa") || !xr_strcmp(section_name,"conserva"))
-		{
-			act_str = "st_eat";
-		}
-		else
-		{
-			act_str = "st_use";
-		}
+		act_str = *pEatableItem->UseText;
 	}
 	if ( act_str )
 	{

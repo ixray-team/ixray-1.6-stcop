@@ -20,6 +20,9 @@ protected:
 	float m_fWeightEmpty;
 
 public:
+	shared_str UseText;
+
+public:
 	CEatableItem();
 	virtual ~CEatableItem();
 	virtual	DLL_Pure* _construct();
