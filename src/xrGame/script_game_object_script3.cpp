@@ -359,11 +359,17 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("play_hud_motion",				&CScriptGameObject::PlayHudMotion)
 		.def("switch_state",				&CScriptGameObject::SwitchState)
 		.def("get_state",					&CScriptGameObject::GetState)
+			
+		// For EatableItem
+		.def("set_remaining_uses",			&CScriptGameObject::SetRemainingUses)
+		.def("get_remaining_uses",			&CScriptGameObject::GetRemainingUses)
+		.def("get_max_uses",				&CScriptGameObject::GetMaxUses)
 
 		//For Ammo
 		.def("ammo_get_count",				&CScriptGameObject::AmmoGetCount)
 		.def("ammo_set_count",				&CScriptGameObject::AmmoSetCount)
 		.def("ammo_box_size",				&CScriptGameObject::AmmoBoxSize)
+		.def("is_ammo",						&CScriptGameObject::IsAmmo)
 
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)

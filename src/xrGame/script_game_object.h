@@ -790,6 +790,10 @@ public:
 			u8 GetWeaponSubstate();
 			u32 GetMainWeaponType();
 			bool IsOnBelt(CScriptGameObject* obj) const;
+			void SetRemainingUses(u8 value);
+			u8 GetRemainingUses();
+			u8 GetMaxUses();
+			bool IsAmmo() const;
 			u32 PlayHudMotion(LPCSTR M, bool bMixIn, u32 state);
 			void AmmoSetCount(u16 count);
 			u16 AmmoBoxSize();
