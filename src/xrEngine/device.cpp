@@ -190,7 +190,7 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
-
+int g_dwFPSlimit = 500;
 void CRenderDevice::on_idle		()
 {
 #ifndef _EDITOR
@@ -198,6 +198,19 @@ void CRenderDevice::on_idle		()
 		Sleep(100);
 		return;
 	}
+
+	// FPS Limit
+	if (g_dwFPSlimit > 0)
+	{
+		static DWORD dwLastFrameTime = 0;
+		int dwCurrentTime = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+
+		int selected_time = (dwCurrentTime - (int)dwLastFrameTime);
+		if (selected_time >= 0 && selected_time < (1000 / g_dwFPSlimit))
+			return;
+		dwLastFrameTime = dwCurrentTime;
+	}
+
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
@@ -306,18 +319,6 @@ void CRenderDevice::on_idle		()
 			Device.seqParallel[pit]			();
 		Device.seqParallel.clear();
 		seqFrameMT.Process					(rp_Frame);
-	}
-
-	bool isFpsLimitNeeded = !g_pGameLevel || load_screen_renderer.b_need_user_input || g_pGamePersistent->m_pMainMenu->IsActive();
-	if (!g_dedicated_server && isFpsLimitNeeded)
-	{
-		u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
-		u32 FrameTime = (FrameEndTime - FrameStartTime);
-
-		u32 DSUpdateDelta = 1000 / g_svDedicateServerUpdateReate;
-		if (FrameTime < DSUpdateDelta) {
-			Sleep(DSUpdateDelta - FrameTime - 1);
-		}
 	}
 
 	Device.EndRender();
