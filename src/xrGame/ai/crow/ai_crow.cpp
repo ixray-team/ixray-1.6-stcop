@@ -314,6 +314,8 @@ void CAI_Crow::renderable_Render	()
 	inherited::renderable_Render	();
 	o_workload_rframe				= Device.dwFrame	;
 }
+
+collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 void CAI_Crow::shedule_Update		(u32 DT)
 {
 	float fDT				= float(DT)/1000.F;
@@ -340,7 +342,23 @@ void CAI_Crow::shedule_Update		(u32 DT)
 		// At random times, change the direction (goal) of the plane
 		if(fGoalChangeTime<=0)	{
 			fGoalChangeTime += fGoalChangeDelta+fGoalChangeDelta*Random.randF(-0.5f,0.5f);
-			Fvector			vP = Actor()->Position();
+
+			Fvector vP = Actor()->Position();
+
+			Fvector dest_dir;
+			dest_dir.sub(Actor()->Position(), Position());
+			float range = dest_dir.magnitude();
+			dest_dir.normalize();
+
+			collide::rq_result RQ = GetPickResult(Position(), dest_dir, range, this);
+			if(RQ.element >= 0)
+				vP = Fvector(Position()).mad(dest_dir, RQ.range);
+
+			collide::rq_result RQ2 = GetPickResult(Position(), Direction(), range, this);
+			if(RQ2.element >= 0)
+				vP = Fvector(Position()).mad(Direction(), RQ2.range);
+
+
 			vP.y			+= +fMinHeight;
 			vGoalDir.x		= vP.x+vVarGoal.x*Random.randF(-0.5f,0.5f); 
 			vGoalDir.y		= vP.y+vVarGoal.y*Random.randF(-0.5f,0.5f);
