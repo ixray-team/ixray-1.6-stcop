@@ -42,7 +42,7 @@ public:
 	virtual void	Update			( Fvector& point, Fvector& noise_dangle );
 	virtual void	Load			(LPCSTR section);
 protected:
-	void	UpdateDistance(Fvector& world, Fvector& local);
+	void	UpdateDistance(Fvector& pivot, Fvector& correction);
 };
 
 class CCameraFixedLook : public CCameraLook

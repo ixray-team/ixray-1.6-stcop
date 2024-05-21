@@ -83,11 +83,11 @@ static void	cammera_shell_collide_callback( bool& do_collide, bool bo1, dContact
 
 static void cammera_shell_character_collide_callback( bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 )
 {
-	dxGeomUserData	*oposite_data		=	retrieveGeomUserData( bo1 ? c.geom.g2 : c.geom.g1 ) ;
-
 	do_collide =  false;
 	return;
 
+	dxGeomUserData	*oposite_data		=	retrieveGeomUserData( bo1 ? c.geom.g2 : c.geom.g1 ) ;
+	do_collide =  false;
 	if( !oposite_data || !oposite_data->ph_object || oposite_data->ph_object->CastType()!=CPHObject::tpCharacter)
 		return;
 	

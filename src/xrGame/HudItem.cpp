@@ -221,7 +221,8 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 		return;
 
 	attachable_hud_item* hi = HudItemData();
-	R_ASSERT(hi);
+	if(!hi)
+		return;
 
 	static float fAvgTimeDelta = Device.fTimeDelta;
 	fAvgTimeDelta = _inertion(fAvgTimeDelta, Device.fTimeDelta, 0.8f);

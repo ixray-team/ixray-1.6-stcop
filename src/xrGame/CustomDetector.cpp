@@ -256,39 +256,44 @@ void CCustomDetector::UpfateWork()
 void CCustomDetector::UpdateVisibility()
 {
 	//check visibility
-	attachable_hud_item* i0		= g_player_hud->attached_item(0);
-	if(i0 && HudItemData())
+
+	if (!m_pInventory)
+		return;
+
+	PIItem pItem = m_pInventory->ActiveItem();
+
+	if (pItem)
 	{
-		bool bClimb	= Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb;
-		if(bClimb)
+		bool bClimb = (Actor()->GetMovementState(eReal)&mcClimb) != 0;
+		if (bClimb)
 		{
-			HideDetector		(true);
-			m_bNeedActivation	= true;
-		}else
+			HideDetector(true);
+			m_bNeedActivation = true;
+		}
+		else
 		{
-			CWeapon* wpn			= smart_cast<CWeapon*>(i0->m_parent_hud_item);
-			if(wpn)
+			CWeapon* wpn = smart_cast<CWeapon*>(pItem);
+			if (wpn)
 			{
-				u32 state			= wpn->GetState();
-				if(wpn->IsZoomed() || state==CWeapon::eReload || state==CWeapon::eSwitch)
+				u32 state = wpn->GetState();
+				if (wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eSwitch)
 				{
-					HideDetector		(true);
-					m_bNeedActivation	= true;
+					HideDetector(true);
+					m_bNeedActivation = true;
 				}
 			}
 		}
-	}else
-	if(m_bNeedActivation)
+	}
+	if (m_bNeedActivation)
 	{
-		attachable_hud_item* i0_		= g_player_hud->attached_item(0);
-		bool bClimb	= Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb;
-		if(!bClimb)
+		bool bClimb = (Actor()->GetMovementState(eReal)&mcClimb) != 0;
+		if (!bClimb)
 		{
-			CHudItem* huditem		= (i0_)?i0_->m_parent_hud_item : nullptr;
-			bool bChecked			= !huditem || CheckCompatibilityInt(huditem, 0);
+			CHudItem* huditem = (pItem) ? pItem->cast_hud_item() : NULL;
+			bool bChecked = !huditem || CheckCompatibilityInt(huditem, 0);
 			
-			if(	bChecked )
-				ShowDetector		(true);
+			if (bChecked)
+				ShowDetector(true);
 		}
 	}
 }
