@@ -640,7 +640,7 @@ extern Flags32		psEnvFlags;
 extern int			g_ErrorLineCount;
 
 extern bool			dsEnableGamepad;
-
+extern int g_dwFPSlimit;
 void CCC_Register()
 {
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
@@ -685,6 +685,8 @@ void CCC_Register()
 
 	// Render device states
 	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
+
+	CMD4(CCC_Integer,	"rs_fps_limit",			&g_dwFPSlimit,		0, 1000);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
 	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
