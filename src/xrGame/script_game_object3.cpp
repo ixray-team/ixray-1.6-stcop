@@ -38,6 +38,7 @@
 #include "sound_player.h"
 #include "stalker_decision_space.h"
 #include "space_restriction_manager.h"
+#include "eatable_item.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -103,6 +104,51 @@ bool CScriptGameObject::IsOnBelt(CScriptGameObject* obj) const
 	}
 
 	return inventory_owner->inventory().InBelt(inventory_item);
+}
+
+void CScriptGameObject::SetRemainingUses(u8 value)
+{
+	CInventoryItem* IItm = object().cast_inventory_item();
+	if (!IItm)
+		return;
+
+	CEatableItem* eItm = IItm->cast_eatable_item();
+	if (!eItm)
+		return;
+
+	eItm->SetRemainingUses(value);
+}
+
+u8 CScriptGameObject::GetRemainingUses()
+{
+	CInventoryItem* IItm = object().cast_inventory_item();
+	if (!IItm)
+		return 0;
+
+	CEatableItem* eItm = IItm->cast_eatable_item();
+	if (!eItm)
+		return 0;
+
+	return eItm->GetRemainingUses();
+}
+
+u8 CScriptGameObject::GetMaxUses()
+{
+	CInventoryItem* IItm = object().cast_inventory_item();
+	if (!IItm)
+		return 0;
+
+	CEatableItem* eItm = IItm->cast_eatable_item();
+	if (!eItm)
+		return 0;
+
+	return eItm->GetMaxUses();
+}
+
+bool CScriptGameObject::IsAmmo() const
+{
+	CInventoryItem* IItm = smart_cast<CWeaponAmmo*>(&object());
+	return IItm != nullptr;
 }
 
 u32 CScriptGameObject::PlayHudMotion(LPCSTR M, bool bMixIn, u32 state)
