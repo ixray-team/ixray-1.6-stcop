@@ -33,24 +33,22 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT);
 	if(!bres && slot_to_activate)
 	{
-		*slot_to_activate	= NO_ACTIVE_SLOT;
+		*slot_to_activate = NO_ACTIVE_SLOT;
+
 		if(m_pInventory->ItemFromSlot(BOLT_SLOT))
 			*slot_to_activate = BOLT_SLOT;
-
-		if(m_pInventory->ItemFromSlot(KNIFE_SLOT))
-			*slot_to_activate = KNIFE_SLOT;
-
-		if(m_pInventory->ItemFromSlot(INV_SLOT_3) && m_pInventory->ItemFromSlot(INV_SLOT_3)->BaseSlot()!=INV_SLOT_3)
+		else if(m_pInventory->ItemFromSlot(INV_SLOT_3) && m_pInventory->ItemFromSlot(INV_SLOT_3)->BaseSlot()!=INV_SLOT_3)
 			*slot_to_activate = INV_SLOT_3;
-
-		if(m_pInventory->ItemFromSlot(INV_SLOT_2) && m_pInventory->ItemFromSlot(INV_SLOT_2)->BaseSlot()!=INV_SLOT_3)
+		else if(m_pInventory->ItemFromSlot(INV_SLOT_2) && m_pInventory->ItemFromSlot(INV_SLOT_2)->BaseSlot()!=INV_SLOT_3)
 			*slot_to_activate = INV_SLOT_2;
+		else if(m_pInventory->ItemFromSlot(KNIFE_SLOT))
+			*slot_to_activate = KNIFE_SLOT;
 
 		if(*slot_to_activate != NO_ACTIVE_SLOT)
 			bres = true;
 	}
 
-	if(itm->GetState()!=CHUDState::eShowing)
+	if(!bres && itm->GetState()!=CHUDState::eShowing)
 		bres = bres && !itm->IsPending();
 
 	if(bres)
@@ -73,9 +71,12 @@ bool  CCustomDetector::CheckCompatibility(CHudItem* itm)
 
 	if(!CheckCompatibilityInt(itm, nullptr))
 	{
+		m_bDetectorActive = false;
 		HideDetector	(true);
 		return			false;
 	}
+	else if(GetState() != eHidden)
+		m_bDetectorActive = true;
 	return true;
 }
 
@@ -134,6 +135,12 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 	if(GetState()==eIdle)
 		SwitchState					(eHiding);
 
+}
+
+void CCustomDetector::switch_detector()
+{
+	m_bDetectorActive = GetState()==CHudItem::eHidden;
+	ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
 }
 
 void CCustomDetector::OnStateSwitch(u32 S)
@@ -200,6 +207,7 @@ CCustomDetector::CCustomDetector()
 	m_ui				= nullptr;
 	m_bFastAnimMode		= false;
 	m_bNeedActivation	= false;
+	m_bDetectorActive	= false;
 }
 
 CCustomDetector::~CCustomDetector() 
@@ -304,7 +312,9 @@ void CCustomDetector::UpdateCL()
 
 	if(H_Parent()!=Level().CurrentEntity() )			return;
 
-	UpdateVisibility		();
+	if(m_bDetectorActive)
+		UpdateVisibility		();
+
 	if( !IsWorking() )		return;
 	UpfateWork				();
 }
@@ -317,7 +327,8 @@ void CCustomDetector::OnH_A_Chield()
 void CCustomDetector::OnH_B_Independent(bool just_before_destroy) 
 {
 	inherited::OnH_B_Independent(just_before_destroy);
-	
+	m_bDetectorActive			= false;
+	SwitchState					(eHidden);
 	m_artefacts.clear			();
 }
 
@@ -327,6 +338,7 @@ void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 	inherited::OnMoveToRuck	(prev);
 	if(prev.type==eItemPlaceSlot)
 	{
+		m_bDetectorActive			= false;
 		SwitchState					(eHidden);
 		g_player_hud->detach_item	(this);
 	}

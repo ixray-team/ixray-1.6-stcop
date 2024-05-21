@@ -16,6 +16,7 @@ protected:
 	CUIArtefactDetectorBase*			m_ui;
 	bool			m_bFastAnimMode;
 	bool			m_bNeedActivation;
+	bool			m_bDetectorActive;
 
 public:
 					CCustomDetector		();
@@ -30,7 +31,7 @@ public:
 	virtual void 	shedule_Update		(u32 dt);
 	virtual void 	UpdateCL			();
 
-
+			void	switch_detector		();
 			bool 	IsWorking			();
 
 	virtual void 	OnMoveToSlot		(const SInvItemPlace& prev);
