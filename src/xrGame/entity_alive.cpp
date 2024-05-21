@@ -966,8 +966,7 @@ Fvector CEntityAlive::get_last_local_point_on_mesh	( Fvector const& last_point, 
 	IKinematics* const kinematics		= smart_cast<IKinematics*>( Visual() );
 	VERIFY								( kinematics );
 
-	Fmatrix transform;
-	kinematics->Bone_GetAnimPos			( transform, bone_id, u8(-1), false );
+	Fmatrix transform = kinematics->LL_GetTransform(bone_id);
 
 	Fvector result;
 	transform.transform_tiny			( result, last_point );

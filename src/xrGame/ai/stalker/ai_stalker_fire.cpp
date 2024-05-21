@@ -249,6 +249,25 @@ void CAI_Stalker::Hit(SHit* pHDS)
 
 	if (g_Alive())
 	{
+
+		{
+			const CEntityAlive *entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());
+			if(entity_alive && entity_alive->g_Alive() && tfGetRelationType(entity_alive) == ALife::eRelationTypeEnemy)
+			{
+				movement().set_mental_state(eMentalStateDanger);
+				if (!memory().visual().visible_now(entity_alive))
+				{
+					CNotYetVisibleObject		new_object;
+					new_object.m_object			= smart_cast<const CGameObject*>(pHDS->initiator());
+					new_object.m_value			= 1.0f;
+					new_object.m_prev_time		= Device.dwTimeGlobal-1;
+					new_object.m_update_time	= Device.dwTimeGlobal;
+					memory().visual().add_not_yet_visible_object(new_object);
+					memory().visual().add_visible_object(pHDS->initiator(), Device.fTimeDelta);
+				}
+			}
+		}
+
 		bool already_critically_wounded = critically_wounded();
 
 		if (!already_critically_wounded)

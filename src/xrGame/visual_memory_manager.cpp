@@ -347,7 +347,13 @@ CNotYetVisibleObject *CVisualMemoryManager::not_yet_visible_object(const CGameOb
 
 void CVisualMemoryManager::add_not_yet_visible_object	(const CNotYetVisibleObject &not_yet_visible_object)
 {
-	m_not_yet_visible_objects.push_back	(not_yet_visible_object);
+	xr_vector<CNotYetVisibleObject>::iterator	I = std::find_if(
+		m_not_yet_visible_objects.begin(),
+		m_not_yet_visible_objects.end(),
+		CNotYetVisibleObjectPredicate(not_yet_visible_object.m_object)
+		);
+	if (I == m_not_yet_visible_objects.end())
+		m_not_yet_visible_objects.push_back	(not_yet_visible_object);
 }
 
 u32	 CVisualMemoryManager::get_prev_time				(const CGameObject *game_object) const

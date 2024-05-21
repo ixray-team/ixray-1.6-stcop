@@ -146,11 +146,30 @@ void CSightAction::execute_position				(Fvector const& look_position)
 	Msg					("%6d %s",Device.dwTimeGlobal,m_torso_look ? "eSightTypeFirePosition" : "eSightTypePosition");
 #endif
 }
+#include "../xrEngine/CameraBase.h"
+#include "Actor.h"
+void aim_target	(shared_str const& aim_bone_id, Fvector &result, const CGameObject *object);
 
 void CSightAction::execute_object				()
 {
 	Fvector					look_pos;
-	m_object_to_look->Center(look_pos);
+
+	CActor* pActor = smart_cast<CActor*>(m_object_to_look);
+	if(pActor)
+	{
+		if(pActor->HUDview())
+		{
+			look_pos = pActor->cam_FirstEye()->Position();
+			look_pos.y -= 0.9f;
+		}
+		else
+		{
+			::aim_target("bip01_head", look_pos, pActor);
+			look_pos.y -= 0.9f;
+		}
+	}
+	else
+		m_object_to_look->Center(look_pos);
 
 	Fvector					my_position = m_object->eye_matrix.c;
 
