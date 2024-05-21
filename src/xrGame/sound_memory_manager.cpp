@@ -34,10 +34,16 @@
 #define SILENCE
 //#define SAVE_OWN_SOUNDS
 //#define SAVE_OWN_ITEM_SOUNDS
-#define SAVE_NON_ALIVE_OBJECT_SOUNDS
-#define SAVE_FRIEND_ITEM_SOUNDS
-#define SAVE_FRIEND_SOUNDS
+//#define SAVE_NON_ALIVE_OBJECT_SOUNDS
+//#define SAVE_FRIEND_ITEM_SOUNDS
+//#define SAVE_FRIEND_SOUNDS
 //#define SAVE_VISIBLE_OBJECT_SOUNDS
+
+#include "visual_memory_manager.h"
+#include "stalker_movement_manager_smart_cover.h"
+#include "movement_manager_space.h"
+#include "stalker_planner.h"
+#include "enemy_manager.h"
 
 const float COMBAT_SOUND_PERCEIVE_RADIUS_SQR	= _sqr(5.f);
 
@@ -240,32 +246,46 @@ void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fv
 		return;
 #endif
 
-#ifndef SAVE_FRIEND_ITEM_SOUNDS
-	// we do not want to save sounds from the teammates items
-	CEntityAlive	*me				= m_object;
-	if (object && object->H_Parent() && (me->tfGetRelationType(smart_cast<const CEntityAlive*>(object->H_Parent())) == ALife::eRelationTypeFriend))
+	// we do not want to save sounds from the teammates and neutrals items
+	CEntityAlive *me_entity_alive = m_object;
+	if (object && object->H_Parent() && smart_cast<const CEntityAlive*>(object->H_Parent()) && (me_entity_alive->tfGetRelationType(smart_cast<const CEntityAlive*>(object->H_Parent())) == ALife::eRelationTypeFriend || me_entity_alive->tfGetRelationType(smart_cast<const CEntityAlive*>(object->H_Parent())) == ALife::eRelationTypeNeutral))
 		return;
-#endif
 
-#ifndef SAVE_FRIEND_SOUNDS
-	const CEntityAlive	*entity_alive	= smart_cast<const CEntityAlive*>(object);
-	// we do not want to save sounds from the teammates
-	if (entity_alive && me && (me->tfGetRelationType(entity_alive) == ALife::eRelationTypeFriend))
+	const CEntityAlive *who_entity_alive = smart_cast<const CEntityAlive*>(object);
+	// we do not want to save sounds from the teammates and neutrals
+	if (who_entity_alive && me_entity_alive && (me_entity_alive->tfGetRelationType(who_entity_alive) == ALife::eRelationTypeFriend || me_entity_alive->tfGetRelationType(who_entity_alive) == ALife::eRelationTypeNeutral))
 		return;
-#endif
 
-#ifndef SAVE_VISIBLE_OBJECT_SOUNDS
-#	ifdef SAVE_FRIEND_SOUNDS
-		const CEntityAlive	*entity_alive	= smart_cast<const CEntityAlive*>(object);
-#	endif
-	// we do not save sounds from the objects we see (?!)
-	if (m_object->memory().visual().visible_now(entity_alive))
+	if(who_entity_alive && !m_object->memory().enemy().is_useful(who_entity_alive))
 		return;
-#endif
 
 	const CGameObject		*game_object = smart_cast<const CGameObject*>(object);
 	if (!game_object && object)
 		return;
+
+	bool heavy_sound = ((sound_type&SOUND_TYPE_WEAPON_SHOOTING) == SOUND_TYPE_WEAPON_SHOOTING ||
+						(sound_type&SOUND_TYPE_WEAPON_BULLET_HIT) == SOUND_TYPE_WEAPON_BULLET_HIT ||
+						(sound_type&SOUND_TYPE_WEAPON_EMPTY_CLICKING) == SOUND_TYPE_WEAPON_EMPTY_CLICKING || 
+						(sound_type&SOUND_TYPE_STEP) == SOUND_TYPE_STEP);
+
+	if(heavy_sound && sound_power >= 4.f)
+	{
+		if(CAI_Stalker	*stalker = smart_cast<CAI_Stalker*>(m_object))
+		{
+			if(who_entity_alive && who_entity_alive->g_Alive() && !m_object->memory().visual().visible_now(who_entity_alive))
+			{
+				stalker->movement().set_mental_state(eMentalStateDanger);
+				CNotYetVisibleObject		new_object;
+				new_object.m_object			= game_object;
+				new_object.m_value			= 1.0f;
+				new_object.m_prev_time		= Device.dwTimeGlobal-1;
+				new_object.m_update_time	= Device.dwTimeGlobal;
+				m_object->memory().visual().add_not_yet_visible_object(new_object);
+				m_object->memory().visual().add_visible_object(object, Device.fTimeDelta);
+				//Msg("sound_power %f", sound_power);
+			}
+		}
+	}
 
 	const CGameObject		*self = m_object;
 
