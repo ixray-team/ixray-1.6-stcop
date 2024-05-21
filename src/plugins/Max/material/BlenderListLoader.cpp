@@ -26,8 +26,7 @@ int LoadBlenderList(LPSTR_vec& lst)
 	string buff;
 
 	xr_file_system& fs = xr_file_system::instance();
-	fs.update_path(shaders, _game_data_, "shaders.xr");
-	xr_reader* r = fs.r_open(shaders);
+	xr_reader* r = fs.r_open(_game_data_, "shaders.xr");
 
 	xr_reader* ch = r->open_chunk(3);
 	xr_assert(ch);
@@ -72,7 +71,7 @@ int LoadGameMtlList(LPSTR_vec& lst)
 
 	xr_gamemtls_lib LIB;
 
-	LIB.load(_game_data_, "shaders_xrlc.xr");
+	LIB.load(_game_data_, "gamemtl.xr");
 
 	lst.resize(LIB.materials().size());
 	LPSTR_vec_it s_it = lst.begin();

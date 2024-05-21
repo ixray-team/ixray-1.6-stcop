@@ -20,8 +20,8 @@ BOOL WINAPI DllMain(HINSTANCE   hinstDLL,
 		controlsInit = TRUE;
 		
 		xr_file_system& fs = xr_file_system::instance();
+//		MessageBoxA(0, "ok0", "", MB_OK);
 		fs.initialize("xray_path.ltx");
-
 		xr_log::instance().init("max_object");
 
 		//FPU::m64r	(); // нужно чтобы макс не сбрасывал контрольки в 0
@@ -39,30 +39,33 @@ BOOL WINAPI DllMain(HINSTANCE   hinstDLL,
 	return (TRUE);
 }
 
-__declspec(dllexport) const TCHAR* LibDescription()
+extern "C"
 {
-	return GetString(IDS_LIBDESCRIPTION);
-}
-
-__declspec(dllexport) int LibNumberClasses()
-{
-	return 1;
-}
-
-__declspec(dllexport) ClassDesc* LibClassDesc(int i)
-{
-	switch(i) 
+	__declspec(dllexport) const TCHAR* LibDescription()
 	{
-	case 0: 
-		return GetXRayMtlDesc();
-	default: 
-		return 0;
+		return GetString(IDS_LIBDESCRIPTION);
 	}
-}
 
-__declspec(dllexport) ULONG LibVersion()
-{
-	return VERSION_3DSMAX;
+	__declspec(dllexport) int LibNumberClasses()
+	{
+		return 1;
+	}
+
+	__declspec(dllexport) ClassDesc* LibClassDesc(int i)
+	{
+		switch (i)
+		{
+		case 0:
+			return GetXRayMtlDesc();
+		default:
+			return 0;
+		}
+	}
+
+	__declspec(dllexport) ULONG LibVersion()
+	{
+		return VERSION_3DSMAX;
+	}
 }
 
 TCHAR *GetString(int id)
