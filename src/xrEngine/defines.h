@@ -40,6 +40,8 @@ enum {
 	rsR4							= (1ul<<20ul),
 
 	rsDeviceActive					= (1ul<<21ul),
+
+	rsActorShadow					= (1ul<<22ul),
 	// 22-32 bit - reserved to Editor
 };
 

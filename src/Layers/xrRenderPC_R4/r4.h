@@ -160,7 +160,7 @@ private:
 
 public:
 	IRender_Sector*					rimp_detectSector			(Fvector& P, Fvector& D);
-	void							render_main					(Fmatrix& mCombined, bool _fportals, bool first_pass);
+	void							render_main					(bool deffered, bool zfill = false);
 	void							render_forward				();
 	void							render_smap_direct			(Fmatrix& mCombined);
 	void							render_indirect				(light*			L	);
@@ -255,6 +255,8 @@ public:
 	virtual IRender_Sector*			getSector					(int id);
 	virtual IRenderVisual*			getVisual					(int id);
 	virtual IRender_Sector*			detectSector				(const Fvector& P);
+	xr_vector<IRender_Sector*>		detectSectors_sphere		(CSector* sector, const Fvector& b_center, const Fvector& b_dim);
+	xr_vector<IRender_Sector*>		detectSectors_frustum		(CSector* sector, CFrustum* _frustum);
 	virtual IRender_Target*			getTarget					();
 
 	// Main 

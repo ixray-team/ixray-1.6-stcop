@@ -975,7 +975,6 @@ float CActor::currentFOV()
 		return g_fov;
 	}
 }
-BOOL g_actor_shadow = 1;
 float	NET_Jump = 0;
 static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
@@ -1021,7 +1020,7 @@ void CActor::UpdateCL	()
 	if (HUDview())
 	{
 		has_visible = 0;
-		has_shadow_only = g_actor_shadow;
+		has_shadow_only = psDeviceFlags.test(rsActorShadow);
 	}
 	else
 	{
@@ -1029,7 +1028,7 @@ void CActor::UpdateCL	()
 		Center(cent);
 
 		has_visible = Device.vCameraPosition.distance_to_sqr(cent) >= _sqr(Radius()*0.85f);
-		has_shadow_only = g_actor_shadow;
+		has_shadow_only = psDeviceFlags.test(rsActorShadow);
 	}
 	setVisible(has_visible, has_shadow_only);
 

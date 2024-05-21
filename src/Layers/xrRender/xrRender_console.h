@@ -69,7 +69,6 @@ enum
 {
 	R1FLAG_DLIGHTS		= (1 << 0),
 	R1FLAG_TERRAIN_MASK	= (1 << 1),
-	R1FLAG_ACTOR_SHADOW	= (1 << 2),
 };
 
 extern ECORE_API Flags32		ps_r__common_flags;
