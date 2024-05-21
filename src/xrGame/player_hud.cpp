@@ -316,6 +316,7 @@ void attachable_hud_item::render_item_ui()
 
 void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 {
+	Fvector def = { 0.f, 0.f, 0.f };
 	bool is_16x9 = UI().is_widescreen();
 	string64	_prefix;
 	xr_sprintf	(_prefix,"%s",is_16x9?"_16x9":"");
@@ -326,8 +327,8 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	xr_strconcat(val_name,"hands_orientation",_prefix);
 	m_hands_attach[1]			= pSettings->r_fvector3(sect_name, val_name);
 
-	m_item_attach[0]			= pSettings->r_fvector3(sect_name, "item_position");
-	m_item_attach[1]			= pSettings->r_fvector3(sect_name, "item_orientation");
+	m_item_attach[0]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", def);
+	m_item_attach[1]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", def);
 
 	shared_str					 bone_name;
 	m_prop_flags.set			 (e_fire_point,pSettings->line_exist(sect_name,"fire_bone"));
@@ -361,14 +362,14 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_hands_offset[1][0].set	(0,0,0);
 
 	xr_strconcat(val_name,"aim_hud_offset_pos",_prefix);
-	m_hands_offset[0][1]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[0][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 	xr_strconcat(val_name,"aim_hud_offset_rot",_prefix);
-	m_hands_offset[1][1]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[1][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 
 	xr_strconcat(val_name,"gl_hud_offset_pos",_prefix);
-	m_hands_offset[0][2]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[0][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 	xr_strconcat(val_name,"gl_hud_offset_rot",_prefix);
-	m_hands_offset[1][2]		= pSettings->r_fvector3(sect_name, val_name);
+	m_hands_offset[1][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 
 	//--> Смещение в стрейфе
 	xr_strconcat(val_name, "strafe_hud_offset_pos", _prefix);
@@ -845,6 +846,23 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 	m_pool.push_back			(res);
 
 	return	res;
+}
+
+void player_hud::RemoveHudItem(const shared_str& sect)
+{
+	attachable_hud_item* itm = nullptr;
+	for (attachable_hud_item* Item : m_pool)
+	{
+		if (Item->m_sect_name == sect)
+		{
+			itm = Item;
+		}
+	}
+
+	auto Iter = std::find(m_pool.begin(), m_pool.end(), itm);
+	m_pool.erase(Iter);
+
+	xr_delete(itm);
 }
 
 bool player_hud::allow_activation(CHudItem* item)

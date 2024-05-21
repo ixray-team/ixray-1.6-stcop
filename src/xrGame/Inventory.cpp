@@ -66,8 +66,6 @@ CInventory::CInventory()
 	{
 		m_last_slot = k;
 
-		m_slots.resize(k + 1); //slot+1 because [0] is the inactive slot
-
 		m_slots[k].m_bPersistent = !!pSettings->r_bool("inventory", slot_persistent);
 		m_slots[k].m_bAct = !!pSettings->r_bool("inventory", slot_active);
 
@@ -76,6 +74,9 @@ CInventory::CInventory()
 		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", k);
 		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
 	}
+
+	m_slots[ANIM_SLOT].m_bAct = true;
+	m_slots[ANIM_SLOT].m_bPersistent = true;
 
 	m_blocked_slots.resize(k + 1);
 
@@ -547,7 +548,7 @@ void CInventory::Activate(u16 slot, bool bForce)
 		return;
 	}
 
-	R_ASSERT2(slot<=LastSlot(), "wrong slot number");
+	//R_ASSERT2(slot<=LastSlot(), "wrong slot number");
 
 	if (slot != NO_ACTIVE_SLOT && !m_slots[slot].CanBeActivated()) 
 		return;
@@ -597,7 +598,8 @@ void CInventory::Activate(u16 slot, bool bForce)
 PIItem CInventory::ItemFromSlot(u16 slot) const
 {
 	VERIFY(NO_ACTIVE_SLOT != slot);
-	return m_slots[slot].m_pIItem;
+	const auto& Slot = m_slots.find(slot);
+	return (*Slot).second.m_pIItem;
 }
 
 void CInventory::SendActionEvent(u16 cmd, u32 flags) 
@@ -1080,9 +1082,10 @@ bool CInventory::ClientEat(PIItem pIItem)
 
 bool CInventory::InSlot(const CInventoryItem* pIItem) const
 {
-	if(pIItem->CurrPlace() != eItemPlaceSlot)	return false;
+	if (pIItem->CurrPlace() != eItemPlaceSlot)
+		return false;
 
-	VERIFY(m_slots[pIItem->CurrSlot()].m_pIItem == pIItem);
+	//VERIFY(m_slots[pIItem->CurrSlot()].m_pIItem == pIItem);
 
 	return true;
 }
@@ -1251,7 +1254,8 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 			PIItem item = ItemFromSlot(I);
 			if(item && (!for_trade || item->CanTrade())  )
 			{
-				if (!SlotIsPersistent(I) || item->BaseSlot() == GRENADE_SLOT) {
+				const auto& Slot = m_slots.find(I);
+				if (!(*Slot).second.m_bPersistent || item->BaseSlot() == GRENADE_SLOT) {
 					if (pOwner) {
 						std::uint32_t slot = item->BaseSlot();
 
@@ -1383,8 +1387,6 @@ void CInventory::TryDeactivateActiveSlot	()
 
 void CInventory::BlockSlot(u16 slot_id)
 {
-	VERIFY(slot_id <= LAST_SLOT);
-	
 	++m_blocked_slots[slot_id];
 	
 	VERIFY2(m_blocked_slots[slot_id] < 5,
@@ -1393,7 +1395,6 @@ void CInventory::BlockSlot(u16 slot_id)
 
 void CInventory::UnblockSlot(u16 slot_id)
 {
-	VERIFY(slot_id <= LAST_SLOT);
 	VERIFY2(m_blocked_slots[slot_id] > 0,
 		make_string<const char*>("blocked slot [%d] underflow"));	
 	
@@ -1402,7 +1403,6 @@ void CInventory::UnblockSlot(u16 slot_id)
 
 bool CInventory::IsSlotBlocked(u16 slot_id) const
 {
-	VERIFY(slot_id <= LAST_SLOT);
 	return m_blocked_slots[slot_id] > 0;
 }
 

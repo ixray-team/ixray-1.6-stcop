@@ -33,6 +33,7 @@ public:
 
 			void	switch_detector		();
 			bool 	IsWorking			();
+	inline	bool	IsActive			() const { return m_bDetectorActive; };
 
 	virtual void 	OnMoveToSlot		(const SInvItemPlace& prev);
 	virtual void 	OnMoveToRuck		(const SInvItemPlace& prev);
