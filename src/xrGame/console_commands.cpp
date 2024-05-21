@@ -1801,6 +1801,17 @@ public:
 			return;
 		}
 
+        //if (pSettings->line_exist(nameSection, "visual"))
+		//{
+		//	shared_str full_path;
+		//	full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, pSettings->r_string( nameSection, "visual" ));
+		//	if(!FS.exist(full_path.c_str()))
+		//	{
+		//		Msg("! Visual not found!");
+		//		return;
+		//	}
+        //}
+
 		Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
 		if (tpGame == nullptr) {
@@ -1837,6 +1848,154 @@ public:
 			}
 		}
 		std::sort(tips.begin(), tips.end());
+	}
+};
+
+#include "alife_smart_terrain_registry.h"
+class CCC_SpawnSquad : public IConsole_Command {
+public:
+	CCC_SpawnSquad	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = false; };
+	
+	LPCSTR GetNearestSmartName()
+	{
+	    const auto& objects = ai().alife().smart_terrains().objects();
+	
+	    const auto I = std::min_element(objects.begin(), objects.end(), [](const auto& left, const auto& right)
+	    {
+	        if (!left.second->m_bOnline)
+	            return false;
+
+	        const float d1 = left.second->Position().distance_to_sqr(Device.vCameraPosition);
+	        const float d2 = right.second->Position().distance_to_sqr(Device.vCameraPosition);
+	        return d1 < d2;
+	    });
+	
+	    if (I != objects.end() && I->second->m_bOnline)
+	        return I->second->name_replace();
+	
+	    return "no_smarts";
+	}
+
+	LPCSTR GetNearestSmartName_compact()
+	{
+		xr_map<float, LPCSTR> smart_names;
+		for (const auto& I : ai().alife().smart_terrains().objects())
+		{
+			if (I.second->m_bOnline)
+				smart_names.insert(std::make_pair(I.second->Position().distance_to_sqr(Device.vCameraPosition), I.second->name_replace()));
+		}
+		return std::min_element(smart_names.begin(), smart_names.end())->second;
+	}
+	
+	virtual void	Execute				(LPCSTR args)
+	{
+		if (ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel))
+		{
+			string256 script_command;
+			xr_sprintf(script_command, "xr_effects.create_squad(db.actor,nil,{\"%s\",\"%s\"})", args, GetNearestSmartName());
+
+			ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->add_script(script_command,true,true);
+		}
+	}
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+		CInifile::Root sections = pSettings->sections();
+		for (CInifile::Root::iterator i = sections.begin(), ie = sections.end(); i != ie; ++i)
+			{
+			    if ((*i)->line_exist("faction") && ((*i)->line_exist("npc") || (*i)->line_exist("npc_in_squad")))
+			        tips.push_back((*i)->Name.c_str());
+			}
+    }
+};
+
+class CCC_SetCharComm : public IConsole_Command 
+{
+public:
+	CCC_SetCharComm(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR args) 
+	{
+		if (!g_pGameLevel) return;
+		if (!Level().CurrentControlEntity()) return;
+		if (Level().CurrentControlEntity() && Level().CurrentControlEntity() != Actor()) return;
+		int target = 0;
+		string256 string;
+		string[0] = 0;
+		sscanf(args, "%s %d", &string, &target);
+		if(target)
+		{
+			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
+			{
+				if (CInventoryOwner *pIO = smart_cast<CInventoryOwner*>(smart_cast<CGameObject*>(HUD().GetCurrentRayQuery().O)))
+				{
+					CHARACTER_COMMUNITY	community_human;
+					for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+					{
+						if(!xr_strcmp(community_human.GetByIndex(i)->id.c_str(), string))
+						{
+							community_human.set(string);
+							pIO->SetCommunity(community_human.index());
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if (CActor *pActor = smart_cast<CActor*>(Level().CurrentControlEntity()))
+			{
+				CHARACTER_COMMUNITY	community_human;
+				for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+				{
+					if(!xr_strcmp(community_human.GetByIndex(i)->id.c_str(), string))
+					{
+						community_human.set(string);
+						pActor->SetCommunity(community_human.index());
+					}
+				}
+			}
+		}
+	}
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		CHARACTER_COMMUNITY	community_human;
+		for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
+			tips.push_back(community_human.GetByIndex(i)->id.c_str());
+	}
+};
+#include "monster_community.h"
+class CCC_SetMonstComm : public IConsole_Command 
+{
+public:
+	CCC_SetMonstComm(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR args) 
+	{
+		if (!g_pGameLevel) return;
+		if (!Level().CurrentControlEntity()) return;
+		if (Level().CurrentControlEntity() && Level().CurrentControlEntity() != Actor()) return;
+		int target = 0;
+		string256 string;
+		string[0] = 0;
+		sscanf(args, "%s %d", &string, &target);
+		if(target)
+		{
+			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
+			{
+				if (CEntityAlive *pEA = smart_cast<CEntityAlive*>(smart_cast<CGameObject*>(HUD().GetCurrentRayQuery().O)))
+					pEA->monster_community->set(string);
+			}
+		}
+		else
+		{
+			if (CActor *pActor = smart_cast<CActor*>(Level().CurrentControlEntity()))
+				pActor->monster_community->set(string);
+		}
+	}
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
+		MONSTER_COMMUNITY	community_monster;
+		for (MONSTER_COMMUNITY_INDEX i=0; i<community_monster.GetMaxIndex()+1; ++i)
+			tips.push_back(community_monster.GetByIndex(i)->id.c_str());
 	}
 };
 
@@ -1956,6 +2115,10 @@ void CCC_RegisterCommands()
 	CMD1(CCC_GiveMoney, "g_money");
 	CMD1(CCC_GSpawn, "g_spawn");
 	CMD1(CCC_GSpawnToInventory, "g_spawn_inv");
+	CMD1(CCC_SpawnSquad,		"g_spawn_squad");
+	CMD1(CCC_SetCharComm, "g_character_community");
+	CMD1(CCC_SetMonstComm, "g_monster_community");
+
 	CMD1(CCC_Particle_TEST,     "g_ps_test");
 #endif
 
