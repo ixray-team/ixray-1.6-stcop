@@ -38,6 +38,12 @@ private:
 public:
 	CZoneEffector*		m_actor_effector;
 
+protected:
+	bool m_bVolumetricBlowout    = true;
+	float m_fVolumetricQuality   = 0.f;
+	float m_fVolumetricDistance  = 0.f;
+	float m_fVolumetricIntensity = 0.f;
+
 public:
 
 						CCustomZone						();
