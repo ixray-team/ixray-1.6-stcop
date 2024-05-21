@@ -119,23 +119,6 @@ void LuaError(lua_State* L)
 	Debug.fatal(DEBUG_INFO,"LUA error: %s",lua_tostring(L,-1));
 }
 
-doug_lea_allocator g_render_lua_allocator("render:lua");
-
-static void* lua_alloc(void* ud, void* ptr, size_t osize, size_t nsize) {
-	(void) ud;
-	(void) osize;
-
-	if (!nsize) {
-		g_render_lua_allocator.free_impl(ptr);
-		return					0;
-	}
-
-	if (!ptr)
-		return					g_render_lua_allocator.malloc_impl((u32) nsize);
-
-	return g_render_lua_allocator.realloc_impl(ptr, (u32) nsize);
-}
-
 // export
 void	CResourceManager::LS_Load			()
 {

@@ -2,7 +2,7 @@
 
 #include "../../xrCore/fixedmap.h"
 
-#define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
+//#define USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 
 #ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
 #	include	"../../xrCore/doug_lea_allocator.h"
