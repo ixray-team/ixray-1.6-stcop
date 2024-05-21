@@ -168,13 +168,5 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 bool CUIKnifeParams::Check(CInventoryItem& cur_wpn)
 {
 	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(&cur_wpn);
-	if (knife)
-	{
-		if (!knife->m_bShowKnifeStats)
-			return false;
-
-		return true;
-	}
-	else
-		return false;
+	return knife && knife->m_bShowKnifeStats;
 }
