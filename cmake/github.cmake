@@ -19,6 +19,27 @@ endif()
 
 set(IXR_3DS_MAX_SDK ${CMAKE_BINARY_DIR}/dep/max_sdk/)
 
+# Maya SDK
+set(IXR_MAYA_SDK ${CMAKE_BINARY_DIR}/dep/Autodesk.Maya.Sdk.2024.zip)
+
+if(NOT EXISTS ${IXR_MAYA_SDK})
+    file(
+        DOWNLOAD
+        https://github.com/ixray-team/ixray-packages/releases/download/d2024.5.3/Autodesk.Maya.Sdk.2024.zip
+        ${IXR_MAYA_SDK}
+        SHOW_PROGRESS
+    )
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dep/maya_sdk)
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xzf ${CMAKE_BINARY_DIR}/dep/Autodesk.Maya.Sdk.2024.zip
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dep/maya_sdk
+    )
+endif()
+
+set(IXR_MAYA_SDK ${CMAKE_BINARY_DIR}/dep/maya_sdk/)
+
 # LightWave SDK
 set(IXR_LW_SDK ${CMAKE_BINARY_DIR}/dep/lw_sdk_2020.zip)
 
