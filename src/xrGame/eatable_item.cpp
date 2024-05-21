@@ -51,6 +51,8 @@ void CEatableItem::Load(LPCSTR section)
 		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
 	}
 
+	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
+
 	if (m_iMaxUses < 1)
 		m_iMaxUses = 1;
 
