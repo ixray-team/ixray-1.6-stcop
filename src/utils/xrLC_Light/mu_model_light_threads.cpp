@@ -1,17 +1,10 @@
-#include	"stdafx.h"
-#include	"mu_model_light_threads.h"
-
-
+#include "stdafx.h"
+#include "mu_model_light_threads.h"
 #include "xrface.h"
 #include "xrMU_Model.h"
 #include "xrMU_Model_Reference.h"
-
 #include "xrlc_globaldata.h"
-
 #include "mu_model_light.h"
-#include "mu_light_net.h"
-
-//#include "mu_model_face.h"
 
 #include "../xrForms/xrThread.h"
 #include "../../xrcore/xrSyncronize.h"

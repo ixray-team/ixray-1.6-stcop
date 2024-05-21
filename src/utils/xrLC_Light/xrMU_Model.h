@@ -3,8 +3,6 @@
 
 #include "mu_model_face.h"
  
-#include "serialize.h"
- 
 namespace	CDB
 {
 	class	MODEL;

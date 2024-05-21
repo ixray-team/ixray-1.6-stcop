@@ -13,8 +13,7 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrface.h"
 #include "../xrLC_Light/mu_model_light.h"
-#include "../xrLC_Light/net_cl_data_prepare.h"
-#include "../xrLC_Light/serialize.h"
+
 //#include "../xrLC_Light/lcnet_task_manager.h"
 void	calc_ogf		( xrMU_Model &	mu_model );
 void	export_geometry	( xrMU_Model &	mu_model );

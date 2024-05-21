@@ -4,7 +4,6 @@
 #include "xrface.h"
 #include "xrdeflector.h"
 #include "lightmap.h"
-#include "serialize.h"
 #include "mu_model_face.h"
 #include "xrmu_model.h"
 #include "xrmu_model_reference.h"

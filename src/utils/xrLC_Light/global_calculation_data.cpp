@@ -2,7 +2,6 @@
 #include "global_calculation_data.h"
 
 #include "../shader_xrlc.h"
-#include "serialize.h"
 
 global_claculation_data	gl_data;
 
@@ -24,8 +23,6 @@ extern u32*		Surface_Load	(char* name, u32& w, u32& h);
 extern void		Surface_Init	();
 
 // 
-
-
 
 void global_claculation_data::xrLoad()
 {

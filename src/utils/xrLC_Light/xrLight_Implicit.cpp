@@ -6,15 +6,11 @@
 
 #include "tga.h"
 
-
-
-
 #include "light_point.h"
 #include "xrdeflector.h"
 #include "xrLC_GlobalData.h"
 #include "xrface.h"
 #include "xrlight_implicitcalcglobs.h"
-#include "net_task_callback.h"
 
 #include "../../xrcdb/xrcdb.h"
 

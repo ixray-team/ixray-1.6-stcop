@@ -1,16 +1,11 @@
 #include "stdafx.h"
 
 #include "xrdeflector.h"
-//#include "build.h"
 #include "cl_intersect.h"
 #include "xrlc_globaldata.h"
-//#include "std_classes.h"
 #include "xrImage_Resampler.h"
 #include "light_point.h"
 #include "xrface.h"
-#include "net_task.h"
-//const	u32	rms_discard			= 8;
-//extern	BOOL		gl_linear	;
 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {
@@ -50,13 +45,6 @@ void GET(const base_color &surface_color,
 		//u32 width, u32 height, int x,  int y, 
 		u32 ref, u32 &count,  base_color_c& dst )
 {
-	//if (x<0) return;
-	//else if (x>=(int)width)		return;
-	//if (y<0) return;
-	//else if (y>=(int)height)	return;
-
-	// summarize
-	//u32		id	= y*width + x;
 	if (marker<=ref)		return;
 
 	base_color_c		C;

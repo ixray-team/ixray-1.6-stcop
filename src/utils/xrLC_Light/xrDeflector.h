@@ -1,13 +1,11 @@
 #pragma once
-
 #include "xrfacedefs.h"
 #include "base_color.h"
 #include "lm_layer.h"
 #include "uv_tri.h"
 #include "../../xrcdb/xrCDB.h"
-#include "serialize.h"
 #include "xrdeflectordefs.h"
-#include "execute_statistics.h"
+
 class  base_lighting;
  
 class CDeflector;

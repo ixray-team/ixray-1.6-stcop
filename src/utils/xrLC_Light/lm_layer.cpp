@@ -1,7 +1,5 @@
 #include "stdafx.h"
-
 #include "lm_layer.h"
-#include "serialize.h"
 
 void lm_layer::Pack		(xr_vector<u32>& dest)const	
 {

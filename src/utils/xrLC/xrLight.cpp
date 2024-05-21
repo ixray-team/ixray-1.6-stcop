@@ -7,9 +7,7 @@
 #include "../xrLC_Light/xrLightVertex.h"
 
 #include "../../xrcore/xrSyncronize.h"
-#include "net.h"
-//#include "../xrLC_Light/net_task_manager.h"
-#include "../xrLC_Light/lcnet_task_manager.h"
+
 #include "../xrLC_Light/mu_model_light.h"
 xrCriticalSection	task_CS
 #ifdef PROFILE_CRITICAL_SECTIONS

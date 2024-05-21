@@ -1,8 +1,6 @@
-#include	"stdafx.h"
+#include "stdafx.h"
 
-#include	"recalculation.h"
-#include	"serialize.h"
-
+#include "recalculation.h"
 
 void recalculation::load_calculation_params()
 {	
