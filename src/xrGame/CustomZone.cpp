@@ -259,6 +259,12 @@ void CCustomZone::Load(LPCSTR section)
 		m_fLightHeight		= pSettings->r_float(section,"light_height");
 	}
 
+	// volumetric light
+	m_bVolumetricBlowout   = READ_IF_EXISTS(pSettings, r_bool,  section, "volumetric_blowout",   false);
+	m_fVolumetricQuality   = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_quality",   1.f);
+	m_fVolumetricDistance  = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_distance",  1.f);
+	m_fVolumetricIntensity = READ_IF_EXISTS(pSettings, r_float, section, "volumetric_intensity", 1.f);
+
 	//загрузить параметры idle подсветки
 	m_zone_flags.set(eIdleLight,	pSettings->r_bool (section, "idle_light"));
 	if( m_zone_flags.test(eIdleLight) )
@@ -319,19 +325,28 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 
 		if(m_zone_flags.test(eIdleLightVolumetric))
 		{
-			//m_pIdleLight->set_type				(IRender_Light::SPOT);
-			m_pIdleLight->set_volumetric		(true);
+			m_pIdleLight->set_volumetric(true);	
+			m_pIdleLight->set_volumetric_quality(m_fVolumetricQuality);
+			m_pIdleLight->set_volumetric_distance(m_fVolumetricDistance);
+			m_pIdleLight->set_volumetric_intensity(m_fVolumetricIntensity);
 		}
 	}
-	else
-		m_pIdleLight = nullptr;
+	else m_pIdleLight = nullptr;
 
-	if ( m_zone_flags.test(eBlowoutLight) ) 
+	if (m_zone_flags.test(eBlowoutLight))
 	{
 		m_pLight = ::Render->light_create();
 		m_pLight->set_shadow(true);
-	}else
-		m_pLight = nullptr;
+
+		if (m_bVolumetricBlowout)
+		{
+			m_pLight->set_volumetric(m_bVolumetricBlowout);
+			m_pLight->set_volumetric_quality(m_fVolumetricQuality);
+			m_pLight->set_volumetric_distance(m_fVolumetricDistance);
+			m_pLight->set_volumetric_intensity(m_fVolumetricIntensity);
+		}
+	}
+	else m_pLight = nullptr;
 
 	setEnabled					(TRUE);
 
