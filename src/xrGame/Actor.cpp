@@ -975,7 +975,8 @@ float CActor::currentFOV()
 		return g_fov;
 	}
 }
-
+BOOL g_actor_shadow = 1;
+float	NET_Jump = 0;
 static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
 void CActor::UpdateCL	()
@@ -1011,6 +1012,117 @@ void CActor::UpdateCL	()
 		m_holder->UpdateEx( currentFOV() );
 
 	m_snd_noise -= 0.3f*Device.fTimeDelta;
+
+	//если в режиме HUD, то сама модель актера не рисуется
+	BOOL has_visible = 1;
+	BOOL has_shadow_only = 0;
+	if (character_physics_support()->IsRemoved())
+		has_visible = 0;
+	if (HUDview())
+	{
+		has_visible = 0;
+		has_shadow_only = g_actor_shadow;
+	}
+	else
+	{
+		Fvector cent;
+		Center(cent);
+
+		has_visible = Device.vCameraPosition.distance_to_sqr(cent) >= _sqr(Radius()*0.85f);
+		has_shadow_only = g_actor_shadow;
+	}
+	setVisible(has_visible, has_shadow_only);
+
+	float dt = Device.fTimeDelta;
+
+	// Check controls, create accel, prelimitary setup "mstate_real"
+	
+	//----------- for E3 -----------------------------
+//	if (Local() && (OnClient() || Level().CurrentEntity()==this))
+	if (Level().CurrentControlEntity() == this && !Level().IsDemoPlay())
+	//------------------------------------------------
+	{
+		g_cl_CheckControls		(mstate_wishful,NET_SavedAccel,NET_Jump,dt);
+		{
+			/*
+			if (mstate_real & mcJump)
+			{
+				NET_Packet	P;
+				u_EventGen(P, GE_ACTOR_JUMPING, ID());
+				P.w_sdir(NET_SavedAccel);
+				P.w_float(NET_Jump);
+				u_EventSend(P);
+			}
+			*/
+		}
+		g_cl_Orientate			(mstate_real,dt);
+		g_Orientate				(mstate_real,dt);
+
+		g_Physics				(NET_SavedAccel,NET_Jump,dt);
+		
+		g_cl_ValidateMState		(dt,mstate_wishful);
+		g_SetAnimation			(mstate_real);
+		
+		// Check for game-contacts
+		Fvector C; float R;		
+		//m_PhysicMovementControl->GetBoundingSphere	(C,R);
+		
+		Center( C );
+		R = Radius();
+		feel_touch_update( C, R );
+		Feel_Grenade_Update( m_fFeelGrenadeRadius );
+
+		// Dropping
+		if (b_DropActivated)	{
+			f_DropPower			+= dt*0.1f;
+			clamp				(f_DropPower,0.f,1.f);
+		} else {
+			f_DropPower			= 0.f;
+		}
+		if (!Level().IsDemoPlay())
+		{		
+		mstate_wishful &=~mcAccel;
+		mstate_wishful &=~mcLStrafe;
+		mstate_wishful &=~mcRStrafe;
+		mstate_wishful &=~mcLLookout;
+		mstate_wishful &=~mcRLookout;
+		mstate_wishful &=~mcFwd;
+		mstate_wishful &=~mcBack;
+		if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
+			mstate_wishful &=~mcCrouch;
+		}
+	}
+	else 
+	{
+		make_Interpolation();
+	
+		if (NET.size())
+		{
+			
+//			NET_SavedAccel = NET_Last.p_accel;
+//			mstate_real = mstate_wishful = NET_Last.mstate;
+
+			g_sv_Orientate				(mstate_real,dt			);
+			g_Orientate					(mstate_real,dt			);
+			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
+			if (!m_bInInterpolation)
+				g_cl_ValidateMState			(dt,mstate_wishful);
+			g_SetAnimation				(mstate_real);
+			
+			set_state_box(NET_Last.mstate);
+
+
+		}	
+		mstate_old = mstate_real;
+	}
+/*
+	if (this == Level().CurrentViewEntity())
+	{
+		UpdateMotionIcon		(mstate_real);
+	};
+*/
+	NET_Jump = 0;
+
 
 	inherited::UpdateCL				();
 	m_pPhysics_support->in_UpdateCL	();
@@ -1126,7 +1238,7 @@ void CActor::UpdateCL	()
 	pPickup->SetPickupMode(false);
 }
 
-float	NET_Jump = 0;
+
 void CActor::set_state_box(u32	mstate)
 {
 		if ( mstate & mcCrouch)
@@ -1139,8 +1251,6 @@ void CActor::set_state_box(u32	mstate)
 	else 
 		character_physics_support()->movement()->ActivateBox(0, true);
 }
-
-BOOL g_actor_shadow = 1;
 
 void CActor::shedule_Update	(u32 DT)
 {
@@ -1187,98 +1297,6 @@ void CActor::shedule_Update	(u32 DT)
 		inherited::shedule_Update		(DT);
 		return;
 	}
-
-	clamp					(DT,0u,100u);
-	float	dt	 			=  float(DT)/1000.f;
-
-	// Check controls, create accel, prelimitary setup "mstate_real"
-	
-	//----------- for E3 -----------------------------
-//	if (Local() && (OnClient() || Level().CurrentEntity()==this))
-	if (Level().CurrentControlEntity() == this && !Level().IsDemoPlay())
-	//------------------------------------------------
-	{
-		g_cl_CheckControls		(mstate_wishful,NET_SavedAccel,NET_Jump,dt);
-		{
-			/*
-			if (mstate_real & mcJump)
-			{
-				NET_Packet	P;
-				u_EventGen(P, GE_ACTOR_JUMPING, ID());
-				P.w_sdir(NET_SavedAccel);
-				P.w_float(NET_Jump);
-				u_EventSend(P);
-			}
-			*/
-		}
-		g_cl_Orientate			(mstate_real,dt);
-		g_Orientate				(mstate_real,dt);
-
-		g_Physics				(NET_SavedAccel,NET_Jump,dt);
-		
-		g_cl_ValidateMState		(dt,mstate_wishful);
-		g_SetAnimation			(mstate_real);
-		
-		// Check for game-contacts
-		Fvector C; float R;		
-		//m_PhysicMovementControl->GetBoundingSphere	(C,R);
-		
-		Center( C );
-		R = Radius();
-		feel_touch_update( C, R );
-		Feel_Grenade_Update( m_fFeelGrenadeRadius );
-
-		// Dropping
-		if (b_DropActivated)	{
-			f_DropPower			+= dt*0.1f;
-			clamp				(f_DropPower,0.f,1.f);
-		} else {
-			f_DropPower			= 0.f;
-		}
-		if (!Level().IsDemoPlay())
-		{		
-		mstate_wishful &=~mcAccel;
-		mstate_wishful &=~mcLStrafe;
-		mstate_wishful &=~mcRStrafe;
-		mstate_wishful &=~mcLLookout;
-		mstate_wishful &=~mcRLookout;
-		mstate_wishful &=~mcFwd;
-		mstate_wishful &=~mcBack;
-		if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
-			mstate_wishful &=~mcCrouch;
-		}
-	}
-	else 
-	{
-		make_Interpolation();
-	
-		if (NET.size())
-		{
-			
-//			NET_SavedAccel = NET_Last.p_accel;
-//			mstate_real = mstate_wishful = NET_Last.mstate;
-
-			g_sv_Orientate				(mstate_real,dt			);
-			g_Orientate					(mstate_real,dt			);
-			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
-			if (!m_bInInterpolation)
-				g_cl_ValidateMState			(dt,mstate_wishful);
-			g_SetAnimation				(mstate_real);
-			
-			set_state_box(NET_Last.mstate);
-
-
-		}	
-		mstate_old = mstate_real;
-	}
-/*
-	if (this == Level().CurrentViewEntity())
-	{
-		UpdateMotionIcon		(mstate_real);
-	};
-*/
-	NET_Jump = 0;
-
 
 	inherited::shedule_Update	(DT);
 
@@ -1350,18 +1368,6 @@ void CActor::shedule_Update	(u32 DT)
 			m_DangerSnd.stop();
 	}
 	
-	//если в режиме HUD, то сама модель актера не рисуется
-	BOOL has_visible = 1;
-	BOOL has_shadow_only = 0;
-	if (character_physics_support()->IsRemoved())
-		has_visible = 0;
-	if (HUDview())
-	{
-		has_visible = 0;
-		has_shadow_only = g_actor_shadow;
-	}
-	setVisible(has_visible, has_shadow_only);
-
 	//что актер видит перед собой
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
 	
