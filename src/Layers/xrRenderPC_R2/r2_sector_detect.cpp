@@ -79,3 +79,65 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 	}
 }
 
+xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const Fvector& b_center, const Fvector& b_dim)
+{
+	xr_vector<IRender_Sector*> m_sectors;
+	if (rmPortals)	
+	{
+		Sectors_xrc.box_query(rmPortals,b_center,b_dim);
+		for (int K=0; K<Sectors_xrc.r_count(); K++)
+		{
+			CPortal* pPortal = (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
+
+			if(!pPortal)
+				continue;
+
+			CSector *pFront = pPortal->Front();
+			CSector *pBack = pPortal->Back();
+
+			if(sector != pFront && sector != pBack)
+				continue;
+
+			auto itfr = std::find(m_sectors.begin(), m_sectors.end(), pFront);
+			if(itfr == m_sectors.end())
+				m_sectors.push_back(pFront);
+
+			auto itbc = std::find(m_sectors.begin(), m_sectors.end(), pBack);
+			if(itbc == m_sectors.end())
+				m_sectors.push_back(pBack);
+		}
+	}
+	return std::move(m_sectors);
+}
+
+xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrustum* _frustum)
+{
+	xr_vector<IRender_Sector*> m_sectors;
+	if (rmPortals)	
+	{
+		Sectors_xrc.frustum_query(rmPortals,*_frustum);
+		for (int K=0; K<Sectors_xrc.r_count(); K++)
+		{
+			CPortal* pPortal = (CPortal*) Portals[rmPortals->get_tris()[Sectors_xrc.r_begin()[K].id].dummy];
+
+			if(!pPortal)
+				continue;
+
+			CSector *pFront = pPortal->Front();
+			CSector *pBack = pPortal->Back();
+
+			if(sector != pFront && sector != pBack)
+				continue;
+
+			auto itfr = std::find(m_sectors.begin(), m_sectors.end(), pFront);
+			if(itfr == m_sectors.end())
+				m_sectors.push_back(pFront);
+
+
+			auto itbc = std::find(m_sectors.begin(), m_sectors.end(), pBack);
+			if(itbc == m_sectors.end())
+				m_sectors.push_back(pBack);
+		}
+	}
+	return std::move(m_sectors);
+}

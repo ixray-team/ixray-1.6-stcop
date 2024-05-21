@@ -40,6 +40,8 @@ enum
 	STYPE_SHAPE					= (1<<7),
 	STYPE_LIGHTSOURCEHEMI		= (1<<8),
 	STYPE_RENDERABLESHADOW		= (1<<9),
+	STYPE_PARTICLE				= (1<<10),
+
 	STYPEFLAG_INVALIDSECTOR		= (1<<16)
 };
 //////////////////////////////////////////////////////////////////////////
