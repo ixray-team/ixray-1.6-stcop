@@ -6,8 +6,7 @@ option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
-option(IXRAY_PLUGIN_MAX "Enable X-Ray Plugins for Autodesk 3ds Max" OFF)
-option(IXRAY_PLUGIN_LW "Enable X-Ray Plugins for Lightwave 2020" OFF)
+option(IXRAY_PLUGINS "Enable X-Ray Plugins" OFF)
 option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
@@ -78,7 +77,9 @@ add_subdirectory("src/3rd party")
 add_subdirectory("src")
 
 # Plugins 
-add_subdirectory("src/plugins")
+if (IXRAY_PLUGINS)
+    add_subdirectory("src/plugins")
+endif()
 
 # Utils
 add_subdirectory("src/utils")
