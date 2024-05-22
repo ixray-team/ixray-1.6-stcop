@@ -291,32 +291,26 @@ void CCustomDetector::UpdateVisibility()
 
 	PIItem pItem = m_pInventory->ActiveItem();
 
-	if (pItem)
+	bool bClimborTalking = ((Actor()->GetMovementState(eReal)&mcClimb) != 0 || Actor()->IsTalking());
+	if (bClimborTalking)
 	{
-		bool bClimb = (Actor()->GetMovementState(eReal)&mcClimb) != 0;
-		if (bClimb)
+		HideDetector(true);
+		m_bNeedActivation = true;
+	}
+	else
+	{
+		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
+		if (wpn && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
 		{
 			HideDetector(true);
 			m_bNeedActivation = true;
 		}
-		else
-		{
-			CWeapon* wpn = smart_cast<CWeapon*>(pItem);
-			if (wpn)
-			{
-				u32 state = wpn->GetState();
-				if (wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eSwitch)
-				{
-					HideDetector(true);
-					m_bNeedActivation = true;
-				}
-			}
-		}
 	}
+
 	if (m_bNeedActivation)
 	{
-		bool bClimb = (Actor()->GetMovementState(eReal)&mcClimb) != 0;
-		if (!bClimb)
+		bool bClimborTalking = ((Actor()->GetMovementState(eReal)&mcClimb) != 0 || Actor()->IsTalking());
+		if (!bClimborTalking)
 		{
 			CHudItem* huditem = (pItem) ? pItem->cast_hud_item() : NULL;
 			bool bChecked = !huditem || CheckCompatibilityInt(huditem, 0);
@@ -367,9 +361,9 @@ void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	inherited::OnMoveToRuck	(prev);
+	m_bDetectorActive			= false;
 	if(prev.type==eItemPlaceSlot)
 	{
-		m_bDetectorActive			= false;
 		SwitchState					(eHidden);
 		g_player_hud->detach_item	(this);
 	}
