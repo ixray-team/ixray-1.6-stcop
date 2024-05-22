@@ -1020,15 +1020,15 @@ void CActor::UpdateCL	()
 	if (HUDview())
 	{
 		has_visible = 0;
-		has_shadow_only = psDeviceFlags.test(rsActorShadow);
+		has_shadow_only = psDeviceFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
 	}
 	else
 	{
 		Fvector cent;
 		Center(cent);
-
-		has_visible = Device.vCameraPosition.distance_to_sqr(cent) >= _sqr(Radius()*0.85f);
-		has_shadow_only = psDeviceFlags.test(rsActorShadow);
+		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
+		has_visible = pCam && pCam->GetDist() >= 0.43f;
+		has_shadow_only = psDeviceFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
 	}
 	setVisible(has_visible, has_shadow_only);
 

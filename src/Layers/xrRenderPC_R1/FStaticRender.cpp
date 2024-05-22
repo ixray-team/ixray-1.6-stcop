@@ -430,7 +430,7 @@ void CRender::Calculate				()
 				(
 				lstRenderables,
 				ISpatial_DB::O_ORDERED,
-				STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
+				STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
 				ViewBase
 				);
 
@@ -465,23 +465,18 @@ void CRender::Calculate				()
 					continue;	// disassociated from S/P structure
 
 				// Filter only not light spatial
-				if	(PortalTraverser.i_marker != sector->r_marker && (spatial->spatial.type & STYPE_RENDERABLE) )	continue;	// inactive (untouched) sector
+				if	(PortalTraverser.i_marker != sector->r_marker && (spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE) )	continue;	// inactive (untouched) sector
 
-				if (spatial->spatial.type & STYPE_RENDERABLE)
+				if(spatial->spatial.type&STYPE_RENDERABLE || spatial->spatial.type&STYPE_PARTICLE)
 				{
 					for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)
 					{
 						set_Frustum			(&(sector->r_frustums[v_it]));
-
-						if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) /*&& (spatial->spatial.type & STYPE_RENDERABLE)*/)	continue;
+						if (!View->testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R)) continue;
 						// renderable
 						IRenderable*	renderable		= spatial->dcast_Renderable	();
-						if (0==renderable)	{
-							// It may be an glow
-							CGlow*		glow				= dynamic_cast<CGlow*>(spatial);
-							VERIFY							(glow);
-							L_Glows->add					(glow);
-						} else {
+						if (renderable)
+						{
 							// Occlusiond
 							vis_data&		v_orig			= renderable->renderable.visual->getVisData();
 							vis_data		v_copy			= v_orig;
@@ -496,27 +491,36 @@ void CRender::Calculate				()
 							// rendering
 							if (o_it==uID_LTRACK && renderable->renderable_ROS())	{
 								// track lighting environment
-								CROS_impl*		T_ = (CROS_impl*)renderable->renderable_ROS();
-								T_->update			(renderable);
+								CROS_impl*		T = (CROS_impl*)renderable->renderable_ROS();
+								T->update			(renderable);
 							}
 							set_Object						(renderable);
 							renderable->renderable_Render	();
 							set_Object						(0);	//? is it needed at all
 						}
+						else
+						{
+							// It may be an glow
+							CGlow*		glow				= fast_dynamic_cast<CGlow*>(spatial);
+							VERIFY							(glow);
+							L_Glows->add					(glow);
+						}
 						break;	// exit loop on frustums
 					}
-				} 
-				else
+				}
+
+				if (spatial->spatial.type & STYPE_LIGHTSOURCE)
 				{
 					if ( ViewBase.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) )
 					{
 						VERIFY								(spatial->spatial.type & STYPE_LIGHTSOURCE);
 						// lightsource
-						light*			L					= (light*)	spatial->dcast_Light	();
-						VERIFY								(L);
-						if (L->spatial.sector)				{
-							vis_data&		vis		= L->get_homdata	( );
-							if	(HOM.visible(vis))	L_DB->add_light		(L);
+						if(light*			L					= (light*)	spatial->dcast_Light	())
+						{
+							if (L->spatial.sector)				{
+								vis_data&		vis		= L->get_homdata	( );
+								if	(HOM.visible(vis))	L_DB->add_light		(L);
+							}
 						}
 					}
 				}
