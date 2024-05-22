@@ -6,9 +6,11 @@
 #include "PhysicsCommon.h"
 #include "icollidevalidator.h"
 #include "../xrserverentities/alife_space.h"
-//#include "script_export_space.h"
+
 #include "../xrEngine/iphysicsshell.h"
+#include "../xrEngine/VisMask.h"
 #include "iphysics_scripted.h"
+
 class CPhysicsJoint;
 class CPhysicsElement;
 class CPhysicsShell;
@@ -398,8 +400,8 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 
 	virtual			void						RunSimulation								(bool place_current_forms=true)																= 0;
 	virtual			void						UpdateRoot									()																							= 0;
-	virtual			void            		    ZeroCallbacks								()																							= 0;
-	virtual			void						ResetCallbacks								(u16 id,Flags64 &mask)																		= 0;
+	virtual			void            		    ZeroCallbacks								() = 0;
+	virtual			void						ResetCallbacks								(u16 id, VisMask& mask) = 0;
 	virtual			void						SetCallbacks								( )																							= 0;
 	virtual			void						EnabledCallbacks							(BOOL val)																					= 0;
 	virtual			void						ToAnimBonesPositions						( motion_history_state history_state )																							= 0;

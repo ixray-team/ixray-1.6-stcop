@@ -168,96 +168,104 @@ void SPHNetState::net_Load(NET_Packet &P)
 	net_Import(P);
 	previous_position.set(position);
 }
+
 void SPHNetState::net_Load(IReader &P)
 {
 	net_Import(P);
 	previous_position.set(position);
 }
+
 void SPHNetState::net_Save(NET_Packet &P,const Fvector& min,const Fvector& max)
 {
-	//P.w_vec3(linear_vel);
-	//P.w_vec3(angular_vel);
-	//P.w_vec3(force);
-	//P.w_vec3(torque);
-	//P.w_vec3(position);
-	w_vec_q8(P,position,min,max);
-	w_qt_q8(P,quaternion);
-	//P.w_vec4(*((Fvector4*)&quaternion));
-	//P.w_vec4(*((Fvector4*)&previous_quaternion));
-	P.w_u8	((u8)enabled);
+	w_vec_q8(P, position, min, max);
+	w_qt_q8(P, quaternion);
+	P.w_u8((u8)enabled);
 }
+
 template<typename src>
 void SPHNetState::read(src &P,const Fvector& min,const Fvector& max)
 {
-VERIFY( !(fsimilar(min.x,max.x)&&fsimilar(min.y,max.y)&&fsimilar(min.z,max.z)) );
-	linear_vel.set(0.f,0.f,0.f);
-	angular_vel.set(0.f,0.f,0.f);
-	force.set(0.f,0.f,0.f);
-	torque.set(0.f,0.f,0.f);
-	r_vec_q8(P,position,min,max);
+	VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+	linear_vel.set(0.f, 0.f, 0.f);
+	angular_vel.set(0.f, 0.f, 0.f);
+	force.set(0.f, 0.f, 0.f);
+	torque.set(0.f, 0.f, 0.f);
+	r_vec_q8(P, position, min, max);
 	previous_position.set(position);
-	r_qt_q8(P,quaternion);
+	r_qt_q8(P, quaternion);
 	previous_quaternion.set(quaternion);
-	enabled=!!P.r_u8();
+	enabled = !!P.r_u8();
 
 }
 
 void SPHNetState::net_Load(NET_Packet &P,const Fvector& min,const Fvector& max)
 {
-VERIFY( !(fsimilar(min.x,max.x)&&fsimilar(min.y,max.y)&&fsimilar(min.z,max.z)) );
-	read(P,min,max);
+	VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+	read(P, min, max);
 }
+
 void SPHNetState::net_Load(IReader &P,const Fvector& min,const Fvector& max)
 {
-VERIFY( !(fsimilar(min.x,max.x)&&fsimilar(min.y,max.y)&&fsimilar(min.z,max.z)) );
-	read(P,min,max);
+	VERIFY(!(fsimilar(min.x, max.x) && fsimilar(min.y, max.y) && fsimilar(min.z, max.z)));
+	read(P, min, max);
 }
+
 SPHBonesData::SPHBonesData()
 {
-	bones_mask					=u64(-1);
-	root_bone					=0;
+	bones_mask.set_all();
+	root_bone = 0;
 
-	Fvector						_mn, _mx;
+	Fvector _mn, _mx;
 
-	_mn.set						(-100.f,-100.f,-100.f);
-	_mx.set						(100.f,100.f,100.f);
-	set_min_max					(_mn, _mx);
+	_mn.set(-100.f, -100.f, -100.f);
+	_mx.set(100.f, 100.f, 100.f);
+	set_min_max(_mn, _mx);
 }
+
 void SPHBonesData::net_Save(NET_Packet &P)
 {
-	P.w_u64			(bones_mask);
-	P.w_u16			(root_bone);
-	
-	P.w_vec3		(get_min());
-	P.w_vec3		(get_max());
-	P.w_u16			((u16)bones.size());//bones number;
-	PHNETSTATE_I	i=bones.begin(),e=bones.end();
-	for(;e!=i;i++)
-	{
-		(*i).net_Save(P,get_min(),get_max());
+	P.w_u64(bones_mask._visimask.flags);
+	P.w_u16(root_bone);
+
+	P.w_vec3(get_min());
+	P.w_vec3(get_max());
+	P.w_u16((u16)bones.size());//bones number;
+
+	if(bones.size() > 64) {
+		Msg("!![SPHBonesData::net_Save] bones_size is [%u]!", bones.size());
+		P.w_u64(bones_mask._visimask_ex.flags);
 	}
-	//	this comment is added by Dima (correct me if this is wrong)
-	//  if we call 2 times in a row StateWrite then we get different results
-	//	WHY???
-	//	bones.clear		();
+
+	PHNETSTATE_I i = bones.begin(), e = bones.end();
+	for(; e != i; i++) {
+		(*i).net_Save(P, get_min(), get_max());
+	}
 }
 
 void SPHBonesData::net_Load(NET_Packet &P)
 {
-	bones.clear					();
+	bones.clear();
 
-	bones_mask					=P.r_u64();
-	root_bone					=P.r_u16();
-	Fvector						_mn, _mx;
-	P.r_vec3					(_mn);
-	P.r_vec3					(_mx);
-	set_min_max					(_mn, _mx);
+	// VisMask init 
+	u64 _low = P.r_u64(); // Left (0...64)
+	u64 _high = 0; // Right(64..128)
 
-	u16 bones_number			=P.r_u16();//bones number /**/
-	for(int i=0;i<bones_number;i++)
-	{
+	root_bone = P.r_u16();
+	Fvector _mn, _mx;
+	P.r_vec3(_mn);
+	P.r_vec3(_mx);
+	set_min_max(_mn, _mx);
+
+	u16 bones_number = P.r_u16();
+	if(bones_number > 64) {
+		Msg("!![SPHBonesData::net_Load] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+	bones_mask.set(_low, _high);
+
+	for(int i = 0; i < bones_number; i++) {
 		SPHNetState	S;
-		S.net_Load(P,get_min(),get_max());
+		S.net_Load(P, get_min(), get_max());
 		bones.push_back(S);
 	}
 }

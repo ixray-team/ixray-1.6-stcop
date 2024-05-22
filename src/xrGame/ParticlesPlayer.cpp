@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ParticlesPlayer.cpp
-// èíòåðôåéñ äëÿ ïðîèãðûâàíèÿ ïàðòèêëîâ íà îáúåêòå
+// Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹Ñ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð¸Ð³Ñ€Ñ‹Ð²Ð°Ð½Ð¸Ñ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð² Ð½Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ðµ
 ///////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "ParticlesPlayer.h"
@@ -15,8 +15,11 @@ static void generate_orthonormal_basis(const Fvector& dir,Fmatrix &result)
 }
 CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::FindParticles(const shared_str& ps_name)
 {
-	for (ParticlesInfoListIt it=particles.begin(); it!=particles.end(); it++)
-		if (it->ps && it->ps->Name()==ps_name) return &(*it);
+	for(ParticlesInfoListIt it = particles.begin(); it != particles.end(); it++) {
+		if(it->ps && it->ps->Name() == ps_name) {
+			return &(*it);
+		}
+	}
 	return 0;
 }
 CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(CObject* object, const shared_str& ps_name)
@@ -51,16 +54,13 @@ void CParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
 }
 //-------------------------------------------------------------------------------------
 
-CParticlesPlayer::CParticlesPlayer ()
+CParticlesPlayer::CParticlesPlayer() : m_bActiveBones(false)
 {
-	bone_mask			= u64(1)<<u64(0);
-	
-	m_bActiveBones		= false;
+	bone_mask = 1 << 0;
+	m_Bones.push_back(SBoneInfo(0, Fvector().set(0, 0, 0)));
 
-	m_Bones.push_back	(SBoneInfo(0,Fvector().set(0,0,0)));
-
-	SetParentVel		(zero_vel);
-	m_self_object		= 0;
+	SetParentVel(zero_vel);
+	m_self_object = nullptr;
 }
 
 CParticlesPlayer::~CParticlesPlayer ()
@@ -75,8 +75,8 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 	m_Bones.clear();
 	
 
-	//ñ÷èòàòü ñïèñîê êîñòî÷åê è ñîîòâåòñòâóþùèõ
-	//îôñåòîâ  êóäà ìîæíî âåøàòü ïàðòèêëû
+	//ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº ÐºÐ¾ÑÑ‚Ð¾Ñ‡ÐµÐº Ð¸ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ñ…
+	//Ð¾Ñ„ÑÐµÑ‚Ð¾Ð²  ÐºÑƒÐ´Ð° Ð¼Ð¾Ð¶Ð½Ð¾ Ð²ÐµÑˆÐ°Ñ‚ÑŒ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹
 	CInifile* ini		= K->LL_UserData();
 	if(ini&&ini->section_exist("particle_bones")){
 		bone_mask		= 0;
@@ -93,11 +93,11 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 	}
 	if(m_Bones.empty())
 	{
-		bone_mask			= u64(1)<<u64(0);
+		bone_mask = 1 << 0;
 		m_Bones.push_back	(SBoneInfo(K->LL_GetBoneRoot(),Fvector().set(0,0,0)));
 	}
 }
-//óíè÷òîæåíèå ïàðòèêëîâ íà net_Destroy
+//ÑƒÐ½Ð¸Ñ‡Ñ‚Ð¾Ð¶ÐµÐ½Ð¸Ðµ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð² Ð½Ð° net_Destroy
 void	CParticlesPlayer::net_DestroyParticles	()
 {
 	VERIFY(m_self_object);
@@ -172,7 +172,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
 
 		particles_info.life_time=auto_stop ? life_time : u32(-1);
 		xform.getHPB(particles_info.angles);
-		//íà÷àòü èãðàòü ïàðòèêëû
+		//Ð½Ð°Ñ‡Ð°Ñ‚ÑŒ Ð¸Ð³Ñ€Ð°Ñ‚ÑŒ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹
 
 		Fmatrix m;m.set(xform);
 		GetBonePos(object,it->index,it->offset,m.c);
@@ -216,7 +216,7 @@ void CParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, boo
 	UpdateParticles();
 }
 
-//îñòàíîâêà ïàðòèêëîâ, ïî èñòå÷åíèè èõ âðåìåíè æèçíè
+//Ð¾ÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð², Ð¿Ð¾ Ð¸ÑÑ‚ÐµÑ‡ÐµÐ½Ð¸Ð¸ Ð¸Ñ… Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð¶Ð¸Ð·Ð½Ð¸
 void CParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id,u32 life_time)
 {
 	if (BI_NONE==bone_id){
@@ -252,13 +252,13 @@ void CParticlesPlayer::UpdateParticles()
 		for (auto p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++){
 			SParticlesInfo& p_info	= *p_it;
 			if(!p_info.ps) continue;
-			//îáíîâèòü ïîçèöèþ ïàðòèêëîâ
+			//Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð²
 			Fmatrix xform;
 			xform.setHPB(p_info.angles.x,p_info.angles.y,p_info.angles.z);
 			GetBonePos(object,b_info.index,b_info.offset,xform.c);
 			p_info.ps->UpdateParent(xform, parent_vel);
 
-			//îáíîâèòü âðåìÿ ñóùåñòâîâàíèÿ
+			//Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²Ñ€ÐµÐ¼Ñ ÑÑƒÑ‰ÐµÑÑ‚Ð²Ð¾Ð²Ð°Ð½Ð¸Ñ
 			if(p_info.life_time!=u32(-1))
 			{
 				if(p_info.life_time>Device.dwTimeDelta)	p_info.life_time-=Device.dwTimeDelta;
