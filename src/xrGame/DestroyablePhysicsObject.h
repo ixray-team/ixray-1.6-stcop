@@ -11,6 +11,7 @@ typedef  CPhysicObject inherited;
 	float m_fHealth;
 	ref_sound							m_destroy_sound;
 	shared_str							m_destroy_particles;
+	bool								child_part;
 public:
 										CDestroyablePhysicsObject									()																																			;
 	virtual								~CDestroyablePhysicsObject									()																																			;
@@ -27,6 +28,7 @@ public:
 	virtual void						shedule_Update				(u32 dt)						;
 	virtual bool						CanRemoveObject				()								;
 	virtual void						OnChangeVisual				();
+	virtual bool						HasChildPart				()								{return !!(child_part || m_fHealth <= 0.f);};
 protected:
 			void						Destroy						()								;
 private:

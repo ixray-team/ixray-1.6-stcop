@@ -22,6 +22,7 @@
 CDestroyablePhysicsObject ::CDestroyablePhysicsObject()
 {
 	m_fHealth=1.f;
+	child_part = false;
 }
 
 CDestroyablePhysicsObject::~CDestroyablePhysicsObject()
@@ -51,6 +52,8 @@ void CDestroyablePhysicsObject::net_Destroy()
 
 BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 {
+	CSE_PHSkeleton *l_tpPHSkeleton = smart_cast<CSE_PHSkeleton*>(DC);
+	child_part = l_tpPHSkeleton && l_tpPHSkeleton->source_id != u16(-1);
 	BOOL res=inherited::net_Spawn(DC);
 	IKinematics		*K=smart_cast<IKinematics*>(Visual());
 	CInifile* ini=K->LL_UserData();
