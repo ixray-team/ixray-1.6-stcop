@@ -44,7 +44,7 @@ public:
 	virtual void	OnAnimationEnd		(u32 state);
 	virtual	void	UpdateXForm			();
 	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
-	void			ToggleDetector		(bool bFastMode);
+	void			ToggleDetector		(bool bFastMode, bool switching = false);
 	void			HideDetector		(bool bFastMode);
 	void			ShowDetector		(bool bFastMode);
 	float			m_fAfDetectRadius;

@@ -108,13 +108,15 @@ void CCustomDetector::ShowDetector(bool bFastMode)
 		ToggleDetector(bFastMode);
 }
 
-void CCustomDetector::ToggleDetector(bool bFastMode)
+void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 {
 	m_bNeedActivation		= false;
 	m_bFastAnimMode			= bFastMode;
 
 	if(GetState()==eHidden)
 	{
+		if(switching)
+			m_bDetectorActive = true;
 		PIItem iitem = m_pInventory->ActiveItem();
 		CHudItem* itm = (iitem)?iitem->cast_hud_item():nullptr;
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
@@ -133,17 +135,18 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 		}
 	}else
 	if(GetState()==eIdle)
+	{
 		SwitchState					(eHiding);
+
+		if(switching)
+			m_bDetectorActive = false;
+	}
 
 }
 
 void CCustomDetector::switch_detector()
 {
-	if(m_bDetectorActive && GetState()!=eIdle)
-		return;
-
-	m_bDetectorActive = GetState()==CHudItem::eHidden;
-	ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
+	ToggleDetector(g_player_hud->attached_item(0)!=nullptr, true);
 }
 
 void CCustomDetector::OnStateSwitch(u32 S)
