@@ -139,6 +139,9 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 
 void CCustomDetector::switch_detector()
 {
+	if(m_bDetectorActive && GetState()!=eIdle)
+		return;
+
 	m_bDetectorActive = GetState()==CHudItem::eHidden;
 	ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
 }
@@ -259,6 +262,21 @@ void CCustomDetector::UpfateWork()
 {
 	UpdateAf				();
 	m_ui->update			();
+}
+
+void CCustomDetector::UpdateHudAdditonal(Fmatrix& trans)
+{
+	if (m_pInventory)
+	{
+		CWeapon* pWeap = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
+		if(pWeap)
+		{
+			if(pWeap->IsZoomed())
+				return;
+		}
+	}
+
+	CHudItem::UpdateHudAdditonal(trans);
 }
 
 void CCustomDetector::UpdateVisibility()

@@ -43,7 +43,7 @@ public:
 	virtual void	OnStateSwitch		(u32 S);
 	virtual void	OnAnimationEnd		(u32 state);
 	virtual	void	UpdateXForm			();
-
+	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
 	void			ToggleDetector		(bool bFastMode);
 	void			HideDetector		(bool bFastMode);
 	void			ShowDetector		(bool bFastMode);
@@ -53,7 +53,8 @@ public:
 	virtual u32		ef_detector_type	() const	{return 1;};
 
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
-
+	
+	virtual bool	HasActive		() const	{return m_bDetectorActive;};
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 			void 	TurnDetectorInternal		(bool b);
