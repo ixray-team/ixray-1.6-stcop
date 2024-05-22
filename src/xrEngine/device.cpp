@@ -191,6 +191,8 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 int g_dwFPSlimit = 500;
+bool IsFpsShow = true;
+
 void CRenderDevice::on_idle		()
 {
 #ifndef _EDITOR
@@ -296,7 +298,9 @@ void CRenderDevice::on_idle		()
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
 
-				pFPSCounter->OnRender();
+				if (IsFpsShow) {
+					pFPSCounter->OnRender();
+				}
 
 				End();
 			}
