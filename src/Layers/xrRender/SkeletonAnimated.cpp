@@ -737,8 +737,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	m_Partition->load		(this,N);
     
 	// initialize motions
-	for (MotionsSlotVecIt m_it=m_Motions.begin(); m_it!=m_Motions.end(); m_it++){
-		SMotionsSlot& MS	= *m_it;
+	for (SMotionsSlot& MS : m_Motions){
 		MS.bone_motions.resize(bones->size());
 		for (u32 i=0; i<bones->size(); i++){
 			CBoneData* BD		= (*bones)[i];
@@ -747,6 +746,49 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	// Init blend pool
+	IBlend_Startup	();
+}
+
+void CKinematicsAnimated::append_motion_from_path(const char* N)
+{
+    string_path	fn;
+    if (!FS.exist(fn, "$level$", N))
+    {
+        if (!FS.exist(fn, "$game_meshes$", N))
+        {
+#ifdef _EDITOR
+         Msg			("!Can't find motion file '%s'.",N);
+         return;
+#else
+        Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",N);
+#endif
+        }
+    }
+    m_Motions.push_back				(SMotionsSlot());
+    bool create_res = true;
+    if( !g_pMotionsContainer->has(N) ) //optimize fs operations
+	{
+		IReader* MS						= FS.r_open(fn);
+		create_res = m_Motions.back().motions.create	(N,MS,bones);
+		FS.r_close						(MS);
+	}
+    if(create_res)
+		m_Motions.back().motions.create	(N,nullptr,bones);
+    else{
+    	m_Motions.pop_back	();
+        Msg					("! Unable to load motion file '%s'.", N);
+        }
+    
+	// Reinitialize motions
+	for (SMotionsSlot& MS : m_Motions){
+		MS.bone_motions.resize(bones->size());
+		for (u32 i=0; i<bones->size(); i++){
+			CBoneData* BD		= (*bones)[i];
+			MS.bone_motions[i]	= MS.motions.bone_motions(BD->name);
+		}
+	}
+
+	// Reinit blend pool
 	IBlend_Startup	();
 }
 
