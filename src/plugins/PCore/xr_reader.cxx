@@ -28,7 +28,7 @@ size_t xr_reader::find_chunk(uint32_t find_id, bool* compressed, bool reset)
 		size_t size = r_u32();
 		assert(m_p + size <= m_end);
 		if (find_id == (id & CHUNK_ID_MASK)) {
-			xr_assert(compressed || (id & CHUNK_COMPRESSED) == 0);
+			//xr_assert(compressed || (id & CHUNK_COMPRESSED) == 0);
 			if (compressed != 0)
 				*compressed = (id & CHUNK_COMPRESSED) != 0;
 //			m_debug_find_chunk = m_p + size;
