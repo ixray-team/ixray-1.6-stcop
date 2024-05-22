@@ -14,7 +14,7 @@ struct 	v_model_skinned_0
 struct 	v_model_skinned_1   		// 24 bytes
 {
 	float4 	P	: POSITION;	// (float,float,float,1) - quantized	// short4
-	int4	N	: NORMAL;	// (nx,ny,nz,index)			// DWORD
+	float4	N	: NORMAL;	// (nx,ny,nz,index)			// DWORD
 	float3	T	: TANGENT;	// tangent				// DWORD
 	float3	B	: BINORMAL;	// binormal				// DWORD
 	float2	tc	: TEXCOORD0;	// (u,v)				// short2
@@ -25,7 +25,7 @@ struct 	v_model_skinned_2		// 28 bytes
 	float4 	N	: NORMAL;	// (nx,ny,nz,weight)			// DWORD
 	float3	T	: TANGENT;	// tangent				// DWORD
 	float3	B	: BINORMAL;	// binormal				// DWORD
-	int4 	tc	: TEXCOORD0;	// (u,v, w=m-index0, z=m-index1)  	// short4
+	float4 	tc	: TEXCOORD0;	// (u,v, w=m-index0, z=m-index1)  	// short4
 };
 
 struct 	v_model_skinned_3		// 28 bytes
@@ -34,7 +34,7 @@ struct 	v_model_skinned_3		// 28 bytes
 	float4 	N	: NORMAL;	// (nx,ny,nz,weight0)			// DWORD
 	float4	T	: TANGENT;	// (tx,ty,tz,weight1)				// DWORD
 	float4	B	: BINORMAL;	// (bx,by,bz,m-index2)				// DWORD
-	int4 	tc	: TEXCOORD0;	// (u,v, w=m-index0, z=m-index1)  	// short4
+	float4 	tc	: TEXCOORD0;	// (u,v, w=m-index0, z=m-index1)  	// short4
 };
 
 struct 	v_model_skinned_4		// 28 bytes
@@ -43,13 +43,13 @@ struct 	v_model_skinned_4		// 28 bytes
 	float4 	N	: NORMAL;	// (nx,ny,nz,weight0)			// DWORD
 	float4	T	: TANGENT;	// (tx,ty,tz,weight1)				// DWORD
 	float4	B	: BINORMAL;	// (bx,by,bz,weight2)				// DWORD
-	int2 	tc	: TEXCOORD0;	// (u,v)  					// short2
+	float2 	tc	: TEXCOORD0;	// (u,v)  					// short2
 	float4 	ind: TEXCOORD1;	// (x=m-index0, y=m-index1, z=m-index2, w=m-index3)  	// DWORD
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-float4 	u_position	(float4 v)	{ return float4(v.xyz*(12.f / 32768.f), 1.f);	}	// -12..+12
+float4 	u_position	(float4 v)	{ return float4(v.xyz, 1.f);	}	// -12..+12
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //uniform float4 	sbones_array	[256-22] : register(vs,c22);
@@ -67,7 +67,7 @@ float3 	skinning_dir 	(float3 dir, float3 m0, float3 m1, float3 m2)
 }
 float4 	skinning_pos 	(float4 pos, float4 m0, float4 m1, float4 m2)
 {
-	float4 	P	= float4(pos.xyz*(12.f / 32768.f), 1.f);		// -12..+12
+	float4 	P	= u_position	(pos);		// -12..+12
 	return 	float4
 		(
 			dot	(m0, P),
@@ -81,11 +81,11 @@ v_model skinning_0	(v_model_skinned_0	v)
 {
 	// skinning
 	v_model 	o;
-	o.P 		= float4(v.P.xyz*(12.f / 32768.f), 1.f);	// -12..+12
+	o.P 		= u_position(v.P);
 	o.N 		= unpack_normal(v.N);
 	o.T 		= unpack_normal(v.T);
 	o.B 		= unpack_normal(v.B);
-	o.tc 		= v.tc		*(16.f / 32768.f);		// -16..+16
+	o.tc 		= v.tc;		// -16..+16
 	return o;
 }
 v_model skinning_1 	(v_model_skinned_1	v)
@@ -95,14 +95,14 @@ v_model skinning_1 	(v_model_skinned_1	v)
 	float4  m0 	= sbones_array[mid+0];
 	float4  m1 	= sbones_array[mid+1];
 	float4  m2 	= sbones_array[mid+2];
-
+ 
 	// skinning
 	v_model 	o;
 	o.P 		= skinning_pos(v.P, m0,m1,m2 );
 	o.N 		= skinning_dir(v.N, m0,m1,m2 );
 	o.T 		= skinning_dir(v.T, m0,m1,m2 );
 	o.B 		= skinning_dir(v.B, m0,m1,m2 );
-	o.tc 		= v.tc		*(16.f / 32768.f);		// -16..+16
+	o.tc 		= v.tc;		// -16..+16
 	return o;
 }
 v_model skinning_2 	(v_model_skinned_2	v)
@@ -129,7 +129,7 @@ v_model skinning_2 	(v_model_skinned_2	v)
 	o.N 		= skinning_dir(v.N, m0,m1,m2 );
 	o.T 		= skinning_dir(v.T, m0,m1,m2 );
 	o.B 		= skinning_dir(v.B, m0,m1,m2 );
-	o.tc 		= v.tc		*(16.f / 32768.f);	// -16..+16
+	o.tc 		= v.tc;	// -16..+16
 	return o;
 }
 v_model skinning_3 	(v_model_skinned_3	v)
@@ -170,7 +170,7 @@ v_model skinning_3 	(v_model_skinned_3	v)
 	o.N 		= skinning_dir(v.N, m0,m1,m2 );
 	o.T 		= skinning_dir(v.T, m0,m1,m2 );
 	o.B 		= skinning_dir(v.B, m0,m1,m2 );
-	o.tc 		= v.tc		*(16.f / 32768.f);	// -16..+16
+	o.tc 		= v.tc;	// -16..+16
 #ifdef SKIN_COLOR
 	o.rgb_tint	= float3	(2,0,0)	;
 	if (id_0==id_1)	o.rgb_tint	= float3(1,2,0);
@@ -213,7 +213,7 @@ v_model skinning_4 	(v_model_skinned_4	v)
 	o.N 		= skinning_dir(v.N, m0,m1,m2 );
 	o.T 		= skinning_dir(v.T, m0,m1,m2 );
 	o.B 		= skinning_dir(v.B, m0,m1,m2 );
-	o.tc 		= v.tc		*(16.f / 32768.f);	// -16..+16
+	o.tc 		= v.tc;	// -16..+16
 
 	return o;
 }
