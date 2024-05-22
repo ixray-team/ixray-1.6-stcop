@@ -44,7 +44,7 @@ void FPS::FPSCounter::ShowEngineVersion(bool IsMainMenu)
         pCGameFont->SetHeight(0.022f);
         pCGameFont->SetColor(DebugTextColor::DTC_GAME_VERSION);
 
-        pCGameFont->Out(5, (psCurrentVidMode[1] - pCGameFont->GetHeight()), "%s Branch[" _BRANCH "] Hash[" _HASH "]", ActualVersion.c_str());
+        pCGameFont->Out(psCurrentVidMode[0] - 475, (psCurrentVidMode[1] - pCGameFont->GetHeight()) - 10, "%s Branch[" _BRANCH "] Hash[" _HASH "]", ActualVersion.c_str());
 
         pCGameFont->OnRender();
     }
