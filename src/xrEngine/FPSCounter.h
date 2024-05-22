@@ -10,7 +10,7 @@ namespace FPS
 		FPSCounter();
 		~FPSCounter() = default;
 
-		void ShowEngineVersion(bool IsMainMenu);
+		void OnRender();
 
 	protected:
 		CGameFont* pCGameFont;
