@@ -25,7 +25,7 @@
 //#include "../../../Layers/xrRender/SkeletonAnimated.h"
 #include <d3dx9.h>
 
-#define MAX_BONE 64
+#define MAX_BONE 128
 
 ECORE_API BOOL g_force16BitTransformQuant = TRUE;
 ECORE_API BOOL g_force32BitTransformQuant = FALSE;
@@ -122,9 +122,8 @@ IC int VertexCache::AddEntry(int entry)
 
 VertexCache::VertexCache()
 {
-  VertexCache(24);
+	entries.assign(24, -1);
 }
-
 
 VertexCache::VertexCache(int size)
 {
