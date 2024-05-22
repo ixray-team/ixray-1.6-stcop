@@ -64,12 +64,15 @@ function main_menu:InitCallBacks()
 	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,				self.OnButton_load_clicked,			self)
 	-- save
 	self:AddCallback("btn_save",		ui_events.BUTTON_CLICKED,				self.OnButton_save_clicked,			self)
+	
 	-- multiplayer
+	if (IsSupportMP()) then
+		self:AddCallback("btn_net_game",	ui_events.BUTTON_CLICKED,				self.OnButton_network_game_clicked,	self)
+		self:AddCallback("btn_internet",	ui_events.BUTTON_CLICKED,				self.OnButton_internet_clicked,		self)
+		self:AddCallback("btn_localnet",	ui_events.BUTTON_CLICKED,				self.OnButton_localnet_clicked,		self)
+		self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
+	end
 
-	self:AddCallback("btn_net_game",	ui_events.BUTTON_CLICKED,				self.OnButton_network_game_clicked,	self)
-	self:AddCallback("btn_internet",	ui_events.BUTTON_CLICKED,				self.OnButton_internet_clicked,		self)
-	self:AddCallback("btn_localnet",	ui_events.BUTTON_CLICKED,				self.OnButton_localnet_clicked,		self)
-	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,				self.OnButton_multiplayer_clicked,	self)
 	self:AddCallback("btn_logout",		ui_events.BUTTON_CLICKED,				self.OnButton_logout_clicked,		self)
 
 	-- quit
