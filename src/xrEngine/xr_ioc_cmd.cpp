@@ -742,11 +742,13 @@ void CCC_Register()
 	psMouseSens			= 0.12f;
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
 
+#ifndef MASTER_GOLD
 	// Other
 	CMD4(CCC_Float,		"developer_float_1",	&devfloat1, -100000.0f, 100000.0f);
 	CMD4(CCC_Float,		"developer_float_2",	&devfloat2, -100000.0f, 100000.0f);
 	CMD4(CCC_Float,		"developer_float_3",	&devfloat3, -100000.0f, 100000.0f);
 	CMD4(CCC_Float,		"developer_float_4",	&devfloat4, -100000.0f, 100000.0f);
+#endif
 
 	// Camera
 	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 0.9f);
