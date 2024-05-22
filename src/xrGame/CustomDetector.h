@@ -55,6 +55,8 @@ public:
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
 	
 	virtual bool	HasActive		() const	{return m_bDetectorActive;};
+
+	virtual bool	can_be_attached		() const;
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 			void 	TurnDetectorInternal		(bool b);

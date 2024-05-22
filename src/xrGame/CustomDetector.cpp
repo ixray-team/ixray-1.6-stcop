@@ -333,11 +333,21 @@ void CCustomDetector::UpdateCL()
 
 	if(H_Parent()!=Level().CurrentEntity() )			return;
 
+	enable(!IsHidden());
+
 	if(m_bDetectorActive)
 		UpdateVisibility		();
 
 	if( !IsWorking() )		return;
 	UpfateWork				();
+}
+
+bool CCustomDetector::can_be_attached		() const
+{
+	if (smart_cast<CActor*>(H_Parent()) && m_pInventory)
+		return m_pInventory->InSlot(this) && !IsHidden();
+
+	return inherited::can_be_attached();
 }
 
 void CCustomDetector::OnH_A_Chield() 
