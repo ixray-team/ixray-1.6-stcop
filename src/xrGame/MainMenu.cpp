@@ -37,6 +37,8 @@
 #include <Level.h>
 #include <GamePersistent.h>
 
+#include "../xrCore/git_version.h"
+
 //#define DEMO_BUILD
 
 string128	ErrMsgBoxTemplate	[]	= {
@@ -438,6 +440,14 @@ void CMainMenu::OnRenderPPUI_main	()
 	}
 
 	UI().pp_stop();
+
+	auto pCGameFont = g_FontManager->GetFont("ui_font_console");
+	pCGameFont->SetAligment(CGameFont::alLeft);
+	pCGameFont->SetHeight(0.022f);
+	pCGameFont->SetColor(0xFFF5F5DC);
+
+	pCGameFont->Out(psCurrentVidMode[0] - 475, (psCurrentVidMode[1] - pCGameFont->GetHeight()) - 10, "%s Branch[" _BRANCH "] Hash[" _HASH "]", "IX-Ray");
+	pCGameFont->OnRender();
 }
 
 void CMainMenu::OnRenderPPUI_PP	()

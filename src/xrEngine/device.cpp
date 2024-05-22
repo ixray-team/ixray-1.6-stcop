@@ -296,8 +296,7 @@ void CRenderDevice::on_idle		()
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
 
-				extern bool IsMainMenuActive();
-				pFPSCounter->ShowEngineVersion(IsMainMenuActive());
+				pFPSCounter->OnRender();
 
 				End();
 			}
