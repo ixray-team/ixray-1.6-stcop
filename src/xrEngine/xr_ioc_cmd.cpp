@@ -641,6 +641,8 @@ extern int			g_ErrorLineCount;
 
 extern bool			dsEnableGamepad;
 extern int g_dwFPSlimit;
+extern bool IsFpsShow;
+
 void CCC_Register()
 {
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
@@ -685,7 +687,8 @@ void CCC_Register()
 
 	// Render device states
 	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
-
+	
+	CMD2(CCC_Boolean,	"rs_fps_show",			&IsFpsShow);
 	CMD4(CCC_Integer,	"rs_fps_limit",			&g_dwFPSlimit,		0, 1000);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);

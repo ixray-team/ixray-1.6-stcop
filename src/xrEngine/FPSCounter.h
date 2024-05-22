@@ -2,8 +2,6 @@
 
 namespace FPS
 {
-	const xr_string ActualVersion = "IX-Ray";
-
 	class FPSCounter final
 	{
 	public:
