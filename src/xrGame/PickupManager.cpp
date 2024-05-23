@@ -118,6 +118,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				if(entity && !entity->g_Alive()) continue;
 				CDestroyablePhysicsObject* dstobj = smart_cast<CDestroyablePhysicsObject*>(GO);
 				if(dstobj && dstobj->HasChildPart()) continue;
+				if(GO->spawn_ini() && GO->spawn_ini()->section_exist("story_object")) continue;
 
 				return false;
 			}
