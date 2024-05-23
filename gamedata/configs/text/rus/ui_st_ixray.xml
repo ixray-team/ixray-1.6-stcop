@@ -52,4 +52,7 @@
     <string id="st_filter_fsr">
         <text>FSR2</text>
     </string>
+    <string id="ui_mm_dof_reload">
+        <text>Размытие при перезарядке</text>
+    </string>
 </string_table>
