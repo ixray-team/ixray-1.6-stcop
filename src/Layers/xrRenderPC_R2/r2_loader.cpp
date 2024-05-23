@@ -130,6 +130,7 @@ void CRender::level_Unload()
 	// 1.
 	xr_delete				(rmPortals);
 	pLastSector				= 0;
+	pOutdoorSector			= 0;
 	vLastCameraPos.set		(0,0,0);
 	// 2.
 	for (I=0; I<Sectors.size(); I++)	xr_delete(Sectors[I]);
@@ -389,6 +390,23 @@ void CRender::LoadSectors(IReader* fs) {
 	}
 
 	pLastSector = 0;
+
+	// Search for default sector - assume "default" or "outdoor" sector is the largest one
+	//. hack: need to know real outdoor sector
+	CSector* largest_sector = 0;
+	float largest_sector_vol = 0;
+	for (u32 s = 0; s < Sectors.size(); s++)
+	{
+		CSector* S = (CSector*)Sectors[s];
+		dxRender_Visual* V = S->root();
+		float vol = V->vis.box.getvolume();
+		if (vol > largest_sector_vol)
+		{
+			largest_sector_vol = vol;
+			largest_sector = S;
+		}
+	}
+	pOutdoorSector = largest_sector;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)

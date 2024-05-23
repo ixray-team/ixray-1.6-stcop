@@ -266,6 +266,14 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 				SlotItemVecIt _iE			= items->end();
 				for (; _iI!=_iE; _iI++){
 					SlotItem&	Instance	= **_iI;
+
+					if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
+						continue;
+
+					CSector* sector = (CSector*)RImplementation.getSector(Instance.sector_id);
+					if (sector && PortalTraverser.i_marker != sector->r_marker)
+						continue;
+
 					u32			base		= dwBatch*4;
 
 					// Build matrix ( 3x4 matrix, last row - color )
