@@ -1,5 +1,9 @@
 #pragma once
 
+#include "PhysicObject.h"
+#include "PHDestroyable.h"
+#include "PHCollisionDamageReceiver.h"
+
 class CDestroyablePhysicsObject :
 public	 CPhysicObject,
 public	 CPHDestroyable,
