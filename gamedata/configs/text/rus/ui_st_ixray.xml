@@ -92,4 +92,7 @@
     <string id="ui_mm_dof_reload">
         <text>Размытие при перезарядке</text>
     </string>
+    <string id="ui_rs_fps_show">
+        <text>Счетчик фпс</text>
+    </string>
 </string_table>
