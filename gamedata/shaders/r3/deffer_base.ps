@@ -12,7 +12,7 @@ void main (p_bumped_new I, out f_deffer O) {
 	
 #ifdef USE_AREF
 	#ifdef USE_HASHED_AREF
-		clip(M.Color.w - hashed_alpha_test(M.point));
+		clip(M.Color.w - hashed_alpha_test(M.Point));
 	#else
 		clip(M.Color.w - def_aref);
 	#endif	
