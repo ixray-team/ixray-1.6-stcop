@@ -495,7 +495,8 @@ void CRender::Render		()
 	// Directional light - fucking sun
 	if (bSUN)	{
 		RImplementation.stats.l_visible		++;
-		render_sun_cascades					();
+		render_sun_cascades();
+		Target->increment_light_marker();
 	}
 
 	{
