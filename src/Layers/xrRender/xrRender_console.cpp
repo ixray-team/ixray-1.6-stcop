@@ -165,6 +165,7 @@ Flags32		ps_r2_ls_flags_ext			= {
 	R2FLAGEXT_SSAO_HALF_DATA
 	| R2FLAGEXT_ENABLE_TESSELLATION
 	| R4FLAG_SCREEN_SPACE_HUD_SHADOWS
+	| R4FLAG_HASHED_ALPHA_TEST
 };
 
 Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD };
@@ -854,6 +855,8 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
 	CMD3(CCC_Mask,		"r4_hud_shadows",				&ps_r2_ls_flags_ext,		R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+
+	CMD3(CCC_Mask,		"r4_hashed_alpha_test",			&ps_r2_ls_flags_ext,		R4FLAG_HASHED_ALPHA_TEST);
 
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
