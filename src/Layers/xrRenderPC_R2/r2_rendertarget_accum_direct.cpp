@@ -262,7 +262,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		else
 			RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,8,0,16);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
 
 		// Fetch4 : disable
 		if (RImplementation.o.HW_smap_FETCH4)	{
@@ -281,7 +281,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	}
 }
 
-void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, const Fmatrix &mShadow)
+void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const Fmatrix &mShadow)
 {
 	if ( (sub_phase!=SE_SUN_NEAR) && (sub_phase!=SE_SUN_MIDDLE) && (sub_phase!=SE_SUN_FAR) ) return;
 
@@ -304,6 +304,24 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 	RCache.set_ColorWriteEnable();
 
 	//	Assume everything was recalculated before this call by accum_direct
+
+	u32 Offset;
+	u32		C = color_rgba(255, 255, 255, 255);
+	float	_w = float(dwWidth);
+	float	_h = float(dwHeight);
+	Fvector2 p0, p1;
+	p0.set(.5f / _w, .5f / _h);
+	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+	float	d_Z = EPS_S, d_W = 1.f;
+
+	// Fill vertex buffer
+	FVF::TL2uv* pv = (FVF::TL2uv*)RCache.Vertex.Lock(4, g_combine_2UV->vb_stride, Offset);
+	pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y, p0.x, p1.y);	pv++;
+	pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y, p0.x, p0.y);	pv++;
+	pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y, p1.x, p1.y);	pv++;
+	pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y, p1.x, p0.y);	pv++;
+	RCache.Vertex.Unlock(4, g_combine_2UV->vb_stride);
+	RCache.set_Geometry(g_combine_2UV);
 
 	//	Set correct depth surface
 	//	It's slow. Make this when shader is created
@@ -415,7 +433,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32 Offset, co
 		// setup stencil: we have to draw to both lit and unlit pixels
 		//RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,8,0,16);
+		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 		// Fetch4 : disable
 		if (RImplementation.o.HW_smap_FETCH4)	{

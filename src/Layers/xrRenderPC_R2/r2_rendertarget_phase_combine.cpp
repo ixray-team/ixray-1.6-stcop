@@ -218,14 +218,11 @@ void	CRenderTarget::phase_combine	()
 
 	// PP enabled ?
 	//	Render to RT texture to be able to copy RT even in windowed mode.
-	BOOL	PP_Complex		= u_need_PP	() | (BOOL)RImplementation.m_bMakeAsyncSS;
-	if (_menu_pp)			PP_Complex	= FALSE;
+	u_setrt(rt_Color, 0, 0, RDepth);
 
-	// Combine everything + perform AA
-	if		(PP_Complex)	u_setrt		( rt_Color,0,0,RDepth );			// LDR RT
-	else					u_setrt		( RCache.get_width(),RCache.get_height(),RTarget,nullptr,nullptr,RDepth);
-	RCache.set_CullMode		( CULL_NONE )	;
-	RCache.set_Stencil		( FALSE		)	;
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(FALSE);
+
 	if (1)	
 	{
 		// 
@@ -257,7 +254,7 @@ void	CRenderTarget::phase_combine	()
 
 		//	Set up variable
 		Fvector2	vDofKernel;
-		vDofKernel.set(0.5f/Device.TargetWidth, 0.5f/Device.TargetHeight);
+		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
 		vDofKernel.mul(ps_r2_dof_kernel_size);
 
 		// Draw COLOR
@@ -282,9 +279,7 @@ void	CRenderTarget::phase_combine	()
 	//	TODO: fox that later
 
 	//	PP-if required
-	if (PP_Complex)		{
-		phase_pp ();
-	}
+	phase_pp();
 
 	//	Re-adapt luminance
 	RCache.set_Stencil		(FALSE);
