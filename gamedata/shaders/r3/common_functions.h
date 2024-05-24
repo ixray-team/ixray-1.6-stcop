@@ -61,6 +61,48 @@ float3 Hash33(float3 value) {
 
 // END
 
+//Hashed Alpha Testing
+//The implementation was taken from https://cwyman.org/papers/i3d17_hashedAlpha.pdf document by Chris Wyman and Morgan McGuire
+float hashed_alpha_test(float3 position)
+{
+	//Find the discretized derivatives of our coordinates
+	float maxDeriv = max(length(ddx(position.xyz)), length(ddy(position.xyz)));
+	float pixScale = rcp(def_aref * maxDeriv); //Let's use def_aref as temporary pixel scale
+	float pixScaleLog2 = log2(pixScale);
+
+	//Find two nearest log-discretized noise scales
+	float2 pixScales = float2(exp2(floor(pixScaleLog2)), exp2(ceil(pixScaleLog2)));
+
+	//Compute alpha thresholds at our two noise scales
+	float2 alpha = float2(Hash(floor(pixScales.x * position.xyz)), Hash(floor(pixScales.y * position.xyz)));
+
+	//Factor to interpolate lerp with
+	float lerpFactor = frac(log2(pixScale));
+
+	//Interpolate alpha threshold from noise at two scales
+	float x = lerp(alpha.x, alpha.y, lerpFactor);
+
+	//Pass into CDF to compute uniformly distrib threshold
+	float a = min(lerpFactor, 1.0 - lerpFactor);
+	float3 cases;
+	cases.x = x * x / (2.0 * a * (1.0 - a));
+	cases.y = (x - 0.5 * a) / (1.0 - a);
+	cases.z = 1.0 - ((1.0 - x) * (1.0 - x) / (2.0 * a * (1.0 - a)));
+
+	//Find our final, uniformly distributed alpha threshold
+	float thresh = (x < (1.0 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
+
+	//R1 sequence to animate our noise for TAA/FSR/DLSS
+	//Todo: Check if player has enabled TAA/upscaling to enable anim
+#ifdef USE_JITTER_FOR_TAA
+	int jitter_phase = 16; //Seems okay
+	thresh = frac(thresh + float(m_taa_jitter.w % jitter_phase) * 0.38196601125);
+#endif
+
+	//Clamp alpha
+	return clamp(thresh, 1e-5, 1.0);
+}
+
 float4 combine_bloom( float3  low, float4 high)	
 {
 	return float4( low + high*high.a, 1.f);

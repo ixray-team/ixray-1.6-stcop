@@ -1021,6 +1021,19 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
+	if (ps_r2_ls_flags_ext.test(R4FLAG_HASHED_ALPHA_TEST))
+	{
+		defines[def_it].Name = "USE_HASHED_AREF";
+		defines[def_it].Definition = "1";
+		def_it ++;
+		sh_name[len]='1'; ++len;
+	}
+	else
+	{
+		sh_name[len] = '0';
+		++len;
+	}
+
 	if (ps_r_sun_shafts)
 	{
 		xr_sprintf					(c_sun_shafts,"%d",ps_r_sun_shafts);

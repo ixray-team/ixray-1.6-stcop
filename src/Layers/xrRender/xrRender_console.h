@@ -205,6 +205,7 @@ enum
 	RFLAG_MT_TEX_LOAD     = (1 << 13),
 	RFLAG_OPT_SHAD_GEOM = (1 << 15),
 	R4FLAG_SCREEN_SPACE_HUD_SHADOWS = (1 << 16),
+	R4FLAG_HASHED_ALPHA_TEST = (1 << 17),
 };
 
 extern void						xrRender_initconsole	();

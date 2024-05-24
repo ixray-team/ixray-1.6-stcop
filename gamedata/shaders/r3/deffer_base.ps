@@ -11,7 +11,11 @@ void main (p_bumped_new I, out f_deffer O) {
 	SloadNew(I, M);
 	
 #ifdef USE_AREF
-	clip(M.Color.w - def_aref);
+	#ifdef USE_HASHED_AREF
+		clip(M.Color.w - hashed_alpha_test(M.point));
+	#else
+		clip(M.Color.w - def_aref);
+	#endif	
 #endif
 	
 	M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
