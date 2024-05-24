@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
+    </string>
+    <string id="st_discord_menu">
+        <text>Hlavnн menu</text>
+    </string>
+    <string id="st_discord_level">
+        <text>Ъroveт:</text>
+    </string>
+    <string id="quicksave">
+        <text>rychlй uloћenн</text>
+    </string>
+    <string id="autosave">
+        <text>auto uloћenн</text>
+    </string>
+
+    <string id="st_m">
+        <text>m</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Vzdбlenost ъderu</text>
+    </string>
+
+    <string id="car_trunk_use">
+        <text>Otevшenэ kufr ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Pouћitн ($$ACTION_USE$$)</text>
+    </string>
+
+    <string id="st_freemp">
+        <text>Volnэ</text>
+    </string>
+
+    <string id="ui_st_autoreload">
+        <text>Autonabнjenн</text>
+    </string>
+
+    <string id="ui_mm_mt_tex_load">
+        <text>Vнcevlбknovй naинtбnн textur</text>
+    </string>
+    <string id="ui_mm_r__smap_size">
+        <text>Stнnovб mapa</text>
+    </string>
+    <string id="1024">
+        <text>1024x1024</text>
+    </string>
+    <string id="2048">
+        <text>2048x2048</text>
+    </string>
+    <string id="3072">
+        <text>3072x3072</text>
+    </string>
+    <string id="4096">
+        <text>4096x4096</text>
+    </string>
+    <string id="ui_rs_device_active">
+        <text>Vћdy aktivnн</text>
+    </string>
+</string_table>
