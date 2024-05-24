@@ -346,7 +346,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Stencil(FALSE);
 	}
 
-	if(ps_r4_fsr_sharpening != 0.0)
+	if(ps_r4_cas_sharpening != 0.0)
 	{
 		PIX_EVENT(phase_cas);
 		phase_cas();

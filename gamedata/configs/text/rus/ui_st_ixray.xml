@@ -95,4 +95,7 @@
     <string id="ui_rs_fps_show">
         <text>—четчик фпс</text>
     </string>
+    <string id="ui_mm_cas_sharpening">
+        <text>–езкость</text>
+    </string>
 </string_table>

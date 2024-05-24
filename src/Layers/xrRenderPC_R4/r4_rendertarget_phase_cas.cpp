@@ -29,7 +29,7 @@ void CRenderTarget::phase_cas()
 
 	// Draw COLOR
     RCache.set_Element(s_cas->E[0]);
-	RCache.set_c("sharpening_intensity", ps_r4_fsr_sharpening);
+	RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
 	RCache.set_Geometry(g_combine);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 

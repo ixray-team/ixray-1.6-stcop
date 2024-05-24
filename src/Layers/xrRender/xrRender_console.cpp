@@ -233,7 +233,7 @@ float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 
-float		ps_r4_fsr_sharpening = 0.8f;
+float		ps_r4_cas_sharpening = 0.8f;
 
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;
@@ -751,7 +751,7 @@ void		xrRender_initconsole	()
 	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
 
 	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
-	CMD4(CCC_Float, "r4_fsr_sharpening", &ps_r4_fsr_sharpening, 0.0f, 1.0f);
+	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
 	// R2-specific
 	CMD2(CCC_R2GM,		"r2em",					&ps_r2_gmaterial							);
