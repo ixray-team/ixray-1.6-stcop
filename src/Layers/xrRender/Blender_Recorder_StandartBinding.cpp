@@ -271,7 +271,7 @@ static cl_hud_project binder_hud_project;
 class cl_taa_jitter : public R_constant_setup {
 	virtual void setup(R_constant* C) {
 		Fvector& V = ps_r_taa_jitter;
-		RCache.set_c(C, V.x, V.y, V.z, 0);
+		RCache.set_c(C, V.x, V.y, V.z, float(RDEVICE.dwFrame));
 	}
 };
 static cl_taa_jitter binder_taa_jitter;
