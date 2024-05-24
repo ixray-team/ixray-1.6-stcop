@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="windows-1251" ?>
-<string_table>
-	<string id="st_m">
-		<text>м</text>
-	</string>
-	<string id="ui_inv_dist">
-		<text>Дистанция удара</text>
-	</string>
-</string_table>
