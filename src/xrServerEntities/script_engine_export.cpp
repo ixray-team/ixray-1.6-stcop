@@ -10,17 +10,25 @@
 #include "pch_script.h"
 
 #include "script_engine_export.h"
-#include "PHSimpleCalls.h"
-#include "eatable_item.h"
-#include "RadioactiveZone.h"
-#include "ZoneCampfire.h"
-#include "alife_online_offline_group_brain.h"
-#include "ui/FractionState.h"
-#include "ui/UIListBox.h"
-#include "ai/crow/ai_crow.h"
+
+#ifdef XRSE_FACTORY_EXPORTS
+
+#else
+#	include "PHSimpleCalls.h"
+#	include "eatable_item.h"
+#	include "RadioactiveZone.h"
+#	include "ZoneCampfire.h"
+#	include "alife_online_offline_group_brain.h"
+#	include "ui/FractionState.h"
+#	include "ui/UIListBox.h"
+#	include "ai/crow/ai_crow.h"
+#endif
 
 void export_classes	(lua_State *L)
 {
+#ifdef XRSE_FACTORY_EXPORTS
+	CScriptPropertiesListHelper::script_register(L);
+#else
 	CScriptEngine::script_register(L);
 
 	CScriptNetPacket::script_register(L);
@@ -246,5 +254,5 @@ void export_classes	(lua_State *L)
 
 	CActor::script_register(L);
 	CEatableItem::script_register(L);
-
+#endif
 }

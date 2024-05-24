@@ -133,6 +133,3 @@ public:
 //			RTextValue* 		CreateNameCB		(PropItemVec* items, LPCSTR key, luabind::object object, LPCSTR name, TOnDrawTextEvent=0, RTextValue::TOnBeforeEditEvent=0, RTextValue::TOnAfterEditEvent=0);
 			DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptPropertiesListHelper)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptPropertiesListHelper)
