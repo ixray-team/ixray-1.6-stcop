@@ -89,7 +89,9 @@ void dxFontRender::OnRender(CGameFont& owner)
 			for (int i = 0; i < length; i++)
 			{
 				const CGameFont::Glyph* glyphInfo = owner.GetGlyphInfo(str.string[i]);
-				R_ASSERT(glyphInfo != nullptr);
+				if (glyphInfo == nullptr)
+					continue;
+
 				if (i != 0)
 				{
 					X += glyphInfo->Abc.abcA;
