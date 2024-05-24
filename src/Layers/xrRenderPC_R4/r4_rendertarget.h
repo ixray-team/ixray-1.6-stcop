@@ -40,6 +40,7 @@ public:
 	IBlender*					b_fxaa;
 	IBlender*					b_smaa;
 	IBlender*					b_scale;
+	IBlender*					b_cas;
 
     // compute shader for hdao
     IBlender*                   b_hdao_cs;
@@ -104,6 +105,7 @@ private:
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
 	ref_shader					s_scale;
+	ref_shader					s_cas;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -239,6 +241,8 @@ public:
 
 	void						phase_fxaa				();
 	void						phase_smaa				();
+
+	void						phase_cas				();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
