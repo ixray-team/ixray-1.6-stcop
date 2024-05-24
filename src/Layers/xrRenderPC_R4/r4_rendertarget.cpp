@@ -12,6 +12,7 @@
 #include "blender_luminance.h"
 #include "blender_ssao.h"
 #include "blender_scale.h"
+#include "blender_cas.h"
 #include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
@@ -524,6 +525,13 @@ CRenderTarget::CRenderTarget		()
 		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
+	
+	//Contrast Adaptive Sharpening
+	{
+		b_cas = new CBlender_cas();
+		s_cas.create(b_cas);
+	}
+
 	// OCCLUSION
 	s_occq.create					(b_occq,		"r2\\occq");
 

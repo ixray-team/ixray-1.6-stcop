@@ -346,6 +346,13 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Stencil(FALSE);
 	}
 
+	//LV: Not much of a reason to use CAS alongside upscalers, as FSR includes RCAS and DLSS has its own solution.
+	if(ps_r4_fsr_sharpening != 0.0 && Device.RenderScale >= 1.0f)
+	{
+		PIX_EVENT(phase_cas);
+		phase_cas();
+	}
+
 	PIX_EVENT(phase_pp);
 	phase_pp();
 
