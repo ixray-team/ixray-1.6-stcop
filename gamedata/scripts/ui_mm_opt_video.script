@@ -21,6 +21,9 @@ function opt_video:InitControls(x, y, xml, handler)
 	xml:InitStatic					("tab_video:cap_rs_device_active",	self)
 	xml:InitCheck					("tab_video:check_rs_device_active", self)
 
+    xml:InitStatic					("tab_video:cap_rs_fps_show",	self)
+	xml:InitCheck					("tab_video:check_rs_fps_show", self)
+
 	xml:InitStatic                  ("tab_video:cap_vsync", self)
 	xml:InitCheck                   ("tab_video:check_vsync", self)
 

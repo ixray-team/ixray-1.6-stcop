@@ -160,6 +160,14 @@
             <options_item entry="rs_device_active" group="mm_opt_video"/>
         </check_rs_device_active>
 
+        <cap_rs_fps_show x="15" y="303" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_rs_fps_show</text>
+        </cap_rs_fps_show>
+        <check_rs_fps_show x="162" y="300" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="rs_fps_show" group="mm_opt_video"/>
+        </check_rs_fps_show>
+
         <btn_advanced x="338" y="322" width="108" height="24">
             <text align="c" font="letterica16">ui_mm_advanced</text>
             <texture>ui_inGame2_button</texture>
