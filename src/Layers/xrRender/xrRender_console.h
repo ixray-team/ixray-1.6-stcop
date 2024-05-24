@@ -136,7 +136,7 @@ extern ECORE_API float			ps_r3_dyn_wet_surf_near;	// 10.0f
 extern ECORE_API float			ps_r3_dyn_wet_surf_far;		// 30.0f
 extern ECORE_API int			ps_r3_dyn_wet_surf_sm_res;	// 256
 
-extern ECORE_API float			ps_r4_fsr_sharpening;
+extern ECORE_API float			ps_r4_cas_sharpening;
 
 // Test float exported to shaders for development
 extern  float					ps_r__test_exp_to_shaders_1;
