@@ -17,6 +17,7 @@ CPHObject::CPHObject	()	: ISpatial(g_SpatialSpacePhysic)
 	spatial.type	|=	STYPE_PHYSIC;
 	m_island.Init	();
 	m_check_count	=0;
+	m_flags.set(fl_collision_disable,FALSE);
 	CPHCollideValidator::InitObject	(*this);
 }
 
@@ -115,7 +116,7 @@ void CPHObject::Collide()
 	}
 	CollideDynamics					();
 ///////////////////////////////
-	if(CPHCollideValidator::DoCollideStatic(*this)) CollideStatic(dSpacedGeom(),this);
+	if(CPHCollideValidator::DoCollideStatic(*this) && !m_flags.test(fl_collision_disable)) CollideStatic(dSpacedGeom(),this);
 	m_flags.set(st_dirty,FALSE);
 }
 void	CPHObject::		CollideDynamics					()
@@ -125,7 +126,7 @@ void	CPHObject::		CollideDynamics					()
 	qResultIt i=result.begin(),e=result.end();
 	for(;i!=e;++i)	{
 		CPHObject* obj2=static_cast<CPHObject*>(*i);
-		if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
+		if(obj2==this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || obj2->m_flags.test(fl_collision_disable))		continue;
 		if(CPHCollideValidator::DoCollide(*this,*obj2)) NearCallback(this,obj2,dSpacedGeom(),obj2->dSpacedGeom());
 	}
 }
@@ -213,10 +214,12 @@ void CPHObject::spatial_register()
 void CPHObject::collision_disable()
 {
 	ISpatial::spatial_unregister();
+	m_flags.set(fl_collision_disable,TRUE);
 }
 void CPHObject::collision_enable()
 {
 	ISpatial::spatial_register();
+	m_flags.set(fl_collision_disable,FALSE);
 }
 
 void CPHObject::Freeze()

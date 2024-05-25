@@ -36,7 +36,8 @@ class CPHObject :
 					st_dirty						=(1<<2),
 					st_net_interpolation			=(1<<3),
 					fl_ray_motions					=(1<<4),
-					st_recently_deactivated			=(1<<5)
+					st_recently_deactivated			=(1<<5),
+					fl_collision_disable			=(1<<6)
 				};
 
 			CPHIsland			m_island;
