@@ -28,7 +28,7 @@ void CRenderTarget::phase_fxaa()
     //////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, RDepth);
+    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
