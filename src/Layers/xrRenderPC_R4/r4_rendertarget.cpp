@@ -13,6 +13,7 @@
 #include "blender_ssao.h"
 #include "blender_scale.h"
 #include "blender_cas.h"
+#include "blender_gtao.h"
 #include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
@@ -530,6 +531,15 @@ CRenderTarget::CRenderTarget		()
 	{
 		b_cas = new CBlender_cas();
 		s_cas.create(b_cas);
+	}
+	
+	//Ground-truth based ambient occlusion
+	{
+		b_gtao = new CBlender_gtao();
+		s_gtao.create(b_gtao);
+
+		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_UINT); //AO.view-z
+		rt_gtao_1.create("$user$gtao_1", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8_UNORM); //AO
 	}
 
 	// OCCLUSION
