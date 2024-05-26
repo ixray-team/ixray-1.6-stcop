@@ -416,6 +416,7 @@ CRenderTarget::CRenderTarget		()
 		DisplayTarget(rt_Accumulator);
 		DisplayTarget(rt_smap_surf);
 		DisplayTarget(rt_smap_depth);
+		DisplayTarget(rt_gtao_1);
 		ImGui::End();
 	});
 
