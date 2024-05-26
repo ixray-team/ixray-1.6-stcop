@@ -1030,6 +1030,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_accum_mask			);
 	xr_delete					(b_occq					);
 	xr_delete					(b_hdao_cs				);
+	xr_delete					(b_gtao					);	
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
 
