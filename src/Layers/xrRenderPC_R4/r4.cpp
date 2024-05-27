@@ -186,22 +186,15 @@ void					CRender::create					()
 	o.disasm			= Core.ParamsData.test(ECoreParams::disasm);
 	o.forceskinw		= Core.ParamsData.test(ECoreParams::skinw);
 
-	o.ssao_blur_on		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && (ps_r_ssao != 0);
-	o.ssao_opt_data		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_OPT_DATA) && (ps_r_ssao != 0);
-	o.ssao_half_data	= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
-	o.ssao_hdao			= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HDAO) && (ps_r_ssao != 0);
-	o.ssao_hbao			= !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
-
-	//	TODO: fix hbao shader to allow to perform per-subsample effect!
-	o.hbao_vectorized = false;
-	if (o.ssao_hbao )
+	if (ps_r_ssao)
 	{
-		o.hbao_vectorized = true;
-		o.ssao_opt_data = true;
-	}
+		SSAO = ps_r2_ls_flags_ssao;
 
-    if( o.ssao_hdao )
-        o.ssao_opt_data = false;
+		if (SSAO.test(ESSAO_DATA::SSAO_HDAO) || SSAO.test(ESSAO_DATA::SSAO_GTAO))
+		{
+			SSAO.set(ESSAO_DATA::SSAO_OPT_DATA, false);
+		}
+	}
 
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
@@ -870,15 +863,18 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len] = '0' + char(o.forceskinw); ++len;
 
-	if (o.ssao_blur_on)
+	bool HasBlur = SSAO.test(ESSAO_DATA::SSAO_BLUR);
+	if (HasBlur)
 	{
 		defines[def_it].Name		=	"USE_SSAO_BLUR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len] = '0' + char(o.ssao_blur_on); ++len;
+	sh_name[len] = '0' + char(HasBlur); ++len;
 
-    if (o.ssao_hdao)
+	bool HasHDAO = SSAO.test(ESSAO_DATA::SSAO_HDAO);
+	bool HasHALF = SSAO.test(ESSAO_DATA::SSAO_HALF_DATA);
+    if (HasHDAO)
     {
         defines[def_it].Name		=	"HDAO";
         defines[def_it].Definition	=	"1";
@@ -891,34 +887,10 @@ HRESULT	CRender::shader_compile			(
 	{
 		sh_name[len] = '0';
 		++len;
-		sh_name[len] = '0' + char(o.ssao_hbao);
+		sh_name[len] = '0' + char(HasHDAO);
 		++len;
-		sh_name[len] = '0' + char(o.ssao_half_data);
+		sh_name[len] = '0' + char(HasHALF);
 		++len;
-
-		if (o.ssao_hbao) {
-			defines[def_it].Name		=	"SSAO_OPT_DATA";
-			if (o.ssao_half_data)
-			{
-				defines[def_it].Definition	=	"2";
-			}
-			else
-			{
-				defines[def_it].Definition	=	"1";
-			}
-			def_it						++;
-
-			if (o.hbao_vectorized)
-			{
-				defines[def_it].Name		=	"VECTORIZED_CODE";
-				defines[def_it].Definition	=	"1";
-				def_it						++;
-			}
-
-			defines[def_it].Name		=	"USE_HBAO";
-			defines[def_it].Definition	=	"1";
-			def_it						++;
-		}
 	}
 
 	// skinning

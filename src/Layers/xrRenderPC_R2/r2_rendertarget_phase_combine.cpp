@@ -46,12 +46,14 @@ void	CRenderTarget::phase_combine	()
 
 	RCache.set_CullMode	( CULL_NONE );
 
-	if (RImplementation.o.ssao_opt_data)
+	if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA))
 	{
 		phase_downsamp();
 	}
-	else if (RImplementation.o.ssao_blur_on)
+	else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
+	{
 		phase_ssao();
+	}
 
 	// low/hi RTs
 	u_setrt(rt_Generic_0, 0, 0, RDepth);

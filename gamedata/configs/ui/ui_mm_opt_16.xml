@@ -434,8 +434,8 @@
 	                <d r="70" g="70" b="70"/>
 	            </text_color>
 			</button>
-			<button x="-8" y="75" width="37" height="28" id="hbao" stretch="1">
-				<text font="letterica16" vert_align="c" x="29" y="3" align="l">ui_mm_hbao</text>
+			<button x="-8" y="75" width="37" height="28" id="gtao" stretch="1">
+				<text font="letterica16" vert_align="c" x="29" y="3" align="l">ui_mm_gtao</text>
 	            <text_color>
 	                <e r="170" g="170" b="170"/>
 	                <d r="70" g="70" b="70"/>

@@ -89,7 +89,7 @@ void CRenderTarget::phase_downsamp	()
 	u32 w = (u32)RCache.get_width();
 	u32 h = (u32)RCache.get_height();
 
-	if (RImplementation.o.ssao_half_data)
+	if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HALF_DATA))
 	{
 		set_viewport(RContext, RCache.get_width() * 0.5f, RCache.get_height() * 0.5f);
 		w /= 2;
@@ -121,6 +121,6 @@ void CRenderTarget::phase_downsamp	()
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
 	}
 
-	if (RImplementation.o.ssao_half_data)
+	if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HALF_DATA))
 		set_viewport(RContext, RCache.get_width(), RCache.get_height());
 }

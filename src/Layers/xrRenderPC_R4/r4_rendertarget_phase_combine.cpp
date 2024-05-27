@@ -52,23 +52,31 @@ void	CRenderTarget::phase_combine	()
 		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
 	}
 
-    if( RImplementation.o.ssao_hdao && RImplementation.o.ssao_ultra)
-    {
-        if( ps_r_ssao > 0 )
-        {
-		    phase_hdao();
-        }
-    }
-    else
-    {
-        if (RImplementation.o.ssao_opt_data)
-        {
-            phase_downsamp();
-            //phase_ssao();
-        } 
-        else if (RImplementation.o.ssao_blur_on)
-            phase_ssao();
-    }
+	if (ps_r_ssao > 0)
+	{
+		if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_GTAO))
+		{
+			phase_gtao();
+		}
+		else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HDAO) || RImplementation.SSAO.test(ESSAO_DATA::SSAO_ULTRA_OPT))
+		{
+			phase_hdao();
+		}
+		else
+		{
+			if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA))
+			{
+				phase_downsamp();
+				//phase_ssao();
+			}
+			else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
+			{
+				// #FIXME: [FX to Hozar] Переделать это дерьмо!
+				phase_ssao();
+			}
+		}
+	}
+
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	u_setrt(rt_Generic_0, 0, 0, RDepth);

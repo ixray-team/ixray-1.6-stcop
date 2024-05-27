@@ -227,15 +227,9 @@ void					CRender::create					()
 	o.disasm			= Core.ParamsData.test(ECoreParams::disasm);
 	o.forceskinw		= Core.ParamsData.test(ECoreParams::skinw);
 	
-	o.ssao_blur_on		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && ps_r_ssao != 0;
-	o.ssao_opt_data		= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_OPT_DATA) && (ps_r_ssao != 0);
-	o.ssao_half_data	= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
-	o.ssao_hbao			= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
-	
-	if (false /* g_pGPU->IsAMD */)
+	if (ps_r_ssao)
 	{
-		o.ssao_opt_data = false;
-		o.ssao_hbao = false;
+		SSAO = ps_r2_ls_flags_ssao;
 	}
 
 	// constants
@@ -771,32 +765,24 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.forceskinw); ++len;
 
-	if (o.ssao_blur_on)
+	bool HasSSAOBlur = SSAO.test(ESSAO_DATA::SSAO_BLUR);
+	if (HasSSAOBlur)
 	{
 		defines[def_it].Name		=	"USE_SSAO_BLUR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(o.ssao_blur_on); ++len;
+	sh_name[len]='0'+char(HasSSAOBlur); ++len;
 
-	if (o.ssao_hbao)
+	bool HasSSAOOpt = SSAO.test(ESSAO_DATA::SSAO_OPT_DATA);
+	bool HasSSAOOptHalf = SSAO.test(ESSAO_DATA::SSAO_HALF_DATA);
+	if (HasSSAOOpt)
 	{
-		defines[def_it].Name		=	"USE_HBAO";
-		defines[def_it].Definition	=	"1";
-		def_it						++;
+		defines[def_it].Name		= "SSAO_OPT_DATA";
+		defines[def_it].Definition  = HasSSAOOptHalf ? "2" : "1";
+		def_it++;
 	}
-	sh_name[len]='0'+char(o.ssao_hbao); ++len;
-
-	if (o.ssao_opt_data)
-	{
-		defines[def_it].Name		=	"SSAO_OPT_DATA";
-		if (o.ssao_half_data)
-			defines[def_it].Definition	=	"2";
-		else
-			defines[def_it].Definition	=	"1";
-		def_it						++;
-	}
-	sh_name[len]='0'+char(o.ssao_opt_data ? (o.ssao_half_data ? 2 : 1) : 0); ++len;
+	sh_name[len]='0'+char(HasSSAOOpt ? (HasSSAOOptHalf ? 2 : 1) : 0); ++len;
 
 	// skinning
 	if (m_skinning<0)		{

@@ -80,6 +80,7 @@ extern ECORE_API	BOOL		ps_r2_particle_dt;
 // R2-specific
 extern ECORE_API Flags32		ps_r2_ls_flags;				// r2-only
 extern ECORE_API Flags32		ps_r2_ls_flags_ext;
+extern ECORE_API Flags16		ps_r2_ls_flags_ssao;
 extern ECORE_API float			ps_r2_df_parallax_h;		// r2-only
 extern ECORE_API float			ps_r2_df_parallax_range;	// r2-only
 extern ECORE_API float			ps_r2_gmaterial;			// r2-only
@@ -187,25 +188,31 @@ enum
 	R3FLAG_VOLUMETRIC_SMOKE		= (1<<27)
 };
 
+enum ESSAO_DATA
+{
+	NONE,
+	SSAO_BLUR		 = (1<<0),
+	SSAO_OPT_DATA	 = (1<<1),
+	SSAO_HALF_DATA   = (1<<2),
+	SSAO_HDAO		 = (1<<3),
+	SSAO_GTAO		 = (1<<4),
+	SSAO_ULTRA_OPT   = (1<<5)
+};
+
 enum
 {
-	R2FLAGEXT_SSAO_BLUR				= (1<<0),
-	R2FLAGEXT_SSAO_OPT_DATA			= (1<<1),
-	R2FLAGEXT_SSAO_HALF_DATA		= (1<<2),
-	R2FLAGEXT_SSAO_HBAO				= (1<<3),
-	R2FLAGEXT_SSAO_HDAO				= (1<<4),
-	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<5),
-	R2FLAGEXT_WIREFRAME				= (1<<6),
-	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<7),
-	R2FLAGEXT_SUN_ZCULLING			= (1<<8),
-	R2FLAG_USE_BUMP					= (1<<9),
-	RFLAG_USE_CACHE					= (1<<10),
-	RFLAG_CLOUD_SHADOWS = (1 << 11),
-	RFLAG_NO_RAM_TEXTURES = (1 << 12),
-	RFLAG_MT_TEX_LOAD     = (1 << 13),
-	RFLAG_OPT_SHAD_GEOM = (1 << 15),
-	R4FLAG_SCREEN_SPACE_HUD_SHADOWS = (1 << 16),
-	R4FLAG_HASHED_ALPHA_TEST = (1 << 17),
+	R2FLAGEXT_ENABLE_TESSELLATION	= (1<<0),
+	R2FLAGEXT_WIREFRAME				= (1<<1),
+	R_FLAGEXT_HOM_DEPTH_DRAW		= (1<<2),
+	R2FLAGEXT_SUN_ZCULLING			= (1<<3),
+	R2FLAG_USE_BUMP					= (1<<4),
+	RFLAG_USE_CACHE					= (1<<5),
+	RFLAG_CLOUD_SHADOWS				= (1<<6),
+	RFLAG_NO_RAM_TEXTURES			= (1<<7),
+	RFLAG_MT_TEX_LOAD				= (1<<8),
+	RFLAG_OPT_SHAD_GEOM				= (1<<9),
+	R4FLAG_SCREEN_SPACE_HUD_SHADOWS = (1<<10),
+	R4FLAG_HASHED_ALPHA_TEST		= (1<<11),
 };
 
 extern void						xrRender_initconsole	();

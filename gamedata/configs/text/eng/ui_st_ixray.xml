@@ -59,4 +59,7 @@
     <string id="ui_rs_device_active">
         <text>Always Active</text>
     </string>
+	<string id="ui_mm_gtao">
+		<text>GTAO</text>
+	</string>
 </string_table>

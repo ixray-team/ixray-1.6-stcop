@@ -39,7 +39,7 @@ xr_token							qssao_mode_token						[ ]={
 	{ "disabled",					0											},
 	{ "default",					1											},
 	{ "hdao",						2											},
-	{ "hbao",						3											},
+	{ "gtao",						3											},
 	{ 0,							0											}
 };
 
@@ -161,9 +161,14 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	| RFLAG_CLOUD_SHADOWS
 	};	// r2-only
 
-Flags32		ps_r2_ls_flags_ext			= {
-	R2FLAGEXT_SSAO_HALF_DATA
-	| R2FLAGEXT_ENABLE_TESSELLATION
+Flags16 ps_r2_ls_flags_ssao = 
+{
+	ESSAO_DATA::SSAO_HALF_DATA
+};
+
+Flags32 ps_r2_ls_flags_ext =
+{
+	R2FLAGEXT_ENABLE_TESSELLATION
 	| R4FLAG_SCREEN_SPACE_HUD_SHADOWS
 	| R4FLAG_HASHED_ALPHA_TEST
 };
@@ -380,8 +385,8 @@ public:
 			case 0:
 			{
 				ps_r_ssao = 0;
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_GTAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_HDAO, 0);
 				break;
 			}
 			case 1:
@@ -390,9 +395,9 @@ public:
 				{
 					ps_r_ssao = 1;
 				}
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_GTAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_HDAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_HALF_DATA, 0);
 				break;
 			}
 			case 2:
@@ -401,10 +406,10 @@ public:
 				{
 					ps_r_ssao = 1;
 				}
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 1);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_GTAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_HDAO, 1);
+				ps_r2_ls_flags_ssao.set(SSAO_OPT_DATA, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_HALF_DATA, 0);
 				break;
 			}
 			case 3:
@@ -413,9 +418,9 @@ public:
 				{
 					ps_r_ssao = 1;
 				}
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 1);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
-				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 1);
+				ps_r2_ls_flags_ssao.set(SSAO_GTAO, 1);
+				ps_r2_ls_flags_ssao.set(SSAO_HDAO, 0);
+				ps_r2_ls_flags_ssao.set(SSAO_OPT_DATA, 1);
 				break;
 			}
 		}
@@ -863,11 +868,11 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
-	CMD3(CCC_Mask,		"r2_ssao_blur",                 &ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_BLUR);//Need restart
-	CMD3(CCC_Mask,		"r2_ssao_opt_data",				&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_OPT_DATA);//Need restart
-	CMD3(CCC_Mask,		"r2_ssao_half_data",			&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HALF_DATA);//Need restart
-	CMD3(CCC_Mask,		"r2_ssao_hbao",					&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HBAO);//Need restart
-	CMD3(CCC_Mask,		"r2_ssao_hdao",					&ps_r2_ls_flags_ext,		R2FLAGEXT_SSAO_HDAO);//Need restart
+	CMD3(CCC_Mask16,	"r2_ssao_blur",                 &ps_r2_ls_flags_ssao,		SSAO_BLUR);//Need restart
+	CMD3(CCC_Mask16,	"r2_ssao_opt_data",				&ps_r2_ls_flags_ssao,		SSAO_OPT_DATA);//Need restart
+	CMD3(CCC_Mask16,	"r2_ssao_half_data",			&ps_r2_ls_flags_ssao,		SSAO_HALF_DATA);//Need restart
+	CMD3(CCC_Mask16,	"r2_ssao_gtao",					&ps_r2_ls_flags_ssao,		SSAO_GTAO);//Need restart
+	CMD3(CCC_Mask16,	"r2_ssao_hdao",					&ps_r2_ls_flags_ssao,		SSAO_HDAO);//Need restart
 	CMD3(CCC_Mask,		"r4_enable_tessellation",		&ps_r2_ls_flags_ext,		R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 	CMD3(CCC_Mask,		"r4_wireframe",					&ps_r2_ls_flags_ext,		R2FLAGEXT_WIREFRAME);//Need restart
 

@@ -101,4 +101,7 @@
     <string id="ui_mm_hashed_alpha_test">
         <text>Фильтрация прозрачности</text>
     </string>
+	<string id="ui_mm_gtao">
+		<text>GTAO</text>
+	</string>
 </string_table>

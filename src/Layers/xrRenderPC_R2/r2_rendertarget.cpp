@@ -325,11 +325,11 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	//HBAO
-	if (RImplementation.o.ssao_opt_data)
+	if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA))
 	{
 		u32		w = 0;
 		u32		h = 0;
-		if (RImplementation.o.ssao_half_data)
+		if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HALF_DATA))
 		{
 			w = RCache.get_width() / 2;
 			h = RCache.get_height() / 2;
@@ -346,7 +346,7 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	//SSAO
-	if (RImplementation.o.ssao_blur_on)
+	if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
 	{
 		u32		w = RCache.get_width(), h = RCache.get_height();
 		rt_ssao_temp.create			(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F);

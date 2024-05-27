@@ -43,14 +43,8 @@ public:
 	};
 
 public:
-	struct		_options	{
-		u32		ssao_blur_on		: 1;
-		u32		ssao_opt_data		: 1;
-		u32		ssao_half_data		: 1;
-		u32		ssao_hbao			: 1;
-		u32		ssao_hdao			: 1;
-		u32		ssao_ultra			: 1;
-		u32		hbao_vectorized		: 1;
+	struct		_options	
+	{
 
 		u32		smapsize			: 16;
 		u32		mrt					: 1;
@@ -87,7 +81,11 @@ public:
 		u32		forceskinw			: 1;
 		float	forcegloss_v		;
 	}			o;
-	struct		_stats		{
+
+	Flags16 SSAO;
+
+	struct _stats
+	{
 		u32		l_total,	l_visible;
 		u32		l_shadowed,	l_unshadowed;
 		s32		s_used,		s_merged,	s_finalclip;
