@@ -35,7 +35,7 @@ bool UpdateBuffersD3D11()
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferCount = 1;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
@@ -62,7 +62,7 @@ bool UpdateBuffersD3D11()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	descDepth.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	descDepth.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	descDepth.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	R = ((ID3D11Device*)HWRenderDevice)->CreateTexture2D(&descDepth, nullptr, (ID3D11Texture2D**)&RenderTexture);
 	R_CHK(R);
@@ -128,7 +128,7 @@ bool CreateD3D11()
 	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferCount = 1;
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
@@ -225,7 +225,7 @@ void ResizeBuffersD3D11(u16 Width, u16 Height)
 	DXGI_MODE_DESC Desc = {};
 	Desc.Width = Width;
 	Desc.Height = Height;
-	Desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	Desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	Desc.RefreshRate.Numerator = 0;
 	Desc.RefreshRate.Denominator = 0;
 
