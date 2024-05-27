@@ -171,6 +171,7 @@ public:
 	// General "Visual" stuff
 	virtual void				Copy			(dxRender_Visual *pFrom);
 	virtual void				Load			(const char* N, IReader *data, u32 dwFlags);
+	virtual void				append_motion_from_path (const char* N);
 	virtual void				Release			();
 	virtual void				Spawn			();
 	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return this;	}

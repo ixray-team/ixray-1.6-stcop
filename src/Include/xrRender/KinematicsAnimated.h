@@ -104,6 +104,7 @@ public:
 	virtual IKinematics*	_BCL dcast_PKinematics() = 0;
 
 	virtual float						get_animation_length (MotionID motion_ID) = 0;
+	virtual void						append_motion_from_path (const char* N) = 0;
 //#ifdef DEBUG
 //	virtual	const BlendSVec			&blend_cycle	(const u32 &bone_part_id) const = 0;
 //#endif //	DEBUG
