@@ -235,6 +235,10 @@ RDEVICE.Statistic->TEST0.End		();
 #else
 				CDB::TRI&	T		= tris[xrc.r_begin()[tid].id];
 				SGameMtl* mtl		= GMLib.GetMaterialByIdx(T.material);
+
+				//Detect sector
+				Item.sector_id = T.sector;
+
 				if(mtl->Flags.test(SGameMtl::flPassable))	
 					continue;
 

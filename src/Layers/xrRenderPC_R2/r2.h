@@ -83,6 +83,7 @@ public:
 public:
 	// Sector detection and visibility
 	CSector*													pLastSector;
+	CSector*													pOutdoorSector;
 	Fvector														vLastCameraPos;
 	u32															uLastLTRACK;
 	xr_vector<IRender_Portal*>									Portals;
