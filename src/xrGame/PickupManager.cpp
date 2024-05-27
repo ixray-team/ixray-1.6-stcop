@@ -87,7 +87,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 	bOverlaped = true;
 	return FALSE;
 }
-
+#include "DestroyablePhysicsObject.h"
 bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
 {
 	if (!item->getVisible())
@@ -108,6 +108,20 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 
 			RQR.r_clear();
 			Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
+
+			for (collide::rq_result result : RQR.r_results())
+			{
+				CGameObject* GO = smart_cast<CGameObject*>(result.O);
+				if(!GO) continue;
+				if(GO == Owner->cast_game_object()) continue;
+				CEntity* entity = smart_cast<CEntity*>(GO);
+				if(entity && !entity->g_Alive()) continue;
+				CDestroyablePhysicsObject* dstobj = smart_cast<CDestroyablePhysicsObject*>(GO);
+				if(dstobj && dstobj->HasChildPart()) continue;
+				if(GO->spawn_ini() && GO->spawn_ini()->section_exist("story_object")) continue;
+
+				return false;
+			}
 		}
 	}
 	return !bOverlaped;
