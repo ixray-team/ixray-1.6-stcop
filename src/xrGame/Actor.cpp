@@ -1282,19 +1282,16 @@ void CActor::shedule_Update	(u32 DT)
 					//Msg("---No active item in inventory(), item 0 detached.");
 			}
 
-			if(inventory().ItemFromSlot(DETECTOR_SLOT))
+			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+			if(pDetector)
 			{
-				CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-				if(pDetector)
+				if(pDetector->IsHidden())
 				{
-					if(pDetector->IsHidden())
-					{
-						g_player_hud->detach_item(pDetector->cast_hud_item());
-					}
-					else
-					{
-						g_player_hud->attach_item(pDetector->cast_hud_item());
-					}
+					g_player_hud->detach_item(pDetector->cast_hud_item());
+				}
+				else
+				{
+					g_player_hud->attach_item(pDetector->cast_hud_item());
 				}
 			}
 		}

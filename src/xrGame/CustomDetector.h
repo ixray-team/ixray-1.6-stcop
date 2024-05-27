@@ -53,7 +53,7 @@ public:
 	virtual u32		ef_detector_type	() const	{return 1;};
 
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
-	
+	void			SetActive		(bool val){m_bDetectorActive = val;};
 	virtual bool	HasActive		() const	{return m_bDetectorActive;};
 
 	virtual bool	can_be_attached		() const;
