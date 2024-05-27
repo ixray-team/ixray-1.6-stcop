@@ -456,6 +456,14 @@
             <options_item entry="r2_dof_enable" group="mm_opt_video_adv" depend="vid"/>
         </check_dof>
 
+        <cap_dof_reload x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_dof_reload</text>
+        </cap_dof_reload>
+        <check_dof_reload x="133" y="0" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="enable_dof_reload" group="mm_opt_video_adv"/>
+        </check_dof_reload>
+
         <cap_volumetric_light x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_volumetric_light</text>
         </cap_volumetric_light>

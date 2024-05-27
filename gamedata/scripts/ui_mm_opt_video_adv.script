@@ -183,6 +183,11 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	ctl = xml:InitCheck("video_adv:check_dof", _st)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_dof_reload", _st)
+    ctl = xml:InitCheck("video_adv:check_dof_reload", _st)
+    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_volumetric_light", _st)
 	ctl = xml:InitCheck("video_adv:check_volumetric_light", _st)
