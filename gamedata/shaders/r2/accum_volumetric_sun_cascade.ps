@@ -29,13 +29,13 @@ float4	sun_shafts_intensity;
 uniform	float4		screen_res;
 //#ifdef	USE_BRANCHING
 //	"If" in loop
-float4 	main (float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
+float4 	main (float2 tc : TEXCOORD0) : COLOR
 {
 #ifndef	SUN_SHAFTS_QUALITY
 	return float4(0.0f,0.0f,0.0f,0.0f);
 #else	//	SUN_SHAFTS_QUALITY
 
-	float3	P = tex2Dproj(s_position, tc).xyz;
+	float3	P = tex2D(s_position, tc).xyz;
 #ifndef	JITTER_SUN_SHAFTS
 //	Fixed ray length, fixed step dencity
 //	float3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);	
@@ -43,7 +43,7 @@ float4 	main (float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	float3	direction = P/RAY_SAMPLES;
 #else	//	JITTER_SUN_SHAFTS
 //	Variable ray length, variable step dencity, use jittering
-	float4	J0 	= tex2D		(jitter0,float4(screen_res.x/JITTER_TEXTURE_SIZE*tc.xy/tc.w,0.0f,0.0f));//tcJ);
+	float4	J0 	= tex2D		(jitter0,float4(screen_res.x/JITTER_TEXTURE_SIZE*tc,0.0f,0.0f));//tcJ);
 	float	coeff = (RAY_SAMPLES - 1.0f*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
 	float3	direction = P*coeff;
 //	float3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
