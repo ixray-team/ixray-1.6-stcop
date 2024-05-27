@@ -2,6 +2,7 @@
 #define __XR_COLLIDE_FORM_H__
 
 #include "../xrCDB/xr_collide_defs.h"
+#include "VisMask.h"
 
 // refs
 class ENGINE_API	CObject;
@@ -134,7 +135,7 @@ public:
 	using ElementVecIt = ElementVec::iterator;
 
 private:
-	u64					vis_mask;
+	VisMask				vis_mask;
 	ElementVec			elements;
 
 	u32					dwFrame;		// The model itself

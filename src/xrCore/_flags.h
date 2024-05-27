@@ -25,6 +25,7 @@ public:
 	IC	SelfRef	assign	(const T mask)								{ flags	=	mask;		return *this;	}
 	IC	SelfRef	set		(const T mask,	BOOL value)					{ if (value) flags|=mask; else flags&=~mask; return *this; }
 	IC 	BOOL	is		(const T mask)						const	{ return mask==(flags&mask);			}
+	IC  bool    bitTest (const int bitNum)					const	{ u64 tempFlag = flags; return _bittest64((LONG64*)&tempFlag, bitNum); }
 	IC 	BOOL	is_any	(const T mask)						const	{ return BOOL(!!(flags&mask));			}
 	IC 	BOOL	test	(const T mask)						const	{ return BOOL(!!(flags&mask));			}
 	IC 	SelfRef	bor		(const T mask)								{ flags|=mask;			return *this;	}
