@@ -98,4 +98,7 @@
     <string id="ui_mm_cas_sharpening">
         <text>Резкость</text>
     </string>
+    <string id="ui_mm_hashed_alpha_test">
+        <text>Фильтрация прозрачности</text>
+    </string>
 </string_table>

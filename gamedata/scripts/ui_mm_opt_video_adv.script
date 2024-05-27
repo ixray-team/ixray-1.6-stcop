@@ -79,6 +79,11 @@ function opt_video_adv:InitControls(x, y, xml, handler)
     table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r4_hashed_aref", _st)
+    ctl = xml:InitCheck ("video_adv:check_r4_hashed_aref", _st)
+    table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
     xml:InitStatic("video_adv:cap_r_type_aa", _st)
     ctl = xml:InitComboBox("video_adv:list_r_type_aa", _st)
     table.insert(handler.m_preconditions, {func=all_modes, control=_st})

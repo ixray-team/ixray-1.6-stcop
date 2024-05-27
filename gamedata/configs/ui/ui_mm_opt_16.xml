@@ -321,6 +321,14 @@
             <options_item entry="r4_hud_shadows" group="mm_opt_video" depend="vid"/>
         </check_r4_hud_shadows>
 
+        <cap_r4_hashed_aref x="16" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_hashed_alpha_test</text>
+        </cap_r4_hashed_aref>
+        <check_r4_hashed_aref x="133" y="0" width="35" stretch="1" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r4_hashed_alpha_test" group="mm_opt_video"/>
+        </check_r4_hashed_aref>
+
         <cap_r2_cloud_shadows x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_cloud_shadows</text>
         </cap_r2_cloud_shadows>
