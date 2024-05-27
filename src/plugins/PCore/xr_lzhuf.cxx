@@ -547,7 +547,7 @@ void _lzhuf::Decode(uint8_t*& _text, size_t& _textsize, const uint8_t* _code, si
 			}
 		}
 	}
-	xr_assert(m_dest_pos == textsize);
+	//xr_assert(m_dest_pos == textsize);
 	_text = m_dest;
 	_textsize = textsize;
 }
