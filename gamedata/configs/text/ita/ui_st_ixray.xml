@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+    <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Chiamata di Pripyat</text>
+    </string>
+    <string id="st_discord_menu">
+        <text>Menu principale</text>
+    </string>
+    <string id="st_discord_level">
+        <text>Livello:</text>
+    </string>
+    <string id="quicksave">
+        <text>Salvataggio rapido</text>
+    </string>
+    <string id="autosave">
+        <text>Salvataggio automatico</text>
+    </string>
+
+    <string id="st_m">
+        <text>m</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Distanza di colpo</text>
+    </string>
+
+    <string id="car_trunk_use">
+        <text>Apri il bagagliaio ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Usa ($$ACTION_USE$$)</text>
+    </string>
+
+    <string id="st_freemp">
+        <text>Libero</text>
+    </string>
+
+    <string id="ui_st_autoreload">
+        <text>Ricarica automatica</text>
+    </string>
+
+    <string id="ui_mm_mt_tex_load">
+        <text>Caricamento texture multithread</text>
+    </string>
+    <string id="ui_mm_r__smap_size">
+        <text>Mappa delle ombre</text>
+    </string>
+    <string id="1024">
+        <text>1024x1024</text>
+    </string>
+    <string id="2048">
+        <text>2048x2048</text>
+    </string>
+    <string id="3072">
+        <text>3072x3072</text>
+    </string>
+    <string id="4096">
+        <text>4096x4096</text>
+    </string>
+    <string id="ui_rs_device_active">
+        <text>Sempre attivo</text>
+    </string>
+</string_table>

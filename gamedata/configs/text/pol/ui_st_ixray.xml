@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
     <string id="st_ixray_title">
-        <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
+        <text>S.T.A.L.K.E.R.: Zew Prypeci</text>
     </string>
     <string id="st_discord_menu">
-        <text>Main menu</text>
+        <text>Menu gіуwne</text>
     </string>
     <string id="st_discord_level">
-        <text>Level:</text>
+        <text>Poziom:</text>
     </string>
     <string id="quicksave">
-        <text>quick save</text>
+        <text>zapis szybki</text>
     </string>
     <string id="autosave">
-        <text>auto save</text>
+        <text>autozapis</text>
     </string>
 
     <string id="st_m">
         <text>m</text>
     </string>
     <string id="ui_inv_dist">
-        <text>Hit Distance</text>
+        <text>Odlegіoњж uderzenia</text>
     </string>
 
     <string id="car_trunk_use">
-        <text>Open Trunk ($$ACTION_USE$$)</text>
+        <text>Otwуrz bagaїnik ($$ACTION_USE$$)</text>
     </string>
     <string id="car_use">
-        <text>Use ($$ACTION_USE$$)</text>
+        <text>Uїywaж ($$ACTION_USE$$)</text>
     </string>
 
     <string id="st_freemp">
-        <text>Free</text>
+        <text>Wolny</text>
     </string>
 
     <string id="ui_st_autoreload">
-        <text>Auto Reload</text>
+        <text>Autoprzeіadowanie</text>
     </string>
 
     <string id="ui_mm_mt_tex_load">
-        <text>Multithread Texture Loading</text>
+        <text>Јadowanie tekstur wielow№tkowych</text>
     </string>
     <string id="ui_mm_r__smap_size">
-        <text>Shadow Map</text>
+        <text>Mapa cieni</text>
     </string>
     <string id="1024">
         <text>1024x1024</text>
@@ -57,6 +57,6 @@
         <text>4096x4096</text>
     </string>
     <string id="ui_rs_device_active">
-        <text>Always Active</text>
+        <text>Zawsze aktywny</text>
     </string>
 </string_table>

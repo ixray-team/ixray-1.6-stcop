@@ -4,45 +4,45 @@
         <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
     </string>
     <string id="st_discord_menu">
-        <text>Main menu</text>
+        <text>Hlavní menu</text>
     </string>
     <string id="st_discord_level">
-        <text>Level:</text>
+        <text>Úroveò:</text>
     </string>
     <string id="quicksave">
-        <text>quick save</text>
+        <text>rychlé uložení</text>
     </string>
     <string id="autosave">
-        <text>auto save</text>
+        <text>auto uložení</text>
     </string>
 
     <string id="st_m">
         <text>m</text>
     </string>
     <string id="ui_inv_dist">
-        <text>Hit Distance</text>
+        <text>Vzdálenost úderu</text>
     </string>
 
     <string id="car_trunk_use">
-        <text>Open Trunk ($$ACTION_USE$$)</text>
+        <text>Otevøený kufr ($$ACTION_USE$$)</text>
     </string>
     <string id="car_use">
-        <text>Use ($$ACTION_USE$$)</text>
+        <text>Použití ($$ACTION_USE$$)</text>
     </string>
 
     <string id="st_freemp">
-        <text>Free</text>
+        <text>Volný</text>
     </string>
 
     <string id="ui_st_autoreload">
-        <text>Auto Reload</text>
+        <text>Autonabíjení</text>
     </string>
 
     <string id="ui_mm_mt_tex_load">
-        <text>Multithread Texture Loading</text>
+        <text>Vícevláknové naèítání textur</text>
     </string>
     <string id="ui_mm_r__smap_size">
-        <text>Shadow Map</text>
+        <text>Stínová mapa</text>
     </string>
     <string id="1024">
         <text>1024x1024</text>
@@ -57,6 +57,6 @@
         <text>4096x4096</text>
     </string>
     <string id="ui_rs_device_active">
-        <text>Always Active</text>
+        <text>Vždy aktivní</text>
     </string>
 </string_table>
