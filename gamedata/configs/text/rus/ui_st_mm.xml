@@ -375,9 +375,6 @@
 	<string id="st_capture_the_artefact">
 		<text>Захват артефакта</text>
 	</string>
-	<string id="st_freemp">
-		<text>Свободный</text>
-	</string>
 	<string id="st_deathmatch">
 		<text>Все против всех</text>
 	</string>
@@ -413,6 +410,9 @@
 	</string>
 	<string id="st_team_deathmatch">
 		<text>Команда против команды</text>
+	</string>
+	<string id="ui_mm_60_hz">
+		<text>Частота 60Гц</text>
 	</string>
 	<string id="ui_mm_action">
 		<text>Действие</text>
@@ -696,9 +696,6 @@
 	<string id="ui_mm_vsync">
 		<text>Верт. синхронизация</text>
 	</string>
-	<string id="ui_mm_mt_tex_load">
-		<text>Многопот. загрузка текстур</text>
-	</string>
 	<string id="ui_mp_gamespy_changing_unique_nick">
 		<text>Изменение уникального имени...</text>
 	</string>
@@ -777,21 +774,6 @@
 	<string id="ui_mm_r1_detail_textures">
 		<text>Детальные текстуры</text>
 	</string>
-	<string id="ui_mm_r__smap_size">
-		<text>Карта теней</text>
-	</string>
-	<string id="1024">
-		<text>1024x1024</text>
-	</string>
-	<string id="2048">
-		<text>2048x2048</text>
-	</string>
-	<string id="3072">
-		<text>3072x3072</text>
-	</string>
-	<string id="4096">
-		<text>4096x4096</text>
-	</string>
 	<string id="mm_mp_demo">
 		<text>Ролики</text>
 	</string>
@@ -869,9 +851,6 @@
 	</string>
 	<string id="ui_st_disable_hud">
 		<text>Показывать интерфейс</text>
-	</string>
-	<string id="ui_st_autoreload">
-		<text>Автоперезарядка</text>
 	</string>
 	<string id="mp_gp_unique_nick_not_registred">
 		<text>Уникальный ник не зарегистрирован. Пожалуйста, зарегистрируйте его</text>
@@ -953,8 +932,5 @@
 	</string>
 	<string id="ui_mm_confirm_changes">
 		<text>Применить сделанные изменения? Все изменения будут отменены через</text>
-	</string>
-	<string id="ui_rs_device_active">
-		<text>Always Active</text>
 	</string>
 </string_table>

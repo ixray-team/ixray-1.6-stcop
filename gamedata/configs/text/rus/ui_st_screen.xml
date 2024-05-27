@@ -12,12 +12,6 @@
 	<string id="car_character_use">
 		<text>Открыть дверь ($$ACTION_USE$$)</text>
 	</string>
-	<string id="car_trunk_use">
-		<text>Открыть багажник ($$ACTION_USE$$)</text>
-	</string>
-	<string id="car_use">
-		<text>Использовать ($$ACTION_USE$$)</text>
-	</string>
 	<string id="character_use">
 		<text>Говорить ($$ACTION_USE$$)</text>
 	</string>

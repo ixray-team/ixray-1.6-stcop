@@ -52,4 +52,41 @@
     <string id="st_filter_fsr">
         <text>FSR2</text>
     </string>
+
+    <string id="st_freemp">
+        <text>Свободный</text>
+    </string>
+    <string id="ui_mm_mt_tex_load">
+        <text>Многопот. загрузка текстур</text>
+    </string>
+    <string id="ui_mm_r__smap_size">
+        <text>Карта теней</text>
+    </string>
+    <string id="1024">
+        <text>1024x1024</text>
+    </string>
+    <string id="2048">
+        <text>2048x2048</text>
+    </string>
+    <string id="3072">
+        <text>3072x3072</text>
+    </string>
+    <string id="4096">
+        <text>4096x4096</text>
+    </string>
+    <string id="ui_rs_device_active">
+        <text>Always Active</text>
+    </string>
+    <string id="car_trunk_use">
+        <text>Открыть багажник ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Использовать ($$ACTION_USE$$)</text>
+    </string>
+    <string id="st_m">
+        <text>м</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Дистанция удара</text>
+    </string>
 </string_table>
