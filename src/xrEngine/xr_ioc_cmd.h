@@ -101,6 +101,41 @@ public		:
 
 };
 
+class ENGINE_API CCC_Mask16 : 
+	public IConsole_Command
+{
+protected	:
+	Flags16*	value;
+	u32			mask;
+public		:
+	CCC_Mask16(LPCSTR N, Flags16* V, u32 M) :
+	  IConsole_Command(N),
+	  value(V),
+	  mask(M)
+	{};
+
+	const BOOL GetValue() const { return value->test(mask); }
+
+	virtual void Execute	(LPCSTR args)
+	{
+		if (EQ(args,"on"))			value->set(mask,TRUE);
+		else if (EQ(args,"off"))	value->set(mask,FALSE);
+		else if (EQ(args,"1"))		value->set(mask,TRUE);
+		else if (EQ(args,"0"))		value->set(mask,FALSE);
+		else InvalidSyntax();
+	}
+	virtual void	Status	(TStatus& S)
+	{	xr_strcpy(S,value->test(mask)?"on":"off"); }
+	virtual void	Info	(TInfo& I)
+	{	xr_strcpy(I,"'on/off' or '1/0'"); }
+
+	virtual void fill_tips(vecTips& tips, u32 mode) {
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
+		tips.push_back( str );
+	}
+};
+
 class ENGINE_API	CCC_ToggleMask : public IConsole_Command
 {
 protected	:
