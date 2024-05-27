@@ -41,6 +41,7 @@ public:
 	IBlender*					b_smaa;
 	IBlender*					b_scale;
 	IBlender*					b_cas;
+	IBlender*					b_gtao;
 
     // compute shader for hdao
     IBlender*                   b_hdao_cs;
@@ -85,6 +86,10 @@ public:
 	ref_texture				t_envmap_0		;	// env-0
 	ref_texture				t_envmap_1		;	// env-1
 
+	//GTAO
+	ref_rt						rt_gtao_0;
+	ref_rt						rt_gtao_1;
+
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color
 	ref_rt						rt_smap_depth;	// 24(32) bit,	depth 
@@ -106,6 +111,7 @@ private:
 	ref_shader					s_smaa;
 	ref_shader					s_scale;
 	ref_shader					s_cas;
+	ref_shader					s_gtao;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -243,6 +249,7 @@ public:
 	void						phase_smaa				();
 
 	void						phase_cas				();
+	void						phase_gtao				();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
