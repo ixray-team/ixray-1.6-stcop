@@ -332,7 +332,7 @@ ImGui_ImplDX11_Data* ImGui_ImplDX11_GetBackendData();
 
 xr_map<xr_string, float> PowerMap;
 
-CRenderTarget::CRenderTarget		()
+CRenderTarget::CRenderTarget()
 {
 	if (g_debug_blend_state == nullptr) {
 		D3D11_BLEND_DESC desc;
@@ -355,21 +355,31 @@ CRenderTarget::CRenderTarget		()
 		}
 
 		auto State = g_debug_blend_state;
-		auto DisplayTarget = [State](const ref_rt& rt) {
+		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData) {
 			if (rt._get() == nullptr || rt->pTexture == nullptr || rt->pTexture->get_SRView() == nullptr) {
 				return;
 			}
 
+			string64 ShowText = {};
+			sprintf(ShowText, "Show ##%p", (void*)&ShowData);
+
+			ImGui::Checkbox(ShowText, &ShowData);
+			ImGui::SameLine();
+
 			const auto& Texture = *rt->pTexture;
+			
 			ImGui::Text(
 				"Target %s (fmt: %s, width: %i, height: %i)",
 				Texture.cName.c_str(), magic_enum::enum_name(rt->fmt).data(), rt->dwWidth, rt->dwHeight
 			);
 
+			if (!ShowData)
+				return;
+
 			auto ContentRegion = ImGui::GetContentRegionAvail();
 			float scale = ImGui::GetContentRegionAvail().x / rt->dwWidth;
 			auto& DrawList = *ImGui::GetWindowDrawList();
-			
+
 			if (!PowerMap.contains(Texture.cName.c_str())) {
 				PowerMap[Texture.cName.c_str()] = 1;
 			}
@@ -383,8 +393,8 @@ CRenderTarget::CRenderTarget		()
 				}, State);
 			ImGui::Image(
 				rt->pTexture->get_SRView(),
-				ImVec2(ImGui::GetContentRegionAvail().x, rt->dwHeight * scale), 
-				ImVec2(0,0), ImVec2(1,1), ImVec4(ImagePower, ImagePower, ImagePower, 1.0f)
+				ImVec2(ImGui::GetContentRegionAvail().x, rt->dwHeight * scale),
+				ImVec2(0, 0), ImVec2(1, 1), ImVec4(ImagePower, ImagePower, ImagePower, 1.0f)
 			);
 			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
 				auto bd = ImGui_ImplDX11_GetBackendData();
@@ -392,8 +402,8 @@ CRenderTarget::CRenderTarget		()
 					const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
 					RContext->OMSetBlendState((ID3D11BlendState*)bd->pBlendState, blend_factor, 0xffffffff);
 				}
-			}, State);
-		};
+				}, State);
+			};
 
 		ID3D11BlendState* BlendState = nullptr;
 		if (!ImGui::Begin("GraphicDebug", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)], ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
@@ -401,22 +411,37 @@ CRenderTarget::CRenderTarget		()
 			return;
 		}
 
-		DisplayTarget(rt_Bloom_1);
-		DisplayTarget(rt_Depth);
-		DisplayTarget(rt_Back_Buffer);
-		DisplayTarget(rt_Generic);
-		DisplayTarget(rt_Generic_0);
-		DisplayTarget(rt_Generic_1);
-		DisplayTarget(rt_Generic_2);
-		DisplayTarget(rt_Back_Buffer_AA);
-		DisplayTarget(rt_Velocity);
-		DisplayTarget(rt_Normal);
-		DisplayTarget(rt_Position);
-		DisplayTarget(rt_Color);
-		DisplayTarget(rt_Accumulator);
-		DisplayTarget(rt_smap_surf);
-		DisplayTarget(rt_smap_depth);
-		DisplayTarget(rt_gtao_1);
+#define DisplayRT(rt) \
+		static bool Show##rt = false; \
+		DisplayTarget(rt, Show##rt);
+
+		DisplayRT(rt_Bloom_1);
+		DisplayRT(rt_Depth);
+		DisplayRT(rt_Back_Buffer);
+		DisplayRT(rt_Generic);
+		DisplayRT(rt_Generic_0);
+		DisplayRT(rt_Generic_1);
+		DisplayRT(rt_Generic_2);
+		DisplayRT(rt_Back_Buffer_AA);
+		DisplayRT(rt_Velocity);
+		DisplayRT(rt_Normal);
+		DisplayRT(rt_Position);
+		DisplayRT(rt_Color);
+		DisplayRT(rt_Accumulator);
+		DisplayRT(rt_smap_surf);
+		DisplayRT(rt_smap_depth);
+
+		if (ps_r_ssao_mode == 3)
+		{
+			DisplayRT(rt_gtao_1);
+		}
+		else if (ps_r_ssao != 2)
+		{
+			DisplayRT(rt_ssao_temp);
+		}
+
+#undef DisplayRT
+
 		ImGui::End();
 	});
 
