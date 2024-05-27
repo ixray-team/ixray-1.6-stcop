@@ -20,6 +20,11 @@ bool CConsole::GetBool(LPCSTR cmd) const {
 	if (ci) {
 		return ( ci->GetValue() != 0 );
 	}
+
+	CCC_Boolean* cb			= dynamic_cast<CCC_Boolean*>(cc);
+	if (cb) {
+		return ( cb->GetValue() != 0 );
+	}
 	return false;
 }
 

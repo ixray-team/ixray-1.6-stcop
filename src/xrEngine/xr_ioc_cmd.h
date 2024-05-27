@@ -366,7 +366,7 @@ protected	:
 public		:
 	bool* value;
 
-	  const int GetValue	() const {return *value;};
+	  const bool GetValue	() const {return *value;};
 
 	CCC_Boolean(LPCSTR N, bool* V) :
 	  IConsole_Command(N),
@@ -376,14 +376,17 @@ public		:
 	virtual void	Execute	(LPCSTR args)
 	{
 		int Value = 0;
-		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) {
-			if (!strcmp(args, "true")) {
-				*value = true;
-			} else if (!strcmp(args, "false")) {
-				*value = false;
-			} 
-		} else {
-			*value = !!Value;
+		if (std::from_chars(args, args + std::strlen(args), Value).ec != std::errc{}) 
+		{
+			*value = !strcmp(args, "true");
+		} 
+		else if (EQ(args, "1"))
+		{
+			*value = true;
+		}
+		else
+		{
+			*value = false;
 		}
 	}
 	virtual void	Status	(TStatus& S)
