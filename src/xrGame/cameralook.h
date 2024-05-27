@@ -21,7 +21,7 @@ public:
 
 	virtual float	GetWorldYaw		( )	{ return -yaw;	};
 	virtual float	GetWorldPitch	( )	{ return pitch; };
-
+	virtual float	GetDist		( )	{ return prev_d;	};	
 	void save(NET_Packet& output_packet) override;
 	void load(IReader& input_packet) override;
 
