@@ -10,7 +10,8 @@
 
 #include "../xrScripts/script_export_space.h"
 
-class CParticleParams {
+class CParticleParams 
+{
 public:
 	Fvector			m_tParticlePosition;
 	Fvector			m_tParticleAngles;
@@ -23,8 +24,5 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CParticleParams)
-#undef script_type_list
-#define script_type_list save_type_list(CParticleParams)
 
 #include "particle_params_inline.h"

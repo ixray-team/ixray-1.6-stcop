@@ -44,12 +44,5 @@ void 					GetAxisDirDynamic			(int num,Fvector& axis)											  	{ physics_imp
 void 					GetAnchorDynamic			(Fvector& anchor)													{ physics_impl().GetAnchorDynamic( anchor ); }
 bool					isBreakable					( )																	{ return physics_impl(). isBreakable( ); }
 
-
-
-
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(cphysics_joint_scripted)
-#undef script_type_list
-#define script_type_list save_type_list(cphysics_joint_scripted)

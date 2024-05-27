@@ -5,12 +5,12 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Level graph space
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 namespace LevelGraph
 {
-	class CHeader : private hdrNODES 
+	class CHeader : 
+		public hdrNODES 
 	{
 	private:
 		friend class CRenumbererConverter;

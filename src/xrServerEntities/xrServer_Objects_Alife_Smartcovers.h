@@ -78,8 +78,6 @@ private:
 	void					fill_visuals			();
 	void					load_draw_data			();
 
-	SERVER_ENTITY_DECLARE_END
-		add_to_type_list(CSE_SmartCover)
-#define script_type_list save_type_list(CSE_SmartCover)
+SERVER_ENTITY_DECLARE_END
 #pragma warning(pop)
 #endif

@@ -91,8 +91,6 @@ public:
 	virtual void					spawn_supplies				();
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTraderAbstract)
-#define script_type_list save_type_list(CSE_ALifeTraderAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_ALifeTraderAbstract)
 									CSE_ALifeTrader			(LPCSTR caSection);
@@ -117,8 +115,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_AL
 	virtual CSE_ALifeTraderAbstract	*cast_trader_abstract	() {return this;};
 	virtual CSE_ALifeTrader			*cast_trader			() {return this;};
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTrader)
-#define script_type_list save_type_list(CSE_ALifeTrader)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone,CSE_ALifeSpaceRestrictor)
 //.	f32								m_maxPower;
@@ -131,8 +127,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCustomZone,CSE_ALifeSpaceRestrictor)
 									CSE_ALifeCustomZone		(LPCSTR caSection);
 	virtual							~CSE_ALifeCustomZone	();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCustomZone)
-#define script_type_list save_type_list(CSE_ALifeCustomZone)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeCustomZone)
 	CSE_ALifeItemWeapon				*m_tpCurrentBestWeapon;
@@ -160,16 +154,12 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeCustomZone)
 	virtual bool					keep_saved_data_anyway	() const;
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeAnomalousZone)
-#define script_type_list save_type_list(CSE_ALifeAnomalousZone)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTorridZone,CSE_ALifeCustomZone,CSE_Motion)
 									CSE_ALifeTorridZone		(LPCSTR caSection);
 	virtual							~CSE_ALifeTorridZone	();
 	virtual CSE_Motion*		motion					();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeTorridZone)
-#define script_type_list save_type_list(CSE_ALifeTorridZone)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeZoneVisual,CSE_ALifeAnomalousZone,CSE_Visual)
 shared_str attack_animation;
@@ -177,8 +167,6 @@ CSE_ALifeZoneVisual	(LPCSTR caSection);
 virtual							~CSE_ALifeZoneVisual	();
 virtual CSE_Visual* 	visual					();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeZoneVisual)
-#define script_type_list save_type_list(CSE_ALifeZoneVisual)
 
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
@@ -240,8 +228,6 @@ public:
 	virtual bool					match_configuration		() const;
 #endif
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureAbstract)
-#define script_type_list save_type_list(CSE_ALifeCreatureAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeMonsterAbstract,CSE_ALifeCreatureAbstract,CSE_ALifeSchedulable,CMovementManagerHolder)
 
@@ -320,8 +306,6 @@ private:
 
 public:
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterAbstract)
-#define script_type_list save_type_list(CSE_ALifeMonsterAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CSE_ALifeTraderAbstract,CSE_PHSkeleton)
 	
@@ -367,24 +351,18 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 public:
 	virtual BOOL					Net_Relevant			();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureActor)
-#define script_type_list save_type_list(CSE_ALifeCreatureActor)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureCrow,CSE_ALifeCreatureAbstract)
 									CSE_ALifeCreatureCrow	(LPCSTR caSection);
 	virtual							~CSE_ALifeCreatureCrow	();
 	virtual bool					used_ai_locations		() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreatureCrow)
-#define script_type_list save_type_list(CSE_ALifeCreatureCrow)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreaturePhantom,CSE_ALifeCreatureAbstract)
 									CSE_ALifeCreaturePhantom	(LPCSTR caSection);
 	virtual							~CSE_ALifeCreaturePhantom	();
 	virtual bool					used_ai_locations			() const;
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeCreaturePhantom)
-#define script_type_list save_type_list(CSE_ALifeCreaturePhantom)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_ALifeInventoryItem)
 	// Personal characteristics:
@@ -420,8 +398,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterRat,CSE_ALifeMonsterAbstract,CSE_AL
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
 	virtual CSE_ALifeInventoryItem	*cast_inventory_item	() {return this;};
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterRat)
-#define script_type_list save_type_list(CSE_ALifeMonsterRat)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
 	// Personal characteristics:
@@ -441,8 +417,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeMonsterZombie,CSE_ALifeMonsterAbstract)
 									CSE_ALifeMonsterZombie	(LPCSTR caSection);				// constructor for variable initialization
 	virtual							~CSE_ALifeMonsterZombie	();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterZombie)
-#define script_type_list save_type_list(CSE_ALifeMonsterZombie)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_PHSkeleton)
 	u16								m_spec_object_id;
@@ -479,8 +453,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 #endif // XRGAME_EXPORTS
 	virtual BOOL Net_Relevant();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeMonsterBase)
-#define script_type_list save_type_list(CSE_ALifeMonsterBase)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom,CSE_ALifeMonsterBase)
 									CSE_ALifePsyDogPhantom	(LPCSTR caSection);				// constructor for variable initialization
@@ -488,10 +460,6 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifePsyDogPhantom,CSE_ALifeMonsterBase)
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 	virtual bool					bfActive				() {return false;}
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifePsyDogPhantom)
-#define script_type_list save_type_list(CSE_ALifePsyDogPhantom)
-
-
 
 //-------------------------------
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanAbstract,CSE_ALifeTraderAbstract,CSE_ALifeMonsterAbstract)
@@ -532,8 +500,6 @@ private:
 	CALifeHumanBrain				*m_brain;
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeHumanAbstract)
-#define script_type_list save_type_list(CSE_ALifeHumanAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PHSkeleton)
 	shared_str						m_start_dialog;
@@ -543,8 +509,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PH
 	virtual	void					load					(NET_Packet &tNetPacket);
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeHumanStalker)
-#define script_type_list save_type_list(CSE_ALifeHumanStalker)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeOnlineOfflineGroup,CSE_ALifeDynamicObject,CSE_ALifeSchedulable,CMovementManagerHolder)
 public:
@@ -610,8 +574,6 @@ public:
 #endif
 
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeOnlineOfflineGroup)
-#define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
 
 #pragma warning(pop)
 

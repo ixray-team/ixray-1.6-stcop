@@ -5,9 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : smart cover object class
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef SMART_COVER_OBJECT_H_INCLUDED
-#define SMART_COVER_OBJECT_H_INCLUDED
+#pragma once
 
 #include "gameobject.h"
 #include "../xrScripts/script_export_space.h"
@@ -61,10 +59,5 @@ public:
 } // namespace smart_cover
 
 typedef smart_cover::object	smart_cover__object;
-add_to_type_list(smart_cover__object)
-#undef script_type_list
-#define script_type_list save_type_list(smart_cover__object)
 
 #include "smart_cover_object_inline.h"
-
-#endif // SMART_COVER_OBJECT_H_INCLUDED

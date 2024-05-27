@@ -1,5 +1,4 @@
-#ifndef GAMESPY_PROFILE_STORE
-#define GAMESPY_PROFILE_STORE
+#pragma once
 
 #include "../xrEngine/ISheduled.h"
 #include "profile_data_types.h"
@@ -104,9 +103,3 @@ private:
 } //namespace gamespy_profile
 
 typedef gamespy_profile::profile_store	gamespy_profile_profile_store;
-
-add_to_type_list(gamespy_profile_profile_store)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_profile_profile_store)
-
-#endif //#ifndef GAMESPY_PROFILE_STORE

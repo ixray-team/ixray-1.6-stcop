@@ -411,9 +411,6 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CLevel)
-#undef script_type_list
-#define script_type_list save_type_list(CLevel)
 
 IC CLevel&				Level()		{ return *((CLevel*) g_pGameLevel);			}
 IC game_cl_GameState&	Game()		{ return *Level().game;					}

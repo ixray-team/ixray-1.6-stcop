@@ -191,6 +191,3 @@ private:
 										 shot_targets_t & dest_shots);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CWeaponKnife)
-#undef script_type_list
-#define script_type_list save_type_list(CWeaponKnife)

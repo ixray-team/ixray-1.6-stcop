@@ -7,7 +7,9 @@
 
 #include "../xrScripts/script_export_space.h"
 
-class CHairsZone : public CVisualZone {
+class CHairsZone : 
+	public CVisualZone 
+{
 typedef				CVisualZone		inherited;		
 public:
 	virtual			void		Affect				(SZoneObjectInfo* O)		;
@@ -20,6 +22,3 @@ protected:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CHairsZone)
-#undef script_type_list
-#define script_type_list save_type_list(CHairsZone)

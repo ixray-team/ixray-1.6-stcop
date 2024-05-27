@@ -286,9 +286,7 @@ public:
 	virtual		void 					SetVelocity					(const float velocity=0.f,const int axis_num=-1)								=0;
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-//add_to_type_list(CPhysicsJoint)
-//#undef script_type_list
-//#define script_type_list save_type_list(CPhysicsJoint)
+
 // ABSTRACT: 
 class CPHIsland;
 class CPhysicsShellAnimator;
@@ -414,9 +412,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	//build_FromKinematics		in returns elements  & joint pointers according bone IDs;
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 	};
-//add_to_type_list(CPhysicsShell)
-//#undef script_type_list
-//#define script_type_list save_type_list(CPhysicsShell)
+
 
 struct dContact;
 struct SGameMtl;

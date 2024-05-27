@@ -10,6 +10,3 @@
 #include "../xrScripts/script_export_space.h"
 
 typedef class_exporter_lib<Fmatrix> SCRIPTS_API CScriptFmatrix;
-add_to_type_list(CScriptFmatrix)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptFmatrix)

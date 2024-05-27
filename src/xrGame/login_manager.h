@@ -153,18 +153,4 @@ typedef gamespy_gp::profile				gamespy_gp_profile;
 typedef gamespy_gp::login_operation_cb	gamespy_gp_login_operation_cb;
 typedef gamespy_gp::login_manager		gamespy_gp_login_manager;
 
-add_to_type_list(gamespy_gp_profile)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_profile)
-
-add_to_type_list(gamespy_gp_login_operation_cb)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_login_operation_cb)
-
-add_to_type_list(gamespy_gp_login_manager)
-#undef script_type_list
-#define script_type_list save_type_list(gamespy_gp_login_manager)
-
-
-
 #endif //#ifndef LOGIN_MANAGER
