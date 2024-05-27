@@ -155,15 +155,10 @@ float CEatableItem::Weight() const
 {
 	float res = inherited::Weight();
 
-	if (IsUsingCondition())  
+	if (IsUsingCondition())
 	{
 		float net_weight = m_fWeightFull - m_fWeightEmpty;
-		float use_weight = m_iMaxUses;
-
-		if (m_iPortionsMarker == 0)
-			use_weight /= 2;
-		else
-			use_weight /= m_iPortionsMarker;
+		float use_weight = m_iMaxUses > 0 ? (net_weight / m_iMaxUses) : 0.f;
 
 		res = m_fWeightEmpty + (GetRemainingUses() * use_weight);
 	}
