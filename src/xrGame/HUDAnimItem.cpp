@@ -104,6 +104,9 @@ void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim)
 	if (ThisItem == nullptr)
 		return;
 
+	if (ThisItem == Inventory.ActiveItem())
+		return;
+
 	if (CCustomDetector* Detector = (CCustomDetector*)Inventory.ItemFromSlot(DETECTOR_SLOT))
 	{
 		ThisItem->DetectorActive = Detector->IsActive();
