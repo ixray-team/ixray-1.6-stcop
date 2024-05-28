@@ -181,28 +181,6 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed hands ancor load (@ForserX)
 - Added `disable_bore` parameter (@Shtrecker)
 
-### Scripts
-
-- Tweaked Lua surge manager (@ggGhosTt)
-- Tweaked Lua weather manager (@ggGhosTt)
-- Added data files when corresponding saves are deleted (@ggGhosTt)
-- Created savegames directory if none is present (@ggGhosTt)
-- Matched saves and serialized tables (@ggGhosTt)
-- Exported save/load events and retrieved save names in Lua (@ggGhosTt)
-- Stored data in savegames folder as single file (@ggGhosTt)
-- Implemented Lua Marshal save/load utility functions (@ggGhosTt)
-- Added weather control exports (@ggGhosTt)
-- Exported god mode state check to lua (@ggGhosTt)
-- Exported boosters to Lua scripts (@Shtrecker)
-- Exported weapons methods to Lua scripts (@ForserX, @Alundaio)
-- Moved Lua export of basic types from xrGame to xrScripts (@ForserX)
-- Added export `kQUICK_SAVE` and `kQUICK_LOAD` button to scripts (@Drombeys)
-- Added `hide_detector` function export to Lua (@ForserX)
-- Reworked fetching dependencies script (@ForserX)
-- Replaced old bitwise operations with native LuaJIT 2 implementations (@ForserX)
-- Added ability to change `CSE_AlifeObject` variables in Lua (@ForserX)
-- Exported actor movement states (@Shtrecker)
-
 ### Multiplayer
 
 - Fixed multiplayer server functionality (@ForserX)
@@ -240,15 +218,12 @@ Full changelog of _IX-Ray_ 1.6 project
 - Implemented ImGui scenes viewer (@Drombeys)
 - Fixed inversion of sky colors in weather editor (@Drombeys)
 
-### Utilities
+### Toolchain
 
 - Implemented decompressor (@ForserX)
 - Implemented texture copy utility (@Hozar2002)
 - Implemented non-recursive version of `OA_Unwarp` method (@ForserX, @range-vs)
 - Enabled `IXRAY_USE_R1` option in utilities presets (@Drombeys, @acidicMercury8)
-
-### Editors
-
 - Ported base xrECore code (@ForserX)
 - Added base props for editors (@ForserX)
 - Added EditorRender and EditorEngineAPI projects (@ForserX)
@@ -265,6 +240,25 @@ Full changelog of _IX-Ray_ 1.6 project
 - Moved script edits to `_g` script (@Drombeys)
 - Added `graffiti22` value (@ForserX)
 - Reverted changes in `ui_sleep_dialog` script (@Drombeys)
+- Tweaked Lua surge manager (@ggGhosTt)
+- Tweaked Lua weather manager (@ggGhosTt)
+- Added data files when corresponding saves are deleted (@ggGhosTt)
+- Created savegames directory if none is present (@ggGhosTt)
+- Matched saves and serialized tables (@ggGhosTt)
+- Exported save/load events and retrieved save names in Lua (@ggGhosTt)
+- Stored data in savegames folder as single file (@ggGhosTt)
+- Implemented Lua Marshal save/load utility functions (@ggGhosTt)
+- Added weather control exports (@ggGhosTt)
+- Exported god mode state check to lua (@ggGhosTt)
+- Exported boosters to Lua scripts (@Shtrecker)
+- Exported weapons methods to Lua scripts (@ForserX, @Alundaio)
+- Moved Lua export of basic types from xrGame to xrScripts (@ForserX)
+- Added export `kQUICK_SAVE` and `kQUICK_LOAD` button to scripts (@Drombeys)
+- Added `hide_detector` function export to Lua (@ForserX)
+- Reworked fetching dependencies script (@ForserX)
+- Replaced old bitwise operations with native LuaJIT 2 implementations (@ForserX)
+- Added ability to change `CSE_AlifeObject` variables in Lua (@ForserX)
+- Exported actor movement states (@Shtrecker)
 
 ## Release 0.9 (March 2024)
 
@@ -437,7 +431,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Returned `FORCE_GLOSS` shader definition for R4 (@MAYLAYSHEZ)
 - Fixed enumeration of option definitions on D3D10+ (@Drombeys)
 - Fixed attachment rotation display (@v2v3v4)
-- Fixed foging in `model_distort4ghost` shader (@ForserX)
+- Fixed fogging in `model_distort4ghost` shader (@ForserX)
 - Fixed limits for `r__detail_density` (@MAYLAYSHEZ)
 - Fixed loading of unsupported textures (@Hozar2002)
 - Bind wallmark life time on dynamic objects to `r__wallmark_ttl` (@MAYLAYSHEZ)
@@ -581,7 +575,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 - Implemented FXAA on static lightning (@Hozar2002)
 - Implemented SMAA in xrRender_R2 (@Hozar2002)
-- Fixed crash on bones synchronization (@xrLil-Batya)
+- Fixed crash on bones synchronization (@Drombeys)
 - Implemented disabling of shader cache reading (@Hozar2002)
 - Fixed mipmap loading (@Drombeys)
 - Fixed distorted glass displaying on static lighting (@Hozar2002)
@@ -891,190 +885,190 @@ Full changelog of _IX-Ray_ 1.6 project
 
 ### Common
 
-- Enabled assets packing
-- Replaced `dxerr` with Windows SDK analog
-- Replaced `stricmp` with POSIX analog
-- Simplificated `get-dependencies` script launching
-- Incompletely integrated __DirectXMesh__
+- Enabled assets packing (@acidicMercury8)
+- Replaced `dxerr` with Windows SDK analog (@Drombeys)
+- Replaced `stricmp` with POSIX analog (@Drombeys)
+- Simplificated `get-dependencies` script launching (@acidicMercury8)
+- Incompletely integrated __DirectXMesh__ (@Drombeys)
 
 ### Engine
 
-- Fixed autosaves
-- Fixed switching ingame console language layout
-- Fixed playing animation of getting weapons
-- Fixed character info for deadbody color
-- Fixed progress bar for optional using of `middle_color`
-- Enabled screenshots capturing in windowed mode on __Direct3D 9__
-- Enabled clearing highlight lists on each inventory action
-- Enabled changing items condition by Num7 and Num8
-- Implemented `ui_reload` command
-- Allowed to use min and max colors for double progress bar
-- Allowed to change upgrade icon color by config
-- Replaced crashing with warning when there is no sound
-- Disabled ammo highlights for knife and binocular
-- Disabled stats by class and not by section
+- Fixed autosaves (@Drombeys)
+- Fixed switching ingame console language layout (@Drombeys)
+- Fixed playing animation of getting weapons (@Drombeys, @Hozar2002)
+- Fixed character info for deadbody color (@Hrusteckiy)
+- Fixed progress bar for optional using of `middle_color` (@Hrusteckiy)
+- Enabled screenshots capturing in windowed mode on __Direct3D 9__ (@Drombeys)
+- Enabled clearing highlight lists on each inventory action (@Hrusteckiy)
+- Enabled changing items condition by Num7 and Num8 (@Hrusteckiy)
+- Implemented `ui_reload` command (@Hrusteckiy)
+- Allowed to use min and max colors for double progress bar (@Hrusteckiy)
+- Allowed to change upgrade icon color by config (@Hrusteckiy)
+- Replaced crashing with warning when there is no sound (@Drombeys)
+- Disabled ammo highlights for knife and binocular (@Hrusteckiy)
+- Disabled stats by class and not by section (@Hrusteckiy)
 
 ### Render
 
-- Fixed inverted sky colors and sky bluring on __Direct3D 10+__
-- Fixed potential memory leak in __DirectX 10__ resource manager
-- Fixed fog accounting for campfire and anomalies
-- Fixed water displaying on static lightning
-- Fixed particles displaying on shooting
-- Fixed `sload` for correct nearest bumps displaying
-- Fixed `s_distort` parameter for `particles_xadd` blender on __Direct3D 10+__
-- Enabled fog accounting for grass on static lightning
-- Enabled fog accounting for wallmarks on static lightning
-- Enabled fog accounting for particles
-- Enabled static sun shadows on disabled cascades
-- Enabled `Ldynamic_dir` counting for `accum_direct_volumetric()` on __Direct3D 9__
-- Restored grass shadow
-- Implemented __Direct3D 10__ initialization over __Direct3D 11__
-- Implemented actor shadow
-- Prevented writing alpha-blended geometry to depth buffer
-- Deleted __xrRender_R3__
-- Deleted old TSM algorithms in all renders
-- Deleted`r2_shadow_cascede_old` console command
+- Fixed inverted sky colors and sky bluring on __Direct3D 10+__ (@MAYLAYSHEZ)
+- Fixed potential memory leak in __DirectX 10__ resource manager (@Drombeys)
+- Fixed fog accounting for campfire and anomalies (@Drombeys, @Hozar2002)
+- Fixed water displaying on static lightning (@Drombeys, @Hozar2002)
+- Fixed particles displaying on shooting (@Drombeys)
+- Fixed `sload` for correct nearest bumps displaying (@Hozar2002)
+- Fixed `s_distort` parameter for `particles_xadd` blender on __Direct3D 10+__ (@Drombeys, @Hozar2002)
+- Enabled fog accounting for grass on static lightning (@Drombeys, @Hozar2002)
+- Enabled fog accounting for wallmarks on static lightning (@Drombeys, @Hozar2002)
+- Enabled fog accounting for particles (@Drombeys, @Hozar2002)
+- Enabled static sun shadows on disabled cascades (@Hozar2002)
+- Enabled `Ldynamic_dir` counting for `accum_direct_volumetric()` on __Direct3D 9__ (@Drombeys)
+- Restored grass shadow (@Hozar2002)
+- Implemented __Direct3D 10__ initialization over __Direct3D 11__ (@Drombeys, @Hozar2002)
+- Implemented actor shadow (@Hozar2002)
+- Prevented writing alpha-blended geometry to depth buffer (@Hozar2002)
+- Deleted __xrRender_R3__ (@Drombeys)
+- Deleted old TSM algorithms in all renders (@Drombeys)
+- Deleted`r2_shadow_cascede_old` console command (@Drombeys)
 
 ### Dependencies
 
-- Replaced `delete` operator with `xr_delete()` function in __xrXMLParser__
+- Replaced `delete` operator with `xr_delete()` function in __xrXMLParser__ (@Drombeys)
 
 ### Resources
 
-- Implemented knife parameters class and and related features
-- Implemented `use_condition` parameter
-- Implemented notification restarting for `r2_sun` command
+- Implemented knife parameters class and and related features (@Hrusteckiy)
+- Implemented `use_condition` parameter (@Hrusteckiy)
+- Implemented notification restarting for `r2_sun` command (@Drombeys)
 
 ## Release 0.4 (September 2022)
 
 ### Common
 
-- Added basic editorconfig
-- Normalized line endings for the root files
+- Added basic editorconfig (@acidicMercury8)
+- Normalized line endings for the root files (@acidicMercury8)
 
 ### Engine
 
-- Disabled use cases of `MSAA_ATEST_DX10_1_NATIVE`
-- Disabled `r3_minmax_sm` by default
-- Fixed crash when rendering volumetric fog on __Direct3D 11__
-- Fixed sequence of initialization of API videocards
-- Fixed screen resolution selection on missed `user.ltx`
-- Fixed engine closing from taskbar menu
-- Fixed displaying of transparent surfaces on HUD
-- Fixed sunshafts for different sun quality
-- Fixed transparent on static lightning
-- Fixed comparison resulting in endless creation of new objects on __Direct3D 10+__
-- Fixed camera glitches
-- Implemented ability to switch entry point to a specific version of __Shader Model__
-- Enabled teleport using `demo_record`
-- Enabled `reload_dof` on weapons reloading
-- Enabled __EAX__
-- Added support for capturing cube map and location map on __Direct3D 10+__
-- Added terrain mask support on static lighting
-- Added inventory for ransacking monsters
-- Added additional `set_weather` console command
-- Added additional `read_sun_config` console command
-- Added `trees_amplitude` option to weather settings
-- Set FPS limit on UI rendering
-- Increased range of near cascade
+- Disabled use cases of `MSAA_ATEST_DX10_1_NATIVE` (@Drombeys)
+- Disabled `r3_minmax_sm` by default (@Drombeys)
+- Fixed crash when rendering volumetric fog on __Direct3D 11__ (@Hozar2002)
+- Fixed sequence of initialization of API videocards (@Drombeys)
+- Fixed screen resolution selection on missed `user.ltx` (@Drombeys)
+- Fixed engine closing from taskbar menu (@Hozar2002)
+- Fixed displaying of transparent surfaces on HUD (@Hozar2002)
+- Fixed sunshafts for different sun quality (@Drombeys)
+- Fixed transparent on static lightning (@Hozar2002)
+- Fixed comparison resulting in endless creation of new objects on __Direct3D 10+__ (@Hozar2002)
+- Fixed camera glitches (@Hozar2002)
+- Implemented ability to switch entry point to a specific version of __Shader Model__ (@Drombeys)
+- Enabled teleport using `demo_record` (@Drombeys)
+- Enabled `reload_dof` on weapons reloading (@Drombeys)
+- Enabled __EAX__ (@Hozar2002)
+- Added support for capturing cube map and location map on __Direct3D 10+__ (@Drombeys, @Hozar2002)
+- Added terrain mask support on static lighting (@Hozar2002)
+- Added inventory for ransacking monsters (@Drombeys)
+- Added additional `set_weather` console command (@Drombeys)
+- Added additional `read_sun_config` console command (@Drombeys)
+- Added `trees_amplitude` option to weather settings (@Drombeys)
+- Set FPS limit on UI rendering (@Drombeys, @Hozar2002)
+- Increased range of near cascade (@Drombeys)
 
 ### Resources
 
-- Normalized encoding of shaders
-- Fixed _MSAA_ (redefinition of `Texture2DMS`)
-- Fixed dynamic wet surfaces
-- Fixed displaying of water foam
-- Fixed skycube displaying on water surface
-- Added shader to correct displaying of _LODs_ when _MSAA_ alphatest is enabled in classic __Direct3D 10__
-- Added hint for ransacking monsters
-- Implemented skyblend accumulation for sunshafts
-- Implemented fog accounting for water on __Direct3D 9__
-- Implemented light accounting for water foam
-- Overrided entry point in _3D Fluid_ shaders
-- Enabled `water_soft` shader for `water_studen` and `water_ryaska`
+- Normalized encoding of shaders (@acidicMercury8)
+- Fixed _MSAA_ (redefinition of `Texture2DMS`) (@Hozar2002)
+- Fixed dynamic wet surfaces (@Hozar2002)
+- Fixed displaying of water foam (@Drombeys, @Hozar2002)
+- Fixed skycube displaying on water surface sunshafts (@Drombeys)
+- Added shader to correct displaying of _LODs_ when _MSAA_ alphatest is enabled in classic __Direct3D 10__ (@Hozar2002)
+- Added hint for ransacking monsters (@Drombeys)
+- Implemented skyblend accumulation for sunshafts (@Drombeys)
+- Implemented fog accounting for water on __Direct3D 9__ (@Drombeys, @Hozar2002)
+- Implemented light accounting for water foam (@Drombeys, @Hozar2002)
+- Overrided entry point in _3D Fluid_ shaders (@Drombeys)
+- Enabled `water_soft` shader for `water_studen` and `water_ryaska` (@Drombeys)
 
 ## Release 0.3 (May 2022)
 
 ### Common
 
-- Migration to __Visual Studio 2022__
-- Fixed compilation errors
-- Fixed a lot of issues with linking
-- Enabled multicore building for all projects
-- Enabled __x86-64__ toolchain for all projects
-- Enabled __GitHub Actions__
-- Disabled debug and incremental info for all projects
+- Migration to __Visual Studio 2022__ (@acidicMercury8)
+- Fixed compilation errors (@acidicMercury8)
+- Fixed a lot of issues with linking (@acidicMercury8)
+- Enabled multicore building for all projects (@acidicMercury8)
+- Enabled __x86-64__ toolchain for all projects (@acidicMercury8)
+- Enabled __GitHub Actions__ (@acidicMercury8)
+- Disabled debug and incremental info for all projects (@acidicMercury8)
 
 ### Core
 
-- Replaced custom `xr_deque<T>` and `xr_vector<T>` with aliases of `std::deque<T>` and `std::vector<T>`
-- Placed `clear_and_reserve()` method of `xr_vector<T>` class in a separate function
-- Partially replaced STL extension aliases with `using` analogs
-- Deleted `DEF_*` and `DEFINE_*` macroses from STL extensions
+- Replaced custom `xr_deque<T>` and `xr_vector<T>` with aliases of `std::deque<T>` and `std::vector<T>` (@acidicMercury8)
+- Placed `clear_and_reserve()` method of `xr_vector<T>` class in a separate functionclear_and_reserve (@acidicMercury8)
+- Partially replaced STL extension aliases with `using` analogs (@Drombeys)
+- Deleted `DEF_*` and `DEFINE_*` macroses from STL extensions (@Drombeys)
 
 ### Engine
 
-- Replaced path to `shaders_cache` in all renders
-- Fixed bug with exporting light to render
-- Fixed __VSync__ on all renders
-- Fixed blurring fonts on D3D11
-- Fixed dialog window of level changer
+- Replaced path to `shaders_cache` in all renders (@Drombeys)
+- Fixed bug with exporting light to render (@Hozar2002)
+- Fixed __VSync__ on all renders (@Drombeys)
+- Fixed blurring fonts on D3D11 (@Hozar2002)
+- Fixed dialog window of level changer (@Drombeys)
 
 ### Dependencies
 
-- Replaced `Flobbster.Windows.Forms` binary
-- Replaced `dockpanelsuite` and bumped to `3.1`
-- Deleted unused __Intel VTune__ functionality
-- Deleted unused __OpenAutomate__ functionality
-- Bumped `TargetFramework` to __.NET Framework__ 4.7.2
+- Replaced `Flobbster.Windows.Forms` binary (@acidicMercury8)
+- Replaced `dockpanelsuite` and bumped to `3.1` (@acidicMercury8)
+- Deleted unused __Intel VTune__ functionality (@acidicMercury8)
+- Deleted unused __OpenAutomate__ functionality (@Drombeys)
+- Bumped `TargetFramework` to __.NET Framework__ 4.7.2 (@acidicMercury8)
 
 ### Resources
 
-- Added resources
-- Normalized encoding of scripts
+- Added resources (@acidicMercury8)
+- Normalized encoding of scripts (@acidicMercury8)
 
 ## Release 0.2 (November 2021)
 
 ### Common
 
-- Migration to __Visual Studio 2015__
-- Fixed compilation errors
-- Replaced deprecated functions to safe and modern analogs
-- Replaced some custom functions and types to standard library analog
-- Disabled hardcoded _GUID_ of __DirectX__
-- Replaced `debug::make_final<T>` class to _C++11_ `final` specifier
+- Migration to __Visual Studio 2015__ (@acidicMercury8, @Drombeys)
+- Fixed compilation errors (@acidicMercury8)
+- Replaced deprecated functions to safe and modern analogs (@acidicMercury8)
+- Replaced some custom functions and types to standard library analog (@acidicMercury8, @Drombeys)
+- Disabled hardcoded _GUID_ of __DirectX__ (@Drombeys)
+- Replaced `debug::make_final<T>` class to _C++11_ `final` specifier (@Drombeys)
 
 ### Core
 
-- Removed __BugTrap__ and __minizip__
-- Fixed `Debug` configuration workability
-- Fixed window focus error
+- Removed __BugTrap__ and __minizip__ (@Drombeys)
+- Fixed `Debug` configuration workability (@acidicMercury8)
+- Fixed window focus error (@Hozar2002)
 
 ### Engine
 
-- Fixed `-nointro` key
-- Unlocked console commands: `hud_fov`, `fov`, `jump_to_level`, `g_god`, `g_unlimitedammo`, `run_script`, `run_string`, `time_factor`
-- Changed viewing angle coefficient to `67.5`
+- Fixed `-nointro` key (@Drombeys)
+- Unlocked console commands: `hud_fov`, `fov`, `jump_to_level`, `g_god`, `g_unlimitedammo`, `run_script`, `run_string`, `time_factor` (@Drombeys)
+- Changed viewing angle coefficient to `67.5` (@Drombeys)
 
 ### Utilities
 
-- Incompletely integrated __DirectXTex__
+- Incompletely integrated __DirectXTex__ (@acidicMercury8)
 
 ## Release 0.1 (March 2021)
 
 ### Common
 
-- Migration to __Visual Studio 2013__
-- Fixed compilation errors
-- Fixed windows displaying in editor projects
-- Configured engine and editor projects building
-- Configured audio libraries and __OpenAutomate__ projects building
+- Migration to __Visual Studio 2013__ (@acidicMercury8)
+- Fixed compilation errors (@acidicMercury8)
+- Fixed windows displaying in editor projects (@acidicMercury8)
+- Configured engine and editor projects building (@acidicMercury8)
+- Configured audio libraries and __OpenAutomate__ projects building (@Drombeys, @acidicMercury8)
 
 ### Core
 
-- Fixed looping and breaking the stack on `NODEFAULT`
+- Fixed looping and breaking the stack on `NODEFAULT` (@acidicMercury8)
 
 ### Engine
 
-- Fixed skyboxes stretching
+- Fixed skyboxes stretching (@Drombeys)
