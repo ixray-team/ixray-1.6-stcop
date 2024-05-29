@@ -100,3 +100,83 @@ jobs:
           name: utilities-packages-${{ github.sha }}
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}/packages/
+
+  build-targets:
+    name: 'Build targets'
+
+    strategy:
+      matrix:
+        system:
+          - ubuntu-22.04
+        preset:
+          - Targets
+        platform:
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+    defaults:
+      run:
+        shell: bash
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Ninja
+        run: |
+          sudo apt update && \
+          sudo apt install -y \
+            ninja-build
+
+      - name: Configure targets
+        run: |
+          cmake \
+            -S . \
+            -B build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            -G "Ninja Multi-Config" \
+            -DCMAKE_C_COMPILER=clang-14 \
+            -DCMAKE_CXX_COMPILER=clang++-14 \
+            -DIXRAY_UTILS=ON
+
+      - name: Build targets
+        run: |
+          cmake \
+            --build build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }} \
+            --target TextureCloner \
+            --config ${{ matrix.config }} \
+            -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: targets-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
+            !build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
+            !build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.debug
+          if-no-files-found: ignore
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.config != 'Release' }}
+        with:
+          name: targets-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.debug
+          if-no-files-found: ignore
+
+      - name: Upload libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: targets-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
+          if-no-files-found: ignore
