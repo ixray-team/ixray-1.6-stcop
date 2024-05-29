@@ -54,11 +54,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache dependencies
+      - name: Cache packages
         uses: actions/cache@v4
         with:
-          key: ${{ matrix.preset }}-NuGet-
+          key: ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
           restore-keys: |
+            ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
