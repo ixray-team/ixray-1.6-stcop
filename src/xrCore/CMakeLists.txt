@@ -192,12 +192,35 @@ include(gitver.cmake)
 
 # Copy SDK binaries
 if (WIN32)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
 endif()
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${CORE_SDL3_NAME}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IXR_TBB_NAME}
-)    
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${CORE_SDL3_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IXR_TBB_NAME}
+    )
+elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CORE_SDL3_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IXR_TBB_NAME}
+    )
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ln -s libtbb.so.12.13 libtbb.so.12
+        COMMAND ln -s libtbb.so.12 libtbb.so
+        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+endif()
+
+# Set relative runpath
+if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_RPATH ""
+        BUILD_RPATH_USE_ORIGIN ON
+    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_RPATH "$ORIGIN"
+    )
+endif()

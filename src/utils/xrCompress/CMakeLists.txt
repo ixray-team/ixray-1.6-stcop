@@ -47,3 +47,14 @@ target_link_libraries(xrCompress PRIVATE lzo_static_lib)
 if (WIN32)
     target_link_libraries(xrCompress PRIVATE "winmm.lib")
 endif()
+
+# Set relative runpath
+if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_RPATH ""
+        BUILD_RPATH_USE_ORIGIN ON
+    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUILD_RPATH "$ORIGIN"
+    )
+endif()
