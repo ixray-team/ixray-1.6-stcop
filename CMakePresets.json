@@ -222,8 +222,8 @@
         },
 
         {
-            "name": "Compressor-Base",
-            "displayName": "Compressor-Base",
+            "name": "Compressor-Base-Windows",
+            "displayName": "Compressor-Base-Windows",
             "hidden": true,
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
@@ -238,10 +238,10 @@
             }
         },
         {
-            "name": "Compressor-x86",
-            "displayName": "Compressor-x86",
-            "inherits": "Compressor-Base",
-            "binaryDir": "build/x86/Compressor",
+            "name": "Compressor-x86-Windows",
+            "displayName": "Compressor-x86-Windows",
+            "inherits": "Compressor-Base-Windows",
+            "binaryDir": "build/x86/Compressor-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -249,15 +249,40 @@
             }
         },
         {
-            "name": "Compressor-x64",
-            "displayName": "Compressor-x64",
-            "inherits": "Compressor-Base",
-            "binaryDir": "build/x64/Compressor",
+            "name": "Compressor-x64-Windows",
+            "displayName": "Compressor-x64-Windows",
+            "inherits": "Compressor-Base-Windows",
+            "binaryDir": "build/x64/Compressor-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
                 }
             }
+        },
+
+        {
+            "name": "Compressor-Base-Linux",
+            "displayName": "Compressor-Base-Linux",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "cacheVariables": {
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "ON",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF",
+                "CMAKE_C_COMPILER": "clang-14",
+                "CMAKE_CXX_COMPILER": "clang++-14"
+            }
+        },
+        {
+            "name": "Compressor-x64-Linux",
+            "displayName": "Compressor-x64-Linux",
+            "inherits": "Compressor-Base-Linux",
+            "binaryDir": "build/x64/Compressor-Linux"
         }
     ],
     "buildPresets": [
@@ -448,39 +473,58 @@
         },
 
         {
-            "name": "Compressor-x86-Debug",
-            "displayName": "Compressor-x86-Debug",
-            "configurePreset": "Compressor-x86",
+            "name": "Compressor-x86-Windows-Debug",
+            "displayName": "Compressor-x86-Windows-Debug",
+            "configurePreset": "Compressor-x86-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Compressor-x86-RelWithDebInfo",
-            "displayName": "Compressor-x86-RelWithDebInfo",
-            "configurePreset": "Compressor-x86",
+            "name": "Compressor-x86-Windows-RelWithDebInfo",
+            "displayName": "Compressor-x86-Windows-RelWithDebInfo",
+            "configurePreset": "Compressor-x86-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Compressor-x86-Release",
-            "displayName": "Compressor-x86-Release",
-            "configurePreset": "Compressor-x86",
+            "name": "Compressor-x86-Windows-Release",
+            "displayName": "Compressor-x86-Windows-Release",
+            "configurePreset": "Compressor-x86-Windows",
             "configuration": "Release"
         },
         {
-            "name": "Compressor-x64-Debug",
-            "displayName": "Compressor-x64-Debug",
-            "configurePreset": "Compressor-x64",
+            "name": "Compressor-x64-Windows-Debug",
+            "displayName": "Compressor-x64-Windows-Debug",
+            "configurePreset": "Compressor-x64-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Compressor-x64-RelWithDebInfo",
-            "displayName": "Compressor-x64-RelWithDebInfo",
-            "configurePreset": "Compressor-x64",
+            "name": "Compressor-x64-Windows-RelWithDebInfo",
+            "displayName": "Compressor-x64-Windows-RelWithDebInfo",
+            "configurePreset": "Compressor-x64-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Compressor-x64-Release",
-            "displayName": "Compressor-x64-Release",
-            "configurePreset": "Compressor-x64",
+            "name": "Compressor-x64-Windows-Release",
+            "displayName": "Compressor-x64-Windows-Release",
+            "configurePreset": "Compressor-x64-Windows",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Compressor-x64-Linux-Debug",
+            "displayName": "Compressor-x64-Linux-Debug",
+            "configurePreset": "Compressor-x64-Linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Compressor-x64-Linux-RelWithDebInfo",
+            "displayName": "Compressor-x64-Linux-RelWithDebInfo",
+            "configurePreset": "Compressor-x64-Linux",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Compressor-x64-Linux-Release",
+            "displayName": "Compressor-x64-Linux-Release",
+            "configurePreset": "Compressor-x64-Linux",
             "configuration": "Release"
         }
     ]
