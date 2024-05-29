@@ -64,42 +64,42 @@ jobs:
 
       - name: Configure utilities
         run: |
-          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
 
       - name: Build utilities
         run: |
-          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ matrix.config }}
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: utilities-binaries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: utilities-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.exe
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.dll
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
 
       - name: Upload symbols
         uses: actions/upload-artifact@v4
         if: ${{ matrix.config != 'Release' }}
         with:
-          name: utilities-symbols-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: utilities-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.pdb
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
 
       - name: Upload libraries
         uses: actions/upload-artifact@v4
         with:
-          name: utilities-libraries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: utilities-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/lib/${{ matrix.config }}/
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
         if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
         with:
-          name: utilities-packages-${{ github.sha }}
+          name: utilities-packages-${{ matrix.system }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/packages/
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   build-targets:
     name: 'Build targets'

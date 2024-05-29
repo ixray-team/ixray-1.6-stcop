@@ -7,8 +7,8 @@
     },
     "configurePresets": [
         {
-            "name": "Engine-Base",
-            "displayName": "Engine-Base",
+            "name": "Engine-Base-Windows",
+            "displayName": "Engine-Base-Windows",
             "hidden": true,
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
@@ -24,10 +24,10 @@
             }
         },
         {
-            "name": "Engine-x86",
-            "displayName": "Engine-x86",
-            "inherits": "Engine-Base",
-            "binaryDir": "build/x86/Engine",
+            "name": "Engine-x86-Windows",
+            "displayName": "Engine-x86-Windows",
+            "inherits": "Engine-Base-Windows",
+            "binaryDir": "build/x86/Engine-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -35,10 +35,10 @@
             }
         },
         {
-            "name": "Engine-x64",
-            "displayName": "Engine-x64",
-            "inherits": "Engine-Base",
-            "binaryDir": "build/x64/Engine",
+            "name": "Engine-x64-Windows",
+            "displayName": "Engine-x64-Windows",
+            "inherits": "Engine-Base-Windows",
+            "binaryDir": "build/x64/Engine-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -87,8 +87,8 @@
         },
 
         {
-            "name": "Server-Base",
-            "displayName": "Server-Base",
+            "name": "Server-Base-Windows",
+            "displayName": "Server-Base-Windows",
             "hidden": true,
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
@@ -104,10 +104,10 @@
             }
         },
         {
-            "name": "Server-x86",
-            "displayName": "Server-x86",
-            "inherits": "Server-Base",
-            "binaryDir": "build/x86/Server",
+            "name": "Server-x86-Windows",
+            "displayName": "Server-x86-Windows",
+            "inherits": "Server-Base-Windows",
+            "binaryDir": "build/x86/Server-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -115,10 +115,10 @@
             }
         },
         {
-            "name": "Server-x64",
-            "displayName": "Server-x64",
-            "inherits": "Server-Base",
-            "binaryDir": "build/x64/Server",
+            "name": "Server-x64-Windows",
+            "displayName": "Server-x64-Windows",
+            "inherits": "Server-Base-Windows",
+            "binaryDir": "build/x64/Server-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -127,8 +127,8 @@
         },
 
         {
-            "name": "Utilities-Base",
-            "displayName": "Utilities-Base",
+            "name": "Utilities-Base-Windows",
+            "displayName": "Utilities-Base-Windows",
             "hidden": true,
             "generator": "Visual Studio 17 2022",
             "cacheVariables": {
@@ -143,10 +143,10 @@
             }
         },
         {
-            "name": "Utilities-x86",
-            "displayName": "Utilities-x86",
-            "inherits": "Utilities-Base",
-            "binaryDir": "build/x86/Utilities",
+            "name": "Utilities-x86-Windows",
+            "displayName": "Utilities-x86-Windows",
+            "inherits": "Utilities-Base-Windows",
+            "binaryDir": "build/x86/Utilities-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -154,10 +154,10 @@
             }
         },
         {
-            "name": "Utilities-x64",
-            "displayName": "Utilities-x64",
-            "inherits": "Utilities-Base",
-            "binaryDir": "build/x64/Utilities",
+            "name": "Utilities-x64-Windows",
+            "displayName": "Utilities-x64-Windows",
+            "inherits": "Utilities-Base-Windows",
+            "binaryDir": "build/x64/Utilities-Windows",
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -287,39 +287,39 @@
     ],
     "buildPresets": [
         {
-            "name": "Engine-x86-Debug",
-            "displayName": "Engine-x86-Debug",
-            "configurePreset": "Engine-x86",
+            "name": "Engine-x86-Windows-Debug",
+            "displayName": "Engine-x86-Windows-Debug",
+            "configurePreset": "Engine-x86-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Engine-x86-RelWithDebInfo",
-            "displayName": "Engine-x86-RelWithDebInfo",
-            "configurePreset": "Engine-x86",
+            "name": "Engine-x86-Windows-RelWithDebInfo",
+            "displayName": "Engine-x86-Windows-RelWithDebInfo",
+            "configurePreset": "Engine-x86-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Engine-x86-Release",
-            "displayName": "Engine-x86-Release",
-            "configurePreset": "Engine-x86",
+            "name": "Engine-x86-Windows-Release",
+            "displayName": "Engine-x86-Windows-Release",
+            "configurePreset": "Engine-x86-Windows",
             "configuration": "Release"
         },
         {
-            "name": "Engine-x64-Debug",
-            "displayName": "Engine-x64-Debug",
-            "configurePreset": "Engine-x64",
+            "name": "Engine-x64-Windows-Debug",
+            "displayName": "Engine-x64-Windows-Debug",
+            "configurePreset": "Engine-x64-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Engine-x64-RelWithDebInfo",
-            "displayName": "Engine-x64-RelWithDebInfo",
-            "configurePreset": "Engine-x64",
+            "name": "Engine-x64-Windows-RelWithDebInfo",
+            "displayName": "Engine-x64-Windows-RelWithDebInfo",
+            "configurePreset": "Engine-x64-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Engine-x64-Release",
-            "displayName": "Engine-x64-Release",
-            "configurePreset": "Engine-x64",
+            "name": "Engine-x64-Windows-Release",
+            "displayName": "Engine-x64-Windows-Release",
+            "configurePreset": "Engine-x64-Windows",
             "configuration": "Release"
         },
 
@@ -361,76 +361,76 @@
         },
 
         {
-            "name": "Server-x86-Debug",
-            "displayName": "Server-x86-Debug",
-            "configurePreset": "Server-x86",
+            "name": "Server-x86-Windows-Debug",
+            "displayName": "Server-x86-Windows-Debug",
+            "configurePreset": "Server-x86-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Server-x86-RelWithDebInfo",
-            "displayName": "Server-x86-RelWithDebInfo",
-            "configurePreset": "Server-x86",
+            "name": "Server-x86-Windows-RelWithDebInfo",
+            "displayName": "Server-x86-Windows-RelWithDebInfo",
+            "configurePreset": "Server-x86-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Server-x86-Release",
-            "displayName": "Server-x86-Release",
-            "configurePreset": "Server-x86",
+            "name": "Server-x86-Windows-Release",
+            "displayName": "Server-x86-Windows-Release",
+            "configurePreset": "Server-x86-Windows",
             "configuration": "Release"
         },
         {
-            "name": "Server-x64-Debug",
-            "displayName": "Server-x64-Debug",
-            "configurePreset": "Server-x64",
+            "name": "Server-x64-Windows-Debug",
+            "displayName": "Server-x64-Windows-Debug",
+            "configurePreset": "Server-x64-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Server-x64-RelWithDebInfo",
-            "displayName": "Server-x64-RelWithDebInfo",
-            "configurePreset": "Server-x64",
+            "name": "Server-x64-Windows-RelWithDebInfo",
+            "displayName": "Server-x64-Windows-RelWithDebInfo",
+            "configurePreset": "Server-x64-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Server-x64-Release",
-            "displayName": "Server-x64-Release",
-            "configurePreset": "Server-x64",
+            "name": "Server-x64-Windows-Release",
+            "displayName": "Server-x64-Windows-Release",
+            "configurePreset": "Server-x64-Windows",
             "configuration": "Release"
         },
 
         {
-            "name": "Utilities-x86-Debug",
-            "displayName": "Utilities-x86-Debug",
-            "configurePreset": "Utilities-x86",
+            "name": "Utilities-x86-Windows-Debug",
+            "displayName": "Utilities-x86-Windows-Debug",
+            "configurePreset": "Utilities-x86-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Utilities-x86-RelWithDebInfo",
-            "displayName": "Utilities-x86-RelWithDebInfo",
-            "configurePreset": "Utilities-x86",
+            "name": "Utilities-x86-Windows-RelWithDebInfo",
+            "displayName": "Utilities-x86-Windows-RelWithDebInfo",
+            "configurePreset": "Utilities-x86-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Utilities-x86-Release",
-            "displayName": "Utilities-x86-Release",
-            "configurePreset": "Utilities-x86",
+            "name": "Utilities-x86-Windows-Release",
+            "displayName": "Utilities-x86-Windows-Release",
+            "configurePreset": "Utilities-x86-Windows",
             "configuration": "Release"
         },
         {
-            "name": "Utilities-x64-Debug",
-            "displayName": "Utilities-x64-Debug",
-            "configurePreset": "Utilities-x64",
+            "name": "Utilities-x64-Windows-Debug",
+            "displayName": "Utilities-x64-Windows-Debug",
+            "configurePreset": "Utilities-x64-Windows",
             "configuration": "Debug"
         },
         {
-            "name": "Utilities-x64-RelWithDebInfo",
-            "displayName": "Utilities-x64-RelWithDebInfo",
-            "configurePreset": "Utilities-x64",
+            "name": "Utilities-x64-Windows-RelWithDebInfo",
+            "displayName": "Utilities-x64-Windows-RelWithDebInfo",
+            "configurePreset": "Utilities-x64-Windows",
             "configuration": "RelWithDebInfo"
         },
         {
-            "name": "Utilities-x64-Release",
-            "displayName": "Utilities-x64-Release",
-            "configurePreset": "Utilities-x64",
+            "name": "Utilities-x64-Windows-Release",
+            "displayName": "Utilities-x64-Windows-Release",
+            "configurePreset": "Utilities-x64-Windows",
             "configuration": "Release"
         },
 

@@ -65,42 +65,42 @@ jobs:
 
       - name: Configure engine
         run: |
-          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
 
       - name: Build engine
         run: |
-          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ matrix.config }}
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: engine-binaries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.exe
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.dll
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
 
       - name: Upload symbols
         uses: actions/upload-artifact@v4
         if: ${{ matrix.config != 'Release' }}
         with:
-          name: engine-symbols-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: engine-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/bin/${{ matrix.config }}/*.pdb
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
 
       - name: Upload libraries
         uses: actions/upload-artifact@v4
         with:
-          name: engine-libraries-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          name: engine-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/lib/${{ matrix.config }}/
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
         if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
         with:
-          name: engine-packages-${{ github.sha }}
+          name: engine-packages-${{ matrix.system }}-${{ github.sha }}
           path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}/packages/
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
   build-compressor:
     name: 'Build compressor'
@@ -233,6 +233,10 @@ jobs:
         platform:
           - x86
           - x64
+        preset:
+          - Engine
+        config:
+          - RelWithDebInfo
 
     runs-on: ${{ matrix.system }}
 
@@ -240,8 +244,8 @@ jobs:
       - name: Get engine
         uses: actions/download-artifact@v4
         with:
-          name: engine-binaries-${{ matrix.platform }}-RelWithDebInfo-${{ github.sha }}
-          path: build/${{ matrix.platform }}/Engine/bin/RelWithDebInfo/
+          name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
 
       - name: Get assets
         uses: actions/download-artifact@v4
@@ -252,12 +256,12 @@ jobs:
       - name: Move files
         run: |
           mkdir ${{ github.workspace }}/bin
-          move ${{ github.workspace }}/build/${{ matrix.platform }}/Engine/bin/RelWithDebInfo/*.* ${{ github.workspace }}/bin
+          move ${{ github.workspace }}/build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.* ${{ github.workspace }}/bin
 
       - name: Upload engine
         uses: actions/upload-artifact@v4
         with:
-          name: engine-publish-${{ matrix.platform }}-${{ github.sha }}
+          name: engine-publish-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
           path: |
             bin/
             gamedata/
