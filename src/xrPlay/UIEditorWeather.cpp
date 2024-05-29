@@ -1,3 +1,4 @@
+#include "../xrEngine/stdafx.h"
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/IGame_Level.h"

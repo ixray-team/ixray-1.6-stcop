@@ -5,7 +5,6 @@ project(IXRay)
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
-option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 option(IXRAY_PLUGINS "Enable X-Ray Plugins" OFF)
 option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
@@ -13,18 +12,24 @@ option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 
+# CI trash
+option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
+option(IXRAY_CI "GitHub Actions build" OFF)
+set(IXR_TEST_CI NOT IXRAY_UTILS OR NOT IXRAY_CI)
+
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
 
-# VS options
-set(CMAKE_EXECUTABLE_ENABLE_EXPORTS ON)
+# CXX options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (MSVC)
     include("cmake/msvc.cmake")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR NOT WIN32)
+    include("cmake/clang.cmake")
 endif()
 
 # Add new build types
@@ -33,22 +38,6 @@ include("cmake/shipping.cmake")
 # Wrap CMake general configs 
 set(CMAKE_CONFIGURATION_TYPES ${IXR_CONFIGURATIONS_STR} CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
-
-# Output target
-if(MSVC)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
-endif()
-
-# Set LLVM config
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR NOT WIN32)
-    include("cmake/clang.cmake")
-endif()
 
 # Asan
 if (IXRAY_ASAN)

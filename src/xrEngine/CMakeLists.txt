@@ -90,16 +90,7 @@ target_include_directories(xrAbstractions PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
 
 # Move precompiled header
-set_target_properties(xrAbstractions PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-set_target_properties(xrAbstractions PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-target_precompile_headers(xrAbstractions PUBLIC "stdafx.h")
-
-file(GLOB_RECURSE ENGINE_SOURCE_PCH_FILES "stdafx.*")
-file(GLOB_RECURSE ENGINE_SOURCE_ALL_C_FILES "*.c")
-
-set_source_files_properties(${ENGINE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-source_group("pch" FILES ${ENGINE_SOURCE_PCH_FILES})
+target_validate_pch(xrAbstractions ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Project defines
 target_compile_definitions(xrAbstractions PRIVATE ENGINE_BUILD)

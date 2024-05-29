@@ -12,11 +12,6 @@
 #include "../xrCore/API/xrapi.h"
 #include "../xrServerEntities/smart_cast.h"
 
-#ifndef smart_cast
-#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
-#define smart_cast fast_dynamic_cast
-#endif
-
 #include "../xrCDB/xrCDB.h"
 #include "../xrSound/sound.h"
 

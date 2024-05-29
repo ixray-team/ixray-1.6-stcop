@@ -19,18 +19,7 @@ add_executable(xrCompress ${COMPR_SRC_FILES})
 target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Move precompiled header
-if (WIN32)
-    set_target_properties(xrCompress PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-    set_target_properties(xrCompress PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-    set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-    target_precompile_headers(xrCompress PUBLIC "stdafx.h")
-
-    file(GLOB_RECURSE COMPRESSOR_PCH_FILES "stdafx.*")
-    file(GLOB_RECURSE COMPRESSOR_SOURCE_ALL_C_FILES "*.c")
-
-    set_source_files_properties(${COMPRESSOR_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-    source_group("pch" FILES ${COMPRESSOR_PCH_FILES})
-endif()
+target_validate_pch(xrCompress ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Project defines
 if (WIN32)

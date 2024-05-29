@@ -1,5 +1,4 @@
 #include "../../xrCore/xrCore.h"
-#define smart_cast dynamic_cast
 #define SCRIPTS_API
 #include "../xrAI/xrAI.h"
 

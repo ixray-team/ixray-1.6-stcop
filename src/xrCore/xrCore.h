@@ -207,3 +207,6 @@ namespace Platform
 }
 
 extern XRCORE_API xrCore Core;
+
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
+#define smart_cast fast_dynamic_cast

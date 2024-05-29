@@ -145,18 +145,7 @@ if (NOT WIN32)
 endif()
 
 # Move precompiled header
-if (MSVC)
-	set_target_properties(xrCore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-	set_target_properties(xrCore PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-	target_precompile_headers(xrCore PRIVATE "stdafx.h")
-
-	file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "stdafx.*")
-	file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "*.c")
-
-	set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-	source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
-endif()
+target_validate_pch(xrCore ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Project defines
 target_compile_definitions(xrCore PRIVATE XRCORE_EXPORTS)
@@ -191,22 +180,16 @@ endif()
 include(gitver.cmake)
 
 # Copy SDK binaries
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX}/${CORE_SDL3_NAME}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX}/${IXR_TBB_NAME}
+)
+
 if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
-endif()
-
-if(WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${CORE_SDL3_NAME}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${IXR_TBB_NAME}
-    )
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CORE_SDL3_NAME}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${IXR_TBB_NAME}
-    )
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ln -s libtbb.so.12.13 libtbb.so.12
         COMMAND ln -s libtbb.so.12 libtbb.so

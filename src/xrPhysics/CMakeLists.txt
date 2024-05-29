@@ -61,13 +61,4 @@ target_link_libraries(xrPhysics PUBLIC ODE)
 target_link_libraries(xrPhysics PUBLIC xrAbstractions)
 
 # Move precompiled header
-set_target_properties(xrPhysics PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-set_target_properties(xrPhysics PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-target_precompile_headers(xrPhysics PRIVATE "stdafx.h")
-
-file(GLOB_RECURSE XPH_SOURCE_PCH_FILES "stdafx.*")
-file(GLOB_RECURSE XPH_SOURCE_ALL_C_FILES "*.c")
-
-set_source_files_properties(${XPH_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
-source_group("pch" FILES ${XPH_SOURCE_PCH_FILES})
+target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})

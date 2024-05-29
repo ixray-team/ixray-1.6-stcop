@@ -26,18 +26,18 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
         add_subdirectory("Layers/xrRenderPC_R2")
     endif()
 
-    if(NOT IXRAY_UTILS)
+    if(IXR_TEST_CI)
         add_subdirectory("Layers/xrRenderPC_R4")
         add_subdirectory("xrGame")
     endif()
 endif()
 
-if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND NOT IXRAY_UTILS)
+if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
     add_subdirectory("xrServer")
     add_subdirectory("xrGameSpy")
 endif()
 
-if(NOT IXRAY_COMPRESSOR_ONLY AND NOT IXRAY_UTILS)
+if(NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
     add_subdirectory("xrPlay")
 endif()
 
@@ -53,12 +53,12 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrScripts PROPERTIES ${IXRAY_FOLDER_ENGINE})
 
-    if(NOT IXRAY_UTILS)
+    if(IXR_TEST_CI)
         set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
     endif()
 endif()
 
-if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND NOT IXRAY_UTILS)
+if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
     set_target_properties(xrGameSpy PROPERTIES ${IXRAY_FOLDER_GAME})
 endif()
 
@@ -71,7 +71,7 @@ if(WIN32)
         set_target_properties(xrRender_R2 PROPERTIES ${IXRAY_FOLDER_RENDER})
     endif()
 
-    if (NOT IXRAY_COMPRESSOR_ONLY AND NOT IXRAY_UTILS)
+    if (NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
         set_target_properties(xrRender_R4 PROPERTIES ${IXRAY_FOLDER_RENDER})
 
         # Set default project

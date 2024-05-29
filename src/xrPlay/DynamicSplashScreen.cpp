@@ -1,4 +1,6 @@
+#include "../xrCore/xrCore.h"
 #include "resource.h"
+
 constexpr const wchar_t* c_szSplashClass = _T("SplashWindow");
 HWND logoWindow = nullptr;
 

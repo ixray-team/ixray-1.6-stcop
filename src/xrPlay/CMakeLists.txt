@@ -27,18 +27,13 @@ source_group("UI" FILES ${XPLAY_SOURCE_UI_FILES})
 # Apply list
 list(APPEND XPLAY_SRC_FILES ${XPLAY_SOURCE_ALL_FILES})
 
-# Remove files
-#list(FILTER CPIPE_SRC_FILES EXCLUDE REGEX "")
-
 # xrEngine project
 add_executable(xrEngine WIN32 ${XPLAY_SOURCE_ALL_FILES})
 target_include_directories(xrEngine PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrEngine PRIVATE "${IXRAY_SDK_INC}")
+set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # Project defines
-#target_compile_definitions(xrEngine PRIVATE XRPLAY_EXPORT)
-
-add_compile_options(/fp:fast)
 target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list

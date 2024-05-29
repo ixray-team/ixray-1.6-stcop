@@ -36,3 +36,25 @@ if(${CMAKE_GENERATOR_PLATFORM} MATCHES "arm64")
 else()
     set(IXR_ARM_ENABLE OFF)
 endif()
+
+# Setup build patches
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Hack for COPY
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX ${CMAKE_BINARY_DIR}/bin/$<CONFIG>/)
+
+# Other 
+function(target_validate_pch target target_path)
+	set_target_properties(${target} PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+	set_target_properties(${target} PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+	target_precompile_headers(${target} PRIVATE "stdafx.h")
+
+	file(GLOB_RECURSE CORE_SOURCE_PCH_FILES "${target_path}/stdafx.*")
+	file(GLOB_RECURSE CORE_SOURCE_ALL_C_FILES "${target_path}/*.c")
+
+	set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+	source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
+endfunction()

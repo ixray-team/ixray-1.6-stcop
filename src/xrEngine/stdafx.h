@@ -1,10 +1,6 @@
 #pragma once
 #include "../xrCore/xrCore.h"
 
-#undef smart_cast
-#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
-#define smart_cast fast_dynamic_cast
-
 #if !defined(XRSE_FACTORY_EXPORTS) && !defined(_EDITOR)
 #	include "imgui.h"
 #endif

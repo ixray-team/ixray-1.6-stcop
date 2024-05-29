@@ -14,3 +14,15 @@ if (NOT WIN32)
         link_directories(/usr/lib64 /usr/local/lib64)
     endif(LLD_PROGRAM)
 endif()
+
+# Setup build patches
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/$<CONFIG>)
+
+# Hack for COPY
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+# Other 
+function(target_validate_pch target target_path)
+endfunction()

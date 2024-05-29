@@ -65,7 +65,7 @@ jobs:
 
       - name: Configure utilities
         run: |
-          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} -DIXRAY_CI=ON
 
       - name: Build utilities
         run: |
@@ -144,8 +144,9 @@ jobs:
             -G "Ninja Multi-Config" \
             -DCMAKE_C_COMPILER=clang-14 \
             -DCMAKE_CXX_COMPILER=clang++-14 \
-            -DIXRAY_UTILS=ON
-
+            -DIXRAY_UTILS=ON \
+            -DIXRAY_CI=ON
+            
       - name: Build targets
         run: |
           cmake \
