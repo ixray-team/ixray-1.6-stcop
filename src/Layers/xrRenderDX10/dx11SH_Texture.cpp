@@ -68,8 +68,8 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 		pSurface->GetType(&type);
 		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type )
 		{
-			D3D_SHADER_RESOURCE_VIEW_DESC	ViewDesc;
-
+			D3D_SHADER_RESOURCE_VIEW_DESC ViewDesc { };
+			
 			if (desc.MiscFlags&D3D_RESOURCE_MISC_TEXTURECUBE)
 			{
 				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
@@ -78,18 +78,19 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 			}
 			else
 			{
-            if(desc.SampleDesc.Count <= 1 )
-            {
-			      ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-				   ViewDesc.Texture2D.MostDetailedMip = 0;
-   			   ViewDesc.Texture2D.MipLevels = desc.MipLevels;
-            }
-            else
-            {
-			      ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
-               ViewDesc.Texture2D.MostDetailedMip = 0;
-   			   ViewDesc.Texture2D.MipLevels = desc.MipLevels;
-            }
+				if(desc.SampleDesc.Count <= 1)
+				{
+					ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
+					ViewDesc.Texture2D.MostDetailedMip = 0;
+					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+				}
+				else
+				{
+					VERIFY(desc.ArraySize == 1);
+					ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
+					ViewDesc.Texture2D.MostDetailedMip = 0;
+					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+				}
 			}			
 
 			ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
@@ -103,6 +104,9 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 				ViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				break;
 			}
+			
+			if (desc.ArraySize > 1)
+                ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
 
          // this would be supported by DX10.1 but is not needed for stalker
         // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
