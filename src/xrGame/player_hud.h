@@ -108,6 +108,7 @@ struct attachable_hud_item
 //props
 	u32								m_upd_firedeps_frame;
 	void		tune				(Ivector values);
+	void		anim_play			(const shared_str& item_anm_name, BOOL bMixIn, float speed);
 	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd);
 
 };
@@ -115,7 +116,7 @@ struct attachable_hud_item
 class player_hud
 {
 public: 
-					player_hud			();
+					player_hud			(bool invert = false);
 					~player_hud			();
 	void			load				(const shared_str& model_name);
 	void			load_default		(){load("actor_hud_05");};
@@ -123,7 +124,13 @@ public:
 	void			render_hud			();	
 	void			render_item_ui		();
 	bool			render_item_ui_query();
+
 	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed);
+	bool			check_anim			(const shared_str& anim_name, u16 place_idx);
+
+	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), BOOL bMixIn = FALSE, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), BOOL UpdateCallbackType = 0);
+	void			animator_fx_play		(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), u8 anm_idx = u8(0), float blendAccrue = 1.f, float blendFalloff = 1.f, float Speed = 1.f, float Power = 1.f);
+
 	const shared_str& section_name		() const {return m_sect_name;}
 
 	attachable_hud_item* create_hud_item(const shared_str& sect);
@@ -140,6 +147,11 @@ public:
 	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
+	void			RestoreHandBlends(LPCSTR ignored_part);
+
+	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
+	void			SetHandsVisible(bool val){m_bhands_visible=val;};
+	bool			GetHandsVisible(){return m_bhands_visible;};
 private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
@@ -149,20 +161,21 @@ private:
 
 	shared_str							m_sect_name;
 
-	Fmatrix								m_attach_offset;
+	Fmatrix								m_attach_offsetr, m_attach_offsetl;
 
 	Fmatrix								m_transform;
 	Fmatrix								m_transformL;
-
-	Fmatrix								m_transform_fake = Fidentity;
-	Fmatrix								m_transformL_fake = Fidentity;
 
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
 	xr_vector<attachable_hud_item*>		m_pool;
 
-	static void  LeftArmCallback(CBoneInstance* B);
+	u16									m_blocked_part_idx;
+	bool								m_bhands_visible;
+	bool								m_binverted;
+	int									item_idx_priority;
+	void  LeftArmCallback(CBoneInstance* B);
 };
 
 extern player_hud* g_player_hud;

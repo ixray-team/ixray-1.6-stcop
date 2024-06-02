@@ -1026,11 +1026,59 @@ void CActor::UpdateCL	()
 	{
 		Fvector cent;
 		Center(cent);
+		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
-		has_visible = pCam && pCam->GetDist() >= 0.43f;
+		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
 		has_shadow_only = psDeviceFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
 	}
 	setVisible(has_visible, has_shadow_only);
+
+	if(IsFocused())
+	{
+		BOOL bHudView				= HUDview();
+		if(bHudView)
+		{
+			CInventoryItem* pInvItem	= inventory().ActiveItem();	
+			if( pInvItem )
+			{
+				CHudItem* pHudItem		= smart_cast<CHudItem*>(pInvItem);	
+				if(pHudItem)
+				{
+					if( pHudItem->IsHidden() )
+					{
+						g_player_hud->detach_item(pHudItem);
+					}
+					else
+					{
+						g_player_hud->attach_item(pHudItem);
+					}
+				}
+			}else
+			{
+					g_player_hud->detach_item_idx	( 0 );
+					//Msg("---No active item in inventory(), item 0 detached.");
+			}
+
+			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+			if(pDetector)
+			{
+				if(pDetector->IsHidden())
+				{
+					g_player_hud->detach_item(pDetector->cast_hud_item());
+				}
+				else if(!g_player_hud->attached_item(1))
+				{
+					g_player_hud->attach_item(pDetector->cast_hud_item());
+				}
+			}
+		}
+		else
+		{
+			g_player_hud->detach_all_items();
+			//Msg("---No hud view found, all items detached.");
+		}
+			
+	}
 
 	float dt = Device.fTimeDelta;
 
@@ -1230,7 +1278,7 @@ void CActor::UpdateCL	()
 	}
 	Fmatrix							trans;
 	Cameras().hud_camera_Matrix(trans);
-	
+
 	if(IsFocused())
 		g_player_hud->update			(trans);
 
@@ -1255,53 +1303,6 @@ void CActor::shedule_Update	(u32 DT)
 {
 	setSVU							(OnServer());
 //.	UpdateInventoryOwner			(DT);
-
-	if(IsFocused())
-	{
-		BOOL bHudView				= HUDview();
-		if(bHudView)
-		{
-			CInventoryItem* pInvItem	= inventory().ActiveItem();	
-			if( pInvItem )
-			{
-				CHudItem* pHudItem		= smart_cast<CHudItem*>(pInvItem);	
-				if(pHudItem)
-				{
-					if( pHudItem->IsHidden() )
-					{
-						g_player_hud->detach_item(pHudItem);
-					}
-					else
-					{
-						g_player_hud->attach_item(pHudItem);
-					}
-				}
-			}else
-			{
-					g_player_hud->detach_item_idx	( 0 );
-					//Msg("---No active item in inventory(), item 0 detached.");
-			}
-
-			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-			if(pDetector)
-			{
-				if(pDetector->IsHidden())
-				{
-					g_player_hud->detach_item(pDetector->cast_hud_item());
-				}
-				else
-				{
-					g_player_hud->attach_item(pDetector->cast_hud_item());
-				}
-			}
-		}
-		else
-		{
-			g_player_hud->detach_all_items();
-			//Msg("---No hud view found, all items detached.");
-		}
-			
-	}
 
 	if(m_holder || !getEnabled() || !Ready())
 	{

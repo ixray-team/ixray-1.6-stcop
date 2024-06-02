@@ -17,7 +17,8 @@ protected:
 	bool			m_bFastAnimMode;
 	bool			m_bNeedActivation;
 	bool			m_bDetectorActive;
-
+	bool			m_bHideAndRestore;
+	u32				m_old_state;
 public:
 					CCustomDetector		();
 	virtual			~CCustomDetector	();
@@ -34,10 +35,10 @@ public:
 			void	switch_detector		();
 			bool 	IsWorking			();
 	inline	bool	IsActive			() const { return m_bDetectorActive; };
-
+	virtual bool	need_renderable		();
 	virtual void 	OnMoveToSlot		(const SInvItemPlace& prev);
 	virtual void 	OnMoveToRuck		(const SInvItemPlace& prev);
-
+			void	ShowingCallback		(CBlend*B);
 	virtual void	OnActiveItem		();
 	virtual void	OnHiddenItem		();
 	virtual void	OnStateSwitch		(u32 S);
@@ -55,6 +56,8 @@ public:
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
 	void			SetActive		(bool val){m_bDetectorActive = val;};
 	virtual bool	HasActive		() const	{return m_bDetectorActive;};
+
+	void			SetHideAndRestore(bool val){m_bHideAndRestore = val;};
 
 	virtual bool	can_be_attached		() const;
 protected:

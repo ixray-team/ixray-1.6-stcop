@@ -279,6 +279,7 @@ void CKinematicsAnimated::IBlendSetup(CBlend& B,u16 part,u8 channel, MotionID mo
 	B.stop_at_end	= noloop;
 	B.playing		= TRUE;
 	B.stop_at_end_callback = TRUE;
+	B.update_callback = FALSE;
 	B.Callback		= Callback;
 	B.CallbackParam = CallbackParam;
 
@@ -302,6 +303,7 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.playing		= TRUE;
 	B.stop_at_end_callback = TRUE;
 	B.stop_at_end	= FALSE;
+	B.update_callback = FALSE;
 	//
 	B.Callback		= 0;
 	B.CallbackParam = 0;

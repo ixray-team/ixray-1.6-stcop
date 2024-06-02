@@ -42,6 +42,7 @@ public:
 
 	BOOL			playing;
 	BOOL			stop_at_end_callback;
+	BOOL			update_callback;
 	BOOL			stop_at_end;
 	BOOL			fall_at_end;
 	PlayCallback	Callback;
@@ -75,6 +76,7 @@ CBlend(  ):
 	speed(0)				,
 	playing(0)				,
 	stop_at_end_callback(0)	,
+	update_callback(0)		,
 	stop_at_end(0)			,
 	fall_at_end(0)			,
 	Callback(0)				,
@@ -104,7 +106,8 @@ const CBlend& operator=( const CBlend& r )
 	blendPower			=	r.blendPower			;
 	speed				=	r.speed					;
 	playing				=	r.playing				;
-	stop_at_end_callback=	r.stop_at_end_callback;
+	stop_at_end_callback=	r.stop_at_end_callback	;
+	update_callback		=	r.update_callback		;
 	stop_at_end			=	r.stop_at_end			;
 	fall_at_end			=	r.fall_at_end			;
 	Callback			=	r.Callback				;
@@ -136,6 +139,9 @@ IC void CBlend::update_play( float dt, PlayCallback _Callback )
 	blendAmount 		+= pow_dt*blendAccrue*blendPower;
 
 	clamp				( blendAmount, 0.f, blendPower); 
+
+	if (_Callback && update_callback && stop_at_end_callback)
+		_Callback( this );
 
 
 	if( !update_time( dt ) )//reached end 
