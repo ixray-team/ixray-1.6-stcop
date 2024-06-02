@@ -187,14 +187,14 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 		
 		if (I->second != m_idx)
 		{
-			Msg("Invalid motion index: %s", mname);
+			Msg("! Invalid motion index: %s", mname);
 		}
 
 		u32 dwLen			= MS->r_u32();
 		for (u32 i=0; i<bones->size(); i++){
 			u16 bone_id		= rm_bones[i];
 			R_ASSERT2(bone_id != BI_NONE, "Invalid remap index.");
-			CMotion&		M	= m_motions[bones->at(bone_id)->name][I->second];
+			CMotion&		M	= m_motions[bones->at(bone_id)->name][m_idx];
 			M.set_count			(dwLen);
 			M.set_flags			(MS->r_u8());
 
