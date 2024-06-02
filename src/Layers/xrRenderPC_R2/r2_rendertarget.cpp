@@ -339,9 +339,8 @@ CRenderTarget::CRenderTarget		()
 			w = RCache.get_width();
 			h = RCache.get_height();
 		}
-		D3DFORMAT	fmt = !g_pGPU->IsAMD ? D3DFMT_R32F : D3DFMT_R16F;
 
-		rt_half_depth.create		(r2_RT_half_depth, w, h, fmt);
+		rt_half_depth.create		(r2_RT_half_depth, w, h, D3DFMT_R16F);
 		s_ssao.create				(b_ssao, "r2\\ssao");
 	}
 

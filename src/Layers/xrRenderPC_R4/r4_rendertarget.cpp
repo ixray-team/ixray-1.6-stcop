@@ -694,7 +694,7 @@ CRenderTarget::CRenderTarget()
 			h = s_dwHeight;
 		}
 
-		DxgiFormat fmt = DxgiFormat::DXGI_FORMAT_R32_FLOAT;
+		DxgiFormat fmt = DxgiFormat::DXGI_FORMAT_R16_FLOAT;
 		rt_half_depth.create(r2_RT_half_depth, w, h, fmt);
 
 	}
