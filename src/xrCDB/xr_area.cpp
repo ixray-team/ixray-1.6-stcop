@@ -81,7 +81,7 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 	hdrCFORM H;
 
 	// Cache for cform
-	string_path LevelName;
+	string_path LevelName = {};
 	u32 crc = crc32(F->pointer(), F->length());
 	auto LevelPath = FS.get_path("$level$")->m_Add;
 	IReader* pReaderCache = nullptr;
