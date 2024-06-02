@@ -12,11 +12,18 @@
 CEliteDetector::CEliteDetector()
 {
 	m_artefacts.m_af_rank = 3;
+	m_ui_xml_tag = "elite"; 
 }
+
 
 CEliteDetector::~CEliteDetector()
 {}
 
+void  CEliteDetector::Load(LPCSTR section)
+{
+	inherited::Load(section);
+	m_ui_xml_tag = READ_IF_EXISTS(pSettings, r_string, section, "ui_xml_tag", m_ui_xml_tag);
+}
 
 void CEliteDetector::CreateUI()
 {
@@ -231,6 +238,7 @@ void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared
 CScientificDetector::CScientificDetector()
 {
 	m_artefacts.m_af_rank = 3;
+	m_ui_xml_tag = "scientific";
 }
 
 CScientificDetector::~CScientificDetector()
