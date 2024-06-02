@@ -104,9 +104,6 @@
         "cmake.configureOnOpen": false,
         "cmake.options.statusBarVisibility": "compact",
         "cmake.showOptionsMovedNotification": false,
-        "markdownlint.ignore": [
-            ".github/**.md"
-        ],
         "vsicons.dontShowNewVersionMessage": true,
         "vssolution.lineEndings": "crlf"
     }
