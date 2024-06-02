@@ -1,16 +1,27 @@
 project(ActorEditor)
 
 # Files import
-file(GLOB_RECURSE EAE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-    "*.*"
+file(GLOB EAE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
+    "*.cpp"
+    "*.h"
+)
+
+file(GLOB EAE_SOURCE_UI_FILES CONFIGURE_DEPENDS "UI*.*")
+
+file(GLOB EPPE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
+    "../../xrGame/PostprocessAnimator.*"
+    "CustomTools/UIPostProcess.*"
 )
 
 set(EAE_SRC_FILES)
 
-source_group("src" FILES ${EAE_SOURCE_ALL_FILES})
+source_group("src/ae/main" FILES ${EAE_SOURCE_ALL_FILES})
+source_group("src/ae/ui" FILES ${EAE_SOURCE_UI_FILES})
+source_group("src/ppe" FILES ${EPPE_SOURCE_ALL_FILES})
 
 # Apply list
 list(APPEND EAE_SRC_FILES ${EAE_SOURCE_ALL_FILES})
+list(APPEND EAE_SRC_FILES ${EPPE_SOURCE_ALL_FILES})
 
 # Remove unused files
 list(FILTER EAE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
@@ -23,6 +34,7 @@ target_precompile_headers(ActorEditor PRIVATE "stdafx.h")
 # Project defines
 target_compile_definitions(ActorEditor PRIVATE _ACTOR_EDITOR)
 target_compile_definitions(ActorEditor PUBLIC XR_EDITOR_NEW)
+target_compile_definitions(ActorEditor PRIVATE _PP_EDITOR_)
 
 target_compile_options(ActorEditor PRIVATE /W0)
 target_compile_definitions(ActorEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")

@@ -1,8 +1,12 @@
 #include "stdafx.h"
-#include "UIEditorWindow.h"
-#include "../EditorProps/ImGuiFileDialog.h"
+#include "UIPostProcess.h"
+#include "../xrEUI/ImOpenFileDialog.h"
+#include "../xrEUI/ImGuiFileDialogConfig.h"
 
-static int BackWnd = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings;
+#include "../../xrEProps/UIFileLoad.h"
+extern CUFileOpen* FileOpen;
+
+static CMainPPE MyForm;
 
 void CMainPPE::AddKey(float Value, bool OnlyValue)
 {
@@ -104,74 +108,60 @@ size_t CMainPPE::GetSelectedItemID() const
 	return Iter;
 }
 
-void CMainPPE::Apply()
+void CMainPPE::Apply(xr_string FileName)
 {
-	if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+	// action if OK
+	std::filesystem::path Path = FileName.c_str();
+	xr_string filePathName = FileName;
+	MyForm.FileName = Path.filename().generic_string().c_str();
+	// action
+
+	if (MyForm.DrawDialogType == DialogType::Save)
 	{
-		if (ImGuiFileDialog::Instance()->IsOk())
+		MyForm.mAnimator.Save(filePathName.c_str());
+	}
+	else if (MyForm.DrawDialogType == DialogType::Load)
+	{
+		if (!FS.exist(filePathName.c_str()))
 		{
-			// action if OK
-			std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-			std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-			FileName = ImGuiFileDialog::Instance()->GetCurrentFileName().c_str();
-			// action
-
-			ImGuiFileDialog::Instance()->Close();
-
-			if (DrawDialogType == DialogType::Save)
-			{
-				mAnimator.Save(filePathName.c_str());
-			}
-			else if (DrawDialogType == DialogType::Load)
-			{
-				if (!FS.exist(filePathName.c_str()))
-				{
-					string_path Root;
-					FS.update_path(Root, "$fs_root$", "");
-					filePathName = filePathName.substr(strlen(Root));
-				}
-
-				mAnimator.Load(filePathName.c_str());
-				LoadData();
-			}
-
-			DrawDialogType = DialogType::None;
+			string_path Root;
+			FS.update_path(Root, "$fs_root$", "");
+			filePathName = filePathName.substr(strlen(Root));
 		}
-		else
-		{
-			ImGuiFileDialog::Instance()->Close();
-		}
+
+		MyForm.mAnimator.Load(filePathName.c_str());
+		MyForm.LoadData();
 	}
 
+	MyForm.DrawDialogType = DialogType::None;
+
 	// Update props 
-	ApplyData();
+	MyForm.ApplyData();
 }
 
 void CMainPPE::ClickHandle()
 {
 	if (LoadClick)
 	{
-		IGFD::FileDialogConfig config;
 		string_path AnimDir = {};
 		FS.update_path(AnimDir, "$game_anims$", "");
 
-		config.path = AnimDir;
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", AnimDir);
 		LoadClick = false;
 
 		DrawDialogType = DialogType::Load;
+		FileOpen->AfterLoadCallback = CMainPPE::Apply;
 	}
 	else if (SaveClick)
 	{
-		IGFD::FileDialogConfig config;
 		string_path AnimDir = {};
 		FS.update_path(AnimDir, "$game_anims$", "");
 
-		config.path = AnimDir;
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", config);
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", AnimDir);
 		SaveClick = false;
-
+		
 		DrawDialogType = DialogType::Save;
+		FileOpen->AfterLoadCallback = CMainPPE::Apply;
 	}
 	else if (NewClick)
 	{
@@ -333,15 +323,18 @@ void CMainPPE::UpdateData()
 
 void CMainPPE::DrawChart()
 {
-	ImGui::SetNextWindowPos({ 0, HeaderSize });
+	//ImGui::SetNextWindowPos({ 0, HeaderSize });
+	float XPos = ImGui::GetWindowPos().x;
+	float YPos = ImGui::GetWindowPos().y;
+	auto WndSize = ImGui::GetWindowSize();
+	WndSize.y /= 2;
 
-	ImGui::Begin("PostProcessChart", 0, BackWnd | ImGuiWindowFlags_NoInputs);
-	ImVec2 WndSize = { (float)EDevice.TargetWidth, (float)EDevice.TargetHeight / 2 };
+	ImGui::BeginChild("PostProcessChart", WndSize, ImGuiChildFlags_None);
 	ImGui::SetWindowSize("PostProcessChart", WndSize);
-	ImGui::GetWindowDrawList()->AddLine({ 0, HeaderSize + WndSize.y / 2 }, { WndSize.x, HeaderSize + WndSize.y / 2 }, ImColor(255, 255, 255));
-	ImGui::GetWindowDrawList()->AddText({ 5, HeaderSize + WndSize.y / 2 - 15 }, ImColor(255, 255, 255), "127.5");
-	ImGui::GetWindowDrawList()->AddText({ 5, HeaderSize }, ImColor(255, 255, 255), "255");
-	ImGui::GetWindowDrawList()->AddText({ 5, HeaderSize + WndSize.y - 15 }, ImColor(255, 255, 255), "0");
+	ImGui::GetWindowDrawList()->AddLine({ XPos + 5, YPos + HeaderSize + WndSize.y / 2 }, { XPos + WndSize.x, YPos + HeaderSize + WndSize.y / 2 }, ImColor(255, 255, 255));
+	ImGui::GetWindowDrawList()->AddText({ XPos + 10, YPos + HeaderSize + WndSize.y / 2 - 15 }, ImColor(255, 255, 255), "127.5");
+	ImGui::GetWindowDrawList()->AddText({ XPos + 10, YPos + HeaderSize }, ImColor(255, 255, 255), "255");
+	ImGui::GetWindowDrawList()->AddText({ XPos + 10, YPos + HeaderSize + WndSize.y - 15 }, ImColor(255, 255, 255), "0");
 
 	if (!ListData.empty())
 	{
@@ -377,177 +370,181 @@ void CMainPPE::DrawChart()
 
 				if (Iter != 0)
 				{
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.x }, { LineStepWidth * Iter, Pos.x }, ImColor(255, 0, 0), 2.f);
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.y }, { LineStepWidth * Iter, Pos.y }, ImColor(0, 255, 0), 2.f);
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * (Iter - 1), PrevPos.z }, { LineStepWidth * Iter, Pos.z }, ImColor(0, 0, 255), 2.f);
+					ImGui::GetWindowDrawList()->AddLine({ XPos + LineStepWidth * (Iter - 1), YPos + PrevPos.x }, { XPos + LineStepWidth * Iter, YPos + Pos.x }, ImColor(255, 0, 0), 2.f);
+					ImGui::GetWindowDrawList()->AddLine({ XPos + LineStepWidth * (Iter - 1), YPos + PrevPos.y }, { XPos + LineStepWidth * Iter, YPos + Pos.y }, ImColor(0, 255, 0), 2.f);
+					ImGui::GetWindowDrawList()->AddLine({ XPos + LineStepWidth * (Iter - 1), YPos + PrevPos.z }, { XPos + LineStepWidth * Iter, YPos + Pos.z }, ImColor(0, 0, 255), 2.f);
 				}
 
 				PrevPos.set(Pos);
 
 				if (Item.IsActive)
 				{
-					ImGui::GetWindowDrawList()->AddLine({ LineStepWidth * Iter, HeaderSize }, { LineStepWidth * Iter, WndSize.y + HeaderSize }, ImColor(127, 127, 127));
-					ImGui::GetWindowDrawList()->AddText({ (LineStepWidth * Iter) - 15 - (Item.Name.length() * 4), HeaderSize + WndSize.y - 15}, ImColor(255, 255, 255), Item.Name.c_str());
+					ImGui::GetWindowDrawList()->AddLine({ XPos + LineStepWidth * Iter, YPos + HeaderSize }, { XPos + LineStepWidth * Iter, YPos + WndSize.y + HeaderSize }, ImColor(127, 127, 127));
+					ImGui::GetWindowDrawList()->AddText({ XPos + (LineStepWidth * Iter) - 15 - (Item.Name.length() * 4), YPos + HeaderSize + WndSize.y - 15}, ImColor(255, 255, 255), Item.Name.c_str());
 				}
 				Iter++;
 			}
 		}
 	}
 	
-	ImGui::End();
+	ImGui::EndChild();
 }
 
 void CMainPPE::DrawTool()
 {
-	ImGui::SetNextWindowPos({ 0, (float)EDevice.TargetHeight / 2 + HeaderSize });
-	ImGui::SetNextWindowSize({ (float)EDevice.TargetWidth, (float)EDevice.TargetHeight / 2 - HeaderSize });
-	ImGui::Begin("PostProcessTools", 0, BackWnd | ImGuiWindowFlags_NoInputs);
-	const char* AllModes[] = { "Base Color", "Add Color", "Gray Color", "Duality", "Noise", "Blur", "ColorMapper" };
-	// ImGui::SetNextWindowSize({ 100, 30 });
+	float XPos = ImGui::GetWindowPos().x;
+	float YPos = ImGui::GetWindowPos().y;
+	auto WndSize = ImGui::GetWindowSize();
+	WndSize.y /= 2;
 
-	if (ImGui::Begin("ModeWnd", 0, BackWnd | ImGuiWindowFlags_NoBackground))
+	ImGui::SetNextWindowPos({ XPos, YPos + WndSize.y });
+	//ImGui::SetNextWindowSize({ (float)Device.TargetWidth, (float)Device.TargetHeight / 2 - HeaderSize });
+	if (ImGui::BeginChild("PostProcessTools", {}, ImGuiChildFlags_None))
 	{
-		ImGui::SetWindowPos({ 5,  (float)EDevice.TargetHeight / 2 + 5 + HeaderSize });
-		ImGui::SetWindowSize({ 300, 50 });
-		if (ImGui::Combo("Mode", &ModeIter, AllModes, IM_ARRAYSIZE(AllModes)))
-		{
-			LoadData();
-		}
-		ImGui::End();
-	}
+		const char* AllModes[] = { "Base Color", "Add Color", "Gray Color", "Duality", "Noise", "Blur", "ColorMapper" };
+		// ImGui::SetNextWindowSize({ 100, 30 });
 
-	ImGui::SetNextWindowPos({ 5, (float)EDevice.TargetHeight / 2 + 30 + HeaderSize });
-	ImGui::SetNextWindowSize({ 220, 500 });
-	if (ImGui::Begin("HelperInput", 0, BackWnd | ImGuiWindowFlags_NoBackground))
-	{
-		if (ImGui::BeginListBox(" ", { 195, 200 }))
+		if (ImGui::BeginChild("ModeWnd", { 300, 50 }, ImGuiChildFlags_None))
 		{
-			for (PointItem& Item : ListData)
+			ImGui::SetWindowPos({ XPos + 5,  YPos + WndSize.y + 5 + HeaderSize });
+			//ImGui::SetWindowSize({ 300, 50 });
+			if (ImGui::Combo("Mode", &ModeIter, AllModes, IM_ARRAYSIZE(AllModes)))
 			{
-				if (ImGui::Selectable(Item.Name.c_str(), &Item.IsActive))
+				LoadData();
+			}
+		}
+		ImGui::EndChild();
+
+		ImGui::SetNextWindowPos({ XPos + 5, YPos + WndSize.y + 30 + HeaderSize });
+		if (ImGui::BeginChild("HelperInput", { 220, 500 }, ImGuiChildFlags_None))
+		{
+			if (ImGui::BeginListBox(" ", { 195, 200 }))
+			{
+				for (PointItem& Item : ListData)
 				{
-					for (PointItem& SecondItem : ListData)
+					if (ImGui::Selectable(Item.Name.c_str(), &Item.IsActive))
 					{
-						if (Item.Value != SecondItem.Value)
+						for (PointItem& SecondItem : ListData)
 						{
-							SecondItem.IsActive = false;
+							if (Item.Value != SecondItem.Value)
+							{
+								SecondItem.IsActive = false;
+							}
 						}
+						UpdateData();
 					}
-					UpdateData();
+				}
+				ImGui::EndListBox();
+			}
+
+			static float InputItemName;
+
+			ImGui::SetCursorPosX(8);
+			float OldYPos = ImGui::GetCursorPosY();
+			ImGui::SetNextWindowBgAlpha(0.f);
+			if (ImGui::BeginChild("HelperInputFloat", { 125, 40 }))
+			{
+				ImGui::InputFloat("  ", &InputItemName, 0.01f, 0.5f, "%.2f");
+			}
+			ImGui::EndChild();
+
+			ImGui::SetNextWindowBgAlpha(0.f);
+			ImGui::SetCursorPos({ 92, OldYPos });
+			if (ImGui::BeginChild("HelperPointButtons", { 130, 40 }))
+			{
+				if (ImGui::Button("Add", { 32, 19 }))
+				{
+					AddKey(InputItemName);
+				}
+
+				ImGui::SetCursorPos({ 35, 0 });
+				if (ImGui::Button("Del", { 33, 19 }))
+				{
+					size_t Iter = 0;
+					for (const PointItem& Item : ListData)
+					{
+						if (Item.IsActive)
+							break;
+
+						Iter++;
+					}
+
+					auto PP = GetCurrentParam();
+					PP->delete_value(ListData[Iter].Value);
+
+					if (Iter < ListData.size())
+					{
+						ListData.erase(ListData.begin() + Iter);
+					}
+
+				}
+
+				ImGui::SetCursorPos({ 71, 0 });
+				if (ImGui::Button("Clear", { 40, 19 }))
+				{
+					auto PP = GetCurrentParam();
+
+					for (const PointItem& Item : ListData)
+					{
+						PP->delete_value(Item.Value);
+					}
+					ListData.clear();
 				}
 			}
-			ImGui::EndListBox();
-		}
-
-		static float InputItemName;
-
-		ImGui::SetCursorPosX(8);
-		float OldYPos = ImGui::GetCursorPosY();
-		ImGui::SetNextWindowBgAlpha(0.f);
-		if (ImGui::BeginChild("HelperInputFloat", { 125, 40 }))
-		{
-			ImGui::InputFloat("  ", &InputItemName, 0.01f, 0.5f, "%.2f");
+			ImGui::EndChild();
 		}
 		ImGui::EndChild();
 
-		ImGui::SetNextWindowBgAlpha(0.f);
-		ImGui::SetCursorPos({ 92, OldYPos });
-		if (ImGui::BeginChild("HelperPointButtons", { 130, 40 }))
+		ImGui::SetNextWindowPos({ XPos + 210, YPos + WndSize.y + 32 + HeaderSize });
+		if (ImGui::BeginChild("EditHelper", { 400, 300 }, ImGuiChildFlags_None))
 		{
-			if (ImGui::Button("Add", { 32, 19 }))
+			if (ListData.empty())
 			{
-				AddKey(InputItemName);
+				float Temp = 0;
+				ImGui::InputFloat("Key Time ", &Temp, 0.01f, 0.5f, "%.2f");
+			}
+			else
+			{
+				float& Value = ListData[GetSelectedItemID()].Value;
+				ImGui::InputFloat("Key Time ", &Value, 0.01f, 0.5f, "%.2f");
+
+				if (Value < 0)
+					Value = 0;
 			}
 
-			ImGui::SetCursorPos({ 35, 0 });
-			if (ImGui::Button("Del", { 33, 19 }))
+			if (ModeIter == 3)
 			{
-				size_t Iter = 0;
-				for (const PointItem& Item : ListData)
-				{
-					if (Item.IsActive)
-						break;
-
-					Iter++;
-				}
-
-				auto PP = GetCurrentParam();
-				PP->delete_value(ListData[Iter].Value);
-
-				if (Iter < ListData.size())
-				{
-					ListData.erase(ListData.begin() + Iter);
-				}
-
+				ImGui::InputFloat("Duality [H]", &Duality.x, 0.01f, 0.5f);
+				ImGui::InputFloat("Duality [V]", &Duality.y, 0.01f, 0.5f);
 			}
-
-			ImGui::SetCursorPos({ 71, 0 });
-			if (ImGui::Button("Clear", { 40, 19 }))
+			else if (ModeIter == 6)
 			{
-				auto PP = GetCurrentParam();
-
-				for (const PointItem& Item : ListData)
+				ImGui::InputFloat("Influence", &Influence, 0.01f, 0.5f);
+				ImGui::InputText("Texture", Texture, sizeof(Texture));
+			}
+			else if (ModeIter == 4)
+			{
+				ImGui::InputFloat("Noise [Intensity]", &Noise.x, 0.01f, 0.5f);
+				ImGui::InputFloat("Noise [Grain]", &Noise.y, 0.01f, 0.5f);
+				ImGui::InputFloat("Noise [FPS]", &Noise.z, 0.01f, 0.5f);
+			}
+			else
+			{
+				if (ModeIter == 2 || ModeIter == 5)
 				{
-					PP->delete_value(Item.Value);
+					ImGui::InputFloat("Itensity", &Itensity, 0.01f, 0.5f, "%.2f");
+
+					if (Itensity < 0)
+						Itensity = 0;
 				}
-				ListData.clear();
+
+				DrawPicker();
 			}
 		}
 		ImGui::EndChild();
-
-		ImGui::End();
 	}
 
-	ImGui::SetNextWindowPos({ 210, (float)EDevice.TargetHeight / 2 + 32 + HeaderSize });
-	ImGui::SetNextWindowSize({ 400, 300 });
-	if (ImGui::Begin("EditHelper", 0, BackWnd | ImGuiWindowFlags_NoBackground))
-	{
-		if (ListData.empty())
-		{
-			float Temp = 0;
-			ImGui::InputFloat("Key Time ", &Temp, 0.01f, 0.5f, "%.2f");
-		}
-		else
-		{
-			float& Value = ListData[GetSelectedItemID()].Value;
-			ImGui::InputFloat("Key Time ", &Value, 0.01f, 0.5f, "%.2f");
-
-			if (Value < 0)
-				Value = 0;
-		}
-
-		if (ModeIter == 3)
-		{
-			ImGui::InputFloat("Duality [H]", &Duality.x, 0.01f, 0.5f);
-			ImGui::InputFloat("Duality [V]", &Duality.y, 0.01f, 0.5f);
-		}
-		else if (ModeIter == 6)
-		{
-			ImGui::InputFloat("Influence", &Influence, 0.01f, 0.5f);
-			ImGui::InputText("Texture", Texture, sizeof(Texture));
-		}
-		else if (ModeIter == 4)
-		{
-			ImGui::InputFloat("Noise [Intensity]", &Noise.x, 0.01f, 0.5f);
-			ImGui::InputFloat("Noise [Grain]", &Noise.y, 0.01f, 0.5f);
-			ImGui::InputFloat("Noise [FPS]", &Noise.z, 0.01f, 0.5f);
-		}
-		else
-		{
-			if (ModeIter == 2 || ModeIter == 5)
-			{
-				ImGui::InputFloat("Itensity", &Itensity, 0.01f, 0.5f, "%.2f");
-
-				if (Itensity < 0)
-					Itensity = 0;
-			}
-
-			DrawPicker();
-		}
-		ImGui::End();
-	}
-
-	ImGui::End();
+	ImGui::EndChild();
 }
 
 void CMainPPE::DrawPicker()
@@ -562,21 +559,63 @@ void CMainPPE::DrawPicker()
 	}
 }
 
-void CMainPPE::DrawUI()
+CMainPPE::CMainPPE()
 {
-	ImGui::BeginMainMenuBar();
-	ImGui::MenuItem("New", "",  &NewClick);
-	ImGui::MenuItem("Load", "", &LoadClick);
-	ImGui::MenuItem("Save", "", &SaveClick);
-	bool Temp = false;
-	ImGui::MenuItem(FileName.c_str(), "", Temp, false);
+	bOpen = false;
+}
 
-	HeaderSize = ImGui::GetWindowHeight();
-	ImGui::EndMainMenuBar();
+void CMainPPE::Draw()
+{
+	if (!bOpen)
+		return;
 
-	DrawChart();
-	DrawTool();
+	if (ImGui::Begin("Post Process Editor", &bOpen))
+	{
+		ImVec2 BtnSize = { 40, 20 };
 
-	ClickHandle();
-	Apply();
+		if (!FileName.empty())
+		{
+			ImGui::Button(FileName.c_str(), {100, BtnSize.y});
+			ImGui::SameLine();
+		}
+
+		if (ImGui::Button("New", BtnSize))
+			NewClick = true;
+		ImGui::SameLine();
+
+		if (ImGui::Button("Load", BtnSize))
+			LoadClick = true;
+		ImGui::SameLine();
+
+		if (ImGui::Button("Save", BtnSize))
+			SaveClick = true;
+
+		HeaderSize = BtnSize.y;
+#if 0
+		ImGui::BeginMainMenuBar();
+		ImGui::MenuItem("New", "", &NewClick);
+		ImGui::MenuItem("Load", "", &LoadClick);
+		ImGui::MenuItem("Save", "", &SaveClick);
+		bool Temp = false;
+		ImGui::MenuItem(FileName.c_str(), "", Temp, false);
+
+		HeaderSize = ImGui::GetWindowHeight();
+		ImGui::EndMainMenuBar();
+#endif
+		DrawChart();
+		DrawTool();
+
+		ClickHandle();
+		//Apply();
+	}
+
+	ImGui::End();
+}
+
+CMainPPE& CMainPPE::Instance()
+{
+	static bool Reg = false;
+	UI->Push(&MyForm, false);
+
+	return MyForm;
 }

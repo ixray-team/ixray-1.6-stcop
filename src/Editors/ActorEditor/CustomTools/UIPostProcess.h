@@ -1,7 +1,8 @@
 #pragma once
 #include "../../xrGame/PostprocessAnimator.h"
 
-class CMainPPE
+class CMainPPE:
+    public XrUI
 {
 public:
     struct PointItem
@@ -47,17 +48,22 @@ private:
     CPostProcessParam* GetCurrentParam();
     size_t GetSelectedItemID() const;
     
-    void Apply();
+    static void Apply(xr_string);
     void ClickHandle();
 
     void ApplyData();
     void LoadData();
     void UpdateData();
+
 private:
 	void DrawChart();
 	void DrawTool();
     void DrawPicker();
 
 public:
-	void DrawUI();
+    CMainPPE();
+
+	virtual void Draw();
+    static CMainPPE& Instance();
+    bool& OpenState() { return bOpen; }
 };
