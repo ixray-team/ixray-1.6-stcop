@@ -440,7 +440,7 @@ void CRender::Calculate				()
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);
 
-			if (psDeviceFlags.test(rsActorShadow)) {
+			if (psGameFlags.test(rsActorShadow)) {
 				g_hud->Render_First();
 			}
 

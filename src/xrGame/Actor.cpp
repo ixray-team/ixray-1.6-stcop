@@ -1020,7 +1020,7 @@ void CActor::UpdateCL	()
 	if (HUDview())
 	{
 		has_visible = 0;
-		has_shadow_only = psDeviceFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
 	}
 	else
 	{
@@ -1029,7 +1029,7 @@ void CActor::UpdateCL	()
 		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
 		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
-		has_shadow_only = psDeviceFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
 	}
 	setVisible(has_visible, has_shadow_only);
 

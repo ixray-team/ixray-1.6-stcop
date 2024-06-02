@@ -685,7 +685,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_render_details",	&psDeviceFlags,		rsDetails);
 	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
 	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
-	CMD3(CCC_Mask,		"rs_render_portals",	&psDeviceFlags,		rsDrawPortals);
+	CMD3(CCC_Mask,		"rs_render_portals",	&psGameFlags,		rsDrawPortals);
 #endif
 	// Render device states
 	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
@@ -698,7 +698,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.5f			);
-	CMD3(CCC_Mask,		"r_actor_shadow",		&psDeviceFlags,		rsActorShadow			);
+	CMD3(CCC_Mask,		"r_actor_shadow",		&psGameFlags,		rsActorShadow			);
 
 	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 #ifdef DEBUG

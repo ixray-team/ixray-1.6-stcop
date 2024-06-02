@@ -81,13 +81,12 @@ ICF		bool	psort_pred			(const std::pair<CPortal*, float>& _1, const std::pair<CP
 }
 extern float r_ssaDISCARD			;
 extern float r_ssaLOD_A, r_ssaLOD_B ;
-const float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
 void CPortalTraverser::fade_render	()
 {
 	if (f_portals.empty())			return;
 
 	// re-sort, back to front
-	if(!psDeviceFlags.test(rsDrawPortals))
+	if(!psGameFlags.test(rsDrawPortals))
 		std::sort						(f_portals.begin(),f_portals.end(),psort_pred);
 	
 	// calc poly-count
@@ -97,14 +96,15 @@ void CPortalTraverser::fade_render	()
 	// fill buffers
 	u32			_offset				= 0;
 	FVF::L*		_v					= (FVF::L*)RCache.Vertex.Lock(_pcount*3,f_geom.stride(),_offset);
+	float		ssaRange			= r_ssaLOD_A - r_ssaLOD_B;
 	Fvector		_ambient_f			= g_pGamePersistent->Environment().CurrentEnv->ambient;
-	u32			_ambient			= psDeviceFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
+	u32			_ambient			= psGameFlags.test(rsDrawPortals) ? u32(-1) : color_rgba_f(_ambient_f.x,_ambient_f.y,_ambient_f.z,0.f);
 	for (u32 _it = 0; _it<f_portals.size(); _it++)
 	{
 		std::pair<CPortal*, float>&	fp		= f_portals	[_it]	;
 		CPortal*					_P		= fp.first	;
 		u32							_clr=u32(-1);
-		if(psDeviceFlags.test(rsDrawPortals))
+		if(psGameFlags.test(rsDrawPortals))
 			_clr	= color_rgba(0,255,100,255);
 		else
 		{

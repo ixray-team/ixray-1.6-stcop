@@ -40,9 +40,13 @@ enum {
 	rsR4							= (1ul<<20ul),
 
 	rsDeviceActive					= (1ul<<21ul),
+	// 22-32 bit - reserved to Editor
+};
 
-	rsActorShadow					= (1ul<<22ul),
-	rsDrawPortals					= (1ul<<23ul),
+// psGameFlags
+enum {
+	rsActorShadow					= (1ul<<0ul),
+	rsDrawPortals					= (1ul<<1ul),
 	// 22-32 bit - reserved to Editor
 };
 
@@ -51,7 +55,7 @@ enum {
 ENGINE_API extern	u32			psCurrentVidMode[];
 ENGINE_API extern	u32			psCurrentBPP		;
 ENGINE_API extern	Flags32		psDeviceFlags		;
-
+ENGINE_API extern	Flags32		psGameFlags			;
 // game path definition
 #define _game_data_				"$game_data$"
 #define _game_textures_			"$game_textures$"

@@ -117,7 +117,7 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// Early-out sphere
 		if (!F.testSphere_dirty(PORTAL->S.P,PORTAL->S.R))	continue;
 
-		if(PortalTraverser.i_options&CPortalTraverser::VQ_FADE|CPortalTraverser::VQ_SSA&&psDeviceFlags.test(rsDrawPortals))
+		if(PortalTraverser.i_options&CPortalTraverser::VQ_FADE|CPortalTraverser::VQ_SSA&&psGameFlags.test(rsDrawPortals))
 			PortalTraverser.fade_portal			(PORTAL,1.f);
 		else
 		{
