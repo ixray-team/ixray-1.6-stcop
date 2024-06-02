@@ -39,17 +39,17 @@ void UITopBarForm::Draw()
 	ImGui::Begin("TOOLBAR", NULL, window_flags);
 	{
 #define ADD_BUTTON_IMAGE_S(Name)\
-		if (ImGui::ImageButton(m_t##Name->surface_get(), ImVec2(20, 20), ImVec2(m_time##Name>EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_time##Name>EDevice->TimerAsync() ? 1 : 0.5, 1), 0))\
+		if (ImGui::ImageButton(m_t##Name->pSurface, ImVec2(20, 20), ImVec2(m_time##Name>EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_time##Name>EDevice->TimerAsync() ? 1 : 0.5, 1), 0))\
 		{\
 			m_time##Name = EDevice->TimerAsync() + 130;\
 			Click##Name();\
 		}ImGui::SameLine();
-#define ADD_BUTTON_IMAGE_D(Name) if (ImGui::ImageButton(m_t##Name->surface_get(), ImVec2(20, 20), ImVec2(m_b##Name? 0.5 : 0, 0), ImVec2(m_b##Name ? 1 : 0.5, 1), 0))\
+#define ADD_BUTTON_IMAGE_D(Name) if (ImGui::ImageButton(m_t##Name->pSurface, ImVec2(20, 20), ImVec2(m_b##Name? 0.5 : 0, 0), ImVec2(m_b##Name ? 1 : 0.5, 1), 0))\
 		{\
 			m_b##Name = !m_b##Name;\
 			Click##Name(); \
 		}ImGui::SameLine();
-#define ADD_BUTTON_IMAGE_P(Name) if (ImGui::ImageButton(m_t##Name->surface_get(), ImVec2(20, 20), ImVec2(m_b##Name? 0.5 : 0, 0), ImVec2(m_b##Name ? 1 : 0.5, 1), 0))\
+#define ADD_BUTTON_IMAGE_P(Name) if (ImGui::ImageButton(m_t##Name->pSurface, ImVec2(20, 20), ImVec2(m_b##Name? 0.5 : 0, 0), ImVec2(m_b##Name ? 1 : 0.5, 1), 0))\
 		{\
 			Click##Name();\
 		}ImGui::SameLine();
