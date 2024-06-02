@@ -679,12 +679,14 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"rs_wireframe",			&psDeviceFlags,		rsWireframe);
 	CMD3(CCC_Mask,		"rs_clear_bb",			&psDeviceFlags,		rsClearBB);
 	CMD3(CCC_Mask,		"rs_occlusion",			&psDeviceFlags,		rsOcclusion);
-
-	CMD3(CCC_Mask,		"rs_detail",			&psDeviceFlags,		rsDetails	);
-	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
-	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
 #endif
 
+#ifndef MASTER_GOLD
+	CMD3(CCC_Mask,		"rs_render_details",	&psDeviceFlags,		rsDetails);
+	CMD3(CCC_Mask,		"rs_render_statics",	&psDeviceFlags,		rsDrawStatic);
+	CMD3(CCC_Mask,		"rs_render_dynamics",	&psDeviceFlags,		rsDrawDynamic);
+	CMD3(CCC_Mask,		"rs_render_portals",	&psDeviceFlags,		rsDrawPortals);
+#endif
 	// Render device states
 	CMD3(CCC_Mask, "rs_device_active", &psDeviceFlags, rsDeviceActive);
 	

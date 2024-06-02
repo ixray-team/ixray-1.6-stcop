@@ -117,21 +117,26 @@ void CSector::traverse			(CFrustum &F, _scissor& R_scissor)
 		// Early-out sphere
 		if (!F.testSphere_dirty(PORTAL->S.P,PORTAL->S.R))	continue;
 
-		// SSA	(if required)
-		if (PortalTraverser.i_options&CPortalTraverser::VQ_SSA)
+		if(PortalTraverser.i_options&CPortalTraverser::VQ_FADE|CPortalTraverser::VQ_SSA&&psDeviceFlags.test(rsDrawPortals))
+			PortalTraverser.fade_portal			(PORTAL,1.f);
+		else
 		{
-			Fvector				dir2portal;
-			dir2portal.sub		(PORTAL->S.P,	PortalTraverser.i_vBase);
-			float R				=	PORTAL->S.R	;
-			float distSQ		=	dir2portal.square_magnitude();
-			float ssa			=	R*R/distSQ;
-			dir2portal.div		(_sqrt(distSQ));
-			ssa					*=	_abs(PORTAL->P.n.dotproduct(dir2portal));
-			if (ssa<r_ssaDISCARD)	continue;
+			// SSA	(if required)
+			if (PortalTraverser.i_options&CPortalTraverser::VQ_SSA)
+			{
+				Fvector				dir2portal;
+				dir2portal.sub		(PORTAL->S.P,	PortalTraverser.i_vBase);
+				float R				=	PORTAL->S.R	;
+				float distSQ		=	dir2portal.square_magnitude();
+				float ssa			=	R*R/distSQ;
+				dir2portal.div		(_sqrt(distSQ));
+				ssa					*=	_abs(PORTAL->P.n.dotproduct(dir2portal));
+				if (ssa<r_ssaDISCARD)	continue;
 
-			if (PortalTraverser.i_options&CPortalTraverser::VQ_FADE)	{
-				if (ssa<r_ssaLOD_A)	PortalTraverser.fade_portal			(PORTAL,ssa);
-				if (ssa<r_ssaLOD_B)	continue							;
+				if (PortalTraverser.i_options&CPortalTraverser::VQ_FADE)	{
+					if (ssa<r_ssaLOD_A)	PortalTraverser.fade_portal			(PORTAL,ssa);
+					if (ssa<r_ssaLOD_B)	continue							;
+				}
 			}
 		}
 
