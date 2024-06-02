@@ -8,8 +8,11 @@
 
 CUFileOpen* FileOpen = nullptr;
 
-void DragFile(const xr_string& File)
+void DragFile(xr_string File)
 {
+	bool NeedConv = IsUTF8(File.c_str());
+	File = Platform::UTF8_to_CP1251(File);
+
 	CActorTools* pTools = (CActorTools*)Tools;
 	auto pObject = pTools->CurrentObject();
 

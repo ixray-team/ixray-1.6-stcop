@@ -28,7 +28,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	RadiusRender = 400;
 	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
 // dynamic buffer size
-	rsDVB_Size		= 2048;
+	rsDVB_Size		= 1024 * 16;
 	rsDIB_Size		= 2048;
 // default initialization
     m_ScreenQuality = 1.f;

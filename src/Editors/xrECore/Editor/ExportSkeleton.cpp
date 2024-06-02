@@ -386,33 +386,45 @@ void CExportSkeleton::SSplit::MakeStripify()
 //	int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //	Log("SRC:",ccc);
 	// alternative stripification - faces
+	bool NeedSkip = false;
 	{
 		DWORD*		remap	= xr_alloc<DWORD>		(m_Faces.size());
 		HRESULT		rhr		= D3DXOptimizeFaces		(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-		R_CHK		(rhr);
-		SkelFaceVec	_source	= m_Faces;
-		for (u32 it=0; it<_source.size(); it++)
-			m_Faces[it] = _source[remap[it]];
+		
+		if (rhr == S_OK)
+		{
+			SkelFaceVec	_source = m_Faces;
+			for (u32 it = 0; it < _source.size(); it++)
+				m_Faces[it] = _source[remap[it]];
 
+		}
+		else
+		{
+			NeedSkip = true;
+		}
 		xr_free		(remap);
 
 //	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
 //		Log("X:",ccc);
 	}
 	// alternative stripification - vertices
+	if (!NeedSkip)
 	{
 		DWORD*		remap	= xr_alloc<DWORD>		(m_Verts.size());
 		HRESULT		rhr		= D3DXOptimizeVertices	(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-		R_CHK		(rhr);
-		SkelVertVec	_source = m_Verts;
+		
+		if (rhr == S_OK)
+		{
+			SkelVertVec	_source = m_Verts;
 
-		for(u32 vit=0; vit<_source.size(); vit++)
-			m_Verts[remap[vit]]		= _source[vit];
+			for (u32 vit = 0; vit < _source.size(); vit++)
+				m_Verts[remap[vit]] = _source[vit];
 
-		for(u32 fit=0; fit<(u32)m_Faces.size(); ++fit)
-			for (u32 j=0; j<3; j++)
-				m_Faces[fit].v[j]= remap[m_Faces[fit].v[j]];
-			
+			for (u32 fit = 0; fit < (u32)m_Faces.size(); ++fit)
+				for (u32 j = 0; j < 3; j++)
+					m_Faces[fit].v[j] = remap[m_Faces[fit].v[j]];
+		}
+
 		xr_free		(remap);
 
 //	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);

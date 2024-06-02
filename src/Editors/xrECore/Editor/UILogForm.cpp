@@ -12,6 +12,9 @@ string_path UILogForm::m_Filter="";
 string_path UILogForm::m_Exec="";
 xr_vector<xr_string>* UILogForm::List = nullptr;
 extern bool bAllowLogCommands;
+
+static xrCriticalSection LogGuard;
+
 void UILogForm::AddMessage( const xr_string& msg)
 {
 	xr_string M;
@@ -22,7 +25,8 @@ void UILogForm::AddMessage( const xr_string& msg)
 		else M += msg[i];
 	}
 
-	GetList()->push_back(M);
+	xrCriticalSectionGuard cs(LogGuard);
+	GetList()->emplace_back(M);
 }
 
 
