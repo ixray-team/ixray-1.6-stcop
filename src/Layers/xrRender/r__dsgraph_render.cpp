@@ -506,7 +506,9 @@ void R_dsgraph_structure::r_dsgraph_render_hud	()
 
 	// Rendering
 	rmNear						();
+	RCache.set_CullMode		(CULL_NONE);
 	mapHUD.traverseLR			(sorted_L1);
+	RCache.set_CullMode		(CULL_CCW);
 	mapHUD.clear				();
 
 #if	RENDER==R_R1
@@ -532,7 +534,9 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 #endif
 
 	rmNear						();
+	RCache.set_CullMode		(CULL_NONE);
 	g_hud->RenderActiveItemUI	();
+	RCache.set_CullMode		(CULL_CCW);
 	rmNormal					();
 }
 
@@ -549,7 +553,9 @@ void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 	CHudInitializer initalizer(true);
 
 	rmNear();
+	RCache.set_CullMode		(CULL_NONE);
 	mapHUDSorted.traverseRL(sorted_L1);
+	RCache.set_CullMode		(CULL_CCW);
 	mapHUDSorted.clear();
 	rmNormal();
 }
@@ -569,7 +575,9 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	CHudInitializer initalizer(true);
 
 	rmNear();
+	RCache.set_CullMode		(CULL_NONE);
 	mapHUDEmissive.traverseLR(sorted_L1);
+	RCache.set_CullMode		(CULL_CCW);
 	mapHUDEmissive.clear();
 	rmNormal();
 #endif
