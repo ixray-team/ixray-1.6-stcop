@@ -972,6 +972,20 @@ void CWeapon::UpdateCL		()
 	if (!!GetHUDmode()) {
 		m_current_inertion.lerp(m_base_inertion, m_zoom_inertion, m_zoom_params.m_fZoomRotationFactor);
 	}
+	else
+	{
+		auto pActor = smart_cast<const CActor*>(H_Parent());
+		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
+			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
+		{
+			if(pActor && pActor->IsZoomAimingMode())
+				m_zoom_params.m_fZoomRotationFactor += Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
+			else
+				m_zoom_params.m_fZoomRotationFactor -= Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
+
+			clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
+		}
+	}
 
 	if(m_zoom_params.m_pVision)
 		m_zoom_params.m_pVision->Update();
@@ -1845,21 +1859,6 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 {
 	auto pActor = smart_cast<const CActor*>(H_Parent());
 	if(!pActor)		return;
-
-	if(!GetHUDmode())
-	{
-		if ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
-			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f))
-		{
-			if(pActor->IsZoomAimingMode())
-				m_zoom_params.m_fZoomRotationFactor += Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
-			else
-				m_zoom_params.m_fZoomRotationFactor -= Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
-
-			clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
-		}
-		return;
-	}
 
 	u8 idx = GetCurrentHudOffsetIdx();
 
