@@ -108,7 +108,10 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
         }
 
     }
+
+    m_ItemProps->ClearProperties();
 	m_ItemProps->AssignItems(props);
+
     UI->RedrawScene();
 }
 
@@ -149,6 +152,5 @@ void CParticleTool::RealUpdateProperties()
         if (m_EditPE && m_EditPE->GetDefinition())
             m_PList->SelectItem(m_EditPE->Name().c_str());
     }
-    
 }
 

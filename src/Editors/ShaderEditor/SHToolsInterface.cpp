@@ -77,8 +77,7 @@ TElTreeItem* ISHTools::ViewGetCurrentItem()
 
 void ISHTools::RemoveCurrent()
 {
-    R_ASSERT(0);
-//	Ext.m_Items->RemoveSelItems();
+	Ext.m_Items->RemoveSelectItem();
 }
 //---------------------------------------------------------------------------
 

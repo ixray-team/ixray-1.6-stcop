@@ -60,10 +60,10 @@ bool CParticleTool::OnCreate()
     m_PList = xr_new<UIItemListForm>();
     m_PList->m_Flags.set(UIItemListForm::fMenuEdit, true);
     m_PList->SetOnItemFocusedEvent	(TOnILItemFocused(this,&CParticleTool::OnParticleItemFocused));
-    //m_PList->SetOnItemCloneEvent(TOnItemClone(this, &CParticleTool::OnParticleCloneItem));
-    //m_PList->SetOnItemCreaetEvent(TOnItemCreate(this, &CParticleTool::OnParticleCreateItem));
-	//m_PList->SetOnItemRenameEvent	(TOnItemRename(this,&CParticleTool::OnParticleItemRename));
-    //m_PList->SetOnItemRemoveEvent	(TOnItemRemove(this,&CParticleTool::OnParticleItemRemove));
+    m_PList->SetOnItemCloneEvent(TOnItemClone(this, &CParticleTool::OnParticleCloneItem));
+    m_PList->SetOnItemCreaetEvent(TOnItemCreate(this, &CParticleTool::OnParticleCreateItem));
+	m_PList->SetOnItemRenameEvent	(TOnItemRename(this,&CParticleTool::OnParticleItemRename));
+    m_PList->SetOnItemRemoveEvent	(TOnItemRemove(this,&CParticleTool::OnParticleItemRemove));
     //
     m_ParentAnimator= xr_new<CObjectAnimator>();
 
@@ -527,12 +527,40 @@ void CParticleTool::Remove(LPCSTR name)
 
 void CParticleTool::RemoveCurrent()
 {
-    R_ASSERT(0);
+    m_PList->RemoveSelectItem();
 }
 
 void CParticleTool::CloneCurrent()
 {
-    R_ASSERT(0);
+   auto Items = m_PList->m_SelectedItems;
+
+   if (!Items.empty()) 
+   {
+       auto Item = Items[0];
+
+       PS::CPEDef* PE = FindPE(Item->Key());
+
+       xr_string CloneName = Item->Key();
+       CloneName += "_clone";
+
+       if (PE)
+       {
+           AppendPE(PE, CloneName.c_str());
+           Modified();
+       }
+       else
+       {
+           PS::CPGDef* PG = FindPG(Item->Key());
+           if (PG) 
+           {
+               AppendPG(PG, CloneName.c_str());
+               Modified();
+           }
+       }
+   }
+   else {
+       ELog.DlgMsg(mtInformation, "At first select object.");
+   }
 }
 
 void CParticleTool::ResetCurrent()
