@@ -71,7 +71,7 @@ void	CRenderTarget::phase_combine	()
 			}
 			else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
 			{
-				// #FIXME: [FX to Hozar] Ïåðåäåëàòü ýòî äåðüìî!
+				// #FIXME: [FX to Hozar] ÐŸÐµÑ€ÐµÐ´ÐµÐ»Ð°Ñ‚ÑŒ ÑÑ‚Ð¾ Ð´ÐµÑ€ÑŒÐ¼Ð¾!
 				phase_ssao();
 			}
 		}
@@ -354,7 +354,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Stencil(FALSE);
 	}
 
-	if(ps_r4_cas_sharpening != 0.0)
+	if(ps_r_scale_mode > 1 && ps_r4_cas_sharpening != 0.0)
 	{
 		PIX_EVENT(phase_cas);
 		phase_cas();
