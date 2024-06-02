@@ -24,7 +24,7 @@ void CEditableMesh::GenerateRenderBuffers()
 
     GenerateVNormals	(0);
 
-    VERIFY				(m_VertexNormals);
+    VERIFY				(m_VertexNormals || m_Normals);
 
     for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++){
 		IntVec& face_lst = sp_it->second;
@@ -115,7 +115,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
             u32 norm_id = f_index*3+k;//fv.pindex;
 	        VERIFY2(norm_id<m_FaceCount*3,"Normal index out of range.");
             VERIFY2(fv.pindex<(int)m_VertCount,"Point index out of range.");
-            Fvector& PN = m_VertexNormals[norm_id];
+            Fvector& PN = m_VertexNormals == nullptr ? m_Normals[norm_id] : m_VertexNormals[norm_id];
 			Fvector& V 	= m_Vertices[fv.pindex];
             int sz;
             if (dwFVF&D3DFVF_XYZ){
@@ -149,7 +149,8 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
         if (surf->m_Flags.is(CSurface::sf2Sided)){
             for (int k=2; k>=0; k--){
                 st_FaceVert& fv = face.pv[k];
-	            Fvector& PN = m_VertexNormals[f_index*3+k];
+                size_t Idx = f_index * 3 + k;
+                Fvector& PN = m_VertexNormals == nullptr ? m_Normals[Idx] : m_VertexNormals[Idx];
                 int sz;
                 if (dwFVF&D3DFVF_XYZ){
                     sz=sizeof(Fvector);
