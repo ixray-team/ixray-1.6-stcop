@@ -105,6 +105,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	UI->PushBegin(MainForm, false);
 	UI->Push(FileOpen, false);
 
+	int ArgsCount = 0;
+	auto Commands = CommandLineToArgvW(GetCommandLine(), &ArgsCount);
+
+	if (ArgsCount > 1)
+	{
+		xr_string SecondArg = Platform::UTF8_to_CP1251(Platform::TCHAR_TO_ANSI_U8(Commands[1]));
+		if (SecondArg.ends_with(".object"))
+		{
+			ExecCommand(COMMAND_LOAD, SecondArg);
+		}
+	}
+
 	bool NeedExit = false;
 
 	while (!NeedExit)

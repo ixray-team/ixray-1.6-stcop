@@ -740,9 +740,38 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
     free(tmp_path);
 #endif
 
-	FS_Path				*path = new FS_Path(full_current_directory,"","","",0);
+	xr_string TestPath = full_current_directory;
+	if (fs_name != nullptr && !std::filesystem::exists(TestPath + "/" + fs_name))
+	{
+		auto TryTestPath = [&TestPath, fs_name](auto Path)
+		{
+			std::filesystem::path TryPath = Path;
+			xr_string StrPath = TryPath.parent_path().generic_string().c_str();
+
+			if (std::filesystem::exists(StrPath + "/" + fs_name))
+			{
+				TestPath = Platform::RestorePath(StrPath.c_str());
+				std::filesystem::current_path(TryPath.parent_path());
+				return true;
+			}
+
+			return false;
+		};
+
+		if (!TryTestPath(full_current_directory))
+		{
+#ifdef IXR_WINDOWS
+			string256 BinPath;
+			int bytes = GetModuleFileNameA(NULL, BinPath, sizeof(BinPath));
+			std::filesystem::path TryPath = BinPath;
+			TryTestPath(TryPath.parent_path());
+#endif
+		}
+	}
+
+	FS_Path				*path = new FS_Path(TestPath.c_str(), "", "", "", 0);
 #ifdef DEBUG
-	Msg					("$fs_root$ = %s", full_current_directory);
+	Msg					("$fs_root$ = %s", TestPath.c_str());
 #endif // #ifdef DEBUG
 
 	pathes.insert		(
