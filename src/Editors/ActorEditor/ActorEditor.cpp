@@ -8,104 +8,182 @@
 
 CUFileOpen* FileOpen = nullptr;
 
+void DragFile(const xr_string& File)
+{
+	CActorTools* pTools = (CActorTools*)Tools;
+	auto pObject = pTools->CurrentObject();
+
+	auto ErrorMsg = []()
+	{
+		SDL_MessageBoxButtonData BtnOk = {};
+		BtnOk.text = "Ok";
+
+		SDL_MessageBoxData ErrorData = {};
+		ErrorData.message = "Need load object!";
+		ErrorData.title = "Error!";
+		ErrorData.buttons = &BtnOk;
+		ErrorData.numbuttons = 1;
+
+		int RetBtn = 0;
+		SDL_ShowMessageBox(&ErrorData, &RetBtn);
+	};
+
+	if (File.ends_with(".object"))
+	{
+		ExecCommand(COMMAND_LOAD, File);
+	}
+	else if (File.Contains(".skl"))
+	{
+		if (pObject != nullptr)
+		{
+			FS.TryLoad(File);
+			pObject->AppendSMotion(File.c_str());
+		}
+		else
+		{
+			ErrorMsg();
+		}
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+	}
+	else if (File.ends_with(".omf"))
+	{
+		if (pObject != nullptr)
+		{
+			string_path CurrentWD = {};
+			string_path CurrentGM = {};
+			FS.update_path(CurrentGM, "$game_meshes$", "");
+			FS.update_path(CurrentWD, "$fs_root$", CurrentGM);
+
+			if (File.Contains(CurrentWD))
+			{
+				pObject->m_SMotionRefs.emplace_back(File.substr(strlen(CurrentWD)).c_str());
+			}
+			else
+			{
+				std::filesystem::path FilePath = File.c_str();
+				xr_string FileName = FilePath.filename().generic_string().c_str();
+				xr_string OutPath = CurrentWD + FileName;
+
+				// Make temp file
+				std::filesystem::copy_file(File.c_str(), OutPath.c_str());
+				FS.TryLoad((CurrentGM + FileName).c_str());
+
+				pObject->m_SMotionRefs.emplace_back(FileName.substr(0, FileName.length() - 4).c_str());
+			}
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		}
+		else
+		{
+			ErrorMsg();
+		}
+	}
+}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    if (!IsDebuggerPresent())
-        Debug._initialize(false);
+	if (!IsDebuggerPresent())
+		Debug._initialize(false);
 
-    const char* FSName = "fs.ltx";
-    Core._initialize("Actor", ELogCallback, 1, FSName);
+	const char* FSName = "fs.ltx";
+	Core._initialize("Actor", ELogCallback, 1, FSName);
 
-    Tools = xr_new<CActorTools>();
-    ATools = (CActorTools*)Tools;
-    UI = xr_new<CActorMain>();
-    UI->RegisterCommands();
+	Tools = xr_new<CActorTools>();
+	ATools = (CActorTools*)Tools;
+	UI = xr_new<CActorMain>();
+	UI->RegisterCommands();
 
-    UIMainForm* MainForm = xr_new<UIMainForm>();
-    ::MainForm = MainForm;
+	UIMainForm* MainForm = xr_new<UIMainForm>();
+	::MainForm = MainForm;
 
-    GameMaterialLibraryEditors->Load();
-    PGMLib->Load();
+	GameMaterialLibraryEditors->Load();
+	PGMLib->Load();
 
-    FileOpen = new CUFileOpen;
-    UI->PushBegin(MainForm, false);
-    UI->Push(FileOpen, false);
+	FileOpen = new CUFileOpen;
+	UI->PushBegin(MainForm, false);
+	UI->Push(FileOpen, false);
 
-    bool NeedExit = false;
+	bool NeedExit = false;
 
-    while (!NeedExit)
-    {
-        SDL_Event Event;
-        while (SDL_PollEvent(&Event))
-        {
-            switch (Event.type)
-            {
-            case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-                EPrefs->SaveConfig();
-                NeedExit = true;
-                break;
+	while (!NeedExit)
+	{
+		SDL_Event Event;
+		while (SDL_PollEvent(&Event))
+		{
+			switch (Event.type)
+			{
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+				EPrefs->SaveConfig();
+				NeedExit = true;
+				break;
 
-            case SDL_EVENT_WINDOW_RESIZED:
-                if (UI && REDevice)
-                {
-                    UI->Resize(Event.window.data1, Event.window.data2, true);
-                    EPrefs->SaveConfig();
-                }
-                break;
-            case SDL_EVENT_WINDOW_SHOWN:
-            case SDL_EVENT_WINDOW_MOUSE_ENTER:
-                Device.b_is_Active = true;
-                //if (UI) UI->OnAppActivate();
+			case SDL_EVENT_WINDOW_RESIZED:
+				if (UI && REDevice)
+				{
+					UI->Resize(Event.window.data1, Event.window.data2, true);
+					EPrefs->SaveConfig();
+				}
+				break;
+			case SDL_EVENT_WINDOW_SHOWN:
+			case SDL_EVENT_WINDOW_MOUSE_ENTER:
+				Device.b_is_Active = true;
+				//if (UI) UI->OnAppActivate();
 
-                break;
-            case SDL_EVENT_WINDOW_HIDDEN:
-            case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-                Device.b_is_Active = false;
-                //if (UI)UI->OnAppDeactivate();
-                break;
+				break;
+			case SDL_EVENT_WINDOW_HIDDEN:
+			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+				Device.b_is_Active = false;
+				//if (UI)UI->OnAppDeactivate();
+				break;
 
-            case SDL_EVENT_KEY_DOWN:
-                if (UI)
-                {
-                    UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
-                    UI->ApplyShortCutInput(Event.key.keysym.scancode);
-                }break;
-            case SDL_EVENT_KEY_UP:
-                if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
-                break;
+			case SDL_EVENT_KEY_DOWN:
+				if (UI)
+				{
+					UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
+					UI->ApplyShortCutInput(Event.key.keysym.scancode);
+				}break;
+			case SDL_EVENT_KEY_UP:
+				if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+				break;
 
-            case SDL_EVENT_MOUSE_MOTION:
-                pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
-                break;
-            case SDL_EVENT_MOUSE_WHEEL:
-                pInput->MouseScroll(Event.wheel.y);
-                break;
+			case SDL_EVENT_MOUSE_MOTION:
+				pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+				break;
+			case SDL_EVENT_MOUSE_WHEEL:
+				pInput->MouseScroll(Event.wheel.y);
+				break;
 
-            case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            case SDL_EVENT_MOUSE_BUTTON_UP:
-            {
-                int mouse_button = 0;
-                if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
-                if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
-                if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
-                if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-                    pInput->MousePressed(mouse_button);
-                }
-                else {
-                    pInput->MouseReleased(mouse_button);
-                }
-            }
-            break;
-            }
+			case SDL_EVENT_DROP_FILE:
+			{
+				xr_string File = strlwr(Event.drop.data);
+				DragFile(File);
+				break;
+			}
 
-            if (!UI->ProcessEvent(&Event))
-                break;
-        }
-        MainForm->Frame();
-    }
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
+			{
+				int mouse_button = 0;
+				if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
+				if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
+				if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+				if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+					pInput->MousePressed(mouse_button);
+				}
+				else {
+					pInput->MouseReleased(mouse_button);
+				}
+			}
+			break;
+			}
 
-    xr_delete(MainForm);
+			if (!UI->ProcessEvent(&Event))
+				break;
+		}
+		MainForm->Frame();
+	}
 
-    Core._destroy();
-    return 0;
+	xr_delete(MainForm);
+
+	Core._destroy();
+	return 0;
 }
