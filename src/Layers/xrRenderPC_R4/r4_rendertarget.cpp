@@ -550,7 +550,7 @@ CRenderTarget::CRenderTarget()
 		b_smaa = new CBlender_SMAA();
 		s_smaa.create(b_smaa);
 
-		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8_UNORM);
 		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
