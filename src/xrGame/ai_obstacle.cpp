@@ -98,6 +98,55 @@ IC	bool ai_obstacle::inside	(const u32 &vertex_id) const
 	);
 }
 
+#include "../xrengine/xr_collide_form.h"
+void ai_obstacle::compute_matrix_novis(Fmatrix &result, const Fvector &additional)
+{
+	if(!m_object->CFORM())
+	{
+		result.scale			(0.f,0.f,0.f);
+		return;
+	}
+
+	Fvector						last_half_size = Fvector().set(flt_max,flt_max,flt_max);
+	Fmatrix						before_scale_matrix	= Fidentity;
+	Fmatrix						xform = m_object->XFORM();
+	Fvector						*points = (Fvector*)_alloca(1*8*sizeof(Fvector));
+	Fvector						*I = points;
+
+	Fobb								obb;
+	m_object->CFORM()->getBBox().get_CD(obb.m_translate,obb.m_halfsize);
+	obb.m_rotate.identity();
+
+	Fmatrix					Mbox;
+	obb.xform_get			(Mbox);
+
+	result.mul_43			(xform,Mbox);
+
+	before_scale_matrix		= result;
+	last_half_size			= obb.m_halfsize.mul(1.2f);
+	result.mulB_43			(Fmatrix().scale(obb.m_halfsize));
+
+	for (u32 i=0; i<8; ++i, ++I)
+		result.transform_tiny	(*I,local_points[i]);
+
+	MagicBox3					min_box = MagicMinBox(1*8,points);
+	min_box.ComputeVertices		(points);
+	
+	result.identity				();
+
+	result.c					= min_box.Center();
+
+	result.i.sub(points[3],points[2]).normalize();
+	result.j.sub(points[2],points[1]).normalize();
+	result.k.sub(points[2],points[6]).normalize();
+
+	Fvector						scale;
+	scale.x						= points[3].distance_to(points[2])*.5f + additional.x;
+	scale.y						= points[2].distance_to(points[1])*.5f + additional.y;
+	scale.z						= points[2].distance_to(points[6])*.5f + additional.z;
+	result.mulB_43				(Fmatrix().scale(scale));
+}
+
 void ai_obstacle::compute_matrix(Fmatrix &result, const Fvector &additional)
 {
 	IKinematics					*kinematics = smart_cast<IKinematics*>(m_object->Visual());
@@ -174,7 +223,10 @@ void ai_obstacle::prepare_inside	(Fvector &min, Fvector &max)
 	Fmatrix						matrix;
 	float						half_cell_size = (use_additional_radius ? 1.f : 0.f)*ai().level_graph().header().cell_size()*.5f;
 	Fvector						half_size = Fvector().set(half_cell_size,half_cell_size,half_cell_size);
-	compute_matrix				(matrix,half_size);
+	if(smart_cast<IKinematics*>(m_object->Visual()))
+		compute_matrix				(matrix,half_size);
+	else
+		compute_matrix_novis		(matrix,half_size);
 
 	Fvector						points[8];
 	for (int i=0; i<8; ++i) {

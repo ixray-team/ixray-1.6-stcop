@@ -48,7 +48,7 @@ private:
 			void			compute_impl	();
 			void			compute			();
 			void			compute_matrix	(Fmatrix &result, const Fvector &additional);
-
+			void			compute_matrix_novis	(Fmatrix &result, const Fvector &additional);
 public:
 	IC						ai_obstacle		(CGameObject *object);
 	IC		const AREA		&area			();
