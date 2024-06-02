@@ -28,12 +28,18 @@ void PreviewModel::Draw()
 	shared_str result;
 	if (UIChooseForm::GetResult(change, result))
 	{
-		Lib.RemoveEditObject(m_pObject);
-		m_pObject = Lib.CreateEditObject(result.c_str());
-		if (!m_pObject)
-			ELog.DlgMsg(mtError, "Object '%s' can't find in object library.", result.c_str());
-		else
-			m_LastObjectName = result.c_str();
+		if (result.size() > 0)
+		{
+			Lib.RemoveEditObject(m_pObject);
+			m_pObject = Lib.CreateEditObject(result.c_str());
+
+			if (!m_pObject)
+				ELog.DlgMsg(mtError, "Object '%s' can't find in object library.", result.c_str());
+			else
+				m_LastObjectName = result.c_str();
+		}
+
+		bOpen = false;
 	}
 }
 

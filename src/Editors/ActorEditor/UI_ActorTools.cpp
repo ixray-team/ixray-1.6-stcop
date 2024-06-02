@@ -963,7 +963,8 @@ void CActorTools::OptimizeMotions()
 
 void CActorTools::RealMakeThumbnail()
 {
-	if (CurrentObject()) {
+	if (CurrentObject())
+	{
 		CEditableObject* obj = CurrentObject();
 		xr_string tex_name, obj_name;
 		tex_name = ChangeFileExt(obj->GetName(), ".thm");

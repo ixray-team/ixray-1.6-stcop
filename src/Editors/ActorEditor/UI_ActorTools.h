@@ -166,9 +166,10 @@ class CActorTools: public CToolCustom
 
 	void  OnUsingLodFlagChange(PropValue* V);
 
-	void OnMakeThumbnailClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void OnMakeLODClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	SMotionVec 			appended_motions;
+public:
+	IC void				MakeThumbnail() { m_Flags.set(flMakeThumbnail, TRUE); }
 protected:
 	// flags
 	enum{
@@ -187,7 +188,6 @@ protected:
 	
 	void				RefreshSubProperties	(){m_Flags.set(flRefreshSubProps,TRUE);}
 	void				RefreshShaders			(){m_Flags.set(flRefreshShaders,TRUE);}
-	void				MakeThumbnail           (){ m_Flags.set(flMakeThumbnail, TRUE); }
 	void				GenerateLOD(bool hq) { m_Flags.set(hq? flGenerateLODHQ: flGenerateLODLQ, TRUE); }
   //  void   	PMMotionItemClick		(TObject *Sender);
 	

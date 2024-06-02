@@ -54,6 +54,12 @@ void UITopBarForm::Draw()
 			else
 				ATools->PhysicsStopSimulate();
 		}
+		ImGui::SameLine();
+
+		if (ATools->CurrentObject() && ImGui::Button("Make Thumbnail"))
+		{
+			ATools->MakeThumbnail();
+		}
 	}
 	ImGui::End();
 	ImGui::PopStyleVar(5);

@@ -534,20 +534,6 @@ void CActorTools::OnUsingLodFlagChange(PropValue* V)
 	RefreshSubProperties();
 }
 
-void CActorTools::OnMakeThumbnailClick(ButtonValue* sender, bool& bModif, bool& bSafe)
-{
-	R_ASSERT(m_pEditObject);
-	switch (sender->btn_num) 
-	{
-	case 0:
-	{
-		MakeThumbnail();
-	}
-	break;
-	}
-  
-}
-
 void CActorTools::OnMakeLODClick(ButtonValue* sender, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
@@ -963,7 +949,6 @@ void CActorTools::FillObjectProperties(PropItemVec& items, LPCSTR pref, ListItem
 	{
 		PHelper().CreateButton(items, "Object\\LOD\\Action", "Make HQ,Make LQ", ButtonValue::flFirstOnly)->OnBtnClickEvent.bind(this, &CActorTools::OnMakeLODClick);
 	}
-	PHelper().CreateButton(items, "Object\\Action", "Make Thumbnail", ButtonValue::flFirstOnly)->OnBtnClickEvent.bind(this, &CActorTools::OnMakeThumbnailClick);
 	m_pEditObject->FillSummaryProps("Object\\Summary", items);
 }
 //------------------------------------------------------------------------------
