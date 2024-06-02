@@ -167,8 +167,7 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 	CCameraLook::OnActivate( old_cam );
 	vPosition.set(old_cam->vPosition);
 }
-u32 dwFPS = 30;
-float inertion_factor	= 0.95f;
+
 void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 {
 	Fvector des_dir;
@@ -190,25 +189,9 @@ void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 	next_pos.mul(des_dir.invert(), -d - VIEWPORT_NEAR);
 	next_pos.add(pivot);
 
-	if (Device.fTimeDelta > EPS_S)
-	{
-		float fps = 1.f / Device.fTimeDelta;
-		float fOne = 0.3f;
-		float fInv = 1.f - fOne;
-		dwFPS = u32(fInv * float(dwFPS) + fOne * fps);
-	}
-
-	float ifps = float(dwFPS);
-
-	ifps *= 0.008f;
-	ifps = (powf(ifps, 1.f / 8.f) - (1.f / ifps) + 10.4f) * (0.089f);
-	clamp(ifps, 0.1f, 1.f);
-
-	inertion_factor = ifps*0.97f;
-
-
-	vPosition.inertion(next_pos, inertion_factor);
+	vPosition.inertion(next_pos, 1.f-Device.fTimeDelta*15.f);
 }
+
 #include "Actor.h"
 #include "inventory.h"
 #include "weapon.h"
@@ -237,7 +220,12 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 	{
 		CWeapon* pWeap = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
 		if(pWeap && pWeap->render_item_ui_query())
-			vPosition.set(point);
+		{
+			if(!vPosition.similar(point))
+				vPosition.inertion(point, 1.f-Device.fTimeDelta*15.f);
+			else
+				vPosition.set(point);
+		}
 		else
 		{
 			Fmatrix							a_xform;
