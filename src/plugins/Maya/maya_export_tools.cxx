@@ -417,6 +417,8 @@ xr_surface* maya_export_tools::create_surface(const char* surf_name, MFnSet& set
 	MPlugArray connected_plugs;
 	set_fn.findPlug("ss").connectedTo(connected_plugs, true, false, &status);
 	MObject shader_obj;
+	const char* base_color_attr = "color";
+
 	for (unsigned i = connected_plugs.length(); i != 0;) {
 		MObject obj = connected_plugs[--i].node();
 		MFnDependencyNode dep_fn(obj);
@@ -428,11 +430,40 @@ xr_surface* maya_export_tools::create_surface(const char* surf_name, MFnSet& set
 			MPlug plug = dep_fn.findPlug("xrayDoubleSide", &status);
 			if (status && plug.asBool())
 				surface->set_two_sided();
+
+			if (m_skeletal) {
+				if (surface->eshader() == "default") {
+					surface->eshader() = "models\\model";
+
+					msg("xray_re: surface '%s' uses 'default' shader, reset to 'models\\model'", surf_name);
+					MGlobal::displayWarning(MString("xray_re: surface '") + surf_name + "' uses 'default' shader, reset to 'models\\model'");
+				}
+
+				if (surface->gamemtl() == "default") {
+					surface->gamemtl() = "default_object";
+
+					msg("xray_re: surface '%s' uses 'default' game-material, reset to 'default_object'", surf_name);
+					MGlobal::displayWarning(MString("xray_re: surface '") + surf_name + "' uses 'default' game-material, reset to 'default_object'");
+				}
+			}
+
+
 			break;
-		} else if (obj.hasFn(MFn::kLambert) || obj.hasFn(MFn::kPhong) || obj.hasFn(MFn::kBlinn)) {
-			if (shader_obj.isNull())
-				shader_obj = obj;
 		}
+		else if (obj.hasFn(MFn::kLambert) || obj.hasFn(MFn::kPhong) || obj.hasFn(MFn::kBlinn)) {
+			if (shader_obj.isNull())
+			{
+				shader_obj = obj;
+				base_color_attr = "color";
+			}
+		}
+		else if (obj.hasFn(MFn::kStandardSurface)) {
+			if (shader_obj.isNull()) {
+				shader_obj = obj;
+				base_color_attr = "baseColor";
+			}
+		}
+
 	}
 	// Поверхность без какого-либо шейдера (баг Майи или ошибка диза)
 	if (shader_obj.isNull()) {
@@ -442,7 +473,7 @@ xr_surface* maya_export_tools::create_surface(const char* surf_name, MFnSet& set
 	}
 
 	MFnDependencyNode shader_fn(shader_obj);
-	shader_fn.findPlug("c").connectedTo(connected_plugs, true, false);
+	shader_fn.findPlug(base_color_attr).connectedTo(connected_plugs, true, false);
 	// Атрибут color не подключен к текстуре
 	if (connected_plugs.length() == 0) {
 		msg("xray_re: can't find texture node connected to the color attribute on %s", surf_name);
