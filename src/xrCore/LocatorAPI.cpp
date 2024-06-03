@@ -760,12 +760,7 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
 
 		if (!TryTestPath(full_current_directory))
 		{
-#ifdef IXR_WINDOWS
-			string256 BinPath;
-			int bytes = GetModuleFileNameA(NULL, BinPath, sizeof(BinPath));
-			std::filesystem::path TryPath = BinPath;
-			TryTestPath(TryPath.parent_path());
-#endif
+			TryTestPath(Platform::GetBinaryFolderPath());
 		}
 	}
 

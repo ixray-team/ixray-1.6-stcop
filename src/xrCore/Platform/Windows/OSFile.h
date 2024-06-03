@@ -19,6 +19,28 @@ namespace Platform
         return NewPath.c_str();
     }
 
+    IC std::filesystem::path GetBinaryFolderPath()
+    {
+        char BinPath[MAX_PATH];
+        int bytes = GetModuleFileNameA(NULL, BinPath, sizeof(BinPath));
+        if (bytes == 0) 
+        {
+            return {};
+        }
+        return std::filesystem::path(BinPath).parent_path();
+    }
+
+    IC std::string GetModuleName()
+    {
+        char ModuleName[MAX_PATH];
+        int bytes = GetModuleFileNameA(NULL, ModuleName, sizeof(ModuleName));
+        if (bytes == 0) 
+        {
+            return {};
+        }
+        return std::string(ModuleName);
+    }
+
     IC const xr_special_char* ValidPath(const xr_special_char* In)
     {
         return In;

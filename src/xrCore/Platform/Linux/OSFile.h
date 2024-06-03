@@ -140,6 +140,27 @@ namespace Platform
         return NewPath.c_str();
     }
 
+    IC std::filesystem::path GetBinaryFolderPath()
+    {
+        char result[PATH_MAX];
+        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+        if (count == -1)
+        {
+            return {};
+        }
+        return std::filesystem::path(std::string(result, count)).parent_path();
+    }
+
+    IC std::string GetModuleName() {
+        char result[PATH_MAX];
+        ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+        if (count == -1) 
+        {
+            return {};
+        }
+        return std::string(result, count);
+    }
+
     IC bool OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, char flt[1024], LPCSTR offset, bool bMulti)
     {
         return true;
