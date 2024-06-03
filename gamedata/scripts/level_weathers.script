@@ -40,8 +40,8 @@ function WeatherManager:reset()
 		self.next_period_change_hour = self:get_next_period_change_hour(self.period)
 	end
 	-- End reading period hours.
-	self.last_hour = level.get_time_hours()
 	self:select_weather(true)
+	self.last_hour = level.get_time_hours()
 end
 
 function WeatherManager:check_if_outdoor()
@@ -127,14 +127,6 @@ function WeatherManager:update()
 		self:select_weather(false)
 		-- End setting weather on the current level.
 	end
-	-- Getting data for debug
-	if swe_debug then
-		local ltpd_cehr_dbg, ntpd_cehr_dbg, wthr_sect_dbg = ""
-		level_weathers.ltpd_cehr_dbg = self.last_period_change_hour
-		level_weathers.ntpd_cehr_dbg = self.next_period_change_hour
-		level_weathers.wthr_sect_dbg = self.levelWeather
-	end
-	--	End getting data for debug
 end
 -- Moon phases functional.
 function WeatherManager:get_moon_phase()
