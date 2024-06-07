@@ -6,6 +6,18 @@ function se_car:__init (section) super (section)
 	self.ini = nil
 	self.spawner_present = false
 end
+
+function se_car:on_register()
+	cse_alife_car.on_register(self)
+	-- Проверяем кастомдату обьекта на наличие стори айди.
+	story_objects.check_spawn_ini_for_story_id(self)
+	
+	--from test xr_effects.spawn_object_in(db.actor, nil, {"wpn_pm","my_moskvich_story_id"})
+end
+function se_car:on_unregister()
+	unregister_story_object_by_id(self.id)
+	cse_alife_car.on_unregister(self)
+end
 --------------------
 function se_car:can_switch_offline ()
 	return cse_alife_car.can_switch_offline(self)
