@@ -188,6 +188,11 @@ void	CSoundRender_Core::statistic			(CSound_stats*  dest, CSound_stats_ext*  ext
 	}
 }
 
+void CSoundRender_Core::time_factor(float time_factor)
+{
+	Timer.time_factor	(time_factor);
+}
+
 
 
 float CSoundRender_Core::get_occlusion_to( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion )

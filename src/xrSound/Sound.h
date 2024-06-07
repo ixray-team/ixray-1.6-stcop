@@ -278,7 +278,7 @@ public:
 
 	virtual void					update					( const Fvector& P, const Fvector& D, const Fvector& N)									= 0;
 	virtual void					statistic				( CSound_stats*  s0, CSound_stats_ext* s1 )												= 0;
-
+	virtual void					time_factor				(float time_factor)																		= 0;
 	virtual float					get_occlusion_to		( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion=0.2f)					= 0;
 
 	virtual void					object_relcase			( CObject* obj )																		= 0;

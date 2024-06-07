@@ -214,6 +214,8 @@ public:
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
 
+	std::unordered_multimap<u32,std::function<void()>> m_time_callbacks;
+	void callback(const u32& cb_time, const std::function<void()> &func);
 	// Dependent classes
 	CStats*									Statistic;
 
@@ -252,11 +254,7 @@ public:
 	void ShutDown							(void);
 
 public:
-	void time_factor						(const float &time_factor)
-	{
-		Timer.time_factor		(time_factor);
-		TimerGlobal.time_factor	(time_factor);
-	}
+	void time_factor						(const float &time_factor);
 	
 	IC	const float &time_factor			() const
 	{

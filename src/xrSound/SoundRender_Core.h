@@ -29,7 +29,7 @@ public:
 
 	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
-	CTimer								Timer;
+	CTimerFactored						Timer;
 	float								fTimer_Value;
 	float								fTimer_Delta;
 	sound_event*						Handler;
@@ -90,6 +90,7 @@ public:
 	virtual void						update_events			( );
 	virtual void						statistic				( CSound_stats*  dest, CSound_stats_ext*  ext );
 
+	virtual void						time_factor				(float time_factor);
 	// listener
 	virtual void						update_listener			(const Fvector& P, const Fvector& D, const Fvector& N, float dt)=0;
 

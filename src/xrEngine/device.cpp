@@ -192,7 +192,17 @@ int g_svDedicateServerUpdateReate = 100;
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 int g_dwFPSlimit = 500;
 bool IsFpsShow = true;
+void CRenderDevice::time_factor(const float &time_factor)
+{
+	Timer.time_factor		(time_factor);
+	TimerGlobal.time_factor	(time_factor);
+	Sound->time_factor		(time_factor);
+}
 
+void CRenderDevice::callback(const u32& cb_time, const std::function<void()> &func)
+{
+	m_time_callbacks.insert({dwTimeGlobal+cb_time,func});
+}
 void CRenderDevice::on_idle		()
 {
 #ifndef _EDITOR
@@ -237,6 +247,16 @@ void CRenderDevice::on_idle		()
 		if (g_pGamePersistent != nullptr)
 		{
 			g_pGamePersistent->UpdateParticles();
+		}
+		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
+		{
+		    if (Device.dwTimeGlobal >= it->first)
+			{
+				it->second();
+		        it = m_time_callbacks.erase(it);
+		    }
+			else
+		       ++it;
 		}
 		FrameMove();
 	}
