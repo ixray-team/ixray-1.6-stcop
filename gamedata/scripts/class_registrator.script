@@ -32,6 +32,7 @@ function register(object_factory)
 	-- ARTEFACTS --------------------------------------------------------------------------------------------------------------------------
 
 	cs_register (object_factory, "CElectricBall",   			"se_artefact.se_artefact",  			"SCRPTART", 		"artefact_s")
+	cs_register	(object_factory, "CCar",                        "se_car.se_car",                        "SCRPTCAR",         "car_s")
 
 	-- MONSTERS ---------------------------------------------------------------------------------------------------------------------------
 
