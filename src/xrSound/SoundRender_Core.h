@@ -30,7 +30,6 @@ public:
 	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
 	CTimer								Timer;
-	CTimerFactored						TimerF;
 	float								fTimer_Value;
 	float								fTimer_Delta;
 	sound_event*						Handler;

@@ -587,11 +587,8 @@ void CLoadScreenRenderer::stop()
 	b_need_user_input				= false;
 }
 
-void CLoadScreenRenderer::OnRender() { pApp->load_draw_internal(); }
-
-void CRenderDevice::time_factor(const float& time_factor) {
-	Timer.time_factor(time_factor);
-	TimerGlobal.time_factor(time_factor);
-	psSoundTimeFactor = time_factor; //--#SM+#--
+void CLoadScreenRenderer::OnRender() 
+{
+	pApp->load_draw_internal();
 }
-#endif
+#endif 
