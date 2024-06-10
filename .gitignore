@@ -38,6 +38,9 @@ UpgradeLog*.htm
 
 # X-Ray user files
 _appdata_/
+fs_*.ltx
+fsgame_*.ltx
+fsfactory_*.ltx
 
 # masOS Cache
 .DS_Store
