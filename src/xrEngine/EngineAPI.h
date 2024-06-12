@@ -38,6 +38,7 @@ enum class EditorUI : u8
 	ActorInfos,
 	HudAdjust,
 	ScenesViewer,
+	CameraEffectors,
 	Count
 };
 

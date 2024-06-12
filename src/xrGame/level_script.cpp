@@ -38,6 +38,7 @@
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "HUDAnimItem.h"
+#include "ActorCondition.h"
 
 using namespace luabind;
 
@@ -454,7 +455,7 @@ void hide_indicators()
 		CurrentGameUI()->ShowGameIndicators(false);
 		CurrentGameUI()->ShowCrosshair(false);
 	}
-	psActorFlags.set(AF_GODMODE_RT, TRUE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, TRUE);
 }
 
 void hide_indicators_safe()
@@ -466,7 +467,7 @@ void hide_indicators_safe()
 
 		CurrentGameUI()->OnExternalHideIndicators();
 	}
-	psActorFlags.set(AF_GODMODE_RT, TRUE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, TRUE);
 }
 
 void show_indicators()
@@ -476,7 +477,7 @@ void show_indicators()
 		CurrentGameUI()->ShowGameIndicators(true);
 		CurrentGameUI()->ShowCrosshair(true);
 	}
-	psActorFlags.set(AF_GODMODE_RT, FALSE);
+	psActorFlags.set(AF_DISABLE_CONDITION_TEST, FALSE);
 }
 
 void show_weapon(bool b)

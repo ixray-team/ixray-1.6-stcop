@@ -47,6 +47,8 @@ class ENGINE_API	IGame_Level	:
 	public pureFrame,
 	public IEventReceiver
 {
+	friend class CCameraManager;
+
 protected:
 	// Network interface
 	CObject*					pCurrentEntity;

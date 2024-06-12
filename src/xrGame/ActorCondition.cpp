@@ -27,8 +27,9 @@
 BOOL	GodMode	()	
 { 
 	if (IsGameTypeSingle()) 
-		return psActorFlags.test(AF_GODMODE|AF_GODMODE_RT); 
-	return FALSE;	
+		return psActorFlags.test(AF_GODMODE|AF_DISABLE_CONDITION_TEST); 
+
+	return false;	
 }
 
 CActorCondition::CActorCondition(CActor *object) :
@@ -459,7 +460,7 @@ void CActorCondition::UpdateSatiety()
 	}
 
 	float satiety_health_koef = (Satiety.Current - Satiety.Critical) / (Satiety.Current >= Satiety.Critical ? 1 - Satiety.Critical : Satiety.Critical);
-	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
+	if (CanBeHarmed() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
 	{
 		m_fDeltaHealth += Satiety.HealthBoost * satiety_health_koef * m_fDeltaTime;
 		m_fDeltaPower += Satiety.PowerBoost * Satiety.Current * m_fDeltaTime;
@@ -478,7 +479,7 @@ void CActorCondition::UpdateThirst()
 	}
 
 	float ThirstHealthKoef = ((1.f - Thirst.Current) - Thirst.Critical) / (Thirst.Current < Thirst.Critical ? 1 - Thirst.Critical : Thirst.Critical);
-	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
+	if (CanBeHarmed() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
 	{
 		m_fDeltaHealth += Thirst.HealthBoost * ThirstHealthKoef * m_fDeltaTime;
 		m_fDeltaPower += Thirst.PowerBoost * (1.f - Thirst.Current) * m_fDeltaTime;
@@ -497,7 +498,7 @@ void CActorCondition::UpdateSleepiness()
 	}
 
 	float SleepinessHealthKoef = ((1.f - Sleepiness.Current) - Sleepiness.Critical) / (Sleepiness.Current < Sleepiness.Critical ? 1 - Sleepiness.Critical : Sleepiness.Critical);
-	if (CanBeHarmed() && !psActorFlags.test(AF_GODMODE_RT))
+	if (CanBeHarmed() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
 	{
 		m_fDeltaHealth += Sleepiness.HealthBoost * SleepinessHealthKoef * m_fDeltaTime;
 		m_fDeltaPower += Sleepiness.PowerBoost * (1.f - Sleepiness.Current) * m_fDeltaTime;

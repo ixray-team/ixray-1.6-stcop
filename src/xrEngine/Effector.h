@@ -10,8 +10,11 @@ protected:
 	ECamEffectorType	eType;
 	
 	friend class		CCameraManager;
-	float				fLifeTime;
 	bool				bHudAffect;
+	
+public:
+	float				fLifeTime;
+
 public:
 						CEffectorCam	(ECamEffectorType type, float tm)	{eType=type; fLifeTime=tm; bHudAffect=true;};
 						CEffectorCam	()									{eType=(ECamEffectorType)0; fLifeTime=0.0f; bHudAffect=true;};

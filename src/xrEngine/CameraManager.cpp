@@ -166,6 +166,54 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 	pp_zero.color_add.set			(0,0,0);
 
 	pp_affected						= pp_identity;
+	
+#ifdef DEBUG_DRAW
+	CImGuiManager::Instance().Subscribe("CameraEffector", CImGuiManager::ERenderPriority::eLow + 1,
+	[this]()
+	{
+		if (g_pGameLevel == nullptr || g_pGameLevel->m_pCameras == nullptr || !Engine.External.EditorStates[u8(EditorUI::CameraEffectors)])
+			return;
+
+		if (ImGui::Begin("Camera Effectors"))
+		{
+			for (CEffectorPP* Effect : m_EffectorsPP)
+			{
+				xr_string EffectorText = "Name: ";
+				EffectorText += Effect->m_Name.size() > 0 ? Effect->m_Name.c_str() : "SimpleEffector";
+
+				ImGui::Text(EffectorText.c_str());
+
+				EffectorText = "Life time: ";
+				EffectorText += xr_string::ToString(Effect->GetRealLifeTime());
+				ImGui::Text(EffectorText.c_str());
+
+				EffectorText = "Remaining time: ";
+				if (Effect->IsCyclic())
+				{
+					EffectorText += "Cyclic";
+				}
+				else
+				{
+					EffectorText += xr_string::ToString(Effect->GetLifeTimeRemaining());
+				}
+
+				ImGui::Text(EffectorText.c_str());
+				ImGui::Separator();
+			}
+
+			for (CEffectorCam* Effect : m_EffectorsCam)
+			{
+				ImGui::Text("Camera Effect");
+				xr_string EffectorText = "Life time: ";
+				EffectorText += xr_string::ToString(Effect->fLifeTime);
+				ImGui::Text(EffectorText.c_str());
+				ImGui::Separator();
+
+			}
+		}
+		ImGui::End();
+	});
+#endif
 }
 
 CCameraManager::~CCameraManager()
@@ -174,6 +222,10 @@ CCameraManager::~CCameraManager()
 		xr_delete(*it);
 	for (EffectorPPIt it=m_EffectorsPP.begin(); it!=m_EffectorsPP.end(); it++ )
 		xr_delete(*it);
+
+#ifdef DEBUG_DRAW
+	CImGuiManager::Instance().Unsubscribe("CameraEffector");
+#endif
 }
 
 CEffectorCam* CCameraManager::GetCamEffector(ECamEffectorType type)	
