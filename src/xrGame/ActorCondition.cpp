@@ -207,13 +207,18 @@ float CActorCondition::GetZoneMaxPower( ALife::EHitType hit_type ) const
 
 void CActorCondition::UpdateCondition()
 {
-	if (GodMode()) return;
+	// FX: Хак для кат-сцен (GODMODE_RT)
+	if (!psActorFlags.test(AF_GODMODE))
+	{
+		Alcohol.Current += Alcohol.Variability * m_fDeltaTime;
+		clamp(Alcohol.Current, 0.0f, 1.0f);
 
-	UpdateSatiety();
-	UpdateBoosters();
+		UpdateSatiety();
+		UpdateBoosters();
+	}
 
-	Alcohol.Current += Alcohol.Variability * m_fDeltaTime;
-	clamp(Alcohol.Current, 0.0f, 1.0f);
+	if (GodMode())
+		return;
 
 	if (!object().g_Alive())	return;
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
@@ -280,10 +285,8 @@ void CActorCondition::UpdateCondition()
 		}
 	}
 
-	UpdateSatiety();
 	UpdateThirst();
 	UpdateSleepiness();
-	UpdateBoosters();
 
 	inherited::UpdateCondition();
 
