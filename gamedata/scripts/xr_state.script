@@ -411,4 +411,13 @@ end
 
 function get_camera_state()
 	return camera_was_changed
+end
+
+local actor_shadow_was_changed = false
+function reg_actor_shadow_change(state)
+	actor_shadow_was_changed = state
+end 
+
+function get_actor_shadow_state()
+	return actor_shadow_was_changed
 end 

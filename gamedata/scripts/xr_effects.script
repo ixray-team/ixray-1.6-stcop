@@ -1960,6 +1960,12 @@ function stop_sr_cutscene(actor,npc,p)
 		set_third_person()
 		xr_state:reg_camera_change(false)
 	end
+	-- Restore actor shadow if needed
+	if xr_state:get_actor_shadow_state() then
+		set_actor_shadow(true)
+		-- get_console():execute("r_actor_shadow 1")
+		xr_state:reg_actor_shadow_change(false)
+	end
 end
 
 --[[
@@ -3099,7 +3105,13 @@ function create_cutscene_actor_with_weapon(actor, npc, p)
 		if not xr_state:get_camera_state() then 
 			xr_state:reg_camera_change(true)
 		end 
-	end 
+	end
+	-- Handle actor shadow hiding to play cutscenes properly
+	if is_actor_shadow() then
+		set_actor_shadow(false)
+		-- get_console():execute("r_actor_shadow 0")
+		xr_state:reg_actor_shadow_change(true)
+	end
 	
 	--' p[1] - секция кого спаунить
 	--' p[2] - имя патрульного пути где спаунить.

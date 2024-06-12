@@ -172,6 +172,11 @@ function action_cutscene:zone_enter()
 			xr_state:reg_camera_change(true)
 		end 
 	end
+	if is_actor_shadow() then
+		set_actor_shadow(false)
+		-- get_console():execute("r_actor_shadow 0")
+		xr_state:reg_actor_shadow_change(true)
+	end
 	
 	self.state = "run"
 	--' телепорт в выбранную точку
@@ -232,6 +237,12 @@ function action_cutscene:cutscene_callback()
 				set_third_person()
 				xr_state:reg_camera_change(false)
 		    end
+			-- Restore actor shadow if needed
+			if xr_state:get_actor_shadow_state() then
+				set_actor_shadow(true)
+				-- get_console():execute("r_actor_shadow 1")
+				xr_state:reg_actor_shadow_change(false)
+			end
 			
 			if(self.ui_disabled) then
 				if not db.actor:is_talking() and self.st.enable_ui_on_end then
