@@ -114,6 +114,7 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				CGameObject* GO = smart_cast<CGameObject*>(result.O);
 				if(!GO) continue;
 				if(GO == Owner->cast_game_object()) continue;
+				if(GO->cast_inventory_item()) continue;
 				CEntity* entity = smart_cast<CEntity*>(GO);
 				if(entity && !entity->g_Alive()) continue;
 				CDestroyablePhysicsObject* dstobj = smart_cast<CDestroyablePhysicsObject*>(GO);
