@@ -19,6 +19,7 @@ void setThirdPerson() { Actor()->cam_Set(eacLookAt); }
 
 bool isGodMode() { return psActorFlags.test(AF_GODMODE); }
 bool isActorShadow() { return psGameFlags.test(rsActorShadow); }
+void setActorShadow(bool state) { psGameFlags.set(rsActorShadow, state); }
 
 #pragma optimize("s",on)
 void CActor::script_register(lua_State* L)
@@ -34,7 +35,8 @@ void CActor::script_register(lua_State* L)
 				def("set_third_person", setThirdPerson),
 				def("is_god_mode", isGodMode),
 				def("is_actor_shadow", isActorShadow),
-				
+				def("set_actor_shadow", setActorShadow),
+
 				class_<enum_exporter<EBoostParams>>("EBoostParams").enum_("eboostparams")[
 					value("eBoostHpRestore", eBoostHpRestore),
 					value("eBoostPowerRestore", eBoostPowerRestore),
