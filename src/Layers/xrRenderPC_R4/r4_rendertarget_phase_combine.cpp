@@ -335,12 +335,14 @@ void	CRenderTarget::phase_combine	()
 
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
 	{
-		phase_aberration();
+		PIX_EVENT(PhaseAberration);
+		PhaseAberration();
 	}
 
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
 	{
-		phase_vignette();
+		PIX_EVENT(PhaseVignette);
+		PhaseVignette();
 	}
 
 	if (ps_r2_aa_type == 1)

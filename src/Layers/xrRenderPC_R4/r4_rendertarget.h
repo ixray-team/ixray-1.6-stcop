@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../xrRender/ColorMapManager.h"
+#include "../xrRender/ScreenPostProcessTypes.h"
 
 class light;
 
@@ -248,8 +249,9 @@ public:
 	void						phase_cas				();
 	void						phase_gtao				();
 
-	void						phase_aberration		();
-	void						phase_vignette			();
+	void						RenderEffect			(ScreenPostProcessType postProcessType);
+	void						PhaseAberration			();
+	void						PhaseVignette			();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();

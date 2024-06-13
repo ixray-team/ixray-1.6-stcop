@@ -8,7 +8,7 @@
 #include "blender_light_spot.h"
 #include "blender_light_reflected.h"
 #include "blender_combine.h"
-#include "blender_screen_postprocess.h"
+#include "../xrRender/blender_screen_postprocess.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"

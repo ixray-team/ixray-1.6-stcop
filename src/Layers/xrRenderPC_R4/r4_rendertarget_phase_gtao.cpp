@@ -5,7 +5,7 @@
 void CRenderTarget::phase_gtao()
 {
 	u32 Offset = 0;
-    u32 vertex_color = color_rgba(0, 0, 0, 255);
+    constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
 
 	//Calculate projection factor, to transform world radius to screen space
 	float p_scale = RCache.get_height() / (tan(deg2rad(float(Device.fFOV)) * 0.5f) * 2.0);
