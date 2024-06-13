@@ -892,21 +892,21 @@ HRESULT	CRender::shader_compile			(
 
 	bool HasHDAO = SSAO.test(ESSAO_DATA::SSAO_HDAO);
 	bool HasHALF = SSAO.test(ESSAO_DATA::SSAO_HALF_DATA);
+
     if (HasHDAO)
     {
-        defines[def_it].Name		=	"HDAO";
-        defines[def_it].Definition	=	"1";
-        def_it						++;
+        defines[def_it].Name = "HDAO";
+        defines[def_it].Definition	= "1";
+        def_it ++;
+
 		sh_name[len]='1'; ++len;
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'; ++len;
     }
 	else 
 	{
-		sh_name[len] = '0';
-		++len;
-		sh_name[len] = '0' + char(HasHDAO);
-		++len;
+		sh_name[len] = '0'; ++len;
+		sh_name[len] = '0'; ++len;
 		sh_name[len] = '0' + char(HasHALF);
 		++len;
 	}

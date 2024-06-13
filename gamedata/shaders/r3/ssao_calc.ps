@@ -4,13 +4,35 @@
 #define ISAMPLE 0
 #endif
 
-uniform float3x4	m_v2w;
-uniform	Texture2D	s_half_depth;
+uniform float3x4 m_v2w;
+uniform	Texture2D s_half_depth;
 
+#ifdef HDAO
+#define USE_HDAO 1
+#endif
+
+#if SSAO_QUALITY <=3
 #include "ssao.ps"
-#ifdef	USE_HBAO
-#include "ssao_hbao.ps"
-#endif	//	USE_HBAO
+#else
+#ifndef USE_HDAO
+#define USE_HDAO
+#endif
+#endif
+
+#ifdef USE_HDAO
+#if SSAO_QUALITY > 3
+#include "ssao_hdao_new.ps"
+#endif
+#define USE_HDAO_CODE
+#if SSAO_QUALITY <=3
+#define g_f2RTSize (pos_decompression_params2.xy)
+
+#define g_txDepth s_position
+#define g_txNormal s_normal
+
+#include "ssao_hdao.ps"
+#endif
+#endif // USE_HDAO
 
 struct	_input
 {
@@ -21,19 +43,22 @@ struct	_input
 
 float4 main (_input I) : SV_Target0
 {
-	gbuffer_data gbd0 = gbuffer_load_data( GLD_P(I.tc0.xy + 0.5f * pos_decompression_params2.zw, I.pos2d * 2, ISAMPLE) );
-	gbuffer_data gbd1 = gbuffer_load_data( GLD_P(I.tc0.xy - 0.5f * pos_decompression_params2.zw, I.pos2d * 2, ISAMPLE) );
-	gbuffer_data gbd2 = gbuffer_load_data( GLD_P(I.tc0.xy + 0.5f * float2(+pos_decompression_params2.z, -pos_decompression_params2.w), I.pos2d * 2, ISAMPLE) );
-	gbuffer_data gbd3 = gbuffer_load_data( GLD_P(I.tc0.xy + 0.5f * float2(-pos_decompression_params2.z, +pos_decompression_params2.w), I.pos2d * 2, ISAMPLE) );
+	IXrayGbuffer O; GbufferUnpack(I.tc0, I.pos2d, O);
+	float4 Light = s_accumulator.Sample(smp_nofilter, I.tc0);
 
-	gbuffer_data gbd = gbd0;
-	if (gbd1.P.z < gbd.P.z) gbd = gbd1;	
-	if (gbd2.P.z < gbd.P.z) gbd = gbd2;	
-	if (gbd3.P.z < gbd.P.z) gbd = gbd3;
+	float4 P = float4(O.PointReal, 1.0f);
+	float4 N = float4(O.Normal, 1.0f);
 
-	float4	P = float4( gbd0.P, gbd0.mtl );
-	float4	N = float4( gbd0.N, gbd0.hemi );
-
-	float occ = calc_ssao( CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE) );
-	return  float4(occ, occ, occ, occ);
+	#ifdef USE_HDAO
+		#if SSAO_QUALITY > 3
+			float occ = calc_new_hdao(P, N, I.tc0, I.tcJ, I.pos2d);
+		#else
+			float occ = calc_hdao(P, N, I.tc0, I.tcJ, I.pos2d);
+		#endif
+	#else
+		float occ = calc_ssao(P, N, I.tc0, I.tcJ, I.pos2d);
+	#endif
+	
+	return float4(occ, occ, occ, occ);
 }
+

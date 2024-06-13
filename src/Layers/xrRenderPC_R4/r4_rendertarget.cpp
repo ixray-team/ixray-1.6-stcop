@@ -435,15 +435,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Accumulator);
 		DisplayRT(rt_smap_surf);
 		DisplayRT(rt_smap_depth);
-
-		if (ps_r_ssao_mode == 3)
-		{
-			DisplayRT(rt_gtao_1);
-		}
-		else if (ps_r_ssao != 2)
-		{
-			DisplayRT(rt_ssao_temp);
-		}
+		DisplayRT(rt_ssao_temp);
 
 #undef DisplayRT
 
@@ -573,7 +565,6 @@ CRenderTarget::CRenderTarget()
 		s_gtao.create(b_gtao);
 
 		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_UINT); //AO.view-z
-		rt_gtao_1.create("$user$gtao_1", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8_UNORM); //AO
 	}
 
 	// OCCLUSION
@@ -672,11 +663,10 @@ CRenderTarget::CRenderTarget()
 	}
 
 	// HBAO
-	const bool TestSSAOOPT = RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA);
-	if (TestSSAOOPT)
 	{
-		u32		w = 0;
-		u32		h = 0;
+		u32 w = 0;
+		u32 h = 0;
+
 		if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HALF_DATA))
 		{
 			w = s_dwWidth / 2;
@@ -693,11 +683,7 @@ CRenderTarget::CRenderTarget()
 
 	}
 
-	if (TestSSAOOPT || RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
-	{
-		s_ssao.create(b_ssao, "r2\\ssao");
-	}
-
+	s_ssao.create(b_ssao, "r2\\ssao");
 	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16_FLOAT, 1, true);
 
 	if(RFeatureLevel >= D3D_FEATURE_LEVEL_11_0) {

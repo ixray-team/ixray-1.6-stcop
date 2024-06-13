@@ -89,7 +89,6 @@ public:
 
 	//GTAO
 	ref_rt						rt_gtao_0;
-	ref_rt						rt_gtao_1;
 
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color

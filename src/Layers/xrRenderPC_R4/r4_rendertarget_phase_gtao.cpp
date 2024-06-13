@@ -30,7 +30,7 @@ void CRenderTarget::phase_gtao()
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
 	
 	//Blur...
-    u_setrt(rt_gtao_1, nullptr, nullptr, nullptr);
+    u_setrt(rt_ssao_temp, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 

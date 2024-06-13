@@ -862,7 +862,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
 	CMD3(CCC_Mask16,	"r2_ssao_blur",                 &ps_r2_ls_flags_ssao,		SSAO_BLUR);//Need restart
-	CMD3(CCC_Mask16,	"r2_ssao_opt_data",				&ps_r2_ls_flags_ssao,		SSAO_OPT_DATA);//Need restart
+	//CMD3(CCC_Mask16,	"r2_ssao_opt_data",				&ps_r2_ls_flags_ssao,		SSAO_OPT_DATA);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_half_data",			&ps_r2_ls_flags_ssao,		SSAO_HALF_DATA);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_gtao",					&ps_r2_ls_flags_ssao,		SSAO_GTAO);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_hdao",					&ps_r2_ls_flags_ssao,		SSAO_HDAO);//Need restart

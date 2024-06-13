@@ -58,22 +58,14 @@ void	CRenderTarget::phase_combine	()
 		{
 			phase_gtao();
 		}
-		else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_HDAO) || RImplementation.SSAO.test(ESSAO_DATA::SSAO_ULTRA_OPT))
+		else if (RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && RImplementation.SSAO.test(ESSAO_DATA::SSAO_HDAO) && RImplementation.SSAO.test(ESSAO_DATA::SSAO_ULTRA_OPT))
 		{
 			phase_hdao();
 		}
 		else
 		{
-			if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA))
-			{
-				phase_downsamp();
-				//phase_ssao();
-			}
-			else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
-			{
-				// #FIXME: [FX to Hozar] Переделать это дерьмо!
-				phase_ssao();
-			}
+			phase_downsamp();
+			phase_ssao();
 		}
 	}
 
