@@ -87,7 +87,7 @@ indent_style = space
 insert_final_newline = true
 
 # Lua scripts
-[{gamedata/scripts/*.script,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_}]
+[{gamedata/scripts/*.script,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_,gamedata/shaders/*/*.lua,gamedata/shaders/*/*.lua_}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4

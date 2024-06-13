@@ -183,7 +183,7 @@ void	CResourceManager::LS_Load			()
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
 		xr_strcpy							(namesp,(*folder)[it]);
-		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".s"))	continue;
+		if	(0==strext(namesp) || 0!=xr_strcmp(strext(namesp),".lua"))	continue;
 		*strext	(namesp)=0;
 		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
 		xr_strconcat(fn,::Render->getShaderPath(),(*folder)[it]);
