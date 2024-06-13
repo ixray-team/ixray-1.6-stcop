@@ -7,6 +7,7 @@
 #include "blender_light_spot.h"
 #include "blender_light_reflected.h"
 #include "blender_combine.h"
+#include "../xrRender/blender_screen_postprocess.h"
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
@@ -352,6 +353,12 @@ CRenderTarget::CRenderTarget		()
 		s_ssao.create				(b_ssao, "r2\\ssao");
 	}
 
+	// Screen Post Process
+	{
+		b_spp = new CBlender_SPP();
+		s_spp.create(b_spp);
+	}
+	
 	//FXAA
 	s_fxaa.create(b_fxaa, "r2\\fxaa");
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -631,6 +638,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete					(b_ssao					);
 	xr_delete(b_fxaa);
 	xr_delete(b_smaa);
+	xr_delete(b_spp);
 	xr_delete					(b_accum_reflected		);
 	xr_delete					(b_accum_spot			);
 	xr_delete					(b_accum_point			);

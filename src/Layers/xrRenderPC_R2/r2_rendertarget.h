@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../xrRender/ColorMapManager.h"
+#include "../xrRender/ScreenPostProcessTypes.h"
 
 class light;
 
@@ -31,6 +32,7 @@ public:
 	IBlender*					b_ssao;
 	IBlender* b_fxaa;
 	IBlender* b_smaa;
+	IBlender* b_spp;
 	IBlender*					b_luminance;
 	IBlender*					b_combine;
 #ifdef DEBUG
@@ -128,6 +130,8 @@ private:
 	ref_rt rt_smaa_edgetex;
 	ref_rt rt_smaa_blendtex;
 
+	ref_shader					s_spp;
+
 	// Bloom
 	ref_geom					g_bloom_build;
 	ref_geom					g_bloom_filter;
@@ -205,6 +209,10 @@ public:
 	bool						u_need_CM				();
 	BOOL						u_DBT_enable			(float zMin, float zMax);
 	void						u_DBT_disable			();
+
+	void RenderEffect(ScreenPostProcessType postProcessType);
+	void PhaseAberration();
+	void PhaseVignette();
 
 	void						phase_ssao				();
 	void phase_fxaa(u32 pass);
