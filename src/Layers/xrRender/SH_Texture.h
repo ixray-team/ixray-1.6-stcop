@@ -43,6 +43,10 @@ public:
 	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
 	IC u32								get_Height		()		{ desc_enshure(); return desc.Height;	}
 
+#ifdef USE_DX11
+	IC DXGI_FORMAT						get_Format		()		{ desc_enshure(); return desc.Format;	}
+#endif
+
 	void								video_Sync		(u32 _time){m_play_time=_time;}
 	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
 	void								video_Pause		(BOOL state);

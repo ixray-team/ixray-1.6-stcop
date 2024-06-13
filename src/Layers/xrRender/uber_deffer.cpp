@@ -15,9 +15,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && _t.bump_exist();
 
 	bool lmap = false;
-	if (C.L_textures.size() >= 3) {
+	if(C.L_textures.size() >= 3) {
 		auto tex = C.L_textures[2].c_str();
-		if (tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p') {
+		if(tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p') {
 			lmap = true;
 		}
 	}
@@ -29,9 +29,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	string256 texDetailBumpX = { '\0' };
 	bool bHasDetailBump = false;
 
-	if (C.bDetail_Bump) {
+	if(C.bDetail_Bump) {
 		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
-		if (detail_bump_texture) {
+		if(detail_bump_texture) {
 			bHasDetailBump = true;
 			xr_strcpy(texDetailBump, sizeof(texDetailBump), detail_bump_texture);
 			xr_strcpy(texDetailBumpX, sizeof(texDetailBumpX), detail_bump_texture);
@@ -39,15 +39,25 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		}
 	}
 
-	if (lmap) {
+	if(lmap) {
 		RImplementation.addShaderOption("USE_LM_HEMI", "1");
 	}
 
-	if (aref) {
+	if(aref) {
 		RImplementation.addShaderOption("USE_AREF", "1");
+#ifdef USE_DX11
+		auto Format = _t->get_Format();
+		if(Format >= DXGI_FORMAT_BC1_TYPELESS && Format < DXGI_FORMAT_BC2_TYPELESS || DXGI_FORMAT_UNKNOWN == Format) {
+			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
+		}
+#endif
 	}
 
-	if (bump) {
+	if(!!DEV->m_textures_description.UsePBRTexures(fname)) {
+		RImplementation.addShaderOption("USE_PBR", "1");
+	}
+
+	if(bump) {
 		RImplementation.addShaderOption("USE_BUMP", "1");
 
 		xr_strcpy(fnameA, _t.bump_get().c_str());
@@ -57,19 +67,19 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		fnameA[0] = fnameB[0] = 0;
 	}
 
-	if (C.bUseSteepParallax) {
+	if(C.bUseSteepParallax) {
 		RImplementation.addShaderOption("USE_STEEPPARALLAX", "1");
 	}
 
-	if (C.bDetail_Diffuse) {
+	if(C.bDetail_Diffuse) {
 		RImplementation.addShaderOption("USE_TDETAIL", "1");
 	}
 
-	if (C.bDetail_Bump) {
+	if(C.bDetail_Bump) {
 		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 	}
 
-	if (hq) {
+	if(hq) {
 		RImplementation.addShaderOption("USE_HIGH_QUALITY", "1");
 	}
 
