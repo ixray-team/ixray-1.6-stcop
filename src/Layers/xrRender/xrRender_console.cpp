@@ -852,7 +852,9 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
-	CMD3(CCC_Mask,		"r4_hud_shadows",				&ps_r2_ls_flags_ext,		R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+	CMD3(CCC_Mask,		"r2_vignette",					&ps_r2_ls_flags_ext,		R2FLAG_SPP_VIGNETTE);
+	CMD3(CCC_Mask,		"r2_aberration",				&ps_r2_ls_flags_ext,		R2FLAG_SPP_ABERRATION);
 
 	CMD3(CCC_Mask,		"r4_hashed_alpha_test",			&ps_r2_ls_flags_ext,		R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask,		"r4_sslr_on_water",				&ps_r2_ls_flags_ext,		R4FLAG_SSLR_ON_WATER);

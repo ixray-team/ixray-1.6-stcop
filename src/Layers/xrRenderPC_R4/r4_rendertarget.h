@@ -38,6 +38,7 @@ public:
 	IBlender*					b_ssao;
 
 	IBlender*					b_fxaa;
+	IBlender*					b_spp;
 	IBlender*					b_smaa;
 	IBlender*					b_scale;
 	IBlender*					b_cas;
@@ -106,6 +107,7 @@ public:
 	ID3DTexture2D*			t_noise_surf	[TEX_jitter_count];
 	ref_texture					t_noise				[TEX_jitter_count];
 private:
+	ref_shader					s_spp;
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
 	ref_shader					s_scale;
@@ -245,6 +247,9 @@ public:
 
 	void						phase_cas				();
 	void						phase_gtao				();
+
+	void						phase_aberration		();
+	void						phase_vignette			();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();

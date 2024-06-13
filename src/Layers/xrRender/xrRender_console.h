@@ -212,6 +212,8 @@ enum
 	R4FLAG_SCREEN_SPACE_HUD_SHADOWS = (1<<10),
 	R4FLAG_HASHED_ALPHA_TEST		= (1<<11),
 	R4FLAG_SSLR_ON_WATER			= (1<<12),
+	R2FLAG_SPP_VIGNETTE				= (1<<13),
+	R2FLAG_SPP_ABERRATION			= (1<<14),
 };
 
 extern void						xrRender_initconsole	();

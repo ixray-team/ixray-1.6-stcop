@@ -333,6 +333,16 @@ void	CRenderTarget::phase_combine	()
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
+	{
+		phase_aberration();
+	}
+
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
+	{
+		phase_vignette();
+	}
+
 	if (ps_r2_aa_type == 1)
 	{
 		PIX_EVENT(phase_fxaa);

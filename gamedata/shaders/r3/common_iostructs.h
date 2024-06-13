@@ -466,6 +466,11 @@ struct p_shadow {
 	float4	hpos : SV_Position;
 };
 
+struct v2p_screen
+{
+	float2 tc0  : TEXCOORD0;
+	float4 HPos : POSITIONT; // Clip-space position (for rasterization)
+};
 ////////////////////////////////////////////////////////////////
 //	Model
 struct	v_model

@@ -183,7 +183,7 @@ struct p_shadow {
 	float4	hpos : POSITION;
 };
 //////////////////////////////////////////////////////////////////////////////////////////
-struct  				p_screen                {
+struct p_screen {
         float4          hpos               		: POSITION;
         float2          tc0                		: TEXCOORD0;        // Texture coordinates         (for sampling maps)
 };

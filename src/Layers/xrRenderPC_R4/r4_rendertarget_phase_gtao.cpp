@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "r4_rendertarget.h"
+
 void CRenderTarget::phase_gtao()
 {
 	u32 Offset = 0;
