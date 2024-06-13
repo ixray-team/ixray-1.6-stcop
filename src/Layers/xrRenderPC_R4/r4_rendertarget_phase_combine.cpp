@@ -247,7 +247,7 @@ void	CRenderTarget::phase_combine	()
 	RImplementation.rmNormal();
 
 	if(Device.RenderScale > 1.0f) {
-		ps_r_scale_mode = 0;
+		ps_r_scale_mode = 1;
 	}
 
 	switch(ps_r_scale_mode)
@@ -255,7 +255,7 @@ void	CRenderTarget::phase_combine	()
 		case 3:
 		{
 			if(!phase_fsr()) {
-				ps_r_scale_mode = 0;
+				ps_r_scale_mode = 1;
 			}
 			break;
 		}

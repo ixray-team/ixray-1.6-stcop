@@ -65,6 +65,9 @@ float3 Hash33(float3 value) {
 //The implementation was taken from https://cwyman.org/papers/i3d17_hashedAlpha.pdf document by Chris Wyman and Morgan McGuire
 float hashed_alpha_test(float3 position)
 {
+	if(m_taa_jitter.z < 0.0f) {
+		return def_aref;
+	}
 	//Find the discretized derivatives of our coordinates
 	float maxDeriv = max(length(ddx(position.xyz)), length(ddy(position.xyz)));
 	float pixScale = rcp(def_aref * maxDeriv); //Let's use def_aref as temporary pixel scale
@@ -94,10 +97,7 @@ float hashed_alpha_test(float3 position)
 
 	//R1 sequence to animate our noise for TAA/FSR/DLSS
 	//Todo: Check if player has enabled TAA/upscaling to enable anim
-#if 1 //def USE_JITTER_FOR_TAA
-	int jitter_phase = 16; //Seems okay
-	thresh = frac(thresh + float(m_taa_jitter.w % jitter_phase) * 0.38196601125);
-#endif
+	thresh = frac(thresh + m_taa_jitter.z);
 
 	//Clamp alpha
 	return clamp(thresh, 1e-5, 1.0);

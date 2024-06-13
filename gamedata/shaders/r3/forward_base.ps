@@ -19,10 +19,8 @@ void main (p_bumped_new I, out f_forward O) {
 	SloadNew(I, M);
 	
 #ifdef USE_AREF
-	#ifdef USE_HASHED_AREF
-		clip(M.Color.w - hashed_alpha_test(M.Point));
-	#else
-		clip(M.Color.w - def_aref);
+	#ifdef USE_DXT1_HACK
+		M.Color.xyz /= max(0.0001f, M.Color.w);
 	#endif
 #endif
 	

@@ -8,7 +8,11 @@ void CBlender_scale::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-	if(C.iElement == 1) {
+	if(C.iElement > 1) {
+		return;
+	}
+
+	if(C.iElement == 0) {
 		RImplementation.addShaderOption("FILTER_TYPE", "smp_nofilter");
 		RImplementation.addShaderOption("USE_POINT_FILTER", "1");
 	}
@@ -24,6 +28,4 @@ void CBlender_scale::Compile(CBlender_Compile& C)
 	C.r_dx10Sampler("smp_rtlinear");
 
 	C.r_End();
-
-	RImplementation.clearAllShaderOptions();
 }

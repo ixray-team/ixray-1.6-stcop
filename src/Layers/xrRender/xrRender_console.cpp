@@ -23,14 +23,14 @@ xr_token qsmapsize_token[] = {
 	{ nullptr, 0   }
 };
 
-u32 ps_r_scale_mode = 0;
+u32 ps_r_scale_mode = 1;
 xr_token qscale_mode_token[] = {
-	{ "st_filter_linear", 0},
-	{ "st_filter_point", 1},
-#ifdef USE_DX11
+#ifdef DEBUG_DRAW
+	{ "st_filter_point", 0},
+#endif
+	{ "st_filter_linear", 1},
 	{ "st_filter_dlss", 2},
 	{ "st_filter_fsr", 3},
-#endif
 	{ 0, 0 }
 };
 

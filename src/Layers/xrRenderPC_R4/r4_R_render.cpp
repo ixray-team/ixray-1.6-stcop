@@ -388,9 +388,10 @@ void CRender::Render		()
 
 		ps_r_taa_jitter.x = 2.0f * ps_r_taa_jitter_full.x / RCache.get_width();
 		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / RCache.get_height();
+		ps_r_taa_jitter.z = float(Device.dwFrame % jitterPhaseCount) / float(jitterPhaseCount) + EPS;
 	}
 	else {
-		ps_r_taa_jitter.set(0, 0, 0);
+		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}
 
