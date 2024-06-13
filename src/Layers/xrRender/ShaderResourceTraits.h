@@ -13,7 +13,7 @@
 		typedef CResourceManager::map_HS	MapType;
 		typedef ID3D11HullShader DXIface;
 
-		static inline const char* GetShaderExt() {return ".hs";}
+		static inline const char* GetShaderExt() {return ".hs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "hs_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
@@ -31,7 +31,7 @@
 		typedef CResourceManager::map_DS	MapType;
 		typedef ID3D11DomainShader			DXIface;
 
-		static inline const char* GetShaderExt() {return ".ds";}
+		static inline const char* GetShaderExt() {return ".ds.hlsl";}
 		static inline const char* GetCompilationTarget() {return "ds_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{
@@ -49,7 +49,7 @@
 		typedef CResourceManager::map_CS	MapType;
 		typedef ID3D11ComputeShader			DXIface;
 
-		static inline const char* GetShaderExt() {return ".cs";}
+		static inline const char* GetShaderExt() {return ".cs.hlsl";}
 		static inline const char* GetCompilationTarget() {return "cs_5_0";}
 		static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
 		{

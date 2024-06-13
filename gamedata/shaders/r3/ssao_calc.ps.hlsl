@@ -12,7 +12,7 @@ uniform	Texture2D s_half_depth;
 #endif
 
 #if SSAO_QUALITY <=3
-#include "ssao.ps"
+#include "ssao.ps.hlsl"
 #else
 #ifndef USE_HDAO
 #define USE_HDAO
@@ -21,7 +21,7 @@ uniform	Texture2D s_half_depth;
 
 #ifdef USE_HDAO
 #if SSAO_QUALITY > 3
-#include "ssao_hdao_new.ps"
+#include "ssao_hdao_new.ps.hlsl"
 #endif
 #define USE_HDAO_CODE
 #if SSAO_QUALITY <=3
@@ -30,7 +30,7 @@ uniform	Texture2D s_half_depth;
 #define g_txDepth s_position
 #define g_txNormal s_normal
 
-#include "ssao_hdao.ps"
+#include "ssao_hdao.ps.hlsl"
 #endif
 #endif // USE_HDAO
 

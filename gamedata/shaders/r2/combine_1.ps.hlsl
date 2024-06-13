@@ -6,9 +6,9 @@ uniform float3x4 m_v2w;
 #include "lmodel.hlsli"
 #include "hmodel.hlsli"
 
-#include "ssao_blur.ps"
-#include "ssao.ps"
-#include "ssao_hbao.ps"
+#include "ssao_blur.ps.hlsl"
+#include "ssao.ps.hlsl"
+// #include "ssao_hbao.ps.hlsl"
 
 struct _input {
 	float4 hpos : POSITION;
