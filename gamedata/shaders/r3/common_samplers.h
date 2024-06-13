@@ -38,6 +38,7 @@ sampler 	smp_material;
 
 //uniform sampler2D       s_depth;                //
 Texture2D	s_position;	//	smp_nofilter or Load
+Texture2D	s_surface;	//	smp_nofilter or Load
 Texture2D	s_normal;	//	smp_nofilter or Load
 Texture2D	s_lmap;		// 2D/???cube projector lightmap
 Texture3D	s_material;	//	smp_material
@@ -51,6 +52,7 @@ Texture2D	s_accumulator;      	// rgb.a = diffuse.specular
 //uniform sampler2D       s_generic;              //
 Texture2D	s_bloom;	//
 Texture2D	s_image;	// used in various post-processing
+Texture2D	s_velocity;	// used in various post-processing
 Texture2D	s_tonemap;	// actually MidleGray / exp(Lw + eps)
 
 

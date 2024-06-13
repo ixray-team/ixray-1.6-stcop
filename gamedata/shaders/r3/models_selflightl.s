@@ -13,4 +13,6 @@ function l_special (shader, t_base, t_second, t_detail)
 	: zb (true,false)
 	: fog (false)
 	: emissive (true)
+	shader:dx10texture ("s_base", t_base)
+	shader:dx10sampler ("smp_base")
 end

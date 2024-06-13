@@ -5,16 +5,16 @@
 
 float SampleHudHitPoint(float2 TexCoord) {
 	float depth = s_position.SampleLevel(smp_nofilter, TexCoord, 0).x;
-	return m_P_hud._34 / (min(1.0f, depth * 50.0f) - m_P_hud._33);
+	return depth_unpack.z / (min(1.0f, depth * 50.0f) - depth_unpack.w);
 }
 
 float2 GetPointTexCoord(float3 Point)
 {
-	Point.xy /= pos_decompression_params.xy * Point.z;
+	Point.xy /= pos_decompression_params_hud.xy * Point.z;
 	return saturate(Point.xy * 0.5f + 0.5f);
 }
 
-void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightInvDir, inout float Shadow) {
+void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightInvDir, inout float3 Light) {
 	#ifdef USE_HUD_SHADOWS
 		float3 Dir = 0.07f * normalize(LightInvDir) / HUD_SHADOWS_STEPS;
 		Point.xyz *= 0.99f; float ContactShadow = 0.0f;
@@ -38,7 +38,7 @@ void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightInvDir, in
 			}
 		}
 		
-		Shadow *= 1.0f - saturate(ContactShadow);
+		Light *= 1.0f - saturate(ContactShadow);
 	#endif
 }
 #endif

@@ -47,11 +47,13 @@ float3	GetWaterNMap( Texture2D s_texture, float2 tc)
 
 float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4	Color	: COLOR, float4 pos2d : SV_Position ) : SV_Target
 {
-	gbuffer_data gbd = gbuffer_load_data(tc, pos2d);
+	IXrayGbuffer O; GbufferUnpack(tc, pos2d, O);
+	
+	//gbuffer_data gbd = gbuffer_load_data(tc, pos2d);
 
-	float4 _P = float4( gbd.P, 1.0);
-	float3 _N = gbd.N;
-	float3	D = gbd.C;
+	float4 _P = float4(O.PointReal, 1.0);
+	float3 _N = O.Normal;
+	float3	D = O.Color;
 
 	_N.xyz = normalize(_N.xyz);
 
@@ -63,7 +65,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4	Color	: COLO
 
 	// Read rain projection with some jetter. Also adding pixel normal 
 	// factor to jitter to make rain strips more realistic.
-	float s = shadow_hw(PS) * saturate(gbd.hemi * 10.0f);	
+	float s = shadow_hw(PS) * saturate(O.Hemi * 10.0f);	
 	
 	//	Apply distance falloff
 	// Using fixed fallof factors according to float16 depth coordinate precision.
@@ -99,7 +101,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4	Color	: COLO
 	IsDir = normalize(IsDir);
 
 	float3 waterFall = GetWaterNMap(s_waterFall, float2( dot(tc1.xz, IsDir), tc1.y+timers.x));
-	float WeaponAttenuation = smoothstep( 0.8, 0.9, length( _P.xyz ));
+	float WeaponAttenuation = O.Depth > 0.2 ? 1.0f : 0.0f;
 	float ApplyNormalCoeff = s * WeaponAttenuation;
 
 	float3 water = waterSplash*(fIsUp*ApplyNormalCoeff);

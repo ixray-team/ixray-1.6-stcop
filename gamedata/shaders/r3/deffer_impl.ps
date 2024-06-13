@@ -1,8 +1,9 @@
 #include "common.h"
 #include "sload.h"
 
-void main (p_bumped_new I, out f_deffer O) {
-	XrayMaterial M;
+void main (p_bumped_new I, out IXrayGbufferPack O) {
+	IXrayMaterial M;
+	M.Depth = I.position.z;
 	
 	M.Sun = I.tcdh.w;
 	M.Hemi = I.tcdh.z;
@@ -30,7 +31,7 @@ void main (p_bumped_new I, out f_deffer O) {
 	float3 Normal = Normal_R.wzy + Normal_G.wzy + Normal_B.wzy + Normal_A.wzy - 0.5;
 	Normal.z *= 0.5f;
 	
-	M.Roughness = saturate(1.0f - Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x);
+	M.Roughness = min(1.0f, Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x);
 	M.Color.xyz *= Detail * 2.0f;
 
 	M.Metalness = 0.0f;
@@ -43,11 +44,13 @@ void main (p_bumped_new I, out f_deffer O) {
 	M.Sun = Lmap.w;
 	M.Hemi = M.Color.w;
 	
-#ifndef USE_R2_STATIC_SUN
-	M.Sun = xmaterial;
+#ifdef USE_LEGACY_LIGHT
+	M.Metalness = L_material.w;
+#else
+	M.Roughness = 1.0f - M.Roughness * 0.9f;
 #endif
 	
-	O = pack_gbuffer(float4(M.Normal, M.Hemi), float4(M.Point, M.Sun), float4(M.Color.xyz, 1.0f - M.Roughness));
-	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	GbufferPack(O, M);
 }
 

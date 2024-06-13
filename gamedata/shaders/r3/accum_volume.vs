@@ -12,4 +12,5 @@ v2p_volume main ( float4 P: POSITION )
 	O.tc 		= mul( m_texgen, P );
  	return	O;
 }
-FXVS;
+
+

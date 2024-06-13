@@ -18,27 +18,21 @@ struct v2p
 // Pixel
 float4 main( v2p I ) : SV_Target
 {
-//	float4 result = I.c*tex2D	(s_base,I.tc0);
 	float4 result = I.c * s_base.Sample( smp_base, I.tc0);
+	result.xyz *= L_hemi_color.xyz + L_ambient.xyz;
 
 	//	Igor: additional depth test
 #ifdef	USE_SOFT_PARTICLES
-//	float4 _P		= tex2Dproj         (s_position,         I.tctexgen);
-	float2 tcProj	= I.tctexgen.xy / I.tctexgen.w;
+	float2 tcProj = I.tctexgen.xy / I.tctexgen.w;
 	gbuffer_data gbd = gbuffer_load_data( tcProj, I.hpos );
-	float4 _P		= float4( gbd.P, gbd.mtl );
+	float4 _P = float4( gbd.P, gbd.mtl );
 	float spaceDepth = _P.z-I.tctexgen.z;
-	//result.a *= saturate(spaceDepth*0.3h);
 	result.a *= Contrast( saturate(spaceDepth*1.3h), 2);
 	result.rgb *= Contrast( saturate(spaceDepth*1.3h), 2);
-//	result = Contrast( saturate(spaceDepth*1.3h), 2);
-//	result = saturate (spaceDepth*5.0);
-//	result.rgb = float3(1,0,0);
-//	result.a = 1;
 #endif	//	USE_SOFT_PARTICLES
 
 	clip(result.a-(0.01f/255.0f));
-	//clip(result.a-0.5);
+	
     result.w *= I.fog;
 	return	result;
 }

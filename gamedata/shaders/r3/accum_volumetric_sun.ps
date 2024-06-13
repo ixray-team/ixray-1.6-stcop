@@ -1,6 +1,5 @@
 #include "common.h"
 
-#undef ULTRA_SHADOWS_ON
 #undef USE_ULTRA_SHADOWS
 
 #define RAY_PATH	2.0h
@@ -19,12 +18,6 @@
 		#define	FILTER_LOW	
 		#define RAY_SAMPLES	40
 	#endif
-#endif
-
-#ifndef	FILTER_LOW
-#ifdef USE_MINMAX_SM
-#define SM_MINMAX
-#endif
 #endif
 
 #include "shadow.h"
@@ -81,11 +74,7 @@ float4 	main (v2p_TL2uv  I) : SV_Target
 		if (depth>0.3)
 		{
 #ifndef	FILTER_LOW
-#ifndef SM_MINMAX
 				res += density*shadow( current );
-#else
-				res += density*shadow_dx10_1_sunshafts(current, pos2d.xy );
-#endif
 #else	//	FILTER_LOW
 				res += density*sample_hw_pcf(current, float4(0,0,0,0));
 #endif	//	FILTER_LOW
@@ -95,18 +84,18 @@ float4 	main (v2p_TL2uv  I) : SV_Target
 		current -= delta;
 	}
 
-	float fSturation = -Ldynamic_dir.z;
+	float fSturation = dot(normalize(P), -Ldynamic_dir.xyz);
 
 	//	Normalize dot product to
-	fSturation	= 0.5*fSturation+0.5;
+	fSturation = 0.5f * fSturation + 0.5f;
 	//	Map saturation to 0.2..1
-	fSturation	= 0.80*fSturation+0.20;
+	fSturation = 0.80f * fSturation + 0.20f;
 	
-	float fog = saturate (length (P.xyz) * fog_params.w + fog_params.x);
+	float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
 	float skyblend = fog * fog;
 
 	res = lerp(res, max_density, skyblend);
-	res		*= fSturation;
+	res *= fSturation;
 
 	return res*Ldynamic_color;
 #endif	//	SUN_SHAFTS_QUALITY

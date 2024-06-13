@@ -18,7 +18,7 @@ vf main (v_static v)
 	o.hpos = mul(m_VP, P);
 	o.tc0 = unpack_tc_base(v.tc,v.T.w,v.B.w);
 	o.c0 = 0;
-	o.fog = saturate(calc_fogging(v.P));
+	o.fog = 1.0f - calc_fogging(v.P);
 	o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
 	return o;

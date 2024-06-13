@@ -7,7 +7,6 @@ function normal (shader, t_base, t_second, t_detail)
 		: sorting (2, false)
 
 	shader:dx10texture	("s_smap", "null")
-	shader:dx10texture  ("s_smap_minmax", "$user$smap_depth_minmax");
 	shader:dx10texture	("s_position", "$user$position")
 	shader:dx10texture	("jitter0", "$user$jitter_0")
 

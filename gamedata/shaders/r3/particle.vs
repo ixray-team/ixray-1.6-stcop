@@ -35,10 +35,10 @@ v2p main (vv v)
 	o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 //	Igor: for additional depth dest
 #ifdef	USE_SOFT_PARTICLES
-	o.tctexgen 	= mul( mVPTexgen, v.P);
-	o.tctexgen.z	= o.hpos.z;
+	o.tctexgen 	= mul(mVPTexgen, v.P);
+	o.tctexgen.z = mul(m_WV, v.P).z;
 #endif	//	USE_SOFT_PARTICLES
 
-    o.fog = saturate(calc_fogging(v.P)); // fog, input in world coords
+    o.fog = 1.0f - calc_fogging(v.P); // fog, input in world coords
 	return o;
 }

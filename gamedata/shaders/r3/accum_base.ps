@@ -1,63 +1,50 @@
 #include "common.h"
+
 #include "lmodel.h"
 #include "shadow.h"
+
+#include "metalic_roughness_light.h"
 #include "ScreenSpaceContactShadows.hlsl"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// This is the basic primitive used by convex, volumetric lights
-// for example spot-lights, one face of the omni lights, etc.
-//////////////////////////////////////////////////////////////////////////////////////////
-// following options are available to configure compilation:
-// USE_LMAP
-// USE_LMAPXFORM
-// USE_SHADOW
-//////////////////////////////////////////////////////////////////////////////////////////
-uniform float4 m_lmap [2];
-float4 main( p_volume I, float4 pos2d : SV_Position ) : SV_Target
+uniform float4 m_lmap[2];
+uniform int Ldynamic_hud;
+
+float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
 {
-	float2	tcProj = I.tc.xy / I.tc.w;
-
-	gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, pos2d, ISAMPLE));
-	gbd.P += gbd.N * 0.015f;
-
-	float4 _P = float4(gbd.P_real, gbd.mtl);
-	float4 _N = float4(gbd.N, gbd.hemi);
-
-	float m = xmaterial;
+	float2 tcProj = I.tc.xy / I.tc.w;
+	IXrayGbuffer O; GbufferUnpack(tcProj, pos2d, O);
 	
-# ifndef USE_R2_STATIC_SUN
-			m = _P.w;
-# endif
-        // ----- light-model
-      	float rsqr;
-        float4 light = plight_local(m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
-
-        // ----- shadow
-		float4 P4 = float4(gbd.P, 1.0f);
-        float4 PS = mul( m_shadow, P4);
-        float s = 1.0f;
-		
+	float4 Point = float4(O.Point, 1.0f);
+	
+	if(Ldynamic_hud > 0) {
+		Point.xyz = O.PointHud;
+	}
+	
+	float3 Light = DirectLight(Ldynamic_color, O.PointReal.xyz - Ldynamic_pos.xyz, O.Normal, O.PointReal.xyz, O.Color, O.Metalness, O.Roughness);
+	
+	float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
+	Point.xyz += O.Normal * 0.015f;
+	
+	float4 PS = mul(m_shadow, Point);
+	
 #ifdef USE_SHADOW
-		s = shadow(PS);
-		
-		#ifdef USE_HUD_SHADOWS
-			if(gbd.depth < 0.02f) {
-				RayTraceContactShadow(tcProj, gbd.P_hud, Ldynamic_pos.xyz - gbd.P_hud, s);
-			}
-		#endif
+	Lightmap *= shadow(PS);
+	
+	#ifdef USE_HUD_SHADOWS
+		if(O.Depth < 0.02f && dot(Lightmap.xyz, Light.xyz) > 0.0001f) {
+			RayTraceContactShadow(tcProj, O.PointHud, Ldynamic_pos.xyz - O.PointHud, Lightmap);
+		}
+	#endif
 #endif
-
-        // ----- lightmap
-        float4 lightmap = 1.0f;
-        #ifdef        USE_LMAP
-                #ifdef         USE_LMAPXFORM
-							PS.x	= dot( P4, m_lmap[0] );
-							PS.y	= dot( P4, m_lmap[1] );
-                #endif
-                //lightmap= tex2Dproj         (s_lmap,        PS);        //
-				//	Can use linear with mip point
-				lightmap = s_lmap.SampleLevel( smp_rtlinear, PS.xy / PS.w, 0);        //
-        #endif
-
-        return blendp (Ldynamic_color * light * s * lightmap, I.tc);
+	
+#ifdef USE_LMAP
+	#ifdef USE_LMAPXFORM
+		PS.x = dot(Point, m_lmap[0]);
+		PS.y = dot(Point, m_lmap[1]);
+	#endif
+	Lightmap *= s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz;
+#endif
+	
+	return float4(Lightmap.xyz * Light.xyz, 0.0f);
 }
+

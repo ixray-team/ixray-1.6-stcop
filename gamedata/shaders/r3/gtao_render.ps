@@ -101,7 +101,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 				break;
 
 			//Sample the view space position
-			float s_view_z = m_P._34 / (s_position.SampleLevel(smp_nofilter, s_texcoord, 0.0).x - m_P._33);
+			float s_view_z = depth_unpack.x / (s_position.SampleLevel(smp_nofilter, s_texcoord, 0.0).x - depth_unpack.y);
 			float3 s_view_position = float3((s_texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
 
 			//Get front and back vectors
@@ -154,7 +154,7 @@ uint main(PSInput I) : SV_Target
 		gbd.N = normalize(N.xyz - 0.5f);
 		gbd.N.z = -gbd.N.z;
 
-		float s_view_z = m_P._34 / (gbd.depth - m_P._33);
+		float s_view_z = depth_unpack.x / (gbd.depth - depth_unpack.y);
 		gbd.P.xyz = float3((I.texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
 	}
 

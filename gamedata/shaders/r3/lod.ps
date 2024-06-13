@@ -15,18 +15,36 @@ void sample_Textures(inout float4 D, inout float4 H, float2 tc1, float2 tc0, flo
 	H = lerp (H0,H1,af.w); H.w *= af.x;
 }
 
-void main (in p_bilbord I, out f_deffer O) {
+void main (in p_bilbord I, out IXrayGbufferPack O) {
 	float4 D, H; sample_Textures(D, H, I.tc1, I.tc0, I.af);
 	float3 N = normalize(H.xyz);
 
 	clip(D.w - def_aref);
 	
 	float Sun = saturate(H.w * 2.0f);
+
+	IXrayMaterial M;
+	M.Depth = I.position.z;
 	
-#ifndef USE_R2_STATIC_SUN
-	Sun = xmaterial;
+	M.Point = I.position.xyz;
+	M.Color = D;
+	
+	M.Sun = Sun;
+	
+	M.AO = 1.0f;
+	M.SSS = 0.0f;
+	M.Hemi = H.w;
+	
+	M.Normal = N.xyz;
+	
+	M.Roughness = 0.95f;
+	M.Metalness = 0.0f;
+	
+#ifdef USE_LEGACY_LIGHT
+	M.Metalness = L_material.w;
+	M.Roughness = def_gloss;
 #endif
 
-	O = pack_gbuffer(float4(N, H.w), float4(I.position, Sun), float4(D.xyz, def_gloss));						
-	O.V = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	GbufferPack(O, M);
 }

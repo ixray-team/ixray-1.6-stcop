@@ -103,7 +103,7 @@ float4 GatherZSamples( float2 f2TexCoord )
 	f4Ret = g_txDepth.GatherRed(smp_nofilter, f2TexCoord);
 #endif // SM_5
 
-	f4Ret = m_P._34 / (f4Ret - m_P._33);
+	f4Ret = depth_unpack.x / (f4Ret - depth_unpack.y);
 
 #ifndef SM_5
 	f4Add.x = 1.0f - 2.0f * g_txNormal.Load(int3(f2TexCoord * g_f2RTSize, 0), int2(1, 0)).z;
@@ -143,7 +143,7 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 	int2 i2OffsetScreenCoord;
 	int2 i2MirrorOffsetScreenCoord;
 	
-	float3 N = 1.0f - 2.0f * g_txNormal.Load(int3( u2ScreenCoord, 0), 0).xyz;
+	float3 N = normalize(1.0f - 2.0f * g_txNormal.Load(int3( u2ScreenCoord, 0), 0).xyz);
 
 	for( int iNormal=0; iNormal<NUM_NORMAL_LOADS; iNormal++ )
 	{
@@ -157,8 +157,8 @@ float HDAOValleyAngle( uint2 u2ScreenCoord )
 		i2OffsetScreenCoord = ( i2OffsetScreenCoord < 0 ) ? ( 0 ) : ( i2OffsetScreenCoord );
 		i2MirrorOffsetScreenCoord = ( i2MirrorOffsetScreenCoord < 0 ) ? ( 0 ) : ( i2MirrorOffsetScreenCoord );
 						
-		f3N1.xyz = 1.0f - 2.0f * g_txNormal.Load(int3( i2OffsetScreenCoord, 0), 0).xyz;
-		f3N2.xyz = 1.0f - 2.0f * g_txNormal.Load(int3( i2MirrorOffsetScreenCoord, 0), 0).xyz;			
+		f3N1.xyz = normalize(1.0f - 2.0f * g_txNormal.Load(int3( i2OffsetScreenCoord, 0), 0).xyz);
+		f3N2.xyz = normalize(1.0f - 2.0f * g_txNormal.Load(int3( i2MirrorOffsetScreenCoord, 0), 0).xyz);			
 		
 		fDot = dot(f3N1, N);
 		

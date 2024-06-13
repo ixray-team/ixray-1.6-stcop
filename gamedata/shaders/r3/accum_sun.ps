@@ -1,35 +1,65 @@
 #include "common.h"
 #include "lmodel.h"
+
+#if SUN_QUALITY > 2
+#define USE_ULTRA_SHADOWS
+#endif
+
 #include "shadow.h"
+uniform float3 view_shadow_proj;
 
-float4 	main	( p_aa_AA_sun I, float4 pos2d : SV_Position ) : SV_Target
+#include "metalic_roughness_light.h"
+#include "ScreenSpaceContactShadows.hlsl"
+
+float4 main ( v2p_volume I ) : SV_Target
 {
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc, pos2d, ISAMPLE) );
-
-//  float4 _P		= tex2D 	(s_position, 	I.tc); 
-//  float4  _N		= tex2D 	(s_normal,   	I.tc); 
-	float4 	_P	= float4( gbd.P, gbd.mtl );
-	float4	_N	= float4( gbd.N, gbd.hemi );
-
-	// ----- light-model
-	float 	m	= xmaterial	;
-# ifndef USE_R2_STATIC_SUN
-			m 	= _P.w		;
-# endif
-	float4	light	= plight_infinity( m, _P, _N, Ldynamic_dir );
-
+	float2 tcProj = I.tc.xy / I.tc.w;
+	IXrayGbuffer O; GbufferUnpack(tcProj, I.hpos.xy, O);
+	
+	float3 Shift = O.Normal;
+	
+	if(O.SSS > 0.5f) {
+		Shift *= dot(Ldynamic_dir, Shift) >= 0.0 ? -1.0f : 1.0f;
+	}
+	
+  	float4 Point = float4(O.Point.xyz, 1.f);
+	Point.xyz += Shift * 0.025f;
+	
 	// ----- shadow
-	float4 	s_sum;
-//		s_sum.x	= tex2D	( s_smap, I.LT).x;
-//		s_sum.y = tex2D	( s_smap, I.RT).y;
-//		s_sum.z	= tex2D	( s_smap, I.LB).z;
-//		s_sum.w = tex2D	( s_smap, I.RB).w;
-		s_sum.x	= s_smap.Sample( smp_nofilter, I.LT).x;
-		s_sum.y = s_smap.Sample( smp_nofilter, I.RT).y;
-		s_sum.z	= s_smap.Sample( smp_nofilter, I.LB).z;
-		s_sum.w = s_smap.Sample( smp_nofilter, I.RB).w;
-//	float 	s 	= dot	( s_sum, 1.h/4.h);
-	float 	s 	= ((s_sum.x+s_sum.y)+(s_sum.z+s_sum.w))*(1.h/4.h);
+	float4 PS = mul(m_shadow, Point);
+	
+#ifdef USE_FAR_ATTENTION
+	// Far edge fading code
+	float3 Factor = smoothstep(0.5f, 0.45f, abs(PS.xyz / PS.w - 0.5f));
+	
+	float Fade = Factor.x * Factor.y * Factor.z;
+	O.SSS *= Fade * Fade;
+#endif
 
-	return 		Ldynamic_color * light * s;
+#ifdef USE_LEGACY_LIGHT
+	O.Roughness *= 1.0f - O.SSS;
+#endif
+	
+	O.Normal = normalize(lerp(O.Normal, -Ldynamic_dir.xyz, O.SSS));
+
+	float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.PointReal.xyz, O.Color, O.Metalness, O.Roughness);
+	
+#if SUN_QUALITY == 2
+	float Shadow = shadow_high(PS);
+#else
+	float Shadow = shadow(PS);
+#endif
+
+#ifdef USE_FAR_ATTENTION
+	Shadow = lerp(1.0f, Shadow, Fade);
+	
+#elif defined(USE_HUD_SHADOWS)
+	if(O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > 0.0001f) {
+		RayTraceContactShadow(tcProj, O.PointHud, -Ldynamic_dir, Light);
+	}
+#endif
+	
+	Shadow *= sunmask(Point);
+	return float4(Light * Shadow, Shadow);
 }
+

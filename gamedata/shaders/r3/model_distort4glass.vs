@@ -10,6 +10,7 @@ struct vf
 	float4 tctexgen	: TEXCOORD1;
 #endif	//	USE_SOFT_PARTICLES
 	float4	hpos: SV_Position;
+    float fog : FOG;
 };
 
 vf   _main (v_model v)
@@ -24,6 +25,7 @@ vf   _main (v_model v)
   float3  norm_v  = normalize    (mul(m_WV,v.N));
   float   fade    = 0.9*abs      (dot(dir_v,norm_v));
   o.c0        = fade;
+  o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f)); // fog, input in world coords
 
   return o;
 }

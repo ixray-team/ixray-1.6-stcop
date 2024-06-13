@@ -94,7 +94,7 @@ float hashed_alpha_test(float3 position)
 
 	//R1 sequence to animate our noise for TAA/FSR/DLSS
 	//Todo: Check if player has enabled TAA/upscaling to enable anim
-#ifdef USE_JITTER_FOR_TAA
+#if 1 //def USE_JITTER_FOR_TAA
 	int jitter_phase = 16; //Seems okay
 	thresh = frac(thresh + float(m_taa_jitter.w % jitter_phase) * 0.38196601125);
 #endif
@@ -103,34 +103,19 @@ float hashed_alpha_test(float3 position)
 	return clamp(thresh, 1e-5, 1.0);
 }
 
-float4 combine_bloom( float3  low, float4 high)	
+float4 combine_bloom(float3  low, float4 high)	
 {
-	return float4( low + high*high.a, 1.f);
+	return float4(low + high * high.a, 1.f);
 }
 
-float calc_fogging( float4 w_pos )      
+float calc_fogging(float4 w_pos)      
 {
-	return dot(w_pos,fog_plane);         
+	return saturate(length(w_pos.xyz - eye_position.xyz) * fog_params.w + fog_params.x);
 }
 
 float2 unpack_tc_base( float2 tc, float du, float dv )
 {
-		return (tc.xy + float2	(du,dv))*(32.f/32768.f); //!Increase from 32bit to 64bit floating point
-}
-
-float3 calc_sun_r1( float3 norm_w )    
-{
-	return L_sun_color*saturate(dot((norm_w),-L_sun_dir_w));                 
-}
-
-float3 calc_model_hemi_r1( float3 norm_w )    
-{
- return max(0,norm_w.y)*L_hemi_color;
-}
-
-float3 calc_model_lq_lighting( float3 norm_w )    
-{
-	return L_material.x*calc_model_hemi_r1(norm_w) + L_ambient + L_material.y*calc_sun_r1(norm_w);
+	return (tc.xy + float2(du, dv)) * (32.f/32768.f); //!Increase from 32bit to 64bit floating point
 }
 
 float3 	unpack_normal( float3 v )	{ return 2*v-1; }
@@ -143,36 +128,33 @@ float3	unpack_D3DCOLOR( float3 c ) { return c.bgr; }
 
 float3   p_hemi( float2 tc )
 {
-//	float3	t_lmh = tex2D (s_hemi, tc);
-//	float3	t_lmh = s_hemi.Sample( smp_rtlinear, tc);
-//	return	dot(t_lmh,1.h/4.h);
-	float4	t_lmh = s_hemi.Sample( smp_rtlinear, tc);
-	return	t_lmh.a;
+	float4 t_lmh = s_hemi.Sample( smp_rtlinear, tc);
+	return t_lmh.w;
 }
 
-float   get_hemi( float4 lmh)
+float get_hemi(float4 lmh)
 {
-	return lmh.a;
+	return lmh.w;
 }
 
-float   get_sun( float4 lmh)
+float get_sun(float4 lmh)
 {
-	return lmh.g;
+	return lmh.y;
 }
 
-float3	v_hemi(float3 n)
+float3 v_hemi(float3 n)
 {
-	return L_hemi_color*(.5f + .5f*n.y);                   
+	return L_hemi_color * L_hemi_color * (.5f + .5f * n.y);                   
 }
 
-float3	v_sun(float3 n)                        	
+float3 v_sun(float3 n)                        	
 {
-	return L_sun_color*dot(n,-L_sun_dir_w);                
+	return L_sun_color * dot(n, -L_sun_dir_w);
 }
 
-float3	calc_reflection( float3 pos_w, float3 norm_w )
+float3 calc_reflection( float3 pos_w, float3 norm_w )
 {
-    return reflect(normalize(pos_w-eye_position), norm_w);
+    return reflect(normalize(pos_w - eye_position), norm_w);
 }
 
 #define USABLE_BIT_1                uint(0x00002000)
@@ -294,9 +276,10 @@ gbuffer_data gbuffer_load_data( float2 tc : TEXCOORD, float2 pos2d)
 	
 	pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
 	float3 P = float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+	float3 P_hud = float3(pos2d * pos_decompression_params_hud.zw - pos_decompression_params_hud.xy, 1.0f);
 	
-	gbd.P = P * m_P._34 / (gbd.depth - m_P._33);
-	gbd.P_hud = P * m_P_hud._34 / (min(1.0f, gbd.depth * 50.0f) - m_P_hud._33);
+	gbd.P = P * depth_unpack.x / (gbd.depth - depth_unpack.y);
+	gbd.P_hud = P_hud * depth_unpack.z / (min(1.0f, gbd.depth * 50.0f) - depth_unpack.w);
 	gbd.P_real = gbd.depth > 0.02f ? gbd.P : gbd.P_hud;
 		
 	float4 N = s_normal.Sample(smp_nofilter, tc);
