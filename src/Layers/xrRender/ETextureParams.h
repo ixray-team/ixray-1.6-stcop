@@ -43,6 +43,7 @@ struct ECORE_API STextureParams{
 		tmBlin_Phong, 
 		tmPhong_Metal,
         tmMetal_OrenNayar,
+        tmPBR_Material,
 		tmForceU32			= u32(-1)
     };
 	enum{
@@ -148,10 +149,10 @@ struct ECORE_API STextureParams{
 
     IC BOOL HasAlpha()
     { 
-    	// исходная текстура содержит альфа канал
+    	// РёСЃС…РѕРґРЅР°СЏ С‚РµРєСЃС‚СѓСЂР° СЃРѕРґРµСЂР¶РёС‚ Р°Р»СЊС„Р° РєР°РЅР°Р»
     	return flags.is(flHasAlpha);
     }
-	IC BOOL HasAlphaChannel() // игровая текстура содержит альфа канал
+	IC BOOL HasAlphaChannel() // РёРіСЂРѕРІР°СЏ С‚РµРєСЃС‚СѓСЂР° СЃРѕРґРµСЂР¶РёС‚ Р°Р»СЊС„Р° РєР°РЅР°Р»
 	{
 		switch (fmt)
 		{

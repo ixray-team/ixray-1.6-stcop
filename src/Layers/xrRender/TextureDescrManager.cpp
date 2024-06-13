@@ -92,6 +92,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 			desc.m_spec					= new texture_spec();
 			desc.m_spec->m_material		= (float)tp.material+tp.material_weight;
 			desc.m_spec->m_use_steep_parallax = false;
+			desc.m_spec->m_use_pbr = (tp.material == STextureParams::tmPBR_Material);
 			
 			if(tp.bump_mode==STextureParams::tbmUse)
 			{
@@ -167,6 +168,16 @@ BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
 		{
 			return I->second.m_spec->m_use_steep_parallax;
 		}	
+	}
+	return FALSE;
+}
+
+BOOL CTextureDescrMngr::UsePBRTexures(const shared_str& tex_name) const {
+	auto I = m_texture_details.find(tex_name);
+	if(I != m_texture_details.end()) {
+		if(I->second.m_spec) {
+			return I->second.m_spec->m_use_pbr;
+		}
 	}
 	return FALSE;
 }
