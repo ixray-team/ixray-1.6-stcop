@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 //////////////////////////////////////////////////////////////////////////////////////////
 #if defined(SM_5) || defined(SM_4_1)
     #define SMAA_HLSL_4_1
@@ -10,7 +10,7 @@
 uniform float4 screen_res;
 #define SMAA_RT_METRICS screen_res.zwxy
 //////////////////////////////////////////////////////////////////////////////////////////
-#include "smaa.h"
+#include "smaa.hlsli"
 
 //Struct
 struct p_smaa

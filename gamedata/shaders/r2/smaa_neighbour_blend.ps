@@ -1,11 +1,11 @@
-#include "common.h"
+#include "common.hlsli"
 
 #define SMAA_HLSL_3
 uniform float4 screen_res;
 #define SMAA_RT_METRICS screen_res.zwxy
 #define	SMAA_PRESET_ULTRA
 
-#include "smaa.h"
+#include "smaa.hlsli"
 
 SMAATexture2D(s_blendtex);
 

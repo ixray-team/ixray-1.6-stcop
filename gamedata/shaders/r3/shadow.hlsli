@@ -1,7 +1,7 @@
 #ifndef	SHADOW_H
 #define SHADOW_H
 
-#include "common.h"
+#include "common.hlsli"
 uniform float4x4 m_shadow;
 
 Texture2D s_smap : register(ps,t0);

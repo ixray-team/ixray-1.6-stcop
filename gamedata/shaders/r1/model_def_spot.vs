@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 vf_spot _main (v_model v)
 {
@@ -19,4 +19,4 @@ vf_spot _main (v_model v)
 
 /////////////////////////////////////////////////////////////////////////
 #define SKIN_VF vf_spot
-#include "skin_main.h"
+#include "skin_main.hlsli"

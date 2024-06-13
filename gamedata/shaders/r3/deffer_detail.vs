@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 cbuffer DetailConstants {
 	float4 consts;

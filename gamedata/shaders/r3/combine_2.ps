@@ -1,6 +1,6 @@
-#include "common.h"
-#include "mblur.h"
-#include "dof.h"
+#include "common.hlsli"
+#include "mblur.hlsli"
+#include "dof.hlsli"
 
 float3 deband_color (float3 image, float2 uv) {
 	float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);

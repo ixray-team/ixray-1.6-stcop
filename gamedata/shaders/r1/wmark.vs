@@ -1,5 +1,5 @@
-#include "common.h"
-#include "shared\wmark.h"
+#include "common.hlsli"
+#include "shared\wmark.hlsli"
 
 //	for multiplicative decal
 

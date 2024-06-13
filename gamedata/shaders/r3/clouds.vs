@@ -1,5 +1,5 @@
-#include "common.h"
-#include "shared\cloudconfig.h"
+#include "common.hlsli"
+#include "shared\cloudconfig.hlsli"
 
 struct 	vi
 {

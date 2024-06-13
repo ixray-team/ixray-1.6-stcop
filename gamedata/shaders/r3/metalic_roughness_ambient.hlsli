@@ -1,6 +1,6 @@
 #ifndef	metalic_roughness_ambient_h_ixray_included
 #define	metalic_roughness_ambient_h_ixray_included
-#include "common.h"
+#include "common.hlsli"
 
 float3 FresnelSchlickRoughness(float3 F, float NdotV, float Roughness) {
     return F + max(0.0f, (1.0f - Roughness) - F) * pow(1.0f - NdotV, 5.0f);

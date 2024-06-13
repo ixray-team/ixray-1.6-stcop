@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 struct 	vf
 {

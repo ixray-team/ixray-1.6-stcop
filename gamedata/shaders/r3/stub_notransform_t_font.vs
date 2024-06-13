@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 uniform	float4 screen_res;
 v2p_TL main(v_TL_positiont I)

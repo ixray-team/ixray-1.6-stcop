@@ -1,7 +1,7 @@
 #ifndef	COMMON_H
 #define COMMON_H
 
-#include "shared\common.h"
+#include "shared\common.hlsli"
 
 uniform float4		L_dynamic_props;	// per object, xyz=sun,w=hemi
 uniform float4		L_dynamic_color;	// dynamic light color (rgb1)	- spot/point

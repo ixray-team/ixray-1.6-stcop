@@ -1,5 +1,5 @@
-#include "common.h"
-#include "DX11\tess.h"
+#include "common.hlsli"
+#include "DX11\tess.hlsli"
 
 [domain("tri")]
 void main(in HS_CONSTANT_DATA_OUTPUT input, 

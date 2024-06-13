@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 cbuffer LodConstants {
 	float3x4 m_xform;

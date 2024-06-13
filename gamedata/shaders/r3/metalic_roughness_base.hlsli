@@ -1,6 +1,6 @@
 #ifndef metalic_roughness_base_h_ixray_included
 #define metalic_roughness_base_h_ixray_included
-#include "common.h"
+#include "common.hlsli"
 
 #define PI 3.141592653589793
 #define F0 float3(0.04, 0.04, 0.04)

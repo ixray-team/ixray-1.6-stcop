@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 // #define SKIN_2
 
@@ -39,4 +39,4 @@ vf 	_main (v_model v)
 
 /////////////////////////////////////////////////////////////////////////
 #define SKIN_VF vf
-#include "skin_main.h"
+#include "skin_main.hlsli"

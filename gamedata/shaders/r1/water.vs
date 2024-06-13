@@ -1,6 +1,6 @@
-#include "common.h"
-#include "shared\waterconfig.h"
-#include "shared\watermove.h"
+#include "common.hlsli"
+#include "shared\waterconfig.hlsli"
+#include "shared\watermove.hlsli"
 
 struct v_vertx {
     float4 P : POSITION; // (float,float,float,1)

@@ -1,7 +1,7 @@
 #ifndef	SKIN_H
 #define SKIN_H
 
-#include "common.h"
+#include "common.hlsli"
 
 struct 	v_model_skinned_0
 {

@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 struct 	a2v {
 	float4 P: POSITION;

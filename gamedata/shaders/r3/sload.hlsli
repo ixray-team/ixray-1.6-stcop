@@ -1,6 +1,6 @@
 #ifndef SLOAD_H
 #define SLOAD_H
-#include "common.h"
+#include "common.hlsli"
 
 static const float fParallaxStartFade = 8.0f;
 static const float fParallaxStopFade = 12.0f;

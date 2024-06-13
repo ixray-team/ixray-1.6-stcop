@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 void skinned_main(in v_model I, out p_bumped_new O) {	
 	float3 Nw = mul((float3x3)m_W, (float3)I.N);

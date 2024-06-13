@@ -1,5 +1,5 @@
-#include "common.h"
-#include "shared\wmark.h"
+#include "common.hlsli"
+#include "shared\wmark.hlsli"
 
 vf_point main (v_vert v)
 {

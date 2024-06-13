@@ -1,7 +1,7 @@
 #ifndef HMODEL_H
 #define HMODEL_H
 
-#include "common.h"
+#include "common.hlsli"
 
 uniform samplerCUBE env_s0;
 uniform samplerCUBE env_s1;

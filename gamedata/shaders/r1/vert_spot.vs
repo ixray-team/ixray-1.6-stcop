@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 vf_spot main (v_vert v)
 {

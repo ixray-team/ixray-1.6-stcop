@@ -1,7 +1,7 @@
 #ifndef HMODEL_H
 #define HMODEL_H
 
-#include "common.h"
+#include "common.hlsli"
 
 TextureCube env_s0;
 TextureCube env_s1;

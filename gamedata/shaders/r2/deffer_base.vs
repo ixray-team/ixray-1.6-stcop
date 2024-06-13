@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 void main(in v_static I, out p_bumped_new O)
 {	

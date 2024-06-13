@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 uniform	float3x4 m_xform;
 uniform	float3x4 m_xform_v;

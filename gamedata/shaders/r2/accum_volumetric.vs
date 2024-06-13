@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 float3	vMinBounds;
 float3	vMaxBounds;

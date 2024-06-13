@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 p_shadow _main(v_model I) {
 	p_shadow O;

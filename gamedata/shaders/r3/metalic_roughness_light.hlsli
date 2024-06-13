@@ -1,6 +1,6 @@
 #ifndef	metalic_roughness_light_h_ixray_included
 #define	metalic_roughness_light_h_ixray_included
-#include "common.h"
+#include "common.hlsli"
 
 float DistributionGGX(float SqrNdotH, float Roughness)
 {

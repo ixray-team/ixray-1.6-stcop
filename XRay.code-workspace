@@ -12,6 +12,8 @@
             "**/gamedata/scripts/*.script": "lua",
             "**/gamedata/shaders/**/*.s": "lua",
             "**/gamedata/shaders/**/*.s_": "lua",
+            "**/gamedata/shaders/**/*.hlsli": "hlsl",
+            "**/gamedata/shaders/**/*.hlsl": "hlsl",
             "**/gamedata/shaders/**/*.h": "hlsl",
             "**/gamedata/shaders/**/*.ps": "hlsl",
             "**/gamedata/shaders/**/*.vs": "hlsl",

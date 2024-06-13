@@ -95,7 +95,7 @@ indent_style = space
 insert_final_newline = true
 
 # HLSL scripts
-[{gamedata/shaders/*/*.h,gamedata/shaders/*/*.ps,gamedata/shaders/*/*.vs,gamedata/shaders/*/*.ds,gamedata/shaders/*/*.hs,gamedata/shaders/*/*.gs,gamedata/shaders/*/*.cs}]
+[{gamedata/shaders/*/*.h,gamedata/shaders/*/*.hlsli,gamedata/shaders/*/*.hlsl,gamedata/shaders/*/*.ps,gamedata/shaders/*/*.vs,gamedata/shaders/*/*.ds,gamedata/shaders/*/*.hs,gamedata/shaders/*/*.gs,gamedata/shaders/*/*.cs}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4

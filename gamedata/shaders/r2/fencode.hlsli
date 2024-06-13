@@ -1,7 +1,7 @@
 #ifndef	FENCODE_H
 #define FENCODE_H
 
-#include "common.h"
+#include "common.hlsli"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 uniform float3		v_encodeZ01;

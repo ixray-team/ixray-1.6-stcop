@@ -1,7 +1,7 @@
 #ifndef	SHADOW_H
 #define SHADOW_H
 
-#include "common.h"
+#include "common.hlsli"
 
 uniform	sampler	s_smap	: register(ps,s0);	// 2D/cube shadowmap
 

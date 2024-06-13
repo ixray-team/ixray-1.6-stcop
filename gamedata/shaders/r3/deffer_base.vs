@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 #ifdef USE_LM_HEMI
 	#define	v_in v_static

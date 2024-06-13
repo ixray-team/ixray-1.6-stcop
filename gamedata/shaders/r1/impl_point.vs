@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 
 vf_point main (v_lmap v)
 {

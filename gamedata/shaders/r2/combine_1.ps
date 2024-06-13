@@ -1,10 +1,10 @@
-#include "common.h"
+#include "common.hlsli"
 
 uniform	sampler2D s_half_depth;
 uniform float3x4 m_v2w;
 
-#include "lmodel.h"
-#include "hmodel.h"
+#include "lmodel.hlsli"
+#include "hmodel.hlsli"
 
 #include "ssao_blur.ps"
 #include "ssao.ps"

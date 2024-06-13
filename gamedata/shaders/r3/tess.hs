@@ -1,5 +1,5 @@
-#include "common.h"
-#include "DX11\tess.h"
+#include "common.hlsli"
+#include "DX11\tess.hlsli"
 
 void PatchConstantsHS(in InputPatch<p_bumped_new, 3> ip, in uint PatchID : SV_PrimitiveID, out HS_CONSTANT_DATA_OUTPUT Output) {	
 	ComputeTessFactor(Output.Edges, Output.Inside);

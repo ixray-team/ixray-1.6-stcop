@@ -1,5 +1,5 @@
-#include "common.h"
-#include "skin.h"
+#include "common.hlsli"
+#include "skin.hlsli"
 
 struct 	vf
 {
@@ -33,4 +33,4 @@ vf 	_main (v_model v)
 /////////////////////////////////////////////////////////////////////////
 #define SKIN_LQ
 #define SKIN_VF vf
-#include "skin_main.h"
+#include "skin_main.hlsli"

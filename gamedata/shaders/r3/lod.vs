@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hlsli"
 #define L_SCALE 3.1f
 
 struct v_bolbord {

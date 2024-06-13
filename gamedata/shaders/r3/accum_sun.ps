@@ -1,14 +1,14 @@
-#include "common.h"
-#include "lmodel.h"
+#include "common.hlsli"
+#include "lmodel.hlsli"
 
 #if SUN_QUALITY > 2
 #define USE_ULTRA_SHADOWS
 #endif
 
-#include "shadow.h"
+#include "shadow.hlsli"
 uniform float3 view_shadow_proj;
 
-#include "metalic_roughness_light.h"
+#include "metalic_roughness_light.hlsli"
 #include "ScreenSpaceContactShadows.hlsl"
 
 float4 main ( v2p_volume I ) : SV_Target
