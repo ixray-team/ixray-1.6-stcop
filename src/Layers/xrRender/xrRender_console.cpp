@@ -76,15 +76,6 @@ xr_token							qsun_quality_token							[ ]={
 	{ 0,							0												}
 };
 
-u32			ps_r3_minmax_sm			=	0;			//	=	0;
-xr_token							qminmax_sm_token					[ ]={
-	{ "off",						0												},
-	{ "on",							1												},
-	{ "auto",						2												},
-	{ "autodetect",					3												},
-	{ 0,							0												}
-};
-
 u32			ps_r2_aa_type			= 0;			//	=	0;
 xr_token							aa_type_token[] = {
 	{ "st_opt_off",						0												},
@@ -892,7 +883,6 @@ void		xrRender_initconsole	()
 	//	Igor: need restart
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
-	CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);
 
 	CMD3(CCC_Token,		"r__type_aa",					&ps_r2_aa_type,				aa_type_token);
 

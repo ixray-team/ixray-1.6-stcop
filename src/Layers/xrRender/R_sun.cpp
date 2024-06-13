@@ -2,6 +2,7 @@
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
+#include "../xrRender/Debug/dxPixEventWrapper.h"
 
 #include "../xrRender/R_sun_support.h"
 
@@ -335,15 +336,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	// Accumulate
 	Target->phase_accumulator	();
 
-#ifdef USE_DX11
-	if ( Target->use_minmax_sm_this_frame()	)
-	{
-		PIX_EVENT(SE_SUN_NEAR_MINMAX_GENERATE);
-		Target->create_minmax_SM();
-	}
-
 	PIX_EVENT(SE_SUN_NEAR);
-#endif // USE_DX11
 
 	if( cascade_ind == 0 )
 		Target->accum_direct_cascade		(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias );

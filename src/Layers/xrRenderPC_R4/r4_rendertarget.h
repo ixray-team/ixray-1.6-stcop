@@ -93,7 +93,6 @@ public:
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color
 	ref_rt						rt_smap_depth;	// 24(32) bit,	depth 
-	ref_rt						rt_smap_depth_minmax;	//	is used for min/max sm
 //	TODO: DX10: CHeck if we need old-style SMAP
 //	IDirect3DSurface9*			rt_smap_ZB;		//
 
@@ -130,14 +129,10 @@ private:
 	ref_shader					s_accum_mask	;
 	ref_shader					s_accum_direct	;
 	ref_shader					s_accum_direct_volumetric;
-	ref_shader					s_accum_direct_volumetric_minmax;
 	ref_shader					s_accum_point	;
 	ref_shader					s_accum_spot	;
 	ref_shader					s_accum_reflected;
 	ref_shader					s_accum_volume;
-
-	//	generate min/max
-	ref_shader					s_create_minmax_sm;
 
 	//	DX10 Rain
 	ref_shader					s_rain;
@@ -268,14 +263,10 @@ public:
 	void						phase_vol_accumulator	();
 	void						shadow_direct			(light* L, u32 dls_phase);
 
-	//	Generates min/max sm
-	void						create_minmax_SM();
-
 	void						phase_rain				();
 	void						draw_rain				(light &RainSetup);
 
 	bool						need_to_render_sunshafts();
-	bool						use_minmax_sm_this_frame();
 
 	BOOL						enable_scissor			(light* L);		// true if intersects near plane
 	void						enable_dbt_bounds		(light* L);

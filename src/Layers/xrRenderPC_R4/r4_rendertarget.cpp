@@ -14,7 +14,6 @@
 #include "blender_scale.h"
 #include "blender_cas.h"
 #include "blender_gtao.h"
-#include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
@@ -92,6 +91,8 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
 	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
 	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
+	RCache.set_RT(nullptr, 3);
+
 	RCache.set_ZB							(zb);
 }
 
@@ -126,7 +127,10 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 
 	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
 	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
-	RCache.set_ZB							(zb);
+	RCache.set_RT(nullptr, 2);
+	RCache.set_RT(nullptr, 3);
+
+	RCache.set_ZB (zb);
 }
 
 void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
@@ -138,6 +142,7 @@ void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRende
 	RCache.set_RT							(_1,	0);
 	RCache.set_RT							(_2,	1);
 	RCache.set_RT							(_3,	2);
+	RCache.set_RT(nullptr, 3);
 	RCache.set_ZB							(zb);
 //	RImplementation.rmNormal				();
 }
@@ -485,18 +490,19 @@ CRenderTarget::CRenderTarget()
 
 	// HDAO
 	b_hdao_cs = new CBlender_CS_HDAO();
-	u32		s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
+	u32 s_dwWidth = (u32)RCache.get_width(), s_dwHeight = (u32)RCache.get_height();
 
-	//	NORMAL
+	// NORMAL
 	{
 		rt_Depth.create(r2_RT_depth, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_FLOAT, SampleCount);
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, SampleCount);
+
 		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM, SampleCount);
 
+		// NV50
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)
 		{
-			// NV50
 			rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, SampleCount);
 			rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, SampleCount);
 		}
@@ -583,23 +589,10 @@ CRenderTarget::CRenderTarget()
 		u32	size = RImplementation.o.smapsize;
 		rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
 
-		if (RImplementation.o.dx10_minmax_sm)
-		{
-			rt_smap_depth_minmax.create(r2_RT_smap_depth_minmax, size / 4, size / 4, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
-			CBlender_createminmax TempBlender;
-			s_create_minmax_sm.create(&TempBlender, "null");
-		}
-
-		//rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
-		//rt_smap_ZB					= nullptr;
 		s_accum_mask.create(b_accum_mask, "r3\\accum_mask");
 		s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
 
 		s_accum_direct_volumetric.create("accum_volumetric_sun");
-
-		if (RImplementation.o.dx10_minmax_sm) {
-			s_accum_direct_volumetric_minmax.create("accum_volumetric_sun_minmax");
-		}
 	}
 
 	//	RAIN
@@ -1123,30 +1116,4 @@ bool CRenderTarget::need_to_render_sunshafts()
 	}
 
 	return true;
-}
-
-bool CRenderTarget::use_minmax_sm_this_frame()
-{
-	switch(RImplementation.o.dx10_minmax_sm)
-	{
-	case CRender::MMSM_ON:
-		return true;
-	case CRender::MMSM_AUTO:
-		return need_to_render_sunshafts();
-	case CRender::MMSM_AUTODETECT:
-		{
-			u32 dwScreenArea = 
-				Device.GetSwapchainWidth()*
-				Device.GetSwapchainHeight();
-
-			if ( ( dwScreenArea >=RImplementation.o.dx10_minmax_sm_screenarea_threshold))
-				return need_to_render_sunshafts();
-			else 
-				return false;
-		}
-		
-	default:
-		return false;
-	}
-
 }

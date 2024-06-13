@@ -196,9 +196,6 @@ void					CRender::create					()
 		}
 	}
 
-	o.dx10_minmax_sm = ps_r3_minmax_sm;
-	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
-
 	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
@@ -1034,17 +1031,7 @@ HRESULT	CRender::shader_compile			(
 		++len;
 	}
 
-	if (xr_strcmp(name, "accum_sun_near_minmax") == 0)
-	{
-		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
-		defines[def_it].Name = "SUN_QUALITY";
-		defines[def_it].Definition = c_sun_quality;
-		def_it++;
-
-		sh_name[len] = '0' + static_cast<char>(4);
-		++len;
-	}
-	else if (ps_r_sun_quality > 0)
+	if (ps_r_sun_quality > 0)
 	{
 		xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
 		defines[def_it].Name = "SUN_QUALITY";
@@ -1088,14 +1075,6 @@ HRESULT	CRender::shader_compile			(
 	   def_it++;
    }
    sh_name[len] = '0' + char(RFeatureLevel >= D3D_FEATURE_LEVEL_11_0); ++len;
-
-   if (o.dx10_minmax_sm)
-   {
-	   defines[def_it].Name		=	"USE_MINMAX_SM";
-	   defines[def_it].Definition	=	"1";
-	   def_it++;
-   }
-   sh_name[len] = '0' + char(o.dx10_minmax_sm != 0); ++len;
 
    sh_name[len] = 0;
 

@@ -35,8 +35,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 
 	//	choose correct element for the sun shader
 	u32 uiElementIndex = sub_phase;
-	if ( (uiElementIndex==SE_SUN_NEAR) && use_minmax_sm_this_frame())
-		uiElementIndex = SE_SUN_NEAR_MINMAX;
 
 	//	TODO: DX10: Remove half pixe offset
 	// *** assume accumulator setted up ***
@@ -321,10 +319,6 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const u32
 	RCache.set_Geometry(g_combine_2UV);
 
 	ref_selement Element = s_accum_direct_volumetric->E[0];
-
-	if(use_minmax_sm_this_frame()) {
-		Element = s_accum_direct_volumetric_minmax->E[0];
-	}
 
 	//	Set correct depth surface
 	//	It's slow. Make this when shader is created
