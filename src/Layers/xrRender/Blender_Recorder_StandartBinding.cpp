@@ -358,6 +358,23 @@ class cl_hemi_color : public R_constant_setup {
 }; static cl_hemi_color binder_hemi_color;
 #endif
 
+class cl_sky_color : public R_constant_setup {
+	u32 marker;
+	Fvector4 result;
+	virtual void setup(R_constant* C) {
+		if (marker != Device.dwFrame) {
+			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
+#if RENDER != R_R1
+			result.set(desc.sky_color.x * ps_r2_sun_lumscale_sky, 
+				desc.sky_color.y * ps_r2_sun_lumscale_sky, desc.sky_color.z * ps_r2_sun_lumscale_sky, desc.sky_rotation);
+#else
+			result.set(desc.sky_color.x, desc.sky_color.y, desc.sky_color.z, desc.sky_rotation);
+#endif
+		}
+		RCache.set_c(C, result);
+	}
+}; static cl_sky_color binder_sky_color;
+
 static class cl_screen_res : public R_constant_setup		
 {	
 	virtual void setup	(R_constant* C)
@@ -498,6 +515,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
 	
 	r_Constant				("m_taa_jitter",	&binder_taa_jitter);
+
+	r_Constant				("L_sky_color",		&binder_sky_color);
 
 	r_Constant				("L_hemi_color",	&binder_hemi_color);
 	r_Constant				("L_ambient",		&binder_amb_color);
