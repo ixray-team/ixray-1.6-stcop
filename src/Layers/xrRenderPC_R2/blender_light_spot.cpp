@@ -40,7 +40,7 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 
 	C.r_Sampler_clw("s_material", r2_material);
 
-	if(C.iElement != SE_L_TRANSLUENT) {
+	if(C.iElement == SE_L_TRANSLUENT) {
 		C.r_Sampler_clf("s_lmap", r2_RT_smap_surf);
 	}
 	else {
