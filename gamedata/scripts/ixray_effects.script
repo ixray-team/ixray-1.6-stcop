@@ -1,0 +1,3 @@
+function start_game_effect(actor, npc)
+	level.add_pp_effector("start_game.ppe", 105182, false)
+end
