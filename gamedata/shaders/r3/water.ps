@@ -1,8 +1,6 @@
 #include "common.h"
 #include "reflections.h"
-
 #include "hmodel.h"
-#define USE_SSLR_ON_WATER 1
 
 struct vf
 {
@@ -31,7 +29,7 @@ Texture2D s_caustic;
 
 float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 {
-	float3 LightColor = max(0.0f, L_sun_color.xyz * 5.0f - 1.0f);
+	float3 LightColor = max(0.0f, L_sun_color.xyz * 4.0f - 1.0f);
 	return LightColor * pow(dot(normalize(Point + Light), -Normal), 256.0);
 }
 

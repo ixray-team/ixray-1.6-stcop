@@ -1,7 +1,8 @@
 #ifndef reflections_h_2134124_inc
 #define reflections_h_2134124_inc
 
-// #define SKYBLED_FADE 1
+// Screen Space Sky Reflections off
+#define SKYBLED_FADE 1
 
 float get_depth_fast(float2 tc)
 {
@@ -46,14 +47,14 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 		ReflUV = gbuf_unpack_uv(TestPos);
 		HitPos = gbuf_unpack_position(ReflUV);
 		DeltaL = length(HitPos) - length(Point);
-		if(all(min(min(1.f-ReflUV.x, ReflUV.x), min(1.f-ReflUV.y, ReflUV.y))) && DeltaL > 0.0f) {
+		if(all(min(min(1.f-ReflUV.x, ReflUV.x), min(1.f-ReflUV.y, ReflUV.y))) && DeltaL > -0.4f) {
 			L = length(Point - HitPos);
 		} else {
 			return 0.0f;
 		}
 	}
 	
-	Fade *= smoothstep(0.0f, 0.15f, DeltaL);
+	//Fade *= smoothstep(0.0f, 0.15f, DeltaL);
 	
 	float Attention = GetBorderAtten(ReflUV, 0.125f);
 	ReflUV -= s_velocity.SampleLevel(smp_rtlinear, ReflUV, 0).xy * float2(0.5f, -0.5f);

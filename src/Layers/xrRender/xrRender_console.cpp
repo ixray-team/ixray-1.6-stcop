@@ -855,6 +855,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r4_hud_shadows",				&ps_r2_ls_flags_ext,		R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 
 	CMD3(CCC_Mask,		"r4_hashed_alpha_test",			&ps_r2_ls_flags_ext,		R4FLAG_HASHED_ALPHA_TEST);
+	CMD3(CCC_Mask,		"r4_sslr_on_water",				&ps_r2_ls_flags_ext,		R4FLAG_SSLR_ON_WATER);
 
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
