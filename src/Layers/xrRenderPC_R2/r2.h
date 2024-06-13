@@ -195,7 +195,7 @@ public:
 		CTexture*		T	= RCache.get_ActiveTexture	(u32(C->samp.index));
 		VERIFY				(T);
 		float	mtl			= T->m_material;
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 		if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl=ps_r2_gmaterial;
 #endif
 		RCache.hemi.set_material (o_hemi,o_sun,0,(mtl+.5f)/4.f);
