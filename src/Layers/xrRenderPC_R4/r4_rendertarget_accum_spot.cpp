@@ -140,6 +140,7 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_c				("m_texgen",		m_Texgen	);
 		RCache.set_c				("m_texgen_J",		m_Texgen_J	);
 		RCache.set_c				("m_shadow",		m_Shadow	);
+		RCache.set_c				("Ldynamic_hud",	(int)L->flags.bHudMode);
 		RCache.set_ca				("m_lmap",		0,	m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41	);
 		RCache.set_ca				("m_lmap",		1,	m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42	);
 
