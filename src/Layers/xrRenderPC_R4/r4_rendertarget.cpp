@@ -498,6 +498,7 @@ CRenderTarget::CRenderTarget()
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS, SampleCount);
 
 		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM, SampleCount);
+		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM, SampleCount);
 
 		// NV50
 		// select albedo & accum

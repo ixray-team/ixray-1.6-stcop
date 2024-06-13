@@ -12,7 +12,9 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		//C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
 		C.r_Pass	("stub_notransform_2uv", "rain_layer", false,	TRUE,	FALSE, FALSE);
 		C.PassSET_ZB		(TRUE,FALSE,TRUE	);	// force inverted Z-Buffer
-
+		
+		C.r_dx10Texture		("s_diffuse",		r2_RT_albedo);
+		C.r_dx10Texture		("s_surface",		r2_RT_S);
 		C.r_dx10Texture		("s_position",		r2_RT_P);
 		C.r_dx10Texture		("s_normal",		r2_RT_N);
 		C.r_dx10Texture		("s_material",		r2_material);
@@ -49,6 +51,7 @@ void CBlender_rain::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_smap",			r2_RT_smap_depth);
 
 		C.r_dx10Texture		("s_diffuse",		r2_RT_albedo);
+		C.r_dx10Texture		("s_surface",		r2_RT_S);
 
 		C.r_dx10Sampler		("smp_nofilter");
 		C.r_dx10Sampler		("smp_material");

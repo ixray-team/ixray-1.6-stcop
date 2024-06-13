@@ -68,20 +68,39 @@ static class cl_LOD		: public R_constant_setup
 	}
 } binder_LOD;
 
-static class cl_pos_decompress_params		: public R_constant_setup		{	virtual void setup	(R_constant* C)
-{
-	float VertTan =  -1.0f * tanf( deg2rad(Device.fFOV/2.0f ) );
-	float HorzTan =  - VertTan / Device.fASPECT;
+static class cl_pos_decompress_params : public R_constant_setup {
+	virtual void setup(R_constant* C) {
 
-	RCache.set_c	( C, HorzTan, VertTan, ( 2.0f * HorzTan )/ RCache.get_width(), (2.0f * VertTan) / RCache.get_height());
+		float VertTan = 1.0f / Device.mProject._22;
+		float HorzTan = VertTan / Device.fASPECT;
 
-}}	binder_pos_decompress_params;
+		RCache.set_c(C, HorzTan, -VertTan, (2.0f * HorzTan) / RCache.get_width(), -(2.0f * VertTan) / RCache.get_height());
+	}
+}	binder_pos_decompress_params;
+
+extern ENGINE_API float psHUD_FOV;
+static class cl_pos_decompress_params_hud : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		float VertTan = -1.0f * tanf(deg2rad(psHUD_FOV / 2.0f));
+		float HorzTan = -VertTan / Device.fASPECT;
+
+		RCache.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / RCache.get_width(), (2.0f * VertTan) / RCache.get_height());
+
+	}
+}	binder_pos_decompress_params_hud;
 
 static class cl_pos_decompress_params2		: public R_constant_setup		{	virtual void setup	(R_constant* C)
 {
 	RCache.set_c	(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
 }}	binder_pos_decompress_params2;
+
+static class cl_depth_unpack : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		RCache.set_c(C, Device.mProject_saved._43, Device.mProject_saved._33,
+			Device.mProject_hud._43, Device.mProject_hud._33);
+	}
+} binder_depth_unpack;
 
 static class cl_water_intensity : public R_constant_setup		
 {	
@@ -205,6 +224,8 @@ void					CRender::create					()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("m_AlphaRef",	&binder_alpha_ref);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("pos_decompression_params",	&binder_pos_decompress_params);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("pos_decompression_params2",	&binder_pos_decompress_params2);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("pos_decompression_params_hud",&binder_pos_decompress_params_hud);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("depth_unpack",	&binder_depth_unpack);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup	("triLOD",	&binder_LOD);
 
 	c_lmaterial					= "L_material";

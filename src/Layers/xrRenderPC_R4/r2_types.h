@@ -5,6 +5,7 @@
 #define		r2_RT_depth			"$user$depth"			      // MRT
 #define		r2_RT_P				"$user$position"		      // MRT
 #define		r2_RT_N				"$user$normal"			      // MRT
+#define		r2_RT_S				"$user$surface"			      // MRT
 #define		r2_RT_albedo		"$user$albedo"			      // MRT
 #define		r2_RT_velocity		"$user$velocity"			  // MRT
 
@@ -98,6 +99,7 @@ const		u32					LUMINANCE_size		= 16	;
 #define		SE_SUN_NEAR			0
 #define		SE_SUN_MIDDLE		1
 #define		SE_SUN_FAR			2
+
 //	For rain R3 rendering
 #define		SE_SUN_RAIN_SMAP	3
 
