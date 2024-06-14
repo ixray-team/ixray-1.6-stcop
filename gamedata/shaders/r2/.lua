@@ -1,5 +1,5 @@
-function printf(fmt,...)
-	log(string.format(fmt,unpack(arg)))
+function printf(fmt, ...)
+    log(string.format(fmt, unpack(arg)))
 end
 
 --[[
@@ -35,4 +35,4 @@ function r1_lpoint	(shader, t_base, vs, aref)
 			: clamp		()
 			: f_linear	()
 end
-]]--
+]] --
