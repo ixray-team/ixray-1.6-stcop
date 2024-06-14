@@ -26,7 +26,11 @@ float4 main(_input I) : SV_Target
 #endif
 
     //  Calculate SSAO
-    float Occ = s_occ.Sample(smp_nofilter, I.tc0);
+    float Occ = 1.0f;
+
+#if SSAO_QUALITY > 0
+    Occ = s_occ.Sample(smp_nofilter, I.tc0);
+#endif
 
     float3 Ambient = Occ * AmbientLighting(O.PointReal, O.Normal, O.Color, O.Metalness, O.Roughness, O.Hemi);
     float3 Color = Ambient + Light.xyz;
