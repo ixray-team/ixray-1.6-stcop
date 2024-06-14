@@ -2,17 +2,18 @@
 
 struct vf
 {
-	float4 hpos	: POSITION	;
-	float4 C 	: COLOR0	;
+    float4 hpos : POSITION;
+    float4 C : COLOR0;
 };
 
-uniform float4 		tfactor;
-vf main (float4	P:POSITION)
+uniform float4 tfactor;
+
+vf main(float4 P : POSITION)
 {
-	vf 		o;
+    vf o;
 
-	o.hpos 		= mul			(m_WVP, P);			// xform, input in world coords
-	o.C 		= tfactor;
+    o.hpos = mul(m_WVP, P); // xform, input in world coords
+    o.C = tfactor;
 
-	return o;
+    return o;
 }

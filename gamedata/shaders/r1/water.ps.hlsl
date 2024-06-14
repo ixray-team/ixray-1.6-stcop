@@ -3,9 +3,9 @@
 struct vf
 {
     float4 hpos : POSITION;
-    float2 tbase : TEXCOORD0;  // base
-    float2 tnorm0 : TEXCOORD1;  // nm0
-    float2 tnorm1 : TEXCOORD2;  // nm1
+    float2 tbase : TEXCOORD0; // base
+    float2 tnorm0 : TEXCOORD1; // nm0
+    float2 tnorm1 : TEXCOORD2; // nm1
     float3 M1 : TEXCOORD3;
     float3 M2 : TEXCOORD4;
     float3 M3 : TEXCOORD5;
@@ -18,13 +18,14 @@ uniform sampler2D s_nmap;
 uniform samplerCUBE s_env0;
 uniform samplerCUBE s_env1;
 
-float4 main(vf I) : COLOR {
+float4 main(vf I) : COLOR
+{
     float4 base = tex2D(s_base, I.tbase);
     float3 n0 = tex2D(s_nmap, I.tnorm0);
     float3 n1 = tex2D(s_nmap, I.tnorm1);
     float3 Navg = n0 + n1 - 1.0f;
 
-    float3 Nw = mul (float3x3(I.M1, I.M2, I.M3), Navg);
+    float3 Nw = mul(float3x3(I.M1, I.M2, I.M3), Navg);
     Nw = normalize(Nw);
 
     float3 v2point = normalize(I.v2point);
@@ -47,7 +48,7 @@ float4 main(vf I) : COLOR {
     final *= I.c0 * 2;
 
     // Fogging
-    float fog =  1.0f - I.c0.w;
+    float fog = 1.0f - I.c0.w;
     final = lerp(final, fog_color.xyz, fog);
     alpha *= 1.0f - fog * fog;
 

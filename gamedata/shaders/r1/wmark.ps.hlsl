@@ -4,11 +4,9 @@ struct v2p
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c0 : COLOR0;
-    float  fog	: FOG;
+    float fog : FOG;
 };
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
 float4 main(v2p I) : COLOR
 {
@@ -18,5 +16,5 @@ float4 main(v2p I) : COLOR
     final.w *= I.fog;
 
     // out
-    return  final;
+    return final;
 }
