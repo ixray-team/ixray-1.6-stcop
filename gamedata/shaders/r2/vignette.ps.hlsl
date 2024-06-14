@@ -1,7 +1,7 @@
 #include "common.hlsli"
 
-float3 pharse_saturation (float3 Color)
- {
+float3 pharse_saturation(float3 Color)
+{
     float Luma = dot(Color.xyz, 0.33f) + 0.001f;
     return lerp(Luma.xxx, Color.xyz, 0.3f * 4.0f);
 }

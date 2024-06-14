@@ -1,8 +1,7 @@
 #include "common.hlsli"
 
-//////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main	(float4 depth : TEXCOORD1 )	: COLOR
+float4 main(float4 depth : TEXCOORD1) : COLOR
 {
-	return	depth.z/depth.w;
+    return depth.z / depth.w;
 }
