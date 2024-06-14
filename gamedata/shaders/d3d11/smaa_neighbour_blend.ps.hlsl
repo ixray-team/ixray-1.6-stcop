@@ -18,7 +18,7 @@ Back to the Roots
 
 uniform float4 screen_res;
 #define SMAA_RT_METRICS screen_res.zwxy
-#define	SMAA_PRESET_ULTRA
+#define SMAA_PRESET_ULTRA
 
 #include "smaa.hlsli"
 
@@ -26,12 +26,12 @@ Texture2D s_blendtex;
 
 struct p_smaa
 {
-	float4 hpos			: SV_Position;
-	float2 tc0			: TEXCOORD0;        // Texture coordinates         (for sampling maps)
-	float4 offset		: TEXCOORD2;
+    float4 hpos : SV_Position;
+    float2 tc0 : TEXCOORD0; // Texture coordinates         (for sampling maps)
+    float4 offset : TEXCOORD2;
 };
 
 float4 main(p_smaa I) : SV_Target
 {
-	return SMAANeighborhoodBlendingPS(I.tc0, I.offset, s_image, s_blendtex);
+    return SMAANeighborhoodBlendingPS(I.tc0, I.offset, s_image, s_blendtex);
 }

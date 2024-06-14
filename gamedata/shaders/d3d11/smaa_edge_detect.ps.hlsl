@@ -19,24 +19,24 @@ Back to the Roots
 uniform float4 screen_res;
 #define SMAA_RT_METRICS screen_res.zwxy
 
-#define	SMAA_PRESET_ULTRA
+#define SMAA_PRESET_ULTRA
 #define EDGE_DETECT_COLOR
 
 #include "smaa.hlsli"
 
-//Struct
+// Struct
 struct p_smaa
 {
-	float4 hpos			: SV_Position;
-	float2 tc0			: TEXCOORD0;        // Texture coordinates         (for sampling maps)
-	float4 offset[3]	: TEXCOORD1;
+    float4 hpos : SV_Position;
+    float2 tc0 : TEXCOORD0; // Texture coordinates         (for sampling maps)
+    float4 offset[3] : TEXCOORD1;
 };
 
 float4 main(p_smaa I) : SV_Target
 {
 #if defined(EDGE_DETECT_COLOR)
-	return float4(SMAAColorEdgeDetectionPS(I.tc0, I.offset, s_image), 0.0f, 0.0f);
+    return float4(SMAAColorEdgeDetectionPS(I.tc0, I.offset, s_image), 0.0f, 0.0f);
 #else
-	return float4(SMAALumaEdgeDetectionPS(I.tc0, I.offset, s_image), 0.0f, 0.0f);
+    return float4(SMAALumaEdgeDetectionPS(I.tc0, I.offset, s_image), 0.0f, 0.0f);
 #endif
 }

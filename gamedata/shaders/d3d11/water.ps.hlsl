@@ -33,9 +33,7 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 	return LightColor * pow(dot(normalize(Point + Light), -Normal), 256.0);
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // Pixel
-
 float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
@@ -44,7 +42,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	float3 n1 = s_nmap.Sample(smp_base, I.tnorm1);
 	float3 Navg = n0 + n1 - 1.0f;
 
-	float3	Nw	= normalize(mul(float3x3(I.M1, I.M2, I.M3), Navg).xyz);
+    float3 Nw = normalize(mul(float3x3(I.M1, I.M2, I.M3), Navg).xyz);
 	
 	float3 envd0 = env_s0.Sample(smp_rtlinear, Nw);
 	float3 envd1 = env_s1.Sample(smp_rtlinear, Nw);
@@ -82,7 +80,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	env = lerp(env, sslr.xyz, sslr.w);
 #endif
 
-	float power	= pow(fresnel, 5.0f);
+    float power = pow(fresnel, 5.0f);
 	float amount = 0.25f + 0.25f * power; // 1=full env, 0=no env
 
 	float3 final = lerp(env * amount * 0.8f, base.xyz, base.w);
@@ -90,7 +88,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	
 	alpha = lerp(alpha, 1.0f, base.w);
 	
-#ifdef	USE_SOFT_WATER
+#ifdef USE_SOFT_WATER
 	// Igor: additional depth test
 	float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
 	gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
@@ -128,7 +126,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	
 	final = lerp(final, leaves, leaves.w * fLeavesFactor);
 	alpha = max(alpha, leaves.w * fLeavesFactor);
-#endif	//	USE_SOFT_WATER
+#endif //	USE_SOFT_WATER
 	
 	float ffog = 1.0f - I.fog;
 	alpha *= 1.0f - ffog * ffog;
@@ -137,4 +135,3 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	final = lerp(fog_color, final, I.fog);
 	return float4(final, alpha);
 }
-
