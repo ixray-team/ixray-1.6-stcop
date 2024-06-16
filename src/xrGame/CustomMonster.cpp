@@ -837,7 +837,7 @@ BOOL CCustomMonster::UsedAI_Locations()
 
 void CCustomMonster::PitchCorrection() 
 {
-	CLevelGraph::SContour	contour;
+	ILevelGraph::SContour	contour;
 	ai().level_graph().contour(contour, ai_location().level_vertex_id());
 	
 	Fplane  P;

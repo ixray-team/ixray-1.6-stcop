@@ -31,20 +31,20 @@ protected:
 #endif
 
 private:
-	IC		void						correct_position	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph);
+	IC		void						correct_position	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph);
 #ifdef DEBUG
-			void						verify_vertex_id	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
+			void						verify_vertex_id	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph) const;
 #endif
 
 public:
-										CPatrolPoint		(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name);
+										CPatrolPoint		(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name);
 										CPatrolPoint		(const CPatrolPath *path = 0);
 	virtual	void						load				(IReader &stream);
 	virtual	void						save				(IWriter &stream);
-			CPatrolPoint				&load_raw			(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream);
+			CPatrolPoint				&load_raw			(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream);
 	IC		const Fvector				&position			() const;
-	IC		const u32					&level_vertex_id	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
-	IC		const GameGraph::_GRAPH_ID	&game_vertex_id		(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
+	IC		const u32					&level_vertex_id	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph) const;
+	IC		const GameGraph::_GRAPH_ID	&game_vertex_id		(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph) const;
 	IC		const u32					&flags				() const;
 	IC		const shared_str			&name				() const;
 

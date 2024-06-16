@@ -29,5 +29,10 @@
 #include "../Editors/ActorEditor/stdafx.h"
 #endif
 
+#include "../xrEngine/Editor/XrEditorSceneInterface.h"
+#include "../xrEngine/AI/game_graph.h"
+#include "../xrEngine/AI/game_level_cross_table.h"
+#include "../xrEngine/AI/level_graph.h"
+
 #undef min
 #undef max

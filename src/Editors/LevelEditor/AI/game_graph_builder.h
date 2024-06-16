@@ -7,9 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "../../xrServerEntities/alife_space.h"
+#include "../../xrEngine/AI//alife_space.h"
 #include "../../xrGame/game_graph.h"
-#include "../../xrGame/graph_vertex.h"
+#include "../../xrEngine/../graph_vertex.h"
 #include "../../xrGame/graph_edge.h"
 #include "../../xrGame/graph_abstract.h"
 #include "game_graph_editor.h"

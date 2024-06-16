@@ -35,6 +35,8 @@ CApplication::CApplication()
 
 	// levels
 	Level_Current = u32(-1);
+	
+	if (Device.IsEditorMode())return;
 	Level_Scan();
 
 	// Register us

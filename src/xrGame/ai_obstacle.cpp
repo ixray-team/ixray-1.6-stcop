@@ -42,7 +42,7 @@ public:
 public:
 	ai_obstacle					*m_object;
 	AREA						*m_area;
-	const CLevelGraph			*m_level_graph;
+	const ILevelGraph			*m_level_graph;
 
 	IC			merge_predicate	(ai_obstacle *object, AREA &area)
 	{
@@ -51,7 +51,7 @@ public:
 		m_level_graph			= &ai().level_graph();
 	}
 
-	IC	void	operator()		(const CLevelGraph::CVertex &vertex) const
+	IC	void	operator()		(const ILevelGraph::CVertex &vertex) const
 	{
 		u32						vertex_id = m_level_graph->vertex_id(&vertex);
 		if (!m_object->inside	(vertex_id))
@@ -264,8 +264,8 @@ void ai_obstacle::compute_impl		()
 {
 //	VERIFY						(m_object->is_ai_obstacle());
 
-	typedef CLevelGraph::CPosition				CPosition;
-	typedef CLevelGraph::const_vertex_iterator	const_iterator;
+	typedef ILevelGraph::CPosition				CPosition;
+	typedef ILevelGraph::const_vertex_iterator	const_iterator;
 
 	Fvector						min_position;
 	Fvector						max_position;
@@ -274,7 +274,7 @@ void ai_obstacle::compute_impl		()
 	correct_position			(min_position);
 	correct_position			(max_position);
 
-	const CLevelGraph			&level_graph = ai().level_graph();
+	const ILevelGraph			&level_graph = ai().level_graph();
 	const CPosition				&min_vertex_position = level_graph.vertex_position(min_position);
 	const CPosition				&max_vertex_position = level_graph.vertex_position(max_position);
 

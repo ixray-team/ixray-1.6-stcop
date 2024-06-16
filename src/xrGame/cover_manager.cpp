@@ -35,7 +35,7 @@ CCoverManager::~CCoverManager				()
 
 IC	bool CCoverManager::edge_vertex		(u32 index) const
 {
-	CLevelGraph::CVertex	*v = ai().level_graph().vertex(index);
+	ILevelGraph::CVertex	*v = ai().level_graph().vertex(index);
 	return					(
 		(!ai().level_graph().valid_vertex_id(v->link(0)) && (v->high_cover(0) < MIN_COVER_VALUE)) ||
 		(!ai().level_graph().valid_vertex_id(v->link(1)) && (v->high_cover(1) < MIN_COVER_VALUE)) ||
@@ -48,7 +48,7 @@ IC	bool CCoverManager::edge_vertex		(u32 index) const
 	);
 }
 
-IC	bool CCoverManager::cover			(CLevelGraph::CVertex *v, u32 index0, u32 index1) const
+IC	bool CCoverManager::cover			(ILevelGraph::CVertex *v, u32 index0, u32 index1) const
 {
 	return					(
 		ai().level_graph().valid_vertex_id(v->link(index0)) &&
@@ -57,7 +57,7 @@ IC	bool CCoverManager::cover			(CLevelGraph::CVertex *v, u32 index0, u32 index1)
 	);
 }
 
-IC	bool CCoverManager::critical_point	(CLevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const
+IC	bool CCoverManager::critical_point	(ILevelGraph::CVertex *v, u32 index, u32 index0, u32 index1) const
 {
 	return					(
 		!ai().level_graph().valid_vertex_id(v->link(index)) &&
@@ -72,7 +72,7 @@ IC	bool CCoverManager::critical_point	(CLevelGraph::CVertex *v, u32 index, u32 i
 
 IC	bool CCoverManager::critical_cover	(u32 index) const
 {
-	CLevelGraph::CVertex	*v = ai().level_graph().vertex(index);
+	ILevelGraph::CVertex	*v = ai().level_graph().vertex(index);
 	return					(
 		critical_point(v,0,1,3) || 
 		critical_point(v,2,1,3) || 
@@ -88,14 +88,14 @@ void CCoverManager::compute_static_cover	()
 	m_covers				= new CPointQuadTree(ai().level_graph().header().box(),ai().level_graph().header().cell_size()*.5f,8*65536,4*65536);
 	m_temp.resize			(ai().level_graph().header().vertex_count());
 
-	const CLevelGraph& Graph = ai().level_graph();
+	const ILevelGraph& Graph = ai().level_graph();
 	const u32 LevelVertexCount = ai().level_graph().header().vertex_count();
 
 	xr_parallel_for(xr_blocked_range<u32>(0, LevelVertexCount), [&](const xr_blocked_range<u32>& range)
 	{
 		for (u32 i = range.begin(); i != range.end(); ++i)
 		{
-			const CLevelGraph::CVertex& vertex = *Graph.vertex(i);
+			const ILevelGraph::CVertex& vertex = *Graph.vertex(i);
 			if (vertex.high_cover(0) + vertex.high_cover(1) + vertex.high_cover(2) + vertex.high_cover(3))
 			{
 				m_temp[i] = edge_vertex(i);

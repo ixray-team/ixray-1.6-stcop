@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 #include "game_graph.h"
-#include "../xrServerEntities/game_level_cross_table.h"
 #include "level_graph.h"
 #include "graph_engine.h"
 #include "ef_storage.h"
@@ -101,9 +100,15 @@ void CAI_Space::load				(LPCSTR level_name)
 	timer.Start				();
 #endif
 
-	const CGameGraph::SLevel &current_level = game_graph().header().level(level_name);
+	const IGameGraph::SLevel &current_level = game_graph().header().level(level_name);
 
-	m_level_graph			= new CLevelGraph();
+#ifndef MASTER_GOLD
+	if(Device.IsEditorMode())
+		m_level_graph = EditorScene->GetLevelGraph();
+	else
+#endif
+	m_level_graph = new CLevelGraph();
+
 	game_graph().set_current_level(current_level.id());
 	R_ASSERT2				(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2				(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
@@ -139,7 +144,8 @@ void CAI_Space::unload				(bool reload)
 
 	xr_delete				(m_doors_manager);
 	xr_delete				(m_graph_engine);
-	xr_delete				(m_level_graph);
+
+	if(!Device.IsEditorMode()) xr_delete(m_level_graph);
 
 	if (!reload && m_game_graph)
 		m_graph_engine		= new CGraphEngine( game_graph().header().vertex_count() );
@@ -191,6 +197,15 @@ void CAI_Space::patrol_path_storage		(IReader &stream)
 	m_patrol_path_storage->load		(stream);
 }
 
+void CAI_Space::patrol_path_storage_from_editor()
+{
+	if (g_dedicated_server)
+		return;
+
+	xr_delete(m_patrol_path_storage);
+	m_patrol_path_storage = xr_new<CPatrolPathStorage>();
+}
+
 void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)
 {
 	VERIFY					((!m_alife_simulator && alife_simulator) || (m_alife_simulator && !alife_simulator));
@@ -205,7 +220,7 @@ void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)
 	xr_delete				(m_graph_engine);
 }
 
-void CAI_Space::game_graph				(CGameGraph *game_graph)
+void CAI_Space::game_graph				(IGameGraph *game_graph)
 {
 	//VERIFY					(m_alife_simulator);
 	VERIFY					(game_graph);
@@ -217,12 +232,12 @@ void CAI_Space::game_graph				(CGameGraph *game_graph)
 	m_graph_engine			= new CGraphEngine(this->game_graph().header().vertex_count());
 }
 
-const CGameLevelCrossTable &CAI_Space::cross_table		() const
+const IGameLevelCrossTable &CAI_Space::cross_table		() const
 {
 	return					(game_graph().cross_table());
 }
 
-const CGameLevelCrossTable *CAI_Space::get_cross_table	() const
+const IGameLevelCrossTable *CAI_Space::get_cross_table	() const
 {
 	return					(&game_graph().cross_table());
 }

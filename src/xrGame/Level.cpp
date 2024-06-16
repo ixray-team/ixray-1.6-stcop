@@ -742,8 +742,8 @@ void CLevel::OnRender()
 	draw_wnds_rects();
 	physics_world()->OnRender	();
 
-	if (ai().get_level_graph())
-		ai().level_graph().render();
+	if (ai().get_level_graph()&&dynamic_cast<CLevelGraph*>(&ai().level_graph()))
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->render();
 
 #endif // DEBUG
 

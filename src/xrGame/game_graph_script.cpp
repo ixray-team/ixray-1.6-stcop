@@ -6,46 +6,45 @@
 //	Description : Game graph class script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "pch_script.h"
 #include "game_graph.h"
 #include "ai_space.h"
 
 using namespace luabind;
 
-const CGameGraph *get_game_graph		()
+const IGameGraph *get_game_graph		()
 {
 	return				(&ai().game_graph());
 }
 
-const CGameGraph::CHeader *get_header	(const CGameGraph *self_)
+const IGameGraph::CHeader *get_header	(const IGameGraph *self)
 {
-	return				(&self_->header());
+	return				(&self->header());
 }
 
-bool get_accessible1					(const CGameGraph *self_, const u32 &vertex_id)
+bool get_accessible1					(const IGameGraph *self, const u32 &vertex_id)
 {
-	return				(self_->accessible(vertex_id));
+	return				(self->accessible(vertex_id));
 }
 
-void get_accessible2					(const CGameGraph *self_, const u32 &vertex_id, bool value)
+void get_accessible2					(const IGameGraph *self, const u32 &vertex_id, bool value)
 {
-	self_->accessible	(vertex_id,value);
+	self->accessible	(vertex_id,value);
 }
 
-Fvector CVertex__level_point			(const CGameGraph::CVertex *vertex)
+Fvector CVertex__level_point			(const IGameGraph::CVertex *vertex)
 {
 	THROW				(vertex);
 	return				(vertex->level_point());
 }
 
-Fvector CVertex__game_point				(const CGameGraph::CVertex *vertex)
+Fvector CVertex__game_point				(const IGameGraph::CVertex *vertex)
 {
 	THROW				(vertex);
 	return				(vertex->game_point());
 }
 
-GameGraph::LEVEL_MAP const& get_levels	( CGameGraph const* graph )
+GameGraph::LEVEL_MAP const& get_levels	( IGameGraph const* graph )
 {
 	THROW				(graph);
 	return				graph->header().levels();
@@ -62,12 +61,12 @@ void CGameGraph::script_register		(lua_State *L)
 
 		def("game_graph",	&get_game_graph),
 
-		class_<CGameGraph>("CGameGraph")
+		class_<IGameGraph>("CGameGraph")
 			.def("accessible",		&get_accessible1)
 			.def("accessible",		&get_accessible2)
-			.def("valid_vertex_id",	&CGameGraph::valid_vertex_id)
-			.def("vertex",			&CGameGraph::vertex)
-			.def("vertex_id",		&CGameGraph::vertex_id)
+			.def("valid_vertex_id",	&IGameGraph::valid_vertex_id)
+			.def("vertex",			&IGameGraph::vertex)
+			.def("vertex_id",		&IGameGraph::vertex_id)
 			.def("levels",			&get_levels, return_stl_iterator()),
 
 		class_<CVertex>("GameGraph__CVertex")

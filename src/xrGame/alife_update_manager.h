@@ -35,6 +35,7 @@ public:
 			void 	update				();
 
 protected:
+			void		new_game_for_editor		();
 			void		new_game				(LPCSTR	save_name);
 			void		init_ef_storage			() const;
 	virtual	void		reload					(LPCSTR section);
@@ -50,6 +51,7 @@ public:
 			void		update_scheduled		(bool init_ef = true);
 			void		load					(LPCSTR game_name = 0, bool no_assert = false, bool new_only = false);
 			bool		load_game				(LPCSTR game_name, bool no_assert = false);
+			void		load_from_editor		();
 	IC		float		update_monster_factor	() const;
 			bool		change_level			(NET_Packet	&net_packet);
 			void		set_process_time		(int microseconds);

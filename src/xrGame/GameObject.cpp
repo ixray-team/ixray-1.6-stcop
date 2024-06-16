@@ -26,7 +26,7 @@
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_cl_mp.h"
 #include "reward_event_generator.h"
-#include "../xrServerEntities/game_level_cross_table.h"
+#include "game_level_cross_table.h"
 #include "ai_obstacle.h"
 #include "magic_box3.h"
 #include "animation_movement_controller.h"

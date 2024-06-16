@@ -4,6 +4,7 @@
 #include "Rain.h"
 #include "igame_persistent.h"
 #include "environment.h"
+#include "Editor/XrEditorSceneInterface.h"
 
 #ifdef _EDITOR
     #include "ui_toolscustom.h"
@@ -81,14 +82,17 @@ void	CEffect_Rain::Born		(Item& dest, float radius)
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
 	BOOL bRes 			= TRUE;
-#ifdef _EDITOR
-    Tools->RayPick		(s,d,range);
-#else
+	if (Device.IsEditorMode())
+	{
+#ifndef MASTER_GOLD
+		EditorScene->RayPick(s, d, range);
+			return true;
+#endif
+	}
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
 	bRes 				= g_pGameLevel->ObjectSpace.RayPick( s,d,range,tgt,RQ,E);	
     if (bRes) range 	= RQ.range;
-#endif
     return bRes;
 }
 
@@ -109,7 +113,7 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 void	CEffect_Rain::OnFrame	()
 {
 #ifndef _EDITOR
-	if (!g_pGameLevel)			return;
+	if (!g_pGameLevel&&!Device.IsEditorMode())			return;
 #endif
 
 	if (g_dedicated_server) {
@@ -171,7 +175,7 @@ void	CEffect_Rain::OnFrame	()
 void	CEffect_Rain::Render	()
 {
 #ifndef _EDITOR
-	if (!g_pGameLevel)			return;
+	if (!g_pGameLevel&&!Device.IsEditorMode())			return;
 #endif
 
 	m_pRender->Render(*this);

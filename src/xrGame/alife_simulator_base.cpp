@@ -323,7 +323,7 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract *tpALi
 		}
 	}
 
-	CGameGraph::const_spawn_iterator		i, e;
+	IGameGraph::const_spawn_iterator		i, e;
 	ai().game_graph().begin_spawn			(tGraphID,i,e);
 	VERIFY									(e == i + ai().game_graph().vertex(tGraphID)->death_point_count());
 	i										+= (e != i) ? random().random(s32(e - i)) : 0;

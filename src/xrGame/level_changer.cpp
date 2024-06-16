@@ -15,7 +15,7 @@
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "level_graph.h"
-#include "../xrServerEntities/game_level_cross_table.h"
+#include "game_level_cross_table.h"
 
 #include "UIGameSP.h"
 #include "../xrengine/xr_collide_form.h"

@@ -32,8 +32,8 @@ private:
 	friend class CLevel;
 
 private:
-	CGameGraph							*m_game_graph;
-	CLevelGraph							*m_level_graph;
+	IGameGraph							*m_game_graph;
+	ILevelGraph							*m_level_graph;
 	CGraphEngine						*m_graph_engine;
 	CEF_Storage							*m_ef_storage;
 	CALifeSimulator						*m_alife_simulator;
@@ -47,19 +47,20 @@ private:
 			void						unload					(bool reload = false);
 			void						patrol_path_storage_raw	(IReader &stream);
 			void						patrol_path_storage		(IReader &stream);
+			void						patrol_path_storage_from_editor();
 			void						set_alife				(CALifeSimulator *alife_simulator);
-			void						game_graph				(CGameGraph *game_graph);
+			void						game_graph				(IGameGraph *game_graph);
 
 public:
 										CAI_Space				();
 	virtual								~CAI_Space				();
 			void						init					();
-	IC		CGameGraph					&game_graph				() const;
-	IC		CGameGraph					*get_game_graph			() const;
-	IC		CLevelGraph					&level_graph			() const;
-	IC		const CLevelGraph			*get_level_graph		() const;
-			const CGameLevelCrossTable	&cross_table			() const;
-			const CGameLevelCrossTable	*get_cross_table		() const;
+	IC		IGameGraph					&game_graph				() const;
+	IC		IGameGraph					*get_game_graph			() const;
+	IC		ILevelGraph					&level_graph			() const;
+	IC		const ILevelGraph			*get_level_graph		() const;
+			const IGameLevelCrossTable	&cross_table			() const;
+			const IGameLevelCrossTable	*get_cross_table		() const;
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
 	IC		CEF_Storage					&ef_storage				() const;
 	IC		CGraphEngine				&graph_engine			() const;

@@ -18,20 +18,20 @@ template <
 >
 class 
 	CBasePathManager<
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
 	> :
 	public CAbstractPathManager<
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
 	>
 {
 	typedef CAbstractPathManager<
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
@@ -42,7 +42,7 @@ protected:
 
 public:
 	IC					CBasePathManager			(CRestrictedObject *object);
-	IC	virtual	void	reinit						(const CGameGraph *graph = 0);
+	IC	virtual	void	reinit						(const IGameGraph *graph = 0);
 	IC			bool	actual						() const;
 	IC	virtual	void	select_intermediate_vertex	();
 	IC	virtual	bool	completed					() const;

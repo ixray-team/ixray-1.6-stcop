@@ -62,6 +62,7 @@ public:
 
 	virtual				void				BeginRender() = 0;
 	virtual				void				EndRender() = 0;
+	virtual				bool				IsEditorMode() { return false; }
 };
 
 class ENGINE_API CRenderDeviceData
@@ -167,7 +168,6 @@ public:
 	void* GetRenderTexture() override;
 	void* GetDepthTexture() override;
 	void* GetSwapchainTexture() override;
-
 	void* GetSwapchain() override;
 	u32	GetSwapchainWidth() override;
 	u32	GetSwapchainHeight() override;

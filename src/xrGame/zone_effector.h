@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrServerEntities/alife_space.h"
+#include "../xrEngine/AI/alife_space.h"
 class CActor;
 class CPostprocessAnimatorLerp;
 

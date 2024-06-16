@@ -17,17 +17,17 @@ template <
 >
 class 
 	CBaseLocationSelector<
-		CLevelGraph,
+		ILevelGraph,
 		_VertexEvaluator,
 		_vertex_id_type
 	> :
 	public CAbstractLocationSelector <
-		CLevelGraph,
+		ILevelGraph,
 		_VertexEvaluator,
 		_vertex_id_type
 	>
 {
-	typedef CLevelGraph _Graph;
+	typedef ILevelGraph _Graph;
 	typedef CAbstractLocationSelector <
 		_Graph,
 		_VertexEvaluator,

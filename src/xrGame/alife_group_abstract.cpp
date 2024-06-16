@@ -14,7 +14,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "alife_schedule_registry.h"
 #include "alife_graph_registry.h"
-#include "../xrServerEntities/game_level_cross_table.h"
+#include "game_level_cross_table.h"
 #include "level_graph.h"
 
 void CSE_ALifeGroupAbstract::switch_online	()
@@ -65,7 +65,7 @@ void CSE_ALifeGroupAbstract::switch_offline	()
 			tpGroup->m_fDistanceToPoint = ai().cross_table().vertex(dwNodeID).distance();
 			tpGroup->m_tNextGraphID		= tpGroup->m_tGraphID;
 			u16	wNeighbourCount			= ai().game_graph().vertex(tpGroup->m_tGraphID)->edge_count();
-			CGameGraph::const_iterator	i,e;
+			IGameGraph::const_iterator	i,e;
 			ai().game_graph().begin		(tpGroup->m_tGraphID,i,e);
 			tpGroup->m_tPrevGraphID		= (*(i + object->randI(0,wNeighbourCount))).vertex_id();
 		}
