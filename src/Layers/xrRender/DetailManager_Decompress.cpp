@@ -5,9 +5,7 @@
 #include "cl_intersect.h"
 
 #ifdef _EDITOR
-#	include "scene.h"
-#	include "sceneobject.h"
-#	include "../utils/ETools/ETools.h"
+#	include "../../Editors/LevelEditor/Editor/scene/scene.h"
 #endif
 
 //--------------------------------------------------- Decompression

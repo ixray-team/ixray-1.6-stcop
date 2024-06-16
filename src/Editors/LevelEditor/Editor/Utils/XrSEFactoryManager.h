@@ -12,7 +12,7 @@ public:
 private:
 	HMODULE m_Module;
 
-	void(__cdecl*m_pFInitialize)(void);
+	//void(__cdecl*m_pFInitialize)(void);
 	void(__cdecl* m_pFDestroy)(void);
 	void(__cdecl* m_pFReload)(void);
 	CSE_Abstract* (__cdecl* m_pFCreateEntity)(LPCSTR);

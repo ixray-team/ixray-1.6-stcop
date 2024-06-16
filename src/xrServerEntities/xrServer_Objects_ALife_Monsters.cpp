@@ -1257,7 +1257,16 @@ void CSE_ALifeMonsterAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
 
 	if (m_wVersion > 113)
 	{
-		tNetPacket.r(&m_task_reached, sizeof(m_task_reached));
+		if (tNetPacket.inistream)
+		{
+			u16 tmp;
+			tNetPacket.r_u16(tmp);
+			m_task_reached = (tmp != 0);
+		}
+		else
+		{
+			tNetPacket.r(&m_task_reached, sizeof(m_task_reached));
+		}
 	}
 }
 

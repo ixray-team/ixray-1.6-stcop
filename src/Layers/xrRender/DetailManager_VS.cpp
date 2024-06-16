@@ -3,13 +3,8 @@
 
 #include "detailmanager.h"
 
-#ifdef _EDITOR
-#	include "igame_persistent.h"
-#	include "environment.h"
-#else
-#	include "../../xrEngine/igame_persistent.h"
-#	include "../../xrEngine/environment.h"
-#endif
+#include "../../xrEngine/igame_persistent.h"
+#include "../../xrEngine/environment.h"
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/dx10BufferUtils.h"
@@ -267,6 +262,7 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 				for (; _iI!=_iE; _iI++){
 					SlotItem&	Instance	= **_iI;
 
+#ifndef _EDITOR
 					if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
 						continue;
 
@@ -274,6 +270,7 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 					if (sector && PortalTraverser.i_marker != sector->r_marker)
 						continue;
 
+#endif    
 					u32			base		= dwBatch*4;
 
 					// Build matrix ( 3x4 matrix, last row - color )

@@ -180,7 +180,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
             
             UI->SetStatus			("Level loading...");
             ExecCommand				(COMMAND_CLEAR);
-
+        	FS.TryLoad(temp_fn.c_str());
 			IReader* R = FS.r_open	(temp_fn.c_str());
             if (!R)return false;
             char ch;

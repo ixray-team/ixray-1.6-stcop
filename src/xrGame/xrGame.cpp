@@ -12,7 +12,24 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "profiler.h"
 
+void CCC_RegisterCommands	();
+void RegisterExpressionDelegates();
 extern "C" {
+
+	DLL_API void __cdecl xrGameInitialize()
+	{
+		CCC_RegisterCommands();
+		// keyboard binding
+		CCC_RegisterInput();
+		
+		RegisterExpressionDelegates();
+
+#ifdef DEBUG
+		g_profiler = xr_new<CProfiler>();
+#endif
+
+	}
+
 	DLL_API DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid)
 	{
 		DLL_Pure			*object = object_factory().client_object(clsid);
@@ -30,30 +47,28 @@ extern "C" {
 	}
 };
 
-void CCC_RegisterCommands	();
-void RegisterExpressionDelegates();
-
-BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
-{
-	switch (ul_reason_for_call) {
-		case DLL_PROCESS_ATTACH: {
-			// register console commands
-			CCC_RegisterCommands();
-			// keyboard binding
-			CCC_RegisterInput	();
-
-			// register xml-script namespace
-			RegisterExpressionDelegates();
-
-#ifdef DEBUG
-			g_profiler			= new CProfiler();
-#endif
-			break;
-		}
-
-		case DLL_PROCESS_DETACH: {
-			break;
-		}
-	}
-    return								(TRUE);
-}
+//
+//BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
+//{
+//	switch (ul_reason_for_call) {
+//		case DLL_PROCESS_ATTACH: {
+//			// register console commands
+//			CCC_RegisterCommands();
+//			// keyboard binding
+//			CCC_RegisterInput	();
+//
+//			// register xml-script namespace
+//			RegisterExpressionDelegates();
+//
+//#ifdef DEBUG
+//			g_profiler			= new CProfiler();
+//#endif
+//			break;
+//		}
+//
+//		case DLL_PROCESS_DETACH: {
+//			break;
+//		}
+//	}
+//    return								(TRUE);
+//}

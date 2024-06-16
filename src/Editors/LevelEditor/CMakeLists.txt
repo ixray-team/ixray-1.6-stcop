@@ -7,15 +7,21 @@ file(GLOB_RECURSE ELE_SOURCE_UI_FILES CONFIGURE_DEPENDS "UI/*.*")
 file(GLOB_RECURSE ELE_SOURCE_EDITOR_FILES CONFIGURE_DEPENDS "Editor/*.*")
 file(GLOB_RECURSE ELE_SOURCE_ENGINE_FILES CONFIGURE_DEPENDS "Engine/*.*")
 
+file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
+    "../../Layers/xrRender/DetailManager*"
+    "../../Layers/xrRender/stats_manager*"
+)
 set(ELE_SRC_FILES)
 
 source_group("ai" FILES ${ELE_SOURCE_AI_FILES})
 source_group("editor" FILES ${ELE_SOURCE_EDITOR_FILES})
 source_group("engine" FILES ${ELE_SOURCE_ENGINE_FILES})
 source_group("ui" FILES ${ELE_SOURCE_ENGINE_FILES})
+source_group("render" FILES ${ELE_SOURCE_RENDER_FILES})
 
 # Apply list
 list(APPEND ELE_SRC_FILES ${ELE_SOURCE_ALL_FILES})
+list(APPEND ELE_SRC_FILES ${ELE_SOURCE_RENDER_FILES})
 
 # Remove unused files
 list(FILTER ELE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
@@ -39,6 +45,8 @@ target_link_libraries(LevelEditor PUBLIC xrECore)
 target_link_libraries(LevelEditor PUBLIC xrSound)
 target_link_libraries(LevelEditor PUBLIC xrAbstractions)
 target_link_libraries(LevelEditor PUBLIC "Shell32.lib")
+add_dependencies(LevelEditor xrGame)
+add_dependencies(LevelEditor xrSE_Factory)
 
 # Move precompiled header
 set_target_properties(LevelEditor PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

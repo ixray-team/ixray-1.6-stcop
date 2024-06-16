@@ -102,8 +102,8 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
     "../../Layers/xrRender/tga.*"
     "../../Layers/xrRender/tss_def.*"
     "../../Layers/xrRender/xrRender_console.*"
-    "../../Layers/xrRenderPC_R1/BlenderDefault.*"
     "../../Layers/xrRenderPC_R1/Blender_Blur.*"
+    "../../Layers/xrRenderPC_R1/BlenderDefault.*"
     "../../Layers/xrRenderPC_R1/Blender_default_aref.*"
     "../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
     "../../Layers/xrRenderPC_R1/Blender_Model.*"
@@ -115,11 +115,11 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DECORENDS
  #   "../../xrEngine/motion.cpp"
-    "../../xrEngine/fmesh.cpp"
-    "../../xrEngine/xrHemisphere.cpp"
+ #  "../../xrEngine/fmesh.cpp"
     "../../xrEngine/ObjectAnimator.cpp"
     "../../xrEngine/ai_script_lua_debug.cpp"
     "../../xrEngine/ai_script_lua_extension.cpp"
+    "../../xrServerEntities/LevelGameDef.cpp"
 )
 
 set(ECORE_SRC_FILES)
