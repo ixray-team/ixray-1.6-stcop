@@ -41,7 +41,7 @@ IC	void CGameSpawnConstructor::add_level_points		(const LEVEL_POINT_STORAGE &lev
 	m_level_points.insert		(m_level_points.end(),level_points.begin(),level_points.end());
 }
 
-IC	void CGameSpawnConstructor::add_level_changer		(ISE_ALifeLevelChanger *level_changer)
+IC	void CGameSpawnConstructor::add_level_changer		(CSE_ALifeLevelChanger *level_changer)
 {
 	m_critical_section.Enter	();
 	m_level_changers.push_back	(level_changer);

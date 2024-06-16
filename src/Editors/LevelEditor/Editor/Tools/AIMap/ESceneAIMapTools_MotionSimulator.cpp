@@ -27,7 +27,7 @@ struct SCollisionData
 		
 	Fvector				vRadius;
 };
-DEF_VECTOR(vecTris,cl_tri);
+using vecTris = xr_vector<cl_tri>;
 
 static int		psCollideActDepth		= 8;
 static int		psCollideActStuckDepth	= 16;

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\..\XrAPI\xrGameManager.h"
 #include "Utils\Cursor3D.h"
 #include "..\xrengine\GameFont.h"
 
@@ -169,7 +168,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
     	if (!p1.IsString())
         {
         	xr_string temp_fn	= LTools->m_LastFileName.c_str();
-        	if (EFS.GetOpenName	(EDevice->m_hWnd, _maps_, temp_fn ))
+        	if (EFS.GetOpenName	(_maps_, temp_fn ))
             	return 			ExecCommand(COMMAND_LOAD,temp_fn);
         }else
         {
@@ -231,7 +230,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
     string_path 	fn;
-    strconcat(sizeof(fn),fn,Core.CompName,"_",Core.UserName,"_backup.level");
+    xr_strconcat(fn,Core.CompName,"_",Core.UserName,"_backup.level");
     FS.update_path	(fn,_maps_,fn);
     return 			ExecCommand(COMMAND_SAVE,xr_string(fn));
 }
@@ -260,14 +259,8 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
                 xr_strlwr(temp_fn);
 
                 UI->SetStatus("Level saving...");
-                if (xrGameManager::GetGame() == EGame::SHOC)
-                {
-                    Scene->Save(temp_fn.c_str(), true, (p2 == 66));
-                }
-                else
-                {
                     Scene->SaveLTX(temp_fn.c_str(), false, (p2 == 66));
-                }
+
                 UI->ResetStatus	();
                 // set new name
                 if (0!=xr_strcmp(Tools->m_LastFileName.c_str(),temp_fn.c_str()))
@@ -357,7 +350,7 @@ CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandImportCompilerError(CCommandVar p1, CCommandVar p2)
 {
     xr_string fn;
-    if(EFS.GetOpenName(EDevice->m_hWnd,"$logs$", fn, false, NULL, 0)){
+    if(EFS.GetOpenName("$logs$", fn, false, NULL, 0)){
         Scene->LoadCompilerError(fn.c_str());
     }
     UI->RedrawScene		();
@@ -442,7 +435,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
     if( !Scene->locked() )
     {
         xr_string fn			= LTools->m_LastSelectionName;
-        if( EFS.GetOpenName(EDevice->m_hWnd, _maps_, fn ) )
+        if( EFS.GetOpenName(_maps_, fn ) )
         {
         	LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
         	if (fn.c_str()==strstr(fn.c_str(),maps_path))
@@ -941,7 +934,7 @@ void CLevelMain::RegisterCommands()
 
 char* CLevelMain::GetCaption()
 {
-	return Tools->m_LastFileName.empty()?"noname":Tools->m_LastFileName.c_str();
+	return (char*)(Tools->m_LastFileName.empty()?"noname":Tools->m_LastFileName.c_str());
 }
 
 bool  CLevelMain::ApplyShortCut(DWORD Key, TShiftState Shift)
@@ -1217,15 +1210,15 @@ void CLevelMain::ProgressDraw()
 
 void CLevelMain::OutCameraPos()
 {
-	if (m_bReady){
-        xr_string s;
-        const Fvector& c 	= EDevice->m_Camera.GetPosition();
-        s.sprintf("C: %3.1f, %3.1f, %3.1f",c.x,c.y,c.z);
-    //	const Fvector& hpb 	= EDevice->m_Camera.GetHPB();
-    //	s.sprintf(" Cam: %3.1f�, %3.1f�, %3.1f�",rad2deg(hpb.y),rad2deg(hpb.x),rad2deg(hpb.z));
-       // fraBottomBar->paCamera->Caption=s; fraBottomBar->paCamera->Repaint();
-
-    }
+	//if (m_bReady){
+    //    xr_string s;
+    //    const Fvector& c 	= EDevice->m_Camera.GetPosition();
+    //    s.sprintf("C: %3.1f, %3.1f, %3.1f",c.x,c.y,c.z);
+    ////	const Fvector& hpb 	= EDevice->m_Camera.GetHPB();
+    ////	s.sprintf(" Cam: %3.1f�, %3.1f�, %3.1f�",rad2deg(hpb.y),rad2deg(hpb.x),rad2deg(hpb.z));
+    //   // fraBottomBar->paCamera->Caption=s; fraBottomBar->paCamera->Repaint();
+    //
+    //}
 }
 
 void CLevelMain::OutUICursorPos()
@@ -1256,15 +1249,15 @@ void CLevelMain::RealQuit()
 }
 
 
-void CLevelMain::SaveSettings(CInifile* I)
+void CLevelMain::SaveSettings(nlohmann::json& js)
 {
-	inherited::SaveSettings(I);
-    SSceneSummary::Save(I);
+	inherited::SaveSettings(js);
+    SSceneSummary::Save();
 }
-void CLevelMain::LoadSettings(CInifile* I)
+void CLevelMain::LoadSettings(nlohmann::json& js)
 {
-	inherited::LoadSettings(I);
-    SSceneSummary::Load(I);
+	inherited::LoadSettings(js);
+    SSceneSummary::Load();
 }
 
 Ivector2 CLevelMain::GetRenderMousePosition() const

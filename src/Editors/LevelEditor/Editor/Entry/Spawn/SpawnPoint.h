@@ -3,8 +3,8 @@
 #define SPAWNPOINT_VERSION   			0x0017
 
 // refs
-class ISE_Visual;
-class ISE_Motion;
+class CSE_Visual;
+class CSE_Motion;
 class CObjectAnimator;
 
 class CLE_Visual :private pureDrawUI
@@ -12,7 +12,7 @@ class CLE_Visual :private pureDrawUI
     virtual void OnDrawUI();
 public:
     static bool     g_tmp_lock;
-    ISE_Visual* source;
+    CSE_Visual* source;
     IRenderVisual* visual;
     void 			OnChangeVisual();
     void			StopAllAnimations();
@@ -21,7 +21,7 @@ public:
     void 			PlayAnimationLastFrame();
     void 			PauseAnimation();
 public:
-    CLE_Visual(ISE_Visual* src);
+    CLE_Visual(CSE_Visual* src);
     virtual			~CLE_Visual();
 };
 class CSpawnPoint : public CCustomObject,
@@ -35,19 +35,19 @@ public:
     class CLE_Motion
     {
     public:
-        ISE_Motion*		source;
+        CSE_Motion*		source;
         CObjectAnimator*animator;
         void 			OnChangeMotion	();
         void 			PlayMotion		();
     public:
-						CLE_Motion		(ISE_Motion* src);
+						CLE_Motion		(CSE_Motion* src);
         virtual			~CLE_Motion		();
     };
 	struct SSpawnData: public ISE_AbstractLEOwner
 	{
 		CLASS_ID		m_ClassID;
         shared_str 		m_Profile;
-		ISE_Abstract*	m_Data;
+		CSE_Abstract*	m_Data;
         CLE_Visual*		m_Visual;
         Flags8			m_flags;
         xr_vector<CLE_Visual*> m_VisualHelpers;
@@ -88,7 +88,7 @@ public:
     	void 	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
         
 		virtual void get_bone_xform				(LPCSTR name, Fmatrix& xform);
-        IC ISE_Abstract* GetEntity()const { return m_Data; }
+        IC CSE_Abstract* GetEntity()const { return m_Data; }
 	};
 
 	SSpawnData    	m_SpawnData;
@@ -170,7 +170,7 @@ public:
 	bool IsGraphPoint()const;
 public:
 
-    IC ISE_Abstract* GetEntity() { PreExportSpawn(); return m_SpawnData.GetEntity(); }
+    IC CSE_Abstract* GetEntity() { PreExportSpawn(); return m_SpawnData.GetEntity(); }
     virtual	IKinematics*	   _BCL	ObjectKinematics	 ()				 	{ if(!m_SpawnData.m_Visual||!m_SpawnData.m_Visual->visual)return 0;return m_SpawnData.m_Visual->visual->dcast_PKinematics();}
 private:
     virtual void 	OnUpdateTransform();

@@ -384,7 +384,9 @@ LPCSTR CLevelTool::GetInfo()
 {
 	static xr_string sel;
 	int cnt = Scene->SelectionCount(true,CurrentClassID());
-	return sel.sprintf(" Sel: %d",cnt).c_str();
+    sel = " Sel: " + xr_string::ToString(cnt);
+
+	return sel.c_str();
 }
 
 
@@ -393,7 +395,7 @@ void  CLevelTool::OnFrame()
 
     if (psDeviceFlags.is(rsEnvironment) &&! UI->IsPlayInEditor()&& g_pGamePersistent&&g_pGamePersistent->pEnvironment)
     {
-        g_pGamePersistent->Environment().SetGameTime(g_pGamePersistent->Environment().GetGameTime() + Device->fTimeDelta * g_pGamePersistent->Environment().fTimeFactor, g_pGamePersistent->Environment().fTimeFactor);
+        g_pGamePersistent->Environment().SetGameTime(g_pGamePersistent->Environment().GetGameTime() + Device.fTimeDelta * g_pGamePersistent->Environment().fTimeFactor, g_pGamePersistent->Environment().fTimeFactor);
     }
 	Scene->OnFrame		(EDevice->fTimeDelta);
     EEditorState est 	= UI->GetEState();
@@ -603,7 +605,7 @@ void CLevelTool::RunGame(const char* Params)
         return;
     }
 	m_GameProcess = {};
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -614,7 +616,7 @@ void CLevelTool::RunGame(const char* Params)
 	xr_sprintf(CommandLine, "Xr3DA.exe %s", Params);
 	Msg("~ Run Game %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
@@ -639,7 +641,7 @@ void CLevelTool::RunXrLC()
 	if (m_GameProcess.hProcess)
 		return;
 
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -650,7 +652,7 @@ void CLevelTool::RunXrLC()
 	xr_sprintf(CommandLine, "XrLC.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
@@ -674,7 +676,7 @@ void CLevelTool::RunXrDO()
 	if (m_GameProcess.hProcess)
 		return;
 
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -685,7 +687,7 @@ void CLevelTool::RunXrDO()
 	xr_sprintf(CommandLine, "xrDO_light.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
@@ -709,7 +711,7 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 	if (m_GameProcess.hProcess)
 		return;
 
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -720,7 +722,7 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 	xr_sprintf(CommandLine, "xrAI.exe -no_separator_check -s %s -out all", current_level? Scene->m_LevelOp.m_FNLevelPath.c_str():"");
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
@@ -744,7 +746,7 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 	if (m_GameProcess.hProcess)
 		return;
 
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -755,7 +757,7 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 	xr_sprintf(CommandLine, "xrAI.exe -f %s %s", Scene->m_LevelOp.m_FNLevelPath.c_str(), draw?"-draft":"");
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable
@@ -779,7 +781,7 @@ void CLevelTool::RunXrAI_Verify()
 	if (m_GameProcess.hProcess)
 		return;
 
-	STARTUPINFO si = {};
+	STARTUPINFOA si = {};
 
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
@@ -790,7 +792,7 @@ void CLevelTool::RunXrAI_Verify()
 	xr_sprintf(CommandLine, "xrAI.exe -verify %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
-	if (!CreateProcess(NULL,   // No module name (use command line)
+	if (!CreateProcessA(NULL,   // No module name (use command line)
 		CommandLine,        // Command line
 		NULL,           // Process handle not inheritable
 		NULL,           // Thread handle not inheritable

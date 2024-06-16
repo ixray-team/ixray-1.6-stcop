@@ -13,10 +13,11 @@ class ILevelGraph;
 class IGameLevelCrossTable;
 class IGameGraph;
 
-#include "..\xrEngine\object_interfaces.h""
-#include "..\xrEngine\associative_vector.h"
+#include "../xrServerEntities/object_interfaces.h""
+#include "../XrCore/associative_vector.h"
 
-class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter> {
+class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter>
+{
 private:
 	typedef IPureSerializeObject<IReader,IWriter>		inherited;
 

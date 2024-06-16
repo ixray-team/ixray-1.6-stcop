@@ -8,7 +8,8 @@ protected:
     u32 			w;
     u32 			h;
     U32Vec			data;
-    DEFINE_VECTOR	(FVF::V,TVertVec,TVertIt);
+    using  TVertVec = xr_vector<FVF::V>;
+    using  TVertIt = TVertVec::iterator;
     TVertVec		mesh;
     ref_geom		geom;
 public:

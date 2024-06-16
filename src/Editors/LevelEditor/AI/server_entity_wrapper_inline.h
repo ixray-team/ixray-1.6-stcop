@@ -8,12 +8,12 @@
 
 #pragma once
 
-IC	CServerEntityWrapper::CServerEntityWrapper	(ISE_Abstract *object)
+IC	CServerEntityWrapper::CServerEntityWrapper	(CSE_Abstract *object)
 {
 	m_object	= object;
 }
 
-IC	ISE_Abstract &CServerEntityWrapper::object	() const
+IC	CSE_Abstract &CServerEntityWrapper::object	() const
 {
 	VERIFY		(m_object);
 	return		(*m_object);

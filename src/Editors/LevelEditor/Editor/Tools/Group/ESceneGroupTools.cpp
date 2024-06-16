@@ -161,10 +161,10 @@ void ESceneGroupTool::ReloadRefsSelectedObject()
     if (!lst.empty())
     {
         string_path				temp_file_name_sector,temp_file_name_portal;
-        GetTempFileName			( FS.get_path(_temp_)->m_Path, "tmp_sector", 0, temp_file_name_sector );
+        GetTempFileNameA			( FS.get_path(_temp_)->m_Path, "tmp_sector", 0, temp_file_name_sector );
         Scene->SaveToolLTX		(OBJCLASS_SECTOR, temp_file_name_sector);
 
-        GetTempFileName			( FS.get_path(_temp_)->m_Path, "tmp_portal", 0, temp_file_name_portal );
+        GetTempFileNameA			( FS.get_path(_temp_)->m_Path, "tmp_portal", 0, temp_file_name_portal );
         Scene->SaveToolLTX		(OBJCLASS_PORTAL, temp_file_name_portal);
 
    		bool bModif	= false;

@@ -10,7 +10,7 @@
 
 #include "game_graph_space.h"
 #include "../../xrScripts/script_export_space.h"
-#include "../../xrServerEntities/game_level_cross_table.h"
+#include "../../xrGame/game_level_cross_table.h"
 
 class CGameGraph {
 private:

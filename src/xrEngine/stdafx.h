@@ -72,3 +72,8 @@ extern ENGINE_API CInifile *pGameIni;
 #ifndef _EDITOR
 #include "ImGuiManager.h"
 #endif
+
+
+struct ISE_AbstractLEOwner{
+	virtual void			get_bone_xform			(LPCSTR name, Fmatrix& xform) = 0;
+};

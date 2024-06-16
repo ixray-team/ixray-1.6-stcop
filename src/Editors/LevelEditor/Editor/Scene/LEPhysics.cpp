@@ -227,7 +227,7 @@ void CScenePhyscs::DestroyObjectSpace	()
      H.version = CFORM_CURRENT_VERSION;
      GetBox(H.aabb, build_data.l_verts, build_data.l_vert_it);
      VERIFY(!m_object_space);
-     To->Create(build_data.l_verts, build_data.l_faces, H, cb);
+     To->Create(build_data.l_verts, build_data.l_faces, H, cb, nullptr, false);
 
      xr_free(build_data.l_faces);
      xr_free(build_data.l_verts);
@@ -238,14 +238,9 @@ void CScenePhyscs::DestroyObjectSpace	()
 
  void  CScenePhyscs::CreateWorld			()
 {
-
-
     VERIFY(!physics_world());
-
-
-    XrDeviceInterface*rd = EDevice  ;
     VERIFY(m_object_space);
-	create_physics_world( false, m_object_space,    0, rd );
+    create_physics_world(false, m_object_space, 0);
 }
 
 void CreatePhysicsShellsSelected()

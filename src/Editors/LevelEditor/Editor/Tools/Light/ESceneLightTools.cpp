@@ -95,9 +95,10 @@ void ESceneLightTool::BeforeRender()
            EDevice->SetRS	(D3DRS_AMBIENT,C.get());
        }else	*/			
         	EDevice->SetRS(D3DRS_AMBIENT,0x00000000);
-        
+#if 0
         EDevice->EStatistic->dwTotalLight 	= l_cnt;
         EDevice->EStatistic->dwLightInScene = frame_light.size();
+#endif
     }
 }
 
@@ -189,11 +190,11 @@ void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
 
 xr_string ESceneLightTool::GenLightControlName()
 {
-	xr_string name;
+    string256 name = {};
     int idx=0;
     do{
-    	name.sprintf("control_%02d",idx++);
-    }while (FindLightControl(name.c_str()));
+    	sprintf(name, "control_%02d",idx++);
+    }while (FindLightControl(name));
     return name;
 }
 

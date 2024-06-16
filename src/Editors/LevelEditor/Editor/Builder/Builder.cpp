@@ -36,7 +36,7 @@ SceneBuilder::~SceneBuilder()
 
 #define CHECK_BREAK     	if (UI->NeedAbort()) break;
 #define VERIFY_COMPILE(x,c1,c2) CHECK_BREAK \
-							if (!x){error_text.sprintf("ERROR: %s %s", c1,c2); break;}
+							if (!x){ELog.Msg(mtError, "ERROR: %s %s", c1,c2); break;}
 
 BOOL SceneBuilder::Compile(bool b_selected_only, bool show_message )
 {

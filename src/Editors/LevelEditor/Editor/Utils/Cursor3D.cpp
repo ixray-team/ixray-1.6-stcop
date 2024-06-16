@@ -117,7 +117,7 @@ bool C3DCursor::PrepareBrush()
     SRayPickInfo pinf;
     bool bPickObject, bPickGround;
     Fvector N, D;
-    POINT start_pt;
+    POINT start_pt = {};
     Ivector2 pt;
     //GetCursorPos(&start_pt); start_pt=UI->GetD3DWindow()->ScreenToClient(start_pt);
     pt.set(iFloor(start_pt.x),iFloor(start_pt.y));

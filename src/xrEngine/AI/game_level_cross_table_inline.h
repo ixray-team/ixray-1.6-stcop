@@ -8,14 +8,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
-
-IC const IGameLevelCrossTable::CCell &IGameLevelCrossTable::vertex(u32 level_vertex_id) const
-{
-	VERIFY				(level_vertex_id < header().level_vertex_count());
-	return				(m_tpaCrossTable[level_vertex_id]);
-}
-
 IC	u32	IGameLevelCrossTable::CHeader::version() const
 {
 	return				(dwVersion);
@@ -46,6 +38,7 @@ IC	GameGraph::_GRAPH_ID IGameLevelCrossTable::CCell::game_vertex_id() const
 	return				(tGraphIndex);
 }
 
+//#ifndef AI_COMPILER
 IC	float IGameLevelCrossTable::CCell::distance() const
 {
 	return				(fDistance);
@@ -55,3 +48,11 @@ IC	const IGameLevelCrossTable::CHeader &IGameLevelCrossTable::header() const
 {
 	return				(m_tCrossTableHeader);
 }
+
+IC const IGameLevelCrossTable::CCell& IGameLevelCrossTable::vertex(u32 level_vertex_id) const
+{
+	VERIFY(level_vertex_id < header().level_vertex_count());
+	return				(m_tpaCrossTable[level_vertex_id]);
+}
+
+//#endif

@@ -4,18 +4,18 @@ struct _SoundProcessor : public pureFrame
 {
 	virtual void	_BCL	OnFrame()
 	{
-		//Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(EngineDevice->dwFrame),VPUSH(EngineDevice->vCameraPosition));
-		Device->Statistic->Sound.Begin();
-		::Sound->update(Device->vCameraPosition, Device->vCameraDirection, Device->vCameraTop);
-		Device->Statistic->Sound.End();
+		//Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(EngineDevice.dwFrame),VPUSH(EngineDevice.vCameraPosition));
+		Device.Statistic->Sound.Begin();
+		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		Device.Statistic->Sound.End();
 	}
 }	SoundProcessor;
 XRayEditor::XRayEditor()
 {
-	Device->seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
+	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
 
-	if (psDeviceFlags.test(mtSound))	Device->seqFrameMT.Add(&SoundProcessor);
-	else								Device->seqFrame.Add(&SoundProcessor);
+	if (psDeviceFlags.test(mtSound))	Device.seqFrameMT.Add(&SoundProcessor);
+	else								Device.seqFrame.Add(&SoundProcessor);
 }
 
 XRayEditor::~XRayEditor()

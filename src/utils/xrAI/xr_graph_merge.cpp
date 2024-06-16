@@ -119,7 +119,7 @@ public:
 		m_tpGraph				= xr_new<CGameGraph>(caFileName);
 
 		xr_strcpy				(caFileName,raw_cross_table_file_name);
-		CGameLevelCrossTable	*l_tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName);
+		CGameLevelCrossTable	*l_tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName, xr_strlen(caFileName));
 
 		CLevelGraph				*l_tpAI_Map = xr_new<CLevelGraph>(S);
 
@@ -173,7 +173,7 @@ public:
 		// updating cross-table
 		{
 			xr_strcpy				(caFileName,raw_cross_table_file_name);
-			CGameLevelCrossTable	*tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName);
+			CGameLevelCrossTable	*tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName, xr_strlen(caFileName));
 			xr_vector<CGameLevelCrossTable::CCell> tCrossTableUpdate;
 			tCrossTableUpdate.resize(tpCrossTable->header().level_vertex_count());
 			for (int i=0; i<(int)tpCrossTable->header().level_vertex_count(); i++) {

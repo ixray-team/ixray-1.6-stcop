@@ -1,5 +1,8 @@
 #include "stdafx.h"
-
+#include "../../../../../xrServerEntities/xrServer_Objects_ALife.h"
+#include "../xrServerEntities/xrServer_Objects_Abstract.h"
+#include "../xrServerEntities/xrServer_Object_Base.h"
+#include "../xrServerEntities/xrServer_Objects.h"
 
 #define SPAWNPOINT_CHUNK_VERSION		0xE411
 #define SPAWNPOINT_CHUNK_POSITION		0xE412
@@ -26,7 +29,7 @@
 #define MAX_TEAM 6
 const u32 RP_COLORS[MAX_TEAM]={0xff0000,0x00ff00,0x0000ff,0xffff00,0x00ffff,0xff00ff};
 // CLE_Visual
-CLE_Visual::CLE_Visual(ISE_Visual* src)
+CLE_Visual::CLE_Visual(CSE_Visual* src)
 {
 	source				= src;
     visual				= 0;
@@ -189,7 +192,7 @@ void CLE_Visual::PauseAnimation ()
 }
 
 // CLE_Motion
-CSpawnPoint::CLE_Motion::CLE_Motion	(ISE_Motion* src)
+CSpawnPoint::CLE_Motion::CLE_Motion	(CSE_Motion* src)
 {
 	source			= src;
     animator		= 0;
@@ -221,12 +224,12 @@ void CSpawnPoint::SSpawnData::Create(LPCSTR _entity_ref)
         if (m_Data->visual())
         {
             m_Visual	= xr_new<CLE_Visual>(m_Data->visual());
-            m_Data->set_editor_flag(ISE_Abstract::flVisualChange|ISE_Abstract::flVisualAnimationChange);
+            m_Data->set_editor_flag(CSE_Abstract::flVisualChange|CSE_Abstract::flVisualAnimationChange);
         }
         if (m_Data->motion())
         {
             m_Motion	= xr_new<CLE_Motion>(m_Data->motion());
-            m_Data->set_editor_flag(ISE_Abstract::flMotionChange);
+            m_Data->set_editor_flag(CSE_Abstract::flMotionChange);
         }
         if (pSettings->line_exist(m_Data->name(),"$player"))
         {
@@ -483,18 +486,18 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 
 void CSpawnPoint::SSpawnData::OnFrame()
 {
-	if (m_Data->m_editor_flags.is(ISE_Abstract::flUpdateProperties))
+	if (m_Data->m_editor_flags.is(CSE_Abstract::flUpdateProperties))
     	ExecCommand				(COMMAND_UPDATE_PROPERTIES);
     // visual part
 	if (m_Visual)
     {
-	    if (m_Data->m_editor_flags.is(ISE_Abstract::flVisualChange))
+	    if (m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange))
         	m_Visual->OnChangeVisual();
 
-	    if(m_Data->m_editor_flags.is(ISE_Abstract::flVisualAnimationChange))
+	    if(m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
         {
         	m_Visual->PlayAnimationFirstFrame();
-            m_Data->m_editor_flags.set(ISE_Abstract::flVisualAnimationChange, FALSE);
+            m_Data->m_editor_flags.set(CSE_Abstract::flVisualAnimationChange, FALSE);
         }
 
     	if (m_Visual->visual&&PKinematics(m_Visual->visual))
@@ -503,13 +506,13 @@ void CSpawnPoint::SSpawnData::OnFrame()
     // motion part
     if (m_Motion)
     {
-	    if (m_Data->m_editor_flags.is(ISE_Abstract::flMotionChange))
+	    if (m_Data->m_editor_flags.is(CSE_Abstract::flMotionChange))
         	m_Motion->OnChangeMotion();
     	if (m_Motion->animator)
     		m_Motion->animator->Update(EDevice->fTimeDelta);
     }
 
-    if (m_Data->m_editor_flags.is(ISE_Abstract::flVisualChange))
+    if (m_Data->m_editor_flags.is(CSE_Abstract::flVisualChange))
     {
         xr_vector<CLE_Visual*>::iterator it 	= m_VisualHelpers.begin();
         xr_vector<CLE_Visual*>::iterator it_e 	= m_VisualHelpers.end();
@@ -768,7 +771,7 @@ void CSpawnPoint::OnFrame()
     if (m_AttachedObject) 		m_AttachedObject->OnFrame	();
 	if (m_SpawnData.Valid())
     {
-    	if(m_physics_shell&&m_SpawnData.m_Data->m_editor_flags.is(ISE_Abstract::flVisualAnimationChange))
+    	if(m_physics_shell&&m_SpawnData.m_Data->m_editor_flags.is(CSE_Abstract::flVisualAnimationChange))
         {
         	DeletePhysicsShell			();
             m_SpawnData.OnFrame			();
@@ -862,9 +865,13 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
                 }else{
                     switch (m_Type)
                     {
-                    case ptRPoint: 	s_name.sprintf("RPoint T:%d",m_RP_TeamID); break;
+                    case ptRPoint: 	s_name = "RPoint T:" + xr_string::ToString(m_RP_TeamID); break;
                     case ptEnvMod:
-                    	s_name.sprintf("EnvMod V:%3.2f, F:%3.2f",m_EM_ViewDist,m_EM_FogDensity);
+                    {
+                        string256 Data = {};
+                        sprintf(Data, "EnvMod V:%3.2f, F:%3.2f", m_EM_ViewDist, m_EM_FogDensity);
+                        s_name = Data;
+                    }
 					break;
                     default: THROW2("CSpawnPoint:: Unknown Type");
                     }
@@ -1011,7 +1018,7 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
     case ptSpawnPoint:
     {
         string128	buff;
-        strconcat	(sizeof(buff), buff, sect_name, "_spawndata");
+        xr_strconcat(buff, sect_name, "_spawndata");
         if (!m_SpawnData.LoadLTX(ini, buff))
         {
             ELog.Msg( mtError, "SPAWNPOINT: Can't load Spawn Data.");
@@ -1081,7 +1088,7 @@ void CSpawnPoint::SaveLTX(CInifile& ini, LPCSTR sect_name)
     case ptSpawnPoint:
     {
         string128	buff;
-        m_SpawnData.SaveLTX(ini, strconcat(sizeof(buff), buff, sect_name, "_spawndata"));
+        m_SpawnData.SaveLTX(ini, xr_strconcat(buff, sect_name, "_spawndata"));
     }break;
     case ptRPoint:
     {
@@ -1280,7 +1287,6 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
             F->envmodif.stream.w_u16(m_EM_Flags.get());
 			F->envmodif.stream.close_chunk();
         break;
-        default: THROW;
         }
     }
     return true;
@@ -1346,12 +1352,12 @@ void CSpawnPoint::OnProfileChange(PropValue* prop)
         VERIFY					(s_name.size());
         if (0!=strcmp(m_SpawnData.m_Data->name(),*s_name))
         {
-            ISE_Abstract* tmp	= g_SEFactoryManager->create_entity	(*s_name);
+            CSE_Abstract* tmp	= g_SEFactoryManager->create_entity	(*s_name);
             VERIFY				(tmp);
             NET_Packet 			Packet;
             tmp->Spawn_Write	(Packet,TRUE);
             R_ASSERT			(m_SpawnData.m_Data->Spawn_Read(Packet));
-            m_SpawnData.m_Data->set_editor_flag(ISE_Abstract::flVisualChange|ISE_Abstract::flVisualAnimationChange);
+            m_SpawnData.m_Data->set_editor_flag(CSE_Abstract::flVisualChange|CSE_Abstract::flVisualAnimationChange);
             g_SEFactoryManager->destroy_entity		(tmp);
         }
     }else{
@@ -1462,10 +1468,10 @@ bool CSpawnPoint::OnChooseQuery(LPCSTR specific)
  }
  bool CSpawnPoint::IsGraphPoint() const
  {
-     ISE_Abstract* SEAbstract = m_SpawnData.GetEntity();
+     CSE_Abstract* SEAbstract = m_SpawnData.GetEntity();
      if (SEAbstract)
      {
-         return SEAbstract->CastALifeGraphPoint();
+         return dynamic_cast<CSE_ALifeGraphPoint*>(SEAbstract)!=nullptr;
      }
      return false;
  }

@@ -13,7 +13,7 @@
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife.h"
 #include "factory_api.h"
-#include "../../xrServerEntities/game_level_cross_table.h"
+#include "../../xrGame/game_level_cross_table.h"
 #include "xrCrossTable.h"
 #include "guid_generator.h"
 #include "graph_engine.h"
@@ -403,7 +403,7 @@ void CGameGraphBuilder::load_cross_table	(const float &start, const float &amoun
 	Msg						("Loading cross table");
 
 	VERIFY					(!m_cross_table);
-	m_cross_table			= xr_new<CGameLevelCrossTable>(m_cross_table_name);
+	m_cross_table			= xr_new<CGameLevelCrossTable>(m_cross_table_name, xr_strlen(m_cross_table_name));
 
 	Progress				(start + amount);
 }

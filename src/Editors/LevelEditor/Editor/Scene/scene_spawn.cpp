@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../AI/game_spawn_constructor.h"
+#include "AI/game_spawn_constructor.h"
 
 bool EScene::BuildSpawn()
 {
@@ -47,10 +47,10 @@ bool EScene::BuildForPCPlay()
 	xr_strcpy(FileName, Scene->m_LevelOp.m_FNLevelPath.c_str());
 
 	string_path	N1, N2, N3, N4;
-	strconcat(sizeof(N1), N1, FileName, "\\level");
-	strconcat(sizeof(N2), N2, FileName, "\\level.ltx");
-	strconcat(sizeof(N3), N3, FileName, "\\level.geom");
-	strconcat(sizeof(N4), N4, FileName, "\\level.cform");
+	xr_strconcat(N1, FileName, "\\level");
+	xr_strconcat(N2, FileName, "\\level.ltx");
+	xr_strconcat(N3, FileName, "\\level.geom");
+	xr_strconcat(N4, FileName, "\\level.cform");
 	if (
 		!FS.exist("$game_levels$", N1) ||
 		!FS.exist("$game_levels$", N2) ||
