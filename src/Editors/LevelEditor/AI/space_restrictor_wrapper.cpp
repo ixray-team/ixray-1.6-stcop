@@ -17,13 +17,13 @@ IC	Fvector construct_position		(ILevelGraph &level_graph,u32 level_vertex_id, fl
 	return							(Fvector().set(x,level_graph.vertex_plane_y(level_vertex_id,x,z),z));
 }
 
-CSpaceRestrictorWrapper::CSpaceRestrictorWrapper	(ISE_ALifeSpaceRestrictor *object)
+CSpaceRestrictorWrapper::CSpaceRestrictorWrapper	(CSE_ALifeSpaceRestrictor *object)
 {
 	m_object						= object;
 	m_level_graph					= 0;
 	m_graph_engine					= 0;
-	m_xform.setXYZ					(object->CastALifeObject()->CastAbstract()->o_Angle);
-	m_xform.c.set					(object->CastALifeObject()->CastAbstract()->o_Position);
+	m_xform.setXYZ					(object->o_Angle);
+	m_xform.c.set					(object->o_Position);
 }
 
 void CSpaceRestrictorWrapper::clear					()
@@ -40,8 +40,8 @@ bool CSpaceRestrictorWrapper::inside				(const Fvector &position, float radius) 
 	sphere.R						= radius;
 
 	typedef CShapeData::ShapeVec	ShapeVec;
-	ShapeVec::const_iterator		I = object().shape()->shapes.begin();
-	ShapeVec::const_iterator		E = object().shape()->shapes.end();
+	ShapeVec::const_iterator		I = object().shapes.begin();
+	ShapeVec::const_iterator		E = object().shapes.end();
 	for ( ; I != E; ++I) {
 		switch ((*I).type) {
 			case 0 : {
@@ -118,8 +118,8 @@ void CSpaceRestrictorWrapper::fill_shape			(const CShapeData::shape_def &shape)
 		case 0 : {
 			start.sub				(Fvector().set(shape.data.sphere.P),Fvector().set(shape.data.sphere.R,0.f,shape.data.sphere.R));
 			dest.add				(Fvector().set(shape.data.sphere.P),Fvector().set(shape.data.sphere.R,0.f,shape.data.sphere.R));
-			start.add				(object().CastAbstract()->o_Position);
-			dest.add				(object().CastAbstract()->o_Position);
+			start.add				(object().o_Position);
+			dest.add				(object().o_Position);
 			break;
 		}
 		case 1 : {
@@ -195,8 +195,8 @@ struct sort_by_xz_predicate {
 bool CSpaceRestrictorWrapper::build_border			()
 {
 	typedef CShapeData::ShapeVec	ShapeVec;
-	ShapeVec::const_iterator		I = object().shape()->shapes.begin();
-	ShapeVec::const_iterator		E = object().shape()->shapes.end();
+	ShapeVec::const_iterator		I = object().shapes.begin();
+	ShapeVec::const_iterator		E = object().shapes.end();
 	for ( ; I != E; ++I)
 		fill_shape					(*I);
 	
@@ -214,7 +214,7 @@ bool CSpaceRestrictorWrapper::build_border			()
 	}
 	if (m_border.empty())
 	{
-		Msg("! space restrictor has no border %S", object().CastAbstract()->name_replace());
+		Msg("! space restrictor has no border %S", object().name_replace());
 	}
 	return !m_border.empty();
 }
@@ -268,7 +268,7 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 	R_ASSERT3						(
 		nodes.size() + m_internal.size() == level_graph().header().vertex_count(),
 		"Restrictor separates AI map into several disconnected components",
-		object().CastAbstract()->name_replace()
+		object().name_replace()
 	);
 }
 

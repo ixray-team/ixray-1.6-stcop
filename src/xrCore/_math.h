@@ -32,7 +32,7 @@ extern XRCORE_API	void	_initialize_cpu_thread	();
 // threading
 typedef				void	thread_t				( void * );
 extern XRCORE_API	void	thread_name				( const char* name);
-extern XRCORE_API	void	thread_spawn			(
+extern XRCORE_API	ThreadID	thread_spawn			(
 	thread_t*	entry,
 	const char*	name,
 	unsigned	stack,

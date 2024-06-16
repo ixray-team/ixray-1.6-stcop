@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/communicate.h"
 
 //refs
 
@@ -277,18 +278,6 @@ public:
 
 public:
 	int  			GetQueryObjects(ObjectList& objset, ObjClassID classfilter, int iSel = 1, int iVis = 1, int iLock = 0);
-	template <class Predicate>
-	int  GetQueryObjects_if(ObjectList& dest, ObjClassID classfilter, Predicate cmp) {
-		for (ObjectPairIt it = FirstClass(); it != LastClass(); it++) {
-			ObjectList& lst = it->second;
-			if ((classfilter == OBJCLASS_DUMMY) || (classfilter == it->first)) {
-				for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++) {
-					if (cmp(_F)) dest.push_back(*_F);
-				}
-			}
-		}
-		return dest.size();
-	}
 public:
 
 	void 			OnCreate();

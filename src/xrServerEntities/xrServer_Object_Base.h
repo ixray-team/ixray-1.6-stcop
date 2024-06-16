@@ -105,14 +105,16 @@ public:
 									CSE_Abstract			(LPCSTR caSection);
 	virtual							~CSE_Abstract			();
 	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS)
 	virtual void					FillProps				(LPCSTR pref, PropItemVec &items);
-	virtual void			FillProp				(LPCSTR pref, PropItemVec &items);
+	virtual void					FillProp				(LPCSTR pref, PropItemVec &items);
+#if !defined(AI_COMPILER)
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F){} 
 	virtual	visual_data*	visual_collection		() const { return 0; }
 	virtual	u32				visual_collection_size	() const { return 0; }
 	virtual	void			set_additional_info		(void* info) {};
-#endif // #ifndef XRGAME_EXPORTS
+#endif
+#endif
 	virtual BOOL					Net_Relevant			(){return FALSE;}; // !!!! WARNING!!!
 	//
 	virtual void			Spawn_Write				(NET_Packet &tNetPacket, BOOL bLocal);

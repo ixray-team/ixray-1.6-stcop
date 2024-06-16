@@ -8,13 +8,13 @@
 
 #include "stdafx.h"
 #include "game_spawn_constructor.h"
-#include "../../XrEngine/object_broker.h"
 #include "level_spawn_constructor.h"
+#include "../../xrServerEntities/xrServer_Objects.h"
+#include "../../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife_All.h"
 #include "server_entity_wrapper.h"
 #include "graph_engine_editor.h"
 #include "patrol_path_storage.h"
-#include "..\XrAPI\xrGameManager.h"
 
 extern LPCSTR GAME_CONFIG;
 extern LPCSTR generate_temp_file_name			(LPCSTR header0, LPCSTR header1, string_path& buffer);
@@ -34,12 +34,11 @@ IC	shared_str CGameSpawnConstructor::actor_level_name()
 {
 	string256						temp;
 	return							(
-		strconcat(
-			sizeof(temp),
+		xr_strconcat(
 			temp,
 			*game_graph().header().level(
 				game_graph().vertex(
-					m_actor->CastALifeObject()->m_tGraphID
+					dynamic_cast<CSE_ALifeObject*>(m_actor)->m_tGraphID
 				)->level_id()).name(),
 			".spawn"
 		)
@@ -174,7 +173,7 @@ bool CGameSpawnConstructor::verify_level_changers	()
 	LEVEL_CHANGER_STORAGE::const_iterator	I = m_level_changers.begin();
 	LEVEL_CHANGER_STORAGE::const_iterator	E = m_level_changers.end();
 	for ( ; I != E; ++I)
-		Msg									("%s",(*I)->CastAbstract()->name_replace());
+		Msg									("%s",(*I)->name_replace());
 
 	//VERIFY2									(m_level_changers.empty(),"Some of the level changers setup incorrectly");
 	return true;
@@ -183,15 +182,7 @@ bool CGameSpawnConstructor::verify_level_changers	()
 bool CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 {
 	CMemoryWriter					stream;
-	switch (xrGameManager::GetGame())
-	{
-	case EGame::SHOC:
-		m_spawn_header.m_version = XRAI_SOC_CURRENT_VERSION;
-		break;
-	default:
-		m_spawn_header.m_version = XRAI_CURRENT_VERSION;
-		break;
-	}
+	m_spawn_header.m_version = XRAI_CURRENT_VERSION;
 	m_spawn_header.m_guid			= generate_guid();
 	m_spawn_header.m_graph_guid		= game_graph().header().guid();
 	m_spawn_header.m_spawn_count	= spawn_graph().vertex_count();
@@ -226,16 +217,7 @@ bool CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 
 bool CGameSpawnConstructor::save_spawn(LPCSTR name, CMemoryWriter& stream)
 {
-	switch (xrGameManager::GetGame())
-	{
-	case EGame::SHOC:
-		m_spawn_header.m_version = XRAI_SOC_CURRENT_VERSION;
-		break;
-	default:
-		m_spawn_header.m_version = XRAI_CURRENT_VERSION;
-		break;
-	}
-
+	m_spawn_header.m_version = XRAI_CURRENT_VERSION;
 	m_spawn_header.m_guid = generate_guid();
 	m_spawn_header.m_graph_guid = game_graph().header().guid();
 	m_spawn_header.m_spawn_count = spawn_graph().vertex_count();
@@ -271,28 +253,29 @@ shared_str CGameSpawnConstructor::spawn_name	(LPCSTR output)
 	else {
 		actor_level_name		();
 		string_path				out;
-		strconcat				(sizeof(out),out,output,".spawn");
+		xr_strcpy				(out,output);
+		xr_strcat				(out,".spawn");
 		FS.update_path			(file_name,"$game_spawn$",out);
 	}
 	return						(file_name);
 }
 
-void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, ISE_ALifeDynamicObject *object, LPCSTR level_name)
+void CGameSpawnConstructor::add_story_object	(ALife::_STORY_ID id, CSE_ALifeDynamicObject *object, LPCSTR level_name)
 {
 	if (id == INVALID_STORY_ID)
 		return;
 
 	auto		I = m_story_objects.find(id);
 	if (I != m_story_objects.end()) {
-		Msg						("Object %s, story id %d",object->CastAbstract()->name_replace(), object->CastALifeObject()->m_story_id);
-		Msg						("Object %s, story id %d",(*I).second->CastAbstract()->name_replace(),(*I).second->CastALifeObject()->m_story_id);
+		Msg						("Object %s, story id %d",object->name_replace(), object->m_story_id);
+		Msg						("Object %s, story id %d",(*I).second->name_replace(),(*I).second->m_story_id);
 		VERIFY3					(I == m_story_objects.end(),"There are several objects which has the same unique story ID, level ",level_name);
 	}
 	
 	m_story_objects.insert		(std::make_pair(id,object));
 }
 
-void CGameSpawnConstructor::add_object				(ISE_Abstract *object)
+void CGameSpawnConstructor::add_object				(CSE_Abstract *object)
 {
 	m_critical_section.Enter	();
 	object->m_tSpawnID			= spawn_id();
@@ -300,7 +283,7 @@ void CGameSpawnConstructor::add_object				(ISE_Abstract *object)
 	m_critical_section.Leave	();
 }
 
-void CGameSpawnConstructor::remove_object			(ISE_Abstract *object)
+void CGameSpawnConstructor::remove_object			(CSE_Abstract *object)
 {
 	spawn_graph().remove_vertex	(object->m_tSpawnID);
 }
@@ -315,7 +298,7 @@ bool CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 		if (!(*I)->actor())
 			continue;
 
-		Msg							("Actor is on the level %s",*game_graph().header().level(game_graph().vertex((*I)->actor()->CastALifeObject()->m_tGraphID)->level_id()).name());
+		Msg							("Actor is on the level %s",*game_graph().header().level(game_graph().vertex((*I)->actor()->m_tGraphID)->level_id()).name());
 		
 		if (m_actor)
 		{
@@ -343,11 +326,11 @@ bool CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 	//GraphEngineSpace::CGameLevelParams	evaluator(level.id());
 	//CGraphEngineEditor					*graph_engine = xr_new<CGraphEngineEditor>(game_graph().header().vertex_count());
 
-	//bool							failed = !graph_engine->search(game_graph(),m_actor->CastALifeObject()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
+	//bool							failed = !graph_engine->search(game_graph(),m_actor->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
 	//if (failed) {
 	//	Msg							("! Cannot build path via game graph from the current level to the level %s!",start_level_name);
 	//	float						min_dist = flt_max;
-	//	Fvector						current = game_graph().vertex(m_actor->CastALifeObject()->m_tGraphID)->game_point();
+	//	Fvector						current = game_graph().vertex(m_actor->m_tGraphID)->game_point();
 	//	GameGraph::_GRAPH_ID			n = game_graph().header().vertex_count();
 	//	for (GameGraph::_GRAPH_ID i=0; i<n; ++i) {
 	//		if (game_graph().vertex(i)->level_id() == level.id()) {
@@ -366,9 +349,9 @@ bool CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 	//else
 	//	dest						= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
 
-	//m_actor->CastALifeObject()->m_tGraphID				= dest;
-	//m_actor->CastALifeObject()->m_tNodeID				= game_graph().vertex(dest)->level_vertex_id();
-	//m_actor->CastAbstract()->o_Position				= game_graph().vertex(dest)->level_point();
+	//m_actor->m_tGraphID				= dest;
+	//m_actor->m_tNodeID				= game_graph().vertex(dest)->level_vertex_id();
+	//m_actor->o_Position				= game_graph().vertex(dest)->level_point();
 
 	//xr_delete						(graph_engine);
 	return true;
@@ -430,7 +413,7 @@ void clear_temp_folder	()
 	FILES::const_iterator	I = files.begin();
 	FILES::const_iterator	E = files.end();
 	for ( ; I != E; ++I) {
-		if (DeleteFile(**I))
+		if (DeleteFileA(**I))
 			Msg		("file %s is successfully deleted",**I);
 		else
 			Msg		("cannot delete file %s",**I);

@@ -2,6 +2,8 @@
 #include "../../xrScripts/stdafx.h"
 #include "../XrECore/stdafx.h"
 
+#include "../xrEngine/xrLevel.h"
+
 #include "../XrECore/Editor/device.h"
 #include "../XrECore/Editor/UI_MainCommand.h"
 #include "../XrECore/Editor/UI_ToolsCustom.h"
@@ -65,11 +67,6 @@
 #include "../../xrEngine/cl_intersect.h"
 
 #include "../../xrServerEntities/xrMessages.h"
-
-
-#ifndef _DEBUG
-#define USE_ARENA_ALLOCATOR
-#endif
 
 #include "AI/game_graph_builder.h"
 #include "AI/level_graph_editor.h"

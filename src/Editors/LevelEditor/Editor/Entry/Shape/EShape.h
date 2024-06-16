@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/ShapeData.h"
 
 enum eShapeUsage{eShapeCommon=0, eShapeLevelBound};
 

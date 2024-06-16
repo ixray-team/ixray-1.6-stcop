@@ -626,7 +626,10 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
                 EditMeshVec& 		_meshes = E->Meshes();
                 for (EditMeshIt m_it=_meshes.begin(); m_it!=_meshes.end(); m_it++)
                 {
-                    pb->Inc(xr_string().sprintf("%s [%s]",S->GetName(),(*m_it)->Name().c_str()).c_str());
+                    string512 Data = {};
+                    sprintf(Data, "%s [%s]", S->GetName(), (*m_it)->Name().c_str());
+                    pb->Inc(Data);
+
                     const SurfFaces&	_sfaces = (*m_it)->GetSurfFaces();
                     for (SurfFaces::const_iterator sp_it=_sfaces.begin(); sp_it!=_sfaces.end(); sp_it++)
                     {
@@ -667,7 +670,7 @@ tm.Start();
 tm.GetElapsed_sec();
         Scene->unlock		();
 //.        Log("-test time: ",	g_tm.GetElapsed_sec());
-		Log("-building time: ",tm.GetElapsed_sec());
+		Msg("-building time: %.3f",tm.GetElapsed_sec());
 //.        Msg("-Rate: %3.2f Count: %d",(g_tm.GetElapsed_sec()/tm.GetElapsed_sec())*100.f,g_tm.count);
 
         // unload CFModel

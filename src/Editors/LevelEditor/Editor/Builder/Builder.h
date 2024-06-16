@@ -35,7 +35,8 @@ public:
         Flight	light;
         float	energy;
     };
-    DEFINE_VECTOR(SBuildLight,BLVec,BLIt);
+    using BLVec = xr_vector<SBuildLight>;
+    using BLIt = BLVec::iterator;
 protected:
     BLVec						simple_hemi;
 public:

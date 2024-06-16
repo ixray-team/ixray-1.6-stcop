@@ -1,8 +1,10 @@
 #include "stdafx.h"
+#include "LevelPreferences.h"
 
-void CLevelPreferences::Load(CInifile* I)
+void CLevelPreferences::Load()
 {
-	inherited::Load		(I);        
+	inherited::Load		();
+#if 0 
     {
         OpenObjectList = R_BOOL_SAFE("windows", "object_list", false);
      
@@ -20,11 +22,14 @@ void CLevelPreferences::Load(CInifile* I)
     for (; _I!=_E; _I++)
         if (_I->second&&(_I->first!=OBJCLASS_DUMMY))
         	_I->second->m_EditFlags.flags = R_U32_SAFE("targets",_I->second->ClassName(),_I->second->m_EditFlags.flags);
+#endif
 }
 
-void CLevelPreferences::Save(CInifile* I)
+void CLevelPreferences::Save()
 {
-	inherited::Save		(I);
+	inherited::Save		();
+
+#if 0
     I->w_bool("windows", "object_list", OpenObjectList);
 	I->w_bool("windows", "properties", OpenProperties);
 	I->w_bool("windows", "world_properties", OpenWorldProperties);
@@ -32,6 +37,8 @@ void CLevelPreferences::Save(CInifile* I)
     SceneToolsMapPairIt _E 	= Scene->LastTool();
     for (; _I!=_E; _I++)
         if (_I->second&&(_I->first!=OBJCLASS_DUMMY))	I->w_u32	("targets",_I->second->ClassName(),_I->second->m_EditFlags.get());
+
+#endif
 }
 
 void CLevelPreferences::OnEnabledChange(PropValue* prop)

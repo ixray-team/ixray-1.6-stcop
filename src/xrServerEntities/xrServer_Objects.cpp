@@ -104,7 +104,7 @@ void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 }
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
 void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
 {
   	inherited::FillProps			(pref,items);
@@ -299,7 +299,7 @@ void CSE_AbstractVisual::STATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_stringZ		(startup_animation);
 }
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS)
 void CSE_AbstractVisual::FillProps		(LPCSTR pref, PropItemVec& values)
 {
 	inherited1::FillProps			(pref,values);

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "..\..\Utils\GeometryPartExtractor.h"
+#include "../xrServerEntities/xrServer_Object_Base.h"
+#include "../xrServerEntities/xrServer_Objects_Abstract.h"
+#include "../xrServerEntities/xrServer_Objects.h"
 static bool s_draw_dbg = false;
 
 IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtractor* extractor, u32 game_mtl_mask, BOOL ignore_shader)
@@ -16,7 +19,7 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
         	bResult 		= FALSE; 
             break; 
         }
-        SGameMtl* M 		=  GameMaterialLibrary->GetMaterialByID(gm_id);
+        SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
         if (0==M){
         	ELog.DlgMsg		(mtError,"Object '%s', surface '%s' contain undefined game material.",mesh->Parent()->m_LibName.c_str(),surf->_Name());
         	bResult 		= FALSE; 
@@ -98,8 +101,10 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
             SBPart*	P				= *p_it;
         	if (P->Valid()){
                 // export visual
-                xr_string sn		= xr_string().sprintf("meshes\\brkbl#%d.ogf",(p_it-parts.begin()));
-                xr_string fn		= Scene->LevelPath()+sn.c_str();
+                string256 sn = {};
+                sprintf(sn, "meshes\\brkbl#%d.ogf", (p_it - parts.begin()));
+
+                xr_string fn = Scene->LevelPath() + sn;
                 IWriter* W			= FS.w_open(fn.c_str()); R_ASSERT(W);
                 if (!P->Export(*W,1)){
                     ELog.DlgMsg		(mtError,"Invalid breakable object.");
@@ -110,14 +115,14 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
                 // export spawn object
                 {
                     xr_string entity_ref		= "breakable_object";
-                    ISE_Abstract*	m_Data		= g_SEFactoryManager->create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
-                    ISE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
+                    CSE_Abstract*	m_Data		= g_SEFactoryManager->create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
+                    CSE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
                     // set params
                     m_Data->set_name			(entity_ref.c_str());
-                    m_Data->set_name_replace	(sn.c_str());
+                    m_Data->set_name_replace	(sn);
                     m_Data->position().set		(P->m_RefOffset);
                     m_Data->angle().set			(P->m_RefRotate);
-                    m_Visual->set_visual		(sn.c_str(),false);
+                    m_Visual->set_visual		(sn,false);
 
 					if (s_draw_dbg){
                         Fmatrix MX;
@@ -219,7 +224,8 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
         	if (P->Valid())
             {
                 // export visual
-                xr_string sn		            = xr_string().sprintf("clmbl#%d",(p_it-parts.begin()));
+                string256 sn = {};
+                sprintf(sn, "clmbl#%d", (p_it - parts.begin()));
 
 				Fvector local_normal	        = {0,0,0};
 
@@ -237,12 +243,12 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                 // export spawn object
                 {
                     xr_string entity_ref		= "climable_object";
-                    ISE_Abstract*	m_Data		= g_SEFactoryManager->create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
+                    CSE_Abstract*	m_Data		= g_SEFactoryManager->create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
                     ISE_Shape* m_Shape			= m_Data->shape();                      VERIFY(m_Shape);
-//					ISE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
+//					CSE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
                     // set params
                     m_Data->set_name			(entity_ref.c_str());
-                    m_Data->set_name_replace	(sn.c_str());
+                    m_Data->set_name_replace	(sn);
                     // set shape
                     CShapeData::shape_def		shape;
                     shape.type					= CShapeData::cfBox;

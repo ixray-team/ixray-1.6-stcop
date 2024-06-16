@@ -12,8 +12,6 @@
 #include "level_graph.h"
 #include "game_level_cross_table.h"
 #include "game_graph.h"
-#include "..\xrEngine\object_broker.h"
-#	include "..\xrServerEntities\ai_space.h"
 
 #ifdef DEBUG
 #	include "patrol_path.h"

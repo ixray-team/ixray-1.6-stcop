@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UITopBarForm.h"
+#include <shellapi.h>
 
 UITopBarForm::UITopBarForm()
 {
@@ -239,6 +240,7 @@ void UITopBarForm::ClickReloadConfigs()
 	g_pGamePersistent->OnAppStart();
 	Tools->UpdateProperties();
 }
+
 void UITopBarForm::ClickOpenGameData()
 {
 	string_path GameDataPath;

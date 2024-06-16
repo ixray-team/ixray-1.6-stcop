@@ -7,7 +7,10 @@ class ESceneCustomMTools;
 class SceneBuilder;
 struct SExportStreams;
 struct mesh_build_data;
-DEFINE_VECTOR(TUI_CustomControl*,ControlsVec,ControlsIt);
+
+using ControlsVec = xr_vector<TUI_CustomControl*>;
+using ControlsIt = ControlsVec::iterator;
+
 
 class ESceneToolBase
 {
@@ -149,4 +152,5 @@ public:
     virtual class ESceneCustomOTool* CastObjectTool() { return nullptr; }
 };
 
-DEFINE_MAP(ObjClassID,ESceneToolBase*,SceneToolsMap,SceneToolsMapPairIt);
+using SceneToolsMap = xr_map<ObjClassID,ESceneToolBase*>;
+using SceneToolsMapPairIt = SceneToolsMap::iterator;

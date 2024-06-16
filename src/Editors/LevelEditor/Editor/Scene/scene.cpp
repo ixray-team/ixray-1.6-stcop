@@ -57,7 +57,7 @@ EScene::EScene()
 	m_Locked = 0;
 
     for (int i=0; i<OBJCLASS_COUNT; i++)
-        m_SceneTools.insert(mk_pair((ObjClassID)i,(ESceneToolBase*)NULL));
+        m_SceneTools.insert(std::make_pair((ObjClassID)i,(ESceneToolBase*)NULL));
     g_SpatialSpace = xr_new<ISpatial_DB>();
     g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
     // first init scene graph for objects
@@ -248,9 +248,9 @@ void EScene::OnFrame( float dT )
         {
 			ShowCursor(TRUE);
 			g_pGameLevel->IR_Release();
-			Device->seqParallel.clear_not_free();
+			Device.seqParallel.clear();
 			g_pGameLevel->net_Stop();
-			Device->seqParallel.clear_not_free();
+			Device.seqParallel.clear();
 			DEL_INSTANCE(g_pGameLevel);
 			DEL_INSTANCE(g_hud);
 			GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, true);
@@ -300,7 +300,10 @@ void EScene::Clear(BOOL bEditableToolsOnly)
     m_RTFlags.set(flRT_Unsaved | flRT_Modified, FALSE);
 
     m_GUID = generate_guid();
-    m_OwnerName = xr_string().sprintf("\\\\%s\\%s", Core.CompName, Core.UserName).c_str();
+    string256 Data = {};
+    sprintf(Data, "\\\\%s\\%s", Core.CompName, Core.UserName);
+
+    m_OwnerName = Data;
     m_CreateTime = time(NULL);
 
     m_SaveCache.free();
@@ -500,10 +503,11 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
     if (bTestShaderCompatible){
     	bool res = true;
         ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
-		DEFINE_SET(CEditableObject*,EOSet,EOSetIt);
+        using EOSet = xr_set<CEditableObject*>;
         EOSet objects;
         int static_obj = 0; 
-        for(ObjectIt it=lst.begin();it!=lst.end();it++){
+        for(ObjectIt it=lst.begin();it!=lst.end();it++)
+        {
         	CSceneObject* S = (CSceneObject*)(*it);
         	if (S->IsStatic()||S->IsMUStatic()){
             	static_obj++;

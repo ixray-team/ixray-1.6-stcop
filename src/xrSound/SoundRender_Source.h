@@ -1,6 +1,5 @@
-#ifndef SoundRender_SourceH
-#define SoundRender_SourceH
 #pragma once
+#include <mmreg.h>
 
 #include "SoundRender_Cache.h"
 
@@ -44,4 +43,3 @@ public:
 	virtual u16				channels_num			() const	{return m_wformat.nChannels;}
 	virtual u32				bytes_total				() const	{return dwBytesTotal;}
 };
-#endif

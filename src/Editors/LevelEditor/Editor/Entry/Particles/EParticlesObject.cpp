@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\..\xrRender\Private\PSLibrary.h"
 
 #define CPSOBJECT_VERSION  				0x0013
 

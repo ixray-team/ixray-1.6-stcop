@@ -67,23 +67,37 @@ public:
                 data[iz*bb_sx+ix] 	= color_rgba(v_s,v_mu,0,0);
             }
         }
-        
+#if 0
         xr_string image_name = xr_string(fn)+".tga";
         CImage* I 	= xr_new<CImage>();
         I->Create	(sx,sz,data.data());
         I->Vflip	();
         I->SaveTGA	(image_name.c_str());
         xr_delete	(I);
+#endif
 
         // flush text
         xr_string txt_name = xr_string(fn)+".txt";
         IWriter* F	= FS.w_open(txt_name.c_str());
-        if (F){
-            F->w_string	(xr_string().sprintf("Map size X x Z:            [%d x %d]",bb_sx,bb_sz).c_str());
-            F->w_string	(xr_string().sprintf("Max static vertex per m^2: %d",max_svert).c_str());
-            F->w_string	(xr_string().sprintf("Total static vertices:     %d",total_svert).c_str());
-            F->w_string	(xr_string().sprintf("Max mu vertex per m^2:     %d",max_muvert).c_str());
-            F->w_string	(xr_string().sprintf("Total mu vertices:         %d",total_muvert).c_str());
+        if (F)
+        {
+            string256 data = {};
+
+            sprintf(data, "Map size X x Z:            [%d x %d]", bb_sx, bb_sz);
+            F->w_string(data);
+
+            sprintf(data, "Max static vertex per m^2: %d", max_svert);
+            F->w_string(data);
+
+            sprintf(data, "Total static vertices:     %d", total_svert);
+            F->w_string(data);
+
+            sprintf(data, "Max mu vertex per m^2:     %d", max_muvert);
+            F->w_string(data);
+
+            sprintf(data, "Total mu vertices:         %d", total_muvert);
+            F->w_string(data);
+
             FS.w_close	(F);
 	        return true;
         }
@@ -506,7 +520,7 @@ BOOL  GetStaticCformData( const Fmatrix& parent,   CEditableMesh* mesh, CEditabl
 			continue;
         if (!EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName())->flags.bCollision)
             continue;
-        u16 game_material_idx = GameMaterialLibrary-> GetMaterialIdx(surf->m_GameMtlName.c_str());
+        u16 game_material_idx = GameMaterialLibraryEditors-> GetMaterialIdx(surf->m_GameMtlName.c_str());
 
         for (IntIt f_it=face_lst.begin(); f_it!=face_lst.end(); ++f_it)
         {
@@ -631,7 +645,7 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
         	bResult 		= FALSE;
             break;
         }
-        SGameMtl* M =  GameMaterialLibrary->GetMaterialByID(gm_id);
+        SGameMtl* M = GameMaterialLibraryEditors->GetMaterialByID(gm_id);
         if (0==M)
         {
         	ELog.DlgMsg		(mtError,"Surface: '%s' contains undefined game material.",surf->_Name());
@@ -754,8 +768,9 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
 BOOL SceneBuilder::BuildObject(CSceneObject* obj)
 {
 	CEditableObject *O = obj->GetReference();
-    xr_string temp;
-    temp.sprintf("Building object: %s",obj->GetName());
+    xr_string temp = "Building object: ";
+    temp += obj->GetName();
+
     UI->SetStatus(temp.c_str());
 
     Fmatrix T 			= obj->_Transform();
@@ -823,7 +838,9 @@ int	GetModelIdx( LPCSTR model_name )
 BOOL SceneBuilder::BuildMUObject(CSceneObject* obj)
 {
 	CEditableObject *O = obj->GetReference();
-    xr_string temp; temp.sprintf("Building object: %s",obj->GetName());
+    xr_string temp = "Building object: ";
+    temp += obj->GetName();
+
     UI->SetStatus(temp.c_str());
 
     int model_idx = GetModelIdx( O->GetName() ) ;

@@ -57,8 +57,9 @@ struct SAINode					// definition of "patch" or "node"
 	void 		operator 	delete	(void*);
 };
 #pragma pack(pop)
+using AINodeVec = xr_vector<SAINode*>;
+using AINodeIt = AINodeVec::iterator;
 
-DEFINE_VECTOR(SAINode*,AINodeVec,AINodeIt);
 
 const int				HDIM_X	= 128;
 const int				HDIM_Z	= 128;

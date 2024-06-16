@@ -208,4 +208,21 @@ using U8It = U8Vec::iterator;
 using LPU32Vec = xr_vector<u32*>;
 using LPU32It = LPU32Vec::iterator;
 
+
+template<class RandomIt>
+void random_shuffle(RandomIt first, RandomIt last)
+{
+	typedef typename std::iterator_traits<RandomIt>::difference_type diff_t;
+
+	for (diff_t i = last - first - 1; i > 0; --i)
+	{
+		using std::swap;
+		swap(first[i], first[std::rand() % (i + 1)]);
+		// rand() % (i + 1) is not actually correct, because the generated number is
+		// not uniformly distributed for most values of i. The correct code would be
+		// a variation of the C++11 std::uniform_int_distribution implementation.
+	}
+}
+
+
 #endif

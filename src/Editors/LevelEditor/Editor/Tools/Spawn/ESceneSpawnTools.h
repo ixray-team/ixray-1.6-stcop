@@ -16,13 +16,21 @@ protected:
     };
     Flags32				m_Flags;
 
-    // class 
-    DEFINE_VECTOR		(SChooseItem,SSVec,SSVecIt);
-    DEFINE_MAP			(CLASS_ID,SSVec,ClassSpawnMap,ClassSpawnMapIt);
+    // class
+    using SSVec = xr_vector<SChooseItem>;
+    using SSVecIt = SSVec::iterator;
+
+    
+    using ClassSpawnMap = xr_map<CLASS_ID,SSVec>;
+    using ClassSpawnMapIt = ClassSpawnMap::iterator;
+
     ClassSpawnMap		m_Classes;
 
     // icon list
-    DEFINE_MAP			(shared_str,ref_shader,ShaderMap,ShaderPairIt);
+    
+    using ShaderMap = xr_map<shared_str,ref_shader>;
+    using ShaderPairIt = ClassSpawnMap::iterator;
+
     ShaderMap 			m_Icons;
     ref_shader 			CreateIcon	(shared_str name);
     ref_shader 			GetIcon		(shared_str name);

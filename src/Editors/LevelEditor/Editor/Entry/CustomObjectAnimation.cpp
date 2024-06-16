@@ -81,7 +81,11 @@ void CCustomObject::AnimationDrawPath()
             m_Motion->_Evaluate	((*k_it)->time,T,r);
             if (EDevice->m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
                 DU_impl.DrawCross	(T,0.1f,0.1f,0.1f, 0.1f,0.1f,0.1f, clr,false);
-                DU_impl.OutText		(T,xr_string().sprintf("K: %3.3f",(*k_it)->time).c_str(),0xffffffff,0x00000000);
+
+                string256 Data = {};
+                sprintf(Data, "K: %3.3f", (*k_it)->time);
+
+                DU_impl.OutText		(T, Data,0xffffffff,0x00000000);
             }
         }
     }
@@ -243,7 +247,7 @@ void 	CCustomObject::OnMotionFilesClick(ButtonValue* value, bool& bModif, bool& 
     xr_string fn;
 	switch(B->btn_num){
     case 0:
-        if(EFS.GetOpenName(EDevice->m_hWnd,"$game_anims$", fn)){
+        if(EFS.GetOpenName("$game_anims$", fn)){
             m_Motion->LoadMotion(fn.c_str());
             m_MotionParams->Set	(m_Motion);
             AnimationUpdate		(m_MotionParams->Frame());

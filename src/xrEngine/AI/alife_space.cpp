@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "alife_space.h"
 
-namespace ALife {
-
-xr_token							hit_types_token							[ ]={
+namespace ALife 
+{
+ENGINE_API xr_token hit_types_token []=
+{
 	{ "burn",						eHitTypeBurn								},
 	{ "shock",						eHitTypeShock								},
 	{ "strike",						eHitTypeStrike								},

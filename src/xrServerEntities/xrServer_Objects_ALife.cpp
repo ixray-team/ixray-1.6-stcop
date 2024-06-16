@@ -302,7 +302,7 @@ void CSE_ALifeGraphPoint::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 }
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
 void CSE_ALifeGraphPoint::FillProps			(LPCSTR pref, PropItemVec& items)
 {
 #	ifdef XRSE_FACTORY_EXPORTS
@@ -1472,7 +1472,7 @@ void CSE_ALifeObjectHangingLamp::OnChangeFlag(PropValue* sender)
 	set_editor_flag				(flUpdateProperties);
 }
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
 void CSE_ALifeObjectHangingLamp::FillProps	(LPCSTR pref, PropItemVec& values)
 {
 	inherited1::FillProps		(pref,values);
