@@ -102,8 +102,8 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
     "../../Layers/xrRender/tga.*"
     "../../Layers/xrRender/tss_def.*"
     "../../Layers/xrRender/xrRender_console.*"
-    "../../Layers/xrRenderPC_R1/BlenderDefault.*"
     "../../Layers/xrRenderPC_R1/Blender_Blur.*"
+    "../../Layers/xrRenderPC_R1/BlenderDefault.*"
     "../../Layers/xrRenderPC_R1/Blender_default_aref.*"
     "../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
     "../../Layers/xrRenderPC_R1/Blender_Model.*"
@@ -115,11 +115,11 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DECORENDS
  #   "../../xrEngine/motion.cpp"
-    "../../xrEngine/fmesh.cpp"
-    "../../xrEngine/xrHemisphere.cpp"
+ #  "../../xrEngine/fmesh.cpp"
     "../../xrEngine/ObjectAnimator.cpp"
     "../../xrEngine/ai_script_lua_debug.cpp"
     "../../xrEngine/ai_script_lua_extension.cpp"
+    "../../xrServerEntities/LevelGameDef.cpp"
 )
 
 set(ECORE_SRC_FILES)
@@ -187,11 +187,11 @@ else()
 endif()
 
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
 ## DirectX SDK
-target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
+target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 # Nuget
 set(SNDE_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
@@ -205,7 +205,7 @@ target_include_directories(xrECore PRIVATE "${SNDE_OGG}/native/include/")
 ## Vorbis
 target_link_libraries(xrECore PRIVATE ${SNDE_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib)
 target_link_libraries(xrECore PRIVATE ${SNDE_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
-target_include_directories(xrECore PRIVATE "${SNDE_VOB}/natie/include/")
+target_include_directories(xrECore PRIVATE "${SNDE_VOB}/native/include/")
 
 ## OpenAL
 target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)

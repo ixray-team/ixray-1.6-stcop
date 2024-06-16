@@ -439,6 +439,10 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 
 void CEnvironment::SelectEnvs(float gt)
 {
+	if(Device.IsEditorMode()&&!CurrentWeather)
+	{
+		return;
+	}
 	VERIFY				(CurrentWeather);
     if ((Current[0]==Current[1])&&(Current[0]==0)){
 		VERIFY			(!bWFX);
@@ -471,6 +475,11 @@ void CEnvironment::lerp		(float& current_weight)
 	if (bWFX&&(wfx_time<=0.f)) StopWFX();
 
 	SelectEnvs				(fGameTime);
+	if (Device.IsEditorMode() && (!Current[0] || !Current[1]))
+	{
+		return;
+	}
+
     VERIFY					(Current[0]&&Current[1]);
 
 	current_weight			= TimeWeight(fGameTime,Current[0]->exec_time,Current[1]->exec_time);
@@ -511,9 +520,9 @@ void CEnvironment::OnFrame()
         }
     }
 	if (!psDeviceFlags.is(rsEnvironment))		return;
-#else
-	if (!g_pGameLevel&&!Device.IsEditorMode())		return;
 #endif
+
+	if ((!g_pGameLevel||!CurrentEnv)&&Device.IsEditorMode())		return;
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 
 	float					current_weight;

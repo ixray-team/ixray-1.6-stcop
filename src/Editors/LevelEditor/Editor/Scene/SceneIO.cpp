@@ -210,7 +210,8 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
     	return LoadLevelPartStream(M, map_name);
 
     int fnidx=0;
-    while(FS.exist(map_name))
+    
+    while(  FS.TryLoad(map_name))
     {
         IReader* R		= FS.r_open	(map_name);
         VERIFY			(R);
@@ -780,11 +781,13 @@ bool EScene::LoadLTX(LPCSTR map_name, bool bUndo)
     full_name 		= map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
-    if (FS.exist(full_name.c_str()))
+        ;
+    if (FS.TryLoad(full_name.c_str()))
     {
         CTimer T; T.Start();
 
         // lock main level
+        
 		CInifile	ini(full_name.c_str());
         version 	= ini.r_u32("version","value");
 
@@ -869,11 +872,12 @@ bool EScene::Load(LPCSTR map_name, bool bUndo)
     full_name 		= map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
-    if (FS.exist(full_name.c_str()))
+    if (  FS.TryLoad(full_name.c_str()))
     {
         CTimer T; T.Start();
             
         // read main level
+      ;
         IReader* F 	= FS.r_open(full_name.c_str()); VERIFY(F);
         // Version
         R_ASSERT	(F->r_chunk(CHUNK_VERSION, &version));

@@ -1,6 +1,6 @@
 #pragma once
-#include "../../xrScripts/stdafx.h"
 #include "../XrECore/stdafx.h"
+#include "../../xrScripts/stdafx.h"
 
 #include "../xrEngine/xrLevel.h"
 

@@ -103,7 +103,9 @@ void CALifeHumanBrain::on_state_read		(NET_Packet &packet)
 		ALife::OBJECT_VECTOR		temp;
 		load_data					(temp,packet);
 	}
-
+	if(packet.inistream==NULL)
+	{
 		load_data						(m_cpEquipmentPreferences,packet);
 		load_data						(m_cpMainWeaponPreferences,packet);
+	}
 }

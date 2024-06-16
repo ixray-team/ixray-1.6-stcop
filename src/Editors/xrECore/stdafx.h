@@ -7,6 +7,12 @@
 #include "../xrEUI/stdafx.h"
 #include "..\..\Layers\xrRenderDX9\xrD3DDefs.h"
 
+#ifdef	XRECORE_EXPORTS
+#define ECORE_API		__declspec(dllexport)
+#else
+#define ECORE_API		__declspec(dllimport)
+#endif
+
 #include "..\..\xrEngine\stdafx.h"
 #include "..\..\xrEngine\device.h"
 #include "..\xrEProps\stdafx.h"
@@ -29,11 +35,7 @@
 #define         RENDER  R_R1
 #define			REDITOR 1
 
-#ifdef	XRECORE_EXPORTS
-#define ECORE_API		__declspec(dllexport)
-#else
-#define ECORE_API		__declspec(dllimport)
-#endif
+
 
 #define PropertyGP(a,b)	__declspec( property( get=a, put=b ) )
 #define THROW			FATAL("THROW");

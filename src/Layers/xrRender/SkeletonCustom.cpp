@@ -18,7 +18,6 @@ xrCriticalSection	UCalc_Mutex
 #ifndef _EDITOR
 #include "../../xrServerEntities/smart_cast.h"
 #else
-extern float ps_r__WallmarkTTL;
 #include "../../xrCore/API/xrAPI.h"
 #endif
 

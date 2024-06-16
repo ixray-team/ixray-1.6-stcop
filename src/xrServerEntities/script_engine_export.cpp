@@ -11,6 +11,9 @@
 
 #include "script_engine_export.h"
 
+#include "alife_human_brain.h"
+#include "alife_monster_brain.h"
+
 #ifdef XRSE_FACTORY_EXPORTS
 
 #else
@@ -26,11 +29,7 @@
 
 void export_classes	(lua_State *L)
 {
-#ifdef XRSE_FACTORY_EXPORTS
-	CScriptPropertiesListHelper::script_register(L);
-#else
 	CScriptEngine::script_register(L);
-
 	CScriptNetPacket::script_register(L);
 	CScriptFcolor::script_register(L);
 	CScriptFlags::script_register(L);
@@ -41,7 +40,80 @@ void export_classes	(lua_State *L)
 	CScriptRTokenList::script_register(L);
 	CScriptSoundType::script_register(L);
 	CScriptTokenList::script_register(L);
-
+	
+	CObjectFactory::script_register(L);
+	CPureServerObject::script_register(L);
+	CSE_Abstract::script_register(L);
+	CSE_Shape::script_register(L);
+	CSE_Spectator::script_register(L);
+	CSE_Temporary::script_register(L);
+	CSE_PHSkeleton::script_register(L);
+	CSE_Visual::script_register(L);
+	CSE_Motion::script_register(L);
+	CSE_AbstractVisual::script_register(L);
+	CSE_ALifeSchedulable::script_register(L);
+	CSE_ALifeGraphPoint::script_register(L);
+	CSE_ALifeObject::script_register(L);
+	CSE_ALifeGroupAbstract::script_register(L);
+	CSE_ALifeDynamicObject::script_register(L);
+	CSE_ALifeDynamicObjectVisual::script_register(L);
+	CSE_ALifePHSkeletonObject::script_register(L);
+	CSE_ALifeSpaceRestrictor::script_register(L);
+	CSE_ALifeLevelChanger::script_register(L);
+	CSE_ALifeSmartZone::script_register(L);
+	CSE_ALifeObjectPhysic::script_register(L);
+	CSE_ALifeObjectHangingLamp::script_register(L);
+	CSE_ALifeObjectProjector::script_register(L);
+	CSE_ALifeHelicopter::script_register(L);
+	CSE_ALifeCar::script_register(L);
+	CSE_ALifeObjectBreakable::script_register(L);
+	CSE_ALifeObjectClimable::script_register(L);
+	CSE_ALifeMountedWeapon::script_register(L);
+	CSE_ALifeTeamBaseZone::script_register(L);
+	CSE_ALifeInventoryBox::script_register(L);
+	CSE_ALifeInventoryItem::script_register(L);
+	CSE_ALifeItem::script_register(L);
+	CSE_ALifeItemTorch::script_register(L);
+	CSE_ALifeItemAmmo::script_register(L);
+	CSE_ALifeItemWeapon::script_register(L);
+	CSE_ALifeItemWeaponMagazined::script_register(L);
+	CSE_ALifeItemWeaponMagazinedWGL::script_register(L);
+	CSE_ALifeItemWeaponShotGun::script_register(L);
+	CSE_ALifeItemWeaponAutoShotGun::script_register(L);
+	CSE_ALifeItemDetector::script_register(L);
+	CSE_ALifeItemArtefact::script_register(L);
+	CSE_ALifeItemPDA::script_register(L);
+	CSE_ALifeItemDocument::script_register(L);
+	CSE_ALifeItemGrenade::script_register(L);
+	CSE_ALifeItemExplosive::script_register(L);
+	CSE_ALifeItemBolt::script_register(L);
+	CSE_ALifeItemHelmet::script_register(L);
+	CSE_ALifeItemCustomOutfit::script_register(L);
+	//CSE_ALifeStationaryMgun::script_register(L);
+	CSE_ALifeTraderAbstract::script_register(L);
+	CSE_ALifeTrader::script_register(L);
+	CSE_ALifeCustomZone::script_register(L);
+	CSE_ALifeAnomalousZone::script_register(L);
+	CSE_ALifeTorridZone::script_register(L);
+	CSE_ALifeZoneVisual::script_register(L);
+	CSE_ALifeCreatureAbstract::script_register(L);
+	CSE_ALifeMonsterAbstract::script_register(L);
+	CSE_ALifeMonsterBase::script_register(L);
+	CSE_ALifeCreatureActor::script_register(L);
+	CSE_ALifeCreatureCrow::script_register(L);
+	CSE_ALifeCreaturePhantom::script_register(L);
+	CSE_ALifeMonsterRat::script_register(L);
+	CSE_ALifeMonsterZombie::script_register(L);
+	CSE_ALifePsyDogPhantom::script_register(L);
+	CSE_ALifeHumanAbstract::script_register(L);
+	CSE_ALifeHumanStalker::script_register(L);
+	CSE_ALifeOnlineOfflineGroup::script_register(L);
+	CSE_SmartCover::script_register(L);
+	
+#ifdef XRSE_FACTORY_EXPORTS
+	CScriptPropertiesListHelper::script_register(L);
+#else
+	
 	gamespy_gp_account_manager::script_register(L);
 	gamespy_gp_suggest_nicks_cb::script_register(L);
 	gamespy_gp_account_operation_cb::script_register(L);
@@ -65,7 +137,6 @@ void export_classes	(lua_State *L)
 	CEF_Storage::script_register(L);
 	fs_registrator::script_register(L);
 	CGameTask::script_register(L);
-	CGameGraph::script_register(L);
 	DLL_PureScript::script_register(L);
 	ISheduledScript::script_register(L);
 	IRenderableScript::script_register(L);
@@ -158,76 +229,6 @@ void export_classes	(lua_State *L)
 	CWeaponVintorez::script_register(L);
 	CWeaponWalther::script_register(L);
 	//CZoneCampfire::script_register(L);
-	CALifeMonsterBrain::script_register(L);
-	CALifeHumanBrain::script_register(L);
-	CObjectFactory::script_register(L);
-	CPureServerObject::script_register(L);
-	CSE_Abstract::script_register(L);
-	CSE_Shape::script_register(L);
-	CSE_Spectator::script_register(L);
-	CSE_Temporary::script_register(L);
-	CSE_PHSkeleton::script_register(L);
-	CSE_Visual::script_register(L);
-	CSE_Motion::script_register(L);
-	CSE_AbstractVisual::script_register(L);
-	CSE_ALifeSchedulable::script_register(L);
-	CSE_ALifeGraphPoint::script_register(L);
-	CSE_ALifeObject::script_register(L);
-	CSE_ALifeGroupAbstract::script_register(L);
-	CSE_ALifeDynamicObject::script_register(L);
-	CSE_ALifeDynamicObjectVisual::script_register(L);
-	CSE_ALifePHSkeletonObject::script_register(L);
-	CSE_ALifeSpaceRestrictor::script_register(L);
-	CSE_ALifeLevelChanger::script_register(L);
-	CSE_ALifeSmartZone::script_register(L);
-	CSE_ALifeObjectPhysic::script_register(L);
-	CSE_ALifeObjectHangingLamp::script_register(L);
-	CSE_ALifeObjectProjector::script_register(L);
-	CSE_ALifeHelicopter::script_register(L);
-	CSE_ALifeCar::script_register(L);
-	CSE_ALifeObjectBreakable::script_register(L);
-	CSE_ALifeObjectClimable::script_register(L);
-	CSE_ALifeMountedWeapon::script_register(L);
-	CSE_ALifeTeamBaseZone::script_register(L);
-	CSE_ALifeInventoryBox::script_register(L);
-	CSE_ALifeInventoryItem::script_register(L);
-	CSE_ALifeItem::script_register(L);
-	CSE_ALifeItemTorch::script_register(L);
-	CSE_ALifeItemAmmo::script_register(L);
-	CSE_ALifeItemWeapon::script_register(L);
-	CSE_ALifeItemWeaponMagazined::script_register(L);
-	CSE_ALifeItemWeaponMagazinedWGL::script_register(L);
-	CSE_ALifeItemWeaponShotGun::script_register(L);
-	CSE_ALifeItemWeaponAutoShotGun::script_register(L);
-	CSE_ALifeItemDetector::script_register(L);
-	CSE_ALifeItemArtefact::script_register(L);
-	CSE_ALifeItemPDA::script_register(L);
-	CSE_ALifeItemDocument::script_register(L);
-	CSE_ALifeItemGrenade::script_register(L);
-	CSE_ALifeItemExplosive::script_register(L);
-	CSE_ALifeItemBolt::script_register(L);
-	CSE_ALifeItemHelmet::script_register(L);
-	CSE_ALifeItemCustomOutfit::script_register(L);
-	//CSE_ALifeStationaryMgun::script_register(L);
-	CSE_ALifeTraderAbstract::script_register(L);
-	CSE_ALifeTrader::script_register(L);
-	CSE_ALifeCustomZone::script_register(L);
-	CSE_ALifeAnomalousZone::script_register(L);
-	CSE_ALifeTorridZone::script_register(L);
-	CSE_ALifeZoneVisual::script_register(L);
-	CSE_ALifeCreatureAbstract::script_register(L);
-	CSE_ALifeMonsterAbstract::script_register(L);
-	CSE_ALifeMonsterBase::script_register(L);
-	CSE_ALifeCreatureActor::script_register(L);
-	CSE_ALifeCreatureCrow::script_register(L);
-	CSE_ALifeCreaturePhantom::script_register(L);
-	CSE_ALifeMonsterRat::script_register(L);
-	CSE_ALifeMonsterZombie::script_register(L);
-	CSE_ALifePsyDogPhantom::script_register(L);
-	CSE_ALifeHumanAbstract::script_register(L);
-	CSE_ALifeHumanStalker::script_register(L);
-	CSE_ALifeOnlineOfflineGroup::script_register(L);
-	CSE_SmartCover::script_register(L);
 
 	CArtefact::script_register(L);
 	CAI_Crow::script_register(L);
@@ -254,5 +255,9 @@ void export_classes	(lua_State *L)
 
 	CActor::script_register(L);
 	CEatableItem::script_register(L);
+	
+	CALifeMonsterBrain::script_register(L);
+	CALifeHumanBrain::script_register(L);
+	CGameGraph::script_register(L);
 #endif
 }

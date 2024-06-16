@@ -64,7 +64,7 @@ enum OGF_SkeletonVertType	{
 const u16	xrOGF_SMParamsVersion	= 4;
 
 // OGF_DESC
-struct ECORE_API ogf_desc	{
+struct ENGINE_API ogf_desc	{
 	shared_str	source_file;
     shared_str	build_name;
     time_t		build_time;

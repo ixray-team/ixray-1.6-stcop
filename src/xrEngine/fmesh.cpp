@@ -180,3 +180,4 @@ void ogf_desc::Save(IWriter& F)
     F.w			(&modif_time,sizeof(modif_time));
 }
 
+  

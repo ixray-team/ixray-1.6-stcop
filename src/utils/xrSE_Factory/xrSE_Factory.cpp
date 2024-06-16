@@ -16,10 +16,12 @@
 
 #include "character_info.h"
 #include "specific_character.h"
+#include "xrServer_Objects_ALife.h"
 //#include "character_community.h"
 //#include "monster_community.h"
 //#include "character_rank.h"
 //#include "character_reputation.h"
+extern SFillPropData			fp_data;
 
 extern CSE_Abstract *F_entity_Create	(LPCSTR section);
 
@@ -37,6 +39,15 @@ extern "C" {
 		CSE_Abstract			*object = smart_cast<CSE_Abstract*>(abstract);
 		F_entity_Destroy		(object);
 		abstract				= 0;
+	}
+	FACTORY_API void __cdecl reload()
+	{
+		if (fp_data.counter)
+		{
+
+			fp_data.unload();
+			fp_data.load();
+		}
 	}
 };
 
