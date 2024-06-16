@@ -22,3 +22,7 @@ extern XRCORE_API CGameMtlLibrary* PGMLib;
 	class IDebugRender;
 	extern XRCORE_API IDebugRender*	DRender;
 #endif // DEBUG
+
+
+class XrEditorSceneInterface;
+extern XRCORE_API XrEditorSceneInterface* EditorScene;

@@ -109,6 +109,29 @@ void CALifeUpdateManager::update			()
 	update_scheduled					(false);
 }
 
+void CALifeUpdateManager::new_game_for_editor()
+{
+	Msg("* Creating new game...");
+	unload();
+	reload(m_section);
+	spawns().load_from_editor();
+	graph().on_load();
+	server().PerformIDgen(0x0000);
+	time_manager().init(m_section);
+	VERIFY(can_register_objects());
+
+	can_register_objects(false);
+	spawn_new_objects();
+	can_register_objects(true);
+
+	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I = objects().objects().begin();
+	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
+	for (; I != E; ++I)
+		(*I).second->on_register();
+
+	Msg("* New game is successfully created!");
+}
+
 void CALifeUpdateManager::shedule_Update	(u32 dt)
 {
 	ISheduled::shedule_Update		(dt);
@@ -311,6 +334,15 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 	return						(true);
 }
 
+void CALifeUpdateManager::load_from_editor()
+{
+	xr_strcpy(g_last_saved_game, "editor");
+	new_game_for_editor();
+
+	if (g_pGameLevel)
+		Level().OnAlifeSimulatorLoaded();
+}
+
 void CALifeUpdateManager::set_switch_online		(ALife::_OBJECT_ID id, bool value)
 {
 	CSE_ALifeDynamicObject			*object = objects().object(id);
@@ -334,7 +366,7 @@ void CALifeUpdateManager::set_interactive		(ALife::_OBJECT_ID id, bool value)
 
 void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 {
-	const CGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
+	const IGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
 	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
 	GraphEngineSpace::CGameLevelParams	evaluator(level.id());
 	bool								failed = !ai().graph_engine().search(ai().game_graph(),graph().actor()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);

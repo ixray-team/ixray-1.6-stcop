@@ -14,6 +14,8 @@ XRCORE_API IUIRender*			UIRender = nullptr;
 XRCORE_API CGameMtlLibrary*		PGMLib = nullptr;
 #endif
 
+XRCORE_API XrEditorSceneInterface* EditorScene = nullptr;
+
 #ifdef DEBUG_DRAW
 XRCORE_API IDebugRender*		DRender = nullptr;
 #endif // DEBUG

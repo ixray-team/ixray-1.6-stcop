@@ -2,7 +2,7 @@
 
 #include "UIWindow.h"
 #include "UIDoubleProgressBar.h"
-#include "../../xrServerEntities/alife_space.h"
+#include "../../xrEngine/AI/alife_space.h"
 
 class CCustomOutfit;
 class CHelmet;

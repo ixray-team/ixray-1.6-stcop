@@ -12,7 +12,7 @@
 #include "UIWndCallback.h"
 
 #include "../ai_space.h"
-#include "../../xrServerEntities/alife_space.h"
+#include "../../xrEngine/AI/alife_space.h"
 #include "xrUIXmlParser.h"
 
 class CUIStatic;

@@ -220,6 +220,9 @@ void CLevel::Load_GameSpecific_CFORM	( CDB::TRI* tris, u32 count )
 	for (GameMtlIt I=GMLib.FirstMaterial(); GMLib.LastMaterial()!=I; ++I, ++index) {
 		if (!(*I)->Flags.test(SGameMtl::flDynamic)) {
 			++static_mtl_count;
+			if(Device.IsEditorMode())
+				translator.push_back(translation_pair((*I)->GetID(), (*I)->GetID()));
+			else
 			translator.push_back		(translation_pair((*I)->GetID(),index));
 			if ((*I)->GetID()>max_static_ID)	max_static_ID	= (*I)->GetID(); 
 		}
@@ -240,7 +243,7 @@ void CLevel::Load_GameSpecific_CFORM	( CDB::TRI* tris, u32 count )
 				(*I).suppress_wm		= mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 				continue;
 			}
-
+			if(Device.IsEditorMode()==false)
 			Debug.fatal					(DEBUG_INFO,"Game material '%d' not found",(*I).material);
 		}
 		return;
@@ -259,7 +262,7 @@ void CLevel::Load_GameSpecific_CFORM	( CDB::TRI* tris, u32 count )
 				(*I).suppress_wm		= mtl->Flags.is(SGameMtl::flSuppressWallmarks);
 				continue;
 			}
-
+			if (Device.IsEditorMode() == false)
 			Debug.fatal					(DEBUG_INFO,"Game material '%d' not found",(*I).material);
 		}
 	}

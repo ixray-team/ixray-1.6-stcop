@@ -13,7 +13,7 @@
 	typename _vertex_id_type\
 >
 
-#define CGameLocationSelector CBaseLocationSelector<CGameGraph,_VertexEvaluator,_vertex_id_type>
+#define CGameLocationSelector CBaseLocationSelector<IGameGraph,_VertexEvaluator,_vertex_id_type>
 
 TEMPLATE_SPECIALIZATION
 IC	CGameLocationSelector::CBaseLocationSelector	(CRestrictedObject *object, CLocationManager *location_manager) :
@@ -35,7 +35,7 @@ IC	void CGameLocationSelector::set_selection_type	(const ESelectionType selectio
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CGameLocationSelector::reinit			(const CGameGraph *graph)
+IC	void CGameLocationSelector::reinit			(const IGameGraph *graph)
 {
 	inherited::reinit				(graph);
 	m_selection_type				= eSelectionTypeRandomBranching;

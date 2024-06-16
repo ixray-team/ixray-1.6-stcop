@@ -31,11 +31,8 @@ ICF bool CLevelGraph::valid_vertex_id	(u32 id) const
 
 ICF	CLevelGraph::CVertex	*CLevelGraph::vertex(const u32 vertex_id) const
 {
-	VERIFY(valid_vertex_id(vertex_id));
-	if (!valid_vertex_id(vertex_id)) {
-		return m_nodes;
-	}
-	return (m_nodes + vertex_id);
+	VERIFY				(valid_vertex_id(vertex_id));
+	return				(m_nodes + vertex_id);
 }
 
 ICF	u32	CLevelGraph::vertex	(const CVertex *vertex_p) const
@@ -206,7 +203,7 @@ IC bool	CLevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) c
 	return				(b);
 }
 
-IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex &vertex, const float InX, const float InZ) const
+IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex &vertex, const float X, const float Z) const
 {
 	Fvector				DUP, normal, v, v1, P;
 	Fplane				PL; 
@@ -215,7 +212,7 @@ IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex &vertex, const 
 	pvDecompress		(normal,vertex.plane());
 	vertex_position		(P,vertex.position());
 	PL.build			(P,normal);
-	v.set				(InX,P.y, InZ);
+	v.set				(X,P.y,Z);	
 	PL.intersectRayPoint(v,DUP,v1);	
 	return				(v1.y);
 }
@@ -227,9 +224,9 @@ IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex &vertex) const
 	return				(vertex_plane_y(vertex,x,z));
 }
 
-IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex *vertex, const float InX, const float InZ) const
+IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex *vertex, const float X, const float Z) const
 {
-	return				(vertex_plane_y(*vertex, InX, InZ));
+	return				(vertex_plane_y(*vertex,X,Z));
 }
 
 IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex *vertex) const
@@ -237,9 +234,9 @@ IC float CLevelGraph::vertex_plane_y	(const CLevelGraph::CVertex *vertex) const
 	return				(vertex_plane_y(*vertex));
 }
 
-IC float CLevelGraph::vertex_plane_y	(const u32 vertex_id, const float InX, const float InZ) const
+IC float CLevelGraph::vertex_plane_y	(const u32 vertex_id, const float X, const float Z) const
 {
-	return				(vertex_plane_y(vertex(vertex_id), InX, InZ));
+	return				(vertex_plane_y(vertex(vertex_id),X,Z));
 }
 
 IC float CLevelGraph::vertex_plane_y	(const u32 vertex_id) const
@@ -444,10 +441,10 @@ IC	bool	CLevelGraph::create_straight_path	(u32 start_vertex_id, const Fvector2 &
 			box.min			= box.max = temp;
 			box.grow		(identity);
 			if (box.pick_exact(start,dir)) {
-				Fvector2		temp_;
-				temp_.add		(box.min,box.max);
-				temp_.mul		(.5f);
-				float			dist = _sqr(temp_.x - dest.x) + _sqr(temp_.y - dest.y);
+				Fvector2		temp;
+				temp.add		(box.min,box.max);
+				temp.mul		(.5f);
+				float			dist = _sqr(temp.x - dest.x) + _sqr(temp.y - dest.y);
 				if ((dist > cur_sqr) && (dest_xz != v->position().xz()))
 					continue;
 
@@ -525,7 +522,7 @@ IC	bool	CLevelGraph::create_straight_path	(u32 start_vertex_id, const Fvector2 &
 						VPUSH(v3d(start_point)),
 						VPUSH(v3d(finish_point))
 					);
-					xrLogger::FlushLog	();
+					FlushLog	();
 					R_ASSERT2	(false,"Loop became infinite :-( call Dima and SAVE YOUR LOG!");
 				}
 #endif
@@ -545,18 +542,19 @@ IC	void CLevelGraph::assign_y_values		(xr_vector<T> &path)
 	const CVertex				*_vertex;
 	u32							prev_id = u32(-1);
 
-	for (auto& PathNode : path) {
-		if (prev_id != PathNode.get_vertex_id()) {
-			_vertex				= vertex(PathNode.get_vertex_id());
+	xr_vector<T>::iterator		I = path.begin();
+	xr_vector<T>::iterator		E = path.end();
+	for ( ; I != E; ++I) {
+		if (prev_id != (*I).get_vertex_id()) {
+			_vertex				= vertex((*I).get_vertex_id());
 			pvDecompress		(normal,_vertex->plane());
 			vertex_position		(P,_vertex->position());
 			PL.build			(P,normal);
-			prev_id				= PathNode.get_vertex_id();
+			prev_id				= (*I).get_vertex_id();
 		}
-
-		PathNode.get_position().y	= P.y;
-		PL.intersectRayPoint	(PathNode.get_position(),DUP,v1);
-		PathNode.get_position().y	= v1.y;
+		(*I).get_position().y	= P.y;
+		PL.intersectRayPoint	((*I).get_position(),DUP,v1);	
+		(*I).get_position().y	= v1.y;
 	}
 }
 
