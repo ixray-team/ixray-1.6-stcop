@@ -19,44 +19,25 @@ using namespace luabind;
 
 struct CChooseType {};
 
-typedef IPropHelper& (__stdcall *TPHelper) ();
-
-TPHelper					_PHelper = 0;
-HMODULE						prop_helper_module = 0;
-LPCSTR						prop_helper_library = "xrEPropsB.dll", prop_helper_func = "PHelper";
 CScriptPropertiesListHelper	*g_property_list_helper = 0;
 
-void load_prop_helper			()
+void load_prop_helper()
 {
-	prop_helper_module		= LoadLibraryA(prop_helper_library);
-	if (!prop_helper_module) {
-		Msg("! Cannot find library %s",prop_helper_library);
-		return;
-	}
-	_PHelper				= (TPHelper)GetProcAddress(prop_helper_module,prop_helper_func);
-	if (!_PHelper) {
-		Msg("! Cannot find entry point of the function %s in the library %s",prop_helper_func,prop_helper_func);
-		return;
-	}
-
-	g_property_list_helper	= xr_new<CScriptPropertiesListHelper>( );
+	g_property_list_helper = xr_new<CScriptPropertiesListHelper>();
 }
 
-IPropHelper &PHelper()
-{
-	static	bool			first_time = true;
-	if (first_time) {
-		first_time			= false;
-		load_prop_helper	();
-	}
-	R_ASSERT3				(_PHelper,"Cannot find entry point of the function or Cannot find library",prop_helper_library);
-	return					(_PHelper());
-}
 
-CScriptPropertiesListHelper *properties_helper()
+
+CScriptPropertiesListHelper* properties_helper()
 {
 	if (!g_property_list_helper)
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"Editor is not started, therefore prop_helper cannot be accessed!");
+	{
+		static	bool			first_time = true;
+		if (first_time) {
+			first_time = false;
+			load_prop_helper();
+		}
+	}
 
 	return								(g_property_list_helper);
 }

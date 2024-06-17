@@ -26,7 +26,6 @@ extern SFillPropData			fp_data;
 extern CSE_Abstract *F_entity_Create	(LPCSTR section);
 
 extern CScriptPropertiesListHelper	*g_property_list_helper;
-extern HMODULE						prop_helper_module;
 
 extern "C" {
 	FACTORY_API	ISE_Abstract* __stdcall create_entity	(LPCSTR section)
@@ -81,8 +80,6 @@ BOOL APIENTRY DllMain		(HANDLE module_handle, DWORD call_reason, LPVOID reserved
 			xr_delete					(g_property_list_helper);
 			xr_delete					(g_ai_space);
 			xr_delete					(g_object_factory);
-			if (prop_helper_module)
-				FreeLibrary				(prop_helper_module);
 			Core._destroy				();
 			break;
 		}
