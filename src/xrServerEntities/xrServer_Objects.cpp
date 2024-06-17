@@ -116,7 +116,7 @@ void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 }
 
-#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
+#if !defined(XRGAME_EXPORTS)
 void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
 {
   	inherited::FillProps			(pref,items);

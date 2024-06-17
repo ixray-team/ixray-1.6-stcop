@@ -38,7 +38,7 @@ public:
 		IC	const xrGUID	&game_guid				() const;
 	};
 	
-	class  CCell 
+	class CCell
 	{
 	public:
 		GameGraph::_GRAPH_ID	tGraphIndex;
@@ -53,14 +53,13 @@ public:
 	CHeader					m_tCrossTableHeader;
 	CCell					*m_tpaCrossTable;
 
-
 public:
 							IGameLevelCrossTable	();
 		virtual				~IGameLevelCrossTable();
 
 public:
-	IC		const CCell		&vertex					(u32 level_vertex_id) const;
-	IC		const CHeader	&header					() const;
+		const CCell		&vertex					(u32 level_vertex_id) const;
+		const CHeader	&header					() const;
 };
 
 #include "game_level_cross_table_inline.h"

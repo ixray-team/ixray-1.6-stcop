@@ -302,7 +302,7 @@ void CSE_ALifeGraphPoint::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 }
 
-#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
+#if !defined(XRGAME_EXPORTS)
 void CSE_ALifeGraphPoint::FillProps			(LPCSTR pref, PropItemVec& items)
 {
 #	ifdef XRSE_FACTORY_EXPORTS
@@ -1472,9 +1472,10 @@ void CSE_ALifeObjectHangingLamp::OnChangeFlag(PropValue* sender)
 	set_editor_flag				(flUpdateProperties);
 }
 
-#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
+#if !defined(XRGAME_EXPORTS)
 void CSE_ALifeObjectHangingLamp::FillProps	(LPCSTR pref, PropItemVec& values)
 {
+#if !defined(AI_COMPILER)
 	inherited1::FillProps		(pref,values);
 	inherited2::FillProps		(pref,values);
 
@@ -1524,11 +1525,13 @@ void CSE_ALifeObjectHangingLamp::FillProps	(LPCSTR pref, PropItemVec& values)
 	PHelper().CreateChoose		(values, PrepareKey(pref,*s_name,"Glow\\Texture"),	    &glow_texture, 		smTexture,	"glow");
 	// game
 	PHelper().CreateFloat		(values, PrepareKey(pref,*s_name,"Game\\Health"),		&m_health,			0.f, 100.f);
+#endif
 }
 
 #define VIS_RADIUS 		0.25f
 void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner_, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)
 {
+#if !defined(AI_COMPILER)
 	inherited1::on_render		(du,owner_,bSelected,parent,priority,strictB2F);
 	if ((1==priority)&&(false==strictB2F)){
 		u32 clr					= bSelected?0x00FFFFFF:0x00FFFF00;
@@ -1552,6 +1555,7 @@ void CSE_ALifeObjectHangingLamp::on_render(CDUInterface* du, ISE_AbstractLEOwner
 		if(flags.is(flPointAmbient) )
 			du->DrawPointLight	(ambient_xform.c,VIS_RADIUS, clr);
 	}
+#endif
 }
 #endif // #ifndef XRGAME_EXPORTS
 
