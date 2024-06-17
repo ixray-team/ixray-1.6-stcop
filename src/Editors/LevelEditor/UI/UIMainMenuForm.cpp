@@ -412,6 +412,20 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("World Properties", "", &selected)) { if (selected)MainForm->GetWorldPropertiesFrom()->Open(); else MainForm->GetWorldPropertiesFrom()->Close(); }
 			}
             {
+                bool selected = MainForm->GetLeftBarForm()->IsUseSnapList();
+                if (ImGui::MenuItem("Snap List", "", &selected))
+                {
+                    MainForm->GetLeftBarForm()->ShowSnapList(selected);
+                }
+            }
+            {
+                bool selected = MainForm->GetLeftBarForm()->IsUseObjectsTool();
+                if (ImGui::MenuItem("Objects Tools", "", &selected))
+                {
+                    MainForm->GetLeftBarForm()->ShowObjectsTool(selected);
+                }
+            }
+            {
                 bool selected = AllowLogCommands();
 
                 if (ImGui::MenuItem("Log", "",&selected)) { ExecCommand(COMMAND_LOG_COMMANDS); }

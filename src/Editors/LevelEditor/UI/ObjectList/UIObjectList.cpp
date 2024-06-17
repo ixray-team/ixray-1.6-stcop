@@ -23,36 +23,28 @@ void UIObjectList::Draw()
 	}
 	{
 		ImGui::BeginGroup();
-		DrawObjects();
-
-		ImGui::SetNextItemWidth(-130);
-		if (ImGui::InputText("##value", m_Filter, sizeof(m_Filter)))
-		{
-			m_Root.ClearSelcted();
-		}
-		ImGui::EndGroup();
-
-	}ImGui::SameLine();
-	if (ImGui::BeginChild("Right", ImVec2(130, 0)))
-	{
 		if (ImGui::RadioButton("All", m_Mode == M_All))
 		{
 			m_Mode = M_All;
 			m_Root.ClearSelcted();
-
 		}
+		ImGui::SameLine();
 		if (ImGui::RadioButton("Visible Only", m_Mode == M_Visible))
 		{
 			m_Mode = M_Visible;
 			m_Root.ClearSelcted();
 		}
+		ImGui::SameLine();
 		if (ImGui::RadioButton("Invisible Only", m_Mode == M_Inbvisible))
 		{
 			m_Mode = M_Inbvisible;
 			m_Root.ClearSelcted();
 		}
 		ImGui::Separator();
-		if (ImGui::Button("Show Selected", ImVec2(-1, 0)))
+		
+		float BtnWidth = ImGui::GetWindowWidth() / 2 - 20;
+
+		if (ImGui::Button("Show Selected", ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -61,11 +53,11 @@ void UIObjectList::Draw()
 				{
 					RItem->Object->Show(true);
 				}
-				
+
 			}
-			
 		}
-		if (ImGui::Button("Hide Selected", ImVec2(-1, 0)))
+		ImGui::SameLine();
+		if (ImGui::Button("Hide Selected", ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -77,8 +69,16 @@ void UIObjectList::Draw()
 
 			}
 		}
+		ImGui::Separator();
+
+		DrawObjects();
+		if (ImGui::InputText("##value", m_Filter, sizeof(m_Filter)))
+		{
+			m_Root.ClearSelcted();
+		}
+		ImGui::EndGroup();
+
 	}
-	ImGui::EndChild();
 
 	ImGui::PopStyleVar(1);
 	ImGui::End();
@@ -115,6 +115,7 @@ void UIObjectList::Refresh()
 {
 	if (Form == nullptr)
 		return;
+
 	Form->m_Root = UIObjectListItem("");
 
 	Form->m_cur_cls = LTools->CurrentClassID();
@@ -125,9 +126,34 @@ void UIObjectList::Refresh()
 		{
 			if (it->first == OBJCLASS_DUMMY)
 				continue;
-			ObjectList& lst = ot->GetObjects();
+
+			ObjectList lst = ot->GetObjects();
 			size_t Index = 0;
-			for (CCustomObject*Obj: lst)
+
+			lst.sort([](CCustomObject* A, CCustomObject* B)
+				{
+					if (A->GetName() == nullptr)
+						return false;
+
+					if (B->GetName() == nullptr)
+						return true;
+
+					size_t BLen = strlen(B->GetName());
+					for (size_t Iter = 0; Iter < strlen(A->GetName()); Iter++)
+					{
+						if (Iter >= BLen)
+							return false;
+
+						if (A->GetName()[Iter] > B->GetName()[Iter])
+							return false;
+						else if(A->GetName()[Iter] < B->GetName()[Iter])
+							return true;
+					}
+				}
+			
+			);
+
+			for (CCustomObject* Obj : lst)
 			{
 				if (Obj->GetName() == 0 || Obj->GetName()[0] == 0)
 				{
@@ -135,7 +161,9 @@ void UIObjectList::Refresh()
 				}
 				else
 				{
-					UIObjectListItem* Item = static_cast<UIObjectListItem*>(Form->m_Root.AppendItem(Obj->GetName(), 0)); VERIFY(Item);
+					UIObjectListItem* Item = static_cast<UIObjectListItem*>(Form->m_Root.AppendItem(Obj->GetName(), 0)); 
+					VERIFY(Item);
+
 					Item->Object = Obj;
 				}
 				
@@ -152,7 +180,7 @@ void UIObjectList::DrawObjects()
 
 	static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody| ImGuiTableFlags_ScrollY;
 
-	if (ImGui::BeginTable("objects", 1, flags, ImVec2(-130, -ImGui::GetFrameHeight() - 4)))
+	if (ImGui::BeginTable("objects", 1, flags, ImVec2(0, -ImGui::GetFrameHeight() - 4)))
 	{
 		ImGui::TableSetupScrollFreeze(1, 1);
 		ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthStretch);

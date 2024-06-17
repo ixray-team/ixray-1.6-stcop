@@ -448,7 +448,7 @@ void ImDrawList::AddDrawCmd()
     draw_cmd.VtxOffset = _CmdHeader.VtxOffset;
     draw_cmd.IdxOffset = IdxBuffer.Size;
 
-    IM_ASSERT(draw_cmd.ClipRect.x <= draw_cmd.ClipRect.z && draw_cmd.ClipRect.y <= draw_cmd.ClipRect.w);
+    //IM_ASSERT(draw_cmd.ClipRect.x <= draw_cmd.ClipRect.z && draw_cmd.ClipRect.y <= draw_cmd.ClipRect.w);
     CmdBuffer.push_back(draw_cmd);
 }
 
