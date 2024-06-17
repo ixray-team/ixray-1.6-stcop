@@ -17,7 +17,8 @@ namespace GameGraph
 	typedef u8	_LEVEL_ID;
 	typedef u8	_LOCATION_ID;
 
-	enum {
+	enum 
+	{
 		LOCATION_TYPE_COUNT = 4,
 		LOCATION_COUNT		= (u32(1) << (8*sizeof(_LOCATION_ID))),
 	};
@@ -25,9 +26,8 @@ namespace GameGraph
 
 	class SLevel
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
+
 		shared_str				m_name;
 		Fvector					m_offset;
 		_LEVEL_ID				m_id;
@@ -71,11 +71,10 @@ namespace GameGraph
 #pragma pack(push,1)
 	class CEdge
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
 		_GRAPH_ID					m_vertex_id;
 		float						m_path_distance;
+
 	public:
 		IC	const _GRAPH_ID& vertex_id() const;
 		IC	const float& distance() const;
@@ -83,9 +82,7 @@ namespace GameGraph
 
 	class CVertex 
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
 		Fvector						tLocalPoint;
 		Fvector						tGlobalPoint;
 		u32							tLevelID:8;
@@ -111,9 +108,8 @@ namespace GameGraph
 
 	class CHeader 
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
+
 		u8							m_version;
 		_GRAPH_ID					m_vertex_count;
 		u32							m_edge_count;
@@ -143,31 +139,20 @@ namespace GameGraph
 
 	class CLevelPoint
 	{
-	#ifndef MASTER_GOLD
 	public:
-	#endif
 		Fvector		tPoint;
 		u32			tNodeID;
 		float		fDistance;	
+
 	public:
-		IC const Fvector			&level_point		() const
-		{
-			return				(tPoint);
-		}
-
-		IC u32						level_vertex_id		() const
-		{
-			return				(tNodeID);
-		}
-
-		IC float					distance			() const
-		{
-			return				(fDistance);
-		}
+		IC const Fvector&	level_point		() const noexcept { return tPoint; }
+		IC u32				level_vertex_id	() const noexcept { return tNodeID; }
+		IC float			distance		() const noexcept { return fDistance; }
 	};
 
-	struct STerrainPlace{
-		svector<_LOCATION_ID,LOCATION_TYPE_COUNT>	tMask;
+	struct STerrainPlace
+	{
+		svector<_LOCATION_ID, LOCATION_TYPE_COUNT> tMask;
 	};
 
 	using TERRAIN_VECTOR = xr_vector<STerrainPlace>;
