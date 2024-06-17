@@ -522,7 +522,8 @@ void CEnvironment::OnFrame()
 	if (!psDeviceFlags.is(rsEnvironment))		return;
 #endif
 
-	if ((!g_pGameLevel||!CurrentEnv)&&Device.IsEditorMode())		return;
+	if (!g_pGameLevel || (!CurrentEnv && Device.IsEditorMode()))
+		return;
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 
 	float					current_weight;

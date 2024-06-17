@@ -125,6 +125,12 @@ void CEngineAPI::Initialize(void)
 		{
 			pCreate = (Factory_Create*)GetProcAddress(hGame, "xrFactory_Create");		R_ASSERT(pCreate);
 			pDestroy = (Factory_Destroy*)GetProcAddress(hGame, "xrFactory_Destroy");	R_ASSERT(pDestroy);
+
+			using xrGameInitialize = void();
+			xrGameInitialize* pxrGameInitialize = (xrGameInitialize*)GetProcAddress(hGame, "xrGameInitialize");
+			R_ASSERT(pxrGameInitialize);
+
+			pxrGameInitialize();
 		}
 	}
 

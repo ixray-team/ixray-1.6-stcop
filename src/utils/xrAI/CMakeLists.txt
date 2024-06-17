@@ -21,6 +21,7 @@ file(GLOB_RECURSE XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Objects_ALife_Items.cpp"
     "../../xrServerEntities/xrServer_Objects_ALife_Monsters.cpp"
     "../../xrServerEntities/xrServer_Object_Base.cpp"
+    "../../xrGame/game_level_cross_table.cpp"
 )
 # Source groups
 source_group("kernel" FILES ${XAI_SOURCE_ALL_FILES})
@@ -64,4 +65,4 @@ target_link_libraries(xrAI PUBLIC ${FREEIMAGE}/native/lib/${NUGET_PACKAGE_PLATFO
 
 ## DirectX SDK
 target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+target_include_directories(xrAI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")

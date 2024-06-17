@@ -80,6 +80,4 @@ endif()
 add_subdirectory("src/utils")
 
 # Editors
-if (IXRAY_EDITORS)
-    add_subdirectory("src/Editors")
-endif()
+add_subdirectory("src/Editors")
