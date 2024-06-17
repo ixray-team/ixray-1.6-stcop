@@ -12,7 +12,8 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    if (!IsDebuggerPresent()) Debug._initialize(false);
+    if (!IsDebuggerPresent())
+        Debug._initialize(false);
     
     const char* FSName = "fs.ltx";
     Core._initialize("LevelEditor", ELogCallback, 1, FSName);
@@ -29,17 +30,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     pApp = xr_new<XRayEditor>();
     g_XrGameManager = xr_new<XrGameManager>();
     g_SEFactoryManager = xr_new<XrSEFactoryManager>();
-    	// Initialize APP
+
+    // Initialize APP
 	g_FontManager = new CFontManager();
 	g_FontManager->InitializeFonts();
+    GameMaterialLibraryEditors->Load();
 
-    /*
-    
-           */
     g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));
     EDevice->seqAppStart.Process(rp_AppStart);
     Console->Execute("default_controls");
     Console->Hide();
+
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
     bool NeedExit = false;
@@ -114,10 +115,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         }
         MainForm->Frame();
     }
+
 	xr_delete(MainForm);
 	xr_delete(pApp);
 	xr_delete(g_XrGameManager);
 	xr_delete(g_SEFactoryManager);
+	xr_delete(g_FontManager);
 
     Core._destroy();
     return 0;
