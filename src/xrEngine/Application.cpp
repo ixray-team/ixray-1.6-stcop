@@ -36,7 +36,9 @@ CApplication::CApplication()
 	// levels
 	Level_Current = u32(-1);
 	
-	if (Device.IsEditorMode())return;
+	if (Device.IsEditorMode())
+		return;
+
 	Level_Scan();
 
 	// Register us
@@ -53,12 +55,15 @@ CApplication::CApplication()
 
 CApplication::~CApplication()
 {
-	Console->Hide();
+	if (Console != nullptr)
+		Console->Hide();
 
-	Device.seqFrameMT.Remove(&SoundProcessor);
-	Device.seqFrame.Remove(&SoundProcessor);
-	Device.seqFrame.Remove(this);
-
+	if (!Device.IsEditorMode())
+	{
+		Device.seqFrameMT.Remove(&SoundProcessor);
+		Device.seqFrame.Remove(&SoundProcessor);
+		Device.seqFrame.Remove(this);
+	}
 
 	// events
 	g_pEventManager->Detach(this);
