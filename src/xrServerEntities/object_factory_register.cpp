@@ -183,6 +183,7 @@
 #	include "actor_mp_client.h"
 #	include "smart_cover_object.h"
 #	include "HUDAnimItem.h"
+#	include "EditorLevel.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -198,6 +199,7 @@ void CObjectFactory::register_classes	()
 #ifndef NO_XR_GAME
 	// client entities
 	add<CLevel>													(CLSID_GAME_LEVEL				,"level");
+	add<CLevelEditor>											(CLSID_EDITOR_LEVEL,			 "level_editor");
 	add<CGamePersistent>										(CLSID_GAME_PERSISTANT			,"game");
 	add<CHUDManager>											(CLSID_HUDMANAGER				,"hud_manager");
 	//Server Game type

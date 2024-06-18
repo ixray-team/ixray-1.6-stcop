@@ -186,7 +186,7 @@ bool CEditorRenderDevice::Create()
 {
 	if (b_is_Ready)	return false;
 
-    //EStatistic			= xr_new<CEStats>();
+    Statistic			= xr_new<CStats>();
 	//Statistic = EStatistic;
 	ELog.Msg(mtInformation,"Starting RENDER device...");
 
