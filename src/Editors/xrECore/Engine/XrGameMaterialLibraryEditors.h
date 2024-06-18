@@ -44,11 +44,6 @@ public:
 
 class ECORE_API XrGameMaterialLibraryEditors:public CGameMtlLibrary
 {
-	int					material_index;
-	int					material_pair_index;
-
-	GameMtlVec			materials;
-	GameMtlPairVec		material_pairs;
 public:
 	XrGameMaterialLibraryEditors();
 	~XrGameMaterialLibraryEditors();

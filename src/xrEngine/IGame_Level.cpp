@@ -24,7 +24,10 @@ IGame_Level::IGame_Level	()
 	pCurrentEntity				= nullptr;
 	pCurrentViewEntity			= nullptr;
 #ifdef DEBUG
-	Device.DumpResourcesMemoryUsage();
+	if (!Device.IsEditorMode())
+	{
+		Device.DumpResourcesMemoryUsage();
+	}
 #endif // DEBUG
 }
 

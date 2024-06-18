@@ -241,6 +241,7 @@ using GameMtlPairIt = GameMtlPairVec::iterator;
 
 class MTL_EXPORT_API CGameMtlLibrary
 {
+protected:
 	int					material_index;
 	int					material_pair_index;
 

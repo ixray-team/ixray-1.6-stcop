@@ -82,6 +82,6 @@ void XRayEditor::load_draw_internal()
 {
 }
 
-void XRayEditor::destroy_loading_shaders()
+void XRayEditor::DestroyLoadingScreen()
 {
 }
