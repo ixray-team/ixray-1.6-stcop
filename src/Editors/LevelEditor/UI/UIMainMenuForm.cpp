@@ -151,6 +151,10 @@ void UIMainMenuForm::Draw()
 			{
 				ExecCommand(COMMAND_IMPORT_COMPILER_ERROR);
 			}
+            if (ImGui::MenuItem("Import xrAI Error List", ""))
+            {
+                ExecCommand(COMMAND_IMPORT_AICOMPILER_ERROR);
+            }
 			if (ImGui::MenuItem("Export Error List", ""))
 			{
 				ExecCommand(COMMAND_EXPORT_COMPILER_ERROR);
@@ -166,6 +170,8 @@ void UIMainMenuForm::Draw()
             if (ImGui::BeginMenu("Objects"))
             {
                 if (ImGui::MenuItem("Reload")) { ExecCommand(COMMAND_RELOAD_OBJECTS); }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Library editor")) { ExecCommand(COMMAND_LIBRARY_EDITOR); }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Images"))

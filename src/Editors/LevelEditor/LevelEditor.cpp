@@ -116,11 +116,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         MainForm->Frame();
     }
 
+    xr_delete(g_FontManager);
 	xr_delete(MainForm);
 	xr_delete(pApp);
 	xr_delete(g_XrGameManager);
 	xr_delete(g_SEFactoryManager);
-	xr_delete(g_FontManager);
 
     Core._destroy();
     return 0;

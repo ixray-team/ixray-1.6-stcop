@@ -42,9 +42,28 @@ void UIObjectList::Draw()
 		}
 		ImGui::Separator();
 		
-		float BtnWidth = ImGui::GetWindowWidth() / 2 - 20;
+		float BtnWidth = ImGui::GetWindowWidth() / 3 - 20;
 
-		if (ImGui::Button("Show Selected", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button("Focus", ImVec2(BtnWidth, 0)))
+		{
+			for (UITreeItem* Item : m_Root.Items)
+			{
+				UIObjectListItem* RItem = (UIObjectListItem*)Item;
+				if (RItem->bIsSelected)
+				{
+					RItem->Object->Select(true);
+					Fbox bb;
+					if (RItem->Object->GetBox(bb))
+						EDevice->m_Camera.ZoomExtents(bb);
+
+					UI->RedrawScene();
+
+					break;
+				}
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Show", ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -53,11 +72,10 @@ void UIObjectList::Draw()
 				{
 					RItem->Object->Show(true);
 				}
-
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Hide Selected", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button("Hide", ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{

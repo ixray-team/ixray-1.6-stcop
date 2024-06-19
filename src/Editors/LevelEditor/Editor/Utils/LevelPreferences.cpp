@@ -4,41 +4,31 @@
 void CLevelPreferences::Load()
 {
 	inherited::Load		();
-#if 0 
-    {
-        OpenObjectList = R_BOOL_SAFE("windows", "object_list", false);
-     
-    }
-    {
-        OpenProperties = R_BOOL_SAFE("windows", "properties", true);
-      
-    }
-	{
-		OpenWorldProperties = R_BOOL_SAFE("windows", "world_properties", true);
 
-	}
+    OpenObjectList = JSONData["windows"]["object_list"];
+    OpenProperties = JSONData["windows"]["properties"];
+    OpenWorldProperties = JSONData["windows"]["world_properties"];
+      
     SceneToolsMapPairIt _I 	= Scene->FirstTool();
     SceneToolsMapPairIt _E 	= Scene->LastTool();
     for (; _I!=_E; _I++)
         if (_I->second&&(_I->first!=OBJCLASS_DUMMY))
-        	_I->second->m_EditFlags.flags = R_U32_SAFE("targets",_I->second->ClassName(),_I->second->m_EditFlags.flags);
-#endif
+        	_I->second->m_EditFlags.flags = JSONData["targets"][_I->second->ClassName()];
 }
 
 void CLevelPreferences::Save()
 {
 	inherited::Save		();
 
-#if 0
-    I->w_bool("windows", "object_list", OpenObjectList);
-	I->w_bool("windows", "properties", OpenProperties);
-	I->w_bool("windows", "world_properties", OpenWorldProperties);
+    JSONData["windows"]["object_list"] = OpenObjectList;
+    JSONData["windows"]["properties"] = OpenProperties;
+    JSONData["windows"]["world_properties"] = OpenWorldProperties;
+
     SceneToolsMapPairIt _I 	= Scene->FirstTool();
     SceneToolsMapPairIt _E 	= Scene->LastTool();
-    for (; _I!=_E; _I++)
-        if (_I->second&&(_I->first!=OBJCLASS_DUMMY))	I->w_u32	("targets",_I->second->ClassName(),_I->second->m_EditFlags.get());
-
-#endif
+    for (; _I != _E; _I++)
+        if (_I->second && (_I->first != OBJCLASS_DUMMY))
+            JSONData["targets"][_I->second->ClassName()] = _I->second->m_EditFlags.flags;
 }
 
 void CLevelPreferences::OnEnabledChange(PropValue* prop)

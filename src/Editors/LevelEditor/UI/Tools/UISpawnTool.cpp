@@ -143,10 +143,16 @@ void UISpawnTool::RefreshList()
 
 void UISpawnTool::OnItemFocused(ListItem* item)
 {
-    m_Current = 0;
+    m_Current = nullptr;
+
     if (item)
     {
-        m_Current = (LPCSTR)item->m_Object;
+        if (strcmp(item->Key(), RPOINT_CHOOSE_NAME) == 0)
+            m_Current = RPOINT_CHOOSE_NAME;
+        else if (strcmp(item->Key(), ENVMOD_CHOOSE_NAME) == 0)
+            m_Current = ENVMOD_CHOOSE_NAME;
+        else
+            m_Current = (LPCSTR)item->m_Object;
     }
     ExecCommand(COMMAND_RENDER_FOCUS);
 }

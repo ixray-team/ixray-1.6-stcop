@@ -25,6 +25,16 @@ void CDetailManager::soft_Render	()
 	// float	fPhaseRange	= PI/16;
 	// float	fPhaseX		= _sin(RDEVICE.fTimeGlobal*0.1f)	*fPhaseRange;
 	// float	fPhaseZ		= _sin(RDEVICE.fTimeGlobal*0.11f)*fPhaseRange;
+	u32 C = 0xFFFFFFFF;
+
+#ifdef _EDITOR
+	if (psDeviceFlags.test(rsEnvironment))
+	{
+		Fvector sun = g_pGamePersistent->Environment().CurrentEnv->sun_color;
+		sun.mul(0.5f);
+		C = color_rgba_f(sun.x, sun.y, sun.z, 1.f);
+	}
+#endif
 
 	// Get index-stream
 	_IndexStream&	_IS		= RCache.Index;
@@ -85,7 +95,6 @@ void CDetailManager::soft_Render	()
 
 					// Transfer vertices
 					{
-						u32					C = 0xffffffff;
 						CDetail::fvfVertexIn	*srcIt = Object.vertices, *srcEnd = Object.vertices+Object.number_vertices;
 						CDetail::fvfVertexOut	*dstIt = vDest;
 
@@ -126,31 +135,3 @@ void CDetailManager::soft_Render	()
 		}
 	}
 }
-
-/*
-//.
-                VERIFY(sizeof(CDetail::fvfVertexOut)==soft_Geom->vb_stride);
-                
-                CDetail::fvfVertexOut	*dstIt = vDest;
-
-                VERIFY(items->size()*Object.number_vertices==vCount_Lock);
-                
-                for	(u32 k=0; k<vCount_Lock; k++)
-                {
-					// Transfer vertices
-					{
-						u32					C = 0xffffffff;
-						CDetail::fvfVertexIn	*srcIt = Object.vertices, *srcEnd = Object.vertices+Object.number_vertices;
-						CDetail::fvfVertexOut	*dstIt = vDest;
-
-						for	(; srcIt!=srcEnd; srcIt++, dstIt++)
-						{
-							mXform.transform_tiny	(dstIt->P,srcIt->P);
-							dstIt->C	= C;
-							dstIt->u	= srcIt->u;
-							dstIt->v	= srcIt->v;
-						}
-					}
-                }
-*/                
-

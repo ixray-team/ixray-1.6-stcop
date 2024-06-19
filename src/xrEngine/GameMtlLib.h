@@ -248,11 +248,10 @@ protected:
 	GameMtlVec			materials;
     GameMtlPairVec		material_pairs;
 
-#ifndef _EDITOR
     // game part
     u32					material_count;
     GameMtlPairVec		material_pairs_rt;
-#endif
+
 public:
 	CGameMtlLibrary		();
 	~CGameMtlLibrary	()
@@ -265,10 +264,9 @@ public:
     }
 	IC void				Unload			()
 	{
-#ifndef _EDITOR
 		material_count	= 0;
 		material_pairs_rt.clear();
-#endif
+
 		for (GameMtlIt m_it=materials.begin(); materials.end() != m_it; ++m_it)
 			xr_delete	(*m_it);
 		materials.clear();

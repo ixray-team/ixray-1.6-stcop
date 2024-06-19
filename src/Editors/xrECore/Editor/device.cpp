@@ -397,7 +397,7 @@ bool CEditorRenderDevice::Begin()
 	}
 
 	VERIFY(FALSE == g_bRendering);
-	CHK_DX(REDevice->BeginScene());
+	(REDevice->BeginScene());
 
 	Clear();
 
@@ -414,7 +414,7 @@ void CEditorRenderDevice::End()
 	// end scene
 	RCache.OnFrameEnd();
 
-    CHK_DX(REDevice->EndScene());
+    (REDevice->EndScene());
 
 	CHK_DX(REDevice->Present( NULL, NULL, NULL, NULL ));
 

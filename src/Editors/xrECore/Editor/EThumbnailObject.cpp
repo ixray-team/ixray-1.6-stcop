@@ -12,6 +12,9 @@
 //------------------------------------------------------------------------------
 EObjectThumbnail::EObjectThumbnail(LPCSTR src_name, bool bLoad):EImageThumbnail(src_name,ETObject)
 {
+    face_count = 0;
+    vertex_count = 0;
+
     if (bLoad) 	Load();
 }
 //------------------------------------------------------------------------------

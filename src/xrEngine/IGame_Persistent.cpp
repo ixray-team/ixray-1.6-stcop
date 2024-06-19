@@ -31,9 +31,7 @@ IGame_Persistent::IGame_Persistent	()
 
 	m_pMainMenu						= nullptr;
 
-	#ifndef _EDITOR
 	pEnvironment					= new CEnvironment();
-	#endif
 }
 
 IGame_Persistent::~IGame_Persistent	()
@@ -43,9 +41,8 @@ IGame_Persistent::~IGame_Persistent	()
 	RDEVICE.seqAppEnd.Remove			(this);
 	RDEVICE.seqAppActivate.Remove	(this);
 	RDEVICE.seqAppDeactivate.Remove	(this);
-#ifndef _EDITOR
+
 	xr_delete						(pEnvironment);
-#endif
 }
 
 void IGame_Persistent::OnAppActivate		()
@@ -58,16 +55,12 @@ void IGame_Persistent::OnAppDeactivate		()
 
 void IGame_Persistent::OnAppStart	()
 {
-#ifndef _EDITOR
 	Environment().load				();
-#endif    
 }
 
 void IGame_Persistent::OnAppEnd		()
 {
-#ifndef _EDITOR
 	Environment().unload			 ();
-#endif    
 	OnGameEnd						();
 
 #ifndef _EDITOR
