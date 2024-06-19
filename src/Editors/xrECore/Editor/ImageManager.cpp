@@ -10,7 +10,9 @@
 #include "EditObject.h"
 #include "../Layers/xrRender/ResourceManager.h"
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_DDS_IMPLEMENTATION
 #include <StbImage/stb_image.h>
+#include <StbImage/stb_image_dds.h>
 #include "../utils/ETools/ETools.h"
 CImageManager ImageLib;
 //---------------------------------------------------------------------------
@@ -36,7 +38,9 @@ bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
     	ELog.Msg(mtError,"Can't find file: '%s'",full_name);
     	return false;
     }
-	if (strstr(full_name,".tga")){
+
+	if (strstr(full_name,".tga"))
+    {
         CXImage img;
         if (!img.LoadTGA	(full_name)) return false;
 		w 					= img.dwWidth;
@@ -46,38 +50,40 @@ bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
 		for(int y=0;y<h;y++) CopyMemory			(data.data()+y*w,img.pData+(y * w),sizeof(u32)*w);
 		if (!IsValidSize(w,h))	ELog.Msg(mtError,"Texture (%s) - invalid size: [%d, %d]",full_name,w,h);
         return true;
-    }else{
+    }
+    else if (strstr(full_name, ".dds"))
+    {
         int wi, hi, c;
-        stbi_uc* raw_data = stbi_load((LPSTR)full_name, &wi, &hi, &c, 4);
-        if(raw_data)
+        stbi_uc* raw_data = stbi_dds_load((LPSTR)full_name, &wi, &hi, &c, 4);
+        if (raw_data)
         {
             w = wi;
             h = hi;
-		    u32 w4			= w*4;
-            data.resize		(w*h);
-            CopyMemory(data.data(), raw_data,w4*h);
+            u32 w4 = w * 4;
+            data.resize(w * h);
+            CopyMemory(data.data(), raw_data, w4 * h);
             a = c == 4;
             stbi_image_free(raw_data);
-			if (!IsValidSize(w,h))	ELog.Msg(mtError,"Texture (%s) - invalid size: [%d, %d]",full_name,w,h);
+            if (!IsValidSize(w, h))	ELog.Msg(mtError, "Texture (%s) - invalid size: [%d, %d]", full_name, w, h);
             return true;
         }
-        else
+    }
+    else
+    {
+        int wi, hi, c;
+        stbi_uc* raw_data = stbi_load((LPSTR)full_name, &wi, &hi, &c, 4);
+        if (raw_data)
         {
-           //RedImageTool::RedImage img;
-           //if (img.LoadFromFile(full_name))
-           //{
-           //    img.ClearMipLevels();
-           //    img.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-           //    img.SwapRB();
-           //    w = img.GetWidth();
-           //    h = img.GetHeight();
-           //    data.resize(w * h);
-           //    a = true;
-           //    CopyMemory(data.data(), *img, w * h*4);
-           //    return true;
-           //}
+            w = wi;
+            h = hi;
+            u32 w4 = w * 4;
+            data.resize(w * h);
+            CopyMemory(data.data(), raw_data, w4 * h);
+            a = c == 4;
+            stbi_image_free(raw_data);
+            if (!IsValidSize(w, h))	ELog.Msg(mtError, "Texture (%s) - invalid size: [%d, %d]", full_name, w, h);
+            return true;
         }
-
     }
 	return false;
 }

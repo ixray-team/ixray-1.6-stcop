@@ -16,7 +16,7 @@ set(ELE_SRC_FILES)
 source_group("ai" FILES ${ELE_SOURCE_AI_FILES})
 source_group("editor" FILES ${ELE_SOURCE_EDITOR_FILES})
 source_group("engine" FILES ${ELE_SOURCE_ENGINE_FILES})
-source_group("ui" FILES ${ELE_SOURCE_ENGINE_FILES})
+source_group("ui" FILES ${ELE_SOURCE_UI_FILES})
 source_group("render" FILES ${ELE_SOURCE_RENDER_FILES})
 
 # Apply list

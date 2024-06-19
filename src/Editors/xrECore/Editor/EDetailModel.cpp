@@ -35,6 +35,7 @@ EDetail::EDetail(bool lib)
 	number_vertices		= 0;
 	indices				= 0;
 	number_indices		= 0;
+	m_bLoadFromLibrary = lib;
 }
 
 EDetail::~EDetail()
@@ -126,6 +127,8 @@ bool EDetail::Update(LPCSTR name)
 		if (!R->Load(name))
 		{
 			xr_delete(R);
+
+			R = Lib.CreateEditObject(name);
 		}
 	}
 

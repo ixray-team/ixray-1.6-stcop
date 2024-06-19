@@ -28,6 +28,8 @@ UIObjectTool::~UIObjectTool()
 
 void UIObjectTool::Draw()
 {
+    ImGui::Checkbox("Show lists", &bDrawList);
+
     if (m_RemoveTexture)m_RemoveTexture->Release();
     m_RemoveTexture = nullptr;
     static bool bbool = false;
@@ -79,7 +81,6 @@ void UIObjectTool::Draw()
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
     if (ImGui::TreeNode("Surface"))
     {
-
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
             if (ImGui::Button("Clear Surface in select", ImVec2(-1, 0)))
@@ -122,9 +123,17 @@ void UIObjectTool::Draw()
         ImGui::TreePop();
     }
 
+    if (bDrawList)
+    {
+        DrawObjectsList();
+    }
+}
+
+void UIObjectTool::DrawObjectsList()
+{
     if (ImGui::Begin("Objects List"))
     {
-        ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->surface_get()), ImVec2(128, 128));
+        ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
         ImGui::SameLine();
         ImGui::BeginChild("Props", ImVec2(0, 128));
         m_Props->Draw();

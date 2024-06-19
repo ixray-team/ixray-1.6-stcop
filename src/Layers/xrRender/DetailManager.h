@@ -27,7 +27,7 @@
 const int		dm_size				= 24;								//!
 const int 		dm_cache1_count		= 4;								// 
 const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
-const int		dm_max_objects		= 64;
+const int		dm_max_objects		= 512;
 const int		dm_obj_in_slot		= 4;
 const int		dm_cache_line		= dm_size+1+dm_size;
 const int		dm_cache_size		= dm_cache_line*dm_cache_line;

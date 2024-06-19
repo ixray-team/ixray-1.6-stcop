@@ -21,6 +21,7 @@ enum
     COMMAND_FILE_MENU,
 	COMMAND_CLEAR_DEBUG_DRAW,
     COMMAND_IMPORT_COMPILER_ERROR,
+    COMMAND_IMPORT_AICOMPILER_ERROR,
     COMMAND_EXPORT_COMPILER_ERROR,
 	COMMAND_VALIDATE_SCENE,
     COMMAND_RELOAD_OBJECTS,
@@ -108,7 +109,7 @@ public:
     virtual void	LoadSettings			(nlohmann::json&);
     virtual Ivector2 GetRenderMousePosition()const;
     virtual void OnDrawUI();
-    bool  KeyDown(WORD Key, TShiftState Shift);
+    virtual bool  KeyDown(WORD Key, TShiftState Shift) override;
     virtual void	OnStats(CGameFont* font);
 
     virtual bool IsPlayInEditor();

@@ -67,6 +67,7 @@ protected:
     CWayPoint*		FindWayPoint	(const shared_str& nm);
 	void   FindWPByName	(LPCSTR new_name,bool& res){res=!!FindWayPoint(new_name);}
 	bool  	OnWayPointNameAfterEdit(PropValue* sender, shared_str& edit_val);
+    virtual void OnNameChange(PropValue* sender) override;
 public:
 					CWayObject		(LPVOID data, LPCSTR name);
     void            Construct   	(LPVOID data);
