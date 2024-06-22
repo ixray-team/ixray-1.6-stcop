@@ -321,6 +321,8 @@ void UIMainMenuForm::Draw()
                 }
                 ImGui::EndMenu();
             }
+            /*
+            * FX: нахуй - так нахуй 
             ImGui::Separator();
             {
                 bool selected = psDeviceFlags.test(rsDrawSafeRect);
@@ -330,6 +332,7 @@ void UIMainMenuForm::Draw()
                     UI->RedrawScene();
                 }
             }
+            */
             {
                 bool selected = psDeviceFlags.test(rsDrawGrid);
                 if (ImGui::MenuItem("Draw Grid", "", &selected))
