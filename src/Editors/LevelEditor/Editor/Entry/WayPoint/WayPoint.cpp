@@ -792,7 +792,7 @@ void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
 
     FName = GetName();
     PropValue* V;
-    V = PHelper().CreateNameCB	(items, PrepareKey(pref, "Way Name"),&EName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
+    V = PHelper().CreateNameCB	(items, PrepareKey(pref, "Way Name"),&FName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
     V->OnChangeEvent.bind(this, &CWayObject::OnNameChange);
 
 	if(IsPointMode())
