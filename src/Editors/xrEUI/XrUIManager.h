@@ -50,5 +50,19 @@ private:
 	TShiftState m_ShiftState;
 	xr_vector<XrUI*> m_UIArray;
 	string_path m_name_ini;
+
+public: 
+	template<typename T> 
+	IC bool HasWindow() const
+	{
+		return std::any_of
+		(
+			m_UIArray.begin(), m_UIArray.end(),
+			[](XrUI* Form)
+			{
+				return smart_cast<T*>(Form);
+			}
+		);
+	}
 };
 
