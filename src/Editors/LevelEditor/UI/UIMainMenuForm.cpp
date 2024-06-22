@@ -37,6 +37,12 @@ void UIMainMenuForm::Draw()
 
         if (ImGui::BeginMenu("Scene"))
         {
+            {
+                bool selected = !MainForm->GetWorldPropertiesFrom()->IsClosed();
+                if (ImGui::MenuItem("World Properties", "", &selected)) { if (selected)MainForm->GetWorldPropertiesFrom()->Open(); else MainForm->GetWorldPropertiesFrom()->Close(); }
+            }
+            ImGui::Separator();
+
             if (ImGui::MenuItem("Validate", "")) { ExecCommand(COMMAND_VALIDATE_SCENE); }
             ImGui::Separator();
             if (ImGui::MenuItem("Summary Info", "")) {
@@ -165,55 +171,50 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Editors"))
+        if (ImGui::BeginMenu("Objects"))
         {
-            if (ImGui::BeginMenu("Objects"))
-            {
-                if (ImGui::MenuItem("Reload")) { ExecCommand(COMMAND_RELOAD_OBJECTS); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Library editor")) { ExecCommand(COMMAND_LIBRARY_EDITOR); }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Images"))
-            {
-                if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Reload Textures", "")) { ExecCommand(COMMAND_RELOAD_TEXTURES); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
-                if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Sync THM", ""))
-                {
-                    FS_FileSet      files;
-                    FS.file_list(files, _textures_, FS_ListFiles, "*.thm");
-                    FS_FileSet::iterator I = files.begin();
-                    FS_FileSet::iterator E = files.end();
-
-                    for (; I != E; ++I)
-                    {
-                        ETextureThumbnail* TH = xr_new<ETextureThumbnail>((*I).name.c_str(), false);
-                        TH->Load((*I).name.c_str(), _textures_);
-                        TH->Save();
-                        xr_delete(TH);
-                    }
-                }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Sounds"))
-            {
-                if (ImGui::MenuItem("Sound Editor", "")) { ExecCommand(COMMAND_SOUND_EDITOR); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Synchronize Sounds", "")) { ExecCommand(COMMAND_SYNC_SOUNDS); }
-                ImGui::Separator();
-                if (ImGui::MenuItem("Refresh Environment Library", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENVS); }
-                if (ImGui::MenuItem("Refresh Environment Geometry", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENV_GEOMETRY); }
-                ImGui::EndMenu();
-
-            }
-            if (ImGui::MenuItem("Light Anim Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
-            if (ImGui::MenuItem("Minimap Editor", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
+            if (ImGui::MenuItem("Library editor")) { ExecCommand(COMMAND_LIBRARY_EDITOR); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Reload")) { ExecCommand(COMMAND_RELOAD_OBJECTS); }
             ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Images"))
+        {
+            if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Reload Textures", "")) { ExecCommand(COMMAND_RELOAD_TEXTURES); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
+            if (ImGui::MenuItem("Check New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Edit minimap", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
+            if (ImGui::MenuItem("Sync THM", ""))
+            {
+                FS_FileSet      files;
+                FS.file_list(files, _textures_, FS_ListFiles, "*.thm");
+                FS_FileSet::iterator I = files.begin();
+                FS_FileSet::iterator E = files.end();
+
+                for (; I != E; ++I)
+                {
+                    ETextureThumbnail* TH = xr_new<ETextureThumbnail>((*I).name.c_str(), false);
+                    TH->Load((*I).name.c_str(), _textures_);
+                    TH->Save();
+                    xr_delete(TH);
+                }
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Sounds"))
+        {
+            if (ImGui::MenuItem("Sound Editor", "")) { ExecCommand(COMMAND_SOUND_EDITOR); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Synchronize Sounds", "")) { ExecCommand(COMMAND_SYNC_SOUNDS); }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Refresh Environment Library", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENVS); }
+            if (ImGui::MenuItem("Refresh Environment Geometry", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENV_GEOMETRY); }
+            ImGui::EndMenu();
+
         }
         
         if (ImGui::BeginMenu("Options"))
@@ -399,24 +400,13 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Stats", "",&selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
 
             }
-             ImGui::Separator();
-            if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
+            //ImGui::Separator();
+            //if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
             ImGui::EndMenu();
         }
+
         if (ImGui::BeginMenu("Windows"))
         {
-            {
-                bool selected = UIObjectList::IsOpen();
-                if (ImGui::MenuItem("Object List", "", &selected)) { if (selected) UIObjectList::Show(); else UIObjectList::Close(); }
-            }
-            {
-                bool selected = !MainForm->GetPropertiesFrom()->IsClosed();
-                if (ImGui::MenuItem("Properties", "", &selected)) { if (selected)MainForm->GetPropertiesFrom()->Open(); else MainForm->GetPropertiesFrom()->Close(); }
-            }
-			{
-				bool selected = !MainForm->GetWorldPropertiesFrom()->IsClosed();
-				if (ImGui::MenuItem("World Properties", "", &selected)) { if (selected)MainForm->GetWorldPropertiesFrom()->Open(); else MainForm->GetWorldPropertiesFrom()->Close(); }
-			}
             {
                 bool selected = MainForm->GetLeftBarForm()->IsUseSnapList();
                 if (ImGui::MenuItem("Snap List", "", &selected))
@@ -430,6 +420,10 @@ void UIMainMenuForm::Draw()
                 {
                     MainForm->GetLeftBarForm()->ShowObjectsTool(selected);
                 }
+                {
+                    bool selected = !MainForm->GetPropertiesFrom()->IsClosed();
+                    if (ImGui::MenuItem("Properties", "", &selected)) { if (selected)MainForm->GetPropertiesFrom()->Open(); else MainForm->GetPropertiesFrom()->Close(); }
+                }
             }
             {
                 bool selected = AllowLogCommands();
@@ -439,6 +433,22 @@ void UIMainMenuForm::Draw()
            
            ImGui::EndMenu();
         }
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("Light Anim Editor", "")) 
+        { 
+            ExecCommand(COMMAND_LIGHTANIM_EDITOR);
+        }
+
+        {
+            bool selected = UIObjectList::IsOpen();
+            if (ImGui::MenuItem("Object List", "", &selected)){ if (selected) UIObjectList::Show(); else UIObjectList::Close(); }
+        }
+        
+        if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
+        ImGui::EndMenu();
+
         ImGui::EndMainMenuBar();
     }
 }
