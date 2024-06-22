@@ -1297,12 +1297,6 @@ bool CLevelMain::KeyDown(WORD Key, TShiftState Shift)
 	if (TUI::KeyDown(Key, Shift))
 		return true;
 
-	if (Key == SDL_SCANCODE_RETURN)
-	{
-		ExecCommand(COMMAND_SHOW_PROPERTIES);
-		return true;
-	}
-
 	return false;
 }
 
