@@ -11,7 +11,7 @@ public:
 						ESceneWayTool			():ESceneCustomOTool(OBJCLASS_WAY){;}
 	// definition
     IC LPCSTR			ClassName				(){return "way";}
-    IC LPCSTR			ClassDesc				(){return "Way";}
+    IC LPCSTR			ClassDesc				(){return "Way Points";}
     IC int				RenderPriority			(){return 1;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

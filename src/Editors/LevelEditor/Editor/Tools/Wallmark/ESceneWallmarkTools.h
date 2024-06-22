@@ -102,7 +102,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "wallmark";}
-    IC LPCSTR			ClassDesc				(){return "Wallmark";}
+    IC LPCSTR			ClassDesc				(){return "Wallmarks";}
     IC int				RenderPriority			(){return 10;}
 
     // validation

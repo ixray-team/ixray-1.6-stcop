@@ -14,7 +14,7 @@ UILeftBarForm::~UILeftBarForm()
 
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("LeftBar", 0))
+	if (ImGui::Begin("Edit Mode", 0))
 	{
 		static ObjClassID Tools[OBJCLASS_COUNT + 1] = {
 													OBJCLASS_SCENEOBJECT,
