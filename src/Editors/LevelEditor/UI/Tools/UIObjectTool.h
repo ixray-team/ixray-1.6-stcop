@@ -14,6 +14,7 @@ public:
 	virtual void OnDrawUI();
 	ESceneObjectTool* ParentTools;
 private:
+	void RefreshListInternal();
 	void OnItemFocused(ListItem*item);
 	void SelByRefObject(bool flag);
 	void MultiSelByRefObject(bool flag);

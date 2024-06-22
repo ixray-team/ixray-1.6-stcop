@@ -42,7 +42,13 @@ void UIDOOneColor::Draw()
 	}
 	ImGui::EndGroup(); ImGui::SameLine();
 	ImGui::SetNextItemWidth(-1);
-	ImGui::ListBox("##list", &list_index, [](void* data, int ind, const char** out)->bool {auto item = reinterpret_cast<xr_vector<xr_string>*>(data)->at(ind).c_str();; *out = item; return true; }, reinterpret_cast<void*>(&list), list.size(), 4);
+
+	bool IsChanged = ImGui::ListBox("##list", &list_index, [](void* data, int ind, const char** out)->bool {auto item = reinterpret_cast<xr_vector<xr_string>*>(data)->at(ind).c_str();; *out = item; return true; }, reinterpret_cast<void*>(&list), list.size(), 4);
+	if (IsChanged)
+	{
+		this->DOShuffle->OnItemFocused(list[list_index].c_str());
+	}
+	
 	ImGui::EndChild();
 	ImGui::Separator();
 }
