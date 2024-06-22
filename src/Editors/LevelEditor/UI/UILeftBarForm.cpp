@@ -64,14 +64,19 @@ void UILeftBarForm::Draw()
 	}
 	ImGui::End();
 
-	if (bUseObjectsTool)
+	if (LTools->GetToolForm())
 	{
-		if (ImGui::Begin("Object Tools", &bUseObjectsTool))
+		if (bUseObjectsTool)
 		{
-			if (LTools->GetToolForm())
-				LTools->GetToolForm()->Draw();
+			if (ImGui::Begin("Object Tools", &bUseObjectsTool))
+			{
+				if (LTools->GetToolForm())
+					LTools->GetToolForm()->Draw();
+			}
+			ImGui::End();
+
+			((UIObjectTool*)(LTools->GetToolForm()))->DrawObjectsList();
 		}
-		ImGui::End();
 	}
 
 	if (!bUseSnapList)
