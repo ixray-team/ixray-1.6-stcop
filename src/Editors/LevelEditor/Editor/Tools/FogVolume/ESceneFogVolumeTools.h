@@ -19,7 +19,7 @@ public:
 						ESceneFogVolumeTool		():ESceneCustomOTool(OBJCLASS_FOG_VOL){;}
 	// definition
     IC LPCSTR			ClassName				(){return "fog_volume";}
-    IC LPCSTR			ClassDesc				(){return "Scene fog volumes";}
+    IC LPCSTR			ClassDesc				(){return "Fog Volumes";}
     IC int				RenderPriority			(){return 11;}
 
     virtual void		Clear					(bool bSpecific=false);

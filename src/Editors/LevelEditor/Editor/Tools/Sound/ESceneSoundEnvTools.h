@@ -11,7 +11,7 @@ public:
 						ESceneSoundEnvTool		():ESceneCustomOTool(OBJCLASS_SOUND_ENV){;}
 	// definition
     IC LPCSTR			ClassName				(){return "sound_env";}
-    IC LPCSTR			ClassDesc				(){return "Sound Environment";}
+    IC LPCSTR			ClassDesc				(){return "Sound Env";}
     IC int				RenderPriority			(){return 10;}
 
     virtual void		Clear					(bool bSpecific=false);

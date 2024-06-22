@@ -11,7 +11,7 @@ public:
 						EScenePSTool			():ESceneCustomOTool(OBJCLASS_PS){;}
 	// definition
     IC LPCSTR			ClassName				(){return "ps";}
-    IC LPCSTR			ClassDesc				(){return "Particle System";}
+    IC LPCSTR			ClassDesc				(){return "Static Particles";}
     IC int				RenderPriority			(){return 30;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}
