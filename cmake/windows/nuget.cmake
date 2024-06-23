@@ -82,7 +82,7 @@ set(LUAJIT_BIN ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/${LUAJIT_N
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 
 # Nuget
-set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
+set(NVTT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Nvtt.Runtimes.win-x64.2024.6.1-open/)
 
 # TBB
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0/)

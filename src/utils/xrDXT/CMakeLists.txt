@@ -33,11 +33,11 @@ target_link_libraries(xrDXT PUBLIC xrCDB)
 
 # NVTT
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}runtimes/win-x64/native/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
-target_link_libraries(xrDXT PRIVATE ${NVTT}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/nvtt.lib)
-target_include_directories(xrDXT PRIVATE "${NVTT}/native/include/")
+target_link_libraries(xrDXT PRIVATE ${NVTT}runtimes/win-x64/native/Release/nvtt.lib)
+target_include_directories(xrDXT PRIVATE "${NVTT}build/native/include/")
 
 target_include_directories(xrDXT PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
 target_link_libraries(xrDXT PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
