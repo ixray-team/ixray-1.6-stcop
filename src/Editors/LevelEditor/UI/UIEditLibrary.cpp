@@ -308,39 +308,42 @@ void UIEditLibrary::DrawRightBar()
 
 		if (ImGui::Checkbox("Preview", &m_Preview))
 			OnPreviewClick();
-		if (ImGui::IsItemHovered())
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-		// if (disabled)
-		{
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-		}
-#pragma todo("IXR Team: Реализовать!")
-		if (ImGui::Button("Rename Object", ImVec2(-1, 0)))
-		{
-		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		if (ImGui::Button("Remove Object", ImVec2(-1, 0)))
 		{
+			m_ObjectList->RemoveSelectItem();
 		}
+		
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-
 		if (ImGui::Button("Import Object", ImVec2(-1, 0)))
 		{
+			ImportClick();
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		if (ImGui::Button("Export OBJ", ImVec2(-1, 0)))
+		{
+			ExportObj();
+		}
+
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		if (ImGui::IsItemHovered())
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		if (ImGui::Button("Rename Object", ImVec2(-1, 0)))
+		{
+			
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		if (ImGui::Button("Export LWO", ImVec2(-1, 0)))
 		{
 		}
-		if (ImGui::IsItemHovered())
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Export OBJ", ImVec2(-1, 0)))
-		{
-		}
+
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
@@ -350,11 +353,8 @@ void UIEditLibrary::DrawRightBar()
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-		// if (disabled)
-		{
-			ImGui::PopItemFlag();
-			ImGui::PopStyleVar();
-		}
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
 
 		if (ImGui::Button("Close", ImVec2(-1, 0)))
 			Close();
@@ -432,6 +432,73 @@ bool UIEditLibrary::SelectionToReference(ListItemsVec* props)
 	}
 	ChangeReference(sel_strings);
 	return sel_strings.size() > 0;
+}
+
+void UIEditLibrary::ShowProperty()
+{
+	
+}
+
+#include "../xrECore/Editor/ExportObjectOGF.h"
+
+void UIEditLibrary::ExportOneOBJ(CEditableObject* EO)
+{
+	string_path			fn;
+	FS.update_path(fn, _import_, EO->m_LibName.c_str());
+	CExportObjectOGF 	E(EO);
+	CMemoryWriter 		F;
+	if (E.ExportAsWavefrontOBJ(F, fn))
+	{
+		strcat(fn, ".obj");
+		F.save_to(fn);
+	}
+}
+
+void UIEditLibrary::ExportObj()
+{
+	if (!m_Preview)
+	{
+		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		CSceneObject* SO = xr_new<CSceneObject>((LPVOID)0, (LPSTR)0);
+
+		ListItem* item = m_Selected;
+		pb->Inc(item->Key());
+		SO->SetReference(item->Key());
+		CEditableObject* NE = SO->GetReference();
+		SO->UpdateTransform();
+		if (NE)
+		{
+			SO->FPosition = NE->t_vPosition;
+			SO->FScale = NE->t_vScale;
+			SO->FRotation = NE->t_vRotate;
+
+			ExportOneOBJ(NE);
+		}
+		if (UI->NeedAbort())
+
+			xr_delete(SO);
+		UI->ProgressEnd(pb);
+	}
+	else
+	{
+		xr_vector<CSceneObject*>::iterator it = m_pEditObjects.begin();
+		xr_vector<CSceneObject*>::iterator it_e = m_pEditObjects.end();
+		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		for (; it != it_e; ++it)
+		{
+			CSceneObject* SO = *it;
+			CEditableObject* O = SO->GetReference();
+			pb->Inc(O->GetName());
+
+			if (O)
+			{
+				ExportOneOBJ(O);
+			}
+			if (UI->NeedAbort()) 	break;
+		}
+		UI->ProgressEnd(pb);
+	}
+	ELog.DlgMsg(mtInformation, "Done.");
 }
 
 void UIEditLibrary::ChangeReference(const RStringVec& items)
@@ -534,4 +601,64 @@ void UIEditLibrary::Draw()
 
 	ImGui::PopStyleVar(1);
 	ImGui::End();
+}
+
+void UIEditLibrary::ImportClick()
+{
+	xr_string open_nm, save_nm, nm;
+	if (EFS.GetOpenName(_import_, open_nm, true))
+	{
+		// remove selected object
+		// load
+		AStringVec 				lst;
+		_SequenceToList(lst, open_nm.c_str());
+		bool bNeedUpdate = false;
+		// folder name
+		AnsiString 				folder;
+
+
+		xr_string m_LastSelection;
+		for (AStringIt it = lst.begin(); it != lst.end(); ++it)
+		{
+			nm = ChangeFileExt(EFS.ExtractFileName((*it).c_str()), "").c_str();
+			CEditableObject* O = xr_new<CEditableObject>(nm.c_str());
+			FS.TryLoad(*it);
+			if (O->Load(it->c_str()))
+			{
+				save_nm = xr_string(FS.get_path(_objects_)->m_Path) + folder.c_str() + EFS.ChangeFileExt(nm, ".object");
+
+				if (FS.exist(save_nm.c_str()))
+					if (mrNo == ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() << mbYes << mbNo, "Object '%s' already exist. Owerwrite it?", nm.c_str()))
+					{
+						xr_delete(O);
+						break;
+					}
+
+				O->Save(save_nm.c_str());
+				EFS.MarkFile(it->c_str(), true);
+				bNeedUpdate = true;
+			}
+			else
+				ELog.DlgMsg(mtError, "Can't load file '%s'.", it->c_str());
+
+			xr_delete(O);
+
+			LPCSTR p = FS.get_path(_objects_)->m_Path;
+			if (folder.Contains(p))
+			{
+				m_LastSelection = xr_string(folder.c_str() + strlen(p)) + nm;
+				xr_strlwr(m_LastSelection);
+			}
+			else 
+			{
+				m_LastSelection = xr_string(folder.c_str()) + nm;
+			}
+		}
+		if (bNeedUpdate)
+		{
+			Lib.CleanLibrary();
+			InitObjects();
+			//m_Items->SelectItem(m_LastSelection.c_str(), true, false, true);
+		}
+	}
 }
