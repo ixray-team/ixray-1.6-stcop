@@ -32,15 +32,15 @@ int CSoundManager::GetGameSounds(FS_FileSet& files)
 
 int	CSoundManager::GetSoundEnvs(AStringVec& items)
 {
-/*
-	SoundEnvironment_LIB* Lib = Sound->get_env_library();
-    if (Lib){
-	    for (SoundEnvironment_LIB::SE_IT it=Lib->Library().begin(); it!=Lib->Library().end(); it++)
-    	    items.push_back(*(*it)->name);
+    SoundEnvironment_LIB* Lib = Sound->get_env_library();
+
+    if (Lib)
+    {
+        for (SoundEnvironment_LIB::SE_IT it = Lib->Library().begin(); it != Lib->Library().end(); it++)
+            items.push_back(*(*it)->name);
     }
-	return items.size();
-*/
-return 0;    
+
+    return items.size();
 }
 
 bool CSoundManager::OnCreate()
