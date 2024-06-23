@@ -214,7 +214,7 @@ bool CUI_Camera::MoveStart(TShiftState Shift)
     if (bTest && !m_bMoving)
     {
         ShowCursor(false);
-        UI->IR_GetMousePosScreen(m_StartPos);
+        UI->IR_GetMousePosReal(m_StartPos);
         m_bMoving = true;
     }
 
@@ -241,7 +241,8 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
     if (m_bMoving){
         m_Shift = Shift;
 // camera move
-        if( dx || dy ){
+        if( dx || dy )
+        {
             SDL_WarpMouseInWindow(g_AppInfo.Window, m_StartPos.x, m_StartPos.y);
             switch (m_Style){
             case csPlaneMove:
