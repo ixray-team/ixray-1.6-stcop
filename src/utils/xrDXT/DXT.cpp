@@ -141,42 +141,35 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	outOpt.setOutputHandler(&writer);
 	DDSErrorHandler handler;
 	outOpt.setErrorHandler(&handler);
-	if (fmt->flags.is(STextureParams::flGenerateMipMaps) && STextureParams::kMIPFilterAdvanced == fmt->mip_filter)
+	if ((fmt->flags.is(STextureParams::flGenerateMipMaps)) && (STextureParams::kMIPFilterAdvanced == fmt->mip_filter))
 	{
 		inOpt.setMipmapGeneration(false);
 		u8* pImagePixels = 0;
 		int numMipmaps = GetPowerOf2Plus1(__min(w, h));
-		u32 line_pitch = w * 2 * 4;
-		pImagePixels = xr_alloc<u8>(line_pitch*h);
-		u32 w_offs = 0;
 		u32 dwW = w;
 		u32 dwH = h;
 		u32 dwP = pitch;
-		u32* pLastMip = xr_alloc<u32>(w*h * 4);
-		CopyMemory(pLastMip, raw_data, w*h * 4);
-		FillRect(pImagePixels, (u8*)pLastMip, w_offs, pitch, dwH, line_pitch);
-		w_offs += dwP;
-		float inv_fade = clampr(1.f - float(fmt->fade_amount) / 100.f, 0.f, 1.f);
-		float blend = fmt->flags.is_any(STextureParams::flFadeToColor | STextureParams::flFadeToAlpha)
-			? inv_fade : 1.f;
-		for (int i = 1; i < numMipmaps; i++)
-		{
+		u32* pLastMip = xr_alloc<u32>(w * h * 4);
+		CopyMemory(pLastMip, raw_data, w * h * 4);
+		inOpt.setMipmapData(pLastMip, dwW, dwH, 1, 0, 0);
+
+		float	inv_fade = clampr(1.f - float(fmt->fade_amount) / 100.f, 0.f, 1.f);
+		float	blend = fmt->flags.is_any(STextureParams::flFadeToColor | STextureParams::flFadeToAlpha) ? inv_fade : 1.f;
+		for (int i = 1; i < numMipmaps; i++) {
 			u32* pNewMip = Build32MipLevel(dwW, dwH, dwP, pLastMip, fmt, i < fmt->fade_delay ? 0.f : 1.f - blend);
-			FillRect(pImagePixels, (u8*)pNewMip, w_offs, dwP, dwH, line_pitch);
 			xr_free(pLastMip);
 			pLastMip = pNewMip;
 			pNewMip = 0;
-			w_offs += dwP;
+			inOpt.setMipmapData(pLastMip, dwW, dwH, 1, 0, i);
 		}
 		xr_free(pLastMip);
-		RGBAImage pImage(w * 2, h);
-		rgba_t* pixels = pImage.pixels();
-		u8* pixel = pImagePixels;
-		for (u32 k = 0; k < w * 2 * h; k++, pixel += 4)
-		{
-			pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);
-		}
-		inOpt.setMipmapData(pixels, w, h);
+
+		//RGBAImage			pImage(w * 2, h);
+		//rgba_t* pixels = pImage.pixels();
+		//u8* pixel = pImagePixels;
+		//for (u32 k = 0; k<w * 2 * h; k++, pixel += 4)
+		//	pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);
+
 		result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
 		xr_free(pImagePixels);
 	}

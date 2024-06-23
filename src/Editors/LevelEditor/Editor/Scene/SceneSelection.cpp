@@ -2,18 +2,22 @@
 
 void EScene::SelectObjects( bool flag, ObjClassID classfilter )
 {
-    if (classfilter==OBJCLASS_DUMMY){
+    if (classfilter==OBJCLASS_DUMMY)
+    {
         SceneToolsMapPairIt _I = m_SceneTools.begin();
         SceneToolsMapPairIt _E = m_SceneTools.end();
         for (; _I!=_E; _I++)
             if (_I->second)	_I->second->SelectObjects(flag);
-    }else{
+    }
+    else
+    {
         ESceneToolBase* mt = GetTool(classfilter);
         if (mt)
         	mt->SelectObjects(flag);
     }
 
     UI->RedrawScene();
+    ExecCommand(COMMAND_UPDATE_PROPERTIES);
 }
 
 int EScene::FrustumSelect( int flag, ObjClassID classfilter )

@@ -141,10 +141,17 @@ void ESceneCustomOTool::OnObjectRemove(CCustomObject* O, bool bDeleting)
 
 void ESceneCustomOTool::SelectObjects(bool flag)
 {
-    for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
-        if((*_F)->Visible()){
-            (*_F)->Select( flag );
+    xr_parallel_for
+    (
+        m_Objects.begin(),
+        m_Objects.end(),
+        [flag](CCustomObject* Obj)
+        {
+            if (Obj->Visible())
+                Obj->Select(flag);
         }
+    );
+
     UI->RedrawScene		();
 }
 
