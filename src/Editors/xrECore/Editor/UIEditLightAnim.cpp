@@ -233,7 +233,7 @@ void UIEditLightAnim::Draw()
        
             RenderItem();
         }
-        ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->surface_get(), ImGui::CalcItemSize(ImVec2(-1,-1), 32, 32));
+        ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->pSurface, ImGui::CalcItemSize(ImVec2(-1,-1), 32, 32));
        
  
     }
