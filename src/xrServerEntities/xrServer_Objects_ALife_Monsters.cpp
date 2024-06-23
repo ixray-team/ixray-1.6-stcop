@@ -1234,13 +1234,17 @@ const CSE_Abstract *CSE_ALifeMonsterAbstract::base	() const
 	return						(inherited1::base());
 }
 
-void CSE_ALifeMonsterAbstract::STATE_Write	(NET_Packet &tNetPacket)
+void CSE_ALifeMonsterAbstract::STATE_Write(NET_Packet& tNetPacket)
 {
-	inherited1::STATE_Write		(tNetPacket);
-	tNetPacket.w_stringZ		(m_out_space_restrictors);
-	tNetPacket.w_stringZ		(m_in_space_restrictors);
-	tNetPacket.w_u16			(m_smart_terrain_id);
-	tNetPacket.w				(&m_task_reached, sizeof(m_task_reached));
+	inherited1::STATE_Write(tNetPacket);
+	tNetPacket.w_stringZ(m_out_space_restrictors);
+	tNetPacket.w_stringZ(m_in_space_restrictors);
+	tNetPacket.w_u16(m_smart_terrain_id);
+
+	if (tNetPacket.inistream)
+		tNetPacket.w_u16((m_task_reached) ? 1 : 0);
+	else
+		tNetPacket.w(&m_task_reached, sizeof(m_task_reached));
 }
 
 void CSE_ALifeMonsterAbstract::STATE_Read(NET_Packet& tNetPacket, u16 size)
