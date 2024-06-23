@@ -14,7 +14,14 @@ void UILPropertiesFrom::Draw()
 	{
 		if (ImGui::Begin("Properties", &bOpen))
 		{
-			LTools->GetProperties()->Draw();
+			if (LTools->PropUpdateIsCompleted)
+			{
+				LTools->GetProperties()->Draw();
+			}
+			else
+			{
+				ImGui::Text("Async loading...");
+			}
 		}
 		ImGui::End();
 	}

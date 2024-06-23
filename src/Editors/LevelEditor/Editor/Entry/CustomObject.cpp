@@ -74,8 +74,8 @@ void CCustomObject::Select( int flag )
     if (m_RT_Flags.is(flRT_Visible) && (!!m_RT_Flags.is(flRT_Selected)!=flag))
     {
         m_RT_Flags.set		(flRT_Selected,(flag==-1)?(m_RT_Flags.is(flRT_Selected)?FALSE:TRUE):flag);
-        UI->RedrawScene		();
-        ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+        //UI->RedrawScene		();
+        //ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 	    FParentTools->OnSelected(this);
     }
 }

@@ -2,6 +2,8 @@
 class XREPROPS_API UIPropertiesForm :public XrUI
 {
 	friend class UIPropertiesItem;
+	std::atomic_bool bAsyncUpdated = true;
+
 public:
 	UIPropertiesForm();
 	virtual ~UIPropertiesForm();
@@ -14,6 +16,10 @@ public:
 	IC bool IsModified() { return m_bModified;}
 	IC bool Empty() { return m_Items.size() == 0; }
 	void SetModifiedEvent(TOnModifiedEvent modif = 0) { OnModifiedEvent = modif; }
+
+
+public:
+	void AssignItemsAsync(PropItemVec items);
 public:
 	enum {
 		plReadOnly = (1 << 0),
