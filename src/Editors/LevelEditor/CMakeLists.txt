@@ -49,10 +49,7 @@ add_dependencies(LevelEditor xrGame)
 add_dependencies(LevelEditor xrSE_Factory)
 
 # Move precompiled header
-set_target_properties(LevelEditor PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-
-file(GLOB_RECURSE ELE_SOURCE_PCH_FILES "stdafx.*")
-source_group("pch" FILES ${ELE_SOURCE_PCH_FILES})
+target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_include_directories(LevelEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_include_directories(LevelEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")

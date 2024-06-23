@@ -1,3 +1,4 @@
+#include "stdafx.h"
 // Magic Software, Inc.
 // http://www.magic-software.com
 // http://www.wild-magic.com

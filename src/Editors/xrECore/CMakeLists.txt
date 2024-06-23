@@ -174,10 +174,7 @@ target_link_libraries(xrECore PUBLIC "d3d9.lib")
 target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
 # Move precompiled header
-set_target_properties(xrECore PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
-
-file(GLOB_RECURSE ECORE_SOURCE_PCH_FILES "stdafx.*")
-source_group("pch" FILES ${ECORE_SOURCE_PCH_FILES})
+target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## DirectX SDK
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
