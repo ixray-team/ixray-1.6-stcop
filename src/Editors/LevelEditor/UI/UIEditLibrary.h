@@ -42,12 +42,13 @@ private:
 
     UIItemListForm* m_ObjectList;
     UIPropertiesForm* m_Props;
+    UIPropertiesForm* m_PropsObjects;
     LPCSTR m_Current;
     bool m_Preview;
-    ListItem* m_Selected;
 
     bool m_SelectLods;
     bool m_HighQualityLod;
+    bool bShowProps = false;
 
     xr_vector<CSceneObject*> m_pEditObjects;
 };
