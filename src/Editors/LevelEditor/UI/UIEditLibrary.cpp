@@ -9,8 +9,9 @@ UIEditLibrary::UIEditLibrary()
 	m_ObjectList = xr_new<UIItemListForm>();
 	InitObjects();
 	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
+	m_ObjectList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 	m_Props = xr_new<UIPropertiesForm>();
-	m_Selected = nullptr;
+	m_PropsObjects = xr_new<UIPropertiesForm>();
 	m_Preview = false;
 	m_SelectLods = false;
 	m_RealTexture = nullptr;
@@ -25,7 +26,6 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 	{
 		PropItemVec Info;
 
-		m_Selected = item;
 		m_Current = item->Key();
 		EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
 
@@ -48,6 +48,13 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 			vec.push_back(item);
 			SelectionToReference(&vec);
 		}
+
+		if (bShowProps)
+			OnPropertiesClick();
+	}
+	else
+	{
+		bShowProps = false;
 	}
 
 	UI->RedrawScene();
@@ -55,6 +62,8 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 
 UIEditLibrary::~UIEditLibrary() 
 {
+	xr_delete(m_PropsObjects);
+	xr_delete(m_Props);
 }
 
 void UIEditLibrary::InitObjects()
@@ -189,7 +198,11 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 	if (res == mrNo)
 	{
 		RStringVec sel_items;
-		sel_items.push_back(m_Selected->Key());
+		for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+		{
+			sel_items.push_back(ListItem->Key());
+		}
+
 		GenerateLOD(sel_items, bHighQuality);
 		return;
 	}
@@ -204,15 +217,13 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 void UIEditLibrary::OnMakeThmClick()
 {
 	U32Vec       pixels;
-	ListItemsVec sel_items;
 
-	if (!m_Selected)
+	if (m_ObjectList->m_SelectedItems.empty())
 		return;
 
-	sel_items.push_back(m_Selected);
 	// m_Items->GetSelected(NULL, sel_items, false);
-	ListItemsIt it = sel_items.begin();
-	ListItemsIt it_e = sel_items.end();
+	ListItemsIt it = m_ObjectList->m_SelectedItems.begin();
+	ListItemsIt it_e = m_ObjectList->m_SelectedItems.end();
 
 	for (; it != it_e; ++it)
 	{
@@ -239,37 +250,56 @@ void UIEditLibrary::OnMakeThmClick()
 
 void UIEditLibrary::OnPropertiesClick()
 {
-	MessageBoxA(0, 0, 0, 0);
+	m_PropsObjects->ClearProperties();
+	PropItemVec Info;
+	bShowProps = true;
+
+	const xr_string InitTex = "texture_";
+	for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+	{
+		CSceneObject* SO = new CSceneObject(nullptr, nullptr);
+		SO->SetReference(ListItem->Key());
+		CEditableObject* NE = SO->GetReference();
+
+		/////////////////////////////////////////////
+		NE->FillBasicProps("", Info);
+		int Iter = 0;
+		for (auto Surf : NE->m_Surfaces)
+		{
+			NE->FillSurfaceProps(Surf, (InitTex + xr_string::ToString(Iter)).c_str(), Info);
+			Iter++;
+		}
+
+		xr_delete(SO);
+	}
+
+	m_PropsObjects->AssignItems(Info);
 }
 
 void UIEditLibrary::DrawRightBar()
 {
+
+	if (bShowProps)
+	{
+		ImGui::Begin("Objects properties", &bShowProps);
+		m_PropsObjects->Draw();
+		ImGui::End();
+	}
+
 	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
 	{
 		ImGui::Image(m_RealTexture ? m_RealTexture : EDevice->texture_null->pSurface, ImVec2(200, 200));
 
 		m_Props->Draw();
 
-		// if (disabled)
-		{
-			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-		}
-
 		if (ImGui::Button("Properties", ImVec2(-1, 0)))
 			OnPropertiesClick();
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-		// if (disabled)
-		{
-			ImGui::PopItemFlag();
-			ImGui::PopStyleVar();
-		}
-
 		// Make Thumbnail & Lod
 		{
-			bool enableMakeThumbnailAndLod = m_Selected && m_Preview;
+			bool enableMakeThumbnailAndLod = !m_ObjectList->m_SelectedItems.empty() && m_Preview;
 
 			if (!enableMakeThumbnailAndLod)
 			{
@@ -398,10 +428,13 @@ void UIEditLibrary::RefreshSelected()
 
 	if (m_Preview)
 	{
-		if (m_Selected)
+		if (m_ObjectList->m_SelectedItems.empty())
 		{
 			ListItemsVec vec;
-			vec.push_back(m_Selected);
+			for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+			{
+				vec.push_back(ListItem);
+			}
 			mt = SelectionToReference(&vec);
 		}
 		else
@@ -461,22 +494,25 @@ void UIEditLibrary::ExportObj()
 		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
 		CSceneObject* SO = xr_new<CSceneObject>((LPVOID)0, (LPSTR)0);
 
-		ListItem* item = m_Selected;
-		pb->Inc(item->Key());
-		SO->SetReference(item->Key());
-		CEditableObject* NE = SO->GetReference();
-		SO->UpdateTransform();
-		if (NE)
+		for (ListItem* item : m_ObjectList->m_SelectedItems)
 		{
-			SO->FPosition = NE->t_vPosition;
-			SO->FScale = NE->t_vScale;
-			SO->FRotation = NE->t_vRotate;
+			pb->Inc(item->Key());
+			SO->SetReference(item->Key());
+			CEditableObject* NE = SO->GetReference();
+			SO->UpdateTransform();
+			if (NE)
+			{
+				SO->FPosition = NE->t_vPosition;
+				SO->FScale = NE->t_vScale;
+				SO->FRotation = NE->t_vRotate;
 
-			ExportOneOBJ(NE);
+				ExportOneOBJ(NE);
+			}
 		}
-		if (UI->NeedAbort())
 
+		if (UI->NeedAbort())
 			xr_delete(SO);
+
 		UI->ProgressEnd(pb);
 	}
 	else
