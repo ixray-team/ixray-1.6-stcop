@@ -14,8 +14,15 @@ public:
 	virtual void ResetBegin();
 	virtual void ResetEnd();
 	bool IsClosed()const { return !bOpen; }
+
+public:
+	void BeginDraw() const;
 	virtual void Draw() = 0;
+	void EndDraw() const;
+
 protected:
 	bool bOpen;
+	bool IsDocked = true;
+	bool IsFocused = false;
 };
 

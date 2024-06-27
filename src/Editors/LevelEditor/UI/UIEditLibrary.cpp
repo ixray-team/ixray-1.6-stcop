@@ -108,7 +108,7 @@ void UIEditLibrary::Show()
 	{
 		Form->bOpen = true;
 	}
-	UI->Push(Form);
+	UI->Push(Form, false);
 }
 
 void UIEditLibrary::Close()
@@ -263,11 +263,9 @@ void UIEditLibrary::OnPropertiesClick()
 
 		/////////////////////////////////////////////
 		NE->FillBasicProps("", Info);
-		int Iter = 0;
 		for (auto Surf : NE->m_Surfaces)
 		{
-			NE->FillSurfaceProps(Surf, (InitTex + xr_string::ToString(Iter)).c_str(), Info);
-			Iter++;
+			NE->FillSurfaceProps(Surf, Surf->_GameMtlName(), Info);
 		}
 
 		xr_delete(SO);
@@ -576,7 +574,17 @@ void UIEditLibrary::ChangeReference(const RStringVec& items)
 void UIEditLibrary::OnRender()
 {
 	if (!Form || !Form->bOpen)
+	{
+		if (UI->GetEState() == EEditorState::esEditLibrary)
+		{
+			UI->EndEState(EEditorState::esEditLibrary);
+		}
 		return;
+	}
+	else if (UI->GetEState() != EEditorState::esEditLibrary)
+	{
+		UI->BeginEState(EEditorState::esEditLibrary);
+	}
 
 	if (!Form->m_Preview)
 		return;
