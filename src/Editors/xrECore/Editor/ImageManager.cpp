@@ -297,6 +297,11 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u3
 		return false;
 	}
 
+	string_path Path = {};
+	FS.update_path(Path, _game_textures_, "");
+
+	FS.rescan_path(Path, true);
+
 	//R_ASSERT((res == 1) && FS.file_length(game_name));
 	return res == 1;
 }

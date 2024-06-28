@@ -387,7 +387,7 @@ void XrUIManager::Draw()
 			| ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, UIToolBarSize));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, UIToolBarSize / 2));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 2));
@@ -407,7 +407,9 @@ void XrUIManager::Draw()
 
 	for (XrUI* ui : m_UIArray)
 	{
+		ui->BeginDraw();
 		ui->Draw();
+		ui->EndDraw();
 	}
 
 	//ImGui::EndFrame();

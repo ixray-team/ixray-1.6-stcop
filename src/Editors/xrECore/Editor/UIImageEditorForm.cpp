@@ -28,6 +28,9 @@ UIImageEditorForm::~UIImageEditorForm()
 
 void UIImageEditorForm::Draw()
 {
+	IsDocked = ImGui::IsWindowDocked();
+	IsFocused = ImGui::IsWindowFocused();
+
 	if (m_bUpdateProperties)
 	{
 		UpdateProperties();
@@ -50,6 +53,10 @@ void UIImageEditorForm::Draw()
 		ImGui::BeginChild("Left", ImVec2(0, -ImGui::GetFrameHeight() - (bImportMode ? 4 : 24)), true, ImGuiWindowFlags_HorizontalScrollbar);
 		{
 			m_ItemList->Draw();
+			if (!IsDocked)
+				IsDocked = ImGui::IsWindowDocked();
+			if (!IsFocused)
+				IsFocused = ImGui::IsWindowFocused();
 		}
 		ImGui::EndChild();
 
@@ -96,6 +103,11 @@ void UIImageEditorForm::Draw()
 			}
 			ImGui::Image(m_Texture, ImVec2(128, 128));
 			m_ItemProps->Draw();
+
+			if (!IsDocked)
+				IsDocked = ImGui::IsWindowDocked();
+			if (!IsFocused)
+				IsFocused = ImGui::IsWindowFocused();
 		}
 		ImGui::EndChild();
 	}
@@ -107,6 +119,7 @@ void UIImageEditorForm::Update()
 	{
 		if (!Form->IsClosed())
 		{
+			Form->BeginDraw();
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
 			if (ImGui::Begin("ImageEditor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 			{
@@ -114,6 +127,7 @@ void UIImageEditorForm::Update()
 			}
 			ImGui::PopStyleVar(1);
 			ImGui::End();
+			Form->EndDraw();
 		}
 		else
 		{

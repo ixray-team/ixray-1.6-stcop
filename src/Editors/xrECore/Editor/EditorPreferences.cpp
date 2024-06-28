@@ -341,9 +341,11 @@ void CCustomPreferences::Save()
 
 void CCustomPreferences::Draw()
 {
-    if (!bOpen)return;
+    if (!bOpen)
+        return;
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 400));
-    if (!ImGui::Begin("Editor Preferences",&bOpen))
+    if (!ImGui::Begin("Editor Preferences", &bOpen))
     {
         OnClose();
         Save();
@@ -351,6 +353,10 @@ void CCustomPreferences::Draw()
         ImGui::End();
         return;
     }
+
+    IsDocked = ImGui::IsWindowDocked();
+    IsFocused = ImGui::IsWindowFocused();
+
     ImGui::PopStyleVar();
     {
         m_ItemProps->Draw();
