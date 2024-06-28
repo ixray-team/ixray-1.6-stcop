@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "xrUITheme.h"
 
 XrUI::~XrUI()
 {
@@ -18,11 +19,11 @@ void XrUI::BeginDraw() const
 {
 	if (!IsFocused && !IsDocked)
 	{
-		ImGui::SetNextWindowBgAlpha(0.33f);
+		ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentUnfocused);
 	}
 }
 
 void XrUI::EndDraw() const
 {
-	ImGui::SetNextWindowBgAlpha(1);
+	ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentDefault);
 }
