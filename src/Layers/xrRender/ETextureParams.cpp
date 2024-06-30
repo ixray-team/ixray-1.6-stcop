@@ -55,6 +55,7 @@ xr_token					tmtl_token								[ ]={
 	{ "Blin <-> Phong",		STextureParams::tmBlin_Phong				},
 	{ "Phong <-> Metal",	STextureParams::tmPhong_Metal				},
 	{ "Metal <-> OrenNayar",STextureParams::tmMetal_OrenNayar			},
+	{ "PBR",                STextureParams::tmPBR_Material			    },
 	{ 0,					0											}
 };
 
@@ -97,7 +98,7 @@ void STextureParams::Load(IReader& F)
 	    bump_virtual_height	= F.r_float				();
 	    bump_mode			= (ETBumpMode)F.r_u32	();
         if (bump_mode<STextureParams::tbmNone){
-        	bump_mode		= STextureParams::tbmNone; //.. временно (до полного убирания Autogen)
+        	bump_mode		= STextureParams::tbmNone; //.. РІСЂРµРјРµРЅРЅРѕ (РґРѕ РїРѕР»РЅРѕРіРѕ СѓР±РёСЂР°РЅРёСЏ Autogen)
         }
     	F.r_stringZ			(bump_name);
     }

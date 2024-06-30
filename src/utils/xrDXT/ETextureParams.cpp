@@ -54,6 +54,7 @@ xr_token tmtl_token[] =
     { "Blin <-> Phong", STextureParams::tmBlin_Phong },
     { "Phong <-> Metal", STextureParams::tmPhong_Metal },
     { "Metal <-> OrenNayar", STextureParams::tmMetal_OrenNayar },
+    { "PBR",                STextureParams::tmPBR_Material			    },
     { 0, 0 }
 };
 
