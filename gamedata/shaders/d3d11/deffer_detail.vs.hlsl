@@ -38,11 +38,11 @@ void main(in v_detail I, out p_bumped_new O)
 
     pos.xz += calc_xz_wave(dir2D.xz * inten, frac);
 
-    #ifdef USE_JITTER_FOR_TAA
-    float dp_old = calc_cyclic(dot(pos_old, wave_old));
-    float inten_old = H * dp_old;
+    #ifndef DETAIL_SHADOW_PASS
+		float dp_old = calc_cyclic(dot(pos_old, wave_old));
+		float inten_old = H * dp_old;
 
-    pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, frac);
+		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, frac);
     #endif
 #endif
 
@@ -68,7 +68,7 @@ void main(in v_detail I, out p_bumped_new O)
 
     O.hpos = mul(m_WVP, pos);
 
-#ifdef USE_JITTER_FOR_TAA
+#ifndef DETAIL_SHADOW_PASS
     O.hpos_curr = mul(m_VP, pos);
     O.hpos_old = mul(m_VP_old, pos_old);
 

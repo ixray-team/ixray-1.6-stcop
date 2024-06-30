@@ -109,8 +109,8 @@ void CBlender_Detail_Still::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile	(C);
 
-	if(C.iElement == SE_R2_NORMAL_HQ || C.iElement == SE_R2_NORMAL_LQ) {
-		RImplementation.addShaderOption("USE_JITTER_FOR_TAA", "1");
+	if(C.iElement == SE_R2_DETAIL_SHADOW_HQ || C.iElement == SE_R2_DETAIL_SHADOW_LQ) {
+		RImplementation.addShaderOption("DETAIL_SHADOW_PASS", "1");
 	}
 
 	switch(C.iElement)

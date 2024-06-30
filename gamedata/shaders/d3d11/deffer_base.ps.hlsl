@@ -13,13 +13,13 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     SloadNew(I, M);
 
 #ifdef USE_AREF
-    #ifdef USE_HASHED_AREF
-    clip(M.Color.w - hashed_alpha_test(M.Point));
+    #if defined(USE_HASHED_AREF) && !defined(DETAIL_SHADOW_PASS)
+		clip(M.Color.w - hashed_alpha_test(M.Point));
     #else
-    clip(M.Color.w - def_aref);
+		clip(M.Color.w - def_aref);
     #endif
     #ifdef USE_DXT1_HACK
-    M.Color.xyz /= max(0.0001f, M.Color.w);
+		M.Color.xyz *= rcp(max(0.0001f, M.Color.w));
     #endif
 #endif
 
@@ -35,14 +35,14 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
 
 #ifdef USE_LEGACY_LIGHT
     #ifndef USE_PBR
-    M.Metalness = L_material.w;
+		M.Metalness = L_material.w;
     #else
-    M.Color.xyz *= M.AO;
-    M.AO = 1.0f;
-    float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
-    M.Color.xyz = lerp(M.Color.xyz, F0, M.Metalness);
-    M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
-    M.Roughness = Specular;
+		M.Color.xyz *= M.AO;
+		M.AO = 1.0f;
+		float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
+		M.Color.xyz = lerp(M.Color.xyz, F0, M.Metalness);
+		M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
+		M.Roughness = Specular;
     #endif
 #endif
 
