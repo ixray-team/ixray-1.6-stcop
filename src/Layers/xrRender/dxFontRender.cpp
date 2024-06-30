@@ -6,21 +6,16 @@
 
 extern ENGINE_API BOOL g_bRendering;
 
-dxFontRender::dxFontRender()
-{
-}
+dxFontRender::dxFontRender() {}
 
-dxFontRender::~dxFontRender()
-{
+dxFontRender::~dxFontRender() {
 	pShader.destroy();
 	pGeom.destroy();
 	pTexture.destroy();
 }
 
-void dxFontRender::Initialize(const char* cShader, const char* cTexture)
-{
-	if (pTexture._get() == nullptr)
-	{
+void dxFontRender::Initialize(const char* cShader, const char* cTexture) {
+	if(pTexture._get() == nullptr) {
 		pTexture.create(cTexture);
 	}
 
@@ -28,23 +23,20 @@ void dxFontRender::Initialize(const char* cShader, const char* cTexture)
 	pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 }
 
-void dxFontRender::OnRender(CGameFont& owner)
-{
+void dxFontRender::OnRender(CGameFont& owner) {
 	VERIFY(g_bRendering);
 
-	if (pShader != nullptr)
-	{
+	if(pShader != nullptr) {
 		RCache.set_Shader(pShader);
 	}
-	
+
 	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
 	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
-	for (CGameFont::String& str : owner.strings) //#TODO mb need use optimization for minimize vertexes allocations?
-	{
+	//#TODO mb need use optimization for minimize vertexes allocations?
+	for(CGameFont::String& str : owner.strings) {
 		int length = xr_strlen(str.string);
-		if (length)
-		{
+		if(length) {
 			// lock AGP memory
 			u32	vOffset;
 			FVF::TL* vertexes = (FVF::TL*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
@@ -54,16 +46,14 @@ void dxFontRender::OnRender(CGameFont& owner)
 			float Y = float(iFloor(str.y));
 			float Y2 = Y + str.height;
 
-			if (str.align)
-			{
+			if(str.align) {
 				float width = (float)owner.WidthOf(str.string);
 
-				switch (str.align)
-				{
-				case CGameFont::alCenter:
+				switch(str.align) {
+					case CGameFont::alCenter:
 					X -= iFloor(width * 0.5f);
 					break;
-				case CGameFont::alRight:
+					case CGameFont::alRight:
 					X -= iFloor(width);
 					break;
 				}
@@ -71,8 +61,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 			u32	clr, clr2;
 			clr2 = clr = str.c;
-			if (owner.uFlags & CGameFont::fsGradient)
-			{
+			if(owner.uFlags & CGameFont::fsGradient) {
 				u32	_R = color_get_R(clr) / 2;
 				u32	_G = color_get_G(clr) / 2;
 				u32	_B = color_get_B(clr) / 2;
@@ -80,20 +69,17 @@ void dxFontRender::OnRender(CGameFont& owner)
 				clr2 = color_rgba(_R, _G, _B, _A);
 			}
 
-#ifndef USE_DX11
 			X -= 0.5f;
 			Y -= 0.5f;
 			Y2 -= 0.5f;
-#endif
 
-			for (int i = 0; i < length; i++)
-			{
+			for(int i = 0; i < length; i++) {
 				const CGameFont::Glyph* glyphInfo = owner.GetGlyphInfo(str.string[i]);
-				if (glyphInfo == nullptr)
+				if(glyphInfo == nullptr) {
 					continue;
+				}
 
-				if (i != 0)
-				{
+				if(i != 0) {
 					X += glyphInfo->Abc.abcA;
 				}
 
@@ -123,8 +109,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 			// Unlock and draw
 			u32 vertexesCount = (u32)(vertexes - start);
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
-			if (vertexesCount > 0)
-			{
+
+			if(vertexesCount > 0) {
 				RCache.set_Geometry(pGeom);
 				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 			}
@@ -132,8 +118,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 	}
 }
 
-void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
-{
+void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) {
 	ID3DTexture2D* pSurface = nullptr;
 
 #ifdef USE_DX11
@@ -156,7 +141,7 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	FontData.SysMemSlicePitch = 0;
 	FontData.SysMemPitch = width * 4;
 
-	if (RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
+	if(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
 		Msg("! D3D_USAGE_DEFAULT may not be working");
 		_RELEASE(pSurface); descFontAtlas.Usage = D3D_USAGE_DYNAMIC;
 		R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface));

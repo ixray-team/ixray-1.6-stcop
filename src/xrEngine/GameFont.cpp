@@ -143,24 +143,25 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	// 1. основываясь на DPI(PPI), однако, как не вычисляй его он всегда считается исходя из разрешения моника(системы) и 23 дюймов(мб с дровами на моник - из реальных дюймов)
 	// 2. основываясь на том, как ПЫС делают скейлинг из UI_BASE_HEIGHT/UI_BASE_WIDTH и тд...
 
-	constexpr float DEFAULT_WND_Y = 800.0f;
-	auto CalcConstant = []()
-		{
-			u32 Constant = 2;
-			u32 scale = u32(Device.TargetHeight / 1000);
+	SetProcessDPIAware();
+	HDC hDCScreen = GetDC(NULL);
 
-			if (scale >= 1)
-				Constant *= 2 * scale;
+	auto Hmm = (float)GetDeviceCaps(hDCScreen, VERTSIZE);
+	auto Wmm = (float)GetDeviceCaps(hDCScreen, HORZSIZE);
+	auto Hpx = (float)GetDeviceCaps(hDCScreen, VERTRES);
+	auto Wpx = (float)GetDeviceCaps(hDCScreen, HORZRES);
 
-			return Constant;
-		};
+	ReleaseDC(NULL, hDCScreen);
 
-	float fHeight = 0.0f;
+	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", TRUE);
+	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", FALSE);
 
-	if (Device.TargetHeight > DEFAULT_WND_Y)
-		fHeight = (Device.TargetHeight / DEFAULT_WND_Y) * CalcConstant() + size;
-	else
-		fHeight = (float)size - (2 / CalcConstant() + 0.5f);
+	auto ppi = int(25.4f * sqrt(Hpx * Hpx + Wpx * Wpx) / sqrt(Hmm * Hmm + Wmm * Wmm));
+
+	auto res_scale = is_res_depend ? float(Device.TargetHeight) / 768.0f : 1.0f;
+	auto ppi_scale = is_dpi_depend ? float(ppi) / 92.0f : 1.0f;
+
+	auto fHeight = float(size * res_scale * ppi_scale);
 
 	xr_string NameWithExt = name;
 	NameWithExt += ".ttf";
@@ -179,9 +180,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	u32 TargetY = 0;
 	u32 TargetX2 = 0;
 	u32 TargetY2 = 0;
-
-// 	FTError = FT_Set_Pixel_Sizes(OurFont, 0, fHeight);
-// 	R_ASSERT3(FTError == 0, "FT_Set_Pixel_Sizes return error", FullPath);
 
 	FT_Size_RequestRec req;
 	req.type = FT_SIZE_REQUEST_TYPE_NOMINAL;
