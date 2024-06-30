@@ -76,6 +76,24 @@ struct _uniq_mode
 	bool operator() (LPCSTR _other) { return !_stricmp(_val, _other); }
 };
 
+bool sort_vid_mode(DXGI_MODE_DESC& left, DXGI_MODE_DESC& right) {
+	auto leftString = xr_string::ToString(left.Width) + xr_string::ToString(left.Height);
+	auto rightString = xr_string::ToString(right.Width) + xr_string::ToString(right.Height);
+
+	if (leftString.length() == rightString.length()) {
+		if (left.Width > right.Width) {
+			return true;
+		}
+		else if (left.Width == right.Width) {
+			return left.Height > right.Height;
+		}
+
+		return false;
+	}
+
+	return leftString.length() > rightString.length();
+}
+
 void fill_vid_mode_list()
 {
 #ifndef _EDITOR
@@ -106,10 +124,12 @@ void fill_vid_mode_list()
 
 	_RELEASE(pOutput);
 
+	std::sort(modes.begin(), modes.end(), sort_vid_mode);
+
 	for (u32 i = 0; i < num; ++i)
 	{
 		DXGI_MODE_DESC& desc = modes[i];
-		string32		str;
+		string32 str;
 
 		if (desc.Width < 800)
 			continue;
