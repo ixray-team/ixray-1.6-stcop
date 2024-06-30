@@ -62,7 +62,7 @@ bool UpdateBuffersD3D11()
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
 
-	descDepth.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	descDepth.Format = DXGI_FORMAT_B8G8R8X8_UNORM;
 	descDepth.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	R = ((ID3D11Device*)HWRenderDevice)->CreateTexture2D(&descDepth, nullptr, (ID3D11Texture2D**)&RenderTexture);
 	R_CHK(R);
@@ -166,8 +166,7 @@ bool CreateD3D11()
 
 		HRESULT R = D3D11CreateDeviceAndSwapChain(
 			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
-			sizeof(pFeatureLevels) / sizeof(pFeatureLevels[0]),
-			D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
+			std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
 			(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
 		);
 
