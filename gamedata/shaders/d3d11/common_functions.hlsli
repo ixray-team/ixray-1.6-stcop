@@ -113,6 +113,23 @@ float hashed_alpha_test(float3 position)
     return clamp(thresh, 1e-5, 1.0);
 }
 
+// Deband color function (by Hozar 2002) - may be huita
+float3 deband_color(float3 image, float2 uv)
+{
+    float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
+
+    float3 color = saturate(image) * 255.0f;
+    float3 pq = frac(color);
+
+    color -= pq;
+    pq = step(dither, pq);
+
+    color += pq;
+    color /= 255.0f;
+
+    return color;
+}
+
 float4 combine_bloom(float3 low, float4 high)
 {
     return float4(low + high * high.a, 1.f);

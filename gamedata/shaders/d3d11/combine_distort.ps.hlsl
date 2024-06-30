@@ -1,23 +1,17 @@
 #include "common.hlsli"
 Texture2D s_distort;
 
-float4 main(float2 tc : TEXCOORD0, float4 hpos : SV_Position) : SV_Target
+float4 main(float2 texcoord : TEXCOORD0, float4 hpos : SV_Position) : SV_Target
 {
-    float4 distort = s_distort.Sample(smp_nofilter, tc);
-    float2 offset = (distort.xy - (127.0f / 255.0f)) * def_distort;
+    float4 distort = s_distort.SampleLevel(smp_nofilter, texcoord, 0);
+    float2 offset = distort.xy - (127.0f / 255.0f);
 
-    gbuffer_data gbd = gbuffer_load_data(tc, hpos);
+    float2 center = texcoord + offset * def_distort;
 
-    float depth = gbd.P.z;
-    float2 center = tc + offset;
+    float depth = s_position.SampleLevel(smp_nofilter, texcoord, 0).x;
+    float depth_x = s_position.SampleLevel(smp_rtlinear, center, 0).x;
 
-    gbuffer_data gbdx = gbuffer_load_data_offset(tc, center, hpos);
-    float depth_x = gbdx.P.z;
-
-    if (depth_x < depth)
-    {
-        center = tc;
-    }
-
-    return s_image.Sample(smp_rtlinear, center);
+    center = depth_x < 0.03f ? texcoord : center;
+    return s_image.SampleLevel(smp_rtlinear, center, 0);
 }
+
