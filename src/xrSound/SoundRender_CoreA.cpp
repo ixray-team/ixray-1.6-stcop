@@ -4,6 +4,7 @@
 #include "SoundRender_CoreA.h"
 #include "SoundRender_TargetA.h"
 #include "SoundRender_Environment.h"
+#include "Recorder/SoundVoiceChat.h"
 
 CSoundRender_CoreA*	SoundRenderA = nullptr; 
 
@@ -303,6 +304,8 @@ void CSoundRender_CoreA::_initialize(int stage)
         		break;
 			}
 		}
+
+        pSoundVoiceChat = new SoundVoiceChat(pContext);
 	}
 }
 
@@ -313,9 +316,20 @@ void CSoundRender_CoreA::set_master_volume(float f )
 	}
 }
 
+void CSoundRender_CoreA::update(const Fvector& P, const Fvector& D, const Fvector& N)
+{
+    inherited::update(P, D, N);
+
+    if (pSoundVoiceChat)
+        pSoundVoiceChat->Update(P, D, N);
+}
+
 void CSoundRender_CoreA::_clear	()
 {
-	inherited::_clear			();
+    inherited::_clear();
+
+    xr_delete(pSoundVoiceChat);
+
     // remove targets
 	CSoundRender_Target* T = nullptr;
 	for (u32 tit=0; tit<s_targets.size(); tit++)
@@ -335,7 +349,7 @@ void CSoundRender_CoreA::_clear	()
 	alcCloseDevice(pDevice);
 	pDevice = nullptr;
 
-	xr_delete					(pDeviceList);
+	xr_delete(pDeviceList);
 }
 
 void CSoundRender_CoreA::update_listener		( const Fvector& P, const Fvector& D, const Fvector& N, float dt )

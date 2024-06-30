@@ -56,6 +56,10 @@ CUIGameCustom::~CUIGameCustom()
 	delete_data(TalkMenu);
 }
 
+bool CUIGameCustom::HasShownDialogs() const
+{
+	return ActorMenu().IsShown() || PdaMenu().IsShown();
+}
 
 void CUIGameCustom::OnFrame() 
 {

@@ -2149,4 +2149,10 @@ void register_mp_console_commands()
 	CMD1(CCC_GameSpyProfile,				"gs_profile");
 	CMD4(CCC_Integer,						"sv_write_update_bin",				&g_sv_write_updates_bin, 0, 1);
 	CMD4(CCC_Integer,						"sv_traffic_optimization_level",	(int*)&g_sv_traffic_optimization_level, 0, 7);
+
+	// Voice Chat
+	CMD4(CCC_Float,		"snd_volume_players",	&psSoundVPlayers, 0, 1);
+	CMD4(CCC_Float,		"snd_volume_recorder",	&psSoundVRecorder, 0, 1);
+	CMD4(CCC_Integer,	"snd_recorder_mode",	&psSoundRecorderMode, 0, 1);
+	CMD4(CCC_Integer,	"snd_recorder_denoise", &psSoundRecorderDenoise, 0, 1);
 }

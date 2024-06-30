@@ -91,3 +91,9 @@ set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Rel
 
 # AMD FidelityFX FSR2
 set(AMD_FSR2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FidelityFX.FSR2.DirectX11.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.2.1.1)
+
+# SpeexDSP
+set(SPEEXDSP ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.SpeexDsp.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2024.6.4.1-open)
+
+# OPUS
+set(OPUS ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Opus.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2024.5.22-open)

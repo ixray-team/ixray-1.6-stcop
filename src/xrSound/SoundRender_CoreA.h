@@ -7,6 +7,8 @@
 
 #include <AL/efx.h>
 
+class SoundVoiceChat;
+
 #ifdef DEBUG
 #	define A_CHK(expr)		{ alGetError(); 		expr; ALenum error=alGetError(); 			VERIFY2(error==AL_NO_ERROR, (LPCSTR)alGetString(error)); }
 #	define AC_CHK(expr)		{ alcGetError(pDevice); expr; ALCenum error=alcGetError(pDevice); 	VERIFY2(error==ALC_NO_ERROR,(LPCSTR)alcGetString(pDevice,error)); }
@@ -32,6 +34,8 @@ class CSoundRender_CoreA:
 		Fvector				orientation[2];
 	};
 	SListener				Listener;
+
+	SoundVoiceChat* pSoundVoiceChat = nullptr;
 
 	/* Filter object functions */
 	LPALGENFILTERS alGenFilters{};
@@ -91,7 +95,10 @@ public:
     
 	virtual void			set_master_volume		( float f		);
 
+	virtual void			update					(const Fvector& P, const Fvector& D, const Fvector& N) override;
+
 	virtual const Fvector&	listener_position		( ){return Listener.position;}
+	virtual ISoundVoiceChat* GetSoundVoiceChat		() { return (ISoundVoiceChat*)pSoundVoiceChat; }
 
 	// EFX Slots
 	void LoadEffect();

@@ -93,7 +93,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE};
+Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON};
 int				psActorSleepTime = 1;
 
 
