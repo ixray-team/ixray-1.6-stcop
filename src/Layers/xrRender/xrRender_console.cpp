@@ -751,7 +751,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
 	// R2-specific
+#ifdef DEBUG_DRAW
 	CMD2(CCC_R2GM,		"r2em",					&ps_r2_gmaterial							);
+#endif
+
 	CMD3(CCC_Mask,		"r2_tonemap",			&ps_r2_ls_flags,			R2FLAG_TONEMAP	);
 	CMD4(CCC_Float,		"r2_tonemap_middlegray",&ps_r2_tonemap_middlegray,	0.0f,	2.0f	);
 	CMD4(CCC_Float,		"r2_tonemap_adaptation",&ps_r2_tonemap_adaptation,	0.01f,	10.0f	);
@@ -863,7 +866,13 @@ void		xrRender_initconsole	()
 //	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
+
+#ifdef DEBUG_DRAW
 	CMD3(CCC_Token,		"r2_ssao",						&ps_r_ssao,					qssao_token);
+#elif USE_DX11
+	ps_r_ssao = 3;
+#endif
+
 	CMD3(CCC_Mask16,	"r2_ssao_blur",                 &ps_r2_ls_flags_ssao,		SSAO_BLUR);//Need restart
 	//CMD3(CCC_Mask16,	"r2_ssao_opt_data",				&ps_r2_ls_flags_ssao,		SSAO_OPT_DATA);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_half_data",			&ps_r2_ls_flags_ssao,		SSAO_HALF_DATA);//Need restart

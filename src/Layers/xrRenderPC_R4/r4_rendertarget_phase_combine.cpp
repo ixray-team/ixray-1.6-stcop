@@ -54,6 +54,8 @@ void	CRenderTarget::phase_combine	()
 
 	if (ps_r_ssao > 0)
 	{
+		phase_downsamp();
+
 		if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_GTAO))
 		{
 			phase_gtao();
@@ -64,7 +66,6 @@ void	CRenderTarget::phase_combine	()
 		}
 		else
 		{
-			phase_downsamp();
 			phase_ssao();
 		}
 	}
@@ -76,13 +77,10 @@ void	CRenderTarget::phase_combine	()
 	RCache.set_Stencil(FALSE);
 
 	// draw skybox
-	if (1)
-	{
-	//	g_pGamePersistent->Environment().RenderSky	();
-		g_pGamePersistent->Environment().RenderClouds	();
-	}
+	g_pGamePersistent->Environment().RenderClouds();
 
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);	// stencil should be >= 1
+
 	if (RImplementation.o.nvstencil) {
 		u_stencil_optimize(CRenderTarget::SO_Combine);
 		RCache.set_ColorWriteEnable();
@@ -358,7 +356,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Stencil(FALSE);
 	}
 
-	if(ps_r_scale_mode > 1 && ps_r4_cas_sharpening != 0.0)
+	if(ps_r4_cas_sharpening > EPS)
 	{
 		PIX_EVENT(phase_cas);
 		phase_cas();
@@ -368,7 +366,7 @@ void	CRenderTarget::phase_combine	()
 	phase_pp();
 
 	//	Re-adapt luminance
-	RCache.set_Stencil		(FALSE);
+	RCache.set_Stencil(FALSE);
 
 	//*** exposure-pipeline-clear
 	{
@@ -485,8 +483,6 @@ void	CRenderTarget::phase_combine	()
 void CRenderTarget::phase_wallmarks		()
 {
 	// Targets
-	RCache.set_RT(nullptr,2);
-	RCache.set_RT(nullptr,1);
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);

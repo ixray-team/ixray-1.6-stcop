@@ -10,9 +10,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	xr_strcpy(fname, *C.L_textures[0]);
 
 	fix_texture_name(fname);
-	ref_texture _t; _t.create(fname);
+	ref_texture pTexture; pTexture.create(fname);
 
-	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && _t.bump_exist();
+	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && pTexture.bump_exist();
 
 	bool lmap = false;
 	if(C.L_textures.size() >= 3) {
@@ -46,8 +46,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if(aref) {
 		RImplementation.addShaderOption("USE_AREF", "1");
 #ifdef USE_DX11
-		auto Format = _t->get_Format();
-		if(Format >= DXGI_FORMAT_BC1_TYPELESS && Format < DXGI_FORMAT_BC2_TYPELESS || DXGI_FORMAT_UNKNOWN == Format) {
+		pTexture->Load();
+		auto Format = pTexture->get_Format();
+		if(Format >= DXGI_FORMAT_BC1_TYPELESS && Format < DXGI_FORMAT_BC2_TYPELESS) {
 			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
 		}
 #endif
@@ -60,7 +61,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if(bump) {
 		RImplementation.addShaderOption("USE_BUMP", "1");
 
-		xr_strcpy(fnameA, _t.bump_get().c_str());
+		xr_strcpy(fnameA, pTexture.bump_get().c_str());
 		xr_strconcat(fnameB, fnameA, "#");
 	}
 	else {

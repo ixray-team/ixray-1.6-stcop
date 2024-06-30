@@ -59,7 +59,6 @@ public:
 #endif
 
 	// MRT-path
-	ref_rt						rt_Depth;			// Z-buffer like - initial depth
 	ref_rt						rt_Generic;
 	ref_rt						rt_Back_Buffer;
 	ref_rt						rt_Back_Buffer_AA;

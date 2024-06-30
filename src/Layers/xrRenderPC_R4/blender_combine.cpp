@@ -22,7 +22,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_diffuse",		r2_RT_albedo		);
 		C.r_dx10Texture		("s_surface",		r2_RT_S);
 		C.r_dx10Texture		("s_accumulator",	r2_RT_accum			);
-		C.r_dx10Texture		("s_depth",			r2_RT_depth			);
 		C.r_dx10Texture		("s_material",		r2_material			);
 		C.r_dx10Texture		("env_s0",			r2_T_envs0			);
 		C.r_dx10Texture		("env_s1",			r2_T_envs1			);

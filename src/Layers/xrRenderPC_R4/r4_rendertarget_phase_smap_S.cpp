@@ -1,36 +1,26 @@
 #include "stdafx.h"
 
-void	CRenderTarget::phase_smap_spot_clear()
+void CRenderTarget::phase_smap_spot_clear()
 {
-	/*
-	if (RImplementation.b_HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_depth->pRT);
-	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_ZB);
-	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
-	*/
-
 	RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
 }
 
-void	CRenderTarget::phase_smap_spot		(light* L)
+void CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	//	TODO: DX10: CHeck if we don't need old-style SMAP
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
-	//else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
-	else								VERIFY(!"Use HW SMap only for DX10!");
-	D3D_VIEWPORT VP					=	{(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
-	//CHK_DX								(RDevice->SetViewport(&VP));
+	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+
+	D3D_VIEWPORT VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
 	RContext->RSSetViewports(1, &VP);
 
-	// Misc		- draw only front-faces //back-faces
-	RCache.set_CullMode					( CULL_CCW	);
-	RCache.set_Stencil					( FALSE		);
+	// Misc - draw only front-faces //back-faces
+	RCache.set_CullMode(CULL_CCW);
+	RCache.set_Stencil(FALSE);
+
 	// no transparency
 	#pragma todo("can optimize for multi-lights covering more than say 50%...")
-	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	(FALSE);
-	//CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
-	//	Do it once per smap generation pass in phase_smap_spot_clear
-	//RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+
+	RCache.set_ColorWriteEnable(FALSE);
 }
 
 void	CRenderTarget::phase_smap_spot_tsh	(light* L)

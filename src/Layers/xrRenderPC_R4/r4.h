@@ -47,10 +47,6 @@ public:
 	{
 
 		u32		smapsize			: 16;
-		u32		mrt					: 1;
-		u32		mrtmixdepth			: 1;
-		u32		fp16_filter			: 1;
-		u32		fp16_blend			: 1;
 		u32		HW_smap				: 1;
 		u32		HW_smap_PCF			: 1;
 		u32		HW_smap_FETCH4		: 1;
@@ -73,11 +69,7 @@ public:
 		u32		volumetricfog		: 1;
 		
 	  u32		dx11_enable_tessellation : 1;
-
-		u32		forcegloss			: 1;
-		u32		forceskinw			: 1;
-		float	forcegloss_v		;
-	}			o;
+	} o;
 
 	Flags16 SSAO;
 
