@@ -41,3 +41,4 @@ float4 main(_input I) : SV_Target
 
     return float4(Color, Fog * Fog);
 }
+

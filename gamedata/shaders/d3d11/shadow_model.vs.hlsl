@@ -8,10 +8,6 @@ p_shadow _main(v_model I)
     O.hpos = mul(m_WVP, I.P);
     O.tc0 = I.tc;
 
-#ifndef USE_HWSMAP
-    O.depth = O.hpos.z;
-#endif
-
     return O;
 }
 

@@ -14,6 +14,7 @@ uniform float3 view_shadow_proj;
 float4 main(v2p_volume I) : SV_Target
 {
     float2 tcProj = I.tc.xy / I.tc.w;
+	
     IXrayGbuffer O;
     GbufferUnpack(tcProj, I.hpos.xy, O);
 

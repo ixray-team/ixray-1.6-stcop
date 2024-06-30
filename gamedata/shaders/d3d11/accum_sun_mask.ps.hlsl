@@ -11,9 +11,9 @@ float4 main(p_TL I, float4 pos2d : SV_Position) : SV_Target
     GbufferUnpack(I.Tex0, pos2d, O);
 
     float4 NH = float4(O.Normal, O.Hemi);
-    float L = NH.w * dot(Ldynamic_dir, (float3)NH) + EPS + O.SSS * 100.0f + 1000;
+    float L = NH.w - 0.001f + O.SSS * 3.0f;
 
-    clip(L - CLIP_THRESHOLD);
+    clip(L);
 
     return float4(L, L, L, L);
 }

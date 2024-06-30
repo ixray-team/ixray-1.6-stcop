@@ -15,8 +15,4 @@ void main(in a2v I, out p_shadow O)
     O.tc0 = 0.0f;
 #endif
     O.hpos = mul(m_WVP, I.P);
-
-#ifndef USE_HWSMAP
-    O.depth = O.hpos.z;
-#endif
 }

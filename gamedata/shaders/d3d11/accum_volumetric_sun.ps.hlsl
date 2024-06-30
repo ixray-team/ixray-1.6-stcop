@@ -28,32 +28,28 @@ uniform float4 screen_res;
 
 float4 main(v2p_TL2uv I) : SV_Target
 {
-    float2 tc = I.Tex0.xy;
-    float4 pos2d = I.HPos;
-
-    gbuffer_data gbd = gbuffer_load_data(GLD_P(tc, pos2d, ISAMPLE));
-
 #ifndef SUN_SHAFTS_QUALITY
     return float4(0, 0, 0, 0);
 #else //	SUN_SHAFTS_QUALITY
+    float2 tc = I.Tex0.xy;
+    float4 pos2d = I.HPos;
 
-    // float3	P = tex2D(s_position, tc).xyz;
-    float3 P = gbd.P;
+    IXrayGbuffer O;
+    GbufferUnpack(tc, pos2d, O);
 
-    #ifndef JITTER_SUN_SHAFTS
-    //	Fixed ray length, fixed step dencity
-    //	float3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);
-    //	Variable ray length, variable step dencity
-    float3 direction = P / RAY_SAMPLES;
-    #else //	JITTER_SUN_SHAFTS
-    //	float2	tcJ = I.tcJ;
-    //	Variable ray length, variable step dencity, use jittering
-    // float4	J0 	= tex2D		(jitter0,tcJ);
-    float4 J0 = jitter0.Sample(smp_jitter, tc * screen_res.x * 1.f / JITTER_TEXTURE_SIZE);
-    float coeff = (RAY_SAMPLES - 1 * J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
-    float3 direction = P * coeff;
-    //	float3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
-    #endif //	JITTER_SUN_SHAFTS
+    float3 P = O.Point;
+
+#ifndef JITTER_SUN_SHAFTS
+	//	Fixed ray length, fixed step dencity
+	//	float3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);
+	//	Variable ray length, variable step dencity
+	float3 direction = P / RAY_SAMPLES;
+#else //	JITTER_SUN_SHAFTS
+	//	Variable ray length, variable step dencity, use jittering
+	float4 J0 = jitter0.Sample(smp_jitter, tc * screen_res.x * 1.f / JITTER_TEXTURE_SIZE);
+	float coeff = (RAY_SAMPLES - 1 * J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
+	float3 direction = P * coeff;
+#endif //	JITTER_SUN_SHAFTS
 
     float depth = P.z;
     float deltaDepth = direction.z;
@@ -65,20 +61,15 @@ float4 main(v2p_TL2uv I) : SV_Target
     float max_density = sun_shafts_intensity;
     float density = max_density / RAY_SAMPLES;
 
-    if (depth < 0.0001)
-    {
-        res = max_density;
-    }
-
-    [unroll] for (int i = 0; i < RAY_SAMPLES; ++i)
+    [unroll] for(int i = 0; i < RAY_SAMPLES; ++i)
     {
         if (depth > 0.3)
         {
-    #ifndef FILTER_LOW
-            res += density * shadow(current);
-    #else //	FILTER_LOW
-            res += density * sample_hw_pcf(current, float4(0, 0, 0, 0));
-    #endif //	FILTER_LOW
+		#ifndef FILTER_LOW
+			res += density * shadow(current);
+		#else
+			res += density * sample_hw_pcf(current, float4(0, 0, 0, 0));
+		#endif
         }
 
         depth -= deltaDepth;
@@ -88,9 +79,7 @@ float4 main(v2p_TL2uv I) : SV_Target
     float fSturation = dot(normalize(P), -Ldynamic_dir.xyz);
 
     //	Normalize dot product to
-    fSturation = 0.5f * fSturation + 0.5f;
-    //	Map saturation to 0.2..1
-    fSturation = 0.80f * fSturation + 0.20f;
+    fSturation = 0.4f * fSturation + 0.6f;
 
     float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
     float skyblend = fog * fog;
@@ -99,5 +88,6 @@ float4 main(v2p_TL2uv I) : SV_Target
     res *= fSturation;
 
     return res * Ldynamic_color;
-#endif //	SUN_SHAFTS_QUALITY
+#endif // SUN_SHAFTS_QUALITY
 }
+

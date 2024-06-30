@@ -21,8 +21,5 @@ void main(in v_shadow_direct_aref I, out p_shadow O)
 
     O.hpos = mul(m_VP, pos);
     O.tc0 = I.tc.xy * consts.xy;
-
-#ifndef USE_HWSMAP
-    O.depth = O.hpos.z;
-#endif
 }
+

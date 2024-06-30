@@ -104,10 +104,10 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	alpha = min(alpha, saturate(waterDepth));
 	alpha = max(fog, alpha);
 
-	color = I.c0.xyz + L_hemi_color.xyz * I.c0.w;
+ 	// color = I.c0.xyz + L_hemi_color.xyz * I.c0.w; color *= 2.0f;
 	//	Leaves
 	float4 leaves = s_leaves.Sample(smp_base, I.tbase);
-	leaves.xyz *= water_intensity.xxx * color * 2.0f;
+	leaves.xyz *= water_intensity.xxx * color;
 	leaves.w *= 1.0f - base.w;
 	
 	float calc_cos = dot(float3(I.M1.z, I.M2.z, I.M3.z), -normalize(v2point));

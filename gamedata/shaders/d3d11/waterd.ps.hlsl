@@ -28,7 +28,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
     float2 t_d1 = s_distort.Sample(smp_base, I.tnorm1);
     float2 distort = (t_d0 + t_d1) * 0.5f;
 
-    float alpha = 0.25f * t_base.w;
+    float alpha = 1.0f - t_base.w;
 
 #ifdef USE_SOFT_WATER
     float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
@@ -37,7 +37,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
     float3 waterPos = gbd.P.xyz * rcp(gbd.P.z) * I.tctexgen.z;
     float waterDepth = length(waterPos - gbd.P) * 0.75f;
 
-    alpha *= saturate(5.0f * waterDepth);
+    alpha *= saturate(5.0f * waterDepth) * 0.25f;
 #endif
 
     return float4(distort, 0.08f, alpha);
