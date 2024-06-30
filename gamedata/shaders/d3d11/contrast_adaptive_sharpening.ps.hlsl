@@ -5,30 +5,61 @@ float sharpening_intensity;
 
 float4 main(float2 texcoord : TEXCOORD0, float4 hpos : SV_Position) : SV_Target
 {
-    // Cross-pattern neighborhood, we could use .Load but w/e.
-    float3 top_smp = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(0, -1)).xyz;
-    float3 left_smp = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(-1, 0)).xyz;
-    float3 center_smp = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0).xyz;
-    float3 right_smp = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(1, 0)).xyz;
-    float3 down_smp = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(0, 1)).xyz;
+    // fetch a 3x3 neighborhood around the pixel 'e',
+    //  a b c
+    //  d(e)f
+    //  g h i
+    
+    float3 a = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(-1, -1)).xyz; a *= rcp(1.0f + a);
+    float3 b = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(0, -1)).xyz; b *= rcp(1.0f + b);
+    float3 c = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(1, -1)).xyz; c *= rcp(1.0f + c);
+	
+    float3 d = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(-1, 0)).xyz; d *= rcp(1.0f + d);
+    float3 g = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(-1, 1)).xyz; g *= rcp(1.0f + g);
+	
+    float3 e = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0).xyz; e *= rcp(1.0f + e);
+	
+    float3 f = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(1, 0)).xyz; f *= rcp(1.0f + f);
+    float3 h = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(0, 1)).xyz; h *= rcp(1.0f + h);
+    float3 i = s_image.SampleLevel(smp_rtlinear, texcoord, 0.0, int2(1, 1)).xyz; i *= rcp(1.0f + i);
 
-    // Min and max luma, from green channel
-    float min_luma = min(top_smp.y, min(left_smp.y, min(center_smp.y, min(right_smp.y, down_smp.y))));
-    float max_luma = max(top_smp.y, max(left_smp.y, max(center_smp.y, max(right_smp.y, down_smp.y))));
+	// Soft min and max.
+	//  a b c             b
+	//  d e f * 0.5  +  d e f * 0.5
+	//  g h i             h
+    // These are 2.0x bigger (factored out the extra multiply).
+    float3 mnRGB = min(min(min(d, e), min(f, b)), h);
+    float3 mnRGB2 = min(mnRGB, min(min(a, c), min(g, i)));
+    mnRGB += mnRGB2;
 
-    // Temp
-    float d_min_luma = min_luma;
-    float d_max_luma = 1.0 - max_luma;
+    float3 mxRGB = max(max(max(d, e), max(f, b)), h);
+    float3 mxRGB2 = max(mxRGB, max(max(a, c), max(g, i)));
+    mxRGB += mxRGB2;
 
-    // Calculate base strength of sharpening (A from presentation)
-    float sharpening_amount = d_max_luma < d_min_luma ? d_max_luma / max_luma : d_min_luma / max_luma;
+    // Smooth minimum distance to signal limit divided by smooth max.
+    float3 rcpMRGB = rcp(mxRGB);
+    float3 ampRGB = saturate(min(mnRGB, 2.0 - mxRGB) * rcpMRGB);    
+    
+    // Shaping amount of sharpening.
+    ampRGB = rsqrt(ampRGB);
+    
+	float Contrast = 1.0f; //sharpening_intensity; //1.0f;
+	float Sharpening = sharpening_intensity; //sharpening_intensity;
+	
+    float peak = -3.0 * Contrast + 8.0;
+    float3 wRGB = -rcp(ampRGB * peak);
 
-    // Filter weight
-    float3 weight = sqrt(sharpening_amount) * lerp(-0.05, -0.2, sharpening_intensity); // Min is set to -0.05, to give a wider range of sharpening.
+    float3 rcpWeightRGB = rcp(4.0 * wRGB + 1.0);
 
-    // Window
-    float3 window = top_smp + left_smp + right_smp + down_smp;
-
-    // Filter the samples and weight them
-    return float4((weight * window + center_smp) * rcp(1.0 + weight * 4.0), 1.0);
+    //                          0 w 0
+    //  Filter shape:           w 1 w
+    //                          0 w 0  
+	
+    float3 window = (b + d) + (f + h);
+    float3 outColor = saturate((window * wRGB + e) * rcpWeightRGB);
+    
+	outColor = lerp(e, outColor, Sharpening);
+	
+	return float4(outColor * rcp(max(0.00001f, 1.0 - outColor)), 1.0f);
 }
+
