@@ -577,12 +577,6 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
-	if (g_hud && g_hud->RenderActiveItemUIQuery())
-	{
-		Target->phase_wallmarks();
-		r_dsgraph_render_hud_ui();
-	}
-
 	Target->u_setrt(RCache.get_width(), RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
 	ID3D11Resource* res;
 	RDepth->GetResource(&res);
@@ -644,6 +638,11 @@ void CRender::Render		()
 		RCache.set_CullMode					(CULL_CCW);
 		RCache.set_ColorWriteEnable			();
 		RImplementation.r_dsgraph_render_emissive();
+	}
+
+	if(g_hud && g_hud->RenderActiveItemUIQuery()) {
+		Target->phase_accumulator();
+		r_dsgraph_render_hud_ui();
 	}
 
 	// Lighting, non dependant on OCCQ

@@ -523,7 +523,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 
 	CHudInitializer initalizer(true);
 
-#if	RENDER!=R_R1
+#if	RENDER==R_R2
 	// Targets, use accumulator for temporary storage
 	const ref_rt	rt_null;
 	RCache.set_RT(0,	1);
