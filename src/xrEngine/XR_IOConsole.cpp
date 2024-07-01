@@ -673,11 +673,9 @@ void CConsole::Execute( LPCSTR cmd )
 
 void CConsole::ExecuteScript( LPCSTR str )
 {
-	u32  str_size = xr_strlen( str );
-	PSTR buf = (PSTR)_alloca( (str_size + 10) * sizeof(char) );
-	xr_strcpy( buf, str_size + 10, "cfg_load " );
-	xr_strcat( buf, str_size + 10, str );
-	Execute( buf );
+	xr_string Buffer = "cfg_load ";
+	Buffer += str;
+	Execute(Buffer.c_str());
 }
 
 // -------------------------------------------------------------------------------------------------
