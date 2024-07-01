@@ -56,6 +56,9 @@ UIEditLightAnim::~UIEditLightAnim()
 
 void UIEditLightAnim::Draw()
 {
+    IsDocked = ImGui::IsWindowDocked();
+    IsFocused = ImGui::IsWindowFocused();
+
     if(ImGui::BeginChild("Left", ImVec2(230, 0)))
     {
         
@@ -65,11 +68,19 @@ void UIEditLightAnim::Draw()
         if (ImGui::BeginChild("Left", ImVec2(0, 0), true))
         {
             m_Items->Draw();
+            if (!IsDocked)
+                IsDocked = ImGui::IsWindowDocked();
+            if (!IsFocused)
+                IsFocused = ImGui::IsWindowFocused();
         }
         ImGui::EndChild();
-
+        if (!IsDocked)
+            IsDocked = ImGui::IsWindowDocked();
+        if (!IsFocused)
+            IsFocused = ImGui::IsWindowFocused();
     }
-    ImGui::EndChild(); ImGui::SameLine();
+    ImGui::EndChild();
+    ImGui::SameLine();
     if (ImGui::BeginChild("Midle", ImVec2(-230, 0)))
     {
         {
@@ -114,7 +125,10 @@ void UIEditLightAnim::Draw()
             }
             m_Props->Draw();
         }
-        
+        if (!IsDocked)
+            IsDocked = ImGui::IsWindowDocked();
+        if (!IsFocused)
+            IsFocused = ImGui::IsWindowFocused();
     }
     ImGui::EndChild(); ImGui::SameLine();
     if (ImGui::BeginChild("Right", ImVec2(230, 0)))
@@ -234,8 +248,10 @@ void UIEditLightAnim::Draw()
             RenderItem();
         }
         ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->pSurface, ImGui::CalcItemSize(ImVec2(-1,-1), 32, 32));
-       
- 
+        if (!IsDocked)
+            IsDocked = ImGui::IsWindowDocked();
+        if (!IsFocused)
+            IsFocused = ImGui::IsWindowFocused();
     }
     ImGui::EndChild();
 }
@@ -246,24 +262,20 @@ void UIEditLightAnim::Update()
     {
         if (!Form->IsClosed())
         {
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(800, 400));
-            if (ImGui::BeginPopupModal("LightAnim Editor", &Form->bOpen,0, true))
+            Form->BeginDraw();
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 600));
+            if (ImGui::Begin("LightAnim Editor", &Form->bOpen, ImGuiWindowFlags_NoDocking))
             {
-                ImGui::PopStyleVar(1);
                 Form->Draw();
-                ImGui::EndPopup();
             }
-            else
-            {
-                ImGui::PopStyleVar(1);
-                
-            }
+            ImGui::PopStyleVar(1);
+            ImGui::End();
+            Form->EndDraw();
         }
         else
         {
             xr_delete(Form);
         }
-
     }
 }
 
