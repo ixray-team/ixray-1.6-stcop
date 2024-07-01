@@ -308,7 +308,7 @@ void UIEditLightAnim::RenderItem()
     u32 Color;
     {
         int 	frame;
-        Color = m_CurrentItem->CalculateBGR(EDevice->fTimeGlobal, frame);
+        Color = m_CurrentItem->CalculateRGB(EDevice->fTimeGlobal, frame);
         if(!m_RenderAlpha)
             Color = subst_alpha(Color, 0xFF);
     }
@@ -447,9 +447,9 @@ void UIEditLightAnim::RenderPointer()
                     cb.x = floorf(x_prev + k * segment+1);
                     cb.z = floorf(x_prev + k * segment + segment+1 );
                     if (!m_RenderAlpha)
-                        FillRectPointer(cb, subst_alpha(m_CurrentItem->InterpolateBGR(prev_key->first + k), 0xFF), true);
+                        FillRectPointer(cb, subst_alpha(m_CurrentItem->InterpolateRGB(prev_key->first + k), 0xFF), true);
                     else
-                        FillRectPointer(cb, m_CurrentItem->InterpolateBGR(prev_key->first + k),true);
+                        FillRectPointer(cb, m_CurrentItem->InterpolateRGB(prev_key->first + k),true);
                 }
                 prev_key = it;
                 x_prev = x;
