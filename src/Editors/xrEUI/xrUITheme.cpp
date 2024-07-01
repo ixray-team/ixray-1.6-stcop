@@ -182,6 +182,9 @@ void CUIThemeManager::Show(bool value)
 
 void CUIThemeManager::Save()
 {
+	if (!IsLoaded)
+		return;
+
 	json JSONData = {};
 	ImVec4* colors = ImGui::GetStyle().Colors;
 
