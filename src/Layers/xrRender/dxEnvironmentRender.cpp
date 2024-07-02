@@ -235,7 +235,10 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env) {
 
 	// Render
 	RCache.set_xform_world(mSky);
+
+#ifdef USE_DX11
 	RCache.set_xform_world_old(mSkyOld);
+#endif
 
 	RCache.set_Geometry(sh_2geom);
 	RCache.set_Shader(sh_2sky);

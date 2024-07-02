@@ -272,8 +272,10 @@ void CSkeletonX::_Copy		(CSkeletonX *B)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
+#ifdef USE_DX11
 	Parent->StoreVisualMatrix(RCache.xforms.m_w);
 	RCache.set_xform_world_old (Parent->mOldWorldMartrix);
+#endif
 
 	RCache.stat.r.s_dynamic.add		(vCount);
 	switch (RenderMode)
@@ -288,7 +290,9 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			Fmatrix	O;	O.mul_43	(RCache.xforms.m_w_old,Parent->LL_GetTransform_R_old	(u16(RMS_boneid)));
 
 			RCache.set_xform_world	(W);
+#ifdef USE_DX11
 			RCache.set_xform_world_old	(O);
+#endif
 
 			RCache.set_Geometry		(hGeom);
 			RCache.Render			(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
@@ -343,7 +347,9 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 		break;
 	}
 
+#ifdef USE_DX11
 	RCache.set_xform_world_old(Fidentity);
+#endif
 }
 void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
