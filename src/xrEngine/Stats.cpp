@@ -222,6 +222,7 @@ void CStats::Show()
 		F.OutNext	("  S_calc:    %2.2fms",RenderDUMP_Scalc.result);
 		F.OutNext	("  S_render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
 		F.OutSkip	();
+		F.OutSet(600, 0);
 		F.OutNext	("*** SOUND:   %2.2fms",Sound.result);
 		F.OutNext	("  TGT/SIM/E: %d/%d/%d",  snd_stat._rendered, snd_stat._simulated, snd_stat._events);
 		F.OutNext	("  HIT/MISS:  %d/%d",  snd_stat._cache_hits, snd_stat._cache_misses);
