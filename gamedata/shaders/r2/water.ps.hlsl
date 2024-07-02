@@ -25,27 +25,6 @@ uniform float4 pos_decompression_params;
 float3 water_intensity;
 #endif //	defined(USE_SOFT_WATER) && defined(NEED_SOFT_WATER)
 
-////////////////////////////////////////////////////////////////////////////////
-// Pixel
-/*
-float4   main         ( v2p I )  : COLOR
-{
-
-        float4        t_base                = tex2D   (s_base,I.tbase);
-        float3        t_env                = texCUBE  (s_env, I.tenv);
-
-        float3        refl                = lerp    (t_env,t_base,I.c0.a);
-        float3        color                = lerp    (refl, t_base,t_base.a);
-        float3        final                = color*I.c0*2  ;
-
-        float        alpha_shift        = saturate(.5-I.c0.a);
-        float        alpha_add        = alpha_shift*alpha_shift;
-        float        alpha                = t_base.a;
-        // out
-  return  float4   (final,   t_base.a );  //t_base.a + (1-I.c0.a));  //float4  (final, t_base.a );
-}
-*/
-
 float4 main(vf I) : COLOR
 {
     float4 base = tex2D(s_base, I.tbase);
@@ -69,10 +48,10 @@ float4 main(vf I) : COLOR
     float3 env0 = texCUBE(s_env0, vreflect);
     float3 env1 = texCUBE(s_env1, vreflect);
     float3 env = lerp(env0, env1, L_ambient.w);
-    env *= env * 2;
+    env *= env * L_sky_color.xyz;
 
     float power = pow(fresnel, 9.0f);
-    float amount = 0.15f + 0.25f * power; // 1=full env, 0=no env
+    float amount = 0.25f + 0.55f * power; // 1=full env, 0=no env
 
     float3 c_reflection = env * amount;
     float3 final = lerp(c_reflection, base.rgb, base.a);
@@ -93,9 +72,7 @@ float4 main(vf I) : COLOR
     float fog_exp_intens = -4.0f;
     float fog = 1 - exp(fog_exp_intens * waterDepth);
     float3 Fc = float3(0.1f, 0.1f, 0.1f) * water_intensity.r;
-    //	float3 Fc  	= lerp(float3( 1.0h, 0.0h, 0.0h), float3( 0.0h, 1.0h, 0.0h), water_intensity.r);
-    //	float3 Fc  	= float3( 0.1h, 0.1h, 0.2h);
-    //	float3 Fc  	= float3( 1.0h, 0.0h, 0.0h);
+	
     final = lerp(Fc, final, alpha);
 
     alpha = min(alpha, saturate(waterDepth));
@@ -113,7 +90,7 @@ float4 main(vf I) : COLOR
     alpha = lerp(alpha, leaves.a, leaves.a * fLeavesFactor);
 
     #endif //	USE_SOFT_WATER
-    final *= I.c0 * 2;
+    final *= I.c0;
 
     //	Fogging
     final = lerp(fog_color, final, I.fog);
@@ -122,7 +99,7 @@ float4 main(vf I) : COLOR
     return float4(final, alpha);
 
 #else //	NEED_SOFT_WATER
-    final *= I.c0 * 2;
+    final *= I.c0;
 
     //	Fogging
     final = lerp(fog_color, final, I.fog);
@@ -131,3 +108,4 @@ float4 main(vf I) : COLOR
 
 #endif //	NEED_SOFT_WATER
 }
+
