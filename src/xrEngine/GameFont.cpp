@@ -153,12 +153,12 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	ReleaseDC(NULL, hDCScreen);
 
-	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", TRUE);
-	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", FALSE);
+	auto is_res_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "res_depend", TRUE);
+	auto is_dpi_depend = !!READ_IF_EXISTS(pSettings, r_bool, Name, "dpi_depend", !is_res_depend);
 
 	auto ppi = int(25.4f * sqrt(Hpx * Hpx + Wpx * Wpx) / sqrt(Hmm * Hmm + Wmm * Wmm));
 
-	auto res_scale = is_res_depend ? float(Device.TargetHeight) / 768.0f : 1.0f;
+	auto res_scale = is_res_depend ? float(Device.TargetHeight) / 900.0f : 1.0f;
 	auto ppi_scale = is_dpi_depend ? float(ppi) / 92.0f : 1.0f;
 
 	auto fHeight = float(size * res_scale * ppi_scale);
