@@ -278,7 +278,6 @@ void CRender::ros_destroy(IRender_ObjectSpecific*& a) { xr_delete(a); }
 class RLight : public IRender_Light
 {
 public:
-public:
 	virtual void set_type(LT type) {}
 	virtual void set_active(bool) {}
 	virtual bool get_active() { return false; }
@@ -297,9 +296,9 @@ public:
 	virtual void set_color(const Fcolor& C) {}
 	virtual void set_color(float r, float g, float b) {}
 	virtual void set_hud_mode(bool b) {}
-	virtual bool get_hud_mode() {
-		return false;
-	}
+	virtual bool get_hud_mode() { return false; }
+	virtual vis_data& get_homdata() { static vis_data temp = {};  return temp; };
+
 	virtual ~RLight() {}
 };
 IRender_Light* CRender::light_create() { return xr_new< RLight>(); }
