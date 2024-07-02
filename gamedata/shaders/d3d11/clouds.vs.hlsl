@@ -20,6 +20,7 @@ vf main(vi v)
 {
     vf o;
     o.hpos = mul(m_WVP, v.p); // xform, input in world coords
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
     // generate tcs
     float2 d0 = v.dir.xy * 2.0f - 1.0f;

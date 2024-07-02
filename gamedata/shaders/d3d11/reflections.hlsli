@@ -75,11 +75,14 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
     return float4(Color, Fade);
 }
 
-float4 calc_reflections(float3 pos, float3 vreflect)
+float4 calc_reflections(float3 pos, float2 pos2d, float3 vreflect)
 {
     float3 Point = mul(m_V, float4(pos, 1.0));
     float3 Reflect = mul(m_V, vreflect);
 
-    return ScreenSpaceLocalReflections(Point, Reflect);
+    pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
+    float3 P = float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+	
+    return ScreenSpaceLocalReflections(P * Point.z, Reflect);
 }
 #endif

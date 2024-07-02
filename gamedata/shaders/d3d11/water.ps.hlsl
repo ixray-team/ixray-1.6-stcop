@@ -57,7 +57,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	float fresnel = saturate(dot(vreflect, v2point));
 
 #ifdef USE_SSLR_ON_WATER
-	float4 sslr = calc_reflections(I.pos, vreflect);
+	float4 sslr = calc_reflections(I.pos, pos2d, vreflect);
 #endif
 
 	float2 rotation = 0.0f;

@@ -103,8 +103,8 @@ void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
 
     O.Depth = s_position.Sample(smp_nofilter, TexCoord).x;
 
-    O.Point = P * depth_unpack.x / (O.Depth - depth_unpack.y);
-    O.PointHud = P_hud * depth_unpack.z / (min(1.0f, O.Depth * 50.0f) - depth_unpack.w);
+    O.Point = P * depth_unpack.x * rcp(O.Depth - depth_unpack.y);
+    O.PointHud = P_hud * depth_unpack.z * rcp(min(1.0f, O.Depth * 50.0f) - depth_unpack.w);
 
     O.PointReal = O.Depth > 0.02f ? O.Point : O.PointHud;
 

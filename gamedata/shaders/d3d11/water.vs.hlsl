@@ -93,3 +93,4 @@ void main(in v_vert v, out vf o)
     o.tctexgen = mul(m_texgen, P);
     o.tctexgen.z = mul(m_V, P).z;
 }
+
