@@ -31,7 +31,6 @@ target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../..
 
 # Linker list
 target_link_libraries(xrCompress PUBLIC xrCore)
-target_link_libraries(xrCompress PRIVATE lzo_static_lib)
 
 if (WIN32)
     target_link_libraries(xrCompress PRIVATE "winmm.lib")

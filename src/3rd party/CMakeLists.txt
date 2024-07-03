@@ -15,8 +15,6 @@ if(WIN32)
     add_subdirectory("dxerr")
 endif()
 
-add_subdirectory("lzo")
-
 if(NOT IXRAY_COMPRESSOR_ONLY)
     if(IXRAY_UTILS OR IXRAY_EDITORS)
         add_subdirectory("MagicSoftware/FreeMagic/Source")
@@ -41,5 +39,3 @@ endif()
 if(WIN32)
     set_target_properties(dxerr PROPERTIES ${IXRAY_FOLDER_3RD})
 endif()
-
-set_target_properties(lzo_static_lib PROPERTIES ${IXRAY_FOLDER_3RD})

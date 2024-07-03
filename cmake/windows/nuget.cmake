@@ -16,7 +16,7 @@ endif()
 
 # Download packages
 execute_process(
-	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+    COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/cmake/windows/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
 )
 
 # Helper
@@ -100,3 +100,6 @@ set(OPUS ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Opus.Runtimes.win-${NUGE
 
 # Mimalloc
 set(MIMALLOC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Mimalloc.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.1.7.3)
+
+# LZO
+set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.10.0)
