@@ -78,3 +78,6 @@ set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
 set(IXR_TBB_NAME libtbb.so.12.13)
 set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/linux-x64/native/Release/${IXR_TBB_NAME})
 set(IXR_TBB_BIN ${IXR_TBB_LIB})
+
+# Mimalloc
+set(MIMALLOC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Mimalloc.Runtimes.linux-x64.2.1.7.3)

@@ -4,11 +4,12 @@
 
 #include "memory_alloc_pure.h"
 #include "memory_alloc_xr.h"
+#include "memory_alloc_mimalloc.h"
 
 #include	"xrsharedmem.h"
 #include	"xrMemory_pure.h"
 
-// HACK: ForserX: Хак для установки уровня инициализации переменной в глобальном пространстве
+// HACK: ForserX: РҐР°Рє РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё СѓСЂРѕРІРЅСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РїРµСЂРµРјРµРЅРЅРѕР№ РІ РіР»РѕР±Р°Р»СЊРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
 #pragma section(".Hook",read)
 
 BOOL		mem_initialized	= FALSE;
@@ -30,7 +31,9 @@ xrMemory::xrMemory()
 	mem_fill	= xrMemFill_x86;
 	mem_fill32	= xrMemFill32_x86;
 
-#if !defined(PURE_ONLY) && !defined(IXR_LINUX)
+#ifdef MASTER_GOLD
+	pAlloc = CMemAllocMimalloc::Create();
+#elif !defined(PURE_ONLY) && !defined(IXR_LINUX)
 	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
 	{
 		pAlloc = CMemAllocPure::Create();
