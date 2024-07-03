@@ -29,17 +29,8 @@ else()
 endif()
 
 # SDL3
-if (WIN32)
-    set(CORE_SDL3_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
-else()
-    set(CORE_SDL3_PLATFORM linux-${NUGET_PACKAGE_PLATFORM})
-endif()
-
+set(CORE_SDL3_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
-set(CORE_SDL3_LIB ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/SDL3.lib)
-
-set(CORE_SDL3_NAME SDL3.dll)
-set(CORE_SDL3_BIN ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/${CORE_SDL3_NAME})
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
@@ -83,10 +74,7 @@ set(NVTT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Nvtt.Runtimes.win-x64.20
 
 # TBB
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.win7-${NUGET_PACKAGE_PLATFORM}.2021.11.0/)
-
 set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
-set(IXR_TBB_NAME tbb12.dll)
-set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
 set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/${IXR_TBB_NAME})
 
 # AMD FidelityFX FSR2

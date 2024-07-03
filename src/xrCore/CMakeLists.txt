@@ -164,35 +164,34 @@ if (DEVIXRAY_ENABLE_SHIPPING)
 endif()
 
 # Linker list
-target_link_libraries(xrCore PUBLIC ${CORE_SDL3_LIB})
-target_link_libraries(xrCore PUBLIC ${IXR_TBB_LIB})
-
-if (WIN32)
+if(WIN32)
     if (NOT IXR_ARM_ENABLE)
         target_link_libraries(xrCore PRIVATE dxerr)
     endif()
 
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "winmm")
+
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.lib)
+    target_link_libraries(xrCore PUBLIC ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
     target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
     target_link_libraries(xrCore PUBLIC ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.lib)
     target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.lib)
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1)
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0)
+    target_link_libraries(xrCore PUBLIC ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13)
     target_link_libraries(xrCore PUBLIC ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0)
+    target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1)
 endif()
 
 # Git Info
 include(gitver.cmake)
 
 # Copy SDK binaries
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX}/${CORE_SDL3_NAME}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_EX}/${IXR_TBB_NAME}
-)
-
-if (WIN32)
+if(WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
@@ -200,11 +199,10 @@ if (WIN32)
     )
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ln -s libtbb.so.12.13 libtbb.so.12
-        COMMAND ln -s libtbb.so.12 libtbb.so
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libmimalloc.so.2
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libSDL3.so.0
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libtbb.so.12
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/liblzo2.so.2
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libmimalloc.so.2
     )
 endif()
 

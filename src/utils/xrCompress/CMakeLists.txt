@@ -26,9 +26,6 @@ if (WIN32)
     target_compile_definitions(xrCompress PRIVATE _USRDLL)
 endif()
 
-# includes 
-target_include_directories(xrCompress PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../3rd party/lzo/include")
-
 # Linker list
 target_link_libraries(xrCompress PUBLIC xrCore)
 

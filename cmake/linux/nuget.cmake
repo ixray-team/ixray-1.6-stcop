@@ -25,11 +25,7 @@ set(NUGET_PACKAGE_PLATFORM_EX x86_64)
 
 # SDL3
 set(CORE_SDL3_PLATFORM linux-${NUGET_PACKAGE_PLATFORM})
-
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
-set(CORE_SDL3_LIB ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
-set(CORE_SDL3_BIN ${CORE_SDL3}runtimes/${CORE_SDL3_PLATFORM}/native/Release/libSDL3.so.0.0.0)
-set(CORE_SDL3_NAME libSDL3.so.0)
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
@@ -71,9 +67,6 @@ set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
 # TBB
 set(IXR_TBB_SDK ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OneTbb.Runtimes.linux-x64.2024.3.26-open/)
 set(IXR_TBB_INC ${IXR_TBB_SDK}build/native/include/)
-
-set(IXR_TBB_NAME libtbb.so.12.13)
-set(IXR_TBB_LIB ${IXR_TBB_SDK}runtimes/linux-x64/native/Release/${IXR_TBB_NAME})
 set(IXR_TBB_BIN ${IXR_TBB_LIB})
 
 # Mimalloc
