@@ -73,7 +73,12 @@ void CNvReader::Initialize()
 
 void CNvReader::InitDeviceInfo()
 {
-	(*NvAPI_Initialize)();
+	if (NVAPI_OK != (*NvAPI_Initialize)())
+	{
+		bSupport = false;
+		return;
+	}
+
 
 	// gpuUsages[0] must be this value, otherwise NvAPI_GPU_GetUsages won't work
 	gpuUsages[0] = (NVAPI_MAX_USAGES_PER_GPU * 4) | 0x10000;
