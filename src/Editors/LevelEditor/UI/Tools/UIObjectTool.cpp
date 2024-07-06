@@ -160,6 +160,11 @@ void UIObjectTool::RefreshList()
     if (RefreshInProgress)
         return;
 
+    string_path ObjectPath = {};
+
+    FS.update_path(ObjectPath, _objects_, "");
+    FS.rescan_path(ObjectPath, true);
+
     std::thread refreshThread(&UIObjectTool::RefreshListInternal, this);
     refreshThread.detach();
 }
@@ -170,7 +175,9 @@ void UIObjectTool::RefreshListInternal()
 
     ListItemsVec items;
     FS_FileSet lst;
-    if (Lib.GetObjects(lst)) {
+    
+    if (Lib.GetObjects(lst)) 
+    {
         FS_FileSetIt	it = lst.begin();
         FS_FileSetIt	_E = lst.end();
         for (; it != _E; it++) {
