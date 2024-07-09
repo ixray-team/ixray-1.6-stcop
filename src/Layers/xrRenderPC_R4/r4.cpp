@@ -565,6 +565,7 @@ CRender::~CRender()
 #include "../../xrEngine/GameFont.h"
 void CRender::Statistics(CGameFont* _F) {
 	CGameFont& F = *_F;
+	F.OutSet(250, 35);
 	F.OutNext(" **** LT:%2d,LV:%2d **** ", stats.l_total, stats.l_visible);	stats.l_visible = 0;
 	F.OutNext("    S(%2d)   | (%2d)NS   ", stats.l_shadowed, stats.l_unshadowed);
 	F.OutNext("smap use[%2d], merge[%2d], finalclip[%2d]", stats.s_used, stats.s_merged - stats.s_used, stats.s_finalclip);

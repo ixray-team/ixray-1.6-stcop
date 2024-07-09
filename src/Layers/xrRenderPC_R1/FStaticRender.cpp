@@ -655,6 +655,7 @@ void	CRender::ApplyBlur4		(FVF::TL4uv* pv, u32 w, u32 h, float k)
 void	CRender::Statistics	(CGameFont* _F)
 {
 	CGameFont&	F	= *_F;
+	F.OutSet(250, 35);
 	F.OutNext	(" **** Occ-Q(%03.1f) **** ",100.f*f32(stats.o_culled)/f32(stats.o_queries?stats.o_queries:1));
 	F.OutNext	(" total  : %2d",	stats.o_queries	);	stats.o_queries = 0;
 	F.OutNext	(" culled : %2d",	stats.o_culled	);	stats.o_culled	= 0;

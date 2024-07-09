@@ -159,7 +159,7 @@ void CStats::Show()
 		::Sound->statistic			(&snd_stat,0);
 		F.SetColor	(0xFFFFFFFF	);
 
-		F.OutSet	(0,0);
+		F.OutSet	(10,35);
 		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
 		F.OutNext	("TPS:         %2.2f M",	fTPS);
 		m_pRender->OutData1(F);
@@ -222,7 +222,7 @@ void CStats::Show()
 		F.OutNext	("  S_calc:    %2.2fms",RenderDUMP_Scalc.result);
 		F.OutNext	("  S_render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
 		F.OutSkip	();
-		F.OutSet(600, 0);
+		F.OutSet(500, 35);
 		F.OutNext	("*** SOUND:   %2.2fms",Sound.result);
 		F.OutNext	("  TGT/SIM/E: %d/%d/%d",  snd_stat._rendered, snd_stat._simulated, snd_stat._events);
 		F.OutNext	("  HIT/MISS:  %d/%d",  snd_stat._cache_hits, snd_stat._cache_misses);
@@ -289,7 +289,7 @@ void CStats::Show()
 	{
 		CGameFont&	F_ = *((CGameFont*)pFont);
 		F_.SetColor						(color_rgba(255,16,16,255));
-		F_.OutSet						(300,300);
+		F_.OutSet						(300,360);
 		if (fFPS<30)					F_.OutNext	("FPS       < 30:   %3.1f",	fFPS);
 		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
 		m_pRender->GuardVerts(F_);
@@ -314,7 +314,7 @@ void CStats::Show()
 	{
 		CGameFont&	F_ = *((CGameFont*)pFont);
 		F_.SetColor	(color_rgba(255,16,16,191));
-		F_.OutSet	(200,0);
+		F_.OutSet	(750,35);
 #if 0
 		for (u32 it=0; it<errors.size(); it++)
 			F_.OutNext("%s",errors[it].c_str());
