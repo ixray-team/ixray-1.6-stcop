@@ -113,4 +113,46 @@
     <string id="ui_mm_sslr_water">
         <text>Отражения на воде</text>
     </string>
+    <string id="ui_mm_r_scale_preset">
+        <text>Качество масштаб.</text>
+    </string>
+    <string id="st_scale_native">
+        <text>Сглаживание</text>
+    </string>
+    <string id="st_scale_quality">
+        <text>Качество</text>
+    </string>
+    <string id="st_scale_balanced">
+        <text>Сбалансированное</text>
+    </string>
+    <string id="st_scale_performance">
+        <text>Производительность</text>
+    </string>
+    <string id="st_scale_ultraperformance">
+        <text>Ультрапроизводительность</text>
+    </string>
+    <string id="st_scale_custom">
+        <text>Пользовательское</text>
+    </string>
+    <string id="st_common_settings">
+        <text>Общие настройки</text>
+    </string>
+    <string id="st_surface_options">
+        <text>Настройки поверхностей</text>
+    </string>
+    <string id="st_aa_options">
+        <text>Настройки сглаживания и масштабирования</text>
+    </string>
+    <string id="st_lights_options">
+        <text>Настройки освещения</text>
+    </string>
+    <string id="st_sunlight_options">
+        <text>Настройки солнечного света</text>
+    </string>
+    <string id="st_effects_options">
+        <text>Эффекты</text>
+    </string>
+    <string id="st_postprocess_options">
+        <text>Постобработка</text>
+    </string>
 </string_table>

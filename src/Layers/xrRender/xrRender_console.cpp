@@ -36,10 +36,12 @@ xr_token qscale_mode_token[] = {
 
 u32			ps_r_ssao_mode			=	2;
 xr_token							qssao_mode_token						[ ]={
-	{ "disabled",					0											},
-	{ "default",					1											},
-	{ "hdao",						2											},
-	{ "gtao",						3											},
+	{ "st_opt_off",					0											},
+	{ "ui_mm_ssao",					1											},
+	{ "ui_mm_hdao",					2											},
+#ifdef USE_DX11
+	{ "ui_mm_gtao",					3											},
+#endif
 	{ 0,							0											}
 };
 

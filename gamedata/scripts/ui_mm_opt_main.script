@@ -3,6 +3,7 @@ class "options_dialog" (CUIScriptWnd)
 function options_dialog:__init() super()
 
 	self.m_preconditions	= {}
+	self.m_deffer_ex	= {}
     self:InitControls()
     self:InitCallBacks()
 	self.tab:SetActiveTab			("video")
@@ -113,21 +114,20 @@ end
 
 function options_dialog:UpdateDependControls()
 	self.scroll_v:Clear()
-	local _current_id = self.combo_renderer:CurrentID()
-	local _value = self.combo_renderer:GetValueOf(_current_id)
+	
+	local current_id = self.combo_renderer:CurrentID()
+	local value = self.combo_renderer:GetValueOf(current_id)
 
-	for i,j in pairs(self.m_preconditions) do
-		if(j.func(_value)) then
+	for _, j in pairs(self.m_preconditions) do
+		if j.func(value) then
 			self.scroll_v:AddWindow(j.control, true)
 			j.control:SetAutoDelete(false)
 		end
 	end
 
-	local max_texture_lod = 4
-	local min_texture_lod = 0
-
-	self.texture_lod_track:SetOptIBounds(min_texture_lod, max_texture_lod)
-	self:OnAOOptionChange()
+    for _, t in pairs(self.m_deffer_ex) do
+        t.func(t.arg)
+    end
 end
 
 function options_dialog:InitCallBacks()
@@ -143,13 +143,9 @@ function options_dialog:InitCallBacks()
 	self:AddCallback("btn_check_updates",	ui_events.BUTTON_CLICKED,	self.OnBtnCheckUpdates,		self)
 	self:AddCallback("combo_renderer",		ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
 	self:AddCallback("btn_cancel_download",	ui_events.BUTTON_CLICKED,	self.OnBtn_CancelDownload,	self)
-	self:AddCallback("tab_ao_opt",			ui_events.TAB_CHANGED,		self.OnAOOptionChange,		self)
 
-	self:AddCallback("mb",					ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
-	self:AddCallback("mb",					ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
---	self:AddCallback("trb_ssample",			ui_events.BUTTON_CLICKED,	self.UpdateDependControls,	self)
---	self:AddCallback("cb_ssample",			ui_events.LIST_ITEM_SELECT,	self.UpdateDependControls,	self)
-
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_YES_CLICKED, self.OnApplyChanges, self)
+	self:AddCallback("mb", ui_events.MESSAGE_BOX_NO_CLICKED, self.OnDiscardChanges,self)
 end
 
 function options_dialog:OnBtnCheckUpdates()
@@ -242,19 +238,6 @@ function options_dialog:OnTabChange()
 		self.dlg_controls:Show(true)
 	end
 
-end
-
-function options_dialog:OnAOOptionChange()
-	local ao_opt_id = self.tab_ao_opt:GetActiveId()
-	local current_id = self.combo_renderer:CurrentID()
-	local value = self.combo_renderer:GetValueOf(current_id)
-
-	if (value == "renderer_r4") and (ao_opt_id=="hdao") then
-		self.combo_ssao:enable_id(4)
-	else
-		self.combo_ssao:disable_id(4)
-	end
-	self.combo_ssao:SetCurrentOptValue()
 end
 
 function options_dialog:OnBtnAdvGraphic()
