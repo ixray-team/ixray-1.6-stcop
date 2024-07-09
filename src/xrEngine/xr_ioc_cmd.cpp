@@ -23,11 +23,23 @@ ENGINE_API float					devfloat3 = 1.0f;
 ENGINE_API float					devfloat4 = 1.0f;
 
 ENGINE_API float ps_render_scale = 1.0f;
+ENGINE_API u32 ps_render_scale_preset = 0;
 
 xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
 	{ "32",							32											},
 	{ 0,							0											}
+};
+
+xr_token vid_scale_preset_token[] = {
+	{ "st_scale_native", 0 },
+	{ "st_scale_quality", 1 },
+	{ "st_scale_balanced", 2 },
+	{ "st_scale_performance", 3 },
+	{ "st_scale_ultraperformance", 4 },
+
+	{ "st_scale_custom", 5 },
+	{ 0, 0 }
 };
 //-----------------------------------------------------------------------
 
@@ -716,6 +728,7 @@ void CCC_Register()
 
 	// General video control
 	CMD1(CCC_VidMode, "vid_mode");
+	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
 
 #ifdef DEBUG

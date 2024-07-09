@@ -55,15 +55,23 @@ void CRenderDevice::Destroy()
 }
 
 extern ENGINE_API float ps_render_scale;
+extern ENGINE_API u32 ps_render_scale_preset;
 
 void CRenderDevice::Reset(bool precache)
 {
 	u32 dwWidth_before = TargetWidth;
 	u32 dwHeight_before = TargetHeight;
 	u32 RenderScale_before = RenderScale;
+
 	u32 tm_start = TimerAsync();
 
-	RenderScale = ps_render_scale;
+	if(ps_render_scale_preset < 5) {
+		static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
+		RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
+	}
+	else {
+		RenderScale = ps_render_scale;
+	}
 
 	m_pRender->Reset(g_AppInfo.Window, TargetWidth, TargetHeight, HalfTargetWidth, HalfTargetHeight);
 
