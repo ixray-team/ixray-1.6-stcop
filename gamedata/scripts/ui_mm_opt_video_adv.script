@@ -92,11 +92,30 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitStatic("video_adv:cap_r2_sun", _st)
 	ctl = xml:InitCheck("video_adv:check_r2_sun", _st)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+    handler:Register(ctl, "enableSun")
+    handler.enableSun = ctl
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun_details", _st)
 	ctl = xml:InitCheck ("video_adv:check_r2_sun_details", _st)
-	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    local sunTable = {handler.enableSun}
+    local enableSunFunc = function (temp)
+        for i = 2, #temp do
+            temp[i]:Enable(temp[1]:GetCheck())
+            if temp[i].GetCheck then
+                temp[i]:SetCheck(temp[i]:GetCheck() and temp[1]:GetCheck())
+            end
+        end
+    end
+    table.insert(sunTable, ctl)
+    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+    
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("video_adv:cap_r2_cloud_shadows", _st)
+    ctl = xml:InitCheck ("video_adv:check_r2_cloud_shadows", _st)
+    table.insert(sunTable, ctl)
+    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
     xml:InitStatic("video_adv:cap_r4_hud_shadows", _st)
@@ -107,11 +126,6 @@ function opt_video_adv:InitControls(x, y, xml, handler)
     xml:InitStatic("video_adv:cap_r_actor_shadow", _st)
     ctl = xml:InitCheck ("video_adv:check_r_actor_shadow", _st)
     table.insert(handler.m_preconditions, {func=all_modes, control=_st})
-
-    _st = xml:InitStatic("video_adv:templ_item", nil)
-    xml:InitStatic("video_adv:cap_r2_cloud_shadows", _st)
-    ctl = xml:InitCheck ("video_adv:check_r2_cloud_shadows", _st)
-    table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_light_distance", _st)
@@ -157,12 +171,16 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun_quality", _st)
 	ctl = xml:InitComboBox("video_adv:list_r2_sun_quality", _st)
+    table.insert(sunTable, ctl)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_sun_shafts", _st)
 	ctl = xml:InitComboBox("video_adv:combo_sun_shafts", _st)
+    table.insert(sunTable, ctl)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+    handler:AddCallback("enableSun", ui_events.BUTTON_CLICKED, enableSunFunc, sunTable)
+    enableSunFunc(sunTable)
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	_st:SetWndSize(vector2():set(_st:GetWidth(), 106))
@@ -176,7 +194,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitStatic("video_adv:cap_ssao", _st)
 	ctl = xml:InitComboBox("video_adv:combo_ssao", _st)
 	handler.combo_ssao = ctl
-	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+	--table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_soft_water", _st)
@@ -192,10 +210,20 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitStatic("video_adv:cap_dof", _st)
 	ctl = xml:InitCheck("video_adv:check_dof", _st)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+    handler:Register(ctl, "enableDof")
+    handler.enableDof = ctl
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
     xml:InitStatic("video_adv:cap_dof_reload", _st)
     ctl = xml:InitCheck("video_adv:check_dof_reload", _st)
+    handler:Register(ctl, "check_dof_reload")
+    
+    local enableDofFunc = function (temp)
+        temp[2]:Enable(temp[1]:GetCheck())
+        temp[2]:SetCheck(temp[2]:GetCheck() and temp[1]:GetCheck())
+    end
+    enableDofFunc({ handler.enableDof, ctl })
+    handler:AddCallback("enableDof", ui_events.BUTTON_CLICKED, enableDofFunc, {handler.enableDof,ctl})
     table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
@@ -222,11 +250,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
 ---------
 
-	_st = xml:InitStatic("video_adv:templ_item", nil)
-	xml:InitStatic("video_adv:cap_mt_tex_load", _st)
-	xml:InitCheck("video_adv:check_mt_tex_load", _st)
-	table.insert(handler.m_preconditions, {func=all_modes, control=_st})
-
 	btn = xml:Init3tButton("video_adv:btn_to_simply", self)
 	handler:Register(btn, "btn_simply_graphic")
+    
 end
