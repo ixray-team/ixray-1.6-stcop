@@ -19,7 +19,7 @@ float4 main(v2p I) : SV_Target
 {
     //	float4	distort	= tex2D		(s_distort,I.tc0);
     float4 distort = s_distort.Sample(smp_linear, I.tc0);
-    float factor = distort.a * dot(I.c.rgb, 0.33h);
+    float factor = distort.a * dot(I.c.rgb, 0.333f);
     /*
     #ifdef	USE_SOFT_PARTICLES
             float2	zero = float2( 0.5, 0.5);
@@ -36,5 +36,5 @@ float4 main(v2p I) : SV_Target
             distort.xy = lerp  ( zero, distort.xy, alphaDistort);
     #endif	//	USE_SOFT_PARTICLES
     */
-    return float4(distort.rgb, factor);
+    return float4(distort.xyz, factor);
 }

@@ -18,7 +18,7 @@ struct v2p
 float4 main(v2p I) : SV_Target
 {
     float4 result = I.c * s_base.Sample(smp_base, I.tc0);
-    result.xyz *= L_hemi_color.xyz + L_ambient.xyz;
+  // result.xyz *= L_hemi_color.xyz + L_ambient.xyz;
 
     //	Igor: additional depth test
 #ifdef USE_SOFT_PARTICLES
