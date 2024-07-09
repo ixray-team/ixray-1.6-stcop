@@ -14,18 +14,35 @@
 
 void CSE_ALifeMonsterBase::on_spawn				()
 {
-	inherited1::on_spawn		();
+    inherited1::on_spawn();
 
-	if (!pSettings->line_exist(s_name,"Spawn_Inventory_Item_Section"))
-		return;
+    if (!pSettings->line_exist(s_name, "Spawn_Inventory_Item_Section"))
+        return;
 
-	LPCSTR						item_section = pSettings->r_string(s_name,"Spawn_Inventory_Item_Section");
-	float						spawn_probability = pSettings->r_float(s_name,"Spawn_Inventory_Item_Probability");
-	float						probability = randF();
-	if ((probability >= spawn_probability) && !fsimilar(spawn_probability,1.f))
-		return;
+    LPCSTR item_sections = pSettings->r_string(s_name, "Spawn_Inventory_Item_Section");
+    LPCSTR item_probabilities = pSettings->r_string(s_name, "Spawn_Inventory_Item_Probability");
 
-	alife().spawn_item(item_section,o_Position,m_tNodeID,m_tGraphID,ID)->ID_Parent = ID;
+    xr_vector<float> probabilities;
+    xr_vector<shared_str> sections;
+
+    string128 buf;
+    int count = _GetItemCount(item_sections);
+
+    for (int i = 0; i < count; ++i) 
+    {
+        sections.push_back(_GetItem(item_sections, i, buf));
+        probabilities.push_back(static_cast<float>(atof(_GetItem(item_probabilities, i, buf))));
+    }
+
+    for (size_t i = 0; i < sections.size(); ++i) 
+    {
+        float probability = randF();
+
+        if ((probability >= probabilities[i]) && !fsimilar(probabilities[i], 1.f))
+            continue;
+
+        alife().spawn_item(*sections[i], o_Position, m_tNodeID, m_tGraphID, ID)->ID_Parent = ID;
+    }
 }
 
 extern void add_online_impl		(CSE_ALifeDynamicObject *object, const bool &update_registries);
