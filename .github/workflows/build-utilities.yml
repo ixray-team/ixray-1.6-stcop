@@ -131,10 +131,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Ninja
-        run: |
-          sudo apt update && \
-          sudo apt install -y \
-            ninja-build
+        uses: imesense/gha-setup-ninja@v0.2
 
       - name: Configure targets
         run: |

@@ -134,8 +134,7 @@ jobs:
 
       - name: Setup Ninja
         if: contains(matrix.system, 'ubuntu')
-        run: |
-          sudo apt update && sudo apt install -y ninja-build
+        uses: imesense/gha-setup-ninja@v0.2
 
       - name: Configure compressor
         run: |
