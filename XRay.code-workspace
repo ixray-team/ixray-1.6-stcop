@@ -5,13 +5,17 @@
             "path": "."
         }
     ],
+
     "settings": {
         "files.associations": {
             "*.ltx": "ini",
+
             "**/gamedata/configs/**/*.ltx": "ini",
+
             "**/gamedata/scripts/*.script": "lua",
             "**/gamedata/shaders/**/*.s": "lua",
             "**/gamedata/shaders/**/*.s_": "lua",
+
             "**/gamedata/shaders/**/*.hlsli": "hlsl",
             "**/gamedata/shaders/**/*.hlsl": "hlsl",
             "**/gamedata/shaders/**/*.h": "hlsl",
@@ -21,7 +25,7 @@
             "**/gamedata/shaders/**/*.hs": "hlsl",
             "**/gamedata/shaders/**/*.gs": "hlsl",
             "**/gamedata/shaders/**/*.cs": "hlsl",
-            // Scenes
+
             "**/rawdata/levels/**/fog_volume.part": "ini",
             "**/rawdata/levels/**/glow.part": "ini",
             "**/rawdata/levels/**/group.part": "ini",
@@ -36,6 +40,7 @@
             "**/rawdata/levels/**/sound_src.part": "ini",
             "**/rawdata/levels/**/spawn.part": "ini",
             "**/rawdata/levels/**/way.part": "ini",
+
             "array": "cpp",
             "atomic": "cpp",
             "hash_map": "cpp",
@@ -102,11 +107,19 @@
             "cinttypes": "cpp",
             "typeinfo": "cpp"
         },
+
         "dotnet.defaultSolution": "disable",
+
         "cmake.configureOnOpen": false,
         "cmake.options.statusBarVisibility": "compact",
         "cmake.showOptionsMovedNotification": false,
+        "cmake.pinnedCommands": [
+            "workbench.action.tasks.configureTaskRunner",
+            "workbench.action.tasks.runTask"
+        ],
+
         "vsicons.dontShowNewVersionMessage": true,
+
         "vssolution.lineEndings": "crlf"
     }
 }

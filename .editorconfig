@@ -15,33 +15,24 @@ indent_size = 2
 indent_style = space
 insert_final_newline = true
 
-# Visual Studio Code project files
-[{*.code-workspace,.vscode/*.json}]
+# JSON-based files
+[{*.code-workspace,*.json}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
 indent_style = space
 insert_final_newline = true
 
-# Visual Studio solutions
-[*.sln]
-charset = utf-8-bom
+# XML-based files
+[{*.manifest,*.config}]
+charset = utf-8
 end_of_line = crlf
 indent_size = 4
-indent_style = tab
-insert_final_newline = true
-tab_width = 4
-
-# Visual C++ projects
-[*.vcxproj]
-charset = utf-8-bom
-end_of_line = crlf
-indent_size = 2
 indent_style = space
-insert_final_newline = false
+insert_final_newline = true
 
-# MSBuild configs and scripts
-[*.props]
+# INI-based files
+[{*.ini,*.INI,*.editorconfig}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
@@ -63,39 +54,70 @@ indent_size = 4
 indent_style = space
 insert_final_newline = true
 
-# INI configs
-[{fs.ltx,fsfactory.ltx,fsgame.ltx,gamedata/configs/*.ltx,gamedata/configs/*/*.ltx,gamedata/textures/*/*.ini,gamedata/textures/*/*.seq}]
+# Python scripts
+[*.py]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
 indent_style = space
 insert_final_newline = true
 
-# XML configs
-[{gamedata/configs/gameplay/*.xml,gamedata/configs/ui/*.xml,gamedata/configs/ui/*/*.xml}]
+# X-Ray configs
+[{*.ltx,*.seq,*.txt}]
+charset = cp1251
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+[{gamedata/configs/gameplay/*.xml,gamedata/configs/ui/*.xml}]
+charset = cp1251
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+[{gamedata/configs/text/cze/*.xml,gamedata/configs/text/pol/*.xml}]
+charset = cp1250
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+[{gamedata/configs/text/rus/*.xml}]
+charset = cp1251
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+[{gamedata/configs/text/eng/*.xml,gamedata/configs/text/ger/*.xml}]
+charset = cp1252
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+[{gamedata/configs/text/fra/*.xml,gamedata/configs/text/ita/*.xml,gamedata/configs/text/spa/*.xml}]
+charset = cp1252
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# X-Ray scripts
+[{gamedata/scripts/*.script,gamedata/scripts/*.lua,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_,gamedata/shaders/*/*.lua,gamedata/shaders/*/*.lua_}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
 indent_style = space
 insert_final_newline = true
 
-# XML locales
-[gamedata/configs/text/*/*.xml]
-end_of_line = crlf
-indent_size = 4
-indent_style = space
-insert_final_newline = true
-
-# Lua scripts
-[{gamedata/scripts/*.script,gamedata/shaders/*/*.s,gamedata/shaders/*/*.s_,gamedata/shaders/*/*.lua,gamedata/shaders/*/*.lua_}]
-charset = utf-8
-end_of_line = crlf
-indent_size = 4
-indent_style = space
-insert_final_newline = true
-
-# HLSL scripts
+# X-Ray scripts
 [{gamedata/shaders/*/*.h,gamedata/shaders/*/*.hlsli,gamedata/shaders/*/*.hlsl,gamedata/shaders/*/*.ps,gamedata/shaders/*/*.vs,gamedata/shaders/*/*.ds,gamedata/shaders/*/*.hs,gamedata/shaders/*/*.gs,gamedata/shaders/*/*.cs}]
+charset = utf-8
+end_of_line = crlf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+# X-Ray raw assets
+[{rawdata/**/fog_volume.part,rawdata/**/glow.part,rawdata/**/group.part,rawdata/**/group.part1,rawdata/**/light.part,rawdata/**/portal.part,rawdata/**/ps.part,rawdata/**/scene_object.part,rawdata/**/sector.part,rawdata/**/shape.part,rawdata/**/sound_env.part,rawdata/**/sound_src.part,rawdata/**/spawn.part,rawdata/**/way.part}]
 charset = utf-8
 end_of_line = crlf
 indent_size = 4
