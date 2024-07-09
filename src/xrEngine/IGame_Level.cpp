@@ -12,6 +12,8 @@
 #include "xr_object.h"
 #include "feel_sound.h"
 
+#include "FPSCounter.h"
+
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
 extern	BOOL g_bLoaded;
 
@@ -145,11 +147,16 @@ BOOL IGame_Level::Load			(u32 dwNum)
 }
 
 int		psNET_DedicatedSleep	= 5;
+bool IsFpsShow = true;
 void	IGame_Level::OnRender		( ) 
 {
 	if (!g_dedicated_server) {
 		Render->Calculate();
 		Render->Render();
+
+		if (IsFpsShow) {
+			pFPSCounter->OnRender();
+		}
 	}
 }
 

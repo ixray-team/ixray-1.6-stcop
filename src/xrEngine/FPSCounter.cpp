@@ -52,9 +52,9 @@ void FPS::FPSCounter::OnRender() {
     fps = (fps == 0.0f) ? prevFps : fps;
 
     //clamp(fps, 0.f, static_cast<float>(l_MonitorHZ()));
-
+    pCGameFont->SetAligment(CGameFont::alLeft);
     pCGameFont->SetColor(DebugTextColor::DTC_FPS_INFO);
-    pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight() * 5, 35, "FPS: %i", static_cast<int>(fps));
+    pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight() * 4.5f, 35, "FPS: %i", static_cast<int>(fps));
     pCGameFont->OnRender();
 
     prevFps = fps;

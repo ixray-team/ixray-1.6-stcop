@@ -22,7 +22,6 @@ using namespace DirectX;
 #define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
 #include "igame_persistent.h"
-#include "FPSCounter.h"
 
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 #ifndef _EDITOR
@@ -191,7 +190,6 @@ int g_svDedicateServerUpdateReate = 100;
 
 ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
 int g_dwFPSlimit = 500;
-bool IsFpsShow = true;
 void CRenderDevice::time_factor(const float &time_factor)
 {
 	Timer.time_factor		(time_factor);
@@ -317,10 +315,6 @@ void CRenderDevice::on_idle		()
 				seqRender.Process(rp_Render);
 				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
 					Statistic->Show();
-
-				if (IsFpsShow) {
-					pFPSCounter->OnRender();
-				}
 
 				End();
 			}
