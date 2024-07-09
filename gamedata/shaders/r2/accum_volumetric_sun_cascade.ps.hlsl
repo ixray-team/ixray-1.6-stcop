@@ -38,18 +38,17 @@ float4 main(float2 tc : TEXCOORD0) : COLOR
 #else //	SUN_SHAFTS_QUALITY
 
     float3 P = tex2D(s_position, tc).xyz;
-    #ifndef JITTER_SUN_SHAFTS
+#ifndef JITTER_SUN_SHAFTS
     //	Fixed ray length, fixed step dencity
     //	float3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);
     //	Variable ray length, variable step dencity
     float3 direction = P / RAY_SAMPLES;
-    #else //	JITTER_SUN_SHAFTS
+#else //	JITTER_SUN_SHAFTS
     //	Variable ray length, variable step dencity, use jittering
     float4 J0 = tex2D(jitter0, float4(screen_res.x / JITTER_TEXTURE_SIZE * tc, 0.0f, 0.0f)); // tcJ);
     float coeff = (RAY_SAMPLES - 1.0f * J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
     float3 direction = P * coeff;
-    //	float3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
-    #endif //	JITTER_SUN_SHAFTS
+#endif //	JITTER_SUN_SHAFTS
 
     float depth = P.z;
     float deltaDepth = direction.z;
