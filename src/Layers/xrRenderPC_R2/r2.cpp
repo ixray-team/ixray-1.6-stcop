@@ -102,7 +102,7 @@ void					CRender::create					()
 	m_skinning			= -1;
 
 	// hardware
-	o.smapsize			= ps_r__smapsize;
+	o.smapsize			= ps_r2_smapsize;
 	o.mrt				= (Caps.raster.dwMRT_count >= 3);
 	o.mrtmixdepth		= (Caps.raster.b_MRT_mixdepth);
 

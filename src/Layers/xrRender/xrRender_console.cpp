@@ -14,7 +14,7 @@ xr_token							qpreset_token							[ ]={
 	{ 0,							0											}
 };
 
-u32 ps_r__smapsize = 2048;
+u32 ps_r2_smapsize = 2048;
 xr_token qsmapsize_token[] = {
 	{ "1024", 1024 },
 	{ "2048", 2048 },
@@ -763,8 +763,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask16,	"r2_ssao_half_data",			&ps_r2_ls_flags_ssao,		SSAO_HALF_DATA);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_gtao",					&ps_r2_ls_flags_ssao,		SSAO_GTAO);//Need restart
 	CMD3(CCC_Mask16,	"r2_ssao_hdao",					&ps_r2_ls_flags_ssao,		SSAO_HDAO);//Need restart
-	CMD3(CCC_Mask,		"r4_enable_tessellation",		&ps_r2_ls_flags_ext,		R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
-
 	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
 	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
 
@@ -780,11 +778,12 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
 
 	CMD3(CCC_Mask,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
+	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 
 	// IX-Ray
 	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
-	CMD3(CCC_Token, "r__type_aa", &ps_r2_aa_type, aa_type_token);
+	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);
 	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
 	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
@@ -792,17 +791,17 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
 
-	CMD4(CCC_Float, "r2_def_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
+	CMD4(CCC_Float, "r2_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
 	CMD3(CCC_Mask, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
 	CMD3(CCC_Mask, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
 	CMD3(CCC_Mask, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
-	CMD3(CCC_Token, "r__smap_size", &ps_r__smapsize, qsmapsize_token);
+	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);
 	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 
-	CMD3(CCC_Token, "r_scale_mode", &ps_r_scale_mode, qscale_mode_token);
+	CMD3(CCC_Token, "vid_scale_mode", &ps_r_scale_mode, qscale_mode_token);
 	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 	CMD3(CCC_Mask, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
-	CMD3(CCC_Mask, "r4_sslr_on_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
+	CMD3(CCC_Mask, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
 #ifdef DEBUG_DRAW

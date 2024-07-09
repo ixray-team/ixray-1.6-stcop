@@ -139,7 +139,7 @@ void					CRender::create					()
 	m_skinning			= -1;
 
 	// hardware
-	o.smapsize			= ps_r__smapsize;
+	o.smapsize			= ps_r2_smapsize;
 
 	o.nullrt = false;
 
