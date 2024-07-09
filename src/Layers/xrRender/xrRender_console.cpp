@@ -183,9 +183,6 @@ float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
-Fvector		ps_r2_aa_barier				= { .8f, .1f, 0};	// r2-only
-Fvector		ps_r2_aa_weight				= { .25f,.25f,0};	// r2-only
-float		ps_r2_aa_kernel				= .5f;				// r2-only
 float		ps_r2_ls_depth_scale		= 1.00001f;			// 1.00001f
 float		ps_r2_ls_depth_bias			= -0.0003f;			// -0.0001f
 float		ps_r2_ls_squality			= 1.0f;				// 1.00f
@@ -804,9 +801,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_sun_lumscale_amb",	&ps_r2_sun_lumscale_amb,	0.0,	+3.0	);
 	CMD4(CCC_Float,		"r2_sun_lumscale_sky",	&ps_r2_sun_lumscale_sky,	0.0,	+3.0	);
 
-	CMD3(CCC_Mask,		"r2_aa",				&ps_r2_ls_flags,			R2FLAG_AA);
-	CMD4(CCC_Float,		"r2_aa_kernel",			&ps_r2_aa_kernel,			0.3f,	0.7f	);
-
 	CMD4(CCC_Integer,	"r2_wait_sleep",		&ps_r2_wait_sleep,			0,		1		);
 
 #ifndef MASTER_GOLD
@@ -828,12 +822,6 @@ void		xrRender_initconsole	()
 
 	CMD4(CCC_Float,		"r2_slight_fade",		&ps_r2_slight_fade,			.2f,	1.f		);
 
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_break",			&ps_r2_aa_barier,			tw_min, tw_max	);
-
-	tw_min.set			(0,0,0);	tw_max.set	(1,1,1);
-	CMD4(CCC_Vector3,	"r2_aa_weight",			&ps_r2_aa_weight,			tw_min, tw_max	);
-
 	//	Igor: Depth of field
 	tw_min.set			(-10000,-10000,0);	tw_max.set	(10000,10000,10000);
 	CMD4( CCC_Dof,		"r2_dof",		&ps_r2_dof, tw_min, tw_max);
@@ -845,7 +833,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r2_dof_sky",	&ps_r2_dof_sky,						-10000.f,	10000.f);
 	CMD3(CCC_Mask,		"r2_dof_enable",&ps_r2_ls_flags,	R2FLAG_DOF);
 
-	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
+	CMD3(CCC_Mask,		"r4_hud_shadows",				&ps_r2_ls_flags_ext,		R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 	CMD3(CCC_Mask,		"r2_vignette",					&ps_r2_ls_flags_ext,		R2FLAG_SPP_VIGNETTE);
 	CMD3(CCC_Mask,		"r2_aberration",				&ps_r2_ls_flags_ext,		R2FLAG_SPP_ABERRATION);
 

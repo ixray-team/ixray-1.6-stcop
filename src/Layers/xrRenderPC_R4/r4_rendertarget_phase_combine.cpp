@@ -313,9 +313,6 @@ void	CRenderTarget::phase_combine	()
 
 		// Draw COLOR
 		RCache.set_Element(s_combine->E[2]);	// look at blender_combine.cpp
-		RCache.set_c("e_barrier", ps_r2_aa_barier.x, ps_r2_aa_barier.y, ps_r2_aa_barier.z, 0);
-		RCache.set_c("e_weights", ps_r2_aa_weight.x, ps_r2_aa_weight.y, ps_r2_aa_weight.z, 0);
-		RCache.set_c("e_kernel", ps_r2_aa_kernel, ps_r2_aa_kernel, ps_r2_aa_kernel, 0);
 
 		Fvector3 dof;
 		g_pGamePersistent->GetCurrentDof(dof);

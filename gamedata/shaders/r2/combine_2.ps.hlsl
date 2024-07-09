@@ -14,9 +14,6 @@ struct v2p
 };
 
 uniform sampler2D s_distort;
-uniform float4 e_barrier; // x=norm(.8f), y=depth(.1f), z=clr
-uniform float4 e_weights; // x=norm, y=depth, z=clr
-uniform float4 e_kernel; // x=norm, y=depth, z=clr
 
 #define EPSDEPTH 0.001
 
