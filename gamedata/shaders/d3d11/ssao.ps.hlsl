@@ -70,7 +70,10 @@ float calc_ssao(float3 pos, float3 normal, float2 tc0, float2 tcJ, float2 pos2d)
 		float3( 1.0,  1.0, -1.0) * fScale * (n += step),
 	};
 	
-	float2 tc1 = (tc0 * scaled_screen_res.xy + m_taa_jitter.w * 4.0f) * 0.015625f;
+	float2 jit_offset = 0.0f;
+	sincos(m_taa_jitter.z * 6.283, jit_offset.x, jit_offset.y);
+	
+	float2 tc1 = (tc0 * scaled_screen_res.xy + jit_offset * 4.0f) * 0.015625f;
 	float3 rotSample = jitter0.Sample(smp_jitter, tc1).xyz;
 	rotSample = normalize(rotSample - 0.5f);
 
