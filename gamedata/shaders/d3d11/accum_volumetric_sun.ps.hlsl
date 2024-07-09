@@ -85,7 +85,7 @@ float4 main(v2p_TL2uv I) : SV_Target
     float skyblend = fog * fog;
 
     res = lerp(res, max_density, skyblend);
-    res *= fSturation;
+    //res *= fSturation;
 
     return res * Ldynamic_color;
 #endif // SUN_SHAFTS_QUALITY
