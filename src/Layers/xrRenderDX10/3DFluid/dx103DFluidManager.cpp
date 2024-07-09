@@ -754,7 +754,7 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 }
 
 //	Allow real-time config reload
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 void dx103DFluidManager::RegisterFluidData(dx103DFluidData* pData, const xr_string &SectionName)
 {
 	int iDataNum = (int)m_lstFluidData.size();

@@ -224,7 +224,7 @@ void dx103DFluidData::ParseProfile(const xr_string &Profile)
 }
 
 //	Allow real-time config reload
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 void dx103DFluidData::ReparseProfile(const xr_string &Profile)
 {
 	m_Emitters.clear();

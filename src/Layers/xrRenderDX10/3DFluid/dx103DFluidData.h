@@ -46,7 +46,7 @@ public:
 	const Settings&				GetSettings() const { return m_Settings;}
 
 	//	Allow real-time config reload
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 	void	ReparseProfile(const xr_string &Profile);
 #endif	//	DEBUG
 

@@ -52,7 +52,7 @@ public:
 	static LPCSTR*	GetShaderTextureNames() { return m_pShaderTextureNames; }
 
 	//	Allow real-time config reload
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 	void	RegisterFluidData(dx103DFluidData* pData, const xr_string &SectionName);
 	void	DeregisterFluidData(dx103DFluidData* pData);
 	void	UpdateProfiles();
@@ -137,7 +137,7 @@ private:
 	int		m_iTextureDepth;
 
 //	Allow real-time config reload
-#ifdef	DEBUG
+#ifdef	DEBUG_DRAW
 	xr_vector<xr_string>		m_lstSectionNames;
 	xr_vector<dx103DFluidData*>	m_lstFluidData;
 #endif	//	DEBUG
