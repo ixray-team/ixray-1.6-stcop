@@ -44,7 +44,17 @@ float main(PSInput I) : SV_Target
         for (int j = -half_kernel; j <= half_kernel; j += 2)
         {
             // This is why I used UINT rendertarget ;)
+#ifndef SM_5
+			uint4 tap = 0; // GatherRed slow emulation (Hozar_2002) for DX10 fan`s
+			int3 gather_texcoord_scaled = int3(float2(i, j) + gather_texcoord * pos_decompression_params2.xy, 0);
+			
+			tap.x = t_gtao_packed.Load(gather_texcoord_scaled, int2(1, 0)).x;
+			tap.y = t_gtao_packed.Load(gather_texcoord_scaled, int2(1, 1)).x;
+			tap.z = t_gtao_packed.Load(gather_texcoord_scaled, int2(0, 1)).x;
+			tap.w = t_gtao_packed.Load(gather_texcoord_scaled, int2(0, 0)).x;
+#else
             uint4 tap = t_gtao_packed.GatherRed(smp_nofilter, gather_texcoord, int2(i, j));
+#endif
 
             // Unpack view-z and occlusion values
             float4 depth_tap = f16tof32(tap & 0x0000ffff);

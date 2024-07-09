@@ -12,6 +12,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
     {
     case 0:
         C.r_Pass("stub_fullscreen_triangle", "gtao_render", FALSE, FALSE, FALSE);
+        C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_normal", r2_RT_N);
 

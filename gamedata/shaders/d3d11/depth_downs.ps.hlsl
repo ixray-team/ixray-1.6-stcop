@@ -1,13 +1,5 @@
 #include "common.hlsli"
 
-#ifdef ISAMPLE
-    #undef ISAMPLE
-#endif // #ifdef ISAMPLE
-
-#define ISAMPLE 0
-
-uniform float3x4 m_v2w;
-
 struct _input
 {
     float4 tc0 : TEXCOORD0; // tc.xy, tc.w = tonemap scale
@@ -17,50 +9,18 @@ struct _input
 
 float4 main(_input I) : SV_Target0
 {
-    // gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d * 2, ISAMPLE) );
-    //	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0.xy + 0.5f / pos_decompression_params2.xy, I.pos2d * 2, ISAMPLE) );
-    //	TODO: move it to C++ code to save maths in PS
-    //	??? Why we move x and y in the same direction???
-    gbuffer_data gbd0 = gbuffer_load_data(GLD_P(I.tc0.xy + 0.5f * pos_decompression_params2.zw, I.pos2d * 2, ISAMPLE));
-    gbuffer_data gbd1 = gbuffer_load_data(GLD_P(I.tc0.xy - 0.5f * pos_decompression_params2.zw, I.pos2d * 2, ISAMPLE));
-    gbuffer_data gbd2 = gbuffer_load_data(GLD_P(I.tc0.xy + 0.5f * float2(+pos_decompression_params2.z, -pos_decompression_params2.w), I.pos2d * 2, ISAMPLE));
-    gbuffer_data gbd3 = gbuffer_load_data(GLD_P(I.tc0.xy + 0.5f * float2(-pos_decompression_params2.z, +pos_decompression_params2.w), I.pos2d * 2, ISAMPLE));
+	float4 Depth;
 
-    gbuffer_data gbd = gbd0;
-    if (gbd1.P.z < gbd.P.z)
-    {
-        gbd = gbd1;
-    }
-    if (gbd2.P.z < gbd.P.z)
-    {
-        gbd = gbd2;
-    }
-    if (gbd3.P.z < gbd.P.z)
-    {
-        gbd = gbd3;
-    }
+#ifndef SM_5
+    Depth.x = s_position.SampleLevel(smp_nofilter, I.tc0.xy, int2(1, 0), 0).x;
+    Depth.y = s_position.SampleLevel(smp_nofilter, I.tc0.xy, int2(1, 1), 0).x;
+    Depth.z = s_position.SampleLevel(smp_nofilter, I.tc0.xy, int2(0, 1), 0).x;
+    Depth.w = s_position.SampleLevel(smp_nofilter, I.tc0.xy, int2(0, 0), 0).x;
+#else // !SM_5
+    Depth = s_position.GatherRed(smp_nofilter, I.tc0.xy);
+#endif // SM_5
 
-    //	gbd.P.z = (gbd0.P.z + gbd1.P.z + gbd2.P.z + gbd3.P.z)  * 0.25f;
-
-    float4 P = float4(gbd.P, gbd.mtl); // position.(mtl or sun)
-
-    //	SSAO_OPT_DATA == 2	for float-res data
-    //	SSAO_OPT_DATA == 1	for full-res data
-
-#ifndef HDAO // AMDs hdao turned off
-    #if SSAO_OPT_DATA == 2
-    return float4(P.zzzz);
-    #else //	SSAO_OPT_DATA == 2
-    gbd = gbuffer_load_data(GLD_P(I.tc0.xy, I.pos2d, ISAMPLE));
-    return float4(gbd.P.zzzz);
-    #endif //	SSAO_OPT_DATA == 2
-#else // HDAO
-    #if SSAO_OPT_DATA == 2
-    return float4(P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz);
-    #else //	SSAO_OPT_DATA == 2
-    //	gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d, ISAMPLE) );
-    //	return  float4(gbd.P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz);
-    return float4(0, 0, 0, 1);
-    #endif //	SSAO_OPT_DATA == 2
-#endif // HDAO
+    Depth = depth_unpack.x * rcp(Depth - depth_unpack.y);
+	return min(min(Depth.x, Depth.y), min(Depth.z, Depth.w));
 }
+

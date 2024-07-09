@@ -26,6 +26,7 @@ struct PSInput
 };
 
 float gtao_parameters; // Factor used to transform world space radius to screen space
+uniform Texture2D s_half_depth;
 
 // Arccosine approximation by Michal Drobot
 // TODO: Make a 'fastmath' like library
@@ -107,7 +108,8 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
             }
 
             // Sample the view space position
-            float s_view_z = depth_unpack.x / (s_position.SampleLevel(smp_nofilter, s_texcoord, 0.0).x - depth_unpack.y);
+            float s_view_z = depth_unpack.x * rcp(s_position.SampleLevel(smp_nofilter, s_texcoord, 0.0).x - depth_unpack.y);
+            // float s_view_z = s_half_depth.SampleLevel(smp_nofilter, s_texcoord, 0.0).x;
             float3 s_view_position = float3((s_texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
 
             // Get front and back vectors
@@ -142,32 +144,33 @@ uint main(PSInput I) : SV_Target
 
     // This noise pattern seems to work best
     float noise_pattern[16] =
-        {
-            0.40625, 0.71875, 0.03125, 0.84375,
-            0.90625, 0.78125, 0.34375, 0.21875,
-            0.53125, 0.15625, 0.65625, 0.28125,
-            0.96875, 0.59375, 0.09375, 0.46875
-        };
+	{
+		0.40625, 0.71875, 0.03125, 0.84375,
+		0.90625, 0.78125, 0.34375, 0.21875,
+		0.53125, 0.15625, 0.65625, 0.28125,
+		0.96875, 0.59375, 0.09375, 0.46875
+	};
 
     float jitter = noise_pattern[pixel_index.x + pixel_index.y * 4u];
 
     // Unpack G-Buffer data...
-    gbuffer_data gbd;
+    float3 Normal, Point; float Depth;
     {
-        gbd.depth = s_position.SampleLevel(smp_nofilter, I.texcoord, 0.0).x;
+        Depth = s_position.SampleLevel(smp_nofilter, I.texcoord, 0.0).x;
 
-        float4 N = s_normal.SampleLevel(smp_nofilter, I.texcoord, 0.0);
-        gbd.N = normalize(N.xyz - 0.5f);
-        gbd.N.z = -gbd.N.z;
+        Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord, 0.0).xyz;
+        Normal = normalize(Normal.xyz - 0.5f);
+        Normal.z = -Normal.z;
 
-        float s_view_z = depth_unpack.x / (gbd.depth - depth_unpack.y);
-        gbd.P.xyz = float3((I.texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
+        float s_view_z = depth_unpack.x / (Depth - depth_unpack.y);
+        Point = float3((I.texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
     }
 
     // Init
-    float occlusion = example_how_to_not_implement_gtao(gbd.P, gbd.N, gbd.depth, I.texcoord, jitter);
+    float occlusion = example_how_to_not_implement_gtao(Point, Normal, Depth, I.texcoord, jitter);
 
     // Pack the data into R32_UINT
-    uint2 packed = uint2(asuint(f32tof16(gbd.P.z)), (asuint(f32tof16(occlusion)) << 16));
+    uint2 packed = uint2(asuint(f32tof16(Point.z)), (asuint(f32tof16(occlusion)) << 16));
     return packed.x | packed.y;
 }
+
