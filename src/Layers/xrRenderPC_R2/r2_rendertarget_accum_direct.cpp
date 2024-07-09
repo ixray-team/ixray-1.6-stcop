@@ -97,9 +97,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		// texture adjustment matrix
 		float			fTexelOffs			= (0.5f / float(RImplementation.o.smapsize));
 		float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
-		//float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-		//	Use this when triangle culling is not inverted.
-//		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
 		Fmatrix			m_TexelAdjust		= 
 		{
 			0.5f,				0.0f,				0.0f,			0.0f,
@@ -121,7 +118,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 			// tsm-bias
 			if ( (SE_SUN_FAR == sub_phase) && (RImplementation.o.HW_smap) )
 			{
-				Fvector		bias;	bias.mul		(L_dir,ps_r2_sun_tsm_bias);
+				Fvector		bias;	bias.mul		(L_dir,ps_r2_sun_bias);
 				Fmatrix		bias_t;	bias_t.translate(bias);
 				m_shadow.mulB_44	(bias_t);
 			}
@@ -275,7 +272,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		u_DBT_disable	();
 
 		//	Igor: draw volumetric here
-		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
 		if ((ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
 			accum_direct_volumetric	(sub_phase, Offset, m_shadow);
 	}

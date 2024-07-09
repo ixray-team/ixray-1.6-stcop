@@ -120,7 +120,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 			// tsm-bias
 			if ( (SE_SUN_FAR == sub_phase) && (RImplementation.o.HW_smap) )
 			{
-				Fvector		bias;	bias.mul		(L_dir,ps_r2_sun_tsm_bias);
+				Fvector		bias;	bias.mul		(L_dir,ps_r2_sun_bias);
 				Fmatrix		bias_t;	bias_t.translate(bias);
 				m_shadow.mulB_44	(bias_t);
 			}
@@ -282,7 +282,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		//		u_DBT_disable	();
 
 		//	Igor: draw volumetric here
-		//if (ps_r2_ls_flags.test(R2FLAG_SUN_SHAFTS))
 		if ((ps_r_sun_shafts>0) && sub_phase == SE_SUN_FAR)
 			accum_direct_volumetric(sub_phase, Offset, i_offset, m_shadow);
 	}

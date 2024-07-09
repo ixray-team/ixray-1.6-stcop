@@ -135,7 +135,6 @@ Fvector3	ps_r_taa_jitter_scale = { 1,1,0 };
 
 // R2-specific
 Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
-	//| R2FLAG_SUN_IGNORE_PORTALS
 	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
 	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
 	| R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF
@@ -145,8 +144,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	|R2FLAG_SOFT_PARTICLES
 	|R2FLAG_SOFT_WATER
 	|R2FLAG_STEEP_PARALLAX
-	|R2FLAG_SUN_FOCUS
-	|R2FLAG_SUN_TSM
 	|R2FLAG_TONEMAP
 	|R2FLAG_VOLUMETRIC_LIGHTS
 	};	// r2-only
@@ -186,17 +183,14 @@ float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
 float		ps_r2_ls_depth_scale		= 1.00001f;			// 1.00001f
 float		ps_r2_ls_depth_bias			= -0.0003f;			// -0.0001f
 float		ps_r2_ls_squality			= 1.0f;				// 1.00f
-float		ps_r2_sun_tsm_projection	= 0.3f;			// 0.18f
-float		ps_r2_sun_tsm_bias			= -0.01f;			// 
+
+float		ps_r2_sun_bias			= -0.01f;			// 
 
 float		ps_r2_sun_far				= 100.f;
 float		ps_r2_sun_near				= 20.f;
-float		ps_r2_sun_near_border		= 1.0f;
 
 float		ps_r2_sun_depth_far_scale	= 1.00000f;			// 1.00001f
-float		ps_r2_sun_depth_far_bias	= -0.00002f;			// -0.0000f
 float		ps_r2_sun_depth_near_scale	= 1.0000f;			// 1.00001f
-float		ps_r2_sun_depth_near_bias	= 0.00001f;		// -0.00005f
 float		ps_r2_sun_lumscale			= 1.0f;				// 1.0f
 float		ps_r2_sun_lumscale_hemi		= 1.0f;				// 1.0f
 float		ps_r2_sun_lumscale_amb		= 1.0f;
@@ -779,23 +773,18 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
-	CMD3(CCC_Mask,		"r2_sun_focus",			&ps_r2_ls_flags,			R2FLAG_SUN_FOCUS);
 //	CMD3(CCC_Mask,		"r2_exp_splitscene",	&ps_r2_ls_flags,			R2FLAG_EXP_SPLIT_SCENE);
 //	CMD3(CCC_Mask,		"r2_exp_donttest_uns",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_UNSHADOWED);
 	CMD3(CCC_Mask,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
 	
-	CMD3(CCC_Mask,		"r2_sun_tsm",			&ps_r2_ls_flags,			R2FLAG_SUN_TSM	);
-	CMD4(CCC_Float,		"r2_sun_tsm_proj",		&ps_r2_sun_tsm_projection,	.001f,	0.8f	);
-	CMD4(CCC_Float,		"r2_sun_tsm_bias",		&ps_r2_sun_tsm_bias,		-0.5,	+0.5	);
+	CMD4(CCC_Float,		"r2_sun_bias",			&ps_r2_sun_bias,			-0.5,	+0.5	);
 	CMD4(CCC_Float,		"r2_sun_near",			&ps_r2_sun_near,			1.f,	50.f	);
 #if RENDER!=R_R1
 	CMD4(CCC_Float,		"r2_sun_far",			&ps_r2_sun_far,				51.f,	180.f	);
 #endif
-	CMD4(CCC_Float,		"r2_sun_near_border",	&ps_r2_sun_near_border,		.5f,	3.0f	);
 	CMD4(CCC_Float,		"r2_sun_depth_far_scale",&ps_r2_sun_depth_far_scale,0.5,	1.5		);
-	CMD4(CCC_Float,		"r2_sun_depth_far_bias",&ps_r2_sun_depth_far_bias,	-0.5,	+0.5	);
 	CMD4(CCC_Float,		"r2_sun_depth_near_scale",&ps_r2_sun_depth_near_scale,0.5,	1.5		);
-	CMD4(CCC_Float,		"r2_sun_depth_near_bias",&ps_r2_sun_depth_near_bias,-0.5,	+0.5	);
+
 	CMD4(CCC_Float,		"r2_sun_lumscale",		&ps_r2_sun_lumscale,		-1.0,	+3.0	);
 	CMD4(CCC_Float,		"r2_sun_lumscale_hemi",	&ps_r2_sun_lumscale_hemi,	0.0,	+3.0	);
 	CMD4(CCC_Float,		"r2_sun_lumscale_amb",	&ps_r2_sun_lumscale_amb,	0.0,	+3.0	);
@@ -841,7 +830,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,		"r4_sslr_on_water",				&ps_r2_ls_flags_ext,		R4FLAG_SSLR_ON_WATER);
 
 	CMD3(CCC_Mask,		"r2_volumetric_lights",			&ps_r2_ls_flags,			R2FLAG_VOLUMETRIC_LIGHTS);
-//	CMD3(CCC_Mask,		"r2_sun_shafts",				&ps_r2_ls_flags,			R2FLAG_SUN_SHAFTS);
 	CMD3(CCC_Token,		"r2_sun_shafts",				&ps_r_sun_shafts,			qsun_shafts_token);
 	CMD3(CCC_SSAO_Mode,	"r2_ssao_mode",					&ps_r_ssao_mode,			qssao_mode_token);
 
@@ -861,8 +849,8 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Token,		"r_scale_mode",					&ps_r_scale_mode,			qscale_mode_token);
 
-	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
-	CMD4(CCC_Float, "r2_def_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
+	CMD3(CCC_Mask,		"r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
+	CMD4(CCC_Float,		"r2_def_aref_quality", &ps_r2_def_aref_quality, 70.0f, 200.0f);
 
 	CMD3(CCC_Mask,		"r2_steep_parallax",			&ps_r2_ls_flags,			R2FLAG_STEEP_PARALLAX);
 	CMD3(CCC_Mask,		"r2_detail_bump",				&ps_r2_ls_flags,			R2FLAG_DETAIL_BUMP);
@@ -903,7 +891,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r_developer_float_3",				&ps_r__test_exp_to_shaders_3, -10000000.0f, 10000000.0f);
 	CMD4(CCC_Float,		"r_developer_float_4",				&ps_r__test_exp_to_shaders_4, -10000000.0f, 10000000.0f);
 #endif
-//	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
 	// Geometry optimization
 	CMD4(CCC_Integer, "r__optimize_static_geom", &opt_static, 0, 2);
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);

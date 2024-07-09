@@ -98,13 +98,9 @@ extern ECORE_API float			ps_r2_ls_depth_bias;		// -0.0001f
 extern ECORE_API float			ps_r2_ls_squality;			// 1.0f
 extern ECORE_API float			ps_r2_sun_far;
 extern ECORE_API float			ps_r2_sun_near;
-extern ECORE_API float			ps_r2_sun_near_border;
-extern ECORE_API float			ps_r2_sun_tsm_projection;	// 0.2f
-extern ECORE_API float			ps_r2_sun_tsm_bias;			// 0.0001f
+extern ECORE_API float			ps_r2_sun_bias;			// 0.0001f
 extern ECORE_API float			ps_r2_sun_depth_far_scale;	// 1.00001f
-extern ECORE_API float			ps_r2_sun_depth_far_bias;	// -0.0001f
 extern ECORE_API float			ps_r2_sun_depth_near_scale;	// 1.00001f
-extern ECORE_API float			ps_r2_sun_depth_near_bias;	// -0.0001f
 extern ECORE_API float			ps_r2_sun_lumscale;			// 0.5f
 extern ECORE_API float			ps_r2_sun_lumscale_hemi;	// 1.0f
 extern ECORE_API float			ps_r2_sun_lumscale_amb;		// 1.0f
@@ -142,17 +138,12 @@ extern ECORE_API int opt_dynamic;
 enum
 {
 	R2FLAG_SUN					= (1<<0),
-	R2FLAG_SUN_FOCUS			= (1<<1),
-	R2FLAG_SUN_TSM				= (1<<2),
 	R2FLAG_SUN_DETAILS			= (1<<3),
 	R2FLAG_TONEMAP				= (1<<4),
 	R2FLAG_FASTBLOOM			= (1<<7),
 	R2FLAG_GLOBALMATERIAL		= (1<<8),
 	R2FLAG_ZFILL				= (1<<9),
 	R2FLAG_R1LIGHTS				= (1<<10),
-	R2FLAG_SUN_IGNORE_PORTALS	= (1<<11),
-
-//	R2FLAG_SUN_STATIC			= (1<<12),
 	
 	R2FLAG_EXP_SPLIT_SCENE					= (1<<13),
 	R2FLAG_EXP_DONT_TEST_UNSHADOWED			= (1<<14),
