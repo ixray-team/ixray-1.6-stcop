@@ -167,7 +167,7 @@ void CWeapon::UpdateXForm	()
 		V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
 	}
 	else {
-		V->CalculateBones();
+		// V->CalculateBones();
 		mL = V->LL_GetTransform(boneL);
 		mR = V->LL_GetTransform(boneR);
 	}
