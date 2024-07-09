@@ -72,7 +72,7 @@ void	CPhysicsShellAnimator::				CreateJoint( CPHElement *e )
 		dJointSetFixed(PhysicsShellAnimatorBoneDataC.m_anim_fixed_dJointID);
 		m_bones_data.push_back(PhysicsShellAnimatorBoneDataC);
 }
-void CPhysicsShellAnimator::OnFrame()
+void CPhysicsShellAnimator::OnFrame(bool calculate_bones)
 {
 
 	
@@ -87,8 +87,11 @@ void CPhysicsShellAnimator::OnFrame()
 		#pragma todo("reset callback?")
 		B.set_callback(B.callback_type(),0,B.callback_param(),FALSE);
 
-		m_pPhysicsShell->PKinematics()->CalculateBones_Invalidate();
-		m_pPhysicsShell->PKinematics()->CalculateBones(TRUE);
+		if(calculate_bones)
+		{
+			m_pPhysicsShell->PKinematics()->CalculateBones_Invalidate();
+			m_pPhysicsShell->PKinematics()->CalculateBones(TRUE);
+		}
 		
 		target_obj_posFmatrixS.mul_43(m_StartXFORM,B.mTransform);
 		dQuaternion target_obj_quat_dQuaternionS;

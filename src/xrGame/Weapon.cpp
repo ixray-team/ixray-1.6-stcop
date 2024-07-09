@@ -813,6 +813,7 @@ void CWeapon::OnH_A_Independent	()
 	Light_Destroy				();
 	UpdateAddonsVisibility		();
 	Engine.Sheduler.Unregister(this);
+	//Engine.Sheduler.Register(this);
 };
 
 void CWeapon::OnH_A_Chield		()
@@ -820,6 +821,7 @@ void CWeapon::OnH_A_Chield		()
 	inherited::OnH_A_Chield		();
 	UpdateAddonsVisibility		();
 	shedule.t_min = shedule.t_max = 1;
+	//Engine.Sheduler.Unregister(this);
 	Engine.Sheduler.Register(this, TRUE);
 };
 

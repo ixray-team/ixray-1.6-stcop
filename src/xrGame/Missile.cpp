@@ -266,22 +266,6 @@ void CMissile::shedule_Update(u32 dt)
 			Destroy	();
 			return;
 		}
-	} 
-
-	if (!Useful())
-	{
-		IKinematics* pGrenadeVisual = dynamic_cast<IKinematics*>(Visual());
-		u16 bone_id;
-
-		pGrenadeVisual->CalculateBones_Invalidate();
-		for (const auto& boneName : m_sCheckoutBones)
-		{
-			bone_id = pGrenadeVisual->LL_BoneID(boneName);
-			if (bone_id != BI_NONE && pGrenadeVisual->LL_GetBoneVisible(bone_id))
-				pGrenadeVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-		}
-		pGrenadeVisual->CalculateBones_Invalidate();
-		pGrenadeVisual->CalculateBones(TRUE);
 	}
 }
 #include "player_hud.h"
@@ -695,9 +679,19 @@ void CMissile::activate_physic_shell()
 	m_pPhysicsShell->SetAirResistance	(0.f,0.f);
 	m_pPhysicsShell->set_DynamicScales	(1.f,1.f);
 
-	IKinematics							*kinematics = smart_cast<IKinematics*>(Visual());
+	IKinematics							*kinematics = PKinematics(Visual());
 	VERIFY								(kinematics);
 	kinematics->CalculateBones_Invalidate();
+	if (m_fThrowForce != 0.f&&!m_sCheckoutBones.empty())
+	{
+		u16 bone_id;
+		for (const auto& boneName : m_sCheckoutBones)
+		{
+			bone_id = kinematics->LL_BoneID(boneName);
+			if (bone_id != BI_NONE && kinematics->LL_GetBoneVisible(bone_id))
+				kinematics->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+		}
+	}
 	kinematics->CalculateBones			(TRUE);
 }
 void	CMissile::net_Relcase(CObject* O)
@@ -724,7 +718,7 @@ void CMissile::setup_physic_shell	()
 	R_ASSERT(!m_pPhysicsShell);
 	create_physic_shell();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());//,true 
-	IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
+	IKinematics					*kinematics = PKinematics(Visual());
 	R_ASSERT					(kinematics);
 	kinematics->CalculateBones_Invalidate();
 	kinematics->CalculateBones			(TRUE);

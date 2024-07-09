@@ -82,8 +82,10 @@ IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)
 xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const Fvector& b_center, const Fvector& b_dim)
 {
 	xr_vector<IRender_Sector*> m_sectors;
-	if (rmPortals)	
+	m_sectors.push_back(sector);
+	if (rmPortals)
 	{
+		Sectors_xrc.box_options(CDB::OPT_FULL_TEST);
 		Sectors_xrc.box_query(rmPortals,b_center,b_dim);
 		for (int K=0; K<Sectors_xrc.r_count(); K++)
 		{
@@ -113,8 +115,10 @@ xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const 
 xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrustum* _frustum)
 {
 	xr_vector<IRender_Sector*> m_sectors;
-	if (rmPortals)	
+	m_sectors.push_back(sector);
+	if (rmPortals)
 	{
+		Sectors_xrc.frustum_options(CDB::OPT_FULL_TEST);
 		Sectors_xrc.frustum_query(rmPortals,*_frustum);
 		for (int K=0; K<Sectors_xrc.r_count(); K++)
 		{

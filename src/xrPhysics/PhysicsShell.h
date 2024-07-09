@@ -329,7 +329,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						CreateShellAnimator							( CInifile const * ini, LPCSTR section )															= 0;
 	virtual			void						SetIgnoreAnimated							()																							= 0;
 //	virtual			bool						Animated									()																							= 0;
-	virtual			void						AnimatorOnFrame								()																							= 0;
+	virtual			void						AnimatorOnFrame								(bool calculate_bones = true)																= 0;
 	virtual			void						SetSmall									()																							= 0;
 	virtual			void						SetIgnoreSmall								()																							= 0;
 	virtual			bool						isFractured									()																							= 0;

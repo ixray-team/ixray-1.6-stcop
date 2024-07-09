@@ -237,7 +237,7 @@ public:
 	virtual		void				SmoothElementsInertia			(float k);
 	virtual		void	_BCL		InterpolateGlobalTransform		(Fmatrix* m);
 	virtual		void				InterpolateGlobalPosition		(Fvector* v);
-	virtual		void				AnimatorOnFrame					();
+	virtual		void				AnimatorOnFrame					(bool calculate_bones = true);
 	virtual		void				GetGlobalTransformDynamic		(Fmatrix* m) ;
 	virtual		void				GetGlobalPositionDynamic		(Fvector* v);
 	virtual		Fmatrix&			ObjectInRoot					(){return m_object_in_root;}

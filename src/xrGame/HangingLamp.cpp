@@ -219,7 +219,7 @@ void CHangingLamp::UpdateCL	()
 		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 
 	if (Alive() && light_render->get_active()){
-		if(Visual())	PKinematics(Visual())->CalculateBones();
+		if(Visual()&&Render->ViewBase.testSphere_dirty(spatial.sphere.P,spatial.sphere.R+light_render->get_homdata().sphere.R))	PKinematics(Visual())->CalculateBones	();
 
 		// update T&R from light (main) bone
 		Fmatrix xf;

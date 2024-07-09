@@ -11,38 +11,43 @@
 
 #include "../../xrEngine/gamefont.h"
 #include "../../xrEngine/x_ray.h"
-void dbg_light_renderer(light* L, u32 color = color_rgba(0,255,100,255), int sectors = 0)
+#include "../xrRender/SkeletonCustom.h"
+static	float	CalcSSADynamic				(const Fvector& C, float R)
 {
-    Fvector4		v_res;
-    Device.mFullTransform.transform(v_res, L->position);
-
-    float x = (1.f + v_res.x) / 2.f * (Device.Width);
-    float y = (1.f - v_res.y) / 2.f * (Device.Height);
-
-    if (v_res.z < 0 || v_res.w < 0)
-        return;
-
-    if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
-        return;
-	if(!L->flags.bActive) return;
-	if(L->flags.bStatic) return;
-
-	g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
-	g_FontManager->pFontSystem->SetColor(color);
-
-	LPCSTR l_type = " ";
-	if(L->flags.type == IRender_Light::POINT)
-		l_type = "POINT";
-	if(L->flags.type == IRender_Light::OMNIPART)
-		l_type = "OMNIPART";
-	if(L->flags.type == IRender_Light::SPOT)
-		l_type = "SPOT";
-	if(L->flags.type == IRender_Light::DIRECT)
-		l_type = "DIRECT";
-	if(L->flags.type == IRender_Light::REFLECTED)
-		l_type = "REFLECTED";
-	g_FontManager->pFontSystem->Out(x, y, "%s %s sc[%d]", l_type, L->flags.bShadow ? "Shdw": " ", sectors);
+    Fvector4 v_res1, v_res2;
+    Device.mFullTransform.transform(v_res1, C);
+    Device.mFullTransform.transform(v_res2, Fvector(C).mad(Device.vCameraRight, R));
+	return	v_res1.sub(v_res2).magnitude();
 }
+constexpr float base_fov = 67.f;
+static float GetDistFromCamera(const Fvector& from_position)
+	// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
+{
+	float distance = Device.vCameraPosition.distance_to(from_position);
+	float fov_K = base_fov / Device.fFOV;
+	float adjusted_distane = distance / fov_K;
+
+	return adjusted_distane;
+}
+
+//static void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0,255,100,255), shared_str str = "+")
+//{
+//    Fvector4		v_res;
+//    Device.mFullTransform.transform(v_res, pos);
+//
+//    float x = (1.f + v_res.x) / 2.f * (Device.Width);
+//    float y = (1.f - v_res.y) / 2.f * (Device.Height);
+//
+//    if (v_res.z < 0 || v_res.w < 0)
+//        return;
+//
+//    if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
+//        return;
+//
+//	g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
+//	g_FontManager->pFontSystem->SetColor(color);
+//	g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
+//}
 
 void CRender::render_main	(bool deffered, bool zfill)
 {
@@ -160,6 +165,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			if	(0==sector) continue;
 			Fbox sp_box;
 			sp_box.setb(spatial->spatial.sphere.P,Fvector().set(spatial->spatial.sphere.R, spatial->spatial.sphere.R, spatial->spatial.sphere.R));
+			HOM.Enable();
 			if(!HOM.visible(sp_box)) continue;
 
 			if ((spatial->spatial.type & STYPE_LIGHTSOURCE) && deffered)
@@ -169,56 +175,21 @@ void CRender::render_main	(bool deffered, bool zfill)
 				{
 					if (L->get_LOD()>EPS_L)
 					{
-						if (dont_test_sectors)
+						
+						if(dont_test_sectors)
+						{
 							Lights.add_light(L);
+						}
 						else
 						{
-							xr_vector<IRender_Sector*> m_sectors = {};
-							bool traversed = false;
-							if(L->flags.type == IRender_Light::SPOT || L->flags.type == IRender_Light::DIRECT)
+							for (u32 s_it = 0; s_it < L->m_sectors.size(); s_it++)
 							{
-								LR.compute_xf_spot	(L);
-								CFrustum	temp;
-								temp.CreateFromMatrix			(L->X.S.combine,	FRUSTUM_P_ALL &(~FRUSTUM_P_NEAR));
-
-								m_sectors = detectSectors_frustum(sector, &temp);
-								for (u32 s_it = 0; s_it < m_sectors.size(); s_it++)
+								CSector* sector_ = (CSector*)L->m_sectors[s_it];
+								if(PortalTraverser.i_marker == sector_->r_marker)
 								{
-									CSector* sector_ = (CSector*)m_sectors[s_it];
-									if(PortalTraverser.i_marker == sector_->r_marker)
-										traversed = true;
+									Lights.add_light(L);
+									break;
 								}
-								
-							}
-							else
-							{
-								m_sectors = detectSectors_sphere(sector, L->position, Fvector().set(L->range, L->range, L->range));
-								for (u32 s_it = 0; s_it < m_sectors.size(); s_it++)
-								{
-									CSector* sector_ = (CSector*)m_sectors[s_it];
-									if(PortalTraverser.i_marker == sector_->r_marker)
-										traversed = true;
-								}
-							}
-
-							if(!m_sectors.size())
-								traversed = true;
-							else
-							{
-								if(L->flags.type == IRender_Light::POINT && spatial->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition) < _sqr(spatial->spatial.sphere.R))
-									traversed = true;
-							}
-							
-
-
-							if(traversed)
-							{
-								//dbg_light_renderer(L, color_rgba(0,255,100,255), m_sectors.size());
-								Lights.add_light(L);
-							}
-							else
-							{
-								//dbg_light_renderer(L, color_rgba(255,0,100,255), m_sectors.size());
 							}
 						}
 					}
@@ -232,10 +203,36 @@ void CRender::render_main	(bool deffered, bool zfill)
 					// renderable
 					if	(IRenderable* renderable = spatial->dcast_Renderable())
 					{
-						// Rendering
-						set_Object						(renderable);
-						renderable->renderable_Render();
-						set_Object						(0);
+						if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+						{
+							if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>0.002f&&GetDistFromCamera(spatial->spatial.sphere.P)<220.f)
+							{
+								if(deffered)
+								{
+									CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
+									if(pKin)
+									{
+										pKin->CalculateBones(TRUE);
+										pKin->CalculateWallmarks();
+										//dbg_text_renderer(spatial->spatial.sphere.P);
+									}
+								}
+								if(spatial->spatial.sphere.R>1.f)
+								{
+									// Rendering
+									set_Object						(renderable);
+									renderable->renderable_Render();
+									set_Object						(0);
+								}
+							}
+							if(spatial->spatial.sphere.R<=1.f)
+							{
+								// Rendering
+								set_Object						(renderable);
+								renderable->renderable_Render();
+								set_Object						(0);
+							}
+						}
 					}
 				}
 
@@ -264,10 +261,36 @@ void CRender::render_main	(bool deffered, bool zfill)
 						// renderable
 						if	(IRenderable* renderable = spatial->dcast_Renderable())
 						{
-							// Rendering
-							set_Object						(renderable);
-							renderable->renderable_Render();
-							set_Object						(0);
+							if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+							{
+								if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>0.002f&&GetDistFromCamera(spatial->spatial.sphere.P)<220.f)
+								{
+									if(deffered)
+									{
+										CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
+										if(pKin)
+										{
+											pKin->CalculateBones(TRUE);
+											pKin->CalculateWallmarks();
+											//dbg_text_renderer(spatial->spatial.sphere.P);
+										}
+									}
+									if(spatial->spatial.sphere.R>1.f)
+									{
+										// Rendering
+										set_Object						(renderable);
+										renderable->renderable_Render();
+										set_Object						(0);
+									}
+								}
+								if(spatial->spatial.sphere.R<=1.f)
+								{
+									// Rendering
+									set_Object						(renderable);
+									renderable->renderable_Render();
+									set_Object						(0);
+								}
+							}
 						}
 					}
 
@@ -381,7 +404,7 @@ void CRender::Render		()
 	}
 
 	if(ps_r_scale_mode > 1) {
-		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount(RCache.get_width(), RCache.get_target_width());
+		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
 		ps_r_taa_jitter_full = ps_r_taa_jitter_full.mul(ps_r_taa_jitter_scale);
@@ -429,13 +452,6 @@ void CRender::Render		()
 	{
 		PIX_EVENT(DEFER_Z_FILL);
 		Device.Statistic->RenderCALC.Begin			();
-		float		z_distance	= ps_r2_zfill		;
-		Fmatrix		m_zfill, m_project				;
-		m_project.build_projection	(
-			deg2rad(Device.fFOV/* *Device.fASPECT*/), 
-			Device.fASPECT, VIEWPORT_NEAR, 
-			z_distance * g_pGamePersistent->Environment().CurrentEnv->far_plane);
-		m_zfill.mul	(m_project,Device.mView);
 		r_pmask										(true,false);	// enable priority "0"
 		set_Recorder								(nullptr)		;
 		phase										= PHASE_SMAP;
@@ -495,7 +511,7 @@ void CRender::Render		()
 	rmNormal();
 
 	// Landshaft phase 
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
+	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
 	r_dsgraph_render_landscape(0, false);
 
 	//******* Main render :: PART-0	-- first
@@ -577,7 +593,7 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
-	Target->u_setrt(RCache.get_width(), RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
+	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
 	ID3D11Resource* res;
 	RDepth->GetResource(&res);
 

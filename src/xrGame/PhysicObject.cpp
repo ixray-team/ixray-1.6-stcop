@@ -346,7 +346,7 @@ void CPhysicObject::UpdateCL()
 	//двигаем объект за анимацией
 	if (m_pPhysicsShell->PPhysicsShellAnimator())
 	{
-		m_pPhysicsShell->AnimatorOnFrame();
+		m_pPhysicsShell->AnimatorOnFrame(!!Render->ViewBase.testSphere_dirty(spatial.sphere.P,spatial.sphere.R));
 	}
 	
 	if (!IsGameTypeSingle())

@@ -15,7 +15,7 @@ class CPhysicsShellAnimator
 public:
 													CPhysicsShellAnimator		( CPhysicsShell* _pPhysicsShell, CInifile const * ini, LPCSTR section );
 													~CPhysicsShellAnimator		();
-	void											OnFrame						();
+	void											OnFrame						(bool calculate_bones = true);
 };
 	
 

@@ -9,7 +9,7 @@
 
 #include "FBasicVisual.h"
 #include "CHudInitializer.h"
-
+#include "SkeletonCustom.h"
 using namespace		R_dsgraph;
 
 extern float		r_ssaDISCARD;
@@ -669,7 +669,26 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 				// renderable
 				IRenderable*	renderable		= spatial->dcast_Renderable	();
 				if (0==renderable)				continue;					// unknown, but renderable object (r1_glow???)
-
+#if RENDER!=R_R1
+				if(Device.vCameraPosition.distance_to_sqr(renderable->renderable.xform.c)<=10000.f)
+				{
+					CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
+					if(pKin)
+					{
+						if(spatial->spatial.type&STYPE_RENDERABLESHADOW)
+						{
+							pKin->CalculateBones(TRUE);
+						}
+						if(spatial->spatial.type&STYPE_RENDERABLE)
+						{
+							if(0==ViewSave.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+							{
+								pKin->CalculateBones(TRUE);
+							}
+						}
+					}
+				}
+#endif
 				renderable->renderable_Render	();
 			}
 		}

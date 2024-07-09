@@ -31,6 +31,9 @@ public:
 	vis_data		hom			;
 	u32				frame_render;
 
+#if RENDER!=R_R1
+	xr_vector<IRender_Sector*> m_sectors;
+#endif	//	RENDER!=R_R1
 	float			m_volumetric_quality;
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;
@@ -87,13 +90,13 @@ public:
 #endif	//	(RENDER==R_R2) || (RENDER==R_R4)
 
 public:
+#if RENDER!=R_R1
+	void get_sectors();
+#endif	//	RENDER!=R_R1
 	virtual void	set_type				(LT type)						{ flags.type = type;		}
 	virtual void	set_active				(bool b);
 	virtual bool	get_active				()								{ return flags.bActive;		}
-	virtual void	set_shadow				(bool b)						
-	{ 
-		flags.bShadow=b;			
-	}
+	virtual void	set_shadow				(bool b);
 	virtual void	set_volumetric			(bool b)						
 	{ 
 		flags.bVolumetric=b;			
@@ -119,7 +122,7 @@ public:
 
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
-	vis_data&		get_homdata				();
+	virtual vis_data&		get_homdata		();
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	void			xform_calc				();
 	void			vis_prepare				();

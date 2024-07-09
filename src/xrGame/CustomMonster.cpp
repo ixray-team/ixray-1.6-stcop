@@ -580,7 +580,7 @@ void CCustomMonster::eye_pp_s0			( )
 {
 	// Eye matrix
 	IKinematics* V							= smart_cast<IKinematics*>(Visual());
-	V->CalculateBones						();
+	//V->CalculateBones						();
 	Fmatrix&	mEye						= V->LL_GetTransform(u16(eye_bone));
 	Fmatrix		X;							X.mul_43	(XFORM(),mEye);
 	VERIFY									(_valid(mEye));
