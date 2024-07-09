@@ -38,7 +38,6 @@ extern ECORE_API	float		ps_r__WallmarkSHIFT_V	;
 extern ECORE_API	float		ps_r__GLOD_ssa_start;
 extern ECORE_API	float		ps_r__GLOD_ssa_end	;
 extern ECORE_API	float		ps_r__LOD			;
-//.extern ECORE_API	float		ps_r__LOD_Power		;
 extern ECORE_API	float		ps_r__ssaDISCARD	;
 extern ECORE_API	float		ps_r__ssaDONTSORT	;
 extern ECORE_API	float		ps_r__ssaHZBvsTEX	;
@@ -90,9 +89,6 @@ extern ECORE_API float			ps_r2_ls_bloom_kernel_g;	// r2-only	// gauss
 extern ECORE_API float			ps_r2_ls_bloom_kernel_b;	// r2-only	// bilinear
 extern ECORE_API float			ps_r2_ls_bloom_threshold;	// r2-only
 extern ECORE_API float			ps_r2_ls_bloom_speed;		// r2-only
-extern ECORE_API float			ps_r2_ls_dsm_kernel;		// r2-only
-extern ECORE_API float			ps_r2_ls_psm_kernel;		// r2-only
-extern ECORE_API float			ps_r2_ls_ssm_kernel;		// r2-only
 extern ECORE_API float			ps_r2_ls_depth_scale;		// 1.0f
 extern ECORE_API float			ps_r2_ls_depth_bias;		// -0.0001f
 extern ECORE_API float			ps_r2_ls_squality;			// 1.0f
