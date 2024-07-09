@@ -1,187 +1,107 @@
+#ifndef SSAO_1231242112
+#define SSAO_1231242112
 #include "common.hlsli"
 
 #ifndef SSAO_QUALITY
 
 float calc_ssao(float3 P, float3 N, float2 tc, float2 tcJ)
 {
-    return 1.0f;
+    return 1.0;
 }
 
-#else //	SSAO_QUALITY
-
-    #if SSAO_QUALITY == 3
-        #define RINGS 3
-        #define DIRS 8
-static const float rads[4] =
-{ // I know it will be more focused in the cener, but that's OK
-    0.20000f,
-    0.57735f,
-    0.81650f,
-    1.00000f
-};
-static const float angles[9] =
-{
-    0.0000f,
-    0.7854f,
-    1.5708f,
-    2.3562f,
-    3.1416f,
-    3.9267f,
-    4.7124f,
-    5.4978f,
-    6.2832f
-};
-    #elif SSAO_QUALITY == 2
-        #define RINGS 3
-        #define DIRS 4
-static const float rads[4] =
-{ // I know it will be more focused in the cener, but that's OK
-    0.20000f,
-    0.57735f,
-    0.81650f,
-    1.00000f
-};
-static const float angles[5] =
-{
-    0.0000f,
-    1.5708f,
-    3.1416f,
-    4.7124f,
-    6.2832f
-};
-    #elif SSAO_QUALITY == 1
-        #define RINGS 2
-        #define DIRS 4
-static const float rads[3] =
-{
-    // I know it will be more focused in the cener, but that's OK
-    0.2000f,
-    0.7071f,
-    1.0000f,
-};
-static const float angles[5] =
-{
-    0.0000f,
-    1.5708f,
-    3.1416f,
-    4.7124f,
-    6.2832f
-};
-    #endif
-
-float4 ssao_params;
-float4 pos_decompression_params;
+#else // SSAO_QUALITY
 
 uniform sampler2D jitter0;
+// uniform float4 screen_res;
+uniform float4 pos_decompression_params;
+
+#define SSAO_RADIUS 0.8
+#define rcp(x) (1.0f / (x))
 
 float3 uv_to_eye(float2 uv, float eye_z)
 {
-    uv = (uv * float2(2.0, 2.0) - float2(1.0f, 1.0f));
-    return float3(uv * pos_decompression_params.xy * eye_z, eye_z);
+    uv = uv * float2(2.0f, 2.0f) - float2(1.0f, 1.0f);
+    return float3(uv * pos_decompression_params.xy, 1.0f) * eye_z;
 }
-//	Screen space ambient occlusion
-//	P	screen space position of the original point
-//	N	screen space normal of the original point
-//	tc	G-buffer coordinates of the original point
-float calc_ssao(float3 P, float3 N, float2 tc, float2 tcJ)
+
+/* 
+	SSAO Нагло украдено у Sir Lancevrot (с его разрешения)
+*/
+
+float3 GetViewPos(float2 uv)
 {
-    const float ssao_noise_tile_factor = ssao_params.x;
-    const float ssao_kernel_size = ssao_params.y;
-
-    float point_depth = P.z;
-    if (point_depth < 0.01)
-    {
-        point_depth = 100000.0h; //	filter for the sky
-    }
-    //	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*100/point_depth;
-    //	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*100/max(point_depth,1.3);
-    //	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*70/point_depth;
-    //	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*150/max(point_depth,1.3);
-    //	Looks better but triggers some strange hardware(?) bug.
-    float2 scale = float2(0.5f / 1024.0f, 0.5f / 768.0f) * ssao_kernel_size / max(point_depth, 1.3f);
-    //	float2 	scale 	= float2	(.5f / 1024.h, .5f / 768.h)*min( ssao_kernel_size/point_depth , ssao_kernel_size/1.3 );
-
-    // sample
-    float occ = 0.1f;
-    float num_dir = 0.1f;
-    //	float 	occ	= 1.0h;
-    //	float num_dir	= 1.0h;
-
-    ////////////////////////////////
-    //	jittering
-
-    //	float2	Mirror = tex2D( jitter0, tcJ );
-    //	float2	Mirror = float2(1,1);
-    float3 tc1 = mul(m_v2w, float4(P, 1));
-    tc1 *= ssao_noise_tile_factor;
-    //	tc1 *= 2;
-    //	tc1 *= 4;
-    tc1.xz += tc1.y;
-    float2 SmallTap = tex2D(jitter0, tc1.xz);
-    //	float2	Mirror = tex2D( jitter0, tc1.xz );
-    //	Mirror	= normalize(Mirror);
-
-    for (int rad = 0; rad < RINGS; rad++)
-    {
-        for (int dir = 0; dir < DIRS; dir++)
-        {
-            SmallTap.x += 0.31337f;
-            SmallTap.y += 0.73313f;
-            SmallTap = frac(SmallTap);
-            float r = lerp(rads[rad] * 1.3, rads[rad + 1] * 1.3, SmallTap.x);
-            float a = lerp(angles[dir], angles[dir + 1], SmallTap.y);
-            float s, c;
-            sincos(a, s, c);
-            float2 tap = float2(r * c, r * s);
-            tap *= scale;
-            tap += tc;
-    #ifndef SSAO_OPT_DATA
-            float3 tap_pos = tex2D(s_position, tap);
-    #else // SSAO_OPT_DATA
-            float z = tex2Dlod(s_half_depth, float4(tap, 0, 0));
-            float3 tap_pos = uv_to_eye(tap, z);
-    #endif // SSAO_OPT_DATA
-            float3 dir = tap_pos - P.xyz;
-            float dist = length(dir);
-            dir = normalize(dir);
-            float infl = saturate(dot(dir, N.xyz));
-            float occ_factor = saturate(dist);
-
-            {
-                //			occ += lerp( 1, occ_factor, infl);
-                //			num_dir += 1;
-
-                occ += (infl + 0.01) * lerp(1, occ_factor, infl) / (occ_factor + 0.1);
-                num_dir += (infl + 0.01) / (occ_factor + 0.1);
-
-                //			occ += (infl+0.1)*lerp( 1, occ_factor, infl)/(occ_factor+0.1);
-                //			num_dir += (infl+0.1)/(occ_factor+0.1);
-
-                //			occ += (infl+0.1)*lerp( 1, occ_factor, infl);
-                //			num_dir += (infl+0.1);
-            }
-        }
-    }
-    occ /= num_dir;
-
-    //	occ = lerp(1, occ, saturate(point_depth/1.5f));
-
-    occ = saturate(occ);
-    //	occ = Contrast(occ,2);
-    //	occ = occ*1.5 - 0.5;
-    //	occ = occ*occ;
-    //	occ = occ*0.5+0.5;
-    #if SSAO_QUALITY == 1
-    occ = (occ + 0.3) / (1 + 0.3);
-    #else //	SSAO_QUALITY==1
-    occ = (occ + 0.2) / (1 + 0.2);
-    #endif //	SSAO_QUALITY==1
-    //	occ = 1;
-
-    float WeaponAttenuation = smoothstep(0.8, 0.9, length(P.xyz));
-    occ = lerp(1, occ, WeaponAttenuation);
-
-    return occ;
+	float3 tap_pos = tex2Dlod(s_position, float4(uv, 0.0f, 0.0f));
+    return uv_to_eye(uv, tap_pos.z);
 }
 
-#endif //	SSAO_QUALITY
+float doPBAO(float2 uv, float3 pos, float3 n, float invRad, float bias, float selfOcc)
+{
+	float3 p = GetViewPos(uv);
+	float3 dist	= p - pos;
+	
+	float len = length(dist);
+	float3 v = dist * rcp(len);
+	
+	float atten	= len * invRad;
+	return max(-selfOcc, dot(n, v) - bias) * rcp(atten * atten + 1.0f);
+}
+
+float calc_ssao(float3 pos, float3 normal, float2 tc0, float2 tcJ)
+{
+	// define kernel
+	float n = 0.0f;
+	const float step = 0.875f;
+	const float fScale = 0.57735f * 0.025f; 
+
+	const float inv2 = 0.5f;
+	const float inv5_3 = 0.188679245283f;
+	const float inv8 = 0.125f;
+	const float inv16 = 0.0625f;
+	const float selfOcc = 0.0f; // range: 0.0f to 1.0f
+	const float2 focalLen = rcp(pos_decompression_params.xy);
+
+	const float3 arrKernel[8] =
+	{
+		float3( 1.0,  1.0,  1.0) * fScale * (n += step),
+		float3(-1.0, -1.0, -1.0) * fScale * (n += step),
+		float3(-1.0, -1.0,  1.0) * fScale * (n += step),
+		float3(-1.0,  1.0, -1.0) * fScale * (n += step),
+		float3(-1.0,  1.0,  1.0) * fScale * (n += step),
+		float3( 1.0, -1.0, -1.0) * fScale * (n += step),
+		float3( 1.0, -1.0,  1.0) * fScale * (n += step),
+		float3( 1.0,  1.0, -1.0) * fScale * (n += step),
+	};
+	
+	float2 tc1 = tc0 * screen_res.xy * 0.015625f;
+	float3 rotSample = tex2D(jitter0, tc1).xyz;
+	rotSample = normalize(rotSample - 0.5f);
+	
+	pos = uv_to_eye(tc0, pos.z * 0.99f);
+	
+	// calculate angle bias
+	float bias = 0.0;
+	
+	// calculate contrast
+	float contrast = inv16 * rcp(1.0f - saturate(bias));
+	
+	// calculate radius
+	float radius = SSAO_RADIUS * saturate(pos.z * inv5_3) * (1.0f + pos.z * inv8);
+	float invRad = rcp(radius);
+	
+	float2 radius2D	= radius * focalLen * rcp(pos.z);
+	float ao = 0.0f;
+	
+	// calculate ao
+ 	[unroll]
+	for (int i = 0; i < 8; ++i) {
+		float2 deltaUV = reflect(arrKernel[i], rotSample) * radius2D;		
+		ao += doPBAO(tc0 + deltaUV, pos, normal, invRad, bias, selfOcc);
+		ao += doPBAO(tc0 + deltaUV * inv2, pos, normal, invRad, bias, selfOcc);
+	}
+	
+	ao = 1.0f - (ao * contrast + selfOcc);
+	return ao * ao * ao;
+}
+#endif
+#endif
+
