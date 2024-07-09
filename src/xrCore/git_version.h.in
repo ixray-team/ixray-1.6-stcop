@@ -3,5 +3,6 @@
 #define _AUTHOR "@AUTHOR@"
 #define _BRANCH "@BRANCH@"
 #define _HASH   "@HASH@"
+#define _VER   "v1.0"
 
 #define CI_BUILD @CI_BUILD@

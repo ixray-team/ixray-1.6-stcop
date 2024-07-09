@@ -81,6 +81,8 @@ class CMainMenu :
 	atlas_submit_queue*					m_atlas_submit_queue;
 
 	demo_info_loader*					m_demo_info_loader;
+
+	CGameFont* pCGameFont;
 public:
 	enum	EErrorDlg 
 	{

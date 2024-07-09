@@ -71,6 +71,8 @@ CMainMenu*	MainMenu()	{return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
 
 CMainMenu::CMainMenu	()
 {
+	pCGameFont = g_FontManager->GetFont("ui_font_console");
+
 	m_Flags.zero					();
 	m_startDialog					= nullptr;
 	m_screenshotFrame				= u32(-1);
@@ -441,12 +443,11 @@ void CMainMenu::OnRenderPPUI_main	()
 
 	UI().pp_stop();
 
-	auto pCGameFont = g_FontManager->GetFont("ui_font_console");
-	pCGameFont->SetAligment(CGameFont::alLeft);
+	pCGameFont->SetAligment(CGameFont::alRight);
 	pCGameFont->SetHeight(0.022f);
 	pCGameFont->SetColor(0xFFF5F5DC);
 
-	pCGameFont->Out(psCurrentVidMode[0] - 475, (psCurrentVidMode[1] - pCGameFont->GetHeight()) - 10, "%s Branch[" _BRANCH "] Hash[" _HASH "]", "IX-Ray");
+	pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight(), (psCurrentVidMode[1] - pCGameFont->GetHeight()), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "]", "IX-Ray");
 	pCGameFont->OnRender();
 }
 
