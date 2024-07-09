@@ -147,6 +147,10 @@ target_compile_definitions(xrGame PRIVATE _USRDLL)
 target_compile_definitions(xrGame PRIVATE XRGAME_EXPORTS)
 target_compile_definitions(xrGame PRIVATE dSINGLE)
 
+if (IXRAY_MP)
+	target_compile_definitions(xrGame PRIVATE XR_MP_BUILD)
+endif()
+
 add_compile_options(/fp:fast)
 add_compile_options(/FS)
 target_compile_definitions(xrGame PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
