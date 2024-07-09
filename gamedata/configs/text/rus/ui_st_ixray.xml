@@ -90,7 +90,7 @@
         <text>Дистанция удара</text>
     </string>
     <string id="ui_mm_dof_reload">
-        <text>Размытие при перезарядке</text>
+        <text>DoF при перезарядке</text>
     </string>
     <string id="ui_rs_fps_show">
         <text>Счетчик фпс</text>
@@ -99,7 +99,7 @@
         <text>Резкость</text>
     </string>
     <string id="ui_mm_hashed_alpha_test">
-        <text>Фильтрация прозрачности</text>
+        <text>Фильтр. прозрачности</text>
     </string>
     <string id="ui_mm_gtao">
         <text>GTAO</text>
@@ -108,7 +108,7 @@
         <text>Виньетка</text>
     </string>
     <string id="ui_mm_aberration">
-        <text>Хроматическая аберрация</text>
+        <text>Хромат. аберрация</text>
     </string>
     <string id="ui_mm_sslr_water">
         <text>Отражения на воде</text>
