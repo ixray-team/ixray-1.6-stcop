@@ -217,7 +217,9 @@ public:
 
 	xr_string getShaderParams();
 	void addShaderOption(const char* name, const char* value);
-	void clearAllShaderOptions() { m_ShaderOptions.clear(); }
+	void clearAllShaderOptions() { m_ShaderOptions.resize(0); }
+
+	auto ShaderOptionsCount() { return m_ShaderOptions.size(); }
 
 private:
 	xr_vector<D3D_SHADER_MACRO>									m_ShaderOptions;

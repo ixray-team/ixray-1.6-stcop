@@ -172,21 +172,27 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	{
 		C.iElement			= 0;
 		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-//.		C.bDetail			= _GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[0]				= _CreateElement	(E);
 	}
 
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
+
 	// Compile element	(LOD1)
 	{
 		C.iElement			= 1;
-//.		C.bDetail			= _GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
 		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[1]				= _CreateElement	(E);
 	}
+
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
 
 	// Compile element
 	{
@@ -197,6 +203,10 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		S.E[2]				= _CreateElement	(E);
 	}
 
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
+
 	// Compile element
 	{
 		C.iElement			= 3;
@@ -205,6 +215,10 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		C._cpp_Compile		(&E);
 		S.E[3]				= _CreateElement	(E);
 	}
+
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
 
 	// Compile element
 	{
@@ -215,6 +229,10 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		S.E[4]				= _CreateElement	(E);
 	}
 
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
+
 	// Compile element
 	{
 		C.iElement			= 5;
@@ -223,6 +241,10 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		C._cpp_Compile		(&E);
 		S.E[5]				= _CreateElement	(E);
 	}
+
+#ifdef DEBUG_DRAW
+	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
+#endif
 	
 	Shader* ResultShader = _CreateShader(&S);
 	return ResultShader;
@@ -237,8 +259,10 @@ Shader*	CResourceManager::_cpp_Create	(LPCSTR s_shader, LPCSTR s_textures, LPCST
 	{
 		//	TODO: DX10: When all shaders are ready switch to common path
 #ifdef USE_DX11
-		IBlender	*pBlender = _GetBlender(s_shader?s_shader:"null");
-		if (!pBlender) return nullptr;
+		IBlender *pBlender = _GetBlender(s_shader?s_shader:"null");
+		if(!pBlender) {
+			return nullptr;
+		}
 		return	_cpp_Create(pBlender ,s_shader,s_textures,s_constants,s_matrices);
 #else //USE_DX11
 		return	_cpp_Create(_GetBlender(s_shader?s_shader:"null"),s_shader,s_textures,s_constants,s_matrices);
@@ -453,17 +477,3 @@ void	CResourceManager::Evict()
 	CHK_DX	(RDevice->EvictManagedResources());
 #endif //USE_DX11
 }
-/*
-BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup* &CS)
-{
-	LPSTR N = LPSTR(Name);
-	map_TD::iterator I = m_td.find	(N);
-	if (I!=m_td.end())
-	{
-		T	= I->second.T;
-		CS	= I->second.cs;
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-}*/
