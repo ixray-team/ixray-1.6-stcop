@@ -92,9 +92,11 @@ float4 main(vf I) : COLOR
     #endif //	USE_SOFT_WATER
     final *= I.c0;
 
+	float fog_i = saturate(1.0f - I.fog);
+
     //	Fogging
     final = lerp(fog_color, final, I.fog);
-    alpha *= I.fog * I.fog;
+    alpha *= 1.0f - fog_i * fog_i;
 
     return float4(final, alpha);
 
@@ -104,7 +106,7 @@ float4 main(vf I) : COLOR
     //	Fogging
     final = lerp(fog_color, final, I.fog);
 
-    return float4(final, I.fog * I.fog);
+    return float4(final, 1.0f - fog_i * fog_i);
 
 #endif //	NEED_SOFT_WATER
 }

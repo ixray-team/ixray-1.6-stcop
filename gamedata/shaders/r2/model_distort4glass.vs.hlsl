@@ -6,6 +6,7 @@ struct vf
     float4 hpos : POSITION;
     float2 tc0 : TEXCOORD0; // base
     float4 c0 : COLOR0; // color
+    float fog : FOG;
 };
 
 vf _main(v_model v)
@@ -14,6 +15,7 @@ vf _main(v_model v)
 
     o.hpos = mul(m_WVP, v.P); // xform, input in world coords
     o.tc0 = v.tc.xy; // copy tc
+    o.fog = saturate(calc_fogging(float4(mul(m_W, v.P), 1))); // fog, input in world coords
 
     // calculate fade
     float3 dir_v = normalize(mul(m_WV, v.P));

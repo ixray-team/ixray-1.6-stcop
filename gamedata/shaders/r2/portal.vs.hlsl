@@ -17,8 +17,11 @@ void main(in v_vert v, out vf o)
 {
     o.hpos = mul(m_VP, v.pos); // xform, input in world coords
     o.c = v.color;
-    o.fog = calc_fogging(v.pos); // fog, input in world coords
-    o.fog = saturate(o.fog);
+    o.fog = saturate(1.0f - calc_fogging(v.pos)); // fog, input in world coords
+	
+    o.c.a *= 1.0f - o.fog * o.fog;
+	
+    o.fog = 1.0f - o.fog;
     o.c.rgb = lerp(fog_color, o.c, o.fog);
-    o.c.a = o.fog;
 }
+

@@ -54,8 +54,9 @@ uniform float4 J_spot[6];
 
 float calc_fogging(float4 w_pos)
 {
-    return dot(w_pos, fog_plane);
+    return 1.0f - saturate(length(w_pos.xyz - eye_position.xyz) * fog_params.w + fog_params.x);
 }
+
 float2 calc_detail(float3 w_pos)
 {
     float dtl = distance(w_pos, eye_position) * dt_params.w;
