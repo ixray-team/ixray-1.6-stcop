@@ -71,4 +71,46 @@
     <string id="ui_mm_sslr_water">
         <text>Water reflections</text>
     </string>
+    <string id="ui_mm_r_scale_preset">
+        <text>Scaling Quality</text>
+    </string>
+    <string id="st_scale_native">
+        <text>Anti-Aliasing</text>
+    </string>
+    <string id="st_scale_quality">
+        <text>Quality</text>
+    </string>
+    <string id="st_scale_balanced">
+        <text>Balanced</text>
+    </string>
+    <string id="st_scale_performance">
+        <text>Performance</text>
+    </string>
+    <string id="st_scale_ultraperformance">
+        <text>Ultra Performance</text>
+    </string>
+    <string id="st_scale_custom">
+        <text>Custom</text>
+    </string>
+    <string id="st_common_settings">
+        <text>General Settings</text>
+    </string>
+    <string id="st_surface_options">
+        <text>Surface Settings</text>
+    </string>
+    <string id="st_aa_options">
+        <text>Anti-Aliasing and Scaling Settings</text>
+    </string>
+    <string id="st_lights_options">
+        <text>Lighting Settings</text>
+    </string>
+    <string id="st_sunlight_options">
+        <text>Sunlight Settings</text>
+    </string>
+    <string id="st_effects_options">
+        <text>Effects</text>
+    </string>
+    <string id="st_postprocess_options">
+        <text>Postprocessing</text>
+    </string>
 </string_table>
