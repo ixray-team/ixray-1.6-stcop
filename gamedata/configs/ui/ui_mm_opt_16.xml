@@ -253,6 +253,13 @@
 		    </text_color>
         </list_r_type_aa>
 
+        <cap_header_setup x="8" y="0" width="108" height="15">
+            <text r="170" g="170" b="170" font="letterica16" vert_align="c" />
+        </cap_header_setup>
+        <header_setup x="0" y="3" width="344" height="15">
+            <texture a="150">ui_inGame2_servers_list_button</texture>
+        </header_setup>
+
         <cap_r2_sun x="16" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_sun</text>
         </cap_r2_sun>

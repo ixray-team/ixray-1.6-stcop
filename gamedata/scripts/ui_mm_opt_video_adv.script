@@ -42,6 +42,14 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
     handler.scroll_v = self.scroll_v
 
+    local lineFrame = function (prec, text)
+        local static = xml:InitStatic("video_adv:templ_item", nil)
+        local temp = xml:InitFrameLine("video_adv:header_setup", static)
+        local tempText = xml:InitTextWnd("video_adv:cap_header_setup", temp)
+        tempText:SetTextST(text)
+        table.insert(handler.m_preconditions, {func=prec, control=static})
+    end
+
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_vis_dist", _st)
 	xml:InitTrackBar("video_adv:track_vis_dist", _st)
@@ -87,6 +95,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
     xml:InitStatic("video_adv:cap_r_type_aa", _st)
     ctl = xml:InitComboBox("video_adv:list_r_type_aa", _st)
     table.insert(handler.m_preconditions, {func=all_modes, control=_st})
+
+    --lineFrame(mode_2, "st_sun_header")
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_r2_sun", _st)
