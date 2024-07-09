@@ -14,7 +14,7 @@ typedef void RP_FUNC(void* obj);
 #define DECLARE_MESSAGE_CL(name,calling)		extern ENGINE_API RP_FUNC rp_##name; class ENGINE_API pure##name { public: virtual void calling On##name(void)=0;	}
 	
 #define DECLARE_MESSAGE( name )	DECLARE_MESSAGE_CL(name, )
-#define DECLARE_RP(name) void __fastcall rp_##name(void *p) { ((pure##name *)p)->On##name(); }
+#define DECLARE_RP(name) void  rp_##name(void *p) { ((pure##name *)p)->On##name(); }
 
 DECLARE_MESSAGE_CL(Frame,_BCL);
 DECLARE_MESSAGE(Render);

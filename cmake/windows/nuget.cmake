@@ -88,6 +88,9 @@ set(OPUS ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Opus.Runtimes.win-${NUGE
 
 # Mimalloc
 set(MIMALLOC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Mimalloc.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.1.7.3)
+if("${NUGET_PACKAGE_PLATFORM}" MATCHES "(x86)")
+    set(MIMALLOC_POSTFIX "32")
+endif()
 
 # LZO
 set(LZO ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Lzo.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.10.0)

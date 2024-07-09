@@ -28,6 +28,9 @@
             "displayName": "Engine-x86-Windows",
             "inherits": "Engine-Base-Windows",
             "binaryDir": "build/x86/Engine-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "Win32"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -39,6 +42,9 @@
             "displayName": "Engine-x64-Windows",
             "inherits": "Engine-Base-Windows",
             "binaryDir": "build/x64/Engine-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -68,6 +74,9 @@
             "displayName": "Engine-x86-NonUnity",
             "inherits": "Engine-Base-NonUnity",
             "binaryDir": "build/x86/Engine-NonUnity",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "Win32"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -79,6 +88,9 @@
             "displayName": "Engine-x64-NonUnity",
             "inherits": "Engine-Base-NonUnity",
             "binaryDir": "build/x64/Engine-NonUnity",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -108,6 +120,9 @@
             "displayName": "Server-x86-Windows",
             "inherits": "Server-Base-Windows",
             "binaryDir": "build/x86/Server-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "Win32"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -119,6 +134,9 @@
             "displayName": "Server-x64-Windows",
             "inherits": "Server-Base-Windows",
             "binaryDir": "build/x64/Server-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -147,6 +165,9 @@
             "displayName": "Utilities-x86-Windows",
             "inherits": "Utilities-Base-Windows",
             "binaryDir": "build/x86/Utilities-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "Win32"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -158,6 +179,9 @@
             "displayName": "Utilities-x64-Windows",
             "inherits": "Utilities-Base-Windows",
             "binaryDir": "build/x64/Utilities-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -186,6 +210,9 @@
             "displayName": "Plugins-3ds-Max-x64",
             "inherits": "Plugins-3ds-Max-Base",
             "binaryDir": "build/x64/Plugins-3ds-Max",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -214,6 +241,9 @@
             "displayName": "Plugins-Lightwave-x64",
             "inherits": "Plugins-Lightwave-Base",
             "binaryDir": "build/x64/Plugins-Lightwave",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"
@@ -242,6 +272,9 @@
             "displayName": "Compressor-x86-Windows",
             "inherits": "Compressor-Base-Windows",
             "binaryDir": "build/x86/Compressor-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "Win32"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x86"
@@ -253,6 +286,9 @@
             "displayName": "Compressor-x64-Windows",
             "inherits": "Compressor-Base-Windows",
             "binaryDir": "build/x64/Compressor-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
             "vendor": {
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-msvc-x64"

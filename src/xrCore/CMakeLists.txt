@@ -195,7 +195,7 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc-redirect.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc-redirect${MIMALLOC_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

@@ -43,13 +43,17 @@ target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
 if(IXRAY_MP)
     target_link_libraries(xrNetServer PUBLIC "${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.lib")
 
+    if("${NUGET_PACKAGE_PLATFORM}" MATCHES "(x64)")
+        set(LIBSSL_POSTFIX "-x64")
+    endif()
+
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/legacy.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libcrypto-3-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libcrypto-3${LIBSSL_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf-lite.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotoc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libssl-3-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libssl-3${LIBSSL_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     )
 endif()
