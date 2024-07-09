@@ -241,6 +241,19 @@ void	CRenderTarget::phase_combine	()
 		}
 	}
 
+	if(ps_r_scale_mode < 2) {
+		if(ps_r2_aa_type == 1) {
+			PIX_EVENT(phase_fxaa);
+			phase_fxaa();
+			RCache.set_Stencil(FALSE);
+		}
+		else if(ps_r2_aa_type == 2) {
+			PIX_EVENT(phase_smaa);
+			phase_smaa();
+			RCache.set_Stencil(FALSE);
+		}
+	}
+
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
 	RImplementation.rmNormal();
 
@@ -328,35 +341,19 @@ void	CRenderTarget::phase_combine	()
 	//	if FP16-BLEND !not! supported - draw flares here, overwise they are already in the bloom target
 	g_pGamePersistent->Environment().RenderFlares();	// lens-flares
 
-	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
-	{
-		PIX_EVENT(PhaseAberration);
-		PhaseAberration();
+	if(ps_r4_cas_sharpening > EPS) {
+		PIX_EVENT(phase_cas);
+		phase_cas();
 	}
 
-	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
-	{
+	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE)) {
 		PIX_EVENT(PhaseVignette);
 		PhaseVignette();
 	}
 
-	if (ps_r2_aa_type == 1)
-	{
-		PIX_EVENT(phase_fxaa);
-		phase_fxaa();
-		RCache.set_Stencil(FALSE);
-	}
-	else if (ps_r2_aa_type == 2)
-	{
-		PIX_EVENT(phase_smaa);
-		phase_smaa();
-		RCache.set_Stencil(FALSE);
-	}
-
-	if(ps_r4_cas_sharpening > EPS)
-	{
-		PIX_EVENT(phase_cas);
-		phase_cas();
+	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION)) {
+		PIX_EVENT(PhaseAberration);
+		PhaseAberration();
 	}
 
 	PIX_EVENT(phase_pp);

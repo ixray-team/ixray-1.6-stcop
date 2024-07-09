@@ -203,19 +203,6 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_Stencil(FALSE);
 	}
 	
-	//if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
-	//{
-	//	u_setrt(rt_Generic_0, 0, 0, 0);
-	//	PhaseAberration();
-	//	RCache.set_Stencil(FALSE);
-	//}
-	//if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
-	//{
-	//	u_setrt(rt_Generic_0, 0, 0, 0);
-	//	PhaseVignette();
-	//	RCache.set_Stencil(FALSE);
-	//}
-	
 	// Distortion filter
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
 	{
@@ -289,6 +276,17 @@ void	CRenderTarget::phase_combine	()
 
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
+	
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
+	{
+		PhaseVignette();
+		RCache.set_Stencil(FALSE);
+	}
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_ABERRATION))
+	{
+		PhaseAberration();
+		RCache.set_Stencil(FALSE);
+	}
 
 	//	PP-if required
 	phase_pp();

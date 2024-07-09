@@ -34,5 +34,5 @@ void CRenderTarget::phase_cas()
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	//Resolve back to rt_Back_Buffer
-    RContext->CopyResource(rt_Back_Buffer->pTexture->surface_get(), rt_Back_Buffer_AA->pTexture->surface_get());
+    RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }

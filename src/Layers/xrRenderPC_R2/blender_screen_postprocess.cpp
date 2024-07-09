@@ -17,6 +17,6 @@ void CBlender_SPP::Compile(CBlender_Compile& C) {
 		break;
 	}
 
-	C.r_Sampler("s_image", r2_RT_albedo);
+	C.r_Sampler_clf("s_image", r2_RT_albedo);
 	C.r_End();
 }

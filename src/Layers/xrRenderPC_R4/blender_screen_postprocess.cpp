@@ -19,5 +19,9 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
     }
 
     C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
+
+    C.r_dx10Sampler("smp_nofilter");
+    C.r_dx10Sampler("smp_rtlinear");
+
     C.r_End();
 }
