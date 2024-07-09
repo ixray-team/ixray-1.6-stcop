@@ -77,8 +77,14 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 
 			if (pMonster)
 			{
-				m_PartnerCharacterInfo->InitCharacterMP("",
-					pSettings->r_string(pMonster->cNameSect(), "icon"));
+				const char* icon = "npc_icon_unknown_data";
+
+				if (pSettings->line_exist(pMonster->cNameSect(), "icon"))
+				{
+					icon = pSettings->r_string(pMonster->cNameSect(), "icon");
+				}
+
+				m_PartnerCharacterInfo->InitCharacterMP("", icon);
 			}
 		}
 		else if (pCar != nullptr)
@@ -283,7 +289,7 @@ void CUIActorMenu::Update()
 	m_hint_wnd->Update();
 }
 
-bool CUIActorMenu::StopAnyMove()  // true = актёр не идёт при открытом меню
+bool CUIActorMenu::StopAnyMove()  // true = Р°РєС‚С‘СЂ РЅРµ РёРґС‘С‚ РїСЂРё РѕС‚РєСЂС‹С‚РѕРј РјРµРЅСЋ
 {
 	switch ( m_currMenuMode )
 	{
