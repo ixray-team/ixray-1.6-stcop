@@ -934,7 +934,10 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id,Fmatrix globa
 		Log("end-------");
 	}
 
-	VERIFY3(bbb,dbg_obj->ObjectNameVisual(),"has breaking parts with no vertexes or size less than 1mm");//
+	if (dbg_obj != nullptr)
+	{
+		VERIFY3(bbb, dbg_obj->ObjectNameVisual(), "has breaking parts with no vertexes or size less than 1mm");//
+	}
 #endif
 	
 }
