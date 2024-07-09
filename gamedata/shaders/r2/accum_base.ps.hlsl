@@ -19,7 +19,7 @@ float4 main(float4 tc : TEXCOORD0, float4 tcJ : TEXCOORD1) : COLOR
     float4 _P = tex2Dproj(s_position, tc);
     float4 _N = tex2Dproj(s_normal, tc);
 
-    _P.xyz += normalize(_N.xyz) * 0.015f;
+    _P.xyz += normalize(_N.xyz) * 0.025f;
 
     float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN

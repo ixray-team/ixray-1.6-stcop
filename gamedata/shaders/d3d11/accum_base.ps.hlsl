@@ -26,7 +26,7 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
     float3 Light = DirectLight(Ldynamic_color, O.PointReal.xyz - Ldynamic_pos.xyz, O.Normal, O.PointReal.xyz, O.Color, O.Metalness, O.Roughness);
 
     float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
-    Point.xyz += O.Normal * 0.015f;
+    Point.xyz += O.Normal * 0.025f;
 
     float4 PS = mul(m_shadow, Point);
 
