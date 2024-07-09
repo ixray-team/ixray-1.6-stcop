@@ -706,8 +706,12 @@ void CCC_Register()
 	CMD4(CCC_Integer,	"rs_fps_limit",			&g_dwFPSlimit,		0, 1000);
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
-	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
-	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
+	
+#ifdef MASTER_GOLD
+	CMD3(CCC_Mask, "rs_fullscreen", &psDeviceFlags, rsFullscreen);
+#endif // MASTER_GOLD
+
+	//CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.5f			);
 	CMD3(CCC_Mask,		"r_actor_shadow",		&psGameFlags,		rsActorShadow			);
