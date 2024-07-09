@@ -52,6 +52,11 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 {
 	inherited::shedule_Update	(dt);
 
+	if (!psActorFlags.test(AF_IMPORTANT_SAVE))
+	{
+		return;
+	}
+
 	if (!ai().get_alife())
 		return;
 
