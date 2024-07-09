@@ -12,13 +12,13 @@ bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s in registry", REGISTRY_PATH);
+		//Msg ("! Unable to find %s in registry", REGISTRY_PATH);
 		return false;
 	}
 
 	if (!hKey) 
 	{
-		Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
+		//Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
 		return false;
 	}
 
@@ -46,7 +46,7 @@ bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s entry in registry", rKeyName); 
+		//Msg ("! Unable to find %s entry in registry", rKeyName); 
 		return false;
 	}
 	
@@ -63,13 +63,13 @@ bool	WriteRegistryValue	(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s in registry", REGISTRY_PATH);
+		//Msg ("! Unable to find %s in registry", REGISTRY_PATH);
 		return false;
 	}
 
 	if (!hKey) 
 	{
-		Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
+		//Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
 		return false;
 	}
 
@@ -123,12 +123,12 @@ u32 const	ReadRegistry_BinaryValue	(LPCSTR rKeyName, u8 * buffer_dest, u32 const
 
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s in registry", REGISTRY_PATH);
+		//Msg ("! Unable to find %s in registry", REGISTRY_PATH);
 		return 0;
 	}
 	if (!hKey) 
 	{
-		Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
+		//Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
 		return 0;
 	}
 
@@ -139,7 +139,7 @@ u32 const	ReadRegistry_BinaryValue	(LPCSTR rKeyName, u8 * buffer_dest, u32 const
 	
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s entry in registry", rKeyName); 
+		//Msg ("! Unable to find %s entry in registry", rKeyName); 
 		return 0;
 	}
 	
@@ -155,13 +155,13 @@ void	WriteRegistry_BinaryValue	(LPCSTR rKeyName, u8 const * buffer_src, u32 cons
 
 	if (res != ERROR_SUCCESS)
 	{
-		Msg ("! Unable to find %s in registry", REGISTRY_PATH);
+		//Msg ("! Unable to find %s in registry", REGISTRY_PATH);
 		return;
 	}
 
 	if (!hKey) 
 	{
-		Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
+		//Msg ("! Unable to find %s entry in registry", REGISTRY_PATH); 
 		return;
 	}
 

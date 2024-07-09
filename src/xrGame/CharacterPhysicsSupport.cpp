@@ -216,9 +216,9 @@ void CCharacterPhysicsSupport::in_NetSpawn( CSE_Abstract* e )
 			ka->PlayCycle( "death_init" );
 
 	} else if( !m_EntityAlife.animation_movement_controlled( ) )
-		ka->PlayCycle( "death_init" );///непонятно зачем это вообще надо запускать
-									  ///этот хак нужен, потому что некоторым монстрам 
-									  ///анимация после спона, может быть вообще не назначена
+		ka->PlayCycle( "death_init" );///РЅРµРїРѕРЅСЏС‚РЅРѕ Р·Р°С‡РµРј СЌС‚Рѕ РІРѕРѕР±С‰Рµ РЅР°РґРѕ Р·Р°РїСѓСЃРєР°С‚СЊ
+									  ///СЌС‚РѕС‚ С…Р°Рє РЅСѓР¶РµРЅ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РЅРµРєРѕС‚РѕСЂС‹Рј РјРѕРЅСЃС‚СЂР°Рј 
+									  ///Р°РЅРёРјР°С†РёСЏ РїРѕСЃР»Рµ СЃРїРѕРЅР°, РјРѕР¶РµС‚ Р±С‹С‚СЊ РІРѕРѕР±С‰Рµ РЅРµ РЅР°Р·РЅР°С‡РµРЅР°
 	pK->CalculateBones_Invalidate( );
 	pK->CalculateBones( TRUE );
 	
@@ -314,7 +314,7 @@ void CCharacterPhysicsSupport::SpawnInitPhysics( CSE_Abstract* e )
 		)
 	{
 #ifdef DEBUG
-		Msg("! saved bones %d , current bones %d, object :%s", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str() );
+		Msg("~ saved bones %d , current bones %d, object :%s", saved_bones.size(), m_EntityAlife.PHGetSyncItemsNumber(), m_EntityAlife.cName().c_str() );
 #endif
 		po->_flags.set(CSE_PHSkeleton::flSavedData, FALSE );
 		saved_bones.clear();
@@ -639,7 +639,7 @@ void CCharacterPhysicsSupport::in_UpdateCL( )
 	if( m_pPhysicsShell )
 	{
 		VERIFY( m_pPhysicsShell->isFullActive( ) );
-		m_pPhysicsShell->SetRagDoll( );//Теперь шела относиться к классу объектов cbClassRagDoll
+		m_pPhysicsShell->SetRagDoll( );//РўРµРїРµСЂСЊ С€РµР»Р° РѕС‚РЅРѕСЃРёС‚СЊСЃСЏ Рє РєР»Р°СЃСЃСѓ РѕР±СЉРµРєС‚РѕРІ cbClassRagDoll
 		
 		if( !is_imotion(m_interactive_motion ) )//!m_flags.test(fl_use_death_motion)
 			m_pPhysicsShell->InterpolateGlobalTransform( &mXFORM );

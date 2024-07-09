@@ -93,7 +93,7 @@ void CSoundRender_Source::LoadWave	(LPCSTR pName)
 			Msg("! Invalid ogg-comment version, file: %s", pname.c_str());
 		}
 	}else{
-		Msg("! Missing ogg-comment, file: %s", pname.c_str());
+		Msg("~ Missing ogg-comment, file: %s", pname.c_str());
 	}
 	R_ASSERT3((m_fMaxAIDist>=0.1f)&&(m_fMaxDist>=0.1f),"Invalid max distance.", pname.c_str());
 }
