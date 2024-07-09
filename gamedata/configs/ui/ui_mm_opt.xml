@@ -459,6 +459,30 @@
             </text_color>
         </combo_ssao>
 
+        <cap_vignette x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_vignette</text>
+        </cap_vignette>
+        <check_vignette x="167" y="0" width="44" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_vignette" group="mm_opt_video_adv" />
+        </check_vignette>
+
+        <cap_aberration x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_aberration</text>
+        </cap_aberration>
+        <check_aberration x="167" y="0" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_aberration" group="mm_opt_video_adv" />
+        </check_aberration>
+
+        <cap_sslr_water x="20" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_sslr_water</text>
+        </cap_sslr_water>
+        <check_sslr_water x="167" y="0" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r4_sslr_water" group="mm_opt_video_adv" depend="restart"/>
+        </check_sslr_water>
+
         <cap_soft_water x="20" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_soft_water</text>
         </cap_soft_water>

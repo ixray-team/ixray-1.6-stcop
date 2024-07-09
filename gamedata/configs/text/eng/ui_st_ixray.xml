@@ -59,7 +59,16 @@
     <string id="ui_rs_device_active">
         <text>Always Active</text>
     </string>
-	<string id="ui_mm_gtao">
-		<text>GTAO</text>
-	</string>
+    <string id="ui_mm_gtao">
+        <text>GTAO</text>
+    </string>
+    <string id="ui_mm_vignette">
+        <text>Vignette</text>
+    </string>
+    <string id="ui_mm_aberration">
+        <text>Chromatic aberration</text>
+    </string>
+    <string id="ui_mm_sslr_water">
+        <text>Water reflections</text>
+    </string>
 </string_table>

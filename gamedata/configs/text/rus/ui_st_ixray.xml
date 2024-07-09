@@ -101,7 +101,16 @@
     <string id="ui_mm_hashed_alpha_test">
         <text>Фильтрация прозрачности</text>
     </string>
-	<string id="ui_mm_gtao">
-		<text>GTAO</text>
-	</string>
+    <string id="ui_mm_gtao">
+        <text>GTAO</text>
+    </string>
+    <string id="ui_mm_vignette">
+        <text>Виньетка</text>
+    </string>
+    <string id="ui_mm_aberration">
+        <text>Хроматическая аберрация</text>
+    </string>
+    <string id="ui_mm_sslr_water">
+        <text>Отражения на воде</text>
+    </string>
 </string_table>

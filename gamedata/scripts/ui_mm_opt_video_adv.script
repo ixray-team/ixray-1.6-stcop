@@ -207,6 +207,21 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	--table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 
 	_st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_vignette", _st)
+	ctl = xml:InitCheck("video_adv:check_vignette", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_aberration", _st)
+	ctl = xml:InitCheck("video_adv:check_aberration", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_sslr_water", _st)
+	ctl = xml:InitCheck("video_adv:check_sslr_water", _st)
+	table.insert(handler.m_preconditions, {func=mode_4, control=_st})
+
+	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_soft_water", _st)
 	ctl = xml:InitCheck("video_adv:check_soft_water", _st)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
