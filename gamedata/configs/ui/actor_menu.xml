@@ -94,7 +94,7 @@
 		</slot>
 		<slot> <!-- Outfit -->
 			<slot_dragdrop x="458" y="137" width="106" height="178"
-				cell_width="33" cell_height="41" rows_num="3" cols_num="2"
+				cell_width="41" cell_height="41" rows_num="3" cols_num="2"
 				custom_placement="0" a="0" virtual_cells="1" vc_vert_align="c"
 				vc_horiz_align="c"/>
     		<slot_progress x="484" y="309" width="58" height="5" horz="1" min="0" max="1" pos="0">
@@ -137,7 +137,7 @@
 				<max_color r="107" g="207" b="119"/>
     		</slot_progress>
 			<slot_dragdrop x="469" y="14" width="85" height="110" 
-				cell_width="33" cell_height="41" rows_num="2" cols_num="2" custom_placement="0" a="0" virtual_cells="1" 
+				cell_width="41" cell_height="41" rows_num="2" cols_num="2" custom_placement="0" a="0" virtual_cells="1" 
 				vc_vert_align="c" vc_horiz_align="c" />
 		</slot>
 	</inventory_slot_wnd>
