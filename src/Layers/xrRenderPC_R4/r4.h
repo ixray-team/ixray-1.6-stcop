@@ -151,7 +151,6 @@ public:
 	void							render_main					(bool deffered, bool zfill = false);
 	void							render_forward				();
 	void							render_smap_direct			(Fmatrix& mCombined);
-	void							render_indirect				(light*			L	);
 	void							render_lights				(light_Package& LP	);
 	void							render_menu					();
 	void							render_rain					();

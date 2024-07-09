@@ -178,7 +178,6 @@ void	light::spatial_move			()
 	ISpatial::spatial_move			();
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	if (flags.bActive) gi_generate	();
 	svis.invalidate					();
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }

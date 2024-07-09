@@ -10,8 +10,6 @@ const	u32	cullfragments			= 4;
 
 void	light::vis_prepare			()
 {
-	if (int(indirect_photons)!=ps_r2_GI_photons)	gi_generate	();
-
 	//	. test is sheduled for future	= keep old result
 	//	. test time comes :)
 	//		. camera inside light volume	= visible,	shedule for 'small' interval
