@@ -1,0 +1,8 @@
+<w>
+    <file name="ui\ui_ixray_ex">
+        <texture id="ui_wp_prop_distantion" x="230" y="4" width="19" height="19" />
+        <texture id="ui_car_panel_back" x="0" y="0" width="220" height="120" />
+        <texture id="ui_car_panel_engine" x="0" y="180" width="22" height="22" />
+        <texture id="ui_car_panel_light" x="30" y="180" width="22" height="22" />
+   </file>
+</w>
