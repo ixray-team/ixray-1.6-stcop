@@ -5,64 +5,74 @@
 static const float fParallaxStartFade = 8.0f;
 static const float fParallaxStopFade = 12.0f;
 
+#ifndef PARALLAX_HEIGHT
+#define PARALLAX_HEIGHT 0.01
+#endif
+
 #ifdef USE_STEEPPARALLAX
-    #if defined(ALLOW_STEEPPARALLAX)
+#ifdef ALLOW_STEEPPARALLAX
 
 void UpdateTC(inout p_bumped_new I)
 {
     if (I.position.z < fParallaxStopFade)
     {
-        const float maxSamples = 25;
-        const float minSamples = 5;
-        const float fParallaxOffset = -0.013f;
-
-        float3x3 TBN = float3x3(I.M1, I.M2, I.M3);
-        float3 viewDir = mul(transpose(TBN), -I.position);
-        viewDir = normalize(viewDir);
-
-        // Calculate number of steps
-        float nNumSteps = lerp(maxSamples, minSamples, viewDir.z);
-
-        float fStepSize = 1.0f / nNumSteps;
-        float2 vDelta = viewDir.xy * fParallaxOffset * 1.2f;
-        float2 vTexOffsetPerStep = fStepSize * vDelta;
-
-        // Prepare start data for cycle
-        float2 vTexCurrentOffset = I.tcdh.xy;
-        float fCurrHeight = 0.0f;
-        float fCurrentBound = 1.0f;
-
-        for (int i = 0; i < nNumSteps; ++i)
-        {
-            if (fCurrHeight < fCurrentBound)
-            {
-                vTexCurrentOffset += vTexOffsetPerStep;
-                fCurrHeight = s_bumpX.SampleLevel(smp_base, vTexCurrentOffset.xy, 0.0f).a;
-
-                fCurrentBound -= fStepSize;
-            }
-        }
-
-        // Reconstruct previouse step's data
-        vTexCurrentOffset -= vTexOffsetPerStep;
-        float fPrevHeight = s_bumpX.Sample(smp_base, float3(vTexCurrentOffset.xy, 0.0f)).a;
-
-        // Smooth tc position between current and previouse step
-        float fDelta2 = ((fCurrentBound + fStepSize) - fPrevHeight);
-        float fDelta1 = (fCurrentBound - fCurrHeight);
-
-        float fParallaxAmount = (fCurrentBound * fDelta2 - (fCurrentBound + fStepSize) * fDelta1) / (fDelta2 - fDelta1);
-        float fParallaxFade = smoothstep(fParallaxStopFade, fParallaxStartFade, I.position.z);
-
-        float2 vParallaxOffset = vDelta * fParallaxFade * (1.0f - fParallaxAmount);
-        float2 vTexCoord = I.tcdh.xy + vParallaxOffset;
-
-        // Output the result
-        I.tcdh.xy = vTexCoord;
+		float3x3 TBN = float3x3(I.M1,I.M2,I.M3);
+		float3 viewDir = mul(transpose(TBN), -I.position);   // better
+		viewDir = normalize(viewDir);
+		
+		const float minLayers = 8.0f;
+		const float maxLayers = 20.0f;
+		const uint reliefSteps = 5;
+		
+		float numLayers = lerp(maxLayers, minLayers, abs(viewDir.z));
+		float layerDepth = rcp(numLayers);
+		
+		viewDir.xy *= PARALLAX_HEIGHT * rcp(viewDir.z);
+		float2 texcoordDelta = viewDir.xy * layerDepth;
+		
+		float2 currTexCoord = I.tcdh;
+		float currDepthMapVal = 1.0f - s_bumpX.Sample(smp_base, currTexCoord).w;
+		float currLayerDepth = 0.5f;
+		
+		[loop] while(currLayerDepth < currDepthMapVal)
+		{
+			currLayerDepth += layerDepth;
+			currTexCoord -= texcoordDelta;
+			currDepthMapVal = 1.0f - s_bumpX.SampleLevel(smp_base, currTexCoord, 0.0f).w;
+		}
+		
+		texcoordDelta *= 0.5;
+		layerDepth *= 0.5;
+		
+		currTexCoord += texcoordDelta;
+		currLayerDepth -= layerDepth;
+		
+		[unroll(reliefSteps)]
+		for(uint i = 0; i < reliefSteps; ++i)
+		{
+			currDepthMapVal = 1.0f - s_bumpX.Sample(smp_base, currTexCoord).w;
+			
+			texcoordDelta *= 0.5f;
+			layerDepth *= 0.5f;
+			
+			if(currDepthMapVal > currLayerDepth)
+			{
+				currTexCoord -= texcoordDelta;
+				currLayerDepth += layerDepth;
+			}
+			else
+			{
+				currTexCoord += texcoordDelta;
+				currLayerDepth -= layerDepth;
+			}
+		}
+			
+        float fParallaxFade = smoothstep(fParallaxStartFade, fParallaxStopFade, I.position.z);	
+		I.tcdh.xy = lerp(currTexCoord, I.tcdh.xy, fParallaxFade);
     }
 }
 
-    #else
+#else
 
 void UpdateTC(inout p_bumped_new I)
 {
@@ -71,13 +81,11 @@ void UpdateTC(inout p_bumped_new I)
     viewDir = normalize(viewDir);
 
     float height = s_bumpX.Sample(smp_base, I.tcdh.xy).w;
-    height = height * parallax.x + parallax.y;
-
-    // Output the result
+    height *= PARALLAX_HEIGHT * rcp(viewDir.z);
     I.tcdh.xy += height * viewDir.xy;
 }
 
-    #endif
+#endif
 #endif
 
 void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
