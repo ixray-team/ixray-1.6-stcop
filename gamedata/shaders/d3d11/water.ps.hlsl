@@ -110,7 +110,7 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	leaves.xyz *= water_intensity.xxx * color;
 	leaves.w *= 1.0f - base.w;
 	
-	float calc_cos = dot(float3(I.M1.z, I.M2.z, I.M3.z), -normalize(v2point));
+	float calc_cos = -dot(float3(I.M1.z, I.M2.z, I.M3.z), v2point);
 	float calc_depth = saturate(waterDepth * calc_cos);
 	
 	float fLeavesFactor = smoothstep(0.025f, 0.05f, calc_depth);
@@ -128,10 +128,10 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	alpha = max(alpha, leaves.w * fLeavesFactor);
 #endif //	USE_SOFT_WATER
 	
-	float ffog = 1.0f - I.fog;
+	float ffog = calc_fogging(I.pos.xyzz);
 	alpha *= 1.0f - ffog * ffog;
 	
 	//	Fogging
-	final = lerp(fog_color, final, I.fog);
+	final = lerp(final, fog_color, ffog);
 	return float4(final, alpha);
 }
