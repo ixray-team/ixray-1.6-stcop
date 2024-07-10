@@ -468,7 +468,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 		fog_density			*= modif_power;
 	}
 
-	fog_distance			=	(fi*A.fog_distance + f*B.fog_distance);
+	fog_distance			=	(fi*A.fog_distance + f*B.fog_distance) * psVisDistance;
 	fog_near				=	(1.0f - fog_density)*0.85f * fog_distance;
 	fog_far					=	0.99f * fog_distance;
 	
