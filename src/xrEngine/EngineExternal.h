@@ -19,7 +19,9 @@ enum class EEngineExternalGame
 	EnableNPCLookAtActor,
 	EnableBlockSprintInReload,
 	EnableAutoreload,
-	EnableMonstersInventory
+	EnableMonstersInventory,
+	EnableWeaponInertion,
+	EnableWeaponCollision
 };
 
 enum class EEngineExternalRender {

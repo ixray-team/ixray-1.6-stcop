@@ -1901,6 +1901,9 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 		clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
 	}
 
+	if (!EngineExternal()[EEngineExternalGame::EnableWeaponInertion])
+		return;
+
 	//============= Подготавливаем общие переменные =============//
 	clamp(idx, u8(0), u8(1));
 	bool bForAim = (idx == 1);
