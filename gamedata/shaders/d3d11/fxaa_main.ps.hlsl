@@ -1,9 +1,11 @@
 #include "common.hlsli"
 #include "fxaa.hlsli"
 
+uniform float4 scaled_screen_res;
+
 float4 main(v2p_aa_AA I) : SV_Target
 {
-    float2 rcpFrame = screen_res.zw;
+    float2 rcpFrame = scaled_screen_res.zw;
     FxaaTex tex = {smp_rtlinear, s_image};
 
     return FxaaPixelShader(I.Tex0.xy,

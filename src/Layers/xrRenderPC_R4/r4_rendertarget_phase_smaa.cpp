@@ -9,14 +9,15 @@ void CRenderTarget::phase_smaa()
     u32 C = color_rgba(0, 0, 0, 255);
     FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-    float _w = RCache.get_target_width();
-    float _h = RCache.get_target_height();
+    float _w = RCache.get_width();
+    float _h = RCache.get_height();
 
     p0.set(0.0f, 0.0f);
     p1.set(1.0f, 1.0f);
 
     // Phase 0: edge detection ////////////////////////////////////////////////
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
+
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
@@ -40,6 +41,7 @@ void CRenderTarget::phase_smaa()
 
     // Phase 1: blend weights calculation ////////////////////////////////////
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
+
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
@@ -63,7 +65,7 @@ void CRenderTarget::phase_smaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Phase 2: neighbour blend //////////////////////////////////////////////
-    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+    u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -86,5 +88,5 @@ void CRenderTarget::phase_smaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    RContext->CopyResource(rt_Back_Buffer->pTexture->surface_get(), rt_Back_Buffer_AA->pTexture->surface_get());
+    RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 }
