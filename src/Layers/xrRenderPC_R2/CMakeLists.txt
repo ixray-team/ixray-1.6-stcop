@@ -67,9 +67,9 @@ target_link_libraries(xrRender_R2 PUBLIC xrParticles)
 target_link_libraries(xrRender_R2 PUBLIC "d3dcompiler.lib")
 
 ## DirectX SDK
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
-target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
+target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## RenderDoc
 target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")

@@ -44,4 +44,4 @@ file(GLOB_RECURSE EPE_SOURCE_PCH_FILES "stdafx.*")
 source_group("pch" FILES ${EPE_SOURCE_PCH_FILES})
 
 target_include_directories(ParticlesEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(ParticlesEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+target_include_directories(ParticlesEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")

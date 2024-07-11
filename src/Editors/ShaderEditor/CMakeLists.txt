@@ -40,7 +40,7 @@ file(GLOB_RECURSE ESHE_SOURCE_PCH_FILES "stdafx.*")
 source_group("pch" FILES ${ESHE_SOURCE_PCH_FILES})
 
 target_include_directories(ShaderEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(ShaderEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+target_include_directories(ShaderEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 
 ## OpenAL
 target_link_libraries(ShaderEditor PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
