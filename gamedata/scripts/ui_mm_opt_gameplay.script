@@ -9,33 +9,63 @@ end
 
 function opt_gameplay:InitControls(x, y, xml, handler)
 
-	self:SetWndPos(vector2():set(x,y))
-	self:SetWndSize(vector2():set(738,416))
-	self:SetAutoDelete(true)
+    self:SetWndPos(vector2():set(x,y))
+    self:SetWndSize(vector2():set(738,416))
+    self:SetAutoDelete(true)
+    self.scroll_v = xml:InitScrollView("main_dialog:scroll_v", self)
 
---	self.bk = xml:InitFrame("frame_gameplay", self)
+    local _st
+    local addControl = function(crl)	
+        self.scroll_v:AddWindow(crl, true)
+        crl:SetAutoDelete(false)
+    end
 
-	xml:InitStatic("tab_gameplay:cap_difficulty",			self)
-	xml:InitStatic("tab_gameplay:cap_check_tips",			self)
-	xml:InitStatic("tab_gameplay:cap_check_crosshair",		self)
-	xml:InitStatic("tab_gameplay:cap_check_dyn_crosshair",	self)
-	xml:InitStatic("tab_gameplay:cap_check_show_weapon",	self)
-	xml:InitStatic("tab_gameplay:cap_check_dist",			self)
-	xml:InitStatic("tab_gameplay:cap_check_important_save",	self)
-	xml:InitStatic("tab_gameplay:cap_check_crouch_toggle",	self)
-	xml:InitStatic("tab_gameplay:cap_check_hud_draw",		self)
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_difficulty", _st)
+    xml:InitComboBox("tab_gameplay:list_difficulty", _st)
+    addControl(_st)
 
-	xml:InitCheck("tab_gameplay:check_tips",			self)
-	xml:InitCheck("tab_gameplay:check_crosshair",		self)
-	xml:InitCheck("tab_gameplay:check_dyn_crosshair", 	self)
-	xml:InitCheck("tab_gameplay:check_show_weapon", 	self)
-	xml:InitCheck("tab_gameplay:check_dist", 			self)
-	xml:InitCheck("tab_gameplay:check_important_save", 	self)
-	xml:InitCheck("tab_gameplay:check_crouch_toggle",	self)
-	xml:InitCheck("tab_gameplay:check_hud_draw",		self)
-	xml:InitComboBox("tab_gameplay:list_difficulty",	self)
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_crosshair", _st)
+    xml:InitCheck("tab_gameplay:check_crosshair", _st)
+    addControl(_st)
 
-	local btn
-	btn = xml:Init3tButton	("tab_gameplay:btn_check_updates", self)
-	handler:Register		(btn, "btn_check_updates")
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_dyn_crosshair", _st)
+    xml:InitCheck("tab_gameplay:check_dyn_crosshair", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_show_weapon", _st)
+    xml:InitCheck("tab_gameplay:check_show_weapon", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_dist", _st)
+    xml:InitCheck("tab_gameplay:check_dist", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_tips", _st)
+    xml:InitCheck("tab_gameplay:check_tips", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_crouch_toggle", _st)
+    xml:InitCheck("tab_gameplay:check_crouch_toggle", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_important_save", _st)
+    xml:InitCheck("tab_gameplay:check_important_save", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_check_hud_draw", _st)
+    xml:InitCheck("tab_gameplay:check_hud_draw", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_rs_fps_show", _st)
+    xml:InitCheck("tab_gameplay:check_rs_fps_show", _st)
 end
