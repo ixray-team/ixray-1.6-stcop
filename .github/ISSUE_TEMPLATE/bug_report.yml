@@ -1,0 +1,71 @@
+name: Bug report
+description: Create a report to help improve the project
+labels: [ bug ]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >
+        A clear and concise description of what the bug is
+    validations:
+      required: true
+
+  - type: textarea
+    id: platform
+    attributes:
+      label: Platform
+      description: >
+        Fill in the following fields to create a complete report
+      placeholder: |
+        - CPU, GPU and RAM
+        - Type of tested machine
+        - Version or build
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: >
+        Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: >
+        A clear and concise description of what you expected to happen
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: >
+        If applicable add screenshots to help explain your problem
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: >
+        Add any other context about the problem here if it is necessary
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Agreements
+
+        By submitting this issue, you agree to follow our __Contributing Guidelines__ and __Code of Conduct__
+
+        - I agree to follow this project's [__Contributing Guidelines__](../CONTRIBUTING.md)
+        - I agree to follow this project's [__Code of Conduct__](../CODE_OF_CONDUCT.md)
