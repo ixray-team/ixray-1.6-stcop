@@ -111,15 +111,15 @@ float		ps_r__ssaDISCARD			=  3.5f	;					//RO
 float		ps_r__ssaDONTSORT			=  32.f	;					//RO
 float		ps_r__ssaHZBvsTEX			=  96.f	;					//RO
 
-int			ps_r__tf_Anisotropic		= 8		;
+int			ps_r__tf_Anisotropic		= 16		;
 
 // R1
 float		ps_r1_ssaLOD_A				= 64.f	;
 float		ps_r1_ssaLOD_B				= 48.f	;
-float ps_r__tf_Mipbias = 0.0f;
+float ps_r__tf_Mipbias = -0.1f;
 Flags32		ps_r1_flags					= { R1FLAG_DLIGHTS | R1FLAG_TERRAIN_MASK };		// r1-only
 float		ps_r1_lmodel_lerp			= 0.1f	;
-float		ps_r1_dlights_clip			= 40.f	;
+float		ps_r1_dlights_clip			= 50.f	;
 float		ps_r1_pps_u					= 0.f	;
 float		ps_r1_pps_v					= 0.f	;
 
@@ -128,8 +128,8 @@ int			ps_r1_GlowsPerFrame			= 16	;					// r1-only
 float		ps_r1_fog_luminance			= 1.1f	;					// r1-only
 int			ps_r1_use_terrain_mask		= 0;
 // R2
-float		ps_r2_ssaLOD_A				= 64.f	;
-float		ps_r2_ssaLOD_B				= 48.f	;
+float		ps_r2_ssaLOD_A				= 48.f	;
+float		ps_r2_ssaLOD_B				= 32.f	;
 
 Fvector3	ps_r_taa_jitter = { 0,0,0 };
 Fvector3	ps_r_taa_jitter_scale = { 1,1,0 };
@@ -141,7 +141,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 	| R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF
 	| R3FLAG_VOLUMETRIC_SMOKE
 	|R2FLAG_DETAIL_BUMP
-	|R2FLAG_DOF
 	|R2FLAG_SOFT_PARTICLES
 	|R2FLAG_SOFT_WATER
 	|R2FLAG_STEEP_PARALLAX
@@ -157,40 +156,39 @@ Flags16 ps_r2_ls_flags_ssao =
 Flags32 ps_r2_ls_flags_ext =
 {
 	RFLAG_CLOUD_SHADOWS |
-	R2FLAGEXT_ENABLE_TESSELLATION |
 	R4FLAG_SCREEN_SPACE_HUD_SHADOWS |
 	R4FLAG_HASHED_ALPHA_TEST
 };
 
 Flags32 ps_r__common_flags = { R2FLAG_USE_BUMP | RFLAG_USE_CACHE | RFLAG_NO_RAM_TEXTURES | RFLAG_MT_TEX_LOAD };
 
-int opt_static = 1;
-int opt_dynamic = 1;
+int opt_static = 0;
+int opt_dynamic = 0;
 
-float		ps_r2_df_parallax_h			= 0.013f;
+float		ps_r2_df_parallax_h			= 0.02f;
 float		ps_r2_df_parallax_range		= 60.f;
 float		ps_r2_tonemap_middlegray	= 1.f;			// r2-only
-float		ps_r2_tonemap_adaptation	= 1.f;				// r2-only
-float		ps_r2_tonemap_low_lum		= 0.0001f;			// r2-only
+float		ps_r2_tonemap_adaptation	= 3.f;				// r2-only
+float		ps_r2_tonemap_low_lum		= 0.01f;			// r2-only
 float		ps_r2_tonemap_amount		= 0.7f;				// r2-only
-float		ps_r2_ls_bloom_kernel_g		= 3.f;				// r2-only
+float		ps_r2_ls_bloom_kernel_g		= 5.f;				// r2-only
 float		ps_r2_ls_bloom_kernel_b		= .7f;				// r2-only
 float		ps_r2_ls_bloom_speed		= 100.f;				// r2-only
 float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
-float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
-float		ps_r2_ls_depth_scale		= 1.00001f;			// 1.00001f
-float		ps_r2_ls_depth_bias			= -0.0003f;			// -0.0001f
+float		ps_r2_ls_bloom_threshold	= 0.1f;				// r2-only
+float		ps_r2_ls_depth_scale = 0.9999f; // 1.00001f
+float		ps_r2_ls_depth_bias = 0.00001f; // -0.0001f
 float		ps_r2_ls_squality			= 1.0f;				// 1.00f
 
-float		ps_r2_sun_bias			= -0.01f;			// 
-float		ps_r2_sun_far				= 100.f;
+float		ps_r2_sun_bias				= -0.01f;			// 
+float		ps_r2_sun_far				= 160.f;
 float		ps_r2_sun_near				= 20.f;
 float		ps_r2_sun_depth_far_scale	= 1.00000f;			// 1.00001f
 float		ps_r2_sun_depth_near_scale	= 1.0000f;			// 1.00001f
-float		ps_r2_sun_lumscale			= 1.0f;				// 1.0f
-float		ps_r2_sun_lumscale_hemi		= 1.0f;				// 1.0f
-float		ps_r2_sun_lumscale_amb		= 1.0f;
-float		ps_r2_sun_lumscale_sky		= 1.0f;
+float		ps_r2_sun_lumscale			= 1.1f;				// 1.0f
+float		ps_r2_sun_lumscale_hemi		= 0.95f;				// 1.0f
+float		ps_r2_sun_lumscale_amb		= 0.6f;
+float		ps_r2_sun_lumscale_sky		= 1.2f;
 float		ps_r2_gmaterial				= 2.2f;				// 
 float		ps_r2_zfill					= 0.25f;				// .1f
 
@@ -201,21 +199,21 @@ int			ps_r2_dhemi_count			= 5;				// 5
 int			ps_r2_wait_sleep			= 0;
 
 float		ps_r2_lt_smooth				= 1.f;				// 1.f
-float		ps_r2_slight_fade			= 0.5f;				// 1.f
+float		ps_r2_slight_fade			= 0.6f;				// 1.f
 
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
 float		ps_r2_dof_kernel_size		= 5.0f;						//	7.0f
 
-float		ps_r2_def_aref_quality = 100.0f;
+float		ps_r2_def_aref_quality = 115.0f;
 
 float		ps_r3_dyn_wet_surf_near		= 10.f;				// 10.0f
 float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
-float		ps_r2_gloss_factor = 4.0f;
+float		ps_r2_gloss_factor = 3.14f;
 
-float		ps_r4_cas_sharpening = 0.8f;
+float		ps_r4_cas_sharpening = 0.0f;
 
 // Test float exported to shaders for development
 float		ps_r__test_exp_to_shaders_1	= 1.0f;

@@ -47,7 +47,6 @@ enum {
 enum {
 	rsActorShadow					= (1ul<<0ul),
 	rsDrawPortals					= (1ul<<1ul),
-	// 22-32 bit - reserved to Editor
 };
 
 
