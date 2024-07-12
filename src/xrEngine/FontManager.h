@@ -22,6 +22,7 @@ public:
 	virtual void OnDeviceReset();
 
 	CGameFont* GetFont(const shared_str& name, u32 flags = 0);
+	CGameFont* CloneFont(const shared_str& name);
 protected:
 
 	shared_str FontConsoleName = "ui_font_console";

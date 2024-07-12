@@ -55,6 +55,22 @@ CGameFont* CFontManager::GetFont(const shared_str& name, u32 flags /*= 0*/)
 	return FontIter->second;
 }
 
+CGameFont* CFontManager::CloneFont(const shared_str& name)
+{
+	auto it = Fonts.find(name);
+	if (it != Fonts.end())
+	{
+		CGameFont* font = new CGameFont(name.c_str(), 0);
+		shared_str newName;
+		newName.printf("%s_cloned", name.c_str());
+		Fonts[newName] = font;
+		return font;
+	}
+
+	FATAL("Failed to clone font which was'nt initialized");
+	return nullptr;
+}
+
 void CFontManager::OnDeviceReset()
 {
 	// Removed old fonts

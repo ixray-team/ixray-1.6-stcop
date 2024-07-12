@@ -17,7 +17,7 @@ enum DebugTextColor : u64
 
 FPS::FPSCounter::FPSCounter()
 {
-    pCGameFont = g_FontManager->GetFont("ui_font_console");
+    pCGameFont = g_FontManager->CloneFont("ui_font_console");
 }
 
 void FPS::FPSCounter::OnRender() {
