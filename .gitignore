@@ -14,6 +14,9 @@ ipch/
 *.VC.VC.opendb
 *.aps
 
+# Visual Studio Code old files
+XRay.code-workspace
+
 # Build results
 obj/
 lib/
@@ -42,7 +45,7 @@ fs_*.ltx
 fsgame_*.ltx
 fsfactory_*.ltx
 
-# masOS Cache
+# masOS cache
 .DS_Store
 
 # Windows cache
@@ -69,6 +72,5 @@ imgui.ini
 git_version.h
 changelog.txt
 
-#CLion
-cmake-build-debug/
-cmake-build-release/
+# CLion cache
+cmake-build*/
