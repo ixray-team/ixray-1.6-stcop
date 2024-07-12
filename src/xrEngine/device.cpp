@@ -275,8 +275,7 @@ void CRenderDevice::on_idle		()
 	mFullTransform.mul			( mProject,mView	);
 	m_pRender->SetCacheXform(mView, mProject);
 
-	XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mInvFullTransform),
-		XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mFullTransform))));
+	mInvFullTransform.invert44(mFullTransform);
 	
 	mView_hud_old			= mView_hud;
 	mProject_hud_old		= mProject_hud;

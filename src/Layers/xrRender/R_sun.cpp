@@ -81,8 +81,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	{
 		ex_project = Device.mProject;
 		ex_full.mul					(ex_project,Device.mView);
-		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse),
-			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
+		ex_full_inverse.invert44(ex_full);
 	}
 
 	// Compute volume(s) - something like a frustum for infinite directional light
@@ -164,11 +163,9 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 		float map_size = m_sun_cascades[cascade_ind].size;
 
 	#ifndef USE_DX11
-		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-			XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size));
+		mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + map_size);
 	#else
-		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-			XMMatrixOrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size));
+		mdir_Project.OrthographicOffCenterLH(-map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + 1.41421f * map_size);
 	#endif // USE_DX11
 
 		// build viewport xform
@@ -180,8 +177,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 			view_dim/2.f,	view_dim/2.f,		0.0f,		1.0f
 		};
 		Fmatrix m_viewport_inv{};
-		XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv),
-			XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
+		m_viewport_inv.invert44(m_viewport);
 
 		// snap view-position to pixel
 		cull_xform.mul		(mdir_Project,mdir_View	);
