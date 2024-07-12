@@ -210,7 +210,8 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 	}
 
 	pParticles = CParticlesObject::Create(particles_name,(BOOL)auto_remove_flag);
-	
+	pParticles->SetLiveUpdate(TRUE);
+
 	UpdateParticles(pParticles, pos, vel);
 	CSpectator* tmp_spectr = smart_cast<CSpectator*>(Level().CurrentControlEntity());
 	bool in_hud_mode = IsHudModeNow();
@@ -292,6 +293,7 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 	if( Device.vCameraPosition.distance_to_sqr(play_pos)>2*2 ) return;
 
 	CParticlesObject* pShellParticles	= CParticlesObject::Create(*m_sShellParticles,TRUE);
+	pShellParticles->SetLiveUpdate(TRUE);
 
 	Fmatrix particles_pos; 
 	particles_pos.set		(get_ParticlesXFORM());
@@ -332,6 +334,8 @@ void CShootingObject::StartFlameParticles	()
 
 	StopFlameParticles();
 	m_pFlameParticles = CParticlesObject::Create(*m_sFlameParticlesCurrent,FALSE);
+	m_pFlameParticles->SetLiveUpdate(TRUE);
+
 	UpdateFlameParticles();
 	
 	

@@ -179,7 +179,7 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
 	}
 
 	// Step through all the actions in the action list.
-	float kill_old_time = 1.0f;
+	float kill_old_time = 3.0f;
 	for (PAPI::ParticleAction* pAction : *pa)
 	{
 		pAction->Execute(&(*pe), dt, kill_old_time);

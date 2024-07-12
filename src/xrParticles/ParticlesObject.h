@@ -36,7 +36,8 @@ public:
 	void				SetXFORM			(const Fmatrix& m);
 	IC	Fmatrix&		XFORM				()	{return renderable.xform;}
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
-
+	void				SetLiveUpdate		(BOOL b);
+	BOOL				GetLiveUpdate		();
 	void				play_at_pos			(const Fvector& pos, BOOL xform=FALSE);
 	virtual void		Play				(bool bHudMode);
 	void				Stop				(BOOL bDefferedStop=TRUE);

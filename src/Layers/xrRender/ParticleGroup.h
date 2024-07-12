@@ -143,6 +143,9 @@ namespace PS
 		virtual void		SetHudMode			(BOOL b);
 		virtual BOOL		GetHudMode			();
 
+		virtual void		SetLiveUpdate		(BOOL b);
+		virtual BOOL		GetLiveUpdate		();
+
 		virtual float		GetTimeLimit	(){VERIFY(m_Def); return m_Def->m_fTimeLimit;}
 
 		virtual const shared_str	Name		(){VERIFY(m_Def); return m_Def->m_Name;}

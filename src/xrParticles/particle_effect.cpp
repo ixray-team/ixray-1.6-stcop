@@ -72,14 +72,18 @@ BOOL ParticleEffect::Add(const pVector& pos, const pVector& posB,
 		return FALSE;
 
 	Particle& P = particles[p_count];
-	P.pos = pos;
-	P.posB = posB;
-	P.size = size;
-	P.rot.x = rot.x;
-	P.vel = vel;
-	P.color = color;
-	P.age = age;
-	P.frame = frame;
+	P.pos 		= pos;
+	P.posI		= pos;
+	P.posB 		= posB;
+	P.size 		= size;
+	P.sizeI 	= size;
+	P.rot.x 	= rot.x;
+	P.rotI.x 	= rot.x;
+	P.vel 		= vel;
+	P.velI 		= vel;
+	P.color 	= color;
+	P.age 		= age;
+	P.frame 	= frame;
 	P.flags.assign(flags);
 
 	if (b_cb)
