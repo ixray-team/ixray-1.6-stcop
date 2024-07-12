@@ -279,8 +279,8 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	hemi_color				= config.r_fvector4	(m_identifier.c_str(),"hemisphere_color");
 	sun_color				= config.r_fvector3	(m_identifier.c_str(),"sun_color");
 	
-	if (config.line_exist(m_identifier.c_str(), "trees_amplitude"))
-		trees_amplitude = config.r_float(m_identifier.c_str(), "trees_amplitude");
+	if (config.line_exist(m_identifier.c_str(), "tree_amplitude_intensity"))
+		trees_amplitude = config.r_float(m_identifier.c_str(), "tree_amplitude_intensity");
 //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
 		sun_dir.setHP			(
 			deg2rad(config.r_float(m_identifier.c_str(),"sun_altitude")),

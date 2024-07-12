@@ -103,7 +103,7 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_fvector4(el->m_identifier.c_str(), "hemisphere_color", el->hemi_color);
 		f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->sun_dir.getH()));
 		f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->sun_dir.getP()));
-		f.w_float(el->m_identifier.c_str(), "trees_amplitude", el->trees_amplitude);
+		f.w_float(el->m_identifier.c_str(), "tree_amplitude_intensity", el->trees_amplitude);
 	}
 	string_path fileName;
 	FS.update_path(fileName, "$game_weathers$", name.c_str());
@@ -458,7 +458,7 @@ void RenderUIWeather() {
 	if (ImGui::SliderFloat("wind_direction", &cur->wind_direction, -360.0f, 360.0f)) {
 		changed = true;
 	}
-	if (ImGui::SliderFloat("trees_amplitude", &cur->trees_amplitude, 0.01f, 0.250f)) {
+	if (ImGui::SliderFloat("tree_amplitude_intensity", &cur->trees_amplitude, 0.01f, 0.250f)) {
 		changed = true;
 	}
 
