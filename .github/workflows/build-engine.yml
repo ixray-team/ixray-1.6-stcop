@@ -204,7 +204,7 @@ jobs:
 
       - name: Generate patch
         run: |
-          ${{ github.workspace }}/generate-patch.bat
+          ${{ github.workspace }}/util/generate-patch.bat
           type *.log
           move ${{ github.workspace }}/gamedata ${{ github.workspace }}/gamedata_full
           move ${{ github.workspace }}/patch ${{ github.workspace }}/gamedata

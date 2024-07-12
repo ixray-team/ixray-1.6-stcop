@@ -1,7 +1,6 @@
 import os
 import git
 
-
 def get_commit_data(repo, start_hash, end_hash):
     commits = repo.iter_commits(rev=f"{start_hash}..{end_hash}")
     commit_data = []
@@ -26,7 +25,6 @@ def get_commit_data(repo, start_hash, end_hash):
 
     return commit_data
 
-
 def get_last_tag_hash(repo):
     tags = repo.tags
 
@@ -42,14 +40,12 @@ def get_last_tag_hash(repo):
 
     return last_tag_hash
 
-
 def format_commit(commit):
     formatted_co_authors = ", ".join([f"@{author}" for author in commit["co_authors"]])
     if formatted_co_authors:
         return f"- {commit['message']} (@{commit['author']}, {formatted_co_authors})"
     else:
         return f"- {commit['message']} (@{commit['author']})"
-
 
 def main():
     git_path = os.getcwd()
@@ -69,7 +65,6 @@ def main():
             output_file.write(format_commit(commit) + '\n')
 
     print(f"Changelog has been written to {output_file_path}")
-
 
 if __name__ == "__main__":
     main()

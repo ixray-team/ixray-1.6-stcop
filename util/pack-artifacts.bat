@@ -1,3 +1,6 @@
+:: Set location
+cd ..
+
 :: Delete x86 files
 del build\x86\Utilities\bin\Debug\xrEngine.exe
 del build\x86\Utilities\bin\Debug\xrEngine.pdb

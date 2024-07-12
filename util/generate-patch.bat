@@ -1,3 +1,6 @@
+:: Set location
+::cd ..
+
 :: Get assets
 if not exist gamedata_origin (
     git clone ./.git ./temp

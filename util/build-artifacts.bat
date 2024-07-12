@@ -1,3 +1,6 @@
+:: Set location
+cd ..
+
 :: Build engine
 cmake --preset Engine-x86
 cmake --build --preset Engine-x86-Debug
