@@ -15,10 +15,10 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
 
     // Lock and set vertices
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0, Device.TargetHeight, d_Z, d_W, color, 0, 1); pv++;
-    pv->set(0, 0, d_Z, d_W, color, 0, 0); pv++;
-    pv->set(Device.TargetWidth, Device.TargetHeight, d_Z, d_W, color, 1, 1); pv++;
-    pv->set(Device.TargetWidth, 0, d_Z, d_W, color, 1, 0); pv++;
+    pv->set(0.f, (float)Device.TargetHeight, d_Z, d_W, color, 0.f, 1.f); pv++;
+    pv->set(0.f, 0.f, d_Z, d_W, color, 0.f, 0.f); pv++;
+    pv->set((float)Device.TargetWidth, (float)Device.TargetHeight, d_Z, d_W, color, 1.f, 1.f); pv++;
+    pv->set((float)Device.TargetWidth, 0.f, d_Z, d_W, color, 1.f, 0.f); pv++;
     RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
     // Set shader and geometry

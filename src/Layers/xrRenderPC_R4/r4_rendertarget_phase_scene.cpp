@@ -6,7 +6,7 @@ void	CRenderTarget::phase_scene_prepare	()
 	PIX_EVENT(phase_scene_prepare);
 
 	//	TODO: DX10: Check if we need to set RT here.
-	u_setrt(RCache.get_width(), RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);
+	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);
 
 	FLOAT ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
 

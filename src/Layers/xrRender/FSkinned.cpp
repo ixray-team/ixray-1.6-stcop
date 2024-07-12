@@ -120,8 +120,8 @@ struct	vertHW_2W
 		_B			= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), 0);
 		_tc_i[0]	= tc.x;
 		_tc_i[1]	= tc.y;
-		_tc_i[2]	= index0;
-		_tc_i[3]	= index1;
+		_tc_i[2]	= (float)index0;
+		_tc_i[3]	= (float)index1;
 	}
 	float get_weight() const
 	{
@@ -177,8 +177,8 @@ struct	vertHW_3W
 		_B_i		= color_rgba(q_N(B.x), q_N(B.y), q_N(B.z), u8(index2));
 		_tc_i[0]	= tc.x;
 		_tc_i[1]	= tc.y;
-		_tc_i[2]	= index0;
-		_tc_i[3]	= index1;
+		_tc_i[2]	= (float)index0;
+		_tc_i[3]	= (float)index1;
 	}
 	float get_weight0() const
 	{

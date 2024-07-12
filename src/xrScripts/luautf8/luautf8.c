@@ -1770,7 +1770,7 @@ static int Lutf8_isvalid(lua_State* L) {
 static int Lutf8_invalidoffset(lua_State* L) {
     const char* e, * s = check_utf8(L, 1, &e);
     const char* orig_s = s;
-    int offset = luaL_optinteger(L, 2, 0);
+    ptrdiff_t offset = luaL_optinteger(L, 2, 0);
     if (offset > 1) {
         offset--;
         s += offset;

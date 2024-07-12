@@ -8,7 +8,7 @@ void CRenderTarget::phase_gtao()
     constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
 
 	//Calculate projection factor, to transform world radius to screen space
-	float p_scale = RCache.get_height() / (tan(deg2rad(float(Device.fFOV)) * 0.5f) * 2.0);
+	float p_scale = RCache.get_height() / (tan(deg2rad(Device.fFOV) * 0.5f) * 2.0f);
 	p_scale *= 0.5;
 
 	//Render the AO and view-z into new rendertarget

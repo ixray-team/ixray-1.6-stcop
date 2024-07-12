@@ -10,11 +10,11 @@ void CRenderTarget::init_fsr()
 
 	Fsr2Wrapper::ContextParameters initParams = {};
 
-	initParams.displaySize.width = RCache.get_target_width();
-	initParams.displaySize.height = RCache.get_target_height();
+	initParams.displaySize.width = (u32)RCache.get_target_width();
+	initParams.displaySize.height = (u32)RCache.get_target_height();
 
-	initParams.maxRenderSize.width = RCache.get_width();
-	initParams.maxRenderSize.height = RCache.get_height();
+	initParams.maxRenderSize.width = (u32)RCache.get_width();
+	initParams.maxRenderSize.height = (u32)RCache.get_height();
 
 	initParams.device = RDevice;
 
@@ -43,8 +43,8 @@ bool CRenderTarget::phase_fsr() {
 
 	fsr2Params.resolvedColorResource = rt_Generic->pSurface;
 
-	fsr2Params.renderWidth = RCache.get_width();
-	fsr2Params.renderHeight = RCache.get_height();
+	fsr2Params.renderWidth = (u32)RCache.get_width();
+	fsr2Params.renderHeight = (u32)RCache.get_height();
 
 	fsr2Params.cameraReset = false;
 

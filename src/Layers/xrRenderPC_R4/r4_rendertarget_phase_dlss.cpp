@@ -30,8 +30,8 @@ bool CRenderTarget::phase_dlss() {
 
 	dlssParams.resolvedColorResource = rt_Generic->pSurface;
 
-	dlssParams.renderWidth = RCache.get_width();
-	dlssParams.renderHeight = RCache.get_height();
+	dlssParams.renderWidth = (int)RCache.get_width();
+	dlssParams.renderHeight = (int)RCache.get_height();
 
 	dlssParams.cameraReset = false;
 

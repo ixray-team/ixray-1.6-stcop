@@ -61,7 +61,7 @@ void CRenderDevice::Reset(bool precache)
 {
 	u32 dwWidth_before = TargetWidth;
 	u32 dwHeight_before = TargetHeight;
-	u32 RenderScale_before = RenderScale;
+	float RenderScale_before = RenderScale;
 
 	u32 tm_start = TimerAsync();
 

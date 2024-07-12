@@ -801,7 +801,6 @@ HRESULT	CRender::shader_compile(
 	int def_it = 0;
 
 	char c_smapsize[32];
-	char c_gloss[32];
 	char c_sun_shafts[32];
 	char c_ssao[32];
 	char c_sun_quality[32];
