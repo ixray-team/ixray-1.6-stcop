@@ -30,7 +30,7 @@
 #if !defined(LUABIND_NO_RTTI) && !defined(LUABIND_WRAPPER_BASE_HPP_INCLUDED)
 #include <luabind/wrapper_base.hpp>
 #endif
-
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #include <luabind/pointer_traits.hpp>
 
 namespace luabind {
@@ -41,7 +41,7 @@ namespace luabind {
 		template<class T>
 		wrap_base const* get_back_reference_aux0(T const* p, std::true_type)
 		{
-			return dynamic_cast<wrap_base const*>(p);
+			return fast_dcast::fast_dynamic_cast<wrap_base const*>(p);
 		}
 
 		template<class T>

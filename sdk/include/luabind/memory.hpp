@@ -11,6 +11,7 @@
 
 #include <luabind/config.hpp>
 #include <luabind/types.hpp>
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 
 #if defined(DEBUG) && defined(NDEBUG)
 static_assert(false, "Do not define NDEBUG macros in DEBUG configuration since luabind classes are sensisitve to it");
@@ -52,7 +53,7 @@ namespace luabind
         {
             static void apply(T*& pointer)
             {
-                delete_helper2(pointer, dynamic_cast<void*>(pointer));
+                delete_helper2(pointer, fast_dcast::fast_dynamic_cast<void*>(pointer));
             }
         };
 

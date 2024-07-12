@@ -7,6 +7,7 @@
 
 # include <luabind/detail/inheritance.hpp>
 # include <luabind/detail/object_rep.hpp>
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 
 namespace luabind {
 	namespace detail {
@@ -19,7 +20,7 @@ namespace luabind {
 			class_id_map& class_ids = *static_cast<class_id_map*>(lua_touserdata(L, -1));
 			lua_pop(L, 1);
 
-			return std::make_pair(class_ids.get_local(typeid(*p)), dynamic_cast<void*>(const_cast<T*>(p)));
+			return std::make_pair(class_ids.get_local(typeid(*p)), fast_dcast::fast_dynamic_cast<void*>(const_cast<T*>(p)));
 		}
 
 		template <class T>

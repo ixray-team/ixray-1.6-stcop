@@ -10,7 +10,7 @@
 # include <memory>
 # include <vector>
 # include <luabind/typeid.hpp>
-
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 #ifdef WIN32
 #undef min
 #undef max
@@ -143,7 +143,7 @@ namespace luabind::detail
 	{
 		static void* execute(void* p)
 		{
-			return dynamic_cast<T*>(static_cast<S*>(p));
+			return fast_dcast::fast_dynamic_cast<T*>(static_cast<S*>(p));
 		}
 	};
 

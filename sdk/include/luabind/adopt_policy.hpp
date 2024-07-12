@@ -28,14 +28,14 @@
 #include <luabind/wrapper_base.hpp>
 #include <luabind/detail/policy.hpp>
 #include <luabind/back_reference_fwd.hpp>
-
+#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
 namespace luabind {
 	namespace detail {
 
 		template <class T>
 		void adjust_backref_ownership(T* ptr, std::true_type)
 		{
-			if(wrap_base* p = dynamic_cast<wrap_base*>(ptr))
+			if(wrap_base* p = fast_dcast::fast_dynamic_cast<wrap_base*>(ptr))
 			{
 				wrapped_self_t& wrapper = wrap_access::ref(*p);
 				wrapper.get(wrapper.state());
