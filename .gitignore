@@ -41,6 +41,7 @@ UpgradeLog*.htm
 
 # X-Ray user files
 _appdata_/
+_appdata_ixray_/
 fs_*.ltx
 fsgame_*.ltx
 fsfactory_*.ltx
