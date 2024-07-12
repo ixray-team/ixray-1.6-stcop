@@ -790,8 +790,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 			if(pid==0 || pid==part_id || part_id==u16(-1))
 			{
 				if(m_blocked_part_idx==pid) continue;
-
-				CBlend* B = m_model->PlayCycle(pid, M, part==0&&pid==0?TRUE:bMixIn);
+				CBlend* B = m_model->PlayCycle(pid, M, part==0&&pid==0&&attached_item(1)?TRUE:bMixIn);
 				B->speed *= speed;
 			}
 		}
