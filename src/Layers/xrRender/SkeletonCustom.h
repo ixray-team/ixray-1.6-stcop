@@ -7,20 +7,11 @@
 #include "../../Include/xrRender/Kinematics.h"
 #include "..\..\xrEngine\VisMask.h"
 
-// consts
-extern	xrCriticalSection	UCalc_Mutex			;
-
 // refs
 class	 CKinematics;
 class	 CInifile;
 class	 CBoneData;
 struct	SEnumVerticesCallback;
-
-// MT-locker
-struct	UCalc_mtlock	{
-	UCalc_mtlock()		{ UCalc_Mutex.Enter(); }
-	~UCalc_mtlock()		{ UCalc_Mutex.Leave(); }
-};
 
 #pragma warning(push)
 #pragma warning(disable:4275)
@@ -144,6 +135,9 @@ protected:
 	BOOL						Update_Visibility		;
 	u32							UCalc_Time				;
 	s32							UCalc_Visibox			;
+
+	xrCriticalSection			UCalc_Mutex;
+	xrCriticalSection			UCalc_Mutex2;
 
 	VisMask						visimask;
     
