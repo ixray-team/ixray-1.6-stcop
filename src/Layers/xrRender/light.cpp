@@ -180,11 +180,11 @@ void light::get_sectors()
 		CFrustum temp = CFrustum();
 		temp.CreateFromMatrix			(X.S.combine, FRUSTUM_P_ALL);
 
-		m_sectors = RImplementation.detectSectors_frustum(sector, &temp);
+		m_sectors = std::move(RImplementation.detectSectors_frustum(sector, &temp));
 	}
 	if(flags.type == IRender_Light::POINT)
 	{
-		m_sectors = RImplementation.detectSectors_sphere(sector, position, Fvector().set(range, range, range));
+		m_sectors = std::move(RImplementation.detectSectors_sphere(sector, position, Fvector().set(range, range, range)));
 	}
 }
 #endif

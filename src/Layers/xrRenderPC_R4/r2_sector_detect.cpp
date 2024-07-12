@@ -97,19 +97,14 @@ xr_vector<IRender_Sector*> CRender::detectSectors_sphere(CSector* sector, const 
 			CSector *pFront = pPortal->Front();
 			CSector *pBack = pPortal->Back();
 
-			if(sector != pFront && sector != pBack)
-				continue;
-
-			auto itfr = std::find(m_sectors.begin(), m_sectors.end(), pFront);
-			if(itfr == m_sectors.end())
+			if(pFront)
 				m_sectors.push_back(pFront);
 
-			auto itbc = std::find(m_sectors.begin(), m_sectors.end(), pBack);
-			if(itbc == m_sectors.end())
+			if(pBack)
 				m_sectors.push_back(pBack);
 		}
 	}
-	return std::move(m_sectors);
+	return m_sectors;
 }
 
 xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrustum* _frustum)
@@ -130,18 +125,12 @@ xr_vector<IRender_Sector*> CRender::detectSectors_frustum(CSector* sector, CFrus
 			CSector *pFront = pPortal->Front();
 			CSector *pBack = pPortal->Back();
 
-			if(sector != pFront && sector != pBack)
-				continue;
-
-			auto itfr = std::find(m_sectors.begin(), m_sectors.end(), pFront);
-			if(itfr == m_sectors.end())
+			if(pFront)
 				m_sectors.push_back(pFront);
 
-
-			auto itbc = std::find(m_sectors.begin(), m_sectors.end(), pBack);
-			if(itbc == m_sectors.end())
+			if(pBack)
 				m_sectors.push_back(pBack);
 		}
 	}
-	return std::move(m_sectors);
+	return m_sectors;
 }
