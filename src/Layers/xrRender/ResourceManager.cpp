@@ -377,13 +377,16 @@ void CResourceManager::DeferredUpload()
 void CResourceManager::DeferredUnload() {
 	if (!RDEVICE.b_is_Ready)
 		return;
-
+#ifdef DEBUG
 	Msg("%s, texture unloading -> START, size = [%d]", __FUNCTION__, m_textures.size());
+#endif // DEBUG
 
 	for (auto& texture : m_textures)
 		texture.second->Unload();
 
+#ifdef DEBUG
 	Msg("%s, texture unloading -> COMPLETE", __FUNCTION__);
+#endif // DEBUG
 }
 
 #ifdef _EDITOR

@@ -879,7 +879,10 @@ HRESULT	CRender::shader_compile			(
 
 	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
 	if (FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+#ifdef DEBUG
 		Msg("compilied shader library found %s", file_name);
+#endif // DEBUG
+
 		IReader* file = FS.r_open(file_name);
 		if (file->length()>4)
 		{
