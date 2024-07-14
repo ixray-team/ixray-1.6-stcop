@@ -15,31 +15,47 @@
     <string id="autosave">
         <text>auto save</text>
     </string>
-
-    <string id="st_m">
-        <text>m</text>
+    <string id="ui_mm_r_actor_shadow">
+        <text>Protagonist Shadow</text>
     </string>
-    <string id="ui_inv_dist">
-        <text>Hit Distance</text>
+    <string id="ui_mm_r2_details_shadows">
+        <text>Grass Shadows</text>
     </string>
-
-    <string id="car_trunk_use">
-        <text>Open Trunk ($$ACTION_USE$$)</text>
+    <string id="ui_mm_r4_hud_shadows">
+        <text>Hud Shadows</text>
     </string>
-    <string id="car_use">
-        <text>Use ($$ACTION_USE$$)</text>
+    <string id="ui_mm_r2_cloud_shadows">
+        <text>Cloud Shadows</text>
     </string>
-
+    <string id="ui_mm_vid_scale">
+        <text>Rendering Scale</text>
+    </string>
+    <string id="fxaa">
+        <text>FXAA</text>
+    </string>
+    <string id="smaa">
+        <text>SMAA</text>
+    </string>
+    <string id="ui_mm_r_scale_mode">
+        <text>Scaling</text>
+    </string>
+    <string id="st_filter_linear">
+        <text>Standard (Linear)</text>
+    </string>
+    <string id="st_filter_point">
+        <text>Point</text>
+    </string>
+    <string id="st_filter_dlss">
+        <text>DLSS</text>
+    </string>
+    <string id="st_filter_fsr">
+        <text>FSR2</text>
+    </string>
     <string id="st_freemp">
-        <text>Free</text>
+        <text>Freeplay</text>
     </string>
-
-    <string id="ui_st_autoreload">
-        <text>Auto Reload</text>
-    </string>
-
     <string id="ui_mm_mt_tex_load">
-        <text>Multithread Texture Loading</text>
+        <text>Multithreaded Texture Loading</text>
     </string>
     <string id="ui_mm_r__smap_size">
         <text>Shadow Map</text>
@@ -59,6 +75,30 @@
     <string id="ui_rs_device_active">
         <text>Always Active</text>
     </string>
+    <string id="car_trunk_use">
+        <text>Open trunk ($$ACTION_USE$$)</text>
+    </string>
+    <string id="car_use">
+        <text>Use ($$ACTION_USE$$)</text>
+    </string>
+    <string id="st_m">
+        <text>m</text>
+    </string>
+    <string id="ui_inv_dist">
+        <text>Hit Distance</text>
+    </string>
+    <string id="ui_mm_dof_reload">
+        <text>DoF on Reload</text>
+    </string>
+    <string id="ui_rs_fps_show">
+        <text>FPS Counter</text>
+    </string>
+    <string id="ui_mm_cas_sharpening">
+        <text>Sharpness</text>
+    </string>
+    <string id="ui_mm_hashed_alpha_test">
+        <text>Alpha Testing</text>
+    </string>
     <string id="ui_mm_gtao">
         <text>GTAO</text>
     </string>
@@ -66,10 +106,10 @@
         <text>Vignette</text>
     </string>
     <string id="ui_mm_aberration">
-        <text>Chromatic aberration</text>
+        <text>Chromatic aberr.</text>
     </string>
     <string id="ui_mm_sslr_water">
-        <text>Water reflections</text>
+        <text>Water refl.</text>
     </string>
     <string id="ui_mm_r_scale_preset">
         <text>Scaling Quality</text>
