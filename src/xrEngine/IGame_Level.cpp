@@ -147,7 +147,7 @@ BOOL IGame_Level::Load			(u32 dwNum)
 }
 
 int		psNET_DedicatedSleep	= 5;
-bool IsFpsShow = true;
+bool IsFpsShow = false;
 void	IGame_Level::OnRender		( ) 
 {
 	if (!g_dedicated_server) {
