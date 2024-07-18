@@ -257,10 +257,6 @@ void	CRenderTarget::phase_combine	()
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
 	RImplementation.rmNormal();
 
-	if(Device.RenderScale > 1.0f) {
-		ps_r_scale_mode = 1;
-	}
-
 	switch(ps_r_scale_mode)
 	{
 		case 3:

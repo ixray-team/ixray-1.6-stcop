@@ -41,6 +41,18 @@ xr_token vid_scale_preset_token[] = {
 	{ "st_scale_custom", 5 },
 	{ 0, 0 }
 };
+
+ENGINE_API u32 ps_r_scale_mode = 1;
+xr_token qscale_mode_token[] = {
+#ifdef DEBUG_DRAW
+	{ "st_filter_point", 0},
+#endif
+	{ "st_filter_linear", 1},
+	{ "st_filter_dlss", 2},
+	{ "st_filter_fsr", 3},
+	{ 0, 0 }
+};
+
 //-----------------------------------------------------------------------
 
 void IConsole_Command::add_to_LRU(shared_str const& arg) {
@@ -734,6 +746,7 @@ void CCC_Register()
 	CMD1(CCC_VidMode, "vid_mode");
 	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
+	CMD3(CCC_Token, "vid_scale_mode", &ps_r_scale_mode, qscale_mode_token);
 
 #ifdef DEBUG
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );

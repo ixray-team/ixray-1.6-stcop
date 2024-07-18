@@ -23,17 +23,6 @@ xr_token qsmapsize_token[] = {
 	{ nullptr, 0   }
 };
 
-u32 ps_r_scale_mode = 1;
-xr_token qscale_mode_token[] = {
-#ifdef DEBUG_DRAW
-	{ "st_filter_point", 0},
-#endif
-	{ "st_filter_linear", 1},
-	{ "st_filter_dlss", 2},
-	{ "st_filter_fsr", 3},
-	{ 0, 0 }
-};
-
 u32			ps_r_ssao_mode			=	2;
 xr_token							qssao_mode_token						[ ]={
 	{ "st_opt_off",					0											},
@@ -798,7 +787,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);
 	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 
-	CMD3(CCC_Token, "vid_scale_mode", &ps_r_scale_mode, qscale_mode_token);
 	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 	CMD3(CCC_Mask, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);

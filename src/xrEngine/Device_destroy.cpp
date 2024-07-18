@@ -56,6 +56,7 @@ void CRenderDevice::Destroy()
 
 extern ENGINE_API float ps_render_scale;
 extern ENGINE_API u32 ps_render_scale_preset;
+extern ENGINE_API u32 ps_r_scale_mode;
 
 void CRenderDevice::Reset(bool precache)
 {
@@ -65,7 +66,12 @@ void CRenderDevice::Reset(bool precache)
 
 	u32 tm_start = TimerAsync();
 
-	if(ps_render_scale_preset < 5) {
+	if (ps_render_scale > 1.0f && ps_r_scale_mode > 1)
+	{
+		ps_render_scale = 1.0f;
+	}
+
+	if(ps_render_scale_preset < 5 && ps_r_scale_mode > 1) {
 		static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
 		RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
 	}

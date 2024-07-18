@@ -133,8 +133,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			if current_id > 1 then
 				return true
 			end
-			get_console():execute("vid_scale_preset st_scale_custom")
-			handler.scalePreset:SetCurrentOptValue()
+			-- get_console():execute("vid_scale_preset st_scale_custom")
+			-- handler.scalePreset:SetCurrentOptValue()
 		end
 		return false
 	end

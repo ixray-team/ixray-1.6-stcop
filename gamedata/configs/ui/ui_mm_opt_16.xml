@@ -215,7 +215,7 @@
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r_scale_mode</text>
         </cap_r_scale_mode>
         <list_r_scale_mode x="154" y="5" width="188" height="20" list_length="4" always_show_scroll="0">
-            <options_item entry="vid_scale_mode" group="mm_opt_video" />
+            <options_item entry="vid_scale_mode" group="mm_opt_video" depend="vid" />
             <list_font r="170" g="170" b="170" font="letterica16"/>
 		    <text_color>
 	            <e r="170" g="170" b="170"/>
