@@ -167,7 +167,7 @@ CCameraManager::CCameraManager(bool bApplyOnUpdate)
 
 	pp_affected						= pp_identity;
 	
-#ifdef DEBUG_DRAW
+#if 0
 	CImGuiManager::Instance().Subscribe("CameraEffector", CImGuiManager::ERenderPriority::eLow + 1,
 	[this]()
 	{
