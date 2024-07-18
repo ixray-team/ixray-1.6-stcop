@@ -9,8 +9,8 @@ uniform float4 c_brightness;
 // Pixel
 float4 main(p_postpr I) : SV_Target
 {
-    float3 t_0 = s_base0.Sample(smp_rtlinear, I.Tex0);
-    float3 t_1 = s_base1.Sample(smp_rtlinear, I.Tex1);
+    float3 t_0 = saturate(s_base0.Sample(smp_rtlinear, I.Tex0));
+    float3 t_1 = saturate(s_base1.Sample(smp_rtlinear, I.Tex1));
     float3 image = (t_0 + t_1) * 0.5f;
 	
     float gray = dot(image, I.Gray);

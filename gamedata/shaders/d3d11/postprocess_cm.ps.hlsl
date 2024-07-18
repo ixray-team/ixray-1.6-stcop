@@ -13,8 +13,8 @@ uniform float4 c_colormap;
 // Pixel
 float4 main(p_postpr I) : SV_Target
 {
-    float3 t_0 = s_base0.Sample(smp_rtlinear, I.Tex0);
-    float3 t_1 = s_base1.Sample(smp_rtlinear, I.Tex1);
+    float3 t_0 = saturate(s_base0.Sample(smp_rtlinear, I.Tex0));
+    float3 t_1 = saturate(s_base1.Sample(smp_rtlinear, I.Tex1));
     float3 image_o = (t_0 + t_1) * .5f;
 
     float grad_i = dot(image_o, 0.3333f);
