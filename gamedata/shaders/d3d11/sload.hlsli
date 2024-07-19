@@ -27,7 +27,7 @@ void UpdateTC(inout p_bumped_new I)
 		float numLayers = lerp(maxLayers, minLayers, abs(viewDir.z));
 		float layerDepth = rcp(numLayers);
 		
-		viewDir.xy *= PARALLAX_HEIGHT * rcp(viewDir.z);
+		viewDir.xy *= PARALLAX_HEIGHT;
 		float2 texcoordDelta = viewDir.xy * layerDepth;
 		
 		float2 currTexCoord = I.tcdh;
@@ -80,8 +80,8 @@ void UpdateTC(inout p_bumped_new I)
     float3 viewDir = mul(transpose(TBN), -I.position);
     viewDir = normalize(viewDir);
 
-    float height = s_bumpX.Sample(smp_base, I.tcdh.xy).w;
-    height *= PARALLAX_HEIGHT * rcp(viewDir.z);
+    float height = s_bumpX.Sample(smp_base, I.tcdh.xy).w - 0.5f;
+    height *= PARALLAX_HEIGHT;
     I.tcdh.xy += height * viewDir.xy;
 }
 
