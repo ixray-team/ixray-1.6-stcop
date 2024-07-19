@@ -31,9 +31,9 @@ xrMemory::xrMemory()
 	mem_fill	= xrMemFill_x86;
 	mem_fill32	= xrMemFill32_x86;
 
-#ifdef MASTER_GOLD
-	pAlloc = CMemAllocMimalloc::Create();
-#elif !defined(PURE_ONLY) && !defined(IXR_LINUX)
+//#ifdef MASTER_GOLD
+//	pAlloc = CMemAllocMimalloc::Create();
+#if !defined(PURE_ONLY) && !defined(IXR_LINUX)
 	//if (!!strstr(GetCommandLineA(), "-pure_alloc"))
 	//{
 		pAlloc = CMemAllocPure::Create();
