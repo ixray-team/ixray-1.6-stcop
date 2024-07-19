@@ -304,7 +304,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 {
 
 	//PIX_EVENT(r_dsgraph_render_graph);
-	Device.Statistic->RenderDUMP.Begin		();
+	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 
 	// **************************************************** NORMAL
 	// Perform sorting based on ScreenSpaceArea
@@ -494,8 +494,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 		matVS.clear				();
 		if(_clear) vs.clear		();
 	}
-
-	Device.Statistic->RenderDUMP.End	();
 }
 
 //////////////////////////////////////////////////////////////////////////

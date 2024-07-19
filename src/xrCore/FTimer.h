@@ -220,3 +220,5 @@ public:
 		return _result;
 	}
 };
+
+#include "FTimerScope.h"
