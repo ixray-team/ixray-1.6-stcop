@@ -521,7 +521,9 @@ STextureList*	CResourceManager::_CreateTextureList(STextureList& L)
 		STextureList*	base		= lst_textures[it];
 		if (L.equal(*base))			return base;
 	}
-	STextureList*	lst		=	new STextureList(L);
+	STextureList*	lst		=	new STextureList();
+	lst->_copy(L);
+
 	lst->dwFlags			|=	xr_resource_flagged::RF_REGISTERED;
 	lst_textures.push_back	(lst);
 	return lst;

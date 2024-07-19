@@ -97,6 +97,7 @@
 #include "xrsharedmem.h"
 #include "shared_string.h"
 #include "xrstring.h"
+#include "_thread_types.h"
 #include "xr_resource.h"
 #include "rt_compressor.h"
 #include "xr_shared.h"
@@ -161,7 +162,6 @@ using RTokenVecIt = RTokenVec::iterator;
 
 #include "net_utils.h"
 #include "xrParams.h"
-#include "_thread_types.h"
 
 // destructor
 template <class T>

@@ -331,7 +331,9 @@ Shader*	CResourceManager::_lua_Create		(LPCSTR d_shader, LPCSTR s_textures)
 		if (S.equal(v_shaders[it]))	return v_shaders[it];
 
 	// Create _new_ entry
-	Shader*		N			=	new Shader(S);
+	Shader* N = new Shader();
+	N->_copy(S);
+
 	N->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
 	v_shaders.push_back		(N);
 	return N;

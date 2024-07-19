@@ -98,7 +98,7 @@ template<class C>	void mdump(C c)
 {
 	if (0==c.size())	return;
 	for (auto &[ref, val] : c) {
-		Msg	("*        : %3d: %s", val->dwReference, val->cName.c_str());
+		Msg	("*        : %3d: %s", (u32)val->dwReference, val->cName.c_str());
 	}
 }
 

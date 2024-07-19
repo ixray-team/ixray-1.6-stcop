@@ -24,7 +24,10 @@ class					IBlender;
 #pragma pack(push,4)
 
 //////////////////////////////////////////////////////////////////////////
-struct	 ECORE_API		STextureList	: public xr_resource_flagged, public xr_vector<std::pair<u32,ref_texture> >	{
+struct ECORE_API STextureList : 
+	public xr_resource_flagged, 
+	public xr_vector<std::pair<u32,ref_texture> >	
+{
 	typedef xr_vector<std::pair<u32,ref_texture> > inherited_vec;
 						~STextureList	();
 
