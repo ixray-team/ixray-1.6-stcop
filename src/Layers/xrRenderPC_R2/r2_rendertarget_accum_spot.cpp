@@ -5,6 +5,11 @@
 
 void CRenderTarget::accum_spot	(light* L)
 {
+	if (L == nullptr)
+	{
+		return;
+	}
+
 	phase_accumulator				();
 	RImplementation.stats.l_visible	++;
 
@@ -169,6 +174,11 @@ void CRenderTarget::accum_spot	(light* L)
 
 void CRenderTarget::accum_volumetric(light* L)
 {
+	if (L == nullptr)
+	{
+		return;
+	}
+
 	//if (L->flags.type != IRender_Light::SPOT) return;
 	if (!L->flags.bVolumetric) return;
 

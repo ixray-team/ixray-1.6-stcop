@@ -3,6 +3,11 @@
 
 void CRenderTarget::accum_point		(light* L)
 {
+	if (L == nullptr)
+	{
+		return;
+	}
+
 	phase_accumulator				();
 	RImplementation.stats.l_visible	++;
 
