@@ -39,7 +39,6 @@ jobs:
         preset:
           - Engine
         platform:
-          - x86
           - x64
         config:
           - Debug
@@ -114,15 +113,11 @@ jobs:
         preset:
           - Compressor
         platform:
-          - x86
           - x64
         config:
           - Debug
           - RelWithDebInfo
           - Release
-        exclude:
-          - system: ubuntu-22.04
-            platform: x86
 
     runs-on: ${{ matrix.system }}
 
@@ -231,7 +226,6 @@ jobs:
         system:
           - windows-2022
         platform:
-          - x86
           - x64
         preset:
           - Engine
