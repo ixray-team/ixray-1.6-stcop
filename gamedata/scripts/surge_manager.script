@@ -535,7 +535,7 @@ function CSurgeManager:kill_all_unhided()
 
 	local cover = self:get_nearest_cover()
 	if(db.actor and db.actor:alive()) then
-		if not(cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position())) then
+		if not(cover and db.storage[cover] and db.storage[cover].object:inside(db.actor:position()) or is_god_mode()) then
 			if has_alife_info("anabiotic_in_process") then
 				local counter_name = "actor_marked_by_zone_cnt"
 				local cnt_value = xr_logic.pstor_retrieve(db.actor, counter_name, 0)

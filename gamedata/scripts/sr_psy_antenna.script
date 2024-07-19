@@ -58,6 +58,10 @@ end
 function PsyAntenna:construct			()
 end
 function PsyAntenna:update_psy_hit(dt)
+	if is_god_mode() then
+		return
+	end
+	
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("cs_psy_danger")
 	if self.hit_intensity > 0.0001 then

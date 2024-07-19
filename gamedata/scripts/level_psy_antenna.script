@@ -89,6 +89,10 @@ function PsyAntenna:update_postprocess	()
 --	self.pp.params.noise				= self.noise_var;
 end
 function PsyAntenna:update_psy_hit		(dt)
+	if is_god_mode() then
+		return
+	end
+	
 	local d_time						= time_global()-self.hit_time;
 	if d_time>200 and self.power_factor.a>0.01 then
 		self.hit_time					= time_global();
