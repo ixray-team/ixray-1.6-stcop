@@ -738,7 +738,7 @@ local save_markers = {}
 
 -- Функции для проверки корректности сейв лоад
 function set_save_marker(p, mode, check, prefix)
-
+	save.set_stage(prefix)
 	-- определяем ключ маркера.
 	local result = ""
 --	if debug ~= nil then
@@ -764,7 +764,8 @@ function set_save_marker(p, mode, check, prefix)
 				printf("WARNING! may be this is problem save point")
 			end
 			if dif >= 10240 then
---				abort("You are saving too much")
+				callstack()
+				save.call_error()
 			end
 			p:w_u16(dif)
 		else
