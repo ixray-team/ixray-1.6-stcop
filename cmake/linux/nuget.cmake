@@ -52,7 +52,7 @@ set(ENGINE_FREETYPE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeType.2.13
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.linux-x64.1.4.1)
 
 # LuaJIT 
-set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2020.5.30-open/)
+set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/)
 
 set(LUAJIT_NAME libluajit.so)
 set(LUAJIT_LIB ${LUAJIT}runtimes/linux-x64/native/${LUAJIT_NAME})

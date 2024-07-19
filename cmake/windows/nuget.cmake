@@ -60,11 +60,11 @@ set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
 # LuaJIT 
-set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2020.5.30-open/)
+set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2017.8.11-open/)
 
 set(LUAJIT_NAME lua51.dll)
-set(LUAJIT_LIB ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/lua51.lib)
-set(LUAJIT_BIN ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/${LUAJIT_NAME})
+set(LUAJIT_LIB ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lua51.lib)
+set(LUAJIT_BIN ${LUAJIT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/${LUAJIT_NAME})
 
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)

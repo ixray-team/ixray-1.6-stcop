@@ -96,8 +96,19 @@ static int base_open(lua_State *L) {
 /*-------------------------------------------------------------------------*\
 * Initializes all library modules.
 \*-------------------------------------------------------------------------*/
-
-LUA_API void luaL_pushmodule(lua_State* L, const char* modname, int sizehint);
+void luaL_pushmodule(lua_State* L, const char* modname, int sizehint)
+{
+    luaL_findtable(L, LUA_REGISTRYINDEX, "_LOADED", 16);
+    lua_getfield(L, -1, modname);
+    if (!lua_istable(L, -1)) 
+    {
+        lua_pop(L, 1);
+        luaL_findtable(L, LUA_GLOBALSINDEX, modname, sizehint);
+        lua_pushvalue(L, -1);
+        lua_setfield(L, -3, modname);
+    }
+    lua_remove(L, -2);
+}
 
 LUASOCKET_API int luaopen_socket_core(lua_State* L)
 {
