@@ -157,25 +157,9 @@ void RenderScenesViewer() {
 
 void RenderUI()
 {
-	static bool FirstDraw = true;
-
 	CImGuiManager::Instance().Subscribe("Editor Weather Draw", CImGuiManager::ERenderPriority::eMedium, RenderUIWeather);
 	CImGuiManager::Instance().Subscribe("Actor InfoPortions", CImGuiManager::ERenderPriority::eMedium, RenderActorInfos);
 	CImGuiManager::Instance().Subscribe("Scenes Viewer", CImGuiManager::ERenderPriority::eMedium, RenderScenesViewer);
-
-	CImGuiManager::Instance().Subscribe("LuaDebug", CImGuiManager::ERenderPriority::eLow, []()
-	{
-		static bool Attach = false;
-
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaDebug)])
-			return;
-
-		if (!Attach)
-		{
-			DebbugerAttach();
-			Attach = true;
-		}
-	});
 };
 
 bool ImGui_ListBox(const char* label, int* current_item, bool(*items_getter)(void*, int, const char**), void* data,

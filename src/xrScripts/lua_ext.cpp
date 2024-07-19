@@ -80,6 +80,7 @@ void lua_init_ext(lua_State* L)
 	}
 }
 
+SCRIPTS_API bool IsLDBGAttached = false;
 SCRIPTS_API void DebbugerAttach()
 {
 	const char* S = "debugger_attach()";
@@ -97,4 +98,5 @@ SCRIPTS_API void DebbugerAttach()
 	}
 
 	g_pScriptEngine->print_output(g_pScriptEngine->lua(), *m_script_name, l_iErrorCode);
+	IsLDBGAttached = true;
 }

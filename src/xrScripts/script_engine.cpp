@@ -11,6 +11,7 @@
 #include "script_engine.h"
 #include "../xrEngine/IGame_ObjectFactory.h"
 #include "script_process.h"
+#include "lua_ext.h"
 
 #include "script_callback_ex.h"
 
@@ -169,6 +170,13 @@ void CScriptEngine::init()
 	load_common_scripts();
 #endif
 	m_stack_level = lua_gettop(lua());
+
+#ifdef xrScripts_EXPORTS
+	if (IsLDBGAttached)
+	{
+		DebbugerAttach();
+	}
+#endif
 
 	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));
 }

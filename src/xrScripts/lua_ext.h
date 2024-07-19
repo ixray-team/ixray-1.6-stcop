@@ -16,3 +16,4 @@ void lua_init_ext(lua_State* L);
 #endif
 
 SCRIPTS_API void DebbugerAttach();
+SCRIPTS_API extern bool IsLDBGAttached;
