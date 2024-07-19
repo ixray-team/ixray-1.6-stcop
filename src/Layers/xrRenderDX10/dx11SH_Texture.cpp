@@ -282,11 +282,15 @@ void CTexture::apply_theora(u32 dwStage)
 		//R_CHK				(T2D->LockRect(0,&R,&rect,0));
 		R_CHK				(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
 		//R_ASSERT			(R.Pitch == int(pTheora->Width(false)*4));
-		R_ASSERT			(mapData.RowPitch == int(pTheora->Width(false)*4));
-		int _pos			= 0;
+		//R_ASSERT			(mapData.RowPitch == int(pTheora->Width(false)*4));
+
+		int DeltaOffset = mapData.RowPitch / int(pTheora->Width(false) * 4);
+		_w *= DeltaOffset;
+
+		int _pos = 0;
 		pTheora->DecompressFrame((u32*)mapData.pData, _w - rect.right, _pos);
-		VERIFY				(u32(_pos) == rect.bottom*_w);
-		//R_CHK				(T2D->UnlockRect(0));
+		VERIFY(u32(_pos) == rect.bottom*_w);
+
 		RContext->Unmap(T2D, 0);
 	}
 	Apply(dwStage);
