@@ -1,0 +1,71 @@
+name: Отчёт об ошибке
+description: Создать отчёт для помощи в улучшении проекта
+labels: [ bug ]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Описание
+      description: >
+        Чёткое и лаконичное описание того, в чём заключается ошибка
+    validations:
+      required: true
+
+  - type: textarea
+    id: platform
+    attributes:
+      label: Платформа
+      description: >
+        Заполните следующие поля, чтобы создать полный отчет
+      placeholder: |
+        - CPU, GPU и RAM
+        - Тип тестируемой машины
+        - Версия или билд
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Воспроизведение
+      description: >
+        Шаги по воспроизведению поведения
+      placeholder: |
+        1. Пройти в '...'
+        2. Нажать на '...'
+        3. Промотать вниз до '...'
+        4. Увидеть ошибку
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Ожидаемое поведение
+      description: >
+        Чёткое и лаконичное описание того, что вы ожидали увидеть
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Скриншоты
+      description: >
+        Если применимо, добавьте скриншоты, которые помогут объяснить вашу проблему
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Дополнительный контекст
+      description: >
+        Добавьте сюда любой другой контекст, касающийся проблемы, если это необходимо
+
+  - type: markdown
+    attributes:
+      value: |
+        ### Согласия
+
+        Отправляя этот отчёт, вы соглашаетесь следовать нашим __Рекомендациям по внесению изменений__ и __Кодексу поведения__
+
+        - Я согласен(-на) следовать [__Рекомендациям по внесению вклада в этот проект__](../CONTRIBUTING.rus.md)
+        - Я согласен(-на) следовать [__Кодексу поведения этого проекта__](../CODE_OF_CONDUCT.rus.md)
