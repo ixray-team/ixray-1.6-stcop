@@ -6,7 +6,7 @@
   <p>
     English
     |
-    <a href="./README.rus.md">
+    <a href="./doc/README.rus.md">
       Русский
     </a>
   </p>

@@ -1,6 +1,6 @@
 # Руководство по внесению вклада
 
-[English](./CONTRIBUTING.md) | Русский
+[English](../CONTRIBUTING.md) | Русский
 
 Руководство по __внесению вклада__ проекта __IX-Ray__
 
@@ -39,5 +39,5 @@
 
 ## Связанные документы
 
-- [Модель ветвления](./doc/branching-model.rus.md)
-- [Стиль фиксаций](./doc/commit-style.rus.md)
+- [Модель ветвления](./branching-model.rus.md)
+- [Стиль фиксаций](./commit-style.rus.md)

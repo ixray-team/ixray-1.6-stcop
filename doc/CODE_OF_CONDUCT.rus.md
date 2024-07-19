@@ -1,6 +1,6 @@
 # Кодекс поведения
 
-[English](./CODE_OF_CONDUCT.md) | Русский
+[English](../CODE_OF_CONDUCT.md) | Русский
 
 Кодекс поведения проекта __IX-Ray__
 

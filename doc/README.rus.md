@@ -4,7 +4,7 @@
   <h4>Стабильный репозиторий модернизированного игрового движка <i>X-Ray 1.6</i></h4>
 
   <p>
-    <a href="./README.md">
+    <a href="../README.md">
       English
     </a>
     |
@@ -13,12 +13,12 @@
 
   <p>
     <a href="https://github.com/ixray-team">
-      <img src="./src/Assets/Splash_long.png" alt="IX-Ray 1.6" />
+      <img src="../src/Assets/Splash_long.png" alt="IX-Ray 1.6" />
     </a>
   </p>
 
   <p>
-    <a href="./LICENSE.md">
+    <a href="./LICENSE.rus.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r0.10">
@@ -191,11 +191,11 @@ git clone https://gitlab.com/ixray-team/ixray/ixray-1.6-stcop.git
 
 ## Список изменений
 
-Все значимые изменения в этом репозитории задокументированы в [этом](./CHANGELOG.md) файле
+Все значимые изменения в этом репозитории задокументированы в [этом](./CHANGELOG.rus.md) файле
 
 ## Лицензия
 
-Содержимое этого репозитория лицензировано на условиях пользовательской некоммерческой MIT-подобной лицензии, если не указано иное. Подробности смотрите в [этом](./LICENSE.ru.md) файле
+Содержимое этого репозитория лицензировано на условиях пользовательской некоммерческой MIT-подобной лицензии, если не указано иное. Подробности смотрите в [этом](./LICENSE.rus.md) файле
 
 ## Поддержка
 

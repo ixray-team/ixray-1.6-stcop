@@ -1,6 +1,6 @@
 # Code of Conduct
 
-English | [Русский](./CODE_OF_CONDUCT.rus.md)
+English | [Русский](./doc/CODE_OF_CONDUCT.rus.md)
 
 Code of Conduct of __IX-Ray__ project
 

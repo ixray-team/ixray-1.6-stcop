@@ -1,6 +1,6 @@
 # Контрибьюторы
 
-[English](./CONTRIBUTORS.md) | Русский
+[English](../CONTRIBUTORS.md) | Русский
 
 Подробный список всех контрибьюторов проекта __IX-Ray__
 
