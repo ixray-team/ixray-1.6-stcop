@@ -28,8 +28,6 @@
 #include <functional>
 #pragma warning(pop)
 
-u32 g_sv_traffic_optimization_level = eto_none;
-
 xrClientData::xrClientData() :
 	IClient(Device.GetTimerGlobal())
 {

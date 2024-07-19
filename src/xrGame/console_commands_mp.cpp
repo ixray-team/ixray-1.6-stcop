@@ -111,7 +111,7 @@ extern s32		lag_simmulator_max_ping;
 #endif
 
 extern BOOL		g_sv_write_updates_bin;
-extern u32		g_sv_traffic_optimization_level;
+extern XRNETSERVER_API u32 g_sv_traffic_optimization_level;
 
 void XRNETSERVER_API DumpNetCompressorStats	(bool brief);
 BOOL XRNETSERVER_API g_net_compressor_enabled;

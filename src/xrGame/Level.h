@@ -13,7 +13,6 @@
 
 #include "Level_network_map_sync.h"
 #include "secure_messaging.h"
-#include "traffic_optimization.h"
 #include "../xrEngine/xr_level_controller.h"
 
 class	CHUDManager;

@@ -1,7 +1,7 @@
 #ifndef XRSERVER_UPDATES_COMPRESSOR_INCLUDED
 #define XRSERVER_UPDATES_COMPRESSOR_INCLUDED
 
-#include "traffic_optimization.h"
+#include "../xrNetServer/traffic_optimization.h"
 
 class last_updates_cache
 {
