@@ -74,6 +74,7 @@ public:
 						typedef T * (resptr_core::*unspecified_bool_type) () const;
 						operator unspecified_bool_type () const							{	return C::p_ == 0? 0: &resptr_core::_get;	}
 						bool operator!	() const										{	return C::p_ == 0;	}
+						operator bool() const											{	return C::p_ != 0;	}
 
 						// fast swapping
 	void				swap			(self & rhs)									{	T * tmp = C::p_; C::p_ = rhs.p_; rhs.p_ = tmp;	}

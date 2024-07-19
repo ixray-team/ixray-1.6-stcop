@@ -597,11 +597,65 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #endif
 		exit(-1);
 	}
-	
+
+#ifdef IXR_WINDOWS
+	IC void handler_base(const char* reason_string)
+	{
+		bool skip;
+		Debug.backend("Error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO, skip);
+	}
+
+	void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t reserved)
+	{
+		string4096	expression_,
+			function_,
+			file_;
+
+		size_t converted_chars = 0;
+
+		if (expression)
+			wcstombs_s(&converted_chars, expression_, sizeof(expression_), expression, (wcslen(expression) + 1) * 2 * sizeof(char));
+		else
+			xr_strcpy(expression_, "");
+
+		if (function)
+			wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
+		else
+			xr_strcpy(function_, __FUNCTION__);
+
+		if (file)
+			wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
+		else
+		{
+			line = __LINE__;
+			xr_strcpy(file_, __FILE__);
+		}
+
+		bool skip;
+		Debug.backend("Error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_, skip);
+	}
+#endif
+
 	void __cdecl debug_on_thread_spawn(void)
 	{
 #ifdef IXR_WINDOWS
 		SetUnhandledExceptionFilter(UnhandledFilter);
+
+		auto abort_handler = [](int signal) { handler_base("Application is aborting"); };
+		auto floating_point_handler = [](int signal) { handler_base("Floating point error"); };
+		auto pure_call_handler = []() { handler_base("Pure virtual function call"); };
+		auto illegal_instruction_handler = [](int signal) { handler_base("Illegal instruction"); };
+
+		signal(SIGABRT, abort_handler);
+		signal(SIGFPE, floating_point_handler);
+		signal(SIGILL, illegal_instruction_handler);
+
+		_set_invalid_parameter_handler(&invalid_parameter_handler);
+
+		_set_new_mode(1);
+		_set_new_handler(&out_of_memory_handler);
+
+		_set_purecall_handler(pure_call_handler);
 #endif
 	}
 

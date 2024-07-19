@@ -115,12 +115,15 @@ struct CDestroyer {
 		}
 	};
 
-	struct CHelper3 {
+	struct CHelper3
+	{
 		template <typename T>
-		IC	static void delete_data(T& data) {
-			for (auto DataValue : data) {
-				CDestroyer::delete_data(DataValue);
-			}
+		IC	static void delete_data(T& data)
+		{
+			auto I = data.begin();
+			auto E = data.end();
+			for (; I != E; ++I)
+				CDestroyer::delete_data(*I);
 			data.clear();
 		}
 	};

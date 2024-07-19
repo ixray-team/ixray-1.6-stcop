@@ -1403,6 +1403,9 @@ void CInventory::UnblockSlot(u16 slot_id)
 
 bool CInventory::IsSlotBlocked(u16 slot_id) const
 {
+	if (m_blocked_slots.size() <= slot_id)
+		return false;
+
 	return m_blocked_slots[slot_id] > 0;
 }
 

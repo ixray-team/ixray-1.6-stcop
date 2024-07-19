@@ -162,25 +162,26 @@ bool CSpaceRestrictionManager::accessible					(ALife::_OBJECT_ID id, u32 level_v
 	return						(true);
 }
 
-CSpaceRestrictionManager::CRestrictionPtr	CSpaceRestrictionManager::restriction	(shared_str out_restrictors, shared_str in_restrictors)
+CSpaceRestrictionManager::CRestrictionPtr	CSpaceRestrictionManager::restriction(shared_str out_restrictors, shared_str in_restrictors)
 {
-	string4096					m_temp;
+	string4096 m_temp;
+
 	if (!xr_strlen(out_restrictors) && !xr_strlen(in_restrictors))
-		return					(0);
+		return (0);
 
-	out_restrictors				= normalize_string(out_restrictors);
-	in_restrictors				= normalize_string(in_restrictors);
+	out_restrictors = normalize_string(out_restrictors);
+	in_restrictors = normalize_string(in_restrictors);
 
-	xr_strconcat(m_temp,*out_restrictors,"\x01",*in_restrictors);
-	shared_str					space_restrictions = m_temp;
-	
+	xr_strconcat(m_temp, *out_restrictors, "\x01", *in_restrictors);
+	shared_str space_restrictions = m_temp;
+
 	SPACE_RESTRICTIONS::const_iterator	I = m_space_restrictions.find(space_restrictions);
 	if (I != m_space_restrictions.end())
-		return					((*I).second);
+		return ((*I).second);
 
-	CSpaceRestriction			*client_restriction = new CSpaceRestriction(this,out_restrictors,in_restrictors);
-	m_space_restrictions.insert	(std::make_pair(space_restrictions,client_restriction));
-	return						(client_restriction);
+	CSpaceRestriction* client_restriction = new CSpaceRestriction(this, out_restrictors, in_restrictors);
+	m_space_restrictions[space_restrictions] = client_restriction;
+	return (client_restriction);
 }
 
 u32	CSpaceRestrictionManager::accessible_nearest			(ALife::_OBJECT_ID id, const Fvector &position, Fvector &result)
