@@ -1,5 +1,7 @@
 # Branching model
 
+English | [Русский](./branching-model.rus.md)
+
 Branching model accepted in __IX-Ray__ project
 
 ## Overview

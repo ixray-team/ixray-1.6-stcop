@@ -1,5 +1,7 @@
 # Commit style
 
+English | [Русский](./commit-style.rus.md)
+
 Commit style accepted in __IX-Ray__ project
 
 ## Overview
@@ -32,7 +34,7 @@ Initial commit
 
   Commit message body should be written starting with a capital letter
 
-  First word should denote the verb of the action performed by the commit, this word should be in the infinitive form the `to` particle
+  First word should denote the verb of the action performed by the commit, this word should be in the infinitive form without the `to` particle
 
   Description should be separated from the body by one empty line
 
