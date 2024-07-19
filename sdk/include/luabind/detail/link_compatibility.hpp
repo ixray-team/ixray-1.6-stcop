@@ -20,43 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_LINK_COMPATIBILITY_HPP_INCLUDED
-#define LUABIND_LINK_COMPATIBILITY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
-namespace luabind {
-	namespace detail {
+namespace luabind { namespace detail
+{
 
 #ifdef LUABIND_NOT_THREADSAFE
-		LUABIND_API void not_threadsafe_defined_conflict();
+	LUABIND_API void not_threadsafe_defined_conflict();
 #else
-		LUABIND_API void not_threadsafe_not_defined_conflict();
+	LUABIND_API void not_threadsafe_not_defined_conflict();
 #endif
 
 #ifdef LUABIND_NO_ERROR_CHECKING
-		LUABIND_API void no_error_checking_defined_conflict();
+	LUABIND_API void no_error_checking_defined_conflict();
 #else
-		LUABIND_API void no_error_checking_not_defined_conflict();
+	LUABIND_API void no_error_checking_not_defined_conflict();
 #endif
 
-		inline void check_link_compatibility()
-		{
-#ifdef LUABIND_NOT_THREADSAFE
-			not_threadsafe_defined_conflict();
-#else
-			not_threadsafe_not_defined_conflict();
-#endif
+	inline void check_link_compatibility()
+	{
+	#ifdef LUABIND_NOT_THREADSAFE
+		not_threadsafe_defined_conflict();
+	#else
+		not_threadsafe_not_defined_conflict();
+	#endif
 
-#ifdef LUABIND_NO_ERROR_CHECKING
-			no_error_checking_defined_conflict();
-#else
-			no_error_checking_not_defined_conflict();
-#endif
-		}
-
+	#ifdef LUABIND_NO_ERROR_CHECKING
+		no_error_checking_defined_conflict();
+	#else
+		no_error_checking_not_defined_conflict();
+	#endif
 	}
-}
 
-#endif
-
+}}

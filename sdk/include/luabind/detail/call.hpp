@@ -1,402 +1,224 @@
-// Copyright Daniel Wallin 208.Use, modification and distribution is
-// subject to the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// Copyright (c) 2003 Daniel Wallin and Arvid Norberg
+
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+// ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+// SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+// ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+// OR OTHER DEALINGS IN THE SOFTWARE.
+
 #pragma once
 
 #include <luabind/config.hpp>
-#include <typeinfo>
-#include <luabind/detail/meta.hpp>
 #include <luabind/detail/policy.hpp>
 #include <luabind/yield_policy.hpp>
-#include <luabind/detail/decorate_type.hpp>
-#include <luabind/detail/object.hpp>
-#include <tuple>
+#include <luabind/detail/calc_has_arg.hpp>
 
-#pragma warning(push)
-#pragma warning(disable: 4251)
-
-namespace luabind::detail
+namespace luabind { namespace detail
 {
-	struct invoke_context;
-
-	struct LUABIND_API function_object
+	template<typename... Policies>
+	struct maybe_yield
 	{
-		function_object(lua_CFunction entry)
-			: entry(entry)
-			, next(0)
-		{}
-
-		virtual ~function_object()
-		{}
-
-		virtual int call(lua_State* L, invoke_context& ctx, const int args) const = 0;
-		virtual int format_signature(lua_State* L, char const* function, bool concat = true) const = 0;
-
-		lua_CFunction entry;
-		luabind::string name;
-		function_object* next;
-		object keepalive;
-	};
-
-	struct LUABIND_API invoke_context
-	{
-		invoke_context()
-			: best_score((std::numeric_limits<int>::max)())
-			//This need to avoid static analyzer's treats
-			, candidates{ nullptr,nullptr,nullptr,nullptr,nullptr,
-						 nullptr,nullptr,nullptr,nullptr,nullptr }
-			, candidate_index(0)
-		{}
-
-		operator bool() const
+		static int apply(lua_State* L, int nret)
 		{
-			return candidate_index == 1;
+			return ret(L, nret, has_yield<Policies...>());
 		}
 
-		void format_error(lua_State* L, function_object const* overloads) const;
-
-		int best_score;
-		function_object const* candidates[10];	// This looks like it could crash if you provide too many overloads?
-		int candidate_index;
-	};
-
-	namespace call_detail_new {
-
-		/*
-			Compute Stack Indices
-			Given the list of argument converter arities, computes the stack indices that each converter addresses.
-		*/
-
-		template< typename ConsumedList, unsigned int CurrentSum, unsigned int... StackIndices >
-		struct compute_stack_indices;
-
-		template< unsigned int Consumed0, unsigned int... Consumeds, unsigned int CurrentSum, unsigned int... StackIndices >
-		struct compute_stack_indices< meta::index_list< Consumed0, Consumeds... >, CurrentSum, StackIndices... >
+		static int ret(lua_State* L, int nret, std::true_type)
 		{
-			using type = typename compute_stack_indices< meta::index_list< Consumeds... >, CurrentSum + Consumed0, StackIndices..., CurrentSum >::type;
-		};
+			return lua_yield(L, nret);
+		}
 
-		template< unsigned int CurrentSum, unsigned int... StackIndices >
-		struct compute_stack_indices< meta::index_list< >, CurrentSum, StackIndices... >
+		static int ret(lua_State*, int nret, std::false_type)
 		{
-			using type = meta::index_list< StackIndices... >;
-		};
-
-		template< typename Foo >
-		struct FooFoo {	// Foo!
-			enum { consumed_args = Foo::consumed_args };
-		};
-
-
-		template< typename PolicyList, typename StackIndexList >
-		struct policy_list_postcall;
-
-		template< typename Policy0, typename... Policies, typename StackIndexList >
-		struct policy_list_postcall< meta::type_list< call_policy_injector<Policy0>, Policies... >, StackIndexList > {
-			static void postcall(lua_State* L, int results) {
-				Policy0::postcall(L, results, StackIndexList());
-				policy_list_postcall< meta::type_list< Policies... >, StackIndexList >::postcall(L, results);
-			}
-		};
-
-		template< typename ConverterPolicy, typename StackIndexList, bool has_postcall >
-		struct converter_policy_postcall {
-			static void postcall(lua_State* L, int results) {
-				ConverterPolicy::postcall(L, results, StackIndexList());
-			}
-		};
-
-		template< typename ConverterPolicy, typename StackIndexList >
-		struct converter_policy_postcall< ConverterPolicy, StackIndexList, false > {
-			static void postcall(lua_State* /*L*/, int /*results*/) {
-			}
-		};
-
-		template< unsigned int Index, typename Policy, typename... Policies, typename StackIndexList >
-		struct policy_list_postcall< meta::type_list< converter_policy_injector< Index, Policy >, Policies... >, StackIndexList > {
-			static void postcall(lua_State* L, int results) {
-				converter_policy_postcall < Policy, StackIndexList, converter_policy_injector< Index, Policy >::has_postcall >::postcall(L, results);
-				policy_list_postcall< meta::type_list< Policies... >, StackIndexList >::postcall(L, results);
-			}
-		};
-
-		template< typename StackIndexList >
-		struct policy_list_postcall< meta::type_list< >, StackIndexList > {
-			static void postcall(lua_State* /*L*/, int /*results*/) {}
-		};
-
-	}
-
-	// VC2013RC doesn't support expanding a template and its member template in one expression, that's why we have to to incrementally build
-	// the converter list instead of a single combined expansion.
-	template< typename ArgumentList, typename PolicyList, typename CurrentList = meta::type_list<>, unsigned int Counter = 1 >
-	struct compute_argument_converter_list;
-
-	template< typename Argument0, typename... Arguments, typename PolicyList, typename... CurrentConverters, unsigned int Counter >
-	struct compute_argument_converter_list< meta::type_list<Argument0, Arguments... >, PolicyList, meta::type_list<CurrentConverters...>, Counter >
-	{
-		using converter_type = typename policy_detail::get_converter_policy<Counter, PolicyList>::type;
-		using this_specialized = typename converter_type::template specialize<Argument0, lua_to_cpp >::type;
-		using type = typename compute_argument_converter_list<meta::type_list<Arguments...>, PolicyList, meta::type_list<CurrentConverters..., this_specialized>, Counter + 1>::type;
-	};
-
-	template<typename PolicyList, typename... CurrentConverters, unsigned int Counter >
-	struct compute_argument_converter_list< meta::type_list<>, PolicyList, meta::type_list<CurrentConverters...>, Counter >
-	{
-		using type = meta::type_list<CurrentConverters...>;
-	};
-
-	template< typename ConverterList >
-	struct build_consumed_list;
-
-	template< typename... Converters >
-	struct build_consumed_list< meta::type_list< Converters... > > 
-	{
-		using consumed_list = meta::index_list< call_detail_new::FooFoo<Converters>::consumed_args... >;
-	};
-
-	template< typename SignatureList, typename PolicyList >
-	struct invoke_traits;
-
-	// Specialization for free functions
-	template< typename ResultType, typename... Arguments, typename PolicyList >
-	struct invoke_traits< meta::type_list<ResultType, Arguments... >, PolicyList >
-	{
-		using signature_list = meta::type_list<ResultType, Arguments...>;
-		using policy_list = PolicyList;
-		using result_type = ResultType;
-		using result_converter = specialized_converter_policy_n<0, PolicyList, result_type, cpp_to_lua >;
-		using argument_list = meta::type_list<Arguments...>;
-
-		using decorated_argument_list = meta::type_list< decorate_type_t<Arguments>... >;
-		// note that this is 0-based, so whenever you want to fetch from the converter list, you need to add 1
-		using argument_index_list = typename meta::make_index_range< 0, sizeof...(Arguments) >::type;
-		using argument_converter_list = typename compute_argument_converter_list<argument_list, PolicyList>::type;
-		using argument_converter_tuple_type = typename meta::make_tuple<argument_converter_list>::type;
-		using consumed_list = typename build_consumed_list<argument_converter_list>::consumed_list;
-		using stack_index_list = typename call_detail_new::compute_stack_indices< consumed_list, 1 >::type;
-
-		enum 
-		{ 
-			arity = meta::sum<consumed_list>::value 
-		};
-	};
-
-	template< typename StackIndexList, typename SignatureList, unsigned int End = meta::size<SignatureList>::value, unsigned int Index = 1 >
-	struct match_struct 
-	{
-		template< typename TupleType >
-		static int match(lua_State* L, TupleType& tuple)
-		{
-			const int this_match = std::get<Index - 1>(tuple).match(L, decorate_type_t<typename SignatureList::template at<Index>>(), meta::get<StackIndexList, Index - 1>::value);
-			return this_match >= 0 ?	// could also sum them up unconditionally
-				this_match + match_struct<StackIndexList, SignatureList, End, Index + 1>::match(L, tuple)
-				: no_match;
+			return nret;
 		}
 	};
 
-	template< typename StackIndexList, typename SignatureList, unsigned int Index >
-	struct match_struct< StackIndexList, SignatureList, Index, Index >
+	template<typename Class, typename WrappedClass>
+	struct most_derived
 	{
-		template< typename TupleType >
-		static int match(lua_State* /*L*/, TupleType&)
-		{
-			return 0;
-		}
+        using type = std::conditional_t<
+            std::is_base_of_v<Class, WrappedClass>,
+            WrappedClass,
+            Class
+        >;
 	};
 
-	template< typename PolicyList, typename Signature, typename F >
-	struct invoke_struct
+    template<typename Class, typename WrappedClass>
+    using most_derived_t = typename most_derived<Class, WrappedClass>::type;
+
+	template<typename T>
+	struct returns
 	{
-		using traits = invoke_traits< Signature, PolicyList >;
+	private:
 
-		template< bool IsMember, bool IsVoid, typename IndexList >
-		struct call_struct;
+        template <int ResInitWithOffset, typename U, size_t Index, typename... Policies>
+        static auto genConverter()
+        {
+            using converter_policy = typename find_conversion_policy<Index + ResInitWithOffset, Policies...>::type;
+            return typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type();
+        }
 
-		template< unsigned int... ArgumentIndices >
-		struct call_struct< false /*member*/, false /*void*/, meta::index_list<ArgumentIndices...> >
+        template <int ResInitWithOffset, typename... Ts, size_t... Indices, typename... Policies>
+        static auto generateConverters(const std::index_sequence<Indices...>, const policy_cons<Policies...>)
+        {
+            return std::make_tuple(
+                genConverter<ResInitWithOffset, Ts, Indices, Policies...>()...
+            );
+        }
+
+        template <int ResInitWithOffset, typename U, size_t Index, typename Conv, typename... Policies>
+        static decltype(auto) apply(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+        {
+            return conv.apply(L, decorated_type<U>::get(), calcHasArg<ResInitWithOffset, ResInitWithOffset, Index, Policies...>());
+        }
+
+        template <int ResInitWithOffset, typename U, size_t Index, typename Conv, typename... Policies>
+        static void postcall(lua_State* L, Conv& conv, const policy_cons<Policies...>)
+        {
+            conv.converter_postcall(L, decorated_type<U>::get(), calcHasArg<ResInitWithOffset, ResInitWithOffset, Index, Policies...>());
+        }
+
+        template <typename WrappedClass, typename C, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(C::*f)(Args...), lua_State* L, Ts&&... args)
+        {
+            using self_type = most_derived_t<C, WrappedClass>;
+            pointer_converter<Direction::lua_to_cpp> self_cv;
+
+            return (self_cv.apply(L, decorated_type<self_type*>::get(), 1)->*f)(std::forward<Ts>(args)...);
+        }
+
+        template <typename WrappedClass, typename C, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(C::*f)(Args...) const, lua_State* L, Ts&&... args)
+        {
+            using self_type = most_derived_t<C, WrappedClass>;
+            const_pointer_converter<Direction::lua_to_cpp> self_cv;
+
+            return (self_cv.apply(L, decorated_type<self_type const*>::get(), 1)->*f)(std::forward<Ts>(args)...);
+        }
+
+        template <typename WrappedClass, typename... Args, typename... Ts>
+        static decltype(auto) callApply(T(*f)(Args...), lua_State*, Ts&&... args)
+        {
+            return f(std::forward<Ts>(args)...);
+        }
+
+        template <int ResInitWithOffset, typename WrappedClass, typename Fn, typename... Converters, typename... Ts, size_t... Indices, typename... Policies>
+		static void callApply(Fn&& fn, lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+			const imdexlib::typelist<Ts...>, const policy_cons<Policies...> policies, std::false_type /*is_void<T>*/)
 		{
-			static void call(lua_State* L, F& f, typename traits::argument_converter_tuple_type& argument_tuple)
-			{
-				using decorated_list = typename traits::decorated_argument_list;
-				using stack_indices = typename traits::stack_index_list;
-				using result_converter = typename traits::result_converter;
+			using converter_policy_ret = typename find_conversion_policy<0, Policies...>::type;
+			typename converter_policy_ret::template generate_converter<T, Direction::cpp_to_lua>::type converter_ret;
 
-				result_converter().to_lua(L,
-					f((std::get<ArgumentIndices>(argument_tuple).to_cpp(L,
-						typename meta::get<decorated_list, ArgumentIndices>::type(),
-						meta::get<stack_indices, ArgumentIndices>::value))...
-					)
-				);
-
-				meta::init_order{
-					(std::get<ArgumentIndices>(argument_tuple).converter_postcall(L,
-					typename meta::get<typename traits::decorated_argument_list, ArgumentIndices>::type(),
-					meta::get<typename traits::stack_index_list, ArgumentIndices>::value), 0)...
-				};
-			}
-		};
-
-		template< unsigned int... ArgumentIndices >
-		struct call_struct< false /*member*/, true /*void*/, meta::index_list<ArgumentIndices...> >
-		{
-			static void call(lua_State* L, F& f, typename traits::argument_converter_tuple_type& argument_tuple)
-			{
-				using decorated_list = typename traits::decorated_argument_list;
-				using stack_indices = typename traits::stack_index_list;
-
-				// This prevents unused warnings with empty parameter lists
-				(void)L;
-
-				f(std::get<ArgumentIndices>(argument_tuple).to_cpp(L,
-					typename meta::get<decorated_list, ArgumentIndices>::type(),
-					meta::get<stack_indices, ArgumentIndices>::value)...
-
-				);
-
-				meta::init_order{
-					(std::get<ArgumentIndices>(argument_tuple).converter_postcall(L,
-					typename meta::get<typename traits::decorated_argument_list, ArgumentIndices>::type(),
-					meta::get<typename traits::stack_index_list, ArgumentIndices>::value), 0)...
-				};
-			}
-		};
-
-		template< unsigned int ClassIndex, unsigned int... ArgumentIndices >
-		struct call_struct< true /*member*/, false /*void*/, meta::index_list<ClassIndex, ArgumentIndices...> >
-		{
-			static void call(lua_State* L, F& f, typename traits::argument_converter_tuple_type& argument_tuple)
-			{
-				using decorated_list = typename traits::decorated_argument_list;
-				using stack_indices = typename traits::stack_index_list;
-				using result_converter = typename traits::result_converter;
-
-				auto& object = std::get<0>(argument_tuple).to_cpp(L,
-					typename meta::get<typename traits::decorated_argument_list, 0>::type(), 1);
-
-				result_converter().to_lua(L,
-					(object.*f)(std::get<ArgumentIndices>(argument_tuple).to_cpp(L,
-						typename meta::get<decorated_list, ArgumentIndices>::type(),
-						meta::get<stack_indices, ArgumentIndices>::value)...
-						)
-				);
-
-				meta::init_order{
-					(std::get<ArgumentIndices>(argument_tuple).converter_postcall(L,
-					typename meta::get<typename traits::decorated_argument_list, ArgumentIndices>::type(),
-					meta::get<typename traits::stack_index_list, ArgumentIndices>::value), 0)...
-				};
-			}
-		};
-
-		template< unsigned int ClassIndex, unsigned int... ArgumentIndices >
-		struct call_struct< true /*member*/, true /*void*/, meta::index_list<ClassIndex, ArgumentIndices...> >
-		{
-			static void call(lua_State* L, F& f, typename traits::argument_converter_tuple_type& argument_tuple)
-			{
-				using decorated_list = typename traits::decorated_argument_list;
-				using stack_indices = typename traits::stack_index_list;
-
-				auto& object = std::get<0>(argument_tuple).to_cpp(L, typename meta::get<typename traits::decorated_argument_list, 0>::type(), 1);
-
-				(object.*f)(std::get<ArgumentIndices>(argument_tuple).to_cpp(L,
-					typename meta::get<decorated_list, ArgumentIndices>::type(),
-					meta::get<stack_indices, ArgumentIndices>::value)...
-					);
-
-				meta::init_order{
-					(std::get<ArgumentIndices>(argument_tuple).converter_postcall(L,
-					typename meta::get<typename traits::decorated_argument_list, ArgumentIndices>::type(),
-					meta::get<typename traits::stack_index_list, ArgumentIndices>::value), 0)...
-				};
-			}
-		};
-
-		template< typename TupleType >
-		static int call_fun(lua_State* L, invoke_context& ctx, F& f, const int args, TupleType& tuple)
-		{
-			int results = 0;
-
-			call_struct<
-				std::is_member_function_pointer<F>::value,
-				std::is_void<typename traits::result_type>::value,
-				typename traits::argument_index_list
-			>::call(L, f, tuple);
-
-			results = lua_gettop(L) - args;
-			if (has_call_policy<PolicyList, yield_policy>::value) {
-				results = lua_yield(L, results);
-			}
-
-			call_detail_new::policy_list_postcall < PolicyList, typename meta::push_front< typename traits::stack_index_list, meta::index<traits::arity> >::type >::postcall(L, results);
-
-			return results;
+			converter_ret.apply(L, callApply<WrappedClass>(std::forward<Fn>(fn), L, apply<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies)...));
 		}
 
-		static int call_best_match(lua_State* L, function_object const& self, invoke_context& ctx, F& f, const int args)
-		{
-			// Even match needs the tuple, since pointer_converters buffer the cast result
-			typename traits::argument_converter_tuple_type converter_tuple;
+        template <int ResInitWithOffset, typename WrappedClass, typename Fn, typename... Converters, typename... Ts, size_t... Indices, typename... Policies>
+        static void callApply(Fn&& fn, lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>,
+                              const imdexlib::typelist<Ts...>, const policy_cons<Policies...> policies, std::true_type /*is_void<T>*/)
+        {
+            callApply<WrappedClass>(std::forward<Fn>(fn), L, apply<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies)...);
+        }
 
-			int score = no_match;
-			if (traits::arity == args)
-			{
-				using struct_type = match_struct< typename traits::stack_index_list, typename traits::signature_list >;
-				score = struct_type::match(L, converter_tuple);
-			}
+        template <int ResInitWithOffset, typename... Ts, typename... Converters, size_t... Indices, typename... Policies>
+        static void callPostcall(lua_State* L, std::tuple<Converters...>& converters, const std::index_sequence<Indices...>, const policy_cons<Policies...> policies)
+        {
+            const int expander [] = { 0, (postcall<ResInitWithOffset, Ts, Indices>(L, std::get<Indices>(converters), policies), 0)... };
+            (void) expander;
+        }
 
-			if (score >= 0 && score < ctx.best_score) {
-				ctx.best_score = score;
-				ctx.candidates[0] = &self;
-				ctx.candidate_index = 1;
-			}
-			else if (score == ctx.best_score) {
-				ctx.candidates[ctx.candidate_index++] = &self;
-			}
+        template <int ResInitWithOffset, typename... Policies, size_t... Indices>
+        static void callPolicyListPostcall(lua_State* L, const int first, const std::index_sequence<Indices...>)
+        {
+            const int indices [] =
+            {
+                /*nargs + nret*/first,
+                1,
+                calcHasArg<ResInitWithOffset, ResInitWithOffset, Indices, Policies...>()...
+            };
 
-			int results = 0;
-			if (self.next)
-				results = self.next->call(L, ctx, args);
+            policy_list_postcall<Policies...>::apply(L, indices);
+        }
 
-			if (ctx.best_score == score && ctx.candidate_index == 1)
-				results = call_fun(L, ctx, f, args, converter_tuple);
+        template <typename WrappedClass,
+                  int ResInitWithOffset,
+                  typename Fn,
+	              typename... Args,
+	              typename... Policies>
+        static int call(Fn&& fn, lua_State* L, const imdexlib::typelist<Args...>, const policy_cons<Policies...> policies)
+        {
+            const int nargs = lua_gettop(L);
+            const auto indices = std::make_index_sequence<sizeof...(Args)>();
+            auto converters = generateConverters<ResInitWithOffset, Args...>(indices, policies);
 
-			return results;
-		}
+            callApply<ResInitWithOffset, WrappedClass>(std::forward<Fn>(fn), L, converters, indices, imdexlib::typelist<Args...>(), policies, std::is_void<T>());
+            callPostcall<ResInitWithOffset, Args...>(L, converters, indices, policies);
 
-		static int invoke(lua_State* L, function_object const& self, invoke_context& ctx, F& f)
-		{
-			int const arguments = lua_gettop(L);
+            const int nret = lua_gettop(L) - nargs;
 
-#ifndef XRAY_SCRIPTS_NO_BACKWARDS_COMPATIBILITY
-			if (!self.next)
-			{
-				// Even match needs the tuple, since pointer_converters buffer the cast result
-				typename traits::argument_converter_tuple_type converter_tuple;
+            callPolicyListPostcall<ResInitWithOffset, Policies...>(L, nargs + nret, indices);
 
-				using struct_type = match_struct< typename traits::stack_index_list, typename traits::signature_list >;
-				ctx.best_score = struct_type::match(L, converter_tuple);
-				ctx.candidates[0] = &self;
-				ctx.candidate_index = 1;
+            return maybe_yield<Policies...>::apply(L, nret);
+        }
 
-				return call_fun(L, ctx, f, arguments, converter_tuple);
-			}
-#endif
+	public:
 
-			return call_best_match(L, self, ctx, f, arguments);
-		}
+        template<typename C,
+	             typename WrappedClass,
+                 typename... Args,
+                 typename... Policies>
+        static int call(T(C::*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 2>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
 
+        template<typename C,
+	             typename WrappedClass,
+	             typename... Args,
+	             typename... Policies>
+        static int call(T(C::*f)(Args...) const, WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 2>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
+
+        template<typename WrappedClass,
+                 typename... Args,
+                 typename... Policies>
+        static int call(T(*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+        {
+            return call<WrappedClass, 1>(f, L, imdexlib::typelist<Args...>(), policies);
+        }
 	};
 
-	template< typename PolicyList, typename Signature, typename F>
-	inline int call_best_match(lua_State* L, function_object const& self, invoke_context& ctx, F& f, const int args)
-	{
-		return invoke_struct<PolicyList, Signature, F>::call_best_match(L, self, ctx, f, args);
-	}
+    template<typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
 
-	template< typename PolicyList, typename Signature, typename F>
-	inline int invoke(lua_State* L, function_object const& self, invoke_context& ctx, F& f)
-	{
-		return invoke_struct<PolicyList, Signature, F>::invoke(L, self, ctx, f);
-	}
-}
+    template<typename T, typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(T::*f)(Args...), WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
+
+    template<typename T, typename WrappedClass, typename R, typename... Args, typename... Policies>
+    int call(R(T::*f)(Args...) const, WrappedClass*, lua_State* L, const policy_cons<Policies...> policies)
+    {
+        return returns<R>::call(f, static_cast<WrappedClass*>(nullptr), L, policies);
+    }
+}}

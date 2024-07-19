@@ -20,110 +20,328 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_CALL_MEMBER_HPP_INCLUDED
-#define LUABIND_CALL_MEMBER_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
-#include <luabind/detail/push_to_lua.hpp>
+#include <luabind/detail/convert_to_lua.hpp>
 #include <luabind/detail/pcall.hpp>
 #include <luabind/error.hpp>
-#include <luabind/detail/stack_utils.hpp>
-#include <luabind/detail/call_shared.hpp>
-#include <luabind/object.hpp>
+
+#include <tuple>
 
 namespace luabind
 {
-	using adl::object;
-
-	namespace detail {
-
-		template<class R, typename PolicyList, unsigned int... Indices, typename... Args>
-		R call_member_impl(lua_State* L, std::true_type /*void*/, meta::index_list<Indices...>, Args&&... args)
-		{
-			// don't count the function and self-reference
-			// since those will be popped by pcall
-			int top = lua_gettop(L) - 2;
-
-			// pcall will pop the function and self reference
-			// and all the parameters
-
-			meta::init_order{ (
-				specialized_converter_policy_n<Indices, PolicyList, typename unwrapped<Args>::type, cpp_to_lua>().to_lua(L, unwrapped<Args>::get(std::forward<Args>(args))), 0)...
-			};
-
-			if(pcall(L, sizeof...(Args)+1, 0))
+	namespace detail
+	{
+		// if the proxy_member_caller returns non-void
+			template<typename Ret, typename... Ts>
+			class proxy_member_caller
 			{
-				assert(lua_gettop(L) == top + 1);
-				call_error(L);
-			}
-			// pops the return values from the function
-			stack_pop pop(L, lua_gettop(L) - top);
-		}
+                using tuple_t = std::tuple<Ts...>;
+			public:
 
-		template<class R, typename PolicyList, unsigned int... Indices, typename... Args>
-		R call_member_impl(lua_State* L, std::false_type /*void*/, meta::index_list<Indices...>, Args&&... args)
-		{
-			// don't count the function and self-reference
-			// since those will be popped by pcall
-			int top = lua_gettop(L) - 2;
+				proxy_member_caller(lua_State* L_, const tuple_t& args)
+					: L(L_)
+					, m_args(args)
+					, m_called(false)
+				{
+				}
 
-			// pcall will pop the function and self reference
-			// and all the parameters
+                proxy_member_caller(lua_State* L_, tuple_t&& args)
+                    : L(L_)
+                    , m_args(std::move(args))
+                    , m_called(false)
+                {
+                }
 
-			meta::init_order{ (
-				specialized_converter_policy_n<Indices, PolicyList, typename unwrapped<Args>::type, cpp_to_lua>().to_lua(L, unwrapped<Args>::get(std::forward<Args>(args))), 0)...
-			};
+				proxy_member_caller(const proxy_member_caller& rhs)
+					: L(rhs.L)
+					, m_args(rhs.m_args)
+					, m_called(rhs.m_called)
+				{
+					rhs.m_called = true;
+				}
 
-			if(pcall(L, sizeof...(Args)+1, 1))
-			{
-				assert(lua_gettop(L) == top + 1);
-				call_error(L);
-			}
-			// pops the return values from the function
-			stack_pop pop(L, lua_gettop(L) - top);
+                proxy_member_caller(proxy_member_caller&& rhs)
+                    : L(rhs.L)
+                    , m_args(std::move(rhs.m_args))
+                    , m_called(rhs.m_called)
+                {
+                    rhs.m_called = true;
+                }
 
-			specialized_converter_policy_n<0, PolicyList, R, lua_to_cpp> converter;
-			if(converter.match(L, decorate_type_t<R>(), -1) < 0) {
-#ifdef XRAY_SCRIPTS_NO_BACKWARDS_COMPATIBILITY
-				cast_error<R>(L);
+				~proxy_member_caller() LUABIND_DTOR_NOEXCEPT
+				{
+					if (m_called) return;
+
+					m_called = true;
+
+					// don't count the function and self-reference
+					// since those will be popped by pcall
+					const int top = lua_gettop(L) - 2;
+
+					// pcall will pop the function and self reference
+					// and all the parameters
+
+					push_args_from_tuple<1>::apply(L, m_args);
+					if (pcall(L, sizeof...(Ts) + 1, 0))
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw luabind::error(L);
+#else
+						error_callback_fun e = get_error_callback();
+						if (e) e(L);
+	
+						assert(0 && "the lua function threw an error and exceptions are disabled."
+								"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
 #endif
-			}
+					}
+					// pops the return values from the function
+					stack_pop pop(L, lua_gettop(L) - top);
+				}
 
-			return converter.to_cpp(L, decorate_type_t<R>(), -1);
-		}
+				operator Ret()
+				{
+					typename default_policy::generate_converter<Ret, Direction::lua_to_cpp>::type converter;
 
+					m_called = true;
+
+					// don't count the function and self-reference
+					// since those will be popped by pcall
+					const int top = lua_gettop(L) - 2;
+
+					// pcall will pop the function and self reference
+					// and all the parameters
+					push_args_from_tuple<1>::apply(L, m_args);
+					if (pcall(L, sizeof...(Ts) + 1, 1))
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw luabind::error(L); 
+#else
+						error_callback_fun e = get_error_callback();
+						if (e) e(L);
+	
+						assert(0 && "the lua function threw an error and exceptions are disabled."
+							"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
+#endif
+					}
+
+					// pops the return values from the function
+					stack_pop pop(L, lua_gettop(L) - top);
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+
+					if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw cast_failed(L, LUABIND_TYPEID(Ret));
+#else
+						cast_failed_callback_fun e = get_cast_failed_callback();
+						if (e) e(L, LUABIND_TYPEID(Ret));
+
+						assert(0 && "the lua function's return value could not be converted."
+							"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
+#endif
+					}
+#endif
+					return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
+				}
+
+				template<typename... Policies>
+				Ret operator[](const policy_cons<Policies...> p)
+				{
+					typedef typename find_conversion_policy<0, Policies...>::type converter_policy;
+					typename converter_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
+
+					m_called = true;
+
+					// don't count the function and self-reference
+					// since those will be popped by pcall
+					const int top = lua_gettop(L) - 2;
+
+					// pcall will pop the function and self reference
+					// and all the parameters
+
+					detail::push_args_from_tuple<1>::apply(L, m_args, p);
+					if (pcall(L, sizeof...(Ts) + 1, 1))
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw error(L);
+#else
+						error_callback_fun e = get_error_callback();
+						if (e) e(L);
+	
+						assert(0 && "the lua function threw an error and exceptions are disabled."
+							"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
+#endif
+					}
+
+					// pops the return values from the function
+					stack_pop pop(L, lua_gettop(L) - top);
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+
+						if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw cast_failed(L, LUABIND_TYPEID(Ret));
+#else
+						cast_failed_callback_fun e = get_cast_failed_callback();
+						if (e) e(L, LUABIND_TYPEID(Ret));
+
+						assert(0 && "the lua function's return value could not be converted."
+							"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
+#endif
+					}
+#endif
+					return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
+				}
+
+			private:
+
+				lua_State* L;
+				tuple_t m_args;
+				mutable bool m_called;
+			};
+
+		// if the proxy_member_caller returns void
+			template<typename... Ts>
+			class proxy_member_void_caller
+			{
+                using tuple_t = std::tuple<Ts...>;
+			    friend class luabind::object;
+			public:
+
+				proxy_member_void_caller(lua_State* L_, const tuple_t& args)
+					: L(L_)
+					, m_args(args)
+					, m_called(false)
+				{
+				}
+
+                proxy_member_void_caller(lua_State* L_, tuple_t&& args)
+                    : L(L_)
+                    , m_args(std::move(args))
+                    , m_called(false)
+                {
+                }
+
+				proxy_member_void_caller(const proxy_member_void_caller& rhs)
+					: L(rhs.L)
+					, m_args(rhs.m_args)
+					, m_called(rhs.m_called)
+				{
+					rhs.m_called = true;
+				}
+
+                proxy_member_void_caller(proxy_member_void_caller&& rhs)
+                    : L(rhs.L)
+                    , m_args(std::move(rhs.m_args))
+                    , m_called(rhs.m_called)
+                {
+                    rhs.m_called = true;
+                }
+
+				~proxy_member_void_caller() LUABIND_DTOR_NOEXCEPT
+				{
+					if (m_called) return;
+
+					m_called = true;
+
+					// don't count the function and self-reference
+					// since those will be popped by pcall
+					const int top = lua_gettop(L) - 2;
+
+					// pcall will pop the function and self reference
+					// and all the parameters
+
+					push_args_from_tuple<1>::apply(L, m_args);
+					if (pcall(L, sizeof...(Ts) + 1, 0))
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw luabind::error(L);
+#else
+						error_callback_fun e = get_error_callback();
+						if (e) e(L);
+                        else
+                        {
+                            assert(0 && "the lua function threw an error and exceptions are disabled."
+                                "If you want to handle this error use luabind::set_error_callback()");
+                            std::terminate();
+                        }
+#endif
+					}
+					// pops the return values from the function
+					stack_pop pop(L, lua_gettop(L) - top);
+				}
+
+				template<typename... Policies>
+				void operator[](const policy_cons<Policies...> p)
+				{
+					m_called = true;
+
+					// don't count the function and self-reference
+					// since those will be popped by pcall
+					const int top = lua_gettop(L) - 2;
+
+					// pcall will pop the function and self reference
+					// and all the parameters
+
+					detail::push_args_from_tuple<1>::apply(L, m_args, p);
+					if (pcall(L, sizeof...(Ts) + 1, 0))
+					{
+						assert(lua_gettop(L) == top + 1);
+#ifndef LUABIND_NO_EXCEPTIONS
+						throw error(L);
+#else
+						error_callback_fun e = get_error_callback();
+						if (e) e(L);
+	
+						assert(0 && "the lua function threw an error and exceptions are disabled."
+							"If you want to handle this error use luabind::set_error_callback()");
+						std::terminate();
+#endif
+					}
+					// pops the return values from the function
+					stack_pop pop(L, lua_gettop(L) - top);
+				}
+
+			private:
+				lua_State* L;
+				tuple_t m_args;
+				mutable bool m_called;
+			};
 
 	} // detail
 
-	template<class R, typename PolicyList = no_policies, typename... Args>
-	R call_member(object const& obj, const char* name, Args&&... args)
-	{
-		// this will be cleaned up by the proxy object
-		// once the call has been made
+    template<typename R, typename... Args>
+    decltype(auto) call_member(object const& obj, const char* name, const Args&... args)
+    {
+        using proxy_type = std::conditional_t<
+            std::is_void_v<R>,
+            luabind::detail::proxy_member_void_caller<const Args*...>,
+            luabind::detail::proxy_member_caller<R, const Args*...>
+        >;
 
-		// get the function
-		obj.push(obj.interpreter());
-		lua_pushstring(obj.interpreter(), name);
-		lua_gettable(obj.interpreter(), -2);
-		// duplicate the self-object
-		lua_pushvalue(obj.interpreter(), -2);
-		// remove the bottom self-object
-		lua_remove(obj.interpreter(), -3);
+        obj.pushvalue();
+        lua_pushstring(obj.lua_state(), name);
+        lua_gettable(obj.lua_state(), -2);
 
-		// now the function and self objects
-		// are on the stack. These will both
-		// be popped by pcall
+        lua_pushvalue(obj.lua_state(), -2);
 
-		return detail::call_member_impl<R, PolicyList>(obj.interpreter(), std::is_void<R>(), meta::index_range<1, sizeof...(Args)+1>(), std::forward<Args>(args)...);
-	}
+        lua_remove(obj.lua_state(), -3);
 
-	template <class R, typename... Args>
-	R call_member(wrap_base const* self, char const* fn, Args&&... args)
-	{
-		return self->call<R>(fn, std::forward<Args>(args)...);
-	}
-
+        return proxy_type(obj.lua_state(), std::make_tuple(&args...));
+    }
 }
-
-#endif // LUABIND_CALL_MEMBER_HPP_INCLUDED
-

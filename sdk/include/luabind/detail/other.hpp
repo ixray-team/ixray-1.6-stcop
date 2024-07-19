@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_OTHER_HPP_INCLUDED
-#define LUABIND_OTHER_HPP_INCLUDED
+#pragma once
 
 // header derived from source code found in Boost.Python
 
@@ -34,33 +32,28 @@
 
 #include <luabind/config.hpp>
 
-namespace luabind {
-
+namespace luabind
+{
 	template<class T>
 	struct other
 	{
-		using type = T;
+		typedef T type;
+	};
+}
+
+namespace luabind { namespace detail
+{
+	template<typename T>
+	class unwrap_other
+	{
+	public:
+			typedef T type;
 	};
 
-} // namespace luabind
-
-namespace luabind {
-	namespace detail {
-		template<typename T>
-		class unwrap_other
-		{
-		public:
-			using type = T;
-		};
-
-		template<typename T>
-		class unwrap_other<other<T> >
-		{
-		public:
-			using type = T;
-		};
-	}
-} // namespace luabind::detail
-
-#endif // LUABIND_OTHER_HPP_INCLUDED
-
+	template<typename T>
+	class unwrap_other<other<T> >
+	{
+	public:
+			typedef T type;
+	};
+}} // namespace luabind::detail

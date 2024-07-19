@@ -20,119 +20,123 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_ADOPT_POLICY_HPP_INCLUDED
-#define LUABIND_ADOPT_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
-#include <luabind/wrapper_base.hpp>
 #include <luabind/detail/policy.hpp>
-#include <luabind/back_reference_fwd.hpp>
-#include <fast_dynamic_cast/fast_dynamic_cast.hpp>
-namespace luabind {
-	namespace detail {
+#include <luabind/detail/implicit_cast.hpp>
 
-		template <class T>
-		void adjust_backref_ownership(T* ptr, std::true_type)
+namespace luabind { namespace detail 
+{
+	template<Direction Dir = Direction::lua_to_cpp>
+	struct adopt_pointer
+	{
+		template<typename T>
+		T* apply(lua_State* L, by_pointer<T>, int index)
 		{
-			if(wrap_base* p = fast_dcast::fast_dynamic_cast<wrap_base*>(ptr))
-			{
-				wrapped_self_t& wrapper = wrap_access::ref(*p);
-				wrapper.get(wrapper.state());
-				wrapper.m_strong_ref.set(wrapper.state());
-			}
+			// preconditions:
+			//	lua_isuserdata(L, index);
+			// getmetatable().__lua_class is true
+			// object_rep->flags() & object_rep::constant == 0
+
+			ptrdiff_t offset = 0;
+			object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, index));
+			assert((obj != nullptr) && "internal error, please report");
+			const class_rep* crep = obj->crep();
+
+			int steps = implicit_cast(crep, LUABIND_TYPEID(T), offset);
+			(void)steps;
+
+			assert((steps >= 0) && "adopt_pointer used with type that cannot be converted");
+			obj->remove_ownership();
+			T* ptr = reinterpret_cast<T*>(obj->ptr(offset));
+
+			return ptr;
 		}
 
-		inline void adjust_backref_ownership(void*, std::false_type)
-		{}
-
-		template <class Pointer, class Direction = lua_to_cpp>
-		struct adopt_pointer : pointer_converter
+		template<typename T>
+		static int match(lua_State* L, by_pointer<T>, int index)
 		{
-			using type = adopt_pointer;
+			object_rep* obj = is_class_object(L, index);
+			if (obj == nullptr) return -1;
+			// cannot cast a constant object to nonconst
+			if (obj->flags() & object_rep::constant) return -1;
+			if (!(obj->flags() & object_rep::owner)) return -1;
+			ptrdiff_t d;
+			return implicit_cast(obj->crep(), LUABIND_TYPEID(T), d);	
+		}
 
-			enum { consumed_args = 1 };
+		template<typename T>
+		void converter_postcall(lua_State*, T, int) {}
+	};
 
-			template<class T>
-			T* to_cpp(lua_State* L, by_pointer<T>, int index)
+	template<>
+	struct adopt_pointer<Direction::cpp_to_lua>
+	{
+		template<typename T>
+		void apply(lua_State* L, T* ptr)
+		{
+			if (ptr == nullptr)
 			{
-				T* ptr = pointer_converter::to_cpp(L, decorate_type_t<T*>(), index);
-
-				object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, index));
-				obj->release();
-
-				adjust_backref_ownership(ptr, std::is_polymorphic<T>());
-
-				return ptr;
+				lua_pushnil(L);
+				return;
 			}
 
-			template<class T>
-			int match(lua_State* L, by_pointer<T>, int index)
+			// if there is a back_reference, then the
+			// ownership will be removed from the
+			// back reference and put on the lua stack.
+			if (back_reference<T>::move(L, ptr))
 			{
-				return pointer_converter::match(L, decorate_type_t<T*>(), index);
+				object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, -1));
+				obj->set_flags(obj->flags() | object_rep::owner);
+				return;
 			}
 
-			template<class T>
-			void converter_postcall(lua_State*, T, int) {}
-		};
+			class_registry* registry = class_registry::get_registry(L);
+			class_rep* crep = registry->find_class(LUABIND_TYPEID(T));
 
-		template <class Pointer, class T>
-		struct pointer_or_default
+/*			// create the struct to hold the object
+			void* obj = lua_newuserdata(L, sizeof(object_rep));
+			// we send 0 as destructor since we know it will never be called
+			new(obj) object_rep(ptr, crep, object_rep::owner, delete_s<T>::apply);*/
+
+			void* obj;
+			void* held;
+
+			std::tie(obj,held) = crep->allocate(L);
+
+			new(obj) object_rep(ptr, crep, object_rep::owner, delete_s<T>::apply);
+
+			// set the meta table
+			detail::getref(L, crep->metatable_ref());
+			lua_setmetatable(L, -2);
+		}
+	};
+
+	template<size_t N>
+	struct adopt_policy : conversion_policy<N>
+	{
+		static void precall(lua_State*, const index_map&) {}
+		static void postcall(lua_State*, const index_map&) {}
+
+		struct only_accepts_nonconst_pointers {};
+
+		template<typename T, Direction Dir>
+		struct generate_converter
 		{
-			using type = Pointer;
+            using type = std::conditional_t<
+                is_nonconst_pointer<T>::value,
+                adopt_pointer<Dir>,
+                only_accepts_nonconst_pointers
+            >;
 		};
+	};
 
-		template <class T>
-		struct pointer_or_default<void, T>
-		{
-			using type = luabind::unique_ptr<T>;
-		};
-
-		template <class Pointer>
-		struct adopt_pointer<Pointer, cpp_to_lua>
-		{
-			using type = adopt_pointer;
-
-			template<class T>
-			void to_lua(lua_State* L, T* ptr)
-			{
-				if(ptr == 0)
-				{
-					lua_pushnil(L);
-					return;
-				}
-
-				// if there is a back_reference, then the
-				// ownership will be removed from the
-				// back reference and put on the lua stack.
-				if(luabind::move_back_reference(L, ptr))
-					return;
-
-				using pointer_type = typename pointer_or_default<Pointer, T>::type;
-
-				make_pointer_instance(L, pointer_type(ptr));
-			}
-		};
-
-		template <class Pointer>
-		struct adopt_policy_impl
-		{
-			template<class T, class Direction>
-			struct specialize
-			{
-				static_assert(detail::is_nonconst_pointer<T>::value, "Adopt policy only accepts non-const pointers");
-				using type = adopt_pointer<Pointer, Direction>;
-			};
-		};
-
-	}
-}
+}}
 
 namespace luabind
 {
-	template<unsigned int N, typename Pointer = void>
-	using adopt = converter_policy_injector<N, detail::adopt_policy_impl<Pointer>>;
+	template<size_t N>
+	detail::policy_cons<detail::adopt_policy<N>> 
+	adopt() { return detail::policy_cons<detail::adopt_policy<N>>(); }
 }
-
-#endif // LUABIND_ADOPT_POLICY_HPP_INCLUDE
-

@@ -20,172 +20,143 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef OPERATOR_040729_HPP
-#define OPERATOR_040729_HPP
+#pragma once
 
-#if defined(__GNUC__) && __GNUC__ < 3
-# define LUABIND_NO_STRINGSTREAM
-#else
-# if defined(BOOST_NO_STRINGSTREAM)
-#  define LUABIND_NO_STRINGSTREAM
-# endif
-#endif
-
-#ifdef LUABIND_NO_STRINGSTREAM
-#include <strstream>
-#else
-#include <sstream>
-#endif
-
-#include <luabind/detail/meta.hpp>
-#include <luabind/lua_include.hpp>
 #include <luabind/detail/other.hpp>
-#include <luabind/detail/policy.hpp>
+#include <luabind/raw_policy.hpp>
+#include <luabind/detail/policy_cons.hpp>
 
-namespace luabind {
-	namespace detail 
-	{
-		template<class Wrap, class Type> struct unwrap_parameter_type;
-		template<class Derived> struct operator_ {};
+namespace luabind 
+{ 
+    namespace detail 
+    {
 
-		struct operator_void_return {};
+    template<class W, class T> struct unwrap_parameter_type;
+    template<class Derived> struct operator_ {};
 
-		template<class T>
-		inline T const& operator,(T const& x, operator_void_return)
-		{
-			return x;
-		}
+    struct operator_void_return {};
 
-		template<class Policies>
-		inline void operator_result(lua_State*, operator_void_return, Policies*)
-		{
-		}
+    template<class T>
+    T const& operator,(T const& x, operator_void_return)
+    {
+        return x;
+    }
 
-		template<class T, class Policies>
-		inline void operator_result(lua_State* L, T const& x, Policies*)
-		{
-			specialized_converter_policy_n<0, Policies, T, cpp_to_lua >().to_lua(L, x);
-		}
+    template<typename... Policies>
+    void operator_result(lua_State* L, operator_void_return, const detail::policy_cons<Policies...>)
+    {
+    }
 
-	}
-} // namespace luabind
+    template<typename T, typename... Policies>
+    void operator_result(lua_State* L, T const& x, const detail::policy_cons<Policies...>)
+    {
+        using cv_policy = typename find_conversion_policy<0, Policies...>::type;
+        typename cv_policy::template generate_converter<T, Direction::cpp_to_lua>::type cv;
+        cv.apply(L, x);
+    }
+}} // namespace luabind
 
+namespace luabind { namespace operators {
 
-namespace luabind {
-	namespace operators {
+    template<typename Self, typename... Args>
+    struct call_operator : detail::operator_<call_operator<Self, Args...>>
+    {
+        call_operator(int) {}
 
-		template<class Self, typename... Args>
-		struct call_operator
-			: detail::operator_ < call_operator< Self, Args... > >
-		{
-			call_operator(int) {}
+        template<typename T, typename... Policies>
+        struct apply
+        {
+            static void execute(lua_State* L,
+                                typename detail::unwrap_parameter_type<T, Self>::type self,
+                                typename detail::unwrap_parameter_type<T, Args>::type... args)
+            {
+                detail::operator_result(L, (self(args...), detail::operator_void_return()), detail::policy_cons<Policies...>());
+            }
+        };
 
-			template<typename Type, class Policies>
-			struct apply
-			{
-				static void execute(
-					lua_State* L
-					, typename detail::unwrap_parameter_type<Type, Self>::type self
-					, typename detail::unwrap_parameter_type<Type, Args>::type... args
-				)
-				{
-					using namespace detail;
-					operator_result(
-						L
-						, (self(args...), detail::operator_void_return())
-						, (Policies*)0
-					);
-				}
-			};
+        static constexpr char const* name() noexcept { return "__call"; }
+    };
+    
+}} // namespace luabind::operators
 
-			static char const* name() { return "__call"; }
-		};
+namespace luabind { namespace detail {
 
-	}
-} // namespace luabind::operators
+    template<class Derived>
+    struct self_base
+    {
+        template<typename... Args>
+        operators::call_operator<Derived, Args...> operator()(Args const&...) const { return 0; }
+    };
 
-namespace luabind {
+    struct self_type : self_base<self_type>
+    {
+    };
 
-	template<class Derived>
-	struct self_base
-	{
-		template< typename... Args >
-		operators::call_operator<Derived, Args...> operator()(const Args&...) const
-		{
-			return 0;
-		}
-	};
+    struct const_self_type : self_base<const_self_type>
+    {
+    };
 
-	struct self_type : self_base<self_type>
-	{
-	};
+    template<typename W, typename T>
+    struct unwrap_parameter_type
+    {
+        using type = std::conditional_t<
+            std::is_same_v<T, self_type>,
+            std::type_identity_t<W&>,
+            std::conditional_t<
+                std::is_same_v<T, const_self_type>,
+                std::type_identity_t<W const&>,
+                typename unwrap_other<T>::type
+            >
+        >;
+    };
 
-	struct const_self_type : self_base<const_self_type>
-	{
-	};
+    template<typename Derived, typename A, typename B>
+    struct binary_operator 
+        : operator_<binary_operator<Derived, A, B> >
+    {
+        binary_operator(int) {}
 
-	namespace detail {
+        template<typename T, typename... Policies>
+        struct apply 
+        {
+            typedef typename unwrap_parameter_type<T, A>::type arg0;
+            typedef typename unwrap_parameter_type<T, B>::type arg1;
 
-		template<class Wrap, class Type>
-		struct unwrap_parameter_type
-		{
-			using type = typename meta::select_ <
-				meta::case_< std::is_same<Type, self_type>, Wrap& >,
-				meta::case_< std::is_same<Type, const_self_type >, Wrap const& >,
-				meta::default_< typename unwrap_other<Type>::type >
-			> ::type;
-		};
+            static void execute(lua_State* L, arg0 _0, arg1 _1)
+            {
+                Derived::template apply<arg0, arg1, Policies...>::execute(L, _0, _1);
+            }
+        };
 
-		template<class Derived, class A, class B>
-		struct binary_operator
-			: operator_<binary_operator<Derived, A, B> >
-		{
-			binary_operator(int) {}
+        static constexpr char const* name() noexcept
+        {
+            return Derived::name();
+        }
+    };
 
-			template<class T, class Policies>
-			struct apply
-			{
-				using arg0 = typename unwrap_parameter_type<T, A>::type;
-				using arg1 = typename unwrap_parameter_type<T, B>::type;
+    template<typename Derived, typename A>
+    struct unary_operator 
+        : operator_<unary_operator<Derived, A> >
+    {
+        unary_operator(int) {}
+        
+        template<typename T, typename... Policies>
+        struct apply
+        {
+            typedef typename unwrap_parameter_type<T, A>::type arg0;
 
-				static void execute(lua_State* L, arg0 _0, arg1 _1)
-				{
-					Derived::template apply<arg0, arg1, Policies>::execute(
-						L, _0, _1);
-				}
-			};
+            static void execute(lua_State* L, arg0 _0)
+            {
+                Derived::template apply<arg0, Policies...>::execute(L, _0);
+            }
+        };
 
-			static char const* name()
-			{
-				return Derived::name();
-			}
-		};
-
-		template<class Derived, class A>
-		struct unary_operator
-			: operator_<unary_operator<Derived, A> >
-		{
-			unary_operator(int) {}
-
-			template<class T, class Policies>
-			struct apply
-			{
-				using arg0 = typename unwrap_parameter_type<T, A>::type;
-
-				static void execute(lua_State* L, arg0 _0)
-				{
-					Derived::template apply<arg0, Policies>::execute(L, _0);
-				}
-			};
-
-			static char const* name()
-			{
-				return Derived::name();
-			}
-		};
-
-	}
-} // namespace detail::luabind
+        static char const* name()
+        {
+            return Derived::name();
+        }
+    };
+}} // namespace detail::luabind
 
 namespace luabind {
 
@@ -194,16 +165,16 @@ namespace luabind {
 \
         struct name_ \
         { \
-            template<class T0, class T1, class Policies> \
+            template<typename T0, typename T1, typename... Policies> \
             struct apply \
             { \
                 static void execute(lua_State* L, T0 _0, T1 _1) \
                 { \
-                    detail::operator_result(L, _0 op _1, (Policies*)0); \
+                    detail::operator_result(L, _0 op _1, detail::policy_cons<Policies...>()); \
                 } \
             }; \
 \
-            static char const* name() \
+            static constexpr char const* name() noexcept\
             { \
                 return "__" # name_; \
             } \
@@ -211,13 +182,13 @@ namespace luabind {
 \
     } \
     \
-    template<class T, class U> \
+    template<typename T, typename U> \
     detail::binary_operator< \
         operators::name_ \
       , U \
       , T \
     > \
-    inline operator op(self_base<U>, T const&) \
+    inline operator op(detail::self_base<U>, T const&) \
     { \
         return 0; \
     } \
@@ -228,80 +199,80 @@ namespace luabind {
       , T \
       , U \
     > \
-    inline operator op(T const&, self_base<U>) \
+    inline operator op(T const&, detail::self_base<U>) \
     { \
         return 0; \
     } \
     \
     detail::binary_operator< \
         operators::name_ \
-      , self_type \
-      , self_type \
+      , detail::self_type \
+      , detail::self_type \
     > \
-    inline operator op(self_type, self_type) \
+    inline operator op(detail::self_type, detail::self_type) \
     { \
         return 0; \
     } \
     \
     detail::binary_operator< \
         operators::name_ \
-      , self_type \
-      , const_self_type \
+      , detail::self_type \
+      , detail::const_self_type \
     > \
-    inline operator op(self_type, const_self_type) \
+    inline operator op(detail::self_type, detail::const_self_type) \
     { \
         return 0; \
     } \
     \
     detail::binary_operator< \
         operators::name_ \
-      , const_self_type \
-      , self_type \
+      , detail::const_self_type \
+      , detail::self_type \
     > \
-    inline operator op(const_self_type, self_type) \
+    inline operator op(detail::const_self_type, detail::self_type) \
     { \
         return 0; \
     } \
     \
     detail::binary_operator< \
         operators::name_ \
-      , const_self_type \
-      , const_self_type \
+      , detail::const_self_type \
+      , detail::const_self_type \
     > \
-    inline operator op(const_self_type, const_self_type) \
+    inline operator op(detail::const_self_type, detail::const_self_type) \
     { \
         return 0; \
     }
 
-	LUABIND_BINARY_OPERATOR(add, +)
-		LUABIND_BINARY_OPERATOR(sub, -)
-		LUABIND_BINARY_OPERATOR(mul, *)
-		LUABIND_BINARY_OPERATOR(div, / )
-		LUABIND_BINARY_OPERATOR(mod, %)
-		LUABIND_BINARY_OPERATOR(pow, ^)
-		LUABIND_BINARY_OPERATOR(lt, < )
-		LUABIND_BINARY_OPERATOR(le, <= )
-		LUABIND_BINARY_OPERATOR(gt, >)
-		LUABIND_BINARY_OPERATOR(ge, >=)
-		LUABIND_BINARY_OPERATOR(eq, == )
+    LUABIND_BINARY_OPERATOR(add, +)
+    LUABIND_BINARY_OPERATOR(sub, -)
+    LUABIND_BINARY_OPERATOR(mul, *)
+    LUABIND_BINARY_OPERATOR(div, /)
+    LUABIND_BINARY_OPERATOR(pow, ^)
+    LUABIND_BINARY_OPERATOR(mod, %)
+    LUABIND_BINARY_OPERATOR(lt,  <)
+    LUABIND_BINARY_OPERATOR(le,  <=)
+	LUABIND_BINARY_OPERATOR(gt,  >)
+	LUABIND_BINARY_OPERATOR(ge,  >=)
+    LUABIND_BINARY_OPERATOR(eq,  ==)
 
-#undef LUABIND_BINARY_OPERATOR
+#undef LUABIND_UNARY_OPERATOR
 
 #define LUABIND_UNARY_OPERATOR(name_, op, fn) \
     namespace operators { \
 \
         struct name_ \
         { \
-            template<class T, class Policies> \
+            template<typename T, typename... Policies> \
             struct apply \
             { \
                 static void execute(lua_State* L, T x) \
                 { \
-                    detail::operator_result(L, op(x), (Policies*)0); \
+                    detail::operator_result(L, op(x), detail::policy_cons<Policies...>()); \
                 } \
             }; \
 \
-            static char const* name() \
+            static constexpr char const* name() noexcept\
             { \
                 return "__" # name_; \
             } \
@@ -314,35 +285,27 @@ namespace luabind {
         operators::name_ \
       , T \
     > \
-    inline fn(self_base<T>) \
+    inline fn(detail::self_base<T>) \
     { \
         return 0; \
     }
 
-		template<class T>
-	luabind::string tostring_operator(T const& x)
-	{
-#ifdef LUABIND_NO_STRINGSTREAM
-		std::strstream s;
-		s << x << std::ends;
-#else
-		luabind::stringstream s;
-		s << x;
-#endif
-		return s.str();
-	}
+    template<class T>
+    T const& tostring_operator(T const& x)
+    {
+        return x;
+    };
+    
+    LUABIND_UNARY_OPERATOR(tostring, tostring_operator, tostring)
+    LUABIND_UNARY_OPERATOR(unm, -, operator-)
 
-	LUABIND_UNARY_OPERATOR(tostring, tostring_operator, tostring)
-		LUABIND_UNARY_OPERATOR(unm, -, operator-)
+#undef LUABIND_BINARY_OPERATOR
 
-#undef LUABIND_UNARY_OPERATOR
+    namespace {
 
+        detail::self_type self;
+        detail::const_self_type const_self;
 
-	extern LUABIND_API self_type self;
-	extern LUABIND_API const_self_type const_self;
-
-
+    } // namespace unnamed
+    
 } // namespace luabind
-
-#endif // OPERATOR_040729_HPP
-

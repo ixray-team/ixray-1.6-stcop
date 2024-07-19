@@ -2,10 +2,10 @@ project(luabind)
 set(LUABIND_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE LUABIND_SOURCE_ALL_FILES
+file(GLOB_RECURSE LUABIND_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "luabind/src/*.*"
 )
-file(GLOB_RECURSE LUABIND_INCL_ALL_FILES
+file(GLOB_RECURSE LUABIND_INCL_ALL_FILES CONFIGURE_DEPENDS
     "${IXRAY_SDK_INC}/luabind/*.*"
 )
 
@@ -29,6 +29,8 @@ target_include_directories(luabind PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/")
 target_link_directories(luabind PUBLIC "${IXRAY_SDK_LIB}/")
 
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
+target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO_EXCEPTIONS>")
+target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
 
 ## LuaJIT
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

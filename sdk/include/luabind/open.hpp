@@ -20,19 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_OPEN_HPP_INCLUDED
-#define LUABIND_OPEN_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 
-#include <luabind/lua_state_fwd.hpp>
-
 namespace luabind {
-
 	LUABIND_API void open(lua_State* L);
-
 }
-
-#endif // LUABIND_OPEN_HPP_INCLUDED
-

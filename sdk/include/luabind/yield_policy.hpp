@@ -20,29 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#ifndef LUABIND_YIELD_POLICY_HPP_INCLUDED
-#define LUABIND_YIELD_POLICY_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>
 
-namespace luabind {
-
-	namespace detail {
-
-		struct yield_policy
-		{
-			static void postcall(lua_State*, int /*results*/, meta::index_list_tag) {}
-		};
-
-	}
-
-	namespace policy
+namespace luabind::detail 
+{
+	struct yield_policy
 	{
-		using yield = call_policy_injector<detail::yield_policy>;
-	}
+		static void precall(lua_State*, const index_map&) {}
+		static void postcall(lua_State*, const index_map&) {}
+	};
+
+    template <typename... Policies>
+    struct has_yield;
+
+	template<typename Policy, typename... Policies>
+	struct has_yield<Policy, Policies...> : public std::conditional_t<
+                                                        std::is_same_v<yield_policy, Policy>,
+                                                        std::true_type,
+                                                        has_yield<Policies...>
+                                                   >
+	{
+	};
+
+    template <typename T>
+    struct has_yield<T> : public std::is_same<yield_policy, T>
+    {
+    };
+
+	template<>
+	struct has_yield<> : public std::false_type
+	{
+	};
+
+    template <typename... Policies>
+    constexpr bool has_yield_v = has_yield<Policies...>::value;
 }
 
-#endif // LUABIND_YIELD_POLICY_HPP_INCLUDED
-
+namespace luabind
+{
+	namespace 
+	{
+		detail::policy_cons<detail::yield_policy> yield;
+	}
+}

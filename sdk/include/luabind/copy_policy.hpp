@@ -1,51 +1,123 @@
-// Copyright Daniel Wallin 2008. Use, modification and distribution is
-// subject to the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// Copyright (c) 2003 Daniel Wallin and Arvid Norberg
 
-#ifndef LUABIND_COPY_POLICY_081021_HPP
-# define LUABIND_COPY_POLICY_081021_HPP
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
 
-# include <luabind/detail/policy.hpp>
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
 
-namespace luabind {
-	namespace detail {
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+// ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+// SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+// ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+// OR OTHER DEALINGS IN THE SOFTWARE.
 
-		struct copy_converter
-		{
-			template <class T>
-			void to_lua(lua_State* L, T const& x)
-			{
-				value_converter().to_lua(L, x);
-			}
+#pragma once
 
-			template <class T>
-			void to_lua(lua_State* L, T* x)
-			{
-				if(!x)
-					lua_pushnil(L);
-				else
-					to_lua(L, *x);
-			}
-		};
+#include <luabind/config.hpp>
+#include <luabind/detail/policy.hpp>
 
-		struct copy_policy
-		{
-			template <class T, class Direction>
-			struct specialize
-			{
-				static_assert(std::is_same<Direction, cpp_to_lua>::value, "Copy policy only supports cpp -> lua");
-				using type = copy_converter;
-			};
-		};
+#include <type_traits>
 
-	} // namespace detail
+namespace luabind { namespace detail {
 
-	namespace policy
+	struct copy_pointer_to
 	{
-		template<unsigned int N>
-		using copy = converter_policy_injector<N, detail::copy_policy>;
-	}
-} // namespace luabind
+		template<typename T>
+		void apply(lua_State* L, const T* ptr)
+		{
+			if (ptr == 0) 
+			{
+				lua_pushnil(L);
+				return;
+			}
 
-#endif // LUABIND_COPY_POLICY_081021_HPP
+			class_registry* registry = class_registry::get_registry(L);
 
+			class_rep* crep = registry->find_class(LUABIND_TYPEID(T));
+
+			// if you get caught in this assert you are trying
+			// to use an unregistered type
+			assert(crep && "you are trying to use an unregistered type");
+
+			T* copied_obj = luabind_new<T>(*ptr);
+
+			// create the struct to hold the object
+			void* obj = lua_newuserdata(L, sizeof(object_rep));
+			// we send 0 as destructor since we know it will never be called
+			new(obj) object_rep(copied_obj, crep, object_rep::owner, delete_s<T>::apply);
+
+			// set the meta table
+			detail::getref(L, crep->metatable_ref());
+			lua_setmetatable(L, -2);
+		}
+	};
+
+	struct copy_reference_to
+	{
+		template<typename T>
+		void apply(lua_State* L, const T& ref)
+		{
+			class_registry* registry = class_registry::get_registry(L);
+			class_rep* crep = registry->find_class(LUABIND_TYPEID(T));
+
+			// if you get caught in this assert you are trying
+			// to use an unregistered type
+			assert(crep && "you are trying to use an unregistered type");
+
+			T* copied_obj = luabind_new<T>(ref);
+
+			// create the struct to hold the object
+			void* obj = lua_newuserdata(L, sizeof(object_rep));
+			// we send 0 as destructor since we know it will never be called
+			new(obj) object_rep(copied_obj, crep, object_rep::owner, delete_s<T>::apply);
+
+			// set the meta table
+			detail::getref(L, crep->metatable_ref());
+			lua_setmetatable(L, -2);
+		}
+	};
+
+	template<size_t N>
+	struct copy_policy : conversion_policy<N>
+	{
+		struct only_accepts_pointers_or_references {};
+		struct only_converts_from_cpp_to_lua {};
+
+		static void precall(lua_State*, const index_map&) {}
+		static void postcall(lua_State*, const index_map&) {}
+
+		template<typename T, Direction Dir>
+		struct generate_converter
+		{
+            using type = std::conditional_t<
+                Dir == Direction::cpp_to_lua,
+                std::conditional_t<
+                    std::is_pointer_v<T>,
+                    copy_pointer_to,
+                    std::conditional_t<
+                        std::is_reference_v<T>,
+                        copy_reference_to,
+                        only_accepts_pointers_or_references
+                    >
+                >,
+                only_converts_from_cpp_to_lua
+            >;
+		};
+	};
+}}
+
+namespace luabind
+{
+	template<size_t N>
+	detail::policy_cons<detail::copy_policy<N>> 
+	copy() { return detail::policy_cons<detail::copy_policy<N>>(); }
+}

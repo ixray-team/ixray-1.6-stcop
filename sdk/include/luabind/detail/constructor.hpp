@@ -1,65 +1,96 @@
-// Copyright Daniel Wallin 2008. Use, modification and distribution is
-// subject to the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// Copyright (c) 2003 Daniel Wallin and Arvid Norberg
 
-#ifndef LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
-#define LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
 
-#include <luabind/get_main_thread.hpp>
-#include <luabind/lua_argument_proxy.hpp>
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+// ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+// TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+// SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+// ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+// OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include <luabind/config.hpp>
 #include <luabind/wrapper_base.hpp>
-#include <luabind/detail/inheritance.hpp>
+#include <luabind/detail/policy.hpp>
+#include <luabind/detail/signature_match.hpp>
+#include <luabind/detail/call_member.hpp>
+#include <luabind/wrapper_base.hpp>
+#include <luabind/weak_ref.hpp>
 
-namespace luabind {
-	namespace detail {
+namespace luabind { namespace detail
+{
+    template<typename T, typename... Policies>
+    struct construct_class
+    {
+    private:
 
-		inline void inject_backref(lua_State*, void*, void*)
-		{}
+        template <typename U, size_t Index>
+        static decltype(auto) applyArg(lua_State* L)
+        {
+            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
+            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
+            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
 
-		template <class T>
-		void inject_backref(lua_State* L, T* p, wrap_base*)
-		{
-			weak_ref(get_main_thread(L), L, 1).swap(wrap_access::ref(*p));
-		}
+            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
+        }
 
-		template< class T, class Pointer, class Signature, class Arguments, class ArgumentIndices >
-		struct construct_aux_helper;
+        template <typename... ConstructorArgs, size_t... Indices>
+        static T* applyImpl(lua_State* L, std::index_sequence<Indices...>)
+        {
+            return luabind::luabind_new<T>(applyArg<ConstructorArgs, Indices>(L)...);
+        }
 
-		template< class T, class Pointer, class Signature, typename... Arguments, unsigned int... ArgumentIndices >
-		struct construct_aux_helper< T, Pointer, Signature, meta::type_list< Arguments... >, meta::index_list< ArgumentIndices... > >
-		{
-			using holder_type = pointer_holder<Pointer, T>;
+    public:
 
-			void operator()(argument const& self_, Arguments... args) const
-			{
-				object_rep* self = touserdata<object_rep>(self_);
+        template <typename... ConstructorArgs>
+        static void* apply(lua_State* L, weak_ref const&)
+        {
+            return applyImpl<ConstructorArgs...>(L, std::make_index_sequence<sizeof...(ConstructorArgs)>());
+        }
+    };
 
-                luabind::unique_ptr<T> instance(luabind_new<T>(args...));
-				inject_backref(self_.interpreter(), instance.get(), instance.get());
+    template<typename T, typename W, typename... Policies>
+    struct construct_wrapped_class
+    {
+    private:
 
-				void* naked_ptr = instance.get();
-				Pointer ptr(instance.release());
+        template <typename U, size_t Index>
+        static decltype(auto) applyArg(lua_State* L)
+        {
+            using converter_policy = typename find_conversion_policy<Index + 1, Policies...>::type;
+            using c_t = typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type;
+            typename converter_policy::template generate_converter<U, Direction::lua_to_cpp>::type c;
 
-				void* storage = self->allocate(sizeof(holder_type));
+            return c.c_t::apply(L, decorated_type<U>::get(), Index + 2);
+        }
 
-				self->set_instance(new (storage) holder_type(std::move(ptr), registered_class<T>::id, naked_ptr));
-			}
-		};
+        template <typename... ConstructorArgs, size_t... Indices>
+        static T* applyImpl(lua_State* L, weak_ref const& ref, std::index_sequence<Indices...>)
+        {
+            W* pResult = luabind::luabind_new<W>(applyArg<ConstructorArgs, Indices>(L)...);
+            static_cast<weak_ref&>(wrap_access::ref(*pResult)) = ref;
+            return pResult;
+        }
 
+    public:
 
-		template< class T, class Pointer, class Signature >
-		struct construct :
-			public construct_aux_helper <
-			T,
-			Pointer,
-			Signature, typename meta::sub_range< Signature, 2, meta::size<Signature>::value >::type,
-			typename meta::make_index_range<0, meta::size<Signature>::value - 2>::type >
-		{
-		};
-
-	}	// namespace detail
-
-}	// namespace luabind
-
-# endif // LUABIND_DETAIL_CONSTRUCTOR_081018_HPP
-
+        template <typename... ConstructorArgs>
+        static void* apply(lua_State* L, weak_ref const& ref)
+        {
+            return applyImpl<ConstructorArgs...>(L, ref, std::make_index_sequence<sizeof...(ConstructorArgs)>());
+        }
+    };
+}}

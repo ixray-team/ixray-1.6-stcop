@@ -20,15 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_WRAPPER_BASE_HPP_INCLUDED
-#define LUABIND_WRAPPER_BASE_HPP_INCLUDED
+#pragma once
 
 #include <luabind/config.hpp>
 #include <luabind/weak_ref.hpp>
 #include <luabind/detail/ref.hpp>
-#include <luabind/detail/meta.hpp>
-#include <luabind/error.hpp>
-#include <type_traits>
+#include <luabind/detail/call_member.hpp>
 
 namespace luabind
 {
@@ -43,15 +40,9 @@ namespace luabind
 		// on the top of the stack (the input self reference will
 		// be popped)
 		LUABIND_API void do_call_member_selection(lua_State* L, char const* name);
-
-		template<class R, typename PolicyList = meta::type_list<>, unsigned int... Indices, typename... Args>
-		R call_member_impl(lua_State* L, std::true_type /*void*/, meta::index_list<Indices...>, Args&&... args);
-
-		template<class R, typename PolicyList = meta::type_list<>, unsigned int... Indices, typename... Args>
-		R call_member_impl(lua_State* L, std::false_type /*void*/, meta::index_list<Indices...>, Args&&... args);
 	}
 
-	struct wrapped_self_t : weak_ref
+	struct wrapped_self_t: weak_ref
 	{
 		detail::lua_reference m_strong_ref;
 	};
@@ -59,42 +50,36 @@ namespace luabind
 	struct wrap_base
 	{
 		friend struct detail::wrap_access;
-		wrap_base() = default;
+		wrap_base() {}
 
-		template<class R, typename... Args>
-		R call(char const* name, Args&&... args) const
+        template<typename R, typename... Args>
+        decltype(auto) call(char const* name, const Args&... args) const
 		{
-			// this will be cleaned up by the proxy object
-			// once the call has been made
+            using proxy_type = std::conditional_t<
+                std::is_void_v<R>,
+                luabind::detail::proxy_member_void_caller<const Args*...>,
+                luabind::detail::proxy_member_caller<R, const Args*...>
+            >;
 
-			// TODO: what happens if this virtual function is
-			// dispatched from a lua thread where the state
-			// pointer is different?
-
-			// get the function
 			lua_State* L = m_self.state();
 			m_self.get(L);
-			assert(!lua_isnil(L, -1));
+            assert(!lua_isnil(L, -1));
 			detail::do_call_member_selection(L, name);
 
-			if(lua_isnil(L, -1))
-			{
-				lua_pop(L, 1);
-				throw unresolved_name("Attempt to call nonexistent function", name);
-			}
-
-			// push the self reference as the first parameter
 			m_self.get(L);
 
-			// now the function and self objects
-			// are on the stack. These will both
-			// be popped by pcall
-			return detail::call_member_impl<R>(L, std::is_void<R>(), meta::index_range<1, sizeof...(Args)+1>(), std::forward<Args>(args)...);
+			return proxy_type(L, std::make_tuple(&args...));
 		}
 
 	private:
 		wrapped_self_t m_self;
 	};
+
+    template<typename R , typename... Args>
+    decltype(auto) call_member(wrap_base const* self, char const* fn, Args&&... args)
+    {
+        return self->call<R>(fn, std::forward<Args>(args)...);
+    }
 
 	namespace detail
 	{
@@ -112,6 +97,3 @@ namespace luabind
 		};
 	}
 }
-
-#endif // LUABIND_WRAPPER_BASE_HPP_INCLUDED
-

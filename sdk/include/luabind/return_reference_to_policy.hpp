@@ -20,54 +20,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
-#ifndef LUABIND_RETURN_REFERENCE_TO_POLICY_HPP_INCLUDED
-#define LUABIND_RETURN_REFERENCE_TO_POLICY_HPP_INCLUDED
+#pragma once
 
-#include <luabind/detail/policy.hpp>    // for index_map, policy_cons, etc
-#include <luabind/lua_include.hpp>      // for lua_State, lua_pushnil, etc
-
-namespace luabind 
+namespace luabind { namespace detail
 {
-	namespace detail
+	template<Direction Dir>
+	struct return_reference_to_converter;
+
+	template<>
+	struct return_reference_to_converter<Direction::cpp_to_lua>
 	{
-
-		struct cpp_to_lua;
-
-		template<class T>
-		struct return_reference_to_converter;
-
-		template<>
-		struct return_reference_to_converter<cpp_to_lua>
+		template<typename T>
+		void apply(lua_State* L, const T&)
 		{
-			template<class T>
-			void to_lua(lua_State* L, const T&)
-			{
-				lua_pushnil(L);
-			}
-		};
+			lua_pushnil(L);
+		}
+	};
 
-		template< unsigned int N >
-		struct return_reference_to_policy : detail::converter_policy_has_postcall_tag
+	template<int N>
+	struct return_reference_to_policy : conversion_policy<0>
+	{
+		static void precall(lua_State*, const index_map&) {}
+		static void postcall(lua_State* L, const index_map& indices) 
 		{
-			template<typename StackIndexList>
-			static void postcall(lua_State* L, int results, StackIndexList)
-			{
-				lua_pushvalue(L, (meta::get<StackIndexList, N>::value));
-				lua_replace(L, (meta::get<StackIndexList, 0>::value + results));
-			}
+			const int result_index = indices[0];
+            const int ref_to_index = indices[N];
 
-			template<class T, class Direction>
-			struct specialize
-			{
-				using type = return_reference_to_converter<Direction>;
-			};
+			lua_pushvalue(L, ref_to_index);
+			lua_replace(L, result_index);
+		}
+
+		template<typename T, Direction Dir>
+		struct generate_converter
+		{
+			typedef return_reference_to_converter<Dir> type;
 		};
+	};
+}}
 
-	}
-
-	template<unsigned int N>
-	using return_reference_to = converter_policy_injector<0, detail::return_reference_to_policy<N>>;
+namespace luabind
+{
+	template<size_t N>
+	detail::policy_cons<detail::return_reference_to_policy<N>> 
+	return_reference_to() { return detail::policy_cons<detail::return_reference_to_policy<N>>(); }
 }
-
-#endif // LUABIND_RETURN_REFERENCE_TO_POLICY_HPP_INCLUDED
-

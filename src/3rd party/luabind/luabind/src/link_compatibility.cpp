@@ -19,13 +19,23 @@
 // ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 // OR OTHER DEALINGS IN THE SOFTWARE.
+#include "luabind_api.h"
 #include <luabind/detail/link_compatibility.hpp>
 
-namespace luabind::detail
+namespace luabind { namespace detail
 {
-	LUABIND_API void not_threadsafe_defined_conflict() {}
-	LUABIND_API void not_threadsafe_not_defined_conflict() {}
 
-	LUABIND_API void no_error_checking_defined_conflict() {}
-	LUABIND_API void no_error_checking_not_defined_conflict() {}
-}
+#ifdef LUABIND_NOT_THREADSAFE
+	void not_threadsafe_defined_conflict() {}
+#else
+	void not_threadsafe_not_defined_conflict() {}
+#endif
+
+#ifdef LUABIND_NO_ERROR_CHECKING
+	void no_error_checking_defined_conflict() {}
+#else
+	void no_error_checking_not_defined_conflict() {}
+#endif
+
+}}
+
