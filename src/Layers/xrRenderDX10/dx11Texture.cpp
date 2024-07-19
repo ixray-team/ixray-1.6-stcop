@@ -58,19 +58,16 @@ u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size) {
 }
 
 IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
-    while ((l > 1) && skip) {
+    while ((l > 1) && (w > 4) && (h > 4) && skip)
+    {
         w /= 2;
         h /= 2;
         l -= 1;
 
         skip--;
     }
-    if (w < 1) {
-        w = 1;
-    }
-    if (h < 1) {
-        h = 1;
-    }
+    if (w < 4) w = 4;
+    if (h < 4) h = 4;
 }
 
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
