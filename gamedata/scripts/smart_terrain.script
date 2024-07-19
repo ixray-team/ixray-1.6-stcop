@@ -128,6 +128,9 @@ function se_smart_terrain:__init(section) super(section)
 	-- Таблица для хранения зарегистренных НПС
 	self.npc_info  = {} -- Те, кто уже пришел и стал на работу
 	self.arriving_npc  = {} -- Только идущие на работу.
+
+	self.respawn_radius = 150
+	self.respawn_time   = 1000
 end
 function se_smart_terrain:on_before_register()
 	cse_alife_smart_zone.on_before_register(self)
