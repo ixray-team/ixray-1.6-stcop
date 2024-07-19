@@ -196,7 +196,6 @@ void CApplication::LoadEnd()
 void CApplication::SetLoadingScreen(ILoadingScreen* newScreen) {
 	if (loadingScreen) {
 		Log("! Trying to create new loading screen, but there is already one..");
-		__debugbreak();
 		DestroyLoadingScreen();
 	}
 
