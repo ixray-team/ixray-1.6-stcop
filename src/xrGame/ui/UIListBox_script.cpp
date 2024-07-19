@@ -44,14 +44,14 @@ void CUIListBox::script_register(lua_State *L)
 		.def("AddTextItem",				&CUIListBox::AddTextItem)
 		.def("AddExistingItem",         &CUIListBox::AddExistingItem, adopt<2>()),
 
-		class_<CUIListBoxItem, CUIFrameLineWnd, default_holder, CUIListBoxItemWrapper>("CUIListBoxItem")
+		class_<CUIListBoxItem, CUIFrameLineWnd, CUIListBoxItemWrapper>("CUIListBoxItem")
 		.def(							constructor<float>())
 		.def("GetTextItem",             &CUIListBoxItem::GetTextItem)
 		.def("AddTextField",            &CUIListBoxItem::AddTextField)
 		.def("AddIconField",            &CUIListBoxItem::AddIconField)
 		.def("SetTextColor",			&CUIListBoxItem::SetTextColor),
 
-		class_<CUIListBoxItemMsgChain, CUIListBoxItem, default_holder, CUIListBoxItemMsgChainWrapper>("CUIListBoxItemMsgChain")
+		class_<CUIListBoxItemMsgChain, CUIListBoxItem, CUIListBoxItemMsgChainWrapper>("CUIListBoxItemMsgChain")
 		.def(							constructor<float>()),
 
 		class_<SServerFilters>("SServerFilters")

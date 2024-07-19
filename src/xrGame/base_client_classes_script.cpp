@@ -23,7 +23,7 @@ void DLL_PureScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<DLL_Pure, no_bases, default_holder, CDLL_PureWrapper>("DLL_Pure")
+		class_<DLL_Pure, CDLL_PureWrapper>("DLL_Pure")
 			.def(constructor<>())
 			.def("_construct",&DLL_Pure::_construct,&CDLL_PureWrapper::_construct_static)
 	];
@@ -33,7 +33,7 @@ void ISheduledScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<ISheduled, no_bases, default_holder, CISheduledWrapper>("ISheduled")
+		class_<ISheduled, CISheduledWrapper>("ISheduled")
 	];
 }
 
@@ -41,7 +41,7 @@ void IRenderableScript::script_register	(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRenderable, no_bases, default_holder, CIRenderableWrapper>("IRenderable")
+		class_<IRenderable, CIRenderableWrapper>("IRenderable")
 	];
 }
 
@@ -58,7 +58,7 @@ void CObjectScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<CGameObject, bases<DLL_Pure, ISheduled, ICollidable, IRenderable>, default_holder, CGameObjectWrapper>("CGameObject")
+		class_<CGameObject, bases<DLL_Pure, ISheduled, ICollidable, IRenderable>, CGameObjectWrapper>("CGameObject")
 			.def(constructor<>())
 			.def("_construct",			&CGameObject::_construct,	&CGameObjectWrapper::_construct_static)
 			.def("Visual",				&CGameObject::Visual)

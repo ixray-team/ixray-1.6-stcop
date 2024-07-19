@@ -105,22 +105,31 @@ void description::load_loopholes	(shared_str const &table_id)
 		);
 	VERIFY2						(result, make_string<const char*>("bad or missing loopholes table in smart_cover [%s]", table_id.c_str()));
 
-	luabind::iterator it(loopholes), end;
-	const size_t count = luabind::distance(it, end);
-	m_loopholes.reserve(count);
-	while (it != end) {
-		const luabind::object& table = *it;
-		if (luabind::type(table) != LUA_TTABLE) {
-			VERIFY(luabind::type(table) != LUA_TNIL);
+
+	luabind::object::iterator	I = loopholes.begin();
+	luabind::object::iterator	E = loopholes.end();
+	for (; I != E; ++I) {
+		luabind::object	table = *I;
+		if (table.type() != LUA_TTABLE) {
+			VERIFY(table.type() != LUA_TNIL);
 			continue;
 		}
 
-		auto* loophole = xr_new<smart_cover::loophole>(table);
-		VERIFY(m_loopholes.end() == std::find_if(m_loopholes.begin(), m_loopholes.end(),
-			[=](smart_cover::loophole* const lh) { return loophole->id()._get() == lh->id()._get(); }));
+		smart_cover::loophole* loophole = new smart_cover::loophole(table);
 
+		VERIFY(
+			std::find_if(
+				m_loopholes.begin(),
+				m_loopholes.end(),
+				[loophole](smart_cover::loophole* const& InLoophole) -> bool
+				{
+					VERIFY(loophole != nullptr);
+					return loophole->id()._get() == InLoophole->id()._get();
+				}
+			) ==
+			m_loopholes.end()
+		);
 		m_loopholes.push_back(loophole);
-		++it;
 	}
 
 	VERIFY2						(!m_loopholes.empty(), make_string<const char*>("smart_cover [%s] doesn't have loopholes", m_table_id.c_str()));
@@ -185,16 +194,18 @@ void description::load_transitions	(shared_str const &table_id)
 		);
 	VERIFY						(result);
 	
-	for (luabind::iterator I(transitions), E; I != E; ++I) {
-		luabind::object table = *I;
-		if (luabind::type(table) != LUA_TTABLE) {
-			VERIFY(luabind::type(table) != LUA_TNIL);
+
+	for (const luabind::object& LuatTable : transitions)
+	{
+		if (LuatTable.type() != LUA_TTABLE)
+		{
+			VERIFY(LuatTable.type() != LUA_TNIL);
 			continue;
 		}
 
-		shared_str vertex_0_id = parse_vertex(table, "vertex0", true);
-		shared_str vertex_1_id = parse_vertex(table, "vertex1", false);
-		float weight = parse_float(table, "weight");
+		shared_str				vertex_0_id = smart_cover::parse_vertex(LuatTable, "vertex0", true);
+		shared_str				vertex_1_id = smart_cover::parse_vertex(LuatTable, "vertex1", false);
+		float					weight = smart_cover::detail::parse_float(LuatTable, "weight");
 
 		if (!m_transitions.vertex(vertex_0_id))
 			m_transitions.add_vertex(Loki::EmptyType(), vertex_0_id);
@@ -204,7 +215,7 @@ void description::load_transitions	(shared_str const &table_id)
 
 		m_transitions.add_edge(vertex_0_id, vertex_1_id, weight);
 		TransitionGraph::CEdge* edge = m_transitions.edge(vertex_0_id, vertex_1_id);
-		load_actions(table, edge->data());
+		load_actions(LuatTable, edge->data());
 	}
 }
 
@@ -213,9 +224,11 @@ void description::load_actions	(luabind::object const &table, description::Actio
 	luabind::object				actions;
 	parse_table					(table, "actions", actions);
 
-	for (luabind::iterator I(actions), E; I != E; ++I) {
-		luabind::object tmp = *I;
-		transitions::action* action = xr_new<transitions::action>(tmp);
+	luabind::object::iterator	I = actions.begin();
+	luabind::object::iterator	E = actions.end();
+	for (; I != E; ++I) {
+		luabind::object			tmp = *I;
+		transitions::action* action = new transitions::action(tmp);
 		result.push_back(action);
 	}
 }

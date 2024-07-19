@@ -22,6 +22,7 @@
 #include "Level.h"
 
 #include <luabind/iterator_policy.hpp>
+#include <luabind/iterator_pair_policy.hpp>
 
 using namespace luabind;
 
@@ -426,7 +427,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("dont_has_info",			&dont_has_info)
 			.def("switch_distance",			&CALifeSimulator::switch_distance)
 			.def("switch_distance",			&CALifeSimulator::set_switch_distance)
-			.def("objects",					&alife_objects, return_stl_pair_iterator())
+			.def("objects",					&alife_objects, return_stl_pair_iterator)
 
 			.def("teleport_object", &teleport_object)
 			.def("iterate_info", &IterateInfo)
@@ -434,7 +435,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("register", &reprocess_spawn)
 			.def("set_objects_per_update", &set_objects_per_update)
 			.def("set_process_time", &set_process_time)
-			.def("get_children", &get_children, return_stl_iterator())
+			.def("get_children", &get_children, return_stl_iterator)
 
 		,def("alife",						&alife)
 	];
@@ -453,12 +454,10 @@ void CALifeSimulator::script_register			(lua_State *L)
 
 		luabind::class_<class_exporter<CALifeSimulator> >	instance("story_ids");
 
-		STORY_PAIRS::const_iterator	I = story_ids.begin();
-		STORY_PAIRS::const_iterator	E = story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (const auto& pair : story_ids)
+			instance = std::move(instance).enum_("_story_ids")[luabind::value(*pair.first, pair.second)];
 
-		luabind::module			(L)[instance];
+		luabind::module(L)[std::move(instance)];
 	}
 
 	{
@@ -475,12 +474,10 @@ void CALifeSimulator::script_register			(lua_State *L)
 
 		luabind::class_<class_exporter<class_exporter<CALifeSimulator> > >	instance("spawn_story_ids");
 
-		SPAWN_STORY_PAIRS::const_iterator	I = spawn_story_ids.begin();
-		SPAWN_STORY_PAIRS::const_iterator	E = spawn_story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_spawn_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (const auto& pair : spawn_story_ids)
+			instance = std::move(instance).enum_("_spawn_story_ids")[luabind::value(*pair.first, pair.second)];
 
-		luabind::module			(L)[instance];
+		luabind::module(L)[std::move(instance)];
 	}
 }
 

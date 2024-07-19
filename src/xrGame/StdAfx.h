@@ -29,5 +29,7 @@
 #include "../Editors/ActorEditor/stdafx.h"
 #endif
 
+#include "pch_script.h"
+
 #undef min
 #undef max

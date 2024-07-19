@@ -37,9 +37,9 @@
 
 using namespace luabind;
 
-class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject> &instance)
+class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject> &&instance)
 {
-	instance
+	return std::move(instance)
 		.def("add_sound",					(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32))(&CScriptGameObject::add_sound))
 		.def("add_sound",					(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32,LPCSTR))(&CScriptGameObject::add_sound))
 		.def("add_combat_sound",			(u32 (CScriptGameObject::*)(LPCSTR,u32,ESoundTypes,u32,u32,u32,LPCSTR))(&CScriptGameObject::add_combat_sound))
@@ -63,10 +63,10 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("best_cover",					&CScriptGameObject::best_cover)
 		.def("safe_cover",					&CScriptGameObject::safe_cover)
 		.def("spawn_ini",					&CScriptGameObject::spawn_ini)
-		.def("memory_visible_objects",		&CScriptGameObject::memory_visible_objects, return_stl_iterator())
-		.def("memory_sound_objects",		&CScriptGameObject::memory_sound_objects, return_stl_iterator())
-		.def("memory_hit_objects",			&CScriptGameObject::memory_hit_objects, return_stl_iterator())
-		.def("not_yet_visible_objects",		&CScriptGameObject::not_yet_visible_objects, return_stl_iterator())
+		.def("memory_visible_objects",		&CScriptGameObject::memory_visible_objects, return_stl_iterator)
+		.def("memory_sound_objects",		&CScriptGameObject::memory_sound_objects, return_stl_iterator)
+		.def("memory_hit_objects",			&CScriptGameObject::memory_hit_objects, return_stl_iterator)
+		.def("not_yet_visible_objects",		&CScriptGameObject::not_yet_visible_objects, return_stl_iterator)
 		.def("visibility_threshold",		&CScriptGameObject::visibility_threshold)
 		.def("enable_vision",				&CScriptGameObject::enable_vision)
 		.def("vision_enabled",				&CScriptGameObject::vision_enabled)
@@ -106,7 +106,7 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("base_out_restrictions",		&CScriptGameObject::base_out_restrictions)
 		.def("accessible",					&CScriptGameObject::accessible_position)
 		.def("accessible",					&CScriptGameObject::accessible_vertex_id)
-		.def("accessible_nearest",			&CScriptGameObject::accessible_nearest, policy::out_value<3>())
+		.def("accessible_nearest",			&CScriptGameObject::accessible_nearest, out_value<3>())
 
 		//////////////////////////////////////////////////////////////////////////
 		.def("enable_attachable_item",		&CScriptGameObject::enable_attachable_item)
@@ -383,5 +383,5 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("has_upgrade",					&CScriptGameObject::HasUpgrade)
 		.def("iterate_installed_upgrades",	&CScriptGameObject::IterateInstalledUpgrades)
 
-	;return	(instance);
+	;
 }

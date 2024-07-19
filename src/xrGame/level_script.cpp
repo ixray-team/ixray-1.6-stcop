@@ -1200,8 +1200,7 @@ void CLevel::script_register(lua_State *L)
 		.def("setHMS"				,&xrTime::setHMS)
 		.def("setHMSms"				,&xrTime::setHMSms)
 		.def("set"					,&xrTime::set)
-		.def("get"					,&xrTime::get, policy_list<policy::out_value<2>, policy::out_value<3>, policy::out_value<4>,
-			policy::out_value<5>, policy::out_value<6>, policy::out_value<7>, policy::out_value<8>>())
+		.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
 		.def("dateToString"			,&xrTime::dateToString)
 		.def("timeToString"			,&xrTime::timeToString),
 		// declarations

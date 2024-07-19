@@ -34,12 +34,12 @@ xrMemory::xrMemory()
 #ifdef MASTER_GOLD
 	pAlloc = CMemAllocMimalloc::Create();
 #elif !defined(PURE_ONLY) && !defined(IXR_LINUX)
-	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
-	{
+	//if (!!strstr(GetCommandLineA(), "-pure_alloc"))
+	//{
 		pAlloc = CMemAllocPure::Create();
-	} else {
-		pAlloc = CMemAllocXRay::Create();
-	}
+	//} else {
+	//	pAlloc = CMemAllocXRay::Create();
+	//}
 #else
 	pAlloc = CMemAllocPure::Create();
 #endif

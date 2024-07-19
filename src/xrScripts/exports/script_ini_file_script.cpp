@@ -24,7 +24,7 @@ CScriptIniFile *get_game_ini()
 }
 #endif // XRGAME_EXPORTS
 
-bool r_line(CScriptIniFile *self_, LPCSTR S, int L,	luabind::string &N, luabind::string&V)
+bool r_line(CScriptIniFile *self_, LPCSTR S, int L,	luabind::internal_string &N, luabind::internal_string&V)
 {
 	VERIFY3			(self_->section_exist(S),"Cannot find section",S);
 	VERIFY2			((int)self_->line_count(S) > L,"Invalid line number");
@@ -121,7 +121,7 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_s32",			&CScriptIniFile::r_s32)
 			.def("r_float",			&CScriptIniFile::r_float)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
-            .def("r_line", &::r_line, policy_list<policy::out_value<4>, policy::out_value<5>>()),
+			.def("r_line", &::r_line, out_value<4>() + out_value<5>()),
 
 		def("system_ini",			&get_system_ini),
 #ifdef XRGAME_EXPORTS

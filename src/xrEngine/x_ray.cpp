@@ -16,7 +16,7 @@
 #include "LightAnimLibrary.h"
 #include "../xrCDB/ispatial.h"
 #include <luabind/luabind.hpp>
-#include <luabind/memory_allocator.hpp>
+#include <luabind/luabind_memory.h>
 #include "string_table.h"
 #include "../xrCore/discord/discord.h"
 #include "std_classes.h"
@@ -413,9 +413,6 @@ ENGINE_API void EngineLoadStage2()
 {
 	damn_keys_filter filter;
 	(void)filter;
-
-	luabind::allocator = &luabind_allocator;
-	luabind::allocator_context = nullptr;
 
 	FPU::m24r();
 	InitEngine();

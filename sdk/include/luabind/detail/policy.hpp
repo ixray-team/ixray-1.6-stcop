@@ -35,6 +35,9 @@
 #include <luabind/detail/class_cache.hpp>
 #include <luabind/detail/implicit_cast.hpp>
 
+#undef max
+#undef min
+
 namespace luabind
 {
 

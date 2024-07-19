@@ -41,10 +41,6 @@ CGameSpawnConstructor::CGameSpawnConstructor(LPCSTR name, LPCSTR output, LPCSTR 
 	:m_critical_section(MUTEX_PROFILE_ID(CGameSpawnConstructor))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-
-	luabind::allocator = &luabind_allocator;
-	luabind::allocator_context = nullptr;
-
 	load_spawns						(name,no_separator_check);
 	process_spawns					();
 	process_actor					(start);

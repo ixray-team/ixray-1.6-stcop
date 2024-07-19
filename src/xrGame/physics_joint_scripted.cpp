@@ -25,7 +25,7 @@ cphysics_element_scripted*	cphysics_joint_scripted::	PSecond_element	()
 
 void cphysics_joint_scripted::script_register(lua_State *L)
 {
-	constexpr auto out_value_23 = policy_list<policy::out_value<2>, policy::out_value<3>>();
+	auto out_value_23 = out_value<2>() + out_value<3>();
 
 	module(L)
 		[

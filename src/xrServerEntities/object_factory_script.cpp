@@ -93,13 +93,22 @@ void CObjectFactory::register_script	() const
 	actualize					();
 
 	luabind::class_<CInternal>	instance("clsid");
+	const_iterator I = clsids().begin(), B = I;
+	const_iterator E = clsids().end();
+	for (; I != E; ++I)
+		instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(), int(I - B))];
 
-	const_iterator				I = clsids().begin(), B = I;
-	const_iterator				E = clsids().end();
-	for ( ; I != E; ++I)
-		instance.enum_			("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
+	lua_State* L = ai().script_engine().lua();
+	luabind::module(L)[std::move(instance)]; // это представление нельзя обработать как таблицу
 
-	luabind::module				(ai().script_engine().lua())[instance];
+	lua_newtable(L);
+	I = B;
+	for (; I != E; ++I)
+	{
+		lua_pushinteger(L, int(I - B));
+		lua_setfield(L, -2, *(*I)->script_clsid());
+	}
+	lua_setglobal(L, "clsid_table"); // это представление можно обработать как таблицу :)
 }
 
 #pragma optimize("s",on)

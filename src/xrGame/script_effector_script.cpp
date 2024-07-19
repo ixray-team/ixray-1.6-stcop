@@ -66,8 +66,8 @@ void CScriptEffector::script_register(lua_State *L)
 			.def_readwrite("color_add",			&SPPInfo::color_add)
 			.def(								constructor<>())
 			.def("assign",						&SPPInfo_assign),
-
-		class_<CScriptEffector, no_bases, default_holder, CScriptEffectorWrapper>("effector")
+			
+		class_<CScriptEffector, CScriptEffectorWrapper>("effector")
 			.def(								constructor<int,float>())
 			.def("start",						&add_effector,		adopt<1>())
 			.def("finish",						&remove_effector,	adopt<1>())

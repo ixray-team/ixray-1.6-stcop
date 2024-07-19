@@ -21,19 +21,19 @@
 	};
 
 #define DEFINE_LUABIND_CLASS_WRAPPER_0(type, wrapper, name) \
-	luabind::class_<type, luabind::no_bases, luabind::default_holder, wrapper>(name)
+	luabind::class_<type, luabind::no_bases, wrapper>(name)
 
 #define DEFINE_LUABIND_CLASS_WRAPPER_1(type, wrapper, name, base1) \
-	luabind::class_<type, base1, luabind::default_holder, wrapper>(name)
+	luabind::class_<type, base1, wrapper>(name)
 
 #define DEFINE_LUABIND_CLASS_WRAPPER_2(type, wrapper, name, base1, base2) \
-	luabind::class_<type, bases<base1, base2>, luabind::default_holder, wrapper>(name)
+	luabind::class_<type, bases<base1, base2>, wrapper>(name)
 
 #define DEFINE_LUABIND_CLASS_WRAPPER_3(type, wrapper, name, base1, base2, base3) \
-	luabind::class_<type, bases<base1, base2, base3>, luabind::default_holder, wrapper>(name)
+	luabind::class_<type, bases<base1, base2, base3>, wrapper>(name)
 
 #define DEFINE_LUABIND_CLASS_WRAPPER_4(type, wrapper, name, base1, base2, base3, base4) \
-	luabind::class_<type, bases<base1, base2, base3, base4>, luabind::default_holder, wrapper>(name)
+	luabind::class_<type, bases<base1, base2, base3, base4>, wrapper>(name)
 
 #define DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,c) \
 	.def(#c, &a::c, &b::c##_static)
