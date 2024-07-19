@@ -1,5 +1,7 @@
 # IX-Ray
 
+English | [Русский](./LICENSE.rus.md)
+
 Detail text of license for IX-Ray project
 
 ## License

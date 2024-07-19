@@ -1,5 +1,7 @@
 # Code of Conduct
 
+English | [Русский](./CODE_OF_CONDUCT.rus.md)
+
 Code of Conduct of __IX-Ray__ project
 
 ## Purpose
@@ -19,7 +21,7 @@ The following behaviors are expected and requested of all community members:
 - Refrain from demeaning or discriminatory behavior and speech
 - Be mindful of your surroundings and of your fellow participants
 
-Also alert community leaders if you notice a dangerous situation, someone in distress, or violations of this *Code of Conduct*, even if they seem inconsequential
+Also alert community leaders if you notice a dangerous situation, someone in distress, or violations of this _Code of Conduct_, even if they seem inconsequential
 
 ## Unacceptable Behavior
 
@@ -38,4 +40,4 @@ If you are subject to or witness unacceptable behavior, or have any other concer
 
 ## Scope
 
-We expect all community participants (contributors, sponsors and other guests) to abide by this *Code of Conduct* in all community venues as well as in all one-on-one communications pertaining to community business
+We expect all community participants (contributors, sponsors and other guests) to abide by this _Code of Conduct_ in all community venues as well as in all one-on-one communications pertaining to community business

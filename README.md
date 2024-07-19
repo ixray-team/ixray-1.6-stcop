@@ -4,6 +4,14 @@
   <h4>Stable repository of the modernized <i>X-Ray 1.6</i> game engine</h4>
 
   <p>
+    English
+    |
+    <a href="./README.rus.md">
+      Русский
+    </a>
+  </p>
+
+  <p>
     <a href="https://github.com/ixray-team">
       <img src="./src/Assets/Splash_long.png" alt="IX-Ray 1.6" />
     </a>
@@ -71,9 +79,9 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 
 - OS: __Windows 7__ or newer
 - CPU: Supports __SSE2__ and newer instructions
-- RAM: 4GB
-- GPU: Support for __shader model 3.0__ or newer
-- GPU VRAM: 512MB
+- RAM: 4 GB
+- GPU: Support for __Shader Model 3.0__ or newer
+- GPU VRAM: 512 MB
 - DirectX: __9.0с__ or newer
 
 ## Requirements
@@ -158,7 +166,7 @@ To build from the console follow steps below
   - `Compressor-x64`
 
   ```sh
-  cmake --preset preset-name
+  cmake --preset <preset-name>
   # For example:
   # cmake --preset Engine-x64
   ```
@@ -170,16 +178,20 @@ To build from the console follow steps below
   - `Release`
 
   ```sh
-  cmake --build --preset preset-name-configuration
+  cmake --build --preset <preset-name-configuration>
   # For example:
   # cmake --build --preset Engine-x64-Debug
   ```
 
-- Run `generate-patch.bat` to get modified files and packed assets
+- Run script to get modified files and packed assets:
+
+  ```sh
+  .\util\generate-patch.bat
+  ```
 
 ## Changelog
 
-All significant changes to this repository are documented in [this](CHANGELOG.md) file
+All significant changes to this repository are documented in [this](./CHANGELOG.md) file
 
 ## License
 

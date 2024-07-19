@@ -1,10 +1,10 @@
-# Contributors
+# Контрибьюторы
 
-English | [Русский](./CONTRIBUTORS.rus.md)
+[English](./CONTRIBUTORS.md) | Русский
 
-Detail list of all contributors to IX-Ray project
+Подробный список всех контрибьюторов проекта __IX-Ray__
 
-## Contributors
+## Контрибьюторы
 
 - IX-Ray Team:
   - acidicMercury8
@@ -55,7 +55,7 @@ Detail list of all contributors to IX-Ray project
   - PastKNIGHT
   - YOUASSBEE
 
-## Community helpers
+## Помощники сообщества
 
 - Dance Maniac
 - Hrusteckiy
