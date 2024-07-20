@@ -284,14 +284,18 @@ void CActorMain::ProgressDraw()
 //---------------------------------------------------------------------------
 void CActorMain::OutCameraPos()
 {
-	VERIFY(m_bReady);
-	
-   /* AnsiString s;
-	const Fvector& c 	= EDevice->m_Camera.GetPosition();
-	s.sprintf("C: %3.1f, %3.1f, %3.1f",c.x,c.y,c.z);
-//	const Fvector& hpb 	= EDevice->m_Camera.GetHPB();
-//	s.sprintf(" Cam: %3.1f�, %3.1f�, %3.1f�",rad2deg(hpb.y),rad2deg(hpb.x),rad2deg(hpb.z));
-	fraBottomBar->paCamera->Caption=s; fraBottomBar->paCamera->Repaint();*/
+	if (m_bReady)
+	{
+		TUI::DrawDebugString Str;
+		Str.Pos = { 15, 50 };
+		Str.Text.resize(64);
+		Str.Color = ImColor(0, 0, 0);
+
+		const Fvector& c = EDevice->m_Camera.GetPosition();
+		sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
+
+		UI->ViewportFrameLines.push_back(Str);
+	}
 }
 //---------------------------------------------------------------------------
 void CActorMain::OutUICursorPos()
