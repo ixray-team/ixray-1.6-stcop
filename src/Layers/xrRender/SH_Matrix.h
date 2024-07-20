@@ -22,13 +22,16 @@ public:
 
 	u32				dwFrame;
 	u32				dwMode;
-    union{
+    union
+	{
 		u32		tcm;				// mask for tc-modifiers
         Flags32	tcm_flags;
     };
-	WaveForm		scaleU, scaleV;
-	WaveForm		rotate;
-	WaveForm		scrollU,scrollV;
+	WaveForm		scaleU ;
+	WaveForm		scaleV ;
+	WaveForm		rotate ;
+	WaveForm		scrollV;
+	WaveForm		scrollU;
 
 	// Non-Copyable (mt-safe)
 #ifndef _EDITOR
@@ -36,6 +39,19 @@ public:
 	CMatrix& operator=(CMatrix&& Other) = delete;
 	CMatrix(const CMatrix& Other) = delete;
 #endif
+
+	IC void Copy(const CMatrix* src)
+	{
+		xform = src->xform;
+		dwFrame = src->dwFrame;
+		dwMode = src->dwMode;
+		tcm_flags = src->tcm_flags;
+		scaleU = src->scaleU;
+		scaleV = src->scaleV;
+		rotate = src->rotate;
+		scrollV = src->scrollV;
+		scrollU = src->scrollU;
+	}
 
 	CMatrix			()
 	{

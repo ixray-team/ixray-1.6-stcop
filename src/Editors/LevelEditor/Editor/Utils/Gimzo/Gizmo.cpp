@@ -201,6 +201,20 @@ void Gizmo::OnFrame()
         m_RotateMatrix.identity();
         Box.getcenter(m_Position);
     }
+
+    if (bApplyChangePos)
+    {
+        static Fvector real_start_pos = m_Position.mad(UI->m_CurrentRStart, UI->m_CurrentRDir, 5);
+        m_Position.set(real_start_pos);
+
+        if (bApplyUpdatePos)
+        {
+            m_Position.mad(UI->m_CurrentRStart, UI->m_CurrentRDir, 5);
+            real_start_pos.set(m_Position);
+            bApplyUpdatePos = false;
+        }
+    }
+
     Fvector ViewNormal = EDevice->m_Camera.GetPosition();
     ViewNormal.sub(m_Position);
     ViewNormal.normalize_safe();

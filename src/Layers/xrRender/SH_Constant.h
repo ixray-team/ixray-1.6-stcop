@@ -28,6 +28,18 @@ public:
 	CConstant(const CConstant& Other) = delete;
 #endif
 
+	IC void Copy(const CConstant* src)
+	{
+		const_float = src->const_float;
+		const_dword = src->const_dword;
+		dwFrame = src->dwFrame;
+		dwMode = src->dwMode;
+		_R = src->_R;
+		_G = src->_G;
+		_B = src->_B;
+		_A = src->_A;
+	}
+
 	CConstant()
 	{
 		Memory.mem_fill(this, 0, sizeof(CConstant));
