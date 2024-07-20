@@ -1,0 +1,26 @@
+:: Delete unnecessary files
+del build\x64\Utilities-Windows\bin\Debug\xrEngine.exe
+del build\x64\Utilities-Windows\bin\Debug\xrEngine.pdb
+del build\x64\Utilities-Windows\bin\Debug\xrGame.dll
+del build\x64\Utilities-Windows\bin\Debug\xrGame.pdb
+del build\x64\Utilities-Windows\bin\Debug\xrGameSpy.dll
+del build\x64\Utilities-Windows\bin\Debug\xrGameSpy.pdb
+del build\x64\Utilities-Windows\bin\Debug\xrRender_R4.dll
+del build\x64\Utilities-Windows\bin\Debug\xrRender_R4.pdb
+del build\x64\Utilities-Windows\bin\Debug\xrServer.exe
+del build\x64\Utilities-Windows\bin\Debug\xrServer.pdb
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrEngine.exe
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrEngine.pdb
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrGame.dll
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrGame.pdb
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrGameSpy.dll
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrGameSpy.pdb
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrRender_R4.dll
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrRender_R4.pdb
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrServer.exe
+del build\x64\Utilities-Windows\bin\RelWithDebInfo\xrServer.pdb
+del build\x64\Utilities-Windows\bin\Release\xrEngine.exe
+del build\x64\Utilities-Windows\bin\Release\xrGame.dll
+del build\x64\Utilities-Windows\bin\Release\xrGameSpy.dll
+del build\x64\Utilities-Windows\bin\Release\xrRender_R4.dll
+del build\x64\Utilities-Windows\bin\Release\xrServer.exe

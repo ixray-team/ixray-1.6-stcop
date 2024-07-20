@@ -57,6 +57,7 @@ obj/
 lib/
 bin/
 build/
+publish/
 
 # Dependencies
 sdk/3d_sdk/
