@@ -509,18 +509,19 @@ bool CGroupObject::CanUngroup(bool bMsg)
 
 void CGroupObject::GroupObjects(ObjectList& lst)
 {
-	R_ASSERT(lst.size());
-	for (ObjectIt it=lst.begin(); it!=lst.end(); ++it)
+    R_ASSERT(lst.size());
+    for (CCustomObject* Obj : lst)
+    {
+        if (Obj->m_CO_Flags.test(flObjectInGroup))
         {
-            if((*it)->m_CO_Flags.test(flObjectInGroup) )
-            	{
-        			ELog.DlgMsg	(mtInformation,"object[%s] already in group", (*it)->GetName());
-                    continue;
-                }
-    		LL_AppendObject(*it);
+            Msg("object[%s] already in group", Obj->GetName());
+            continue;
         }
-	if(m_ObjectsInGroup.size())
-	    UpdatePivot(0,false);
+        LL_AppendObject(Obj);
+    }
+
+    if (m_ObjectsInGroup.size())
+        UpdatePivot(0, false);
 }
 
 void CGroupObject::UngroupObjects()
