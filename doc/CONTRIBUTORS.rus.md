@@ -21,7 +21,6 @@
   - ggGhosTt
   - ugozapad
   - morrazzzz
-  - Oswald
   - Z3SA
   - DJYar
   - K0cTep (ice[icicle)
@@ -39,13 +38,10 @@
   - borshig
   - pavelspitsin
   - Seakad
-  - mox.creative (ЛилЖма)
-  - ROOZBAN
-  - moof1x
-  - MafiosiGhost
   - KWAN
   - nuclearfag
   - Baryshev194
+  - Oswald
 
 - IX-Ray Testers:
   - Kystman
@@ -53,7 +49,12 @@
   - Sinner
   - after_glow
   - PastKNIGHT
+  - mannewil_
   - YOUASSBEE
+  - mox.creative (ЛилЖма)
+  - ROOZBAN
+  - moof1x
+  - MafiosiGhost
 
 ## Помощники сообщества
 

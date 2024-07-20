@@ -59,27 +59,29 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 
 ## Возможности
 
-- Поддержка архитектур: __x86-64__, __x86__
+- Поддержка архитектур: __x64__
 - Система сборки __CMake__
 - Поддерживаемые рендеры: __DirectX 9.0c__, __DirectX 11__
 - Улучшенная производительность и повышенный FPS
+- Загрузка уровней ускорена в 3-4 раза
 - [Расширены возможности для модмейкеров](https://github.com/ixray-team/ixray-1.6-stcop/wiki)
-- [Исправление оригинальных ошибок](https://github.com/ixray-team/ixray-1.6-stcop/wiki/%D0%98%D1%81%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-%D0%BE%D1%80%D0%B8%D0%B3%D0%B8%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5-%D0%B1%D0%B0%D0%B3%D0%B8)
+- Исправление оригинальных ошибок
 - [Поддержка инструментов отладки: __ASAN__, __RenderDoc__ и __LuaPanda__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/%D0%98%D0%BD%D1%82%D0%B5%D0%B3%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
 - [Поддержка __DLTX__ и __XMLOverride__](https://github.com/ixray-team/ixray-1.6-stcop/wiki#addons)
 - [Поддержка внутриигровых инструментов отладки](https://github.com/ixray-team/ixray-1.6-stcop/wiki/In%E2%80%90Game-debugging-tools)
 - [Поддержка системы __TTF__ шрифтов](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Fonts)
-- [Расширены возможности рендеринга](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Render-features)
+- Расширены возможности рендеринга
 - Поддержка формата сжатия __BC7__
-- [Расширены возможности геймплея](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Gameplay-features)
+- Поддержка технологий NVIDIA DLSS и AMD FidelityFX Super Resolution 2 (FSR2)
+- Расширены возможности геймплея
 - [Расширены возможности __UI__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/UI:-%D0%9E%D0%B1%D1%89%D0%B5%D0%B5)
 - [Расширены возможности  __Lua__](https://github.com/ixray-team/ixray-1.6-stcop/wiki#%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D1%8B-lua)
 
 ## Минимальные системные требования
 
-- ОС: __Windows 7__ или новее
+- ОС: __Windows 7 SP1__ с установленным [Platform Update](https://msdn.microsoft.com/en-us/library/windows/desktop/jj863687.aspx) или новее
 - ЦПУ: Поддержка __SSE2__ или более новых инструкций
-- ОЗУ: 4 Гб
+- ОЗУ: 6 Гб
 - ГПУ: Поддержка __Shader Model 3.0__ или новее
 - ГПУ VRAM: 512 Мб
 - DirectX: __9.0с__ или новее
@@ -91,6 +93,10 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
+
+- Установите оригинальную игру (Steam\GOG)
+- Удалите в основной папке игры: `bin`, `gamedata` (при наличии)
+- Распакуйте архив в основную папку игры с заменой файлов
 
 Для сборки:
 

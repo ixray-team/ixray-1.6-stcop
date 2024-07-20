@@ -21,7 +21,6 @@ Detail list of all contributors to IX-Ray project
   - ggGhosTt
   - ugozapad
   - morrazzzz
-  - Oswald
   - Z3SA
   - DJYar
   - K0cTep (ice[icicle)
@@ -39,13 +38,10 @@ Detail list of all contributors to IX-Ray project
   - borshig
   - pavelspitsin
   - Seakad
-  - mox.creative (ЛилЖма)
-  - ROOZBAN
-  - moof1x
-  - MafiosiGhost
   - KWAN
   - nuclearfag
   - Baryshev194
+  - Oswald
 
 - IX-Ray Testers:
   - Kystman
@@ -53,7 +49,10 @@ Detail list of all contributors to IX-Ray project
   - Sinner
   - after_glow
   - PastKNIGHT
+  - mannewil_
   - YOUASSBEE
+  - moof1x
+  - MafiosiGhost
 
 ## Community helpers
 
