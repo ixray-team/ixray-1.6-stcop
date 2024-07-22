@@ -315,7 +315,7 @@ bool CMainMenu::CanSkipSceneRendering()
 }
 
 //IInputReceiver
-static int mouse_button_2_keys []	=	{MOUSE_1,MOUSE_2,MOUSE_3};
+static int mouse_button_2_keys []	=	{MOUSE_1,MOUSE_2,MOUSE_3, MOUSE_4 , MOUSE_5 };
 void	CMainMenu::IR_OnMousePress				(int btn)	
 {	
 	if(!IsActive()) return;
