@@ -4,10 +4,19 @@
 
 float psHUDSoundVolume			= 1.0f;
 float psHUDStepSoundVolume		= 1.0f;
+
 void InitHudSoundSettings()
 {
-	psHUDSoundVolume		= pSettings->r_float("hud_sound", "hud_sound_vol_k");
-	psHUDStepSoundVolume	= pSettings->r_float("hud_sound", "hud_step_sound_vol_k");
+	psHUDSoundVolume = pSettings->r_float("hud_sound", "hud_sound_vol_k");
+
+	if (pSettings->line_exist("hud_sound", "hud_step_sound_vol_k"))
+	{
+		psHUDStepSoundVolume = pSettings->r_float("hud_sound", "hud_step_sound_vol_k");
+	}
+	else
+	{
+		psHUDStepSoundVolume = psHUDSoundVolume;
+	}
 }
 
 void HUD_SOUND_ITEM::LoadSound(	LPCSTR section, LPCSTR line, 

@@ -101,13 +101,14 @@ void CUIMMShniaga::OnDeviceReset()
 
 void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path)
 {
-	CGameFont* pF;
+	CGameFont* pF = nullptr;
 	u32	color;
 	float button_height				= xml_doc.ReadAttribFlt("button", 0, "h");
 	R_ASSERT						(button_height);
 
 	CUIXmlInit::InitFont			(xml_doc, path, 0, color, pF);
-	R_ASSERT						(pF);
+	if (pF == nullptr)
+		return;
 
 	int nodes_num					= xml_doc.GetNodesNum(path, 0, "btn");
 
