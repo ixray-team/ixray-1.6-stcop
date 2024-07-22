@@ -192,6 +192,9 @@ public:
 	virtual	void					level_Load				(IReader*)									{};
 	virtual void					level_Unload			()											{};
 
+	virtual BOOL					InIndoor				()											{ return false; }
+	virtual size_t					SectorsCount			()											{ return size_t(0); }
+
 			void					shader_option_skinning	(s32 mode)									{ m_skinning=mode;	}
 	virtual HRESULT					shader_compile			(
 		LPCSTR							name,
