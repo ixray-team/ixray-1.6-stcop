@@ -5,7 +5,7 @@
 
 R_occlusion::R_occlusion(void)
 {
-	enabled = Core.ParamsData.test(ECoreParams::no_occq);
+	enabled = !Core.ParamsData.test(ECoreParams::no_occq);
 }
 R_occlusion::~R_occlusion(void)
 {
