@@ -1,7 +1,8 @@
 ﻿﻿
 #include "stdafx.h"
-
 #include "GameFont.h"
+#include "string_table.h"
+
 #include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
@@ -99,7 +100,7 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 }
 #include <freetype/ftfntfmt.h>
 
-constexpr u32 TextureDimension = 2048;
+constexpr u32 TextureDimension = 2048 * 2;
 static u32 FontBitmap[TextureDimension * TextureDimension] = {};
 
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
@@ -163,14 +164,24 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	auto fHeight = float(size * res_scale * ppi_scale);
 
-	xr_string NameWithExt = name;
-	NameWithExt += ".ttf";
+	CStringTable::LangName();
+	xr_string NameWithExt = CStringTable::LangName() + "\\" + name + ".ttf";
 
 	string_path FullPath;
 	FS.update_path(FullPath, _game_fonts_, NameWithExt.c_str());
 
 	IReader* FontFile = FS.r_open(FullPath);
-	R_ASSERT3(FontFile != nullptr, "Can't open font file", name);
+	if (FontFile == nullptr)
+	{
+		Msg("! Can't open font file %s", name);
+
+		string_path DefPath;
+		NameWithExt = CStringTable::LangName() + "\\default.ttf";
+		FS.update_path(DefPath, _game_fonts_, NameWithExt.c_str());
+		FontFile = FS.r_open(DefPath);
+
+		R_ASSERT3(FontFile != nullptr, "Can't find default font: %s", DefPath);
+	}
 
 	FT_Face OurFont;
 	FT_Error FTError = FT_New_Memory_Face(FreetypeLib, (FT_Byte*)FontFile->pointer(), FontFile->length(), 0, &OurFont);
@@ -267,14 +278,15 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		};
 
 	//const char* Format = FT_Get_Font_Format(OurFont);
+	u32 index = 0;
 
-	for (u32 glyphID = FirstChar; glyphID <= LastChar; glyphID++)
+	auto glyphID = FT_Get_First_Char(OurFont, &index);
+	while(index != 0)
 	{
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
 		{
 			TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
-
 		}
 
 		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
@@ -302,12 +314,13 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		yOffset += (int)FontSizeInPixels; // Return back to the center pos
 		yOffset -= (int)(FontSizeInPixels / 4);
 
-		GlyphData[(char)glyphID] = { region, widths, yOffset };
+		GlyphData[glyphID] = { region, widths, yOffset };
 
 		TargetX = TargetX2;
 		TargetX += 4;
-	}
 
+		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
+	}
 	FT_Done_Face(OurFont);
 	fCurrentHeight = FontSizeInPixels;
 
@@ -415,57 +428,29 @@ void CGameFont::OutSkip(float val)
 	fCurrentY += val * CurrentHeight_();
 }
 
-float CGameFont::SizeOf_(const char cChar)
+float CGameFont::SizeOf_(int cChar)
 {
-	//return (GetCharTC((u16)(u8)(((IsMultibyte() && cChar == ' ')) ? 0 : cChar)).z * vInterval.x);
+	if (cChar < 0)
+	{
+		cChar = u8(cChar);
+	}
+
 	return static_cast<float>(WidthOf(cChar));
 }
 
 float CGameFont::SizeOf_(const char* s)
 {
-	//if (!(s && s[0]))
-	//	return 0;
-
-	//if (IsMultibyte())
-	//{
-	//	wide_char wsStr[MAX_MB_CHARS];
-	//	mbhMulti2Wide(wsStr, nullptr, MAX_MB_CHARS, s);
-	//	return SizeOf_(wsStr);
-	//}
-
-	//int	len = xr_strlen(s);
-	//float X = 0;
-	//if (len)
-	//	for (int j = 0; j < len; j++)
-	//		X += GetCharTC((u16)(u8)s[j]).z;
-
-	//return(X * vInterval.x);
 	return static_cast<float> (WidthOf(s));
 }
 
 float CGameFont::SizeOf_(const wide_char* wsStr)
 {
-	//if (!(wsStr && wsStr[0]))
-	//	return 0;
-
-	//unsigned int len = wsStr[0];
-	//float X = 0.0f, fDelta = 0.0f;
-
-	//if (len)
-	//	for (unsigned int j = 1; j <= len; j++) {
-	//		fDelta = GetCharTC(wsStr[j]).z - 2;
-	//		if (IsNeedSpaceCharacter(wsStr[j]))
-	//			fDelta += fXStep;
-	//		X += fDelta;
-	//	}
-
-	//return (X * vInterval.x);
 	return 0;
 }
 
 float CGameFont::CurrentHeight_()
 {
-	return GetHeight();//fCurrentHeight * vInterval.y;
+	return GetHeight();
 }
 
 void CGameFont::SetHeight(float S)
@@ -476,15 +461,7 @@ void CGameFont::SetHeight(float S)
 	}
 }
 
-//void CGameFont::SetHeightI(float S)
-//{
-//	if (uFlags & fsDeviceIndependent)
-//	{
-//		fCurrentHeight = S * RDevice.CurrentViewport->Height;
-//	}
-//}
-
-const CGameFont::Glyph* CGameFont::GetGlyphInfo(char ch)
+const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 {
 	auto symbolInfoIterator = GlyphData.find(ch);
 	if (symbolInfoIterator == GlyphData.end())
@@ -495,7 +472,7 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(char ch)
 	return &symbolInfoIterator->second;
 }
 
-int CGameFont::WidthOf(const char ch)
+int CGameFont::WidthOf(int ch)
 {
 	const Glyph* glyphInfo = GetGlyphInfo(ch);
 	return glyphInfo ? (glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC) : 0;
@@ -508,12 +485,25 @@ int CGameFont::WidthOf(const char* str)
 		return 0;
 	}
 
-	int length = xr_strlen(str);
 	int size = 0;
 
-	for (int i = 0; i < length; i++)
+	if (IsUTF8(str))
 	{
-		size += WidthOf(str[i]);
+		auto asda = Platform::ANSI_TO_TCHAR(str);
+		int length = std::wcslen(asda);
+		for (int i = 0; i < length; i++)
+		{
+			size += WidthOf(asda[i]);
+		}
+
+	}
+	else
+	{
+		int length = xr_strlen(str);
+		for (int i = 0; i < length; i++)
+		{
+			size += WidthOf((u8)str[i]);
+		}
 	}
 
 	return size;

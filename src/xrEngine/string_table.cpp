@@ -108,6 +108,10 @@ void CStringTable::ReparseKeyBindings()
 	}
 }
 
+xr_string CStringTable::LangName()
+{
+	return pData->m_sLanguage.c_str();
+}
 
 STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 {

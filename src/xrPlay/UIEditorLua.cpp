@@ -10,6 +10,7 @@ namespace Platform
 {
 	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const wchar_t* C);
 }
+
 void EditorLuaCodespace()
 {
 	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaCodespace)])

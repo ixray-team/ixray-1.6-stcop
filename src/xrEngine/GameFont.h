@@ -83,7 +83,7 @@ public:
 
 	float SizeOf_(const char* s);
 	float SizeOf_(const wide_char* wsStr);
-	float SizeOf_(const char cChar);  // only ANSII
+	float SizeOf_(int cChar);  // only ANSII
 
 	float CurrentHeight_();
 
@@ -160,16 +160,13 @@ public:
 		return Name;
 	}
 
-	const Glyph* GetGlyphInfo(char ch);
+	const Glyph* GetGlyphInfo(int ch);
 
 	// returns symbol width in pixels
-	int WidthOf(const char ch);
+	int WidthOf(int ch);
 	int WidthOf(const char* str);
 
 private:
-	static const u32 FirstChar = 0x04;
-	static const u32 LastChar = 0xFF;
-
 	float LetterSpacing; //that must be in CUIText from new font system
 	float LineSpacing; //that must be in CUIText from new font system
 
@@ -178,7 +175,7 @@ private:
 	u32 Size;
 	Style Style;
 
-	xr_map<char, Glyph> GlyphData;
+	xr_map<int, Glyph> GlyphData;
 
 	void Prepare(const char* name, const char* shader, const char* style, u32 size);
 	void Initialize(const char* name, const char* shader, const char* style, u32 size);

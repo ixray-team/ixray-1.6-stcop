@@ -103,8 +103,13 @@ void CUILines::Reset()
 	m_lines.clear();
 }
 
-float get_str_width(CGameFont*pFont, char ch)
+float get_str_width(CGameFont*pFont, int ch)
 {
+	if (ch < 0)
+	{
+		ch = (u8)ch;
+	}
+
 	float ll = pFont->SizeOf_(ch);
 	UI().ClientToScreenScaledWidth(ll);
 	return ll;
@@ -246,8 +251,21 @@ void CUILines::ParseText(bool force)
 						idx = last_space_idx;
 						last_space_idx = 0;
 					}
+#ifdef IXR_WINDOWS
+					if (IsUTF8(sbl.m_text.c_str()))
+					{
+						auto utf16text = Platform::ANSI_TO_TCHAR(sbl.m_text.c_str());
+						wchar_t tempbuff[4096];
+						wcsncpy_s(tempbuff, sizeof(buff), utf16text + curr_w_pos, idx - curr_w_pos + 1);
 
-					strncpy_s			(buff, sizeof(buff), sbl.m_text.c_str()+curr_w_pos, idx-curr_w_pos+1);
+						xr_string ValidUTF8Text = Platform::CP_TCHAR_TO_ANSI_U8(tempbuff); 
+						strcpy(buff, ValidUTF8Text.c_str());
+					}
+					else
+#endif
+					{
+						strncpy_s(buff, sizeof(buff), sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
+					}
 					tmp_line.AddSubLine	(buff , sbl.m_color);
 					curr_w_pos			= idx+1;
 				}else
@@ -328,7 +346,7 @@ LPCSTR GetElipsisText(CGameFont* pFont, float width, LPCSTR source_text, LPSTR b
 		
 		while(total+el_len < width)
 		{
-			const char c					= *(source_text+pos);
+			int c					= *(source_text+pos);
 			float ch_len					= pFont->SizeOf_(c);
 			UI().ClientToScreenScaledWidth	(ch_len);
 		

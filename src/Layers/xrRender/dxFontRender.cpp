@@ -73,9 +73,20 @@ void dxFontRender::OnRender(CGameFont& owner) {
 			Y -= 0.5f;
 			Y2 -= 0.5f;
 
-			for(int i = 0; i < length; i++) {
-				const CGameFont::Glyph* glyphInfo = owner.GetGlyphInfo(str.string[i]);
-				if(glyphInfo == nullptr) {
+			for(int i = 0; i < length; i++) 
+			{
+				CGameFont::Glyph* glyphInfo = nullptr;
+				if (IsUTF8(str.string))
+				{
+					auto asd = Platform::ANSI_TO_TCHAR(str.string);
+					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(asd[i]));
+				}
+				else
+				{
+					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)str.string[i]));
+				}
+
+				if (glyphInfo == nullptr) {
 					continue;
 				}
 
