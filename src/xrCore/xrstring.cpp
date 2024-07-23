@@ -162,6 +162,17 @@ bool xr_string::Contains(const xr_string& SubStr) const
 	return find(SubStr) != npos;
 }
 
+bool xr_string::EqualWithCaseInsensitive(const xr_string& SubStr) const
+{
+	xr_string Left = *this;
+	xr_string Right = SubStr;
+
+	xr_strlwr(Left);
+	xr_strlwr(Right);
+
+	return Left == Right;
+}
+
 xr_string xr_string::ToString(int Value) 
 {
 	string64 buf = { 0 };
