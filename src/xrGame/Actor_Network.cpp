@@ -602,7 +602,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 //.		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 		
 
-	ROS()->force_mode	(IRender_ObjectSpecific::TRACE_ALL);
+	ROS()->force_mode	(IRender_ObjectSpecific::TRACE_HEMI|IRender_ObjectSpecific::TRACE_SUN);
 
 	//mstate_wishful = E->mstate;
 	mstate_wishful=0;
