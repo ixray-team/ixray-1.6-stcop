@@ -415,6 +415,10 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	else if (mstate_rl&mcRStrafe)	M_legs	= AS->legs_rs;
 	else is_standing = true;
 
+	if(g_player_hud && is_standing && IsFocused() && g_player_hud->m_legs_model) {
+		is_standing = false;
+	}
+
 	if(mstate_rl&mcSprint)
 	{
 		g_SetSprintAnimation			(mstate_rl,M_head,M_torso,M_legs);

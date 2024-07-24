@@ -16,7 +16,7 @@
 #	include "PHDebug.h"
 #endif // DEBUG
 
-
+#include "Actor.h"
 
 
 CIKLimbsController::CIKLimbsController(): m_object(0), m_legs_blend(0)
@@ -92,13 +92,20 @@ float	CIKLimbsController::LegLengthShiftLimit			( float current_shift, const SCa
 {
 	float shift_down = -phInfinity;
 	const u16 sz =(u16)_bone_chains.size();
-	for(u16 j = 0; sz > j; ++j )
-		if( cd[j].state.foot_step )
-		{
-			float s_down = cd[j].m_limb->ObjShiftDown( current_shift, cd[j] );
-			if( shift_down < s_down )
-					shift_down = s_down;
+
+	for(u16 j = 0; sz > j; ++j) {
+		if(cd[j].state.foot_step) {
+			float s_down = cd[j].m_limb->ObjShiftDown(current_shift, cd[j]);
+			if(shift_down < s_down)
+				shift_down = s_down;
 		}
+	}
+
+	if(Actor() == m_object) {
+		if(Actor()->active_cam() == EActorCameras::eacFirstEye) {
+			clamp(shift_down, -0.1f, 0.1f);
+		}
+	}
 	return shift_down;
 }
 static const float static_shift_object_speed = .2f;
@@ -182,15 +189,17 @@ bool	CIKLimbsController::PredictObjectShift			(  const SCalculateData cd[max_siz
 		predict_time_shift = predict_time_shift_up;
 	} else 
 		return false;
-	//{
-	//	predict_shift = 0;
-	//	predict_time_shift = Device.fTimeDelta;
-	//}
-		
-	
-	if( predict_time_shift < EPS_S )
+
+	if(predict_time_shift < EPS_S)
 		predict_time_shift = Device.fTimeDelta;
-		_object_shift.set_taget( predict_shift, predict_time_shift );
+
+	if(Actor() == m_object) {
+		if(Actor()->active_cam() == EActorCameras::eacFirstEye) {
+			clamp(predict_shift, -0.1f, 0.1f);
+		}
+	}
+
+	_object_shift.set_taget(predict_shift, predict_time_shift);
 	return true;
 }
 
@@ -239,7 +248,6 @@ void	CIKLimbsController::ShiftObject( const SCalculateData cd[max_size] )
 		
 }
 
-int ik_shift_object = 1;
 void CIKLimbsController::Calculate( )
 {
 	update_blend( m_legs_blend );

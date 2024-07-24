@@ -477,7 +477,16 @@ if(!g_dedicated_server)
 	m_sInventoryBoxUseAction		= "inventory_box_use";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
+	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
 }
+
+void CActor::legs_shift_callback(CBoneInstance* B) {
+	if(cam_active == eacFirstEye) {
+		if(g_player_hud && g_player_hud->m_legs_model) {
+			B->mTransform.c.mad(B->mTransform.k, m_fLegs_shift);
+		}
+	}
+};
 
 void CActor::PHHit(SHit &H)
 {

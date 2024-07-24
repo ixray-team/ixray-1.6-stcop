@@ -529,14 +529,15 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 player_hud::player_hud(bool invert)
 {
-	m_model					= nullptr;
-	m_attached_items[0]		= nullptr;
-	m_attached_items[1]		= nullptr;
-	m_transform.identity	();
-	m_transformL.identity	();
-	m_binverted				= invert;
-	m_blocked_part_idx		= u16(-1);
-	m_bhands_visible		= false;
+	m_model = nullptr;
+	m_attached_items[0] = nullptr;
+	m_attached_items[1] = nullptr;
+	m_transform.identity();
+	m_transformL.identity();
+	m_binverted = invert;
+	m_blocked_part_idx = u16(-1);
+	m_bhands_visible = false;
+	m_legs_model = nullptr;
 }
 
 
@@ -558,48 +559,77 @@ player_hud::~player_hud()
 
 void player_hud::load(const shared_str& player_hud_sect)
 {
-	if(player_hud_sect ==m_sect_name)	return;
-	bool b_reload = (m_model!=nullptr);
+	if(player_hud_sect == m_sect_name) {
+		return;
+	}
+
+	bool b_reload = (m_model != nullptr);
+
 	if(m_model)
 	{
-		IRenderVisual* v			= m_model->dcast_RenderVisual();
-		::Render->model_Delete		(v);
+		IRenderVisual* v = m_model->dcast_RenderVisual();
+		::Render->model_Delete(v);
 	}
 
-	m_sect_name					= player_hud_sect;
-	const shared_str& model_name= pSettings->r_string(player_hud_sect, "visual");
-	m_model						= smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+	if(m_legs_model)
+	{
+		IRenderVisual* v = m_legs_model->dcast_RenderVisual();
+		::Render->model_Delete(v);
+
+		m_legs_model = nullptr;
+	}
+
+	m_sect_name = player_hud_sect;
+
+	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
+	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+
+	if(pSettings->line_exist(player_hud_sect, "legs_visual")) {
+		auto model_name = pSettings->r_string(player_hud_sect, "legs_visual");
+		m_legs_model = PKinematics(::Render->model_Create(model_name));
+	}
 
 	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
-	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance*B){g_player_hud->LeftArmCallback(B);}, NULL);
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
 
-	CInifile::Sect& _sect		= pSettings->r_section(player_hud_sect);
-	CInifile::SectCIt _b		= _sect.Data.begin();
-	CInifile::SectCIt _e		= _sect.Data.end();
-	for(;_b!=_e;++_b)
+	auto& _sect = pSettings->r_section(player_hud_sect);
+	auto _b = _sect.Data.begin();
+	auto _e = _sect.Data.end();
+
+	for(; _b != _e; ++_b) 
 	{
-		if(strstr(_b->first.c_str(), "ancor_")==_b->first.c_str())
+		if(strstr(_b->first.c_str(), "ancor_") == _b->first.c_str())
 		{
-			const shared_str& _bone	= _b->second;
-			m_ancors.push_back		(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+			const shared_str& _bone = _b->second;
+			m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
 		}
 	}
-	
-//	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
 
-	if(!b_reload)
-	{
+	if(!b_reload) {
 		m_model->PlayCycle("hand_idle_doun");
-	}else
-	{
-		if(m_attached_items[1])
-			m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
-
-		if(m_attached_items[0])
-			m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
 	}
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
+	else {
+		if(m_attached_items[1]) {
+			m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
+		}
+
+		if(m_attached_items[0]) {
+			m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
+		}
+	}
+
+	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
+
+	if(m_legs_model) {
+		m_legs_model->CalculateBones_Invalidate();
+		m_legs_model->CalculateBones(TRUE);
+	}
+
+	if(Actor()) {
+		float m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
+		Actor()->m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, player_hud_sect, "legs_shift_delta", m_fLegs_shift);
+	}
 }
 
 bool player_hud::render_item_ui_query()
@@ -628,17 +658,43 @@ void player_hud::render_hud()
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 
-	if(b_r0 || b_r1 || m_bhands_visible)
-	{
-		::Render->set_Transform		(&m_transform);
-		::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
+	if(b_r0 || b_r1 || m_bhands_visible) {
+		::Render->set_Transform(&m_transform);
+		::Render->add_Visual(m_model->dcast_RenderVisual(), true);
 	}
-	
-	if(b_r0)
+
+	if(b_r0) {
 		m_attached_items[0]->render();
-	
-	if(b_r1)
+	}
+
+	if(b_r1) {
 		m_attached_items[1]->render();
+	}
+
+	if(Actor() && m_legs_model) {
+		bool isClimb = Actor()->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcClimb;
+		if(!isClimb) {
+			auto bHud = ::Render->get_HUD();
+			IKinematics* actor_model = Actor()->Visual()->dcast_PKinematics();
+
+			actor_model->CalculateBones(TRUE);
+
+			m_legs_model->CalculateBones_Invalidate();
+			m_legs_model->CalculateBones(TRUE);
+
+			for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
+				m_legs_model->LL_GetBoneInstance(i).mTransform.set(actor_model->LL_GetBoneInstance(i).mTransform);
+				m_legs_model->LL_GetBoneInstance(i).mRenderTransform.mul_43(m_legs_model->LL_GetBoneInstance(i).mTransform, m_legs_model->LL_GetData(i).m2b_transform);
+			}
+
+			::Render->set_HUD(FALSE);
+
+			::Render->set_Transform(&Actor()->XFORM());
+			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
+
+			::Render->set_HUD(bHud);
+		}
+	}
 }
 
 
@@ -703,13 +759,16 @@ void player_hud::LeftArmCallback(CBoneInstance* B)
 	B->mTransform.mulA_44(m_attached_items[1]?m_transformL:m_transform);
 	B->mTransform.mulA_44(Fmatrix(m_transform).invert());
 }
+
 void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
 {
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 }
+
 #include "Missile.h"
+
 void player_hud::update(const Fmatrix& cam_trans)
 {
 	if(!m_attached_items[0] && !m_attached_items[1])
