@@ -47,6 +47,7 @@ void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightInvDir, in
         }
     }
 
+	ContactShadow *= GetBorderAtten(TexCoord, 0.0125f);
     Light *= 1.0f - saturate(ContactShadow);
 #endif
 }

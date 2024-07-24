@@ -29,10 +29,12 @@ float Hash(float n)
 {
     return frac(sin(n) * 43758.5453123f);
 }
+
 float Hash(float2 n)
 {
     return Hash(Hash(n.x) + n.y);
 }
+
 float Hash(float3 n)
 {
     return Hash(Hash(dot(n.xy, float2(12.989, 78.233))) + n.z);
@@ -69,6 +71,13 @@ float3 Hash33(float3 value)
 }
 
 // END
+
+float GetBorderAtten(float2 tc, float2 att)
+{
+    att.x *= pos_decompression_params2.y * pos_decompression_params2.z;
+    float2 factors = saturate(min(1.0f - tc, tc) / att);
+    return factors.x * factors.y;
+}
 
 // Hashed Alpha Testing
 // The implementation was taken from https://cwyman.org/papers/i3d17_hashedAlpha.pdf document by Chris Wyman and Morgan McGuire
