@@ -175,8 +175,10 @@ void light::get_sectors()
 	CSector* sector = (CSector*)spatial.sector;
 	if(0==sector) return;
 
-	if(flags.type == IRender_Light::SPOT || flags.type == IRender_Light::OMNIPART)
+	if(flags.type == IRender_Light::SPOT)
 	{
+		if(X.S.combine.has_inited())
+			RImplementation.LR.compute_xf_spot(this);
 		CFrustum temp = CFrustum();
 		temp.CreateFromMatrix			(X.S.combine, FRUSTUM_P_ALL);
 
