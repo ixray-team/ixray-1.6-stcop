@@ -1481,8 +1481,7 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
 		        pb->Inc();
 			}
         }else{
-            ELog.DlgMsg		(mtError,"Failed to build merged LOD texture. Merged texture more than [4096x4096].");
-        	bResult			= FALSE;
+            ELog.Msg(mtError, "! Failed to build merged LOD texture. Merged texture more than [4096x4096]");
         }
         UI->ProgressEnd(pb);
     }
