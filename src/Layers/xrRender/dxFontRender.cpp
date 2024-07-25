@@ -73,21 +73,33 @@ void dxFontRender::OnRender(CGameFont& owner) {
 			Y -= 0.5f;
 			Y2 -= 0.5f;
 
+			xr_special_char* UniStr = nullptr; 
+			bool IsUTF8Str = IsUTF8(str.string);
+			if (IsUTF8Str)
+			{
+				UniStr = Platform::ANSI_TO_TCHAR(str.string);
+			}
+			else
+			{
+				UniStr = Platform::ANSI_TO_TCHAR(str.string_utf8.c_str());
+			}
+
 			for(int i = 0; i < length; i++) 
 			{
 				CGameFont::Glyph* glyphInfo = nullptr;
-				if (IsUTF8(str.string))
-				{
-					auto asd = Platform::ANSI_TO_TCHAR(str.string);
-					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(asd[i]));
-				}
-				else
+
+				if (!IsUTF8Str)
 				{
 					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)str.string[i]));
 				}
 
-				if (glyphInfo == nullptr) {
-					continue;
+				if (glyphInfo == nullptr) 
+				{
+					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(UniStr[i]));
+					if (glyphInfo == nullptr)
+					{
+						continue;
+					}
 				}
 
 				if(i != 0) {

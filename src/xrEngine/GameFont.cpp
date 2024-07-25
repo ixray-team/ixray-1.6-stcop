@@ -280,8 +280,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	//const char* Format = FT_Get_Font_Format(OurFont);
 	u32 index = 0;
 
-	auto glyphID = FT_Get_First_Char(OurFont, &index);
-	while(index != 0)
+	auto LoadGlyph = [&](FT_UInt glyphID)
 	{
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
@@ -318,9 +317,15 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 		TargetX = TargetX2;
 		TargetX += 4;
+	};
 
+	auto glyphID = FT_Get_First_Char(OurFont, &index);
+	while(index != 0)
+	{
+		LoadGlyph(glyphID);
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
 	}
+
 	FT_Done_Face(OurFont);
 	fCurrentHeight = FontSizeInPixels;
 
@@ -388,8 +393,12 @@ void CGameFont::MasterOut(
 	rs.height = fCurrentHeight;
 	rs.align = eCurrentAlignment;
 	int vs_sz = vsprintf(rs.string, fmt, p);
-	//VERIFY( ( vs_sz != -1 ) && ( rs.string[ vs_sz ] == '\0' ) );
 
+	if (!IsUTF8(rs.string))
+	{
+		rs.string_utf8 = Platform::ANSI_TO_UTF8(rs.string);
+	}
+	
 	rs.string[sizeof(rs.string) - 1] = 0;
 	if (vs_sz == -1)
 	{
@@ -475,7 +484,7 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 int CGameFont::WidthOf(int ch)
 {
 	const Glyph* glyphInfo = GetGlyphInfo(ch);
-	return glyphInfo ? (glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC) : 0;
+	return glyphInfo ? (glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC) : 5;
 }
 
 int CGameFont::WidthOf(const char* str)
