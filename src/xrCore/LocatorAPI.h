@@ -76,6 +76,7 @@ private:
 	u64							m_auth_code		;
 
 	bool IsAddonPhase = false;
+	bool IsArchivePhase = false;
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
 	void						ProcessArchive	(LPCSTR path);

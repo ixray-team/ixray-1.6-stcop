@@ -223,7 +223,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 
 	file desc;
 
-	if (IsAddonPhase)
+	if (IsAddonPhase && !IsArchivePhase)
 	{
 		static xr_string addons_path = get_path("$arch_dir_addons$")->m_Path;
 		static xr_string CurrentAddonName = "";
@@ -250,6 +250,12 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 			else if (!TempPath.Contains(CurrentAddonName))
 			{
 				CurrentAddonName = "";
+				IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+
+				if (IsProcessingAddon)
+				{
+					CurrentAddonName += TempPath.substr(addons_path.length());
+				}
 			}
 		}
 	}
@@ -620,7 +626,11 @@ void CLocatorAPI::ProcessOne(LPCSTR path, system_file* F)
 	else 
 	{
 		if (strext(N) && (0 == strncmp(strext(N), ".db", 3) || 0 == strncmp(strext(N), ".xdb", 4)))
+		{
+			IsArchivePhase = true;
 			ProcessArchive(N);
+			IsArchivePhase = false;
+		}
 		else
 			Register(N, 0xffffffff, 0, 0, F->size, F->size, F->time_write);
 	}
