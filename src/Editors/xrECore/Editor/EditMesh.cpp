@@ -161,13 +161,6 @@ void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform, bool force)
 				}
 				else
 				{
-					if (parent_xform)
-					{
-						Fvector p0;
-						parent_xform->transform_tiny(p0, m_Vertices[m_Faces[f_i].pv[k].pindex]);
-						Tools->m_DebugDraw.AppendPoint(p0, 0xffff0000, true, true, "invalid vNORMAL");
-					}
-
 					N.set(m_FaceNormals[a_lst.front()]);
 				}
 			}
