@@ -63,6 +63,7 @@ void UILogForm::Update()
 		{
 			NeedCopy = true;
 		}ImGui::SameLine();
+
 		ImGui::Checkbox("Auto Scroll", &bAutoScroll); 
 		ImGui::SameLine();
 		ImGui::InputText("Filter", m_Filter, sizeof(m_Filter));;
@@ -94,11 +95,17 @@ void UILogForm::Update()
 					Color = { 0.5,0.5,0.5,1 };
 				}
 
-				ImGui::TextColored(Color, Str);
-				if (NeedCopy)
-					CopyLog.append(Str).append("\r\n");
-
-
+				ImGui::PushStyleColor(ImGuiCol_Text, Color);
+				if (ImGui::Selectable(Str))
+				{
+					os_clipboard::copy_to_clipboard(Str);
+				}
+				else
+				{
+					if (NeedCopy)
+						CopyLog.append(Str).append("\r\n");
+				}
+				ImGui::PopStyleColor();
 			}
 
 			if (NeedCopy)

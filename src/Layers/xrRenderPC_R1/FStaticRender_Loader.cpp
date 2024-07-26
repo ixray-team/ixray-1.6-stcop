@@ -291,12 +291,12 @@ struct b_portal
 
 void CRender::LoadSectors(IReader* fs) {
 	// allocate memory for portals
-	u32 size = fs->find_chunk(fsL_PORTALS); 
-	R_ASSERT(0==size%sizeof(b_portal));
-	u32 count = size/sizeof(b_portal);
-	Portals.resize	(count);
-	for (u32 c=0; c<count; c++)
-		Portals[c]	= new CPortal ();
+	u32 size = fs->find_chunk(fsL_PORTALS);
+	R_ASSERT(0 == size % sizeof(b_portal));
+	u32 count = size / sizeof(b_portal);
+	Portals.resize(count);
+	for (u32 c = 0; c < count; c++)
+		Portals[c] = new CPortal();
 
 	// load sectors
 	IReader* S = fs->open_chunk(fsL_SECTORS);
@@ -307,9 +307,9 @@ void CRender::LoadSectors(IReader* fs) {
 		IReader* P = S->open_chunk(i);
 		if (0 == P) break;
 
-		CSector* __S		= new CSector ();
-		__S->load			(*P);
-		Sectors.push_back	(__S);
+		CSector* __S = new CSector();
+		__S->load(*P);
+		Sectors.push_back(__S);
 
 		P->close();
 	}
@@ -376,20 +376,24 @@ void CRender::LoadSectors(IReader* fs) {
 
 	// Search for default sector - assume "default" or "outdoor" sector is the largest one
 	//. hack: need to know real outdoor sector
-	CSector* largest_sector = 0;
-	float largest_sector_vol = 0;
-	for (u32 s = 0; s < Sectors.size(); s++)
+
+	if (!g_dedicated_server)
 	{
-		CSector* S = (CSector*)Sectors[s];
-		dxRender_Visual* V = S->root();
-		float vol = V->vis.box.getvolume();
-		if (vol > largest_sector_vol)
+		CSector* largest_sector = 0;
+		float largest_sector_vol = 0;
+		for (u32 s = 0; s < Sectors.size(); s++)
 		{
-			largest_sector_vol = vol;
-			largest_sector = S;
+			CSector* S = (CSector*)Sectors[s];
+			dxRender_Visual* V = S->root();
+			float vol = V->vis.box.getvolume();
+			if (vol > largest_sector_vol)
+			{
+				largest_sector_vol = vol;
+				largest_sector = S;
+			}
 		}
+		pOutdoorSector = largest_sector;
 	}
-	pOutdoorSector = largest_sector;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)

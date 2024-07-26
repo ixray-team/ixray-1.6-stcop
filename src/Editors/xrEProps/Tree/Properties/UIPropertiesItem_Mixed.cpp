@@ -248,10 +248,6 @@ void UIPropertiesItem::RemoveMixed()
 						}
 					}
 				}
-				else
-				{
-					R_ASSERT(false);
-				}
 			}
 		}
 	}

@@ -239,7 +239,7 @@ public:
         return bChanged;
     }
     IC PropValueVec&	Values			(){return values;}
-    IC PropValue*		GetFrontValue	(){VERIFY(!values.empty()); return values.front(); };
+    IC PropValue*       GetFrontValue   (){return (values.empty()) ? nullptr : values.front(); };
     IC EPropType		Type			(){return type;}
 #ifdef __BORLANDC__    
 	IC TElTreeItem*		Item			(){return (TElTreeItem*)item;}

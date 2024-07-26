@@ -43,8 +43,8 @@ public:
     shared_str			m_ModifName;
     time_t				m_ModifTime;
 	// frame & Controls
-    TUI_CustomControl* 	pCurControl;
-    UIToolCustom*       pForm;
+    TUI_CustomControl* 	pCurControl = nullptr;
+    UIToolCustom*       pForm = nullptr;
 	TUI_CustomControl* FindControl(int subtarget, int action);
 protected:
     void            	AddControl				(TUI_CustomControl* c);

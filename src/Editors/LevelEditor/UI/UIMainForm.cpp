@@ -400,7 +400,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Size)
             bool bPushColor = false;
 
 			ImGui::BeginDisabled(!bIsSupportMove);
-            if (Action == etaSelect && LTools->GetGimzo()->GetType() == Gizmo::EType::Move)
+            if ((Action == etaSelect || Action == etaMove) && LTools->GetGimzo()->GetType() == Gizmo::EType::Move)
             {
                 bPushColor = true;
                 ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Border));
@@ -426,7 +426,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Size)
         {
             bool bPushColor = false;
             ImGui::BeginDisabled(!bIsSupportScale);
-            if (Action == etaSelect && LTools->GetGimzo()->GetType() == Gizmo::EType::Scale)
+            if ((Action == etaSelect || Action == etaScale) && LTools->GetGimzo()->GetType() == Gizmo::EType::Scale)
             {
                 bPushColor = true;
                 ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Border));
@@ -451,7 +451,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Size)
             bool bPushColor = false;
 
 			ImGui::BeginDisabled(!bIsSupportRotate);
-            if (Action == etaSelect && LTools->GetGimzo()->GetType() == Gizmo::EType::Rotate)
+            if ((Action == etaSelect || Action == etaRotate) && LTools->GetGimzo()->GetType() == Gizmo::EType::Rotate)
             {
                 bPushColor = true;
                 ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_Border));
