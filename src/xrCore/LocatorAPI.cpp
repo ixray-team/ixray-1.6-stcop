@@ -218,13 +218,63 @@ CLocatorAPI::~CLocatorAPI()
 
 void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
 {
-	string256 temp_file_name;
-	xr_strcpy(temp_file_name, sizeof(temp_file_name), name);
-	xr_strlwr(temp_file_name);
+	xr_string TempPath = name;
+	xr_strlwr(TempPath);
+
+	file desc;
+
+	if (IsAddonPhase && !IsArchivePhase)
+	{
+		static xr_string addons_path = get_path("$arch_dir_addons$")->m_Path;
+		static xr_string CurrentAddonName = "";
+
+		bool PathIsDir = std::filesystem::is_directory(name);
+		if (TempPath.Contains(addons_path) && !PathIsDir)
+		{
+			static xr_string data_path = get_path("$game_data$")->m_Path;
+			desc.wrap = xr_strdup(TempPath.data());
+			TempPath = data_path + TempPath.substr(CurrentAddonName.length() + addons_path.length());
+		}
+		else if (PathIsDir)
+		{
+			static bool IsProcessingAddon = false;
+
+			if (IsProcessingAddon && !TempPath.Contains(CurrentAddonName))
+			{
+				IsProcessingAddon = false;
+				Msg("Processing %s addon completed!", CurrentAddonName.c_str());
+
+				CurrentAddonName = "";
+			}
+
+			if (!IsProcessingAddon)
+			{
+				if (CurrentAddonName.empty())
+				{
+					CurrentAddonName += TempPath.substr(addons_path.length());
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+				}
+				else if (TempPath.Contains(CurrentAddonName))
+				{
+					CurrentAddonName += TempPath.substr(CurrentAddonName.length() + addons_path.length());
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+				}
+				else if (!TempPath.Contains(CurrentAddonName))
+				{
+					CurrentAddonName = "";
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+
+					if (IsProcessingAddon)
+					{
+						CurrentAddonName += TempPath.substr(addons_path.length());
+					}
+				}
+			}
+		}
+	}
 
 	// Register file
-	file				desc;
-	desc.name			= temp_file_name;
+	desc.name			= xr_strdup(TempPath.data());
 	desc.vfs			= vfs;
 	desc.crc			= crc;
 	desc.ptr			= ptr;
@@ -589,7 +639,11 @@ void CLocatorAPI::ProcessOne(LPCSTR path, system_file* F)
 	else 
 	{
 		if (strext(N) && (0 == strncmp(strext(N), ".db", 3) || 0 == strncmp(strext(N), ".xdb", 4)))
+		{
+			IsArchivePhase = true;
 			ProcessArchive(N);
+			IsArchivePhase = false;
+		}
 		else
 			Register(N, 0xffffffff, 0, 0, F->size, F->size, F->time_write);
 	}
@@ -905,10 +959,12 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 	};
 
 	// Load addons
-	if (fs_name != nullptr)
+	if (FS.path_exist("$arch_dir_addons$"))
 	{
+		FS.IsAddonPhase = true;
 		FS_Path* AddonsArchsPath = FS.get_path("$arch_dir_addons$");
 		FS.rescan_path(AddonsArchsPath->m_Path, AddonsArchsPath->m_Flags.is(FS_Path::flRecurse));
+		FS.IsAddonPhase = false;
 	}
 
 	u32	M2 = Memory.mem_usage();
@@ -1215,14 +1271,16 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 	xr_strcpy		(fname,fname_size,fname_in_cache);
 }
 
-void CLocatorAPI::file_from_cache_impl	(IReader *&R, LPSTR fname, const file &desc)
+void CLocatorAPI::file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc)
 {
-	if (desc.size_real<16*1024) {
-		R						= new CFileReader(fname);
+	const char* RealFileName = desc.wrap == nullptr ? fname : desc.wrap;
+	if (desc.size_real < 16 * 1024)
+	{
+		R = new CFileReader(RealFileName);
 		return;
 	}
 
-	R							= new CVirtualFileReader(fname);
+	R = new CVirtualFileReader(RealFileName);
 }
 
 void CLocatorAPI::file_from_cache_impl	(CStreamReader *&R, LPSTR fname, const file &desc)
@@ -1453,7 +1511,9 @@ T *CLocatorAPI::r_open_impl	(LPCSTR path, LPCSTR _fname)
 
 	// OK, analyse
 	if (0xffffffff == desc->vfs)
-		file_from_cache		(R,fname,sizeof(fname),*desc,source_name);
+	{
+		file_from_cache(R, fname, sizeof(fname), *desc, source_name);
+	}
 	else
 		file_from_archive	(R,fname,*desc);
 

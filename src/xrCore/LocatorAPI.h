@@ -10,10 +10,12 @@ class XRCORE_API CStreamReader;
 class XRCORE_API CLocatorAPI  
 {
 	friend class FS_Path;
+
 public:
-	struct	file
+	struct file
 	{
 		LPCSTR					name;			// low-case name
+		LPCSTR					wrap = nullptr;	// addons real path
 		u32						vfs;			// 0xffffffff - standart file
 		u32						crc;			// contents CRC
 		u32						ptr;			// pointer inside vfs
@@ -72,6 +74,9 @@ private:
 
 	xrCriticalSection			m_auth_lock		;
 	u64							m_auth_code		;
+
+	bool IsAddonPhase = false;
+	bool IsArchivePhase = false;
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
 	void						ProcessArchive	(LPCSTR path);
