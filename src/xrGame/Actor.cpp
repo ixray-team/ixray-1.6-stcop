@@ -477,16 +477,7 @@ if(!g_dedicated_server)
 	m_sInventoryBoxUseAction		= "inventory_box_use";
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
-	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
 }
-
-void CActor::legs_shift_callback(CBoneInstance* B) {
-	if(cam_active == eacFirstEye) {
-		if(g_player_hud && g_player_hud->m_legs_model) {
-			B->mTransform.c.mad(B->mTransform.k, m_fLegs_shift);
-		}
-	}
-};
 
 void CActor::PHHit(SHit &H)
 {
@@ -1016,7 +1007,8 @@ void CActor::UpdateCL	()
 			}
 		}
 	}
-	if (m_holder)
+	if(m_holder)
+
 	{
 		m_holder->UpdateEx(currentFOV());
 	}
@@ -1024,7 +1016,8 @@ void CActor::UpdateCL	()
 	{
 		UpdatePlayerView();
 	}
-	m_snd_noise -= 0.3f*Device.fTimeDelta;
+	
+	m_snd_noise -= 0.3f * Device.fTimeDelta; ////////////////////
 
 	inherited::UpdateCL				();
 	m_pPhysics_support->in_UpdateCL	();
@@ -1233,12 +1226,12 @@ void CActor::UpdatePlayerView()
 		Feel_Grenade_Update(m_fFeelGrenadeRadius);
 
 		// Dropping
-		if (b_DropActivated) 
+		if (b_DropActivated)
 		{
 			f_DropPower += dt * 0.1f;
 			clamp(f_DropPower, 0.f, 1.f);
 		}
-		else 
+		else
 		{
 			f_DropPower = 0.f;
 		}
