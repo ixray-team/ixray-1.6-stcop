@@ -211,6 +211,11 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Exit", "")) {
+					g_pEventManager->Event.Defer("KERNEL:disconnect");
+					g_pEventManager->Event.Defer("KERNEL:quit");
+				}
+
 				ImGui::EndMenu();
 			}
 

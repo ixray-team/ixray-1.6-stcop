@@ -229,7 +229,7 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 		static xr_string CurrentAddonName = "";
 
 		bool PathIsDir = std::filesystem::is_directory(name);
-		if (TempPath.Contains(addons_path) && !std::filesystem::is_directory(name) && !PathIsDir)
+		if (TempPath.Contains(addons_path) && !PathIsDir)
 		{
 			static xr_string data_path = get_path("$game_data$")->m_Path;
 			desc.wrap = xr_strdup(TempPath.data());
@@ -238,23 +238,36 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 		else if (PathIsDir)
 		{
 			static bool IsProcessingAddon = false;
-			if (CurrentAddonName.empty())
-			{
-				CurrentAddonName += TempPath.substr(addons_path.length());
-				IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
-			}
-			else if (TempPath.Contains(CurrentAddonName) && !IsProcessingAddon)
-			{
-				CurrentAddonName += TempPath.substr(CurrentAddonName.length() + addons_path.length());
-			}
-			else if (!TempPath.Contains(CurrentAddonName))
-			{
-				CurrentAddonName = "";
-				IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
 
-				if (IsProcessingAddon)
+			if (IsProcessingAddon && !TempPath.Contains(CurrentAddonName))
+			{
+				IsProcessingAddon = false;
+				Msg("Processing %s addon completed!", CurrentAddonName.c_str());
+
+				CurrentAddonName = "";
+			}
+
+			if (!IsProcessingAddon)
+			{
+				if (CurrentAddonName.empty())
 				{
 					CurrentAddonName += TempPath.substr(addons_path.length());
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+				}
+				else if (TempPath.Contains(CurrentAddonName))
+				{
+					CurrentAddonName += TempPath.substr(CurrentAddonName.length() + addons_path.length());
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+				}
+				else if (!TempPath.Contains(CurrentAddonName))
+				{
+					CurrentAddonName = "";
+					IsProcessingAddon = std::filesystem::exists((TempPath + "addon.init"));
+
+					if (IsProcessingAddon)
+					{
+						CurrentAddonName += TempPath.substr(addons_path.length());
+					}
 				}
 			}
 		}
