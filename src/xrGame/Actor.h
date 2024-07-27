@@ -101,6 +101,7 @@ public:
 
 	virtual void						shedule_Update		( u32 T ); 
 	virtual void						UpdateCL			( );
+			void						UpdatePlayerView	( );
 	
 	virtual void						OnEvent				( NET_Packet& P, u16 type		);
 

@@ -1016,169 +1016,15 @@ void CActor::UpdateCL	()
 			}
 		}
 	}
-	if(m_holder)
-		m_holder->UpdateEx( currentFOV() );
-
-	m_snd_noise -= 0.3f*Device.fTimeDelta;
-
-	//если в режиме HUD, то сама модель актера не рисуется
-	BOOL has_visible = 1;
-	BOOL has_shadow_only = 0;
-	if (character_physics_support()->IsRemoved())
-		has_visible = 0;
-	if (HUDview())
+	if (m_holder)
 	{
-		has_visible = 0;
-		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+		m_holder->UpdateEx(currentFOV());
 	}
 	else
 	{
-		Fvector cent;
-		Center(cent);
-		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
-		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
-		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
-		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+		UpdatePlayerView();
 	}
-	setVisible(has_visible, has_shadow_only);
-
-	if(IsFocused())
-	{
-		BOOL bHudView				= HUDview();
-		if(bHudView)
-		{
-			CInventoryItem* pInvItem	= inventory().ActiveItem();	
-			if( pInvItem )
-			{
-				CHudItem* pHudItem		= smart_cast<CHudItem*>(pInvItem);	
-				if(pHudItem)
-				{
-					if( pHudItem->IsHidden() )
-					{
-						g_player_hud->detach_item(pHudItem);
-					}
-					else
-					{
-						g_player_hud->attach_item(pHudItem);
-					}
-				}
-			}else
-			{
-					g_player_hud->detach_item_idx	( 0 );
-					//Msg("---No active item in inventory(), item 0 detached.");
-			}
-
-			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-			if(pDetector)
-			{
-				if(pDetector->IsHidden())
-				{
-					g_player_hud->detach_item(pDetector->cast_hud_item());
-				}
-				else if(!g_player_hud->attached_item(1))
-				{
-					g_player_hud->attach_item(pDetector->cast_hud_item());
-				}
-			}
-		}
-		else
-		{
-			g_player_hud->detach_all_items();
-			//Msg("---No hud view found, all items detached.");
-		}
-			
-	}
-
-	float dt = Device.fTimeDelta;
-
-	// Check controls, create accel, prelimitary setup "mstate_real"
-	
-	//----------- for E3 -----------------------------
-//	if (Local() && (OnClient() || Level().CurrentEntity()==this))
-	if (Level().CurrentControlEntity() == this && !Level().IsDemoPlay())
-	//------------------------------------------------
-	{
-		g_cl_CheckControls		(mstate_wishful,NET_SavedAccel,NET_Jump,dt);
-		{
-			/*
-			if (mstate_real & mcJump)
-			{
-				NET_Packet	P;
-				u_EventGen(P, GE_ACTOR_JUMPING, ID());
-				P.w_sdir(NET_SavedAccel);
-				P.w_float(NET_Jump);
-				u_EventSend(P);
-			}
-			*/
-		}
-		g_cl_Orientate			(mstate_real,dt);
-		g_Orientate				(mstate_real,dt);
-
-		g_Physics				(NET_SavedAccel,NET_Jump,dt);
-		
-		g_cl_ValidateMState		(dt,mstate_wishful);
-		g_SetAnimation			(mstate_real);
-		
-		// Check for game-contacts
-		Fvector C; float R;		
-		//m_PhysicMovementControl->GetBoundingSphere	(C,R);
-		
-		Center( C );
-		R = Radius();
-		feel_touch_update( C, R );
-		Feel_Grenade_Update( m_fFeelGrenadeRadius );
-
-		// Dropping
-		if (b_DropActivated)	{
-			f_DropPower			+= dt*0.1f;
-			clamp				(f_DropPower,0.f,1.f);
-		} else {
-			f_DropPower			= 0.f;
-		}
-		if (!Level().IsDemoPlay())
-		{		
-		mstate_wishful &=~mcAccel;
-		mstate_wishful &=~mcLStrafe;
-		mstate_wishful &=~mcRStrafe;
-		mstate_wishful &=~mcLLookout;
-		mstate_wishful &=~mcRLookout;
-		mstate_wishful &=~mcFwd;
-		mstate_wishful &=~mcBack;
-		if( !psActorFlags.test(AF_CROUCH_TOGGLE) )
-			mstate_wishful &=~mcCrouch;
-		}
-	}
-	else 
-	{
-		make_Interpolation();
-	
-		if (NET.size())
-		{
-			
-//			NET_SavedAccel = NET_Last.p_accel;
-//			mstate_real = mstate_wishful = NET_Last.mstate;
-
-			g_sv_Orientate				(mstate_real,dt			);
-			g_Orientate					(mstate_real,dt			);
-			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
-			if (!m_bInInterpolation)
-				g_cl_ValidateMState			(dt,mstate_wishful);
-			g_SetAnimation				(mstate_real);
-			
-			set_state_box(NET_Last.mstate);
-
-
-		}	
-		mstate_old = mstate_real;
-	}
-/*
-	if (this == Level().CurrentViewEntity())
-	{
-		UpdateMotionIcon		(mstate_real);
-	};
-*/
-	NET_Jump = 0;
-
+	m_snd_noise -= 0.3f*Device.fTimeDelta;
 
 	inherited::UpdateCL				();
 	m_pPhysics_support->in_UpdateCL	();
@@ -1294,6 +1140,143 @@ void CActor::UpdateCL	()
 	pPickup->SetPickupMode(false);
 }
 
+void CActor::UpdatePlayerView()
+{
+	//если в режиме HUD, то сама модель актера не рисуется
+	BOOL has_visible = 1;
+	BOOL has_shadow_only = 0;
+	if (character_physics_support()->IsRemoved())
+		has_visible = 0;
+	if (HUDview())
+	{
+		has_visible = 0;
+		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+	}
+	else if (IsGameTypeSingle())
+	{
+		Fvector cent;
+		Center(cent);
+		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
+		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
+		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
+	}
+	setVisible(has_visible, has_shadow_only);
+
+	if (IsFocused())
+	{
+		BOOL bHudView = HUDview();
+		if (bHudView)
+		{
+			CInventoryItem* pInvItem = inventory().ActiveItem();
+			if (pInvItem)
+			{
+				CHudItem* pHudItem = smart_cast<CHudItem*>(pInvItem);
+				if (pHudItem)
+				{
+					if (pHudItem->IsHidden())
+					{
+						g_player_hud->detach_item(pHudItem);
+					}
+					else
+					{
+						g_player_hud->attach_item(pHudItem);
+					}
+				}
+			}
+			else
+			{
+				g_player_hud->detach_item_idx(0);
+			}
+
+			CHudItem* pDetector = smart_cast<CHudItem*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+			if (pDetector)
+			{
+				if (pDetector->IsHidden())
+				{
+					g_player_hud->detach_item(pDetector->cast_hud_item());
+				}
+				else if (!g_player_hud->attached_item(1))
+				{
+					g_player_hud->attach_item(pDetector->cast_hud_item());
+				}
+			}
+		}
+		else
+		{
+			g_player_hud->detach_all_items();
+		}
+	}
+
+	float dt = Device.fTimeDelta;
+
+	// Check controls, create accel, prelimitary setup "mstate_real"
+	//----------- for E3 -----------------------------
+	if (Level().CurrentControlEntity() == this && !Level().IsDemoPlay())
+		//------------------------------------------------
+	{
+		g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
+		g_cl_Orientate(mstate_real, dt);
+		g_Orientate(mstate_real, dt);
+
+		g_Physics(NET_SavedAccel, NET_Jump, dt);
+
+		g_cl_ValidateMState(dt, mstate_wishful);
+		g_SetAnimation(mstate_real);
+
+		// Check for game-contacts
+		Fvector C;
+		Center(C);
+		float R = Radius();
+
+		feel_touch_update(C, R);
+		Feel_Grenade_Update(m_fFeelGrenadeRadius);
+
+		// Dropping
+		if (b_DropActivated) 
+		{
+			f_DropPower += dt * 0.1f;
+			clamp(f_DropPower, 0.f, 1.f);
+		}
+		else 
+		{
+			f_DropPower = 0.f;
+		}
+		if (!Level().IsDemoPlay())
+		{
+			mstate_wishful &= ~mcAccel;
+			mstate_wishful &= ~mcLStrafe;
+			mstate_wishful &= ~mcRStrafe;
+			mstate_wishful &= ~mcLLookout;
+			mstate_wishful &= ~mcRLookout;
+			mstate_wishful &= ~mcFwd;
+			mstate_wishful &= ~mcBack;
+			if (!psActorFlags.test(AF_CROUCH_TOGGLE))
+				mstate_wishful &= ~mcCrouch;
+		}
+	}
+	else
+	{
+		make_Interpolation();
+
+		if (NET.size())
+		{
+			g_sv_Orientate(mstate_real, dt);
+			g_Orientate(mstate_real, dt);
+			g_Physics(NET_SavedAccel, NET_Jump, dt);
+			if (!m_bInInterpolation)
+				g_cl_ValidateMState(dt, mstate_wishful);
+			g_SetAnimation(mstate_real);
+
+			set_state_box(NET_Last.mstate);
+
+
+		}
+		mstate_old = mstate_real;
+	}
+
+	NET_Jump = 0;
+}
 
 void CActor::set_state_box(u32	mstate)
 {
