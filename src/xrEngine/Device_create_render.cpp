@@ -209,8 +209,16 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	{
 		auto& States = Engine.External.EditorStates;
 
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu("File")) {
+		if (ImGui::BeginMainMenuBar()) 
+		{
+			if (ImGui::BeginMenu("File"))
+			 {
+				if (ImGui::MenuItem("Exit", "")) 
+				{
+					g_pEventManager->Event.Defer("KERNEL:disconnect");
+					g_pEventManager->Event.Defer("KERNEL:quit");
+				}
+
 				ImGui::EndMenu();
 			}
 
