@@ -20,6 +20,12 @@ public:
 	virtual		LPCSTR				type_name() const { return "freemp"; };
 	void							net_Relcase(CObject* O) {};
 
+	void									AddMoneyToPlayer(game_PlayerState* ps, s32 amount);
+	void									SpawnItemToActor(u16 actorId, LPCSTR name);
+	virtual		void				on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
+	//virtual		void				OnPlayerTrade(NET_Packet& P, ClientID const& clientID);  //disabled in omp
+	virtual		void				OnTransferMoney(NET_Packet& P, ClientID const& clientID);
+
 
 	virtual		void				OnPlayerReady(ClientID id_who);
 	virtual		void				OnPlayerConnect(ClientID id_who);
@@ -32,4 +38,20 @@ public:
 
 	virtual		void				Update();
 	virtual		BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = false);
+
+
+	bool				SpawnItem(LPCSTR section, u16 parent);
+	bool				SpawnItemToPos(LPCSTR section, Fvector3 position);
+
+	IC			xrServer& server() const
+	{
+		VERIFY(m_server);
+		return						(*m_server);
+	}
+
+	IC			CALifeSimulator& alife() const
+	{
+		VERIFY(m_alife_simulator);
+		return						(*m_alife_simulator);
+	}
 };

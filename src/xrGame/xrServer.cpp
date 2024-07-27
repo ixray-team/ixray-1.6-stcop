@@ -43,7 +43,7 @@ void	xrClientData::Clear()
 	net_PassUpdates							= TRUE;
 	m_ping_warn.m_maxPingWarnings			= 0;
 	m_ping_warn.m_dwLastMaxPingWarningTime	= 0;
-	m_admin_rights.m_has_admin_rights		= FALSE;
+	m_admin_rights.m_has_admin_rights		= TRUE;
 };
 
 
