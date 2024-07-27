@@ -21,6 +21,7 @@
 #include "DemoPlay_Control.h"
 #include "account_manager_console.h"
 #include "gamespy/GameSpy_GP.h"
+#include "HUDManager.h"
 
 EGameIDs	ParseStringToGameType	(LPCSTR str);
 LPCSTR		GameTypeToString		(EGameIDs gt, bool bShort);
@@ -1943,8 +1944,381 @@ public:
 	virtual void	Info	(TInfo& I){xr_strcpy(I,"valid arguments is [info info_full on off]"); }
 };
 
+
+class CCC_GSpawn_mp : public IConsole_Command {
+public:
+	CCC_GSpawn_mp(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (pSettings->section_exist(arguments))
+		{
+			Fvector3 pos, dir, madPos;
+			float range;
+			pos.set(Device.vCameraPosition);
+			dir.set(Device.vCameraDirection);
+			collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+
+			if (RQ.O)
+			{
+				Msg("! ERROR: Can spawn only on ground");
+				return;
+			}
+
+			range = RQ.range;
+			dir.normalize();
+			madPos.mad(pos, dir, range);
+
+			NET_Packet		P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "sv_spawn_on_position %s %f %f %f", arguments, madPos.x, madPos.y, madPos.z);
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+		else
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn item. Format: \"g_spawn <item section>\"");
+			return;
+		}
+	}
+	virtual void		Save(IWriter* F) {};
+
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				|| sect->line_exist("species"))
+				tips.push_back(sect->Name);
+		}
+	}
+};
+
+
+
+class CCC_SpawnOnPosition : public IConsole_Command {
+public:
+	CCC_SpawnOnPosition(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (!g_pGameLevel || !Level().Server) return;
+
+		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		if (!srv) return;
+
+		string256 section;
+		Fvector3 vec;
+
+		string1024 buff;
+		exclude_raid_from_args(arguments, buff, sizeof(buff));
+
+		if (sscanf_s(buff, "%s %f %f %f", &section, sizeof(section), &vec.x, &vec.y, &vec.z) != 4)
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn object. Format: \"sv_spawn_on_position <item section> <position>\"");
+			return;
+		}
+		srv->SpawnItemToPos(section, vec);
+
+	}
+	virtual void		Save(IWriter* F) {};
+};
+
+
+/*
+class CCC_SpawnToInventory : public IConsole_Command {
+public:
+	CCC_SpawnToInventory(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (!g_pGameLevel || !Level().Server) return;
+		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		if (!srv) return;
+		ClientID client_id(0);
+		u32 tmp_client_id;
+		string256 section;
+		string1024 buff;
+		exclude_raid_from_args(arguments, buff, sizeof(buff));
+		if (sscanf_s(buff, "%u %s", &tmp_client_id, &section, sizeof(section)) != 2)
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn item to player. Format: \"sv_spawn_to_player_inv <player session id> <item section>\"");
+			return;
+		}
+		client_id.set(tmp_client_id);
+		xrClientData* CL = static_cast<xrClientData*>(Level().Server->GetClientByID(client_id));
+		if (CL && CL->owner)
+		{
+			srv->SpawnItem(section, CL->owner->ID);
+		}
+		else
+		{
+			Msg("! Can't spawn item to client %u", client_id.value());
+		}
+	}
+	virtual void		Save(IWriter* F) {};
+};
+class CCC_SpawnToObjWithId : public IConsole_Command {
+public:
+	CCC_SpawnToObjWithId(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (!g_pGameLevel || !Level().Server) return;
+		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		if (!srv) return;
+		u16 tmp_id;
+		string256 section;
+		string1024 buff;
+		exclude_raid_from_args(arguments, buff, sizeof(buff));
+		if (sscanf_s(buff, "%hu %s", &tmp_id, &section, sizeof(section)) != 2)
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn item by ID. Format: \"sv_spawn_to_obj_with_id <player id> <item section>\"");
+			return;
+		}
+		if (Level().Objects.net_Find(tmp_id))
+		{
+			srv->SpawnItem(section, tmp_id);
+		}
+		else
+		{
+			Msg("! Can't spawn item to parent %u", tmp_id);
+		}
+	}
+	virtual void		Save(IWriter* F) {};
+};
+class CCC_GSpawnToInventorySelf : public IConsole_Command {
+public:
+	CCC_GSpawnToInventorySelf(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (pSettings->section_exist(arguments))
+		{
+			NET_Packet		P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "sv_spawn_to_player_inv %u %s", Game().local_svdpnid.value(), arguments);
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+		else
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn item to player. Format: \"g_spawn_to_inv <item section>\"");
+			return;
+		}
+	}
+	virtual void		Save(IWriter* F) {};
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if (sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				tips.push_back(sect->Name);
+		}
+	}
+};
+class CCC_GSpawnToInventory_mp : public IConsole_Command {
+public:
+	CCC_GSpawnToInventory_mp(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+	virtual void		Execute(LPCSTR arguments)
+	{
+		if (pSettings->section_exist(arguments))
+		{
+			collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+			CInventoryOwner* invOwner = smart_cast<CInventoryOwner*>(RQ.O);
+			CInventoryBox* invBox = smart_cast<CInventoryBox*>(RQ.O);
+			if (RQ.O && (invOwner || invBox))
+			{
+				NET_Packet		P;
+				P.w_begin(M_REMOTE_CONTROL_CMD);
+				string128 str;
+				xr_sprintf(str, "sv_spawn_to_obj_with_id %hu %s", RQ.O->ID(), arguments);
+				P.w_stringZ(str);
+				Level().Send(P, net_flags(TRUE, TRUE));
+				return;
+			}
+			else
+			{
+				Msg("! ERROR: cant spawn to inventory.");
+			}
+		}
+		else
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Spawn item. Format: \"g_spawn_to_inv <item section>\"");
+			return;
+		}
+	}
+	virtual void		Save(IWriter* F) {};
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		for (auto sect : pSettings->sections())
+		{
+			if (sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
+				tips.push_back(sect->Name);
+		}
+	}
+};
+*/
+
+class CCC_GiveMoneyToPlayer : public IConsole_Command {
+public:
+	CCC_GiveMoneyToPlayer(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void	Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel || !Level().Server) return;
+
+		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		if (!srv) return;
+
+		string1024 buff;
+		exclude_raid_from_args(args, buff, sizeof(buff));
+
+		ClientID client_id(0);
+		u32 tmp_client_id;
+		s32 money;
+
+		if (sscanf_s(buff, "%u %d", &tmp_client_id, &money) != 2)
+		{
+			Msg("! ERROR: bad command parameters.");
+			Msg("Give money to player. Format: \"sv_give_money <player session id> <money>\"");
+			return;
+		}
+		client_id.set(tmp_client_id);
+
+		xrClientData* CL = static_cast<xrClientData*>(Level().Server->GetClientByID(client_id));
+
+		if (CL && CL->ps && (CL != Level().Server->GetServerClient()))
+		{
+			s64 total_money = CL->ps->money_for_round;
+			total_money += money;
+
+			if (total_money < 0)
+				total_money = 0;
+
+			if (total_money > std::numeric_limits<s32>().max())
+			{
+				Msg("! The limit of the maximum amount of money has been exceeded");
+				return;
+			}
+
+			CL->ps->money_for_round = s32(total_money);
+			srv->signal_Syncronize();
+		}
+		else
+		{
+			Msg("! Can't give money to client %u", client_id.value());
+		}
+	}
+};
+
+
+class CCC_TransferMoney : public IConsole_Command {
+public:
+	CCC_TransferMoney(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void	Execute(LPCSTR args)
+	{
+		string4096 buff;
+		xr_strcpy(buff, args);
+
+		static _locale_t current_locale = _create_locale(LC_ALL, "");
+
+		u32 len = xr_strlen(buff);
+		if (0 == len)
+			return;
+
+		if (IsGameTypeSingle()) return;
+		if (g_dedicated_server) return;
+		if (!(&Level())) return;
+		if (!(&Game())) return;
+
+		if (!Game().local_player)
+			return;
+
+		if (Game().local_player && Game().local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
+			return;
+
+		CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+		if (!pActor || !pActor->is_alive())
+			return;
+
+		string128 name;
+		s32 money;
+
+		if (sscanf_s(args, "%d %s", &money, &name, sizeof(name)) != 2)
+		{
+			Msg("! Transfer money to player. Format: \"transfer_money <money> <player name>\"");
+			return;
+		}
+		if (Game().local_player->money_for_round < money)
+		{
+			Msg("! You don't have enough money!");
+			return;
+		}
+
+		_strlwr_l(_Trim(name), current_locale);
+
+		bool wasSent = false;
+
+		for (auto& player : Game().players)
+		{
+			game_PlayerState* ps = player.second;
+			if (ps->GameID == Game().local_player->GameID)
+			{
+				continue;
+			}
+
+			string128 player_name;
+			xr_strcpy(player_name, ps->getName());
+			_strlwr_l(player_name, current_locale);
+
+			if (xr_strcmp(player_name, name) == 0)
+			{
+				NET_Packet					P;
+				Game().u_EventGen(P, GE_GAME_EVENT, pActor->ID());
+				P.w_u16(GAME_EVENT_TRANSFER_MONEY);
+				P.w_clientID(player.first); // to
+				P.w_s32(money); // money
+				Game().u_EventSend(P);
+				wasSent = true;
+				break;
+			}
+		}
+
+		if (wasSent)
+		{
+			Msg("- The money was transferred successfully!");
+		}
+		else
+		{
+			Msg("! Failed to send money to player with name: \"%s\".", name);
+		}
+	}
+};
+
+
+
+
+
 void register_mp_console_commands()
 {
+	//CMD1(CCC_SpawnToInventory, "sv_spawn_to_player_inv");
+	//CMD1(CCC_SpawnToObjWithId, "sv_spawn_to_obj_with_id");
+	CMD1(CCC_SpawnOnPosition, "sv_spawn_on_position");
+	CMD1(CCC_GSpawn_mp, "g_spawn");
+	//CMD1(CCC_GSpawnToInventorySelf, "g_spawn_to_self_inv");
+	//CMD1(CCC_GSpawnToInventory_mp, "g_spawn_to_inv");
+
+	CMD1(CCC_GiveMoneyToPlayer, "sv_give_money");
+	CMD1(CCC_TransferMoney, "transfer_money");
+
+
 	CMD1(CCC_Restart,				"g_restart"				);
 	CMD1(CCC_RestartFast,			"g_restart_fast"		);
 	CMD1(CCC_Kill,					"g_kill"				);

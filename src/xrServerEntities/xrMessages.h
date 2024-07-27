@@ -228,6 +228,10 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_PLAYERS_INFO_REPLY,
 
 	//-----------------------------------------
+	GAME_EVENT_MP_TRADE,
+	GAME_EVENT_TRANSFER_MONEY,
+
+	//-----------------------------------------
 	GAME_EVENT_SCRIPT_BEGINS_FROM,		// don't add messages after this
 	GAME_EVENT_FORCEDWORD				= u32(-1)
 };
