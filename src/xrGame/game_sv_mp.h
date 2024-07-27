@@ -216,6 +216,9 @@ public:
 	virtual		void				Player_AddMoney			(game_PlayerState* ps, s32 MoneyAmount);
 				void				SpawnPlayer				(ClientID id, LPCSTR N);
 
+				bool				SpawnItem(LPCSTR section, u16 parent);
+				bool				SpawnItemToPos(LPCSTR section, Fvector3 position);
+
 	IC xrServer& server() const
 	{
 		VERIFY(m_server);
