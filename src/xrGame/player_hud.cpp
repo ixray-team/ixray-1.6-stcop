@@ -682,10 +682,36 @@ void player_hud::render_hud()
 			m_legs_model->CalculateBones_Invalidate();
 			m_legs_model->CalculateBones(TRUE);
 
-			for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
-				m_legs_model->LL_GetBoneInstance(i).mTransform.set(actor_model->LL_GetBoneInstance(i).mTransform);
-				m_legs_model->LL_GetBoneInstance(i).mRenderTransform.mul_43(m_legs_model->LL_GetBoneInstance(i).mTransform, m_legs_model->LL_GetData(i).m2b_transform);
+			if(m_legs_model->LL_BoneCount() == actor_model->LL_BoneCount()) {
+				for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
+					auto& BoneInstance = m_legs_model->LL_GetBoneInstance(i);
+					BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(i).mTransform);
+					BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(i).m2b_transform);
+				}
 			}
+			else {
+				auto setBoneTransform = [actor_model, this](u16 ID, shared_str bonename) {
+					auto BoneID = actor_model->LL_BoneID(bonename);
+					if(BoneID != BI_NONE) {
+						auto& BoneInstance = m_legs_model->LL_GetBoneInstance(ID);
+						BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(BoneID).mTransform);
+						BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(ID).m2b_transform);
+					}
+				};
+
+				setBoneTransform(0, "root_stalker");
+				setBoneTransform(1, "bip01");
+
+				shared_str bonename;
+				for(u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
+					bonename = m_legs_model->LL_BoneName_dbg(i);
+					setBoneTransform(i, bonename);
+				}
+			}
+
+			auto BoneID = m_legs_model->LL_BoneID("bip01_spine");
+			auto& BoneInstance = m_legs_model->LL_GetData(BoneID);
+			m_legs_model->Bone_Calculate(&BoneInstance, &m_legs_model->LL_GetTransform(BoneInstance.GetParentID()));
 
 			::Render->set_HUD(FALSE);
 
