@@ -325,7 +325,12 @@ void CDetailManager::Render	()
 	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
 
 #ifndef _EDITOR
-	float factor			= g_pGamePersistent->Environment().wind_strength_factor;
+	float _factor = g_pGamePersistent->Environment().wind_strength_factor;
+	static float factor = _factor;
+	static float lastTime = 0.0f;
+	float fTimeDelta = Device.fTimeDelta - lastTime; fTimeDelta *= 0.5f;
+	factor += clampr(_factor - factor, -fTimeDelta, fTimeDelta);
+	lastTime = Device.fTimeDelta;
 #else
 	float factor			= 0.3f;
 #endif
