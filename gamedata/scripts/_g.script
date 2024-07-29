@@ -3,10 +3,6 @@ if (jit == nil) then
 	profiler.setup_hook	()
 end
 
-jit.opt.start(2)
-
-string.gfind = string.gmatch
-math.mod = math.fmod
 math.randomseed(time_global())
 
 isMarshal = marshal ~= nil
@@ -506,39 +502,6 @@ function npc_in_actor_frustrum(npc)
 	return yaw < 35
 end
 
-local intercepts = {
-	save_state						= {},
-	load_state						= {}
-}
-
-function RegisterScriptCallback(name, func_or_userdata)
-	if (func_or_userdata == nil) then 
-		callstack()
-	end
-	
-	if (intercepts[name]) then
-		intercepts[name][func_or_userdata] = true
-	end
-end
-
-function UnregisterScriptCallback(name, func_or_userdata)
-	if (intercepts[name]) then
-		intercepts[name][func_or_userdata] = nil
-	end
-end
-
-function SendScriptCallback(name,...)
-	if (intercepts[name]) then
-		for func_or_userdata,v in pairs(intercepts[name]) do 
-			if (type(func_or_userdata) == "function") then 
-				func_or_userdata(...)
-			elseif (func_or_userdata[name]) then
-				func_or_userdata[name](func_or_userdata,...)
-			end
-		end
-	end
-end
-
 function start_game_callback()
 	aa = alife()
 
@@ -891,34 +854,5 @@ function show_all_ui(show)
 			hud:hide_messages()
 --	    db.actor:hide_weapon()
 			db.actor:disable_hit_marks(true)
-	end
-end
-
---// LuaPandas
-DebuggerMode = false
-
-function debug_jit_off()
-	if DebuggerMode then
-		if jit then jit.off() end
-	end
-end
-
-function debug_jit_on()
-	if DebuggerMode then
-		if jit then jit.on() end
-	end
-end
-
-function debugger_attach() 
-	if DebuggerMode then
-		debug_jit_off()
-		LuaPanda.reConnect()
-		debug_jit_on()
-	else
-		debug_jit_off()
-		SemiLog('LuaPanda starting...')
-		LuaPanda.start("127.0.0.1", 8818)
-		DebuggerMode = true
-		debug_jit_on()
 	end
 end
