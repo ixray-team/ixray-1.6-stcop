@@ -188,18 +188,6 @@ public:
 	}
 };
 
-
-XRCORE_API void _dump_open_files(int mode);
-class CCC_DumpOpenFiles : public IConsole_Command
-{
-public:
-	CCC_DumpOpenFiles(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = FALSE; };
-	virtual void Execute(LPCSTR args) {
-		int _mode			= atoi(args);
-		_dump_open_files	(_mode);
-	}
-};
-
 //-----------------------------------------------------------------------
 class CCC_SaveCFG : public IConsole_Command
 {
@@ -800,10 +788,6 @@ void CCC_Register()
 	extern	int	g_Dump_Import_Obj;
 	CMD4(CCC_Integer,	"net_dbg_dump_export_obj",	&g_Dump_Export_Obj, 0, 1);
 	CMD4(CCC_Integer,	"net_dbg_dump_import_obj",	&g_Dump_Import_Obj, 0, 1);
-
-#ifdef DEBUG	
-	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
-#endif
 
 	CMD1(CCC_ExclusiveMode,		"input_exclusive_mode");
 	CMD2(CCC_Boolean,		"input_enable_gamepad", &dsEnableGamepad);

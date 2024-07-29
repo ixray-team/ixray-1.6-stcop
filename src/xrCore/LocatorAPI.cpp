@@ -16,155 +16,13 @@
 
 constexpr u32 BIG_FILE_READER_WINDOW_SIZE = 1024*1024;
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
-CLocatorAPI*		xr_FS = nullptr;
+CLocatorAPI* xr_FS = nullptr;
 
 #ifdef _EDITOR
-#	define FSLTX	"fs.ltx"
+#	define FSLTX "fs.ltx"
 #else
-#	define FSLTX	"fsgame.ltx"
+#	define FSLTX "fsgame.ltx"
 #endif
-
-struct _open_file
-{
-	union {
-		IReader*		_reader;
-		CStreamReader*	_stream_reader;
-	};
-	shared_str			_fn;
-	u32					_used;
-};
-
-template <typename T>
-struct eq_pointer;
-
-template <>
-struct eq_pointer<IReader>{
-	IReader* _val;
-	eq_pointer(IReader* p):_val(p){}
-	bool operator () (_open_file& itm){
-		return ( _val==itm._reader );
-	}
-};
-template <>
-struct eq_pointer<CStreamReader>{
-	CStreamReader* _val;
-	eq_pointer(CStreamReader* p):_val(p){}
-	bool operator () (_open_file& itm){
-		return ( _val==itm._stream_reader );
-	}
-};
-struct eq_fname_free{
-	shared_str _val;
-	eq_fname_free(shared_str s){_val = s;}
-	bool operator () (_open_file& itm){
-		return ( _val==itm._fn && itm._reader==nullptr);
-	}
-};
-struct eq_fname_check{
-	shared_str _val;
-	eq_fname_check(shared_str s){_val = s;}
-	bool operator () (_open_file& itm){
-		return ( _val==itm._fn && itm._reader!=nullptr);
-	}
-};
-
-XRCORE_API xr_vector<_open_file>	g_open_files;
-
-void _check_open_file(const shared_str& _fname)
-{
-	xr_vector<_open_file>::iterator it	= std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_check(_fname) );
-	if(it!=g_open_files.end())
-		Msg("file opened at least twice %s", _fname.c_str());
-}
-
-_open_file& find_free_item(const shared_str& _fname)
-{
-	xr_vector<_open_file>::iterator it	= std::find_if(g_open_files.begin(), g_open_files.end(), eq_fname_free(_fname) );
-	if(it==g_open_files.end())
-	{
-		g_open_files.resize		(g_open_files.size()+1);
-		_open_file& _of			= g_open_files.back();
-		_of._fn					= _fname;
-		_of._used				= 0;
-		return					_of;
-	}
-	return *it;
-}
-
-void setup_reader(CStreamReader* _r, _open_file& _of)
-{
-	_of._stream_reader		= _r;
-}
-
-void setup_reader(IReader* _r, _open_file& _of)
-{
-	_of._reader				= _r;
-}
-
-template <typename T>
-void _register_open_file(T* _r, LPCSTR _fname)
-{
-	xrCriticalSection		_lock;
-	_lock.Enter				();
-
-	shared_str f			= _fname;
-	_check_open_file		(f);
-	
-	_open_file& _of			= find_free_item(_fname);
-	setup_reader			(_r,_of);
-	_of._used				+= 1;
-
-	_lock.Leave				();
-}
-
-template <typename T>
-void _unregister_open_file(T* _r)
-{
-	xrCriticalSection		_lock;
-	_lock.Enter				();
-
-	xr_vector<_open_file>::iterator it	= std::find_if(g_open_files.begin(), g_open_files.end(), eq_pointer<T>(_r) );
-	VERIFY								(it!=g_open_files.end());
-	_open_file&	_of						= *it;
-	_of._reader							= nullptr;
-	_lock.Leave				();
-}
-
-XRCORE_API void _dump_open_files(int mode)
-{
-	bool bShow = false;
-	if (mode == 1)
-	{
-		for (_open_file& _of : g_open_files)
-		{
-			if (_of._reader != nullptr)
-			{
-				if (!bShow)
-					Log("----opened files");
-
-				bShow = true;
-				Msg("[%d] fname:%s", _of._used, _of._fn.c_str());
-			}
-		}
-	}
-	else
-	{
-		Log("----un-used");
-		for (_open_file& _of : g_open_files)
-		{
-			if (_of._reader == nullptr)
-				Msg("[%d] fname:%s", _of._used, _of._fn.c_str());
-		}
-	}
-
-	if (bShow)
-		Msg("----total count=%d", (int)g_open_files.size());
-}
 
 void CLocatorAPI::ParseIgnoreList()
 {
@@ -199,9 +57,6 @@ bool CLocatorAPI::CheckSkip(const xr_string& Path) const
 }
 
 CLocatorAPI::CLocatorAPI()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_auth_lock			(MUTEX_PROFILE_ID(CLocatorAPI::m_auth_lock))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
     m_Flags.zero();
 	// get page size
@@ -213,7 +68,6 @@ CLocatorAPI::CLocatorAPI()
 CLocatorAPI::~CLocatorAPI()
 {
 	VERIFY				(0==m_iLockRescan);
-	_dump_open_files	(1);
 }
 
 void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
@@ -857,9 +711,6 @@ IReader *CLocatorAPI::setup_fs_ltx	(LPCSTR fs_name)
 		copy_file_to_build	(result, fs_file_name);
 #endif // DEBUG
 
-	if (m_Flags.test(flDumpFileActivity))
-		_register_open_file	(result, fs_file_name);
-
 	return			(result);
 }
 
@@ -988,9 +839,6 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			pAppdataPath->_set_root(c_newAppPathRoot);
 			rescan_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
 		}
-
-		int x = 0;
-		x = x;
 	}
 
 	rec_files.clear();
@@ -1523,36 +1371,27 @@ T *CLocatorAPI::r_open_impl	(LPCSTR path, LPCSTR _fname)
 		copy_file_to_build	(R,source_name);
 #endif // DEBUG
 
-	if (m_Flags.test(flDumpFileActivity))
-		_register_open_file	(R,fname);
-
-	return					(R);
+	return (R);
 }
 
-CStreamReader* CLocatorAPI::rs_open	(LPCSTR path, LPCSTR _fname)
+CStreamReader* CLocatorAPI::rs_open(LPCSTR path, LPCSTR _fname)
 {
-	return					(r_open_impl<CStreamReader>(path,_fname));
+	return (r_open_impl<CStreamReader>(path, _fname));
 }
 
-IReader *CLocatorAPI::r_open	(LPCSTR path, LPCSTR _fname)
+IReader* CLocatorAPI::r_open(LPCSTR path, LPCSTR _fname)
 {
-	return					(r_open_impl<IReader>(path,_fname));
+	return (r_open_impl<IReader>(path, _fname));
 }
 
-void	CLocatorAPI::r_close	(IReader* &fs)
+void CLocatorAPI::r_close(IReader*& fs)
 {
-	if( m_Flags.test(flDumpFileActivity) )
-		_unregister_open_file	(fs);
-
-	xr_delete					(fs);
+	xr_delete(fs);
 }
 
-void	CLocatorAPI::r_close	(CStreamReader* &fs)
+void CLocatorAPI::r_close(CStreamReader*& fs)
 {
-	if( m_Flags.test(flDumpFileActivity) )
-		_unregister_open_file	(fs);
-
-	fs->close					();
+	fs->close();
 }
 
 IWriter* CLocatorAPI::w_open	(LPCSTR path, LPCSTR _fname)

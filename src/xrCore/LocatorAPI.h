@@ -100,7 +100,6 @@ public:
 		flCacheFiles			= (1<<6),
 		flScanAppRoot			= (1<<7),
 		flNeedCheck				= (1<<8),
-		flDumpFileActivity		= (1<<9),
 	};    
 	Flags32						m_Flags			;
 	u32							dwAllocGranularity;
