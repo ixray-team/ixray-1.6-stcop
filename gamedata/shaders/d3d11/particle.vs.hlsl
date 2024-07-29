@@ -42,3 +42,4 @@ v2p main(vv v)
     o.fog = 1.0f - calc_fogging(v.P); // fog, input in world coords
     return o;
 }
+

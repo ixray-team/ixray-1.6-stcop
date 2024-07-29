@@ -144,9 +144,9 @@ float4 combine_bloom(float3 low, float4 high)
     return float4(low + high * high.a, 1.f);
 }
 
-float calc_fogging(float4 w_pos)
+float calc_fogging(float3 pos)
 {
-    return saturate(length(w_pos.xyz - eye_position.xyz) * fog_params.w + fog_params.x);
+    return saturate(length(pos - eye_position) * fog_params.w + fog_params.x);
 }
 
 float2 unpack_tc_base(float2 tc, float du, float dv)

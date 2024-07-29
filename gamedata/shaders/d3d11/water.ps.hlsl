@@ -14,7 +14,6 @@ struct vf
 	float4 tctexgen : TEXCOORD7;
 	float3 pos : TEXCOORD8;
 	float4 c0 : COLOR0;
-	float fog : FOG;
 	float4 hpos : SV_Position;
 };
 
@@ -81,15 +80,15 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 #endif
 
     float power = pow(fresnel, 5.0f);
-	float amount = 0.25f + 0.25f * power; // 1=full env, 0=no env
+	float amount = 0.25f + 0.25f * power;
 
 	float3 final = lerp(env * amount * 0.8f, base.xyz, base.w);
-	float alpha = 0.25f + 0.65f * power; // 1=full env, 0=no env
+	float alpha = 0.25f + 0.65f * power;
 	
 	alpha = lerp(alpha, 1.0f, base.w);
 	
-#ifdef USE_SOFT_WATER
 	// Igor: additional depth test
+#ifdef USE_SOFT_WATER
 	float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
 	gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
 	
@@ -97,15 +96,12 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	float waterDepth = length(waterPos - gbd.P) * 0.75f;
 
 	//	water fog
-	float fog = 1.0f - exp(-4.0f * waterDepth);
 	float3 Fc = 0.1f * water_intensity.xxx * color;
 	final = lerp(Fc, final, alpha);
 
 	alpha = min(alpha, saturate(waterDepth));
-	alpha = max(fog, alpha);
+	alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
 
- 	// color = I.c0.xyz + L_hemi_color.xyz * I.c0.w; color *= 2.0f;
-	//	Leaves
 	float4 leaves = s_leaves.Sample(smp_base, I.tbase);
 	leaves.xyz *= water_intensity.xxx * color;
 	leaves.w *= 1.0f - base.w;
@@ -128,10 +124,6 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	alpha = max(alpha, leaves.w * fLeavesFactor);
 #endif //	USE_SOFT_WATER
 	
-	float ffog = calc_fogging(I.pos.xyzz);
-	alpha *= 1.0f - ffog * ffog;
-	
-	//	Fogging
-	final = lerp(final, fog_color, ffog);
-	return float4(final, alpha);
+	return lerp(float4(final, alpha), fog_color, calc_fogging(I.pos));
 }
+

@@ -20,11 +20,10 @@ v2p main(v_vert v)
     o.hpos = mul(m_VP, v.pos); // xform, input in world coords
     o.c = v.color;
     o.fog = calc_fogging(v.pos); // fog, input in world coords
-    o.c.rgb = lerp(o.c, fog_color, o.fog);
-    o.c.a *= 1.0f - o.fog * o.fog;
+    o.c = lerp(o.c, fog_color, o.fog);
     o.fog = 1.0f - o.fog;
 
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
-
     return o;
 }
+

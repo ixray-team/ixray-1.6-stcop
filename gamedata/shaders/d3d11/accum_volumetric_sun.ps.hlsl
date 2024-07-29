@@ -83,9 +83,7 @@ float4 main(v2p_TL I) : SV_Target
     fSturation = 0.4f * fSturation + 0.6f;
 
     float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
-    float skyblend = fog * fog;
-
-    res = lerp(res, max_density, skyblend);
+    res = lerp(res, max_density, fog);
     res *= fSturation;
 
     return res * Ldynamic_color;
