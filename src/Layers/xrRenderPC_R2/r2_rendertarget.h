@@ -212,6 +212,7 @@ public:
 	void RenderEffect(ScreenPostProcessType postProcessType);
 	void PhaseAberration();
 	void PhaseVignette();
+	void PhaseSaturation();
 
 	void						phase_ssao				();
 	void phase_fxaa(u32 pass);

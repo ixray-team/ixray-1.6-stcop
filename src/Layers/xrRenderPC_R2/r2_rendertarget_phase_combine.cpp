@@ -276,7 +276,11 @@ void	CRenderTarget::phase_combine	()
 
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
-	
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION))
+	{
+		PhaseSaturation();
+		RCache.set_Stencil(FALSE);
+	}
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE))
 	{
 		PhaseVignette();

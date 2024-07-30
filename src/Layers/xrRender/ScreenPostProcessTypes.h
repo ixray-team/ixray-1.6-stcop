@@ -3,5 +3,6 @@
 enum ScreenPostProcessType
 {
     Vignette = 0,
-    Aberration = 1
+    Aberration = 1,
+    Saturation = 2
 };

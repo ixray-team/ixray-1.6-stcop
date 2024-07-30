@@ -192,6 +192,7 @@ enum
 	R4FLAG_SSLR_ON_WATER			= (1<<12),
 	R2FLAG_SPP_VIGNETTE				= (1<<13),
 	R2FLAG_SPP_ABERRATION			= (1<<14),
+	R2FLAG_SPP_SATURATION			= (1<<15),
 };
 
 extern void						xrRender_initconsole	();

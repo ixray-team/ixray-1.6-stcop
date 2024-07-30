@@ -39,3 +39,7 @@ void CRenderTarget::PhaseAberration() {
 void CRenderTarget::PhaseVignette() {
     RenderEffect(ScreenPostProcessType::Vignette);
 }
+
+void CRenderTarget::PhaseSaturation() {
+    RenderEffect(ScreenPostProcessType::Saturation);
+}
