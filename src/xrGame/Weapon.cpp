@@ -2446,7 +2446,7 @@ u32 CWeapon::Cost() const
 
 float CWeapon::GetHudFov() {
 	auto base = inherited::GetHudFov();
-	auto zoom = m_HudFovZoom ? m_HudFovZoom : (psHUD_FOV_def * Device.fFOV / g_fov);
+	auto zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
 }
