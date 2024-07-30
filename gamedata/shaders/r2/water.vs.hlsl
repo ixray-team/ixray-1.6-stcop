@@ -28,7 +28,6 @@ struct vf
     #endif //	USE_SOFT_WATER
 #endif //	NEED_SOFT_WATER
     float4 c0 : COLOR0;
-    float fog : FOG;
 };
 
 vf main(v_vert v)
@@ -75,8 +74,6 @@ vf main(v_vert v)
     // L_final        = v.N.w        + L_ambient;
 
     o.hpos = mul(m_VP, P); // xform, input in world coords
-    o.fog = saturate(calc_fogging(v.P));
-
     o.c0 = float4(L_final, 1);
 
 //	Igor: for additional depth dest

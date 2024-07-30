@@ -52,7 +52,7 @@ uniform float4 Ldynamic_dir; // dynamic light direction         - sun
 uniform float4 J_direct[6];
 uniform float4 J_spot[6];
 
-float calc_fogging(float4 w_pos)
+float calc_fogging(float3 w_pos)
 {
     return 1.0f - saturate(length(w_pos.xyz - eye_position.xyz) * fog_params.w + fog_params.x);
 }

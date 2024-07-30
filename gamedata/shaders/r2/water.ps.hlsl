@@ -12,7 +12,6 @@ struct vf
     float3 v2point : TEXCOORD6;
     float4 tctexgen : TEXCOORD7;
     float4 c0 : COLOR0;
-    float fog : FOG;
 };
 
 uniform sampler2D s_nmap;
@@ -51,33 +50,28 @@ float4 main(vf I) : COLOR
     env *= env * L_sky_color.xyz;
 
     float power = pow(fresnel, 9.0f);
-    float amount = 0.25f + 0.55f * power; // 1=full env, 0=no env
+    float amount = 0.25f + 0.55f * power;
 
     float3 c_reflection = env * amount;
     float3 final = lerp(c_reflection, base.rgb, base.a);
 
 #ifdef NEED_SOFT_WATER
 
-    float alpha = 0.75f + 0.25f * power; // 1=full env, 0=no env
-
-    #ifdef USE_SOFT_WATER
+    float alpha = 0.75f + 0.25f * power;
     //	Igor: additional depth test
+    #ifdef USE_SOFT_WATER
     float4 _P = tex2Dproj(s_position, I.tctexgen);
 
     float2 PosTc = I.tctexgen.xy / I.tctexgen.w;
     float3 waterPos = float3((PosTc * 2 - 1) * pos_decompression_params.xy, 1) * I.tctexgen.z;
     float waterDepth = length(waterPos - _P) * 0.75f;
 
-    //	water fog
-    float fog_exp_intens = -4.0f;
-    float fog = 1 - exp(fog_exp_intens * waterDepth);
+	//	water fog
     float3 Fc = float3(0.1f, 0.1f, 0.1f) * water_intensity.r;
-	
     final = lerp(Fc, final, alpha);
 
     alpha = min(alpha, saturate(waterDepth));
-
-    alpha = max(fog, alpha);
+    alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
 
     //	Leaves
     float4 leaves = tex2D(s_leaves, I.tbase);
@@ -92,22 +86,10 @@ float4 main(vf I) : COLOR
     #endif //	USE_SOFT_WATER
     final *= I.c0;
 
-	float fog_i = saturate(1.0f - I.fog);
-
-    //	Fogging
-    final = lerp(fog_color, final, I.fog);
-    alpha *= 1.0f - fog_i * fog_i;
-
-    return float4(final, alpha);
+	return lerp(float4(final, alpha), fog_color, 1.0f - calc_fogging(I.v2point + eye_position));
 
 #else //	NEED_SOFT_WATER
-    final *= I.c0;
-
-    //	Fogging
-    final = lerp(fog_color, final, I.fog);
-
-    return float4(final, 1.0f - fog_i * fog_i);
-
+	return lerp(float4(final, 1.0f), fog_color, 1.0f - calc_fogging(I.v2point + eye_position));
 #endif //	NEED_SOFT_WATER
 }
 
