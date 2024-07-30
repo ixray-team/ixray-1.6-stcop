@@ -119,7 +119,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 	data()->m_icon_name		= pXML->Read("icon", 0, "ui_npc_u_barman");
 		
 
-	//игровое имя персонажа
+	//РёРіСЂРѕРІРѕРµ РёРјСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	data()->m_sGameName		= pXML->Read("name", 0, "");
 	data()->m_sBioText		= g_pStringTable->translate(pXML->Read("bio", 0, ""));
 
@@ -186,9 +186,36 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 	if(data()->m_Community.index() == NO_COMMUNITY_INDEX)
 		Debug.fatal(DEBUG_INFO,"wrong 'community' '%s' in specific character %s ", team, *m_OwnId);
 
-	data()->m_Rank			= pXML->ReadInt("rank", 0, NO_RANK);
+	data()->m_Rank = pXML->ReadInt("rank", 0, NO_RANK);
+	if (data()->m_Rank == NO_RANK)
+	{
+		data()->rankDef.minRank = pXML->ReadAttribInt("rank", 0, "min", data()->m_Rank);
+		data()->rankDef.maxRank = pXML->ReadAttribInt("rank", 0, "max", data()->rankDef.minRank);
+		data()->m_Rank = data()->rankDef.minRank;
+
+		R_ASSERT3(data()->rankDef.minRank != NO_RANK, "'Min rank' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->rankDef.maxRank != NO_RANK, "'Max rank' field not fulfiled for specific character", *m_OwnId);
+	}
+	else {
+		data()->rankDef.minRank = data()->rankDef.maxRank = data()->m_Rank;
+	}
+
 	R_ASSERT3(data()->m_Rank != NO_RANK, "'rank' field not fulfiled for specific character", *m_OwnId);
+
 	data()->m_Reputation	= pXML->ReadInt("reputation", 0, NO_REPUTATION);
+	if (data()->m_Reputation == NO_REPUTATION)
+	{
+		data()->reputationDef.minReputation = pXML->ReadAttribInt("reputation", 0, "min", data()->m_Reputation);
+		data()->reputationDef.maxReputation = pXML->ReadAttribInt("reputation", 0, "max", data()->reputationDef.minReputation);
+		data()->m_Reputation = data()->reputationDef.minReputation;
+
+		R_ASSERT3(data()->reputationDef.minReputation != NO_REPUTATION, "'Min reputation' field not fulfiled for specific character", *m_OwnId);
+		R_ASSERT3(data()->reputationDef.maxReputation != NO_REPUTATION, "'Max reputation' field not fulfiled for specific character", *m_OwnId);
+	}
+	else {
+		data()->reputationDef.minReputation = data()->reputationDef.maxReputation = data()->m_Reputation;
+	}
+
 	R_ASSERT3(data()->m_Reputation != NO_REPUTATION, "'reputation' field not fulfiled for specific character", *m_OwnId);
 
 	if(pXML->NavigateToNode(pXML->GetLocalRoot(), "money", 0))

@@ -410,11 +410,22 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 		setup_location_types_section	(monster->m_tpaTerrain, pSettings, *(selected_char.terrain_sect()));
 	}
 //----
-	if(NO_RANK == m_rank)
+	if (NO_RANK == m_rank) {
 		m_rank = selected_char.Rank();
-
-	if(NO_REPUTATION == m_reputation)
+		auto minRank = selected_char.RankDef().minRank;
+		auto maxRank = selected_char.RankDef().maxRank;
+		if (minRank != maxRank) {
+			m_rank += ::Random.randI(maxRank - minRank);
+		}
+	}
+	if (NO_REPUTATION == m_reputation) {
 		m_reputation = selected_char.Reputation();
+		auto minReputation = selected_char.ReputationDef().minReputation;
+		auto maxReputation = selected_char.ReputationDef().maxReputation;
+		if (minReputation != maxReputation) {
+			m_reputation += ::Random.randI(maxReputation - minReputation);
+		}
+	}
 
 	m_character_name = *(CStringTable().translate(selected_char.Name()));
 	
