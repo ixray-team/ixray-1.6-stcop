@@ -721,6 +721,145 @@ bool    CController::tube_ready () const
 	return m_psy_hit && m_psy_hit->tube_ready();
 }
 
+
+#include "../../../HudManager.h"
+#include "../../../../xrEngine/CameraBase.h"
+#include "../../../CharacterPhysicsSupport.h"
+
+void CController::OnEvent(NET_Packet& P, u16 type)
+{
+	inherited::OnEvent(P, type);
+
+	switch (type)
+	{
+	case GE_CONTROLLER_PSY_FIRE: {
+		u16 actor_id;
+		u8 state;
+		P.r_u16(actor_id);
+		P.r_u8(state);
+
+		if (state == 0 && actor_id == Actor()->ID())
+		{
+			m_sound_tube_prepare.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
+		}
+		if (state == 1)
+		{
+			if (actor_id == Actor()->ID())
+			{
+				HUD().SetRenderable(false);
+
+				if (CController* controller = smart_cast<CController*>(this))
+				{
+					controller->CControlledActor::install();
+					controller->CControlledActor::dont_need_turn();
+				}
+
+				// Start effector
+				CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
+				VERIFY(!ce);
+
+				Fvector src_pos = Actor()->cam_Active()->vPosition;
+				Fvector target_pos = Position();
+				target_pos.y += 1.2f;
+
+				Fvector				dir;
+				dir.sub(target_pos, src_pos);
+
+				float dist = dir.magnitude();
+				dir.normalize();
+
+
+				float const actor_psy_immunity = Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+
+				target_pos.mad(src_pos, dir, 0.01f + actor_psy_immunity * (dist - 4.8f));
+
+
+				float const base_fov = g_fov;
+				float const dest_fov = g_fov - (g_fov - 10.f) * actor_psy_immunity;
+
+				IKinematicsAnimated* skel = smart_cast<IKinematicsAnimated*>(Visual());
+
+				Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos, target_pos,
+					control().animation().motion_time(skel->ID_Cycle_Safe("psy_attack_1"), Visual()),
+					base_fov, dest_fov));
+
+				Fvector pos = Actor()->Position();
+				pos.y += 1.5f;
+
+				if (control_hit_sound._feedback()) control_hit_sound.stop();
+				control_hit_sound.play_at_pos(Actor(), pos);
+
+				dir.sub(src_pos, target_pos);
+				dir.normalize();
+				float h, p;
+				dir.getHP(h, p);
+				dir.setHP(h, p + PI_DIV_3);
+				Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
+
+				if (m_sound_tube_prepare._feedback())	m_sound_tube_prepare.stop();
+
+				m_sound_tube_start.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
+				m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
+			}
+
+			CObject* obj = Level().Objects.net_Find(actor_id);
+			Fvector my_head_pos;
+			my_head_pos.set(get_head_position(this));
+
+			Fvector position;
+			position.set(get_head_position(obj));
+			position.y -= 0.5f;
+
+			Fvector			dir;
+			dir.sub(position, my_head_pos);
+			dir.normalize();
+
+			PlayParticles(particles_fire, my_head_pos, dir);
+		}
+
+		if (state == 2)
+		{
+			CObject* obj = Level().Objects.net_Find(actor_id);
+			Fvector my_head_pos;
+			my_head_pos.set(get_head_position(this));
+
+			Fvector position;
+			position.set(get_head_position(obj));
+			position.y -= 0.5f;
+
+			Fvector			dir;
+			dir.sub(position, my_head_pos);
+			dir.normalize();
+
+			PlayParticles(particles_fire, my_head_pos, dir);
+
+			if (Actor()->ID() == actor_id) {
+				m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+				m_sound_tube_hit_right.play_at_pos(Actor(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
+
+				HUD().SetRenderable(true);
+
+				if (CController* controller = smart_cast<CController*>(this))
+					if (controller->CControlledActor::is_controlling())
+						controller->CControlledActor::release();
+
+				// Stop camera effector
+				CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
+				if (ce)
+					Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
+			}
+		}
+
+		if (state == 3 && Actor()->ID() == actor_id)
+		{
+			if (m_sound_tube_start._feedback())	m_sound_tube_start.stop();
+			if (m_sound_tube_pull._feedback())	m_sound_tube_pull.stop();
+			if (m_sound_tube_prepare._feedback())	m_sound_tube_prepare.stop();
+		}
+		break;
+	}
+	}
+}
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CController::show_debug_info()
 {

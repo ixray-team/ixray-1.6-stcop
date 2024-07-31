@@ -232,6 +232,12 @@ void CAI_Space::game_graph				(IGameGraph *game_graph)
 	m_graph_engine			= new CGraphEngine(this->game_graph().header().vertex_count());
 }
 
+void CAI_Space::destroy_game_graph()
+{
+	// Pavel: фикс краша при перезаходе клиентом в мп
+	xr_delete(m_game_graph);
+}
+
 const IGameLevelCrossTable &CAI_Space::cross_table		() const
 {
 	return					(game_graph().cross_table());

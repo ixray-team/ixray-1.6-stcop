@@ -250,6 +250,16 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		{
 			SendBroadcast	(BroadcastCID, P, net_flags(TRUE, TRUE));
 		}break;
+	case GE_PSEUDO_GIGANT_KICK:
+	case GE_BURER_GRAVI_PARTICLES:
+	case GE_BURER_GRAVI_WAVE:
+	case GE_BURER_SHIELD:
+	case GE_BLOODSUCKER_VAMPIRE_START:
+	case GE_BLOODSUCKER_VAMPIRE_STOP:
+	case GE_CONTROLLER_PSY_FIRE:
+	{
+		SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
+	}break;
 	case GE_CHANGE_POS:
 		{			
 			SendTo		(SV_Client->ID, P, net_flags(TRUE, TRUE));

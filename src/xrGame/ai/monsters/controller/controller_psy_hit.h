@@ -13,6 +13,8 @@ class CControllerPsyHit : public CControl_ComCustom<> {
 
 	CPsyHitEffectorCam	*m_effector_cam;
 	CPsyHitEffectorPP	*m_effector_pp;
+	u16						m_curent_actor_id = u16(-1);
+
 
 	enum ESoundState{
 		ePrepare,
@@ -54,6 +56,8 @@ private:
 			void	set_sound_state			(ESoundState state);
 			void	hit						();
 			bool	check_conditions_final	();
-			bool	see_enemy				();
+
+			bool	see_enemy(CActor* pA);
+
 };
 

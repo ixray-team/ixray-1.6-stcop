@@ -50,6 +50,7 @@ private:
 			void						patrol_path_storage_from_editor();
 			void						set_alife				(CALifeSimulator *alife_simulator);
 			void						game_graph				(IGameGraph *game_graph);
+			void						destroy_game_graph(); // for MP
 
 public:
 										CAI_Space				();
