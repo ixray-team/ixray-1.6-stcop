@@ -126,15 +126,33 @@ void CStateBurerAttackGravi<Object>::ExecuteGraviContinue()
 template <typename Object>
 void CStateBurerAttackGravi<Object>::ExecuteGraviFire()
 {
-	Fvector from_pos;
-	Fvector target_pos;
-	from_pos						=	this->object->Position();	
-	from_pos.y						+=	0.5f;
-	target_pos						=	this->object->EnemyMan.get_enemy()->Position();	
-	target_pos.y					+=	0.5f;
+	if (IsGameTypeSingle()) {
+		Fvector from_pos;
+		Fvector target_pos;
+		from_pos = this->object->Position();
+		from_pos.y += 0.5f;
+		target_pos = this->object->EnemyMan.get_enemy()->Position();
+		target_pos.y += 0.5f;
 
-	this->object->m_gravi_object.activate		(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
+		this->object->m_gravi_object.activate(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
+	}
+	else
+	{
+		this->object->StartGraviMP();
+	}
 
-	this->object->StopGraviPrepare			();
-	this->object->sound().play				(CBurer::eMonsterSoundGraviAttack);
+	this->object->StopGraviPrepare();
+
+	if (IsGameTypeSingle())
+	{
+		this->object->sound().play(CBurer::eMonsterSoundGraviAttack);
+	}
+	else
+	{
+		CBaseMonster* pMonster = smart_cast<CBaseMonster*>(this->object);
+		if (pMonster)
+		{
+			pMonster->PlaySoundSync(CBurer::eMonsterSoundGraviAttack);
+		}
+	}
 }

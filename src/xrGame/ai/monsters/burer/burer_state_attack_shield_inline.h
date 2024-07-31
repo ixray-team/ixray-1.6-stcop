@@ -34,11 +34,17 @@ void   CStateBurerShield<Object>::execute()
 		 this->object->m_shield_keep_particle != 0 && 
 		 current_time() > m_next_particle_allowed )
 	{
+		if (IsGameTypeSingle()) {
 		this->object->CParticlesPlayer::StartParticles	(this->object->m_shield_keep_particle, 
 													 Fvector().set(0,1,0), 
 													 this->object->ID(), 
 													 -1, 
 													 true);
+		}
+		else
+		{
+			this->object->shieldParticlesMP();
+		}
 
 		m_next_particle_allowed		=	current_time() + this->object->m_shield_keep_particle_period;
 	}
