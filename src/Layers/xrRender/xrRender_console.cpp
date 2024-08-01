@@ -784,6 +784,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r2_use_bump", &ps_r__common_flags, R2FLAG_USE_BUMP);
 	CMD3(CCC_Mask, "r2_vignette", &ps_r2_ls_flags_ext, R2FLAG_SPP_VIGNETTE);
 	CMD3(CCC_Mask, "r2_aberration", &ps_r2_ls_flags_ext, R2FLAG_SPP_ABERRATION);
+	CMD3(CCC_Mask, "r2_saturation", &ps_r2_ls_flags_ext, R2FLAG_SPP_SATURATION);
 	CMD3(CCC_Token, "r2_smap_size", &ps_r2_smapsize, qsmapsize_token);
 	CMD3(CCC_Mask, "r2_cloud_shadows", &ps_r2_ls_flags_ext, RFLAG_CLOUD_SHADOWS);	//Need restart
 

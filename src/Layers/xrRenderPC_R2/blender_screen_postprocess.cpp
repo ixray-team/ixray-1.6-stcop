@@ -15,6 +15,9 @@ void CBlender_SPP::Compile(CBlender_Compile& C) {
 	case ScreenPostProcessType::Aberration:
 		C.r_Pass("null", "chromatic_aberration", FALSE, FALSE, FALSE);
 		break;
+	case ScreenPostProcessType::Saturation:
+		C.r_Pass("null", "saturation", FALSE, FALSE, FALSE);
+		break;
 	}
 
 	C.r_Sampler_clf("s_image", r2_RT_albedo);

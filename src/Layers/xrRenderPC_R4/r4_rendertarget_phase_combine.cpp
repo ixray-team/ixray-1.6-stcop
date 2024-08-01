@@ -342,6 +342,11 @@ void	CRenderTarget::phase_combine	()
 		phase_cas();
 	}
 
+	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION)) {
+		PIX_EVENT(PhaseSaturation);
+		PhaseSaturation();
+	}
+
 	if(ps_r2_ls_flags_ext.test(R2FLAG_SPP_VIGNETTE)) {
 		PIX_EVENT(PhaseVignette);
 		PhaseVignette();

@@ -251,6 +251,7 @@ public:
 	void						RenderEffect			(ScreenPostProcessType postProcessType);
 	void						PhaseAberration			();
 	void						PhaseVignette			();
+	void						PhaseSaturation			();
 
 	void						phase_scene_prepare		();
 	void						phase_scene_begin		();
