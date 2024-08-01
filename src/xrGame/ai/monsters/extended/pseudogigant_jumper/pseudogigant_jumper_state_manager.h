@@ -4,12 +4,13 @@
 
 class CPseudogigantJumper;
 
-class CStateManagerPseudogigantJumper : public CMonsterStateManager<CPseudogigantJumper>, public CPseudogigant {
+class CStateManagerPseudogigantJumper : public CMonsterStateManager<CPseudogigantJumper> {
 	typedef CMonsterStateManager<CPseudogigantJumper> inherited;
 public:
 
-					CStateManagerPseudogigantJumper(CPseudogigantJumper*monster);
-					virtual ~CStateManagerPseudogigantJumper();
+	CStateManagerPseudogigantJumper(CPseudogigantJumper* monster);
+	virtual ~CStateManagerPseudogigantJumper();
 
-	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	execute();
+	virtual void	remove_links(CObject* object_) { inherited::remove_links(object_); }
 };
