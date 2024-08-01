@@ -178,7 +178,7 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object)
 {
 	BOOL _res = _RayQuery2(dest, R, CB, user_data, tb, ignore_object);
-	CObjectSpaceThreadData::r_spatial.clear();
+	CObjectSpaceThreadData::r_spatial.resize(0);
 	return (_res);
 }
 

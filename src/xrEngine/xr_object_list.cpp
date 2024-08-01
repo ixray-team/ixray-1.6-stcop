@@ -182,7 +182,7 @@ void CObjectList::clear_crow_vec(Objects& o)
 //		Msg				("[%d][0x%08x]IAmNotACrowAnyMore (clear_crow_vec)", Device.dwFrame, dynamic_cast<void*>(o[_it]));
 		o[_it]->IAmNotACrowAnyMore();
 	}
-	o.clear();
+	o.resize(0);
 }
 
 void CObjectList::Update		(bool bForce)
@@ -200,7 +200,7 @@ void CObjectList::Update		(bool bForce)
 			{
 				Objects& crows1			= m_crows[1];
 				crows.insert			(crows.end(), crows1.begin(), crows1.end());
-				crows1.clear();
+				crows1.resize(0);
 			}
 
 #if 0
@@ -241,7 +241,7 @@ void CObjectList::Update		(bool bForce)
 			CObject** objects			= (CObject**)_alloca(objects_count*sizeof(CObject*));
 			std::copy					( workload->begin(), workload->end(), objects );
 
-			crows.clear();
+			crows.resize(0);
 
 			CObject** b					= objects;
 			CObject** e					= objects + objects_count;
@@ -460,7 +460,7 @@ void		CObjectList::Destroy			( CObject*	O		)
 			for (u32 j=0; i != e; ++i, ++j )
 				Msg							( "%d %s", j, (*i)->cName().c_str() );
 			VERIFY							( Device.Paused() || m_crows[1].empty() );
-			m_crows[1].clear();
+			m_crows[1].resize(0);
 		}
 	}
 	else {

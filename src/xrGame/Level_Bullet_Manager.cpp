@@ -943,10 +943,10 @@ void CBulletManager::Render	()
 		}
 
 		if (m_bullet_points.size() > 32768)
-			m_bullet_points.clear();
+			m_bullet_points.resize(0);
 	}
 	else
-		m_bullet_points.clear();
+		m_bullet_points.resize(0);
 
 	//0-рикошет
 	//1-застрявание пули в материале

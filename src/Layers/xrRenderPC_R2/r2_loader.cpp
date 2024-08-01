@@ -423,8 +423,8 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 			xr_free( (*it).sw );
 
 		SWIs.clear();
+		SWIs.resize(item_count);
 
-		SWIs.resize			(item_count);
 		for (u32 c=0; c<item_count; c++){
 			FSlideWindowItem& swi = SWIs[c];
 			swi.reserved[0]	= fs->r_u32();	

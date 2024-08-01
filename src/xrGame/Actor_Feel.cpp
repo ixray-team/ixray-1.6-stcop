@@ -110,7 +110,7 @@ void	CActor::PickupModeUpdate_COD	()
 	CFrustum frustum;
 	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
-	ISpatialResult.clear();
+	ISpatialResult.resize(0);
 	g_SpatialSpace->q_frustum		(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 
 	float maxlen					= 1000.0f;
@@ -247,7 +247,7 @@ void CActor::Feel_Grenade_Update( float rad )
 	Fvector pos_actor;
 	Center( pos_actor );
 
-	q_nearest.clear();
+	q_nearest.resize(0);
 	g_pGameLevel->ObjectSpace.GetNearest( q_nearest, pos_actor, rad, nullptr );
 
 	xr_vector<CObject*>::iterator	it_b = q_nearest.begin();

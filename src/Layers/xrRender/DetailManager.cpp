@@ -265,9 +265,9 @@ void CDetailManager::UpdateVisibleM()
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;
 
-						sp.r_items[0].clear();
-						sp.r_items[1].clear();
-						sp.r_items[2].clear();
+						sp.r_items[0].resize(0);
+						sp.r_items[1].resize(0);
+						sp.r_items[2].resize(0);
 
 						float				R		= objects	[sp.id]->bv_sphere.R;
 						float				Rq_drcp	= R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc

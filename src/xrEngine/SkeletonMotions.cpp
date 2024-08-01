@@ -45,7 +45,7 @@ void CPartition::load(IKinematics* V, LPCSTR model_name)
 		CInifile::SectCIt it_e = S.Data.end();
 		if (S.Data.size())
 		{
-			P[i].bones.clear();
+			P[i].bones.resize(0);
 		}
 		for (; it != it_e; ++it)
 		{

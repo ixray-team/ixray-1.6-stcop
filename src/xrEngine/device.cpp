@@ -146,7 +146,7 @@ void mt_Thread(void* ptr)
 		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]();
 
-		Device.seqParallel.clear();
+		Device.seqParallel.resize(0);
 		Device.seqFrameMT.Process(rp_Frame);
 
 		// now we give control to device - signals that we are ended our work
@@ -333,7 +333,7 @@ void CRenderDevice::on_idle		()
 	if (dwFrame!=mt_Thread_marker)			{
 		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
 			Device.seqParallel[pit]			();
-		Device.seqParallel.clear();
+		Device.seqParallel.resize(0);
 		seqFrameMT.Process					(rp_Frame);
 	}
 

@@ -76,7 +76,7 @@ TEMPLATE_SPECIALIZATION
 IC	void CGenericPathManager::init_path				()
 {
 	if (path)
-		path->clear();
+		path->resize(0);
 }
 
 TEMPLATE_SPECIALIZATION

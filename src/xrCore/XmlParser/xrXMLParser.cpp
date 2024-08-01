@@ -65,7 +65,7 @@ void CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 	return Load				(path_alias, str);
 }
 
-//инициализация и загрузка XML файла
+//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё Р·Р°РіСЂСѓР·РєР° XML С„Р°Р№Р»Р°
 void CXml::Load(LPCSTR path, LPCSTR xml_filename)
 {
 	xr_strcpy(m_xml_file_name, xml_filename);
@@ -125,7 +125,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_inde
     char *token;
 	int tmp						= 0;
 
-    //разбить путь на отдельные подпути
+    //СЂР°Р·Р±РёС‚СЊ РїСѓС‚СЊ РЅР° РѕС‚РґРµР»СЊРЅС‹Рµ РїРѕРґРїСѓС‚Рё
 	token = strtok( buf_str, seps );
 
 	if( token != nullptr )
@@ -299,12 +299,12 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
 	else
 	{
 /*
-		//обязательно делаем ref_str, а то 
-		//не сможем запомнить строку и return вернет левый указатель
+		//РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРµР»Р°РµРј ref_str, Р° С‚Рѕ 
+		//РЅРµ СЃРјРѕР¶РµРј Р·Р°РїРѕРјРЅРёС‚СЊ СЃС‚СЂРѕРєСѓ Рё return РІРµСЂРЅРµС‚ Р»РµРІС‹Р№ СѓРєР°Р·Р°С‚РµР»СЊ
 		shared_str result_str;
 */
 		LPCSTR result_str = nullptr;
-		// Кастаем ниже по иерархии
+		// РљР°СЃС‚Р°РµРј РЅРёР¶Рµ РїРѕ РёРµСЂР°СЂС…РёРё
 
 		tinyxml2::XMLElement *el = node->ToElement(); 
 		
@@ -429,7 +429,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 	return result;
 }
 
-//нахождение элемнета по его атрибуту
+//РЅР°С…РѕР¶РґРµРЅРёРµ СЌР»РµРјРЅРµС‚Р° РїРѕ РµРіРѕ Р°С‚СЂРёР±СѓС‚Сѓ
 XML_NODE* CXml::SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
 {
 	XML_NODE* start_node			= NavigateToNode(path, index);
@@ -468,7 +468,7 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 
 LPCSTR CXml::CheckUniqueAttrib (XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name)
 {
-	m_AttribValues.clear();
+	m_AttribValues.resize(0);
 
 	int tags_num					= GetNodesNum(start_node, tag_name);
 

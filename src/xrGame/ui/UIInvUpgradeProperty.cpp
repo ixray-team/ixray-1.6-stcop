@@ -225,7 +225,7 @@ void UIInvUpgPropertiesWnd::set_upgrade_info( Upgrade_type& upgrade )
 		return;
 	}
 
-	m_temp_upgrade_vector.clear();
+	m_temp_upgrade_vector.resize(0);
 	m_temp_upgrade_vector.push_back( upgrade.id() );
 	set_info( m_temp_upgrade_vector );
 }

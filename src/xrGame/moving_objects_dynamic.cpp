@@ -537,9 +537,9 @@ void moving_objects::query_action_dynamic		(moving_object *object)
 	if (object->action_frame() == Device.dwFrame)
 		return;
 
-	m_visited_emitters.clear();
-	m_collision_emitters.clear();
-	m_collisions.clear();
+	m_visited_emitters.resize(0);
+	m_collision_emitters.resize(0);
+	m_collisions.resize(0);
 
 	m_collision_emitters.push_back		(object);
 	while (!m_collision_emitters.empty()) {

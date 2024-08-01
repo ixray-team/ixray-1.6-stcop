@@ -808,7 +808,7 @@ void CEntityAlive::fill_hit_bone_surface_areas		( ) const
 	VERIFY								( kinematics );
 	VERIFY								( kinematics->LL_BoneCount() );
 
-	m_hit_bone_surface_areas.clear();
+	m_hit_bone_surface_areas.resize(0);
 
 	for (u16 i=0, n=kinematics->LL_BoneCount(); i < n; ++i ) {
 		SBoneShape const& shape			= kinematics->LL_GetData(i).shape;

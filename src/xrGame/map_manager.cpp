@@ -208,7 +208,7 @@ void CMapManager::RemoveMapLocation(CMapLocation* ml)
 
 bool CMapManager::GetMapLocationsForObject(u16 id, xr_vector<CMapLocation*>& res)
 {
-	res.clear();
+	res.resize(0);
 	Locations_it it			= Locations().begin();
 	Locations_it it_e		= Locations().end();
 	for(; it!=it_e;++it)

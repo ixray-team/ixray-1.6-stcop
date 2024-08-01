@@ -134,7 +134,7 @@ void CInventoryItem::log_upgrades()
 
 void CInventoryItem::net_Spawn_install_upgrades( Upgrades_type saved_upgrades ) // net_Spawn
 {
-	m_upgrades.clear();
+	m_upgrades.resize(0);
 
 	if ( !ai().get_alife() )
 	{

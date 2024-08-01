@@ -75,7 +75,7 @@ void CPda::shedule_Update(u32 dt)
 
 void CPda::UpdateActiveContacts	()
 {
-	m_active_contacts.clear();
+	m_active_contacts.resize(0);
 	xr_vector<CObject*>::iterator it= feel_touch.begin();
 	for(;it!=feel_touch.end();++it){
 		CEntityAlive* pEA = smart_cast<CEntityAlive*>(*it);
@@ -174,7 +174,7 @@ CInventoryOwner* CPda::GetOriginalOwner()
 
 void CPda::ActivePDAContacts(xr_vector<CPda*>& res)
 {
-	res.clear();
+	res.resize(0);
 	xr_vector<CObject*>::iterator it		= m_active_contacts.begin();
 	xr_vector<CObject*>::iterator it_e		= m_active_contacts.end();
 

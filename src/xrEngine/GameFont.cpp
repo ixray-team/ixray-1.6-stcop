@@ -363,7 +363,7 @@ void CGameFont::OnRender()
 {
 	pFontRender->OnRender(*this);
 	if (!strings.empty())
-		strings.clear();
+		strings.resize(0);
 }
 
 u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)

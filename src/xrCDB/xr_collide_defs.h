@@ -81,7 +81,7 @@ namespace collide
 	{
 		CObject*	O;				// if NULL - static
 		float		range;			// range to intersection
-		int			element;		// номер кости/номер треугольника
+		int			element;		// РЅРѕРјРµСЂ РєРѕСЃС‚Рё/РЅРѕРјРµСЂ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 		IC rq_result& set		(CObject* _O, float _range, int _element)
 		{
 			O		= _O;
@@ -131,7 +131,7 @@ namespace collide
 		IC int			r_count			()	{ return (int)results.size();	}
 		IC rq_result*	r_begin			()	{ return &*results.begin();	}
 		IC rq_result*	r_end			()	{ return &*results.end();	}
-		IC void			r_clear			()	{ results.clear();	}
+		IC void			r_clear			()	{ results.resize(0);	}
 		IC void			r_sort			()	{ std::sort(results.begin(),results.end(),r_sort_pred);}
 		IC rqVec		&r_results		()	{ return results; }
 
