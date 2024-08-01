@@ -43,6 +43,7 @@ xr_token vid_scale_preset_token[] = {
 };
 
 ENGINE_API u32 ps_r_scale_mode = 1;
+ENGINE_API u32 ps_proxy_r_scale_mode = 1;
 xr_token qscale_mode_token[] = {
 #ifdef DEBUG_DRAW
 	{ "st_filter_point", 0},
@@ -746,7 +747,7 @@ void CCC_Register()
 	CMD1(CCC_VidMode, "vid_mode");
 	CMD3(CCC_Token, "vid_scale_preset", &ps_render_scale_preset, vid_scale_preset_token);
 	CMD4(CCC_Float, "vid_scale", &ps_render_scale, 0.3f, 2.0f);
-	CMD3(CCC_Token, "vid_scale_mode", &ps_r_scale_mode, qscale_mode_token);
+	CMD3(CCC_Token, "vid_scale_mode", &ps_proxy_r_scale_mode, qscale_mode_token);
 
 #ifdef DEBUG
 	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );
