@@ -50,61 +50,84 @@ bool CStateControllerAttackAbstract::check_home_point()
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::execute()
 {
-	this->object->anim().clear_override_animation	();
+    EMonsterState state_id = eStateUnknown;
 
-	if	( check_home_point() )
-	{
-		this->select_state					(eStateAttack_MoveToHomePoint);
-		this->get_state_current()->execute	();
-		this->prev_substate				= this->current_substate;
-		return;
-	}
+    if (this->prev_substate == u32(-1))
+        state_id = eStateAttack_HideInCoverLite;
 
-	EMonsterState		state_id	=	eStateUnknown;
-	const CEntityAlive* enemy		=	this->object->EnemyMan.get_enemy();
+    if (state_id == eStateUnknown)
+    {
+        if (this->prev_substate == eStateAttack_HideInCoverLite)
+        {
+            if (!this->get_state_current()->check_completion())
+                state_id = eStateAttack_HideInCoverLite;
+            else if (this->get_state(eStateAttack_MoveOut)->check_start_conditions())
+                state_id = eStateAttack_MoveOut;
+        }
+    }
 
-	if (this->current_substate == eStateAttack_Melee )
-	{
-		if (this->get_state(eStateAttack_Melee)->check_completion() )
-			state_id				=	eStateAttack_Run;
-		else
-			state_id				=	eStateAttack_Melee;
-	}
-	else
-	{
-		if (this->get_state(eStateAttack_Melee)->check_start_conditions() )
-			state_id				=	eStateAttack_Melee;
-		else
-			state_id				=	eStateAttack_Run;
-	}
+    if (state_id == eStateUnknown)
+    {
+        if (this->prev_substate == eStateAttack_MoveOut)
+        {
+            if (this->get_state(eStateAttack_ControlFire)->check_start_conditions())
+                state_id = eStateAttack_ControlFire;
+            else
+            {
+                if (!this->get_state_current()->check_completion())
+                    state_id = eStateAttack_MoveOut;
+                else
+                    state_id = eStateAttack_HideInCover;
+            }
+        }
+    }
 
-	if ( !this->object->enemy_accessible() && state_id == eStateAttack_Run )
-	{
-		this->current_substate			=	(u32)eStateUnknown;
-		this->prev_substate				= this->current_substate;
+    if (state_id == eStateUnknown)
+    {
+        if (this->prev_substate == eStateAttack_ControlFire)
+        {
+            if (!this->get_state_current()->check_completion())
+                state_id = eStateAttack_ControlFire;
+            else
+                state_id = eStateAttack_HideInCover;
+        }
+    }
 
-		Fvector dir_xz				=	this->object->Direction();
-		dir_xz.y					=	0;
-		Fvector self_to_enemy_xz	=	enemy->Position() - this->object->Position();
-		self_to_enemy_xz.y			=	0;
+    if (state_id == eStateUnknown)
+    {
+        if (this->prev_substate == eStateAttack_HideInCover)
+        {
+            if (!this->get_state_current()->check_completion())
+                state_id = eStateAttack_HideInCover;
+            else
+                state_id = eStateAttack_CampInCover;
+        }
+    }
 
-		float const angle			=	angle_between_vectors(dir_xz, self_to_enemy_xz);
-		
-		if ( _abs(angle) > deg2rad(30.f) )
-		{
-			bool const rotate_right		=	this->object->control().direction().is_from_right(enemy->Position());
-			this->object->anim().set_override_animation	(rotate_right ? 
-													 eAnimStandTurnRight: eAnimStandTurnLeft, 0);
-			this->object->dir().face_target		(enemy);
-		}
+    if (state_id == eStateUnknown)
+    {
+        if (this->prev_substate == eStateAttack_CampInCover)
+        {
+            if (!this->get_state_current()->check_completion())
+                state_id = eStateAttack_CampInCover;
+            else
+            {
+                if (this->get_state(eStateAttack_MoveOut)->check_start_conditions())
+                    state_id = eStateAttack_MoveOut;
+                else
+                    state_id = eStateAttack_HideInCoverLite;
+            }
+        }
+    }
 
-		this->object->set_action				(ACT_STAND_IDLE);
-		return;
-	}
+    if (state_id == eStateUnknown)
+    {
+        state_id = eStateAttack_HideInCover;
+    }
 
-	this->select_state						(state_id);
-	this->get_state_current()->execute		();
-	this->prev_substate					= this->current_substate;
+    this->select_state(state_id);
+    this->get_state_current()->execute();
+    this->prev_substate = this->current_substate;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -121,14 +144,12 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::finalize()
 {
 	inherited::finalize();
-	//this->object->set_mental_state(CController::eStateIdle);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	//this->object->set_mental_state(CController::eStateIdle);
 }
 
 #undef TEMPLATE_SPECIALIZATION
