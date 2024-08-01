@@ -164,6 +164,7 @@ protected:
 	CUI3tButton*				m_trade_buy_button;
 	CUI3tButton*				m_trade_sell_button;
 	CUI3tButton*				m_takeall_button;
+	CUI3tButton*				m_putall_button;
 	CUI3tButton*				m_exit_button;
 //	CUIStatic*					m_clock_value;
 
@@ -334,6 +335,7 @@ public:
 	void				OnBtnPerformTradeSell		(CUIWindow* w, void* d);
 	void				OnBtnExitClicked			(CUIWindow* w, void* d);
 	void				TakeAllFromPartner			(CUIWindow* w, void* d);
+	void				PutAllToPartner			(CUIWindow* w, void* d);
 	void						TakeAllFromInventoryBox		();
 	void						UpdateConditionProgressBars	();
 

@@ -327,6 +327,18 @@
 	    </text_color>
 	</takeall_button>
 
+	<putall_button x="699" y="695" width="312" height="24" stretch="1" hint="ui_st_put_all_hint">
+	    <window_name>putall_button</window_name>
+	    <texture>ui_inGame2_big_inventory_button</texture>
+	    <text font="graffiti22" align="c">ui_st_put_all</text>
+	    <text_color>
+	        <e color ="ui_6"/>
+	        <t color ="ui_black"/>
+	        <d color ="ui_5"/>
+	        <h color ="ui_black"/>
+	    </text_color>
+	</putall_button>
+
 	<exit_button x="353" y="736" width="320" height="24" hint="ui_st_exit_hint">
 	    <window_name>exit_button</window_name>
 	    <texture>ui_inGame2_big_inventory_button</texture>
