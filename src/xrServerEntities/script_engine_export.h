@@ -98,6 +98,7 @@
 #	include "ai/monsters/cat/cat.h"
 #	include "ai/monsters/tushkano/tushkano.h"
 #   include "ai/monsters/extended/beetle/beetle.h"
+#	include "ai/monsters/extended/Pseudogigant_jumper/pseudogigant_jumper.h"
 #	include "PhraseDialog_script.h"
 #	ifdef	DEBUG
 #		include "PHDebug.h"

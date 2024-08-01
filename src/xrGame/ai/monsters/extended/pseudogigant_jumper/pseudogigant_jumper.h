@@ -1,14 +1,14 @@
 #pragma once
-#include "../BaseMonster/base_monster.h"
-#include "../controlled_entity.h"
-#include "../../../../xrScripts/script_export_space.h"
+#include "../../BaseMonster/base_monster.h"
+#include "../../controlled_entity.h"
+#include "../../../../../xrServerEntities/script_export_space.h"
 
 
-class CPseudoGigant : public CBaseMonster,
-					  public CControlledEntity<CPseudoGigant> {
+class CPseudogigantJumper : public CBaseMonster,
+					  public CControlledEntity<CPseudogigantJumper> {
 	
 	typedef		CBaseMonster						inherited;
-	typedef		CControlledEntity<CPseudoGigant>	CControlled;
+	typedef		CControlledEntity<CPseudogigantJumper>	CControlled;
 
 private:
 	xr_vector<CObject*>		m_nearest;
@@ -21,8 +21,8 @@ private:
 	} step_effector;
 
 	SAttackEffector m_threaten_effector;
-	ref_sound		m_sound_threaten_hit;		// звук, который играется в голове у актера
-	ref_sound		m_sound_start_threaten;		// звук, который играется в голове у актера
+	ref_sound		m_sound_threaten_hit;		// Р·РІСѓРє, РєРѕС‚РѕСЂС‹Р№ РёРіСЂР°РµС‚СЃСЏ РІ РіРѕР»РѕРІРµ Сѓ Р°РєС‚РµСЂР°
+	ref_sound		m_sound_start_threaten;		// Р·РІСѓРє, РєРѕС‚РѕСЂС‹Р№ РёРіСЂР°РµС‚СЃСЏ РІ РіРѕР»РѕРІРµ Сѓ Р°РєС‚РµСЂР°
 	
 	u32				m_time_next_threaten;
 	
@@ -40,10 +40,9 @@ private:
 
 	LPCSTR			m_kick_particles;
 
-
 public:
-					CPseudoGigant				();
-	virtual			~CPseudoGigant				();	
+	CPseudogigantJumper();
+	virtual			~CPseudogigantJumper();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();
@@ -56,8 +55,13 @@ public:
 
 	virtual	void	on_threaten_execute	();
 
+	virtual void	HitEntityInJump		(const CEntity *pEntity);
 	virtual void	TranslateActionToPathParams	();
-	virtual	char*	get_monster_class_name () { return (char*) "pseudogigant"; }
+	virtual	char*	get_monster_class_name () { return (char*)"pseudogigant_jumper"; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
+add_to_type_list(CPseudogigantJumper)
+#undef script_type_list
+#define script_type_list save_type_list(CPseudogigantJumper)

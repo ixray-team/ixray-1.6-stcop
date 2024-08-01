@@ -45,6 +45,7 @@
 #	include "ai/monsters/tushkano/tushkano.h"
 #	include "ai/monsters/rats/ai_rat.h"
 #   include "ai/monsters/extended/beetle/beetle.h"
+#	include "ai/monsters/extended/Pseudogigant_jumper/pseudogigant_jumper.h"
 #	include "ai/phantom/phantom.h"
 
 #	include "ai/trader/ai_trader.h"
@@ -262,6 +263,7 @@ void CObjectFactory::register_classes	()
 	ADD(CPsyDogPhantom			,CSE_ALifePsyDogPhantom			,CLSID_AI_DOG_PSY_PHANTOM		,"psy_dog_phantom");
 	ADD(CBurer					,CSE_ALifeMonsterBase			,CLSID_AI_BURER					,"burer");
 	ADD(CPseudogigant			,CSE_ALifeMonsterBase			,CLSID_AI_GIANT					,"pseudogigant");
+	ADD(CPseudogigantJumper		,CSE_ALifeMonsterBase			,CLSID_AI_GIANT_JUMPER			,"pseudogigant_jumper");
 	ADD(CController				,CSE_ALifeMonsterBase			,CLSID_AI_CONTROLLER			,"controller");
 	ADD(CPoltergeist			,CSE_ALifeMonsterBase			,CLSID_AI_POLTERGEIST			,"poltergeist");
 	ADD(CZombie					,CSE_ALifeMonsterBase			,CLSID_AI_ZOMBIE				,"zombie");
