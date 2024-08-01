@@ -5,8 +5,9 @@
 XrGameManager* g_XrGameManager = nullptr;
 extern "C" 
 {
-	typedef void  xrGameInitialize();
+	using xrGameInitialize = void();
 };
+
 XrGameManager::XrGameManager()
 {
 	LPCSTR			g_name = "XrGame.dll";

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "game_level_cross_table.h"
+
 CGameLevelCrossTable::CGameLevelCrossTable(const void* buffer, const u32& buffer_size)
 {
 	VERIFY(Device.IsEditorMode() == false);

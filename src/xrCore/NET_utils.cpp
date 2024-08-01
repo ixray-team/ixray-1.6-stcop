@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #pragma hdrstop
-#include "NET_utils.h"
-
+#include "net_utils.h"
 
 // ---NET_Packet
 // reading

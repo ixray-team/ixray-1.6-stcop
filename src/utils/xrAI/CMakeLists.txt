@@ -21,6 +21,7 @@ file(GLOB_RECURSE XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Objects_ALife_Items.cpp"
     "../../xrServerEntities/xrServer_Objects_ALife_Monsters.cpp"
     "../../xrServerEntities/xrServer_Object_Base.cpp"
+    "../../xrGame/game_level_cross_table.cpp"
 )
 # Source groups
 source_group("kernel" FILES ${XAI_SOURCE_ALL_FILES})

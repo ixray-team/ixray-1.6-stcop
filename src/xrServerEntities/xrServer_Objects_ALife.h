@@ -21,15 +21,14 @@
 #pragma warning(disable:4005)
 
 #ifdef XRGAME_EXPORTS
-	class 	CALifeSimulator;
+	class CALifeSimulator;
+	class CALifeSmartTerrainTask;
 #endif
 
 class CSE_ALifeItemWeapon;
 class CSE_ALifeDynamicObject;
 class CSE_ALifeObject;
-#ifdef XRGAME_EXPORTS
-class CALifeSmartTerrainTask;
-#endif //#ifdef XRGAME_EXPORTS
+class ISE_AbstractLEOwner;
 class CALifeMonsterAbstract;
 
 
@@ -94,7 +93,7 @@ public:
 	virtual							~CSE_ALifeGraphPoint();
 	virtual bool					match_configuration	() const { return false; }
 
-#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
+#if !defined(XRGAME_EXPORTS)
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 #endif
 SERVER_ENTITY_DECLARE_END
@@ -475,7 +474,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	virtual bool					used_ai_locations			() const;
 	virtual bool					match_configuration			() const;
 	virtual bool			validate					();
-#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
+#if !defined(XRGAME_EXPORTS)
 	virtual void 			on_render					(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 #endif // #ifndef XRGAME_EXPORTS
 	virtual CSE_Abstract			*cast_abstract				() {return this;}
