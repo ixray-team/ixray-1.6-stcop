@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Таракан (Чернобыльский)
+////////////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
 
 #include "../../../tushkano/tushkano.h"
@@ -21,7 +26,8 @@
 
 #include "../../../../../entitycondition.h"
 
-CStateManagerBeetle::CStateManagerBeetle(CBeetle* _object) : inherited(_object) 
+CStateManagerBeetle::CStateManagerBeetle(CBeetle* _object) : 
+	inherited(_object) 
 {
 
 }

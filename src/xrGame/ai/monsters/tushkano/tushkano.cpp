@@ -5,7 +5,6 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-
 CTushkano::CTushkano()
 {
 	StateMan = new CStateManagerTushkano(this);

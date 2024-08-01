@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Лягушка
+////////////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
 
 #include "../../tushkano/tushkano.h"
@@ -21,7 +26,8 @@
 
 #include "../../../../entitycondition.h"
 
-CStateManagerFrog::CStateManagerFrog(CFrog* _object) : inherited(_object) 
+CStateManagerFrog::CStateManagerFrog(CFrog* _object) : 
+	inherited(_object) 
 {
 
 }

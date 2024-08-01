@@ -3,12 +3,12 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CTushkano :	public CBaseMonster,
-					public CControlledEntity<CTushkano> {
-
-
-	typedef		CBaseMonster					inherited;
-	typedef		CControlledEntity<CTushkano>	CControlled;
+class CTushkano : 
+	public CBaseMonster,		  
+	public CControlledEntity<CTushkano> 
+{
+	using inherited = CBaseMonster;
+	using CControlled = CControlledEntity<CTushkano>;
 
 public:
 					CTushkano 			();

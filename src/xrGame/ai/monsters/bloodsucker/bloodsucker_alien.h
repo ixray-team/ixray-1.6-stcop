@@ -26,5 +26,4 @@ public:
 	void	deactivate			();
 
 	bool	active				() {return m_active;}
-
 };

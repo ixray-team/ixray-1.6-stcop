@@ -1,9 +1,15 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Таракан (Чернобыльский)
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../../BaseMonster/base_monster.h"
 #include "../../../controlled_entity.h"
 #include "../../../../../../xrScripts/script_export_space.h"
 
-class CBeetle :	public CTushkano 
+class CBeetle :	
+	public CTushkano 
 {
 public:
 	CBeetle();

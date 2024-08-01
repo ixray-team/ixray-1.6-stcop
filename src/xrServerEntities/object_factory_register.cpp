@@ -31,6 +31,7 @@
 #	include "ai/monsters/dog/dog.h"
 #	include "ai/stalker/ai_stalker.h"
 #	include "ai/monsters/bloodsucker/bloodsucker.h"
+#	include "ai/monsters/extended/bloodsucker_ix/bloodsucker_ix.h"
 #	include "ai/monsters/boar/boar.h"
 #	include "ai/monsters/pseudodog/pseudodog.h"
 #	include "ai/monsters/pseudodog/psy_dog.h"
@@ -49,6 +50,12 @@
 #	include "ai/monsters/extended/pseudogigant_jumper/pseudogigant_jumper.h"
 #   include "ai/monsters/extended/frog/frog.h"
 #   include "ai/monsters/extended/rotan/rotan.h"
+#	include "ai/monsters/extended/tushkano_black/tushkano_black.h"
+#	include "ai/monsters/extended/tushkano_big/tushkano_big.h"
+#	include "ai/monsters/extended/tushkano_big_black/tushkano_big_black.h"
+#	include "ai/monsters/extended/tushkano_fly/tushkano_fly.h"
+#	include "ai/monsters/extended/ghoul/ghoul.h"
+
 #	include "ai/phantom/phantom.h"
 
 #	include "ai/trader/ai_trader.h"
@@ -260,6 +267,7 @@ void CObjectFactory::register_classes	()
 	ADD(CAI_Dog					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_RED				,"dog_red");
 	ADD(CAI_Stalker				,CSE_ALifeHumanStalker			,CLSID_AI_STALKER				,"stalker");
 	ADD(CAI_Bloodsucker			,CSE_ALifeMonsterBase			,CLSID_AI_BLOODSUCKER			,"bloodsucker");
+	ADD(CAI_BloodsuckerIX		,CSE_ALifeMonsterBase			,CLSID_AI_BLOODSUCKER_IX		,"bloodsuckerix");
 	ADD(CAI_Boar				,CSE_ALifeMonsterBase			,CLSID_AI_BOAR					,"boar");
 	ADD(CAI_PseudoDog			,CSE_ALifeMonsterBase			,CLSID_AI_DOG_BLACK				,"dog_black");
 	ADD(CPsyDog					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_PSY				,"psy_dog");
@@ -274,12 +282,18 @@ void CObjectFactory::register_classes	()
 	ADD(CSnork					,CSE_ALifeMonsterBase			,CLSID_AI_SNORK					,"snork");
 	ADD(CCat					,CSE_ALifeMonsterBase			,CLSID_AI_CAT					,"cat");
 	ADD(CTushkano				,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO				,"tushkano");
-	
+
 	ADD(CBeetle					,CSE_ALifeMonsterBase           ,CLSID_AI_BEETLE_NORMAL			,"beetle");
 	ADD(CBeetleBlack			,CSE_ALifeMonsterBase			,CLSID_AI_BEETLE_BLACK			,"beetle_black");
 
 	ADD(CFrog					,CSE_ALifeMonsterBase			,CLSID_AI_FROG					,"frog");
 	ADD(CRotan					,CSE_ALifeMonsterBase			,CLSID_AI_ROTAN					,"rotan");
+
+	ADD(CTushkanoBlack			,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO_BLACK		,"tushkano_black");
+	ADD(CTushkanoBig			,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO_BIG			,"tushkano_big");
+	ADD(CTushkanoBigBlack		,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO_BIG_BLACK	,"tushkano_big_black");
+	ADD(CTushkanoFly			,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO_FLY			,"tushkano_fly");
+	ADD(CGhoul					,CSE_ALifeMonsterBase			,CLSID_AI_GHOUL					,"ghoul");
 
 	ADD(CPhantom				,CSE_ALifeCreaturePhantom		,CLSID_AI_PHANTOM				,"phantom");
 

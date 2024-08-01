@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Ротан (Болотный)
+////////////////////////////////////////////////////////////////////////////
+
 #include "stdafx.h"
 
 #include "../../tushkano/tushkano.h"
@@ -21,7 +26,8 @@
 
 #include "../../../../entitycondition.h"
 
-CStateManagerRotan::CStateManagerRotan(CRotan* _object) : inherited(_object) 
+CStateManagerRotan::CStateManagerRotan(CRotan* _object) : 
+	inherited(_object) 
 {
 
 }

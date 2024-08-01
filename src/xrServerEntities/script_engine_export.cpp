@@ -253,6 +253,13 @@ void export_classes	(lua_State *L)
 	CPseudogigantJumper::script_register(L);
 	CFrog::script_register(L);
 	CRotan::script_register(L);
+	CTushkanoBlack::script_register(L);
+	CTushkanoBig::script_register(L);
+	CTushkanoBigBlack::script_register(L);
+	CTushkanoFly::script_register(L);
+	CGhoul::script_register(L);
+	CAI_BloodsuckerIX::script_register(L);
+
 	CZombie::script_register(L);
 	CAI_Stalker::script_register(L);
 	CAI_Trader::script_register(L);

@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "../states/state_move_to_point.h"
 #include "bloodsucker_predator_lite.h"
 

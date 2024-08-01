@@ -3,8 +3,10 @@
 
 class CTushkano;
 
-class CStateManagerTushkano : public CMonsterStateManager<CTushkano> {
-	typedef CMonsterStateManager<CTushkano> inherited;
+class CStateManagerTushkano : 
+	public CMonsterStateManager<CTushkano> 
+{
+	using inherited = CMonsterStateManager<CTushkano>;
 
 public:
 						CStateManagerTushkano	(CTushkano *obj);

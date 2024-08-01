@@ -1,9 +1,15 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Псевдогигант
+//	Мутант: Прыгающий псевдогигант
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../BaseMonster/base_monster.h"
 #include "../../controlled_entity.h"
 #include "../../../../../xrScripts/script_export_space.h"
 
-class CPseudogigantJumper final : public CPseudogigant 
+class CPseudogigantJumper final : 
+	public CPseudogigant 
 {
 	using inherited = CPseudogigant;
 

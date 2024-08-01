@@ -19,7 +19,8 @@
 #include "../../../entitycondition.h"
 
 
-CStateManagerTushkano::CStateManagerTushkano(CTushkano *obj) : inherited(obj)
+CStateManagerTushkano::CStateManagerTushkano(CTushkano *obj) : 
+	inherited(obj)
 {
 	add_state(eStateRest,                new CStateMonsterRest<CTushkano>(obj));
 	add_state(eStateAttack,              new CStateMonsterAttack<CTushkano>(obj));

@@ -23,6 +23,7 @@
 #define CLSID_AI_SPONGER			MK_CLSID('A','I','_','S','P','O','N','G')
 #define CLSID_AI_CONTROLLER			MK_CLSID('A','I','_','C','O','N','T','R')
 #define CLSID_AI_BLOODSUCKER		MK_CLSID('A','I','_','B','L','O','O','D')
+#define CLSID_AI_BLOODSUCKER_IX		MK_CLSID('A','I','_','B','L','O','I','X')
 #define CLSID_AI_STALKER			MK_CLSID('A','I','_','S','T','L',' ',' ')
 #define CLSID_AI_BURER				MK_CLSID('A','I','_','B','U','R','E','R')
 #define CLSID_AI_GIANT				MK_CLSID('A','I','_','G','I','A','N','T')
@@ -42,6 +43,11 @@
 #define CLSID_AI_BEETLE_BLACK		MK_CLSID('A','I','_','B','E','E','T','B')
 #define CLSID_AI_FROG				MK_CLSID('A','I','_','F','R','O','G',' ')
 #define CLSID_AI_ROTAN				MK_CLSID('A','I','_','R','O','T','A','N')
+#define CLSID_AI_TUSHKANO_BLACK		MK_CLSID('A','I','_','T','U','S','H','B')
+#define CLSID_AI_TUSHKANO_BIG		MK_CLSID('A','I','_','T','U','B','I','G')
+#define CLSID_AI_TUSHKANO_BIG_BLACK	MK_CLSID('A','I','_','T','U','B','I','B')
+#define CLSID_AI_TUSHKANO_FLY		MK_CLSID('A','I','_','T','U','S','H','F')
+#define CLSID_AI_GHOUL				MK_CLSID('A','I','_','G','H','O','U','L')
 #define CLSID_AI_RAT				MK_CLSID('A','I','_','R','A','T',' ',' ')
 
 // vehicles

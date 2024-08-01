@@ -1,9 +1,15 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Таракан (Чернобыльский)
+//	Мутант: Таракан (Чернобыльский матёрый)
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../../BaseMonster/base_monster.h"
 #include "../../../controlled_entity.h"
 #include "../../../../../../xrScripts/script_export_space.h"
 
-class CBeetleBlack final : public CBeetle 
+class CBeetleBlack final : 
+	public CBeetle 
 {
 public:
 	CBeetleBlack();

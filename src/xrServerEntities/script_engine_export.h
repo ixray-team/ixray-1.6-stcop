@@ -82,6 +82,7 @@
 #	include "ef_storage.h"
 #	include "ai/stalker/ai_stalker.h"
 #	include "ai/monsters/bloodsucker/bloodsucker.h"
+#	include "ai/monsters/extended/bloodsucker_ix/bloodsucker_ix.h"
 #	include "ai/monsters/boar/boar.h"
 #	include "ai/monsters/dog/dog.h"
 #	include "ai/monsters/flesh/flesh.h"
@@ -102,6 +103,12 @@
 #	include "ai/monsters/extended/pseudogigant_jumper/pseudogigant_jumper.h" 
 #   include "ai/monsters/extended/frog/frog.h"
 #   include "ai/monsters/extended/rotan/rotan.h"
+#	include "ai/monsters/extended/tushkano_black/tushkano_black.h"
+#	include "ai/monsters/extended/tushkano_big/tushkano_big.h"
+#	include "ai/monsters/extended/tushkano_big_black/tushkano_big_black.h"
+#	include "ai/monsters/extended/tushkano_fly/tushkano_fly.h"
+#	include "ai/monsters/extended/ghoul/ghoul.h"
+
 #	include "PhraseDialog_script.h"
 #	ifdef	DEBUG
 #		include "PHDebug.h"

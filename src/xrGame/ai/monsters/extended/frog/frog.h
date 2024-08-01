@@ -1,9 +1,15 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Лягушка
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../BaseMonster/base_monster.h"
 #include "../../controlled_entity.h"
 #include "../../../../../xrScripts/script_export_space.h"
 
-class CFrog final : public CTushkano 
+class CFrog final : 
+	public CTushkano 
 {
 public:
 	CFrog();

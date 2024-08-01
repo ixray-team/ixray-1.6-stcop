@@ -1,9 +1,15 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Тушкан
+//	Мутант: Ротан (Болотный)
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../BaseMonster/base_monster.h"
 #include "../../controlled_entity.h"
 #include "../../../../../xrScripts/script_export_space.h"
 
-class CRotan final : public CTushkano 
+class CRotan final : 
+	public CTushkano 
 {
 public:
 	CRotan();

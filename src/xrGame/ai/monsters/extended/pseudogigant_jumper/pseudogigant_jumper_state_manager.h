@@ -1,7 +1,13 @@
+///////////////////////////////////////////////////////////////////////////
+//  Базовый класс: Псевдогигант
+//	Мутант: Прыгающий псевдогигант
+////////////////////////////////////////////////////////////////////////////
+
 #pragma once
 #include "../../pseudogigant/pseudogigant_state_manager.h"
 
-class CStateManagerPseudogigantJumper final : public CStateManagerPseudogigantBase<CPseudogigantJumper> 
+class CStateManagerPseudogigantJumper final : 
+    public CStateManagerPseudogigantBase<CPseudogigantJumper> 
 {
     using inherited = CStateManagerPseudogigantBase<CPseudogigantJumper>;
 
