@@ -23,6 +23,7 @@ enum eBufferMapping
 	READ,
 	WRITE,
 	WRITE_DISCARD,
+	WRITE_NO_OVERWRITE,
 	READ_AND_WRITE
 };
 
@@ -46,6 +47,13 @@ public:
 
 	virtual void SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset) = 0;
 	virtual void SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) = 0;
+
+	virtual void VSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
+	virtual void PSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
+	virtual void HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
+	virtual void CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
+	virtual void DSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
+	virtual void GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
 };
 
 extern ENGINE_API IRender_RHI* g_RenderRHI;
@@ -64,6 +72,13 @@ public:
 
 	void SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset) override;
 	void SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) override;
+
+	void VSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
+	void PSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
+	void HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
+	void CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
+	void DSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
+	void GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
 
 	// DX11 Stuff
 	ID3D11Device* GetDevice();
@@ -84,3 +99,37 @@ extern void* RenderDSV;
 
 extern void* RenderRTV;
 extern void* SwapChainRTV;
+
+namespace RHIUtils
+{
+	inline bool CreateVertexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	{
+		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(VERTEX, pData, DataSize, bImmutable);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	inline bool CreateIndexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	{
+		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(INDEX, pData, DataSize, bImmutable);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	// Will return nullptr on DX9
+	inline bool CreateConstantBuffer(IBuffer** ppBuffer, u32 DataSize)
+	{
+		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(CONSTANT, NULL, DataSize, FALSE);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+}

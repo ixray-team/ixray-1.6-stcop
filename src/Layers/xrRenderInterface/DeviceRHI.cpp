@@ -34,7 +34,7 @@ void CRenderRHI_DX11::SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, con
 	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pVertexBuffer;
 	if (pAPIBuffer)
 	{
-		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DBufferObject();
+		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DObject();
 
 		const UINT uStrides = Stride;
 		const UINT uOffsets = Offset;
@@ -54,7 +54,7 @@ void CRenderRHI_DX11::SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, 
 	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pIndexBuffer;
 	if (pAPIBuffer)
 	{
-		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DBufferObject();
+		ID3D11Buffer* pD3DBuffer = pAPIBuffer->GetD3DObject();
 		DXGI_FORMAT indicesFormat = Is32BitBuffer ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
 		pImmediateContext->IASetIndexBuffer(pD3DBuffer, indicesFormat, Offset);
 	}
@@ -62,6 +62,112 @@ void CRenderRHI_DX11::SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, 
 	{
 		pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 	}
+}
+
+void CRenderRHI_DX11::VSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{
+	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->VSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::PSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{
+	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->PSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{
+	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->HSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->CSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::DSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->DSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
+{
+	// #TODO: TO SLOW
+
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	R_ASSERT(pImmediateContext);
+
+	xr_vector< ID3D11Buffer* > buffers;
+
+	for (int i = 0; i < NumBuffers; i++)
+	{
+		CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)ppConstantBuffers[i];
+		buffers.push_back(pAPIBuffer->GetD3DObject());
+	}
+
+	pImmediateContext->GSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
 }
 
 ID3D11Device* CRenderRHI_DX11::GetDevice()

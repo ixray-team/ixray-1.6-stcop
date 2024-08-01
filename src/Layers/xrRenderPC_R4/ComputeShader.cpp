@@ -63,7 +63,7 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 		m_ctable->m_CBTable[i].second->Flush();
 	}
 
-	ID3DBuffer*	tempBuffer[CBackend::MaxCBuffers];
+	IBuffer*	tempBuffer[CBackend::MaxCBuffers];
 
 	for (u32 i=0; i<count; ++i)
 	{
@@ -79,7 +79,7 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 		if (Cs->handler)	Cs->handler->setup(Cs);
 	}
 
-	RContext->CSSetConstantBuffers(0, count, tempBuffer);
+	g_RenderRHI->CSSetConstantBuffers(0, count, tempBuffer);
 
 	if (!m_Textures.empty())
 		RContext->CSSetShaderResources(0, (u32)m_Textures.size(), &m_Textures[0]);

@@ -15,7 +15,7 @@ public:
 
 	void UpdateSubresource(void* pData, size_t Size) override;
 
-	ID3D11Buffer* GetD3DBufferObject();
+	ID3D11Buffer* GetD3DObject();
 
 private:
 	ID3D11Buffer* m_pBuffer;

@@ -163,7 +163,7 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 	}
 }
 
-ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
+ICF void CBackend::set_Vertices(IBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb!=_vb) || (vb_stride!=_vb_stride))
 	{
@@ -173,23 +173,12 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 #endif
 		vb				= _vb;
 		vb_stride		= _vb_stride;
-		//CHK_DX			(RDevice->SetStreamSource(0,vb,0,vb_stride));
-		//UINT StreamNumber,
-		//IDirect3DVertexBuffer9 * pStreamData,
-		//UINT OffsetInBytes,
-		//UINT Stride
-
-		//UINT StartSlot,
-		//UINT NumBuffers,
-		//ID3DxxBuffer *const *ppVertexBuffers,
-		//const UINT *pStrides,
-		//const UINT *pOffsets
 		u32	iOffset = 0;
-		RContext->IASetVertexBuffers( 0, 1, &vb, &_vb_stride, &iOffset);
+		g_RenderRHI->SetVertexBuffer(0, vb, _vb_stride, iOffset);
 	}
 }
 
-ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
+ICF void CBackend::set_Indices(IBuffer* _ib)
 {
 	if (ib!=_ib)
 	{
@@ -198,7 +187,7 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 		stat.ib			++;
 #endif
 		ib				= _ib;
-		RContext->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
+		g_RenderRHI->SetIndexBuffer(ib, false, 0);
 	}
 }
 
@@ -581,7 +570,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				VERIFY("Invalid enumeration");
 		}
 
-		ID3DBuffer*	tempBuffer[MaxCBuffers];
+		IBuffer*	tempBuffer[MaxCBuffers];
 
 		u32 uiMin;
 		u32 uiMax;
@@ -598,7 +587,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 					tempBuffer[i] = 0;
 			}
 
-			RContext->PSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->PSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 		
 
@@ -613,7 +602,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->VSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->VSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 
 			
@@ -628,7 +617,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->GSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->GSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 
 		if (CBuffersNeedUpdate(m_aHullConstants, aHullConstants, uiMin, uiMax))
@@ -642,7 +631,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->HSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->HSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 
 		if (CBuffersNeedUpdate(m_aDomainConstants, aDomainConstants, uiMin, uiMax))
@@ -656,7 +645,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->DSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->DSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 
 		if (CBuffersNeedUpdate(m_aComputeConstants, aComputeConstants, uiMin, uiMax))
@@ -670,7 +659,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->CSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			g_RenderRHI->CSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
 		}
 
 		/*

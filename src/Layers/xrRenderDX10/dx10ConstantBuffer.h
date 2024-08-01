@@ -12,7 +12,7 @@ public:
 	~dx10ConstantBuffer();
 
 	bool			Similar(dx10ConstantBuffer &_in);
-	ID3DBuffer*		GetBuffer() { return m_pBuffer; }
+	IBuffer*		GetBuffer() { return m_pBuffer; }
 
 	void			Flush();
 
@@ -40,7 +40,7 @@ private:
 	xr_vector<D3D_SHADER_TYPE_DESC>	m_MembersList;
 	xr_vector<shared_str>				m_MembersNames;
 
-	ID3DBuffer*							m_pBuffer;
+	IBuffer*							m_pBuffer;
 	u32									m_uiBufferSize;	//	Cache buffer size for debug validation
 	void*								m_pBufferData;
 	bool								m_bChanged;

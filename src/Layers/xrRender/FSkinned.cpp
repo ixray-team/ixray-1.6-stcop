@@ -438,7 +438,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++; src++;
 			}
 			//R_CHK				(RDevice->CreateVertexBuffer(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			R_ASSERT(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -479,7 +479,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->matrix0)*3,int(src->matrix1)*3,src->w);
 				dst++;		src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			R_ASSERT(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -523,7 +523,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++;		
 				src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			R_ASSERT(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_3W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -566,7 +566,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++;		
 				src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			R_ASSERT(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_4W, V.p_rm_Vertices, V.p_rm_Indices);

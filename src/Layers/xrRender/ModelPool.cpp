@@ -483,7 +483,9 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 			vb_mem_system += IB_desc.Size;
 
 #else
-		D3D_BUFFER_DESC IB_desc;
+
+		// #TODO: !!! GetDesc implement
+	/*	D3D_BUFFER_DESC IB_desc;
 		D3D_BUFFER_DESC VB_desc;
 
 		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
@@ -494,7 +496,7 @@ void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_
 		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
 
 		vb_mem_video += IB_desc.ByteWidth;
-		vb_mem_system += IB_desc.ByteWidth;
+		vb_mem_system += IB_desc.ByteWidth;*/
 
 #endif
 

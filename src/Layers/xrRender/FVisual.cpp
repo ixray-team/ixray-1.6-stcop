@@ -53,7 +53,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Vertices);
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
-		p_rm_Vertices->AddRef	();
+	//	p_rm_Vertices->AddRef	(); // #TODO: !!! REF COUNT !!!
 		vFormat				= RImplementation.getVB_Format	(ID);
 		loaded_v			= true;
 
@@ -65,7 +65,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 		VERIFY				(nullptr==p_rm_Indices);
 		p_rm_Indices		= RImplementation.getIB		(ID);
-		p_rm_Indices->AddRef();
+		// p_rm_Indices->AddRef();  // #TODO: !!! REF COUNT !!!
 #endif
 #if (RENDER==R_R2) || (RENDER==R_R4)
 		// check for fast-vertices
@@ -84,7 +84,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 			VERIFY						(nullptr==m_fast->p_rm_Vertices);
 			m_fast->p_rm_Vertices		= RImplementation.getVB	(ID,true);
-			m_fast->p_rm_Vertices->AddRef();
+			//m_fast->p_rm_Vertices->AddRef();  // #TODO: !!! REF COUNT !!!
 			fmt							= RImplementation.getVB_Format(ID,true);
 
 			// indices
@@ -95,7 +95,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		
 			VERIFY						(nullptr==m_fast->p_rm_Indices);
 			m_fast->p_rm_Indices		= RImplementation.getIB	(ID,true);
-			m_fast->p_rm_Indices->AddRef();
+			//m_fast->p_rm_Indices->AddRef();  // #TODO: !!! REF COUNT !!!
 
 			// geom
 			m_fast->rm_geom.create			(fmt,m_fast->p_rm_Vertices,m_fast->p_rm_Indices);
@@ -115,7 +115,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			vCount				= data->r_u32				();
 			VERIFY				(nullptr==p_rm_Vertices);
 			p_rm_Vertices		= RImplementation.getVB			(ID);
-			p_rm_Vertices->AddRef();
+			// p_rm_Vertices->AddRef();  // #TODO: !!! REF COUNT !!!
 			vFormat				= RImplementation.getVB_Format	(ID);
 #endif
 		} 
@@ -133,7 +133,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 #ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Vertices);
-			R_CHK				(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
+			R_ASSERT				(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
 #else //USE_DX11
 			BOOL	bSoft		= Caps.geometry.bSoftware;
 			u32		dwUsage		= D3DUSAGE_WRITEONLY | (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);
@@ -161,7 +161,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			dwPrimitives		= iCount/3;
 			VERIFY				(nullptr==p_rm_Indices);
 			p_rm_Indices		= RImplementation.getIB	(ID);
-			p_rm_Indices->AddRef	();
+			// p_rm_Indices->AddRef	();  // #TODO: !!! REF COUNT !!!
 #endif
 		} 
 		else
@@ -175,7 +175,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 #ifdef USE_DX11
 			VERIFY				(nullptr==p_rm_Indices);
-			R_CHK				(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
+			R_ASSERT			(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
 #else //USE_DX11
 			BOOL	bSoft		= Caps.geometry.bSoftware;
 			u32		dwUsage		= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// indices are read in model-wallmarks code
@@ -225,11 +225,11 @@ void	Fvisual::Copy			(dxRender_Visual *pSrc)
 
 	PCOPY	(rm_geom);
 
-	PCOPY	(p_rm_Vertices); if (p_rm_Vertices) p_rm_Vertices->AddRef();
+	PCOPY	(p_rm_Vertices); // if (p_rm_Vertices) p_rm_Vertices->AddRef();  // #TODO: !!! REF COUNT !!!
 	PCOPY	(vBase);
 	PCOPY	(vCount);
 
-	PCOPY	(p_rm_Indices); if (p_rm_Indices) p_rm_Indices->AddRef();
+	PCOPY	(p_rm_Indices); // if (p_rm_Indices) p_rm_Indices->AddRef();  // #TODO: !!! REF COUNT !!!
 	PCOPY	(iBase);
 	PCOPY	(iCount);
 	PCOPY	(dwPrimitives);

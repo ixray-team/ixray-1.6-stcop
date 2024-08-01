@@ -10,6 +10,8 @@ D3D11_MAP GetD3D11Map(eBufferMapping Mapping)
 		return D3D11_MAP_READ;
 	case WRITE:
 		return D3D11_MAP_WRITE;
+	case WRITE_NO_OVERWRITE:
+		return D3D11_MAP_WRITE_NO_OVERWRITE;
 	case WRITE_DISCARD:
 		return D3D11_MAP_WRITE_DISCARD;
 	case READ_AND_WRITE:
@@ -104,7 +106,7 @@ void CD3D11Buffer::UpdateSubresource(void* pData, size_t Size)
 	pImmediateContext->UpdateSubresource(m_pBuffer, 0, NULL, pData, 0, 0);
 }
 
-ID3D11Buffer* CD3D11Buffer::GetD3DBufferObject()
+ID3D11Buffer* CD3D11Buffer::GetD3DObject()
 {
 	return m_pBuffer;
 }

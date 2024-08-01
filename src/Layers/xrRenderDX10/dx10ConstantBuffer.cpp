@@ -45,7 +45,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 
 	m_uiMembersCRC = crc32( &m_MembersList[0], Desc.Variables*sizeof(m_MembersList[0]));
 
-	R_CHK(dx10BufferUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
+	R_ASSERT(RHIUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
 	VERIFY(m_pBuffer);
 	m_pBufferData = xr_malloc(Desc.Size);
 	VERIFY(m_pBufferData);
@@ -84,17 +84,13 @@ void dx10ConstantBuffer::Flush()
 {
 	if (m_bChanged)
 	{
-		void	*pData;
-
-		D3D11_MAPPED_SUBRESOURCE	pSubRes;
-		CHK_DX(RContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
-		pData = pSubRes.pData;
+		void* pData = m_pBuffer->Map(WRITE_DISCARD);
 
 		VERIFY(pData);
 		VERIFY(m_pBufferData);
 		CopyMemory(pData, m_pBufferData, m_uiBufferSize);
 
-		RContext->Unmap(m_pBuffer, 0);
+		m_pBuffer->Unmap();
 
 		m_bChanged = false;
 	}

@@ -7,6 +7,7 @@
 #define DXGI_RGBA D3DCOLORVALUE
 
 #include "../../xrEngine/stdafx.h"
+#include "../../Layers/xrRenderInterface/DeviceRHI.h"
 
 #include "imgui.h"
 

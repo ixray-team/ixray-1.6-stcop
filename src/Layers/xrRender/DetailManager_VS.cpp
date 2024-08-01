@@ -109,7 +109,7 @@ void CDetailManager::hw_Load_Geom()
 			}
 		}
 #ifdef USE_DX11
-		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		xr_free(pVOriginal);
 #else //USE_DX11
 		R_CHK			(hw_VB->Unlock());
@@ -138,7 +138,7 @@ void CDetailManager::hw_Load_Geom()
 			}
 		}
 #ifdef USE_DX11
-		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
+		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		xr_free(pIOriginal);
 #else //USE_DX11
 		R_CHK			(hw_IB->Unlock());

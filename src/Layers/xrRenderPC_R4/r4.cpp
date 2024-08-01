@@ -384,6 +384,44 @@ void CRender::models_Prefetch() {
 	Models->Prefetch();
 }
 
+ref_shader				CRender::getShader				(int id)			{ VERIFY(id<int(Shaders.size()));	return Shaders[id];	}
+IRender_Portal*			CRender::getPortal				(int id)			{ VERIFY(id<int(Portals.size()));	return Portals[id];	}
+IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size()));	return Sectors[id];	}
+IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
+IRenderVisual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
+D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{ 
+	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
+	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
+}
+IBuffer*				CRender::getVB					(int id, BOOL	_alt)	{
+	if (_alt)	{ VERIFY(id<int(xVB.size()));	return xVB[id];		}
+	else		{ VERIFY(id<int(nVB.size()));	return nVB[id];		}
+}
+IBuffer*				CRender::getIB					(int id, BOOL	_alt)	{ 
+	if (_alt)	{ VERIFY(id<int(xIB.size()));	return xIB[id];		}
+	else		{ VERIFY(id<int(nIB.size()));	return nIB[id];		}
+}
+FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
+IRender_Target*			CRender::getTarget				()					{ return Target;										}
+
+IRender_Light*			CRender::light_create			()					{ return Lights.Create();								}
+IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
+
+void					CRender::flush					()					{ r_dsgraph_render_graph	(0);						}
+
+BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
+BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
+BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
+
+void					CRender::add_Visual				(IRenderVisual*		V, bool ignore_opt)	{ add_leafs_Dynamic((dxRender_Visual*)V, ignore_opt);								}
+void					CRender::add_Geometry			(IRenderVisual*		V )	{ add_Static((dxRender_Visual*)V,View->getMask());					}
+void					CRender::add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts)
+{
+	if (T->suppress_wm)	return;
+	VERIFY2							(_valid(P) && _valid(s) && T && verts && (s>EPS_L), "Invalid static wallmark params");
+	Wallmarks->AddStaticWallmark	(T,verts,P,&*S,s);
+}
+
 void CRender::models_Clear(BOOL b_complete) {
 	Models->ClearPool(b_complete);
 }

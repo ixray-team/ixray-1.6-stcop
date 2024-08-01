@@ -138,24 +138,24 @@ private:
 
 	//	DX10 Rain
 	ref_shader					s_rain;
-	ref_geom						g_accum_point	;
-	ref_geom						g_accum_spot	;
-	ref_geom						g_accum_omnipart;
-	ref_geom						g_accum_volumetric;
+	ref_geom					g_accum_point	;
+	ref_geom					g_accum_spot	;
+	ref_geom					g_accum_omnipart;
+	ref_geom					g_accum_volumetric;
 
-	ID3DVertexBuffer*		g_accum_point_vb;
-	ID3DIndexBuffer*		g_accum_point_ib;
+	IBuffer*					g_accum_point_vb;
+	IBuffer*					g_accum_point_ib;
 
-	ID3DVertexBuffer*		g_accum_omnip_vb;
-	ID3DIndexBuffer*		g_accum_omnip_ib;
+	IBuffer*					g_accum_omnip_vb;
+	IBuffer*					g_accum_omnip_ib;
 
-	ID3DVertexBuffer*		g_accum_spot_vb	;
-	ID3DIndexBuffer*		g_accum_spot_ib	;
+	IBuffer*					g_accum_spot_vb	;
+	IBuffer*					g_accum_spot_ib	;
 
-	ID3DVertexBuffer*		g_accum_volumetric_vb;
-	ID3DIndexBuffer*		g_accum_volumetric_ib;
+	IBuffer*					g_accum_volumetric_vb;
+	IBuffer*					g_accum_volumetric_ib;
 
-	ID3DBlendState*			g_debug_blend_state = nullptr;
+	ID3DBlendState*				g_debug_blend_state = nullptr;
 
 	// Bloom
 	ref_geom					g_bloom_build;
