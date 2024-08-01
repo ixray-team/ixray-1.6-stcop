@@ -87,6 +87,8 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
 		if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
 		if (Event.button.button == SDL_BUTTON_MIDDLE) { mouse_button = 2; }
+		if (Event.button.button == SDL_BUTTON_X1) { mouse_button = 3; }
+		if (Event.button.button == SDL_BUTTON_X2) { mouse_button = 4; }
 		if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
 			pInput->MousePressed(mouse_button);
 		} else {
