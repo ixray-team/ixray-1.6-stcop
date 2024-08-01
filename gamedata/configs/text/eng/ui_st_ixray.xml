@@ -153,4 +153,7 @@
     <string id="st_postprocess_options">
         <text>Postprocessing</text>
     </string>
+    <string id="ui_mm_saturation">
+        <text>Saturation</text>
+    </string>
 </string_table>

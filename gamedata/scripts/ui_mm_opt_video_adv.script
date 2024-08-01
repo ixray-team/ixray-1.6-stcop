@@ -348,6 +348,11 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	xml:InitStatic("video_adv:cap_aberration", _st)
 	ctl = xml:InitCheck("video_adv:check_aberration", _st)
 	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+	xml:InitStatic("video_adv:cap_saturation", _st)
+	ctl = xml:InitCheck("video_adv:check_saturation", _st)
+	table.insert(handler.m_preconditions, {func=mode_2, control=_st})
 	
 	_st = xml:InitStatic("video_adv:templ_item", nil)
 	xml:InitStatic("video_adv:cap_dof", _st)

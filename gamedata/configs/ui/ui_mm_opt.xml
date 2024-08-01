@@ -436,7 +436,6 @@
         <cap_vignette x="40" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_vignette</text>
         </cap_vignette>
-		
         <check_vignette x="177" y="0.5" width="44" height="29">
 	        <texture>ui_inGame2_checkbox</texture>
             <options_item entry="r2_vignette" group="mm_opt_video_adv" />
@@ -449,6 +448,14 @@
             <texture>ui_inGame2_checkbox</texture>
             <options_item entry="r2_aberration" group="mm_opt_video_adv" />
         </check_aberration>
+
+        <cap_saturation x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_saturation</text>
+        </cap_saturation>
+        <check_saturation x="177" y="0.5" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_saturation" group="mm_opt_video_adv" />
+        </check_saturation>
 
         <cap_sslr_water x="40" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_sslr_water</text>
