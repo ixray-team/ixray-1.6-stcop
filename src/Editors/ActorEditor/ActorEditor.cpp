@@ -98,7 +98,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	UIMainForm* MainForm = xr_new<UIMainForm>();
 	::MainForm = MainForm;
 
-	GameMaterialLibraryEditors->Load();
+	//GameMaterialLibraryEditors->Load();
 	PGMLib->Load();
 
 	FileOpen = new CUFileOpen;
