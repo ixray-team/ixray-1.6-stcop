@@ -68,6 +68,7 @@ void ESceneShapeTool::OnEditLevelBounds(bool recalc)
         
         br.getcenter(vec);
         level_shape->FPosition = vec;
+        level_shape->UpdateTransform();
 		
     }
 }
