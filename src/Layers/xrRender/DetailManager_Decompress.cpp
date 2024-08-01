@@ -325,8 +325,9 @@ RDEVICE.Statistic->TEST0.End		();
 #else
 			Item.vis_ID = 0;
 #endif
-			if (Item.vis_ID == 0)//чтобы листики травы ложились на поверхность террейна
-				ground_correction(Item.mRotY, normal);
+			//чтобы (только) листики травы ложились на поверхность террейна
+			//	if (Item.vis_ID == 0)
+			ground_correction(Item.mRotY, normal);
 			// Save it
 			D.G[index].items.push_back(ItemP);
 		}

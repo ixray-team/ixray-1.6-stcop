@@ -30,7 +30,7 @@ void main(in v_detail I, out p_bumped_new O)
 
 #ifdef USE_TREEWAVE
     float base = m1.w;
-    float H = pos.y - base;
+    float H = I.pos.y * length(m1.xyz);
     float frac = I.misc.z * consts.x;
 
     float dp = calc_cyclic(dot(pos, wave));
