@@ -617,6 +617,9 @@ bool EScene::ReadObjectStream(IReader& F, CCustomObject*& O)
 
 bool EScene::ReadObjectLTX(CInifile& ini, LPCSTR sect_name, CCustomObject*& O)
 {
+    if (!ini.section_exist(sect_name))
+        return false;
+
     ObjClassID clsid		= OBJCLASS_DUMMY;
     clsid 					= ObjClassID(ini.r_u32(sect_name,"clsid"));
 	O 						= GetOTool(clsid)->CreateObject(0,0);

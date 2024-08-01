@@ -210,7 +210,11 @@ void ETextureThumbnail::Update(ImTextureID& Texture)
 
             return;
         }
-        ImageLib.MakeThumbnailImage(this, data.data(), image_w, image_h, image_a);
+
+        if (!data.empty())
+        {
+            ImageLib.MakeThumbnailImage(this, data.data(), image_w, image_h, image_a);
+        }
     }
 
     if (Valid())
