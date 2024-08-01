@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 #pragma hdrstop
-
+#include "../xrEUI/xrUITheme.h"
 
 #include "ui_main.h"
 #include "ui_toolscustom.h"
@@ -337,6 +337,8 @@ void CCustomPreferences::Save()
     // load shortcuts
     SaveShortcuts(JSONData);
     UI->SaveSettings(JSONData);
+
+    CUIThemeManager::Get().Save();
 }
 
 void CCustomPreferences::Draw()
