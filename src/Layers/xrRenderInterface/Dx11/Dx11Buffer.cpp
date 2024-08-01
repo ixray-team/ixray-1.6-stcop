@@ -40,6 +40,7 @@ CD3D11Buffer::CD3D11Buffer() :
 	m_pBuffer(nullptr),
 	m_bImmutable(false)
 {
+	AddRef();
 }
 
 CD3D11Buffer::~CD3D11Buffer()

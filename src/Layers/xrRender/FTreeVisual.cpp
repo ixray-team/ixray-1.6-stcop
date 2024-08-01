@@ -50,7 +50,7 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		VERIFY				(nullptr==p_rm_Vertices);
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
-		// p_rm_Vertices->AddRef();  // #TODO: !!! REF COUNT !!!
+		p_rm_Vertices->AddRef();
 
 		// indices
 		dwPrimitives		= 0;
@@ -60,8 +60,8 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		dwPrimitives		= iCount/3;
 		
 		VERIFY				(nullptr==p_rm_Indices);
-		p_rm_Indices			= RImplementation.getIB		(ID);
-		// p_rm_Indices->AddRef	();  // #TODO: !!! REF COUNT !!!
+		p_rm_Indices		= RImplementation.getIB		(ID);
+		p_rm_Indices->AddRef(); 
 	}
 
 	// load tree-def
@@ -166,12 +166,12 @@ void	FTreeVisual::Copy	(dxRender_Visual *pSrc)
 
 	PCOPY(rm_geom);
 
-	PCOPY(p_rm_Vertices);	// if (p_rm_Vertices) p_rm_Vertices->AddRef();  // #TODO: !!! REF COUNT !!!
+	PCOPY(p_rm_Vertices);	if (p_rm_Vertices) p_rm_Vertices->AddRef();
 
 	PCOPY(vBase);
 	PCOPY(vCount);
 
-	PCOPY(p_rm_Indices);	// if (p_rm_Indices) p_rm_Indices->AddRef();  // #TODO: !!! REF COUNT !!!
+	PCOPY(p_rm_Indices);	if (p_rm_Indices) p_rm_Indices->AddRef();
 
 	PCOPY(iBase);
 	PCOPY(iCount);

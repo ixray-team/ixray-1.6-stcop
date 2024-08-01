@@ -27,7 +27,40 @@ enum eBufferMapping
 	READ_AND_WRITE
 };
 
-class IBuffer
+class RefCount
+{
+public:
+	virtual ~RefCount() {}
+
+	uint64_t AddRef();
+	uint64_t Release();
+
+private:
+	// Ref counting
+	uint64_t m_RefCount = 0;
+};
+
+inline uint64_t RefCount::AddRef()
+{
+	++m_RefCount;
+	return m_RefCount;
+}
+
+inline uint64_t RefCount::Release()
+{
+	assert(m_RefCount > 0);
+	--m_RefCount;
+
+	if (m_RefCount == 0)
+	{
+		delete this;
+		return 0;
+	}
+
+	return m_RefCount;
+}
+
+class IBuffer : public RefCount
 {
 public:
 	virtual ~IBuffer() {}
