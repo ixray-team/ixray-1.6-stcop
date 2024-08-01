@@ -120,6 +120,7 @@ public:
 					~player_hud			();
 	void			load				(const shared_str& model_name);
 	void			load_default		(){load("actor_hud_05");};
+	void			load_default		(){load("actor_hud");};
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
