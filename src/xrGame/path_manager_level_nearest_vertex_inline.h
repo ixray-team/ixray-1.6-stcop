@@ -17,7 +17,7 @@
 	>
 
 #define CNearestVertexPathManager CPathManager<\
-	CLevelGraph,\
+	ILevelGraph,\
 	_DataStorage,\
 	SNearestVertex<\
 		_dist_type,\

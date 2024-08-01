@@ -67,6 +67,8 @@ CGamePersistent::CGamePersistent(void)
 	m_pUI_core					= nullptr;
 	m_pMainMenu					= nullptr;
 	m_intro						= nullptr;
+	
+	if(!Device.IsEditorMode())
 	m_intro_event.bind			(this, &CGamePersistent::start_logo_intro);
 #ifdef DEBUG
 	m_frame_counter				= 0;
@@ -569,7 +571,14 @@ void CGamePersistent::OnFrame	()
 		m_pMainMenu->DestroyInternal(false);
 	}
 
-	if(!g_pGameLevel)			return;
+if (!g_pGameLevel)
+	{
+		if (Device.IsEditorMode())
+		{
+			__super::OnFrame();
+		}
+		return;
+	}
 	if(!g_pGameLevel->bReady)	return;
 
 	if(Device.Paused())

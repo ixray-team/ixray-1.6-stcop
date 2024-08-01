@@ -495,6 +495,7 @@ void CEnvironment::lerp		(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
+
 #ifdef _EDITOR
 	SetGameTime				(fGameTime+Device.fTimeDelta*fTimeFactor,fTimeFactor);
     if (fsimilar(ed_to_time,DAY_LENGTH)&&fsimilar(ed_from_time,0.f)){
@@ -511,7 +512,7 @@ void CEnvironment::OnFrame()
     }
 	if (!psDeviceFlags.is(rsEnvironment))		return;
 #else
-	if (!g_pGameLevel)		return;
+	if (!g_pGameLevel&&!Device.IsEditorMode())		return;
 #endif
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 

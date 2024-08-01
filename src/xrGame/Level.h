@@ -100,7 +100,7 @@ protected:
 	//---------------------------------------------
 	IReader						*m_chunk;
 	IReader						*spawn;
-	CGameGraph					*m_game_graph;
+	IGameGraph					*m_game_graph;
 public:
 #ifdef DEBUG
 	// level debugger

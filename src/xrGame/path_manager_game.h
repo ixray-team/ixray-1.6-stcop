@@ -17,14 +17,14 @@ template <
 	typename _index_type,
 	typename _iteration_type
 >	class CPathManager <
-		CGameGraph,
+		IGameGraph,
 		_DataStorage,
 		_Parameters,
 		_dist_type,
 		_index_type,
 		_iteration_type
 	> : public CPathManagerGeneric <
-			CGameGraph,
+			IGameGraph,
 			_DataStorage,
 			_Parameters,
 			_dist_type,
@@ -33,7 +33,7 @@ template <
 		>
 {
 protected:
-	typedef CGameGraph _Graph;
+	typedef IGameGraph _Graph;
 	typedef typename CPathManagerGeneric <
 		_Graph,
 		_DataStorage,

@@ -60,7 +60,7 @@ cover::cover					(
 		}
 	}
 
-	CLevelGraph const			&graph = ai().level_graph();
+	ILevelGraph const			&graph = ai().level_graph();
 	m_vertices.resize			(loopholes().size());
 	Vertices::iterator			i = m_vertices.begin();
 	Loopholes::const_iterator	J = loopholes().begin();
@@ -93,7 +93,7 @@ cover::~cover					()
 
 void cover::vertex				(smart_cover::loophole const &loophole, smart_cover::loophole_data &loophole_data)
 {
-	CLevelGraph const			&graph = ai().level_graph();
+	ILevelGraph const			&graph = ai().level_graph();
 	Fvector						pos = fov_position(loophole);
 	pos.y						+= 2.0f;
 	loophole_data.m_level_vertex_id	= graph.vertex_id(pos);

@@ -62,6 +62,10 @@ file(GLOB_RECURSE ENGINE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.h"
 )
 
+file(GLOB_RECURSE ENGINE_SOURCE_AI_FILES
+    "AI/.*"
+)
+
 # File groups
 source_group("src" FILES ${ENGINE_SOURCE_ALL_FILES})
 source_group("core/fonts" FILES ${ENGINE_SOURCE_FONTS_FILES})
@@ -74,6 +78,7 @@ source_group("interfaces" FILES ${ENGINE_SOURCE_INTERFACE_FILES})
 source_group("subsystem/lua" FILES ${ENGINE_SOURCE_LUA_FILES})
 source_group("subsystem/render" FILES ${ENGINE_SOURCE_RENDER_FILES})
 source_group("environment" FILES ${ENGINE_SOURCE_ENV_FILES})
+source_group("ai" FILES ${ENGINE_SOURCE_AI_FILES})
 
 # Apply list
 list(APPEND ENGINE_SRC_FILES ${ENGINE_SOURCE_ALL_FILES})
@@ -86,6 +91,7 @@ add_library(xrAbstractions SHARED ${ENGINE_SRC_FILES})
 set_property(TARGET xrAbstractions PROPERTY ENABLE_EXPORTS ON)
 
 # Include directories
+target_include_directories(xrAbstractions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/AI")
 target_include_directories(xrAbstractions PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrAbstractions PUBLIC "${IXRAY_SDK_INC}")
 

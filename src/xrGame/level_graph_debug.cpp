@@ -62,10 +62,10 @@ void CLevelGraph::render	()
 
 void modify							(const int &vertex_id, Fbox &bounding_box)
 {
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	bounding_box.modify		(graph.vertex(vertex_id)->game_point());
 
-	CGameGraph::const_iterator	I,E;
+	IGameGraph::const_iterator	I,E;
 	graph.begin				(vertex_id,I,E);
 	for ( ; I != E; ++I)
 		bounding_box.modify	(graph.vertex(graph.value(vertex_id,I))->game_point());
@@ -80,7 +80,7 @@ void CLevelGraph::update_current_info	()
 
 	bool					found = false;
 	bool					all = (m_current_level_id == -1);
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	for (int i=0, n = (int)graph.header().vertex_count(); i<n; ++i) {
 		if (!all) {
 			if (graph.vertex(i)->level_id() != m_current_level_id) {
@@ -121,15 +121,15 @@ void CLevelGraph::draw_edge			(const int &vertex_id0, const int &vertex_id1)
 	float				radius = 0.005f;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))
 		radius = 1.f;
-	u32 vertex_color0 = color_xrgb(0, 255, 255);
+	u32						vertex_color0 = color_xrgb(0,255,255);
 	if (vt0[3] == 0)
-		vertex_color0 = color_xrgb(255, 0, 255);
-	u32 vertex_color1 = color_xrgb(0, 255, 255);
+		vertex_color0 = color_xrgb(255,0,255);
+	u32						vertex_color1 = color_xrgb(0,255,255);
 	if (vt1[3] == 0)
-		vertex_color1 = color_xrgb(255, 0, 255);
-	const u32 edge_color = color_xrgb(0, 255, 0);
+		vertex_color1 = color_xrgb(255,0,255);
+	const u32				edge_color = color_xrgb(0,255,0);
 	
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	Fvector					position0;
 	Fvector					position1;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))
@@ -154,8 +154,8 @@ void CLevelGraph::draw_edge			(const int &vertex_id0, const int &vertex_id1)
 
 void CLevelGraph::draw_vertex		(const int &vertex_id)
 {
-	CGameGraph::const_iterator	I,E;
-	const CGameGraph			&graph = ai().game_graph();
+	IGameGraph::const_iterator	I,E;
+	const IGameGraph			&graph = ai().game_graph();
 	graph.begin					(vertex_id,I,E);
 	for ( ; I != E; ++I) {
 		int						neighbour_id = graph.value(vertex_id,I);
@@ -171,8 +171,8 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	float				radius = .0105f;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))
 		radius = 1.f;
-	const u32 color = color_xrgb(255, 0, 0);
-	const CGameGraph			&graph = ai().game_graph();
+	const u32					color = color_xrgb(255,0,0);
+	const IGameGraph			&graph = ai().game_graph();
 	CGameFont					&font = *UI().Font().pFontDI;
 
 	Fvector						position;
@@ -181,7 +181,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	else
 		position = convert_position(graph.vertex(vertex_id)->game_point());
 
-	font.SetColor(color_xrgb(255, 255, 0));
+	font.SetColor				(color_xrgb(255,255,0));
 
 	bool						show_text = true;
 	for (;;) {
@@ -224,15 +224,15 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	}
 
 	typedef CALifeGraphRegistry::OBJECT_REGISTRY	OBJECT_REGISTRY;
-	typedef OBJECT_REGISTRY::_const_iterator		const_iterator_;
+	typedef OBJECT_REGISTRY::_const_iterator		const_iterator;
 	typedef CALifeMonsterDetailPathManager::PATH	PATH;
 	const OBJECT_REGISTRY		&objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer				&render = Level().debug_renderer();
 	if (show_text) {
 		bool					first_time = true;
-		const_iterator_			I = objects.objects().begin();
-		const_iterator_			E = objects.objects().end();
+		const_iterator			I = objects.objects().begin();
+		const_iterator			E = objects.objects().end();
 		for (; I != E; ++I) {
 			CSE_ALifeDynamicObject	*object = (*I).second;
 			CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
@@ -249,20 +249,20 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 			if (!first_time)
 				continue;
 
-			Fvector						position_;
+			Fvector						position;
 			if (psAI_Flags.test(aiDrawGameGraphRealPos))
-				position_ = graph.vertex(stalker->m_tGraphID)->level_point();
+				position = graph.vertex(stalker->m_tGraphID)->level_point();
 			else
-				position_ = convert_position(graph.vertex(stalker->m_tGraphID)->game_point());
+				position = convert_position(graph.vertex(stalker->m_tGraphID)->game_point());
 			
-			render.draw_aabb	(position_,radius,radius,radius,color);
+			render.draw_aabb	(position,radius,radius,radius,color);
 			first_time			= false;
 			continue;
 		}
 	}
 
-	const_iterator_				I = objects.objects().begin();
-	const_iterator_				E = objects.objects().end();
+	const_iterator				I = objects.objects().begin();
+	const_iterator				E = objects.objects().end();
 	for (; I != E; ++I) {
 		CSE_ALifeDynamicObject	*object = (*I).second;
 		CSE_ALifeHumanStalker	*stalker = smart_cast<CSE_ALifeHumanStalker*>(object);
@@ -338,8 +338,8 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	float				radius = .0105f;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))
 		radius = 1.f;
-	const u32 color = color_xrgb(255, 0, 0);
-	const CGameGraph			&graph = ai().game_graph();
+	const u32					color = color_xrgb(255,0,0);
+	const IGameGraph			&graph = ai().game_graph();
 	CGameFont					&font = *UI().Font().pFontDI;
 	Fvector						position;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))
@@ -347,7 +347,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	else
 		position = convert_position(graph.vertex(vertex_id)->game_point());
 
-	font.SetColor(color_xrgb(255, 255, 0));
+	font.SetColor				(color_xrgb(255,255,0));
 
 	bool						show_text = true;
 	for (;;) {
@@ -390,15 +390,15 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	}
 
 	typedef CALifeGraphRegistry::OBJECT_REGISTRY	OBJECT_REGISTRY;
-	typedef OBJECT_REGISTRY::_const_iterator		const_iterator_;
+	typedef OBJECT_REGISTRY::_const_iterator		const_iterator;
 	typedef CALifeMonsterDetailPathManager::PATH	PATH;
 	const OBJECT_REGISTRY		&objects = ai().alife().graph().objects()[vertex_id].objects();
 
 	CDebugRenderer				&render = Level().debug_renderer();
 	if (show_text) {
 		bool					first_time = true;
-		const_iterator_			I = objects.objects().begin();
-		const_iterator_			E = objects.objects().end();
+		const_iterator			I = objects.objects().begin();
+		const_iterator			E = objects.objects().end();
 		for (; I != E; ++I) {
 			CSE_ALifeDynamicObject	*object = (*I).second;
 			CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
@@ -415,20 +415,20 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 			if (!first_time)
 				continue;
 
-			Fvector						position_;
+			Fvector						position;
 			if (psAI_Flags.test(aiDrawGameGraphRealPos))
-				position_ = graph.vertex(monster->m_tGraphID)->level_point();
+				position = graph.vertex(monster->m_tGraphID)->level_point();
 			else
-				position_ = convert_position(graph.vertex(monster->m_tGraphID)->game_point());
+				position = convert_position(graph.vertex(monster->m_tGraphID)->game_point());
 
-			render.draw_aabb	(position_,radius,radius,radius,color);
+			render.draw_aabb	(position,radius,radius,radius,color);
 			first_time			= false;
 			continue;
 		}
 	}
 
-	const_iterator_				I = objects.objects().begin();
-	const_iterator_				E = objects.objects().end();
+	const_iterator				I = objects.objects().begin();
+	const_iterator				E = objects.objects().end();
 	for (; I != E; ++I) {
 		CSE_ALifeDynamicObject	*object = (*I).second;
 		CSE_ALifeMonsterAbstract*monster = smart_cast<CSE_ALifeMonsterAbstract*>(object);
@@ -518,7 +518,7 @@ void CLevelGraph::draw_game_graph	()
 //	RCache.dbg_DrawTRI		(Fidentity,vertices[1],vertices[2],vertices[3],back_color);
 
 	// draw vertices
-	CGameGraph				&graph = ai().game_graph();
+	IGameGraph				&graph = ai().game_graph();
 	update_current_info		();
 
 	bool					found = false;
@@ -550,7 +550,7 @@ void CLevelGraph::draw_game_graph	()
 		t1.y += .6f;
 		NORMALIZE_VECTOR(t1);
 		Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(0,0,255));
-		CGameGraph::const_iterator	I, E;
+		IGameGraph::const_iterator	I, E;
 		ai().game_graph().begin		(i,I,E);
 		for ( ; I != E; ++I) {
 			Fvector t2 = ai().game_graph().vertex((*I).vertex_id())->game_point();
@@ -563,7 +563,7 @@ void CLevelGraph::draw_game_graph	()
 		T.set			(t1);
 		//T.y+= 1.5f;
 		T.y+= 1.5f/10.f;
-		Device.mFullTransform.transform (S,T);
+		Device->mFullTransform.transform (S,T);
 		//out of screen
 		if (S.z < 0 || S.w < 0)												continue;
 		if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;
@@ -589,7 +589,7 @@ void CLevelGraph::draw_game_graph	()
 		}
 	}
 
-	if (IsGameTypeSingle() && ai().get_alife()) {
+	if (GameID() == eGameIDSingle && ai().get_alife()) {
 		{
 			GameGraph::_LEVEL_ID	J = ai().game_graph().vertex(ai().alife().graph().actor()->m_tGraphID)->level_id();
 			for (int i=0, n=(int)ai().game_graph().header().vertex_count(); i<n; ++i) {
@@ -606,7 +606,7 @@ void CLevelGraph::draw_game_graph	()
 				T.set			(t1);
 				//T.y+= 1.5f;
 				T.y+= 1.5f;
-				Device.mFullTransform.transform (S,T);
+				Device->mFullTransform.transform (S,T);
 				//out of screen
 				if (S.z < 0 || S.w < 0)												continue;
 				if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;

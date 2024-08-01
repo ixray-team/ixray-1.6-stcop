@@ -30,7 +30,7 @@ CALifeSpawnRegistry::CALifeSpawnRegistry	(LPCSTR section)
 
 CALifeSpawnRegistry::~CALifeSpawnRegistry	()
 {
-	xr_delete					(m_game_graph);
+	if(!Device.IsEditorMode())xr_delete(m_game_graph);
 	m_chunk->close				();
 	FS.r_close					(m_file);
 }
@@ -106,6 +106,42 @@ void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 	VERIFY						(!m_file);
 	m_file						= FS.r_open(file_name);
 	load						(*m_file);
+}
+
+void CALifeSpawnRegistry::load_from_editor()
+{
+	Msg("* Loading spawn registry...");
+	ai().patrol_path_storage_from_editor();
+
+	m_game_graph = EditorScene->GetGameGraph();
+	ai().game_graph(m_game_graph);
+	
+
+	IReader*F = EditorScene->LoadSpawn();
+	IReader* chunk;
+	chunk = F->open_chunk(0);
+	m_header.load(*chunk);
+	chunk->close();
+
+	chunk = F->open_chunk(1);
+	m_spawns.load(*chunk);
+	chunk->close();
+		chunk = F->open_chunk(2);
+	load_data(m_artefact_spawn_positions, *chunk);
+	chunk->close();
+
+	chunk = F->open_chunk(3);
+	R_ASSERT2(chunk, "Spawn version mismatch - REBUILD SPAWN!");
+	ai().patrol_path_storage(*chunk);
+	chunk->close();
+
+	xr_delete(F);
+
+	build_story_spawns();
+
+	build_root_spawns();
+
+	Msg("* %d spawn points are successfully loaded", m_spawns.vertex_count());
 }
 
 struct dummy {

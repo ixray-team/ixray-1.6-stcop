@@ -932,7 +932,7 @@ void CAI_Stalker::compute_throw_miss		( u32 const vertex_id )
 	float const throw_miss_radius		= ::Random.randF(2.f,5.f);
 	u32 const try_count					= 6;
 
-	CLevelGraph const& level_graph		= ai().level_graph();
+	ILevelGraph const& level_graph		= ai().level_graph();
 	for (u32 i = 0; i < try_count; ++i) {
 		Fvector const direction			= Fvector().random_dir();
 		Fvector const check_position	= Fvector().mad( m_throw_target_position, direction, throw_miss_radius );
