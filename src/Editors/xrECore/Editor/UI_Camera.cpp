@@ -119,7 +119,6 @@ void CUI_Camera::BuildCamera()
 
 	m_CamMat.setHPB(m_HPB.x,m_HPB.y,m_HPB.z);
     m_CamMat.translate_over(m_Position);
-    UI->OutCameraPos();
     
 	EDevice->vCameraPosition.set	(m_CamMat.c);
 	EDevice->vCameraDirection.set	(m_CamMat.k);

@@ -854,6 +854,7 @@ void TUI::OnStats()
 	}
 
 	ViewportFrameLines.push_back(Str);
+	UI->OutCameraPos();
 }
 
 void SPBItem::GetInfo			(xr_string& txt, float& p, float& m)
