@@ -1,14 +1,14 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CPseudoGigant;
+class CPseudogigant;
 
-class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant> {
-	typedef CMonsterStateManager<CPseudoGigant> inherited;
+class CStateManagerPseudogigant : public CMonsterStateManager<CPseudogigant> {
+	typedef CMonsterStateManager<CPseudogigant> inherited;
 public:
 
-					CStateManagerGigant	(CPseudoGigant *monster); 
-					virtual ~CStateManagerGigant();
+					CStateManagerPseudogigant(CPseudogigant*monster);
+					virtual ~CStateManagerPseudogigant();
 
 	virtual void	execute				();
 	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}

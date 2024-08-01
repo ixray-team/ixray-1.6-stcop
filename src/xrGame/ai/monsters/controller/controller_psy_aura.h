@@ -80,5 +80,5 @@ public:
 	void	on_death();
 	void	update_schedule();
 	void	update_frame();
-	float   xr_stdcall get_effector_strength();
+	float   get_effector_strength();
 };
