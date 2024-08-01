@@ -170,7 +170,7 @@ void ResizeBuffersD3D9(u16 Width, u16 Height);
 void DestroyD3D9();
 
 #ifndef _EDITOR
-bool CreateD3D11();
+bool CreateD3D11(bool ReturnToDX10);
 bool UpdateBuffersD3D11();
 void ResizeBuffersD3D11(u16 Width, u16 Height);
 void DestroyD3D11();
@@ -285,8 +285,9 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		break;
 
 #ifndef _EDITOR
+	case APILevel::DX10:
 	case APILevel::DX11:
-		if (!CreateD3D11()) {
+		if (!CreateD3D11(API == APILevel::DX10)) {
 			return false;
 		}
 		break;
