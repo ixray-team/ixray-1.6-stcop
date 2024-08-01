@@ -2481,16 +2481,14 @@ float CWeapon::GetSecondVPFov() const
 
 void CWeapon::UpdateSecondVP()
 {
-	// + CActor::UpdateCL();
 	bool b_is_active_item = (m_pInventory != NULL) && (m_pInventory->ActiveItem() == this);
-	R_ASSERT(ParentIsActor() && b_is_active_item); // Ýòà ôóíêöèÿ äîëæíà âûçûâàòüñÿ òîëüêî äëÿ îðóæèÿ â ðóêàõ íàøåãî èãðîêà
+	R_ASSERT(ParentIsActor() && b_is_active_item);
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 
-	bool bCond_1 = m_zoom_params.m_fZoomRotationFactor > 0.05f;    // Ìû äîëæíû öåëèòüñÿ
-	bool bCond_2 = m_zoom_params.m_fSecondVPFovFactor > 0.0f;     // Â êîíôèãå äîëæåí áûòü ïðîïèñàí ôàêòîð çóìà (scope_lense_fov_factor) áîëüøå ÷åì 0
-	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Ìû äîëæíû áûòü îò 1-ãî ëèöà
-	//bool bCond_4 = m_bGrenadeMode == false;                        // Ìû íå äîëæíû áûòü â ðåæèìå ïîäñòâîëüíèêà
+	bool bCond_1 = m_zoom_params.m_fZoomRotationFactor > 0.05f;  
+	bool bCond_2 = m_zoom_params.m_fSecondVPFovFactor > 0.0f;
+	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye();
 
-	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 /*&& bCond_4*/);
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3);
 }

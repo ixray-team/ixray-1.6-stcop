@@ -263,6 +263,16 @@ public:
 		return m_zoom_params.m_bHideCrosshairInZoom || ZoomTexture();
 	}
 
+	IC float GetZRotatingFactor()    const {
+		return m_zoom_params.m_fZoomRotationFactor;
+	}
+	IC float GetSecondVPZoomFactor() const {
+		return m_zoom_params.m_fSecondVPFovFactor;
+	}
+	IC float IsSecondVPZoomPresent() const {
+		return GetSecondVPZoomFactor() > 0.005f;
+	}
+
 	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
 	IC void					SetZoomFactor		(float f) 		{m_zoom_params.m_fCurrentZoomFactor = f;}
 

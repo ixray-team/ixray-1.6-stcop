@@ -616,7 +616,8 @@ void CRender::AfterWorldRender()
 	{
 		IDirect3DSurface9* pBackBuffer = NULL;
 		RDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
-		D3DXLoadSurfaceFromSurface(Target->rt_secondVP->pRT, 0, 0, pBackBuffer, 0, 0, D3DX_DEFAULT, 0);
+		//D3DXLoadSurfaceFromSurface(Target->rt_secondVP->pRT, 0, 0, pBackBuffer, 0, 0, D3DX_DEFAULT, 0);
+		RDevice->StretchRect(pBackBuffer, NULL, Target->rt_secondVP->pRT, NULL, D3DTEXF_NONE);
 		pBackBuffer->Release();
 	}
 }

@@ -716,7 +716,7 @@ void CRender::AfterWorldRender()
 	{
 		ID3DTexture2D* pBuffer = NULL;
 		RSwapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBuffer);
-		HW.pContext->CopyResource(Target->rt_secondVP->pSurface, pBuffer);
+		RContext->CopyResource(Target->rt_secondVP->pSurface, pBuffer);
 		pBuffer->Release();
 	}
 }

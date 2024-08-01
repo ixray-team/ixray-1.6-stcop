@@ -71,7 +71,7 @@ BOOL CRenderTarget::Create()
 	}
 	//RImplementation.o.color_mapping = RT_color_map->valid();
 
-	RT_SecondVP.create(RTname_SecondVP, rtWidth, rtHeight, HW.Caps.fTarget);
+	RT_SecondVP.create(RTname_SecondVP, rtWidth, rtHeight, D3DFMT_X8R8G8B8);
 
 	//FXAA
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
