@@ -207,7 +207,7 @@ namespace ChoseEvents
                     dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(rect.pBits)+(rect.Pitch*y));
                     for (u32 i = 0; i < THUMB_WIDTH; i++)
                     {
-                        dest[i] = item->CalculateBGR(EDevice->fTimeGlobal, frame);
+                        dest[i] = item->CalculateRGB(EDevice->fTimeGlobal, frame);
                         dest[i] = subst_alpha(dest[i], 0xFF);
                     }
                 }

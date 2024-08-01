@@ -255,7 +255,7 @@ void UIPropertiesItem::DrawProp()
 
 		PItem->BeforeEdit<ColorValue, Fcolor>(edit_val);
 		float a = edit_val.a;
-		float color[3] = { edit_val.r,edit_val.b,edit_val.b };
+		float color[3] = { edit_val.r,edit_val.g,edit_val.b };
 		if (ImGui::ColorEdit3("##value", color))
 		{
 			edit_val.r = color[0];
