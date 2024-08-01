@@ -37,8 +37,6 @@ bone_head			 = bip01_head				; bone name
 bone_fire			 = bip01_head				; bone name
 weapon_usage		 = 0						; boolean
 
-stamina_hit		=	0.2;
-
 ;------------------------------------------------------------------------
 ; Influences
 ;------------------------------------------------------------------------
@@ -55,6 +53,7 @@ psy_max_power			=	0.2
 psy_sound				=	anomaly\psy_voices_1_l		;monsters\controller\controller_presence_l
 psy_pp_effector_name	= 	psy_antenna 				;postprocess_psi
 psy_pp_highest_at		= 	0.1
+psy_enable_aura_effector = 0
 
 radiation_max_distance		=	0
 radiation_max_power			=	0.02
@@ -89,25 +88,25 @@ ph_skel_shot_up_factor        = 0.25
 ;------------------------------------------------------------------------- 
 ; Psy Aura
 ;-------------------------------------------------------------------------
-PsyAura_HeadSound			= monsters\controller\controller_control1
-PsyAura_SoundLeftPath		= monsters\controller\controller_presence_l
-PsyAura_SoundRightPath		= monsters\controller\controller_presence_r
-PsyAura_Radius				= 20
-PsyAura_Damage				= 0.1
+PsyAura_Enabled		     			= true
 
-m_psy_aura		     		= true
-psy_hit_damage				= 0.35
+PsyAura_HeadSound                   = monsters\controller\controller_control1
+PsyAura_SoundLeftPath               = monsters\controller\controller_presence_l
+PsyAura_SoundRightPath              = monsters\controller\controller_presence_r
+PsyAura_Radius_min                  = 20   ; at this distance the auro effect is strongest and hit effector starts
+PsyAura_Radius_max                  = 80   ; at this distance the regular effector starts
+PsyAura_Radius_max_y                = 3    ; minimum Y-difference between actor and controller to initiate the PsyAura
+PsyAura_Damage                      = 0.05 ; damage of every psy aura hit
 
-aura_effector				= controller_aura_pp_effector_section
-aura_effector_hit			= controller_aura_pp_hit_effector_section
+aura_effector                       = controller_aura_pp_effector_section
+aura_hit_effector_sect				= effector_controller_aura
+aura_regular_effector_sect			= effector_controller_aura2 ; regular aura effector that starts at PsyAura_Radius_max
+aura_effector_max_factor			= 0.4  ; maximum amplitude of camera effector at PsyAura_Radius_min [0..1]
 
-PsyAura_Fake_Duration		= 3000
-PsyAura_Fake_Delay			= 8000
-PsyAura_Fake_MaxAddDist		= 90
-PsyAura_Fake_MinAddDist		= 20
-PsyAura_HitDelay			= 1500
-PsyAura_PPHitDelay			= 300
-
+PsyAura_Fake_Duration		        = 5000,8000  ; min/max duration of every "fake aura" effect
+PsyAura_Fake_Delay			        = 5000,13000 ; min/max delay between every "fake aura" effect
+PsyAura_HitDelay                    = 1500
+PsyAura_PPHitDelay                  = 300
 
 ;----------------------------------------------------------------------------
 ; Movement::Velocities & Acceleration
@@ -430,16 +429,16 @@ ce_power			= 1.5 ;0.7 ; power
 ; Aura PP Effector
 ;=========================================================================================
 [controller_aura_pp_effector_section]
-duality_h		= 0.00
-duality_v		= 0.00
-blur			= 10
-gray			= 0.0
-noise_intensity = 10.0
-noise_grain		= 1
-noise_fps		= 30
-color_base		= 0.9,0.9,1.0
-color_gray		= 0.33,0.330,0.33
-color_add		= 0.00,0.00,0.015
+duality_h                           = 0.00
+duality_v                           = 0.00
+blur                                = 10
+gray                                = 0.0
+noise_intensity                     = 10.0
+noise_grain                         = 1
+noise_fps                           = 25
+color_base                          = 0.9,0.9,1.0
+color_gray                          = 0.33,0.330,0.33
+color_add                           = 0.00,0.00,0.015
 
 ;===========================================================================
 ; Attack Animation Parameters
