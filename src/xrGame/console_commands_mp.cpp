@@ -2015,7 +2015,7 @@ public:
 		string1024 buff;
 		exclude_raid_from_args(arguments, buff, sizeof(buff));
 
-		if (sscanf_s(buff, "%s %f %f %f", &section, sizeof(section), &vec.x, &vec.y, &vec.z) != 4)
+		if (sscanf_s(buff, "%s %f %f %f", &section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z) != 4)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Spawn object. Format: \"sv_spawn_on_position <item section> <position>\"");
@@ -2115,7 +2115,7 @@ public:
 		string128 name;
 		s32 money;
 
-		if (sscanf_s(args, "%d %s", &money, &name, sizeof(name)) != 2)
+		if (sscanf_s(args, "%d %s", &money, &name, (u32)sizeof(name)) != 2)
 		{
 			Msg("! Transfer money to player. Format: \"transfer_money <money> <player name>\"");
 			return;
