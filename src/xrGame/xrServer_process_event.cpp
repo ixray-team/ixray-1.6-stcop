@@ -266,6 +266,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		}break;
 	case GE_REPAIR_ITEM:
 	{
+
 		CSE_ALifeInventoryItem* iitem = smart_cast<CSE_ALifeInventoryItem*>(receiver);
 		if (!iitem)
 			break;

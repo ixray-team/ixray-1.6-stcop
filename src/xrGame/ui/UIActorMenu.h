@@ -337,7 +337,6 @@ public:
 	void						TakeAllFromInventoryBox		();
 	void						UpdateConditionProgressBars	();
 	void						OnSuccessRepairMP(PIItem item);
-
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
 
 }; // class CUIActorMenu

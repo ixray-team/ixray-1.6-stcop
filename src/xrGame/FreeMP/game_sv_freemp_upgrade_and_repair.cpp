@@ -22,6 +22,7 @@ void game_sv_freemp::OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID)
 	AddMoneyToPlayer(ps, -cost);
 
 	NET_Packet NP;
+
 	CGameObject::u_EventGen(NP, GE_REPAIR_ITEM, itemId);
 	CGameObject::u_EventSend(NP);
 

@@ -143,7 +143,6 @@ void CUIActorMenu::SeparateUpgradeItem()
 //	}
 }
 
-
 void CUIActorMenu::OnSuccessRepairMP(PIItem item)
 {
 	UpdateItemsPlace();

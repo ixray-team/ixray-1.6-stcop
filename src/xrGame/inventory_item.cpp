@@ -309,6 +309,7 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 	{
 		SetCondition(1.0f);
 	}break;
+
 	}
 }
 

@@ -63,6 +63,7 @@ void CUIActorMenu::RepairEffect_CurItem()
 	}
 	if (!IsGameTypeSingle())
 	{
+
 		LPCSTR item_name = item->m_section_id.c_str();
 		luabind::functor<int> funct;
 		R_ASSERT2(

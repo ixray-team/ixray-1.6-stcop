@@ -38,19 +38,6 @@ public:
 	virtual		void				Update();
 	virtual		BOOL OnTouch(u16 eid_who, u16 eid_what, BOOL bForced = false);
 
+	virtual		void				OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID);
 
-	bool				SpawnItem(LPCSTR section, u16 parent);
-	bool				SpawnItemToPos(LPCSTR section, Fvector3 position);
-
-	IC			xrServer& server() const
-	{
-		VERIFY(m_server);
-		return						(*m_server);
-	}
-
-	IC			CALifeSimulator& alife() const
-	{
-		VERIFY(m_alife_simulator);
-		return						(*m_alife_simulator);
-	}
 };
