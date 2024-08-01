@@ -20,6 +20,8 @@ class CMapSpot;
 class CGameTask;
 class CUIXml;
 class UIHint;
+class CUIPdaSpot;
+class CUIPropertiesBox;
 
 using GameMaps = xr_map<shared_str, CUICustomMap*>;
 using GameMapsPairIt = GameMaps::iterator;
@@ -44,13 +46,9 @@ private:
 	CUIFixedScrollBar*				m_UIMainScrollH;
 	CUIWindow*					m_UILevelFrame;
 	CMapActionPlanner*			m_ActionPlanner;
-//	CUIFrameLineWnd*			UIMainMapHeader;
-	CUIMapLocationHint*			m_map_location_hint;
 
-#ifdef DEBUG
-//	CUIStatic*					m_dbg_text_hint;
-//	CUIStatic*					m_dbg_info;
-#endif // DEBUG
+	CUIMapLocationHint*			m_map_location_hint;
+	CUIPdaSpot*					m_UserSpotWnd;
 
 	enum EBtnPos
 	{
@@ -92,7 +90,18 @@ private:
 
 	void						ResetActionPlanner		();
 
+	CMapLocation* m_cur_location;
+	CUIPropertiesBox* m_UIPropertiesBox;
+
 public:
+
+	// qweasdd: from lost alpha
+	bool						ConvertCursorPosToMap(Fvector*, CUILevelMap*);
+	void						CreateSpotWindow(Fvector, shared_str);
+	void						ShowSettingsWindow(u16 id, Fvector position, shared_str levelName);
+	CMapLocation*				UnderSpot(Fvector RealPosition, CUILevelMap*);
+	//-qweasdd
+
 	void						ViewGlobalMap	();
 	void						ViewActor		();
 	void						ViewZoomIn		();
@@ -100,6 +109,7 @@ public:
 
 	void						MoveScrollV		( float dy );
 	void						MoveScrollH		( float dx );
+	void 						ActivatePropertiesBox(CUIWindow* w);
 
 public:
 	CUICustomMap*				m_tgtMap;

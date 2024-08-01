@@ -41,6 +41,7 @@ void SLocationKey::save(IWriter &stream)
 	stream.w		(&object_id,sizeof(object_id));
 
 	stream.w_stringZ(spot_type);
+	stream.w_u8(location->IsUserDefined() ? 1 : 0);
 	stream.w_u8		(0);
 	location->save	(stream);
 }
@@ -50,7 +51,18 @@ void SLocationKey::load(IReader &stream)
 	stream.r		(&object_id,sizeof(object_id));
 
 	stream.r_stringZ(spot_type);
+	u8	bUserDefined = stream.r_u8();
 	stream.r_u8		();
+
+	if (bUserDefined)
+	{
+		Level().Server->PerformIDgen(object_id);
+		location = xr_new<CMapLocation>(*spot_type, object_id, true);
+	}
+	else
+	{
+		location = xr_new<CMapLocation>(*spot_type, object_id);
+	}
 
 	location  = new CMapLocation(*spot_type, object_id);
 
@@ -59,6 +71,9 @@ void SLocationKey::load(IReader &stream)
 
 void SLocationKey::destroy()
 {
+	if (location && location->IsUserDefined())
+		Level().Server->FreeID(object_id, 0);
+
 	delete_data(location);
 }
 
@@ -127,6 +142,19 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 	CMapLocation* l = new CRelationMapLocation(sname, pInvOwner->object_id(), pActor->object_id());
 	Locations().push_back( SLocationKey(sname, pInvOwner->object_id()) );
 	Locations().back().location = l;
+	return l;
+}
+
+CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const shared_str& level_name, Fvector position)
+{
+	u16 _id = Level().Server->PerformIDgen(0xffff);
+
+	CMapLocation* l = xr_new<CMapLocation>(spot_type.c_str(), _id, true);
+	l->InitUserSpot(level_name, position);
+
+	Locations().push_back(SLocationKey(spot_type, _id));
+	Locations().back().location = l;
+
 	return l;
 }
 
@@ -288,3 +316,76 @@ void CMapManager::Dump						()
 	Msg("end of map_locations dump");
 }
 #endif
+
+using namespace luabind;
+void CMapManager::MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor)
+{
+	xr_vector<CMapLocation*> res;
+	Level().MapManager().GetMapLocations(spot_type, id, res);
+	xr_vector<CMapLocation*>::iterator it = res.begin();
+	xr_vector<CMapLocation*>::iterator it_e = res.end();
+	for (; it != it_e; ++it)
+	{
+		CMapLocation* ml = *it;
+		if (functor(ml) == true)
+			return;
+	}
+}
+
+void CMapManager::AllLocationsForEach(const luabind::functor<bool>& functor)
+{
+	Locations_it it = Locations().begin();
+	Locations_it it_e = Locations().end();
+
+	for (; it != it_e; ++it)
+	{
+		if (functor((*it).location) == true)
+			return;
+	}
+}
+
+#include "map_location.h"
+
+#pragma optimize("s",on)
+void CMapManager::script_register(lua_State* L)
+{
+	module(L)
+	[
+		class_<CMapManager>("CMapManager")
+			.def(constructor<>())
+			//.def("AddMapLocation", &CMapManager::AddMapLocation_script)
+			//.def("AddUserLocation", &CMapManager::AddUserLocation_script)
+			//.def("RemoveMapLocation", &CMapManager::RemoveMapLocation_script)
+			//.def("HasMapLocation", &CMapManager::HasMapLocation_script)
+			//.def("GetMapLocation", &CMapManager::GetMapLocation_script)
+				.def("RemoveMapLocationByObjectID", &CMapManager::RemoveMapLocationByObjectID)
+				.def("RemoveMapLocation", (void (CMapManager::*)(CMapLocation*)) & CMapManager::RemoveMapLocation)
+			//.def("RemoveMapLocation", &CMapManager::RemoveMapLocation_script)
+				.def("DisableAllPointers", &CMapManager::DisableAllPointers)
+				.def("MapLocationsForEach", &CMapManager::MapLocationsForEach)
+				.def("AllLocationsForEach", &CMapManager::AllLocationsForEach),
+
+			class_<CMapLocation>("CMapLocation")
+			//.def(constructor<>())
+				.def("HintEnabled", &CMapLocation::HintEnabled)
+				.def("GetHint", &CMapLocation::GetHint)
+				.def("SetHint", &CMapLocation::SetHint)
+				.def("PointerEnabled", &CMapLocation::PointerEnabled)
+				.def("EnablePointer", &CMapLocation::EnablePointer)
+				.def("DisablePointer", &CMapLocation::DisablePointer)
+				.def("GetType", &CMapLocation::GetType)
+				.def("SpotSize", &CMapLocation::SpotSize)
+				.def("IsUserDefined", &CMapLocation::IsUserDefined)
+				.def("SetUserDefinedFlag", &CMapLocation::SetUserDefinedFlag)
+				.def("HighlightSpot", &CMapLocation::HighlightSpot)
+				.def("Collidable", &CMapLocation::Collidable)
+				.def("SpotEnabled", &CMapLocation::SpotEnabled)
+				.def("EnableSpot", &CMapLocation::EnableSpot)
+				.def("DisableSpot", &CMapLocation::DisableSpot)
+				.def("GetLevelName", &CMapLocation::GetLevelName)
+				.def("GetPosition", &CMapLocation::GetPosition)
+				.def("ObjectID", &CMapLocation::ObjectID)
+				.def("GetLastPosition", &CMapLocation::GetLastPosition)
+			//.def("GetOwnerTaskID", &CMapLocation::GetOwnerTaskID)
+	];
+}

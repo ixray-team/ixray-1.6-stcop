@@ -24,9 +24,11 @@ enum ELocationFlags
 	eSpotEnabled		= (1<<5),
 	eCollidable			= (1<<6),
 	eHintEnabled		= (1<<7),
+	eUserDefined		= (1 << 8),
 };
 
 protected:
+	LPCSTR					m_type;
 	flags32					m_flags;
 	shared_str				m_hint;
 	CMapSpot*				m_level_spot;
@@ -71,9 +73,16 @@ protected :
 	CMapSpotPointer*		GetSpotPointer					(CMapSpot* sp);
 	CMapSpot*				GetSpotBorder					(CMapSpot* sp);
 public:
-							CMapLocation					(LPCSTR type, u16 object_id);
+							CMapLocation					(LPCSTR type, u16 object_id, bool is_user_loc = false);
 	virtual					~CMapLocation					();
 	virtual void			destroy							();
+
+	IC		LPCSTR			GetType				() const		{ return m_type; };
+	Fvector2				SpotSize			();
+	IC bool					IsUserDefined		() const		{ return !!m_flags.test(eUserDefined); }
+	IC void					SetUserDefinedFlag	(BOOL state)	{ m_flags.set(eUserDefined, state); }
+	void					InitUserSpot		(const shared_str& level_name, const Fvector& pos);
+	void					HighlightSpot		(bool state, const Fcolor& color);
 
 	IC		bool			HintEnabled						()					{return !!m_flags.test(eHintEnabled);}
 			LPCSTR			GetHint							();
@@ -93,7 +102,7 @@ public:
 	virtual void			UpdateMiniMap					(CUICustomMap* map);
 	virtual void			UpdateLevelMap					(CUICustomMap* map);
 
-	void					CalcPosition					();
+	Fvector2				CalcPosition					();
 	const Fvector2&			CalcDirection					();
 	IC const shared_str&	GetLevelName					()	{return m_cached.m_LevelName;}
 	const Fvector2&			GetPosition						()	{return m_cached.m_Position;}
