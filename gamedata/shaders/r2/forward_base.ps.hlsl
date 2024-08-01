@@ -43,6 +43,5 @@ void main(p_bumped_new I, out float4 Color : COLOR0)
     Color.xyz += Light.w * Gloss + Specular;
 
     float fog = saturate(length(M.Point) * fog_params.w + fog_params.x);
-    Color.xyz = lerp(Color.xyz, fog_color, fog);
-    Color.w *= 1.0f - fog * fog;
+    Color = lerp(Color, fog_color, fog);
 }

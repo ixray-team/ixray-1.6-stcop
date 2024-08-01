@@ -100,9 +100,7 @@ float4 main(float2 tc : TEXCOORD0) : COLOR
     fSturation = 0.80 * fSturation + 0.20;
 
     float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
-    float skyblend = fog * fog;
-
-    res = lerp(res, max_density, skyblend);
+    res = lerp(res, max_density, fog);
     res *= fSturation;
 
     return res * Ldynamic_color * 1.0;
