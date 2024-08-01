@@ -24,5 +24,5 @@ public:
 
 	virtual void	_BCL	OnFrame();
 	virtual	void			load_draw_internal();
-	virtual	void			destroy_loading_shaders();
+	virtual	void			DestroyLoadingScreen();
 };

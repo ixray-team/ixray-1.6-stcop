@@ -183,7 +183,6 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time),
 
-		//def("log",								&LuaLog),
 		def("error_log",						&ErrorLog),
 		def("flush",							&FlushLogs),
 		def("prefetch",							&prefetch_module),
@@ -200,4 +199,12 @@ void CScriptEngine::script_register(lua_State *L)
 		def("TinyLog",							&MyLog)
 #endif // #ifdef XRGAME_EXPORTS
 	];
+
+	if (Device.IsEditorMode())
+	{
+		module(L)
+		[
+			def("log", &LuaLog)
+		];
+	}
 }
