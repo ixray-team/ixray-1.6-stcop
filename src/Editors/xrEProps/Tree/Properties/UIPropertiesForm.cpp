@@ -17,6 +17,10 @@ UIPropertiesForm::~UIPropertiesForm()
 
 void UIPropertiesForm::Draw()
 {
+	if (!bAsyncUpdated)
+	{
+		return;
+	}
 	{
 		if (m_EditChooseValue)
 		{
@@ -99,9 +103,28 @@ void UIPropertiesForm::Draw()
 	}
 }
 
+void UIPropertiesForm::AssignItemsAsync(PropItemVec items)
+{
+	bAsyncUpdated = false;
+
+	m_Items = items;
+	for (PropItem* item : items)
+	{
+		item->m_Owner = this;
+		UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.AppendItem(item->Key()));
+		VERIFY(Item);
+		Item->PItem = item;
+	}
+
+	bAsyncUpdated = true;
+}
+
 
 void UIPropertiesForm::AssignItems(PropItemVec& items)
 {
+	if (!bAsyncUpdated)
+		return;
+
 	m_Items = items;
 	for (PropItem* item : items)
 	{
