@@ -148,7 +148,7 @@ public:
 	void	manual_deactivate();
 	bool	start_threaten;
 	float	get_vampire_distance() const { return m_vampire_distance; }
-	virtual	char* get_monster_class_name() { return (char*)"BloodsuckerIX"; }
+	virtual	char* get_monster_class_name() { return (char*)"bloodsucker_ix"; }
 	u32		m_hits_before_vampire;
 	u32		m_sufficient_hits_before_vampire;
 	int		m_sufficient_hits_before_vampire_random;
