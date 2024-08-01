@@ -56,6 +56,8 @@ public:
 	virtual	void	on_threaten_execute	();
 
 	virtual void	HitEntityInJump		(const CEntity *pEntity);
+	virtual void    EndStateJump ();
+
 	virtual void	TranslateActionToPathParams	();
 	virtual	char*	get_monster_class_name () { return (char*)"pseudogigant_jumper"; }
 

@@ -263,6 +263,11 @@ void CPseudogigantJumper::HitEntityInJump		(const CEntity *pEntity) {
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
 
+void CPseudogigantJumper::EndStateJump()
+{
+
+}
+
 void CPseudogigantJumper::TranslateActionToPathParams() {
 	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD)) {
 		inherited::TranslateActionToPathParams();

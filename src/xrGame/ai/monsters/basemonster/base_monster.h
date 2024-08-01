@@ -184,6 +184,7 @@ public:
 															 bool				draw_hit_marks = true);
 
 	virtual	void			HitEntityInJump					(const CEntity *pEntity) {}
+	virtual void			EndStateJump					() {}
 
 	virtual	void			on_before_sell					(CInventoryItem *item);
 	virtual bool			unlimited_ammo					() override { return false; }
