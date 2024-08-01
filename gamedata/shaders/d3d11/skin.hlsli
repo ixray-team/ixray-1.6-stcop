@@ -52,8 +52,8 @@ float4 u_position(float4 v)
     return float4(v.xyz, 1.f);
 } // -12..+12
 
-float4 sbones_array[256 - 22];
-float4 sbones_array_old[256 - 22];
+float4 sbones_array[512];
+float4 sbones_array_old[512];
 
 float3 skinning_dir(float3 dir, float3 m0, float3 m1, float3 m2)
 {
@@ -100,7 +100,7 @@ v_model skinning_1(v_model_skinned_1 v)
     v.B.xyz = v.B.zyx;
 
     // matrices
-    int mid = v.N.w * 255 + 0.3;
+    int mid = v.N.w * 765 + 0.3;
     float4 m0 = sbones_array[mid + 0];
     float4 m1 = sbones_array[mid + 1];
     float4 m2 = sbones_array[mid + 2];
@@ -129,11 +129,11 @@ v_model skinning_2(v_model_skinned_2 v)
     v.B.xyz = v.B.zyx;
 
     // matrices
-    int id_0 = v.tc.z;
+    int id_0 = v.tc.z * 3;
     float4 m0_0 = sbones_array[id_0 + 0];
     float4 m1_0 = sbones_array[id_0 + 1];
     float4 m2_0 = sbones_array[id_0 + 2];
-    int id_1 = v.tc.w;
+    int id_1 = v.tc.w * 3;
     float4 m0_1 = sbones_array[id_1 + 0];
     float4 m1_1 = sbones_array[id_1 + 1];
     float4 m2_1 = sbones_array[id_1 + 2];
@@ -176,15 +176,15 @@ v_model skinning_3(v_model_skinned_3 v)
     v.B.xyz = v.B.zyx;
 
     // matrices
-    int id_0 = v.tc.z;
+    int id_0 = v.tc.z * 3;
     float4 m0_0 = sbones_array[id_0 + 0];
     float4 m1_0 = sbones_array[id_0 + 1];
     float4 m2_0 = sbones_array[id_0 + 2];
-    int id_1 = v.tc.w;
+    int id_1 = v.tc.w * 3;
     float4 m0_1 = sbones_array[id_1 + 0];
     float4 m1_1 = sbones_array[id_1 + 1];
     float4 m2_1 = sbones_array[id_1 + 2];
-    int id_2 = v.B.w * 255 + 0.3;
+    int id_2 = v.B.w * 765 + 0.3;
     float4 m0_2 = sbones_array[id_2 + 0];
     float4 m1_2 = sbones_array[id_2 + 1];
     float4 m2_2 = sbones_array[id_2 + 2];
@@ -258,7 +258,7 @@ v_model skinning_4(v_model_skinned_4 v)
     [unroll(4)]
     for (int i = 0; i < 4; ++i)
     {
-        id[i] = v.ind[i] * 255 + 0.3;
+        id[i] = v.ind[i] * 765 + 0.3;
 
         [unroll(3)]
         for (int j = 0; j < 3; ++j)
@@ -309,3 +309,4 @@ v_model skinning_4(v_model_skinned_4 v)
 }
 
 #endif
+
