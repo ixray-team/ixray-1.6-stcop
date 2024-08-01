@@ -70,3 +70,15 @@ XRCORE_API xr_string Platform::TCHAR_TO_ANSI_U8(const wchar_t* input)
 	WideCharToMultiByte(1251, 0, input, (int)wcslen(input), buf, size, nullptr, nullptr);
 	return buf;
 }
+
+XRCORE_API xr_string Platform::CP_TCHAR_TO_ANSI_U8(const wchar_t* input)
+{
+	int size = WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), 0, 0,
+		nullptr, nullptr);
+
+	static thread_local char buf[256] = {};
+	std::memset(&buf, 0, 256);
+
+	WideCharToMultiByte(CP_UTF8, 0, input, (int)wcslen(input), buf, size, nullptr, nullptr);
+	return buf;
+}
