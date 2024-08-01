@@ -1322,10 +1322,8 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 						while (bInsideSTR)
 						{
 							value_raw += "\r\n";
-
-							xr_string str_add_raw;
-							str_add_raw.resize(4096);
-							F->r_string(str_add_raw.data(), 4096);
+							string4096 str_add_raw;
+							F->r_string(str_add_raw, 4096);
 							value_raw += str_add_raw;
 
 							bInsideSTR = _parse(LTXHelpStr2, value_raw.data());

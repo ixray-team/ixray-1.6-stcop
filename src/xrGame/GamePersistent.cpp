@@ -99,6 +99,7 @@ CGamePersistent::CGamePersistent(void)
 
 	eQuickLoad				= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
+	if(DofValue)
 	SetBaseDof				(*DofValue);
 
 	g_Discord.SetStatus(strTable.translate(EngineExternal().GetTitle().c_str()).c_str());
