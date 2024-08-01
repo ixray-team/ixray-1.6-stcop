@@ -34,7 +34,7 @@ vf main(v_detail v)
     //
     float base = m1.w;
     float dp = calc_cyclic(dot(pos, wave));
-    float H = pos.y - base; // height of vertex (scaled)
+    float H = v.pos.y * length(m1.xyz);
     float frac = v.misc.z * consts.x; // fractional
     float inten = H * dp;
     float2 result = calc_xz_wave(dir2D.xz * inten, frac);

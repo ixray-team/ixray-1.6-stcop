@@ -54,18 +54,13 @@ float2 unpack_tc_lmap(float2 tc)
 
 float calc_cyclic(float x)
 {
-    float phase = 1 / (2 * 3.141592653589f);
-    float sqrt2 = 1.4142136f;
-    float sqrt2m2 = 2.8284271f;
-    float f = sqrt2m2 * frac(x) - sqrt2; // [-sqrt2 .. +sqrt2] !No changes made, but this controls the grass wave (which is violent if I must say)
-    return f * f - 1.f; // [-1     .. +1]
+    float f = 1.4142f * sin(x * 3.14159f);
+    return f * f - 1.0f;
 }
+
 float2 calc_xz_wave(float2 dir2D, float frac)
 {
-    // Beizer
-    float2 ctrl_A = float2(0.f, 0.f);
-    float2 ctrl_B = float2(dir2D.x, dir2D.y);
-    return lerp(ctrl_A, ctrl_B, frac); //! This calculates tree wave. No changes made
+    return dir2D * frac;
 }
 
 #endif

@@ -44,10 +44,10 @@ uniform float4 def_aref;
 uniform float4 parallax;
 uniform float4 hemi_cube_pos_faces;
 uniform float4 hemi_cube_neg_faces;
-uniform float4 L_material; // 0,0,0,mid
-uniform float4 Ldynamic_color; // dynamic light color (rgb1)        - spot/point
-uniform float4 Ldynamic_pos; // dynamic light pos+1/range(w) - spot/point
-uniform float4 Ldynamic_dir; // dynamic light direction         - sun
+uniform float4 L_material;
+uniform float4 Ldynamic_color;
+uniform float4 Ldynamic_pos;
+uniform float4 Ldynamic_dir;
 
 uniform float4 J_direct[6];
 uniform float4 J_spot[6];
@@ -211,7 +211,7 @@ struct p_shadow
 struct p_screen
 {
     float4 hpos : POSITION;
-    float2 tc0 : TEXCOORD0; // Texture coordinates         (for sampling maps)
+    float2 tc0 : TEXCOORD0;
 };
 //////////////////////////////////////////////////////////////////////////////////////////
 // Geometry phase / deferring               	//
