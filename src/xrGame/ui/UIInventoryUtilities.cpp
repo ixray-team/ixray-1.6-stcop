@@ -48,11 +48,13 @@ const LPCSTR st_months[12]= // StringTable for GetDateAsString()
 };
 
 ui_shader	*g_BuyMenuShader			= nullptr;
-ui_shader	*g_EquipmentIconsShader		= nullptr;
 ui_shader	*g_MPCharIconsShader		= nullptr;
 ui_shader	*g_OutfitUpgradeIconsShader	= nullptr;
 ui_shader	*g_WeaponUpgradeIconsShader	= nullptr;
 ui_shader	*g_tmpWMShader				= nullptr;
+
+xr_hash_map<xr_string, ui_shader*> g_CustomIconShaders;
+
 static CUIStatic*	GetUIStatic				();
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
@@ -76,9 +78,6 @@ void InventoryUtilities::DestroyShaders()
 	xr_delete(g_BuyMenuShader);
 	g_BuyMenuShader = 0;
 
-	xr_delete(g_EquipmentIconsShader);
-	g_EquipmentIconsShader = 0;
-
 	xr_delete(g_MPCharIconsShader);
 	g_MPCharIconsShader = 0;
 
@@ -90,6 +89,12 @@ void InventoryUtilities::DestroyShaders()
 
 	xr_delete(g_tmpWMShader);
 	g_tmpWMShader = 0;
+
+	for (auto& [name, shader] : g_CustomIconShaders)
+	{
+		xr_delete(shader);
+	}
+	g_CustomIconShaders.clear();
 }
 
 bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
@@ -202,15 +207,23 @@ const ui_shader& InventoryUtilities::GetBuyMenuShader()
 	return *g_BuyMenuShader;
 }
 
-const ui_shader& InventoryUtilities::GetEquipmentIconsShader()
+const ui_shader& InventoryUtilities::GetEquipmentIconsShader(const char* name)
 {	
-	if(!g_EquipmentIconsShader)
+	if (name == nullptr)
 	{
-		g_EquipmentIconsShader = new ui_shader();
-		(*g_EquipmentIconsShader)->create("hud\\default", "ui\\ui_icon_equipment");
+		name = DEFAULT_ICONS_TEXTURE;
 	}
 
-	return *g_EquipmentIconsShader;
+	if (g_CustomIconShaders.contains(name))
+	{
+		return *g_CustomIconShaders[name];
+	}
+
+	auto shader = xr_new<ui_shader>();
+	(*shader)->create("hud\\default", name);
+	g_CustomIconShaders[name] = shader;
+
+	return *shader;
 }
 
 const ui_shader&	InventoryUtilities::GetMPCharIconsShader()

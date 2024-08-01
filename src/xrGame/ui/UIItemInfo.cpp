@@ -330,10 +330,11 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	if(UIItemImage)
 	{
 		// Загружаем картинку
-		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, m_pInvItem->m_section_id.c_str(), "icons_texture", nullptr);
+		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();
-		Frect texture_rect;
+		Frect texture_rect = {};
 		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y1*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y2*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
 		texture_rect.rb.add					(texture_rect.lt);

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // encyclopedia_article.cpp
-// структура, хранящая и загружающая статьи в энциклопедию
+// СЃС‚СЂСѓРєС‚СѓСЂР°, С…СЂР°РЅСЏС‰Р°СЏ Рё Р·Р°РіСЂСѓР¶Р°СЋС‰Р°СЏ СЃС‚Р°С‚СЊРё РІ СЌРЅС†РёРєР»РѕРїРµРґРёСЋ
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -63,19 +63,21 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	XML_NODE* pNode = pXML->NavigateToNode(id_to_index::tag_name, item_data.pos_in_file);
 	THROW3(pNode, "encyclopedia article id=", *item_data.id);
 
-	//текст
+	//С‚РµРєСЃС‚
 	data()->text = pXML->Read(pNode, "text", 0, "");
-	//имя
+	//РёРјСЏ
 	data()->name = pXML->ReadAttrib(pNode, "name", "");
-	//группа
+	//РіСЂСѓРїРїР°
 	data()->group = pXML->ReadAttrib(pNode, "group", "");
-	//секция ltx, откуда читать данные
+	//СЃРµРєС†РёСЏ ltx, РѕС‚РєСѓРґР° С‡РёС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ
 	LPCSTR ltx = pXML->Read(pNode, "ltx", 0, nullptr);
 
 
 	if(ltx)
 	{
-		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ltx, "icons_texture", nullptr);
+		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+
 		Frect				tex_rect;
 		tex_rect.x1			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
 		tex_rect.y1			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
@@ -101,7 +103,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 
 		const int minSize = 65;
 
-		// Сначала устанавливаем если надо минимально допустимые размеры иконки
+		// РЎРЅР°С‡Р°Р»Р° СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РµСЃР»Рё РЅР°РґРѕ РјРёРЅРёРјР°Р»СЊРЅРѕ РґРѕРїСѓСЃС‚РёРјС‹Рµ СЂР°Р·РјРµСЂС‹ РёРєРѕРЅРєРё
 		if (r.width() < minSize)
 		{
 			float dx = minSize - r.width();
@@ -119,7 +121,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 		data()->image.SetWndRect(Frect().set(0,0,r.width(),r.height()));
 	};
 
-	// Тип статьи
+	// РўРёРї СЃС‚Р°С‚СЊРё
 	xr_string atricle_type = pXML->ReadAttrib(pNode, "article_type", "encyclopedia");
 	if(0==_stricmp(atricle_type.c_str(),"encyclopedia")){
 		data()->articleType = ARTICLE_DATA::eEncyclopediaArticle;

@@ -27,7 +27,8 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
 	m_pData											= (void*)itm;
 
-	inherited::SetShader							(InventoryUtilities::GetEquipmentIconsShader());
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id.c_str(), "icons_texture", nullptr);
+	inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 	m_grid_size.set									(itm->GetInvGridRect().rb);
 	Frect rect; 
@@ -415,8 +416,10 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	if(GetIcon(eSilencer))
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
-		InitAddon		(s, *object()->GetSilencerName(), m_addon_offset[eSilencer], false);
+		auto section = *object()->GetSilencerName();
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+		InitAddon		(s, section, m_addon_offset[eSilencer], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
 	}
@@ -424,7 +427,9 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	if(GetIcon(eScope))
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
+		auto section = *object()->GetScopeName();
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 		InitAddon		(s,	*object()->GetScopeName(),		m_addon_offset[eScope], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
@@ -433,7 +438,9 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	if(GetIcon(eLauncher))
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
+		auto section = *object()->GetGrenadeLauncherName();
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 		InitAddon		(s, *object()->GetGrenadeLauncherName(),m_addon_offset[eLauncher], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);

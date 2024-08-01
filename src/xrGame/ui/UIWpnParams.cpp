@@ -194,7 +194,8 @@ void CUIWpnParams::SetInfo( CInventoryItem* slot_wpn, CInventoryItem& cur_wpn )
 		xr_sprintf(str, sizeof(str), "%s", pSettings->r_string(ammo_types[0].c_str(), "inv_name_short"));
 		m_textAmmoUsedType.SetTextST(str);
 
-		m_stAmmoType1.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ammo_types[0].c_str(), "icons_texture", nullptr);
+		m_stAmmoType1.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 		Frect				tex_rect;
 		tex_rect.x1			= float(pSettings->r_u32(ammo_types[0].c_str(), "inv_grid_x") * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
 		tex_rect.y1			= float(pSettings->r_u32(ammo_types[0].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
@@ -210,7 +211,8 @@ void CUIWpnParams::SetInfo( CInventoryItem* slot_wpn, CInventoryItem& cur_wpn )
 		else
 			m_stAmmoType1.SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
 
-		m_stAmmoType2.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		const char* icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[1].c_str(), "icons_texture", nullptr);
+		m_stAmmoType2.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
 		if(ammo_types.size()==1)
 		{
 			tex_rect.set(0,0,1,1);

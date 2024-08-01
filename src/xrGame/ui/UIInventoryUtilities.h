@@ -24,6 +24,8 @@ class CUITextWnd;
 
 #define TRADE_ICONS_SCALE		(4.f/5.f)
 
+constexpr const char* DEFAULT_ICONS_TEXTURE = "ui\\ui_icon_equipment";
+
 namespace InventoryUtilities
 {
 
@@ -37,7 +39,7 @@ bool FreeRoom_inBelt	(TIItemContainer& item_list, PIItem item, int width, int he
 // get shader for BuyWeaponWnd
 const ui_shader&	GetBuyMenuShader();
 //получить shader на иконки инвенторя
-const ui_shader& GetEquipmentIconsShader();
+const ui_shader& GetEquipmentIconsShader(const char* name = nullptr);
 // shader на иконки персонажей в мультиплеере
 const ui_shader&	GetMPCharIconsShader();
 //get shader for outfit icons in upgrade menu

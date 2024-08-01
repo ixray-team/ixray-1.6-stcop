@@ -98,7 +98,10 @@ CUICellItem* CUIDragDropReferenceList::RemoveItem(CUICellItem* itm, bool force_r
 void CUIDragDropReferenceList::LoadItemTexture(LPCSTR section, Ivector2 cell_pos)
 {
 	CUIStatic* ref = m_references[cell_pos.x];
-	ref->SetShader(InventoryUtilities::GetEquipmentIconsShader());
+
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
+	ref->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+
 	Frect texture_rect;
 	texture_rect.x1	= pSettings->r_float(section, "inv_grid_x")		*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
 	texture_rect.y1	= pSettings->r_float(section, "inv_grid_y")		*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
