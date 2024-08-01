@@ -359,6 +359,8 @@ function actor_binder:update(delta)
 		primary_objects_filled = true
 	end
 	pda.fill_sleep_zones()
+	
+	SendScriptCallback("update")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
@@ -426,6 +428,8 @@ function actor_binder:save(packet)
 		utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
 	end
 	set_save_marker(packet, "save", true, "actor_binder")
+	
+	SendScriptCallback("save", packet)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
@@ -482,6 +486,8 @@ function actor_binder:load(reader)
 		self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
 	end
 	set_save_marker(reader, "load", true, "actor_binder")
+
+	SendScriptCallback("load", reader)
 end
 
 --*************************************************************

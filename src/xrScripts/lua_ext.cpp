@@ -19,8 +19,9 @@ extern "C"
 static bool LoadScriptToGlobal(lua_State* L, const char* name)
 {
 	string_path FileName;
+	xr_string FixedFileName = "ixray_system\\" + xr_string(name);
 
-	if (FS.exist(FileName, "$game_scripts$", name))
+	if (FS.exist(FileName, "$game_scripts$", FixedFileName.data()))
 	{
 		int	start = lua_gettop(L);
 		IReader* l_tpFileReader = FS.r_open(FileName);
@@ -68,15 +69,19 @@ void lua_init_ext(lua_State* L)
 	luaopen_LuaXML_lib(L);
 	luaopen_utf8(L);
 
+
+	LoadScriptToGlobal(L, "global.lua");
+	LoadScriptToGlobal(L, "dynamic_callbacks.lua");
+
 	// Sockets
 	luajit::open_lib(L, "socket.core", luaopen_socket_core);
-	bool SocketTest = LoadScriptToGlobal(L, "socket.script");
+	bool SocketTest = LoadScriptToGlobal(L, "socket.lua");
 
 	// Panda
 	if (SocketTest)
 	{
 		pdebug_init(L);
-		LoadScriptToGlobal(L, "LuaPanda.script");
+		LoadScriptToGlobal(L, "LuaPanda.lua");
 	}
 }
 
