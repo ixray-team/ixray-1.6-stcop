@@ -97,8 +97,9 @@ void	CRender::render_lights	(light_Package& LP)
 			phase									= PHASE_SMAP;
 			if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
 			else							r_pmask	(true,false	);
-			L->svis.begin							();
-			r_dsgraph_render_subspace				(L->spatial.sector, L->X.S.combine, L->position, TRUE);
+			r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
+			L->svis.begin();
+
 			bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 			bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 			if ( bNormal || bSpecial)	{
