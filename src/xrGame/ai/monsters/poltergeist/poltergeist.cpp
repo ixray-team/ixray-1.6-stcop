@@ -351,7 +351,7 @@ BOOL CPoltergeist::net_Spawn (CSE_Abstract* DC)
 	VERIFY(character_physics_support());
 	VERIFY(character_physics_support()->movement());
 	character_physics_support()->movement()->DestroyCharacter();
-	// ñïàóíèòñÿ íèâèäèìûì
+	// ÑÐ¿Ð°ÑƒÐ½Ð¸Ñ‚ÑÑ Ð½Ð¸Ð²Ð¸Ð´Ð¸Ð¼Ñ‹Ð¼
 	setVisible		(false);
 	ability()->on_hide();
 	
@@ -368,19 +368,19 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-// 	if (m_tele) {
-// 		if (state_invisible) {
-// 			setVisible(true);
-// 
-// 			if (PPhysicsShell()) {
-// 				Fmatrix M;
-// 				M.set							(XFORM());
-// 				M.translate_over				(m_current_position);
-// 				PPhysicsShell()->SetTransform	(M);
-// 			} else 
-// 				Position() = m_current_position;
-// 		}
-// 	}
+ 	if (m_tele) {
+ 		if (state_invisible) {
+ 			setVisible(true);
+ 
+ 			if (PPhysicsShell()) {
+ 				Fmatrix M;
+ 				M.set							(XFORM());
+ 				M.translate_over				(m_current_position);
+ 				PPhysicsShell()->SetTransform	(M, mh_unspecified);
+ 			} else 
+ 				Position() = m_current_position;
+ 		}
+ 	}
 
 	inherited::Die				(who);
 	Energy::disable				();
