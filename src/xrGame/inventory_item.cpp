@@ -305,6 +305,10 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 			pSyncObj->set_State(state);
 
 		}break;
+	case GE_REPAIR_ITEM:
+	{
+		SetCondition(1.0f);
+	}break;
 	}
 }
 

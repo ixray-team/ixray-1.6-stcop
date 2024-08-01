@@ -25,6 +25,10 @@ public:
 	virtual		void				on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src);
 	virtual		void				OnTransferMoney(NET_Packet& P, ClientID const& clientID);
 
+<<<<<<< HEAD
+=======
+	virtual		void				OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID);
+>>>>>>> 944f43f5 (Подтягивание дева ОМП - ремонт снаряги)
 	virtual		void				OnPlayerReady(ClientID id_who);
 	virtual		void				OnPlayerConnect(ClientID id_who);
 	virtual		void				OnPlayerConnectFinished(ClientID id_who);

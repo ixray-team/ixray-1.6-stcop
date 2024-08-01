@@ -76,10 +76,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 {
 	CSE_ALifeItemWeapon* const weapon		= smart_cast<CSE_ALifeItemWeapon*>(DC);
 	R_ASSERT								(weapon);
-	if ( IsGameTypeSingle() )
-	{
-		inherited::net_Spawn_install_upgrades	(weapon->m_upgrades);
-	}
+	inherited::net_Spawn_install_upgrades(weapon->m_upgrades);
 
 	BOOL l_res = inherited::net_Spawn(DC);
 	 

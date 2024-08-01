@@ -110,6 +110,7 @@ enum {
 	GE_ADDON_ATTACH,
 	GE_ADDON_DETACH,
 	GE_ADDON_CHANGE,
+	GE_REPAIR_ITEM,
 	GE_INSTALL_UPGRADE,
 	
 	GE_GRENADE_EXPLODE,
@@ -239,6 +240,8 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 
 	//-----------------------------------------
 	GAME_EVENT_MP_TRADE,
+	GAME_EVENT_MP_REPAIR,
+	GAME_EVENT_MP_REPAIR_SUCCESS,
 	GAME_EVENT_TRANSFER_MONEY,
 
 	//-----------------------------------------
