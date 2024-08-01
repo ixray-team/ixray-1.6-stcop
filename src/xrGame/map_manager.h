@@ -38,5 +38,5 @@ public:
 
 	void MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor);
 	void AllLocationsForEach(const luabind::functor<bool>& functor);
-	void script_register(lua_State* L);
+	static void script_register(lua_State* L);
 };
