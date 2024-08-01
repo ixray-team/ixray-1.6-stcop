@@ -14,7 +14,7 @@
 #include "stream_reader.h"
 #include "file_stream_reader.h"
 
-const u32 BIG_FILE_READER_WINDOW_SIZE	= 1024*1024;
+constexpr u32 BIG_FILE_READER_WINDOW_SIZE = 1024*1024;
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -1283,11 +1283,12 @@ void CLocatorAPI::file_from_cache_impl(IReader*& R, LPSTR fname, const file& des
 	R = new CVirtualFileReader(RealFileName);
 }
 
-void CLocatorAPI::file_from_cache_impl	(CStreamReader *&R, LPSTR fname, const file &desc)
+void CLocatorAPI::file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc)
 {
-	CFileStreamReader			*r = new CFileStreamReader();
-	r->construct				(fname,BIG_FILE_READER_WINDOW_SIZE);
-	R							= r;
+	const char* RealFileName = desc.wrap == nullptr ? fname : desc.wrap;
+	CFileStreamReader* r = new CFileStreamReader();
+	r->construct(RealFileName, BIG_FILE_READER_WINDOW_SIZE);
+	R = r;
 }
 
 template <typename T>
