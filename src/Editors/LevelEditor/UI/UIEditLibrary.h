@@ -20,6 +20,7 @@ private:
     static UIEditLibrary* Form;
 
     virtual void Draw();
+    void ImportClick();
     void DrawObjects();
 
     void DrawRightBar();
@@ -35,6 +36,9 @@ private:
     void RefreshSelected();
     void ChangeReference(const RStringVec& items);
     bool SelectionToReference(ListItemsVec* props);
+    void ShowProperty();
+    void ExportOneOBJ(CEditableObject* EO);
+    void ExportObj();
 
     UIItemListForm* m_ObjectList;
     UIPropertiesForm* m_Props;
