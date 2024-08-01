@@ -60,7 +60,8 @@ inline uint64_t RefCount::Release()
 	return m_RefCount;
 }
 
-class IBuffer : public RefCount
+class IBuffer : 
+	public RefCount
 {
 public:
 	virtual ~IBuffer() {}
@@ -74,7 +75,7 @@ public:
 class IRender_RHI
 {
 public:
-	virtual void Create(APILevel API, void* renderDevice, void* renderContext) = 0;
+	virtual void Create(void* renderDevice, void* renderContext) = 0;
 
 	virtual IBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) = 0;
 
@@ -89,6 +90,9 @@ public:
 	virtual void GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) = 0;
 };
 
+typedef IRender_RHI* (*GetRenderRHIAPIFunc)(APILevel API);
+
+extern ENGINE_API GetRenderRHIAPIFunc g_CreateRHIFunc;
 extern ENGINE_API IRender_RHI* g_RenderRHI;
 
 // RHI Device ???
@@ -99,7 +103,7 @@ public:
 	CRenderRHI_DX11();
 	~CRenderRHI_DX11();
 
-	void Create(APILevel API, void* renderDevice, void* renderContext);
+	void Create(void* renderDevice, void* renderContext);
 
 	IBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 

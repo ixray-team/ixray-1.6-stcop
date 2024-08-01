@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "linker.h"
 #include <d3d11.h>
 #include "DeviceRHI.h"
 #include "Dx11/Dx11Buffer.h"
@@ -13,7 +14,7 @@ CRenderRHI_DX11::~CRenderRHI_DX11()
 {
 }
 
-void CRenderRHI_DX11::Create(APILevel API, void* renderDevice, void* renderContext)
+void CRenderRHI_DX11::Create(void* renderDevice, void* renderContext)
 {
 	HWRenderDevice = renderDevice;
 	HWRenderContext = renderContext;

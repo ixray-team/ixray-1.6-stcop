@@ -29,6 +29,7 @@ void* SwapChainRTV = nullptr;
 
 // #TODO: REMOVE
 ENGINE_API IRender_RHI* g_RenderRHI = nullptr;
+ENGINE_API GetRenderRHIAPIFunc g_CreateRHIFunc = nullptr;
 
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
@@ -298,7 +299,8 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	}
 
 	// #TODO: Create RHI (so test variant)
-	g_RenderRHI->Create(API, HWRenderDevice, HWRenderContext);
+	g_RenderRHI = g_CreateRHIFunc(API);
+	g_RenderRHI->Create(HWRenderDevice, HWRenderContext);
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
