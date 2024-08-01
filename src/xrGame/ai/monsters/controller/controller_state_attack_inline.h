@@ -20,14 +20,12 @@
 TEMPLATE_SPECIALIZATION
 CStateControllerAttackAbstract::CStateControllerAttack(_Object *obj, state_ptr state_run, state_ptr state_melee) : inherited(obj)
 {
-	add_state	(eStateAttack_HideInCover,		xr_new<CStateControlHide<_Object> >	(obj));
-	add_state	(eStateAttack_HideInCoverLite,	xr_new<CStateControlHideLite<_Object> >	(obj));
-	add_state	(eStateAttack_MoveOut,			xr_new<CStateControlMoveOut<_Object> >	(obj));
-	add_state	(eStateAttack_CampInCover,		xr_new<CStateControlCamp<_Object> >		(obj));
-	add_state	(eStateAttack_ControlFire,		xr_new<CStateControlFire<_Object> >		(obj));
-
-	add_state	(eStateAttack_ControlTube,		xr_new<CStateControllerTube<_Object> >	(obj));
-	
+	add_state(eStateAttack_HideInCover,    new CStateControlHide<_Object>(obj));
+	add_state(eStateAttack_HideInCoverLite, new CStateControlHideLite<_Object>(obj));
+	add_state(eStateAttack_MoveOut,        new CStateControlMoveOut<_Object>(obj));
+	add_state(eStateAttack_CampInCover,    new CStateControlCamp<_Object>(obj));
+	add_state(eStateAttack_ControlFire,    new CStateControlFire<_Object>(obj));
+	add_state(eStateAttack_ControlTube,    new CStateControllerTube<_Object>(obj));
 }
 
 TEMPLATE_SPECIALIZATION
