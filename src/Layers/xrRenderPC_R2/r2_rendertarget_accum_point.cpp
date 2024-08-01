@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "../xrRender/CHudInitializer.h"
+
 void CRenderTarget::accum_point		(light* L)
 {
 	if (L == nullptr)
@@ -13,23 +15,10 @@ void CRenderTarget::accum_point		(light* L)
 	ref_shader		shader			= L->s_point;
 	if (!shader)	shader			= s_accum_point;
 
-
-	Fmatrix Pold=Fidentity;
-	Fmatrix FTold=Fidentity;
-
-	if (L->flags.bHudMode)
-	{
-		extern ENGINE_API float		psHUD_FOV;
-		Pold				= Device.mProject;
-		FTold				= Device.mFullTransform;
-		Device.mProject.build_projection(
-			deg2rad(psHUD_FOV), 
-			Device.fASPECT, HUD_VIEWPORT_NEAR, 
-			g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-		Device.mFullTransform.mul	(Device.mProject, Device.mView);
-		RCache.set_xform_project	(Device.mProject);
-		RImplementation.rmNear		();
+	CHudInitializer initalizer(false);
+	if (L->flags.bHudMode) {
+		initalizer.SetHudMode();
+		RImplementation.rmNear();
 	}
 
 	// Common
@@ -136,14 +125,8 @@ void CRenderTarget::accum_point		(light* L)
 
 	u_DBT_disable				();
 
-
-
-	if (L->flags.bHudMode)
-	{
-		RImplementation.rmNormal					();
-		// Restore projection
-		Device.mProject				= Pold;
-		Device.mFullTransform		= FTold;
-		RCache.set_xform_project	(Device.mProject);
+	if (L->flags.bHudMode) {
+		RImplementation.rmNormal();
+		initalizer.SetDefaultMode();
 	}
 }
