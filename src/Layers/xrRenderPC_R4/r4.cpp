@@ -276,6 +276,12 @@ void CRender::reset_begin() {
 		Lights_LastFrame.clear();
 	}
 
+	if (b_loaded)
+	{
+		Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+		Details->Unload();
+		xr_delete(Details);
+	}
 	xr_delete(Target);
 	HWOCC.occq_destroy();
 
@@ -297,6 +303,11 @@ void CRender::reset_end() {
 
 	HWOCC.occq_create(occq_size);
 
+	if (b_loaded)
+	{
+		Details = new CDetailManager();
+		Details->Load();
+	}
 	Target = new CRenderTarget();
 
 	xrRender_apply_tf();

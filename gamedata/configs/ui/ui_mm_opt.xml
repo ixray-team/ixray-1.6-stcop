@@ -191,7 +191,7 @@
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_detail_density</text>
         </cap_detail_density>
         <track_detail_density x="190" y="6" width="235" height="16" step="0.02" invert="1">
-            <options_item entry="r__detail_density" group="mm_opt_video_adv"/>
+            <options_item entry="r__detail_density" group="mm_opt_video_adv" depend="vid" />
         </track_detail_density>
 
         <cap_texture_lod x="40" y="3" width="135" height="24" >

@@ -295,6 +295,13 @@ void CRender::reset_begin()
 		Lights_LastFrame.clear	();
 	}
 
+	if (b_loaded)
+	{
+		Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+		Details->Unload();
+		xr_delete(Details);
+	}
+
 	xr_delete					(Target);
 	HWOCC.occq_destroy			();
 	//_RELEASE					(q_sync_point[1]);
@@ -310,6 +317,12 @@ void CRender::reset_end()
 	for (u32 i=0; i<Caps.iGPUNum; ++i)
 		R_CHK					(RDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[i]));
 	HWOCC.occq_create			(occq_size);
+
+	if (b_loaded)
+	{
+		Details = new CDetailManager();
+		Details->Load();
+	}
 
 	Target						=	new CRenderTarget	();
 
