@@ -330,6 +330,10 @@ void CControlJump::update_frame()
 		grounding();
 }
 
+//-' FIX THIS!!!!!!!!!!!
+//-' Сделать шаблон под параметр с конфига
+#include "pseudogigant/pseudogigant.h"
+#include "extended/pseudogigant_jumper/pseudogigant_jumper.h"
 //////////////////////////////////////////////////////////////////////////
 // Trace ground to check if we have already landed
 //////////////////////////////////////////////////////////////////////////
@@ -350,7 +354,13 @@ bool CControlJump::is_on_the_ground()
 		if (l_rq.range < m_trace_ground_range)
 		{
 			on_the_ground = true;
-			m_object->EndStateJump();
+
+			CPseudogigantJumper* pJumper = smart_cast<CPseudogigantJumper*>(m_object);
+
+			if (pJumper)
+			{
+				pJumper->EndStateJump();
+			}
 		}
 	}
 

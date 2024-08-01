@@ -20,18 +20,36 @@ CPseudogigant::CPseudogigant()
 {
 	CControlled::init_external(this);
 
-	StateMan = xr_new<CStateManagerPseudogigant>(this);
+	StateMan = new CStateManagerPseudogigant(this);
 	
 	com_man().add_ability(ControlCom::eControlRunAttack);
 	com_man().add_ability(ControlCom::eControlThreaten);
-	com_man().add_ability(ControlCom::eControlRotationJump);
+
+	m_time_next_threaten = 0;
+
+	m_threaten_delay_min = 0;
+	m_threaten_delay_max = 0;
+	m_threaten_dist_min = 0.0f;
+	m_threaten_dist_max = 0.0f;
+
+	m_kick_damage = 0.0f;
+
+	m_time_kick_actor_slow_down = 0;
+
+	m_fsVelocityJumpPrepare = {};
+	m_fsVelocityJumpGround = {};
+
+	m_kick_particles = nullptr;
+
+	step_effector.time = 0.f;
+	step_effector.amplitude = 0.f;
+	step_effector.period_number = 0.f;
 }
 
 CPseudogigant::~CPseudogigant()
 {
 	xr_delete(StateMan);
 }
-
 
 void CPseudogigant::Load(LPCSTR section)
 {
@@ -83,7 +101,8 @@ void CPseudogigant::Load(LPCSTR section)
 	anim().LinkAction(ACT_ATTACK,		eAnimAttack);
 	anim().LinkAction(ACT_STEAL,		eAnimSteal);
 	anim().LinkAction(ACT_LOOK_AROUND,	eAnimStandIdle);
-																										
+
+	// define transitions																											
 	anim().AddTransition(eAnimStandLieDown,	eAnimSleep,		eAnimLieToSleep,		false);										
 	anim().AddTransition(PS_STAND,			eAnimSleep,		eAnimStandLieDown,		true);
 	anim().AddTransition(PS_STAND,			PS_LIE,			eAnimStandLieDown,		false);
@@ -92,6 +111,7 @@ void CPseudogigant::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
+	// Load psi postprocess --------------------------------------------------------
 	LPCSTR ppi_section = pSettings->r_string(section, "threaten_effector");
 	m_threaten_effector.ppi.duality.h		= pSettings->r_float(ppi_section,"duality_h");
 	m_threaten_effector.ppi.duality.v		= pSettings->r_float(ppi_section,"duality_v");
@@ -134,12 +154,7 @@ void CPseudogigant::reinit()
 
 	m_time_next_threaten = 0;
 
-	if(CCustomMonster::use_simplified_visual())	return;
-
-	move().load_velocity(*cNameSect(), "Velocity_JumpPrepare",MonsterMovement::eGiantVelocityParameterJumpPrepare);
-	move().load_velocity(*cNameSect(), "Velocity_JumpGround",MonsterMovement::eGiantVelocityParameterJumpGround);
-	
-	com_man().add_rotation_jump_data("1","2","3","4", PI_DIV_2);
+	if (CCustomMonster::use_simplified_visual()) return;
 
 	com_man().set_threaten_data	("stand_kick_0", 0.43f);
 }
@@ -154,7 +169,7 @@ void CPseudogigant::event_on_step()
 		float dist_to_actor = pActor->Position().distance_to(Position());
 		float max_dist		= MAX_STEP_RADIUS;
 		if (dist_to_actor < max_dist) 
-			Actor()->Cameras().AddCamEffector(xr_new<CPseudogigantStepEffector>(
+			Actor()->Cameras().AddCamEffector(new CPseudogigantStepEffector(
 				step_effector.time, 
 				step_effector.amplitude, 
 				step_effector.period_number, 
@@ -200,11 +215,11 @@ void CPseudogigant::on_threaten_execute()
 {
 	// разбросить объекты
 	m_nearest.clear();
-	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, NULL); 
+	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, nullptr); 
 	for (u32 i=0;i<m_nearest.size();i++) {
 		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell || 
-			(pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item"))) 
+		if (!obj || !obj->m_pPhysicsShell ||
+			(pSettings->line_exist(obj->cNameSect().c_str(), "quest_item") && pSettings->r_bool(obj->cNameSect().c_str(), "quest_item")))
 			continue;
 
 		Fvector dir;
@@ -226,8 +241,11 @@ void CPseudogigant::on_threaten_execute()
 	PlayParticles(m_kick_particles, pos, Direction());
 	
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
-	if (!pA) return;
-	if ((pA->MovingState() & ACTOR_DEFS::mcJump) != 0) return;
+	if (!pA)
+		return;
+
+	if (pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump || pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcFall)
+		return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
 	float			hit_value;
@@ -235,8 +253,8 @@ void CPseudogigant::on_threaten_execute()
 	clamp			(hit_value,0.f,1.f);
 
 	// запустить эффектор
-	Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
-	Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
+	Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
+	Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
 
 	// развернуть камеру
 	if (pA->cam_Active()) {
@@ -279,4 +297,3 @@ void CPseudogigant::TranslateActionToPathParams()
 	path().set_desirable_mask	(des_mask);
 	path().enable_path			();
 }
-

@@ -1,8 +1,9 @@
 #pragma once
 #include "../../../CameraEffector.h"
 
-class CPseudogigantStepEffector : public CEffectorCam {
-	typedef CEffectorCam inherited;	
+class CPseudogigantStepEffector : public CEffectorCam 
+{
+	using inherited = CEffectorCam;
 
 	float total;
 	float max_amp;
@@ -10,7 +11,7 @@ class CPseudogigantStepEffector : public CEffectorCam {
 	float power;
 
 public:
-	CPseudogigantStepEffector(float time, float amp, float periods, float power);
+					CPseudogigantStepEffector	(float time, float amp, float periods, float power);
 					virtual ~CPseudogigantStepEffector();
 
 	virtual BOOL	ProcessCam					(SCamEffectorInfo& info);

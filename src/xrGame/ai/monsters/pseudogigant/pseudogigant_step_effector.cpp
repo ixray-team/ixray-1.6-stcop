@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "pseudogigant_step_effector.h" 
 
-CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, float periods, float power)
-					: CEffectorCam(eCEPseudoGigantStep, time)
+CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, float periods, float power) 
+					: CEffectorCam(eCEPseudogigantStep, time) 
 {
 	total			= time;
 
@@ -11,12 +11,12 @@ CPseudogigantStepEffector::CPseudogigantStepEffector(float time, float amp, floa
 	this->power		= power;
 }
 
-CPseudogigantStepEffector::~CPseudogigantStepEffector()
+CPseudogigantStepEffector::~CPseudogigantStepEffector() 
 {
 
 }
 
-BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info)
+BOOL CPseudogigantStepEffector::ProcessCam(SCamEffectorInfo& info) 
 {
 	fLifeTime -= Device.fTimeDelta; 
 	if(fLifeTime<0) 

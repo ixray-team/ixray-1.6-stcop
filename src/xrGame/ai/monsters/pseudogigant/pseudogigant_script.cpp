@@ -9,7 +9,7 @@ void CPseudogigant::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CPseudogigant,CGameObject>("CPseudogigant")
+		class_<CPseudogigant,CGameObject>("CPseudoGigant")
 			.def(constructor<>())
 	];
 }

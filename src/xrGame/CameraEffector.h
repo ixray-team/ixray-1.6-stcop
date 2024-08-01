@@ -33,7 +33,7 @@
 #define	eCEUser					((ECamEffectorType)(cefNext+11))
 #define	eCEControllerPsyHit		((ECamEffectorType)(cefNext+12))
 #define	eCEVampire				((ECamEffectorType)(cefNext+13))
-#define	eCEPseudoGigantStep		((ECamEffectorType)(cefNext+14))
+#define	eCEPseudogigantStep		((ECamEffectorType)(cefNext+14))
 #define	eCEMonsterHit			((ECamEffectorType)(cefNext+15))
 #define	eCEDOF					((ECamEffectorType)(cefNext+16))
 #define	eCEWeaponAction			((ECamEffectorType)(cefNext+17))
