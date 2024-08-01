@@ -210,28 +210,29 @@ void CUI_Camera::Rotate(float dx, float dy)
 
 bool CUI_Camera::MoveStart(TShiftState Shift)
 {
-	if (Shift&ssShift){
-    	if (!m_bMoving){
-		    ShowCursor	(FALSE);
-    	    UI->IR_GetMousePosScreen(m_StartPos);
-			m_bMoving	= true;
-        }
-		m_Shift 	= Shift;
-        return true;
+    const bool bTest = Shift&ssShift;
+    if (bTest && !m_bMoving)
+    {
+        ShowCursor(false);
+        UI->IR_GetMousePosScreen(m_StartPos);
+        m_bMoving = true;
     }
+
 	m_Shift = Shift;
-    return false;
+    return bTest;
 }
 
 bool CUI_Camera::MoveEnd(TShiftState Shift)
 {
-	m_Shift = Shift;
-	if ((!Shift&ssLeft)||(!Shift&ssShift)){
-	    //SetCursorPos(m_StartPos.x, m_StartPos.y);
-    	ShowCursor	(TRUE);
-		m_bMoving	= false;
+    m_Shift = Shift;
+    if ((!Shift & ssLeft) || (!Shift & ssShift))
+    {
+        SDL_WarpMouseInWindow(g_AppInfo.Window, m_StartPos.x, m_StartPos.y);
+        ShowCursor(true);
+        m_bMoving = false;
         return true;
     }
+
     return false;
 }
 
@@ -241,7 +242,7 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
         m_Shift = Shift;
 // camera move
         if( dx || dy ){
-        	//SetCursorPos(m_StartPos.x,m_StartPos.y);
+            SDL_WarpMouseInWindow(g_AppInfo.Window, m_StartPos.x, m_StartPos.y);
             switch (m_Style){
             case csPlaneMove:
                 if ((m_Shift & ssLeft) && (m_Shift & ssRight)) 
@@ -259,8 +260,6 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
             break;
             case csFreeFly:
                 if ((m_Shift&ssLeft)||(m_Shift&ssRight)) Rotate (dx,dy);
-//                if (Shift&ssLeft)) Rotate (d.x,d.y);
-//                else if (Shift&ssRight)) Scale(d.y);
             break;
             case cs3DArcBall:
             	ArcBall(m_Shift,dx,dy);

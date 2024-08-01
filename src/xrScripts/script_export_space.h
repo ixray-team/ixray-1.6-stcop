@@ -6,10 +6,8 @@
 //	Description : XRay Script export space 
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef script_export_spaceH
-#define script_export_spaceH
-
 #pragma once
+#include "linker.h"
 
 struct lua_State;
 
@@ -21,5 +19,3 @@ template <typename T> struct class_exporter{DECLARE_SCRIPT_REGISTER_FUNCTION};
 
 template <typename T> struct SCRIPTS_API enum_exporter_lib { DECLARE_SCRIPT_REGISTER_FUNCTION };
 template <typename T> struct SCRIPTS_API class_exporter_lib { DECLARE_SCRIPT_REGISTER_FUNCTION };
-
-#endif
