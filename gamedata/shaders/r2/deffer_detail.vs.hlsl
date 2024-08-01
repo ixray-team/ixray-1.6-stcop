@@ -5,7 +5,7 @@ uniform float4 consts;
 uniform float4 wave;
 uniform float4 dir2D;
 
-uniform float4 array[61 * 4];
+uniform float4 array[200];
 
 void main(in v_detail I, out p_bumped_new O)
 {

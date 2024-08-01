@@ -10,11 +10,8 @@
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #endif // USE_DX11
 
-
-
-const int			quant	= 16384;
-const int			c_hdr	= 10;
-const int			c_size	= 4;
+const int quant = 16384;
+const int c_size = 4;
 
 static D3DVERTEXELEMENT9 dwDecl[] =
 {
@@ -46,9 +43,11 @@ void CDetailManager::hw_Load	()
 void CDetailManager::hw_Load_Geom()
 {
 	// Analyze batch-size
-	hw_BatchSize	= (u32(256)-c_hdr)/c_size;
-	clamp			(hw_BatchSize,(u32)0,(u32)64);
-	Msg				("* [DETAILS] VertexConsts(%d), Batch(%d)",u32(256),hw_BatchSize);
+	hw_BatchSize = 50;
+
+#ifdef USE_DX11
+	hw_BatchSize = 61;
+#endif
 
 	// Pre-process objects
 	u32			dwVerts		= 0;
@@ -71,7 +70,7 @@ void CDetailManager::hw_Load_Geom()
 	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
 
 #endif	//	USE_DX11
-	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)",hw_BatchSize,(dwVerts*vSize)/1024, (dwIndices*2)/1024);
+	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
 	// Fill VB
 	{
@@ -181,8 +180,6 @@ void CDetailManager::hw_Render()
 	m_time_rot_2	+= (PI_MUL_2*fDelta/swing_current.rot2);
 	m_time_pos		+= fDelta*swing_current.speed;
 
-	//float		tm_rot1		= (PI_MUL_2*RDEVICE.fTimeGlobal/swing_current.rot1);
-	//float		tm_rot2		= (PI_MUL_2*RDEVICE.fTimeGlobal/swing_current.rot2);
 	float		tm_rot1		= m_time_rot_1;
 	float		tm_rot2		= m_time_rot_2;
 
@@ -201,22 +198,22 @@ void CDetailManager::hw_Render()
 	RCache.set_c			(&*hwc_consts,	scale,		scale,		ps_r__Detail_l_aniso,	ps_r__Detail_l_ambient);				// consts
 	RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
 	RCache.set_c			(&*hwc_wind,	dir1);																					// wind-dir
-	hw_Render_dump			(&*hwc_array,	1, 0, c_hdr );
+	hw_Render_dump			(&*hwc_array,	1, 0 );
 
 	// Wave1
 	//wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	RDEVICE.fTimeGlobal*swing_current.speed);
 	wave.set				(1.f/3.f,		1.f/7.f,	1.f/5.f,	m_time_pos);
 	RCache.set_c			(&*hwc_wave,	wave.div(PI_MUL_2));	// wave
 	RCache.set_c			(&*hwc_wind,	dir2);																					// wind-dir
-	hw_Render_dump			(&*hwc_array,	2, 0, c_hdr );
+	hw_Render_dump			(&*hwc_array,	2, 0 );
 
 	// Still
 	RCache.set_c			(&*hwc_s_consts,scale,		scale,		scale,				1.f);
 	RCache.set_c			(&*hwc_s_xform,	RDEVICE.mFullTransform);
-	hw_Render_dump			(&*hwc_s_array,	0, 1, c_hdr );
+	hw_Render_dump			(&*hwc_s_array,	0, 1 );
 }
 
-void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_id, u32 c_offset)
+void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_id)
 {
 	RDEVICE.Statistic->RenderDUMP_DT_Count	= 0;
 
