@@ -472,7 +472,7 @@ void UIEditLibrary::ChangeReference(const RStringVec& items)
 
 void UIEditLibrary::OnRender()
 {
-	if (!Form)
+	if (!Form || !Form->bOpen)
 		return;
 
 	if (!Form->m_Preview)

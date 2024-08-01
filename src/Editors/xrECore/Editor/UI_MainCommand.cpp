@@ -11,6 +11,7 @@
 #include "UIMinimapEditorForm.h"
 #include "UISoundEditorForm.h"
 #include "d3dutils.h"
+#include "UIMoveToCamera.h"
 
 #include "Library.h"
 #include "../Layers/xrRender/PSLibrary.h"
@@ -551,11 +552,10 @@ CCommandVar 	CommandMuteSound(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 {
-	not_implemented();
-	Fvector pos					= EDevice->m_Camera.GetPosition();
-	/*if (NumericVectorRun		("Move to",&pos,3))
-		EDevice->m_Camera.Set		(EDevice->m_Camera.GetHPB(),pos);*/
-	return 						TRUE;
+	if (!UI->HasWindow<UIMoveToCamera>())
+		UI->Push(new UIMoveToCamera(), true);
+
+	return TRUE;
 }
 
 CCommandVar 	ExecuteCommandList(LPCSTR text)
