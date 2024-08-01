@@ -51,7 +51,8 @@ void CPoltergeist::Load(LPCSTR section)
 	
 	UseOldLogicPoltergeist = pSettings->r_bool(section, "use_old_logic");
 	UseLossPoltergeistEnergy = pSettings->r_bool(section, "use_fly_energy");
-
+	DeadAlwaysVisible = pSettings->r_bool(section, "corpse_always_visible");
+	
 	invisible_vel.set(pSettings->r_float(section,"Velocity_Invisible_Linear"),pSettings->r_float(section,"Velocity_Invisible_Angular"));
 	movement().detail().add_velocity(MonsterMovement::eVelocityParameterInvisible,CDetailPathManager::STravelParams(invisible_vel.linear, invisible_vel.angular));
 
@@ -374,7 +375,7 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
- 	if (m_tele) {
+ 	if (m_tele || this->DeadAlwaysVisible) {
  		if (state_invisible) {
  			setVisible(true);
  
