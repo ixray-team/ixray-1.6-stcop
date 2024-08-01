@@ -297,7 +297,9 @@ void UIPropertiesForm::DrawEditText()
 			if (EFS.GetOpenName("$import$", fn, false, NULL, 2)) 
 			{
 				xr_string		buf;
+				FS.TryLoad(fn);
 				IReader* F = FS.r_open(fn.c_str());
+
 				F->r_stringZ(buf);
 				xr_delete(m_EditTextValueData);
 				m_EditTextValueData = xr_strdup(buf.c_str());

@@ -21,6 +21,11 @@ void UIObjectList::Draw()
 		ImGui::End();
 		return;
 	}
+
+	IsDocked = ImGui::IsWindowDocked();
+	IsFocused = ImGui::IsWindowFocused();
+
+
 	{
 		ImGui::BeginGroup();
 		if (ImGui::RadioButton("All", m_Mode == M_All))
@@ -108,7 +113,9 @@ void UIObjectList::Update()
 	{
 		if (!Form->IsClosed())
 		{
+			Form->BeginDraw();
 			Form->Draw();
+			Form->EndDraw();
 		}
 		else
 		{
