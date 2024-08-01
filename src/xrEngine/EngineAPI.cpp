@@ -128,6 +128,8 @@ void CEngineAPI::Initialize(void)
 		}
 	}
 
+	hRenderRHI = LoadLibraryA("xrRenderInterface.dll");
+
 	// GameSpy
 	{
 		LPCSTR g_name = "xrGameSpy.dll";

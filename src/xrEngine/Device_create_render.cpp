@@ -3,6 +3,8 @@
 #include "imgui_impl_sdl3.h"
 #include "IGame_Persistent.h"
 
+#include "../Layers/xrRenderInterface/DeviceRHI.h"
+
 #include <d3d11.h>
 #include <d3d9.h>
 
@@ -24,6 +26,9 @@ void* RenderRTV = nullptr;
 
 void* RenderDSV = nullptr;
 void* SwapChainRTV = nullptr;
+
+// #TODO: REMOVE
+ENGINE_API IRender_RHI* g_RenderRHI = nullptr;
 
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
@@ -291,6 +296,9 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	if (HWRenderDevice == nullptr) {
 		return false;
 	}
+
+	// #TODO: Create RHI (so test variant)
+	g_RenderRHI->Create(API, HWRenderDevice, HWRenderContext);
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];

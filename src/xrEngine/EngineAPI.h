@@ -47,6 +47,7 @@ class ENGINE_API		CEngineAPI
 private:
 	HMODULE				hGame;
 	HMODULE				hRender;
+	HMODULE				hRenderRHI;
 
 public:
 	HMODULE				hGameSpy;
