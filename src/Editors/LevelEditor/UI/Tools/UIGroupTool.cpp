@@ -52,6 +52,11 @@ void UIGroupTool::Draw()
 			{
 				if (ImGui::Button("Select ...", ImVec2(size / 2, 0))) 
 				{
+					string_path ObjectPath = {};
+
+					FS.update_path(ObjectPath, _groups_, "");
+					FS.rescan_path(ObjectPath, true);
+
 					UIChooseForm::SelectItem(smGroup, 1, m_Current.c_str());
 					m_ChooseGroup = true;
 				}
