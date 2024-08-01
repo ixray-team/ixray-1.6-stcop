@@ -635,8 +635,13 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
                     {
                         CSurface* surf		= sp_it->first;
                         // test passable
-    //.			        SGameMtl* mtl 		=  GameMaterialLibrary->GetMaterialByID(surf->_GameMtl());
-    //.					if (mtl->Flags.is(SGameMtl::flPassable))continue;
+
+                        u16 mtl_id = surf->_GameMtl();// ->material;
+
+                        if (std::find(m_ignored_materials.begin(), m_ignored_materials.end(), mtl_id) != m_ignored_materials.end())
+                        {
+                            continue;
+                        }
 
                         Shader_xrLC* c_sh	= EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
                         if (!c_sh->flags.bCollision) 			continue;
