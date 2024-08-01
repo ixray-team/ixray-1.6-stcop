@@ -426,7 +426,7 @@ void remap_keys()
 		buff[0] = 0;
 		_keyboard& kb = keyboards[idx];
 		bool res = pInput->get_dik_name(kb.dik, buff, sizeof(buff));
-		kb.key_local_name = res ? buff : kb.key_name;
+		kb.key_local_name = res ? buff : kb.key_local_name;
 
 		if (kb.key_local_name.starts_with('k'))
 		{
@@ -476,7 +476,7 @@ ENGINE_API LPCSTR	dik_to_keyname			(int _dik)
 {
 	_keyboard* kb = dik_to_ptr(_dik, true);
 	if(kb)
-		return kb->key_name;
+		return kb->key_local_name.data();
 	else
 		return nullptr;
 }
@@ -504,19 +504,24 @@ ENGINE_API int	keyname_to_dik (LPCSTR _name)
     return 0;
 }
 
-ENGINE_API _keyboard*	keyname_to_ptr(LPCSTR _name)
+ENGINE_API _keyboard* keyname_to_ptr(LPCSTR _name)
 {
-	int idx =0;
-	while(keyboards[idx].key_name)
-	{
-		_keyboard&	kb		= keyboards[idx];
-		if( !_stricmp(_name, kb.key_name) )
-			return &keyboards[idx];
-		++idx;
-	}	
+	xr_string TestName = _name;
 
-	Msg				("! cant find corresponding [_keyboard*] for keyname %s", _name);
-	return			nullptr;
+	for (_keyboard& KeyData : keyboards)
+	{
+		if (KeyData.key_name == nullptr)
+			continue;
+
+		if (TestName.EqualWithCaseInsensitive(KeyData.key_local_name))
+			return &KeyData;
+
+		if (TestName.EqualWithCaseInsensitive(KeyData.key_name))
+			return &KeyData;
+	}
+
+	Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
+	return nullptr;
 }
 
 ENGINE_API bool is_group_not_conflicted(_key_group g1, _key_group g2)

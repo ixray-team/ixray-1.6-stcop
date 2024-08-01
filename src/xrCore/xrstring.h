@@ -74,6 +74,7 @@ public:
 	bool StartWith(LPCSTR Str, size_t Size) const;
 
 	bool Contains(const xr_string& SubStr) const;
+	bool EqualWithCaseInsensitive(const xr_string& SubStr) const;
 
 	xr_string RemoveWhitespaces() const;
 
