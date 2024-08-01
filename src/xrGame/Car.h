@@ -132,11 +132,14 @@ public:
 
 	// Приборная панель
 	Fvector4 m_speed_offsets;
+	Fvector4 m_fuel_offsets;
 	Fvector4 m_rpm_offsets;
 	u16 m_speed_b;
+	u16 m_fuel_b;
 	u16 m_rpm_b;
 
 	static void cb_Rpm(CBoneInstance* B);
+	static void cb_Fuel(CBoneInstance* B);
 	static void cb_Speed(CBoneInstance* B);
 
 	eStateSteer e_state_steer;

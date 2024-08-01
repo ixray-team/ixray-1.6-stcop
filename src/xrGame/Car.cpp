@@ -267,11 +267,7 @@ void CCar::net_Save(NET_Packet& P)
 {
 	inherited::net_Save(P);
 	SaveNetState(P);
-
-
 }
-
-
 
 BOOL CCar::net_SaveRelevant()
 {
@@ -297,8 +293,6 @@ void CCar::SaveNetState(NET_Packet& P)
 
 	P.w_float(GetfHealth());
 }
-
-
 
 void CCar::RestoreNetState(CSE_PHSkeleton* po)
 {
@@ -372,6 +366,7 @@ void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 		CarObj.SetDefaultNetState();
 	}
 }
+
 void CCar::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -402,8 +397,6 @@ void CCar::UpdateEx(float fov)
 		OwnerActor()->Cameras().UpdateFromCamera(Camera());
 		OwnerActor()->Cameras().ApplyDevice(VIEWPORT_NEAR);
 	}
-
-
 }
 
 BOOL CCar::AlwaysTheCrow()
@@ -490,9 +483,7 @@ void	CCar::OnHUDDraw(CCustomHUD* /**hud*/)
 	UI().Font().pFontStat->SetColor(0xffffffff);
 	UI().Font().pFontStat->OutSet(120, 530);
 	UI().Font().pFontStat->OutNext("Position:      [%3.2f, %3.2f, %3.2f]", VPUSH(Position()));
-	UI().Font().pFontStat->OutNext("Velocity:      [%3.2f]", velocity.magnitude());
-
-
+	UI().Font().pFontStat->OutNext("Velocity:      [%3.2f]", velocity.mul(3.6f).magnitude());
 #endif
 }
 
@@ -734,17 +725,10 @@ bool CCar::Exit(const Fvector& pos, const Fvector& dir)
 
 void CCar::cb_Speed(CBoneInstance* B)
 {
-	Fvector Vel;
+	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;	Fvector Vel;
+	car->m_pPhysicsShell->get_LinearVel(Vel); float m_speed = Vel.magnitude() * 0.036f;
 
-	CCar* car = static_cast<CCar*>(B->callback_param());
-	Fmatrix m;
-
-	car->m_pPhysicsShell->get_LinearVel(Vel);
-	float m_speed = Vel.magnitude() * 3.6f;
-
-	float current_rotation = car->m_speed_offsets.x + car->m_speed_offsets.y * m_speed;
-	//current_rotation *= Device.fTimeDelta;
-
+	float current_rotation = car->m_speed_offsets.x + (car->m_speed_offsets.y - car->m_speed_offsets.x) * m_speed;
 	m.rotateZ(deg2rad(clampr(current_rotation, car->m_speed_offsets.z, car->m_speed_offsets.w)));
 
 	B->mTransform.mulB_43(m);
@@ -753,8 +737,21 @@ void CCar::cb_Speed(CBoneInstance* B)
 void CCar::cb_Rpm(CBoneInstance* B)
 {
 	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;
-	float current_rotation = car->m_rpm_offsets.x + car->m_rpm_offsets.y * car->m_current_rpm / car->m_max_rpm;
+
+	auto local_rpm = car->m_current_rpm / car->m_max_rpm;
+	float current_rotation = car->m_rpm_offsets.x + (car->m_rpm_offsets.y - car->m_rpm_offsets.x) * local_rpm;
 	m.rotateZ(deg2rad(clampr(current_rotation, car->m_rpm_offsets.z, car->m_rpm_offsets.w)));
+
+	B->mTransform.mulB_43(m);
+}
+
+void CCar::cb_Fuel(CBoneInstance* B)
+{
+	CCar* car = static_cast<CCar*>(B->callback_param()); Fmatrix m;
+
+	auto local_fuel = car->m_fuel / car->m_fuel_tank;
+	float current_rotation = car->m_fuel_offsets.x + (car->m_fuel_offsets.y - car->m_fuel_offsets.x) * local_fuel;
+	m.rotateZ(deg2rad(clampr(current_rotation, car->m_fuel_offsets.z, car->m_fuel_offsets.w)));
 
 	B->mTransform.mulB_43(m);
 }
@@ -816,14 +813,41 @@ void CCar::ParseDefinitions()
 	{
 		if (ini->line_exist("dashboard", "rpm_bone")) 
 		{
-			m_rpm_b = pKinematics->LL_BoneID(ini->r_string("dashboard", "rpm_bone"));
-			m_rpm_offsets = ini->r_fvector4("dashboard", "rpm_angle");
+			auto bonename = ini->r_string("dashboard", "rpm_bone");
+			m_rpm_b = pKinematics->LL_BoneID(bonename);
+
+			R_ASSERT4(m_rpm_b != BI_NONE, "Car model has no rpm bone", cNameSect().c_str(), bonename);
+
+			auto temp = m_rpm_offsets = ini->r_fvector4("dashboard", "rpm_angle");
+			m_rpm_offsets.z = std::min(temp.z, temp.w);
+			m_rpm_offsets.w = std::max(temp.z, temp.w);
+
 			pKinematics->LL_GetBoneInstance(m_rpm_b).set_callback(bctPhysics, cb_Rpm, this);
+		}
+		if (ini->line_exist("dashboard", "fuel_bone")) 
+		{
+			auto bonename = ini->r_string("dashboard", "fuel_bone");
+			m_fuel_b = pKinematics->LL_BoneID(bonename);
+
+			R_ASSERT4(m_fuel_b != BI_NONE, "Car model has no fuel bone", cNameSect().c_str(), bonename);
+
+			auto temp = m_fuel_offsets = ini->r_fvector4("dashboard", "fuel_angle");
+			m_fuel_offsets.z = std::min(temp.z, temp.w);
+			m_fuel_offsets.w = std::max(temp.z, temp.w);
+
+			pKinematics->LL_GetBoneInstance(m_fuel_b).set_callback(bctPhysics, cb_Fuel, this);
 		}
 		if (ini->line_exist("dashboard", "speed_bone")) 
 		{
-			m_speed_b = pKinematics->LL_BoneID(ini->r_string("dashboard", "speed_bone"));
-			m_speed_offsets = ini->r_fvector4("dashboard", "speed_angle");
+			auto bonename = ini->r_string("dashboard", "speed_bone");
+			m_speed_b = pKinematics->LL_BoneID(bonename);
+
+			R_ASSERT4(m_speed_b != BI_NONE, "Car model has no speed bone", cNameSect().c_str(), bonename);
+
+			auto temp = m_speed_offsets = ini->r_fvector4("dashboard", "speed_angle");
+			m_speed_offsets.z = std::min(temp.z, temp.w);
+			m_speed_offsets.w = std::max(temp.z, temp.w);
+
 			pKinematics->LL_GetBoneInstance(m_speed_b).set_callback(bctPhysics, cb_Speed, this);
 		}
 	}

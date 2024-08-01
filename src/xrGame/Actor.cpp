@@ -1542,14 +1542,16 @@ extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 // HUD
 
-void CActor::OnHUDDraw	(CCustomHUD*)
+void CActor::OnHUDDraw	(CCustomHUD* Z)
 {
 	R_ASSERT(IsFocused());
 
 	if (!((mstate_real & mcLookout) && !IsGameTypeSingleCompatible()))
 		g_player_hud->render_hud();
 
-
+	if(auto pGameObject = smart_cast<CGameObject*>(Holder())) {
+		pGameObject->OnHUDDraw(Z);
+	}
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)
 	{
