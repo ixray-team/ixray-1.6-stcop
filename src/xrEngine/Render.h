@@ -225,6 +225,10 @@ public:
 	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 
+	// [FFT++]
+	virtual void					BeforeWorldRender		() {}; //--#SM+#-- +SecondVP+
+	virtual void					AfterWorldRender		() {}; //--#SM+#-- +SecondVP+
+
 	//	Prefer this function when possible
 	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 	virtual void					clear_static_wallmarks	() {};

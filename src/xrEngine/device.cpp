@@ -467,6 +467,10 @@ CRenderDevice::CRenderDevice() :
 	b_is_Ready = FALSE;
 	Timer.Start();
 	m_bNearer = FALSE;
+
+	m_SecondViewport.SetSVPActive(false);
+	m_SecondViewport.SetSVPFrameDelay(2);
+	m_SecondViewport.isCamReady = false;
 #endif
 };
 
@@ -604,4 +608,16 @@ void CLoadScreenRenderer::OnRender()
 {
 	pApp->load_draw_internal();
 }
-#endif 
+#endif
+
+void CRenderDevice::CSecondVPParams::SetSVPActive(bool bState) //--#SM+#-- +SecondVP+
+{
+	isActive = bState;
+	if (g_pGamePersistent != NULL)
+		g_pGamePersistent->m_pGShaderConstants->m_blender_mode.z = (isActive ? 1.0f : 0.0f);
+}
+
+bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
+{
+	return IsSVPActive() && Device.dwFrame % frameDelay == 0;
+}

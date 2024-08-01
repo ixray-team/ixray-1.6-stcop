@@ -43,6 +43,8 @@
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"shaders\\shaders_sunmask"
 
+#define		r2_RT_secondVP		"$user$viewport2" // +SecondVP+
+
 #define		r2_RT_smaa_edgetex "$user$edgetex"
 #define		r2_RT_smaa_blendtex "$user$blendtex"
 

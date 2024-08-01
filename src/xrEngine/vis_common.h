@@ -1,16 +1,26 @@
-#ifndef vis_commonH
-#define vis_commonH
 #pragma once
-
 #pragma pack(push,4)
+
+#include "vis_data.h"
+
 struct	vis_data
 {
+private:
+	vis_object_data obj_data_self;  // [personal shaders data of this model]
+
+public:
 	Fsphere		sphere;				//
 	Fbox		box;				//
 	u32			marker;				// for different sub-renders
 	u32			accept_frame;		// when it was requisted accepted for main render
 	u32			hom_frame;			// when to perform test - shedule
 	u32			hom_tested;			// when it was last time tested
+
+	vis_object_data* obj_data;      // [shaders data which will be used at render for this model]
+	vis_data()
+	{
+		obj_data = &obj_data_self;
+	}
 
 	IC void		clear			()
 	{
@@ -23,5 +33,5 @@ struct	vis_data
 		hom_tested		= 0;
 	}
 };
+
 #pragma pack(pop)
-#endif

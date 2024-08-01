@@ -169,6 +169,10 @@ public:
 	xr_vector<IRender_Sector*>		detectSectors_sphere		(CSector* sector, const Fvector& b_center, const Fvector& b_dim);
 	xr_vector<IRender_Sector*>		detectSectors_frustum		(CSector* sector, CFrustum* _frustum);
 	int								translateSector				(IRender_Sector* pSector);
+	
+	// [FFT++]
+	virtual void					BeforeWorldRender		(); //--#SM+#-- +SecondVP+
+	virtual void					AfterWorldRender		(); //--#SM+#-- +SecondVP+
 
 	// HW-occlusion culling
 	IC u32							occq_begin					(u32&	ID		)	{ return HWOCC.occq_begin	(ID);	}

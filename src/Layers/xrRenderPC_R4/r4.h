@@ -158,6 +158,10 @@ public:
 	void							render_sun_cascade			(u32 cascade_ind);
 	void							init_cacades				();
 	void							render_sun_cascades			();
+	
+	// [FFT++]
+	virtual void					BeforeWorldRender		(); //--#SM+#-- +SecondVP+
+	virtual void					AfterWorldRender		(); //--#SM+#-- +SecondVP+
 
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);

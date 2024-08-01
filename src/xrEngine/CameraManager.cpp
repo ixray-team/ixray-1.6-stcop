@@ -476,6 +476,14 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	Device.fASPECT				= m_cam_info.fAspect;
 	Device.mProject.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
 
+	if (Device.m_SecondViewport.IsSVPFrame())
+	{
+		Device.fFOV *= g_pGamePersistent->m_pGShaderConstants->hud_params.y;
+	}
+	Device.m_SecondViewport.isCamReady = Device.m_SecondViewport.IsSVPFrame();
+
+	Device.mProject.build_projection(deg2rad(Device.fFOV), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
+
 	if( g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive() )
 		ResetPP					();
 	else

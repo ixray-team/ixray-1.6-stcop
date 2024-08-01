@@ -726,16 +726,15 @@ extern void draw_wnds_rects();
 
 void CLevel::OnRender()
 {
+	::Render->BeforeWorldRender();
 	inherited::OnRender	();
 
 	if (!game)
 		return;
 
 	Game().OnRender();
-	//  
-	//Device.Statistic->TEST1.Begin();
-	//Device.Statistic->TEST1.End();
-	// c 
+
+	::Render->AfterWorldRender();
 	HUD().RenderUI();
 
 #ifdef DEBUG

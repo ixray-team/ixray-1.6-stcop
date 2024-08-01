@@ -1224,6 +1224,10 @@ void CActor::UpdateCL	()
 			m_fdisp_controller.SetDispertion(fire_disp_full);
 			
 			fire_disp_full = m_fdisp_controller.GetCurrentDispertion();
+			
+			//+SecondVP+ Чтобы перекрестие не скакало из за смены FOV (Sin!) [fix for crosshair shaking while SecondVP]
+			if (!Device.m_SecondViewport.IsSVPFrame())
+				HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 
 			HUD().SetCrosshairDisp(fire_disp_full, 0.02f);
 			HUD().ShowCrosshair(pWeapon->use_crosshair());
@@ -1238,8 +1242,17 @@ void CActor::UpdateCL	()
 
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, B );
 			psHUD_Flags.set( HUD_DRAW_RT,		pWeapon->show_indicators() );
-		}
 
+			//--#SM+#-- +SecondVP+ [Update SecondVP with Weapon Data]
+			pWeapon->UpdateSecondVP();
+
+			// Apply Weapon Data in Shaders
+			auto& Constants = g_pGamePersistent->m_pGShaderConstants;
+			Constants->hud_params.x = pWeapon->GetZRotatingFactor();
+			Constants->hud_params.y = pWeapon->GetSecondVPZoomFactor();
+			Constants->hud_params.z = pWeapon->m_nearwall_last_hud_fov;
+			Constants->hud_params.w = Device.m_SecondViewport.IsSVPFrame();
+		}
 	}
 	else
 	{
@@ -1249,8 +1262,17 @@ void CActor::UpdateCL	()
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
 
+			//--#SM+#-- +SecondVP+ [Clearing Weapons Information in Shaders]
+			auto& Constants = g_pGamePersistent->m_pGShaderConstants;
+			Constants->hud_params.set(0.f, 0.f, 0.f, 0.f);
+			Constants->m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
+
+			// Turn off SecondVP
+			Device.m_SecondViewport.SetSVPActive(false);
+
 			// Switch back to third-person if was forced
-			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
+			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) 
+			{
 				cam_Set(eacLookAt);
 				bLook_cam_fp_zoom = false;
 			}

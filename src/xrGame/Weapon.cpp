@@ -58,6 +58,7 @@ CWeapon::CWeapon()
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
 	m_zoom_params.m_pVision						= nullptr;
 	m_zoom_params.m_pNight_vision				= nullptr;
+	m_zoom_params.m_fSecondVPFovFactor			= 0.0f;
 
 	m_pCurrentAmmo			= nullptr;
 
@@ -419,7 +420,7 @@ void CWeapon::Load		(LPCSTR section)
 	conditionDecreasePerShot		= pSettings->r_float(section,"condition_shot_dec"); 
 	conditionDecreasePerQueueShot	= READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot); 
 
-
+	m_zoom_params.m_fSecondVPFovFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f);
 
 
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
@@ -509,7 +510,7 @@ void CWeapon::Load		(LPCSTR section)
 	else
 		m_bAutoSpawnAmmo = TRUE;
 
-
+	m_zoom_params.m_fSecondVPFovFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov", 0.0f);
 
 	m_zoom_params.m_bHideCrosshairInZoom		= true;
 
@@ -1011,7 +1012,7 @@ void CWeapon::EnableActorNVisnAfterZoom()
 
 bool  CWeapon::need_renderable()
 {
-	return !( IsZoomed() && ZoomTexture() && !IsRotatingToZoom() );
+	return !Device.m_SecondViewport.IsSVPFrame() && !( IsZoomed() && ZoomTexture() && !IsRotatingToZoom() );
 }
 
 void CWeapon::renderable_Render		()
@@ -2444,9 +2445,52 @@ u32 CWeapon::Cost() const
 	return res;
 }
 
-float CWeapon::GetHudFov() {
-	auto base = inherited::GetHudFov();
-	auto zoom = m_HudFovZoom ? m_HudFovZoom : (psHUD_FOV_def * Device.fFOV / g_fov);
-	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
-	return base;
+#include "HUDManager.h"
+
+float CWeapon::GetHudFov()
+{
+	if (ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
+	{
+		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+		float dist = RQ.range;
+
+		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
+		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
+
+		float fBaseFov = psHUD_FOV_def;
+		clamp(fBaseFov, 0.0f, FLT_MAX);
+
+		float src = m_nearwall_speed_mod * Device.fTimeDelta;
+		clamp(src, 0.f, 1.f);
+
+		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
+		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
+	}
+
+	return m_nearwall_last_hud_fov;
+}
+
+#if 0
+float CWeapon::GetSecondVPFov() const
+{
+	if (m_zoom_params.m_bUseDynamicZoom && IsSecondVPZoomPresent())
+		return (m_fRTZoomFactor / 100.f) * g_fov;
+	return GetSecondVPZoomFactor() * g_fov;
+}
+#endif
+
+void CWeapon::UpdateSecondVP()
+{
+	// + CActor::UpdateCL();
+	bool b_is_active_item = (m_pInventory != NULL) && (m_pInventory->ActiveItem() == this);
+	R_ASSERT(ParentIsActor() && b_is_active_item); // Ýòà ôóíêöèÿ äîëæíà âûçûâàòüñÿ òîëüêî äëÿ îðóæèÿ â ðóêàõ íàøåãî èãðîêà
+
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+
+	bool bCond_1 = m_zoom_params.m_fZoomRotationFactor > 0.05f;    // Ìû äîëæíû öåëèòüñÿ
+	bool bCond_2 = m_zoom_params.m_fSecondVPFovFactor > 0.0f;     // Â êîíôèãå äîëæåí áûòü ïðîïèñàí ôàêòîð çóìà (scope_lense_fov_factor) áîëüøå ÷åì 0
+	bool bCond_3 = pActor->cam_Active() == pActor->cam_FirstEye(); // Ìû äîëæíû áûòü îò 1-ãî ëèöà
+	//bool bCond_4 = m_bGrenadeMode == false;                        // Ìû íå äîëæíû áûòü â ðåæèìå ïîäñòâîëüíèêà
+
+	Device.m_SecondViewport.SetSVPActive(bCond_1 && bCond_2 && bCond_3 /*&& bCond_4*/);
 }

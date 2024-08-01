@@ -138,6 +138,10 @@ public:
 		DWORD                           Flags,
 		void*&							result
 	);
+	
+	// [FFT++]
+	virtual void					BeforeWorldRender		(); //--#SM+#-- +SecondVP+
+	virtual void					AfterWorldRender		(); //--#SM+#-- +SecondVP+
 
 	// Information
 	virtual void					Statistics				(CGameFont* F);

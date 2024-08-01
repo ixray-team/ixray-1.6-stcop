@@ -1,6 +1,5 @@
-#ifndef IGame_PersistentH
-#define IGame_PersistentH
 #pragma once
+#include "ShadersExternalData.h"
 
 #include "../xrServerEntities/gametype_chooser.h"
 #include "GameFont.h"
@@ -62,7 +61,8 @@ public:
 	class CEnvironment*				pEnvironment;
 	CEnvironment&					Environment()	{return *pEnvironment;};
 	void							Prefetch			( );
-	IMainMenu*						m_pMainMenu;	
+	IMainMenu*						m_pMainMenu;
+	ShadersExternalData* m_pGShaderConstants;
 
 			void					UpdateParticles();
 
@@ -125,5 +125,3 @@ public:
 
 extern ENGINE_API	bool g_dedicated_server;
 extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
-#endif //IGame_PersistentH
-

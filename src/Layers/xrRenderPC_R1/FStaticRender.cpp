@@ -665,6 +665,21 @@ void	CRender::Statistics	(CGameFont* _F)
 #endif
 }
 
+void CRender::BeforeWorldRender() {}
+
+void CRender::AfterWorldRender()
+{
+	if (Device.m_SecondViewport.IsSVPFrame())
+	{
+		IRender_Target* T = getTarget();
+		IDirect3DSurface9* pBackBuffer = nullptr;
+		RDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
+		D3DXLoadSurfaceFromSurface(Target->RT_SecondVP->pRT, 0, 0, pBackBuffer, 0, 0, D3DX_DEFAULT, 0);
+		pBackBuffer->Release();
+	}
+}
+
+
 xr_string CRender::getShaderParams() {
 	xr_string params = "";
 	if (!m_ShaderOptions.empty()) {

@@ -66,6 +66,26 @@ public:
 
 class ENGINE_API CRenderDeviceData
 {
+public:
+	class ENGINE_API CSecondVPParams
+	{
+		bool isActive;
+		u8 frameDelay;
+
+	public:
+		bool isCamReady;
+
+		IC bool IsSVPActive() { return isActive; }
+		void SetSVPActive(bool bState);
+		bool    IsSVPFrame();
+
+		IC u8 GetSVPFrameDelay() { return frameDelay; }
+		void  SetSVPFrameDelay(u8 iDelay)
+		{
+			frameDelay = iDelay;
+			clamp<u8>(frameDelay, 2, u8(-1));
+		}
+	};
 
 public:
 	u32										TargetWidth;
@@ -220,7 +240,8 @@ public:
 	CStats*									Statistic;
 
 	// Engine flow-control
-	Fmatrix									mInvFullTransform;
+	Fmatrix									mInvFullTransform;	
+	CSecondVPParams							m_SecondViewport; //--#SM+#-- +SecondVP+
 	
 	CRenderDevice();
 

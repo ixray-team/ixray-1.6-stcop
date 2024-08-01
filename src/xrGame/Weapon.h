@@ -92,6 +92,10 @@ public:
 	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
 	virtual float GetHudFov();
+
+	//float GetSecondVPFov() const;
+	void UpdateSecondVP();
+
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
@@ -225,7 +229,8 @@ protected:
 		float			m_fScopeZoomFactor;		//коэффициент увеличения прицела
 
 		float			m_fZoomRotationFactor;
-		
+		float			m_fSecondVPFovFactor;
+
 //		Fvector			m_ZoomDof;
 		Fvector4		m_ReloadDof;
 		BOOL			m_bUseDynamicZoom;

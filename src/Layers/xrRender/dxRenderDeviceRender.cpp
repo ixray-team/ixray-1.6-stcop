@@ -438,7 +438,7 @@ void DoAsyncScreenshot();
 void dxRenderDeviceRender::End()
 {
 #ifndef _EDITOR
-	VERIFY	(RDevice);
+	VERIFY(RDevice);
 
 	RCache.OnFrameEnd();
 
@@ -471,7 +471,10 @@ void dxRenderDeviceRender::End()
 #endif
 
 #ifdef USE_DX11
-	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+	if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.isCamReady)
+	{
+		RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+	}
 #else
 	CHK_DX				(RDevice->EndScene());
 	RDevice->Present( nullptr, nullptr, nullptr, nullptr );
