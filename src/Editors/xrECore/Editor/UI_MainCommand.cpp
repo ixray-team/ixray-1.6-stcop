@@ -154,6 +154,13 @@ BOOL LoadShortcuts(nlohmann::json& Data)
 				if (SUB->desc.size())	sprintf(nm, "%s.\"%s\"", CMD->Name(), SUB->desc.c_str());
 				else   					sprintf(nm, "%s", CMD->Name());
 
+				auto ShortCutItern = Data.find("shortcuts");
+				if (ShortCutItern != Data.end())
+				{
+					auto awda = *ShortCutItern;
+					if (!awda.contains(nm))
+						continue;
+				}
 				std::string val = Data["shortcuts"][nm];
 				int res = sscanf(val.data(), "%d,%s", &SUB->shortcut.hotkey, tmp);
 

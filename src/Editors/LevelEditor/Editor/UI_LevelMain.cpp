@@ -598,6 +598,17 @@ CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 	}
 	return 						FALSE;
 }
+CCommandVar CommandUpdateGizmo(CCommandVar p1, CCommandVar p2)
+{
+	LTools->GetGimzo()->bApplyUpdatePos = true;
+	return FALSE;
+}
+CCommandVar CommandMakeGizmo(CCommandVar p1, CCommandVar p2)
+{
+	auto GizmoPtr = LTools->GetGimzo();
+	GizmoPtr->bApplyChangePos = !GizmoPtr->bApplyChangePos;
+	return FALSE;
+}
 CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
@@ -919,6 +930,8 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
+	REGISTER_CMD_SE	    (COMMAND_MOVE_GIZMO,              	"Gizmo\\Set at camera",	        CommandMakeGizmo,false);
+	REGISTER_CMD_SE	    (COMMAND_UPDATE_GIZMO,             	"Gizmo\\Update at camera",	    CommandUpdateGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_HOM,              	"Compile\\Make HOM",	        CommandMakeHOM,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_SOM,              	"Compile\\Make SOM",	        CommandMakeSOM,false);

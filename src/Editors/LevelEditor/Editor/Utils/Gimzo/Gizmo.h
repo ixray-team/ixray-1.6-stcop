@@ -2,6 +2,10 @@
 class Gizmo
 {
 public:
+	bool bApplyChangePos = false;
+	bool bApplyUpdatePos = false;
+
+public:
 	enum class EStatus
 	{
 		None,

@@ -3,7 +3,8 @@
 #pragma once
 
 // resource itself, the base class for all derived resources
-class	XRCORE_API	xr_resource	{
+class XRCORE_API xr_resource	
+{
 public:
 	enum			{RF_REGISTERED=1<<0 };
 public:

@@ -576,7 +576,10 @@ void CSHEngineTools::AddConstantRef(LPSTR name)
 LPCSTR CSHEngineTools::AppendConstant(CConstant* src, CConstant** dest)
 {
     CConstant* C = xr_new<CConstant>();
-    if (src) *C = *src;
+    if (src)
+    {
+        C->Copy(src);
+    }
     C->dwReference = 1;
     char name[128];
     std::pair<ConstantPairIt, bool> I = m_Constants.insert(std::make_pair(xr_strdup(GenerateConstantName(name)),C));
@@ -588,7 +591,11 @@ LPCSTR CSHEngineTools::AppendConstant(CConstant* src, CConstant** dest)
 LPCSTR CSHEngineTools::AppendMatrix(CMatrix* src, CMatrix** dest)
 {
     CMatrix* M = xr_new<CMatrix>();
-    if (src) *M = *src;
+    if (src)
+    {
+        M->Copy(src);
+    }
+
     M->dwReference = 1;
     char name[128];
     std::pair<MatrixPairIt, bool> I = m_Matrices.insert(std::make_pair(xr_strdup(GenerateMatrixName(name)),M));
@@ -712,7 +719,8 @@ void CSHEngineTools::CollapseMatrix(LPSTR name)
         }
     }
     // append new optimized matrix
-    CMatrix* N = xr_new<CMatrix>(*M);
+    CMatrix* N = xr_new<CMatrix>();
+    N->Copy(M);
     N->dwReference=1;
 	m_OptMatrices.insert(std::make_pair(xr_strdup(name),N));
 }
@@ -730,8 +738,10 @@ void CSHEngineTools::CollapseConstant(LPSTR name)
             return;
         }
     }
+
     // append opt constant
-    CConstant* N = xr_new<CConstant>(*C);
+    CConstant* N = new CConstant();
+    N->Copy(C);
     N->dwReference=1;
 	m_OptConstants.insert(std::make_pair(xr_strdup(name),N));
 }
@@ -930,4 +940,3 @@ void CSHEngineTools::AppendItem(LPCSTR path, CLASS_ID cls_id, IBlender* parent )
     Modified();
 
 }
-
