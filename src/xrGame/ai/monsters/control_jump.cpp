@@ -24,6 +24,9 @@
 #include "../../../xrPhysics/PHCharacter.h"
 #include "../../../xrCore/_vector3d_ext.h"
 
+#include "pseudogigant/pseudogigant.h"
+#include "extended/pseudogigant_jumper/pseudogigant_jumper.h"
+
 void CControlJump::reinit()
 {
 	inherited::reinit		();
@@ -326,17 +329,27 @@ void CControlJump::update_frame()
 	}
 
 	// check if we landed
-	if (is_on_the_ground()) 
+	// CPseudogigantJumper, ...
+	if (is_on_the_ground<CPseudogigantJumper>())
 		grounding();
 }
 
-//-' FIX THIS!!!!!!!!!!!
-//-' Сделать шаблон под параметр с конфига
-#include "pseudogigant/pseudogigant.h"
-#include "extended/pseudogigant_jumper/pseudogigant_jumper.h"
 //////////////////////////////////////////////////////////////////////////
 // Trace ground to check if we have already landed
 //////////////////////////////////////////////////////////////////////////
+template <typename T>
+void CControlJump::check_and_end_state()
+{
+	if (auto pObject = smart_cast<T*>(m_object))
+	{
+		pObject->EndStateJump();
+#ifdef DEBUG
+		Msg("~ [%s]: %s", __FUNCTION__, m_object->get_monster_class_name());
+#endif
+	}
+}
+
+template <typename... T>
 bool CControlJump::is_on_the_ground()
 {
 	if (m_time_started == 0) return false;
@@ -350,17 +363,12 @@ bool CControlJump::is_on_the_ground()
 	collide::rq_result		l_rq;
 
 	bool on_the_ground = false;
-	if (Level().ObjectSpace.RayPick(trace_from, direction, m_trace_ground_range, collide::rqtStatic, l_rq, m_object)) {
+	if (Level().ObjectSpace.RayPick(trace_from, direction, m_trace_ground_range, collide::rqtStatic, l_rq, m_object)) 
+	{
 		if (l_rq.range < m_trace_ground_range)
 		{
 			on_the_ground = true;
-
-			CPseudogigantJumper* pJumper = smart_cast<CPseudogigantJumper*>(m_object);
-
-			if (pJumper)
-			{
-				pJumper->EndStateJump();
-			}
+			(..., check_and_end_state<T>());
 		}
 	}
 

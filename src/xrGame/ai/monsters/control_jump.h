@@ -129,7 +129,11 @@ private:
 			void	hit_test			();
 
 			// check current jump state		
+			template <typename... T>
 			bool	is_on_the_ground	();
+
+			template <typename T>
+			void check_and_end_state();
 
 			// position prediction
 			Fvector	predict_position	(CObject *obj, const Fvector &pos);
