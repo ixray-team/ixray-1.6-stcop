@@ -23,6 +23,12 @@ CStateBloodsuckerVampireAbstract::CStateBloodsuckerVampire(_Object *obj) : inher
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBloodsuckerVampireAbstract::~CStateBloodsuckerVampire()
+{
+
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireAbstract::reinit()
 {
 	inherited::reinit	();
@@ -103,7 +109,7 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 	if (!this->object->WantVampire()) return false;
 	if (this->object->berserk_always) return false;
 	
-	// ÿâëÿåòñÿ ëè âðàã àêòåðîì
+	// ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð»Ð¸ Ð²Ñ€Ð°Ð³ Ð°ÐºÑ‚ÐµÑ€Ð¾Ð¼
 	const CEntityAlive *enemy = this->object->EnemyMan.get_enemy();
 	if (!smart_cast<CActor const*>(enemy))			return false;
 	if (!this->object->EnemyMan.see_enemy_now())			return false;
@@ -121,14 +127,14 @@ bool CStateBloodsuckerVampireAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateBloodsuckerVampireAbstract::check_completion()
 {
-	// åñëè óáåæàë
+	// ÐµÑÐ»Ð¸ ÑƒÐ±ÐµÐ¶Ð°Ð»
 	if ((this->current_substate == eStateVampire_Hide) &&
 		this->get_state_current()->check_completion())	return true;
 
-	// åñëè âðàã èçìåíèëñÿ
+	// ÐµÑÐ»Ð¸ Ð²Ñ€Ð°Ð³ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð»ÑÑ
 	if (enemy != this->object->EnemyMan.get_enemy())		return true;
 	
-	// åñëè àêòåðà óæå êîíòðîëèò äðóãîé êðîâîñîñ
+	// ÐµÑÐ»Ð¸ Ð°ÐºÑ‚ÐµÑ€Ð° ÑƒÐ¶Ðµ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ð¸Ñ‚ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÐºÑ€Ð¾Ð²Ð¾ÑÐ¾Ñ
 	if ((this->current_substate != eStateVampire_Execute) &&
 		this->object->CControlledActor::is_controlling())	return true;
 

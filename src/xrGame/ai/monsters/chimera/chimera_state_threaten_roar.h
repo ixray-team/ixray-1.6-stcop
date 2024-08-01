@@ -6,8 +6,9 @@ class CStateChimeraThreatenRoar : public CState<_Object> {
 	typedef CState<_Object>		inherited;
 
 public:
-	IC					CStateChimeraThreatenRoar	(_Object *obj) : inherited(obj){}
-	
+						CStateChimeraThreatenRoar(_Object* obj) {}
+						virtual ~CStateChimeraThreatenRoar() {}
+
 	virtual	void		initialize					();	
 	virtual	void		execute						();
 	virtual bool		check_completion			();

@@ -6,7 +6,9 @@ class CBurer;
 class CStateManagerBurer : public CMonsterStateManager<CBurer> {
 	typedef CMonsterStateManager<CBurer> inherited;
 public:
-					CStateManagerBurer		(CBurer *monster); 
+					CStateManagerBurer		(CBurer *monster);
+					virtual ~CStateManagerBurer();
+
 	virtual void	execute					();
 	virtual void	setup_substates			();
 	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}

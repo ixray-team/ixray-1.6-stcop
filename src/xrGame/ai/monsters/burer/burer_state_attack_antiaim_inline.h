@@ -9,6 +9,12 @@ CStateBurerAntiAim<Object>::CStateBurerAntiAim (Object *obj) : inherited(obj)
 }
 
 template <class Object>
+CStateBurerAntiAim<Object>::~CStateBurerAntiAim()
+{
+
+}
+
+template <class Object>
 void   CStateBurerAntiAim<Object>::initialize()
 {
 	inherited::initialize					();

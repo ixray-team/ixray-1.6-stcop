@@ -8,6 +8,8 @@ class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant> {
 public:
 
 					CStateManagerGigant	(CPseudoGigant *monster); 
+					virtual ~CStateManagerGigant();
+
 	virtual void	execute				();
 	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
 };

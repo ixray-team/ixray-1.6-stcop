@@ -11,7 +11,8 @@ class	CStateBloodsuckerVampire : public CState<_Object> {
 
 public:
 						CStateBloodsuckerVampire		(_Object *obj);
-	
+	virtual				~CStateBloodsuckerVampire		();
+
 	virtual void		reinit							();
 	
 	virtual void		initialize						();

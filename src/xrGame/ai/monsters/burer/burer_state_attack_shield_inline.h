@@ -9,6 +9,12 @@ CStateBurerShield<Object>::CStateBurerShield (Object *obj) : inherited(obj)
 }
 
 template <class Object>
+CStateBurerShield<Object>::~CStateBurerShield()
+{
+
+}
+
+template <class Object>
 void   CStateBurerShield<Object>::initialize()
 {
 	inherited::initialize				();

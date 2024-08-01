@@ -6,7 +6,9 @@ class CStateChimeraThreatenSteal : public CStateMonsterMoveToPointEx<_Object> {
 	typedef CStateMonsterMoveToPointEx<_Object>		inherited;
 
 public:
-	IC					CStateChimeraThreatenSteal	(_Object *obj) : inherited(obj){}
+						CStateChimeraThreatenSteal	(_Object *obj) : inherited(obj){}
+						virtual ~CStateChimeraThreatenSteal() {}
+
 	virtual	void		initialize					();	
 	virtual void		finalize					();
 	virtual	void		execute						();

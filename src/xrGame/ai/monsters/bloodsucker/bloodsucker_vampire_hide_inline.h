@@ -16,6 +16,12 @@ CStateBloodsuckerVampireHideAbstract::CStateBloodsuckerVampireHide(_Object *obj)
 }
 
 TEMPLATE_SPECIALIZATION
+CStateBloodsuckerVampireHideAbstract::~CStateBloodsuckerVampireHide()
+{
+
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireHideAbstract::reselect_state()
 {
 	if (this->prev_substate == eStateVampire_RunAway) {

@@ -17,7 +17,7 @@ class CBloodsuckerAlien {
 
 public:
 			CBloodsuckerAlien	();
-			~CBloodsuckerAlien	();
+	virtual	~CBloodsuckerAlien	();
 	
 	void	init_external		(CAI_Bloodsucker *obj);	
 	void	reinit				();

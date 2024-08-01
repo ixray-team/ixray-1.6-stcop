@@ -14,6 +14,8 @@ class CPPEffectorPsyDogAura : public CPPEffectorCustom {
 
 public:
 					CPPEffectorPsyDogAura	(const SPPInfo &ppi, u32 time_to_fade);
+					virtual ~CPPEffectorPsyDogAura();
+
 	virtual BOOL	update					();
 			void	switch_off				();
 };
@@ -31,6 +33,8 @@ class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>{
 
 public:
 					CPsyDogAura						(CPsyDog *dog) : m_object(dog){}
+					virtual ~CPsyDogAura() {}
+
 			void	reinit							();
 			void	on_death						();
 			void	update_schedule					();

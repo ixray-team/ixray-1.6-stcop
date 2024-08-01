@@ -8,6 +8,7 @@ protected:
 
 public:
 						CStateChimeraHuntingComeOut	(_Object *obj);
+	virtual				~CStateChimeraHuntingComeOut();
 
 	virtual	void		reselect_state				();
 	virtual bool 		check_start_conditions		();	

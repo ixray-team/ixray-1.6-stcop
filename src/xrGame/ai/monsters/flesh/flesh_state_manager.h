@@ -9,6 +9,8 @@ class CStateManagerFlesh : public CMonsterStateManager<CAI_Flesh> {
 public:
 
 					CStateManagerFlesh	(CAI_Flesh *monster); 
+					virtual ~CStateManagerFlesh();
+
 	virtual void	execute				();
 	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
 };

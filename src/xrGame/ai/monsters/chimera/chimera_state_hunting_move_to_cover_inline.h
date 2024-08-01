@@ -12,6 +12,11 @@ CStateChimeraHuntingMoveToCoverAbstract::CStateChimeraHuntingMoveToCover(_Object
 }
 
 TEMPLATE_SPECIALIZATION
+CStateChimeraHuntingMoveToCoverAbstract::~CStateChimeraHuntingMoveToCover()
+{
+}
+
+TEMPLATE_SPECIALIZATION
 void CStateChimeraHuntingMoveToCoverAbstract::initialize()
 {
 	inherited::initialize();

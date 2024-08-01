@@ -34,6 +34,10 @@ CStateManagerBoar::CStateManagerBoar(CAI_Boar *monster) : inherited(monster)
 	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CAI_Boar> >		(monster));
 }
 
+CStateManagerBoar::~CStateManagerBoar()
+{
+}
+
 void CStateManagerBoar::execute()
 {
 	u32 state_id = u32(-1);
@@ -63,7 +67,7 @@ void CStateManagerBoar::execute()
 	
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

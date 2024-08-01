@@ -28,6 +28,12 @@ CBloodsuckerStateAttackHideAbstract::CBloodsuckerStateAttackHide(_Object *obj) :
 }
 
 TEMPLATE_SPECIALIZATION
+CBloodsuckerStateAttackHideAbstract::~CBloodsuckerStateAttackHide()
+{
+
+}
+
+TEMPLATE_SPECIALIZATION
 void CBloodsuckerStateAttackHideAbstract::reinit()
 {
 	inherited::reinit	();

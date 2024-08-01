@@ -12,6 +12,9 @@ class CControllerAnimation : public CControlAnimationBase {
 	CController	*m_controller;
 
 public:
+	CControllerAnimation();
+	virtual ~CControllerAnimation();
+
 	enum ELegsActionType {
 		eLegsTypeBase			= u32(1) << 15,
 

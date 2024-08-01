@@ -8,6 +8,10 @@ CVampirePPEffector::CVampirePPEffector(const SPPInfo &ppi, float life_time) :
 	m_total		= life_time;
 }
 
+CVampirePPEffector::~CVampirePPEffector()
+{
+}
+
 #define TIME_ATTACK		0.2f
 #define PERIODS			2			
 #define RAD_TO_PERC(rad)	((rad - PI_DIV_2) / (PERIODS * PI_MUL_2))
@@ -68,16 +72,21 @@ CVampireCameraEffector::CVampireCameraEffector(float time, const Fvector &src, c
 	dangle_current.set	(0.f, 0.f, 0.f);
 }
 
+CVampireCameraEffector::~CVampireCameraEffector()
+{
+
+}
+
 BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	fLifeTime -= Device.fTimeDelta; 
 	if(fLifeTime<0) 
 		return FALSE;
 
-	// ïðîöåíò îñòàâøåãîñÿ âðåìåíè
+	// Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚ Ð¾ÑÑ‚Ð°Ð²ÑˆÐµÐ³Ð¾ÑÑ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸
 	float time_left_perc = fLifeTime / m_time_total;
 
-	// Èíèöèàëèçàöèÿ
+	// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 	Fmatrix	Mdef;
 	Mdef.identity		();
 	Mdef.j.set			(info.n);
@@ -122,7 +131,7 @@ BOOL CVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 
 	//////////////////////////////////////////////////////////////////////////
 
-	// Óñòàíîâèòü óãëû ñìåùåíèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑƒÐ³Ð»Ñ‹ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ
 	Fmatrix			R;
 	R.setHPB		(dangle_current.x,dangle_current.y,dangle_current.z);
 

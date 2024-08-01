@@ -17,6 +17,11 @@ CStateManagerPsyDog::CStateManagerPsyDog(CAI_PseudoDog *monster) : inherited(mon
 //	add_state(eStateAttack_Psy,	 xr_new<CStatePsyDogPsyAttack<CAI_PseudoDog> >	 (monster));
 }
 
+CStateManagerPsyDog::~CStateManagerPsyDog()
+{
+
+}
+
 void CStateManagerPsyDog::execute()
 {
 // 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
@@ -25,7 +30,7 @@ void CStateManagerPsyDog::execute()
 // 		
 // 		select_state(eStateAttack_Psy); 
 // 	
-// 		// выполнить текущее состояние
+// 		// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 // 		get_state_current()->execute();
 // 
 // 		prev_substate = current_substate;

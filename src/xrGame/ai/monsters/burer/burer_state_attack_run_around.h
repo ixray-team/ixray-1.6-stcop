@@ -12,6 +12,8 @@ class	CStateBurerAttackRunAround : public CState<_Object> {
 
 public:
 						CStateBurerAttackRunAround	(_Object *obj);
+						virtual ~CStateBurerAttackRunAround();
+
 	virtual void		initialize					();
 	virtual void		execute						();
 

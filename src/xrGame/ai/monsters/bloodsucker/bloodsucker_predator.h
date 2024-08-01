@@ -11,6 +11,7 @@ class	CStateBloodsuckerPredator : public CState<_Object> {
 
 public:
 						CStateBloodsuckerPredator		(_Object *obj);
+	virtual				~CStateBloodsuckerPredator		();
 
 	virtual void		reinit							();
 

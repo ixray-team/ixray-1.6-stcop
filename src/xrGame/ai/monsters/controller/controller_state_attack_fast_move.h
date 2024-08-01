@@ -8,6 +8,8 @@ protected:
 	typedef CState<_Object>		inherited;
 public:
 						CStateControllerFastMove	(_Object *obj) : inherited(obj) {}
+						virtual ~CStateControllerFastMove() {}
+
 	virtual void		initialize					();	
 	virtual void		finalize					();	
 	virtual void		critical_finalize			();

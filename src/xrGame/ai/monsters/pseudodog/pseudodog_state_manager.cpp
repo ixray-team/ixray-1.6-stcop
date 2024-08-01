@@ -34,6 +34,10 @@ CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog *monster) : inherit
 	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CAI_PseudoDog> >				(monster));
 }
 
+CStateManagerPseudodog::~CStateManagerPseudodog()
+{
+}
+
 #define MIN_ANGRY_TIME		10000
 #define MAX_GROWLING_TIME	20000
 
@@ -61,7 +65,7 @@ void CStateManagerPseudodog::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

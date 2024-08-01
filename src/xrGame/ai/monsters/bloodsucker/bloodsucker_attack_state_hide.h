@@ -10,6 +10,7 @@ class	CBloodsuckerStateAttackHide : public CState<_Object> {
 
 public:
 						CBloodsuckerStateAttackHide			(_Object *obj);
+	virtual				~CBloodsuckerStateAttackHide();
 
 	virtual void		reinit							();
 

@@ -8,6 +8,7 @@ protected:
 	typedef CStateMonsterRest<_Object>		inherited;
 public:
 						CPoltergeistStateRest		(_Object *obj) : inherited(obj) {}
+						virtual ~CPoltergeistStateRest() {}
 	virtual	void		execute					();
 };
 

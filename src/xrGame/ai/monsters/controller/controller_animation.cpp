@@ -10,6 +10,16 @@
 
 const float	_pmt_psy_attack_time  = 0.5f;
 
+CControllerAnimation::CControllerAnimation()
+{
+
+}
+
+CControllerAnimation::~CControllerAnimation()
+{
+
+}
+
 void CControllerAnimation::reinit()
 {
 	m_controller			= smart_cast<CController *>(m_object);
