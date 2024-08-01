@@ -3,8 +3,10 @@
 #include <d3d11.h>
 #include "DeviceRHI.h"
 #include "Dx11/Dx11Buffer.h"
+#include "Dx11/Dx11Texture.h"
 
 CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
+SPixelFormats g_PixelFormats[FMT_MAX_COUNT];
 
 CRenderRHI_DX11::CRenderRHI_DX11()
 {
@@ -18,6 +20,46 @@ void CRenderRHI_DX11::Create(void* renderDevice, void* renderContext)
 {
 	HWRenderDevice = renderDevice;
 	HWRenderContext = renderContext;
+
+	// Initialize pixel formats
+
+	g_PixelFormats[FMT_UNKNOWN].PlatformFormat			=	DXGI_FORMAT_UNKNOWN;
+	g_PixelFormats[FMT_R8G8B8A8].PlatformFormat			=	DXGI_FORMAT_B8G8R8A8_UNORM;
+	g_PixelFormats[FMT_R8G8].PlatformFormat				=	DXGI_FORMAT_R8G8_UNORM;
+	g_PixelFormats[FMT_R8G8B8].PlatformFormat			=	DXGI_FORMAT_R8G8B8A8_UNORM;
+//	g_PixelFormats[FMT_X8R8G8B8].PlatformFormat			=	DXGI_FORMAT_B8G8R8X8_UNORM;	
+	g_PixelFormats[FMT_R5G6B5].PlatformFormat			=	DXGI_FORMAT_B5G6R5_UNORM;
+	g_PixelFormats[FMT_B8G8R8A8].PlatformFormat			=	DXGI_FORMAT_R8G8B8A8_UNORM;
+	g_PixelFormats[FMT_G16R16].PlatformFormat			=	DXGI_FORMAT_R16G16_UNORM;
+	g_PixelFormats[FMT_A16B16G16R16].PlatformFormat		=	DXGI_FORMAT_R16G16B16A16_UNORM;
+	g_PixelFormats[FMT_L8].PlatformFormat				=	DXGI_FORMAT_R8_UNORM;
+	g_PixelFormats[FMT_V8U8].PlatformFormat				=	DXGI_FORMAT_R8G8_SNORM;
+	g_PixelFormats[FMT_Q8W8V8U8].PlatformFormat			=	DXGI_FORMAT_R8G8B8A8_SNORM;
+	g_PixelFormats[FMT_V16U16].PlatformFormat			=	DXGI_FORMAT_R16G16_SNORM;
+	g_PixelFormats[FMT_D24X8].PlatformFormat			=	DXGI_FORMAT_R24G8_TYPELESS;
+	g_PixelFormats[FMT_D24S8].PlatformFormat			=	DXGI_FORMAT_D24_UNORM_S8_UINT;
+	g_PixelFormats[FMT_D32F_LOCKABLE].PlatformFormat	=	DXGI_FORMAT_R32_TYPELESS;
+	g_PixelFormats[FMT_G16R16F].PlatformFormat			=	DXGI_FORMAT_R16G16_FLOAT;
+	g_PixelFormats[FMT_A16B16G16R16F].PlatformFormat	=	DXGI_FORMAT_R16G16B16A16_FLOAT;
+	g_PixelFormats[FMT_R32F].PlatformFormat				=	DXGI_FORMAT_R32_FLOAT;
+	g_PixelFormats[FMT_R16F].PlatformFormat				=	DXGI_FORMAT_R16_FLOAT;
+	g_PixelFormats[FMT_A32B32G32R32F].PlatformFormat	=	DXGI_FORMAT_R32G32B32A32_FLOAT;
+	g_PixelFormats[FMT_UYVY].PlatformFormat				=	DXGI_FORMAT_UNKNOWN;
+	g_PixelFormats[FMT_R8G8_B8G8].PlatformFormat		=   DXGI_FORMAT_G8R8_G8B8_UNORM;
+	g_PixelFormats[FMT_YUY2].PlatformFormat				=   DXGI_FORMAT_UNKNOWN;
+	g_PixelFormats[FMT_G8R8_G8B8].PlatformFormat		=   DXGI_FORMAT_R8G8_B8G8_UNORM;
+	g_PixelFormats[FMT_DXT1].PlatformFormat				=   DXGI_FORMAT_BC1_UNORM;
+	g_PixelFormats[FMT_DXT2].PlatformFormat				=   DXGI_FORMAT_BC2_UNORM;
+	g_PixelFormats[FMT_DXT3].PlatformFormat				=   DXGI_FORMAT_BC2_UNORM;
+	g_PixelFormats[FMT_DXT4].PlatformFormat				=   DXGI_FORMAT_BC3_UNORM;
+	g_PixelFormats[FMT_DXT5].PlatformFormat				=   DXGI_FORMAT_BC3_UNORM;
+}
+
+ITexture2D* CRenderRHI_DX11::CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc)
+{
+	CD3D11Texture2D* pTexture2D = new CD3D11Texture2D();
+	R_CHK(pTexture2D->Create(textureDesc, pSubresourceDesc));
+	return pTexture2D;
 }
 
 IBuffer* CRenderRHI_DX11::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
