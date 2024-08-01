@@ -267,15 +267,9 @@ void CPoltergeist::reinit()
 	m_actor_ignore						= false;
 
 	if (this->get_value_use_energy())
-	{
 		EnableHide();
-		Msg("- %s: %i", __FUNCTION__, __LINE__);
-	}
 	else
-	{
 		DisableHide();
-		Msg("- %s: %i", __FUNCTION__, __LINE__);
-	}
 }
 
 void CPoltergeist::Hide()
