@@ -20,14 +20,11 @@
 
 class ENGINE_API IGameLevelCrossTable 
 {
-
 public:
 #pragma pack(push,2)
 	class CHeader 
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
 		u32					dwVersion;
 		u32					dwNodeCount;
 		u32					dwGraphPointCount;
@@ -43,9 +40,7 @@ public:
 	
 	class  CCell 
 	{
-#ifndef MASTER_GOLD
 	public:
-#endif
 		GameGraph::_GRAPH_ID	tGraphIndex;
 		float				fDistance;
 	public:
@@ -54,7 +49,7 @@ public:
 	};
 #pragma pack(pop)
 
-protected:
+public:
 	CHeader					m_tCrossTableHeader;
 	CCell					*m_tpaCrossTable;
 

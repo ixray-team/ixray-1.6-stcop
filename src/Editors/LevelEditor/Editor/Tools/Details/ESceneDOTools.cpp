@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\..\xrRender\Private\DetailFormat.h"
 
 static const u32 DETMGR_VERSION = 0x0003ul;
 enum{

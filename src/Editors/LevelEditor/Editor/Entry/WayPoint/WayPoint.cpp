@@ -58,7 +58,11 @@ void CWayPoint::Render(LPCSTR parent_name, bool bParentSelect)
             xx.sub	(p2,p1);
             xx.mul	(0.95f);
             xx.add	(p1);
-            DU_impl.OutText(xx,xr_string().sprintf("P: %1.2f",O->probability).c_str(),c,s);
+
+            string256 Data = {};
+            sprintf(Data, "P: %1.2f", O->probability);
+
+            DU_impl.OutText(xx, Data, c, s);
         }
 	    DU_impl.OutText(m_vPosition,hint.c_str(),c,s);
     }
@@ -387,14 +391,10 @@ CWayPoint* CWayObject::AppendWayPoint()
         for (int i = 0; true; i++)
         {
             bool result;
-            xr_string temp;
-            if (i == 0)
+            xr_string temp = pref;
+            if (i != 0)
             {
-                temp = pref;
-            }
-            else
-            {
-                temp.sprintf("%s_%02d", pref, i - 1);
+                temp += "_" + xr_string::ToString(i - 1);
             }
             FindWPByName(temp.c_str(), result);
             if (!result)
@@ -802,7 +802,7 @@ void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
                     PHelper().CreateFloat	(items,	PrepareKey(pref,"Way Point\\Links",*(*l_it)->way_point->m_Name),&(*l_it)->probability);
                     
                 for (int k=0; k<32; k++)
-                    PHelper().CreateFlag32(items,	PrepareKey(pref,"Way Point\\Flags",xr_string(k).c_str()),	&W->m_Flags,	1<<k);
+                    PHelper().CreateFlag32(items,	PrepareKey(pref,"Way Point\\Flags",xr_string::ToString(k).c_str()),	&W->m_Flags,	1<<k);
             }
     	}
     }

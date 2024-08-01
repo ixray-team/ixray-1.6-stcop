@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "XrGameManager.h"
-#include "..\..\XrAPI\xrGameManager.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
-#include "..\XrEngine\XrGameEditorInterface.h"
+
 XrGameManager* g_XrGameManager = nullptr;
 extern "C" 
 {
@@ -11,18 +10,8 @@ extern "C"
 XrGameManager::XrGameManager()
 {
 	LPCSTR			g_name = "XrGame.dll";
-	switch (xrGameManager::GetGame())
-	{
-	case EGame::CS:
-		g_name = "XrGameCS.dll";
-		break;
-	case EGame::SHOC:
-		g_name = "XrGameSOC.dll";
-		break;
-	}
-
 	Log("Loading DLL:", g_name);
-	m_hGame = LoadLibrary(g_name);
+	m_hGame = LoadLibraryA(g_name);
 	if (0 == m_hGame)	R_CHK(GetLastError());
 	R_ASSERT2(m_hGame, "Game DLL raised exception during loading or there is no game DLL at all");
 	m_pCreate = (Factory_Create*)GetProcAddress(m_hGame, "xrFactory_Create");	R_ASSERT(m_pCreate);

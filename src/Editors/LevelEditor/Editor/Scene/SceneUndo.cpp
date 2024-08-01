@@ -19,7 +19,7 @@ void EScene::UndoSave()
     if (0==EPrefs->scene_undo_level) return;
 
 	UndoItem item;
-	GetTempFileName( FS.get_path(_temp_)->m_Path, "undo", 0, item.m_FileName );
+	GetTempFileNameA( FS.get_path(_temp_)->m_Path, "undo", 0, item.m_FileName );
 
 	Save( item.m_FileName, true, true );
 	m_UndoStack.push_back( item );

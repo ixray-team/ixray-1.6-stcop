@@ -94,7 +94,7 @@ public:
 	virtual							~CSE_ALifeGraphPoint();
 	virtual bool					match_configuration	() const { return false; }
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 #endif
 SERVER_ENTITY_DECLARE_END
@@ -475,7 +475,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	virtual bool					used_ai_locations			() const;
 	virtual bool					match_configuration			() const;
 	virtual bool			validate					();
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS) && !defined(AI_COMPILER)
 	virtual void 			on_render					(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 #endif // #ifndef XRGAME_EXPORTS
 	virtual CSE_Abstract			*cast_abstract				() {return this;}

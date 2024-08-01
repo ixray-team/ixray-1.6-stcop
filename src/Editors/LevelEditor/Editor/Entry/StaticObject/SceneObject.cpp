@@ -240,12 +240,15 @@ void CSceneObject::OnFrame()
 	inherited::OnFrame();
 	if (!m_pReference) return;
 	if (m_pReference) m_pReference->OnFrame();
+
+#if 0
 	if (psDeviceFlags.is(rsStatistic)){
     	if (IsStatic()||IsMUStatic()||Selected()){
             EDevice->EStatistic->dwLevelSelFaceCount 	+= GetFaceCount();
             EDevice->EStatistic->dwLevelSelVertexCount += GetVertexCount();
         }
     }
+#endif
 }
 
 void CSceneObject::ReferenceChange(PropValue* sender)
@@ -361,8 +364,11 @@ void CSceneObject::OnShowHint(AStringVec& dest)
 	        dest.push_back(xr_string("Game Mtl: ")+xr_string(surf->_GameMtlName()));
             int gm_id			= surf->_GameMtl(); 
             if (gm_id!=GAMEMTL_NONE_ID){ 
-                SGameMtl* mtl 	=  GameMaterialLibrary->GetMaterialByID(gm_id);
-                if (mtl)		dest.push_back(xr_string().sprintf("Occlusion Factor: %3.2f",mtl->fSndOcclusionFactor));
+                SGameMtl* mtl 	=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
+                string256 Data = {};
+                sprintf(Data, "Occlusion Factor: %3.2f", mtl->fSndOcclusionFactor);
+
+                if (mtl)		dest.push_back(Data);
             }
         }else if (pinf.e_obj->m_objectFlags.is(CEditableObject::eoHOM)){
         }else{
@@ -394,7 +400,7 @@ bool CSceneObject::Validate(bool bMsg)
 void CSceneObject::ClearSurface()
 {
     for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
-    m_Surfaces.clear_and_free();
+    m_Surfaces.clear();
     if (m_pReference)
     {
         for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)

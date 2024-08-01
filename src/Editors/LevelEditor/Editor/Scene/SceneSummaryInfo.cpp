@@ -148,7 +148,6 @@ void SSceneSummary::STextureInfo::FillProp	(PropItemVec& items, LPCSTR main_pref
 void SSceneSummary::STextureInfo::Export	(IWriter* F, u32& mem_use)
 {
 	string128		mask;
-	xr_string		tmp;
     strcpy			(mask,"%s=%s,%d,%d,%s,%d,%3.2f,%3.2f,%s");
     if (info.flags.is_any(STextureParams::flDiffuseDetail|STextureParams::flBumpDetail)){
         if (0!=info.detail_name.size()){
@@ -161,17 +160,24 @@ void SSceneSummary::STextureInfo::Export	(IWriter* F, u32& mem_use)
         }
     }
     xr_string 		tmp2;
-    for (objinf_map_it o_it=objects.begin(); o_it!=objects.end(); o_it++){
-        tmp2 		+= xr_string().sprintf("%s%s[%d*%3.2f]",tmp2.size()?"; ":"",o_it->first.c_str(),o_it->second.ref_count,o_it->second.area);
+    for (objinf_map_it o_it=objects.begin(); o_it!=objects.end(); o_it++)
+    {
+        string256 Data;
+        sprintf(Data, "%s%s[%d*%3.2f]", tmp2.size() ? "; " : "", o_it->first.c_str(), o_it->second.ref_count, o_it->second.area);
+
+        tmp2 		+= Data;
     }
     int tex_mem		= info.MemoryUsage(*file_name);
     mem_use			+=tex_mem;
-    tmp.sprintf		(mask,*file_name,info.FormatString(),
+
+    string512 tmp;
+    sprintf		(tmp, mask,*file_name,info.FormatString(),
     				info.width,info.height,info.HasAlpha()?"present":"absent",
                     iFloor(tex_mem/1024),
                     effective_area, _sqrt((pixel_area*info.width*info.height)/effective_area), tmp2.c_str(), 
                     *info.detail_name, info.detail_scale, *info.bump_name);
-	F->w_string		(tmp.c_str());
+
+	F->w_string		(tmp);
 }
 
 void SSceneSummary::OnFileClick(ButtonValue* sender, bool& bModif, bool& bSafe)
@@ -353,8 +359,9 @@ SSceneSummary::SSceneSummary()
     pm_colors.push_back	(SPixelDensityPair(1000,0x800000FF));
 }
 
-void SSceneSummary::Save(CInifile* I)
+void SSceneSummary::Save()
 {
+#if 0
 	I->w_u32			("summary_info","pm_count",s_summary.pm_colors.size());
     for (u32 idx=0; idx<s_summary.pm_colors.size(); ++idx){
     	string128 		tmp;
@@ -363,10 +370,12 @@ void SSceneSummary::Save(CInifile* I)
         sprintf			(tmp,"pm_item_%d_weight",idx);
     	I->w_float		("summary_info",tmp,s_summary.pm_colors[idx].pm);
     }
+#endif
 }
 
-void SSceneSummary::Load(CInifile* I)
+void SSceneSummary::Load()
 {
+#if 0
 	if (I->section_exist("summary_info")&&I->line_exist("summary_info","pm_count")&&(5==I->r_u32("summary_info","pm_count"))){
         for (u32 idx=0; idx<s_summary.pm_colors.size(); ++idx){
             string128 	tmp;
@@ -377,6 +386,7 @@ void SSceneSummary::Load(CInifile* I)
         }
     }
     std::sort			(s_summary.pm_colors.begin(),s_summary.pm_colors.end());
+#endif
 }
 
 u32 SSceneSummary::SelectPMColor(float pm)

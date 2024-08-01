@@ -72,7 +72,7 @@ EFC_Visible	CFrustum::testSphere			(Fvector& c, float r, u32& test_mask) const
 	return test_mask ? fcvPartial:fcvFully;
 }
 
-BOOL	CFrustum::testSphere_dirty		(Fvector& c, float r) const
+BOOL CFrustum::testSphere_dirty(const Fvector& c, float r) const
 {
 	switch (p_count) {
 		case 12:if (planes[11].classify(c)>r)	return FALSE;

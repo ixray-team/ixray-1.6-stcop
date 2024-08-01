@@ -322,7 +322,8 @@ void	__cdecl thread_entry	(void*	_params )	{
 	entry				(arglist);
 }
 
-void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
+
+ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
 {
 	Debug._initialize	(false);
 
@@ -332,13 +333,15 @@ void	thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* argl
 	startup->args		= arglist;
 
 #ifdef IXR_WINDOWS
-	_beginthread		(thread_entry,stack,startup);
+	return (ThreadID)_beginthread		(thread_entry,stack,startup);
 #else
     pthread_t handle;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_create(&handle, &attr, 0, arglist);
     pthread_attr_destroy(&attr);
+
+	return (ThreadID)handle;
 #endif
 }
 

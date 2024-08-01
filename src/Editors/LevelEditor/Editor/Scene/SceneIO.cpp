@@ -1108,12 +1108,12 @@ void EScene::CopySelection( ObjClassID classfilter )
 	SceneClipData *sceneclipdata = (SceneClipData *)GlobalLock(hmem);
 
 	sceneclipdata->m_ClassFilter = classfilter;
-	GetTempFileName( FS.get_path(_temp_)->m_Path, "clip", 0, sceneclipdata->m_FileName );
+	GetTempFileNameA( FS.get_path(_temp_)->m_Path, "clip", 0, sceneclipdata->m_FileName );
 	SaveSelection( classfilter, sceneclipdata->m_FileName );
 
 	GlobalUnlock( hmem );
 
-	int clipformat = RegisterClipboardFormat( "CF_XRAY_CLASS_LIST" );
+	int clipformat = RegisterClipboardFormatA( "CF_XRAY_CLASS_LIST" );
 	if( OpenClipboard( 0 ) ){
 		SetClipboardData( clipformat, hmem );
 		CloseClipboard();
@@ -1125,7 +1125,7 @@ void EScene::CopySelection( ObjClassID classfilter )
 
 void EScene::PasteSelection() 
 {
-	int clipformat = RegisterClipboardFormat( "CF_XRAY_CLASS_LIST" );
+	int clipformat = RegisterClipboardFormatA( "CF_XRAY_CLASS_LIST" );
 	if( OpenClipboard( 0 ) ){
 
 		HGLOBAL hmem = GetClipboardData(clipformat);

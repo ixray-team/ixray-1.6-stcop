@@ -423,7 +423,7 @@ xr_token game_types[]={
 	{ 0,				0				}
 };
 
-#ifndef XRGAME_EXPORTS
+#if !defined(XRGAME_EXPORTS)
 void CSE_Abstract::FillProps(LPCSTR pref, PropItemVec& items)
 {
 #ifdef XRSE_FACTORY_EXPORTS

@@ -124,8 +124,8 @@ void CLight::Render(int priority, bool strictB2F)
             Fvector 		D;
             D.sub			(EDevice->vCameraPosition,GetPosition());
             float dist 		= D.normalize_magn();
-        	if (!Scene->RayPickObject(dist,GetPosition(),D,OBJCLASS_SCENEOBJECT,0,0))
-	        	DU_impl.OutText (GetPosition(),xr_string().sprintf(" %s",GetLControlName()).c_str(),0xffffffff,0xff000000);
+            if (!Scene->RayPickObject(dist, GetPosition(), D, OBJCLASS_SCENEOBJECT, 0, 0))
+                DU_impl.OutText(GetPosition(), GetLControlName(), 0xffffffff, 0xff000000);
         }
     }else if ((1==priority)&&(true==strictB2F))
     {

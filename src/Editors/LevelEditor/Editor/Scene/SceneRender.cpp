@@ -4,9 +4,9 @@
 #ifdef USE_ARENA_ALLOCATOR
 static const u32	s_arena_size = 32 * 1024 * 1024;
 char* s_fake_array = nullptr;
-doug_lea_allocator	g_render_lua_allocator(s_fake_array, s_arena_size, "render:lua");
+doug_lea_allocator	g_render_lua_allocator("render:lua");
 #else // #ifdef USE_ARENA_ALLOCATOR
-doug_lea_allocator	g_render_lua_allocator(0, 0, "render:lua");
+doug_lea_allocator	g_render_lua_allocator("render:lua");
 #endif // #ifdef USE_ARENA_ALLOCATOR
 
 

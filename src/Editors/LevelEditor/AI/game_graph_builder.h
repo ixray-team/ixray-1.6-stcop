@@ -9,9 +9,9 @@
 #pragma once
 #include "../../xrEngine/AI//alife_space.h"
 #include "../../xrGame/game_graph.h"
-#include "../../xrEngine/../graph_vertex.h"
-#include "../../xrGame/graph_edge.h"
-#include "../../xrGame/graph_abstract.h"
+#include "../../xrEngine/AI/graph_vertex.h"
+#include "../../xrEngine/AI/graph_edge.h"
+#include "../../xrEngine/AI/graph_abstract.h"
 #include "game_graph_editor.h"
 #include "game_level_cross_table_editor.h"
 
@@ -19,13 +19,6 @@ struct ISE_Abstract;
 class ILevelGraph;
 class IGameLevelCrossTable;
 
-template <
-	typename _data_type = Loki::EmptyType,
-	typename _edge_weight_type = float,
-	typename _vertex_id_type = u32,
-	typename _edge_data_type = Loki::EmptyType
->
-class CGraphAbstract;
 
 namespace GameGraph 
 {
@@ -73,7 +66,7 @@ private:
 private:
 			void		create_graph				();
 			void		load_level_graph			();
-			void		load_graph_point			(ISE_Abstract* entity);
+			void		load_graph_point			(class CSE_Abstract* entity);
 			void		load_graph_points			();
 
 private:

@@ -65,18 +65,15 @@ void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
         xr_string temp;
         if (pref)
         {
-            if (i == 0)
+            temp = pref;
+            if (i != 0)
             {
-                temp = pref;
-            }
-            else
-            {
-                temp.sprintf("%s_%02d", pref, i - 1);
+                temp += "_" + xr_string::ToString(i - 1);
             }
         }
         else
         {
-            temp.sprintf("%02d", i );
+            temp = xr_string::ToString(i);
         }
        
         FindObjectByNameCB(temp.c_str(), result);

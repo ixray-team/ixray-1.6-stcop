@@ -78,7 +78,7 @@ void UIDOShuffle::Draw()
 			if (ImGui::Button("Load..", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
-				if (EFS.GetOpenName(EDevice->m_hWnd,_detail_objects_, fname)) {
+				if (EFS.GetOpenName(_detail_objects_, fname)) {
 					if (DM->ImportColorIndices(fname.c_str())) {
 						DM->InvalidateSlots();
 						FillData();

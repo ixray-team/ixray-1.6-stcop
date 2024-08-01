@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "../xrGame/vertex_path.h"
-#include "../xrGame/data_storage_constructor.h"
-#include "../xrGame/dijkstra.h"
+#include "../xrEngine/AI/vertex_path.h"
+#include "../xrEngine/AI/data_storage_constructor.h"
+#include "../xrEngine/AI/dijkstra.h"
 
 namespace AStar {
 	template <

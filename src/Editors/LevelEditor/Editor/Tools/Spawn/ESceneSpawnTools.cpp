@@ -168,7 +168,7 @@ ref_shader ESceneSpawnTool::CreateIcon(shared_str name)
 
 ref_shader ESceneSpawnTool::GetIcon(shared_str name)
 {
-	ShaderPairIt it = m_Icons.find(name);
+	auto it = m_Icons.find(name);
 	if (it==m_Icons.end())	return CreateIcon(name);
 	else					return it->second;
 }
@@ -206,7 +206,7 @@ int ESceneSpawnTool::MultiRenameObjects()
     	CCustomObject* obj	= *o_it;
     	if (obj->Selected()){
         	string256			pref;
-            strconcat			(sizeof(pref),pref,Scene->LevelPrefix().c_str(),"_",obj->RefName());
+            xr_strconcat		(pref,Scene->LevelPrefix().c_str(),"_",obj->RefName());
             string256 			buf;
         	Scene->GenObjectName(obj->FClassID,buf,pref);
             if (xr_strcmp( obj->GetName(),buf)==0){

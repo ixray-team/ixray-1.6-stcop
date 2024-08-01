@@ -596,9 +596,9 @@ void CSector::FillProp(LPCSTR pref, PropItemVec& items)
     PHelper().CreateFColor(items, PrepareKey(pref,"Color"), &sector_color);
     int faces, objects, meshes;
     GetCounts(&objects,&meshes,&faces);
-    PHelper().CreateCaption(items,PrepareKey(pref,GetName(),"Contents\\Objects"),	xr_string(objects).c_str());
-    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string(meshes).c_str());
-    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string(faces).c_str());
+    PHelper().CreateCaption(items,PrepareKey(pref,GetName(),"Contents\\Objects"),	xr_string::ToString(objects).c_str());
+    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
+    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
 	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
     
 }

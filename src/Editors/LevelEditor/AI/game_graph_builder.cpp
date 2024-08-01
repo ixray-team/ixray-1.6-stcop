@@ -7,16 +7,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "game_graph_builder.h"
 #include "level_graph.h"
+#include "game_graph_builder.h"
 #include "graph_abstract.h"
 #include "graph_vertex.h"
 #include "game_level_cross_table.h"
 #include "..\XrECore\Engine\guid_generator.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
+#include "../../xrServerEntities/xrServer_Objects.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife.h"
 #include "graph_engine_editor.h"
-#include "..\XrAPI\xrGameManager.h"
 
 
 CGameGraphBuilder::CGameGraphBuilder		()
@@ -54,11 +54,9 @@ void CGameGraphBuilder::load_level_graph	()
 	
 }
 
-void CGameGraphBuilder::load_graph_point	(ISE_Abstract*entity)
+void CGameGraphBuilder::load_graph_point	(CSE_Abstract*entity)
 {
-
-
-	ISE_ALifeGraphPoint* graph_point = entity->CastALifeGraphPoint();
+	CSE_ALifeGraphPoint* graph_point = smart_cast<CSE_ALifeGraphPoint*>(entity);
 	if (!graph_point) {
 		return;
 	}
@@ -284,15 +282,7 @@ void CGameGraphBuilder::build_cross_table	()
 	iterate_distances		();
 
 	IGameLevelCrossTable::CHeader		tCrossTableHeader;
-	switch (xrGameManager::GetGame())
-	{
-	case EGame::SHOC:
-		tCrossTableHeader.dwVersion = XRAI_SOC_CURRENT_VERSION;
-		break;
-	default:
-		tCrossTableHeader.dwVersion = XRAI_CURRENT_VERSION;
-		break;
-	}
+	tCrossTableHeader.dwVersion = XRAI_CURRENT_VERSION;
 	tCrossTableHeader.dwNodeCount = level_graph().header().vertex_count();
 	tCrossTableHeader.dwGraphPointCount = graph().header().vertex_count();
 	tCrossTableHeader.m_level_guid = level_graph().header().guid();
@@ -570,15 +560,7 @@ bool CGameGraphBuilder::build_graph	()
 
 
 	IGameGraph::CHeader GameGraphHeader;
-	switch (xrGameManager::GetGame())
-	{
-	case EGame::SHOC:
-		GameGraphHeader.m_version = XRAI_SOC_CURRENT_VERSION;
-		break;
-	default:
-		GameGraphHeader.m_version = XRAI_CURRENT_VERSION;
-		break;
-	}
+	GameGraphHeader.m_version = XRAI_CURRENT_VERSION;
 	VERIFY						(graph().vertices().size() < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));
 	GameGraphHeader.m_vertex_count		= (GameGraph::_GRAPH_ID)graph().vertices().size();
 	VERIFY						(graph().edge_count() < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));

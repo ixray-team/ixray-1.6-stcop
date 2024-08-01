@@ -88,5 +88,5 @@ void CFromBuilder::Load(CObjectSpace* To, CDB::build_callback cb)
 	H.facecount = m_Faces.size();
 	H.version = CFORM_CURRENT_VERSION;
 	H.aabb = m_Box;
-	To->Create(m_Vertex.data(),m_Faces.data(), H, cb);
+	To->Create(m_Vertex.data(),m_Faces.data(), H, cb,nullptr,false);
 }

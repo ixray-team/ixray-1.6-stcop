@@ -25,7 +25,9 @@ private:
         	float 			area;
             SObjInfo(float a):ref_count(0),area(a){}            
         };
-        DEFINE_MAP(shared_str,SObjInfo,objinf_map,objinf_map_it);
+        using objinf_map = xr_map<shared_str,SObjInfo>;
+        using objinf_map_it = objinf_map::iterator;
+
         objinf_map			objects;
         float				effective_area;
         float				pixel_area;
@@ -47,13 +49,19 @@ private:
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(file_name,fn)<0;};
 		bool operator ==(const shared_str& fn)		const{return file_name.equal(fn);};
     };
-    DEFINE_SET	(STextureInfo,TISet,TISetIt);
+
+    using TISet = xr_set<STextureInfo>;
+    using TISetIt = TISet::iterator;
+
     TISet		textures;
     struct SPairInfo{
     	xr_string			first;
     	xr_string			second;
     };
-    DEFINE_VECTOR(SPairInfo,PIVec,PIVecIt);
+    
+    using PIVec = xr_vector<SPairInfo>;
+    using PIVecIt = PIVec::iterator;
+
 	struct SObjectInfo{      
     	shared_str 			object_name;
         PIVec				info;
@@ -73,7 +81,9 @@ private:
 		bool operator < (const shared_str& fn)		const{return xr_strcmp(object_name,fn)<0;};
 		bool operator ==(const shared_str& fn)		const{return object_name.equal(fn);};
     };
-    DEFINE_SET	(SObjectInfo,OISet,OISetIt);
+    using OISet = xr_set<SObjectInfo>;
+    using OISetIt = OISet::iterator;
+
     OISet		objects;
 public:    
 	RStringSet	lod_objects;
@@ -110,7 +120,12 @@ protected:
         SPixelDensityPair(float _pm, u32 _c):pm(_pm),color(_c){}
 		bool operator < (const SPixelDensityPair& other)const{return pm < other.pm;};
     };
-    DEFINE_VECTOR(SPixelDensityPair,PDVec,PDVecIt);
+    
+    using OISet = xr_set<SObjectInfo>;
+    using OISetIt = OISet::iterator;
+
+    using PDVec = xr_vector<SPixelDensityPair>;
+    using PDVecIt = PDVec::iterator;
     PDVec		pm_colors;
 	bool 		OnWeightAfterEditClick(PropValue* sender, float& edit_val);
 public:
@@ -174,6 +189,6 @@ public:
         sound_source_cnt	= 0;
         pe_static_cnt		= 0;
     }
-    static void	Load		(CInifile* I);
-    static void	Save		(CInifile* I);
+    static void	Load		();
+    static void	Save		();
 };

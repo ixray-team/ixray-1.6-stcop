@@ -104,8 +104,8 @@ public:
     // commands
 	virtual	void	RegisterCommands		(); 
 
-    virtual void	SaveSettings			(CInifile*);
-    virtual void	LoadSettings			(CInifile*);
+    virtual void	SaveSettings			(nlohmann::json&);
+    virtual void	LoadSettings			(nlohmann::json&);
     virtual Ivector2 GetRenderMousePosition()const;
     virtual void OnDrawUI();
     bool  KeyDown(WORD Key, TShiftState Shift);

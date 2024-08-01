@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "level_graph.h"
-#include "../../xrServerEntities/game_level_cross_table.h"
+#include "../../xrGame/game_level_cross_table.h"
 
 #ifndef AI_COMPILER
 #	include "ai_space.h"

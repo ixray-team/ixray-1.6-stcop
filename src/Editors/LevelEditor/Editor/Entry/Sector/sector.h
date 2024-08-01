@@ -25,8 +25,8 @@ public:
     bool IsItem		(const char* O, const char* M);
     IC bool IsItem	(CSceneObject* o, CEditableMesh* m){ return (o==object)&&(m==mesh); }
 };
-
-DEFINE_VECTOR(CSectorItem,SItemVec,SItemIt);
+using SItemVec = xr_vector<CSectorItem>;
+using SItemIt = SItemVec::iterator;
 
 class CSector : public CCustomObject {
 	friend class TfrmPropertiesSector;

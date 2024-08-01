@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "shapedata.h"
+//#include "shapedata.h"
 
-class ISE_ALifeSpaceRestrictor;
+class CSE_ALifeSpaceRestrictor;
 class ILevelGraph;
 class CGraphEngineEditor;
 
@@ -19,7 +19,7 @@ private:
 	friend struct border_merge_predicate;
 
 public:
-	typedef ISE_ALifeSpaceRestrictor			object_type;
+	typedef CSE_ALifeSpaceRestrictor			object_type;
 	typedef xr_vector<u32>						BORDER;
 
 private:
@@ -41,7 +41,7 @@ private:
 	IC		CGraphEngineEditor	&graph_engine			() const;
 
 public:
-							CSpaceRestrictorWrapper	(ISE_ALifeSpaceRestrictor *object);
+							CSpaceRestrictorWrapper	(CSE_ALifeSpaceRestrictor *object);
 	IC		object_type		&object					() const;
 			bool			verify					(ILevelGraph &level_graph, CGraphEngineEditor &graph_engine, bool no_separator_check);
 };
