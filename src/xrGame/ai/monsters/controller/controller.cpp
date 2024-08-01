@@ -50,9 +50,9 @@ const u32	_pmt_psy_attack_delay		= 2000;
 const float	_pmt_psy_attack_min_angle	= deg(5);
 
 
-namespace detail
+namespace controller
 {
-	namespace controller 
+	namespace detail
 	{
 		// default settings for tube fire:
 		const float default_tube_condition_see_duration = 1000;
@@ -65,14 +65,14 @@ namespace detail
 
 CController::CController()
 {
-	StateMan = xr_new<CStateManagerController>(this);
+	StateMan = new CStateManagerController (this);
 	time_control_hit_started = 0;
 
-	m_psy_hit			= xr_new<CControllerPsyHit>();
+	m_psy_hit			= new CControllerPsyHit();
 
 	control().add		(m_psy_hit,  ControlCom::eComCustom1);
 
-	m_aura				= xr_new<CControllerAura>(this);
+	m_aura				= new CControllerAura(this);
 
 
 #ifdef _DEBUG	
@@ -252,7 +252,7 @@ void CController::Load(LPCSTR section)
 	LPCSTR tube_condition_min_delay_line    = "tube_condition_min_delay";
 	LPCSTR tube_condition_min_distance_line = "tube_condition_min_distance";
 
-	using namespace detail::controller;
+	using namespace controller::detail;
 	m_tube_condition_see_duration = pSettings->line_exist(section, tube_see_duration_line) ?
 	                             	pSettings->r_float(section, tube_see_duration_line) :
 									default_tube_condition_see_duration;
@@ -419,8 +419,8 @@ void CController::control_hit()
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
 	if (!pA) return;
 	
-	Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_control_effector.ce_time,m_control_effector.ce_amplitude,m_control_effector.ce_period_number,m_control_effector.ce_power));
-	Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
+	Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_control_effector.ce_time,m_control_effector.ce_amplitude,m_control_effector.ce_period_number,m_control_effector.ce_power));
+	Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
 
 	play_control_sound_hit		();
 /*
@@ -635,7 +635,7 @@ void CController::tube_fire()
 
 bool CController::can_tube_fire()
 {
-	using namespace detail::controller;
+	using namespace controller::detail;
 
 	if ( m_tube_at_once )
 	{
@@ -692,14 +692,14 @@ void CController::test_covers()
 
 void CController::create_base_controls()
 {
-	m_custom_anim_base	= xr_new<CControllerAnimation>		(); 
-	m_custom_dir_base	= xr_new<CControllerDirection>		(); 
+	m_custom_anim_base	= new CControllerAnimation		(); 
+	m_custom_dir_base	= new CControllerDirection		(); 
 	
 	m_anim_base			= m_custom_anim_base;
 	m_dir_base			= m_custom_dir_base;
 
-	m_move_base			= xr_new<CControlMovementBase>		();
-	m_path_base			= xr_new<CControlPathBuilderBase>	();
+	m_move_base			= new CControlMovementBase		();
+	m_path_base			= new CControlPathBuilderBase	();
 }
 
 void CController::TranslateActionToPathParams()
