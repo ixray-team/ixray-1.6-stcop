@@ -447,7 +447,7 @@ void UIMainMenuForm::Draw()
         }
         
         if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
-        ImGui::EndMenu();
+        //ImGui::EndMenu();
 
         ImGui::EndMainMenuBar();
     }

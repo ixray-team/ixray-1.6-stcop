@@ -34,6 +34,7 @@ private:
 	void RegisterModifiedTHM();
 	void OnCubeMapBtnClick(ButtonValue* value, bool& bModif, bool& bSafe);
 	void OnTypeChange(PropValue* prop);
+	void UpdateProperties();
 	void InitItemList();
 	void HideLib();
 	void UpdateLib();
@@ -42,6 +43,7 @@ private:
 private:
 	bool m_bFilterImage;
 	bool m_bFilterTerrain;
+	bool m_bUpdateProperties;
 	bool m_bFilterBump;
 	bool m_bFilterNormal;
 	bool m_bFilterCube;

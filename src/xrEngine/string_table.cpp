@@ -156,9 +156,7 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 
 STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 {
-	VERIFY					(pData);
-
-	if(pData->m_StringTable.find(str_id)!=pData->m_StringTable.end())
+	if(pData != nullptr && pData->m_StringTable.find(str_id)!=pData->m_StringTable.end())
 		return  pData->m_StringTable[str_id];
 	else
 		return str_id;

@@ -59,6 +59,9 @@ set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)
 # Steam Sockets
 set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
 
+# RedImage
+set(REDIMAGE_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.RedImageTool.Runtimes.win-x64.0.1.0)
+
 # LuaJIT 
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2017.8.11-open/)
 

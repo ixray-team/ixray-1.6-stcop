@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+static std::atomic<bool> RefreshInProgress;
+
 UIObjectTool::UIObjectTool()
 {
     m_selPercent = 0.f;
@@ -13,12 +16,16 @@ UIObjectTool::UIObjectTool()
     m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIObjectTool::OnItemFocused));
     m_TextureNull.create("ed\\ed_nodata");
     m_TextureNull->Load();
+
     m_Props = xr_new< UIPropertiesForm>();
     RefreshList();
 }
 
 UIObjectTool::~UIObjectTool()
 {
+    while (RefreshInProgress)
+        std::this_thread::yield();
+
     if (m_RemoveTexture)m_RemoveTexture->Release();
     if (m_RealTexture)m_RealTexture->Release();
     xr_delete(m_Props);
@@ -122,31 +129,45 @@ void UIObjectTool::Draw()
         ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
         ImGui::TreePop();
     }
-
-    if (bDrawList)
-    {
-        DrawObjectsList();
-    }
 }
 
 void UIObjectTool::DrawObjectsList()
 {
-    if (ImGui::Begin("Objects List"))
-    {
-        ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
-        ImGui::SameLine();
-        ImGui::BeginChild("Props", ImVec2(0, 128));
-        m_Props->Draw();
-        ImGui::EndChild();
+    if (!bDrawList)
+        return;
 
-        ImGui::Separator();
-        m_ObjectList->Draw();
+    if (ImGui::Begin("Objects List", &bDrawList))
+    {
+        if (!RefreshInProgress)
+        {
+            ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
+            ImGui::SameLine();
+            ImGui::BeginChild("Props", ImVec2(0, 128));
+            m_Props->Draw();
+            ImGui::EndChild();
+
+            ImGui::Separator();
+            m_ObjectList->Draw();
+        }
+        else
+            ImGui::Text("Loading...");
     }
     ImGui::End();
 }
 
 void UIObjectTool::RefreshList()
 {
+    if (RefreshInProgress)
+        return;
+
+    std::thread refreshThread(&UIObjectTool::RefreshListInternal, this);
+    refreshThread.detach();
+}
+
+void UIObjectTool::RefreshListInternal()
+{
+    RefreshInProgress = true;
+
     ListItemsVec items;
     FS_FileSet lst;
     if (Lib.GetObjects(lst)) {
@@ -157,10 +178,14 @@ void UIObjectTool::RefreshList()
             ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
         }
     }
-    if (m_RealTexture)m_RemoveTexture = m_RealTexture;
+    if (m_RealTexture)
+        m_RemoveTexture = m_RealTexture;
+
     m_RealTexture = nullptr;
     m_Props->ClearProperties();
     m_ObjectList->AssignItems(items);
+
+    RefreshInProgress = false;
 }
 
 void UIObjectTool::OnDrawUI()

@@ -358,6 +358,13 @@ void UIPropertiesForm::DrawEditGameType()
 					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
 				}
 			}
+			{
+				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
+				if (ImGui::Checkbox("FMP", &cheked))
+				{
+					m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
+				}
+			}
 			ImGui::EndGroup(); ImGui::SameLine();
 		}
 		{
