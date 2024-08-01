@@ -23,13 +23,6 @@ float2 gbuf_unpack_uv(float3 position)
     return saturate(position.xy * 0.5 + 0.5);
 }
 
-float GetBorderAtten(float2 tc, float2 att)
-{
-    att.x *= pos_decompression_params2.y * pos_decompression_params2.z;
-    float2 factors = saturate(min(1.0f - tc, tc) / att);
-    return factors.x * factors.y;
-}
-
 float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 {
     float2 ReflUV = 0.0;
