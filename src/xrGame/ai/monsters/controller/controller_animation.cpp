@@ -220,11 +220,10 @@ void CControllerAnimation::select_torso_animation()
 		target_motion			= m_torso[m_current_torso_action];
 	}
 	
-	if ((ctrl_data->torso.motion != target_motion) || m_wait_torso_anim_end) {
-		ctrl_data->torso.motion	= target_motion;
-		ctrl_data->torso.actual	= false;
+	if ((ctrl_data->torso.get_motion() != target_motion) || m_wait_torso_anim_end) {
+		ctrl_data->torso.set_motion(target_motion);
+		ctrl_data->torso.actual = false;
 	}
-
 }
 
 void CControllerAnimation::select_legs_animation()
@@ -255,10 +254,10 @@ void CControllerAnimation::select_legs_animation()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	if (!ctrl_data) return;
 	
-	if (ctrl_data->legs.motion != m_legs[legs_action])
-		ctrl_data->legs.actual	= false;
+	if (ctrl_data->legs.get_motion() != m_legs[legs_action])
+		ctrl_data->legs.actual = false;
 
-	ctrl_data->legs.motion	= m_legs[legs_action];
+	ctrl_data->legs.set_motion(m_legs[legs_action]);
 }
 
 CControllerAnimation::SPathRotations CControllerAnimation::get_path_rotation(float cur_yaw)

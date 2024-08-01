@@ -11,6 +11,7 @@
 #include "../../../../xrEngine/CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
+#include "../../../ActorCondition.h"
 #include "../../../HUDManager.h"
 
 void CControllerPsyHit::load(LPCSTR section)
@@ -79,7 +80,7 @@ void CControllerPsyHit::deactivate()
 		NET_Packet			P;
 
 		Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-		P.w_u32				(INV_STATE_BLOCK_ALL);
+		P.w_u16				(INV_STATE_BLOCK_ALL);
 		P.w_u8				(u8(false));
 		Actor()->u_EventSend(P);
 	}
@@ -111,7 +112,7 @@ void CControllerPsyHit::play_anim()
 	SControlAnimationData		*ctrl_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_anim);
 
-	ctrl_anim->global.motion	= m_stage[m_current_index];
+	ctrl_anim->global.set_motion(m_stage[m_current_index]);
 	ctrl_anim->global.actual	= false;
 }
 
@@ -193,7 +194,16 @@ void CControllerPsyHit::death_glide_start()
 
 	target_pos.mad		(src_pos,dir,dist-4.8f);
 	
-	Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos,target_pos, m_man->animation().motion_time(m_stage[1], m_object->Visual())));
+	//Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos,target_pos, m_man->animation().motion_time(m_stage[1], m_object->Visual())));
+
+	float const actor_psy_immunity = Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+	float const base_fov = g_fov;
+	float const dest_fov = g_fov - (g_fov - 10.f) * actor_psy_immunity;
+
+	Actor()->Cameras().AddCamEffector(xr_new<CControllerPsyHitCamEffector>(eCEControllerPsyHit, src_pos, target_pos,
+		m_man->animation().motion_time(m_stage[1], m_object->Visual()),
+		base_fov, dest_fov));
+
 	smart_cast<CController *>(m_object)->draw_fire_particles();
 
 	dir.sub(src_pos,target_pos);
@@ -207,7 +217,7 @@ void CControllerPsyHit::death_glide_start()
 
 	NET_Packet			P;
 	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
+	P.w_u16				(INV_STATE_BLOCK_ALL);
 	P.w_u8				(u8(true));
 	Actor()->u_EventSend(P);
 	
