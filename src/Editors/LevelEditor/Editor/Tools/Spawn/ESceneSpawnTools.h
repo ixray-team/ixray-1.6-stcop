@@ -41,7 +41,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "spawn";}
-    IC LPCSTR			ClassDesc				(){return "Spawn";}
+    IC LPCSTR			ClassDesc				(){return "Spawn Element";}
     IC int				RenderPriority			(){return 1;}
 
     void 				FillProp				(LPCSTR pref, PropItemVec& items);
