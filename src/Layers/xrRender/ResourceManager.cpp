@@ -177,10 +177,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		S.E[0]				= _CreateElement	(E);
 	}
 
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
-
 	// Compile element	(LOD1)
 	{
 		C.iElement			= 1;
@@ -189,10 +185,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		C._cpp_Compile		(&E);
 		S.E[1]				= _CreateElement	(E);
 	}
-
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
 
 	// Compile element
 	{
@@ -203,10 +195,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		S.E[2]				= _CreateElement	(E);
 	}
 
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
-
 	// Compile element
 	{
 		C.iElement			= 3;
@@ -215,10 +203,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		C._cpp_Compile		(&E);
 		S.E[3]				= _CreateElement	(E);
 	}
-
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
 
 	// Compile element
 	{
@@ -229,10 +213,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		S.E[4]				= _CreateElement	(E);
 	}
 
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
-
 	// Compile element
 	{
 		C.iElement			= 5;
@@ -241,10 +221,6 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 		C._cpp_Compile		(&E);
 		S.E[5]				= _CreateElement	(E);
 	}
-
-#ifdef DEBUG_DRAW
-	R_ASSERT2(!RImplementation.ShaderOptionsCount(), RImplementation.getShaderParams().c_str());
-#endif
 	
 	Shader* ResultShader = _CreateShader(&S);
 	return ResultShader;

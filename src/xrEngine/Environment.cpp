@@ -441,10 +441,11 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 
 void CEnvironment::SelectEnvs(float gt)
 {
-	if(Device.IsEditorMode()&&!CurrentWeather)
+	if(!CurrentWeather)
 	{
 		return;
 	}
+
 	VERIFY				(CurrentWeather);
     if ((Current[0]==Current[1])&&(Current[0]==0)){
 		VERIFY			(!bWFX);
@@ -530,7 +531,7 @@ void CEnvironment::OnFrame()
 		}
 	}
 
-	if (!CurrentEnv && Device.IsEditorMode())
+	if (!CurrentEnv)
 		return;
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 
