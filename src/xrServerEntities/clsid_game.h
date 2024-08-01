@@ -38,7 +38,10 @@
 #define CLSID_AI_SNORK				MK_CLSID('A','I','_','S','N','O','R','K')
 #define CLSID_AI_CAT				MK_CLSID('A','I','_','C','A','T',' ',' ')
 #define CLSID_AI_TUSHKANO			MK_CLSID('A','I','_','T','U','S','H',' ')
-#define CLSID_AI_BEETLE				MK_CLSID('A','I','_','B','E','E','T','L')
+#define CLSID_AI_BEETLE_NORMAL		MK_CLSID('A','I','_','B','E','E','T','N')
+#define CLSID_AI_BEETLE_BLACK		MK_CLSID('A','I','_','B','E','E','T','B')
+#define CLSID_AI_FROG				MK_CLSID('A','I','_','F','R','O','G',' ')
+#define CLSID_AI_ROTAN				MK_CLSID('A','I','_','R','O','T','A','N')
 #define CLSID_AI_RAT				MK_CLSID('A','I','_','R','A','T',' ',' ')
 
 // vehicles

@@ -97,8 +97,11 @@
 #	include "ai/monsters/controller/controller.h"
 #	include "ai/monsters/cat/cat.h"
 #	include "ai/monsters/tushkano/tushkano.h"
-#   include "ai/monsters/extended/beetle/beetle.h"
-#	include "ai/monsters/extended/Pseudogigant_jumper/pseudogigant_jumper.h"
+#   include "ai/monsters/extended/beetle/beetle_normal/beetle.h"
+#   include "ai/monsters/extended/beetle/beetle_black/beetle_black.h"
+#	include "ai/monsters/extended/pseudogigant_jumper/pseudogigant_jumper.h" 
+#   include "ai/monsters/extended/frog/frog.h"
+#   include "ai/monsters/extended/rotan/rotan.h"
 #	include "PhraseDialog_script.h"
 #	ifdef	DEBUG
 #		include "PHDebug.h"

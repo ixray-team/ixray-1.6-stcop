@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "../../tushkano/tushkano.h" // base class
-#include "beetle.h"
-#include "beetle_state_manager.h"
+
+#include "../../tushkano/tushkano.h"
+
+#include "rotan.h"
+#include "rotan_state_manager.h"
 
 #include "../../control_animation_base.h"
 #include "../../control_direction_base.h"
@@ -19,10 +21,12 @@
 
 #include "../../../../entitycondition.h"
 
-CStateManagerBeetle::CStateManagerBeetle(CBeetle* obj) : inherited(obj) {
+CStateManagerRotan::CStateManagerRotan(CRotan* _object) : inherited(_object) 
+{
 
 }
 
-CStateManagerBeetle::~CStateManagerBeetle() {
+CStateManagerRotan::~CStateManagerRotan() 
+{
 
 }

@@ -2,7 +2,7 @@
 //	Module 		: script_engine_export.cpp
 //	Created 	: 01.04.2004
 //  Modified 	: 22.06.2004
-//	Author		: Еблан Конченный
+//	Author		: Р•Р±Р»Р°РЅ РљРѕРЅС‡РµРЅРЅС‹Р№
 //	Description : XRay Script Engine export
 ////////////////////////////////////////////////////////////////////////////
 
@@ -244,9 +244,15 @@ void export_classes	(lua_State *L)
 	CAI_PseudoDog::script_register(L);
 	CPsyDog::script_register(L);
 	CPsyDogPhantom::script_register(L);
-	CPseudoGigant::script_register(L);
+	CPseudogigant::script_register(L);
 	CSnork::script_register(L);
 	CTushkano::script_register(L);
+
+	CBeetle::script_register(L);
+	CBeetleBlack::script_register(L);
+	CPseudogigantJumper::script_register(L);
+	CFrog::script_register(L);
+	CRotan::script_register(L);
 	CZombie::script_register(L);
 	CAI_Stalker::script_register(L);
 	CAI_Trader::script_register(L);
