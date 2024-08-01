@@ -19,7 +19,7 @@ class CLevelTool: public CToolCustom
 	ObjClassID		target;
 
 	Flags32			m_Flags;
-	Gizmo*      m_Gizmo;
+	Gizmo*      m_Gizmo = nullptr;
 
 	enum{
 		flChangeAction		= (1<<0),

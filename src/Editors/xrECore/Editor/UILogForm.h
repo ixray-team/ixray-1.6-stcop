@@ -15,6 +15,7 @@ public:
 private:
 	static xr_vector<xr_string>*List;
 	static xr_vector<xr_string>* GetList();
+	static xr_vector<bool*> SelectedItems;
 	static bool bAutoScroll;
 	static string_path m_Filter;
 	static string_path m_Exec;

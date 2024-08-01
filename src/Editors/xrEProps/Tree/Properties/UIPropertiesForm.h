@@ -34,7 +34,7 @@ private:
 private:
 	TOnModifiedEvent 	OnModifiedEvent;
 private:
-	PropItem* m_EditTextValue;
+	PropItem* m_EditTextValue = nullptr;
 	char* m_EditTextValueData;
 	int m_EditTextValueDataSize;
 	void DrawEditText();

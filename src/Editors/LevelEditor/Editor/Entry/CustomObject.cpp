@@ -75,7 +75,7 @@ void CCustomObject::Select( int flag )
     {
         m_RT_Flags.set		(flRT_Selected,(flag==-1)?(m_RT_Flags.is(flRT_Selected)?FALSE:TRUE):flag);
         //UI->RedrawScene		();
-        //ExecCommand			(COMMAND_UPDATE_PROPERTIES);
+        ExecCommand(COMMAND_UPDATE_PROPERTIES);
 	    FParentTools->OnSelected(this);
     }
 }

@@ -17,6 +17,7 @@ CLevelTool::CLevelTool()
 	m_ToolForm = 0;
 	m_CompilerProcess.hProcess = 0;
 
+	pCurTool = nullptr;
 	mtPropObj = CreateEventA(nullptr, true, false, nullptr);
 	thread_spawn(mtUpdateProperties, "PropertiesAsync", 1, this);
 }
@@ -176,13 +177,29 @@ void CLevelTool::RealSetAction   (ETAction act)
 void  CLevelTool::SetAction(ETAction act)
 {
 	// если мышь захвачена - изменим action после того как она освободится
-	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
-		m_Flags.set	(flChangeAction,TRUE);
-		iNeedAction=act;
-	}else
-		RealSetAction	(act);
-}
+	//if (UI->IsMouseCaptured() || UI->IsMouseInUse())
+	{
+		m_Flags.set(flChangeAction, TRUE);
+		iNeedAction = act;
+	}
+	//else
+	//	RealSetAction(act);
 
+	if (m_Gizmo)
+	{
+		Gizmo::EType Type = Gizmo::EType::None;
+
+		switch (act)
+		{
+			case ETAction::etaMove:   Type = Gizmo::EType::Move;   iNeedAction = ETAction::etaSelect; break;
+			case ETAction::etaScale:  Type = Gizmo::EType::Scale;  iNeedAction = ETAction::etaSelect; break;
+			case ETAction::etaRotate: Type = Gizmo::EType::Rotate; iNeedAction = ETAction::etaSelect; break;
+		}
+
+		m_Gizmo->SetType(Type);
+		UI->RedrawScene();
+	}
+}
 
 void  CLevelTool::RealSetTarget   (ObjClassID tgt,int sub_tgt,bool bForced)
 {
