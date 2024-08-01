@@ -6,6 +6,9 @@ public:
 	UIObjectTool();
 	virtual ~UIObjectTool();
 	virtual void Draw();
+
+	void DrawObjectsList();
+
 	void RefreshList();
 	IC const char* Current() { return m_Current; }
 	virtual void OnDrawUI();
@@ -22,9 +25,12 @@ private:
 	bool m_RandomAppend;
 	float m_selPercent;
 	bool m_Selection;
+
 private:
 	ref_texture m_TextureNull;
 	ImTextureID m_RealTexture;
 	ImTextureID m_RemoveTexture;
 	UIPropertiesForm* m_Props;
+
+	bool bDrawList = true;
 };

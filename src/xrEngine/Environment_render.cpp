@@ -195,23 +195,23 @@ void CEnvironment::RenderClouds			()
 	*/
 }
 
-void CEnvironment::RenderFlares		()
+void CEnvironment::RenderFlares()
 {
-#ifndef _EDITOR
-	if (0==g_pGameLevel)			return	;
-#endif
+	if (0 == g_pGameLevel)
+		return;
+
 	// 1
-	eff_LensFlare->Render			(FALSE,TRUE,TRUE);
+	eff_LensFlare->Render(FALSE, TRUE, TRUE);
 }
 
-void CEnvironment::RenderLast		()
+void CEnvironment::RenderLast()
 {
-#ifndef _EDITOR
-	if (0==g_pGameLevel&&!Device.IsEditorMode())		return	;
-#endif
+	if (0 == g_pGameLevel && !Device.IsEditorMode())
+		return;
+
 	// 2
-	eff_Rain->Render				();
-	eff_Thunderbolt->Render			();
+	eff_Rain->Render();
+	eff_Thunderbolt->Render();
 }
 
 void CEnvironment::OnDeviceCreate()

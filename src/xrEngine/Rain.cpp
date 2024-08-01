@@ -124,7 +124,7 @@ void	CEffect_Rain::OnFrame	()
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	static float hemi_factor	= 0.f;
 #ifndef _EDITOR
-	CObject* E 					= g_pGameLevel->CurrentViewEntity();
+	CObject* E 					= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
 	if (E&&E->renderable_ROS())
 	{
 //		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));

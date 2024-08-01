@@ -252,22 +252,24 @@ float CEnvironment::TimeWeight(float val, float min_t, float max_t)
 	return			weight;
 }
 
-void CEnvironment::ChangeGameTime(float game_time) {
-	fGameTime				= NormalizeTime(fGameTime + game_time);
-};
+void CEnvironment::ChangeGameTime(float game_time) 
+{
+	fGameTime = NormalizeTime(fGameTime + game_time);
+}
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
-#ifndef _EDITOR
-	if (m_paused) {
-		g_pGameLevel->SetEnvironmentGameTimeFactor	(iFloor(fGameTime*1000.f), fTimeFactor);
+	if (m_paused)
+	{
+		g_pGameLevel->SetEnvironmentGameTimeFactor(iFloor(fGameTime * 1000.f), fTimeFactor);
 		return;
 	}
-#endif
+
 	if (bWFX)
-		wfx_time			-= TimeDiff(fGameTime,game_time);
-	fGameTime				= game_time;  
-	fTimeFactor				= time_factor;	
+		wfx_time -= TimeDiff(fGameTime, game_time);
+
+	fGameTime = game_time;
+	fTimeFactor = time_factor;
 }
 
 float CEnvironment::NormalizeTime(float tm)
@@ -504,25 +506,31 @@ void CEnvironment::lerp		(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
+	if (g_pGameLevel == nullptr && Device.IsEditorMode())
+	{
+		SetGameTime(fGameTime + Device.fTimeDelta * fTimeFactor, fTimeFactor);
 
-#ifdef _EDITOR
-	SetGameTime				(fGameTime+Device.fTimeDelta*fTimeFactor,fTimeFactor);
-    if (fsimilar(ed_to_time,DAY_LENGTH)&&fsimilar(ed_from_time,0.f)){
-	    if (fGameTime>DAY_LENGTH)	fGameTime-=DAY_LENGTH;
-    }else{
-	    if (fGameTime>ed_to_time){	
-        	fGameTime=fGameTime-ed_to_time+ed_from_time;
-            Current[0]=Current[1]=0;
-        }
-    	if (fGameTime<ed_from_time){	
-        	fGameTime=ed_from_time;
-            Current[0]=Current[1]=0;
-        }
-    }
-	if (!psDeviceFlags.is(rsEnvironment))		return;
-#endif
+		if (fsimilar(ed_to_time, DAY_LENGTH) && fsimilar(ed_from_time, 0.f)) 
+		{
+			if (fGameTime > DAY_LENGTH)	fGameTime -= DAY_LENGTH;
+		}
+		else 
+		{
+			if (fGameTime > ed_to_time) 
+			{
+				fGameTime = fGameTime - ed_to_time + ed_from_time;
+				Current[0] = Current[1] = 0;
+			}
 
-	if (!g_pGameLevel || (!CurrentEnv && Device.IsEditorMode()))
+			if (fGameTime < ed_from_time) 
+			{
+				fGameTime = ed_from_time;
+				Current[0] = Current[1] = 0;
+			}
+		}
+	}
+
+	if (!CurrentEnv && Device.IsEditorMode())
 		return;
 
 //	if (pInput->iGetAsyncKeyState(DIK_O))		SetWeatherFX("surge_day"); 

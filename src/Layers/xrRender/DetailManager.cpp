@@ -333,8 +333,12 @@ void CDetailManager::Render	()
 
 	RCache.set_CullMode		(CULL_NONE);
 	RCache.set_xform_world	(Fidentity);
-	if (UseVS())			hw_Render	();
-	else					soft_Render	();
+
+	if (UseVS() && !Device.IsEditorMode())
+		hw_Render();
+	else
+		soft_Render();
+
 	RCache.set_CullMode		(CULL_CCW);
 	RDEVICE.Statistic->RenderDUMP_DT_Render.End	();
 	m_frame_rendered		= RDEVICE.dwFrame;

@@ -70,28 +70,28 @@ class TProperties;
 
 struct st_LevelOptions{
 	shared_str		m_FNLevelPath;
-    shared_str		m_LevelPrefix;
+	shared_str		m_LevelPrefix;
 	shared_str 		m_BOPText;
 	shared_str 		m_map_version;
-    
-    u8	 			m_LightHemiQuality;
-    u8 				m_LightSunQuality;
+	
+	u8	 			m_LightHemiQuality;
+	u8 				m_LightSunQuality;
 
-    b_params		m_BuildParams;
+	b_params		m_BuildParams;
 
-    GameTypeChooser	m_mapUsage;
-    				st_LevelOptions	();
+	GameTypeChooser	m_mapUsage;
+					st_LevelOptions	();
 
-    void			SetCustomQuality();
-    void			SetDraftQuality	();
-    void			SetHighQuality	();
-    
+	void			SetCustomQuality();
+	void			SetDraftQuality	();
+	void			SetHighQuality	();
+	
 	void 			Save			(IWriter&);
 	void 			SaveLTX			(CInifile&);
 
 	void 			Read			(IReader&);
 	void 			ReadLTX			(CInifile&);
-    void			Reset			();
+	void			Reset			();
 };
 
 class EScene :public XrEditorSceneInterface
@@ -278,6 +278,8 @@ public:
 
 public:
 	int  			GetQueryObjects(ObjectList& objset, ObjClassID classfilter, int iSel = 1, int iVis = 1, int iLock = 0);
+	const Fvector&	GetCameraPosition() const;
+
 public:
 
 	void 			OnCreate();
@@ -308,7 +310,8 @@ public:
 	void			ExportObj(bool b_selected_only);
 	void			ShowSummaryInfo();
 	void			ExportSummaryInfo(LPCSTR f_name);
-
+	
+	void			LoadXrAICompilerError(LPCSTR fn);
 	xr_string		LevelPath();
 	shared_str 		LevelPrefix() { return m_LevelOp.m_LevelPrefix; }
 

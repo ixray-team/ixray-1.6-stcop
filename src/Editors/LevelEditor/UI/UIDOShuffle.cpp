@@ -27,7 +27,6 @@ void UIDOShuffle::Draw()
 	ImGui::Columns(2);
 	ImGui::BeginChild("Left");
 	{
-		VERIFY(m_TextureNull->surface_get());
 		if (m_RealTexture != m_Texture)
 		{
 			if (m_RealTexture)m_RealTexture->Release();
@@ -36,7 +35,7 @@ void UIDOShuffle::Draw()
 
 
 		}
-		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->surface_get(), ImVec2(128, 128));
+		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface, ImVec2(128, 128));
 
 		{
 			int selected = m_list_selected;

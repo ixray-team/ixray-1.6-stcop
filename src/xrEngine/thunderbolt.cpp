@@ -156,10 +156,11 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
     bRes 				= Tools->RayPick	(s,d,dist,0,0);
 #else
 	collide::rq_result	RQ;
-	CObject* E 			= g_pGameLevel->CurrentViewEntity();
-	bRes 				= g_pGameLevel->ObjectSpace.RayPick(s,d,dist,collide::rqtBoth,RQ,E);	
+	CObject* E 			= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
+	bRes 				= g_pGameLevel ? g_pGameLevel->ObjectSpace.RayPick(s,d,dist,collide::rqtBoth,RQ,E) : false;	
     if (bRes) dist	 	= RQ.range;
-    else{
+    else
+    {
         Fvector N	={0.f,-1.f,0.f};
         Fvector P	={0.f,0.f,0.f};
         Fplane PL; PL.build(P,N);

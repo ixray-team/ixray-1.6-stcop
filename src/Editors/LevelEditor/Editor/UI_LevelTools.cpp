@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
+#include "UI/UIEditLibrary.h"
 
 #define DETACH_FRAME(a) 	if (a){ a=0; }
 #define ATTACH_FRAME(a,b)	if (a){b=a;}
@@ -477,12 +478,17 @@ void  CLevelTool::Render()
 
     EEditorState est 		= UI->GetEState();
     // draw scene
-    switch(est){
-    case esEditLibrary: 	/*TfrmEditLibrary::OnRender();*/ 	break;
+    switch(est)
+    {
+    case esEditLibrary:
+        UIEditLibrary::OnRender(); 
+        break;
+
     case esEditLightAnim:
     case esEditScene:
     	Scene->Render(EDevice->m_Camera.GetTransform()); 
-        if (psDeviceFlags.is(rsEnvironment)|| UI->IsPlayInEditor()) g_pGamePersistent->Environment().RenderLast	();
+        if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
+            g_pGamePersistent->Environment().RenderLast();
     break;
     case esBuildLevel:  	Builder.OnRender();				break;
     }

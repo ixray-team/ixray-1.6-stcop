@@ -1389,7 +1389,7 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
                 C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillRespawnItemProfile);
              }else
             {
-				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,7);
+				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,32);
             }
 			Token8Value* TV = PHelper().CreateToken8	(items, PrepareKey(pref,"Respawn Point\\Spawn Type"),	&m_RP_Type, 	rpoint_type);
             TV->OnChangeEvent.bind		(this,&CSpawnPoint::OnRPointTypeChange);
