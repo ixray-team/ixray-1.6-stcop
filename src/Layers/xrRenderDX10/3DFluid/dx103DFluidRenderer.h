@@ -65,13 +65,15 @@ private:
 	void	CalculateRenderTextureSize(int screenWidth, int screenHeight);
 	void	CreateRayDataResources( int width, int height );
 
-	void	ComputeRayData();
-	void	ComputeEdgeTexture();
+	void	ComputeRayData(const dx103DFluidData& FluidData);
+	void	ComputeEdgeTexture(const dx103DFluidData& FluidData);
 
 	void	DrawScreenQuad();
 	void	DrawBox();
 
 	void	CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData);
+
+	void	Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight);
 
 private:
 	bool		m_bInited;

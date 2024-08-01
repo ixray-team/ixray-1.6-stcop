@@ -10,7 +10,7 @@ cbuffer DynOOBBData
 }
 
 //	Vertex
-v2g_fluidsim_dyn_aabb main_vs_4_0(v_fluidsim input)
+v2g_fluidsim_dyn_aabb main(v_fluidsim input)
 {
     v2g_fluidsim_dyn_aabb output = (v2g_fluidsim_dyn_aabb)0;
 

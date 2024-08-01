@@ -11,6 +11,9 @@
 #include "blenders\blender_recorder.h"
 #include <execution>
 
+#ifdef USE_DX11
+#include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
+#endif
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
 /*
@@ -348,21 +351,24 @@ void CResourceManager::DeferredUpload()
 			pair.second->Load();
 		}
 	}
+
+#ifdef USE_DX11
+	FluidManager.Initialize(70, 70, 70);
+	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+#endif
 }
 
-void CResourceManager::DeferredUnload() {
+void CResourceManager::DeferredUnload() 
+{
 	if (!RDEVICE.b_is_Ready)
 		return;
-#ifdef DEBUG
-	Msg("%s, texture unloading -> START, size = [%d]", __FUNCTION__, m_textures.size());
-#endif // DEBUG
+
+#ifdef USE_DX11
+	FluidManager.Destroy();
+#endif
 
 	for (auto& texture : m_textures)
 		texture.second->Unload();
-
-#ifdef DEBUG
-	Msg("%s, texture unloading -> COMPLETE", __FUNCTION__);
-#endif // DEBUG
 }
 
 #ifdef _EDITOR

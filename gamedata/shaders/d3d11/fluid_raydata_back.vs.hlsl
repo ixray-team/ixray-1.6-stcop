@@ -2,7 +2,7 @@
 
 //	Vertex
 //	TODO: DX10: replace WorldViewProjection with m_WVP
-PS_INPUT_RAYDATA_BACK main_vs_4_0(VS_INPUT input)
+PS_INPUT_RAYDATA_BACK main(VS_INPUT input)
 {
     PS_INPUT_RAYDATA_BACK output = (PS_INPUT_RAYDATA_BACK)0;
     // output.pos = mul(float4(input.pos,1), WorldViewProjection);
