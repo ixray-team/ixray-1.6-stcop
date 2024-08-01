@@ -119,7 +119,6 @@ public:
 					player_hud			(bool invert = false);
 					~player_hud			();
 	void			load				(const shared_str& model_name);
-	void			load_default		(){load("actor_hud_05");};
 	void			load_default		(){load("actor_hud");};
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
@@ -153,6 +152,8 @@ public:
 	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
+
+	IKinematics* m_legs_model;
 private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);

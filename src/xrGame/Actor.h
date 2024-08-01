@@ -175,7 +175,7 @@ public:
 	virtual void OnItemDropUpdate ();
 
 	virtual	void OnPlayHeadShotParticle (NET_Packet P);
-
+	void legs_shift_callback(CBoneInstance* K);
 
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
@@ -245,6 +245,7 @@ private:
 	void					SwitchOutBorder(bool new_border_state);
 public:
 	bool					m_bAllowDeathRemove;
+	float					m_fLegs_shift;
 
 	void					SetZoomRndSeed			(s32 Seed = 0);
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};

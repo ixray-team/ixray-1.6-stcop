@@ -23,6 +23,8 @@ public:
 			void	PlayLegs					( CBlend *b );
 			void	Update						( );
 			float	Shift						( ){ return _object_shift.shift(); }
+
+			int ik_shift_object = 1;
 private:
 			void	Calculate					( );
 			void	LimbCalculate				(  SCalculateData &cd );

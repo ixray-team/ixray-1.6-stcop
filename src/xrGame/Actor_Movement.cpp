@@ -400,8 +400,14 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 		break;
 	}
 
+	float scale_yaw_offset = 1.0f;
+
+	if(cam_active == eacFirstEye && g_player_hud && g_player_hud->m_legs_model) {
+	 	scale_yaw_offset = 0.15f;
+	}
+
 	// lerp angle for "effect" and capture torso data from camera
-	angle_lerp		(r_model_yaw_delta,calc_yaw,PI_MUL_4,dt);
+	angle_lerp(r_model_yaw_delta, calc_yaw * scale_yaw_offset, PI_MUL_4 * scale_yaw_offset, dt);
 
 	// build matrix
 	Fmatrix mXFORM;
@@ -501,7 +507,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		r_torso.pitch = 0;
 
 	// если есть движение - выровнять модель по камере
-	if (mstate_rl&mcAnyMove)	{
+	if(mstate_rl & mcAnyMove || (g_player_hud && g_player_hud->m_legs_model)) {
 		r_model_yaw		= angle_normalize(r_torso.yaw);
 		mstate_real		&=~mcTurn;
 	} else {
