@@ -74,6 +74,7 @@ void CRenderDevice::Reset(bool precache)
 	if(ps_render_scale_preset < 5 && ps_r_scale_mode > 1) {
 		static float ScalePresets[] = {1.0f, 1.5f, 1.724f, 2.0f, 3.0f};
 		RenderScale = 1.0f / ScalePresets[ps_render_scale_preset];
+		ps_render_scale = RenderScale;
 	}
 	else {
 		RenderScale = ps_render_scale;
