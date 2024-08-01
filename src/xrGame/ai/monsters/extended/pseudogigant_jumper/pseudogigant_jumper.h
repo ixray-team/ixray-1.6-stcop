@@ -1,7 +1,7 @@
 #pragma once
 #include "../../BaseMonster/base_monster.h"
 #include "../../controlled_entity.h"
-#include "../../../../../xrServerEntities/script_export_space.h"
+#include "../../../../../xrScripts/script_export_space.h"
 
 
 class CPseudogigantJumper : public CBaseMonster,
