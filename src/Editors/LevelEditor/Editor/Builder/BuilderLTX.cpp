@@ -39,6 +39,8 @@ BOOL SceneBuilder::BuildLTX()
         	F->w_string("dominationzone");
         if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDTeamDominationZone))
         	F->w_string("teamdominationzone");
+        if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDFreeMP))
+        	F->w_string("freemp");
 
 //----
         F->w_string( ";");
