@@ -97,6 +97,7 @@
 #	include "ai/monsters/controller/controller.h"
 #	include "ai/monsters/cat/cat.h"
 #	include "ai/monsters/tushkano/tushkano.h"
+#   include "ai/monsters/extended/beetle/beetle.h"
 #	include "PhraseDialog_script.h"
 #	ifdef	DEBUG
 #		include "PHDebug.h"

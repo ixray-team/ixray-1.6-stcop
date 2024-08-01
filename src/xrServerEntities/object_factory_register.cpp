@@ -44,7 +44,7 @@
 #	include "ai/monsters/cat/cat.h"
 #	include "ai/monsters/tushkano/tushkano.h"
 #	include "ai/monsters/rats/ai_rat.h"
-
+#   include "ai/monsters/extended/beetle/beetle.h"
 #	include "ai/phantom/phantom.h"
 
 #	include "ai/trader/ai_trader.h"
@@ -270,6 +270,8 @@ void CObjectFactory::register_classes	()
 	ADD(CCat					,CSE_ALifeMonsterBase			,CLSID_AI_CAT					,"cat");
 	ADD(CTushkano				,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO				,"tushkano");
 	
+	ADD(CBeetle					,CSE_ALifeMonsterBase           ,CLSID_AI_BEETLE				,"beetle");
+
 	ADD(CPhantom				,CSE_ALifeCreaturePhantom		,CLSID_AI_PHANTOM				,"phantom");
 
 	// Trader
