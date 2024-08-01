@@ -58,7 +58,7 @@ CApplication::~CApplication()
 	if (Console != nullptr)
 		Console->Hide();
 
-	if (!Device.IsEditorMode())
+	if (DevicePtr != nullptr && !Device.IsEditorMode())
 	{
 		Device.seqFrameMT.Remove(&SoundProcessor);
 		Device.seqFrame.Remove(&SoundProcessor);

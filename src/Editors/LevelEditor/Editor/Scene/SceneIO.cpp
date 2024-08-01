@@ -256,7 +256,7 @@ BOOL EScene::LoadLevelPart(ESceneToolBase* M, LPCSTR map_name)
 
 BOOL EScene::LoadLevelPartStream(ESceneToolBase* M, LPCSTR map_name)
 {
-    if (FS.exist(map_name))
+    if (FS.TryLoad(map_name))
     {
         // check locking
         M->m_EditFlags.set(ESceneToolBase::flReadonly, FALSE);
@@ -1060,7 +1060,7 @@ bool EScene::LoadSelection( LPCSTR fname )
 
     bool res = true;
 
-    if (FS.exist(full_name.c_str())){
+    if (FS.TryLoad(full_name.c_str())){
 		SelectObjects( false );
 
         IReader* F = FS.r_open(full_name.c_str());
