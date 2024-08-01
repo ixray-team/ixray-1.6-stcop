@@ -520,9 +520,10 @@ void CInput::OnAppDeactivate	(void)
 
 void CInput::OnFrame()
 {
-	RDEVICE.Statistic->Input.Begin();
+	CScopeTimer Input(RDEVICE.Statistic->Input);
+
 	dwCurTime = RDEVICE.TimerAsync_MMT();
-#ifndef _EDITOR
+#if !defined(_EDITOR) && !defined(MASTER_GOLD)
 	if (KBState[SDL_SCANCODE_LALT] || CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
@@ -534,8 +535,6 @@ void CInput::OnFrame()
 		GamepadUpdate();
 		KeyboardUpdate();
 	}
-
-	RDEVICE.Statistic->Input.End();
 }
 
 IInputReceiver* CInput::CurrentIR()
