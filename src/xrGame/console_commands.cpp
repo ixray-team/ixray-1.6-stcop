@@ -59,6 +59,7 @@
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
+#include <Level.h>>
 string_path		g_last_saved_game;
 
 #ifdef DEBUG
@@ -1779,73 +1780,119 @@ public:
 	}
 };
 
+extern bool	IsGameTypeSingle();
+
 class CCC_GSpawn : public IConsole_Command {
 public:
 	CCC_GSpawn(LPCSTR N) : IConsole_Command(N) {
 	}
 
 	virtual void Execute(LPCSTR args) override {
+
+		if (IsGameTypeSingle()) {
+			auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+			if (actor == nullptr) {
+				return;
+			}
+
+			int count = 1;
+			char nameSection[128] = {};
+			auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
+			if (sc > 2) {
+				Msg("! Failed to parse input");
+				return;
+			}
+
+			if (!pSettings->section_exist(nameSection)) {
+				Msg("! Can't find section: %s", nameSection);
+				return;
+			}
+
+			//if (pSettings->line_exist(nameSection, "visual"))
+			//{
+			//	shared_str full_path;
+			//	full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, pSettings->r_string( nameSection, "visual" ));
+			//	if(!FS.exist(full_path.c_str()))
+			//	{
+			//		Msg("! Visual not found!");
+			//		return;
+			//	}
+			//}
+
+			Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
+			auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+			if (tpGame == nullptr) {
+				return;
+			}
+
+			for (size_t i = 0; i < count; i++) {
+				auto item = tpGame->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
+				item->cast_alife_object()->use_ai_locations(false);
+
+				auto anomaly = item->cast_anomalous_zone();
+				if (anomaly != nullptr) {
+					CShapeData::shape_def _shape{};
+					_shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
+					_shape.data.sphere.R = 3;
+					_shape.type = CShapeData::cfSphere;
+
+					anomaly->assign_shapes(&_shape, 1);
+					anomaly->m_owner_id = u32(-1);
+					anomaly->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+				}
+			}
+		}
+
+		else {
+
+			if (pSettings->section_exist(args))
+			{
+				Fvector3 pos, dir, madPos;
+				float range;
+				pos.set(Device.vCameraPosition);
+				dir.set(Device.vCameraDirection);
+				collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+
+				if (RQ.O)
+				{
+					Msg("! ERROR: Can spawn only on ground");
+					return;
+				}
+
+				range = RQ.range;
+				dir.normalize();
+				madPos.mad(pos, dir, range);
+
+				NET_Packet		P;
+				P.w_begin(M_REMOTE_CONTROL_CMD);
+				string128 str;
+				xr_sprintf(str, "spawn_on_position %s %f %f %f", args, madPos.x, madPos.y, madPos.z);
+				P.w_stringZ(str);
+				Level().Send(P, net_flags(TRUE, TRUE));
+			}
+			else
+			{
+				Msg("! ERROR: bad command parameters.");
+				Msg("Spawn item. Format: \"g_spawn <item section>\"");
+				return;
+			}
+		}
+
 		if (g_pGameLevel == nullptr) {
 			return;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor == nullptr) {
-			return;
-		}
-
-		int count = 1;
-		char nameSection[128] = {};
-		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
-		if (sc > 2) {
-			Msg("! Failed to parse input");
-			return;
-		}
-
-		if (!pSettings->section_exist(nameSection)) {
-			Msg("! Can't find section: %s", nameSection);
-			return;
-		}
-
-        //if (pSettings->line_exist(nameSection, "visual"))
-		//{
-		//	shared_str full_path;
-		//	full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, pSettings->r_string( nameSection, "visual" ));
-		//	if(!FS.exist(full_path.c_str()))
-		//	{
-		//		Msg("! Visual not found!");
-		//		return;
-		//	}
-        //}
-
-		Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
-		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame == nullptr) {
-			return;
-		}
-
-		for (size_t i = 0; i < count; i++) {
-			auto item = tpGame->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
-			item->cast_alife_object()->use_ai_locations(false);
-
-			auto anomaly = item->cast_anomalous_zone();
-			if (anomaly != nullptr) {
-				CShapeData::shape_def _shape{};
-				_shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
-				_shape.data.sphere.R = 3;
-				_shape.type = CShapeData::cfSphere;
-
-				anomaly->assign_shapes(&_shape, 1);
-				anomaly->m_owner_id = u32(-1);
-				anomaly->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
-			}
-		}
+		
+		
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override {
-		if (!ai().get_alife()) {
-			Msg("! ALife simulator is needed to perform specified command!");
-			return;
+
+		if (IsGameTypeSingle()) {
+			if (!ai().get_alife()) {
+				Msg("! ALife simulator is needed to perform specified command!");
+				return;
+			}
 		}
 
 		for (const auto& section : pSettings->sections()) {

@@ -538,6 +538,79 @@ void   CAI_Bloodsucker::update_invisibility ()
 	}
 }
 
+
+u8 CAI_Bloodsucker::GetCustomSyncFlag() const
+{
+	Flags8 flag;
+	flag.zero();
+
+	switch (get_visibility_state())
+	{
+	case unset:
+		flag.set(f_unset, true);
+		break;
+	case no_visibility:
+		flag.set(f_no_visibility, true);
+		break;
+	case partial_visibility:
+		flag.set(f_partial_visibility, true);
+		break;
+	case full_visibility:
+		flag.set(f_full_visibility, true);
+		break;
+	default:
+		R_ASSERT(0);
+		break;
+	}
+
+	return flag.flags;
+}
+
+void CAI_Bloodsucker::ProcessCustomSyncFlag_CL(u8 flags)
+{
+	Flags8 flag;
+	flag.flags = flags;
+
+	visibility_t new_state;
+
+	if (flag.test(f_no_visibility))
+	{
+		new_state = no_visibility;
+	}
+	else if (flag.test(f_partial_visibility))
+	{
+		new_state = partial_visibility;
+	}
+	else if (flag.test(f_full_visibility))
+	{
+		new_state = full_visibility;
+	}
+	else
+	{
+		new_state = unset;
+	}
+
+	if (get_visibility_state() == new_state)
+		return;
+
+	m_visibility_state_last_changed_time = Device.dwTimeGlobal;
+
+	m_visibility_state = new_state;
+
+	if (m_visibility_state == full_visibility)
+	{
+		stop_invisible_predator();
+	}
+	else if (m_visibility_state == partial_visibility)
+	{
+		start_invisible_predator();
+	}
+	else
+	{
+		sound().play(CAI_Bloodsucker::eChangeVisibility);
+	}
+}
+
 void CAI_Bloodsucker::UpdateCL()
 {
 	update_invisibility				();
@@ -567,6 +640,24 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 	}
 
 	if (m_alien_control.active())	sound().play(eAlien);
+
+	if (IsGameTypeSingle() || OnServer())
+		return;
+
+	if (!CControlledActor::is_turning() && !m_client_effector) {
+		IKinematics* pK = smart_cast<IKinematics*>(Visual());
+		Fmatrix bone_transform;
+		bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
+
+		Fmatrix global_transform;
+		global_transform.mul_43(XFORM(), bone_transform);
+
+		CControlledActor::look_point(global_transform.c);
+		sound().play(CAI_Bloodsucker::eVampireSucking);
+		ActivateVampireEffector();
+		m_client_effector = true;
+	}
+
 }
 
 void CAI_Bloodsucker::Die(CObject* who)
@@ -691,7 +782,44 @@ void CAI_Bloodsucker::predator_start()
 	cNameVisual_set(m_visual_predator);
 	CDamageManager::reload(*cNameSect(),"damage",pSettings);
 
-	control().animation().restart	();
+
+	if (IsGameTypeSingle() || OnServer())
+		control().animation().restart();
+	else
+	{
+		MotionID mid;
+		mid.idx = u_last_motion_idx;
+		mid.slot = u_last_motion_slot;
+		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
+			u_last_motion_idx = NULL;
+			u_last_motion_slot = NULL;
+			u8 loop = u_last_motion_no_loop;
+
+			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
+			MotionID motion;
+			IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
+			{
+				u_last_motion_idx = mid.idx;
+				u_last_motion_slot = mid.slot;
+				u_last_motion_no_loop = loop;
+				motion.idx = mid.idx;
+				motion.slot = mid.slot;
+				if (motion.valid())
+				{
+					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
+					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
+
+					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, TRUE,
+						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
+				}
+			}
+
+
+
+		}
+	}
 	
 	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
 	sound().play					(CAI_Bloodsucker::eChangeVisibility);
@@ -722,8 +850,41 @@ void CAI_Bloodsucker::predator_stop()
 
 	CDamageManager::reload(*cNameSect(),"damage",pSettings);
 
-	control().animation().restart	();
-	
+	if (IsGameTypeSingle() || OnServer())
+		control().animation().restart();
+	else
+	{
+		MotionID mid;
+		mid.idx = u_last_motion_idx;
+		mid.slot = u_last_motion_slot;
+		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
+			u_last_motion_idx = NULL;
+			u_last_motion_slot = NULL;
+			u8 loop = u_last_motion_no_loop;
+
+			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
+			MotionID motion;
+			IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
+			{
+				u_last_motion_idx = mid.idx;
+				u_last_motion_slot = mid.slot;
+				u_last_motion_no_loop = loop;
+				motion.idx = mid.idx;
+				motion.slot = mid.slot;
+				if (motion.valid())
+				{
+					u16 bone_or_part = ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part;
+					if (bone_or_part == u16(-1)) bone_or_part = ik_anim_obj->LL_PartID("default");
+
+					CStepManager::on_animation_start(motion, ik_anim_obj->LL_PlayCycle(bone_or_part, motion, TRUE,
+						ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
+				}
+			}
+		}
+	}
+
 	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
 	sound().play					(CAI_Bloodsucker::eChangeVisibility);
 	m_predator						= false;
@@ -823,6 +984,83 @@ void   CAI_Bloodsucker::release_stand_sleep_animation ()
 {
 	anim().clear_override_animation();
 
+}
+
+
+
+void CAI_Bloodsucker::sendToStartVampire(CActor* pA)
+{
+	NET_Packet	tmp_packet;
+	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_START, ID());
+	//tmp_packet.w_u16(pA->ID());
+	CSE_Abstract* e_who = Level().Server->ID_to_entity(pA->ID());
+	xrClientData* xrCData = e_who->owner;
+	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(TRUE, TRUE));
+}
+
+void CAI_Bloodsucker::sendToStopVampire()
+{
+	NET_Packet	tmp_packet;
+	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_STOP, ID());
+	//tmp_packet.w_u16(CControlledActor::m_actor->ID());
+	CSE_Abstract* e_who = Level().Server->ID_to_entity(CControlledActor::m_actor->ID());
+	xrClientData* xrCData = e_who->owner;
+	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(TRUE, TRUE));
+}
+
+#include "../../../HudManager.h"
+void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
+{
+	inherited::OnEvent(P, type);
+
+	switch (type)
+	{
+	case GE_BLOODSUCKER_VAMPIRE_START: {
+		if (Actor())
+		{
+			CControlledActor::install(Actor());
+			IKinematics* pK = smart_cast<IKinematics*>(Visual());
+			Fmatrix bone_transform;
+			bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
+
+			Fmatrix global_transform;
+			global_transform.mul_43(XFORM(), bone_transform);
+
+			CControlledActor::look_point(global_transform.c);
+
+			HUD().SetRenderable(false);
+			NET_Packet			P;
+			Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+			P.w_u16(INV_STATE_BLOCK_ALL);
+			P.w_u8(u8(true));
+			Actor()->u_EventSend(P);
+
+			sound().play(CAI_Bloodsucker::eVampireGrasp);
+			m_client_effector = false;
+			Actor()->set_inventory_disabled(true);
+		}
+		break;
+	}
+	case GE_BLOODSUCKER_VAMPIRE_STOP: {
+		if (Actor())
+		{
+			if (CControlledActor::is_controlling())
+				CControlledActor::release();
+
+			HUD().SetRenderable(true);
+			NET_Packet			P;
+			Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+			P.w_u16(INV_STATE_BLOCK_ALL);
+			P.w_u8(u8(false));
+			Actor()->u_EventSend(P);
+
+			sound().play(CAI_Bloodsucker::eVampireHit);
+			Actor()->set_inventory_disabled(false);
+		}
+		break;
+	}
+									break;
+	}
 }
 
 #ifdef DEBUG

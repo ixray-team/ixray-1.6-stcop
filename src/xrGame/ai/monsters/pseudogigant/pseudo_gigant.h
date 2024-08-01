@@ -60,5 +60,7 @@ public:
 	virtual void	TranslateActionToPathParams	();
 	virtual	char*	get_monster_class_name () { return (char*) "pseudogigant"; }
 
+	virtual void	OnEvent(NET_Packet& P, u16 type);
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -23,6 +23,12 @@
 #include "gamespy/GameSpy_GP.h"
 #include "HUDManager.h"
 
+#include "actor_mp_client.h"
+#include "ai/stalker/ai_stalker.h"
+#include "InventoryBox.h"
+
+#include <locale.h>
+
 EGameIDs	ParseStringToGameType	(LPCSTR str);
 LPCSTR		GameTypeToString		(EGameIDs gt, bool bShort);
 LPCSTR		AddHyphens				(LPCSTR c);
@@ -1944,60 +1950,6 @@ public:
 	virtual void	Info	(TInfo& I){xr_strcpy(I,"valid arguments is [info info_full on off]"); }
 };
 
-
-class CCC_GSpawn_mp : public IConsole_Command {
-public:
-	CCC_GSpawn_mp(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-
-	virtual void		Execute(LPCSTR arguments)
-	{
-		if (pSettings->section_exist(arguments))
-		{
-			Fvector3 pos, dir, madPos;
-			float range;
-			pos.set(Device.vCameraPosition);
-			dir.set(Device.vCameraDirection);
-			collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-
-			if (RQ.O)
-			{
-				Msg("! ERROR: Can spawn only on ground");
-				return;
-			}
-
-			range = RQ.range;
-			dir.normalize();
-			madPos.mad(pos, dir, range);
-
-			NET_Packet		P;
-			P.w_begin(M_REMOTE_CONTROL_CMD);
-			string128 str;
-			xr_sprintf(str, "sv_spawn_pos %s %f %f %f", arguments, madPos.x, madPos.y, madPos.z);
-			P.w_stringZ(str);
-			Level().Send(P, net_flags(TRUE, TRUE));
-		}
-		else
-		{
-			Msg("! ERROR: bad command parameters.");
-			Msg("Spawn item. Format: \"g_spawn <item section>\"");
-			return;
-		}
-	}
-	virtual void		Save(IWriter* F) {};
-
-	virtual void	fill_tips(vecTips& tips, u32 mode)
-	{
-		for (auto sect : pSettings->sections())
-		{
-			if ((sect->line_exist("description") && !sect->line_exist("value") && !sect->line_exist("scheme_index"))
-				|| sect->line_exist("species"))
-				tips.push_back(sect->Name);
-		}
-	}
-};
-
-
-
 class CCC_SpawnOnPosition : public IConsole_Command {
 public:
 	CCC_SpawnOnPosition(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
@@ -2018,7 +1970,7 @@ public:
 		if (sscanf_s(buff, "%s %f %f %f", &section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z) != 4)
 		{
 			Msg("! ERROR: bad command parameters.");
-			Msg("Spawn object. Format: \"sv_spawn_on_position <item section> <position>\"");
+			Msg("Spawn object. Format: \"spawn_on_position <item section> <position>\"");
 			return;
 		}
 		srv->SpawnItemToPos(section, vec);
@@ -2172,11 +2124,10 @@ public:
 
 void register_mp_console_commands()
 {
-	CMD1(CCC_SpawnOnPosition, "sv_spawn_pos");
-	CMD1(CCC_GSpawn_mp, "sv_g_spawn");
+	CMD1(CCC_SpawnOnPosition, "spawn_on_position");
 
-	CMD1(CCC_GiveMoneyToPlayer, "sv_give_money");
-	CMD1(CCC_TransferMoney, "sv_transfer_money");
+	CMD1(CCC_GiveMoneyToPlayer, "give_money");
+	CMD1(CCC_TransferMoney, "transfer_money");
 
 
 	CMD1(CCC_Restart,				"g_restart"				);

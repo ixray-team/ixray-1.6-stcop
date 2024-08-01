@@ -28,6 +28,8 @@ public:
 	virtual	void			Load					(LPCSTR section);
 	virtual	void			Hit						(SHit* pHDS);
 
+	virtual void			OnEvent(NET_Packet& P, u16 type);
+
 	virtual	void			CheckSpecParams			(u32 spec_params);
 	virtual bool			ability_invisibility	() {return true;}
 	virtual bool			ability_pitch_correction() {return false;}
@@ -77,6 +79,26 @@ public:
 
 			virtual bool    in_solid_state           ();
 
+
+	//--------------------------------------------------------------------
+	// Invisibility sync
+	//--------------------------------------------------------------------
+
+private:
+	//  enum visibility_t { unset = -1, no_visibility = 0, partial_visibility = 1, full_visibility = 2 };
+	enum sync_visibility_flags {
+		f_unset = (1 << 0),
+		f_no_visibility = (1 << 1),
+		f_partial_visibility = (1 << 2),
+		f_full_visibility = (1 << 3)
+	};
+
+public:
+	virtual bool			HasCustomSyncFlag() const { return true; }
+	virtual u8				GetCustomSyncFlag() const;
+	virtual void			ProcessCustomSyncFlag_CL(u8 flags);
+
+
 	//--------------------------------------------------------------------
 	// Vampire
 	//--------------------------------------------------------------------
@@ -109,6 +131,8 @@ private:
 	bool					m_drag_anim_jump;
 	bool					m_animated;
 	static void				animation_end_jump		(CBlend* B);
+
+	bool					m_client_effector;
 
 
 			void			LoadVampirePPEffector	(LPCSTR section);	
@@ -234,6 +258,9 @@ public:
 	int				m_sufficient_hits_before_vampire_random;
 	virtual void	on_attack_on_run_hit	();
 	bool			done_enough_hits_before_vampire ();
+
+	void			sendToStartVampire(CActor* pA);
+	void			sendToStopVampire();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

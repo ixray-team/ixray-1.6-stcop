@@ -23,9 +23,17 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::initialize()
 {
 	inherited::initialize					();
-
-	this->object->CControlledActor::install		();
-
+	CActor* actor = nullptr;
+	if (IsGameTypeSingle())
+		this->object->CControlledActor::install();
+	else
+	{
+		actor = const_cast<CActor*>(smart_cast<const CActor*>(this->object->EnemyMan.get_enemy()));
+		if (actor)
+			this->object->CControlledActor::install(actor);
+		else
+			return;
+	}
 	look_head				();
 
 	m_action				= eActionPrepare;
@@ -36,15 +44,21 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 	this->object->m_hits_before_vampire	= 0;
 	this->object->m_sufficient_hits_before_vampire_random	=	-1 + (rand()%3);
 
-	HUD().SetRenderable				(false);
-	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u16				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
+	if (IsGameTypeSingle())
+	{
+		HUD().SetRenderable(false);
+		NET_Packet			P;
+		Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
+		P.w_u16(INV_STATE_BLOCK_ALL);
+		P.w_u8(u8(true));
+		Actor()->u_EventSend(P);
 
-	Actor()->set_inventory_disabled	(true);
-
+		Actor()->set_inventory_disabled(true);
+	}
+	else
+	{
+		this->object->sendToStartVampire(actor);
+	}
 	m_effector_activated			= false;
 }
 
@@ -124,15 +138,18 @@ void CStateBloodsuckerVampireExecuteAbstract::show_hud()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::cleanup()
 {
-	Actor()->set_inventory_disabled	(false);
-	
+	if (IsGameTypeSingle())
+		Actor()->set_inventory_disabled(false);
+	else
+		this->object->sendToStopVampire();
 	if ( this->object->com_man().ta_is_active() )
 		this->object->com_man().ta_deactivate();
 
 	if (this->object->CControlledActor::is_controlling())
 		this->object->CControlledActor::release		();
 
-	show_hud();
+	if (IsGameTypeSingle())
+		show_hud();
 }
 
 TEMPLATE_SPECIALIZATION
