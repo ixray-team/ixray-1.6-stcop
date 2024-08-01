@@ -41,9 +41,8 @@ void CStateManagerPseudogigant::execute()
 	u32 state_id = u32(-1);
 
 	if (!object->is_under_control()) {
-		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
+		if (object->EnemyMan.get_enemy()) {
 			switch (object->EnemyMan.get_danger_type()) {
 			case eStrong:	state_id = eStatePanic; break;
 			case eWeak:		state_id = eStateAttack; break;

@@ -50,12 +50,10 @@ void CStateManagerDog::execute()
 
 	CMonsterSquad* squad = monster_squad().get_squad(object);
 
-	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-
 	bool atack = false;
-	if ( enemy )
+	if (object->EnemyMan.get_enemy())
 	{
-		const Fvector3& enemy_pos = enemy->Position();
+		const Fvector3& enemy_pos = object->EnemyMan.get_enemy()->Position();
 
 		if ( squad )
 		{

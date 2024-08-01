@@ -48,9 +48,7 @@ void CStateManagerFlesh::execute()
 
 	if (!object->is_under_control()) {
 		
-		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-
-		if (enemy) {
+		if (object->EnemyMan.get_enemy()) {
 			state_id = object->EnemyMan.get_danger_type() == eStrong &&
 					   !object->HitMemory.is_hit() ? eStatePanic : eStateAttack;
 
