@@ -50,3 +50,4 @@ target_compile_definitions(xrSE_Factory PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_
 target_link_libraries(xrSE_Factory PUBLIC xrCore)
 target_link_libraries(xrSE_Factory PUBLIC luabind)
 target_link_libraries(xrSE_Factory PUBLIC xrScripts)
+target_link_libraries(xrSE_Factory PUBLIC xrEProps)
