@@ -212,6 +212,7 @@ void		CDetailManager::cache_Decompress(Slot* S)
 			Fvector	dir; dir.set(0,-1,0);
 			Fvector normal;normal.set(0,1,0);
 			float		r_u,r_v,r_range;
+			bool no_push = false;
 			for (u32 tid=0; tid<triCount; tid++)
 			{
 #ifdef _EDITOR
@@ -240,6 +241,13 @@ RDEVICE.Statistic->TEST0.End		();
 				if(mtl->Flags.test(SGameMtl::flPassable))	
 					continue;
 
+				CSector* sector = (CSector*)RImplementation.getSector(T.sector);
+				if(sector != RImplementation.pOutdoorSector)
+				{
+					no_push = true;
+					continue;
+				}
+
 				Fvector		Tv[3]	= { verts[T.verts[0]],verts[T.verts[1]],verts[T.verts[2]] };
 				if (CDB::TestRayTri(Item_P,dir,Tv,r_u,r_v,r_range,TRUE))
 				{
@@ -251,6 +259,7 @@ RDEVICE.Statistic->TEST0.End		();
 				}
 #endif
 			}
+			if(no_push) continue;
 			if (y<D.vis.box.min.y)			continue;
 			Item_P.y	= y;
 
