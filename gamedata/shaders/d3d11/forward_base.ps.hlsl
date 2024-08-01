@@ -57,8 +57,7 @@ void main(p_bumped_new I, out f_forward O)
     O.Color.w = M.Color.w;
 
     float fog = saturate(length(M.Point) * fog_params.w + fog_params.x);
-    O.Color.xyz = lerp(O.Color.xyz, fog_color, fog);
-    O.Color.w *= 1.0f - fog * fog;
+    O.Color = lerp(O.Color, fog_color, fog);
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     O.Reactive = O.Color.w * 0.9f;

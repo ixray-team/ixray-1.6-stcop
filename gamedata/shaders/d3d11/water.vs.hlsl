@@ -24,7 +24,6 @@ struct vf
     float4 tctexgen : TEXCOORD7;
     float3 pos : TEXCOORD8;
     float4 c0 : COLOR0;
-    float fog : FOG;
     float4 hpos : SV_Position;
 };
 
@@ -84,7 +83,6 @@ void main(in v_vert v, out vf o)
 
     // xform, input in world coords
     o.hpos = mul(m_VP, P);
-    o.fog = 1.0f - calc_fogging(v.P);
 
     o.c0 = float4(L_final, v.N.w);
     o.hpos.xy += m_taa_jitter.xy * o.hpos.w;

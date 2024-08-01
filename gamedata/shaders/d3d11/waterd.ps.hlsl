@@ -13,7 +13,6 @@ struct vf
     float4 tctexgen : TEXCOORD7;
     float3 pos : TEXCOORD8;
     float4 c0 : COLOR0;
-    float fog : FOG;
     float4 hpos : SV_Position;
 };
 
@@ -37,8 +36,10 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
     float3 waterPos = gbd.P.xyz * rcp(gbd.P.z) * I.tctexgen.z;
     float waterDepth = length(waterPos - gbd.P) * 0.75f;
 
-    alpha *= saturate(5.0f * waterDepth) * 0.25f;
+    alpha *= saturate(5.0f * waterDepth);
 #endif
 
-    return float4(distort, 0.08f, alpha);
+	float fog = 1.0f - calc_fogging(I.pos);
+    return float4(distort, 0.08f, alpha * fog * 0.25f);
 }
+

@@ -32,6 +32,6 @@ float4 main(v2p I) : SV_Target
 
     clip(result.a - (0.01f / 255.0f));
 
-    result.w *= I.fog;
-    return result;
+    return lerp(fog_color, result, I.fog);
 }
+
