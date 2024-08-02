@@ -26,6 +26,11 @@
 #include "object_broker.h"
 #include "../xrEngine/igame_persistent.h"
 
+#include "ai_space.h"
+#include "alife_simulator.h"
+#include "inventory_upgrade_manager.h"
+#include "inventory_upgrade.h"
+
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
@@ -291,6 +296,16 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 			P.r_stringZ			(i_name);
 			Detach(i_name, true);
 		}break;	
+	case GE_INSTALL_UPGRADE:
+	{
+		R_ASSERT(!IsGameTypeSingle());
+		if (object().Remote())
+		{
+			shared_str upgrade_id;
+			P.r_stringZ(upgrade_id);
+			ai().alife().inventory_upgrade_manager().upgrade_install_mp(*this, (*upgrade_id), true);
+		}
+	}break;
 	case GE_CHANGE_POS:
 		{
 			Fvector p; 
@@ -383,10 +398,9 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;
 	
-	if ( IsGameTypeSingle() )
-	{
+
 		net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades );
-	}
+
 
 	if (!IsGameTypeSingle())
 		object().processing_activate();

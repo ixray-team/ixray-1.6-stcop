@@ -154,3 +154,14 @@ void CUIActorMenu::OnSuccessRepairMP(PIItem item)
 		SeparateUpgradeItem();
 	}
 }
+
+
+void CUIActorMenu::OnSuccessUpgradeInstallMP(PIItem item)
+{
+	UpdateActor();
+	if (CurrentItem() && ((PIItem)m_upgrade_selected->m_pData)->object_id() == item->object_id())
+	{
+		SeparateUpgradeItem();
+	}
+	m_pUpgradeWnd->UpdateAllUpgrades();
+}

@@ -332,6 +332,17 @@ void CUIInventoryUpgradeWnd::AskUsing( LPCSTR text, LPCSTR upgrade_name )
 
 void CUIInventoryUpgradeWnd::OnMesBoxYes()
 {
+	if (!IsGameTypeSingle())
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_GAME_EVENT, m_inv_item->object().ID());
+		P.w_u16(GAME_EVENT_MP_INSTALL_UPGRADE);
+		P.w_u16(m_inv_item->object().ID());
+		P.w_stringZ(m_cur_upgrade_id);
+		CGameObject::u_EventSend(P);
+		return;
+	}
+
 	if ( get_manager().upgrade_install( *m_inv_item, m_cur_upgrade_id, false ) )
 	{
 		VERIFY( m_pParentWnd );

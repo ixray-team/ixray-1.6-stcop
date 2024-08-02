@@ -14,7 +14,7 @@
 #include "inventory_upgrade_root.h"
 #include "inventory_upgrade_group.h"
 #include "inventory_upgrade_property.h"
-
+#include "Level.h"
 
 extern int g_upgrades_log = 0;
 
@@ -297,8 +297,48 @@ bool Manager::is_disabled_upgrade( CInventoryItem& item, shared_str const& upgra
 }
 */
 
+
+bool Manager::can_upgrade_install(CInventoryItem& item, shared_str const& upgrade_id, bool loading)
+{
+	Upgrade* upgrade = upgrade_verify(item.m_section_id, upgrade_id);
+	UpgradeStateResult res = upgrade->can_install(item, loading);
+	return res == result_ok;
+}
+
+bool Manager::upgrade_install_mp(CInventoryItem& item, shared_str const& upgrade_id, bool loading)
+{
+	Upgrade* upgrade = upgrade_verify(item.m_section_id, upgrade_id);
+
+	// Pavel: TODO need to fix
+	// if (!loading)
+	// {
+	// 	item.pre_install_upgrade();
+	// }
+
+	if (item.install_upgrade(upgrade->section()))
+	{
+		// upgrade->run_effects(loading);
+		item.add_upgrade(upgrade_id, loading);
+
+		if (g_upgrades_log == 1)
+		{
+			Msg("# Upgrade <%s> of inventory item [%s] (id = %d) is installed.",
+				upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id());
+		}
+		return true;
+	}
+	else
+	{
+		FATAL(make_string<const char*>("! Upgrade <%s> of item [%s] (id = %d) is EMPTY or FAILED !",
+			upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id()));
+	}
+
+	return false;
+}
+
 bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_id, bool loading )
 {
+	R_ASSERT2(IsGameTypeSingle(), "upgrade_install() is available only for single player.");
 	Upgrade* upgrade = upgrade_verify( item.m_section_id, upgrade_id );
 	UpgradeStateResult res = upgrade->can_install( item, loading );
 	
@@ -353,9 +393,15 @@ void Manager::init_install( CInventoryItem& item )
 			u32 const buffer_size	= (xr_strlen(installed_upgrades_str) + 1) * sizeof(char);
 			PSTR	temp = (PSTR)_alloca( buffer_size );
 
-			for ( int n = _GetItemCount(installed_upgrades_str), i = 0; i < n; ++i )
+			if (IsGameTypeSingle())
 			{
-				upgrade_install( item, _GetItem( installed_upgrades_str, i, temp, buffer_size ), true );
+				for (int n = _GetItemCount(installed_upgrades_str), i = 0; i < n; ++i)
+					upgrade_install(item, _GetItem(installed_upgrades_str, i, temp, buffer_size), true);
+			}
+			else
+			{
+				for (int n = _GetItemCount(installed_upgrades_str), i = 0; i < n; ++i)
+					upgrade_install_mp(item, _GetItem(installed_upgrades_str, i, temp, buffer_size), true);
 			}
 		}
 	}//if exist

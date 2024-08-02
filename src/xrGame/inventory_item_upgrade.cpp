@@ -145,9 +145,12 @@ void CInventoryItem::net_Spawn_install_upgrades( Upgrades_type saved_upgrades ) 
 
 	Upgrades_type::iterator ib = saved_upgrades.begin();
 	Upgrades_type::iterator ie = saved_upgrades.end();
-	for ( ; ib != ie ; ++ib )
+	if (IsGameTypeSingle())
 	{
 		ai().alife().inventory_upgrade_manager().upgrade_install( *this, (*ib), true );
+	}
+	else {
+		ai().alife().inventory_upgrade_manager().upgrade_install_mp(*this, (*ib), true);
 	}
 }
 

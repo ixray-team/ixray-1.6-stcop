@@ -64,6 +64,8 @@ public:
 			bool		make_known_upgrade( shared_str const& upgrade_id );
 			bool		is_known_upgrade( CInventoryItem& item, shared_str const& upgrade_id );
 			bool		is_known_upgrade( shared_str const& upgrade_id );
+			bool		can_upgrade_install(CInventoryItem& item, shared_str const& upgrade_id, bool loading);
+			bool		upgrade_install_mp(CInventoryItem& item, shared_str const& upgrade_id, bool loading);
 //*			bool		is_disabled_upgrade( CInventoryItem& item, shared_str const& upgrade_id );
 
 			bool		upgrade_install	( CInventoryItem& item, shared_str const& upgrade_id, bool loading );
