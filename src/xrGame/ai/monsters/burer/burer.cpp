@@ -376,84 +376,11 @@ void CBurer::UpdateGraviObject()
 	} else ::Sound->play_at_pos			(sound_gravi_wave,0,snd_pos);
 }
 
-
-void CBurer::UpdateGraviObjectCL()
-{
-	if (!m_gravi_object.active)
-	{
-		return;
-	}
-
-	if (!m_gravi_object.enemy || (m_gravi_object.enemy && m_gravi_object.enemy->getDestroy()))
-	{
-		m_gravi_object.deactivate();
-		return;
-	}
-
-	if (m_gravi_object.from_pos.distance_to(m_gravi_object.cur_pos)
-	>
-		m_gravi_object.from_pos.distance_to(m_gravi_object.target_pos))
-	{
-		m_gravi_object.deactivate();
-		return;
-	}
-
-	float dt = float(Device.dwTimeGlobal - m_gravi_object.time_last_update);
-	float dist = dt * float(m_gravi.speed) / 1000.f;
-
-	if (dist < m_gravi.step) return;
-
-	Fvector new_pos;
-	Fvector dir;
-	dir.sub(m_gravi_object.target_pos, m_gravi_object.cur_pos);
-	dir.normalize();
-
-	new_pos.mad(m_gravi_object.cur_pos, dir, dist);
-
-	// Trace to enemy 
-	Fvector enemy_center;
-	m_gravi_object.enemy->Center(enemy_center);
-	dir.sub(enemy_center, new_pos);
-	dir.normalize();
-
-	float trace_dist = float(m_gravi.step);
-
-	m_gravi_object.cur_pos = new_pos;
-	m_gravi_object.time_last_update = Device.dwTimeGlobal;
-
-	// ---------------------------------------------------------------------
-	// draw particle
-	CParticlesObject* ps = CParticlesObject::Create(particle_gravi_wave, TRUE);
-
-	// вычислить позицию и направленность партикла
-	Fmatrix pos;
-	pos.identity();
-	pos.k.set(dir);
-	Fvector::generate_orthonormal_basis_normalized(pos.k, pos.j, pos.i);
-	// установить позицию
-	pos.translate_over(m_gravi_object.cur_pos);
-
-	ps->UpdateParent(pos, zero_vel);
-	ps->Play(false);
-
-
-	// играть звук
-	Fvector snd_pos = m_gravi_object.cur_pos;
-	snd_pos.y += 0.5f;
-	if (sound_gravi_wave._feedback()) {
-		sound_gravi_wave.set_position(snd_pos);
-	}
-	else ::Sound->play_at_pos(sound_gravi_wave, 0, snd_pos);
-}
-
 void CBurer::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if (IsGameTypeSingle() || OnServer())
-		UpdateGraviObject();
-	else
-		UpdateGraviObjectCL();
+	UpdateGraviObject();
 	//if (m_fast_gravi->check_start_conditions()) 
 	//	control().activate(ControlCom::eComCustom1);
 }
@@ -466,43 +393,15 @@ void CBurer::StartGraviPrepare()
 	CActor *pA									=	const_cast<CActor *>(smart_cast<const CActor*>(enemy));
 	if (!pA) return;
 
-	if (IsGameTypeSingle())
-	{
-		pA->CParticlesPlayer::StartParticles(particle_gravi_prepare,
-			Fvector().set(0.0f, 0.1f, 0.0f),
-			pA->ID());
-	}
-	else
-	{
-		NET_Packet	tmp_packet;
-		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
-		tmp_packet.w_u8(1);
-		tmp_packet.w_u16(pA->ID());
-		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
-	}
+	pA->CParticlesPlayer::StartParticles			(particle_gravi_prepare,
+													 Fvector().set(0.0f, 0.1f, 0.0f),
+													 pA->ID());
 }
 void CBurer::StopGraviPrepare() 
 {
-	if (IsGameTypeSingle())
-	{
-		CActor* pA = Actor();
-		if (!pA) return;
-		pA->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
-	}
-	else
-	{
-		const CEntityAlive* enemy = m_gravi_object.enemy;
-		if (!enemy) return;
-
-		CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(enemy));
-		if (!pA) return;
-
-		NET_Packet	tmp_packet;
-		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
-		tmp_packet.w_u8(0);
-		tmp_packet.w_u16(pA->ID());
-		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
-	}
+	CActor *pA = Actor();
+	if ( !pA ) return;
+	pA->CParticlesPlayer::StopParticles				(particle_gravi_prepare, BI_NONE, true);
 }
 
 void CBurer::StartTeleObjectParticle(CGameObject *pO) 
@@ -565,75 +464,6 @@ void CBurer::net_Relcase(CObject *O)
 	TTelekinesis::remove_links	(O);
 }
 
-void CBurer::OnEvent(NET_Packet& P, u16 type)
-{
-	inherited::OnEvent(P, type);
-
-	switch (type)
-	{
-	case GE_BURER_GRAVI_PARTICLES: {
-		u16 target;
-		u8 start_particles;
-		P.r_u8(start_particles);
-		P.r_u16(target);
-
-		CObject* obj = Level().Objects.net_Find(target);
-		if (!obj)
-			break;
-
-		CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(obj));
-		if (!pA)
-			break;
-
-		if (start_particles == 1)
-		{
-			pA->CParticlesPlayer::StartParticles(particle_gravi_prepare,
-				Fvector().set(0.0f, 0.1f, 0.0f),
-				pA->ID());
-		}
-		else
-		{
-			if (Actor())
-				Actor()->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
-		}
-
-		break;
-	}
-	case GE_BURER_GRAVI_WAVE: {
-		u16 target;
-		P.r_u16(target);
-
-		if (OnServer())
-			break;
-
-		CObject* obj = Level().Objects.net_Find(target);
-		if (!obj)
-			break;
-
-		CEntityAlive* entity = smart_cast<CEntityAlive*>(obj);
-		if (!entity)
-			break;
-
-		Fvector from_pos;
-		Fvector target_pos;
-		from_pos = Position();
-		from_pos.y += 0.5f;
-		target_pos = entity->Position();
-		target_pos.y += 0.5f;
-		m_gravi_object.activate(entity, from_pos, target_pos);
-		break;
-	}
-	case GE_BURER_SHIELD: {
-		this->CParticlesPlayer::StartParticles(m_shield_keep_particle,
-			Fvector().set(0, 1, 0),
-			ID(),
-			-1,
-			true);
-		break;
-	}
-	}
-}
-
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CBurer::show_debug_info()
 {
@@ -647,30 +477,6 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
-
-void CBurer::StartGraviMP()
-{
-
-	Fvector from_pos;
-	Fvector target_pos;
-	from_pos = Position();
-	from_pos.y += 0.5f;
-	target_pos = EnemyMan.get_enemy()->Position();
-	target_pos.y += 0.5f;
-	m_gravi_object.activate(EnemyMan.get_enemy(), from_pos, target_pos);
-
-	NET_Packet	tmp_packet;
-	CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_WAVE, ID());
-	tmp_packet.w_u16(EnemyMan.get_enemy()->ID());
-	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
-}
-
-void CBurer::shieldParticlesMP()
-{
-	NET_Packet	tmp_packet;
-	CGameObject::u_EventGen(tmp_packet, GE_BURER_SHIELD, ID());
-	Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
-}
 
 void   CBurer::face_enemy ()
 {

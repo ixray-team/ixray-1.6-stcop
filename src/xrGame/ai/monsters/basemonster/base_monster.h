@@ -516,10 +516,6 @@ protected:
 	u32 m_sv_snd_sync_sound_delay = 0;
 
 public:
-	void PlaySoundSync(u32 type);
-	void PlaySoundSyncWithDelay(u32 type, u32 delay);
-
-public:
 	virtual	char*			get_monster_class_name () = 0;
 // DEBUG stuff
 #ifdef DEBUG

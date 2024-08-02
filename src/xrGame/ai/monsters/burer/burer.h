@@ -141,12 +141,7 @@ public:
 			void	ProcessTurn			();
 	virtual void	CheckSpecParams		(u32 spec_params);
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
-	void			StartGraviMP();
-	void			shieldParticlesMP();
-
 			void	UpdateGraviObject	();
-			void	UpdateGraviObjectCL();
 
 			void	StartGraviPrepare	();
 			void	StopGraviPrepare	();
