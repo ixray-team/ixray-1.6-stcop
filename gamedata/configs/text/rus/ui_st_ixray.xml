@@ -167,6 +167,9 @@
     <string id="ui_st_put_all">
         <text>Сложить все</text>
     </string>
+    <string id="ui_st_put_all_hint">
+        <text>Переместить все вещи</text>
+    </string>
     <string id="st_move_to">
         <text>переместить</text>
     </string>
