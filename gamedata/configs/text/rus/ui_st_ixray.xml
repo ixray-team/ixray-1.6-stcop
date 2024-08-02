@@ -158,4 +158,19 @@
     <string id="ui_mm_saturation">
         <text>Насыщенность</text>
     </string>
+    <string id="st_take_to">
+        <text>взять</text>
+    </string>
+    <string id="st_take_all">
+        <text>взять все</text>
+    </string>
+    <string id="ui_st_put_all">
+        <text>Сложить все</text>
+    </string>
+    <string id="st_move_to">
+        <text>переместить</text>
+    </string>
+    <string id="st_move_all">
+        <text>переместить всё</text>
+    </string>
 </string_table>
