@@ -93,7 +93,6 @@ For launching:
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
-
 - Install original game from Steam or GOG
 - Delete in main folder of the game: `bin`, `gamedata` (if exists)
 - Unpack archive to main folder of the game
