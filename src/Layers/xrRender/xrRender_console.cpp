@@ -203,19 +203,6 @@ int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 float		ps_r2_gloss_factor = 3.14f;
 
 int			ps_r__detail_radius = 49;
-u32			dm_size = 24;
-u32 		dm_cache1_line = 12;
-u32			dm_cache_line = 49;
-u32			dm_cache_size = 2401;
-float		dm_fade = 47.5;
-u32			dm_current_size = 24;
-u32 		dm_current_cache1_line = 12;
-u32			dm_current_cache_line = 49;
-u32			dm_current_cache_size = 2401;
-float		dm_current_fade = 47.5;
-float		ps_current_detail_density = 0.6;
-float		ps_current_detail_scale = 1.f;
-
 float		ps_r4_cas_sharpening = 0.0f;
 
 // Test float exported to shaders for development
@@ -806,7 +793,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 
 	// IX-Ray
-	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 49, 350);
+	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 49, 250);
 	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);

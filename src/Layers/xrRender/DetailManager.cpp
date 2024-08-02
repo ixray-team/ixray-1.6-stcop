@@ -15,6 +15,19 @@
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
 
+u32			dm_size = 24;
+u32 		dm_cache1_line = 12;
+u32			dm_cache_line = 49;
+u32			dm_cache_size = 2401;
+float		dm_fade = 47.5;
+u32			dm_current_size = 24;
+u32 		dm_current_cache1_line = 12;
+u32			dm_current_cache_line = 49;
+u32			dm_current_cache_size = 2401;
+float		dm_current_fade = 47.5;
+float		ps_current_detail_density = 0.6;
+float		ps_current_detail_scale = 1.f;
+
 //--------------------------------------------------- Decompression
 static int magic4x4[4][4] =
 {

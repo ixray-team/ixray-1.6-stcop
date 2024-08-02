@@ -24,23 +24,23 @@
 #else
 	const int	dm_max_decompress	= 7;
 #endif
-	const int 		dm_cache1_count = 4;
-	const int		dm_max_objects = 64;
-	const int		dm_obj_in_slot = 4;
-	const float		dm_slot_size = DETAIL_SLOT_SIZE;
+const int 		dm_cache1_count = 4;
+const int		dm_max_objects = 64;
+const int		dm_obj_in_slot = 4;
+const float		dm_slot_size = DETAIL_SLOT_SIZE;
 
-	const u32		dm_max_cache_size = 62001 * 2;
-	extern u32		dm_size;
-	extern u32 		dm_cache1_line;
-	extern u32		dm_cache_line;
-	extern u32		dm_cache_size;
-	extern float	dm_fade;
-	extern u32		dm_current_size;
-	extern u32 		dm_current_cache1_line;
-	extern u32		dm_current_cache_line;
-	extern u32		dm_current_cache_size;
-	extern float	dm_current_fade;
-	extern float	ps_current_detail_density;
+const u32		dm_max_cache_size = 62001 * 2;
+extern u32		dm_size;
+extern u32 		dm_cache1_line;
+extern u32		dm_cache_line;
+extern u32		dm_cache_size;
+extern float	dm_fade;
+extern u32		dm_current_size;
+extern u32 		dm_current_cache1_line;
+extern u32		dm_current_cache_line;
+extern u32		dm_current_cache_size;
+extern float	dm_current_fade;
+extern float	ps_current_detail_density;
 
 class CDetailManager
 {
