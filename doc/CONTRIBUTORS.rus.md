@@ -42,6 +42,8 @@
   - nuclearfag
   - Baryshev194
   - Oswald
+  - MiX225
+  - Romann
 
 - IX-Ray Testers:
   - Kystman

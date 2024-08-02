@@ -4,6 +4,89 @@ English | [Русский](./doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.1 (August)
+
+### Common
+
+- Enabled `/EHsc` for all configs (@ForserX)
+
+### Engine (core, sound, multiplayer)
+
+- Added font glyph support for additional codepages (@ForserX)
+- Added subdirectories support for addon directory (@ForserX)
+- Fixed `mouse4` and `mouse5` buttons (@ForserX)
+- Fixed keyname translate (@ForserX)
+- Fixed UTF8 issues (@ForserX)
+- Reduced `hud viewport near` to `0.01` (@Drombeys)
+- Removed 44100 Hz sound rate assertion (@Hozar2002)
+- Resized vectors instead of clearing where possible (@Drombeys)
+- Restored Alt key use for release configuration (@ForserX)
+
+### Graphics (renders, shaders, textures)
+
+- Added accounting `r2_lumscale_sky` on D3D9 (@Drombeys)
+- Added hot reload for details (@Drombeys)
+- Added screen space shadows fade (@Hozar2002)
+- Fixed `vid_scale_mode` console command (@Drombeys, @Hozar2002)
+- Fixed 127 bones support (@Hozar2002)
+- Fixed bug with light culling (@v2v3v4)
+- Fixed incorrect details array size on D3D9 (@Hozar2002)
+- Fixed occlusion activation (@ForserX)
+- Fixed volumetric fog (@ForserX)
+- Improved fog for forward geometry (@Hozar2002, @Drombeys)
+- Improved grass rendering on D3D9 (@Hozar2002, @Drombeys)
+- Refined detailed objects to be placed only in outdoorsector (@v2v3v4)
+- Skipped weather effects when actor is indoor (@v2v3v4)
+- Splitted saturation and vignette shaders (@Drombeys, @Hozar2002)
+
+### Gameplay
+
+- Added additional character information to inventory (@Drombeys, @Hozar2002)
+- Added basic SWM 2.1 legs models support (@Hozar2002)
+- Added monster anims sync in MP support (@MiX225)
+- Added mp console command (@MiX225)
+- Added on-map users spot-marks support (@ForserX)
+- Added optional generation of rank and reputation in NPC profiles (@Drombeys, @Hozar2002)
+- Exported `CMapManager` to LUA (@ForserX)
+- Fixed reading custom `hud_fov` parameter (@Drombeys)
+- Implemented legs system (@Hozar2002)
+- Ported OMP functions for `freemp` mode (@MiX225)
+- Updated car dashboard (@Hozar2002)
+
+### Resources
+
+- Added `r2_saturation` to graphics options (@Drombeys)
+- Added default hands model (@Hozar2002)
+- Decoupled script functional (@ForserX)
+
+### Toolchain (in-game tools, editors, utilities, plugins)
+
+- Added `CLevelEditor` class for PIE (@ForserX)
+- Added `Ignore Materials` support for LevelEditor (@ForserX)
+- Added camera position draw (@ForserX)
+- Added community fixes for LevelEditor (@ForserX)
+- Added drag-n-drop for BoneParts (@ForserX, @abramcumner, @Romann)
+- Added exit button to debug menu (@Drombeys)
+- Added Lua snippets support (@Drombeys)
+- Added PIE support for xrGame (@isoboleskiy)
+- Added properties and multiselect for library editor (@ForserX)
+- Added support moving gizmo at mouse pos by shortcuts (@ForserX)
+- Added theme editor (@ForserX)
+- Added unfocused windows transparency and docking in `Light Anim Editor` (@Romann)
+- Added windows transparent without focus and docking (@ForserX)
+- Fixed loading sound environment parameters (@ForserX)
+- Fixed merged LOD texture build fail cancelling level build (@VodkaNET)
+- Fixed mouse moving in viewport with other monitor (@ForserX)
+- Fixed mouse postion update into editor viewport (@ForserX)
+- Implemented adjust colors in tools (@Romann)
+- Implemented `Move Camera To` view (@ForserX)
+- Improved `Library Editor` view (@ForserX)
+- Renamed tools in `Edit Mode` page (@Drombeys)
+- Replaced message box `object[%s] already in group` with Msg (@ForserX)
+- Restored Sound Environment choose form (@ForserX)
+- Reworked main toolbar in Level Editor (@Drombeys)
+- Reworked UI in LevelEditor (@ForserX)
+
 ## Release 1.0 (July 2024)
 
 ### Common
