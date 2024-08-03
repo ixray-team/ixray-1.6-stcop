@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+void CRenderTarget::phase_scene_forward() {
+	u_setrt(rt_Generic_0, 0, 0, RDepth); // LDR RT
+}
+
 // startup
 void	CRenderTarget::phase_scene_prepare	()
 {

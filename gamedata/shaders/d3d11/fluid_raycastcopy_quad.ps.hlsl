@@ -2,7 +2,7 @@
 
 //	Pixel
 //	TODO: DX10: replace WorldViewProjection with m_WVP
-float4 main_ps_4_0(PS_INPUT_RAYCAST input) : SV_Target
+float4 main(PS_INPUT_RAYCAST input) : SV_Target
 {
     float edge = edgeTex.Sample(samLinearClamp, float2(input.pos.x / RTWidth, input.pos.y / RTHeight)).r;
 
@@ -29,3 +29,4 @@ float4 main_ps_4_0(PS_INPUT_RAYCAST input) : SV_Target
     }
 #endif //	RENDER_FIRE
 }
+

@@ -73,6 +73,7 @@ void	CRenderTarget::phase_combine	()
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
+
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
 
@@ -171,7 +172,8 @@ void	CRenderTarget::phase_combine	()
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);
-		u_setrt(rt_Generic_0, 0, 0, RDepth); // LDR RT
+		phase_scene_forward();
+
 		RCache.set_CullMode (CULL_CCW);
 		RCache.set_Stencil (FALSE);
 		RCache.set_ColorWriteEnable ();

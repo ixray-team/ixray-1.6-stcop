@@ -6,7 +6,7 @@
 //	Advect MCCormack
 
 //	Pixel
-float4 main_ps_4_0(p_fluidsim input) : SV_Target
+float4 main(p_fluidsim input) : SV_Target
 {
     if (IsNonEmptyCell(input.texcoords.xyz))
     {

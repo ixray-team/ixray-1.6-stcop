@@ -8,7 +8,7 @@
 // Use col.a to find depth edges of objects occluding the smoke
 // Use col.g to find the edges where the camera near plane cuts the smoke volume
 //
-float4 main_ps_4_0(VS_OUTPUT_EDGE vIn) : SV_Target
+float4 main(VS_OUTPUT_EDGE vIn) : SV_Target
 {
     // We need eight samples (the centre has zero weight in both kernels).
     float4 col;
