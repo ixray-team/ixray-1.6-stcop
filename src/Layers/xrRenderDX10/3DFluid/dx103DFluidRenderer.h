@@ -73,7 +73,7 @@ private:
 
 	void	CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData);
 
-	void	Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight);
+	void	Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly);
 
 private:
 	bool		m_bInited;

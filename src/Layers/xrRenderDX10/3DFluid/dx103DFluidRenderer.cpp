@@ -516,7 +516,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	else
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastFog]);
 
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
+	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
 
 	DrawScreenQuad();
 
@@ -529,7 +529,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog]);
 
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height());
+	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
 
 	RCache.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
@@ -547,13 +547,13 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
 
 	// Setup viewport to match the window's backbuffer
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height());
+	Prepare(FluidData, RCache.get_width(), RCache.get_height(), false);
 
 	DrawBox();
 
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
 	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
-	Prepare(FluidData, RCache.get_width(), RCache.get_height());
+	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
 
 	DrawBox();
 
@@ -567,7 +567,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
 
 	// First setup viewport to match the size of the destination low-res texture
 	RImplementation.rmNormal();
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
+	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, false);
 
 	// Downsample the rayDataTexture to a new small texture, simply using point sample (no filtering)
 	DrawScreenQuad();
@@ -575,7 +575,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
 	// Create an edge texture, performing edge detection on 'rayDataTexSmall'
 	pTarget->u_setrt(RT[RRT_EdgeTex],0,0,0);		// LDR RT
 	RCache.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
-	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
+	Prepare(FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight, true);
 
 	DrawScreenQuad();
 }
@@ -659,8 +659,14 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 	}
 }
 
-void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight)
+void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight, bool SizeOnly)
 {
+	RCache.set_c(strRTWidth, (float)RTWidth);
+	RCache.set_c(strRTHeight, (float)RTHeight);
+
+	if (SizeOnly)
+		return;
+
 	const Fmatrix& transform = FluidData.GetTransform();
 	RCache.set_xform_world(transform);
 
@@ -708,7 +714,4 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	RCache.set_c(strEyeOnGrid, tempVector);
 
 	RCache.set_c("DepthUnpack", RCache.xforms.m_p._43, RCache.xforms.m_p._33, 0.0f, 0.0f);
-
-	RCache.set_c(strRTWidth, (float)RTWidth);
-	RCache.set_c(strRTHeight, (float)RTHeight);
 }
