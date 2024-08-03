@@ -1020,7 +1020,23 @@ void CSkeletonX_ext::_FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& w
 
 void CSkeletonX_ext::_FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
 {
-	R_ASSERT2(0,"CSkeletonX_ext::_FillVertices not implemented");
+	VERIFY(Parent && (ChildIDX != u16(-1)));
+	CBoneData& BD = Parent->LL_GetData(bone_id);
+	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
+	u16* indices = 0;
+	indices = *m_Indices;
+
+	if (*Vertices1W)
+		_FillVerticesSoft1W(view, wm, normal, size, indices + iBase, *faces);
+	else if (*Vertices2W)
+		_FillVerticesSoft2W(view, wm, normal, size, indices + iBase, *faces);
+	else if (*Vertices3W)
+		_FillVerticesSoft3W(view, wm, normal, size, indices + iBase, *faces);
+	else
+	{
+		VERIFY(!!(*Vertices4W));
+		_FillVerticesSoft4W(view, wm, normal, size, indices + iBase, *faces);
+	}
 }
 
 void CSkeletonX_ST::FillVertices	(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)
