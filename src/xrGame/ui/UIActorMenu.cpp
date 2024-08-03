@@ -41,6 +41,7 @@
 #include "../Trade.h"
 #include "Car.h"
 #include "../xrEngine/string_table.h"
+#include "game_cl_base.h"
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -895,7 +896,14 @@ void CUIActorMenu::UpdateActorMP()
 	xr_sprintf( buf, "%d RU", money );
 	m_ActorMoney->SetText( buf );
 
-	m_ActorCharacterInfo->InitCharacterMP( Game().local_player->getName(), "ui_npc_u_nebo_1" );
+	if (Game().Type() == eGameIDFreeMP)
+	{
+		m_ActorCharacterInfo->InitCharacterMP(m_pActorInvOwner);
+	}
+	else
+	{
+		m_ActorCharacterInfo->InitCharacterMP(Game().local_player->getName(), "ui_npc_u_nebo_1");
+	}
 
 }
 
