@@ -19,7 +19,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed UTF8 issues (@ForserX)
 - Reduced `hud viewport near` to `0.01` (@Drombeys)
 - Removed 44100 Hz sound rate assertion (@Hozar2002)
-- Resized vectors instead of clearing where possible (@Drombeys)
+- Switched to vector resizing instead of clearing where possible (@Drombeys)
 - Restored Alt key use for release configuration (@ForserX)
 
 ### Graphics (renders, shaders, textures)
@@ -36,7 +36,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Improved fog for forward geometry (@Hozar2002, @Drombeys)
 - Improved grass rendering on D3D9 (@Hozar2002, @Drombeys)
 - Refined detailed objects to be placed only in outdoorsector (@v2v3v4)
-- Skipped weather effects when actor is indoor (@v2v3v4)
+- Added weather effects skipping when actor is indoor (@v2v3v4)
 - Splitted saturation and vignette shaders (@Drombeys, @Hozar2002)
 
 ### Gameplay
@@ -78,7 +78,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed merged LOD texture build fail cancelling level build (@VodkaNET)
 - Fixed mouse moving in viewport with other monitor (@ForserX)
 - Fixed mouse postion update into editor viewport (@ForserX)
-- Implemented adjust colors in tools (@Romann)
+- Adjusted colors in tools (@Romann)
 - Implemented `Move Camera To` view (@ForserX)
 - Improved `Library Editor` view (@ForserX)
 - Renamed tools in `Edit Mode` page (@Drombeys)
@@ -123,7 +123,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Added message to log about duplicate XML section (@Drombeys)
 - Added platform-specific functions for path retrieval (@ggGhosTt)
 - Added support for mimalloc memory allocator (@ForserX, @Drombeys, @acidicMercury8)
-- Disabled fullscreen on non-release configuration (@Drombeys)
+- Disabled fullscreen on non-release configurations (@Drombeys)
 - Disabled registration of MP commands in single builds (@Drombeys)
 - Disabled teleport using `demo_record` command (@Drombeys)
 - Fixed and simplified window mode change and resize (@ggGhosTt)
@@ -132,7 +132,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed collision disabling mechanism (@v2v3v4)
 - Fixed ImGui windows hiding (@ForserX)
 - Fixed Linux build (@ggGhosTt)
-- Maked resources thread-safe (@ForserX)
+- Made resources thread-safe (@ForserX)
 - Moved statistics positions (@Drombeys)
 - Reimplemented global time factor influence on sound (@v2v3v4)
 - Removed Loki dependency usage in class registrator (@ForserX)
@@ -200,8 +200,8 @@ Full changelog of _IX-Ray_ 1.6 project
 - Reworked transfer of defines to shaders (@Hozar2002)
 - Separated statistic on screen (@Hozar2002)
 - Switched to standard allocator for renderers (@ForserX)
-- Transferred sky rendering on frame start (@Hozar2002)
-- Transferred tonemaping after forward rendering (@Hozar2002)
+- Moved sky rendering to frame start (@Hozar2002)
+- Moved tonemaping execution after forward rendering (@Hozar2002)
 - Unified forward and refactor blenders (@Hozar2002)
 - Unlocked multi-threaded texture loading (@Drombeys)
 - Updated shaders for forward pass (@Hozar2002)
@@ -226,19 +226,19 @@ Full changelog of _IX-Ray_ 1.6 project
 - Enabled `anm_bore` for binoculars (@v2v3v4)
 - Fixed actor weapon fire vectors (@v2v3v4)
 - Fixed animation blending (@v2v3v4)
-- Fixed condition actor update with cutscenes (@ForserX)
+- Fixed actor update condition within cutscenes (@ForserX)
 - Fixed crashing on unknow `icon` parameter in monster character (@OldSerpskiStalker)
 - Fixed crows AI fly target position (@v2v3v4)
 - Fixed detector switch (@v2v3v4)
 - Fixed detectors switching handling (@v2v3v4)
 - Fixed food weight calculation (@ForserX)
-- Fixed hidden markings of NPC on map (@Drombeys)
+- Fixed hidden NPC markers on map (@Drombeys)
 - Fixed missing task icon after task change (@Drombeys)
 - Fixed objects being picked up while not visible (@v2v3v4)
 - Fixed stalkers staring at floor/ceiling during combat (@OldSerpskiStalker)
 - Fixed string expression use in ProgressBar control (@ForserX)
-- Ignored inventory item when picking up items (@v2v3v4)
-- Implemented disabling FPS counter (@Drombeys)
+- Added inventory item ignore when picking up items (@v2v3v4)
+- Added FPS counter disable option (@Drombeys)
 - Implemented HUD animator (@ForserX, @v2v3v4, @Shtrecker)
 - Implemented multispawn for mutant inventory (@OldSerpskiStalker)
 - Implemented third-person view camera collision and inertia (@v2v3v4)
@@ -310,7 +310,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Merged PostProcess and Actor editors (@ForserX)
 - Moved `Make Thumbnail` button to top bar (@ForserX)
 - Ported editors base to Visual Studio 2022 (@isoboleskiy, @ForserX)
-- Reconnect debugger with level change (@ForserX)
+- Added debugger reconnection on level change (@ForserX)
 - Restored faces optimization in actor editor (@ForserX)
 - Updated Maya plugin (@ForserX, @abramcumner, @StalkMen, Moddera)
 
@@ -532,24 +532,19 @@ Full changelog of _IX-Ray_ 1.6 project
 - Added `graffiti22` value (@ForserX)
 - Added `hide_detector` function export to Lua (@ForserX)
 - Added ability to change `CSE_AlifeObject` variables in Lua (@ForserX)
-- Added data files when corresponding saves are deleted (@ggGhosTt)
+- Added `lua-marshal` support for game saves (@ggGhosTt)
 - Added export `kQUICK_SAVE` and `kQUICK_LOAD` button to scripts (@Drombeys)
 - Added icon to `m_burer_e` section (@Drombeys)
 - Added weather control exports (@ggGhosTt)
 - Deleted strafe in aiming (@VOIN101)
-- Enabled creating savegames directory if none is present (@ggGhosTt)
 - Exported actor movement states (@Shtrecker)
 - Exported boosters to Lua scripts (@Shtrecker)
 - Exported god mode state check to lua (@ggGhosTt)
-- Exported save/load events and retrieved save names in Lua (@ggGhosTt)
 - Exported torch click sound into config (@ForserX)
 - Exported weapons methods to Lua scripts (@ForserX, @Alundaio)
 - Fixed shotgun animations (@VOIN101)
-- Implemented Lua Marshal save/load utility functions (@ggGhosTt)
-- Matched saves and serialized tables (@ggGhosTt)
 - Moved Lua export of basic types from xrGame to xrScripts (@ForserX)
 - Reworked fetching dependencies script (@ForserX)
-- Stored data in savegames folder as single file (@ggGhosTt)
 - Tweaked Lua surge manager (@ggGhosTt)
 - Tweaked Lua weather manager (@ggGhosTt)
 
@@ -649,8 +644,8 @@ Full changelog of _IX-Ray_ 1.6 project
 - Implemented inventory customization (@ForserX)
 - Implemented new noclip movement (@v2v3v4)
 - Implemented UI auto slot system (@ForserX)
-- Implemented visible strapped weapon models in third person (@ggGhosTt)
-- Merged and clean `-psp` functional (@ggGhosTt)
+- Implemented visible strapped weapon models for third person view (@ggGhosTt)
+- Merged and cleaned `-psp` functional (@ggGhosTt)
 - Migrated alcohol features to new system (@ForserX)
 - Moved `read_sun_config` command to `engine_external` config (@Drombeys)
 - Ported camera noise support from `CCameraFirstEye` to `CCameraLook2` (@ggGhosTt)
@@ -724,7 +719,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed loading of unsupported textures (@Hozar2002)
 - Fixed memory leak for vertex buffers in `dx103DFluidGrid` (@MAYLAYSHEZ)
 - Fixed point lights virtual size (@MAYLAYSHEZ)
-- Let `DXGI` calculate refresh rate for itself for performance (@MAYLAYSHEZ)
+- Remade `DXGI` to calculate refresh rate by itself for performance (@MAYLAYSHEZ)
 - Made fonts not change state if there is no text to render (@MAYLAYSHEZ)
 - Optimized dynamic objects rendering (@VaIeroK)
 - Reimplemented actor shadow for R2-R4 (@MAYLAYSHEZ, @v2v3v4)
@@ -748,9 +743,9 @@ Full changelog of _IX-Ray_ 1.6 project
 - Added Lua export to control global time factor (@MAYLAYSHEZ)
 - Applied various fixes to `crow` class (@MAYLAYSHEZ)
 - Corrected zooming in/out command handler (@MAYLAYSHEZ)
-- Decreased actor movement speed after jump (@MAYLAYSHEZ)
+- Added actor movement speed decrease after jump (@MAYLAYSHEZ)
 - Disabled cheats command on Release configuration (@Drombeys)
-- Disabled useless and unnecessary `item place` spam (@ForserX)
+- Disabled redundant `item place` spam (@ForserX)
 - Enabled calculating distance to enemy by monsters that created sound they hear (@MAYLAYSHEZ)
 - Enabled clearing objects and models pools between level loads (@MAYLAYSHEZ)
 - Ensured accurate results for `npc:path_completed()` method (@Drombeys)
@@ -783,7 +778,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed weapon camera effector (@MAYLAYSHEZ)
 - Fixed zero `scope_zoom_factor` (@xrEugene)
 - Implemented XML expressions for MP mode (@ForserX)
-- Made clear levels vector on quit (@MAYLAYSHEZ)
+- Added levels vector clearing on quit (@MAYLAYSHEZ)
 - Moved descriptions of detector's eye zones in one place (@ForserX)
 - Prevented crash due `reserve()` call with `arg < 0` (@MAYLAYSHEZ)
 - Removed duplicate `mstate_r1&mcLanding` in condition in `ActorAnimation` (@MAYLAYSHEZ)
@@ -855,7 +850,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Rewritten CRC32 without Boost (@ForserX)
 - Rewritten renders iterator (@Drombeys, @Hozar2002)
 - Rewritten timers (@mortany, @ForserX)
-- Set special function for terminate (@MAYLAYSHEZ)
+- Set special function for termination (@MAYLAYSHEZ)
 
 ### Graphics (renders, shaders)
 
@@ -995,7 +990,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 ### Graphics (renders, shaders)
 
-- Fixed fog displaying on static lighting (@Hozar2002)
+- Fixed fog display on static lighting (@Hozar2002)
 - Fixed incorrect including of header files in renders projects (@Drombeys)
 
 ### Gameplay
@@ -1151,7 +1146,7 @@ Full changelog of _IX-Ray_ 1.6 project
 ### Common
 
 - Enabled assets packing (@acidicMercury8)
-- Incompletely integrated DirectXMesh (@Drombeys)
+- Implemented a partial DirectXMesh integration (@Drombeys)
 - Replaced `dxerr` with Windows SDK analog (@Drombeys)
 - Replaced `stricmp` with POSIX analog (@Drombeys)
 - Simplified `get-dependencies` script launching (@acidicMercury8)
@@ -1249,7 +1244,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Implemented light accounting for water foam (@Drombeys, @Hozar2002)
 - Implemented skyblend accumulation for sunshafts (@Drombeys)
 - Increased range of near cascade (@Drombeys)
-- Overrided entry point in 3D Fluid shaders (@Drombeys)
+- Overrode entry point in 3D Fluid shaders (@Drombeys)
 
 ### Resources
 
@@ -1277,7 +1272,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 - Deleted `DEF_*` and `DEFINE_*` macroses from STL extensions (@Drombeys)
 - Fixed dialog window of level changer (@Drombeys)
-- Partially replaced STL extension aliases with `using` analogs (@Drombeys)
+- Implemented a partial replacement of STL extension aliases with `using` analogs (@Drombeys)
 - Placed `clear_and_reserve()` method of `xr_vector<T>` class in a separate functionclear_and_reserve (@acidicMercury8)
 - Replaced custom `xr_deque<T>` and `xr_vector<T>` with aliases of `std::deque<T>` and `std::vector<T>` (@acidicMercury8)
 
@@ -1315,7 +1310,7 @@ Full changelog of _IX-Ray_ 1.6 project
 
 ### Utilities
 
-- Incompletely integrated DirectXTex (@acidicMercury8)
+- Implemented a partial DirectXTex integration (@acidicMercury8)
 
 ## Release 0.1 (March 2021)
 
