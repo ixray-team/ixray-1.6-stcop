@@ -36,6 +36,7 @@
 
 #ifndef _EDITOR
 #	include "pch_script.h"
+extern CInifile* pGameGlobals;
 #endif
 
 #undef min

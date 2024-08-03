@@ -81,22 +81,23 @@ void CWalmarkManager::PlaceWallmark(const Fvector& dir, const Fvector& start_pos
 }
 */
 
-void CWalmarkManager::PlaceWallmarks( const Fvector& start_pos)
+void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
 {
-	m_pos				= start_pos;
+    m_pos = start_pos;
 
-    shared_str sect = "explosion_marks";
+    shared_str sect;
 
     if (pSettings->line_exist(m_owner->cNameSect(), "wallmark_section"))
     {
         sect = pSettings->r_string(m_owner->cNameSect(), "wallmark_section");
     }
+    else
+    {
+        sect = pGameGlobals->r_string("render", "default_wallmark");
+    }
 
-	Load				(sect.c_str());
-
-//.	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CWalmarkManager::StartWorkflow));
-
-	StartWorkflow		(sect);
+    Load(sect.c_str());
+    StartWorkflow(sect);
 }
 
 float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, float& pfTParam, Fvector& closest, Fvector& dir);

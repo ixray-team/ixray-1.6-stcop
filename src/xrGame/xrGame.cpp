@@ -14,61 +14,43 @@
 
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
-extern "C" {
 
+CInifile* pGameGlobals = nullptr;
+
+extern "C" 
+{
 	DLL_API void __cdecl xrGameInitialize()
 	{
 		CCC_RegisterCommands();
 		// keyboard binding
 		CCC_RegisterInput();
-		
+
 		RegisterExpressionDelegates();
 
 #ifdef DEBUG
 		g_profiler = xr_new<CProfiler>();
 #endif
 
+		string_path GameGlobals = {};
+		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
+		pGameGlobals = new CInifile(GameGlobals);
 	}
 
-	DLL_API DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid)
+	DLL_API DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
 	{
-		DLL_Pure			*object = object_factory().client_object(clsid);
+		DLL_Pure* object = object_factory().client_object(clsid);
+
 #ifdef DEBUG
 		if (!object)
 			return			(0);
 #endif
-		object->CLS_ID		= clsid;
+
+		object->CLS_ID = clsid;
 		return				(object);
 	}
 
-	DLL_API void		__cdecl	xrFactory_Destroy		(DLL_Pure* O)
+	DLL_API void		__cdecl	xrFactory_Destroy(DLL_Pure* O)
 	{
-		xr_delete			(O);
+		xr_delete(O);
 	}
-};
-
-//
-//BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
-//{
-//	switch (ul_reason_for_call) {
-//		case DLL_PROCESS_ATTACH: {
-//			// register console commands
-//			CCC_RegisterCommands();
-//			// keyboard binding
-//			CCC_RegisterInput	();
-//
-//			// register xml-script namespace
-//			RegisterExpressionDelegates();
-//
-//#ifdef DEBUG
-//			g_profiler			= new CProfiler();
-//#endif
-//			break;
-//		}
-//
-//		case DLL_PROCESS_DETACH: {
-//			break;
-//		}
-//	}
-//    return								(TRUE);
-//}
+}

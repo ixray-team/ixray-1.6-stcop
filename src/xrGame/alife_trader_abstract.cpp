@@ -18,50 +18,48 @@
 #include "alife_schedule_registry.h"
 
 #ifdef DEBUG
-	extern Flags32 psAI_Flags;
+extern Flags32 psAI_Flags;
 #endif
 
-void CSE_ALifeTraderAbstract::spawn_supplies	()
+void CSE_ALifeTraderAbstract::spawn_supplies()
 {
-	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(this);
-	VERIFY						(dynamic_object);
-	CSE_Abstract				*abstract = dynamic_object->alife().spawn_item("device_pda",base()->o_Position,dynamic_object->m_tNodeID,dynamic_object->m_tGraphID,base()->ID);
-	CSE_ALifeItemPDA			*pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
-	pda->m_original_owner		= base()->ID;
+	CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(this);
+	VERIFY(dynamic_object);
+	CSE_Abstract* abstract = dynamic_object->alife().spawn_item(pGameGlobals->r_string("actor_item", "pda_item"), base()->o_Position, dynamic_object->m_tNodeID, dynamic_object->m_tGraphID, base()->ID);
+	CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
+	pda->m_original_owner = base()->ID;
 
 #ifdef XRGAME_EXPORTS
-	character_profile			();
-	m_SpecificCharacter			= shared_str();
-	m_community_index			= NO_COMMUNITY_INDEX;
-	pda->m_specific_character	= specific_character();
+	character_profile();
+	m_SpecificCharacter = shared_str();
+	m_community_index = NO_COMMUNITY_INDEX;
+	pda->m_specific_character = specific_character();
 #endif
 
-	if(m_SpecificCharacter.size())
+	if (m_SpecificCharacter.size())
 	{
 		//если в custom data объекта есть
 		//секция [dont_spawn_character_supplies]
 		//то не вызывать spawn из selected_char.SupplySpawn()
-		bool specific_character_supply = true;	
+		bool specific_character_supply = true;
 
 		if (xr_strlen(dynamic_object->m_ini_string))
 		{
 #pragma warning(push)
 #pragma warning(disable:4238)
 			IReader temp(
-				(void*) (*dynamic_object->m_ini_string),
+				(void*)(*dynamic_object->m_ini_string),
 				xr_strlen(dynamic_object->m_ini_string)
 			);
 
-			CInifile ini(&temp,
-				FS.get_path("$game_config$")->m_Path
-			);
+			CInifile ini(&temp, FS.get_path("$game_config$")->m_Path);
 #pragma warning(pop)
 
-			if (ini.section_exist("dont_spawn_character_supplies")) 
+			if (ini.section_exist("dont_spawn_character_supplies"))
 				specific_character_supply = false;
 		}
 
-		if(specific_character_supply)
+		if (specific_character_supply)
 		{
 			CSpecificCharacter selected_char;
 			selected_char.Load(m_SpecificCharacter);
@@ -72,47 +70,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies	()
 
 void CSE_ALifeTraderAbstract::vfInitInventory()
 {
-//	m_fCumulativeItemMass		= 0.f;
-//	m_iCumulativeItemVolume		= 0;
 }
-
-#if 0//def DEBUG
-bool CSE_ALifeTraderAbstract::check_inventory_consistency	()
-{
-	int							volume = 0;
-	float						mass = 0.f;
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	I = base()->children.begin();
-	xr_vector<ALife::_OBJECT_ID>::const_iterator	E = base()->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*object = ai().alife().objects().object(*I,true);
-		if (!object)
-			continue;
-
-		CSE_ALifeInventoryItem	*item = smart_cast<CSE_ALifeInventoryItem*>(object);
-		if (!item)
-			continue;
-
-		volume					+= item->m_iVolume;
-		mass					+= item->m_fMass;
-	}
-
-	R_ASSERT2					(fis_zero(m_fCumulativeItemMass - mass,EPS_L),base()->name_replace());
-	if (!fis_zero(m_fCumulativeItemMass - mass,EPS_L))
-		return					(false);
-
-	R_ASSERT2					(m_iCumulativeItemVolume == volume,base()->name_replace());
-	if (m_iCumulativeItemVolume != volume)
-		return					(false);
-
-#ifdef DEBUG
-//	if (psAI_Flags.test(aiALife)) {
-//		Msg						("[LSS] [%s] inventory is consistent [%f][%d]",base()->name_replace(),mass,volume);
-//	}
-#endif
-
-	return						(true);
-}
-#endif
 
 void CSE_ALifeDynamicObject::attach	(CSE_ALifeInventoryItem *tpALifeInventoryItem, bool bALifeRequest, bool bAddChildren)
 {
