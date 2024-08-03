@@ -93,7 +93,7 @@ bool CControllerPsyHit::check_start_conditions()
 
 void CControllerPsyHit::activate()
 {
-	CActor* pActor = Actor();
+	CActor* pActor = nullptr;
 	if (!IsGameTypeSingle())
 	{
 		pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
@@ -114,7 +114,10 @@ void CControllerPsyHit::activate()
 	SControlDirectionData			*ctrl_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 	VERIFY							(ctrl_dir);
 	ctrl_dir->heading.target_speed	= 3.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(Actor()->Position());
+	if (IsGameTypeSingle())
+		ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(Actor()->Position());
+	else
+		ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(pActor->Position());
 
 	//////////////////////////////////////////////////////////////////////////
 	m_current_index					= 0;
@@ -135,7 +138,6 @@ void CControllerPsyHit::activate()
 
 void CControllerPsyHit::deactivate()
 {
-	CActor* pActor = Actor();
 	m_man->release_pure				(this);
 	m_man->unsubscribe				(this, ControlCom::eventAnimationEnd);
 
@@ -143,10 +145,10 @@ void CControllerPsyHit::deactivate()
 		NET_Packet			P;
 
 		if (IsGameTypeSingle()) {
-			pActor->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, pActor->ID());
+			Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
 			P.w_u16(INV_STATE_BLOCK_ALL);
 			P.w_u8(u8(false));
-			pActor->u_EventSend(P);
+			Actor()->u_EventSend(P);
 		}
 		else
 		{
@@ -200,7 +202,6 @@ bool check_actor_visibility (const Fvector trace_from,
 							 const Fvector trace_to,
 							 CObject* object)
 {
-	CActor* pActor = Actor();
 	const float dist = trace_from.distance_to(trace_to);
 	Fvector trace_dir;
 	trace_dir.sub(trace_to, trace_from);
@@ -215,7 +216,7 @@ bool check_actor_visibility (const Fvector trace_from,
 								l_rq, 
 								object);
 
-	return l_rq.O == pActor || (l_rq.range >= dist - 0.1f);
+	return l_rq.O == Actor() || (l_rq.range >= dist - 0.1f);
 }
 
 } // namespace detail
@@ -238,23 +239,24 @@ bool CControllerPsyHit::see_enemy(CActor* pA)
 }
 
 bool CControllerPsyHit::check_conditions_final() {
-	CActor* pActor = Actor();
 	if (!m_object->g_Alive())
 		return false;
 	// 	if (m_object->EnemyMan.get_enemy() != pActor	
 	// 		return false;
+	CActor* pActor = nullptr; // for mp
+
 
 	if (IsGameTypeSingle()) {
 		if (!g_actor)
 			return false;
 
-		if (!m_object->EnemyMan.is_enemy(pActor))
+		if (!m_object->EnemyMan.is_enemy(Actor()))
 			return false;
 
-		if (!pActor->g_Alive())
+		if (!Actor()->g_Alive())
 			return false;
 
-		if (m_object->Position().distance_to_xz(pActor->Position()) < m_min_tube_dist - 2)
+		if (m_object->Position().distance_to_xz(Actor()->Position()) < m_min_tube_dist - 2)
 			return false;
 	}
 	else
@@ -275,14 +277,14 @@ bool CControllerPsyHit::check_conditions_final() {
 	}
 
 	if (IsGameTypeSingle())
-		return see_enemy(pActor);
+		return see_enemy(Actor());
 	else
 		return see_enemy(pActor);
 }
 
 void CControllerPsyHit::death_glide_start()
 {
-	CActor* pActor = Actor();
+	CActor* pActor = nullptr;
 	if (!check_conditions_final()) {
 		m_man->deactivate	(this);
 		return;
@@ -309,10 +311,10 @@ void CControllerPsyHit::death_glide_start()
 		}
 
 		// Start effector
-		CEffectorCam* ce = pActor->Cameras().GetCamEffector(eCEControllerPsyHit);
+		CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
 		VERIFY(!ce);
 
-	Fvector src_pos		= pActor->cam_Active()->vPosition;
+	Fvector src_pos		= Actor()->cam_Active()->vPosition;
 	Fvector target_pos	= m_object->Position();
 	target_pos.y		+= 1.2f;
 
@@ -323,7 +325,7 @@ void CControllerPsyHit::death_glide_start()
 	dir.normalize		();
 
 
-	float const actor_psy_immunity	= pActor->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
+	float const actor_psy_immunity	= Actor()->conditions().GetHitImmunity(ALife::eHitTypeTelepatic);
 
 	target_pos.mad		(src_pos,dir, 0.01f + actor_psy_immunity*(dist-4.8f) );
 
@@ -331,7 +333,7 @@ void CControllerPsyHit::death_glide_start()
 	float const base_fov	=	g_fov;
 	float const dest_fov	=	g_fov - (g_fov-10.f)*actor_psy_immunity;
 
-	pActor->Cameras().AddCamEffector(new CControllerPsyHitCamEffector(eCEControllerPsyHit, src_pos,target_pos,
+	Actor()->Cameras().AddCamEffector(new CControllerPsyHitCamEffector(eCEControllerPsyHit, src_pos,target_pos,
 			m_man->animation().motion_time(m_stage[1], m_object->Visual()),
 			base_fov, dest_fov));
 
@@ -342,7 +344,7 @@ void CControllerPsyHit::death_glide_start()
 	float h,p;
 	dir.getHP(h,p);
 	dir.setHP(h,p+PI_DIV_3);
-		pActor->character_physics_support()->movement()->ApplyImpulse(dir, pActor->GetMass() * 530.f);
+	Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
 
 	set_sound_state					(eStart);
 
@@ -358,10 +360,10 @@ void CControllerPsyHit::death_glide_start()
 	if (IsGameTypeSingle())
 	{
 		NET_Packet			P;
-	pActor->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, pActor->ID());
+		Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
 	P.w_u16				(INV_STATE_BLOCK_ALL);
 	P.w_u8				(u8(true));
-		pActor->u_EventSend(P);
+	Actor()->u_EventSend(P);
 	}
 	else {
 		NET_Packet			P;
@@ -377,22 +379,23 @@ void CControllerPsyHit::death_glide_start()
 	SControlDirectionData			*ctrl_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 	VERIFY							(ctrl_dir);
 	ctrl_dir->heading.target_speed	= 3.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(pActor->Position());
-
+	if (IsGameTypeSingle())
+		ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(Actor()->Position());
+	else
+		ctrl_dir->heading.target_angle = m_man->direction().angle_to_target(pActor->Position());
 	//////////////////////////////////////////////////////////////////////////
 }
 
 void CControllerPsyHit::death_glide_end()
 {
-	CActor* pActor = Actor();
 	if (IsGameTypeSingle()) {
 	CController *monster = smart_cast<CController *>(m_object);
 	monster->draw_fire_particles();
 
-	monster->m_sound_tube_hit_left.play_at_pos(pActor, Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-	monster->m_sound_tube_hit_right.play_at_pos(pActor, Fvector().set(1.f, 0.f, 1.f), sm_2D);
+	monster->m_sound_tube_hit_left.play_at_pos(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
+	monster->m_sound_tube_hit_right.play_at_pos(Actor(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
 
-	m_object->Hit_Psy		(pActor, monster->m_tube_damage);
+	m_object->Hit_Psy		(Actor(), monster->m_tube_damage);
 	}	
 	else
 	{
@@ -414,16 +417,15 @@ void CControllerPsyHit::update_frame()
 
 void CControllerPsyHit::set_sound_state(ESoundState state)
 {
-	CActor* pActor = Actor();
 	CController *monster = smart_cast<CController *>(m_object);
 	if (state == ePrepare) {
-		monster->m_sound_tube_prepare.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_prepare.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
 	} else 
 	if (state == eStart) {
 		if (monster->m_sound_tube_prepare._feedback())	monster->m_sound_tube_prepare.stop();
 
-		monster->m_sound_tube_start.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
-		monster->m_sound_tube_pull.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_start.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
+		monster->m_sound_tube_pull.play_at_pos(Actor(), Fvector().set(0.f, 0.f, 0.f), sm_2D);
 	} else 
 	if (state == eHit) {
 		if (monster->m_sound_tube_start._feedback())	monster->m_sound_tube_start.stop();
@@ -458,7 +460,6 @@ void CControllerPsyHit::hit()
 
 void CControllerPsyHit::stop ()
 {
-	CActor* pActor = Actor();
 	if (IsGameTypeSingle())
 	{
 	HUD().SetRenderable(true);
@@ -468,9 +469,9 @@ void CControllerPsyHit::stop ()
 			controller->CControlledActor::release();
 
 	// Stop camera effector
-	CEffectorCam* ce = pActor->Cameras().GetCamEffector(eCEControllerPsyHit);
+	CEffectorCam* ce = Actor()->Cameras().GetCamEffector(eCEControllerPsyHit);
 	if (ce)
-		pActor->Cameras().RemoveCamEffector(eCEControllerPsyHit);
+		Actor()->Cameras().RemoveCamEffector(eCEControllerPsyHit);
 	}
 	else
 	{
