@@ -16,10 +16,15 @@ extern "C"
 
 #include "lua_ext.h"
 
-static bool LoadScriptToGlobal(lua_State* L, const char* name)
+bool LoadScriptToGlobal(lua_State* L, const char* name, bool KernelScript)
 {
 	string_path FileName;
-	xr_string FixedFileName = "ixray_system\\" + xr_string(name);
+	xr_string FixedFileName = name;
+
+	if (KernelScript)
+	{
+		FixedFileName = "ixray_system\\" + FixedFileName;
+	}
 
 	if (FS.exist(FileName, "$game_scripts$", FixedFileName.data()))
 	{
