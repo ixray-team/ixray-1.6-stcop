@@ -67,7 +67,6 @@ void game_cl_freemp::shedule_Update(u32 dt)
 	if (!local_player)
 		return;
 
-	// ñèíõðîíèçàöèÿ èìåíè è äåíåã èãðîêîâ äëÿ InventoryOwner
 	for (auto cl : players)
 	{
 		game_PlayerState* ps = cl.second;

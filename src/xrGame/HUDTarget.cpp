@@ -195,7 +195,7 @@ void CHUDTarget::Render()
 				{
 					C = C_ON_ENEMY;
 				}
-				else if (!pActor || (pActor && CheckGameFlag(F_RENDER_ACTOR_HUD_INFO)))
+				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{
 					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E_);
 

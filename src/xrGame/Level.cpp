@@ -71,7 +71,6 @@ ENGINE_API bool g_dedicated_server;
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
-u32 g_game_flags[GAME_FLAGS_COUNT];
 
 float		g_cl_lvInterp		= 0.1f;
 u32			lvInterpSteps		= 0;
@@ -188,7 +187,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_chunk = 0;
 	spawn = 0;
 
-	setup_game_flags();
 }
 
 extern CAI_Space *g_ai_space;
@@ -318,19 +316,6 @@ CLevel::~CLevel()
 	FS.r_close(spawn);
 }
 
-
-
-void CLevel::setup_game_flags()
-{
-	g_game_flags[F_DISABLE_WEAPON_FIRE_WHEN_LOOKOUT] = eGameIDDeathmatch | eGameIDTeamDeathmatch | eGameIDArtefactHunt | eGameIDCaptureTheArtefact;
-	g_game_flags[F_DISABLE_RENDER_WEAPON_WHEN_LOOKOUT] = eGameIDDeathmatch | eGameIDTeamDeathmatch | eGameIDArtefactHunt | eGameIDCaptureTheArtefact;
-	g_game_flags[F_DISABLE_RENDER_WEAPON_CROSSHAIR_WHEN_LOOKOUT] = eGameIDDeathmatch | eGameIDTeamDeathmatch | eGameIDArtefactHunt | eGameIDCaptureTheArtefact;
-
-	g_game_flags[F_USE_BOLT] = eGameIDSingle | eGameIDFreeMP;
-	g_game_flags[F_USE_NO_ACTIVE_SLOT] = eGameIDSingle | eGameIDFreeMP;
-
-	g_game_flags[F_RENDER_ACTOR_HUD_INFO] = eGameIDFreeMP;
-}
 
 shared_str	CLevel::name		() const
 {
