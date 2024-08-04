@@ -202,6 +202,7 @@ float		ps_r3_dyn_wet_surf_far		= 30.f;				// 30.0f
 int			ps_r3_dyn_wet_surf_sm_res	= 256;				// 256
 float		ps_r2_gloss_factor = 3.14f;
 
+int			ps_r__detail_radius = 49;
 float		ps_r4_cas_sharpening = 0.0f;
 
 // Test float exported to shaders for development
@@ -635,6 +636,28 @@ public:
 };
 #endif
 
+class CCC_DetailRadius : public CCC_Integer
+{
+public:
+	CCC_DetailRadius(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
+	{
+	};
+	
+	virtual void Execute(LPCSTR args) {
+		CCC_Integer::Execute(args);
+
+		dm_current_size = iFloor((float)ps_r__detail_radius / 4) * 2;
+		dm_current_cache1_line = dm_current_size * 2 / 4;		// assuming cache1_count = 4
+		dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+		dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+		dm_current_fade = float(2 * dm_current_size) - .5f;
+	}
+	
+	virtual void Status(TStatus& S) {
+		CCC_Integer::Status(S);
+	}
+};
+
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
@@ -770,6 +793,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
 
 	// IX-Ray
+	CMD4(CCC_DetailRadius, "r__detail_radius", &ps_r__detail_radius, 49, 250);
 	CMD3(CCC_Mask, "r__no_ram_textures", &ps_r__common_flags, RFLAG_NO_RAM_TEXTURES);
 	CMD3(CCC_Mask, "r__mt_texture_load", &ps_r__common_flags, RFLAG_MT_TEX_LOAD);
 	CMD3(CCC_Token, "r_aa", &ps_r2_aa_type, aa_type_token);

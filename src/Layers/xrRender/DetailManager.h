@@ -24,25 +24,33 @@
 #else
 	const int	dm_max_decompress	= 7;
 #endif
-const int		dm_size				= 24;								//!
-const int 		dm_cache1_count		= 4;								// 
-const int 		dm_cache1_line		= dm_size*2/dm_cache1_count;		//! dm_size*2 must be div dm_cache1_count
-const int		dm_max_objects		= 512;
-const int		dm_obj_in_slot		= 4;
-const int		dm_cache_line		= dm_size+1+dm_size;
-const int		dm_cache_size		= dm_cache_line*dm_cache_line;
-const float		dm_fade				= float(2*dm_size)-.5f;
-const float		dm_slot_size		= DETAIL_SLOT_SIZE;
+const int 		dm_cache1_count = 4;
+const int		dm_max_objects = 64;
+const int		dm_obj_in_slot = 4;
+const float		dm_slot_size = DETAIL_SLOT_SIZE;
+
+const u32		dm_max_cache_size = 62001 * 2;
+extern u32		dm_size;
+extern u32 		dm_cache1_line;
+extern u32		dm_cache_line;
+extern u32		dm_cache_size;
+extern float	dm_fade;
+extern u32		dm_current_size;
+extern u32 		dm_current_cache1_line;
+extern u32		dm_current_cache_line;
+extern u32		dm_current_cache_size;
+extern float	dm_current_fade;
+extern float	ps_current_detail_density;
 
 class CDetailManager
 {
 public:
-	struct	SlotItem	{								// один кустик
+	struct	SlotItem	{								// РѕРґРёРЅ РєСѓСЃС‚РёРє
 		float						scale;
 		float						scale_calculated;
 		Fmatrix						mRotY;
 		u32							sector_id;
-		u32							vis_ID;				// индекс в visibility списке он же тип [не качается, качается1, качается2]
+		u32							vis_ID;				// РёРЅРґРµРєСЃ РІ visibility СЃРїРёСЃРєРµ РѕРЅ Р¶Рµ С‚РёРї [РЅРµ РєР°С‡Р°РµС‚СЃСЏ, РєР°С‡Р°РµС‚СЃСЏ1, РєР°С‡Р°РµС‚СЃСЏ2]
 		float						c_hemi;
 		float						c_sun;
 #if RENDER==R_R1
@@ -54,9 +62,9 @@ public:
 	using SlotItemVecIt = SlotItemVec::iterator;
 
 	struct	SlotPart	{                              	// 
-		u32							id;					// ID модельки
-		SlotItemVec					items;              // список кустиков
-		SlotItemVec					r_items[3];         // список кустиков for render
+		u32							id;					// ID РјРѕРґРµР»СЊРєРё
+		SlotItemVec					items;              // СЃРїРёСЃРѕРє РєСѓСЃС‚РёРєРѕРІ
+		SlotItemVec					r_items[3];         // СЃРїРёСЃРѕРє РєСѓСЃС‚РёРєРѕРІ for render
 	};
 	enum	SlotType	{
 		stReady						= 0,				// Ready to use
@@ -64,13 +72,13 @@ public:
 
 		stFORCEDWORD				= 0xffffffff
 	};
-	struct	Slot		{								// распакованый слот размером DETAIL_SLOT_SIZE
+	struct	Slot		{								// СЂР°СЃРїР°РєРѕРІР°РЅС‹Р№ СЃР»РѕС‚ СЂР°Р·РјРµСЂРѕРј DETAIL_SLOT_SIZE
 		struct{
 			u32						empty	:1;
 			u32						type	:1;
 			u32						frame	:30;
 		};
-		int							sx,sz;				// координаты слота X x Y
+		int							sx,sz;				// РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃР»РѕС‚Р° X x Y
 		vis_data					vis;				// 
 		SlotPart					G[dm_obj_in_slot];	// 
 
@@ -118,14 +126,15 @@ public:
 #ifndef _EDITOR    
 	xrXRC							xrc;
 #endif    
-	CacheSlot1 						cache_level1[dm_cache1_line][dm_cache1_line];
-	Slot*							cache		[dm_cache_line][dm_cache_line];	// grid-cache itself
-	svector<Slot*,dm_cache_size>	cache_task;									// non-unpacked slots
-	Slot							cache_pool	[dm_cache_size];				// just memory for slots
+	CacheSlot1** cache_level1;
+	Slot*** cache;									// grid-cache itself
+	svector<Slot*, dm_max_cache_size>	cache_task; // non-unpacked slots
+	Slot* cache_pool;								// just memory for slots
+
 	int								cache_cx;
 	int								cache_cz;
 
-	PSS								poolSI;										// pool из которого выделяются SlotItem
+	PSS								poolSI;										// pool РёР· РєРѕС‚РѕСЂРѕРіРѕ РІС‹РґРµР»СЏСЋС‚СЃСЏ SlotItem
 
 	void							UpdateVisibleM	();
 	void							UpdateVisibleS	();

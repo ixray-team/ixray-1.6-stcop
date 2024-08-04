@@ -15,6 +15,19 @@
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
 
+u32			dm_size = 24;
+u32 		dm_cache1_line = 12;
+u32			dm_cache_line = 49;
+u32			dm_cache_size = 2401;
+float		dm_fade = 47.5;
+u32			dm_current_size = 24;
+u32 		dm_current_cache1_line = 12;
+u32			dm_current_cache_line = 49;
+u32			dm_current_cache_size = 2401;
+float		dm_current_fade = 47.5;
+float		ps_current_detail_density = 0.6;
+float		ps_current_detail_scale = 1.f;
+
 //--------------------------------------------------- Decompression
 static int magic4x4[4][4] =
 {
@@ -78,14 +91,65 @@ CDetailManager::CDetailManager	()
 	m_time_rot_2 = 0;
 	m_time_pos	= 0;
 	m_global_time_old = 0;
+
+	dm_size = dm_current_size;
+	dm_cache_line = dm_current_cache_line;
+	dm_cache1_line = dm_current_cache1_line;
+	dm_cache_size = dm_current_cache_size;
+	dm_fade = dm_current_fade;
+	ps_r__Detail_density = ps_current_detail_density;
+	cache_level1 = (CacheSlot1**)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1*));
+	for (u32 i = 0; i < dm_cache1_line; ++i)
+	{
+		cache_level1[i] = (CacheSlot1*)Memory.mem_alloc(dm_cache1_line * sizeof(CacheSlot1));
+		for (u32 j = 0; j < dm_cache1_line; ++j)
+		{
+			new (&(cache_level1[i][j])) CacheSlot1();
+		}
+	}
+
+	cache = (Slot***)Memory.mem_alloc(dm_cache_line * sizeof(Slot**));
+	for (u32 i = 0; i < dm_cache_line; ++i)
+	{
+		cache[i] = (Slot**)Memory.mem_alloc(dm_cache_line * sizeof(Slot*));
+	}
+	cache_pool = (Slot*)Memory.mem_alloc(dm_cache_size * sizeof(Slot));
+	
+	for (u32 i = 0; i < dm_cache_size; ++i)
+	{
+		new (&(cache_pool[i])) Slot();
+	}
 }
 
 CDetailManager::~CDetailManager	()
 {
-	if (dtFS) {
+	if (dtFS)
+	{
 		FS.r_close(dtFS);
 		dtFS = 0;
 	}
+
+	for (u32 i = 0; i < dm_cache_size; ++i)
+	{
+		cache_pool[i].~Slot();
+	}
+	Memory.mem_free(cache_pool);
+
+	for (u32 i = 0; i < dm_cache_line; ++i)
+	{
+		Memory.mem_free(cache[i]);
+	}
+	Memory.mem_free(cache);
+
+	for (u32 i = 0; i < dm_cache1_line; ++i)
+	{
+		for (u32 j = 0; j < dm_cache1_line; ++j)
+		{
+			cache_level1[i][j].~CacheSlot1();
+		}
+		Memory.mem_free(cache_level1[i]);
+	}
+	Memory.mem_free(cache_level1);
 }
 /*
 */
