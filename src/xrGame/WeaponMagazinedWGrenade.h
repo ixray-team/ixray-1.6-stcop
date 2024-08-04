@@ -62,16 +62,9 @@ public:
 	virtual float Weight() const;
 
 	//виртуальные функции для проигрывания анимации HUD
-	virtual void	PlayAnimShow		();
-	virtual void	PlayAnimHide		();
-	virtual void	PlayAnimReload		();
-	virtual void	PlayAnimIdle		();
-	virtual void	PlayAnimShoot		();
 	virtual void	PlayAnimModeSwitch	();
-	virtual void	PlayAnimBore		();
-	virtual void	PlayAnimIdleMoving	();
-	virtual void	PlayAnimIdleSprint	();
-	virtual void	PlayAnimAim			();
+	virtual void	PlayAnimShoot		();
+	virtual std::string	NeedAddSuffix(std::string M);
 	
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );
