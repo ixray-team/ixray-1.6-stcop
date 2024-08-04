@@ -2,6 +2,7 @@
 #include "bolt.h"
 #include "../xrphysics/PhysicsShell.h"
 #include "Inventory.h"
+#include "Actor.h"
 
 CBolt::CBolt(void) 
 {
