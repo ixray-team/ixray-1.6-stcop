@@ -145,6 +145,11 @@ protected:
 	shared_str		m_sFireModeMask_3;
 	shared_str		m_sFireModeMask_a;
 
+	RStringVec m_sFireModeBonesTotal;
+	RStringVec m_sFireModeBone_1;
+	RStringVec m_sFireModeBone_3;
+	RStringVec m_sFireModeBone_a;
+
 	//переменная блокирует использование
 	//только разных типов патронов
 	bool m_bLockType;
@@ -162,6 +167,9 @@ public:
 
 protected:
 	virtual bool	install_upgrade_impl( LPCSTR section, bool test );
+
+	virtual void UpdateAddonsVisibility();
+	virtual void UpdateHUDAddonsVisibility();
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}

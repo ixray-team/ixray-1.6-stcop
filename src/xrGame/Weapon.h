@@ -152,8 +152,8 @@ public:
 	virtual bool UseScopeTexture() {return true;};
 
 	//обновление видимости для косточек аддонов
-			void UpdateAddonsVisibility();
-			void UpdateHUDAddonsVisibility();
+	virtual void UpdateAddonsVisibility();
+	virtual void UpdateHUDAddonsVisibility();
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
