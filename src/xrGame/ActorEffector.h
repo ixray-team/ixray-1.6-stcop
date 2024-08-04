@@ -31,6 +31,11 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_F
 void AddEffector		(CActor* A, int type, const shared_str& sect_name, CEffectorController*);
 void RemoveEffector		(CActor* A, int type);
 
+void add_pp_effector	(LPCSTR fn, int id, bool cyclic);
+void remove_pp_effector	(int id);
+void set_pp_effector_factor(int id, float f, float f_sp);
+void set_pp_effector_factor2(int id, float f);
+
 class CEffectorController
 {
 protected:
