@@ -35,6 +35,8 @@ enum EActorKeyflags
 {
 	kfFIRE = 1,
 	kfUNZOOM = 2,
+	kfHEADLAMP = 3,
+	kfNIGHTVISION = 4,
 };
 
 enum EMoveCommand
