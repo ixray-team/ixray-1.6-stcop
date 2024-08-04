@@ -1001,7 +1001,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 	}
 }
 #include "../../xrEngine/string_table.h"
-void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
+void CUIActorMenu::PropertiesBoxForAddon(PIItem item, bool& b_show)
 {
 	//присоединение аддонов к активному слоту (2 или 3)
 
@@ -1013,67 +1013,65 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 	PIItem	item_in_slot_2 = inv->ItemFromSlot(INV_SLOT_2);
 	PIItem	item_in_slot_3 = inv->ItemFromSlot(INV_SLOT_3);
 
-	if(!item_in_slot_2 && !item_in_slot_3)	return;
+	if (!item_in_slot_2 && !item_in_slot_3) return;
 
-	if ( pScope )
+	if (pScope)
 	{
-		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pScope) )
+		if (item_in_slot_2 && item_in_slot_2->CanAttach(pScope))
 		{
 			shared_str str = g_pStringTable->translate("st_attach_scope_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_scope_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pScope) )
+
+		if (item_in_slot_3 && item_in_slot_3->CanAttach(pScope))
 		{
 			shared_str str = g_pStringTable->translate("st_attach_scope_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_scope_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem(str.c_str(), (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
+
 		return;
 	}
 
-	if ( pSilencer )
+	if (pSilencer)
 	{
 		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pSilencer) )
 		{
 			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem( str.c_str(), (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pSilencer) )
+		if (item_in_slot_3 && item_in_slot_3->CanAttach(pSilencer))
 		{
 			shared_str str = g_pStringTable->translate("st_attach_silencer_to_pistol");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_silencer_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem( str.c_str(), (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
+
 		return;
 	}
 
-	if ( pGrenadeLauncher )
+	if (pGrenadeLauncher)
 	{
-		if ( item_in_slot_2 && item_in_slot_2->CanAttach(pGrenadeLauncher) )
+		if (item_in_slot_2 && item_in_slot_2->CanAttach(pGrenadeLauncher))
 		{
 			shared_str str = g_pStringTable->translate("st_attach_gl_to_rifle");
 			str.printf("%s %s", str.c_str(), item_in_slot_2->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_gl_to_pistol",  (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem( str.c_str(), (void*)item_in_slot_2, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
-		if ( item_in_slot_3 && item_in_slot_3->CanAttach(pGrenadeLauncher) )
+
+		if (item_in_slot_3 && item_in_slot_3->CanAttach(pGrenadeLauncher))
 		{
 			shared_str str = g_pStringTable->translate("st_attach_gl_to_rifle");
 			str.printf("%s %s", str.c_str(), item_in_slot_3->m_name.c_str());
-			m_UIPropertiesBox->AddItem( str.c_str(),  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-//			m_UIPropertiesBox->AddItem( "st_attach_gl_to_rifle",  (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON );
-			b_show			= true;
+			m_UIPropertiesBox->AddItem( str.c_str(), (void*)item_in_slot_3, INVENTORY_ATTACH_ADDON);
+			b_show = true;
 		}
 	}
 }
