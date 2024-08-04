@@ -63,7 +63,6 @@ public:
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimModeSwitch	();
-	virtual void	PlayAnimShoot		();
 	virtual std::string	NeedAddSuffix(std::string M);
 
 	virtual bool	IsGrenadeMode() { return m_bGrenadeMode; }
