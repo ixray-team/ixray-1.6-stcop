@@ -1908,7 +1908,7 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd)
 		else
 			bPrevModeKeyPressed = true;
 
-		if (GetDetector() && !GetDetector()->GetState() != CCustomDetector::eIdle)
+		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
 			return false;
 	}
 
