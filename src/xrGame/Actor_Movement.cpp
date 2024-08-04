@@ -604,11 +604,55 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 		if( (mstate_rl&mcLLookout) && (mstate_rl&mcRLookout) )
 			tgt_roll	= 0.0f;
 	}
-	if (!fsimilar(tgt_roll,r_torso_tgt_roll,EPS)){
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+	{
+		LookoutFunctionReplace(&r_torso_tgt_roll, tgt_roll, dt);
+		r_torso_tgt_roll = angle_normalize_signed(r_torso_tgt_roll);
+		return;
+	}
+
+	if (!fsimilar(tgt_roll,r_torso_tgt_roll,EPS))
+	{
 		r_torso_tgt_roll = angle_inertion_var(r_torso_tgt_roll, tgt_roll, 0.f, CurrentHeight * PI_MUL_2, PI_DIV_2, dt);
 		r_torso_tgt_roll= angle_normalize_signed(r_torso_tgt_roll);
 	}
 }
+
+void CActor::LookoutFunctionReplace(float* cur_roll, float tgt_roll, float dt)
+{
+    float dx, delta;
+    float speed, koef, ampl_k, dx_pow;
+
+    speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 1.0f);
+    ampl_k = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
+    dx_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
+
+    CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
+    if (itm)
+	{
+		koef = READ_IF_EXISTS(pSettings, r_float, itm->HudSection(), "lookout_speed_koef", 1.0f);
+		speed *= koef;
+
+		koef = READ_IF_EXISTS(pSettings, r_float, itm->HudSection(), "lookout_ampl_k", 1.0f);
+		ampl_k *= koef;
+    }
+
+    tgt_roll = tgt_roll * ampl_k;
+
+    dx = tgt_roll - *cur_roll;
+    delta = abs(pow(abs(dx), dx_pow) * dt * speed);
+
+    if (dx < 0.0f)
+        delta *= -1.0f;
+
+    if (abs(delta) > abs(dx))
+        delta = dx;
+
+    *cur_roll += delta;
+}
+
 bool CActor::g_LadderOrient()
 {
 	Fvector leader_norm;
