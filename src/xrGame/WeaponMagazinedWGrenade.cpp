@@ -139,8 +139,9 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 		else
 			PlaySound("sndReloadG", get_LastFP2());
 
-		PlayHUDMotion("anm_reload", FALSE, this, GetState());
-		SetPending			(TRUE);
+		PlayHUDMotion("anm_reload", FALSE, GetState());
+		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
+		SetPending(TRUE);
 	}
 	else 
 	     inherited::switch2_Reload();
@@ -548,7 +549,7 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
 	VERIFY(GetState() == eSwitch);
 
-	PlayHUDMotion("anm_switch", TRUE, this, eSwitch);
+	PlayHUDMotion("anm_switch", TRUE, eSwitch);
 }
 
 xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
