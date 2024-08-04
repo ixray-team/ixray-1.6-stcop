@@ -150,10 +150,21 @@ void CUICharacterInfo::InitCharacter(u16 id)
 	CCharacterInfo				chInfo;
 	chInfo.Init					(T);
 
-	if ( m_icons[eName]       ) {	m_icons[eName      ]->TextItemControl()->SetTextST( T->m_character_name.c_str()                      );	}
-	if ( m_icons[eRank]       ) {	m_icons[eRank      ]->TextItemControl()->SetTextST( GetRankAsText(chInfo.Rank().value())             );	}
-	if ( m_icons[eCommunity]  ) {	m_icons[eCommunity ]->TextItemControl()->SetTextST( chInfo.Community().id().c_str()                  );	}
-	if ( m_icons[eReputation] ) {	m_icons[eReputation]->TextItemControl()->SetTextST( GetReputationAsText(chInfo.Reputation().value()) );	}
+	if(m_icons[eName]) {
+		m_icons[eName]->TextItemControl()->SetTextST(T->m_character_name.c_str());
+	}
+
+	if(m_icons[eRank]) {
+		m_icons[eRank]->TextItemControl()->SetTextST(GetRankAsText(chInfo.Rank().value()));
+	}
+
+	if(m_icons[eCommunity]) {
+		m_icons[eCommunity]->TextItemControl()->SetTextST(chInfo.Community().id().c_str());
+	}
+
+	if(m_icons[eReputation]) {
+		m_icons[eReputation]->TextItemControl()->SetTextST(GetReputationAsText(chInfo.Reputation().value()));
+	}
 
 	// Bio
 	if (pUIBio && pUIBio->IsEnabled())
@@ -224,35 +235,36 @@ void CUICharacterInfo::InitCharacter(u16 id)
 */
 }
 
-void CUICharacterInfo::InitCharacterMP( LPCSTR player_name, LPCSTR player_icon )
+void CUICharacterInfo::InitCharacterMP(LPCSTR player_name, LPCSTR player_icon)
 {
 	ClearInfo();
-	
-	if ( m_icons[eName] )
+
+	if(m_icons[eName])
 	{
-		m_icons[eName]->TextItemControl()->SetTextST( player_name );
-		m_icons[eName]->Show( true );
+		m_icons[eName]->TextItemControl()->SetTextST(player_name);
+		m_icons[eName]->Show(player_name && player_name[0]);
 	}
 
-	if ( m_icons[eIcon] )
+	if(m_icons[eIcon])
 	{
-		m_icons[eIcon]->InitTexture( player_icon );
-		m_icons[eIcon]->Show( true );
+		m_icons[eIcon]->InitTexture(player_icon);
+		m_icons[eIcon]->Show(true);
 	}
-	if ( m_icons[eIconOver] )
+
+	if(m_icons[eIconOver])
 	{
-		m_icons[eIconOver]->Show( true );
+		m_icons[eIconOver]->Show(true);
 	}
 }
 
-void  CUICharacterInfo::SetRelation( ALife::ERelationType relation, CHARACTER_GOODWILL goodwill )
+void  CUICharacterInfo::SetRelation(ALife::ERelationType relation, CHARACTER_GOODWILL goodwill)
 {
-	if ( !m_icons[eRelation] || !m_icons[eRelationCaption] )
+	if(!m_icons[eRelation] || !m_icons[eRelationCaption])
 	{
 		return;
 	}
-	m_icons[eRelation]->TextItemControl()->SetTextColor( GetRelationColor(  relation ) );
-	m_icons[eRelation]->TextItemControl()->SetTextST(    GetGoodwillAsText( goodwill ) );
+	m_icons[eRelation]->TextItemControl()->SetTextColor(GetRelationColor(relation));
+	m_icons[eRelation]->TextItemControl()->SetTextST(GetGoodwillAsText(goodwill));
 }
 
 
@@ -260,34 +272,37 @@ void  CUICharacterInfo::SetRelation( ALife::ERelationType relation, CHARACTER_GO
 
 void CUICharacterInfo::ResetAllStrings()
 {
-	if(m_icons[eName])			m_icons[eName]->TextItemControl()->SetText			("");
-	if(m_icons[eRank])			m_icons[eRank]->TextItemControl()->SetText			("");
-	if(m_icons[eCommunity])		m_icons[eCommunity]->TextItemControl()->SetText		("");
-	if(m_icons[eReputation])	m_icons[eReputation]->TextItemControl()->SetText	("");
-	if(m_icons[eRelation])		m_icons[eRelation]->TextItemControl()->SetText		("");
+	if(m_icons[eName])			m_icons[eName]->TextItemControl()->SetText("");
+	if(m_icons[eRank])			m_icons[eRank]->TextItemControl()->SetText("");
+	if(m_icons[eCommunity])		m_icons[eCommunity]->TextItemControl()->SetText("");
+	if(m_icons[eReputation])	m_icons[eReputation]->TextItemControl()->SetText("");
+	if(m_icons[eRelation])		m_icons[eRelation]->TextItemControl()->SetText("");
 }
 
 void CUICharacterInfo::UpdateRelation()
 {
-	if ( !m_icons[eRelation] || !m_icons[eRelationCaption] )
+	if(!m_icons[eRelation] || !m_icons[eRelationCaption])
 	{
 		return;
 	}
 
-	if ( Actor()->ID() == m_ownerID || !hasOwner() )
-	{
+	if(Actor()->ID() == m_ownerID || !hasOwner()) {
 		m_icons[eRelationCaption]->Show(false);
 		m_icons[eRelation]->Show(false);
 	}
 	else
 	{
-		m_icons[eRelationCaption]->Show(true);
-		m_icons[eRelation]->Show(true);
+		bool showRelation = m_icons[eName]->IsShown();
 
-		CSE_ALifeTraderAbstract* T = ch_info_get_from_id	(m_ownerID);
-		CSE_ALifeTraderAbstract* TA = ch_info_get_from_id	(Actor()->ID());
+		m_icons[eRelationCaption]->Show(showRelation);
+		m_icons[eRelation]->Show(showRelation);
 
-		SetRelation( RELATION_REGISTRY().GetRelationType( T, TA ), RELATION_REGISTRY().GetAttitude( T, TA ) );
+		if(showRelation) {
+			CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
+			CSE_ALifeTraderAbstract* TA = ch_info_get_from_id(Actor()->ID());
+
+			SetRelation(RELATION_REGISTRY().GetRelationType(T, TA), RELATION_REGISTRY().GetAttitude(T, TA));
+		}
 	}
 }
 
@@ -300,13 +315,13 @@ void CUICharacterInfo::Update()
 {
 	inherited::Update();
 
-	if ( hasOwner() && ( m_bForceUpdate ||(Device.dwFrame%50 == 0) )  )
+	if(hasOwner() && (m_bForceUpdate || (Device.dwFrame % 50 == 0)))
 	{
 		m_bForceUpdate = false;
+		CSE_ALifeTraderAbstract* T = ::detail::object_exists_in_alife_registry(m_ownerID) ? ch_info_get_from_id(m_ownerID) : nullptr;
 
-		CSE_ALifeTraderAbstract* T = ::detail::object_exists_in_alife_registry(m_ownerID) ?
-									 ch_info_get_from_id(m_ownerID) : nullptr;
-		if (nullptr==T){
+		if(nullptr == T)
+		{
 			m_ownerID = u16(-1);
 			return;
 		}
@@ -315,7 +330,7 @@ void CUICharacterInfo::Update()
 			UpdateRelation();
 		}
 
-		if ( m_icons[eIcon] )
+		if(m_icons[eIcon])
 		{
 			CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
 			if ( pCreature && !pCreature->g_Alive() )
