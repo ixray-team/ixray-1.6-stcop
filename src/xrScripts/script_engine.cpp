@@ -10,6 +10,7 @@
 #include "pch_script.h"
 #include "script_engine.h"
 #include "../xrEngine/IGame_ObjectFactory.h"
+#include "../xrCore/xrAddons.h"
 #include "script_process.h"
 #include "lua_ext.h"
 
@@ -176,6 +177,18 @@ void CScriptEngine::init()
 	{
 		DebbugerAttach();
 	}
+
+	if (g_pAddonsManager != nullptr)
+	{
+		for (auto& Addon : g_pAddonsManager->Addons)
+		{
+			if (Addon.ScriptInit.size() == 0)
+				continue;
+
+			LoadScriptToGlobal(lua(), Addon.ScriptInit.c_str(), false);
+		}
+	}
+
 #endif
 
 	add_script_process(ScriptEngine::eScriptProcessorHelper, new CScriptProcess("ImHelper", ""));

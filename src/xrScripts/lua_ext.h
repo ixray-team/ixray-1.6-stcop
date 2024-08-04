@@ -13,6 +13,7 @@ struct luajit
 };
 
 void lua_init_ext(lua_State* L);
+bool LoadScriptToGlobal(lua_State* L, const char* name, bool KernelScript = true);
 #endif
 
 SCRIPTS_API void DebbugerAttach();
