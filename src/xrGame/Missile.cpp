@@ -424,6 +424,23 @@ void CMissile::OnAnimationEnd(u32 state)
 	}
 }
 
+bool CMissile::SendDeactivateItem()
+{
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
+	if (!isGuns)
+	{
+		if (pActor && (GetState() == eReady || GetState() == eThrow))
+			return false;
+	}
+	else
+	{
+		if (pActor && GetState() != eIdle && GetState() != eShowing)
+			return false;
+	}
+
+	return inherited::SendDeactivateItem();
+}
 
 void CMissile::UpdatePosition(const Fmatrix& trans)
 {
