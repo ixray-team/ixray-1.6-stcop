@@ -150,6 +150,7 @@ public:
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 	virtual xr_string GetActualCurrentAnim() const;
+	using TAnimationEffector = void(*)(CHudItem*);
 
 protected:
 
@@ -179,8 +180,8 @@ protected:
 
 	bool						m_bDisableBore;
 	bool						SwitchSprint;
-
-	using TAnimationEffector = void(*)(CHudItem*);
+	TAnimationEffector			lock_time_callback;
+	u32							mark;
 
 private:
 	CPhysicItem					*m_object;

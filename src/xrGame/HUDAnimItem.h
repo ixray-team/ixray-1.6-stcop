@@ -8,8 +8,6 @@ class CHUDAnimItem :
 	shared_str CurrentMotion;
 	u16 OldSlot = 0;
 	bool DetectorActive = false;
-	TAnimationEffector callback = nullptr;
-	u32 mark = 0;
 
 public:
 	CHUDAnimItem() = default;
