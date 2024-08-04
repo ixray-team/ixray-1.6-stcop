@@ -998,27 +998,6 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 			m_UIPropertiesBox->AddItem("st_unload_magazine", nullptr, INVENTORY_UNLOAD_MAGAZINE);
 			b_show = true;
 		}
-
-		b = pWeapon->m_bAmmoInChamber && (pWeapon->iAmmoInChamberElapsed || pWeapon->IsMisfire()) && !pWeapon->IsGrenadeMode() && pWeapon->GetState() != CWeapon::eReload && pWeapon->GetState() != CWeapon::eUnjam;
-
-		if (!b)
-		{
-			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
-			{
-				CWeapon* weap = smart_cast<CWeapon*>((CWeapon*)cell_item->Child(i)->m_pData);
-				if (weap->m_bAmmoInChamber && weap->iAmmoInChamberElapsed && !weap->IsGrenadeMode())
-				{
-					b = true;
-					break;
-				}
-			}
-		}
-
-		if (b)
-		{
-			m_UIPropertiesBox->AddItem("st_unload_chamber", NULL, INVENTORY_UNLOAD_CHAMBER);
-			b_show = true;
-		}
 	}
 }
 #include "../../xrEngine/string_table.h"
@@ -1320,44 +1299,6 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 				if ( child_weap_mag )
 				{
 					child_weap_mag->UnloadMagazine();
-				}
-			}
-			break;
-		}
-	case INVENTORY_UNLOAD_CHAMBER:
-		{
-			CWeapon* weap = smart_cast<CWeapon*>((CWeapon*)cell_item->m_pData);
-			if (!weap)
-				break;
-
-			if (weap->IsMisfire())
-			{
-				if (weap->GetState() == CWeapon::eIdle)
-					weap->SwitchState(CWeapon::eUnjam);
-				else
-					weap->SetMisfireStatus(false);
-			}
-			else
-			{
-				weap->UnloadChamber();
-				weap->GiveAmmoFromMagToChamber();
-			}
-
-			for ( u32 i = 0; i < cell_item->ChildsCount(); ++i )
-			{
-				CUICellItem* child_itm = cell_item->Child(i);
-				CWeapon* child_weap	= smart_cast<CWeapon*>((CWeapon*)child_itm->m_pData);
-				if (child_weap->IsMisfire())
-				{
-					if (child_weap->GetState() == CWeapon::eIdle)
-						child_weap->SwitchState(CWeapon::eUnjam);
-					else
-						child_weap->SetMisfireStatus(false);
-				}
-				else
-				{
-					child_weap->UnloadChamber();
-					child_weap->GiveAmmoFromMagToChamber();
 				}
 			}
 			break;
