@@ -33,6 +33,10 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_silencer(section, test);
 	result |= install_upgrade_hud_sect_scope(section, test);
 	result |= install_upgrade_hud_sect_gl(section, test);
+
+	ProcessUpgrade();
+	ProcessScope();
+
 	return result;
 }
 
