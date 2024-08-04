@@ -35,6 +35,7 @@
 #include "../PDA.h"
 
 #include "../actor_defs.h"
+#include "../InventoryBox.h"
 
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
@@ -854,8 +855,7 @@ void CUIActorMenu::ActivatePropertiesBox()
 		PropertiesBoxForAddon( item, b_show );
 		PropertiesBoxForUsing( item, b_show );
 		PropertiesBoxForPlaying(item, b_show);
-		if ( m_currMenuMode == mmInventory )
-			PropertiesBoxForDrop( cell_item, item, b_show );
+		PropertiesBoxForDrop(cell_item, item, b_show);
 	}
 	//else if ( m_currMenuMode == mmDeadBodySearch )
 	//{
@@ -995,7 +995,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 		}
 		if ( b )
 		{
-			m_UIPropertiesBox->AddItem( "st_unload_magazine",  nullptr, INVENTORY_UNLOAD_MAGAZINE );
+			m_UIPropertiesBox->AddItem("st_unload_magazine", nullptr, INVENTORY_UNLOAD_MAGAZINE);
 			b_show = true;
 		}
 	}
@@ -1116,16 +1116,27 @@ void CUIActorMenu::PropertiesBoxForPlaying(PIItem item, bool& b_show)
 	b_show = true;
 }
 
-void CUIActorMenu::PropertiesBoxForDrop( CUICellItem* cell_item, PIItem item, bool& b_show )
+void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, bool& b_show)
 {
-	if ( !item->IsQuestItem() )
+	if(!item->IsQuestItem())
 	{
-		m_UIPropertiesBox->AddItem( "st_drop", nullptr, INVENTORY_DROP_ACTION );
-		b_show = true;
+		if(m_currMenuMode != mmDeadBodySearch) {
+			m_UIPropertiesBox->AddItem("st_drop", nullptr, INVENTORY_DROP_ACTION);
+			b_show = true;
 
-		if ( cell_item->ChildsCount() )
-		{
-			m_UIPropertiesBox->AddItem( "st_drop_all", (void*)33, INVENTORY_DROP_ACTION );
+			if(cell_item->ChildsCount()) {
+				m_UIPropertiesBox->AddItem("st_drop_all", (void*)33, INVENTORY_DROP_ACTION);
+			}
+		}
+		else {
+			if(item->parent_id() == m_pActorInvOwner->object_id()) {
+				m_UIPropertiesBox->AddItem("st_move_to", nullptr, INVENTORY_DROP_ACTION);
+				b_show = true;
+
+				if(cell_item->ChildsCount()) {
+					m_UIPropertiesBox->AddItem("st_move_all", (void*)33, INVENTORY_DROP_ACTION);
+				}
+			}
 		}
 	}
 }
@@ -1162,13 +1173,26 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	case INVENTORY_DROP_ACTION:
 		{
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
-			if ( d_ == (void*)33 )
-			{
-				DropAllCurrentItem();
+			if(m_currMenuMode != mmDeadBodySearch) {
+				if(d_ == (void*)33) {
+					DropAllCurrentItem();
+				}
+				else {
+					SendEvent_Item_Drop(item, m_pActorInvOwner->object_id());
+				}
 			}
-			else
-			{
-				SendEvent_Item_Drop( item, m_pActorInvOwner->object_id() );
+			else {
+				auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
+
+				if(d_ == (void*)33) {
+					for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
+						CUICellItem* child_itm = cell_item->Child(i);
+						PIItem child_iitm = (PIItem)(child_itm->m_pData);
+						move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
+					}
+				}
+
+				move_item_from_to(item->parent_id(), ownerID, item->object_id());
 			}
 			break;
 		}
