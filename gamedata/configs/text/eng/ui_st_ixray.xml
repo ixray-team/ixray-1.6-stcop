@@ -156,4 +156,25 @@
     <string id="ui_mm_saturation">
         <text>Saturation</text>
     </string>
+    <string id="st_take_to">
+        <text>take</text>
+    </string>
+    <string id="st_take_all">
+        <text>take all</text>
+    </string>
+    <string id="ui_st_put_all">
+        <text>Stash all</text>
+    </string>
+    <string id="ui_st_put_all_hint">
+        <text>Stash all items</text>
+    </string>
+    <string id="st_move_to">
+        <text>move</text>
+    </string>
+    <string id="st_move_all">
+        <text>move all</text>
+    </string>
+    <string id="renderer_r4_dx10">
+        <text>Enhanced full dyn. lighting (DX10)</text>
+    </string>
 </string_table>
