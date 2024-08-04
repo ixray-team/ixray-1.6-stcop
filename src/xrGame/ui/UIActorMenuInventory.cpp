@@ -833,14 +833,13 @@ void CUIActorMenu::TryHidePropertiesBox()
 void CUIActorMenu::ActivatePropertiesBox()
 {
 	TryHidePropertiesBox();
-	if ( !(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch || m_currMenuMode == mmUpgrade) )
-	{
+
+	if(!(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch || m_currMenuMode == mmUpgrade)) {
 		return;
 	}
 
 	PIItem item = CurrentIItem();
-	if ( !item )
-	{
+	if(!item) {
 		return;
 	}
 
@@ -848,40 +847,37 @@ void CUIActorMenu::ActivatePropertiesBox()
 	m_UIPropertiesBox->RemoveAll();
 	bool b_show = false;
 
-	if ( m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch)
-	{
-		PropertiesBoxForSlots( item, b_show );
-		PropertiesBoxForWeapon( cell_item, item, b_show );
-		PropertiesBoxForAddon( item, b_show );
-		PropertiesBoxForUsing( item, b_show );
+	if(m_currMenuMode == mmInventory || m_currMenuMode == mmDeadBodySearch) {
+		PropertiesBoxForSlots(item, b_show);
+		PropertiesBoxForWeapon(cell_item, item, b_show);
+		PropertiesBoxForAddon(item, b_show);
+		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
 	}
-	//else if ( m_currMenuMode == mmDeadBodySearch )
-	//{
-	//	PropertiesBoxForUsing( item, b_show );
-	//}
-	else if ( m_currMenuMode == mmUpgrade )
-	{
-		PropertiesBoxForRepair( item, b_show );
+	else if(m_currMenuMode == mmUpgrade) {
+		PropertiesBoxForRepair(item, b_show);
 	}
 
-	if ( b_show )
-	{
+	if(b_show) {
 		m_UIPropertiesBox->AutoUpdateSize();
 
 		Fvector2 cursor_pos_;
-		Frect						vis_rect;
-		GetAbsoluteRect				(vis_rect);
-		cursor_pos_					= GetUICursor().GetCursorPosition();
-		cursor_pos_.sub				(vis_rect.lt);
-		m_UIPropertiesBox->Show		(vis_rect, cursor_pos_);
-		PlaySnd						(eProperties);
+		Frect vis_rect;
+		GetAbsoluteRect(vis_rect);
+		cursor_pos_ = GetUICursor().GetCursorPosition();
+		cursor_pos_.sub(vis_rect.lt);
+		m_UIPropertiesBox->Show(vis_rect, cursor_pos_);
+		PlaySnd(eProperties);
 	}
 }
 
 void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 {
+	if(item->parent_id() != m_pActorInvOwner->object_id()) {
+		return;
+	}
+
 	CCustomOutfit* pOutfit	= smart_cast<CCustomOutfit*>( item );
 	CHelmet* pHelmet		= smart_cast<CHelmet*>		( item );
 	CInventory&  inv		= m_pActorInvOwner->inventory();
@@ -889,6 +885,10 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
 	bool bAlreadyDressed	= false;
 	u16 cur_slot			= item->BaseSlot();
+
+	if(cur_slot == GRENADE_SLOT) {
+		return;
+	}
 
 	if (	!pOutfit && !pHelmet &&
 			cur_slot != NO_ACTIVE_SLOT &&
@@ -1139,6 +1139,14 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 			}
 		}
 	}
+	if(item->parent_id() != m_pActorInvOwner->object_id()) {
+		m_UIPropertiesBox->AddItem("st_take_to", nullptr, INVENTORY_DROP_ACTION);
+		b_show = true;
+
+		if(cell_item->ChildsCount()) {
+			m_UIPropertiesBox->AddItem("st_take_all", (void*)33, INVENTORY_DROP_ACTION);
+		}
+	}
 }
 
 void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
@@ -1182,17 +1190,34 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 				}
 			}
 			else {
-				auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
+				if(item->parent_id() == m_pActorInvOwner->object_id()) {
+					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
 
-				if(d_ == (void*)33) {
-					for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
-						CUICellItem* child_itm = cell_item->Child(i);
-						PIItem child_iitm = (PIItem)(child_itm->m_pData);
-						move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
+					if(d_ == (void*)33) {
+						for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
+							CUICellItem* child_itm = cell_item->Child(i);
+							PIItem child_iitm = (PIItem)(child_itm->m_pData);
+							move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
+						}
 					}
-				}
 
-				move_item_from_to(item->parent_id(), ownerID, item->object_id());
+					move_item_from_to(item->parent_id(), ownerID, item->object_id());
+				}
+				else {
+					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
+
+					if(d_ == (void*)33) {
+						u32 Iter = 0;
+						while(Iter < cell_item->ChildsCount()) {
+							CUICellItem* child_itm = cell_item->Child(Iter);
+							if(!ToBag(child_itm, false)) {
+								++Iter;
+							}
+						}
+					}
+
+					ToBag(cell_item, false);
+				}
 			}
 			break;
 		}
