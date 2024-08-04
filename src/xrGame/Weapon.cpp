@@ -23,6 +23,7 @@
 #include "ui/UIXmlInit.h"
 #include "Torch.h"
 #include "script_game_object.h"
+#include "WeaponMagazinedWGrenade.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -101,6 +102,8 @@ CWeapon::CWeapon()
 
 	bIsNeedCallDet = false;
 	_last_update_time = Device.dwTimeGlobal;
+	ammo_cnt_to_reload = -1;
+	_last_shot_ammotype = 0;
 }
 
 CWeapon::~CWeapon		()
@@ -1253,6 +1256,82 @@ void CWeapon::EnableActorNVisnAfterZoom()
 			pTorch->GetNightVision()->PlaySounds(CNightVisionEffector::eIdleSound);
 		}
 	}
+}
+
+
+u8 CWeapon::GetAmmoTypeIndex(bool second)
+{
+	if (second)
+	{
+		CWeaponMagazinedWGrenade* wpn_mag_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+		if (wpn_mag_gl)
+			return wpn_mag_gl->m_ammoType2;
+	}
+
+	return m_ammoType;
+}
+
+u8 CWeapon::GetAmmoTypeToReload()
+{
+	u8 result = m_set_next_ammoType_on_reload;
+	if (result == undefined_ammo_type)
+		result = GetAmmoTypeIndex();
+
+	return result;
+}
+
+u8 CWeapon::GetOrdinalAmmoType()
+{
+	if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_previous_shot_type", false))
+		return _last_shot_ammotype;
+	else if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false) && m_magazine.size() > 0)
+		return GetCartridgeType(GetCartridgeFromMagVector(m_magazine.size() - 1));
+	else
+		return GetAmmoTypeIndex(IsGrenadeMode());
+}
+
+u8 CWeapon::GetGlAmmotype()
+{
+	return GetAmmoTypeIndex(!IsGrenadeMode());
+}
+
+u8 CWeapon::GetCartridgeType(CCartridge* c)
+{
+	return c->m_LocalAmmoType;
+}
+
+CCartridge* CWeapon::GetCartridgeFromMagVector(u32 index)
+{
+	if (index >= m_magazine.size())
+		return nullptr;
+
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+	{
+		CWeaponMagazinedWGrenade* wpn_gl = static_cast<CWeaponMagazinedWGrenade*>(this);
+		return &(wpn_gl->m_magazine2[index]);
+	}
+	else
+		return &(m_magazine[index]);
+}
+
+u32 CWeapon::GetAmmoInGLCount()
+{
+	u32 result = 0;
+
+	if (get_GrenadeLauncherStatus() == 0 || (get_GrenadeLauncherStatus() == 2) && !IsGrenadeLauncherAttached())
+		return result;
+
+	CWeaponMagazinedWGrenade* wpngl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+
+	if (wpngl)
+	{
+		if (IsGrenadeMode())
+			result = m_magazine.size();
+		else
+			result = wpngl->m_magazine2.size();
+	}
+
+	return result;
 }
 
 bool  CWeapon::need_renderable()
