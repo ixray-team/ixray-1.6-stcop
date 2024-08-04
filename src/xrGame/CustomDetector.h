@@ -61,6 +61,7 @@ public:
 
 	virtual bool	can_be_attached		() const;
 	void 	TurnDetectorInternal(bool b);
+	void	ForceHide					() { SwitchState(eHiding); }
 
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
