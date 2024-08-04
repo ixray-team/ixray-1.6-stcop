@@ -1059,10 +1059,10 @@ void CActor::UpdateCL	()
 		psHUD_Flags.set( HUD_DRAW_RT, true );
 	}
 
+	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint();
+
 	if (pWeapon)
 	{
-		bBlockSprint = pWeapon->NeedBlockSprint();
-
 		if(pWeapon->IsZoomed())
 		{
 			float full_fire_disp = pWeapon->GetFireDispersion(true);
@@ -1113,7 +1113,6 @@ void CActor::UpdateCL	()
 	{
 		if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
 		{
-			bBlockSprint = false;
 			HUD().SetCrosshairDisp(0.f);
 			HUD().ShowCrosshair(false);
 
