@@ -369,19 +369,19 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	xr_strconcat(val_name,"gl_hud_offset_rot",_prefix);
 	m_hands_offset[1][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 
-	//--> Смещение в стрейфе
+	//--> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	xr_strconcat(val_name, "strafe_hud_offset_pos", _prefix);
 	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.015f, 0.f, 0.f));
 	xr_strconcat(val_name, "strafe_hud_offset_rot", _prefix);
 	m_strafe_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 4.5f));
 
-	//--> Поворот в стрейфе
+	//--> пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	xr_strconcat(val_name, "strafe_aim_hud_offset_pos", _prefix);
 	m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.005f, 0.f, 0.f));
 	xr_strconcat(val_name, "strafe_aim_hud_offset_rot", _prefix);
 	m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 2.5f));
 
-	//--> Параметры стрейфа
+	//--> пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	bool bStrafeEnabled = READ_IF_EXISTS(pSettings, r_bool, sect_name, "strafe_enabled", true);
 	bool bStrafeEnabled_aim = READ_IF_EXISTS(pSettings, r_bool, sect_name, "strafe_aim_enabled", false);
 	float fFullStrafeTime = READ_IF_EXISTS(pSettings, r_float, sect_name, "strafe_transition_time", 0.5f);
@@ -1156,7 +1156,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 	return !!m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r);
 
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
+	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1165,7 +1165,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 		if(m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r))
 			return true;
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ abakan_draw пїЅпїЅпїЅ fn_2000_reload пїЅ пїЅпїЅ
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1176,21 +1176,21 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 }
 
 //	HUD_HANDS_ANIMATOR
-//	anim_name название анимации
-//	place_idx индекс айтема 0 - оружие, 1 - детектор, любые другие значения заставят аниматор искать анимацию в библиотеке рук по прямым названиям
-//	part_id индекс бон парта 0 - default 1 - left_hand, 2 - right_hand, -1 - означает что будет взят бон парт назначенный в анимации, любые другие значения запустят анимацию для всех бонпартов
-//	bMixIn сглаживание с предыдущей анимацией
-//	speed множитель скорости анимации
-//	anm_idx индекс анимации из конфига худайтема
-//	impact_on_item запуск анимации на айтиме
-//	similar_check для того если нужно запретить запускать анимацию если она уже была запущена
-//	static void Callback статическая функция которая будет вызвана по завершению анимации
-//	void* CallbackParam параметр в который можно поместить что угодно
-//	UpdateCallbackType тип каллбека 0 - сработает по окончанию анимации 1 - будет срабатывать пока анимация не закончится
+//	anim_name пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	place_idx пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 0 - пїЅпїЅпїЅпїЅпїЅпїЅ, 1 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	part_id пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 0 - default 1 - left_hand, 2 - right_hand, -1 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	bMixIn пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	speed пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	anm_idx пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	impact_on_item пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+//	similar_check пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	static void Callback пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//	void* CallbackParam пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+//	UpdateCallbackType пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0 - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1 - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, BOOL bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, BOOL UpdateCallbackType)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///ищем анимацию в библиотеке айтема на пример anm_show
+	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1219,7 +1219,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ abakan_draw пїЅпїЅпїЅ fn_2000_reload пїЅ пїЅпїЅ
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1229,7 +1229,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 		}
 	}
 
-	//если играется анимация stop_at_end то не будем запускать
+	//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ stop_at_end пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	u16 pc = m_model->partitions().count();
 	for(u16 pid=0; pid<pc; ++pid)
 	{
@@ -1249,7 +1249,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			}
 		}
 	}
-	m_blocked_part_idx = part_id;//блокируем чтобы стандартные анимации не могли перебить запущенную
+	m_blocked_part_idx = part_id;//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	CBlend* B = NULL;
 	switch (part_id)
@@ -1258,7 +1258,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 		case 1:
 		case 2:
 		{
-			if(similar_check)//проверим на выбранном бон парте
+			if(similar_check)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			{
 				u32 blends_count = m_model->LL_PartBlendsCount(part_id);
 				for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
@@ -1273,12 +1273,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//запустим на выбранном бон парте
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			B = m_model->PlayCycle(part_id, motion, bMixIn, Callback, CallbackParam);
 		}break;
 		case u16(-1):
 		{
-			if(similar_check)//проверим на бон парте который указанв настройках анимации
+			if(similar_check)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			{
 				CMotionDef* m_def = m_model->LL_GetMotionDef(motion);
 				u32 blends_count = m_model->LL_PartBlendsCount(m_def->bone_or_part);
@@ -1294,12 +1294,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//запустим для того бон парта который указан в настройках анимации
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			B = m_model->PlayCycle(motion, bMixIn, Callback, CallbackParam);
 		}break;
 		default:
 		{
-			if(similar_check)//проверим на всех бон партах
+			if(similar_check)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			{
 				u16 pc = m_model->partitions().count();
 				for(u16 pid=0; pid<pc; ++pid)
@@ -1318,7 +1318,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//запустим на всех бон партах
+			//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			B = m_model->PlayCycle(0, motion, bMixIn, Callback, CallbackParam);
 			B = m_model->PlayCycle(1, motion, bMixIn, Callback, CallbackParam);
 			B = m_model->PlayCycle(2, motion, bMixIn, Callback, CallbackParam);
@@ -1343,11 +1343,11 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 
 	return true;
 }
-// анимация-эффект которая не будет отключать обычные анимации но позволит создать подрагивания уклонения и прочие анимационные эффекты
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0)///ищем анимацию относительно айтема на пример anm_show
+	if(m_attached_items[place_idx] && place_idx>=0)///пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1366,7 +1366,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//иначе будем искать по прямому названию на пример abakan_draw или fn_2000_reload и тп
+	else//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ abakan_draw пїЅпїЅпїЅ fn_2000_reload пїЅ пїЅпїЅ
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1382,19 +1382,19 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 		{
 			case 0:
 			case 1:
-			case 2://запустим на выбранном бонпарте
+			case 2://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			{
 				auto bones_vec = m_model->partitions().part(part_id).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			case -1://запустим для того который указан в настройках анимации
+			case -1://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			{
 				auto bones_vec = m_model->partitions().part(m_def->bone_or_part).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			default://запустим на всех бон партах
+			default://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			{
 				for (auto &[first,second] : *m_model->dcast_PKinematics()->LL_Bones())
 					m_model->LL_PlayFX(second, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
