@@ -2097,54 +2097,31 @@ bool CWeaponMagazined::GetBriefInfo(II_BriefInfo& info)
 	return true;
 }
 
-
 void CWeaponMagazined::UpdateAddonsVisibility()
 {
 	inherited::UpdateAddonsVisibility();
 
-	IKinematics* pWeaponVisual = dynamic_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	R_ASSERT(pWeaponVisual);
 
-	u16 bone_id;
-
-	UpdateHUDAddonsVisibility();
 	pWeaponVisual->CalculateBones_Invalidate();
 
-	auto firemode = GetQueueSize();
+	auto ChangeBonesVisible = [&](const RStringVec& bones, bool status)
+	{
+		for (const shared_str& bone : bones)
+		{
+			u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
-	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
-	{
-		bone_id = pWeaponVisual->LL_BoneID(boneNameTotal);
-		if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-			pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-	}
+			if (bone_id != BI_NONE)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, status, TRUE);
+		}
+	};
 
-	if (firemode == 1)
-	{
-		for (shared_str boneName1 : m_sFireModeBone_1)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneName1);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
-	if (firemode == 3)
-	{
-		for (shared_str boneName3 : m_sFireModeBone_3)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneName3);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
-	if (firemode == -1)
-	{
-		for (shared_str boneNameAuto : m_sFireModeBone_a)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneNameAuto);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
+	int firemode = GetQueueSize();
+	ChangeBonesVisible(m_sFireModeBonesTotal, false);
+	ChangeBonesVisible(m_sFireModeBone_1, !!(firemode == 1));
+	ChangeBonesVisible(m_sFireModeBone_3, !!(firemode == 3));
+	ChangeBonesVisible(m_sFireModeBone_a, !!(firemode == -1));
 
 	pWeaponVisual->CalculateBones_Invalidate();
 	pWeaponVisual->CalculateBones(TRUE);
@@ -2157,36 +2134,19 @@ void CWeaponMagazined::UpdateHUDAddonsVisibility()
 
 	inherited::UpdateHUDAddonsVisibility();
 
-	auto firemode = GetQueueSize();
-
-	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
+	auto ChangeBonesVisible = [&](const RStringVec& bones, bool status)
 	{
-		HudItemData()->set_bone_visible(boneNameTotal, FALSE, TRUE);
-	}
-
-	if (firemode == 1)
-	{
-		for (shared_str boneName1 : m_sFireModeBone_1)
+		for (const shared_str& bone : bones)
 		{
-			HudItemData()->set_bone_visible(boneName1, TRUE, TRUE);
+			HudItemData()->set_bone_visible(bone, status, TRUE);
 		}
-	}
+	};
 
-	if (firemode == 3)
-	{
-		for (shared_str boneName3 : m_sFireModeBone_3)
-		{
-			HudItemData()->set_bone_visible(boneName3, TRUE, TRUE);
-		}
-	}
-
-	if (firemode == -1)
-	{
-		for (shared_str boneNameAuto : m_sFireModeBone_a)
-		{
-			HudItemData()->set_bone_visible(boneNameAuto, TRUE, TRUE);
-		}
-	}
+	int firemode = GetQueueSize();
+	ChangeBonesVisible(m_sFireModeBonesTotal, false);
+	ChangeBonesVisible(m_sFireModeBone_1, !!(firemode == 1));
+	ChangeBonesVisible(m_sFireModeBone_3, !!(firemode == 3));
+	ChangeBonesVisible(m_sFireModeBone_a, !!(firemode == -1));
 }
 
 bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
