@@ -1887,7 +1887,7 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 	if (GetQueueSize() < 0)
 		return "a";
 	else
-		return xr_string().ToString(GetQueueSize());
+		return xr_string::ToString(GetQueueSize());
 }
 
 bool CWeaponMagazined::ChangeFiremode(u16 cmd)
