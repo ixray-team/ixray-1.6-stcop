@@ -633,6 +633,9 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 		bMisfireReload = true;
 	}
 
+	if (!IsScopeAttached())
+		new_name = AddSuffixName(new_name, "_noscope");
+
 	return new_name;
 }
 
