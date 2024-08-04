@@ -180,8 +180,8 @@ protected:
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
-	static void		OnAmmoTimer(CWeapon* wpn, int param);
-	static void		KickCallback(CWeapon* wpn, int param);
+	static void		OnAmmoTimer(CHudItem* item);
+	static void		KickCallback(CHudItem* item);
 	void ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main = "") const;
 	bool			NeedShootMix() const;
 	void			TriStateReload();
