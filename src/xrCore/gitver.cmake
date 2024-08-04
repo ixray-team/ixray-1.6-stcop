@@ -22,6 +22,14 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+# Get last tag
+execute_process(
+    COMMAND git describe --tags --abbrev=0
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    OUTPUT_VARIABLE LATEST_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 # Define a variable for CI_BUILD
 set(CI_BUILD 0)
 
