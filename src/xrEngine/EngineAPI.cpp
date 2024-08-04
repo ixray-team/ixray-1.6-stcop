@@ -191,9 +191,7 @@ void CEngineAPI::CreateRendererList()
 		}
 		else
 		{
-			char fullPath[MAX_PATH]{};
-			GetModuleFileNameA(nullptr, fullPath, MAX_PATH);
-			auto dir = std::filesystem::weakly_canonical(fullPath).parent_path();
+			auto dir = std::filesystem::weakly_canonical(Platform::GetBinaryFolderPath());
 			bSupports_r1 = std::filesystem::exists(dir / r1_name);
 			bSupports_r2 = std::filesystem::exists(dir / r2_name);
 			bSupports_r4 = std::filesystem::exists(dir / r4_name);

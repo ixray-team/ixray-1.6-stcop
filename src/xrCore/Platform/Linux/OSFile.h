@@ -151,7 +151,8 @@ namespace Platform
         return std::filesystem::path(std::string(result, count)).parent_path();
     }
 
-    IC std::string GetModuleName() {
+    IC std::string GetModuleName() 
+    {
         char result[PATH_MAX];
         ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
         if (count == -1) 
@@ -159,6 +160,36 @@ namespace Platform
             return {};
         }
         return std::string(result, count);
+    }
+	
+    IC std::string GetModuleNameForAddress(uintptr_t address) 
+    {
+        Dl_info dl_info;
+        if (dladdr((void*)address, &dl_info) && dl_info.dli_fname) 
+        {
+            return std::string(dl_info.dli_fname);
+        }
+        return {};
+    }
+	
+    IC std::string GetUsrName() 
+    {
+        char UserName[LOGIN_NAME_MAX];
+        if (getlogin_r(UserName, sizeof(UserName)) == 0) 
+        {
+            return std::string(UserName);
+        }
+        return {};
+    }
+
+    IC std::string GetCompName() 
+    {
+        char CompName[HOST_NAME_MAX];
+        if (gethostname(CompName, sizeof(CompName)) == 0) 
+        {
+            return std::string(CompName);
+        }
+        return {};
     }
 
     IC bool OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, char flt[1024], LPCSTR offset, bool bMulti)

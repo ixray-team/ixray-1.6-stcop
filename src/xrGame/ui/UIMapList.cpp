@@ -67,14 +67,12 @@ CUIMapList::~CUIMapList()
 {}
 
 void CUIMapList::StartDedicatedServer(){
+	std::string moduleFileName = Platform::GetModuleName();
 
-	string_path ModuleFileName;		
-	GetModuleFileNameA(nullptr, ModuleFileName, sizeof(ModuleFileName));
+	std::filesystem::path moduleDir = std::filesystem::weakly_canonical(moduleFileName).parent_path();
+	std::string moduleDirStr = moduleDir.string();
 
-	char* ModuleName	= nullptr;
-	GetFullPathNameA(ModuleFileName, sizeof(g_sLaunchWorkingFolder), g_sLaunchWorkingFolder, &ModuleName);
-	//removing module name from WorkingDirectory that contain full path...
-	ModuleName[0]		= 0;
+	xr_strcpy(g_sLaunchWorkingFolder, moduleDirStr.c_str());
 			
 	xr_strcpy			(g_sLaunchOnExit_app, g_sLaunchWorkingFolder);
 	xr_strcat			(g_sLaunchOnExit_app, "dedicated\\xrEngine.exe");

@@ -52,31 +52,20 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		LoadParams();
 #endif
 
-		string_path		fn,dr,di;
-
 		// application path
-#ifdef IXR_WINDOWS
-        GetModuleFileNameA(GetModuleHandleA(MODULE_NAME),fn,sizeof(fn));
-        _splitpath		(fn,dr,di,0,0);
-		xr_strconcat(ApplicationPath,dr,di);
+		std::string ApplicationPath = Platform::GetBinaryFolderPath().string();
+		std::string WorkingPath = std::filesystem::current_path().string();
 
-		GetCurrentDirectoryA(sizeof(WorkingPath),WorkingPath);
-#else
-        xr_strcpy(ApplicationPath, SDL_GetBasePath());
-        xr_strcpy(WorkingPath, SDL_GetBasePath());
-#endif
 #ifndef _EDITOR
-		xr_strcpy		(g_application_path,sizeof(g_application_path),ApplicationPath);
+		xr_strcpy(g_application_path, sizeof(g_application_path), ApplicationPath.c_str());
 #endif
 
 		// User/Comp Name
-#ifdef IXR_WINDOWS
-        DWORD sz_user = sizeof(UserName);
-		GetUserNameA(UserName,&sz_user);
+		std::string user_name = Platform::GetUsrName();
+		std::string comp_name = Platform::GetCompName();
 
-		DWORD sz_comp = sizeof(CompName);
-		GetComputerNameA(CompName,&sz_comp);
-#endif
+		xr_strcpy(UserName, sizeof(UserName), user_name.c_str());
+		xr_strcpy(CompName, sizeof(CompName), comp_name.c_str());
 
 		// Mathematics & PSI detection
 		CPU::Detect			();

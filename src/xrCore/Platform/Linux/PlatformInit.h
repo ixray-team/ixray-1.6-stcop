@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <utime.h>
 #include <pthread.h>
+#include <dlfcn.h>
 
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -13,6 +14,7 @@
 #include <sys/types.h>
 
 #include <linux/limits.h>
+#include <bits/local_lim.h>
 
 #ifdef IXR_ARM64
 #	include <arm64_neon.h>

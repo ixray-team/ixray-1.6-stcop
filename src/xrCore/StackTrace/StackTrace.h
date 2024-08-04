@@ -27,16 +27,16 @@ namespace StackTrace
 		}
 
 		frameStr.clear();
-		string512 formatBuff;
 
-		//-' Module name:
-		HINSTANCE hModule = (HINSTANCE)SymGetModuleBase(GetCurrentProcess(), stackFrame->AddrPC.Offset);
-		if (hModule && GetModuleFileNameA(hModule, formatBuff, _countof(formatBuff)))
+		// Module name:
+		std::string moduleName = Platform::GetModuleNameForAddress(stackFrame->AddrPC.Offset);
+		if (!moduleName.empty())
 		{
-			frameStr.append(formatBuff);
+			frameStr.append(moduleName);
 		}
 
 		//-' Address:
+		string512 formatBuff;
 		xr_sprintf(formatBuff, _countof(formatBuff), " at %p", stackFrame->AddrPC.Offset);
 		frameStr.append(formatBuff);
 

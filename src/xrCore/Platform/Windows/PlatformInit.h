@@ -34,6 +34,8 @@
 #pragma warning(push)
 #pragma warning(disable:4005)
 #include <windows.h>
+#include <lmcons.h>
+#include <dbghelp.h>
 
 #ifdef IXR_ARM64
 #	include <arm64_neon.h>

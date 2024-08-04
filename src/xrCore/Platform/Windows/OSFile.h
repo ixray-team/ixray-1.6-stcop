@@ -40,10 +40,43 @@ namespace Platform
         }
         return std::string(ModuleName);
     }
+	
+    IC std::string GetModuleNameForAddress(uintptr_t address) 
+    {
+        char formatBuff[MAX_PATH] = { 0 };
+        HINSTANCE hModule = (HINSTANCE)SymGetModuleBase(GetCurrentProcess(), address);
+        if (hModule && GetModuleFileNameA(hModule, formatBuff, sizeof(formatBuff))) 
+        {
+            return std::string(formatBuff);
+        }
+        return {};
+    }
 
     IC const xr_special_char* ValidPath(const xr_special_char* In)
     {
         return In;
+    }
+
+    IC std::string GetUsrName()
+    {
+        char UserName[UNLEN + 1];
+        DWORD size = sizeof(UserName);
+        if (GetUserNameA(UserName, &size)) 
+        {
+            return std::string(UserName);
+        }
+        return {};
+    }
+
+    IC std::string GetCompName()
+    {
+        char CompName[MAX_COMPUTERNAME_LENGTH + 1];
+        DWORD size = sizeof(CompName);
+        if (GetComputerNameA(CompName, &size)) 
+        {
+            return std::string(CompName);
+        }
+        return {};
     }
 
 	bool OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_flt_ext, char flt[1024], LPCSTR offset, bool bMulti);
