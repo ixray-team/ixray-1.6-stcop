@@ -23,6 +23,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "weaponmagazined.h"
 #include "Car.h"
+#include "Grenade.h"
 
 using namespace InventoryUtilities;
 
@@ -95,6 +96,7 @@ CInventory::CInventory()
 	
 	InitPriorityGroupsForQSwitch				();
 	m_next_item_iteration_time					= 0;
+	new_grenade									= nullptr;
 }
 
 
@@ -616,6 +618,11 @@ void CInventory::Activate(u16 slot, bool bForce)
 	}
 }
 
+void CInventory::PutGrenade(CGrenade* new_grenade)
+{
+	this->new_grenade = new_grenade;
+	Activate(NO_ACTIVE_SLOT);
+}
 
 PIItem CInventory::ItemFromSlot(u16 slot) const
 {
@@ -829,11 +836,21 @@ void CInventory::Update()
 				}
 			}
 			
+			if (new_grenade != nullptr && ItemFromSlot(new_grenade->BaseSlot()))
+				m_iNextActiveSlot = new_grenade->BaseSlot();
+
 			if (GetNextActiveSlot() != NO_ACTIVE_SLOT)
 			{
 				PIItem tmp_next_active = ItemFromSlot(GetNextActiveSlot());
 				if (tmp_next_active)
 				{
+					if (new_grenade != nullptr && tmp_next_active == ItemFromSlot(new_grenade->BaseSlot()))
+					{
+						Ruck(ItemFromSlot(new_grenade->BaseSlot()));
+						Slot(new_grenade->BaseSlot(), new_grenade);
+						new_grenade = nullptr;
+					}
+
 					if (IsSlotBlocked(tmp_next_active))
 					{
 						Activate(m_iActiveSlot);
