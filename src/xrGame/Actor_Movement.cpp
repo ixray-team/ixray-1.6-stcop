@@ -305,47 +305,225 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		}//(mstate_real&mcAnyMove)
 	}//peOnGround || peAtWall
 
-	if(IsGameTypeSingle() && cam_eff_factor>EPS)
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (IsGameTypeSingle() && (!isGuns && cam_eff_factor > EPS || isGuns))
 	{
-	LPCSTR state_anm				= nullptr;
+		ECamEffectorType anm_id = eCEActorMoving;
+		xr_string state_anm = "";
+		xr_string HUD_PREFIX = "cam_";
+		CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+		if (mstate_real & mcSprint)
+		{
+			state_anm = "sprint";
+			if (wpn)
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
 
-	if(mstate_real&mcSprint && !(mstate_old&mcSprint) )
-		state_anm					= "sprint";
-	else
-	if(mstate_real&mcLStrafe && !(mstate_old&mcLStrafe) )
-		state_anm					= "strafe_left";
-	else
-	if(mstate_real&mcRStrafe && !(mstate_old&mcRStrafe) )
-		state_anm					= "strafe_right";
-	else
-	if(mstate_real&mcFwd && !(mstate_old&mcFwd) )
-		state_anm					= "move_fwd";
-	else
-	if(mstate_real&mcBack && !(mstate_old&mcBack) )
-		state_anm					= "move_back";
-
-		if(state_anm)
-		{ //play moving cam effect
-			CActor*	control_entity		= static_cast<CActor*>(Level().CurrentControlEntity());
-			R_ASSERT2					(control_entity, "current control entity is nullptr");
-			CEffectorCam* ec			= control_entity->Cameras().GetCamEffector(eCEActorMoving);
-			if(nullptr==ec)
+			anm_id = eCEActorMovingSprint;
+		}
+		else if (mstate_real & mcLStrafe && !(mstate_old & mcLStrafe))
+		{
+			state_anm = "strafe_left";
+			if (wpn)
 			{
-				string_path			eff_name;
-				xr_sprintf			(eff_name, sizeof(eff_name), "%s.anm", state_anm);
-				string_path			ce_path;
-				string_path			anm_name;
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingLeft;
+		}
+		else if (mstate_real & mcRStrafe && !(mstate_old & mcRStrafe))
+		{
+			state_anm = "strafe_right";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingRight;
+		}
+		else if (mstate_real & mcFwd && !(mstate_old & mcFwd))
+		{
+			state_anm = "move_fwd";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingFwd;
+		}
+		else if (mstate_real & mcBack && !(mstate_old & mcBack))
+		{
+			state_anm = "move_back";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingBack;
+		}
+		else if (mstate_real & mcLanding)
+		{
+			state_anm = "landing";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingLanding;
+		}
+		else if (mstate_real & mcLanding2)
+		{
+			state_anm = "landing2";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingLanding;
+		}
+		else if (mstate_real & mcJump && !(mstate_old & mcJump))
+		{
+			state_anm = "jump";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingJump;
+		}
+		else if (mstate_real & mcFall && !(mstate_old & mcFall))
+		{
+			state_anm = "fall";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingFall;
+		}
+		else if (!(mstate_real & mcLLookout) && mstate_wishful & mcLLookout)
+		{
+			state_anm = "lookout_left_start";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorLLookoutStart;
+		}
+		else if (!(mstate_real & mcRLookout) && mstate_wishful & mcRLookout)
+		{
+			state_anm = "lookout_right_start";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorRLookoutStart;
+		}
+		else if (mstate_real & mcLLookout && !(mstate_wishful & mcLLookout))
+		{
+			state_anm = "lookout_left_end";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorLLookoutEnd;
+		}
+		else if (mstate_real & mcRLookout && !(mstate_wishful & mcRLookout))
+		{
+			state_anm = "lookout_right_end";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorRLookoutEnd;
+		}
+		else if (mstate_real & mcCrouch && !(mstate_old & mcCrouch))
+		{
+			state_anm = "crouch_down";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingCrouchDown;
+		}
+		else if (mstate_real & mcCrouch && !(mstate_wishful & mcCrouch))
+		{
+			state_anm = "crouch_up";
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = eCEActorMovingCrouchUp;
+		}
+
+		if (state_anm != "")
+		{ //play moving cam effect
+			CActor*	control_entity = static_cast<CActor*>(Level().CurrentControlEntity());
+			R_ASSERT2(control_entity, "current control entity is nullptr");
+			CEffectorCam* ec = control_entity->Cameras().GetCamEffector(anm_id);
+			if (!ec)
+			{
+				string_path	eff_name;
+				xr_sprintf(eff_name, sizeof(eff_name), "%s.anm", state_anm.c_str());
+				string_path	ce_path;
+				string_path	anm_name;
 				xr_strconcat(anm_name, "camera_effects\\actor_move\\", eff_name);
-				if (FS.exist( ce_path, "$game_anims$", anm_name))
+				if (FS.exist(ce_path, "$game_anims$", anm_name))
 				{
-					CAnimatorCamLerpEffectorConst* e		= new CAnimatorCamLerpEffectorConst();
-					float max_scale				= 70.0f;
-					float factor				= cam_eff_factor/max_scale;
-					e->SetFactor				(factor);
-					e->SetType					(eCEActorMoving);
-					e->SetHudAffect				(false);
-					e->SetCyclic				(false);
-					e->Start					(anm_name);
+					CAnimatorCamLerpEffectorConst* e = new CAnimatorCamLerpEffectorConst();
+					float factor = isGuns ? 70.0f : cam_eff_factor / 70.0f;
+					e->SetFactor(factor);
+					e->SetType(anm_id);
+					e->SetHudAffect(false);
+					e->SetCyclic(false);
+					e->Start(anm_name);
 					control_entity->Cameras().AddCamEffector(e);
 				}
 			}
