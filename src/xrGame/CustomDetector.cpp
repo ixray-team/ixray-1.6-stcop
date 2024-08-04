@@ -235,16 +235,19 @@ void CCustomDetector::OnStateSwitch(u32 S)
 	m_old_state=S;
 }
 
-void CCustomDetector::SetHideDetStateInWeapon()
+void CCustomDetector::SetHideDetStateInWeapon() const
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return;
+
 	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
 
-	if (!wpn)
+	if (wpn == nullptr)
 		return;
 
 	CWeaponKnife* knf = smart_cast<CWeaponKnife*>(wpn);
 
-	if (knf)
+	if (knf != nullptr)
 		return;
 
 	if (wpn->GetState() == CWeapon::eIdle)
