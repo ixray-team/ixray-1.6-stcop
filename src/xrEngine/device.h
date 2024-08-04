@@ -26,6 +26,7 @@ union SDL_Event;
 enum class APILevel
 {
 	DX9,
+	DX10,
 	DX11
 };
 

@@ -118,7 +118,7 @@ void CreateRDoc()
 	}
 }
 
-bool CreateD3D11()
+bool CreateD3D11(bool ReturnToDX10)
 {
 	CreateRDoc();
 
@@ -157,18 +157,35 @@ bool CreateD3D11()
 			createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 		}
 
-		const D3D_FEATURE_LEVEL pFeatureLevels[] = {
+		constexpr D3D_FEATURE_LEVEL pFeatureLevels10[] = {
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_10_0,
+		};
+
+		constexpr D3D_FEATURE_LEVEL pFeatureLevels[] = {
 			D3D_FEATURE_LEVEL_11_1,
 			D3D_FEATURE_LEVEL_11_0,
 			D3D_FEATURE_LEVEL_10_1,
 			D3D_FEATURE_LEVEL_10_0,
 		};
 
-		HRESULT R = D3D11CreateDeviceAndSwapChain(
-			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
-			std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
-			(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
-		);
+		HRESULT R = S_OK;
+		if (ReturnToDX10)
+		{
+			R = D3D11CreateDeviceAndSwapChain(
+				0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels10,
+				std::size(pFeatureLevels10), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
+				(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
+			);
+		}
+		else
+		{
+			R = D3D11CreateDeviceAndSwapChain(
+				0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
+				std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
+				(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
+			);
+		}
 
 		if (FAILED(R))
 		{
