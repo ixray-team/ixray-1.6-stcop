@@ -1160,7 +1160,7 @@ void CWeapon::ModUpdate()
 	{
 		if (!H_Parent())
 		{
-			lock_time_callback = nullptr;
+			SetAnimationCallback(nullptr);
 			lock_time = 0.f;
 		}
 
@@ -1174,7 +1174,7 @@ void CWeapon::ModUpdate()
 			if (lock_time_callback != nullptr)
 			{
 				lock_time_callback(this);
-				lock_time_callback = nullptr;
+				SetAnimationCallback(nullptr);
 			}
 		}
 	}
@@ -1357,7 +1357,7 @@ void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimatio
 			fShotTimeCounter = floor(time * 1000.f);
 
 		if (fun != nullptr)
-			lock_time_callback = fun;
+			SetAnimationCallback(fun);
 	}
 }
 
