@@ -154,7 +154,6 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
-		m_bHasDifferentFireModes = true;
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
 		int ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
@@ -169,10 +168,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		m_iCurFireMode = ModesCount - 1;
 		m_iPrefferedFireMode = READ_IF_EXISTS(pSettings, r_s16,section,"preffered_fire_mode",-1);
 	}
-	else
-	{
-		m_bHasDifferentFireModes = false;
-	}
+
 	LoadSilencerKoeffs();
 
 	if (WeaponSoundExist(section, "snd_changefiremode") && m_bUseChangeFireModeAnim)
@@ -1933,7 +1929,7 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd)
 
 void	CWeaponMagazined::OnH_A_Chield		()
 {
-	if (m_bHasDifferentFireModes)
+	if (HasFireModes())
 	{
 		CActor	*actor = smart_cast<CActor*>(H_Parent());
 		if (!actor) SetQueueSize(-1);
