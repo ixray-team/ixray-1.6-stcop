@@ -67,7 +67,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	if (m_u8TracerColorID != u8(-1))
 		l_cartridge.param_s.u8ColorID	= m_u8TracerColorID;
 	//-------------------------------------------------------------
-	//повысить изношенность оружия с учетом влияния конкретного патрона
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //	float Deterioration = GetWeaponDeterioration();
 //	Msg("Deterioration = %f", Deterioration);
 	ChangeCondition(-GetWeaponDeterioration()*l_cartridge.param_s.impair);
@@ -107,7 +107,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	
 
 	bool SendHit = SendHitAllowed(H_Parent());
-	//выстерлить пулю (с учетом возможной стрельбы дробью)
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 	for(int i = 0; i < l_cartridge.param_s.buckShot; ++i) 
 	{
 		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
@@ -130,7 +130,7 @@ void CWeapon::StopShooting()
 {
 //	SetPending			(TRUE);
 
-	//принудительно останавливать зацикленные партиклы
+	//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles	();	
 

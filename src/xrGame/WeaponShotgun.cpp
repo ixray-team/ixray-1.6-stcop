@@ -69,7 +69,8 @@ void CWeaponShotgun::switch2_Fire()
 
 void CWeaponShotgun::OnAnimationEnd(u32 state) 
 {
-	if (!m_bTriStateReload || state != eReload || IsMisfire())
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!m_bTriStateReload || state != eReload || (IsMisfire() && isGuns || IsMisfire() && HudAnimationExist("anm_reload_misfire")))
 	{
 		bStopReloadSignal = false;
 		bPreloadAnimAdapter = false;
@@ -126,7 +127,8 @@ void CWeaponShotgun::TriStateReload()
 
 void CWeaponShotgun::OnStateSwitch(u32 S)
 {
-	if (!m_bTriStateReload || S != eReload || IsMisfire())
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!m_bTriStateReload || S != eReload || (IsMisfire() && isGuns || IsMisfire() && HudAnimationExist("anm_reload_misfire")))
 	{
 		bStopReloadSignal = false;
 		bPreloadAnimAdapter = false;
