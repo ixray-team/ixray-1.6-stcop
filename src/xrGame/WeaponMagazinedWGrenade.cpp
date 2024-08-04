@@ -300,7 +300,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 				if (canfire0 != 0)
 					d = res[0];
 				else
-					LaunchGrenade_Correct(&d);
+					LaunchGrenade_Correct(d);
 			}
 		};
 		
@@ -331,7 +331,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		inherited::state_Fire(dt);
 }
 
-void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
+void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3& v)
 {
 	Fvector3 camdir = Device.vCameraDirection;
 
@@ -341,7 +341,7 @@ void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
 	camdir.y = 1.0f;
 	camdir.normalize();
 
-	*v = camdir;
+	v = camdir;
 }
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type) 
