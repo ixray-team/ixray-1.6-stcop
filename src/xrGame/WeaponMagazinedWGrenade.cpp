@@ -141,7 +141,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 			PlaySound("sndReloadG", get_LastFP2());
 
 		PlayHUDMotion("anm_reload", FALSE, GetState());
-		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
+		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazinedWGrenade::OnAmmoTimer) });
 		SetPending(TRUE);
 	}
 	else 
