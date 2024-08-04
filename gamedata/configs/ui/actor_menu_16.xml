@@ -265,7 +265,7 @@
   <dragdrop_trash x="0" y="0" width="375" height="768"
     	cell_width="375" cell_height="768" rows_num="1" cols_num="1" a="0"/>
 
-  <dragdrop_bag x="662" y="119" width="250" height="574"
+  <dragdrop_bag x="662" y="119" width="247" height="574"
     	cell_width="33" cell_height="41" rows_num="14" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
@@ -273,23 +273,23 @@
 		cell_width="33" cell_height="41" rows_num="1" cols_num="5"
 		cell_sp_x="19" cell_sp_y="0" a="0"/>
 
-	<dragdrop_actor_trade x="662" y="114" width="250" height="164"
+	<dragdrop_actor_trade x="662" y="114" width="247" height="164"
 		cell_width="33" cell_height="41" rows_num="4" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_actor_trade_bag x="662" y="340" width="250" height="369"
+	<dragdrop_actor_trade_bag x="662" y="340" width="247" height="369"
 		cell_width="33" cell_height="41" rows_num="9" cols_num="7"
 		unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_partner_trade x="117" y="114" width="250" height="164"
+	<dragdrop_partner_trade x="117" y="114" width="247" height="164"
 	    cell_width="33" cell_height="41" rows_num="4" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_partner_bag x="117" y="340" width="250" height="369"
+	<dragdrop_partner_bag x="117" y="340" width="247" height="369"
 	    cell_width="33" cell_height="41" rows_num="9" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
-	<dragdrop_deadbody_bag x="117" y="119" width="250" height="574"
+	<dragdrop_deadbody_bag x="117" y="119" width="247" height="574"
 	    cell_width="33" cell_height="41" rows_num="14" cols_num="7"
 	    unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
@@ -321,7 +321,7 @@
 	    </text_color>
 	</trade_sell_button>
 
-	<takeall_button x="115" y="695" width="249" height="24" stretch="1" hint="ui_st_take_all_hint">
+	<takeall_button x="116" y="694" width="248" height="24" stretch="1" hint="ui_st_take_all_hint">
 	    <window_name>takeall_button</window_name>
 	    <texture>ui_inGame2_big_inventory_button</texture>
 	    <text font="graffiti22" align="c">ui_st_take_all</text>
@@ -332,6 +332,18 @@
 	        <h color ="ui_black"/>
 	    </text_color>
 	</takeall_button>
+
+	<putall_button x="662" y="694" width="248" height="24" stretch="1" hint="ui_st_put_all_hint">
+	    <window_name>putall_button</window_name>
+	    <texture>ui_inGame2_big_inventory_button</texture>
+	    <text font="graffiti22" align="c">ui_st_put_all</text>
+	    <text_color>
+	        <e color ="ui_6"/>
+	        <t color ="ui_black"/>
+	        <d color ="ui_5"/>
+	        <h color ="ui_black"/>
+	    </text_color>
+	</putall_button>
 
 	<exit_button x="384" y="736" width="256" height="24" stretch="1" hint="ui_st_exit_hint">
 	    <window_name>exit_button</window_name>

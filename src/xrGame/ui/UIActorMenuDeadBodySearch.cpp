@@ -57,6 +57,7 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	m_PartnerBottomInfo->Show		(true);
 	m_PartnerWeight->Show			(true);
 	m_takeall_button->Show			(true);
+	m_putall_button->Show			(true);
 
 	if ( m_pPartnerInvOwner )
 	{
@@ -125,6 +126,7 @@ void CUIActorMenu::DeInitDeadBodySearchMode()
 	m_PartnerBottomInfo->Show		(false);
 	m_PartnerWeight->Show			(false);
 	m_takeall_button->Show			(false);
+	m_putall_button->Show			(false);
 
 	if ( m_pInvBox )
 	{
@@ -199,6 +201,19 @@ void CUIActorMenu::UpdateDeadBodyBag()
 	m_PartnerWeight->SetWndPos( pos );
 	pos.x = pos.x - m_PartnerBottomInfo->GetWndSize().x - 5.0f;
 	m_PartnerBottomInfo->SetWndPos( pos );
+}
+
+void CUIActorMenu::PutAllToPartner(CUIWindow* w, void* d) 
+{
+	u32 Iter = 0;
+	while (Iter < m_pInventoryBagList->ItemsCount())
+	{
+		CUICellItem* ci = m_pInventoryBagList->GetItemIdx(Iter);
+		if (!ToDeadBodyBag(ci, false))
+		{
+			++Iter;
+		}
+	}
 }
 
 void CUIActorMenu::TakeAllFromPartner(CUIWindow* w, void* d)
