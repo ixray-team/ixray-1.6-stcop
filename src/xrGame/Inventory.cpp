@@ -551,15 +551,8 @@ void CInventory::Activate(u16 slot, bool bForce)
 				}
 				else if (det->IsShowing())
 				{
-					if (ActiveItem())
-					{
-						CHudItem* old_item = smart_cast<CHudItem*>(ActiveItem());
-						if (old_item)
-						{
-							if (!det->CheckCompatibility(old_item))
-								det->ForceHide();
-						}
-					}
+					if (ItemFromSlot(slot) && (ItemFromSlot(slot)->BaseSlot() == INV_SLOT_3 || ItemFromSlot(slot)->BaseSlot() == BINOCULAR_SLOT || ItemFromSlot(slot)->BaseSlot() == GRENADE_SLOT))
+						det->ForceHide();
 				}
 			}
 		}
