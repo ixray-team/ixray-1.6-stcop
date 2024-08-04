@@ -486,6 +486,21 @@ void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, 
 
 void CActor::ProcessKeys()
 {
+	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
+	if (itm == nullptr)
+		return;
+
+	if ((_keyflags & kfHEADLAMP) != 0 && itm->CanStartAction())
+	{
+		SwitchTorch();
+		SetActorKeyRepeatFlag(kfHEADLAMP, false);
+	}
+
+	if ((_keyflags & kfNIGHTVISION) != 0 && itm->CanStartAction())
+	{
+		SwitchNightVision();
+		SetActorKeyRepeatFlag(kfNIGHTVISION, false);
+	}
 }
 
 #include "HudItem.h"
