@@ -114,7 +114,7 @@ void CControllerPsyHit::activate()
 	SControlDirectionData			*ctrl_dir = (SControlDirectionData*)m_man->data(this, ControlCom::eControlDir); 
 	VERIFY							(ctrl_dir);
 	ctrl_dir->heading.target_speed	= 3.f;
-	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(Actor()->Position());
+	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(pActor->Position());
 
 	//////////////////////////////////////////////////////////////////////////
 	m_current_index					= 0;

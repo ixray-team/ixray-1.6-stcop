@@ -402,7 +402,12 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 		}break;
 		case M_REMOTE_CONTROL_CMD:
 		{
-			if(CL->m_admin_rights.m_has_admin_rights)
+#ifdef DEBUG
+			bool bCan = true;
+#else
+			bool bCan = CL->m_admin_rights.m_has_admin_rights;
+#endif
+			if(bCan)
 			{
 				string1024			buff;
 				P.r_stringZ			(buff);
