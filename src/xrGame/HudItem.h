@@ -193,6 +193,7 @@ public:
 	IC CInventoryItem&			item					() const		{ VERIFY(m_item); return(*m_item);}
 	IC		u32					animation_slot			()				{ return m_animation_slot;}
 	InertionData&				CurrentInertionData		()				{ return m_current_inertion;}
+	void						SetAnimationCallback(TAnimationEffector callback) { lock_time_callback = callback; }
 
 	virtual void				on_renderable_Render	() = 0;
 	virtual void				debug_draw_firedeps		() {};
