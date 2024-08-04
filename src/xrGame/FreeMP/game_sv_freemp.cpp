@@ -307,6 +307,11 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		KillPlayer(l_pC->ID, l_pC->ps->GameID);
 	}
 	break;
+	case GAME_EVENT_TRANSFER_MONEY:
+	{
+		OnTransferMoney(P, sender);
+	}
+	break;
 	default:
 		inherited::OnEvent(P, type, time, sender);
 	};

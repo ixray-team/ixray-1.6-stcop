@@ -41,7 +41,6 @@
 #include "../Trade.h"
 #include "Car.h"
 #include "../xrEngine/string_table.h"
-#include "game_cl_base.h"
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -58,7 +57,7 @@ void CUIActorMenu::SetActor(CInventoryOwner* io)
 	}
 	else
 	{
-		UpdateActorMP();
+		SetActorInfoMP();
 	}
 }
 
@@ -881,22 +880,30 @@ void CUIActorMenu::ResetMode()
 	SetCurrentItem				(nullptr);
 }
 
-void CUIActorMenu::UpdateActorMP()
+void CUIActorMenu::UpdateActorMoneyMP()
 {
 	if ( !&Level() || !Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle() )
 	{
-		m_ActorCharacterInfo->ClearInfo();
-		m_ActorMoney->SetText( "" );
+		m_ActorMoney->SetText("");
 		return;
 	}
 
-	int money = Game().local_player->money_for_round;
+	s32 money = Game().local_player->money_for_round;
 
 	string64 buf;
 	xr_sprintf( buf, "%d RU", money );
 	m_ActorMoney->SetText( buf );
+}
 
-	if (Game().Type() == eGameIDFreeMP)
+void CUIActorMenu::SetActorInfoMP()
+{
+	if (!&Level() || !Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle())
+	{
+		m_ActorCharacterInfo->ClearInfo();
+		return;
+	}
+
+	if (IsGameTypeSingleCompatible())
 	{
 		m_ActorCharacterInfo->InitCharacterMP(m_pActorInvOwner);
 	}
@@ -905,8 +912,8 @@ void CUIActorMenu::UpdateActorMP()
 		m_ActorCharacterInfo->InitCharacterMP(Game().local_player->getName(), "ui_npc_u_nebo_1");
 	}
 
+	UpdateActorMoneyMP();
 }
-
 bool CUIActorMenu::CanSetItemToList(PIItem item, CUIDragDropListEx* l, u16& ret_slot)
 {
 	u16 item_slot = item->BaseSlot();

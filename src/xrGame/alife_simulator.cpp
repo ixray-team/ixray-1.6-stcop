@@ -57,14 +57,20 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 	typedef IGame_Persistent::params params;
 	params						&p = g_pGamePersistent->m_game_params;
 	
-	string256					temp;
+	bool is_single = !xr_strcmp(p.m_game_type, "single");
+
+	if (is_single)
+	{
+		string256					temp;
 	xr_strcpy						(temp,p.m_game_or_spawn);
 	xr_strcat						(temp,"/");
 	xr_strcat						(temp,p.m_game_type);
 	xr_strcat						(temp,"/");
 	xr_strcat						(temp,p.m_alife);
 	*command_line				= temp;
-	
+
+	}
+
 	LPCSTR						start_game_callback = pSettings->r_string(alife_section,"start_game_callback");
 	luabind::functor<void>		functor;
 	R_ASSERT2					(ai().script_engine().functor(start_game_callback,functor),"failed to get start game callback");
@@ -75,9 +81,7 @@ CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
 		load_from_editor();
 		return;
 	}
-
-	if (!xr_strcmp(p.m_game_type, "single")) 
-	{
+	if (is_single) {
 		load(p.m_game_or_spawn, !xr_strcmp(p.m_new_or_load, "load") ? false : true, !xr_strcmp(p.m_new_or_load, "new"));
 	}
 	else //if(!xr_strcmp(p.m_alife, "alife"))
