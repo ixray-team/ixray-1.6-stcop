@@ -42,7 +42,12 @@ bool CEngineExternal::operator[](const EEngineExternalEnvironment& ID) const {
 	return pOptions->r_bool("environment", magic_enum::enum_name(ID).data());
 }
 
-ENGINE_API CEngineExternal& EngineExternal() {
+bool CEngineExternal::operator[](const EEngineExternalGunslinger& ID) const {
+	return pOptions->r_bool("gunslinger", magic_enum::enum_name(ID).data());
+}
+
+ENGINE_API CEngineExternal& EngineExternal()
+{
 	if (g_pEngineExternal == nullptr) {
 		g_pEngineExternal = new CEngineExternal;
 	}
