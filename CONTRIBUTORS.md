@@ -42,6 +42,8 @@ Detail list of all contributors to IX-Ray project
   - nuclearfag
   - Baryshev194
   - Oswald
+  - MiX225
+  - Romann
 
 - IX-Ray Testers:
   - Kystman

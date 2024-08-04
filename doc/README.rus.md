@@ -21,7 +21,7 @@
     <a href="./LICENSE.rus.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r1.0">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r1.1">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases">
@@ -81,7 +81,7 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 
 - ОС: __Windows 7 SP1__ с установленным [Platform Update](https://msdn.microsoft.com/en-us/library/windows/desktop/jj863687.aspx) или новее
 - ЦПУ: Поддержка __SSE2__ или более новых инструкций
-- ОЗУ: 6 Гб
+- ОЗУ: 4 Гб
 - ГПУ: Поддержка __Shader Model 3.0__ или новее
 - ГПУ VRAM: 512 Мб
 - DirectX: __9.0с__ или новее
@@ -93,7 +93,6 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
-
 - Установите оригинальную игру (Steam\GOG)
 - Удалите в основной папке игры: `bin`, `gamedata` (при наличии)
 - Распакуйте архив в основную папку игры с заменой файлов

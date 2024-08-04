@@ -21,7 +21,7 @@
     <a href="./LICENSE.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r1.0">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r1.1">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases">
@@ -81,7 +81,7 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 
 - OS: __Windows 7 SP1__ with installed [Platform Update](https://msdn.microsoft.com/en-us/library/windows/desktop/jj863687.aspx) or newer
 - CPU: Supports __SSE2__ and newer instructions
-- RAM: 6 GB
+- RAM: 4 GB
 - GPU: Support for __Shader Model 3.0__ or newer
 - GPU VRAM: 512 MB
 - DirectX: __9.0с__ or newer
@@ -93,7 +93,6 @@ For launching:
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
-
 - Install original game from Steam or GOG
 - Delete in main folder of the game: `bin`, `gamedata` (if exists)
 - Unpack archive to main folder of the game
