@@ -65,6 +65,8 @@ public:
 	virtual void	PlayAnimModeSwitch	();
 	virtual void	PlayAnimShoot		();
 	virtual std::string	NeedAddSuffix(std::string M);
+
+	virtual bool	IsGrenadeMode() { return m_bGrenadeMode; }
 	
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );
