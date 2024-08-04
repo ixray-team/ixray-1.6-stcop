@@ -111,6 +111,7 @@ CWeapon::CWeapon()
 	_last_shot_ammotype = 0;
 	IsAimStarted = false;
 	_wanim_force_assign = false;
+	is_firstlast_ammo_swapped = false;
 }
 
 CWeapon::~CWeapon		()
