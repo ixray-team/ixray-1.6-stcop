@@ -602,8 +602,7 @@ void CInventory::Activate(u16 slot, bool bForce)
 			CHudItem* tempItem = active_item->cast_hud_item();
 			R_ASSERT2(tempItem, active_item->object().cNameSect().c_str());
 			
-			if (!tempItem->SendDeactivateItem())
-				return;
+			tempItem->SendDeactivateItem();
 
 		} else //in case where weapon is going to destroy
 		{
@@ -808,14 +807,22 @@ void CInventory::Update()
 				   )
 				   return;
 			}
-			if( ActiveItem() )
+			if (ActiveItem())
 			{
 				CHudItem* hi = ActiveItem()->cast_hud_item();
 				
-				if(!hi->IsHidden())
+				if (!hi->IsHidden())
 				{
-					if(hi->GetState()==CHUDState::eIdle && hi->GetNextState()==CHUDState::eIdle)
-						hi->SendDeactivateItem();
+					if (hi->GetState() == CHUDState::eIdle && hi->GetNextState() == CHUDState::eIdle)
+					{
+						bool is_sprint = false;
+						CActor* actor = smart_cast<CActor*>(pActor_owner);
+						if (actor && actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+							is_sprint = true;
+						
+						if (!is_sprint)
+							hi->SendDeactivateItem();
+					}
 
 					UpdateDropTasks	();
 					return;
