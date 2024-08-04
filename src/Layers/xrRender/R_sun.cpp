@@ -2,7 +2,6 @@
 #include "../../xrEngine/igame_persistent.h"
 #include "../../xrEngine/irenderable.h"
 #include "../xrRender/FBasicVisual.h"
-#include "../xrRender/Debug/dxPixEventWrapper.h"
 
 #include "../xrRender/R_sun_support.h"
 
