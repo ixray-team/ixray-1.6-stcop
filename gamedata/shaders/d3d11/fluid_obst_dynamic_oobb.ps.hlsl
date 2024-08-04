@@ -7,7 +7,7 @@ struct PSDrawBoxOut
 };
 
 //	Pixel
-PSDrawBoxOut main_ps_4_0(p_fluidsim_dyn_aabb input)
+PSDrawBoxOut main(p_fluidsim_dyn_aabb input)
 {
     PSDrawBoxOut voxel;
 

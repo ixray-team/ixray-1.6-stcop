@@ -14,7 +14,7 @@ bool PointIsInsideBox(float3 p, float3 LBUcorner, float3 RTDcorner)
 }
 
 //	Pixel
-PSDrawBoxOut main_ps_4_0(p_fluidsim_clip input)
+PSDrawBoxOut main(p_fluidsim_clip input)
 {
     PSDrawBoxOut voxel;
 

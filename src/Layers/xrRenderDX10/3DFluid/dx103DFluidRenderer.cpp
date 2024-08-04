@@ -521,7 +521,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	DrawScreenQuad();
 
 	//	Restore render state
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,RDepth);		// LDR RT
+	pTarget->phase_scene_forward(); // LDR RT
 
 	if (bRenderFire)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFire]);
@@ -683,8 +683,12 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	//  raytracing through it.
 	WorldView = m_gridMatrix * WorldView;
 
+	auto temp = RCache.xforms.m_p;
+	temp._31 += ps_r_taa_jitter.x;
+	temp._32 += ps_r_taa_jitter.y;
+
 	// worldViewProjection is used to transform the volume box to screen space
-	auto Projection = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&RCache.xforms.m_p));
+	auto Projection = XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&temp));
 	auto WorldViewProjection = WorldView * Projection;
 	RCache.set_c(strWorldViewProjection, *(Fmatrix*)&WorldViewProjection);
 
@@ -702,6 +706,8 @@ void dx103DFluidRenderer::Prepare(const dx103DFluidData& FluidData, u32 RTWidth,
 	Fvector4 tempVector{};
 	XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(&tempVector), EyeInGridSpace);
 	RCache.set_c(strEyeOnGrid, tempVector);
+
+	RCache.set_c("DepthUnpack", RCache.xforms.m_p._43, RCache.xforms.m_p._33, 0.0f, 0.0f);
 
 	RCache.set_c(strRTWidth, (float)RTWidth);
 	RCache.set_c(strRTHeight, (float)RTHeight);

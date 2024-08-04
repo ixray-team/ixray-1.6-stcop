@@ -1,7 +1,7 @@
 #include "fluid_common.hlsli"
 
 //	Pixel
-float4 main_ps_4_0(p_fluidsim input) : SV_Target
+float4 main(p_fluidsim input) : SV_Target
 {
     float4 fieldL = Texture_velocity1.SampleLevel(samPointClamp, LEFTCELL, 0);
     float4 fieldR = Texture_velocity1.SampleLevel(samPointClamp, RIGHTCELL, 0);

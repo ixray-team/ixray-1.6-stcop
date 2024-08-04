@@ -351,7 +351,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 
 	//	Restore render state
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,RDepth);		// LDR RT
+	pTarget->phase_scene_forward(); // LDR RT
 
 	RImplementation.rmNormal();
 	//RImplementation.Target->phase_scene_begin();
@@ -731,7 +731,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 
 	//	Restore render state
 	CRenderTarget* pTarget = RImplementation.Target;
-	pTarget->u_setrt( pTarget->rt_Generic_0,0,0,RDepth);		// LDR RT
+	pTarget->phase_scene_forward(); // LDR RT
 
 	RImplementation.rmNormal();
 }
@@ -755,6 +755,8 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 	//	Reset to avoid confusion. 
 	RCache.set_RT(0, 0);
 	RCache.set_RT(0, 1);
+	RCache.set_RT(0, 2);
+	RCache.set_RT(0, 3);
 }
 
 //	Allow real-time config reload

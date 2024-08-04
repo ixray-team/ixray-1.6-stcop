@@ -44,6 +44,7 @@ cbuffer FluidRenderConfig
     float RTHeight;
 
     float4 DiffuseLight;
+	float4 DepthUnpack;
 
     float4x4 WorldViewProjection;
     float4x4 InvWorldViewProjection;
