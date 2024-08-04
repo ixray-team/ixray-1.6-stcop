@@ -233,6 +233,7 @@ public:
 	bool m_bMixAfterQueue;
 	bool _wanim_force_assign;
 	bool is_firstlast_ammo_swapped;
+	bool m_bAimScopeAnims;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
