@@ -56,7 +56,8 @@ class HUD_SOUND_COLLECTION
 	xr_vector<HUD_SOUND_ITEM>	m_sound_items;
 public:
 	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
-								~HUD_SOUND_COLLECTION();
+	HUD_SOUND_COLLECTION();
+	~HUD_SOUND_COLLECTION();
 								void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, 
 									bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
