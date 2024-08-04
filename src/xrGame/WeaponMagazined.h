@@ -109,7 +109,7 @@ public:
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
-	virtual xr_string	NeedAddSuffix(xr_string M);
+	virtual xr_string	NeedAddSuffix(const xr_string& M);
 
 public:
 	virtual bool	SwitchMode				();
@@ -161,8 +161,7 @@ protected:
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
-			void	OnNextFireMode		();
-			void	OnPrevFireMode		();
+			bool	ChangeFiremode		(u16 cmd);
 			bool	HasFireModes		() { return m_bHasDifferentFireModes; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 	xr_string		GetFiremodeSuffix() const;

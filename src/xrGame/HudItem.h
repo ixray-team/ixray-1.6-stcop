@@ -86,7 +86,7 @@ public:
 	virtual bool				Action				(u16 cmd, u32 flags)			{return false;}
 			void				OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	
-	virtual	u8					GetCurrentHudOffsetIdx ()							{return 0;}
+	virtual	u8					GetCurrentHudOffsetIdx () const {return 0;}
 
 	BOOL						GetHUDmode			();
 	IC BOOL						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
@@ -132,7 +132,7 @@ public:
 	virtual u32					PlayHUDMotion		(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix = true);
 	u32							PlayHUDMotion_noCB	(const shared_str& M, BOOL bMixIn);
 	void						StopCurrentAnimWithoutCallback();
-	virtual xr_string			NeedAddSuffix(xr_string M) { return M; }
+	virtual xr_string			NeedAddSuffix(const xr_string& M) { return M; }
 
 	IC void						RenderHud				(BOOL B)	{ m_huditem_flags.set(fl_renderhud, B);}
 	IC BOOL						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}

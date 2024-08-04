@@ -57,10 +57,6 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_fOldBulletSpeed			= 0;
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
-
-	m_sFireModeMask_1 = nullptr;
-	m_sFireModeMask_3 = nullptr;
-	m_sFireModeMask_a = nullptr;
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -726,7 +722,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
-xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
+xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
@@ -1353,14 +1349,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	case kWPN_FIREMODE_PREV:
 	case kWPN_FIREMODE_NEXT:
 	{
-		if (flags & CMD_START) 
-		{
-				if (cmd == kWPN_FIREMODE_PREV)
-					OnPrevFireMode();
-				else
-					OnNextFireMode();
-				return true;
-		};
+		return ChangeFiremode(cmd);
 	}break;
 	}
 	return false;
@@ -1905,69 +1894,42 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 		return xr_string().ToString(GetQueueSize());
 }
 
-void CWeaponMagazined::OnNextFireMode()
+bool CWeaponMagazined::ChangeFiremode(u16 cmd)
 {
-	if (!m_bHasDifferentFireModes)
-		return;
-
-	if (bNextModeKeyPressed || bPrevModeKeyPressed)
-		return;
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (isGuns)
-	{
-		if (IsZoomed())
-			return;
-	}
+
+	if (!HasFireModes())
+		return false;
+	else if (bPrevModeKeyPressed || bNextModeKeyPressed)
+		return false;
+	else if (isGuns && IsZoomed())
+		return false;
 
 	if (m_bUseChangeFireModeAnim)
 	{
-		bNextModeKeyPressed = true;
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
+		if (cmd == kWPN_FIREMODE_NEXT)
+			bNextModeKeyPressed = true;
+		else
+			bPrevModeKeyPressed = true;
+
+		if (GetDetector() && !GetDetector()->GetState() != CCustomDetector::eIdle)
+			return false;
 	}
 
 	m_iOldFireMode = m_iQueueSize;
 
-	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % (int)m_aFireModes.size();
+	if (cmd == kWPN_FIREMODE_NEXT)
+		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (int)m_aFireModes.size();
+	else
+		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (int)m_aFireModes.size();
 
 	SetQueueSize(GetCurrentFireMode());
 
 	if (m_bUseChangeFireModeAnim)
 		SwitchState(eSwitchMode);
-};
 
-void CWeaponMagazined::OnPrevFireMode()
-{
-	if (!m_bHasDifferentFireModes)
-		return;
-
-	if (bPrevModeKeyPressed || bNextModeKeyPressed)
-		return;
-
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (isGuns)
-	{
-		if (IsZoomed())
-			return;
-	}
-
-	if (m_bUseChangeFireModeAnim)
-	{
-		bPrevModeKeyPressed = true;
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
-	}
-
-	m_iOldFireMode = m_iQueueSize;
-
-	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % (int)m_aFireModes.size();
-
-	SetQueueSize(GetCurrentFireMode());
-
-	if (m_bUseChangeFireModeAnim)
-		SwitchState(eSwitchMode);
-};
+	return true;
+}
 
 void	CWeaponMagazined::OnH_A_Chield		()
 {
