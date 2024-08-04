@@ -1059,7 +1059,9 @@ void CActor::UpdateCL	()
 		psHUD_Flags.set( HUD_DRAW_RT, true );
 	}
 
-	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint();
+	CMissile* pMissile = smart_cast<CMissile*>(inventory().ActiveItem());
+
+	bBlockSprint = (pWeapon != nullptr && pWeapon->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint());
 
 	if (pWeapon)
 	{
