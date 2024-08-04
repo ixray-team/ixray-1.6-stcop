@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "bolt.h"
-#include "../xrPhysics/PhysicsShell.h"
-#include "../xrEngine/xr_level_controller.h"
+#include "../xrphysics/PhysicsShell.h"
+#include "Inventory.h"
 
 CBolt::CBolt(void) 
 {
@@ -72,4 +72,14 @@ void CBolt::SetInitiator			(u16 id)
 u16	CBolt::Initiator				()
 {
 	return m_thrower_id;
+}
+
+bool CBolt::SendDeactivateItem()
+{
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
+	if (isGuns && pActor && (GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow || GetState() == eThrowEnd))
+		return false;
+
+	return inherited::SendDeactivateItem();
 }
