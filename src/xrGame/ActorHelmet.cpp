@@ -44,6 +44,8 @@ void CHelmet::Load(LPCSTR section)
 	else
 		m_NightVisionSect = "";
 
+	bIsTorchAvaliable = READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode]);
+
 	m_fHealthRestoreSpeed			= READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed",    0.0f );
 	m_fRadiationRestoreSpeed		= READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.0f );
 	m_fSatietyRestoreSpeed			= READ_IF_EXISTS(pSettings, r_float, section, "satiety_restore_speed",   0.0f );
@@ -124,6 +126,13 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 			CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 			if(pTorch)
 				pTorch->SwitchNightVision(false);
+
+			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			if (isGuns)
+			{
+				if (pTorch && pTorch->IsSwitched())
+					pTorch->Switch(false);
+			}
 		}
 	}
 }
@@ -193,6 +202,14 @@ bool CHelmet::install_upgrade_impl( LPCSTR section, bool test )
 	result2 = process_if_exists_set( section, "bones_koeff_protection_add", &CInifile::r_string, str, test );
 	if ( result2 && !test )
 		AddBonesProtection	(str);
+
+	BOOL value = bIsTorchAvaliable;
+	result2 = process_if_exists_set(section, "torch_available", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		bIsTorchAvaliable = !!value;
+	}
+
 
 	return result;
 }

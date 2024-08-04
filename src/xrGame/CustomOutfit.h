@@ -13,12 +13,12 @@ public:
 
 	virtual void			Load				(LPCSTR section);
 	
-	//уменьшенная версия хита, для вызова, когда костюм надет на персонажа
+	//СѓРјРµРЅСЊС€РµРЅРЅР°СЏ РІРµСЂСЃРёСЏ С…РёС‚Р°, РґР»СЏ РІС‹Р·РѕРІР°, РєРѕРіРґР° РєРѕСЃС‚СЋРј РЅР°РґРµС‚ РЅР° РїРµСЂСЃРѕРЅР°Р¶Р°
 	virtual void			Hit					(float P, ALife::EHitType hit_type);
 
-	//коэффициенты на которые домножается хит
-	//при соответствующем типе воздействия
-	//если на персонаже надет костюм
+	//РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РЅР° РєРѕС‚РѕСЂС‹Рµ РґРѕРјРЅРѕР¶Р°РµС‚СЃСЏ С…РёС‚
+	//РїСЂРё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРј С‚РёРїРµ РІРѕР·РґРµР№СЃС‚РІРёСЏ
+	//РµСЃР»Рё РЅР° РїРµСЂСЃРѕРЅР°Р¶Рµ РЅР°РґРµС‚ РєРѕСЃС‚СЋРј
 	float					GetHitTypeProtection		(ALife::EHitType hit_type, s16 element);
 	float					GetDefHitTypeProtection		(ALife::EHitType hit_type);
 	float					GetBoneArmor				(s16 element);
@@ -54,6 +54,7 @@ public:
 	shared_str				m_NightVisionSect;
 
 	bool					bIsHelmetAvaliable;
+	bool					bIsTorchAvaliable;
 
 	virtual u32				ef_equipment_type		() const;
 	virtual	BOOL			BonePassBullet			(int boneID);
