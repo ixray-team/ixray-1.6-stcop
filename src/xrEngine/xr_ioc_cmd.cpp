@@ -522,8 +522,11 @@ public:
 		//	0 - r1
 		//	1..3 - r2
 		//	4 - r3
+		bool IsDX11On10Render = std::string("renderer_r4_dx10") == tokens[renderer_value].name;
+		bool IsDX11Render = xr_string(tokens[renderer_value].name).Contains("renderer_r4");// || IsDX11On10Render;
 		psDeviceFlags.set(rsR2, std::string("renderer_r2") == tokens[renderer_value].name);
-		psDeviceFlags.set(rsR4, std::string("renderer_r4") == tokens[renderer_value].name);
+		psDeviceFlags.set(rsR4, IsDX11Render);
+		psDeviceFlags.set(rsR4low, IsDX11On10Render);
 	}
 
 	virtual void	Save	(IWriter *F)	
