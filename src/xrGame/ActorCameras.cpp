@@ -97,23 +97,17 @@ void CActor::cam_UnsetLadder()
 }
 
 float cammera_into_collision_shift = 0.05f;
-void CActor::CorrectActorCameraHeight(float* h)
+void CActor::CorrectActorCameraHeight(float& h)
 {
 	if (_last_camera_height == 0.f)
 	{
-		_last_camera_height = *h;
+		_last_camera_height = h;
 		_last_cam_update_time = Device.dwTimeGlobal;
 		return;
 	}
 
-	u32 curtime = Device.dwTimeGlobal;
-
-	u32 result = curtime - _last_cam_update_time;
-	if (result > curtime)
-		result = u32(-1) - _last_cam_update_time + curtime;
-
-	u32 dt = result;
-	_last_cam_update_time = curtime;
+	u32 dt = Device.GetTimeDeltaSafe(_last_cam_update_time, Device.dwTimeGlobal);
+	_last_cam_update_time = Device.dwTimeGlobal;
 
 	if (mstate_real & mcLanding2)
 	{
@@ -155,7 +149,7 @@ void CActor::CorrectActorCameraHeight(float* h)
 		max_offset = 0.f;
 	}
 
-	float target_h = *h + max_offset;
+	float target_h = h + max_offset;
 	float dh = target_h - _last_camera_height;
 	float delta = abs(pow(abs(dh), dh_pow) * dt * speed / 1000.f);
 
@@ -168,8 +162,8 @@ void CActor::CorrectActorCameraHeight(float* h)
 		_landing_effect_finish_time_remains = 0;
 	}
 
-	*h = _last_camera_height + delta;
-	_last_camera_height = *h;
+	h = _last_camera_height + delta;
+	_last_camera_height = h;
 
 	if (_landing_effect_time_remains > dt)
 		_landing_effect_time_remains -= dt;
@@ -431,7 +425,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		current_ik_cam_shift = 0;
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	float camera_h;
+	float camera_h = CameraHeight();
 	if (!isGuns)
 	{
 		// Alex ADD: smooth crouch
@@ -447,10 +441,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		camera_h = CurrentHeight;
 	}
 	else
-	{
-		camera_h = CameraHeight();
-		CorrectActorCameraHeight(&camera_h);
-	}
+		CorrectActorCameraHeight(camera_h);
 
 	Fvector point = { 0, camera_h + current_ik_cam_shift, 0};
 	Fvector dangle		= {0,0,0};
@@ -505,7 +496,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
 
-	// Âûñ÷èòûâàåì ðàçíèöó ìåæäó ïðåäûäóùèì è òåêóùèì Yaw \ Pitch îò 1-ãî ëèöà //--#SM+ Begin#--
+	// Ð’Ñ‹ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ñ€Ð°Ð·Ð½Ð¸Ñ†Ñƒ Ð¼ÐµÐ¶Ð´Ñƒ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð¸Ð¼ Ð¸ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¼ Yaw \ Pitch Ð¾Ñ‚ 1-Ð³Ð¾ Ð»Ð¸Ñ†Ð° //--#SM+ Begin#--
 	float& cam_yaw_cur = cameras[eacFirstEye]->yaw;
 	static float cam_yaw_prev = cam_yaw_cur;
 

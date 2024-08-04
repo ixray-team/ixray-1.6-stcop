@@ -372,12 +372,12 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		else
 			moving_idx				= STorsoWpn::eWalk;
 	}
-	// анимации
+	// Р°РЅРёРјР°С†РёРё
 	MotionID 						M_legs;
 	MotionID 						M_torso;
 	MotionID 						M_head;
 
-	//если мы просто стоим на месте
+	//РµСЃР»Рё РјС‹ РїСЂРѕСЃС‚Рѕ СЃС‚РѕРёРј РЅР° РјРµСЃС‚Рµ
 	bool is_standing = false;
 
 	CInventoryItem* _i = inventory().ActiveItem();
@@ -427,7 +427,12 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 	if (this == Level().CurrentViewEntity())
 	{	
-		if (((mstate_rl&mcSprint) != (mstate_old&mcSprint)) || ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove)) || ((mstate_rl & mcAccel) != (mstate_old & mcAccel)) || ((mstate_rl & mcCrouch) != (mstate_old & mcCrouch)))
+		auto TestState = [&](u32 State)
+		{
+			return ((mstate_rl & State) != (mstate_old & State));
+		};
+
+		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
 			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_rl));
 	};
 
@@ -663,7 +668,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 			M_torso = ST->m_torso_idle;
 	}
 	
-	// есть анимация для всего - запустим / иначе запустим анимацию по частям
+	// РµСЃС‚СЊ Р°РЅРёРјР°С†РёСЏ РґР»СЏ РІСЃРµРіРѕ - Р·Р°РїСѓСЃС‚РёРј / РёРЅР°С‡Рµ Р·Р°РїСѓСЃС‚РёРј Р°РЅРёРјР°С†РёСЋ РїРѕ С‡Р°СЃС‚СЏРј
 	if (m_current_torso!=M_torso)
 	{
 		if (m_bAnimTorsoPlayed)		
