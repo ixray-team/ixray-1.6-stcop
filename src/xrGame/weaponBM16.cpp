@@ -59,7 +59,7 @@ void CWeaponBM16::PlayReloadSound()
 void CWeaponBM16::PlayAnimShoot()
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	std::string anm_name = isGuns ? "anm_shoot" : "anm_shot";
+	xr_string anm_name = isGuns ? "anm_shoot" : "anm_shot";
 
 	PlayHUDMotion(anm_name, FALSE, this, GetState());
 }
@@ -71,7 +71,7 @@ void CWeaponBM16::PlayAnimReload()
 	VERIFY(GetState()==eReload);
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	std::string anm_name = "anm_reload";
+	xr_string anm_name = "anm_reload";
 	if (!isGuns)
 	{
 		if ((m_magazine.size() == 1 || !b_both) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
@@ -83,11 +83,11 @@ void CWeaponBM16::PlayAnimReload()
 	PlayHUDMotion(anm_name, TRUE, this, GetState(), isGuns);
 }
 
-std::string CWeaponBM16::NeedAddSuffix(std::string M)
+xr_string CWeaponBM16::NeedAddSuffix(xr_string M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	std::string new_name = M;
+	xr_string new_name = M;
 
 	if (IsChangeAmmoType() && m_magazine.size() != 0)
 	{

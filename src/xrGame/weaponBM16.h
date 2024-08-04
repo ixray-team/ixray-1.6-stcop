@@ -12,7 +12,7 @@ public:
 	virtual void	Load							(LPCSTR section);
 
 protected:
-	virtual std::string	NeedAddSuffix(std::string M);
+	virtual xr_string	NeedAddSuffix(xr_string M);
 	virtual void	PlayAnimShoot					();
 	virtual void	PlayReloadSound					();
 	virtual void	PlayAnimReload					();
