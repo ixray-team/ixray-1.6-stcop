@@ -1241,9 +1241,65 @@ bool CSE_ALifeItemBolt::used_ai_locations		() const
 }
 
 #ifndef XRGAME_EXPORTS
-void CSE_ALifeItemBolt::FillProps			(LPCSTR pref, PropItemVec& values)
+void CSE_ALifeItemBolt::FillProps(LPCSTR pref, PropItemVec& values)
 {
-	inherited::FillProps			(pref,	 values);
+	inherited::FillProps(pref, values);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
+////////////////////////////////////////////////////////////////////////////
+// CSE_ALifeItemsNotSave
+////////////////////////////////////////////////////////////////////////////
+CSE_ALifeItemsNotSave::CSE_ALifeItemsNotSave(LPCSTR caSection) : CSE_ALifeItem(caSection)
+{
+	m_flags.set(flUseSwitches, FALSE);
+	m_flags.set(flSwitchOffline, FALSE);
+	m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, caSection, "ef_weapon_type", u32(-1));
+}
+
+CSE_ALifeItemsNotSave::~CSE_ALifeItemsNotSave()
+{
+}
+
+u32	CSE_ALifeItemsNotSave::ef_weapon_type() const
+{
+	VERIFY(m_ef_weapon_type != u32(-1));
+	return	(m_ef_weapon_type);
+}
+
+void CSE_ALifeItemsNotSave::STATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::STATE_Write(tNetPacket);
+}
+
+void CSE_ALifeItemsNotSave::STATE_Read(NET_Packet& tNetPacket, u16 size)
+{
+	inherited::STATE_Read(tNetPacket, size);
+}
+
+void CSE_ALifeItemsNotSave::UPDATE_Write(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Write(tNetPacket);
+};
+
+void CSE_ALifeItemsNotSave::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	inherited::UPDATE_Read(tNetPacket);
+};
+
+bool CSE_ALifeItemsNotSave::can_save() const
+{
+	return						(false);//!attached());
+}
+bool CSE_ALifeItemsNotSave::used_ai_locations() const
+{
+	return false;
+}
+
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeItemsNotSave::FillProps(LPCSTR pref, PropItemVec& values)
+{
+	inherited::FillProps(pref, values);
 }
 #endif // #ifndef XRGAME_EXPORTS
 

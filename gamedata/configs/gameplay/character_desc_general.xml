@@ -15,7 +15,6 @@
 		<supplies>
 			[spawn] \n
 			device_torch \n
-      anim_fake \n
 			wpn_binoc \n
 			wpn_knife \n
 			detector_simple \n

@@ -69,6 +69,16 @@ void CSE_ALifeItemBolt::script_register(lua_State *L)
 	];
 }
 
+void CSE_ALifeItemsNotSave::script_register(lua_State* L) {
+	module(L)[
+		luabind_class_item1(
+			CSE_ALifeItemsNotSave,
+			"cse_alife_item_not_save",
+			CSE_ALifeItem
+		)
+	];
+}
+
 void CSE_ALifeItemCustomOutfit::script_register(lua_State *L)
 {
 	module(L)[

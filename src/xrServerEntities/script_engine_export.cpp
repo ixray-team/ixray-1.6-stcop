@@ -2,7 +2,7 @@
 //	Module 		: script_engine_export.cpp
 //	Created 	: 01.04.2004
 //  Modified 	: 22.06.2004
-//	Author		: Еблан Конченный
+//	Author		: Р•Р±Р»Р°РЅ РљРѕРЅС‡РµРЅРЅС‹Р№
 //	Description : XRay Script Engine export
 ////////////////////////////////////////////////////////////////////////////
 
@@ -87,6 +87,7 @@ void export_classes	(lua_State *L)
 	CSE_ALifeItemGrenade::script_register(L);
 	CSE_ALifeItemExplosive::script_register(L);
 	CSE_ALifeItemBolt::script_register(L);
+	CSE_ALifeItemsNotSave::script_register(L);
 	CSE_ALifeItemHelmet::script_register(L);
 	CSE_ALifeItemCustomOutfit::script_register(L);
 	//CSE_ALifeStationaryMgun::script_register(L);

@@ -101,7 +101,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeItem,CSE_ALifeDynamicObjectVisual,CSE_ALif
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemTorch,CSE_ALifeItem)
-//флаги
+//С„Р»Р°РіРё
 	enum EStats{
 		eTorchActive				= (1<<0),
 		eNightVisionActive			= (1<<1),
@@ -131,7 +131,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 
 	typedef	ALife::EWeaponAddonStatus	EWeaponAddonStatus;
 	
-	//текущее состояние аддонов
+	//С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ Р°РґРґРѕРЅРѕРІ
 	enum EWeaponAddonState 
 	{
 		eWeaponAddonScope = 0x01,
@@ -278,6 +278,15 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemBolt,CSE_ALifeItem)
 	virtual bool					can_save			() const;
 	virtual bool					used_ai_locations	() const;
 	virtual u32						ef_weapon_type		() const;
+SERVER_ENTITY_DECLARE_END
+
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemsNotSave, CSE_ALifeItem)
+	u32								m_ef_weapon_type;
+									CSE_ALifeItemsNotSave(LPCSTR caSection);
+	virtual							~CSE_ALifeItemsNotSave();
+	virtual bool					can_save() const;
+	virtual bool					used_ai_locations() const;
+	virtual u32						ef_weapon_type() const;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemCustomOutfit,CSE_ALifeItem)
