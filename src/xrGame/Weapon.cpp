@@ -280,6 +280,16 @@ void CWeapon::ForceUpdateFireParticles()
 	}
 }
 
+bool CWeapon::WeaponSoundExist(LPCSTR section, LPCSTR sound_name)
+{
+	LPCSTR str = "";
+	bool sec_exist = process_if_exists_set(section, sound_name, &CInifile::r_string, str, true);
+	if (sec_exist)
+		return true;
+
+	return false;
+}
+
 void CWeapon::Load		(LPCSTR section)
 {
 	inherited::Load					(section);
