@@ -559,6 +559,8 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 
 	if (IsGrenadeLauncherAttached())
 	{
+		bool TempTest;
+
 		if (m_bGrenadeMode)
 		{
 			if (IsZoomed())
@@ -573,7 +575,9 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_g");
 
-			if (!IsMisfire() && iAmmoElapsed2 == 0)
+			TempTest = m_bAmmoInChamber ? iAmmoInChamberElapsed == 0 : iAmmoElapsed2 == 0;
+
+			if (!IsMisfire() && TempTest)
 				new_name = AddSuffixName(new_name, "_empty", "_g");
 
 			if (IsMisfire())
@@ -607,10 +611,14 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_w_gl");
 
+			TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 1 : iAmmoElapsed == 1;
+
 			if (!IsMisfire() && iAmmoElapsed == 1)
 				new_name = AddSuffixName(new_name, "_last", "_w_gl");
 
-			if (!IsMisfire() && iAmmoElapsed == 0)
+			TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
+
+			if (!IsMisfire() && TempTest)
 				new_name = AddSuffixName(new_name, "_empty", "_w_gl");
 
 			if (IsChangeAmmoType())
@@ -623,7 +631,7 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 				else
 					new_name = AddSuffixName(new_name, "_misfire", "_w_gl");
 
-				if (iAmmoElapsed == 1)
+				if (TempTest)
 					new_name = AddSuffixName(new_name, "_last", "_w_gl");
 			}
 
@@ -818,6 +826,10 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo( II_BriefInfo& info )
 	if(!inherited::GetBriefInfo(info))
 		return false;
 */
+
+	if (!m_bGrenadeMode && m_bAmmoInChamber)
+		return inherited::GetBriefInfo(info);
+
 	string32 int_str;
 	int	ae = GetAmmoElapsed();
 	xr_sprintf(int_str, "%d", ae);
