@@ -119,6 +119,7 @@ void clean_game_globals()
 	
 #ifdef DEBUG
 	xr_delete										(g_profiler);
+	xr_delete										(pGameGlobals);
 #endif
 
 	RELATION_REGISTRY::clear_relation_registry		();

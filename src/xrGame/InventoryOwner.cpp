@@ -373,26 +373,28 @@ float  CInventoryOwner::MaxCarryWeight () const
 	return ret;
 }
 
-void CInventoryOwner::spawn_supplies		()
+void CInventoryOwner::spawn_supplies()
 {
-	CGameObject								*game_object = smart_cast<CGameObject*>(this);
-	VERIFY									(game_object);
-	if (smart_cast<CBaseMonster*>(this))	return;
+	if (smart_cast<CBaseMonster*>(this))
+		return;
 
+	CGameObject* game_object = smart_cast<CGameObject*>(this);
+	VERIFY(game_object);
 
 	if (use_bolts())
-		Level().spawn_item					("bolt",game_object->Position(),game_object->ai_location().level_vertex_id(),game_object->ID());
+		Level().spawn_item(pGameGlobals->r_string("actor_item", "bolt_item"), game_object->Position(), game_object->ai_location().level_vertex_id(), game_object->ID());
 
-	if (!ai().get_alife() && IsGameTypeSingle() ) 
+	if (!ai().get_alife() && IsGameTypeSingle())
 	{
-		CSE_Abstract						*abstract = Level().spawn_item("device_pda",game_object->Position(),game_object->ai_location().level_vertex_id(),game_object->ID(),true);
-		CSE_ALifeItemPDA					*pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
-		R_ASSERT							(pda);
-		pda->m_original_owner				= (u16)game_object->ID();
-		NET_Packet							P;
-		abstract->Spawn_Write				(P,TRUE);
-		Level().Send						(P,net_flags(TRUE));
-		F_entity_Destroy					(abstract);
+		CSE_Abstract* abstract = Level().spawn_item(pGameGlobals->r_string("actor_item", "pda_item"), game_object->Position(), game_object->ai_location().level_vertex_id(), game_object->ID(), true);
+		CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
+		R_ASSERT(pda);
+		pda->m_original_owner = (u16)game_object->ID();
+
+		NET_Packet P;
+		abstract->Spawn_Write(P, TRUE);
+		Level().Send(P, net_flags(TRUE));
+		F_entity_Destroy(abstract);
 	}
 }
 
