@@ -11,10 +11,6 @@ public:
 
 	virtual void	Load			(LPCSTR section);
 
-	virtual void	OnShot			();
-	virtual void	net_Destroy		();
-	virtual void	OnH_B_Chield	();
-
 	virtual void	UpdateSounds	();
 protected:	
 	virtual bool	AllowFireWhileWorking() {return true;}
