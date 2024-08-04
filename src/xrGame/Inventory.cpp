@@ -55,6 +55,7 @@ CInventory::CInventory()
 	m_iActiveSlot								= NO_ACTIVE_SLOT;
 	m_iNextActiveSlot							= NO_ACTIVE_SLOT;
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
+	m_iDeferredSlot								= NO_ACTIVE_SLOT;
 
 	string256	slot_persistent;
 	string256	slot_active;
@@ -535,6 +536,23 @@ void CInventory::Activate(u16 slot, bool bForce)
 	if (slot != NO_ACTIVE_SLOT)
 		tmp_item = ItemFromSlot(slot);
 
+	if (slot != NO_ACTIVE_SLOT && slot != BOLT_SLOT && slot != KNIFE_SLOT)
+	{
+		if (tmp_item)
+		{
+			CCustomDetector* det = smart_cast<CCustomDetector*>(ItemFromSlot(DETECTOR_SLOT));
+
+			if (det)
+			{
+				if (det->IsHiding())
+				{
+					m_iDeferredSlot = slot;
+					return;
+				}
+			}
+		}
+	}
+
 	if (tmp_item && IsSlotBlocked(tmp_item) && (!bForce))
 	{
 		//to restore after unblocking ...
@@ -753,6 +771,25 @@ void CInventory::ActiveWeapon( u16 slot )
 
 void CInventory::Update() 
 {
+	if (m_iDeferredSlot != NO_ACTIVE_SLOT)
+	{
+		CCustomDetector* det = smart_cast<CCustomDetector*>(ItemFromSlot(DETECTOR_SLOT));
+
+		if (det)
+		{
+			if (det->IsHidden())
+			{
+				ActiveWeapon(m_iDeferredSlot);
+				m_iDeferredSlot = NO_ACTIVE_SLOT;
+			}
+		}
+		else
+		{
+			Activate(m_iDeferredSlot);
+			m_iDeferredSlot = NO_ACTIVE_SLOT;
+		}
+	}
+
 	if( OnServer() )
 	{
 		if(m_iActiveSlot!=m_iNextActiveSlot)
