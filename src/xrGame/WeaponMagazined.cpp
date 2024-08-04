@@ -245,11 +245,16 @@ void CWeaponMagazined::FireStart()
 		{
 			if(!IsWorking() || AllowFireWhileWorking())
 			{
-				if(GetState()==eReload) return;
-				if(GetState()==eShowing) return;
-				if(GetState()==eHiding) return;
-				if(GetState()==eMisfire) return;
-				if (lock_time) return;
+				if (!OnActWhileReload_CanActNow())
+				{
+					if (GetState() == eReload) return;
+					if (GetState() == eShowing) return;
+					if (GetState() == eHiding) return;
+					if (GetState() == eMisfire) return;
+					if (lock_time) return;
+				}
+				else if (!Action_PrepareEarlyShotInReload())
+					return;
 
 				inherited::FireStart();
 				
@@ -1216,6 +1221,7 @@ void CWeaponMagazined::switch2_Reload()
 {
 	CWeapon::FireEnd	();
 
+	IsReloaded = false;
 	PlayAnimReload		();
 	PlayReloadSound		();
 	SetPending			(TRUE);
