@@ -8,7 +8,8 @@
 #ifndef _EDITOR
 #include	"../../xrEngine/Render.h"
 #endif
-int			psSkeletonUpdate	= 32;
+
+int psSkeletonUpdate = 32;
 xrCriticalSection	UCalc_Mutex
 #ifdef PROFILE_CRITICAL_SECTIONS
 	(MUTEX_PROFILE_ID(UCalc_Mutex))
@@ -651,7 +652,7 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	intrusive_ptr<CSkeletonWallmark>		wm = new CSkeletonWallmark(this,parent_xform,shader_,cp,RDEVICE.fTimeGlobal);
 	wm->m_LocalBounds.set		(cp,size*2.f);
 	wm->XFORM()->transform_tiny	(wm->m_Bounds.P,cp);
-	wm->m_Bounds.R				= wm->m_Bounds.R; 
+	wm->m_Bounds.R				= wm->m_LocalBounds.R;
 
 	Fvector tmp; tmp.invert		(D);
 	normal.add(tmp).normalize	();
@@ -672,10 +673,6 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 	wallmarks.push_back		(wm);
 }
 
-struct zero_wm_pred {
-	bool operator()(const intrusive_ptr<CSkeletonWallmark> x){ return x==0; }
-};
-
 void CKinematics::CalculateWallmarks()
 {
 	if (!wallmarks.empty()&&(wm_frame!=RDEVICE.dwFrame)){
@@ -695,7 +692,7 @@ void CKinematics::CalculateWallmarks()
 			}
 		}
 		if (need_remove){
-			SkeletonWMVecIt new_end= std::remove_if(wallmarks.begin(),wallmarks.end(),zero_wm_pred());
+			SkeletonWMVecIt new_end = std::remove_if(wallmarks.begin(), wallmarks.end(), [](const auto& x) {return x == 0; });
 			wallmarks.erase	(new_end,wallmarks.end());
 		}
 	}
@@ -720,15 +717,57 @@ void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* 
 				// 1-link
 				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				xform0.transform_tiny	(P,F.vert[k]);
-			}else{
+			}
+			else if (F.bone_id[k][1] == F.bone_id[k][2])
+			{
 				// 2-link
 				Fvector P0,P1;
 				Fmatrix& xform0			= LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
 				Fmatrix& xform1			= LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
 				xform0.transform_tiny	(P0,F.vert[k]);
 				xform1.transform_tiny	(P1,F.vert[k]);
-				P.lerp					(P0,P1,F.weight[k]);
+				P.lerp(P0, P1, F.weight[k][0]);
 			}
+			else if (F.bone_id[k][2] == F.bone_id[k][3])
+			{
+				// 3-link
+				Fvector P0, P1, P2;
+				Fmatrix& xform0 = LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+				Fmatrix& xform1 = LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+				Fmatrix& xform2 = LL_GetBoneInstance(F.bone_id[k][2]).mRenderTransform;
+				xform0.transform_tiny(P0, F.vert[k]);
+				xform1.transform_tiny(P1, F.vert[k]);
+				xform2.transform_tiny(P2, F.vert[k]);
+				float w0 = F.weight[k][0];
+				float w1 = F.weight[k][1];
+				P0.mul(w0);
+				P1.mul(w1);
+				P2.mul(1 - w0 - w1);
+				P = P0;
+				P.add(P1);
+				P.add(P2);
+			}
+			else 
+			{
+				// 4-link
+				Fvector PB[4];
+				for (int i = 0; i < 4; ++i) {
+					Fmatrix& xform = LL_GetBoneInstance(F.bone_id[k][i]).mRenderTransform;
+					xform.transform_tiny(PB[i], F.vert[k]);
+				}
+
+				float s = 0.f;
+				for (int i = 0; i < 3; ++i) {
+					PB[i].mul(F.weight[k][i]);
+					s += F.weight[k][i];
+				}
+				PB[3].mul(1 - s);
+
+				P = PB[0];
+				for (int i = 1; i < 4; ++i)
+					P.add(PB[i]);
+			}
+
 			wm->XFORM()->transform_tiny	(V->p,P);
 			V->t.set					(F.uv[k]);
 			int			aC				= iFloor	( w * 255.f);	clamp	(aC,0,255);
