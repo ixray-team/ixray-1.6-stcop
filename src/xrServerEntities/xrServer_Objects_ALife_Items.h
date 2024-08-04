@@ -152,6 +152,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	u8								misfire;
 	float							rt_zoom_factor;
 	u8								cur_scope;
+	xr_vector<u8>					m_AmmoIDs;
 
 	//count of grenades to spawn in grenade launcher [ttcccccc]
 	//WARNING! hight 2 bits (tt bits) indicate type of grenade, so maximum grenade count is 2^6 = 64
@@ -214,7 +215,6 @@ virtual CSE_ALifeItemWeapon		*cast_item_weapon	() {return this;}
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeaponShotGun,CSE_ALifeItemWeaponMagazined)
-	xr_vector<u8>				m_AmmoIDs;
 								CSE_ALifeItemWeaponShotGun(LPCSTR caSection);
 virtual							~CSE_ALifeItemWeaponShotGun();
 
