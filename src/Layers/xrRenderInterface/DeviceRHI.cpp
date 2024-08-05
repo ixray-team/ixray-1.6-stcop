@@ -62,7 +62,14 @@ ITexture2D* CRenderRHI_DX11::CreateTexture2D(const STexture2DDesc& textureDesc, 
 	return pTexture2D;
 }
 
-IBuffer* CRenderRHI_DX11::CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
+ITexture3D* CRenderRHI_DX11::CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc)
+{
+	CD3D11Texture3D* pTexture3D = new CD3D11Texture3D();
+	R_CHK(pTexture3D->Create(textureDesc, pSubresourceDesc));
+	return pTexture3D;
+}
+
+IBuffer* CRenderRHI_DX11::CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CD3D11Buffer* pBuffer = new CD3D11Buffer();
 	R_CHK(pBuffer->Create(bufferType, pData, DataSize, bImmutable));

@@ -6,22 +6,22 @@ D3D11_MAP GetD3D11Map(eBufferMapping Mapping)
 {
 	switch (Mapping)
 	{
-	case READ:
+	case MAPPING_READ:
 		return D3D11_MAP_READ;
-	case WRITE:
+	case MAPPING_WRITE:
 		return D3D11_MAP_WRITE;
-	case WRITE_NO_OVERWRITE:
+	case MAPPING_WRITE_NO_OVERWRITE:
 		return D3D11_MAP_WRITE_NO_OVERWRITE;
-	case WRITE_DISCARD:
+	case MAPPING_WRITE_DISCARD:
 		return D3D11_MAP_WRITE_DISCARD;
-	case READ_AND_WRITE:
+	case MAPPING_READ_AND_WRITE:
 		return D3D11_MAP_READ_WRITE;
 	}
 
 	return (D3D11_MAP)0;
 }
 
-static u32 GetD3D11BindFlags(eBufferType bufferType)
+u32 GetD3D11BindFlags(eBufferType bufferType)
 {
 	switch (bufferType)
 	{

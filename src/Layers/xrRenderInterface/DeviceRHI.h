@@ -51,9 +51,9 @@ enum eBufferType
 
 enum eBufferAccess
 {
-	DEFAULT,
-	IMMUTABLE,
-	DYNAMIC
+	BUFFERACCESS_DEFAULT,
+	BUFFERACCESS_IMMUTABLE,
+	BUFFERACCESS_DYNAMIC
 };
 
 enum eResourceUsage
@@ -66,11 +66,11 @@ enum eResourceUsage
 
 enum eBufferMapping
 {
-	READ,
-	WRITE,
-	WRITE_DISCARD,
-	WRITE_NO_OVERWRITE,
-	READ_AND_WRITE
+	MAPPING_READ,
+	MAPPING_WRITE,
+	MAPPING_WRITE_DISCARD,
+	MAPPING_WRITE_NO_OVERWRITE,
+	MAPPING_READ_AND_WRITE
 };
 
 enum eResourceDimension
@@ -92,6 +92,19 @@ struct STexture2DDesc
 	eResourceUsage Usage;
 	bool IsRenderTarget;
 	bool IsDepthStencil;
+	bool IsTextureCube;
+};
+
+struct STexture3DDesc {
+	u32 Width;
+	u32 Height;
+	u32 Depth;
+	u32 MipLevels;
+	ERHITextureFormat Format;
+	eResourceUsage Usage;
+	bool IsRenderTarget;
+	bool IsDepthStencil;
+	bool IsTextureCube;
 };
 
 struct SubresourceData
@@ -100,6 +113,13 @@ struct SubresourceData
 	u32 SysMemPitch;
 	u32 SysMemSlicePitch;
 	u32 SysMemSize;
+};
+
+struct SMappedSubresource
+{
+	void* pData;
+	u32 RowPitch;
+	u32 DepthPitch;
 };
 
 class RefCount
@@ -142,6 +162,8 @@ public:
 	virtual ~IRHIResource() {}
 
 	virtual void GetType(eResourceDimension* pResourceDimension) = 0;
+
+	virtual void SetDebugName(const char* name) = 0;
 };
 
 class IBuffer : 
@@ -156,14 +178,38 @@ public:
 	virtual void UpdateSubresource(void* pData, size_t Size) = 0;
 };
 
+class IShaderResourceView;
+
 class ITexture2D :
 	public IRHIResource
 {
 public:
 	virtual ~ITexture2D() {}
 
-	virtual void SetDebugName(const char* name) = 0;
+	virtual void GetDesc(STexture2DDesc* desc) = 0;
+
+	// #TODO: Costyl, remove after refactor of SRVSManager
+	virtual void GetShaderResourceView(IShaderResourceView** ppShaderResourceView) = 0;
+
+	virtual void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex2D) = 0;
+	virtual void Unmap(u32 Subresource) = 0;
 };
+
+class ITexture3D :
+	public IRHIResource
+{
+public:
+	virtual ~ITexture3D() {}
+
+	virtual void GetDesc(STexture3DDesc* desc) = 0;
+
+	// #TODO: Costyl, remove after refactor of SRVSManager
+	virtual void GetShaderResourceView(IShaderResourceView** ppShaderResourceView) = 0;
+
+	virtual void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex3D) = 0;
+	virtual void Unmap(u32 Subresource) = 0;
+};
+
 
 class IRender_RHI
 {
@@ -171,8 +217,9 @@ public:
 	virtual void Create(void* renderDevice, void* renderContext) = 0;
 
 	virtual ITexture2D* CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
+	virtual ITexture3D* CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
 
-	virtual IBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) = 0;
+	virtual IBuffer* CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) = 0;
 
 	virtual void SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset) = 0;
 	virtual void SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) = 0;
@@ -201,8 +248,9 @@ public:
 	void Create(void* renderDevice, void* renderContext);
 
 	ITexture2D* CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
+	ITexture3D* CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
 
-	IBuffer* CreateAPIBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
+	IBuffer* CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
 
 	void SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset) override;
 	void SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) override;
@@ -219,6 +267,10 @@ public:
 	ID3D11DeviceContext* GetDeviceContext();
 
 };
+
+// D3D11 Stuff
+D3D11_MAP GetD3D11Map(eBufferMapping Mapping);
+u32 GetD3D11BindFlags(eBufferType bufferType);
 
 extern CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
 
@@ -246,7 +298,7 @@ namespace RHIUtils
 {
 	inline bool CreateVertexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(VERTEX, pData, DataSize, bImmutable);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(VERTEX, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -256,7 +308,7 @@ namespace RHIUtils
 
 	inline bool CreateIndexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(INDEX, pData, DataSize, bImmutable);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(INDEX, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -267,7 +319,7 @@ namespace RHIUtils
 	// Will return nullptr on DX9
 	inline bool CreateConstantBuffer(IBuffer** ppBuffer, u32 DataSize)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateAPIBuffer(CONSTANT, NULL, DataSize, FALSE);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(CONSTANT, NULL, DataSize, FALSE);
 		if (!pBuffer)
 			return false;
 
