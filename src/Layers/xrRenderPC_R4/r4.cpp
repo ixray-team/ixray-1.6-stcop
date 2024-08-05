@@ -10,6 +10,7 @@
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
+#include "../../xrCore/git_version.h"
 
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
@@ -1110,7 +1111,9 @@ HRESULT	CRender::shader_compile(
 	string_path file_name;
 	{
 		string_path file;
-		xr_strcpy(file, "shaders_cache\\d3d11\\");
+		xr_strcpy(file, "shaders_cache\\");
+		xr_strcat(file, _VER);
+		xr_strcat(file, "\\d3d11\\");
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);

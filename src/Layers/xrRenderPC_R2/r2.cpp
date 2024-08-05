@@ -15,7 +15,7 @@
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
-//#include "../../xrServerEntities/smart_cast.h"
+#include "../../xrCore/git_version.h"
 
 CRender										RImplementation;
 
@@ -946,7 +946,9 @@ HRESULT	CRender::shader_compile			(
 	string_path file_name;
 	{
 		string_path file;
-		xr_strcpy(file, "shaders_cache\\r2\\");
+		xr_strcpy(file, "shaders_cache\\");
+		xr_strcat(file, _VER);
+		xr_strcat(file, "\\r2\\");
 		xr_strcat(file, name);
 		xr_strcat(file, ".");
 		xr_strcat(file, extension);
