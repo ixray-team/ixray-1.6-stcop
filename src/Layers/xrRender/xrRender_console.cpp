@@ -671,7 +671,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		0.2f,	0.8f	);
+	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.2f,	0.8f	);
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);
