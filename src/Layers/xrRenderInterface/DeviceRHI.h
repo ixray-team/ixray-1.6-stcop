@@ -82,6 +82,17 @@ enum eResourceDimension
 	RESOURCE_DIMENSION_TEXTURE3D
 };
 
+struct STexture1DDesc {
+	u32 Width;
+	u32 MipLevels;
+	u32 ArraySize;
+	ERHITextureFormat Format;
+	eResourceUsage Usage;
+	bool IsRenderTarget;
+	bool IsDepthStencil;
+	bool IsTextureCube;
+};
+
 struct STexture2DDesc
 {
 	u32 Width;
@@ -180,6 +191,21 @@ public:
 
 class IShaderResourceView;
 
+class ITexture1D :
+	public IRHIResource
+{
+public:
+	virtual ~ITexture1D() {}
+
+	virtual void GetDesc(STexture1DDesc* desc) = 0;
+
+	// #TODO: Costyl, remove after refactor of SRVSManager
+	virtual void GetShaderResourceView(IShaderResourceView** ppShaderResourceView) = 0;
+
+	virtual void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex2D) = 0;
+	virtual void Unmap(u32 Subresource) = 0;
+};
+
 class ITexture2D :
 	public IRHIResource
 {
@@ -216,6 +242,7 @@ class IRender_RHI
 public:
 	virtual void Create(void* renderDevice, void* renderContext) = 0;
 
+	virtual ITexture1D* CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
 	virtual ITexture2D* CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
 	virtual ITexture3D* CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
 
@@ -247,6 +274,7 @@ public:
 
 	void Create(void* renderDevice, void* renderContext);
 
+	ITexture1D* CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
 	ITexture2D* CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
 	ITexture3D* CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
 

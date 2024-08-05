@@ -20,6 +20,123 @@ D3D11_USAGE GetD3D11Usage(eResourceUsage usage)
 }
 
 /////////////////////////////////////////////////////////////////////
+// Texture 1D Implementation
+
+CD3D11Texture1D::CD3D11Texture1D() :
+	m_pTexture1D(nullptr),
+	m_pShaderResourceView(nullptr)
+{
+	memset(&m_TextureDesc, 0, sizeof(m_TextureDesc));
+
+	AddRef();
+}
+
+CD3D11Texture1D::~CD3D11Texture1D()
+{
+	if (m_pShaderResourceView)
+	{
+		m_pShaderResourceView->Release();
+		m_pShaderResourceView = nullptr;
+	}
+
+	if (m_pTexture1D)
+	{
+		m_pTexture1D->Release();
+		m_pTexture1D = nullptr;
+	}
+}
+
+HRESULT CD3D11Texture1D::Create(const STexture1DDesc& desc, const SubresourceData* pSubresourceData)
+{
+	m_TextureDesc = desc;
+
+	ID3D11Device* pDevice = g_RenderRHI_DX11Implementation.GetDevice();
+
+	D3D11_TEXTURE1D_DESC d3dTextureDesc = {};
+	d3dTextureDesc.Width = desc.Width;
+	d3dTextureDesc.MipLevels = desc.MipLevels;
+	d3dTextureDesc.ArraySize = desc.ArraySize;
+	d3dTextureDesc.Format = g_PixelFormats[desc.Format].PlatformFormat;
+	d3dTextureDesc.Usage = GetD3D11Usage(desc.Usage);
+
+	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+
+	// #TODO: Make BindFlags for STexture1DDesc
+	if (desc.IsRenderTarget)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+	else if (desc.IsDepthStencil)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_DEPTH_STENCIL;
+
+	// #TODO: Make CPUAccessFlags for STexture1DDesc
+	d3dTextureDesc.CPUAccessFlags = (desc.Usage == USAGE_DYNAMIC ? D3D11_CPU_ACCESS_WRITE : 0);
+	d3dTextureDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA subresourceData[16] = {};
+	if (pSubresourceData)
+	{
+		for (int i = 0; i < desc.MipLevels; i++)
+		{
+			const SubresourceData* it = pSubresourceData + i;
+			subresourceData[i].pSysMem = it->pSysMem;
+			subresourceData[i].SysMemPitch = it->SysMemPitch;
+			subresourceData[i].SysMemSlicePitch = it->SysMemSlicePitch;
+		}
+	}
+
+	HRESULT hr = pDevice->CreateTexture1D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture1D);
+	R_CHK(hr);
+
+	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
+		shaderResourceViewDesc.Format = d3dTextureDesc.Format;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		shaderResourceViewDesc.Texture2D.MipLevels = -1;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+
+		hr = pDevice->CreateShaderResourceView(m_pTexture1D, &shaderResourceViewDesc, &m_pShaderResourceView);
+		R_CHK(hr);
+	}
+
+	return hr;
+}
+
+void CD3D11Texture1D::GetType(eResourceDimension* pResourceDimension)
+{
+	R_ASSERT(pResourceDimension);
+	*pResourceDimension = RESOURCE_DIMENSION_TEXTURE1D;
+}
+
+void CD3D11Texture1D::SetDebugName(const char* name)
+{
+	R_ASSERT(m_pTexture1D);
+	m_pTexture1D->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name), name);
+}
+
+void CD3D11Texture1D::GetDesc(STexture1DDesc* desc)
+{
+	R_ASSERT(desc);
+	*desc = m_TextureDesc;
+}
+
+void CD3D11Texture1D::GetShaderResourceView(IShaderResourceView** ppShaderResourceView)
+{
+	R_ASSERT(ppShaderResourceView);
+	*ppShaderResourceView = (IShaderResourceView*)m_pShaderResourceView;
+}
+
+void CD3D11Texture1D::Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex1D)
+{
+	R_CHK(g_RenderRHI_DX11Implementation.GetDeviceContext()->Map(m_pTexture1D, Subresource, GetD3D11Map(MapType), MapFlags, (D3D11_MAPPED_SUBRESOURCE*)pMappedTex1D));
+}
+
+void CD3D11Texture1D::Unmap(u32 Subresource)
+{
+	g_RenderRHI_DX11Implementation.GetDeviceContext()->Unmap(m_pTexture1D, Subresource);
+}
+
+/////////////////////////////////////////////////////////////////////
 // Texture 2D Implementation
 
 CD3D11Texture2D::CD3D11Texture2D() :
@@ -86,7 +203,6 @@ HRESULT CD3D11Texture2D::Create(const STexture2DDesc& desc, const SubresourceDat
 		}
 	}
 
-	//R_CHK(pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture2D));
 	HRESULT hr = pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture2D);
 	R_CHK(hr);
 
@@ -197,7 +313,6 @@ HRESULT CD3D11Texture3D::Create(const STexture3DDesc& desc, const SubresourceDat
 		}
 	}
 
-	//R_CHK(pDevice->CreateTexture3D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture3D));
 	HRESULT hr = pDevice->CreateTexture3D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture3D);
 	R_CHK(hr);
 
@@ -250,3 +365,4 @@ void CD3D11Texture3D::Unmap(u32 Subresource)
 {
 	g_RenderRHI_DX11Implementation.GetDeviceContext()->Unmap(m_pTexture3D, Subresource);
 }
+

@@ -55,6 +55,13 @@ void CRenderRHI_DX11::Create(void* renderDevice, void* renderContext)
 	g_PixelFormats[FMT_DXT5].PlatformFormat				=   DXGI_FORMAT_BC3_UNORM;
 }
 
+ITexture1D* CRenderRHI_DX11::CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc)
+{
+	CD3D11Texture1D* pTexture1D = new CD3D11Texture1D();
+	R_CHK(pTexture1D->Create(textureDesc, pSubresourceDesc));
+	return pTexture1D;
+}
+
 ITexture2D* CRenderRHI_DX11::CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc)
 {
 	CD3D11Texture2D* pTexture2D = new CD3D11Texture2D();

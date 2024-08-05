@@ -2,6 +2,31 @@
 
 #include "DeviceRHI.h"
 
+class CD3D11Texture1D :
+	public ITexture1D
+{
+public:
+	CD3D11Texture1D();
+	~CD3D11Texture1D();
+
+	HRESULT Create(const STexture1DDesc& desc, const SubresourceData* pSubresourceData);
+
+	// IRHIResource
+	void GetType(eResourceDimension* pResourceDimension) override;
+	void SetDebugName(const char* name) override;
+
+	// ITexture1D
+	void GetDesc(STexture1DDesc* desc) override;
+	void GetShaderResourceView(IShaderResourceView** ppShaderResourceView) override;
+	void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex1D) override;
+	void Unmap(u32 Subresource) override;
+
+private:
+	ID3D11Texture1D* m_pTexture1D;
+	ID3D11ShaderResourceView* m_pShaderResourceView;
+	STexture1DDesc m_TextureDesc;
+};
+
 class CD3D11Texture2D :
 	public ITexture2D
 {
