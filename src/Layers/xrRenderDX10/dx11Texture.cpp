@@ -212,30 +212,31 @@ bool RHICreateTextureEx(
     // #TODO: Please remove or refactor
     switch (format)
     {
-    case DXGI_FORMAT_UNKNOWN:						rhiFormat = FMT_UNKNOWN;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:				rhiFormat = FMT_R8G8B8A8;
-    case DXGI_FORMAT_R8G8_UNORM:					rhiFormat = FMT_R8G8;
-    case DXGI_FORMAT_R8G8B8A8_UNORM:				rhiFormat = FMT_B8G8R8A8;
-    case DXGI_FORMAT_B5G6R5_UNORM:					rhiFormat = FMT_R5G6B5;
-    case DXGI_FORMAT_R16G16_UNORM:					rhiFormat = FMT_G16R16;
-    case DXGI_FORMAT_R16G16B16A16_UNORM:			rhiFormat = FMT_A16B16G16R16;
-    case DXGI_FORMAT_R8_UNORM:						rhiFormat = FMT_L8;
-    case DXGI_FORMAT_R8G8_SNORM:					rhiFormat = FMT_V8U8;
-    case DXGI_FORMAT_R8G8B8A8_SNORM:				rhiFormat = FMT_Q8W8V8U8;
-    case DXGI_FORMAT_R16G16_SNORM:					rhiFormat = FMT_V16U16;
-    case DXGI_FORMAT_R24G8_TYPELESS:				rhiFormat = FMT_D24X8;
-    case DXGI_FORMAT_D24_UNORM_S8_UINT:				rhiFormat = FMT_D24S8;
-    case DXGI_FORMAT_R32_TYPELESS:					rhiFormat = FMT_D32F_LOCKABLE;
-    case DXGI_FORMAT_R16G16_FLOAT:					rhiFormat = FMT_G16R16F;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:			rhiFormat = FMT_A16B16G16R16F;
-    case DXGI_FORMAT_R32_FLOAT:						rhiFormat = FMT_R32F;
-    case DXGI_FORMAT_R16_FLOAT:						rhiFormat = FMT_R16F;
-    case DXGI_FORMAT_R32G32B32A32_FLOAT:			rhiFormat = FMT_A32B32G32R32F;
-    case DXGI_FORMAT_G8R8_G8B8_UNORM:				rhiFormat = FMT_R8G8_B8G8;
-    case DXGI_FORMAT_R8G8_B8G8_UNORM:				rhiFormat = FMT_G8R8_G8B8;
-    case DXGI_FORMAT_BC1_UNORM:						rhiFormat = FMT_DXT1;
-    case DXGI_FORMAT_BC2_UNORM:						rhiFormat = FMT_DXT3;
-    case DXGI_FORMAT_BC3_UNORM:						rhiFormat = FMT_DXT5;
+    case DXGI_FORMAT_UNKNOWN:						rhiFormat = FMT_UNKNOWN; break;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:				rhiFormat = FMT_R8G8B8A8; break;
+    case DXGI_FORMAT_R8G8_UNORM:					rhiFormat = FMT_R8G8; break;
+    case DXGI_FORMAT_R8G8B8A8_UNORM:				rhiFormat = FMT_B8G8R8A8; break;
+    case DXGI_FORMAT_B5G6R5_UNORM:					rhiFormat = FMT_R5G6B5; break; 
+    case DXGI_FORMAT_R16G16_UNORM:					rhiFormat = FMT_G16R16; break;
+    case DXGI_FORMAT_R16G16B16A16_UNORM:			rhiFormat = FMT_A16B16G16R16; break;
+    case DXGI_FORMAT_R8_UNORM:						rhiFormat = FMT_L8; break;
+    case DXGI_FORMAT_R8G8_SNORM:					rhiFormat = FMT_V8U8; break;
+    case DXGI_FORMAT_R8G8B8A8_SNORM:				rhiFormat = FMT_Q8W8V8U8; break;
+    case DXGI_FORMAT_R16G16_SNORM:					rhiFormat = FMT_V16U16; break;
+    case DXGI_FORMAT_R24G8_TYPELESS:				rhiFormat = FMT_D24X8; break;
+    case DXGI_FORMAT_D24_UNORM_S8_UINT:				rhiFormat = FMT_D24S8; break;
+    case DXGI_FORMAT_R32_TYPELESS:					rhiFormat = FMT_D32F_LOCKABLE; break;
+    case DXGI_FORMAT_R16G16_FLOAT:					rhiFormat = FMT_G16R16F; break;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:			rhiFormat = FMT_A16B16G16R16F; break;
+    case DXGI_FORMAT_R32_FLOAT:						rhiFormat = FMT_R32F; break;
+    case DXGI_FORMAT_R16_FLOAT:						rhiFormat = FMT_R16F; break;
+    case DXGI_FORMAT_R32G32B32A32_FLOAT:			rhiFormat = FMT_A32B32G32R32F; break;
+    case DXGI_FORMAT_G8R8_G8B8_UNORM:				rhiFormat = FMT_R8G8_B8G8; break;
+    case DXGI_FORMAT_R8G8_B8G8_UNORM:				rhiFormat = FMT_G8R8_G8B8; break;
+    case DXGI_FORMAT_BC1_UNORM:						rhiFormat = FMT_DXT1; break;
+    case DXGI_FORMAT_BC2_UNORM:						rhiFormat = FMT_DXT3; break;
+    case DXGI_FORMAT_BC3_UNORM:						rhiFormat = FMT_DXT5; break;
+    case DXGI_FORMAT_B8G8R8X8_UNORM:                rhiFormat = FMT_X8R8G8B8; break;
     default:
         FATAL("Unknowed or unsupport format");
         break;

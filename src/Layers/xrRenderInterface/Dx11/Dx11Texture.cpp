@@ -179,7 +179,8 @@ HRESULT CD3D11Texture2D::Create(const STexture2DDesc& desc, const SubresourceDat
 	d3dTextureDesc.SampleDesc.Count = 1;
 	d3dTextureDesc.Usage = GetD3D11Usage(desc.Usage);
 	
-	d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+	if (!desc.NoShaderResourceView)
+		d3dTextureDesc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
 
 	// #TODO: Make BindFlags for STexture2DDesc
 	if (desc.IsRenderTarget)
@@ -206,7 +207,7 @@ HRESULT CD3D11Texture2D::Create(const STexture2DDesc& desc, const SubresourceDat
 	HRESULT hr = pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture2D);
 	R_CHK(hr);
 
-	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0 || !desc.NoShaderResourceView)
+	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0 && !desc.NoShaderResourceView)
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));

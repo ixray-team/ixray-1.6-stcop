@@ -298,10 +298,6 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		return false;
 	}
 
-	// #TODO: Create RHI (so test variant)
-	g_RenderRHI = g_CreateRHIFunc(API);
-	g_RenderRHI->Create(HWRenderDevice, HWRenderContext);
-
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
 	CurrentAPILevel = API;

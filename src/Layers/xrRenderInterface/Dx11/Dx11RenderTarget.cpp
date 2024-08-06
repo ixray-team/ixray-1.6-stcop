@@ -26,56 +26,76 @@ CD3D11RenderTargetView::~CD3D11RenderTargetView()
 HRESULT CD3D11RenderTargetView::Create(IRHIResource* pResource, const SRenderTargetViewDesc* pDesc)
 {
 	R_ASSERT(pResource);
-	R_ASSERT(pDesc);
 
-	m_pResource = pResource;
-	m_ResourceDesc = *pDesc;
-
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
-	renderTargetViewDesc.Format = g_PixelFormats[pDesc->Format].PlatformFormat;
-
-	// #TODO: RHI - Make it more properly
-
-	ID3D11Resource* pTexture = nullptr;
-
-	switch (pDesc->ViewDimension)
-	{
-
-	case RTV_DIMENSION_TEXTURE2D:
-	{
-		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		renderTargetViewDesc.Texture2D.MipSlice = pDesc->Texture2D.MipSlice;
-
-		CD3D11Texture2D* pTexture2D = (CD3D11Texture2D*)pResource;
-		pTexture = pTexture2D->GetD3D11Texture();
-
-		break;
-	}
-
-	case RTV_DIMENSION_TEXTURE3D:
-	{
-		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
-		renderTargetViewDesc.Texture3D.MipSlice = pDesc->Texture3D.MipSlice;
-		renderTargetViewDesc.Texture3D.FirstWSlice = pDesc->Texture3D.FirstWSlice;
-		renderTargetViewDesc.Texture3D.WSize = pDesc->Texture3D.WSize;
-
-		CD3D11Texture3D* pTexture3D = (CD3D11Texture3D*)pResource;
-		pTexture = pTexture3D->GetD3D11Texture();
-
-		break;
-	}
-
-	default:
-	{
-		R_ASSERT2(0, "Not implemented");
-		break;
-	}
-
-	}
-
+	HRESULT hr = S_OK;
 	ID3D11Device* pDevice = g_RenderRHI_DX11Implementation.GetDevice();
-	HRESULT hr = pDevice->CreateRenderTargetView(pTexture, &renderTargetViewDesc, &m_pRenderTargetView);
+
+	// if we have desc
+	if (pDesc)
+	{
+		m_pResource = pResource;
+		m_ResourceDesc = *pDesc;
+
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		memset(&renderTargetViewDesc, 0, sizeof(renderTargetViewDesc));
+		renderTargetViewDesc.Format = g_PixelFormats[pDesc->Format].PlatformFormat;
+
+		// #TODO: RHI - Make it more properly
+
+		ID3D11Resource* pTexture = nullptr;
+
+		switch (pDesc->ViewDimension)
+		{
+
+		case RTV_DIMENSION_TEXTURE2D:
+		{
+			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			renderTargetViewDesc.Texture2D.MipSlice = pDesc->Texture2D.MipSlice;
+
+			CD3D11Texture2D* pTexture2D = (CD3D11Texture2D*)pResource;
+			pTexture = pTexture2D->GetD3D11Texture();
+
+			break;
+		}
+
+		case RTV_DIMENSION_TEXTURE3D:
+		{
+			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
+			renderTargetViewDesc.Texture3D.MipSlice = pDesc->Texture3D.MipSlice;
+			renderTargetViewDesc.Texture3D.FirstWSlice = pDesc->Texture3D.FirstWSlice;
+			renderTargetViewDesc.Texture3D.WSize = pDesc->Texture3D.WSize;
+
+			CD3D11Texture3D* pTexture3D = (CD3D11Texture3D*)pResource;
+			pTexture = pTexture3D->GetD3D11Texture();
+
+			break;
+		}
+
+		default:
+		{
+			R_ASSERT2(0, "Not implemented");
+			break;
+		}
+
+		}
+
+		hr = pDevice->CreateRenderTargetView(pTexture, &renderTargetViewDesc, &m_pRenderTargetView);
+	}
+	else
+	{
+		ID3D11Resource* pD3D11Resource = nullptr;
+		if (CD3D11Texture1D* pTex = dynamic_cast<CD3D11Texture1D*>(pResource))
+			pD3D11Resource = pTex->GetD3D11Texture();
+		if (CD3D11Texture2D* pTex = dynamic_cast<CD3D11Texture2D*>(pResource))
+			pD3D11Resource = pTex->GetD3D11Texture();
+		if (CD3D11Texture3D* pTex = dynamic_cast<CD3D11Texture3D*>(pResource))
+			pD3D11Resource = pTex->GetD3D11Texture();
+
+		R_ASSERT(pD3D11Resource);
+
+		hr = pDevice->CreateRenderTargetView(pD3D11Resource, nullptr, &m_pRenderTargetView);
+	}
+	
 	return hr;
 }
 

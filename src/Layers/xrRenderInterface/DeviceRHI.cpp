@@ -54,6 +54,8 @@ void CRenderRHI_DX11::Create(void* renderDevice, void* renderContext)
 	g_PixelFormats[FMT_DXT3].PlatformFormat				=   DXGI_FORMAT_BC2_UNORM;
 	g_PixelFormats[FMT_DXT4].PlatformFormat				=   DXGI_FORMAT_BC3_UNORM;
 	g_PixelFormats[FMT_DXT5].PlatformFormat				=   DXGI_FORMAT_BC3_UNORM;
+	g_PixelFormats[FMT_R32].PlatformFormat				=	DXGI_FORMAT_R32_UINT;
+	g_PixelFormats[FMT_X8R8G8B8].PlatformFormat			= DXGI_FORMAT_B8G8R8X8_UNORM;
 }
 
 ITexture1D* CRenderRHI_DX11::CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc)
@@ -258,19 +260,18 @@ void CRenderRHI_DX11::ClearDepthStencilView(IDepthStencilView* pDepthStencilView
 void CRenderRHI_DX11::SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView)
 {
 	// #TODO: RHI - Shit
-	std::vector<ID3D11RenderTargetView*> renderTargetViews;
-
+	std::array<ID3D11RenderTargetView*, 8> renderTargetViews;
 	for (int i = 0; i < NumViews; i++) {
 		CD3D11RenderTargetView* pD3D11RenderTargetView = (CD3D11RenderTargetView*)ppRenderTargetViews[i];
-		renderTargetViews.push_back(pD3D11RenderTargetView->GetRenderTargetView());
+		renderTargetViews[i] = pD3D11RenderTargetView ? pD3D11RenderTargetView->GetRenderTargetView() : nullptr;
 	}
 
 	CD3D11DepthStencilView* pD3D11DepthStencilView = (CD3D11DepthStencilView*)pDepthStencilView;
 
 	// #TODO: RHI - Hack with depth stencil installation
 	GetDeviceContext()->OMSetRenderTargets(
-		1, 
-		renderTargetViews.data(), 
+		NumViews,
+		renderTargetViews.data(),
 		pD3D11DepthStencilView ? pD3D11DepthStencilView->GetDepthStencilView() : nullptr);
 }
 

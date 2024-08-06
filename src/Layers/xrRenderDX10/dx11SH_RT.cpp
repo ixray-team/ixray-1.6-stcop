@@ -88,6 +88,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 	case DXGI_FORMAT_BC1_UNORM:						rhiFormat = FMT_DXT1; break;
 	case DXGI_FORMAT_BC2_UNORM:						rhiFormat = FMT_DXT3; break;
 	case DXGI_FORMAT_BC3_UNORM:						rhiFormat = FMT_DXT5; break;
+	case DXGI_FORMAT_R32_UINT:						rhiFormat = FMT_R32; break;
 	default:
 		FATAL("Unknowed or unsupport format");
 		break;

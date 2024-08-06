@@ -703,7 +703,7 @@ CRenderTarget::CRenderTarget()
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
 			desc.Format = FMT_Q8W8V8U8;
-			desc.Usage = USAGE_STAGING;
+			desc.Usage = USAGE_DEFAULT;// USAGE_STAGING; RHI Crash
 			desc.IsCPURead = true;
 
 			t_ss_async = g_RenderRHI->CreateTexture2D(desc, 0);
@@ -718,7 +718,7 @@ CRenderTarget::CRenderTarget()
 			desc.Depth	= TEX_material_Count;
 			desc.MipLevels = 1;
 			desc.Format = FMT_R8G8;
-			desc.Usage = USAGE_IMMUTABLE;
+			desc.Usage = USAGE_DEFAULT; //  USAGE_IMMUTABLE; RHI -  D3D11 ERROR: ID3D11Device::CreateTexture3D: A D3D11_USAGE_IMMUTABLE Resource cannot be bound to certain parts of the graphics pipeline, but must have at least one BindFlags bit set. The following set of BindFlags bits are invalid: (0x28), their values being: D3D11_BIND_STREAM_OUTPUT (0), D3D11_BIND_RENDER_TARGET (1), D3D11_BIND_DEPTH_STENCIL (0), D3D11_BIND_UNORDERED_ACCESS (0). [ STATE_CREATION ERROR #116: CREATETEXTURE3D_INVALIDBINDFLAGS]
 
 			// #TODO: RHI - D3D_BIND_SHADER_RESOURCE flag
 			//desc.BindFlags = D3D_BIND_SHADER_RESOURCE;

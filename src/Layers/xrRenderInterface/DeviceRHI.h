@@ -39,6 +39,9 @@ enum ERHITextureFormat
 	FMT_DXT4,
 	FMT_DXT5,
 
+	FMT_R32,
+	FMT_X8R8G8B8,
+
 	FMT_MAX_COUNT
 };
 
