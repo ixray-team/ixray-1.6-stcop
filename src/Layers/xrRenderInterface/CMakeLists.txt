@@ -43,10 +43,10 @@ target_link_libraries(xrRenderInterface PRIVATE xrAbstractions)
 target_link_libraries(xrRenderInterface PRIVATE "d3dcompiler.lib")
 
 ## DirectX SDK
-target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
-target_link_libraries(xrRenderInterface PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+#target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")
+#target_link_libraries(xrRenderInterface PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
-target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
+#target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
 ## RenderDoc
 target_include_directories(xrRenderInterface PUBLIC "${RENDERDOC_API}")

@@ -76,6 +76,16 @@ ITexture3D* CRenderRHI_DX11::CreateTexture3D(const STexture3DDesc& textureDesc, 
 	return pTexture3D;
 }
 
+IRenderTargetView* CRenderRHI_DX11::CreateRenderTargetView(IRHIResource* pResource, const SRenderTargetViewDesc* pDesc)
+{
+	return nullptr;
+}
+
+IDepthStencilView* CRenderRHI_DX11::CreateDepthStencilView(IRHIResource* pResource, const SDepthStencilViewDesc* pDesc)
+{
+	return nullptr;
+}
+
 IBuffer* CRenderRHI_DX11::CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
 {
 	CD3D11Buffer* pBuffer = new CD3D11Buffer();
@@ -225,6 +235,25 @@ void CRenderRHI_DX11::GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 	}
 
 	pImmediateContext->GSSetConstantBuffers(StartSlot, NumBuffers, buffers.data());
+}
+
+void CRenderRHI_DX11::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float ColorRGBA[4])
+{
+}
+
+void CRenderRHI_DX11::ClearDepthStencilView(IDepthStencilView* pDepthStencilView, u32 ClearFlags, float Depth, u8 Stencil)
+{
+}
+
+// Note: maximum is 8 render targets.
+void CRenderRHI_DX11::SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView)
+{
+
+}
+
+void CRenderRHI_DX11::CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource)
+{
+
 }
 
 ID3D11Device* CRenderRHI_DX11::GetDevice()

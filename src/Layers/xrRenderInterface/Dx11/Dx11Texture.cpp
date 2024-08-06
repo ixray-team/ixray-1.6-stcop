@@ -92,7 +92,7 @@ HRESULT CD3D11Texture1D::Create(const STexture1DDesc& desc, const SubresourceDat
 		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 		shaderResourceViewDesc.Format = d3dTextureDesc.Format;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
-		shaderResourceViewDesc.Texture2D.MipLevels = -1;
+		shaderResourceViewDesc.Texture2D.MipLevels = desc.MipLevels;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
 		hr = pDevice->CreateShaderResourceView(m_pTexture1D, &shaderResourceViewDesc, &m_pShaderResourceView);
@@ -212,7 +212,7 @@ HRESULT CD3D11Texture2D::Create(const STexture2DDesc& desc, const SubresourceDat
 		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 		shaderResourceViewDesc.Format = d3dTextureDesc.Format;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		shaderResourceViewDesc.Texture2D.MipLevels = -1;
+		shaderResourceViewDesc.Texture2D.MipLevels = desc.MipLevels;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
 		hr = pDevice->CreateShaderResourceView(m_pTexture2D, &shaderResourceViewDesc, &m_pShaderResourceView);
@@ -322,7 +322,7 @@ HRESULT CD3D11Texture3D::Create(const STexture3DDesc& desc, const SubresourceDat
 		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 		shaderResourceViewDesc.Format = d3dTextureDesc.Format;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
-		shaderResourceViewDesc.Texture3D.MipLevels = -1;
+		shaderResourceViewDesc.Texture3D.MipLevels = desc.MipLevels;
 		shaderResourceViewDesc.Texture3D.MostDetailedMip = 0;
 
 		hr = pDevice->CreateShaderResourceView(m_pTexture3D, &shaderResourceViewDesc, &m_pShaderResourceView);
