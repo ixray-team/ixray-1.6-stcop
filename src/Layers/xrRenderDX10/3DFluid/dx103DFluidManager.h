@@ -84,7 +84,7 @@ private:
 	void	DestroyShaders();
 
 	void	PrepareTexture( int rtIndex );
-	void	CreateRTTextureAndViews( int rtIndex, D3D_TEXTURE3D_DESC TexDesc );
+	void	CreateRTTextureAndViews( int rtIndex, const STexture3DDesc& TexDesc );
 	void	DestroyRTTextureAndViews( int rtIndex );
 
 	void	Reset();
@@ -107,8 +107,8 @@ private:
 private:
 	bool	m_bInited;
 
-	DXGI_FORMAT				RenderTargetFormats[ NUM_RENDER_TARGETS ];
-	ID3DRenderTargetView	*pRenderTargetViews[ NUM_RENDER_TARGETS ];
+	ERHITextureFormat		RenderTargetFormats[ NUM_RENDER_TARGETS ];
+	IRenderTargetView	   *pRenderTargetViews[ NUM_RENDER_TARGETS ];
 	ref_texture				pRTTextures[ NUM_RENDER_TARGETS ];
 	static LPCSTR			m_pEngineTextureNames[ NUM_RENDER_TARGETS ];
 	static LPCSTR			m_pShaderTextureNames[ NUM_RENDER_TARGETS ];

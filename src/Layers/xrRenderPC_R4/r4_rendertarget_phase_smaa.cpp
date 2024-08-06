@@ -20,7 +20,7 @@ void CRenderTarget::phase_smaa()
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    g_RenderRHI->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -45,7 +45,7 @@ void CRenderTarget::phase_smaa()
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
-    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    g_RenderRHI->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -88,5 +88,5 @@ void CRenderTarget::phase_smaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
+    g_RenderRHI->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 }

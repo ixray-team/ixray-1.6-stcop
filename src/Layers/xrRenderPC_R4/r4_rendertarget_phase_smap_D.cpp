@@ -3,7 +3,7 @@
 void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 {
 	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
-	RContext->ClearDepthStencilView(rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	g_RenderRHI->ClearDepthStencilView(rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
 
 	//	Prepare viewport for shadow map rendering
 	if(sub_phase != SE_SUN_RAIN_SMAP) {
@@ -31,5 +31,5 @@ void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
 	RCache.set_ColorWriteEnable();
 	//	Prepare viewport for shadow map rendering
 	RImplementation.rmNormal();
-	RContext->ClearRenderTargetView(RCache.get_RT(0), ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(RCache.get_RT(0), ColorRGBA);
 }

@@ -30,7 +30,6 @@ void resptrcode_texture::create(LPCSTR _name)
 CTexture::CTexture		()
 {
 	pSurface			= nullptr;
-	m_pSRView			= nullptr;
 	pAVI				= nullptr;
 	pTheora				= nullptr;
 	desc_cache			= 0;
@@ -52,11 +51,10 @@ CTexture::~CTexture()
 	DEV->_DeleteTexture	(this);
 }
 
-void					CTexture::surface_set	(ID3DBaseTexture* surf )
+void					CTexture::surface_set	(IRHIResource* surf )
 {
 	if (surf)			surf->AddRef		();
 	_RELEASE			(pSurface);
-	_RELEASE			(m_pSRView);
 
 	pSurface			= surf;
 
@@ -64,13 +62,13 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 	{
 		desc_update();
 
-		D3D_RESOURCE_DIMENSION	type;
+		eResourceDimension	type;
 		pSurface->GetType(&type);
-		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type )
+		if (RESOURCE_DIMENSION_TEXTURE2D == type )
 		{
 			D3D_SHADER_RESOURCE_VIEW_DESC ViewDesc { };
 			
-			if (desc.MiscFlags&D3D_RESOURCE_MISC_TEXTURECUBE)
+			if (desc.IsTextureCube)
 			{
 				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
 				ViewDesc.TextureCube.MostDetailedMip = 0;
@@ -78,13 +76,14 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 			}
 			else
 			{
-				if(desc.SampleDesc.Count <= 1)
-				{
-					ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
-					ViewDesc.Texture2D.MostDetailedMip = 0;
-					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
-				}
-				else
+				// NO SAMPLING #TODO: !!!
+				//if(desc.SampleDesc.Count <= 1)
+				//{
+				//	ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
+				//	ViewDesc.Texture2D.MostDetailedMip = 0;
+				//	ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+				//}
+				//else
 				{
 					VERIFY(desc.ArraySize == 1);
 					ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
@@ -107,26 +106,27 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 			
 			if (desc.ArraySize > 1)
                 ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
-
-         // this would be supported by DX10.1 but is not needed for stalker
-        // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
-				if( (desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS) )         
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, &ViewDesc, &m_pSRView));
-        else
-           m_pSRView = 0;
 		}
-		else
-			CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
+		
 	}	
 }
 
-ID3DBaseTexture*	CTexture::surface_get	()
+IRHIResource*	CTexture::surface_get	()
 {
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
-	if (pSurface)		pSurface->AddRef	();
+	if (pSurface)
+		pSurface->AddRef();
+
 	return pSurface;
+}
+
+ID3D11ShaderResourceView* CTexture::get_SRView()
+{
+	ID3DShaderResourceView* pSRView = nullptr;
+	reinterpret_cast<ITexture2D*>(pSurface)->GetShaderResourceView((IShaderResourceView**)&pSRView);
+	return pSRView;
 }
 
 void CTexture::PostLoad	()
@@ -145,17 +145,18 @@ void CTexture::apply_load	(u32 dwStage)	{
 
 void CTexture::ProcessStaging()
 {
+#if 0
 	VERIFY(pSurface);
 	VERIFY(flags.bLoadedAsStaging);
 
-	ID3DBaseTexture* pTargetSurface = 0;
+	IRHIResource* pTargetSurface = 0;
 
-	D3D_RESOURCE_DIMENSION	type;
+	eResourceDimension type;
 	pSurface->GetType(&type);
 
 	switch (type)
 	{
-	case D3D_RESOURCE_DIMENSION_TEXTURE2D:
+	case RESOURCE_DIMENSION_TEXTURE2D:
 		{
 			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
 			D3D_TEXTURE2D_DESC TexDesc;
@@ -173,7 +174,7 @@ void CTexture::ProcessStaging()
 			pTargetSurface = T;
 		}
 		break;
-	case D3D_RESOURCE_DIMENSION_TEXTURE3D:
+	case RESOURCE_DIMENSION_TEXTURE3D:
 		{
 			ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface;
 			D3D_TEXTURE3D_DESC TexDesc;
@@ -224,53 +225,57 @@ void CTexture::ProcessStaging()
 	surface_set(pTargetSurface);
 
 	_RELEASE(pTargetSurface);
+#endif
 }
 
 void CTexture::Apply(u32 dwStage)
 {
+	flags.bLoadedAsStaging = false;
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
+	ID3DShaderResourceView* pSRView = nullptr;
+	reinterpret_cast<ITexture2D*>(pSurface)->GetShaderResourceView((IShaderResourceView**)&pSRView);
+
 	if (dwStage<rstVertex)	//	Pixel shader stage resources
 	{
-		//RDevice->PSSetShaderResources(dwStage, 1, &m_pSRView);
-		SRVSManager.SetPSResource(dwStage, m_pSRView);
+		SRVSManager.SetPSResource(dwStage, pSRView);
 	}
 	else if (dwStage<rstGeometry)	//	Vertex shader stage resources
 	{
-		//RDevice->VSSetShaderResources(dwStage-rstVertex, 1, &m_pSRView);
-		SRVSManager.SetVSResource(dwStage-rstVertex, m_pSRView);
+		SRVSManager.SetVSResource(dwStage-rstVertex, pSRView);
 	}
 	else if (dwStage<rstHull)	//	Geometry shader stage resources
 	{
-		//RDevice->GSSetShaderResources(dwStage-rstGeometry, 1, &m_pSRView);
-		SRVSManager.SetGSResource(dwStage-rstGeometry, m_pSRView);
+		SRVSManager.SetGSResource(dwStage-rstGeometry, pSRView);
 	}
 	else if (dwStage<rstDomain)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetHSResource(dwStage-rstHull, m_pSRView);
+		SRVSManager.SetHSResource(dwStage-rstHull, pSRView);
 	}
 	else if (dwStage<rstCompute)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetDSResource(dwStage-rstDomain, m_pSRView);
+		SRVSManager.SetDSResource(dwStage-rstDomain, pSRView);
 	}
 	else if (dwStage<rstInvalid)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetCSResource(dwStage-rstCompute, m_pSRView);
+		SRVSManager.SetCSResource(dwStage-rstCompute, pSRView);
 	}
 	else
+	{
 		VERIFY("Invalid stage");
+	}
 }
 
 void CTexture::apply_theora(u32 dwStage)
 {
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:Device.dwTimeContinual))
 	{
-		D3D_RESOURCE_DIMENSION	type;
+		eResourceDimension	type;
 		pSurface->GetType(&type);
 		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
-		D3D_MAPPED_TEXTURE2D	mapData{};
+		ITexture2D*	T2D		= (ITexture2D*)pSurface;
+		SMappedSubresource	mapData{};
 		RECT rect;
 		rect.left			= 0;
 		rect.top			= 0;
@@ -280,7 +285,9 @@ void CTexture::apply_theora(u32 dwStage)
 		u32 _w				= pTheora->Width(false);
 
 		//R_CHK				(T2D->LockRect(0,&R,&rect,0));
-		R_CHK				(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
+		//R_CHK				(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
+		T2D->Map(0, MAPPING_WRITE_DISCARD, 0, &mapData);
+
 		//R_ASSERT			(R.Pitch == int(pTheora->Width(false)*4));
 		//R_ASSERT			(mapData.RowPitch == int(pTheora->Width(false)*4));
 
@@ -291,7 +298,7 @@ void CTexture::apply_theora(u32 dwStage)
 		pTheora->DecompressFrame((u32*)mapData.pData, _w - rect.right, _pos);
 		VERIFY(u32(_pos) == rect.bottom*_w);
 
-		RContext->Unmap(T2D, 0);
+		T2D->Unmap(0);
 	}
 	Apply(dwStage);
 	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
@@ -299,22 +306,20 @@ void CTexture::apply_theora(u32 dwStage)
 void CTexture::apply_avi	(u32 dwStage)	
 {
 	if (pAVI->NeedUpdate()){
-		D3D_RESOURCE_DIMENSION	type;
+		eResourceDimension	type;
 		pSurface->GetType(&type);
-		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
-		D3D_MAPPED_TEXTURE2D	mapData{};
+		R_ASSERT(RESOURCE_DIMENSION_TEXTURE2D == type);
+		ITexture2D*	T2D	= (ITexture2D*)pSurface;
+		SMappedSubresource mapData{};
 
 		// AVI
-		//R_CHK	(T2D->LockRect(0,&R,nullptr,0));
-		R_CHK(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
+		T2D->Map(0, MAPPING_WRITE_DISCARD, 0, &mapData);
 		R_ASSERT(mapData.RowPitch == int(pAVI->m_dwWidth*4));
 		BYTE* ptr; pAVI->GetFrame(&ptr);
 		CopyMemory(mapData.pData,ptr,pAVI->m_dwWidth*pAVI->m_dwHeight*4);
-		//R_CHK	(T2D->UnlockRect(0));
-		RContext->Unmap(T2D, 0);
+		T2D->Unmap(0);
 	}
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+
 	Apply(dwStage);
 };
 void CTexture::apply_seq	(u32 dwStage)	{
@@ -325,17 +330,14 @@ void CTexture::apply_seq	(u32 dwStage)	{
 		u32	frame_id	= frame%(frame_data*2);
 		if (frame_id>=frame_data)	frame_id = (frame_data-1) - (frame_id%frame_data);
 		pSurface 			= seqDATA[frame_id];
-		m_pSRView			= m_seqSRView[frame_id];
 	} else {
 		u32	frame_id	= frame%frame_data;
 		pSurface 			= seqDATA[frame_id];
-		m_pSRView			= m_seqSRView[frame_id];
 	}
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+
 	Apply(dwStage);
 };
 void CTexture::apply_normal	(u32 dwStage)	{
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
 	Apply(dwStage);
 };
 
@@ -378,40 +380,29 @@ void CTexture::Load		()
 			pTheora->Play		(TRUE,Device.dwTimeContinual);
 
 			// Now create texture
-			ID3DTexture2D*	pTexture = 0;
+			ITexture2D*	pTexture = 0;
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
 //			HRESULT hrr = RDevice->CreateTexture(
 //				_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr );
-			D3D_TEXTURE2D_DESC	desc_;
+			STexture2DDesc	desc_;
 			desc_.Width = _w;
 			desc_.Height = _h;
 			desc_.MipLevels = 1;
 			desc_.ArraySize = 1;
-			desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			desc_.SampleDesc.Count = 1;
-			desc_.SampleDesc.Quality = 0;
-			desc_.Usage = D3D_USAGE_DYNAMIC;
-			desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-			desc_.MiscFlags = 0;
-			HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
+			desc_.Format = FMT_B8G8R8A8; //DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc_.Usage = USAGE_DYNAMIC;
+			pTexture = g_RenderRHI->CreateTexture2D(desc_, 0);
 
 			pSurface = pTexture;
-			if (FAILED(hrr))
+			if (!pTexture)
 			{
 				FATAL		("Invalid video stream");
-				R_CHK		(hrr);
 				xr_delete	(pTheora);
 				pSurface	= 0;
-				m_pSRView	= 0;
-			}
-			else
-			{
-				CHK_DX(RDevice->CreateShaderResourceView(pSurface, 0, &m_pSRView));
-			}
 
+			}
 		}
 	} else
 		if (FS.exist(fn,"$game_textures$",*cName,".avi")){
@@ -425,39 +416,28 @@ void CTexture::Load		()
 				flags.MemoryUsage	= pAVI->m_dwWidth*pAVI->m_dwHeight*4;
 
 				// Now create texture
-				ID3DTexture2D*	pTexture = 0;
+				ITexture2D*	pTexture = 0;
 				//HRESULT hrr = RDevice->CreateTexture(
 				//pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
 				//	&pTexture,nullptr
 				//	);
-				D3D_TEXTURE2D_DESC	desc_;
+				STexture2DDesc	desc_;
 				desc_.Width = pAVI->m_dwWidth;
 				desc_.Height = pAVI->m_dwHeight;
 				desc_.MipLevels = 1;
 				desc_.ArraySize = 1;
-				desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				desc_.SampleDesc.Count = 1;
-				desc_.SampleDesc.Quality = 0;
-				desc_.Usage = D3D_USAGE_DYNAMIC;
-				desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
-				desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-				desc_.MiscFlags = 0;
-				HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
+				desc_.Format = FMT_B8G8R8A8;//DXGI_FORMAT_R8G8B8A8_UNORM;
+				desc_.Usage = USAGE_DYNAMIC;
+	
+				pTexture = g_RenderRHI->CreateTexture2D(desc_, 0);
 
 				pSurface	= pTexture;
-				if (FAILED(hrr))
+				if (!pTexture)
 				{
 					FATAL		("Invalid video stream");
-					R_CHK		(hrr);
 					xr_delete	(pAVI);
 					pSurface = 0;
-					m_pSRView	= 0;
 				}
-				else
-				{
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, 0, &m_pSRView));
-				}
-
 			}
 		} else
 			if (FS.exist(fn,"$game_textures$",*cName,".seq"))
@@ -489,8 +469,6 @@ void CTexture::Load		()
 						{
 							// pSurface->SetPriority	(PRIORITY_LOW);
 							seqDATA.push_back(pSurface);
-							m_seqSRView.push_back(0);
-							RDevice->CreateShaderResourceView(seqDATA.back(), nullptr, & m_seqSRView.back());
 							flags.MemoryUsage		+= mem;
 						}
 					}
@@ -502,8 +480,9 @@ void CTexture::Load		()
 			{
 				// Normal texture
 				u32	mem  = 0;
-				//pSurface = ::RImplementation.texture_load	(*cName,mem);
+
 				pSurface = ::RImplementation.texture_load	(*cName,mem, true);
+				pSurface->SetDebugName(*cName);
 
 				if (GetUsage() == D3D_USAGE_STAGING)
 				{
@@ -514,11 +493,9 @@ void CTexture::Load		()
 				// Calc memory usage and preload into vid-mem
 				if (pSurface) 
 				{
-					// pSurface->SetPriority	(PRIORITY_NORMAL);
 					flags.MemoryUsage		=	mem;
 				}
-				if (pSurface && bCreateView)
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
+		
 			}
 
 			PostLoad	()		;
@@ -539,19 +516,15 @@ void CTexture::Unload	()
 		for (u32 I=0; I<seqDATA.size(); I++)
 		{
 			_RELEASE	(seqDATA[I]);
-			_RELEASE	(m_seqSRView[I]);
 		}
 		seqDATA.clear();
-		m_seqSRView.clear();
 		pSurface	= 0;
-		m_pSRView	= 0;
 	}
 
 #ifdef DEBUG
 	_SHOW_REF		(msg_buff, pSurface);
 #endif // DEBUG
 	_RELEASE		(pSurface);
-	_RELEASE		(m_pSRView);
 
 	xr_delete		(pAVI);
 	xr_delete		(pTheora);
@@ -564,51 +537,56 @@ void CTexture::desc_update	()
 	desc_cache	= pSurface;
 	if (pSurface)
 	{
-		D3D_RESOURCE_DIMENSION	type;
+		eResourceDimension	type;
 		pSurface->GetType(&type);
-		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
+		if (RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
+			ITexture2D*	T = (ITexture2D*)pSurface;
 			T->GetDesc(&desc);
 		}
 	}
 }
 
-D3D_USAGE CTexture::GetUsage()
+eResourceUsage CTexture::GetUsage()
 {
-	D3D_USAGE	res = D3D_USAGE_DEFAULT;
+	eResourceUsage res = USAGE_DEFAULT;
 
 	if (pSurface)
 	{
-		D3D_RESOURCE_DIMENSION	type;
+		eResourceDimension	type;
 		pSurface->GetType(&type);
 		switch(type)
 		{
-		case D3D_RESOURCE_DIMENSION_TEXTURE1D:
+#if 0
+		case RESOURCE_DIMENSION_TEXTURE1D:
+
 			{
 				ID3DTexture1D*	T	= (ID3DTexture1D*)pSurface;
 				D3D_TEXTURE1D_DESC	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;
 			}
+#endif
 			break;
 
-		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
+		case RESOURCE_DIMENSION_TEXTURE2D:
 			{
-				ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
-				D3D_TEXTURE2D_DESC	descr;
+				ITexture2D*	T	= (ITexture2D*)pSurface;
+				STexture2DDesc	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;
 			}
 			break;
+#if 0
+		case RESOURCE_DIMENSION_TEXTURE3D:
 
-		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
 			{
 				ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface;
 				D3D_TEXTURE3D_DESC	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;
 			}
+#endif
 			break;
 
 		default:

@@ -20,35 +20,48 @@ namespace
 	};
 }
 
-DXGI_FORMAT	dx103DFluidData::m_VPRenderTargetFormats[ VP_NUM_TARGETS ] = 
+ERHITextureFormat	dx103DFluidData::m_VPRenderTargetFormats[ VP_NUM_TARGETS ] =
 {
-	DXGI_FORMAT_R16G16B16A16_FLOAT,	//	VP_VELOCITY0 
-	DXGI_FORMAT_R16_FLOAT,			//	VP_PRESSURE
-	DXGI_FORMAT_R16_FLOAT			//	VP_COLOR
+	FMT_A16B16G16R16F,	//	VP_VELOCITY0 
+	FMT_R16F,			//	VP_PRESSURE
+	FMT_R16F			//	VP_COLOR
 };
 
 dx103DFluidData::dx103DFluidData()
 {
-	D3D_TEXTURE3D_DESC desc;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	desc.CPUAccessFlags = 0; 
-	desc.MipLevels = 1;
-	desc.MiscFlags = 0;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.Width =  FluidManager.GetTextureWidth();
-	desc.Height = FluidManager.GetTextureHeight();
-	desc.Depth =  FluidManager.GetTextureDepth();
+	//D3D_TEXTURE3D_DESC desc;
+	//desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	//desc.CPUAccessFlags = 0; 
+	//desc.MipLevels = 1;
+	//desc.MiscFlags = 0;
+	//desc.Usage = D3D_USAGE_DEFAULT;
+	//desc.Width =  FluidManager.GetTextureWidth();
+	//desc.Height = FluidManager.GetTextureHeight();
+	//desc.Depth =  FluidManager.GetTextureDepth();
 
-	D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	ZeroMemory( &SRVDesc, sizeof(SRVDesc) );
-	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
-	SRVDesc.Texture3D.MipLevels = 1;
-	SRVDesc.Texture3D.MostDetailedMip = 0;
+	//D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+	//ZeroMemory( &SRVDesc, sizeof(SRVDesc) );
+	//SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
+	//SRVDesc.Texture3D.MipLevels = 1;
+	//SRVDesc.Texture3D.MostDetailedMip = 0;
+
+	//for(int rtIndex=0; rtIndex<VP_NUM_TARGETS; rtIndex++)
+	//{
+	//	desc.Format = m_VPRenderTargetFormats[rtIndex];
+	//	SRVDesc.Format = m_VPRenderTargetFormats[rtIndex];
+	//	CreateRTTextureAndViews( rtIndex, desc );
+	//}
 
 	for(int rtIndex=0; rtIndex<VP_NUM_TARGETS; rtIndex++)
 	{
+		STexture3DDesc desc;
+		desc.MipLevels = 1;
+		desc.Usage = USAGE_DEFAULT;
+		desc.Width =  FluidManager.GetTextureWidth();
+		desc.Height = FluidManager.GetTextureHeight();
+		desc.Depth =  FluidManager.GetTextureDepth();
+		desc.IsRenderTarget = true;
 		desc.Format = m_VPRenderTargetFormats[rtIndex];
-		SRVDesc.Format = m_VPRenderTargetFormats[rtIndex];
 		CreateRTTextureAndViews( rtIndex, desc );
 	}
 }
@@ -66,24 +79,25 @@ dx103DFluidData::~dx103DFluidData()
 	}
 }
 
-void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
+void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, const STexture3DDesc& TexDesc)
 {
 	// Create the texture
-	CHK_DX( RDevice->CreateTexture3D(&TexDesc,nullptr,&m_pRTTextures[rtIndex]));
+	m_pRTTextures[rtIndex] = g_RenderRHI->CreateTexture3D(TexDesc, nullptr);
+	R_ASSERT(m_pRTTextures[rtIndex]);
+	
 	// Create the render target view
 	
-	D3D_RENDER_TARGET_VIEW_DESC DescRT;
+	SRenderTargetViewDesc DescRT;
 	DescRT.Format = TexDesc.Format;
-	DescRT.ViewDimension =  D3D_RTV_DIMENSION_TEXTURE3D;
+	DescRT.ViewDimension = RTV_DIMENSION_TEXTURE3D;
 	DescRT.Texture3D.FirstWSlice = 0;
 	DescRT.Texture3D.MipSlice = 0;
 	DescRT.Texture3D.WSize = TexDesc.Depth;
 
-	CHK_DX( RDevice->CreateRenderTargetView( m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]) );
+	m_pRenderTargetViews[rtIndex] = g_RenderRHI->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT);
 
 	float color[4] = {0, 0, 0, 0 };
-
-	RContext->ClearRenderTargetView( m_pRenderTargetViews[rtIndex], color );
+	g_RenderRHI->ClearRenderTargetView( m_pRenderTargetViews[rtIndex], color );
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)

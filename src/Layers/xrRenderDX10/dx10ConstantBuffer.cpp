@@ -84,7 +84,7 @@ void dx10ConstantBuffer::Flush()
 {
 	if (m_bChanged)
 	{
-		void* pData = m_pBuffer->Map(WRITE_DISCARD);
+		void* pData = m_pBuffer->Map(MAPPING_WRITE_DISCARD);
 
 		VERIFY(pData);
 		VERIFY(m_pBufferData);

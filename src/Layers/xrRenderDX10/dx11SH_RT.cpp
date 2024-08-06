@@ -58,29 +58,80 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
 	bool bUseAsDepth = (usage == D3DUSAGE_RENDERTARGET) ? false : true;
 
+	ERHITextureFormat rhiFormat = FMT_UNKNOWN;
+
+	// Format conversion
+	// #TODO: Please remove or refactor
+	switch (dx10FMT)
+	{
+	case DXGI_FORMAT_UNKNOWN:						rhiFormat = FMT_UNKNOWN; break;
+	case DXGI_FORMAT_B8G8R8A8_UNORM:				rhiFormat = FMT_R8G8B8A8; break;
+	case DXGI_FORMAT_R8G8_UNORM:					rhiFormat = FMT_R8G8; break;
+	case DXGI_FORMAT_R8G8B8A8_UNORM:				rhiFormat = FMT_B8G8R8A8; break;
+	case DXGI_FORMAT_B5G6R5_UNORM:					rhiFormat = FMT_R5G6B5; break;
+	case DXGI_FORMAT_R16G16_UNORM:					rhiFormat = FMT_G16R16; break;
+	case DXGI_FORMAT_R16G16B16A16_UNORM:			rhiFormat = FMT_A16B16G16R16; break;
+	case DXGI_FORMAT_R8_UNORM:						rhiFormat = FMT_L8; break; 
+	case DXGI_FORMAT_R8G8_SNORM:					rhiFormat = FMT_V8U8; break;
+	case DXGI_FORMAT_R8G8B8A8_SNORM:				rhiFormat = FMT_Q8W8V8U8; break;
+	case DXGI_FORMAT_R16G16_SNORM:					rhiFormat = FMT_V16U16; break;
+	case DXGI_FORMAT_R24G8_TYPELESS:				rhiFormat = FMT_D24X8; break;
+	case DXGI_FORMAT_D24_UNORM_S8_UINT:				rhiFormat = FMT_D24S8; break;
+	case DXGI_FORMAT_R32_TYPELESS:					rhiFormat = FMT_D32F_LOCKABLE; break;
+	case DXGI_FORMAT_R16G16_FLOAT:					rhiFormat = FMT_G16R16F; break;
+	case DXGI_FORMAT_R16G16B16A16_FLOAT:			rhiFormat = FMT_A16B16G16R16F; break;
+	case DXGI_FORMAT_R32_FLOAT:						rhiFormat = FMT_R32F; break;
+	case DXGI_FORMAT_R16_FLOAT:						rhiFormat = FMT_R16F; break;
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:			rhiFormat = FMT_A32B32G32R32F; break;
+	case DXGI_FORMAT_G8R8_G8B8_UNORM:				rhiFormat = FMT_R8G8_B8G8; break;
+	case DXGI_FORMAT_R8G8_B8G8_UNORM:				rhiFormat = FMT_G8R8_G8B8; break;
+	case DXGI_FORMAT_BC1_UNORM:						rhiFormat = FMT_DXT1; break;
+	case DXGI_FORMAT_BC2_UNORM:						rhiFormat = FMT_DXT3; break;
+	case DXGI_FORMAT_BC3_UNORM:						rhiFormat = FMT_DXT5; break;
+	default:
+		FATAL("Unknowed or unsupport format");
+		break;
+	}
+
 	// Try to create texture/surface
 	DEV->Evict				();
 	// Create the render target texture
-	D3D_TEXTURE2D_DESC desc;
+	STexture2DDesc desc;
 	ZeroMemory( &desc, sizeof(desc) );
 	desc.Width = dwWidth;
 	desc.Height = dwHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = dx10FMT;
+	desc.Format = rhiFormat;
 	desc.SampleDesc.Count = SampleCount;
-	desc.Usage = D3D_USAGE_DEFAULT;
+	desc.Usage = USAGE_DEFAULT;
+
+	if (bUseAsDepth)
+		desc.IsDepthStencil = true;
+	else
+		desc.IsRenderTarget = true;
+
+
+	// #TODO: RHI - Mess up with this shit
+#if 0
    if( SampleCount <= 1 )
 	   desc.BindFlags = D3D_BIND_SHADER_RESOURCE | (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : D3D_BIND_RENDER_TARGET);
    else
    {
       desc.BindFlags = (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : (D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET));
    }
+#endif
 
+   // #TODO: RHI - UNORDERED_ACCESS
+
+#if 0
 	if (!bUseAsDepth && SampleCount == 1 && useUAV )
 		desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+#endif
 
-	CHK_DX( RDevice->CreateTexture2D( &desc, nullptr, &pSurface ) );
+	desc.NoShaderResourceView = true;
+
+	pSurface = g_RenderRHI->CreateTexture2D( desc, nullptr );
 
 	// OK
 #ifdef DEBUG
@@ -89,36 +140,52 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 	//R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
 	if (bUseAsDepth)
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	ViewDesc;
+		SDepthStencilViewDesc	ViewDesc;
 		ZeroMemory( &ViewDesc, sizeof(ViewDesc) );
 
-		ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+		ViewDesc.Format = FMT_UNKNOWN;
 		if( SampleCount <= 1 )
 		{
-			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2D;
+			ViewDesc.ViewDimension = DSV_DIMENSION_TEXTURE2D;
 		}
+		else
+		{
+			FATAL("Multisample render target is unsuppoerted");
+		}
+
+
+		// #TODO: RHI - MULTISAMPLE TEXTURES
+#if 0
 		else
 		{
 			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2DMS;
 			ViewDesc.Texture2DMS.UnusedField_NothingToDefine = 0;
 		}
+#endif
 
 		ViewDesc.Texture2D.MipSlice = 0;
+	
+		// #TODO: RHI - Format naming mess up
 		switch (desc.Format)
 		{
-		case DXGI_FORMAT_R24G8_TYPELESS:
-			ViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case FMT_D24X8:
+			ViewDesc.Format = FMT_D24S8;
 			break;
 		case DXGI_FORMAT_R32_TYPELESS:
-			ViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			ViewDesc.Format = FMT_D32F_LOCKABLE;
 			break;
 		}
 
-		CHK_DX( RDevice->CreateDepthStencilView( pSurface, &ViewDesc, &pZRT) );
+		pZRT = g_RenderRHI->CreateDepthStencilView( pSurface, &ViewDesc );
 	}
 	else
-		CHK_DX( RDevice->CreateRenderTargetView( pSurface, 0, &pRT ) );
+	{
+		pRT = g_RenderRHI->CreateRenderTargetView(pSurface, 0);
+	}
+		
 
+	// #TODO: RHI - UNORDERED_ACCESS
+#if 0
 	if (!bUseAsDepth &&  SampleCount == 1 && useUAV)
     {
 	    D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
@@ -129,6 +196,7 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, bool
 		UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
 		CHK_DX( RDevice->CreateUnorderedAccessView( pSurface, &UAVDesc, &pUAView ) );
     }
+#endif
 
 	pTexture	= DEV->_CreateTexture	(Name);
 	pTexture->surface_set(pSurface);

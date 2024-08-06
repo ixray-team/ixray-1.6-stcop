@@ -60,13 +60,13 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		vOffset				= 0;
 		mDiscardID			++;
 
-		pData = (BYTE*)pVB->Map(WRITE_DISCARD);
+		pData = (BYTE*)pVB->Map(MAPPING_WRITE_DISCARD);
 		pData += vOffset;
 	} else {
 		// APPEND-LOCK
 		mPosition			= vl_mPosition*Stride;
 		vOffset				= vl_mPosition;
-		pData=(BYTE*)pVB->Map(WRITE_NO_OVERWRITE);
+		pData=(BYTE*)pVB->Map(MAPPING_WRITE_NO_OVERWRITE);
 		pData += vOffset*Stride;
 	}
 	VERIFY				( pData );
@@ -162,7 +162,7 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 		mDiscardID	++;
 	}
 
-	eBufferMapping MapMode = (dwFlags==LOCKFLAGS_APPEND) ? WRITE_NO_OVERWRITE : WRITE_DISCARD;
+	eBufferMapping MapMode = (dwFlags==LOCKFLAGS_APPEND) ? MAPPING_WRITE_NO_OVERWRITE : MAPPING_WRITE_DISCARD;
 	pLockedData = (BYTE*)pIB->Map(MapMode);
 	pLockedData += mPosition * 2;
 

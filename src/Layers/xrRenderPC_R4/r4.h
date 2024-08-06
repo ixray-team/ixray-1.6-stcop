@@ -225,7 +225,7 @@ public:
 	virtual	void					level_Load					(IReader*);
 	virtual void					level_Unload				();
 
-			ID3DBaseTexture*		texture_load				(LPCSTR	fname, u32& msize, bool bStaging = false);
+			IRHIResource*			texture_load				(LPCSTR	fname, u32& msize, bool bStaging = false);
 	virtual HRESULT					shader_compile			(
 		LPCSTR							name,
 		DWORD const*					pSrcData,
@@ -306,14 +306,17 @@ public:
 	virtual void					rmNormal					();
 
 	// Constructor/destructor/loader
-	CRender							();
-	virtual ~CRender				();
+	CRender														();
+	virtual ~CRender											();
 
-	xr_string getShaderParams();
-	void addShaderOption(const char* name, const char* value);
-	void clearAllShaderOptions() { m_ShaderOptions.resize(0); }
+	xr_string						getShaderParams				();
+	void							addShaderOption				(const char* name, const char* value);
+	void							clearAllShaderOptions		() { m_ShaderOptions.resize(0); }
 
-	auto ShaderOptionsCount() { return m_ShaderOptions.size(); }
+	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
+
+	virtual BOOL					InIndoor					() { return pLastSector!=pOutdoorSector; };
+	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
 private:
 	xr_vector<D3D_SHADER_MACRO>									m_ShaderOptions;

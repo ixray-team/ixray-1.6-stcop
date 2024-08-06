@@ -119,10 +119,10 @@ void dxFontRender::OnRender(CGameFont& owner) {
 }
 
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) {
-	ID3DTexture2D* pSurface = nullptr;
+	ITexture2D* pSurface = nullptr;
 
 #ifdef USE_DX11
-	D3D_TEXTURE2D_DESC descFontAtlas;
+	STexture2DDesc descFontAtlas;
 	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));
 	descFontAtlas.Width = width;
 	descFontAtlas.Height = height;
@@ -130,22 +130,21 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	descFontAtlas.ArraySize = 1;
 	descFontAtlas.SampleDesc.Count = 1;
 	descFontAtlas.SampleDesc.Quality = 0;
-	descFontAtlas.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	descFontAtlas.Usage = D3D_USAGE_DEFAULT;
-	descFontAtlas.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	descFontAtlas.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	descFontAtlas.MiscFlags = 0;
+	descFontAtlas.Format = FMT_R8G8B8A8;
+	descFontAtlas.Usage = USAGE_DEFAULT;
 
-	D3D_SUBRESOURCE_DATA FontData;
+	SubresourceData FontData;
 	FontData.pSysMem = bitmap;
 	FontData.SysMemSlicePitch = 0;
 	FontData.SysMemPitch = width * 4;
 
-	if(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
+	pSurface = g_RenderRHI->CreateTexture2D(descFontAtlas, &FontData);
+
+	/*if(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
 		Msg("! D3D_USAGE_DEFAULT may not be working");
 		_RELEASE(pSurface); descFontAtlas.Usage = D3D_USAGE_DYNAMIC;
 		R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface));
-	}
+	}*/
 #else
 	D3DLOCKED_RECT LockedRect = {};
 	R_CHK(RDevice->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pSurface, nullptr));

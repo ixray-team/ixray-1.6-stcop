@@ -8,13 +8,16 @@ void CRenderTarget::DoAsyncScreenshot()
 {
 	//	Igor: screenshot will not have postprocess applied.
 	//	TODO: fox that later
+
+	// #TODO : RHI - Screenshot
 	if (RImplementation.m_bMakeAsyncSS)
 	{
+#if 0
 		HRESULT hr;
 		ID3DTexture2D* pBuffer = nullptr;
 		hr = RSwapchain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-		RContext->CopyResource( t_ss_async, pBuffer );
-		
+		g_RenderRHI->CopyResource( t_ss_async, pBuffer );
+#endif
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}
@@ -143,8 +146,8 @@ void	CRenderTarget::phase_combine	()
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
-		ID3DBaseTexture*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
-		ID3DBaseTexture*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
+		IRHIResource*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
+		IRHIResource*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
@@ -201,7 +204,7 @@ void	CRenderTarget::phase_combine	()
 
 			RImplementation.rmNormal();
 
-			RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
+			g_RenderRHI->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
 			RCache.set_CullMode(CULL_CCW);
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
@@ -237,7 +240,7 @@ void	CRenderTarget::phase_combine	()
 
 			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
-			RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
+			g_RenderRHI->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
 

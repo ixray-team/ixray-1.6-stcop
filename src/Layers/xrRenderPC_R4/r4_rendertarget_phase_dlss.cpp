@@ -16,7 +16,9 @@ void CRenderTarget::init_dlss() {
 
 bool CRenderTarget::phase_dlss() {
 	PIX_EVENT(DLSS);
-
+	
+	// #TODO: RHI - DLSS Weird stuff
+#if 0
 	DLSSWrapper::DrawParameters dlssParams = {};
 	dlssParams.deviceContext = RContext;
 
@@ -47,4 +49,7 @@ bool CRenderTarget::phase_dlss() {
 	dlssParams.fovH = deg2rad(Device.fFOV);
 
 	return g_DLSSWrapper.Draw(dlssParams);
+#else
+	return false;
+#endif
 }

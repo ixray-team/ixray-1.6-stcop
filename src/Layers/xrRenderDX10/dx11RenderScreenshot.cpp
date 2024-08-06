@@ -11,7 +11,7 @@ extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 
 void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {
-    ID3DResource* pSrcTexture = nullptr;
+    IRHIResource* pSrcTexture = nullptr;
     RTarget->GetResource(&pSrcTexture);
 
     VERIFY(pSrcTexture);
@@ -25,7 +25,9 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         auto pSmallScratchImage = std::make_unique<ScratchImage>();
 
         // Load source texture
-        CHK_DX(CaptureTexture(RDevice, RContext, pSrcTexture, *pScratchImage));
+        
+        // #TODO: RHI - Screen capture
+        //CHK_DX(CaptureTexture(RDevice, RContext, pSrcTexture, *pScratchImage));
 
         // Create a smaller texture
         Resize(*pScratchImage->GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE, 
@@ -50,7 +52,9 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         auto smallScratchImage = std::make_unique<ScratchImage>();
 
         // Load source texture
-        CaptureTexture(RDevice, RContext, pSrcTexture, *scratchImage);
+        
+         // #TODO: RHI - Screen capture
+        //CaptureTexture(RDevice, RContext, pSrcTexture, *scratchImage);
 
         // Create a smaller texture
         Resize(*scratchImage->GetImage(0, 0, 0), SM_FOR_SEND_WIDTH, SM_FOR_SEND_HEIGHT, TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, *smallScratchImage);
@@ -80,7 +84,10 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 
         auto scratchImage = std::make_unique<ScratchImage>();
         auto saved = std::make_unique<Blob>();
-        CaptureTexture(RDevice, RContext, pSrcTexture, *scratchImage);
+        
+        // #TODO: RHI - Screen capture
+        //CaptureTexture(RDevice, RContext, pSrcTexture, *scratchImage);
+        
         SaveToWICMemory(*scratchImage->GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, *saved);
 
         auto fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
@@ -108,7 +115,9 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         auto pSmallScratchImage = std::make_unique<DirectX::ScratchImage>();
 
         // Load source texture
-        CHK_DX(CaptureTexture(RDevice, RContext, pSrcTexture, *pScratchImage));
+        
+         // #TODO: RHI - Screen capture
+        //CHK_DX(CaptureTexture(RDevice, RContext, pSrcTexture, *pScratchImage));
 
         // Create a smaller texture
         CHK_DX(Resize(*pScratchImage->GetImage(0, 0, 0), Device.TargetHeight, Device.TargetHeight, TEX_FILTER_FLAGS::TEX_FILTER_LINEAR, *pSmallScratchImage));
@@ -139,8 +148,8 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
 
     //	Don't own. No need to release.
     auto pTex = Target->t_ss_async;
-    D3D_MAPPED_TEXTURE2D MappedData;
-    RContext->Map(pTex, 0, D3D_MAP_READ, 0, &MappedData);
+    SMappedSubresource MappedData;
+    pTex->Map(0, MAPPING_READ, 0, &MappedData);
     {
         auto pPixel = (u32*)MappedData.pData;
         u32 Width = (u32)(RCache.get_target_width());
@@ -162,5 +171,5 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
         memory_writer.w(MappedData.pData, (Width * Height) * 4);
     }
 
-    RContext->Unmap(pTex, 0);
+    pTex->Unmap(0);
 }

@@ -12,7 +12,7 @@ void CRenderTarget::phase_ssao() {
 	u32	Offset = 0;
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	RContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
 
 	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0/*RDepth*/);
@@ -76,7 +76,7 @@ void CRenderTarget::phase_downsamp() {
 
 	u_setrt(rt_half_depth, 0, 0, 0);
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	RContext->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
 	u32 w = (u32)RCache.get_width();
 	u32 h = (u32)RCache.get_height();
 

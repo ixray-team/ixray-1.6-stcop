@@ -279,30 +279,23 @@ void dx103DFluidRenderer::CreateJitterTexture()
 		data[i] = (unsigned char) (rand()/float(RAND_MAX)*256);
 	}
 
-	D3D_TEXTURE2D_DESC desc;
+	STexture2DDesc desc;
 	desc.Width = 256;
 	desc.Height = 256;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	//desc.Format = DXGI_FORMAT_R8_TYPELESS;
-	desc.Format = DXGI_FORMAT_R8_UNORM;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
+	desc.Format = FMT_L8;
 	//desc.Usage = D3D_USAGE_IMMUTABLE;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
+	desc.Usage = USAGE_DEFAULT;
+	SubresourceData dataDesc;
 	dataDesc.pSysMem = data;
 	dataDesc.SysMemPitch = 256;
 
-	ID3DTexture2D* NoiseTexture = nullptr;
+
 	//ID3DxxShaderResourceView* JitterTextureSRV = nullptr;
 
-	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
+	ITexture2D* NoiseTexture = g_RenderRHI->CreateTexture2D(desc, &dataDesc);
 
 	//( m_pD3DDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture) );
 
@@ -405,29 +398,22 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 
 	XMConvertFloatToHalfStream(converted, sizeof(converted[0]), data, sizeof(data[0]), 4 * iNumSamples);
 
-	D3D_TEXTURE1D_DESC desc;
+	STexture1DDesc desc;
 	desc.Width = iNumSamples;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	//desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	desc.Format = FMT_A16B16G16R16F;
 	//desc.Usage = D3D_USAGE_IMMUTABLE;
+	desc.Usage = USAGE_DEFAULT;
 
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA dataDesc;
+	SubresourceData dataDesc;
 	//dataDesc.pSysMem = data;
 	//dataDesc.SysMemPitch = sizeof(data);
 	dataDesc.pSysMem = converted;
 	dataDesc.SysMemPitch = sizeof(converted);
 
-	ID3DTexture1D* HHGGTexture = nullptr;
-
-	CHK_DX( RDevice->CreateTexture1D(&desc, &dataDesc, &HHGGTexture));
+	ITexture1D* HHGGTexture = g_RenderRHI->CreateTexture1D(desc, &dataDesc);
 
 	m_HHGGTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVHHGGTex");
 	m_HHGGTexture->surface_set(HHGGTexture);
@@ -665,7 +651,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 	// Raycast into the temporary render target: 
 	//  raycasting is done at the smaller resolution, using a fullscreen quad
 	//m_pD3DDevice->ClearRenderTargetView( pRayCastRTV, color );
-	RContext->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
+	g_RenderRHI->ClearRenderTargetView( RT[RRT_RayCastTex]->pRT, color );
 	//m_pD3DDevice->OMSetRenderTargets( 1, &pRayCastRTV , nullptr ); 
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayCastTex],0,0,0);		// LDR RT
@@ -727,7 +713,7 @@ void dx103DFluidRenderer::ComputeRayData()
 	// Clear the color buffer to 0
 	float blackColor[4] = {0, 0, 0, 0 };
 	//m_pD3DDevice->ClearRenderTargetView(pRayDataRTV, blackColor);
-	RContext->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
+	g_RenderRHI->ClearRenderTargetView( RT[RRT_RayDataTex]->pRT, blackColor );
 	//m_pD3DDevice->OMSetRenderTargets(1, &pRayDataRTV, nullptr);
 	CRenderTarget* pTarget = RImplementation.Target;
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT

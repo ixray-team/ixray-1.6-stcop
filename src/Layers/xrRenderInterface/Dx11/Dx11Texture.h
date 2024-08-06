@@ -3,7 +3,8 @@
 #include "DeviceRHI.h"
 
 class CD3D11Texture1D :
-	public ITexture1D
+	public ITexture1D,
+	public IRHI_ResourceHack
 {
 public:
 	CD3D11Texture1D();
@@ -21,6 +22,12 @@ public:
 	void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex1D) override;
 	void Unmap(u32 Subresource) override;
 
+	// IRHI_ResourceHack
+	ID3D11Resource* GetD3D11Resource() override { return m_pTexture1D; }
+
+	// D3D11
+	ID3D11Texture1D* GetD3D11Texture() { return m_pTexture1D; }
+
 private:
 	ID3D11Texture1D* m_pTexture1D;
 	ID3D11ShaderResourceView* m_pShaderResourceView;
@@ -28,7 +35,8 @@ private:
 };
 
 class CD3D11Texture2D :
-	public ITexture2D
+	public ITexture2D,
+	public IRHI_ResourceHack
 {
 public:
 	CD3D11Texture2D();
@@ -46,6 +54,12 @@ public:
 	void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex2D) override;
 	void Unmap(u32 Subresource) override;
 
+	// IRHI_ResourceHack
+	ID3D11Resource* GetD3D11Resource() override { return m_pTexture2D; }
+
+	// D3D11
+	ID3D11Texture2D* GetD3D11Texture() { return m_pTexture2D; }
+
 private:
 	ID3D11Texture2D* m_pTexture2D;
 	ID3D11ShaderResourceView* m_pShaderResourceView;
@@ -53,7 +67,8 @@ private:
 };
 
 class CD3D11Texture3D :
-	public ITexture3D
+	public ITexture3D,
+	public IRHI_ResourceHack
 {
 public:
 	CD3D11Texture3D();
@@ -70,6 +85,12 @@ public:
 	void GetShaderResourceView(IShaderResourceView** ppShaderResourceView) override;
 	void Map(u32 Subresource, eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pMappedTex3D) override;
 	void Unmap(u32 Subresource) override;
+
+	// IRHI_ResourceHack
+	ID3D11Resource* GetD3D11Resource() override { return m_pTexture3D; }
+
+	// D3D11
+	ID3D11Texture3D* GetD3D11Texture() { return m_pTexture3D; }
 
 private:
 	ID3D11Texture3D* m_pTexture3D;

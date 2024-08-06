@@ -29,7 +29,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Copy resource
-    RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+    g_RenderRHI->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
 
 void CRenderTarget::PhaseAberration() {

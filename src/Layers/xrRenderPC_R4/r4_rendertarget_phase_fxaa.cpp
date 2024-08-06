@@ -39,5 +39,5 @@ void CRenderTarget::phase_fxaa()
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
+    g_RenderRHI->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 }

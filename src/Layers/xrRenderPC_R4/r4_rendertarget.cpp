@@ -24,7 +24,7 @@
 #include "FSR2Wrapper.h"
 #include "DLSSWrapper.h"
 
-void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
+void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
 	if (_1)	{
@@ -32,19 +32,16 @@ void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 		dwHeight = _1->dwHeight;
 	}
 	else {
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
+		SDepthStencilViewDesc desc;
 		zb->GetDesc(&desc);
 
-		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
+		VERIFY(desc.ViewDimension == DSV_DIMENSION_TEXTURE2D);
 
-		ID3DResource* pRes;
-
+		IRHIResource* pRes = nullptr;
 		zb->GetResource(&pRes);
 
-		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
-
-		D3D_TEXTURE2D_DESC	TexDesc;
-
+		ITexture2D* pTex = (ITexture2D*)pRes;
+		STexture2DDesc	TexDesc;
 		pTex->GetDesc(&TexDesc);
 
 		dwWidth = TexDesc.Width;
@@ -59,7 +56,7 @@ void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	RCache.set_ZB(zb);
 }
 
-void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
+void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDepthStencilView* zb)
 {
 	VERIFY									(_1||zb);
 	if (_1)
@@ -69,19 +66,17 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	}
 	else
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
+		SDepthStencilViewDesc desc;
 		zb->GetDesc(&desc);
 
-		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
+		VERIFY(desc.ViewDimension == DSV_DIMENSION_TEXTURE2D);
 
-		ID3DResource* pRes;
-
+		IRHIResource* pRes;
 		zb->GetResource(&pRes);
 
-		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
+		ITexture2D* pTex = (ITexture2D*)pRes;
 
-		D3D_TEXTURE2D_DESC	TexDesc;
-
+		STexture2DDesc	TexDesc;
 		pTex->GetDesc(&TexDesc);
 
 		dwWidth = TexDesc.Width;
@@ -97,7 +92,7 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	RCache.set_ZB							(zb);
 }
 
-void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
+void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, IDepthStencilView* zb)
 {
 	VERIFY									(_1||zb);
 	if (_1)
@@ -107,17 +102,17 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 	}
 	else
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
+		SDepthStencilViewDesc	desc;
 		zb->GetDesc(&desc);
-		VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
+		VERIFY(desc.ViewDimension==DSV_DIMENSION_TEXTURE2D);
 
-		ID3DResource *pRes;
+		IRHIResource *pRes;
 
 		zb->GetResource( &pRes);
 
-		ID3DTexture2D *pTex = (ID3DTexture2D *)pRes;
+		ITexture2D *pTex = (ITexture2D *)pRes;
 
-		D3D_TEXTURE2D_DESC	TexDesc;
+		STexture2DDesc	TexDesc;
 
 		pTex->GetDesc(&TexDesc);
 
@@ -134,7 +129,7 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 	RCache.set_ZB (zb);
 }
 
-void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
+void	CRenderTarget::u_setrt			(u32 W, u32 H, IRenderTargetView* _1, IRenderTargetView* _2, IRenderTargetView* _3, IDepthStencilView* zb)
 {
 	//VERIFY									(_1);
 	dwWidth									= W;
@@ -638,7 +633,7 @@ CRenderTarget::CRenderTarget()
 			rt_LUM_pool[it].create(name, 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
 
 			FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
-			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
+			g_RenderRHI->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
 
 		u_setrt(Device.TargetWidth, Device.TargetHeight, RTarget, nullptr, nullptr, nullptr);
@@ -702,38 +697,35 @@ CRenderTarget::CRenderTarget()
 	{
 		// Testure for async sreenshots
 		{
-			D3D_TEXTURE2D_DESC	desc;
+			STexture2DDesc	desc;
 			desc.Width = s_dwWidth;
 			desc.Height = s_dwHeight;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
-			desc.Usage = D3D_USAGE_STAGING;
-			desc.BindFlags = 0;
-			desc.CPUAccessFlags = D3D_CPU_ACCESS_READ;
-			desc.MiscFlags = 0;
+			desc.Format = FMT_Q8W8V8U8;
+			desc.Usage = USAGE_STAGING;
+			desc.IsCPURead = true;
 
-			R_CHK( RDevice->CreateTexture2D(&desc, 0, &t_ss_async) );
+			t_ss_async = g_RenderRHI->CreateTexture2D(desc, 0);
 		}
 		// Build material(s)
 		{
 			u16	tempData[TEX_material_LdotN * TEX_material_LdotH * TEX_material_Count];
 
-			D3D_TEXTURE3D_DESC	desc;
+			STexture3DDesc	desc;
 			desc.Width = TEX_material_LdotN;
 			desc.Height = TEX_material_LdotH;
 			desc.Depth	= TEX_material_Count;
 			desc.MipLevels = 1;
-			desc.Format = DXGI_FORMAT_R8G8_UNORM;
-			desc.Usage = D3D_USAGE_IMMUTABLE;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = 0;
-			desc.MiscFlags = 0;
+			desc.Format = FMT_R8G8;
+			desc.Usage = USAGE_IMMUTABLE;
 
-			D3D_SUBRESOURCE_DATA	subData;
+			// #TODO: RHI - D3D_BIND_SHADER_RESOURCE flag
+			//desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			//desc.CPUAccessFlags = 0;
+			//desc.MiscFlags = 0;
 
+			SubresourceData	subData;
 			subData.pSysMem = tempData;
 			subData.SysMemPitch = desc.Width*2;
 			subData.SysMemSlicePitch = desc.Height*subData.SysMemPitch;
@@ -786,7 +778,7 @@ CRenderTarget::CRenderTarget()
 				}
 			}
 
-			R_CHK(RDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
+			t_material_surf = g_RenderRHI->CreateTexture3D(desc, &subData);
 			t_material = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
 			t_material->surface_set(t_material_surf);
 		}
@@ -796,21 +788,21 @@ CRenderTarget::CRenderTarget()
 			static const int sampleSize = 4;
 			u32	tempData[TEX_jitter_count][TEX_jitter*TEX_jitter];
 
-			D3D_TEXTURE2D_DESC	desc;
+			STexture2DDesc	desc;
 			desc.Width = TEX_jitter;
 			desc.Height = TEX_jitter;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+			desc.Format = FMT_Q8W8V8U8;
 			//desc.Usage = D3D_USAGE_IMMUTABLE;
-			desc.Usage = D3D_USAGE_DEFAULT;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = 0;
-			desc.MiscFlags = 0;
+			desc.Usage = USAGE_DEFAULT;
 
-			D3D_SUBRESOURCE_DATA	subData[TEX_jitter_count];
+			// #TODO: RHI - D3D_BIND_SHADER_RESOURCE !!!
+			//desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			//desc.CPUAccessFlags = 0;
+			//desc.MiscFlags = 0;
+
+			SubresourceData	subData[TEX_jitter_count];
 
 			for (int it=0; it<TEX_jitter_count-1; it++)
 			{
@@ -841,7 +833,7 @@ CRenderTarget::CRenderTarget()
 
 			for(; it < TEX_jitter_count - 1; it++) {
 				xr_sprintf(name, "%s%d", r2_jitter, it);
-				R_CHK(RDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
+				t_noise_surf[it] = g_RenderRHI->CreateTexture2D(desc, &subData[it]);
 				t_noise[it] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
 				t_noise[it]->surface_set(t_noise_surf[it]);
 			}
@@ -849,19 +841,19 @@ CRenderTarget::CRenderTarget()
 			float tempDataHBAO[TEX_jitter*TEX_jitter*4];
 
 			// generate HBAO jitter texture (last)
-			D3D_TEXTURE2D_DESC	descHBAO;
+			STexture2DDesc	descHBAO;
 			descHBAO.Width = TEX_jitter;
 			descHBAO.Height = TEX_jitter;
 			descHBAO.MipLevels = 1;
 			descHBAO.ArraySize = 1;
-			descHBAO.SampleDesc.Count = 1;
-			descHBAO.SampleDesc.Quality = 0;
-			descHBAO.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			descHBAO.Format = FMT_A32B32G32R32F;
 
-			descHBAO.Usage = D3D_USAGE_DEFAULT;
-			descHBAO.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			descHBAO.CPUAccessFlags = 0;
-			descHBAO.MiscFlags = 0;
+			descHBAO.Usage = USAGE_DEFAULT;
+			
+			// #TODO: RHI - D3D_BIND_SHADER_RESOURCE
+			//descHBAO.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			//descHBAO.CPUAccessFlags = 0;
+			//descHBAO.MiscFlags = 0;
 
 			it = TEX_jitter_count - 1;
 			subData[it].pSysMem = tempDataHBAO;
@@ -895,7 +887,7 @@ CRenderTarget::CRenderTarget()
 			}			
 
 			xr_sprintf(name, "%s%d", r2_jitter, it);
-			R_CHK(RDevice->CreateTexture2D(&descHBAO, &subData[it], &t_noise_surf[it]));
+			t_noise_surf[it] = g_RenderRHI->CreateTexture2D(descHBAO, &subData[it]);
 			t_noise[it] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
 			t_noise[it]->surface_set(t_noise_surf[it]);
 		}
@@ -930,7 +922,7 @@ CRenderTarget::~CRenderTarget	()
 	t_LUM_dest->surface_set		(nullptr);
 
 #ifdef DEBUG
-	ID3DBaseTexture*	pSurf = 0;
+	IRHIResource*	pSurf = 0;
 
 	pSurf = t_envmap_0->surface_get();
 	if (pSurf) pSurf->Release();

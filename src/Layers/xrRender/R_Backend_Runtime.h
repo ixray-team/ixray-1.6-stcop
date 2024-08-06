@@ -63,14 +63,14 @@ IC	const Fmatrix&	CBackend::get_xform_world_old	()	{ return xforms.get_W_old();	
 IC	const Fmatrix&	CBackend::get_xform_view_old	()	{ return xforms.get_V_old();	}
 IC	const Fmatrix&	CBackend::get_xform_project_old	()	{ return xforms.get_P_old();	}
 
-IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
+IC	IRenderTargetView* CBackend::get_RT(u32 ID)
 {
 	VERIFY((ID>=0)&&(ID<4));
 
 	return pRT[ID];
 }
 
-IC	ID3DDepthStencilView* CBackend::get_ZB				()
+IC	IDepthStencilView* CBackend::get_ZB				()
 {
 	return pZB;
 }

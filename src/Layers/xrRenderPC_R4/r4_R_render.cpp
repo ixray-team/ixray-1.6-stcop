@@ -337,7 +337,7 @@ void CRender::render_menu() {
 		FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 		Target->u_setrt(Target->rt_Generic_1, 0, 0, 0);		// Now RT is a distortion mask
 		rmNormal();
-		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
+		g_RenderRHI->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
 		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 
@@ -421,8 +421,8 @@ void CRender::Render		()
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
 
 	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	RContext->ClearRenderTargetView(Target->rt_Generic_0->pRT, ColorRGBA);
-	RContext->ClearRenderTargetView(Target->rt_Velocity->pRT, ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(Target->rt_Generic_0->pRT, ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(Target->rt_Velocity->pRT, ColorRGBA);
 
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
@@ -594,10 +594,11 @@ void CRender::Render		()
 	}
 
 	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
-	ID3D11Resource* res;
+	
+	IRHIResource* res;
 	RDepth->GetResource(&res);
 
-	RContext->CopyResource(Target->rt_Position->pSurface, res);
+	g_RenderRHI->CopyResource(Target->rt_Position->pSurface, res);
 
 	// Wall marks
 	if(Wallmarks)	

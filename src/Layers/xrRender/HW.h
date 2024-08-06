@@ -19,9 +19,12 @@ struct SDL_Window;
 #define RContext ((ID3D11DeviceContext*)Device.GetRenderContext())
 #define RDevice ((ID3D11Device*)Device.GetRenderDevice())
 #define RSwapchainTarget ((ID3D11RenderTargetView*)Device.GetSwapchainTexture())
-#define RTarget ((ID3D11RenderTargetView*)Device.GetRenderTexture())
-#define RDepth ((ID3D11DepthStencilView*)Device.GetDepthTexture())
 #define RSwapchain ((IDXGISwapChain*)Device.GetSwapchain())
+
+// #TODO : !!! IRenderTargetView and IDepthStencilView from swap chain
+#define RTarget ((IRenderTargetView*)Device.GetRenderTexture())
+#define RDepth ((IDepthStencilView*)Device.GetDepthTexture())
+
 #else
 #define RContext ((IDirect3DDevice9*)Device.GetRenderContext())
 #define RDevice ((IDirect3DDevice9*)Device.GetRenderDevice())

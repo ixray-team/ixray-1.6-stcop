@@ -206,11 +206,23 @@ HRESULT CD3D11Texture2D::Create(const STexture2DDesc& desc, const SubresourceDat
 	HRESULT hr = pDevice->CreateTexture2D(&d3dTextureDesc, pSubresourceData ? subresourceData : NULL, &m_pTexture2D);
 	R_CHK(hr);
 
-	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0)
+	if ((d3dTextureDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE) != 0 || !desc.NoShaderResourceView)
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 		memset(&shaderResourceViewDesc, 0, sizeof(shaderResourceViewDesc));
 		shaderResourceViewDesc.Format = d3dTextureDesc.Format;
+
+		// #TODO: RHI - Ugly
+		switch (d3dTextureDesc.Format)
+		{
+		case DXGI_FORMAT_R24G8_TYPELESS:
+			shaderResourceViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			break;
+		case DXGI_FORMAT_R32_TYPELESS:
+			shaderResourceViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			break;
+		}
+
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		shaderResourceViewDesc.Texture2D.MipLevels = desc.MipLevels;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;

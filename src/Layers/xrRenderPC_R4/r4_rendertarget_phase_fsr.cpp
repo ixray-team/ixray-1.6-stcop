@@ -31,6 +31,8 @@ void CRenderTarget::init_fsr()
 bool CRenderTarget::phase_fsr() {
 	PIX_EVENT(FSR);
 
+	// #TODO: RHI - FSR
+#if 0
 	Fsr2Wrapper::DrawParameters fsr2Params = {};
 	fsr2Params.deviceContext = RContext;
 
@@ -61,5 +63,8 @@ bool CRenderTarget::phase_fsr() {
 	fsr2Params.fovH = deg2rad(Device.fFOV);
 
 	return g_Fsr2Wrapper.Draw(fsr2Params);
+#else
+	return false;
+#endif
 }
 

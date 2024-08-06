@@ -136,6 +136,7 @@ struct STexture1DDesc
 	bool IsDepthStencil;
 	bool IsTextureCube;
 	bool IsCPURead = false;
+	bool NoShaderResourceView = false;
 };
 
 struct STexture2DDesc
@@ -151,6 +152,7 @@ struct STexture2DDesc
 	bool IsDepthStencil;
 	bool IsTextureCube;
 	bool IsCPURead = false;
+	bool NoShaderResourceView = false;
 };
 
 struct STexture3DDesc
@@ -166,6 +168,7 @@ struct STexture3DDesc
 	bool IsDepthStencil;
 	bool IsTextureCube;
 	bool IsCPURead = false;
+	bool NoShaderResourceView = false;
 };
 
 struct STexture2DRTV
@@ -403,7 +406,6 @@ public:
 	// Note: maximum is 8 render targets.
 	virtual void SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView) = 0;
 
-
 	virtual void CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
 };
 
@@ -411,6 +413,13 @@ typedef IRender_RHI* (*GetRenderRHIAPIFunc)(APILevel API);
 
 extern ENGINE_API GetRenderRHIAPIFunc g_CreateRHIFunc;
 extern ENGINE_API IRender_RHI* g_RenderRHI;
+
+// #TODO: COSTYL
+class IRHI_ResourceHack
+{
+public:
+	virtual ID3D11Resource* GetD3D11Resource() = 0;
+};
 
 // RHI Device ???
 class CRenderRHI_DX11 : 

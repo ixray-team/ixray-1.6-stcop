@@ -169,8 +169,8 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env) {
 	dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
 	//. Setup skybox textures, somewhat ugly
-	ID3DBaseTexture* e0 = mixRen.sky_r_textures[0].second->surface_get();
-	ID3DBaseTexture* e1 = mixRen.sky_r_textures[1].second->surface_get();
+	IRHIResource* e0 = mixRen.sky_r_textures[0].second->surface_get();
+	IRHIResource* e1 = mixRen.sky_r_textures[1].second->surface_get();
 
 	tsky0->surface_set(e0);	_RELEASE(e0);
 	tsky1->surface_set(e1);	_RELEASE(e1);

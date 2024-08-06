@@ -98,13 +98,13 @@ public:
 //	IDirect3DSurface9*			rt_smap_ZB;		//
 
 	//	Igor: for async screenshots
-	ID3DTexture2D*			t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
+	ITexture2D*					t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
 
 	// Textures
-	ID3DTexture3D*			t_material_surf;
+	ITexture3D*					t_material_surf;
 	ref_texture					t_material;
 
-	ID3DTexture2D*			t_noise_surf	[TEX_jitter_count];
+	ITexture2D*					t_noise_surf		[TEX_jitter_count];
 	ref_texture					t_noise				[TEX_jitter_count];
 private:
 	ref_shader					s_spp;
@@ -225,10 +225,10 @@ public:
 	void						u_stencil_optimize		(eStencilOptimizeMode eSOM = SO_Light);
 	void						u_compute_texgen_screen	(Fmatrix&	dest);
 	void						u_compute_texgen_jitter	(Fmatrix&	dest);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
-	void						u_setrt					(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
+	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IDepthStencilView* zb);
+	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDepthStencilView* zb);
+	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, IDepthStencilView* zb);
+	void						u_setrt					(u32 W, u32 H, IRenderTargetView* _1, IRenderTargetView* _2, IRenderTargetView* _3, IDepthStencilView* zb);
 	void						u_calc_tc_noise			(Fvector2& p0, Fvector2& p1);
 	void						u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
 	BOOL						u_need_PP				();

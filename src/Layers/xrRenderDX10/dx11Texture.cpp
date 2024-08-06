@@ -70,7 +70,240 @@ IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
     if (h < 4) h = 4;
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
+bool RHICreateTextureEx(
+    const Image* srcImages,
+    size_t nimages,
+    const TexMetadata& metadata,
+    eResourceUsage usage,
+    unsigned int bindFlags,
+    unsigned int cpuAccessFlags,
+    unsigned int miscFlags,
+    CREATETEX_FLAGS flags,
+    IRHIResource** ppResource) noexcept
+{
+    if (!srcImages || !nimages || !ppResource)
+        return false;
+
+    *ppResource = nullptr;
+
+    if (!metadata.mipLevels || !metadata.arraySize)
+        return false;
+
+    if ((metadata.width > UINT32_MAX) || (metadata.height > UINT32_MAX)
+        || (metadata.mipLevels > UINT16_MAX) || (metadata.arraySize > UINT16_MAX))
+        return false;
+
+    std::unique_ptr<SubresourceData[]> initData(new SubresourceData[metadata.mipLevels * metadata.arraySize]);
+    if (!initData)
+        return false;
+
+    // Fill out subresource array
+    if (metadata.IsVolumemap())
+    {
+        //--- Volume case -------------------------------------------------------------
+        if (!metadata.depth)
+            return E_INVALIDARG;
+
+        if (metadata.depth > UINT16_MAX)
+            return E_INVALIDARG;
+
+        if (metadata.arraySize > 1)
+            // Direct3D 11 doesn't support arrays of 3D textures
+            return false;
+
+        size_t depth = metadata.depth;
+
+        size_t idx = 0;
+        for (size_t level = 0; level < metadata.mipLevels; ++level)
+        {
+            const size_t index = metadata.ComputeIndex(level, 0, 0);
+            if (index >= nimages)
+                return E_FAIL;
+
+            const Image& img = srcImages[index];
+
+            if (img.format != metadata.format)
+                return E_FAIL;
+
+            if (!img.pixels)
+                return E_POINTER;
+
+            // Verify pixels in image 1 .. (depth-1) are exactly image->slicePitch apart
+            // For 3D textures, this relies on all slices of the same miplevel being continous in memory
+            // (this is how ScratchImage lays them out), which is why we just give the 0th slice to Direct3D 11
+            const uint8_t* pSlice = img.pixels + img.slicePitch;
+            for (size_t slice = 1; slice < depth; ++slice)
+            {
+                const size_t tindex = metadata.ComputeIndex(level, 0, slice);
+                if (tindex >= nimages)
+                    return E_FAIL;
+
+                const Image& timg = srcImages[tindex];
+
+                if (!timg.pixels)
+                    return E_POINTER;
+
+                if (timg.pixels != pSlice
+                    || timg.format != metadata.format
+                    || timg.rowPitch != img.rowPitch
+                    || timg.slicePitch != img.slicePitch)
+                    return E_FAIL;
+
+                pSlice = timg.pixels + img.slicePitch;
+            }
+
+            assert(idx < (metadata.mipLevels * metadata.arraySize));
+
+            initData[idx].pSysMem = img.pixels;
+            initData[idx].SysMemPitch = static_cast<DWORD>(img.rowPitch);
+            initData[idx].SysMemSlicePitch = static_cast<DWORD>(img.slicePitch);
+            ++idx;
+
+            if (depth > 1)
+                depth >>= 1;
+        }
+    }
+    else
+    {
+        //--- 1D or 2D texture case ---------------------------------------------------
+        size_t idx = 0;
+        for (size_t item = 0; item < metadata.arraySize; ++item)
+        {
+            for (size_t level = 0; level < metadata.mipLevels; ++level)
+            {
+                const size_t index = metadata.ComputeIndex(level, item, 0);
+                if (index >= nimages)
+                    return false;
+
+                const Image& img = srcImages[index];
+
+                if (img.format != metadata.format)
+                    return false;
+
+                if (!img.pixels)
+                    return false;
+
+                assert(idx < (metadata.mipLevels * metadata.arraySize));
+
+                initData[idx].pSysMem = img.pixels;
+                initData[idx].SysMemPitch = static_cast<DWORD>(img.rowPitch);
+                initData[idx].SysMemSlicePitch = static_cast<DWORD>(img.slicePitch);
+                ++idx;
+            }
+        }
+    }
+
+    // Create texture using static initialization data
+    bool hr = false;
+
+    DXGI_FORMAT format = metadata.format;
+    if (flags & CREATETEX_FORCE_SRGB)
+    {
+        format = MakeSRGB(format);
+    }
+    else if (flags & CREATETEX_IGNORE_SRGB)
+    {
+        format = MakeLinear(format);
+    }
+
+    ERHITextureFormat rhiFormat = FMT_UNKNOWN;
+
+    // Format conversion
+    // #TODO: Please remove or refactor
+    switch (format)
+    {
+    case DXGI_FORMAT_UNKNOWN:						rhiFormat = FMT_UNKNOWN;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:				rhiFormat = FMT_R8G8B8A8;
+    case DXGI_FORMAT_R8G8_UNORM:					rhiFormat = FMT_R8G8;
+    case DXGI_FORMAT_R8G8B8A8_UNORM:				rhiFormat = FMT_B8G8R8A8;
+    case DXGI_FORMAT_B5G6R5_UNORM:					rhiFormat = FMT_R5G6B5;
+    case DXGI_FORMAT_R16G16_UNORM:					rhiFormat = FMT_G16R16;
+    case DXGI_FORMAT_R16G16B16A16_UNORM:			rhiFormat = FMT_A16B16G16R16;
+    case DXGI_FORMAT_R8_UNORM:						rhiFormat = FMT_L8;
+    case DXGI_FORMAT_R8G8_SNORM:					rhiFormat = FMT_V8U8;
+    case DXGI_FORMAT_R8G8B8A8_SNORM:				rhiFormat = FMT_Q8W8V8U8;
+    case DXGI_FORMAT_R16G16_SNORM:					rhiFormat = FMT_V16U16;
+    case DXGI_FORMAT_R24G8_TYPELESS:				rhiFormat = FMT_D24X8;
+    case DXGI_FORMAT_D24_UNORM_S8_UINT:				rhiFormat = FMT_D24S8;
+    case DXGI_FORMAT_R32_TYPELESS:					rhiFormat = FMT_D32F_LOCKABLE;
+    case DXGI_FORMAT_R16G16_FLOAT:					rhiFormat = FMT_G16R16F;
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:			rhiFormat = FMT_A16B16G16R16F;
+    case DXGI_FORMAT_R32_FLOAT:						rhiFormat = FMT_R32F;
+    case DXGI_FORMAT_R16_FLOAT:						rhiFormat = FMT_R16F;
+    case DXGI_FORMAT_R32G32B32A32_FLOAT:			rhiFormat = FMT_A32B32G32R32F;
+    case DXGI_FORMAT_G8R8_G8B8_UNORM:				rhiFormat = FMT_R8G8_B8G8;
+    case DXGI_FORMAT_R8G8_B8G8_UNORM:				rhiFormat = FMT_G8R8_G8B8;
+    case DXGI_FORMAT_BC1_UNORM:						rhiFormat = FMT_DXT1;
+    case DXGI_FORMAT_BC2_UNORM:						rhiFormat = FMT_DXT3;
+    case DXGI_FORMAT_BC3_UNORM:						rhiFormat = FMT_DXT5;
+    default:
+        FATAL("Unknowed or unsupport format");
+        break;
+    }
+
+    switch (metadata.dimension)
+    {
+        case TEX_DIMENSION_TEXTURE1D:
+        {
+            STexture1DDesc desc = {};
+            desc.Width = static_cast<UINT>(metadata.width);
+            desc.MipLevels = static_cast<UINT>(metadata.mipLevels);
+            desc.ArraySize = static_cast<UINT>(metadata.arraySize);
+            desc.Format = rhiFormat;
+            desc.Usage = usage;
+            if (metadata.IsCubemap())
+                desc.IsTextureCube = true;
+            else
+                desc.IsTextureCube = false;
+
+            *ppResource = g_RenderRHI->CreateTexture1D(desc, initData.get());
+        }
+        break;
+
+    case TEX_DIMENSION_TEXTURE2D:
+    {
+        STexture2DDesc desc = {};
+        desc.Width = static_cast<u32>(metadata.width);
+        desc.Height = static_cast<u32>(metadata.height);
+        desc.MipLevels = static_cast<u32>(metadata.mipLevels);
+        desc.ArraySize = static_cast<u32>(metadata.arraySize);
+        desc.Format = rhiFormat;
+        desc.Usage = usage;
+        if (metadata.IsCubemap())
+            desc.IsTextureCube = true;
+        else
+            desc.IsTextureCube = false;
+
+        *ppResource = g_RenderRHI->CreateTexture2D(desc, initData.get());
+    }
+    break;
+
+    case TEX_DIMENSION_TEXTURE3D:
+    {
+        STexture3DDesc desc = {};
+        desc.Width = static_cast<u32>(metadata.width);
+        desc.Height = static_cast<u32>(metadata.height);
+        desc.Depth = static_cast<u32>(metadata.depth);
+        desc.MipLevels = static_cast<u32>(metadata.mipLevels);
+        desc.Format = rhiFormat;
+        desc.Usage = usage;
+        if (metadata.IsCubemap())
+            desc.IsTextureCube = true;
+        else
+            desc.IsTextureCube = false;
+
+        *ppResource = g_RenderRHI->CreateTexture3D(desc, initData.get());
+    }
+    break;
+
+    default:
+        return false;
+    }
+
+    return hr;
+}
+
+IRHIResource* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
     // Moved here just to avoid warning
     TexMetadata imageInfo{};
 
@@ -79,7 +312,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     bStaging &= bAllowStaging;
 
     DDS_FLAGS textureFlag = DDS_FLAGS::DDS_FLAGS_NONE;
-    ID3DBaseTexture* pTexture2D = nullptr;
+    IRHIResource* pTexture2D = nullptr;
     string_path fn;
     u32 img_size = 0;
     int img_loaded_lod = 0;
@@ -149,12 +382,12 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     _DDS_CUBE: {
         auto scratchImage = std::make_unique<ScratchImage>();
         HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
-        auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
+        auto usage = (bStaging) ? USAGE_STAGING : USAGE_DEFAULT;
         auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
         auto miscFlags = imageInfo.miscFlags;
         
-        hr = CreateTextureEx(RDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
+        bool res = RHICreateTextureEx(scratchImage->GetImages(), scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
 
         FS.r_close(reader);
@@ -171,7 +404,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         auto scratchImage = std::make_unique<ScratchImage>();
         HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
         
-        auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
+        auto usage = (bStaging) ? USAGE_STAGING : USAGE_DEFAULT;
         auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
         auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
         auto miscFlags = imageInfo.miscFlags;
@@ -182,7 +415,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             mip_lod = old_mipmap_cnt - (int)imageInfo.mipLevels;
         }
 
-        hr = CreateTextureEx(RDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
+        bool res = RHICreateTextureEx(scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
             imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
         FS.r_close(reader);
         

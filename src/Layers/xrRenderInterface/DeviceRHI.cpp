@@ -4,6 +4,7 @@
 #include "DeviceRHI.h"
 #include "Dx11/Dx11Buffer.h"
 #include "Dx11/Dx11Texture.h"
+#include "Dx11/Dx11RenderTarget.h"
 
 CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
 SPixelFormats g_PixelFormats[FMT_MAX_COUNT];
@@ -78,12 +79,16 @@ ITexture3D* CRenderRHI_DX11::CreateTexture3D(const STexture3DDesc& textureDesc, 
 
 IRenderTargetView* CRenderRHI_DX11::CreateRenderTargetView(IRHIResource* pResource, const SRenderTargetViewDesc* pDesc)
 {
-	return nullptr;
+	CD3D11RenderTargetView* pRenderTargetView = new CD3D11RenderTargetView();
+	R_CHK(pRenderTargetView->Create(pResource, pDesc));
+	return pRenderTargetView;
 }
 
 IDepthStencilView* CRenderRHI_DX11::CreateDepthStencilView(IRHIResource* pResource, const SDepthStencilViewDesc* pDesc)
 {
-	return nullptr;
+	CD3D11DepthStencilView* pDepthStencilView = new CD3D11DepthStencilView();
+	R_CHK(pDepthStencilView->Create(pResource, pDesc));
+	return pDepthStencilView;
 }
 
 IBuffer* CRenderRHI_DX11::CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable)
@@ -239,21 +244,46 @@ void CRenderRHI_DX11::GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 
 void CRenderRHI_DX11::ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float ColorRGBA[4])
 {
+	CD3D11RenderTargetView* pD3D11RenderTargetView = (CD3D11RenderTargetView*)pRenderTargetView;
+	GetDeviceContext()->ClearRenderTargetView(pD3D11RenderTargetView->GetRenderTargetView(), ColorRGBA);
 }
 
 void CRenderRHI_DX11::ClearDepthStencilView(IDepthStencilView* pDepthStencilView, u32 ClearFlags, float Depth, u8 Stencil)
 {
+	CD3D11DepthStencilView* pD3D11DepthStencilView = (CD3D11DepthStencilView*)pDepthStencilView;
+	GetDeviceContext()->ClearDepthStencilView(pD3D11DepthStencilView->GetDepthStencilView(), ClearFlags, Depth, Stencil);
 }
 
 // Note: maximum is 8 render targets.
 void CRenderRHI_DX11::SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView)
 {
+	// #TODO: RHI - Shit
+	std::vector<ID3D11RenderTargetView*> renderTargetViews;
 
+	for (int i = 0; i < NumViews; i++) {
+		CD3D11RenderTargetView* pD3D11RenderTargetView = (CD3D11RenderTargetView*)ppRenderTargetViews[i];
+		renderTargetViews.push_back(pD3D11RenderTargetView->GetRenderTargetView());
+	}
+
+	CD3D11DepthStencilView* pD3D11DepthStencilView = (CD3D11DepthStencilView*)pDepthStencilView;
+
+	// #TODO: RHI - Hack with depth stencil installation
+	GetDeviceContext()->OMSetRenderTargets(
+		1, 
+		renderTargetViews.data(), 
+		pD3D11DepthStencilView ? pD3D11DepthStencilView->GetDepthStencilView() : nullptr);
 }
 
 void CRenderRHI_DX11::CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource)
 {
+	// #TODO: RHI - Refactor, ugly and slow shit
 
+	IRHI_ResourceHack* pRHIDstResource = dynamic_cast<IRHI_ResourceHack*>(pDstResource);
+	IRHI_ResourceHack* pRHISrcResource = dynamic_cast<IRHI_ResourceHack*>(pSrcResource);
+
+	GetDeviceContext()->CopyResource(
+		pRHIDstResource ? pRHIDstResource->GetD3D11Resource() : 0,
+		pRHISrcResource ? pRHISrcResource->GetD3D11Resource() : 0);
 }
 
 ID3D11Device* CRenderRHI_DX11::GetDevice()

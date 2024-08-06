@@ -414,13 +414,13 @@ void dxRenderDeviceRender::Clear()
 {
 #ifndef _EDITOR
 #ifdef USE_DX11
-	RContext->ClearDepthStencilView(RCache.get_ZB(), 
-		D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
+	g_RenderRHI->ClearDepthStencilView(RCache.get_ZB(),
+		CLEAR_DEPTH | CLEAR_STENCIL, 1.0f, 0);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
 		FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
-		RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+		g_RenderRHI->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 	}
 #else //USE_DX11
 	CHK_DX(RDevice->Clear(0,0,
@@ -491,7 +491,7 @@ void dxRenderDeviceRender::ClearTarget()
 #ifndef _EDITOR
 #ifdef USE_DX11
 	FLOAT ColorRGBA[4] = {0.0f,0.0f,0.0f,0.0f};
-	RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+	g_RenderRHI->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
 #else //USE_DX11
 	CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(0,0,0), 1, 0));
 #endif
