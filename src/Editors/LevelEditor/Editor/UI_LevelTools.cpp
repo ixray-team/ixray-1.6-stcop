@@ -655,7 +655,7 @@ void CLevelTool::RunGame(const char* Params)
 
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "Xr3DA.exe %s", Params);
+	xr_sprintf(CommandLine, "xrEngine.exe %s", Params);
 	Msg("~ Run Game %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)
