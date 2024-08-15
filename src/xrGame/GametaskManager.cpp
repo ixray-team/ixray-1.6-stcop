@@ -178,18 +178,18 @@ void CGameTaskManager::UpdateTasks						()
 	}
 	
 
-	CGameTask*	t = ActiveTask();
-	if ( t )
+	CGameTask*	pActiveTask = ActiveTask();
+	if (pActiveTask)
 	{
-		CMapLocation* ml = t->LinkedMapLocation();
-		if ( ml && !ml->PointerEnabled() )
+		CMapLocation* pMapLocation = pActiveTask->LinkedMapLocation();
+		if ( pMapLocation && !pMapLocation->PointerEnabled() )
 		{
-			ml->EnablePointer();
+			pMapLocation->EnablePointer();
 		}
 	}
 
 	if(	m_flags.test(eChanged) )
-		UpdateActiveTask	();
+		UpdateActiveTask();
 }
 
 
