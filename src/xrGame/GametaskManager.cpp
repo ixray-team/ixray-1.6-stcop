@@ -150,12 +150,13 @@ void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state)
 
 void CGameTaskManager::UpdateTasks						()
 {
-	if(Device.Paused())		return;
+	if(Device.Paused())		
+		return;
 
 	Level().MapManager().DisableAllPointers();
 
-	u32					task_count = (u32)GetGameTasks().size();
-	if(0==task_count)	return;
+	if(GetGameTasks().empty())	
+		return;
 
 	
 	const vGameTasks& vTasks = GetGameTasks();
