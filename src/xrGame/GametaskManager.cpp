@@ -368,8 +368,6 @@ void CGameTaskManager::DumpTasks()
 	}
 }
 
-using namespace luabind;
-
 CGameTaskManager* get_task_manager() { return Level().GameTaskManager(); }
 
 void CGameTaskManager::script_register(lua_State* pState)
@@ -379,11 +377,11 @@ void CGameTaskManager::script_register(lua_State* pState)
 		luabind::module(pState)
 			[
 				// register class
-				class_<CGameTaskManager>("game_task_manager")
+				luabind::class_<CGameTaskManager>("game_task_manager")
 					.def("test", &CGameTaskManager::test_groid),
 
 				// register globals
-				def("get_game_task_manager", get_task_manager)
+				luabind::def("get_game_task_manager", get_task_manager)
 			];
 	}
 }
