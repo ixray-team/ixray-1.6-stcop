@@ -260,5 +260,6 @@ void export_classes	(lua_State *L)
 	CALifeMonsterBrain::script_register(L);
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
+	CGameTaskManager::script_register(L);
 #endif
 }

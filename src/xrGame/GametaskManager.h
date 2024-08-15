@@ -25,6 +25,7 @@ public:
 	CGameTask*				HasGameTask						(const CMapLocation* ml, bool only_inprocess);
 	CGameTask*				HasGameTask						(const shared_str& id, bool only_inprocess);
 	CGameTask*				GiveGameTaskToActor				(CGameTask* t, u32 timeToComplete, bool bCheckExisting, u32 timer_ttl);
+	void test_groid();
 	void					SetTaskState					(const shared_str& id, ETaskState state);
 	void					SetTaskState					(CGameTask* t, ETaskState state);
 
@@ -42,4 +43,6 @@ public:
 
 	void					ResetStorage					() {m_gametasks = NULL;};
 	void					DumpTasks						();
+
+	static void script_register(lua_State* pState);
 };
