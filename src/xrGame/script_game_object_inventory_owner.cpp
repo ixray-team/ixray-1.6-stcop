@@ -699,7 +699,7 @@ ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id)
 void CScriptGameObject::SetGameTaskState	(ETaskState state, LPCSTR task_id)
 {
 	shared_str shared_name	= task_id;
-	Level().GameTaskManager().SetTaskState(shared_name, state);
+	Level().GameTaskManager()->SetTaskState(shared_name, state);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1117,24 +1117,24 @@ CScriptGameObject *CScriptGameObject::item_in_slot	(u32 slot_id) const
 
 void CScriptGameObject::GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExisting, u32 t_timer)
 {
-	Level().GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting, t_timer);
+	Level().GameTaskManager()->GiveGameTaskToActor(t, dt, bCheckExisting, t_timer);
 }
 
 CGameTask* CScriptGameObject::GetTask(LPCSTR id, bool only_inprocess)
 {
-	return Level().GameTaskManager().HasGameTask(id, only_inprocess);
+	return Level().GameTaskManager()->HasGameTask(id, only_inprocess);
 }
 
 void CScriptGameObject::SetActiveTask(CGameTask* t)
 {
 	VERIFY(t);
-	Level().GameTaskManager().SetActiveTask(t);
+	Level().GameTaskManager()->SetActiveTask(t);
 }
 
 bool CScriptGameObject::IsActiveTask(CGameTask* t)
 {
 	VERIFY(t);
-	return Level().GameTaskManager().ActiveTask()==t;
+	return Level().GameTaskManager()->ActiveTask()==t;
 }
 
 u32	CScriptGameObject::active_slot()

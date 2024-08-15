@@ -168,7 +168,7 @@ void CUITaskWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUITaskWnd::ReloadTaskInfo()
 {
-	CGameTask* t					= Level().GameTaskManager().ActiveTask();
+	CGameTask* t					= Level().GameTaskManager()->ActiveTask();
 	m_pStoryLineTaskItem->InitTask	(t);
 	
 	if(t && (t->m_map_object_id==u16(-1) || t->m_map_location.size()==0))
@@ -198,12 +198,12 @@ void CUITaskWnd::ReloadTaskInfo()
 	if(!t)
 		return;
 
-	m_actual_frame					= Level().GameTaskManager().ActualFrame();
+	m_actual_frame					= Level().GameTaskManager()->ActualFrame();
 	
-	u32 task_count					= Level().GameTaskManager().GetTaskCount( eTaskStateInProgress );
+	u32 task_count					= Level().GameTaskManager()->GetTaskCount( eTaskStateInProgress );
 	if ( task_count )
 	{
-		u32 task_index				= Level().GameTaskManager().GetTaskIndex( t, eTaskStateInProgress );
+		u32 task_index				= Level().GameTaskManager()->GetTaskIndex( t, eTaskStateInProgress );
 		string32 buf;
 		xr_sprintf( buf, sizeof(buf), "%d / %d", task_index, task_count );
 	}
@@ -296,7 +296,7 @@ void CUITaskWnd::TaskShowMapSpot( CGameTask* task, bool show )
 
 void CUITaskWnd::OnTask1DbClicked( CUIWindow* ui, void* d )
 {
-	CGameTask* task = Level().GameTaskManager().ActiveTask();
+	CGameTask* task = Level().GameTaskManager()->ActiveTask();
 	TaskSetTargetMap( task );
 }
 

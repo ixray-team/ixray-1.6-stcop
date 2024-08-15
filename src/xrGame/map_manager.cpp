@@ -169,7 +169,7 @@ void CMapManager::RemoveMapLocation(const shared_str& spot_type, u16 id)
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it!=Locations().end() )
 	{
-		Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager()->MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -182,7 +182,7 @@ void CMapManager::RemoveMapLocationByObjectID(u16 id) //call on destroy object
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
 	while( it!= Locations().end() )
 	{
-		Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager()->MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -198,7 +198,7 @@ void CMapManager::RemoveMapLocation(CMapLocation* ml)
 	Locations_it it = std::find_if(Locations().begin(), Locations().end(), key);
 	if( it!=Locations().end() )
 	{
-		Level().GameTaskManager().MapLocationRelcase((*it).location);
+		Level().GameTaskManager()->MapLocationRelcase((*it).location);
 
 		Destroy					((*it).location);
 		Locations().erase		(it);
@@ -267,7 +267,7 @@ void CMapManager::Update()
 
 	while( (!Locations().empty())&&(!Locations().back().actual) )
 	{
-		Level().GameTaskManager().MapLocationRelcase(Locations().back().location);
+		Level().GameTaskManager()->MapLocationRelcase(Locations().back().location);
 
 		Destroy(Locations().back().location);
 		Locations().pop_back();

@@ -164,9 +164,9 @@ bool UITaskListWnd::SortingLessFunction( CUIWindow* left, CUIWindow* right )
 /*
 void UITaskListWnd::UpdateCounter()
 {
-	u32  m_progress_task_count = Level().GameTaskManager().GetTaskCount( eTaskStateInProgress );
-	CGameTask* act_task = Level().GameTaskManager().ActiveTask();
-	u32 task2_index     = Level().GameTaskManager().GetTaskIndex( act_task, eTaskStateInProgress );
+	u32  m_progress_task_count = Level().GameTaskManager()->GetTaskCount( eTaskStateInProgress );
+	CGameTask* act_task = Level().GameTaskManager()->ActiveTask();
+	u32 task2_index     = Level().GameTaskManager()->GetTaskIndex( act_task, eTaskStateInProgress );
 
 	string32 buf;
 	xr_sprintf( buf, sizeof(buf), "%d / %d", task2_index, m_progress_task_count );
@@ -264,7 +264,7 @@ void UITaskListWndItem::update_view()
 	h1 = _max( h1, GetHeight() );
 	SetHeight( h1 );
 
-	CGameTask* activ_task = Level().GameTaskManager().ActiveTask();
+	CGameTask* activ_task = Level().GameTaskManager()->ActiveTask();
 
 	if ( m_task == activ_task )
 	{
@@ -311,7 +311,7 @@ void UITaskListWndItem::SendMessage( CUIWindow* pWnd, s16 msg, void* pData )
 	{
 		if ( msg == BUTTON_DOWN )
 		{
-			Level().GameTaskManager().SetActiveTask( m_task );
+			Level().GameTaskManager()->SetActiveTask( m_task );
 			return;
 		}
 

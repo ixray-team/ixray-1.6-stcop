@@ -90,7 +90,7 @@ bool CMapSpot::OnMouseDown( int mouse_btn )
 {
 	if ( mouse_btn == MOUSE_1 )
 	{
-		CGameTask* t = Level().GameTaskManager().HasGameTask(m_map_location, true);
+		CGameTask* t = Level().GameTaskManager()->HasGameTask(m_map_location, true);
 		if(t)
 		{
 			GetMessageTarget()->SendMessage(this, MAP_SELECT_SPOT);

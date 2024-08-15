@@ -1185,13 +1185,13 @@ bool CLevel::IsClient ()
 void CLevel::OnAlifeSimulatorUnLoaded()
 {
 	MapManager().ResetStorage();
-	GameTaskManager().ResetStorage();
+	GameTaskManager()->ResetStorage();
 }
 
 void CLevel::OnAlifeSimulatorLoaded()
 {
 	MapManager().ResetStorage();
-	GameTaskManager().ResetStorage();
+	GameTaskManager()->ResetStorage();
 }
 
 void CLevel::OnSessionTerminate		(LPCSTR reason)
