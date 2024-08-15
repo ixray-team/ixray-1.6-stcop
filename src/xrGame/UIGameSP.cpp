@@ -127,7 +127,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		if ( !pActor->inventory_disabled() )
 		{
 			m_game_objective		= AddCustomStatic("main_task", true);
-			CGameTask* t1			= Level().GameTaskManager().ActiveTask();
+			CGameTask* t1			= Level().GameTaskManager()->ActiveTask();
 			m_game_objective->m_static->TextItemControl()->SetTextST((t1) ? t1->m_Title.c_str() : "st_no_active_task");
 
 			if ( t1 && t1->m_Description.c_str() )

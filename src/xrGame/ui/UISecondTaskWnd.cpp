@@ -134,7 +134,7 @@ void UITaskListWnd::UpdateList()
 	m_list->Clear();
 	
 	u32 count_for_check = 0;
-	vGameTasks& tasks = Level().GameTaskManager().GetGameTasks();
+	vGameTasks& tasks = Level().GameTaskManager()->GetGameTasks();
 	vGameTasks::iterator itb = tasks.begin();
 	vGameTasks::iterator ite = tasks.end();
 	for ( ; itb != ite; ++itb )

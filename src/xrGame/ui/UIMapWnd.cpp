@@ -781,10 +781,10 @@ void CUIMapWnd::SpotSelected( CUIWindow* w )
 		return;
 	}
 	
-	CGameTask* t	= Level().GameTaskManager().HasGameTask( sp->MapLocation(), true );
+	CGameTask* t	= Level().GameTaskManager()->HasGameTask( sp->MapLocation(), true );
 	if ( t )
 	{
-		Level().GameTaskManager().SetActiveTask( t );
+		Level().GameTaskManager()->SetActiveTask( t );
 	}
 }
 

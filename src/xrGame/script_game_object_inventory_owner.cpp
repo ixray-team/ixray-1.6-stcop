@@ -687,7 +687,7 @@ LPCSTR CScriptGameObject::sound_voice_prefix () const
 ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id)
 {
 	shared_str shared_name				= task_id;
-	CGameTask* t						= Level().GameTaskManager().HasGameTask(shared_name, true);
+	CGameTask* t						= Level().GameTaskManager()->HasGameTask(shared_name, true);
 	
 	if(nullptr==t) 
 		return eTaskStateDummy;

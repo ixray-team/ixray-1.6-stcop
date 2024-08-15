@@ -102,7 +102,7 @@ void CUITaskWnd::Init()
 
 void CUITaskWnd::Update()
 {
-	if(Level().GameTaskManager().ActualFrame() != m_actual_frame)
+	if(Level().GameTaskManager()->ActualFrame() != m_actual_frame)
 	{
 		ReloadTaskInfo();
 	}

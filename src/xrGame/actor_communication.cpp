@@ -210,6 +210,6 @@ bool CActor::OnDialogSoundHandlerStop(CInventoryOwner *inv_owner)
 #ifdef DEBUG
 void CActor::DumpTasks()
 {
-	Level().GameTaskManager().DumpTasks();
+	Level().GameTaskManager()->DumpTasks();
 }
 #endif // DEBUG
