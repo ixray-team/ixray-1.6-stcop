@@ -27,7 +27,7 @@ struct FindTaskByID{
 	bool operator () (const SGameTaskKey& key)
 		{
 			if(b_only_inprocess)
-				return (id==key.task_id && key.game_task->GetTaskState()==eTaskStateInProgress);
+				return (id == key.task_id && (key.getGameTask() && key.getGameTask()->GetTaskState() == eTaskStateInProgress));
 			else
 				return (id==key.task_id);
 		}
@@ -35,7 +35,7 @@ struct FindTaskByID{
 
 bool task_prio_pred(const SGameTaskKey& k1, const SGameTaskKey& k2)
 {
-	return k1.game_task->m_priority > k2.game_task->m_priority;
+	return k1.getGameTask() && k2.getGameTask() && k1.getGameTask()->m_priority > k2.getGameTask()->m_priority;
 }
 
 CGameTaskManager::CGameTaskManager()
@@ -80,7 +80,7 @@ CGameTask* CGameTaskManager::HasGameTask(const shared_str& id, bool only_inproce
 	FindTaskByID key(id, only_inprocess);
 	vGameTasks_it it = std::find_if(GetGameTasks().begin(),GetGameTasks().end(),key);
 	if( it!=GetGameTasks().end() )
-		return (*it).game_task;
+		return (*it).getGameTask();
 	
 	return 0;
 }
@@ -98,7 +98,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	m_flags.set						(eChanged, TRUE);
 
 	GetGameTasks().push_back		(SGameTaskKey(t->m_ID) );
-	GetGameTasks().back().game_task	= t;
+	GetGameTasks().back().setGameTask(t);
 	t->m_ReceiveTime				= Level().GetGameTime();
 	t->m_TimeToComplete				= t->m_ReceiveTime + timeToComplete * 1000; //ms
 	t->m_timer_finish				= t->m_ReceiveTime + timer_ttl      * 1000; //ms
@@ -157,29 +157,25 @@ void CGameTaskManager::UpdateTasks						()
 	u32					task_count = (u32)GetGameTasks().size();
 	if(0==task_count)	return;
 
-	{
-		typedef buffer_vector<SGameTaskKey>	Tasks;
-		Tasks tasks				(
-			_alloca(task_count*sizeof(SGameTaskKey)),
-			task_count,
-			GetGameTasks().begin(),
-			GetGameTasks().end()
-		);
+	
+	const vGameTasks& vTasks = GetGameTasks();
 
-		Tasks::const_iterator	I = tasks.begin();
-		Tasks::const_iterator	E = tasks.end();
-		for ( ; I != E; ++I) {
-			CGameTask* const	t = (*I).game_task;
-			if (t->GetTaskState()!=eTaskStateInProgress)
+	for (const SGameTaskKey& task : vTasks)
+	{
+		CGameTask* const pGameTask = task.getGameTask();
+
+		if (pGameTask)
+		{
+			if (pGameTask->GetTaskState() != eTaskStateInProgress)
 				continue;
 
-			ETaskState const	state = t->UpdateState();
+			const ETaskState state = pGameTask->UpdateState();
 
-			if ( (state == eTaskStateFail) || (state == eTaskStateCompleted) )
-				SetTaskState	(t, state);
+			if ((state == eTaskStateFail) || (state == eTaskStateCompleted))
+				SetTaskState(pGameTask, state);
 		}
-
 	}
+	
 
 	CGameTask*	t = ActiveTask();
 	if ( t )
@@ -259,7 +255,7 @@ CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inpro
 
 	for(; it!=it_e; ++it)
 	{
-		CGameTask* gt = (*it).game_task;
+		CGameTask* gt = (*it).getGameTask();
 		if(gt->LinkedMapLocation()==ml)
 		{
 			if(only_inprocess && gt->GetTaskState()!=eTaskStateInProgress)
@@ -277,7 +273,7 @@ CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bFo
 	u32 cnt				= (u32)v.size();
 	for(u32 i=0; i<cnt; ++i)
 	{
-		CGameTask* gt	= v[i].game_task;
+		CGameTask* gt	= v[i].getGameTask();
 		if(gt==t || nullptr==t)
 		{
 			bool			allow;
@@ -291,7 +287,7 @@ CGameTask* CGameTaskManager::IterateGet(CGameTask* t, ETaskState state, bool bFo
 			}
 			if(allow)
 			{
-				CGameTask* found		= v[i].game_task;
+				CGameTask* found		= v[i].getGameTask();
 				if ( found->GetTaskState()==state )
 					return found;
 				else
@@ -315,7 +311,7 @@ u32 CGameTaskManager::GetTaskIndex( CGameTask* t, ETaskState state )
 	u32 res			= 0;
 	for ( u32 i = 0; i < cnt; ++i )
 	{
-		CGameTask* gt = v[i].game_task;
+		CGameTask* gt = v[i].getGameTask();
 		if ( gt->GetTaskState() == state )
 		{
 			++res;
@@ -335,7 +331,7 @@ u32 CGameTaskManager::GetTaskCount( ETaskState state )
 	u32 res			= 0;
 	for ( u32 i = 0; i < cnt; ++i )
 	{
-		CGameTask* gt = v[i].game_task;
+		CGameTask* gt = v[i].getGameTask();
 		if ( gt->GetTaskState()==state )
 		{
 			++res;
@@ -358,7 +354,7 @@ void CGameTaskManager::DumpTasks()
 	vGameTasks_it it_e			= GetGameTasks().end();
 	for(; it!=it_e; ++it)
 	{
-		const CGameTask* gt = (*it).game_task;
+		const CGameTask* gt = (*it).getGameTask();
 		Msg( " ID=[%s] state=[%s] prio=[%d] ",
 			gt->m_ID.c_str(),
 			sTaskStates[gt->GetTaskState()],
