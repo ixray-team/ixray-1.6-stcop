@@ -54,6 +54,9 @@
 
 #include "../xrPhysics/iphworld.h"
 #include "../xrPhysics/console_vars.h"
+
+#include "script_xr_conditions.h"
+
 #ifdef DEBUG_DRAW
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
@@ -186,6 +189,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_game_graph = 0;
 	m_chunk = 0;
 	spawn = 0;
+
+	m_pScriptXRCondition = new CScriptXRConditionsStorage();
 }
 
 extern CAI_Space *g_ai_space;
@@ -242,6 +247,8 @@ CLevel::~CLevel()
 #endif
 
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorLevel);
+
+	xr_delete(m_pScriptXRCondition);
 
 	xr_delete					(game);
 	xr_delete					(game_events);

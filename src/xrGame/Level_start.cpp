@@ -14,6 +14,7 @@
 #include "UIGameCustom.h"
 #include "ui/UICDkey.h"
 #include "object_factory.h"
+#include "script_xr_conditions.h"
 
 int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
@@ -352,6 +353,11 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	game->set_type_name		(game_type_name);
 	game->Init				();
 	m_bGameConfigStarted	= TRUE;
+
+	if (m_pScriptXRCondition)
+	{
+		m_pScriptXRCondition->initialize(this);
+	}
 
 	if (!IsGameTypeSingle())
 	{

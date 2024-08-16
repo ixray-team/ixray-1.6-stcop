@@ -22,6 +22,8 @@
 #include "../xrNetServer/NET_AuthCheck.h"
 
 #include "../xrPhysics/physicscommon.h"
+#include "script_xr_conditions.h"
+
 ENGINE_API bool g_dedicated_server;
 
 const int max_objects_size			= 2*1024;
@@ -164,6 +166,11 @@ void CLevel::net_Stop		()
 	}
 
 	ai().script_engine().collect_all_garbage();
+
+	if (m_pScriptXRCondition)
+	{
+		m_pScriptXRCondition->destroy();
+	}
 
 #ifdef DEBUG
 	show_animation_stats		();
@@ -619,7 +626,12 @@ void				CLevel::OnConnectRejected		()
 
 //	if (MainMenu()->GetErrorDialogType() != CMainMenu::ErrNoError)
 //		MainMenu()->SetErrorDialog(CMainMenu::ErrServerReject);
-};
+}
+
+CScriptXRConditionsStorage* CLevel::getScriptXRConditions(void) const
+{
+	return m_pScriptXRCondition;
+}
 
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)
 {

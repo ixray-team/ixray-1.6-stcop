@@ -15,6 +15,8 @@
 #include "secure_messaging.h"
 #include "../xrEngine/xr_level_controller.h"
 
+// always try to forward declare your script implementations
+class	CScriptXRConditionsStorage;
 class	CHUDManager;
 class	CParticlesObject;
 class	xrServer;
@@ -84,6 +86,7 @@ protected:
 	CPHCommander				*m_ph_commander;
 	CPHCommander				*m_ph_commander_scripts;
 	CPHCommander				*m_ph_commander_physics_worldstep;
+	CScriptXRConditionsStorage*  m_pScriptXRCondition;
 	// Local events
 	EVENT						eChangeRP;
 	EVENT						eDemoPlay;
@@ -123,6 +126,8 @@ public:
 	virtual void				OnInvalidPassword		();
 	virtual void				OnSessionFull			();
 	virtual void				OnConnectRejected		();
+
+	CScriptXRConditionsStorage* getScriptXRConditions(void) const;
 
 private:
 			

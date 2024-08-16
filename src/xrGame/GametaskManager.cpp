@@ -378,7 +378,7 @@ void CGameTaskManager::script_register(lua_State* pState)
 			[
 				// register class
 				luabind::class_<CGameTaskManager>("game_task_manager")
-					.def("test", &CGameTaskManager::test_groid),
+					.def("give_task", &CGameTaskManager::GiveGameTaskToActor),
 
 				// register globals
 				luabind::def("get_game_task_manager", get_task_manager)
