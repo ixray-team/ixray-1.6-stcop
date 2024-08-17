@@ -21,41 +21,30 @@ private:
 template <typename ReturnType>
 struct CAnyCallable
 {
-    CAnyCallable(void) = default;
-    ~CAnyCallable(void) = default;
+    CAnyCallable(void) : m_any{}, m_argument_count{} {}
+    ~CAnyCallable(void) {}
+
+    CAnyCallable(const CAnyCallable<ReturnType>& inst) : m_any{ inst.m_any }, m_argument_count{ inst.m_argument_count } {}
 
     template <typename F>
-    CAnyCallable(F&& func) : CAnyCallable(std::function(func))
+    CAnyCallable(F&& func) : m_any(func)
     {
     }
 
     template <typename... Args>
-    CAnyCallable(std::function<ReturnType(Args...)> func) : m_any(func), m_argument_count(sizeof...(Args))
-    {
-    }
-
-    template <typename... Args>
-    ReturnType operator()(Args... arguments)
+    ReturnType operator()(Args... arguments) const
     {
         std::function<ReturnType(Args...)> myfunction;
 
-        try
-        {
-            myfunction = std::any_cast<std::function<ReturnType(Args...)>>(this->m_any);
-        }
-        catch (std::bad_any_cast error)
-        {
-            Msg("[IXRAY][Scripting]: failed to cast the function!");
-
-            return ReturnType();
-        }
+        auto function = (ReturnType(*)(Args...))m_any;
+        myfunction = function;
 
         return std::invoke(myfunction, std::forward<Args>(arguments)...);
     }
 
-    inline std::uint16_t getArgumentsCount(void) noexcept { return this->m_argument_count; }
+    inline u16 getArgumentsCount(void) noexcept { return this->m_argument_count; }
 
 private:
-    std::any m_any;
-    std::uint16_t m_argument_count;
+    void* m_any;
+    u16 m_argument_count;
 };
