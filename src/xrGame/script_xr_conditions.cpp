@@ -4,8 +4,17 @@
 
 #define REGISTER_FUNCTION_TO_XR_CONDITIONS(myfunction) this->registerFunction(#myfunction, CAnyCallable<std::function<decltype(myfunction)>::result_type>(myfunction)); 
 
+// set breakpoint on these functions for 'understanding' the sense of usage and the purpose of CAnyCallable
+bool test_adiahfuirhgarughargha(int a, int b) { return false; }
+bool test2_Afjreauhgaeughauegaoegheog(int a, int b, const xr_vector<int>& c) { return false; }
+
 CScriptXRConditionsStorage::CScriptXRConditionsStorage() : m_pLevel{}
 {
+	REGISTER_FUNCTION_TO_XR_CONDITIONS(test_adiahfuirhgarughargha);
+	REGISTER_FUNCTION_TO_XR_CONDITIONS(test2_Afjreauhgaeughauegaoegheog);
+
+	this->getRegisteredFunctionByName("test_adiahfuirhgarughargha")(1,2);
+	this->getRegisteredFunctionByName("test2_Afjreauhgaeughauegaoegheog")(1, 2, xr_vector<int>{});
 }
 
 CScriptXRConditionsStorage::~CScriptXRConditionsStorage()

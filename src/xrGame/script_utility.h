@@ -21,13 +21,13 @@ private:
 template <typename ReturnType>
 struct CAnyCallable
 {
-    CAnyCallable(void) : m_any{}, m_argument_count{} {}
+    CAnyCallable(void) : m_pFunction{} {}
     ~CAnyCallable(void) {}
 
-    CAnyCallable(const CAnyCallable<ReturnType>& inst) : m_any{ inst.m_any }, m_argument_count{ inst.m_argument_count } {}
+    CAnyCallable(const CAnyCallable<ReturnType>& inst) : m_pFunction{ inst.m_pFunction } {}
 
     template <typename F>
-    CAnyCallable(F&& func) : m_any(func)
+    CAnyCallable(F&& func) : m_pFunction{func}
     {
     }
 
@@ -36,15 +36,12 @@ struct CAnyCallable
     {
         std::function<ReturnType(Args...)> myfunction;
 
-        auto function = (ReturnType(*)(Args...))m_any;
+        auto function = (ReturnType(*)(Args...))m_pFunction;
         myfunction = function;
 
         return std::invoke(myfunction, std::forward<Args>(arguments)...);
     }
 
-    inline u16 getArgumentsCount(void) noexcept { return this->m_argument_count; }
-
 private:
-    void* m_any;
-    u16 m_argument_count;
+    void* m_pFunction;
 };
