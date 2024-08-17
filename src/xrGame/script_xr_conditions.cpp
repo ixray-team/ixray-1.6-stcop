@@ -27,7 +27,17 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 
 	m_pLevel = pLevelManager;
 
-	REGISTER_FUNCTION_TO_SCRIPT(is_fighting_dist_ge);
+	REGISTER_FUNCTION_TO_SCRIPT(fighting_dist_ge);
+	REGISTER_FUNCTION_TO_SCRIPT(surge_started);
+	REGISTER_FUNCTION_TO_SCRIPT(surge_complete);
+	REGISTER_FUNCTION_TO_SCRIPT(surge_kill_all);
+	REGISTER_FUNCTION_TO_SCRIPT(signal_rocket_flying);
+	REGISTER_FUNCTION_TO_SCRIPT(quest_npc_enemy_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(animpoint_reached);
+	REGISTER_FUNCTION_TO_SCRIPT(distance_to_obj_ge);
+	REGISTER_FUNCTION_TO_SCRIPT(distance_to_obj_le);
+	REGISTER_FUNCTION_TO_SCRIPT(in_dest_smart_cover);
+	REGISTER_FUNCTION_TO_SCRIPT(active_item);
 }
 
 void CScriptXRConditionsStorage::destroy()

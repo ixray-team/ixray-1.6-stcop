@@ -21,6 +21,8 @@
 //  hasRegisteredServerFunctionByName = checks if you registered your function in storage, false - means you didn't register or you passed an empty string; true - means it was successfully regsitered to storage;
 #define REGISTER_STORAGE_FOR_RETURN_TYPE(return_type_of_function) private: xr_hash_map<xr_string, CAnyCallable<return_type_of_function>> m_mClientStorageOf##return_type_of_function; private: xr_hash_map<xr_string, CAnyCallable<return_type_of_function>> m_mServerStorageOf##return_type_of_function; private: void registerClientFunction(const xr_string& function_name, const CAnyCallable<return_type_of_function>& func) { m_mClientStorageOf##return_type_of_function[function_name] = func; } private: void registerServerFunction(const xr_string& function_name, const CAnyCallable<return_type_of_function>& func) { m_mServerStorageOf##return_type_of_function[function_name] = func; } public: const CAnyCallable<return_type_of_function>& getRegisteredClientFunctionByName(const xr_string& function_name) { if (m_mClientStorageOf##return_type_of_function.find(function_name) != m_mClientStorageOf##return_type_of_function.end()) return m_mClientStorageOf##return_type_of_function.at(function_name); return CAnyCallable<return_type_of_function>([]()->return_type_of_function{return return_type_of_function{};}); } const CAnyCallable<return_type_of_function>& getRegisteredServerFunctionByName(const xr_string& function_name) { if (m_mServerStorageOf##return_type_of_function.find(function_name) != m_mServerStorageOf##return_type_of_function.end()) return m_mServerStorageOf##return_type_of_function.at(function_name); return CAnyCallable<return_type_of_function>([]()->return_type_of_function{return return_type_of_function{};}); } bool hasRegisteredClientFunction(const xr_string& function_name) { if (function_name.empty()) return false; return m_mClientStorageOf##return_type_of_function.find(function_name) != m_mClientStorageOf##return_type_of_function.end(); } bool hasRegisteredServerFunction(const xr_string& function_name) { if (function_name.empty()) return false; return m_mServerStorageOf##return_type_of_function.find(function_name) != m_mServerStorageOf##return_type_of_function.end(); }
 
+class CScriptGameObject;
+
 class CConfigInfoportion
 {
 public:
@@ -58,3 +60,8 @@ struct CAnyCallable
 private:
 	void* m_pFunction;
 };
+
+namespace ixray
+{
+	bool is_weapon(CScriptGameObject* pObject);
+}
