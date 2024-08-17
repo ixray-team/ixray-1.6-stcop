@@ -949,3 +949,99 @@ inline bool is_monster_tushkano_server(CScriptGameObject* pActor, CSE_ALifeDynam
 
     return result;
 }
+
+inline bool is_monster_burer_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_BURER");
+    }
+
+    return result;
+}
+
+inline bool is_monster_burer_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_BURER");
+    }
+
+    return result;
+}
+
+inline bool is_monster_controller_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_CONTR");
+    }
+
+    return result;
+}
+
+inline bool is_monster_controller_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_CONTR");
+    }
+
+    return result;
+}
+
+inline bool is_monster_flesh_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_FLESH");
+    }
+
+    return result;
+}
+
+inline bool is_monster_flesh_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_FLESH");
+    }
+
+    return result;
+}
+
+inline bool is_monster_boar_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_BOARW");
+    }
+
+    return result;
+}
+
+inline bool is_monster_boar_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_BOARW");
+    }
+
+    return result;
+}
