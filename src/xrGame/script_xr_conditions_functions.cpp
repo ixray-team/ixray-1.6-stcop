@@ -853,3 +853,28 @@ inline bool is_monster_snork_server(CScriptGameObject* pActor, CSE_ALifeDynamicO
 
     return result;
 }
+
+inline bool is_monster_dog_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_DOG_S");
+    }
+
+    return result;
+}
+
+inline bool is_monster_dog_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_DOG_S");
+    }
+
+    return result;
+}
+
