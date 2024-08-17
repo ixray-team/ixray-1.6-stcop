@@ -65,4 +65,5 @@ namespace ixray
 {
 	bool is_weapon(CScriptGameObject* pObject);
 	bool has_alife_info(LPCSTR str);
+	int get_script_clsid(LPCSTR str);
 }

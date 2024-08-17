@@ -112,3 +112,9 @@ bool ixray::has_alife_info(LPCSTR info_id)
 
 	return result;
 }
+
+int ixray::get_script_clsid(LPCSTR str)
+{
+	R_ASSERT(str && "provide a valid string alwasys!");
+	return object_factory().script_clsid(TEXT2CLSID(str));
+}

@@ -789,3 +789,67 @@ inline bool object_exist_server(CScriptGameObject* pActor, CSE_ALifeDynamicObjec
     return false;
 #endif
 }
+
+inline bool squad_curr_action_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.squad_curr_action", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide se_squad_group.script implementation on C++ side, not implemented!");
+    return false;
+#endif
+}
+
+inline bool squad_curr_action_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.squad_curr_action", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide se_squad_group.script implementation on C++ side, not implemented!");
+    return false;
+#endif
+}
+
+inline bool is_monster_snork_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_SNORK");
+    }
+
+    return result;
+}
+
+inline bool is_monster_snork_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_SNORK");
+    }
+
+    return result;
+}

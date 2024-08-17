@@ -47,6 +47,9 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(jup_b202_inventory_box_empty);
 	REGISTER_FUNCTION_TO_SCRIPT(is_in_danger);
 	REGISTER_FUNCTION_TO_SCRIPT(object_exist);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_curr_action);
+	REGISTER_FUNCTION_TO_SCRIPT(is_monster_snork);
+
 }
 
 void CScriptXRConditionsStorage::destroy()
