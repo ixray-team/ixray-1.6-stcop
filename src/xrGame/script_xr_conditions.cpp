@@ -38,6 +38,7 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(distance_to_obj_le);
 	REGISTER_FUNCTION_TO_SCRIPT(in_dest_smart_cover);
 	REGISTER_FUNCTION_TO_SCRIPT(active_item);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_nomove_nowpn);
 }
 
 void CScriptXRConditionsStorage::destroy()

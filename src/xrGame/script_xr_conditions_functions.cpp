@@ -12,6 +12,8 @@
 
 // always provide two implementations for your functions based on prefixes _client and _server respectively
 
+// comment it if you can provide C++ implementation
+#define IXRAY_USE_LUA_IMPLEMENTATION
 
 inline bool fighting_dist_ge_client(
     CScriptGameObject* enemy, CScriptGameObject* npc, const xr_vector<xr_string>& buffer)
@@ -49,112 +51,303 @@ inline bool fighting_dist_ge_server(
 
 inline bool surge_started_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer) 
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_started", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+    
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool surge_started_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_started", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool surge_complete_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_complete", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool surge_complete_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_complete", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool surge_kill_all_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_kill_all", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool surge_kill_all_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! surge manager is not implemented yet!\n");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.surge_kill_all", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "surge manager is not implemented yet!");
     return false;
+#endif
 }
 
 inline bool signal_rocket_flying_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement signal rocket data storage, but only when you provided a manager for that!");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.signal_rocket_flying", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement signal rocket data storage, but only when you provided a manager for that!");
     return false;
+#endif
 }
 
 inline bool signal_rocket_flying_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement signal rocket data storage, but only when you provided a manager for that!");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.signal_rocket_flying", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement signal rocket data storage, but only when you provided a manager for that!");
     return false;
+#endif
 }
 
 inline bool quest_npc_enemy_actor_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.quest_npc_enemy_actor", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
     bool result{};
     if (buffer.empty())
         return result;
 
     const xr_string& story_id_name = buffer[0];
 
-    Msg("! implement story registry, provide one class for these database classes into one!");
+    R_ASSERT2(false, "implement story registry, provide one class for these database classes into one!");
 
     return result;
+#endif
 }
 
 inline bool quest_npc_enemy_actor_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.quest_npc_enemy_actor", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
     bool result{};
     if (buffer.empty())
         return result;
 
     const xr_string& story_id_name = buffer[0];
 
-    Msg("! implement story registry, provide one class for these database classes into one!");
+    R_ASSERT2(false, "implement story registry, provide one class for these database classes into one!");
 
     return result;
+#endif
 }
 
 inline bool animpoint_reached_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement animpoint for database");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.animpoint_reached", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "implement animpoint for database");
     return false;
+#endif
 }
 
 inline bool animpoint_reached_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement animpoint for database!");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.animpoint_reached", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "implement animpoint for database");
     return false;
+#endif
 }
 
 inline bool distance_to_obj_ge_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement story registry");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.distance_to_obj_ge", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement story registry!");
     return false;
+#endif
 }
 
 inline bool distance_to_obj_ge_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement story registry");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.distance_to_obj_ge", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement story registry");
     return false;
+#endif
 }
 
 inline bool distance_to_obj_le_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! implement story registry");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.distance_to_obj_le", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement story registry!");
     return false;
+#endif
 }
 
 inline bool distance_to_obj_le_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-    Msg("! imlpement story registry");
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.distance_to_obj_le", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement story registry!");
     return false;
+#endif
 }
 
 inline bool in_dest_smart_cover_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer) 
@@ -172,7 +365,6 @@ inline bool in_dest_smart_cover_client(CScriptGameObject* pActor, CScriptGameObj
 inline bool in_dest_smart_cover_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
     R_ASSERT2(false, "must not be called, because it is expected to call for client object. Otherwise something is wrong");
-
     return false;
 }
 
@@ -209,7 +401,25 @@ inline bool actor_nomove_nowpn_client(CScriptGameObject* pActor, CScriptGameObje
 
     if (pActor)
     {
+        if (!ixray::is_weapon(pActor->GetActiveItem()) || pActor->IsTalking())
+        {
+            result = true;
+        }
+    }
 
+    return result;
+}
+
+inline bool actor_nomove_nowpn_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pActor)
+    {
+        if (!ixray::is_weapon(pActor->GetActiveItem()) || pActor->IsTalking())
+        {
+            result = true;
+        }
     }
 
     return result;
