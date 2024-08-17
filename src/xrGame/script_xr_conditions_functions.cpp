@@ -24,7 +24,7 @@ inline bool is_fighting_dist_ge_client(
 }
 
 inline bool is_fighting_dist_ge_server(
-    CSE_ALifeDynamicObject* enemy, CSE_ALifeDynamicObject* npc, const xr_vector<xr_string>& buffer)
+    CScriptGameObject* enemy, CSE_ALifeDynamicObject* npc, const xr_vector<xr_string>& buffer)
 {
     if (!enemy)
         return false;

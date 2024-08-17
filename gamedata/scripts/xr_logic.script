@@ -568,10 +568,6 @@ function pick_section_from_condlist(actor, npc, condlist)
 	local rval = nil -- math.random(100)
 	--printf("_bp: pick_section_from_condlist: rval = %d", rval)
 
-	if actor ~= nil then
-		printf("class=%s", class_info(actor).name)
-	end
-
 	local newsect = nil
 	local infop_conditions_met
 	for n, cond in pairs(condlist) do
