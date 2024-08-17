@@ -878,3 +878,50 @@ inline bool is_monster_dog_server(CScriptGameObject* pActor, CSE_ALifeDynamicObj
     return result;
 }
 
+inline bool is_monster_psy_dog_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_DOG_P");
+    }
+
+    return result;
+}
+
+inline bool is_monster_psy_dog_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_DOG_P");
+    }
+
+    return result;
+}
+
+inline bool is_monster_polter_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_POLTR");
+    }
+
+    return result;
+}
+
+inline bool is_monster_polter_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_POLTR");
+    }
+
+    return result;
+}
