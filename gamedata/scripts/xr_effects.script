@@ -4,6 +4,7 @@
 
 -- Принудительно апдейтит логику у объектов, переданных параметром. Пока работает только с НПС
 function update_npc_logic(actor, object, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(object))
 	--printf("UPDATE NPC LOGIC %s", device():time_global())
 	for k,v in pairs(p) do
 		local npc = get_story_object(v)
@@ -27,6 +28,7 @@ function update_npc_logic(actor, object, p)
 end
 
 function update_obj_logic(actor, object, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(object))
 	--printf("UPDATE OBJ LOGIC %s", device():time_global())
 	for k,v in pairs(p) do
 		local obj = get_story_object(v)
@@ -46,6 +48,7 @@ end
 local ui_active_slot = 0
 
 function disable_ui(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if db.actor:is_talking() then
 		db.actor:stop_talk()
 	end
@@ -69,6 +72,7 @@ function disable_ui(actor, npc, p)
 end
 
 function disable_ui_only(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if db.actor:is_talking() then
 		db.actor:stop_talk()
 	end
@@ -90,6 +94,7 @@ function disable_ui_only(actor, npc)
 end
 
 function enable_ui(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	--db.actor:restore_weapon()
 
 	if not p or (p and p[1] ~= "true") then
@@ -109,6 +114,7 @@ end
 local cam_effector_playing_object_id = nil
 
 function run_cam_effector(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] then
 		local loop, num = false, (1000 + math.random(100))
 		if p[2] and type(p[2]) == "number" and p[2] > 0 then
@@ -124,12 +130,14 @@ function run_cam_effector(actor, npc, p)
 end
 
 function stop_cam_effector(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] and type(p[1]) == "number" and p[1] > 0 then
 		level.remove_cam_effector(p[1])
 	end
 end
 
 function run_cam_effector_global(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local num = 1000 + math.random(100)
 	if p[2] and type(p[2]) == "number" and p[2] > 0 then
 		 num = p[2]
@@ -161,6 +169,7 @@ function cam_effector_callback()
 end
 
 function run_postprocess(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p[1]) then
 		if(system_ini():section_exist(p[1])) then
 			local num = 2000 + math.random(100)
@@ -176,6 +185,7 @@ function run_postprocess(actor, npc, p)
 end
 
 function stop_postprocess(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1] and type(p[1]) == "number" and p[1]>0) then
 		printf("removing complex effector id [%s] from [%s]", tostring(p[1]), tostring(npc:name()))
 		level.remove_complex_effector(p[1])
@@ -183,6 +193,7 @@ function stop_postprocess(actor, npc, p)
 end
 
 function run_tutorial(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	printf("run tutorial called")
 	game.start_tutorial(p[1])
 end
@@ -196,6 +207,7 @@ end
 ]]--
 
 function jup_b32_place_scanner(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	for i = 1, 5 do
 		if xr_conditions.actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_"..i})
 			and not has_alife_info("jup_b32_scanner_"..i.."_placed") then
@@ -208,16 +220,19 @@ function jup_b32_place_scanner(actor, npc)
 end
 
 function jup_b32_pda_check(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	pda.change_anomalies_names()
 end
 
 function pri_b306_generator_start(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"pri_b306_sr_generator"}) then
 		give_info("pri_b306_lift_generator_used")
 	end
 end
 
 function jup_b206_get_plant(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"jup_b206_sr_quest_line"}) then
 		give_info("jup_b206_anomalous_grove_has_plant")
 		give_actor(actor, npc, {"jup_b206_plant"})
@@ -226,6 +241,7 @@ function jup_b206_get_plant(actor, npc)
 end
 
 function pas_b400_switcher(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"pas_b400_sr_switcher"}) then
 		give_info("pas_b400_switcher_use")
 	end
@@ -233,6 +249,7 @@ end
 
 
 function jup_b209_place_scanner(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"jup_b209_hypotheses"})	then
 		scenario_autosave(db.actor, nil, {"st_save_jup_b209_placed_mutant_scanner"})
 		db.actor:give_info_portion("jup_b209_scanner_placed")
@@ -242,6 +259,7 @@ function jup_b209_place_scanner(actor, npc)
 end
 
 function jup_b9_heli_1_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"jup_b9_heli_1"})
 		then
 		db.actor:give_info_portion("jup_b9_heli_1_searching")
@@ -249,6 +267,7 @@ function jup_b9_heli_1_searching(actor, npc)
 end
 
 function pri_a18_use_idol(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"pri_a18_use_idol_restrictor"})
 		then
 		db.actor:give_info_portion("pri_a18_run_cam")
@@ -256,6 +275,7 @@ function pri_a18_use_idol(actor, npc)
 end
 
 function jup_b8_heli_4_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"jup_b8_heli_4"})
 		then
 		db.actor:give_info_portion("jup_b8_heli_4_searching")
@@ -263,6 +283,7 @@ function jup_b8_heli_4_searching(actor, npc)
 end
 
 function jup_b10_ufo_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"jup_b10_ufo_restrictor"})
 		then
 		db.actor:give_info_portion("jup_b10_ufo_memory_started")
@@ -272,6 +293,7 @@ end
 
 
 function zat_b101_heli_5_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"zat_b101_heli_5"})
 		then
 		db.actor:give_info_portion("zat_b101_heli_5_searching")
@@ -279,6 +301,7 @@ function zat_b101_heli_5_searching(actor, npc)
 end
 
 function zat_b28_heli_3_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"zat_b28_heli_3"})
 		then
 		db.actor:give_info_portion("zat_b28_heli_3_searching")
@@ -286,12 +309,14 @@ function zat_b28_heli_3_searching(actor, npc)
 end
 
 function zat_b100_heli_2_searching(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_conditions.actor_in_zone(actor, npc, {"zat_b100_heli_2"})	then
 		db.actor:give_info_portion("zat_b100_heli_2_searching")
 	end
 end
 
 function teleport_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local point = patrol(p[1])
 	local dir
 	if p[2] ~= nil then
@@ -316,6 +341,7 @@ end
 
 
 local function reset_animation(npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local state_mgr = db.storage[npc:id()].state_mgr
 	if state_mgr == nil then
 		return
@@ -348,6 +374,7 @@ end
 
 
 function teleport_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local patrol_point = p[1]
 	local patrol_point_index = p[2] or 0
 	if patrol_point == nil then
@@ -360,6 +387,7 @@ function teleport_npc(actor, npc, p)
 end
 
 function teleport_npc_by_story_id(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local patrol_point = p[2]
 	local patrol_point_index = p[3] or 0
@@ -381,6 +409,7 @@ function teleport_npc_by_story_id(actor, npc, p)
 end
 
 function teleport_squad(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local squad_story_id = p[1]
 	local patrol_point = p[2]
 	local patrol_point_index = p[3] or 0
@@ -396,6 +425,7 @@ function teleport_squad(actor, npc, p)
 end
 
 function jup_teleport_actor(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local point_in = patrol("jup_b16_teleport_in"):point(0)
 	local point_out = patrol("jup_b16_teleport_out"):point(0)
 	local actor_position = actor:position()
@@ -448,6 +478,7 @@ end
 ]]--
 
 function give_items(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local pos, lv_id, gv_id, npc_id = npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id()
 	for i, v in pairs(p) do
 		alife():create(v, pos, lv_id, gv_id, npc_id)
@@ -455,6 +486,7 @@ function give_items(actor, npc, p)
 end
 
 function give_item(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[2] ~= nil then
 		npc_id = get_story_object_id(p[2])
 	else
@@ -466,6 +498,7 @@ function give_item(actor, npc, p)
 end
 
 function play_particle_on_path(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local name = p[1]
 	local path = p[2]
 	local point_prob = p[3]
@@ -496,6 +529,7 @@ send_tip(news_id:sender:sender_id)
 		* - not necessary
 --]]
 function send_tip(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	news_manager.send_tip(actor, p[1], nil, p[2], nil, p[3])
 end
 
@@ -511,6 +545,7 @@ end
 		5. reverse (true/false) - изменение направления удара. по умолчанию false
 --]]
 function hit_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local h = hit()
 	local rev = p[6] and p[6] == 'true'
 	h.draftsman = npc
@@ -553,6 +588,7 @@ end
 				данная функция.
 --]]
 function hit_obj(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local h = hit()
 	local obj = get_story_object(p[1])
 	local sid = nil
@@ -652,6 +688,7 @@ end
 FIXME: killer:position() isn't working
 --]]
 function hit_by_killer(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if not npc then return end
 	local t = db.storage[npc:id()].death
 	if t == nil or t.killer == -1 then return end
@@ -672,6 +709,7 @@ end
 
 
 function hit_npc_from_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local h = hit()
 	local sid = nil
 	h.draftsman = actor
@@ -728,11 +766,13 @@ end
 ]]--
 
 function restore_health(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	--printf("HEALTH RESTORE")
 	npc.health = 1
 end
 
 function make_enemy(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p == nil then abort("Invalid parameter in function 'hit_npc_from_npc'!!!!") end
 	local h = hit()
 	local hitted_npc = npc
@@ -749,6 +789,7 @@ function make_enemy(actor, npc, p)
 end
 
 function sniper_fire_mode(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] == "true" then
 		--printf("SNIPER FIRE MODE ON")
 		npc:sniper_fire_mode(true)
@@ -759,6 +800,7 @@ function sniper_fire_mode(actor, npc, p)
 end
 
 function kill_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		npc = get_story_object(p[1])
 	end
@@ -768,6 +810,7 @@ function kill_npc(actor, npc, p)
 end
 
 function remove_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		npc_id = get_story_object_id(p[1])
 	end
@@ -778,6 +821,7 @@ end
 
 -- прибавить к указанному счётчику актёра 1
 function inc_counter(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		local inc_value = p[2] or 1
 		local new_value = xr_logic.pstor_retrieve(actor, p[1], 0) + inc_value
@@ -789,6 +833,7 @@ function inc_counter(actor, npc, p)
 end
 
 function dec_counter(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		local dec_value = p[2] or 1
 		local new_value = xr_logic.pstor_retrieve(actor, p[1], 0) - dec_value
@@ -803,6 +848,7 @@ function dec_counter(actor, npc, p)
 end
 
 function set_counter(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		local count = p[2] or 0
 --		printf( "set_counter '%s' %s", p[1], count)
@@ -842,6 +888,7 @@ function clearAbuse(npc)
 end
 
 function turn_off_underpass_lamps(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local lamps_table = {
 							["pas_b400_lamp_start_flash"] = true,
 							["pas_b400_lamp_start_red"] = true,
@@ -881,6 +928,7 @@ end
 
 ---Выключение динамической лампочки (hanging_lamp)
 function turn_off(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj
 	for k,v in pairs(p) do
 		obj = get_story_object(v)
@@ -895,11 +943,13 @@ function turn_off(actor, npc, p)
 end
 
 function turn_off_object(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	npc:get_hanging_lamp():turn_off()
 end
 
 ---Включение динамической лампочки (hanging_lamp)
 function turn_on(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj
 	for k,v in pairs(p) do
 		obj = get_story_object(v)
@@ -914,6 +964,7 @@ end
 
 ---Включение и запуск динамической лампочки (hanging_lamp)
 function turn_on_and_force(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj = get_story_object(p[1])
 	if not obj then
 		abort("TURN_ON_AND_FORCE. Target object does not exist")
@@ -928,6 +979,7 @@ end
 
 ---Выключение динамической лампочки и партиклов (hanging_lamp)
 function turn_off_and_force(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj = get_story_object(p[1])
 	if not obj then
 		abort("TURN_OFF [%s]. Target object does not exist", npc:name())
@@ -939,10 +991,12 @@ end
 
 
 function turn_on_object(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	npc:get_hanging_lamp():turn_on()
 end
 
 function turn_off_object(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	npc:get_hanging_lamp():turn_off()
 end
 
@@ -952,6 +1006,7 @@ end
 -- уже выполнены, и повторно выполнять их во время боя нельзя (а условия секции [combat] проверяются на каждом
 -- апдейте, когда персонаж в бою, если, конечно, не отключены вызовом этой функции).
 function disable_combat_handler(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if db.storage[npc:id()].combat then
 		db.storage[npc:id()].combat.enabled = false
 	end
@@ -995,10 +1050,12 @@ end
 ]]--
 
 function heli_start_flame(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	bind_heli.heli_start_flame( npc )
 end
 
 function heli_die(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	bind_heli.heli_die( npc )
 end
 
@@ -1011,6 +1068,7 @@ end
 -- =set_weather(<секция погоды>:true) - установка погоды сразу, false - через некоторое время
 -- Будет использоваться на старте игры Зов Припяти и в сцене jup_b15 - утро после пьянки с Зулусом
 function set_weather(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]) then
 		if(p[2]=="true") then
 			level.set_weather(p[1],true)
@@ -1058,6 +1116,7 @@ end
 ]]--
 
 function game_disconnect(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local c = get_console()
 	c:execute("disconnect")
 --	c:execute_deferred("main_menu off")
@@ -1065,6 +1124,7 @@ function game_disconnect(actor, npc)
 end
 
 function game_credits(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	db.gameover_credits_started = true
 	game.start_tutorial("credits_seq")
 end
@@ -1079,10 +1139,12 @@ function game_over(actor, npc)
 end
 
 function after_credits(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	get_console():execute	("main_menu on")
 end
 
 function before_credits(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	get_console():execute	("main_menu off")
 end
 
@@ -1100,9 +1162,11 @@ end
 
 -- для смены работы
 function get_stalker_for_new_job(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	xr_gulag.find_stalker_for_job(npc,p[1])
 end
 function switch_to_desired_job(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	xr_gulag.switch_to_desired_job(npc)
 end
 
@@ -1127,6 +1191,7 @@ end
 --' Функции для работы с подспауном
 --'-----------------------------------------------------------------------------------
 function spawn_object(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 		--' p[1] - секция кого спаунить
 		--' p[2] - имя патрульного пути где спа унить.
 	local spawn_sect = p[1]
@@ -1190,6 +1255,7 @@ function jup_b219_restore_gate()
 end
 
 function spawn_corpse(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 		--' p[1] - секция кого спаунить
 		--' p[2] - имя патрульного пути где спаунить.
 	local spawn_sect = p[1]
@@ -1217,6 +1283,7 @@ end
 
 
 function spawn_object_in(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	--' p[1] - секция кого спаунить
 	--' p[2] - стори айди обьекта в который спавнить
 	local spawn_sect = p[1]
@@ -1245,6 +1312,7 @@ end
 
 
 function spawn_npc_in_zone(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	--' p[1] - секция кого спаунить
 	--' p[2] - имя зоны в которой спаунить.
 	local spawn_sect = p[1]
@@ -1270,6 +1338,7 @@ function spawn_npc_in_zone(actor, obj, p)
 end
 
 function destroy_object(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local sobj
 	if p == nil then
 		sobj = alife():object(obj:id())
@@ -1297,6 +1366,7 @@ function destroy_object(actor, obj, p)
 end
 
 function give_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	for k,v in pairs(p) do
 		alife():create(v,
 				db.actor:position(),
@@ -1308,10 +1378,12 @@ function give_actor(actor, npc, p)
 end
 
 function activate_weapon_slot(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	db.actor:activate_slot(p[1])
 end
 
 function anim_obj_forward(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	for k,v in pairs(p) do
 		if v ~= nil then
 			db.anim_obj_by_name[v]:anim_forward()
@@ -1319,11 +1391,13 @@ function anim_obj_forward(actor, npc, p)
 	end
 end
 function anim_obj_backward(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] ~= nil then
 		db.anim_obj_by_name[p[1]]:anim_backward()
 	end
 end
 function anim_obj_stop(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] ~= nil then
 		db.anim_obj_by_name[p[1]]:anim_stop()
 	end
@@ -1343,6 +1417,7 @@ end
 --' Функции для отыгрывания звука
 --'-----------------------------------------------------------------------------------
 function play_sound(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local theme = p[1]
 	local faction = p[2]
 	local point = sim_board.get_sim_board().smarts_by_names[p[3]]
@@ -1362,6 +1437,7 @@ function play_sound(actor, obj, p)
 end
 
 function play_sound_by_story(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local story_obj = get_story_object_id(p[1])
 	local theme = p[2]
 	local faction = p[3]
@@ -1375,15 +1451,18 @@ function play_sound_by_story(actor, obj, p)
 end
 
 function stop_sound(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	xr_sound.stop_sounds_by_id(npc:id())
 end
 
 function play_sound_looped(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local theme = p[1]
 	xr_sound.play_sound_looped(obj:id(), theme)
 end
 
 function stop_sound_looped(actor, obj)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	xr_sound.stop_sound_looped(obj:id())
 end
 
@@ -1420,6 +1499,7 @@ end
 ]]--
 
 function create_squad(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if obj ~= nil then
 		printf("pl:creating_squad from obj [%s] in section [%s]", tostring(obj:name()), tostring(db.storage[obj:id()].active_section))
 	end
@@ -1457,6 +1537,7 @@ function create_squad(actor, obj, p)
 end
 
 function create_squad_member(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local squad_member_sect = p[1]
 	local story_id			= p[2]
 	local position			= nil
@@ -1498,6 +1579,7 @@ function create_squad_member(actor, obj, p)
 end
 
 function remove_squad(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local story_id = p[1]
 	if story_id == nil then
 		abort("Wrong squad identificator [NIL] in remove_squad function")
@@ -1512,6 +1594,7 @@ function remove_squad(actor, obj, p)
 end
 
 function kill_squad(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local story_id = p[1]
 	if story_id == nil then
 		abort("Wrong squad identificator [NIL] in kill_squad function")
@@ -1536,6 +1619,7 @@ function kill_squad(actor, obj, p)
 end
 
 function heal_squad(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local story_id = p[1]
 	local health_mod = 1
 	if p[2] and p[2] ~= nil then
@@ -1573,6 +1657,7 @@ end
 ]]--
 
 function clear_smart_terrain(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local smart_name = p[1]
 	if smart_name == nil then
 		abort("Wrong squad identificator [NIL] in clear_smart_terrain function")
@@ -1606,6 +1691,7 @@ end
 --' Quest support
 --'-----------------------------------------------------------------------------------
 function give_task(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if p[1] == nil then
 		abort("No parameter in give_task function.")
 	end
@@ -1613,6 +1699,7 @@ function give_task(actor, obj, p)
 end
 
 function set_active_task(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]) then
 		local t = db.actor:get_task(tostring(p[1]), true)
 		if(t) then
@@ -1624,19 +1711,23 @@ end
 -- Функции для работы с отношениями
 
 function actor_friend(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	printf("_bp: xr_effects: actor_friend(): npc='%s': time=%d", npc:name(), time_global())
 	npc:force_set_goodwill( 1000, actor)
 end
 
 function actor_neutral(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	npc:force_set_goodwill( 0, actor)
 end
 
 function actor_enemy(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	npc:force_set_goodwill( -1000, actor)
 end
 
 function set_squad_neutral_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then
@@ -1647,6 +1738,7 @@ function set_squad_neutral_to_actor(actor, npc, p)
 end
 
 function set_squad_friend_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then
@@ -1658,6 +1750,7 @@ end
 
 --Сделать актера врагом к отряду, передается имя отряда
 function set_squad_enemy_to_actor( actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then
@@ -1715,6 +1808,7 @@ end
 --set_npc_sympathy(number)
 --call only from npc`s logic
 function set_npc_sympathy(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
 		game_relations.set_npc_sympathy(npc, p[1])
 	end
@@ -1723,18 +1817,21 @@ end
 --sets SQUAD relation to actor
 --set_squad_goodwill(faction:number)
 function set_squad_goodwill(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) and (p[2]~=nil) then
 		game_relations.set_squad_goodwill(p[1], p[2])
 	end
 end
 
 function set_squad_goodwill_to_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) and (p[2]~=nil) then
 		game_relations.set_squad_goodwill_to_npc(npc, p[1], p[2])
 	end
 end
 
 function inc_faction_goodwill_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local community = p[1]
 	local delta		= p[2]
 	if delta and community then
@@ -1745,6 +1842,7 @@ function inc_faction_goodwill_to_actor(actor, npc, p)
 end
 
 function dec_faction_goodwill_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local community = p[1]
 	local delta		= p[2]
 	if delta and community then
@@ -1775,6 +1873,7 @@ end
 ]]--
 
 function kill_actor(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	db.actor:kill(db.actor)
 end
 
@@ -1782,6 +1881,7 @@ end
 --  Treasures support
 -----------------------------------------------------------------------
 function give_treasure (actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p == nil then
 		abort("Required parameter is [NIL]")
 	end
@@ -1801,14 +1901,17 @@ end
 ]]--
 
 function start_surge(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	surge_manager.start_surge(p)
 end
 
 function stop_surge(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	surge_manager.stop_surge()
 end
 
 function set_surge_mess_and_task(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p) then
 		surge_manager.set_surge_message(p[1])
 		if(p[2]) then
@@ -1901,6 +2004,7 @@ end
 ]]--
 
 function set_level_faction_community(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) and (p[2]~= nil) and (p[3]~= nil) then
 		local faction = sim_board.get_sim_board().players[p[1]]
 		local goodwill = 0
@@ -1938,6 +2042,7 @@ end
 ]]--
 
 function make_actor_visible_to_squad(actor,npc,p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p and p[1]
 	local squad = get_story_squad(story_id)
 	if squad == nil then abort("There is no squad with id[%s]", story_id) end
@@ -1950,6 +2055,7 @@ function make_actor_visible_to_squad(actor,npc,p)
 end
 
 function stop_sr_cutscene(actor,npc,p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj = db.storage[npc:id()]
 	if(obj.active_scheme~=nil) then
 		obj[obj.active_scheme].signals["cam_effector_stop"] = true
@@ -2032,6 +2138,7 @@ end
 
 -- Anomal fields support
 function enable_anomaly(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] == nil then
 		abort("Story id for enable_anomaly function is not set")
 	end
@@ -2044,6 +2151,7 @@ function enable_anomaly(actor, npc, p)
 end
 
 function disable_anomaly(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] == nil then
 		abort("Story id for disable_anomaly function is not set")
 	end
@@ -2056,6 +2164,7 @@ function disable_anomaly(actor, npc, p)
 end
 
 function launch_signal_rocket(actor, obj, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if p==nil then
 		abort("Signal rocket name is not set!")
 	end
@@ -2079,6 +2188,7 @@ end
 ]]--
 
 function add_cs_text(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] then
 		local hud = get_hud()
 		local cs_text = hud:GetCustomStatic("text_on_screen_center")
@@ -2092,6 +2202,7 @@ function add_cs_text(actor, npc, p)
 end
 
 function del_cs_text(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local hud = get_hud()
 	cs_text = hud:GetCustomStatic("text_on_screen_center")
 	if cs_text then
@@ -2100,6 +2211,7 @@ function del_cs_text(actor, npc, p)
 end
 
 function spawn_item_to_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local new_item = p[1]
 	if p[1] then
 		alife():create(new_item,
@@ -2111,6 +2223,7 @@ function spawn_item_to_npc(actor, npc, p)
 end
 
 function give_money_to_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local money = p[1]
 	if p[1] then
 		npc:give_money(money)
@@ -2118,6 +2231,7 @@ function give_money_to_npc(actor, npc, p)
 end
 
 function seize_money_to_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local money = p[1]
 	if p[1] then
 		npc:give_money(-money)
@@ -2127,6 +2241,7 @@ end
 -- Передача предмета от непися к неписю
 -- relocate_item(item_name:story_id_from:story_id_to)
 function relocate_item(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local item = p and p[1]
 	local from_obj = p and get_story_object(p[2])
 	local to_obj = p and get_story_object(p[3])
@@ -2147,6 +2262,7 @@ end
 
 -- Сделать сквады врагами, передаются два сквада set_squads_enemies(squad_name_1:squad_name_2)
 function set_squads_enemies(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p[1] == nil or p[2] == nil) then
 		abort("Wrong parameters in function set_squad_enemies")
 		return
@@ -2187,6 +2303,7 @@ local particles_table = {
 }
 
 function jup_b16_play_particle_and_sound(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	particles_table[p[1]].particle :play_at_pos(patrol(npc:name().."_particle"):point(0))
 	--particles_table[p[1]].sound    :play_at_pos(actor, patrol(npc:name().."_particle"):point(0), 0, sound_object.s3d)
 end
@@ -2197,6 +2314,7 @@ end
 --						1 - полувидимый
 --						2 - полностью видимый
 function set_bloodsucker_state(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p and p[1]) == nil then abort("Wrong parameters in function 'set_bloodsucker_state'!!!") end
 	local state = p[1]
 	if p[2] ~= nil then
@@ -2214,6 +2332,7 @@ end
 
 --Функция вставки предмета в определенную точку, сделал для сцены б57
 function drop_object_item_on_point(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local drop_object = db.actor:object(p[1])
 	local drop_point  = patrol(p[2]):point(0)
 	db.actor:drop_item_and_teleport(drop_object, drop_point)
@@ -2221,6 +2340,7 @@ end
 
 --Функция отнятия предмета у игрока
 function remove_item(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p and p[1]) == nil then abort("Wrong parameters in function 'remove_item'!!!") end
 	local item = p[1]
 
@@ -2235,6 +2355,7 @@ end
 
 -- Сюжетное сохранение в важных местах
 function scenario_autosave(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local save_name = p[1]
 	if save_name == nil then
 		abort("You are trying to use scenario_autosave without save name")
@@ -2282,6 +2403,7 @@ end
 
 
 function zat_b29_create_random_infop(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[2] == nil then
 		abort("Not enough parameters for zat_b29_create_random_infop!")
 	end
@@ -2319,6 +2441,7 @@ function zat_b29_create_random_infop(actor, npc, p)
 end
 
 function give_item_b29(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 --	local story_object = p and get_story_object(p[1])
 	local az_name
 	local az_table = {
@@ -2345,6 +2468,7 @@ function give_item_b29(actor, npc, p)
 end
 
 function relocate_item_b29(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local item
 	for i = 16, 23 do
 		if has_alife_info(dialogs_zaton.zat_b29_infop_bring_table[i]) then
@@ -2371,6 +2495,7 @@ end
 
 -- Функция ресетит секвенсную звукокую тему у непися. by peacemaker, hein, redstain
 function reset_sound_npc(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj_id = npc:id()
 	if obj_id and xr_sound.sound_table and xr_sound.sound_table[obj_id] then
 		xr_sound.sound_table[obj_id]:reset(obj_id)
@@ -2378,6 +2503,7 @@ function reset_sound_npc(actor, npc, p)
 end
 
 function jup_b202_inventory_box_relocate(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local inv_box_out = get_story_object("jup_b202_actor_treasure")
 	local inv_box_in = get_story_object("jup_b202_snag_treasure")
 	local items_to_relocate = {}
@@ -2391,6 +2517,7 @@ function jup_b202_inventory_box_relocate(actor, npc)
 end
 
 function clear_box(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p and p[1]) == nil then abort("Wrong parameters in function 'clear_box'!!!") end
 
 	local inv_box = get_story_object(p[1])
@@ -2413,6 +2540,7 @@ function clear_box(actor, npc, p)
 end
 
 function activate_weapon(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local object = actor:object(p[1])
 	if object == nil then
 		assert("Actor has no such weapon! [%s]", p[1])
@@ -2423,6 +2551,7 @@ function activate_weapon(actor, npc, p)
 end
 
 function set_game_time(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local real_hours = level.get_time_hours()
 	local real_minutes = level.get_time_minutes()
 	local hours = tonumber(p[1])
@@ -2448,6 +2577,7 @@ function set_game_time(actor, npc, p)
 end
 
 function forward_game_time(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	if not p then
 		abort("Insufficient or invalid parameters in function 'forward_game_time'!")
 	end
@@ -2470,6 +2600,7 @@ function stop_tutorial()
 end
 
 function jup_b10_spawn_drunk_dead_items(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local items_all = {
 					["wpn_ak74"] = 1,
 					["ammo_5.45x39_fmj"] = 5,
@@ -2547,6 +2678,7 @@ function jup_b10_spawn_drunk_dead_items(actor, npc, p)
 end
 
 function pick_artefact_from_anomaly(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc
 	local az_name = p and p[2]
 	local af_name = p and p[3]
@@ -2611,6 +2743,7 @@ function pick_artefact_from_anomaly(actor, npc, p)
 end
 
 function anomaly_turn_off (actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local anomal_zone = db.anomaly_by_name[p[1]]
 	if anomal_zone == nil then
 		abort("No such anomal zone in function 'anomaly_turn_off!'")
@@ -2619,6 +2752,7 @@ function anomaly_turn_off (actor, npc, p)
 end
 
 function anomaly_turn_on (actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local anomal_zone = db.anomaly_by_name[p[1]]
 	if anomal_zone == nil then
 		abort("No such anomal zone in function 'anomaly_turn_on!'")
@@ -2631,6 +2765,7 @@ function anomaly_turn_on (actor, npc, p)
 end
 
 function zat_b202_spawn_random_loot(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local si_table = {}
 	si_table[1] = {
 		[1] = {item = {"bandage","bandage","bandage","bandage","bandage","medkit","medkit","medkit","conserva","conserva"}},
@@ -2693,6 +2828,7 @@ function zat_b202_spawn_random_loot(actor, npc, p)
 end
 
 function zat_a1_tutorial_end_give(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 --	level.add_pp_effector("black.ppe", 1313, true) ---do not stop on r1 !
 	db.actor:give_info_portion("zat_a1_tutorial_end")
 end
@@ -2719,6 +2855,7 @@ end
 
 --Функция принимает только одно значение, определяющее для какой групировки запускается. доступные значения [duty, freedom]
 function jup_b221_play_main(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local info_table = {}
 	local main_theme
 	local reply_theme
@@ -2789,14 +2926,17 @@ function jup_b221_play_main(actor, npc, p)
 end
 
 function pas_b400_play_particle(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	db.actor:start_particles("zones\\zone_acidic_idle","bip01_head")
 end
 
 function pas_b400_stop_particle(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	db.actor:stop_particles("zones\\zone_acidic_idle","bip01_head")
 end
 
 function damage_actor_items_on_start(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
 	local actor = db.actor
 
 	local obj = actor:object("helm_respirator")
@@ -2856,6 +2996,7 @@ end
 
 
 function sleep(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local sleep_zones = {
 						"zat_a2_sr_sleep",
 						"jup_a6_sr_sleep",
@@ -2907,12 +3048,14 @@ end
 ]]--
 
 function mech_discount(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if(p[1]) then
 				inventory_upgrades.mech_discount(tonumber(p[1]))
 	end
 end
 
 function polter_actor_ignore(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if p[1] and p[1] == "true" then
 				npc:poltergeist_set_actor_ignore(true)
 	elseif p[1] and p[1] == "false" then
@@ -2921,6 +3064,7 @@ function polter_actor_ignore(actor, npc, p)
 end
 
 function burer_force_gravi_attack(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	npc:burer_set_force_gravi_attack(true)
 end
 
@@ -2929,6 +3073,7 @@ function burer_force_anti_aim(actor, npc)
 end
 
 function show_freeplay_dialog(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if p[1] and p[2] and p[2] == "true" then
 		ui_freeplay_dialog.show("message_box_yes_no", p[1])
 	elseif p[1] then
@@ -2963,85 +3108,106 @@ end
 
 -- Инфопоршны для синхронизации анимации нпс с прочими действиями, и для других целей
 function pri_a18_radio_start(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a18_radio_start")
 end
 
 function pri_a17_ice_climb_end(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a17_ice_climb_end")
 end
 
 function jup_b219_opening(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("jup_b219_opening")
 end
 
 function jup_b219_entering_underpass(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("jup_b219_entering_underpass")
 end
 
 function pri_a17_pray_start(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a17_pray_start")
 end
 
 function zat_b38_open_info(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b38_open_info")
 end
 
 function zat_b38_switch_info(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b38_switch_info")
 end
 function zat_b38_cop_dead(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b38_cop_dead")
 end
 
 function jup_b15_zulus_drink_anim_info(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("jup_b15_zulus_drink_anim_info")
 end
 
 function pri_a17_preacher_death(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a17_preacher_death")
 end
 
 function zat_b3_tech_surprise_anim_end(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b3_tech_surprise_anim_end")
 end
 
 function zat_b3_tech_waked_up(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b3_tech_waked_up")
 end
 
 function zat_b3_tech_drinked_out(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b3_tech_drinked_out")
 end
 
 function pri_a28_kirillov_hq_online(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a28_kirillov_hq_online")
 end
 
 function pri_a20_radio_start(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a20_radio_start")
 end
 
 function pri_a22_kovalski_speak(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a22_kovalski_speak")
 end
 
 function zat_b38_underground_door_open(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b38_underground_door_open")
 end
 
 function zat_b38_jump_tonnel_info(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("zat_b38_jump_tonnel_info")
 end
 
 function jup_a9_cam1_actor_anim_end(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("jup_a9_cam1_actor_anim_end")
 end
 
 function pri_a28_talk_ssu_video_end(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	db.actor:give_info_portion("pri_a28_talk_ssu_video_end")
 end
 
 function set_torch_state(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
  	if p == nil or p[2] == nil then
 		abort("Not enough parameters in 'set_torch_state' function!")
 	end
@@ -3066,6 +3232,7 @@ local actor_nightvision = false
 local actor_torch		= false
 
 function disable_actor_nightvision(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local nightvision = db.actor:object("device_torch")
 	if nightvision ~= nil and nightvision:night_vision_enabled() then
 		nightvision:enable_night_vision(false)
@@ -3074,6 +3241,7 @@ function disable_actor_nightvision(actor, npc)
 end
 
 function enable_actor_nightvision(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local nightvision = db.actor:object("device_torch")
 	if nightvision ~= nil and not nightvision:night_vision_enabled() and actor_nightvision then
 		nightvision:enable_night_vision(true)
@@ -3082,6 +3250,7 @@ function enable_actor_nightvision(actor, npc)
 end
 
 function disable_actor_torch(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local torch = db.actor:object("device_torch")
 	if torch ~= nil and torch:torch_enabled() then
 		torch:enable_torch(false)
@@ -3090,6 +3259,7 @@ function disable_actor_torch(actor, npc)
 end
 
 function enable_actor_torch(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local torch = db.actor:object("device_torch")
 	if torch ~= nil and not torch:torch_enabled() and actor_torch then
 		torch:enable_torch(true)
@@ -3099,6 +3269,7 @@ end
 
 
 function create_cutscene_actor_with_weapon(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
     -- Handle camera change to play cutscenes properly
 	if not is_first_person() then
 		set_first_person()
@@ -3187,15 +3358,18 @@ end
 
 -- Заставить играть уникальные анимации сна(у кровососа)
 function set_force_sleep_animation(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local num = p[1]
 	npc:force_stand_sleep_animation(tonumber(num))
 end
 -- Убрать уникальные анимации сна(у кровососа)
 function release_force_sleep_animation(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	npc:release_stand_sleep_animation()
 end
 
 function zat_b33_pic_snag_container(actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if xr_conditions.actor_in_zone(actor, npc, {"zat_b33_tutor"}) then
 		give_actor(actor, npc, {"zat_b33_safe_container"})
 		db.actor:give_info_portion("zat_b33_find_package")
@@ -3209,6 +3383,7 @@ end
 --Отключение воздействия вражеского нпс на индикатор видимости врага на хаде игрока.
 --Исп. только из логики нпс.
 function set_visual_memory_enabled(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if (p and p[1]) and (tonumber(p[1]) >= 0) and (tonumber(p[1]) <= 1) then
 		local boolval = false
 		if (tonumber(p[1]) == 1) then
@@ -3219,6 +3394,7 @@ function set_visual_memory_enabled(actor, npc, p)
 end
 
 function disable_memory_object (actor, npc)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local best_enemy = npc:best_enemy()
 	if best_enemy then
 		npc:enable_memory_object(best_enemy, false)
@@ -3226,6 +3402,7 @@ function disable_memory_object (actor, npc)
 end
 
 function zat_b202_spawn_b33_loot(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local info_table = {
 		"zat_b33_first_item_gived",
 		"zat_b33_second_item_gived",
@@ -3276,6 +3453,7 @@ function zat_b202_spawn_b33_loot(actor, npc, p)
 end
 
 function set_monster_animation (actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	if not (p and p[1]) then
 		abort("Wrong parameters in function 'set_monster_animation'!!!")
 	end
@@ -3306,6 +3484,7 @@ function upgrade_hint(actor, npc, p)
 end
 
 function force_obj(actor, npc, p)
+	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(obj))
 	local obj = get_story_object(p[1])
 	if not obj then
 		abort("'force_obj' Target object does not exist")

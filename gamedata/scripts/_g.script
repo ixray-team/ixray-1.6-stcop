@@ -121,6 +121,15 @@ function printf(fmt,...)
 
 end
 
+g_EnablePrintfXRScript = false
+
+-- используется для выявления сигнатур функций которые заложены в xr_conditions
+function printf_xrscript(fmt, ...)
+	if g_EnablePrintfXRScript then
+		log(debug.traceback(1))
+		printf(fmt, ...)
+	end
+end
 ----------------------------------------------------------------------
 if nil == time_global then
 	time_global = function () return device():time_global() end
@@ -760,6 +769,21 @@ function vec_to_str (vector)
 	if vector == nil then return "nil" end
 	return string.format("[%s:%s:%s]", vector.x, vector.y, vector.z)
 end
+
+function convert_class_name(obj)
+	if obj then
+		local name = class_info(obj).name
+
+		if name == "game_object" then
+			return "client"
+		else
+			return "server"
+		end
+	else
+		return "nil"
+	end
+end
+
 -- выводит в лог стэк вызова функций.
 function callstack()
 	if debug ~= nil then

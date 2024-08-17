@@ -5,7 +5,10 @@
 -- ----------------------------------------------------------------------------------------------------
 -- Функции для работы с combat_ignore_cond
 -- ----------------------------------------------------------------------------------------------------
+
+
 function is_enemy_actor(enemy, object)
+	--printf_xrscript("caller=%s object=%s", convert_class_name(enemy), convert_class_name(object))
 	return enemy:id() == db.actor:id()
 end
 
@@ -13,12 +16,14 @@ end
 -- для combat_ignore
 function fighting_dist_ge(enemy, npc, p)
 	local d = p[1]
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(enemy), convert_class_name(npc))
 	return enemy:position():distance_to_sqr(npc:position()) >= d * d
 end
 
 -- расстояние до текущего реального врага меньше или равно заданного значения
 function fighting_dist_le(enemy, npc, p)
 	local d = p[1]
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(enemy), convert_class_name(npc))
 	return enemy:position():distance_to_sqr(npc:position()) <= d * d
 end
 
@@ -27,6 +32,7 @@ function enemy_in_zone(enemy, npc, p)
 	if zone == nil then
 		abort("Wrong zone name %s in enemy_in_zone function. NPC [%s]", tostring(p[1]), npc:name())
 	end
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(enemy), convert_class_name(npc))
 	return utils.npc_in_zone(enemy, zone)
 end
 
@@ -36,11 +42,13 @@ end
 -- ----------------------------------------------------------------------------------------------------
 -- видим ли мы еще "черный экран" или нет?
 function black_screen(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return device().precache_frame > 1
 end
 --Проверка, встречается ли в имени чувака одна из строк .
 function check_npc_name (actor , npc , p)
 	if npc:name() == nil then return false end
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local name_exist = false
 	for k,v in pairs(p) do
 		if string.find( npc:name(), v ) ~= nil then
@@ -51,6 +59,7 @@ function check_npc_name (actor , npc , p)
 end
 
 function check_enemy_name (actor , npc , p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local enemy_id = db.storage[npc:id()].enemy_id
 	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
 	local name
@@ -66,11 +75,13 @@ function check_enemy_name (actor , npc , p)
 end
 
 function is_playing_sound (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return xr_sound.sound_table[npc:id()] ~= nil
 end
 
 -- проверка, что актер жив
 function actor_alive(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if db.actor and db.actor:alive() then
 		return true
 	end
@@ -78,9 +89,10 @@ function actor_alive(actor, npc)
 end
 
 function see_npc(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1 = get_story_object(p[1])
 	if npc and npc1 then
-		--printf("cond <see_npc>: [%s]->[%s]", npc:name(), npc1:name())
+		----printf_xrscript("cond <see_npc>: [%s]->[%s]", npc:name(), npc1:name())
 		return npc:see(npc1)
 	else
 		return false
@@ -88,18 +100,22 @@ function see_npc(actor, npc, p)
 end
 
 function actor_see_npc(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor:see(npc)
 end
 
 function npc_in_actor_frustum(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc_in_actor_frustrum(npc)
 end
 
 function is_wounded(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return xr_wounded.is_wounded(npc)
 end
 
 function dist_to_actor_le(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local d = p[1]
 	if d == nil then
 		abort("Wrong parameter in 'dist_to_actor_le' function!!!")
@@ -108,6 +124,7 @@ function dist_to_actor_le(actor, npc, p)
 end
 
 function dist_to_actor_ge(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local d = p[1]
 	if d == nil then
 		abort("Wrong parameter in 'dist_to_actor_ge' function!!!")
@@ -117,6 +134,7 @@ end
 
 -- Проверка выполняет ли кто указанную работу
 function is_obj_on_job(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local smart
 	if p and p[2] then
 		smart = sim_board.get_sim_board():get_smart_by_name(p[2])
@@ -128,7 +146,7 @@ function is_obj_on_job(actor, npc, p)
 	end
 	for k,v in pairs(smart.npc_info) do
 		local npc_job = smart.job_data[v.job_id]
-		printf("section [%s]", tostring(npc_job.section))
+		--printf_xrscript("section [%s]", tostring(npc_job.section))
 		if npc_job.section == p[1] then
 			return true
 		end
@@ -139,6 +157,7 @@ end
 -- проверка того что дистанция до обьекта <= заданной
 -- параметры: [sid,dist]
 function distance_to_obj_on_job_le(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local smart = xr_gulag.get_npc_smart(npc)
 	for k,v in pairs(smart.npc_info) do
 		local npc_job = smart.job_data[v.job_id]
@@ -155,6 +174,7 @@ end
 -- !!! НЕКОРРЕКТНО РАБОТАЕТ ДЛЯ ОБЬЕКТОВ В offline'e !!!
 -- !!! ДЛЯ ГАРАНТИИ ИСПОЛЬЗОВАТЬ one_obj_in_zone !!!
 function obj_in_zone(actor, zone, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(zone))
 	local npc1, i, v = 0, 0, 0
 	for i, v in pairs(p) do
 		npc1 = get_story_object_id(v)
@@ -168,6 +188,7 @@ end
 -- параметры: [sid:def*] def=true|false
 -- * параметр не обязателен
 function one_obj_in_zone(actor, zone, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(zone))
 	--local def_offline = (p[2] ~= "false") -- default (true) result if npc in offline
 	local obj1 = get_story_object_id(p[1])
 
@@ -179,6 +200,7 @@ function one_obj_in_zone(actor, zone, p)
 end
 
 function story_obj_in_zone_by_name (actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj = get_story_object_id(p[1])
 	local zone = db.zone_by_name[p[2]]
 	if obj and zone then -- npc is online
@@ -188,11 +210,13 @@ function story_obj_in_zone_by_name (actor, npc, p)
 end
 
 function actor_in_zone(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local zone = db.zone_by_name[p[1]]
 	return utils.npc_in_zone(db.actor, zone)
 end
 
 function npc_in_zone(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local zone = db.zone_by_name[p[1]]
 
 	if type(npc.id) ~= "function" then
@@ -214,12 +238,14 @@ end
 -- true, если здоровье npc <= заданному значению
 -- false в противном случае
 function health_le(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return p[1] and npc.health < p[1]
 end
 
 -- true, если здоровье актера  <= заданному значению
 -- false в противном случае
 function actor_health_le(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return p[1] and actor.health < p[1]
 end
 
@@ -253,7 +279,7 @@ function enemy_group(actor, npc, p)
 	local i, v = 0, 0
 	for i, v in pairs(p) do
 		if v == g then
-			--printf("_bp: [%s]'s enemy is from group [%d]", npc:name(), v)
+			----printf_xrscript("_bp: [%s]'s enemy is from group [%d]", npc:name(), v)
 			return true
 		end
 	end
@@ -269,6 +295,7 @@ end
 ]]--
 
 function npc_community(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc_obj
 
 	if p[1] == nil then
@@ -315,6 +342,7 @@ end
 -- Проверка того что удар был нанесен кем-то из npc указанных в списке.
 -- Параметры это story_id персонажей. Можно задавать несколько story_id.
 function hitted_by(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	local t = db.storage[npc:id()].hit
 	if t then
@@ -329,6 +357,7 @@ function hitted_by(actor, npc, p)
 end
 -- Функция проверки попадания в кость по её индексу.(Проверка только для секции hit)
 function hitted_on_bone(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	for k,v in pairs (p) do
 		if db.storage[npc:id()].hit.bone_index == npc:get_bone_id(v) then
 			return true
@@ -339,6 +368,7 @@ end
 
 -- Проверка, что лучшее оружие персонажа - пистолет
 function best_pistol(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local pistol = npc:item_in_slot(1)
 	if pistol ~= nil then
 		return true
@@ -349,12 +379,13 @@ end
 
 -- Проверка, что персонажу нанесли смертельный хит. Проверять ТОЛЬКО на on_hit
 function deadly_hit(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if db.storage[npc:id()] == nil or db.storage[npc:id()].hit == nil then
-		--printf("deadly hit false")
+		----printf_xrscript("deadly hit false")
 		return false
 	end
 
-	--printf("deadly hit [%s]", tostring(db.storage[npc:id()].hit.deadly_hit == true))
+	----printf_xrscript("deadly hit [%s]", tostring(db.storage[npc:id()].hit.deadly_hit == true))
 	return db.storage[npc:id()].hit.deadly_hit == true
 end
 
@@ -363,13 +394,14 @@ end
 -- Проверка того что персонаж был убит кем-то из npc указанных в списке.
 -- Параметры это story_id персонажей. Можно задавать несколько story_id.
 function killed_by(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	local t = db.storage[npc:id()].death
 	if t then
 		for i, v in pairs(p) do
 			npc1 = get_story_object(v)
 			if npc1 and t.killer == npc1:id() then
-				printf("_bp: killed_by(%d)", v)
+				--printf_xrscript("_bp: killed_by(%d)", v)
 				return true
 			end
 		end
@@ -381,6 +413,7 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_alive_all(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	for i, v in pairs(p) do
 		npc1 = get_story_object_id(v)
@@ -399,6 +432,7 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_alive_one(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	for i, v in pairs(p) do
 		npc1 = get_story_object_id(v)
@@ -417,6 +451,7 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_alive(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 
 	if npc == nil or (p and p[1]) then
@@ -444,6 +479,7 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_dead_all(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	for i, v in pairs(p) do
 		npc1 = get_story_object(v)
@@ -451,7 +487,7 @@ function is_dead_all(actor, npc, p)
 			if npc1:alive() then
 				return false
 			else
-				printf("_bp: is_dead_all(%d) = true", v)
+				--printf_xrscript("_bp: is_dead_all(%d) = true", v)
 				return true
 			end
 		end
@@ -464,11 +500,12 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_dead_one(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	for i, v in pairs(p) do
 		npc1 = get_story_object(v)
 		if not npc1 or not npc1:alive() then
-			printf("_bp: is_dead_one(%d) = true", v)
+			--printf_xrscript("_bp: is_dead_one(%d) = true", v)
 			return true
 		end
 	end
@@ -479,6 +516,7 @@ end
 -- TODO: исправить ситуацию, когда выдается неправильный результат для обьектов, которые
 --       не успели проспавниться.
 function is_dead(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1
 	npc1 = get_story_object(p[1])
 	return not npc1 or not npc1:alive()
@@ -486,6 +524,7 @@ end
 
 -- Проверяет , существует ли обьект с заданным стори айди.
 function story_object_exist(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc1 = get_story_object(p[1])
 	return npc1 ~= nil
 end
@@ -499,14 +538,14 @@ function check_fighting(actor, npc, p)
 	if enemy and enemy:alive() then
 			sid = enemy:story_id()
 			for i, v in pairs(p) do
-					--printf("_bp: %s.check_fighting(%d)", npc:name(), v)
+					----printf_xrscript("_bp: %s.check_fighting(%d)", npc:name(), v)
 				if type(v) == 'number' and sid == v then
-					--printf("TRUE")
+					----printf_xrscript("TRUE")
 					return true
 				end
 			end
 	end
-	--printf("_bp: check_fighting() = false")
+	----printf_xrscript("_bp: check_fighting() = false")
 	return false
 end
 ]]--
@@ -515,20 +554,23 @@ end
 -- true, если у актёра в инвентаре есть указанный предмет
 -- false, если нету, либо не задана секция предмета
 function actor_has_item(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_actor  = get_story_object("actor")
 	return p[1] ~= nil and story_actor and story_actor:object( p[1] ) ~= nil
 end
 
 function npc_has_item(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return p[1] ~= nil and npc:object( p[1] ) ~= nil
 end
 -- проверяет наличие заданого количества предметов в инвентаре игрока.
 function actor_has_item_count(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local item_section 	= p[1]
 	local need_count 	= tonumber(p[2])
 	local has_count 	= 0
 	local function calc(temp, item)
-		--printf("item [%s]",tostring(item:section()))
+		----printf_xrscript("item [%s]",tostring(item:section()))
 		if item:section() == item_section then
 			has_count = has_count + 1
 		end
@@ -539,10 +581,11 @@ end
 
 -- возвращает true, если в текущей схеме персонажа взведён указанный сигнал.
 function signal(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] then
 		local st   = db.storage[npc:id()]
 		local sigs = st[st.active_scheme].signals
---		printf( "xr_conditions.signal: npc=%s, scheme=%s", npc:name(), tostring(st.active_scheme) )
+--		--printf_xrscript( "xr_conditions.signal: npc=%s, scheme=%s", npc:name(), tostring(st.active_scheme) )
 		return sigs ~= nil and sigs[p[1]] == true
 	else
 		return false
@@ -551,15 +594,17 @@ end
 
 -- возвращает true, если значение указанного счётчика актёра больше указанного числа
 function counter_greater(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
---		if  c > p[2] then printf("pl: counter [%s]  greater [%s]", p[1], p[2]) end
+--		if  c > p[2] then --printf_xrscript("pl: counter [%s]  greater [%s]", p[1], p[2]) end
 		return c > p[2]
 	else
 		return false
 	end
 end
 function counter_equal(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
 		return c == p[2]
@@ -577,6 +622,7 @@ end
 -------------------------------------------------------------------------------------------------------
 -- Функции поддержки kamp
 function _kamp_talk(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if xr_kamp.kamp_stalkers[npc:id()] then
 		return xr_kamp.kamp_stalkers[npc:id()]
 	end
@@ -584,6 +630,7 @@ function _kamp_talk(actor, npc)
 end
 
 function _used(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:is_talking()
 end
 -------------------------------------------------------------------------------------------------------
@@ -597,6 +644,8 @@ local alarm_statuses = {
 
 -- Функции поддержки безопасности баз
 function check_smart_alarm_status(actor, npc, p)
+
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local smart_name = p[1]
 	local status = alarm_statuses[p[2]]
 
@@ -617,15 +666,18 @@ end
 
 -------------------------------------------------------------------------------------------------------
 function has_enemy(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:best_enemy() ~= nil
 end
 
 function has_actor_enemy(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local best_enemy = npc:best_enemy()
 	return best_enemy ~= nil and best_enemy:id() == db.actor:id()
 end
 
 function see_enemy(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local enemy = npc:best_enemy()
 
 	if enemy ~= nil then
@@ -635,35 +687,44 @@ function see_enemy(actor, npc)
 end
 
 function has_enemy_in_current_loopholes_fov(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:in_smart_cover() and npc:best_enemy() ~= nil and npc:in_current_loophole_fov( npc:best_enemy():position())
 end
 
 function talking(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return actor:is_talking()
 end
 
 function npc_talking(actor, npc)
+
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:is_talking()
 end
 
 function see_actor(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:alive() and npc:see(actor)
 end
 
 function actor_enemy(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local t = db.storage[npc:id()].death
 	return npc:relation(actor) == game_object.enemy or (t ~= nil and t.killer == actor:id())
 end
 
 function actor_friend(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:relation(actor) == game_object.friend
 end
 
 function actor_neutral(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:relation(actor) == game_object.neutral
 end
 
 function is_factions_enemies(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
 		return game_relations.is_factions_enemies(character_community(actor), p[1])
 	else
@@ -672,10 +733,13 @@ function is_factions_enemies(actor, npc, p)
 end
 
 function is_factions_neutrals(actor, npc, p)
+
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return not(is_factions_enemies(actor, npc, p) or is_factions_friends(actor, npc, p))
 end
 
 function is_factions_friends(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
 		return game_relations.is_factions_friends(character_community(actor), p[1])
 	else
@@ -684,6 +748,7 @@ function is_factions_friends(actor, npc, p)
 end
 
 function is_faction_enemy_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
 --        return db.actor:community_goodwill(p[1])<-1000
 		return relation_registry.community_goodwill(p[1], db.actor:id())<=-1000
@@ -693,6 +758,7 @@ function is_faction_enemy_to_actor(actor, npc, p)
 end
 
 function is_faction_friend_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
 --		return db.actor:community_goodwill(p[1])>1000
 		return relation_registry.community_goodwill(p[1], db.actor:id())>=1000
@@ -702,26 +768,29 @@ function is_faction_friend_to_actor(actor, npc, p)
 end
 
 function is_faction_neutral_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return not(is_faction_enemy_to_actor(actor, npc, p) or is_faction_friend_to_actor(actor, npc, p))
 end
 
 function is_squad_friend_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1]~=nil) then
---	   printf("squad check goodwill1 [%s]", p[1])
+--	   --printf_xrscript("squad check goodwill1 [%s]", p[1])
 		return game_relations.check_all_squad_members(p[1], "friend")
 	else
---	   printf("squad check goodwill5 [%s]", p[1])
+--	   --printf_xrscript("squad check goodwill5 [%s]", p[1])
 		return false
 	end
 end
 
 function is_squad_enemy_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if not p then
 		abort("Not enough arguments in 'is_squad_enemy_to_actor' funciton!")
 	end
 
 	for k,v in pairs(p) do
---   	printf("squad check goodwill1 [%s]", v)
+--   	--printf_xrscript("squad check goodwill1 [%s]", v)
 		if game_relations.check_all_squad_members(v, "enemy") then
 			return true
 		end
@@ -731,11 +800,13 @@ function is_squad_enemy_to_actor(actor, npc, p)
 end
 
 function is_squad_neutral_to_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return not(is_squad_enemy_to_actor(actor, npc, p) or is_squad_friend_to_actor(actor, npc, p))
 end
 
 -- текущий враг актёр?
 function fighting_actor(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local enemy_id = db.storage[npc:id()].enemy_id
 	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
 	return enemy and enemy:id() == actor:id()
@@ -743,26 +814,30 @@ end
 
 
 function hit_by_actor(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local t = db.storage[npc:id()].hit
 	local hit_by_actor = (t ~= nil and t.who == actor:id())
-	printf("_bp: hit_by_actor: %s", if_then_else(hit_by_actor, "true", "false"))
+	--printf_xrscript("_bp: hit_by_actor: %s", if_then_else(hit_by_actor, "true", "false"))
 	return hit_by_actor
 end
 
 function killed_by_actor(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local t = db.storage[npc:id()].death
 	local killed_by_actor = t ~= nil and t.killer == actor:id()
-	printf("_bp: killed_by_actor: %s", if_then_else(killed_by_actor, "true", "false"))
+	--printf_xrscript("_bp: killed_by_actor: %s", if_then_else(killed_by_actor, "true", "false"))
 	return killed_by_actor
 end
 
 function actor_has_weapon (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local obj = actor:active_item ()
 	if obj == nil or isWeapon (obj) == false then return false end
 	return true
 end
 
 function actor_active_detector(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local detector_section = p and p[1]
 	if detector_section == nil then abort("Wrong parameters in function 'actor_active_detector'") end
 	local actor_detector = db.actor:active_detector()
@@ -770,6 +845,7 @@ function actor_active_detector(actor, npc, p)
 end
 
 function heavy_wounded(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return xr_wounded.is_heavy_wounded_by_id( npc:id() )
 end
 
@@ -784,6 +860,7 @@ end
 time_period(60:10) - возвращает true каждый час на протяжении первых 10 минут
 --]]
 function time_period(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local tshift, period = p[1], p[2]
 	if tshift ~= nil and period ~= nil and db.actor ~= nil then
 		return tshift > period and level.get_time_minutes() % tshift <= period
@@ -792,41 +869,50 @@ function time_period(actor, npc, p)
 end
 
 function is_rain (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and level.rain_factor() > 0
 end
 
 function is_heavy_rain (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and level.rain_factor() >= 0.5
 end
 
 function is_day (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and level.get_time_hours() >= 6 and level.get_time_hours() < 21
 end
 
 function is_dark_night (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and (level.get_time_hours() < 3 or level.get_time_hours() > 22)
 end
 
 function is_jup_a12_mercs_time (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and (level.get_time_hours() >= 1 and level.get_time_hours() < 5)
 end
 
 function zat_b7_is_night (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and (level.get_time_hours() >= 23 or level.get_time_hours() < 5)
 end
 
 function zat_b7_is_late_attack_time (actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return db.actor ~= nil and (level.get_time_hours() >= 23 or level.get_time_hours() < 9)
 end
 
 function mob_has_enemy(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	-- return false
 	if npc == nil then return false end
-	--if npc:get_enemy () then printf ("ENEMY PRESENT") else printf ("ENEMY NOT PRESENT") end
+	--if npc:get_enemy () then --printf_xrscript ("ENEMY PRESENT") else --printf_xrscript ("ENEMY NOT PRESENT") end
 	return npc:get_enemy() ~= nil
 end
 
 function mob_was_hit(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local h = npc:get_monster_hit_info()
 	if h.who and h.time ~= 0 then
 		return true
@@ -835,8 +921,9 @@ function mob_was_hit(actor, npc)
 end
 
 function actor_on_level(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	for k,v in pairs (p) do
-		--printf("level name: [%s], needed level name: [%s]", level.name(), v`)
+		----printf_xrscript("level name: [%s], needed level name: [%s]", level.name(), v`)
 		if v == level.name() then
 			return true
 		end
@@ -845,7 +932,8 @@ function actor_on_level(actor, npc, p)
 end
 
 function treasure_exist(actor, npc, p)
-	--printf("%s %s", actor:name(), npc:name())
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
+	----printf_xrscript("%s %s", actor:name(), npc:name())
 	return true
 end
 
@@ -870,6 +958,7 @@ end
 --' Squad support
 --'-----------------------------------------------------------------------------------
 function squad_in_zone(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local zone_name = p[2]
 	if story_id == nil then
@@ -903,6 +992,7 @@ function squad_in_zone(actor, npc, p)
 end
 
 function squad_has_enemy(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 
 	if story_id == nil then
@@ -931,6 +1021,7 @@ end
 
 -- Functions for Yantar
 function squad_in_zone_all(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	local zone_name = p[2]
 	if story_id == nil or zone_name == nil then
@@ -957,6 +1048,7 @@ function squad_in_zone_all(actor, npc, p)
 end
 
 function squads_in_zone_b41(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local smart = sim_board.get_sim_board():get_smart_by_name("jup_b41")
 	local zone = db.zone_by_name["jup_b41_sr_light"]
 	local al = alife()
@@ -984,6 +1076,7 @@ end
 
 --' Проверка в таргет кондлисте задания, соответствует ли имя сквада переданному
 function target_squad_name(actor, obj, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(obj))
 	if p[1] == nil then
 		abort("Wrong parameters")
 	end
@@ -1005,6 +1098,7 @@ end
 
 --' Проверка в таргет кондлисте задания, соответствует ли имя смарта переданному
 function target_smart_name(actor, smart, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(smart))
 	if p[1] == nil then
 		abort("Wrong parameters")
 	end
@@ -1014,6 +1108,7 @@ end
 
 --' Проверяет жив ли отряд с указанным ID
 function squad_exist(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	if story_id == nil then
 		abort("Wrong parameter story_id[%s] in squad_exist function", tostring(story_id))
@@ -1028,6 +1123,7 @@ function squad_exist(actor, npc, p)
 end
 
 function is_squad_commander(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if (type(npc.id) == "number") then
 		npc_id = npc.id
 	else
@@ -1038,6 +1134,7 @@ function is_squad_commander(actor, npc)
 end
 
 function squad_npc_count_ge(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p[1]
 	if story_id == nil then
 		abort("Wrong parameter squad_id[%s] in 'squad_npc_count_ge' function", tostring(squad_id))
@@ -1064,6 +1161,8 @@ function surge_kill_all()
 end
 
 function signal_rocket_flying(actor, npc, p)
+
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p==nil then
 		abort("Signal rocket name is not set!")
 	end
@@ -1076,6 +1175,7 @@ function signal_rocket_flying(actor, npc, p)
 end
 
 function quest_npc_enemy_actor(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] == nil then
 		abort("wrong story id")
 	else
@@ -1090,6 +1190,7 @@ function quest_npc_enemy_actor(actor, npc, p)
 end
 
 function animpoint_reached(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local animpoint_storage = db.storage[npc:id()].animpoint
 
 	if animpoint_storage == nil then
@@ -1120,6 +1221,7 @@ end
 -- проверка того что дистанция до обьекта >= заданной
 -- параметры: [sid,dist]
 function distance_to_obj_ge(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc_id = get_story_object_id(p[1])
 	local npc1 = npc_id and alife():object(npc_id)
 	if npc1 then
@@ -1129,6 +1231,7 @@ function distance_to_obj_ge(actor, npc, p)
 end
 
 function distance_to_obj_le(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local npc_id = get_story_object_id(p[1])
 	local npc1 = npc_id and alife():object(npc_id)
 	if npc1 then
@@ -1138,10 +1241,12 @@ function distance_to_obj_le(actor, npc, p)
 end
 
 function in_dest_smart_cover(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:in_smart_cover()
 end
 
 function active_item(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		for k,v  in pairs(p) do
 			if actor:item_in_slot(3) ~= nil and actor:item_in_slot(3):section() == v then return true end
@@ -1158,6 +1263,7 @@ function actor_nomove_nowpn()
 end
 
 function jup_b16_is_zone_active(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return has_alife_info(npc:name())
 end
 
@@ -1169,6 +1275,7 @@ end
 --						2 - полностью видимый
 
 function check_bloodsucker_state(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if (p and p[1]) == nil then abort("Wrong parameters in function 'check_bloodsucker_state'!!!") end
 	local state = p[1]
 	if p[2] ~= nil then
@@ -1182,6 +1289,7 @@ function check_bloodsucker_state(actor, npc, p)
 end
 
 function dist_to_story_obj_ge(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local story_id = p and p[1]
 	local story_obj_id = get_story_object_id(story_id)
 	if story_obj_id == nil then return true end
@@ -1190,6 +1298,7 @@ function dist_to_story_obj_ge(actor, npc, p)
 end
 
 function actor_has_nimble_weapon(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local need_item = {}
 	need_item["wpn_groza_nimble"] = true
 	need_item["wpn_desert_eagle_nimble"] = true
@@ -1212,6 +1321,7 @@ function actor_has_nimble_weapon(actor, npc)
 end
 
 function actor_has_active_nimble_weapon(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local need_item = {}
 	need_item["wpn_groza_nimble"] = true
 	need_item["wpn_desert_eagle_nimble"] = true
@@ -1236,6 +1346,7 @@ function actor_has_active_nimble_weapon(actor, npc)
 end
 
 function jup_b202_inventory_box_empty(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local inv_box = get_story_object("jup_b202_actor_treasure")
 	return inv_box:is_inv_box_empty()
 end
@@ -1246,65 +1357,79 @@ function jup_b46_actor_has_active_science_detector(actor, npc)
 end
 ]]--
 function is_in_danger(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p and p[1] then
 		npc = get_story_object(p[1])
 	end
-	--printf("npc: [%s] is in danger [%s]", tostring(npc:id()), tostring(db.storage[npc:id()].danger_flag))
+	----printf_xrscript("npc: [%s] is in danger [%s]", tostring(npc:id()), tostring(db.storage[npc:id()].danger_flag))
 	return db.storage[npc:id()].danger_flag
 end
 
 function object_exist(actor , npc , p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return get_story_object(p[1]) ~= nil
 end
 
 function squad_curr_action(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local squad = get_object_squad(npc)
 	return squad.current_action and squad.current_action.name == p[1]
 end
 
 function is_monster_snork(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.snork_s
 end
 
 function is_monster_dog(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.dog_s
 end
 
 function is_monster_psy_dog(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.psy_dog_s
 end
 
 function is_monster_polter(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.poltergeist_s
 end
 
 function is_monster_tushkano(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.tushkano_s
 end
 
 function is_monster_burer(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.burer_s
 end
 
 function is_monster_controller(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.controller_s
 end
 
 function is_monster_flesh(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.flesh_s
 end
 
 function is_monster_boar(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:clsid() == clsid.boar_s
 end
 
 
 function dead_body_searching(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return actor_menu.dead_body_searching
 end
 
 function jup_b47_npc_online(actor, npc, p)
---	printf("function jup_b47_npc_online: story_obj[%s]", tostring(p[1]))
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
+--	--printf_xrscript("function jup_b47_npc_online: story_obj[%s]", tostring(p[1]))
 	local story_obj = get_story_object(p[1])
 	if story_obj == nil then
 		return false
@@ -1314,6 +1439,7 @@ function jup_b47_npc_online(actor, npc, p)
 end
 
 function anomaly_has_artefact(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local az_name = p and p[1]
 	local af_name = p and p[2]
 
@@ -1346,6 +1472,7 @@ function anomaly_has_artefact(actor, npc, p)
 end
 
 function zat_b29_anomaly_has_af(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local az_name = p and p[1]
 	local af_name
 
@@ -1375,7 +1502,8 @@ function zat_b29_anomaly_has_af(actor, npc, p)
 	return false
 end
 
-function jup_b221_who_will_start(actor, npc, p) -- доступные параметры: ability - проверить есть ли доступные темы, choose - выбрать групировку которая начнет перепалку
+function jup_b221_who_will_start(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc)) -- доступные параметры: ability - проверить есть ли доступные темы, choose - выбрать групировку которая начнет перепалку
 	local reachable_theme = {}
 	local faction_table = {}
 	local info_table = {
@@ -1405,7 +1533,7 @@ function jup_b221_who_will_start(actor, npc, p) -- доступные парам
 		end
 		if (has_alife_info(v)) and (not has_alife_info("jup_b221_" .. faction_table[1] .. "_main_" .. tostring(k - tonumber(faction_table[2])) .. "_played")) then
 			table.insert(reachable_theme,k)
-			printf("jup_b221_who_will_start: table reachable_theme ------------------------------> [%s]", tostring(k))
+			--printf_xrscript("jup_b221_who_will_start: table reachable_theme ------------------------------> [%s]", tostring(k))
 		end
 	end
 	if (p and p[1]) == nil then
@@ -1447,12 +1575,13 @@ function pas_b400_actor_far_forward(actor, npc)
 		end
 	end
 
-	--printf("npc: [%s], actor is far forward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
+	----printf_xrscript("npc: [%s], actor is far forward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
 
 	return true
 end
 
 function pas_b400_actor_far_backward(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local bwd_obj = get_story_object("pas_b400_bwd")
 
 	if bwd_obj then
@@ -1478,12 +1607,13 @@ function pas_b400_actor_far_backward(actor, npc)
 		end
 	end
 
-	--printf("npc: [%s], actor is far backward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
+	----printf_xrscript("npc: [%s], actor is far backward - self_dist [%s] distance [%s]", tostring(npc:name()), self_dist, distance)
 
 	return true
 end
 
 function pri_a28_actor_is_far(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local distance = 150 * 150
 	local squad = get_story_squad("pri_a16_military_squad")
 
@@ -1498,6 +1628,7 @@ function pri_a28_actor_is_far(actor, npc)
 end
 
 function check_enemy_smart(actor , npc , p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local enemy_id = db.storage[npc:id()].enemy_id
 	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
 	if enemy == nil or enemy_id == alife():actor().id then
@@ -1512,6 +1643,7 @@ function check_enemy_smart(actor , npc , p)
 end
 
 function zat_b103_actor_has_needed_food(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return (dialogs_zaton.zat_b103_actor_has_needed_food(actor, npc)) or (has_alife_info("zat_b103_merc_task_done"))
 end
 
@@ -1554,28 +1686,34 @@ function zat_b29_rivals_dialog_precond(actor, npc)
 end
 
 function polter_ignore_actor(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:poltergeist_get_actor_ignore()
 end
 
 function burer_gravi_attack(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:burer_get_force_gravi_attack()
 end
 
 function burer_anti_aim(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:burer_get_force_anti_aim()
 end
 
 function jup_b202_actor_treasure_not_in_steal(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local before = ((not has_alife_info("jup_b52_actor_items_can_be_stolen")) and (not has_alife_info("jup_b202_actor_items_returned")))
 	local after  = (has_alife_info("jup_b52_actor_items_can_be_stolen") and has_alife_info("jup_b202_actor_items_returned"))
 	return (before or after)
 end
 
 function jup_b25_senya_spawn_condition(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return (has_alife_info("jup_b16_oasis_found") or has_alife_info("zat_b57_bloodsucker_lair_clear") or has_alife_info("jup_b6_complete_end") or has_alife_info("zat_b215_gave_maps")) and has_alife_info("zat_b106_search_soroka")
 end
 
 function jup_b25_flint_gone_condition(actor, npc)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return has_alife_info("jup_b25_flint_blame_done_to_duty") or has_alife_info("jup_b25_flint_blame_done_to_freedom") or has_alife_info("zat_b106_found_soroka_done")
 end
 
@@ -1638,6 +1776,7 @@ friend_of_stalkers_functor = xr_statistic.friend_of_stalkers_functor
 
 --------------------------------------------------------------------------------
 function check_deimos_phase(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if(p[1] and p[2]) then
 		local obj = db.storage[npc:id()]
 		local delta = sr_deimos.check_intensity_delta(obj)
@@ -1677,10 +1816,13 @@ end
 --------------------------------------------------------------------------------
 
 function actor_in_surge_cover(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return surge_manager.actor_in_cover()
 end
 
 function is_door_blocked_by_npc(actor, obj)
+
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(obj))
 	return obj:is_door_blocked_by_npc()
 end
 
@@ -1689,6 +1831,7 @@ function has_active_tutorial()
 end
 
 function upgrade_hint_kardan(actor, npc, p)
+	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	local hint_table = {}
 	local can_upgrade = 0
 	local tools = (p and tonumber(p[1])) or 0
