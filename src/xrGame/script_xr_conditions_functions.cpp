@@ -605,3 +605,77 @@ inline bool actor_has_nimble_weapon_server(CScriptGameObject* pActor, CSE_ALifeD
 
     return result;
 }
+
+inline bool actor_has_active_nimble_weapon_client(CScriptGameObject* 
+pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pActor)
+    {
+        constexpr const char* needed_items[] = {
+            "wpn_groza_nimble",
+            "wpn_desert_eagle_nimble",
+            "wpn_fn2000_nimble",
+            "wpn_g36_nimble",
+            "wpn_protecta_nimble",
+            "wpn_mp5_nimble",
+            "wpn_sig220_nimble",
+            "wpn_spas12_nimble",
+            "wpn_usp_nimble",
+            "wpn_vintorez_nimble",
+            "wpn_svu_nimble",
+            "wpn_svd_nimble"
+        };
+
+        constexpr auto length_of_array = sizeof(needed_items) / sizeof(needed_items[0]);
+
+        CScriptGameObject* slot2 = pActor->item_in_slot(2);
+        if (slot2)
+        {
+            std::string_view view = slot2->Section();
+
+            if (view.empty() == false)
+            {
+                for (int i = 0; i < length_of_array; ++i)
+                {
+                    if (view == needed_items[i])
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!result)
+        {
+            CScriptGameObject* slot3 = pActor->item_in_slot(3);
+
+            if (slot3)
+            {
+                std::string_view view = slot3->Section();
+
+                if (view.empty() == false)
+                {
+                    for (int i = 0; i < length_of_array; ++i)
+                    {
+                        if (view == needed_items[i])
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+inline bool actor_has_active_nimble_weapon_server(CScriptGameObject*
+    pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return actor_has_active_nimble_weapon_client(pActor, nullptr, buffer);
+}
