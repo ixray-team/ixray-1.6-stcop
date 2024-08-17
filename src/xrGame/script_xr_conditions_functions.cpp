@@ -679,3 +679,73 @@ inline bool actor_has_active_nimble_weapon_server(CScriptGameObject*
 {
     return actor_has_active_nimble_weapon_client(pActor, nullptr, buffer);
 }
+
+inline bool jup_b202_inventory_box_empty_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.jup_b202_inventory_box_empty", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "implement this and story registry manager");
+    return false;
+#endif
+}
+
+inline bool jup_b202_inventory_box_empty_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.jup_b202_inventory_box_empty", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "implement this and story registry manager");
+    return false;
+#endif
+}
+
+inline bool is_in_danger_client(CScriptGameObject* pActor, 
+CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.is_in_danger", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool is_in_danger_server(CScriptGameObject* pActor,
+    CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.is_in_danger", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
