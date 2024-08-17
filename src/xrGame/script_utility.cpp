@@ -4,6 +4,10 @@
 #include "script_game_object.h"
 
 #include "object_factory.h"
+#include "alife_simulator.h"
+#include "InfoPortionDefs.h"
+#include "alife_registry_container.h"
+#include "alife_registry_container_composition.h"
 
 bool ixray::is_weapon(CScriptGameObject* pObject)
 {
@@ -87,5 +91,24 @@ bool ixray::is_weapon(CScriptGameObject* pObject)
 	}
 #endif
 	
+	return result;
+}
+
+bool ixray::has_alife_info(LPCSTR info_id)
+{
+	bool result{};
+	if (!info_id)
+		return result;
+
+	const KNOWN_INFO_VECTOR* known_info = ai().alife().registry(info_portions).object(0, true);
+
+	if (!known_info)
+		return result;
+
+	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
+		return result;
+
+	result = true;
+
 	return result;
 }

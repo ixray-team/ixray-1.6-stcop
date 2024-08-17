@@ -425,3 +425,28 @@ inline bool actor_nomove_nowpn_server(CScriptGameObject* pActor, CSE_ALifeDynami
 
     return result;
 }
+
+inline bool jup_b16_is_zone_active_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+   
+    if (pBot)
+    {
+        result = ixray::has_alife_info(pBot->Name());
+    }
+
+    return result;
+}
+
+inline bool jup_b16_is_zone_active_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = ixray::has_alife_info(pBot->name_replace());
+    }
+
+    return result;
+}
+

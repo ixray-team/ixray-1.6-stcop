@@ -39,6 +39,7 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(in_dest_smart_cover);
 	REGISTER_FUNCTION_TO_SCRIPT(active_item);
 	REGISTER_FUNCTION_TO_SCRIPT(actor_nomove_nowpn);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b16_is_zone_active);
 }
 
 void CScriptXRConditionsStorage::destroy()
