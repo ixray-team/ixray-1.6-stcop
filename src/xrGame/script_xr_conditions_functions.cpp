@@ -450,3 +450,158 @@ inline bool jup_b16_is_zone_active_server(CScriptGameObject* pActor, CSE_ALifeDy
     return result;
 }
 
+inline bool check_bloodsucker_state_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_bloodsucker_state", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool check_bloodsucker_state_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_bloodsucker_state", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool dist_to_story_obj_ge_client(CScriptGameObject* pActor, CScriptGameObject*
+ pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.dist_to_story_obj_ge", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool dist_to_story_obj_ge_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject*
+    pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.dist_to_story_obj_ge", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool actor_has_nimble_weapon_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pActor)
+    {
+        constexpr const char* needed_items[] = {
+            "wpn_groza_nimble", 
+            "wpn_desert_eagle_nimble",
+            "wpn_fn2000_nimble",
+            "wpn_g36_nimble",
+            "wpn_protecta_nimble",
+            "wpn_mp5_nimble",
+            "wpn_sig220_nimble",
+            "wpn_spas12_nimble",
+            "wpn_usp_nimble",
+            "wpn_vintorez_nimble",
+            "wpn_svu_nimble",
+            "wpn_svd_nimble"
+        };
+
+        constexpr auto length_of_array = sizeof(needed_items) / sizeof(needed_items[0]);
+
+
+        for (int i = 0; i < length_of_array; ++i)
+        {
+            if (pActor->GetObjectByName(needed_items[i]))
+            {
+                result = true;
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+inline bool actor_has_nimble_weapon_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pActor)
+    {
+        constexpr const char* needed_items[] = {
+            "wpn_groza_nimble",
+            "wpn_desert_eagle_nimble",
+            "wpn_fn2000_nimble",
+            "wpn_g36_nimble",
+            "wpn_protecta_nimble",
+            "wpn_mp5_nimble",
+            "wpn_sig220_nimble",
+            "wpn_spas12_nimble",
+            "wpn_usp_nimble",
+            "wpn_vintorez_nimble",
+            "wpn_svu_nimble",
+            "wpn_svd_nimble"
+        };
+
+        constexpr auto length_of_array = sizeof(needed_items) / sizeof(needed_items[0]);
+
+
+        for (int i = 0; i < length_of_array; ++i)
+        {
+            if (pActor->GetObjectByName(needed_items[i]))
+            {
+                result = true;
+                break;
+            }
+        }
+    }
+
+    return result;
+}

@@ -40,6 +40,9 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(active_item);
 	REGISTER_FUNCTION_TO_SCRIPT(actor_nomove_nowpn);
 	REGISTER_FUNCTION_TO_SCRIPT(jup_b16_is_zone_active);
+	REGISTER_FUNCTION_TO_SCRIPT(check_bloodsucker_state);
+	REGISTER_FUNCTION_TO_SCRIPT(dist_to_story_obj_ge);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_has_nimble_weapon);
 }
 
 void CScriptXRConditionsStorage::destroy()
