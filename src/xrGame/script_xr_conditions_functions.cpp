@@ -925,3 +925,27 @@ inline bool is_monster_polter_server(CScriptGameObject* pActor, CSE_ALifeDynamic
 
     return result;
 }
+
+inline bool is_monster_tushkano_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->clsid() == ixray::get_script_clsid("SM_TUSHK");
+    }
+
+    return result;
+}
+
+inline bool is_monster_tushkano_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->script_clsid() == ixray::get_script_clsid("SM_TUSHK");
+    }
+
+    return result;
+}

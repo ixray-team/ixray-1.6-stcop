@@ -52,7 +52,7 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_dog);
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_psy_dog);
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_polter);
-
+	REGISTER_FUNCTION_TO_SCRIPT(is_monster_tushkano);
 }
 
 void CScriptXRConditionsStorage::destroy()
