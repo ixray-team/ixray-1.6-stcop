@@ -46,6 +46,7 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(actor_has_active_nimble_weapon);
 	REGISTER_FUNCTION_TO_SCRIPT(jup_b202_inventory_box_empty);
 	REGISTER_FUNCTION_TO_SCRIPT(is_in_danger);
+	REGISTER_FUNCTION_TO_SCRIPT(object_exist);
 }
 
 void CScriptXRConditionsStorage::destroy()

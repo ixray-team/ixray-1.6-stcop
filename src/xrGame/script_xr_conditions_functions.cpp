@@ -12,7 +12,7 @@
 
 // always provide two implementations for your functions based on prefixes _client and _server respectively
 
-// comment it if you can provide C++ implementation
+// comment it if you can provide C++ implementation FOR ALL FUNCTIONS!!!
 // because now some functions are provided in pure C++ implementation, but some of many functions can't be re-written so easily due to lack of manager implementations like surge manager, story manager, db.script (database) and etc, so if you can't provide implementation just use lua's implementation
 #define IXRAY_USE_LUA_IMPLEMENTATION
 
@@ -735,6 +735,46 @@ inline bool is_in_danger_server(CScriptGameObject* pActor,
 #ifdef IXRAY_USE_LUA_IMPLEMENTATION
     luabind::functor<bool> _impl;
     auto status = ai().script_engine().functor("xr_conditions.is_in_danger", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool object_exist_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.object_exist", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "not implemented!");
+    return false;
+#endif
+}
+
+inline bool object_exist_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.object_exist", _impl);
     R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
 
     xr_vector<const char*> temp;
