@@ -13,6 +13,7 @@
 // always provide two implementations for your functions based on prefixes _client and _server respectively
 
 // comment it if you can provide C++ implementation
+// because now some functions are provided in pure C++ implementation, but some of many functions can't be re-written so easily due to lack of manager implementations like surge manager, story manager, db.script (database) and etc, so if you can't provide implementation just use lua's implementation
 #define IXRAY_USE_LUA_IMPLEMENTATION
 
 inline bool fighting_dist_ge_client(
