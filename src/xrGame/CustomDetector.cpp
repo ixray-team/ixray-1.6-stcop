@@ -63,7 +63,7 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	{
 		CWeapon* W = smart_cast<CWeapon*>(itm);
 		if (W && !smart_cast<CWeaponBinoculars*>(W))
-			bres =	bres && !m_bHideAndRestore && W->GetState() != CHUDState::eBore && W->GetState() != CWeapon::eReload && W->GetState() != CWeapon::eSwitch && W->GetState() != CWeapon::eUnjam && !W->IsZoomed();
+			bres =	bres && W->GetState() != CHUDState::eBore && W->GetState() != CWeapon::eReload && W->GetState() != CWeapon::eSwitch && W->GetState() != CWeapon::eUnjam && !W->IsZoomed();
 	}
 	return bres;
 }
@@ -75,12 +75,10 @@ bool  CCustomDetector::CheckCompatibility(CHudItem* itm)
 
 	if(!CheckCompatibilityInt(itm, nullptr))
 	{
-		m_bDetectorActive = false;
 		HideDetector	(true);
 		return			false;
 	}
-	else if(GetState() != eHidden||GetState()!=eHiding)
-		m_bDetectorActive = true;
+
 	return true;
 }
 
@@ -111,11 +109,8 @@ void CCustomDetector::ShowDetector(bool bFastMode)
 		ToggleDetector(bFastMode);
 }
 
-void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
+void CCustomDetector::ToggleDetector(bool bFastMode)
 {
-	isTryToToggle = true;
-	bNeedHideDet = false;
-
 	m_bNeedActivation = false;
 	m_bFastAnimMode	= bFastMode;
 
@@ -127,9 +122,6 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 
 	if (GetState() == eHidden || !isGuns && GetState() == eHiding)
 	{
-		if(switching)
-			m_bDetectorActive = true;
-
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
 
 		if (CheckCompatibilityInt(itm, &slot_to_activate))
@@ -146,20 +138,15 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 				{
 					if (knf || wpn->bIsNeedCallDet || !isGuns)
 					{
-						isTryToToggle = false;
 						SwitchState(eShowing);
 						TurnDetectorInternal(true);
 						wpn->bIsNeedCallDet = false;
 					}
 					else if (isGuns && wpn->GetState() == CWeapon::eIdle)
-					{
-						isTryToToggle = false;
 						wpn->SwitchState(CWeapon::eShowingDet);
-					}
 				}
 				else
 				{
-					isTryToToggle = false;
 					SwitchState(eShowing);
 					TurnDetectorInternal(true);
 				}
@@ -168,9 +155,6 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 	}
 	else if (GetState()==eIdle || GetState()==eShowing)
 	{
-		if (GetState() == eShowing)
-			bNeedHideDet = true;
-
 		if (wpn)
 		{
 			u32 state = wpn->GetState();
@@ -180,33 +164,29 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 		}
 
 		if (GetState() == eIdle || !isGuns && GetState() == eShowing)
-		{
-			isTryToToggle = false;
 			SwitchState(eHiding);
-
-			if (switching)
-				m_bDetectorActive = false;
-		}
 	}
 
 }
+
 void  CCustomDetector::ShowingCallback(CBlend*B)
 {
-	ToggleDetector(g_player_hud->attached_item(0)!=nullptr, true);
+	ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
 	g_player_hud->ResetBlockedPartID();
 	g_player_hud->OnMovementChanged(mcAnyMove);
 	g_player_hud->RestoreHandBlends("right_hand");
 }
+
 void CCustomDetector::switch_detector()
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (!isGuns && !m_bDetectorActive&&GetState()==eHidden && g_player_hud->attached_item(0)&&m_pInventory->ActiveItem()&&m_pInventory->ActiveItem()->BaseSlot()==INV_SLOT_2)
+	if (!isGuns && GetState() == eHidden && g_player_hud->attached_item(0) && m_pInventory->ActiveItem() && m_pInventory->ActiveItem()->BaseSlot() == INV_SLOT_2)
 	{
 		if(g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend*B){static_cast<CCustomDetector*>(B->CallbackParam)->ShowingCallback(B);}, this, 0))
 			g_player_hud->animator_fx_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 2, 0, 3.f, 1.f, 1.f, 0.5f);
 	}
 	else
-		ToggleDetector(g_player_hud->attached_item(0)!=nullptr, true);
+		ToggleDetector(g_player_hud->attached_item(0) != nullptr);
 }
 
 bool  CCustomDetector::need_renderable()
@@ -303,11 +283,7 @@ CCustomDetector::CCustomDetector()
 	m_ui				= nullptr;
 	m_bFastAnimMode		= false;
 	m_bNeedActivation	= false;
-	m_bDetectorActive	= false;
-	m_bHideAndRestore	= false;
 	m_old_state			= eHidden;
-	isTryToToggle		= false;
-	bNeedHideDet		= false;
 }
 
 CCustomDetector::~CCustomDetector() 
@@ -386,7 +362,7 @@ void CCustomDetector::UpdateVisibility()
 	PIItem pItem = m_pInventory->ActiveItem();
 
 	bool bClimborTalking = ((Actor()->GetMovementState(eReal)&mcClimb) != 0 || Actor()->IsTalking());
-	if (bClimborTalking || m_bHideAndRestore)
+	if (bClimborTalking)
 	{
 		HideDetector(true);
 		m_bNeedActivation = true;
@@ -426,44 +402,12 @@ void CCustomDetector::UpdateCL()
 {
 	inherited::UpdateCL();
 
-	if(H_Parent()!=Level().CurrentEntity() )			return;
-	if (m_pInventory)
-	{
-		CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
-
-		if (!wpn)
-		{
-			if (bNeedHideDet && GetState() == eIdle)
-			{
-				bNeedHideDet = false;
-				HideDetector(g_player_hud->attached_item(0) != nullptr);
-			}
-		}
-
-		if (isTryToToggle)
-		{
-			if (wpn)
-			{
-				if (wpn->GetState() == CWeapon::eIdle)
-				{
-					isTryToToggle = false;
-					ToggleDetector(true);
-				}
-			}
-			else
-			{
-				if (GetState() == eHidden)
-				{
-					isTryToToggle = false;
-					ToggleDetector(false);
-				}
-			}
-		}
-	}
+	if (H_Parent() != Level().CurrentEntity())
+		return;
 
 	enable(!IsHidden());
 
-	if(m_bDetectorActive)
+	if (GetState() != eHidden)
 	{
 		if (AllowBore() && !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 		{
@@ -477,12 +421,14 @@ void CCustomDetector::UpdateCL()
 				}
 			}
 		}
-
-		UpdateVisibility		();
 	}
 
-	if( !IsWorking() )		return;
-	UpfateWork				();
+	UpdateVisibility();
+
+	if (!IsWorking())
+		return;
+
+	UpfateWork();
 }
 
 bool CCustomDetector::can_be_attached		() const
@@ -501,7 +447,6 @@ void CCustomDetector::OnH_A_Chield()
 void CCustomDetector::OnH_B_Independent(bool just_before_destroy) 
 {
 	inherited::OnH_B_Independent(just_before_destroy);
-	m_bDetectorActive			= false;
 	SwitchState					(eHidden);
 	m_artefacts.clear			();
 }
@@ -510,7 +455,6 @@ void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	inherited::OnMoveToRuck	(prev);
-	m_bDetectorActive			= false;
 	if(prev.type==eItemPlaceSlot)
 	{
 		SwitchState					(eHidden);
