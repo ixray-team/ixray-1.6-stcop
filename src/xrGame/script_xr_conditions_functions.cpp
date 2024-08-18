@@ -50,6 +50,98 @@ inline bool fighting_dist_ge_server(
     return (enemy->Position().distance_to_sqr(npc->Position()) >= (distance * distance));
 }
 
+inline bool fighting_dist_le_client(
+    CScriptGameObject* enemy, CScriptGameObject* npc, const xr_vector<xr_string>& buffer)
+{
+    if (!enemy)
+        return false;
+
+    if (!npc)
+        return false;
+
+    if (!buffer.size())
+        return false;
+
+    float distance = atof(buffer[0].c_str());
+
+    return (enemy->Position().distance_to_sqr(npc->Position()) <= (distance * distance));
+}
+
+inline bool fighting_dist_le_server(
+    CScriptGameObject* enemy, CSE_ALifeDynamicObject* npc, const xr_vector<xr_string>& buffer)
+{
+    if (!enemy)
+        return false;
+
+    if (!npc)
+        return false;
+
+    if (!buffer.size())
+        return false;
+
+    float distance = atof(buffer[0].c_str());
+
+    return (enemy->Position().distance_to_sqr(npc->Position()) <= (distance * distance));
+}
+
+inline bool enemy_in_zone_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.enemy_in_zone", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement signal rocket data storage, but only when you provided a manager for that!");
+    return false;
+#endif
+}
+
+inline bool enemy_in_zone_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    if (buffer.empty())
+        return false;
+
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.enemy_in_zone", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "implement signal rocket data storage, but only when you provided a manager for that!");
+    return false;
+#endif
+}
+
+inline bool black_screen_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return Device.dwPrecacheFrame > 1;
+} 
+
+inline bool black_screen_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return Device.dwPrecacheFrame > 1;
+}
+
 inline bool surge_started_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer) 
 {
 #ifdef IXRAY_USE_LUA_IMPLEMENTATION
@@ -1334,6 +1426,366 @@ inline bool pas_b400_actor_far_backward_server(CScriptGameObject* pActor, CSE_AL
     R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
 
     return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool pri_a28_actor_is_far_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pri_a28_actor_is_far", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool pri_a28_actor_is_far_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pri_a28_actor_is_far", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool check_enemy_smart_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_enemy_smart", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool check_enemy_smart_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_enemy_smart", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool zat_b103_actor_has_needed_food_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b103_actor_has_needed_food", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool zat_b103_actor_has_needed_food_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b103_actor_has_needed_food", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool zat_b29_rivals_dialog_precond_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b29_rivals_dialog_precond", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool zat_b29_rivals_dialog_precond_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b29_rivals_dialog_precond", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool poltergeist_get_actor_ignore_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->poltergeist_get_actor_ignore();
+    }
+
+    return result;
+}
+
+inline bool poltergeist_get_actor_ignore_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    R_ASSERT2(false, "must be not accessible for calling! something is wrong! use client version because only client has a such 'checking'");
+    return false;
+}
+
+inline bool burer_gravi_attack_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->burer_get_force_gravi_attack();
+    }
+
+    return result;
+}
+
+inline bool burer_gravi_attack_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    R_ASSERT2(false, "must be not accessible for calling! something is wrong! use client version because only client has a such 'checking'");
+    return false;
+}
+
+inline bool jup_b202_actor_treasure_not_in_steal_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool before = ((!ixray::has_alife_info("jup_b52_actor_items_can_be_stolen")) && (!ixray::has_alife_info("jup_b202_actor_items_returned")));
+    bool after = (ixray::has_alife_info("jup_b52_actor_items_can_be_stolen") && ixray::has_alife_info("jup_b202_actor_items_returned"));
+    return (before || after);
+}
+
+inline bool jup_b202_actor_treasure_not_in_steal_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return jup_b202_actor_treasure_not_in_steal_client(pActor, nullptr, buffer);
+}
+
+inline bool jup_b25_senya_spawn_condition_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return (ixray::has_alife_info("jup_b16_oasis_found") || ixray::has_alife_info("zat_b57_bloodsucker_lair_clear") || ixray::has_alife_info("jup_b6_complete_end") || ixray::has_alife_info("zat_b215_gave_maps")) && ixray::has_alife_info("zat_b106_search_soroka");
+}
+
+inline bool jup_b25_senya_spawn_condition_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return jup_b25_senya_spawn_condition_client(pActor, nullptr, buffer);
+}
+
+inline bool jup_b25_flint_gone_condition_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return ixray::has_alife_info("jup_b25_flint_blame_done_to_duty") || ixray::has_alife_info("jup_b25_flint_blame_done_to_freedom") || ixray::has_alife_info("zat_b106_found_soroka_done");
+}
+
+inline bool jup_b25_flint_gone_condition_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return jup_b25_flint_gone_condition_client(pActor, nullptr, buffer);
+}
+
+inline bool check_deimos_phase_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_deimos_phase", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool check_deimos_phase_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.check_deimos_phase", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool actor_in_surge_cover_client(CScriptGameObject* pActor, 
+CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.actor_in_surge_cover", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool actor_in_surge_cover_server(CScriptGameObject* pActor,
+    CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.actor_in_surge_cover", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool is_door_blocked_by_npc_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool result{};
+
+    if (pBot)
+    {
+        result = pBot->is_door_blocked_by_npc();
+    }
+
+    return result;
+}
+
+inline bool is_door_blocked_by_npc_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    R_ASSERT2(false, "must be not accessible, because implementation only for client object!");
+    return false;
+}
+
+inline bool has_active_tutorial_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.has_active_tutorial", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool has_active_tutorial_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.has_active_tutorial", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl();
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool upgrade_hint_kardan_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.upgrade_hint_kardan", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool upgrade_hint_kardan_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.upgrade_hint_kardan", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
 #else
     R_ASSERT2(false, "provide implementation");
     return false;

@@ -1695,6 +1695,7 @@ function burer_gravi_attack(actor, npc)
 	return npc:burer_get_force_gravi_attack()
 end
 
+-- burer_get_force_anti_aim doesn't exist at all, means outdated function
 function burer_anti_aim(actor, npc)
 	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	return npc:burer_get_force_anti_aim()

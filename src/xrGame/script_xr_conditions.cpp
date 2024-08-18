@@ -64,7 +64,23 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(jup_b221_who_will_start);
 	REGISTER_FUNCTION_TO_SCRIPT(pas_b400_actor_far_forward);
 	REGISTER_FUNCTION_TO_SCRIPT(pas_b400_actor_far_backward);
-
+	REGISTER_FUNCTION_TO_SCRIPT(pri_a28_actor_is_far);
+	REGISTER_FUNCTION_TO_SCRIPT(check_enemy_smart);
+	REGISTER_FUNCTION_TO_SCRIPT(zat_b103_actor_has_needed_food);
+	REGISTER_FUNCTION_TO_SCRIPT(zat_b29_rivals_dialog_precond);
+	REGISTER_FUNCTION_TO_SCRIPT(poltergeist_get_actor_ignore);
+	REGISTER_FUNCTION_TO_SCRIPT(burer_gravi_attack);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b202_actor_treasure_not_in_steal);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b25_senya_spawn_condition);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b25_flint_gone_condition);
+	REGISTER_FUNCTION_TO_SCRIPT(check_deimos_phase);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_in_surge_cover);
+	REGISTER_FUNCTION_TO_SCRIPT(is_door_blocked_by_npc);
+	REGISTER_FUNCTION_TO_SCRIPT(has_active_tutorial);
+	REGISTER_FUNCTION_TO_SCRIPT(upgrade_hint_kardan);
+	REGISTER_FUNCTION_TO_SCRIPT(fighting_dist_le);
+	REGISTER_FUNCTION_TO_SCRIPT(enemy_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(black_screen);
 }
 
 void CScriptXRConditionsStorage::destroy()
