@@ -1380,7 +1380,7 @@ void CActor::shedule_Update	(u32 DT)
 	Center(ActorPos);
 	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
 
-	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 4.0f)
+	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f)
 	{
 		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
 		
@@ -1935,7 +1935,7 @@ void CActor::spawn_supplies			()
 	inherited::spawn_supplies		();
 	CInventoryOwner::spawn_supplies	();
 
-	if (!pSettings->section_exist("anim_fake"))
+	if (!pGameGlobals->line_exist("actor_item", "anim_fake_item"))
 	{
 		Msg("! Animation slot not registered");
 		Msg("! [anim_fake] section missing");

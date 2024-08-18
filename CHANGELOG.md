@@ -4,6 +4,13 @@ English | [Русский](./doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.1.1 (August 2024)
+
+### Graphics
+
+- Added engine version to shader cache path (@Drombeys)
+- Fixed work `r__detail_density` console command (@Drombeys)
+
 ## Release 1.1 (August 2024)
 
 ### Common
@@ -22,7 +29,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Switched to vector resizing instead of clearing where possible (@Drombeys)
 - Restored Alt key use for release configuration (@ForserX)
 
-### Graphics (renders, shaders, textures)
+### Graphics (renders, shaders)
 
 - Added accounting `r2_lumscale_sky` on D3D9 (@Drombeys)
 - Added hot reload for details (@Drombeys)

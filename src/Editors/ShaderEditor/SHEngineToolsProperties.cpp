@@ -196,6 +196,8 @@ void CSHEngineTools::RealUpdateProperties()
       //  Ext.m_ItemProps->ResetModified();
 //---------------------------
     }
+
+    Ext.m_ItemProps->ClearProperties();
     Ext.m_ItemProps->AssignItems(items);
     Ext.m_ItemProps->SetModifiedEvent(TOnModifiedEvent(this,&CSHEngineTools::Modified));
 }

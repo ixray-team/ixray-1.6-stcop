@@ -78,8 +78,6 @@ void CSHGameMtlPairTools::Load()
 {
     m_bLockUpdate		= TRUE;
 
-    GameMaterialLibraryEditors->Unload		();
-    GameMaterialLibraryEditors->Load			();
     ResetCurrentItem	();
 
     m_bLockUpdate		= FALSE;
@@ -110,8 +108,12 @@ void CSHGameMtlPairTools::RealUpdateList()
 void CSHGameMtlPairTools::RealUpdateProperties()
 {
 	PropItemVec items;
-    if (m_MtlPair)	static_cast<SGameMtlPairEditor*>(m_MtlPair)->FillProp(items);
-    Ext.m_ItemProps->AssignItems		(items);
+
+    if (m_MtlPair)
+        static_cast<SGameMtlPairEditor*>(m_MtlPair)->FillProp(items);
+
+    Ext.m_ItemProps->ClearProperties();
+    Ext.m_ItemProps->AssignItems(items);
 }
 //---------------------------------------------------------------------------
 

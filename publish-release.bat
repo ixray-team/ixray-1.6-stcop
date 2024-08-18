@@ -24,4 +24,4 @@ call util\pack-packages.bat %release%
 call util\pack-engine.bat %release%
 call util\pack-server.bat %release%
 call util\pack-utilities.bat %release%
-call util\pack-builds.bat
+call util\pack-builds.bat %release%
