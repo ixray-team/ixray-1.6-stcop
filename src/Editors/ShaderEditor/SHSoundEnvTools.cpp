@@ -360,6 +360,8 @@ void CSHSoundEnvTools::RealUpdateProperties()
         PHelper().CreateFloat	(items, "Decay\\DecayTime",						&S.DecayTime           ,EAXLISTENER_MINDECAYTIME, 			EAXLISTENER_MAXDECAYTIME				,0.01f,	3);
         PHelper().CreateFloat	(items, "Decay\\DecayHFRatio",					&S.DecayHFRatio        ,EAXLISTENER_MINDECAYHFRATIO, 		EAXLISTENER_MAXDECAYHFRATIO				,0.01f,	3);
     }
+
+    Ext.m_ItemProps->ClearProperties();
     Ext.m_ItemProps->AssignItems		(items);
     Ext.m_ItemProps->SetModifiedEvent	(TOnModifiedEvent(this,&CSHSoundEnvTools::Modified));
 }
