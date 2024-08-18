@@ -12,6 +12,7 @@
 #include "weapon.h"
 #include "WeaponKnife.h"
 #include "HUDAnimItem.h"
+#include "Missile.h"
 
 ITEM_INFO::ITEM_INFO()
 {
@@ -203,7 +204,6 @@ void CCustomDetector::OnStateSwitch(u32 S)
 	{
 	case eShowing:
 		{
-			g_player_hud->attach_item	(this);
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion				(m_bFastAnimMode?"anm_show_fast":"anm_show", !!(m_old_state != eHidden), this, S);
 			SetPending					(TRUE);
@@ -217,11 +217,27 @@ void CCustomDetector::OnStateSwitch(u32 S)
 		}break;
 	case eIdle:
 		{
-			PlayAnimIdle				();
-			SetPending					(FALSE);
+			PlayAnimIdle();
+			SetPending(FALSE);
 		}break;
 	}
 	m_old_state=S;
+}
+
+void CCustomDetector::PlayAnimIdle()
+{
+	CMissile* mis = smart_cast<CMissile*>(m_pInventory->ActiveItem());
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && mis && (mis->GetState() == CMissile::eThrowStart || mis->GetState() == CMissile::eReady))
+	{
+		string128 det_anm = "";
+		xr_sprintf(det_anm, "anm_lefthand_%s_wpn_throw_idle", m_section_id.c_str());
+		AssignDetectorAnim(det_anm, true, true);
+		return;
+	}
+	else if (TryPlayAnimIdle())
+		return;
+
+	PlayHUDMotion("anm_idle", TRUE, nullptr, GetState());
 }
 
 void CCustomDetector::SetHideDetStateInWeapon() const

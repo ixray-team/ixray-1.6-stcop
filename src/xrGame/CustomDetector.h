@@ -56,13 +56,15 @@ public:
 	void 	TurnDetectorInternal(bool b);
 	void	ForceHide					() { SwitchState(eHiding); }
 
+	virtual void	PlayAnimIdle();
+
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 	void 			UpdateNightVisionMode		(bool b_off);
 	void			UpdateVisibility			();
 	virtual void	UpfateWork					();
-	virtual void 	UpdateAf					()				{};
-	virtual void 	CreateUI					()				{};
+	virtual void 	UpdateAf					()				{}
+	virtual void 	CreateUI					()				{}
 	void SetHideDetStateInWeapon() const;
 
 	bool			m_bWorking;
