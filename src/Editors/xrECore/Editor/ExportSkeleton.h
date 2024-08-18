@@ -38,7 +38,30 @@ struct ECORE_API SSkelVert: public st_SVert{
         }
         sort_by_bone(); // need to similar 
     }
-	
+
+    BOOL	similar_pos(SSkelVert& V)
+    {
+        return offs.similar(V.offs, g_EpsSkelPositionDelta);
+    }
+    BOOL	similar(SSkelVert& V)
+    {
+        if (bones.size() != V.bones.size())	return FALSE;
+        for (u8 k = 0; k < (u8)bones.size(); k++)
+        {
+            if (!bones[k].similar(V.bones[k]))
+                return FALSE;
+        }
+        if (!uv.similar(V.uv, EPS_S))
+            return FALSE;
+
+        if (!offs.similar(V.offs, g_EpsSkelPositionDelta))
+            return FALSE;
+
+        if (!norm.similar(V.norm, g_EpsSkelPositionDelta))
+            return FALSE;
+
+        return TRUE;
+    }
 };
 
 struct ECORE_API SSkelFace{
@@ -57,7 +80,10 @@ class ECORE_API CSkeletonCollectorPacked
 protected:
     SkelVertVec		m_Verts;
     SkelFaceVec		m_Faces;
-
+    
+    Fvector			m_VMmin, m_VMscale;
+    U32Vec			m_VM[clpSMX+1][clpSMY+1][clpSMZ+1];
+    Fvector			m_VMeps;
 
     u16				VPack(SSkelVert& V);
 public:
