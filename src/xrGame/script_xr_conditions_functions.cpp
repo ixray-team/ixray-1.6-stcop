@@ -1271,15 +1271,8 @@ inline bool jup_b221_who_will_start_client(CScriptGameObject* pActor, CScriptGam
         }
         else if (sFlag == "choose")
         {
-            R_ASSERT(Level().getRandomManager());
-
-            CRandomManager* pRandom = Level().getRandomManager();
-
-            if (pRandom)
-            {
-                int nGeneratedIndex = pRandom->randomBetween(0, nCurrentLengthOfIndexes-1);
-                bResult = aIndexes[nGeneratedIndex] <= 5;
-            }
+           int nGeneratedIndex = Random.randI(0, nCurrentLengthOfIndexes-1);
+           bResult = aIndexes[nGeneratedIndex] <= 5;
         }
     }
 
@@ -1289,4 +1282,60 @@ inline bool jup_b221_who_will_start_client(CScriptGameObject* pActor, CScriptGam
 inline bool jup_b221_who_will_start_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
     return jup_b221_who_will_start_client(pActor, nullptr, buffer);
+}
+
+inline bool pas_b400_actor_far_forward_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pas_b400_actor_far_forward", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool pas_b400_actor_far_forward_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pas_b400_actor_far_forward", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool pas_b400_actor_far_backward_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pas_b400_actor_far_backward", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool pas_b400_actor_far_backward_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.pas_b400_actor_far_backward", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
 }

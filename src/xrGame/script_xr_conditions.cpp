@@ -62,6 +62,9 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(anomaly_has_artefact);
 	REGISTER_FUNCTION_TO_SCRIPT(zat_b29_anomaly_has_af);
 	REGISTER_FUNCTION_TO_SCRIPT(jup_b221_who_will_start);
+	REGISTER_FUNCTION_TO_SCRIPT(pas_b400_actor_far_forward);
+	REGISTER_FUNCTION_TO_SCRIPT(pas_b400_actor_far_backward);
+
 }
 
 void CScriptXRConditionsStorage::destroy()

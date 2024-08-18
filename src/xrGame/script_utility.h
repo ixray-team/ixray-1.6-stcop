@@ -61,17 +61,6 @@ private:
 	void* m_pFunction;
 };
 
-class CRandomManager
-{
-public:
-	CRandomManager();
-	~CRandomManager();
-
-	int randomBetween(int from, int to);
-	float randomBetween(float from, float to);
-	double randomBetween(double from, double to);
-};
-
 namespace ixray
 {
 	bool is_weapon(CScriptGameObject* pObject);

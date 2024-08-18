@@ -88,7 +88,6 @@ protected:
 	CPHCommander				*m_ph_commander_scripts;
 	CPHCommander				*m_ph_commander_physics_worldstep;
 	CScriptXRConditionsStorage*  m_pScriptXRCondition;
-	CRandomManager* m_pRandomManager;
 	// Local events
 	EVENT						eChangeRP;
 	EVENT						eDemoPlay;
@@ -130,7 +129,6 @@ public:
 	virtual void				OnConnectRejected		();
 
 	CScriptXRConditionsStorage* getScriptXRConditions(void) const;
-	CRandomManager* getRandomManager(void) const;
 
 private:
 			
