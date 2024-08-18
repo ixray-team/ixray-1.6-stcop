@@ -191,6 +191,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	spawn = 0;
 
 	m_pScriptXRCondition = new CScriptXRConditionsStorage();
+	m_pRandomManager = new CRandomManager();
 }
 
 extern CAI_Space *g_ai_space;
@@ -318,6 +319,7 @@ CLevel::~CLevel()
 	deinit_compression();
 
 	xr_delete(m_game_graph);
+	xr_delete(m_pRandomManager);
 	m_chunk->close();
 	FS.r_close(spawn);
 }

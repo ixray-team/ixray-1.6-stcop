@@ -57,6 +57,11 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_controller);
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_flesh);
 	REGISTER_FUNCTION_TO_SCRIPT(is_monster_boar);
+	REGISTER_FUNCTION_TO_SCRIPT(dead_body_searching);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b47_npc_online);
+	REGISTER_FUNCTION_TO_SCRIPT(anomaly_has_artefact);
+	REGISTER_FUNCTION_TO_SCRIPT(zat_b29_anomaly_has_af);
+	REGISTER_FUNCTION_TO_SCRIPT(jup_b221_who_will_start);
 }
 
 void CScriptXRConditionsStorage::destroy()

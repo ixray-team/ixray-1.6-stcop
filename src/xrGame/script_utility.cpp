@@ -118,3 +118,34 @@ int ixray::get_script_clsid(LPCSTR str)
 	R_ASSERT(str && "provide a valid string alwasys!");
 	return object_factory().script_clsid(TEXT2CLSID(str));
 }
+
+#include <random>
+
+std::random_device random_device;
+std::mt19937 random_engine(random_device());
+
+CRandomManager::CRandomManager()
+{
+}
+
+CRandomManager::~CRandomManager()
+{
+}
+
+int CRandomManager::randomBetween(int from, int to)
+{
+	std::uniform_int_distribution<int> dist(from, to);
+	return dist(random_engine);
+}
+
+float CRandomManager::randomBetween(float from, float to)
+{
+	std::uniform_real_distribution<float> dist(from, to);
+	return dist(random_engine);
+}
+
+double CRandomManager::randomBetween(double from, double to)
+{
+	std::uniform_real_distribution<double> dist(from, to);
+	return dist(random_engine);
+}

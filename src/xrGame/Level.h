@@ -16,6 +16,7 @@
 #include "../xrEngine/xr_level_controller.h"
 
 // always try to forward declare your script implementations
+class	CRandomManager;
 class	CScriptXRConditionsStorage;
 class	CHUDManager;
 class	CParticlesObject;
@@ -87,6 +88,7 @@ protected:
 	CPHCommander				*m_ph_commander_scripts;
 	CPHCommander				*m_ph_commander_physics_worldstep;
 	CScriptXRConditionsStorage*  m_pScriptXRCondition;
+	CRandomManager* m_pRandomManager;
 	// Local events
 	EVENT						eChangeRP;
 	EVENT						eDemoPlay;
@@ -128,6 +130,7 @@ public:
 	virtual void				OnConnectRejected		();
 
 	CScriptXRConditionsStorage* getScriptXRConditions(void) const;
+	CRandomManager* getRandomManager(void) const;
 
 private:
 			

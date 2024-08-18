@@ -4,7 +4,7 @@
 #include "script_game_object.h"
 #include "xrServer_Objects_ALife.h"
 #include "script_utility.h"
-
+#include "Level.h"
 // specify your function implementation here as you do in xr_conditions.script on Lua programming language
 // reminder for user, the game uses client server architecture thus they have client and server types that represent a NPC on level. 
 // CScriptGameObject - client 
@@ -1044,4 +1044,249 @@ inline bool is_monster_boar_server(CScriptGameObject* pActor, CSE_ALifeDynamicOb
     }
 
     return result;
+}
+
+inline bool dead_body_searching_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.dead_body_searching", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "actor_menu provide implementation");
+    return false;
+#endif
+}
+
+inline bool dead_body_searching_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.dead_body_searching", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    return _impl(pActor, pBot);
+#else
+    R_ASSERT2(false, "actor_menu provide implementation");
+    return false;
+#endif
+}
+
+inline bool jup_b47_npc_online_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.jup_b47_npc_online", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool jup_b47_npc_online_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.jup_b47_npc_online", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide implementation");
+    return false;
+#endif
+}
+
+inline bool anomaly_has_artefact_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.anomaly_has_artefact", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide storage of anomaly_by_name");
+    return false;
+#endif
+}
+
+
+inline bool anomaly_has_artefact_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.anomaly_has_artefact", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide storage of anomaly_by_name");
+    return false;
+#endif
+}
+
+inline bool zat_b29_anomaly_has_af_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b29_anomaly_has_af", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide storage of anomaly_by_name");
+    return false;
+#endif
+}
+
+inline bool zat_b29_anomaly_has_af_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+    luabind::functor<bool> _impl;
+    auto status = ai().script_engine().functor("xr_conditions.zat_b29_anomaly_has_af", _impl);
+    R_ASSERT2(status, "failed to obtain original function implementation in lua file!!!");
+
+    xr_vector<const char*> temp;
+    for (const xr_string& str : buffer)
+    {
+        temp.push_back(str.c_str());
+    }
+
+    return _impl(pActor, pBot, temp.data());
+#else
+    R_ASSERT2(false, "provide storage of anomaly_by_name");
+    return false;
+#endif
+}
+
+inline bool jup_b221_who_will_start_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    bool bResult{};
+    if (buffer.empty())
+        return bResult;
+
+    constexpr const char* infos[] = {
+        "jup_b25_freedom_flint_gone",
+        "jup_b25_flint_blame_done_to_duty",
+        "jup_b4_monolith_squad_in_duty",
+        "jup_a6_duty_leader_bunker_guards_work",
+        "jup_a6_duty_leader_employ_work",
+        "jup_b207_duty_wins",
+        "jup_b207_freedom_know_about_depot",
+        "jup_b46_duty_founder_pda_to_freedom",
+        "jup_b4_monolith_squad_in_freedom",
+        "jup_a6_freedom_leader_bunker_guards_work",
+        "jup_a6_freedom_leader_employ_work",
+        "jup_b207_freedom_wins"
+    };
+
+    constexpr auto nLengthOfArray = sizeof(infos) / sizeof(infos[0]);
+
+    int nFactionFreedomNumber = 5;
+    int nFactionDutyNumber = 0;
+    const char* sDutyName = "duty";
+    const char* sFreedomName = "freedom";
+    int aIndexes[nLengthOfArray]{};
+    memset(aIndexes, -1, sizeof(aIndexes));
+    int nCurrentLengthOfIndexes{};
+
+    for (int i = 0; i < nLengthOfArray; ++i)
+    {
+        char aInfoBuffer[32]{};
+        const char* pFactionName{};
+        int nFactionNumber{};
+
+        if (i <= 5)
+        {
+            pFactionName = sDutyName;
+            nFactionNumber = nFactionDutyNumber;
+        }
+        else
+        {
+            pFactionName = sFreedomName;
+            nFactionNumber = nFactionFreedomNumber;
+        }
+
+        memcpy(&aInfoBuffer[0] + strlen(aInfoBuffer), "jup_b221_", sizeof("jup_b221_"));
+        memcpy(&aInfoBuffer[0] + strlen(aInfoBuffer), pFactionName, strlen(pFactionName) * sizeof(char));
+        memcpy(&aInfoBuffer[0] + strlen(aInfoBuffer), "_main_", sizeof("_main_"));
+
+        int nNumberToConvert = i - nFactionNumber;
+        char number[2]{};
+        sprintf(number, "%d", nNumberToConvert);
+
+        memcpy(&aInfoBuffer[0] + strlen(aInfoBuffer), number, sizeof(number));
+        memcpy(&aInfoBuffer[0] + strlen(aInfoBuffer), "_played", sizeof("_played"));
+
+        if (ixray::has_alife_info(infos[i]) && !(ixray::has_alife_info(aInfoBuffer)))
+        {
+            aIndexes[nCurrentLengthOfIndexes] = i;
+            ++nCurrentLengthOfIndexes;
+        }
+    }
+
+    const xr_string& sFlag = buffer[0];
+
+    if (sFlag.empty() == false)
+    {
+        if (sFlag == "ability")
+        {
+            bResult = nCurrentLengthOfIndexes != 0;
+        }
+        else if (sFlag == "choose")
+        {
+            R_ASSERT(Level().getRandomManager());
+
+            CRandomManager* pRandom = Level().getRandomManager();
+
+            if (pRandom)
+            {
+                int nGeneratedIndex = pRandom->randomBetween(0, nCurrentLengthOfIndexes-1);
+                bResult = aIndexes[nGeneratedIndex] <= 5;
+            }
+        }
+    }
+
+    return bResult;
+}
+
+inline bool jup_b221_who_will_start_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
+{
+    return jup_b221_who_will_start_client(pActor, nullptr, buffer);
 }

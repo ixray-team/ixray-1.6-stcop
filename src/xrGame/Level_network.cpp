@@ -633,6 +633,11 @@ CScriptXRConditionsStorage* CLevel::getScriptXRConditions(void) const
 	return m_pScriptXRCondition;
 }
 
+CRandomManager* CLevel::getRandomManager(void) const
+{
+	return m_pRandomManager;
+}
+
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)
 {
 	if (!P) return;
