@@ -81,6 +81,23 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(fighting_dist_le);
 	REGISTER_FUNCTION_TO_SCRIPT(enemy_in_zone);
 	REGISTER_FUNCTION_TO_SCRIPT(black_screen);
+	REGISTER_FUNCTION_TO_SCRIPT(check_npc_name);
+	REGISTER_FUNCTION_TO_SCRIPT(check_enemy_name);
+	REGISTER_FUNCTION_TO_SCRIPT(is_playing_sound);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_alive);
+	REGISTER_FUNCTION_TO_SCRIPT(see_npc);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_see_npc);
+	REGISTER_FUNCTION_TO_SCRIPT(npc_in_actor_frustum);
+	REGISTER_FUNCTION_TO_SCRIPT(is_wounded);
+	REGISTER_FUNCTION_TO_SCRIPT(dist_to_actor_le);
+	REGISTER_FUNCTION_TO_SCRIPT(dist_to_actor_ge);
+	REGISTER_FUNCTION_TO_SCRIPT(is_obj_on_job);
+	REGISTER_FUNCTION_TO_SCRIPT(distance_to_obj_on_job_le);
+	REGISTER_FUNCTION_TO_SCRIPT(obj_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(one_obj_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(story_obj_in_zone_by_name);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(npc_in_zone);
 }
 
 void CScriptXRConditionsStorage::destroy()
