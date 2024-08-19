@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "xrUITheme.h"
 
+#define _game_fonts_ "$game_fonts$"
+
 #include <fstream>
 #include <json/json.hpp>
 using json = nlohmann::json;
+
+void LoadImGuiFont(const char* Font);
+extern xr_string ImCurrentFont;
 
 CUIThemeManager::CUIThemeManager()
 {
@@ -46,6 +51,41 @@ void CUIThemeManager::Draw()
 		ImGui::ColorEdit4("CheckItem Color", (float*)&colors[ImGuiCol_CheckMark]);
 		ImGui::ColorEdit4("Item Border Color", (float*)&colors[ImGuiCol_Border]);
 		ImGui::ColorEdit4("Title Color", (float*)&colors[ImGuiCol_TitleBg]);
+		ImGui::ColorEdit4("Active title Color", (float*)&colors[ImGuiCol_TitleBgActive]);
+
+		ImGui::SeparatorText("Buttons");
+		ImGui::ColorEdit4("Button", (float*)&colors[ImGuiCol_Button]);
+		ImGui::ColorEdit4("Button Hovered", (float*)&colors[ImGuiCol_ButtonHovered]);
+		ImGui::ColorEdit4("Button Active", (float*)&colors[ImGuiCol_ButtonActive]);
+			;
+		ImGui::SeparatorText("Tabs");
+		ImGui::ColorEdit4("Tab Hovered", (float*)&colors[ImGuiCol_TabHovered]);
+		ImGui::ColorEdit4("Tab Unfocused", (float*)&colors[ImGuiCol_TabUnfocused]);
+		ImGui::ColorEdit4("Tab Active", (float*)&colors[ImGuiCol_TabActive]);
+		ImGui::ColorEdit4("Tab Active Unfocused", (float*)&colors[ImGuiCol_TabUnfocusedActive]);
+
+		ImGui::SeparatorText("Fonts");
+		FS_FileSet Files;
+		string_path Fonts = {};
+		FS.update_path(Fonts, _game_fonts_, "editors\\");
+		FS.file_list(Files, Fonts, 1, "*.ttf");
+
+		if (ImGui::BeginCombo("Main font", ImCurrentFont.data()))
+		{
+			for (auto& File : Files)
+			{
+				xr_string FileName = std::filesystem::path(File.name.c_str()).filename().string().c_str();
+				bool is_selected = (ImCurrentFont == FileName);
+				if (ImGui::Selectable(FileName.c_str(), is_selected))
+				{
+					LoadImGuiFont(FileName.c_str());
+				}
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 
 		ImGui::SeparatorText("Other");
 		ImGui::PushItemWidth(150);
@@ -56,7 +96,7 @@ void CUIThemeManager::Draw()
 
 		if (ImGui::Button("Default"))
 		{
-			InitDefault();
+			InitDefault(true);
 		}
 	}
 
@@ -73,7 +113,6 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.24f);
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
-	colors[ImGuiCol_TitleBgActive] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
 	colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	colors[ImGuiCol_ScrollbarBg] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
 	colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
@@ -81,9 +120,6 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
 	colors[ImGuiCol_SliderGrab] = ImVec4(0.34f, 0.34f, 0.34f, 0.54f);
 	colors[ImGuiCol_SliderGrabActive] = ImVec4(0.56f, 0.56f, 0.56f, 0.54f);
-	colors[ImGuiCol_Button] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
-	colors[ImGuiCol_ButtonHovered] = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
-	colors[ImGuiCol_ButtonActive] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
 	colors[ImGuiCol_Header] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
 	colors[ImGuiCol_HeaderHovered] = ImVec4(0.00f, 0.00f, 0.00f, 0.36f);
 	colors[ImGuiCol_HeaderActive] = ImVec4(0.20f, 0.22f, 0.23f, 0.33f);
@@ -94,10 +130,6 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.44f, 0.44f, 0.44f, 0.29f);
 	colors[ImGuiCol_ResizeGripActive] = ImVec4(0.40f, 0.44f, 0.47f, 1.00f);
 	colors[ImGuiCol_Tab] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-	colors[ImGuiCol_TabHovered] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
-	colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
-	colors[ImGuiCol_TabUnfocused] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
-	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_DockingPreview] = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
 	colors[ImGuiCol_DockingEmptyBg] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
 	colors[ImGuiCol_PlotLines] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -137,7 +169,10 @@ void CUIThemeManager::InitDefault(bool Forced)
 
 	Load();
 	if (!Forced && IsLoaded)
+	{
+		IsLoaded = true;
 		return;
+	}
 
 	colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
@@ -151,7 +186,16 @@ void CUIThemeManager::InitDefault(bool Forced)
 	colors[ImGuiCol_CheckMark] = ImVec4(0.33f, 0.67f, 0.86f, 1.00f);
 	colors[ImGuiCol_Border] = ImVec4(0.19f, 0.19f, 0.19f, 0.29f);
 	colors[ImGuiCol_TitleBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	colors[ImGuiCol_TabHovered] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.20f, 0.20f, 0.36f);
+	colors[ImGuiCol_TabUnfocused] = ImVec4(0.00f, 0.00f, 0.00f, 0.52f);
+	colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+	colors[ImGuiCol_TitleBgActive] = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
+	colors[ImGuiCol_Button] = ImVec4(0.05f, 0.05f, 0.05f, 0.54f);
+	colors[ImGuiCol_ButtonHovered] = ImVec4(0.19f, 0.19f, 0.19f, 0.54f);
+	colors[ImGuiCol_ButtonActive] = ImVec4(0.20f, 0.22f, 0.23f, 1.00f);
 
+	IsLoaded = true;
 }
 
 void CUIThemeManager::Show(bool value)
@@ -161,6 +205,9 @@ void CUIThemeManager::Show(bool value)
 
 #define FastJSonReadImColor(color) \
 { \
+	if (!JSONData["Theme"].contains(#color))\
+		return; \
+	\
 	float r = JSONData["Theme"][#color]["r"];\
 	float g = JSONData["Theme"][#color]["g"];\
 	float b = JSONData["Theme"][#color]["b"];\
@@ -200,9 +247,18 @@ void CUIThemeManager::Save()
 	FastJSonWriteImColor(ImGuiCol_CheckMark);
 	FastJSonWriteImColor(ImGuiCol_Border);
 	FastJSonWriteImColor(ImGuiCol_TitleBg);
+	FastJSonWriteImColor(ImGuiCol_TabUnfocusedActive);
+	FastJSonWriteImColor(ImGuiCol_TabUnfocused);
+	FastJSonWriteImColor(ImGuiCol_TabActive);
+	FastJSonWriteImColor(ImGuiCol_TabHovered);
+	FastJSonWriteImColor(ImGuiCol_TitleBgActive);
+	FastJSonWriteImColor(ImGuiCol_ButtonHovered);
+	FastJSonWriteImColor(ImGuiCol_ButtonActive);
+	FastJSonWriteImColor(ImGuiCol_Button);
 
-	JSONData["Theme"]["ActiveAlpha"] = TransparentDefault;
+	JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
 	JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
+	JSONData["Theme"]["Font"] = ImCurrentFont;
 
 	string_path jfn;
 	FS.update_path(jfn, "$local_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
@@ -225,7 +281,9 @@ void CUIThemeManager::Load()
 	}
 
 	if (!JSONData.contains("Theme"))
+	{
 		return;
+	}
 
 	ImVec4* colors = ImGui::GetStyle().Colors;
 
@@ -241,9 +299,30 @@ void CUIThemeManager::Load()
 	FastJSonReadImColor(ImGuiCol_CheckMark);
 	FastJSonReadImColor(ImGuiCol_Border);
 	FastJSonReadImColor(ImGuiCol_TitleBg);
+	FastJSonReadImColor(ImGuiCol_TabUnfocusedActive);
+	FastJSonReadImColor(ImGuiCol_TabUnfocused);
+	FastJSonReadImColor(ImGuiCol_TabActive);
+	FastJSonReadImColor(ImGuiCol_TabHovered);
+	FastJSonReadImColor(ImGuiCol_TitleBgActive);
+	FastJSonReadImColor(ImGuiCol_ButtonHovered);
+	FastJSonReadImColor(ImGuiCol_ButtonActive);
+	FastJSonReadImColor(ImGuiCol_Button);
 
-	TransparentDefault = JSONData["Theme"]["ActiveAlpha"];
-	TransparentUnfocused = JSONData["Theme"]["ActiveAlpha"];
+
+	if (JSONData["Theme"].contains("InactiveAlpha"))
+	{
+		TransparentDefault = JSONData["Theme"]["InactiveAlpha"];
+	}
+
+	if (JSONData["Theme"].contains("ActiveAlpha"))
+	{
+		TransparentUnfocused = JSONData["Theme"]["ActiveAlpha"];
+	}
+
+	if (JSONData["Theme"].contains("Font"))
+	{
+		ImCurrentFont = JSONData["Theme"]["Font"];
+	}
 
 	IsLoaded = true;
 }
