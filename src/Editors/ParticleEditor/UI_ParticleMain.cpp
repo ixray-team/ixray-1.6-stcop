@@ -39,34 +39,26 @@ CCommandVar CParticleTool::CommandSaveXR(CCommandVar p1, CCommandVar p2)
     return TRUE;
 }
 
-#include "../xrEProps/UIFileLoad.h"
-extern CUFileOpen* FileOpen;
-
 CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
 {
-    FileOpen->AfterLoadCallback = [](xr_string filePathName)
+    xr_string temp_fn;
+    if (EFS.GetOpenName("$game_data$", temp_fn, false, NULL, 0))
     {
-        if (!filePathName.empty())
+        size_t Pos = temp_fn.find("gamedata", 0);
+
+        if (Pos == xr_string::npos)
         {
-            size_t Pos = filePathName.find("gamedata", 0);
-
-            if (Pos == xr_string::npos)
-            {
-                Msg("Incorrect Path!!! [%s]", filePathName.c_str());
-                return;
-            }
-
-            xr_string NormalPath = filePathName.substr(Pos);
-            RImplementation.PSLibrary.OnDestroy();
-            RImplementation.PSLibrary.Load(NormalPath.c_str());
-            PTools->ResetCurrent();
-            ExecCommand(COMMAND_UPDATE_PROPERTIES);
-            ExecCommand(COMMAND_UPDATE_CAPTION);
+            Msg("Incorrect Path!!! [%s]", temp_fn.c_str());
+            return false;
         }
-    };
 
-    FileOpen->ShowDialog("$game_data$", ".xr");
-
+        xr_string NormalPath = temp_fn.substr(Pos);
+        RImplementation.PSLibrary.OnDestroy();
+        RImplementation.PSLibrary.Load(NormalPath.c_str());
+        PTools->ResetCurrent();
+        ExecCommand(COMMAND_UPDATE_PROPERTIES);
+        ExecCommand(COMMAND_UPDATE_CAPTION);
+    }
     return TRUE;
 }
 

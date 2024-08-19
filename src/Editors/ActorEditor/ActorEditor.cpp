@@ -3,10 +3,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/xr_input.h"
 
-#include "../xrEProps/UIFileLoad.h"
 #include "../xrEProps/UIBoneView.h"
-
-CUFileOpen* FileOpen = nullptr;
 
 void DragFile(xr_string File)
 {
@@ -98,12 +95,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	UIMainForm* MainForm = xr_new<UIMainForm>();
 	::MainForm = MainForm;
 
-	//GameMaterialLibraryEditors->Load();
 	PGMLib->Load();
 
-	FileOpen = new CUFileOpen;
 	UI->PushBegin(MainForm, false);
-	UI->Push(FileOpen, false);
 
 	int ArgsCount = 0;
 	auto Commands = CommandLineToArgvW(GetCommandLine(), &ArgsCount);
