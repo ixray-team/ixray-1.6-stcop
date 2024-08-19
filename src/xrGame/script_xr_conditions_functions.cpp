@@ -11,7 +11,7 @@
 // specify your function implementation here as you do in xr_conditions.script
 // on Lua programming language reminder for user, the game uses client server
 // architecture thus they have client and server types that represent a NPC on
-// level. CScriptGameObject - client CSE_ALifeXXX - server
+// level. CScriptGameObject - CLIENT representation of NPC (online) |/|\| CSE_ALifeXXX - SERVER representation of NPC (offline)
 
 // always provide two implementations for your functions based on prefixes
 // _client and _server respectively
