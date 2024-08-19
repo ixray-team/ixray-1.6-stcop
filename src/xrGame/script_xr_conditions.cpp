@@ -98,6 +98,27 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(story_obj_in_zone_by_name);
 	REGISTER_FUNCTION_TO_SCRIPT(actor_in_zone);
 	REGISTER_FUNCTION_TO_SCRIPT(npc_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(health_le);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_health_le);
+	REGISTER_FUNCTION_TO_SCRIPT(npc_community);
+	REGISTER_FUNCTION_TO_SCRIPT(hitted_by);
+	REGISTER_FUNCTION_TO_SCRIPT(hitted_on_bone);
+	REGISTER_FUNCTION_TO_SCRIPT(best_pistol);
+	REGISTER_FUNCTION_TO_SCRIPT(deadly_hit);
+	REGISTER_FUNCTION_TO_SCRIPT(killed_by);
+	REGISTER_FUNCTION_TO_SCRIPT(is_alive_all);
+	REGISTER_FUNCTION_TO_SCRIPT(is_alive_one);
+	REGISTER_FUNCTION_TO_SCRIPT(is_alive);
+	REGISTER_FUNCTION_TO_SCRIPT(is_dead_all);
+	REGISTER_FUNCTION_TO_SCRIPT(is_dead_one);
+	REGISTER_FUNCTION_TO_SCRIPT(is_dead);
+	REGISTER_FUNCTION_TO_SCRIPT(story_object_exist);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_has_item);
+	REGISTER_FUNCTION_TO_SCRIPT(npc_has_item);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_has_item_count);
+	REGISTER_FUNCTION_TO_SCRIPT(signal);
+	REGISTER_FUNCTION_TO_SCRIPT(counter_greater);
+	REGISTER_FUNCTION_TO_SCRIPT(counter_equal);
 }
 
 void CScriptXRConditionsStorage::destroy()
