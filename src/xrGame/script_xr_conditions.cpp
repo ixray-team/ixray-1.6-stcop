@@ -119,6 +119,44 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(signal);
 	REGISTER_FUNCTION_TO_SCRIPT(counter_greater);
 	REGISTER_FUNCTION_TO_SCRIPT(counter_equal);
+	REGISTER_FUNCTION_TO_SCRIPT(check_smart_alarm_status);
+	REGISTER_FUNCTION_TO_SCRIPT(has_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(has_actor_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(see_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(has_enemy_in_current_loopholes_fov);
+	REGISTER_FUNCTION_TO_SCRIPT(talking);
+	REGISTER_FUNCTION_TO_SCRIPT(npc_talking);
+	REGISTER_FUNCTION_TO_SCRIPT(see_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_friend);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_neutral);
+	REGISTER_FUNCTION_TO_SCRIPT(is_factions_enemies);
+	REGISTER_FUNCTION_TO_SCRIPT(is_factions_friends);
+	REGISTER_FUNCTION_TO_SCRIPT(is_faction_enemy_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(is_faction_friend_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(is_faction_neutral_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(is_squad_friend_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(is_squad_enemy_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(is_squad_neutral_to_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(fighting_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(hit_by_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(killed_by_actor);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_has_weapon);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_active_detector);
+	REGISTER_FUNCTION_TO_SCRIPT(heavy_wounded);
+	REGISTER_FUNCTION_TO_SCRIPT(time_period);
+	REGISTER_FUNCTION_TO_SCRIPT(is_rain);
+	REGISTER_FUNCTION_TO_SCRIPT(is_heavy_rain);
+	REGISTER_FUNCTION_TO_SCRIPT(is_day);
+	REGISTER_FUNCTION_TO_SCRIPT(is_dark_night);
+	REGISTER_FUNCTION_TO_SCRIPT(is_jup_a12_mercs_time);
+	REGISTER_FUNCTION_TO_SCRIPT(zat_b7_is_night);
+	REGISTER_FUNCTION_TO_SCRIPT(zat_b7_is_late_attack_time);
+	REGISTER_FUNCTION_TO_SCRIPT(mob_has_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(mob_was_hit);
+	REGISTER_FUNCTION_TO_SCRIPT(actor_on_level);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_in_zone);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_has_enemy);
 }
 
 void CScriptXRConditionsStorage::destroy()
