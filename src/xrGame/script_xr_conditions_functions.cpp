@@ -1997,6 +1997,8 @@ inline bool has_enemy_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	{
 		result = pBot->GetBestEnemy() != nullptr;
 	}
+
+	return result;
 }
 
 inline bool has_enemy_server(CScriptGameObject* pActor,
