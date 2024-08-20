@@ -939,6 +939,8 @@ inline bool health_le_server(CScriptGameObject* pActor,
 			result = pCasted->get_health() < fValue;
 		}
 	}
+
+	return result;
 }
 
 inline bool actor_health_le_client(CScriptGameObject* pActor,
