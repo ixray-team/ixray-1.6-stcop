@@ -131,6 +131,22 @@ void UIRenderForm::Draw()
 			}
 		}
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			auto ImData = ImGui::AcceptDragDropPayload("TEST");
+
+			if (ImData != nullptr)
+			{
+				struct DragDropData
+				{
+					xr_string FileName;
+				} Data = *(DragDropData*)ImData->Data;
+
+				DragFunctor(Data.FileName);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		auto WndSize = ImGui::GetWindowSize();
 
 		for (auto& Data : UI->ViewportLines)
