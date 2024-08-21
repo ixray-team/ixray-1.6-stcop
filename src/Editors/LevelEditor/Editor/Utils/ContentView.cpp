@@ -61,33 +61,42 @@ void CContentView::Destroy()
 
 void CContentView::Init()
 {
-	Icons["Folder"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
-	Icons[".."] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
-	Icons["thm"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\thm");
-	Icons["logs"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\log");
-	Icons["ogg"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg");
-	Icons["wav"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\wav");
-	Icons["object"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\object");
+	Icons["Folder"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"), true};
+	Icons[".."] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\folder"), true};
+	Icons["thm"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\thm"), true};
+	Icons["logs"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\log"), true};
+	Icons["ogg"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg"), true};
+	Icons["wav"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\wav"), true};
+	Icons["object"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\object"), true};
 }
 
 bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, const size_t IterCount)
 {
+	ImVec4* colors = ImGui::GetStyle().Colors;
 	std::filesystem::path FilePath = InitFileName.c_str();
 	float YPos = ImGui::GetCursorPosY();
 	float XPos = ImGui::GetCursorPosX();
 
 	xr_string FileName = FilePath.filename().string().data();
 
-	ref_texture& Icon = std::filesystem::is_directory(FilePath) ? GetTexture("Folder") : GetTexture(FilePath.string().data());
-	bool OutValue = ImGui::ImageButton(FilePath.filename().string().c_str(), Icon->pSurface, BtnSize);
+	IconData& Icon = std::filesystem::is_directory(FilePath) ? GetTexture("Folder") : GetTexture(FilePath.string().data());
+	ImVec4 IconColor = Icon.UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
+
+	bool OutValue = ImGui::ImageButton
+	(
+		FilePath.filename().string().c_str(),
+		Icon.Icon->pSurface, BtnSize,
+		ImVec2(0, 0), ImVec2(1, 1), 
+		ImVec4(0, 0, 0, 0), IconColor
+	);
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length() - 1).c_str() : FileName.c_str();
-	//ImGui::Text(LabelText.data());
+
 	if (ImGui::BeginDragDropSource())
 	{
 		Data.FileName = FilePath.string().c_str();
 		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
-		ImGui::ImageButton(FilePath.filename().string().c_str(), Icon->pSurface, BtnSize);
+		ImGui::ImageButton(FilePath.filename().string().c_str(), Icon.Icon->pSurface, BtnSize);
 		ImGui::Text(LabelText.data());
 		ImGui::EndDragDropSource();
 	}
@@ -118,7 +127,7 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 	return OutValue;
 }
 
-ref_texture& CContentView::GetTexture(const xr_string& IconPath)
+CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 {
 	if (IconPath.ends_with(".ltx"))
 		return Icons["thm"];
@@ -152,20 +161,18 @@ ref_texture& CContentView::GetTexture(const xr_string& IconPath)
 			}
 			else
 			{
-				Icons[IconPath] = TempTexture;
+				Icons[IconPath] = {TempTexture, false};
 			}
 		}
 		else if (IconPath.ends_with(".dds"))
 		{
-			//size_t Iter = IconPath.find(GamedataTextureDir);
-			//xr_string NewPath = IconPath.substr(Iter + GamedataTextureDir.length());
 			xr_string NewPath = IconPath.substr(0, NewPath.length() - 4);
-			Icons[IconPath] = EDevice->Resources->_CreateTexture(NewPath.c_str());
-			Icons[IconPath]->Load();
+			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};
+			Icons[IconPath].Icon->Load();
 		}
 		else
 		{
-			Icons[IconPath] = EDevice->Resources->_CreateTexture(IconPath.c_str());
+			Icons[IconPath] = {EDevice->Resources->_CreateTexture(IconPath.c_str()), false};
 		}
 	}
 
