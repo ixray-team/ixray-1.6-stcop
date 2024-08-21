@@ -243,6 +243,39 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	}
 }
 
+bool CWeaponMagazined::OnShoot_CanShootNow()
+{
+	//if (ParentIsActor() && (IsActorPlanningSuicide() || IsActorSuicideNow()))
+		//return IsSuicideInreversible();
+
+	if (IsActionProcessing())
+	{
+		if (OnActWhileReload_CanActNow())
+			return true;
+
+		xr_string cur_param = "autoshoot_" + GetActualCurrentAnim();
+		if (lock_time > 0 && pSettings->line_exist(HudSection(), cur_param.c_str()) && pSettings->r_bool(HudSection(), cur_param.c_str()))
+		{
+			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
+			return false;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		if (ParentIsActor() && Actor()->GetMovementState(eReal) & mcSprint)
+		{
+			//Add sprint stopping anm
+			Actor()->SetMovementState(eWishful, mcSprint, false);
+			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void CWeaponMagazined::FireStart()
 {
 	if(!IsMisfire())
@@ -257,7 +290,7 @@ void CWeaponMagazined::FireStart()
 					if (GetState() == eShowing) return;
 					if (GetState() == eHiding) return;
 					if (GetState() == eMisfire) return;
-					if (lock_time) return;
+					if (!OnShoot_CanShootNow()) return;
 				}
 				else if (!Action_PrepareEarlyShotInReload())
 					return;
