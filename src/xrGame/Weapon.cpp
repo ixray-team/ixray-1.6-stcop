@@ -303,7 +303,20 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_d", 0.0f);
 	m_zoom_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_n", 0.0f);
 
-	m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		float origin_offset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", -1.f);
+
+		if (origin_offset < 0.0f)
+			origin_offset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
+		else
+			origin_offset = -READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", -1.f);
+
+		m_zoom_inertion.OriginOffset = origin_offset;
+	}
+	else
+		m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
+
 	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_tendto_speed", TENDTO_SPEED);
 	
 	if(pSettings->line_exist(section, "flame_particles_2"))
