@@ -31,7 +31,7 @@ bool IsValidSize(u32 w, u32 h){
 	return true;
 }
 
-bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
+ECORE_API bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
 {
 	if (!FS.exist(full_name))
 	{ 

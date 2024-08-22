@@ -22,8 +22,9 @@ public:
 	virtual void ResetBegin();
 	virtual void ResetEnd();
 
-	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
 private:
+	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
+	bool DrawContext(const std::filesystem::path& Path) const;
 	IconData& GetTexture(const xr_string& IconPath);
 
 private:

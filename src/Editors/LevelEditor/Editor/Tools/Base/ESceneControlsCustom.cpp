@@ -40,10 +40,9 @@ bool TUI_CustomControl::HiddenMode()
     return false;
 }
 
-void DragDrop(const xr_string& Path)
+void DragDrop(const xr_string& Path, int Type)
 {
     Fvector p, n;
-    CCustomObject* obj = 0;
     if (LUI->PickGround(p, UI->m_CurrentRStart, UI->m_CurrentRDir, 1, &n))
     {
         // before callback
@@ -51,21 +50,48 @@ void DragDrop(const xr_string& Path)
 
         string_path fn = {};
 
-        FS.update_path(fn, "$objects$", fn);
-        xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
-        NewPath = NewPath.substr(0, NewPath.length() - 7);
+        if (OBJCLASS_SCENEOBJECT == Type)
+        {
+            FS.update_path(fn, "$objects$", fn);
+            xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+            NewPath = NewPath.substr(0, NewPath.length() - 7);
 
-        string256 namebuffer;
-        Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
-        CSceneObject* obj = xr_new<CSceneObject>((LPVOID)0, namebuffer);
-        CEditableObject* ref = obj->SetReference(NewPath.data());
-        if (!obj->Valid()) {
-            xr_delete(obj);
+            string256 namebuffer;
+            Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
+            CSceneObject* obj = xr_new<CSceneObject>((LPVOID)0, namebuffer);
+            CEditableObject* ref = obj->SetReference(NewPath.data());
+            if (!obj->Valid()) {
+                xr_delete(obj);
+            }
+
+            obj->MoveTo(p, n);
+            Scene->SelectObjects(false, Type);
+            Scene->AppendObject(obj);
         }
+        else if (Type == OBJCLASS_GROUP)
+        {
+            FS.update_path(fn, "$groups$", fn);
+            xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+            NewPath = NewPath.substr(0, NewPath.length() - 6);
 
-        obj->MoveTo(p, n);
-        Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
-        Scene->AppendObject(obj);
+            string256 namebuffer;
+            Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
+            CGroupObject* obj = xr_new<CGroupObject>((LPVOID)0, namebuffer);
+
+            if (obj->SetReference(NewPath.data())) {
+                string256 			namebuffer;
+                Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
+                obj->SetName(namebuffer);
+            }
+
+            if (!obj->Valid()) {
+                xr_delete(obj);
+            }
+
+            obj->MoveTo(p, n);
+            Scene->SelectObjects(false, Type);
+            Scene->AppendObject(obj);
+        }
     }
 }
 
