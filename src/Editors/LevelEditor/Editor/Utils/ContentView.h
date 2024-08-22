@@ -19,6 +19,8 @@ public:
 	virtual void Draw() override;
 	virtual void Init();
 	virtual void Destroy();
+	virtual void ResetBegin();
+	virtual void ResetEnd();
 
 	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
 private:
