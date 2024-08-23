@@ -3439,6 +3439,384 @@ inline bool squad_has_enemy_server(CScriptGameObject* pActor,
 #endif
 }
 
+inline bool squad_in_zone_all_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_in_zone_all", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squad_in_zone_all_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_in_zone_all", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squads_in_zone_b41_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squads_in_zone_b41", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squads_in_zone_b41_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squads_in_zone_b41", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool target_squad_name_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.target_squad_name", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool target_squad_name_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.target_squad_name", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool target_smart_name_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.target_smart_name", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool target_smart_name_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.target_smart_name", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squad_exist_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_exist", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squad_exist_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_exist", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool is_squad_commander_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.is_squad_commander", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool is_squad_commander_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.is_squad_commander", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squad_npc_count_ge_client(CScriptGameObject* pActor,
+	CScriptGameObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_npc_count_ge", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
+inline bool squad_npc_count_ge_server(CScriptGameObject* pActor,
+	CSE_ALifeDynamicObject* pBot,
+	const xr_vector<xr_string>& buffer)
+{
+#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+	if (buffer.empty())
+		return false;
+
+	luabind::functor<bool> _impl;
+	auto status = ai().script_engine().functor("xr_conditions.squad_npc_count_ge", _impl);
+	R_ASSERT2(status,
+		"failed to obtain original function implementation in lua file!!!");
+
+	xr_vector<const char*> temp;
+
+	for (const xr_string& str : buffer)
+	{
+		temp.push_back(str.c_str());
+	}
+
+	return _impl(pActor, pBot, temp.data());
+#else
+	R_ASSERT2(false, "provide implementation");
+	return false;
+#endif
+}
+
 
 
 

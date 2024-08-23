@@ -157,6 +157,14 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 	REGISTER_FUNCTION_TO_SCRIPT(actor_on_level);
 	REGISTER_FUNCTION_TO_SCRIPT(squad_in_zone);
 	REGISTER_FUNCTION_TO_SCRIPT(squad_has_enemy);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_in_zone_all);
+	REGISTER_FUNCTION_TO_SCRIPT(squads_in_zone_b41);
+	REGISTER_FUNCTION_TO_SCRIPT(target_squad_name);
+	REGISTER_FUNCTION_TO_SCRIPT(target_smart_name);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_exist);
+	REGISTER_FUNCTION_TO_SCRIPT(is_squad_commander);
+	REGISTER_FUNCTION_TO_SCRIPT(squad_npc_count_ge);
+
 }
 
 void CScriptXRConditionsStorage::destroy()
