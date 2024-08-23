@@ -2474,17 +2474,19 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	if (!GetHUDmode())
 		return;
 
-	bool test = !!(get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1);
+	bool validBone = HudItemData()->m_model->LL_BoneID(wpn_scope) != BI_NONE;
 
-	HudItemData()->set_bone_visible(wpn_scope, test, TRUE);
+	bool scope_test = ((get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1) && validBone);
 
-	test = !!(get_SilencerStatus() == 2 && IsSilencerAttached() || get_SilencerStatus() == 1);
+	HudItemData()->set_bone_visible(wpn_scope, scope_test, TRUE);
 
-	HudItemData()->set_bone_visible(wpn_silencer, test, TRUE);
+	bool silencer_test = !!(get_SilencerStatus() == 2 && IsSilencerAttached() || get_SilencerStatus() == 1);
 
-	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
+	HudItemData()->set_bone_visible(wpn_silencer, silencer_test, TRUE);
 
-	HudItemData()->set_bone_visible(wpn_grenade_launcher, test, TRUE);
+	bool gl_test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
+
+	HudItemData()->set_bone_visible(wpn_grenade_launcher, gl_test, TRUE);
 }
 
 void CWeapon::UpdateAddonsVisibility()
