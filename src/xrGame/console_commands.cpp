@@ -2200,9 +2200,11 @@ void CCC_RegisterCommands()
 
 #endif // DEBUG
 	
-	CMD1(CCC_ALifeSave,			"save"					);		// save game
-	CMD1(CCC_ALifeLoadFrom,		"load"					);		// load game from ...
-	CMD1(CCC_LoadLastSave,		"load_last_save"		);		// load last saved game from ...
+	if(!Device.IsEditorMode()) {
+		CMD1(CCC_ALifeSave, "save");		// save game
+		CMD1(CCC_ALifeLoadFrom, "load");		// load game from ...
+		CMD1(CCC_LoadLastSave, "load_last_save");		// load last saved game from ...
+	}
 
 	CMD1(CCC_FlushLog,			"flush"					);		// flush log
 	CMD1(CCC_ClearLog,			"clear_log"					);
