@@ -1845,7 +1845,10 @@ bool CWeapon::IsCollimatorInstalled()
 		return false;
 
 	shared_str scope = GetCurrentScopeSection();
-	scope = pSettings->r_string(scope, "scope_name");
+	if (UseAltScope)
+		scope = m_scopes[m_cur_scope];
+	else
+		scope = pSettings->r_string(scope, "scope_name");
 
 	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
 }
@@ -1858,6 +1861,11 @@ bool CWeapon::IsHudModelForceUnhide()
 bool CWeapon::IsUIForceUnhiding()
 {
 	bool result = IsHudModelForceUnhide();
+	shared_str currentScope;
+	if (UseAltScope)
+		currentScope = m_scopes[m_cur_scope];
+	else
+		currentScope = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
 	if (result)
 	{
@@ -1866,7 +1874,7 @@ bool CWeapon::IsUIForceUnhiding()
 		else */if (get_ScopeStatus() == 1)
 			result = !READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
 		else if (get_ScopeStatus() == 2 && IsScopeAttached())
-			result = !READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+			result = !READ_IF_EXISTS(pSettings, r_bool, currentScope, "zoom_hide_ui", false);
 	}
 
 	return result;
@@ -1875,13 +1883,18 @@ bool CWeapon::IsUIForceUnhiding()
 bool CWeapon::IsUIForceHiding()
 {
 	CWeaponBinoculars* bino = smart_cast<CWeaponBinoculars*>(this);
+	shared_str currentScope;
+	if (UseAltScope)
+		currentScope = m_scopes[m_cur_scope];
+	else
+		currentScope = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
 	if (bino && IsZoomed())
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	else if (get_ScopeStatus() == 1 && IsZoomed())
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
 	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
-		return READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+		return READ_IF_EXISTS(pSettings, r_bool, currentScope, "zoom_hide_ui", false);
 	else
 		return false;
 }
@@ -3473,7 +3486,10 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	return !(IsZoomed() && ZoomTexture() && IsUIForceHiding() && !IsUIForceUnhiding());
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return !(IsZoomed() && ZoomTexture() && IsUIForceHiding() && !IsUIForceUnhiding());
+	else
+		return !(IsZoomed() && ZoomTexture());
 }
 
 float CWeapon::GetConditionToShow	() const
