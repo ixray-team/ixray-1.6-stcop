@@ -1875,8 +1875,8 @@ void CWeaponMagazined::InitAddons()
 		LoadLights		(*cNameSect(), "");
 		ResetSilencerKoeffs();
 	}
-
-	HudSelector();
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		HudSelector();
 	inherited::InitAddons();
 }
 
