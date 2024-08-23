@@ -112,6 +112,18 @@ public:                                                                        \
 			m_mServerStorageOf##return_type_of_function.end();                 \
 	}
 
+
+// TODO: ForserX->Discussion(); I suggest to use these variants for preprocessor and make possible to use vanila GSC's variant for lua like to disable cpp implementations of lua scripts; and for users who wants to re-write everything on cpp
+// also I suggest to defined which variant to use through CMake
+
+// if user wants vanila lua backend (no cpp at all)
+//#define IXRAY_USE_LUA_ONLY_IMPLEMENTATION
+// if user wants to use cpp backend (no lua at all)
+//#define IXRAY_USE_CPP_ONLY_IMPLEMENTATION
+// if user wants to use cpp backend but mixed with lua callings (some stuff is in pure lua, some stuff was re-written)
+#define IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
+
+
 class CScriptGameObject;
 
 class CConfigInfoportion

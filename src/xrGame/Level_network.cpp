@@ -167,10 +167,13 @@ void CLevel::net_Stop		()
 
 	ai().script_engine().collect_all_garbage();
 
+	#if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
+	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	if (m_pScriptXRCondition)
 	{
 		m_pScriptXRCondition->destroy();
 	}
+	#endif
 
 #ifdef DEBUG
 	show_animation_stats		();

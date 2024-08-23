@@ -21,7 +21,6 @@
 // of many functions can't be re-written so easily due to lack of manager
 // implementations like surge manager, story manager, db.script (database) and
 // etc, so if you can't provide implementation just use lua's implementation
-#define IXRAY_USE_LUA_IMPLEMENTATION
 
 inline bool fighting_dist_ge_client(CScriptGameObject* enemy,
 	CScriptGameObject* npc, const xr_vector<xr_string>& buffer)
@@ -98,7 +97,7 @@ inline bool fighting_dist_le_server(CScriptGameObject* enemy,
 inline bool enemy_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -116,7 +115,7 @@ inline bool enemy_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"implement signal rocket data storage, but only when you provided a "
 		"manager for that!");
@@ -127,7 +126,7 @@ inline bool enemy_in_zone_client(CScriptGameObject* pActor,
 inline bool enemy_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -145,7 +144,7 @@ inline bool enemy_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"implement signal rocket data storage, but only when you provided a "
 		"manager for that!");
@@ -212,7 +211,7 @@ inline bool check_npc_name_server(CScriptGameObject* pActor,
 inline bool check_enemy_name_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -230,7 +229,7 @@ inline bool check_enemy_name_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -239,7 +238,7 @@ inline bool check_enemy_name_client(CScriptGameObject* pActor,
 inline bool check_enemy_name_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -257,7 +256,7 @@ inline bool check_enemy_name_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -266,7 +265,7 @@ inline bool check_enemy_name_server(CScriptGameObject* pActor,
 inline bool is_playing_sound_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_playing_sound", _impl);
@@ -274,7 +273,7 @@ inline bool is_playing_sound_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -283,7 +282,7 @@ inline bool is_playing_sound_client(CScriptGameObject* pActor,
 inline bool is_playing_sound_server(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_playing_sound", _impl);
@@ -291,7 +290,7 @@ inline bool is_playing_sound_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -324,7 +323,7 @@ inline bool actor_alive_server(CScriptGameObject* pActor,
 inline bool see_npc_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -341,7 +340,7 @@ inline bool see_npc_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -350,7 +349,7 @@ inline bool see_npc_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool see_npc_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -367,7 +366,7 @@ inline bool see_npc_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -399,7 +398,7 @@ inline bool actor_see_npc_server(CScriptGameObject* pActor,
 inline bool npc_in_actor_frustum_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.npc_in_actor_frustum", _impl);
@@ -407,7 +406,7 @@ inline bool npc_in_actor_frustum_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -416,7 +415,7 @@ inline bool npc_in_actor_frustum_client(CScriptGameObject* pActor,
 inline bool npc_in_actor_frustum_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.npc_in_actor_frustum", _impl);
@@ -424,7 +423,7 @@ inline bool npc_in_actor_frustum_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -433,7 +432,7 @@ inline bool npc_in_actor_frustum_server(CScriptGameObject* pActor,
 inline bool is_wounded_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_wounded", _impl);
@@ -441,7 +440,7 @@ inline bool is_wounded_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -450,7 +449,7 @@ inline bool is_wounded_client(CScriptGameObject* pActor,
 inline bool is_wounded_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_wounded", _impl);
@@ -458,7 +457,7 @@ inline bool is_wounded_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -524,7 +523,7 @@ inline bool is_obj_on_job_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -542,7 +541,7 @@ inline bool is_obj_on_job_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -552,7 +551,7 @@ inline bool is_obj_on_job_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -570,7 +569,7 @@ inline bool is_obj_on_job_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -579,7 +578,7 @@ inline bool is_obj_on_job_server(CScriptGameObject* pActor,
 inline bool distance_to_obj_on_job_le_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -597,7 +596,7 @@ inline bool distance_to_obj_on_job_le_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -606,7 +605,7 @@ inline bool distance_to_obj_on_job_le_client(CScriptGameObject* pActor,
 inline bool distance_to_obj_on_job_le_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -624,7 +623,7 @@ inline bool distance_to_obj_on_job_le_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -633,7 +632,7 @@ inline bool distance_to_obj_on_job_le_server(CScriptGameObject* pActor,
 inline bool obj_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -651,7 +650,7 @@ inline bool obj_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -660,7 +659,7 @@ inline bool obj_in_zone_client(CScriptGameObject* pActor,
 inline bool obj_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -678,7 +677,7 @@ inline bool obj_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -687,7 +686,7 @@ inline bool obj_in_zone_server(CScriptGameObject* pActor,
 inline bool one_obj_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -705,7 +704,7 @@ inline bool one_obj_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -714,7 +713,7 @@ inline bool one_obj_in_zone_client(CScriptGameObject* pActor,
 inline bool one_obj_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -732,7 +731,7 @@ inline bool one_obj_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -741,7 +740,7 @@ inline bool one_obj_in_zone_server(CScriptGameObject* pActor,
 inline bool story_obj_in_zone_by_name_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -759,7 +758,7 @@ inline bool story_obj_in_zone_by_name_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -768,7 +767,7 @@ inline bool story_obj_in_zone_by_name_client(CScriptGameObject* pActor,
 inline bool story_obj_in_zone_by_name_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -786,7 +785,7 @@ inline bool story_obj_in_zone_by_name_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -795,7 +794,7 @@ inline bool story_obj_in_zone_by_name_server(CScriptGameObject* pActor,
 inline bool actor_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -813,7 +812,7 @@ inline bool actor_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -822,7 +821,7 @@ inline bool actor_in_zone_client(CScriptGameObject* pActor,
 inline bool actor_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -840,7 +839,7 @@ inline bool actor_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -849,7 +848,7 @@ inline bool actor_in_zone_server(CScriptGameObject* pActor,
 inline bool npc_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -867,7 +866,7 @@ inline bool npc_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -876,7 +875,7 @@ inline bool npc_in_zone_client(CScriptGameObject* pActor,
 inline bool npc_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -894,7 +893,7 @@ inline bool npc_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -974,7 +973,7 @@ inline bool actor_health_le_server(CScriptGameObject* pActor,
 inline bool npc_community_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -992,7 +991,7 @@ inline bool npc_community_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1001,7 +1000,7 @@ inline bool npc_community_client(CScriptGameObject* pActor,
 inline bool npc_community_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1019,7 +1018,7 @@ inline bool npc_community_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1027,7 +1026,7 @@ inline bool npc_community_server(CScriptGameObject* pActor,
 
 inline bool hitted_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1045,7 +1044,7 @@ inline bool hitted_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1054,7 +1053,7 @@ inline bool hitted_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool hitted_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1072,7 +1071,7 @@ inline bool hitted_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* 
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1081,7 +1080,7 @@ inline bool hitted_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* 
 inline bool hitted_on_bone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1099,7 +1098,7 @@ inline bool hitted_on_bone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1108,7 +1107,7 @@ inline bool hitted_on_bone_client(CScriptGameObject* pActor,
 inline bool hitted_on_bone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1126,7 +1125,7 @@ inline bool hitted_on_bone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1157,7 +1156,7 @@ inline bool best_pistol_server(CScriptGameObject* pActor,
 inline bool deadly_hit_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.deadly_hit", _impl);
@@ -1165,7 +1164,7 @@ inline bool deadly_hit_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement animpoint for database");
 	return false;
 #endif
@@ -1174,7 +1173,7 @@ inline bool deadly_hit_client(CScriptGameObject* pActor,
 inline bool deadly_hit_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.deadly_hit", _impl);
@@ -1182,7 +1181,7 @@ inline bool deadly_hit_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement animpoint for database");
 	return false;
 #endif
@@ -1191,7 +1190,7 @@ inline bool deadly_hit_server(CScriptGameObject* pActor,
 inline bool killed_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1209,7 +1208,7 @@ inline bool killed_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1218,7 +1217,7 @@ inline bool killed_by_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool killed_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1236,7 +1235,7 @@ inline bool killed_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* 
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1245,7 +1244,7 @@ inline bool killed_by_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* 
 inline bool is_alive_all_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1263,7 +1262,7 @@ inline bool is_alive_all_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1272,7 +1271,7 @@ inline bool is_alive_all_client(CScriptGameObject* pActor,
 inline bool is_alive_all_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1290,7 +1289,7 @@ inline bool is_alive_all_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1298,7 +1297,7 @@ inline bool is_alive_all_server(CScriptGameObject* pActor,
 
 inline bool is_alive_one_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1316,7 +1315,7 @@ inline bool is_alive_one_client(CScriptGameObject* pActor, CScriptGameObject* pB
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1325,7 +1324,7 @@ inline bool is_alive_one_client(CScriptGameObject* pActor, CScriptGameObject* pB
 inline bool is_alive_one_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1343,7 +1342,7 @@ inline bool is_alive_one_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1351,7 +1350,7 @@ inline bool is_alive_one_server(CScriptGameObject* pActor,
 
 inline bool is_alive_client(CScriptGameObject* pActor, CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1369,7 +1368,7 @@ inline bool is_alive_client(CScriptGameObject* pActor, CScriptGameObject* pBot, 
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1378,7 +1377,7 @@ inline bool is_alive_client(CScriptGameObject* pActor, CScriptGameObject* pBot, 
 inline bool is_alive_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1395,7 +1394,7 @@ inline bool is_alive_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* p
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1404,7 +1403,7 @@ inline bool is_alive_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* p
 inline bool is_dead_all_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1421,7 +1420,7 @@ inline bool is_dead_all_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1430,7 +1429,7 @@ inline bool is_dead_all_client(CScriptGameObject* pActor,
 inline bool is_dead_all_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1448,7 +1447,7 @@ inline bool is_dead_all_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1457,7 +1456,7 @@ inline bool is_dead_all_server(CScriptGameObject* pActor,
 inline bool is_dead_one_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1475,7 +1474,7 @@ inline bool is_dead_one_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1484,7 +1483,7 @@ inline bool is_dead_one_client(CScriptGameObject* pActor,
 inline bool is_dead_one_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1502,7 +1501,7 @@ inline bool is_dead_one_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1511,7 +1510,7 @@ inline bool is_dead_one_server(CScriptGameObject* pActor,
 inline bool is_dead_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1529,7 +1528,7 @@ inline bool is_dead_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1538,7 +1537,7 @@ inline bool is_dead_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool is_dead_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1555,7 +1554,7 @@ inline bool is_dead_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pB
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1564,7 +1563,7 @@ inline bool is_dead_server(CScriptGameObject* pActor, CSE_ALifeDynamicObject* pB
 inline bool story_object_exist_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1581,7 +1580,7 @@ inline bool story_object_exist_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1590,7 +1589,7 @@ inline bool story_object_exist_client(CScriptGameObject* pActor,
 inline bool story_object_exist_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1608,7 +1607,7 @@ inline bool story_object_exist_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1617,7 +1616,7 @@ inline bool story_object_exist_server(CScriptGameObject* pActor,
 inline bool actor_has_item_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1635,7 +1634,7 @@ inline bool actor_has_item_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1644,7 +1643,7 @@ inline bool actor_has_item_client(CScriptGameObject* pActor,
 inline bool actor_has_item_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1662,7 +1661,7 @@ inline bool actor_has_item_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1671,7 +1670,7 @@ inline bool actor_has_item_server(CScriptGameObject* pActor,
 inline bool npc_has_item_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1689,7 +1688,7 @@ inline bool npc_has_item_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1698,7 +1697,7 @@ inline bool npc_has_item_client(CScriptGameObject* pActor,
 inline bool npc_has_item_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1716,7 +1715,7 @@ inline bool npc_has_item_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1725,7 +1724,7 @@ inline bool npc_has_item_server(CScriptGameObject* pActor,
 inline bool actor_has_item_count_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1743,7 +1742,7 @@ inline bool actor_has_item_count_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1752,7 +1751,7 @@ inline bool actor_has_item_count_client(CScriptGameObject* pActor,
 inline bool actor_has_item_count_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1770,7 +1769,7 @@ inline bool actor_has_item_count_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1779,7 +1778,7 @@ inline bool actor_has_item_count_server(CScriptGameObject* pActor,
 inline bool signal_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1797,7 +1796,7 @@ inline bool signal_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1806,7 +1805,7 @@ inline bool signal_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool signal_server(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1823,7 +1822,7 @@ inline bool signal_server(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1832,7 +1831,7 @@ inline bool signal_server(CScriptGameObject* pActor, CScriptGameObject* pBot,
 inline bool counter_greater_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1849,7 +1848,7 @@ inline bool counter_greater_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1858,7 +1857,7 @@ inline bool counter_greater_client(CScriptGameObject* pActor,
 inline bool counter_greater_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1876,7 +1875,7 @@ inline bool counter_greater_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1885,7 +1884,7 @@ inline bool counter_greater_server(CScriptGameObject* pActor,
 inline bool counter_equal_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1903,7 +1902,7 @@ inline bool counter_equal_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1912,7 +1911,7 @@ inline bool counter_equal_client(CScriptGameObject* pActor,
 inline bool counter_equal_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1930,7 +1929,7 @@ inline bool counter_equal_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1940,7 +1939,7 @@ inline bool counter_equal_server(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1957,7 +1956,7 @@ inline bool counter_equal_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -1967,7 +1966,7 @@ inline bool check_smart_alarm_status_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -1984,7 +1983,7 @@ inline bool check_smart_alarm_status_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2154,14 +2153,14 @@ inline bool actor_enemy_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_enemy", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2171,14 +2170,14 @@ inline bool actor_enemy_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_enemy", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2188,14 +2187,14 @@ inline bool actor_friend_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_friend", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2205,14 +2204,14 @@ inline bool actor_friend_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_friend", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2222,14 +2221,14 @@ inline bool actor_neutral_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_neutral", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2239,14 +2238,14 @@ inline bool actor_neutral_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_neutral", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2266,7 +2265,7 @@ inline bool is_factions_enemies_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2283,7 +2282,7 @@ inline bool is_factions_enemies_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2293,7 +2292,7 @@ inline bool is_factions_enemies_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2310,7 +2309,7 @@ inline bool is_factions_enemies_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2321,7 +2320,7 @@ inline bool is_factions_friends_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2338,7 +2337,7 @@ inline bool is_factions_friends_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2348,7 +2347,7 @@ inline bool is_factions_friends_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2365,7 +2364,7 @@ inline bool is_factions_friends_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2375,7 +2374,7 @@ inline bool is_faction_enemy_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2392,7 +2391,7 @@ inline bool is_faction_enemy_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2402,7 +2401,7 @@ inline bool is_faction_enemy_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2419,7 +2418,7 @@ inline bool is_faction_enemy_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2429,7 +2428,7 @@ inline bool is_faction_friend_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2446,7 +2445,7 @@ inline bool is_faction_friend_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2456,7 +2455,7 @@ inline bool is_faction_friend_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2473,7 +2472,7 @@ inline bool is_faction_friend_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2483,7 +2482,7 @@ inline bool is_faction_neutral_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2500,7 +2499,7 @@ inline bool is_faction_neutral_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2510,7 +2509,7 @@ inline bool is_faction_neutral_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2527,7 +2526,7 @@ inline bool is_faction_neutral_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2537,7 +2536,7 @@ inline bool is_squad_friend_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2554,7 +2553,7 @@ inline bool is_squad_friend_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2564,7 +2563,7 @@ inline bool is_squad_friend_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2581,7 +2580,7 @@ inline bool is_squad_friend_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2591,7 +2590,7 @@ inline bool is_squad_enemy_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2608,7 +2607,7 @@ inline bool is_squad_enemy_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2618,7 +2617,7 @@ inline bool is_squad_enemy_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2635,7 +2634,7 @@ inline bool is_squad_enemy_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2645,7 +2644,7 @@ inline bool is_squad_neutral_to_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2662,7 +2661,7 @@ inline bool is_squad_neutral_to_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2672,7 +2671,7 @@ inline bool is_squad_neutral_to_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2689,7 +2688,7 @@ inline bool is_squad_neutral_to_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2699,14 +2698,14 @@ inline bool fighting_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.fighting_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2716,14 +2715,14 @@ inline bool fighting_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.fighting_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2733,14 +2732,14 @@ inline bool hit_by_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.hit_by_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2750,14 +2749,14 @@ inline bool hit_by_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.hit_by_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2767,14 +2766,14 @@ inline bool killed_by_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.killed_by_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2784,14 +2783,14 @@ inline bool killed_by_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.killed_by_actor", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2801,14 +2800,14 @@ inline bool actor_has_weapon_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.actor_has_weapon", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2817,7 +2816,7 @@ inline bool actor_has_weapon_client(CScriptGameObject* pActor,
 inline bool actor_has_weapon_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.actor_has_weapon", _impl);
@@ -2825,7 +2824,7 @@ inline bool actor_has_weapon_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2835,7 +2834,7 @@ inline bool actor_active_detector_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2852,7 +2851,7 @@ inline bool actor_active_detector_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2862,7 +2861,7 @@ inline bool actor_active_detector_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2879,7 +2878,7 @@ inline bool actor_active_detector_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2889,14 +2888,14 @@ inline bool heavy_wounded_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.heavy_wounded", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2906,14 +2905,14 @@ inline bool heavy_wounded_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.heavy_wounded", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2923,7 +2922,7 @@ inline bool time_period_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2940,7 +2939,7 @@ inline bool time_period_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2950,7 +2949,7 @@ inline bool time_period_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -2967,7 +2966,7 @@ inline bool time_period_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2976,14 +2975,14 @@ inline bool time_period_server(CScriptGameObject* pActor,
 inline bool is_rain_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_rain", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -2993,14 +2992,14 @@ inline bool is_rain_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_rain", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3010,14 +3009,14 @@ inline bool is_heavy_rain_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_heavy_rain", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3027,14 +3026,14 @@ inline bool is_heavy_rain_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_heavy_rain", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3043,14 +3042,14 @@ inline bool is_heavy_rain_server(CScriptGameObject* pActor,
 inline bool is_day_client(CScriptGameObject* pActor, CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_day", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3060,14 +3059,14 @@ inline bool is_day_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_day", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3077,14 +3076,14 @@ inline bool is_dark_night_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_dark_night", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3094,14 +3093,14 @@ inline bool is_dark_night_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_dark_night", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3111,14 +3110,14 @@ inline bool is_jup_a12_mercs_time_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_jup_a12_mercs_time", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3128,14 +3127,14 @@ inline bool is_jup_a12_mercs_time_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.is_jup_a12_mercs_time", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3145,14 +3144,14 @@ inline bool zat_b7_is_night_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.zat_b7_is_night", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3162,14 +3161,14 @@ inline bool zat_b7_is_night_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.zat_b7_is_night", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3179,14 +3178,14 @@ inline bool zat_b7_is_late_attack_time_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.zat_b7_is_late_attack_time", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3196,14 +3195,14 @@ inline bool zat_b7_is_late_attack_time_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.zat_b7_is_late_attack_time", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3213,14 +3212,14 @@ inline bool mob_has_enemy_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.mob_has_enemy", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3230,14 +3229,14 @@ inline bool mob_has_enemy_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.mob_has_enemy", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3247,14 +3246,14 @@ inline bool mob_was_hit_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.mob_was_hit", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3264,14 +3263,14 @@ inline bool mob_was_hit_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor("xr_conditions.mob_was_hit", _impl);
 	R_ASSERT2(status,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3281,7 +3280,7 @@ inline bool actor_on_level_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3298,7 +3297,7 @@ inline bool actor_on_level_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3308,7 +3307,7 @@ inline bool actor_on_level_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3325,7 +3324,7 @@ inline bool actor_on_level_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3335,7 +3334,7 @@ inline bool squad_in_zone_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3352,7 +3351,7 @@ inline bool squad_in_zone_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3362,7 +3361,7 @@ inline bool squad_in_zone_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3379,7 +3378,7 @@ inline bool squad_in_zone_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3389,7 +3388,7 @@ inline bool squad_has_enemy_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3406,7 +3405,7 @@ inline bool squad_has_enemy_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3416,7 +3415,7 @@ inline bool squad_has_enemy_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3433,7 +3432,7 @@ inline bool squad_has_enemy_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3443,7 +3442,7 @@ inline bool squad_in_zone_all_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3460,7 +3459,7 @@ inline bool squad_in_zone_all_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3470,7 +3469,7 @@ inline bool squad_in_zone_all_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3487,7 +3486,7 @@ inline bool squad_in_zone_all_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3497,7 +3496,7 @@ inline bool squads_in_zone_b41_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3514,7 +3513,7 @@ inline bool squads_in_zone_b41_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3524,7 +3523,7 @@ inline bool squads_in_zone_b41_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3541,7 +3540,7 @@ inline bool squads_in_zone_b41_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3551,7 +3550,7 @@ inline bool target_squad_name_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3568,7 +3567,7 @@ inline bool target_squad_name_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3578,7 +3577,7 @@ inline bool target_squad_name_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3595,7 +3594,7 @@ inline bool target_squad_name_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3605,7 +3604,7 @@ inline bool target_smart_name_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3622,7 +3621,7 @@ inline bool target_smart_name_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3632,7 +3631,7 @@ inline bool target_smart_name_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3649,7 +3648,7 @@ inline bool target_smart_name_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3659,7 +3658,7 @@ inline bool squad_exist_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3676,7 +3675,7 @@ inline bool squad_exist_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3686,7 +3685,7 @@ inline bool squad_exist_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3703,7 +3702,7 @@ inline bool squad_exist_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3713,7 +3712,7 @@ inline bool is_squad_commander_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3730,7 +3729,7 @@ inline bool is_squad_commander_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3740,7 +3739,7 @@ inline bool is_squad_commander_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3757,7 +3756,7 @@ inline bool is_squad_commander_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3767,7 +3766,7 @@ inline bool squad_npc_count_ge_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3784,7 +3783,7 @@ inline bool squad_npc_count_ge_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3794,7 +3793,7 @@ inline bool squad_npc_count_ge_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot,
 	const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3811,7 +3810,7 @@ inline bool squad_npc_count_ge_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -3841,7 +3840,7 @@ inline bool dist_to_actor_le_server(CScriptGameObject* pActor,
 inline bool surge_started_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_started", _impl);
@@ -3849,7 +3848,7 @@ inline bool surge_started_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3858,7 +3857,7 @@ inline bool surge_started_client(CScriptGameObject* pActor,
 inline bool surge_started_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_started", _impl);
@@ -3866,7 +3865,7 @@ inline bool surge_started_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3875,7 +3874,7 @@ inline bool surge_started_server(CScriptGameObject* pActor,
 inline bool surge_complete_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_complete", _impl);
@@ -3883,7 +3882,7 @@ inline bool surge_complete_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3892,7 +3891,7 @@ inline bool surge_complete_client(CScriptGameObject* pActor,
 inline bool surge_complete_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_complete", _impl);
@@ -3900,7 +3899,7 @@ inline bool surge_complete_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3909,7 +3908,7 @@ inline bool surge_complete_server(CScriptGameObject* pActor,
 inline bool surge_kill_all_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_kill_all", _impl);
@@ -3917,7 +3916,7 @@ inline bool surge_kill_all_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3926,7 +3925,7 @@ inline bool surge_kill_all_client(CScriptGameObject* pActor,
 inline bool surge_kill_all_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.surge_kill_all", _impl);
@@ -3934,7 +3933,7 @@ inline bool surge_kill_all_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "surge manager is not implemented yet!");
 	return false;
 #endif
@@ -3943,7 +3942,7 @@ inline bool surge_kill_all_server(CScriptGameObject* pActor,
 inline bool signal_rocket_flying_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3961,7 +3960,7 @@ inline bool signal_rocket_flying_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"implement signal rocket data storage, but only when you provided a "
 		"manager for that!");
@@ -3972,7 +3971,7 @@ inline bool signal_rocket_flying_client(CScriptGameObject* pActor,
 inline bool signal_rocket_flying_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -3989,7 +3988,7 @@ inline bool signal_rocket_flying_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"implement signal rocket data storage, but only when you provided a "
 		"manager for that!");
@@ -4000,7 +3999,7 @@ inline bool signal_rocket_flying_server(CScriptGameObject* pActor,
 inline bool quest_npc_enemy_actor_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -4018,7 +4017,7 @@ inline bool quest_npc_enemy_actor_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	bool result{};
 	if (buffer.empty())
 		return result;
@@ -4036,7 +4035,7 @@ inline bool quest_npc_enemy_actor_client(CScriptGameObject* pActor,
 inline bool quest_npc_enemy_actor_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	if (buffer.empty())
 		return false;
 
@@ -4054,7 +4053,7 @@ inline bool quest_npc_enemy_actor_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	bool result{};
 	if (buffer.empty())
 		return result;
@@ -4072,7 +4071,7 @@ inline bool quest_npc_enemy_actor_server(CScriptGameObject* pActor,
 inline bool animpoint_reached_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.animpoint_reached", _impl);
@@ -4080,7 +4079,7 @@ inline bool animpoint_reached_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement animpoint for database");
 	return false;
 #endif
@@ -4089,7 +4088,7 @@ inline bool animpoint_reached_client(CScriptGameObject* pActor,
 inline bool animpoint_reached_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.animpoint_reached", _impl);
@@ -4097,7 +4096,7 @@ inline bool animpoint_reached_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement animpoint for database");
 	return false;
 #endif
@@ -4106,7 +4105,7 @@ inline bool animpoint_reached_server(CScriptGameObject* pActor,
 inline bool distance_to_obj_ge_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.distance_to_obj_ge", _impl);
@@ -4120,7 +4119,7 @@ inline bool distance_to_obj_ge_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement story registry!");
 	return false;
 #endif
@@ -4129,7 +4128,7 @@ inline bool distance_to_obj_ge_client(CScriptGameObject* pActor,
 inline bool distance_to_obj_ge_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.distance_to_obj_ge", _impl);
@@ -4143,7 +4142,7 @@ inline bool distance_to_obj_ge_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement story registry");
 	return false;
 #endif
@@ -4152,7 +4151,7 @@ inline bool distance_to_obj_ge_server(CScriptGameObject* pActor,
 inline bool distance_to_obj_le_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.distance_to_obj_le", _impl);
@@ -4166,7 +4165,7 @@ inline bool distance_to_obj_le_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement story registry!");
 	return false;
 #endif
@@ -4175,7 +4174,7 @@ inline bool distance_to_obj_le_client(CScriptGameObject* pActor,
 inline bool distance_to_obj_le_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.distance_to_obj_le", _impl);
@@ -4189,7 +4188,7 @@ inline bool distance_to_obj_le_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement story registry!");
 	return false;
 #endif
@@ -4307,7 +4306,7 @@ inline bool jup_b16_is_zone_active_server(CScriptGameObject* pActor,
 inline bool check_bloodsucker_state_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.check_bloodsucker_state", _impl);
@@ -4321,7 +4320,7 @@ inline bool check_bloodsucker_state_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4330,7 +4329,7 @@ inline bool check_bloodsucker_state_client(CScriptGameObject* pActor,
 inline bool check_bloodsucker_state_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.check_bloodsucker_state", _impl);
@@ -4344,7 +4343,7 @@ inline bool check_bloodsucker_state_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4353,7 +4352,7 @@ inline bool check_bloodsucker_state_server(CScriptGameObject* pActor,
 inline bool dist_to_story_obj_ge_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.dist_to_story_obj_ge", _impl);
@@ -4367,7 +4366,7 @@ inline bool dist_to_story_obj_ge_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4376,7 +4375,7 @@ inline bool dist_to_story_obj_ge_client(CScriptGameObject* pActor,
 inline bool dist_to_story_obj_ge_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.dist_to_story_obj_ge", _impl);
@@ -4390,7 +4389,7 @@ inline bool dist_to_story_obj_ge_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4523,7 +4522,7 @@ inline bool actor_has_active_nimble_weapon_server(CScriptGameObject* pActor,
 inline bool jup_b202_inventory_box_empty_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.jup_b202_inventory_box_empty", _impl);
@@ -4531,7 +4530,7 @@ inline bool jup_b202_inventory_box_empty_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement this and story registry manager");
 	return false;
 #endif
@@ -4540,7 +4539,7 @@ inline bool jup_b202_inventory_box_empty_client(CScriptGameObject* pActor,
 inline bool jup_b202_inventory_box_empty_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.jup_b202_inventory_box_empty", _impl);
@@ -4548,7 +4547,7 @@ inline bool jup_b202_inventory_box_empty_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "implement this and story registry manager");
 	return false;
 #endif
@@ -4557,7 +4556,7 @@ inline bool jup_b202_inventory_box_empty_server(CScriptGameObject* pActor,
 inline bool is_in_danger_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_in_danger", _impl);
@@ -4571,7 +4570,7 @@ inline bool is_in_danger_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4580,7 +4579,7 @@ inline bool is_in_danger_client(CScriptGameObject* pActor,
 inline bool is_in_danger_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.is_in_danger", _impl);
@@ -4594,7 +4593,7 @@ inline bool is_in_danger_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4603,7 +4602,7 @@ inline bool is_in_danger_server(CScriptGameObject* pActor,
 inline bool object_exist_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.object_exist", _impl);
@@ -4617,7 +4616,7 @@ inline bool object_exist_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4626,7 +4625,7 @@ inline bool object_exist_client(CScriptGameObject* pActor,
 inline bool object_exist_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.object_exist", _impl);
@@ -4640,7 +4639,7 @@ inline bool object_exist_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "not implemented!");
 	return false;
 #endif
@@ -4649,7 +4648,7 @@ inline bool object_exist_server(CScriptGameObject* pActor,
 inline bool squad_curr_action_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.squad_curr_action", _impl);
@@ -4663,7 +4662,7 @@ inline bool squad_curr_action_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"provide se_squad_group.script implementation on C++ side, not "
 		"implemented!");
@@ -4674,7 +4673,7 @@ inline bool squad_curr_action_client(CScriptGameObject* pActor,
 inline bool squad_curr_action_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.squad_curr_action", _impl);
@@ -4688,7 +4687,7 @@ inline bool squad_curr_action_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false,
 		"provide se_squad_group.script implementation on C++ side, not "
 		"implemented!");
@@ -4933,7 +4932,7 @@ inline bool is_monster_boar_server(CScriptGameObject* pActor,
 inline bool dead_body_searching_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.dead_body_searching", _impl);
@@ -4941,7 +4940,7 @@ inline bool dead_body_searching_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "actor_menu provide implementation");
 	return false;
 #endif
@@ -4950,7 +4949,7 @@ inline bool dead_body_searching_client(CScriptGameObject* pActor,
 inline bool dead_body_searching_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.dead_body_searching", _impl);
@@ -4958,7 +4957,7 @@ inline bool dead_body_searching_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "actor_menu provide implementation");
 	return false;
 #endif
@@ -4967,7 +4966,7 @@ inline bool dead_body_searching_server(CScriptGameObject* pActor,
 inline bool jup_b47_npc_online_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.jup_b47_npc_online", _impl);
@@ -4981,7 +4980,7 @@ inline bool jup_b47_npc_online_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -4990,7 +4989,7 @@ inline bool jup_b47_npc_online_client(CScriptGameObject* pActor,
 inline bool jup_b47_npc_online_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.jup_b47_npc_online", _impl);
@@ -5004,7 +5003,7 @@ inline bool jup_b47_npc_online_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5013,7 +5012,7 @@ inline bool jup_b47_npc_online_server(CScriptGameObject* pActor,
 inline bool anomaly_has_artefact_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.anomaly_has_artefact", _impl);
@@ -5027,7 +5026,7 @@ inline bool anomaly_has_artefact_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide storage of anomaly_by_name");
 	return false;
 #endif
@@ -5036,7 +5035,7 @@ inline bool anomaly_has_artefact_client(CScriptGameObject* pActor,
 inline bool anomaly_has_artefact_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.anomaly_has_artefact", _impl);
@@ -5050,7 +5049,7 @@ inline bool anomaly_has_artefact_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide storage of anomaly_by_name");
 	return false;
 #endif
@@ -5059,7 +5058,7 @@ inline bool anomaly_has_artefact_server(CScriptGameObject* pActor,
 inline bool zat_b29_anomaly_has_af_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b29_anomaly_has_af", _impl);
@@ -5073,7 +5072,7 @@ inline bool zat_b29_anomaly_has_af_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide storage of anomaly_by_name");
 	return false;
 #endif
@@ -5082,7 +5081,7 @@ inline bool zat_b29_anomaly_has_af_client(CScriptGameObject* pActor,
 inline bool zat_b29_anomaly_has_af_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b29_anomaly_has_af", _impl);
@@ -5096,7 +5095,7 @@ inline bool zat_b29_anomaly_has_af_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide storage of anomaly_by_name");
 	return false;
 #endif
@@ -5196,7 +5195,7 @@ inline bool jup_b221_who_will_start_server(CScriptGameObject* pActor,
 inline bool pas_b400_actor_far_forward_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pas_b400_actor_far_forward", _impl);
@@ -5204,7 +5203,7 @@ inline bool pas_b400_actor_far_forward_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5213,7 +5212,7 @@ inline bool pas_b400_actor_far_forward_client(CScriptGameObject* pActor,
 inline bool pas_b400_actor_far_forward_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pas_b400_actor_far_forward", _impl);
@@ -5221,7 +5220,7 @@ inline bool pas_b400_actor_far_forward_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5230,7 +5229,7 @@ inline bool pas_b400_actor_far_forward_server(CScriptGameObject* pActor,
 inline bool pas_b400_actor_far_backward_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pas_b400_actor_far_backward", _impl);
@@ -5238,7 +5237,7 @@ inline bool pas_b400_actor_far_backward_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5247,7 +5246,7 @@ inline bool pas_b400_actor_far_backward_client(CScriptGameObject* pActor,
 inline bool pas_b400_actor_far_backward_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pas_b400_actor_far_backward", _impl);
@@ -5255,7 +5254,7 @@ inline bool pas_b400_actor_far_backward_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5264,7 +5263,7 @@ inline bool pas_b400_actor_far_backward_server(CScriptGameObject* pActor,
 inline bool pri_a28_actor_is_far_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pri_a28_actor_is_far", _impl);
@@ -5272,7 +5271,7 @@ inline bool pri_a28_actor_is_far_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5281,7 +5280,7 @@ inline bool pri_a28_actor_is_far_client(CScriptGameObject* pActor,
 inline bool pri_a28_actor_is_far_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.pri_a28_actor_is_far", _impl);
@@ -5289,7 +5288,7 @@ inline bool pri_a28_actor_is_far_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5298,7 +5297,7 @@ inline bool pri_a28_actor_is_far_server(CScriptGameObject* pActor,
 inline bool check_enemy_smart_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.check_enemy_smart", _impl);
@@ -5312,7 +5311,7 @@ inline bool check_enemy_smart_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5321,7 +5320,7 @@ inline bool check_enemy_smart_client(CScriptGameObject* pActor,
 inline bool check_enemy_smart_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.check_enemy_smart", _impl);
@@ -5335,7 +5334,7 @@ inline bool check_enemy_smart_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5344,7 +5343,7 @@ inline bool check_enemy_smart_server(CScriptGameObject* pActor,
 inline bool zat_b103_actor_has_needed_food_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b103_actor_has_needed_food", _impl);
@@ -5352,7 +5351,7 @@ inline bool zat_b103_actor_has_needed_food_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5361,7 +5360,7 @@ inline bool zat_b103_actor_has_needed_food_client(CScriptGameObject* pActor,
 inline bool zat_b103_actor_has_needed_food_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b103_actor_has_needed_food", _impl);
@@ -5369,7 +5368,7 @@ inline bool zat_b103_actor_has_needed_food_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5378,7 +5377,7 @@ inline bool zat_b103_actor_has_needed_food_server(CScriptGameObject* pActor,
 inline bool zat_b29_rivals_dialog_precond_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b29_rivals_dialog_precond", _impl);
@@ -5386,7 +5385,7 @@ inline bool zat_b29_rivals_dialog_precond_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5395,7 +5394,7 @@ inline bool zat_b29_rivals_dialog_precond_client(CScriptGameObject* pActor,
 inline bool zat_b29_rivals_dialog_precond_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.zat_b29_rivals_dialog_precond", _impl);
@@ -5403,7 +5402,7 @@ inline bool zat_b29_rivals_dialog_precond_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl(pActor, pBot);
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5505,7 +5504,7 @@ inline bool jup_b25_flint_gone_condition_server(CScriptGameObject* pActor,
 inline bool check_deimos_phase_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.check_deimos_phase", _impl);
@@ -5519,7 +5518,7 @@ inline bool check_deimos_phase_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5528,7 +5527,7 @@ inline bool check_deimos_phase_client(CScriptGameObject* pActor,
 inline bool check_deimos_phase_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status =
 		ai().script_engine().functor("xr_conditions.check_deimos_phase", _impl);
@@ -5542,7 +5541,7 @@ inline bool check_deimos_phase_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5551,7 +5550,7 @@ inline bool check_deimos_phase_server(CScriptGameObject* pActor,
 inline bool actor_in_surge_cover_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.actor_in_surge_cover", _impl);
@@ -5565,7 +5564,7 @@ inline bool actor_in_surge_cover_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5574,7 +5573,7 @@ inline bool actor_in_surge_cover_client(CScriptGameObject* pActor,
 inline bool actor_in_surge_cover_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.actor_in_surge_cover", _impl);
@@ -5588,7 +5587,7 @@ inline bool actor_in_surge_cover_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5619,7 +5618,7 @@ inline bool is_door_blocked_by_npc_server(CScriptGameObject* pActor,
 inline bool has_active_tutorial_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.has_active_tutorial", _impl);
@@ -5627,7 +5626,7 @@ inline bool has_active_tutorial_client(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5636,7 +5635,7 @@ inline bool has_active_tutorial_client(CScriptGameObject* pActor,
 inline bool has_active_tutorial_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.has_active_tutorial", _impl);
@@ -5644,7 +5643,7 @@ inline bool has_active_tutorial_server(CScriptGameObject* pActor,
 		"failed to obtain original function implementation in lua file!!!");
 
 	return _impl();
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5653,7 +5652,7 @@ inline bool has_active_tutorial_server(CScriptGameObject* pActor,
 inline bool upgrade_hint_kardan_client(CScriptGameObject* pActor,
 	CScriptGameObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.upgrade_hint_kardan", _impl);
@@ -5667,7 +5666,7 @@ inline bool upgrade_hint_kardan_client(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
@@ -5676,7 +5675,7 @@ inline bool upgrade_hint_kardan_client(CScriptGameObject* pActor,
 inline bool upgrade_hint_kardan_server(CScriptGameObject* pActor,
 	CSE_ALifeDynamicObject* pBot, const xr_vector<xr_string>& buffer)
 {
-#ifdef IXRAY_USE_LUA_IMPLEMENTATION
+#ifdef IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 	luabind::functor<bool> _impl;
 	auto status = ai().script_engine().functor(
 		"xr_conditions.upgrade_hint_kardan", _impl);
@@ -5690,7 +5689,7 @@ inline bool upgrade_hint_kardan_server(CScriptGameObject* pActor,
 	}
 
 	return _impl(pActor, pBot, temp.data());
-#else
+#elif defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	R_ASSERT2(false, "provide implementation");
 	return false;
 #endif
