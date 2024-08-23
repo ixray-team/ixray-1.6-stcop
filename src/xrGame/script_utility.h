@@ -24,7 +24,7 @@
 			##myfunction##_server));
 
 // declares two hash maps for two version of function client and server;
-// also implements all methods for accessing these methods:
+// also implements all methods for accessing these fields:
 //	getRegisteredClientFunctionByName = returns callable (functor) that you can
 // call but you should provide a valid arguments otherwise you will get an
 // runtime error with invalid by type arguments
