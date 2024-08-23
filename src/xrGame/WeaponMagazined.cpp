@@ -1704,6 +1704,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 		};
 
 		ProcessUpgrade();
+		UpdateAltScope();
 		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
@@ -1751,8 +1752,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
 		ProcessUpgrade();
-		ProcessScope();
 		UpdateAltScope();
+		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 
@@ -1802,17 +1803,12 @@ void CWeaponMagazined::InitAddons()
 		shared_str scope_tex_name;
 		if ( m_eScopeStatus == ALife::eAddonAttachable )
 		{
+			ScopeIsHasTexture = false;
 			if (pSettings->line_exist(GetScopeName(), "scope_texture"))
 			{
 				scope_tex_name = pSettings->r_string(GetScopeName(), "scope_texture");
 				if (xr_strcmp(scope_tex_name, "none") != 0)
-				{
 					ScopeIsHasTexture = true;
-				}
-				else
-				{
-					ScopeIsHasTexture = false;
-				}
 			}
 			else
 			{
@@ -1831,7 +1827,7 @@ void CWeaponMagazined::InitAddons()
 				xr_delete( m_UIScope );
 			}
 
-			if ( !g_dedicated_server && ScopeIsHasTexture )
+			if ( ScopeIsHasTexture )
 			{
 				m_UIScope				= new CUIWindow();
 				createWpnScopeXML		();
