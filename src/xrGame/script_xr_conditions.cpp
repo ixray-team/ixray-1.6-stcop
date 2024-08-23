@@ -170,4 +170,7 @@ void CScriptXRConditionsStorage::initialize(CLevel* pLevelManager)
 #endif
 }
 
-void CScriptXRConditionsStorage::destroy() {}
+void CScriptXRConditionsStorage::destroy() 
+{
+	m_pLevel = nullptr;
+}

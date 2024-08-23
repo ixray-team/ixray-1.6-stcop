@@ -26,6 +26,7 @@
 // lua to cpp
 #include "script_xr_conditions.h"
 #include "script_xr_effects.h"
+#include "script_xr_logic.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -180,6 +181,11 @@ void CLevel::net_Stop		()
 	if (m_pScriptXREffects)
 	{
 		m_pScriptXREffects->destroy();
+	}
+
+	if (m_pScriptXRLogic)
+	{
+		m_pScriptXRLogic->destroy();
 	}
 	#endif
 

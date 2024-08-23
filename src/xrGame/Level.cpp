@@ -58,6 +58,7 @@
 // lua to cpp
 #include "script_xr_conditions.h"
 #include "script_xr_effects.h"
+#include "script_xr_logic.h"
 
 
 #ifdef DEBUG_DRAW
@@ -200,6 +201,7 @@ CLevel::CLevel() :
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	m_pScriptXRCondition = new CScriptXRConditionsStorage();
 	m_pScriptXREffects = new CScriptXREffectsStorage();
+	m_pScriptXRLogic = new CScriptXRLogicManager();
 #endif
 }
 
@@ -265,6 +267,7 @@ CLevel::~CLevel()
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	xr_delete(m_pScriptXRCondition);
 	xr_delete(m_pScriptXREffects);
+	xr_delete(m_pScriptXRLogic);
 #endif
 	xr_delete(game);
 	xr_delete(game_events);

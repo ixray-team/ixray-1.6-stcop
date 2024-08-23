@@ -18,6 +18,7 @@
 // lua to cpp
 #include "script_xr_conditions.h"
 #include "script_xr_effects.h"
+#include "script_xr_logic.h"
 
 int g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
@@ -404,6 +405,11 @@ void CLevel::InitializeClientGame(NET_Packet& P)
 	if (m_pScriptXREffects)
 	{
 		m_pScriptXREffects->initialize(this);
+	}
+
+	if (m_pScriptXRLogic)
+	{
+		m_pScriptXRLogic->initialize(this, m_pScriptXRCondition, m_pScriptXREffects);
 	}
 #endif
 

@@ -21,6 +21,7 @@ class CRandomManager;
 // lua to cpp forward declarations
 class CScriptXRConditionsStorage;
 class CScriptXREffectsStorage;
+class CScriptXRLogicManager;
 
 class CHUDManager;
 class CParticlesObject;
@@ -94,6 +95,7 @@ protected:
 	CPHCommander* m_ph_commander_physics_worldstep;
 	CScriptXRConditionsStorage* m_pScriptXRCondition;
 	CScriptXREffectsStorage* m_pScriptXREffects;
+	CScriptXRLogicManager* m_pScriptXRLogic;
 	// Local events
 	EVENT eChangeRP;
 	EVENT eDemoPlay;
