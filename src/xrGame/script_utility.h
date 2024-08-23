@@ -120,7 +120,7 @@ public:                                                                        \
 //#define IXRAY_USE_LUA_ONLY_IMPLEMENTATION
 // if user wants to use cpp backend (no lua at all)
 //#define IXRAY_USE_CPP_ONLY_IMPLEMENTATION
-// if user wants to use cpp backend but mixed with lua callings (some stuff is in pure lua, some stuff was re-written)
+// if user wants to use cpp backend but mixed with lua callings (some stuff is in pure lua, some stuff was re-written to cpp)
 #define IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 
 
