@@ -21,7 +21,7 @@ public:
 	void initialize(CLevel* pLevelManager);
 	void destroy();
 
-	REGISTER_STORAGE_FOR_RETURN_TYPE(bool);
+	IXRAY_LUA_TO_CPP_REGISTER_STORAGE_FOR_RETURN_TYPE(bool);
 
 private:
 	CLevel* m_pLevel;

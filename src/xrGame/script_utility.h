@@ -13,7 +13,7 @@
 // client that means it accepts only CScriptGameObject* instances and server
 // version that accepts a server instance when it is called it binds client and
 // server version of  your function myfunction = main word without postfix
-#define REGISTER_FUNCTION_TO_SCRIPT(myfunction)                           \
+#define IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(myfunction)                           \
 	this->registerClientFunction(#myfunction,                             \
 		CAnyCallable<                                                     \
 			std::function<decltype(##myfunction##_client)>::result_type>( \
@@ -37,7 +37,8 @@
 //  hasRegisteredServerFunctionByName = checks if you registered your function
 //  in storage, false - means you didn't register or you passed an empty string;
 //  true - means it was successfully regsitered to storage;
-#define REGISTER_STORAGE_FOR_RETURN_TYPE(return_type_of_function)              \
+#define IXRAY_LUA_TO_CPP_REGISTER_STORAGE_FOR_RETURN_TYPE(                     \
+	return_type_of_function)                                                   \
 private:                                                                       \
 	xr_hash_map<xr_string, CAnyCallable<return_type_of_function>>              \
 		m_mClientStorageOf##return_type_of_function;                           \
