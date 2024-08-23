@@ -1,5 +1,5 @@
 --'******************************************************
---'*  серверный класс объекта смарт кавер .
+--'*  ��������� ����� ������� ����� ����� .
 --'******************************************************
 registered_smartcovers = {}
 registered_smartcovers_by_lv_id = {}
@@ -63,7 +63,7 @@ function se_smart_cover:STATE_Read (packet, size)
 		end
 	else
 		local smart_cover_description = self:description()
-		if smart_cover_description ~= nil then
+		if smart_cover_description ~= nil and smart_covers.descriptions[smart_cover_description] ~= nil then
 			local loopholes = smart_covers.descriptions[smart_cover_description].loopholes
 			for k,v in pairs (loopholes) do
 				self.loopholes[v.id] = true
