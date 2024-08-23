@@ -22,7 +22,10 @@
 #include "../xrNetServer/NET_AuthCheck.h"
 
 #include "../xrPhysics/physicscommon.h"
+
+// lua to cpp
 #include "script_xr_conditions.h"
+#include "script_xr_effects.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -172,6 +175,11 @@ void CLevel::net_Stop		()
 	if (m_pScriptXRCondition)
 	{
 		m_pScriptXRCondition->destroy();
+	}
+
+	if (m_pScriptXREffects)
+	{
+		m_pScriptXREffects->destroy();
 	}
 	#endif
 

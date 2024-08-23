@@ -14,7 +14,7 @@ public:
 	void initialize(CLevel* pLevelManager);
 	void destroy();
 
-
+	REGISTER_STORAGE_FOR_RETURN_TYPE(void);
 
 private:
 	CLevel* m_pLevel;

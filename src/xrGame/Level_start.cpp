@@ -14,7 +14,10 @@
 #include "UIGameCustom.h"
 #include "ui/UICDkey.h"
 #include "object_factory.h"
+
+// lua to cpp
 #include "script_xr_conditions.h"
+#include "script_xr_effects.h"
 
 int g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
@@ -396,6 +399,11 @@ void CLevel::InitializeClientGame(NET_Packet& P)
 	if (m_pScriptXRCondition)
 	{
 		m_pScriptXRCondition->initialize(this);
+	}
+
+	if (m_pScriptXREffects)
+	{
+		m_pScriptXREffects->initialize(this);
 	}
 #endif
 

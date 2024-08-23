@@ -55,7 +55,10 @@
 #include "../xrPhysics/iphworld.h"
 #include "../xrPhysics/console_vars.h"
 
+// lua to cpp
 #include "script_xr_conditions.h"
+#include "script_xr_effects.h"
+
 
 #ifdef DEBUG_DRAW
 	#include "level_debug.h"
@@ -196,6 +199,7 @@ CLevel::CLevel() :
 #if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	m_pScriptXRCondition = new CScriptXRConditionsStorage();
+	m_pScriptXREffects = new CScriptXREffectsStorage();
 #endif
 }
 
@@ -260,6 +264,7 @@ CLevel::~CLevel()
 #if defined(IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION) || \
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	xr_delete(m_pScriptXRCondition);
+	xr_delete(m_pScriptXREffects);
 #endif
 	xr_delete(game);
 	xr_delete(game_events);
