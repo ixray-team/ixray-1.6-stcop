@@ -1,10 +1,11 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../../xrEngine/stdafx.h"
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_sdl3.h"
 #include "spectrum.h"
 #include <SDL3/SDL.h>
 #include "xrUITheme.h"
+#include "ImGuizmo.h"
 
 XrUIManager::XrUIManager()
 {
@@ -251,6 +252,7 @@ void XrUIManager::Draw()
 	//BeginFrame(); 
 
 	ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 
 	ImGui::PushFont(FontsStorage[ImCurrentFont]);
 	//ImGui::DockSpaceOverViewport();

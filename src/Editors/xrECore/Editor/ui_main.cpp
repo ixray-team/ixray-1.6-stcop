@@ -16,7 +16,7 @@
 #include "UIImageEditorForm.h"
 #include "UISoundEditorForm.h"
 #include "UIMinimapEditorForm.h"
-#include "..\utils\ETools\ETools.h"
+#include "../utils/ETools/ETools.h"
 #include "UILogForm.h"
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
