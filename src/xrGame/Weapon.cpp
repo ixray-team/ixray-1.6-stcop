@@ -833,19 +833,21 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	xr_vector<u8> ammo_ids = E->m_AmmoIDs;
 
-	for (u32 i = 0; i < ammo_ids.size(); i++)
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 	{
-		u8 LocalAmmoType = ammo_ids[i];
-		if (i >= m_magazine.size())
-			continue;
+		for (u32 i = 0; i < ammo_ids.size(); i++)
+		{
+			u8 LocalAmmoType = ammo_ids[i];
+			if (i >= m_magazine.size())
+				continue;
 
-		CCartridge& l_cartridge = *(m_magazine.begin() + i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
-			continue;
+			CCartridge& l_cartridge = *(m_magazine.begin() + i);
+			if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+				continue;
 
-		l_cartridge.Load(*m_ammoTypes[LocalAmmoType], LocalAmmoType);
+			l_cartridge.Load(*m_ammoTypes[LocalAmmoType], LocalAmmoType);
+		}
 	}
-
 	ProcessAmmo();
 	ProcessAmmoGL();
 	ProcessUpgrade();
