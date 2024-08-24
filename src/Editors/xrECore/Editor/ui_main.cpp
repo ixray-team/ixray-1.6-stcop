@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 #include "stdafx.h"
 #pragma hdrstop
@@ -22,6 +22,7 @@
 #include "../XrEngine/XR_IOConsole.h"
 
 
+ECORE_API extern bool bIsLevelEditor = false;
 namespace ImGui
 {
 	XREUI_API ImFont* LightFont;
@@ -829,13 +830,19 @@ void TUI::OnStats()
 
 	DrawDebugString Str;
 	Str.Color = ImColor(0, 0, 0);
-	Str.Pos = { 15, 30 };
+    if (bIsLevelEditor)
+	    Str.Pos = { 45, 50 };
+    else
+	    Str.Pos = { 15, 30 };
 
 	Str.Text.reserve(64);
 	sprintf(Str.Text.data(), "FPS: %.2f %.2gms", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
 	ViewportFrameLines.push_back(Str);
 
-	Str.Pos = { 15, 40 };
+    if (bIsLevelEditor)
+        Str.Pos = { 45, 60 };
+    else
+	    Str.Pos = { 15, 40 };
 
 	auto Mode = Tools->GetAction();
 	auto Axis = Tools->GetAxis();

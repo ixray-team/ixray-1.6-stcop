@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 // chunks
 #define WM_VERSION  				0x0004
@@ -867,17 +867,15 @@ bool ESceneWallmarkTool::ExportStatic(SceneBuilder* B, bool b_selected_only)
 	return true;
 }
 
-
-
 void ESceneWallmarkTool::CreateControls()
 {
-	inherited::CreateDefaultControls(estDefault);
-	// node tools
-    AddControl(xr_new<TUI_ControlWallmarkAdd>		(0,		etaAdd, 	this));
-    AddControl(xr_new<TUI_ControlWallmarkSelect>		(0,		etaSelect,	this));
+    inherited::CreateDefaultControls(estDefault);
+    // node tools
+    AddControl(xr_new<TUI_ControlWallmarkAdd>(0, etaAdd, this));
+    AddControl(xr_new<TUI_ControlWallmarkMove>(0, etaMove, this));
+    // AddControl(xr_new<TUI_CustomControl>(0, etaSelect, this));
 }
 
- 
 void ESceneWallmarkTool::RemoveControls()
 {
 	inherited::RemoveControls();

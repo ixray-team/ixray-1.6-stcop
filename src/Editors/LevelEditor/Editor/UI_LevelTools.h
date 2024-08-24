@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // refs
 class ESceneToolBase;
@@ -19,7 +19,6 @@ class CLevelTool: public CToolCustom
 	ObjClassID		target;
 
 	Flags32			m_Flags;
-	Gizmo*      m_Gizmo = nullptr;
 
 	enum{
 		flChangeAction		= (1<<0),
@@ -64,7 +63,6 @@ public:
 						CLevelTool			();
 	virtual         	~CLevelTool		();
 
-	IC Gizmo* GetGimzo() { return m_Gizmo; }
 	IC UIToolCustom*            GetToolForm         ()const{ return m_ToolForm; }
 	IC UIPropertiesForm*GetProperties       ()const { return m_Props; }
 	IC UIPropertiesForm*GetWorldProperties  ()const { return m_WorldProps; }

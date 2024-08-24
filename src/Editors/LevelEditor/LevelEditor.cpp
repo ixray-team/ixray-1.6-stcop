@@ -11,10 +11,13 @@
 #include "../../xrEngine/xr_input.h"
 #include "Editor/Utils/ContentView.h"
 
+ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+    bIsLevelEditor = true;
+
     if (!IsDebuggerPresent())
         Debug._initialize(false);
     

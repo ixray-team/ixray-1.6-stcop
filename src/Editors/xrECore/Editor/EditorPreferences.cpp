@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
 #pragma hdrstop
 #include "../xrEUI/xrUITheme.h"
@@ -37,6 +37,7 @@ CCustomPreferences::CCustomPreferences()
     snap_angle			= deg2rad(5.f);
     snap_move			= 0.1f;
     snap_moveto			= 0.5f;
+    scale_fixed         = 0.1f;
     // grid
     grid_cell_size		= 1.f;
     grid_cell_count		= 100;
@@ -55,6 +56,10 @@ CCustomPreferences::~CCustomPreferences()
 
 void CCustomPreferences::ApplyValues()
 {
+    Tools->m_MoveSnap = snap_move;
+    Tools->m_MoveSnapTo = snap_moveto;
+    Tools->m_RotateSnapAngle = snap_angle;
+    Tools->m_ScaleFixed = scale_fixed;
 
     EDevice->m_Camera.SetViewport(view_np, view_fp, rad2deg(view_fov));
     Tools->SetFog	(fog_color,fog_fogness);
@@ -151,8 +156,9 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateFloat	(props,"Tools\\Sens\\Rotate",		          	&tools_sens_rot);
     PHelper().CreateFloat	(props,"Tools\\Sens\\Scale",		          	&tools_sens_scale);
     PHelper().CreateAngle	(props,"Tools\\Snap\\Angle",		          	&snap_angle,		0, 		PI_MUL_2);
-    PHelper().CreateFloat	(props,"Tools\\Snap\\Move",			          	&snap_move, 		0.01f,	1000.f);
+    PHelper().CreateFloat	(props,"Tools\\Snap\\Move",			          	&snap_move, 		0.01f,	500.f);
     PHelper().CreateFloat	(props,"Tools\\Snap\\Move To", 		          	&snap_moveto,		0.01f,	1000.f);
+    PHelper().CreateFloat	(props,"Tools\\Snap\\Scale Fixed",              &scale_fixed,		0.01f,	1000.f);
 
 
     PHelper().CreateFloat	(props,"Viewport\\Camera\\Move Sens",		    &cam_sens_move);
@@ -226,6 +232,7 @@ void CCustomPreferences::Load()
     snap_angle = JSONData["editor_prefs"]["snap_angle"];
     snap_move = JSONData["editor_prefs"]["snap_move"];
     snap_moveto = JSONData["editor_prefs"]["snap_moveto"];
+    scale_fixed = JSONData["editor_prefs"]["scale_fixed"];
     grid_cell_size = JSONData["editor_prefs"]["grid_cell_size"];
     grid_cell_count = JSONData["editor_prefs"]["grid_cell_count"];
     scene_undo_level = JSONData["editor_prefs"]["scene_undo_level"];
@@ -296,6 +303,7 @@ void CCustomPreferences::Save()
     JSONData["editor_prefs"]["snap_angle"]=snap_angle;
     JSONData["editor_prefs"]["snap_move"]=snap_move;
     JSONData["editor_prefs"]["snap_moveto"]=snap_moveto;
+    JSONData["editor_prefs"]["scale_fixed"]=scale_fixed;
 
     JSONData["editor_prefs"]["grid_cell_size"]=grid_cell_size;
     JSONData["editor_prefs"]["grid_cell_count"]=grid_cell_count;
