@@ -283,6 +283,7 @@ bool CWeaponMagazined::OnShoot_CanShootNow()
 
 void CWeaponMagazined::FireStart()
 {
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if(!IsMisfire())
 	{
 		if (iAmmoElapsed)
@@ -306,8 +307,13 @@ void CWeaponMagazined::FireStart()
 		}
 		else 
 		{
-			if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle) 
-				SwitchState(eEmptyClick);
+			if (isGuns)
+			{
+				if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle)
+					SwitchState(eEmptyClick);
+			}
+			else
+				OnEmptyClick();
 		}
 	}
 	else
@@ -322,8 +328,6 @@ void CWeaponMagazined::FireStart()
 
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			CurrentGameUI()->AddCustomStatic("gun_jammed",true);
-
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 		if (isGuns)
 		{
@@ -1357,8 +1361,11 @@ void CWeaponMagazined::TriStateReload()
 		if (HaveCartridgeInInventory(1))
 		{
 			switch2_StartReload();
-			if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
-				AddCartridge(1);
+			if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+			{
+				if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
+					AddCartridge(1);
+			}
 		}
 	}break;
 	case eSubstateReloadInProcess:
@@ -1439,7 +1446,7 @@ void CWeaponMagazined::PlayAnimAddOneCartridgeWeapon()
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0 && HudAnimationExist("anm_add_cartridge_empty"))
 		anm_name += "_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
@@ -1460,7 +1467,7 @@ void CWeaponMagazined::PlayAnimCloseWeapon()
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0 && HudAnimationExist("anm_add_cartridge_empty"))
 		anm_name = "anm_add_cartridge_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
@@ -1580,7 +1587,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	case kWPN_FIREMODE_PREV:
 	case kWPN_FIREMODE_NEXT:
 	{
-		return ChangeFiremode(cmd);
+		return ChangeFiremode(cmd, flags);
 	}break;
 	}
 	return false;
@@ -2183,11 +2190,13 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 		return xr_string::ToString(GetQueueSize());
 }
 
-bool CWeaponMagazined::ChangeFiremode(u16 cmd)
+bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (!HasFireModes())
+		return false;
+	else if (!(flags & CMD_START))
 		return false;
 	else if (bPrevModeKeyPressed || bNextModeKeyPressed)
 		return false;
