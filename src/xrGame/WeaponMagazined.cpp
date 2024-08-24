@@ -1086,8 +1086,9 @@ void CWeaponMagazined::DoReload()
 	int mod_magsize = def_magsize;
 
 	CWeaponBM16* bm = smart_cast<CWeaponBM16*>(this);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	if (bm)
+	if (bm && isGuns)
 		mod_magsize = ammo_cnt_to_reload;
 	else if (!IsGrenadeMode() && m_bAmmoInChamber && GetAmmoElapsed() == 0)
 		mod_magsize = def_magsize - 1;
