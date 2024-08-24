@@ -1,6 +1,6 @@
 #include "Stdafx.h"
 #include "script_xr_conditions.h"
-#include "script_xr_conditions_functions.cpp"
+#include "script_xr_conditions_functions.h"
 
 // set breakpoint on these functions for 'understanding' the sense of usage and
 // the purpose of CAnyCallable
