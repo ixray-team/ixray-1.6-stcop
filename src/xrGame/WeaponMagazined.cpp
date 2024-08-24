@@ -1355,8 +1355,11 @@ void CWeaponMagazined::TriStateReload()
 		if (HaveCartridgeInInventory(1))
 		{
 			switch2_StartReload();
-			if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
-				AddCartridge(1);
+			if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+			{
+				if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
+					AddCartridge(1);
+			}
 		}
 	}break;
 	case eSubstateReloadInProcess:
@@ -1437,7 +1440,7 @@ void CWeaponMagazined::PlayAnimAddOneCartridgeWeapon()
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0 && HudAnimationExist("anm_add_cartridge_empty"))
 		anm_name += "_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
@@ -1458,7 +1461,7 @@ void CWeaponMagazined::PlayAnimCloseWeapon()
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0 && HudAnimationExist("anm_add_cartridge_empty"))
 		anm_name = "anm_add_cartridge_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
