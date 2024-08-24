@@ -2012,6 +2012,9 @@ bool CWeapon::CanAimNow()
 	if (!ParentIsActor())
 		return true;
 
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return true;
+
 	bool result = true;
 
 	/*if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
@@ -2051,6 +2054,9 @@ bool CWeapon::CanLeaveAimNow()
 
 	//if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
 		//return true;
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return true;
+
 
 	if ((IsActionProcessing() && GetActualCurrentAnim().find("anm_idle_aim_start") == -1 || GetState() != eIdle))
 	{
