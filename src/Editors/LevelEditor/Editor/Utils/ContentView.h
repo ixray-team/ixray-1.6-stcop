@@ -1,4 +1,5 @@
 #pragma once
+#include <fswatcher/filewatch.hpp>
 
 class CContentView:
 	public XrUI
@@ -8,24 +9,11 @@ class CContentView:
 		xr_string FileName;
 	};
 
-	struct IconData {
+	struct IconData 
+	{
 		ref_texture Icon;
 		bool UseButtonColor = false;
 	};
-
-	DragDropData Data;
-public:
-	CContentView();
-	virtual void Draw() override;
-	virtual void Init();
-	virtual void Destroy();
-	virtual void ResetBegin();
-	virtual void ResetEnd();
-
-private:
-	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
-	bool DrawContext(const std::filesystem::path& Path) const;
-	IconData& GetTexture(const xr_string& IconPath);
 
 	struct HintItem
 	{
@@ -34,13 +22,41 @@ private:
 		bool Active = false;
 	};
 
-	HintItem CurrentItemHint;
+	struct FileOptData
+	{
+		std::filesystem::path File;
+		bool IsDir = false;
+	};
+
+public:
+	CContentView();
+	virtual void Draw() override;
+	void RescanDirectory();
+	virtual void Init();
+	virtual void Destroy();
+	virtual void ResetBegin();
+	virtual void ResetEnd();
 
 private:
+	bool DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
+	bool DrawContext(const std::filesystem::path& Path) const;
+	bool Contains();
+	IconData& GetTexture(const xr_string& IconPath);
+
+private:
+
+	HintItem CurrentItemHint;
+
+	DragDropData Data;
+	xr_vector<FileOptData> Files;
+	filewatch::FileWatch<std::string>* WatcherPtr;
+
 	xr_string CurrentDir;
 	xr_string RootDir;
 	xr_string LogsDir;
 	ImVec2 BtnSize = { 64, 64 };
 
 	xr_hash_map<xr_string, IconData> Icons;
+
+	volatile xr_atomic_bool LockFiles = false;
 };
