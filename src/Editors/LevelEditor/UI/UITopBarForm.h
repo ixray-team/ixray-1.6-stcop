@@ -1,11 +1,10 @@
-#pragma once
+﻿#pragma once
 class UITopBarForm :public XrUI
 {
 public:
 	UITopBarForm();
 	virtual ~UITopBarForm();
 	virtual void Draw();
-	void RefreshBar();
 	bool VerifySpaceRestrictors()const {return m_VerifySpaceRestrictors;}
 private:
 

@@ -1,12 +1,26 @@
-#pragma once
-class UITopBarForm :public XrUI
+﻿#pragma once
+class UITopBarForm: public XrUI
 {
 public:
-	UITopBarForm();
-	virtual ~UITopBarForm();
-	virtual void Draw();
-	void RefreshBar();
+    UITopBarForm();
+    virtual ~UITopBarForm();
+    virtual void Draw();
+
 private:
-#define ADD_BUTTON_IMAGE_S(Name) void Click##Name(); ref_texture m_t##Name;u32 m_time##Name;
-#include "UITopBarForm_ButtonList.h"
+    void        ClickUndo();
+    ref_texture m_tUndo;
+    u32         m_timeUndo;
+    void        ClickRedo();
+    ref_texture m_tRedo;
+    u32         m_timeRedo;
+
+    void        ClickNew();
+    ref_texture m_tNew;
+    void        ClickOpen();
+    ref_texture m_tOpen;
+    void        ClickSave();
+    ref_texture m_tSave;
+
+    void        ClickOpenGameData();
+    ref_texture m_tOpenGameData;
 };
