@@ -2653,15 +2653,15 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	bool validBone = HudItemData()->m_model->LL_BoneID(wpn_scope) != BI_NONE;
 
-	bool scope_test = ((get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1) && validBone);
+	bool scope_test = (validBone && (get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1));
 
 	HudItemData()->set_bone_visible(wpn_scope, scope_test, TRUE);
 
-	bool silencer_test = !!(get_SilencerStatus() == 2 && IsSilencerAttached() || get_SilencerStatus() == 1);
+	bool silencer_test = (validBone && (get_SilencerStatus() == 2 && IsSilencerAttached() || get_SilencerStatus() == 1));
 
 	HudItemData()->set_bone_visible(wpn_silencer, silencer_test, TRUE);
 
-	bool gl_test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
+	bool gl_test = (validBone && (get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1));
 
 	HudItemData()->set_bone_visible(wpn_grenade_launcher, gl_test, TRUE);
 }
