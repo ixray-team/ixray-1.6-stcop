@@ -13,7 +13,7 @@
 // client that means it accepts only CScriptGameObject* instances and server
 // version that accepts a server instance when it is called it binds client and
 // server version of  your function myfunction = main word without postfix
-#define IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(myfunction)                           \
+#define IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(myfunction)          \
 	this->registerClientFunction(#myfunction,                             \
 		CAnyCallable<                                                     \
 			std::function<decltype(##myfunction##_client)>::result_type>( \
@@ -55,7 +55,7 @@ private:                                                                       \
 			m_mClientStorageOf##return_type_of_function.find(function_name) == \
 				m_mClientStorageOf##return_type_of_function.end(),             \
 			"you try to register client same function twice, because it is "   \
-		    "already "                                                         \
+			"already "                                                         \
 			"registered!");                                                    \
 		m_mClientStorageOf##return_type_of_function[function_name] = func;     \
 	}                                                                          \
@@ -68,7 +68,7 @@ private:                                                                       \
 			m_mServerStorageOf##return_type_of_function.find(function_name) == \
 				m_mServerStorageOf##return_type_of_function.end(),             \
 			"you try to register server same function twice, because it is "   \
-		    "already "                                                         \
+			"already "                                                         \
 			"registered!");                                                    \
 		m_mServerStorageOf##return_type_of_function[function_name] = func;     \
 	}                                                                          \
@@ -113,19 +113,21 @@ public:                                                                        \
 			m_mServerStorageOf##return_type_of_function.end();                 \
 	}
 
-
-// TODO: ForserX->Discussion(); I suggest to use these variants for preprocessor and make possible to use vanila GSC's variant for lua like to disable cpp implementations of lua scripts; and for users who wants to re-write everything on cpp
-// also I suggest to defined which variant to use through CMake
+// TODO: ForserX->Discussion(); I suggest to use these variants for preprocessor
+// and make possible to use vanila GSC's variant for lua like to disable cpp
+// implementations of lua scripts; and for users who wants to re-write
+// everything on cpp also I suggest to defined which variant to use through
+// CMake
 
 // if user wants vanila lua backend (no cpp at all)
-//#define IXRAY_USE_LUA_ONLY_IMPLEMENTATION
+// #define IXRAY_USE_LUA_ONLY_IMPLEMENTATION
 
 // if user wants to use cpp backend (no lua at all)
-//#define IXRAY_USE_CPP_ONLY_IMPLEMENTATION
+// #define IXRAY_USE_CPP_ONLY_IMPLEMENTATION
 
-// if user wants to use cpp backend but mixed with lua callings (some stuff is in pure lua, some stuff was re-written to cpp)
+// if user wants to use cpp backend but mixed with lua callings (some stuff is
+// in pure lua, some stuff was re-written to cpp)
 #define IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
-
 
 class CScriptGameObject;
 
@@ -168,6 +170,64 @@ struct CAnyCallable
 
 private:
 	void* m_pFunction;
+};
+
+class CCondlistData
+{
+public:
+	CCondlistData();
+	~CCondlistData();
+
+	bool getRequired(void) const;
+	void setRequired(bool bValue);
+
+	bool getExpected(void) const;
+	void setExpected(bool bValue);
+
+	u32 getProbability(void) const;
+	void setProbability(u32 nValue);
+
+	const char* getFunctionName(void) const;
+	void setFunctionName(const char* pFSStringField);
+
+	const char* getInfoPortionName(void) const;
+	void setInfoPortionName(const char* pFSStringField);
+
+	const char* getParams(void) const;
+	void setParams(const char* pFSStringField);
+	
+	u32 getID(void) const;
+	void setID(u32 nValue);
+
+private:
+	bool m_bRequired;
+	bool m_bExpected;
+	u32 m_nProbability;
+	// inner id that defines our 'data', not for user
+	u32 m_nID;
+	// don't make it as std::string because it is already stored in filesystem...
+	const char* m_pFunctionName;
+	const char* m_pInfoPortionName;
+	const char* m_pParams;
+};
+
+class CCondlist
+{
+public:
+	CCondlist();
+	~CCondlist();
+
+private:
+};
+
+class CParsedCondlistHandle
+{
+public:
+	CParsedCondlistHandle();
+	~CParsedCondlistHandle();
+
+private:
+
 };
 
 namespace ixray
