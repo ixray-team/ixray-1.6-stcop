@@ -17,6 +17,9 @@ public:
 	void initialize(CLevel* pLevelManager, CScriptXRConditionsStorage* pStorageXRConditions, CScriptXREffectsStorage* pStorageXREffects);
 	void destroy();
 
+	// it means if symbol is in this mask: "%{}., qwertyuioplkjhgfdsamnbvcxz1234567890@-+=~!_():"
+	bool isSymbolValidForParsing(char nSymbol);
+
 private:
 	CLevel* m_pLevel;
 	CScriptXRConditionsStorage* m_pXRConditions;
