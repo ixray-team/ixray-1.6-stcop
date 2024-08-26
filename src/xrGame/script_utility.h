@@ -184,8 +184,8 @@ public:
 	bool getExpected(void) const;
 	void setExpected(bool bValue);
 
-	u32 getProbability(void) const;
-	void setProbability(u32 nValue);
+	const char* getProbability(void) const;
+	void setProbability(const char* pFSStringField);
 
 	const char* getFunctionName(void) const;
 	void setFunctionName(const char* pFSStringField);
@@ -195,16 +195,11 @@ public:
 
 	const char* getParams(void) const;
 	void setParams(const char* pFSStringField);
-	
-	u32 getID(void) const;
-	void setID(u32 nValue);
 
 private:
 	bool m_bRequired;
 	bool m_bExpected;
-	u32 m_nProbability;
-	// inner id that defines our 'data', not for user
-	u32 m_nID;
+	const char* m_pProbabilityNumberAsString;
 	// don't make it as std::string because it is already stored in filesystem...
 	const char* m_pFunctionName;
 	const char* m_pInfoPortionName;

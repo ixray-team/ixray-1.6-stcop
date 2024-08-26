@@ -108,7 +108,7 @@ bool ixray::is_weapon(CScriptGameObject* pObject)
 
 				R_ASSERT2(found,
 					"you forgot to register CLSID of some weapon in "
-				    "clsids_of_weapons, can't find!");
+					"clsids_of_weapons, can't find!");
 			}
 		}
 	}
@@ -145,8 +145,8 @@ int ixray::get_script_clsid(LPCSTR str)
 }
 
 CCondlistData::CCondlistData() :
-	m_bRequired{}, m_bExpected{}, m_nProbability{}, m_nID{}, m_pFunctionName{},
-	m_pInfoPortionName{}, m_pParams{}
+	m_bRequired{}, m_bExpected{}, m_nID{}, m_pProbabilityNumberAsString{},
+	m_pFunctionName{}, m_pInfoPortionName{}, m_pParams{}
 {
 }
 
@@ -172,14 +172,14 @@ void CCondlistData::setExpected(bool bValue)
 	m_bExpected = bValue;
 }
 
-u32 CCondlistData::getProbability(void) const
+const char* CCondlistData::getProbability(void) const
 {
-	return m_nProbability;
+	return m_pProbabilityNumberAsString;
 }
 
-void CCondlistData::setProbability(u32 nValue)
+void CCondlistData::setProbability(const char* pFSStringField)
 {
-	m_nProbability = nValue;
+	m_pProbabilityNumberAsString = pFSStringField;
 }
 
 const char* CCondlistData::getFunctionName(void) const
@@ -210,14 +210,4 @@ const char* CCondlistData::getParams(void) const
 void CCondlistData::setParams(const char* pFSStringField)
 {
 	m_pParams = pFSStringField;
-}
-
-u32 CCondlistData::getID(void) const
-{
-	return m_nID;
-}
-
-void CCondlistData::setID(u32 nValue)
-{
-	m_nID = nValue;
 }
