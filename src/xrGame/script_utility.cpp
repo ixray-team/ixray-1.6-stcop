@@ -211,3 +211,53 @@ void CCondlistData::setParams(const char* pFSStringField)
 {
 	m_pParams = pFSStringField;
 }
+
+CCondlist::CCondlist() : m_pSectionName{} {}
+
+CCondlist::~CCondlist() {}
+
+const xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionCheck(
+	void) const
+{
+	return m_mInfoPortionCheck;
+}
+
+const xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionSet(void) const
+{
+	return m_mInfoPortionSet;
+}
+
+void CCondlist::addInfoPortionSet(u32 nID, const CCondlistData& data) 
+{
+	R_ASSERT2(m_mInfoPortionSet.find(nID) == m_mInfoPortionSet.end(),
+		"something is wrong?");
+	m_mInfoPortionSet[nID] = data;
+}
+
+void CCondlist::addInfoPortionSet(const std::pair<u32, CCondlistData>& pair) 
+{
+	addInfoPortionSet(pair.first, pair.second);
+}
+
+void CCondlist::addInfoPortionCheck(u32 nID, const CCondlistData& data) 
+{
+	R_ASSERT2(m_mInfoPortionCheck.find(nID) == m_mInfoPortionCheck.end(),
+		"something is bruh");
+
+	m_mInfoPortionCheck[nID] = data;
+}
+
+void CCondlist::addInfoPortionCheck(const std::pair<u32, CCondlistData>& pair)
+{
+	addInfoPortionCheck(pair.first, pair.second);
+}
+
+const char* CCondlist::getSectionName(void) const
+{
+	return m_pSectionName;
+}
+
+void CCondlist::setSectionName(const char* pFSStringField) 
+{
+	m_pSectionName = pFSStringField;
+}
