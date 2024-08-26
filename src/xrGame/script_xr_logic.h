@@ -8,11 +8,11 @@ class CLevel;
 class CScriptXRConditionsStorage;
 class CScriptXREffectsStorage;
 
-class CScriptXRLogicManager
+class CScriptXRParser
 {
 public:
-	CScriptXRLogicManager();
-	~CScriptXRLogicManager();
+	CScriptXRParser();
+	~CScriptXRParser();
 
 	void initialize(CLevel* pLevelManager, CScriptXRConditionsStorage* pStorageXRConditions, CScriptXREffectsStorage* pStorageXREffects);
 	void destroy();

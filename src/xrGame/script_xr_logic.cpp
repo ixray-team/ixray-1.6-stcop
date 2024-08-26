@@ -3,28 +3,28 @@
 #include "script_xr_conditions.h"
 #include "script_xr_effects.h"
 
-CScriptXRLogicManager::CScriptXRLogicManager() :
+CScriptXRParser::CScriptXRParser() :
 	m_pLevel{}, m_pXRConditions{}, m_pXREffects{}
 {
 }
 
-CScriptXRLogicManager::~CScriptXRLogicManager() {}
+CScriptXRParser::~CScriptXRParser() {}
 
-void CScriptXRLogicManager::initialize(CLevel* pLevelManager, CScriptXRConditionsStorage* pStorageXRConditions, CScriptXREffectsStorage* pStorageXREffects)
+void CScriptXRParser::initialize(CLevel* pLevelManager, CScriptXRConditionsStorage* pStorageXRConditions, CScriptXREffectsStorage* pStorageXREffects)
 {
 	m_pLevel = pLevelManager;
 	m_pXRConditions = pStorageXRConditions;
 	m_pXREffects = pStorageXREffects;
 }
 
-void CScriptXRLogicManager::destroy() 
+void CScriptXRParser::destroy() 
 {
 	m_pLevel = nullptr;
 	m_pXRConditions = nullptr;
 	m_pXREffects = nullptr;
 }
 
-bool CScriptXRLogicManager::isSymbolValidForParsing(char nSymbol)
+bool CScriptXRParser::isSymbolValidForParsing(char nSymbol)
 {
 	constexpr char a = 'a';
 	constexpr char z = 'z';

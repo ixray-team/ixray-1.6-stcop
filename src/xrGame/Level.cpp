@@ -201,7 +201,7 @@ CLevel::CLevel() :
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	m_pScriptXRCondition = new CScriptXRConditionsStorage();
 	m_pScriptXREffects = new CScriptXREffectsStorage();
-	m_pScriptXRLogic = new CScriptXRLogicManager();
+	m_pScriptXRParser = new CScriptXRParser();
 #endif
 }
 
@@ -267,7 +267,7 @@ CLevel::~CLevel()
 	defined(IXRAY_USE_CPP_ONLY_IMPLEMENTATION)
 	xr_delete(m_pScriptXRCondition);
 	xr_delete(m_pScriptXREffects);
-	xr_delete(m_pScriptXRLogic);
+	xr_delete(m_pScriptXRParser);
 #endif
 	xr_delete(game);
 	xr_delete(game_events);

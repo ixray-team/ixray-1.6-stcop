@@ -183,9 +183,9 @@ void CLevel::net_Stop		()
 		m_pScriptXREffects->destroy();
 	}
 
-	if (m_pScriptXRLogic)
+	if (m_pScriptXRParser)
 	{
-		m_pScriptXRLogic->destroy();
+		m_pScriptXRParser->destroy();
 	}
 	#endif
 

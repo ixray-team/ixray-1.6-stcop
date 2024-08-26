@@ -407,9 +407,9 @@ void CLevel::InitializeClientGame(NET_Packet& P)
 		m_pScriptXREffects->initialize(this);
 	}
 
-	if (m_pScriptXRLogic)
+	if (m_pScriptXRParser)
 	{
-		m_pScriptXRLogic->initialize(this, m_pScriptXRCondition, m_pScriptXREffects);
+		m_pScriptXRParser->initialize(this, m_pScriptXRCondition, m_pScriptXREffects);
 	}
 #endif
 
