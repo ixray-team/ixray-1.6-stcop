@@ -145,7 +145,7 @@ int ixray::get_script_clsid(LPCSTR str)
 }
 
 CCondlistData::CCondlistData() :
-	m_bRequired{}, m_bExpected{}, m_nID{}, m_pProbabilityNumberAsString{},
+	m_bRequired{}, m_bExpected{}, m_pProbabilityNumberAsString{},
 	m_pFunctionName{}, m_pInfoPortionName{}, m_pParams{}
 {
 }

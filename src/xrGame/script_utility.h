@@ -224,7 +224,7 @@ public:
 	void addInfoPortionSet(const std::pair<u32, CCondlistData>& pair);
 
 	const char* getSectionName(void) const;
-	void setSectionName(const char* pFSStringField);
+	void setSectionName(const char* pFSStringField);	
 
 private:
 	const char* m_pSectionName;
