@@ -18,7 +18,7 @@ public:
 	void destroy();
 
 	// it means if symbol is in this mask: "%{}., qwertyuioplkjhgfdsamnbvcxz1234567890@-+=~!_():"
-	bool isSymbolValidForParsing(char nSymbol);
+	bool isSymbolValidForParsing(char nSymbol) const;
 
 private:
 	CLevel* m_pLevel;

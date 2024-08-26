@@ -24,7 +24,7 @@ void CScriptXRParser::destroy()
 	m_pXREffects = nullptr;
 }
 
-bool CScriptXRParser::isSymbolValidForParsing(char nSymbol)
+bool CScriptXRParser::isSymbolValidForParsing(char nSymbol) const
 {
 	constexpr char a = 'a';
 	constexpr char z = 'z';
