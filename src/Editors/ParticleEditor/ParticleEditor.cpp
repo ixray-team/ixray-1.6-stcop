@@ -1,10 +1,7 @@
 ﻿// ParticleEditor.cpp : Определяет точку входа для приложения.
 //
 #include "stdafx.h"
-#include "../xrEProps/UIFileLoad.h"
 #include "../../xrEngine/xr_input.h"
-
-CUFileOpen* FileOpen = nullptr;
 
 void BeginRender()
 {
@@ -41,12 +38,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     UI = xr_new<CParticleMain>();
     UI->RegisterCommands();
     
-    FileOpen = new CUFileOpen;
-
     UIMainForm* MainForm = xr_new< UIMainForm>();
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
-    UI->Push(FileOpen, false);
 
     //MainForm->Frame();
     bool NeedExit = false;
