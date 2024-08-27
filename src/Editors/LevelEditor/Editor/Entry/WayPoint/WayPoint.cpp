@@ -485,6 +485,8 @@ void CWayObject::MoveTo(const Fvector& pos, const Fvector& up)
 
 void CWayObject::Move(Fvector& amount)
 {
+    Msg("Move at: %0.1f %0.1f %0.1f", amount.x, amount.y, amount.z);
+
 	if (IsPointMode())
     {
         for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
@@ -496,6 +498,7 @@ void CWayObject::Move(Fvector& amount)
         for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
             (*it)->m_vPosition.add(amount);
     }
+
 }
 
 void CWayObject::Render(int priority, bool strictB2F)

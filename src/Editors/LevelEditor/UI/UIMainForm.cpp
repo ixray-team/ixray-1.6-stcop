@@ -57,7 +57,6 @@ UIMainForm::UIMainForm()
 	m_tZoomSel      = EDevice->Resources->_CreateTexture("ed\\bar\\zoomsel");
 
 	// Axis
-	m_tShowAxisMove = EDevice->Resources->_CreateTexture("ed\\bar\\AxisMove");
 	m_tX            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisX");
 	m_tY            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisY");
 	m_tZ            = EDevice->Resources->_CreateTexture("ed\\bar\\AxisZ");
@@ -116,7 +115,6 @@ UIMainForm::~UIMainForm()
 	m_tMSnap.destroy();
 
 	// Axis
-	m_tShowAxisMove.destroy();
 	m_tX.destroy();
 	m_tY.destroy();
 	m_tZ.destroy();
@@ -1293,40 +1291,6 @@ void UIMainForm::RenderOldCameraButtons()
 void UIMainForm::RenderAxisButtons()
 {
 	ImGui::BeginGroup();
-	// Show Move Axis
-	{
-		bool bPushColor = false;
-		if (EPrefs->tools_show_move_axis)
-		{
-			bPushColor = true;
-			ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
-		}
-		m_tShowAxisMove->Load();
-		if (ImGui::ImageButton(m_tShowAxisMove->pSurface, ImVec2(16, ImGui::GetFontSize())))
-		{
-			if (EPrefs->tools_show_move_axis)
-			{
-				EPrefs->tools_show_move_axis = false;
-			}
-			else
-			{
-				EPrefs->tools_show_move_axis = true;
-				LTools->SetAction(etaMove);
-			}
-		}
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Show Move Axis");
-		}
-		if (bPushColor)
-		{
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-		}
-	}
-	ImGui::Spacing();
 	// --------------------------------------------------------------------------------------------
 	ETAxis Axis = LTools->GetAxis();
 	// Ось X

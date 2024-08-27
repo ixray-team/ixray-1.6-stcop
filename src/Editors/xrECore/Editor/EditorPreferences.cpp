@@ -28,7 +28,6 @@ CCustomPreferences::CCustomPreferences()
 	tools_sens_move		= 0.3f;
 	tools_sens_rot		= 0.3f;
 	tools_sens_scale	= 0.3f;
-	tools_show_move_axis =false;
 	// box pick
 	bp_lim_depth		= TRUE;
 	bp_cull				= TRUE;
@@ -151,7 +150,6 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Back Face Culling",	&bp_cull);
 	PHelper().CreateFloat	(props,"Tools\\Box Pick\\Depth Tolerance",		&bp_depth_tolerance,0.f, 	10000.f);
 	PHelper().CreateFloat	(props,"Tools\\Sens\\Move",			          	&tools_sens_move);
-	PHelper().CreateBOOL	(props,"Tools\\Sens\\ShowMoveAxis",				&tools_show_move_axis);
 	
 	PHelper().CreateFloat	(props,"Tools\\Sens\\Rotate",		          	&tools_sens_rot);
 	PHelper().CreateFloat	(props,"Tools\\Sens\\Scale",		          	&tools_sens_scale);
@@ -234,7 +232,6 @@ void CCustomPreferences::Load()
 	tools_sens_move = JSONData["editor_prefs"]["tools_sens_move"];
 	tools_sens_rot = JSONData["editor_prefs"]["tools_sens_rot"];
 	tools_sens_scale = JSONData["editor_prefs"]["tools_sens_scale"];
-	tools_show_move_axis = JSONData["editor_prefs"]["tools_show_move_axis"];
 	bp_lim_depth = JSONData["editor_prefs"]["bp_lim_depth"];
 	bp_cull = JSONData["editor_prefs"]["bp_lim_depth"];
 	bp_depth_tolerance = JSONData["editor_prefs"]["tools_sens_rot"];
@@ -308,7 +305,6 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["tools_sens_rot"]=tools_sens_rot;
 	JSONData["editor_prefs"]["tools_sens_move"]=tools_sens_move;
 	JSONData["editor_prefs"]["tools_sens_scale"]=tools_sens_scale;
-	JSONData["editor_prefs"]["tools_show_move_axis"]=tools_show_move_axis;
 
 	JSONData["editor_prefs"]["bp_lim_depth"]=bp_lim_depth;
 	JSONData["editor_prefs"]["bp_lim_depth"]=bp_cull;

@@ -54,7 +54,7 @@ public:
 	float			tools_sens_rot;
 	float			tools_sens_move;
 	float			tools_sens_scale;
-	BOOL			tools_show_move_axis;
+
 	// box pick
 	BOOL			bp_lim_depth;
 	BOOL			bp_cull;

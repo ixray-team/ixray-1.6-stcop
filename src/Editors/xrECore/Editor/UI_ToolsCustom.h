@@ -236,9 +236,6 @@ public:
 
     const xr_string&	GetEditFileName		()	{ return m_LastFileName; }
 
-    CEditableObject*    m_pAxisMoveObject;
-	Fmatrix				m_axis_xform;
-    
     virtual bool		GetSelectionPosition	(Fmatrix& result) =0;
     virtual bool UpdateCamera() { return false; }
 
