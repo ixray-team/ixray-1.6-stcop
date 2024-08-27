@@ -561,6 +561,7 @@ HRESULT	CRender::shader_compile(
 		if (SUCCEEDED(_result))
 		{
 
+			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), name, result, false);
 		}
 		else
 		{
