@@ -20,13 +20,18 @@ void CContentView::Draw()
 		const size_t IterCount = (ImGui::GetWindowSize().x / (BtnSize.x + 15)) - 1;
 		size_t HorBtnIter = 0;
 		xr_string NextDir = CurrentDir;
+		bool FixVodkaPath = true;
 
 		if (!RootDir.Contains(CurrentDir))
 		{
+			FixVodkaPath = false;
 			std::filesystem::path FilePath = CurrentDir.c_str();
 			if (DrawItem("..", HorBtnIter, IterCount))
 			{
 				NextDir = FilePath.parent_path().string().data();
+				if(!NextDir.Contains(RootDir)) {
+					NextDir = RootDir;
+				}
 			}
 		}
 
@@ -41,11 +46,46 @@ void CContentView::Draw()
 			}
 		}
 
+		if(FixVodkaPath) {
+			if(FS.pathes.size() > 0) {
+				for(auto& [Name, Path] : FS.pathes) {
+					xr_string FilePath = Path->m_Path;
+					if(!FilePath.Contains(RootDir)) {
+						if(DrawItem(Name, HorBtnIter, IterCount)) {
+							NextDir = FilePath;
+						}
+					}
+				}
+			}
+		}
+
 		for (std::filesystem::path FilePath : std::filesystem::directory_iterator{ CurrentDir.data() })
 		{
 			if (!std::filesystem::is_directory(FilePath) && FilePath.has_extension() && FilePath.extension().string() != ".thm")
 			{
-				DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount);
+				if(DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount)) {
+					if(FilePath.extension() == ".tga") {
+						string_path fn = {};
+						FS.update_path(fn, _textures_, "");
+						xr_string OldPath = FilePath.string().data();
+
+						auto CharIndex = OldPath.find(fn);
+						if(CharIndex != xr_string::npos) {
+							xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
+							NewPath = NewPath.substr(0, NewPath.find_last_of("."));
+							ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, false);
+						}
+						else {
+							FS.update_path(fn, _import_, "");
+							CharIndex = OldPath.find(fn);
+
+							if(CharIndex != xr_string::npos) {
+								xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
+								ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, true);
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -57,7 +97,13 @@ void CContentView::Draw()
 
 void CContentView::Destroy()
 {
-	Icons.clear();
+ 	Icons.clear();
+}
+
+void CContentView::ResetBegin() {
+}
+
+void CContentView::ResetEnd() {
 }
 
 void CContentView::Init()
@@ -69,6 +115,14 @@ void CContentView::Init()
 	Icons["ogg"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg"), true};
 	Icons["wav"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\wav"), true};
 	Icons["object"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\object"), true};
+	Icons["image"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\image"), true};
+	Icons["seq"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\seq"), true};
+	Icons["tga"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\tga"), true};
+	Icons["file"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\file"), true};
+	Icons["exe"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\exe"), true};
+	Icons["cmd"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\cmd"), true};
+	Icons["dll"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"), true};
+	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"), true};
 }
 
 bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, const size_t IterCount)
@@ -130,6 +184,9 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 
 CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 {
+	if (IconPath.find(".~") != xr_string::npos)
+		return Icons["backup"];
+
 	if (IconPath.ends_with(".ltx"))
 		return Icons["thm"];
 	
@@ -138,6 +195,22 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];
+
+	if (IconPath.ends_with(".seq"))
+		return Icons["seq"];
+
+	if (IconPath.ends_with(".dll"))
+		return Icons["dll"];
+
+	if (IconPath.ends_with(".exe"))
+		return Icons["exe"];
+
+	if (IconPath.ends_with("$") && IconPath.starts_with("$"))
+		return Icons["Folder"];
+
+	if (IconPath.ends_with(".cmd") ||
+		IconPath.ends_with(".bat"))
+		return Icons["cmd"];
 	
 	if (IconPath.Contains(LogsDir))
 		return Icons["logs"];
@@ -148,32 +221,56 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 		{
 			string_path fn = {};
 			FS.update_path(fn, _objects_, fn);
-			xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
-			//NewPath = NewPath.substr(0, NewPath.length() - 4);
+			Icons[IconPath] = Icons["object"];
 
-			EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETObject);
-			CTexture* TempTexture = new CTexture();
-			m_Thm->Update(TempTexture->pSurface);
+			if(IconPath.find(fn) != xr_string::npos) {
+				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
-			if (TempTexture->pSurface == nullptr)
-			{
-				xr_delete(TempTexture);
-				Icons[IconPath] = Icons["object"];
-			}
-			else
-			{
-				Icons[IconPath] = {TempTexture, false};
+				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETObject);
+				CTexture* TempTexture = new CTexture();
+				m_Thm->Update(TempTexture->pSurface);
+
+				if(TempTexture->pSurface != nullptr) {
+					Icons[IconPath] = {TempTexture, false};
+				}
+				else {
+					xr_delete(TempTexture);
+				}
 			}
 		}
-		else if (IconPath.ends_with(".dds"))
-		{
-			xr_string NewPath = IconPath.substr(0, NewPath.length() - 4);
+		else if(IconPath.ends_with(".tga")) {
+			string_path fn = {};
+			FS.update_path(fn, _textures_, "");
+			Icons[IconPath] = Icons["tga"];
+
+			if(IconPath.find(fn) != xr_string::npos) {
+				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
+
+				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
+				CTexture* TempTexture = new CTexture();
+				m_Thm->Update(TempTexture->pSurface);
+
+				if(TempTexture->pSurface != nullptr) {
+					Icons[IconPath] = {TempTexture, false};
+				}
+				else {
+					xr_delete(TempTexture);
+				}
+			}
+		}
+		else if(IconPath.ends_with(".dds")) {
+			xr_string NewPath = IconPath.substr(0, IconPath.length() - 4);
+
 			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};
 			Icons[IconPath].Icon->Load();
+
+			if(!Icons[IconPath].Icon->pSurface) {
+				Icons[IconPath] = Icons["image"];
+			}
 		}
 		else
 		{
-			Icons[IconPath] = {EDevice->Resources->_CreateTexture(IconPath.c_str()), false};
+			Icons[IconPath] = Icons["file"];
 		}
 	}
 

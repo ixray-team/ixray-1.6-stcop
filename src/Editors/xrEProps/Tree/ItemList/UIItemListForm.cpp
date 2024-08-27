@@ -78,6 +78,11 @@ void UIItemListForm::SelectItem(const char* name, bool ClearOld)
 
 	Node* N = SelectObject(&m_GeneralNode, name);
 
+	R_ASSERT3(N, "Item not found", name);
+	if(!N) {
+		return;
+	}
+
 	if (ClearOld)
 	{
 		ClearSelectedItems();

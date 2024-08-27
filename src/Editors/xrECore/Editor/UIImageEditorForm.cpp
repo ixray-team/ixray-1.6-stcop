@@ -89,6 +89,13 @@ void UIImageEditorForm::Draw()
 				m_ItemList->RemoveSelectItem();
 			}
 		}
+		else {
+			ImGui::SameLine();
+			if(ImGui::Button("Selected")) {
+				UpdateSelected();
+				HideLib();
+			}
+		}
 		ImGui::EndGroup();
 	}
 
@@ -138,9 +145,11 @@ void UIImageEditorForm::Update()
 
 void UIImageEditorForm::Show(bool bImport)
 {
-	if(Form==nullptr)Form = xr_new< UIImageEditorForm>();
+	if(Form == nullptr) {
+		Form = xr_new<UIImageEditorForm>();
+	}
 	Form->bImportMode = bImport;
-	//.        form->ebRebuildAssociation->Enabled = !bImport;
+	//. form->ebRebuildAssociation->Enabled = !bImport;
 	Form->bReadonlyMode = !FS.can_write_to_alias(_textures_);
 	if (Form->bReadonlyMode)
 	{
@@ -149,6 +158,27 @@ void UIImageEditorForm::Show(bool bImport)
 	}
 	Form->modif_map.clear();
 	Form->InitItemList();
+}
+
+void UIImageEditorForm::FindInEditor(xr_string fn, bool bImport) {
+	if(Form && (Form->bImportMode || bImport)) {
+		Form->HideLib();
+		Form = NULL;
+		//	xr_delete(Form);
+	}
+	if(!Form) {
+		if(bImport) {
+			if(!Form) {
+				Form = xr_new<UIImageEditorForm>();
+			}
+			Form->texture_map.insert(fn);
+		}
+
+		Show(bImport);
+	}
+	if(Form) {
+		Form->m_ItemList->SelectItem(fn.data());
+	}
 }
 
 void UIImageEditorForm::ImportTextures()
@@ -325,6 +355,19 @@ void UIImageEditorForm::UpdateLib()
 			ImageLib.RefreshTextures(&modif);
 		}
 	}
+}
+
+void UIImageEditorForm::UpdateSelected() {
+	texture_map.clear();
+	RStringVec items; string_path fn{};
+	if(m_ItemList->GetSelected(items) > 0) {
+		for(auto item : items) {
+			if(auto file = FS.exist(fn, _import_, *item)) {
+				texture_map.insert(xr_string(item.c_str()));
+			}
+		}
+	}
+	UpdateLib();
 }
 
 void UIImageEditorForm::OnItemsFocused(ListItem* item)
