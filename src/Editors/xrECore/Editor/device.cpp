@@ -119,7 +119,6 @@ void CEditorRenderDevice::Initialize()
 		SDL_MaximizeWindow(g_AppInfo.Window);
 	
 	SDL_ShowWindow(g_AppInfo.Window);
-//::ShowWindow(m_hWnd, EPrefs->start_maximized? SW_SHOWMAXIMIZED: SW_SHOWDEFAULT);
 }
 
 void CEditorRenderDevice::ShutDown()

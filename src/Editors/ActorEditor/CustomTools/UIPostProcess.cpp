@@ -1,10 +1,5 @@
 #include "stdafx.h"
 #include "UIPostProcess.h"
-#include "../xrEUI/ImOpenFileDialog.h"
-#include "../xrEUI/ImGuiFileDialogConfig.h"
-
-#include "../../xrEProps/UIFileLoad.h"
-extern CUFileOpen* FileOpen;
 
 static CMainPPE MyForm;
 
@@ -146,22 +141,27 @@ void CMainPPE::ClickHandle()
 		string_path AnimDir = {};
 		FS.update_path(AnimDir, "$game_anims$", "");
 
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", AnimDir);
+		xr_string temp_fn;
+		EFS.GetOpenName(AnimDir, temp_fn);
+
 		LoadClick = false;
 
 		DrawDialogType = DialogType::Load;
-		FileOpen->AfterLoadCallback = CMainPPE::Apply;
+		CMainPPE::Apply(temp_fn);
 	}
 	else if (SaveClick)
 	{
 		string_path AnimDir = {};
 		FS.update_path(AnimDir, "$game_anims$", "");
 
-		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".ppe", AnimDir);
+		xr_string temp_fn;
+		EFS.GetSaveName(AnimDir, temp_fn);
+
+		//FileOpen->ShowDialog(AnimDir, ".ppe");
 		SaveClick = false;
 		
 		DrawDialogType = DialogType::Save;
-		FileOpen->AfterLoadCallback = CMainPPE::Apply;
+		CMainPPE::Apply(temp_fn);
 	}
 	else if (NewClick)
 	{
