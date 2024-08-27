@@ -252,7 +252,8 @@ void CWeapon::UpdateXForm	()
 	int						boneL = -1, boneR = -1, boneR2 = -1;
 
 	// this ugly case is possible in case of a CustomMonster, not a Stalker, nor an Actor
-	if ((m_strap_bone0_id == -1 || m_strap_bone1_id == -1) && m_can_be_strapped_rifle) {
+	if ((m_strap_bone0_id == -1 || m_strap_bone1_id == -1) && m_can_be_strapped_rifle) 
+	{
 		m_strap_bone0_id = V->LL_BoneID(m_strap_bone0);
 		m_strap_bone1_id = V->LL_BoneID(m_strap_bone1);
 	}
