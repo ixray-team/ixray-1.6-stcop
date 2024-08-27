@@ -224,6 +224,9 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath.string().data());
 		ImVec4 IconColor = IconPtr->UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
 
+		if (!IconPtr->Icon)
+			return false;
+
 		OutValue = ImGui::ImageButton
 		(
 			FileName.c_str(),
