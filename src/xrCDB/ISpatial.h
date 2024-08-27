@@ -81,12 +81,12 @@ public:
 		u32						type;
 		Fsphere					sphere;
 		Fvector					node_center;	// Cached node center for TBV optimization
-		float					node_radius;	// Cached node bounds for TBV optimization
+		float					node_radius, ssa_dyn_factor, ssa_d_cam;	// Cached node bounds for TBV optimization
 		ISpatial_NODE*			node_ptr;		// Cached parent node for "empty-members" optimization
 		IRender_Sector*			sector;
 		ISpatial_DB*			space;			// allow different spaces
 
-		_spatial() : type(0)	{}				// safe way to enhure type is zero before any contstructors takes place
+		_spatial() : type(0),ssa_dyn_factor(0.002f),ssa_d_cam(220.f)	{}				// safe way to enhure type is zero before any contstructors takes place
 	}							spatial;
 public:
 	BOOL						spatial_inside		()			;

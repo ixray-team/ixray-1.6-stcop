@@ -195,7 +195,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 					{
 						if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
 						{
-							if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>0.002f&&GetDistFromCamera(spatial->spatial.sphere.P)<220.f)
+							if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>spatial->spatial.ssa_dyn_factor&&GetDistFromCamera(spatial->spatial.sphere.P)<spatial->spatial.ssa_d_cam)
 							{
 								if(deffered)
 								{
@@ -253,7 +253,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 						{
 							if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
 							{
-								if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>0.002f&&GetDistFromCamera(spatial->spatial.sphere.P)<220.f)
+								if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>spatial->spatial.ssa_dyn_factor&&GetDistFromCamera(spatial->spatial.sphere.P)<spatial->spatial.ssa_d_cam)
 								{
 									if(deffered)
 									{
