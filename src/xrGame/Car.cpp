@@ -173,20 +173,22 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
 
 
 	CInifile* pUserData = PKinematics(Visual())->LL_UserData();
-
-	if (pUserData->section_exist("destroyed"))
-		CPHDestroyable::Load(pUserData, "destroyed");
-
-	if (pUserData->section_exist("mounted_weapon_definition"))
-		m_car_weapon = new CCarWeapon(this);
-
-	if (pUserData->line_exist("car_definition", "trunk_bone"))
-		m_bone_trunk = PKinematics(Visual())->LL_BoneID(pUserData->r_string("car_definition", "trunk_bone"));
-
-	if (pUserData->section_exist("visual_memory_definition"))
+	if (pUserData != nullptr)
 	{
-		m_memory = new car_memory(this);
-		m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
+		if (pUserData->section_exist("destroyed"))
+			CPHDestroyable::Load(pUserData, "destroyed");
+
+		if (pUserData->section_exist("mounted_weapon_definition"))
+			m_car_weapon = new CCarWeapon(this);
+
+		if (pUserData->line_exist("car_definition", "trunk_bone"))
+			m_bone_trunk = PKinematics(Visual())->LL_BoneID(pUserData->r_string("car_definition", "trunk_bone"));
+
+		if (pUserData->section_exist("visual_memory_definition"))
+		{
+			m_memory = new car_memory(this);
+			m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
+		}
 	}
 
 	return (CScriptEntity::net_Spawn(DC) && R);
@@ -763,6 +765,10 @@ void CCar::ParseDefinitions()
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	bone_map.insert(std::make_pair(pKinematics->LL_GetBoneRoot(), physicsBone()));
 	CInifile* ini = pKinematics->LL_UserData();
+
+	if (ini == nullptr && Device.IsEditorMode())
+		return;
+
 	R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
 	CExplosive::Load(ini, "explosion");
 	//CExplosive::SetInitiator(ID());
@@ -968,6 +974,10 @@ void CCar::Init()
 	//get reference wheel radius
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
 	CInifile* ini = pKinematics->LL_UserData();
+
+	if (ini == nullptr && Device.IsEditorMode())
+		return;
+
 	R_ASSERT2(ini, "Car has no description !!! See ActorEditor Object - UserData");
 
 	if (ini->section_exist("air_resistance"))
@@ -1835,6 +1845,12 @@ void CCar::PhDataUpdate(float step)
 		{
 			D->Update();
 		}
+	}
+
+	if (m_steering_wheels.empty())
+	{
+		m_steer_angle = 0;
+		return;
 	}
 
 	m_steer_angle = m_steering_wheels.begin()->GetSteerAngle() * 0.1f + m_steer_angle * 0.9f;

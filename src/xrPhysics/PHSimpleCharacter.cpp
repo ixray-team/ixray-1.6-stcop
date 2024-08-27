@@ -552,7 +552,10 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
 	m_last_move.sub(cast_fv(dBodyGetPosition(m_body)), m_last_move);
 	m_last_move.mul(1.f / fixed_step);
 
-	VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE IN PhDataUpdate");
+#ifdef DEBUG
+	if (!Device.IsEditorMode())
+		VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE IN PhDataUpdate");
+#endif
 
 	if (PhOutOfBoundaries(cast_fv(dBodyGetPosition(m_body))))
 		Disable();
