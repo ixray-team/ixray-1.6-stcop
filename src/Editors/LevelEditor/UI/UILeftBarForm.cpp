@@ -4,7 +4,7 @@ UILeftBarForm::UILeftBarForm()
 {
 	bUseSnapList = true;
 	bUseObjectsTool = true;
-	bDrawSnapListObjects = true;
+	bDrawSnapListObjects = false;
 	m_SnapListMode = false;
 	m_SnapItem_Current = 0;
 }
