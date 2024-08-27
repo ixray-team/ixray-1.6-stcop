@@ -111,10 +111,11 @@ CSkeletonCollectorPacked::CSkeletonCollectorPacked(const Fbox& _bb, int apx_vert
 CExportSkeleton::SSplit::SSplit(CSurface* surf, const Fbox& bb, u16 part):CSkeletonCollectorPacked(bb)
 {
 //.	m_b2Link	= FALSE;
-	m_SkeletonLinkType		= 1;
-	m_Shader				= surf->m_ShaderName;
-	m_Texture				= surf->m_Texture;
-	m_PartID 				= part;
+	m_SkeletonLinkType = 1;
+	m_Shader = surf->m_ShaderName;
+	m_Texture = surf->m_Texture;
+	m_PartID = part;
+	m_id = surf->m_id;
 }
 //----------------------------------------------------
 
@@ -540,15 +541,13 @@ void ComputeOBB_WML		(Fobb &B, FvectorVec& V)
 	VERIFY (_valid(B.m_rotate)&&_valid(B.m_translate)&&_valid(B.m_halfsize));
 }
 //----------------------------------------------------
-
-int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 part_id)
+int CExportSkeletonCustom::FindSplit(shared_str shader, shared_str texture, u16 part_id, u16 surf_id)
 {
-	for (SplitIt it=m_Splits.begin(); it!=m_Splits.end(); it++)
-		if (	it->m_Shader.equal(shader) 		&&
-				it->m_Texture.equal(texture) 	&&
-				(it->m_PartID==part_id)      	)
-
-		return it-m_Splits.begin();
+	for (SplitIt it = m_Splits.begin(); it != m_Splits.end(); it++)
+	{
+		if (it->m_Shader.equal(shader) && it->m_Texture.equal(texture) && (it->m_PartID == part_id) && (it->m_id == surf_id))
+			return it - m_Splits.begin();
+	}
 	return -1;
 }
 
@@ -622,6 +621,14 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 #if 1
 		pb->Inc											();
 #endif
+		u16 surf_counter = 0;
+		for (SurfFacesPairIt sp_it = MESH->m_SurfFaces.begin(); sp_it != MESH->m_SurfFaces.end(); sp_it++)
+		{
+			CSurface* surf = sp_it->first;
+			surf->m_id = surf_counter;
+			surf_counter++;
+		}
+
 		// fill faces
 		for (SurfFacesPairIt sp_it=MESH->m_SurfFaces.begin(); sp_it!=MESH->m_SurfFaces.end(); sp_it++)
 		{
@@ -695,7 +702,7 @@ bool CExportSkeleton::PrepareGeometry(u8 influence)
 							}                    	
 					}
 					// find split
-					int mtl_idx 				= FindSplit(surf->m_ShaderName,surf->m_Texture,bone_brk_part);
+					int mtl_idx = FindSplit(surf->m_ShaderName, surf->m_Texture, bone_brk_part, surf->m_id);
 					if (mtl_idx<0)
 					{
 						m_Splits.push_back					(SSplit(surf,m_Source->GetBox(),bone_brk_part));
