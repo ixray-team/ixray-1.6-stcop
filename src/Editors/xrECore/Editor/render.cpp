@@ -127,6 +127,8 @@ void CRender::Calculate()
 }
 
 #include "../xrEngine/IGame_Persistent.h"
+#include "../../../Layers/xrRender/CHudInitializer.h"
+#include "../../../Layers/xrRender/CHudInitializer.cpp"
 void CRender::Render()
 {
 
@@ -180,7 +182,34 @@ void 	CRender::set_Transform(Fmatrix* M)
 	current_matrix.set(*M);
 }
 
-void			CRender::add_Visual(IRenderVisual* visual) { if (val_bInvisible)		return; Models->RenderSingle(dynamic_cast<dxRender_Visual*>(visual), current_matrix, 1.f); }
+void CRender::add_Visual(IRenderVisual* visual, bool) {
+	if(val_bInvisible) {
+		return;
+	}
+
+	if(auto pKin = PKinematics(visual)) {
+		pKin->CalculateBones(TRUE);
+	}
+
+	CHudInitializer initalizer(false);
+
+	if(get_HUD()) {
+		initalizer.SetHudMode();
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+		RImplementation.rmNear();
+	}
+
+	Models->RenderSingle(dynamic_cast<dxRender_Visual*>(visual), current_matrix, 1.f);
+
+	if(get_HUD()) {
+		initalizer.SetDefaultMode();
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+		RImplementation.rmNormal();
+	}
+}
+
 IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
 IRenderVisual* CRender::model_CreateChild(LPCSTR name, IReader* data) { return Models->CreateChild(name, data); }
 void 			CRender::model_Delete(IRenderVisual*& V, BOOL bDiscard) { auto v = dynamic_cast<dxRender_Visual*>(V); Models->Delete(v, bDiscard); if (v == nullptr)V = nullptr; }
@@ -197,13 +226,16 @@ void					CRender::reset_end()
 	Target = xr_new<CRenderTarget>();
 }
 
+bool is_Hud_mode = false;
+
 void CRender::set_HUD(BOOL V)
 {
+	is_Hud_mode = !!V;
 }
 
 BOOL CRender::get_HUD()
 {
-	return 0;
+	return is_Hud_mode;
 }
 
 void CRender::set_Invisible(BOOL V)

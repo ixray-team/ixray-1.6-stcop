@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "lephysics.h"
+#include "../xrEngine/xr_input.h"
 
 EScene* Scene;
 
@@ -227,23 +228,40 @@ int EScene::MultiRenameObjects()
 
 void EScene::OnFrame( float dT )
 {
-	if( !valid() ) return;
-	if( locked() ) return;
+	if(!valid()) return;
+	if(locked()) return;
 
-	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-	for (; t_it!=t_end; t_it++)
-		if (t_it->second && t_it->second->IsEnabled() && t_it->second->IsVisible())
+	SceneToolsMapPairIt t_it = m_SceneTools.begin();
+	SceneToolsMapPairIt t_end = m_SceneTools.end();
+
+	for(; t_it != t_end; t_it++) {
+		if(t_it->second && t_it->second->IsEnabled() && t_it->second->IsVisible()) {
 			t_it->second->OnFrame();
+		}
+	}
 
-	if(m_RTFlags.test(flUpdateSnapList) )
-		UpdateSnapListReal();    
-	if (m_RTFlags.test(flIsStopPlayInEditor))
+	if(m_RTFlags.test(flUpdateSnapList))
+		UpdateSnapListReal();
+
+	if(IsPlayInEditor()) {
+		if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT)) {
+			ShowCursor(TRUE);
+			pInput->unacquire();
+		}
+		else {
+			pInput->acquire();
+		}
+	}
+
+	if(m_RTFlags.test(flIsStopPlayInEditor))
 	{
 		m_RTFlags.set(flIsStopPlayInEditor, FALSE);
-		if (IsPlayInEditor())
+		if(IsPlayInEditor())
 		{
 			ShowCursor(TRUE);
+			pInput->unacquire();
+			SDL_WarpMouseInWindow(g_AppInfo.Window, 
+			Device.TargetWidth / 2, Device.TargetHeight / 2);
 			g_pGameLevel->IR_Release();
 			Device.seqParallel.clear();
 			g_pGameLevel->net_Stop();
@@ -253,7 +271,6 @@ void EScene::OnFrame( float dT )
 			GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, true);
 			UI->RedrawScene();
 		}
-	
 	}
 }
 

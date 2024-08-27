@@ -81,7 +81,7 @@ public:
 	virtual void					Render();
 
 	virtual void					set_Transform(Fmatrix* M);
-	virtual void					add_Visual(IRenderVisual* visual);
+	virtual void					add_Visual(IRenderVisual* visual, bool ignore_opt = false);
 
 	virtual ref_shader		getShader(int id);
 	virtual	CRenderTarget* getTarget() { return Target; }
