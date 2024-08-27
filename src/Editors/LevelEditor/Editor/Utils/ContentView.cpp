@@ -6,8 +6,8 @@ CContentView::CContentView()
 	string_path Dir = {};
 	FS.update_path(Dir, "$fs_root$", "");
 
-	CurrentDir = Dir;
-	RootDir = Dir;
+	RootDir = std::filesystem::path(Dir).string().data();
+	CurrentDir = RootDir;
 
 	FS.update_path(Dir, "$logs$", "");
 	LogsDir = Dir;
@@ -21,7 +21,7 @@ void CContentView::Draw()
 		size_t HorBtnIter = 0;
 		xr_string NextDir = CurrentDir;
 
-		if (CurrentDir != RootDir)
+		if (!RootDir.Contains(CurrentDir))
 		{
 			std::filesystem::path FilePath = CurrentDir.c_str();
 			if (DrawItem("..", HorBtnIter, IterCount))
@@ -50,6 +50,7 @@ void CContentView::Draw()
 		}
 
 		CurrentDir = NextDir;
+		xr_strlwr(CurrentDir);
 	}
 	ImGui::End();
 }
