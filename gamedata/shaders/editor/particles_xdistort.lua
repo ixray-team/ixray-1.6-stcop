@@ -1,0 +1,10 @@
+function normal(shader, t_base, t_second, t_detail)
+    shader:begin("particle_distort", "particle_distort")
+        :sorting(3, false)
+        :blend(true, blend.srcalpha, blend.invsrcalpha)
+        :zb(true, false)
+        :fog(false)
+    shader:sampler("s_base") : texture(t_base)
+    shader:sampler("s_distort") : texture(t_base)
+    shader:sampler("s_image") : texture("rt_color") : mirror ()
+end
