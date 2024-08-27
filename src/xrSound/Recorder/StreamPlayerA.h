@@ -3,7 +3,7 @@
 #include "IStreamPlayer.h"
 
 struct ALCcontext;
-class OpusDecoder;
+struct OpusDecoder;
 
 class CStreamPlayerA : public IStreamPlayer
 {

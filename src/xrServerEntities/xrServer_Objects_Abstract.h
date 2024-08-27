@@ -94,7 +94,7 @@ struct visual_data {
 }; // struct visual_data
 #pragma pack(pop)
 
-class ISE_AbstractLEOwner;
+struct ISE_AbstractLEOwner;
 
 struct ISE_Abstract {
 public:

@@ -4,7 +4,7 @@
 #include "StreamPlayerA.h"
 #include "VoicePacketsPacker.h"
 
-class ALCcontext;
+struct ALCcontext;
 
 #define VOICE_SAMPLE_RATE 24000
 #define VOICE_SAMPLES_PER_BUFFER 960

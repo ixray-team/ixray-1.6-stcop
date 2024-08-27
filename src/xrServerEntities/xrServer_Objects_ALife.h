@@ -28,7 +28,7 @@
 class CSE_ALifeItemWeapon;
 class CSE_ALifeDynamicObject;
 class CSE_ALifeObject;
-class ISE_AbstractLEOwner;
+struct ISE_AbstractLEOwner;
 class CALifeMonsterAbstract;
 
 

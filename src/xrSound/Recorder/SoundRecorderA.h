@@ -1,7 +1,7 @@
 #pragma once
 #include "ISoundRecorder.h"
 
-class ALCdevice;
+struct ALCdevice;
 class CSpeexPreprocess;
 class CVoicePacketsPacker;
 

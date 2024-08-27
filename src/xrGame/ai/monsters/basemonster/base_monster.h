@@ -510,7 +510,7 @@ protected:
 
 	u16 u_last_motion_idx = u16(-1);
 	u16 u_last_motion_slot = u16(-1);
-	u8	u_last_motion_no_loop = u16(-1);
+	u8	u_last_motion_no_loop = u8(-1);
 	CSE_ALifeMonsterBase::eMonsterSound m_sv_snd_sync_flag = CSE_ALifeMonsterBase::eMonsterSound::monster_sound_no;
 	u8	m_sv_snd_sync_sound = 0;
 	u32 m_sv_snd_sync_sound_delay = 0;
