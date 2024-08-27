@@ -44,7 +44,7 @@ private:
 	PropItem* m_EditGameTypeValue;
 	void DrawEditGameType();
 	bool m_bModified;
-	void Modified() { m_bModified = true; if (!OnModifiedEvent.empty()) OnModifiedEvent(); }
+	void Modified() { m_bModified = true; if (!OnModifiedEvent.empty()) OnModifiedEvent(); m_bModified = false; }
 private:
 	UIPropertiesItem m_Root;
 

@@ -211,6 +211,10 @@ void UIPropertiesForm::DrawEditText()
 							Modified();
 							ImGui::CloseCurrentPopup();
 						}
+						else
+						{
+							ImGui::CloseCurrentPopup();
+						}
 					}
 				}
 				else
