@@ -206,10 +206,13 @@ bool SBPart::Export	(IWriter& F, u8 infl)
 
     u32 mtl_cnt				= 0;
                                   
-    for (SBFaceVecIt pf_it=m_Faces.begin(); pf_it!=m_Faces.end(); pf_it++){
-    	SBFace* face		= *pf_it;
-        int mtl_idx			= FindSplit(face->surf->_ShaderName(),face->surf->_Texture(),0);
-        if (mtl_idx<0){
+    for (SBFaceVecIt pf_it=m_Faces.begin(); pf_it!=m_Faces.end(); pf_it++)
+    {
+    	SBFace* face = *pf_it;
+        int mtl_idx = FindSplit(face->surf->_ShaderName(), face->surf->_Texture(), 0, face->surf->m_id);
+
+        if (mtl_idx<0)
+        {
             m_Splits.push_back(SSplit(face->surf,m_BBox,0));
             mtl_idx	= mtl_cnt++;
         }
@@ -230,7 +233,8 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     }
 
     // fill per bone vertices
-    for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++){
+    for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
+    {
         if (!split_it->valid()){
             ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*split_it->m_Texture);
             bRes = false;

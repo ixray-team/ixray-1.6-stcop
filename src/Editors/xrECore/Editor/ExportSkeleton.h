@@ -132,14 +132,18 @@ public:
 };
 //----------------------------------------------------
 
-class ECORE_API CExportSkeletonCustom{
+class ECORE_API CExportSkeletonCustom
+{
 protected:
-    struct ECORE_API SSplit: public CSkeletonCollectorPacked{
+    struct ECORE_API SSplit: 
+        public CSkeletonCollectorPacked
+    {
     	shared_str		m_Shader;
         shared_str		m_Texture;
         u16 			m_PartID;
         Fbox			m_Box;
         U16Vec			m_UsedBones;
+        u16             m_id;
 
         // Progressive
 		ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
@@ -174,14 +178,15 @@ protected:
     using SplitIt = SplitVec::iterator;
 	SplitVec			m_Splits;
     Fbox 				m_Box;
-//----------------------------------------------------
-    int     			FindSplit			(shared_str shader, shared_str texture, u16 part_id);
-    void				ComputeBounding	()
+//----------------------------------------------------    
+    int  FindSplit(shared_str shader, shared_str texture, u16 part_id, u16 surf_id);
+    void ComputeBounding()
     {
         m_Box.invalidate();
-        for (SplitIt it=m_Splits.begin(); it!=m_Splits.end(); it++){
-            it->ComputeBounding	();
-            m_Box.merge			(it->m_Box);
+        for (SplitIt it = m_Splits.begin(); it != m_Splits.end(); it++) 
+        {
+            it->ComputeBounding();
+            m_Box.merge(it->m_Box);
         }
     }
 public:
