@@ -590,7 +590,9 @@ void player_hud::load(const shared_str& player_hud_sect)
 	}
 
 	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
-	m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
+	if(l_arm != BI_NONE) {
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
+	}
 
 	auto& _sect = pSettings->r_section(player_hud_sect);
 	auto _b = _sect.Data.begin();
