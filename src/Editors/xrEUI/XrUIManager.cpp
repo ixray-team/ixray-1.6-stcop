@@ -14,26 +14,33 @@ XrUIManager::~XrUIManager()
 {
 }
 
-static void LoadImGuiFont(ImFont*& FontHandle, const char* Font)
+xr_map<xr_string, ImFont*> FontsStorage;
+xr_string ImCurrentFont;
+xr_vector<xr_string> LazyFonts; 
+
+void LoadImGuiFont(const char* Font)
+{
+	LazyFonts.push_back(Font);
+}
+
+void LoadImGuiFontBase(const char* Font)
 {
 	string_path FullPath;
-	FS.update_path(FullPath, _game_fonts_, Font);
+	xr_string FixFontName = "editors\\" + xr_string(Font);
+	FS.update_path(FullPath, _game_fonts_, FixFontName.data());
 	ImFontConfig FontConfig = {};
 	FontConfig.OversampleH = 3;
 
-	if (FS.exist(FullPath))
+	if (FS.TryLoad(FullPath))
 	{
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
-		R_ASSERT(FontHandle);
-	}
-}
+		if (!FontsStorage.contains(Font))
+		{
+			FontsStorage[Font] = ImGui::GetIO().Fonts->AddFontFromFileTTF(Platform::ANSI_TO_UTF8(FullPath).c_str(), 14.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		}
 
-namespace ImGui
-{
-	XREUI_API ImFont* LightFont = nullptr;
-	XREUI_API ImFont* RegularFont = nullptr;
-	XREUI_API ImFont* MediumFont = nullptr;
-	XREUI_API ImFont* BoldFont = nullptr;
+		ImCurrentFont = Font;
+		//ImGui::GetIO().Fonts->AddFontDefault(&FontsStorage[Font]);
+	}
 }
 
 void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* ini_path)
@@ -50,11 +57,23 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	CUIThemeManager::Get().InitDefault();
 	Push(&CUIThemeManager::Get(), false);
 
-	LoadImGuiFont(ImGui::RegularFont, "RobotoMono.ttf");
-	LoadImGuiFont(ImGui::LightFont, "RobotoMono-Light.ttf");
-	LoadImGuiFont(ImGui::MediumFont, "RobotoMono-Medium.ttf");
-	LoadImGuiFont(ImGui::BoldFont, "RobotoMono-Bold.ttf");
-	
+	FS_FileSet Files;
+	string_path Fonts = {};
+	FS.update_path(Fonts, _game_fonts_, "editors\\");
+	FS.file_list(Files, Fonts, 1, "*.ttf");
+
+	auto OldFont = ImCurrentFont;
+	for (auto& File : Files)
+	{
+		xr_string FileName = std::filesystem::path(File.name.c_str()).filename().string().c_str();
+		LoadImGuiFontBase(FileName.c_str());
+	}
+
+	if (!OldFont.empty())
+	{
+		ImCurrentFont = OldFont;
+	}
+
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	io.Fonts->Build();
 	//ImGui_ImplWin32_Init(hWnd);
@@ -79,6 +98,13 @@ bool XrUIManager::ProcessEvent(void* Event)
 
 void XrUIManager::BeginFrame()
 {
+	for (auto str : LazyFonts)
+	{
+		LoadImGuiFontBase(str.c_str());
+	}
+
+	LazyFonts.clear();
+
 	ImGui_ImplSDL3_NewFrame();
 	ImGui_ImplDX9_NewFrame();
 }
@@ -217,6 +243,7 @@ void XrUIManager::Draw()
 
 	ImGui::NewFrame();
 
+	ImGui::PushFont(FontsStorage[ImCurrentFont]);
 	//ImGui::DockSpaceOverViewport();
 	{
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -254,6 +281,7 @@ void XrUIManager::Draw()
 		ui->EndDraw();
 	}
 
+	ImGui::PopFont();
 	//ImGui::EndFrame();
 
 	//EndFrame();
