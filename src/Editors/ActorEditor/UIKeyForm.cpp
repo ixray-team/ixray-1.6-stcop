@@ -49,14 +49,29 @@ void UIKeyForm::Draw()
 			{
 				m_TempForPlotHistogram.resize(size.x);
 			}
-			if (Mark1)DrawMark(0);
+			if (!Mark1) ImGui::BeginDisabled();
+			if (Mark1)
+				DrawMark(0);
 			ImGui::PlotHistogram("##left1", Mark1?m_TempForPlotHistogram .data():&Zero, Mark1 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
-			if (Mark2)DrawMark(1);
+			if (!Mark1) ImGui::EndDisabled();
+
+			if (!Mark2) ImGui::BeginDisabled();
+			if (Mark2)
+				DrawMark(1);
 			ImGui::PlotHistogram("##right1", Mark2 ? m_TempForPlotHistogram.data() : &Zero, Mark2 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
-			if (Mark3)DrawMark(2);
+			if (!Mark2) ImGui::EndDisabled();
+
+			if (!Mark3) ImGui::BeginDisabled();
+			if (Mark3)
+				DrawMark(2);
 			ImGui::PlotHistogram("##left2", Mark3 ? m_TempForPlotHistogram.data() : &Zero, Mark3 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
-			if (Mark4)DrawMark(3);
+			if (!Mark3) ImGui::EndDisabled();
+
+			if (!Mark4) ImGui::BeginDisabled();
+			if (Mark4)
+				DrawMark(3);
 			ImGui::PlotHistogram("##right2", Mark4 ? m_TempForPlotHistogram.data() : &Zero, Mark4 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
+			if (!Mark4) ImGui::EndDisabled();
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
@@ -80,18 +95,29 @@ void UIKeyForm::Draw()
 				EDevice->time_factor(m_TimeFactor);
 			}
 
+			if (!Mark1) ImGui::BeginDisabled();
 			ImGui::PushID("left1");
 			if (ImGui::Button("Del") && Mark1) { SetMark(0, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark1) { SetMark(0, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark1) { SetMark(0, 1); }
 			ImGui::PopID();
+			if (!Mark1) ImGui::EndDisabled();
+
+			if (!Mark2) ImGui::BeginDisabled();
 			ImGui::PushID("right1");
 			if (ImGui::Button("Del") && Mark2) { SetMark(1, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark2) { SetMark(1, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark2) { SetMark(1, 1); }
 			ImGui::PopID();
+			if (!Mark2) ImGui::EndDisabled();
+
+			if (!Mark3) ImGui::BeginDisabled();
 			ImGui::PushID("left2");
 			if (ImGui::Button("Del") && Mark3) { SetMark(2, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark3) { SetMark(2, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark3) { SetMark(2, 1); }
 			ImGui::PopID();
+			if (!Mark3) ImGui::EndDisabled();
+
+			if (!Mark4) ImGui::BeginDisabled();
 			ImGui::PushID("right2");
 			if (ImGui::Button("Del") && Mark4) { SetMark(3, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark4) { SetMark(3, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark4) { SetMark(3, 1); }
 			ImGui::PopID();
+			if (!Mark4) ImGui::EndDisabled();
 
 			ImGui::PopStyleVar();
 			ImGui::EndChild();
@@ -133,36 +159,34 @@ void UIKeyForm::SetMark(int id, int action)
 			}
 		}
 	}
-	else
-		if (action == 2)
-		{//up
-			for (; it != it_e; ++it)
+	else if (action == 2)
+	{//up
+		for (; it != it_e; ++it)
+		{
+			motion_marks::interval& iv = *it;
+			if (iv.first<cur_time && iv.second>cur_time)
 			{
-				motion_marks::interval& iv = *it;
-				if (iv.first<cur_time && iv.second>cur_time)
-				{
-					iv.second = cur_time;
-					break;
-				}
+				iv.second = cur_time;
+				break;
 			}
 		}
-		else
-			if (action == 1)
-			{//down
-				for (; it != it_e; ++it)
-				{
-					motion_marks::interval& iv = *it;
-					if (iv.first<cur_time && iv.second>cur_time)
-					{
-						iv.first = cur_time;
-						break;
-					}
-				}
-				if (it == it_e)
-				{//insert new
-					M.intervals.push_back(motion_marks::interval(cur_time, b - a));
-				}
+	}
+	else if (action == 1)
+	{//down
+		for (; it != it_e; ++it)
+		{
+			motion_marks::interval& iv = *it;
+			if (iv.first<cur_time && iv.second>cur_time)
+			{
+				iv.first = cur_time;
+				break;
 			}
+		}
+		if (it == it_e)
+		{//insert new
+			M.intervals.push_back(motion_marks::interval(cur_time, b - a));
+		}
+	}
 
 	std::sort(M.intervals.begin(), M.intervals.end(), interval_comparer);
 }
