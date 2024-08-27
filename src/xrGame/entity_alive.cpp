@@ -394,47 +394,55 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 
 }
 
-void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos, 
-									  float trace_dist, float wallmark_size,
-									  IWallMarkArray *pwallmarks_vector)
+void CEntityAlive::PlaceBloodWallmark(const Fvector& dir, const Fvector& start_pos,
+	float trace_dist, float wallmark_size,
+	IWallMarkArray* pwallmarks_vector)
 {
 	collide::rq_result	result;
-	BOOL				reach_wall = 
-		Level().ObjectSpace.RayPick(
-			start_pos,
-			dir,
-			trace_dist, 
-			collide::rqtBoth,
-			result,
-			this
-		)
-		&&
-		!result.O;
+	bool bSurfaceReached = Level().ObjectSpace.RayPick(start_pos, dir, trace_dist, collide::rqtBoth, result, nullptr);
+
+	if (!bSurfaceReached)
+		return;
+
+	// Calculate hit pos
+	Fvector end_point; end_point.set(0, 0, 0);
+	end_point.mad(start_pos, dir, result.range);
+
+	if (result.O)
+	{
+		// Dynamic object
+		IKinematics* const pK = smart_cast<IKinematics*>(result.O->Visual());
+		if (!pK)
+			return;
+
+		CBoneData const& bone_data = pK->LL_GetData((u16)result.element);
+		SGameMtl* pMaterial = GMLib.GetMaterialByIdx(bone_data.game_mtl_idx);
+
+		if (pMaterial->Flags.is(SGameMtl::flBloodmark))
+			::Render->add_SkeletonWallmark(&result.O->renderable.xform, pK, pwallmarks_vector, end_point, dir, wallmark_size);
+	}
 
 	//если кровь долетела до статического объекта
-	if(reach_wall)
+	CDB::TRI* pTri = Level().ObjectSpace.GetStaticTris() + result.element;
+	SGameMtl* pMaterial = GMLib.GetMaterialByIdx(pTri->material);
+
+	if (pMaterial->Flags.is(SGameMtl::flBloodmark))
 	{
-		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+result.element;
-		SGameMtl*	pMaterial = GMLib.GetMaterialByIdx(pTri->material);
+		//вычислить нормаль к пораженной поверхности
+		Fvector* pVerts = Level().ObjectSpace.GetStaticVerts();
 
-		if(pMaterial->Flags.is(SGameMtl::flBloodmark))
+		//вычислить точку попадания
+		Fvector end_point;
+		end_point.set(0, 0, 0);
+		end_point.mad(start_pos, dir, result.range);
+
+
+		//ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
+		VERIFY(!pwallmarks_vector->empty());
 		{
-			//вычислить нормаль к пораженной поверхности
-			Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
-
-			//вычислить точку попадания
-			Fvector end_point;
-			end_point.set(0,0,0);
-			end_point.mad(start_pos, dir, result.range);
-
-			
-			//ref_shader wallmarkShader = wallmarks_vector[::Random.randI(wallmarks_vector.size())];
-			VERIFY(!pwallmarks_vector->empty());
-			{
-				//добавить отметку на материале
-				//::Render->add_StaticWallmark(wallmarkShader, end_point, wallmark_size, pTri, pVerts);
-				::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
-			}
+			//добавить отметку на материале
+			//::Render->add_StaticWallmark(wallmarkShader, end_point, wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark(pwallmarks_vector, end_point, wallmark_size, pTri, pVerts);
 		}
 	}
 }
