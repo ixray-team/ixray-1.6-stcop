@@ -27,9 +27,6 @@ CLevelTool::~CLevelTool()
 	
 }
 
-
-
-
 bool CLevelTool::OnCreate()
 {
 	inherited::OnCreate();
@@ -347,6 +344,7 @@ void CLevelTool::RealUpdateProperties()
 	PropUpdateIsCompleted = false;
 	SetEvent(mtPropObj);
 	m_Flags.set(flUpdateProperties, FALSE);
+	m_Props->setModified(FALSE);
 }
 
 

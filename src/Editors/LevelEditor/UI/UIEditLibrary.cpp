@@ -2,6 +2,7 @@
 #include "UIEditLibrary.h"
 #include "../../xrECore/Editor/Library.h"
 
+static FS_FileSet modif_map;
 UIEditLibrary* UIEditLibrary::Form = nullptr;
 
 UIEditLibrary::UIEditLibrary()
@@ -109,6 +110,7 @@ void UIEditLibrary::Show()
 		Form->bOpen = true;
 	}
 	UI->Push(Form, false);
+	modif_map.clear();
 }
 
 void UIEditLibrary::Close()
@@ -272,6 +274,7 @@ void UIEditLibrary::OnPropertiesClick()
 	}
 
 	m_PropsObjects->AssignItems(Info);
+	m_PropsObjects->SetModifiedEvent(OnModified);
 }
 
 void UIEditLibrary::DrawRightBar()
@@ -375,14 +378,24 @@ void UIEditLibrary::DrawRightBar()
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-		if (ImGui::Button("Save", ImVec2(-1, 0)))
-		{
-		}
-		if (ImGui::IsItemHovered())
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-
 		ImGui::PopItemFlag();
 		ImGui::PopStyleVar();
+
+		if (!IsModify)
+		{
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			RenderSaveButton();
+			ImGui::PopItemFlag();
+			ImGui::PopStyleVar();
+		}
+		else
+		{
+			RenderSaveButton();
+		}
+
+		if (ImGui::IsItemHovered())
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
 		if (ImGui::Button("Close", ImVec2(-1, 0)))
 			Close();
@@ -412,6 +425,19 @@ void UIEditLibrary::DrawRightBar()
 		}
 
 		UIChooseForm::Update();
+	}
+}
+
+void UIEditLibrary::RenderSaveButton()
+{
+	if (ImGui::Button("Save", ImVec2(-1, 0)))
+	{
+		RStringVec sel_strings;
+		ChangeReference(sel_strings);
+		Lib.Save(&modif_map);
+		modif_map.clear();
+		RefreshSelected();
+		IsModify = false;
 	}
 }
 
@@ -533,6 +559,28 @@ void UIEditLibrary::ExportObj()
 		UI->ProgressEnd(pb);
 	}
 	ELog.DlgMsg(mtInformation, "Done.");
+}
+
+void UIEditLibrary::OnModified()
+{
+	if (!Form) 				return;
+	Form->IsModify = true;
+
+	auto it = Form->m_ObjectList->m_SelectedItems.begin();
+	auto it_e = Form->m_ObjectList->m_SelectedItems.end();
+	for (; it != it_e; ++it)
+	{
+		CSceneObject* SO = new CSceneObject(nullptr, nullptr);
+		SO->SetReference((*it)->Key());
+		CEditableObject* E = SO->GetReference();
+		if (E)
+		{
+			modif_map.insert(FS_File(E->GetName()));
+			E->Modified();
+			SO->UpdateTransform();
+		}
+	}
+	UI->RedrawScene();
 }
 
 void UIEditLibrary::ChangeReference(const RStringVec& items)
