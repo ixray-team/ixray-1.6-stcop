@@ -105,21 +105,20 @@ void CGameGraphBuilder::load_graph_point	(CSE_Abstract*entity)
 	graph().add_vertex		(vertex,graph().vertices().size());
 }
 
-void CGameGraphBuilder::load_graph_points	()
+void CGameGraphBuilder::load_graph_points()
 {
-	
-
-	Msg						("Loading graph points");
+	Msg("Loading graph points");
 	for (auto& Obj : Scene->ListObj(OBJCLASS_SPAWNPOINT))
 	{
 		CSpawnPoint* Spawn = dynamic_cast<CSpawnPoint*>(Obj);
+
+		if (!Spawn->m_SpawnData.Valid())
+			continue;
+
 		load_graph_point(Spawn->GetEntity());
 	}
 
-
-
-	Msg						("%d graph points loaded",graph().vertices().size());
-
+	Msg("%d graph points loaded", graph().vertices().size());
 }
 
 template <typename T>
