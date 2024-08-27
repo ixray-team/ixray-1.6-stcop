@@ -118,7 +118,7 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
         	else
             {
                 string1024 Name;
-				sprintf_s(Name,"bone%d",bone_idx);
+				sprintf_s(Name,"%d",bone_idx);
 
                 m_Bones.push_back		(SBBone( Name,parent_bone,F->surf->_GameMtlName(),face_accum,area));
                 parent_bone				= "0";
