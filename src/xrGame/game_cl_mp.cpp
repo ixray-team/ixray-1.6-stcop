@@ -374,9 +374,11 @@ void game_cl_mp::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			clientdata_event_t etype = static_cast<clientdata_event_t>(P.r_u8());
 			if (etype == e_screenshot_request)
 			{
-				screenshot_manager::complete_callback_t compl_cb = 
+			#ifdef XR_MP_BUILD
+				screenshot_manager::complete_callback_t compl_cb =
 					fastdelegate::MakeDelegate(this, &game_cl_mp::SendCollectedData);
 				ss_manager.make_screenshot(compl_cb);
+			#endif //  XR_MP_BUILD
 			} else if (etype == e_configs_request)
 			{
 				mp_anticheat::configs_dumper::complete_callback_t compl_cb = 
@@ -1829,7 +1831,9 @@ void game_cl_mp::draw_all_active_binder_states()
 
 void game_cl_mp::draw_downloads(bool draw)
 {
+#ifdef XR_MP_BUILD
 	ss_manager.set_draw_downloads(draw);
+#endif //  XR_MP_BUILD
 }
 
 void game_cl_mp::extract_server_info(u8* data_ptr, u32 data_size)

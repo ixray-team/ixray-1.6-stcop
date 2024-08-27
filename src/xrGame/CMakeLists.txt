@@ -162,7 +162,10 @@ target_link_libraries(xrGame PUBLIC xrScripts)
 target_link_libraries(xrGame PUBLIC luabind)
 target_link_libraries(xrGame PUBLIC xrParticles)
 target_link_libraries(xrGame PUBLIC crypto)
-target_link_libraries(xrGame PUBLIC CxImage)
+
+if(IXRAY_MP)
+    target_link_libraries(xrGame PUBLIC CxImage)
+endif()
 
 # Move precompiled header
 set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

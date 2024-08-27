@@ -4,11 +4,14 @@
 #include "ui_defs.h"
 #include "Spectator.h"
 #include "file_transfer.h"
-#include "screenshot_manager.h"
 #include "configs_dumper.h"
 #include "configs_dump_verifyer.h"
 #include "screenshot_server.h"
 #include "../xrCore/fastdelegate.h"
+
+#ifdef XR_MP_BUILD
+#include "screenshot_manager.h"
+#endif //  XR_MP_BUILD
 
 class CUIWindow;
 class CUISpeechMenu;
@@ -43,7 +46,7 @@ struct SND_Message{
 
 struct cl_TeamStruct
 {
-	shared_str			caSection;		// имя секции комманды
+	shared_str			caSection;		// РёРјСЏ СЃРµРєС†РёРё РєРѕРјРјР°РЅРґС‹
 	//-----------------------------------
 	ui_shader			IndicatorShader;
 	ui_shader			InvincibleShader;
@@ -268,8 +271,10 @@ public:
 				void				SendPlayerStarted();
 	virtual		void				OnConnected				();
 	virtual		LPCSTR				GetGameScore			(string32&	score_dest) = 0;
-				
+#ifdef XR_MP_BUILD
 	screenshot_manager				ss_manager;
+#endif //  XR_MP_BUILD
+
 	mp_anticheat::configs_dumper	cd_manager;
 	mp_anticheat::configs_verifyer	cd_verifyer;
 	
