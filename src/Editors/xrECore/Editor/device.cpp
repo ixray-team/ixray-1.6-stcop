@@ -87,7 +87,8 @@ void CEditorRenderDevice::Initialize()
 
 	RenderFactory = &RenderFactoryImpl;
 	UIRender = &UIRenderImpl;
-#ifdef DEBUG
+
+#ifdef DEBUG_DRAW
 	DRender = &DebugRenderImpl;
 #endif
 
