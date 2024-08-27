@@ -85,6 +85,8 @@
 
 #include "Editor/Tools/ESceneClassList.h"
 
+#include "Editor/Utils/Gizmo/IM_Manipulator.h"
+
 #include "Editor/UI_LevelMain.h"
 #include "Editor/UI_LevelTools.h"
 

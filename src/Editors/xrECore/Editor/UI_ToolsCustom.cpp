@@ -20,20 +20,17 @@ CToolCustom* Tools=0;
 
 CToolCustom::CToolCustom()
 {
-	m_bReady			= false;
-	m_Action			= etaSelect;
-	m_Settings.assign	(etfNormalAlign|etfGSnap|etfOSnap|etfMTSnap|etfVSnap|etfASnap|etfMSnap);
-	m_Axis = etAxisZX;
-	fFogness = 0.9f;
-	dwFogColor = 0xffffffff;
-	m_pAxisMoveObject = NULL;
-	m_axis_xform = Fidentity;
+    m_bReady = false;
+    m_Action = etaSelect;
+    m_Settings.assign(etfNormalAlign | etfGSnap | etfOSnap | etfMTSnap | etfVSnap | etfASnap | etfMSnap | etfScaleFixed);
+    m_Axis            = etAxisZX;
+    fFogness          = 0.9f;
+    dwFogColor        = 0xffffffff;
+    m_pAxisMoveObject = NULL;
+    m_axis_xform      = Fidentity;
 }
 //---------------------------------------------------------------------------
-
-CToolCustom::~CToolCustom()
-{
-}
+CToolCustom::~CToolCustom() {}
 //---------------------------------------------------------------------------
 
 bool CToolCustom::OnCreate()
