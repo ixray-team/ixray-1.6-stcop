@@ -481,12 +481,12 @@ void CEditorRenderDevice::DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32
 void CEditorRenderDevice::ReloadTextures()
 {
 	string_path Path = {};
-	FS.update_path(Path, _game_textures_, "");
 
+	FS.update_path(Path, _game_textures_, "");
 	FS.rescan_path(Path, true);
-	UI->SetStatus("Reload textures...");
-	Resources->ED_UpdateTextures(0);
-	UI->SetStatus("");
+
+	Msg("* Reload textures...");
+	UI->Resize();
 }
 
 void CEditorRenderDevice::UnloadTextures()
