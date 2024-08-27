@@ -4,6 +4,10 @@ typedef fastdelegate::FastDelegate1<ImVec2>		  				TOnRenderToolBar;
 class ECORE_API UIRenderForm :public XrUI
 {
 public:
+	using DragCallback = void(const xr_string&);
+	DragCallback* DragFunctor;
+
+public:
 	UIRenderForm();
 	virtual ~UIRenderForm();
 	virtual void Draw();
@@ -19,4 +23,5 @@ private:
 	bool m_mouse_down;
 	bool m_mouse_move;
 	bool m_shiftstate_down;
+
 };

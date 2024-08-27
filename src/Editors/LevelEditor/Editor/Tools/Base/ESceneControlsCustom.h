@@ -50,6 +50,7 @@ protected:
     bool				DefaultMovingProcess(TShiftState Shift, Fvector& amount);
 public:
     ESceneToolBase*	parent_tool;
+
 public:
     				TUI_CustomControl	(int st, int act, ESceneToolBase* parent);
     virtual 		~TUI_CustomControl	(){;}
@@ -62,7 +63,7 @@ public:
     virtual bool 	KeyPress			(WORD Key, TShiftState Shift){return false;}
     virtual void 	OnEnter				(){;}
     virtual void 	OnExit				(){;}
-
+    //virtual void    DragDrop            (const xr_string& Path);
     int 			Action				(){return action;}
 
 	virtual bool IsSupportMove() { return action == etaSelect; }
