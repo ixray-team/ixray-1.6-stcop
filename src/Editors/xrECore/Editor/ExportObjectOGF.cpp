@@ -27,12 +27,12 @@ CObjectOGFCollectorPacked::CObjectOGFCollectorPacked(const Fbox &bb, int apx_ver
     m_Verts.reserve	(apx_vertices);
     m_Faces.reserve	(apx_faces);
 
-   /*int		_size = (clpOGFMX + 1) * (clpOGFMY + 1) * (clpOGFMZ + 1);
+   int		_size = (clpOGFMX + 1) * (clpOGFMY + 1) * (clpOGFMZ + 1);
     int		_average= (apx_vertices/_size)/2;
     for (int ix=0; ix<clpOGFMX+1; ++ix)
         for (int iy=0; iy<clpOGFMY+1; ++iy)
             for (int iz=0; iz<clpOGFMZ+1; ++iz)
-                m_VM[ix][iy][iz].reserve	(_average);*/
+                m_VM[ix][iy][iz].reserve	(_average);
 }
 
 u16 CObjectOGFCollectorPacked::VPack(SOGFVert& V)
