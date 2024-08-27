@@ -720,7 +720,9 @@ void EScene::Play()
 		return;
 	if (!BuildSpawn())
 		return;
-   // Console->Execute("main_menu off");
+
+	g_pGamePersistent->m_game_params.reset();
+	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;
 	g_hud = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
 	g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_EDITOR_LEVEL);
 	g_pGameLevel->net_Start("all/single/alife/new", "localhost");
