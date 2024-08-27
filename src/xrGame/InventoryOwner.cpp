@@ -29,7 +29,8 @@
 
 CInventoryOwner::CInventoryOwner			()
 {
-	m_pTrade					= nullptr;
+	m_pTrade = nullptr;
+	m_purchase_list = nullptr;
 	m_trade_parameters			= 0;
 
 	m_inventory					= new CInventory();
