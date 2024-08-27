@@ -427,11 +427,11 @@ void TUI::Redraw()
 				RT.create("rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 				ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
 				m_Flags.set(flRedraw, TRUE);
-				EDevice->fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
 
 				EDevice->m_fNearer = EDevice->mProject._43;
-				// EDevice->fWidth_2 = GetRenderWidth() / 2.f;
-				// EDevice->fHeight_2 = GetRenderHeight() / 2.f;
+				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
+				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;
+				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
 
 				EDevice->seqDeviceReset.Process(rp_DeviceReset);
 				EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
@@ -440,7 +440,9 @@ void TUI::Redraw()
 			}
 			else {
 				// Soft render update when resizing window
-				EDevice->fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
+				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
+				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;
+				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
 			}
 		}
 		if (!UI->IsPlayInEditor())
