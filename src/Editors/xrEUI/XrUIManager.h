@@ -64,5 +64,7 @@ public:
 			}
 		);
 	}
+
+	bool IsEnableInput = true;
 };
 

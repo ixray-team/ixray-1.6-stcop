@@ -27,6 +27,12 @@ void UIRenderForm::Draw()
 {
 	ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
+	m_render_pos.right = ImGui::GetWindowSize().x;
+	m_render_pos.left = ImGui::GetWindowPos().x;
+
+	m_render_pos.bottom = ImGui::GetWindowSize().y;
+	m_render_pos.top = ImGui::GetWindowPos().y;
+
 	if (UI && UI->RT->pSurface)
 	{
 		int ShiftState = ssNone;

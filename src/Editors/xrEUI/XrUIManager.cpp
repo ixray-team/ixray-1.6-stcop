@@ -282,6 +282,13 @@ void XrUIManager::Draw()
 		ImGui::PopStyleVar(4);
 
 	}
+
+	bool CopyBool = IsEnableInput;
+
+	if (!CopyBool)
+	{
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	}
 	
 	OnDrawUI();
 
@@ -290,6 +297,11 @@ void XrUIManager::Draw()
 		ui->BeginDraw();
 		ui->Draw();
 		ui->EndDraw();
+	}
+
+	if (!CopyBool)
+	{
+		ImGui::PopItemFlag();
 	}
 
 	ImGui::PopFont();

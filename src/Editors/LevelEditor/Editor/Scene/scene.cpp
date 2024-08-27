@@ -243,13 +243,17 @@ void EScene::OnFrame( float dT )
 	if(m_RTFlags.test(flUpdateSnapList))
 		UpdateSnapListReal();
 
-	if(IsPlayInEditor()) {
-		if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT)) {
-			ShowCursor(TRUE);
-			pInput->unacquire();
-		}
-		else {
-			pInput->acquire();
+	if(IsPlayInEditor()) 
+	{
+		if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT)) 
+		{
+			if (pInput->IsAcquire)
+			{
+				pInput->unacquire();
+				pInput->KeyboardButtonUpdate(SDL_SCANCODE_LALT, false);
+				UI->IsEnableInput = true;
+				ShowCursor(TRUE);
+			}
 		}
 	}
 
@@ -721,6 +725,9 @@ void EScene::Play()
 	if (!BuildSpawn())
 		return;
 
+	pInput->acquire();
+	UI->IsEnableInput = false;
+
 	g_pGamePersistent->m_game_params.reset();
 	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;
 	g_hud = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
@@ -740,6 +747,9 @@ void EScene::Stop()
 {
 	if (!IsPlayInEditor())
 		return;
+
+	UI->IsEnableInput = true;
+	pInput->unacquire();
 
 	Console->Hide();
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
