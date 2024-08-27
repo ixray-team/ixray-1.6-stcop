@@ -1,16 +1,9 @@
-#include "stdafx.h"
-
-class TUI_ControlGlowSelect : public TUI_CustomControl
-{
-public:
-	TUI_ControlGlowSelect(int st, int act, ESceneToolBase* parent) :TUI_CustomControl(st, act, parent) {}
-	virtual bool IsSupportRotate() { return false; }
-};
+﻿#include "stdafx.h"
 
 void ESceneGlowTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	AddControl(xr_new<TUI_ControlGlowSelect>(estDefault, etaSelect, this));
+	// AddControl(xr_new<TUI_CustomControl>(estDefault, etaSelect, this));
     m_Flags.zero	();
 }
 

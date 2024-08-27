@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../XrECore/stdafx.h"
 #include "../../xrScripts/stdafx.h"
 
@@ -84,8 +84,6 @@
 #include "UI/Tools/UIShapeTool.h"
 
 #include "Editor/Tools/ESceneClassList.h"
-
-#include "Editor/Utils/Gimzo/Gizmo.h"
 
 #include "Editor/UI_LevelMain.h"
 #include "Editor/UI_LevelTools.h"

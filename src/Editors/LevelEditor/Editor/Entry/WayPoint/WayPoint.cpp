@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #define WAYPOINT_SIZE 	1.5f
 #define WAYPOINT_RADIUS WAYPOINT_SIZE*.5f
@@ -483,19 +483,18 @@ void CWayObject::MoveTo(const Fvector& pos, const Fvector& up)
     }
 }
 
-void CWayObject::Move(Fvector& Position)
+void CWayObject::Move(Fvector& amount)
 {
-    Fvector Delta;
-    Delta.sub(Position, GetSavePosition());
 	if (IsPointMode())
     {
-        for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++)
-            if ((*it)->m_bSelected) (*it)->m_vPosition.add(Delta, (*it)->m_vSavePosition);
+        for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
+            if ((*it)->m_bSelected)
+                (*it)->m_vPosition.add(amount);
     }
     else
     {
-        for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++)
-            (*it)->m_vPosition.add(Delta, (*it)->m_vSavePosition);
+        for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
+            (*it)->m_vPosition.add(amount);
     }
 }
 
@@ -823,28 +822,3 @@ bool CWayObject::OnSelectionRemove()
 	    return m_WayPoints.empty();
     }else return true;
 }
-
-void CWayObject::PositionSave()
-{
-    CCustomObject::PositionSave();
-	if (IsPointMode()) 
-    {
-        for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
-        {
-            if ((*it)->m_bSelected)
-            {
-                (*it)->m_vSavePosition = (*it)->m_vPosition;
-            }
-        }
-	}
-	else 
-    {
-        for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
-        {
-
-			(*it)->m_vSavePosition = (*it)->m_vPosition;
-        }
-	}
-}
-
-

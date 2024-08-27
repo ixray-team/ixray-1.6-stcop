@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #ifndef UI_ToolsCustomH
 #define UI_ToolsCustomH
 
@@ -12,7 +12,8 @@ class PropValue;
 class TfrmKeyBar;
 class CBlend;
 
-enum ETAction{
+enum ETAction
+{
     etaSelect=0,
     etaAdd,
     etaMove,
@@ -31,16 +32,18 @@ enum ETAxis
 };
 
 
-enum ETFlags{
-	etfCSParent    	= (1<<0),
-	etfNUScale      = (1<<1),
-	etfNormalAlign  = (1<<2),
-	etfGSnap      	= (1<<3),
-	etfOSnap      	= (1<<4),
-	etfMTSnap      	= (1<<5),
-	etfVSnap      	= (1<<6),
-	etfASnap      	= (1<<7),
-	etfMSnap      	= (1<<8),
+enum ETFlags
+{
+    etfCSParent    = (1 << 0),
+    etfNUScale     = (1 << 1),
+    etfNormalAlign = (1 << 2),
+    etfGSnap       = (1 << 3),
+    etfOSnap       = (1 << 4),
+    etfMTSnap      = (1 << 5),
+    etfVSnap       = (1 << 6),
+    etfASnap       = (1 << 7),
+    etfMSnap       = (1 << 8),
+    etfScaleFixed  = (1 << 9),
 };
 
 class ECORE_API CToolCustom
@@ -70,9 +73,11 @@ protected:
     float				m_fRotateSnapValue;
     float				m_RotateAmount;
 public:
+    Fvector             m_fScaleFixedValue;
     float               m_MoveSnap;
     float               m_MoveSnapTo;
     float               m_RotateSnapAngle;
+    float               m_ScaleFixed;
 
 public:
     float 				fFogness;

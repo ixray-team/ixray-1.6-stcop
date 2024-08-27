@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class CFrustum;
 class CWayPoint;
@@ -17,7 +17,6 @@ using WPLIt = WPLVec::iterator;
 class CWayPoint
 {
 
-	friend class Gizmo;
     friend class CPatrolPoint;
     friend class CPatrolPath;
     friend class CWayObject;
@@ -60,7 +59,6 @@ protected:
     friend class TfrmPropertiesWayPoint;
     friend class CPatrolPath;
 	friend class CPatrolPoint;
-	friend class Gizmo;
 	EWayType		m_Type;
     WPVec			m_WayPoints;
     typedef CCustomObject inherited;
@@ -118,6 +116,4 @@ public:
 
     virtual const Fvector& GetPosition	()	const { return m_WayPoints.front()->m_vPosition; 	}
     virtual void 	SetPosition		(const Fvector& pos)	{ MoveTo(pos, Fvector().set(0,1,0) );	UpdateTransform();}
-
-    virtual void           PositionSave();
 };

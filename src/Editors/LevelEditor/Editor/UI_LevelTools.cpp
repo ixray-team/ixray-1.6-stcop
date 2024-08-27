@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "Utils/Cursor3D.h"
 #include "UI/UIEditLibrary.h"
 
@@ -45,7 +45,6 @@ bool CLevelTool::OnCreate()
 	m_Props->SetModifiedEvent(TOnCloseEvent(this, &CLevelTool::OnPropsModified));
 	m_WorldProps = xr_new < UIPropertiesForm>();
 	m_WorldProps->SetModifiedEvent(TOnCloseEvent(this, &CLevelTool::OnPropsModified));
-	m_Gizmo = xr_new<Gizmo>();
   /*
 	ssRBOnly << ssRight;
 	paParent 		= fraLeftBar->paFrames;   VERIFY(paParent);
@@ -77,7 +76,6 @@ void CLevelTool::OnDestroy()
 	if (pCurTool)
 		pCurTool->OnDeactivate();
 	Scene->OnDestroy		();
-	xr_delete(m_Gizmo);
 }
 
 void CLevelTool::Reset()
@@ -179,29 +177,14 @@ void CLevelTool::RealSetAction   (ETAction act)
 
 void  CLevelTool::SetAction(ETAction act)
 {
-	// если мышь захвачена - изменим action после того как она освободится
-	//if (UI->IsMouseCaptured() || UI->IsMouseInUse())
+	// РµСЃР»Рё РјС‹С€СЊ Р·Р°С…РІР°С‡РµРЅР° - РёР·РјРµРЅРёРј action РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РѕРЅР° РѕСЃРІРѕР±РѕРґРёС‚СЃСЏ
+	if (UI->IsMouseCaptured() || UI->IsMouseInUse())
 	{
 		m_Flags.set(flChangeAction, TRUE);
 		iNeedAction = act;
 	}
-	//else
-	//	RealSetAction(act);
-
-	if (m_Gizmo)
-	{
-		Gizmo::EType Type = Gizmo::EType::None;
-
-		switch (act)
-		{
-			case ETAction::etaMove:   Type = Gizmo::EType::Move;   iNeedAction = ETAction::etaSelect; break;
-			case ETAction::etaScale:  Type = Gizmo::EType::Scale;  iNeedAction = ETAction::etaSelect; break;
-			case ETAction::etaRotate: Type = Gizmo::EType::Rotate; iNeedAction = ETAction::etaSelect; break;
-		}
-
-		m_Gizmo->SetType(Type);
-		UI->RedrawScene();
-	}
+	else
+		RealSetAction(act);
 }
 
 void  CLevelTool::RealSetTarget   (ObjClassID tgt,int sub_tgt,bool bForced)
@@ -239,7 +222,7 @@ void  CLevelTool::ResetSubTarget()
 
 void  CLevelTool::SetTarget(ObjClassID tgt, int sub_tgt)
 {
-	// если мышь захвачена - изменим target после того как она освободится
+	// РµСЃР»Рё РјС‹С€СЊ Р·Р°С…РІР°С‡РµРЅР° - РёР·РјРµРЅРёРј target РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РѕРЅР° РѕСЃРІРѕР±РѕРґРёС‚СЃСЏ
 	if (UI->IsMouseCaptured()||UI->IsMouseInUse()||!false){
 		m_Flags.set(flChangeTarget,TRUE);
 		if(tgt == OBJCLASS_WAY && sub_tgt==2 && target==tgt)
@@ -450,16 +433,15 @@ void  CLevelTool::OnFrame()
 	if ((est==esEditScene)||(est==esEditLibrary)||(est==esEditLightAnim)){
 		if (true/*!UI->IsMouseCaptured()*/)
 		{
-			// если нужно изменить target выполняем после того как мышь освободится
+			// РµСЃР»Рё РЅСѓР¶РЅРѕ РёР·РјРµРЅРёС‚СЊ target РІС‹РїРѕР»РЅСЏРµРј РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РјС‹С€СЊ РѕСЃРІРѕР±РѕРґРёС‚СЃСЏ
 			if(m_Flags.is(flChangeTarget)) 		RealSetTarget(iNeedTarget,iNeedSubTarget,false);
-			// если нужно изменить action выполняем после того как мышь освободится
+			// РµСЃР»Рё РЅСѓР¶РЅРѕ РёР·РјРµРЅРёС‚СЊ action РІС‹РїРѕР»РЅСЏРµРј РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РјС‹С€СЊ РѕСЃРІРѕР±РѕРґРёС‚СЃСЏ
 			if(m_Flags.is(flChangeAction)) 		RealSetAction(ETAction(iNeedAction));
 		}
 		if (m_Flags.is(flUpdateProperties)) 	RealUpdateProperties();
 		if (m_Flags.is(flUpdateObjectList)) 	RealUpdateObjectList();
 		//TfrmEditLightAnim::OnIdle();
 	}
-	m_Gizmo->OnFrame();
 
 	if (IsCompilerRunning())
 	{
@@ -541,7 +523,7 @@ void  CLevelTool::Render()
 	}
 	// draw cursor
 	LUI->m_Cursor->Render();
-	m_Gizmo->Render();
+
 	inherited::Render		();
 }
 
