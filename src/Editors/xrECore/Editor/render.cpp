@@ -331,6 +331,15 @@ public:
 	virtual bool get_hud_mode() { return false; }
 	virtual vis_data& get_homdata() { static vis_data temp = {};  return temp; };
 
+	virtual void set_occq_mode(bool b) {};
+	virtual bool get_occq_mode() { return false; };
+
+	virtual void set_ignore_object(CObject* O) {};
+	virtual CObject* get_ignore_object() { return nullptr; };
+
+	virtual void	set_decor_object(CObject* O, int index = 0) {};
+	virtual CObject* get_decor_object(int index = 0) { return nullptr; };
+
 	virtual ~RLight() {}
 };
 IRender_Light* CRender::light_create() { return xr_new< RLight>(); }

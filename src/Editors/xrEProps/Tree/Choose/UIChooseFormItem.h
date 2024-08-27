@@ -6,6 +6,7 @@ public:
 	virtual ~UIChooseFormItem();
 
 	bool bIsFavorite;
+	bool m_bOpenByDefault;
 
 	class UIChooseForm* Form;
 	int Index;
@@ -22,6 +23,7 @@ public:
 	void ClearSelection();
 	void Selected(int Start, int End);
 	void SelectedToFavorite(bool Favorite);
+	void OpenParentItems(const char* path, char delimiter = '\\');
 protected:
 	bool CheckFilter();
 	virtual UITreeItem* CreateItem(shared_str Name);
