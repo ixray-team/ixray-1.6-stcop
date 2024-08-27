@@ -85,8 +85,11 @@ void CTorch::Load(LPCSTR section)
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section,"night_vision");
 
-	const char* SoundName = pSettings->r_string(section, "snd_click");
-	m_switch_sound.create(SoundName, st_Effect, sg_SourceType);
+	if (pSettings->line_exist(section, "snd_click"))
+	{
+		const char* SoundName = pSettings->r_string(section, "snd_click");
+		m_switch_sound.create(SoundName, st_Effect, sg_SourceType);
+	}
 }
 
 void CTorch::SwitchNightVision()
@@ -226,38 +229,42 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
 	IKinematics* K			= smart_cast<IKinematics*>(Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
-	R_ASSERT3				(pUserData,"Empty Torch user data!",torch->get_visual());
-	lanim					= LALib.FindItem(pUserData->r_string("torch_definition","color_animator"));
-	guid_bone				= K->LL_BoneID	(pUserData->r_string("torch_definition","guide_bone"));	VERIFY(guid_bone!=BI_NONE);
 
-	Fcolor clr				= pUserData->r_fcolor				("torch_definition",(b_r2)?"color_r2":"color");
-	fBrightness				= clr.intensity();
-	float range				= pUserData->r_float				("torch_definition",(b_r2)?"range_r2":"range");
-	light_render->set_color	(clr);
-	light_render->set_range	(range);
+	if (pUserData != nullptr)
+	{
+		R_ASSERT3(pUserData, "Empty Torch user data!", torch->get_visual());
+		lanim = LALib.FindItem(pUserData->r_string("torch_definition", "color_animator"));
+		guid_bone = K->LL_BoneID(pUserData->r_string("torch_definition", "guide_bone"));	VERIFY(guid_bone != BI_NONE);
 
-	Fcolor clr_o			= pUserData->r_fcolor				("torch_definition",(b_r2)?"omni_color_r2":"omni_color");
-	float range_o			= pUserData->r_float				("torch_definition",(b_r2)?"omni_range_r2":"omni_range");
-	light_omni->set_color	(clr_o);
-	light_omni->set_range	(range_o);
+		Fcolor clr = pUserData->r_fcolor("torch_definition", (b_r2) ? "color_r2" : "color");
+		fBrightness = clr.intensity();
+		float range = pUserData->r_float("torch_definition", (b_r2) ? "range_r2" : "range");
+		light_render->set_color(clr);
+		light_render->set_range(range);
 
-	light_render->set_cone	(deg2rad(pUserData->r_float			("torch_definition","spot_angle")));
-	light_render->set_texture(pUserData->r_string				("torch_definition","spot_texture"));
+		Fcolor clr_o = pUserData->r_fcolor("torch_definition", (b_r2) ? "omni_color_r2" : "omni_color");
+		float range_o = pUserData->r_float("torch_definition", (b_r2) ? "omni_range_r2" : "omni_range");
+		light_omni->set_color(clr_o);
+		light_omni->set_range(range_o);
 
-	glow_render->set_texture(pUserData->r_string				("torch_definition","glow_texture"));
-	glow_render->set_color	(clr);
-	glow_render->set_radius	(pUserData->r_float					("torch_definition","glow_radius"));
+		light_render->set_cone(deg2rad(pUserData->r_float("torch_definition", "spot_angle")));
+		light_render->set_texture(pUserData->r_string("torch_definition", "spot_texture"));
 
-	//включить/выключить фонарик
-	Switch					(torch->m_active);
-	VERIFY					(!torch->m_active || (torch->ID_Parent != 0xffff));
-	
-	if(torch->ID_Parent == 0)		
-		SwitchNightVision	(torch->m_nightvision_active, false);
-	//else
-	//	SwitchNightVision	(false, false);
+		glow_render->set_texture(pUserData->r_string("torch_definition", "glow_texture"));
+		glow_render->set_color(clr);
+		glow_render->set_radius(pUserData->r_float("torch_definition", "glow_radius"));
 
-	m_delta_h				= PI_DIV_2-atan((range*0.5f)/_abs(TORCH_OFFSET.x));
+		//включить/выключить фонарик
+		Switch(torch->m_active);
+		VERIFY(!torch->m_active || (torch->ID_Parent != 0xffff));
+
+		if (torch->ID_Parent == 0)
+			SwitchNightVision(torch->m_nightvision_active, false);
+		//else
+		//	SwitchNightVision	(false, false);
+
+		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / _abs(TORCH_OFFSET.x));
+	}
 
 	return					(TRUE);
 }
