@@ -232,7 +232,12 @@ void CCustomPreferences::Load()
     snap_angle = JSONData["editor_prefs"]["snap_angle"];
     snap_move = JSONData["editor_prefs"]["snap_move"];
     snap_moveto = JSONData["editor_prefs"]["snap_moveto"];
-    scale_fixed = JSONData["editor_prefs"]["scale_fixed"];
+
+    if (JSONData["editor_prefs"].contains("scale_fixed"))
+    {
+        scale_fixed = JSONData["editor_prefs"]["scale_fixed"];
+    }
+
     grid_cell_size = JSONData["editor_prefs"]["grid_cell_size"];
     grid_cell_count = JSONData["editor_prefs"]["grid_cell_count"];
     scene_undo_level = JSONData["editor_prefs"]["scene_undo_level"];
