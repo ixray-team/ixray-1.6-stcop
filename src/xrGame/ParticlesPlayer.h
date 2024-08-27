@@ -8,7 +8,7 @@
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
 #include "../xrEngine/bone.h"
-
+#include "../xrEngine/VisMask.h"
 
 using PARTICLES_PTR_VECTOR = xr_vector<CParticlesObject*>;
 using PARTICLES_PTR_VECTOR_IT = PARTICLES_PTR_VECTOR::iterator;
@@ -51,7 +51,7 @@ public:
 
 private:
 	// список костей
-	u64						bone_mask; // используемые кости
+	VisMask					bone_mask; // используемые кости
 	BoneInfoVec				m_Bones;	
 	CObject					*m_self_object;
 
@@ -72,6 +72,10 @@ public:
 							CParticlesPlayer		(void);
 	virtual					~CParticlesPlayer		(void);
 	void					LoadParticles			(IKinematics* K);
+
+	void					LoadParticles			(LPCSTR section, IKinematics* K);
+	void					LoadParticles			(LPCSTR section, LPCSTR line, IKinematics* K);
+	void					AppendBone				(u16 bone_id, Fvector offs = zero_vel);
 
 	void					net_DestroyParticles	();
 	void					net_SpawnParticles		();

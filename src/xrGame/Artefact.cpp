@@ -36,10 +36,12 @@ CArtefact::CArtefact()
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
 	m_sParticlesName			= nullptr;
+	m_sParticlesBone			= nullptr;
 	m_pTrailLight				= nullptr;
 	m_activationObj				= nullptr;
 	m_detectorObj				= nullptr;
 	m_additional_weight			= 0.0f;
+	has_detector_visibling		= false;
 }
 
 
@@ -53,6 +55,33 @@ void CArtefact::Load(LPCSTR section)
 
 	if (pSettings->line_exist(section, "particles"))
 		m_sParticlesName	= pSettings->r_string(section, "particles");
+
+	if (pSettings->line_exist(section, "particles_bones"))
+	{
+		m_sParticlesBone = nullptr;
+		CParticlesPlayer::LoadParticles(section,"particles_bones",PKinematics(Visual()));
+	}
+	else
+	{
+		if (pSettings->line_exist(section, "particles_bone"))
+		{
+			m_sParticlesBone = pSettings->r_string(section, "particles_bone");
+			int count = _GetItemCount(m_sParticlesBone.c_str());
+			if(count>1)
+			{
+				CParticlesPlayer::LoadParticles(section,"particles_bone",PKinematics(Visual()));
+				m_sParticlesBone = nullptr;
+			}
+			else
+			{
+				IKinematics* K			= PKinematics(Visual());
+				R_ASSERT2				(K, cNameSect().c_str());
+				u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
+				R_ASSERT2				(bone_id!=BI_NONE, m_sParticlesBone.c_str());
+				CParticlesPlayer::AppendBone(bone_id);
+			}
+		}
+	}
 
 	m_bLightsEnabled		= !!pSettings->r_bool(section, "lights_enabled");
 	if(m_bLightsEnabled){
@@ -123,7 +152,7 @@ void CArtefact::OnH_A_Chield()
 	}
 	else
 	{
-		IKinematics* K = smart_cast<IKinematics*>(H_Parent()->Visual());
+		IKinematics* K = PKinematics(H_Parent()->Visual());
 		m_CarringBoneID = K != nullptr ? K->LL_BoneID("bip01_head") : u16(-1);
 	}
 
@@ -152,7 +181,19 @@ void CArtefact::SwitchAfParticles(bool bOn)
 	{
 			Fvector dir;
 			dir.set(0,1,0);
-			CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
+
+			if(m_sParticlesBone.size()==0)
+			{
+				CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
+				return;
+			}
+
+			IKinematics* K			= PKinematics(Visual());
+			R_ASSERT2				(K, cNameSect().c_str());
+			u16 bone_id				= K->LL_BoneID(m_sParticlesBone.c_str());
+			R_ASSERT2				(bone_id!=BI_NONE, m_sParticlesBone.c_str());
+			CParticlesPlayer::StartParticles(m_sParticlesName,bone_id,dir,ID(),-1, false);
+			
 	}else
 	{
 			CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
@@ -253,6 +294,7 @@ void CArtefact::StartLights()
 	bool const b_light_shadow	= !!pSettings->r_bool(cNameSect(), "idle_light_shadow");
 
 	m_pTrailLight->set_shadow	(b_light_shadow);
+	m_pTrailLight->set_ignore_object(this);
 
 	m_pTrailLight->set_color	(m_TrailLightColor); 
 	m_pTrailLight->set_range	(m_fTrailLightRange);
@@ -347,7 +389,7 @@ void CArtefact::UpdateXForm()
 			return;
 
 		VERIFY				(E);
-		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
+		IKinematics*		V		= PKinematics(E->Visual());
 		VERIFY				(V);
 		if(CAttachableItem::enabled())
 			return;
@@ -465,9 +507,10 @@ bool CArtefact::CanBeInvisible()
 
 void CArtefact::SwitchVisibility(bool b)
 {
+	if(b)
+		has_detector_visibling = true;
 	if(m_detectorObj)
 		m_detectorObj->SetVisible(b);
-
 }
 
 void CArtefact::StopActivation()
@@ -513,22 +556,26 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 	else
 		m_parent->StopLights	();
 
-	if(b)
+	if(m_parent->has_detector_visibling)
 	{
 		LPCSTR curr				= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_particles":"det_hide_particles");
+		if(nullptr==m_parent->PS_bone())
+			m_parent->CParticlesPlayer::StartParticles(curr,Fvector().set(0,1,0),m_parent->ID());
+		else
+		{
+			IKinematics* K			= PKinematics(m_parent->Visual());
+			R_ASSERT2				(K, m_parent->cNameSect().c_str());
+			u16 bone_id				= K->LL_BoneID(m_parent->PS_bone());
+			R_ASSERT2				(bone_id!=BI_NONE, m_parent->PS_bone());
 
-		IKinematics* K			= smart_cast<IKinematics*>(m_parent->Visual());
-		R_ASSERT2				(K, m_parent->cNameSect().c_str());
-		LPCSTR bone				= pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
-		u16 bone_id				= K->LL_BoneID(bone);
-		R_ASSERT2				(bone_id!=BI_NONE, bone);
-
-		m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID());
+			m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID());
+		}
 
 		curr					= pSettings->r_string(m_parent->cNameSect().c_str(), (b)?"det_show_snd":"det_hide_snd");
 		m_sound.create			(curr, st_Effect, sg_SourceType);
 		m_sound.play_at_pos		(0, m_parent->Position(), 0);
 	}
+
 	
 	m_parent->setVisible	(b);
 	m_parent->SwitchAfParticles(b);
@@ -537,14 +584,17 @@ void SArtefactDetectorsSupport::SetVisible(bool b)
 void SArtefactDetectorsSupport::Blink()
 {
 	LPCSTR curr				= pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+	if(nullptr==m_parent->PS_bone())
+		m_parent->CParticlesPlayer::StartParticles(curr,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
+	else
+	{
+		IKinematics* K			= PKinematics(m_parent->Visual());
+		R_ASSERT2				(K, m_parent->cNameSect().c_str());
+		u16 bone_id				= K->LL_BoneID(m_parent->PS_bone());
+		R_ASSERT2				(bone_id!=BI_NONE, m_parent->PS_bone());
 
-	IKinematics* K			= smart_cast<IKinematics*>(m_parent->Visual());
-	R_ASSERT2				(K, m_parent->cNameSect().c_str());
-	LPCSTR bone				= pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
-	u16 bone_id				= K->LL_BoneID(bone);
-	R_ASSERT2				(bone_id!=BI_NONE, bone);
-
-	m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
+		m_parent->CParticlesPlayer::StartParticles(curr,bone_id,Fvector().set(0,1,0),m_parent->ID(), 1000, true);
+	}
 }
 
 void SArtefactDetectorsSupport::UpdateOnFrame()
@@ -579,7 +629,10 @@ void SArtefactDetectorsSupport::UpdateOnFrame()
 	}
 
 	if(m_parent->getVisible() && m_parent->GetAfRank()!=0 && m_switchVisTime+5000 < Device.dwTimeGlobal)
+	{
 		SetVisible(false);
+		m_parent->has_detector_visibling = false;
+	}
 
 	u32 dwDt = 2*3600*1000/10; //2 hour of game time
 	if(!m_parent->getVisible() && m_switchVisTime+dwDt < Device.dwTimeGlobal)
