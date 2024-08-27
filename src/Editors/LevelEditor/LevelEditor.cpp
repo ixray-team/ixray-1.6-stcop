@@ -11,7 +11,7 @@
 #include "../../xrEngine/xr_input.h"
 #include "Editor/Utils/ContentView.h"
 
-void DragDrop(const xr_string& Path);
+void DragDrop(const xr_string&, int);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {

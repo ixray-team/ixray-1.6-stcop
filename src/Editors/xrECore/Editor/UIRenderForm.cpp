@@ -144,7 +144,11 @@ void UIRenderForm::Draw()
 
 				if (Data.FileName.ends_with(".object"))
 				{
-					DragFunctor(Data.FileName);
+					DragFunctor(Data.FileName, 2);
+				}
+				else if (Data.FileName.ends_with(".group"))
+				{
+					DragFunctor(Data.FileName, 0);
 				}
 			}
 			ImGui::EndDragDropTarget();

@@ -11,6 +11,9 @@ class XRCORE_API CLocatorAPI
 {
 	friend class FS_Path;
 
+	using PathMap = xr_map<LPCSTR, FS_Path*, pred_str>;
+	using PathPairIt = PathMap::iterator;
+
 public:
 	struct file
 	{
@@ -45,6 +48,8 @@ public:
     archives_vec				m_archives;
 	void						LoadArchive		(archive& A, LPCSTR entrypoint=NULL);
 
+	PathMap						pathes;
+
 private:
 
 	struct file_pred 
@@ -52,11 +57,6 @@ private:
 		IC bool operator()	(const file& x, const file& y) const
 		{	return xr_strcmp(x.name,y.name)<0;	}
 	};
-
-	using PathMap = xr_map<LPCSTR, FS_Path*, pred_str>;
-	using PathPairIt = PathMap::iterator;
-
-	PathMap						pathes;
 
 	using files_set = xr_set<file, file_pred>;
 	using files_it = files_set::iterator;
