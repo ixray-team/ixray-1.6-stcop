@@ -93,7 +93,7 @@ IC	void CAbstractPathManager<ILevelGraph,SBaseParameters<float,u32,u32>,u32,u32>
 	before_search			(start_vertex_id,dest_vertex_id);
 	
 	//m_failed				= !ai().graph_engine().search(*m_graph,start_vertex_id,dest_vertex_id,&m_path,*m_evaluator);
-	m_failed				= !m_graph->Search(start_vertex_id,dest_vertex_id,m_path);
+	m_failed				= !m_graph->Search(start_vertex_id,dest_vertex_id,m_path,m_evaluator->max_range,m_evaluator->max_iteration_count,m_evaluator->max_visited_node_count);
 	after_search			();
 	
 	m_current_index			= _index_type(-1);

@@ -10,7 +10,7 @@ ILevelGraph::~ILevelGraph()
 {
 }
 
-bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath) const
+bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath,float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
 	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
 	thread_local	xr_map<u32, u32>					TempCameFrom;
@@ -72,13 +72,23 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 		CVertex* Node = vertex(CurrentNodeID);
 		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
 		{
-			
 			u32 NeighborID = Node->link(NeighborIndex);
-			if (!is_accessible(NeighborID))continue;
-			ILevelGraph::CVertex* Neighbor = vertex(NeighborID);
+			if (!is_accessible(NeighborID)) continue;
+
+
+			if(MaxIterationCount == 0) continue;
+			MaxIterationCount--;
+
+			CVertex* Neighbor = vertex(NeighborID);
 			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
-			if (TempCostSoFar.find(NeighborID) == TempCostSoFar.end()|| TempCostSoFar[NeighborID] > NewCost)
+			if ((TempCostSoFar.find(NeighborID) == TempCostSoFar.end() &&MaxVisitedNodeCount > TempCostSoFar.size())|| TempCostSoFar[NeighborID] > NewCost)
 			{
+				const float Distance = DistanceNode(vertex(ToID), Neighbor);
+				if(Distance>MaxRange)
+				{
+					continue;
+				}
+
 				auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
 				if(TempCostSoFarIterator!=TempCostSoFar.end())
 				{
@@ -89,7 +99,7 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 					TempCostSoFar.insert({NeighborID,NewCost});
 				}
 
-				float  priority = NewCost + DistanceNode(vertex(ToID), Neighbor);
+				float  priority = NewCost + Distance;
 				TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(),TempPriorityNode.end(),std::pair<float, u32>{priority,NeighborID},[](const std::pair<float, u32>& Left, const std::pair<float, u32>& Right) {return Left.first > Right.first; }),{priority,NeighborID});
 
 				
