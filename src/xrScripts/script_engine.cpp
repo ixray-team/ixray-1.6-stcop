@@ -120,16 +120,31 @@ void CScriptEngine::lua_hook_call		(lua_State *L, lua_Debug *dbg)
 }
 #endif
 
-int auto_load				(lua_State *L)
+int auto_load(lua_State* L)
 {
-	if ((lua_gettop(L) < 2) || !lua_istable(L,1) || !lua_isstring(L,2)) {
-		lua_pushnil	(L);
+	int StackSize = lua_gettop(L);
+	bool IsTable = lua_istable(L, 1);
+
+	if ((StackSize < 2) || !IsTable || !lua_isstring(L, 2)) {
+		lua_pushnil(L);
 		return		(1);
 	}
 
-	g_pScriptEngine->process_file_if_exists(lua_tostring(L,2),false);
-	lua_rawget		(L,1);
-	return			(1);
+	string_path S = {};
+	string128 FullName = {};
+	FS.update_path(S, "$game_scripts$", xr_strconcat(FullName, lua_tostring(L, 2), ".script"));
+
+	if (FS.exist(S))
+	{
+		g_pScriptEngine->process_file_if_exists(lua_tostring(L, 2), false);
+		lua_rawget(L, 1);
+	}
+	else
+	{
+		lua_pushnil(L);
+	}
+
+	return (1);
 }
 
 void CScriptEngine::setup_auto_load		()
