@@ -1935,7 +1935,7 @@ void CActor::spawn_supplies			()
 	inherited::spawn_supplies		();
 	CInventoryOwner::spawn_supplies	();
 
-	if (!pSettings->section_exist("anim_fake"))
+	if (!pGameGlobals->line_exist("actor_item", "anim_fake_item"))
 	{
 		Msg("! Animation slot not registered");
 		Msg("! [anim_fake] section missing");
