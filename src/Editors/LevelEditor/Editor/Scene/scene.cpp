@@ -738,7 +738,10 @@ bool EScene::IsPlayInEditor()
 
 void EScene::Stop()
 {
-	if (!IsPlayInEditor())return;
+	if (!IsPlayInEditor())
+		return;
+
+	Console->Hide();
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
 }
 

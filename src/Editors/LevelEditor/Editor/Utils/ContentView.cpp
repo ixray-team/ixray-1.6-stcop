@@ -258,7 +258,7 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 	{
 		if (ImGui::IsItemHovered())
 		{
-			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos();
+			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos() + ImVec2{ ImGui::GetScrollX(), ImGui::GetScrollY()};
 			DrawHintPos.y -= 15;
 			CurrentItemHint = { Platform::ANSI_TO_UTF8(FileName) ,DrawHintPos, true };
 		}
