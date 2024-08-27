@@ -122,7 +122,7 @@ void UIRenderForm::Draw()
 		m_mouse_position.set(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 
 
-		if (!m_OnContextMenu.empty()&& !curent_shiftstate_down)
+		if (!m_OnContextMenu.empty()&& !curent_shiftstate_down && !UI->IsPlayInEditor())
 		{
 			if (ImGui::BeginPopupContextItem("Menu"))
 			{

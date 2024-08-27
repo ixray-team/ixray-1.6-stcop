@@ -88,6 +88,9 @@ void CLevelTool::Reset()
 
 bool  CLevelTool::MouseStart(TShiftState Shift)
 {
+	if (Scene->IsPlayInEditor())
+		return false;
+
 	inherited::MouseStart(Shift);
 	if(pCurTool && pCurTool->pCurControl)
 	{
