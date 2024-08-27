@@ -818,10 +818,10 @@ CCommandVar CommandShowContextMenu(CCommandVar p1, CCommandVar p2)
 //------        
 CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
 {
-	if(MainForm)
+	/*if(MainForm)
 		if(MainForm->GetTopBarForm())
 			MainForm->GetTopBarForm()->RefreshBar();
-	/*fraTopBar->RefreshBar		();
+	fraTopBar->RefreshBar		();
 	fraLeftBar->RefreshBar		();
 	fraBottomBar->RefreshBar	();*/
 	return 						TRUE;

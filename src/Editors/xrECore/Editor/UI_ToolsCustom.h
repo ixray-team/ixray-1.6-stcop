@@ -53,7 +53,6 @@ protected:
     bool				m_bReady;
 
     ETAxis              m_Axis;
-    ECameraStyle        m_Style;
 
     ETAction			m_Action;
     Flags32				m_Settings;
@@ -249,12 +248,6 @@ public:
     {
         return m_Axis;
     }
-
-    ECameraStyle GetStyle() const
-    {
-        return m_Style;
-    }
-
 };
 extern ECORE_API CToolCustom*	Tools;
 

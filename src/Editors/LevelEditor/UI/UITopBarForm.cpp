@@ -4,30 +4,28 @@
 
 UITopBarForm::UITopBarForm()
 {
-	m_tUndo = EDevice->Resources->_CreateTexture("ed\\bar\\Undo"); m_timeUndo = 0;
-	m_tRedo = EDevice->Resources->_CreateTexture("ed\\bar\\Redo"); m_timeRedo = 0;
-	m_tNew = EDevice->Resources->_CreateTexture("ed\\bar\\new");
-	m_tOpen = EDevice->Resources->_CreateTexture("ed\\bar\\open");
-	m_tSave= EDevice->Resources->_CreateTexture("ed\\bar\\save");
-	m_tCForm = EDevice->Resources->_CreateTexture("ed\\bar\\CForm");
-	m_tAIMap = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
-	m_tGGraph = EDevice->Resources->_CreateTexture("ed\\bar\\GGraph");
-	m_tPlayInEditor = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
-	m_tPlayPC = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
-	m_tBuildAndMake = EDevice->Resources->_CreateTexture("ed\\bar\\build_all");
-	m_tPlayCleanGame= EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
-	m_tTerminated = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
+    m_tUndo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Undo");
+    m_timeUndo               = 0;
+    m_tRedo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Redo");
+    m_timeRedo               = 0;
+    m_tNew                   = EDevice->Resources->_CreateTexture("ed\\bar\\new");
+    m_tOpen                  = EDevice->Resources->_CreateTexture("ed\\bar\\open");
+    m_tSave                  = EDevice->Resources->_CreateTexture("ed\\bar\\save");
+    m_tCForm                 = EDevice->Resources->_CreateTexture("ed\\bar\\CForm");
+    m_tAIMap                 = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
+    m_tGGraph                = EDevice->Resources->_CreateTexture("ed\\bar\\GGraph");
+    m_tPlayInEditor          = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
+    m_tPlayPC                = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
+    m_tBuildAndMake          = EDevice->Resources->_CreateTexture("ed\\bar\\build_all");
+    m_tPlayCleanGame         = EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
+    m_tTerminated            = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
 
-	m_tReloadConfigs = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
-	m_tOpenGameData = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
-	m_VerifySpaceRestrictors = false;
-	RefreshBar();
+    m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
+    m_tOpenGameData          = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
+    m_VerifySpaceRestrictors = false;
 }
 
-UITopBarForm::~UITopBarForm()
-{
-	
-}
+UITopBarForm::~UITopBarForm() {}
 
 void UITopBarForm::Draw()
 {
@@ -176,29 +174,6 @@ void UITopBarForm::Draw()
 	ImGui::End();
 	ImGui::PopStyleVar(5);
 	
-}
-void UITopBarForm::RefreshBar()
-{/*
-	{
-		m_bSelect = false;
-		m_bAdd = false;
-
-		switch (Tools->GetAction()) {
-		case etaSelect: 	m_bSelect = true; 	break;
-		case etaAdd:    m_bAdd = true; 		break;
-		default: THROW;
-		}
-	}
-	// settings
-	m_bCsLocal = Tools->GetSettings(etfCSParent);
-	m_bNuScale = Tools->GetSettings(etfNUScale);
-	m_bNSnap = Tools->GetSettings(etfNormalAlign);
-	m_bGSnap = Tools->GetSettings(etfGSnap);
-	m_bOSnap = Tools->GetSettings(etfOSnap);
-	m_bMoveToSnap = Tools->GetSettings(etfMTSnap);
-	m_bVSnap = Tools->GetSettings(etfVSnap);
-	m_bASnap = Tools->GetSettings(etfASnap);
-	m_bMSnap = Tools->GetSettings(etfMSnap);*/
 }
 
 void UITopBarForm::ClickUndo()
