@@ -12,6 +12,8 @@ class CContentView:
 public:
 	CContentView();
 	virtual void Draw() override;
+	virtual void Init();
+	virtual void Destroy();
 
 	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
 

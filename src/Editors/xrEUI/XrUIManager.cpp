@@ -132,14 +132,23 @@ void XrUIManager::EndFrame()
 
 void XrUIManager::ResetBegin()
 {
+	for (auto Ptr : m_UIArray)
+	{
+		Ptr->ResetBegin();
+	}
+
 	ImGui_ImplDX9_Shutdown();
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
 	ImGui_ImplDX9_Init((IDirect3DDevice9*)NewDevice);
-}
 
+	for (auto Ptr : m_UIArray)
+	{
+		Ptr->ResetEnd();
+	}
+}
 
 void XrUIManager::OnDrawUI()
 {

@@ -11,14 +11,6 @@ CContentView::CContentView()
 
 	FS.update_path(Dir, "$logs$", "");
 	LogsDir = Dir;
-
-	Icons["Folder"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
-	Icons[".."] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
-	Icons["thm"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\thm");
-	Icons["logs"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\log");
-	Icons["ogg"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg");
-	Icons["wav"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\wav");
-	Icons["object"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\object");
 }
 
 void CContentView::Draw()
@@ -60,6 +52,22 @@ void CContentView::Draw()
 		CurrentDir = NextDir;
 	}
 	ImGui::End();
+}
+
+void CContentView::Destroy()
+{
+	Icons.clear();
+}
+
+void CContentView::Init()
+{
+	Icons["Folder"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
+	Icons[".."] = EDevice->Resources->_CreateTexture("ed\\content_browser\\folder");
+	Icons["thm"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\thm");
+	Icons["logs"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\log");
+	Icons["ogg"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg");
+	Icons["wav"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\wav");
+	Icons["object"] = EDevice->Resources->_CreateTexture("ed\\content_browser\\object");
 }
 
 bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, const size_t IterCount)

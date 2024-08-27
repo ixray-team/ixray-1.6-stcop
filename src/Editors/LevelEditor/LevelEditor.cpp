@@ -51,6 +51,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     MainForm->GetRenderForm()->DragFunctor = DragDrop;
     CContentView ContentBrowser;
     UI->PushBegin(&ContentBrowser);
+    ContentBrowser.Init();
 
     while (!NeedExit)
     {
@@ -61,6 +62,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             {
             case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
                 EPrefs->SaveConfig();
+                ContentBrowser.Destroy();
                 NeedExit = true;
                 break;
 

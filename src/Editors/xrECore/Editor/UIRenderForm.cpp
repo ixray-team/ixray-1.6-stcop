@@ -142,7 +142,10 @@ void UIRenderForm::Draw()
 					xr_string FileName;
 				} Data = *(DragDropData*)ImData->Data;
 
-				DragFunctor(Data.FileName);
+				if (Data.FileName.ends_with(".object"))
+				{
+					DragFunctor(Data.FileName);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
