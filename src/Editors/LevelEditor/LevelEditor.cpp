@@ -122,14 +122,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 break;
             case SDL_EVENT_MOUSE_MOTION:
             {
-                if (!pInput->IsAcquire)
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
                     break;
 
                 pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
             } break;
             case SDL_EVENT_MOUSE_WHEEL:
             {
-                if (!pInput->IsAcquire)
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
                     break;
 
                 pInput->MouseScroll(Event.wheel.y);
@@ -137,7 +137,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
             {
-                if (!pInput->IsAcquire)
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
                     break;
 
                 int mouse_button = 0;
