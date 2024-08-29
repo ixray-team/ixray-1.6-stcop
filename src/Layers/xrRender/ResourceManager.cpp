@@ -10,6 +10,7 @@
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
 #include <execution>
+#include "../xrRenderDX10/dx11XMLBlendCompiler.h"
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
@@ -285,17 +286,24 @@ Shader*		CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_
 	{
 		//	TODO: DX10: When all shaders are ready switch to common path
 #ifdef USE_DX11
-		if	(_lua_HasShader(s_shader))		
-			return	_lua_Create	(s_shader,s_textures);
-		else								
+		if (CXMLBlend::Check(s_shader))
 		{
-			Shader* pShader = _cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
+			CXMLBlend* BlendXML = new CXMLBlend(s_shader);
+			Shader* pShader = BlendXML->Compile(s_textures);
+			xr_delete(BlendXML);
+			return pShader;
+		}
+		else if	(_lua_HasShader(s_shader))		
+			return	_lua_Create	(s_shader,s_textures);
+		else
+		{
+			Shader* pShader = _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
 			if (pShader)
 				return pShader;
 			else
 			{
 				if (_lua_HasShader("stub_default"))
-					return	_lua_Create	("stub_default",s_textures);
+					return	_lua_Create("stub_default", s_textures);
 				else
 				{
 					FATAL("Can't find stub_default.s");
