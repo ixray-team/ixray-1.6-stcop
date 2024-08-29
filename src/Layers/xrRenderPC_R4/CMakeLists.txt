@@ -21,7 +21,7 @@ file(GLOB_RECURSE XRR4_SOURCE_BLEND_FILES
     "Blender_*.cpp"
     "Blender_*.h"
 )
-file(GLOB_RECURSE XRR4_SOURCE_DX9_FILES
+file(GLOB_RECURSE XRR4_SOURCE_DX9_FILES CONFIGURE_DEPENDS
     "../xrRenderDX10/*.cpp"
     "../xrRenderDX10/*.h"
 )

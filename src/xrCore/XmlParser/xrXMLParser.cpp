@@ -323,6 +323,39 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
 	}
 }
 
+// Try boolean parser
+bool CXml::ReadAttribBool(XML_NODE* node, const char* attrib, bool default_value)
+{
+	const char* result_str = ReadAttrib(node, attrib, nullptr);
+	if (result_str)
+	{
+		if (strstr(result_str, "true"))
+			return true;
+		else if (strstr(result_str, "false"))
+			return false;
+	}
+
+	return result_str ? atoi(result_str) : default_value;
+}
+
+bool CXml::ReadAttribBool(const char* path, int index, const char* attrib, bool default_value)
+{
+	const char* result_str = ReadAttrib(path, index, attrib, nullptr);
+	if (result_str)
+	{
+		if (strstr(result_str, "true"))
+			return true;
+		else if (strstr(result_str, "false"))
+			return false;
+	}
+
+	return result_str ? atoi(result_str) : default_value;
+}
+
+bool CXml::ReadAttribBool(XML_NODE* start_node, const char* path, int index, const char* attrib, bool default_value)
+{
+	return ReadAttribInt(start_node, path, index, attrib, default_value);
+}
 
 int CXml::ReadAttribInt(XML_NODE* node, LPCSTR attrib, int default_int_val)
 {
