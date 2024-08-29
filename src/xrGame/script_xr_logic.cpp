@@ -138,7 +138,7 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 				buffer.first[buffer.second] = current_info;
 				++buffer.second;
 				current_info.clear();
-				
+
 				std::memset(
 					current_section_name, 0, ixray::kCondlistInfoStringSize);
 				current_section_size = 0;
@@ -146,14 +146,13 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 				continue;
 			}
 
-
 			if (it == '{')
 			{
 				if (current_section_size)
 				{
 					current_info.setText(
 						current_section_name, current_section_size);
-					
+
 					std::memset(current_section_name, 0,
 						ixray::kCondlistInfoStringSize);
 					current_section_size = 0;
@@ -165,7 +164,7 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 				{
 					R_ASSERT2(false,
 						"can't be! you forgot to add second percent in set "
-					    "infoportion statement! Check your ltx file -_-'");
+						"infoportion statement! Check your ltx file -_-'");
 					break;
 				}
 
@@ -188,12 +187,12 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 				{
 					R_ASSERT2(false,
 						"Found right bracket without left bracket. Check your "
-					    "ltx file");
+						"ltx file");
 					break;
 				}
 
 				was_found_check = true;
-				
+
 				current_check_name[current_check_size] = it;
 				++current_check_size;
 
@@ -256,7 +255,7 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 					current_set_name[current_set_size] = it;
 					++current_set_size;
 					current_info.setInfoSet(current_set_name, current_set_size);
-					
+
 					std::memset(
 						current_set_name, 0, ixray::kCondlistInfoStringSize);
 					current_set_size = 0;
@@ -316,7 +315,7 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 			{
 				R_ASSERT2(false,
 					"Incorrect parsing. Can't parse section betwen two "
-				    "infoportion's sentences. Check your ltx");
+					"infoportion's sentences. Check your ltx");
 				break;
 			}
 		}
@@ -332,9 +331,9 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 		current_info.clear();
 
 		parseCondlistInfos(buffer, result);
-
 	}
 
+	// compiler must do std::move without obvious markering
 	return result;
 }
 
@@ -361,7 +360,4 @@ void CScriptXRParser::parseInfoportions(
 	const char* pBuffer, xr_hash_map<u32, CCondlistData>& result)
 {
 	R_ASSERT2(pBuffer, "string must be valid!");
-
-
-
 }
