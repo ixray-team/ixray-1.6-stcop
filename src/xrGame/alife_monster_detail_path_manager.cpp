@@ -120,14 +120,10 @@ void CALifeMonsterDetailPathManager::actualize				()
 
 	typedef GraphEngineSpace::CGameVertexParams	CGameVertexParams;
 	CGameVertexParams				temp = CGameVertexParams(object().m_tpaTerrain);
-	bool							failed = 
-		!ai().graph_engine().search	(
-			ai().game_graph(),
-			object().get_object().m_tGraphID,
-			m_destination.m_game_vertex_id,
-			&m_path,
-			temp
-		);
+
+	bool							failed = !ai().game_graph().Search(object().get_object().m_tGraphID,m_destination.m_game_vertex_id,m_path,temp.m_vertex_types,temp.max_range,temp.max_iteration_count,temp.max_visited_node_count);
+
+	
 
 #ifdef DEBUG
 	if (failed) {

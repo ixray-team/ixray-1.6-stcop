@@ -25,7 +25,6 @@ struct SGameVertex : public SBaseParameters<
 
 	const VERTEX_TYPES	*m_vertex_types;
 	_index_type		m_vertex_id;
-	xr_vector<_index_type> *m_path;
 
 	IC	SGameVertex (
 			const VERTEX_TYPES		&vertex_types,

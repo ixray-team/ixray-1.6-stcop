@@ -50,6 +50,7 @@ private:
 public:
 	IC									CGraphAbstract	();
 	virtual								~CGraphAbstract	();
+	IC		bool						Search			(_vertex_id_type start_vertex_id, _vertex_id_type dest_vertex_id,xr_vector<_vertex_id_type>& OutPath, _edge_weight_type MaxRange = type_max(float), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF) const;
 	IC		bool						operator==		(const CGraphAbstract &obj) const;
 	IC		void						clear			();
 	IC		void						add_vertex		(const _data_type &data, const _vertex_id_type &vertex_id);

@@ -81,7 +81,9 @@ public:
 	ILevelGraph();
 	virtual			~ILevelGraph();
 	bool			Search	(u32 start_vertex_id, u32 dest_vertex_id,xr_vector<u32>& OutPath, float MaxRange = type_max(float), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF) const;
-	
+	u32				SearchNearestVertex	(u32 VertexID , const Fvector & TargetPosition, float Range) const;
+
+
 	IC		const_vertex_iterator begin			() const;
 	IC		const_vertex_iterator end			() const;
 	

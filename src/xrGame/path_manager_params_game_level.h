@@ -22,7 +22,6 @@ struct SGameLevel : public SBaseParameters<
 > {
 	u32				m_level_id;
 	_index_type		m_vertex_id;
-	xr_vector<_index_type> *m_path;
 
 	IC	SGameLevel (
 			u32						level_id,
