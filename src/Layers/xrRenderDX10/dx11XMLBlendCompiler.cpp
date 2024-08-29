@@ -79,7 +79,16 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 	};
 	const char* PSName = Parser.ReadAttrib(pElement, "ps", "false");
 	const char* VSName = Parser.ReadAttrib(pElement, "vs", "false");
-	pCompiler->r_Pass(VSName, PSName, bFog, bZb[0], bZb[1]);
+	const char* GSName = Parser.ReadAttrib(pElement, "gs", nullptr);
+
+	if (GSName != nullptr)
+	{
+		pCompiler->r_Pass(VSName, GSName, PSName, bFog, bZb[0], bZb[1]);
+	}
+	else
+	{
+		pCompiler->r_Pass(VSName, PSName, bFog, bZb[0], bZb[1]);
+	}
 
 	// Check blend
 	XML_NODE* pBlend = Parser.NavigateToNode(pElement, "blend");
