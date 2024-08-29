@@ -61,7 +61,18 @@ bool CScriptXRParser::isSymbolValidForParsing(char nSymbol) const
 	return result;
 }
 
-CCondlist CScriptXRParser::parseCondlist(
+bool CScriptXRParser::isSymbolEvent(char nSymbol) const
+{
+	bool result{};
+
+	if (nSymbol == '+' || nSymbol == '-' || nSymbol == '~' || nSymbol == '!' ||
+		nSymbol == '=' || nSymbol == '}' || nSymbol == '%')
+		result = true;
+
+	return result;
+}
+
+xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 	const char* pSectionName, const char* pFieldName, const char* pSourceName)
 {
 	bool was_found_check{};
@@ -78,11 +89,11 @@ CCondlist CScriptXRParser::parseCondlist(
 	char current_set_name[ixray::kCondlistInfoStringSize]{};
 	u32 current_set_size{};
 
-	xr_array<CCondlistInfo, 10> buffer;
+	xr_infos buffer{};
 
 	CCondlistInfo current_info;
 
-	CCondlist result;
+	xr_hash_map<u32, CCondlist> result;
 
 	if (pSourceName)
 	{
@@ -124,7 +135,8 @@ CCondlist CScriptXRParser::parseCondlist(
 				}
 
 				was_found_section = false;
-				buffer[buffer.size()] = current_info;
+				buffer.first[buffer.second] = current_info;
+				++buffer.second;
 				current_info.clear();
 				
 				std::memset(
@@ -314,12 +326,42 @@ CCondlist CScriptXRParser::parseCondlist(
 			current_info.setText(current_section_name, current_section_size);
 		}
 
-		buffer[buffer.size()] = current_info;
+		buffer.first[buffer.second] = current_info;
+		++buffer.second;
+
 		current_info.clear();
 
-		// todo: implement parse_condlistdata
+		parseCondlistInfos(buffer, result);
 
 	}
 
 	return result;
+}
+
+void CScriptXRParser::parseCondlistInfos(
+	xr_infos& infos, xr_hash_map<u32, CCondlist>& result)
+{
+	if (!infos.second)
+	{
+		R_ASSERT2(false, "supposed to be a not empty buffer at all!");
+		return;
+	}
+
+	for (size_t i = 0; i < infos.second; ++i)
+	{
+		result[i].setSectionName(infos.first[i].getTextName());
+		parseInfoportions(
+			infos.first[i].getInfoCheckName(), result[i].getInfoPortionCheck());
+		parseInfoportions(
+			infos.first[i].getInfoSetName(), result[i].getInfoPortionSet());
+	}
+}
+
+void CScriptXRParser::parseInfoportions(
+	const char* pBuffer, xr_hash_map<u32, CCondlistData>& result)
+{
+	R_ASSERT2(pBuffer, "string must be valid!");
+
+
+
 }

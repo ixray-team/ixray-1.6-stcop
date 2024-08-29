@@ -210,12 +210,12 @@ private:
 	bool m_bExpected;
 	// because in some cases it is not initialized field and make it obvious
 	// using raw string much better than storing invalid number value yk~~
-	const char* m_pProbabilityNumberAsString;
+	char m_probability[6];
 	// don't make it as std::string because it is already stored in
 	// filesystem...
-	const char* m_pFunctionName;
-	const char* m_pInfoPortionName;
-	const char* m_pParams;
+	char m_functionname[ixray::kCondlistInfoStringSize];
+	char m_infoportionname[ixray::kCondlistInfoStringSize];
+	char m_params[ixray::kCondlistInfoStringSize];
 };
 
 class CCondlist
@@ -225,18 +225,22 @@ public:
 	~CCondlist();
 
 	const xr_hash_map<u32, CCondlistData>& getInfoPortionCheck(void) const;
+	xr_hash_map<u32, CCondlistData>& getInfoPortionCheck(void);
+
 	void addInfoPortionCheck(u32 nID, const CCondlistData& data);
 	void addInfoPortionCheck(const std::pair<u32, CCondlistData>& pair);
 
 	const xr_hash_map<u32, CCondlistData>& getInfoPortionSet(void) const;
+	xr_hash_map<u32, CCondlistData>& getInfoPortionSet(void);
+
 	void addInfoPortionSet(u32 nID, const CCondlistData& data);
 	void addInfoPortionSet(const std::pair<u32, CCondlistData>& pair);
 
 	const char* getSectionName(void) const;
-	void setSectionName(const char* pFSStringField);	
+	void setSectionName(const char* pString);	
 
 private:
-	const char* m_pSectionName;
+	char m_sectionname[ixray::kCondlistInfoStringSize];
 	xr_hash_map<u32, CCondlistData> m_mInfoPortionCheck;
 	xr_hash_map<u32, CCondlistData> m_mInfoPortionSet;
 };

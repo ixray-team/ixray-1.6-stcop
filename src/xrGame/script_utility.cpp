@@ -145,8 +145,8 @@ int ixray::get_script_clsid(LPCSTR str)
 }
 
 CCondlistData::CCondlistData() :
-	m_bRequired{}, m_bExpected{}, m_pProbabilityNumberAsString{},
-	m_pFunctionName{}, m_pInfoPortionName{}, m_pParams{}
+	m_bRequired{}, m_bExpected{}, m_probability{},
+	m_functionname{}, m_infoportionname{}, m_params{}
 {
 }
 
@@ -174,45 +174,58 @@ void CCondlistData::setExpected(bool bValue)
 
 const char* CCondlistData::getProbability(void) const
 {
-	return m_pProbabilityNumberAsString;
+	return m_probability;
 }
 
-void CCondlistData::setProbability(const char* pFSStringField)
+void CCondlistData::setProbability(const char* pString)
 {
-	m_pProbabilityNumberAsString = pFSStringField;
+	R_ASSERT2(strlen(pString) <= (sizeof(m_probability)/sizeof(char)), "overflow");
+
+	std::memset(m_probability, 0, sizeof(m_probability));
+	std::memcpy(m_probability, pString, strlen(pString) * sizeof(char));
 }
 
 const char* CCondlistData::getFunctionName(void) const
 {
-	return m_pFunctionName;
+	return m_functionname;
 }
 
-void CCondlistData::setFunctionName(const char* pFSStringField)
+void CCondlistData::setFunctionName(const char* pString)
 {
-	m_pFunctionName = pFSStringField;
+	R_ASSERT2(strlen(pString) <= (sizeof(m_functionname) / sizeof(char)), "overflow");
+
+	std::memset(m_functionname, 0, sizeof(m_functionname));
+	std::memcpy(m_functionname, pString, strlen(pString) * sizeof(char));
 }
 
 const char* CCondlistData::getInfoPortionName(void) const
 {
-	return m_pInfoPortionName;
+	return m_infoportionname;
 }
 
-void CCondlistData::setInfoPortionName(const char* pFSStringField)
+void CCondlistData::setInfoPortionName(const char* pString)
 {
-	m_pInfoPortionName = pFSStringField;
+	R_ASSERT2(strlen(pString) <= (sizeof(m_infoportionname) / sizeof(char)),
+		"overflow");
+
+	std::memset(m_infoportionname, 0, sizeof(m_infoportionname));
+	std::memcpy(m_infoportionname, pString, strlen(pString) * sizeof(char));
 }
 
 const char* CCondlistData::getParams(void) const
 {
-	return m_pParams;
+	return m_params;
 }
 
-void CCondlistData::setParams(const char* pFSStringField)
+void CCondlistData::setParams(const char* pString)
 {
-	m_pParams = pFSStringField;
+	R_ASSERT2(
+		strlen(pString) <= (sizeof(m_params) / sizeof(char)), "overflow!");
+	std::memset(m_params, 0, sizeof(m_params));
+	std::memcpy(m_params, pString, strlen(pString) * sizeof(char));
 }
 
-CCondlist::CCondlist() : m_pSectionName{} {}
+CCondlist::CCondlist() : m_sectionname{} {}
 
 CCondlist::~CCondlist() {}
 
@@ -222,7 +235,17 @@ const xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionCheck(
 	return m_mInfoPortionCheck;
 }
 
+xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionCheck(void)
+{
+	return m_mInfoPortionCheck;
+}
+
 const xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionSet(void) const
+{
+	return m_mInfoPortionSet;
+}
+
+xr_hash_map<u32, CCondlistData>& CCondlist::getInfoPortionSet(void)
 {
 	return m_mInfoPortionSet;
 }
@@ -254,12 +277,16 @@ void CCondlist::addInfoPortionCheck(const std::pair<u32, CCondlistData>& pair)
 
 const char* CCondlist::getSectionName(void) const
 {
-	return m_pSectionName;
+	return m_sectionname;
 }
 
-void CCondlist::setSectionName(const char* pFSStringField) 
+void CCondlist::setSectionName(const char* pFSStringField)
 {
-	m_pSectionName = pFSStringField;
+	R_ASSERT2(strlen(pFSStringField) <= (sizeof(m_sectionname) / sizeof(char)),
+		"overflow, shrink buffer!");
+
+	std::memset(m_sectionname, 0, sizeof(m_sectionname));
+	std::memcpy(m_sectionname, pFSStringField, strlen(pFSStringField) * sizeof(char));
 }
 
 CCondlistInfo::CCondlistInfo() :
