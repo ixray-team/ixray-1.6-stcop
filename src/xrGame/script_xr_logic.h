@@ -20,6 +20,9 @@ public:
 	// it means if symbol is in this mask: "%{}., qwertyuioplkjhgfdsamnbvcxz1234567890@-+=~!_():"
 	bool isSymbolValidForParsing(char nSymbol) const;
 
+	CCondlist parseCondlist(const char* pSectionName, const char* pFieldName,
+		const char* pSourceName);
+
 private:
 	CLevel* m_pLevel;
 	CScriptXRConditionsStorage* m_pXRConditions;

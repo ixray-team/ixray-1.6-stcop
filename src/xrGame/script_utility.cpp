@@ -261,3 +261,74 @@ void CCondlist::setSectionName(const char* pFSStringField)
 {
 	m_pSectionName = pFSStringField;
 }
+
+CCondlistInfo::CCondlistInfo() :
+	m_infocheck_name{}, m_infoset_name{}, m_text_name{}
+{
+}
+
+CCondlistInfo::~CCondlistInfo() {}
+
+void CCondlistInfo::setInfoCheck(const char* pBuffer, size_t nStringLength) 
+{
+	R_ASSERT2(nStringLength <= (sizeof(m_infocheck_name) / sizeof(char)),
+		"overflow, shrink buffer!");
+
+	std::memset(m_infocheck_name, 0, sizeof(m_infocheck_name));
+	std::memcpy(m_infocheck_name, pBuffer, nStringLength);
+}
+
+void CCondlistInfo::setInfoSet(const char* pBuffer, size_t nStringLength) 
+{
+	R_ASSERT2(nStringLength <= (sizeof(m_infoset_name) / sizeof(char)),
+		"overflow, shrink buffer!");
+
+	std::memset(m_infoset_name, 0, sizeof(m_infoset_name));
+	std::memcpy(m_infoset_name, pBuffer, nStringLength);
+}
+
+void CCondlistInfo::setText(const char* pBuffer, size_t nStringLength) 
+{
+	R_ASSERT2(nStringLength <= (sizeof(m_text_name) / sizeof(char)),
+		"overflow, shrink  buffer!");
+
+	std::memset(m_text_name, 0, sizeof(m_text_name));
+	std::memcpy(m_text_name, pBuffer, nStringLength);
+}
+
+void CCondlistInfo::clearInfoCheck() 
+{
+	std::memset(m_infocheck_name, 0, sizeof(m_infocheck_name));
+}
+
+void CCondlistInfo::clearInfoSet()
+{
+	std::memset(m_infoset_name, 0, sizeof(m_infoset_name));
+}
+
+void CCondlistInfo::clearText() 
+{
+	std::memset(m_text_name, 0, sizeof(m_text_name));
+}
+
+void CCondlistInfo::clear() 
+{
+	clearInfoCheck();
+	clearInfoSet();
+	clearText();
+}
+
+const char* CCondlistInfo::getInfoCheckName(void)
+{
+	return m_infocheck_name;
+}
+
+const char* CCondlistInfo::getTextName(void)
+{
+	return m_text_name;
+}
+
+const char* CCondlistInfo::getInfoSetName(void)
+{
+	return m_infoset_name;
+}

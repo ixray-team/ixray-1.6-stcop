@@ -978,10 +978,20 @@ function parse_condlist(npc, section, field, src)
 		-- заполнить массив infop_check: { "infop_name" = true/false }.
 		-- На входе имеем строку вида "  +infop1  -infop2 +infop3 ... "
 		lst[n].infop_check = {}
+		
+		if infop_check_lst then
+			printf("[xrLogic] lst [%s]", infop_check_lst)
+		end
+
 		parse_infop(lst[n].infop_check, infop_check_lst)
 
 		-- То же самое для устанавливаемых infoportions:
 		lst[n].infop_set = {}
+		
+		if infop_set_lst then
+			printf("[xrLogic] set [%s]", infop_set_lst)
+		end
+
 		parse_infop(lst[n].infop_set, infop_set_lst)
 
 		n = n + 1

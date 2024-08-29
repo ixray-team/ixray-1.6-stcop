@@ -131,6 +131,15 @@ public:                                                                        \
 
 class CScriptGameObject;
 
+namespace ixray
+{
+	constexpr size_t kCondlistInfoStringSize = 64;
+	bool is_weapon(CScriptGameObject* pObject);
+	bool has_alife_info(LPCSTR str);
+	int get_script_clsid(LPCSTR str);
+} // namespace ixray
+
+
 class CConfigInfoportion
 {
 public:
@@ -232,9 +241,28 @@ private:
 	xr_hash_map<u32, CCondlistData> m_mInfoPortionSet;
 };
 
-namespace ixray
+class CCondlistInfo
 {
-	bool is_weapon(CScriptGameObject* pObject);
-	bool has_alife_info(LPCSTR str);
-	int get_script_clsid(LPCSTR str);
-} // namespace ixray
+public:
+	CCondlistInfo();
+	~CCondlistInfo();
+	
+	void setInfoCheck(const char* pBuffer, size_t nStringLength);
+	void setInfoSet(const char* pBuffer, size_t nStringLength);
+	void setText(const char* pBuffer, size_t nStringLength);
+
+	void clearInfoCheck();
+	void clearInfoSet();
+	void clearText();
+	void clear();
+
+	const char* getInfoCheckName(void);
+	const char* getTextName(void);
+	const char* getInfoSetName(void);
+
+
+private:
+	char m_infocheck_name[ixray::kCondlistInfoStringSize];
+	char m_infoset_name[ixray::kCondlistInfoStringSize];
+	char m_text_name[ixray::kCondlistInfoStringSize];
+};
