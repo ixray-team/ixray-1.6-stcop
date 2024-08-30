@@ -339,7 +339,7 @@ void CDetailManager::UpdateVisibleM()
 						SlotItem			**siIT=&(*sp.items.begin()), **siEND=&(*sp.items.end());
 						for (; siIT!=siEND; siIT++){
 							SlotItem& Item			= *(*siIT);
-							float   scale			= Item.scale_calculated	= Item.scale*alpha_i;
+							float   scale			= Item.scale*alpha_i;
 							float	ssa				= scale*scale*Rq_drcp;
 							if (ssa < r_ssaDISCARD)
 							{
@@ -347,7 +347,13 @@ void CDetailManager::UpdateVisibleM()
 							}
 							u32		vis_id			= 0;
 							if (ssa > r_ssaCHEAP)	vis_id = Item.vis_ID;
-							
+
+							Fmatrix& M = Item.mRotY_calculated;
+							M = Item.mRotY;
+							M._11*=scale; M._21*=scale; M._31*=scale;
+							M._12*=scale; M._22*=scale; M._32*=scale;
+							M._13*=scale; M._23*=scale; M._33*=scale;
+
 							sp.r_items[vis_id].push_back	(*siIT);
 
 //2							visible[vis_id][sp.id].push_back(&Item);
