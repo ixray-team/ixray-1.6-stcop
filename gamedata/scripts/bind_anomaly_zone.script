@@ -85,6 +85,7 @@ function anomaly_zone_binder:__init(obj) super(obj)
 		local coeffs_section = utils.cfg_get_string(ini, section, "coeffs_section", nil, false, "", def_coeff_sect_name)
 
 		local parsed_condlist = xr_logic.parse_condlist(nil, "anomal_zone_binder", "coeff_condlist", coeffs_section)
+
 		local coeffs_sect_name = xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
 
 		local coeffs = utils.cfg_get_string(ini, section, coeffs_sect_name, nil, false, "", def_coeffs)
