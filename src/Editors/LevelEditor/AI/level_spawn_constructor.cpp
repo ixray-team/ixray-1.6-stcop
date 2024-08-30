@@ -32,7 +32,6 @@ CLevelSpawnConstructor::~CLevelSpawnConstructor()
 		*/
 	VERIFY(!m_level_graph);
 	VERIFY(!m_cross_table);
-	VERIFY(!m_graph_engine);
 }
 
 IC const IGameGraph& CLevelSpawnConstructor::game_graph() const
@@ -60,10 +59,6 @@ IC const IGameLevelCrossTable& CLevelSpawnConstructor::cross_table() const
 	return (*m_cross_table);
 }
 
-IC CGraphEngineEditor& CLevelSpawnConstructor::graph_engine() const
-{
-	return (*m_graph_engine);
-}
 
 void CLevelSpawnConstructor::init()
 {
@@ -484,8 +479,6 @@ public:
 
 void CLevelSpawnConstructor::generate_artefact_spawn_positions()
 {
-	VERIFY(!m_graph_engine);
-	m_graph_engine = xr_new<CGraphEngineEditor>(m_level_graph->header().vertex_count());
 	// create graph engine
 	CTimer Timer;
 	Timer.Start();
@@ -637,21 +630,35 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 		Object->m_fDistance = cell.distance();
 
 		m_generate_artefact_spawn_positions_worker_mutex.Enter();
-		graph_engine().search(
-			level_graph(),
-			Object->m_tNodeID,
-			Object->m_tNodeID,
-			&l_tpaStack,
-			SFlooder<
-				float,
-				u32,
-				u32
-			>(
-				zone->m_offline_interactive_radius,
-				u32(-1),
-				u32(-1)
-			)
-		);
+
+		xr_vector<u32> CheckNodes;
+		l_tpaStack.push_back(Object->m_tNodeID);
+		CheckNodes.push_back(Object->m_tNodeID);
+		float m_distance_xz = level_graph().header().cell_size();
+		ILevelGraph::CVertex* MainNode = level_graph().vertex(Object->m_tNodeID);
+		while(CheckNodes.size() > 0)
+		{
+			u32 CurrentNodeID = CheckNodes.back();
+			CheckNodes.pop_back();
+			ILevelGraph::CVertex* Node = level_graph().vertex(CurrentNodeID);
+
+			auto DistanceNode = [this,m_distance_xz](ILevelGraph::CVertex* Node1,ILevelGraph::CVertex* Node2)
+			{
+				return level_graph().distance(Node1,Node2);
+			};
+
+			for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
+			{
+				const u32 NeighborID = Node->link(NeighborIndex);
+				if (!level_graph().valid_vertex_id(NeighborID)) continue;
+				ILevelGraph::CVertex* NeighborNode = level_graph().vertex(Object->m_tNodeID);
+				if(DistanceNode(MainNode,NeighborNode) < zone->m_offline_interactive_radius)
+				{
+					l_tpaStack.push_back(NeighborID);
+					CheckNodes.push_back(NeighborID);
+				}
+			}
+		}
 
 		l_tpaStack.erase(
 			std::remove_if(
@@ -665,6 +672,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 			),
 			l_tpaStack.end()
 		);
+
 		random_shuffle(l_tpaStack.begin(), l_tpaStack.end());
 		zone->m_artefact_position_offset = m_level_points.size();
 		m_level_points.resize(zone->m_artefact_position_offset + zone->m_artefact_spawn_count);
@@ -769,7 +777,6 @@ bool CLevelSpawnConstructor::Execute()
 	{
 		m_cross_table = 0;
 		m_level_graph = 0;
-		xr_delete(m_graph_engine);
 		return false;
 	}
 	//	fill_spawn_groups					();
@@ -780,7 +787,6 @@ bool CLevelSpawnConstructor::Execute()
 	{
 		m_cross_table = 0;
 		m_level_graph = 0;
-		xr_delete(m_graph_engine);
 		return false;
 	}
 	generate_artefact_spawn_positions();
@@ -792,7 +798,6 @@ bool CLevelSpawnConstructor::Execute()
 	//xr_delete							(m_level_graph);
 	m_cross_table = 0;
 	m_level_graph = 0;
-	xr_delete(m_graph_engine);
 	Msg("Spawn build completed time %3.2f", Timer.GetElapsed_sec());
 	return true;
 }
@@ -817,7 +822,7 @@ bool CLevelSpawnConstructor::verify_space_restrictors()
 		if ((*I)->object().m_space_restrictor_type == RestrictionSpace::eRestrictorTypeNone)
 			continue;
 
-		if (!(*I)->verify(*m_level_graph, *m_graph_engine, m_no_separator_check))
+		if (!(*I)->verify(*m_level_graph, m_no_separator_check))
 			bResult = false;
 	}
 

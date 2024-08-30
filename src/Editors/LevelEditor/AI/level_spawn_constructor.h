@@ -48,7 +48,6 @@ private:
 	CGameSpawnConstructor				*m_game_spawn_constructor;
 	CSE_ALifeCreatureActor				*m_actor;
 	ILevelGraph							*m_level_graph;
-	CGraphEngineEditor						*m_graph_engine;
 	LEVEL_CHANGER_STORAGE				m_level_changers;
 	bool								m_no_separator_check;
 
@@ -79,7 +78,6 @@ protected:
 	IC		const IGameGraph			&game_graph							() const;
 	IC		const ILevelGraph			&level_graph						() const;
 	IC		const IGameLevelCrossTable	&cross_table						() const;
-	IC		CGraphEngineEditor				&graph_engine						() const;
 	IC		LEVEL_CHANGER_STORAGE		&level_changers						() const;
 	IC		u32							level_id							(shared_str level_name) const;
 

@@ -37,7 +37,6 @@ CLevelSpawnConstructor::~CLevelSpawnConstructor					()
 
 	VERIFY					(!m_level_graph);
 	VERIFY					(!m_cross_table);
-	VERIFY					(!m_graph_engine);
 }
 
 IC	const CGameGraph &CLevelSpawnConstructor::game_graph		() const
@@ -60,14 +59,9 @@ IC	const CLevelGraph &CLevelSpawnConstructor::level_graph			() const
 	return					(*m_level_graph);
 }
 
-IC	const CGameLevelCrossTable &CLevelSpawnConstructor::cross_table	() const
+IC	const IGameLevelCrossTable &CLevelSpawnConstructor::cross_table	() const
 {
 	return					(*m_cross_table);
-}
-
-IC	CGraphEngine &CLevelSpawnConstructor::graph_engine			() const
-{
-	return					(*m_graph_engine);
 }
 
 void CLevelSpawnConstructor::init								()
@@ -438,8 +432,6 @@ public:
 void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 {
 	// create graph engine
-	VERIFY								(!m_graph_engine);
-	m_graph_engine						= xr_new<CGraphEngine>(m_level_graph->header().vertex_count());
 
 	xr_vector<u32>						l_tpaStack;
 	SPAWN_STORAGE						zones;
@@ -464,23 +456,37 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 		zone->m_tGraphID					= cell.game_vertex_id();
 		zone->m_fDistance					= cell.distance();
 
-		graph_engine().search			(
-			level_graph(),
-			zone->m_tNodeID,
-			zone->m_tNodeID,
-			&l_tpaStack,
-			SFlooder<
-				float,
-				u32,
-				u32
-			>(
-				zone->m_offline_interactive_radius,
-				u32(-1),
-				u32(-1)
-			)
-		);
-		
-		l_tpaStack.erase				(
+
+		xr_vector<u32> CheckNodes;
+		l_tpaStack.push_back(zone->m_tNodeID);
+		CheckNodes.push_back(zone->m_tNodeID);
+		float m_distance_xz = level_graph().header().cell_size();
+		ILevelGraph::CVertex* MainNode = level_graph().vertex(zone->m_tNodeID);
+		while(CheckNodes.size() > 0)
+		{
+			u32 CurrentNodeID = CheckNodes.back();
+			CheckNodes.pop_back();
+			ILevelGraph::CVertex* Node = level_graph().vertex(CurrentNodeID);
+
+			auto DistanceNode = [this,m_distance_xz](ILevelGraph::CVertex* Node1,ILevelGraph::CVertex* Node2)
+			{
+				return level_graph().distance(Node1,Node2);
+			};
+
+			for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
+			{
+				const u32 NeighborID = Node->link(NeighborIndex);
+				if (!level_graph().valid_vertex_id(NeighborID)) continue;
+				ILevelGraph::CVertex* NeighborNode = level_graph().vertex(zone->m_tNodeID);
+				if(DistanceNode(MainNode,NeighborNode) < zone->m_offline_interactive_radius)
+				{
+					l_tpaStack.push_back(NeighborID);
+					CheckNodes.push_back(NeighborID);
+				}
+			}
+		}
+
+		l_tpaStack.erase(
 			std::remove_if(
 				l_tpaStack.begin(),
 				l_tpaStack.end(),
@@ -613,7 +619,6 @@ void CLevelSpawnConstructor::Execute							()
 	
 	xr_delete							(m_level_graph);
 	m_cross_table						= 0;
-	xr_delete							(m_graph_engine);
 }
 
 void CLevelSpawnConstructor::update								()
@@ -633,7 +638,7 @@ void CLevelSpawnConstructor::verify_space_restrictors			()
 		if ((*I)->object().m_space_restrictor_type == RestrictionSpace::eRestrictorTypeNone)
 			continue;
 
-		(*I)->verify					(*m_level_graph,*m_graph_engine,m_no_separator_check);
+		(*I)->verify					(*m_level_graph,m_no_separator_check);
 	}
 
 	delete_data							(m_space_restrictors);

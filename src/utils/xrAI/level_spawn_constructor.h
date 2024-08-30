@@ -15,7 +15,6 @@ class CLevelGraph;
 class CGameLevelCrossTable;
 class CGameSpawnConstructor;
 class CSE_ALifeCreatureActor;
-class CGraphEngine;
 class CSE_Abstract;
 class CSE_ALifeObject;
 class CSE_ALifeGraphPoint;
@@ -42,12 +41,11 @@ private:
 	CGameSpawnConstructor				*m_game_spawn_constructor;
 	CSE_ALifeCreatureActor				*m_actor;
 	CLevelGraph							*m_level_graph;
-	CGraphEngine						*m_graph_engine;
 	LEVEL_CHANGER_STORAGE				m_level_changers;
 	bool								m_no_separator_check;
 
 private:
-	const CGameLevelCrossTable			*m_cross_table;
+	const IGameLevelCrossTable			*m_cross_table;
 
 protected:
 			void						init								();
@@ -66,8 +64,7 @@ protected:
 			void						update_artefact_spawn_positions		();
 	IC		const CGameGraph			&game_graph							() const;
 	IC		const CLevelGraph			&level_graph						() const;
-	IC		const CGameLevelCrossTable	&cross_table						() const;
-	IC		CGraphEngine				&graph_engine						() const;
+	IC		const IGameLevelCrossTable	&cross_table						() const;
 	IC		LEVEL_CHANGER_STORAGE		&level_changers						() const;
 	IC		u32							level_id							(shared_str level_name) const;
 

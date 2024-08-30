@@ -51,7 +51,7 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 		float x2; float y2;
 		unpack_xz(Node1,x1,y1);
 		unpack_xz(Node2,x2,y2);
-		return m_distance_xz*(fabs(x1-x2)+fabs(y1-y2));
+		return m_distance_xz*2*(fabs(x1-x2)+fabs(y1-y2));
 	};
 	while (!TempPriorityNode.empty())
 	{
