@@ -27,13 +27,13 @@ function pick_section_from_condlist(actor, client_or_server_object, condlist_han
         )
     end
 
-    return ""
+    return nil
 end
 
 -- parsing without any allocation and returns string as we do in original pick_section_from_condlist
 function pick_section_from_condlist(actor, client_or_server_object, section_name, field_name, string_for_parsing)
     if get_xr_parser_manager() then
-        get_xr_parser_manager():pick_section_from_condlist(
+        return get_xr_parser_manager():pick_section_from_condlist(
             actor,
             client_or_server_object,
             section_name,
@@ -41,4 +41,6 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
             string_for_parsing
         )
     end
+
+    return nil
 end
