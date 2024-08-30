@@ -415,39 +415,6 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 	return "nullptr";
 }
 
-void CScriptXRParser::script_register(lua_State* pState)
-{
-	if (pState)
-	{
-		luabind::module(pState)
-			[luabind::class_<CScriptXRParser>("CScriptXRParser")
-					.def("parse_condlist", &CScriptXRParser::lua_parseCondlist)
-					.def(
-						"delete_condlist", &CScriptXRParser::lua_deleteCondlist)
-
-
-			// stacked implementation registration, no allocations
-					.def("pick_section_from_condlist",
-						(const char* (CScriptXRParser::*)(CScriptGameObject*,
-							CScriptGameObject*, const char*, const char*,
-							const char*)) &
-							CScriptXRParser::lua_pickSectionFromCondlist)
-					.def("pick_section_from_condlist",
-						(const char* (CScriptXRParser::*)(CScriptGameObject*,
-							CSE_ALifeDynamicObject*, const char*, const char*,
-							const char*)) &
-							CScriptXRParser::lua_pickSectionFromCondlist)
-					.def("pick_section_from_condlist",
-						(const char* (
-							CScriptXRParser::*)(CSE_ALifeDynamicObject*,
-							CSE_ALifeDynamicObject*, const char*, const char*,
-							const char*)) &
-							CScriptXRParser::lua_pickSectionFromCondlist),
-
-				luabind::def("get_xr_parser_manager", get_xr_parser)];
-	}
-}
-
 void CScriptXRParser::parseCondlistInfos(
 	xr_infos& infos, xr_hash_map<u32, CCondlist>& result)
 {
@@ -672,4 +639,36 @@ u32 CScriptXRParser::generateHandle(void)
 	u32 nResult = m_nCurrentIndex;
 	++m_nCurrentIndex;
 	return nResult;
+}
+
+void CScriptXRParser::script_register(lua_State* pState)
+{
+	if (pState)
+	{
+		luabind::module(pState)
+			[luabind::class_<CScriptXRParser>("CScriptXRParser")
+					.def("parse_condlist", &CScriptXRParser::lua_parseCondlist)
+					.def(
+						"delete_condlist", &CScriptXRParser::lua_deleteCondlist)
+
+					// stacked implementation registration, no allocations
+					.def("pick_section_from_condlist",
+						(const char* (CScriptXRParser::*)(CScriptGameObject*,
+							CScriptGameObject*, const char*, const char*,
+							const char*)) &
+							CScriptXRParser::lua_pickSectionFromCondlist)
+					.def("pick_section_from_condlist",
+						(const char* (CScriptXRParser::*)(CScriptGameObject*,
+							CSE_ALifeDynamicObject*, const char*, const char*,
+							const char*)) &
+							CScriptXRParser::lua_pickSectionFromCondlist)
+					.def("pick_section_from_condlist",
+						(const char* (
+							CScriptXRParser::*)(CSE_ALifeDynamicObject*,
+							CSE_ALifeDynamicObject*, const char*, const char*,
+							const char*)) &
+							CScriptXRParser::lua_pickSectionFromCondlist),
+
+				luabind::def("get_xr_parser_manager", get_xr_parser)];
+	}
 }
