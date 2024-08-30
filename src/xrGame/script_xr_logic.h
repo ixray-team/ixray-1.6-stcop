@@ -50,7 +50,6 @@ public:
 	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
 		CSE_ALifeDynamicObject* pServerObject, const char* pSectionName,
 		const char* pFieldName, const char* pSourceName);
-
 	const char* lua_pickSectionFromCondlist(
 		CSE_ALifeDynamicObject* pServerPlayer,
 		CSE_ALifeDynamicObject* pServerObject, const char* pSectionName,
