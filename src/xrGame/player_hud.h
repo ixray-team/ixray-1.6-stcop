@@ -116,6 +116,13 @@ struct attachable_hud_item
 
 };
 
+struct cached_cfg_param_float
+{
+	shared_str last_section;
+	float value = 0.f;
+	bool is_default = true;
+};
+
 class player_hud
 {
 public: 
@@ -160,20 +167,13 @@ public:
 		bool is16x9 = true;
 	};
 
-	struct cached_cfg_param_float
-	{
-		shared_str last_section;
-		float value = 0.f;
-		bool is_default = true;
-	};
-
 	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
 	void			UpdateWeaponOffset(u32 delta);
 	default_hud_coords_params GetDefaultHudCoords(shared_str hud_sect);
 	default_hud_coords_params _last_default_hud_params;
-	float GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def);
+	static float GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def);
 	void GetCurrentTargetOffset_aim(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
 	void GetCurrentTargetOffset(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
 	void AddOffsets(const xr_string base, shared_str section, Fvector3& pos, Fvector3& rot, float koef = 1.0f);
