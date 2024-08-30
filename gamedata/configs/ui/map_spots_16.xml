@@ -505,6 +505,27 @@
   <alife_presentation_squad_monster_spot_mini x="0" y="0" width="9" height="9" alignment="c" stretch="1" location_level="10" scale_min="3.0" scale_max="5.1" scale="0">
     <texture r="237" g="28" b="36">ui_mmap_squad_leader</texture>
   </alife_presentation_squad_monster_spot_mini>
+  
+  <alife_presentation_squad_friend_debug>
+	<level_map spot="alife_presentation_squad_friend_spot"/>
+    <mini_map spot="alife_presentation_squad_friend_spot_mini"/>
+  </alife_presentation_squad_friend_debug>
+
+  <alife_presentation_squad_neutral_debug>
+   <level_map spot="alife_presentation_squad_neutral_spot"/>
+    <mini_map spot="alife_presentation_squad_neutral_spot_mini"/>
+  </alife_presentation_squad_neutral_debug>
+
+  <alife_presentation_squad_enemy_debug>
+   <level_map spot="alife_presentation_squad_enemy_spot"/>
+	<mini_map spot="alife_presentation_squad_enemy_spot_mini"/>
+  </alife_presentation_squad_enemy_debug>
+
+  <alife_presentation_squad_monster_debug>
+   <level_map spot="alife_presentation_squad_monster_spot"/>
+    <mini_map spot="alife_presentation_squad_monster_spot_mini"/>
+  </alife_presentation_squad_monster_debug>
+  
 <!--
   <alife_presentation_squad_attack_point>
     <level_map spot="alife_presentation_squad_attack_point_spot"/>

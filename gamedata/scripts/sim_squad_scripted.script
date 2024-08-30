@@ -846,13 +846,27 @@ function sim_squad_scripted:show()
 		return
 	end
 	local spot = ""
-
-	if not(is_squad_monster[self.player_id]) then
-		local relation = game_relations.get_squad_relation_to_actor_by_id(self.id)
-		if(relation=="friends") then
-			spot = "alife_presentation_squad_friend"
-		elseif(relation=="neutral") then
-			spot = "alife_presentation_squad_neutral"
+	if dev_debug then
+		if not(is_squad_monster[self.player_id]) then
+			local relation = game_relations.get_squad_goodwill_to_actor_by_id(self.id)
+			if(relation=="friends") then
+				spot = "alife_presentation_squad_friend_debug"
+			elseif(relation=="neutral") then
+				spot = "alife_presentation_squad_neutral_debug"
+			else 
+				spot = "alife_presentation_squad_enemy_debug"
+			end
+		else
+			spot = "alife_presentation_squad_monster_debug"
+		end
+	else
+		if not(is_squad_monster[self.player_id]) then
+			local relation = game_relations.get_squad_relation_to_actor_by_id(self.id)
+			if(relation=="friends") then
+				spot = "alife_presentation_squad_friend"
+			elseif(relation=="neutral") then
+				spot = "alife_presentation_squad_neutral"
+			end
 		end
 	end
 	if(spot~="") then
