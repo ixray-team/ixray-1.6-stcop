@@ -650,6 +650,11 @@ CScriptXRConditionsStorage* CLevel::getScriptXRConditions(void) const
 	return m_pScriptXRCondition;
 }
 
+CScriptXRParser* CLevel::getScriptXRParser(void) const
+{
+	return m_pScriptXRParser;
+}
+
 void				CLevel::net_OnChangeSelfName			(NET_Packet* P)
 {
 	if (!P) return;

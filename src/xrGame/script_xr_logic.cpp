@@ -2,9 +2,10 @@
 #include "script_xr_logic.h"
 #include "script_xr_conditions.h"
 #include "script_xr_effects.h"
+#include "Level.h"
 
 CScriptXRParser::CScriptXRParser() :
-	m_pLevel{}, m_pXRConditions{}, m_pXREffects{}
+	m_nCurrentIndex{}, m_pLevel{}, m_pXRConditions{}, m_pXREffects{}
 {
 }
 
@@ -24,6 +25,8 @@ void CScriptXRParser::destroy()
 	m_pLevel = nullptr;
 	m_pXRConditions = nullptr;
 	m_pXREffects = nullptr;
+	m_nCurrentIndex = 0;
+	m_mStorage.clear();
 }
 
 bool CScriptXRParser::isSymbolValidForParsing(char nSymbol) const
@@ -337,6 +340,49 @@ xr_hash_map<u32, CCondlist> CScriptXRParser::parseCondlist(
 	return result;
 }
 
+void CScriptXRParser::eraseCondlist(u32 nHandle)
+{
+	if (m_mStorage.find(nHandle) != m_mStorage.end())
+	{
+		m_mStorage.erase(nHandle);
+	}
+}
+
+u32 CScriptXRParser::lua_parseCondlist(
+	const char* pSectionName, const char* pFieldName, const char* pSourceName)
+{
+	u32 nHandle = generateHandle();
+
+	this->m_mStorage[nHandle] =
+		std::move(this->parseCondlist(pSectionName, pFieldName, pSourceName));
+
+	return nHandle;
+}
+
+void CScriptXRParser::lua_deleteCondlist(u32 nHandle)
+{
+	eraseCondlist(nHandle);
+}
+
+CScriptXRParser* get_xr_parser()
+{
+	R_ASSERT2(Level().getScriptXRParser(),
+		"something is wrong! early calling or late calling");
+
+	return Level().getScriptXRParser();
+}
+
+void CScriptXRParser::script_register(lua_State* pState)
+{
+	if (pState)
+	{
+		luabind::module(
+			pState)[luabind::class_<CScriptXRParser>("CScriptXRParser").def("parse_condlist", &CScriptXRParser::lua_parseCondlist),
+
+			luabind::def("get_xr_parser_manager", get_xr_parser)];
+	}
+}
+
 void CScriptXRParser::parseCondlistInfos(
 	xr_infos& infos, xr_hash_map<u32, CCondlist>& result)
 {
@@ -360,4 +406,202 @@ void CScriptXRParser::parseInfoportions(
 	const char* pBuffer, xr_hash_map<u32, CCondlistData>& result)
 {
 	R_ASSERT2(pBuffer, "string must be valid!");
+
+	char buffer[ixray::kCondlistInfoStringSize]{};
+	u32 buffer_size{};
+	u32 index{};
+	auto string_length = strlen(pBuffer);
+
+	if (string_length)
+	{
+		for (auto i = 0; i < string_length; ++i)
+		{
+			CCondlistData value;
+
+			if (pBuffer[i] == '{' || pBuffer[i] == '%')
+			{
+				continue;
+			}
+
+			switch (pBuffer[i])
+			{
+			case '+':
+			{
+				u32 z = i;
+				z += 1;
+
+				while (pBuffer[z] && (!isSymbolEvent(pBuffer[z])))
+				{
+					buffer[buffer_size] = pBuffer[z];
+					++z;
+					++buffer_size;
+				}
+
+				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+					"too big string! reduce it in your config please");
+
+				value.setInfoPortionName(buffer);
+				value.setRequired(true);
+				result[index] = value;
+
+				++index;
+				--z;
+				i = z;
+
+				std::memset(buffer, 0, sizeof(buffer));
+				buffer_size = 0;
+
+				break;
+			}
+			case '-':
+			{
+				u32 z = i;
+				z += 1;
+
+				while (pBuffer[z] && (!isSymbolEvent(pBuffer[z])))
+				{
+					buffer[buffer_size] = pBuffer[z];
+					++z;
+					++buffer_size;
+				}
+
+				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+					"too big string! reduce it in your config please");
+
+				value.setInfoPortionName(buffer);
+				value.setRequired(false);
+				result[index] = value;
+				++index;
+				--z;
+				i = z;
+
+				std::memset(buffer, 0, sizeof(buffer));
+				buffer_size = 0;
+
+				break;
+			}
+			case '=':
+			{
+				u32 z = i;
+				char params[ixray::kCondlistInfoStringSize]{};
+				u32 params_size{};
+				z += 1;
+
+				while (pBuffer[z] && (!isSymbolEvent(pBuffer[z])))
+				{
+					if (pBuffer[z] == '(')
+					{
+						u32 z1 = z;
+						++z1;
+
+						while (pBuffer[z1] != ')')
+						{
+							params[params_size] = pBuffer[z1];
+							++z1;
+							++params_size;
+						}
+
+						R_ASSERT2(params_size <= ixray::kCondlistInfoStringSize,
+							"too big string!");
+
+						z = z1;
+						break;
+					}
+
+					buffer[buffer_size] = pBuffer[z];
+					++z;
+					++buffer_size;
+				}
+
+				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+					"too big string! reduce it in your config please");
+
+				value.setFunctionName(buffer);
+				value.setParams(params);
+				value.setExpected(true);
+
+				result[index] = value;
+				++index;
+				--z;
+				i = z;
+
+				std::memset(buffer, 0, sizeof(buffer));
+				buffer_size = 0;
+
+				break;
+			}
+			case '~':
+			{
+				u32 z = i;
+				z += 1;
+				while (pBuffer[z] && (!isSymbolEvent(pBuffer[z])))
+				{
+					buffer[buffer_size] = pBuffer[z];
+					++z;
+				}
+
+				R_ASSERT2(buffer_size <= ixray::kCondlistProbabilityStringSize,
+					"too big number lol????? string is too big!");
+
+				value.setProbability(buffer);
+				result[index] = value;
+				++index;
+				--z;
+				i = z;
+
+				std::memset(buffer, 0, sizeof(buffer));
+				buffer_size = 0;
+
+				break;
+			}
+			case '!':
+			{
+				u32 z = i;
+				char params[ixray::kCondlistInfoStringSize]{};
+				u32 params_size{};
+				z += 1;
+
+				while (pBuffer[z] && (!isSymbolEvent(pBuffer[z])))
+				{
+					if (pBuffer[z] == '(')
+					{
+						u32 z1 = z;
+						while (pBuffer[z1] != ')')
+						{
+							params[params_size] = pBuffer[z1];
+							++z1;
+						}
+
+						z = z1;
+						break;
+					}
+
+					buffer[buffer_size] = pBuffer[z];
+					++z;
+					++buffer_size;
+				}
+
+				value.setFunctionName(buffer);
+				value.setParams(params);
+				value.setExpected(false);
+				result[index] = value;
+				++index;
+				--z;
+				i = z;
+
+				std::memset(buffer, 0, sizeof(buffer));
+				buffer_size = 0;
+
+				break;
+			}
+			}
+		}
+	}
+}
+
+u32 CScriptXRParser::generateHandle(void)
+{
+	u32 nResult = m_nCurrentIndex;
+	++m_nCurrentIndex;
+	return nResult;
 }

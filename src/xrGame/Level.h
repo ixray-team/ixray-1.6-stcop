@@ -138,6 +138,7 @@ public:
 	virtual void OnConnectRejected();
 
 	CScriptXRConditionsStorage* getScriptXRConditions(void) const;
+	CScriptXRParser* getScriptXRParser(void) const;
 
 private:
 	void OnSecureMessage(NET_Packet& P);

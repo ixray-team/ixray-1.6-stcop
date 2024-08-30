@@ -134,6 +134,7 @@ class CScriptGameObject;
 namespace ixray
 {
 	constexpr size_t kCondlistInfoStringSize = 64;
+	constexpr size_t kCondlistProbabilityStringSize = 6;
 	bool is_weapon(CScriptGameObject* pObject);
 	bool has_alife_info(LPCSTR str);
 	int get_script_clsid(LPCSTR str);
@@ -194,23 +195,23 @@ public:
 	void setExpected(bool bValue);
 
 	const char* getProbability(void) const;
-	void setProbability(const char* pFSStringField);
+	void setProbability(const char* pString);
 
 	const char* getFunctionName(void) const;
-	void setFunctionName(const char* pFSStringField);
+	void setFunctionName(const char* pString);
 
 	const char* getInfoPortionName(void) const;
-	void setInfoPortionName(const char* pFSStringField);
+	void setInfoPortionName(const char* pString);
 
 	const char* getParams(void) const;
-	void setParams(const char* pFSStringField);
+	void setParams(const char* pString);
 
 private:
 	bool m_bRequired;
 	bool m_bExpected;
 	// because in some cases it is not initialized field and make it obvious
 	// using raw string much better than storing invalid number value yk~~
-	char m_probability[6];
+	char m_probability[ixray::kCondlistProbabilityStringSize];
 	// don't make it as std::string because it is already stored in
 	// filesystem...
 	char m_functionname[ixray::kCondlistInfoStringSize];
