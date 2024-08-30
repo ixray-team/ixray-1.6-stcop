@@ -581,6 +581,9 @@ void CScriptXRParser::parseInfoportions(
 					++buffer_size;
 				}
 
+				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+					"too big string!");
+
 				value.setFunctionName(buffer);
 				value.setParams(params);
 				value.setExpected(false);
