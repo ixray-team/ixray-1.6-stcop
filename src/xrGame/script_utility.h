@@ -135,11 +135,13 @@ namespace ixray
 {
 	constexpr size_t kCondlistInfoStringSize = 64;
 	constexpr size_t kCondlistProbabilityStringSize = 6;
+	constexpr size_t kCondlistEmbeddedDataSize = 10;
+	constexpr size_t kCondlistEmbeddedSize = 32;
+
 	bool is_weapon(CScriptGameObject* pObject);
 	bool has_alife_info(LPCSTR str);
 	int get_script_clsid(LPCSTR str);
 } // namespace ixray
-
 
 class CConfigInfoportion
 {
@@ -238,7 +240,7 @@ public:
 	void addInfoPortionSet(const std::pair<u32, CCondlistData>& pair);
 
 	const char* getSectionName(void) const;
-	void setSectionName(const char* pString);	
+	void setSectionName(const char* pString);
 
 private:
 	char m_sectionname[ixray::kCondlistInfoStringSize];
@@ -246,12 +248,41 @@ private:
 	xr_hash_map<u32, CCondlistData> m_mInfoPortionSet;
 };
 
+// stack memory
+class CCondlistEmbedded
+{
+public:
+	using xr_condlistdata =
+		xr_array<CCondlistData, ixray::kCondlistEmbeddedDataSize>;
+
+public:
+	CCondlistEmbedded();
+	~CCondlistEmbedded();
+
+	const xr_condlistdata& getInfoPortionSet(void) const;
+	xr_condlistdata& getInfoPortionSet(void);
+
+	const xr_condlistdata& getInfoPortionCheck(void) const;
+	xr_condlistdata& getInfoPortionCheck(void);
+
+	void addInfoPortionSet(u32 nID, const CCondlistData& data);
+	void addInfoPortionCheck(u32 nID, const CCondlistData& data);
+
+	const char* getSectionName(void) const;
+	void setSectionName(const char* pString);
+
+private:
+	char m_sectionname[ixray::kCondlistInfoStringSize];
+	xr_condlistdata m_aInfoPortionCheck;
+	xr_condlistdata m_aInfoPortionSet;
+};
+
 class CCondlistInfo
 {
 public:
 	CCondlistInfo();
 	~CCondlistInfo();
-	
+
 	void setInfoCheck(const char* pBuffer, size_t nStringLength);
 	void setInfoSet(const char* pBuffer, size_t nStringLength);
 	void setText(const char* pBuffer, size_t nStringLength);
@@ -264,7 +295,6 @@ public:
 	const char* getInfoCheckName(void);
 	const char* getTextName(void);
 	const char* getInfoSetName(void);
-
 
 private:
 	char m_infocheck_name[ixray::kCondlistInfoStringSize];

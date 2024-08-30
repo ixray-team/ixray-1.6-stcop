@@ -359,3 +359,55 @@ const char* CCondlistInfo::getInfoSetName(void)
 {
 	return m_infoset_name;
 }
+
+CCondlistEmbedded::CCondlistEmbedded() : m_sectionname{} {}
+
+CCondlistEmbedded::~CCondlistEmbedded() {}
+
+const CCondlistEmbedded::xr_condlistdata& CCondlistEmbedded::getInfoPortionSet(void) const
+{
+	return this->m_aInfoPortionSet;
+}
+
+CCondlistEmbedded::xr_condlistdata& CCondlistEmbedded::getInfoPortionSet(void)
+{
+	return this->m_aInfoPortionSet;
+}
+
+const CCondlistEmbedded::xr_condlistdata& CCondlistEmbedded::getInfoPortionCheck(void) const
+{
+	return this->m_aInfoPortionCheck;
+}
+
+CCondlistEmbedded::xr_condlistdata& CCondlistEmbedded::getInfoPortionCheck(void)
+{
+	return this->m_aInfoPortionCheck;
+}
+
+void CCondlistEmbedded::addInfoPortionSet(u32 nID, const CCondlistData& data) 
+{
+	R_ASSERT2(nID <= this->m_aInfoPortionSet.size(), "overflow!");
+
+	this->m_aInfoPortionSet[nID] = data;
+}
+
+void CCondlistEmbedded::addInfoPortionCheck(u32 nID, const CCondlistData& data)
+{
+	R_ASSERT2(nID <= this->m_aInfoPortionCheck.size(), "overflow!");
+
+	this->m_aInfoPortionCheck[nID] = data;
+}
+
+const char* CCondlistEmbedded::getSectionName(void) const
+{
+	return this->m_sectionname;
+}
+
+void CCondlistEmbedded::setSectionName(const char* pString) 
+{
+	R_ASSERT2(strlen(pString) <= (sizeof(this->m_sectionname) / sizeof(char)),
+		"overflow! too big string");
+
+	std::memset(this->m_sectionname, 0, sizeof(this->m_sectionname));
+	std::memcpy(this->m_sectionname, pString, strlen(pString) * sizeof(char));
+}

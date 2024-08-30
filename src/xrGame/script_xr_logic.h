@@ -9,7 +9,11 @@ class CScriptXREffectsStorage;
 class CScriptXRParser
 {
 	// second is a real length of .first
-	using xr_infos = std::pair<xr_array<CCondlistInfo, 10>, size_t>;
+	using xr_infos =
+		std::pair<xr_array<CCondlistInfo, ixray::kCondlistEmbeddedSize>,
+			size_t>;
+	using xr_embedded_condlist =
+		xr_array<CCondlistEmbedded, ixray::kCondlistEmbeddedSize>;
 
 public:
 	CScriptXRParser();
@@ -58,6 +62,12 @@ public:
 	static void script_register(lua_State* L);
 
 private:
+	void parseCondlist(xr_embedded_condlist& result, const char* pSectionName,
+		const char* pFieldName, const char* pSourceName);
+	void parseCondlistInfos(xr_infos& infos, xr_embedded_condlist& result);
+	void parseInfoportions(
+		const char* pBuffer, CCondlistEmbedded::xr_condlistdata& result);
+
 	void parseCondlistInfos(
 		xr_infos& infos, xr_hash_map<u32, CCondlist>& result);
 	void parseInfoportions(
@@ -74,4 +84,8 @@ private:
 	// about reducing size of CCondlist and think about storing hashes instead
 	// of strings but for first iteration of development let's keep 'as is'
 	xr_hash_map<u32, xr_hash_map<u32, CCondlist>> m_mStorage;
+
+	// on stack, we proceed only memset, so we don't do create/destroy cycle
+	// every possible calling just only do memset (must be fast)
+	xr_embedded_condlist m_mStackStorage;
 };

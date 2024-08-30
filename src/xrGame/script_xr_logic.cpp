@@ -672,3 +672,18 @@ void CScriptXRParser::script_register(lua_State* pState)
 				luabind::def("get_xr_parser_manager", get_xr_parser)];
 	}
 }
+
+void CScriptXRParser::parseCondlist(xr_embedded_condlist& result,
+	const char* pSectionName, const char* pFieldName, const char* pSourceName)
+{
+}
+
+void CScriptXRParser::parseCondlistInfos(
+	xr_infos& infos, xr_embedded_condlist& result)
+{
+}
+
+void CScriptXRParser::parseInfoportions(
+	const char* pBuffer, CCondlistEmbedded::xr_condlistdata& result)
+{
+}
