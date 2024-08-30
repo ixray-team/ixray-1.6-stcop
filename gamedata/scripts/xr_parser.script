@@ -30,6 +30,13 @@ function pick_section_from_condlist(actor, client_or_server_object, condlist_han
     return nil
 end
 
+-- if you need deallocate memory from storage on cpp side (use it carefully, or ignore)
+function delete_condlist(condlist_handle)
+    if get_xr_parser_manager() then
+        get_xr_parser_manager():delete_condlist(condlist_handle)
+    end
+end
+
 -- parsing without any allocation and returns string as we do in original pick_section_from_condlist
 function pick_section_from_condlist(actor, client_or_server_object, section_name, field_name, string_for_parsing)
     if get_xr_parser_manager() then
