@@ -156,7 +156,7 @@ void	CRender::render_lights	(light_Package& LP)
 				if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) && 
 					psDeviceFlags.is(rsDetails) &&
 					Details->dtFS &&
-					L->flags.bShadow && L->flags.bActive && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+					L->flags.bShadow && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 				{
 					RCache.set_CullMode		(CULL_NONE);
 					RCache.set_xform_world	(Fidentity);
