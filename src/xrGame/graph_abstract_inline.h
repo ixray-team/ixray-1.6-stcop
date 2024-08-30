@@ -203,7 +203,7 @@ IC	void CAbstractGraph::begin	(_vertex_id_type const &vertex_index, const_iterat
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CAbstractGraph::Search (_vertex_id_type start_vertex_id, _vertex_id_type dest_vertex_id,xr_vector<_vertex_id_type>& OutPath, _edge_weight_type MaxRange, u32 MaxIterationCount,u32 MaxVisitedNodeCount) const
+IC bool CAbstractGraph::Search (_vertex_id_type start_vertex_id, _vertex_id_type dest_vertex_id,xr_vector<_vertex_id_type>& OutPath, _edge_weight_type MaxRange, u32 MaxIterationCount,u32 MaxVisitedNodeCount, _edge_weight_type* LastCost) const
 {
 	auto IsAccessible = [this](const _vertex_id_type& VertexID)
 	{
@@ -251,6 +251,10 @@ IC bool CAbstractGraph::Search (_vertex_id_type start_vertex_id, _vertex_id_type
 	while (!TempPriorityNode.empty())
 	{
 		const _vertex_id_type CurrentNodeID = TempPriorityNode.back().second;
+		if(LastCost)
+		{
+			*LastCost = TempPriorityNode.back().first;
+		}
 		TempPriorityNode.pop_back();
 		if (CurrentNodeID == ToID)
 		{

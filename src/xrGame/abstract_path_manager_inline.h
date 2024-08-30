@@ -84,8 +84,8 @@ IC	void CAbstractPathManager<IGameGraph,SGameVertex<float,u32,u32>,u32,u32>::bui
 		before_search		(start_vertex_id,dest_vertex_id);
 		m_failed			= true;
 		after_search		();
-		m_current_index		= _index_type(-1);
-		m_intermediate_index= _index_type(-1);
+		m_current_index		= u32(-1);
+		m_intermediate_index= u32(-1);
 		m_actuality			= !failed();
 		return;
 	}
@@ -95,8 +95,8 @@ IC	void CAbstractPathManager<IGameGraph,SGameVertex<float,u32,u32>,u32,u32>::bui
 	m_failed				= !m_graph->Search(start_vertex_id,dest_vertex_id,m_path,m_evaluator->m_vertex_types,m_evaluator->max_range,m_evaluator->max_iteration_count,m_evaluator->max_visited_node_count);
 	after_search			();
 	
-	m_current_index			= _index_type(-1);
-	m_intermediate_index	= _index_type(-1);
+	m_current_index			= u32(-1);
+	m_intermediate_index	= u32(-1);
 	m_actuality				= !failed();
 
 	if (!m_failed)
@@ -115,8 +115,8 @@ IC	void CAbstractPathManager<ILevelGraph,SBaseParameters<float,u32,u32>,u32,u32>
 		before_search		(start_vertex_id,dest_vertex_id);
 		m_failed			= true;
 		after_search		();
-		m_current_index		= _index_type(-1);
-		m_intermediate_index= _index_type(-1);
+		m_current_index		= u32(-1);
+		m_intermediate_index= u32(-1);
 		m_actuality			= !failed();
 		return;
 	}
@@ -126,8 +126,8 @@ IC	void CAbstractPathManager<ILevelGraph,SBaseParameters<float,u32,u32>,u32,u32>
 	m_failed				= !m_graph->Search(start_vertex_id,dest_vertex_id,m_path,m_evaluator->max_range,m_evaluator->max_iteration_count,m_evaluator->max_visited_node_count);
 	after_search			();
 	
-	m_current_index			= _index_type(-1);
-	m_intermediate_index	= _index_type(-1);
+	m_current_index			= u32(-1);
+	m_intermediate_index	= u32(-1);
 	m_actuality				= !failed();
 
 	if (!m_failed)
