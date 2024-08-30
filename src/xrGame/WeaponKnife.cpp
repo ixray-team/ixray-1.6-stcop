@@ -55,6 +55,10 @@ void CWeaponKnife::Load	(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
 		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_SHOOTING);
+
+		m_sounds.LoadSound(section, "snd_start_suicide", "sndPrepareSuicide", true, SOUND_TYPE_ITEM_TAKING);
+		m_sounds.LoadSound(section, "snd_selfkill", "sndSelfKill", true, SOUND_TYPE_WEAPON_SHOOTING);
+		m_sounds.LoadSound(section, "snd_stop_suicide", "sndStopSuicide", true, SOUND_TYPE_ITEM_TAKING);
 	}
 	else
 		m_sounds.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
@@ -269,8 +273,18 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	case eHiding:	SwitchState(eHidden);	break;
 	
 	case eFire: 
-	case eFire2: 	SwitchState(eIdle);		break;
-
+	case eFire2:
+		if (GetActualCurrentAnim() == "anm_selfkill" && ParentIsActor())
+			Actor()->KillEntity(Actor()->ID());
+		else if (GetActualCurrentAnim() == "anm_prepare_suicide" && ParentIsActor())
+			SwitchState(state);
+		else
+			SwitchState(eIdle);
+	break;
+	case eSuicide:
+		SwitchState(eSuicideStop);
+	break;
+	case eSuicideStop:
 	case eShowing:
 	case eIdle:		SwitchState(eIdle);		break;	
 
@@ -284,10 +298,41 @@ void CWeaponKnife::state_Attacking	(float)
 
 void CWeaponKnife::switch2_Attacking(u32 state)
 {
-	if (IsPending())
-		return;
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	SetPending(TRUE);
+
+	if (isGuns && ParentIsActor())
+	{
+		if (Actor()->IsActorPlanningSuicide() && Actor()->CheckActorVisibilityForController())
+		{
+			if (!Actor()->IsActorSuicideNow())
+			{
+				PlaySound("sndPrepareSuicide", Position());
+				PlayHUDMotion("anm_prepare_suicide", FALSE, state, false, false);
+				return;
+			}
+			else
+			{
+				//SetDisableInputStatus(true);
+				PlaySound("sndSelfKill", Position());
+				Actor()->NotifySuicideShotCallbackIfNeeded();
+				PlayHUDMotion("anm_selfkill", FALSE, state, false, false);
+				return;
+			}
+		}
+		else if (IsSuicideAnimPlaying())
+		{
+			SwitchState(eSuicideStop);
+			return;
+		}
+		/*else if (IsKnifeSelfKickNeeded())
+		{
+			CHudItem_Play_Snd(knife, "sndSelfKick");
+			return "anm_selfkick";
+		}*/
+	}
+
 	if (state == eFire)
 	{
 		PlayHUDMotion("anm_attack", FALSE, state, false, false);
@@ -302,8 +347,6 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 		if (isGuns)
 			PlaySound("sndKick2", Position());
 	}
-
-	SetPending(TRUE);
 }
 
 void CWeaponKnife::switch2_Idle	()
@@ -370,18 +413,21 @@ void CWeaponKnife::Fire2Start ()
 	SwitchState(eFire2);
 }
 
-
 bool CWeaponKnife::Action(u16 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
+	if (inherited::Action(cmd, flags))
+		return true;
+
 	switch(cmd) 
 	{
-
-		case kWPN_ZOOM : 
-			if(flags&CMD_START) 
-				Fire2Start			();
-
-			return true;
+		case kWPN_ZOOM: 
+		{
+			if (flags & CMD_START && !IsPending())
+			{
+				Fire2Start();
+				return true;
+			}
+		}break;
 	}
 	return false;
 }

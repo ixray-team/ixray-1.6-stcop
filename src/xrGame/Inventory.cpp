@@ -713,6 +713,14 @@ bool CInventory::Action(u16 cmd, u32 flags)
 	case kWPN_5:
 	case kWPN_6:
 		{
+			if (pActor != nullptr)
+			{
+				bool is_suicide = pActor->IsActorControlled() || pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide();
+
+				if (is_suicide)
+					break;
+			}
+
 			b_send_event = true;
 			if (cmd == kWPN_6 && !IsGameTypeSingle()) return false;
 			
@@ -1265,7 +1273,16 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 	if((!pCar && !pActor) && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
 		return false;
 
-	return	true;
+	if (pActor != nullptr)
+	{
+		if (pActor->IsActorControlled() || pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide())
+		{
+			if (inventory_item->m_section_id != nullptr && !READ_IF_EXISTS(pSettings, r_bool, inventory_item->m_section_id, "can_take_when_controlled", false))
+				return false;
+		}
+	}
+
+	return true;
 }
 
 

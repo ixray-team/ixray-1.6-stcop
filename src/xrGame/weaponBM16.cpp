@@ -131,6 +131,9 @@ xr_string CWeaponBM16::NeedAddSuffix(const xr_string& M)
 {
 	xr_string new_name = M;
 
+	if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
+		new_name = AddSuffixName(new_name, "_suicide", "_" + xr_string::ToString(iAmmoElapsed));
+
 	if (IsZoomed())
 		new_name = AddSuffixName(new_name, "_aim", "_" + xr_string::ToString(iAmmoElapsed));
 

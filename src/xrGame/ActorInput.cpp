@@ -88,10 +88,16 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		return;
 	}
 #endif //DEBUG
+
+	bool is_suicide = IsActorControlled() || IsActorSuicideNow() || IsActorPlanningSuicide();
+
 	switch(cmd)
 	{
 	case kJUMP:		
 		{
+			if (is_suicide)
+				break;
+
 			mstate_wishful |= mcJump;
 		}break;
 	case kSPRINT_TOGGLE:	
@@ -133,25 +139,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				return;
 			}
 		}break;
-/*
-	case kFLARE:{
-			PIItem fl_active = inventory().ItemFromSlot(FLARE_SLOT);
-			if(fl_active)
-			{
-				CFlare* fl			= smart_cast<CFlare*>(fl_active);
-				fl->DropFlare		();
-				return				;
-			}
-
-			PIItem fli = inventory().Get(CLSID_DEVICE_FLARE, true);
-			if(!fli)			return;
-
-			CFlare* fl			= smart_cast<CFlare*>(fli);
-			
-			if(inventory().Slot(fl))
-				fl->ActivateFlare	();
-		}break;
-*/
 	case kUSE:
 		ActorUse();
 		break;
@@ -173,6 +160,9 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
 		{
+			if (is_suicide)
+				break;
+
 			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
 			if(item_name.size())
 			{
@@ -307,6 +297,61 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	}
 }
 
+void CActor::IR_OnMouseMove_CorrectMouseSense(int& p_dx, int& p_dy, float& sense)
+{
+	/*if (wpn != nullptr && IsAimNow(wpn))
+	{
+		const char* sect = nullptr;
+		if (IsScopeAttached(wpn) && GetScopeStatus(wpn) == 2 && !IsAlterZoom(wpn))
+			sect = game_ini_read_string(GetCurrentScopeSection(wpn), "scope_name");
+		else
+			sect = GetSection(wpn);
+
+		if (!IsGrenadeMode(wpn))
+			sense *= ModifyFloatUpgradedValue(wpn, "zoom_mouse_sense_koef", game_ini_r_single_def(sect, "zoom_mouse_sense_koef", 1.0f));
+		else
+			sense *= game_ini_r_single_def(sect, "zoom_gl_mouse_sense_koef", 1.0f);
+	}*/
+
+	controller_input_correction_params controller_correction = GetCurrentControllerInputCorrectionParams();
+	if (controller_correction.reverse_axis_y)
+		p_dy = -(p_dy);
+
+	float rot_ang = controller_correction.rotate_angle;
+	float sense_scale_x = controller_correction.sense_scaler_x;
+	float sense_scale_y = controller_correction.sense_scaler_y;
+
+	const float ROTATE_SCALER = 10.0f;
+
+	if (fabs(rot_ang) > EPS || fabs(sense_scale_x - 1) > EPS || fabs(sense_scale_y - 1) > EPS)
+	{
+		sense /= ROTATE_SCALER;
+		float dx = ROTATE_SCALER * p_dx * sense_scale_x;
+		float dy = ROTATE_SCALER * p_dy * sense_scale_y;
+
+		if (fabs(rot_ang) > EPS)
+		{
+			p_dx = static_cast<int>(floor(dx * cos(rot_ang) + dy * sin(rot_ang)));
+			p_dy = static_cast<int>(floor(dy * cos(rot_ang) - dx * sin(rot_ang)));
+		}
+		else
+		{
+			p_dx = static_cast<int>(floor(dx));
+			p_dy = static_cast<int>(floor(dy));
+		}
+
+		controller_input_random_offset controller_offset = GetControllerInputRandomOffset();
+		p_dx += static_cast<int>(floor(controller_offset.offset_x * ROTATE_SCALER));
+		p_dy += static_cast<int>(floor(controller_offset.offset_y * ROTATE_SCALER));
+	}
+	else
+	{
+		controller_input_random_offset controller_offset = GetControllerInputRandomOffset();
+		p_dx += controller_offset.offset_x;
+		p_dy += controller_offset.offset_y;
+	}
+}
+
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
 
@@ -332,11 +377,17 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 	CCameraBase* C	= cameras	[cam_active];
 	float scale		= (C->f_fov/g_fov)*psMouseSens * psMouseSensScale/50.f  / LookFactor;
-	if (dx){
+
+	IR_OnMouseMove_CorrectMouseSense(dx, dy, scale);
+
+	if (dx)
+	{
 		float d = float(dx)*scale;
 		cam_Active()->Move((d<0)?kLEFT:kRIGHT, _abs(d));
 	}
-	if (dy){
+
+	if (dy)
+	{
 		float d = ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*3.f/4.f;
 		cam_Active()->Move((d>0)?kUP:kDOWN, _abs(d));
 	}
@@ -475,8 +526,8 @@ static bool IsActionKeyPressedInGame(const EGameActions& EGameAction)
 
 void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
 {
-	//if (!ignore_suicide && IsActorSuicideNow())
-		//return;
+	if (!ignore_suicide && IsActorSuicideNow())
+		return;
 
 	if (state)
 		_keyflags |= mask;
