@@ -8,6 +8,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "InertionData.h"
 #include "Inventory.h"
+#include "WeaponBinoculars.h"
 
 player_hud* g_player_hud = nullptr;
 player_hud* g_player_hud2 = nullptr;
@@ -200,6 +201,16 @@ Fvector& attachable_hud_item::hands_offset_rot()
 {
 	u8 idx	= m_parent_hud_item->GetCurrentHudOffsetIdx();
 	return m_measures.m_hands_offset[1][idx];
+}
+
+void attachable_hud_item::set_hands_offset_pos(Fvector3 offset)
+{
+	m_measures.m_hands_attach[0].set(offset);
+}
+
+void attachable_hud_item::set_hands_offset_rot(Fvector3 offset)
+{
+	m_measures.m_hands_attach[1].set(offset);
 }
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
@@ -523,7 +534,6 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	return ret;
 }
 
-
 player_hud::player_hud(bool invert)
 {
 	m_model = nullptr;
@@ -535,8 +545,19 @@ player_hud::player_hud(bool invert)
 	m_blocked_part_idx = u16(-1);
 	m_bhands_visible = false;
 	m_legs_model = nullptr;
-}
 
+	time_accumulator = 0;
+	tocrouch_time_remains = 0;
+	fromcrouch_time_remains = 0;
+	
+	toslowcrouch_time_remains = 0;
+	fromslowcrouch_time_remains = 0;
+	
+	torlookout_time_remains = 0;
+	fromrlookout_time_remains = 0;
+	tollookout_time_remains = 0;
+	fromllookout_time_remains = 0;
+}
 
 player_hud::~player_hud()
 {
@@ -1401,4 +1422,496 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 			}break;
 		}
 	}
+}
+
+player_hud::default_hud_coords_params player_hud::GetDefaultHudCoords(shared_str hud_sect)
+{
+	if (_last_default_hud_params.hud_sect != hud_sect || UI().is_widescreen() != _last_default_hud_params.is16x9)
+	{
+		Fvector3 zerovec = { 0,0,0 };
+		_last_default_hud_params.hud_sect = hud_sect;
+		_last_default_hud_params.is16x9 = UI().is_widescreen();
+
+		if (_last_default_hud_params.is16x9)
+		{
+			_last_default_hud_params.hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position_16x9", zerovec);
+			_last_default_hud_params.hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation_16x9", zerovec);
+		}
+		else
+		{
+			_last_default_hud_params.hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position", zerovec);
+			_last_default_hud_params.hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation", zerovec);
+		}
+	}
+
+	return _last_default_hud_params;
+}
+
+float player_hud::GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def)
+{
+	if ((cached.last_section.size() == section.size()) && (cached.last_section == section))
+	{
+		if (cached.is_default)
+			return def;
+		else
+			return cached.value;
+	}
+	else
+	{
+		cached.value = READ_IF_EXISTS(pSettings, r_float, section, key.c_str(), def);
+
+		if (pSettings->line_exist(section, key.c_str()))
+			cached.is_default = false;
+		else
+			cached.is_default = true;
+
+		cached.last_section = section;
+		return cached.value;
+	}
+}
+
+void player_hud::AddOffsets(const xr_string base, shared_str section, Fvector3& pos, Fvector3& rot, float koef)
+{
+	Fvector3 tmp = {0,0,0};
+	Fvector3 zerovec = {0,0,0};
+
+	if (UI().is_widescreen())
+	{
+		tmp = READ_IF_EXISTS(pSettings, r_fvector3, section, (base + "_pos_16x9").c_str(), zerovec);
+		tmp.mul(koef);
+		pos.add(tmp);
+
+		tmp = READ_IF_EXISTS(pSettings, r_fvector3, section, (base + "_rot_16x9").c_str(), zerovec);
+		tmp.mul(koef);
+		rot.add(tmp);
+	}
+	else
+	{
+		tmp = READ_IF_EXISTS(pSettings, r_fvector3, section, (base + "_pos").c_str(), zerovec);
+		tmp.mul(koef);
+		pos.add(tmp);
+
+		tmp = READ_IF_EXISTS(pSettings, r_fvector3, section, (base + "_rot").c_str(), zerovec);
+		tmp.mul(koef);
+		rot.add(tmp);
+	}
+}
+
+void player_hud::AddSuicideOffset(shared_str section, Fvector3& pos, Fvector3& rot)
+{
+	if (READ_IF_EXISTS(pSettings,  r_bool, section, "prohibit_suicide", false))
+		return;
+
+	if (READ_IF_EXISTS(pSettings, r_bool, section, "no_other_hud_moving_while_suicide", false))
+	{
+		rot.set(0, 0, 0);
+		pos.set(0, 0, 0);
+	}
+
+	AddOffsets("hud_move_suicide_offset", section, pos, rot);
+
+}
+
+void player_hud::GetCurrentTargetOffset_aim(shared_str section, Fvector3& pos, Fvector3& rot, float& factor)
+{
+	pos.set(0, 0, 0);
+	rot.set(0, 0, 0);
+	factor = 1.0f;
+
+	float koef = 1.0f;
+
+	if (Actor()->GetMovementState(eReal) & mcCrouch && Actor()->GetMovementState(eReal) & mcAccel)
+		koef = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_crouch_factor", 1.0f);
+	else if (Actor()->GetMovementState(eReal) & mcCrouch)
+		koef = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_crouch_factor", 1.0f);
+	else if (Actor()->GetMovementState(eReal) & mcAccel)
+		koef = READ_IF_EXISTS(pSettings, r_float, section, "hud_aim_move_slow_factor", 1.0f);
+
+	if (tocrouch_time_remains > 0)
+		AddOffsets("hud_aim_move_to_crouch_offset", section, pos, rot, koef);
+
+	if (fromcrouch_time_remains > 0)
+		AddOffsets("hud_aim_move_from_crouch_offset", section, pos, rot, koef);
+
+	if (toslowcrouch_time_remains > 0)
+		AddOffsets("hud_aim_move_to_slow_crouch_offset", section, pos, rot, koef);
+
+	if (fromslowcrouch_time_remains > 0)
+		AddOffsets("hud_aim_move_from_slow_crouch_offset", section, pos, rot, koef);
+
+	if (torlookout_time_remains > 0)
+		AddOffsets("hud_aim_move_to_rlookout_offset", section, pos, rot, koef);
+
+	if (fromrlookout_time_remains > 0)
+		AddOffsets("hud_aim_move_from_rlookout_offset", section, pos, rot, koef);
+
+	if (tollookout_time_remains > 0)
+		AddOffsets("hud_aim_move_to_llookout_offset", section, pos, rot, koef);
+
+	if (fromllookout_time_remains > 0)
+		AddOffsets("hud_aim_move_from_llookout_offset", section, pos, rot, koef);
+}
+
+void player_hud::GetCurrentTargetOffset(shared_str section, Fvector3& pos, Fvector3& rot, float& factor)
+{
+	factor = GetCachedCfgParamFloatDef(cached_hud_move_stabilize_factor, section, "hud_move_stabilize_factor", 2.0f);
+
+	pos.set(0, 0, 0);
+	rot.set(0, 0, 0);
+
+	float koef = 1.0f;
+
+	if (Actor()->GetMovementState(eReal) & mcCrouch && Actor()->GetMovementState(eReal) & mcAccel)
+		koef = GetCachedCfgParamFloatDef(cached_hud_move_slow_crouch_factor, section, "hud_move_slow_crouch_factor", 1.0f);
+	else if (Actor()->GetMovementState(eReal) & mcCrouch)
+		koef = GetCachedCfgParamFloatDef(cached_hud_move_crouch_factor, section, "hud_move_crouch_factor", 1.0f);
+	else if (Actor()->GetMovementState(eReal) & mcAccel)
+		koef = GetCachedCfgParamFloatDef(cached_hud_move_slow_factor, section, "hud_move_slow_factor", 1.0f);
+
+	if (tocrouch_time_remains > 0)
+	{
+		AddOffsets("hud_move_to_crouch_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (fromcrouch_time_remains > 0)
+	{
+		AddOffsets("hud_move_from_crouch_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (toslowcrouch_time_remains > 0)
+	{
+		AddOffsets("hud_move_to_slow_crouch_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (fromslowcrouch_time_remains > 0)
+	{
+		AddOffsets("hud_move_from_slow_crouch_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (torlookout_time_remains > 0)
+	{
+		AddOffsets("hud_move_to_rlookout_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (fromrlookout_time_remains > 0)
+	{
+		AddOffsets("hud_move_from_rlookout_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (tollookout_time_remains > 0)
+	{
+		AddOffsets("hud_move_to_llookout_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if (fromllookout_time_remains > 0)
+	{
+		AddOffsets("hud_move_from_llookout_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal) & mcRLookout) && !(Actor()->GetMovementState(eReal) & mcLLookout))
+	{
+		AddOffsets("hud_move_rlookout_offset", section, pos, rot, koef);
+		factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_rlookout_offset_speed_factor", 1.0f);
+	}
+
+	if ((Actor()->GetMovementState(eReal) & mcLLookout) && !(Actor()->GetMovementState(eReal) & mcRLookout))
+	{
+		AddOffsets("hud_move_llookout_offset", section, pos, rot, koef);
+		factor = READ_IF_EXISTS(pSettings, r_float, section, "hud_move_llookout_offset_speed_factor", 1.0f);
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcLStrafe && !(Actor()->GetMovementState(eReal) & mcRStrafe))
+	{
+		AddOffsets("hud_move_left_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcRStrafe && !(Actor()->GetMovementState(eReal) & mcLStrafe))
+	{
+		AddOffsets("hud_move_right_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcFwd && !(Actor()->GetMovementState(eReal) & mcBack))
+	{
+		AddOffsets("hud_move_forward_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcBack && !(Actor()->GetMovementState(eReal) & mcFwd))
+	{
+		AddOffsets("hud_move_back_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcJump && !(Actor()->GetMovementState(eReal) & mcFall) && !(Actor()->GetMovementState(eReal) & mcLanding) && !(Actor()->GetMovementState(eReal) & mcLanding2))
+	{
+		AddOffsets("hud_move_jump_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcFall && !(Actor()->GetMovementState(eReal) & mcJump) && !(Actor()->GetMovementState(eReal) & mcLanding) && !(Actor()->GetMovementState(eReal) & mcLanding2))
+	{
+		AddOffsets("hud_move_fall_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcLanding && !(Actor()->GetMovementState(eReal) & mcJump) && !(Actor()->GetMovementState(eReal) & mcFall) && !(Actor()->GetMovementState(eReal) & mcLanding2))
+	{
+		AddOffsets("hud_move_landing_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+
+	if ((Actor()->GetMovementState(eReal)) & mcLanding2 && !(Actor()->GetMovementState(eReal) & mcJump) && !(Actor()->GetMovementState(eReal) & mcFall) && !(Actor()->GetMovementState(eReal) & mcLanding))
+	{
+		AddOffsets("hud_move_landing2_offset", section, pos, rot, koef);
+		factor = 1.0f;
+	}
+}
+
+void player_hud::UpdateWeaponOffset(u32 delta)
+{
+	CHudItemObject* itm = smart_cast<CHudItemObject*>(Actor()->inventory().ActiveItem());
+	CCustomDetector* det = nullptr;
+
+	if (itm == nullptr)
+		itm = Actor()->GetDetector();
+	else
+		det = Actor()->GetDetector();
+
+	if (itm == nullptr)
+		return;
+
+	attachable_hud_item* HID = itm->HudItemData();
+
+	if (HID == nullptr)
+		return;
+
+	time_accumulator += delta;
+
+	shared_str section = itm->HudSection();
+
+	if ((Actor()->GetMovementState(eWishful) & mcCrouch) && !(Actor()->GetMovementState(eReal) & mcCrouch))
+	{
+		// Начали присяд
+		tocrouch_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_crouch_time", 0.f) * 1000.f);
+		fromcrouch_time_remains = 0;
+	}
+	else if (!(Actor()->GetMovementState(eWishful) & mcCrouch) && (Actor()->GetMovementState(eReal) & mcCrouch))
+	{
+		// Закончили присяд
+		fromcrouch_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_crouch_time", 0.f) * 1000.f);
+		tocrouch_time_remains = 0;
+	}
+
+	if ((Actor()->GetMovementState(eWishful) & mcCrouch) && (Actor()->GetMovementState(eWishful) & mcAccel) && !(Actor()->GetMovementState(eReal) & mcAccel))
+	{
+		// Начали присяд
+		toslowcrouch_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_slow_crouch_time", 0.f) * 1000.f);
+		fromslowcrouch_time_remains = 0;
+	}
+	else if ((Actor()->GetMovementState(eWishful) & mcCrouch) && !(Actor()->GetMovementState(eWishful) & mcAccel) && (Actor()->GetMovementState(eReal) & mcAccel))
+	{
+		// Закончили присяд
+		fromslowcrouch_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_slow_crouch_time", 0.f) * 1000.f);
+		toslowcrouch_time_remains = 0;
+	}
+
+	if (!(Actor()->GetMovementState(eReal) & mcRLookout) && !(Actor()->GetMovementState(eReal) & mcLLookout))
+	{
+		// Если одновременно выглядываем влево и вправо - что-то тут не так...
+		if ((Actor()->GetMovementState(eWishful) & mcRLookout) && !(Actor()->GetMovementState(eReal) & mcRLookout))
+		{
+			// Начали выглядывать вправо
+			torlookout_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_rlookout_time", 0.f) * 1000.f);
+			fromrlookout_time_remains = 0;
+		}
+		else if (!(Actor()->GetMovementState(eWishful) & mcRLookout) && (Actor()->GetMovementState(eReal) & mcRLookout))
+		{
+			// Закончили выглядывать вправо
+			fromrlookout_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_rlookout_time", 0.f) * 1000.f);
+			torlookout_time_remains = 0;
+		}
+
+		if ((Actor()->GetMovementState(eWishful) & mcLLookout) && !(Actor()->GetMovementState(eReal) & mcLLookout))
+		{
+			// Начали выглядывать влево
+			tollookout_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "to_llookout_time", 0.f) * 1000.f);
+			fromllookout_time_remains = 0;
+		}
+		else if (!(Actor()->GetMovementState(eWishful) & mcLLookout) && (Actor()->GetMovementState(eReal) & mcLLookout))
+		{
+			// Закончили выглядывать влево
+			fromllookout_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, section, "from_llookout_time", 0.f) * 1000.f);
+			tollookout_time_remains = 0;
+		}
+	}
+
+	// Прочитаем конфиговые умолчания
+	default_hud_coords_params def_hud_params = GetDefaultHudCoords(section);
+	Fvector3 pos = def_hud_params.hands_position;
+	Fvector3 rot = def_hud_params.hands_orientation;
+
+	Fvector3 targetpos = {0,0,0};
+	Fvector3 targetrot = {0,0,0};
+
+	float factor = 1.0f;
+
+	// Вычислим целевое смещение от равновесия
+	if (itm->GetState() == CHUDState::eHiding || (det != nullptr && det->GetState() == CHUDState::eHiding))
+		factor = GetCachedCfgParamFloatDef(cached_hud_move_weaponhide_factor, section, "hud_move_weaponhide_factor", 1.0f);
+	else if ((itm->WpnCanShoot() || smart_cast<CWeaponBinoculars*>(itm) != nullptr) && (static_cast<CWeapon*>(itm)->IsZoomed() || static_cast<CWeapon*>(itm)->IsAimStarted))
+	{
+		GetCurrentTargetOffset_aim(section, targetpos, targetrot, factor);
+		factor = GetCachedCfgParamFloatDef(cached_hud_move_unzoom_factor, section, "hud_move_unzoom_factor", 1.0f);
+	}
+	else
+	{
+		GetCurrentTargetOffset(section, targetpos, targetrot, factor);
+		if (Actor()->IsActorSuicideNow() && Actor()->CheckActorVisibilityForController())
+			AddSuicideOffset(section, targetpos, targetrot);
+		else if (HID != nullptr &&
+			!(Actor()->GetMovementState(eReal) & mcFwd) &&
+			!(Actor()->GetMovementState(eReal) & mcBack) &&
+			!(Actor()->GetMovementState(eReal) & mcLStrafe) &&
+			!(Actor()->GetMovementState(eReal) & mcRStrafe) &&
+			!(Actor()->GetMovementState(eReal) & mcSprint) &&
+			!(Actor()->GetMovementState(eReal) & mcJump) &&
+			!(Actor()->GetMovementState(eReal) & mcFall) &&
+			!(Actor()->GetMovementState(eReal) & mcLanding) &&
+			!(Actor()->GetMovementState(eReal) & mcLanding2))
+		{
+			// TODO: Смещение в идле
+		}
+	}
+
+	// Находим целевую позицию
+	targetpos.add(pos);
+	targetrot.add(rot);
+
+	float speed_pos = 0.f;
+	float speed_rot = 0.f;
+
+	// Смотрим на скорость сдвига
+	if (!Actor()->IsActorSuicideNow() && !itm->IsSuicideAnimPlaying())
+	{
+		speed_rot = GetCachedCfgParamFloatDef(cached_hud_move_speed_rot, section, "hud_move_speed_rot", 0.4f) * factor / 100.f;
+		speed_pos = GetCachedCfgParamFloatDef(cached_hud_move_speed_pos, section, "hud_move_speed_pos", 0.1f) * factor / 100.f;
+	}
+	else
+	{
+		speed_rot = GetCachedCfgParamFloatDef(cached_suicide_speed_rot, section, "suicide_speed_rot", 0.002f);
+		speed_pos = GetCachedCfgParamFloatDef(cached_suicide_speed_pos, section, "suicide_speed_pos", 0.2f);
+	}
+
+	CHudItem::jitter_params jitter;
+
+	// 120 коррекций в секунду к вычисленному положению
+	while (time_accumulator > 8)
+	{
+		// Смотрим, куда будем двигать худ
+		pos = targetpos;
+		rot = targetrot;
+
+		Fvector3 cur_pos = HID->hands_attach_pos();
+		Fvector3 cur_rot = HID->hands_attach_rot();
+
+		pos.sub(cur_pos);
+		rot.sub(cur_rot);
+
+		// Пересчитываем вектор сдвига с учетом скорости
+		if (Actor()->IsActorSuicideNow())
+		{
+			// Идем линейно
+			if (pos.magnitude() > speed_pos)
+				pos.set_length(speed_pos);
+
+			if (rot.magnitude() > speed_rot)
+				rot.set_length(speed_rot);
+		}
+		else
+		{
+			if (pos.magnitude() > 0.0001f)
+				pos.mul(speed_pos);
+
+			if (rot.magnitude() > 0.0001f)
+				rot.mul(speed_rot);
+		}
+
+		// Добавляем пересчитанный сдвиг к текущему положению и записываем его
+		cur_pos.add(pos);
+		cur_rot.add(rot);
+
+		if (Actor()->IsHandJitter(itm))
+		{
+			jitter = itm->GetCurJitterParams(section);
+
+			pos.x = ::Random.randF(0.f, 1000.f) - 500.f;
+			pos.y = ::Random.randF(0.f, 500.f) - 250.f;
+			pos.z = ::Random.randF(0.f, 1000.f) - 500.f;
+			pos.set_length(jitter.pos_amplitude * Actor()->GetHandJitterScale(itm));
+			cur_pos.add(pos);
+
+			rot.x = ::Random.randF(0.f, 1000.f) - 500.f;
+			rot.y = ::Random.randF(0.f, 1000.f) - 500.f;
+			rot.z = ::Random.randF(0.f, 1000.f) - 500.f;
+			rot.set_length(jitter.rot_amplitude * Actor()->GetHandJitterScale(itm));
+			cur_rot.add(rot);
+		}
+
+		HID->set_hands_offset_pos(cur_pos);
+		HID->set_hands_offset_rot(cur_rot);
+
+		if (det != nullptr)
+		{
+			attached_item(1)->set_hands_offset_pos(cur_pos);
+			attached_item(1)->set_hands_offset_rot(cur_rot);
+		}
+
+		time_accumulator -= 8;
+	}
+
+	if (Actor()->IsActorSuicideNow() && Actor()->CheckActorVisibilityForController() && !(READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false) || READ_IF_EXISTS(pSettings, r_bool, section, "suicide_by_animation", false)))
+	{
+		jitter = itm->GetCurJitterParams(section);
+		pos = HID->hands_attach_pos();
+		rot = HID->hands_attach_rot();
+
+		pos.sub(targetpos);
+		rot.sub(targetrot);
+
+		if (pos.magnitude() < jitter.pos_amplitude * 2 && rot.magnitude() < jitter.rot_amplitude * 2)
+			Actor()->DoSuicideShot();
+	}
+
+	fromcrouch_time_remains = (fromcrouch_time_remains > delta) ? fromcrouch_time_remains - delta : 0;
+	tocrouch_time_remains = (tocrouch_time_remains > delta) ? tocrouch_time_remains - delta : 0;
+	fromslowcrouch_time_remains = (fromslowcrouch_time_remains > delta) ? fromslowcrouch_time_remains - delta : 0;
+	toslowcrouch_time_remains = (toslowcrouch_time_remains > delta) ? toslowcrouch_time_remains - delta : 0;
+
+	fromrlookout_time_remains = (fromrlookout_time_remains > delta) ? fromrlookout_time_remains - delta : 0;
+	torlookout_time_remains = (torlookout_time_remains > delta) ? torlookout_time_remains - delta : 0;
+
+	fromllookout_time_remains = (fromllookout_time_remains > delta) ? fromllookout_time_remains - delta : 0;
+	tollookout_time_remains = (tollookout_time_remains > delta) ? tollookout_time_remains - delta : 0;
+}
+
+void player_hud::ResetItmHudOffset(CHudItem* itm)
+{
+	attachable_hud_item* hid = itm->HudItemData();
+	if (hid == nullptr)
+		return;
+
+	default_hud_coords_params def_hud_params = GetDefaultHudCoords(itm->HudSection());
+
+	hid->set_hands_offset_pos(def_hud_params.hands_position);
+	hid->set_hands_offset_rot(def_hud_params.hands_orientation);
 }
