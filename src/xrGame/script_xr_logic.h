@@ -34,6 +34,28 @@ public:
 		const char* pSourceName);
 	void lua_deleteCondlist(u32 nHandle);
 
+	// cached version
+	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
+		CScriptGameObject* pClientObject, u32 nHandle);
+	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
+		CSE_ALifeDynamicObject* pServerObject, u32 nHandle);
+	const char* lua_pickSectionFromCondlist(
+		CSE_ALifeDynamicObject* pServerPlayer,
+		CSE_ALifeDynamicObject* pServerObject, u32 nHandle);
+
+	// on stack implementation, no allocations
+	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
+		CScriptGameObject* pClientObject, const char* pSectionName,
+		const char* pFieldName, const char* pSourceName);
+	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
+		CSE_ALifeDynamicObject* pServerObject, const char* pSectionName,
+		const char* pFieldName, const char* pSourceName);
+
+	const char* lua_pickSectionFromCondlist(
+		CSE_ALifeDynamicObject* pServerPlayer,
+		CSE_ALifeDynamicObject* pServerObject, const char* pSectionName,
+		const char* pFieldName, const char* pSourceName);
+
 	static void script_register(lua_State* L);
 
 private:
