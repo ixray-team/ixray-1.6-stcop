@@ -119,13 +119,13 @@ public:
 	//
 	virtual void			Spawn_Write				(NET_Packet &tNetPacket, BOOL bLocal);
 	virtual BOOL			Spawn_Read				(NET_Packet &tNetPacket);
-	virtual LPCSTR			name					() const;
-	virtual LPCSTR			name_replace			() const;
-	virtual void			set_name				(LPCSTR s)
+	virtual LPCSTR			name					() const override;
+	virtual LPCSTR			name_replace			() const override;
+	virtual void			set_name				(LPCSTR s) override
 	{
 		s_name		= s;
 	};
-	virtual void			set_name_replace		(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+	virtual void			set_name_replace		(LPCSTR s) override {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
 	virtual Fvector&		position				();
 	virtual Fvector&		angle					();
 	virtual Flags16&		flags					();
