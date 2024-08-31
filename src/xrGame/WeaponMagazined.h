@@ -85,6 +85,7 @@ public:
 			void	LoadSilencerKoeffs();
 	virtual CWeaponMagazined*cast_weapon_magazined	()		 {return this;}
 
+	virtual bool    UseScopeTexture	();
 	virtual void	SetDefaults		();
 			bool	OnShoot_CanShootNow();
 	virtual void	FireStart		();
