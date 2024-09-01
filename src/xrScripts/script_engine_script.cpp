@@ -56,6 +56,11 @@ CRenderDevice *get_device()
 {
 	return		(&Device);
 }
+
+void trigger_assert()
+{
+	R_ASSERT(false && "catch the thing!");
+}
 #endif
 
 LPCSTR user_name()
@@ -195,7 +200,8 @@ void CScriptEngine::script_register(lua_State *L)
 		def("IsSupportMP",						&CheckMP)
 
 #ifdef XRGAME_EXPORTS
-		,def("device",							&get_device),
+			,
+		def("device", &get_device), def("trigger_assert", &trigger_assert),
 		def("TinyLog",							&MyLog)
 #endif // #ifdef XRGAME_EXPORTS
 	];

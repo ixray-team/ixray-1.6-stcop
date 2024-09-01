@@ -84,8 +84,8 @@ function prereq_functor_a( param3, section )
 				return str
 			else
 				cur_hint = nil
-				local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
-				local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
+				local possibility = xr_parser.pick_section_from_condlist(db.actor, victim, mechanic_name.."_upgr", section, param)
+
 				if not(possibility) or (possibility=="false") then
 					str = str..get_possibility_string(mechanic_name, possibility_table)
 				end
