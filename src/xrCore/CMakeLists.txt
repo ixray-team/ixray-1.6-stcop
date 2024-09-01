@@ -163,6 +163,17 @@ if (DEVIXRAY_ENABLE_SHIPPING)
     target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 endif()
 
+# Profiler
+if (IXRAY_PROFILER)
+    target_include_directories(xrCore PUBLIC "${IXRAY_SDK_INC}../optick/")
+    target_link_directories(xrCore PUBLIC "${IXRAY_SDK_INC}../optick/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_INC}../optick/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+    target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
+    target_link_libraries(xrCore PUBLIC "OptickCore")
+endif()
+
 # Linker list
 if(WIN32)
     if (NOT IXR_ARM_ENABLE)

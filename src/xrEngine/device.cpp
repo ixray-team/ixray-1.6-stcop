@@ -125,6 +125,7 @@ void CRenderDevice::End		(void)
 volatile u32 mt_Thread_marker = 0x12345678;
 void mt_Thread(void* ptr)
 {
+	PROF_THREAD("SecondaryThread");
 	g_AppInfo.SecondaryThread = GetCurrentThread();
 	while (true)
 	{
@@ -141,13 +142,23 @@ void mt_Thread(void* ptr)
 		// we has granted permission to execute
 		mt_Thread_marker = Device.dwFrame;
 
-		g_Discord.Update();
+		{
+			PROF_EVENT("Discord Sync")
+			g_Discord.Update();
+		}
 
-		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]();
+		{
+			PROF_EVENT("Parallel Sync")
+				for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+					Device.seqParallel[pit]();
 
-		Device.seqParallel.resize(0);
-		Device.seqFrameMT.Process(rp_Frame);
+			Device.seqParallel.resize(0);
+		}
+
+		{
+			PROF_EVENT("Frame")
+			Device.seqFrameMT.Process(rp_Frame);
+		}
 
 		// now we give control to device - signals that we are ended our work
 		Device.mt_csEnter.Leave();
@@ -221,6 +232,9 @@ void CRenderDevice::on_idle		()
 		dwLastFrameTime = dwCurrentTime;
 	}
 
+
+	PROF_THREAD("MainThread");
+	PROF_FRAME("Main Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;

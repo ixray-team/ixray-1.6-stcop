@@ -27,7 +27,7 @@ extern "C"
 
 		RegisterExpressionDelegates();
 
-#ifdef DEBUG
+#if 0
 		g_profiler = xr_new<CProfiler>();
 #endif
 

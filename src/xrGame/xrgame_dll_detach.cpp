@@ -117,7 +117,7 @@ void clean_game_globals()
 
 	xr_delete										(g_sound_collection_storage);
 	
-#ifdef DEBUG
+#if 0
 	xr_delete(g_profiler);
 #endif
 

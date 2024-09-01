@@ -10,7 +10,7 @@
 
 #ifdef XRGAME_EXPORTS
 #	ifdef DEBUG
-#		define	USE_PROFILER
+//#		define	USE_PROFILER
 #	endif // DEBUG
 #endif // XRGAME_EXPORTS
 
@@ -86,6 +86,10 @@ IC	CProfiler&	profiler();
 #	define STOP_PROFILE     }
 
 #	include "profiler_inline.h"
+
+#elif defined(IXRAY_PROFILER)
+#	define START_PROFILE(a) { PROF_EVENT(a)
+#	define STOP_PROFILE		}
 
 #else // DEBUG
 #	define START_PROFILE(a) {

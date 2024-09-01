@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 
-#ifdef DEBUG
+#if 0
 #include "profiler.h"
 #include "../xrEngine/gamefont.h"
 
