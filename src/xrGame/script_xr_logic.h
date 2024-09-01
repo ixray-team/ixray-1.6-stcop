@@ -30,24 +30,6 @@ public:
 	bool isFunctionArgumentSymbolValidForParsing(char nSymbol) const;
 	bool isSymbolEvent(char nSymbol) const;
 
-	xr_hash_map<u32, CCondlist> parseCondlist(const char* pSectionName,
-		const char* pFieldName, const char* pSourceName);
-
-	void eraseCondlist(u32 nHandle);
-
-	u32 lua_parseCondlist(const char* pSectionName, const char* pFieldName,
-		const char* pSourceName);
-	void lua_deleteCondlist(u32 nHandle);
-
-	// cached version
-	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
-		CScriptGameObject* pClientObject, u32 nHandle);
-	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
-		CSE_ALifeDynamicObject* pServerObject, u32 nHandle);
-	const char* lua_pickSectionFromCondlist(
-		CSE_ALifeDynamicObject* pServerPlayer,
-		CSE_ALifeDynamicObject* pServerObject, u32 nHandle);
-
 	// on stack implementation, no allocations
 	const char* lua_pickSectionFromCondlist(CScriptGameObject* pClientPlayer,
 		CScriptGameObject* pClientObject, const char* pSectionName,
@@ -85,9 +67,4 @@ private:
 	CLevel* m_pLevel;
 	CScriptXRConditionsStorage* m_pXRConditions;
 	CScriptXREffectsStorage* m_pXREffects;
-	// on lua user receive the handle and when he calls other method he operates
-	// with handle!!! in our case handle = id of parse condlist todo: think
-	// about reducing size of CCondlist and think about storing hashes instead
-	// of strings but for first iteration of development let's keep 'as is'
-	xr_hash_map<u32, xr_hash_map<u32, CCondlist>> m_mStorage;
 };

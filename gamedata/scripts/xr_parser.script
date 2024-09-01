@@ -3,40 +3,6 @@
     date: 30.08.2024
 --]]
 
--- returns handle of condlist for using in pick_section_from_condlist 
--- WARNING: use this only on initialization/registering (supposed to be called once), but not in updating methods (or places where callings are many and constant)!!!
-function parse_condlist(section_name, field_name, string_for_parsing)
-    if get_xr_parser_manager() then
-        return get_xr_parser_manager():parse_condlist(
-            section_name,
-            field_name, 
-            string_for_parsing
-        )
-    end
-
-    return -1
-end
-
--- uses 'cached' condlist handle and retrieve information
-function pick_section_from_condlist(actor, client_or_server_object, condlist_handle)
-    if get_xr_parser_manager() then
-        return get_xr_parser_manager():pick_section_from_condlist(
-            actor, 
-            client_or_server_object, 
-            condlist_handle
-        )
-    end
-
-    return nil
-end
-
--- if you need deallocate memory from storage on cpp side (use it carefully, or ignore)
-function delete_condlist(condlist_handle)
-    if get_xr_parser_manager() then
-        get_xr_parser_manager():delete_condlist(condlist_handle)
-    end
-end
-
 -- parsing without any allocation and returns string as we do in original pick_section_from_condlist
 function pick_section_from_condlist(actor, client_or_server_object, section_name, field_name, string_for_parsing)
     if get_xr_parser_manager() then
