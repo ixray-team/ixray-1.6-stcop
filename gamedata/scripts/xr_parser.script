@@ -21,7 +21,7 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
         local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
 
         if result ~= section then
-            trigger_assert()
+            trigger_assert("xr_logic behaviour differs to xr_parser can't be!!! (report to wh1t3lord)")
         end
 
         return result
@@ -45,7 +45,7 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
                 )
 
                 if result ~= section then
-                    trigger_assert()
+                    trigger_assert("xr_logic behaviour differs to xr_parser can't be!!! (report to wh1t3lord)")
                 end
             end
 
@@ -74,7 +74,7 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
         local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
 
         if result ~= section then
-            trigger_assert()
+            trigger_assert("xr_logic behaviour differs to xr_parser can't be!!! (report to wh1t3lord)")
         end
 
         return result

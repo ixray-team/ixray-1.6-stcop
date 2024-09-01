@@ -598,7 +598,7 @@ function counter_greater(actor, npc, p)
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
 --		if  c > p[2] then --printf_xrscript("pl: counter [%s]  greater [%s]", p[1], p[2]) end
-		return c > p[2]
+		return c > tonumber(p[2])
 	else
 		return false
 	end

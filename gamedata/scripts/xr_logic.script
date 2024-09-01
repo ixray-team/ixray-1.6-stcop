@@ -1006,19 +1006,22 @@ function parse_condlist(npc, section, field, src)
 		end
 	end
 
-	if #lst >= 5 then
-		local kek = 0
+	if #lst > 16 then
+		callstack()
+		printf("xr_logic:parse too big condlist size=%d", #lst)
 	end
 
-	if size_set >= 5 then
-		local kek = 0
+	if size_set > 16 then
+		callstack()
+		printf("xr_logic:parse too big set size=%d", size_set)
 	end
 
-	if size_check >= 5 then
-		local kek = 0
+	if size_check > 16 then
+		callstack()
+		printf("xr_logic:parse too big check size=%d", size_check)
 	end
 
-	printf("xr_logic-parse: lst: %d set: %d check: %d", #lst, size_set, size_check)
+	--printf("xr_logic-parse: lst: %d set: %d check: %d", #lst, size_set, size_check)
 	return lst
 end
 

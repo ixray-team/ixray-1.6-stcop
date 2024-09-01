@@ -57,7 +57,7 @@ CRenderDevice *get_device()
 	return		(&Device);
 }
 
-void trigger_assert()
+void trigger_assert(const char* pStringFromLua)
 {
 	#ifdef DEBUG
 	R_ASSERT(false && "catch the thing!");

@@ -1897,6 +1897,7 @@ size_t CScriptXRParser::parseParams(
 					std::memcpy(&result[nIndex][0], argument,
 						argument_size * sizeof(char));
 					memset(argument, 0, sizeof(argument));
+					argument_size = 0;
 					++nIndex;
 				}
 				else if (nCurrentSymbol == ' ' || nCurrentSymbol == '\n')

@@ -195,7 +195,6 @@ function motivator_binder:net_destroy()
 
 	local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
 	if on_offline_condlist ~= nil then
-		--xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
 		xr_parser.pick_section_from_condlist(db.actor, self.object, "", "", on_offline_condlist)
 	end
 -- Запоминаем позицию и активную секцию --------
