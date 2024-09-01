@@ -33,7 +33,7 @@ function WeatherManager:reset()
 	local weather =
 		utils.cfg_get_string(ini_file("game.ltx"), level.name(), "weathers", db.actor, false, "", "[default]")
 	self.levelWeather = weather -- Getting section.
-	self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)
+	self.weather_list = weather
 	-- Reading period hours if level is not underground.
 	if self:check_if_outdoor() then
 		self.tweaks = xr_s.parse_ini_section_to_array(self.graphs_ini, level.name() .. "_periods_length")
@@ -147,7 +147,7 @@ function WeatherManager:get_moon_phase()
 end
 -- End moon phases functional.
 function WeatherManager:select_weather(now)
-	local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
+	local weather = xr_parser.pick_section_from_condlist(db.actor, db.actor, level.name(), "weather", self.weather_list)
 	-- Breaking down outdoor weather to stated periods.
 	if weather == "outdoor" then
 		if self.transition_period then
