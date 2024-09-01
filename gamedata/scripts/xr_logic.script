@@ -1183,9 +1183,9 @@ function cfg_get_overrides(ini, section, npc)
 		l.min_post_combat_time,l.max_post_combat_time = utils.r_2nums( ini, section, "post_combat_time", 10, 15 )
 	end
 	if ini:line_exist(section, "on_offline") then
-		l.on_offline_condlist = xr_logic.parse_condlist(npc, section, "on_offline", utils.cfg_get_string(ini, section, "on_offline", npc, false, "", "nil"))
+		l.on_offline_condlist = utils.cfg_get_string(ini, section, "on_offline", npc, false, "", "nil")
 	else
-		l.on_offline_condlist =  xr_logic.parse_condlist(npc, st.section_logic, "on_offline", utils.cfg_get_string(ini, st.section_logic, "on_offline", npc, false, "", "nil"))
+		l.on_offline_condlist = utils.cfg_get_string(ini, st.section_logic, "on_offline", npc, false, "", "nil")
 	end
 	if string.find(section, "kamp") ~= nil then
 		l.soundgroup		= utils.cfg_get_string(ini, section, "center_point", npc, false, "")

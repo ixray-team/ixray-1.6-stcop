@@ -5,7 +5,7 @@
 function bind(obj)
 	printf("_bp: monster.bind: name='%s', id='%d'", obj:name(), obj:id())
 
-	-- Для спауна
+	-- пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	--xr_spawner.spawn_client(obj)
 
 	local new_binder = generic_object_binder(obj)
@@ -57,7 +57,7 @@ function generic_object_binder:update(delta)
 	if st ~= nil and st.active_scheme ~= nil then
 		xr_logic.try_switch_to_another_section(self.object, st[st.active_scheme], db.actor)
 	end
-	-- Апдейт отряда
+	-- пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if squad ~= nil then
 		if squad:commander_id() == self.object:id() then
 			squad:update()
@@ -90,7 +90,7 @@ function generic_object_binder:update(delta)
 	end
 
 
--- Если есть враг , то идем в комбат !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ , пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	if self.object:get_enemy() then
 		if xr_logic.mob_captured(self.object) then
 			xr_logic.mob_release(self.object)
@@ -131,7 +131,7 @@ function generic_object_binder:update(delta)
 end
 
 function generic_object_binder:extrapolate_callback()
-	-- Проверяем, что объект еще в онлайне
+	-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if db.storage[self.object:id()] == nil or
 		 db.storage[self.object:id()].object == nil
 	then
@@ -181,7 +181,7 @@ function generic_object_binder:death_callback(victim, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "death_callback", victim, who)
 	end
-	--' Наносим небольшой импульс вперед.
+	--' пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
 	local h = hit()
 	h.draftsman = self.object
 	h.type = hit.fire_wound
@@ -230,7 +230,8 @@ function generic_object_binder:net_spawn(sobject)
 
 	local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
 	if on_offline_condlist ~= nil then
-		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
+		--xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
+		xr_parser.pick_section_from_condlist(db.actor, self.object, "", "", on_offline_condlist)
 	end
 
 	if not self.object:alive() then
@@ -245,7 +246,7 @@ function generic_object_binder:net_spawn(sobject)
 
 	db.add_obj(self.object)
 
---******************************* Телепорт на первую точку пути работы смарттеррейна...*****************************
+--******************************* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ...*****************************
 	local se_obj = alife():object(self.object:id())
 	if db.spawned_vertex_by_id[se_obj.id] ~= nil then
 		self.object:set_npc_position(level.vertex_position(db.spawned_vertex_by_id[se_obj.id]))
@@ -282,7 +283,7 @@ function generic_object_binder:net_destroy()
 		xr_logic.issue_event(self.object, st[st.active_scheme], "net_destroy")
 	end
 
--- Запоминаем позицию и активную секцию --------
+-- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ --------
 if db.offline_objects[self.object:id()] then
 	db.offline_objects[self.object:id()].level_vertex_id = self.object:level_vertex_id()
 	db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section
