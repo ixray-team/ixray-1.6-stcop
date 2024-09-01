@@ -345,6 +345,9 @@ function se_ammo:can_switch_online()
 	end
 	return cse_alife_item_ammo.can_switch_online(self)
 end
+function se_ammo:keep_saved_data_anyway()
+	return true
+end
 -- GRENADES --------------------------------------------------------------------------------------------------------------------------
 class "se_grenade" (cse_alife_item_grenade)
 function se_grenade:__init (section) super (section)
