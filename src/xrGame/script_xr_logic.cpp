@@ -1182,7 +1182,7 @@ u32 CScriptXRParser::parseInfoportions(
 {
 	R_ASSERT2(pBuffer, "string must be valid!");
 
-	char buffer[ixray::kCondlistInfoStringSize]{};
+	char buffer[ixray::kCondlistDataStringSize]{};
 	u32 buffer_size{};
 	u32 index{};
 	auto string_length = strlen(pBuffer);
@@ -1214,7 +1214,7 @@ u32 CScriptXRParser::parseInfoportions(
 					++buffer_size;
 				}
 
-				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+				R_ASSERT2(buffer_size <= ixray::kCondlistDataStringSize,
 					"too big string! reduce it in your config please");
 
 				value.setInfoPortionName(buffer);
@@ -1241,7 +1241,7 @@ u32 CScriptXRParser::parseInfoportions(
 					++buffer_size;
 				}
 
-				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+				R_ASSERT2(buffer_size <= ixray::kCondlistDataStringSize,
 					"too big string! reduce it in your config please");
 
 				value.setInfoPortionName(buffer);
@@ -1259,7 +1259,7 @@ u32 CScriptXRParser::parseInfoportions(
 			case '=':
 			{
 				u32 z = i;
-				char params[ixray::kCondlistInfoStringSize]{};
+				char params[ixray::kCondlistDataStringSize]{};
 				u32 params_size{};
 				z += 1;
 
@@ -1277,7 +1277,7 @@ u32 CScriptXRParser::parseInfoportions(
 							++params_size;
 						}
 
-						R_ASSERT2(params_size <= ixray::kCondlistInfoStringSize,
+						R_ASSERT2(params_size <= ixray::kCondlistDataStringSize,
 							"too big string!");
 
 						z = z1;
@@ -1289,7 +1289,7 @@ u32 CScriptXRParser::parseInfoportions(
 					++buffer_size;
 				}
 
-				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+				R_ASSERT2(buffer_size <= ixray::kCondlistDataStringSize,
 					"too big string! reduce it in your config please");
 
 				value.setFunctionName(buffer);
@@ -1333,7 +1333,7 @@ u32 CScriptXRParser::parseInfoportions(
 			case '!':
 			{
 				u32 z = i;
-				char params[ixray::kCondlistInfoStringSize]{};
+				char params[ixray::kCondlistDataStringSize]{};
 				u32 params_size{};
 				z += 1;
 
@@ -1357,7 +1357,7 @@ u32 CScriptXRParser::parseInfoportions(
 					++buffer_size;
 				}
 
-				R_ASSERT2(buffer_size <= ixray::kCondlistInfoStringSize,
+				R_ASSERT2(buffer_size <= ixray::kCondlistDataStringSize,
 					"too big string!");
 
 				value.setFunctionName(buffer);
