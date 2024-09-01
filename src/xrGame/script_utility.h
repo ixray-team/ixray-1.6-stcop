@@ -129,6 +129,20 @@ public:                                                                        \
 // in pure lua, some stuff was re-written to cpp)
 #define IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION
 
+// we use functions from lua that defined in xr_effects.script and
+// xr_conditions.script files (original behaviour)
+#define IXRAY_XR_PARSER_USE_LUA_BACKEND
+
+#pragma todo( \
+	"wh1t3lord to ForserX: need to implement support of CMake configuration of these preprocessors, read comments carefully, so they need to be generated in separated header file like script_utility_preprocessors.h (or your variant)!")
+
+// this preprocessor uses the third up preprocessors e.g.
+// IXRAY_USE_LUA_AND_CPP_IMPLEMENTATION, IXRAY_USE_CPP_ONLY_IMPLEMENTATION,
+// IXRAY_USE_LUA_ONLY_IMPLEMENTATION
+// in comparison to IXRAY_XR_PARSER_USE_LUA_BACKEND it will used
+// CScriptXREffectsStorage and CScriptXRConditionsStorage implementations and
+// binded functions #define IXRAY_XR_PARSER_USE_CPP_BACKEND
+
 class CScriptGameObject;
 
 namespace ixray
@@ -137,9 +151,19 @@ namespace ixray
 	constexpr size_t kCondlistProbabilityStringSize = 6;
 	constexpr size_t kCondlistEmbeddedDataSize = 10;
 	constexpr size_t kCondlistEmbeddedSize = 32;
+	
+	// how many arguments we could have
+	constexpr size_t kXRParserParamsBufferSize = 10;
+
+	// char paramName[kXRParserParamBufferSize]; lol but 32 length must be
+	// enough
+	constexpr size_t kXRParserParamBufferSize = 32;
+	constexpr size_t kXRParserFunctionNameBufferSize = 64;
+
+	constexpr const char* kReservedWordNever = "never";
 
 	bool is_weapon(CScriptGameObject* pObject);
-	bool has_alife_info(LPCSTR str);
+	bool has_alife_info(LPCSTR str);	
 	int get_script_clsid(LPCSTR str);
 } // namespace ixray
 
@@ -271,7 +295,15 @@ public:
 	const char* getSectionName(void) const;
 	void setSectionName(const char* pString);
 
+	int getArrayCheckSize(void) const;
+	void setArrayCheckSize(int nSize);
+
+	int getArraySetSize(void) const;
+	void setArraySetSize(int nSize);
+
 private:
+	int m_nArrayCheckSize;
+	int m_nArraySetSize;
 	char m_sectionname[ixray::kCondlistInfoStringSize];
 	xr_condlistdata m_aInfoPortionCheck;
 	xr_condlistdata m_aInfoPortionSet;

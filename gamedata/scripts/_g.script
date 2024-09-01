@@ -9,7 +9,7 @@ isMarshal = marshal ~= nil
 isLfs = lfs ~= nil
 
 --// Some X-Ray block
-DebugLog = false
+DebugLog = true
 
 function empty	(container)
 	if (type(container) == "function") then
