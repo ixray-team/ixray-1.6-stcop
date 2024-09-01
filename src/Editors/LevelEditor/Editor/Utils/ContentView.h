@@ -29,6 +29,7 @@ class CContentView:
 		shared_str ISESect;
 	};
 
+	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
 	xr_string ISEPath;
 

@@ -69,10 +69,32 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 {
 	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
 	{
-		IsSpawnElement = false;
-		ISEPath = "";
+		if (ISEPath.empty())
+		{
+			IsSpawnElement = false;
+			ISEPath = "";
+			Files.clear();
+		}
+		else
+		{
+			xr_string Validate = ISEPath;
+			if (Validate.ends_with('\\'))
+			{
+				Validate = Validate.erase(Validate.length() - 1);
+			}
+			std::filesystem::path ISEFS = Validate.data();
 
-		Files.clear();
+			if (ISEFS.has_parent_path())
+			{
+				RescanISEDirectory(ISEFS.parent_path().string().data());
+				ISEPath = ISEFS.parent_path().string().data();
+			}
+			else
+			{
+				RescanISEDirectory("");
+				ISEPath = "";
+			}
+		}
 	}
 
 	for (const FileOptData& Data : Files)
@@ -81,7 +103,8 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 		{
 			if (Data.IsDir)
 			{
-				RescanISEDirectory(Data.File.string().c_str());
+				xr_string CopyFileName = Data.File.string().c_str();
+				RescanISEDirectory(CopyFileName);
 			}
 
 			break;
@@ -284,6 +307,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 
 void CContentView::RescanDirectory()
 {
+	IsDelWatcher = true;
 	xr_delete(WatcherPtr);
 
 	for (const auto& file : std::filesystem::directory_iterator{ CurrentDir.data() })
@@ -307,13 +331,20 @@ void CContentView::RescanDirectory()
 		[this](const std::string&, const filewatch::Event)
 		{
 			while (LockFiles || IsSpawnElement)
+			{
+				if (IsDelWatcher)
+					return;
+
 				continue;
+			}
 
 			LockFiles = true;
 			Files.clear();
 			LockFiles = false;
 		}
 	);
+
+	IsDelWatcher = false;
 }
 
 void CContentView::Destroy()
