@@ -27,6 +27,7 @@ public:
 	// it means if symbol is in this mask: "%{}.,
 	// qwertyuioplkjhgfdsamnbvcxz1234567890@-+=~!_():"
 	bool isSymbolValidForParsing(char nSymbol) const;
+	bool isFunctionArgumentSymbolValidForParsing(char nSymbol) const;
 	bool isSymbolEvent(char nSymbol) const;
 
 	xr_hash_map<u32, CCondlist> parseCondlist(const char* pSectionName,
@@ -66,7 +67,7 @@ private:
 		void* pClientActor, void* pClientObject, int nCallingVersion,
 		bool& bNeedToBreak);
 
-	void parseParams(const char* pParamsBuffer, xr_embedded_params_t& result);
+	size_t parseParams(const char* pParamsBuffer, xr_embedded_params_t& result);
 
 	void parseCondlistInfo(CCondlistInfo& info, CCondlistEmbedded& result);
 	// returns size of array

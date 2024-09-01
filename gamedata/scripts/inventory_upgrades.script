@@ -29,8 +29,8 @@ function precondition_functor_a( param1, section )
 			if(param=="false") then
 				return 1
 			elseif(param~="true") then
-				local possibility_table = xr_logic.parse_condlist(victim, mechanic_name.."_upgr", section, param)
-				local possibility = xr_logic.pick_section_from_condlist(db.actor, victim, possibility_table)
+				local possibility = xr_parser.pick_section_from_condlist(db.actor, victim, mechanic_name.."_upgr", section, param)
+				
 				if not(possibility) or (possibility=="false") then
 					return 2
 				end

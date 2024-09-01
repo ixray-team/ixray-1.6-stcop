@@ -159,6 +159,7 @@ namespace ixray
 	// enough
 	constexpr size_t kXRParserParamBufferSize = 32;
 	constexpr size_t kXRParserFunctionNameBufferSize = 64;
+	constexpr size_t kLTXFunctionArgumentDelimiterCharacter = ':';
 
 	constexpr const char* kReservedWordNever = "never";
 

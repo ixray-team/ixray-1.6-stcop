@@ -67,6 +67,41 @@ bool CScriptXRParser::isSymbolValidForParsing(char nSymbol) const
 	return result;
 }
 
+bool CScriptXRParser::isFunctionArgumentSymbolValidForParsing(
+	char nSymbol) const
+{
+	constexpr char a = 'a';
+	constexpr char z = 'z';
+	constexpr char A = 'A';
+	constexpr char Z = 'Z';
+	constexpr char number_0 = '0';
+	constexpr char number_9 = '9';
+
+	bool result{};
+
+	if (nSymbol >= a && nSymbol <= z)
+	{
+		result = true;
+	}
+	else if (nSymbol >= A && nSymbol <= Z)
+	{
+		result = true;
+	}
+	else if (nSymbol >= number_0 && nSymbol <= number_9)
+	{
+		result = true;
+	}
+	else if (nSymbol == '.' || nSymbol == ',' || nSymbol == '{' ||
+		nSymbol == '}' || nSymbol == '%' || nSymbol == '@' || nSymbol == '-' ||
+		nSymbol == '+' || nSymbol == '=' || nSymbol == '~' || nSymbol == '!' ||
+		nSymbol == '_')
+	{
+		result = true;
+	}
+
+	return result;
+}
+
 bool CScriptXRParser::isSymbolEvent(char nSymbol) const
 {
 	bool result{};
@@ -1785,17 +1820,22 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 
 				xr_embedded_params_t parsed_params{};
 
-				parseParams(data.getParams(), parsed_params);
-
-				const char*
-					pCastedArrayOfStrings[ixray::kXRParserParamsBufferSize]{};
+				size_t nParsedBufferSize =
+					parseParams(data.getParams(), parsed_params);
 
 				static_assert(ixray::kXRParserParamsBufferSize >= 1 &&
 					"can't be negative or zero!");
+				static_assert(ixray::kXRParserParamBufferSize >= 1 &&
+					"can't be negative");
 
-				for (int i = 0; i < ixray::kXRParserParamsBufferSize; ++i)
+				luabind::object params_to_lua =
+					luabind::newtable(ai().script_engine().lua());
+
+				for (int i = 0; i < nParsedBufferSize; ++i)
 				{
-					pCastedArrayOfStrings[i] = &parsed_params[i][0];
+					// because in lua indexing starts from 1 not from 0!
+					params_to_lua[i+1] =
+						static_cast<const char*>(&parsed_params[i][0]);
 				}
 
 				luabind::functor<bool> function_from_xr_conditions;
@@ -1825,25 +1865,22 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 					{
 					case 0:
 					{
-						bResultFromCalling =
-							function_from_xr_conditions(pClientActor,
-								pClientObject, &pCastedArrayOfStrings);
+						bResultFromCalling = function_from_xr_conditions(
+							pClientActor, pClientObject, params_to_lua);
 
 						break;
 					}
 					case 1:
 					{
-						bResultFromCalling =
-							function_from_xr_conditions(pClientActor,
-								pServerObject, &pCastedArrayOfStrings);
+						bResultFromCalling = function_from_xr_conditions(
+							pClientActor, pServerObject, params_to_lua);
 
 						break;
 					}
 					case 2:
 					{
-						bResultFromCalling =
-							function_from_xr_conditions(pServerActor,
-								pServerObject, &pCastedArrayOfStrings);
+						bResultFromCalling = function_from_xr_conditions(
+							pServerActor, pServerObject, params_to_lua);
 
 						break;
 					}
@@ -1965,17 +2002,21 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 
 					xr_embedded_params_t parsed_params{};
 
-					parseParams(data.getParams(), parsed_params);
-
-					const char* pCastedArrayOfStrings
-						[ixray::kXRParserParamsBufferSize]{};
+					size_t nParsedBufferSize = parseParams(data.getParams(), parsed_params);
 
 					static_assert(ixray::kXRParserParamsBufferSize >= 1 &&
 						"can't be negative or zero!");
+					static_assert(ixray::kXRParserParamBufferSize >= 1 &&
+						"can't be negative or 0");
 
-					for (int i = 0; i < ixray::kXRParserParamsBufferSize; ++i)
+					luabind::object params_to_lua =
+						luabind::newtable(ai().script_engine().lua());
+
+					for (int i = 0; i < nParsedBufferSize; ++i)
 					{
-						pCastedArrayOfStrings[i] = &parsed_params[i][0];
+						// because in lua indexing starts from 1 not from 0!
+						params_to_lua[i+1] =
+							static_cast<const char*>(&parsed_params[i][0]);
 					}
 
 					luabind::functor<void> function_from_xr_effects;
@@ -2004,21 +2045,19 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 						case 0:
 						{
 							function_from_xr_effects(pClientActor,
-								pClientObject, &pCastedArrayOfStrings);
+								pClientObject, params_to_lua);
 
 							break;
 						}
 						case 1:
 						{
-							function_from_xr_effects(pClientActor,
-								pServerObject, &pCastedArrayOfStrings);
+							function_from_xr_effects(pClientActor, pServerObject, params_to_lua);
 
 							break;
 						}
 						case 2:
 						{
-							function_from_xr_effects(pServerActor,
-								pServerObject, &pCastedArrayOfStrings);
+							function_from_xr_effects(pServerActor, pServerObject, params_to_lua);
 
 							break;
 						}
@@ -2137,24 +2176,62 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 			bNeedToBreak = true;
 			return condlist.getSectionName();
 		}
-
 	}
 
 	return nullptr;
 }
 
-void CScriptXRParser::parseParams(
+size_t CScriptXRParser::parseParams(
 	const char* pParamsBuffer, xr_embedded_params_t& result)
 {
+	size_t nIndex{};
+
 	if (pParamsBuffer)
 	{
-		if (strlen(pParamsBuffer))
+		size_t nLength = strlen(pParamsBuffer);
+		if (nLength)
 		{
-			size_t nLength = strlen(pParamsBuffer);
-
+			char argument[ixray::kXRParserParamBufferSize]{};
+			size_t argument_size{};
 			for (size_t i = 0; i < nLength; ++i)
 			{
+				R_ASSERT2(nIndex <= ixray::kXRParserParamsBufferSize,
+					"overflow, too many arguments for function!");
+
+				char nCurrentSymbol = pParamsBuffer[i];
+
+				if (isFunctionArgumentSymbolValidForParsing(nCurrentSymbol))
+				{
+					R_ASSERT2(argument_size <= ixray::kXRParserParamBufferSize,
+						"too big string! reduce it vasyan");
+
+					argument[argument_size] = nCurrentSymbol;
+					++argument_size;
+				}
+				else if (nCurrentSymbol == ':')
+				{
+					std::memcpy(&result[nIndex][0], argument,
+						argument_size * sizeof(char));
+					memset(argument, 0, sizeof(argument));
+					++nIndex;
+				}
+				else if (nCurrentSymbol == ' ' || nCurrentSymbol == '\n')
+				{
+					// ignore
+				}
 			}
+
+			if (argument_size)
+			{
+				std::memcpy(
+					&result[nIndex][0], argument, argument_size * sizeof(char));
+				++nIndex;
+			}
+
+			R_ASSERT2(nIndex <= ixray::kXRParserParamsBufferSize,
+				"overflow, reduce string");
 		}
 	}
+
+	return nIndex;
 }
