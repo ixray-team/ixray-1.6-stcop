@@ -7,26 +7,50 @@
 -- WARNING: don't pass section_name and field_name as nil lua can't detect the overload on C++ side and will cause throw, just pass an empty string ""
 function pick_section_from_condlist(actor, client_or_server_object, section_name, field_name, string_for_parsing)
     if get_xr_parser_manager() then 
+        --[[ if you need to test (first calling is CPP backend then original that compares result from CPP)
+        
+        local result = get_xr_parser_manager():pick_section_from_condlist(
+            actor,
+            client_or_server_object,
+            section_name,
+            field_name,
+            string_for_parsing
+        )
+        
         local temp = xr_logic.parse_condlist(nil, section_name, field_name, string_for_parsing)
         local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
 
-        local result = "VasyanAnomaly"
-
         if result ~= section then
-            result = get_xr_parser_manager():pick_section_from_condlist(
-                actor,
-                client_or_server_object,
-                section_name,
-                field_name,
-                string_for_parsing
-            )
-
-            if result ~= section then
-                trigger_assert()
-            end
+            trigger_assert()
         end
 
         return result
+
+        ]]
+
+
+        --[[ if you need to debug with LuaPanda use this template
+            local temp = xr_logic.parse_condlist(nil, section_name, field_name, string_for_parsing)
+            local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
+
+            local result = "VasyanAnomaly"
+
+            if result ~= section then
+                result = get_xr_parser_manager():pick_section_from_condlist(
+                    actor,
+                    client_or_server_object,
+                    section_name,
+                    field_name,
+                    string_for_parsing
+                )
+
+                if result ~= section then
+                    trigger_assert()
+                end
+            end
+
+            return result    
+        ]]
 
         --[[ use this version after tests
         return get_xr_parser_manager():pick_section_from_condlist(
@@ -37,6 +61,23 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
             string_for_parsing
         )
         --]]
+
+        local result = get_xr_parser_manager():pick_section_from_condlist(
+            actor,
+            client_or_server_object,
+            section_name,
+            field_name,
+            string_for_parsing
+        )
+
+        local temp = xr_logic.parse_condlist(nil, section_name, field_name, string_for_parsing)
+        local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
+
+        if result ~= section then
+            trigger_assert()
+        end
+
+        return result
     end
 
     return nil
