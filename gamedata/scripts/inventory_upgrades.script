@@ -233,9 +233,9 @@ end
 
 function setup_discounts()
 		if param_ini:line_exist(mechanic_name, "discount_condlist") then
-				local condlist = param_ini:r_string(mechanic_name, "discount_condlist")
-		local parsed = xr_logic.parse_condlist(db.actor, nil, nil, condlist)
-		xr_logic.pick_section_from_condlist(db.actor, nil, parsed)
+		local condlist = param_ini:r_string(mechanic_name, "discount_condlist")
+		xr_parser.pick_section_from_condlist(db.actor, nil, "", "", condlist)
+
 	end
 end
 

@@ -59,7 +59,11 @@ CRenderDevice *get_device()
 
 void trigger_assert()
 {
+	#ifdef DEBUG
 	R_ASSERT(false && "catch the thing!");
+	#else
+	MessageBoxA(nullptr, "Report to wh1t3lord, because xr_parser failed and is different to xr_logic behaviour!", "Report to wh1t3lord", 0);
+	#endif
 }
 #endif
 
