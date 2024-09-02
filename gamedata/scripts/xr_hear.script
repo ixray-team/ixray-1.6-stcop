@@ -52,7 +52,7 @@ function reset_hear_callback(st, section)
 		st.hear_sounds[parsed_params[1]] = st.hear_sounds[parsed_params[1]] or {}
 		st.hear_sounds[parsed_params[1]][parsed_params[2]] = {	dist = tonumber(parsed_params[3]),
 																power = tonumber(parsed_params[4]),
-																condlist = xr_logic.parse_condlist(obj, "hear_callback", "hear_callback", parsed_params[5])}
+																condlist = parsed_params[5]}
 	end
 	local ini = st.ini
 	if not ini:section_exist(section) then
@@ -79,7 +79,7 @@ function hear_callback(obj, who_id, sound_type, sound_position, sound_power)
 	if st.hear_sounds[story_id] and st.hear_sounds[story_id][s_type] then
 		local hear_sound_params = st.hear_sounds[story_id][s_type]
 		if hear_sound_params.dist >= sound_position:distance_to(obj:position()) and sound_power >= hear_sound_params.power then
-			local new_section = xr_logic.pick_section_from_condlist(db.actor, obj, hear_sound_params.condlist)
+			local new_section = xr_parser.pick_section_from_condlist(db.actor, obj, "hear_callback", "condlist", hear_sound_params.condlist)
 			if new_section ~= nil and new_section ~= "" then
 				xr_logic.switch_to_section(obj, st.ini, new_section)
 			elseif new_section == "" then
