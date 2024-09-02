@@ -86,7 +86,6 @@ function action_remark_activity:update()
 		local cb = { obj = self, func = self.time_callback }
 		local target = self:get_target()
 		if target == nil then
-			--local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
 			local anim = xr_parser.pick_section_from_condlist(db.actor, self.object, "xr_remark", "anim", self.st.anim)
 			state_mgr.set_state(self.object, anim, cb, 0)
 			self.state = state_animation
