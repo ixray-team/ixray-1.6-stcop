@@ -86,13 +86,14 @@ function action_remark_activity:update()
 		local cb = { obj = self, func = self.time_callback }
 		local target = self:get_target()
 		if target == nil then
-			local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
+			--local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
+			local anim = xr_parser.pick_section_from_condlist(db.actor, self.object, "xr_remark", "anim", self.st.anim)
 			state_mgr.set_state(self.object, anim, cb, 0)
 			self.state = state_animation
 			return
 		end
 
-		local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
+		local anim = xr_parser.pick_section_from_condlist(db.actor, self.object, "xr_remark", "anim", self.st.anim)
 		state_mgr.set_state(self.object, anim, cb, 0, target)
 		self.state = state_animation
 
@@ -199,7 +200,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.snd_anim_sync = utils.cfg_get_bool(ini, section, "snd_anim_sync", npc, false)
 
 	st.snd			= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
-	st.anim			= xr_logic.parse_condlist(npc, "anim", "anim", utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
+	st.anim			= utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait")
 	st.tips_id		= utils.cfg_get_string(ini, section, "tips", npc, false, "")
 	if st.tips_id then
 		st.sender	= utils.cfg_get_string(ini, section, "tips_sender", npc, false, "")
