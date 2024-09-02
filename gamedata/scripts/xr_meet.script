@@ -104,22 +104,15 @@ function Cmeet_manager:update_state()
 
 	if self.current_distance == "close" then
 		-- анимация, пока в близком радиусе
---		state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_anim)
 		state = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_anim", self.a.close_anim)
 
 		-- направление, пока в близком радиусе
-		--victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_victim)
-
 		victim = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_victim", self.a.close_victim)
 	elseif self.current_distance == "far" then
 		-- анимация, пока в дальнем радиусе
-	--	state = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_anim)
-
 		state = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_anim", self.a.far_anim)
 
 		-- направление, пока в близком радиусе
-	--	victim = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_victim)
-
 		victim = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_victim", self.a.far_victim)
 	end
 
@@ -139,7 +132,6 @@ function Cmeet_manager:update_state()
 		end
 	end
 
---	local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd)
 	local snd = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_snd", self.a.far_snd)
 
 	-- звук, пока в дальнем радиусе  (отыгрывается, даже если мы в ближнем)
@@ -168,9 +160,6 @@ function Cmeet_manager:set_start_distance()
 
 	local actor_visible = self.npc:see(db.actor)
 
-	--local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
-	--local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or self.npc:is_talking()
-
 	local is_object_far = actor_visible and distance <= tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_distance", self.a.far_distance))
 	local is_object_close = (actor_visible and distance <= tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_distance", self.a.close_distance))) or self.npc:is_talking()
 
@@ -197,12 +186,11 @@ function Cmeet_manager:update()
 	local actor_visible = self.npc:see(db.actor)
 
 	if actor_visible then
-		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_distance)), tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_snd_distance)) )
+		--printf("%s check distance %s <= %s <= %s", self.npc:name(), distance, tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_snd_distance", self.a.close_snd_distance)), tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_snd_distance", self.a.far_snd_distance)) )
 		if distance <= tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_snd_distance", self.a.close_snd_distance)) then
 			-- Коллбек на приближение
 			-- звук при приближении
 			if self.hello_passed == false then
-			--	local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_hello)
 				local snd = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_snd_hello", self.a.close_snd_hello)
 				if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
 					xr_sound.set_sound_play(self.npc:id(), snd)
@@ -216,8 +204,6 @@ function Cmeet_manager:update()
 				-- Коллбек на отдаление
 				-- звук при отдалении
 				if self.bye_passed == false then
-					--local snd = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_snd_bye)
-
 					local snd = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_snd_bye", self.a.close_snd_bye)
 
 					if tostring(snd) ~= "nil" and not state_mgr.is_npc_in_combat(self.npc) then
@@ -230,14 +216,11 @@ function Cmeet_manager:update()
 		end
 	end
 	
-	--local is_object_far = actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.far_distance))
-	--local is_object_close = (actor_visible and distance <= tonumber(xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))) or (self.npc:is_talking() and self.a.meet_on_talking)
-
 	local is_object_far = actor_visible and distance <= tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "far_distance", self.a.far_distance))
 	local is_object_close = (actor_visible and distance <= tonumber(xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_distance", self.a.close_distance))) or (self.npc:is_talking() and self.a.meet_on_talking)
 
 	--printf("!!! %s %s %s", self.npc:name(), tostring(is_object_far), tostring(is_object_close))
-	--printf("%s",  xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.close_distance))
+	--printf("%s",  xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "close_distance", self.a.close_distance))
 
 	if is_object_close == true then
 		if self.current_distance ~= "close" then
@@ -256,7 +239,6 @@ function Cmeet_manager:update()
 
 
 	-- Можно или нет оборвать диалог
-	--local allow_break = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.allow_break)
 	local allow_break = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "allow_break", self.a.allow_break)
 	if self.allow_break ~= (allow_break == "true") then
 		self.allow_break = (allow_break == "true")
@@ -264,7 +246,6 @@ function Cmeet_manager:update()
 
 	-- стартовый диалог
 	if self.a.meet_dialog ~= nil then
-		--local start_dialog = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.meet_dialog)
 		local start_dialog = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "meet_dialog", self.a.meet_dialog)
 		if self.startdialog ~= start_dialog then
 			self.startdialog = start_dialog
@@ -288,7 +269,6 @@ function Cmeet_manager:update()
 	local is_talking = self.npc:is_talking()
 
 
-	--local use = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use)
 	local use = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "use", self.a.use)
 
 	-- Проверяем, играем ли мы что то в кампе
@@ -315,7 +295,6 @@ function Cmeet_manager:update()
 	end
 
 
-	--local use_text = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.use_text)
 	local use_text = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "use_text", self.a.use_text)
 
 	if use_text ~= "nil" then
@@ -335,7 +314,6 @@ function Cmeet_manager:update()
 	end
 ]]
 	-- Проверяем включать ли обижание на заюзывание
-	--local abuse = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.abuse)
 	local abuse = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "abuse", self.a.abuse)
 	if self.abuse_mode ~= abuse then
 		if abuse == "true" then
@@ -350,7 +328,6 @@ function Cmeet_manager:update()
 	if xr_wounded.is_wounded(self.npc) then
 		self.trade_enable = false
 	else
-		--local trade_enable = xr_logic.pick_section_from_condlist(db.actor, self.npc, self.a.trade_enable)
 		local trade_enable = xr_parser.pick_section_from_condlist(db.actor, self.npc, "xr_meet", "trade_enable", self.a.trade_enable)
 		--printf("npc [%s] self %s *** %s", self.npc:name(), tostring(self.trade_enable), tostring(trade_enable))
 		if self.trade_enable ~= trade_enable then
@@ -378,7 +355,6 @@ function notify_on_use(victim, who)
 		return
 	end
 
-	--local snd = xr_logic.pick_section_from_condlist(db.actor, victim, st.snd_on_use)
 	local snd = xr_parser.pick_section_from_condlist(db.actor, victim, "xr_meet", "snd_on_use", st.snd_on_use)
 
 	if tostring(snd) ~= "nil" then
