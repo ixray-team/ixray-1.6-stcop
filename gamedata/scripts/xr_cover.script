@@ -82,7 +82,7 @@ function action_cover:execute()
 	--printf("[%s] dist %s to %s", self.object:name(), self.cover_position:distance_to_sqr(self.object:position()), vec_to_str(self.cover_position))
 	--' Проверяем пришли ли в точку.
 	if self.cover_position:distance_to_sqr(self.object:position()) <= 0.4 then
-		local anim = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.anim)
+		local anim = xr_parser.pick_section_from_condlist(db.actor, self.object, "xr_cover", "anim", self.st.anim)
 		state_mgr.set_state(self.object, anim, nil, nil, {look_position = self.enemy_random_position}, nil, nil)
 	else
 		self.object:set_dest_level_vertex_id(self.cover_vertex_id)
@@ -143,9 +143,9 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	st.logic    = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 
-	st.smart	= utils.cfg_get_string(ini, section, "smart", npc, false, "")
-	st.anim		= xr_logic.parse_condlist(npc, "anim", "anim", utils.cfg_get_string(ini, section, "anim", npc, false, "", "hide"))
-	st.sound_idle= utils.cfg_get_string(ini, section, "sound_idle",npc, false, "")
+	st.smart		= utils.cfg_get_string(ini, section, "smart", npc, false, "")
+	st.anim			= utils.cfg_get_string(ini, section, "anim", npc, false, "", "hide")
+	st.sound_idle 	= utils.cfg_get_string(ini, section, "sound_idle",npc, false, "")
 		
 	if st.smart == nil then
 		abort("There is no path_walk and smart in xr_cover.")

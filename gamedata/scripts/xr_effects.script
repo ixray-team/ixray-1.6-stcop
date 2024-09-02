@@ -1554,11 +1554,11 @@ function create_squad_member(actor, obj, p)
 		if p[3] == "simulation_point" then
 			spawn_point = utils.cfg_get_string(sim_board.squad_ltx, squad:section_name(), "spawn_point", obj, false, "")
 			if spawn_point == "" or spawn_point == nil then
-				spawn_point = xr_logic.parse_condlist(obj, "spawn_point", "spawn_point", squad_smart.spawn_point)
+				spawn_point = squad_smart.spawn_point
 			else
-				spawn_point = xr_logic.parse_condlist(obj, "spawn_point", "spawn_point", spawn_point)
+				spawn_point = spawn_point
 			end
-			spawn_point = xr_logic.pick_section_from_condlist(db.actor, obj, spawn_point)
+			spawn_point = xr_parser.pick_section_from_condlist(db.actor, obj, "spawn_point", "spawn_point", spawn_point)
 		else
 			spawn_point = p[3]
 		end

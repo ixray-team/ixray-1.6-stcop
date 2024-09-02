@@ -41,7 +41,7 @@ function evaluator_shoot:evaluate()
 	overrides = xr_logic.generic_scheme_overrides( self.object )
 
 	if overrides and overrides.heli_hunter ~= nil and
-	   xr_logic.pick_section_from_condlist(db.actor, self.object, overrides.heli_hunter) ~= nil
+	   xr_parser.pick_section_from_condlist(db.actor, self.object, "xr_heli_hunter", "heli_hunter", overrides.heli_hunter) ~= nil
 	then
 --		if self.a.heli == nil then
 			-- поиск вертолета

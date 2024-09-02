@@ -1170,7 +1170,7 @@ function cfg_get_overrides(ini, section, npc)
 
 	local tmp			= utils.cfg_get_string(ini, section, "heli_hunter", npc, false, "")
 	if tmp then
-		l.heli_hunter	= xr_logic.parse_condlist(npc, section, "heli_hunter", tmp)
+		l.heli_hunter	= tmp
 	end
 
 --	l.wounded_enabled   = utils.cfg_get_bool(ini, section, "wounded_enabled", npc, false)
