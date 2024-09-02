@@ -20,10 +20,10 @@ function CTreasureManager:initialize()
 					for i=0,items_count-1 do
 							result, item_section, str = ini:r_line(id,i,"","")
 				if(item_section=="empty") then
-									local parsed_condlist = xr_logic.parse_condlist(nil, "treasure_manager", "empty_cond", str)
+									local parsed_condlist = str
 					self.secrets[id].empty = parsed_condlist
 				elseif(item_section=="refreshing") then
-									local parsed_condlist = xr_logic.parse_condlist(nil, "treasure_manager", "refreshing_cond", str)
+									local parsed_condlist = str
 					self.secrets[id].refreshing = parsed_condlist
 				else
 									self.secrets[id].items[item_section] = {}
@@ -103,7 +103,7 @@ function CTreasureManager:update()
 		for k,v in pairs(self.secrets) do
 				if(v.given) then
 		 	if(v.empty) then
-							local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.empty)
+							local sect = xr_parser.pick_section_from_condlist(db.actor, nil, "treasure_manager", "empty", v.empty)
 							if(sect=="true") and not v.checked then
 									level.map_remove_object_spot(self.secret_restrs[k], "treasure")
 									xr_statistic.inc_founded_secrets_counter()
@@ -112,7 +112,7 @@ function CTreasureManager:update()
 									printf("Empty secret [%s] remove map spot!", k)
 							end
 			elseif(v.refreshing and v.checked) then
-							local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.refreshing)
+							local sect = xr_parser.pick_section_from_condlist(db.actor, nil, "treasure_manager", "refreshing", v.refreshing)
 							if(sect=="true") then
 									v.given = false
 									v.checked = false

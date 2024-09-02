@@ -178,7 +178,7 @@ function mob_walker:waypoint_callback(obj, action_type, index)
 			if suggested_anim_set == "nil" then
 				suggested_anim_set = nil
 			end
-			self.cur_anim_set = anim[xr_logic.pick_section_from_condlist(db.actor, self.object, suggested_anim_set)]
+			self.cur_anim_set = anim[xr_parser.pick_section_from_condlist(db.actor, self.object, "mob_walker", "suggested_anim_set", suggested_anim_set)]
 		else
 			self.cur_anim_set = default_anim_standing
 		end

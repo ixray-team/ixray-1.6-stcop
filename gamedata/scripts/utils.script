@@ -365,7 +365,7 @@ function parse_waypoint_data(pathname, wpflags, wpname)
 			end
 
 			if fld == "a" then
-				rslt[fld] = xr_logic.parse_condlist(db.actor, "waypoint_data", "anim_state", val)
+				rslt[fld] = val
 			else
 				rslt[fld] = val
 			end

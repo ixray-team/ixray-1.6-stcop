@@ -474,7 +474,13 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 
 	local suggested_state_moving = self.path_walk_info[index]["a"]
 	if suggested_state_moving then
-		self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, suggested_state_moving)
+		self.cur_state_moving = xr_parser.pick_section_from_condlist(
+			db.actor, 
+			self.object, 
+			"move_mgr",
+			"suggested_state_moving",
+			suggested_state_moving
+		)
 		if tostring(self.cur_state_moving) == "true" then
 			print_table(suggested_state_moving)
 			abort("!!!!!")
@@ -530,7 +536,13 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 	if pt_chosen_idx then
 		local suggested_anim_set = self.path_look_info[pt_chosen_idx]["a"]
 		if suggested_anim_set then
-			self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, suggested_anim_set)
+			self.cur_state_standing = xr_parser.pick_section_from_condlist(
+				db.actor, 
+				self.object, 
+				"move_mgr",
+				"suggested_anim_set",
+				suggested_anim_set
+			)
 		else
 			self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_standing)
 		end
