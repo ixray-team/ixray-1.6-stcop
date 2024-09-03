@@ -555,7 +555,7 @@ void CRender::Render		()
 		// level, SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_graph					(0);
-		r_dsgraph_render_landscape				(1, true);
+		//r_dsgraph_render_landscape				(1, true);
 		Target->disable_aniso					();
 	}
 
@@ -627,6 +627,7 @@ void CRender::Render		()
 		r_dsgraph_render_hud					();
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
+		r_dsgraph_render_landscape(1, true);
 		Target->phase_scene_end					();
 	}
 
