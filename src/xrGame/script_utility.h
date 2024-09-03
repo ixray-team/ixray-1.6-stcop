@@ -147,7 +147,7 @@ class CScriptGameObject;
 
 namespace ixray
 {
-	constexpr size_t kCondlistInfoStringSize = 128;
+	constexpr size_t kCondlistInfoStringSize = 256;
 	constexpr size_t kCondlistDataStringSize = 64;
 	constexpr size_t kCondlistProbabilityStringSize = 6;
 	constexpr size_t kCondlistEmbeddedDataSize = 10;
@@ -158,7 +158,7 @@ namespace ixray
 
 	// char paramName[kXRParserParamBufferSize]; lol but 32 length must be
 	// enough
-	constexpr size_t kXRParserParamBufferSize = 32;
+	constexpr size_t kXRParserParamBufferSize = 64;
 	constexpr size_t kXRParserFunctionNameBufferSize = 64;
 	constexpr size_t kLTXFunctionArgumentDelimiterCharacter = ':';
 

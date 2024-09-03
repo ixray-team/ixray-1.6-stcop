@@ -74,7 +74,7 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
         local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
 
         if result ~= section then
-            trigger_assert("result: '"..tostring(result).."' section: '"..tostring(section).."'")
+            trigger_assert(string_for_parsing.."\n".."["..section_name.."]".."["..field_name.."]".."result: '"..tostring(result).."' section: '"..tostring(section).."'")
         end
 
         return result

@@ -363,6 +363,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			}
 		}
 
+		if (string_length == 0)
+			return pResult;
+
 		if (current_section_size)
 		{
 			current_info.setText(current_section_name, current_section_size);
@@ -438,10 +441,6 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 					{
 						current_info.setText(
 							current_section_name, current_section_size);
-					}
-					else
-					{
-						current_info.clearText();
 					}
 				}
 
@@ -717,10 +716,6 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
-					else
-					{
-						current_info.clearText();
-					}
 				}
 
 				was_found_section = false;
@@ -915,6 +910,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				break;
 			}
 		}
+
+		if (string_length == 0)
+			return pResult;
 
 		if (current_section_size)
 		{
@@ -1124,6 +1122,7 @@ void CScriptXRParser::parseInfoportions(
 						{
 							params[params_size] = pBuffer[z1];
 							++z1;
+							++params_size;
 						}
 
 						z = z1;
@@ -1341,10 +1340,13 @@ u32 CScriptXRParser::parseInfoportions(
 					if (pBuffer[z] == '(')
 					{
 						u32 z1 = z;
+						++z1;
+
 						while (pBuffer[z1] != ')')
 						{
 							params[params_size] = pBuffer[z1];
 							++z1;
+							++params_size;
 						}
 
 						z = z1;

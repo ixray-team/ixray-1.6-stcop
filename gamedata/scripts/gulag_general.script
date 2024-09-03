@@ -923,7 +923,7 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 				return
 		end
 
-		local condlist = xr_logic.parse_condlist(smart, "logic@"..work_field, "suitable", job_suitable)
+		local condlist = job_suitable
 		local t = { _prior = new_prior,
 								_precondition_is_monster = is_monster,
 								job_id = {  section = "logic@"..work_field,
@@ -933,7 +933,7 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 														job_type = job_type },
 								_precondition_params = { condlist = condlist },
 								_precondition_function = function(se_obj, smart, precond_params)
-									local result = xr_logic.pick_section_from_condlist(db.actor, se_obj, precond_params.condlist)
+									local result = xr_parser.pick_section_from_condlist(db.actor, se_obj, "gulag_general", "precond_params", precond_params.condlist)
 									if result == "false" or result == nil then
 										return false
 									end
