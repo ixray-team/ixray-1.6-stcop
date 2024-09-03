@@ -19,8 +19,8 @@ function CBaseOnActorControl:__init(smart, ini, section)
 	self.noweap_zone	= utils.cfg_get_string(ini, section, "noweap_zone", self, true, "")
 	self.ignore_zone	= utils.cfg_get_string(ini, section, "ignore_zone", self, false, "")
 
-	self.alarm_start_sound 	= xr_logic.parse_condlist(smart, section, "alarm_start_sound", 		utils.cfg_get_string(ini, section, "alarm_start_sound", self, false, "") )
-	self.alarm_stop_sound 	= xr_logic.parse_condlist(smart, section, "alarm_stop_sound", 		utils.cfg_get_string(ini, section, "alarm_stop_sound", self, false, "") )
+	self.alarm_start_sound 	= utils.cfg_get_string(ini, section, "alarm_start_sound", self, false, "") 
+	self.alarm_stop_sound 	= utils.cfg_get_string(ini, section, "alarm_stop_sound", self, false, "") 
 
 	self.smart = smart
 
@@ -36,7 +36,7 @@ function CBaseOnActorControl:update()
 			return
 		end
 
-		local sound = xr_logic.pick_section_from_condlist(db.actor, self.smart, self.alarm_stop_sound)
+		local sound = xr_parser.pick_section_from_condlist(db.actor, self.smart, "smart_terrain_control", "alarm_stop_sound", self.alarm_stop_sound)
 		--printf("SOUND = %s", tostring(sound))
 		--' Озвучка на конец атаки
 		if sound ~= nil then
@@ -82,7 +82,7 @@ end
 function CBaseOnActorControl:actor_attack()
 
 	if self.status ~= ALARM then
-		local sound = xr_logic.pick_section_from_condlist(db.actor, self.smart, self.alarm_start_sound)
+		local sound = xr_parser.pick_section_from_condlist(db.actor, self.smart, "smart_terrain_control", "alarm_start_sound", self.alarm_start_sound)
 		--' Озвучка на начало атаки.
 		if sound ~= nil then
 			xr_sound.set_sound_play(db.actor:id(), sound)
