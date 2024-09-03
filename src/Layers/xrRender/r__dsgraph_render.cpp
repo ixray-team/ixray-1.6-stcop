@@ -17,9 +17,19 @@ extern float		r_ssaDONTSORT;
 extern float		r_ssaHZBvsTEX;
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 
-ICF float calcLOD	(float ssa/*fDistSq*/, float R)
+ICF float calcLOD(float ssa, float R, bool Dyn = true)
 {
-	return			_sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
+	float TestLod = 0.f;
+
+	//if (RImplementation.phase == CRender::PHASE_SMAP && !Dyn)
+	//	return TestLod;
+
+	TestLod = _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
+
+	if (RImplementation.phase == CRender::PHASE_SMAP && Dyn)
+		clamp(TestLod, 0.0f, 0.3f);
+	
+	return TestLod;
 }
 
 // NORMAL
@@ -32,7 +42,7 @@ void __fastcall pLandscape_0(mapLandscape_Node* N)
 	dxRender_Visual* V = N->val.pVisual;
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N->val.se, 0);
-	float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
+	float LOD = calcLOD(N->val.ssa, V->vis.sphere.R, false);
 #ifdef USE_DX11
 	RCache.LOD.set_LOD(LOD);
 #endif
@@ -46,7 +56,7 @@ void __fastcall pLandscape_1(mapLandscape_Node* N)
 	VERIFY(V && V->shader._get());
 	RCache.set_Element(N->val.se, 1);
 	RImplementation.apply_lmaterial();
-	float LOD = calcLOD(N->val.ssa, V->vis.sphere.R);
+	float LOD = calcLOD(N->val.ssa, V->vis.sphere.R, false);
 #ifdef USE_DX11
 	RCache.LOD.set_LOD(LOD);
 #endif
@@ -75,7 +85,7 @@ void __fastcall mapNormal_Render	(mapNormalItems& N)
 	_NormalItem				*I=&*N.begin(), *E = &*N.end();
 	for (; I!=E; I++)		{
 		_NormalItem&		Ni	= *I;
-		float LOD = calcLOD(Ni.ssa,Ni.pVisual->vis.sphere.R);
+		float LOD = calcLOD(Ni.ssa,Ni.pVisual->vis.sphere.R, false);
 #ifdef USE_DX11
 		RCache.LOD.set_LOD(LOD);
 #endif
