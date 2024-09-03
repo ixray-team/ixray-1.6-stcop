@@ -70,11 +70,22 @@ function pick_section_from_condlist(actor, client_or_server_object, section_name
             string_for_parsing
         )
 
+        -- в силу того факта что у нас есть set блок в котором может быть выдача информации из-за этого поведение может хериться
+        -- поэтому проверять мы должны со вторым вызовом т.к. если делать как раньше то разница возникнет потому что поменялась
+        -- логика из-за выдачи информарции в set блоке и вот если на второй раз оно разное то правда что-то не так
+        local compare_with = get_xr_parser_manager():pick_section_from_condlist(
+            actor,
+            client_or_server_object,
+            section_name,
+            field_name,
+            string_for_parsing
+        )
+
         local temp = xr_logic.parse_condlist(nil, section_name, field_name, string_for_parsing)
         local section= xr_logic.pick_section_from_condlist(actor, client_or_server_object, temp)
 
-        if result ~= section then
-            trigger_assert(string_for_parsing.."\n".."["..section_name.."]".."["..field_name.."]".."result: '"..tostring(result).."' section: '"..tostring(section).."'")
+        if compare_with ~= section then
+            trigger_assert(string_for_parsing.."\n".."["..section_name.."]".."["..field_name.."]".."result: '"..tostring(compare_with).."' section: '"..tostring(section).."'")
         end
 
         return result
