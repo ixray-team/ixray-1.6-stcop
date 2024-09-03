@@ -558,7 +558,7 @@ function update_logic(object)
 			local overrides = xr_logic.generic_scheme_overrides(object)
 			if overrides then
 				if overrides.on_combat then
-					xr_logic.pick_section_from_condlist(actor, object, overrides.on_combat.condlist)
+					xr_parser.pick_section_from_condlist(actor, object, "xr_motivator", "on_combat", overrides.on_combat.condlist)
 				end
 				if st_combat and st_combat.logic then
 					if  not xr_logic.try_switch_to_another_section(object, st_combat, actor) then
