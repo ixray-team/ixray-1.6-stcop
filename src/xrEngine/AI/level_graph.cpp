@@ -13,9 +13,9 @@ ILevelGraph::~ILevelGraph()
 bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath,float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
 	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
-	thread_local	xr_map<u32, u32>					TempCameFrom;
-	thread_local	xr_map<u32, float>					TempCostSoFar;
-					float								m_distance_xz			= header().cell_size();
+	thread_local	xr_hash_map<u32, u32>				TempCameFrom;
+	thread_local	xr_hash_map<u32, float>				TempCostSoFar;
+					float								m_distance_xz = header().cell_size();
 
 	TempPriorityNode.clear();
 	TempCameFrom.clear();
@@ -37,9 +37,9 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 		return false;
 	}
 
-	TempPriorityNode.push_back({0, FromID});
+	TempPriorityNode.push_back({0.f, FromID});
 	TempCameFrom.insert({FromID, FromID});
-	TempCostSoFar.insert( {FromID, 0});
+	TempCostSoFar.insert( {FromID, 0.f});
 
 	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
 	{
@@ -140,9 +140,9 @@ u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition
 	
 	int MaxRangeSqr = iFloor(_sqr(Range)/ _sqr(m_distance_xz) + .5f);
 
-	TempPriorityNode.push_back({0, FromID});
+	TempPriorityNode.push_back({0.f, FromID});
 	TempCameFrom.insert({FromID, FromID});
-	TempCostSoFar.insert( {FromID, 0});
+	TempCostSoFar.insert( {FromID, 0.f });
 
 	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
 	{

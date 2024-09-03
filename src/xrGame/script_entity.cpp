@@ -122,14 +122,7 @@ void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSci
 
 	m_bScriptControl	= bScriptControl;
 	m_caScriptName		= caSciptName;
-/* 
-#ifdef DEBUG
-	if (bScriptControl)
-		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeInfo,"Script %s set object %s under its control",*caSciptName,*object().cName());
-	else
-		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeInfo,"Script %s freed object %s from its control",*caSciptName,*object().cName());
-#endif
-*/
+
 	if (!bScriptControl)
 		ResetScriptData(this);
 }
@@ -235,17 +228,16 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
 void CScriptEntity::ProcessScripts()
 {
 	CScriptEntityAction	*l_tpEntityAction = 0;
+
 #ifdef DEBUG
-	bool			empty_queue = m_tpActionQueue.empty();
+	bool empty_queue = m_tpActionQueue.empty();
 #endif
-	while (!m_tpActionQueue.empty()) {
+
+	while (!m_tpActionQueue.empty()) 
+	{
 		l_tpEntityAction= m_tpActionQueue.front();
 		VERIFY		(l_tpEntityAction);
-#ifdef _DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
-		
+
 		if (m_tpCurrentEntityAction != l_tpEntityAction)
 			l_tpEntityAction->initialize	();
 
@@ -254,27 +246,16 @@ void CScriptEntity::ProcessScripts()
 		if (!l_tpEntityAction->CheckIfActionCompleted())
 			break;
 
-#ifdef _DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
-
 		vfFinishAction(l_tpEntityAction);
 
-#ifdef DEBUG
-		if (psAI_Flags.is(aiLua))
-			Msg("Entity Action removed!!!");
-#endif
-		if (true /*psAI_Flags.is(aiLua)*/ )
-		{
-			object().callback(GameObject::eActionTypeRemoved)(object().lua_game_object(),u32(eActionTypeRemoved));
-		}
+		object().callback(GameObject::eActionTypeRemoved)(object().lua_game_object(), u32(eActionTypeRemoved));
 
 		xr_delete	(l_tpEntityAction);
 		m_tpActionQueue.erase(m_tpActionQueue.begin());
 	}
 
-	if (m_tpActionQueue.empty()) {
+	if (m_tpActionQueue.empty()) 
+	{
 #ifdef DEBUG
 		if (empty_queue)
 			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"Object %s has an empty script queue!",*object().cName());
@@ -587,10 +568,6 @@ bool CScriptEntity::bfScriptAnimation()
 			if (m_tpScriptAnimation == m_tpNextAnimation)
 				return			(true);
 
-#ifdef DEBUG
-			//if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-			//	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
-#endif
 			m_tpScriptAnimation = m_tpNextAnimation;
 			IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());
 			LPCSTR				animation_id = *GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay;

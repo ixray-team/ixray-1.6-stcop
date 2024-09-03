@@ -96,9 +96,9 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 		return true;
 	}
 		
-	TempPriorityNode.push_back({0, FromID});
+	TempPriorityNode.push_back({0.f, FromID});
 	TempCameFrom.insert({FromID, FromID});
-	TempCostSoFar.insert( {FromID, 0});
+	TempCostSoFar.insert( {FromID, 0.f});
 
 	
 	while (!TempPriorityNode.empty())
@@ -201,9 +201,9 @@ bool IGameGraph::SearchNearestVertex(u32 start_vertex_id, u8 LevelID, u32& Resul
 
 	u32 FromID = start_vertex_id;
 		
-	TempPriorityNode.push_back({0, FromID});
+	TempPriorityNode.push_back({0.f, FromID});
 	TempCameFrom.insert({FromID, FromID});
-	TempCostSoFar.insert( {FromID, 0});
+	TempCostSoFar.insert( {FromID, 0.f });
 
 	
 	while (!TempPriorityNode.empty())
