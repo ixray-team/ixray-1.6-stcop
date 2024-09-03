@@ -41,12 +41,12 @@ end
 --' Инициализация
 function sim_squad_scripted:init_squad()
 	self.player_id 			= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "faction", self, true, "")
-	self.action_condlist	= xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", ""))
-	self.death_condlist		= xr_logic.parse_condlist(self, "death_condlist", "on_death", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "on_death", self, false, "", ""))
-	self.invulnerability	= xr_logic.parse_condlist(self, "invulnerability", "invulnerability", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "invulnerability", self, false, "", ""))
+	self.action_condlist	= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "target_smart", self, false, "", "")
+	self.death_condlist		= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "on_death", self, false, "", "")
+	self.invulnerability	= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "invulnerability", self, false, "", "")
 	self.relationship		= self.relationship or utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "relationship", self, false, "", nil)
 	self.sympathy			= utils.cfg_get_number(sim_board.squad_ltx, self.settings_id, "sympathy", self, false, nil)
-	self.show_spot			= xr_logic.parse_condlist(self, "show_spot", "show_spot", utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "show_spot", self, false, "", "false"))
+	self.show_spot			= utils.cfg_get_string(sim_board.squad_ltx, self.settings_id, "show_spot", self, false, "", "false")
 
 	self.always_walk 		= utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_walk", self, false)
 	self.always_arrived		= utils.cfg_get_bool(sim_board.squad_ltx, self.settings_id, "always_arrived", self, false)
@@ -87,7 +87,7 @@ end
 
 --' Возвращает скриптовую цель.
 function sim_squad_scripted:get_script_target()
-	local new_target = xr_logic.pick_section_from_condlist(db.actor, self, self.action_condlist)
+	local new_target = xr_parser.pick_section_from_condlist(db.actor, self, "sim_squad_scripted", "action_condlist", self.action_condlist)
 
 	if new_target == nil then
 --		printf("[%s] get_script_target nil_condlist", self.id)
@@ -411,7 +411,7 @@ function sim_squad_scripted:on_npc_death(npc)
 		end
 
 		if self.death_condlist ~= nil then
-			xr_logic.pick_section_from_condlist(db.actor, self, self.death_condlist)
+			xr_parser.pick_section_from_condlist(db.actor, self, "sim_squad_scripted", "death_condlist", self.death_condlist)
 		end
 		self.board:remove_squad(self)
 		return
@@ -450,7 +450,7 @@ function sim_squad_scripted:check_invulnerability()
 	if self.squad_online ~= true then
 		return
 	end
-	local invulnerability = xr_logic.pick_section_from_condlist(db.actor, self, self.invulnerability) == "true"
+	local invulnerability = xr_parser.pick_section_from_condlist(db.actor, self, "sim_squad_scripted", "invulnerability", self.invulnerability) == "true"
 
 	for k in self:squad_members() do
 		local npc_st = db.storage[k.id]
@@ -537,8 +537,8 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 	local spawn_point = utils.cfg_get_string(ini, self.settings_id, "spawn_point", self, false, "","self") or
 						utils.cfg_get_string(spawn_smart.ini, smart_terrain.SMART_TERRAIN_SECT, "spawn_point", self, false,"","self")
-	spawn_point = xr_logic.parse_condlist(self, "spawn_point", "spawn_point", spawn_point)
-	spawn_point = xr_logic.pick_section_from_condlist(db.actor, self, spawn_point)
+	spawn_point = spawn_point
+	spawn_point = xr_parser.pick_section_from_condlist(db.actor, self, "sim_squad_scripted", "spawn_point", spawn_point)
 
 	--print_table(debug.getinfo(1))
 	printf("SPAWN SMART %s", spawn_smart:name())

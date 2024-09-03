@@ -637,6 +637,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			}
 		}
 
+		if (string_length == 0)
+			return pResult;
+
 		if (current_section_size)
 		{
 			current_info.setText(current_section_name, current_section_size);
