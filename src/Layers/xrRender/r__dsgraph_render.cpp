@@ -55,6 +55,8 @@ void __fastcall pLandscape_1(mapLandscape_Node* N)
 
 void R_dsgraph_structure::r_dsgraph_render_landscape(u32 pass, bool bClear)
 {
+	PROF_EVENT("Landscape Z Prepass");
+
 	RCache.set_xform_world(Fidentity);
 
 	if (pass == 0)

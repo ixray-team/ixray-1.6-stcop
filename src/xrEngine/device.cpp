@@ -31,6 +31,7 @@ ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API BOOL g_bRendering = FALSE;
 extern ENGINE_API float psHUD_FOV;
+static HANDLE RenderEventMT = nullptr;
 
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
@@ -38,6 +39,8 @@ ref_light	precache_light = 0;
 BOOL CRenderDevice::Begin()
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: Begin");
+
 	if (g_dedicated_server)
 	{
 		return TRUE;
@@ -82,6 +85,7 @@ void CRenderDevice::Clear	()
 void CRenderDevice::End		(void)
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: End");
 	if (g_dedicated_server) {
 		return;
 	}
@@ -122,7 +126,33 @@ void CRenderDevice::End		(void)
 }
 
 #ifndef _EDITOR
+void mt_3rdThread(void* ptr)
+{
+	PROF_THREAD("3rd Thread");
+	while (true)
+	{
+		if (Device.mt_bMustExit)
+		{
+			return;
+		}
+
+		WaitForSingleObject(RenderEventMT, INFINITE);
+		PROF_EVENT("CPU Frame: Render");
+
+		{
+			PROF_EVENT("Discord Sync");
+			g_Discord.Update();
+		}
+
+		for (u32 pit = 0; pit < Device.seqParallelRender.size(); pit++)
+			Device.seqParallelRender[pit]();
+
+		ResetEvent(RenderEventMT);
+	}
+}
+
 volatile u32 mt_Thread_marker = 0x12345678;
+
 void mt_Thread(void* ptr)
 {
 	PROF_THREAD("SecondaryThread");
@@ -138,25 +168,20 @@ void mt_Thread(void* ptr)
 			Device.mt_csEnter.Leave();					// Important!!!
 			return;
 		}
+		PROF_EVENT("CPU Frame: Secondary");
 
 		// we has granted permission to execute
 		mt_Thread_marker = Device.dwFrame;
-
 		{
-			PROF_EVENT("Discord Sync")
-			g_Discord.Update();
-		}
-
-		{
-			PROF_EVENT("Parallel Sync")
-				for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-					Device.seqParallel[pit]();
+			PROF_EVENT("Parallel Sync");
+			for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+				Device.seqParallel[pit]();
 
 			Device.seqParallel.resize(0);
 		}
 
 		{
-			PROF_EVENT("Frame")
+			PROF_EVENT("OnFrame");
 			Device.seqFrameMT.Process(rp_Frame);
 		}
 
@@ -212,6 +237,7 @@ void CRenderDevice::callback(const u32& cb_time, const std::function<void()> &fu
 {
 	m_time_callbacks.insert({dwTimeGlobal+cb_time,func});
 }
+
 void CRenderDevice::on_idle		()
 {
 #ifndef _EDITOR
@@ -258,8 +284,10 @@ void CRenderDevice::on_idle		()
 	{
 		if (g_pGamePersistent != nullptr)
 		{
+			PROF_EVENT("Update Particles");
 			g_pGamePersistent->UpdateParticles();
 		}
+
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
 		    if (Device.dwTimeGlobal >= it->first)
@@ -313,6 +341,8 @@ void CRenderDevice::on_idle		()
 
 	vCameraPosition_saved	= vCameraPosition;
 
+	SetEvent(RenderEventMT);
+
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
@@ -340,16 +370,9 @@ void CRenderDevice::on_idle		()
 	// *** Suspend threads
 	// Capture startup point
 	// Release end point - allow thread to wait for startup point
-	mt_csEnter.Enter						();
-	mt_csLeave.Leave						();
-
-	// Ensure, that second thread gets chance to execute anyway
-	if (dwFrame!=mt_Thread_marker)			{
-		for (u32 pit=0; pit<Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]			();
-		Device.seqParallel.resize(0);
-		seqFrameMT.Process					(rp_Frame);
-	}
+	PROF_EVENT("Wait secondary thread");
+	mt_csEnter.Enter();
+	mt_csLeave.Leave();
 
 	Device.EndRender();
 	if (!b_is_Active)
@@ -406,7 +429,9 @@ void CRenderDevice::Run()
 	mt_bMustExit = FALSE;
 
 	g_AppInfo.MainThread = GetCurrentThread();
+	RenderEventMT = CreateEventA(nullptr, true, false, "Render Helper Event");
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
+	thread_spawn(mt_3rdThread, "X-RAY 3rd thread", 0, 0);
 
 	// Message cycle
 	seqAppStart.Process(rp_AppStart);
@@ -426,10 +451,11 @@ void CRenderDevice::Run()
 u32 app_inactive_time		= 0;
 u32 app_inactive_time_start = 0;
 
-void ProcessLoading(RP_FUNC *f);
+void ProcessLoading();
 void CRenderDevice::FrameMove()
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: Frame Move");
 	dwFrame			++;
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
 
@@ -458,16 +484,16 @@ void CRenderDevice::FrameMove()
 		dwTimeDelta		= dwTimeGlobal-_old_global;
 	}
 
-	Statistic->EngineTOTAL.Begin	();
-	ProcessLoading				(rp_Frame);
-	Statistic->EngineTOTAL.End	();
+	Statistic->EngineTOTAL.Begin();
+	ProcessLoading();
+	Statistic->EngineTOTAL.End();
 #endif
 }
 
-void ProcessLoading				(RP_FUNC *f)
+void ProcessLoading()
 {
-	Device.seqFrame.Process				(rp_Frame);
-	g_bLoaded							= TRUE;
+	Device.seqFrame.Process(rp_Frame);
+	g_bLoaded = TRUE;
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;

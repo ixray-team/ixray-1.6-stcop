@@ -133,7 +133,7 @@ static class cl_alpha_ref	: public R_constant_setup
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
-void					CRender::create					()
+void CRender::create()
 {
 	Device.seqFrame.Add	(this,REG_PRIORITY_HIGH+0x12345678);
 
@@ -319,17 +319,9 @@ void CRender::reset_end() {
 	m_bFirstFrameAfterReset = true;
 }
 
-void CRender::OnFrame() {
+void CRender::OnFrame() 
+{
 	Models->DeleteQueue();
-	if(ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC)) {
-		// MT-details (@front)
-		Device.seqParallel.insert(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
-
-		// MT-HOM (@front)
-		Device.seqParallel.insert(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM, &CHOM::MT_RENDER));
-	}
 }
 
 // Implementation

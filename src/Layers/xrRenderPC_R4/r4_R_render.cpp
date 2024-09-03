@@ -136,6 +136,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 		// Determine visibility for static geometry hierrarhy
 		if(psDeviceFlags.test(rsDrawStatic))
 		{
+			PROF_EVENT("static geometry hierrarhy");
+
 			if (dont_test_sectors)
 			{
 				CSector*	sector		= (CSector*)Sectors[0];
@@ -213,36 +215,36 @@ void CRender::render_main	(bool deffered, bool zfill)
 				if (spatial->spatial.type & STYPE_RENDERABLE && psDeviceFlags.test(rsDrawDynamic))
 				{
 					// renderable
-					if	(IRenderable* renderable = spatial->dcast_Renderable())
+					if (IRenderable* renderable = spatial->dcast_Renderable())
 					{
-						if(Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P)<_sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
+						if (Device.vCameraPosition.distance_to_sqr(spatial->spatial.sphere.P) < _sqr(g_pGamePersistent->Environment().CurrentEnv->fog_distance))
 						{
-							if(CalcSSADynamic(spatial->spatial.sphere.P,spatial->spatial.sphere.R)>spatial->spatial.ssa_dyn_factor&&GetDistFromCamera(spatial->spatial.sphere.P)<spatial->spatial.ssa_d_cam)
+							if (CalcSSADynamic(spatial->spatial.sphere.P, spatial->spatial.sphere.R) > spatial->spatial.ssa_dyn_factor && GetDistFromCamera(spatial->spatial.sphere.P) < spatial->spatial.ssa_d_cam)
 							{
-								if(deffered)
+								if (deffered)
 								{
 									CKinematics* pKin = (CKinematics*)renderable->renderable.visual;
-									if(pKin)
+									if (pKin)
 									{
 										pKin->CalculateBones(TRUE);
 										pKin->CalculateWallmarks();
 										//dbg_text_renderer(spatial->spatial.sphere.P);
 									}
 								}
-								if(spatial->spatial.sphere.R>1.f)
+								if (spatial->spatial.sphere.R > 1.f)
 								{
 									// Rendering
-									set_Object						(renderable);
+									set_Object(renderable);
 									renderable->renderable_Render();
-									set_Object						(0);
+									set_Object(0);
 								}
 							}
-							if(spatial->spatial.sphere.R<=1.f)
+							if (spatial->spatial.sphere.R <= 1.f)
 							{
 								// Rendering
-								set_Object						(renderable);
+								set_Object(renderable);
 								renderable->renderable_Render();
-								set_Object						(0);
+								set_Object(0);
 							}
 						}
 					}
@@ -320,12 +322,20 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 			}
 		}
-		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
+		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))	
+		{
+			PROF_EVENT("Render HUD");
+			g_hud->Render_Last();		// HUD
+		}
 	}
 	else
 	{
-		set_Object									(0);
-		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))	g_hud->Render_Last();		// HUD
+		set_Object(0);
+		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase == PHASE_NORMAL))
+		{
+			PROF_EVENT("Render HUD");
+			g_hud->Render_Last();		// HUD
+		}
 	}
 }
 

@@ -989,6 +989,7 @@ static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
 void CActor::UpdateCL	()
 {
+	PROF_EVENT("CActor UpdateCL");
 	if(g_Alive() && Level().CurrentViewEntity() == this)
 	{
 		if(CurrentGameUI() && nullptr==CurrentGameUI()->TopInputReceiver())
@@ -1293,6 +1294,7 @@ void CActor::set_state_box(u32	mstate)
 
 void CActor::shedule_Update	(u32 DT)
 {
+	PROF_EVENT("CActor shedule_Update");
 	setSVU							(OnServer());
 //.	UpdateInventoryOwner			(DT);
 

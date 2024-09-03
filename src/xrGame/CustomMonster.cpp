@@ -328,7 +328,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
 	if (g_Alive()) {
-		if ( false && g_mt_config.test(mtAiVision) )
+		if (g_mt_config.test(mtAiVision) )
 #ifndef DEBUG
 			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 #else // DEBUG
@@ -419,7 +419,8 @@ void CCustomMonster::net_update::lerp(CCustomMonster::net_update& A, CCustomMons
 
 void CCustomMonster::update_sound_player()
 {
-	sound().update	(client_update_fdelta());
+	PROF_EVENT("AI: [Monsters] Update sounds");
+	sound().update(client_update_fdelta());
 }
 
 void CCustomMonster::UpdateCL	()
@@ -660,7 +661,7 @@ void CCustomMonster::eye_pp_s2				( )
 
 void CCustomMonster::Exec_Visibility	( )
 {
-	//if (0==Sector())				return;
+	PROF_EVENT("AI: Exec_Visibility");
 	if (!g_Alive())					return;
 
 	Device.Statistic->AI_Vis.Begin	();

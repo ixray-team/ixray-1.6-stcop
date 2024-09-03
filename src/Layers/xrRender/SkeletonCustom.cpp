@@ -674,7 +674,9 @@ void CKinematics::AddWallmark(const Fmatrix* parent_xform, const Fvector3& start
 
 void CKinematics::CalculateWallmarks()
 {
-	if (!wallmarks.empty()&&(wm_frame!=RDEVICE.dwFrame)){
+	PROF_EVENT("Calculate Wallmarks");
+	if (!wallmarks.empty()&&(wm_frame!=RDEVICE.dwFrame))
+	{
 		wm_frame			= RDEVICE.dwFrame;
 		bool need_remove	= false; 
 		for (SkeletonWMVecIt it=wallmarks.begin(); it!=wallmarks.end(); it++){

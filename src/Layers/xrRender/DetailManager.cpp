@@ -223,6 +223,12 @@ void CDetailManager::Load		()
 	swing_desc[1].rot1	= pSettings->r_float("details","swing_fast_rot1");
 	swing_desc[1].rot2	= pSettings->r_float("details","swing_fast_rot2");
 	swing_desc[1].speed	= pSettings->r_float("details","swing_fast_speed");
+
+	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
+	{
+		// MT-details (@front)
+		Device.seqParallelRender.push_back(fastdelegate::FastDelegate0<>(this, &CDetailManager::MT_CALC));
+	}
 }
 #endif
 void CDetailManager::Unload		()
@@ -389,9 +395,6 @@ void CDetailManager::Render	()
 	if (!psDeviceFlags.is(rsDetails))	return;
 #endif
 
-	// MT
-	MT_SYNC					();
-
 	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
 
 #ifndef _EDITOR
@@ -419,29 +422,33 @@ void CDetailManager::Render	()
 	m_frame_rendered		= RDEVICE.dwFrame;
 }
 
-void	CDetailManager::MT_CALC		()
+void CDetailManager::MT_CALC()
 {
 #ifndef _EDITOR
-	if (0==RImplementation.Details)		return;	// possibly deleted
-	if (0==dtFS)						return;
-	if (!psDeviceFlags.is(rsDetails))	return;
-#endif    
+	PROF_EVENT("Render Details");
 
-	MT.Enter					();
-	if (m_frame_calc!=RDEVICE.dwFrame)	
-		if ((m_frame_rendered+1)==RDEVICE.dwFrame) //already rendered
-		{
-			Fvector		EYE				= RDEVICE.vCameraPosition_saved;
+	if (0 == RImplementation.Details)
+		return;	// possibly deleted
 
-			int s_x	= iFloor			(EYE.x/dm_slot_size+.5f);
-			int s_z	= iFloor			(EYE.z/dm_slot_size+.5f);
+	if (0 == dtFS)						
+		return;
 
-			RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin	();
-			cache_Update				(s_x,s_z,EYE,dm_max_decompress);
-			RDEVICE.Statistic->RenderDUMP_DT_Cache.End	();
+	if (!psDeviceFlags.is(rsDetails))	
+		return;
+#endif
 
-			UpdateVisibleM				();
-			m_frame_calc				= RDEVICE.dwFrame;
-		}
-	MT.Leave					        ();
+	if (m_frame_calc != RDEVICE.dwFrame && (m_frame_rendered + 1) == RDEVICE.dwFrame)
+	{
+		Fvector		EYE = RDEVICE.vCameraPosition_saved;
+
+		int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+		int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+
+		RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
+		cache_Update(s_x, s_z, EYE, dm_max_decompress);
+		RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
+
+		UpdateVisibleM();
+		m_frame_calc = RDEVICE.dwFrame;
+	}
 }

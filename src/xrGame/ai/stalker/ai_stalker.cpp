@@ -839,6 +839,8 @@ void CAI_Stalker::update_object_handler	()
 	if (!g_Alive())
 		return;
 
+	PROF_EVENT("AI: [Stalker] Update Handler");
+
 	try {
 		try {
 			CObjectHandler::update	();
@@ -1010,11 +1012,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		agent_manager().update			();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-//		bool			check = !!memory().enemy().selected();
-#if 0//def DEBUG
-		memory().visual().check_visibles();
-#endif
-		if ( false && g_mt_config.test(mtAiVision) )
+		if (g_mt_config.test(mtAiVision) )
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 		else {
 			START_PROFILE("stalker/schedule_update/vision")

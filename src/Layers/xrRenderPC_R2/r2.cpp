@@ -297,7 +297,11 @@ void CRender::reset_begin()
 
 	if (b_loaded)
 	{
-		Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+		auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+
+		if (I != Device.seqParallelRender.end())
+			Device.seqParallelRender.erase(I);
+		
 		Details->Unload();
 		xr_delete(Details);
 	}
@@ -343,16 +347,7 @@ void CRender::OnFrame()
 }*/
 void CRender::OnFrame()
 {
-	Models->DeleteQueue			();
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		// MT-details (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(Details,&CDetailManager::MT_CALC));
-
-		// MT-HOM (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
-	}
+	Models->DeleteQueue();
 }
 
 
