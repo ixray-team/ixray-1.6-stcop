@@ -12,7 +12,7 @@ function set_combat_type(npc, actor, t)
 
 	local script_combat_type = nil
 	if t.combat_type ~= nil then
-		script_combat_type = xr_logic.pick_section_from_condlist(actor, npc, t.combat_type.condlist)
+		script_combat_type = xr_parser.pick_section_from_condlist(actor, npc, "xr_combat", "combat_type", t.combat_type.condlist)
 		if script_combat_type == "nil" then
 			script_combat_type = nil
 		end
@@ -78,7 +78,7 @@ function set_combat_checker(npc, ini, scheme, section)
 		st.logic      = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 		st.enabled    = true
 
-		st.combat_type = xr_logic.cfg_get_condlist(ini, section, "combat_type", npc)
+		st.combat_type = xr_logic.cfg_get_condlist2(ini, section, "combat_type", npc)
 
 		if st.combat_type == "monolith" then
 			st.combat_type  = nil
@@ -86,7 +86,7 @@ function set_combat_checker(npc, ini, scheme, section)
 
 		-- зомбированные сражаются по умолчанию на зомбированной боевой схеме
 		if not st.combat_type and is_zombied then
-			st.combat_type = { condlist = xr_logic.parse_condlist(npc, section, "", "zombied") }
+			st.combat_type = { condlist = "zombied" }
 		end
 
 		if st.combat_type then
