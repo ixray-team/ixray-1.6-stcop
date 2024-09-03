@@ -169,10 +169,15 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
+#ifdef DEBUG
 					else
 					{
-						current_info.clearText();
+						//R_ASSERT(strlen(current_info.getTextName()) > 0 &&
+						//	"can't be you found section and set but clear "
+						//	"current_section_name, but your section name in "
+						//	"current_info must contain not empty string!");
 					}
+#endif
 				}
 
 				was_found_section = false;
@@ -1518,7 +1523,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 				for (int i = 0; i < nParsedBufferSize; ++i)
 				{
 					// because in lua indexing starts from 1 not from 0!
-					params_to_lua[i+1] =
+					params_to_lua[i + 1] =
 						static_cast<const char*>(&parsed_params[i][0]);
 				}
 
@@ -1686,7 +1691,8 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 
 					xr_embedded_params_t parsed_params{};
 
-					size_t nParsedBufferSize = parseParams(data.getParams(), parsed_params);
+					size_t nParsedBufferSize =
+						parseParams(data.getParams(), parsed_params);
 
 					static_assert(ixray::kXRParserParamsBufferSize >= 1 &&
 						"can't be negative or zero!");
@@ -1699,7 +1705,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 					for (int i = 0; i < nParsedBufferSize; ++i)
 					{
 						// because in lua indexing starts from 1 not from 0!
-						params_to_lua[i+1] =
+						params_to_lua[i + 1] =
 							static_cast<const char*>(&parsed_params[i][0]);
 					}
 
@@ -1728,20 +1734,22 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 						{
 						case 0:
 						{
-							function_from_xr_effects(pClientActor,
-								pClientObject, params_to_lua);
+							function_from_xr_effects(
+								pClientActor, pClientObject, params_to_lua);
 
 							break;
 						}
 						case 1:
 						{
-							function_from_xr_effects(pClientActor, pServerObject, params_to_lua);
+							function_from_xr_effects(
+								pClientActor, pServerObject, params_to_lua);
 
 							break;
 						}
 						case 2:
 						{
-							function_from_xr_effects(pServerActor, pServerObject, params_to_lua);
+							function_from_xr_effects(
+								pServerActor, pServerObject, params_to_lua);
 
 							break;
 						}
@@ -1894,11 +1902,14 @@ size_t CScriptXRParser::parseParams(
 				}
 				else if (nCurrentSymbol == ':')
 				{
-					std::memcpy(&result[nIndex][0], argument,
-						argument_size * sizeof(char));
-					memset(argument, 0, sizeof(argument));
-					argument_size = 0;
-					++nIndex;
+					if (argument_size > 0)
+					{
+						std::memcpy(&result[nIndex][0], argument,
+							argument_size * sizeof(char));
+						memset(argument, 0, sizeof(argument));
+						argument_size = 0;
+						++nIndex;
+					}
 				}
 				else if (nCurrentSymbol == ' ' || nCurrentSymbol == '\n')
 				{
