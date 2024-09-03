@@ -1194,7 +1194,7 @@ function cfg_get_overrides(ini, section, npc)
 	end
 
 --	l.wounded_enabled   = utils.cfg_get_bool(ini, section, "wounded_enabled", npc, false)
-	l.combat_ignore     = cfg_get_condlist(ini, section, "combat_ignore_cond", npc)
+	l.combat_ignore     = cfg_get_condlist2(ini, section, "combat_ignore_cond", npc)
 	l.combat_ignore_keep_when_attacked = utils.cfg_get_bool(ini, section, "combat_ignore_keep_when_attacked", npc, false)
 	l.combat_type       = cfg_get_condlist(ini, section, "combat_type", npc)
 	l.on_combat         = cfg_get_condlist2(ini, section, "on_combat", npc)

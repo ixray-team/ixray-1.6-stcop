@@ -80,7 +80,7 @@ function is_enemy(obj, enemy, st, not_check_sim)
 	if overrides and
 		 overrides.combat_ignore
 	then
-		local ret_value = xr_logic.pick_section_from_condlist( enemy, obj, overrides.combat_ignore.condlist )
+		local ret_value = xr_parser.pick_section_from_condlist( enemy, obj, "xr_combat_ignore", "combat_ignore", overrides.combat_ignore.condlist )
 		if ret_value == "true" then
 			--printf("pl:Disabling_memory_object[1] for stalker[%s] enemy name [%s] in section[%s]",obj:name(), enemy:name(),storage.active_section)
 --			obj:enable_memory_object( enemy, false )
