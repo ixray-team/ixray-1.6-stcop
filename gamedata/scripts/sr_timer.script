@@ -41,7 +41,7 @@ function action_timer:update(delta)
 			 (self.st.type == "inc" and value_time >= v.dist)
 		then
 			-- Обработка значения.
-			xr_logic.switch_to_section(self.object, self.st.ini, xr_logic.pick_section_from_condlist(db.actor, self.object, v.state))
+			xr_logic.switch_to_section(self.object, self.st.ini, xr_parser.pick_section_from_condlist(db.actor, self.object, "sr_timer", "state", v.state))
 		end
 	end
 end
@@ -112,7 +112,7 @@ function parse_data(npc,s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist(npc, dist, state, state)
+				dat.state = state
 			end
 			table.insert(t, dat)
 		end
