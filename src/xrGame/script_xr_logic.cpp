@@ -169,15 +169,6 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
-#ifdef DEBUG
-					else
-					{
-						//R_ASSERT(strlen(current_info.getTextName()) > 0 &&
-						//	"can't be you found section and set but clear "
-						//	"current_section_name, but your section name in "
-						//	"current_info must contain not empty string!");
-					}
-#endif
 				}
 
 				was_found_section = false;
