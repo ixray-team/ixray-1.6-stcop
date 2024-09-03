@@ -1105,6 +1105,26 @@ function cfg_get_condlist(ini, section, field, npc)
 	return t
 end
 
+function cfg_get_condlist2(ini, section, field, npc)
+	local str = utils.cfg_get_string(ini, section, field, npc, false, "")
+	if not str then
+		return nil
+	end
+
+	local par = utils.parse_params(str)
+	if not par[1] then
+		abort_syntax_error_in_cond(npc, section, field)
+	end
+
+	local t = {}
+
+	t.name = field
+	t.condlist = par[1]
+
+	return t
+end
+
+
 function add_condition(lst, at, cond)
 	if cond then
 		lst[at] = cond
