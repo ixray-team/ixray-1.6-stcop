@@ -668,7 +668,7 @@ function parse_data_1v(npc,s)
 --			printf("	[%s]=[%s][%s]", utils.to_str(dist), utils.to_str(state), utils.to_str(sound))
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist(npc, dist, state, state)
+				dat.state = state
 			end
 			t[tonumber(dist)] = dat
 		end

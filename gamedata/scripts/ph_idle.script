@@ -37,7 +37,7 @@ function action_idle:hit_callback(obj, amount, local_direction, who, bone_index)
 
 	printf("IDLE: hit_callback: obj='%s', amount=%d, who='%s', bone='%s'", obj:name(), amount, who_name, bone_index)
 	if self.st.hit_on_bone[bone_index] ~= nil then
-		local section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.hit_on_bone[bone_index].state)
+		local section = xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_idle", "hit_on_bone_"..tostring(bone_index), self.st.hit_on_bone[bone_index].state)
 		xr_logic.switch_to_section(obj, self.st.ini, section)
 		return
 	end
@@ -45,7 +45,7 @@ end
 function action_idle:use_callback(obj, actor)
 	if self.st.on_use then		
 		if xr_logic.switch_to_section(self.object, self.st.ini,
-		   xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_use.condlist)) then
+		   xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_idle", "on_use", self.st.on_use.condlist)) then
 			return true
 		end
 	end
@@ -69,7 +69,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	st.hit_on_bone = utils.parse_data_1v(npc, utils.cfg_get_string(ini, section, "hit_on_bone", npc, false, ""))
 	st.nonscript_usable = utils.cfg_get_bool(ini, section, "nonscript_usable", npc, false)
-	st.on_use    = xr_logic.cfg_get_condlist(ini, section, "on_use", npc)
+	st.on_use    = xr_logic.cfg_get_condlist2(ini, section, "on_use", npc)
 	
 	st.tips  = utils.cfg_get_string(ini, section, "tips", npc, false, "", "")
 	

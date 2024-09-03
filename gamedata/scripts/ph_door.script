@@ -240,7 +240,7 @@ function action_door:try_switch()
 	--printf("_bp: action_door: object '%s': try_switch", self.object:name())
 	if self.st.on_use then		
 		if xr_logic.switch_to_section(self.object, self.st.ini,
-		   xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_use.condlist)) then
+		   xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_door", "on_use", self.st.on_use.condlist)) then
 			return true
 		end
 	end
@@ -277,7 +277,7 @@ function action_door:hit_callback(obj, amount, local_direction, who, bone_index)
 	--printf("DOOR: hit_callback: obj='%s', amount=%d, who='%s', bone='%s'", obj:name(), amount, who_name, bone_index)
 	print_table(self.st.hit_on_bone)
 	if self.st.hit_on_bone[bone_index] ~= nil then
-		local section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.hit_on_bone[bone_index].state)
+		local section = xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_door", "hit_on_bone_"..tostring(bone_index), self.st.hit_on_bone[bone_index].state)
 		xr_logic.switch_to_section(obj, self.st.ini, section)
 		return
 	end
@@ -323,7 +323,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.snd_close_start = utils.cfg_get_string(ini, section, "snd_close_start", npc, false, "", "trader_door_close_start")
 	st.snd_close_stop  = utils.cfg_get_string(ini, section, "snd_close_stop", npc, false, "", "trader_door_close_stop")
 	
-	st.on_use    = xr_logic.cfg_get_condlist(ini, section, "on_use", npc)
+	st.on_use    = xr_logic.cfg_get_condlist2(ini, section, "on_use", npc)
 
 	if st.locked == true or st.not_for_npc == true then
 		if not npc:is_door_locked_for_npc() then	
