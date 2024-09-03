@@ -110,8 +110,8 @@ function mob_remark:update(delta)
 		return
 	end
 ]]
-	if self.st.dialog_cond and xr_logic.pick_section_from_condlist(actor, self.object,
-	     self.st.dialog_cond.condlist) ~= nil then
+	if self.st.dialog_cond and xr_parser.pick_section_from_condlist(actor, self.object,
+	     "mob_remark","dialog_cond",self.st.dialog_cond.condlist) ~= nil then
 		--printf("_bp: enable talk")
 	     	if not self.object:is_talk_enabled() then
 			self.object:enable_talk()
@@ -161,7 +161,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	st.state           = mob_state_mgr.get_state(ini, section, npc)
 
-	st.dialog_cond    = xr_logic.cfg_get_condlist(ini, section, "dialog_cond", npc)
+	st.dialog_cond    = xr_logic.cfg_get_condlist2(ini, section, "dialog_cond", npc)
 	-- Не работает, т.к. при переключении схем в данный момент монстр всегда
 	-- уходит из под скрипта, соответственно, сбрасывает свою очередь actions.
 	--st.no_reset       = utils.cfg_get_bool(ini, section, "no_reset", npc, false)
