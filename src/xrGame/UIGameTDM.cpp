@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UIGameTDM.h"
 
 #include "game_cl_base.h"
@@ -151,7 +151,7 @@ void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 	if(fraglimit)
 		xr_sprintf(str,"%d", fraglimit);
 	else
-		xr_sprintf(str,"%s", "--");
+		xr_sprintf(str,"%s","∞");
 
 	m_pFragLimitIndicator->SetText(str);
 }

@@ -729,7 +729,7 @@ void CUIGameCTA::SetScore(s32 max_score, s32 greenTeamScore, s32 blueTeamScore)
 	m_team2_score->SetText(str);
 	if (max_score <= 0)
 	{
-		xr_strcpy(str,"--");
+		xr_strcpy(str,"∞");
 	} else
 	{
 		xr_sprintf(str,"%d", max_score);

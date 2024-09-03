@@ -1463,8 +1463,8 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	u32 at_size = (u32)m_ammoTypes.size();
 	if ( unlimited_ammo() || at_size == 0 )
 	{
-		info.fmj_ammo._set( "--" );
-		info.ap_ammo._set( "--" );
+		info.fmj_ammo._set("∞");
+		info.ap_ammo._set("∞");
 	}
 	else
 	{
