@@ -13,7 +13,7 @@ function simulation_objects_registry:register(obj)
 end
 
 function simulation_objects_registry:update_avaliability(obj)
-	if xr_logic.pick_section_from_condlist(db.actor or alife():actor(), obj, obj.sim_avail) == "true" and obj:sim_available() then
+	if xr_parser.pick_section_from_condlist(db.actor or alife():actor(), obj, "simulation_objects_registry", "sim_avail", obj.sim_avail) == "true" and obj:sim_available() then
 		self.objects[obj.id] = obj
 	else
 		self.objects[obj.id] = nil
@@ -40,13 +40,13 @@ function simulation_objects_registry:get_props(obj)
 	for j=0,n-1 do
 		local result, prop_name, prop_condlist = props_ini:r_line(props_section,j,"","")
 		if prop_name == "sim_avail" then
-			obj.sim_avail = xr_logic.parse_condlist(nil, "simulation_object", "sim_avail", prop_condlist)
+			obj.sim_avail = prop_condlist
 		else
 			obj.props[prop_name] = prop_condlist
 		end
 	end
 	if obj.sim_avail == nil then
-		obj.sim_avail = xr_logic.parse_condlist(nil, "simulation_object", "sim_avail", "true")
+		obj.sim_avail = "true"
 	end
 end
 

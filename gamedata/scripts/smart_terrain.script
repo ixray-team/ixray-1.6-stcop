@@ -949,7 +949,7 @@ function se_smart_terrain:show()
 	local player = self.player_name
 	local spot = "neutral"
 
-	if self.sim_avail == nil or xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) == "true" then
+	if self.sim_avail == nil or xr_parser.pick_section_from_condlist(db.actor or alife():actor(), self, "smart_terrain", "sim_avail", self.sim_avail) == "true" then
 		spot = "friend"
 	else
 		spot = "enemy"
@@ -1399,7 +1399,7 @@ function se_smart_terrain:try_respawn()
 	if self.last_respawn_update == nil or curr_time:diffSec(self.last_respawn_update) > self.respawn_time then
 		self.last_respawn_update = curr_time
 
-		if self.sim_avail ~= nil and xr_logic.pick_section_from_condlist(db.actor or alife():actor(), self, self.sim_avail) ~= "true" then return end
+		if self.sim_avail ~= nil and xr_parser.pick_section_from_condlist(db.actor or alife():actor(), self, "smart_terrain", "sim_avail", self.sim_avail) ~= "true" then return end
 
 		local squad_count = smart_terrain_squad_count(self.board.smarts[self.id].squads)
 		if self.max_population <= squad_count then printf("%s cannot respawn due to squad_count %s of %s", self:name(), self.max_population, squad_count) return end
