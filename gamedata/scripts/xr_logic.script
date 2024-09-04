@@ -1081,7 +1081,7 @@ function cfg_get_two_strings_and_condlist(ini, section, field, npc)
 	t.name = field
 	t.v1 = par[1]
 	t.v2 = par[2]
-	t.condlist = parse_condlist(npc, section, field, par[3])
+	t.condlist = par[3]
 
 	return t
 end
