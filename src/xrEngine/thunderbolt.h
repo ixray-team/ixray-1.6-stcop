@@ -15,41 +15,40 @@ class ENGINE_API CLAItem;
 #include "../Include/xrRender/ThunderboltDescRender.h"
 #include "../Include/xrRender/ThunderboltRender.h"
 
-#	define	INGAME_EDITOR_VIRTUAL
-
 class CEnvironment;
 
 struct SThunderboltDesc
 {
 	// geom
-	//IRender_DetailModel*		l_model;
 	FactoryPtr<IThunderboltDescRender>	m_pRender;
-    // sound
-    ref_sound					snd;
-    // gradient
+
+	// sound
+	ref_sound					snd;
+
+	// gradient
 	struct SFlare
 	{
-    	float					fOpacity;
-	    Fvector2				fRadius;
-        shared_str				texture;
-        shared_str				shader;
-        //ref_shader				hShader;
+		float					fOpacity;
+		Fvector2				fRadius;
+		shared_str				texture;
+		shared_str				shader;
+		//ref_shader				hShader;
 		FactoryPtr<IFlareRender>	m_pFlare;
-    	SFlare()				{ fOpacity = 0; fRadius.set(0.f,0.f);}
+		SFlare()				{ fOpacity = 0; fRadius.set(0.f,0.f);}
 	};
-    SFlare*						m_GradientTop;
-    SFlare*						m_GradientCenter;
-    shared_str					name;
-	CLAItem*					color_anim;
-public:
-								SThunderboltDesc		();
-	INGAME_EDITOR_VIRTUAL	    ~SThunderboltDesc		();
-						  void	load					(CInifile& pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_top_gradient		(CInifile& pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_center_gradient	(CInifile& pIni, shared_str const& sect);
-};
 
-#undef INGAME_EDITOR_VIRTUAL
+	SFlare*						m_GradientTop;
+	SFlare*						m_GradientCenter;
+	shared_str					name;
+	CLAItem*					color_anim;
+
+public:
+			SThunderboltDesc		();
+			~SThunderboltDesc		();
+	void	load(CInifile& pIni, shared_str const& sect);
+	void	create_top_gradient(CInifile& pIni, shared_str const& sect);
+	void	create_center_gradient(CInifile& pIni, shared_str const& sect);
+};
 
 struct SThunderboltCollection
 {
@@ -77,31 +76,31 @@ protected:
 	CollectionVec				collection;
 	SThunderboltDesc*			current;
 private:
-    Fmatrix				  		current_xform;
+	Fmatrix				  		current_xform;
 	Fvector3					current_direction;
 
 	FactoryPtr<IThunderboltRender>	m_pRender;
 	//ref_geom			  		hGeom_model;
-    // states
+	// states
 	enum EState
 	{
-        stIdle,
+		stIdle,
 		stWorking
 	};
 	EState						state;
 
 	//ref_geom			  		hGeom_gradient;
 
-    Fvector						lightning_center;
-    float						lightning_size;
-    float						lightning_phase;
+	Fvector						lightning_center;
+	float						lightning_size;
+	float						lightning_phase;
 
-    float						life_time;
-    float						current_time;
-    float						next_lightning_time;
+	float						life_time;
+	float						current_time;
+	float						next_lightning_time;
 	BOOL						bEnabled;
 
-    // params
+	// params
 //	Fvector2					p_var_alt;
 //	float						p_var_long;
 //	float						p_min_dist;
@@ -112,7 +111,7 @@ private:
 //	float						p_fog_color;
 private:
 	BOOL						RayPick				(const Fvector& s, const Fvector& d, float& range);
-    void						Bolt				(shared_str id, float period, float life_time);
+	void						Bolt				(shared_str id, float period, float life_time);
 public:                     
 								CEffect_Thunderbolt	(); 
 								~CEffect_Thunderbolt();
