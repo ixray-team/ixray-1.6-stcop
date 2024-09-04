@@ -42,7 +42,7 @@ function cam_effector_set:update()
 	if(self.playing) then
 		local eff = self.set[self.state][self.cur_effect]
 		if(eff) and (eff.looped~=false) then
-			local cond = xr_logic.pick_section_from_condlist(db.actor, nil, self.condlist)
+			local cond = xr_parser.pick_section_from_condlist(db.actor, nil, "sr_cutscene", "condlist", self.condlist)
 					if(cond=="false") then
 				self.looped = false
 --	            self:stop_effect()
@@ -67,14 +67,14 @@ function cam_effector_set:select_effect()
 		if(self.set.start[cur_effect]) then
 			self.cur_effect = cur_effect
 			if type(self.set.start[cur_effect].enabled)=="string" then
-				local condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "enabled_condlist", self.set.start[cur_effect].enabled)
-				if xr_logic.pick_section_from_condlist(db.actor, nil, condlist) == "false" then
+				local condlist = self.set.start[cur_effect].enabled
+				if xr_parser.pick_section_from_condlist(db.actor, nil, "sr_cutscene", "enable", condlist) == "false" then
 					return self:select_effect()
 				end
 			end
 			if(type(self.set.start[cur_effect].looped)=="string") then
 				self.looped = true
-				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.start[cur_effect].looped)
+				self.condlist = self.set.start[cur_effect].looped
 			end
 			return self.set.start[cur_effect]
 		else
@@ -87,14 +87,14 @@ function cam_effector_set:select_effect()
 		if(self.set.idle[cur_effect]) then
 			self.cur_effect = cur_effect
 			if type(self.set.idle[cur_effect].enabled)=="string" then
-				local condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "enabled_condlist", self.set.idle[cur_effect].enabled)
-				if xr_logic.pick_section_from_condlist(db.actor, nil, condlist) == "false" then
+				local condlist = self.set.idle[cur_effect].enabled
+				if xr_parser.pick_section_from_condlist(db.actor, nil, "sr_cutscene", "enabled_condlist", condlist) == "false" then
 					return self:select_effect()
 				end
 			end
 			if(type(self.set.idle[cur_effect].looped)=="string") then
 				self.looped = true
-				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.idle[cur_effect].looped)
+				self.condlist = self.set.idle[cur_effect].looped
 			end
 			return self.set.idle[cur_effect]
 		else
@@ -107,14 +107,14 @@ function cam_effector_set:select_effect()
 		if(self.set.finish[cur_effect]) then
 			self.cur_effect = cur_effect
 			if type(self.set.finish[cur_effect].enabled)=="string" then
-				local condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "enabled_condlist", self.set.finish[cur_effect].enabled)
-				if xr_logic.pick_section_from_condlist(db.actor, nil, condlist) == "false" then
+				local condlist = self.set.finish[cur_effect].enabled
+				if xr_parser.pick_section_from_condlist(db.actor, nil, "sr_cutscene", "enabled_condlist", condlist) == "false" then
 					return self:select_effect()
 				end
 			end
 			if(type(self.set.finish[cur_effect].looped)=="string") then
 				self.looped = true
-				self.condlist = xr_logic.parse_condlist(db.actor, "sr_cutscene", "effect_condlist", self.set.finish[cur_effect].looped)
+				self.condlist = self.set.finish[cur_effect].looped
 			end
 			return self.set.finish[cur_effect]
 		else
