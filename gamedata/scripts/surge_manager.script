@@ -64,13 +64,13 @@ function CSurgeManager:initialize()
 	if(ini:line_exist("settings", "condlist")) then
 		cond_string = ini:r_string("settings", "condlist")
 	end
-	self.condlist = xr_logic.parse_condlist(nil, "surge_manager", "condlist", cond_string)
+	self.condlist = cond_string
 
 	cond_string = "false"
 	if(ini:line_exist("settings", "survive")) then
 		cond_string = ini:r_string("settings", "survive")
 	end
-	self.survive = xr_logic.parse_condlist(nil, "surge_manager", "survive_condlist", cond_string)
+	self.survive = cond_string
 
 	self:init_surge_covers()
 
@@ -89,7 +89,7 @@ function CSurgeManager:init_surge_covers()
 			self.covers[self.count] = zone
 			if(ini:line_exist(id, "condlist")) then
 				self.covers[self.count].condlist = {}
-				self.covers[self.count].condlist = xr_logic.parse_condlist(npc, id, "condlist", ini:r_string(id, "condlist"))
+				self.covers[self.count].condlist = ini:r_string(id, "condlist")
 			end
 		end
 	end
@@ -104,7 +104,7 @@ function CSurgeManager:get_nearest_cover()
 	if(self.count>0) then
 		for k,v in pairs(hides) do
 			if (v.condlist) then
-				local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.condlist)
+				local sect = xr_parser.pick_section_from_condlist(db.actor, nil, "CSurgeManager", "cover_condlist", v.condlist)
 				if(sect~="true" and sect~=nil) then
 					table.remove(hides, k)
 				end
@@ -119,7 +119,7 @@ function CSurgeManager:get_nearest_cover()
 			local dist = v:position():distance_to(db.actor:position())
 			if(dist<nearest_cover_dist) then
 				if(v.condlist) then
-					local sect = xr_logic.pick_section_from_condlist(db.actor, nil, v.condlist)
+					local sect = xr_parser.pick_section_from_condlist(db.actor, nil, "CSurgeManager", "cover_condlist", v.condlist)
 					if(sect=="true") then
 						nearest_cover_id = v:id()
 						nearest_cover_dist = dist
@@ -132,7 +132,7 @@ function CSurgeManager:get_nearest_cover()
 		end
 		if(nearest_cover_id==hides[1]:id()) then
 			if(hides[1].condlist) then
-				local sect = xr_logic.pick_section_from_condlist(db.actor, nil, hides[1].condlist)
+				local sect = xr_parser.pick_section_from_condlist(db.actor, nil, "CSurgeManager", "cover_condlist", hides[1].condlist)
 				if(sect~="true" and sect~=nil) then
 					return nil
 				end
@@ -163,7 +163,7 @@ function CSurgeManager:update()
 		if(g_time:diffSec(self.last_surge_time) < self._delta) then
 			return
 		end
-		if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.condlist) ~= "true") then
+		if(xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "CSurgeManager", "condlist", self.condlist) ~= "true") then
 			return
 		end
 		if not(self:get_nearest_cover()) then
@@ -229,7 +229,7 @@ function CSurgeManager:update()
 	            h.impulse = 0.0
 	            h.direction = vector():set(0,0,1)
 	            h.draftsman = db.actor
-				if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)=="true") then
+				if(xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "CSurgeManager", "survive", self.survive)=="true") then
 					if(db.actor.health<=h.power) then
 			            h.power = db.actor.health - 0.05
 						if(h.power<0) then
@@ -551,7 +551,7 @@ function CSurgeManager:kill_all_unhided()
 			db.actor:hide_weapon()
 ]]--
 			xr_effects.disable_ui_only(db.actor, nil)
-			if(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.survive)~="true") then
+			if(xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "CSurgeManager", "survive", self.survive)~="true") then
 				self:kill_all_unhided_after_actor_death()
 				db.actor:kill(db.actor)
 				return
