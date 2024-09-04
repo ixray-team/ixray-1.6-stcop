@@ -132,10 +132,10 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 		self.default_state_moving3 = if_then_else(suggested_state.moving, suggested_state.moving, default_state_moving3)
 	end
 
-	self.default_state_standing = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_standing)
-	self.default_state_moving1  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving1)
-	self.default_state_moving2  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving2)
-	self.default_state_moving3  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving3)
+	self.default_state_standing = self.default_state_standing
+	self.default_state_moving1  = self.default_state_moving1
+	self.default_state_moving2  = self.default_state_moving2
+	self.default_state_moving3  = self.default_state_moving3
 
 	--' С момента включения схемы должна пройти как минимум секунда, прежде чем
 	--' проверять состояние синхронизации с другими сталкерами (иначе после лоада
@@ -196,8 +196,8 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 
 		self.at_terminal_waypoint_flag = false
 
-		self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_standing)
-		self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
+		self.cur_state_standing = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_standing)
+		self.cur_state_moving = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_moving1)
 
 		self.retval_after_rotation = nil
 		self.sound_after_anim_start = nil
@@ -302,11 +302,11 @@ function move_mgr:update()
 			local dist = self.object:position():distance_to(self.patrol_walk:point(cur_pt))
 			--printf("_bp: move_mgr: distance to destination waypoint: %d", dist)
 			if dist <= dist_walk or t < self.walk_until then
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
+				self.cur_state_moving = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_moving1)
 			elseif dist <= dist_run or t < self.run_until then
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving2)
+				self.cur_state_moving = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_moving2)
 			else
-				self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving3)
+				self.cur_state_moving = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_moving3)
 			end
 			self:update_movement_state()
 		end
@@ -486,7 +486,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 			abort("!!!!!")
 		end
 	else
-		self.cur_state_moving = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_moving1)
+		self.cur_state_moving = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_moving1)
 		if tostring(self.cur_state_moving) == "true" then
 			abort("!!!!!")
 		end
@@ -544,7 +544,7 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 				suggested_anim_set
 			)
 		else
-			self.cur_state_standing = xr_logic.pick_section_from_condlist(db.actor, self.object, self.default_state_standing)
+			self.cur_state_standing = xr_parser.pick_section_from_condlist(db.actor, self.object, "move_mgr", "def_state", self.default_state_standing)
 		end
 
 		local suggested_wait_time = self.path_look_info[pt_chosen_idx]["t"]
