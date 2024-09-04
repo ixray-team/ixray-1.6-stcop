@@ -87,7 +87,7 @@ function action_smartcover_activity:activate_scheme()
 
 		--' Вычитываем кондлист который вернет поведение чувака в смарткавере.
 		self.cover_condlist = self.st.cover_state
-		self.cover_state = xr_parser.pick_section_from_condlist(db.actor, object, self.st.active_section, "cover_state", self.cover_condlist)
+		self.cover_state = xr_parser.pick_section_from_condlist(db.actor, object, tostring(self.st.active_section), "cover_state", self.cover_condlist)
 		self:target_selector(self.object)
 		self:check_target_selector()
 
@@ -117,7 +117,7 @@ end
 function action_smartcover_activity:check_target()
 	local object = self.object
 
-	local target_path = xr_parser.pick_section_from_condlist(db.actor, self.object, self.st.active_section, "target_path", self.target_path_condlist)
+	local target_path = xr_parser.pick_section_from_condlist(db.actor, self.object, tostring(self.st.active_section), "target_path", self.target_path_condlist)
 
 	if target_path ~= "nil" and target_path ~= nil then
 		self.target_path, used = get_param_string(target_path, object)
@@ -151,7 +151,7 @@ function action_smartcover_activity:execute()
 	action_base.execute(self)
 	local storage = db.storage[self.object:id()]
 
-	local need_cover_state = xr_parser.pick_section_from_condlist(db.actor, self.object, self.st.active_section, "cover_state", self.cover_condlist)
+	local need_cover_state = xr_parser.pick_section_from_condlist(db.actor, self.object, tostring(self.st.active_section), "cover_state", self.cover_condlist)
 
 	if need_cover_state == "default_behaviour" or cover_substate_table[self.cover_state] ~= cover_substate_table[need_cover_state] then
 		self.cover_state = need_cover_state
