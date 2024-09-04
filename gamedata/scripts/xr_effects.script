@@ -2408,7 +2408,7 @@ function zat_b29_create_random_infop(actor, npc, p)
 		abort("Not enough parameters for zat_b29_create_random_infop!")
 	end
 
-	local amount_needed = p[1]
+	local amount_needed = tonumber(p[1])
 	local current_infop = 0
 	local total_infop = 0
 

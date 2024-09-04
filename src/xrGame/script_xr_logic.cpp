@@ -1476,7 +1476,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 			int nCastedProbability = atoi(data.getProbability());
 
 			R_ASSERT2(
-				nCastedProbability, "expected probability to be from 0 to 100");
+				nCastedProbability>=0&&nCastedProbability<=100, "expected probability to be from 0 to 100");
 
 			// we need to be sure that atoi gave us a '0', because otherwise the
 			// input is invalid and need to notify user
