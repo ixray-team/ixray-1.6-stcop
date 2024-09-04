@@ -41,7 +41,7 @@ function door_binder_labx8:__init(obj) super(obj)
 		self.stop_snd 	= 	sound_object(stop_snd)
 	end
 	
- 	self.tip		= xr_logic.parse_condlist(nil, "door_binder_labx8", "tip_condlist", utils.cfg_get_string(ini, ANIMATED_OBJECT_SECT, "tip", nil, false, "", "none")) 
+ 	self.tip		= utils.cfg_get_string(ini, ANIMATED_OBJECT_SECT, "tip", nil, false, "", "none")
 
 	local on_use 	= "true"
 	local on_start 	= "true"
@@ -50,17 +50,17 @@ function door_binder_labx8:__init(obj) super(obj)
 	if(ini:line_exist(ANIMATED_OBJECT_SECT, "on_use")) then
 		on_use = ini:r_string(ANIMATED_OBJECT_SECT, "on_use")
 	end
-	self.on_use = xr_logic.parse_condlist(nil, "door_binder_labx8", "on_use", on_use)
+	self.on_use = on_use
 
 	if(ini:line_exist(ANIMATED_OBJECT_SECT, "on_start")) then
 		on_start = ini:r_string(ANIMATED_OBJECT_SECT, "on_start")
 	end
-	self.on_start = xr_logic.parse_condlist(nil, "door_binder_labx8", "on_start", on_start)
+	self.on_start = on_start
 
 	if(ini:line_exist(ANIMATED_OBJECT_SECT, "on_stop")) then
 		on_stop = ini:r_string(ANIMATED_OBJECT_SECT, "on_stop")
 	end
-	self.on_stop = xr_logic.parse_condlist(nil, "door_binder_labx8", "on_stop", on_stop)
+	self.on_stop = on_stop
 
 	self.idle_delay = utils.cfg_get_number(ini, ANIMATED_OBJECT_SECT, "idle_delay", nil, false, 2000)
 	self.start_delay = utils.cfg_get_number(ini, ANIMATED_OBJECT_SECT, "start_delay", nil, false, 0)
@@ -120,7 +120,7 @@ function door_binder_labx8:update(delta)
 		end
 	end
 	
-	local tip_string = xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, self.tip)
+	local tip_string = xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "bind_door_labx8", "tip_condlist", self.tip)
 	
 	if tip_string ~= "none" then 
 		self.object:set_tip_text(tip_string)
@@ -143,7 +143,7 @@ function door_binder_labx8:anim_forward()
 	end
 	self.is_idle = false
 	self.is_play_fwd = true
-	xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_start)	
+	xr_parser.pick_section_from_condlist(get_story_object("actor"), obj, "bind_door_labx8", "on_start", self.on_start)	
 end
 
 function door_binder_labx8:anim_backward()
@@ -160,7 +160,7 @@ function door_binder_labx8:anim_backward()
 	end
 	self.is_idle = false
 	self.is_play_fwd = false
-	xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_start)	
+	xr_parser.pick_section_from_condlist(get_story_object("actor"), obj, "bind_door_labx8", "on_start", self.on_start)	
 end
 
 function door_binder_labx8:anim_stop()
@@ -170,7 +170,7 @@ function door_binder_labx8:anim_stop()
 		self.stop_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
 	end
 	self.anim_time = self.object:get_physics_object():anim_time_get()
-	xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_stop)	
+	xr_parser.pick_section_from_condlist(get_story_object("actor"), obj, "bind_door_labx8", "on_stop", self.on_stop)	
 end
 
 function door_binder_labx8:animation_end_callback(is_end)
@@ -180,12 +180,12 @@ function door_binder_labx8:animation_end_callback(is_end)
 		end
 		self.is_idle = true
 		self.anim_time = self.object:get_physics_object():anim_time_get()
-		xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_stop)
+		xr_parser.pick_section_from_condlist(get_story_object("actor"), obj, "bind_door_labx8", "on_stop", self.on_stop)
 	end
 end
 
 function door_binder_labx8:use_callback(obj)
-    xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_use)
+    xr_parser.pick_section_from_condlist(get_story_object("actor"), obj, "bind_door_labx8", "on_use", self.on_use)
 end
 
 -- Standart function for save

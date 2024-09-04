@@ -5,8 +5,8 @@
 function condlist(id, field, p)
 	local cond_string = p
 
-	local parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
-	return xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
+	local parsed_condlist = cond_string
+	return xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "task_functor", "condlist", parsed_condlist)
 end
 
 function zat_b29_adv_title(id, field, p)
@@ -87,8 +87,8 @@ end
 function target_condlist(id, field, p)
 	local cond_string = p
 
-	local parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
-	local value = xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
+	local parsed_condlist = cond_string
+	local value = xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "task_functor", "cond_string", parsed_condlist)
 
 	if value == nil then
 		return nil

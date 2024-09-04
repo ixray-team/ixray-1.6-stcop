@@ -58,7 +58,7 @@ bool CScriptXRParser::isSymbolValidForParsing(char nSymbol) const
 		nSymbol == '{' || nSymbol == '}' || nSymbol == '%' || nSymbol == '@' ||
 		nSymbol == '-' || nSymbol == '+' || nSymbol == '=' || nSymbol == '~' ||
 		nSymbol == '!' || nSymbol == '_' || nSymbol == '(' || nSymbol == ')' ||
-		nSymbol == ':')
+		nSymbol == ':' || nSymbol == '/' || nSymbol == '\\')
 	{
 		result = true;
 	}
@@ -93,7 +93,7 @@ bool CScriptXRParser::isFunctionArgumentSymbolValidForParsing(
 	else if (nSymbol == '.' || nSymbol == ',' || nSymbol == '{' ||
 		nSymbol == '}' || nSymbol == '%' || nSymbol == '@' || nSymbol == '-' ||
 		nSymbol == '+' || nSymbol == '=' || nSymbol == '~' || nSymbol == '!' ||
-		nSymbol == '_')
+		nSymbol == '_' || nSymbol == '/' || nSymbol == '\\')
 	{
 		result = true;
 	}

@@ -74,18 +74,18 @@ function CGeneralTask:__init(task_ini, id)
 	local i = 0
 	self.condlist = {}
 	while task_ini:line_exist(id, "condlist_"..i) do
-		self.condlist[i] = xr_logic.parse_condlist(nil, "task_manager", "condlist", task_ini:r_string(id, "condlist_"..i))
+		self.condlist[i] = task_ini:r_string(id, "condlist_"..i)
 		i = i + 1
 	end
 
 	--' Кондлисты на статусы квеста
-	self.on_init = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_init", nil, false, "", ""))
-	self.on_complete = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_complete", nil, false, "", ""))
-	self.on_reversed = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "on_reversed", nil, false, "", ""))
+	self.on_init = utils.cfg_get_string(task_ini, id, "on_init", nil, false, "", "")
+	self.on_complete = utils.cfg_get_string(task_ini, id, "on_complete", nil, false, "", "")
+	self.on_reversed = utils.cfg_get_string(task_ini, id, "on_reversed", nil, false, "", "")
 
 	--' Награды за квест
-	self.reward_money = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", ""))
-	self.reward_item = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", ""))
+	self.reward_money = utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", "")
+	self.reward_item = utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", "")
 
 	self.community_relation_delta_fail = utils.cfg_get_number(task_ini, id, "community_relation_delta_fail", nil, false, 0)
 	self.community_relation_delta_complete = utils.cfg_get_number(task_ini, id, "community_relation_delta_complete", nil, false, 0)
@@ -132,7 +132,7 @@ function CGeneralTask:give_task(community)
 	t:add_complete_func("task_manager.task_complete")
 	t:add_fail_func("task_manager.task_fail")
 
-	xr_logic.pick_section_from_condlist(db.actor, db.actor, self.on_init)
+	xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "on_init", self.on_init)
 
 	if self.current_target ~= nil then
 		t:set_map_location(self.spot)
@@ -221,7 +221,7 @@ function CGeneralTask:check_task(tm)
 		news_manager.send_task(db.actor, "updated", self.t)
 	end
 	for k,v in pairs(self.condlist) do
-		local t = xr_logic.pick_section_from_condlist(db.actor, db.actor, v)
+		local t = xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "condlist", v)
 		if t ~= nil then
 			--' Проверка на валидность
 			if valid_values[t] ~= true then
@@ -236,10 +236,10 @@ end
 
 --' Инициализация награды
 function CGeneralTask:give_reward()
-	xr_logic.pick_section_from_condlist(db.actor, db.actor, self.on_complete)
+	xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "on_complete", self.on_complete)
 
-	local money = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.reward_money)
-	local items = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.reward_item)
+	local money = xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "reward_money", self.reward_money)
+	local items = xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "reward_item", self.reward_item)
 
 	-- Награду можно выдать двумя методами: от нпс или просто свалитьс неба. Если не найден НПС, с которым мы в диалоге, то просто валим с неба
 
@@ -275,7 +275,7 @@ function CGeneralTask:deactivate_task(task)
 	if self.last_check_task == "fail" then
 		news_manager.send_task(db.actor, "fail", task)
 	elseif self.last_check_task == "reversed" then
-		xr_logic.pick_section_from_condlist(db.actor, db.actor, self.on_reversed)
+		xr_parser.pick_section_from_condlist(db.actor, db.actor, "task_objects", "on_reversed", self.on_reversed)
 		news_manager.send_task(db.actor, "reversed", task)
 	end
 	self.last_check_task = nil
