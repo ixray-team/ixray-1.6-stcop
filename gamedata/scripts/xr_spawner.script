@@ -142,7 +142,7 @@ function add_to_spawn_list (s_object)
 	spawn_list[s_object.id] = 
 	                        {
 	                        id = s_object.id,
-	                        cond = xr_logic.cfg_get_condlist (s_object:spawn_ini (), "spawner", "cond", s_object),
+	                        cond = xr_logic.cfg_get_condlist2(s_object:spawn_ini (), "spawner", "cond", s_object),
 	                        npc = nil,
 	                        online = false
 	                        }
@@ -169,7 +169,7 @@ function check_spawn (s_object)
                   spawn_list[s_object.id].npc = nil  
                end
             end   
-			if xr_logic.pick_section_from_condlist(actor, spawn_list[s_object.id].npc, 
+			if xr_parser.pick_section_from_condlist(actor, spawn_list[s_object.id].npc, "xr_spawner", "condlist",
 			 								   spawn_list[s_object.id].cond.condlist) ~= nil 
 		    then
 				return true
