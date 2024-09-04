@@ -215,7 +215,6 @@ function se_smart_terrain:read_params()
 		if self.respawn_sector == "default" then
 			self.respawn_sector = "all"
 		end
-		self.respawn_sector = xr_logic.parse_condlist(nil, SMART_TERRAIN_SECT, "respawn_sector", self.respawn_sector)
 	end
 
 	self.mutant_lair 		= utils.cfg_get_bool(ini, SMART_TERRAIN_SECT, "mutant_lair", 	self, false)
@@ -235,9 +234,10 @@ function se_smart_terrain:read_params()
 	self.arrive_dist	= utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "arrive_dist", 	self, false, 30)
 
 --	self.max_population = utils.cfg_get_number(ini, SMART_TERRAIN_SECT, "max_population", self, false, 0)
-	local max_population = utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "max_population", self, false, "", 0)
-	local parsed_condlist = xr_logic.parse_condlist(nil, SMART_TERRAIN_SECT, "max_population", max_population)
-	self.max_population = tonumber(xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist))
+	local max_population = utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "max_population", self, false, "", "0")
+	local parsed_condlist = max_population
+
+	self.max_population = tonumber(xr_parser.pick_section_from_condlist(get_story_object("actor"), nil, "smart_terrain", "max_population", parsed_condlist))
 
 --	self.sim_avail		= utils.cfg_get_string(ini, SMART_TERRAIN_SECT, "sim_avail", 	self, false, "")
 --	if self.sim_avail ~= nil then
@@ -921,7 +921,7 @@ function se_smart_terrain:get_smart_props()
 			if self.respawn_point ~= nil and self.already_spawned ~= nil then
 					props = props.."\\nalready_spawned :\n"
 					for k,v in pairs(self.already_spawned) do
-						props = props.."["..k.."] = "..v.num.."("..xr_logic.pick_section_from_condlist(db.actor, nil,self.respawn_params[k].num)..")\\n"
+						props = props.."["..k.."] = "..v.num.."("..xr_parser.pick_section_from_condlist(db.actor, nil, "smart_terrain", "respawn_params", self.respawn_params[k].num)..")\\n"
 					end
 					if self.last_respawn_update then
 						props = props.."\\ntime_to_spawn:"..tostring(self.respawn_time - game.get_game_time():diffSec(self.last_respawn_update)).."\\n"
@@ -1361,7 +1361,6 @@ function se_smart_terrain:check_respawn_params(respawn_params)
 			abort("Wrong smatr_terrain respawn_params section [%s] prop [%s] line [spawn_num](there is no line)", respawn_params, prop_name)
 		end
 		spawn_squads = utils.parse_names(spawn_squads)
-		spawn_num = xr_logic.parse_condlist(nil, prop_name, "spawn_num", spawn_num)
 		self.respawn_params[prop_name] 			= {}
 		self.already_spawned[prop_name]			= {}
 		self.respawn_params[prop_name].squads	= spawn_squads
@@ -1374,7 +1373,7 @@ function se_smart_terrain:call_respawn()
 	local available_sects = {}
 	printf("respawn called from smart_terrain [%s]", self:name())
 	for k,v in pairs(self.respawn_params) do
-		if tonumber(xr_logic.pick_section_from_condlist(db.actor, nil,v.num)) > self.already_spawned[k].num then
+		if tonumber(xr_parser.pick_section_from_condlist(db.actor, nil, "smart_terrain", "spawn_num", v.num)) > self.already_spawned[k].num then
 			table.insert(available_sects,k)
 		end
 	end
