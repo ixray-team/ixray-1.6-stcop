@@ -1294,7 +1294,7 @@ function dist_to_story_obj_ge(actor, npc, p)
 	local story_obj_id = get_story_object_id(story_id)
 	if story_obj_id == nil then return true end
 	local se_obj = alife():object(story_obj_id)
-	return se_obj.position:distance_to(db.actor:position()) > p[2]
+	return se_obj.position:distance_to(db.actor:position()) > tonumber(p[2])
 end
 
 function actor_has_nimble_weapon(actor, npc)

@@ -741,71 +741,71 @@ function try_switch_to_another_section(npc, st, actor)
 			--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
 			if see_actor(npc) and distance_between(actor, npc) <= c.v1 then
 				--printf("_bp: conditions met")
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_dist_le", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_dist_le_nvis") then
 			if distance_between(actor, npc) <= c.v1 then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_dist_le_nvis", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_dist_ge") then
 			--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
 			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le, где <=
 			if see_actor(npc) and distance_between(actor, npc) > c.v1 then
 				--printf("_bp: conditions met")
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_dist_ge", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_dist_ge_nvis") then
 			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le_nvis, где <=
 			if distance_between(actor, npc) > c.v1 then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_dist_ge_nvis", c.condlist))
 			end
 		elseif cond_name(c.name, "on_signal") then
 			--printf("_bp: on_signal (c.v1 = %s)", c.v1)
 			if st.signals and st.signals[c.v1] then
 				--printf("_bp: on_signal (c.v1 = %s) signalled [%s]", c.v1, npc:name())
 				--printf("_bp: signalled")
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_signal", c.condlist))
 			end
 		-- FIXME: не дублировать тут имена, оставить один on_info, но добавлять несколько его экземпляров в список
 		elseif cond_name(c.name, "on_info") then
-			switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+			switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_info", c.condlist))
 		elseif cond_name(c.name, "on_timer") then
 			--printf("_bp: on_timer: %d >= %d", time_global(),
 			--	db.storage[npc_id].activation_time + c.v1)
 			if time_global() >= db.storage[npc_id].activation_time + c.v1 then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_timer", c.condlist))
 			end
 
 		-- GAMETIME added by Stohe.
 		elseif cond_name(c.name, "on_game_timer") then
 			if  game.get_game_time():diffSec(db.storage[npc_id].activation_game_time) >= c.v1 then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_game_timer", c.condlist))
 			end
 
 		elseif cond_name(c.name, "on_actor_in_zone") then
 			if utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_in_zone", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_not_in_zone") then
 			if not utils.npc_in_zone(actor, db.zone_by_name[c.v1]) then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_not_in_zone", c.condlist))
 			end
 		elseif cond_name(c.name, "on_npc_in_zone") then
 			if utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_npc_in_zone", c.condlist))
 			end
 		elseif cond_name(c.name, "on_npc_not_in_zone") then
 			if not utils.npc_in_zone(level.object_by_id(c.npc_id), db.zone_by_name[c.v2]) then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_npc_not_in_zone", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_inside") then
 			if utils.npc_in_zone(actor, npc) then
 --				printf("_bp: TRUE")
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_inside", c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_outside") then
 			if not utils.npc_in_zone(actor, npc) then
-				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
+				switched = switch_to_section(npc, st.ini, xr_parser.pick_section_from_condlist(actor, npc, "xr_logic", "on_actor_outside", c.condlist))
 			end
 		else
 			abort(
@@ -1040,7 +1040,7 @@ function cfg_get_number_and_condlist(ini, section, field, npc)
 
 	t.name = field
 	t.v1 = tonumber(par[1])
-	t.condlist = parse_condlist(npc, section, field, par[2])
+	t.condlist = par[2]
 
 	return t
 end
@@ -1060,7 +1060,7 @@ function cfg_get_string_and_condlist(ini, section, field, npc)
 
 	t.name = field
 	t.v1 = par[1]
-	t.condlist = parse_condlist(npc, section, field, par[2])
+	t.condlist = par[2]
 
 	return t
 end
@@ -1166,13 +1166,13 @@ function cfg_get_switch_conditions(ini, section, npc)
 	add_conditions( cfg_get_number_and_condlist, "on_actor_dist_ge"      )
 	add_conditions( cfg_get_number_and_condlist, "on_actor_dist_ge_nvis" )
 	add_conditions( cfg_get_string_and_condlist, "on_signal"             )
-	add_conditions( cfg_get_condlist           , "on_info"               )
+	add_conditions( cfg_get_condlist2           , "on_info"               )
 	add_conditions( cfg_get_number_and_condlist, "on_timer"              )
 	add_conditions( cfg_get_number_and_condlist, "on_game_timer"         )
 	add_conditions( cfg_get_string_and_condlist, "on_actor_in_zone"      )
 	add_conditions( cfg_get_string_and_condlist, "on_actor_not_in_zone"  )
-	add_conditions( cfg_get_condlist           , "on_actor_inside"       )
-	add_conditions( cfg_get_condlist           , "on_actor_outside"      )
+	add_conditions( cfg_get_condlist2           , "on_actor_inside"       )
+	add_conditions( cfg_get_condlist2           , "on_actor_outside"      )
 	add_conditions( cfg_get_npc_and_zone       , "on_npc_in_zone"        )
 	add_conditions( cfg_get_npc_and_zone       , "on_npc_not_in_zone"    )
 

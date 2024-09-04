@@ -279,7 +279,7 @@ function action_mgun:fast_update()
 	 --  printf("car <fire>: target(%d)", self.state_firetarget)
 		if self.on_target_vis and self.on_target_vis.v1:alive() and self.mgun:IsObjectVisible(self.on_target_vis.v1) then
 			--    printf("car <vis>: try")
-				local new_section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.on_target_vis.condlist)
+				local new_section = xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_minigun", "on_target_vis", self.on_target_vis.condlist)
 				if new_section then
 			--        printf("car <vis>: switch to section [%s]", new_section)
 						xr_logic.switch_to_section(self.object, self.st.ini, new_section)
@@ -288,7 +288,7 @@ function action_mgun:fast_update()
 
 		if self.on_target_nvis and self.on_target_nvis.v1:alive() and not self.mgun:IsObjectVisible(self.on_target_nvis.v1) then
 					--printf("car <nvis>: try")
-				local new_section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.on_target_nvis.condlist)
+				local new_section = xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_minigun", "on_target_nvis", self.on_target_nvis.condlist)
 				if new_section then
 							printf("car <nvis>: switch to section [%s]", new_section)
 						xr_logic.switch_to_section(self.object, self.st.ini, new_section)

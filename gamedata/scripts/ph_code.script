@@ -32,14 +32,14 @@ function codepad:OnNumberReceive(text)
         if tonumber(text) == self.st.code then
             if self.st.on_code then
                 printf("ph_code <OnNumberReceive>: on_code [%s]", text)
-                xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist)
+                xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_code", "on_code", self.st.on_code.condlist)
             end
         end
     else
         local condlist = self.st.on_check_code[text]
         if condlist then
             printf("ph_code <OnNumberReceive>: on_check_code [%s]", text)
-            xr_logic.pick_section_from_condlist(db.actor, self.object, condlist)
+            xr_parser.pick_section_from_condlist(db.actor, self.object, "ph_code", "on_check_code", condlist)
         end
     end
 end
@@ -66,7 +66,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
     
     st.code = utils.cfg_get_number(ini, section, "code", npc, false)    
     if st.code then
-        st.on_code = xr_logic.cfg_get_condlist(ini, section, "on_code", npc)
+        st.on_code = xr_logic.cfg_get_condlist2(ini, section, "on_code", npc)
         printf("ph_code <set_scheme>: on_code [%d]", st.code)
     else
         st.on_check_code = {}

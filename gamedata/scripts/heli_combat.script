@@ -90,7 +90,7 @@ function heli_combat:read_custom_data( ini, section )
 
 	local combat_ignore    = utils.cfg_get_string( ini, section, "combat_ignore",     self.object, false, "", nil )
 	if combat_ignore then
-		self.combat_ignore = xr_logic.parse_condlist( self.object, section, "combat_ignore", combat_ignore )
+		self.combat_ignore = combat_ignore
 	else
 		self.combat_ignore = nil
 	end
@@ -372,7 +372,7 @@ end
 
 -- нужно ли игнорировать врага
 function heli_combat:combat_ignore_check()
-	return self.combat_ignore ~= nil and xr_logic.pick_section_from_condlist( db.actor, self.object, self.combat_ignore ) ~= nil
+	return self.combat_ignore ~= nil and xr_parser.pick_section_from_condlist( db.actor, self.object, "heli_combat", "combat_ignore", self.combat_ignore ) ~= nil
 end
 
 -- частое обновление.
