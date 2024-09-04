@@ -8,8 +8,8 @@ UISoundEditorForm *UISoundEditorForm::Form = nullptr;
 
 UISoundEditorForm::UISoundEditorForm()
 {
-    m_ItemProps = xr_new<UIPropertiesForm>();
-    m_ItemList = xr_new<UIItemListForm>();
+    m_ItemProps = new UIPropertiesForm();
+    m_ItemList = new UIItemListForm();
     m_ItemList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UISoundEditorForm::OnItemsFocused));
     modif_map.clear();
     m_Flags.zero();
@@ -76,7 +76,7 @@ void UISoundEditorForm::Update()
 void UISoundEditorForm::Show()
 {
     VERIFY(!Form);
-	Form = xr_new< UISoundEditorForm>();
+	Form = new UISoundEditorForm();
 }
 
 void UISoundEditorForm::HideLib()
@@ -215,7 +215,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
         if (prop) 
         {
             ESoundThumbnail* thm = FindUsedTHM(prop->Key());
-            if (!thm) m_THM_Used.push_back(thm = xr_new<ESoundThumbnail>(prop->Key()));
+            if (!thm) m_THM_Used.push_back(thm = new ESoundThumbnail(prop->Key()));
             m_THM_Current.push_back(thm);
             thm->FillProp(props);
         }

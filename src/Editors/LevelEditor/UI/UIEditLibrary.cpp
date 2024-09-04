@@ -7,12 +7,12 @@ UIEditLibrary* UIEditLibrary::Form = nullptr;
 
 UIEditLibrary::UIEditLibrary()
 {
-	m_ObjectList = xr_new<UIItemListForm>();
+	m_ObjectList = new UIItemListForm();
 	InitObjects();
 	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
 	m_ObjectList->m_Flags.set(UIItemListForm::fMultiSelect, true);
-	m_Props = xr_new<UIPropertiesForm>();
-	m_PropsObjects = xr_new<UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
+	m_PropsObjects = new UIPropertiesForm();
 	m_Preview = false;
 	m_SelectLods = false;
 	m_RealTexture = nullptr;
@@ -103,7 +103,7 @@ void UIEditLibrary::Show()
 
 	if (!Form)
 	{
-		Form = xr_new<UIEditLibrary>();
+		Form = new UIEditLibrary();
 	}
 	else
 	{
@@ -516,7 +516,7 @@ void UIEditLibrary::ExportObj()
 	if (!m_Preview)
 	{
 		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
-		CSceneObject* SO = xr_new<CSceneObject>((LPVOID)0, (LPSTR)0);
+		CSceneObject* SO = new CSceneObject((LPVOID)0, (LPSTR)0);
 
 		for (ListItem* item : m_ObjectList->m_SelectedItems)
 		{
@@ -600,7 +600,7 @@ void UIEditLibrary::ChangeReference(const RStringVec& items)
 
 	for (; sit != sit_e; ++sit)
 	{
-		CSceneObject* SO = xr_new<CSceneObject>((LPVOID)0, (LPSTR)0);
+		CSceneObject* SO = new CSceneObject((LPVOID)0, (LPSTR)0);
 		m_pEditObjects.push_back(SO);
 		SO->SetReference((*sit).c_str());
 
@@ -713,7 +713,7 @@ void UIEditLibrary::ImportClick()
 		for (AStringIt it = lst.begin(); it != lst.end(); ++it)
 		{
 			nm = ChangeFileExt(EFS.ExtractFileName((*it).c_str()), "").c_str();
-			CEditableObject* O = xr_new<CEditableObject>(nm.c_str());
+			CEditableObject* O = new CEditableObject(nm.c_str());
 			FS.TryLoad(*it);
 			if (O->Load(it->c_str()))
 			{

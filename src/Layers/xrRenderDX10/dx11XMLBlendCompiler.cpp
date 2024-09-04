@@ -31,7 +31,7 @@ CXMLBlend::~CXMLBlend()
 
 Shader* CXMLBlend::Compile(const char* Texture)
 {
-	Shader* pShader = xr_new<Shader>();
+	Shader* pShader = new Shader();
 	XML_NODE* pRoot = Parser.GetRoot();
 	for (u32 Iter = 0; Iter < 6; Iter++)
 	{

@@ -49,21 +49,21 @@ extern char* s_fake_array;
 EScene::EScene()
 {
 #ifdef USE_ARENA_ALLOCATOR
-	s_fake_array = xr_new<char>(64 * 1024 * 1024);
+	s_fake_array = new char(64 * 1024 * 1024);
 #endif
 	m_Valid = false;
 	m_Locked = 0;
 
 	for (int i=0; i<OBJCLASS_COUNT; i++)
 		m_SceneTools.insert(std::make_pair((ObjClassID)i,(ESceneToolBase*)NULL));
-	g_SpatialSpace = xr_new<ISpatial_DB>();
-	g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
+	g_SpatialSpace = new ISpatial_DB();
+	g_SpatialSpacePhysic = new ISpatial_DB();
 	// first init scene graph for objects
    // mapRenderObjects.init(MAX_VISUALS);
 // 	Build options
 	m_SummaryInfo	= 0;
 	//ClearSnapList	(false);
-//   g_frmConflictLoadObject 		= xr_new<TfrmAppendObjectInfo>((TComponent*)NULL);
+//   g_frmConflictLoadObject 		= new TfrmAppendObjectInfo((TComponent*)NULL);
 
 
 }
@@ -762,7 +762,7 @@ void EScene::LoadCFrom(CObjectSpace* Space, CDB::build_callback cb)
 
 IReader* EScene::LoadSpawn()
 {
-	return xr_new<IReader>(m_spawn_data.pointer(), m_spawn_data.size());
+	return new IReader(m_spawn_data.pointer(), m_spawn_data.size());
 }
 
 

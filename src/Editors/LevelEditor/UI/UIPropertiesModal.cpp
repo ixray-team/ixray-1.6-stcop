@@ -2,7 +2,7 @@
 UIPropertiesModal* UIPropertiesModal::Form = nullptr;
 UIPropertiesModal::UIPropertiesModal()
 {
-	m_Props = xr_new<UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
 	m_Result = R_Cancel;
 }
 
@@ -52,6 +52,6 @@ bool UIPropertiesModal::GetResult(bool& ok)
 void UIPropertiesModal::Show(PropItemVec& items)
 {
 	VERIFY(!Form);
-	Form = xr_new<UIPropertiesModal>();
+	Form = new UIPropertiesModal();
 	Form->m_Props->AssignItems(items);
 }

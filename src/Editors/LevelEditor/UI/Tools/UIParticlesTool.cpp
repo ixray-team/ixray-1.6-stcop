@@ -3,7 +3,7 @@
 UIParticlesTool::UIParticlesTool()
 {
     m_Current = nullptr;
-    m_ParticlesList = xr_new<UIItemListForm>();
+    m_ParticlesList = new UIItemListForm();
     m_ParticlesList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIParticlesTool::OnItemFocused));
     ListItemsVec items;
     for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++) {

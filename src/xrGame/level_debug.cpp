@@ -14,7 +14,9 @@
 #ifdef DEBUG
 
 // Lain: added text_tree
-CLevelDebug::CLevelDebug() : m_p_texttree( xr_new<debug::text_tree>() ), m_texttree_offs(0)
+CLevelDebug::CLevelDebug() :
+	m_p_texttree(new debug::text_tree()),
+	m_texttree_offs(0)
 {
 	
 }

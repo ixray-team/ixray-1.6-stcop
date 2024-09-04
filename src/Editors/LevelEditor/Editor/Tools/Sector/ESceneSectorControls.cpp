@@ -49,7 +49,7 @@ bool TUI_ControlSectorAdd::AddSector()
 {
 	string256 namebuffer;
 	Scene->GenObjectName( OBJCLASS_SECTOR, namebuffer );
-	CSector* _O = xr_new<CSector>((LPVOID)0,namebuffer);
+	CSector* _O = new CSector((LPVOID)0,namebuffer);
     SRayPickInfo pinf;
     if (Scene->RayPickObject( pinf.inf.range, UI->m_CurrentRStart,UI->m_CurrentRDir, OBJCLASS_SCENEOBJECT, &pinf, 0)&&
     	(_O->AddMesh(dynamic_cast<CSceneObject*>(pinf.s_obj),pinf.e_mesh)))
@@ -86,7 +86,7 @@ bool TUI_ControlSectorAdd::AddSectors()
         for (EditMeshIt it=meshes->begin(); it!=meshes->end(); it++){
             string256 namebuffer;
             Scene->GenObjectName( OBJCLASS_SECTOR, namebuffer );
-            CSector* _O = xr_new<CSector>((LPVOID)0,namebuffer);
+            CSector* _O = new CSector((LPVOID)0,namebuffer);
             if (_O->AddMesh(S,*it)){
             	cnt++;
                 u32 clr	= 0;

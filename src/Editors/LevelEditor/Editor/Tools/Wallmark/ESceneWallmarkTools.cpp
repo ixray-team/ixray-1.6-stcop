@@ -527,7 +527,7 @@ void ESceneWallmarkTool::OnSynchronize()
 ESceneWallmarkTool::wallmark*	ESceneWallmarkTool::wm_allocate		()
 {
 	wallmark*			W = 0;
-	if (pool.empty())	W = xr_new<wallmark> ();
+	if (pool.empty())	W = new wallmark ();
 	else				{ W = pool.back(); pool.pop_back(); }
 
 	W->verts.clear		();
@@ -555,7 +555,7 @@ ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::FindSlot	(shared_str sh_name, s
 }
 ESceneWallmarkTool::wm_slot* ESceneWallmarkTool::AppendSlot(shared_str sh_name, shared_str tx_name)
 {
-	wm_slot* slot			= xr_new<wm_slot>(sh_name,tx_name);
+	wm_slot* slot			= new wm_slot(sh_name,tx_name);
     if (0==slot->shader)	xr_delete(slot);
     else marks.push_back	(slot);
     return slot;
@@ -871,9 +871,9 @@ void ESceneWallmarkTool::CreateControls()
 {
     inherited::CreateDefaultControls(estDefault);
     // node tools
-    AddControl(xr_new<TUI_ControlWallmarkAdd>(0, etaAdd, this));
-    AddControl(xr_new<TUI_ControlWallmarkMove>(0, etaMove, this));
-    // AddControl(xr_new<TUI_CustomControl>(0, etaSelect, this));
+    AddControl(new TUI_ControlWallmarkAdd(0, etaAdd, this));
+    AddControl(new TUI_ControlWallmarkMove(0, etaMove, this));
+    // AddControl(new TUI_CustomControl(0, etaSelect, this));
 }
 
 void ESceneWallmarkTool::RemoveControls()

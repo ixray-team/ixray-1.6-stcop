@@ -100,8 +100,8 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 {
 	VERIFY					(0==m_pBloodMarksVector);
 	VERIFY					(0==m_pBloodDropsVector);
-	m_pBloodMarksVector		= xr_new<FactoryPtr<IWallMarkArray> >();
-	m_pBloodDropsVector		= xr_new<FactoryPtr<IWallMarkArray> >();
+	m_pBloodMarksVector		= new FactoryPtr<IWallMarkArray>();
+	m_pBloodDropsVector		= new FactoryPtr<IWallMarkArray>();
 	
 	//кровавые отметки на стенах
 	string256	tmp;

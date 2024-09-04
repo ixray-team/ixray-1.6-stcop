@@ -23,7 +23,7 @@ xrLC_GlobalData*	lc_global_data()
 void	create_global_data()
 {
 	VERIFY( !inlc_global_data() );
-	data = xr_new<xrLC_GlobalData>();
+	data = new xrLC_GlobalData();
 }
 void	destroy_global_data()
 {
@@ -79,7 +79,7 @@ void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept 
 void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
 {
 	VERIFY(!_cl_globs._RCAST_Model);
-	_cl_globs._RCAST_Model				= xr_new<CDB::MODEL> ();
+	_cl_globs._RCAST_Model				= new CDB::MODEL();
 	_cl_globs._RCAST_Model->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
 }
 

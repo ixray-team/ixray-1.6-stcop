@@ -1876,8 +1876,8 @@ void game_cl_mp::ReInitRewardGenerator(game_PlayerState* local_ps)
 {
 	if (!m_reward_generator)
 	{
-		m_reward_generator	= xr_new<award_system::reward_event_generator>(u32(-1));
-		m_reward_manager	= xr_new<award_system::reward_manager>(this);
+		m_reward_generator	= new award_system::reward_event_generator(u32(-1));
+		m_reward_manager	= new award_system::reward_manager(this);
 	}
 	m_reward_generator->init_player(local_ps);
 }

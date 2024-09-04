@@ -70,7 +70,7 @@ void verify_level_graph	(LPCSTR name, bool verbose)
 	Msg				("Verifying level %s",name);
 	Phase			("Verifying level graph");
 	Progress		(0.f);
-	CLevelGraph		*level_graph = xr_new<CLevelGraph>(name);
+	CLevelGraph		*level_graph = new CLevelGraph(name);
 	if (!level_graph->header().vertex_count()) {
 		Progress	(1.f);
 		Msg			("Level graph is empty!");

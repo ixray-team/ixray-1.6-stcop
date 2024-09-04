@@ -885,7 +885,7 @@ xr_vector<char*>* CLocatorAPI::file_list_open			(const char* _path, u32 flags)
 	files_it	I 	= m_files.find(desc);
 	if (I==m_files.end())	return 0;
 	
-	xr_vector<char*>*	dest	= xr_new<xr_vector<char*> > ();
+	xr_vector<char*>*	dest	= new xr_vector<char*>();
 
 	size_t base_len		= xr_strlen(N);
 	for (++I; I!=m_files.end(); I++)

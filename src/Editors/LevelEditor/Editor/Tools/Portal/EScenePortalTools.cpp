@@ -4,9 +4,9 @@
 void EScenePortalTool::CreateControls()
 {
 //	inherited::CreateControls();
-    AddControl		(xr_new<TUI_ControlPortalSelect>(estDefault,etaSelect,	this));
+    AddControl		(new TUI_ControlPortalSelect(estDefault,etaSelect,	this));
 	// frame
-    pForm = xr_new <UIPortalTool> ();
+    pForm = new UIPortalTool();
    ((UIPortalTool*)pForm)->tool	= this;
 }
 
@@ -26,7 +26,7 @@ void EScenePortalTool::FillProp(LPCSTR pref, PropItemVec& items)
 
 CCustomObject* EScenePortalTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CCustomObject* O	= xr_new<CPortal>(data,name);
+	CCustomObject* O	= new CPortal(data,name);
     O->FParentTools		= this;
     return O;
 }

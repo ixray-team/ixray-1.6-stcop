@@ -34,7 +34,7 @@ namespace ChoseEvents
         /*
         //.
             ECustomThumbnail*& thm, ref_sound& snd,
-            thm 		= xr_new<ESoundThumbnail>(item->name.c_str());
+            thm 		= new ESoundThumbnail(item->name.c_str());
         */
     }
     void   CloseSoundSource()
@@ -73,13 +73,13 @@ namespace ChoseEvents
     }
     void   SelectObject(SChooseItem* item, PropItemVec& info_items)
     {
-        EObjectThumbnail* thm = xr_new<EObjectThumbnail>(*item->name);
+        EObjectThumbnail* thm = new EObjectThumbnail(*item->name);
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
     void   UpdateObjectTHM(LPCSTR name, ImTextureID&ID)
     {
-        EObjectThumbnail* thm = xr_new<EObjectThumbnail>(name);
+        EObjectThumbnail* thm = new EObjectThumbnail(name);
         if (thm->Valid())
         {
             thm->Update(ID);
@@ -103,13 +103,13 @@ namespace ChoseEvents
     }
     void   SelectGroup(SChooseItem* item, PropItemVec& info_items)
     {
-        EGroupThumbnail* thm = xr_new<EGroupThumbnail>(*item->name);
+        EGroupThumbnail* thm = new EGroupThumbnail(*item->name);
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
     void   UpdateGroupTHM(LPCSTR name, ImTextureID& ID)
     {
-        EGroupThumbnail* thm = xr_new<EGroupThumbnail>(name);
+        EGroupThumbnail* thm = new EGroupThumbnail(name);
         if (thm->Valid())
         {
             thm->Update(ID);
@@ -301,7 +301,7 @@ namespace ChoseEvents
     void   UpdateTextureTHM(LPCSTR name, ImTextureID&Texture)
     {
         if (name && name[0]) {
-            ETextureThumbnail* thm = xr_new<ETextureThumbnail>(name);
+            ETextureThumbnail* thm = new ETextureThumbnail(name);
             if (thm->Valid()) thm->Update(Texture);
             xr_delete(thm);
         }
@@ -321,7 +321,7 @@ namespace ChoseEvents
     void   UpdateTextureTHMRaw(LPCSTR name, ImTextureID& ID)
     {
         if (name && name[0]) {
-            ETextureThumbnail* thm = xr_new<ETextureThumbnail>(name);
+            ETextureThumbnail* thm = new ETextureThumbnail(name);
             if (thm->Valid()) thm->Update(ID);
             xr_delete(thm);
         }
@@ -330,7 +330,7 @@ namespace ChoseEvents
     void   SelectTexture(SChooseItem* item, PropItemVec& info_items)
     {
         if (item->name.size()) {
-            ETextureThumbnail* thm = xr_new<ETextureThumbnail>(*item->name);
+            ETextureThumbnail* thm = new ETextureThumbnail(*item->name);
             if (thm->Valid()) thm->FillInfo(info_items);
             xr_delete(thm);
         }
@@ -338,7 +338,7 @@ namespace ChoseEvents
     void   SelectTextureRaw(SChooseItem* item, PropItemVec& info_items)
     {
         if (item->name.size()) {
-            ETextureThumbnail* thm = xr_new<ETextureThumbnail>(*item->name);
+            ETextureThumbnail* thm = new ETextureThumbnail(*item->name);
             if (thm->Valid()) thm->FillInfo(info_items);
             xr_delete(thm);
         }
@@ -423,7 +423,7 @@ void FillChooseEvents()
     UIChooseForm::AppendEvents(smGameMaterial, "Select Game Material", ChoseEvents::FillGameMaterial, 0, 0, 0, 0);
     UIChooseForm::AppendEvents(smGameAnim, "Select Animation", ChoseEvents::FillGameAnim, 0, 0, 0, 0);
     UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, 0, 0, 0);
-    choose_snd = xr_new<ref_sound>();
+    choose_snd = new ref_sound();
 }
 
 void ClearChooseEvents()

@@ -25,7 +25,7 @@ bool  TUI_ControlObjectAdd::Start(TShiftState Shift)
 
         string256 namebuffer;
         Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, N);
-        CSceneObject *obj = xr_new<CSceneObject>((LPVOID)0,namebuffer);
+        CSceneObject *obj = new CSceneObject((LPVOID)0,namebuffer);
         CEditableObject* ref = obj->SetReference(N);
         if (!ref){
         	ELog.DlgMsg(mtError,"TUI_ControlObjectAdd:: Can't load reference object.");

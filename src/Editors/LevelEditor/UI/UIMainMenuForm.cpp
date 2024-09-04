@@ -199,7 +199,7 @@ void UIMainMenuForm::Draw()
 
 				for (; I != E; ++I)
 				{
-					ETextureThumbnail* TH = xr_new<ETextureThumbnail>((*I).name.c_str(), false);
+					ETextureThumbnail* TH = new ETextureThumbnail((*I).name.c_str(), false);
 					TH->Load((*I).name.c_str(), _textures_);
 					TH->Save();
 					xr_delete(TH);

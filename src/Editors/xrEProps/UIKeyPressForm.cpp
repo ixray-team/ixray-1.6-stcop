@@ -53,7 +53,7 @@ void UIKeyPressForm::Update(float timeGlobal)
 void UIKeyPressForm::Show()
 {
 	VERIFY(!Form);
-	Form = xr_new<UIKeyPressForm>();
+	Form = new UIKeyPressForm();
 }
 
 bool UIKeyPressForm::SetResult(const xr_shortcut& result)

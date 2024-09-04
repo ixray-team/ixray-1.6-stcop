@@ -38,7 +38,7 @@ CSoundRecorderA::CSoundRecorderA(ALuint sampleRate, ALenum format, ALuint sample
 	}
 
 	m_buffer = new ALbyte[samplesPerBuffer * m_bytesPerSample];
-	m_speexPreprocess = xr_new<CSpeexPreprocess>(sampleRate, samplesPerBuffer);
+	m_speexPreprocess = new CSpeexPreprocess(sampleRate, samplesPerBuffer);
 	m_speexPreprocess->EnableAGC(psSoundRecorderMode);
 	m_speexPreprocess->EnableDenoise(psSoundRecorderDenoise);
 }

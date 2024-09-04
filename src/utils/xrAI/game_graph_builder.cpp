@@ -39,7 +39,7 @@ void CGameGraphBuilder::create_graph		(const float &start, const float &amount)
 	Progress				(start);
 
 	VERIFY					(!m_graph);
-	m_graph					= xr_new<graph_type>();
+	m_graph					= new graph_type();
 
 	m_graph_guid			= generate_guid();
 
@@ -53,7 +53,7 @@ void CGameGraphBuilder::load_level_graph	(const float &start, const float &amoun
 	Msg						("Loading AI map");
 	
 	VERIFY					(!m_level_graph);
-	m_level_graph			= xr_new<CLevelGraph>(*m_level_name);
+	m_level_graph			= new CLevelGraph(*m_level_name);
 	
 	Msg						("%d nodes loaded",level_graph().header().vertex_count());
 	
@@ -403,7 +403,7 @@ void CGameGraphBuilder::load_cross_table	(const float &start, const float &amoun
 	Msg						("Loading cross table");
 
 	VERIFY					(!m_cross_table);
-	m_cross_table			= xr_new<CGameLevelCrossTable>(m_cross_table_name, xr_strlen(m_cross_table_name));
+	m_cross_table			= new CGameLevelCrossTable(m_cross_table_name, xr_strlen(m_cross_table_name));
 
 	Progress				(start + amount);
 }

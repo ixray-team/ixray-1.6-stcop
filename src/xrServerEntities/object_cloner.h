@@ -8,19 +8,21 @@
 
 #pragma once
 
-struct CCloner {
+struct CCloner 
+{
 	template <typename T>
-	struct CHelper {
+	struct CHelper 
+	{
 		template <bool a>
 		IC	static void clone(const T &_1, T &_2)
 		{
-			_2				= _1;
+			_2 = _1;
 		}
 
 		template <>
 		IC	static void clone<true>(const T &_1, T &_2)
 		{
-			_2				= xr_new<std::remove_pointer<T>::type>(*_1);
+			_2 = new std::remove_pointer<T>::type(*_1);
 			CCloner::clone	(*_1,*_2);
 		}
 	};

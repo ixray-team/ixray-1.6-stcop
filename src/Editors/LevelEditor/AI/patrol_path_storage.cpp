@@ -27,9 +27,9 @@ void CPatrolPathStorage::load_editor(const ILevelGraph* level_graph, const IGame
 		m_registry.insert(
 			std::make_pair(
 				patrol_name,
-				&xr_new<CPatrolPath>(
+				&(new CPatrolPath(
 					patrol_name
-					)->load_editor(
+					))->load_editor(
 						level_graph,
 						cross,
 						game_graph,

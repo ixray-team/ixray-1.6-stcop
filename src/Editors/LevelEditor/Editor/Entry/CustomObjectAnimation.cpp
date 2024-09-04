@@ -3,8 +3,8 @@
 void  CCustomObject::OnMotionableChange(PropValue* sender)
 {
 	if (m_CO_Flags.is(flMotion)){
-    	m_Motion		= xr_new<COMotion>();
-        m_MotionParams	= xr_new<SAnimParams>();
+    	m_Motion		= new COMotion();
+        m_MotionParams	= new SAnimParams();
     }else{
     	xr_delete		(m_Motion);
     	xr_delete		(m_MotionParams);

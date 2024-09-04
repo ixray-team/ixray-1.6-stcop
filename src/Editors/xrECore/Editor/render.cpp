@@ -45,7 +45,7 @@ void					CRender::ShutDown()
 
 void					CRender::OnDeviceCreate()
 {
-	Models = xr_new<CModelPool>();
+	Models = new CModelPool();
 	Models->Logging(FALSE);
 }
 void					CRender::OnDeviceDestroy()
@@ -138,7 +138,7 @@ void CRender::Render()
 IRender_DetailModel* CRender::model_CreateDM(IReader* F)
 {
 	VERIFY(F);
-	CDetail* D = xr_new<CDetail>();
+	CDetail* D = new CDetail();
 	D->Load(F);
 	return D;
 }
@@ -211,7 +211,7 @@ void CRender::reset_begin() {
 }
 
 void CRender::reset_end() {
-	Target = xr_new<CRenderTarget>();
+	Target = new CRenderTarget();
 }
 
 void CRender::set_HUD(BOOL V)
@@ -307,7 +307,7 @@ public:
 	}
 
 };
-IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) { return xr_new< RenderObjectSpecific>(); }
+IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) { return new RenderObjectSpecific(); }
 void CRender::ros_destroy(IRender_ObjectSpecific*& a) { xr_delete(a); }
 class RLight : public IRender_Light
 {
@@ -344,7 +344,7 @@ public:
 
 	virtual ~RLight() {}
 };
-IRender_Light* CRender::light_create() { return xr_new< RLight>(); }
+IRender_Light* CRender::light_create() { return new RLight(); }
 void CRender::light_destroy(IRender_Light* p_) {  }
 
 
@@ -367,7 +367,7 @@ public:
 	virtual void					spatial_move() { return; }
 };
 
-IRender_Glow* CRender::glow_create() { return xr_new< RGlow>(); }
+IRender_Glow* CRender::glow_create() { return new RGlow(); }
 void CRender::glow_destroy(IRender_Glow* p_) {  }
 void CRender::model_Logging(BOOL bEnable) {}
 void CRender::models_Prefetch() {}

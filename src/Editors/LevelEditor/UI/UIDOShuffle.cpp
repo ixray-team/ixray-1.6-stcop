@@ -8,7 +8,7 @@ UIDOShuffle::UIDOShuffle()
 	m_Texture = nullptr;
 	m_TextureNull.create("ed\\ed_nodata");
 	m_TextureNull->Load();
-	m_Props = xr_new< UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
 	m_RealTexture = nullptr;
 }
 
@@ -112,7 +112,7 @@ void UIDOShuffle::Draw()
 		ImGui::SameLine();
 		if (ImGui::Button("Append Color Index", ImVec2(-1,0))) 
 		{
-			m_color_indices.push_back(xr_new<UIDOOneColor>());
+			m_color_indices.push_back(new UIDOOneColor());
 			m_color_indices.back()->DOShuffle = this;
 		}
 
@@ -200,7 +200,7 @@ bool UIDOShuffle::GetResult()
 void UIDOShuffle::Show(EDetailManager* DM)
 {
 	VERIFY(!Form);
-	Form = xr_new<UIDOShuffle>();
+	Form = new UIDOShuffle();
 	Form->DM = DM;
 	Form->FillData();
 }
@@ -216,7 +216,7 @@ void UIDOShuffle::FillData()
 	ColorIndexPairIt E = DM->m_ColorIndices.end();
 	ColorIndexPairIt it = S;
 	for (; it != E; it++) {
-		UIDOOneColor* OneColor = xr_new<UIDOOneColor>();
+		UIDOOneColor* OneColor = new UIDOOneColor();
 		OneColor->DOShuffle = this;
 		m_color_indices.push_back(OneColor);
 		OneColor->Color[0] = color_get_R(it->first)/255.f;

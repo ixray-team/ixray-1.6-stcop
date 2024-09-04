@@ -115,14 +115,14 @@ public:
 
 		ThreadTaskID = 0;
 		for (u32 thID = 0; thID < MU_THREADS; thID++)
-			mu_materials.start(xr_new<CMULightCalculation>(thID));
+			mu_materials.start(new CMULightCalculation(thID));
 
 		mu_materials.wait(100);
  
 		// Light references
 		ThreadTaskID = 0;
 		for (u32 thID=0; thID < MU_THREADS; thID++)
-			mu_secondary.start	( xr_new<CMULight> (thID) );
+			mu_secondary.start	( new CMULight (thID) );
 	
 		mu_secondary.wait(100);
 	}
@@ -131,7 +131,7 @@ public:
 
 void	run_mu_base( )
 {
- 	mu_base.start				(xr_new<CMUThread> (0));
+ 	mu_base.start				(new CMUThread (0));
 }
 
 void	wait_mu_base_thread		()

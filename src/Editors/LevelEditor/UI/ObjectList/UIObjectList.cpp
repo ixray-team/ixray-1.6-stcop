@@ -127,7 +127,7 @@ void UIObjectList::Update()
 
 void UIObjectList::Show()
 {
-	if (Form == nullptr)Form = xr_new< UIObjectList>();
+	if (Form == nullptr)Form = new UIObjectList();
 	Refresh();
 }
 

@@ -23,20 +23,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     
     const char* FSName = "fs.ltx";
     Core._initialize("LevelEditor", ELogCallback, 1, FSName);
-    Tools = xr_new<CLevelTool>();
+    Tools = new CLevelTool();
     LTools = static_cast<CLevelTool*>(Tools);
 
-    UI = xr_new<CLevelMain>();
+    UI = new CLevelMain();
     UI->RegisterCommands();
 
     LUI = static_cast<CLevelMain*>(UI);
 
-    Scene = xr_new<EScene>();
+    Scene = new EScene();
     EditorScene = Scene;
-    UIMainForm* MainForm = xr_new< UIMainForm>();
-    pApp = xr_new<XRayEditor>();
-    g_XrGameManager = xr_new<XrGameManager>();
-    g_SEFactoryManager = xr_new<XrSEFactoryManager>();
+    UIMainForm* MainForm = new UIMainForm();
+    pApp = new XRayEditor();
+    g_XrGameManager = new XrGameManager();
+    g_SEFactoryManager = new XrSEFactoryManager();
 
     // Initialize APP
 	g_FontManager = new CFontManager();

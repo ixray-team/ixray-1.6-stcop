@@ -219,10 +219,10 @@ void CStalkerCombatPlanner::add_evaluators		()
 	add_evaluator			(eWorldPropertyCriticallyWounded,new CStalkerPropertyEvaluatorMember			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyCriticallyWounded,true,true,"critically wounded"));
 	add_evaluator			(eWorldPropertyKilledWounded	,new CStalkerPropertyEvaluatorMember			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyKilledWounded,true,true,"killed critically wounded"));
 
-	add_evaluator			(eWorldPropertyShouldThrowGrenade,new CStalkerPropertyEvaluatorShouldThrowGrenade	(m_object,"should throw grenade"));
+	add_evaluator			(eWorldPropertyShouldThrowGrenade,new CStalkerPropertyEvaluatorShouldThrowGrenade(m_object,"should throw grenade"));
 	add_evaluator			(eWorldPropertyLowCover,		new CStalkerPropertyEvaluatorLowCover			(m_object, "using low cover"));
 
-	add_evaluator			(eWorldPropertyInSmartCover		,xr_new<smart_cover::evaluators::in_cover_evaluator>	(m_object, "in smart cover"));
+	add_evaluator			(eWorldPropertyInSmartCover		,new smart_cover::evaluators::in_cover_evaluator(m_object, "in smart cover"));
 }
 
 void CStalkerCombatPlanner::add_actions			()

@@ -266,14 +266,14 @@ void CSoundManager::SynchronizeSounds(bool sync_thm, bool sync_game, bool bForce
         // backup base sound
     	// check thumbnail
     	if (sync_thm&&bThm){
-        	THM 				= xr_new<ESoundThumbnail>(it->name.c_str());
+        	THM 				= new ESoundThumbnail(it->name.c_str());
             THM->Save			(m_age);
             bUpdated 			= TRUE;
         }
         // check game sounds
     	if (bForceGame||(sync_game&&bGame))
         {
-        	if (!THM) THM 			= xr_new<ESoundThumbnail>(it->name.c_str());
+        	if (!THM) THM 			= new ESoundThumbnail(it->name.c_str());
             R_ASSERT(THM);
             string_path 			src_name;
             xr_strconcat			(src_name, base_name.c_str(), ".wav");

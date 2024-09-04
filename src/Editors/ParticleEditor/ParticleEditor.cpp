@@ -33,12 +33,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     psDeviceFlags.set(rsFullscreen, false);
 
-    Tools = xr_new<CParticleTool>();
+    Tools = new CParticleTool();
     PTools = (CParticleTool*)Tools;
-    UI = xr_new<CParticleMain>();
+    UI = new CParticleMain();
     UI->RegisterCommands();
     
-    UIMainForm* MainForm = xr_new< UIMainForm>();
+    UIMainForm* MainForm = new UIMainForm();
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
 

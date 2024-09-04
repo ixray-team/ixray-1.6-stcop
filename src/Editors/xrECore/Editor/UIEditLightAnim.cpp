@@ -8,14 +8,14 @@ UIEditLightAnim* UIEditLightAnim::Form = nullptr;
 UIEditLightAnim::UIEditLightAnim()
 {
     m_Modife = false;
-    m_Items = xr_new<UIItemListForm>();
+    m_Items = new UIItemListForm();
     m_Items->SetOnItemFocusedEvent(TOnILItemFocused(this,&UIEditLightAnim::OnItemFocused));
     /*m_Items->SetOnItemCreaetEvent(TOnItemCreate(this, &UIEditLightAnim::OnCreateItem));
     m_Items->SetOnItemCloneEvent(TOnItemClone(this, &UIEditLightAnim::OnCloneItem));
     m_Items->SetOnItemRemoveEvent(TOnItemRemove(this, &UIEditLightAnim::OnRemoveItem));
     m_Items->SetOnItemRenameEvent(TOnItemRename(this, &UIEditLightAnim::OnRenameItem));*/
     m_Items->m_Flags.set(UIItemListForm::fMenuEdit, true);
-    m_Props = xr_new<UIPropertiesForm>();
+    m_Props = new UIPropertiesForm();
     m_Props->SetModifiedEvent(TOnModifiedEvent(this, &UIEditLightAnim::OnModified));
     m_CurrentItem = nullptr;
 
@@ -281,7 +281,7 @@ void UIEditLightAnim::Update()
 
 void UIEditLightAnim::Show()
 {
-    if (Form == nullptr)Form = xr_new< UIEditLightAnim>();
+    if (Form == nullptr)Form = new UIEditLightAnim();
 }
 
 void UIEditLightAnim::UpdateProperties()

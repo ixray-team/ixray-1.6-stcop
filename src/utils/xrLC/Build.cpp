@@ -249,7 +249,7 @@ void CBuild::Run	(LPCSTR P)
 }
 void	CBuild::StartMu	()
 {
-  //mu_base.start				(xr_new<CMUThread> (0));
+  //mu_base.start				(new CMUThread (0));
   run_mu_light(  );
 }
 void CBuild::	RunAfterLight			( IWriter* fs	)

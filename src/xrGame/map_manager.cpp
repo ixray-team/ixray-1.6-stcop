@@ -57,11 +57,11 @@ void SLocationKey::load(IReader &stream)
 	if (bUserDefined)
 	{
 		Level().Server->PerformIDgen(object_id);
-		location = xr_new<CMapLocation>(*spot_type, object_id, true);
+		location = new CMapLocation(*spot_type, object_id, true);
 	}
 	else
 	{
-		location = xr_new<CMapLocation>(*spot_type, object_id);
+		location = new CMapLocation(*spot_type, object_id);
 	}
 
 	location  = new CMapLocation(*spot_type, object_id);
@@ -149,7 +149,7 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
 {
 	u16 _id = Level().Server->PerformIDgen(0xffff);
 
-	CMapLocation* l = xr_new<CMapLocation>(spot_type.c_str(), _id, true);
+	CMapLocation* l = new CMapLocation(spot_type.c_str(), _id, true);
 	l->InitUserSpot(level_name, position);
 
 	Locations().push_back(SLocationKey(spot_type, _id));

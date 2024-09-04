@@ -63,7 +63,7 @@ void CRenderDevice::ConnectToRender()
 void CRenderDevice::Create	() 
 {
 	if (b_is_Ready)		return;		// prevent double call
-	Statistic			= xr_new<CStats>();
+	Statistic			= new CStats();
 
 #ifdef	DEBUG
 	cdb_clRAY		= &Statistic->clRAY;				// total: ray-testing

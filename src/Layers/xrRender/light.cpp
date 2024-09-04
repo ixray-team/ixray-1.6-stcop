@@ -103,7 +103,7 @@ void light::set_shadow				(bool b)
 			if (0==omnipart[0])
 			{
 				for (int f=0; f<6; f++)
-					omnipart[f] = xr_new<light> ();
+					omnipart[f] = new light ();
 			}
 		}
 		else

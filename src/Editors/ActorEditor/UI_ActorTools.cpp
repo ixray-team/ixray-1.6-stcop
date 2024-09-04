@@ -208,9 +208,9 @@ void CActorTools::OnFrame()
 bool CActorTools::OnCreate()
 {
 	inherited::OnCreate();
-	m_ObjectItems = xr_new<UIItemListForm>();
+	m_ObjectItems = new UIItemListForm();
 	m_ObjectItems->m_Flags.set(UIItemListForm::fMultiSelect, true);
-	m_Props = xr_new<UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
 	m_ObjectItems->SetOnItemsFocusedEvent(TOnILItemsFocused(this, &CActorTools::OnObjectItemsFocused));
 	m_PreviewObject.OnCreate();
 
@@ -323,7 +323,7 @@ void CActorTools::ZoomObject(BOOL bSelOnly)
 bool CActorTools::Load(LPCSTR obj_name)
 {
 	VERIFY(m_bReady);
-	CEditableObject* O = xr_new<CEditableObject>(obj_name);
+	CEditableObject* O = new CEditableObject(obj_name);
 
 	xr_string Str = obj_name;
 	xr_strlwr(Str);
@@ -744,7 +744,7 @@ bool CActorTools::Import(LPCSTR initial, LPCSTR obj_name)
 	}
 
 	VERIFY(m_bReady);
-	CEditableObject* O = xr_new<CEditableObject>(obj_name);
+	CEditableObject* O = new CEditableObject(obj_name);
 	if (O->Load(full_name))
 	{
 		O->m_objectFlags.set(CEditableObject::eoDynamic, TRUE);
@@ -1052,7 +1052,7 @@ bool CActorTools::BatchConvert(LPCSTR fn)
 			if (FS.exist(src_name))
 			{
 				Msg(".Converting '%s' <-> '%s'", it->first.c_str(), it->second.c_str());
-				CEditableObject* O = xr_new<CEditableObject>("convert");
+				CEditableObject* O = new CEditableObject("convert");
 				BOOL res = O->Load(src_name);
 				if (res) res = O->ExportOGF(tgt_name, 4);
 				Log(res ? ".OK" : "!.FAILED");
@@ -1080,7 +1080,7 @@ bool CActorTools::BatchConvert(LPCSTR fn)
 			if (FS.exist(src_name))
 			{
 				Msg(".Converting '%s' <-> '%s'", it->first.c_str(), it->second.c_str());
-				CEditableObject* O = xr_new<CEditableObject>("convert");
+				CEditableObject* O = new CEditableObject("convert");
 				BOOL res = O->Load(src_name);
 				if (res) res = O->ExportOMF(tgt_name);
 				Log(res ? ".OK" : "!.FAILED");

@@ -50,7 +50,7 @@ void CAI_Space::init				()
 	m_patrol_path_storage	= new CPatrolPathStorage();
 
 	VERIFY					(!m_moving_objects);
-	m_moving_objects		= xr_new<::moving_objects>();
+	m_moving_objects		= new ::moving_objects();
 
 #endif //#ifndef NO_SINGLE
 
@@ -120,7 +120,7 @@ void CAI_Space::load				(LPCSTR level_name)
 	m_moving_objects->on_level_load			();
 
 	VERIFY					(!m_doors_manager);
-	m_doors_manager			= xr_new<::doors::manager>( ai().level_graph().header().box() );
+	m_doors_manager			= new ::doors::manager( ai().level_graph().header().box() );
 
 #ifdef DEBUG
 	Msg						("* Loading ai space is successfully completed (%.3fs, %7.3f Mb)",timer.GetElapsed_sec(),float(Memory.mem_usage() - mem_usage)/1048576.0);
@@ -189,7 +189,7 @@ void CAI_Space::patrol_path_storage_from_editor()
 		return;
 
 	xr_delete(m_patrol_path_storage);
-	m_patrol_path_storage = xr_new<CPatrolPathStorage>();
+	m_patrol_path_storage = new CPatrolPathStorage();
 }
 
 void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)

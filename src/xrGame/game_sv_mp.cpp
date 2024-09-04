@@ -537,7 +537,7 @@ void game_sv_mp::Create (shared_str &options)
 
 	if (FS.exist(file_name, "$level$", "alife", ".spawn"))
 	{
-		m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
+		m_alife_simulator = new CALifeSimulator(&server(), &options);
 	}
 	else
 	{

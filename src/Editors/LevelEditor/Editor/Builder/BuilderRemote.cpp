@@ -69,7 +69,7 @@ public:
         }
 #if 0
         xr_string image_name = xr_string(fn)+".tga";
-        CImage* I 	= xr_new<CImage>();
+        CImage* I 	= new CImage();
         I->Create	(sx,sz,data.data());
         I->Vflip	();
         I->SaveTGA	(image_name.c_str());
@@ -1403,7 +1403,7 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
     l_smgroups  = xr_alloc<u32>		(l_face_cnt);
 	l_verts		= xr_alloc<b_vertex>(l_vert_cnt);
 
-    l_scene_stat= xr_new<CSceneStat>(m_LevelBox);
+    l_scene_stat= new CSceneStat(m_LevelBox);
 
 // make hemisphere
 	ESceneLightTool* lt = dynamic_cast<ESceneLightTool*>(Scene->GetOTool(OBJCLASS_LIGHT));

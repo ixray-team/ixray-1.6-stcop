@@ -80,7 +80,7 @@ void CBuild::xrPhase_UVmap()
 			}
 			if (msF) {
 
-				CDeflector *D = xr_new<CDeflector>();
+				CDeflector *D = new CDeflector();
 				lc_global_data()->g_deflectors().push_back	(D);
 				// Start recursion from this face
 				start_unwarp_recursion();
@@ -104,7 +104,7 @@ void CBuild::xrPhase_UVmap()
 				
 				// detaching itself
 				Detach				(&faces_affected);
-				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
+				g_XSplit.push_back	(new vecFace (faces_affected));
 			} else {
 				if (g_XSplit[SP]->empty()) 
 				{
@@ -132,7 +132,7 @@ void CBuild::mem_CompactSubdivs()
 		temp.assign			(g_XSplit[SP]->begin(),g_XSplit[SP]->end());
 		xr_delete			(g_XSplit[SP]);
 		mem_Compact			();
-		g_XSplit[SP]		= xr_new<vecFace> ();
+		g_XSplit[SP]		= new vecFace ();
 		g_XSplit[SP]->assign(temp.begin(),temp.end());
 	}
 	clMsg		("%d ms for memory compacting...",dwT.GetElapsed_ms());

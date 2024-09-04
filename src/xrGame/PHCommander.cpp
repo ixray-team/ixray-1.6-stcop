@@ -100,7 +100,7 @@ void CPHCommander::add_call_threadsafety(CPHCondition* condition, CPHAction* act
 
 void CPHCommander::add_call(CPHCondition* condition,CPHAction* action)
 {
-	m_calls.push_back(xr_new<CPHCall>(condition, action));
+	m_calls.push_back(new CPHCall(condition, action));
 }
 
 void CPHCommander::remove_call(PHCALL_I i)

@@ -28,7 +28,7 @@ extern "C"
 		RegisterExpressionDelegates();
 
 #if 0
-		g_profiler = xr_new<CProfiler>();
+		g_profiler = new CProfiler();
 #endif
 
 		string_path GameGlobals = {};

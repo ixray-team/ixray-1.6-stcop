@@ -32,7 +32,7 @@ bool CVoiceChat::CreateRecorder()
 		m_pSender = nullptr;
 	}
 
-	m_pSender = xr_new<CVoiceSender>();
+	m_pSender = new CVoiceSender();
 	m_pSender->SetDistance(10); // default
 
 	m_pRecorder = m_pSoundVoiceChat->CreateRecorder((IVoicePacketSender*)m_pSender);

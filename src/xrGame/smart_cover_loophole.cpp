@@ -111,7 +111,7 @@ loophole::loophole	(luabind::object const &description) :
 void loophole::add_action(LPCSTR type, luabind::object const &table)
 {	
 	VERIFY		(luabind::get_type(table) == LUA_TTABLE);
-	smart_cover::action	*action = xr_new<smart_cover::action>(table);
+	smart_cover::action	*action = new smart_cover::action(table);
 	VERIFY		(
 		std::find_if(
 			m_actions.begin(),

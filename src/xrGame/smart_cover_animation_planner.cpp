@@ -117,16 +117,10 @@ void animation_planner::finalize		()
 
 void animation_planner::add_evaluators	()
 {
-	add_evaluator			(
-		eWorldPropertySmartCoverEntered,
-		xr_new<evaluators::cover_entered_evaluator>(
-			m_object,
-			"smart cover entered"
-		)
-	);
+	add_evaluator(eWorldPropertySmartCoverEntered, new evaluators::cover_entered_evaluator(m_object, "smart cover entered"));
 	add_evaluator			(
 		eWorldPropertySmartCoverActual,
-		xr_new<evaluators::cover_actual_evaluator>(
+		new evaluators::cover_actual_evaluator(
 			m_object,
 			"smart cover actual"
 		)
@@ -148,7 +142,7 @@ void animation_planner::add_evaluators	()
 	);
 	add_evaluator			(
 		eWorldPropertyLoopholeActual,
-		xr_new<evaluators::loophole_actual_evaluator>(
+		new evaluators::loophole_actual_evaluator(
 			m_object,
 			"loophole actual",
 			this,
@@ -225,14 +219,14 @@ void animation_planner::add_evaluators	()
 	);
 	add_evaluator			(
 		eWorldPropertyLoopholeExitable,
-		xr_new<evaluators::loophole_exitable_evaluator>(
+		new evaluators::loophole_exitable_evaluator(
 			m_object,
 			"loophole exitable"
 		)
 	);
 	add_evaluator			(
 		eWorldPropertyLoopholeCanExitWithAnimation,
-		xr_new<evaluators::can_exit_loophole_with_animation>(
+		new evaluators::can_exit_loophole_with_animation(
 			m_object,
 			"can exit loophole with animation"
 		)

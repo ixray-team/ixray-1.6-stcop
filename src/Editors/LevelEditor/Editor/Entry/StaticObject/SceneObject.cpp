@@ -219,7 +219,7 @@ CEditableObject* CSceneObject::UpdateReference()
     {
         for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
         {
-            CSurface* surf = xr_new< CSurface>();
+            CSurface* surf = new CSurface();
             surf->CopyFrom(m_pReference->Surfaces()[i]);
             m_Surfaces.push_back(surf);
             if(surf->IsVoid())
@@ -405,7 +405,7 @@ void CSceneObject::ClearSurface()
     {
         for (size_t i = 0; i < m_pReference->SurfaceCount(); i++)
         {
-            CSurface* surf = xr_new< CSurface>();
+            CSurface* surf = new CSurface();
             surf->CopyFrom(m_pReference->Surfaces()[i]);
             m_Surfaces.push_back(surf);
             if (surf->IsVoid())

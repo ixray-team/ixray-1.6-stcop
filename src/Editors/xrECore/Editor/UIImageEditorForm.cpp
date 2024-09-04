@@ -5,8 +5,8 @@
 UIImageEditorForm* UIImageEditorForm::Form = nullptr;
 UIImageEditorForm::UIImageEditorForm()
 {
-	m_ItemProps = xr_new<UIPropertiesForm>();
-	m_ItemList = xr_new<UIItemListForm>();
+	m_ItemProps = new UIPropertiesForm();
+	m_ItemList = new UIItemListForm();
 	m_ItemList->SetOnItemFocusedEvent(TOnILItemFocused(this,&UIImageEditorForm::OnItemsFocused));
 	m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
 	m_Texture = nullptr;
@@ -146,7 +146,7 @@ void UIImageEditorForm::Update()
 void UIImageEditorForm::Show(bool bImport)
 {
 	if(Form == nullptr) {
-		Form = xr_new<UIImageEditorForm>();
+		Form = new UIImageEditorForm();
 	}
 	Form->bImportMode = bImport;
 	//. form->ebRebuildAssociation->Enabled = !bImport;
@@ -169,7 +169,7 @@ void UIImageEditorForm::FindInEditor(xr_string fn, bool bImport) {
 	if(!Form) {
 		if(bImport) {
 			if(!Form) {
-				Form = xr_new<UIImageEditorForm>();
+				Form = new UIImageEditorForm();
 			}
 			Form->texture_map.insert(fn);
 		}
@@ -190,7 +190,7 @@ void UIImageEditorForm::ImportTextures()
 	{
 		if (ELog.DlgMsg(mtInformation, "Found %d new texture(s)", new_cnt))
 		{
-			Form = xr_new< UIImageEditorForm>();
+			Form = new UIImageEditorForm();
 			Form->texture_map.swap(TextureMap);
 			Show(true);
 		}
@@ -207,7 +207,7 @@ ETextureThumbnail* UIImageEditorForm::FindUsedTHM(const shared_str& name)
 	if (it != m_THM_Used.end())
 		return it->second;
 
-	ETextureThumbnail* thm = xr_new<ETextureThumbnail>(name.c_str(), false);
+	ETextureThumbnail* thm = new ETextureThumbnail(name.c_str(), false);
 	m_THM_Used[name] = thm;
 
 	if (bImportMode)
