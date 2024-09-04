@@ -24,7 +24,7 @@ function Ctraveler:__init()
 
 		self.smart_travels[id].name = ini_file:r_string(id, "name")
 		self.smart_travels[id].level = ini_file:r_string(id, "level")
-		self.smart_travels[id].condlist = xr_logic.parse_condlist(db.actor, id, "close_distance", ini_file:r_string(id, "condlist"))
+		self.smart_travels[id].condlist = ini_file:r_string(id, "condlist")
 		self.smart_travels[id].phrase_id = tostring(1000+i)
 
 		self.smart_by_phrase[self.smart_travels[id].phrase_id] = id
@@ -334,7 +334,7 @@ function check_smart_availability(smart_name, smart_table, squad)
 		abort("Error in travel manager. Smart [%s] doesnt exist.", tostring(smart_name))
 	end
 
-	if xr_logic.pick_section_from_condlist(db.actor, smart, smart_table.condlist) ~= "true" then
+	if xr_parser.pick_section_from_condlist(db.actor, smart, "travel_manager", "condlist", smart_table.condlist) ~= "true" then
 		return false
 	end
 
