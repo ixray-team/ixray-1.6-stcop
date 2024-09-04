@@ -20,9 +20,9 @@ function get_infos_from_data(npc, s)
 		if s then
 		for name in string.gfind( s, "(%|*[^%|]+%|*)%p*" ) do
 --			printf("[%s]", utils.to_str(name))
-			local condlist = xr_logic.parse_condlist(npc, "in", name, name)
+			local condlist = name
 			if condlist then
-				table.insert(t, xr_logic.pick_section_from_condlist(db.actor, npc, condlist))
+				table.insert(t, xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "name", condlist))
 			end
 		end
 	end
@@ -76,8 +76,8 @@ function reset_show_spot(npc, scheme, st, section)
 		map_spot = utils.cfg_get_string(st.ini, section, "level_spot", npc, false, "")
 	end
 	if map_spot ~= nil then
-			map_spot = xr_logic.parse_condlist(npc, section, "level_spot", map_spot)
-			map_spot = xr_logic.pick_section_from_condlist(db.actor, npc, map_spot)
+			map_spot = map_spot
+			map_spot = xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "map_spot", map_spot)
 	end
 	--' printf("STALKER SPOT SECTION [%s]", utils.to_str(spot_section))
 
@@ -87,8 +87,8 @@ function reset_show_spot(npc, scheme, st, section)
 
 		local spot = "false"
 --    if character_community(npc) ~= "zombied" then
-			local spot_condlist = xr_logic.parse_condlist(npc, section, "show_spot", spot_section)
-			spot = xr_logic.pick_section_from_condlist(db.actor, npc, spot_condlist)
+			local spot_condlist = spot_section
+			spot = xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "show_spot", spot_condlist)
 --    end
 
 	local sim  = alife()
@@ -164,8 +164,8 @@ function remove_level_spot(npc, st)
 		map_spot = utils.cfg_get_string(st.ini, st.active_section, "level_spot", npc, false, "")
 	end
 	if map_spot ~= nil then
-			map_spot = xr_logic.parse_condlist(npc, st.active_section, "level_spot", map_spot)
-			map_spot = xr_logic.pick_section_from_condlist(db.actor, npc, map_spot)
+			map_spot = map_spot
+			map_spot = xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "level_spot", map_spot)
 	end
 	local sim  = alife()
 	if not sim then
@@ -206,9 +206,9 @@ function is_need_invulnerability(npc)
 		return false
 	end
 
-	invulnerability = xr_logic.parse_condlist(npc, "invulnerability", "invulnerability", invulnerability)
+	invulnerability = invulnerability
 
-	return xr_logic.pick_section_from_condlist(db.actor, npc, invulnerability) == "true"
+	return xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "invulnerability", invulnerability) == "true"
 end
 
 --' Вызывается на переключении на новую секцию. Производит вычитывание настроек из текущей секции.
@@ -265,7 +265,7 @@ function can_select_weapon(npc, scheme, st, section)
 		str = utils.cfg_get_string(st.ini, st.section_logic, "can_select_weapon", npc, false, "", "true")
 	end
 
-		local cond = xr_logic.parse_condlist(npc, section, "can_select_weapon", str)
-		local can = xr_logic.pick_section_from_condlist(db.actor, npc, cond)
+		local cond = str
+		local can = xr_parser.pick_section_from_condlist(db.actor, npc, "stalker_generic", "can_select_weapon", cond)
 		npc:can_select_weapon(can=="true")
 end
