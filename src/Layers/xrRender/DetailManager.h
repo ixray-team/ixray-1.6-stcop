@@ -152,6 +152,7 @@ public:
 	void							soft_Render		();
 
 	// Hardware processor
+	volatile bool					bWait = false;
 	ref_geom						hw_Geom;
 	u32								hw_BatchSize;
 	ID3DVertexBuffer*			hw_VB;

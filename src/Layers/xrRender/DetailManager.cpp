@@ -390,10 +390,17 @@ void CDetailManager::UpdateVisibleM()
 
 void CDetailManager::Render	()
 {
+	PROF_EVENT("Render details");
 #ifndef _EDITOR
 	if (0==dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
 #endif
+
+	while(bWait)
+	{
+		PROF_EVENT("Wait details");
+		Sleep(0);
+	}
 
 	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
 
@@ -426,7 +433,6 @@ void CDetailManager::MT_CALC()
 {
 #ifndef _EDITOR
 	PROF_EVENT("Render Details");
-
 	if (0 == RImplementation.Details)
 		return;	// possibly deleted
 
@@ -436,6 +442,8 @@ void CDetailManager::MT_CALC()
 	if (!psDeviceFlags.is(rsDetails))	
 		return;
 #endif
+
+	bWait = true;
 
 	if (m_frame_calc != RDEVICE.dwFrame && (m_frame_rendered + 1) == RDEVICE.dwFrame)
 	{
@@ -451,4 +459,5 @@ void CDetailManager::MT_CALC()
 		UpdateVisibleM();
 		m_frame_calc = RDEVICE.dwFrame;
 	}
+	bWait = false;
 }

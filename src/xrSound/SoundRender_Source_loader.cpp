@@ -28,6 +28,7 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
 
 void CSoundRender_Source::LoadWave	(LPCSTR pName)
 {
+	PROF_EVENT("Sound: Load ogg");
 	pname					= pName;
 	ZeroMemory				(&m_wformat, sizeof(WAVEFORMATEX));
 

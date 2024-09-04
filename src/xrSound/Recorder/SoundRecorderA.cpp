@@ -94,6 +94,8 @@ void CSoundRecorderA::Stop()
 
 void CSoundRecorderA::Update()
 {
+	PROF_EVENT("Sound: Recorder Core");
+
 	if (m_pCaptureDevice == nullptr)
 		return;
 
