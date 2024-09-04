@@ -777,10 +777,10 @@ function parse_data(npc,s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist(npc, dist, state, state)
+				dat.state = state
 			end
 			if sound then
-				dat.sound = xr_logic.parse_condlist(npc, dist, sound, sound)
+				dat.sound = sound
 			end
 			table.insert(t, dat)
 		end
