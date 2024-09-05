@@ -1,6 +1,6 @@
 [logic@zat_b5_stalker_commander]
 active = walker
-suitable = {-zat_b5_task_end -zat_b7_stalker_victim_leader_alive =check_npc_name(zat_b5_stalker_commander)} true, {-zat_b5_task_end +zat_b7_stalker_victim_leader_alive =check_npc_name(zat_b5_stalker_commander_b7)} true, { -zat_b5_task_end =target_squad_name(zat_b5_stalkers_squad) !is_alive(zat_b5_stalker_commander_id) !is_alive(zat_b5_stalker_commander_b7_id) =is_squad_commander} true
+suitable = {-zat_b5_task_end -zat_b7_stalker_victim_leader_alive =check_npc_name(zat_b5_stalker_commander)} true, {-zat_b5_task_end +zat_b7_stalker_victim_leader_alive =check_npc_name(zat_b5_stalker_commander_b7)} true, {=zat_b5_stalker_commander_1} true
 prior = 200
 post_combat_time = 0,0
 on_death = death 
@@ -22,7 +22,7 @@ gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
 
-;----------------------за бандитов------------------------
+;----------------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ------------------------
 [walker@start_work_bandit]
 path_walk = zat_b5_stalker_commander_b_1_walk
 path_look = zat_b5_stalker_commander_b_1_look
@@ -125,7 +125,7 @@ corpse_detection_enabled = false
 combat_ignore_cond =  {=check_enemy_name(sim_default) =fighting_dist_ge(30)} true
 
 
-;------------------за сталкеров ждет актера---------------------------------------------------
+;------------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ---------------------------------------------------
 [walker@start_work_stalker]
 path_walk = zat_b5_stalker_commander_1_walk
 path_look = zat_b5_stalker_commander_1_look
@@ -196,7 +196,7 @@ gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
 
-;----------------крадутся к дому-----------------------
+;----------------пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ-----------------------
 [walker@go_to_position_2]
 path_walk = zat_b5_stalker_commander_2_walk
 path_look = zat_b5_stalker_commander_2_look
@@ -312,7 +312,7 @@ corpse_detection_enabled = false
 combat_ignore_cond =  {=check_enemy_name(sim_default) =fighting_dist_ge(30)} true
 
 
-;-----------------за торговца-------------------------------
+;-----------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-------------------------------
 [walker@start_work_dealer]
 path_walk = zat_b5_stalker_commander_1_walk
 path_look = zat_b5_stalker_commander_1_look

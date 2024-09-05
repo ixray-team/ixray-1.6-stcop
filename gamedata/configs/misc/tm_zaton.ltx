@@ -1,4 +1,4 @@
-;сюжетные задания
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 [zat_b107_evacuation_zaton]
 icon = ui_inGame2_Mesta_evakuatsii
@@ -56,9 +56,9 @@ descr = zat_b28_heli_3_crash_text
 target = zat_b28_heli_3
 condlist_0 = {+zat_b28_heli_3_searched} complete
 
-;второстепенные задания
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-[zat_b14_learn_about_strange_occurrence] ;Найти артефакт - послал бармен
+[zat_b14_learn_about_strange_occurrence] ;пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Strannoe_yavlenie
 prior = 1
 storyline = false
@@ -72,7 +72,7 @@ on_complete = %+zat_b14_smart_terrain_open%
 on_reversed = %+zat_b14_smart_terrain_open% 
 reward_money = 3000
 
-[zat_b14_learn_about_strange_occurrence_by_stalkers] ;Игрок сам нашел артефакт
+[zat_b14_learn_about_strange_occurrence_by_stalkers] ;пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Strannoe_yavlenie
 prior = 1
 storyline = false
@@ -86,7 +86,7 @@ on_complete = %+zat_b14_smart_terrain_open +zat_b14_give_item_linker%
 on_reversed = %+zat_b14_smart_terrain_open%
 reward_money = 3000
 
-[zat_b38_disappearance_stalkers] ;Исчезновение сталкеров
+[zat_b38_disappearance_stalkers] ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Ischeznovenie_stalkerov
 prior = 2
 storyline = false
@@ -98,7 +98,7 @@ condlist_1 =  {+zat_b38_stalker_cop_death -zat_b38_disappearance_stalkers_meet_c
 reward_money = 10000
 on_complete = %=inc_faction_goodwill_to_actor(stalker:200) =give_treasure(zat_hiding_place_31:zat_hiding_place_49)%
 
-[zat_b38_den_of_the_bloodsucker_inform_stalkers] ;Рассказать сталкерам о логове
+[zat_b38_den_of_the_bloodsucker_inform_stalkers] ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Logovo_krovososov
 prior = 2
 storyline = false
@@ -109,7 +109,7 @@ condlist_0 = {+zat_b38_den_of_the_bloodsucker_complete} complete
 on_complete = %+zat_b57_bloodsucker_lair_clear =inc_faction_goodwill_to_actor(stalker:200)%
 reward_money = 5000
 
-[zat_b52_reputation] ;Репутация
+[zat_b52_reputation] ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Reputatsiya
 prior = 2
 storyline = false
@@ -118,7 +118,7 @@ descr = {+zat_b52_actor_has_port_bandits_pda} zat_b52_reputation_find_snag_text_
 target = {+zat_b52_actor_has_port_bandits_pda} nil, {+zat_b52_snag_jupiter} nil, {+zat_b52_snag_port_bandits} port_bandit_1_leader_id, {+zat_b52_snag_no_port_cranes} port_bandit_1_leader_id, {+zat_b52_bandit_leader_is_dead} port_bandit_1_leader_id, {+zat_b52_snag_port_cranes} zat_b52_port_cranes_id, {+zat_b52_barman_know_there_snag} zat_a2_stalker_barmen, {+zat_b52_sultan_know_there_snag} zat_b7_bandit_boss_sultan, {+zat_b52_snag_no_place} nil, zat_b52_snag_place_id
 condlist_0 = {+jup_b202_snag_on_jup_founded} complete, {+zat_b52_snag_is_dead} complete
 
-[zat_b51_nimble_items] ;Предметы на заказ
+[zat_b51_nimble_items] ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 icon = ui_inGame2_Osobiy_zakaz
 prior = 2
 storyline = false
@@ -163,9 +163,7 @@ prior = 2
 storyline = false
 title = {-zat_b5_actor_stalker_go_to_trader -zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_come_to_stalkers_name, {-zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_intercept_talking_name, {-zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b5_kill_dealer_name, {-zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b5_search_body_name, zat_b5_talk_stalkers_name
 descr = {-zat_b5_actor_stalker_go_to_trader -zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_come_to_stalkers_text, {-zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_intercept_talking_text, {-zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b5_kill_dealer_text, {-zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b5_search_body_text, zat_b5_talk_stalkers_text
-;target = {-zat_b5_actor_stalker_go_to_trader -zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_stalkers_squad, {-zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_intercept_talking_id, {-zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b7_duty_illicit_dealer, {-zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b7_duty_illicit_dealer, {=is_alive(zat_b5_stalker_commander_id) +zat_b5_actor_help_stalkers} zat_b5_stalker_commander_id, {=is_alive(zat_b5_stalker_commander_b7_id) +zat_b5_actor_help_stalkers} zat_b5_stalker_commander_b7_id, {!is_alive(zat_b5_stalker_commander_id) !is_alive(zat_b5_stalker_commander_b7_id) +zat_b5_actor_help_stalkers} zat_b5_stalkers_squad
 target = {=is_alive(zat_b5_stalker_commander_id) -zat_b5_actor_stalker_go_to_trader -zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_stalker_commander_id, {=is_alive(zat_b5_stalker_commander_b7_id) -zat_b5_actor_stalker_go_to_trader -zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_stalker_commander_b7_id, {-zat_b5_stalker_attack_dealer -zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric -zat_b5_meat} zat_b5_intercept_talking_id, {-zat_b5_destroy_enemy -zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b7_duty_illicit_dealer, {-zat_b7_actor_now_duty_illicit_dealer -zat_b5_actor_help_stalkers_pric} zat_b7_duty_illicit_dealer, {=is_alive(zat_b5_stalker_commander_id) +zat_b5_actor_help_stalkers} zat_b5_stalker_commander_id, {=is_alive(zat_b5_stalker_commander_b7_id) +zat_b5_actor_help_stalkers} zat_b5_stalker_commander_b7_id, {!is_alive(zat_b5_stalker_commander_id) !is_alive(zat_b5_stalker_commander_b7_id) +zat_b5_actor_help_stalkers} zat_b5_stalkers_squad
-;reward_money = 2500
 condlist_0 = {+zat_b5_actor_help_stalkers_pric} complete %+zat_b5_task_end =inc_faction_goodwill_to_actor(stalker:200) =dec_faction_goodwill_to_actor(bandit:100) =set_squad_goodwill(zat_b5_stalkers_squad:friend)%
 condlist_1 = {=is_squad_enemy_to_actor(zat_b5_stalkers_squad)} fail %+zat_b5_task_end%
 condlist_2 = {+zat_b5_stalker_death -zat_b5_actor_help_stalkers_pric} fail %+zat_b5_task_end%

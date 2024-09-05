@@ -1969,3 +1969,7 @@ end
 function zat_b38_quest_line_1(actor, npc)
 	return has_alife_info("zat_b38_den_of_the_bloodsucker_inform_stalkers_give_task") and not squad_exist(actor, npc, {"zat_b38_bloodsuckers_sleepers"}) and counter_equal(actor, npc, {"zat_b57_terminated", "9"}) and not has_alife_info("zat_b57_den_of_the_bloodsucker_wait_destroy_give") and not has_alife_info("zat_b57_den_of_the_bloodsucker_tell_stalkers_about_destroy_lair_give")
 end
+
+function zat_b5_stalker_commander_1(actor, npc)
+	return not has_alife_info("zat_b5_task_end") and target_squad_name(actor, npc, {"zat_b5_stalkers_squad"}) and not is_alive(actor, npc, {"zat_b5_stalker_commander_id"}) and not is_alive(actor, npc, {"zat_b5_stalker_commander_b7_id"}) and is_squad_commander(actor, npc)
+end

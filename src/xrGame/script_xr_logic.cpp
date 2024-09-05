@@ -166,6 +166,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				{
 					if (strlen(current_section_name))
 					{
+						R_ASSERT2(current_section_size <=
+								ixray::kCondlistInfoStringSize,
+							"[xr_parser] too big section");
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
@@ -193,6 +196,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big string of section");
 					current_info.setText(
 						current_section_name, current_section_size);
 
@@ -239,6 +245,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				current_check_name[current_check_size] = it;
 				++current_check_size;
 
+				R_ASSERT2(current_check_size <= ixray::kCondlistInfoStringSize,
+					"[xr_parser] too big string between brackets {...}");
 				current_info.setInfoCheck(
 					current_check_name, current_check_size);
 				std::memset(
@@ -259,6 +267,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big string of section");
 					current_info.setText(
 						current_section_name, current_section_size);
 					std::memset(current_section_name, 0,
@@ -297,6 +308,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 					counter_percent_symbol = 0;
 					current_set_name[current_set_size] = it;
 					++current_set_size;
+					R_ASSERT2(
+						current_set_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big string between percents %...%");
 					current_info.setInfoSet(current_set_name, current_set_size);
 
 					std::memset(
@@ -368,6 +382,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 
 		if (current_section_size)
 		{
+			R_ASSERT2(current_section_size <= ixray::kCondlistInfoStringSize,
+				"[xr_parser] too big string of section");
 			current_info.setText(current_section_name, current_section_size);
 		}
 
@@ -439,6 +455,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				{
 					if (strlen(current_section_name))
 					{
+						R_ASSERT2(current_section_size <=
+								ixray::kCondlistInfoStringSize,
+							"[xr_parser] too big string of section name");
+
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
@@ -466,6 +486,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big string of section name");
+
 					current_info.setText(
 						current_section_name, current_section_size);
 
@@ -512,6 +536,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				current_check_name[current_check_size] = it;
 				++current_check_size;
 
+				R_ASSERT2(current_check_size <= ixray::kCondlistInfoStringSize,
+					"[xr_parser] too big information string between brackets {...}");
+
 				current_info.setInfoCheck(
 					current_check_name, current_check_size);
 				std::memset(
@@ -532,6 +559,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"too big section name!");
+
 					current_info.setText(
 						current_section_name, current_section_size);
 					std::memset(current_section_name, 0,
@@ -570,6 +601,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 					counter_percent_symbol = 0;
 					current_set_name[current_set_size] = it;
 					++current_set_size;
+
+					R_ASSERT2(
+						current_set_size <= ixray::kCondlistInfoStringSize,
+						"too big %...% string");
 					current_info.setInfoSet(current_set_name, current_set_size);
 
 					std::memset(
@@ -641,6 +676,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 
 		if (current_section_size)
 		{
+			R_ASSERT2(current_section_size <= ixray::kCondlistInfoStringSize,
+				"too big section length");
 			current_info.setText(current_section_name, current_section_size);
 		}
 
@@ -713,6 +750,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				{
 					if (strlen(current_section_name))
 					{
+						R_ASSERT2(current_section_size <=
+								ixray::kCondlistInfoStringSize,
+							"[xr_parser] too big section name");
+
 						current_info.setText(
 							current_section_name, current_section_size);
 					}
@@ -741,6 +782,10 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big section name");
+
 					current_info.setText(
 						current_section_name, current_section_size);
 
@@ -787,6 +832,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 				current_check_name[current_check_size] = it;
 				++current_check_size;
 
+				R_ASSERT2(current_check_size <= ixray::kCondlistInfoStringSize,
+					"[xr_parser] too big string between brackets {...}");
 				current_info.setInfoCheck(
 					current_check_name, current_check_size);
 				std::memset(
@@ -807,6 +854,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 			{
 				if (current_section_size)
 				{
+					R_ASSERT2(
+						current_section_size <= ixray::kCondlistInfoStringSize,
+						"[xr_parser] too big string of section");
 					current_info.setText(
 						current_section_name, current_section_size);
 					std::memset(current_section_name, 0,
@@ -845,6 +895,9 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 					counter_percent_symbol = 0;
 					current_set_name[current_set_size] = it;
 					++current_set_size;
+					R_ASSERT2(
+						current_set_size <= ixray::kCondlistInfoStringSize,
+						"too big string between percents %...%");
 					current_info.setInfoSet(current_set_name, current_set_size);
 
 					std::memset(
@@ -916,6 +969,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(
 
 		if (current_section_size)
 		{
+			R_ASSERT2(current_section_size <= ixray::kCondlistInfoStringSize,
+				"too big string of section");
 			current_info.setText(current_section_name, current_section_size);
 		}
 
@@ -1246,8 +1301,8 @@ const char* CScriptXRParser::pickSectionFromCondlist(
 		{
 			int nCastedProbability = atoi(data.getProbability());
 
-			R_ASSERT2(
-				nCastedProbability>=0&&nCastedProbability<=100, "expected probability to be from 0 to 100");
+			R_ASSERT2(nCastedProbability >= 0 && nCastedProbability <= 100,
+				"expected probability to be from 0 to 100");
 
 			// we need to be sure that atoi gave us a '0', because otherwise the
 			// input is invalid and need to notify user
