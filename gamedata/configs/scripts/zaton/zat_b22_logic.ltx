@@ -2,7 +2,7 @@
 active = sr_idle@b38_connect
 
 [sr_idle@b38_connect]
-on_info  = {+zat_b38_cop_passed_away =story_object_exist(zat_b22_stalker_medic) -zat_b22_medic_respawn} sr_idle@2 %=teleport_npc_by_story_id(zat_b22_stalker_medic:zat_medic_home_smart_zat_b22_stalker_medic_walk) +zat_b22_medic_respawn =spawn_corpse(zat_b22_stalker_hunter_dead:zat_b22_stalker_hunter_dead) =spawn_object_in(drug_antidot:zat_b22_medic_inv_box) =spawn_object_in(medkit_army:zat_b22_medic_inv_box) =spawn_object_in(medkit_army:zat_b22_medic_inv_box) =spawn_object(zat_b38_stalker_cop_dead:zat_medic_home_smart_zat_b22_stalker_medic_look)%
+on_info  = {+zat_b38_cop_passed_away =story_object_exist(zat_b22_stalker_medic) -zat_b22_medic_respawn} sr_idle@2 %=zat_b22_logic_on_info%
 
 [sr_idle@2]
 on_info = {-zat_b22_stalker_hunter_hit =story_object_exist(zat_b22_stalker_hunter_dead)} %=hit_obj(zat_b22_stalker_hunter_dead:bip01_head:5:500:zat_b22_stalker_hunter_dead) +zat_b22_stalker_hunter_hit%

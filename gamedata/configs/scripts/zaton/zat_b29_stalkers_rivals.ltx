@@ -44,7 +44,7 @@ on_info = {!npc_has_item(detector_advanced) !npc_has_item(detector_scientific)} 
 
 ;On stalkers base, with af
 [logic@zat_b29_stalker_rival]
-suitable = {=check_npc_name(zat_b29_stalker_rival) -zat_b29_linker_take_af_from_rival +zat_b29_adv_task_given +zat_b29_stalkers_rivals_found_af} true
+suitable = {=zat_b29_stalkers_rivals_suitable} true
 prior = 200
 active = walker@stalker_rival_base_reach
 

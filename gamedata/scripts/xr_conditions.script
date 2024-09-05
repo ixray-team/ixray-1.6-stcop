@@ -598,7 +598,7 @@ function counter_greater(actor, npc, p)
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
 --		if  c > p[2] then --printf_xrscript("pl: counter [%s]  greater [%s]", p[1], p[2]) end
-		return c > tonumber(p[2])
+		return tonumber(c) > tonumber(p[2])
 	else
 		return false
 	end
@@ -1872,4 +1872,92 @@ function upgrade_hint_kardan(actor, npc, p)
 	inventory_upgrades.cur_hint = hint_table
 
 	return can_upgrade >= 2
+end
+
+function zat_b29_stalkers_rivals_suitable(actor, npc)
+	return check_npc_name(actor, npc, {"zat_b29_stalker_rival"}) and not has_alife_info("zat_b29_linker_take_af_from_rival") and has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_stalkers_rivals_found_af")
+end
+
+function pri_a16_recon_squad_suitable(actor, npc)
+	return not has_alife_info("pri_a17_actor_has_gauss_rifle") and not has_alife_info("pri_b305_fifth_cam_end") and target_squad_name(actor, npc, {"pri_a17_recon_squad"}) and not check_npc_name(actor, npc, {"pri_a17_military_captain_tarasov"})
+end
+
+function zat_b38_quest_line_on_info(actor, npc)
+	return has_alife_info("zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give") and not has_alife_info("zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task")
+end
+
+function zat_b29_sr_rival_on_info(actor, npc)
+	return has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_second_rival_taken_out") and not story_object_exist(actor, npc, {"zat_b29_stalker_rival_2"})
+end
+
+function zat_b29_sr_rival_on_info2(actor, npc)
+	return has_alife_info("zat_b29_adv_task_given") and not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_second_rival_taken_out") and not story_object_exist(actor, npc, {"zat_b29_stalker_rival_default_2"})
+end
+
+function zat_b29_sr_rival_1_on_info2(actor, npc)
+	return has_alife_info("zat_b29_adv_task_given") and not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_first_rival_taken_out") and not story_object_exist(actor, npc, {"zat_b29_stalker_rival_default_1"})
+end
+
+function zat_b14_quest_line_on_info2(actor, npc)
+	return not has_alife_info("zat_b14_recon_place") and has_alife_info("zat_b14_take_item") and not has_alife_info("zat_b14_learn_about_strange_occurrence_by_stalkers_give_task") and actor_has_item(actor, npc, {"af_quest_b14_twisted"})
+end
+
+function zat_b14_bar_zone_on_info(actor, npc)
+	return not has_alife_info("zat_b14_cut_scene_1_start") and not has_alife_info("zat_b14_stalker_death") and has_alife_info("zat_b14_give_item_stalker") and has_alife_info("zat_b14_stalker_cut_scene_ready") and not actor_has_item(actor, npc, {"af_quest_b14_twisted"}) and actor_in_zone(actor, npc, {"zat_b14_bar_zone"})
+end
+
+function zat_b103_logic_on_info1(actor, npc)
+	return has_alife_info("zat_b103_lost_merc_leader_bunker_guards_work") and distance_to_obj_ge(actor, npc, {"zat_b103_lost_merc_squad1","100"}) and squad_exist(actor, npc, {"zat_b103_lost_merc_squad1"}) and not has_alife_info("zat_b103_lost_merc_leader_destroed_for_bunker_guards_work1")
+end
+
+function zat_b103_logic_on_info1_1(actor, npc)
+	return has_alife_info("zat_b103_lost_merc_leader_bunker_guards_work") and has_alife_info("zat_b215_guide_to_jupiter") and squad_exist(actor, npc, {"zat_b103_lost_merc_squad1"}) and not has_alife_info("zat_b103_lost_merc_leader_destroed_for_bunker_guards_work1")
+end
+
+function zat_b103_logic_on_info2(actor, npc)
+	return has_alife_info("zat_b7_stalker_squad_leader_bunker_guards_work") and distance_to_obj_ge(actor, npc, {"zat_b7_stalkers_base_squad","100"}) and squad_exist(actor, npc, {"zat_b7_stalkers_base_squad"}) and not has_alife_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_on_info2_1(actor, npc)
+	return has_alife_info("zat_b7_stalker_squad_leader_bunker_guards_work") and has_alife_info("zat_b215_guide_to_jupiter") and squad_exist(actor, npc, {"zat_b7_stalkers_base_squad"}) and not has_alife_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_on_info6(actor, npc)
+	return has_alife_info("zat_b7_stalker_squad_leader_bunker_guards_work") and distance_to_obj_ge(actor, npc, {"zat_b7_stalkers_victims_1", "100"}) and squad_exist(actor, npc, {"zat_b7_stalkers_victims_1"}) and not has_alife_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_on_info6_1(actor, npc)
+	return has_alife_info("zat_b7_stalker_squad_leader_bunker_guards_work") and has_alife_info("zat_b215_guide_to_jupiter") and squad_exist(actor, npc, {"zat_b7_stalkers_victims_1"}) and not has_alife_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_on_info3(actor, npc)
+	return has_alife_info("zat_b103_lost_merc_leader_bunker_guards_work") and squad_exist(actor, npc, {"zat_b103_lost_merc_squad1"}) and not has_alife_info("zat_b103_lost_merc_relation_friend_set")
+end
+
+function zat_b103_logic_oni4(actor, npc)
+	return has_alife_info("zat_b103_merc_fight") and has_alife_info("zat_b103_lost_merc_leader_bunker_guards_work")
+end
+
+function zat_b103_logic_oni4_1(actor, npc)
+	return is_squad_enemy_to_actor(actor, npc, {"zat_b103_lost_merc_squad1"}) and has_alife_info("zat_b103_lost_merc_leader_bunker_guards_work")
+end
+
+function zat_b103_logic_oni5(actor, npc)
+	return is_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_base_squad"}) and has_alife_info("zat_b7_stalker_squad_leader_bunker_guards_work")
+end
+
+function zat_b107_logic_1(actor, npc)
+	return has_alife_info("zat_b28_heli_3_searched") and not has_alife_info("jup_b9_blackbox_decrypted") and not has_alife_info("zat_b107_evacuation_info_partial")
+end
+
+function zat_b107_logic_5(actor, npc)
+	return has_alife_info("zat_b107_evacuation_info_full") and not has_alife_info("jup_a9_actor_found_main_documents") and not has_alife_info("jup_a9_way_to_pripyat_search_started")
+end
+
+function zat_b107_logic_4(actor, npc)
+	return has_alife_info("zat_b107_evacuation_info_full") and has_alife_info("jup_a9_way_info") and has_alife_info("jup_a9_conservation_info") and has_alife_info("jup_a9_power_info") and not has_alife_info("jup_a9_actor_found_main_documents")
+end
+
+function zat_b107_logic_2(actor, npc)
+	return has_alife_info("jup_b9_blackbox_decrypted") and not has_alife_info("zat_b28_heli_3_searched") and not has_alife_info("zat_b107_evacuation_info_partial")
 end

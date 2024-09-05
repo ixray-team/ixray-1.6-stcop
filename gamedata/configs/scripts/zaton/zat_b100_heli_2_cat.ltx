@@ -2,7 +2,7 @@
 active = sr_idle@spawn_corps
 
 [sr_idle@spawn_corps]
-on_info = {-zat_b100_military_corps_spawned} sr_idle@poltergeist %=spawn_corpse(zat_b100_military_1:zat_b100_heli_2_look) =spawn_corpse(zat_b100_military_2:zat_b100_poltergeist_01_walk) =spawn_corpse(zat_b100_military_3:zat_b100_poltergeist_02_walk) +zat_b100_military_corps_spawned%
+on_info = {-zat_b100_military_corps_spawned} sr_idle@poltergeist %=zat_b100_heli_2_cat_on_info%
 
 [sr_idle@poltergeist]
 on_info = {+zat_b100_heli_2_searching +zat_a1_game_start} sr_idle@thinking_spawn %+zat_b100_polter_ignor_actor =run_postprocess(fade_in:7914) =disable_ui%

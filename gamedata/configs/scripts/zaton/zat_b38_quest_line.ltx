@@ -2,8 +2,8 @@
 active = sr_idle@1
 
 [sr_idle@1]
-on_info  = {+zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give -zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task} %=give_task(zat_b38_disappearance_stalkers) +zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task =set_counter(zat_b38_cop_abuse:0)%
-on_info2 = {+zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task} sr_idle@2 %=clear_smart_terrain(zat_b38) =create_squad(zat_b38_bloodsucker_1_lair:zat_b38) =create_squad(zat_b38_bloodsucker_2_lair:zat_b38) =create_squad(zat_b38_bloodsuckers_sleepers:zat_b38u) =spawn_corpse(zat_b38_bloodsucker_corpse:zat_b38_stalker_wrong_dead_body_walk_and_look) =spawn_corpse(zat_b38_stalker_corpse_1:zat_b38_dead_body_1_spawn) =spawn_corpse(zat_b38_stalker_corpse_2:zat_b38_dead_body_2_spawn) =spawn_corpse(zat_b38_stalker_corpse_3:zat_b38_dead_body_3_spawn) =spawn_corpse(zat_b38_tasty_corpse:zat_b38_tasty_spawn)%
+on_info  = {=zat_b38_quest_line_on_info} %=zat_b38_quest_line_on_info%
+on_info2 = {+zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task} sr_idle@2 %=zat_b38_quest_line_on_info2%
 
 [sr_idle@2]
 on_info6 = {-zat_b38_sleepers_incase_tp} %=teleport_squad(zat_b38_bloodsuckers_sleepers:zat_b38u_sleeper_bloodsuckers_spawn) +zat_b38_sleepers_incase_tp%

@@ -2,7 +2,7 @@
 active = sr_idle@zat_a23_gauss_rifle_guard_spawn
 
 [sr_idle@zat_a23_gauss_rifle_guard_spawn]
-on_info = {-zat_a23_gauss_rifle_guard_spawned =actor_has_item(zat_a23_access_card)} sr_idle@zat_a23_wait_actor %+zat_a23_gauss_rifle_guard_spawned =create_squad(zat_a23_zombie_squad:zat_a23_smart_terrain) =create_squad(zat_a23_giant_squad:zat_a23_smart_terrain) =set_counter(zat_a23_zombied_attack:0) =set_counter(zat_a23_zombied_death:0)%, {+zat_a23_gauss_rifle_guard_spawned} sr_idle@zat_a23_wait_actor
+on_info = {-zat_a23_gauss_rifle_guard_spawned =actor_has_item(zat_a23_access_card)} sr_idle@zat_a23_wait_actor %=zat_a23_cat_rest_on_info%, {+zat_a23_gauss_rifle_guard_spawned} sr_idle@zat_a23_wait_actor
 on_info2 = {=actor_has_item(zat_a23_gauss_rifle_docs)} sr_idle@zat_a23_pick_documents %+zat_a23_actor_used_access_card%
 
 [sr_idle@zat_a23_wait_actor]

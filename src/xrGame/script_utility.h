@@ -147,7 +147,7 @@ class CScriptGameObject;
 
 namespace ixray
 {
-	constexpr size_t kCondlistInfoStringSize = 512;
+	constexpr size_t kCondlistInfoStringSize = 128;
 	constexpr size_t kCondlistDataStringSize = 128;
 	constexpr size_t kCondlistProbabilityStringSize = 6;
 	constexpr size_t kCondlistEmbeddedDataSize = 32;

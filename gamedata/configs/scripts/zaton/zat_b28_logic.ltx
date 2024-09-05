@@ -2,7 +2,7 @@
 active = sr_idle@spawn
 
 [sr_idle@spawn]
-on_info = {-zat_b28_spawn_dead} sr_idle %+zat_b28_spawn_dead =spawn_corpse(snork_weak : zat_b28_snork_1_dead_walk) =spawn_corpse(snork_weak : zat_b28_snork_2_dead_walk) =spawn_corpse(snork_weak : zat_b28_snork_3_dead_walk) =spawn_corpse(zat_b28_draper : zat_b28_draper_walk) =spawn_corpse(zat_b28_umerov : zat_b28_umerov_walk) =spawn_corpse(zat_b28_smoliak : zat_b28_smoliak_walk)%
+on_info = {-zat_b28_spawn_dead} sr_idle %=zat_b28_logic_on_info%
 
 [sr_idle]
 on_info = {+zat_a1_game_start -zat_b28_start_blok} sr_idle@1 %+zat_b28_start_blok%

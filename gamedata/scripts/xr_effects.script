@@ -3587,3 +3587,160 @@ function jup_b200_count_found(actor)
 	cnt = cnt + xr_logic.pstor_retrieve(actor, "jup_b200_tech_materials_brought_counter", 0)
 	xr_logic.pstor_store(actor, "jup_b200_tech_materials_found_counter", cnt)
 end
+
+function zat_a23_cat_rest_on_info(actor, npc)
+	give_info("zat_a23_gauss_rifle_guard_spawned")
+	create_squad(actor, npc, {"zat_a23_zombie_squad", "zat_a23_smart_terrain"})
+	create_squad(actor, npc, {"zat_a23_giant_squad", "zat_a23_smart_terrain"}) 
+	set_counter(actor, npc, {"zat_a23_zombied_attack", "0"}) 
+	set_counter(actor, npc, {"zat_a23_zombied_death", "0"})
+end
+
+function zat_b38_quest_line_on_info(actor, npc)
+	give_task(actor, npc, {"zat_b38_disappearance_stalkers"}) 
+	give_info("zat_b38_disappearance_stalkers_find_to_be_missing_hunter_give_task")
+	set_counter(actor, npc, {"zat_b38_cop_abuse", "0"})
+end
+
+function zat_b38_quest_line_on_info2(actor, npc)
+	clear_smart_terrain(actor, npc, {"zat_b38"}) 
+	create_squad(actor, npc, {"zat_b38_bloodsucker_1_lair", "zat_b38"}) 
+	create_squad(actor, npc, {"zat_b38_bloodsucker_2_lair", "zat_b38"}) 
+	create_squad(actor, npc, {"zat_b38_bloodsuckers_sleepers", "zat_b38u"}) 
+	spawn_corpse(actor, npc, {"zat_b38_bloodsucker_corpse", "zat_b38_stalker_wrong_dead_body_walk_and_look"}) 
+	spawn_corpse(actor, npc, {"zat_b38_stalker_corpse_1", "zat_b38_dead_body_1_spawn"}) 
+	spawn_corpse(actor, npc, {"zat_b38_stalker_corpse_2", "zat_b38_dead_body_2_spawn"}) 
+	spawn_corpse(actor, npc, {"zat_b38_stalker_corpse_3", "zat_b38_dead_body_3_spawn"}) 
+	spawn_corpse(actor, npc, {"zat_b38_tasty_corpse", "zat_b38_tasty_spawn"})
+end
+
+function zat_b22_logic_on_info(actor, npc)
+	teleport_npc_by_story_id(actor, npc, {"zat_b22_stalker_medic","zat_medic_home_smart_zat_b22_stalker_medic_walk"}) 
+	give_info("zat_b22_medic_respawn") 
+	spawn_corpse(actor, npc, {"zat_b22_stalker_hunter_dead","zat_b22_stalker_hunter_dead"}) 
+	spawn_object_in(actor, npc, {"drug_antidot","zat_b22_medic_inv_box"}) 
+	spawn_object_in(actor, npc, {"medkit_army","zat_b22_medic_inv_box"}) 
+	spawn_object_in(actor, npc, {"medkit_army","zat_b22_medic_inv_box"}) 
+	spawn_object(actor, npc, {"zat_b38_stalker_cop_dead","zat_medic_home_smart_zat_b22_stalker_medic_look"})
+end
+
+function zat_b14_quest_line_on_info2(actor, npc)
+	give_info("zat_b14_learn_about_strange_occurrence_by_stalkers_give_task") 
+	give_task(actor, npc, {"zat_b14_learn_about_strange_occurrence_by_stalkers"})
+end
+
+function zat_b5_sr_set_squads_enemies_on_info(actor, npc)
+	give_info("zat_b5_meat_online")
+	set_squads_enemies(actor, npc, {"zat_b5_stalkers_squad","zat_b5_bandit_squad"}) 
+	set_squads_enemies(actor, npc, {"zat_b5_stalkers_squad","zat_b5_dolg_squad"}) 
+	set_squads_enemies(actor, npc, {"zat_b5_bandit_squad","zat_b5_dolg_squad"}) 
+	set_squads_enemies(actor, npc, {"zat_b5_bandit_squad","zat_b5_dolg_assist_squad"}) 
+	set_squads_enemies(actor, npc, {"zat_b5_stalkers_squad","zat_b5_dolg_assist_squad"})
+end
+
+function zat_b57_gas_actor_on_info(actor, npc)
+	remove_item(actor, npc, {"zat_b57_gas"}) 
+	spawn_object(actor, npc, {"zat_b57_ph_gas","zat_b57_place_gas_point"})
+	give_info("zat_b57_den_of_the_bloodsucker_twist_vintil_give")
+end
+
+function zat_b101_logic_on_info(actor, npc)
+	give_task(actor, npc, {"zat_b101_heli_5_crash"})
+	give_info("zat_b101_give_task") 
+	give_task(actor, npc, {"jup_b8_heli_4_crash"}) 
+	give_info("jup_b8_give_task") 
+	give_task(actor, npc, {"zat_b28_heli_3_crash"}) 
+	give_task(actor, npc, {"zat_b100_heli_2_crash"}) 
+	give_task(actor, npc, {"jup_b9_heli_1_crash"}) 
+	give_info("jup_b9_give_task") 
+	set_active_task(actor, npc, {"zat_b28_heli_3_crash"})
+end
+
+function zat_b100_heli_2_cat_on_info(actor, npc)
+	spawn_corpse(actor, npc, {"zat_b100_military_1","zat_b100_heli_2_look"}) 
+	spawn_corpse(actor, npc, {"zat_b100_military_2","zat_b100_poltergeist_01_walk"}) 
+	spawn_corpse(actor, npc, {"zat_b100_military_3","zat_b100_poltergeist_02_walk"}) 
+	give_info("zat_b100_military_corps_spawned")
+end
+
+function zat_b28_logic_on_info(actor, npc)
+	give_info("zat_b28_spawn_dead") 
+	spawn_corpse(actor, npc, {"snork_weak" , "zat_b28_snork_1_dead_walk"}) 
+	spawn_corpse(actor, npc, {"snork_weak" , "zat_b28_snork_2_dead_walk"}) 
+	spawn_corpse(actor, npc, {"snork_weak" , "zat_b28_snork_3_dead_walk"}) 
+	spawn_corpse(actor, npc, {"zat_b28_draper" , "zat_b28_draper_walk"}) 
+	spawn_corpse(actor, npc, {"zat_b28_umerov" , "zat_b28_umerov_walk"}) 
+	spawn_corpse(actor, npc, {"zat_b28_smoliak" , "zat_b28_smoliak_walk"})
+end
+
+function zat_b103_logic_1(actor, npc)
+	remove_squad(actor, npc, {"zat_b103_lost_merc_squad1"}) 
+	give_info("zat_b103_lost_merc_leader_destroed_for_bunker_guards_work1")
+end
+
+function zat_b103_logic_2(actor, npc)
+	remove_squad(actor, npc, {"zat_b103_lost_merc_squad1"}) 
+	give_info("zat_b103_lost_merc_leader_destroed_for_bunker_guards_work1")
+end
+
+function zat_b103_logic_3(actor, npc)
+	remove_squad(actor, npc, {"zat_b7_stalkers_base_squad"}) 
+	give_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_4(actor, npc)
+	remove_squad(actor, npc, {"zat_b7_stalkers_base_squad"}) 
+	give_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_5(actor, npc)
+	remove_squad(actor, npc, {"zat_b7_stalkers_victims_1"}) 
+	give_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_6(actor, npc)
+	remove_squad(actor, npc, {"zat_b7_stalkers_victims_1"}) 
+	give_info("zat_b7_stalker_squad_leader_destroed_for_bunker_guards_work")
+end
+
+function zat_b103_logic_7(actor, npc)
+	disable_info("zat_b103_lost_merc_leader_bunker_guards_work") 
+	disable_info("jup_b47_bunker_guards_done")
+end
+
+function zat_b103_logic_8(actor, npc)
+	disable_info("zat_b103_lost_merc_leader_bunker_guards_work")
+	disable_info("jup_b47_bunker_guards_done")
+end
+
+function zat_b107_logic_1(actor, npc)
+	give_info("zat_b107_evacuation_info_partial") 
+	give_task(actor, npc, {"zat_b107_evacuation_zaton"}) 
+	give_task(actor, npc, {"zat_b107_evacuation_jupiter"}) 
+	give_task(actor, npc, {"zat_b107_evacuation_pripyat"})
+end
+
+function zat_b12_item_spawner_1(actor, npc)
+	give_info("zat_b12_item_1_spawned") 
+	spawn_object_in(actor, npc, {"zat_b12_key_1","zat_b12_key_1_box"})  
+	spawn_object_in(actor, npc, {"zat_b12_documents_1","zat_b12_key_1_box"}) 
+	spawn_object_in(actor, npc, {"zat_b12_documents_2","zat_b12_key_1_box"})
+end
+
+function zat_b12_item_spawner_2(actor, npc)
+	give_info("zat_b12_item_2_spawned") 
+	spawn_object_in(actor, npc, {"zat_b12_key_2","zat_b12_key_2_box"}) 
+	spawn_object_in(actor, npc, {"zat_b12_documents_2","zat_b12_key_2_box"})
+end
+
+function zat_b12_item_spawner_3(actor, npc)
+	give_info("zat_b12_item_5_spawned") 
+	spawn_object_in(actor, npc, {"ammo_5.45x39_fmj","zat_b12_millitary_box"}) 
+	spawn_object_in(actor, npc, {"ammo_5.45x39_fmj","zat_b12_millitary_box"})
+	spawn_object_in(actor, npc, {"ammo_5.45x39_ap","zat_b12_millitary_box"}) 
+	spawn_object_in(actor, npc, {"ammo_9x18_fmj","zat_b12_millitary_box"}) 
+	spawn_object_in(actor, npc, {"ammo_9x18_fmj","zat_b12_millitary_box"}) 
+	spawn_object_in(actor, npc, {"ammo_9x18_fmj","zat_b12_millitary_box"}) 
+	spawn_object_in(actor, npc, {"grenade_rgd5","zat_b12_millitary_box"})
+	spawn_object_in(actor, npc, {"grenade_rgd5","zat_b12_millitary_box"})
+end
