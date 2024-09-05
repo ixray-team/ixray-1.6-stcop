@@ -9,9 +9,6 @@ class CScriptXREffectsStorage;
 class CScriptXRParser
 {
 	// second is a real length of .first
-	using xr_infos =
-		std::pair<xr_array<CCondlistInfo, ixray::kCondlistEmbeddedSize>,
-			size_t>;
 	using xr_embedded_params_t =
 		char[ixray::kXRParserParamsBufferSize][ixray::kXRParserParamBufferSize];
 
@@ -55,12 +52,6 @@ private:
 	// returns size of array
 	u32 parseInfoportions(
 		const char* pBuffer, CCondlistEmbedded::xr_condlistdata& result);
-
-	void parseCondlistInfos(
-		xr_infos& infos, xr_hash_map<u32, CCondlist>& result);
-	void parseInfoportions(
-		const char* pBuffer, xr_hash_map<u32, CCondlistData>& result);
-	u32 generateHandle(void);
 
 private:
 	u32 m_nCurrentIndex;
