@@ -173,10 +173,13 @@ function run_postprocess(actor, npc, p)
 	if (p[1]) then
 		if(system_ini():section_exist(p[1])) then
 			local num = 2000 + math.random(100)
-			if(p[2] and type(p[2]) == "number" and p[2]>0) then
-				num = p[2]
+			if(p[2]) then
+				local casted = tonumber(p[2])
+				if casted > 0 then 
+					num = casted
+				end
 			end
-			printf("adding complex effector [%s], id [%s], from [%s]", p[1], tostring(p[2]), tostring(npc:name()))
+			--printf("adding complex effector [%s], id [%s], from [%s]", p[1], tostring(p[2]), tostring(npc:name()))
 			level.add_complex_effector(p[1], num)
 		else
 			abort("Complex effector section is no set! [%s]", tostring(p[1]))
@@ -186,9 +189,13 @@ end
 
 function stop_postprocess(actor, npc, p)
 	--printf_xrscript("caller=%s obj=%s", convert_class_name(actor), convert_class_name(npc))
-	if(p[1] and type(p[1]) == "number" and p[1]>0) then
-		printf("removing complex effector id [%s] from [%s]", tostring(p[1]), tostring(npc:name()))
-		level.remove_complex_effector(p[1])
+	if(p[1]) then
+		local id = tonumber(p[1])
+
+		if id > 0 then
+			--printf("removing complex effector id [%s] from [%s]", tostring(p[1]), tostring(npc:name()))
+			level.remove_complex_effector(id)
+		end
 	end
 end
 
