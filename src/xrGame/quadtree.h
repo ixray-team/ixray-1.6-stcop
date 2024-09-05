@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "profiler.h"
-
 template <typename _object_type>
-class CQuadTree {
+class CQuadTree 
+{
 public:
-	struct CQuadNode {
+	struct CQuadNode
+	{
 		CQuadNode				*m_neighbours[4];
 
 		IC	CQuadNode	*&next				()
@@ -22,7 +22,8 @@ public:
 		}
 	};
 
-	struct CListItem {
+	struct CListItem
+	{
 		_object_type			*m_object;
 		CListItem				*m_next;
 		
@@ -33,7 +34,8 @@ public:
 	};
 
 	template <typename T>
-	struct CFixedStorage {
+	struct CFixedStorage 
+	{
 		T						*m_objects;
 		T						*m_free;
 		u32						m_max_object_count;

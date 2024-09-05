@@ -5,7 +5,6 @@
 #include "../xrEngine/xr_ioconsole.h"
 #include "../xrEngine/gamemtllib.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"

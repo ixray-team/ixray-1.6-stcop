@@ -22,9 +22,7 @@
 #include "location_manager.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
-#include "profiler.h"
 #include "mt_config.h"
-//#include "custommonster.h"
 
 // Lain: added 
 #include "steering_behaviour.h"

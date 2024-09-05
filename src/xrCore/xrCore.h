@@ -1,17 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include "profiler.h"
 #include "Platform/Platform.h"
-
-#ifdef IXRAY_PROFILER
-#	include <optick.h>
-#	define PROF_THREAD(Name) OPTICK_THREAD(Name)
-#	define PROF_FRAME(Name) OPTICK_FRAME(Name)
-#	define PROF_EVENT(Name) OPTICK_EVENT(Name)
-#else
-#	define PROF_THREAD(Name)
-#	define PROF_FRAME(Name)
-#	define PROF_EVENT(Name)
-#endif
 
 // Our headers
 #ifdef XRCORE_STATIC
