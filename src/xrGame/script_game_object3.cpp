@@ -363,10 +363,19 @@ u32 CScriptGameObject::GetWeaponType()
 	return weapon->ef_weapon_type();
 }
 
+bool CScriptGameObject::ActorIsJump() const
+{
+	if (smart_cast<CActor*>(this) == nullptr)
+		return false;
+
+	return (Actor()->is_jump());
+}
+
 bool CScriptGameObject::RayPick(const Fvector3& Pos, const Fvector3& Dir, float Range)
 {
 	collide::rq_result R;
 	return Level().ObjectSpace.RayPick(Pos, Dir, Range, collide::rq_target::rqtNone, R, nullptr);
+	return Level().ObjectSpace.RayPick(Pos, Dir, Range, (collide::rq_target)(collide::rq_target::rqtBoth | collide::rq_target::rqtObstacle), R, nullptr);
 }
 
 const CCoverPoint *CScriptGameObject::best_cover	(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance)
