@@ -147,7 +147,7 @@ class CScriptGameObject;
 
 namespace ixray
 {
-	// the length of string in ltx file like on_info field
+	// the length of string of check condition e.g. {...} <= between brackets string must be equal or less 128 or section_name or %...% <= between percents string must be equal or less 128 symbols 
 	constexpr size_t kCondlistInfoStringSize = 128;
 	// the length of function name or section name or infoportion
 	// for example we have a such condlist "{-infoportion_name} section_name %=function_name%" so

@@ -3779,3 +3779,25 @@ function zat_b7_stalker_victim_2(actor, npc)
 	play_sound(actor, npc, {"zat_b7_stalkers_attack"}) 
 	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"})
 end
+
+function zat_b14_spawner_1(actor, npc)
+	teleport_npc_by_story_id(actor, npc, {"zat_stalker_friend_1_id","zat_b14_smart_terrain_zat_b14_stalker_3_walk_1"}) 
+	teleport_npc_by_story_id(actor, npc, {"zat_stalker_friend_2_id","zat_b14_smart_terrain_zat_b14_stalker_2_walk_1"})
+end
+
+function zat_b14_spawner_2(actor, npc)
+	teleport_npc_by_story_id(actor, npc, {"zat_stalker_friend_1_id","zat_stalker_base_smart_general_characters_spawn_point"}) 
+	teleport_npc_by_story_id(actor, npc, {"zat_stalker_friend_2_id","zat_stalker_base_smart_general_characters_spawn_point"})
+end
+
+function zat_b101_logic_1(actor, npc)
+	run_postprocess(actor, npc, {"black","8011","true"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"zat_b101_actor_visual_stalker","zat_b101_actor_visual_stalker_walk","0","45"})
+end
+
+function zat_b101_logic_2(actor, npc)
+	stop_postprocess(actor, npc, {"8012"}) 
+	stop_postprocess(actor, npc, {"8013"}) 
+	enable_ui(actor, npc, nil)
+	teleport_actor(actor, npc, {"zat_b101_actor_visual_stalker_walk","zat_b101_actor_visual_stalker_look"})
+end
