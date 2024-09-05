@@ -607,7 +607,7 @@ function counter_equal(actor, npc, p)
 	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
 	if p[1] and p[2] then
 		local c = xr_logic.pstor_retrieve(actor, p[1], 0)
-		return c == p[2]
+		return c == tonumber(p[2])
 	else
 		return false
 	end
@@ -1964,4 +1964,8 @@ end
 
 function zat_b7_stalker_victim_1(actor, npc)
 	return not has_alife_info("zat_b7_attack_started") and squad_in_zone(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_sr_stalkers_victims_attack"})
+end
+
+function zat_b38_quest_line_1(actor, npc)
+	return has_alife_info("zat_b38_den_of_the_bloodsucker_inform_stalkers_give_task") and not squad_exist(actor, npc, {"zat_b38_bloodsuckers_sleepers"}) and counter_equal(actor, npc, {"zat_b57_terminated", "9"}) and not has_alife_info("zat_b57_den_of_the_bloodsucker_wait_destroy_give") and not has_alife_info("zat_b57_den_of_the_bloodsucker_tell_stalkers_about_destroy_lair_give")
 end
