@@ -3762,3 +3762,8 @@ function zat_b7_sr_at_3(actor, npc)
 	give_info("zat_b7_stalkers_victims_task_given") 
 	give_task(actor, npc, {"zat_b7_stalkers_victims"})
 end
+
+function zat_b7_sr_at_4(actor, npc)
+	give_info("zat_b7_stalkers_victims_task_given") 
+	give_task(actor, npc, {"zat_b7_stalkers_victims"})
+end
