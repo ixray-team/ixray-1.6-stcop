@@ -3744,3 +3744,21 @@ function zat_b12_item_spawner_3(actor, npc)
 	spawn_object_in(actor, npc, {"grenade_rgd5","zat_b12_millitary_box"})
 	spawn_object_in(actor, npc, {"grenade_rgd5","zat_b12_millitary_box"})
 end
+
+function zat_b7_sr_at_1(actor, npc)
+	teleport_squad(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_raiders_spawn_2"}) 
+	teleport_actor(actor, npc, {"zat_b7_actor_teleport_walk","zat_b7_actor_teleport_look"}) 
+	set_game_time(actor, npc, {"23","0"}) 
+	give_info("zat_b7_stalkers_raiders_attack")
+end
+
+function zat_b7_sr_at_2(actor, npc)
+	teleport_squad(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_raiders_spawn_2"}) 
+	teleport_actor(actor, npc, {"zat_b7_actor_teleport_walk","zat_b7_actor_teleport_look"}) 
+	give_info("zat_b7_stalkers_raiders_attack")
+end
+
+function zat_b7_sr_at_3(actor, npc)
+	give_info("zat_b7_stalkers_victims_task_given") 
+	give_task(actor, npc, {"zat_b7_stalkers_victims"})
+end
