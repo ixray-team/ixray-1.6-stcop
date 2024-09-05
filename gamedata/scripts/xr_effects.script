@@ -3767,3 +3767,15 @@ function zat_b7_sr_at_4(actor, npc)
 	give_info("zat_b7_stalkers_victims_task_given") 
 	give_task(actor, npc, {"zat_b7_stalkers_victims"})
 end
+
+function zat_b7_stalker_victim_1(actor, npc)
+	give_info("zat_b7_attack_started") 
+	play_sound(actor, npc, {"zat_b7_stalkers_attack"}) 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"})
+end
+
+function zat_b7_stalker_victim_2(actor, npc)
+	give_info("zat_b7_attack_started") 
+	play_sound(actor, npc, {"zat_b7_stalkers_attack"}) 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"})
+end

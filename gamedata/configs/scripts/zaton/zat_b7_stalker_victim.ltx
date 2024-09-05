@@ -66,8 +66,8 @@ def_state_moving = sprint
 def_state_moving_fire = sneak_fire
 radius = 0
 on_info = {+zat_b7_actor_help_stalkers} walker@end_1
-on_info2 = {=is_squad_enemy_to_actor(zat_b7_stalkers_raiders) -zat_b7_attack_started} camper@attack_1_leader %+zat_b7_attack_started =play_sound(zat_b7_stalkers_attack) =set_squads_enemies(zat_b7_stalkers_raiders:zat_b7_stalkers_victims_1)%
-on_info3 = {-zat_b7_attack_started =squad_in_zone(zat_b7_stalkers_raiders:zat_b7_sr_stalkers_victims_attack)} camper@attack_1_leader %+zat_b7_attack_started =play_sound(zat_b7_stalkers_attack) =set_squads_enemies(zat_b7_stalkers_raiders:zat_b7_stalkers_victims_1)%
+on_info2 = {=is_squad_enemy_to_actor(zat_b7_stalkers_raiders) -zat_b7_attack_started} camper@attack_1_leader %=zat_b7_stalker_victim_1%
+on_info3 = {=zat_b7_stalker_victim_1} camper@attack_1_leader %=zat_b7_stalker_victim_2%
 
 [camper@attack_1_leader]
 path_walk = stalker_victim_1_attack_walk

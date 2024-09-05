@@ -1961,3 +1961,7 @@ end
 function zat_b107_logic_2(actor, npc)
 	return has_alife_info("jup_b9_blackbox_decrypted") and not has_alife_info("zat_b28_heli_3_searched") and not has_alife_info("zat_b107_evacuation_info_partial")
 end
+
+function zat_b7_stalker_victim_1(actor, npc)
+	return not has_alife_info("zat_b7_attack_started") and squad_in_zone(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_sr_stalkers_victims_attack"})
+end
