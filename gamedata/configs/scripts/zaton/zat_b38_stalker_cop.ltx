@@ -269,7 +269,7 @@ on_info34 = {+zat_b38_bloodscukers_sleepers_stand_up} walker@runaway %=play_soun
 cover_name = zat_b38_alert_animp
 avail_animations = zat_b38_stalker_alert
 out_restr = zat_b38_sleepers_territory
-on_game_timer = 40 | {-zat_b38_stalker_cop_bloodsuckers_sleep_done} %=play_sound(zat_b38_stalker_cop_bloodsuckers_sleep) +zat_b38_stalker_cop_bloodsuckers_sleep_done +zat_b38_disappearance_stalkers_get_out_from_den_of_the_bloodsucker_give%
+on_game_timer = 40 | {-zat_b38_stalker_cop_bloodsuckers_sleep_done} %=zat_b38_s_c_1%
 on_game_timer2 = 110 | walker@lair_sneak
 on_info = {+zat_b38_bloodscukers_sleepers_stand_up} walker@runaway %=play_sound(zat_b38_stalker_cop_bloodsuckers_no_sleep)%
 combat_ignore_cond = true

@@ -2057,3 +2057,43 @@ end
 function zat_b7_sr_sra_15(actor, npc)
 	return not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
 end
+
+function zat_b5_c_t_s_1(actor, npc)
+	return not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b5_s_r_1_1(actor, npc)
+	return has_alife_info("zat_b5_actor_with_stalkers") and not has_alife_info("zat_b5_stalker_death") and check_enemy_name(actor, npc, {"zat_b7_duty_illicit_dealer","zat_b5_dealer_assistant_2","zat_b5_dealer_assistant_1","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b5_s_r_2_1(actor, npc)
+	return has_alife_info("zat_b5_actor_with_stalkers") and not has_alife_info("zat_b5_stalker_death") and check_enemy_name(actor, npc, {"zat_b7_duty_illicit_dealer","zat_b5_dealer_assistant_2","zat_b5_dealer_assistant_1","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b5_s_r_3_1(actor, npc)
+	return has_alife_info("zat_b5_actor_with_stalkers") and not has_alife_info("zat_b5_stalker_death") and check_enemy_name(actor, npc, {"zat_b7_duty_illicit_dealer","zat_b5_dealer_assistant_2","zat_b5_dealer_assistant_1","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b5_s_r_4_1(actor, npc)
+	return has_alife_info("zat_b5_actor_with_stalkers") and not has_alife_info("zat_b5_stalker_death") and check_enemy_name(actor, npc, {"zat_b7_duty_illicit_dealer","zat_b5_dealer_assistant_2","zat_b5_dealer_assistant_1","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b5_d_a_1_1(actor, npc)
+	return not has_alife_info("zat_b5_stalker_death") and has_alife_info("zat_b5_actor_with_stalkers") and check_enemy_name(actor, npc, {"zat_b5_stalker_raider","zat_b7_bandit_boss","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b5_d_a_2_1(actor, npc)
+	return not has_alife_info("zat_b5_stalker_death") and has_alife_info("zat_b5_actor_with_stalkers") and check_enemy_name(actor, npc, {"zat_b5_stalker_raider","zat_b7_bandit_boss","zat_b5_actor_with_bandits","zat_b5_actor_with_dealer"})
+end
+
+function zat_b51_o_p_1(actor, npc)
+	return has_alife_info("zat_b51_finished_category_1") and has_alife_info("zat_b51_finished_category_2") and has_alife_info("zat_b51_finished_category_3") and has_alife_info("zat_b51_finished_category_4") and has_alife_info("zat_b51_finished_category_5") and has_alife_info("zat_b51_finished_category_7")
+end
+
+function zat_b51_o_p_2(actor, npc)
+	return has_alife_info("zat_b51_finished_category_1") and has_alife_info("zat_b51_finished_category_2") and has_alife_info("zat_b51_finished_category_3") and has_alife_info("zat_b51_finished_category_4") and has_alife_info("zat_b51_finished_category_5") and has_alife_info("zat_b51_finished_category_6") and has_alife_info("zat_b51_finished_category_7")
+end
+
+function zat_b100_h_2_c_1(actor, npc)
+	return has_alife_info("zat_b100_heli_2_searched") and not is_obj_on_job(actor, npc, {"logic@zat_b100_poltergeist_02","zat_b100"}) and not squad_exist(actor, npc, {"zat_b100_poltergeist_squad_01"}) and distance_to_obj_ge(actor, npc, {"zat_b100_heli_2", "100"})
+end

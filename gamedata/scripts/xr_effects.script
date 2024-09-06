@@ -3310,8 +3310,8 @@ function create_cutscene_actor_with_weapon(actor, npc, p)
 		abort("Path %s doesnt exist. Function 'spawn_object' for object %s ", tostring(path_name), obj:name())
 	end
 	local ptr = patrol(path_name)
-	local index = p[3] or 0
-	local yaw = p[4] or 0
+	local index = tonumber(p[3]) or 0
+	local yaw = tonumber(p[4]) or 0
 
 	local npc = alife():create(spawn_sect, ptr:point(index), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
 	if IsStalker( nil, npc:clsid()) then
@@ -3320,7 +3320,7 @@ function create_cutscene_actor_with_weapon(actor, npc, p)
 		npc.angle.y = yaw * math.pi / 180
 	end
 
-	local slot_override = p[5] or 0
+	local slot_override = tonumber(p[5]) or 0
 
 	local slot
 	local active_item
@@ -3870,4 +3870,125 @@ function zat_b5_sr_st_1(actor, npc)
 	create_squad(actor, npc, {"zat_b5_dolg_squad","zat_b5_smart_terrain"})  
 	create_squad(actor, npc, {"zat_b5_bandit_squad","zat_b5_smart_terrain"}) 
 	create_squad(actor, npc, {"zat_b5_dolg_assist_squad","zat_b5_smart_terrain"})
+end
+
+function zat_b38_s_b_1(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_7_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_7")
+end
+
+function zat_b38_s_b_2(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_8_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_8")
+end
+
+function zat_b38_s_b_3(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_9_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_9")
+end
+
+function zat_b38_s_b_4(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	give_info("zat_b38_sleeper_state_2") 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_2_walk_1"}) 
+	set_visual_memory_enabled(0)
+end
+
+function zat_b38_s_b_5(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_3_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_3")
+end
+
+function zat_b38_s_b_6(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_4_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_4")
+end
+
+function zat_b38_s_b_7(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_6_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_6")
+end
+
+function zat_b38_s_b_8(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_5_walk_1"}) 
+	set_visual_memory_enabled(0) 
+	give_info("zat_b38_sleeper_state_5")
+end
+
+function zat_b38_s_b_9(actor, npc)
+	set_bloodsucker_state(actor, npc, {"2"}) 
+	give_info("zat_b38_sleeper_state_1") 
+	teleport_npc(actor, npc, {"zat_b38u_sleeper_bloodsucker_1_walk_1"}) 
+	set_visual_memory_enabled(0)
+end
+
+function zat_b29_sr_c_1(actor, npc)
+	zat_b29_create_random_infop(actor, npc, {"3","zat_b29_af_16","zat_b29_af_17","zat_b29_af_18","zat_b29_af_19","zat_b29_af_20","zat_b29_af_21","zat_b29_af_22","zat_b29_af_23"})
+end
+
+function zat_b38_s_c_1(actor, npc)
+	play_sound(actor, npc, {"zat_b38_stalker_cop_bloodsuckers_sleep"}) 
+	give_info("zat_b38_stalker_cop_bloodsuckers_sleep_done") 
+	give_info("zat_b38_disappearance_stalkers_get_out_from_den_of_the_bloodsucker_give")
+end
+
+function zat_b100_h_2_c_1(actor, npc)
+	run_postprocess(actor, npc, {"black","7917","true"}) 
+	destroy_object(actor, npc, {"story","zat_b100_actor"}) 
+	teleport_actor(actor, npc, {"zat_b100_heli_2_walk","zat_b100_heli_2_look"})
+end
+
+function zat_b100_h_2_c_2(actor, npc)
+	stop_postprocess(actor, npc, {"7916"}) 
+	stop_postprocess(actor, npc, {"7917"}) 
+	enable_ui(actor, npc)
+	disable_info("zat_b100_polter_ignor_actor") 
+	give_info("zat_b100_guide_maps_gived") 
+	give_task(actor, npc, {"zat_b100_guide_maps"})
+end
+
+function zat_b20_q_l_1(actor, npc)
+	run_postprocess(actor, npc, {"black","22219","true"}) 
+	create_squad(actor, npc, {"zat_b20_noah_teleport_squad","zat_b20_smart_terrain"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"zat_b20_actor","zat_b20_smart_terrain_actor_spawn_walk","0","0","3"}) 
+	teleport_actor(actor, npc, {"zat_b20_smart_terrain_actor_spawn_walk","zat_b20_smart_terrain_actor_spawn_look"})
+end
+
+function zat_b28_l_1(actor, npc)
+	run_postprocess(actor, npc, {"black","8110","true"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"zat_b28_actor_visual_stalker","zat_b28_actor_visual_stalker_walk","0","153"})
+end
+
+function zat_b28_l_2(actor, npc)
+	stop_postprocess(actor, npc, {"8111"}) 
+	stop_postprocess(actor, npc, {"8112"}) 
+	teleport_actor(actor, npc, {"zat_b28_actor_visual_stalker_walk","zat_b28_actor_visual_stalker_look"}) 
+	enable_ui(actor, npc)
+end
+
+function zat_b51_q_l_1(actor, npc)
+	give_info("zat_b51_order_ready_task") 
+	give_info("zat_b51_order_ready") 
+	play_sound(actor, npc, {"zat_b51_order_ready"}) 
+	create_squad(actor, npc, {"zat_a2_stalker_nimble_squad","zat_stalker_base_smart"})
+end
+
+function zat_b51_q_l_2(actor, npc)
+	give_info("zat_b51_order_ready") 
+	play_sound(actor, npc, {"zat_b51_order_ready"}) 
+	create_squad(actor, npc, {"zat_a2_stalker_nimble_squad","zat_stalker_base_smart"}) 
+	give_info("zat_b51_order_ready_task")
 end

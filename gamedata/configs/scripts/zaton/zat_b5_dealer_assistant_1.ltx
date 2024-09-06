@@ -36,7 +36,7 @@ gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
 
-;--ждет ответа
+;--пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 [walker@wait]
 path_walk = zat_b5_dealer_assistant_1_walker_10_walk
 path_look = zat_b5_dealer_assistant_1_walker_10_look
@@ -63,7 +63,7 @@ danger = danger
 gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
-;--вторая фраза "оружие не проблема"
+;--пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 
 [walker@fear]
 path_walk = zat_b5_dealer_assistant_1_walker_10_walk
@@ -78,14 +78,14 @@ gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
 
-;--универсальный бой
+;--пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 [walker@fight]
 path_walk = zat_b5_dealer_assistant_1_walker_10_walk
 path_look = zat_b5_dealer_assistant_1_walker_10_look
 def_state_standing = guard_na
 meet = no_meet
 out_restr = zat_b5_smart_terrain_attack
-combat_ignore_cond = {-zat_b5_stalker_death +zat_b5_actor_with_stalkers =check_enemy_name(zat_b5_stalker_raider:zat_b7_bandit_boss:zat_b5_actor_with_bandits:zat_b5_actor_with_dealer)} true, {=check_enemy_name(zat_b7_duty_illicit_dealer)} true, {=check_enemy_name(sim_default)} true
+combat_ignore_cond = {=zat_b5_d_a_1_1} true, {=check_enemy_name(zat_b7_duty_illicit_dealer)} true, {=check_enemy_name(sim_default)} true
 ;gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
@@ -192,7 +192,7 @@ gather_items_enabled = false
 help_wounded_enabled = false
 corpse_detection_enabled = false
 
-;--универсальный бой
+;--пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 [walker@dealer_fight]
 path_walk = zat_b5_dealer_assistant_1_walker_10_walk
 path_look = zat_b5_dealer_assistant_1_walker_10_look

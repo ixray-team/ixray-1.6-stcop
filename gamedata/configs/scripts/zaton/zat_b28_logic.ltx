@@ -12,7 +12,7 @@ on_info2 = {+zat_b28_start_blok} sr_idle@1
 on_info =  {+zat_b28_heli_3_searching -zat_b28_heli_3_searched} sr_idle@timer1 %=disable_ui =run_postprocess(fade_in:8109)%
 
 [sr_idle@timer1]
-on_game_timer = 20 | sr_idle@timer12 %=run_postprocess(black:8110:true) =create_cutscene_actor_with_weapon(zat_b28_actor_visual_stalker:zat_b28_actor_visual_stalker_walk:0:153)%
+on_game_timer = 20 | sr_idle@timer12 %=zat_b28_l_1%
 
 [sr_idle@timer12]
 on_game_timer = 45 | sr_cutscene %=stop_postprocess(8110) =stop_postprocess(8109) +zat_b28_heli_3_play_sound%
@@ -32,7 +32,7 @@ on_info3 = {+zat_b28_actor_hit} %=stop_sr_cutscene%
 
 [sr_idle@fade_out]
 on_game_timer = 10 | %+zat_b28_heli_3_searched%
-on_info = {+zat_b28_heli_3_searched} sr_idle@nil %=stop_postprocess(8111) =stop_postprocess(8112) =teleport_actor(zat_b28_actor_visual_stalker_walk:zat_b28_actor_visual_stalker_look) =enable_ui%
+on_info = {+zat_b28_heli_3_searched} sr_idle@nil %=zat_b28_l_2%
 
 [sr_idle@nil]
 on_info = {+zat_b28_heli_3_searched -save_zat_b28_searched_heli_3} %+save_zat_b28_searched_heli_3 =scenario_autosave(st_save_zat_b28_searched_heli_3)%
