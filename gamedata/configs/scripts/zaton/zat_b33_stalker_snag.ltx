@@ -64,8 +64,8 @@ prior = 200
 meet = meet@no_share
 on_info2 = {+zat_b33_safe_container -zat_b33_task_gived -zat_b52_reputation_task_open} %+zat_b33_task_gived =give_task(zat_b33_zaporojec)%
 on_info3 = {+zat_b33_share_start} remark@share
-on_info4 = {+zat_b52_reputation_task_open =actor_has_active_nimble_weapon -zat_b33_stalker_snag_b52_my_gun_dialog_done =actor_in_zone(zat_b52_actor_restr)} animpoint@my_weapon
-on_info5 = {+zat_b33_refuse_task =actor_has_active_nimble_weapon -zat_b33_stalker_snag_b52_my_gun_dialog_done =actor_in_zone(zat_b52_actor_restr)} animpoint@my_weapon
+on_info4 = {=zat_b33_stalker_snag_1} animpoint@my_weapon
+on_info5 = {=zat_b33_stalker_snag_2} animpoint@my_weapon
 
 [animpoint@my_weapon]:animpoint@zat_a2_stalker_snag
 meet = meet@my_weapon

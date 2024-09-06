@@ -83,7 +83,7 @@ abuse = false
 [logic@zat_b7_stalker_raider_leader_attack]
 active = walker@leader_attack
 prior = 200
-suitable = {=is_alive(zat_b7_stalker_raider_leader) =check_npc_name(zat_b7_stalker_raider_leader) +zat_b7_stalkers_raiders_attack} true, {!is_alive(zat_b7_stalker_raider_leader) =target_squad_name(zat_b7_stalkers_raiders) +zat_b7_stalkers_raiders_attack =is_squad_commander} true
+suitable = {=is_alive(zat_b7_stalker_raider_leader) =check_npc_name(zat_b7_stalker_raider_leader) +zat_b7_stalkers_raiders_attack} true, {=zat_b7_sr_sra_2} true
 post_combat_time = 0, 0
 
 [walker@leader_attack]
@@ -94,7 +94,7 @@ on_actor_dist_ge = 75 | {+zat_b7_actor_with_bandits +zat_b7_stalkers_raiders_mee
 def_state_standing = guard_na
 meet = meet@leader_start_attack
 on_info = {=is_squad_enemy_to_actor(zat_b7_stalkers_victims_1) +zat_b7_stalkers_raiders_meet} camper@leader_attack %+zat_b7_stalkers_raiders_attack_started%, {+zat_b7_stalkers_raiders_attack_started +zat_b7_stalkers_raiders_meet} walker@leader_walk_to_position
-on_info2 = {!squad_exist(zat_b7_stalkers_victims_1) -zat_b7_victims_disappeared -zat_b7_actor_killed_victims_self -zat_b7_stalkers_raiders_meet} %+zat_b7_actor_killed_victims_self +zat_b7_attack_started%
+on_info2 = {=zat_b7_stalker_raider_1} %+zat_b7_actor_killed_victims_self +zat_b7_attack_started%
 on_info3 = {-zat_b7_stalkers_raiders_meet =squad_in_zone(zat_b7_stalkers_raiders:zat_b7_sr_stalkers_raiders_attack)} %+zat_b7_stalkers_raiders_meet%
 def_state_moving = assault
 gather_items_enabled = false
@@ -225,7 +225,7 @@ snd_on_use = nil
 [logic@zat_b7_stalker_raider_1_attack]
 active = walker@attack_1
 prior = 100
-suitable = {=target_squad_name(zat_b7_stalkers_raiders) !check_npc_name(zat_b7_stalker_raider_leader) +zat_b7_stalkers_raiders_attack !is_squad_commander} true
+suitable = {=zat_b7_sr_sra_5} true
 post_combat_time = 0, 0
 
 [walker@attack_1]
@@ -282,7 +282,7 @@ corpse_detection_enabled = false
 [logic@zat_b7_stalker_raider_2_attack]
 active = walker@attack_2
 prior = 100
-suitable = {=target_squad_name(zat_b7_stalkers_raiders) !check_npc_name(zat_b7_stalker_raider_leader) +zat_b7_stalkers_raiders_attack !is_squad_commander} true
+suitable = {=zat_b7_sr_sra_3} true
 post_combat_time = 0, 0
 
 [walker@attack_2]
@@ -339,7 +339,7 @@ corpse_detection_enabled = false
 [logic@zat_b7_stalker_raider_3_attack]
 active = walker@attack_3
 prior = 100
-suitable = {=target_squad_name(zat_b7_stalkers_raiders) !check_npc_name(zat_b7_stalker_raider_leader) +zat_b7_stalkers_raiders_attack !is_squad_commander} true
+suitable = {=zat_b7_sr_sra_4} true
 post_combat_time = 0, 0
 
 [walker@attack_3]

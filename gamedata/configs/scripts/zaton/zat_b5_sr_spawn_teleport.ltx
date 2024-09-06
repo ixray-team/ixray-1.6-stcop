@@ -27,12 +27,12 @@ on_info = {+zat_b7_stalker_victim_leader_alive} sr_idle@create_stalkers %=create
 on_info2 = {-zat_b7_stalker_victim_leader_alive} sr_idle@create_stalkers %=create_squad_member(zat_b5_stalker_commander:zat_b5_stalkers_squad)%
 
 [sr_idle@create_stalkers]
-on_info = {+zat_b5_actor_stalker_go_to_trader} sr_idle@pre_stalkers_disable_ui %=create_squad(zat_b5_dolg_squad:zat_b5_smart_terrain)  =create_squad(zat_b5_bandit_squad:zat_b5_smart_terrain) =create_squad(zat_b5_dolg_assist_squad:zat_b5_smart_terrain)% 
+on_info = {+zat_b5_actor_stalker_go_to_trader} sr_idle@pre_stalkers_disable_ui %=zat_b5_sr_st_1% 
 on_info2 = {+zat_b5_come_to_bandits_complete} sr_idle@bandits_check %=create_squad(zat_b5_dolg_squad:zat_b5_smart_terrain) =create_squad(zat_b5_dolg_assist_squad:zat_b5_smart_terrain)% 
 on_info3 = {+zat_b5_spawn_enemy} sr_idle@alter_bandits %=create_squad(zat_b5_bandit_squad:zat_b5_smart_terrain)%
 on_info4 = {+zat_b5_time_is_out =squad_exist(zat_b5_stalkers_squad)} sr_idle@nil %=remove_squad(zat_b5_stalkers_squad)%,  {+zat_b5_time_is_out !squad_exist(zat_b5_stalkers_squad)} sr_idle@nil
 
-;-------------за сталкеров-------------------
+;-------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-------------------
 [sr_idle@pre_stalkers_disable_ui]
 on_info = {+zat_b7_stalker_raider_leader_alive} sr_idle@cheack_alive_leader %=create_squad_member(zat_b5_stalker_raider_leader:zat_b5_bandit_squad)%
 on_info2 = {-zat_b7_stalker_raider_leader_alive} sr_idle@cheack_alive_leader %=create_squad_member(zat_b7_bandit_boss_dead:zat_b5_bandit_squad)%
@@ -59,7 +59,7 @@ on_game_timer = 20 | sr_idle@nil %=create_squad(zat_b7_stalkers_base_squad:zat_b
 
 
 
-;-------------за торговца-------------------
+;-------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-------------------
 [sr_idle@dealer_check]
 on_info = {+zat_b5_dealer_close} sr_idle@dealer_disable_ui
 on_info2 = {+zat_b5_meat} sr_idle@add_stalker_with_dealer_to_nil %=create_squad(zat_b5_stalkers_squad:zat_b5_smart_terrain)%
@@ -83,7 +83,7 @@ on_info2 = {-zat_b7_stalker_victim_leader_alive} sr_idle@nil %=create_squad_memb
 [sr_idle@dealer_cam_sig]
 on_info = {+zat_b5_dealer_cutscene_end} sr_idle@nil %=enable_ui%
 
-;--------------------за бандитов-----------------------
+;--------------------пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ-----------------------
 
 [sr_idle@bandits_check]
 on_info = {+zat_b5_sultan_close} sr_idle@bandits_disable_ui 

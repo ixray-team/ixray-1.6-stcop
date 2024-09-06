@@ -1973,3 +1973,87 @@ end
 function zat_b5_stalker_commander_1(actor, npc)
 	return not has_alife_info("zat_b5_task_end") and target_squad_name(actor, npc, {"zat_b5_stalkers_squad"}) and not is_alive(actor, npc, {"zat_b5_stalker_commander_id"}) and not is_alive(actor, npc, {"zat_b5_stalker_commander_b7_id"}) and is_squad_commander(actor, npc)
 end
+
+function zat_b33_stalker_snag_1(actor, npc)
+	return has_alife_info("zat_b52_reputation_task_open") and actor_has_active_nimble_weapon(actor, npc) and not has_alife_info("zat_b33_stalker_snag_b52_my_gun_dialog_done") and actor_in_zone(actor, npc, {"zat_b52_actor_restr"})
+end
+
+function zat_b33_stalker_snag_2(actor, npc)
+	return has_alife_info("zat_b33_refuse_task") and actor_has_active_nimble_weapon(actor, npc) and not has_alife_info("zat_b33_stalker_snag_b52_my_gun_dialog_done") and actor_in_zone(actor, npc, {"zat_b52_actor_restr"})
+end
+
+function zat_b33_stalker_snag_3(actor, npc)
+	return not has_alife_info("zat_b7_actor_killed_victims_self") and has_alife_info("zat_b7_actor_help_bandits") and has_alife_info("zat_b7_stalkers_raiders_reward_given") and has_alife_info("zat_b7_actor_really_helped_bandits")
+end
+
+function zat_b33_stalker_snag_4(actor, npc)
+	return not has_alife_info("zat_b7_actor_killed_victims_self") and has_alife_info("zat_b7_actor_help_bandits") and has_alife_info("zat_b7_stalkers_raiders_reward_given") and not has_alife_info("zat_b7_actor_really_helped_bandits")
+end
+
+function zat_b7_sr_sra_1(actor, npc)
+	return has_alife_info("zat_b7_stalkers_victims_know_about_raid") and not has_alife_info("zat_b7_victims_disappeared") and not has_alife_info("zat_b7_actor_with_stalkers") and has_alife_info("zat_b7_stalkers_raiders_attack") and dist_to_story_obj_ge(actor, npc, {"zat_b7_stalkers_victims_1","75"})
+end
+
+function zat_b7_stalkers_victims_1(actor, npc)
+	return has_alife_info("zat_b7_actor_help_stalkers") and has_alife_info("zat_b7_stalkers_victims_reward_1_given") and not has_alife_info("zat_b7_actor_really_helped_stalkers") and not has_alife_info("zat_b7_victims_disappeared")
+end
+
+function zat_b7_sr_sra_2(actor, npc)
+	return not is_alive(actor, npc, {"zat_b7_stalker_raider_leader"}) and target_squad_name(actor, npc, {"zat_b7_stalkers_raiders"}) and has_alife_info("zat_b7_stalkers_raiders_attack") and is_squad_commander(actor, npc)
+end
+
+function zat_b7_sr_sra_3(actor, npc)
+	return target_squad_name(actor, npc, {"zat_b7_stalkers_raiders"}) and not check_npc_name(actor, npc, {"zat_b7_stalker_raider_leader"}) and has_alife_info("zat_b7_stalkers_raiders_attack") and not is_squad_commander(actor, npc)
+end
+
+function zat_b7_sr_sra_4(actor, npc)
+	return target_squad_name(actor, npc, {"zat_b7_stalkers_raiders"}) and not check_npc_name(actor, npc, {"zat_b7_stalker_raider_leader"}) and has_alife_info("zat_b7_stalkers_raiders_attack") and not is_squad_commander(actor, npc)
+end
+
+function zat_b7_sr_sra_5(actor, npc)
+	return target_squad_name(actor, npc, {"zat_b7_stalkers_raiders"}) and not check_npc_name(actor, npc, {"zat_b7_stalker_raider_leader"}) and has_alife_info("zat_b7_stalkers_raiders_attack") and not is_squad_commander(actor, npc)
+end
+
+function zat_b7_stalker_raider_1(actor, npc)
+	return not squad_exist(actor, npc, {"zat_b7_stalkers_victims_1"}) and not has_alife_info("zat_b7_victims_disappeared") and not has_alife_info("zat_b7_actor_killed_victims_self") and not has_alife_info("zat_b7_stalkers_raiders_meet")
+end
+
+function zat_b7_sr_sra_6(actor, npc)
+	return not is_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_victims_1"}) and not has_alife_info("zat_b7_stalkers_victims_know_about_raid") and not has_alife_info("zat_b7_actor_really_helped_stalkers")
+end
+
+function zat_b7_sr_sra_7(actor, npc)
+	return not is_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_victims_1"}) and not has_alife_info("zat_b7_stalkers_victims_know_about_raid") and has_alife_info("zat_b7_actor_really_helped_stalkers")
+end
+
+function zat_b7_sr_sra_8(actor, npc)
+	return not squad_exist(actor, npc, {"zat_b7_stalkers_victims_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_raiders"}) and not has_alife_info("zat_b7_victims_disappeared") and has_alife_info("zat_b7_actor_with_bandits") and not has_alife_info("zat_b7_actor_killed_victims_self")
+end
+
+function zat_b7_sr_sra_9(actor, npc)
+	return not squad_exist(actor, npc, {"zat_b7_stalkers_victims_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_raiders"}) and not has_alife_info("zat_b7_victims_disappeared") and not has_alife_info("zat_b7_actor_with_bandits")
+end
+
+function zat_b7_sr_sra_10(actor, npc)
+	return not has_alife_info("zat_b5_actor_stalker_go_to_trader") and not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b7_sr_sra_11(actor, npc)
+	return not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b7_sr_sra_12(actor, npc)
+	return not has_alife_info("zat_b5_actor_stalker_go_to_trader") and not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b7_sr_sra_13(actor, npc)
+	return is_alive(actor, npc, {"zat_b5_stalker_commander_id"}) and not has_alife_info("zat_b5_actor_stalker_go_to_trader") and not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b7_sr_sra_14(actor, npc)
+	return is_alive(actor, npc, {"zat_b5_stalker_commander_b7_id"}) and not has_alife_info("zat_b5_actor_stalker_go_to_trader") and not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end
+
+function zat_b7_sr_sra_15(actor, npc)
+	return not has_alife_info("zat_b5_stalker_attack_dealer") and not has_alife_info("zat_b5_destroy_enemy") and not has_alife_info("zat_b7_actor_now_duty_illicit_dealer") and not has_alife_info("zat_b5_actor_help_stalkers_pric") and not has_alife_info("zat_b5_meat")
+end

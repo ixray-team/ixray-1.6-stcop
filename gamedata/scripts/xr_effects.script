@@ -3826,3 +3826,48 @@ function zat_b38_quest_line_3(actor, npc)
 	give_info("zat_b38_den_of_the_bloodsucker_inform_stalkers_give_task") 
 	set_counter(actor, npc, {"zat_b57_terminated", "0"})
 end
+
+function zat_b7_sr_sra_1(actor, npc)
+	give_info("zat_b7_stalkers_raiders_attack_started") 
+	give_info("zat_b7_timeout") 
+	give_info("zat_b7_task_fail") 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"})
+end
+
+function zat_b7_sr_sra_2(actor, npc)
+	give_info("zat_b7_stalkers_raiders_attack_started") 
+	give_info("zat_b7_timeout") 
+	give_info("zat_b7_task_fail") 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"})
+end
+
+function zat_b7_sr_sra_3(actor, npc)
+	give_info("zat_b7_actor_really_helped_stalkers") 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"}) 
+	give_info("zat_b7_attack_started")
+end
+
+function zat_b7_sr_sra_4(actor, npc)
+	give_info("zat_b7_actor_really_helped_bandits") 
+	set_squads_enemies(actor, npc, {"zat_b7_stalkers_raiders","zat_b7_stalkers_victims_1"}) 
+	give_info("zat_b7_attack_started")
+end
+
+function zat_b7_sr_sra_5(actor, npc)
+	inc_faction_goodwill_to_actor(actor, npc, {"stalker","200"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"bandit","250"}) 
+	set_squad_enemy_to_actor(actor, npc, {"zat_b7_stalkers_raiders"})
+end
+
+function zat_b7_sr_sra_6(actor, npc)
+	give_info("zat_b5_task_end") 
+	inc_faction_goodwill_to_actor(actor, npc, {"stalker","200"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"bandit","100"}) 
+	set_squad_goodwill(actor, npc, {"zat_b5_stalkers_squad","friend"})
+end
+
+function zat_b5_sr_st_1(actor, npc)
+	create_squad(actor, npc, {"zat_b5_dolg_squad","zat_b5_smart_terrain"})  
+	create_squad(actor, npc, {"zat_b5_bandit_squad","zat_b5_smart_terrain"}) 
+	create_squad(actor, npc, {"zat_b5_dolg_assist_squad","zat_b5_smart_terrain"})
+end
