@@ -41,6 +41,10 @@
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml/badge.svg" alt="Build utilities" />
     </a>
     <br />
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-editors.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-editors.yml/badge.svg" alt="Build editors" />
+    </a>
+    <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/nonunity-build.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/nonunity-build.yml/badge.svg" alt="Non-Unity build" />
     </a>

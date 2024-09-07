@@ -319,6 +319,40 @@
             "displayName": "Compressor-x64-Linux",
             "inherits": "Compressor-Base-Linux",
             "binaryDir": "build/x64/Compressor-Linux"
+        },
+
+        {
+            "name": "Editors-Base-Windows",
+            "displayName": "Editors-Base-Windows",
+            "hidden": true,
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "IXRAY_EDITORS": "ON",
+                "IXRAY_UTILS": "OFF",
+                "IXRAY_MP": "OFF",
+                "IXRAY_USE_COMPRESSOR": "OFF",
+                "IXRAY_COMPRESSOR_ONLY": "OFF",
+                "IXRAY_PLUGIN_MAX": "OFF",
+                "IXRAY_PLUGIN_LW": "OFF",
+                "IXRAY_ASAN": "OFF",
+                "IXRAY_USE_R1": "OFF",
+                "IXRAY_USE_R2": "OFF",
+                "IXRAY_UNITYBUILD": "ON"
+            }
+        },
+        {
+            "name": "Editors-x64-Windows",
+            "displayName": "Editors-x64-Windows",
+            "inherits": "Editors-Base-Windows",
+            "binaryDir": "build/x64/Editors-Windows",
+            "cacheVariables": {
+                "CMAKE_GENERATOR_PLATFORM": "x64"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioSettings/CMake/1.0": {
+                    "intelliSenseMode": "windows-msvc-x64"
+                }
+            }
         }
     ],
     "buildPresets": [
@@ -561,6 +595,25 @@
             "name": "Compressor-x64-Linux-Release",
             "displayName": "Compressor-x64-Linux-Release",
             "configurePreset": "Compressor-x64-Linux",
+            "configuration": "Release"
+        },
+
+        {
+            "name": "Editors-x64-Windows-Debug",
+            "displayName": "Editors-x64-Windows-Debug",
+            "configurePreset": "Editors-x64-Windows",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Editors-x64-Windows-RelWithDebInfo",
+            "displayName": "Editors-x64-Windows-RelWithDebInfo",
+            "configurePreset": "Editors-x64-Windows",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "Editors-x64-Windows-Release",
+            "displayName": "Editors-x64-Windows-Release",
+            "configurePreset": "Editors-x64-Windows",
             "configuration": "Release"
         }
     ]
