@@ -504,9 +504,9 @@ void	CBlender_Compile::SetMapping	()
 
 #if 1 //ndef _EDITOR
 	// fog-params
-	r_Constant				("fog_plane",		&binder_fog_plane);
-	r_Constant				("fog_params",		&binder_fog_params);
-	r_Constant				("fog_color",		&binder_fog_color);
+	//r_Constant				("fog_plane",		&binder_fog_plane);
+	//r_Constant				("fog_params",		&binder_fog_params);
+	//r_Constant				("fog_color",		&binder_fog_color);
 #endif
 	// time
 	r_Constant				("timers",			&binder_times);
@@ -518,16 +518,16 @@ void	CBlender_Compile::SetMapping	()
 
 #if 1 //ndef _EDITOR
 	// global-lighting (env params)
-	r_Constant				("L_sun_color",		&binder_sun0_color);
-	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
-	r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
-	
-	r_Constant				("m_taa_jitter",	&binder_taa_jitter);
-
-	r_Constant				("L_sky_color",		&binder_sky_color);
-
-	r_Constant				("L_hemi_color",	&binder_hemi_color);
-	r_Constant				("L_ambient",		&binder_amb_color);
+	//r_Constant				("L_sun_color",		&binder_sun0_color);
+	//r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
+	//r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
+	//
+	//r_Constant				("m_taa_jitter",	&binder_taa_jitter);
+	//
+	//r_Constant				("L_sky_color",		&binder_sky_color);
+	//
+	//r_Constant				("L_hemi_color",	&binder_hemi_color);
+	//r_Constant				("L_ambient",		&binder_amb_color);
 #endif
 	r_Constant				("screen_res",		&binder_screen_res);
 	r_Constant				("def_aref",		&binder_def_aref);

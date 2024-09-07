@@ -6,6 +6,7 @@
 #pragma hdrstop
 
 #include "blender_BmmD.h"
+#include "..\xrRender\uber_deffer.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -68,15 +69,19 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		string256 mask;
 		xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
-		C.r_Pass("impl_dt", "impl_dt", TRUE);
+	//	C.r_Pass("impl_dt", "impl_dt", TRUE);
+		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
 		C.r_Sampler("s_mask", mask);
 
-		C.r_Sampler("s_dt_r", oR_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-		C.r_Sampler("s_dt_g", oG_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-		C.r_Sampler("s_dt_b", oB_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
-		C.r_Sampler("s_dt_a", oA_Name, false, D3DTADDRESS_WRAP, D3DTEXF_ANISOTROPIC, D3DTEXF_LINEAR, D3DTEXF_ANISOTROPIC);
+		C.r_Sampler_waf("s_dt_r", oR_Name, false);
+		C.r_Sampler_waf("s_dt_g", oG_Name, false);
+		C.r_Sampler_waf("s_dt_b", oB_Name, false);
+		C.r_Sampler_waf("s_dt_a", oA_Name, false);
 
-		C.r_Sampler("s_base", C.L_textures[0]);
+		C.r_Sampler("s_dn_r", xr_strconcat(mask, oR_Name, "_bump"));
+		C.r_Sampler("s_dn_g", xr_strconcat(mask, oG_Name, "_bump"));
+		C.r_Sampler("s_dn_b", xr_strconcat(mask, oB_Name, "_bump"));
+		C.r_Sampler("s_dn_a", xr_strconcat(mask, oA_Name, "_bump"));
 		C.r_Sampler("s_detail", oT2_Name);
 
 		C.r_End();

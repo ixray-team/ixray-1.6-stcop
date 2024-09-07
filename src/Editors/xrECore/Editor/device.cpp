@@ -169,7 +169,7 @@ void CEditorRenderDevice::Clear()
 		ClearColor = color_rgba_f(color[0], color[1], color[2], 1.f);
 	}
 
-	CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, ClearColor, 1, 0));
+	CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL | D3DCLEAR_TARGET, ClearColor, 1, 0));
 }
 
 //---------------------------------------------------------------------------

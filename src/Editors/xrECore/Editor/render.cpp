@@ -119,9 +119,7 @@ void CRenderTarget::accum_spot(light* L) {
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
 
-	ref_shader shader = L->s_spot;
-	if(!shader)	shader = s_accum;
-
+	ref_shader shader = s_accum;
 	{
 		// setup xform
 		L->xform_calc();
@@ -148,13 +146,13 @@ void CRenderTarget::accum_spot(light* L) {
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(CULL_CW);		// back
+	RCache.set_CullMode(CULL_CW); // back
 
 	// 2D texgens 
 	Fmatrix m_Texgen; u_compute_texgen_screen(m_Texgen);
 
 	// Shadow xform (+texture adjustment matrix)
-	Fmatrix m_Lmap{};
+	Fmatrix m_Lmap = Fidentity;
 
 	if(L->flags.type == IRender_Light::SPOT)
 	{
@@ -208,7 +206,6 @@ void CRenderTarget::accum_spot(light* L) {
 		draw_volume(L);
 	}
 
-	CHK_DX(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE));
 	increment_light_marker();
 }
 
@@ -276,6 +273,8 @@ void CRender::Calculate()
 	//	r_ssaLOD_B						=	(ssaLOD_B*ssaLOD_B)/g_fSCREEN;
 	lstRenderables.clear();
 	ViewBase.CreateFromMatrix(EDevice->mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+	RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+
 	{
 		g_SpatialSpace->q_frustum
 		(
@@ -310,7 +309,6 @@ void CRender::Calculate()
 				if (R)		R->update(O);
 			}
 		}*/
-		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 		for (ISpatial* pSpatial : lstRenderables)
 		{
 			if(pSpatial->spatial.type & STYPE_LIGHTSOURCE) {

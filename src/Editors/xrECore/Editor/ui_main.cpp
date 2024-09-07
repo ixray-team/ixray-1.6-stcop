@@ -470,6 +470,14 @@ void TUI::Redraw()
 				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
 
+				RCache.set_RT(RTNormal->pRT, 0);
+				RCache.set_RT(RTDiffuse->pRT, 1);
+				RCache.set_RT(RTPostion->pRT, 2);
+
+				RCache.set_ZB(0);
+
+				CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
+
 				RCache.set_RT(RT->pRT);
 				RCache.set_ZB(ZB->pRT);
 
@@ -531,6 +539,7 @@ void TUI::Redraw()
 				RCache.set_RT(0, 1);
 				RCache.set_RT(0, 2);
 				RCache.set_RT(0, 3);
+
 				RCache.set_RT(RSwapchainTarget);
 				RCache.set_ZB(RDepth);
 
