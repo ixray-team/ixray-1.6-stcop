@@ -7,7 +7,7 @@ on_info2 = {=distance_to_obj_le(jup_b46_spatial_bubble_zone:50)} %=play_sound(ju
 on_info3 = {+jup_b46_spatial_bubble_ruptured} sr_idle@jup_b46_rupture %=stop_sound%
 
 [sr_idle@jup_b46_rupture] 
-on_game_timer = 46 | {-jup_b46_duty_founder_squad_spawned} %+jup_b46_duty_founder_squad_spawned =spawn_object(wpn_ak74:jup_b46_corps_spawn) =spawn_corpse(jup_b46_duty_founder:jup_b46_corps_spawn) =spawn_object(wpn_ak74u:jup_b46_corps_spawn) =spawn_corpse(jup_b46_duty_founder_squad_01:jup_b46_corps_spawn) =spawn_object(wpn_ak74u:jup_b46_corps_spawn) =spawn_corpse(jup_b46_duty_founder_squad_02:jup_b46_corps_spawn)%
+on_game_timer = 46 | {-jup_b46_duty_founder_squad_spawned} %=jup_b46_s_b_z_1%
 on_info = {-jup_b46_duty_founder_pda_start =actor_has_item(jup_b46_duty_founder_pda)} %+jup_b46_duty_founder_pda_start =play_sound(jup_b46_duty_founder_pda_diary) =give_task(jup_b46_duty_founder_pda)%
 on_info2 = {+jup_b46_duty_founder_squad_spawned +jup_b46_duty_founder_pda_start} sr_idle@end 
 

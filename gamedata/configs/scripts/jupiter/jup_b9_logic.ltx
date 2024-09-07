@@ -11,7 +11,7 @@ on_info = {+jup_b9_give_task} sr_idle@1
 on_info = {+jup_b9_heli_1_searching -jup_b9_heli_1_searched} sr_idle@timer %=disable_ui =run_postprocess(fade_in:7710)%
 
 [sr_idle@timer]
-on_game_timer = 20 | sr_idle@timer_2 %=run_postprocess(black:7711:true) =create_cutscene_actor_with_weapon(jup_b9_actor_visual_stalker:jup_b9_actor_visual_stalker_walk:0:30)%
+on_game_timer = 20 | sr_idle@timer_2 %=jup_b9_l_1%
 
 [sr_idle@timer_2]
 on_game_timer = 40 | sr_cutscene %=stop_postprocess(7710) =stop_postprocess(7711) +jup_b9_heli_1_play_sound%
@@ -30,7 +30,7 @@ on_info2 = {+jup_b9_camera_stop} %=stop_sr_cutscene%
 on_info3 = {+jup_b9_actor_hit} %=stop_sr_cutscene%
 
 [sr_idle@2]
-on_game_timer = 10 | sr_idle@3 %=stop_postprocess(7712) =stop_postprocess(7713) +jup_b9_heli_1_searched =enable_ui =teleport_actor(jup_b9_actor_visual_stalker_walk :jup_b9_actor_visual_stalker_look)%
+on_game_timer = 10 | sr_idle@3 %=jup_b9_l_2%
 
 [sr_idle@3]
 on_info = {+jup_b9_blackbox_decrypting} sr_idle@4

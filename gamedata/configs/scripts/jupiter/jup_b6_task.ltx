@@ -27,7 +27,7 @@ on_info = sr_idle@no_task
 on_game_timer = 10 | sr_idle@reward %=give_task(jup_b6_task)%
 
 [sr_idle@reward]
-on_info = {+jup_b6_task_done -jup_b1_stalker_1_is_dead -jup_b1_stalker_2_is_dead -jup_b1_stalker_3_is_dead -jup_b1_stalker_4_is_dead =dist_to_story_obj_ge(jup_b1_stalker_squad:140)} sr_idle@reward_2 %=remove_squad(jup_b1_stalker_squad)%, {+jup_b1_stalker_1_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_2_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_3_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_4_is_dead +jup_b6_task_done} sr_idle@nil
+on_info = {=jup_b6_t_7} sr_idle@reward_2 %=remove_squad(jup_b1_stalker_squad)%, {+jup_b1_stalker_1_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_2_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_3_is_dead +jup_b6_task_done} sr_idle@nil, {+jup_b1_stalker_4_is_dead +jup_b6_task_done} sr_idle@nil
 
 [sr_idle@reward_2]
 on_info = sr_idle@reward_3 %=create_squad(jup_b1_stalker_pro_squad:jup_b41)%

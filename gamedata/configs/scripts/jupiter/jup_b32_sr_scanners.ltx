@@ -19,7 +19,7 @@ on_info6 = {=actor_in_zone(jup_b32_sr_scanner_place_5) -jup_b32_scanner_5_placed
 
 [sr_idle@place]
 on_info = {+jup_b32_tutorial_done} sr_idle@use %-jup_b32_tutorial_done%
-on_info2 = {!actor_in_zone(jup_b32_sr_scanner_place_1) !actor_in_zone(jup_b32_sr_scanner_place_2) !actor_in_zone(jup_b32_sr_scanner_place_3) !actor_in_zone(jup_b32_sr_scanner_place_4) !actor_in_zone(jup_b32_sr_scanner_place_5)} sr_idle@use %=stop_tutorial%
+on_info2 = {=jup_b32_sr_s_1} sr_idle@use %=stop_tutorial%
 on_info3 = {!has_active_tutorial} sr_idle@use
 
 [sr_idle@nil]

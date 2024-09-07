@@ -2351,3 +2351,51 @@ end
 function jup_b19_f_y_k_2(actor, npc)
 	return not squad_exist(actor, npc, {"jup_b19_merc_squad"}) and has_alife_info("jup_b19_actor_damaged_zombied") and not squad_exist(actor, npc, {"jup_b19_kopatci_zombied_squad"}) and has_alife_info("jup_b19_freedom_yar_explanations_done")
 end
+
+function jup_b32_sr_s_1(actor, npc)
+	return not actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_1"}) and not actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_2"}) and not actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_3"}) and not actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_4"}) and not actor_in_zone(actor, npc, {"jup_b32_sr_scanner_place_5"})
+end
+
+function jup_b25_t_s_c_1(actor, npc)
+	return is_obj_on_job(actor, npc, {"logic@jup_b221_duty_01","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_duty_02","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_duty_03","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_freedom_01","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_freedom_02","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_freedom_02","jup_a6"})
+end
+
+function jup_b25_t_s_c_2(actor, npc)
+	return is_obj_on_job(actor, npc, {"logic@jup_b221_duty_01","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_duty_02","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_duty_03","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_freedom_01","jup_a6"}) and is_obj_on_job(actor, npc, {"logic@jup_b221_freedom_02","jup_a6"})
+end
+
+function jup_b6_t_1(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_st_mission") and squad_exist(actor, npc, {"jup_b6_stalker_freedom_squad"}) and has_alife_info("jup_b6_give_task") and has_alife_info("jup_b6_freedom_employed")
+end
+
+function jup_b6_t_2(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_st_mission") and squad_exist(actor, npc, {"jup_b1_stalker_squad"}) and has_alife_info("jup_b6_give_task") and not has_alife_info("jup_b6_freedom_employed") and not has_alife_info("jup_b6_duty_employed") and not has_alife_info("jup_b6_gonta_employed") and not has_alife_info("jup_b6_exprisoner_work_on_sci") and not has_alife_info("jup_b1_squad_is_dead")
+end
+
+function jup_b6_t_3(actor, npc)
+	return not squad_exist(actor, npc, {"jup_b1_stalker_squad"}) and has_alife_info("jup_b6_give_task") and not has_alife_info("jup_b6_freedom_employed") and not has_alife_info("jup_b6_duty_employed") and not has_alife_info("jup_b6_gonta_employed") and not has_alife_info("jup_b6_exprisoner_work_on_sci") and has_alife_info("jup_b1_squad_is_dead")
+end
+
+function jup_b6_t_4(actor, npc)
+	return is_squad_enemy_to_actor(actor, npc, {"jup_b1_stalker_squad"}) and has_alife_info("jup_b6_give_task") and not has_alife_info("jup_b6_freedom_employed") and not has_alife_info("jup_b6_duty_employed") and not has_alife_info("jup_b6_gonta_employed") and not has_alife_info("jup_b6_exprisoner_work_on_sci") and not has_alife_info("jup_b1_squad_is_dead")
+end
+
+function jup_b6_t_5(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_st_mission") and squad_exist(actor, npc, {"jup_b6_stalker_exprisoner_squad"}) and has_alife_info("jup_b6_give_task") and has_alife_info("jup_b6_exprisoner_work_on_sci")
+end
+
+function jup_b6_t_6(actor, npc)
+	return squad_exist(actor, npc, {"jup_b1_stalker_squad"}) and has_alife_info("jup_b6_give_task") and not has_alife_info("jup_b6_freedom_employed") and not has_alife_info("jup_b6_duty_employed") and not has_alife_info("jup_b6_gonta_employed") and not has_alife_info("jup_b6_exprisoner_work_on_sci") and not has_alife_info("jup_b1_squad_is_dead")
+end
+
+function jup_b6_t_7(actor, npc)
+	return has_alife_info("jup_b6_task_done") and not has_alife_info("jup_b1_stalker_1_is_dead") and not has_alife_info("jup_b1_stalker_2_is_dead") and not has_alife_info("jup_b1_stalker_3_is_dead") and not has_alife_info("jup_b1_stalker_4_is_dead") and dist_to_story_obj_ge(actor, npc, {"jup_b1_stalker_squad","140"})
+end
+
+function jup_b209_l_1(actor, npc)
+	return has_alife_info("jup_b209_snork_7_death") and has_alife_info("jup_b209_snork_6_death") and has_alife_info("jup_b209_snork_5_death") and has_alife_info("jup_b209_snork_4_death") and has_alife_info("jup_b209_snork_3_death") and has_alife_info("jup_b209_snork_2_death") and has_alife_info("jup_b209_snork_1_death")
+end
+
+function jup_b4_f_l_1(actor, npc)
+	return has_alife_info("jup_b4_freedom_monolit_soldier_2_near_fire") and has_alife_info("jup_b4_freedom_monolit_soldier_3_near_fire") and has_alife_info("jup_b4_freedom_monolit_leader_near_fire") and not has_alife_info("jup_b4_freedom_squad_leader_speech_sound")
+end

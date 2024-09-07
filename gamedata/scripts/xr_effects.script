@@ -4504,3 +4504,97 @@ function jup_b41_sr_s_1(actor, npc)
 	play_particle_on_path(actor, npc, {"damage_fx\\smoke","jup_b41_steam_1"}) 
 	play_particle_on_path(actor, npc, {"damage_fx\\smoke","jup_b41_steam_2"})
 end
+
+function jup_b46_s_b_z_1(actor, npc)
+	give_info("jup_b46_duty_founder_squad_spawned") 
+	spawn_object(actor, npc, {"wpn_ak74","jup_b46_corps_spawn"}) 
+	spawn_corpse(actor, npc, {"jup_b46_duty_founder","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"wpn_ak74u","jup_b46_corps_spawn"}) 
+	spawn_corpse(actor, npc, {"jup_b46_duty_founder_squad_01","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"wpn_ak74u","jup_b46_corps_spawn"}) 
+	spawn_corpse(actor, npc, {"jup_b46_duty_founder_squad_02","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"wpn_ak74","jup_b46_corps_spawn"}) 
+	spawn_corpse(actor, npc, {"jup_b46_duty_founder_squad_03","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"wpn_abakan","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"wpn_abakan","jup_b46_corps_spawn"}) 
+	spawn_corpse(actor, npc, {"jup_b46_duty_founder_squad_04","jup_b46_corps_spawn"}) 
+	spawn_object(actor, npc, {"medkit","jup_b46_corps_spawn"})
+end
+
+function jup_b209_l_1(actor, npc)
+	create_squad(actor, npc, {"jup_b209_squad_snork_up","jup_b209"}) 
+	create_squad(actor, npc, {"jup_b209_squad_snork_1","jup_b209"}) 
+	create_squad(actor, npc, {"jup_b209_squad_snork_2","jup_b209"}) 
+	give_info("jup_b209_create_snork_squad")
+end
+
+function jup_a9_c_1(actor, npc)
+	run_postprocess(actor, npc, {"black","7921","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_actor"}) 
+	destroy_object(actor, npc, {"story","jup_a9_way_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_1_actor_walk","jup_a9_cam_1_actor_look"})
+end
+
+function jup_a9_c_2(actor, npc)
+	run_postprocess(actor, npc, {"black","7929","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_actor"}) 
+	destroy_object(actor, npc, {"story","jup_a9_power_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_3_actor_walk","jup_a9_cam_3_actor_look"})
+end
+
+function jup_a9_c_3(actor, npc)
+	run_postprocess(actor, npc, {"black","7929","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_power_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_3_actor_walk","jup_a9_cam_3_actor_look"})
+end
+
+function jup_a9_c_4(actor, npc)
+	run_postprocess(actor, npc, {"black","7925","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_actor"}) 
+	destroy_object(actor, npc, {"story","jup_a9_conservation_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_2_actor_walk","jup_a9_cam_2_actor_look"})
+end
+
+function jup_a9_c_5(actor, npc)
+	run_postprocess(actor, npc, {"black","7925","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_conservation_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_2_actor_walk","jup_a9_cam_2_actor_look"})
+end
+
+function jup_a9_c_6(actor, npc)
+	run_postprocess(actor, npc, {"black","7921","true"}) 
+	destroy_object(actor, npc, {"story","jup_a9_way_info_fake"}) 
+	teleport_actor(actor, npc, {"jup_a9_cam_1_actor_walk","jup_a9_cam_1_actor_look"})
+end
+
+function jup_b8_l_1(actor, npc)
+	run_postprocess(actor, npc, {"black","2216","true"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"jup_b8_actor_visual_stalker","jup_b8_actor_visual_stalker_walk","0","140"})
+end
+
+function jup_b8_l_2(actor, npc)
+	stop_postprocess(actor, npc, {"2217"}) 
+	stop_postprocess(actor, npc, {"2218"}) 
+	enable_ui(actor, npc)
+	teleport_actor(actor, npc, {"jup_b8_actor_visual_stalker_walk","jup_b8_actor_visual_stalker_look"})
+end
+
+function jup_b9_l_1(actor, npc)
+	run_postprocess(actor, npc, {"black","7711","true"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"jup_b9_actor_visual_stalker","jup_b9_actor_visual_stalker_walk","0","30"})
+end
+
+function jup_b9_l_2(actor, npc)
+	stop_postprocess(actor, npc, {"7712"}) 
+	stop_postprocess(actor, npc, {"7713"}) 
+	give_info("jup_b9_heli_1_searched") 
+	enable_ui(actor, npc) 
+	teleport_actor(actor, npc, {"jup_b9_actor_visual_stalker_walk","jup_b9_actor_visual_stalker_look"})
+end
+
+function jup_b202_l_1(actor, npc)
+	clear_smart_terrain(actor, npc, {"jup_b202","false"}) 
+	set_counter(actor, npc, {"jup_b202_sound_count","0"}) 
+	teleport_squad(actor, npc, {"jup_b202_stalker_snag_squad","jup_b202_snag_wait_walk"}) 
+	give_info("jup_b202_snag_teleported")
+end

@@ -34,7 +34,7 @@ use_camp = false
 path_walk = freedom_leader_2_walk
 path_look = freedom_leader_2_look
 combat_ignore_cond = {-jup_b4_monolith_squad_out} true
-on_info = {+jup_b4_freedom_monolit_soldier_2_near_fire +jup_b4_freedom_monolit_soldier_3_near_fire +jup_b4_freedom_monolit_leader_near_fire -jup_b4_freedom_squad_leader_speech_sound} %=play_sound(jup_b4_freedom_squad_leader_speech)%
+on_info = {=jup_b4_f_l_1} %=play_sound(jup_b4_freedom_squad_leader_speech)%
 on_info2 = {+jup_b4_monolith_squad_out -jup_b4_freedom_leader_stop_sound} %=stop_sound +jup_b4_freedom_leader_stop_sound%
 on_signal = sound_end | walker@4 %+jup_b4_freedom_squad_leader_speech_sound%
 meet = no_meet

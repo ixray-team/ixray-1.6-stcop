@@ -29,7 +29,7 @@ on_signal1 = theme_end | {-jup_a9_cam_1_end} %+jup_a9_cam_1_end =stop_sr_cutscen
 on_signal2 = cameff_end | {+jup_a9_cam_1_end} sr_idle@cam_1_destroy
 
 [sr_idle@cam_1_destroy]
-on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_1_end %=run_postprocess(black:7921:true) =destroy_object(story:jup_a9_actor) =destroy_object(story:jup_a9_way_info_fake) =teleport_actor(jup_a9_cam_1_actor_walk:jup_a9_cam_1_actor_look)%, sr_idle@cam_1_end %=run_postprocess(black:7921:true) =destroy_object(story:jup_a9_way_info_fake) =teleport_actor(jup_a9_cam_1_actor_walk:jup_a9_cam_1_actor_look)%  
+on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_1_end %=jup_a9_c_1%, sr_idle@cam_1_end %=jup_a9_c_6%  
 
 [sr_idle@cam_1_end]
 on_game_timer = 20 | sr_idle@select %=stop_postprocess(7920) =stop_postprocess(7921) =enable_ui%
@@ -55,7 +55,7 @@ on_signal1 = theme_end | {-jup_a9_cam_2_end} %+jup_a9_cam_2_end =stop_sr_cutscen
 on_signal2 = cameff_end | {+jup_a9_cam_2_end} sr_idle@cam_2_destroy
 
 [sr_idle@cam_2_destroy]
-on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_2_end %=run_postprocess(black:7925:true) =destroy_object(story:jup_a9_actor) =destroy_object(story:jup_a9_conservation_info_fake) =teleport_actor(jup_a9_cam_2_actor_walk:jup_a9_cam_2_actor_look)%, sr_idle@cam_2_end %=run_postprocess(black:7925:true) =destroy_object(story:jup_a9_conservation_info_fake) =teleport_actor(jup_a9_cam_2_actor_walk:jup_a9_cam_2_actor_look)%  
+on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_2_end %=jup_a9_c_4%, sr_idle@cam_2_end %=jup_a9_c_5%  
 
 [sr_idle@cam_2_end]
 on_game_timer = 20 | sr_idle@select %=stop_postprocess(7924) =stop_postprocess(7925) =enable_ui%
@@ -81,7 +81,7 @@ on_signal1 = theme_end | {-jup_a9_cam_3_end} %+jup_a9_cam_3_end =stop_sr_cutscen
 on_signal2 = cameff_end | {+jup_a9_cam_3_end} sr_idle@cam_3_destroy
 
 [sr_idle@cam_3_destroy]
-on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_3_end %=run_postprocess(black:7929:true) =destroy_object(story:jup_a9_actor) =destroy_object(story:jup_a9_power_info_fake) =teleport_actor(jup_a9_cam_3_actor_walk:jup_a9_cam_3_actor_look)%, sr_idle@cam_3_end %=run_postprocess(black:7929:true) =destroy_object(story:jup_a9_power_info_fake) =teleport_actor(jup_a9_cam_3_actor_walk:jup_a9_cam_3_actor_look)%  
+on_game_timer = 20 | {=story_object_exist(jup_a9_actor)} sr_idle@cam_3_end %=jup_a9_c_2%, sr_idle@cam_3_end %=jup_a9_c_3%  
 
 [sr_idle@cam_3_end]
 on_game_timer = 20 | sr_idle@select %=stop_postprocess(7928) =stop_postprocess(7929) =enable_ui%
