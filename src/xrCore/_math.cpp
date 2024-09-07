@@ -315,7 +315,10 @@ void	__cdecl thread_entry	(void*	_params )	{
 	thread_name			(startup->name);
 	thread_t*			entry	= startup->entry;
 	void*				arglist	= startup->args;
-	xr_delete			(startup);
+
+	free(startup->name);
+	xr_delete(startup);
+
 	_initialize_cpu_thread		();
 
 	// call
@@ -329,7 +332,7 @@ ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* 
 
 	THREAD_STARTUP*		startup	= new THREAD_STARTUP	();
 	startup->entry		= entry;
-	startup->name		= (char*)name;
+	startup->name		= xr_strdup((char*)name);
 	startup->args		= arglist;
 
 #ifdef IXR_WINDOWS

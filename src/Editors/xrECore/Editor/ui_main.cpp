@@ -470,21 +470,8 @@ void TUI::Redraw()
 				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
 
-
-				RCache.set_RT(RTDiffuse->pRT, 0);
-				RCache.set_RT(RTNormal->pRT, 1);
-				RCache.set_RT(RTPostion->pRT, 2);
-				RCache.set_RT(0, 3);
-
+				RCache.set_RT(RT->pRT);
 				RCache.set_ZB(ZB->pRT);
-
-				CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
-
-				RCache.set_RT(RT->pRT, 0);
-
-				RCache.set_RT(0, 1);
-				RCache.set_RT(0, 2);
-				RCache.set_RT(0, 3);
 
 				EDevice->Clear();
 
@@ -541,6 +528,9 @@ void TUI::Redraw()
 					g_pGamePersistent->OnRenderPPUI_main();
 				}
 
+				RCache.set_RT(0, 1);
+				RCache.set_RT(0, 2);
+				RCache.set_RT(0, 3);
 				RCache.set_RT(RSwapchainTarget);
 				RCache.set_ZB(RDepth);
 
@@ -723,7 +713,7 @@ bool TUI::OnCreate()
 
 	RT.create("$user$rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 	RTCopy.create("$user$rt_color_copy", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+	ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24S8);
 
 	return true;
 }

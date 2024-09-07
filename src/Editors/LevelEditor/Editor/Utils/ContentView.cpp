@@ -436,7 +436,18 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 
 	if (ImGui::BeginDragDropSource())
 	{
-		Data.FileName = InitFileName.ISESect.c_str();
+		if (IsSpawnElement)
+		{
+			if (InitFileName.ISESect.size() > 0)
+			{
+				Data.FileName = InitFileName.ISESect.c_str();
+			}
+		}
+		else
+		{
+			Data.FileName = FilePath.string().c_str();
+		}
+
 		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
 		ImGui::ImageButton(FilePath.filename().string().c_str(), IconPtr->Icon->pSurface, BtnSize);
 		ImGui::Text(LabelText.data());
