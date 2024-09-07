@@ -4658,3 +4658,20 @@ function pas_b400_sr_c_1(actor, npc)
 	give_info("pas_b400_task_given") 
 	set_squad_goodwill(actor, npc, {"pas_b400_stalkers_squad","friend"})
 end
+
+function pas_b400_ph_b_e_1(actor, npc)
+	anim_obj_forward(actor, npc, {"pas_b400_door_elevator"}) 
+	heal_squad(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_elevator_button_pressed") 
+	disable_info("pas_b400_about_gates")
+end
+
+function pas_b400_ph_d_e_1(actor, npc)
+	turn_off(actor, npc, {"pas_b400_lamp_elevator_red","pas_b400_lamp_elevator_red_1"}) 
+	turn_on(actor, npc, {"pas_b400_lamp_elevator_flash","pas_b400_lamp_elevator_flash_1"})
+end
+
+function pas_b400_ph_d_e_2(actor, npc)
+	turn_off(actor, npc, {"pas_b400_lamp_elevator_flash","pas_b400_lamp_elevator_flash_1"}) 
+	turn_on(actor, npc, {"pas_b400_lamp_elevator_green","pas_b400_lamp_elevator_green_1"})
+end
