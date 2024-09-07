@@ -2399,3 +2399,27 @@ end
 function jup_b4_f_l_1(actor, npc)
 	return has_alife_info("jup_b4_freedom_monolit_soldier_2_near_fire") and has_alife_info("jup_b4_freedom_monolit_soldier_3_near_fire") and has_alife_info("jup_b4_freedom_monolit_leader_near_fire") and not has_alife_info("jup_b4_freedom_squad_leader_speech_sound")
 end
+
+function jup_b219_sr_c_1(actor, npc)
+	return has_alife_info("jup_b219_azot_on_pos") and has_alife_info("jup_b219_zulus_on_pos") and has_alife_info("jup_b219_actor_on_pos") and has_alife_info("jup_b219_soldier_on_pos") and has_alife_info("jup_b219_monolith_on_pos") and has_alife_info("jup_b219_vano_on_pos")
+end
+
+function pas_b400_sr_s_n_1(actor, npc)
+	return squad_exist(actor, npc, {"pas_b400_stalkers_squad"}) and is_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) and not counter_greater(actor, npc, {"pas_b400_actor_zulus_hit","2"}) and not counter_greater(actor, npc, {"pas_b400_actor_vano_hit","2"}) and not counter_greater(actor, npc, {"pas_b400_actor_sokolov_hit","2"}) and not counter_greater(actor, npc, {"pas_b400_actor_wanderer_hit","2"})
+end
+
+function pas_b400_sr_c_1(actor, npc)
+	return not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not squad_exist(actor, npc, {"pas_b400_snork_tunnel_5"}) and has_alife_info("pas_b400_zulus_about_train_gates_2") and has_alife_info("pas_b400_tunnel_gates_opened")
+end
+
+function pas_b400_sr_c_2(actor, npc)
+	return not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not squad_exist(actor, npc, {"pas_b400_snork_tunnel_5"}) and not is_alive(actor, npc, {"pas_b400_zulus"}) and has_alife_info("pas_b400_tunnel_gates_opened")
+end
+
+function pas_b400_sr_c_3(actor, npc)
+	return has_alife_info("pas_b400_hall_monolith_squad_attacked") and not has_alife_info("pas_b400_hall_monolith_squad_dead") and not squad_exist(actor, npc, {"pas_b400_hall_monolith_squad"}) and not squad_exist(actor, npc, {"pas_b400_hall_monolith_2_squad"})
+end
+
+function pas_b400_sr_c_4(actor, npc)
+	return has_alife_info("pas_b400_hall_monolith_snipers_attacked") and not has_alife_info("pas_b400_hall_monolith_snipers_dead") and not squad_exist(actor, npc, {"pas_b400_hall_monolith_sniper_1"}) and not squad_exist(actor, npc, {"pas_b400_hall_monolith_sniper_2"})
+end
