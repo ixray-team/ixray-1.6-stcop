@@ -3992,3 +3992,25 @@ function zat_b51_q_l_2(actor, npc)
 	create_squad(actor, npc, {"zat_a2_stalker_nimble_squad","zat_stalker_base_smart"}) 
 	give_info("zat_b51_order_ready_task")
 end
+
+function zat_b106_sr_q_l_1(actor, npc)
+	run_postprocess(actor, npc, {"black","12106","true"}) 
+	give_info("zat_b106_destroy_gonta") 
+	give_info("zat_b106_destroy_garmata") 
+	teleport_squad(actor, npc, {"zat_b106_stalker_gonta_squad","zat_b106_smart_terrain_gonta_lair_1_walk"}) 
+	forward_game_time(actor, npc, {"0","20"})
+end
+
+function zat_b106_sr_q_l_2(actor, npc)
+	create_squad(actor, npc, {"zat_b106_chimera_squad","zat_b106_smart_terrain"}) 
+	teleport_actor(actor, npc, {"zat_b106_teleport_actor_walk","zat_b106_teleport_actor_look"}) 
+	set_squad_goodwill(actor, npc, {"zat_b106_stalker_gonta_squad","friend"})
+end
+
+function zat_b29_sr_t_1(actor, npc)
+	disable_info("zat_b29_rivals_search") 
+	disable_info("zat_b29_stalker_rival_1_found_af") 
+	disable_info("zat_b29_stalker_rival_2_found_af") 
+	disable_info("zat_b29_stalkers_rivals_found_af") 
+	disable_info("zat_b29_quest_af_given")
+end

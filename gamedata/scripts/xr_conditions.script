@@ -2097,3 +2097,165 @@ end
 function zat_b100_h_2_c_1(actor, npc)
 	return has_alife_info("zat_b100_heli_2_searched") and not is_obj_on_job(actor, npc, {"logic@zat_b100_poltergeist_02","zat_b100"}) and not squad_exist(actor, npc, {"zat_b100_poltergeist_squad_01"}) and distance_to_obj_ge(actor, npc, {"zat_b100_heli_2", "100"})
 end
+
+function zat_b29_sr_r_1_1(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_first_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_1", "150"})
+end
+
+function zat_b29_s_r_1_2(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_1","150"})
+end
+
+function zat_b29_s_r_1_3(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_first_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_1","150"})
+end
+
+function zat_b29_s_r_1_4(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_1","150"})
+end
+
+function zat_b29_sr_r_1_5(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_first_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_1","150"})
+end
+
+function zat_b29_sr_r_1_6(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_1","150"})
+end
+
+function zat_b29_sr_r_1_7(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_first_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_1","150"})
+end
+
+function zat_b29_sr_r_1_8(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_1","150"})
+end
+
+function zat_b29_sr_r_1_9(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and has_alife_info("zat_b29_stalker_rival_1_found_af") and squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_stalkers_base"})
+end
+
+function zat_b29_sr_r_1_10(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and has_alife_info("zat_b29_stalker_rival_1_found_af") and squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_stalkers_base"})
+end
+
+function zat_b29_sr_r_2_1(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_second_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_2","150"})
+end
+
+function zat_b29_sr_r_2_2(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_2","150"})
+end
+
+function zat_b29_sr_r_2_3(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_second_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_2","150"})
+end
+
+function zat_b29_sr_r_2_4(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_2","150"})
+end
+
+function zat_b29_sr_r_2_5(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_second_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_2","150"})
+end
+
+function zat_b29_sr_r_2_6(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_2","150"})
+end
+
+function zat_b29_sr_r_2_7(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and has_alife_info("zat_b29_second_rival_taken_out") and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_2","150"})
+end
+
+function zat_b29_sr_r_2_8(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and not has_alife_info("zat_b29_adv_task_given") and squad_exist(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and dist_to_story_obj_ge(actor, npc, {"zat_b29_stalker_rival_default_2","150"})
+end
+
+function zat_b29_sr_r_2_9(actor, npc)
+	return has_alife_info("zat_b29_exclusive_conditions") and has_alife_info("zat_b29_stalker_rival_2_found_af") and squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_stalkers_base"})
+end
+
+function zat_b29_sr_r_2_10(actor, npc)
+	return not has_alife_info("zat_b29_exclusive_conditions") and has_alife_info("zat_b29_stalker_rival_2_found_af") and squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_stalkers_base"})
+end
+
+function zat_b29_sr_t_1(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b55_anomal_zone"})
+end
+
+function zat_b29_sr_t_2(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_2"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b54_anomal_zone"})
+end
+
+function zat_b29_sr_t_3(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_3"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b53_anomal_zone"})
+end
+
+
+function zat_b29_sr_t_4(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b55_anomal_zone"})
+end
+
+function zat_b29_sr_t_5(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_2"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b54_anomal_zone"})
+end
+
+function zat_b29_sr_t_6(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_3"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b53_anomal_zone"})
+end
+
+function zat_b29_sr_t_7(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_4"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b39_anomal_zone"})
+end
+
+function zat_b29_sr_t_8(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_1_squad","zat_b29_sr_5"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zaton_b56_anomal_zone"})
+end
+
+
+function zat_b29_sr_t_9(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_4"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b39_anomal_zone"})
+end
+
+function zat_b29_sr_t_10(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_default_2_squad","zat_b29_sr_5"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_default_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_default_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zaton_b56_anomal_zone"})
+end
+
+function zat_b29_sr_t_11(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b55_anomal_zone"})
+end
+
+function zat_b29_sr_t_12(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_2"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b54_anomal_zone"})
+end
+
+function zat_b29_sr_t_13(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_3"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b53_anomal_zone"})
+end
+
+function zat_b29_sr_t_14(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_1"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b55_anomal_zone"})
+end
+
+function zat_b29_sr_t_15(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_2"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b54_anomal_zone"})
+end
+
+function zat_b29_sr_t_16(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_3"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b53_anomal_zone"})
+end
+
+function zat_b29_sr_t_17(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_4"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b39_anomal_zone"})
+end
+
+function zat_b29_sr_t_18(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_1_squad","zat_b29_sr_5"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_1_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_1","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zaton_b56_anomal_zone"})
+end
+
+function zat_b29_sr_t_19(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_4"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zat_b39_anomal_zone"})
+end
+
+function zat_b29_sr_t_20(actor, npc)
+	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_5"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zaton_b56_anomal_zone"})
+end

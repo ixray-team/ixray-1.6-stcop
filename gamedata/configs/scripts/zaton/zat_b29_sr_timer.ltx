@@ -16,29 +16,29 @@ on_info = {-zat_b29_adv_task_given} sr_idle@wait_for_rivals %-zat_b29_rivals_sea
 on_game_timer = 60 | {+zat_b29_exclusive_conditions} sr_idle@search_af2, {-zat_b29_exclusive_conditions} sr_idle@search_af
 
 [sr_idle@search_af]
-on_info = {=squad_in_zone(zat_b29_stalker_rival_default_1_squad:zat_b29_sr_1) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_1:30) =zat_b29_anomaly_has_af(zat_b55_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info2 = {=squad_in_zone(zat_b29_stalker_rival_default_1_squad:zat_b29_sr_2) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_1:30) =zat_b29_anomaly_has_af(zat_b54_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info3 = {=squad_in_zone(zat_b29_stalker_rival_default_1_squad:zat_b29_sr_3) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_1:30) =zat_b29_anomaly_has_af(zat_b53_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info4 = {=squad_in_zone(zat_b29_stalker_rival_default_2_squad:zat_b29_sr_1) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_2:30) =zat_b29_anomaly_has_af(zat_b55_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info5 = {=squad_in_zone(zat_b29_stalker_rival_default_2_squad:zat_b29_sr_2) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_2:30) =zat_b29_anomaly_has_af(zat_b54_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info6 = {=squad_in_zone(zat_b29_stalker_rival_default_2_squad:zat_b29_sr_3) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_2:30) =zat_b29_anomaly_has_af(zat_b53_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info7 = {=squad_in_zone(zat_b29_stalker_rival_default_1_squad:zat_b29_sr_4) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_1:30) =zat_b29_anomaly_has_af(zat_b39_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info8 = {=squad_in_zone(zat_b29_stalker_rival_default_1_squad:zat_b29_sr_5) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_1:30) =zat_b29_anomaly_has_af(zaton_b56_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info9 = {=squad_in_zone(zat_b29_stalker_rival_default_2_squad:zat_b29_sr_4) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_2:30) =zat_b29_anomaly_has_af(zat_b39_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info10 = {=squad_in_zone(zat_b29_stalker_rival_default_2_squad:zat_b29_sr_5) !is_squad_enemy_to_actor(zat_b29_stalker_rival_default_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_default_2:30) =zat_b29_anomaly_has_af(zaton_b56_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info = {=zat_b29_sr_t_1} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info2 = {=zat_b29_sr_t_2} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info3 = {=zat_b29_sr_t_3} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info4 = {=zat_b29_sr_t_4} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info5 = {=zat_b29_sr_t_5} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info6 = {=zat_b29_sr_t_6} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info7 = {=zat_b29_sr_t_7} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info8 = {=zat_b29_sr_t_8} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info9 = {=zat_b29_sr_t_9} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info10 = {=zat_b29_sr_t_10} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
 on_game_timer = 50 | sr_idle@rivals_searching
 
 [sr_idle@search_af2]
-on_info = {=squad_in_zone(zat_b29_stalker_rival_1_squad:zat_b29_sr_1) !is_squad_enemy_to_actor(zat_b29_stalker_rival_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_1:30) =zat_b29_anomaly_has_af(zat_b55_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info2 = {=squad_in_zone(zat_b29_stalker_rival_1_squad:zat_b29_sr_2) !is_squad_enemy_to_actor(zat_b29_stalker_rival_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_1:30) =zat_b29_anomaly_has_af(zat_b54_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info3 = {=squad_in_zone(zat_b29_stalker_rival_1_squad:zat_b29_sr_3) !is_squad_enemy_to_actor(zat_b29_stalker_rival_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_1:30) =zat_b29_anomaly_has_af(zat_b53_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info4 = {=squad_in_zone(zat_b29_stalker_rival_2_squad:zat_b29_sr_1) !is_squad_enemy_to_actor(zat_b29_stalker_rival_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_2:30) =zat_b29_anomaly_has_af(zat_b55_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info5 = {=squad_in_zone(zat_b29_stalker_rival_2_squad:zat_b29_sr_2) !is_squad_enemy_to_actor(zat_b29_stalker_rival_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_2:30) =zat_b29_anomaly_has_af(zat_b54_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info6 = {=squad_in_zone(zat_b29_stalker_rival_2_squad:zat_b29_sr_3) !is_squad_enemy_to_actor(zat_b29_stalker_rival_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_2:30) =zat_b29_anomaly_has_af(zat_b53_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info7 = {=squad_in_zone(zat_b29_stalker_rival_1_squad:zat_b29_sr_4) !is_squad_enemy_to_actor(zat_b29_stalker_rival_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_1:30) =zat_b29_anomaly_has_af(zat_b39_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info8 = {=squad_in_zone(zat_b29_stalker_rival_1_squad:zat_b29_sr_5) !is_squad_enemy_to_actor(zat_b29_stalker_rival_1_squad) !distance_to_obj_le(zat_b29_stalker_rival_1:30) =zat_b29_anomaly_has_af(zaton_b56_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
-on_info9 = {=squad_in_zone(zat_b29_stalker_rival_2_squad:zat_b29_sr_4) !is_squad_enemy_to_actor(zat_b29_stalker_rival_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_2:30) =zat_b29_anomaly_has_af(zat_b39_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
-on_info10 = {=squad_in_zone(zat_b29_stalker_rival_2_squad:zat_b29_sr_5) !is_squad_enemy_to_actor(zat_b29_stalker_rival_2_squad) !distance_to_obj_le(zat_b29_stalker_rival_2:30) =zat_b29_anomaly_has_af(zaton_b56_anomal_zone)} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info = {=zat_b29_sr_t_11} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info2 = {=zat_b29_sr_t_12} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info3 = {=zat_b29_sr_t_13} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info4 = {=zat_b29_sr_t_14} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info5 = {=zat_b29_sr_t_15} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info6 = {=zat_b29_sr_t_16} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info7 = {=zat_b29_sr_t_17} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info8 = {=zat_b29_sr_t_18} sr_idle@spawn_af %+zat_b29_stalker_rival_1_found_af +zat_b29_stalkers_rivals_found_af%
+on_info9 = {=zat_b29_sr_t_19} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
+on_info10 = {=zat_b29_sr_t_20} sr_idle@spawn_af %+zat_b29_stalker_rival_2_found_af +zat_b29_stalkers_rivals_found_af%
 on_game_timer = 50 | sr_idle@rivals_searching
 
 [sr_idle@spawn_af]
@@ -49,6 +49,6 @@ on_info4 = {=distance_to_obj_le(zat_b29_stalker_rival_default_2:150) +zat_b29_st
 on_info5 = {-zat_b29_adv_task_given} sr_idle@wait_for_rivals %-zat_b29_rivals_search -zat_b29_stalker_rival_1_found_af -zat_b29_stalker_rival_2_found_af -zat_b29_stalkers_rivals_found_af%
 
 [sr_idle@wait_for_quest_end]
-on_info = {-zat_b29_adv_task_given} sr_idle@wait_for_rivals %-zat_b29_rivals_search -zat_b29_stalker_rival_1_found_af -zat_b29_stalker_rival_2_found_af -zat_b29_stalkers_rivals_found_af -zat_b29_quest_af_given%
+on_info = {-zat_b29_adv_task_given} sr_idle@wait_for_rivals %=zat_b29_sr_t_1%
 
 [sr_idle@nil]
