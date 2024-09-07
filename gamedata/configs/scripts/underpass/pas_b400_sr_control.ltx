@@ -107,7 +107,7 @@ on_game_timer = 150 | {-pas_b400_about_gates -pas_b400_way_button_pressed} sr_id
 
 [sr_idle@exit]
 on_info = {=actor_in_zone(pas_b400_sr_exit)} sr_idle@disable %+pas_b400_canalisation_done +pas_b400_done =run_postprocess(fade_in)%
-on_info2 = {+pas_b400_canalisation_tushkano_attacked -pas_b400_canalisation_snork_rl_spawned !actor_in_zone(pas_b400_sr_canalisation_tushkano_revert)} sr_idle@canalisation_spawn %=heal_squad(pas_b400_stalkers_squad)%
+on_info2 = {=pas_b400_sr_c_5} sr_idle@canalisation_spawn %=heal_squad(pas_b400_stalkers_squad)%
 
 [sr_idle@canalisation_spawn]
 on_info = {~50} sr_idle@exit %+pas_b400_canalisation_snork_rl_spawned =create_squad(pas_b400_canalisation_snork_2_r:pas_b400_canalisation)%, sr_idle@exit %+pas_b400_canalisation_snork_rl_spawned =create_squad(pas_b400_canalisation_snork_2_l:pas_b400_canalisation)%

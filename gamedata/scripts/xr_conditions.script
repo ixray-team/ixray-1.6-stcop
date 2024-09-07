@@ -2423,3 +2423,115 @@ end
 function pas_b400_sr_c_4(actor, npc)
 	return has_alife_info("pas_b400_hall_monolith_snipers_attacked") and not has_alife_info("pas_b400_hall_monolith_snipers_dead") and not squad_exist(actor, npc, {"pas_b400_hall_monolith_sniper_1"}) and not squad_exist(actor, npc, {"pas_b400_hall_monolith_sniper_2"})
 end
+
+function pas_b400_g_1(actor, npc)
+	return not has_alife_info("pas_b400_vano_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_vano_hit","2"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_2(actor, npc)
+	return not has_alife_info("pas_b400_vano_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_vano_hit","1"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_3(actor, npc)
+	return not has_alife_info("pas_b400_vano_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_vano_hit","0"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_4(actor, npc)
+	return not has_alife_info("pas_b400_sokolov_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_sokolov_hit","2"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_5(actor, npc)
+	return not has_alife_info("pas_b400_sokolov_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_sokolov_hit","1"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_6(actor, npc)
+	return not has_alife_info("pas_b400_sokolov_dead") and not is_playing_sound(actor, npc) and is_alive(actor,npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_sokolov_hit","0"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_7(actor, npc)
+	return not has_alife_info("pas_b400_wanderer_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_wanderer_hit","2"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_8(actor, npc)
+	return not has_alife_info("pas_b400_wanderer_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_wanderer_hit","1"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_9(actor, npc)
+	return not has_alife_info("pas_b400_wanderer_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_wanderer_hit","0"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_10(actor, npc)
+	return not has_alife_info("pas_b400_zulus_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_zulus_hit","2"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_11(actor, npc)
+	return not has_alife_info("pas_b400_zulus_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_zulus_hit","1"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_g_12(actor, npc)
+	return not has_alife_info("pas_b400_zulus_dead") and not is_playing_sound(actor, npc) and is_alive(actor, npc) and not has_enemy(actor, npc) and hit_by_actor(actor, npc) and counter_equal(actor, npc, {"pas_b400_actor_zulus_hit","0"}) and squad_exist(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_sr_p_p_1(actor, npc)
+	return not actor_in_zone(actor, npc, {"pas_b400_field_elevator"}) and not actor_in_zone(actor, npc, {"pas_b400_field_track"}) and not actor_in_zone(actor, npc, {"pas_b400_field_downstairs"}) and not actor_in_zone(actor, npc, {"pas_b400_field_tunnel"})
+end
+
+function pas_b400_t_1(actor, npc)
+	return not has_alife_info("pas_b400_zulus_about_train_gates_1_can") and not squad_exist(actor, npc, {"pas_b400_snork_tunnel_3"}) and not squad_exist(actor, npc, {"pas_b400_snork_tunnel_4"}) and not has_alife_info("pas_b400_zulus_about_train_gates_1") and not has_alife_info("pas_b400_tunnel_gates_opened")
+end
+
+function pas_b400_h_1(actor, npc)
+	return not has_alife_info("pas_b400_sokolov_about_door_1") and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_sokolov","pas_b400_wanderer"}) and has_alife_info("pas_b400_hall_door_opened") and has_alife_info("pas_b400_hall_monolith_snipers_dead")
+end
+
+function pas_b400_h_2(actor, npc)
+	return not has_alife_info("pas_b400_about_cover") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_6"}) and actor_in_zone(actor, npc, {"pas_b400_sr_control_stairs"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_h_3(actor, npc)
+	return not has_alife_info("pas_b400_hall_door_opened") and has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_12"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_control_gates")
+end
+
+function pas_b400_h_4(actor, npc)
+	return has_alife_info("pas_b400_about_railway") and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_wanderer"}) and npc_in_zone(actor, npc, {"pas_b400_sr_hall_11"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_transformer")
+end
+
+function pas_b400_h_5(actor, npc)
+	return not has_alife_info("pas_b400_hall_door_opened") and has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor,npc,{"pas_b400_sr_hall_12"}) and not is_alive_one(actor, npc, {"pas_b400_sokolov","pas_b400_zulus"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_control_gates")
+end
+
+function pas_b400_h_6(actor, npc)
+	return not has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_12"}) and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_sokolov","pas_b400_wanderer"}) and not has_alife_info("pas_b400_vano_about_railway_1")
+end
+
+function pas_b400_h_7(actor, npc)
+	return not has_alife_info("pas_b400_about_cover") and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_vano"}) and npc_in_zone(actor, npc, {"pas_b400_sr_hall_6"}) and actor_in_zone(actor, npc, {"pas_b400_sr_control_stairs"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_h_8(actor, npc)
+	return not has_alife_info("pas_b400_sokolov_about_transformer_1") and actor_in_zone(actor, npc, {"pas_b400_sr_hall_transformer"}) and npc_in_zone(actor, npc, {"pas_b400_sr_hall_11"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_h_9(actor, npc)
+	return not has_alife_info("pas_b400_hall_door_opened") and has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_12"}) and not is_alive(actor, npc, {"pas_b400_zulus"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_control_gates")
+end
+
+function pas_b400_h_10(actor, npc)
+	return not has_alife_info("pas_b400_about_cover") and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_vano","pas_b400_sokolov"}) and npc_in_zone(actor, npc, {"pas_b400_sr_hall_6"}) and actor_in_zone(actor, npc, {"pas_b400_sr_control_stairs"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_h_11(actor, npc)
+	return has_alife_info("pas_b400_about_railway") and not is_alive(actor, npc, {"pas_b400_zulus"}) and npc_in_zone(actor, npc, {"pas_b400_sr_hall_11"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_transformer")
+end
+
+function pas_b400_h_12(actor, npc)
+	return not has_alife_info("pas_b400_hall_door_opened") and has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_12"}) and not is_alive_one(actor, npc, {"pas_b400_zulus","pas_b400_sokolov","pas_b400_vano"}) and not squad_has_enemy(actor, npc, {"pas_b400_stalkers_squad"}) and not has_alife_info("pas_b400_about_control_gates")
+end
+
+function pas_b400_h_13(actor, npc)
+	return has_alife_info("pas_b400_control_down_door_opened") and npc_in_zone(actor, npc, {"pas_b400_sr_hall_12"}) and not is_alive_one(actor, npc, {"pas_b400_sokolov","pas_b400_zulus"}) and not has_alife_info("pas_b400_about_railway")
+end
+
+function pas_b400_sr_c_5(actor, npc)
+	return has_alife_info("pas_b400_canalisation_tushkano_attacked") and not has_alife_info("pas_b400_canalisation_snork_rl_spawned") and not actor_in_zone(actor, npc, {"pas_b400_sr_canalisation_tushkano_revert"})
+end

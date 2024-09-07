@@ -4675,3 +4675,86 @@ function pas_b400_ph_d_e_2(actor, npc)
 	turn_off(actor, npc, {"pas_b400_lamp_elevator_flash","pas_b400_lamp_elevator_flash_1"}) 
 	turn_on(actor, npc, {"pas_b400_lamp_elevator_green","pas_b400_lamp_elevator_green_1"})
 end
+
+function pas_b400_g_1(actor, npc)
+	play_sound(actor, npc, {"pas_b400_wanderer_on_actor_hit_3"}) 
+	inc_counter(actor, npc, {"pas_b400_actor_wanderer_hit"}) 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_g_2(actor, npc)
+	play_sound(actor, npc, {"pas_b400_sokolov_on_actor_hit_3"}) 
+	inc_counter(actor, npc, {"pas_b400_actor_sokolov_hit"}) 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_g_3(actor, npc)
+	give_info("pas_b400_wanderer_dead_sound") 
+	give_info("pas_b400_wanderer_dead_sound_actor") 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_g_4(actor, npc)
+	give_info("pas_b400_sokolov_dead_sound") 
+	give_info("pas_b400_sokolov_dead_sound_actor") 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_g_5(actor, npc)
+	give_info("pas_b400_zulus_dead_sound") 
+	give_info("pas_b400_zulus_dead_sound_actor") 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_g_6(actor, npc)
+	play_sound(actor, npc, {"pas_b400_vano_on_actor_hit_3"}) 
+	inc_counter(actor, npc, {"pas_b400_actor_vano_hit"}) 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end	
+
+function pas_b400_g_7(actor, npc)
+	play_sound(actor, npc, {"pas_b400_zulus_on_actor_hit_3"}) 
+	inc_counter(actor, npc, {"pas_b400_actor_zulus_hit"}) 
+	set_squad_enemy_to_actor(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_actor_enemy")
+end
+
+function pas_b400_ph_b_d_1(actor, npc)
+	anim_obj_forward(actor, npc, {"pas_b400_door_downstairs"}) 
+	heal_squad(actor, npc, {"pas_b400_stalkers_squad"}) 
+	give_info("pas_b400_downstairs_button_pressed") 
+	disable_info("pas_b400_about_gates")
+end
+
+function pas_b400_d_t_1(actor, npc)
+	turn_off(actor, npc, {"pas_b400_lamp_tunnel_red","pas_b400_lamp_tunnel_red_1"}) 
+	turn_on(actor, npc, {"pas_b400_lamp_tunnel_flash","pas_b400_lamp_tunnel_flash_1"})
+end
+
+function pas_b400_d_t_2(actor, npc)
+	give_info("pas_b400_tunnel_gates_opened") 
+	turn_off(actor, npc, {"pas_b400_lamp_tunnel_flash","pas_b400_lamp_tunnel_flash_1"}) 
+	turn_on(actor, npc, {"pas_b400_lamp_tunnel_green","pas_b400_lamp_tunnel_green_1"})
+end
+
+function pas_b400_ph_b_c_d_1(actor, npc)
+	anim_obj_forward(actor, npc, {"pas_b400_door_control_down"}) 
+	create_squad(actor, npc, {"pas_b400_hall_monolith_squad","pas_b400_hall"}) 
+	give_info("pas_b400_control_down_door_opened") 
+	heal_squad(actor, npc, {"pas_b400_stalkers_squad"})
+end
+
+function pas_b400_ph_b_c_u_1(actor, npc)
+	anim_obj_forward(actor, npc, {"pas_b400_door_control_up"}) 
+	create_squad(actor, npc, {"pas_b400_hall_monolith_sniper_1","pas_b400_hall"}) 
+	create_squad(actor, npc, {"pas_b400_hall_monolith_sniper_2","pas_b400_hall"}) 
+	create_squad(actor, npc, {"pas_b400_hall_monolith_sniper_3","pas_b400_hall"}) 
+	give_info("pas_b400_control_up_door_opened") 
+	heal_squad(actor, npc, {"pas_b400_stalkers_squad"})
+end

@@ -24,37 +24,37 @@ snd_on_use = pas_b400_wanderer_no_meet
 ;Hits
 [hit@zulus]
 on_info = {-pas_b400_zulus_dead !is_playing_sound =is_alive !hit_by_actor} %=play_sound(pas_b400_zulus_on_enemy_hit)%
-on_info2 = {-pas_b400_zulus_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_zulus_hit:2) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_zulus_on_actor_hit_3) =inc_counter(pas_b400_actor_zulus_hit) =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
-on_info3 = {-pas_b400_zulus_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_zulus_hit:1) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_zulus_on_actor_hit_2) =inc_counter(pas_b400_actor_zulus_hit)%
-on_info4 = {-pas_b400_zulus_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_zulus_hit:0) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_zulus_on_actor_hit_1) =inc_counter(pas_b400_actor_zulus_hit)%
+on_info2 = {=pas_b400_g_10} %=pas_b400_g_7%
+on_info3 = {=pas_b400_g_11} %=play_sound(pas_b400_zulus_on_actor_hit_2) =inc_counter(pas_b400_actor_zulus_hit)%
+on_info4 = {=pas_b400_g_12} %=play_sound(pas_b400_zulus_on_actor_hit_1) =inc_counter(pas_b400_actor_zulus_hit)%
 on_info5 = {=deadly_hit} %+pas_b400_zulus_dead%
 
 [hit@vano]
 on_info = {-pas_b400_vano_dead !is_playing_sound =is_alive !hit_by_actor} %=play_sound(pas_b400_vano_on_enemy_hit)%
-on_info2 = {-pas_b400_vano_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_vano_hit:2) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_vano_on_actor_hit_3) =inc_counter(pas_b400_actor_vano_hit) =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
-on_info3 = {-pas_b400_vano_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_vano_hit:1) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_vano_on_actor_hit_2) =inc_counter(pas_b400_actor_vano_hit)%
-on_info4 = {-pas_b400_vano_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_vano_hit:0) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_vano_on_actor_hit_1) =inc_counter(pas_b400_actor_vano_hit)%
+on_info2 = {=pas_b400_g_1} %=pas_b400_g_6%
+on_info3 = {=pas_b400_g_2} %=play_sound(pas_b400_vano_on_actor_hit_2) =inc_counter(pas_b400_actor_vano_hit)%
+on_info4 = {=pas_b400_g_3} %=play_sound(pas_b400_vano_on_actor_hit_1) =inc_counter(pas_b400_actor_vano_hit)%
 on_info5 = {=deadly_hit} %+pas_b400_vano_dead%
 
 [hit@sokolov]
 on_info = {-pas_b400_sokolov_dead !is_playing_sound =is_alive !hit_by_actor} %=play_sound(pas_b400_sokolov_on_enemy_hit)%
-on_info2 = {-pas_b400_sokolov_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_sokolov_hit:2) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_sokolov_on_actor_hit_3) =inc_counter(pas_b400_actor_sokolov_hit) =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
-on_info3 = {-pas_b400_sokolov_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_sokolov_hit:1) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_sokolov_on_actor_hit_2) =inc_counter(pas_b400_actor_sokolov_hit)%
-on_info4 = {-pas_b400_sokolov_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_sokolov_hit:0) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_sokolov_on_actor_hit_1) =inc_counter(pas_b400_actor_sokolov_hit)%
+on_info2 = {=pas_b400_g_4} %=pas_b400_g_2%
+on_info3 = {=pas_b400_g_5} %=play_sound(pas_b400_sokolov_on_actor_hit_2) =inc_counter(pas_b400_actor_sokolov_hit)%
+on_info4 = {=pas_b400_g_6} %=play_sound(pas_b400_sokolov_on_actor_hit_1) =inc_counter(pas_b400_actor_sokolov_hit)%
 on_info5 = {=deadly_hit} %+pas_b400_sokolov_dead%
 
 [hit@wanderer]
 on_info = {-pas_b400_wanderer_dead !is_playing_sound =is_alive !hit_by_actor} %=play_sound(pas_b400_wanderer_on_enemy_hit)%
-on_info2 = {-pas_b400_wanderer_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_wanderer_hit:2) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_wanderer_on_actor_hit_3) =inc_counter(pas_b400_actor_wanderer_hit) =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
-on_info3 = {-pas_b400_wanderer_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_wanderer_hit:1) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_wanderer_on_actor_hit_2) =inc_counter(pas_b400_actor_wanderer_hit)%
-on_info4 = {-pas_b400_wanderer_dead !is_playing_sound =is_alive !has_enemy =hit_by_actor =counter_equal(pas_b400_actor_wanderer_hit:0) =squad_exist(pas_b400_stalkers_squad)} %=play_sound(pas_b400_wanderer_on_actor_hit_1) =inc_counter(pas_b400_actor_wanderer_hit)%
+on_info2 = {=pas_b400_g_7} %=pas_b400_g_1%
+on_info3 = {=pas_b400_g_8} %=play_sound(pas_b400_wanderer_on_actor_hit_2) =inc_counter(pas_b400_actor_wanderer_hit)%
+on_info4 = {=pas_b400_g_9} %=play_sound(pas_b400_wanderer_on_actor_hit_1) =inc_counter(pas_b400_actor_wanderer_hit)%
 on_info5 = {=deadly_hit} %+pas_b400_wanderer_dead%
 
 
 ;Death
 [death@zulus]
 on_info = %=stop_sound +pas_b400_zulus_dead +pri_a15_zulus_out%
-on_info2 = {!killed_by_actor} %+pas_b400_zulus_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %+pas_b400_zulus_dead_sound +pas_b400_zulus_dead_sound_actor =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
+on_info2 = {!killed_by_actor} %+pas_b400_zulus_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %=pas_b400_g_5%
 
 [death@vano]
 on_info = %=stop_sound +pas_b400_vano_dead +pri_a15_vano_out%
@@ -62,11 +62,11 @@ on_info2 = {!killed_by_actor} %+pas_b400_vano_dead_sound%, {=killed_by_actor =sq
 
 [death@sokolov]
 on_info = %=stop_sound +pas_b400_sokolov_dead +pri_a15_sokolov_out%
-on_info2 = {!killed_by_actor} %+pas_b400_sokolov_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %+pas_b400_sokolov_dead_sound +pas_b400_sokolov_dead_sound_actor =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
+on_info2 = {!killed_by_actor} %+pas_b400_sokolov_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %=pas_b400_g_4%
 
 [death@wanderer]
 on_info = %=stop_sound +pas_b400_wanderer_dead +pri_a15_wanderer_out%
-on_info2 = {!killed_by_actor} %+pas_b400_wanderer_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %+pas_b400_wanderer_dead_sound +pas_b400_wanderer_dead_sound_actor =set_squad_enemy_to_actor(pas_b400_stalkers_squad) +pas_b400_actor_enemy%
+on_info2 = {!killed_by_actor} %+pas_b400_wanderer_dead_sound%, {=killed_by_actor =squad_exist(pas_b400_stalkers_squad)} %=pas_b400_g_3%
 
 
 ;Sounds

@@ -62,7 +62,7 @@ combat_ignore_cond = {-pas_b400_tunnel_gates_started_to_open =check_enemy_smart(
 on_signal = path_end | {-pas_b400_zulus_about_train_gates_1_can} %+pas_b400_zulus_about_train_gates_1_can%
 on_info = {-pas_b400_zulus_about_train_gates_2 !squad_exist(pas_b400_snork_tunnel_5)} %+pas_b400_zulus_about_train_gates_2 =play_sound(pas_b400_zulus_about_train_gates_2)%
 on_info2 = {+pas_b400_sr_tunnel_4} walker@zulus_tunnel_4
-on_info3 = {-pas_b400_zulus_about_train_gates_1_can !squad_exist(pas_b400_snork_tunnel_3) !squad_exist(pas_b400_snork_tunnel_4) -pas_b400_zulus_about_train_gates_1 -pas_b400_tunnel_gates_opened} %+pas_b400_zulus_about_train_gates_1 =play_sound(pas_b400_zulus_about_train_gates_1)%
+on_info3 = {=pas_b400_t_1} %+pas_b400_zulus_about_train_gates_1 =play_sound(pas_b400_zulus_about_train_gates_1)%
 
 
 [logic@pas_b400_vano_tunnel]
