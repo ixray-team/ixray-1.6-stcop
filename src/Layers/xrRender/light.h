@@ -39,15 +39,16 @@ public:
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;
 
-#if (RENDER==R_R2) || (RENDER==R_R4)
+#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	float			falloff;			// precalc to make light equal to zero at light range
 	float	        attenuation0;		// Constant attenuation		
 	float	        attenuation1;		// Linear attenuation		
 	float	        attenuation2;		// Quadratic attenuation	
 
+#ifndef _EDITOR
 	light*						omnipart	[6]	;
-
 	smapvis			svis;		// used for 6-cubemap faces
+#endif
 
 	ref_shader		s_spot;
 	ref_shader		s_point;
@@ -134,12 +135,14 @@ public:
 	virtual IRender_Light*	dcast_Light		()	{ return this; }
 
 	virtual vis_data&		get_homdata		();
-#if (RENDER==R_R2) || (RENDER==R_R4)
+#if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	void			xform_calc				();
+#ifndef _EDITOR
 	void			vis_prepare				();
 	void			vis_update				();
 	void			export_ 					(light_Package& dest);
 	void			set_attenuation_params	(float a0, float a1, float a2, float fo);
+#endif // _EDITOR
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 
 	float			get_LOD					();

@@ -14,13 +14,125 @@
 #include "../../../Layers/xrRender/ModelPool.h"
 #include "../../../Layers/xrRender/SkeletonCustom.h"
 #include "../../../xrCore/API/xrAPI.h"
+#include <d3dcompiler.h>
+#include "../../../Layers/xrRender/light.h"
+#include "../../../Layers/xrRenderPC_R2/Light_Render_Direct.h"
 class ISpatial;
+
+class CBlender_accum : public IBlender {
+public:
+	virtual LPCSTR getComment() {
+		return "INTERNAL: accumulate light";
+	}
+
+	virtual BOOL canBeDetailed() {
+		return FALSE;
+	}
+
+	virtual BOOL canBeLMAPped() {
+		return FALSE;
+	}
+
+	virtual void Compile(CBlender_Compile& C);
+
+	CBlender_accum() {
+		description.CLS = 0;
+	};
+
+	virtual ~CBlender_accum() {};
+};
 
 // definition (Renderer)
 class CRenderTarget :public IRender_Target
 {
 public:
-	CRenderTarget() {}
+	CRenderTarget() {
+		t_envmap_0.create("$user$env_s0");
+		t_envmap_1.create("$user$env_s1");
+
+		b_accum = new CBlender_accum();
+		s_accum.create(b_accum, "r2\\accum_spot_s", "lights\\lights_spot01");
+
+		// POINT
+		{
+			accum_point_geom_create();
+			g_accum_point.create(D3DFVF_XYZ, g_accum_point_vb, g_accum_point_ib);
+		}
+
+		// SPOT
+		{
+			accum_spot_geom_create();
+			g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
+		}
+	};
+
+	virtual ~CRenderTarget() {
+		t_envmap_0->surface_set(nullptr);
+		t_envmap_1->surface_set(nullptr);
+		t_envmap_0.destroy();
+		t_envmap_1.destroy();
+
+		accum_spot_geom_destroy();
+		accum_point_geom_destroy();
+
+		xr_delete(b_accum);
+	};
+
+	// 2D texgen (texture adjustment matrix)
+	void	u_compute_texgen_screen(Fmatrix& m_Texgen) {
+		float	_w = float(RCache.get_width());
+		float	_h = float(RCache.get_height());
+		float	o_w = (.5f / _w);
+		float	o_h = (.5f / _h);
+
+		Fmatrix			m_TexelAdjust =
+		{
+			0.5f,				0.0f,				0.0f,			0.0f,
+			0.0f,				-0.5f,				0.0f,			0.0f,
+			0.0f,				0.0f,				1.0f,			0.0f,
+			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
+		};
+		m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
+	}
+
+	void reset_light_marker(bool bResetStencil = false) {
+		dwLightMarkerID = 5;
+
+		if(bResetStencil) {
+			CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+		}
+	}
+
+	void increment_light_marker() {
+		dwLightMarkerID += 2;
+
+		if(dwLightMarkerID > 255)
+			reset_light_marker(true);
+	}
+
+	void accum_point_geom_create();
+	void accum_point_geom_destroy();
+	void accum_spot_geom_create();
+	void accum_spot_geom_destroy();
+
+	void accum_spot(light*);
+	void accum_point(light*);
+	void draw_volume(light*);
+
+	u32 dwLightMarkerID = 0;
+
+	ref_shader s_accum;
+	IBlender* b_accum;
+
+	ref_geom g_accum_point;
+	ref_geom g_accum_spot;
+
+	IDirect3DVertexBuffer9* g_accum_point_vb;
+	IDirect3DIndexBuffer9* g_accum_point_ib;
+
+	IDirect3DVertexBuffer9* g_accum_spot_vb;
+	IDirect3DIndexBuffer9* g_accum_spot_ib;
+
 	virtual	void					set_blur(float	f) {}
 	virtual	void					set_gray(float	f) {}
 	virtual void					set_duality_h(float	f) {}
@@ -35,7 +147,7 @@ public:
 	virtual void					set_cm_imfluence(float	f) {}
 	virtual void					set_cm_interpolate(float	f) {}
 	virtual void					set_cm_textures(const shared_str& tex0, const shared_str& tex1) {}
-	virtual ~CRenderTarget() {};
+
 	virtual u32			get_width			()				{ return EDevice->TargetWidth;	}
 	virtual u32			get_height			()				{ return EDevice->TargetHeight;	}
 
@@ -43,9 +155,10 @@ public:
 	virtual u32						get_target_height() { return EDevice->TargetHeight;	}
 	virtual u32						get_core_width()	{ return EDevice->TargetWidth;	}
 	virtual u32						get_core_height()	{ return EDevice->TargetHeight;	}
+
+	ref_texture t_envmap_0;	// env-0
+	ref_texture t_envmap_1;	// env-1
 };
-
-
 
 class	ECORE_API CRender : public IRender_interface
 {
@@ -60,6 +173,10 @@ public:
 	CPSLibrary				PSLibrary;
 
 	CModelPool* Models;
+
+	xr_vector<light*> m_pointlights;
+	xr_vector<light*> m_spotlights;
+	CLight_Compute_XFORM_and_VIS LR;
 public:
 	// Occlusion culling
 	virtual BOOL			occ_visible(Fbox& B);
@@ -122,7 +239,19 @@ public:
 	virtual void			rmFar();
 	virtual void			rmNormal();
 
-	void 					apply_lmaterial() {}
+	IC void apply_lmaterial() {
+		R_constant* C = &*RCache.get_c("s_base"); // get sampler
+		if(0 == C)			return;
+		VERIFY(RC_dest_sampler == C->destination);
+		VERIFY(RC_sampler == C->type);
+		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
+		VERIFY(T);
+		float	mtl = T->m_material;
+#ifdef	DEBUG_DRAW
+		if(ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl = ps_r2_gmaterial;
+#endif
+		RCache.hemi.set_material(0.7, 1, 0, (mtl + .5f) / 4.f);
+	}
 
 	virtual LPCSTR			getShaderPath()
 	{
@@ -195,11 +324,31 @@ public:
 	// Render mode
 	virtual u32						memory_usage();
 
-	xr_string getShaderParams() { return ""; };
-	void addShaderOption(const char* name, const char* value) {};
-	void clearAllShaderOptions() {  }
+	xr_string getShaderParams() {
+		xr_string params = "";
+		if(!m_ShaderOptions.empty()) {
+			params.append("(").append(m_ShaderOptions[0].Name);
+
+			for(auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+				params.append(",").append(m_ShaderOptions[i].Name);
+			}
+
+			params.append(")");
+		}
+		return params;
+	};
+
+	void addShaderOption(const char* name, const char* value) {
+		m_ShaderOptions.emplace_back(name, value);
+	};
+
+	void clearAllShaderOptions() {
+		m_ShaderOptions.resize(0);
+	}
 
 protected:
+	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
+
 	virtual	void					ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
 	HRESULT					shader_compile(
 		LPCSTR							name,

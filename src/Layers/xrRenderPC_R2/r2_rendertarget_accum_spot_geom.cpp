@@ -1,6 +1,7 @@
+#ifndef _EDITOR
 #include "stdafx.h"
-
 #include "../xrRender/du_cone.h"
+#endif
 /*
 Fvector du_cone_vertices[DU_CONE_NUMVERTEX]=
 {
@@ -106,6 +107,7 @@ void CRenderTarget::accum_spot_geom_destroy()
 	_RELEASE	(g_accum_spot_vb);
 }
 
+#ifndef _EDITOR
 struct Slice
 {
 	Fvector	m_Vert[4];
@@ -179,3 +181,4 @@ void CRenderTarget::accum_volumetric_geom_destroy()
 #endif // DEBUG
 	_RELEASE	(g_accum_volumetric_vb);
 }
+#endif

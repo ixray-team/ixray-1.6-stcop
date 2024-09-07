@@ -177,7 +177,7 @@ void UIMainMenuForm::Draw()
             }
             ImGui::Separator();
             {
-                bool selected = psDeviceFlags.test(rsLighting);;
+                bool selected = psDeviceFlags.test(rsLighting);
                 if (ImGui::MenuItem("Lighting", "", &selected))
                 {
                     psDeviceFlags.set(rsLighting, selected);

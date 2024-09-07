@@ -99,8 +99,7 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 	{
 		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
 
-#ifndef _EDITOR
-#if RENDER!=R_R1
+#if RENDER!=R_R1 || defined(_EDITOR)
 		//	Detect the alowance of detail bump usage here.
 		if (!(ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP)))
 		{
@@ -108,8 +107,6 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 			bDetail_Bump = false;
 		}
 #endif
-#endif
-
 	}
 
 	bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) 

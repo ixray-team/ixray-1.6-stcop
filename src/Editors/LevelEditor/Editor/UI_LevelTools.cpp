@@ -486,7 +486,6 @@ void  CLevelTool::Render()
 {
 	// Render update
 	::Render->Calculate		();
-	::Render->Render		();
 
 	EEditorState est 		= UI->GetEState();
 	// draw scene
@@ -504,6 +503,7 @@ void  CLevelTool::Render()
 	break;
 	case esBuildLevel:  	Builder.OnRender();				break;
 	}
+	::Render->Render();
 	// draw cursor
 	LUI->m_Cursor->Render();
 

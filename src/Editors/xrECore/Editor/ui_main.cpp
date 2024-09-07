@@ -423,9 +423,20 @@ void TUI::Redraw()
 				GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
 				GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
 				RT.destroy();
+				RTCopy.destroy();
 				ZB.destroy();
-				RT.create("rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-				ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+
+				RTPostion.destroy();
+				RTNormal.destroy();
+				RTDiffuse.destroy();
+
+				RTPostion.create("$user$position", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+				RTNormal.create("$user$normal", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+				RTDiffuse.create("$user$diffuse", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
+
+				RT.create("$user$rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+				RTCopy.create("$user$rt_color_copy", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+				ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24S8);
 				m_Flags.set(flRedraw, TRUE);
 
 				EDevice->m_fNearer = EDevice->mProject._43;
@@ -458,10 +469,28 @@ void TUI::Redraw()
 			{
 				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
-				RCache.set_RT(RT->pRT);
+
+
+				RCache.set_RT(RTDiffuse->pRT, 0);
+				RCache.set_RT(RTNormal->pRT, 1);
+				RCache.set_RT(RTPostion->pRT, 2);
+				RCache.set_RT(0, 3);
+
 				RCache.set_ZB(ZB->pRT);
 
+				CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+
+				RCache.set_RT(RT->pRT, 0);
+
+				RCache.set_RT(0, 1);
+				RCache.set_RT(0, 2);
+				RCache.set_RT(0, 3);
+
 				EDevice->Clear();
+
+				RCache.set_RT(RTDiffuse->pRT, 1);
+				RCache.set_RT(RTNormal->pRT, 2);
+				RCache.set_RT(RTPostion->pRT, 3);
 
 				//EDevice->Statistic->RenderDUMP_RT.Begin();
 				EDevice->UpdateView();
@@ -685,11 +714,16 @@ bool TUI::OnCreate()
 	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
 	EDevice->m_fNearer = EDevice->mProject._43;
 
-
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
-	RT.create("rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y* EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+
+	RTPostion.create("$user$position", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTNormal.create("$user$normal", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTDiffuse.create("$user$diffuse", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
+
+	RT.create("$user$rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	RTCopy.create("$user$rt_color_copy", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
 
 	return true;
 }
@@ -698,8 +732,14 @@ void TUI::OnDestroy()
 {
 	Console->Destroy();
 	xr_delete(Console);
+
 	RT.destroy();
+	RTCopy.destroy();
 	ZB.destroy();
+
+	RTPostion.destroy();
+	RTNormal.destroy();
+	RTDiffuse.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady		= false;

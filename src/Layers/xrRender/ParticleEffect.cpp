@@ -718,12 +718,16 @@ void CParticleEffect::Render(float )
 			RCache.Vertex.Unlock(dwCount,geom->vb_stride);
 			if (dwCount)    
 			{
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 				CHudInitializer initalizer(false);
 
 				if (GetHudMode()) {
 					initalizer.SetHudMode();
 					RImplementation.rmNear();
+#ifdef _EDITOR
+					RCache.set_xform_view(Device.mView);
+					RCache.set_xform_project(Device.mProject);
+#endif
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif
@@ -734,10 +738,14 @@ void CParticleEffect::Render(float )
                 RCache.set_CullMode		(m_Def->m_Flags.is(CPEDef::dfCulling)?(m_Def->m_Flags.is(CPEDef::dfCullCCW)?CULL_CCW:CULL_CW):CULL_NONE);
 				RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0,dwCount,0,dwCount/2);
                 RCache.set_CullMode		(CULL_CCW	); 
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 				if (GetHudMode()) {
 					RImplementation.rmNormal();
 					initalizer.SetDefaultMode();
+#ifdef _EDITOR
+					RCache.set_xform_view(Device.mView);
+					RCache.set_xform_project(Device.mProject);
+#endif
 					ApplyTexgen(Device.mFullTransform);
 				}
 #endif

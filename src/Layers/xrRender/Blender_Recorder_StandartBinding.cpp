@@ -157,7 +157,7 @@ class cl_VPtexgen : public R_constant_setup
 static cl_VPtexgen		binder_VPtexgen;
 
 // fog
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 class cl_fog_plane	: public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
@@ -270,7 +270,7 @@ class cl_hud_project : public R_constant_setup {
 };
 static cl_hud_project binder_hud_project;
 
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 // TAA Jiter
 class cl_taa_jitter : public R_constant_setup {
 	virtual void setup(R_constant* C) {
@@ -281,7 +281,7 @@ class cl_taa_jitter : public R_constant_setup {
 static cl_taa_jitter binder_taa_jitter;
 #endif
 
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 // D-Light0
 class cl_sun0_color : public R_constant_setup {
 	u32 marker;
@@ -289,7 +289,7 @@ class cl_sun0_color : public R_constant_setup {
 	virtual void setup(R_constant* C) {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
+#if defined(_EDITOR) || RENDER != R_R1
 			result.set(desc.sun_color.x * ps_r2_sun_lumscale, desc.sun_color.y * ps_r2_sun_lumscale, desc.sun_color.z * ps_r2_sun_lumscale, 0);
 #else
 			result.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z, 0);
@@ -333,7 +333,7 @@ class cl_amb_color : public R_constant_setup {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 
-#if RENDER != R_R1
+#if defined(_EDITOR) || RENDER != R_R1
 			result.set(desc.ambient.x * ps_r2_sun_lumscale_amb * 2.0f,
 				desc.ambient.y * ps_r2_sun_lumscale_amb * 2.0f, desc.ambient.z * ps_r2_sun_lumscale_amb * 2.0f, desc.weight);
 #else
@@ -350,7 +350,7 @@ class cl_hemi_color : public R_constant_setup {
 	virtual void setup(R_constant* C) {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
+#if defined(_EDITOR) || RENDER != R_R1
 			result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
 				desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
 #else
@@ -368,7 +368,7 @@ class cl_sky_color : public R_constant_setup {
 	virtual void setup(R_constant* C) {
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
-#if RENDER != R_R1
+#if defined(_EDITOR) || RENDER != R_R1
 			result.set(desc.sky_color.x * ps_r2_sun_lumscale_sky, 
 				desc.sky_color.y * ps_r2_sun_lumscale_sky, desc.sky_color.z * ps_r2_sun_lumscale_sky, desc.sky_rotation);
 #else
@@ -502,7 +502,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("m_texgen",			&binder_texgen);
 	r_Constant				("mVPTexgen",			&binder_VPtexgen);
 
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 	// fog-params
 	r_Constant				("fog_plane",		&binder_fog_plane);
 	r_Constant				("fog_params",		&binder_fog_params);
@@ -516,7 +516,7 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant				("eye_direction",	&binder_eye_D);
 	r_Constant				("eye_normal",		&binder_eye_N);
 
-#ifndef _EDITOR
+#if 1 //ndef _EDITOR
 	// global-lighting (env params)
 	r_Constant				("L_sun_color",		&binder_sun0_color);
 	r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
