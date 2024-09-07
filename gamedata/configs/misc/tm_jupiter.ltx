@@ -1,5 +1,5 @@
 
-;сюжетные задания
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 [jup_a9_way_to_pripyat_power_info]
 icon = ui_inGame2_Put_v_pripyat
@@ -129,7 +129,7 @@ descr  = {+pas_b400_way_button_pressed} pas_b400_pripyat_text, {-pas_b400_way_bu
 target = {+pas_b400_way_button_pressed} pas_b400_fwd, {-pas_b400_way_button_pressed +pas_b400_sr_way_2} pas_b400_ph_button_way, {+pas_b400_hall_done} pas_b400_door_way, {+pas_b400_hall_door_opened} pas_b400_door_hall, {-pas_b400_hall_door_opened !squad_exist(pas_b400_stalkers_squad) +pas_b400_sr_hall_12_in_2} pas_b400_ph_button_hall, {-pas_b400_hall_door_opened +pas_b400_about_control_gates +pas_b400_sr_hall_12_in_2} pas_b400_ph_button_hall, {+pas_b400_control_down_door_opened} pas_b400_door_hall, {-pas_b400_control_down_door_opened !squad_exist(pas_b400_stalkers_squad) +pas_b400_sr_hall_11_in} pas_b400_ph_button_control_down, {-pas_b400_control_down_door_opened +pas_b400_about_transformer +pas_b400_sr_hall_11_in} pas_b400_ph_button_control_down, {-pas_b400_control_down_door_opened !squad_exist(pas_b400_stalkers_squad) +pas_b400_sr_hall_12_in} nil, {-pas_b400_control_down_door_opened +pas_b400_about_railway +pas_b400_sr_hall_12_in} nil, {+pas_b400_tunnel_button_pressed} pas_b400_door_hall, {-pas_b400_tunnel_button_pressed +pas_b400_sr_tunnel_5_in +pas_b400_zulus_about_train_gates_1} pas_b400_ph_button_tunnel, {-pas_b400_tunnel_button_pressed +pas_b400_sr_tunnel_5_in !is_alive(pas_b400_zulus)} pas_b400_ph_button_tunnel, {+pas_b400_downstairs_button_pressed} pas_b400_door_tunnel, {-pas_b400_downstairs_button_pressed +pas_b400_sr_downstairs_2} pas_b400_ph_button_downstairs, {+pas_b400_track_button_pressed} pas_b400_door_downstairs, {-pas_b400_track_button_pressed +pas_b400_sr_track_4 !is_alive(pas_b400_zulus)} pas_b400_ph_button_track, {-pas_b400_track_button_pressed +pas_b400_sr_track_4 =is_alive(pas_b400_zulus) +pas_b400_zulus_about_obstacle_2} pas_b400_ph_button_track, {+pas_b400_elevator_button_pressed} pas_b400_door_track, {-pas_b400_elevator_button_pressed +pas_b400_sr_elevator_5} pas_b400_ph_button_elevator, pas_b400_door_elevator
 condlist_0 = {=actor_on_level(pripyat)} complete
 
-;второстепенные задания
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 [jup_b208_burers_hunt]
 icon = ui_inGame2_Ohota_na_Burerov
@@ -484,4 +484,4 @@ title  = {+jup_b6_all_hunters_are_dead} jup_b211_take_reward_name, {+jup_b211_sw
 descr  = {+jup_b6_all_hunters_are_dead} jup_b211_take_reward_text, {+jup_b211_swamp_bloodsuckers_hunt_started} jup_b211_kill_bloodsuckers_text
 target = {+jup_b6_all_hunters_are_dead} jup_b220_trapper, {+jup_b211_swamp_bloodsuckers_hunt_started} jup_b6_swamp_hunters 
 condlist_0 = {+jup_b211_scene_done} complete
-on_complete = %=give_treasure(jup_hiding_place_9:jup_hiding_place_41:jup_hiding_place_47) =inc_faction_goodwill_to_actor(freedom:250) =inc_faction_goodwill_to_actor(stalker:200) =inc_faction_goodwill_to_actor(dolg:250)%
+on_complete = %=jup_b211_s_b_h_1%

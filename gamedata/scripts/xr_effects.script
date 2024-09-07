@@ -4491,3 +4491,16 @@ function jup_a12_sr_c_3(actor, npc)
 	give_info("jup_a12_actor_choose_power") 
 	give_info("jup_a12_actor_is_ready")
 end
+
+function jup_b211_s_b_h_1(actor, npc)
+	give_treasure(actor, npc, {"jup_hiding_place_9","jup_hiding_place_41","jup_hiding_place_47"})
+	inc_faction_goodwill_to_actor(actor, npc, {"freedom","250"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"stalker","200"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"dolg","250"})
+end
+
+function jup_b41_sr_s_1(actor, npc)
+	play_sound(actor, npc, {"jup_b41_steam"}) 
+	play_particle_on_path(actor, npc, {"damage_fx\\smoke","jup_b41_steam_1"}) 
+	play_particle_on_path(actor, npc, {"damage_fx\\smoke","jup_b41_steam_2"})
+end
