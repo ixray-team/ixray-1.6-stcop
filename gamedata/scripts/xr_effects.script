@@ -4014,3 +4014,17 @@ function zat_b29_sr_t_1(actor, npc)
 	disable_info("zat_b29_stalkers_rivals_found_af") 
 	disable_info("zat_b29_quest_af_given")
 end
+
+function zat_b215_l_z_1(actor, npc)
+	teleport_actor(actor, npc, {"zat_b215_jupiter_temp_walk","zat_b215_jupiter_temp_look"}) 
+	forward_game_time(actor, npc, {"4"}) 
+	run_postprocess(actor, npc, {"black","6127","true"}) 
+	give_info("zat_to_jup_jump_probka")
+end
+
+function zat_b215_l_z_2(actor, npc)
+	teleport_actor(actor, npc, {"zat_b215_pripyat_temp_walk","zat_b215_pripyat_temp_look"}) 
+	forward_game_time(actor, npc, {"4"}) 
+	run_postprocess(actor, npc, {"black","6127","true"}) 
+	give_info("jup_b43_pripyat_out_base_teleport")
+end
