@@ -629,8 +629,6 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 		Object->m_tGraphID = cell.game_vertex_id();
 		Object->m_fDistance = cell.distance();
 
-		m_generate_artefact_spawn_positions_worker_mutex.Enter();
-
 		xr_vector<u32> CheckNodes;
 		l_tpaStack.push_back(Object->m_tNodeID);
 		CheckNodes.push_back(Object->m_tNodeID);
@@ -681,10 +679,13 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 		);
 
 		random_shuffle(l_tpaStack.begin(), l_tpaStack.end());
+
+		m_generate_artefact_spawn_positions_worker_mutex.Enter();
 		zone->m_artefact_position_offset = m_level_points.size();
 		m_level_points.resize(zone->m_artefact_position_offset + zone->m_artefact_spawn_count);
 
 		//		Msg								("%s  %f [%f][%f][%f] : artefact spawn positions",zone->name_replace(),zone->m_fRadius,VPUSH(zone->o_Position));
+
 
 		LEVEL_POINT_STORAGE::iterator I = m_level_points.begin() + zone->m_artefact_position_offset;
 		LEVEL_POINT_STORAGE::iterator E = m_level_points.end();
