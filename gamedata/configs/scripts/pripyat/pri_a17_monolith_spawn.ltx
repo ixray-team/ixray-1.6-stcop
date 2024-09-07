@@ -2,7 +2,7 @@
 active = sr_idle@recon_on_position
 
 [sr_idle@recon_on_position]
-on_info = {+pri_a17_teleport_military_recon} sr_idle@monolith_patrol %=set_counter(pri_a17_monolith_death:0) =create_squad(pri_a17_mon_patrol:pri_a17) =create_squad(pri_a17_mon_ambush_1:pri_a17) =create_squad(pri_a17_mon_ambush_2:pri_a17) =set_counter(pri_a17_monolith_amb_death:0)%
+on_info = {+pri_a17_teleport_military_recon} sr_idle@monolith_patrol %=pri_a17_m_s_1%
 
 [sr_idle@monolith_patrol]
 on_info = {=counter_equal(pri_a17_monolith_death:3)} sr_idle@patrol_dead %+pri_a17_patrol_dead%

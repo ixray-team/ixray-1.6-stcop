@@ -2543,3 +2543,15 @@ end
 function pri_a18_cam_r_1(actor, npc)
 	return not has_alife_info("pri_a18_actor_enemy") and is_squad_enemy_to_actor(actor, npc, {"pri_a16_sokolov_squad","pri_a16_vano_squad","pri_a22_military_merkulov_squad","pri_a22_military_skelja_squad"})
 end
+
+function pri_b35_sr_c_1(actor, npc)
+	return has_alife_info("pri_b35_attack_started") and not has_alife_info("pri_b35_envoy_escape") and not has_alife_info("pri_b35_envoy_out") and squad_exist(actor, npc, {"pri_b35_envoy_squad"}) and not actor_in_zone(actor, npc, {"pri_b35_sr_actor_position"})
+end
+
+function pri_b35_sr_c_2(actor, npc)
+	return has_alife_info("pri_b35_attack_started") and not has_alife_info("pri_b35_merc_leader_escape") and not has_alife_info("pri_b35_merc_leader_out") and squad_exist(actor, npc, {"pri_b35_mercs_squad"}) and not actor_in_zone(actor, npc, {"pri_b35_sr_actor_position"})
+end
+
+function pri_a16_k_s_1(actor, npc)
+	return has_alife_info("zat_a23_actor_has_gauss_rifle_documentation") and has_alife_info("pri_a20_talk_with_colonel_complete") and not has_alife_info("pri_a21_colonel_lets_talk") and not has_alife_info("pri_a21_give_task_no_base")
+end

@@ -3,7 +3,7 @@ active = sr_idle@give_task
 
 [sr_idle@give_task]
 on_info = {+pri_b305_fifth_cam_end} sr_idle@start_surge %=give_task(pri_a28_evacuation) =set_counter(pri_a28_friendly_hit:0) =set_counter(pri_a28_heli_mono_cnt:12)%
-on_info2 = {+pri_a28_evacuation_start -pri_b305_fifth_cam_end} sr_idle@clear_smart %+pri_b305_fifth_cam_end +pri_a25_rfi_source_eliminated +pri_a16_wait_for_stalkers =set_counter(pri_a28_friendly_hit:0) =set_counter(pri_a28_heli_mono_cnt:12)%
+on_info2 = {+pri_a28_evacuation_start -pri_b305_fifth_cam_end} sr_idle@clear_smart %=pri_a26_sr_c_1%
 
 [sr_idle@start_surge]
 on_info = {!surge_started} sr_idle@stop_surge %=set_surge_mess_and_task(empty:empty) =start_surge%, sr_idle@stop_surge %=set_surge_mess_and_task(empty:empty)%
@@ -19,7 +19,7 @@ on_info2 = {+pri_a28_update_task_cover_strelok} %=stop_surge%
 on_info = sr_idle@add_squad %=clear_smart_terrain(pri_a16)%
 
 [sr_idle@add_squad]
-on_info = sr_idle@add_strong_parts %=create_squad(pri_a16_military_squad_strong:pri_a16) +pri_a28_strelok_alive +pri_a28_tarasov_alive +pri_a28_valentyr_alive +pri_a28_podorojniy_alive +pri_a28_sokolov_alive% 
+on_info = sr_idle@add_strong_parts %=pri_a26_sr_c_3% 
 
 [sr_idle@add_strong_parts]
 on_info = {+pri_a28_tarasov_alive} %-pri_a28_tarasov_alive =create_squad_member(pri_a17_military_captain_tarasov_strong:pri_a16_military_squad)%
@@ -33,7 +33,7 @@ on_info6 = {=is_alive(pri_b305_strelok)} sr_idle@give_task
 
 ;main theme again
 [sr_idle@base_zombied_add]
-on_info = sr_idle@school_snork_spawn_start %=create_squad(pri_a28_base_zombied:pri_a28_base) =create_squad(pri_a28_base_zombied_2:pri_a28_base:pri_a16) =create_squad(pri_a28_shop_zombied:pri_a28_shop) =create_squad(pri_a28_shop_zombied_2:pri_a28_shop) =create_squad(pri_a28_shop_zombied_3:pri_a28_shop) =create_squad(pri_a28_arch_zombied:pri_a28_arch)%
+on_info = sr_idle@school_snork_spawn_start %=pri_a26_sr_c_2%
 
 [sr_idle@school_snork_spawn_start]
 on_info = sr_idle@add_snorks %=clear_smart_terrain(pri_b301)%

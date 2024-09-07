@@ -2,14 +2,14 @@
 active = sr_idle@start 
 
 [sr_idle@start]
-on_info  = {+pri_a25_rfi_source_eliminated -pri_a28_evacuation_start} sr_idle@management %=run_postprocess(fade_in) =spawn_object(pri_b305_signal_man:pri_b305_signal_temp_walk) =create_squad(pri_b305_dogs_squad:pri_b305_dogs)%
+on_info  = {+pri_a25_rfi_source_eliminated -pri_a28_evacuation_start} sr_idle@management %=pri_b305_l_1%
 
 [sr_idle@management]
 on_info = %=run_postprocess(black:5612:true)%
 on_info2 = {=squad_exist(pri_a16_vano_squad) -pri_a16_vano_was_alive_when_removed} %=remove_squad(pri_a16_vano_squad) +pri_a16_vano_was_alive_when_removed%
 on_info3 = {=story_object_exist(pri_a17_military_sergeant_morozov) -pri_b305_kill_morozov} %+pri_b305_kill_morozov =destroy_object(story:pri_a17_military_sergeant_morozov)%
 on_game_timer = 20 | {=squad_exist(pri_a25_base_army_medic)} %=remove_squad(pri_a25_base_army_medic) +pri_b305_medic_home +pri_b305_medic_squad_removed%
-on_info4 = {!squad_exist(pri_a25_base_army_medic)} sr_idle@actor_spawn %=create_squad(pri_a25_base_army_medic:pri_a16) =teleport_actor(pri_a16_pri_b305_kirillov_walk:pri_a28_cutscene_actor_base_walk) +pri_b305_1_cam_actor =create_cutscene_actor_with_weapon(pri_b305_actor_visual:pri_a16_pri_b305_actor_walk)%
+on_info4 = {!squad_exist(pri_a25_base_army_medic)} sr_idle@actor_spawn %=pri_b305_l_2%
 
 [sr_idle@actor_spawn]
 on_info1 = {+pri_b305_1_cam_actor} sr_idle@cam1_timer %=disable_ui%
@@ -36,7 +36,7 @@ on_info = {-save_pri_a25_freed_medic} %+save_pri_a25_freed_medic =scenario_autos
 on_info2 = {+save_pri_a25_freed_medic} sr_idle@second_cam
 
 [sr_idle@second_cam]
-on_actor_inside = sr_idle@actor_spawn %=run_postprocess(fade_in) +pri_b305_2_cam_actor -pri_b305_1_cam_actor =create_cutscene_actor_with_weapon(pri_b305_actor_visual_2:pri_a28_cutscene_actor_base_walk)%
+on_actor_inside = sr_idle@actor_spawn %=pri_b305_l_1%
 
 [sr_cutscene@cam2_p1]
 point = pri_a28_cutscene_actor_base_walk
@@ -49,7 +49,7 @@ on_info2 = {+pri_b305_actor_check_signal_done_end} %=stop_sr_cutscene +pri_b305_
 on_signal = cameff_end | sr_idle@keeper_of_secrets_archievement %+pri_b305_second_cam_end =give_task(pri_b305_check_unknown_signal)%
 
 ;*************************************************************************************************************
-; Логика бонуса за ачивку "Хранитель тайн"
+; пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ"
 ;*************************************************************************************************************
 [sr_idle@keeper_of_secrets_archievement]
 on_info = {+keeper_of_secrets_achievement_gained} sr_idle@strelok_regeneration_timer

@@ -4810,3 +4810,130 @@ function pri_a18_cam_r_3(actor, npc)
 	give_info("pri_a18_task_end") 
 	run_postprocess(actor, npc, {"black","2057","true"})
 end
+
+function pri_a25_h_f_b_1(actor, npc)
+	hit_obj(actor, npc, {"pri_a25_hospital_fense_blocker_1_story_id","link","10","10","pri_a25_smart_terrain_pri_a25_antenna_blow_up_particle_point"}) 
+	hit_obj(actor, npc, {"pri_a25_hospital_fense_blocker_2_story_id","link","10","10","pri_a25_smart_terrain_pri_a25_antenna_blow_up_particle_point"})
+end
+
+function pri_b306_sr_c_1(actor, npc)
+	spawn_corpse(actor, npc, {"pri_b306_envoy","pri_b306_spawn_envoy","0"}) 
+	turn_off(actor, npc, {"pri_b306_lamp_1","pri_b306_lamp_2","pri_b306_lamp_3","pri_b306_lamp_4","pri_b306_lamp_5","pri_b306_lamp_6","pri_b306_lamp_7","pri_b306_lamp_8","pri_b306_lamp_9"})
+end
+
+function pri_b306_sr_c_2(actor, npc)
+	turn_on(actor, npc, {"pri_b306_lamp_1","pri_b306_lamp_2","pri_b306_lamp_3"}) 
+	anim_obj_forward(actor, npc, {"pri_b306_door","pri_b306_door_0000","pri_b306_door_0001","pri_b306_door_0002"})
+end
+
+function pri_b304_a_r_a_1(actor, npc)
+	create_squad(actor, npc, {"pri_b304_tushkano_7","pri_b304_monsters_smart_terrain"}) 
+	create_squad(actor, npc, {"pri_b304_tushkano_8","pri_b304_monsters_smart_terrain"})
+	give_info("pri_b304_tushkano_underground_attack")
+end
+
+function pri_a17_m_s_1(actor, npc)
+	set_counter(actor, npc, {"pri_a17_monolith_death","0"}) 
+	create_squad(actor, npc, {"pri_a17_mon_patrol","pri_a17"}) 
+	create_squad(actor, npc, {"pri_a17_mon_ambush_1","pri_a17"}) 
+	create_squad(actor, npc, {"pri_a17_mon_ambush_2","pri_a17"}) 
+	set_counter(actor, npc, {"pri_a17_monolith_amb_death","0"})
+end
+
+function pri_a22_g_t_k_1(actor, npc)
+	give_info("pri_a25_task_start") 
+	teleport_squad(actor, npc, {"pri_a25_base_army_medic","pri_a25_smart_terrain_medic_walk"}) 
+	remove_squad(actor, npc, {"pri_a22_military_yarmoshuk_squad"})
+end
+
+function pri_a22_g_t_k_2(actor, npc)
+	run_postprocess(actor, npc, {"black","8911","true"}) 
+	create_cutscene_actor_with_weapon(actor, npc, {"pri_a22_cutscene_actor_give_task","pri_a16_a22_cutscene_actor_walk","0","90"}) 
+	teleport_actor(actor, npc, {"pri_a16_yarmoshuk_look","pri_a16_yarmoshuk_look"})
+end
+
+function pri_a22_g_t_k_3(actor, npc)
+	run_postprocess(actor, npc, {"black","2021","true"}) 
+	teleport_actor(actor, npc, {"pri_a16_a22_cutscene_actor_walk","pri_a16_a22_kovalski_to_actor_walk"}) 
+	give_info("pri_a22_cutscene_actor_give_task_destroy")
+end
+
+function pri_a22_g_t_k_4(actor, npc)
+	stop_postprocess(actor, npc, {"2021"}) 
+	stop_postprocess(actor, npc, {"2022"}) 
+	enable_ui(actor, npc)
+	create_squad(actor, npc, {"pri_a22_military_yarmoshuk_squad","pri_a22_smart_terrain"})
+end
+
+function pri_b35_sr_c_1(actor, npc)
+	give_info("pri_a17_military_base_commander_task_dialog_end") 
+	give_info("zat_a23_actor_has_gauss_rifle_documentation") 
+	give_info("pri_a17_actor_has_gauss_rifle") 
+	give_info("pri_b306_attack_end")
+end
+
+function pri_b35_sr_c_2(actor, npc)
+	remove_squad(actor, npc, {"pri_b35_military_squad"}) 
+	teleport_actor(actor, npc, {"pri_b35_actor_teleport_walk","pri_b35_actor_teleport_look"}) 
+	forward_game_time(actor, npc, {"0","15"})
+end
+
+function pri_b35_sr_c_3(actor, npc)
+	give_info("pri_b35_merc_leader_escape") 
+	remove_squad(actor, npc, {"pri_b35_mercs_squad"}) 
+	create_squad(actor, npc, {"merc_sim_squad_advanced","pri_b307"}) 
+	create_squad(actor, npc, {"merc_sim_squad_advanced","pri_b302"})
+end
+
+function pri_b305_l_1(actor, npc)
+	run_postprocess(actor, npc, {"fade_in"}) 
+	spawn_object(actor, npc, {"pri_b305_signal_man","pri_b305_signal_temp_walk"}) 
+	create_squad(actor, npc, {"pri_b305_dogs_squad","pri_b305_dogs"})
+end
+
+function pri_b305_l_2(actor, npc)
+	create_squad(actor, npc, {"pri_a25_base_army_medic","pri_a16"}) 
+	teleport_actor(actor, npc, {"pri_a16_pri_b305_kirillov_walk","pri_a28_cutscene_actor_base_walk"}) 
+	give_info("pri_b305_1_cam_actor") 
+	create_cutscene_actor_with_weapon(actor, npc, {"pri_b305_actor_visual","pri_a16_pri_b305_actor_walk"})
+end
+
+function pri_b305_l_1(actor, npc)
+	run_postprocess(actor, npc, {"fade_in"}) 
+	give_info("pri_b305_2_cam_actor") 
+	disable_info("pri_b305_1_cam_actor")
+	create_cutscene_actor_with_weapon(actor, npc, {"pri_b305_actor_visual_2","pri_a28_cutscene_actor_base_walk"})
+end
+
+function pri_a26_sr_c_1(actor, npc)
+	give_info("pri_b305_fifth_cam_end") 
+	give_info("pri_a25_rfi_source_eliminated") 
+	give_info("pri_a16_wait_for_stalkers") 
+	set_counter(actor, npc, {"pri_a28_friendly_hit","0"}) 
+	set_counter(actor, npc, {"pri_a28_heli_mono_cnt","12"})
+end
+
+function pri_a26_sr_c_2(actor, npc)
+	create_squad(actor, npc, {"pri_a28_base_zombied","pri_a28_base"}) 
+	create_squad(actor, npc, {"pri_a28_base_zombied_2","pri_a28_base","pri_a16"}) 
+	create_squad(actor, npc, {"pri_a28_shop_zombied","pri_a28_shop"}) 
+	create_squad(actor, npc, {"pri_a28_shop_zombied_2","pri_a28_shop"}) 
+	create_squad(actor, npc, {"pri_a28_shop_zombied_3","pri_a28_shop"}) 
+	create_squad(actor, npc, {"pri_a28_arch_zombied","pri_a28_arch"})
+end
+
+function pri_a26_sr_c_3(actor, npc)
+	create_squad(actor, npc, {"pri_a16_military_squad_strong","pri_a16"}) 
+	give_info("pri_a28_strelok_alive") 
+	give_info("pri_a28_tarasov_alive") 
+	give_info("pri_a28_valentyr_alive") 
+	give_info("pri_a28_podorojniy_alive") 
+	give_info("pri_a28_sokolov_alive")
+end
+
+function pri_a15_sr_e_1(actor, npc)
+	enable_ui(actor, npc, {"true"}) 
+	stop_postprocess(actor, npc, {"3009"}) 
+	give_info("pri_a16_kovalski_start") 
+	spawn_corpse(actor, npc, {"sim_default_monolith_2","pri_a15_monolith_dead_stand","0"})
+end

@@ -2,7 +2,7 @@
 active = sr_idle@give_task_cutscene
 
 [sr_idle@give_task_cutscene]
-on_info = {+pri_a18_found_antenna +pri_a21_sentry_task_done +pri_a19_lab_x8_investigated +pri_b306_attack_end !black_screen} sr_idle@remove_squads %+pri_a25_task_start =teleport_squad(pri_a25_base_army_medic:pri_a25_smart_terrain_medic_walk) =remove_squad(pri_a22_military_yarmoshuk_squad)%
+on_info = {+pri_a18_found_antenna +pri_a21_sentry_task_done +pri_a19_lab_x8_investigated +pri_b306_attack_end !black_screen} sr_idle@remove_squads %=pri_a22_g_t_k_1%
 
 [sr_idle@remove_squads]
 on_info = {=squad_exist(pri_a22_military_skelja_squad)} %=remove_squad(pri_a22_military_skelja_squad) +pri_a22_skelya% 
@@ -17,7 +17,7 @@ on_signal = sound_end | sr_idle@kovalski_office_meet %=give_task(pri_a22_talk_wi
 on_info = {=actor_in_zone(pri_a21_meet_kovalski_restrictor)} sr_idle@kovalski_give_task_start %+pri_a22_kovalski_give_task_start +pri_a22_talk_with_kovalski_task_compete =disable_ui =run_postprocess(fade_in:8910)%
 
 [sr_idle@kovalski_give_task_start]
-on_game_timer = 10 | sr_idle@wait_cutscene %=run_postprocess(black:8911:true) =create_cutscene_actor_with_weapon(pri_a22_cutscene_actor_give_task:pri_a16_a22_cutscene_actor_walk:0:90) =teleport_actor(pri_a16_yarmoshuk_look:pri_a16_yarmoshuk_look)%
+on_game_timer = 10 | sr_idle@wait_cutscene %=pri_a22_g_t_k_2%
 
 [sr_idle@wait_cutscene]
 on_game_timer = 20 | %+pri_a22_close_kovalski_office_door%
@@ -29,13 +29,13 @@ global_cameffect = true
 point = pri_a16_yarmoshuk_look
 look = pri_a16_yarmoshuk_look
 cam_effector = scenario_cam\pripyat\pri_a22_give_task
-on_signal = cameff_end | sr_idle@cutscene_end_postprocess %=run_postprocess(black:2021:true) =teleport_actor(pri_a16_a22_cutscene_actor_walk:pri_a16_a22_kovalski_to_actor_walk) +pri_a22_cutscene_actor_give_task_destroy%
+on_signal = cameff_end | sr_idle@cutscene_end_postprocess %=pri_a22_g_t_k_3%
 on_info = %=stop_postprocess(8910) =stop_postprocess(8911)%
 on_info2 = {+pri_a22_colonel_give_task -pri_a22_fade_in} %=run_postprocess(fade_in:2022) +pri_a22_fade_in%
 on_info3 = {+pri_a22_stop_cam} %=stop_sr_cutscene%
 
 [sr_idle@cutscene_end_postprocess]
-on_game_timer = 10 | sr_idle@create_squads %=stop_postprocess(2021) =stop_postprocess(2022) =enable_ui =create_squad(pri_a22_military_yarmoshuk_squad:pri_a22_smart_terrain)%
+on_game_timer = 10 | sr_idle@create_squads %=pri_a22_g_t_k_4%
 
 [sr_idle@create_squads]
 on_info = {+pri_a22_skelya -pri_a18_actor_enemy} %=create_squad(pri_a22_military_skelja_squad:pri_a22_smart_terrain)%
