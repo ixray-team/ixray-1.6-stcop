@@ -10,7 +10,6 @@ void CRenderTarget::accum_reflected		(light* L)
 	ref_shader		shader		= s_accum_reflected;
 
 	BOOL	bIntersect			= FALSE; //enable_scissor(L);
-	L->xform_calc				();
 	RCache.set_xform_world		(L->m_xform			);
 	RCache.set_xform_view		(Device.mView		);
 	RCache.set_xform_project	(Device.mProject	);
