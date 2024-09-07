@@ -23,9 +23,9 @@ on_info6 = {+jup_a6_duty_leader_bunker_guards_work -jup_a6_duty_leader_bunker_gu
 on_info7 = {+zat_b103_lost_merc_leader_bunker_guards_work -zat_b103_lost_merc_leader_bunker_guards_spawned} %+zat_b103_lost_merc_leader_bunker_guards_spawned =create_squad(jup_b47_bunker_guard_lost_merc:jup_b41)%
 on_info8 = {+zat_b7_stalker_squad_leader_bunker_guards_work -zat_b7_stalker_squad_leader_bunker_guards_spawned} %+zat_b7_stalker_squad_leader_bunker_guards_spawned =create_squad(jup_b47_bunker_guard_stalker_leader:jup_b41)%
 
-on_info9 = {+jup_b47_merc_leader_regret =dist_to_story_obj_ge(jup_b47_merc_guard_squad:180) =squad_exist(jup_b47_merc_guard_squad) -jup_b47_attack_squad_removed} %+jup_b47_attack_squad_removed =remove_squad(jup_b47_merc_guard_squad)%
+on_info9 = {=jup_b47_l_1} %+jup_b47_attack_squad_removed =remove_squad(jup_b47_merc_guard_squad)%
 
-on_info10 = {+jup_b47_actor_pick_docs -jup_b47_no_bunker_guard =squad_exist(jup_b47_merc_guard_squad)} sr_idle@jup_b47_say_to_actor %=teleport_squad(jup_b47_merc_guard_squad:jup_b47_merc_guard_attak_spown) =create_squad_member(jup_b47_merc_06:jup_b47_merc_guard_squad:jup_b47_merc_guard_attak_spown) =create_squad_member(jup_b47_merc_07:jup_b47_merc_guard_squad:jup_b47_merc_guard_attak_spown) =set_squad_enemy_to_actor(jup_b47_merc_guard_squad)%
+on_info10 = {+jup_b47_actor_pick_docs -jup_b47_no_bunker_guard =squad_exist(jup_b47_merc_guard_squad)} sr_idle@jup_b47_say_to_actor %=jup_b47_l_1%
 
 on_info11 = {!squad_exist(jup_b47_merc_guard_squad) +jup_b47_products_info_complite +jup_b47_bunker_guards_complite} sr_idle@jup_b47_end
 

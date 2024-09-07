@@ -2259,3 +2259,95 @@ end
 function zat_b29_sr_t_20(actor, npc)
 	return squad_in_zone(actor, npc, {"zat_b29_stalker_rival_2_squad","zat_b29_sr_5"}) and not is_squad_enemy_to_actor(actor, npc, {"zat_b29_stalker_rival_2_squad"}) and not distance_to_obj_le(actor, npc, {"zat_b29_stalker_rival_2","30"}) and zat_b29_anomaly_has_af(actor, npc, {"zaton_b56_anomal_zone"})
 end
+
+function jup_a12_s_d_1(actor, npc)
+	return not has_alife_info("jup_a12_stalker_assaulter_told_story") and has_alife_info("jup_b217_welcome_tech_talked") and actor_in_zone(actor, npc, {"jup_a12_sr_stalkers_argue"}) and has_alife_info("jup_a12_stalker_assaulter_argued")
+end
+
+function jup_a9_l_1(actor, npc)
+	return has_alife_info("zat_b107_evacuation_info_full") and has_alife_info("jup_a9_way_info") and not has_alife_info("jup_a9_conservation_info") and not has_alife_info("jup_a9_power_info") and not has_alife_info("jup_a9_way_to_pripyat_gas_info_started") and not has_alife_info("jup_a9_way_to_pripyat_power_info_started")
+end
+
+function jup_a9_l_2(actor, npc)
+	return has_alife_info("zat_b107_evacuation_info_full") and not has_alife_info("jup_a9_way_info") and has_alife_info("jup_a9_conservation_info") and not has_alife_info("jup_a9_power_info") and not has_alife_info("jup_a9_way_to_pripyat_way_info_started") and not has_alife_info("jup_a9_way_to_pripyat_power_info_started")
+end
+
+function jup_a9_l_3(actor, npc)
+	return has_alife_info("zat_b107_evacuation_info_full") and not has_alife_info("jup_a9_way_info") and not has_alife_info("jup_a9_conservation_info") and has_alife_info("jup_a9_power_info") and not has_alife_info("jup_a9_way_to_pripyat_way_info_started") and not has_alife_info("jup_a9_way_to_pripyat_gas_info_started")
+end
+
+function jup_a6_h_c_1(actor, npc)
+	return jup_b202_actor_treasure_not_in_steal(actor, npc) and distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","100"}) and counter_greater(actor, npc, {"jup_a6_actor_help_duty","1"}) and not has_alife_info("jup_a6_duty_leader_give_first_reward")
+end
+
+function jup_a6_h_c_2(actor, npc)
+	return jup_b202_actor_treasure_not_in_steal(actor, npc) and distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","100"}) and counter_greater(actor, npc, {"jup_a6_actor_help_freedom", "1"}) and not has_alife_info("jup_a6_freedom_leader_give_first_reward")
+end
+
+function jup_a6_h_c_3(actor, npc)
+	return jup_b202_actor_treasure_not_in_steal(actor, npc) and distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","100"}) and counter_greater(actor, npc, {"jup_a6_actor_help_duty","3"}) and not has_alife_info("jup_a6_duty_leader_give_second_reward")
+end
+
+function jup_a6_h_c_4(actor, npc)
+	return jup_b202_actor_treasure_not_in_steal(actor, npc) and distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","100"}) and counter_greater(actor, npc, {"jup_a6_actor_help_freedom","3"}) and not has_alife_info("jup_a6_freedom_leader_give_second_reward")
+end
+
+function jup_a6_h_c_5(actor, npc)
+	return has_alife_info("jup_b46_counted") and has_alife_info("zat_b106_counted") and has_alife_info("jup_b4_counted") and has_alife_info("jup_b207_counted") and distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","200"}) and jup_b202_actor_treasure_not_in_steal(actor, npc)
+end
+
+function jup_b6_c_1(actor, npc)
+	return has_alife_info("jup_b6_anom_2_count_1_end") and has_alife_info("jup_b6_anom_2_count_2_end") and has_alife_info("jup_b6_anom_2_count_3_end") and has_alife_info("jup_b6_anom_2_count_4_end") and not has_alife_info("jup_b6_anom_2_reward_given")
+end
+
+function jup_b6_c_2(actor, npc)
+	return has_alife_info("jup_b6_anom_1_count_1_end") and has_alife_info("jup_b6_anom_1_count_2_end") and has_alife_info("jup_b6_anom_1_count_3_end") and has_alife_info("jup_b6_anom_1_count_4_end") and not has_alife_info("jup_b6_anom_1_reward_given")
+end
+
+function jup_b6_t_1(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_start") and has_alife_info("jup_b6_st_mission") and squad_in_zone(actor, npc, {"jup_b6_stalker_freedom_squad","jup_b6_st_return_controller"})
+end
+
+function jup_b6_t_2(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_start") and has_alife_info("jup_b6_st_mission") and squad_in_zone(actor, npc, {"jup_b6_stalker_exprisoner_squad","jup_b6_st_return_controller"})
+end
+
+function jup_b6_t_3(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_start") and has_alife_info("jup_b6_st_mission") and squad_in_zone(actor, npc, {"jup_b6_stalker_duty_squad","jup_b6_st_return_controller"})
+end
+
+function jup_b6_t_4(actor, npc)
+	return has_alife_info("jup_b6_two_anomaly_learned") and has_alife_info("jup_b6_start") and has_alife_info("jup_b6_st_mission") and squad_in_zone(actor, npc, {"jup_b6_stalker_gonta_squad","jup_b6_st_return_controller"})
+end
+
+function jup_b202_a_t_1(actor, npc)
+	return distance_to_obj_ge(actor, npc, {"jup_b202_actor_treasure","200"}) and distance_to_obj_ge(actor, npc, {"jup_b202_snag_treasure","200"}) and not has_alife_info("jup_b202_inventory_box_empty") and not has_alife_info("jup_b52_actor_items_can_be_stolen") and has_alife_info("zat_b52_nimble_clear")
+end
+
+function jup_b202_a_t_2(actor, npc)
+	return not has_alife_info("jup_b212_jupiter_chimera_hunt_mentioned") and not has_alife_info("jup_b212_jupiter_chimera_hunt_told") and has_alife_info("jup_b220_trapper_about_retire_told") and has_alife_info("jup_b208_burers_hunt_done") and not has_alife_info("jup_b212_trapper_found_chimera_play") and dist_to_actor_ge(actor, npc, {"100"})
+end
+
+function jup_b207_sr_c_1(actor, npc)
+	return has_alife_info("jup_b207_attack_started") and has_alife_info("jup_b207_freedom_knows_about_depot") and not squad_exist(actor, npc, {"jup_b207_freedom_depot"}) and not squad_exist(actor, npc, {"jup_b207_freedom_base"})
+end
+
+function jup_b47_l_1(actor, npc)
+	return has_alife_info("jup_b47_merc_leader_regret") and dist_to_story_obj_ge(actor, npc, {"jup_b47_merc_guard_squad","180"}) and squad_exist(actor, npc, {"jup_b47_merc_guard_squad"}) and not has_alife_info("jup_b47_attack_squad_removed")
+end
+
+function jup_a12_s_a_1(actor, npc)
+	return has_alife_info("jup_b200_tech_materials_has") and not actor_has_item(actor, npc, {"jup_b200_tech_materials_wire"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_acetone"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_textolite"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_transistor"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_capacitor"})
+end
+
+function jup_a12_s_a_2(actor, npc)
+	return has_alife_info("jup_b200_tech_materials_has") and not actor_has_item(actor, npc, {"jup_b200_tech_materials_wire"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_acetone"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_textolite"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_transistor"}) and not actor_has_item(actor, npc, {"jup_b200_tech_materials_capacitor"})
+end
+
+function jup_b19_f_y_k_1(actor, npc)
+	return not squad_exist(actor, npc, {"jup_b19_merc_squad"}) and has_alife_info("jup_b19_actor_damaged_zombied") and not squad_exist(actor, npc, {"jup_b19_kopatci_zombied_squad"}) and not has_alife_info("jup_b19_freedom_yar_explanations_done")
+end
+
+function jup_b19_f_y_k_2(actor, npc)
+	return not squad_exist(actor, npc, {"jup_b19_merc_squad"}) and has_alife_info("jup_b19_actor_damaged_zombied") and not squad_exist(actor, npc, {"jup_b19_kopatci_zombied_squad"}) and has_alife_info("jup_b19_freedom_yar_explanations_done")
+end

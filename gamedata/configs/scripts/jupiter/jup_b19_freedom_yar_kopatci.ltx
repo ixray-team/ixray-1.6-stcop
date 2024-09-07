@@ -185,8 +185,8 @@ def_state_campering = hide_na
 def_state_campering_fire = hide_sniper_fire
 combat_ignore_cond = {=check_enemy_name(jup_b19_zombied_1) -jup_b19_actor_damaged_zombied} true, {=check_enemy_name(jup_b19_zombied_2) -jup_b19_actor_damaged_zombied} true, {=check_enemy_name(sim_default) =fighting_dist_ge(30)} true
 on_info = {!squad_exist(jup_b19_merc_squad) -jup_b19_actor_damaged_zombied} walker@after_fire
-on_info2 = {!squad_exist(jup_b19_merc_squad) +jup_b19_actor_damaged_zombied !squad_exist(jup_b19_kopatci_zombied_squad) -jup_b19_freedom_yar_explanations_done} walker@after_fire
-on_info3 = {!squad_exist(jup_b19_merc_squad) +jup_b19_actor_damaged_zombied !squad_exist(jup_b19_kopatci_zombied_squad) +jup_b19_freedom_yar_explanations_done} walker@after_remark
+on_info2 = {=jup_b19_f_y_k_1} walker@after_fire
+on_info3 = {=jup_b19_f_y_k_2} walker@after_remark
 danger = danger
 attack_sound = false
 meet = meet@camper

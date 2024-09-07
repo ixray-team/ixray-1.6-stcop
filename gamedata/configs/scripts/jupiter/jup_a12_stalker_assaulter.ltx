@@ -11,9 +11,9 @@ on_signal = sound_end | {-jup_a12_stalker_diplomat_argued -jup_a12_stalker_assau
 on_info = {+jup_a12_stalker_assaulter_1_argue -jup_a12_stalker_assaulter_argued} %=play_sound(jup_a12_stalker_assaulter_1_argue)%
 on_info2 = {+jup_a12_stalker_assaulter_2_argue -jup_a12_stalker_assaulter_argued} %=play_sound(jup_a12_stalker_assaulter_2_argue)%
 on_info3 = {+jup_a12_stalker_assaulter_3_argue -jup_a12_stalker_assaulter_argued} %=play_sound(jup_a12_stalker_assaulter_3_argue)%
-on_info4 = {!actor_in_zone(jup_a12_sr_stalkers_argue)} animpoint@stand_start %-jup_a12_stalker_assaulter_argued -jup_a12_stalker_assaulter_1_argue -jup_a12_stalker_assaulter_2_argue -jup_a12_stalker_assaulter_3_argue%
+on_info4 = {!actor_in_zone(jup_a12_sr_stalkers_argue)} animpoint@stand_start %=jup_a12_s_a_1%
 on_info5 = {+jup_a12_stalker_assaulter_told_story} animpoint@stand_start
-on_info6 = {+jup_a12_stalker_diplomat_argued} animpoint@stand_start %-jup_a12_stalker_assaulter_argued -jup_a12_stalker_assaulter_1_argue -jup_a12_stalker_assaulter_2_argue -jup_a12_stalker_assaulter_3_argue%
+on_info6 = {+jup_a12_stalker_diplomat_argued} animpoint@stand_start %=jup_a12_s_a_2%
 meet = meet@stand_start_meet
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true

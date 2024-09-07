@@ -4028,3 +4028,466 @@ function zat_b215_l_z_2(actor, npc)
 	run_postprocess(actor, npc, {"black","6127","true"}) 
 	give_info("jup_b43_pripyat_out_base_teleport")
 end
+
+function jup_b205_r_l_1(actor, npc)
+	spawn_corpse(actor, npc, {"sim_default_zombied_1","jup_b205_dead_zombie_01_way"}) 
+	spawn_corpse(actor, npc, {"sim_default_zombied_1","jup_b205_smart_terrain_tushkano_evil_tushkano_look"})
+end
+
+function jup_a6_h_c_1(actor, npc)
+	set_counter(actor, npc, {"jup_a6_actor_help_stalkers","0"}) 
+	set_counter(actor, npc, {"jup_a6_actor_help_duty","0"}) 
+	set_counter(actor, npc, {"jup_a6_actor_help_freedom","0"}) 
+	give_info("jup_b4_b46_b207_b106_counters_start")
+end
+
+function jup_a6_h_c_2(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_duty","1"})  
+	inc_faction_goodwill_to_actor(actor, npc, {"dolg","500"})  
+	dec_faction_goodwill_to_actor(actor, npc, {"freedom","250"})  
+	give_info("jup_b46_counted")
+end
+
+function jup_a6_h_c_3(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_freedom","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"freedom","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"dolg","250"}) 
+	give_info("jup_b46_counted")
+end
+
+function jup_a6_h_c_4(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_duty","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"dolg","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"freedom","250"}) 
+	give_info("zat_b106_counted")
+end
+
+function jup_a6_h_c_5(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_freedom","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"freedom","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"dolg,250"}) 
+	give_info("zat_b106_counted")
+end
+
+function jup_a6_h_c_6(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_duty","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"dolg","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"freedom","250"}) 
+	give_info("jup_b4_counted")
+end
+
+function jup_a6_h_c_7(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_freedom","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"freedom","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"dolg","250"}) 
+	give_info("jup_b4_counted")
+end
+
+function jup_a6_h_c_8(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_duty","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"dolg","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"freedom","250"}) 
+	give_info("jup_b207_counted")
+end
+
+function jup_a6_h_c_9(actor, npc)
+	inc_counter(actor, npc, {"jup_a6_actor_help_freedom","1"}) 
+	inc_faction_goodwill_to_actor(actor, npc, {"freedom","500"}) 
+	dec_faction_goodwill_to_actor(actor, npc, {"dolg","250"}) 
+	give_info("jup_b207_counted")
+end
+
+function jup_a6_h_c_10(actor, npc)
+	spawn_object_in(actor, npc, {"dolg_outfit","jup_b202_actor_treasure"}) 
+	send_tip(actor, npc, {"st_duty_first_reward_news","got_duty_light_armor"}) 
+	give_info("jup_a6_duty_leader_give_first_reward")
+end
+
+function jup_a6_h_c_11(actor, npc)
+	spawn_object_in(actor, npc, {"svoboda_light_outfit","jup_b202_actor_treasure"}) 
+	send_tip(actor, npc, {"st_freedom_first_reward_news","got_freedom_light_armor"}) 
+	give_info("jup_a6_freedom_leader_give_first_reward")
+end
+
+function jup_a6_h_c_12(actor, npc)
+	spawn_object_in(actor, npc, {"dolg_heavy_outfit","jup_b202_actor_treasure"}) 
+	send_tip(actor, npc, {"st_duty_second_reward_news","got_duty_heavy_armor"}) 
+	give_info("jup_a6_duty_leader_give_second_reward")
+end
+
+function jup_a6_h_c_13(actor, npc)
+	spawn_object_in(actor, npc, {"svoboda_heavy_outfit","jup_b202_actor_treasure"}) 
+	send_tip(actor, npc, {"st_freedom_second_reward_news","got_freedom_heavy_armor"}) 
+	give_info("jup_a6_freedom_leader_give_second_reward")
+end
+
+function zat_b215_l_j_1(actor, npc)
+	run_postprocess(actor, npc, {"black","1238","true"}) 
+	disable_ui(actor, npc) 
+	teleport_actor(actor, npc, {"jup_actor_arrive_walk","jup_actor_arrive_look"}) 
+	give_info("jup_travel_made") 
+	disable_info("zat_b215_guide_to_zaton")
+end
+
+function zat_b215_l_j_2(actor, npc)
+	disable_ui(actor, npc) 
+	teleport_actor(actor, npc, {"jup_a6_actor_walk","jup_a6_actor_look"}) 
+	give_info("jup_travel_made") 
+	disable_info("zat_b215_guide_to_zaton")
+end
+
+function jup_b200_b_c_1(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	give_info("jup_b200_tech_materials_brought_counter_4")
+end
+
+function jup_b200_b_c_2(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	give_info("jup_b200_tech_materials_brought_counter_5")
+end
+
+function jup_b200_b_c_3(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	give_info("jup_b200_tech_materials_brought_counter_6")
+end
+
+function jup_b200_b_c_4(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	give_info("jup_b200_tech_materials_brought_counter_7")
+end
+
+function jup_b200_b_c_5(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	disable_info("jup_b200_tech_materials_brought_counter_7") 
+	give_info("jup_b200_tech_materials_brought_counter_8")
+end
+
+function jup_b200_b_c_6(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	disable_info("jup_b200_tech_materials_brought_counter_7") 
+	disable_info("jup_b200_tech_materials_brought_counter_8") 
+	give_info("jup_b200_tech_materials_brought_counter_9")
+end
+
+function jup_b200_b_c_7(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	give_info("jup_b200_tech_materials_brought_counter_4")
+end
+
+function jup_b200_b_c_8(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	give_info("jup_b200_tech_materials_brought_counter_5")
+end
+
+function jup_b200_b_c_9(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	give_info("jup_b200_tech_materials_brought_counter_6")
+end
+
+function jup_b200_b_c_10(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	give_info("jup_b200_tech_materials_brought_counter_7")
+end
+
+function jup_b200_b_c_11(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	disable_info("jup_b200_tech_materials_brought_counter_7") 
+	give_info("jup_b200_tech_materials_brought_counter_8")
+end
+
+function jup_b200_b_c_12(actor, npc)
+	disable_info("jup_b200_tech_materials_brought_counter_1") 
+	disable_info("jup_b200_tech_materials_brought_counter_2") 
+	disable_info("jup_b200_tech_materials_brought_counter_3") 
+	disable_info("jup_b200_tech_materials_brought_counter_4") 
+	disable_info("jup_b200_tech_materials_brought_counter_5") 
+	disable_info("jup_b200_tech_materials_brought_counter_6") 
+	disable_info("jup_b200_tech_materials_brought_counter_7") 
+	disable_info("jup_b200_tech_materials_brought_counter_8") 
+	give_info("jup_b200_tech_materials_brought_counter_9")
+end
+
+function jup_b9_m_l_1(actor, npc)
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_1"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_2"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_3"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_4"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_5"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_6"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_7"}) 
+	spawn_object(actor, npc, {"boar_jup_b9","jup_b9_mob_spawn_8"}) 
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_9"})
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_10"}) 
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_11"}) 
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_12"}) 
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_13"}) 
+	spawn_object(actor, npc, {"flesh_jup_b9","jup_b9_mob_spawn_14"})
+end
+
+function jup_b6_c_1(actor, npc)
+	set_counter(actor, npc, {"jup_b6_anom_1_count_1","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_1_count_2","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_1_count_3","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_1_count_4","0"})
+	set_counter(actor, npc, {"jup_b6_anom_2_count_1","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_2_count_2","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_2_count_3","0"}) 
+	set_counter(actor, npc, {"jup_b6_anom_2_count_4","0"})
+end
+
+function jup_b6_t_1(actor, npc)
+	run_postprocess(actor, npc, {"fade_in","8610"}) 
+	disable_ui(actor, npc) 
+	give_info("jup_b6_st_mission") 
+	give_info("jup_b6_to_anom_1_teleported") 
+	give_info("jup_b6_anom_1") 
+	disable_info("jup_b6_anom_2") 
+	disable_info("jup_b6_travel")
+end
+
+function jup_b6_t_2(actor, npc)
+	run_postprocess(actor, npc, {"fade_in","8611"}) 
+	disable_ui(actor, npc) 
+	give_info("jup_b6_st_mission") 
+	give_info("jup_b6_to_anom_2_teleported") 
+	give_info("jup_b6_anom_2") 
+	disable_info("jup_b6_anom_1") 
+	disable_info("jup_b6_travel")
+end
+
+function jup_b6_t_3(actor, npc)
+	teleport_squad(actor, npc, {"jup_b6_swamp_hunters","jup_b211_mob_home_hunter_prime"}) 
+	teleport_actor(actor, npc, {"jup_b211_actor_stay","jup_b211_actor_b6_look"}) 
+	give_info("jup_b6_teleport_step_1")
+end
+
+function jup_b6_t_4(actor, npc)
+	teleport_actor(actor, npc, {"jup_b1_actor_telep_stay_2","jup_b1_actor_telep_look_2"}) 
+	teleport_squad(actor, npc, {"jup_b6_stalker_exprisoner_squad","jup_b41_stalker_spawn"})
+end
+
+function jup_b6_t_5(actor, npc)
+	teleport_actor(actor, npc, {"jup_b1_actor_telep_stay_2","jup_b1_actor_telep_look_2"}) 
+	teleport_squad(actor, npc, {"jup_b6_stalker_gonta_squad","jup_b41_stalker_spawn"})
+end
+
+function jup_b6_t_6(actor, npc)
+	teleport_actor(actor, npc, {"jup_b1_actor_telep_stay_2", "jup_b1_actor_telep_look_2"}) 
+	teleport_squad(actor, npc, {"jup_b6_stalker_duty_squad", "jup_b41_stalker_spawn"})
+end
+
+function jup_b6_t_7(actor, npc)
+	teleport_actor(actor, npc, {"jup_b1_actor_telep_stay_2","jup_b1_actor_telep_look_2"}) 
+	teleport_squad(actor, npc, {"jup_b6_stalker_freedom_squad","jup_b41_stalker_spawn"})
+end
+
+function jup_b220_t_1(actor, npc)
+	give_info("jup_b4_monolith_squad_in_duty") 
+	remove_squad(actor, npc, {"jup_b4_squad"}) 
+	create_squad(actor, npc, {"jup_b4_squad_duty","jup_b4"}) 
+	create_squad(actor, npc, {"jup_b4_squad_duty_leader","jup_b4"}) 
+	give_info("jup_b4_duty_go_home_alone")
+end
+
+function jup_b220_t_2(actor, npc)
+	give_info("jup_b4_monolith_squad_in_freedom") 
+	remove_squad(actor, npc, {"jup_b4_squad"}) 
+	create_squad(actor, npc, {"jup_b4_squad_freedom","jup_b4"}) 
+	create_squad(actor, npc, {"jup_b4_squad_freedom_leader","jup_b4"}) 
+	give_info("jup_b4_freedom_go_home_alone")
+end
+
+function jup_b4_m_l_1(actor, npc)
+	give_info("jup_b4_monolith_squad_in_duty") 
+	remove_squad(actor, npc, {"jup_b4_squad"}) 
+	create_squad(actor, npc, {"jup_b4_squad_duty","jup_b4"}) 
+	create_squad(actor, npc, {"jup_b4_squad_duty_leader","jup_b4"})
+	enable_ui(actor, npc)
+end
+
+function jup_b4_m_l_2(actor, npc)
+	give_info("jup_b4_monolith_squad_in_freedom") 
+	remove_squad(actor, npc, {"jup_b4_squad"}) 
+	create_squad(actor, npc, {"jup_b4_squad_freedom","jup_b4"}) 
+	create_squad(actor, npc, {"jup_b4_squad_freedom_leader","jup_b4"}) 
+	enable_ui(actor, npc)
+end
+
+function jup_b4_m_l_3(actor, npc)
+	give_info("jup_b4_monolith_squad_on_base") 
+	forward_game_time(actor, npc, {"2"}) 
+	teleport_actor(actor, npc, {"jup_actor_arrive_walk","jup_actor_arrive_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_squad_duty","jup_a6_actor_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_squad_duty_leader","jup_a6_actor_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_duty_squad","jup_a6_actor_look"})
+end
+
+function jup_b4_m_l_4(actor, npc)
+	give_info("jup_b4_monolith_squad_on_base") 
+	forward_game_time(actor, npc, {"2"}) 
+	teleport_actor(actor, npc, {"jup_actor_arrive_walk","jup_actor_arrive_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_squad_freedom","jup_a6_actor_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_squad_freedom_leader","jup_a6_actor_look"}) 
+	teleport_squad(actor, npc, {"jup_b4_freedom_squad","jup_a6_actor_look"})
+end
+
+function jup_b4_m_l_5(actor, npc)
+	forward_game_time(actor, npc, {"2"}) 
+	teleport_actor(actor, npc, {"jup_b4_teleport_actor_walk","jup_b4_teleport_actor_look"}) 
+	create_squad(actor, npc, {"jup_b4_freedom_squad","jup_b4"}) 
+	give_info("jup_b4_teleport_to_monolit") 
+	enable_ui(actor, npc)
+end
+
+function jup_b4_m_l_6(actor, npc)
+	forward_game_time(actor, npc, {"2"}) 
+	teleport_actor(actor, npc, {"jup_b4_teleport_actor_walk","jup_b4_teleport_actor_look"}) 
+	create_squad(actor, npc, {"jup_b4_duty_squad","jup_b4"})
+	give_info("jup_b4_teleport_to_monolit") 
+	enable_ui(actpr, npc)
+end
+
+function jup_b207_sr_c_1(actor, npc)
+	create_squad_member(actor, npc, {"sim_default_duty_1","jup_b207_duty_base","jup_a6_spawn_point"}) 
+	create_squad_member(actor, npc, {"sim_default_duty_1","jup_b207_duty_base","jup_a6_spawn_point"}) 
+	create_squad(actor, npc, {"jup_b207_freedom_depot","jup_b207"})
+end
+
+function jup_b207_sr_c_2(actor, npc)
+	set_squad_enemy_to_actor(actor, npc, {"jup_b207_zat_b7_duty_illicit_dealer_depot"}) 
+	create_squad(actor, npc, {"jup_b207_depot_mercs","jup_b207"}) 
+	give_info("jup_b207_morgan_ambush")
+end
+
+function jup_b16_l_1(actor, npc)
+	disable_info("jup_b16_sr_1_1") 
+	disable_info("jup_b16_sr_1_2") 
+	disable_info("jup_b16_sr_1_3") 
+	disable_info("jup_b16_sr_1_4") 
+	disable_info("jup_b16_sr_1_5") 
+	disable_info("jup_b16_sr_2_1") 
+	disable_info("jup_b16_sr_2_2") 
+	disable_info("jup_b16_sr_2_3") 
+	disable_info("jup_b16_sr_2_4") 
+	disable_info("jup_b16_sr_2_5") 
+	disable_info("jup_b16_sr_3_1") 
+	disable_info("jup_b16_sr_3_2") 
+	disable_info("jup_b16_sr_3_3") 
+	disable_info("jup_b16_sr_3_4") 
+	disable_info("jup_b16_sr_3_5") 
+	disable_info("jup_b16_sr_4_1") 
+	disable_info("jup_b16_sr_4_2") 
+	disable_info("jup_b16_sr_4_3") 
+	disable_info("jup_b16_sr_4_4") 
+	disable_info("jup_b16_sr_4_5")
+end
+
+function jup_b16_l_2(actor, npc)
+	disable_info("jup_b16_sr_1_1") 
+	disable_info("jup_b16_sr_1_2") 
+	disable_info("jup_b16_sr_1_3") 
+	disable_info("jup_b16_sr_1_4") 
+	disable_info("jup_b16_sr_1_5") 
+	disable_info("jup_b16_sr_2_1") 
+	disable_info("jup_b16_sr_2_2") 
+	disable_info("jup_b16_sr_2_3") 
+	disable_info("jup_b16_sr_2_4") 
+	disable_info("jup_b16_sr_2_5") 
+	disable_info("jup_b16_sr_3_1") 
+	disable_info("jup_b16_sr_3_2") 
+	disable_info("jup_b16_sr_3_3") 
+	disable_info("jup_b16_sr_3_4") 
+	disable_info("jup_b16_sr_3_5") 
+	disable_info("jup_b16_sr_4_1") 
+	disable_info("jup_b16_sr_4_2") 
+	disable_info("jup_b16_sr_4_3") 
+	disable_info("jup_b16_sr_4_4") 
+	disable_info("jup_b16_sr_4_5")
+end
+
+function jup_b47_l_1(actor, npc)
+	teleport_squad(actor, npc, {"jup_b47_merc_guard_squad","jup_b47_merc_guard_attak_spown"}) 
+	create_squad_member(actor, npc, {"jup_b47_merc_06","jup_b47_merc_guard_squad","jup_b47_merc_guard_attak_spown"}) 
+	create_squad_member(actor, npc, {"jup_b47_merc_07","jup_b47_merc_guard_squad","jup_b47_merc_guard_attak_spown"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_b47_merc_guard_squad"})
+end
+
+function jup_a12_s_a_1(actor, npc)
+	disable_info("jup_a12_stalker_assaulter_argued") 
+	disable_info("jup_a12_stalker_assaulter_1_argue") 
+	disable_info("jup_a12_stalker_assaulter_2_argue") 
+	disable_info("jup_a12_stalker_assaulter_3_argue")
+end
+
+function jup_a12_s_a_2(actor, npc)
+	disable_info("jup_a12_stalker_assaulter_argued") 
+	disable_info("jup_a12_stalker_assaulter_1_argue") 
+	disable_info("jup_a12_stalker_assaulter_2_argue") 
+	disable_info("jup_a12_stalker_assaulter_3_argue")
+end
+
+function jup_a12_sr_c_1(actor, npc)
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_guard_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_chief_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_cashier_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_sim_squad"})
+end
+
+
+function jup_a12_sr_c_2(actor, npc)
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_guard_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_chief_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_cashier_squad"}) 
+	set_squad_enemy_to_actor(actor, npc, {"jup_a12_bandit_sim_squad"})
+end
+
+function jup_a12_sr_c_3(actor, npc)
+	give_info("jup_a12_actor_switched_from_ransom_to_power") 
+	disable_info("jup_a12_actor_choose_self_or_ransom") 
+	disable_info("jup_a12_actor_choose_ransom") 
+	give_info("jup_a12_actor_choose_power") 
+	give_info("jup_a12_actor_is_ready")
+end

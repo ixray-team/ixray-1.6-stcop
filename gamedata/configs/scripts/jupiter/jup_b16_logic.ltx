@@ -17,7 +17,7 @@ on_info5 =  sr_idle@wait_for_reset %+jup_b16_randomize%
 on_info = {-jup_b16_oasis_artifact_spawn} %+jup_b16_oasis_artifact_spawn%
 on_info2 = {+jup_b16_oasis_start -jup_b16_oasis_give_task}  %=give_task(jup_b16_oasis) +jup_b16_oasis_give_task%
 on_info3 = {=surge_started} sr_idle@surge
-on_info4  = {-jup_b16_randomize} sr_idle@random %-jup_b16_sr_1_1 -jup_b16_sr_1_2 -jup_b16_sr_1_3 -jup_b16_sr_1_4 -jup_b16_sr_1_5 -jup_b16_sr_2_1 -jup_b16_sr_2_2 -jup_b16_sr_2_3 -jup_b16_sr_2_4 -jup_b16_sr_2_5 -jup_b16_sr_3_1 -jup_b16_sr_3_2 -jup_b16_sr_3_3 -jup_b16_sr_3_4 -jup_b16_sr_3_5 -jup_b16_sr_4_1 -jup_b16_sr_4_2 -jup_b16_sr_4_3 -jup_b16_sr_4_4 -jup_b16_sr_4_5%
+on_info4  = {-jup_b16_randomize} sr_idle@random %=jup_b16_l_1%
 on_info5 = {+jup_b16_oasis_artefact_to_scientist =dist_to_actor_ge(30) -jup_b41_heart_spawn} %+jup_b41_heart_spawn =spawn_object(jup_b41_af_oasis_heart:jup_b41_heart_spawn) =turn_on(jup_b43_heart_lamp)%
 on_info6 = {+jup_b16_oasis_artefact_to_scientist +jup_b41_heart_spawn} sr_idle@nil
 
@@ -31,4 +31,4 @@ on_info = {!surge_started} sr_idle@nil %-jup_b16_randomize%
 
 [sr_idle@nil]
 on_info3 = {=surge_started} sr_idle@surge_after_task
-on_info4  = {-jup_b16_randomize} sr_idle@random %-jup_b16_sr_1_1 -jup_b16_sr_1_2 -jup_b16_sr_1_3 -jup_b16_sr_1_4 -jup_b16_sr_1_5 -jup_b16_sr_2_1 -jup_b16_sr_2_2 -jup_b16_sr_2_3 -jup_b16_sr_2_4 -jup_b16_sr_2_5 -jup_b16_sr_3_1 -jup_b16_sr_3_2 -jup_b16_sr_3_3 -jup_b16_sr_3_4 -jup_b16_sr_3_5 -jup_b16_sr_4_1 -jup_b16_sr_4_2 -jup_b16_sr_4_3 -jup_b16_sr_4_4 -jup_b16_sr_4_5%
+on_info4  = {-jup_b16_randomize} sr_idle@random %=jup_b16_l_2%

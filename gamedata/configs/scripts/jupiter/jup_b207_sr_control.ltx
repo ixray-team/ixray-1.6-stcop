@@ -30,7 +30,7 @@ on_info = {-jup_b207_arrived_to_duty_depot =actor_in_zone(jup_b207_sr_depot_atta
 on_info2 = {+jup_b207_arrived_to_duty_depot} sr_idle@wait_for_ambush
 
 [sr_idle@wait_for_ambush]
-on_info = {=squad_exist(jup_b207_zat_b7_duty_illicit_dealer_depot) =actor_in_zone(jup_b207_sr_control)} sr_idle@ambush_merc_add %=set_squad_enemy_to_actor(jup_b207_zat_b7_duty_illicit_dealer_depot) =create_squad(jup_b207_depot_mercs:jup_b207) +jup_b207_morgan_ambush%
+on_info = {=squad_exist(jup_b207_zat_b7_duty_illicit_dealer_depot) =actor_in_zone(jup_b207_sr_control)} sr_idle@ambush_merc_add %=jup_b207_sr_c_2%
 on_info2 = {=squad_exist(jup_b207_zat_b7_duty_illicit_dealer_depot) +jup_b207_morgan_ambush} sr_idle@ambush_merc_add %=set_squad_enemy_to_actor(jup_b207_zat_b7_duty_illicit_dealer_depot) =create_squad(jup_b207_depot_mercs:jup_b207)%
 on_game_timer = 300 | {!actor_in_zone(jup_b207_sr_depot_attack)} sr_idle@save %-jup_b207_arrived_to_duty_depot%
 
@@ -39,7 +39,7 @@ on_info = sr_idle@nil %=create_squad_member(sim_default_killer_2:jup_b207_depot_
  
 [sr_idle@switch]
 on_info = {+jup_b207_freedom_knows_about_depot} sr_idle@cutscene %=create_squad(jup_b207_freedom_depot:jup_b207)%
-on_info2 = {+jup_b207_duty_knows_about_depot} sr_idle@cutscene %=create_squad_member(sim_default_duty_1:jup_b207_duty_base:jup_a6_spawn_point) =create_squad_member(sim_default_duty_1:jup_b207_duty_base:jup_a6_spawn_point) =create_squad(jup_b207_freedom_depot:jup_b207)%
+on_info2 = {+jup_b207_duty_knows_about_depot} sr_idle@cutscene %=jup_b207_sr_c_1%
 
 [sr_idle@cutscene]
 on_info = {!talking} sr_idle@cutscene_done %-jup_b207_ui%
@@ -53,7 +53,7 @@ on_info2 = {-jup_b207_attack_started =is_squad_enemy_to_actor(jup_b207_duty_base
 on_info3 = {-jup_b207_attack_started =is_squad_enemy_to_actor(jup_b207_freedom_depot)} %+jup_b207_attack_started%
 on_info4 = {-jup_b207_attack_started =is_squad_enemy_to_actor(jup_b207_freedom_base)} %+jup_b207_attack_started%
 on_info5 = {+jup_b207_attack_started !squad_exist(jup_b207_duty_base)} sr_idle@after_attack
-on_info6 = {+jup_b207_attack_started +jup_b207_freedom_knows_about_depot !squad_exist(jup_b207_freedom_depot) !squad_exist(jup_b207_freedom_base)} sr_idle@after_attack
+on_info6 = {=jup_b207_sr_c_1} sr_idle@after_attack
 on_info7 = {+jup_b207_attack_started -jup_b207_freedom_knows_about_depot !squad_exist(jup_b207_freedom_depot)} sr_idle@after_attack
 
 [sr_idle@after_attack]

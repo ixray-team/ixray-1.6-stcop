@@ -2,20 +2,20 @@
 active = sr_idle
 
 [sr_idle]
-on_info = {+jup_b6_give_task} sr_idle@count %=set_counter(jup_b6_anom_1_count_1:0) =set_counter(jup_b6_anom_1_count_2:0) =set_counter(jup_b6_anom_1_count_3:0) =set_counter(jup_b6_anom_1_count_4:0) =set_counter(jup_b6_anom_2_count_1:0) =set_counter(jup_b6_anom_2_count_2:0) =set_counter(jup_b6_anom_2_count_3:0) =set_counter(jup_b6_anom_2_count_4:0)%
+on_info = {+jup_b6_give_task} sr_idle@count %=jup_b6_c_1%
 
 [sr_idle@count]
 on_info =  {=counter_greater(jup_b6_anom_1_count_1:80)} %+jup_b6_anom_1_count_1_end%, {=counter_greater(jup_b6_anom_1_count_1:20) -jup_b6_mut_wave_1} %+jup_b6_mut_wave_1%
 on_info2 = {=counter_greater(jup_b6_anom_1_count_2:100)} %+jup_b6_anom_1_count_2_end%, {=counter_greater(jup_b6_anom_1_count_2:30) -jup_b6_mut_wave_2} %+jup_b6_mut_wave_2%
 on_info3 = {=counter_greater(jup_b6_anom_1_count_3:120)} %+jup_b6_anom_1_count_3_end%, {=counter_greater(jup_b6_anom_1_count_3:70) -jup_b6_mut_wave_3} %+jup_b6_mut_wave_3%
 on_info4 = {=counter_greater(jup_b6_anom_1_count_4:140)} %+jup_b6_anom_1_count_4_end%, {=counter_greater(jup_b6_anom_1_count_4:110) -jup_b6_mut_wave_4} %+jup_b6_mut_wave_4%
-on_info5 = {+jup_b6_anom_1_count_1_end +jup_b6_anom_1_count_2_end +jup_b6_anom_1_count_3_end +jup_b6_anom_1_count_4_end -jup_b6_anom_1_reward_given} %+jup_b6_anom_1_count_end +jup_b6_reward +jup_b6_travel +jup_b6_anom_1_reward_given%
+on_info5 = {=jup_b6_c_2} %+jup_b6_anom_1_count_end +jup_b6_reward +jup_b6_travel +jup_b6_anom_1_reward_given%
 
 on_info6 = {=counter_greater(jup_b6_anom_2_count_1:80)} %+jup_b6_anom_2_count_1_end%, {=counter_greater(jup_b6_anom_2_count_1:20) -jup_b6_zom_wave_1} %+jup_b6_zom_wave_1%
 on_info7 = {=counter_greater(jup_b6_anom_2_count_2:100)} %+jup_b6_anom_2_count_2_end%, {=counter_greater(jup_b6_anom_2_count_1:40) -jup_b6_zom_wave_2} %+jup_b6_zom_wave_2%
 on_info8 = {=counter_greater(jup_b6_anom_2_count_3:120)} %+jup_b6_anom_2_count_3_end%, {=counter_greater(jup_b6_anom_2_count_1:60) -jup_b6_zom_wave_3} %+jup_b6_zom_wave_3%
 on_info9 = {=counter_greater(jup_b6_anom_2_count_4:140)} %+jup_b6_anom_2_count_4_end%, {=counter_greater(jup_b6_anom_2_count_1:80) -jup_b6_zom_wave_4} %+jup_b6_zom_wave_4%
-on_info10 = {+jup_b6_anom_2_count_1_end +jup_b6_anom_2_count_2_end +jup_b6_anom_2_count_3_end +jup_b6_anom_2_count_4_end -jup_b6_anom_2_reward_given} %+jup_b6_anom_2_count_end +jup_b6_reward +jup_b6_travel +jup_b6_anom_2_reward_given%
+on_info10 = {=jup_b6_c_1} %+jup_b6_anom_2_count_end +jup_b6_reward +jup_b6_travel +jup_b6_anom_2_reward_given%
 
 on_info11 = {+jup_b6_anom_1_count_end +jup_b6_anom_2_count_end}  %+jup_b6_two_anomaly_learned% sr_idle@end, {+jup_b6_task_fail} sr_idle@end
 
