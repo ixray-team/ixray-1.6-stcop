@@ -9,8 +9,8 @@ combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 engine_sound = false
 on_info = {+pri_b305_fifth_cam_end} heli_move@start
-;Затычка
-on_info2 = {+pri_a28_cutscene_start} heli_move@land %+pri_a28_helis_added =spawn_object(pri_a28_earth_helli_1:pri_a28_heli_landing_way_1:0:215) =spawn_object(pri_a28_earth_helli_2:pri_a28_heli_landing_way_2:0:210)%
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+on_info2 = {+pri_a28_cutscene_start} heli_move@land %=pas_a28_heli_1_1%
 
 [heli_move@start]
 path_move = pri_a28_heli_start_1
@@ -28,7 +28,7 @@ max_velocity = 100
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
 on_info = {-pri_a28_heli_near_base =npc_in_zone(pri_a28_heli_near_base)} %+pri_a28_heli_near_base%
-on_info2 = {=npc_in_zone(pri_a28_heli_landing_zone)} heli_move@land %+pri_a28_helis_added =spawn_object(pri_a28_earth_helli_1:pri_a28_heli_landing_way_1:0:215) =spawn_object(pri_a28_earth_helli_2:pri_a28_heli_landing_way_2:0:210)%
+on_info2 = {=npc_in_zone(pri_a28_heli_landing_zone)} heli_move@land %=pas_a28_heli_1_2%
 
 [heli_move@land]
 path_move = pri_a28_heli_land_move_1

@@ -2535,3 +2535,11 @@ end
 function pas_b400_sr_c_5(actor, npc)
 	return has_alife_info("pas_b400_canalisation_tushkano_attacked") and not has_alife_info("pas_b400_canalisation_snork_rl_spawned") and not actor_in_zone(actor, npc, {"pas_b400_sr_canalisation_tushkano_revert"})
 end
+
+function pri_a18_useidol_1(actor, npc)
+	return actor_in_zone(actor, npc, {"pri_a18_use_idol_restrictor"}) and not squad_exist(actor, npc, {"pri_a18_monolith_idol_squad"}) and not squad_exist(actor, npc, {"pri_a18_monolith_post_guard_squad"}) and not squad_exist(actor, npc, {"pri_a18_monolith_corridor_squad"}) and not squad_exist(actor, npc, {"pri_a18_monolith_2nd_corridor_squad"}) and not has_alife_info("pri_a18_koval_go_on") and not surge_started(actor, npc)
+end
+
+function pri_a18_cam_r_1(actor, npc)
+	return not has_alife_info("pri_a18_actor_enemy") and is_squad_enemy_to_actor(actor, npc, {"pri_a16_sokolov_squad","pri_a16_vano_squad","pri_a22_military_merkulov_squad","pri_a22_military_skelja_squad"})
+end

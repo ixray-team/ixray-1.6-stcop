@@ -4758,3 +4758,55 @@ function pas_b400_ph_b_c_u_1(actor, npc)
 	give_info("pas_b400_control_up_door_opened") 
 	heal_squad(actor, npc, {"pas_b400_stalkers_squad"})
 end
+
+function pas_a15_sr_c_1(actor, npc)
+	stop_surge(actor, npc) 
+	disable_ui(actor, npc)
+	run_postprocess(actor, npc, {"black","3009","true"}) 
+	set_counter(actor, npc, {"pri_a15_squad_count","5"}) 
+	create_squad(actor, npc, {"pri_a15_squad","pri_a15"}) 
+	create_squad(actor, npc, {"pri_a15_military_squad","pri_a15"})
+end
+
+function pas_a15_sr_c_2(actor, npc)
+	create_squad_member(actor, npc, {"pri_a15_military_2","pri_a15_military_squad","pri_a15_military_2_spawn"}) 
+	create_squad_member(actor, npc, {"pri_a15_military_3","pri_a15_military_squad","pri_a15_military_3_spawn"}) 
+	create_squad_member(actor, npc, {"pri_a15_military_4","pri_a15_military_squad","pri_a15_military_4_spawn"})
+end
+
+function pas_a15_sr_c_3(actor, npc)
+	stop_postprocess(actor, npc, {"3009"}) 
+	give_info("pri_a15_cutscene_go")
+	update_npc_logic(actor, npc, {"pri_a15_actor","pri_a15_vano","pri_a15_sokolov_scene","pri_a15_zulus","pri_a15_wanderer","pri_a15_military_tarasov","pri_a15_military_2","pri_a15_military_3","pri_a15_military_4"}) 
+	update_obj_logic(actor, npc, {"pri_a15_exit"})
+end
+
+function pas_a28_heli_1_1(actor, npc)
+	give_info("pri_a28_helis_added")
+	spawn_object(actor, npc, {"pri_a28_earth_helli_1","pri_a28_heli_landing_way_1","0","215"}) 
+	spawn_object(actor, npc, {"pri_a28_earth_helli_2","pri_a28_heli_landing_way_2","0","210"})
+end
+
+function pas_a28_heli_1_2(actor, npc)
+	give_info("pri_a28_helis_added")
+	spawn_object(actor, npc, {"pri_a28_earth_helli_1","pri_a28_heli_landing_way_1","0","215"}) 
+	spawn_object(actor, npc, {"pri_a28_earth_helli_2","pri_a28_heli_landing_way_2","0","210"})
+end
+
+function pri_a18_cam_r_1(actor, npc)
+	run_postprocess(actor, npc, {"black","2021","true"}) 
+	give_info("pri_a18_cutscene_actor_destr") 
+	teleport_actor(actor, npc, {"pri_b35_mercs_pri_a18_reinforcement_1_ready_kill_look","pri_a18_smart_terrain_pri_a18_monolith_2_look"})
+end
+
+function pri_a18_cam_r_2(actor, npc)
+	run_postprocess(actor, npc, {"black","2021","true"}) 
+	give_info("pri_a18_cutscene_actor_destr") 
+	teleport_actor(actor, npc, {"pri_b35_mercs_pri_a18_reinforcement_1_ready_kill_look","pri_a18_smart_terrain_pri_a18_monolith_2_look"})
+end
+
+function pri_a18_cam_r_3(actor, npc)
+	create_cutscene_actor_with_weapon(actor, npc, {"pri_a18_cutscene_actor","pri_a18_cutscene_actor_spawn","0","180"}) 
+	give_info("pri_a18_task_end") 
+	run_postprocess(actor, npc, {"black","2057","true"})
+end

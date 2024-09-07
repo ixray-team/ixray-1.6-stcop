@@ -2,16 +2,16 @@
 active = sr_idle@run_black
 
 [sr_idle@run_black]
-on_info = sr_idle@prestart %=stop_surge =disable_ui =run_postprocess(black:3009:true) =set_counter(pri_a15_squad_count:5) =create_squad(pri_a15_squad:pri_a15) =create_squad(pri_a15_military_squad:pri_a15)%
+on_info = sr_idle@prestart %=pas_a15_sr_c_1%
 
 [sr_idle@prestart]
 ;on_game_timer = 5 | sr_idle@give_info %=teleport_actor(pri_a15_actor_walk:pri_a15_actor_look)%
-;затычка
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 on_game_timer = 5 | sr_idle@start %=teleport_actor(pri_a15_actor_walk:pri_a15_actor_look)%
 
 [sr_idle@start]
 on_info = {+pas_b400_done} sr_idle@give_info
-;затычка
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 on_info2 = {-pas_b400_done} sr_idle@nil %+pri_a15_cutscene_end =teleport_actor(pri_a15_actor_start_walk:pri_a15_actor_start_look)%   
 ;on_info2 = {-pas_b400_done} %+pas_b400_done%   
 
@@ -38,7 +38,7 @@ on_info15 = { -pri_a15_vano_out +pri_a15_sokolov_out +pri_a15_zulus_out +pri_a15
 on_info16 = { +pri_a15_vano_out +pri_a15_sokolov_out +pri_a15_zulus_out +pri_a15_wanderer_out} sr_idle@spawn_military %+pri_a15_all_dead%
 
 [sr_idle@spawn_military]
-on_info = sr_idle@spawn_vano %=create_squad_member(pri_a15_military_2:pri_a15_military_squad:pri_a15_military_2_spawn) =create_squad_member(pri_a15_military_3:pri_a15_military_squad:pri_a15_military_3_spawn) =create_squad_member(pri_a15_military_4:pri_a15_military_squad:pri_a15_military_4_spawn)%
+on_info = sr_idle@spawn_vano %=pas_a15_sr_c_2%
 
 [sr_idle@spawn_vano]
 on_info = {-pri_a15_vano_out} sr_idle@spawn_sokolov %=create_squad_member(pri_a15_vano:pri_a15_squad:pri_a15_vano_spawn) =inc_counter(pri_a15_squad_count)%
@@ -60,7 +60,7 @@ on_info2 = {+pri_a15_wanderer_out} sr_idle@count_squad
 on_info = {!counter_greater(pri_a15_squad_count:0)} sr_idle@start_cam %=stop_surge%
 
 [sr_idle@start_cam]
-on_game_timer = 20 | sr_idle@wait %=stop_postprocess(3009) +pri_a15_cutscene_go =update_npc_logic(pri_a15_actor:pri_a15_vano:pri_a15_sokolov_scene:pri_a15_zulus:pri_a15_wanderer:pri_a15_military_tarasov:pri_a15_military_2:pri_a15_military_3:pri_a15_military_4) =update_obj_logic(pri_a15_exit)%
+on_game_timer = 20 | sr_idle@wait %=pas_a15_sr_c_3%
 
 [sr_idle@wait]
 on_info = {+pri_a15_cutscene_end} sr_idle@end %=run_postprocess(fade_to_black_9_sec)%
