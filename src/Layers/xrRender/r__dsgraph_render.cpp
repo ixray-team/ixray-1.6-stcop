@@ -21,13 +21,14 @@ ICF float calcLOD(float ssa, float R, bool Dyn = true)
 {
 	float TestLod = 0.f;
 
+	//if (RImplementation.phase == CRender::PHASE_SMAP && !Dyn)
+	//	return TestLod;
+
 	TestLod = _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.f, 1.f));
 
-#if	RENDER!=R_R1
 	if (RImplementation.phase == CRender::PHASE_SMAP && Dyn)
 		clamp(TestLod, 0.0f, 0.3f);
-#endif
-
+	
 	return TestLod;
 }
 
