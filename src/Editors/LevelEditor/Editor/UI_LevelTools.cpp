@@ -503,11 +503,11 @@ void  CLevelTool::Render()
 	break;
 	case esBuildLevel:  	Builder.OnRender();				break;
 	}
-	::Render->Render();
 	// draw cursor
 	LUI->m_Cursor->Render();
-
     inherited::Render();
+
+	::Render->Render();
 }
 
 

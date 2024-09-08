@@ -273,6 +273,8 @@ void CRender::Calculate()
 	//	r_ssaLOD_B						=	(ssaLOD_B*ssaLOD_B)/g_fSCREEN;
 	lstRenderables.clear();
 	ViewBase.CreateFromMatrix(EDevice->mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
+	Target->reset_light_marker();
 	RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
 	{
@@ -346,8 +348,6 @@ void CRender::Calculate()
 void CRender::Render()
 {
 	if(Target) {
-		Target->reset_light_marker();
-
 		CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
 		dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 		IDirect3DBaseTexture9* e0 = envdescren.sky_r_textures_env[0].second->surface_get();
@@ -364,6 +364,8 @@ void CRender::Render()
 		}
 
 		Target->reset_light_marker(true);
+
+		RCache.set_CullMode(CULL_CCW); // back
 		RCache.set_Stencil(FALSE);
 	}
 
