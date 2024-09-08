@@ -101,34 +101,38 @@ void					CRender::create					()
 	::PortalTraverser.initialize();
 }
 
-void					CRender::destroy				()
+void CRender::destroy()
 {
-	m_bMakeAsyncSS				= false;
-	::PortalTraverser.destroy	();
-//.	HWOCC.occq_destroy			();
-	PSLibrary.OnDestroy			();
-	
-	xr_delete					(L_Dynamic);
-	xr_delete					(Models);
-	
-	//*** Components
-	xr_delete					(Target);
-	Device.seqFrame.Remove		(this);
+	m_bMakeAsyncSS = false;
+	::PortalTraverser.destroy();
+	//.	HWOCC.occq_destroy			();
+	PSLibrary.OnDestroy();
 
-	r_dsgraph_destroy			();
+	xr_delete(L_Dynamic);
+	xr_delete(Models);
+
+	//*** Components
+	xr_delete(Target);
+	Device.seqFrame.Remove(this);
+
+	r_dsgraph_destroy();
 }
 
-void					CRender::reset_begin			()
+void CRender::reset_begin()
 {
 	if (b_loaded)
 	{
-		Device.remove_from_seq_parallel(fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+		auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
+
+		if (I != Device.seqParallelRender.end())
+			Device.seqParallelRender.erase(I);
+
 		Details->Unload();
 		xr_delete(Details);
 	}
 
-	xr_delete					(Target);
-//.	HWOCC.occq_destroy			();
+	xr_delete(Target);
+	//.	HWOCC.occq_destroy			();
 }
 
 void					CRender::reset_end				()
