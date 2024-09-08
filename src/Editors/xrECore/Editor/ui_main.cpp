@@ -419,7 +419,8 @@ void TUI::Redraw()
 	
 		if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
 		{
-			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
+			{
 				GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
 				GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
 				RT.destroy();
@@ -429,7 +430,7 @@ void TUI::Redraw()
 				RTPostion.destroy();
 				RTNormal.destroy();
 				RTDiffuse.destroy();
-
+				
 				RTPostion.create("$user$position", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
 				RTNormal.create("$user$normal", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
 				RTDiffuse.create("$user$diffuse", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
@@ -449,7 +450,8 @@ void TUI::Redraw()
 				RCache.set_xform_project(EDevice->mProject);
 				RCache.set_xform_world(Fidentity);
 			}
-			else {
+			else 
+			{
 				// Soft render update when resizing window
 				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
 				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;

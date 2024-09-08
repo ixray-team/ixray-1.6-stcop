@@ -165,6 +165,7 @@ class	ECORE_API CRender : public IRender_interface
 	CRenderTarget* Target;
 	Fmatrix					current_matrix;
 	BOOL val_bInvisible;
+	u32 dwFrameCalc = 0;
 public:
 	// options
 

@@ -266,6 +266,9 @@ BOOL CRender::occ_visible(vis_data& P)
 
 void CRender::Calculate()
 {
+	if (dwFrameCalc == Device.dwFrame)
+		return;
+
 	// Transfer to global space to avoid deep pointer access
 	g_fSCREEN = float(EDevice->TargetWidth * EDevice->TargetHeight);
 	r_ssaDISCARD = (ssaDISCARD * ssaDISCARD) / g_fSCREEN;
@@ -339,6 +342,8 @@ void CRender::Calculate()
 			}
 		}
 	}
+
+	dwFrameCalc = Device.dwFrame;
 }
 
 #include "../xrEngine/IGame_Persistent.h"
