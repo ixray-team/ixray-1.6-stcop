@@ -381,20 +381,25 @@ void CRender::Calculate()
 
 void CRender::Render()
 {
-	if(Target) {
-		if(g_pGamePersistent && g_pGameLevel) {
-			auto& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
-			auto& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
+	if(Target) 
+	{
+		if(g_pGamePersistent && g_pGameLevel) 
+		{
+			auto& envdescren = *(dxEnvDescriptorMixerRender*)(&*g_pGamePersistent->Environment().CurrentEnv->m_pDescriptorMixer);
+			envdescren.sky_r_textures_env[0].second->Load();
+			envdescren.sky_r_textures_env[1].second->Load();
 
 			Target->t_envmap_0->surface_set(envdescren.sky_r_textures_env[0].second->pSurface);
 			Target->t_envmap_1->surface_set(envdescren.sky_r_textures_env[1].second->pSurface);
 		}
 
-		for(auto& light : m_spotlights) {
+		for(auto& light : m_spotlights) 
+		{
 			Target->accum_spot(light);
 		}
 
-		for(auto& light : m_pointlights) {
+		for(auto& light : m_pointlights)
+		{
 			Target->accum_spot(light);
 		}
 
