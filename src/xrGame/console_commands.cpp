@@ -58,7 +58,7 @@
 
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-
+#include "alife_time_manager.h"
 #include "Level.h"
 string_path		g_last_saved_game;
 
@@ -1729,6 +1729,63 @@ public:
 	}
 };
 
+class CCC_AddLevelTimeInHours : public IConsole_Command
+{
+public:
+	CCC_AddLevelTimeInHours(LPCSTR N) : IConsole_Command(N) {}
+
+	virtual void Execute(LPCSTR buffer)
+	{
+		if (!g_pGamePersistent && !OnServer())
+		{
+			return;
+		}
+
+		if (buffer && buffer[0])
+		{
+			if (Level().Server)
+			{
+				game_sv_Single* pSingle =
+					dynamic_cast<game_sv_Single*>(Level().Server->game);
+
+				if (pSingle)
+				{
+					if (ai().get_alife())
+					{
+						char number[2]{};
+						auto str_len = strlen(buffer);
+						if (str_len >= 2)
+						{
+							number[0] = buffer[0];
+							number[1] = buffer[1];
+						}
+						else if (str_len == 1)
+						{
+							number[0] = buffer[0];
+						}
+
+						int casted = atoi(number);
+						clamp(casted, 0, 24);
+						if (casted > 0)
+						{
+							u32 value = casted * 3600;
+							value *= 1000;
+							float env = static_cast<float>(value);
+
+							g_pGamePersistent->Environment().ChangeGameTime(
+								env);
+							pSingle->alife().time_manager().change_game_time(
+								value);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	virtual void Info(TInfo& I) { xr_strcpy(I, "Adds time in hours to current time"); }
+};
+
 class CCC_ReceiveInfo : public IConsole_Command {
 public:
 	CCC_ReceiveInfo(LPCSTR N) : IConsole_Command(N) {
@@ -2173,6 +2230,7 @@ void CCC_RegisterCommands()
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_SetWeather, "set_weather");
+	CMD1(CCC_AddLevelTimeInHours, "add_time_in_hours");
 	CMD1(CCC_ReceiveInfo, "g_info");
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");

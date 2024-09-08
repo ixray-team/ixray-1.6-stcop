@@ -34,12 +34,30 @@ void RenderActorInfos()
 		return;
 	}
 
+	char buffer[128]{};
+	ImGui::InputText("Filter:", buffer, sizeof(buffer));
+
+	bool filter_is_not_empty = strlen(buffer);
+
 	auto Data = g_pIGameActor->GetKnowedPortions();
 
-	for (auto Str : Data)
+	for (const auto& Str : Data)
 	{
-		if (ImGui::Button(Str.c_str(), { 200, 30 })) {
-			g_pIGameActor->DisableInfoPortion(Str.c_str());
+		bool can_show{true};
+		if (filter_is_not_empty)
+		{
+			if (Str.find(buffer) == xr_string::npos)
+			{
+				can_show = false;
+			}
+		}
+		
+		if (can_show)
+		{
+			if (ImGui::Button(Str.c_str(), {200, 30}))
+			{
+				g_pIGameActor->DisableInfoPortion(Str.c_str());
+			}
 		}
 	}
 

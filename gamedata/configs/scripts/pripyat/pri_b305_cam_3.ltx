@@ -6,7 +6,7 @@ on_info = {+pri_b305_signal_lost -pri_b305_kirilov_signal_lost_done} %=play_soun
 on_info2 = {+pri_b305_third_cam_go} sr_idle@third_cam 
 
 [sr_idle@third_cam]
-on_info = {-pri_b305_third_cam_prepare} sr_idle@remove_squads %+pri_b305_third_cam_prepare +pri_b305_3_cam_actor =run_postprocess(fade_in) =create_cutscene_actor_with_weapon(pri_b305_actor_visual_3:pri_b305_cam3_actor_prespawn:0:0:3)%
+on_info = {-pri_b305_third_cam_prepare} sr_idle@remove_squads %=pri_b305_c_3_1%
 
 [sr_idle@remove_squads]
 on_info = {-pri_a28_tarasov_alive =is_alive(pri_a17_military_captain_tarasov)} %+pri_a28_tarasov_alive%
@@ -35,7 +35,7 @@ global_cameffect = true
 enable_ui_on_end = true
 on_signal = cameff_end | sr_idle@add_squad %=play_sound(pri_b305_kovalskiy_attack_case_prepare) +pri_b305_third_cam_end%
 on_signal2 = cam_effector_stop | sr_idle@add_squad %=play_sound(pri_b305_kovalskiy_attack_case_prepare) +pri_b305_third_cam_end%
-on_info = {+pri_b305_cut_3_actor_hit} %=stop_sr_cutscene +pri_b305_actor_dont_see_anyone_done +pri_b305_actor_dont_see_anyone_done_end +pri_b305_kirilov_source_is_near_done_end +pri_b305_actor_it_is_underground_done%
+on_info = {+pri_b305_cut_3_actor_hit} %=pri_b305_c_3_2%
 
 [sr_idle@add_squad]
 on_info = {+leader_achievement_gained} sr_idle@add_strong_parts %=create_squad(pri_a16_military_squad_strong:pri_a16)% 

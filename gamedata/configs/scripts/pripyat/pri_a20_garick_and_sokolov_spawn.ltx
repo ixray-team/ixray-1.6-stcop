@@ -3,7 +3,7 @@ active = sr_idle@pre_has_gaus_spawn_garik
 
 [sr_idle@pre_has_gaus_spawn_garik]
 on_info = {+pri_a17_actor_has_gauss_rifle} sr_idle@sokolov_spawn %=create_squad(pri_b35_jup_b43_stalker_assistant_squad:pri_a16)%
-;Затычка!!!
+;пїЅпїЅпїЅпїЅпїЅпїЅпїЅ!!!
 on_info2 = {+pri_a28_actor_in_zone_stay} sr_idle@create_garry
 
 [sr_idle@sokolov_spawn]
@@ -16,7 +16,7 @@ on_info = {+pri_a25_rfi_source_eliminated =squad_exist(pri_b35_jup_b43_stalker_a
 on_info2 = {!squad_exist(pri_b35_jup_b43_stalker_assistant_squad)} %=create_squad(pri_b35_jup_b43_stalker_assistant_squad:pri_a16)%
 
 [sr_idle@create_garry]
-on_info = {+pri_a28_actor_in_zone_stay} sr_idle@create_yar %=create_squad(pri_b35_jup_b43_stalker_assistant_squad:pri_a16) =create_squad(pri_a16_stalkers_squad:pri_a16) =create_squad(stalker_sim_squad_advanced:pri_a16) =create_squad(stalker_sim_squad_veteran:pri_a16) -pri_a16_wait_for_stalkers%
+on_info = {+pri_a28_actor_in_zone_stay} sr_idle@create_yar %=pri_a20_g_a_s_s_1%
 
 [sr_idle@create_yar]
 on_info = {+jup_b19_complete -jup_b19_yar_enemy_or_dead =squad_exist(jup_b19_freedom_yar_squad)} sr_idle@add_yar %=remove_squad(jup_b19_freedom_yar_squad)%

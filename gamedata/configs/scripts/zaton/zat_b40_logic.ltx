@@ -26,7 +26,7 @@ on_info = {+pri_a17_actor_has_gauss_rifle -zat_b40_pripyat_case} sr_idle@zat_b40
 [sr_idle@zat_b40_pripyat]
 on_info1 = {-zat_b40_merc_gone =squad_exist(zat_b40_merc_squad)} %=remove_squad(zat_b40_merc_squad) +zat_b40_merc_gone%
 on_info2 = {-zat_b40_find_information} %+zat_b40_find_information +zat_b40_find_information_comlpete%
-on_info3 = {-zat_b40_actor_has_notebook =object_exist(zat_b40_notebook) -zat_b40_notebook_replaced} %=destroy_object(story:zat_b40_notebook) =spawn_corpse(sim_default_killer_1:zat_b40_dead_merc_spawn) =spawn_object(zat_b40_notebook:zat_b40_notebook_spawn_2) +zat_b40_notebook_replaced% 
+on_info3 = {-zat_b40_actor_has_notebook =object_exist(zat_b40_notebook) -zat_b40_notebook_replaced} %=zat_b40_l_1% 
 on_info4 = {=actor_has_item(zat_b40_notebook) -zat_b40_actor_has_notebook} %+zat_b40_actor_has_notebook%
 on_info5 = {-zat_b103_lost_merc_leader_bunker_guards_work -zat_b103_merc_bring_supplies =distance_to_obj_ge(zat_b103_logic:100)} %+zat_b103_merc_can_gone%, {+zat_b103_merc_bring_supplies +zat_b103_merc_task_done =distance_to_obj_ge(zat_b103_logic:100)} %+zat_b103_merc_can_gone%, {+zat_b103_merc_bring_supplies +zat_b103_merc_fight =distance_to_obj_ge(zat_b103_logic:100)} %+zat_b103_merc_can_gone%
 on_info6 = {-zat_b103_merc_gone1 +zat_b103_merc_can_gone =squad_exist(zat_b103_lost_merc_squad1)} %=remove_squad(zat_b103_lost_merc_squad1) +zat_b103_merc_gone1 +zat_b103_merc_gone%

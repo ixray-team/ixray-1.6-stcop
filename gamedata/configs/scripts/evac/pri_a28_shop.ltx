@@ -209,7 +209,7 @@ on_game_timer = 200 | {-pri_a28_shop_3_leave} %+pri_a28_shop_3_leave%
 
 [logic@pri_a28_military_1_shop]
 active = walker@military_1_shop_1 
-suitable = {-pri_a28_shop_done =target_squad_name(pri_a16_military_squad) !check_npc_name(strelok) !check_npc_name(base_medic) !check_npc_name(kovalski)} true
+suitable = {=pri_a28_s_1} true
 prior = 110
 on_hit = hit@def
 on_death = death@def
@@ -253,7 +253,7 @@ in_restr = pri_a28_sr_shop_in
 
 [logic@pri_a28_military_2_shop]
 active = walker@military_2_shop_1 
-suitable = {-pri_a28_shop_done =target_squad_name(pri_a16_military_squad) !check_npc_name(strelok) !check_npc_name(base_medic) !check_npc_name(kovalski)} true
+suitable = {=pri_a28_s_1} true
 prior = 100
 on_hit = hit@def
 on_death = death@def
@@ -297,7 +297,7 @@ in_restr = pri_a28_sr_shop_in
 
 [logic@pri_a28_military_3_shop]
 active = walker@military_3_shop_1 
-suitable = {-pri_a28_shop_done =target_squad_name(pri_a16_military_squad) !check_npc_name(strelok) !check_npc_name(base_medic) !check_npc_name(kovalski)} true
+suitable = {=pri_a28_s_1} true
 prior = 100
 on_hit = hit@def
 on_death = death@def
@@ -341,7 +341,7 @@ in_restr = pri_a28_sr_shop_in
 
 [logic@pri_a28_military_4_shop]
 active = walker@military_4_shop_1 
-suitable = {-pri_a28_shop_done =target_squad_name(pri_a16_military_squad) !check_npc_name(strelok) !check_npc_name(base_medic) !check_npc_name(kovalski)} true
+suitable = {=pri_a28_s_1} true
 prior = 90
 on_hit = hit@def
 on_death = death@def
@@ -385,7 +385,7 @@ in_restr = pri_a28_sr_shop_in
 
 [logic@pri_a28_military_5_shop]
 active = camper@military_5_shop_1 
-suitable = {-pri_a28_shop_done =target_squad_name(pri_a16_military_squad) !check_npc_name(strelok) !check_npc_name(base_medic) !check_npc_name(kovalski)} true
+suitable = {=pri_a28_s_1} true
 prior = 90
 on_hit = hit@def
 on_death = death@def

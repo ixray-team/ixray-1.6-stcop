@@ -88,7 +88,7 @@ on_signal = sound_end | animpoint@a28_order_to_kirillov_2 %+pri_a28_colonel_afte
 meet = no_meet
 
 [animpoint@a28_order_to_kirillov_2]:animpoint@a28_def
-on_info = {+pri_a28_signaller_after_surge_1_done} animpoint@a28_radio_talking_1 ;prev. cond. was +pri_a28_signaller_after_surge_sound_end
+on_info = {+pri_a28_signaller_after_surge_1_done} animpoint@a28_radio_talking_1
 
 ;--------------------------------------
 ; Talk with base, going to radio, talking
@@ -131,7 +131,7 @@ meet = no_meet
 on_game_timer = 10 | %=play_sound(pri_a28_colonel_actor_talk)%
 on_signal = sound_end | animpoint@a28_waiting_for_actor_command_3 %+pri_a28_militarys_go_to_the_door%
 meet = no_meet
-on_info = {-pri_a28_supply_done -pri_a25_actor_needs_medikit_supply +pri_a22_army_signaller_supply_outfit_done -pri_a22_actor_needs_ammo_supply -pri_a22_actor_needs_grenade_supply} %+pri_a28_supply_done%
+on_info = {=pri_a28_k_1} %+pri_a28_supply_done%
 
 [animpoint@a28_waiting_for_actor_command_3]:animpoint@a28_def_short
 on_game_timer = 6000 | walker@a28_no_time

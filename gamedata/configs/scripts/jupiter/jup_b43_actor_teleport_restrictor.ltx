@@ -11,13 +11,13 @@ on_info6 = {=actor_on_level(zaton) +jup_b43_zaton_out_base_teleport} %=teleport_
 on_info7 = {+uni_leave_zone_info} sr_idle@leave_zone %=disable_ui =run_postprocess(fade_in)% 
 
 [sr_idle@from_pripyat_to_jupiter]
-on_game_timer = 20 | sr_idle@talk_about_teleport %-jup_b43_teleport_actor_from_pripyat_to_jupiter =forward_game_time(4) =run_postprocess(black:3009:true) =teleport_actor(pri_teleport_actor_from_pripyat_to_jupiter_walk:pri_teleport_actor_from_pripyat_to_jupiter_look) +jup_b43_jupiter_out_base_teleport%
+on_game_timer = 20 | sr_idle@talk_about_teleport %=jup_b43_a_t_r_1%
 
 [sr_idle@from_jupiter_to_pripyat]
-on_game_timer = 20 | sr_idle@talk_about_teleport %-jup_b43_teleport_actor_from_jupiter_to_pripyat =forward_game_time(4) =run_postprocess(black:3009:true) =teleport_actor(jup_teleport_actor_from_jupiter_to_pripyat_walk:jup_teleport_actor_from_jupiter_to_pripyat_look) +jup_b43_pripyat_out_base_teleport%
+on_game_timer = 20 | sr_idle@talk_about_teleport %=jup_b43_a_t_r_2%
 
 [sr_idle@from_pripyat_to_zaton]
-on_game_timer = 20 | sr_idle@talk_about_teleport %-jup_b43_teleport_actor_from_pripyat_to_zaton =forward_game_time(4) =run_postprocess(black:3009:true) =teleport_actor(pri_teleport_actor_from_pripyat_to_zaton_walk:pri_teleport_actor_from_pripyat_to_zaton_look) +jup_b43_zaton_out_base_teleport%
+on_game_timer = 20 | sr_idle@talk_about_teleport %=jup_b43_a_t_r_3%
 
 [sr_idle@leave_zone]
 on_game_timer = 20 | nil %=run_tutorial(outro_game)%

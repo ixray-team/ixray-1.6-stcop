@@ -6,7 +6,7 @@ on_info = {+pri_a17_teleport_military_recon} sr_idle@teleportin %=run_postproces
 
 [sr_idle@teleportin]
 on_game_timer = 20 | %=run_postprocess(black:8710:true) +pri_a17_teleport_step_1%
-on_info = {+pri_a17_teleport_step_1} sr_idle@teleport_post %=teleport_actor(pri_a17_actor_teleport_stay:pri_a17_actor_teleport_look) =teleport_squad(pri_a17_recon_squad:pri_a17_recon_teleport)%
+on_info = {+pri_a17_teleport_step_1} sr_idle@teleport_post %=pri_a17_t_1%
 
 [sr_idle@teleport_post]
 on_info =  %=teleport_npc_by_story_id(pri_a17_military_captain_tarasov:pri_a17_taras_stay_idle)%

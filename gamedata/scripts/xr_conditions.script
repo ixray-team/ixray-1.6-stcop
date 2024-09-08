@@ -239,14 +239,14 @@ end
 -- false в противном случае
 function health_le(actor, npc, p)
 	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
-	return p[1] and npc.health < p[1]
+	return p[1] and npc.health < tonumber(p[1])
 end
 
 -- true, если здоровье актера  <= заданному значению
 -- false в противном случае
 function actor_health_le(actor, npc, p)
 	--printf_xrscript("caller=%s npc=%s", convert_class_name(actor), convert_class_name(npc))
-	return p[1] and actor.health < p[1]
+	return p[1] and actor.health < tonumber(p[1])
 end
 
 --[[
@@ -2554,4 +2554,136 @@ end
 
 function pri_a16_k_s_1(actor, npc)
 	return has_alife_info("zat_a23_actor_has_gauss_rifle_documentation") and has_alife_info("pri_a20_talk_with_colonel_complete") and not has_alife_info("pri_a21_colonel_lets_talk") and not has_alife_info("pri_a21_give_task_no_base")
+end
+
+function pri_b35_h_l_1(actor, npc)
+	return not has_alife_info("pri_a20_way_to_pripyat_2_sound_end") and not
+	has_alife_info("pri_a20_talk_with_colonel_complete") and
+	squad_in_zone(actor, npc, {"pri_a16_sokolov_squad","pri_a16_sr_noweap"}) and 
+	has_alife_info("pri_a16_sokolov_on_pripyat")
+end
+
+function pri_b35_h_l_2(actor, npc)
+	return not has_alife_info("pri_a25_rfi_source_eliminated") and
+	has_alife_info("pri_a16_stalker_guide_met_done")  and
+	has_alife_info("zat_a23_actor_has_gauss_rifle_documentation") and not
+	has_alife_info("pri_b35_assistant_start_dialog_done") and not
+	talking(actor, npc) and
+	dist_to_actor_le(actor, npc, {"6"}) and
+	see_actor(actor, npc) and not
+	actor_enemy(actor, npc)
+end
+
+function pri_a18_i_m_1(actor, npc)
+	return not squad_exist(actor, npc, {"pri_a18_monolith_idol_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_post_guard_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_corridor_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_2nd_corridor_squad"}) 
+	and has_alife_info("pri_a18_find_antena")
+end
+
+function pri_a18_i_m_2(actor, npc)
+	return not squad_exist(actor, npc, {"pri_a18_monolith_idol_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_post_guard_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_corridor_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_2nd_corridor_squad"}) 
+	and has_alife_info("pri_a18_find_antena")
+end
+
+function pri_a18_i_m_3(actor, npc)
+	return not squad_exist(actor, npc, {"pri_a18_monolith_idol_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_post_guard_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_corridor_squad"}) 
+	and not squad_exist(actor, npc, {"pri_a18_monolith_2nd_corridor_squad"}) 
+	and has_alife_info("pri_a18_find_antena")
+end
+
+function pri_a18_s_t_1(actor, npc)
+	return not has_alife_info("pri_a18_vano_exist") 
+	and not has_alife_info("pri_a18_sokolov_exist") 
+	and squad_exist(actor, npc, {"pri_a22_military_merkulov_squad"}) 
+	and squad_exist(actor, npc, {"pri_a22_military_skelja_squad"}) 
+	and not has_alife_info("pri_a18_once_merkulov_and_skelja_remove")
+end
+
+function pri_a18_s_t_2(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_once_skelja_create") 
+	and squad_exist(actor, npc, {"pri_a22_military_skelja_squad"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a22_military_skelja_squad","100"})
+end
+
+function pri_a18_s_t_3(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_sokolov_exist")
+	and squad_exist(actor, npc, {"pri_a16_sokolov_squad_strong"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a16_sokolov_squad_strong","100"})
+end
+
+function pri_a18_s_t_4(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_once_skelja_create") 
+	and squad_exist(actor, npc, {"pri_a22_military_skelja_squad_strong"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a22_military_skelja_squad_strong","100"})
+end
+
+function pri_a18_s_t_5(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_vano_exist") 
+	and squad_exist(actor, npc, {"pri_a16_vano_squad_strong"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a16_vano_squad_strong","100"})
+end
+
+function pri_a18_s_t_6(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_once_merkulov_create") 
+	and squad_exist(actor, npc, {"pri_a22_military_merkulov_squad"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a22_military_merkulov_squad","100"})
+end
+
+function pri_a18_s_t_7(actor, npc)
+	return has_alife_info("pri_a18_actor_enemy") 
+	and has_alife_info("pri_a18_once_merkulov_create") 
+	and squad_exist(actor, npc, {"pri_a22_military_merkulov_squad_strong"}) 
+	and dist_to_story_obj_ge(actor, npc, {"pri_a22_military_merkulov_squad_strong","100"})
+end
+
+function pri_a28_k_1(actor, npc)
+	return not has_alife_info("pri_a28_supply_done") 
+	and not has_alife_info("pri_a25_actor_needs_medikit_supply")
+	and has_alife_info("pri_a22_army_signaller_supply_outfit_done")
+	and not has_alife_info("pri_a22_actor_needs_ammo_supply") 
+	and not has_alife_info("pri_a22_actor_needs_grenade_supply")
+end
+
+function pri_a28_b_1(actor, npc)
+	return not has_alife_info("pri_a28_base_done") 
+	and target_squad_name(actor, npc, {"pri_a16_military_squad"}) 
+	and not check_npc_name(actor, npc, {"strelok"}) 
+	and not check_npc_name(actor, npc, {"army_signaller"}) 
+	and not check_npc_name(actor, npc, {"kovalski"})
+end
+
+function pri_a28_s_1(actor, npc)
+	return not has_alife_info("pri_a28_shop_done") 
+	and target_squad_name(actor, npc, {"pri_a16_military_squad"}) 
+	and not check_npc_name(actor, npc, {"strelok"}) 
+	and not check_npc_name(actor, npc, {"base_medic"}) 
+	and not check_npc_name(actor, npc, {"kovalski"})
+end
+
+function pri_a28_school_1(actor, npc)
+	return not has_alife_info("pri_a28_school_done") 
+	and target_squad_name(actor, npc, {"pri_a16_military_squad"}) 
+	and not check_npc_name(actor, npc, {"strelok"}) 
+	and not check_npc_name(actor, npc, {"kovalski"}) 
+	and not check_npc_name(actor, npc, {"base_medic"})
+end
+
+function pri_a28_e_1(actor, npc)
+	return not has_alife_info("pri_a28_evac_done") 
+	and target_squad_name(actor, npc, {"pri_a16_military_squad"}) 
+	and not check_npc_name(actor, npc, {"strelok"}) 
+	and not check_npc_name(actor, npc, {"base_medic"}) 
+	and not check_npc_name(actor, npc, {"kovalski"})
 end
