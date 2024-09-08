@@ -1,56 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/xr_object.h"
-IC		bool	pred_area		(light* _1, light* _2)
-{
-	u32		a0		= _1->X.S.size;
-	u32		a1		= _2->X.S.size;
-	return	a0>a1;	// reverse -> descending
-}
 #include "FBasicVisual.h"
 #include "SkeletonCustom.h"
-static void optimize_smap_size(light* L)
-{
-	int _cached_size = L->X.S.size;
-	L->X.S.posX	= 0;
-	L->X.S.posY	= 0;
-	L->X.S.size	= SMAP_adapt_max;
-	L->X.S.transluent = FALSE;
-	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
-	// Note: we clamp screen space area to ONE, although it is not correct at all
-	float	dist				= Device.vCameraPosition.distance_to(L->spatial.sphere.P)-L->spatial.sphere.R;
-			if (dist<0)	dist	= 0;
-	float	ssa					= clampr	(L->range*L->range / (1.f+dist*dist),0.f,1.f);
-
-	// compute intensity
-	//float	intensity0			= (L->color.r + L->color.g + L->color.b)/3.f;
-	//float	intensity1			= (L->color.r * 0.2125f + L->color.g * 0.7154f + L->color.b * 0.0721f);
-	//float	intensity			= (intensity0+intensity1)/2.f;		// intensity1 tends to underestimate...
-
-	// compute how much duelling frusta occurs	[-1..1]-> 1 + [-0.5 .. +0.5]
-	float	duel_dot			= 1.f -	0.5f*Device.vCameraDirection.dotproduct(L->direction);
-
-	// compute how large the light is - give more texels to larger lights, assume 8m as being optimal radius
-	float	sizefactor			= L->range/8.f;				// 4m = .5, 8m=1.f, 16m=2.f, 32m=4.f
-
-	// compute how wide the light frustum is - assume 90deg as being optimal
-	float	widefactor			= L->cone/deg2rad(90.f);	// 
-
-	// factors
-	float	factor0				= powf	(ssa,		1.f/2.f);		// ssa is quadratic
-	//float	factor1				= powf	(intensity, 1.f/16.f);		// less perceptually important?
-	float	factor2				= powf	(duel_dot,	1.f/4.f);		// difficult to fast-change this -> visible
-	float	factor3				= powf	(sizefactor,1.f/4.f);		// this shouldn't make much difference
-	float	factor4				= powf	(widefactor,1.f/2.f);		// make it linear ???
-	float	factor				= ps_r2_ls_squality * factor0 /** factor1*/ * factor2 * factor3 * factor4;
-	
-	// final size calc
-	u32 _size					= iFloor( factor * SMAP_adapt_optimal );
-	if (_size<SMAP_adapt_min)	_size	= SMAP_adapt_min;
-	if (_size>SMAP_adapt_max)	_size	= SMAP_adapt_max;
-	int _epsilon				= iCeil	(float(_size)*0.01f);
-	int _diff					= _abs	(int(_size)-int(_cached_size));
-	L->X.S.size					= (_diff>=_epsilon)?_size:_cached_size;
-}
 
 void	CRender::render_lights	(light_Package& LP)
 {
@@ -73,13 +24,13 @@ void	CRender::render_lights	(light_Package& LP)
 				else
 				{
 					if(!L->flags.bHudMode)
-						optimize_smap_size(L);
+						L->optimize_smap_size();
 				}
 			}
 			else
 			{
 				if(!L->flags.bHudMode)
-					optimize_smap_size(L);
+					L->optimize_smap_size();
 			}
 		}
 	}
@@ -94,7 +45,7 @@ void	CRender::render_lights	(light_Package& LP)
 		for		(u16 smap_ID=0; refactored.size()!=total; smap_ID++)
 		{
 			LP_smap_pool.initialize	(RImplementation.o.smapsize);
-			std::sort				(source.begin(),source.end(),pred_area);
+			std::sort				(source.begin(),source.end(),[](light* _1, light* _2){return _1->X.S.size>_2->X.S.size;});
 			for	(u32 test=0; test<source.size(); test++)
 			{
 				light*	L	= source[test];
@@ -115,9 +66,7 @@ void	CRender::render_lights	(light_Package& LP)
 		std::reverse	(refactored.begin(),refactored.end());
 		LP.v_shadowed	= refactored;
 	}
-#if USE_DX11
    PIX_EVENT(SHADOWED_LIGHTS);
-#endif
 	//////////////////////////////////////////////////////////////////////////
 	// sort lights by importance???
 	// while (has_any_lights_that_cast_shadows) {
@@ -161,9 +110,7 @@ void	CRender::render_lights	(light_Package& LP)
 			if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
 			else							r_pmask	(true,false	);
 #endif
-#if USE_DX11
 			PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-#endif
 			bool decorative_light = false;
 			if (L->flags.bHudMode)
 			{
@@ -181,9 +128,7 @@ void	CRender::render_lights	(light_Package& LP)
 			{
 				if((L->decor_object[0]&&!L->decor_object[0]->getDestroy()) || (L->decor_object[1]&&!L->decor_object[1]->getDestroy()) || (L->decor_object[2]&&!L->decor_object[2]->getDestroy()) || (L->decor_object[3]&&!L->decor_object[3]->getDestroy()) || (L->decor_object[4]&&!L->decor_object[4]->getDestroy()) || (L->decor_object[5]&&!L->decor_object[5]->getDestroy()))
 				{
-#if USE_DX11
 					PROF_EVENT("decor_object")
-#endif
 					RImplementation.marker			++;			// !!! critical here
 					RImplementation.set_Object		(0);
 					for (int f=0; f<6; f++)
@@ -197,9 +142,7 @@ void	CRender::render_lights	(light_Package& LP)
 				}
 				else
 				{
-#if USE_DX11
 					PROF_EVENT("r_dsgraph_render_subspace")
-#endif
 					r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
 				}
 			}
@@ -232,13 +175,10 @@ void	CRender::render_lights	(light_Package& LP)
 				if (bSpecial)						{
 					L->X.S.transluent					= TRUE;
 					Target->phase_smap_spot_tsh			(L);
-#if USE_DX11
+
                PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
-#endif
 					r_dsgraph_render_graph				(1);			// normal level, secondary priority
-#if USE_DX11
                PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
-#endif
 					r_dsgraph_render_sorted				( );			// strict-sorted geoms
 				}
 			} else {
@@ -249,15 +189,11 @@ void	CRender::render_lights	(light_Package& LP)
 				L->svis.end								();
 			r_pmask									(true,false);
 		}
-#if USE_DX11
       PIX_EVENT(UNSHADOWED_LIGHTS);
-#endif
       //		switch-to-accumulator
 		Target->phase_accumulator			();
 		HOM.Disable							();
-#if USE_DX11
       PIX_EVENT(POINT_LIGHTS);
-#endif
 		//		if (has_point_unshadowed)	-> 	accum point unshadowed
 		if		(!LP.v_point.empty())	{
 			light*	L_	= LP.v_point.back	();		LP.v_point.pop_back		();
@@ -270,9 +206,7 @@ void	CRender::render_lights	(light_Package& LP)
 			else
 				Target->accum_point		(L_);
 		}
-#if USE_DX11
       PIX_EVENT(SPOT_LIGHTS);
-#endif
       //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
 		if		(!LP.v_spot.empty())	{
 			light*	L_	= LP.v_spot.back	();		LP.v_spot.pop_back			();
@@ -285,15 +219,11 @@ void	CRender::render_lights	(light_Package& LP)
 			else
 				Target->accum_spot		(L_);
 		}
-#if USE_DX11
       PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
-#endif	
       //		if (was_spot_shadowed)		->	accum spot shadowed
 	  if (!L_spot_s.empty())
 	  {
-#if USE_DX11
 		  PIX_EVENT(ACCUM_SPOT);
-#endif
 		  for (u32 it = 0; it < L_spot_s.size(); it++)
 		  {
 			  Target->accum_spot(L_spot_s[it]);
@@ -304,9 +234,7 @@ void	CRender::render_lights	(light_Package& LP)
 		  L_spot_s.clear();
 	  }
 	}
-#if USE_DX11
    PIX_EVENT(POINT_LIGHTS_ACCUM);
-#endif
 	// Point lighting (unshadowed, if left)
 	if (!LP.v_point.empty())		{
 		xr_vector<light*>&	Lvec		= LP.v_point;
@@ -322,9 +250,7 @@ void	CRender::render_lights	(light_Package& LP)
 		}
 		Lvec.clear	();
 	}
-#if USE_DX11
    PIX_EVENT(SPOT_LIGHTS_ACCUM);
-#endif
 	// Spot lighting (unshadowed, if left)
 	if (!LP.v_spot.empty())		{
 		xr_vector<light*>&	Lvec		= LP.v_spot;
