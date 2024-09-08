@@ -16,7 +16,8 @@
 #include "../../../xrCore/API/xrAPI.h"
 #include <d3dcompiler.h>
 #include "../../../Layers/xrRender/light.h"
-#include "../../../Layers/xrRenderPC_R2/Light_Render_Direct.h"
+#include "../Render/LightSpot.h"
+
 class ISpatial;
 
 class CBlender_accum : public IBlender {
@@ -149,6 +150,7 @@ public:
 	xr_vector<light*> m_pointlights;
 	xr_vector<light*> m_spotlights;
 	CLight_Compute_XFORM_and_VIS LR;
+
 public:
 	// Occlusion culling
 	virtual BOOL			occ_visible(Fbox& B);

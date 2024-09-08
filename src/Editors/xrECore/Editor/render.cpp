@@ -13,7 +13,7 @@
 
 #include "..\Layers\xrRender\uber_deffer.h"
 #include "..\Layers\xrRender\uber_deffer.cpp"
-#include "../../../Layers/xrRender/Light_Render_Direct_ComputeXFS.cpp"
+//#include "../../../Layers/xrRender/Light_Render_Direct_ComputeXFS.cpp"
 
 #include "../../../Layers/xrRender/du_sphere_part.h"
 #include "../../../Layers/xrRender/du_cone.h"
@@ -134,12 +134,14 @@ void	light::xform_calc() {
 	}
 }
 
-void CRenderTarget::accum_spot(light* L) {
+void CRenderTarget::accum_spot(light* L) 
+{
 	if(L == nullptr) {
 		return;
 	}
 
-	if(L->flags.type == IRender_Light::SPOT) {
+	if(L->flags.type == IRender_Light::SPOT) 
+	{
 		RImplementation.LR.compute_xf_spot(L);
 	}
 
