@@ -753,6 +753,8 @@ void EScene::Stop()
 
 	Console->Hide();
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
+
+	g_pGamePersistent->Environment().Invalidate();
 }
 
 void EScene::LoadCFrom(CObjectSpace* Space, CDB::build_callback cb)

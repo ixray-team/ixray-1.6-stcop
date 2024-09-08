@@ -41,6 +41,33 @@ void CRenderTarget::draw_volume(light* L) {
 	}
 }
 
+CRenderTarget::CRenderTarget() {
+	t_envmap_0 = DEV->_CreateTexture("$user$env_s0");
+	t_envmap_1 = DEV->_CreateTexture("$user$env_s1");
+
+	b_accum = new CBlender_accum();
+	s_accum.create(b_accum, "r2\\accum_spot_s", "lights\\lights_spot01");
+
+	// POINT
+	{
+		accum_point_geom_create();
+		g_accum_point.create(D3DFVF_XYZ, g_accum_point_vb, g_accum_point_ib);
+	}
+
+	// SPOT
+	{
+		accum_spot_geom_create();
+		g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
+	}
+};
+
+CRenderTarget::~CRenderTarget() {
+	accum_spot_geom_destroy();
+	accum_point_geom_destroy();
+
+	xr_delete(b_accum);
+};
+
 void	light::xform_calc() {
 	if(Device.dwFrame == m_xform_frame)	return;
 	m_xform_frame = Device.dwFrame;
@@ -276,9 +303,7 @@ void CRender::Calculate()
 	//	r_ssaLOD_B						=	(ssaLOD_B*ssaLOD_B)/g_fSCREEN;
 	lstRenderables.clear();
 	ViewBase.CreateFromMatrix(EDevice->mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
-
 	Target->reset_light_marker();
-	RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 
 	{
 		g_SpatialSpace->q_frustum
@@ -350,21 +375,24 @@ void CRender::Calculate()
 #include "../../../Layers/xrRender/CHudInitializer.h"
 #include "../../../Layers/xrRender/CHudInitializer.cpp"
 #include "../../../Layers/xrRender/dxEnvironmentRender.h"
+#include "../../../xrEngine/IGame_Level.h"
+
 void CRender::Render()
 {
 	if(Target) {
-		CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
-		dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
-		IDirect3DBaseTexture9* e0 = envdescren.sky_r_textures_env[0].second->surface_get();
-		IDirect3DBaseTexture9* e1 = envdescren.sky_r_textures_env[1].second->surface_get();
-		Target->t_envmap_0->surface_set(e0); _RELEASE(e0);
-		Target->t_envmap_1->surface_set(e1); _RELEASE(e1);
+		if(g_pGamePersistent && g_pGameLevel) {
+			auto& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
+			auto& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
-		for(auto light : m_spotlights) {
+			Target->t_envmap_0->surface_set(envdescren.sky_r_textures_env[0].second->pSurface);
+			Target->t_envmap_1->surface_set(envdescren.sky_r_textures_env[1].second->pSurface);
+		}
+
+		for(auto& light : m_spotlights) {
 			Target->accum_spot(light);
 		}
 
-		for(auto light : m_pointlights) {
+		for(auto& light : m_pointlights) {
 			Target->accum_spot(light);
 		}
 
@@ -494,13 +522,26 @@ DWORD CRender::get_dx_level()
 	return 90;
 }
 
+static class cl_lighting_enable : public R_constant_setup {
+	virtual void setup(R_constant* C) {
+		float is_lighting_enable = 0.0f;
+		if(g_pGamePersistent && g_pGameLevel) {
+			if(g_pGamePersistent->Environment().Current[0] && g_pGamePersistent->Environment().Current[1]) {
+				is_lighting_enable = 1.0f;
+			}
+		}
+		RCache.set_c(C, is_lighting_enable, is_lighting_enable, is_lighting_enable, is_lighting_enable);
+	}
+} binder_lighting_enable;
+
 void CRender::create()
 {
-
+	DEV->RegisterConstantSetup("is_lighting_enable", &binder_lighting_enable);
 }
+
 void CRender::destroy()
 {
-
+	xr_delete(Target);
 }
 
 void CRender::level_Load(IReader*)

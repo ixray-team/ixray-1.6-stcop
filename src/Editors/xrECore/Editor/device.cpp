@@ -226,6 +226,8 @@ bool CEditorRenderDevice::Create()
     _Create				(F);
 	FS.r_close			(F);
 
+	::Render->create();
+
 	ELog.Msg			(mtInformation, "D3D: initialized");
 
 	return true;
@@ -238,6 +240,7 @@ void CEditorRenderDevice::Destroy()
 	ELog.Msg( mtInformation, "Destroying Direct3D...");
 
 	//HW.Validate			();
+	::Render->destroy();
 
 	// before destroy
 	_Destroy			(FALSE);

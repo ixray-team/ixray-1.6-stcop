@@ -55,37 +55,39 @@ void	CBlender_LmEbB::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 	if (C.bEditor)	{
-		C.PassBegin		();
-		{
-			C.PassSET_ZB		(TRUE,TRUE);
-			C.PassSET_Blend_SET	();
-			C.PassSET_LightFog	(TRUE,TRUE);
-			
-			// Stage1 - Env texture
-			C.StageBegin		();
-			C.StageSET_Address	(D3DTADDRESS_CLAMP);
-			C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
-			C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
-			C.StageSET_TMC		(oT2_Name, oT2_xform, "$null", 0);
-			C.StageEnd			();
-			
-			// Stage2 - Base texture
-			C.StageBegin		();
-			C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_BLENDTEXTUREALPHA,	D3DTA_CURRENT);
-			C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_CURRENT);
-			C.StageSET_TMC		(oT_Name, oT_xform, "$null", 0);
-			C.StageEnd			();
+		//C.PassBegin		();
+		//{
+		//	C.PassSET_ZB		(TRUE,TRUE);
+		//	C.PassSET_Blend_SET	();
+		//	C.PassSET_LightFog	(TRUE,TRUE);
+		//	
+		//	// Stage1 - Env texture
+		//	C.StageBegin		();
+		//	C.StageSET_Address	(D3DTADDRESS_CLAMP);
+		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
+		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_DIFFUSE);
+		//	C.StageSET_TMC		(oT2_Name, oT2_xform, "$null", 0);
+		//	C.StageEnd			();
+		//	
+		//	// Stage2 - Base texture
+		//	C.StageBegin		();
+		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_BLENDTEXTUREALPHA,	D3DTA_CURRENT);
+		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,		D3DTA_CURRENT);
+		//	C.StageSET_TMC		(oT_Name, oT_xform, "$null", 0);
+		//	C.StageEnd			();
 
-			// Stage3 - Lighting - should work on all 2tex hardware
-			C.StageBegin		();
-			C.StageSET_Color	(D3DTA_DIFFUSE,	  D3DTOP_MODULATE,			D3DTA_CURRENT);
-			C.StageSET_Alpha	(D3DTA_DIFFUSE,	  D3DTOP_SELECTARG2,		D3DTA_CURRENT);
-			C.Stage_Texture		("$null"	);
-			C.Stage_Matrix		("$null",	0);
-			C.Stage_Constant	("$null"	);
-			C.StageEnd			();
-		}
-		C.PassEnd			();
+		//	// Stage3 - Lighting - should work on all 2tex hardware
+		//	C.StageBegin		();
+		//	C.StageSET_Color	(D3DTA_DIFFUSE,	  D3DTOP_MODULATE,			D3DTA_CURRENT);
+		//	C.StageSET_Alpha	(D3DTA_DIFFUSE,	  D3DTOP_SELECTARG2,		D3DTA_CURRENT);
+		//	C.Stage_Texture		("$null"	);
+		//	C.Stage_Matrix		("$null",	0);
+		//	C.Stage_Constant	("$null"	);
+		//	C.StageEnd			();
+		//}
+		//C.PassEnd			();
+		uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+		C.r_End();
 	} else {
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)

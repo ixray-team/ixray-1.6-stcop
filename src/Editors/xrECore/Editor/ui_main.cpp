@@ -416,13 +416,13 @@ void TUI::Redraw()
 	PrepareRedraw();
 
 	try{
-	
-		if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
+		if(u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight || !RT->pSurface)
 		{
 			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
 			{
 				GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
 				GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
+
 				RT.destroy();
 				RTCopy.destroy();
 				ZB.destroy();
@@ -430,14 +430,16 @@ void TUI::Redraw()
 				RTPostion.destroy();
 				RTNormal.destroy();
 				RTDiffuse.destroy();
-				
-				RTPostion.create("$user$position", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-				RTNormal.create("$user$normal", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-				RTDiffuse.create("$user$diffuse", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
 
-				RT.create("$user$rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-				RTCopy.create("$user$rt_color_copy", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-				ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24S8);
+				RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+				RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+				RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
+
+				RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+
+				ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
+
 				m_Flags.set(flRedraw, TRUE);
 
 				EDevice->m_fNearer = EDevice->mProject._43;
@@ -489,6 +491,7 @@ void TUI::Redraw()
 				RCache.set_RT(RTNormal->pRT, 2);
 				RCache.set_RT(RTPostion->pRT, 3);
 
+				RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 				//EDevice->Statistic->RenderDUMP_RT.Begin();
 				EDevice->UpdateView();
 				EDevice->ResetMaterial();
@@ -528,7 +531,6 @@ void TUI::Redraw()
 
 				// draw axis
 				DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
-
 
 				//EDevice->Statistic->RenderDUMP_RT.End();
 				//->EStatistic->Show(EDevice->pSystemFont);
@@ -707,24 +709,28 @@ bool TUI::OnCreate()
 		return 		false;
 	}
 
-	BeginEState		(esEditScene);
+	BeginEState(esEditScene);
+
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
+
 	RTSize = { GetRenderWidth(), GetRenderHeight() };
 	EDevice->fASPECT = (float)RTSize.x / (float)RTSize.y;
+
 	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
 	EDevice->m_fNearer = EDevice->mProject._43;
 
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
 
-	RTPostion.create("$user$position", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-	RTNormal.create("$user$normal", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-	RTDiffuse.create("$user$diffuse", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
+	RTPostion.create("$user$position", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTNormal.create("$user$normal", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTDiffuse.create("$user$diffuse", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
 
-	RT.create("$user$rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	RTCopy.create("$user$rt_color_copy", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	ZB.create("$user$rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24S8);
+	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+
+	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_D24S8);
 
 	return true;
 }

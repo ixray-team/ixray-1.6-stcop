@@ -9,6 +9,7 @@
 #include "../../xrEngine/environment.h"
 
 #include "dxRenderDeviceRender.h"
+#include "../../xrEngine/IGame_Level.h"
 
 // matrices
 #define	BIND_DECLARE(xf)	\
@@ -163,6 +164,12 @@ class cl_fog_plane	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C)
 	{
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker!=Device.dwFrame)
 		{
 			// Plane
@@ -191,6 +198,12 @@ class cl_fog_params	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C)
 	{
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker!=Device.dwFrame)
 		{
 			// Near/Far
@@ -208,6 +221,12 @@ class cl_fog_color	: public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker!=Device.dwFrame)	{
 			CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
 #if RENDER == R_R1
@@ -287,6 +306,12 @@ class cl_sun0_color : public R_constant_setup {
 	u32 marker;
 	Fvector4 result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
 #if defined(_EDITOR) || RENDER != R_R1
@@ -303,6 +328,12 @@ class cl_sun0_dir_w : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
 			result.set(desc.sun_dir.x, desc.sun_dir.y, desc.sun_dir.z, 0);
@@ -315,6 +346,12 @@ class cl_sun0_dir_e : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			Fvector D;
 			CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
@@ -330,6 +367,12 @@ class cl_amb_color : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 
@@ -348,6 +391,12 @@ class cl_hemi_color : public R_constant_setup {
 	u32			marker;
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 #if defined(_EDITOR) || RENDER != R_R1
@@ -366,6 +415,12 @@ class cl_sky_color : public R_constant_setup {
 	u32 marker;
 	Fvector4 result;
 	virtual void setup(R_constant* C) {
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		if (marker != Device.dwFrame) {
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 #if defined(_EDITOR) || RENDER != R_R1
@@ -428,13 +483,15 @@ static class cl_rain_params : public R_constant_setup {
 
 	virtual void setup(R_constant* C)
 	{
-#ifndef _EDITOR
+#ifdef _EDITOR
+		if(!g_pGamePersistent || !g_pGameLevel) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
 		float rainDensity = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 		float rainWetness = g_pGamePersistent->Environment().wetness_factor;
 		RCache.set_c(C, rainDensity, rainWetness, 0.0f, 0.0f);
-#else
-		RCache.set_c(C, 0, 0, 0.0f, 0.0f);
-#endif
 	}
 } binder_rain_params;
 
@@ -452,17 +509,17 @@ static class cl_inv_v : public R_constant_setup
 } binder_inv_v;
 
 // Standart constant-binding
-void	CBlender_Compile::SetMapping	()
+void	CBlender_Compile::SetMapping()
 {
 	// matrices
-	r_Constant				("m_W",				&binder_w);
-	r_Constant				("m_invW",			&binder_invw);
-	r_Constant				("m_V",				&binder_v);
-	r_Constant				("m_P",				&binder_p);
-	r_Constant				("m_WV",			&binder_wv);
-	r_Constant				("m_VP",			&binder_vp);
-	r_Constant				("m_WVP",			&binder_wvp);
-	r_Constant				("m_inv_V",			&binder_inv_v);
+	r_Constant("m_W", &binder_w);
+	r_Constant("m_invW", &binder_invw);
+	r_Constant("m_V", &binder_v);
+	r_Constant("m_P", &binder_p);
+	r_Constant("m_WV", &binder_wv);
+	r_Constant("m_VP", &binder_vp);
+	r_Constant("m_WVP", &binder_wvp);
+	r_Constant("m_inv_V", &binder_inv_v);
 
 	r_Constant("m_P_hud", &binder_hud_project);
 
@@ -474,63 +531,59 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant("m_VP_old", &binder_vp_old);
 	r_Constant("m_WVP_old", &binder_wvp_old);
 #endif
-	
-	r_Constant				("m_xform_v",		&tree_binder_m_xform_v);
-	r_Constant				("m_xform",			&tree_binder_m_xform);
 
-	r_Constant				("consts",			&tree_binder_consts);
-	r_Constant				("wave",			&tree_binder_wave);
-	r_Constant				("wind",			&tree_binder_wind);
+	r_Constant("m_xform_v", &tree_binder_m_xform_v);
+	r_Constant("m_xform", &tree_binder_m_xform);
+
+	r_Constant("consts", &tree_binder_consts);
+	r_Constant("wave", &tree_binder_wave);
+	r_Constant("wind", &tree_binder_wind);
 
 #ifdef USE_DX11
-	r_Constant				("consts_old",		&tree_binder_consts_old);
-	r_Constant				("wave_old",  		&tree_binder_wave_old);
-	r_Constant				("wind_old",  		&tree_binder_wind_old);
+	r_Constant("consts_old", &tree_binder_consts_old);
+	r_Constant("wave_old", &tree_binder_wave_old);
+	r_Constant("wind_old", &tree_binder_wind_old);
 #endif
 
-	r_Constant				("c_scale",			&tree_binder_c_scale);
-	r_Constant				("c_bias",			&tree_binder_c_bias);
-	r_Constant				("c_sun",			&tree_binder_c_sun);
+	r_Constant("c_scale", &tree_binder_c_scale);
+	r_Constant("c_bias", &tree_binder_c_bias);
+	r_Constant("c_sun", &tree_binder_c_sun);
 
 	//hemi cube
-	r_Constant				("L_material",			&binder_material);
-	r_Constant				("hemi_cube_pos_faces",			&binder_hemi_cube_pos_faces);
-	r_Constant				("hemi_cube_neg_faces",			&binder_hemi_cube_neg_faces);
+	r_Constant("L_material", &binder_material);
+	r_Constant("hemi_cube_pos_faces", &binder_hemi_cube_pos_faces);
+	r_Constant("hemi_cube_neg_faces", &binder_hemi_cube_neg_faces);
 
 	//	Igor	temp solution for the texgen functionality in the shader
-	r_Constant				("m_invV",				&binder_invv);
-	r_Constant				("m_texgen",			&binder_texgen);
-	r_Constant				("mVPTexgen",			&binder_VPtexgen);
+	r_Constant("m_invV", &binder_invv);
+	r_Constant("m_texgen", &binder_texgen);
+	r_Constant("mVPTexgen", &binder_VPtexgen);
 
-#if 1 //ndef _EDITOR
 	// fog-params
-	//r_Constant				("fog_plane",		&binder_fog_plane);
-	//r_Constant				("fog_params",		&binder_fog_params);
-	//r_Constant				("fog_color",		&binder_fog_color);
-#endif
-	// time
-	r_Constant				("timers",			&binder_times);
+	r_Constant("fog_plane", &binder_fog_plane);
+	r_Constant("fog_params", &binder_fog_params);
+	r_Constant("fog_color", &binder_fog_color);
+
+	r_Constant("timers", &binder_times);
 
 	// eye-params
-	r_Constant				("eye_position",	&binder_eye_P);
-	r_Constant				("eye_direction",	&binder_eye_D);
-	r_Constant				("eye_normal",		&binder_eye_N);
+	r_Constant("eye_position", &binder_eye_P);
+	r_Constant("eye_direction", &binder_eye_D);
+	r_Constant("eye_normal", &binder_eye_N);
 
-#if 1 //ndef _EDITOR
-	// global-lighting (env params)
-	//r_Constant				("L_sun_color",		&binder_sun0_color);
-	//r_Constant				("L_sun_dir_w",		&binder_sun0_dir_w);
-	//r_Constant				("L_sun_dir_e",		&binder_sun0_dir_e);
-	//
-	//r_Constant				("m_taa_jitter",	&binder_taa_jitter);
-	//
-	//r_Constant				("L_sky_color",		&binder_sky_color);
-	//
-	//r_Constant				("L_hemi_color",	&binder_hemi_color);
-	//r_Constant				("L_ambient",		&binder_amb_color);
-#endif
-	r_Constant				("screen_res",		&binder_screen_res);
-	r_Constant				("def_aref",		&binder_def_aref);
+	r_Constant("L_sun_color", &binder_sun0_color);
+	r_Constant("L_sun_dir_w", &binder_sun0_dir_w);
+	r_Constant("L_sun_dir_e", &binder_sun0_dir_e);
+
+	r_Constant("m_taa_jitter", &binder_taa_jitter);
+
+	r_Constant("L_sky_color", &binder_sky_color);
+
+	r_Constant("L_hemi_color", &binder_hemi_color);
+	r_Constant("L_ambient", &binder_amb_color);
+
+	r_Constant("screen_res", &binder_screen_res);
+	r_Constant("def_aref", &binder_def_aref);
 
 	r_Constant("scaled_screen_res", &binder_scaled_screen_res);
 	r_Constant("target_screen_res", &binder_target_screen_res);

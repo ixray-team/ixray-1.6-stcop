@@ -46,37 +46,8 @@ public:
 class CRenderTarget :public IRender_Target
 {
 public:
-	CRenderTarget() {
-		t_envmap_0.create("$user$env_s0");
-		t_envmap_1.create("$user$env_s1");
-
-		b_accum = new CBlender_accum();
-		s_accum.create(b_accum, "r2\\accum_spot_s", "lights\\lights_spot01");
-
-		// POINT
-		{
-			accum_point_geom_create();
-			g_accum_point.create(D3DFVF_XYZ, g_accum_point_vb, g_accum_point_ib);
-		}
-
-		// SPOT
-		{
-			accum_spot_geom_create();
-			g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
-		}
-	};
-
-	virtual ~CRenderTarget() {
-		t_envmap_0->surface_set(nullptr);
-		t_envmap_1->surface_set(nullptr);
-		t_envmap_0.destroy();
-		t_envmap_1.destroy();
-
-		accum_spot_geom_destroy();
-		accum_point_geom_destroy();
-
-		xr_delete(b_accum);
-	};
+	CRenderTarget();
+	virtual ~CRenderTarget();
 
 	// 2D texgen (texture adjustment matrix)
 	void	u_compute_texgen_screen(Fmatrix& m_Texgen) {
@@ -156,8 +127,8 @@ public:
 	virtual u32						get_core_width()	{ return EDevice->TargetWidth;	}
 	virtual u32						get_core_height()	{ return EDevice->TargetHeight;	}
 
-	ref_texture t_envmap_0;	// env-0
-	ref_texture t_envmap_1;	// env-1
+	CTexture* t_envmap_0;	// env-0
+	CTexture* t_envmap_1;	// env-1
 };
 
 class	ECORE_API CRender : public IRender_interface

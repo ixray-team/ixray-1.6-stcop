@@ -93,7 +93,6 @@ void	CBlender_Model_EbB::Compile(CBlender_Compile& C)
 		if(oBlend.value) {
 			C.PassSET_ZB(TRUE, FALSE);
 			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
-			
 		}
 
 		C.r_End();

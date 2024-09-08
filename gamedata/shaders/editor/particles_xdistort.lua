@@ -6,5 +6,5 @@ function normal(shader, t_base, t_second, t_detail)
         :fog(false)
     shader:sampler("s_base") : texture(t_base)
     shader:sampler("s_distort") : texture(t_base)
-    shader:sampler("s_image") : texture("rt_color") : mirror ()
+    shader:sampler("s_image") : texture("$user$rt_color") : mirror ()
 end

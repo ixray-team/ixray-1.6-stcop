@@ -81,18 +81,17 @@ void	CBlender_Model::Compile	(CBlender_Compile& C)
 		//}
 		//C.PassEnd			();
 
-		bool is_blend = oStrictSorting.value || (oBlend.value && oAREF.value < 16);
+		bool is_blend = oBlend.value && oAREF.value < 16;
 
 		if(is_blend) {
 			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
 
-		uber_deffer(C, true, "deffer_model", "deffer_base", !!oBlend.value && !is_blend, 0, true);
+		uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, 0, true);
 
 		if(is_blend) {
 			C.PassSET_ZB(TRUE, FALSE);
 			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
-
 		}
 
 		C.r_End();
