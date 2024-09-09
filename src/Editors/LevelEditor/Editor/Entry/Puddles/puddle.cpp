@@ -25,19 +25,19 @@ bool CPuddle::RayPick(float& distance, const Fvector& start, const Fvector& dire
 
 	Fbox Box;
 	Box.set(FPosition, FScale);
-	const float PSOBJECT_SIZE = Box.getradius();
+	Box.getcenter(pos);
 
-	float d = ray2.dotproduct(direction);
-	if (d > 0) {
-		float d2 = ray2.magnitude();
-		if (((d2 * d2 - d * d) < (PSOBJECT_SIZE * PSOBJECT_SIZE)) && (d > PSOBJECT_SIZE)) {
-			if (d < distance) {
-				distance = d;
-				return true;
-			}
-		}
-	}
-	return false;
+	Fobb obb;
+	obb.invalidate();
+	obb.m_translate = FPosition;
+	obb.m_halfsize = FScale;
+	//obb.m_halfsize.mul(0.5f);
+
+	return CDB::TestRayOBB(start, direction, obb);
+
+	//Fvector ada;
+	//ada.mad(start, direction, sqrt(pos.sub(start).dotproduct(direction)));
+	//return Box.contains(ada);
 }
 
 bool CPuddle::FrustumPick(const CFrustum& frustum)
@@ -47,7 +47,7 @@ bool CPuddle::FrustumPick(const CFrustum& frustum)
 
 void CPuddle::Render(int priority, bool strictB2F)
 {
-	constexpr u32 SelColor = color_rgba(10, 10, 255, 0);
+	constexpr u32 SelColor = color_rgba(10, 10, 255, 122);
 	DU_impl.DrawBox(this->FPosition, this->FScale, Selected(), true, SelColor, Selected() ? 0xfff : 0xddd);
 }
 

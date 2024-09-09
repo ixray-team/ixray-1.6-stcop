@@ -30,7 +30,8 @@ void EScenePuddlesTool::AfterRender()
 
 void EScenePuddlesTool::OnRender(int priority, bool strictB2F)
 {
-	inherited::OnRender(priority, strictB2F);
+	for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)
+    	(*it)->Render(priority,strictB2F);
 }
 
 void EScenePuddlesTool::OnControlAppendClick(ButtonValue* sender, bool& bDataModified, bool& bSafe)
