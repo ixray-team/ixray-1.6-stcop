@@ -329,8 +329,10 @@ void CDetailManager::UpdateVisibleM()
 					float	alpha		= (dist_sq<fade_start)?0.f:(dist_sq-fade_start)/fade_range;
 					float	alpha_i		= 1.f - alpha;
 					float	dist_sq_rcp	= 1.f / dist_sq;
-
-					S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
+					if(ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
+						S.frame			= RDEVICE.dwFrame+1;
+					else
+						S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
 					for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++){
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;
