@@ -40,6 +40,7 @@ enum class EditorUI : u8
 	ScenesViewer,
 	CameraEffectors,
 	Game_TimeManager,
+	Game_SpawnManager,
 	Count
 };
 
