@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "../Tools/Puddles/EScenePuddlesTools.h"
 
 void EScene::RegisterSceneTools(ESceneToolBase* mt)
 {
@@ -22,6 +22,7 @@ void EScene::CreateSceneTools()
     RegisterSceneTools	   	(new ESceneWayTool		()	); //+
     RegisterSceneTools	   	(new ESceneSectorTool	()	); //+
     RegisterSceneTools	   	(new EScenePortalTool	()	); //+
+    RegisterSceneTools	   	(new EScenePuddlesTool  ()	); //+
     RegisterSceneTools	   	(new EScenePSTool		()	); //+
     RegisterSceneTools	   	(new EDetailManager		()	); //+
     RegisterSceneTools	   	(new ESceneAIMapTool	()	); //+

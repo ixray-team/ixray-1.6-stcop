@@ -85,6 +85,10 @@ void UIMainMenuForm::Draw()
 				{
 					ExecCommand(COMMAND_MAKE_GAME);
 				}
+				if (ImGui::MenuItem("Make Puddles", ""))
+				{
+					ExecCommand(COMMAND_MAKE_PUDDLES);
+				}
 				if (ImGui::MenuItem("Make Details", ""))
 				{
 					ExecCommand(COMMAND_MAKE_DETAILS);

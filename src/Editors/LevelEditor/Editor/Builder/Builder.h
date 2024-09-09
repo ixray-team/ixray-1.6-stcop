@@ -142,6 +142,7 @@ public:
 
 	BOOL	Compile            		(bool b_selected_only,bool show_message=true);
 	BOOL 	MakeGame				();
+	BOOL 	MakePuddles				();
     BOOL 	MakeDetails				();
     BOOL 	MakeHOM					();
 	BOOL 	MakeSOM					();
