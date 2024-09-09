@@ -88,7 +88,7 @@ void CWeaponBM16::PlayAnimReload()
 	xr_string anm_name = "anm_reload";
 	if (!isGuns)
 	{
-		if ((m_magazine.size() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+		if ((m_magazine.size() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
 			anm_name += "_1";
 		else
 			anm_name += "_2";

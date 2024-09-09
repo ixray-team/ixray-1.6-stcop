@@ -89,11 +89,13 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
 	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
 
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
 	if (WeaponSoundExist(section, "snd_reload_empty"))
 		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload);
 	
-	if (WeaponSoundExist(section, "snd_reload_jammed"))
-		m_sounds.LoadSound(section, "snd_reload_jammed", "sndReloadJammed", true, m_eSoundReload); 
+	if (WeaponSoundExist(section, isGuns ? "snd_reload_jammed" : "snd_reload_misfire"))
+		m_sounds.LoadSound(section, isGuns ? "snd_reload_jammed" : "snd_reload_misfire", "sndReloadJammed", true, m_eSoundReload);
 
 	if (WeaponSoundExist(section, "snd_reload_jammed_last"))
 		m_sounds.LoadSound(section, "snd_reload_jammed_last", "sndReloadJammedLast", true, m_eSoundReload);
@@ -135,8 +137,6 @@ void CWeaponMagazined::Load	(LPCSTR section)
 			m_sounds.LoadSound(section, "snd_close_weapon_preloaded", "sndClosePreloaded", false, m_eSoundClose);
 		}
 	}
-
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (isGuns)
 	{
