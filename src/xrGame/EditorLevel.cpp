@@ -212,3 +212,25 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 	spawn_item("bread", Fvector().set(0, 0, 0), 0, 0);*/
 	return TRUE;
 }
+
+void CLevelEditor::LoadEditor(shared_str LevelName)
+{
+	string_path fn_game;
+	// loading sound environment
+
+	xr_string File = LevelName.c_str();
+
+	if (FS.exist(fn_game, "$level$", (File + "\\level.snd_env").c_str()))
+	{
+		IReader* F = FS.r_open(fn_game);
+		::Sound->set_geometry_env(F);
+		FS.r_close(F);
+	}
+	// loading SOM
+	if (FS.exist(fn_game, "$level$", (File + "\\level.som").c_str()))
+	{
+		IReader* F = FS.r_open(fn_game);
+		::Sound->set_geometry_som(F);
+		FS.r_close(F);
+	}
+}
