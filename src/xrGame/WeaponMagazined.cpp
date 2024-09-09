@@ -2089,7 +2089,7 @@ void CWeaponMagazined::PlayAnimIdle()
 
 	if (IsZoomed())
 	{
-		if (isGuns)
+		if (HudAnimationExist("anm_idle_aim_start"))
 		{
 			if (!IsAimStarted)
 			{
@@ -2105,7 +2105,7 @@ void CWeaponMagazined::PlayAnimIdle()
 	}
 	else
 	{
-		if (isGuns)
+		if (HudAnimationExist("anm_idle_aim_end"))
 		{
 			if (IsAimStarted)
 			{
