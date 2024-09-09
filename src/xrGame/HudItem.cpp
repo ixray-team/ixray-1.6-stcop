@@ -862,7 +862,7 @@ bool CHudItem::TryPlayAnimIdle()
 			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 			if(state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
-				if (!SwitchSprint && isGuns)
+				if (!SwitchSprint && HudAnimationExist("anm_idle_sprint_start"))
 				{
 					SwitchState(eSprintStart);
 					return true;
@@ -872,25 +872,25 @@ bool CHudItem::TryPlayAnimIdle()
 
 				return true;
 			}
-			else if (SwitchSprint && isGuns)
+			else if (SwitchSprint && HudAnimationExist("anm_idle_sprint_end"))
 			{
 				SwitchState(eSprintEnd);
 				return true;
 			}
 			else if (pActor->AnyMove())
 			{
-				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && isGuns)
+				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && (HudAnimationExist("anm_idle_moving_crouch") || HudAnimationExist("anm_idle_moving_crouch_slow")))
 				{
-					if (state & ACTOR_DEFS::EMoveCommand::mcAccel)
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_crouch_slow"))
 						PlayAnimIdleMovingCrouchSlow();
-					else
+					else if (HudAnimationExist("anm_idle_moving_crouch"))
 						PlayAnimIdleMovingCrouch();
 
 					return true;
 				}
 				else
 				{
-					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && isGuns)
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_slow"))
 						PlayAnimIdleMovingSlow();
 					else
 						PlayAnimIdleMoving();
