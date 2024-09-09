@@ -517,6 +517,8 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 		Env->wetness_factor -= 0.00001f;
 	}
 
+	clamp(Env->wetness_factor, 0.f, 1.f);
+
 	R_ASSERT				( _valid(A.sun_dir) );
 	R_ASSERT				( _valid(B.sun_dir) );
 	sun_dir.lerp			(A.sun_dir,B.sun_dir,f).normalize();
