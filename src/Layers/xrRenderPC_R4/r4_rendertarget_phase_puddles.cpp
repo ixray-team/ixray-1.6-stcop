@@ -3,7 +3,7 @@
 
 void CRenderTarget::phase_puddles()
 {
-	if(!FS.exist("$level$","level.puddles"))
+	if(!FS.exist("$level$","level.puddles") || g_pGamePersistent->Environment().wetness_factor == 0.0f)
 		return;
 
 	//Set the rendertarget and DSV
