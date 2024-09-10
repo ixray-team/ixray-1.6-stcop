@@ -177,7 +177,10 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(LPCSTR  N)
 }
 MotionID CKinematicsAnimated::ID_Cycle	(shared_str  N)
 {
-	MotionID motion_ID		= ID_Cycle_Safe	(N);	R_ASSERT3(motion_ID.valid(),"! MODEL: can't find cycle: ", N.c_str());
+	MotionID motion_ID		= ID_Cycle_Safe	(N);
+	R_ASSERT2(motion_ID.valid(), 
+		make_string<const char*>("! MODEL [%s]: can't find cycle: [%s]", 
+		dbg_name.c_str(), N.c_str()));
     return motion_ID;
 }
 MotionID CKinematicsAnimated::ID_Cycle_Safe(shared_str  N)
@@ -192,7 +195,8 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(shared_str  N)
 }
 MotionID CKinematicsAnimated::ID_Cycle	(LPCSTR  N)
 {
-	MotionID motion_ID		= ID_Cycle_Safe	(N);	R_ASSERT3(motion_ID.valid(),"! MODEL: can't find cycle: ", N);
+	MotionID motion_ID		= ID_Cycle_Safe	(N);
+	R_ASSERT2(motion_ID.valid(), make_string<const char*>("! MODEL [%s]: can't find cycle: [%s]", dbg_name.c_str(), N));
 	return motion_ID;
 }
 void	CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel /*= (1<<0)*/)
@@ -335,11 +339,20 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 	}
 	CPartDef& P	=	(*m_Partition)[part];
 	CBlend*	B	=	IBlend_Create	();
-
+	if (B == nullptr)
+	{
+		return 0;
+	}
 	_DBG_SINGLE_USE_MARKER;
 	IBlendSetup(*B, part,channel, motion_ID, bMixing, blendAccrue, blendFalloff, Speed, noloop, Callback, CallbackParam );
-	for (u32 i=0; i<P.bones.size(); i++)
-		Bone_Motion_Start_IM	((*bones)[P.bones[i]],B);
+	for (u32 i = 0; i < P.bones.size(); i++)
+	{
+		if (!(*bones)[P.bones[i]])
+		{
+			Debug.fatal(DEBUG_INFO, "! MODEL: missing bone/wrong armature? : %s", *getDebugName());
+		}
+		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
+	}
 	blend_cycles[part].push_back(B);
 	return		B;
 }
@@ -348,6 +361,11 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle		(u16 part, MotionID motion_ID, BOOL b
 	VERIFY					(motion_ID.valid()); 
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
+	if (m_def == nullptr)
+	{
+		return nullptr;
+	}
+
 	return LL_PlayCycle		(part,motion_ID,bMixIn, 
     						 m_def->Accrue(),m_def->Falloff(),m_def->Speed(),m_def->StopAtEnd(), 
                              Callback,CallbackParam,channel);
@@ -355,14 +373,26 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle		(u16 part, MotionID motion_ID, BOOL b
 CBlend*	CKinematicsAnimated::PlayCycle		(LPCSTR  N, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam,u8 channel  /*= 0*/)
 {
 	MotionID motion_ID		= ID_Cycle(N);
-	if (motion_ID.valid())	return PlayCycle(motion_ID,bMixIn,Callback,CallbackParam,channel);
-	else					{ Debug.fatal(DEBUG_INFO,"! MODEL: can't find cycle: %s", N); return 0; }
+	if (motion_ID.valid())
+	{
+		return PlayCycle(motion_ID,bMixIn,Callback,CallbackParam,channel);
+	}
+	else
+	{ 
+		Debug.fatal(DEBUG_INFO, "! MODEL [%s]: can't find cycle: [%s]", dbg_name.c_str(), N);
+		return 0;
+	}
 }
 CBlend*	CKinematicsAnimated::PlayCycle		(MotionID motion_ID,  BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam,u8 channel /*= 0*/)
 {	
 	VERIFY					(motion_ID.valid()); 
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
+	if (m_def == nullptr)
+	{
+		return nullptr;
+	}
+
 	return LL_PlayCycle		(m_def->bone_or_part,motion_ID,bMixIn, 
     						 m_def->Accrue(),m_def->Falloff(),m_def->Speed(),m_def->StopAtEnd(), 
                              Callback,CallbackParam,channel);
@@ -373,6 +403,11 @@ CBlend*	CKinematicsAnimated::PlayCycle		(u16 partition, MotionID motion_ID,  BOO
 	VERIFY					(motion_ID.valid()); 
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
+	if (m_def == nullptr)
+	{
+		return nullptr;
+	}
+
 	return LL_PlayCycle		(partition, motion_ID,bMixIn, 
     						 m_def->Accrue(),m_def->Falloff(),m_def->Speed(),m_def->StopAtEnd(), 
                              Callback,CallbackParam,channel);
@@ -399,6 +434,10 @@ CBlend*	CKinematicsAnimated::PlayFX			(MotionID motion_ID, float power_scale)
 	VERIFY					(motion_ID.valid()); 
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
+	if (m_def == nullptr)
+	{
+		return nullptr;
+	}
 	return LL_PlayFX		(m_def->bone_or_part,motion_ID,
     						 m_def->Accrue(),m_def->Falloff(),
                              m_def->Speed(),m_def->Power()*power_scale);
@@ -417,6 +456,10 @@ CBlend*	CKinematicsAnimated::LL_PlayFX		(u16 bone, MotionID motion_ID, float ble
 	if (BI_NONE==bone)		bone = iRoot;
 	
 	CBlend*	B		= IBlend_Create();
+	if (B == nullptr)
+	{
+		return nullptr;
+	}
 	_DBG_SINGLE_USE_MARKER;
 	IFXBlendSetup(*B,motion_ID,blendAccrue,blendFalloff,Power,Speed,bone);
 	Bone_Motion_Start	((*bones)[bone],B);
@@ -632,7 +675,7 @@ CBlend*	CKinematicsAnimated::IBlend_Create	()
 	CBlend *I=blend_pool.begin(), *E=blend_pool.end();
 	for (; I!=E; I++)
 		if (I->blend_state() == CBlend::eFREE_SLOT) return I;
-	FATAL("Too many blended motions requisted");
+	// FATAL("Too many blended motions requested");
 	return 0;
 }
 void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)

@@ -459,7 +459,7 @@ void CKinematics::Release		()
 
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
-	VERIFY(bone_id<LL_BoneCount());      
+	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
 	visimask.set(bone_id, val);
 
 	if(!visimask.is(bone_id)) {
