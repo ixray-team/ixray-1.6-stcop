@@ -122,20 +122,14 @@ void CRender::reset_begin()
 {
 	if (b_loaded)
 	{
-		auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), fastdelegate::FastDelegate0<>(Details, &CDetailManager::MT_CALC));
-
-		if (I != Device.seqParallelRender.end())
-			Device.seqParallelRender.erase(I);
-
 		Details->Unload();
 		xr_delete(Details);
 	}
 
 	xr_delete(Target);
-	//.	HWOCC.occq_destroy			();
 }
 
-void					CRender::reset_end				()
+void CRender::reset_end()
 {
 	xrRender_apply_tf			();
 //.	HWOCC.occq_create			(occq_size);

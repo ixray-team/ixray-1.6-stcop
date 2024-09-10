@@ -233,6 +233,12 @@ void CDetailManager::Load		()
 #endif
 void CDetailManager::Unload		()
 {
+	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), fastdelegate::FastDelegate0<>(this, &CDetailManager::MT_CALC));
+
+	if (I != Device.seqParallelRender.end())
+		Device.seqParallelRender.erase(I);
+
+
 	if (UseVS())	hw_Unload	();
 	else			soft_Unload	();
 
