@@ -299,6 +299,11 @@ void CActor::IR_OnKeyboardHold(int cmd)
 
 void CActor::IR_OnMouseMove_CorrectMouseSense(int& p_dx, int& p_dy, float& sense)
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		return;
+	}
+
 	CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
 	if (wpn != nullptr && wpn->IsZoomed())
 	{

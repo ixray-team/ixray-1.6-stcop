@@ -887,12 +887,14 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	UpdateAddonsVisibility();
 	InitAddons();
 
-	shared_str scope_sect = m_section_id;
-	if (IsScopeAttached() && get_ScopeStatus() == 2)
-		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		shared_str scope_sect = m_section_id;
+		if (IsScopeAttached() && get_ScopeStatus() == 2)
+			scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
-	LoadNightBrightnessParamsFromSection(scope_sect);
-
+		LoadNightBrightnessParamsFromSection(scope_sect);
+	}
 	m_dwWeaponIndependencyTime = 0;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -3953,6 +3955,11 @@ float CWeapon::GetLensFOV(float default_value) const
 
 void CWeapon::ReloadNightBrightnessParams()
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		return;
+	}
+
 	shared_str scope_sect = m_section_id;
 
 	if (IsScopeAttached() && get_ScopeStatus() == 2)
@@ -4089,6 +4096,11 @@ void CWeapon::SetLensParams(lens_zoom_params& params)
 
 void CWeapon::UpdateLensFactor(u32 timedelta)
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		return;
+	}
+
 	lens_zoom_params lens_params_tmp = _lens_zoom_params;
 	lens_zoom_params lens_params_final = lens_params_tmp;
 
