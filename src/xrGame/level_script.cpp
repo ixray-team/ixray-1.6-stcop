@@ -39,6 +39,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "HUDAnimItem.h"
 #include "ActorCondition.h"
+#include "../xrEngine/XR_IOConsole.h"
 
 #include "ai_object_location.h"
 
@@ -604,35 +605,38 @@ void RenderSpawnManagerWindow()
 
 							if (ImGui::Button(imname))
 							{
-								if (!imgui_spawn_manager.weapon_spawn_on_level)
+								int count = atoi(imgui_spawn_manager.weapon_spawn_count);
+
+								if (count == 0)
+									count = 1;
+
+								if (Console)
 								{
-									int count = atoi(imgui_spawn_manager.weapon_spawn_count);
+									string256 cmd{};
+									size_t size{};
 
-									if (count == 0)
-										count = 1;
-
-									for (int i = 0; i < count; ++i)
+									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										auto pActor = smart_cast<CActor*>(Level().CurrentEntity());
-
-										if (pActor)
-										{
-											if (Level().Server)
-											{
-												auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-												if (tpGame)
-												{
-													CALifeSimulator__spawn_item2(&tpGame->alife(), section_name.data(), pActor->Position(), pActor->ai_location().level_vertex_id(),
-														pActor->ai_location().game_vertex_id(), pActor->ID());
-												}
-											}
-										}
+										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
+										size += sizeof("g_spawn_inv");
 									}
+									else
+									{
+										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
+										size += sizeof("g_spawn");
+									}
+
+									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
+									size += section_name.size();
+
+									char to_number[4]{};
+									sprintf_s(to_number, sizeof(to_number), " %d", count);
+
+									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
+
+									Console->ExecuteCommand(cmd);
 								}
-								else
-								{
-									// todo: implement
-								}
+
 							}
 
 							if (ImGui::BeginItemTooltip())
@@ -713,34 +717,37 @@ void RenderSpawnManagerWindow()
 
 							if (ImGui::Button(imname))
 							{
-								if (!imgui_spawn_manager.weapon_spawn_on_level)
+
+								int count = atoi(imgui_spawn_manager.weapon_spawn_count);
+
+								if (count == 0)
+									count = 1;
+
+								if (Console)
 								{
-									int count = atoi(imgui_spawn_manager.weapon_spawn_count);
+									string256 cmd{};
+									size_t size{};
 
-									if (count == 0)
-										count = 1;
-
-									for (int i = 0; i < count; ++i)
+									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										auto pActor = smart_cast<CActor*>(Level().CurrentEntity());
-
-										if (pActor)
-										{
-											if (Level().Server)
-											{
-												auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-												if (tpGame)
-												{
-													CALifeSimulator__spawn_item2(&tpGame->alife(), section_name.data(), pActor->Position(), pActor->ai_location().level_vertex_id(),
-														pActor->ai_location().game_vertex_id(), pActor->ID());
-												}
-											}
-										}
+										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
+										size += sizeof("g_spawn_inv");
 									}
-								}
-								else
-								{
-									// todo: implement
+									else
+									{
+										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
+										size += sizeof("g_spawn");
+									}
+
+									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
+									size += section_name.size();
+
+									char to_number[4]{};
+									sprintf_s(to_number, sizeof(to_number), " %d", count);
+
+									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
+
+									Console->ExecuteCommand(cmd);
 								}
 							}
 
