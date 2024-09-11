@@ -103,7 +103,7 @@ void UITopBarForm::Draw()
         if (ImGui::IsItemHovered())
         {
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Open folder 'GameData'");
+            ImGui::SetTooltip("Open 'gamedata' folder");
         }
         ImGui::SameLine();
 
