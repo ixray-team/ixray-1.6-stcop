@@ -135,15 +135,21 @@ void CConsole::Initialize()
 	extern void CCC_Register();
 	CCC_Register();
 
-	CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsole, this));
-	CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsoleVars, this));
+	if (!Device.IsEditorMode())
+	{
+		CImGuiManager::Instance().Subscribe("DebugConsole", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsole, this));
+		CImGuiManager::Instance().Subscribe("DebugConsoleVars", CImGuiManager::ERenderPriority::eMedium, std::bind(&CConsole::DrawUIConsoleVars, this));
+	}
 }
 
 CConsole::~CConsole()
 {
 	xrLogger::RemoveLogCallback(ConsoleLogCallback);
-	CImGuiManager::Instance().Unsubscribe("DebugConsole");
-	CImGuiManager::Instance().Unsubscribe("DebugConsoleVars");
+	if (!Device.IsEditorMode())
+	{
+		CImGuiManager::Instance().Unsubscribe("DebugConsole");
+		CImGuiManager::Instance().Unsubscribe("DebugConsoleVars");
+	}
 
 	xr_delete( m_hShader_back );
 	xr_delete( m_editor );
