@@ -99,7 +99,7 @@ void	CRender::render_lights	(light_Package& LP)
 			L	= source.back			();
 			if	(L->vis.smap_ID!=sid)	break;
 			source.pop_back				();
-			if(L->flags.bOccq&&!L->flags.bHudMode)
+			if(L->flags.bOccq&&!L->flags.bHudMode&&!ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED))
 				Lights_LastFrame.push_back	(L);
 
 			// render
@@ -148,7 +148,7 @@ void	CRender::render_lights	(light_Package& LP)
 				}
 			}
 
-			if(L->flags.bOccq&&!L->flags.bHudMode)
+			if(L->flags.bOccq&&!L->flags.bHudMode&&!ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED))
 				L->svis.begin();
 			
 			bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
@@ -165,7 +165,8 @@ void	CRender::render_lights	(light_Package& LP)
 				if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) && 
 					psDeviceFlags.test(rsDetails) &&
 					Details->dtFS &&
-					L->flags.bShadow && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+					RImplementation.pOutdoorSector && PortalTraverser.i_marker == RImplementation.pOutdoorSector->r_marker &&
+					L->flags.bShadow && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < 1600.f)
 				{
 					RCache.set_CullMode		(CULL_NONE);
 					RCache.set_xform_world	(Fidentity);
@@ -191,7 +192,7 @@ void	CRender::render_lights	(light_Package& LP)
 				stats.s_finalclip					++;
 
 
-			if(L->flags.bOccq&&!L->flags.bHudMode)
+			if(L->flags.bOccq&&!L->flags.bHudMode&&!ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED))
 				L->svis.end								();
 			r_pmask									(true,false);
 		}
