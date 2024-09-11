@@ -60,6 +60,7 @@ list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__sector_detect.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__blenders.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/R_calculate.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__types.h")
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/SMAP_Allocator.h")
 # xrRender_R1 project
 add_library(xrRender_R1 SHARED ${XRR1_SRC_FILES})
 target_precompile_headers(xrRender_R1 PRIVATE "stdafx.h")
