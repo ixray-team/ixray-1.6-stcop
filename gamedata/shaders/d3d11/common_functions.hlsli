@@ -139,6 +139,19 @@ float3 deband_color(float3 image, float2 uv)
     return color;
 }
 
+//Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180
+void build_contangent_frame(float3 position, float3 normal, float2 uv, out float3 tangent, out float3 binormal)
+{
+    float4 duv = float4(ddx(uv), ddy(uv));
+    float3 dp1perp = cross(normal, ddx(position));
+    float3 dp2perp = cross(ddy(position), normal);
+    tangent = dp2perp * duv.x + dp1perp * duv.z;
+    binormal = dp2perp * duv.y + dp1perp * duv.w;
+    float invmax = rsqrt(max(dot(tangent, tangent), dot(binormal, binormal)));
+	tangent *= invmax;
+	binormal *= invmax;
+}
+
 float4 combine_bloom(float3 low, float4 high)
 {
     return float4(low + high * high.a, 1.f);

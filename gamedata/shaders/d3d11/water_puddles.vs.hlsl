@@ -13,8 +13,7 @@ static const float2 quad_geometry[6] =
 struct VSOutput
 {
     float4 hpos	: SV_Position;
-	float3 world_normal : TEXCOORD0;
-	float3 world_position : TEXCOORD1;	
+	float3 world_position : TEXCOORD0;	
 };
 
 float puddle_constants;
@@ -30,8 +29,6 @@ VSOutput main(uint vertex_id : SV_VertexID)
 
 	O.hpos = mul(m_VP, float4(O.world_position, 1.0));
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
-
-	O.world_normal = float3(0.0, 1.0, 0.0);
 
     return O; 
 }

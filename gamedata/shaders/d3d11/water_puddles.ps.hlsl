@@ -5,8 +5,7 @@
 struct PSInput
 {
     float4 hpos	: SV_Position;
-	float3 world_normal : TEXCOORD0;
-	float3 world_position : TEXCOORD1;	
+	float3 world_position : TEXCOORD0;	
 };
 
 uniform float3 water_intensity;
@@ -27,16 +26,13 @@ float4 main(PSInput I) : SV_Target
 	float4 base = s_base.Sample(smp_base, I.world_position.xz);
 	float3 normal = s_nmap.Sample(smp_base, I.world_position.xz) * 2.0 - 1.0;
 
-	//Cotangent frame
-    float4 duv = float4(ddx(I.world_position.xz), ddy(I.world_position.xz));
-    float3 dp1perp = cross(I.world_normal, ddx(I.world_position));
-    float3 dp2perp = cross(ddy(I.world_position), I.world_normal);
-    float3 tangent = dp2perp * duv.x + dp1perp * duv.z;
-    float3 binormal = dp2perp * duv.y + dp1perp * duv.w;
-    float invmax = rsqrt(max(dot(tangent, tangent), dot(binormal, binormal)));
-
-    float3 Nw = normalize(mul(float3x3(tangent * invmax, binormal * invmax, I.world_normal), normal).xyz);
+	//Build cotangent frame and transform our normal to world space
+	float3x3 TBN = {float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 1.0, 0.0)};
 	
+	build_contangent_frame(I.world_position.xyz, TBN[2], I.world_position.xz, TBN[0], TBN[1]);
+
+    float3 Nw = normalize(mul(TBN, normal));
+
 	float3 envd0 = env_s0.Sample(smp_rtlinear, Nw);
 	float3 envd1 = env_s1.Sample(smp_rtlinear, Nw);
 	
