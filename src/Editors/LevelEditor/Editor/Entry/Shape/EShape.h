@@ -3,14 +3,17 @@
 
 enum eShapeUsage{eShapeCommon=0, eShapeLevelBound};
 
-class CEditShape: public CCustomObject,protected CShapeData
+class CEditShape: 
+	public CCustomObject,
+	protected CShapeData
 {
 	typedef CCustomObject inherited;
-private:
+protected:
 // bounds
 	Fbox			m_Box;
 	Fsphere			m_Sphere;
 	void			ComputeBounds	( );
+
 public:
 	u8				m_shape_type;
 	u32				m_DrawTranspColor;
