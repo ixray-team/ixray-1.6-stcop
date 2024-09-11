@@ -240,8 +240,8 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 	ofn.lpstrTitle = "Save a File";
 	string512 path; xr_strcpy(path, (offset && offset[0]) ? offset : P.m_Path);
 	ofn.lpstrInitialDir = path;
-	ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
-	ofn.FlagsEx = OFN_EX_NOPLACESBAR;
+	ofn.Flags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR | OFN_EXPLORER;
+	ofn.FlagsEx = 0;
 
 
 	bool bRes = !!GetSaveFileNameA(&ofn);
