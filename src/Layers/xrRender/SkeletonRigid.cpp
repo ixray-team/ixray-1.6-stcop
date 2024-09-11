@@ -134,13 +134,13 @@ void CKinematics::CLBone( const CBoneData* bd, CBoneInstance &bi, const Fmatrix 
 
 			BuildBoneMatrix( bd, bi, parent, channel_mask );
 #ifndef MASTER_GOLD
-			R_ASSERT2( _valid( bi.mTransform ), "anim kils bone matrix" ); 
+			R_ASSERT2( _valid( bi.mTransform ), "Animation is killing bone matrix!"); 
 #endif // #ifndef MASTER_GOLD
 			if (bi.callback())
 			{
 				bi.callback()(&bi);
 #ifndef MASTER_GOLD
-				R_ASSERT2( _valid( bi.mTransform ), make_string<const char*>( "callback kils bone matrix bone: %s " , bd->name.c_str() ) );
+				R_ASSERT2( _valid( bi.mTransform ), make_string<const char*>( "Callback is killing bone matrix! Bone: %s " , bd->name.c_str() ) );
 #endif // #ifndef MASTER_GOLD
 			}
 		}
