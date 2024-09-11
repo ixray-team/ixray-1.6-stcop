@@ -13,4 +13,4 @@ u32			psCurrentBPP		= 32;
 Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
 Flags32 psGameFlags = { rsActorShadow };
 // textures 
-int			psTextureLOD		= 1;
+int			psTextureLOD		= 0;
