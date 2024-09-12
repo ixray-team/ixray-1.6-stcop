@@ -438,6 +438,8 @@ void CSpawnPoint::SSpawnData::OnAnimControlClick(ButtonValue* value, bool& bModi
 
 void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 {
+	xrCriticalSectionGuard guard(mLuaEnter);
+
 	m_Data->FillProp			(pref,items);
 
 	if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDeathmatch|eGameIDTeamDeathmatch|eGameIDArtefactHunt|eGameIDCaptureTheArtefact))
@@ -472,6 +474,9 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		xr_vector<CLE_Visual*>::iterator it_e 	= m_VisualHelpers.end();
 		Fmatrix M;
 		u32 idx = 0;
+
+		xrCriticalSectionGuard guard(mLuaEnter);
+
 		for(;it!=it_e;++it,++idx)
 		{
 			visual_data* vc 		= m_Data->visual_collection()+idx;
