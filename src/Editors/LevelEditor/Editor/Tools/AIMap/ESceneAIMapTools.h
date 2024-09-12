@@ -4,7 +4,11 @@
 class ESceneAIMapTool;
 struct SAINode;
 
+#ifdef AI_MAP_26_BIT
+const DWORD InvalidNode = 0xffffffff;
+#else
 const DWORD InvalidNode		= (1<<24)-1;
+#endif
 
 #pragma pack(push,1)
 struct SAINode					// definition of "patch" or "node"
@@ -99,9 +103,17 @@ protected:
 	SAINode* 			GetNode					(Fvector vAt, bool bIgnoreConstraints);
 	void				UpdateLinks				(SAINode* N, bool bIgnoreConstraints);
 
+#ifndef AI_MAP_26_BIT
 	void 				UnpackPosition			(Fvector& Pdest, const SNodePositionOld& Psrc, Fbox& bb, SAIParams& params);
+#else
+    void 				UnpackPosition			(Fvector& Pdest, const NodePosition& Psrc, Fbox& bb, SAIParams& params);
+#endif
 	u32 				UnpackLink				(u32& L);
+#ifndef AI_MAP_26_BIT
 	void				PackPosition			(SNodePositionOld& Dest, Fvector& Src, Fbox& bb, SAIParams& params);
+#else
+    void				PackPosition			(NodePosition& Dest, Fvector& Src, Fbox& bb, SAIParams& params);
+#endif
 
    
 

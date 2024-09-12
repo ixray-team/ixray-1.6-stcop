@@ -24,7 +24,9 @@ IC void CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
 }
 IC void	compress_node(NodeCompressed& Dest, SAINode* Src)
 {
+#ifndef AI_MAP_26_BIT
 	Dest.light(15);//compress(Src.LightLevel,15));
+#endif
 	for (u8 L = 0; L < 4; ++L)
 		Dest.link(L, Src->n[L] ? Src->n[L]->idx : InvalidNode);
 }

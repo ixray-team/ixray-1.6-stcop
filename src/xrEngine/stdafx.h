@@ -9,6 +9,8 @@
 #	define D3D_DEBUG_INFO
 #endif
 
+#define AI_MAP_26_BIT
+
 #pragma warning(disable:4995)
 #include <d3d9.h>
 //#include <dplay8.h>

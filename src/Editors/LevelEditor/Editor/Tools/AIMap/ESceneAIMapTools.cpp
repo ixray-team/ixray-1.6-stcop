@@ -82,7 +82,11 @@ void SAINode::SaveLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
 	R_ASSERT2		(0, "dont use it !!!");
 	u32 			id;
     u16 			pl;
+#ifdef AI_MAP_26_BIT
+    NodePosition 	np;
+#else
 	SNodePositionOld 	np;
+#endif
 
     id 				= n1?(u32)n1->idx:InvalidNode;
     ini.w_u32		(sect_name,"n1", id);
@@ -115,7 +119,11 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
 {
 	u32 			id;
     u16 			pl;
+#ifdef AI_MAP_26_BIT
+    NodePosition 	np;
+#else
 	SNodePositionOld 	np;
+#endif
     F.r				(&id,3); 			n1 = (SAINode*)tools->UnpackLink(id);
     F.r				(&id,3); 			n2 = (SAINode*)tools->UnpackLink(id);
     F.r				(&id,3); 			n3 = (SAINode*)tools->UnpackLink(id);
@@ -130,7 +138,11 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
 {
 	u32 			id;
     u16 			pl;
+#ifdef AI_MAP_26_BIT
+    NodePosition 	np;
+#else
 	SNodePositionOld 	np;
+#endif
 
     id = n1?(u32)n1->idx:InvalidNode; F.w(&id,3);
     id = n2?(u32)n2->idx:InvalidNode; F.w(&id,3);

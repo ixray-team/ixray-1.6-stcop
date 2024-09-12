@@ -51,6 +51,12 @@ ICF	u32	ILevelGraph::vertex	(const CVertex &vertex_r) const
 IC	void ILevelGraph::unpack_xz(const ILevelGraph::CPosition &vertex_position, u32 &x, u32 &z) const
 {
 	VERIFY				(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
+
+#ifdef AI_MAP_26_BIT
+	VERIFY				(vertex_position.xz() < NodePosition::MAX_XZ);
+#else
+	VERIFY				(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
+#endif
 	x					= vertex_position.xz() / m_row_length;
 	z					= vertex_position.xz() % m_row_length;
 }
@@ -101,7 +107,11 @@ IC	const ILevelGraph::CPosition &ILevelGraph::vertex_position	(ILevelGraph::CPos
 	VERIFY				(iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f) < (int)m_row_length);
 	int					pxz	= iFloor(((source_position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((source_position.z - header().box().min.z)/header().cell_size() + .5f);
 	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
+#ifdef AI_MAP_26_BIT
+	VERIFY				(pxz < NodePosition::MAX_XZ);
+#else
 	VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
+#endif
 	dest_position.xz	(u32(pxz));
 	clamp				(py,0,65535);
 	dest_position.y		(u16(py));
@@ -200,7 +210,11 @@ IC bool ILevelGraph::inside				(const u32 vertex_id, const Fvector &position, co
 IC bool	ILevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
 {
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
+#ifdef AI_MAP_26_BIT
+	VERIFY				(pxz < NodePosition::MAX_XZ);
+#else
 	VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
+#endif
 	bool				b = vertex(vertex_id)->position().xz() == u32(pxz);
 	return				(b);
 }
@@ -576,7 +590,11 @@ IC	bool ILevelGraph::valid_vertex_position	(const Fvector &position) const
 	if (!(iFloor((position.x - header().box().min.x)/header().cell_size() + .5f) < (int)m_column_length))
 		return			(false);
 
+#ifdef AI_MAP_26_BIT
+	return				vertex_position(position).xz() < NodePosition::MAX_XZ;
+#else
 	return				((vertex_position(position).xz() < (1 << MAX_NODE_BIT_COUNT) - 1));
+#endif
 }
 
 
