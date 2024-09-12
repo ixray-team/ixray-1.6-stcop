@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "xrUITheme.h"
+#include "../../xrEngine/stdafx.h" // for proper work of string_table
+#include "../../xrEngine/string_table.h"
 
 #define _game_fonts_ "$game_fonts$"
 
@@ -27,50 +29,50 @@ void CUIThemeManager::Draw()
 	if (!bOpen)
 		return;
 
-	if (ImGui::Begin("Theme Editor", &bOpen))
+	if (ImGui::Begin(g_pStringTable->translate("ed_st_theme_editor").c_str(), &bOpen))
 	{
 		IsDocked = ImGui::IsWindowDocked();
 		IsFocused = ImGui::IsWindowFocused();
 
 		ImVec4* colors = ImGui::GetStyle().Colors;
 
-		ImGui::SeparatorText("General");
-		ImGui::ColorEdit4("Default Color", (float*)&colors[ImGuiCol_WindowBg]);
-		ImGui::ColorEdit4("Header Color", (float*)&colors[ImGuiCol_MenuBarBg]);
-		ImGui::ColorEdit4("Text Color", (float*)&colors[ImGuiCol_Text]);
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_general").c_str());
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_default_color").c_str(), (float*)&colors[ImGuiCol_WindowBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_header_color").c_str(), (float*)&colors[ImGuiCol_MenuBarBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_text_color").c_str(), (float*)&colors[ImGuiCol_Text]);
 
-		ImGui::SeparatorText("Properties");
-		ImGui::ColorEdit4("Header Color ##", (float*)&colors[ImGuiCol_TableHeaderBg]);
-		ImGui::ColorEdit4("Header Border Color", (float*)&colors[ImGuiCol_TableBorderStrong]);
-		ImGui::ColorEdit4("Row Color", (float*)&colors[ImGuiCol_TableRowBgAlt]);
-		ImGui::ColorEdit4("Row Color 2", (float*)&colors[ImGuiCol_TableRowBg]);
-		ImGui::ColorEdit4("Row Border Color", (float*)&colors[ImGuiCol_TableBorderLight]);
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_properties").c_str());
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_header_color_bg").c_str(), (float*)&colors[ImGuiCol_TableHeaderBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_header_border_color").c_str(), (float*)&colors[ImGuiCol_TableBorderStrong]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_row_color").c_str(), (float*)&colors[ImGuiCol_TableRowBgAlt]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_row_color_2").c_str(), (float*)&colors[ImGuiCol_TableRowBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_row_border_color").c_str(), (float*)&colors[ImGuiCol_TableBorderLight]);
 
-		ImGui::SeparatorText("Items");
-		ImGui::ColorEdit4("Item Color", (float*)&colors[ImGuiCol_FrameBg]);
-		ImGui::ColorEdit4("CheckItem Color", (float*)&colors[ImGuiCol_CheckMark]);
-		ImGui::ColorEdit4("Item Border Color", (float*)&colors[ImGuiCol_Border]);
-		ImGui::ColorEdit4("Title Color", (float*)&colors[ImGuiCol_TitleBg]);
-		ImGui::ColorEdit4("Active title Color", (float*)&colors[ImGuiCol_TitleBgActive]);
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_items").c_str());
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_item_color").c_str(), (float*)&colors[ImGuiCol_FrameBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_checkitem_color").c_str(), (float*)&colors[ImGuiCol_CheckMark]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_item_border_color").c_str(), (float*)&colors[ImGuiCol_Border]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_title_color").c_str(), (float*)&colors[ImGuiCol_TitleBg]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_active_title_color").c_str(), (float*)&colors[ImGuiCol_TitleBgActive]);
 
-		ImGui::SeparatorText("Buttons");
-		ImGui::ColorEdit4("Button", (float*)&colors[ImGuiCol_Button]);
-		ImGui::ColorEdit4("Button Hovered", (float*)&colors[ImGuiCol_ButtonHovered]);
-		ImGui::ColorEdit4("Button Active", (float*)&colors[ImGuiCol_ButtonActive]);
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_buttons").c_str());
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_button").c_str(), (float*)&colors[ImGuiCol_Button]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_button_hovered").c_str(), (float*)&colors[ImGuiCol_ButtonHovered]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_button_active").c_str(), (float*)&colors[ImGuiCol_ButtonActive]);
 			;
-		ImGui::SeparatorText("Tabs");
-		ImGui::ColorEdit4("Tab Hovered", (float*)&colors[ImGuiCol_TabHovered]);
-		ImGui::ColorEdit4("Tab Unfocused", (float*)&colors[ImGuiCol_TabUnfocused]);
-		ImGui::ColorEdit4("Tab Active", (float*)&colors[ImGuiCol_TabActive]);
-		ImGui::ColorEdit4("Tab Active Unfocused", (float*)&colors[ImGuiCol_TabUnfocusedActive]);
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_tabs").c_str());
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_tab_hovered").c_str(), (float*)&colors[ImGuiCol_TabHovered]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_tab_unfocused").c_str(), (float*)&colors[ImGuiCol_TabUnfocused]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_tab_active").c_str(), (float*)&colors[ImGuiCol_TabActive]);
+		ImGui::ColorEdit4(g_pStringTable->translate("ed_st_tab_active_unfocused").c_str(), (float*)&colors[ImGuiCol_TabUnfocusedActive]);
 
-		ImGui::SeparatorText("Fonts");
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_fonts").c_str());
 		FS_FileSet Files;
 		string_path Fonts = {};
 		FS.update_path(Fonts, _game_fonts_, "editors\\");
 		FS.file_list(Files, Fonts, 1, "*.ttf");
 
-		if (ImGui::BeginCombo("Main font", ImCurrentFont.data()))
+		if (ImGui::BeginCombo(g_pStringTable->translate("ed_st_main_font").c_str(), ImCurrentFont.data()))
 		{
 			for (auto& File : Files)
 			{
@@ -87,14 +89,14 @@ void CUIThemeManager::Draw()
 			ImGui::EndCombo();
 		}
 
-		ImGui::SeparatorText("Other");
+		ImGui::SeparatorText(g_pStringTable->translate("ed_st_other").c_str());
 		ImGui::PushItemWidth(150);
-		ImGui::SliderFloat("Active window transparent", &TransparentDefault, 0.1f, 1.f, "%.1f");
-		ImGui::SliderFloat("Inactive window transparent", &TransparentUnfocused, 0.1f, 1.f, "%.1f");
+		ImGui::SliderFloat(g_pStringTable->translate("ed_st_active_wnd_trans").c_str(), &TransparentDefault, 0.1f, 1.f, "%.1f");
+		ImGui::SliderFloat(g_pStringTable->translate("ed_st_inactive_wnd_trans").c_str(), &TransparentUnfocused, 0.1f, 1.f, "%.1f");
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 
-		if (ImGui::Button("Default"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_default").c_str()))
 		{
 			InitDefault(true);
 		}

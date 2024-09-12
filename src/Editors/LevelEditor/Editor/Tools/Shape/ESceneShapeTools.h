@@ -12,7 +12,7 @@ public:
 						ESceneShapeTool			():ESceneCustomOTool(OBJCLASS_SHAPE){;}
 	// definition
     IC LPCSTR			ClassName				(){return "shape";}
-    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("Shape").c_str();}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_shape").c_str();}
     IC int				RenderPriority			(){return 20;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

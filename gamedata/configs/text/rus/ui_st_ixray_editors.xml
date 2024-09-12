@@ -969,4 +969,97 @@
     <string id="ed_st_select_2_link">
         <text>Select 2-Link</text>
     </string>
+    <string id="ed_st_theme_editor">
+        <text>Theme Editor</text>
+    </string>
+    <string id="ed_st_general">
+        <text>General</text>
+    </string>
+    <string id="ed_st_default_color">
+        <text>Default Color</text>
+    </string>
+    <string id="ed_st_header_color">
+        <text>Header Color</text>
+    </string>
+    <string id="ed_st_text_color">
+        <text>Text Color</text>
+    </string>
+    <string id="ed_st_header_color_bg">
+        <text>Header Color ##</text>
+    </string>
+    <string id="ed_st_header_border_color">
+        <text>Header Border Color</text>
+    </string>
+    <string id="ed_st_row_color">
+        <text>Row Color</text>
+    </string>
+    <string id="ed_st_row_color_2">
+        <text>Row Color 2</text>
+    </string>
+    <string id="ed_st_row_border_color">
+        <text>Row Border Color</text>
+    </string>
+    <string id="ed_st_items">
+        <text>Items</text>
+    </string>
+    <string id="ed_st_item_color">
+        <text>Item Color</text>
+    </string>
+    <string id="ed_st_checkitem_color">
+        <text>CheckItem Color</text>
+    </string>
+    <string id="ed_st_item_border_color">
+        <text>Item Border Color</text>
+    </string>
+    <string id="ed_st_title_color">
+        <text>Title Color</text>
+    </string>
+    <string id="ed_st_active_title_color">
+        <text>Active title Color</text>
+    </string>
+    <string id="ed_st_buttons">
+        <text>Buttons</text>
+    </string>
+    <string id="ed_st_button">
+        <text>Button</text>
+    </string>
+    <string id="ed_st_button_hovered">
+        <text>Button Hovered</text>
+    </string>
+    <string id="ed_st_button_active">
+        <text>Button Active</text>
+    </string>
+    <string id="ed_st_tabs">
+        <text>Tabs</text>
+    </string>
+    <string id="ed_st_tab_hovered">
+        <text>Tab Hovered</text>
+    </string>
+    <string id="ed_st_tab_unfocused">
+        <text>Tab Unfocused</text>
+    </string>
+    <string id="ed_st_tab_active">
+        <text>Tab Active</text>
+    </string>
+    <string id="ed_st_tab_active_unfocused">
+        <text>Tab Active Unfocused</text>
+    </string>
+    <string id="ed_st_fonts">
+        <text>Fonts</text>
+    </string>
+    <string id="ed_st_main_font">
+        <text>Main font</text>
+    </string>
+    <string id="ed_st_other">
+        <text>Other</text>
+    </string>
+    <string id="ed_st_active_wnd_trans">
+        <text>Active window transparent</text>
+    </string>
+    <string id="ed_st_inactive_wnd_trans">
+        <text>Inactive window transparent</text>
+    </string>
+    <string id="ed_st_default">
+        <text>Default</text>
+    </string>
 </string_table>

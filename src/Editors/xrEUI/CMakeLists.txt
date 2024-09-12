@@ -35,6 +35,7 @@ target_compile_definitions(xrEUI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrEUI PUBLIC xrCore)
+target_link_libraries(xrEUI PUBLIC xrAbstractions)
 #target_link_libraries(xrEUI PUBLIC imgui)
 
 # Move precompiled header
