@@ -1747,29 +1747,26 @@ public:
 		if (g_pIGameActor == nullptr)
 			return;
 
-		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		CActor* pActor = Actor();
 
 		if (pActor)
 		{
-			xr_vector<float> vect;
+			Fvector position;
+			int sc = sscanf_s(pos_str, "%f,%f,%f",&position.x, &position.y, &position.z);
 
-			std::stringstream ss(pos_str);
-
-			for (float i; ss >> i;) {
-				vect.push_back(i);
-				if (ss.peek() == ',')
-					ss.ignore();
-			}
-
-			if (vect.size() >= 3)
+			if (sc > 3 || sc < 3)
 			{
-				Fvector position;
-				position.x = vect[0];
-				position.y = vect[1];
-				position.z = vect[2];
-
-				pActor->SetActorPosition(position);
+				Msg("! failed to parse string (x,y,z), must pass three coordinates");
+				return;
 			}
+
+			if (pActor->g_Alive())
+			{
+				Fmatrix m = pActor->XFORM();
+				m.c = position;
+
+				pActor->ForceTransform(m);
+			};
 		}
 	}
 
