@@ -46,6 +46,7 @@ void CRenderDevice::Destroy()
 	seqFrameMT.R.clear			();
 	seqDeviceReset.R.clear		();
 	seqParallel.clear			();
+	seqParallelRender.clear		();
 	m_time_callbacks.clear		();
 	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;

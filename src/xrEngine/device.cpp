@@ -126,16 +126,11 @@ void CRenderDevice::End		(void)
 }
 
 #ifndef _EDITOR
-void mt_3rdThread(void* ptr)
+static void mt_3rdThread(void* ptr)
 {
 	PROF_THREAD("3rd Thread");
-	while (true)
+	while (FALSE==Device.mt_bMustExit)
 	{
-		if (Device.mt_bMustExit)
-		{
-			return;
-		}
-
 		WaitForSingleObject(RenderEventMT, INFINITE);
 		PROF_EVENT("CPU Frame: Render");
 
@@ -152,46 +147,37 @@ void mt_3rdThread(void* ptr)
 }
 
 volatile u32 mt_Thread_marker = 0x12345678;
-
-void mt_Thread(void* ptr)
+static void mt_Thread(void* ptr)
 {
 	PROF_THREAD("SecondaryThread");
 	g_AppInfo.SecondaryThread = GetCurrentThread();
-	while (true)
+	while (FALSE==Device.mt_bMustExit)
 	{
 		// waiting for Device permission to execute
-		Device.mt_csEnter.Enter();
-
-		if (Device.mt_bMustExit)
 		{
-			Device.mt_bMustExit = FALSE;				// Important!!!
-			Device.mt_csEnter.Leave();					// Important!!!
-			return;
+			xrCriticalSectionGuard guard(&Device.mt_csEnter);
+			PROF_EVENT("CPU Frame: Secondary");
+
+			// we has granted permission to execute
+			mt_Thread_marker = Device.dwFrame;
+			{
+				PROF_EVENT("Parallel Sync");
+				for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+					Device.seqParallel[pit]();
+
+				Device.seqParallel.resize(0);
+			}
+
+			{
+				PROF_EVENT("OnFrame");
+				Device.seqFrameMT.Process(rp_Frame);
+			}
+
+			// now we give control to device - signals that we are ended our work
 		}
-		PROF_EVENT("CPU Frame: Secondary");
-
-		// we has granted permission to execute
-		mt_Thread_marker = Device.dwFrame;
-		{
-			PROF_EVENT("Parallel Sync");
-			for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-				Device.seqParallel[pit]();
-
-			Device.seqParallel.resize(0);
-		}
-
-		{
-			PROF_EVENT("OnFrame");
-			Device.seqFrameMT.Process(rp_Frame);
-		}
-
-		// now we give control to device - signals that we are ended our work
-		Device.mt_csEnter.Leave();
-		// waits for device signal to continue - to start again
-		Device.mt_csLeave.Enter();
-		// returns sync signal to device
-		Device.mt_csLeave.Leave();
+		xrCriticalSectionGuard sync(&Device.mt_csLeave);
 	}
+	Device.mt_bMustExit = FALSE; // Important!!!
 }
 
 #include "igame_level.h"
@@ -346,33 +332,43 @@ void CRenderDevice::on_idle		()
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
-	mt_csLeave.Enter			();
-	mt_csEnter.Leave			();
-	Sleep						(0);
+	{
+		xrCriticalSectionGuard guard(&mt_csLeave);
+		mt_csEnter.Leave			();
+		Sleep						(0);
 
-	if (!g_dedicated_server) {
-		Statistic->RenderTOTAL_Real.FrameStart();
-		Statistic->RenderTOTAL_Real.Begin();
-		if (b_is_Active) {
-			if (Begin()) {
-				seqRender.Process(rp_Render);
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-					Statistic->Show();
+		if (!g_dedicated_server) {
+			Statistic->RenderTOTAL_Real.FrameStart();
+			Statistic->RenderTOTAL_Real.Begin();
+			if (b_is_Active) {
+				if (Begin()) {
+					seqRender.Process(rp_Render);
+					if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+						Statistic->Show();
 
-				End();
+					End();
+				}
 			}
+			Statistic->RenderTOTAL_Real.End();
+			Statistic->RenderTOTAL_Real.FrameEnd();
+			Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 		}
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+
+		// *** Suspend threads
+		// Capture startup point
+		// Release end point - allow thread to wait for startup point
+		PROF_EVENT("Wait secondary thread");
+		mt_csEnter.Enter();
 	}
 
-	// *** Suspend threads
-	// Capture startup point
-	// Release end point - allow thread to wait for startup point
-	PROF_EVENT("Wait secondary thread");
-	mt_csEnter.Enter();
-	mt_csLeave.Leave();
+	// Ensure, that second thread gets chance to execute anyway
+	if (dwFrame!=mt_Thread_marker)			{
+		for (u32 pit=0; pit<seqParallel.size(); pit++)
+			seqParallel[pit]();
+		seqParallel.resize(0);
+
+		seqFrameMT.Process(rp_Frame);
+	}
 
 	Device.EndRender();
 	if (!b_is_Active)
@@ -424,7 +420,7 @@ void CRenderDevice::Run()
 		Timer_MM_Delta = time_system - time_local;
 	}
 
-	// Start all threads
+	// Start Balance-Threads
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 
@@ -441,8 +437,9 @@ void CRenderDevice::Run()
 
 	seqAppEnd.Process(rp_AppEnd);
 
-	// Stop Balance-Thread
+	// Stop Balance-Threads
 	mt_bMustExit = TRUE;
+	SetEvent(RenderEventMT); // Important for correct thread closing!!!
 	mt_csEnter.Leave();
 	while (mt_bMustExit)	Sleep(0);
 #endif
