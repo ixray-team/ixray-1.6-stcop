@@ -654,29 +654,22 @@ void RenderSpawnManagerWindow()
 
 								if (Console)
 								{
-									string256 cmd{};
-									size_t size{};
+									xr_string cmd;
 
 									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
-										size += sizeof("g_spawn_inv");
+										cmd += "g_spawn_inv ";
 									}
 									else
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
-										size += sizeof("g_spawn");
+										cmd += "g_spawn ";
 									}
 
-									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
-									size += section_name.size();
-
-									char to_number[4]{};
-									sprintf_s(to_number, sizeof(to_number), " %d", count);
-
-									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
-
-									execute_console_command_deferred(Console, cmd);
+									cmd += section_name.data();
+									cmd += " ";
+									cmd += std::to_string(count);
+								
+									execute_console_command_deferred(Console, cmd.c_str());
 								}
 
 							}
@@ -767,29 +760,22 @@ void RenderSpawnManagerWindow()
 
 								if (Console)
 								{
-									string256 cmd{};
-									size_t size{};
+									xr_string cmd;
 
 									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
-										size += sizeof("g_spawn_inv");
+										cmd += "g_spawn_inv ";
 									}
 									else
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
-										size += sizeof("g_spawn");
+										cmd += "g_spawn ";
 									}
 
-									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
-									size += section_name.size();
+									cmd += section_name.data();
+									cmd += " ";
+									cmd += std::to_string(count);
 
-									char to_number[4]{};
-									sprintf_s(to_number, sizeof(to_number), " %d", count);
-
-									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
-
-									execute_console_command_deferred(Console, cmd);
+									execute_console_command_deferred(Console, cmd.c_str());
 								}
 							}
 
