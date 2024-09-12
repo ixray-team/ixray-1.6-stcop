@@ -16,19 +16,14 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
     IXrayGbuffer O;
     GbufferUnpack(tcProj, pos2d, O);
 
-    float4 Point = float4(O.Point, 1.0f);
-
-    if (Ldynamic_hud > 0)
-    {
-        Point.xyz = O.PointHud;
-    }
+    float4 Point = float4(Ldynamic_hud > 0 ? O.PointHud.xyz : O.Point.xyz, 1.0f);
 
     float3 Light = DirectLight(Ldynamic_color, O.PointReal.xyz - Ldynamic_pos.xyz, O.Normal, O.PointReal.xyz, O.Color, O.Metalness, O.Roughness);
 
     float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     Point.xyz += O.Normal * 0.025f;
 
-    float4 PS = mul(m_shadow, Point);
+    float4 PS = mul(m_shadow, float4(O.Point.xyz, 1.0f));
 
 #ifdef USE_SHADOW
     Lightmap *= shadow(PS);
