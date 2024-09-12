@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////
 //	Module 		: level_script.cpp
 //	Created 	: 28.06.2004
 //  Modified 	: 28.06.2004
@@ -680,7 +680,7 @@ void RenderSpawnManagerWindow()
 								{
 									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
 									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", pTranslatedString.c_str());
+									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
 								}
 
 								if (pSection->line_exist("cost"))
@@ -785,7 +785,7 @@ void RenderSpawnManagerWindow()
 								{
 									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
 									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", pTranslatedString.c_str());
+									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
 								}
 
 								if (pSection->line_exist("cost"))
@@ -1069,19 +1069,37 @@ void RenderSearchManagerWindow()
 
 						if (imgui_search_manager.filter(pObject->CLS_ID))
 						{
-							char buffer[512]{};
-							memcpy(buffer, pObject->cName().c_str(), strlen(pObject->cName().c_str()));
-							char number[32]{};
-							sprintf_s(number, sizeof(number), "##InGame_SM_%d", i);
-							memcpy(&buffer[0] + strlen(pObject->cName().c_str()), number, sizeof(number));
+							CGameObject* pCasted = smart_cast<CGameObject*>(pObject);
 
-							if (ImGui::Button(buffer))
+							xr_string name;
+
+							name = pObject->cName().c_str();
+
+							if (pCasted)
+							{
+								name += " ";
+								name += "[";
+								name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
+								name += "]";
+							}
+							name += "##InGame_SM_";
+							name += i;
+
+							if (ImGui::Button(name.c_str()))
 							{
 								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
 								if (pActor)
 								{
-									pActor->SetActorPosition(pObject->Position());
+									xr_string cmd;
+									cmd = "set_actor_position ";
+									cmd += std::to_string(pObject->Position().x);
+									cmd += ",";
+									cmd += std::to_string(pObject->Position().y);
+									cmd += ",";
+									cmd += std::to_string(pObject->Position().z);
+
+									execute_console_command_deferred(Console, cmd.c_str());
 								}
 							}
 						}
