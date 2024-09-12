@@ -56,12 +56,12 @@ void UIChooseForm::FillItems(u32 choose_id)
 
 	if (m_Flags.is(cfAllowNone) && !m_Flags.is(cfMultiSelect))
 	{
-		m_ItemNone.name = NONE_CAPTION;
+		m_ItemNone.name = g_pStringTable->translate("ed_st_none_caption").c_str();
 		xr_string Name = m_ItemNone.name.c_str();
 
 		UIChooseFormItem* Item = static_cast<UIChooseFormItem*> (m_RootItem.AppendItem(Name.c_str()));
 		Item->Object = &m_ItemNone;
-		Item->Text = NONE_CAPTION;
+		Item->Text = g_pStringTable->translate("ed_st_none_caption").c_str();
 		Item->Index = Index++;
 	}
 	m_RootItem.Sort();
@@ -100,16 +100,16 @@ void UIChooseForm::Draw()
 	ImGui::Columns(2);
 	{
 		{
-			ImGui::Text("Find:");
+			ImGui::Text(g_pStringTable->translate("ed_st_find").c_str());
 			ImGui::SameLine();
-			m_Filter.Draw("##Find", -1);
-			if (ImGui::BeginChild("Left", ImVec2(0, 0), false))
+			m_Filter.Draw(g_pStringTable->translate("ed_st_find_2").c_str(), -1);
+			if (ImGui::BeginChild("ed_st_left", ImVec2(0, 0), false))
 			{
 				static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersH | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY | ImGuiTableFlags_ScrollX| ImGuiTableFlags_SizingFixedFit;
 
 				if (ImGui::BeginTable("objects", 1, flags))
 				{
-					ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed);
+					ImGui::TableSetupColumn(g_pStringTable->translate("ed_st_name").c_str(), ImGuiTableColumnFlags_WidthFixed);
 					ImGui::TableHeadersRow();
 
 					m_RootItem.DrawRoot();
@@ -121,7 +121,7 @@ void UIChooseForm::Draw()
 		}
 		ImGui::NextColumn();
 		{
-			ImGui::BeginChild("Right", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), false);
+			ImGui::BeginChild(g_pStringTable->translate("ed_st_left").c_str(), ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), false);
 			{
 				if (NullTexture || m_Texture)
 				{
@@ -142,13 +142,13 @@ void UIChooseForm::Draw()
 				ImGui::Separator();
 				if (m_SelectedItem == nullptr)
 				{
-					ImGui::Text("Name:");
-					ImGui::Text("Hit:");
+					ImGui::Text(g_pStringTable->translate("ed_st_name").c_str());
+					ImGui::Text(g_pStringTable->translate("ed_st_hit").c_str());
 				}
 				else
 				{
-					ImGui::Text("Name:%s", m_SelectedItem->Object->name.c_str());
-					ImGui::Text("Hit:%s", m_SelectedItem->Object->hint.c_str());
+					ImGui::Text(g_pStringTable->translate("ed_st_name_selected").c_str(), m_SelectedItem->Object->name.c_str());
+					ImGui::Text(g_pStringTable->translate("ed_st_hit_selected").c_str(), m_SelectedItem->Object->hint.c_str());
 				}
 				ImGui::Separator();
 			}
@@ -156,7 +156,7 @@ void UIChooseForm::Draw()
 			{
 				if (m_SelectedItem)
 				{
-					if (ImGui::BeginChild("Props", ImVec2(0, 0)))
+					if (ImGui::BeginChild(g_pStringTable->translate("ed_st_props").c_str(), ImVec2(0, 0)))
 					{
 						m_Props->Draw();
 					}
@@ -165,11 +165,11 @@ void UIChooseForm::Draw()
 			}
 			else if (m_Flags.is(cfMultiSelect))
 			{
-				if (ImGui::Button("Up")) { if (m_SelectedList > 0) { std::swap(m_SelectedItems[m_SelectedList - 1], m_SelectedItems[m_SelectedList]); m_SelectedList = -(m_SelectedList - 1) - 2; } } ImGui::SameLine();
-				if (ImGui::Button("Down")) { if (m_SelectedItems.size() > 1 && m_SelectedList < m_SelectedItems.size() - 1) { std::swap(m_SelectedItems[m_SelectedList], m_SelectedItems[m_SelectedList + 1]); m_SelectedList = -(m_SelectedList + 1) - 2; } }  ImGui::SameLine();
-				if (ImGui::Button("Del")) { if (m_SelectedItems.size() && m_SelectedList >= 0) { m_SelectedItems.erase(m_SelectedItems.begin() + m_SelectedList); m_SelectedList = -1; }m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); } ImGui::SameLine();
-				if (ImGui::Button("Clear List")) { m_SelectedItems.clear(); m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); m_SelectedList = -1;/*  if (E.flags.test(SChooseEvents::flClearTexture) ){ if (m_Texture)m_Texture->Release(); m_Texture = 0; } */ImGui::SameLine(); }
-				if (ImGui::BeginChild("List", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_up").c_str())) { if (m_SelectedList > 0) { std::swap(m_SelectedItems[m_SelectedList - 1], m_SelectedItems[m_SelectedList]); m_SelectedList = -(m_SelectedList - 1) - 2; } } ImGui::SameLine();
+				if (ImGui::Button(g_pStringTable->translate("ed_st_down").c_str())) { if (m_SelectedItems.size() > 1 && m_SelectedList < m_SelectedItems.size() - 1) { std::swap(m_SelectedItems[m_SelectedList], m_SelectedItems[m_SelectedList + 1]); m_SelectedList = -(m_SelectedList + 1) - 2; } }  ImGui::SameLine();
+				if (ImGui::Button(g_pStringTable->translate("ed_st_delete").c_str())) { if (m_SelectedItems.size() && m_SelectedList >= 0) { m_SelectedItems.erase(m_SelectedItems.begin() + m_SelectedList); m_SelectedList = -1; }m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); } ImGui::SameLine();
+				if (ImGui::Button(g_pStringTable->translate("ed_st_clear_list").c_str())) { m_SelectedItems.clear(); m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); m_SelectedList = -1;/*  if (E.flags.test(SChooseEvents::flClearTexture) ){ if (m_Texture)m_Texture->Release(); m_Texture = 0; } */ImGui::SameLine(); }
+				if (ImGui::BeginChild(g_pStringTable->translate("ed_st_list").c_str(), ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar))
 				{
 					int i = 0;
 
@@ -193,7 +193,7 @@ void UIChooseForm::Draw()
 			ImGui::EndChild();
 
 			ImGui::BeginDisabled(!m_Flags.is(cfMultiSelect) && !GetSelectedItem());
-			if (ImGui::Button("Ok", ImVec2(100, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str(), ImVec2(100, 0)))
 			{
 				if (!m_Flags.is(cfMultiSelect))
 				{
@@ -206,7 +206,7 @@ void UIChooseForm::Draw()
 			ImGui::EndDisabled();
 
 			ImGui::SameLine(0);
-			if (ImGui::Button("Cancel", ImVec2(100, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str(), ImVec2(100, 0)))
 			{
 
 				m_Result = R_Cancel;
@@ -229,7 +229,7 @@ void UIChooseForm::Update()
 	if (Form&& !Form->IsClosed())
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("ChooseForm", nullptr,0,true))
+		if (ImGui::BeginPopupModal(g_pStringTable->translate("ed_st_choose_form").c_str(), nullptr, 0, true))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
@@ -358,12 +358,12 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 	{
 		VERIFY2(item_fill.empty(), "ChooseForm: Duplicate source.");
 		Form->m_Items = *items;
-		Form->E.Set("Select Item", 0, item_select, 0, 0, 0);
+		Form->E.Set(g_pStringTable->translate("ed_st_sel_item").c_str(), 0, item_select, 0, 0, 0);
 	}
 	else if (!item_fill.empty()) 
 	{
 		// custom
-		Form->E.Set("Select Item", item_fill, item_select, 0, 0, 0);
+		Form->E.Set(g_pStringTable->translate("ed_st_sel_item").c_str(), item_fill, item_select, 0, 0, 0);
 	}
 	else
 	{

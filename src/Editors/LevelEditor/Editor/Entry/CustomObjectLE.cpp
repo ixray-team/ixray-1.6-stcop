@@ -204,21 +204,21 @@ void CCustomObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
     PropValue* V;
     EName = GetName();
-    V = PHelper().CreateNameCB	(items, PrepareKey(pref, "Name"),&EName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
+    V = PHelper().CreateNameCB	(items, PrepareKey(pref, g_pStringTable->translate("ed_st_name").c_str()),&EName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNameChange);
     EPosition = GetPosition();
-    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Position"), &EPosition,	-10000,	10000,0.01,2);
+    V = PHelper().CreateVector	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_transform_pos").c_str()), &EPosition,	-10000,	10000,0.01,2);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangePosition);
     ERotation = GetRotation();
-    V = PHelper().CreateAngle3	(items, PrepareKey(pref,"Transform\\Rotation"),	&ERotation,	-10000,	10000,0.1,1);
+    V = PHelper().CreateAngle3	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_transform_rot").c_str()),	&ERotation,	-10000,	10000,0.1,1);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeRotation);
     EScale = GetScale();
-    V = PHelper().CreateVector	(items, PrepareKey(pref,"Transform\\Scale"),	&EScale, 	0.01,	10000,0.01,2);
+    V = PHelper().CreateVector	(items, PrepareKey(pref, g_pStringTable->translate("ed_st_transform_scale").c_str()),	&EScale, 	0.01,	10000,0.01,2);
     V->OnChangeEvent.bind		(this,&CCustomObject::OnNumChangeScale);
 
     if(m_CO_Flags.test(flObjectInGroup))
     {
-		V = PHelper().CreateFlag32	(items, PrepareKey(pref,"In group editable"),	&m_CO_Flags, flObjectInGroupUnique);
+		V = PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_in_group_editable").c_str()),	&m_CO_Flags, flObjectInGroupUnique);
     	V->OnChangeEvent.bind		(this,&CCustomObject::OnChangeIngroupUnique);
     }
 }

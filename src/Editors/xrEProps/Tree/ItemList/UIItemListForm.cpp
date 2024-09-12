@@ -190,14 +190,14 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 
 void UIItemListForm::DrawMenuEdit()
 {
-	if (ImGui::BeginPopupContextItem("MenuEdit"))
+	if (ImGui::BeginPopupContextItem(g_pStringTable->translate("ed_st_menu_edit").c_str()))
 	{
 		ImGui::PopStyleVar(2);
 		m_UseMenuEdit = true;
 
 		if (!OnItemCreateEvent.empty())
 		{
-			if (ImGui::MenuItem("Create"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_create").c_str()))
 			{
 				for (int i = 0; i < 256; i++)
 				{
@@ -237,7 +237,7 @@ void UIItemListForm::DrawMenuEdit()
 		}
 		if (!OnItemCloneEvent.empty() && m_edit_node && m_edit_node->IsObject())
 		{
-			if (ImGui::MenuItem("Clone"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_clone").c_str()))
 			{
 				string_path parent_path;
 				parent_path[0] = 0;
@@ -284,7 +284,7 @@ void UIItemListForm::DrawMenuEdit()
 			}
 		}
 
-		if (ImGui::MenuItem("Create Folder"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_create_folder").c_str()))
 		{
 			Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
 			for (int i = 0; i < 256; i++)
@@ -322,10 +322,10 @@ void UIItemListForm::DrawMenuEdit()
 		if (m_edit_node && m_edit_node != &m_GeneralNode)
 		{
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Rename"))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_rename").c_str()))
 			{
-				ImGui::InputText("New Name", m_edit_name, sizeof(m_edit_name));
-				if (ImGui::Button("Ok"))
+				ImGui::InputText(g_pStringTable->translate("ed_st_new_name").c_str(), m_edit_name, sizeof(m_edit_name));
+				if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str()))
 				{
 					string4096 full_path;
 					if (m_edit_node->Path.c_str() && m_edit_node->Path.c_str()[0])
@@ -345,7 +345,7 @@ void UIItemListForm::DrawMenuEdit()
 				if (ImGui::IsItemHovered())
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SameLine();
-				if (ImGui::Button("Cancel"))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str()))
 				{
 					ImGui::CloseCurrentPopup();
 				}
@@ -355,10 +355,10 @@ void UIItemListForm::DrawMenuEdit()
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			if (ImGui::BeginMenu("Move"))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_move").c_str()))
 			{
-				ImGui::InputText("New Path", m_edit_path, sizeof(m_edit_path));
-				if (ImGui::Button("Ok"))
+				ImGui::InputText(g_pStringTable->translate("ed_st_new_path").c_str(), m_edit_path, sizeof(m_edit_path));
+				if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str()))
 				{
 					string4096 full_path;
 					xr_strcpy(full_path, m_edit_path);
@@ -374,7 +374,7 @@ void UIItemListForm::DrawMenuEdit()
 				if (ImGui::IsItemHovered())
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				ImGui::SameLine();
-				if (ImGui::Button("Cancel"))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str()))
 				{
 					ImGui::CloseCurrentPopup();
 				}
@@ -384,7 +384,7 @@ void UIItemListForm::DrawMenuEdit()
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			if (ImGui::MenuItem("Delete"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_delete").c_str()))
 			{
 				Remove(&m_GeneralNode, m_edit_node, true);
 				ImGui::CloseCurrentPopup();
@@ -404,7 +404,7 @@ void UIItemListForm::DrawAfterFolderNode(bool is_open, Node* Node)
 {
 	if (m_Flags.is(fMenuEdit))
 	{
-		if (ImGui::OpenPopupOnItemClick2("MenuEdit", 1))
+		if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_menu_edit").c_str(), 1))
 		{
 			m_UseMenuEdit = true;
 			m_edit_node = Node;
@@ -441,7 +441,7 @@ void UIItemListForm::DrawItem(Node* Node)
 
 	if (m_Flags.is(fMenuEdit))
 	{
-		if (ImGui::OpenPopupOnItemClick2("MenuEdit", 1))
+		if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_menu_edit").c_str(), 1))
 		{
 			m_UseMenuEdit = true;
 			m_edit_node = Node;

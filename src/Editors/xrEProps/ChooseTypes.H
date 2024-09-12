@@ -38,7 +38,11 @@ struct SChooseEvents{
     TOnChooseClose	    on_close;
     Flags32				flags;
 
-    SChooseEvents	(){caption="Select Item";flags.zero();}
+    SChooseEvents	()
+    {
+        caption =   g_pStringTable->translate("ed_st_sel_item").c_str();
+        flags.zero  ();
+    }
     SChooseEvents	(LPCSTR capt, TOnChooseFillItems f, TOnChooseSelectItem s, TGetTexture t, TOnChooseClose c, u32 fl)
     {
     	Set				(capt,f,s,t,c,fl);
@@ -54,7 +58,5 @@ struct SChooseEvents{
         flags.assign	(fl);
     }
 };
-
-#define NONE_CAPTION "<none>"
 
 #endif

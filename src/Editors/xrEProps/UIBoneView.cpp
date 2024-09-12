@@ -20,7 +20,7 @@ void CUIBoneView::Draw()
 		return;
 
 	int uniqueId = 1;
-	if (ImGui::Begin("Bones Node View", &IsOpen))
+	if (ImGui::Begin(g_pStringTable->translate("ed_st_bones_node_view").c_str(), &IsOpen))
 	{
 		auto& io = ImGui::GetIO();
 		ImGui::Text("FPS: %.2f (%.2gms)", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);

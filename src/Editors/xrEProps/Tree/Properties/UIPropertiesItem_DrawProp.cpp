@@ -293,7 +293,7 @@ void UIPropertiesItem::DrawProp()
 	{
 
 		xr_string text = PItem->GetDrawText().c_str();
-		if (!text[0])text = "<none>";
+		if (!text[0])text = g_pStringTable->translate("ed_st_none").c_str();
 		if (ImGui::Button(text.c_str(),ImVec2(-1,0)))
 		{
 			PropItem* prop = PItem;
@@ -453,7 +453,7 @@ void UIPropertiesItem::DrawProp()
 				{
 				}
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_edit_text").c_str(), 0))
 			{
 				if (PropertiesFrom->m_EditTextValueData)
 				{
@@ -482,7 +482,7 @@ void UIPropertiesItem::DrawProp()
 				{
 				}
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_edit_text").c_str(), 0))
 			{
 				if (PropertiesFrom->m_EditTextValueData)xr_delete(PropertiesFrom->m_EditTextValueData);
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue().c_str()? V->GetValue().c_str():"");
@@ -509,7 +509,7 @@ void UIPropertiesItem::DrawProp()
 				{
 				}
 			}
-			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
+			if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_edit_text").c_str(), 0))
 			{
 				if (PropertiesFrom->m_EditTextValueData)xr_delete(PropertiesFrom->m_EditTextValueData);
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue().c_str());
@@ -529,7 +529,7 @@ void UIPropertiesItem::DrawProp()
 			ImGui::Text(PItem->GetDrawText().c_str());
 			PropertiesFrom->m_EditGameTypeChooser = V->GetValue();
 			PItem->BeforeEdit<GameTypeValue, GameTypeChooser>(PropertiesFrom->m_EditGameTypeChooser);
-			if (ImGui::OpenPopupOnItemClick2("EditGameType", 0))
+			if (ImGui::OpenPopupOnItemClick2(g_pStringTable->translate("ed_st_edit_game_type").c_str(), 0))
 			{
 				PropertiesFrom->m_EditGameTypeValue = PItem;
 			}

@@ -14,13 +14,13 @@ UITextForm::~UITextForm()
 void UITextForm::Draw()
 {
      ImGui::BeginGroup();
-    if (ImGui::Button("Ok"))CLBOk(); ImGui::SameLine(0);
-    if (ImGui::Button("Cancel"))CLBCancel();
+    if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str()))CLBOk(); ImGui::SameLine(0);
+    if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str()))CLBCancel();
     ImGui::SameLine(150);
 
-    if (ImGui::Button("Load"))CLBLoad(); ImGui::SameLine(0);
-    if (ImGui::Button("Save"))CLBSave(); ImGui::SameLine(0);
-    if (ImGui::Button("Clear"))CLBClear(); 
+    if (ImGui::Button(g_pStringTable->translate("ed_st_load").c_str()))CLBLoad(); ImGui::SameLine(0);
+    if (ImGui::Button(g_pStringTable->translate("ed_st_save").c_str()))CLBSave(); ImGui::SameLine(0);
+    if (ImGui::Button(g_pStringTable->translate("ed_st_clear").c_str()))CLBClear(); 
 
     ImGui::EndGroup();
     ImGui::InputTextMultiline("", m_EditText, sizeof(m_EditText), ImVec2(500, 200));
@@ -36,7 +36,7 @@ void UITextForm::Update()
 {
     if (Form && !Form->IsClosed())
     {
-        if (ImGui::BeginPopupModal("TextEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize))
+        if (ImGui::BeginPopupModal(g_pStringTable->translate("ed_st_text_editor").c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize))
         {
             Form->Draw();
             ImGui::EndPopup();

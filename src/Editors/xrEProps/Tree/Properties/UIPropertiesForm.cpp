@@ -95,8 +95,8 @@ void UIPropertiesForm::Draw()
 	static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
 	if (ImGui::BeginTable("props", 2, flags))
 	{
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
-		ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
+		ImGui::TableSetupColumn(g_pStringTable->translate("ed_st_name").c_str(), ImGuiTableColumnFlags_NoHide);
+		ImGui::TableSetupColumn(g_pStringTable->translate("ed_st_prop").c_str(), ImGuiTableColumnFlags_WidthFixed);
 		ImGui::TableHeadersRow();
 		m_Root.DrawRoot();
 		ImGui::EndTable();
@@ -176,12 +176,12 @@ PropItem* UIPropertiesForm::FindItem(const char* name)
 void UIPropertiesForm::DrawEditText()
 {
 
-	if (ImGui::BeginPopupContextItem("EditText", 0))
+	if (ImGui::BeginPopupContextItem(g_pStringTable->translate("ed_st_edit_text").c_str(), 0))
 	{
 		R_ASSERT(m_EditTextValueData);
 
 		ImGui::BeginGroup();
-		if (ImGui::Button("Ok"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str()))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
 			if (V1)
@@ -240,12 +240,12 @@ void UIPropertiesForm::DrawEditText()
 				}
 			}
 		}ImGui::SameLine(0);
-		if (ImGui::Button("Cancel"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str()))
 		{
 			xr_delete(m_EditTextValueData);
 			ImGui::CloseCurrentPopup();
 		} ImGui::SameLine(0);
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_apply").c_str()))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
 			if (V1)
@@ -295,7 +295,7 @@ void UIPropertiesForm::DrawEditText()
 			}
 		}ImGui::SameLine(150);
 
-		if (ImGui::Button("Load"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_load").c_str()))
 		{
 			xr_string fn;
 			if (EFS.GetOpenName("$import$", fn, false, NULL, 2)) 
@@ -313,19 +313,19 @@ void UIPropertiesForm::DrawEditText()
 		}
 		
 		ImGui::SameLine(0);
-		if (ImGui::Button("Save"))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_save").c_str()))
 		{
 			xr_string fn;
 			if (EFS.GetSaveName("$import$", fn, NULL, 2)) {
 				CMemoryWriter F;
 				F.w_stringZ(m_EditTextValueData);
 				if (!F.save_to(fn.c_str()))
-					Msg("!Can't save text file: %s", fn.c_str());
+					Msg(g_pStringTable->translate("ed_st_cant_save").c_str(), fn.c_str());
 			}
 		}
 		
 		ImGui::SameLine(0);
-		if (ImGui::Button("Clear")) { m_EditTextValueData[0] = 0; }
+		if (ImGui::Button(g_pStringTable->translate("ed_st_clear").c_str())) { m_EditTextValueData[0] = 0; }
 		ImGui::EndGroup();
 		if(m_EditTextValueData)
 		ImGui::InputTextMultiline("##text", m_EditTextValueData, m_EditTextValueDataSize, ImVec2(500, 200) ,ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data)->int {return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data); }, reinterpret_cast<void*>(this));
@@ -345,7 +345,7 @@ int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
 
 void UIPropertiesForm::DrawEditGameType()
 {
-	if (ImGui::BeginPopupContextItem("EditGameType", 0))
+	if (ImGui::BeginPopupContextItem(g_pStringTable->translate("ed_st_edit_game_type").c_str(), 0))
 	{
 		R_ASSERT(m_EditGameTypeValue);
 
@@ -353,52 +353,52 @@ void UIPropertiesForm::DrawEditGameType()
 		{
 			ImGui::BeginGroup();
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
-				if (ImGui::Checkbox("Single", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_sp").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, checked);
 				}
 			}
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
-				if (ImGui::Checkbox("DM", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_dm").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, checked);
 				}
 			}
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
-				if (ImGui::Checkbox("TDM", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_tdm").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, checked);
 				}
 			}
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
-				if (ImGui::Checkbox("ArtefactHunt", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_ah").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, checked);
 				}
 			}
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
-				if (ImGui::Checkbox("CTA", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_cta").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, checked);
 				}
 			}
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
-				if (ImGui::Checkbox("FMP", &cheked))
+				bool checked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_freemp").c_str(), &checked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
+					m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, checked);
 				}
 			}
 			ImGui::EndGroup(); ImGui::SameLine();
 		}
 		{
 			ImGui::BeginGroup();
-			if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str(), ImVec2(ImGui::GetFrameHeight() * 6, 0)))
 			{
 				if (m_EditGameTypeValue->AfterEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
 					if (m_EditGameTypeValue->ApplyValue<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
@@ -407,7 +407,7 @@ void UIPropertiesForm::DrawEditGameType()
 					}
 				ImGui::CloseCurrentPopup();
 			}
-			if (ImGui::Button("Cancel", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str(), ImVec2(ImGui::GetFrameHeight() * 6, 0)))
 			{
 				m_EditGameTypeValue = nullptr;
 				ImGui::CloseCurrentPopup();

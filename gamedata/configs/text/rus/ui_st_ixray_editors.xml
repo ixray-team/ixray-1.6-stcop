@@ -529,7 +529,7 @@
         <text>Left</text>
     </string>
     <string id="ed_st_load">
-        <text>Load...</text>
+        <text>Load</text>
     </string>
     <string id="ed_st_right">
         <text>Right</text>
@@ -1058,6 +1058,129 @@
     </string>
     <string id="ed_st_inactive_wnd_trans">
         <text>Inactive window transparent</text>
+    </string>
+    <string id="ed_st_text_editor">
+        <text>Text Editor</text>
+    </string>
+    <string id="ed_st_clear">
+        <text>Clear</text>
+    </string>
+    <string id="ed_st_none_caption">
+        <text>[none]</text>
+    </string>
+    <string id="ed_st_edit_text">
+        <text>Edit text</text>
+    </string>
+    <string id="ed_st_edit_game_type">
+        <text>Edit game type</text>
+    </string>
+    <string id="ed_st_custom">
+        <text>Custom...</text>
+    </string>
+    <string id="ed_st_freemp">
+        <text>FreeMP</text>
+    </string>
+    <string id="ed_st_cta">
+        <text>Capture the Artefact</text>
+    </string>
+    <string id="ed_st_ah">
+        <text>Artefact Hunt</text>
+    </string>
+    <string id="ed_st_tdm">
+        <text>Team Deathmatch</text>
+    </string>
+    <string id="ed_st_dm">
+        <text>Deathmatch</text>
+    </string>
+    <string id="ed_st_sp">
+        <text>Singleplayer</text>
+    </string>
+    <string id="ed_st_cant_save">
+        <text>! Can't save text file: %s</text>
+    </string>
+    <string id="ed_st_apply">
+        <text>Apply</text>
+    </string>
+    <string id="ed_st_name">
+        <text>Name</text>
+    </string>
+    <string id="ed_st_prop">
+        <text>Prop</text>
+    </string>
+    <string id="ed_st_reset">
+        <text>Reset</text>
+    </string>
+    <string id="ed_st_press_key">
+        <text>Press key</text>
+    </string>
+    <string id="ed_st_press_any_key">
+        <text>Press any key to continue...</text>
+    </string>
+    <string id="ed_st_menu_edit">
+        <text>Menu edit</text>
+    </string>
+    <string id="ed_st_create">
+        <text>Create</text>
+    </string>
+    <string id="ed_st_clone">
+        <text>Clone</text>
+    </string>
+    <string id="ed_st_create_folder">
+        <text>Create folder</text>
+    </string>
+    <string id="ed_st_rename">
+        <text>Rename</text>
+    </string>
+    <string id="ed_st_new_name">
+        <text>New name</text>
+    </string>
+    <string id="ed_st_new_path">
+        <text>New path</text>
+    </string>
+    <string id="ed_st_find">
+        <text>Find:</text>
+    </string>
+    <string id="ed_st_find_2">
+        <text>##Find</text>
+    </string>
+    <string id="ed_st_hit">
+        <text>Hit</text>
+    </string>
+    <string id="ed_st_name_selected">
+        <text>Name:%s</text>
+    </string>
+    <string id="ed_st_hit_selected">
+        <text>Hit:%s</text>
+    </string>
+    <string id="ed_st_up">
+        <text>Up</text>
+    </string>
+    <string id="ed_st_clear_list">
+        <text>Clear list</text>
+    </string>
+    <string id="ed_st_list">
+        <text>List</text>
+    </string>
+    <string id="ed_st_choose_form">
+        <text>Choose form</text>
+    </string>
+    <string id="ed_st_sel_item">
+        <text>Select item</text>
+    </string>
+    <string id="ed_st_bones_node_view">
+        <text>Bones Node View</text>
+    </string>
+    <string id="ed_st_transform_pos">
+        <text>Transform\Position</text>
+    </string>
+    <string id="ed_st_transform_rot">
+        <text>Transform\Rotation</text>
+    </string>
+    <string id="ed_st_transform_scale">
+        <text>Transform\Scale</text>
+    </string>
+    <string id="ed_st_in_group_editable">
+        <text>In group editable</text>
     </string>
     <string id="ed_st_default">
         <text>Default</text>

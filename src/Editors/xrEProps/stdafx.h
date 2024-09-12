@@ -19,6 +19,7 @@ inline void not_implemented()
 
 #include "..\xrEUI\stdafx.h"
 #include "..\..\xrEngine\stdafx.h"
+#include "..\..\xrEngine\string_table.h"
 #include "..\Public\xrEProps.h"
 #include "ChooseTypes.H"
 #include "FolderLib.h"

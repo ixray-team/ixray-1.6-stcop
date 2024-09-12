@@ -14,7 +14,7 @@ void UIKeyPressForm::Draw()
 	if (!bOpen)
 		return;
 
-	if (!ImGui::BeginPopupModal("PressKey", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove, true))
+	if (!ImGui::BeginPopupModal(g_pStringTable->translate("ed_st_press_key").c_str(), 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove, true))
 	{
 		ImGui::EndPopup();
 		return;
@@ -22,13 +22,13 @@ void UIKeyPressForm::Draw()
 
 	if (fmod(m_TimeGlobal*1000, 1000.f) >500.f)
 	{
-		ImGui::TextColored(ImVec4(1,0,0,1),"PRESS ANY KEY!!!");
+		ImGui::TextColored(ImVec4(1,0,0,1),g_pStringTable->translate("ed_st_press_any_key").c_str());
 	}
 	else
 	{
-		ImGui::Text("PRESS ANY KEY!!!");
+		ImGui::Text(g_pStringTable->translate("ed_st_press_any_key").c_str());
 	}
-	if (ImGui::Button("Cancel", ImVec2(-1, 0)))
+	if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str(), ImVec2(-1, 0)))
 	{
 		m_Ok = false;
 		bOpen = false;

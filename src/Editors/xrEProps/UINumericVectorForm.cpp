@@ -20,15 +20,15 @@ void UINumericVectorForm::Draw()
 	ImGui::Begin(m_Title.c_str() , 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
 		ImGui::BeginGroup();
 			ImGui::InputFloat("X",&m_Edit.x,0.01,0.1, m_Decimal); ImGui::SameLine(0);
-			if (ImGui::Button("Ok"))CLBOk(); 
+			if (ImGui::Button(g_pStringTable->translate("ed_st_ok").c_str()))CLBOk(); 
 		ImGui::EndGroup();
 		ImGui::BeginGroup();
 			ImGui::InputFloat("Y", &m_Edit.y, 0.01, 0.1, m_Decimal); ImGui::SameLine(0);
-			if (ImGui::Button("Cancek"))CLBCancel();
+			if (ImGui::Button(g_pStringTable->translate("ed_st_cancel").c_str()))CLBCancel();
 		ImGui::EndGroup();
 		ImGui::BeginGroup();
 			ImGui::InputFloat("Z", &m_Edit.z, 0.01, 0.1, m_Decimal); ImGui::SameLine(0);
-			if(m_Reset) if (ImGui::Button("Reset"))CLBReset();
+			if(m_Reset) if (ImGui::Button(g_pStringTable->translate("ed_st_reset").c_str()))CLBReset();
 		ImGui::EndGroup();
 	ImGui::End();
 	if (m_Max)
