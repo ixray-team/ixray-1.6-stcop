@@ -1156,6 +1156,32 @@ void EScene::PasteSelection()
 	}
 }
 
+void EScene::DuplicateSelection(ObjClassID classfilter)
+{
+    HGLOBAL hmem = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(SceneClipData) );
+	SceneClipData *sceneclipdata = (SceneClipData *)GlobalLock(hmem);
+
+	sceneclipdata->m_ClassFilter = classfilter;
+	GetTempFileNameA( FS.get_path(_temp_)->m_Path, "clip", 0, sceneclipdata->m_FileName );
+	SaveSelection( classfilter, sceneclipdata->m_FileName );
+
+	if( OpenClipboard( 0 ) ){
+
+		if( hmem ){
+			SceneClipData *sceneclipdata = (SceneClipData *)GlobalLock(hmem);
+			LoadSelection( sceneclipdata->m_FileName );
+			GlobalUnlock( hmem );
+		} else {
+			ELog.DlgMsg( mtError, "No data in clipboard" );
+		}
+
+		CloseClipboard();
+
+	} else {
+		ELog.DlgMsg( mtError, "Failed to open clipboard" );
+	}
+}
+
 void EScene::CutSelection( ObjClassID classfilter )
 {
 	CopySelection( classfilter );
