@@ -607,7 +607,7 @@ ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 
 	if (nullptr == pbinding->m_keyboard[0] && nullptr == pbinding->m_keyboard[1])
-		xr_sprintf(dst_buff, dst_buff_sz, "%s", CStringTable().translate("st_key_notbinded").c_str());
+		xr_sprintf(dst_buff, dst_buff_sz, "%s", g_pStringTable->translate("st_key_notbinded").c_str());
 	else
 		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
 }

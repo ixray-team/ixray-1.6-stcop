@@ -37,8 +37,8 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 	m_parent_group = &parental_group;
 
 	// name : StringTable(); icon; description;
-	m_name        = CStringTable().translate( pSettings->r_string(id(), "name") );
-	m_description = CStringTable().translate( pSettings->r_string(id(), "description") );
+	m_name        = g_pStringTable->translate( pSettings->r_string(id(), "name") );
+	m_description = g_pStringTable->translate( pSettings->r_string(id(), "description") );
 	m_icon._set( pSettings->r_string(id(), "icon") );
 
 	// section --------------------------------------------------------------------------

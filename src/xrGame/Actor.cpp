@@ -465,7 +465,6 @@ if(!g_dedicated_server)
 	m_AutoPickUp_AABB				= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB",Fvector().set(0.02f, 0.02f, 0.02f));
 	m_AutoPickUp_AABB_Offset		= READ_IF_EXISTS(pSettings,r_fvector3,section,"AutoPickUp_AABB_offs",Fvector().set(0, 0, 0));
 
-	CStringTable string_table;
 	m_sCharacterUseAction			= "character_use";
 	m_sDeadCharacterUseAction		= "dead_character_use";
 	m_sDeadCharacterUseOrDragAction	= "dead_character_use_or_drag";
@@ -1402,7 +1401,7 @@ void CActor::shedule_Update	(u32 DT)
 		{
 			if (m_pUsableObject && m_pUsableObject->tip_text())
 			{
-				m_sDefaultObjAction = CStringTable().translate( m_pUsableObject->tip_text() );
+				m_sDefaultObjAction = g_pStringTable->translate( m_pUsableObject->tip_text() );
 			}
 			else
 			{
