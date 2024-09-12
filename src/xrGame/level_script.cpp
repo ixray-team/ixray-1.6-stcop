@@ -1061,56 +1061,75 @@ void RenderSearchManagerWindow()
 				{
 					auto* pObject = Level().Objects.o_get_by_iterator(i);
 
-					if (pObject)
+					if (pObject && pObject->H_Parent()==nullptr)
 					{
 						imgui_search_manager.count(pObject->CLS_ID);
 
 						if (imgui_search_manager.filter(pObject->CLS_ID))
 						{
+							auto filter_string_size = strlen(imgui_search_manager.search_string);
+
 							CGameObject* pCasted = smart_cast<CGameObject*>(pObject);
-
-							xr_string name;
-
-							name = pObject->cName().c_str();
-
-							if (pCasted)
+							bool passed_filter{true};
+							if (filter_string_size)
 							{
-								name += " ";
-								name += "[";
-								name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
-								name += "]";
-							}
-							name += "##InGame_SM_";
-							name += std::to_string(i);
-
-							if (ImGui::Button(name.c_str()))
-							{
-								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-
-								if (pActor)
+								if (pCasted && pObject)
 								{
-									xr_string cmd;
-									cmd = "set_actor_position ";
-									cmd += std::to_string(pObject->Position().x);
-									cmd += ",";
-									cmd += std::to_string(pObject->Position().y);
-									cmd += ",";
-									cmd += std::to_string(pObject->Position().z);
+									std::string_view cname = pObject->cName().c_str();
+									std::string_view translate_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str();
 
-									execute_console_command_deferred(Console, cmd.c_str());
+									if (cname.find(imgui_search_manager.search_string) == xr_string::npos && translate_name.find(imgui_search_manager.search_string) == xr_string::npos)
+									{
+										passed_filter = false;
+									}
 								}
 							}
 
-							if (ImGui::BeginItemTooltip())
+							if (passed_filter)
 							{
-								ImGui::Text("system name: [%s]", pObject->cName().c_str());
-								ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
-								ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
-								ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
+								xr_string name;
+
+								name = pObject->cName().c_str();
+
+								if (pCasted)
+								{
+									name += " ";
+									name += "[";
+									name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
+									name += "]";
+								}
+								name += "##InGame_SM_";
+								name += std::to_string(i);
+
+								if (ImGui::Button(name.c_str()))
+								{
+									CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+									if (pActor)
+									{
+										xr_string cmd;
+										cmd = "set_actor_position ";
+										cmd += std::to_string(pObject->Position().x);
+										cmd += ",";
+										cmd += std::to_string(pObject->Position().y);
+										cmd += ",";
+										cmd += std::to_string(pObject->Position().z);
+
+										execute_console_command_deferred(Console, cmd.c_str());
+									}
+								}
+
+								if (ImGui::BeginItemTooltip())
+								{
+									ImGui::Text("system name: [%s]", pObject->cName().c_str());
+									ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
+									ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
+									ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
 
 
 
-								ImGui::EndTooltip();
+									ImGui::EndTooltip();
+								}
 							}
 						}
 					}
