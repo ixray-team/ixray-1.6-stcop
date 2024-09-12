@@ -32,6 +32,7 @@ public:
 	{
 		PHASE_NORMAL	= 0,	// E[0]
 		PHASE_SMAP		= 1,	// E[1]
+		PHASE_SMAP_CSM	= 2,	// E[1]
 	};
 	
 	enum

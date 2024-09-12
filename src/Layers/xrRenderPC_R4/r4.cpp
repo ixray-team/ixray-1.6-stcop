@@ -43,6 +43,10 @@ ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, floa
 	{
 		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
 	}
+
+	if(CRender::PHASE_SMAP_CSM == RImplementation.phase)
+		id = SE_R2_SHADOW_CSM;
+
 	return pVisual->shader->E[id]._get();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -53,6 +57,10 @@ ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float
 	{
 		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
 	}
+
+	if(CRender::PHASE_SMAP_CSM == RImplementation.phase)
+		id = SE_R2_SHADOW_CSM;
+
 	return pVisual->shader->E[id]._get();
 }
 static class cl_parallax		: public R_constant_setup		{	virtual void setup	(R_constant* C)
@@ -130,6 +138,15 @@ static class cl_alpha_ref	: public R_constant_setup
 		StateManager.BindAlphaRef(C);
 	}
 } binder_alpha_ref;
+
+static class cl_smap_proj : public R_constant_setup		
+{	
+	virtual void setup	(R_constant* C)
+	{
+		for(int i = 0; i < 3; i++)
+			RCache.set_ca(C, i, RImplementation.m_sun_cascades[i].view_proj);
+	}
+}	binder_smap_proj;
 
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
@@ -209,6 +226,7 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params_hud", &binder_pos_decompress_params_hud);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("depth_unpack", &binder_depth_unpack);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_vp", &binder_smap_proj);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";

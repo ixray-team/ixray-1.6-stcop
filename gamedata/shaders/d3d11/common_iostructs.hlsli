@@ -469,6 +469,14 @@ struct p_shadow
     float4 hpos : SV_Position;
 };
 
+struct p_shadow_csm
+{
+    float2 tc0 : TEXCOORD0;
+	float4 w_pos : TEXCOORD1;
+    float4 hpos : SV_Position;
+};
+
+
 struct v2p_screen
 {
     float2 tc0 : TEXCOORD0;

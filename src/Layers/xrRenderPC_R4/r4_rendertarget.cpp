@@ -901,6 +901,42 @@ CRenderTarget::CRenderTarget()
 		}
 	}
 
+		{
+			//Texture desc
+			D3D11_TEXTURE2D_DESC shadowMapDesc;
+			ZeroMemory(&shadowMapDesc, sizeof(D3D11_TEXTURE2D_DESC));
+			shadowMapDesc.Width = RImplementation.o.smapsize;
+			shadowMapDesc.Height = RImplementation.o.smapsize;
+			shadowMapDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			shadowMapDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			shadowMapDesc.ArraySize = 3;
+			shadowMapDesc.MipLevels = 1;
+			shadowMapDesc.CPUAccessFlags = 0;
+			shadowMapDesc.SampleDesc.Count = 1;
+			shadowMapDesc.SampleDesc.Quality = 0;
+			shadowMapDesc.MiscFlags = 0;
+			shadowMapDesc.Usage = D3D11_USAGE_DEFAULT;
+
+			//Create a ID3D11Texture
+			R_CHK(RDevice->CreateTexture2D(&shadowMapDesc, nullptr, &shadow_atlas_tex));
+
+			//DSV desc
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+			ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			depthStencilViewDesc.Texture2DArray.ArraySize = 3;
+			depthStencilViewDesc.Texture2DArray.MipSlice = 0;
+			depthStencilViewDesc.Texture2DArray.FirstArraySlice = 0;
+
+			//Create DSV
+			R_CHK(RDevice->CreateDepthStencilView(shadow_atlas_tex, &depthStencilViewDesc, &shadow_atlas_dsv));
+
+			//Create SRV (well, ref_texture)
+			shadow_atlas.create("$user$shadow_atlas_srv");
+			shadow_atlas->surface_set(shadow_atlas_tex);
+		}
+
 	// PP
 	s_postprocess.create("postprocess");
 	g_postprocess.create(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX3, RCache.Vertex.Buffer(), RCache.QuadIB);

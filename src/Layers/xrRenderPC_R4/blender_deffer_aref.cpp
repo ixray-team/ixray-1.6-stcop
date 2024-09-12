@@ -80,6 +80,17 @@ void	CBlender_deffer_aref::Compile(CBlender_Compile& C)
 			C.r_ColorWriteEnable(false, false, false, false);
 			C.r_End();
 			break;
+		case SE_R2_SHADOW_CSM: // smap-direct
+			RImplementation.addShaderOption("USE_AREF", "1");
+			C.r_Pass("shadow_base_csm", "shadow_base", "shadow_base", false, TRUE, TRUE);
+
+			C.r_dx10Texture("s_base", C.L_textures[0]);
+			C.r_dx10Sampler("smp_base");
+			C.r_dx10Sampler("smp_linear");
+			C.r_ColorWriteEnable(false, false, false, false);
+
+			C.r_End();
+			break;
 		}
 	}
 }

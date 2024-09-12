@@ -96,6 +96,10 @@ public:
 //	TODO: DX10: CHeck if we need old-style SMAP
 //	IDirect3DSurface9*			rt_smap_ZB;		//
 
+	ID3DTexture2D* shadow_atlas_tex;
+	ID3D11DepthStencilView* shadow_atlas_dsv;
+	ref_texture shadow_atlas;
+
 	//	Igor: for async screenshots
 	ID3DTexture2D*			t_ss_async;				//32bit		(r,g,b,a) is situated in the system memory
 

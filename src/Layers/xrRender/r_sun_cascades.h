@@ -17,6 +17,9 @@ struct cascade
 	cascade () : reset_chain( false )	{}
 
 	Fmatrix			xform;
+	Fmatrix			view_proj;
+	CFrustum frustum;
+	Fvector3 cop;
 	xr_vector<ray>	rays;
 	float			size;
 	float			bias;

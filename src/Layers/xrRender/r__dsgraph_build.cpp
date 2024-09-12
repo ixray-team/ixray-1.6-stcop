@@ -1013,7 +1013,7 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 				N->val.pVisual		=	pVisual;
 			}
 #if RENDER!=R_R1
-			if (ssa>r_ssaLOD_B || phase==PHASE_SMAP)
+			if (ssa>r_ssaLOD_B || phase==PHASE_SMAP || phase==PHASE_SMAP_CSM)
 #else
 			if (ssa>r_ssaLOD_B)
 #endif
@@ -1226,7 +1226,7 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 				N->val.pVisual			= pVisual;
 			}
 #if RENDER!=R_R1
-			if (ssa>r_ssaLOD_B || phase==PHASE_SMAP)
+			if (ssa>r_ssaLOD_B || phase==PHASE_SMAP || phase==PHASE_SMAP_CSM)
 #else
 			if (ssa>r_ssaLOD_B)
 #endif
