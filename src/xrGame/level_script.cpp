@@ -140,10 +140,10 @@ struct {
 	void add_weapons(CLASS_ID id)
 	{
 		if (weapons.find(id) == weapons.end())
-			weapons.insert(id); 
+			weapons.insert(id);
 	}
 
-	bool is_weapons(CLASS_ID id) 
+	bool is_weapons(CLASS_ID id)
 	{
 		return weapons.find(id) != weapons.end();
 	}
@@ -668,7 +668,7 @@ void RenderSpawnManagerWindow()
 									cmd += section_name.data();
 									cmd += " ";
 									cmd += std::to_string(count);
-								
+
 									execute_console_command_deferred(Console, cmd.c_str());
 								}
 
@@ -962,7 +962,7 @@ struct {
 			result = id == imgui_clsid_manager.stalker;
 			break;
 		}
-		case eSelectedType::kSelectedType_Car: 
+		case eSelectedType::kSelectedType_Car:
 		{
 			result = id == imgui_clsid_manager.car;
 			break;
@@ -975,7 +975,7 @@ struct {
 	void count(CLASS_ID id)
 	{
 		counts[(eSelectedType::kSelectedType_All)] += 1;
-	
+
 		if (id == imgui_clsid_manager.smart_terrain)
 		{
 			counts[(eSelectedType::kSelectedType_SmartTerrain)] += 1;
@@ -999,7 +999,7 @@ struct {
 		else if (id == imgui_clsid_manager.car)
 		{
 			counts[(eSelectedType::kSelectedType_Car)] += 1;
- 
+
 		}
 	}
 
@@ -1032,7 +1032,7 @@ void RenderSearchManagerWindow()
 
 	if (ImGui::Begin("Search Manager"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
 	{
-		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items)/sizeof(imgui_search_manager.combo_items[0]);
+		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items) / sizeof(imgui_search_manager.combo_items[0]);
 		ImGui::Combo("Category", &imgui_search_manager.selected_type, imgui_search_manager.combo_items, kItemSize);
 
 		ImGui::SeparatorText("Stats");
@@ -1050,7 +1050,7 @@ void RenderSearchManagerWindow()
 		if (ImGui::BeginTabBar("##TB_InGameSearchManager"))
 		{
 			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
-			{				
+			{
 				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
 
 				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
@@ -1083,7 +1083,7 @@ void RenderSearchManagerWindow()
 								name += "]";
 							}
 							name += "##InGame_SM_";
-							name += i;
+							name += std::to_string(i);
 
 							if (ImGui::Button(name.c_str()))
 							{
@@ -1101,6 +1101,18 @@ void RenderSearchManagerWindow()
 
 									execute_console_command_deferred(Console, cmd.c_str());
 								}
+							}
+
+							if (ImGui::BeginItemTooltip())
+							{
+								ImGui::Text("system name: [%s]", pObject->cName().c_str());
+								ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
+								ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
+								ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
+
+
+
+								ImGui::EndTooltip();
 							}
 						}
 					}
