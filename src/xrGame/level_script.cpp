@@ -880,7 +880,7 @@ void RenderWeaponManagerWindow()
 	}
 }
 
-enum class eSelectedType : int {
+enum eSelectedType {
 	kSelectedType_All,
 	kSelectedType_SmartTerrain,
 	kSelectedType_SmartCover,
@@ -896,9 +896,9 @@ struct {
 
 	int selected_type{};
 	char search_string[256]{};
-	char category_names[static_cast<int>(eSelectedType::kSelectedType_Count)][32];
-	const char* combo_items[static_cast<int>(eSelectedType::kSelectedType_Count)]{};
-	int counts[static_cast<int>(eSelectedType::kSelectedType_Count)]{};
+	char category_names[(eSelectedType::kSelectedType_Count)][32];
+	const char* combo_items[(eSelectedType::kSelectedType_Count)]{};
+	int counts[(eSelectedType::kSelectedType_Count)]{};
 
 	const char* convertTypeToString(int type)
 	{
@@ -987,38 +987,38 @@ struct {
 
 	void count(CLASS_ID id)
 	{
-		counts[static_cast<int>(eSelectedType::kSelectedType_All)] += 1;
+		counts[(eSelectedType::kSelectedType_All)] += 1;
 	
 		if (id == imgui_clsid_manager.smart_terrain)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_SmartTerrain)] += 1;
+			counts[(eSelectedType::kSelectedType_SmartTerrain)] += 1;
 		}
 		else if (id == imgui_clsid_manager.smart_cover)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_SmartCover)] += 1;
+			counts[(eSelectedType::kSelectedType_SmartCover)] += 1;
 		}
 		else if (id == imgui_clsid_manager.level_changer)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_LevelChanger)] += 1;
+			counts[(eSelectedType::kSelectedType_LevelChanger)] += 1;
 		}
 		else if (id == imgui_clsid_manager.artefact)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_Artefact)] += 1;
+			counts[(eSelectedType::kSelectedType_Artefact)] += 1;
 		}
 		else if (id == imgui_clsid_manager.stalker)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_Stalker)] += 1;
+			counts[(eSelectedType::kSelectedType_Stalker)] += 1;
 		}
 		else if (id == imgui_clsid_manager.car)
 		{
-			counts[static_cast<int>(eSelectedType::kSelectedType_Car)] += 1;
+			counts[(eSelectedType::kSelectedType_Car)] += 1;
  
 		}
 	}
 
 	void init()
 	{
-		for (int i = 0; i < static_cast<int>(eSelectedType::kSelectedType_Count); ++i)
+		for (int i = 0; i < (eSelectedType::kSelectedType_Count); ++i)
 		{
 			char* pPtr = &category_names[i][0];
 			const char* pStr = convertTypeToString(i);
@@ -1056,13 +1056,13 @@ void RenderSearchManagerWindow()
 				ImGui::Text("Current category: %s (%d)", imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type), imgui_search_manager.selected_type);
 				ImGui::Text("Level: %s", Level().name().c_str());
 
-				ImGui::Text("All: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_All)]);
-				ImGui::Text("Smart covers: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_SmartCover)]);
-				ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_SmartTerrain)]);
-				ImGui::Text("Stalker: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_Stalker)]);
-				ImGui::Text("Car: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_Car)]);
-				ImGui::Text("Level changer: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_LevelChanger)]);
-				ImGui::Text("Artefact: %d", imgui_search_manager.counts[static_cast<int>(eSelectedType::kSelectedType_Artefact)]);
+				ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
+				ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
+				ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
+				ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
+				ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
+				ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
+				ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
 				
 				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
 
