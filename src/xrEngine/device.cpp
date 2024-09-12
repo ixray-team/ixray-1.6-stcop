@@ -254,8 +254,6 @@ void CRenderDevice::on_idle		()
 	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
 	SDL_SetRelativeMouseMode(Focus);
 
-	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
-
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
 	if (g_loading_events.size())
@@ -420,12 +418,12 @@ void CRenderDevice::Run()
 		Timer_MM_Delta = time_system - time_local;
 	}
 
-	// Start Balance-Threads
 	mt_csEnter.Enter();
 	mt_bMustExit = FALSE;
 
 	g_AppInfo.MainThread = GetCurrentThread();
 	RenderEventMT = CreateEventA(nullptr, true, false, "Render Helper Event");
+	// Start Balance-Threads
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
 	thread_spawn(mt_3rdThread, "X-RAY 3rd thread", 0, 0);
 
