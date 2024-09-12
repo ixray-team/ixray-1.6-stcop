@@ -1048,22 +1048,22 @@ void RenderSearchManagerWindow()
 		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items)/sizeof(imgui_search_manager.combo_items[0]);
 		ImGui::Combo("Category", &imgui_search_manager.selected_type, imgui_search_manager.combo_items, kItemSize);
 
+		ImGui::SeparatorText("Stats");
+		ImGui::Text("Current category: %s (%d)", imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type), imgui_search_manager.selected_type);
+		ImGui::Text("Level: %s", Level().name().c_str());
+
+		ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
+		ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
+		ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
+		ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
+		ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
+		ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
+		ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
+
 		if (ImGui::BeginTabBar("##TB_InGameSearchManager"))
 		{
 			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
-			{
-				ImGui::SeparatorText("Stats");
-				ImGui::Text("Current category: %s (%d)", imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type), imgui_search_manager.selected_type);
-				ImGui::Text("Level: %s", Level().name().c_str());
-
-				ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
-				ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
-				ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
-				ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
-				ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
-				ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
-				ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
-				
+			{				
 				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
 
 				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
@@ -1088,7 +1088,15 @@ void RenderSearchManagerWindow()
 							sprintf_s(number, sizeof(number), "##InGame_SM_%d", i);
 							memcpy(&buffer[0] + strlen(pObject->cName().c_str()), number, sizeof(number));
 
-							ImGui::Button(buffer);
+							if (ImGui::Button(buffer))
+							{
+								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+								if (pActor)
+								{
+									pActor->SetActorPosition(pObject->Position());
+								}
+							}
 						}
 					}
 				}
