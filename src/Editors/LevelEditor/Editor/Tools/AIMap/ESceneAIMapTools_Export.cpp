@@ -1,11 +1,6 @@
 #include "stdafx.h"
 
-
-#ifdef AI_MAP_26_BIT
-void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const NodePosition& Psrc, Fbox& bb, SAIParams& params)
-#else
 void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const SNodePositionOld& Psrc, Fbox& bb, SAIParams& params)
-#endif
 {
     Pdest.x = float(Psrc.x)*params.fPatchSize;
     Pdest.y = (float(Psrc.y)/65535)*(bb.max.y-bb.min.y) + bb.min.y;
@@ -17,11 +12,7 @@ u32 ESceneAIMapTool::UnpackLink(u32& L)
 	return L&0x00ffffff;
 }
 
-#ifdef AI_MAP_26_BIT
-void ESceneAIMapTool::PackPosition(NodePosition& Dest, Fvector& Src, Fbox& bb, SAIParams& params)
-#else
 void ESceneAIMapTool::PackPosition(SNodePositionOld& Dest, Fvector& Src, Fbox& bb, SAIParams& params)
-#endif
 {
 	float sp = 1/params.fPatchSize;
 	int px,py,pz;
@@ -66,11 +57,8 @@ bool ESceneAIMapTool::Export(LPCSTR path)
         for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
             u32 			id;
             u16 			pl;
-#ifdef AI_MAP_26_BIT
-            NodePosition 	np;
-#else
+
             SNodePositionOld 	np;
-#endif
 
 #ifdef AI_MAP_26_BIT
             id = (*it)->n1?(u32)(*it)->n1->idx:InvalidNode;  	F->w(&id, sizeof(id));

@@ -50,8 +50,6 @@ ICF	u32	ILevelGraph::vertex	(const CVertex &vertex_r) const
 
 IC	void ILevelGraph::unpack_xz(const ILevelGraph::CPosition &vertex_position, u32 &x, u32 &z) const
 {
-	VERIFY				(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
-
 #ifdef AI_MAP_26_BIT
 	VERIFY				(vertex_position.xz() < NodePosition::MAX_XZ);
 #else

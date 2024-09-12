@@ -586,14 +586,14 @@ public:
 };									// 2+5+2+11 = 20b
 #endif
 
-#ifndef AI_MAP_26_BIT
+
 struct SNodePositionOld
 {
 	s16 x;
 	u16 y;
 	s16 z;
 };
-#endif
+
 #pragma pack	(pop)
 
 const u32 XRCL_CURRENT_VERSION = 18; //17;	// input
