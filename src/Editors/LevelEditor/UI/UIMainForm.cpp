@@ -167,51 +167,51 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
-	if (ImGui::BeginMenu("Edit"))
+	if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_edit").c_str()))
 	{
-		if (ImGui::MenuItem("Copy"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_copy").c_str()))
 		{
 			ExecCommand(COMMAND_COPY);
 		}
-		if (ImGui::MenuItem("Paste"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_paste").c_str()))
 		{
 			ExecCommand(COMMAND_PASTE);
 		}
 		ImGui::Separator();
-		if (ImGui::MenuItem("Cut"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_cut").c_str()))
 		{
 			ExecCommand(COMMAND_CUT);
 		}
 		ImGui::Separator();
-		if (ImGui::MenuItem("Delete"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_delete").c_str()))
 		{
 			ExecCommand(COMMAND_DELETE_SELECTION);
 		}
 		ImGui::EndMenu();
 	}
-	if (ImGui::BeginMenu("Visiblity"))
+	if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_visibility").c_str()))
 	{
-		if (ImGui::MenuItem("Hide Selected"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_hide_selected").c_str()))
 		{
 			ExecCommand(COMMAND_HIDE_SEL, FALSE);
 		}
-		if (ImGui::MenuItem("Hide Unselected"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_hide_unselected").c_str()))
 		{
 			ExecCommand(COMMAND_HIDE_UNSEL);
 		}
-		if (ImGui::MenuItem("Hide All"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_hide_all").c_str()))
 		{
 			ExecCommand(COMMAND_HIDE_ALL, FALSE);
 		}
 		ImGui::Separator();
-		if (ImGui::MenuItem("Unhide All"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_unhide_all").c_str()))
 		{
 			ExecCommand(COMMAND_HIDE_ALL, TRUE);
 		}
 		ImGui::EndMenu();
 	}
 	ImGui::Separator();
-	if (ImGui::MenuItem("Properties"))
+	if (ImGui::MenuItem(g_pStringTable->translate("ed_st_properties").c_str()))
 	{
 		ExecCommand(COMMAND_SHOW_PROPERTIES);
 	}
@@ -228,7 +228,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			{
 				{
 					bool selected = psDeviceFlags.test(rsDrawSafeRect);
-					if (ImGui::MenuItem("Draw Safe Rect", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_draw_safe_rect").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsDrawSafeRect, selected);
 						UI->RedrawScene();
@@ -236,7 +236,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				}
 				{
 					bool selected = psDeviceFlags.test(rsDrawGrid);
-					if (ImGui::MenuItem("Draw Grid", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_draw_grid").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsDrawGrid, selected);
 						UI->RedrawScene();
@@ -245,17 +245,17 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::Separator();
 				{
 					bool selected = psDeviceFlags.test(rsFog);
-					if (ImGui::MenuItem("Fog", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_fog").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsFog, selected);
 						UI->RedrawScene();
 					}
 				}
 				{
-					if (ImGui::BeginMenu("Environment"))
+					if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_environment").c_str()))
 					{
 						bool selected = !psDeviceFlags.test(rsEnvironment);
-						if (ImGui::MenuItem("None", "", &selected))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_none").c_str(), "", &selected))
 						{
 							psDeviceFlags.set(rsEnvironment, false);
 							UI->RedrawScene();
@@ -275,9 +275,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 					}
 				}
 				ImGui::Separator();
-				if (ImGui::BeginMenu("Render"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_render").c_str()))
 				{
-					if (ImGui::BeginMenu("Quality"))
+					if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_quality").c_str()))
 					{
 						static bool selected[4] = { false,false,true,false };
 						if (ImGui::MenuItem("25%", "", &selected[0]))
@@ -306,20 +306,20 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 						}
 						ImGui::EndMenu();
 					}
-					if (ImGui::BeginMenu("Fill Mode"))
+					if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_fill_mode").c_str()))
 					{
 						bool selected[3] = { EDevice->dwFillMode == D3DFILL_POINT,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
-						if (ImGui::MenuItem("Point", "", &selected[0]))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_point").c_str(), "", &selected[0]))
 						{
 							EDevice->dwFillMode = D3DFILL_POINT;
 							UI->RedrawScene();
 						}
-						if (ImGui::MenuItem("Wireframe", "", &selected[1]))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_wireframe").c_str(), "", &selected[1]))
 						{
 							EDevice->dwFillMode = D3DFILL_WIREFRAME;
 							UI->RedrawScene();
 						}
-						if (ImGui::MenuItem("Solid", "", &selected[2]))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_solid").c_str(), "", &selected[2]))
 						{
 							EDevice->dwFillMode = D3DFILL_SOLID;
 							UI->RedrawScene();
@@ -328,7 +328,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 					}
 					{
 						bool selected = psDeviceFlags.test(rsEdgedFaces);
-						if (ImGui::MenuItem("Edged Faces", "", &selected))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_edged_faces").c_str(), "", &selected))
 						{
 							psDeviceFlags.set(rsEdgedFaces, selected);
 							UI->RedrawScene();
@@ -336,7 +336,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 					}
 					{
 						bool selected = psDeviceFlags.test(rsLighting);
-						if (ImGui::MenuItem("Lighting", "", &selected))
+						if (ImGui::MenuItem(g_pStringTable->translate("ed_st_lighting").c_str(), "", &selected))
 						{
 							psDeviceFlags.set(rsLighting, selected);
 							UI->RedrawScene();
@@ -347,14 +347,14 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::Separator();
 				{
 					bool selected = psDeviceFlags.test(rsMuteSounds);
-					if (ImGui::MenuItem("Mute Sounds", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_mute_sounds").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsMuteSounds, selected);
 					}
 				}
 				{
 					bool selected = psDeviceFlags.test(rsRenderRealTime);
-					if (ImGui::MenuItem("Real Time", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_real_time").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsRenderRealTime, selected);
 					}
@@ -362,7 +362,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::Separator();
 				{
 					bool selected = psDeviceFlags.test(rsStatistic);
-					if (ImGui::MenuItem("Stats", "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_stats").c_str(), "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
 
 				}
 				ImGui::EndPopup();
@@ -374,7 +374,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Menu");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_menu").c_str());
 			}
 		}
 		ImGui::EndGroup();
@@ -401,7 +401,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Select");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_select").c_str());
 			}
 			if (bPushColor)
 			{
@@ -427,7 +427,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Add");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_add").c_str());
 			}
 			if (bPushColor)
 			{
@@ -453,7 +453,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Move");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_move").c_str());
 			}
 			if (bPushColor)
 			{
@@ -479,7 +479,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Scale");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_scale").c_str());
 			}
 			if (bPushColor)
 			{
@@ -505,7 +505,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Rotate");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_rotate").c_str());
 			}
 			if (bPushColor)
 			{
@@ -536,7 +536,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Object Snap Toggle");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_obj_snap_toggle").c_str());
 			}
 			if (bPushColor)
 			{
@@ -562,7 +562,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Moving Snap To Object Toggle");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_move_snap_to_obj_toggle").c_str());
 			}
 			if (bPushColor)
 			{
@@ -588,7 +588,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Normal Alignment");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_normal_align").c_str());
 			}
 			if (bPushColor)
 			{
@@ -614,7 +614,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Grid Snap Toggle");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_grid_snap_toggle").c_str());
 			}
 			if (bPushColor)
 			{
@@ -640,7 +640,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Vertex Snap Toggle");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_vertex_snap_toggle").c_str());
 			}
 			if (bPushColor)
 			{
@@ -665,7 +665,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Focus the whole scene");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_focus_whole_scene").c_str());
 			}
 		}
 		ImGui::SameLine();
@@ -679,7 +679,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Focus on the selected object");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_focus_on_selected_obj").c_str());
 			}
 		}
 		ImGui::EndGroup();
@@ -708,7 +708,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Fixed object movement");
+					ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_movement").c_str());
 				}
 				if (bPushColor)
 				{
@@ -798,7 +798,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("The choice of a fixed distance of movement of the object");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_distance_hint").c_str());
 			}
 		}
 		ImGui::SameLine(0, ImGui::GetFontSize());
@@ -821,7 +821,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Fixed Object Scaling");
+					ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_scaling").c_str());
 				}
 				if (bPushColor)
 				{
@@ -911,7 +911,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Setting a Fixed Object Scaling");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_scaling_distance_desc").c_str());
 			}
 		}
 		ImGui::SameLine(0, ImGui::GetFontSize());
@@ -934,7 +934,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Fixed object rotation angle");
+					ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_rotation").c_str());
 				}
 				if (bPushColor)
 				{
@@ -994,7 +994,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Set a fixed rotation angle of the object (in degrees)");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_fixed_obj_rotation_desc").c_str());
 			}
 		}
 		ImGui::EndGroup();
@@ -1022,7 +1022,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Parent CS Toggle");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_parent_cs_toggle").c_str());
 			}
 			if (bPushColor)
 			{
@@ -1049,7 +1049,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Scaling by Axes only");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_axes_scaling").c_str());
 			}
 			if (bPushColor)
 			{
@@ -1091,7 +1091,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Front View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_front_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1108,7 +1108,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Back View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_back_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1125,7 +1125,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Left View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_left_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1142,7 +1142,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Right View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_right_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1159,7 +1159,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Top View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_top_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1176,7 +1176,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Bottom View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_bottom_view").c_str());
 			}
 		}
 		ImGui::Spacing();
@@ -1193,7 +1193,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Reset View");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_reset_view").c_str());
 			}
 		}
 		ImGui::EndGroup();
@@ -1222,7 +1222,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Free camera mode");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_freecam_mode").c_str());
 			}
 			if (bPushColor)
 			{
@@ -1249,7 +1249,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Snap the camera to the center of coordinates|scene");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_snap_cam_center").c_str());
 			}
 			if (bPushColor)
 			{
@@ -1276,7 +1276,7 @@ void UIMainForm::RenderOldCameraButtons()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Automatic camera flyover of the scene");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_cam_freefly").c_str());
 			}
 			if (bPushColor)
 			{
@@ -1310,7 +1310,7 @@ void UIMainForm::RenderAxisButtons()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select X Axis");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_select_x_axis").c_str());
 		}
 		if (bPushColor)
 		{
@@ -1336,7 +1336,7 @@ void UIMainForm::RenderAxisButtons()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select Y Axis");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_select_y_axis").c_str());
 		}
 		if (bPushColor)
 		{
@@ -1362,7 +1362,7 @@ void UIMainForm::RenderAxisButtons()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select Z Axis");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_select_z_axis").c_str());
 		}
 		if (bPushColor)
 		{
@@ -1388,7 +1388,7 @@ void UIMainForm::RenderAxisButtons()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Select ZX Axis");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_select_zx_axis").c_str());
 		}
 		if (bPushColor)
 		{

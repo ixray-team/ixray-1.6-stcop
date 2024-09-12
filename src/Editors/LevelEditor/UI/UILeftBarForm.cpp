@@ -15,7 +15,7 @@ UILeftBarForm::~UILeftBarForm()
 
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("Edit Mode", 0))
+	if (ImGui::Begin(g_pStringTable->translate("ed_st_edit_mode").c_str(), 0))
 	{
 		static ObjClassID Tools[OBJCLASS_COUNT + 1] = {
 													OBJCLASS_SCENEOBJECT,
@@ -70,7 +70,7 @@ void UILeftBarForm::Draw()
 	{
 		if (bUseObjectsTool)
 		{
-			if (ImGui::Begin("Object Tools", &bUseObjectsTool))
+			if (ImGui::Begin(g_pStringTable->translate("ed_st_obj_tools").c_str(), &bUseObjectsTool))
 			{
 				if (LTools->GetToolForm())
 					LTools->GetToolForm()->Draw();
@@ -88,48 +88,48 @@ void UILeftBarForm::Draw()
 	if (!bUseSnapList)
 		return;
 
-	if (ImGui::Begin("Snap List", &bUseSnapList))
+	if (ImGui::Begin(g_pStringTable->translate("ed_st_snap_list").c_str(), &bUseSnapList))
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
 		
-		if (ImGui::Checkbox("Enable/Show Snap List", &bDrawSnapListObjects))
+		if (ImGui::Checkbox(g_pStringTable->translate("ed_st_show_snap_list").c_str(), &bDrawSnapListObjects))
 			static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList = bDrawSnapListObjects;
 		
 		ImGui::Separator();
 		{
-			ImGui::BulletText("Commands", ImGuiDir_Left);
-			if (ImGui::BeginPopupContextItem("Commands", 1))
+			ImGui::BulletText(g_pStringTable->translate("ed_st_commands").c_str(), ImGuiDir_Left);
+			if (ImGui::BeginPopupContextItem(g_pStringTable->translate("ed_st_commands").c_str(), 1))
 			{
-				if (ImGui::MenuItem("Make List From Selected"))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_list_from_sel").c_str()))
 				{
 					ExecCommand(COMMAND_SET_SNAP_OBJECTS);
 				}
-				if (ImGui::MenuItem("Select Object From List"))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_sel_obj_from_list").c_str()))
 				{
 					ExecCommand(COMMAND_SELECT_SNAP_OBJECTS);
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Add Selected To List"))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_add_sel_to_list").c_str()))
 				{
 					ExecCommand(COMMAND_ADD_SEL_SNAP_OBJECTS);
 				}
-				if (ImGui::MenuItem("Remove Selected From List"))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_remove_sel_from_list").c_str()))
 				{
 					ExecCommand(COMMAND_DEL_SEL_SNAP_OBJECTS);
 				}
 				ImGui::EndPopup();
 			}
-			ImGui::OpenPopupOnItemClick("Commands", 0);
+			ImGui::OpenPopupOnItemClick(g_pStringTable->translate("ed_st_commands").c_str(), 0);
 		}
 
 		ImGui::Separator();
-		ImGui::Checkbox("+/- Mode", &m_SnapListMode); ImGui::SameLine(0, 10);
+		ImGui::Checkbox(g_pStringTable->translate("ed_st_snap_list_mode").c_str(), &m_SnapListMode); ImGui::SameLine(0, 10);
 		if (ImGui::Button("X"))
 		{
-			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear snap objects?") == mrYes)
+			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, g_pStringTable->translate("ed_st_clear_snap_dialog").c_str()) == mrYes)
 				ExecCommand(COMMAND_CLEAR_SNAP_OBJECTS);
 		}
 		ImGui::PopStyleVar(2);

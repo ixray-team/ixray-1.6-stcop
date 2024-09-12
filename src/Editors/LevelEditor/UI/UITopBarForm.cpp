@@ -60,7 +60,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Undo the last action.");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_undo").c_str());
 		}
 		ImGui::SameLine();
 		m_tRedo->Load();
@@ -72,7 +72,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Repeat the last action.");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_redo").c_str());
 		}
 		ImGui::SameLine();
 
@@ -84,7 +84,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Clear/New Scene");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_new").c_str());
 		}
 		ImGui::SameLine();
 		m_tOpen->Load();
@@ -95,7 +95,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Open level");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_open_le").c_str());
 		}
 		ImGui::SameLine();
 		m_tSave->Load();
@@ -106,7 +106,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Save level");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_save_le").c_str());
 		}
 		ImGui::SameLine();
 
@@ -118,7 +118,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Build CFORM");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_build_cform").c_str());
 		}
 		ImGui::SameLine();
 		m_tAIMap->Load();
@@ -129,7 +129,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Build AI Map");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_build_ai_map").c_str());
 		}
 		ImGui::SameLine();
 		m_tGGraph->Load();
@@ -140,7 +140,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Build game graph");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_build_game_graph").c_str());
 		}
 		ImGui::SameLine();
 
@@ -156,7 +156,7 @@ void UITopBarForm::Draw()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Stop Play in Editor");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_stop_pie").c_str());
 			}
 		}
 		else
@@ -169,7 +169,7 @@ void UITopBarForm::Draw()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Start Play in Editor");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_start_pie").c_str());
 			}
 		}
 		{
@@ -181,12 +181,12 @@ void UITopBarForm::Draw()
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SetTooltip("Play in Editor settings");
+				ImGui::SetTooltip(g_pStringTable->translate("ed_st_pie_settings").c_str());
 			}
 			ImGui::SameLine();
 			if (ImGui::BeginPopup("test"))
 			{
-				ImGui::Checkbox("Verify space restrictors",&m_VerifySpaceRestrictors);
+				ImGui::Checkbox(g_pStringTable->translate("ed_st_verify_restrictors").c_str(), &m_VerifySpaceRestrictors);
 				ImGui::EndPopup();
 			}
 		}
@@ -204,7 +204,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Reload configs");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_reload_configs").c_str());
 		}
 		ImGui::SameLine();
 
@@ -216,7 +216,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Build and Make");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_build_and_make").c_str());
 		}
 		ImGui::SameLine();
 		m_tPlayPC->Load();
@@ -228,7 +228,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Play level");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_play_level").c_str());
 		}
 		ImGui::SameLine();
 		m_tPlayCleanGame->Load();
@@ -239,7 +239,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Play level in-game");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_play_level_ingame").c_str());
 		}
 		ImGui::SameLine();
 
@@ -257,7 +257,7 @@ void UITopBarForm::Draw()
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			ImGui::SetTooltip("Open 'gamedata' folder");
+			ImGui::SetTooltip(g_pStringTable->translate("ed_st_open_gamedata").c_str());
 		}
 	}
 	ImGui::SameLine(0,1);

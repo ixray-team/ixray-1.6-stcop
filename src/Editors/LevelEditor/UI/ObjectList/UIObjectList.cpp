@@ -15,7 +15,7 @@ void UIObjectList::Draw()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400, 400));
 
-	if (!ImGui::Begin("Object List", &bOpen))
+	if (!ImGui::Begin(g_pStringTable->translate("ed_st_obj_list").c_str(), &bOpen))
 	{
 		ImGui::PopStyleVar(1);
 		ImGui::End();
@@ -28,19 +28,19 @@ void UIObjectList::Draw()
 
 	{
 		ImGui::BeginGroup();
-		if (ImGui::RadioButton("All", m_Mode == M_All))
+		if (ImGui::RadioButton(g_pStringTable->translate("ed_st_all").c_str(), m_Mode == M_All))
 		{
 			m_Mode = M_All;
 			m_Root.ClearSelcted();
 		}
 		ImGui::SameLine();
-		if (ImGui::RadioButton("Visible Only", m_Mode == M_Visible))
+		if (ImGui::RadioButton(g_pStringTable->translate("ed_st_visible_only").c_str(), m_Mode == M_Visible))
 		{
 			m_Mode = M_Visible;
 			m_Root.ClearSelcted();
 		}
 		ImGui::SameLine();
-		if (ImGui::RadioButton("Invisible Only", m_Mode == M_Inbvisible))
+		if (ImGui::RadioButton(g_pStringTable->translate("ed_st_invisible_only").c_str(), m_Mode == M_Inbvisible))
 		{
 			m_Mode = M_Inbvisible;
 			m_Root.ClearSelcted();
@@ -49,7 +49,7 @@ void UIObjectList::Draw()
 		
 		float BtnWidth = ImGui::GetWindowWidth() / 3 - 20;
 
-		if (ImGui::Button("Focus", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_focus").c_str(), ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -68,7 +68,7 @@ void UIObjectList::Draw()
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Show", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_show").c_str(), ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -80,7 +80,7 @@ void UIObjectList::Draw()
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Hide", ImVec2(BtnWidth, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_hide").c_str(), ImVec2(BtnWidth, 0)))
 		{
 			for (UITreeItem* Item : m_Root.Items)
 			{
@@ -211,7 +211,7 @@ void UIObjectList::DrawObjects()
 		IsFocused = ImGui::IsWindowFocused();
 
 		ImGui::TableSetupScrollFreeze(1, 1);
-		ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn(g_pStringTable->translate("ed_st_label").c_str(), ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableHeadersRow();
 		m_Root.DrawRoot();
 		ImGui::EndTable();

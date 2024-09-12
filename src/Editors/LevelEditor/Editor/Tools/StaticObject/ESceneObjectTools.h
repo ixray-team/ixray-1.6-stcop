@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneObjectTool: public ESceneCustomOTool
 {
@@ -39,7 +40,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "scene_object";}
-    IC LPCSTR			ClassDesc				(){return "Scene Object";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_scene_object").c_str();}
     IC int				RenderPriority			(){return 1;}
 
     bool				GetBox					(Fbox& bb);

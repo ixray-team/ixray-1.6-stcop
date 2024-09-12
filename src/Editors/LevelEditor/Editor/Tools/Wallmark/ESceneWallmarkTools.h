@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneWallmarkTool: public ESceneToolBase
 {
@@ -102,7 +103,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "wallmark";}
-    IC LPCSTR			ClassDesc				(){return "Wallmarks";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_wallmarks").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     // validation

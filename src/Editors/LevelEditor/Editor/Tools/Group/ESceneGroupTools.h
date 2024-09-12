@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneGroupTool: public ESceneCustomOTool,private pureDrawUI
 {
@@ -16,7 +17,7 @@ public:
 				ESceneGroupTool		        ():ESceneCustomOTool(OBJCLASS_GROUP){;}
 	// definition
     IC LPCSTR			ClassName			(){return "group";}
-    IC LPCSTR			ClassDesc			(){return "Group";}
+    IC LPCSTR			ClassDesc			(){return g_pStringTable->translate("ed_st_group").c_str();}
     IC int			RenderPriority			(){return 1;}
 
     virtual void		Clear				(bool bSpecific=false){inherited::Clear(bSpecific);}

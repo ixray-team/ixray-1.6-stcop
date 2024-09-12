@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<string_table>
+    <string id="ed_st_preferences">
+        <text>Preferences</text>
+    </string>
+    <string id="ed_st_la_editor">
+        <text>Light Anim Editor</text>
+    </string>
+    <string id="ed_st_obj_list">
+        <text>Object List</text>
+    </string>
+    <string id="ed_st_theme">
+        <text>Theme</text>
+    </string>
+    <string id="ed_st_log">
+        <text>Log</text>
+    </string>
+    <string id="ed_st_properties">
+        <text>Properties</text>
+    </string>
+    <string id="ed_st_snap_list">
+        <text>Snap List</text>
+    </string>
+    <string id="ed_st_windows">
+        <text>Windows</text>
+    </string>
+    <string id="ed_st_stats">
+        <text>Stats</text>
+    </string>
+    <string id="ed_st_real_time">
+        <text>Real Time</text>
+    </string>
+    <string id="ed_st_mute_sounds">
+        <text>Mute Sounds</text>
+    </string>
+    <string id="ed_st_lighting">
+        <text>Lighting</text>
+    </string>
+    <string id="ed_st_environment">
+        <text>Environment</text>
+    </string>
+    <string id="ed_st_none">
+        <text>None</text>
+    </string>
+    <string id="ed_st_fog">
+        <text>Fog</text>
+    </string>
+    <string id="ed_st_draw_grid">
+        <text>Draw Grid</text>
+    </string>
+    <string id="ed_st_textures">
+        <text>Textures</text>
+    </string>
+    <string id="ed_st_linear_filtering">
+        <text>Linear Filtering</text>
+    </string>
+    <string id="ed_st_hw_render">
+        <text>Hardware Render</text>
+    </string>
+    <string id="ed_st_edged_faces">
+        <text>Edged Faces</text>
+    </string>
+    <string id="ed_st_gouraud">
+        <text>Gouraud</text>
+    </string>
+    <string id="ed_st_flat">
+        <text>Flat</text>
+    </string>
+    <string id="ed_st_shader_mode">
+        <text>Shader Mode</text>
+    </string>
+    <string id="ed_st_solid">
+        <text>Solid</text>
+    </string>
+    <string id="ed_st_wireframe">
+        <text>Wireframe</text>
+    </string>
+    <string id="ed_st_point">
+        <text>Point</text>
+    </string>
+    <string id="ed_st_fill_mode">
+        <text>Fill Mode</text>
+    </string>
+    <string id="ed_st_quality">
+        <text>Quality</text>
+    </string>
+    <string id="ed_st_render">
+        <text>Render</text>
+    </string>
+    <string id="ed_st_options">
+        <text>Options</text>
+    </string>
+    <string id="ed_st_refresh_env_lib">
+        <text>Refresh Environment Library</text>
+    </string>
+    <string id="ed_st_refresh_env_geom">
+        <text>Refresh Environment Geometry</text>
+    </string>
+    <string id="ed_st_sync_sounds">
+        <text>Synchronize Sounds</text>
+    </string>
+    <string id="ed_st_sound_editor">
+        <text>Sound Editor</text>
+    </string>
+    <string id="ed_st_sounds">
+        <text>Sounds</text>
+    </string>
+    <string id="ed_st_sync_thm">
+        <text>Sync THM</text>
+    </string>
+    <string id="ed_st_edit_minimap">
+        <text>Edit minimap</text>
+    </string>
+    <string id="ed_st_check_new_textures">
+        <text>Check new textures</text>
+    </string>
+    <string id="ed_st_sync_textures">
+        <text>Synchronize Textures</text>
+    </string>
+    <string id="ed_st_reload_textures">
+        <text>Reload Textures</text>
+    </string>
+    <string id="ed_st_image_editor">
+        <text>Image Editor</text>
+    </string>
+    <string id="ed_st_images">
+        <text>Images</text>
+    </string>
+    <string id="ed_st_reload">
+        <text>Reload</text>
+    </string>
+    <string id="ed_st_lib_editor">
+        <text>Library Editor</text>
+    </string>
+    <string id="ed_st_objects">
+        <text>Objects</text>
+    </string>
+    <string id="ed_st_clear_error_list">
+        <text>Clear Error List</text>
+    </string>
+    <string id="ed_st_export_error_list">
+        <text>Export Error List</text>
+    </string>
+    <string id="ed_st_import_xrai_error_list">
+        <text>Import xrAI Error List</text>
+    </string>
+    <string id="ed_st_import_error_list">
+        <text>Import Error List</text>
+    </string>
+    <string id="ed_st_all_levels">
+        <text>All Levels</text>
+    </string>
+    <string id="ed_st_only_current_lvl">
+        <text>Only current level</text>
+    </string>
+    <string id="ed_st_spawn">
+        <text>Spawn</text>
+    </string>
+    <string id="ed_st_verify">
+        <text>Verify</text>
+    </string>
+    <string id="ed_st_low">
+        <text>Low</text>
+    </string>
+    <string id="ed_st_high">
+        <text>High</text>
+    </string>
+    <string id="ed_st_ai_map">
+        <text>AI-Map</text>
+    </string>
+    <string id="ed_st_detail_obj_light">
+        <text>Detail Object Light</text>
+    </string>
+    <string id="ed_st_geometry_and_light">
+        <text>Geometry and Light</text>
+    </string>
+    <string id="ed_st_compile">
+        <text>Compile</text>
+    </string>
+    <string id="ed_st_make_ai">
+        <text>Make AI-Map</text>
+    </string>
+    <string id="ed_st_make_som">
+        <text>Make SOM</text>
+    </string>
+    <string id="ed_st_make_hom">
+        <text>Make HOM</text>
+    </string>
+    <string id="ed_st_make_details">
+        <text>Make Details</text>
+    </string>
+    <string id="ed_st_make_puddles">
+        <text>Make Puddles</text>
+    </string>
+    <string id="ed_st_make_game">
+        <text>Make Game</text>
+    </string>
+    <string id="ed_st_make_all">
+        <text>Make All</text>
+    </string>
+    <string id="ed_st_make">
+        <text>Make</text>
+    </string>
+    <string id="ed_st_export_selection_as_obj">
+        <text>Export Selection as .obj</text>
+    </string>
+    <string id="ed_st_export_scene_as_obj">
+        <text>Export entire Scene as .obj</text>
+    </string>
+    <string id="ed_st_clear_debug_draw">
+        <text>Clear Debug Draw</text>
+    </string>
+    <string id="ed_st_highlight_texture">
+        <text>Highlight Texture...</text>
+    </string>
+    <string id="ed_st_summary_info">
+        <text>Summary Info</text>
+    </string>
+    <string id="ed_st_validate">
+        <text>Validate</text>
+    </string>
+    <string id="ed_st_world_properties">
+        <text>World Properties</text>
+    </string>
+    <string id="ed_st_scene">
+        <text>Scene</text>
+    </string>
+    <string id="ed_st_quit">
+        <text>Quit</text>
+    </string>
+    <string id="ed_st_open_recent">
+        <text>Open recent</text>
+    </string>
+    <string id="ed_st_save_selection_as">
+        <text>Save Selection As...</text>
+    </string>
+    <string id="ed_st_open_selection">
+        <text>Open Selection...</text>
+    </string>
+    <string id="ed_st_save_as">
+        <text>Save As...</text>
+    </string>
+    <string id="ed_st_save">
+        <text>Save</text>
+    </string>
+    <string id="ed_st_open">
+        <text>Open...</text>
+    </string>
+    <string id="ed_st_clear">
+        <text>Clear</text>
+    </string>
+    <string id="ed_st_file">
+        <text>File</text>
+    </string>
+    <string id="ed_st_edit">
+        <text>Edit</text>
+    </string>
+    <string id="ed_st_menu">
+        <text>Menu</text>
+    </string>
+    <string id="ed_st_paste">
+        <text>Paste</text>
+    </string>
+    <string id="ed_st_cut">
+        <text>Cut</text>
+    </string>
+    <string id="ed_st_delete">
+        <text>Delete</text>
+    </string>
+    <string id="ed_st_delete_w_space">
+        <text>Delete </text>
+    </string>
+    <string id="ed_st_visibility">
+        <text>Visibility</text>
+    </string>
+    <string id="ed_st_hide_selected">
+        <text>Hide selected</text>
+    </string>
+    <string id="ed_st_hide_unselected">
+        <text>Hide unselected</text>
+    </string>
+    <string id="ed_st_hide_all">
+        <text>Hide All</text>
+    </string>
+    <string id="ed_st_unhide_all">
+        <text>Unhide All</text>
+    </string>
+    <string id="ed_st_draw_safe_rect">
+        <text>Draw Safe Rect</text>
+    </string>
+    <string id="ed_st_copy">
+        <text>Copy</text>
+    </string>
+    <string id="ed_st_select">
+        <text>Select</text>
+    </string>
+    <string id="ed_st_add">
+        <text>Add</text>
+    </string>
+    <string id="ed_st_add_w_space">
+        <text>Add    </text>
+    </string>
+    <string id="ed_st_move">
+        <text>Move</text>
+    </string>
+    <string id="ed_st_scale">
+        <text>Scale</text>
+    </string>
+    <string id="ed_st_rotate">
+        <text>Rotate</text>
+    </string>
+    <string id="ed_st_obj_snap_toggle">
+        <text>Object Snap Toggle</text>
+    </string>
+    <string id="ed_st_move_snap_to_obj_toggle">
+        <text>Moving Snap To Object Toggle</text>
+    </string>
+    <string id="ed_st_normal_align">
+        <text>Normal Alignment</text>
+    </string>
+    <string id="ed_st_grid_snap_toggle">
+        <text>Grid Snap Toggle</text>
+    </string>
+    <string id="ed_st_vertex_snap_toggle">
+        <text>Vertex Snap Toggle</text>
+    </string>
+    <string id="ed_st_focus_whole_scene">
+        <text>Focus the whole scene</text>
+    </string>
+    <string id="ed_st_focus_on_selected_obj">
+        <text>Focus on the selected object</text>
+    </string>
+    <string id="ed_st_fixed_obj_movement">
+        <text>Fixed object movement</text>
+    </string>
+    <string id="ed_st_fixed_obj_distance_hint">
+        <text>The choice of a fixed distance of movement of the object</text>
+    </string>
+    <string id="ed_st_fixed_obj_scaling">
+        <text>Fixed Object Scaling</text>
+    </string>
+    <string id="ed_st_fixed_obj_scaling_distance_desc">
+        <text>Setting a Fixed Object Scaling</text>
+    </string>
+    <string id="ed_st_fixed_obj_rotation">
+        <text>Fixed object rotation angle</text>
+    </string>
+    <string id="ed_st_fixed_obj_rotation_desc">
+        <text>Set a fixed rotation angle of the object (in degrees)</text>
+    </string>
+    <string id="ed_st_parent_cs_toggle">
+        <text>Parent CS Toggle</text>
+    </string>
+    <string id="ed_st_axes_scaling">
+        <text>Scaling by Axes only</text>
+    </string>
+    <string id="ed_st_front_view">
+        <text>Front View</text>
+    </string>
+    <string id="ed_st_back_view">
+        <text>Back View</text>
+    </string>
+    <string id="ed_st_left_view">
+        <text>Left View</text>
+    </string>
+    <string id="ed_st_right_view">
+        <text>Right View</text>
+    </string>
+    <string id="ed_st_top_view">
+        <text>Top View</text>
+    </string>
+    <string id="ed_st_bottom_view">
+        <text>Bottom View</text>
+    </string>
+    <string id="ed_st_reset_view">
+        <text>Reset View</text>
+    </string>
+    <string id="ed_st_freecam_mode">
+        <text>Free camera mode</text>
+    </string>
+    <string id="ed_st_snap_cam_center">
+        <text>Snap the camera to the center of coordinates|scene</text>
+    </string>
+    <string id="ed_st_cam_freefly">
+        <text>Automatic camera flyover of the scene</text>
+    </string>
+    <string id="ed_st_select_x_axis">
+        <text>Select X Axis</text>
+    </string>
+    <string id="ed_st_select_y_axis">
+        <text>Select Y Axis</text>
+    </string>
+    <string id="ed_st_select_z_axis">
+        <text>Select Z Axis</text>
+    </string>
+    <string id="ed_st_select_zx_axis">
+        <text>Select ZX Axis</text>
+    </string>
+    <string id="ed_st_undo">
+        <text>Undo the last action.</text>
+    </string>
+    <string id="ed_st_redo">
+        <text>Repeat the last action.</text>
+    </string>
+    <string id="ed_st_new">
+        <text>Clear/New Scene</text>
+    </string>
+    <string id="ed_st_open_le">
+        <text>Open level</text>
+    </string>
+    <string id="ed_st_save_le">
+        <text>Save level</text>
+    </string>
+    <string id="ed_st_build_cform">
+        <text>Build CFORM</text>
+    </string>
+    <string id="ed_st_build_ai_map">
+        <text>Build AI-Map</text>
+    </string>
+    <string id="ed_st_build_game_graph">
+        <text>Build game graph</text>
+    </string>
+    <string id="ed_st_stop_pie">
+        <text>Stop Play in Editor</text>
+    </string>
+    <string id="ed_st_start_pie">
+        <text>Start Play in Editor</text>
+    </string>
+    <string id="ed_st_pie_settings">
+        <text>Play in Editor settings</text>
+    </string>
+    <string id="ed_st_verify_restrictors">
+        <text>Verify space restrictors</text>
+    </string>
+    <string id="ed_st_reload_configs">
+        <text>Reload configs</text>
+    </string>
+    <string id="ed_st_build_and_make">
+        <text>Build and Make</text>
+    </string>
+    <string id="ed_st_play_level">
+        <text>Play level</text>
+    </string>
+    <string id="ed_st_play_level_ingame">
+        <text>Play level in-game</text>
+    </string>
+    <string id="ed_st_open_gamedata">
+        <text>Open 'gamedata' folder</text>
+    </string>
+    <string id="ed_st_content_browser">
+        <text>Content Browser</text>
+    </string>
+    <string id="ed_st_spawn_elements">
+        <text>Spawn Elements</text>
+    </string>
+    <string id="ed_st_all">
+        <text>All</text>
+    </string>
+    <string id="ed_st_visible_only">
+        <text>Visible only</text>
+    </string>
+    <string id="ed_st_invisible_only">
+        <text>Invisible only</text>
+    </string>
+    <string id="ed_st_focus">
+        <text>Focus</text>
+    </string>
+    <string id="ed_st_show">
+        <text>Show</text>
+    </string>
+    <string id="ed_st_hide">
+        <text>Hide</text>
+    </string>
+    <string id="ed_st_label">
+        <text>Label</text>
+    </string>
+    <string id="ed_st_way_points">
+        <text>Way Points</text>
+    </string>
+    <string id="ed_st_glow">
+        <text>Glow</text>
+    </string>
+    <string id="ed_st_scene_object">
+        <text>Scene object</text>
+    </string>
+    <string id="ed_st_sound_src">
+        <text>Sound source</text>
+    </string>
+    <string id="ed_st_sound_env">
+        <text>Sound env</text>
+    </string>
+    <string id="ed_st_shape">
+        <text>Shape</text>
+    </string>
+    <string id="ed_st_sector">
+        <text>Sector</text>
+    </string>
+    <string id="ed_st_portal">
+        <text>Portal</text>
+    </string>
+    <string id="ed_st_group">
+        <text>Group</text>
+    </string>
+    <string id="ed_st_ps">
+        <text>Static Particles</text>
+    </string>
+    <string id="ed_st_details">
+        <text>Detail objects</text>
+    </string>
+    <string id="ed_st_wallmarks">
+        <text>Wallmarks</text>
+    </string>
+    <string id="ed_st_fog_volumes">
+        <text>Fog volumes</text>
+    </string>
+    <string id="ed_st_puddles">
+        <text>Puddles</text>
+    </string>
+    <string id="ed_st_props">
+        <text>Props</text>
+    </string>
+    <string id="ed_st_loading">
+        <text>Loading...</text>
+    </string>
+    <string id="ed_st_append_obj">
+        <text>Append object: </text>
+    </string>
+    <string id="ed_st_left">
+        <text>Left</text>
+    </string>
+    <string id="ed_st_load">
+        <text>Load...</text>
+    </string>
+    <string id="ed_st_right">
+        <text>Right</text>
+    </string>
+    <string id="ed_st_append_color_idx">
+        <text>Append Color Index</text>
+    </string>
+    <string id="ed_st_maximum_detail_obj">
+        <text>Maximum detail objects in scene '%d'</text>
+    </string>
+    <string id="ed_st_detail_obj_list">
+        <text>Detail Object List</text>
+    </string>
+    <string id="ed_st_density">
+        <text>Density</text>
+    </string>
+    <string id="ed_st_min_scale">
+        <text>Min scale</text>
+    </string>
+    <string id="ed_st_max_scale">
+        <text>Max scale</text>
+    </string>
+    <string id="ed_st_no_waving">
+        <text>No waving</text>
+    </string>
+    <string id="ed_st_ok">
+        <text>OK</text>
+    </string>
+    <string id="ed_st_cancel">
+        <text>Cancel</text>
+    </string>
+    <string id="ed_st_props_modal">
+        <text>Properties Modal</text>
+    </string>
+    <string id="ed_st_async_loading">
+        <text>Async loading...</text>
+    </string>
+    <string id="ed_st_edit_mode">
+        <text>Edit mode</text>
+    </string>
+    <string id="ed_st_obj_tools">
+        <text>Object tools</text>
+    </string>
+    <string id="ed_st_clear_snap_dialog">
+        <text>Are you sure to clear snap objects?</text>
+    </string>
+    <string id="ed_st_snap_list_mode">
+        <text>+/- Mode</text>
+    </string>
+    <string id="ed_st_commands">
+        <text>Commands</text>
+    </string>
+    <string id="ed_st_remove_sel_from_list">
+        <text>Remove Selected From List</text>
+    </string>
+    <string id="ed_st_add_sel_to_list">
+        <text>Add Selected To List</text>
+    </string>
+    <string id="ed_st_sel_obj_from_list">
+        <text>Select Object From List</text>
+    </string>
+    <string id="ed_st_make_list_from_sel">
+        <text>Make List From Selected</text>
+    </string>
+    <string id="ed_st_show_snap_list">
+        <text>Enable/Show Snap List</text>
+    </string>
+    <string id="ed_st_face_count">
+        <text>Face Count</text>
+    </string>
+    <string id="ed_st_vertex_count">
+        <text>Vertex Count</text>
+    </string>
+    <string id="ed_st_no_thm">
+        <text>THM not found</text>
+    </string>
+    <string id="ed_st_making_lod">
+        <text>Making LOD</text>
+    </string>
+    <string id="ed_st_way_mode">
+        <text>Way mode</text>
+    </string>
+    <string id="ed_st_way_point">
+        <text>Way point</text>
+    </string>
+    <string id="ed_st_link_cmd">
+        <text>Link command</text>
+    </string>
+    <string id="ed_st_link_cmds">
+        <text>Link commands</text>
+    </string>
+    <string id="ed_st_auto_link">
+        <text>Auto link</text>
+    </string>
+    <string id="ed_st_create_1_link">
+        <text>Create 1-Link</text>
+    </string>
+    <string id="ed_st_enter_point_mode">
+        <text>Before editing enter Point Mode.</text>
+    </string>
+    <string id="ed_st_convert_to_1_link">
+        <text>Convert to 1-Link</text>
+    </string>
+    <string id="ed_st_create_2_link">
+        <text>Create 2-Link</text>
+    </string>
+    <string id="ed_st_convert_to_2_link">
+        <text>Convert to 2-Link</text>
+    </string>
+    <string id="ed_st_invert_link">
+        <text>Invert Link</text>
+    </string>
+    <string id="ed_st_remove_link">
+        <text>Remove Link</text>
+    </string>
+    <string id="ed_st_ref_select">
+        <text>Reference Select</text>
+    </string>
+    <string id="ed_st_sel_by_curr">
+        <text>Select by Current: </text>
+    </string>
+    <string id="ed_st_sel_by_sel">
+        <text>Select by Selected:</text>
+    </string>
+    <string id="ed_st_attach_obj">
+        <text>Attach Object...</text>
+    </string>
+    <string id="ed_st_detach_obj">
+        <text>Detach Object</text>
+    </string>
+    <string id="ed_st_sphere">
+        <text>Sphere</text>
+    </string>
+    <string id="ed_st_box">
+        <text>Box</text>
+    </string>
+    <string id="ed_st_attach_shape">
+        <text>Attach Shape...</text>
+    </string>
+    <string id="ed_st_detach_all">
+        <text>Detach All</text>
+    </string>
+    <string id="ed_st_level_bound">
+        <text>Level Bound</text>
+    </string>
+    <string id="ed_st_edit_level_bound">
+        <text>Edit Level Bound</text>
+    </string>
+    <string id="ed_st_recalc">
+        <text>Recalc</text>
+    </string>
+    <string id="ed_st_validate_sectors">
+        <text>Validate Sectors</text>
+    </string>
+    <string id="ed_st_capture_volume">
+        <text>Capture Volume</text>
+    </string>
+    <string id="ed_st_distribute_objects">
+        <text>Distribute Objects</text>
+    </string>
+    <string id="ed_st_create_default">
+        <text>Create Default</text>
+    </string>
+    <string id="ed_st_default_sector_present">
+        <text>Default sector already present. Remove this and try again.</text>
+    </string>
+    <string id="ed_st_cant_create_default">
+        <text>Default can't be created.</text>
+    </string>
+    <string id="ed_st_remove_default">
+        <text>Remove Default</text>
+    </string>
+    <string id="ed_st_no_default_sector">
+        <text>Default sector not found.</text>
+    </string>
+    <string id="ed_st_create_from_mesh">
+        <text>Create New Single (From Mesh)</text>
+    </string>
+    <string id="ed_st_create_from_obj">
+        <text>Create New Multiple (From Object)</text>
+    </string>
+    <string id="ed_st_meshes">
+        <text>Meshes</text>
+    </string>
+    <string id="ed_st_box_pick">
+        <text>Box Pick</text>
+    </string>
+    <string id="ed_st_plus_mesh">
+        <text>M+</text>
+    </string>
+    <string id="ed_st_minus_mesh">
+        <text>M-</text>
+    </string>
+    <string id="ed_st_invert_orientation">
+        <text>Invert Orientation</text>
+    </string>
+    <string id="ed_st_compute_all_portals">
+        <text>Compute All Portals</text>
+    </string>
+    <string id="ed_st_compute_all_portals_msg">
+        <text>Are you sure want to destroy all existing portals and compute them again?</text>
+    </string>
+    <string id="ed_st_calculated_portals_count">
+        <text>Calculated '%d' portal(s).</text>
+    </string>
+    <string id="ed_st_compute_sel_portals">
+        <text>Compute Sel. Portals</text>
+    </string>
+    <string id="ed_st_remove_similar">
+        <text>Remove Similar</text>
+    </string>
+    <string id="ed_st_refs_select">
+        <text>Ref's Select:   </text>
+    </string>
+    <string id="ed_st_selected">
+        <text>Selected:       </text>
+    </string>
+    <string id="ed_st_play">
+        <text>Play</text>
+    </string>
+    <string id="ed_st_stop">
+        <text>Stop</text>
+    </string>
+    <string id="ed_st_particles">
+        <text>Particles</text>
+    </string>
+    <string id="ed_st_show_lists">
+        <text>Show lists</text>
+    </string>
+    <string id="ed_st_multiple_append">
+        <text>Multiple Append</text>
+    </string>
+    <string id="ed_st_random_append">
+        <text>Random Append</text>
+    </string>
+    <string id="ed_st_random_props">
+        <text>Random Props...</text>
+    </string>
+    <string id="ed_st_surface">
+        <text>Surface</text>
+    </string>
+    <string id="ed_st_clear_surface_in_sel">
+        <text>Clear Surface in select</text>
+    </string>
+    <string id="ed_st_clear_surface_in_level">
+        <text>Clear Surface in level</text>
+    </string>
+    <string id="ed_st_clear_surface_in_level_msg">
+        <text>Are you sure to reset surface in level?</text>
+    </string>
+    <string id="ed_st_current_obj">
+        <text>Current Object</text>
+    </string>
+    <string id="ed_st_refresh_list">
+        <text>Refresh List</text>
+    </string>
+    <string id="ed_st_affect_dx">
+        <text>Affect in D3D</text>
+    </string>
+    <string id="ed_st_enable_sel">
+        <text>Enable Sel</text>
+    </string>
+    <string id="ed_st_enable_all">
+        <text>Enable All</text>
+    </string>
+    <string id="ed_st_disable_sel">
+        <text>Disable Sel</text>
+    </string>
+    <string id="ed_st_disable_all">
+        <text>Disable All</text>
+    </string>
+    <string id="ed_st_group_obj">
+        <text>Group</text>
+    </string>
+    <string id="ed_st_ungroup">
+        <text>Ungroup</text>
+    </string>
+    <string id="ed_st_make_thumbnail">
+        <text>Make Thumbnail</text>
+    </string>
+    <string id="ed_st_reload_refs">
+        <text>Reload Refs</text>
+    </string>
+    <string id="ed_st_current">
+        <text>Current:%s</text>
+    </string>
+    <string id="ed_st_pivot_align">
+        <text>Pivot Alignment</text>
+    </string>
+    <string id="ed_st_center_to_group">
+        <text>Center To Group</text>
+    </string>
+    <string id="ed_st_align_to_obj">
+        <text>Align To Object...</text>
+    </string>
+    <string id="ed_st_group_sel">
+        <text>Group Selected</text>
+    </string>
+    <string id="ed_st_ungroup_sel">
+        <text>UnGroup Selected</text>
+    </string>
+    <string id="ed_st_lod_create_success">
+        <text>+ LOD for object '%s' successfully created.</text>
+    </string>
+    <string id="ed_st_lod_non_multiple_usage">
+        <text>! Can't create LOD texture from non 'Multiple Usage' object.</text>
+    </string>
+    <string id="ed_st_lods_created_msg">
+        <text>+ '%u' LOD's succesfully created.</text>
+    </string>
+    <string id="ed_st_lod_multiple_obj">
+        <text>Do you want to select multiple objects?</text>
+    </string>
+    <string id="ed_st_thumbnail_create_success">
+        <text>+ Thumbnail successfully created.</text>
+    </string>
+    <string id="ed_st_thumbail_no_preview">
+        <text>& Can't create thumbnail. Set preview mode.</text>
+    </string>
+    <string id="ed_st_objects_properties">
+        <text>Objects properties</text>
+    </string>
+    <string id="ed_st_make_lod_hq">
+        <text>Make LOD (High Quality)</text>
+    </string>
+    <string id="ed_st_make_lod_lq">
+        <text>Make LOD (Low Quality)</text>
+    </string>
+    <string id="ed_st_preview">
+        <text>Preview</text>
+    </string>
+    <string id="ed_st_remove_obj">
+        <text>Remove Object</text>
+    </string>
+    <string id="ed_st_import_obj">
+        <text>Import Object</text>
+    </string>
+    <string id="ed_st_export_obj">
+        <text>Export OBJ</text>
+    </string>
+    <string id="ed_st_rename_obj">
+        <text>Rename Object</text>
+    </string>
+    <string id="ed_st_export_lwo">
+        <text>Export LWO</text>
+    </string>
+    <string id="ed_st_close">
+        <text>Close</text>
+    </string>
+    <string id="ed_st_exporting_obj">
+        <text>Expotring to OBJ</text>
+    </string>
+    <string id="ed_st_done">
+        <text>Done.</text>
+    </string>
+    <string id="ed_st_obj_lib">
+        <text>Object Library</text>
+    </string>
+    <string id="ed_st_items_count">
+        <text> Items count: %u</text>
+    </string>
+    <string id="ed_st_obj_exist">
+        <text>Object '%s' already exist. Owerwrite it?</text>
+    </string>
+    <string id="ed_st_cant_load_file">
+        <text>Can't load file '%s'.</text>
+    </string>
+    <string id="ed_st_first_init">
+        <text>First Initialize</text>
+    </string>
+    <string id="ed_st_reinit_all">
+        <text>Reinitialize All</text>
+    </string>
+    <string id="ed_st_reinit_obj_only">
+        <text>Reinitialize Objects Only</text>
+    </string>
+    <string id="ed_st_reinit_sel_obj">
+        <text>Reinitialize Selected Slot Objects</text>
+    </string>
+    <string id="ed_st_update_renderer">
+        <text>Update Renderer</text>
+    </string>
+    <string id="ed_st_clear_slots">
+        <text>Clear Slots</text>
+    </string>
+    <string id="ed_st_clear_slots_msg">
+        <text>Are you sure to reset slots?</text>
+    </string>
+    <string id="ed_st_clear_details">
+        <text>Clear Details</text>
+    </string>
+    <string id="ed_st_clear_details_msg">
+        <text>Are you sure to clear details?</text>
+    </string>
+    <string id="ed_st_reinit_needed">
+        <text>Object or object list changed. Reinitialize needed!</text>
+    </string>
+    <string id="ed_st_generate_full">
+        <text>Generate Full</text>
+    </string>
+    <string id="ed_st_generate_sel">
+        <text>Generate Selected</text>
+    </string>
+    <string id="ed_st_clear_ai_map">
+        <text>Clear AI Map</text>
+    </string>
+    <string id="ed_st_clear_ai_map_msg">
+        <text>Are you sure to clear AI Map?</text>
+    </string>
+    <string id="ed_st_smooth_sel">
+        <text>Smooth Selected</text>
+    </string>
+    <string id="ed_st_reset_sel">
+        <text>Reset Selected</text>
+    </string>
+    <string id="ed_st_ai_map_nodes">
+        <text>AI Map Nodes</text>
+    </string>
+    <string id="ed_st_ignore_constraints">
+        <text>Ignore Constraints</text>
+    </string>
+    <string id="ed_st_ignore_materials">
+        <text>Ignore materials</text>
+    </string>
+    <string id="ed_st_select_0_link">
+        <text>Select 0-Link</text>
+    </string>
+    <string id="ed_st_select_1_link">
+        <text>Select 1-Link</text>
+    </string>
+    <string id="ed_st_invert">
+        <text>Invert </text>
+    </string>
+    <string id="ed_st_down">
+        <text>Down</text>
+    </string>
+    <string id="ed_st_select_2_link">
+        <text>Select 2-Link</text>
+    </string>
+</string_table>

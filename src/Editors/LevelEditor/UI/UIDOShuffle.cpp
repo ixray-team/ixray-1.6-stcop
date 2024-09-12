@@ -25,7 +25,7 @@ UIDOShuffle::~UIDOShuffle()
 void UIDOShuffle::Draw()
 {
 	ImGui::Columns(2);
-	ImGui::BeginChild("Left");
+	ImGui::BeginChild(g_pStringTable->translate("ed_st_left").c_str());
 	{
 		if (m_RealTexture != m_Texture)
 		{
@@ -74,7 +74,7 @@ void UIDOShuffle::Draw()
 				bModif = true;
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Load..", ImVec2(0, ImGui::GetFrameHeight())))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_load").c_str(), ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
 				if (EFS.GetOpenName(_detail_objects_, fname)) {
@@ -86,7 +86,7 @@ void UIDOShuffle::Draw()
 				}
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Save..", ImVec2(-1, ImGui::GetFrameHeight())))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_save").c_str(), ImVec2(-1, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
 				if (EFS.GetSaveName(_detail_objects_, fname)) 
@@ -98,7 +98,7 @@ void UIDOShuffle::Draw()
 			}
 		}
 		{
-			ImGui::BeginChild("Props",  ImVec2(0, 0), false);
+			ImGui::BeginChild(g_pStringTable->translate("ed_st_props").c_str(), ImVec2(0, 0), false);
 			m_Props->Draw();
 			ImGui::EndChild();
 		}
@@ -106,11 +106,11 @@ void UIDOShuffle::Draw()
 	}
 	ImGui::EndChild();
 	ImGui::NextColumn();
-	ImGui::BeginChild("Right");
+	ImGui::BeginChild(g_pStringTable->translate("ed_st_right").c_str());
 	{
 		if (ImGui::Button("X")) { ClearIndexForms(); }
 		ImGui::SameLine();
-		if (ImGui::Button("Append Color Index", ImVec2(-1,0))) 
+		if (ImGui::Button(g_pStringTable->translate("ed_st_append_color_idx").c_str(), ImVec2(-1, 0)))
 		{
 			m_color_indices.push_back(new UIDOOneColor());
 			m_color_indices.back()->DOShuffle = this;
@@ -156,7 +156,7 @@ void UIDOShuffle::Draw()
 					if (!FindItem(l.c_str())) 
 					{
 						if (m_list.size() >= dm_max_objects) {
-							ELog.DlgMsg(mtInformation, "Maximum detail objects in scene '%d'", dm_max_objects);
+							ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_maximum_detail_obj").c_str(), dm_max_objects);
 							return;
 						}
 						DM->AppendDO(l.c_str());
@@ -178,7 +178,7 @@ void UIDOShuffle::Update()
 	if (Form && !Form->IsClosed())
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Detail Object List", &Form->bOpen,0,true))
+		if (ImGui::BeginPopupModal(g_pStringTable->translate("ed_st_detail_obj_list").c_str(), &Form->bOpen, 0, true))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
@@ -252,10 +252,10 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	PropItemVec items;
 
 	//PHelper().CreateCaption(items, "Ref Name", dd->GetName());
-	PHelper().CreateFloat(items, "Density", &dd->m_fDensityFactor, 0.1f, 1.0f);
-	PHelper().CreateFloat(items, "Min Scale", &dd->m_fMinScale, 0.1f, 100.0f);
-	PHelper().CreateFloat(items, "Max Scale", &dd->m_fMaxScale, 0.1f, 100.f);
-	PHelper().CreateFlag32(items, "No Waving", &dd->m_Flags, DO_NO_WAVING);
+	PHelper().CreateFloat(items, g_pStringTable->translate("ed_st_density").c_str(), &dd->m_fDensityFactor, 0.1f, 1.0f);
+	PHelper().CreateFloat(items, g_pStringTable->translate("ed_st_min_scale").c_str(), &dd->m_fMinScale, 0.1f, 100.0f);
+	PHelper().CreateFloat(items, g_pStringTable->translate("ed_st_max_scale").c_str(), &dd->m_fMaxScale, 0.1f, 100.f);
+	PHelper().CreateFlag32(items, g_pStringTable->translate("ed_st_no_waving").c_str(), &dd->m_Flags, DO_NO_WAVING);
 
 	m_Props->AssignItems(items);
 }
@@ -289,7 +289,7 @@ bool UIDOShuffle::ApplyChanges(bool msg )
 	}
 	if (/*bNeedUpdate||*/bModif&& msg)
 	{
-		ELog.DlgMsg(mtInformation, "Object or object list changed. Reinitialize needed!");
+		ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_reinit_needed").c_str());
 		DM->InvalidateSlots();
 		return true;
 	}

@@ -38,8 +38,8 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		}
 		else
 		{
-			PHelper().CreateCaption(Info, "Face Count", "THM not found");
-			PHelper().CreateCaption(Info, "Vertex Count", "THM not found");
+			PHelper().CreateCaption(Info, g_pStringTable->translate("ed_st_face_count").c_str(), g_pStringTable->translate("ed_st_no_thm").c_str());
+			PHelper().CreateCaption(Info, g_pStringTable->translate("ed_st_vertex_count").c_str(), g_pStringTable->translate("ed_st_no_thm").c_str());
 			m_Props->AssignItems(Info);
 		}
 
@@ -122,7 +122,7 @@ void UIEditLibrary::Close()
 
 void UIEditLibrary::DrawObjects()
 {
-	ImGui::BeginChild("Object List");
+	ImGui::BeginChild(g_pStringTable->translate("ed_st_obj_list").c_str());
 	ImGui::Separator();
 
 	m_ObjectList->Draw();
@@ -140,7 +140,7 @@ void UIEditLibrary::DrawObject(CCustomObject* obj, const char* name)
 void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
 {
 	u32      lodsCnt = 0;
-	SPBItem* pb = UI->ProgressStart(props.size(), "Making LOD");
+	SPBItem* pb = UI->ProgressStart(props.size(), g_pStringTable->translate("ed_st_making_lod").c_str());
 
 	for (const shared_str& str : props)
 	{
@@ -168,11 +168,11 @@ void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
 			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, O->Version(), bHighQuality ? 4 /*7*/ : 1);
 			O->OnDeviceDestroy();
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, bLod);
-			ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", O->GetName());
+			ELog.Msg(mtInformation, g_pStringTable->translate("ed_st_lod_create_success").c_str(), O->GetName());
 			lodsCnt++;
 		}
 		else
-			ELog.Msg(mtError, "! Can't create LOD texture from non 'Multiple Usage' object.", SO->RefName());
+			ELog.Msg(mtError, g_pStringTable->translate("ed_st_lod_non_multiple_usage").c_str(), SO->RefName());
 
 		if (UI->NeedAbort())
 			break;
@@ -181,7 +181,7 @@ void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
 	UI->ProgressEnd(pb);
 
 	if (lodsCnt)
-		ELog.DlgMsg(mtInformation, "+ '%u' LOD's succesfully created.", lodsCnt);
+		ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_lods_created_msg").c_str(), lodsCnt);
 }
 
 void UIEditLibrary::MakeLOD(bool bHighQuality)
@@ -192,7 +192,7 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 	//         return;
 	// }
 
-	int res = ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo | mbCancel, "Do you want to select multiple objects?");
+	int res = ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo | mbCancel, g_pStringTable->translate("ed_st_lod_multiple_obj").c_str());
 
 	if (res == mrCancel)
 		return;
@@ -239,10 +239,10 @@ void UIEditLibrary::OnMakeThmClick()
 
 			// m_Items->SelectItem(item->Key(), true, false, true);
 			if (ImageLib.CreateOBJThumbnail(fn, obj, obj->Version()))
-				ELog.Msg(mtInformation, "+ Thumbnail successfully created.");
+				ELog.Msg(mtInformation, g_pStringTable->translate("ed_st_thumbnail_create_success").c_str());
 		}
 		else
-			ELog.DlgMsg(mtError, "& Can't create thumbnail. Set preview mode.");
+			ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_thumbail_no_preview").c_str());
 
 		Lib.RemoveEditObject(obj);
 	}
@@ -282,18 +282,18 @@ void UIEditLibrary::DrawRightBar()
 
 	if (bShowProps)
 	{
-		ImGui::Begin("Objects properties", &bShowProps);
+		ImGui::Begin(g_pStringTable->translate("ed_st_objects_properties").c_str(), &bShowProps);
 		m_PropsObjects->Draw();
 		ImGui::End();
 	}
 
-	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
+	if (ImGui::BeginChild(g_pStringTable->translate("ed_st_right").c_str(), ImVec2(0, 0)))
 	{
 		ImGui::Image(m_RealTexture ? m_RealTexture : EDevice->texture_null->pSurface, ImVec2(200, 200));
 
 		m_Props->Draw();
 
-		if (ImGui::Button("Properties", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_properties").c_str(), ImVec2(-1, 0)))
 			OnPropertiesClick();
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -308,7 +308,7 @@ void UIEditLibrary::DrawRightBar()
 				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 			}
 
-			if (ImGui::Button("Make Thumbnail", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_make_thumbnail").c_str(), ImVec2(-1, 0)))
 			{
 				OnMakeThmClick();
 
@@ -320,12 +320,12 @@ void UIEditLibrary::DrawRightBar()
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-			if (ImGui::Button("Make LOD (High Quality)", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_make_lod_hq").c_str(), ImVec2(-1, 0)))
 				MakeLOD(true);
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-			if (ImGui::Button("Make LOD (Low Quality)", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_make_lod_lq").c_str(), ImVec2(-1, 0)))
 				MakeLOD(false);
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -337,26 +337,26 @@ void UIEditLibrary::DrawRightBar()
 			}
 		}
 
-		if (ImGui::Checkbox("Preview", &m_Preview))
+		if (ImGui::Checkbox(g_pStringTable->translate("ed_st_preview").c_str(), &m_Preview))
 			OnPreviewClick();
 
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Remove Object", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_remove_obj").c_str(), ImVec2(-1, 0)))
 		{
 			m_ObjectList->RemoveSelectItem();
 		}
 		
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Import Object", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_import_obj").c_str(), ImVec2(-1, 0)))
 		{
 			ImportClick();
 		}
 
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Export OBJ", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_export_obj").c_str(), ImVec2(-1, 0)))
 		{
 			ExportObj();
 		}
@@ -365,13 +365,13 @@ void UIEditLibrary::DrawRightBar()
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Rename Object", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_rename_obj").c_str(), ImVec2(-1, 0)))
 		{
 			
 		}
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		if (ImGui::Button("Export LWO", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_export_lwo").c_str(), ImVec2(-1, 0)))
 		{
 		}
 
@@ -397,7 +397,7 @@ void UIEditLibrary::DrawRightBar()
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-		if (ImGui::Button("Close", ImVec2(-1, 0)))
+		if (ImGui::Button(g_pStringTable->translate("ed_st_close").c_str(), ImVec2(-1, 0)))
 			Close();
 		if (ImGui::IsItemHovered())
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -430,7 +430,7 @@ void UIEditLibrary::DrawRightBar()
 
 void UIEditLibrary::RenderSaveButton()
 {
-	if (ImGui::Button("Save", ImVec2(-1, 0)))
+	if (ImGui::Button(g_pStringTable->translate("ed_st_save").c_str(), ImVec2(-1, 0)))
 	{
 		RStringVec sel_strings;
 		ChangeReference(sel_strings);
@@ -515,7 +515,7 @@ void UIEditLibrary::ExportObj()
 {
 	if (!m_Preview)
 	{
-		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), g_pStringTable->translate("ed_st_exporting_obj").c_str());
 		CSceneObject* SO = new CSceneObject((LPVOID)0, (LPSTR)0);
 
 		for (ListItem* item : m_ObjectList->m_SelectedItems)
@@ -543,7 +543,7 @@ void UIEditLibrary::ExportObj()
 	{
 		xr_vector<CSceneObject*>::iterator it = m_pEditObjects.begin();
 		xr_vector<CSceneObject*>::iterator it_e = m_pEditObjects.end();
-		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
+		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), g_pStringTable->translate("ed_st_exporting_obj").c_str());
 		for (; it != it_e; ++it)
 		{
 			CSceneObject* SO = *it;
@@ -558,7 +558,7 @@ void UIEditLibrary::ExportObj()
 		}
 		UI->ProgressEnd(pb);
 	}
-	ELog.DlgMsg(mtInformation, "Done.");
+	ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_done").c_str());
 }
 
 void UIEditLibrary::OnModified()
@@ -668,7 +668,7 @@ void UIEditLibrary::Draw()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(550, 650));
 
-	if (!ImGui::Begin("Object Library", &bOpen))
+	if (!ImGui::Begin(g_pStringTable->translate("ed_st_obj_lib").c_str(), &bOpen))
 	{
 		ImGui::PopStyleVar(1);
 		ImGui::End();
@@ -678,12 +678,12 @@ void UIEditLibrary::Draw()
 	{
 		ImGui::BeginGroup();
 
-		if (ImGui::BeginChild("Left", ImVec2(-200, -ImGui::GetFrameHeight() - 4), true))
+		if (ImGui::BeginChild(g_pStringTable->translate("ed_st_left").c_str(), ImVec2(-200, -ImGui::GetFrameHeight() - 4), true))
 			DrawObjects();
 
 		ImGui::EndChild();
 		ImGui::SetNextItemWidth(-200);
-		ImGui::Text(" Items count: %u", m_ObjectList->m_Items.size());
+		ImGui::Text(g_pStringTable->translate("ed_st_items_count").c_str(), m_ObjectList->m_Items.size());
 		// ImGui::InputText("##value", m_Filter, sizeof(m_Filter));
 		ImGui::EndGroup();
 	}
@@ -720,7 +720,7 @@ void UIEditLibrary::ImportClick()
 				save_nm = xr_string(FS.get_path(_objects_)->m_Path) + folder.c_str() + EFS.ChangeFileExt(nm, ".object");
 
 				if (FS.exist(save_nm.c_str()))
-					if (mrNo == ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() << mbYes << mbNo, "Object '%s' already exist. Owerwrite it?", nm.c_str()))
+					if (mrNo == ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() << mbYes << mbNo, g_pStringTable->translate("ed_st_obj_exist").c_str(), nm.c_str()))
 					{
 						xr_delete(O);
 						break;
@@ -731,7 +731,7 @@ void UIEditLibrary::ImportClick()
 				bNeedUpdate = true;
 			}
 			else
-				ELog.DlgMsg(mtError, "Can't load file '%s'.", it->c_str());
+				ELog.DlgMsg(mtError, g_pStringTable->translate("Can't load file '%s'.").c_str(), it->c_str());
 
 			xr_delete(O);
 

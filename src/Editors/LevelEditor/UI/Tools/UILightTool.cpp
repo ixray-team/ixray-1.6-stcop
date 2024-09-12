@@ -11,19 +11,19 @@ UILightTool::~UILightTool()
 void UILightTool::Draw()
 {
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Affect in D3D"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_affect_dx").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::PushItemWidth(-1);
 		float size = float(ImGui::CalcItemWidth());
 		{
-			if(ImGui::Button("Enable Sel",ImVec2(size/2,0)))UseInD3D(false,true);
+			if(ImGui::Button(g_pStringTable->translate("ed_st_enable_sel").c_str(), ImVec2(size / 2, 0)))UseInD3D(false, true);
 			ImGui::SameLine(0, 2);
-			if (ImGui::Button("Enable All", ImVec2(size / 2, 0)))UseInD3D(true, true);
+			if (ImGui::Button(g_pStringTable->translate("ed_st_enable_all").c_str(), ImVec2(size / 2, 0)))UseInD3D(true, true);
 
-			if (ImGui::Button("Disable Sel", ImVec2( size / 2,0)))UseInD3D(false, false);
+			if (ImGui::Button(g_pStringTable->translate("ed_st_disable_sel").c_str(), ImVec2(size / 2, 0)))UseInD3D(false, false);
 			ImGui::SameLine(0, 2);
-			if (ImGui::Button("Disable All", ImVec2(size / 2, 0)))UseInD3D(true, false);
+			if (ImGui::Button(g_pStringTable->translate("ed_st_disable_all").c_str(), ImVec2(size / 2, 0)))UseInD3D(true, false);
 		}
 
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());

@@ -16,21 +16,21 @@ UIAIMapTool::~UIAIMapTool()
 void UIAIMapTool::Draw()
 {
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Commands"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if (ImGui::Button("Generate Full", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_generate_full").c_str(), ImVec2(-1, 0)))
 			{
 				tool->GenerateMap(false);
 			}
-			if (ImGui::Button("Generate Selected", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_generate_sel").c_str(), ImVec2(-1, 0)))
 			{
 				tool->GenerateMap(true);
 			}
-			if (ImGui::Button("Clear AI Map", ImVec2(-1, 0)))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_clear_ai_map").c_str(), ImVec2(-1, 0)))
 			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes) 
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, g_pStringTable->translate("ed_st_clear_ai_map_msg").c_str()) == mrYes) 
 				{
 					tool->Clear();
 					Scene->UndoSave();
@@ -39,31 +39,31 @@ void UIAIMapTool::Draw()
 		}
 		ImGui::Separator();
 		{
-			if(ImGui::Button("Smooth Selected", ImVec2(-1, 0)))	tool->SmoothNodes();
-			if (ImGui::Button("Reset Selected", ImVec2(-1, 0)))tool->ResetNodes();
+			if(ImGui::Button(g_pStringTable->translate("ed_st_smooth_sel").c_str(), ImVec2(-1, 0)))	tool->SmoothNodes();
+			if (ImGui::Button(g_pStringTable->translate("ed_st_reset_sel").c_str(), ImVec2(-1, 0)))tool->ResetNodes();
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("AI Map Nodes"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_ai_map_nodes").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			ImGui::Checkbox("Ignore Constraints",&m_IgnoreConstraints);
-			ImGui::Checkbox("Auto Link", &m_AutoLink);
+			ImGui::Checkbox(g_pStringTable->translate("ed_st_ignore_constraints").c_str(), &m_IgnoreConstraints);
+			ImGui::Checkbox(g_pStringTable->translate("ed_st_auto_link").c_str(), &m_AutoLink);
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Ignore materials"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_ignore_materials").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if (ImGui::Button("Add"))
+			if (ImGui::Button(g_pStringTable->translate("ed_st_add").c_str()))
 			{
 				UIChooseForm::SelectItem(smGameMaterial, 1, 0, 0, 0, 0, 0, 0);
 				m_ChooseIgnoreMaterials = true;
@@ -83,7 +83,7 @@ void UIAIMapTool::Draw()
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Link Commands"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_link_cmds").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::PushItemWidth(-1);
@@ -93,24 +93,24 @@ void UIAIMapTool::Draw()
 			float my_tex_h = (float)ImGui::GetIO().Fonts->TexHeight;
 			
 			{
-				if (ImGui::RadioButton("Add    ", m_Mode == mdAppend)) { m_Mode = mdAppend; } ImGui::SameLine(0, -1);
+				if (ImGui::RadioButton(g_pStringTable->translate("ed_st_add_w_space").c_str(), m_Mode == mdAppend)) { m_Mode = mdAppend; } ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none1", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
-				if (ImGui::ArrowButton("Up", ImGuiDir_Up)) { SideClick(1); } ImGui::SameLine(0, -1);
+				if (ImGui::ArrowButton(g_pStringTable->translate("ed_st_up").c_str(), ImGuiDir_Up)) { SideClick(1); } ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none2", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none3", ImVec2(ImGui::GetFrameHeight()*2, ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
-				if (ImGui::Button("Select 0-Link", ImVec2(-1, 0)))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_select_0_link").c_str(), ImVec2(-1, 0)))
 				{
 					tool->SelectNodesByLink(0);
 					Scene->UndoSave();
 				}
 			}
 			{
-				if (ImGui::RadioButton("Delete ", m_Mode == mdRemove)) { m_Mode = mdRemove; }  ImGui::SameLine(0, -1);
-				if (ImGui::ArrowButton("Left", ImGuiDir_Left)) { SideClick(0); } ImGui::SameLine(0, -1);
+				if (ImGui::RadioButton(g_pStringTable->translate("ed_st_delete_w_space").c_str(), m_Mode == mdRemove)) { m_Mode = mdRemove; }  ImGui::SameLine(0, -1);
+				if (ImGui::ArrowButton(g_pStringTable->translate("ed_st_left").c_str(), ImGuiDir_Left)) { SideClick(0); } ImGui::SameLine(0, -1);
 				if (ImGui::Button("X", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SideClick(4); } ImGui::SameLine(0, -1);
-				if (ImGui::ArrowButton("Right", ImGuiDir_Right)) { SideClick(2); }	ImGui::SameLine(0, -1);
+				if (ImGui::ArrowButton(g_pStringTable->translate("ed_st_right").c_str(), ImGuiDir_Right)) { SideClick(2); }	ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none4", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
-				if (ImGui::Button("Select 1-Link", ImVec2(-1, 0)))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_select_1_link").c_str(), ImVec2(-1, 0)))
 				{
 					tool->SelectNodesByLink(1);
 					Scene->UndoSave();
@@ -118,12 +118,12 @@ void UIAIMapTool::Draw()
 
 			}
 			{
-				if (ImGui::RadioButton("Invert ", m_Mode == mdInvert)) { m_Mode = mdInvert; }  ImGui::SameLine(0, -1);
+				if (ImGui::RadioButton(g_pStringTable->translate("ed_st_invert").c_str(), m_Mode == mdInvert)) { m_Mode = mdInvert; }  ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none5", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()));	ImGui::SameLine(0, -1);
-				if (ImGui::ArrowButton("Down", ImGuiDir_Down)) { SideClick(3); } ImGui::SameLine(0, -1);
+				if (ImGui::ArrowButton(g_pStringTable->translate("ed_st_down").c_str(), ImGuiDir_Down)) { SideClick(3); } ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none6", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
 				ImGui::InvisibleButton("none7", ImVec2(ImGui::GetFrameHeight() * 2, ImGui::GetFrameHeight())); ImGui::SameLine(0, -1);
-				if (ImGui::Button("Select 2-Link", ImVec2(-1, 0)))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_select_2_link").c_str(), ImVec2(-1, 0)))
 				{
 					tool->SelectNodesByLink(2);
 					Scene->UndoSave();

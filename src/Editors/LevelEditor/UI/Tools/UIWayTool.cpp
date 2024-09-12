@@ -13,17 +13,17 @@ UIWayTool::~UIWayTool()
 void UIWayTool::Draw()
 {
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::RadioButton("Way Mode", m_WayMode))
+            if (ImGui::RadioButton(g_pStringTable->translate("ed_st_way_mode").c_str(), m_WayMode))
             {
                 LTools->SetTarget(OBJCLASS_WAY, 0);
                 m_WayMode = true;
             }
             ImGui::SameLine();
-            if (ImGui::RadioButton("Way Point", m_WayMode == false))
+            if (ImGui::RadioButton(g_pStringTable->translate("ed_st_way_point").c_str(), m_WayMode == false))
             {
                 LTools->SetTarget(OBJCLASS_WAY, 1);
                 m_WayMode = false;
@@ -34,21 +34,21 @@ void UIWayTool::Draw()
         ImGui::TreePop();
     }
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Link Command"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_link_cmd").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::Checkbox("Auto Link", &m_AutoLink))
+            if (ImGui::Checkbox(g_pStringTable->translate("ed_st_auto_link").c_str(), &m_AutoLink))
             {
                
             }
             ImGui::PushItemWidth(-1);
             float size = float(ImGui::CalcItemWidth());
             {
-                if (ImGui::Button("Create 1-Link", ImVec2(size / 2, 0))) 
+                if (ImGui::Button(g_pStringTable->translate("ed_st_create_1_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+                        ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_enter_point_mode").c_str());
                         return;
                     }
                     bool bRes = false;
@@ -63,7 +63,7 @@ void UIWayTool::Draw()
                     ExecCommand(COMMAND_UPDATE_PROPERTIES);
                 }
                 ImGui::SameLine(0, 2);
-                if (ImGui::Button("Convert to 1-Link", ImVec2(size / 2, 0))) 
+                if (ImGui::Button(g_pStringTable->translate("ed_st_convert_to_1_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     ObjectList lst;
                     int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
@@ -73,10 +73,10 @@ void UIWayTool::Draw()
                     ExecCommand(COMMAND_UPDATE_PROPERTIES);
                 }
 
-                if (ImGui::Button("Create 2-Link", ImVec2(size / 2, 0))) 
+                if (ImGui::Button(g_pStringTable->translate("ed_st_create_2_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+                        ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_enter_point_mode").c_str());
                         return;
                     }
                     bool bRes = false;
@@ -88,7 +88,7 @@ void UIWayTool::Draw()
                     ExecCommand(COMMAND_UPDATE_PROPERTIES);
                 }
                 ImGui::SameLine(0, 2);
-                if (ImGui::Button("Convert to 2-Link", ImVec2(size / 2, 0))) 
+                if (ImGui::Button(g_pStringTable->translate("ed_st_convert_to_2_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     ObjectList lst;
                     int cnt = Scene->GetQueryObjects(lst, OBJCLASS_WAY, 1, 1, 0);
@@ -98,10 +98,10 @@ void UIWayTool::Draw()
                     ExecCommand(COMMAND_UPDATE_PROPERTIES);
                 }
 
-                if (ImGui::Button("Invert Link", ImVec2(size / 2, 0))) 
+                if (ImGui::Button(g_pStringTable->translate("ed_st_invert_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+                        ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_enter_point_mode").c_str());
                         return;
                     }
                     ObjectList lst;
@@ -112,10 +112,10 @@ void UIWayTool::Draw()
                     ExecCommand(COMMAND_UPDATE_PROPERTIES);
                 }
                 ImGui::SameLine(0, 2);
-                if (ImGui::Button("Remove Link", ImVec2(size / 2, 0)))
+                if (ImGui::Button(g_pStringTable->translate("ed_st_remove_link").c_str(), ImVec2(size / 2, 0)))
                 {
                     if (m_WayMode) {
-                        ELog.DlgMsg(mtInformation, "Before editing enter Point Mode.");
+                        ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_enter_point_mode").c_str());
                         return;
                     }
                     ObjectList lst;

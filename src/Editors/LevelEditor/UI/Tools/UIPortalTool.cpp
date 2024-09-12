@@ -10,11 +10,11 @@ UIPortalTool::~UIPortalTool()
 void UIPortalTool::Draw()
 {
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Command"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::Button("Invert Orientation",ImVec2(-1,0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_invert_orientation").c_str(), ImVec2(-1, 0)))
             {
                 ObjectList lst;
                 if (Scene->GetQueryObjects(lst, OBJCLASS_PORTAL, 1, 1, 0)) {
@@ -24,23 +24,23 @@ void UIPortalTool::Draw()
                     }
                 }
             }
-            if (ImGui::Button("Compute All Portals",ImVec2(-1,0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_compute_all_portals").c_str(), ImVec2(-1, 0)))
             {
-                if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure want to destroy all existing portals and compute them again?"))
+                if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_compute_all_portals_msg").c_str()))
                 {
                     int cnt = PortalUtils.CalculateAllPortals();
-                    if (cnt) ELog.DlgMsg(mtInformation, "Calculated '%d' portal(s).", cnt);
+                    if (cnt) ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_calculated_portals_count").c_str(), cnt);
                 }
             }
-            if (ImGui::Button("Compute Sel. Portals",ImVec2(-1,0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_compute_sel_portals").c_str(), ImVec2(-1, 0)))
             {
-                if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure want to destroy all existing portals and compute them again?"))
+                if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_compute_all_portals_msg").c_str()))
                 {
                     int cnt = PortalUtils.CalculateSelectedPortals();
-                    if (cnt) ELog.DlgMsg(mtInformation, "Calculated '%d' portal(s).", cnt);
+                    if (cnt) ELog.DlgMsg(mtInformation, g_pStringTable->translate("ed_st_calculated_portals_count").c_str(), cnt);
                 }
             }
-            if (ImGui::Button("Remove Similar",ImVec2(-1,0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_remove_similar").c_str(), ImVec2(-1, 0)))
             {
                 tool->RemoveSimilar();
             }

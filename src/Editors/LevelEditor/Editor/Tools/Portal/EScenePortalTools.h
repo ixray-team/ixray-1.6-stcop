@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class EScenePortalTool: public ESceneCustomOTool
 {
@@ -16,7 +17,7 @@ public:
 						EScenePortalTool		():ESceneCustomOTool(OBJCLASS_PORTAL){m_Flags.zero();}
 	// definition
     IC LPCSTR			ClassName				(){return "portal";}
-    IC LPCSTR			ClassDesc				(){return "Portal";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_portal").c_str();}
     IC int				RenderPriority			(){return 20;}
 
 	virtual void 		FillProp				(LPCSTR pref, PropItemVec& items);

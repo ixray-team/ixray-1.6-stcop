@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 // refs
 class ESceneAIMapTool;
@@ -157,7 +158,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "ai_map";}
-    IC LPCSTR			ClassDesc				(){return "AI Map";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_ai_map").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     // validation

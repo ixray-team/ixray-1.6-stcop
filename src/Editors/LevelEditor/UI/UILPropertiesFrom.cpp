@@ -12,7 +12,7 @@ void UILPropertiesFrom::Draw()
 {
 	if (bOpen)
 	{
-		if (ImGui::Begin("Properties", &bOpen))
+		if (ImGui::Begin(g_pStringTable->translate("ed_st_properties").c_str(), &bOpen))
 		{
 			if (LTools->PropUpdateIsCompleted)
 			{
@@ -20,7 +20,7 @@ void UILPropertiesFrom::Draw()
 			}
 			else
 			{
-				ImGui::Text("Async loading...");
+				ImGui::Text(g_pStringTable->translate("ed_st_async_loading").c_str());
 			}
 		}
 		ImGui::End();

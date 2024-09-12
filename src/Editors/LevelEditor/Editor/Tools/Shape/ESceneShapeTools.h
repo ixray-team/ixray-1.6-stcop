@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneShapeTool: public ESceneCustomOTool
 {
@@ -11,7 +12,7 @@ public:
 						ESceneShapeTool			():ESceneCustomOTool(OBJCLASS_SHAPE){;}
 	// definition
     IC LPCSTR			ClassName				(){return "shape";}
-    IC LPCSTR			ClassDesc				(){return "Shape";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("Shape").c_str();}
     IC int				RenderPriority			(){return 20;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

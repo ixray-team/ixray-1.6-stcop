@@ -14,17 +14,17 @@ void UIMainMenuForm::Draw()
   
 	if (ImGui::BeginMainMenuBar())
 	{
-		if (ImGui::BeginMenu("File"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_file").c_str()))
 		{
-			if (ImGui::MenuItem("Clear", "")) { ExecCommand(COMMAND_CLEAR); }
-			if (ImGui::MenuItem("Open...", "")) { ExecCommand(COMMAND_LOAD); }
-			if (ImGui::MenuItem("Save", "")) { ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str())); }
-			if (ImGui::MenuItem("Save As ...", "")) { ExecCommand(COMMAND_SAVE, 0,1); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_clear").c_str(), "")) { ExecCommand(COMMAND_CLEAR); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_open").c_str(), "")) { ExecCommand(COMMAND_LOAD); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_save").c_str(), "")) { ExecCommand(COMMAND_SAVE, xr_string(LTools->m_LastFileName.c_str())); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_save_as").c_str(), "")) { ExecCommand(COMMAND_SAVE, 0, 1); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Open Selection...", "")) { ExecCommand(COMMAND_LOAD_SELECTION); }
-			if (ImGui::MenuItem("Save Selection As...", "")) { ExecCommand(COMMAND_SAVE_SELECTION); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_open_selection").c_str(), "")) { ExecCommand(COMMAND_LOAD_SELECTION); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_save_selection_as").c_str(), "")) { ExecCommand(COMMAND_SAVE_SELECTION); }
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Open Recent", ""))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_open_recent").c_str(), ""))
 			{
 				for (auto& str : EPrefs->scene_recent_list)
 				{
@@ -33,75 +33,75 @@ void UIMainMenuForm::Draw()
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Quit", "")) { ExecCommand(COMMAND_QUIT); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_quit").c_str(), "")) { ExecCommand(COMMAND_QUIT); }
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Scene"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_scene").c_str()))
 		{
 			{
 				bool selected = !MainForm->GetWorldPropertiesFrom()->IsClosed();
-				if (ImGui::MenuItem("World Properties", "", &selected)) { if (selected)MainForm->GetWorldPropertiesFrom()->Open(); else MainForm->GetWorldPropertiesFrom()->Close(); }
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_world_properties").c_str(), "", &selected)) { if (selected)MainForm->GetWorldPropertiesFrom()->Open(); else MainForm->GetWorldPropertiesFrom()->Close(); }
 			}
 			ImGui::Separator();
 
-			if (ImGui::MenuItem("Validate", "")) { ExecCommand(COMMAND_VALIDATE_SCENE); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_validate").c_str(), "")) { ExecCommand(COMMAND_VALIDATE_SCENE); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Summary Info", "")) {
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_summary_info").c_str(), "")) {
 				ExecCommand(COMMAND_CLEAR_SCENE_SUMMARY);
 				ExecCommand(COMMAND_COLLECT_SCENE_SUMMARY);
 				ExecCommand(COMMAND_SHOW_SCENE_SUMMARY);
 			}
-			if (ImGui::MenuItem("Highlight Texture...", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_highlight_texture").c_str(), ""))
 			{
 				ExecCommand(COMMAND_SCENE_HIGHLIGHT_TEXTURE);
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Clear Debug Draw", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_clear_debug_draw").c_str(), ""))
 			{
 				ExecCommand(COMMAND_CLEAR_DEBUG_DRAW);
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Export entire Scene as Obj", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_export_scene_as_obj").c_str(), ""))
 			{
 				Scene->ExportObj(false);
 			}
-			if (ImGui::MenuItem("Export selection as Obj", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_export_selection_as_obj").c_str(), ""))
 			{
 				Scene->ExportObj(true);
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Compile"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_compile").c_str()))
 		{
-			if (ImGui::BeginMenu("Make"))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_make").c_str()))
 			{
-				if (ImGui::MenuItem("Make All", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_all").c_str(), ""))
 				{
 					ExecCommand(COMMAND_BUILD);
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Make Game", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_game").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_GAME);
 				}
-				if (ImGui::MenuItem("Make Puddles", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_puddles").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_PUDDLES);
 				}
-				if (ImGui::MenuItem("Make Details", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_details").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_DETAILS);
 				}
-				if (ImGui::MenuItem("Make Hom", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_hom").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_HOM);
 				}
-				if (ImGui::MenuItem("Make SOM", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_som").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_SOM);
 				}
-				if (ImGui::MenuItem("Make AI-Map", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_ai").c_str(), ""))
 				{
 					ExecCommand(COMMAND_MAKE_AIMAP);
 				}
@@ -113,39 +113,39 @@ void UIMainMenuForm::Draw()
 				ImGui::BeginDisabled();
 				bDisable = true;
 			}
-			if (ImGui::BeginMenu("Compile"))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_compile").c_str()))
 			{
-				if (ImGui::MenuItem("Geometry & Light", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_geometry_and_light").c_str(), ""))
 				{
 					LTools->RunXrLC();
 				}
-				if (ImGui::MenuItem("Detail Object Light", ""))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_detail_obj_light").c_str(), ""))
 				{
 					LTools->RunXrDO();
 				}
-				if (ImGui::BeginMenu("AIMap"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_ai_map").c_str()))
 				{
-					if (ImGui::MenuItem("High", ""))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_high").c_str(), ""))
 					{
 						LTools->RunXrAI_AIMap(false);
 					}
-					if (ImGui::MenuItem("Low", ""))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_low").c_str(), ""))
 					{
 						LTools->RunXrAI_AIMap(false);
 					}
-					if (ImGui::MenuItem("Verify", ""))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_verify").c_str(), ""))
 					{
 						LTools->RunXrAI_Verify();
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Spawn"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_spawn").c_str()))
 				{
-					if (ImGui::MenuItem("Only current level", ""))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_only_current_lvl").c_str(), ""))
 					{
 						LTools->RunXrAI_Spawn(true);
 					}
-					if (ImGui::MenuItem("All levels", ""))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_all_levels").c_str(), ""))
 					{
 						LTools->RunXrAI_Spawn(false);
 					}
@@ -159,42 +159,42 @@ void UIMainMenuForm::Draw()
 				ImGui::EndDisabled();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Import Error List", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_import_error_list").c_str(), ""))
 			{
 				ExecCommand(COMMAND_IMPORT_COMPILER_ERROR);
 			}
-			if (ImGui::MenuItem("Import xrAI Error List", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_import_xrai_error_list").c_str(), ""))
 			{
 				ExecCommand(COMMAND_IMPORT_AICOMPILER_ERROR);
 			}
-			if (ImGui::MenuItem("Export Error List", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_export_error_list").c_str(), ""))
 			{
 				ExecCommand(COMMAND_EXPORT_COMPILER_ERROR);
 			}
-			if (ImGui::MenuItem("Clear Error List", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_clear_error_list").c_str(), ""))
 			{
 				ExecCommand(COMMAND_CLEAR_DEBUG_DRAW);
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Objects"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_objects").c_str()))
 		{
-			if (ImGui::MenuItem("Library editor")) { ExecCommand(COMMAND_LIBRARY_EDITOR); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_lib_editor").c_str())) { ExecCommand(COMMAND_LIBRARY_EDITOR); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Reload")) { ExecCommand(COMMAND_RELOAD_OBJECTS); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_reload").c_str())) { ExecCommand(COMMAND_RELOAD_OBJECTS); }
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Images"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_images").c_str()))
 		{
-			if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_image_editor").c_str(), "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Reload Textures", "")) { ExecCommand(COMMAND_RELOAD_TEXTURES); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_reload_textures").c_str(), "")) { ExecCommand(COMMAND_RELOAD_TEXTURES); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
-			if (ImGui::MenuItem("Check New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_sync_textures").c_str(), "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_check_new_textures").c_str(), "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Edit minimap", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
-			if (ImGui::MenuItem("Sync THM", ""))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_edit_minimap").c_str(), "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_sync_thm").c_str(), ""))
 			{
 				FS_FileSet      files;
 				FS.file_list(files, _textures_, FS_ListFiles, "*.thm");
@@ -211,23 +211,23 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Sounds"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_sounds").c_str()))
 		{
-			if (ImGui::MenuItem("Sound Editor", "")) { ExecCommand(COMMAND_SOUND_EDITOR); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_sound_editor").c_str(), "")) { ExecCommand(COMMAND_SOUND_EDITOR); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Synchronize Sounds", "")) { ExecCommand(COMMAND_SYNC_SOUNDS); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_sync_sounds").c_str(), "")) { ExecCommand(COMMAND_SYNC_SOUNDS); }
 			ImGui::Separator();
-			if (ImGui::MenuItem("Refresh Environment Library", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENVS); }
-			if (ImGui::MenuItem("Refresh Environment Geometry", "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENV_GEOMETRY); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_refresh_env_lib").c_str(), "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENVS); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_refresh_env_geom").c_str(), "")) { ExecCommand(COMMAND_REFRESH_SOUND_ENV_GEOMETRY); }
 			ImGui::EndMenu();
 
 		}
 		
-		if (ImGui::BeginMenu("Options"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_options").c_str()))
 		{
-			if (ImGui::BeginMenu("Render"))
+			if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_render").c_str()))
 			{
-				if (ImGui::BeginMenu("Quality"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_quality").c_str()))
 				{
 					static bool selected[4] = { false,false,true,false };
 					if (ImGui::MenuItem("25%", "", &selected[0]))
@@ -256,35 +256,35 @@ void UIMainMenuForm::Draw()
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Fill Mode"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_fill_mode").c_str()))
 				{
 					bool selected[3] = { EDevice->dwFillMode == D3DFILL_POINT,EDevice->dwFillMode == D3DFILL_WIREFRAME,EDevice->dwFillMode == D3DFILL_SOLID };
-					if (ImGui::MenuItem("Point", "", &selected[0]))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_point").c_str(), "", &selected[0]))
 					{
 						EDevice->dwFillMode = D3DFILL_POINT;
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("Wireframe", "", &selected[1]))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_wireframe").c_str(), "", &selected[1]))
 					{
 						EDevice->dwFillMode = D3DFILL_WIREFRAME;
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("Solid", "", &selected[2]))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_solid").c_str(), "", &selected[2]))
 					{
 						EDevice->dwFillMode = D3DFILL_SOLID;
 						UI->RedrawScene();
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Shader Mode"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_shader_mode").c_str()))
 				{
 					bool selected[2] = { EDevice->dwShadeMode == D3DSHADE_FLAT,EDevice->dwShadeMode == D3DSHADE_GOURAUD };
-					if (ImGui::MenuItem("Flat", "", &selected[0]))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_flat").c_str(), "", &selected[0]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_FLAT;
 						UI->RedrawScene();
 					}
-					if (ImGui::MenuItem("Gouraud", "", &selected[1]))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_gouraud").c_str(), "", &selected[1]))
 					{
 						EDevice->dwShadeMode = D3DSHADE_GOURAUD;
 						UI->RedrawScene();
@@ -293,7 +293,7 @@ void UIMainMenuForm::Draw()
 				}
 				{
 					bool selected = psDeviceFlags.test(rsEdgedFaces);
-					if (ImGui::MenuItem("Edged Faces", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_edged_faces").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsEdgedFaces, selected);
 						UI->RedrawScene();
@@ -302,7 +302,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				{
 					bool selected = !Caps.bForceGPU_SW;
-					if (ImGui::MenuItem("RenderHW", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_hw_render").c_str(), "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
 						UI->Resize();
@@ -311,7 +311,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				{
 					bool selected = psDeviceFlags.test(rsFilterLinear);
-					if (ImGui::MenuItem("Filter Linear", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_linear_filtering").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsFilterLinear, selected);
 						UI->RedrawScene();
@@ -319,7 +319,7 @@ void UIMainMenuForm::Draw()
 				}
 				{
 					bool selected = psDeviceFlags.test(rsRenderTextures);
-					if (ImGui::MenuItem("Textures", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_textures").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsRenderTextures, selected);
 						UI->RedrawScene();
@@ -327,21 +327,9 @@ void UIMainMenuForm::Draw()
 				}
 				ImGui::EndMenu();
 			}
-			/*
-			* FX: нахуй - так нахуй 
-			ImGui::Separator();
-			{
-				bool selected = psDeviceFlags.test(rsDrawSafeRect);
-				if (ImGui::MenuItem("Draw Safe Rect", "", &selected))
-				{
-					psDeviceFlags.set(rsDrawSafeRect, selected);
-					UI->RedrawScene();
-				}
-			}
-			*/
 			{
 				bool selected = psDeviceFlags.test(rsDrawGrid);
-				if (ImGui::MenuItem("Draw Grid", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_draw_grid").c_str(), "", &selected))
 				{
 					psDeviceFlags.set(rsDrawGrid, selected);
 					UI->RedrawScene();
@@ -350,17 +338,17 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsFog);
-				if (ImGui::MenuItem("Fog", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_fog").c_str(), "", &selected))
 				{
 					psDeviceFlags.set(rsFog, selected);
 					UI->RedrawScene();
 				}
 			}
 			{
-				if (ImGui::BeginMenu("Environment"))
+				if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_environment").c_str()))
 				{
 					bool selected = !psDeviceFlags.test(rsEnvironment);
-					if (ImGui::MenuItem("None", "", &selected))
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_none").c_str(), "", &selected))
 					{
 						psDeviceFlags.set(rsEnvironment, false);
 						UI->RedrawScene();
@@ -383,7 +371,7 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsLighting);
-				if (ImGui::MenuItem("Lighting", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_lighting").c_str(), "", &selected))
 				{
 					psDeviceFlags.set(rsLighting, selected);
 					UI->RedrawScene();
@@ -391,14 +379,14 @@ void UIMainMenuForm::Draw()
 			}
 			{
 				bool selected = psDeviceFlags.test(rsMuteSounds);
-				if (ImGui::MenuItem("Mute Sounds", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_mute_sounds").c_str(), "", &selected))
 				{
 					psDeviceFlags.set(rsMuteSounds, selected);
 				}
 			}
 			{
 				bool selected = psDeviceFlags.test(rsRenderRealTime);
-				if (ImGui::MenuItem("Real Time", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_real_time").c_str(), "", &selected))
 				{
 					psDeviceFlags.set(rsRenderRealTime, selected);
 				}
@@ -406,42 +394,40 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsStatistic);
-				if (ImGui::MenuItem("Stats", "",&selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_stats").c_str(), "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
 
 			}
-			//ImGui::Separator();
-			//if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Windows"))
+		if (ImGui::BeginMenu(g_pStringTable->translate("ed_st_windows").c_str()))
 		{
 			{
 				bool selected = MainForm->GetLeftBarForm()->IsUseSnapList();
-				if (ImGui::MenuItem("Snap List", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_snap_list").c_str(), "", &selected))
 				{
 					MainForm->GetLeftBarForm()->ShowSnapList(selected);
 				}
 			}
 			{
 				bool selected = MainForm->GetLeftBarForm()->IsUseObjectsTool();
-				if (ImGui::MenuItem("Objects Tools", "", &selected))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_obj_tools").c_str(), "", &selected))
 				{
 					MainForm->GetLeftBarForm()->ShowObjectsTool(selected);
 				}
 				{
 					bool selected = !MainForm->GetPropertiesFrom()->IsClosed();
-					if (ImGui::MenuItem("Properties", "", &selected)) { if (selected)MainForm->GetPropertiesFrom()->Open(); else MainForm->GetPropertiesFrom()->Close(); }
+					if (ImGui::MenuItem(g_pStringTable->translate("ed_st_properties").c_str(), "", &selected)) { if (selected)MainForm->GetPropertiesFrom()->Open(); else MainForm->GetPropertiesFrom()->Close(); }
 				}
 			}
 			{
 				bool selected = AllowLogCommands();
 
-				if (ImGui::MenuItem("Log", "",&selected)) { ExecCommand(COMMAND_LOG_COMMANDS); }
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_log").c_str(), "", &selected)) { ExecCommand(COMMAND_LOG_COMMANDS); }
 
 				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
 				bool selected2 = !ThemeInstance.IsClosed();
-				if (ImGui::MenuItem("Theme", "", &selected2))
+				if (ImGui::MenuItem(g_pStringTable->translate("ed_st_theme").c_str(), "", &selected2))
 				{ 
 					if (selected2)
 					{
@@ -461,18 +447,17 @@ void UIMainMenuForm::Draw()
 
 		ImGui::Separator();
 
-		if (ImGui::MenuItem("Light Anim Editor", "")) 
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_la_editor").c_str(), ""))
 		{ 
 			ExecCommand(COMMAND_LIGHTANIM_EDITOR);
 		}
 
 		{
 			bool selected = UIObjectList::IsOpen();
-			if (ImGui::MenuItem("Object List", "", &selected)){ if (selected) UIObjectList::Show(); else UIObjectList::Close(); }
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_obj_list").c_str(), "", &selected)) { if (selected) UIObjectList::Show(); else UIObjectList::Close(); }
 		}
 		
-		if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
-		//ImGui::EndMenu();
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_preferences").c_str(), "")) { ExecCommand(COMMAND_EDITOR_PREF); }
 
 		ImGui::EndMainMenuBar();
 	}

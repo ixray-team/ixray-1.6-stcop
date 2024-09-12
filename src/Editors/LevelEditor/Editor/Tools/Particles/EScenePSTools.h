@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class EScenePSTool: public ESceneCustomOTool
 {
@@ -11,7 +12,7 @@ public:
 						EScenePSTool			():ESceneCustomOTool(OBJCLASS_PS){;}
 	// definition
     IC LPCSTR			ClassName				(){return "ps";}
-    IC LPCSTR			ClassDesc				(){return "Static Particles";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_ps").c_str();}
     IC int				RenderPriority			(){return 30;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

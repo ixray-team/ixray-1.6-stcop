@@ -26,13 +26,13 @@ UIParticlesTool::~UIParticlesTool()
 void UIParticlesTool::Draw()
 {
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            ImGui::Text("Ref's Select:   "); ImGui::SameLine(); if (ImGui::Button("+", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(true); }; ImGui::SameLine(); if (ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(false); };
-            ImGui::Text("Selected:       "); ImGui::SameLine();
-            if (ImGui::ArrowButton("play", ImGuiDir_Right))
+            ImGui::Text(g_pStringTable->translate("ed_st_refs_select").c_str()); ImGui::SameLine(); if (ImGui::Button("+", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(true); }; ImGui::SameLine(); if (ImGui::Button("-", ImVec2(ImGui::GetFrameHeight(), ImGui::GetFrameHeight()))) { SelByRef(false); };
+            ImGui::Text(g_pStringTable->translate("ed_st_selected").c_str()); ImGui::SameLine();
+            if (ImGui::ArrowButton(g_pStringTable->translate("ed_st_play").c_str(), ImGuiDir_Right))
             {
                 ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
                 ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
@@ -41,7 +41,7 @@ void UIParticlesTool::Draw()
                         ((EParticlesObject*)(*_F))->Play();
                 }
             }ImGui::SameLine(); 
-            if (ImGui::Button("stop", ImVec2(0, ImGui::GetFrameHeight())))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_stop").c_str(), ImVec2(0, ImGui::GetFrameHeight())))
             {
                 ObjectIt _F = Scene->FirstObj(OBJCLASS_PS);
                 ObjectIt _E = Scene->LastObj(OBJCLASS_PS);
@@ -56,7 +56,7 @@ void UIParticlesTool::Draw()
 	}
 	ImGui::Separator();
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Particles"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_particles").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		m_ParticlesList->Draw();

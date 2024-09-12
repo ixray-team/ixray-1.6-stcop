@@ -35,18 +35,18 @@ UIObjectTool::~UIObjectTool()
 
 void UIObjectTool::Draw()
 {
-    ImGui::Checkbox("Show lists", &bDrawList);
+    ImGui::Checkbox(g_pStringTable->translate("ed_st_show_lists").c_str(), &bDrawList);
 
     if (m_RemoveTexture)m_RemoveTexture->Release();
     m_RemoveTexture = nullptr;
     static bool bbool = false;
     float a = 1;
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Commands"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::Button("Multiple Append", ImVec2(-1, 0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_multiple_append").c_str(), ImVec2(-1, 0)))
             {
                 UIChooseForm::SelectItem(smObject, 512, 0);
                 m_MultiAppend = true;
@@ -56,12 +56,12 @@ void UIObjectTool::Draw()
         {
             float size = float(ImGui::CalcItemWidth());
             {
-                if (ImGui::Checkbox("Random Append", &m_RandomAppend))
+                if (ImGui::Checkbox(g_pStringTable->translate("ed_st_random_append").c_str(), &m_RandomAppend))
                 {
                     ParentTools->ActivateAppendRandom(m_RandomAppend);
                 }
                 ImGui::SameLine(0,10);
-                if (ImGui::Button("Random Props...", ImVec2(-1, 0)))
+                if (ImGui::Button(g_pStringTable->translate("ed_st_random_props").c_str(), ImVec2(-1, 0)))
                 {
                     m_PropRandom = true;
                     ParentTools->FillAppendRandomPropertiesBegin();
@@ -74,30 +74,30 @@ void UIObjectTool::Draw()
         ImGui::TreePop();
     }
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Reference Select"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_ref_select").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-            ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+            ImGui::Text(g_pStringTable->translate("ed_st_sel_by_curr").c_str()); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
+            ImGui::Text(g_pStringTable->translate("ed_st_sel_by_sel").c_str()); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
         }
         ImGui::Separator();
         ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
         ImGui::TreePop();
     }
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Surface"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_surface").c_str()))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::Button("Clear Surface in select", ImVec2(-1, 0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_clear_surface_in_sel").c_str(), ImVec2(-1, 0)))
             {
                 Scene->UndoSave();
                 ClearSurface(true);
             }
-            if (ImGui::Button("Clear Surface in level", ImVec2(-1, 0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_clear_surface_in_level").c_str(), ImVec2(-1, 0)))
             {
-                if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes) 
+                if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, g_pStringTable->translate("ed_st_clear_surface_in_level_msg").c_str()) == mrYes) 
                 {
                     Scene->UndoSave();
                     ClearSurface(false);
@@ -110,17 +110,17 @@ void UIObjectTool::Draw()
         ImGui::TreePop();
     }
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Current Object"))
+    if (ImGui::TreeNode(g_pStringTable->translate("ed_st_current_obj").c_str()))
     {
 
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         {
-            if (ImGui::Button("Select ...", ImVec2(-1, 0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_select").c_str(), ImVec2(-1, 0)))
             {
                 UIChooseForm::SelectItem(smObject,1, m_Current,0,0,0,0,0);
                 m_Selection = true;
             }
-            if (ImGui::Button("Refresh List", ImVec2(-1, 0)))
+            if (ImGui::Button(g_pStringTable->translate("ed_st_refresh_list").c_str(), ImVec2(-1, 0)))
             {
                 RefreshList();
             }
@@ -136,13 +136,13 @@ void UIObjectTool::DrawObjectsList()
     if (!bDrawList)
         return;
 
-    if (ImGui::Begin("Objects List", &bDrawList))
+    if (ImGui::Begin(g_pStringTable->translate("ed_st_obj_list").c_str(), &bDrawList))
     {
         if (!RefreshInProgress)
         {
             ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
             ImGui::SameLine();
-            ImGui::BeginChild("Props", ImVec2(0, 128));
+            ImGui::BeginChild(g_pStringTable->translate("ed_st_props").c_str(), ImVec2(0, 128));
             m_Props->Draw();
             ImGui::EndChild();
 
@@ -150,7 +150,7 @@ void UIObjectTool::DrawObjectsList()
             m_ObjectList->Draw();
         }
         else
-            ImGui::Text("Loading...");
+            ImGui::Text(g_pStringTable->translate("ed_st_loading").c_str());
     }
     ImGui::End();
 }
@@ -224,7 +224,7 @@ void UIObjectTool::OnDrawUI()
                 Fvector up = { 0.f,1.f,0.f };
                 Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
 
-                SPBItem* pb = UI->ProgressStart(lst.size(), "Append object: ");
+                SPBItem* pb = UI->ProgressStart(lst.size(), g_pStringTable->translate("ed_st_append_obj").c_str());
                 for (AStringIt it = lst.begin(); it != lst.end(); it++)
                 {
                     string256 namebuffer;

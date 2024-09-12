@@ -21,7 +21,7 @@ CContentView::CContentView():
 
 void CContentView::Draw()
 {
-	if (ImGui::Begin("Content Browser"))
+	if (ImGui::Begin(g_pStringTable->translate("ed_st_content_browser").c_str()))
 	{
 		if (Files.empty())
 		{
@@ -145,7 +145,7 @@ void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_s
 	FS.update_path(FSEntry, "$game_data$", "");
 	PathClickLambda();
 
-	if (DrawItem({ "Spawn Elements", true }, HorBtnIter, IterCount))
+	if (DrawItem({ g_pStringTable->translate("ed_st_spawn_elements").c_str(), true}, HorBtnIter, IterCount))
 	{
 		RescanISEDirectory("");
 	}
@@ -495,7 +495,7 @@ bool CContentView::DrawContext(const std::filesystem::path& Path) const
 {
 	if (ImGui::BeginPopupContextItem())
 	{
-		if (ImGui::MenuItem("Delete"))
+		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_delete").c_str()))
 		{
 			std::filesystem::remove(Path);
 			FS.rescan_path(Path.parent_path().string().c_str() , true);

@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneWayTool: public ESceneCustomOTool
 {
@@ -11,7 +12,7 @@ public:
 						ESceneWayTool			():ESceneCustomOTool(OBJCLASS_WAY){;}
 	// definition
     IC LPCSTR			ClassName				(){return "way";}
-    IC LPCSTR			ClassDesc				(){return "Way Points";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_way_points").c_str();}
     IC int				RenderPriority			(){return 1;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

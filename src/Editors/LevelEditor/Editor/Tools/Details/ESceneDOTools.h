@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class CFrustum;
 class CEditableObject;
@@ -107,7 +108,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "detail_object";}
-    IC LPCSTR			ClassDesc				(){return "Detail Objects";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_details").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     // validation

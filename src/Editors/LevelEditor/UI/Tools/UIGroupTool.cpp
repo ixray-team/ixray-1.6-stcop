@@ -16,41 +16,41 @@ void UIGroupTool::Draw()
 {
 	ImGui::Separator();
 	{
-		ImGui::BulletText("Commands", ImGuiDir_Left);
-		if (ImGui::BeginPopupContextItem("Commands", 1))
+		ImGui::BulletText(g_pStringTable->translate("ed_st_commands").c_str(), ImGuiDir_Left);
+		if (ImGui::BeginPopupContextItem(g_pStringTable->translate("ed_st_commands").c_str(), 1))
 		{
-			if (ImGui::MenuItem("Group"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_group_obj").c_str()))
 			{
 				ParentTools->GroupObjects();
 			}
-			if (ImGui::MenuItem("Ungroup"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_ungroup").c_str()))
 			{
 				ParentTools->UngroupObjects();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Make Thumbnail"))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_make_thumbnail").c_str()))
 			{
 				ParentTools->MakeThumbnail();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Save As ..."))
+			if (ImGui::MenuItem(g_pStringTable->translate("ed_st_save_as").c_str()))
 			{
 				ParentTools->SaveSelectedObject();
 			}
 			ImGui::EndPopup();
 		}
-		ImGui::OpenPopupOnItemClick("Commands", 0);
+		ImGui::OpenPopupOnItemClick(g_pStringTable->translate("ed_st_commands").c_str(), 0);
 	}
 	ImGui::Separator();
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Current Object"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_current_obj").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
 			ImGui::SetNextItemWidth(-1);
 			float size = float(ImGui::CalcItemWidth());
 			{
-				if (ImGui::Button("Select ...", ImVec2(size / 2, 0))) 
+				if (ImGui::Button(g_pStringTable->translate("ed_st_select").c_str(), ImVec2(size / 2, 0)))
 				{
 					string_path ObjectPath = {};
 
@@ -61,38 +61,38 @@ void UIGroupTool::Draw()
 					m_ChooseGroup = true;
 				}
 				ImGui::SameLine(0, 2);
-				if (ImGui::Button("Reload Refs", ImVec2(size / 2, 0))) 
+				if (ImGui::Button(g_pStringTable->translate("ed_st_reload_refs").c_str(), ImVec2(size / 2, 0)))
 				{
 					ParentTools->ReloadRefsSelectedObject();
 					//bForceInitListBox = TRUE;
 					Tools->UpdateProperties(TRUE);
 				}
 			}
-			ImGui::Text("Current:%s", m_Current.c_str()? m_Current.c_str():"");
+			ImGui::Text(g_pStringTable->translate("ed_st_current").c_str(), m_Current.c_str() ? m_Current.c_str() : "");
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Reference Select"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_ref_select").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-			ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+			ImGui::Text(g_pStringTable->translate("ed_st_sel_by_curr").c_str()); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
+			ImGui::Text(g_pStringTable->translate("ed_st_sel_by_sel").c_str()); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Pivot Alignment"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_pivot_align").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if(ImGui::Button("Center To Group", ImVec2(-1, 0))) { ParentTools->CenterToGroup(); }
-			if (ImGui::Button("Align To Object...", ImVec2(-1, 0))) { ParentTools->AlignToObject(); }
+			if(ImGui::Button(g_pStringTable->translate("ed_st_center_to_group").c_str(), ImVec2(-1, 0))) { ParentTools->CenterToGroup(); }
+			if (ImGui::Button(g_pStringTable->translate("ed_st_align_to_obj").c_str(), ImVec2(-1, 0))) { ParentTools->AlignToObject(); }
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());

@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneSoundEnvTool: public ESceneCustomOTool
 {
@@ -11,7 +12,7 @@ public:
 						ESceneSoundEnvTool		():ESceneCustomOTool(OBJCLASS_SOUND_ENV){;}
 	// definition
     IC LPCSTR			ClassName				(){return "sound_env";}
-    IC LPCSTR			ClassDesc				(){return "Sound Env";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_sound_env").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     virtual void		Clear					(bool bSpecific=false);

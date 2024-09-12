@@ -53,6 +53,7 @@
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../../xrEngine/CustomHUD.h"
+#include "../../xrEngine/string_table.h"
 #include "../../xrEngine/CameraManager.h"
 #include "../../xrEngine/IGame_Level.h"
 #include "../../xrEngine/x_ray.h"

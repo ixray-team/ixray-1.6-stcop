@@ -18,30 +18,30 @@ UISpawnTool::~UISpawnTool()
 void UISpawnTool::Draw()
 {
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Reference Select"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_ref_select").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			ImGui::Text("Select by Current: "); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
-			ImGui::Text("Select by Selected:"); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
+			ImGui::Text(g_pStringTable->translate("ed_st_sel_by_curr").c_str()); ImGui::SameLine(); if (ImGui::Button(" +")) { SelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button(" -")) { SelByRefObject(false); }
+			ImGui::Text(g_pStringTable->translate("ed_st_sel_by_sel").c_str()); ImGui::SameLine(); if (ImGui::Button("=%")) { MultiSelByRefObject(true); } ImGui::SameLine(); if (ImGui::Button("+%")) { MultiSelByRefObject(false); } ImGui::SameLine(); ImGui::SetNextItemWidth(-ImGui::GetTextLineHeight() - 8); ImGui::DragFloat("%", &m_selPercent, 1, 0, 100, "%.1f");
 		}
 		ImGui::Separator();
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::TreePop();
 	} 
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Commands"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_commands").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
 			float size = float(ImGui::CalcItemWidth());
 			{
-				if (ImGui::Checkbox("Attach Object...", &m_AttachObject))
+				if (ImGui::Checkbox(g_pStringTable->translate("ed_st_attach_obj").c_str(), &m_AttachObject))
 				{
 					if (m_AttachObject) ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
 				}
 				ImGui::SameLine(0, 10);
-				if (ImGui::Button("Detach Object", ImVec2(-1, 0)))
+				if (ImGui::Button(g_pStringTable->translate("ed_st_detach_obj").c_str(), ImVec2(-1, 0)))
 				{
 					ObjectList lst;
 					if (Scene->GetQueryObjects(lst, OBJCLASS_SPAWNPOINT, 1, 1, 0)) {
@@ -59,7 +59,7 @@ void UISpawnTool::Draw()
 	}
 	ImGui::Separator();
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Object List"))
+	if (ImGui::TreeNode(g_pStringTable->translate("ed_st_obj_list").c_str()))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		m_SpawnList->Draw();

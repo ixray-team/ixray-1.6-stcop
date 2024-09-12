@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class CSceneObject;
 
@@ -18,7 +19,7 @@ public:
 						ESceneSectorTool		():ESceneCustomOTool(OBJCLASS_SECTOR){m_Flags.zero();}
 	// definition
     IC LPCSTR			ClassName				(){return "sector";}
-    IC LPCSTR			ClassDesc				(){return "Sector";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_sector").c_str();}
     IC int				RenderPriority			(){return 20;}
 
     virtual void 		OnObjectRemove			(CCustomObject* O, bool bDeleting);

@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class ESceneSoundSrcTool: public ESceneCustomOTool
 {
@@ -11,7 +12,7 @@ public:
 						ESceneSoundSrcTool		():ESceneCustomOTool(OBJCLASS_SOUND_SRC){;}
 	// definition
     IC LPCSTR			ClassName				(){return "sound_src";}
-    IC LPCSTR			ClassDesc				(){return "Sound Source";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_sound_src").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);}

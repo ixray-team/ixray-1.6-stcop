@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrEngine/string_table.h"
 
 class EFogVolume;
 
@@ -19,7 +20,7 @@ public:
 						ESceneFogVolumeTool		():ESceneCustomOTool(OBJCLASS_FOG_VOL){;}
 	// definition
     IC LPCSTR			ClassName				(){return "fog_volume";}
-    IC LPCSTR			ClassDesc				(){return "Fog Volumes";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_fog_volumes").c_str();}
     IC int				RenderPriority			(){return 11;}
 
     virtual void		Clear					(bool bSpecific=false);
