@@ -339,9 +339,9 @@ void RenderSpawnManagerWindow()
 					ImGui::Separator();
 
 					// that has all fields for sorting
-					std::array<std::pair<std::string_view, CInifile::Sect*>, 256> section_names_sort;
+					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_sort;
 					// lack of some fields for sorting thus can't be included for 'sorting' categorty
-					std::array<std::pair<std::string_view, CInifile::Sect*>, 256> section_names_unsort;
+					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_unsort;
 
 					for (const auto& pSection : pSettings->sections())
 					{
@@ -356,14 +356,12 @@ void RenderSpawnManagerWindow()
 								{
 									if (pSection->line_exist("hit_power") && pSection->line_exist("cost") && pSection->line_exist("fire_distance"))
 									{
-										section_names_sort[total_count_sort].first = name;
-										section_names_sort[total_count_sort].second = pSection;
+										section_names_sort.push_back({ name, pSection });
 										++total_count_sort;
 									}
 									else
 									{
-										section_names_unsort[total_count_unsort].first = name;
-										section_names_unsort[total_count_unsort].second = pSection;
+										section_names_unsort.push_back({ name, pSection });
 										++total_count_unsort;
 									}
 								}
