@@ -186,6 +186,7 @@ imgui_spawn_manager;
 
 extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position,
 	u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
 
 void RenderSpawnManagerWindow()
 {
@@ -675,7 +676,7 @@ void RenderSpawnManagerWindow()
 
 									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
 
-									Console->ExecuteCommand(cmd);
+									execute_console_command_deferred(Console, cmd);
 								}
 
 							}
@@ -788,7 +789,7 @@ void RenderSpawnManagerWindow()
 
 									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
 
-									Console->ExecuteCommand(cmd);
+									execute_console_command_deferred(Console, cmd);
 								}
 							}
 
