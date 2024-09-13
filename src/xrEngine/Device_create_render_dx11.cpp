@@ -168,7 +168,7 @@ bool CreateD3D11(bool ReturnToDX10)
 			D3D_FEATURE_LEVEL_10_1,
 			D3D_FEATURE_LEVEL_10_0,
 		};
-
+		
 		HRESULT R = S_OK;
 		if (ReturnToDX10)
 		{
@@ -197,6 +197,16 @@ bool CreateD3D11(bool ReturnToDX10)
 			xrLogger::FlushLog();
 			return false;
 		};
+
+		if (bHasDebugRender)
+		{
+			ID3D11InfoQueue* infoQueue = nullptr;
+			if (SUCCEEDED(((ID3D11Device*)HWRenderDevice)->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&infoQueue)))
+			{
+				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+			}
+		}
 	}
 	//else
 	//{
