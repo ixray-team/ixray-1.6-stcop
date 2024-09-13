@@ -85,7 +85,8 @@ void CUIRankingWnd::Init()
 	m_background				= UIHelper::CreateFrameWindow(xml, "background", this);
 	m_down_background			= UIHelper::CreateFrameWindow(xml, "down_background", this);
 
-	if (!EngineExternal()[EEngineExternalUI::DisableCharacterInfo])
+	const static bool isCharacterInfo = EngineExternal()[EEngineExternalUI::DisableCharacterInfo];
+	if (!isCharacterInfo)
 	{
 		m_actor_ch_info = new CUICharacterInfo();
 		m_actor_ch_info->SetAutoDelete(true);

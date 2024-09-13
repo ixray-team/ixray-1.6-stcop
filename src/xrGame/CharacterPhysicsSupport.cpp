@@ -1173,7 +1173,8 @@ void	CCharacterPhysicsSupport::	CreateShell						( CObject* who, Fvector& dp, Fv
 		//use exact integration for ragdolls in single
 		m_pPhysicsShell->SetPrefereExactIntegration();
 
-		if (!EngineExternal()[EEngineExternalPhysical::DeadBodyRagdoll]) {
+		const static bool isDeadBodyRagdoll = EngineExternal()[EEngineExternalPhysical::DeadBodyRagdoll];
+		if (!isDeadBodyRagdoll) {
 			m_pPhysicsShell->SetRemoveCharacterCollLADisable();
 		}
 	} else {

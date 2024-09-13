@@ -1380,6 +1380,7 @@ void CActor::shedule_Update	(u32 DT)
 	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
 	Center(ActorPos);
 	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
+	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
 	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f)
 	{
@@ -1419,7 +1420,7 @@ void CActor::shedule_Update	(u32 DT)
 					{
 						if (CBaseMonster* pMonster = smart_cast<CBaseMonster*>(m_pPersonWeLookingAt))
 						{
-							if (EngineExternal()[EEngineExternalGame::EnableMonstersInventory])
+							if (isMonstersInventory)
 							{
 								m_sDefaultObjAction = m_sDeadCharacterUseAction;
 							}

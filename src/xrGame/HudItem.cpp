@@ -216,7 +216,8 @@ void CHudItem::SendHiddenItem()
 
 void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 {
-	if (!EngineExternal()[EEngineExternalGame::EnableWeaponInertion])
+	const static bool isInertion = EngineExternal()[EEngineExternalGame::EnableWeaponInertion];
+	if (!isInertion)
 		return;
 
 	CActor* pActor = smart_cast<CActor*>(object().H_Parent());
@@ -696,8 +697,8 @@ float CHudItem::GetHudFov()
 
 		float fBaseFov = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
 		clamp(fBaseFov, 5.f, 180.f);
-
-		if (EngineExternal()[EEngineExternalGame::EnableWeaponCollision])
+		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
+		if (isCollision)
 		{
 
 			float src = m_nearwall_speed_mod * Device.fTimeDelta;

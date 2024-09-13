@@ -37,10 +37,10 @@ void CUIStatsIcon::InitTexInfo(){
 
 	m_tex_info[ARTEFACT][0].sh = InventoryUtilities::GetEquipmentIconsShader();
 	m_tex_info[ARTEFACT][0].rect.set(
-		fXPos * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),
-		fYPos * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]),
-		fXPos * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) + fGridWidth * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),
-		fYPos * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) + fGridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+		fXPos * INV_GRID_WIDTH(isHQIcons),
+		fYPos * INV_GRID_HEIGHT(isHQIcons),
+		fXPos * INV_GRID_WIDTH(isHQIcons) + fGridWidth * INV_GRID_WIDTH(isHQIcons),
+		fYPos * INV_GRID_HEIGHT(isHQIcons) + fGridHeight * INV_GRID_HEIGHT(isHQIcons));
 	
 	m_tex_info[ARTEFACT][1] = m_tex_info[ARTEFACT][0];
 
