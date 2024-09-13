@@ -151,7 +151,7 @@ bool EParticlesObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
     m_RefName		= ini.r_string(sect_name, "ref_name");
     if (!Compile(*m_RefName))
     {
-        ELog.DlgMsg( mtError, "EParticlesObject: '%s' not found in library", *m_RefName );
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_ps_not_found").c_str(), *m_RefName );
         return false;
     }
     return true;
@@ -174,7 +174,7 @@ bool EParticlesObject::LoadStream(IReader& F)
     R_ASSERT(F.r_chunk(CPSOBJECT_CHUNK_VERSION,&version));
     if(version<0x0011)
     {
-        ELog.DlgMsg( mtError, "PSObject: Unsupported version.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_ps_unsupported_ver").c_str());
         return false;
     }
 
@@ -193,7 +193,7 @@ bool EParticlesObject::LoadStream(IReader& F)
 
     if (!Compile(*m_RefName))
     {
-        ELog.DlgMsg( mtError, "EParticlesObject: '%s' not found in library", *m_RefName );
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_ps_not_found").c_str(), *m_RefName);
         return false;
     }
 
@@ -269,7 +269,7 @@ bool EParticlesObject::Compile(LPCSTR ref_name)
 void EParticlesObject::OnRefChange(PropValue* V)
 {
 	if (!Compile(*m_RefName)){
-        ELog.Msg( mtError, "Can't compile particle system '%s'", *m_RefName );
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_cant_compile_ps").c_str(), *m_RefName);
     }else{
     	ExecCommand(COMMAND_REFRESH_PROPERTIES);
     }
@@ -290,10 +290,10 @@ void EParticlesObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
     PropValue* V;
-    V=PHelper().CreateChoose	(items,PrepareKey(pref, "Reference"),&m_RefName, smParticles);
+    V=PHelper().CreateChoose	(items,PrepareKey(pref, g_pStringTable->translate("ed_st_reference").c_str()),&m_RefName, smParticles);
     V->OnChangeEvent.bind		(this,&EParticlesObject::OnRefChange);
 	ButtonValue* B;
-    B=PHelper().CreateButton	(items,PrepareKey(pref,"Controls"), 	"Play,Stop",0);
+    B=PHelper().CreateButton	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_controls").c_str()), 	"Play,Stop",0);
     B->OnBtnClickEvent.bind		(this,&EParticlesObject::OnControlClick);
 
 	m_GameType.FillProp			(pref, items);

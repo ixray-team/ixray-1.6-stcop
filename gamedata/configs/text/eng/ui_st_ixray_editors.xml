@@ -1185,4 +1185,220 @@
     <string id="ed_st_default">
         <text>Default</text>
     </string>
+    <string id="ed_st_reference">
+        <text>Reference</text>
+    </string>
+    <string id="ed_st_surfaces">
+        <text>Surfaces</text>
+    </string>
+    <string id="ed_st_texture">
+        <text>Texture</text>
+    </string>
+    <string id="ed_st_shader">
+        <text>Shader</text>
+    </string>
+    <string id="ed_st_game_mtl">
+        <text>Game material</text>
+    </string>
+    <string id="ed_st_action">
+        <text>Action</text>
+    </string>
+    <string id="ed_st_controls">
+        <text>Controls</text>
+    </string>
+    <string id="ed_st_cant_compile_ps">
+        <text>Can't compile particle system '%s'</text>
+    </string>
+    <string id="ed_st_ps_not_found">
+        <text>EParticlesObject: '%s' not found in library</text>
+    </string>
+    <string id="ed_st_ps_unsupported_ver">
+        <text>PSObject: Unsupported version.</text>
+    </string>
+    <string id="ed_st_cant_attach">
+        <text>Can't attach object: '%s'</text>
+    </string>
+    <string id="ed_st_obj_already_in_group_change_group">
+        <text>Object '%s' already in group '%s'. Change group?</text>
+    </string>
+    <string id="ed_st_group_unsupported_ver">
+        <text>CGroupObject: unsupported file version. Object can't load.</text>
+    </string>
+    <string id="ed_st_old_group_fmt">
+        <text>old opened group save format</text>
+    </string>
+    <string id="ed_st_group_empty_ref">
+        <text>ERROR: group '%s' - has empty reference. Corrupted file?</text>
+    </string>
+    <string id="ed_st_old_group_fmt_open">
+        <text>old format, opened group</text>
+    </string>
+    <string id="ed_st_group_empty_ref_err">
+        <text>ERROR: '%s' - has empty reference.</text>
+    </string>
+    <string id="ed_st_group_sync_not_all">
+        <text>Not all objects synchronised correctly</text>
+    </string>
+    <string id="ed_st_group_empty">
+        <text>Group '%s' has no objects and will be removed.</text>
+    </string>
+    <string id="ed_st_cant_detach_readonly">
+        <text>! Can't detach object '%s'. Target '%s' in readonly mode.</text>
+    </string>
+    <string id="ed_st_obj_already_in_group">
+        <text>Object [%s] is already in group!</text>
+    </string>
+    <string id="ed_st_load_append_name_changed">
+        <text>Load_Append name changed from[%s] to[%s]</text>
+    </string>
+    <string id="ed_st_cant_open_group">
+        <text>ERROR: Can't open group file: '%s'.</text>
+    </string>
+    <string id="ed_st_le_error">
+        <text>ERROR: %s %s</text>
+    </string>
+    <string id="ed_st_build_start">
+        <text>Building started...</text>
+    </string>
+    <string id="ed_st_validation_failed">
+        <text>Validation failed.</text>
+    </string>
+    <string id="ed_st_invalid_scene">
+        <text>Invalid scene.</text>
+    </string>
+    <string id="ed_st_level_path_failed">
+        <text>Failed to prepare level path</text>
+    </string>
+    <string id="ed_st_prepare_folders_failed">
+        <text>Failed to prepare level folders</text>
+    </string>
+    <string id="ed_st_resource_evict_failed">
+        <text>Failed to evict resource</text>
+    </string>
+    <string id="ed_st_level_bound_failed">
+        <text>Failed to acquire level bounding volume</text>
+    </string>
+    <string id="ed_st_renum_sectors_failed">
+        <text>Failed to renumerate sectors</text>
+    </string>
+    <string id="ed_st_static_failed">
+        <text>Failed static remote build</text>
+    </string>
+    <string id="ed_st_ltx_failed">
+        <text>Failed to build level description</text>
+    </string>
+    <string id="ed_st_game_failed">
+        <text>Failed to build game</text>
+    </string>
+    <string id="ed_st_scene_stats_failed">
+        <text>Failed to build scene statistic</text>
+    </string>
+    <string id="ed_st_export_failed">
+        <text>Export failed.</text>
+    </string>
+    <string id="ed_st_process_done">
+        <text>Process %s - done.</text>
+    </string>
+    <string id="ed_st_process_failed">
+        <text>Process %s - failed.</text>
+    </string>
+    <string id="ed_st_build_terminated">
+        <text>Building terminated.</text>
+    </string>
+    <string id="ed_st_build_success">
+        <text>Building successful.</text>
+    </string>
+    <string id="ed_st_build_error">
+        <text>Error has occured in builder routine. Editor aborted.</text>
+    </string>
+    <string id="ed_st_making_started">
+        <text>Making started...</text>
+    </string>
+    <string id="ed_st_making_terminated">
+        <text>Making terminated.</text>
+    </string>
+    <string id="ed_st_making_finished">
+        <text>Making finished.</text>
+    </string>
+    <string id="ed_st_no_puddles">
+        <text>No puddles placed on the level!</text>
+    </string>
+    <string id="ed_st_som_failed">
+        <text>Failed to build SOM.</text>
+    </string>
+    <string id="ed_st_hom_failed">
+        <text>Failed to build HOM.</text>
+    </string>
+    <string id="ed_st_ai_map_failed">
+        <text>Failed to build AI-Map.</text>
+    </string>
+    <string id="ed_st_evict_objects">
+        <text>Evict objects...</text>
+    </string>
+    <string id="ed_st_renum_sectors">
+        <text>Renumerate sectors...</text>
+    </string>
+    <string id="ed_st_incorrect_fog_groups">
+        <text>! Incorrect fog volumes grouping</text>
+    </string>
+    <string id="ed_st_way_name">
+        <text>Way Name</text>
+    </string>
+    <string id="ed_st_wp_name">
+        <text>Way Point\Name</text>
+    </string>
+    <string id="ed_st_wp_position">
+        <text>Way Point\Transform\Position</text>
+    </string>
+    <string id="ed_st_wp_links">
+        <text>Way Point\Links</text>
+    </string>
+    <string id="ed_st_wp_flags">
+        <text>Way Point\Flags</text>
+    </string>
+    <string id="ed_st_wp_unsupported">
+        <text>CWayPoint: Unsupported version.</text>
+    </string>
+    <string id="ed_st_wp_corrupted">
+        <text>Corrupted scene file.[%s] sect[%s] has empty name</text>
+    </string>
+    <string id="ed_st_scene_must_be_empty">
+        <text>! Scene must be empty before editing library!</text>
+    </string>
+    <string id="ed_st_invalid_mat">
+        <text>Object '%s', surface '%s' contain invalid game material.</text>
+    </string>
+    <string id="ed_st_undefined_mat">
+        <text>Object '%s', surface '%s' contain undefined game material.</text>
+    </string>
+    <string id="ed_st_motion_diff_ver">
+        <text>CustomObject: '%s' - motion has different version. Load failed.</text>
+    </string>
+    <string id="ed_st_sound_src_no_sounds">
+        <text>SoundSource: '%s' has no sounds.</text>
+    </string>
+    <string id="ed_st_same_in_out">
+        <text>SoundEnvironment: '%s' inner and outer environment must be different.</text>
+    </string>
+    <string id="ed_st_no_sound_env">
+        <text>Scene hasn't sound environment geometry.</text>
+    </string>
+    <string id="ed_st_only_one_sector">
+        <text>Please select only one sector.</text>
+    </string>
+    <string id="ed_st_at_least_2_sectors">
+        <text>Select at least 2 sectors.</text>
+    </string>
+    <string id="ed_st_non_associated_face">
+        <text>* ERROR: Scene has non associated face (face without sector)!</text>
+    </string>
+    <string id="ed_st_cant_simplify_portal">
+        <text>Can't simplify Portal!\nPlease check geometry\nfrom '%s' to '%s</text>
+    </string>
+    <string id="ed_st_cant_create_portal_0">
+        <text>Can't create Portal from 0 edge!\nPlease check geometry\nfrom'%s' to'%s'\n</text>
+    </string>
+    <string id="ed_st_cant_create_portal_1">
+        <text>Can't create Portal from one edge!\nPlease check geometry\nfrom '%s' to '%s'</text>
+    </string>
 </string_table>

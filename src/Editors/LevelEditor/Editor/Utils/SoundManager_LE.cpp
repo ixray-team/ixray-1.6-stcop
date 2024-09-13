@@ -8,7 +8,7 @@ bool CLevelSoundManager::Validate()
     for (ObjectIt it=snd_envs.begin(); it!=snd_envs.end(); it++){
     	ESoundEnvironment* E = dynamic_cast<ESoundEnvironment*>(*it); R_ASSERT(E);
         if (E->m_EnvInner==E->m_EnvOuter){ 
-        	ELog.DlgMsg(mtError,"SoundEnvironment: '%s' inner and outer environment must be different.",E->GetName());
+        	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_same_in_out").c_str(), E->GetName());
         	return false;
         }
     }
@@ -16,7 +16,7 @@ bool CLevelSoundManager::Validate()
     for (ObjectIt it=snd_src.begin(); it!=snd_src.end(); it++){
     	ESoundSource* S = dynamic_cast<ESoundSource*>(*it); R_ASSERT(S);
         if (!S->GetSourceWAV()||(0==strlen(S->GetSourceWAV()))){
-        	ELog.DlgMsg(mtError,"SoundSource: '%s' hasn't wave.",S->GetName());
+        	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_sound_src_no_sounds").c_str(), S->GetName());
         	return false;
         } 
     }
@@ -28,7 +28,7 @@ bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
 	ObjectList& snd_envs = Scene->ListObj(OBJCLASS_SOUND_ENV);
 
     if (snd_envs.empty()){ 
-		if (bErrMsg) ELog.Msg(mtError,"Scene hasn't sound environment geometry.");
+		if (bErrMsg) ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_sound_env").c_str());
     	return false;
     }
     

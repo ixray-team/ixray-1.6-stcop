@@ -74,12 +74,12 @@ bool CGroupObject::LL_AppendObject(CCustomObject* object)
 {
     if (!object->CanAttach())
     {
-    	ELog.Msg(mtError,"Can't attach object: '%s'",object->GetName());
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_cant_attach").c_str(), object->GetName());
 	    return false;
     }
     if(object->GetOwner())
     {
-        if (mrNo==ELog.DlgMsg(mtConfirmation,mbYes |mbNo,"Object '%s' already in group '%s'. Change group?",object->GetName(),object->GetOwner()->GetName()))
+        if (mrNo==ELog.DlgMsg(mtConfirmation,mbYes |mbNo,g_pStringTable->translate("ed_st_obj_already_in_group_change_group").c_str(), object->GetName(), object->GetOwner()->GetName()))
         	return false;
             
 	    object->OnDetach();
@@ -106,7 +106,7 @@ bool CGroupObject::AppendObjectLoadCB(CCustomObject* object)
     LPCSTR N = object->GetName();
     if (xr_strcmp(N,buf)!=0)
     {
-       	Msg					("Load_Append name changed from[%s] to[%s]",object->GetName(), buf);
+       	Msg					(g_pStringTable->translate("ed_st_load_append_name_changed").c_str(), object->GetName(), buf);
         object->SetName(buf);
     }
 
@@ -130,7 +130,7 @@ bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
     u32 version = ini.r_u32(sect_name, "version");
     if (version<0x0011)
     {
-        ELog.DlgMsg( mtError, "CGroupObject: unsupported file version. Object can't load.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_group_unsupported_ver").c_str());
         return false;
     }
 	CCustomObject::LoadLTX(ini, sect_name);
@@ -142,7 +142,7 @@ bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	// objects
     if(/*IsOpened()*/ tmp_flags.test((1<<0)))
     {    //old opened group save format
-        ELog.DlgMsg( mtError, "old opened group save format");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_old_group_fmt").c_str());
         return false;
 /*      
         u32 cnt 	= ini.r_u32			(sect_name, "objects_in_group_count");
@@ -164,7 +164,7 @@ bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
    	SetRefName(ini.r_string	(sect_name, "ref_name")) ;
 	if (!m_ReferenceName_.size())
-        ELog.Msg			(mtError,"ERROR: group '%s' - has empty reference. Corrupted file?", GetName());
+        ELog.Msg			(mtError,g_pStringTable->translate("ed_st_group_empty_ref").c_str(), GetName());
     
 
     if(version<0x0012)
@@ -207,7 +207,7 @@ bool CGroupObject::LoadStream(IReader& F)
     R_ASSERT(F.r_chunk(GROUPOBJ_CHUNK_VERSION,&version));
     if (version<0x0011)
     {
-        ELog.DlgMsg( mtError, "CGroupObject: unsupported file version. Object can't load.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_group_unsupported_ver").c_str());
         return false;
     }
 	CCustomObject::LoadStream(F);
@@ -219,7 +219,7 @@ bool CGroupObject::LoadStream(IReader& F)
 	// objects
     if (tmp_flags.test(1<<0))
     { //old format, opened group
-        ELog.DlgMsg( mtError, "old format, opened group");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_old_group_fmt_open").c_str());
         return false;
 /*        
         R_ASSERT(F.find_chunk(GROUPOBJ_CHUNK_OPEN_OBJECT_LIST));
@@ -310,7 +310,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
 {
 	if (!m_ReferenceName_.size())
     {
-        ELog.Msg			(mtError,"ERROR: '%s' - has empty reference.",GetName());
+        ELog.Msg			(mtError,g_pStringTable->translate("ed_st_group_empty_ref_err").c_str(), GetName());
      	return 				false;
     }
 
@@ -369,7 +369,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
         {
         	if(ObjectsInGroupBk.size())
             {
-        		ELog.Msg		(mtError, "Not all objects synchronised correctly", GetName());
+        		ELog.Msg		(mtError, g_pStringTable->translate("ed_st_group_sync_not_all").c_str(), GetName());
                 for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)
                         it->pObject->m_CO_Flags.set(flObjectInGroupUnique, FALSE);
             }else
@@ -383,7 +383,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
         
     }else
     {
-        ELog.Msg		(mtError,"ERROR: Can't open group file: '%s'.",fn.c_str());
+        ELog.Msg		(mtError,g_pStringTable->translate("ed_st_cant_open_group").c_str(), fn.c_str());
     }
     
     return bres;
@@ -393,7 +393,7 @@ bool CGroupObject::UpdateReference(bool bForceReload)
 void CGroupObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
-    PropValue* V		= PHelper().CreateChoose	(items,PrepareKey(pref,"Reference"),&m_ReferenceName_, smGroup); 
+    PropValue* V		= PHelper().CreateChoose	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_reference").c_str()),&m_ReferenceName_, smGroup); 
     V->OnChangeEvent.bind(this,&CGroupObject::ReferenceChange);
 
     ButtonValue* B;
@@ -486,7 +486,7 @@ void CGroupObject::OnSceneUpdate()
     }
     if (m_ObjectsInGroup.empty())
     {
-        ELog.Msg	(mtInformation,"Group '%s' has no objects and will be removed.",GetName());
+        ELog.Msg	(mtInformation,g_pStringTable->translate("ed_st_group_empty").c_str(), GetName());
         DeleteThis	();
     }
 }
@@ -500,7 +500,7 @@ bool CGroupObject::CanUngroup(bool bMsg)
     	ESceneToolBase* tool = Scene->GetTool(it->pObject->FClassID);
     	if ( !tool->IsEditable()  )
         {
-        	if (bMsg) Msg("!.Can't detach object '%s'. Target '%s' in readonly mode.",it->pObject->GetName(), tool->ClassDesc());
+        	if (bMsg) Msg(g_pStringTable->translate("ed_st_cant_detach_readonly").c_str(), it->pObject->GetName(), tool->ClassDesc());
         	res = false;
         }
     }
@@ -514,7 +514,7 @@ void CGroupObject::GroupObjects(ObjectList& lst)
     {
         if (Obj->m_CO_Flags.test(flObjectInGroup))
         {
-            Msg("object[%s] already in group", Obj->GetName());
+            Msg(g_pStringTable->translate("ed_st_obj_already_in_group").c_str(), Obj->GetName());
             continue;
         }
         LL_AppendObject(Obj);

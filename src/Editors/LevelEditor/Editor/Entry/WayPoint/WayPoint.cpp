@@ -485,8 +485,6 @@ void CWayObject::MoveTo(const Fvector& pos, const Fvector& up)
 
 void CWayObject::Move(Fvector& amount)
 {
-    Msg("Move at: %0.1f %0.1f %0.1f", amount.x, amount.y, amount.z);
-
 	if (IsPointMode())
     {
         for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
@@ -539,7 +537,7 @@ bool CWayObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if(version!=WAYOBJECT_VERSION)
     {
-        ELog.DlgMsg	( mtError, "CWayPoint: Unsupported version.");
+        ELog.DlgMsg	( mtError, g_pStringTable->translate("ed_st_wp_unsupported").c_str());
         return 		false;
     }
 
@@ -547,7 +545,7 @@ bool CWayObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if(!GetName())
     {
-     ELog.DlgMsg(mtError,"Corrupted scene file.[%s] sect[%s] has empty name",ini.fname(), sect_name);
+     ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_wp_corrupted").c_str(), ini.fname(), sect_name);
      return false;
     }
 
@@ -651,7 +649,7 @@ bool CWayObject::LoadStream(IReader& F)
     if (!F.find_chunk(WAYOBJECT_CHUNK_VERSION)) return false;
     R_ASSERT(F.r_chunk(WAYOBJECT_CHUNK_VERSION,&version));
     if(version!=WAYOBJECT_VERSION){
-        ELog.DlgMsg( mtError, "CWayPoint: Unsupported version.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_wp_unsupported").c_str());
         return false;
     }
 
@@ -794,7 +792,7 @@ void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
 
     FName = GetName();
     PropValue* V;
-    V = PHelper().CreateNameCB	(items, PrepareKey(pref, "Way Name"),&FName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
+    V = PHelper().CreateNameCB	(items, PrepareKey(pref, g_pStringTable->translate("ed_st_way_name").c_str()),&FName,NULL,NULL,RTextValue::TOnAfterEditEvent(this,&CCustomObject::OnObjectNameAfterEdit));
     V->OnChangeEvent.bind(this, &CWayObject::OnNameChange);
 
 	if(IsPointMode())
@@ -804,14 +802,14 @@ void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
         	CWayPoint* W = *it;
             if ((*it)->m_bSelected)
             {
-            	PHelper().CreateNameCB	(items, PrepareKey(pref,"Way Point\\Name"),&W->m_Name,0,0, RTextValue::TOnAfterEditEvent(this,&CWayObject::OnWayPointNameAfterEdit));
-                PHelper().CreateVector	(items, PrepareKey(pref,"Way Point\\Transform\\Position"),	&W->m_vPosition,	-10000,	10000, 0.01, 2);
+            	PHelper().CreateNameCB	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wp_name").c_str()),&W->m_Name,0,0, RTextValue::TOnAfterEditEvent(this,&CWayObject::OnWayPointNameAfterEdit));
+                PHelper().CreateVector	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wp_position").c_str()),	&W->m_vPosition,	-10000,	10000, 0.01, 2);
                 
                 for (WPLIt l_it=W->m_Links.begin(); l_it!=W->m_Links.end(); l_it++)
-                    PHelper().CreateFloat	(items,	PrepareKey(pref,"Way Point\\Links",*(*l_it)->way_point->m_Name),&(*l_it)->probability);
+                    PHelper().CreateFloat	(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_wp_links").c_str(), *(*l_it)->way_point->m_Name), &(*l_it)->probability);
                     
                 for (int k=0; k<32; k++)
-                    PHelper().CreateFlag32(items,	PrepareKey(pref,"Way Point\\Flags",xr_string::ToString(k).c_str()),	&W->m_Flags,	1<<k);
+                    PHelper().CreateFlag32(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_wp_flags").c_str(), xr_string::ToString(k).c_str()), &W->m_Flags, 1 << k);
             }
     	}
     }

@@ -51,7 +51,7 @@ CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 		if (LUI->GetEState() == esEditLibrary)
 			UIEditLibrary::Show();
 		else
-			ELog.DlgMsg(mtError, "! Scene must be empty before editing library!");
+			ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_must_be_empty").c_str());
 	}
 	else
 		UIEditLibrary::Show();
