@@ -725,6 +725,11 @@ void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameO
 		FS.file_list(fset, "$game_meshes$", FS_ListFiles, pathOmf);
 		FS.file_list(fset, "$level$", FS_ListFiles, pathOmf);
 
+		if (fset.size() == 0)
+		{
+			return;
+		}
+
 		m_Motions.reserve(fset.size() - 1);
 
 		for (auto& it : fset)
