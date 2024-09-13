@@ -3,12 +3,14 @@
 #include "UIXmlInit.h"
 #include "UIStatic.h"
 #include "UIDoubleProgressBar.h"
+#include "UIHelper.h"
 
 #include "../CustomOutfit.h"
 #include "../ActorHelmet.h"
 #include "../Actor.h"
 #include "../ActorCondition.h"
 #include "../player_hud.h"
+#include "../../xrEngine/string_table.h"
 
 
 LPCSTR immunity_names[]=
@@ -20,8 +22,6 @@ LPCSTR immunity_names[]=
 	"telepatic_immunity",
 	"wound_immunity",		
 	"fire_wound_immunity",
-//	"strike_immunity",
-//	"explosion_immunity",
 };
 
 LPCSTR immunity_st_names[]=
@@ -33,15 +33,14 @@ LPCSTR immunity_st_names[]=
 	"ui_inv_outfit_telepatic_protection",
 	"ui_inv_outfit_wound_protection",
 	"ui_inv_outfit_fire_wound_protection",
-//	"ui_inv_outfit_strike_protection",
-//	"ui_inv_outfit_explosion_protection",
 };
 
 CUIOutfitImmunity::CUIOutfitImmunity()
 {
-	AttachChild( &m_name );
-	AttachChild( &m_progress );
-	AttachChild( &m_value );
+	AttachChild(&m_name);
+	AttachChild(&m_progress);
+	m_unit_str._set("");
+	m_value = nullptr;
 	m_magnitude = 1.0f;
 }
 
@@ -64,20 +63,30 @@ void CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_t
 	m_progress.InitFromXml( xml_doc, buf );
 	
 	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":static_value" );
-	m_value.SetVisible( false );
+	m_value = UIHelper::CreateTextWnd(xml_doc, buf, this);
 
 	m_magnitude = xml_doc.ReadAttribFlt( buf, 0, "magnitude", 1.0f );
+
+	LPCSTR unit_str = xml_doc.ReadAttrib(buf, 0, "unit_str", "");
+	m_unit_str._set(g_pStringTable->translate(unit_str));
 }
 
-void CUIOutfitImmunity::SetProgressValue( float cur, float comp )
+void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 {
-	cur  *= m_magnitude;
+	cur *= m_magnitude;
 	comp *= m_magnitude;
-	m_progress.SetTwoPos( cur, comp );
+	m_progress.SetTwoPos(cur, comp);
+
 	string32 buf;
-//	xr_sprintf( buf, sizeof(buf), "%d %%", (int)cur );
-	xr_sprintf( buf, sizeof(buf), "%.0f", cur );
-	m_value.SetText( buf );
+	xr_sprintf(buf, "%.0f", cur);
+
+	string256 str;
+	if (m_unit_str.size())
+		xr_strconcat(str, buf, m_unit_str.c_str());
+	else
+		xr_strconcat(str, buf);
+
+	m_value->SetText(str);
 }
 
 // ===========================================================================================

@@ -177,4 +177,7 @@
     <string id="renderer_r4_dx10">
         <text>Enhanced full dyn. lighting (DX10)</text>
     </string>
+    <string id="st_proc">
+        <text>%</text>
+    </string>
 </string_table>
