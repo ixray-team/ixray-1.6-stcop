@@ -204,7 +204,27 @@ bool CreateD3D11(bool ReturnToDX10)
 			if (SUCCEEDED(((ID3D11Device*)HWRenderDevice)->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&infoQueue)))
 			{
 				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+
+				D3D11_MESSAGE_SEVERITY Severities[] =
+				{
+					D3D11_MESSAGE_SEVERITY_INFO
+				};
+
+				// Suppress individual messages by their ID
+				D3D11_MESSAGE_ID DenyIds[] = {
+					D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET,
+				};
+
+				D3D11_INFO_QUEUE_FILTER NewFilter = {};
+				NewFilter.DenyList.NumSeverities = _countof(Severities);
+				NewFilter.DenyList.pSeverityList = Severities;
+				NewFilter.DenyList.NumIDs = _countof(DenyIds);
+				NewFilter.DenyList.pIDList = DenyIds;
+
+
+				infoQueue->PushStorageFilter(&NewFilter);
 				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_WARNING, true);
+				infoQueue->SetBreakOnID(D3D11_MESSAGE_ID_DEVICE_DRAW_RENDERTARGETVIEW_NOT_SET, false);
 			}
 		}
 	}

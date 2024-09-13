@@ -14,7 +14,7 @@ struct vf
 	float4 tctexgen : TEXCOORD7;
 	float3 pos : TEXCOORD8;
 	float4 c0 : COLOR0;
-	float4 hpos : SV_Position;
+	float4 hpos : SV_POSITION;
 };
 
 uniform float3 water_intensity;
@@ -33,7 +33,7 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 }
 
 // Pixel
-float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
+float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 {
 	float4 base = s_base.Sample(smp_base, I.tbase);
 	

@@ -5,7 +5,7 @@
 // Note: this is a float-sphere
 uniform float3 direction;
 
-float4 main(float4 tc : TEXCOORD0, float4 pos2d : SV_Position) : SV_Target
+float4 main(float4 tc : TEXCOORD0, float4 pos2d : SV_POSITION) : SV_Target
 {
     //  float4 _P		= tex2Dproj 	(s_position, 	tc);
     //  float4 _N		= tex2Dproj 	(s_normal,   	tc);

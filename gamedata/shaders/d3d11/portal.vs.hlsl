@@ -10,7 +10,7 @@ struct v2p
 {
     float4 c : COLOR0;
     float fog : FOG;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 v2p main(v_vert v)

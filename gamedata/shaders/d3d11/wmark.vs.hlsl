@@ -6,7 +6,7 @@ struct vf
     float2 tc0 : TEXCOORD0;
     float3 c0 : COLOR0; // c0=all lighting
     float fog : FOG;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 vf main(v_static v)

@@ -6,7 +6,7 @@ struct VSInput
 
 struct VSOutput
 {
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
     float2 texcoord : TEXCOORD0;
 };
 
