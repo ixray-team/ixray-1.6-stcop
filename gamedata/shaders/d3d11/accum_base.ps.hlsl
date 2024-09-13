@@ -23,10 +23,10 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
     float3 Lightmap = ComputeLightAttention(Point.xyz - Ldynamic_pos.xyz, Ldynamic_pos.w);
     Point.xyz += O.Normal * 0.025f;
 
-    float4 PS = mul(m_shadow, float4(O.Point.xyz, 1.0f));
+    float4 PS = mul(m_shadow, Point);
 
 #ifdef USE_SHADOW
-    Lightmap *= shadow(PS);
+    Lightmap *= max(Ldynamic_hud, shadow(PS));
 
     #ifdef USE_HUD_SHADOWS
     if (O.Depth < 0.02f && dot(Lightmap.xyz, Light.xyz) > 0.0001f)
