@@ -87,7 +87,9 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 		}
 
 		C.r_End();
-	} else {
+	} 
+	else 
+	{
 		switch (C.iElement)
 		{
 		case SE_R1_NORMAL_HQ:
