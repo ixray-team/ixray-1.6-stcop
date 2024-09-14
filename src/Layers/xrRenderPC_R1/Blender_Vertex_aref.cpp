@@ -76,7 +76,16 @@ void	CBlender_Vertex_aref::Compile(CBlender_Compile& C)
 		//}
 		//C.PassEnd			();
 
-		uber_deffer(C, true, "deffer_base", "deffer_base", oBlend.value, 0, true);
+		if (!!oBlend.value) {
+			RImplementation.addShaderOption("FORWARD_ONLY", "1");
+		}
+		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, 0, true);
+		
+		if(!!oBlend.value) 
+		{
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+		}
+
 		C.r_End();
 	} else {
 		switch (C.iElement)
