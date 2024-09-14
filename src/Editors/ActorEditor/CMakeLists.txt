@@ -4,6 +4,8 @@ project(ActorEditor)
 file(GLOB EAE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
+    "*.ico"
+    "*.rc"
 )
 
 file(GLOB EAE_SOURCE_UI_FILES CONFIGURE_DEPENDS "UI*.*")
