@@ -51,7 +51,7 @@ struct SAINode					// definition of "patch" or "node"
 	void		PointRB	(Fvector& D, float patch_size);
 	void		PointBL	(Fvector& D, float patch_size);
 
-    void   		LoadStream			(IReader&, ESceneAIMapTool*);
+    void   		LoadStream			(IReader&, ESceneAIMapTool*, u16 version);
     void   		SaveStream			(IWriter&, ESceneAIMapTool*);
     void   		LoadLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
     void   		SaveLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
