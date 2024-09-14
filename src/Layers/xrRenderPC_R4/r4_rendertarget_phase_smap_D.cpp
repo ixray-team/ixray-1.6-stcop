@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 {
-	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+	u_setrt(nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
 	RContext->ClearDepthStencilView(rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
 
 	//	Prepare viewport for shadow map rendering
