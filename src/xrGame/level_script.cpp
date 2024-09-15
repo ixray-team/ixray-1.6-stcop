@@ -964,6 +964,15 @@ void RenderSpawnManagerWindow()
 	}
 }
 
+struct 
+{
+	bool init{};
+	u32 inv_cost{};
+	float inv_weight{};
+
+}
+imgui_weapon_manager;
+
 void RenderWeaponManagerWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WeaponManager)])
@@ -978,6 +987,14 @@ void RenderWeaponManagerWindow()
 	auto draw_item = [](CInventoryItem* pItem) {
 		if (pItem)
 		{
+			if (!imgui_weapon_manager.init)
+			{
+				imgui_weapon_manager.inv_cost = pItem->Cost();
+				imgui_weapon_manager.inv_weight = pItem->Weight();
+				imgui_weapon_manager.init = true;
+			}
+
+
 			if (ImGui::CollapsingHeader("Information"))
 			{
 				ImGui::SeparatorText("Inventory information");
