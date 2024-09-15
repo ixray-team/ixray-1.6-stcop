@@ -3,7 +3,7 @@
 
 
 class CStateMonsterSteal : public CState {
-	typedef CStateinherited;
+	typedef CState inherited;
 
 public:
 						CStateMonsterSteal		(CBaseMonster*obj);

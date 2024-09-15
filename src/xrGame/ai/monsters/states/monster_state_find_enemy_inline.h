@@ -6,12 +6,12 @@
 #include "monster_state_find_enemy_look.h"
 
 
-CStateMonsterFindEnemy::CStateMonsterFindEnemy(CBaseMonster *obj) : inherited(obj)
+CStateMonsterFindEnemy::CStateMonsterFindEnemy(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateFindEnemy_Run,			xr_new<CStateMonsterFindEnemyRun<CBaseMonster> >			(obj));
-	this->add_state	(eStateFindEnemy_LookAround,	xr_new<CStateMonsterFindEnemyLook<CBaseMonster> >		(obj));
-	this->add_state	(eStateFindEnemy_Angry,			xr_new<CStateMonsterFindEnemyAngry<CBaseMonster> >		(obj));
-	this->add_state	(eStateFindEnemy_WalkAround,	xr_new<CStateMonsterFindEnemyWalkAround<CBaseMonster> >	(obj));
+	this->add_state(eStateFindEnemy_Run, xr_new<CStateMonsterFindEnemyRun>(obj));
+	this->add_state(eStateFindEnemy_LookAround, xr_new<CStateMonsterFindEnemyLook>(obj));
+	this->add_state(eStateFindEnemy_Angry, xr_new<CStateMonsterFindEnemyAngry>(obj));
+	this->add_state(eStateFindEnemy_WalkAround, xr_new<CStateMonsterFindEnemyWalkAround>(obj));
 }
 
 

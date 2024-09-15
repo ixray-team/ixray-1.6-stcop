@@ -6,8 +6,8 @@
 
 CStateMonsterHearHelpSound::CStateMonsterHearHelpSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearHelpSound_MoveToDest,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
-	this->add_state	(eStateHearHelpSound_LookAround,	xr_new<CStateMonsterCustomActionLook<CBaseMonster> >(obj));
+	this->add_state	(eStateHearHelpSound_MoveToDest,	xr_new<CStateMonsterMoveToPointEx>(obj));
+	this->add_state	(eStateHearHelpSound_LookAround,	xr_new<CStateMonsterCustomActionLook>(obj));
 }
 
 bool CStateMonsterHearHelpSound::check_start_conditions()

@@ -1,7 +1,7 @@
 #pragma once
 #include "../state.h"
 
-class CStateMonsterTestState : public CStat {
+class CStateMonsterTestState : public CState {
 	typedef CState inherited;
 	typedef CState *state_ptr;
 

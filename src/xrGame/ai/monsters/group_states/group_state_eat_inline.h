@@ -14,17 +14,18 @@
 #define TIME_NOT_HUNGRY 20000
 
 
-CStateGroupEat::CStateGroupEat(CBaseMonster *obj) : inherited(obj)
+CStateGroupEat::CStateGroupEat(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
-	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<CBaseMonster >	(obj));
-	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
-	this->add_state	(eStateEat_Eat,					xr_new<CStateGroupEating<CBaseMonster> >		(obj));
-	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
-	this->add_state	(eStateEat_Drag,				xr_new<CStateGroupDrag<CBaseMonster> >				(obj));
-	this->add_state	(eStateCustom,					xr_new<CStateCustomGroup<CBaseMonster> >			(obj));
+	this->add_state(eStateEat_CorpseApproachRun, xr_new<CStateMonsterMoveToPoint>(obj));
+	this->add_state(eStateEat_CorpseApproachWalk, xr_new<CStateMonsterMoveToPoint>(obj));
+	this->add_state(eStateEat_CheckCorpse, xr_new<CStateMonsterCustomAction>(obj));
+	this->add_state(eStateEat_Eat, xr_new<CStateGroupEating>(obj));
+	this->add_state(eStateEat_WalkAway, xr_new<CStateMonsterHideFromPoint>(obj));
+	this->add_state(eStateEat_Rest, xr_new<CStateMonsterCustomAction>(obj));
+	this->add_state(eStateEat_Drag, xr_new<CStateGroupDrag>(obj));
+	this->add_state(eStateCustom, xr_new<CStateCustomGroup>(obj));
 }
+
 
 
 CStateGroupEat::~CStateGroupEat()

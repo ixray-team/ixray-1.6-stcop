@@ -4,8 +4,8 @@
 
 CStateBloodsuckerVampireHide::CStateBloodsuckerVampireHide(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateVampire_RunAway,		xr_new<CStateMonsterHideFromPoint<_Object> >	(obj));
-	this->add_state	(eStatePredator,			xr_new<CStateBloodsuckerPredator<_Object> >		(obj));
+	this->add_state	(eStateVampire_RunAway,		xr_new<CStateMonsterHideFromPoint>	(obj));
+	this->add_state	(eStatePredator,			xr_new<CStateBloodsuckerPredator >		(obj));
 }
 
 void CStateBloodsuckerVampireHide::reselect_state()

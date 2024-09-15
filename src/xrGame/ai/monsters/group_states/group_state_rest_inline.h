@@ -12,15 +12,16 @@
 #include "group_state_custom.h"
 
 
-CStateGroupRest::CStateGroupRest(CBaseMonster*obj) : inherited(obj)
+CStateGroupRest::CStateGroupRest(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateRest_Sleep,				xr_new<CStateMonsterRestSleep<CBaseMonster> >			(obj));
-	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<CBaseMonster> >		(obj));
-	this->add_state(eStateRest_MoveToHomePoint,	xr_new<CStateMonsterRestMoveToHomePoint<CBaseMonster> >	(obj));
-	this->add_state(eStateSmartTerrainTask,		xr_new<CStateMonsterSmartTerrainTask<CBaseMonster> >		(obj));
-	this->add_state(eStateRest_Idle,				xr_new<CStateGroupRestIdle<CBaseMonster> >					(obj));
-	this->add_state(eStateCustom,					xr_new<CStateCustomGroup<CBaseMonster> >					(obj));
+	this->add_state(eStateRest_Sleep, xr_new<CStateMonsterRestSleep>(obj));
+	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor>(obj));
+	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint>(obj));
+	this->add_state(eStateSmartTerrainTask, xr_new<CStateMonsterSmartTerrainTask>(obj));
+	this->add_state(eStateRest_Idle, xr_new<CStateGroupRestIdle>(obj));
+	this->add_state(eStateCustom, xr_new<CStateCustomGroup>(obj));
 }
+
 
 
 CStateGroupRest::~CStateGroupRest	()

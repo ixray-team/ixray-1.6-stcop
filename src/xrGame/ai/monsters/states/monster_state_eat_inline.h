@@ -14,15 +14,15 @@
 #	include "../../../level_debug.h"
 #endif
 
-CStateMonsterEat::CStateMonsterEat(CBaseMonster*obj) : inherited(obj)
+CStateMonsterEat::CStateMonsterEat(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_Eat,					xr_new<CStateMonsterEating<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<CBaseMonster> >(obj));
-	this->add_state	(eStateEat_Drag,				xr_new<CStateMonsterDrag<CBaseMonster> >(obj));
+	this->add_state(eStateEat_CorpseApproachRun, xr_new<CStateMonsterMoveToPoint>(obj));
+	this->add_state(eStateEat_CorpseApproachWalk, xr_new<CStateMonsterMoveToPoint>(obj));
+	this->add_state(eStateEat_CheckCorpse, xr_new<CStateMonsterCustomAction>(obj));
+	this->add_state(eStateEat_Eat, xr_new<CStateMonsterEating>(obj));
+	this->add_state(eStateEat_WalkAway, xr_new<CStateMonsterHideFromPoint>(obj));
+	this->add_state(eStateEat_Rest, xr_new<CStateMonsterCustomAction>(obj));
+	this->add_state(eStateEat_Drag, xr_new<CStateMonsterDrag>(obj));
 }
 
 
@@ -257,6 +257,3 @@ void CStateMonsterEat::remove_links	(CObject* object_)
 	if (corpse == object_)
 		corpse	= 0;
 }
-
-#undef 
-#undef CStateMonsterEat

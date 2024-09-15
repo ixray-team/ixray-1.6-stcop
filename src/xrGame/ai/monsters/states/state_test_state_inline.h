@@ -7,7 +7,7 @@
 
 CStateMonsterTestState::CStateMonsterTestState(CBaseMonster*obj) : inherited(obj)
 {
-	add_state(eStateCustom,xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
+	add_state(eStateCustom,xr_new<CStateMonsterMoveToPointEx>(obj));
 }
 
 
@@ -51,10 +51,10 @@ void CStateMonsterTestState::setup_substates()
 }
 
 
-CStateMonsterTestCover::CStateMonsterTestCover(_Object *obj) : inherited(obj) 
+CStateMonsterTestCover::CStateMonsterTestCover(CBaseMonster *obj) : inherited(obj) 
 {
-	this->add_state(eStateAttack_HideInCover,xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
-	this->add_state(eStateAttack_CampInCover,xr_new<CStateMonsterCustomAction<_Object> >(obj));
+	this->add_state(eStateAttack_HideInCover,xr_new<CStateMonsterMoveToPointEx>(obj));
+	this->add_state(eStateAttack_CampInCover,xr_new<CStateMonsterCustomAction >(obj));
 }
 
 void CStateMonsterTestCover::initialize()

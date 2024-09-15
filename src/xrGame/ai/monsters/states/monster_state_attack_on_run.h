@@ -9,7 +9,7 @@ inline
 TTime   current_time () { return Device.dwTimeGlobal; }
 
 class CStateMonsterAttackOnRun : public CState {
-	typedef CStateinherited;
+	typedef CState inherited;
 
 public:
 					CStateMonsterAttackOnRun		(CBaseMonster *obj);

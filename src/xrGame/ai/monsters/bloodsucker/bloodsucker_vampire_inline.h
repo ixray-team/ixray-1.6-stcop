@@ -9,10 +9,10 @@
 
 CStateBloodsuckerVampire::CStateBloodsuckerVampire(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateVampire_ApproachEnemy,	xr_new<CStateBloodsuckerVampireApproach<_Object> >	(obj));
-	this->add_state	(eStateVampire_Execute,			xr_new<CStateBloodsuckerVampireExecute<_Object> >	(obj));
-	this->add_state	(eStateVampire_RunAway,			xr_new<CStateMonsterHideFromPoint<_Object> >		(obj));
-	this->add_state	(eStateVampire_Hide,			xr_new<CStateBloodsuckerVampireHide<_Object> >		(obj));
+	this->add_state	(eStateVampire_ApproachEnemy,	xr_new<CStateBloodsuckerVampireApproach>	(obj));
+	this->add_state	(eStateVampire_Execute,			xr_new<CStateBloodsuckerVampireExecute>	(obj));
+	this->add_state	(eStateVampire_RunAway,			xr_new<CStateMonsterHideFromPoint>		(obj));
+	this->add_state	(eStateVampire_Hide,			xr_new<CStateBloodsuckerVampireHide>		(obj));
 }
 
 void CStateBloodsuckerVampire::reinit()

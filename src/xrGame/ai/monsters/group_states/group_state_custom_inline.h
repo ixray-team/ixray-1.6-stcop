@@ -6,7 +6,7 @@
 
 CStateCustomGroup::CStateCustomGroup(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
+	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction>		(obj));
 }
 
 

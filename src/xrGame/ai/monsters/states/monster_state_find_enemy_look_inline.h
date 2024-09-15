@@ -5,13 +5,12 @@
 #include "state_custom_action.h"
 
 
-CStateMonsterFindEnemyLook::CStateMonsterFindEnemyLook(CBaseMonster *obj) : inherited(obj)
+CStateMonsterFindEnemyLook::CStateMonsterFindEnemyLook(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateFindEnemy_LookAround_MoveToPoint,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
-	this->add_state	(eStateFindEnemy_LookAround_LookAround,		xr_new<CStateMonsterCustomAction<CBaseMonster> > (obj));
-	this->add_state	(eStateFindEnemy_LookAround_TurnToPoint,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >	(obj));
+	this->add_state(eStateFindEnemy_LookAround_MoveToPoint, xr_new<CStateMonsterMoveToPoint>(obj));
+	this->add_state(eStateFindEnemy_LookAround_LookAround, xr_new<CStateMonsterCustomAction>(obj));
+	this->add_state(eStateFindEnemy_LookAround_TurnToPoint, xr_new<CStateMonsterLookToPoint>(obj));
 }
-
 
 CStateMonsterFindEnemyLook::~CStateMonsterFindEnemyLook()
 {

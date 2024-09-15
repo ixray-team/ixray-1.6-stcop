@@ -10,9 +10,9 @@
 
 CStateMonsterPanic::CStateMonsterPanic(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStatePanic_Run,					xr_new<CStateMonsterPanicRun<CBaseMonster> >(obj));
-	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<CBaseMonster> >(obj));
-	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_Run,					xr_new<CStateMonsterPanicRun>(obj));
+	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea>(obj));
+	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint>(obj));
 }
 
 

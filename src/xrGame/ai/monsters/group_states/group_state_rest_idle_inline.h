@@ -6,15 +6,13 @@
 #include "../monster_cover_manager.h"
 #include "../states/state_custom_action.h"
 
-
-CStateGroupRestIdle::CStateGroupRestIdle(CBaseMonster*obj) : inherited(obj)
+CStateGroupRestIdle::CStateGroupRestIdle(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
-	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
-	this->add_state	(eStateRest_WalkGraphPoint,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
-	this->add_state	(eStateCustom,				xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
+	this->add_state(eStateRest_WalkToCover, xr_new<CStateMonsterMoveToPointEx>(obj));
+	this->add_state(eStateRest_LookOpenPlace, xr_new<CStateMonsterLookToPoint>(obj));
+	this->add_state(eStateRest_WalkGraphPoint, xr_new<CStateMonsterMoveToPointEx>(obj));
+	this->add_state(eStateCustom, xr_new<CStateMonsterCustomAction>(obj));
 }
-
 
 void CStateGroupRestIdle::initialize()
 {

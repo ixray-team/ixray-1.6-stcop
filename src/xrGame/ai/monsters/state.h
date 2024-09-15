@@ -8,6 +8,8 @@
 #include "debug_text_tree.h"
 #endif
 
+#include "basemonster/base_monster.h"
+
 class CState 
 {
 	typedef CState CSState;

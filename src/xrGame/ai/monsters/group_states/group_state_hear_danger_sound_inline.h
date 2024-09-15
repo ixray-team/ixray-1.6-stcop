@@ -13,9 +13,9 @@
 
 CStateGroupHearDangerousSound::CStateGroupHearDangerousSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >		(obj));
-	this->add_state	(eStateSquad,								xr_new<CStateMonsterMoveToPoint<CBaseMonster> >			(obj));
-	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<CBaseMonster> >(obj));
+	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterMoveToPointEx>		(obj));
+	this->add_state	(eStateSquad,								xr_new<CStateMonsterMoveToPoint>			(obj));
+	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint>(obj));
 }
 
 

@@ -24,8 +24,8 @@ namespace dog
 
 CStateGroupAttackMoveToHomePoint::CStateGroupAttackMoveToHomePoint(CBaseMonster *obj) : inherited(obj) 
 {
-	this->add_state	(eStateAttack_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
-	this->add_state	(eStateAttack_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
+	this->add_state	(eStateAttack_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx>	(obj));
+	this->add_state	(eStateAttack_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint>		(obj));
 
 	m_last_tick_enemy_inaccessible	=	0;
 	m_first_tick_enemy_inaccessible	=	0;

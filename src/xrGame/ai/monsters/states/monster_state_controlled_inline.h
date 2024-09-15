@@ -5,8 +5,8 @@
 
 CStateMonsterControlled::CStateMonsterControlled(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateControlled_Attack,		xr_new<CStateMonsterControlledAttack<CBaseMonster> >	(obj));
-	this->add_state	(eStateControlled_Follow,		xr_new<CStateMonsterControlledFollow<CBaseMonster> >	(obj));
+	this->add_state	(eStateControlled_Attack,		xr_new<CStateMonsterControlledAttack >	(obj));
+	this->add_state	(eStateControlled_Follow,		xr_new<CStateMonsterControlledFollow >	(obj));
 }
 
 void CStateMonsterControlled::execute()

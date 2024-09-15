@@ -77,14 +77,14 @@ bool CStateGroupSquadMoveToRadiusEx::check_completion()
 //////////////////////////////////////////////////////////////////////////
 
 
-void CStateGroupSquadMoveToRadiusAbstract::initialize()
+void CStateGroupSquadMoveToRadius::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();	
 }
 
 
-void CStateGroupSquadMoveToRadiusAbstract::execute()
+void CStateGroupSquadMoveToRadius::execute()
 {
 	Fvector m_enemy_position = this->object->EnemyMan.get_enemy()->Position();
 
@@ -120,7 +120,7 @@ void CStateGroupSquadMoveToRadiusAbstract::execute()
 }
 
 
-bool CStateGroupSquadMoveToRadiusAbstract::check_completion()
+bool CStateGroupSquadMoveToRadius::check_completion()
 {	
 	if (data.action.time_out !=0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;

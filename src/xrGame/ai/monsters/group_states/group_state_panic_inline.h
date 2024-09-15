@@ -6,12 +6,13 @@
 #include "group_state_panic_run.h"
 #include "../states/monster_state_home_point_attack.h"
 
-CStateGroupPanic::CStateGroupPanic(CBaseMonster*obj) : inherited(obj)
+CStateGroupPanic::CStateGroupPanic(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStatePanic_Run,					xr_new<CStateGroupPanicRun<CBaseMonster> >(obj));
-	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<CBaseMonster> >(obj));
-	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_Run, xr_new<CStateGroupPanicRun>(obj));
+	this->add_state(eStatePanic_FaceUnprotectedArea, xr_new<CStateMonsterLookToUnprotectedArea>(obj));
+	this->add_state(eStatePanic_MoveToHomePoint, xr_new<CStateMonsterAttackMoveToHomePoint>(obj));
 }
+
 
 
 CStateGroupPanic::~CStateGroupPanic()

@@ -11,9 +11,9 @@
 
 CStateMonsterRestIdle::CStateMonsterRestIdle(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
-	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
-	this->add_state	(eStateRest_Idle,			xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
+	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx>	(obj));
+	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint>		(obj));
+	this->add_state	(eStateRest_Idle,			xr_new<CStateMonsterCustomAction>		(obj));
 }
 
 

@@ -16,8 +16,8 @@
 
 CStateMonsterSquadRest::CStateMonsterSquadRest(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateSquad_Rest_Idle,				xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
-	this->add_state	(eStateSquad_Rest_WalkAroundLeader,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
+	this->add_state	(eStateSquad_Rest_Idle,				xr_new<CStateMonsterCustomAction>	(obj));
+	this->add_state	(eStateSquad_Rest_WalkAroundLeader,	xr_new<CStateMonsterMoveToPoint>	(obj));
 }
 
 CStateMonsterSquadRest::~CStateMonsterSquadRest	()

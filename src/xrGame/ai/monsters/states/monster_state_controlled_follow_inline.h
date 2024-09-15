@@ -10,8 +10,8 @@
 
 CStateMonsterControlledFollow::CStateMonsterControlledFollow(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateControlled_Follow_Wait,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
-	this->add_state	(eStateControlled_Follow_WalkToObject,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
+	this->add_state	(eStateControlled_Follow_Wait,			xr_new<CStateMonsterCustomAction>	(obj));
+	this->add_state	(eStateControlled_Follow_WalkToObject,	xr_new<CStateMonsterMoveToPointEx >(obj));
 }
 
 void CStateMonsterControlledFollow::reselect_state()

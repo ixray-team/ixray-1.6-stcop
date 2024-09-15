@@ -5,7 +5,7 @@
 
 CStateCaptureJumpBloodsucker::CStateCaptureJumpBloodsucker(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction>		(obj));
 }
 
 CStateCaptureJumpBloodsucker::~CStateCaptureJumpBloodsucker	()

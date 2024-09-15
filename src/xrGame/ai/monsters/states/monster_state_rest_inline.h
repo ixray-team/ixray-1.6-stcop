@@ -17,19 +17,18 @@
 #define TIME_IDLE		60000
 
 
-CStateMonsterRest::CStateMonsterRest(CBaseMonster*obj) : inherited(obj)
+CStateMonsterRest::CStateMonsterRest(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateRest_Sleep,			xr_new<CStateMonsterRestSleep<CBaseMonster> >	(obj));
-	this->add_state(eStateRest_WalkGraphPoint,xr_new<CStateMonsterRestWalkGraph<CBaseMonster> >(obj));
-	this->add_state(eStateRest_Idle,			xr_new<CStateMonsterRestIdle<CBaseMonster> >		(obj));
-	this->add_state(eStateRest_Fun,			xr_new<CStateMonsterRestFun<CBaseMonster> >		(obj));
-	this->add_state(eStateSquad_Rest,			xr_new<CStateMonsterSquadRest<CBaseMonster> >	(obj));
-	this->add_state(eStateSquad_RestFollow,	xr_new<CStateMonsterSquadRestFollow<CBaseMonster> >(obj));
-	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<CBaseMonster> > (obj));
-	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint<CBaseMonster> > (obj));
-	this->add_state(eStateSmartTerrainTask, xr_new<CStateMonsterSmartTerrainTask<CBaseMonster> > (obj));
+	this->add_state(eStateRest_Sleep, xr_new<CStateMonsterRestSleep>(obj));
+	this->add_state(eStateRest_WalkGraphPoint, xr_new<CStateMonsterRestWalkGraph>(obj));
+	this->add_state(eStateRest_Idle, xr_new<CStateMonsterRestIdle>(obj));
+	this->add_state(eStateRest_Fun, xr_new<CStateMonsterRestFun>(obj));
+	this->add_state(eStateSquad_Rest, xr_new<CStateMonsterSquadRest>(obj));
+	this->add_state(eStateSquad_RestFollow, xr_new<CStateMonsterSquadRestFollow>(obj));
+	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor>(obj));
+	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint>(obj));
+	this->add_state(eStateSmartTerrainTask, xr_new<CStateMonsterSmartTerrainTask>(obj));
 }
-
 
 CStateMonsterRest::~CStateMonsterRest	()
 {

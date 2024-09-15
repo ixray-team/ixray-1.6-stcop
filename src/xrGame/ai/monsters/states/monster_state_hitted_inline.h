@@ -7,9 +7,9 @@
 
 CStateMonsterHitted::CStateMonsterHitted(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHitted_Hide,		xr_new<CStateMonsterHittedHide<CBaseMonster> >(obj));
-	this->add_state	(eStateHitted_MoveOut,	xr_new<CStateMonsterHittedMoveOut<CBaseMonster> >(obj));
-	this->add_state	(eStateHitted_Home,		xr_new<CStateMonsterDangerMoveToHomePoint<CBaseMonster> >(obj));
+	this->add_state	(eStateHitted_Hide,		xr_new<CStateMonsterHittedHide >(obj));
+	this->add_state	(eStateHitted_MoveOut,	xr_new<CStateMonsterHittedMoveOut >(obj));
+	this->add_state	(eStateHitted_Home,		xr_new<CStateMonsterDangerMoveToHomePoint>(obj));
 }
 
 

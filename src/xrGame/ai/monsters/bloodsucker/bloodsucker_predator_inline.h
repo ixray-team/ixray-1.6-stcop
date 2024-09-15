@@ -13,9 +13,9 @@
 
 CStateBloodsuckerPredator::CStateBloodsuckerPredator(CBaseMonster *obj) : inherited(obj)
 {
-	add_state	(eStatePredator_MoveToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
-	add_state	(eStatePredator_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >	(obj));
-	add_state	(eStatePredator_Camp,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	add_state	(eStatePredator_MoveToCover,	xr_new<CStateMonsterMoveToPointEx >(obj));
+	add_state	(eStatePredator_LookOpenPlace,	xr_new<CStateMonsterLookToPoint>	(obj));
+	add_state	(eStatePredator_Camp,			xr_new<CStateMonsterCustomAction>	(obj));
 }
 
 void CStateBloodsuckerPredator::reinit()

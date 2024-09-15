@@ -15,8 +15,8 @@
 
 CBloodsuckerStateAttackHide::CBloodsuckerStateAttackHide(CBaseMonster *obj) : inherited(obj)
 {
-	add_state	(eStateAttack_HideInCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
-	add_state	(eStateAttack_CampInCover,	xr_new<CStateBloodsuckerPredatorLite<CBaseMonster> >	(obj));
+	add_state	(eStateAttack_HideInCover,	xr_new<CStateMonsterMoveToPointEx>(obj));
+	add_state	(eStateAttack_CampInCover,	xr_new<CStateBloodsuckerPredatorLite>	(obj));
 }
 
 void CBloodsuckerStateAttackHide::reinit()
