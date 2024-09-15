@@ -223,8 +223,7 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	rain_width			= 0.3f;
 	rain_speed_min		= 40.0f;
 	rain_speed_max		= 80.0f;
-	rain_volume_coefficient = 0.0f;
-	rain_additional_angle_coefficient = 0.0f;
+	rain_angle_rotation = 0.f;
 
 	bolt_period			= 0.0f;
 	bolt_duration		= 0.0f;
@@ -291,10 +290,8 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	rain_speed_min = config.line_exist(m_identifier.c_str(), "rain_speed_min") ? config.r_float(m_identifier.c_str(), "rain_speed_min") : 40.0f;
 	rain_speed_max = config.line_exist(m_identifier.c_str(), "rain_speed_max") ? config.r_float(m_identifier.c_str(), "rain_speed_max") : 80.0f;
 
-	rain_volume_coefficient = config.line_exist(m_identifier.c_str(), "rain_volumeco") ? config.r_float(m_identifier.c_str(), "rain_volumeco") : 0.0f;
-	clampr(-5.0f, 5.0f, rain_volume_coefficient);
-	rain_additional_angle_coefficient = deg2rad(config.line_exist(m_identifier.c_str(), "rain_aanglec") ? config.r_float(m_identifier.c_str(), "rain_aanglec") : 0.0f);
-	clampr(0.0f, 360.f, rain_additional_angle_coefficient);
+	rain_angle_rotation = deg2rad(config.line_exist(m_identifier.c_str(), "rain_angle_rotation") ? config.r_float(m_identifier.c_str(), "rain_angle_rotation") : 0.0f);
+	clampr(0.0f, 360.f, rain_angle_rotation);
 
 	wind_velocity			= config.r_float	(m_identifier.c_str(),"wind_velocity");
 	wind_direction			= deg2rad(config.r_float(m_identifier.c_str(),"wind_direction"));
@@ -505,9 +502,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	rain_speed_min = fi * A.rain_speed_min + f * B.rain_speed_min;
 	rain_speed_max = fi * A.rain_speed_max + f * B.rain_speed_max;
 
-	rain_volume_coefficient = fi * A.rain_volume_coefficient + f * B.rain_volume_coefficient;
-
-	rain_additional_angle_coefficient = fi * A.rain_additional_angle_coefficient + f * B.rain_additional_angle_coefficient;
+	rain_angle_rotation = fi * A.rain_angle_rotation + f * B.rain_angle_rotation;
 
 	bolt_period = rain_fi * A.bolt_period + rain_f * B.bolt_period;
 	bolt_duration = rain_fi * A.bolt_duration + rain_f * B.bolt_duration;

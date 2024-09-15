@@ -186,6 +186,23 @@ CEnvironment::CEnvironment	() :
 	p_sun_color		= config->r_float							( "environment","sun_color" );
 	p_fog_color		= config->r_float							( "environment","fog_color" );
 
+	max_desired_items = config->r_u32("rain", "max_desired_items");
+	source_offset = config->r_float("rain", "source_offset");
+	max_distance = source_offset * 1.25f;
+	sink_offset = -(max_distance - source_offset);
+
+	drop_angle = config->r_float("rain", "drop_angle");
+	drop_max_angle = deg2rad(config->r_float("rain", "drop_max_angle"));
+	drop_max_wind_vel = config->r_float("rain", "drop_max_wind_vel");
+
+	max_particles = config->r_u32("rain", "max_particles");
+	particles_cache = config->r_u32("rain", "particles_cache");
+	particles_time = config->r_float("rain", "particles_time");
+
+	source_rain_radius_render = config->r_float("rain", "source_rain_radius_render");
+	add_const_dist_coefficient = config->r_u32("rain", "add_const_dist_coefficient");
+	add_const_dist_coefficient_render = config->r_u32("rain", "add_const_dist_coefficient_render");
+
 	xr_delete		(config);
 }
 

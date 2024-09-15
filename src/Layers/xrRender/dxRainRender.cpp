@@ -3,24 +3,6 @@
 
 #include "../../xrEngine/Rain.h"
 
-//	Warning: duplicated in rain.cpp
-static const int	max_desired_items	= 2500;
-
-static const float	source_offset		= 40.f;
-static const float	max_distance		= source_offset*1.25f;
-static const float	sink_offset			= -(max_distance-source_offset);
-
-
-static const float	drop_angle			= 3.0f;
-static const float	drop_max_angle		= deg2rad(10.f);
-static const float	drop_max_wind_vel	= 20.0f;
-
-
-
-const int	max_particles		= 1000;
-const int	particles_cache		= 400;
-const float particles_time		= .3f;
-
 dxRainRender::dxRainRender()
 {
 #ifndef _EDITOR
@@ -58,19 +40,25 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor<EPS_L)			return;
 
-  	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(max_desired_items));
+  	u32 desired_items			= iFloor	(0.5f*(1.f+factor)*float(g_pGamePersistent->Environment().max_desired_items));
 	// visual
 	float		factor_visual	= factor/2.f+.5f;
 	Fvector3	f_rain_color	= g_pGamePersistent->Environment().CurrentEnv->rain_color;
 	u32			u_rain_color	= color_rgba_f(f_rain_color.x,f_rain_color.y,f_rain_color.z,factor_visual);
 
 	// born _new_ if needed
-	float	b_radius_wrap_sqr	= _sqr(((12.5f + 40.f) +.5f));
+	const float CORRECT_SRC = 0.5f;
+
+	float	b_radius_wrap_sqr	= _sqr(((g_pGamePersistent->Environment().source_rain_radius_render + 
+		g_pGamePersistent->Environment().add_const_dist_coefficient_render) + CORRECT_SRC));
+
 	if (owner.items.size()<desired_items)	{
 		// owner.items.reserve		(desired_items);
 		while (owner.items.size()<desired_items)	{
 			CEffect_Rain::Item				one;
-			owner.Born				(one, 12.5f + 40.f);
+			owner.Born				(one, g_pGamePersistent->Environment().source_rain_radius_render + 
+				g_pGamePersistent->Environment().add_const_dist_coefficient_render);
+
 			owner.items.push_back		(one);
 		}
 	}
@@ -78,7 +66,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	// build source plane
 	Fplane src_plane;
 	Fvector norm	={0.f,-1.f,0.f};
-	Fvector upper; 	upper.set(Device.vCameraPosition.x,Device.vCameraPosition.y+source_offset,Device.vCameraPosition.z);
+	Fvector upper; 	upper.set(Device.vCameraPosition.x,Device.vCameraPosition.y+ g_pGamePersistent->Environment().source_offset,Device.vCameraPosition.z);
 	src_plane.build(upper,norm);
 
 	// perform update
@@ -91,7 +79,9 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		CEffect_Rain::Item&	one		=	owner.items[I];
 
 		if (one.dwTime_Hit<Device.dwTimeGlobal)		owner.Hit (one.Phit);
-		if (one.dwTime_Life<Device.dwTimeGlobal)	owner.Born(one, 12.5f + 40.f);
+
+		if (one.dwTime_Life<Device.dwTimeGlobal)	owner.Born(one, g_pGamePersistent->Environment().source_rain_radius_render + 
+			g_pGamePersistent->Environment().add_const_dist_coefficient_render);
 
 		// последняя дельта ??
 		//.		float xdt		= float(one.dwTime_Hit-Device.dwTimeGlobal)/1000.f;
@@ -105,17 +95,20 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		if (wlen>b_radius_wrap_sqr)	{
 			wlen		= _sqrt(wlen);
 			//.			Device.Statistic->TEST3.Begin();
-			if ((one.P.y-vEye.y)<sink_offset){
+			if ((one.P.y-vEye.y)< g_pGamePersistent->Environment().sink_offset){
 				// need born
 				one.invalidate();
 			}else{
 				Fvector		inv_dir, src_p;
 				inv_dir.invert(one.D);
 				wdir.div	(wlen);
-				one.P.mad	(one.P, wdir, -(wlen+ 12.5f + 40.f));
+
+				one.P.mad	(one.P, wdir, -(wlen+ g_pGamePersistent->Environment().source_rain_radius_render + 
+					g_pGamePersistent->Environment().add_const_dist_coefficient_render));
+
 				if (src_plane.intersectRayPoint(one.P,inv_dir,src_p)){
 					float dist_sqr	= one.P.distance_to_sqr(src_p);
-					float height	= max_distance;
+					float height	= g_pGamePersistent->Environment().max_distance;
 					if (owner.RayPick(src_p,one.D,height,collide::rqtBoth)){	
 						if (_sqr(height)<=dist_sqr){ 
 							one.invalidate	();								// need born
@@ -125,7 +118,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 							//							Log("2",height-dist);
 						}
 					}else{
-						owner.RenewItem		(one,max_distance-_sqrt(dist_sqr),FALSE);		// fly ...
+						owner.RenewItem		(one, g_pGamePersistent->Environment().max_distance-_sqrt(dist_sqr),FALSE);		// fly ...
 						//						Log("3",1.5f*b_height-dist);
 					}
 				}else{
@@ -195,8 +188,8 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		Fmatrix					mXform,mScale;
 		int						pcount  = 0;
 		u32						v_offset,i_offset;
-		u32						vCount_Lock		= particles_cache*DM_Drop->number_vertices;
-		u32						iCount_Lock		= particles_cache*DM_Drop->number_indices;
+		u32						vCount_Lock		= g_pGamePersistent->Environment().particles_cache*DM_Drop->number_vertices;
+		u32						iCount_Lock		= g_pGamePersistent->Environment().particles_cache*DM_Drop->number_indices;
 		IRender_DetailModel::fvfVertexOut* v_ptr= (IRender_DetailModel::fvfVertexOut*) RCache.Vertex.Lock	(vCount_Lock, hGeom_Drops->vb_stride, v_offset);
 		u16*					i_ptr			= _IS.Lock													(iCount_Lock, i_offset);
 		while (P)	{
@@ -215,7 +208,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 			if (::Render->ViewBase.testSphere_dirty(P->bounds.P, P->bounds.R))
 			{
 				// Build matrix
-				float scale			=	P->time / particles_time;
+				float scale			=	P->time / g_pGamePersistent->Environment().particles_time;
 				mScale.scale		(scale,scale,scale);
 				mXform.mul_43		(P->mXForm,mScale);
 
@@ -225,7 +218,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 				i_ptr			+=	DM_Drop->number_indices;
 				pcount			++;
 
-				if (pcount >= particles_cache) {
+				if (pcount >= g_pGamePersistent->Environment().particles_cache) {
 					// flush
 					u32	dwNumPrimitives		= iCount_Lock/3;
 					RCache.Vertex.Unlock	(vCount_Lock,hGeom_Drops->vb_stride);

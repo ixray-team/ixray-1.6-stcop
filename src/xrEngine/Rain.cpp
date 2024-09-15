@@ -15,24 +15,6 @@
 	#include "xr_object.h"
 #endif
 
-//	Warning: duplicated in dxRainRender
-static const int	max_desired_items	= 2500;
-
-static const float	source_offset		= 40.f;
-static const float	max_distance		= source_offset*1.25f;
-static const float	sink_offset			= -(max_distance-source_offset);
-
-
-static const float	drop_angle			= 3.0f;
-static const float	drop_max_angle		= deg2rad(10.f);
-static const float	drop_max_wind_vel	= 20.0f;
-
-
-
-const int	max_particles		= 1000;
-const int	particles_cache		= 400;
-const float particles_time		= .3f;
- 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -60,9 +42,9 @@ void CEffect_Rain::Born(Item& dest, float radius)
 	Fvector axis;
 	axis.set(0.f, -1.f, 0.f);
 
-	float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / drop_max_wind_vel;
-	float pitch = drop_max_angle * k - PI_DIV_2;
-	axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_additional_angle_coefficient, pitch);
+	float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
+	float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
+	axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
 
 	Fvector& view = Device.vCameraPosition;
 	float angle = ::Random.randF(0.f, PI_MUL_2);
@@ -72,12 +54,12 @@ void CEffect_Rain::Born(Item& dest, float radius)
 	float x = dist * _cos(angle);
 	float z = dist * _sin(angle);
 
-	dest.D.random_dir(axis, deg2rad(drop_angle));
-	dest.P.set(x + view.x - dest.D.x * source_offset, source_offset + view.y, z + view.z - dest.D.z * source_offset);
+	dest.D.random_dir(axis, deg2rad(g_pGamePersistent->Environment().drop_angle));
+	dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset + view.y, z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
 	dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
 		g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
 
-	float height = max_distance + 30.f;
+	float height = g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
 	RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
 }
 
@@ -155,7 +137,7 @@ void	CEffect_Rain::OnFrame	()
 		state					= stWorking;
 		snd_Ambient.play		(0,sm_Looped);
 		snd_Ambient.set_position(Fvector().set(0,0,0));
-		snd_Ambient.set_range	(source_offset,source_offset*2.f);
+		snd_Ambient.set_range	(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset*2.f);
 	break;
 	case stWorking:
 		if (factor<EPS_L){
@@ -169,7 +151,7 @@ void	CEffect_Rain::OnFrame	()
 	// ambient sound
 	if (snd_Ambient._feedback())
 	{
-		snd_Ambient.set_volume(_max(0.1f, factor + (g_pGamePersistent->Environment().CurrentEnv->rain_volume_coefficient)) * hemi_factor);
+		snd_Ambient.set_volume(_max(0.1f, factor) * hemi_factor);
 	}
 }
 
@@ -192,7 +174,7 @@ void	CEffect_Rain::Hit		(Fvector& pos)
 
 	const Fsphere &bv_sphere = m_pRender->GetDropBounds();
 
-	P->time						= particles_time;
+	P->time						= g_pGamePersistent->Environment().particles_time;
 	P->mXForm.rotateY			(::Random.randF(PI_MUL_2));
 	P->mXForm.translate_over	(pos);
 	P->mXForm.transform_tiny	(P->bounds.P, bv_sphere.P);
@@ -204,7 +186,7 @@ void	CEffect_Rain::Hit		(Fvector& pos)
 void CEffect_Rain::p_create		()
 {
 	// pool
-	particle_pool.resize	(max_particles);
+	particle_pool.resize	(g_pGamePersistent->Environment().max_particles);
 	for (u32 it=0; it<particle_pool.size(); it++)
 	{
 		Particle&	P	= particle_pool[it];
