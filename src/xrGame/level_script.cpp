@@ -1140,6 +1140,45 @@ void RenderSearchManagerWindow()
 
 			if (ImGui::BeginTabItem("Offline##TB_Offline_InGameSearchManager"))
 			{
+				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
+
+				ImGui::InputText("##IT_InGameSearchManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
+
+				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+
+				const auto& objects = ai().alife().objects().objects();
+				for (const auto& it : objects)
+				{
+					auto* pServerObject = it.second;
+
+					if (pServerObject)
+					{
+						if (pServerObject->ID_Parent == 0xffff)
+						{
+							xr_string name;
+
+							name = pServerObject->name_replace();
+							if (ImGui::Button(name.c_str()))
+							{
+								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+								if (pActor)
+								{
+									xr_string cmd;
+									cmd = "set_actor_position ";
+									cmd += std::to_string(pServerObject->Position().x);
+									cmd += ",";
+									cmd += std::to_string(pServerObject->Position().y);
+									cmd += ",";
+									cmd += std::to_string(pServerObject->Position().z);
+
+									execute_console_command_deferred(Console, cmd.c_str());
+								}
+							}
+						}
+					}
+				}
+
 
 				ImGui::EndTabItem();
 			}
