@@ -2,13 +2,12 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateGroupPanic : public CState<_Object> {
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+class	CStateGroupPanic : public CState {
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 	
 public:
-						CStateGroupPanic		(_Object *obj);
+						CStateGroupPanic		(CBaseMonster*obj);
 	virtual				~CStateGroupPanic		();
 
 	virtual void		initialize				();

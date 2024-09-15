@@ -5,24 +5,18 @@
 #include "../../../CaptureBoneCallback.h"
 #include "../../../../include/xrrender/Kinematics.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateGroupDragAbstract CStateGroupDrag<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateGroupDragAbstract::CStateGroupDrag(_Object *obj) : inherited(obj)
+CStateGroupDrag::CStateGroupDrag(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupDragAbstract::~CStateGroupDrag()
+
+CStateGroupDrag::~CStateGroupDrag()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupDragAbstract::initialize()
+
+void CStateGroupDrag::initialize()
 {
 	inherited::initialize();
 	IKinematics*  K = this->object->EatedCorpse->Visual()->dcast_PKinematics( );
@@ -108,12 +102,12 @@ void CStateGroupDragAbstract::initialize()
 	this->object->path().prepare_builder();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupDragAbstract::execute()
+
+void CStateGroupDrag::execute()
 {
 	if (m_failed) return;
 	
-	// Óñòàíîâèòü ïàðàìåòðû äâèæåíèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ñ
 	this->object->set_action				(ACT_DRAG);
 	this->object->anim().SetSpecParams	(ASP_MOVE_BKWD);
 
@@ -128,28 +122,28 @@ void CStateGroupDragAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupDragAbstract::finalize()
+
+void CStateGroupDrag::finalize()
 {
 	inherited::finalize();	
 
-	// áðîñèòü òðóï
+	// Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚Ñ€ÑƒÐ¿
 	if (this->object->character_physics_support()->movement()->PHCapture())
 		this->object->character_physics_support()->movement()->PHReleaseObject();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupDragAbstract::critical_finalize()
+
+void CStateGroupDrag::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	// áðîñèòü òðóï
+	// Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚Ñ€ÑƒÐ¿
 	if (this->object->character_physics_support()->movement()->PHCapture())
 			this->object->character_physics_support()->movement()->PHReleaseObject();
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupDragAbstract::check_completion()
+
+bool CStateGroupDrag::check_completion()
 {
 	if (m_failed) {
 		return true;
@@ -169,6 +163,3 @@ bool CStateGroupDragAbstract::check_completion()
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupDragAbstract

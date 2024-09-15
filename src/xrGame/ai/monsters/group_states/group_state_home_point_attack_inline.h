@@ -6,14 +6,6 @@
 #include "../monster_cover_manager.h"
 #include "../monster_home.h"
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupAttackMoveToHomePointAbstract CStateGroupAttackMoveToHomePoint<_Object>
-
-
 namespace detail
 {
 
@@ -29,11 +21,11 @@ namespace dog
 // Construct Substates
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-CStateGroupAttackMoveToHomePointAbstract::CStateGroupAttackMoveToHomePoint(_Object *obj) : inherited(obj) 
+
+CStateGroupAttackMoveToHomePoint::CStateGroupAttackMoveToHomePoint(CBaseMonster *obj) : inherited(obj) 
 {
-	this->add_state	(eStateAttack_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateAttack_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
+	this->add_state	(eStateAttack_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStateAttack_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
 
 	m_last_tick_enemy_inaccessible	=	0;
 	m_first_tick_enemy_inaccessible	=	0;
@@ -43,8 +35,8 @@ CStateGroupAttackMoveToHomePointAbstract::CStateGroupAttackMoveToHomePoint(_Obje
 // Initialize/Finalize
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackMoveToHomePointAbstract::initialize()
+
+void CStateGroupAttackMoveToHomePoint::initialize()
 {
 	inherited::initialize	();
 	m_target_node = u32(-1);
@@ -53,8 +45,8 @@ void CStateGroupAttackMoveToHomePointAbstract::initialize()
 	m_state_started					=	time();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackMoveToHomePointAbstract::finalize()
+
+void CStateGroupAttackMoveToHomePoint::finalize()
 {
 	inherited::finalize();
 	CMonsterSquad* squad = monster_squad().get_squad(this->object);
@@ -63,8 +55,8 @@ void CStateGroupAttackMoveToHomePointAbstract::finalize()
 	m_first_tick_enemy_inaccessible	=	0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackMoveToHomePointAbstract::critical_finalize()
+
+void CStateGroupAttackMoveToHomePoint::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -79,8 +71,8 @@ void CStateGroupAttackMoveToHomePointAbstract::critical_finalize()
 //////////////////////////////////////////////////////////////////////////
 #include "ai_object_location.h"
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackMoveToHomePointAbstract::enemy_inaccessible()
+
+bool CStateGroupAttackMoveToHomePoint::enemy_inaccessible()
 {
 	CEntityAlive const * enemy		=	this->object->EnemyMan.get_enemy();
 	Fvector const enemy_pos			=	enemy->Position();
@@ -107,8 +99,8 @@ bool CStateGroupAttackMoveToHomePointAbstract::enemy_inaccessible()
 	return								false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackMoveToHomePointAbstract::check_start_conditions()
+
+bool CStateGroupAttackMoveToHomePoint::check_start_conditions()
 {
 	if ( !this->object->Home->at_home() )
 	{
@@ -138,8 +130,8 @@ bool CStateGroupAttackMoveToHomePointAbstract::check_start_conditions()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackMoveToHomePointAbstract::check_completion()
+
+bool CStateGroupAttackMoveToHomePoint::check_completion()
 {
 	bool const in_camp_state				= this->prev_substate != u32(-1) &&
 												this->prev_substate != eStateAttack_HomePoint_Hide;
@@ -172,8 +164,8 @@ bool CStateGroupAttackMoveToHomePointAbstract::check_completion()
 // Select Substate
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackMoveToHomePointAbstract::reselect_state()
+
+void CStateGroupAttackMoveToHomePoint::reselect_state()
 {
 	if (this->prev_substate == eStateAttack_HomePoint_Hide )
 	{
@@ -188,8 +180,8 @@ void CStateGroupAttackMoveToHomePointAbstract::reselect_state()
 // Setup Substates
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackMoveToHomePointAbstract::setup_substates()
+
+void CStateGroupAttackMoveToHomePoint::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -250,6 +242,3 @@ void CStateGroupAttackMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupAttackMoveToHomePointAbstract

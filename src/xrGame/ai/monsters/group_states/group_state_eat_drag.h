@@ -5,9 +5,9 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-template<typename _Object>
-class CStateGroupDrag : public CState<_Object> {
-	typedef CState<_Object>		inherited;
+
+class CStateGroupDrag : public CState {
+	typedef CState	inherited;
 
 	Fvector				m_cover_position;
 	u32					m_cover_vertex_id;
@@ -16,7 +16,7 @@ class CStateGroupDrag : public CState<_Object> {
 	Fvector				m_corpse_start_position;
 
 public:
-						CStateGroupDrag		(_Object *obj);
+						CStateGroupDrag		(CBaseMonster*obj);
 	virtual				~CStateGroupDrag		();
 
 	virtual void		initialize				();

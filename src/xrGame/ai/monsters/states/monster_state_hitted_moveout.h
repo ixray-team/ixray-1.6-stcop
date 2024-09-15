@@ -2,10 +2,9 @@
 
 #include "../../../detail_path_manager.h"
 
-template<typename _Object>
-class CStateMonsterHittedMoveOut : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
-	typedef	CState<_Object>*	state_ptr;
+class CStateMonsterHittedMoveOut : public CState{
+	typedef	CState	inherited;
+	typedef	CState*	state_ptr;
 
 	struct {
 		Fvector position;
@@ -14,7 +13,7 @@ class CStateMonsterHittedMoveOut : public CState<_Object> {
 
 public:
 
-					CStateMonsterHittedMoveOut	(_Object *obj) : inherited(obj) {}
+					CStateMonsterHittedMoveOut	(CBaseMonster*obj) : inherited(obj) {}
 	virtual			~CStateMonsterHittedMoveOut	() {}
 
 	virtual	void	initialize					();

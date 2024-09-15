@@ -2,16 +2,15 @@
 #include "../state.h"
 #include "../states/state_data.h"
 
-template<typename _Object>
-class CStateGroupSquadMoveToRadiusEx : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateGroupSquadMoveToRadiusEx : public CState {
+	typedef CState inherited;
 
 protected:
 	
 	SStateDataMoveToPointEx data;
 
 public:
-						CStateGroupSquadMoveToRadiusEx	(_Object *obj) : inherited(obj, &data) {}
+						CStateGroupSquadMoveToRadiusEx	(CBaseMonster *obj) : inherited(obj, &data) {}
 	virtual				~CStateGroupSquadMoveToRadiusEx	() {}
 	virtual void		initialize					();
 	virtual	void		execute						();
@@ -19,16 +18,15 @@ public:
 	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
 
-template<typename _Object>
-class CStateGroupSquadMoveToRadius : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateGroupSquadMoveToRadius : public CState {
+	typedef CState inherited;
 
 protected:
 
 	SStateDataMoveToPointEx data;
 
 public:
-	CStateGroupSquadMoveToRadius	(_Object *obj) : inherited(obj, &data) {}
+	CStateGroupSquadMoveToRadius	(CBaseMonster*obj) : inherited(obj, &data) {}
 	virtual				~CStateGroupSquadMoveToRadius	() {}
 	virtual void		initialize					();
 	virtual	void		execute						();

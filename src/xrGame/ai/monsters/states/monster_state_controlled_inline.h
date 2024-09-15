@@ -3,26 +3,18 @@
 #include "monster_state_controlled_attack.h"
 #include "monster_state_controlled_follow.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterControlledAbstract CStateMonsterControlled<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterControlledAbstract::CStateMonsterControlled(_Object *obj) : inherited(obj)
+CStateMonsterControlled::CStateMonsterControlled(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateControlled_Attack,		xr_new<CStateMonsterControlledAttack<_Object> >	(obj));
-	this->add_state	(eStateControlled_Follow,		xr_new<CStateMonsterControlledFollow<_Object> >	(obj));	
+	this->add_state	(eStateControlled_Attack,		xr_new<CStateMonsterControlledAttack<CBaseMonster> >	(obj));
+	this->add_state	(eStateControlled_Follow,		xr_new<CStateMonsterControlledFollow<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterControlledAbstract::execute()
+void CStateMonsterControlled::execute()
 {
 	switch (this->object->get_data().m_task) {
 		case eTaskFollow:	this->select_state(eStateControlled_Follow);	break;
 		case eTaskAttack:	{
-			// проверить валидность данных атаки
+			// РїСЂРѕРІРµСЂРёС‚СЊ РІР°Р»РёРґРЅРѕСЃС‚СЊ РґР°РЅРЅС‹С… Р°С‚Р°РєРё
 			const CEntity *enemy = this->object->get_data().m_object;
 			if (!enemy || enemy->getDestroy() || !enemy->g_Alive()) {
 				this->object->get_data().m_object = this->object->get_controller();
@@ -38,6 +30,3 @@ void CStateMonsterControlledAbstract::execute()
 	this->prev_substate = this->current_substate;
 
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterControlledAbstract

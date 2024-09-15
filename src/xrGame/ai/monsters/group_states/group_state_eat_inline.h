@@ -11,50 +11,43 @@
 #include "group_state_custom.h"
 #include "group_state_eat_eat.h "
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupEatAbstract CStateGroupEat<_Object>
-
 #define TIME_NOT_HUNGRY 20000
 
-TEMPLATE_SPECIALIZATION
-CStateGroupEatAbstract::CStateGroupEat(_Object *obj) : inherited(obj)
+
+CStateGroupEat::CStateGroupEat(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<_Object> >	(obj));
-	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<_Object> >	(obj));
-	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<_Object> >	(obj));
-	this->add_state	(eStateEat_Eat,					xr_new<CStateGroupEating<_Object> >		(obj));
-	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<_Object> >(obj));
-	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<_Object> >	(obj));
-	this->add_state	(eStateEat_Drag,				xr_new<CStateGroupDrag<_Object> >				(obj));
-	this->add_state	(eStateCustom,					xr_new<CStateCustomGroup<_Object> >			(obj));
+	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
+	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<CBaseMonster >	(obj));
+	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	this->add_state	(eStateEat_Eat,					xr_new<CStateGroupEating<CBaseMonster> >		(obj));
+	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	this->add_state	(eStateEat_Drag,				xr_new<CStateGroupDrag<CBaseMonster> >				(obj));
+	this->add_state	(eStateCustom,					xr_new<CStateCustomGroup<CBaseMonster> >			(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupEatAbstract::~CStateGroupEat()
+
+CStateGroupEat::~CStateGroupEat()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::reinit()
+
+void CStateGroupEat::reinit()
 {
 	inherited::reinit();
 
 	m_time_last_eat = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::initialize()
+
+void CStateGroupEat::initialize()
 {
 	inherited::initialize();
 	corpse = this->object->EatedCorpse;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::finalize()
+
+void CStateGroupEat::finalize()
 {
 	inherited::finalize();
 
@@ -69,8 +62,8 @@ void CStateGroupEatAbstract::finalize()
 	this->object->b_end_state_eat = true;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::critical_finalize()
+
+void CStateGroupEat::critical_finalize()
 {
 	inherited::critical_finalize();
 	if ( (corpse==this->object->EatedCorpse) && this->object->EatedCorpse && check_completion() )
@@ -90,8 +83,8 @@ void CStateGroupEatAbstract::critical_finalize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::reselect_state()
+
+void CStateGroupEat::reselect_state()
 {
 	if (this->object->b_state_check)
 	{
@@ -200,14 +193,14 @@ void CStateGroupEatAbstract::reselect_state()
 	this->select_state(eStateEat_Rest);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::setup_substates()
+
+void CStateGroupEat::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
 	if (this->current_substate == eStateEat_CorpseApproachRun) {
 
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpse_ = this->object->EatedCorpse;
 		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
@@ -277,7 +270,7 @@ void CStateGroupEatAbstract::setup_substates()
 
 	if (this->current_substate == eStateEat_CorpseApproachWalk) {
 
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpse_ = this->object->EatedCorpse;
 
@@ -311,8 +304,8 @@ void CStateGroupEatAbstract::setup_substates()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupEatAbstract::check_completion()
+
+bool CStateGroupEat::check_completion()
 {
 	if (corpse != this->object->EatedCorpse) return true;
 	if (!hungry()) return true;
@@ -320,8 +313,8 @@ bool CStateGroupEatAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupEatAbstract::check_start_conditions()
+
+bool CStateGroupEat::check_start_conditions()
 {
 	if (this->object->EatedCorpse) return true;
 	return (
@@ -333,18 +326,15 @@ bool CStateGroupEatAbstract::check_start_conditions()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupEatAbstract::hungry()
+
+bool CStateGroupEat::hungry()
 {
 	return ((m_time_last_eat == 0) || (m_time_last_eat + TIME_NOT_HUNGRY < time()));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatAbstract::remove_links	(CObject* object_)
+
+void CStateGroupEat::remove_links	(CObject* object_)
 {
 	if (corpse == object_)
 		corpse	= 0;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupEatAbstract

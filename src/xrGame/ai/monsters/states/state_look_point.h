@@ -2,14 +2,13 @@
 #include "../state.h"
 #include "state_data.h"
 
-template<typename _Object>
-class CStateMonsterLookToPoint : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterLookToPoint : public CState {
+	typedef CState inherited;
 
 	SStateDataLookToPoint	data;
 
 public:
-						CStateMonsterLookToPoint	(_Object *obj);
+						CStateMonsterLookToPoint	(CBaseMonster*obj);
 	virtual				~CStateMonsterLookToPoint	();
 
 	virtual void		initialize					();

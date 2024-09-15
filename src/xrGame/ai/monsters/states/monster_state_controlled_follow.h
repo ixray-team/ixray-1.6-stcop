@@ -2,13 +2,12 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateMonsterControlledFollow : public CState<_Object> {
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+class	CStateMonsterControlledFollow : public CState {
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 public:
-						CStateMonsterControlledFollow	(_Object *obj);
+						CStateMonsterControlledFollow	(CBaseMonster *obj);
 	virtual void		reselect_state					();
 	virtual void		setup_substates					();
 	virtual void		remove_links					(CObject* object_) { inherited::remove_links(object_);}

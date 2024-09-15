@@ -2,24 +2,18 @@
 
 #include "../../../sound_player.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterLookToUnprotectedAreaAbstract CStateMonsterLookToUnprotectedArea<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterLookToUnprotectedAreaAbstract::CStateMonsterLookToUnprotectedArea(_Object *obj) : inherited(obj, &data)
+CStateMonsterLookToUnprotectedArea::CStateMonsterLookToUnprotectedArea(CBaseMonster*obj) : inherited(obj, &data)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterLookToUnprotectedAreaAbstract::~CStateMonsterLookToUnprotectedArea()
+
+CStateMonsterLookToUnprotectedArea::~CStateMonsterLookToUnprotectedArea()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterLookToUnprotectedAreaAbstract::initialize()
+
+void CStateMonsterLookToUnprotectedArea::initialize()
 {
 	inherited::initialize();
 	
@@ -37,8 +31,8 @@ void CStateMonsterLookToUnprotectedAreaAbstract::initialize()
 	target_point.mad(this->object->Position(),dir, 1.f);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterLookToUnprotectedAreaAbstract::execute()
+
+void CStateMonsterLookToUnprotectedArea::execute()
 {
 	this->object->anim().m_tAction				= data.action;
 	this->object->anim().SetSpecParams			(data.spec_params);
@@ -53,8 +47,8 @@ void CStateMonsterLookToUnprotectedAreaAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterLookToUnprotectedAreaAbstract::check_completion()
+
+bool CStateMonsterLookToUnprotectedArea::check_completion()
 {	
 	if (data.time_out !=0) {
 		if (this->time_state_started + data.time_out < Device.dwTimeGlobal) return true;
@@ -62,6 +56,3 @@ bool CStateMonsterLookToUnprotectedAreaAbstract::check_completion()
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterLookToUnprotectedAreaAbstract

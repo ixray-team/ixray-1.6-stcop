@@ -8,12 +8,11 @@
 inline
 TTime   current_time () { return Device.dwTimeGlobal; }
 
-template<typename _Object>
-class CStateMonsterAttackOnRun : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterAttackOnRun : public CState {
+	typedef CStateinherited;
 
 public:
-					CStateMonsterAttackOnRun		(_Object *obj);
+					CStateMonsterAttackOnRun		(CBaseMonster *obj);
 
 	virtual	void	initialize						();
 	virtual	void	execute							();

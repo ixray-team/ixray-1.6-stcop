@@ -1,32 +1,22 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateBloodsuckerVampireApproachAbstract CStateBloodsuckerVampireApproach<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateBloodsuckerVampireApproachAbstract::CStateBloodsuckerVampireApproach(_Object *obj) : inherited(obj)
+CStateBloodsuckerVampireApproach::CStateBloodsuckerVampireApproach(CCameraBase *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateBloodsuckerVampireApproachAbstract::~CStateBloodsuckerVampireApproach()
+CStateBloodsuckerVampireApproach::~CStateBloodsuckerVampireApproach()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireApproachAbstract::initialize()
+void CStateBloodsuckerVampireApproach::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder	();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireApproachAbstract::execute()
+void CStateBloodsuckerVampireApproach::execute()
 {
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
 	this->object->set_action								(ACT_RUN);
 	this->object->anim().accel_activate					(eAT_Aggressive);
 	this->object->anim().accel_set_braking				(false);

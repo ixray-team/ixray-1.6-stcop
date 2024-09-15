@@ -2,17 +2,16 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateGroupHearDangerousSound : public CState<_Object> {
+class	CStateGroupHearDangerousSound : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 	u32				m_target_node;
 
 
 public:
-	CStateGroupHearDangerousSound		(_Object *obj);
+	CStateGroupHearDangerousSound		(CBaseMonster*obj);
 	virtual			~CStateGroupHearDangerousSound	() {}
 
 	virtual void	initialize						();

@@ -11,30 +11,24 @@
 #include "group_state_rest_idle.h"
 #include "group_state_custom.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateGroupRestAbstract CStateGroupRest<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateGroupRestAbstract::CStateGroupRest(_Object *obj) : inherited(obj)
+CStateGroupRest::CStateGroupRest(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state(eStateRest_Sleep,				xr_new<CStateMonsterRestSleep<_Object> >			(obj));
-	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<_Object> >		(obj));
-	this->add_state(eStateRest_MoveToHomePoint,	xr_new<CStateMonsterRestMoveToHomePoint<_Object> >	(obj));
-	this->add_state(eStateSmartTerrainTask,		xr_new<CStateMonsterSmartTerrainTask<_Object> >		(obj));
-	this->add_state(eStateRest_Idle,				xr_new<CStateGroupRestIdle<_Object> >					(obj));
-	this->add_state(eStateCustom,					xr_new<CStateCustomGroup<_Object> >					(obj));
+	this->add_state(eStateRest_Sleep,				xr_new<CStateMonsterRestSleep<CBaseMonster> >			(obj));
+	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<CBaseMonster> >		(obj));
+	this->add_state(eStateRest_MoveToHomePoint,	xr_new<CStateMonsterRestMoveToHomePoint<CBaseMonster> >	(obj));
+	this->add_state(eStateSmartTerrainTask,		xr_new<CStateMonsterSmartTerrainTask<CBaseMonster> >		(obj));
+	this->add_state(eStateRest_Idle,				xr_new<CStateGroupRestIdle<CBaseMonster> >					(obj));
+	this->add_state(eStateCustom,					xr_new<CStateCustomGroup<CBaseMonster> >					(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupRestAbstract::~CStateGroupRest	()
+
+CStateGroupRest::~CStateGroupRest	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestAbstract::initialize()
+
+void CStateGroupRest::initialize()
 {
 	inherited::initialize	();
 	time_for_sleep			= 0;
@@ -42,24 +36,24 @@ void CStateGroupRestAbstract::initialize()
 	this->object->anomaly_detector().activate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestAbstract::finalize()
+
+void CStateGroupRest::finalize()
 {
 	inherited::finalize();
 	
 	this->object->anomaly_detector().deactivate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestAbstract::critical_finalize()
+
+void CStateGroupRest::critical_finalize()
 {
 	inherited::critical_finalize();
 
 	this->object->anomaly_detector().deactivate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestAbstract::execute()
+
+void CStateGroupRest::execute()
 {
 	// check alife control
 
@@ -181,5 +175,3 @@ void CStateGroupRestAbstract::execute()
 	this->prev_substate = this->current_substate;
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupRestAbstract

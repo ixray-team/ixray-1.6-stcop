@@ -2,14 +2,13 @@
 #include "../state.h"
 #include "state_data.h"
 
-template<typename _Object>
-class CStateMonsterCustomAction : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterCustomAction : public CState {
+	typedef CState  inherited;
 
 	SStateDataAction	data;
 
 public:
-						CStateMonsterCustomAction	(_Object *obj);
+						CStateMonsterCustomAction	(CBaseMonster *obj);
 	virtual				~CStateMonsterCustomAction	();
 
 	virtual	void		execute						();

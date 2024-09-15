@@ -1,16 +1,15 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterRestMoveToHomePoint : public CStateMove<_Object> {
+class CStateMonsterRestMoveToHomePoint : public CStateMove{
 protected:
-	typedef CStateMove<_Object>		inherited;
-	typedef CStateMove<_Object>*	state_ptr;
+	typedef CStateMove		inherited;
+	typedef CStateMove*	state_ptr;
 
 	u32					m_target_node;
 
 public:
-						CStateMonsterRestMoveToHomePoint(_Object *obj) : inherited(obj){}
+						CStateMonsterRestMoveToHomePoint(CBaseMonster *obj) : inherited(obj){}
 	virtual	void		initialize				();
 	virtual	void		execute					();
 	virtual bool		check_start_conditions	();

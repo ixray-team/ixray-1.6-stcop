@@ -4,27 +4,21 @@
 #include "state_look_point.h"
 #include "state_custom_action.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterFindEnemyLookAbstract CStateMonsterFindEnemyLook<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterFindEnemyLookAbstract::CStateMonsterFindEnemyLook(_Object *obj) : inherited(obj)
+CStateMonsterFindEnemyLook::CStateMonsterFindEnemyLook(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateFindEnemy_LookAround_MoveToPoint,	xr_new<CStateMonsterMoveToPoint<_Object> >	(obj));
-	this->add_state	(eStateFindEnemy_LookAround_LookAround,		xr_new<CStateMonsterCustomAction<_Object> > (obj));
-	this->add_state	(eStateFindEnemy_LookAround_TurnToPoint,	xr_new<CStateMonsterLookToPoint<_Object> >	(obj));
+	this->add_state	(eStateFindEnemy_LookAround_MoveToPoint,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
+	this->add_state	(eStateFindEnemy_LookAround_LookAround,		xr_new<CStateMonsterCustomAction<CBaseMonster> > (obj));
+	this->add_state	(eStateFindEnemy_LookAround_TurnToPoint,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterFindEnemyLookAbstract::~CStateMonsterFindEnemyLook()
+
+CStateMonsterFindEnemyLook::~CStateMonsterFindEnemyLook()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterFindEnemyLookAbstract::initialize()
+
+void CStateMonsterFindEnemyLook::initialize()
 {
 	inherited::initialize	();
 
@@ -37,8 +31,8 @@ void CStateMonsterFindEnemyLookAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterFindEnemyLookAbstract::reselect_state()
+
+void CStateMonsterFindEnemyLook::reselect_state()
 {
 	if ((current_stage == 1) || (current_stage == 3)) {
 		float h,p;
@@ -55,15 +49,15 @@ void CStateMonsterFindEnemyLookAbstract::reselect_state()
 	current_stage++;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterFindEnemyLookAbstract::check_completion()
+
+bool CStateMonsterFindEnemyLook::check_completion()
 {	
 	if (current_stage < 5) return false;
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterFindEnemyLookAbstract::setup_substates()
+
+void CStateMonsterFindEnemyLook::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 

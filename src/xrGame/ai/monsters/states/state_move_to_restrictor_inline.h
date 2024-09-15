@@ -1,13 +1,7 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterMoveToRestrictorAbstract CStateMonsterMoveToRestrictor<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToRestrictorAbstract::initialize()
+void CStateMonsterMoveToRestrictor::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();
@@ -17,8 +11,8 @@ void CStateMonsterMoveToRestrictorAbstract::initialize()
 	this->object->path().set_target_point	(ai().level_graph().vertex_position(node), node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToRestrictorAbstract::execute()
+
+void CStateMonsterMoveToRestrictor::execute()
 {
 	this->object->set_action					(ACT_RUN);
 	
@@ -27,17 +21,14 @@ void CStateMonsterMoveToRestrictorAbstract::execute()
 	this->object->set_state_sound			(MonsterSound::eMonsterSoundIdle);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterMoveToRestrictorAbstract::check_start_conditions()
+
+bool CStateMonsterMoveToRestrictor::check_start_conditions()
 {
 	return (!this->object->control().path_builder().accessible(this->object->Position()));
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterMoveToRestrictorAbstract::check_completion()
+
+bool CStateMonsterMoveToRestrictor::check_completion()
 {
 	return (this->object->control().path_builder().accessible(this->object->Position()));
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterMoveToRestrictorAbstract

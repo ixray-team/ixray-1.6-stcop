@@ -8,19 +8,12 @@
 //#include "../../../ActorCondition.h"
 #include "../../../HudManager.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateBloodsuckerVampireExecuteAbstract CStateBloodsuckerVampireExecute<_Object>
-
 #define VAMPIRE_TIME_HOLD		4000
 #define VAMPIRE_HIT_IMPULSE		40.f
 #define VAMPIRE_MIN_DIST		0.5f
 #define VAMPIRE_MAX_DIST		1.f
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::initialize()
+void CStateBloodsuckerVampireExecute::initialize()
 {
 	inherited::initialize					();
 	CActor* actor = nullptr;
@@ -62,8 +55,7 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 	m_effector_activated			= false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::execute()
+void CStateBloodsuckerVampireExecute::execute()
 {
 	if (!this->object->CControlledActor::is_turning() && !m_effector_activated) {
 		this->object->ActivateVampireEffector	();
@@ -123,8 +115,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::show_hud()
+void CStateBloodsuckerVampireExecute::show_hud()
 {
 	HUD().SetRenderable(true);
 	NET_Packet			P;
@@ -135,8 +126,7 @@ void CStateBloodsuckerVampireExecuteAbstract::show_hud()
 	Actor()->u_EventSend(P);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::cleanup()
+void CStateBloodsuckerVampireExecute::cleanup()
 {
 	if (IsGameTypeSingle())
 		Actor()->set_inventory_disabled(false);
@@ -152,26 +142,23 @@ void CStateBloodsuckerVampireExecuteAbstract::cleanup()
 		show_hud();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::finalize()
+void CStateBloodsuckerVampireExecute::finalize()
 {
 	inherited::finalize();
 	cleanup();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::critical_finalize()
+void CStateBloodsuckerVampireExecute::critical_finalize()
 {
 	inherited::critical_finalize();
 	cleanup();
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
+bool CStateBloodsuckerVampireExecute::check_start_conditions()
 {
 	const CEntityAlive	*enemy = this->object->EnemyMan.get_enemy();
 	
-	// проверить дистанцию
+	// РїСЂРѕРІРµСЂРёС‚СЊ РґРёСЃС‚Р°РЅС†РёСЋ
 // 	float dist		= this->object->MeleeChecker.distance_to_enemy	(enemy);
 // 	if ((dist > VAMPIRE_MAX_DIST) || (dist < VAMPIRE_MIN_DIST))	return false;
 
@@ -187,14 +174,14 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 	if ( !this->object->MeleeChecker.can_start_melee(enemy) ) 
 		return false;
 
-	// проверить направление на врага
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РІСЂР°РіР°
 	if ( !this->object->control().direction().is_face_target(enemy, PI_DIV_2) ) 
 		return false;
 
 	if ( !this->object->WantVampire() ) 
 		return false;
 	
-	// является ли враг актером
+	// СЏРІР»СЏРµС‚СЃСЏ Р»Рё РІСЂР°Рі Р°РєС‚РµСЂРѕРј
 	if ( !smart_cast<CActor const*>(enemy) )
 		return false;
 
@@ -211,16 +198,14 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateBloodsuckerVampireExecuteAbstract::check_completion()
+bool CStateBloodsuckerVampireExecute::check_completion()
 {
 	return (m_action == eActionCompleted);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_prepare()
+void CStateBloodsuckerVampireExecute::execute_vampire_prepare()
 {
 	this->object->com_man().ta_activate		(this->object->anim_triple_vampire);
 	time_vampire_started				= Device.dwTimeGlobal;
@@ -228,8 +213,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_prepare()
 	this->object->sound().play(CAI_Bloodsucker::eVampireGrasp);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
+void CStateBloodsuckerVampireExecute::execute_vampire_continue()
 {
 	const CEntityAlive	*enemy = this->object->EnemyMan.get_enemy();
 
@@ -242,14 +226,13 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 	
 	this->object->sound().play(CAI_Bloodsucker::eVampireSucking);
 
-	// проверить на грави удар
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР° РіСЂР°РІРё СѓРґР°СЂ
 	if (time_vampire_started + VAMPIRE_TIME_HOLD < Device.dwTimeGlobal) {
 		m_action = eActionFire;
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
+void CStateBloodsuckerVampireExecute::execute_vampire_hit()
 {
 	this->object->com_man().ta_pointbreak				();
 	this->object->sound().play						(CAI_Bloodsucker::eVampireHit);
@@ -258,8 +241,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerVampireExecuteAbstract::look_head()
+void CStateBloodsuckerVampireExecute::look_head()
 {
 	IKinematics *pK = smart_cast<IKinematics*>(this->object->Visual());
 	Fmatrix bone_transform;
@@ -270,7 +252,3 @@ void CStateBloodsuckerVampireExecuteAbstract::look_head()
 
 	this->object->CControlledActor::look_point	(global_transform.c);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateBloodsuckerVampireExecuteAbstract
-

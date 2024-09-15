@@ -2,9 +2,8 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class CStateGroupAttackRun : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateGroupAttackRun : public CState {
+	typedef CState inherited;
 
 	TTime				m_time_path_rebuild;
 	
@@ -21,7 +20,7 @@ class CStateGroupAttackRun : public CState<_Object> {
 	Fvector             m_predicted_vel;
 
 public:
-	IC					CStateGroupAttackRun	(_Object *obj);
+	IC					CStateGroupAttackRun	(CBaseMonster *obj);
 
 	virtual void		initialize				();
 	virtual	void		execute					();

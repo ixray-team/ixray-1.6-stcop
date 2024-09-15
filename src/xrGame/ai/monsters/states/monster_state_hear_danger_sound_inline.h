@@ -5,23 +5,17 @@
 #include "state_custom_action.h"
 #include "monster_state_home_point_danger.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterHearDangerousSoundAbstract CStateMonsterHearDangerousSound<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterHearDangerousSoundAbstract::CStateMonsterHearDangerousSound(_Object *obj) : inherited(obj)
+CStateMonsterHearDangerousSound::CStateMonsterHearDangerousSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterHideFromPoint<_Object> >(obj));
-	this->add_state	(eStateHearDangerousSound_FaceOpenPlace,	xr_new<CStateMonsterLookToUnprotectedArea<_Object> >(obj));
-	this->add_state	(eStateHearDangerousSound_StandScared,		xr_new<CStateMonsterCustomAction<_Object> >(obj));
-	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterHideFromPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateHearDangerousSound_FaceOpenPlace,	xr_new<CStateMonsterLookToUnprotectedArea<CBaseMonster> >(obj));
+	this->add_state	(eStateHearDangerousSound_StandScared,		xr_new<CStateMonsterCustomAction<CBaseMonster> >(obj));
+	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearDangerousSoundAbstract::reselect_state()
+
+void CStateMonsterHearDangerousSound::reselect_state()
 {
 	if (this->get_state(eStateHearDangerousSound_Home)->check_start_conditions())	{
 		this->select_state(eStateHearDangerousSound_Home);
@@ -41,8 +35,8 @@ void CStateMonsterHearDangerousSoundAbstract::reselect_state()
 	this->select_state(eStateHearDangerousSound_StandScared);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearDangerousSoundAbstract::setup_substates()
+
+void CStateMonsterHearDangerousSound::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -94,6 +88,3 @@ void CStateMonsterHearDangerousSoundAbstract::setup_substates()
 		return;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHearDangerousSoundAbstract 

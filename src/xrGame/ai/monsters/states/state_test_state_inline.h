@@ -4,26 +4,20 @@
 #include "state_move_to_point.h"
 #include "state_custom_action.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterTestStateAbstract CStateMonsterTestState<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterTestStateAbstract::CStateMonsterTestState(_Object *obj) : inherited(obj) 
+CStateMonsterTestState::CStateMonsterTestState(CBaseMonster*obj) : inherited(obj)
 {
-	add_state(eStateCustom,xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
+	add_state(eStateCustom,xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestStateAbstract::reselect_state()
+
+void CStateMonsterTestState::reselect_state()
 {
 	this->select_state(eStateCustom);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestStateAbstract::setup_substates()
+
+void CStateMonsterTestState::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -57,16 +51,13 @@ void CStateMonsterTestStateAbstract::setup_substates()
 }
 
 
-#define CStateMonsterTestCoverAbstract CStateMonsterTestCover<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterTestCoverAbstract::CStateMonsterTestCover(_Object *obj) : inherited(obj) 
+CStateMonsterTestCover::CStateMonsterTestCover(_Object *obj) : inherited(obj) 
 {
 	this->add_state(eStateAttack_HideInCover,xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
 	this->add_state(eStateAttack_CampInCover,xr_new<CStateMonsterCustomAction<_Object> >(obj));
 }
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestCoverAbstract::initialize()
+
+void CStateMonsterTestCover::initialize()
 {
 	inherited::initialize();
 
@@ -74,8 +65,8 @@ void CStateMonsterTestCoverAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestCoverAbstract::check_force_state()
+
+void CStateMonsterTestCover::check_force_state()
 {
 	if (m_last_node	!= this->object->m_target_node) {
 		m_last_node			= this->object->m_target_node;
@@ -87,8 +78,8 @@ void CStateMonsterTestCoverAbstract::check_force_state()
 		if (this->object->ai_location().level_vertex_id() != m_last_node)
 			this->current_substate = u32(-1);
 }
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestCoverAbstract::reselect_state()
+
+void CStateMonsterTestCover::reselect_state()
 {
 	if (this->object->ai_location().level_vertex_id() != m_last_node)
 		this->select_state(eStateAttack_HideInCover);
@@ -96,8 +87,8 @@ void CStateMonsterTestCoverAbstract::reselect_state()
 		this->select_state(eStateAttack_CampInCover);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTestCoverAbstract::setup_substates()
+
+void CStateMonsterTestCover::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -130,8 +121,3 @@ void CStateMonsterTestCoverAbstract::setup_substates()
 	}
 
 }
-
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterTestStateAbstract
-#undef CStateMonsterTestCoverAbstract

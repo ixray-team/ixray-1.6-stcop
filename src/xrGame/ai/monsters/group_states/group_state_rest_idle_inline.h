@@ -6,23 +6,17 @@
 #include "../monster_cover_manager.h"
 #include "../states/state_custom_action.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateGroupRestIdleAbstract CStateGroupRestIdle<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateGroupRestIdleAbstract::CStateGroupRestIdle(_Object *obj) : inherited(obj)
+CStateGroupRestIdle::CStateGroupRestIdle(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
-	this->add_state	(eStateRest_WalkGraphPoint,	xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateCustom,				xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
+	this->add_state	(eStateRest_WalkGraphPoint,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStateCustom,				xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestIdleAbstract::initialize()
+
+void CStateGroupRestIdle::initialize()
 {
 	inherited::initialize();
 
@@ -55,16 +49,16 @@ void CStateGroupRestIdleAbstract::initialize()
 	squad->lock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestIdleAbstract::finalize()
+
+void CStateGroupRestIdle::finalize()
 {
 	inherited::finalize();
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestIdleAbstract::critical_finalize()
+
+void CStateGroupRestIdle::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -73,8 +67,8 @@ void CStateGroupRestIdleAbstract::critical_finalize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestIdleAbstract::reselect_state()
+
+void CStateGroupRestIdle::reselect_state()
 {
 	if (this->object->saved_state == eStateRest_LookOpenPlace) {
 		this->object->saved_state = u32(-1);
@@ -103,8 +97,8 @@ void CStateGroupRestIdleAbstract::reselect_state()
 	this->select_state(eStateRest_WalkGraphPoint);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupRestIdleAbstract::setup_substates()
+
+void CStateGroupRestIdle::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -215,6 +209,3 @@ void CStateGroupRestIdleAbstract::setup_substates()
 		return;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupRestIdleAbstract

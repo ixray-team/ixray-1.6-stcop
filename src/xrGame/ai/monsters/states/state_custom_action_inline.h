@@ -1,24 +1,18 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterCustomActionAbstract CStateMonsterCustomAction<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterCustomActionAbstract::CStateMonsterCustomAction(_Object *obj) : inherited(obj, &data)
-{
-}
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterCustomActionAbstract::~CStateMonsterCustomAction()
+CStateMonsterCustomAction::CStateMonsterCustomAction(CBaseMonster *obj) : inherited(obj, &data)
 {
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterCustomActionAbstract::execute()
+CStateMonsterCustomAction::~CStateMonsterCustomAction()
+{
+}
+
+
+
+void CStateMonsterCustomAction::execute()
 {
 	this->object->anim().m_tAction		= data.action;
 	this->object->anim().SetSpecParams(data.spec_params);
@@ -32,8 +26,8 @@ void CStateMonsterCustomActionAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterCustomActionAbstract::check_completion()
+
+bool CStateMonsterCustomAction::check_completion()
 {	
 	if (data.time_out) {
 		if (this->time_state_started + data.time_out < time()) return true;
@@ -41,6 +35,3 @@ bool CStateMonsterCustomActionAbstract::check_completion()
 	
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterCustomActionAbstract

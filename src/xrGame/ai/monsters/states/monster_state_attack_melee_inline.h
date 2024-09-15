@@ -1,24 +1,14 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterAttackMeleeAbstract CStateMonsterAttackMelee<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterAttackMeleeAbstract::CStateMonsterAttackMelee(_Object *obj) : inherited(obj)
+CStateMonsterAttackMelee::CStateMonsterAttackMelee(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterAttackMeleeAbstract::~CStateMonsterAttackMelee()
+CStateMonsterAttackMelee::~CStateMonsterAttackMelee()
 {
 }
 
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMeleeAbstract::execute()
+void CStateMonsterAttackMelee::execute()
 {
 	this->object->set_action			(ACT_ATTACK);
 	if (this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), PI_DIV_3))
@@ -29,8 +19,7 @@ void CStateMonsterAttackMeleeAbstract::execute()
 	this->object->set_state_sound		(MonsterSound::eMonsterSoundAggressive);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackMeleeAbstract::check_start_conditions()
+bool CStateMonsterAttackMelee::check_start_conditions()
 {
 	return (
 		this->object->MeleeChecker.can_start_melee(this->object->EnemyMan.get_enemy()) &&
@@ -38,8 +27,7 @@ bool CStateMonsterAttackMeleeAbstract::check_start_conditions()
 	);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackMeleeAbstract::check_completion()
+bool CStateMonsterAttackMelee::check_completion()
 {
 	return (this->object->MeleeChecker.should_stop_melee(this->object->EnemyMan.get_enemy()));
 }

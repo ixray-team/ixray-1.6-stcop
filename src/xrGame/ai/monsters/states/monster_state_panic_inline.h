@@ -7,33 +7,27 @@
 #include "monster_state_panic_run.h"
 #include "monster_state_home_point_attack.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterPanicAbstract CStateMonsterPanic<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterPanicAbstract::CStateMonsterPanic(_Object *obj) : inherited(obj)
+CStateMonsterPanic::CStateMonsterPanic(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStatePanic_Run,					xr_new<CStateMonsterPanicRun<_Object> >(obj));
-	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<_Object> >(obj));
-	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<_Object> >(obj));
+	this->add_state(eStatePanic_Run,					xr_new<CStateMonsterPanicRun<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterPanicAbstract::~CStateMonsterPanic()
+
+CStateMonsterPanic::~CStateMonsterPanic()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterPanicAbstract::initialize()
+
+void CStateMonsterPanic::initialize()
 {
 	inherited::initialize();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterPanicAbstract::reselect_state()
+
+void CStateMonsterPanic::reselect_state()
 {
 	if (this->get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
 		this->select_state(eStatePanic_MoveToHomePoint);
@@ -44,8 +38,8 @@ void CStateMonsterPanicAbstract::reselect_state()
 	else this->select_state(eStatePanic_Run);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterPanicAbstract::setup_substates()
+
+void CStateMonsterPanic::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -65,22 +59,19 @@ void CStateMonsterPanicAbstract::setup_substates()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterPanicAbstract::check_force_state()
+
+void CStateMonsterPanic::check_force_state()
 {
 	if ((this->current_substate == eStatePanic_FaceUnprotectedArea)){
-		// åñëè âèäèò âðàãà
+		// ÐµÑÐ»Ð¸ Ð²Ð¸Ð´Ð¸Ñ‚ Ð²Ñ€Ð°Ð³Ð°
 		if (this->object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
 			this->select_state(eStatePanic_Run);
 			return;
 		}
-		// åñëè ïîëó÷èë hit
+		// ÐµÑÐ»Ð¸ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð» hit
 		if (this->object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
 			this->select_state(eStatePanic_Run);
 			return;
 		}
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterPanicAbstract

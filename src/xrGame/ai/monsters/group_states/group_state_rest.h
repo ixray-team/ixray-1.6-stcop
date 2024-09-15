@@ -3,17 +3,17 @@
 #include "../state.h"
 #include "../../../entitycondition.h"
 #include "../states/state_data.h"
-template<typename _Object>
-class	CStateGroupRest : public CState<_Object> {
+
+class	CStateGroupRest : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 	u32					time_for_life;
 	u32					time_for_sleep;
 
 public:
-						CStateGroupRest		(_Object *obj);
+						CStateGroupRest		(CBaseMonster *obj);
 	virtual				~CStateGroupRest		();
 
 	virtual	void		initialize				();

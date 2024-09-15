@@ -7,31 +7,25 @@
 #include "../../../entity.h"
 #include "../../../ai_object_location.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupHearDangerousSoundAbstract CStateGroupHearDangerousSound<_Object>
-
 #define LEADER_RADIUS			20.f
 #define FIND_POINT_ATTEMPTS		5
 
-TEMPLATE_SPECIALIZATION
-CStateGroupHearDangerousSoundAbstract::CStateGroupHearDangerousSound(_Object *obj) : inherited(obj)
+
+CStateGroupHearDangerousSound::CStateGroupHearDangerousSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterMoveToPointEx<_Object> >		(obj));
-	this->add_state	(eStateSquad,								xr_new<CStateMonsterMoveToPoint<_Object> >			(obj));
-	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<_Object> >(obj));
+	this->add_state	(eStateHearDangerousSound_Hide,				xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >		(obj));
+	this->add_state	(eStateSquad,								xr_new<CStateMonsterMoveToPoint<CBaseMonster> >			(obj));
+	this->add_state	(eStateHearDangerousSound_Home,				xr_new<CStateMonsterDangerMoveToHomePoint<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupHearDangerousSoundAbstract::initialize()
+
+void CStateGroupHearDangerousSound::initialize()
 {
 	inherited::initialize				();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupHearDangerousSoundAbstract::reselect_state()
+
+void CStateGroupHearDangerousSound::reselect_state()
 {
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	VERIFY(squad);
@@ -63,8 +57,8 @@ void CStateGroupHearDangerousSoundAbstract::reselect_state()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupHearDangerousSoundAbstract::setup_substates()
+
+void CStateGroupHearDangerousSound::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -133,6 +127,3 @@ void CStateGroupHearDangerousSoundAbstract::setup_substates()
 		return;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupHearDangerousSoundAbstract 

@@ -4,23 +4,17 @@
 //#include "../../../PHInterpolation.h"
 //#include "../../../PHElement.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterRestFunAbstract CStateMonsterRestFun<_Object>
-
 #define IMPULSE_TO_CORPSE	15.f
 #define MIN_DELAY			100
 #define TIME_IN_STATE		8000
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterRestFunAbstract::CStateMonsterRestFun(_Object *obj) : inherited(obj)
+
+CStateMonsterRestFun::CStateMonsterRestFun(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestFunAbstract::initialize()
+
+void CStateMonsterRestFun::initialize()
 {
 	inherited::initialize	();
 
@@ -28,8 +22,8 @@ void CStateMonsterRestFunAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestFunAbstract::execute()
+
+void CStateMonsterRestFun::execute()
 {
 	Fvector point;
 	float	dist;
@@ -63,7 +57,7 @@ void CStateMonsterRestFunAbstract::execute()
 			dir_.setHP		(h, p + 5 * PI / 180);
 			dir_.normalize	();
 			
-			// выполнить бросок
+			// РІС‹РїРѕР»РЅРёС‚СЊ Р±СЂРѕСЃРѕРє
 			for (u32 i=0; i<target->m_pPhysicsShell->get_ElementsNumber();i++) {
 				target->m_pPhysicsShell->get_ElementByStoreOrder((u16)i)->applyImpulse(dir_, IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size());
 			}
@@ -73,14 +67,14 @@ void CStateMonsterRestFunAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterRestFunAbstract::check_start_conditions()
+
+bool CStateMonsterRestFun::check_start_conditions()
 {
 	return ((this->object->CorpseMan.get_corpse() != 0) && this->object->Home->at_home(this->object->CorpseMan.get_corpse()->Position()));
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterRestFunAbstract::check_completion()
+
+bool CStateMonsterRestFun::check_completion()
 {
 	if (!this->object->CorpseMan.get_corpse()) return true;
 	if (this->time_state_started + TIME_IN_STATE < Device.dwTimeGlobal) return true;
@@ -90,5 +84,3 @@ bool CStateMonsterRestFunAbstract::check_completion()
 #undef TIME_IN_STATE
 #undef MIN_DELAY
 #undef IMPULSE_TO_CORPSE
-#undef CStateMonsterRestFunAbstract
-#undef TEMPLATE_SPECIALIZATION

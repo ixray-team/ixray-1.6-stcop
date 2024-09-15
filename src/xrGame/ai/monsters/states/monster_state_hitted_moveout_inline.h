@@ -1,25 +1,20 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateMonsterHittedMoveOutAbstract CStateMonsterHittedMoveOut<_Object>
-
 #define DIST_TO_PATH_END	1.5f
 #define DIST_TO_HIT_POINT	3.f
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHittedMoveOutAbstract::initialize()
+
+void CStateMonsterHittedMoveOut::initialize()
 {
 	inherited::initialize();
 	select_target();
 	this->object->path().prepare_builder	();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHittedMoveOutAbstract::execute()
+
+void CStateMonsterHittedMoveOut::execute()
 {
-	// проверить на завершение пути
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ РїСѓС‚Рё
 	if (this->object->control().path_builder().detail().time_path_built() > this->time_state_started) {
 		if (this->object->control().path_builder().is_path_end(DIST_TO_PATH_END)) 
 			select_target		();
@@ -40,8 +35,8 @@ void CStateMonsterHittedMoveOutAbstract::execute()
 	this->object->set_state_sound				(MonsterSound::eMonsterSoundIdle);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHittedMoveOutAbstract::check_completion()
+
+bool CStateMonsterHittedMoveOut::check_completion()
 {
 	if (this->object->HitMemory.get_last_hit_time() > this->time_state_started) return true;
 
@@ -51,13 +46,10 @@ bool CStateMonsterHittedMoveOutAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHittedMoveOutAbstract::select_target()
+
+void CStateMonsterHittedMoveOut::select_target()
 {
 	if (!this->object->GetCoverCloseToPoint(this->object->HitMemory.get_last_hit_position(), 10.f, 20.f, 0.f, 15.f, target.position, target.node)){
 		target.node = u32(-1);
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHittedMoveOutAbstract

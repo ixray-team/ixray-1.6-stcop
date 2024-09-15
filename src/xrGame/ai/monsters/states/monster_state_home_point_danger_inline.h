@@ -9,30 +9,24 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterDangerMoveToHomePointAbstract CStateMonsterDangerMoveToHomePoint<_Object>
-
 //////////////////////////////////////////////////////////////////////////
 // Construct Substates
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterDangerMoveToHomePointAbstract::CStateMonsterDangerMoveToHomePoint(_Object *obj) : inherited(obj) 
+
+CStateMonsterDangerMoveToHomePoint::CStateMonsterDangerMoveToHomePoint(CBaseMonster *obj) : inherited(obj) 
 {
-	this->add_state	(eStatePanic_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStatePanic_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
-	this->add_state	(eStatePanic_HomePoint_Camp,			xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state	(eStatePanic_HomePoint_Hide,			xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStatePanic_HomePoint_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
+	this->add_state	(eStatePanic_HomePoint_Camp,			xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
 }
 
 //////////////////////////////////////////////////////////////////////////
 // Initialize/Finalize
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDangerMoveToHomePointAbstract::initialize()
+
+void CStateMonsterDangerMoveToHomePoint::initialize()
 {
 	inherited::initialize	();
 
@@ -51,16 +45,16 @@ void CStateMonsterDangerMoveToHomePointAbstract::initialize()
 	squad->lock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDangerMoveToHomePointAbstract::finalize()
+
+void CStateMonsterDangerMoveToHomePoint::finalize()
 {
 	inherited::finalize();
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDangerMoveToHomePointAbstract::critical_finalize()
+
+void CStateMonsterDangerMoveToHomePoint::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -72,14 +66,14 @@ void CStateMonsterDangerMoveToHomePointAbstract::critical_finalize()
 // Check Start Conditions / Completion
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterDangerMoveToHomePointAbstract::check_start_conditions()
+
+bool CStateMonsterDangerMoveToHomePoint::check_start_conditions()
 {
 	return (!this->object->Home->at_home() && !this->object->Home->at_home(get_most_danger_pos()));
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()
+
+bool CStateMonsterDangerMoveToHomePoint::check_completion()
 {
 	if (this->object->HitMemory.get_last_hit_time() > this->time_state_started) return true;
 	if (m_skip_camp && (this->prev_substate != u32(-1)) && (this->prev_substate != eStatePanic_HomePoint_Hide) ) return true;
@@ -91,8 +85,8 @@ bool CStateMonsterDangerMoveToHomePointAbstract::check_completion()
 // Select Substate
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDangerMoveToHomePointAbstract::reselect_state()
+
+void CStateMonsterDangerMoveToHomePoint::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) {
 		this->select_state(eStatePanic_HomePoint_Hide);
@@ -111,8 +105,8 @@ void CStateMonsterDangerMoveToHomePointAbstract::reselect_state()
 // Setup Substates
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
+
+void CStateMonsterDangerMoveToHomePoint::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -166,8 +160,8 @@ void CStateMonsterDangerMoveToHomePointAbstract::setup_substates()
 		return;
 	}
 }
-TEMPLATE_SPECIALIZATION
-Fvector &CStateMonsterDangerMoveToHomePointAbstract::get_most_danger_pos()
+
+Fvector &CStateMonsterDangerMoveToHomePoint::get_most_danger_pos()
 {	
 	m_danger_pos.set(0,0,0);
 
@@ -180,5 +174,5 @@ Fvector &CStateMonsterDangerMoveToHomePointAbstract::get_most_danger_pos()
 	return m_danger_pos;
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterDangerMoveToHomePointAbstract
+#undef 
+#undef CStateMonsterDangerMoveToHomePoint

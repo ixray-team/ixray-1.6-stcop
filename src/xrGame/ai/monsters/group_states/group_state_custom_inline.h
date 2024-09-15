@@ -2,26 +2,20 @@
 
 #include "../states/state_custom_action.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateCustomGroupAbstract CStateCustomGroup<_Object>
 
 
-TEMPLATE_SPECIALIZATION
-CStateCustomGroupAbstract::CStateCustomGroup(_Object *obj) : inherited(obj)
+CStateCustomGroup::CStateCustomGroup(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateCustomGroupAbstract::~CStateCustomGroup	()
+
+CStateCustomGroup::~CStateCustomGroup	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateCustomGroupAbstract::execute()
+
+void CStateCustomGroup::execute()
 {
 	// check alife control
 	this->select_state	(eStateCustom);
@@ -30,8 +24,8 @@ void CStateCustomGroupAbstract::execute()
 	this->get_state_current()->execute();
 	this->prev_substate = this->current_substate;
 }
-TEMPLATE_SPECIALIZATION
-void CStateCustomGroupAbstract::setup_substates()
+
+void CStateCustomGroup::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 	if (this->current_substate == eStateCustom) {
@@ -57,5 +51,3 @@ void CStateCustomGroupAbstract::setup_substates()
 		return;
 	}
 }
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateCustomGroupAbstract

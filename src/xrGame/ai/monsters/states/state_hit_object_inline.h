@@ -1,18 +1,12 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterHitObjectAbstract CStateMonsterHitObject<_Object>
-
 #define TEST_ANGLE			PI_DIV_6
 #define TIME_OUT_STATE		1000
 #define TIME_POINTBREAK		500
 #define IMPULSE				20
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHitObjectAbstract::initialize()
+
+void CStateMonsterHitObject::initialize()
 {
 	inherited::initialize	();
 	
@@ -20,8 +14,8 @@ void CStateMonsterHitObjectAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHitObjectAbstract::execute()
+
+void CStateMonsterHitObject::execute()
 {
 	object->set_action				(ACT_STAND_IDLE);
 	object->anim().SetSpecParams	(ASP_CHECK_CORPSE);
@@ -36,12 +30,12 @@ void CStateMonsterHitObjectAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHitObjectAbstract::check_start_conditions()
+
+bool CStateMonsterHitObject::check_start_conditions()
 {
 	target									= 0;
 	
-	// получить физ. объекты в радиусе
+	// РїРѕР»СѓС‡РёС‚СЊ С„РёР·. РѕР±СЉРµРєС‚С‹ РІ СЂР°РґРёСѓСЃРµ
 	m_nearest_objects.clear_not_free		();
 	Level().ObjectSpace.GetNearest			(m_nearest_objects,object->Position(), object->Radius() - 0.5f, object()); 
 	
@@ -52,11 +46,11 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(*I);
 		if (!obj || !obj->m_pPhysicsShell) continue;
 
-		// определить дистанцию до врага
+		// РѕРїСЂРµРґРµР»РёС‚СЊ РґРёСЃС‚Р°РЅС†РёСЋ РґРѕ РІСЂР°РіР°
 		Fvector d;
 		d.sub(obj->Position(),object->Position());
 
-		// проверка на  Field-Of-Hit
+		// РїСЂРѕРІРµСЂРєР° РЅР°  Field-Of-Hit
 		float my_h,my_p;
 		float h,p;
 
@@ -80,12 +74,9 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHitObjectAbstract::check_completion()
+
+bool CStateMonsterHitObject::check_completion()
 {
 	if (time_state_started + TIME_OUT_STATE < Device.dwTimeGlobal) return true;
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHitObjectAbstract

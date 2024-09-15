@@ -3,24 +3,15 @@
 //#include "../../../PHCharacter.h"
 #include "../../../../xrPhysics/IPHCapture.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterDragAbstract CStateMonsterDrag<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterDragAbstract::CStateMonsterDrag(_Object *obj) : inherited(obj)
+CStateMonsterDrag::CStateMonsterDrag(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterDragAbstract::~CStateMonsterDrag()
+CStateMonsterDrag::~CStateMonsterDrag()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDragAbstract::initialize()
+void CStateMonsterDrag::initialize()
 {
 	inherited::initialize();
 
@@ -46,12 +37,11 @@ void CStateMonsterDragAbstract::initialize()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDragAbstract::execute()
+void CStateMonsterDrag::execute()
 {
 	if (m_failed) return;
 	
-	// Óñòàíîâèòü ïàðàìåòðû äâèæåíèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ñ
 	this->object->set_action				(ACT_DRAG);
 	this->object->anim().SetSpecParams	(ASP_MOVE_BKWD);
 
@@ -66,29 +56,26 @@ void CStateMonsterDragAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDragAbstract::finalize()
+void CStateMonsterDrag::finalize()
 {
 	inherited::finalize();	
 
-	// áðîñèòü òðóï
+	// Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚Ñ€ÑƒÐ¿
 	if (this->object->character_physics_support()->movement()->PHCapture())
 		this->object->character_physics_support()->movement()->PHReleaseObject();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterDragAbstract::critical_finalize()
+void CStateMonsterDrag::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	// áðîñèòü òðóï
+	// Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ñ‚Ñ€ÑƒÐ¿
 	if (this->object->character_physics_support()->movement()->PHCapture())
 		this->object->character_physics_support()->movement()->PHReleaseObject();
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterDragAbstract::check_completion()
+bool CStateMonsterDrag::check_completion()
 {
 	if (m_failed) {
 		return true;
@@ -108,6 +95,3 @@ bool CStateMonsterDragAbstract::check_completion()
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterDragAbstract

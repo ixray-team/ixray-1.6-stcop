@@ -6,33 +6,26 @@
 #include "group_state_panic_run.h"
 #include "../states/monster_state_home_point_attack.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupPanicAbstract CStateGroupPanic<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateGroupPanicAbstract::CStateGroupPanic(_Object *obj) : inherited(obj)
+CStateGroupPanic::CStateGroupPanic(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state(eStatePanic_Run,					xr_new<CStateGroupPanicRun<_Object> >(obj));
-	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<_Object> >(obj));
-	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<_Object> >(obj));	
+	this->add_state(eStatePanic_Run,					xr_new<CStateGroupPanicRun<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_FaceUnprotectedArea,	xr_new<CStateMonsterLookToUnprotectedArea<CBaseMonster> >(obj));
+	this->add_state(eStatePanic_MoveToHomePoint,		xr_new<CStateMonsterAttackMoveToHomePoint<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupPanicAbstract::~CStateGroupPanic()
+
+CStateGroupPanic::~CStateGroupPanic()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicAbstract::initialize()
+
+void CStateGroupPanic::initialize()
 {
 	inherited::initialize();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicAbstract::reselect_state()
+
+void CStateGroupPanic::reselect_state()
 {
 	if (this->get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
 		this->select_state(eStatePanic_MoveToHomePoint);
@@ -43,8 +36,8 @@ void CStateGroupPanicAbstract::reselect_state()
 	else this->select_state(eStatePanic_Run);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicAbstract::setup_substates()
+
+void CStateGroupPanic::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -64,22 +57,19 @@ void CStateGroupPanicAbstract::setup_substates()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicAbstract::check_force_state()
+
+void CStateGroupPanic::check_force_state()
 {
 	if ((this->current_substate == eStatePanic_FaceUnprotectedArea)){
-		// åñëè âèäèò âðàãà
+		// ÐµÑÐ»Ð¸ Ð²Ð¸Ð´Ð¸Ñ‚ Ð²Ñ€Ð°Ð³Ð°
 		if (this->object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
 			this->select_state(eStatePanic_Run);
 			return;
 		}
-		// åñëè ïîëó÷èë hit
+		// ÐµÑÐ»Ð¸ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð» hit
 		if (this->object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
 			this->select_state(eStatePanic_Run);
 			return;
 		}
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupPanicAbstract

@@ -13,28 +13,18 @@
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CBloodsuckerStateAttackHideAbstract CBloodsuckerStateAttackHide<_Object>
-
-TEMPLATE_SPECIALIZATION
-CBloodsuckerStateAttackHideAbstract::CBloodsuckerStateAttackHide(_Object *obj) : inherited(obj)
+CBloodsuckerStateAttackHide::CBloodsuckerStateAttackHide(CBaseMonster *obj) : inherited(obj)
 {
-	add_state	(eStateAttack_HideInCover,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
-	add_state	(eStateAttack_CampInCover,	xr_new<CStateBloodsuckerPredatorLite<_Object> >	(obj));
+	add_state	(eStateAttack_HideInCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
+	add_state	(eStateAttack_CampInCover,	xr_new<CStateBloodsuckerPredatorLite<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::reinit()
+void CBloodsuckerStateAttackHide::reinit()
 {
 	inherited::reinit	();
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::initialize()
+void CBloodsuckerStateAttackHide::initialize()
 {
 	inherited::initialize	();
 
@@ -43,8 +33,7 @@ void CBloodsuckerStateAttackHideAbstract::initialize()
 	object->start_invisible_predator();
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::reselect_state()
+void CBloodsuckerStateAttackHide::reselect_state()
 {
 	if (prev_substate == u32(-1)) {
 		select_state(eStateAttack_HideInCover);
@@ -54,8 +43,7 @@ void CBloodsuckerStateAttackHideAbstract::reselect_state()
 	select_state(eStateAttack_CampInCover);
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::finalize()
+void CBloodsuckerStateAttackHide::finalize()
 {
 	inherited::finalize							();
 
@@ -63,8 +51,7 @@ void CBloodsuckerStateAttackHideAbstract::finalize()
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::critical_finalize()
+void CBloodsuckerStateAttackHide::critical_finalize()
 {
 	inherited::critical_finalize				();
 
@@ -72,9 +59,7 @@ void CBloodsuckerStateAttackHideAbstract::critical_finalize()
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
 }
 
-
-TEMPLATE_SPECIALIZATION
-bool CBloodsuckerStateAttackHideAbstract::check_completion()
+bool CBloodsuckerStateAttackHide::check_completion()
 {
 	if (current_substate == eStateAttack_CampInCover)
 		return (get_state_current()->check_completion());
@@ -82,9 +67,7 @@ bool CBloodsuckerStateAttackHideAbstract::check_completion()
 	return false;
 }
 
-
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::setup_substates()
+void CBloodsuckerStateAttackHide::setup_substates()
 {
 	state_ptr state = get_state_current();
 
@@ -111,13 +94,11 @@ void CBloodsuckerStateAttackHideAbstract::setup_substates()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::check_force_state()
+void CBloodsuckerStateAttackHide::check_force_state()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackHideAbstract::select_camp_point()
+void CBloodsuckerStateAttackHide::select_camp_point()
 {
 	if (m_target_node != u32(-1))
 		monster_squad().get_squad(object)->unlock_cover(m_target_node);
@@ -143,7 +124,3 @@ void CBloodsuckerStateAttackHideAbstract::select_camp_point()
 
 	monster_squad().get_squad(object)->lock_cover(m_target_node);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CBloodsuckerStateAttackHideAbstract
-

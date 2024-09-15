@@ -1,30 +1,24 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterStealAbstract CStateMonsterSteal<_Object>
-
 #define STEAL_MIN_DISTANCE		4.f
 #define STEAL_MAX_DISTANCE		15.f
 #define STEAL_MAX_PATH_ANGLE	PI_DIV_6
 
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterStealAbstract::CStateMonsterSteal(_Object *obj) : inherited(obj)
+
+CStateMonsterSteal::CStateMonsterSteal(CBaseMonster*obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterStealAbstract::initialize()
+
+void CStateMonsterSteal::initialize()
 {
 	inherited::initialize					();
 	this->object->path().prepare_builder	();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterStealAbstract::execute()
+
+void CStateMonsterSteal::execute()
 {
 	this->object->set_action					(ACT_STEAL);
 	this->object->anim().accel_activate			(eAT_Calm);
@@ -34,20 +28,20 @@ void CStateMonsterStealAbstract::execute()
 	this->object->set_state_sound				(MonsterSound::eMonsterSoundSteal);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterStealAbstract::check_completion()
+
+bool CStateMonsterSteal::check_completion()
 {
 	return (!check_conditions());
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterStealAbstract::check_start_conditions()
+
+bool CStateMonsterSteal::check_start_conditions()
 {
 	return (check_conditions());
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterStealAbstract::check_conditions()
+
+bool CStateMonsterSteal::check_conditions()
 {
 	// if i see enemy
 	if (!this->object->EnemyMan.see_enemy_now())						return false;

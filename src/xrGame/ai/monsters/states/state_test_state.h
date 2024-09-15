@@ -1,27 +1,25 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterTestState : public CState<_Object> {
-	typedef CState<_Object> inherited;
-	typedef CState<_Object> *state_ptr;
+class CStateMonsterTestState : public CStat {
+	typedef CState inherited;
+	typedef CState *state_ptr;
 
 public:
-						CStateMonsterTestState	(_Object *obj);
+						CStateMonsterTestState	(CBaseMonster*obj);
 	virtual	void		reselect_state			();
 	virtual	void		setup_substates			();
 	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 };
 
-template<typename _Object>
-class CStateMonsterTestCover : public CState<_Object> {
-	typedef CState<_Object> inherited;
-	typedef CState<_Object> *state_ptr;
+class CStateMonsterTestCover : public CState{
+	typedef CState inherited;
+	typedef CState *state_ptr;
 
 	u32					m_last_node;
 
 public:
-						CStateMonsterTestCover	(_Object *obj);
+						CStateMonsterTestCover	(CBaseMonster*obj);
 	virtual void		initialize				();	
 	virtual void		check_force_state		();
 	virtual	void		reselect_state			();

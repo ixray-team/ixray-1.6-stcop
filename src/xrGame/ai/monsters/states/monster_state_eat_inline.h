@@ -14,39 +14,32 @@
 #	include "../../../level_debug.h"
 #endif
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterEatAbstract CStateMonsterEat<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterEatAbstract::CStateMonsterEat(_Object *obj) : inherited(obj)
+CStateMonsterEat::CStateMonsterEat(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<_Object> >(obj));
-	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<_Object> >(obj));
-	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<_Object> >(obj));
-	this->add_state	(eStateEat_Eat,					xr_new<CStateMonsterEating<_Object> >(obj));
-	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<_Object> >(obj));
-	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<_Object> >(obj));
-	this->add_state	(eStateEat_Drag,				xr_new<CStateMonsterDrag<_Object> >(obj));
+	this->add_state	(eStateEat_CorpseApproachRun,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_CorpseApproachWalk,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_CheckCorpse,			xr_new<CStateMonsterCustomAction<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_Eat,					xr_new<CStateMonsterEating<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_WalkAway,			xr_new<CStateMonsterHideFromPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_Rest,				xr_new<CStateMonsterCustomAction<CBaseMonster> >(obj));
+	this->add_state	(eStateEat_Drag,				xr_new<CStateMonsterDrag<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterEatAbstract::~CStateMonsterEat()
+
+CStateMonsterEat::~CStateMonsterEat()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::reinit()
+
+void CStateMonsterEat::reinit()
 {
 	inherited::reinit();
 	
 	m_time_last_eat = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::initialize()
+
+void CStateMonsterEat::initialize()
 {
 	inherited::initialize();
 	corpse = this->object->CorpseMan.get_corpse();
@@ -54,16 +47,16 @@ void CStateMonsterEatAbstract::initialize()
 	monster_squad().get_squad(this->object)->lock_corpse(this->object->CorpseMan.get_corpse());
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::finalize()
+
+void CStateMonsterEat::finalize()
 {
 	inherited::finalize();
 
 	monster_squad().get_squad(this->object)->unlock_corpse(this->object->CorpseMan.get_corpse());
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::critical_finalize()
+
+void CStateMonsterEat::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -71,8 +64,8 @@ void CStateMonsterEatAbstract::critical_finalize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::reselect_state()
+
+void CStateMonsterEat::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) { this->select_state(eStateEat_CorpseApproachRun);return;}
 	if (this->prev_substate == eStateEat_CorpseApproachRun) { this->select_state(eStateEat_CheckCorpse); return; }
@@ -122,14 +115,14 @@ void CStateMonsterEatAbstract::reselect_state()
 	if (this->prev_substate == eStateEat_Rest)		{ this->select_state(eStateEat_Rest);		return; }
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::setup_substates()
+
+void CStateMonsterEat::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
 	if (this->current_substate == eStateEat_CorpseApproachRun) {
 
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpse_ = this->object->CorpseMan.get_corpse();
 		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
@@ -206,7 +199,7 @@ void CStateMonsterEatAbstract::setup_substates()
 
 	if (this->current_substate == eStateEat_CorpseApproachWalk) {
 		
-		// Îïðåäåëèòü ïîçèöèþ áëèæàéøåé áîíû ó òðóïà
+		// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐµÐ¹ Ð±Ð¾Ð½Ñ‹ Ñƒ Ñ‚Ñ€ÑƒÐ¿Ð°
 		Fvector nearest_bone_pos;
 		const CEntityAlive *corpse_ = this->object->CorpseMan.get_corpse();
 		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
@@ -229,8 +222,8 @@ void CStateMonsterEatAbstract::setup_substates()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterEatAbstract::check_completion()
+
+bool CStateMonsterEat::check_completion()
 {
 	if (corpse != this->object->CorpseMan.get_corpse()) return true;
 	if (!hungry()) return true;
@@ -238,8 +231,8 @@ bool CStateMonsterEatAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterEatAbstract::check_start_conditions()
+
+bool CStateMonsterEat::check_start_conditions()
 {
 	return (
 		this->object->CorpseMan.get_corpse() && 
@@ -252,18 +245,18 @@ bool CStateMonsterEatAbstract::check_start_conditions()
 
 #define TIME_NOT_HUNGRY 20000
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterEatAbstract::hungry()
+
+bool CStateMonsterEat::hungry()
 {
 	return ((m_time_last_eat == 0) || (m_time_last_eat + TIME_NOT_HUNGRY < time()));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatAbstract::remove_links	(CObject* object_)
+
+void CStateMonsterEat::remove_links	(CObject* object_)
 {
 	if (corpse == object_)
 		corpse	= 0;
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterEatAbstract
+#undef 
+#undef CStateMonsterEat

@@ -3,41 +3,30 @@
 //#include "bloodsucker_attack_state_hide.h"
 #include "../states/state_move_to_point.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CBloodsuckerStateAttackAbstract CBloodsuckerStateAttack<_Object>
-
-TEMPLATE_SPECIALIZATION
-CBloodsuckerStateAttackAbstract::CBloodsuckerStateAttack(_Object *obj) : inherited_attack(obj)
+CBloodsuckerStateAttack::CBloodsuckerStateAttack(_Object *obj) : inherited_attack(obj)
 {
 	add_state	(eStateAttack_Hide,	xr_new<CStateMonsterBackstubEnemy<_Object> >(obj));
 	add_state	(eStateVampire_Execute,	xr_new<CStateBloodsuckerVampireExecute<_Object> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CBloodsuckerStateAttackAbstract::~CBloodsuckerStateAttack()
+CBloodsuckerStateAttack::~CBloodsuckerStateAttack()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackAbstract::initialize()
+void CBloodsuckerStateAttack::initialize()
 {
 	__super::initialize	();
 	m_time_stop_invis		= 0;
 	m_last_health           = this->object->conditions().GetHealth();
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackAbstract::finalize()
+void CBloodsuckerStateAttack::finalize()
 {
 	__super::finalize();
 	this->object->start_invisible_predator();
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackAbstract::critical_finalize()
+void CBloodsuckerStateAttack::critical_finalize()
 {
 	__super::critical_finalize();
 	this->object->start_invisible_predator();
@@ -56,8 +45,7 @@ namespace bloodsucker
 
 } // namespace detail
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackAbstract::execute()
+void CBloodsuckerStateAttack::execute()
 {
 	if (this->check_home_point() )				this->select_state(eStateAttack_MoveToHomePoint);
 	else if ( check_vampire() )				this->select_state(eStateVampire_Execute);
@@ -68,7 +56,7 @@ void CBloodsuckerStateAttackAbstract::execute()
 	else if (this->check_run_attack_state() )	this->select_state(eStateAttack_RunAttack);
 	else
 	{
-		// определить тип атаки
+		// РѕРїСЂРµРґРµР»РёС‚СЊ С‚РёРї Р°С‚Р°РєРё
 		bool b_melee = false; 
 
 		if (this->prev_substate == eStateAttack_Melee )
@@ -88,7 +76,7 @@ void CBloodsuckerStateAttackAbstract::execute()
 			this->select_state(eStateAttack_Hide);
  		}
  		else
-		// установить целевое состояние
+		// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С†РµР»РµРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		if ( b_melee ) 
 		{  
 			// check if enemy is behind me for a long time
@@ -130,8 +118,7 @@ void CBloodsuckerStateAttackAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CBloodsuckerStateAttackAbstract::check_vampire()
+bool CBloodsuckerStateAttack::check_vampire()
 {
 	if (this->prev_substate != eStateVampire_Execute )
 	{
@@ -144,8 +131,7 @@ bool CBloodsuckerStateAttackAbstract::check_vampire()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CBloodsuckerStateAttackAbstract::check_hiding()
+bool CBloodsuckerStateAttack::check_hiding()
 {
 	const bool health_step_lost = this->object->conditions().GetHealth() < 
 		                          m_last_health-::detail::bloodsucker::loose_health_diff;
@@ -176,8 +162,7 @@ bool CBloodsuckerStateAttackAbstract::check_hiding()
 	return this->get_state(eStateAttack_Hide)->check_start_conditions();
 }
 
-TEMPLATE_SPECIALIZATION
-void CBloodsuckerStateAttackAbstract::setup_substates()
+void CBloodsuckerStateAttack::setup_substates()
 {
 	auto state = this->get_state_current();
 
@@ -201,17 +186,11 @@ void CBloodsuckerStateAttackAbstract::setup_substates()
 	}
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CBloodsuckerStateAttackAbstract
-
-
 //////////////////////////////////////////////////////////////////////////
 // CStateMonsterMoveToPointEx with path rebuild options
 //////////////////////////////////////////////////////////////////////////
 
-
-template <class _Object>
-void   CStateMonsterBackstubEnemy<_Object>::initialize ()
+void   CStateMonsterBackstubEnemy<CBaseMonster>::initialize ()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();
@@ -221,8 +200,7 @@ void   CStateMonsterBackstubEnemy<_Object>::initialize ()
 	m_next_change_behaviour_tick = 0;
 }
 
-template <class _Object>
-void   CStateMonsterBackstubEnemy<_Object>::execute ()
+void   CStateMonsterBackstubEnemy<CBaseMonster>::execute ()
 {
 	// on hit, change behaviour
 	if ( this->object->conditions().GetHealth() < m_last_health- ::detail::bloodsucker::loose_health_diff &&
@@ -288,8 +266,7 @@ void   CStateMonsterBackstubEnemy<_Object>::execute ()
 	}
 }
 
-template <class _Object>
-bool   CStateMonsterBackstubEnemy<_Object>::check_start_conditions ()
+bool   CStateMonsterBackstubEnemy<CBaseMonster>::check_start_conditions ()
 {
 	if ( !this->object->Home->at_home(this->object->EnemyMan.get_enemy_position()) )
 	{
@@ -301,8 +278,7 @@ bool   CStateMonsterBackstubEnemy<_Object>::check_start_conditions ()
 	return dist > this->object->MeleeChecker.get_min_distance();
 }
 
-template <class _Object>
-bool   CStateMonsterBackstubEnemy<_Object>::check_completion ()
+bool   CStateMonsterBackstubEnemy<CBaseMonster>::check_completion ()
 {	
 	if ( !this->object->Home->at_home(this->object->EnemyMan.get_enemy_position()) )
 	{

@@ -1,11 +1,10 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterAttackMoveToHomePoint : public CState<_Object> {
+class CStateMonsterAttackMoveToHomePoint : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 	u32					m_target_node;
 	Fvector				m_target_pos;
@@ -13,7 +12,7 @@ protected:
 	TTime				m_selected_target_time;
 
 public:
-						CStateMonsterAttackMoveToHomePoint(_Object *obj);
+						CStateMonsterAttackMoveToHomePoint(CBaseMonster*obj);
 
 	virtual	void		initialize				();
 	virtual void 		finalize				();

@@ -7,12 +7,12 @@
 #include "debug_text_tree.h"
 #endif
 
-template <typename _Object>
-class CMonsterStateManager : public IStateManagerBase, public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CMonsterStateManager : public IStateManagerBase, public CState 
+{
+	typedef CState inherited;
 
 public:
-					CMonsterStateManager	(_Object *obj) : inherited(obj) {}
+					CMonsterStateManager	(CBaseMonster *obj) : inherited(obj) {}
 	virtual void	reinit					();
 	virtual void	update					();
 	virtual void	force_script_state		(EMonsterState state);

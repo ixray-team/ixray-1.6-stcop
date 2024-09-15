@@ -1,11 +1,10 @@
 #pragma once
 
-template<typename _Object>
-class CStateMonsterPanicRun : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterPanicRun : public CState {
+	typedef CState inherited;
 
 public:
-						CStateMonsterPanicRun	(_Object *obj) : inherited(obj) {}
+						CStateMonsterPanicRun	(CBaseMonster *obj) : inherited(obj) {}
 	virtual				~CStateMonsterPanicRun	() {}
 
 	virtual void		initialize				();

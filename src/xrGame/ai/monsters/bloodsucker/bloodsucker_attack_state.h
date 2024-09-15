@@ -1,9 +1,8 @@
 #pragma once
 #include "../states/monster_state_attack.h"
 
-template<typename _Object>
-class	CBloodsuckerStateAttack : public CStateMonsterAttack<_Object> {
-	typedef CStateMonsterAttack<_Object> inherited_attack;
+class	CBloodsuckerStateAttack : public CStateMonsterAttack {
+	typedef CStateMonsterAttack inherited_attack;
 
 	u32				m_time_stop_invis;
 	Fvector			m_dir_point;
@@ -12,7 +11,7 @@ class	CBloodsuckerStateAttack : public CStateMonsterAttack<_Object> {
 	bool            m_start_with_encircle;
 
 public:
-					CBloodsuckerStateAttack		(_Object *obj);
+					CBloodsuckerStateAttack		(CBaseMonster *obj);
 	virtual			~CBloodsuckerStateAttack	();
 
 	virtual	void	initialize					();
@@ -26,9 +25,8 @@ private:
 			bool	check_vampire				();
 };
 
-template<typename _Object>
-class CStateMonsterBackstubEnemy : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterBackstubEnemy : public CState {
+	typedef CState inherited;
 public:
 	struct StateParams : SStateDataMoveToPointEx
 	{
@@ -44,7 +42,7 @@ protected:
 	TTime                   m_next_change_behaviour_tick;
 
 public:
-	CStateMonsterBackstubEnemy	(_Object *obj) : inherited(obj, &data) {}
+	CStateMonsterBackstubEnemy	(CBaseMonster *obj) : inherited(obj, &data) {}
 	virtual				~CStateMonsterBackstubEnemy	() {}
 	virtual void		initialize					();
 	virtual	void		execute						();

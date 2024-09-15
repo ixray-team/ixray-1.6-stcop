@@ -13,14 +13,8 @@
 #include "../../../entity_alive.h"
 #include "../../../actor.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateGroupAttackAbstract CStateGroupAttack<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateGroupAttackAbstract::CStateGroupAttack(_Object *obj) : inherited(obj)
+CStateGroupAttack::CStateGroupAttack(_Object *obj) : inherited(obj)
 {
 	this->add_state	(eStateAttack_Run,				xr_new<CStateGroupAttackRun<_Object> >				(obj));
 	this->add_state	(eStateAttack_Melee,			xr_new<CStateMonsterAttackMelee<_Object> >			(obj));
@@ -37,13 +31,13 @@ CStateGroupAttackAbstract::CStateGroupAttack(_Object *obj) : inherited(obj)
 	this->add_state	(eStateAttack_ControlFire,		xr_new<CStateCustomGroup<_Object> >					(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupAttackAbstract::~CStateGroupAttack()
+
+CStateGroupAttack::~CStateGroupAttack()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackAbstract::initialize()
+
+void CStateGroupAttack::initialize()
 {
 	inherited::initialize				();
 
@@ -81,8 +75,8 @@ void CStateGroupAttackAbstract::initialize()
 
 #define FIND_ENEMY_DELAY	12000
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackAbstract::finalize()
+
+void CStateGroupAttack::finalize()
 {
 	inherited::finalize();
 	CEntityAlive* enemy	= const_cast<CEntityAlive*>(m_enemy);
@@ -90,8 +84,8 @@ void CStateGroupAttackAbstract::finalize()
 	this->object->EnemyMan.script_enemy();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackAbstract::critical_finalize()
+
+void CStateGroupAttack::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -104,8 +98,8 @@ void CStateGroupAttackAbstract::critical_finalize()
 	this->object->EnemyMan.script_enemy();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackAbstract::execute()
+
+void CStateGroupAttack::execute()
 {
 	bool	can_attack_on_move	=	this->object->can_attack_on_move();
 	CEntityAlive* enemy	= const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
@@ -196,7 +190,7 @@ void CStateGroupAttackAbstract::execute()
 	else
 	{
 
-		// определить тип атаки
+		// РѕРїСЂРµРґРµР»РёС‚СЊ С‚РёРї Р°С‚Р°РєРё
 		bool b_melee = false; 
 
 		if (this->prev_substate == eStateAttack_Melee )
@@ -211,7 +205,7 @@ void CStateGroupAttackAbstract::execute()
 			b_melee = true;
 		}
 
-		// установить целевое состояние
+		// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С†РµР»РµРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		if ( !can_attack_on_move && b_melee )
 		{  
 			// check if enemy is behind me for a long time
@@ -342,8 +336,8 @@ void CStateGroupAttackAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackAbstract::check_home_point()
+
+bool CStateGroupAttack::check_home_point()
 {
 	// Lain: intentionally
 	// 	if ( this->object->Home->is_aggressive() )
@@ -369,8 +363,8 @@ bool CStateGroupAttackAbstract::check_home_point()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void   CStateGroupAttackAbstract::setup_substates ()
+
+void   CStateGroupAttack::setup_substates ()
 {
 	state_ptr state = this->get_state_current();
 
@@ -469,8 +463,8 @@ void   CStateGroupAttackAbstract::setup_substates ()
 #define ANGLE_START_CHECK_BEHINDER		2 * PI_DIV_3
 #define ANGLE_CONTINUE_CHECK_BEHINDER	PI_DIV_2
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackAbstract::check_behinder()
+
+bool CStateGroupAttack::check_behinder()
 {
 	// if we are not in behinder state
 	if (m_time_start_behinder == 0) {
@@ -511,14 +505,11 @@ bool CStateGroupAttackAbstract::check_behinder()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackAbstract::remove_links(CObject* object_)
+
+void CStateGroupAttack::remove_links(CObject* object_)
 {
 	if ( m_enemy == object_ )
 	{
 		m_enemy	= 0;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupAttackAbstract

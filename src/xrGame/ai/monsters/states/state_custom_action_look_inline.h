@@ -1,24 +1,18 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterCustomActionLookAbstract CStateMonsterCustomActionLook<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterCustomActionLookAbstract::CStateMonsterCustomActionLook(_Object *obj) : inherited(obj, &data)
-{
-}
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterCustomActionLookAbstract::~CStateMonsterCustomActionLook()
+CStateMonsterCustomActionLook::CStateMonsterCustomActionLook(CBaseMonster *obj) : inherited(obj, &data)
 {
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterCustomActionLookAbstract::execute()
+CStateMonsterCustomActionLook::~CStateMonsterCustomActionLook()
+{
+}
+
+
+
+void CStateMonsterCustomActionLook::execute()
 {
 	this->object->set_action			(data.action);
 	this->object->anim().SetSpecParams(data.spec_params);
@@ -33,8 +27,8 @@ void CStateMonsterCustomActionLookAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterCustomActionLookAbstract::check_completion()
+
+bool CStateMonsterCustomActionLook::check_completion()
 {	
 	if (data.time_out) {
 		if (this->time_state_started + data.time_out < time()) return true;
@@ -42,6 +36,3 @@ bool CStateMonsterCustomActionLookAbstract::check_completion()
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterCustomActionLookAbstract

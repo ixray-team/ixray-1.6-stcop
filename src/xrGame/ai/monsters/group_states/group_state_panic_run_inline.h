@@ -1,24 +1,18 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupPanicRunAbstract CStateGroupPanicRun<_Object>
-
 #define MIN_UNSEEN_TIME			15000
 #define MIN_DIST_TO_ENEMY		15.f
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicRunAbstract::initialize()
+
+void CStateGroupPanicRun::initialize()
 {
 	inherited::initialize();
 	
 	this->object->path().prepare_builder		();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupPanicRunAbstract::execute()
+
+void CStateGroupPanicRun::execute()
 {
 	this->object->set_action							(ACT_RUN);
 	this->object->set_state_sound						(MonsterSound::eMonsterSoundPanic);
@@ -33,8 +27,8 @@ void CStateGroupPanicRunAbstract::execute()
 
 	this->object->path().set_generic_parameters	();
 }
-TEMPLATE_SPECIALIZATION
-bool CStateGroupPanicRunAbstract::check_completion()
+
+bool CStateGroupPanicRun::check_completion()
 {
 	float dist_to_enemy = this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position());
 	u32 time_delta	= Device.dwTimeGlobal - this->object->EnemyMan.get_enemy_time_last_seen();
@@ -47,5 +41,4 @@ bool CStateGroupPanicRunAbstract::check_completion()
 
 #undef DIST_TO_PATH_END
 #undef MIN_DIST_TO_ENEMY
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupPanicRunAbstract
+

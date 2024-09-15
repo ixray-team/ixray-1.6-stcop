@@ -1,12 +1,10 @@
 #pragma once
 
-
-template<typename _Object>
-class CStateMonsterAttackCampStealOut : public CStateMove<_Object> {
-	typedef CStateMove<_Object> inherited;
+class CStateMonsterAttackCampStealOut : public CStateMove {
+	typedef CStateMove inherited;
 
 public:
-						CStateMonsterAttackCampStealOut	(_Object *obj);
+						CStateMonsterAttackCampStealOut	(CBaseMonster*obj);
 
 	virtual	void		execute					();
 	virtual bool 		check_completion		();

@@ -2,15 +2,13 @@
 
 #include "../state.h"
 
-
-template<typename _Object>
-class	CStateMonsterFindEnemy : public CState<_Object> {
+class	CStateMonsterFindEnemy : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 public:
-						CStateMonsterFindEnemy	(_Object *obj);
+						CStateMonsterFindEnemy	(CBaseMonster *obj);
 	virtual				~CStateMonsterFindEnemy	();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 

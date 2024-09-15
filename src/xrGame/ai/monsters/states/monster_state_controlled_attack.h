@@ -3,12 +3,11 @@
 #include "../state.h"
 #include "monster_state_attack.h"
 
-template<typename _Object>
-class	CStateMonsterControlledAttack : public CStateMonsterAttack<_Object> {
-	typedef CStateMonsterAttack<_Object>	inherited;
+class	CStateMonsterControlledAttack : public CStateMonsterAttack {
+	typedef CStateMonsterAttack	inherited;
 
 public:
-						CStateMonsterControlledAttack	(_Object *obj);
+						CStateMonsterControlledAttack	(CBaseMonster *obj);
 	virtual void		initialize						();
 	virtual	void		execute							();
 	virtual void		finalize						();

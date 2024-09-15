@@ -1,22 +1,17 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterHideFromPointAbstract CStateMonsterHideFromPoint<_Object>
 #define DIST_TO_PATH_END		1.5f
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHideFromPointAbstract::initialize()
+
+void CStateMonsterHideFromPoint::initialize()
 {
 	inherited::initialize();
 
 	this->object->path().prepare_builder();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHideFromPointAbstract::execute()
+
+void CStateMonsterHideFromPoint::execute()
 {
 	this->object->set_action									(data.action.action);
 	this->object->anim().SetSpecParams						(data.action.spec_params);
@@ -34,8 +29,8 @@ void CStateMonsterHideFromPointAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHideFromPointAbstract::check_completion()
+
+bool CStateMonsterHideFromPoint::check_completion()
 {	
 	if (data.action.time_out !=0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal)
@@ -46,5 +41,3 @@ bool CStateMonsterHideFromPointAbstract::check_completion()
 }
 
 #undef DIST_TO_PATH_END
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHideFromPointAbstract

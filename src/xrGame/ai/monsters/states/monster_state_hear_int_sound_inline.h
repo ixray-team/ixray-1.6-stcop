@@ -3,21 +3,15 @@
 #include "state_custom_action_look.h"
 #include "state_move_to_point.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterHearInterestingSoundAbstract CStateMonsterHearInterestingSound<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterHearInterestingSoundAbstract::CStateMonsterHearInterestingSound(_Object *obj) : inherited(obj)
+CStateMonsterHearInterestingSound::CStateMonsterHearInterestingSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearInterestingSound_MoveToDest,	xr_new<CStateMonsterMoveToPoint<_Object> >(obj));
-	this->add_state	(eStateHearInterestingSound_LookAround,	xr_new<CStateMonsterCustomActionLook<_Object> >(obj));
+	this->add_state	(eStateHearInterestingSound_MoveToDest,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >(obj));
+	this->add_state	(eStateHearInterestingSound_LookAround,	xr_new<CStateMonsterCustomActionLook<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearInterestingSoundAbstract::reselect_state()
+
+void CStateMonsterHearInterestingSound::reselect_state()
 {
 	if (this->prev_substate == u32(-1)){
 		if (this->get_state(eStateHearInterestingSound_MoveToDest)->check_start_conditions()) 
@@ -30,8 +24,8 @@ void CStateMonsterHearInterestingSoundAbstract::reselect_state()
 	this->select_state(eStateHearInterestingSound_LookAround);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearInterestingSoundAbstract::setup_substates()
+
+void CStateMonsterHearInterestingSound::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 	
@@ -69,8 +63,8 @@ void CStateMonsterHearInterestingSoundAbstract::setup_substates()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-Fvector	CStateMonsterHearInterestingSoundAbstract::get_target_position()
+
+Fvector	CStateMonsterHearInterestingSound::get_target_position()
 {
 	Fvector snd_pos = this->object->SoundMemory.GetSound().position;
 	if (!this->object->Home->has_home() )
@@ -81,6 +75,3 @@ Fvector	CStateMonsterHearInterestingSoundAbstract::get_target_position()
 
 	return ai().level_graph().vertex_position(this->object->Home->get_place());
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHearInterestingSoundAbstract 

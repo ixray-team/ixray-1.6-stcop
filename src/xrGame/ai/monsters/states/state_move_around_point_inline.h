@@ -1,19 +1,13 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterMoveAroundPointAbstract CStateMonsterMoveAroundPoint<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveAroundPointAbstract::initialize()
+void CStateMonsterMoveAroundPoint::initialize()
 {
 	inherited::initialize();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveAroundPointAbstract::execute()
+
+void CStateMonsterMoveAroundPoint::execute()
 {
 	//if (data.vertex != u32(-1)) object->MoveToTarget(data.point, data.vertex);
 	//else object->MoveToTarget(data.point);
@@ -34,13 +28,10 @@ void CStateMonsterMoveAroundPointAbstract::execute()
 	//}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterMoveAroundPointAbstract::check_completion()
+
+bool CStateMonsterMoveAroundPoint::check_completion()
 {	
 //	if (data.time_out)
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterMoveAroundPointAbstract

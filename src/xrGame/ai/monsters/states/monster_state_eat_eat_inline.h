@@ -1,38 +1,29 @@
 #pragma once
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterEatingAbstract CStateMonsterEating<_Object>
 
 #define TIME_TO_EAT 20000
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterEatingAbstract::CStateMonsterEating(_Object *obj) : inherited(obj)
+CStateMonsterEating::CStateMonsterEating(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterEatingAbstract::~CStateMonsterEating()
+CStateMonsterEating::~CStateMonsterEating()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatingAbstract::initialize()
+void CStateMonsterEating::initialize()
 {
 	inherited::initialize();
 	time_last_eat = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatingAbstract::execute()
+void CStateMonsterEating::execute()
 {
 	if (this->object->CorpseMan.get_corpse() != corpse)  return;
 
 	this->object->set_action				(ACT_EAT);
 	this->object->set_state_sound			(MonsterSound::eMonsterSoundEat);
 
-	// ñúåñòü ÷àñòü
+	// ÑÑŠÐµÑÑ‚ÑŒ Ñ‡Ð°ÑÑ‚ÑŒ
 	if (time_last_eat + u32(1000/this->object->db().m_fEatFreq) < Device.dwTimeGlobal) {
 		this->object->ChangeSatiety(this->object->db().m_fEatSlice);
 		corpse->m_fFood -= this->object->db().m_fEatSliceWeight;
@@ -40,8 +31,7 @@ void CStateMonsterEatingAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterEatingAbstract::check_start_conditions()
+bool CStateMonsterEating::check_start_conditions()
 {
 	corpse	= const_cast<CEntityAlive*>(this->object->CorpseMan.get_corpse());
 	VERIFY	(corpse);
@@ -58,9 +48,7 @@ bool CStateMonsterEatingAbstract::check_start_conditions()
 	return false;
 }
 
-
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterEatingAbstract::check_completion()
+bool CStateMonsterEating::check_completion()
 {
 	if (this->time_state_started + TIME_TO_EAT < time())	return true;
 	if (this->object->CorpseMan.get_corpse() != corpse)	return true;
@@ -77,12 +65,8 @@ bool CStateMonsterEatingAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterEatingAbstract::remove_links	(CObject* object_)
+void CStateMonsterEating::remove_links	(CObject* object_)
 {
 	if (corpse == object_)
 		corpse				= 0;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterEatingAbstract

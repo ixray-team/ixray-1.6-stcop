@@ -3,20 +3,15 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateGroupAttackRunAbstract CStateGroupAttackRun<_Object>
 
-TEMPLATE_SPECIALIZATION
-CStateGroupAttackRunAbstract::CStateGroupAttackRun	(_Object *obj) : inherited(obj) 
+CStateGroupAttackRun::CStateGroupAttackRun	(CBaseMonster*obj) : inherited(obj)
 {
 	m_next_encircle_tick = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackRunAbstract::initialize()
+
+void CStateGroupAttackRun::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder	();	
@@ -66,8 +61,8 @@ void CStateGroupAttackRunAbstract::initialize()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackRunAbstract::execute()
+
+void CStateGroupAttackRun::execute()
 {	
  	if ( Device.dwTimeGlobal > m_intercept_tick + m_intercept_length )
  	{
@@ -143,7 +138,7 @@ void CStateGroupAttackRunAbstract::execute()
  		vertex = this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
 	}
 	
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
 	this->object->set_action (ACT_RUN);
 
 	this->object->anim().accel_activate			(eAT_Aggressive);
@@ -172,23 +167,23 @@ void CStateGroupAttackRunAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackRunAbstract::finalize()
+
+void CStateGroupAttackRun::finalize()
 {
 	inherited::finalize					();
 	this->object->path().extrapolate_path	(false);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupAttackRunAbstract::critical_finalize()
+
+void CStateGroupAttackRun::critical_finalize()
 {
 	inherited::critical_finalize		();
 	this->object->path().extrapolate_path	(false);
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackRunAbstract::check_completion()
+
+bool CStateGroupAttackRun::check_completion()
 {
 	float m_fDistMin = this->object->MeleeChecker.get_min_distance();
 	float dist		 = this->object->MeleeChecker.distance_to_enemy(this->object->EnemyMan.get_enemy());
@@ -201,8 +196,8 @@ bool CStateGroupAttackRunAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupAttackRunAbstract::check_start_conditions()
+
+bool CStateGroupAttackRun::check_start_conditions()
 {
 	float m_fDistMax = this->object->MeleeChecker.get_max_distance();
 	float dist		 = this->object->MeleeChecker.distance_to_enemy(this->object->EnemyMan.get_enemy());

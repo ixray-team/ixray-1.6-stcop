@@ -1,29 +1,19 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterLookToPointAbstract CStateMonsterLookToPoint<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterLookToPointAbstract::CStateMonsterLookToPoint(_Object *obj) : inherited(obj, &data)
+CStateMonsterLookToPoint::CStateMonsterLookToPoint(CBaseMonster*obj) : inherited(obj, &data)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterLookToPointAbstract::~CStateMonsterLookToPoint()
+CStateMonsterLookToPoint::~CStateMonsterLookToPoint()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterLookToPointAbstract::initialize()
+void CStateMonsterLookToPoint::initialize()
 {
 	inherited::initialize();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterLookToPointAbstract::execute()
+void CStateMonsterLookToPoint::execute()
 {
 	this->object->anim().m_tAction				= data.action.action;
 	this->object->anim().SetSpecParams			(data.action.spec_params);
@@ -38,8 +28,8 @@ void CStateMonsterLookToPointAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterLookToPointAbstract::check_completion() {
+
+bool CStateMonsterLookToPoint::check_completion() {
 	if (data.action.time_out != 0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) {
 			return true;
@@ -49,6 +39,3 @@ bool CStateMonsterLookToPointAbstract::check_completion() {
 	}
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterLookToPointAbstract

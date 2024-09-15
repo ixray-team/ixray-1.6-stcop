@@ -3,20 +3,19 @@
 #include "../state.h"
 #include "../../../ai_debug.h"
 
-template<typename _Object>
-class	CStateMonsterAttack : public CState<_Object> {
+class	CStateMonsterAttack : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 	u32					m_time_next_run_away;
 	u32					m_time_start_check_behinder;
 	u32					m_time_start_behinder;
 
 public:
-						CStateMonsterAttack		(_Object *obj);
-						CStateMonsterAttack		(_Object *obj, state_ptr state_move2home);
-						CStateMonsterAttack		(_Object *obj, state_ptr state_run, state_ptr state_melee);
+						CStateMonsterAttack		(CBaseMonster *obj);
+						CStateMonsterAttack		(CBaseMonster*obj, state_ptr state_move2home);
+						CStateMonsterAttack		(CBaseMonster*obj, state_ptr state_run, state_ptr state_melee);
 	virtual				~CStateMonsterAttack	();
 	
 	virtual void		initialize				();

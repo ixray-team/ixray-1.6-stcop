@@ -13,36 +13,30 @@
 #include "monster_state_home_point_rest.h"
 #include "monster_state_smart_terrain_task.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterRestAbstract CStateMonsterRest<_Object>
-
 #define TIME_DELAY_FUN	20000
 #define TIME_IDLE		60000
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterRestAbstract::CStateMonsterRest(_Object *obj) : inherited(obj)
+
+CStateMonsterRest::CStateMonsterRest(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state(eStateRest_Sleep,			xr_new<CStateMonsterRestSleep<_Object> >	(obj));
-	this->add_state(eStateRest_WalkGraphPoint,xr_new<CStateMonsterRestWalkGraph<_Object> >(obj));
-	this->add_state(eStateRest_Idle,			xr_new<CStateMonsterRestIdle<_Object> >		(obj));
-	this->add_state(eStateRest_Fun,			xr_new<CStateMonsterRestFun<_Object> >		(obj));
-	this->add_state(eStateSquad_Rest,			xr_new<CStateMonsterSquadRest<_Object> >	(obj));
-	this->add_state(eStateSquad_RestFollow,	xr_new<CStateMonsterSquadRestFollow<_Object> >(obj));
-	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<_Object> > (obj));
-	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint<_Object> > (obj));
-	this->add_state(eStateSmartTerrainTask, xr_new<CStateMonsterSmartTerrainTask<_Object> > (obj));
+	this->add_state(eStateRest_Sleep,			xr_new<CStateMonsterRestSleep<CBaseMonster> >	(obj));
+	this->add_state(eStateRest_WalkGraphPoint,xr_new<CStateMonsterRestWalkGraph<CBaseMonster> >(obj));
+	this->add_state(eStateRest_Idle,			xr_new<CStateMonsterRestIdle<CBaseMonster> >		(obj));
+	this->add_state(eStateRest_Fun,			xr_new<CStateMonsterRestFun<CBaseMonster> >		(obj));
+	this->add_state(eStateSquad_Rest,			xr_new<CStateMonsterSquadRest<CBaseMonster> >	(obj));
+	this->add_state(eStateSquad_RestFollow,	xr_new<CStateMonsterSquadRestFollow<CBaseMonster> >(obj));
+	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor<CBaseMonster> > (obj));
+	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint<CBaseMonster> > (obj));
+	this->add_state(eStateSmartTerrainTask, xr_new<CStateMonsterSmartTerrainTask<CBaseMonster> > (obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterRestAbstract::~CStateMonsterRest	()
+
+CStateMonsterRest::~CStateMonsterRest	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestAbstract::initialize()
+
+void CStateMonsterRest::initialize()
 {
 	inherited::initialize	();
 
@@ -51,24 +45,24 @@ void CStateMonsterRestAbstract::initialize()
 	this->object->anomaly_detector().activate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestAbstract::finalize()
+
+void CStateMonsterRest::finalize()
 {
 	inherited::finalize();
 	
 	this->object->anomaly_detector().deactivate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestAbstract::critical_finalize()
+
+void CStateMonsterRest::critical_finalize()
 {
 	inherited::critical_finalize();
 
 	this->object->anomaly_detector().deactivate();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestAbstract::execute()
+
+void CStateMonsterRest::execute()
 {
 	// check alife control
 	bool captured_by_smart_terrain = false;
@@ -129,6 +123,3 @@ void CStateMonsterRestAbstract::execute()
 	this->get_state_current()->execute();
 	this->prev_substate = this->current_substate;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterRestAbstract

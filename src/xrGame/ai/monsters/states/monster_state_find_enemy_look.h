@@ -2,10 +2,9 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterFindEnemyLook : public CState<_Object> {
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+class CStateMonsterFindEnemyLook : public CState {
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 	bool		look_right_side;
 	u8			current_stage;
@@ -21,7 +20,7 @@ class CStateMonsterFindEnemyLook : public CState<_Object> {
 	} ;
 
 public:
-						CStateMonsterFindEnemyLook	(_Object *obj);
+						CStateMonsterFindEnemyLook	(CBaseMonster*obj);
 	virtual				~CStateMonsterFindEnemyLook	();
 
 	virtual	void		initialize					();	

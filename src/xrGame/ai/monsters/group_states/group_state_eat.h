@@ -2,18 +2,17 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateGroupEat : public CState<_Object> {
+class	CStateGroupEat : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 	const CEntityAlive			*corpse;
 
 	u32							m_time_last_eat;
 
 public:
-	CStateGroupEat		(_Object *obj);
+	CStateGroupEat		(CBaseMonster*obj);
 	virtual				~CStateGroupEat		();
 
 	virtual	void		reinit					();

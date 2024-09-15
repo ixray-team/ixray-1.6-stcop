@@ -3,32 +3,25 @@
 #include "state_custom_action.h"
 #include "state_move_to_point.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterSquadRestFollowAbstract CStateMonsterSquadRestFollow<_Object>
-
-
 #define STOP_DISTANCE	2.f
 #define STAY_DISTANCE	5 * STOP_DISTANCE
 #define MIN_TIME_OUT	2000
 #define MAX_TIME_OUT	3000
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterSquadRestFollowAbstract::CStateMonsterSquadRestFollow(_Object *obj) : inherited(obj)
+
+CStateMonsterSquadRestFollow::CStateMonsterSquadRestFollow(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateSquad_RestFollow_Idle,			xr_new<CStateMonsterCustomAction<_Object> >	(obj));
-	this->add_state	(eStateSquad_RestFollow_WalkToPoint,	xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
+	this->add_state	(eStateSquad_RestFollow_Idle,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	this->add_state	(eStateSquad_RestFollow_WalkToPoint,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterSquadRestFollowAbstract::~CStateMonsterSquadRestFollow	()
+
+CStateMonsterSquadRestFollow::~CStateMonsterSquadRestFollow	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSquadRestFollowAbstract::initialize()
+
+void CStateMonsterSquadRestFollow::initialize()
 {
 	inherited::initialize();
 	
@@ -36,8 +29,8 @@ void CStateMonsterSquadRestFollowAbstract::initialize()
 	last_point	 = command.position;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSquadRestFollowAbstract::reselect_state()
+
+void CStateMonsterSquadRestFollow::reselect_state()
 {
 	SSquadCommand &command = monster_squad().get_squad(this->object)->GetCommand(this->object);
 	if (command.position.distance_to(this->object->Position()) < Random.randF(STOP_DISTANCE, STAY_DISTANCE)) {
@@ -47,13 +40,13 @@ void CStateMonsterSquadRestFollowAbstract::reselect_state()
 	}
 }
 
-TEMPLATE_SPECIALIZATION 
-void CStateMonsterSquadRestFollowAbstract::check_force_state()
+ 
+void CStateMonsterSquadRestFollow::check_force_state()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSquadRestFollowAbstract::setup_substates()
+
+void CStateMonsterSquadRestFollow::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -99,6 +92,5 @@ void CStateMonsterSquadRestFollowAbstract::setup_substates()
 #undef  STAY_DISTANCE
 #undef  MIN_TIME_OUT
 #undef  MAX_TIME_OUT
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterSquadRestFollowAbstract
+
 

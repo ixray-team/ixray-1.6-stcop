@@ -6,23 +6,14 @@
 #include "../../../cover_point.h"
 #include "../monster_cover_manager.h"
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterAttackCampAbstract CStateMonsterAttackCamp<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterAttackCampAbstract::CStateMonsterAttackCamp(_Object *obj) : inherited(obj) 
+CStateMonsterAttackCamp::CStateMonsterAttackCamp(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateAttackCamp_Hide,		xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateAttackCamp_Camp,		xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
-	this->add_state	(eStateAttackCamp_StealOut,	xr_new<CStateMonsterAttackCampStealOut<_Object> >(obj));
+	this->add_state	(eStateAttackCamp_Hide,		xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStateAttackCamp_Camp,		xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
+	this->add_state	(eStateAttackCamp_StealOut,	xr_new<CStateMonsterAttackCampStealOut<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::initialize()
+void CStateMonsterAttackCamp::initialize()
 {
 	inherited::initialize();
 
@@ -30,16 +21,14 @@ void CStateMonsterAttackCampAbstract::initialize()
 	squad->lock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::finalize()
+void CStateMonsterAttackCamp::finalize()
 {
 	inherited::finalize();
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::critical_finalize()
+void CStateMonsterAttackCamp::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -47,8 +36,7 @@ void CStateMonsterAttackCampAbstract::critical_finalize()
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackCampAbstract::check_completion()
+bool CStateMonsterAttackCamp::check_completion()
 {
 	if (this->current_substate == eStateAttackCamp_StealOut) {
 		return this->get_state_current()->check_completion();
@@ -66,8 +54,7 @@ bool CStateMonsterAttackCampAbstract::check_completion()
 
 #define MIN_DISTANCE_TO_ENEMY 20.f
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackCampAbstract::check_start_conditions()
+bool CStateMonsterAttackCamp::check_start_conditions()
 {
 	if (!this->object->ability_distant_feel()) return false;
 
@@ -89,8 +76,7 @@ bool CStateMonsterAttackCampAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::reselect_state()
+void CStateMonsterAttackCamp::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) {
 		this->select_state(eStateAttackCamp_Hide);
@@ -116,8 +102,7 @@ void CStateMonsterAttackCampAbstract::reselect_state()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::setup_substates()
+void CStateMonsterAttackCamp::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -159,12 +144,7 @@ void CStateMonsterAttackCampAbstract::setup_substates()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampAbstract::check_force_state()
+void CStateMonsterAttackCamp::check_force_state()
 {
 	
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterAttackCampAbstract
-#undef MIN_DISTANCE_TO_ENEMY

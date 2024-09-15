@@ -3,26 +3,16 @@
 //#include "../states/monster_state_rest_idle.h"
 #include "../states/state_custom_action.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateCaptureJumpBloodsuckerAbstract CStateCaptureJumpBloodsucker<_Object>
-
-
-TEMPLATE_SPECIALIZATION
-CStateCaptureJumpBloodsuckerAbstract::CStateCaptureJumpBloodsucker(_Object *obj) : inherited(obj)
+CStateCaptureJumpBloodsucker::CStateCaptureJumpBloodsucker(CBaseMonster *obj) : inherited(obj)
 {
 	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction<_Object> >		(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateCaptureJumpBloodsuckerAbstract::~CStateCaptureJumpBloodsucker	()
+CStateCaptureJumpBloodsucker::~CStateCaptureJumpBloodsucker	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateCaptureJumpBloodsuckerAbstract::execute()
+void CStateCaptureJumpBloodsucker::execute()
 {
 	// check alife control
 	this->select_state	(eStateCustom);
@@ -30,8 +20,8 @@ void CStateCaptureJumpBloodsuckerAbstract::execute()
 	this->get_state_current()->execute();
 	this->prev_substate = this->current_substate;
 }
-TEMPLATE_SPECIALIZATION
-void CStateCaptureJumpBloodsuckerAbstract::setup_substates()
+
+void CStateCaptureJumpBloodsucker::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 	if (this->current_substate == eStateCustom) {
@@ -47,5 +37,3 @@ void CStateCaptureJumpBloodsuckerAbstract::setup_substates()
 		return;
 	}
 }
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateCaptureJumpBloodsuckerAbstract

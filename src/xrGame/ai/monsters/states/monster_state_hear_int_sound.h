@@ -2,14 +2,13 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateMonsterHearInterestingSound : public CState<_Object> {
+class	CStateMonsterHearInterestingSound : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState	inherited;
+	typedef CState*	state_ptr;
 
 public:
-					CStateMonsterHearInterestingSound	(_Object *obj);
+					CStateMonsterHearInterestingSound	(CBaseMonster*obj);
 	virtual			~CStateMonsterHearInterestingSound	(){}
 
 	virtual void	reselect_state						();

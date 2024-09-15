@@ -3,28 +3,18 @@
 #include "state_custom_action.h"
 #include "state_move_to_point.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterControlledFollowAbstract CStateMonsterControlledFollow<_Object>
-
 #define STOP_DISTANCE	2.f
 #define STAY_DISTANCE	5 * STOP_DISTANCE
 #define MIN_TIME_OUT	4000
 #define MAX_TIME_OUT	6000
 
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterControlledFollowAbstract::CStateMonsterControlledFollow(_Object *obj) : inherited(obj)
+CStateMonsterControlledFollow::CStateMonsterControlledFollow(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateControlled_Follow_Wait,			xr_new<CStateMonsterCustomAction<_Object> >	(obj));
-	this->add_state	(eStateControlled_Follow_WalkToObject,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
+	this->add_state	(eStateControlled_Follow_Wait,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	this->add_state	(eStateControlled_Follow_WalkToObject,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
 }
 
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterControlledFollowAbstract::reselect_state()
+void CStateMonsterControlledFollow::reselect_state()
 {
 	CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(this->object);
 	VERIFY(entity);
@@ -34,8 +24,7 @@ void CStateMonsterControlledFollowAbstract::reselect_state()
 	this->select_state(dist < Random.randF(STOP_DISTANCE, STAY_DISTANCE) ? eStateControlled_Follow_Wait : eStateControlled_Follow_WalkToObject);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterControlledFollowAbstract::setup_substates()
+void CStateMonsterControlledFollow::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -85,5 +74,3 @@ void CStateMonsterControlledFollowAbstract::setup_substates()
 #undef  STAY_DISTANCE
 #undef  MIN_TIME_OUT
 #undef  MAX_TIME_OUT
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterControlledFollowAbstract

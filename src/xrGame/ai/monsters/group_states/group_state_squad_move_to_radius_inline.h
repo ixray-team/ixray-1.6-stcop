@@ -1,24 +1,18 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
 //////////////////////////////////////////////////////////////////////////
 // CStateGroupSquadMoveToRadiusEx with path rebuild options
 //////////////////////////////////////////////////////////////////////////
 
-#define CStateGroupSquadMoveToRadiusExAbstract CStateGroupSquadMoveToRadiusEx<_Object>
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupSquadMoveToRadiusExAbstract::initialize()
+void CStateGroupSquadMoveToRadiusEx::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupSquadMoveToRadiusExAbstract::execute()
+
+void CStateGroupSquadMoveToRadiusEx::execute()
 {
 	CMonsterSquad *squad	= monster_squad().get_squad(this->object);
 	if (squad && squad->SquadActive())
@@ -68,8 +62,7 @@ void CStateGroupSquadMoveToRadiusExAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupSquadMoveToRadiusExAbstract::check_completion()
+bool CStateGroupSquadMoveToRadiusEx::check_completion()
 {	
 	if (data.action.time_out !=0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;
@@ -83,16 +76,14 @@ bool CStateGroupSquadMoveToRadiusExAbstract::check_completion()
 // CStateGroupSquadMoveToRadiusEx with path rebuild options
 //////////////////////////////////////////////////////////////////////////
 
-#define CStateGroupSquadMoveToRadiusAbstract CStateGroupSquadMoveToRadius<_Object>
 
-TEMPLATE_SPECIALIZATION
 void CStateGroupSquadMoveToRadiusAbstract::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();	
 }
 
-TEMPLATE_SPECIALIZATION
+
 void CStateGroupSquadMoveToRadiusAbstract::execute()
 {
 	Fvector m_enemy_position = this->object->EnemyMan.get_enemy()->Position();
@@ -128,7 +119,7 @@ void CStateGroupSquadMoveToRadiusAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
+
 bool CStateGroupSquadMoveToRadiusAbstract::check_completion()
 {	
 	if (data.action.time_out !=0) {

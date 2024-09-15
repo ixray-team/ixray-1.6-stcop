@@ -11,29 +11,19 @@
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateBloodsuckerPredatorAbstract CStateBloodsuckerPredator<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateBloodsuckerPredatorAbstract::CStateBloodsuckerPredator(_Object *obj) : inherited(obj)
+CStateBloodsuckerPredator::CStateBloodsuckerPredator(CBaseMonster *obj) : inherited(obj)
 {
-	add_state	(eStatePredator_MoveToCover,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
-	add_state	(eStatePredator_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >	(obj));
-	add_state	(eStatePredator_Camp,			xr_new<CStateMonsterCustomAction<_Object> >	(obj));
+	add_state	(eStatePredator_MoveToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
+	add_state	(eStatePredator_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >	(obj));
+	add_state	(eStatePredator_Camp,			xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::reinit()
+void CStateBloodsuckerPredator::reinit()
 {
 	inherited::reinit	();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::initialize()
+void CStateBloodsuckerPredator::initialize()
 {
 	inherited::initialize						();
 
@@ -42,8 +32,7 @@ void CStateBloodsuckerPredatorAbstract::initialize()
 	select_camp_point							();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::reselect_state()
+void CStateBloodsuckerPredator::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) {
 		this->select_state(eStatePredator_MoveToCover);
@@ -63,8 +52,7 @@ void CStateBloodsuckerPredatorAbstract::reselect_state()
 	this->select_state(eStatePredator_Camp);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::finalize()
+void CStateBloodsuckerPredator::finalize()
 {
 	inherited::finalize							();
 
@@ -76,8 +64,7 @@ void CStateBloodsuckerPredatorAbstract::finalize()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::critical_finalize()
+void CStateBloodsuckerPredator::critical_finalize()
 {
 	inherited::critical_finalize				();
 
@@ -88,15 +75,13 @@ void CStateBloodsuckerPredatorAbstract::critical_finalize()
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateBloodsuckerPredatorAbstract::check_start_conditions()
+bool CStateBloodsuckerPredator::check_start_conditions()
 {
 	if (Actor()->memory().visual().visible_now(this->object)) return false;
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateBloodsuckerPredatorAbstract::check_completion()
+bool CStateBloodsuckerPredator::check_completion()
 {
 	if (this->object->HitMemory.get_last_hit_time() > this->time_state_started) return true;
 	if (this->object->EnemyMan.get_enemy() && this->object->EnemyMan.see_enemy_now() && (this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position()) < 4.f)) return true;
@@ -104,9 +89,7 @@ bool CStateBloodsuckerPredatorAbstract::check_completion()
 	return false;
 }
 
-
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::setup_substates()
+void CStateBloodsuckerPredator::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 	
@@ -172,8 +155,7 @@ void CStateBloodsuckerPredatorAbstract::setup_substates()
 
 #define TIME_TO_RESELECT_CAMP	15000
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::check_force_state()
+void CStateBloodsuckerPredator::check_force_state()
 {
 	if ((this->current_substate == eStatePredator_Camp) && (m_time_start_camp + TIME_TO_RESELECT_CAMP < time())) {
 		if (this->current_substate != u32(-1))
@@ -189,8 +171,7 @@ void CStateBloodsuckerPredatorAbstract::check_force_state()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBloodsuckerPredatorAbstract::select_camp_point()
+void CStateBloodsuckerPredator::select_camp_point()
 {
 	m_target_node = u32(-1);
 	if (this->object->Home->has_home()) {
@@ -214,7 +195,3 @@ void CStateBloodsuckerPredatorAbstract::select_camp_point()
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->lock_cover(m_target_node);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateBloodsuckerPredatorAbstract
-

@@ -1,21 +1,15 @@
 #pragma once
 #include "ai_space.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterMoveToPointAbstract CStateMonsterMoveToPoint<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToPointAbstract::initialize()
+void CStateMonsterMoveToPoint::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToPointAbstract::execute()
+
+void CStateMonsterMoveToPoint::execute()
 {
 	this->object->set_action						(data.action.action);
 	this->object->anim().SetSpecParams				(data.action.spec_params);
@@ -34,8 +28,8 @@ void CStateMonsterMoveToPointAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterMoveToPointAbstract::check_completion()
+
+bool CStateMonsterMoveToPoint::check_completion()
 {	
 	if (data.action.time_out !=0) {
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;
@@ -52,17 +46,14 @@ bool CStateMonsterMoveToPointAbstract::check_completion()
 // CStateMonsterMoveToPointEx with path rebuild options
 //////////////////////////////////////////////////////////////////////////
 
-#define CStateMonsterMoveToPointExAbstract CStateMonsterMoveToPointEx<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToPointExAbstract::initialize()
+void CStateMonsterMoveToPointEx::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterMoveToPointExAbstract::execute()
+
+void CStateMonsterMoveToPointEx::execute()
 {
 	this->object->set_action						(data.action.action);
 	this->object->anim().SetSpecParams			(data.action.spec_params);
@@ -93,8 +84,8 @@ void CStateMonsterMoveToPointExAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterMoveToPointExAbstract::check_completion()
+
+bool CStateMonsterMoveToPointEx::check_completion()
 {	
 	if ( data.action.time_out != 0 )
 	{

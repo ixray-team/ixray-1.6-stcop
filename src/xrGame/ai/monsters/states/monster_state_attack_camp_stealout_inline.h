@@ -1,18 +1,10 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterAttackCampStealOutAbstract CStateMonsterAttackCampStealOut<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterAttackCampStealOutAbstract::CStateMonsterAttackCampStealOut(_Object *obj) : inherited(obj) 
+CStateMonsterAttackCampStealOut::CStateMonsterAttackCampStealOut(CBaseMonster*obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackCampStealOutAbstract::execute()
+void CStateMonsterAttackCampStealOut::execute()
 {
 	if (this->object->EnemyMan.get_my_vertex_enemy_last_seen() == u32(-1)) return;
 	
@@ -29,9 +21,7 @@ void CStateMonsterAttackCampStealOutAbstract::execute()
 
 #define STATE_EXECUTE_TIME 8000
 
-
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackCampStealOutAbstract::check_completion()
+bool CStateMonsterAttackCampStealOut::check_completion()
 {
 	if (this->object->EnemyMan.get_my_vertex_enemy_last_seen() == u32(-1)) return true;
 	if (this->object->EnemyMan.see_enemy_now()) return true;
@@ -44,14 +34,9 @@ bool CStateMonsterAttackCampStealOutAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackCampStealOutAbstract::check_start_conditions()
+bool CStateMonsterAttackCampStealOut::check_start_conditions()
 {
 	if (this->object->EnemyMan.get_my_vertex_enemy_last_seen() == u32(-1)) return false;
 	if (this->object->EnemyMan.see_enemy_now()) return false;
 	return true;	
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterAttackCampStealOutAbstract
-

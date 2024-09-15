@@ -8,18 +8,12 @@
 #include "../monster_home.h"
 #include "monster_state_attack_on_run.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterAttackMoveToHomePointAbstract CStateMonsterAttackMoveToHomePoint<_Object>
-
 //////////////////////////////////////////////////////////////////////////
 // Construct Substates
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterAttackMoveToHomePointAbstract::CStateMonsterAttackMoveToHomePoint(_Object *obj) 
+
+CStateMonsterAttackMoveToHomePoint::CStateMonsterAttackMoveToHomePoint(CBaseMonster*obj)
                              : inherited(obj)
 {
 }
@@ -28,8 +22,8 @@ CStateMonsterAttackMoveToHomePointAbstract::CStateMonsterAttackMoveToHomePoint(_
 // Initialize/Finalize
 //////////////////////////////////////////////////////////////////////////
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::select_target()
+
+void CStateMonsterAttackMoveToHomePoint::select_target()
 {
 	CMonsterSquad * const squad			=	monster_squad().get_squad(this->object);
 	u32 const self_node					=	this->object->ai_location().level_vertex_id();
@@ -68,8 +62,8 @@ void CStateMonsterAttackMoveToHomePointAbstract::select_target()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::initialize()
+
+void CStateMonsterAttackMoveToHomePoint::initialize()
 {
 	inherited::initialize					();
 
@@ -79,8 +73,8 @@ void CStateMonsterAttackMoveToHomePointAbstract::initialize()
 	select_target							();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::execute()
+
+void CStateMonsterAttackMoveToHomePoint::execute()
 {
 	if ( m_target_node == u32(-1) )
 	{
@@ -119,15 +113,15 @@ void CStateMonsterAttackMoveToHomePointAbstract::execute()
 											 this->object->db().m_dwAttackSndDelay == u32(-1));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::finalize()
+
+void CStateMonsterAttackMoveToHomePoint::finalize()
 {
 	inherited::finalize();
 	clean();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::clean()
+
+void CStateMonsterAttackMoveToHomePoint::clean()
 {
 	inherited::finalize();
 
@@ -138,8 +132,8 @@ void CStateMonsterAttackMoveToHomePointAbstract::clean()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackMoveToHomePointAbstract::critical_finalize()
+
+void CStateMonsterAttackMoveToHomePoint::critical_finalize()
 {
 	inherited::critical_finalize();
 	clean();
@@ -150,8 +144,8 @@ void CStateMonsterAttackMoveToHomePointAbstract::critical_finalize()
 //////////////////////////////////////////////////////////////////////////
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
+
+bool CStateMonsterAttackMoveToHomePoint::check_start_conditions()
 {
 	if ( !this->object->at_home() )
 		return									true;
@@ -165,8 +159,8 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_start_conditions()
 	return										false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
+
+bool CStateMonsterAttackMoveToHomePoint::check_completion()
 {
 	if ( !this->object->at_home() ) 
 		return									false;
@@ -180,6 +174,3 @@ bool CStateMonsterAttackMoveToHomePointAbstract::check_completion()
 	return										true;
 }
 
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterAttackMoveToHomePointAbstract

@@ -1,23 +1,14 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterFindEnemyRunAbstract CStateMonsterFindEnemyRun<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterFindEnemyRunAbstract::CStateMonsterFindEnemyRun(_Object *obj) : inherited(obj)
+CStateMonsterFindEnemyRun::CStateMonsterFindEnemyRun(CBaseMonster*obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterFindEnemyRunAbstract::~CStateMonsterFindEnemyRun()
+CStateMonsterFindEnemyRun::~CStateMonsterFindEnemyRun()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterFindEnemyRunAbstract::initialize()
+void CStateMonsterFindEnemyRun::initialize()
 {
 	inherited::initialize					();
 
@@ -34,7 +25,7 @@ void CStateMonsterFindEnemyRunAbstract::initialize()
 	Fvector test_position;
 	test_position.mad(target_point, dir, 10.f);
 	
-	// ïðîâåðèü âîçìîæíîñòü ïðîáåæàòü äàëüøå
+	// Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸ÑŒ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ñ€Ð¾Ð±ÐµÐ¶Ð°Ñ‚ÑŒ Ð´Ð°Ð»ÑŒÑˆÐµ
 	if (ai().level_graph().valid_vertex_position(test_position)) {
 		u32 vertex_id = ai().level_graph().vertex_id(test_position);
 		if (ai().level_graph().valid_vertex_id(vertex_id)) {
@@ -44,8 +35,7 @@ void CStateMonsterFindEnemyRunAbstract::initialize()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterFindEnemyRunAbstract::execute()
+void CStateMonsterFindEnemyRun::execute()
 {
 	this->object->set_action						(ACT_RUN);
 	this->object->anim().accel_activate			(eAT_Aggressive);
@@ -58,8 +48,7 @@ void CStateMonsterFindEnemyRunAbstract::execute()
 	this->object->set_state_sound					(MonsterSound::eMonsterSoundAggressive);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterFindEnemyRunAbstract::check_completion()
+bool CStateMonsterFindEnemyRun::check_completion()
 {	
 	if ((this->object->ai_location().level_vertex_id() == target_vertex) && 
 		!this->object->control().path_builder().is_moving_on_path()) return true;

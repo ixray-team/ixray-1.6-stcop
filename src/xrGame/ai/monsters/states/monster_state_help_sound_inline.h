@@ -4,21 +4,13 @@
 #include "state_custom_action_look.h"
 
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterHearHelpSoundAbstract CStateMonsterHearHelpSound<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterHearHelpSoundAbstract::CStateMonsterHearHelpSound(_Object *obj) : inherited(obj)
+CStateMonsterHearHelpSound::CStateMonsterHearHelpSound(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateHearHelpSound_MoveToDest,	xr_new<CStateMonsterMoveToPointEx<_Object> >(obj));
-	this->add_state	(eStateHearHelpSound_LookAround,	xr_new<CStateMonsterCustomActionLook<_Object> >(obj));
+	this->add_state	(eStateHearHelpSound_MoveToDest,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >(obj));
+	this->add_state	(eStateHearHelpSound_LookAround,	xr_new<CStateMonsterCustomActionLook<CBaseMonster> >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHearHelpSoundAbstract::check_start_conditions()
+bool CStateMonsterHearHelpSound::check_start_conditions()
 {
 	if (!this->object->SoundMemory.hear_help_sound()) return false;
 	if (this->object->Home->has_home())				return this->object->Home->at_home(ai().level_graph().vertex_position(this->object->SoundMemory.hear_help_sound_node()));
@@ -26,15 +18,13 @@ bool CStateMonsterHearHelpSoundAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHearHelpSoundAbstract::check_completion()
+bool CStateMonsterHearHelpSound::check_completion()
 {
 	if (this->current_substate == u32(-1)) return true;
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearHelpSoundAbstract::reselect_state()
+void CStateMonsterHearHelpSound::reselect_state()
 {
 	if (this->prev_substate == u32(-1))
 		this->select_state(eStateHearHelpSound_MoveToDest);
@@ -42,8 +32,7 @@ void CStateMonsterHearHelpSoundAbstract::reselect_state()
 		this->select_state(eStateHearHelpSound_LookAround);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHearHelpSoundAbstract::setup_substates()
+void CStateMonsterHearHelpSound::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -79,6 +68,3 @@ void CStateMonsterHearHelpSoundAbstract::setup_substates()
 		return;
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHearHelpSoundAbstract 

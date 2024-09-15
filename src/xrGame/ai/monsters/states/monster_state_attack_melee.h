@@ -2,12 +2,11 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterAttackMelee : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterAttackMelee : public CState {
+	typedef CState inherited;
 
 public:
-						CStateMonsterAttackMelee	(_Object *obj);
+						CStateMonsterAttackMelee	(CBaseMonster *obj);
 	virtual				~CStateMonsterAttackMelee	();
 
 	virtual	void		execute						();

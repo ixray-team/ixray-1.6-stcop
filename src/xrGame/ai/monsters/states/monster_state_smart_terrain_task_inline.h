@@ -9,27 +9,21 @@
 #include "state_custom_action.h"
 #include "monster_state_smart_terrain_task_graph_walk.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterSmartTerrainTaskAbstract CStateMonsterSmartTerrainTask<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterSmartTerrainTaskAbstract::CStateMonsterSmartTerrainTask(_Object *obj) : inherited(obj)
+CStateMonsterSmartTerrainTask::CStateMonsterSmartTerrainTask(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateSmartTerrainTaskGamePathWalk,	xr_new<CStateMonsterSmartTerrainTaskGraphWalk<_Object> >(obj));
-	this->add_state(eStateSmartTerrainTaskLevelPathWalk,	xr_new<CStateMonsterMoveToPointEx<_Object> >			(obj));
-	this->add_state(eStateSmartTerrainTaskWaitCapture,	xr_new<CStateMonsterCustomAction<_Object> >				(obj));
+	this->add_state(eStateSmartTerrainTaskGamePathWalk,	xr_new<CStateMonsterSmartTerrainTaskGraphWalk<CBaseMonster> >(obj));
+	this->add_state(eStateSmartTerrainTaskLevelPathWalk,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >			(obj));
+	this->add_state(eStateSmartTerrainTaskWaitCapture,	xr_new<CStateMonsterCustomAction<CBaseMonster> >				(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterSmartTerrainTaskAbstract::~CStateMonsterSmartTerrainTask	()
+
+CStateMonsterSmartTerrainTask::~CStateMonsterSmartTerrainTask	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSmartTerrainTaskAbstract::initialize()
+
+void CStateMonsterSmartTerrainTask::initialize()
 {
 	inherited::initialize();
 
@@ -42,8 +36,8 @@ void CStateMonsterSmartTerrainTaskAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterSmartTerrainTaskAbstract::check_start_conditions()
+
+bool CStateMonsterSmartTerrainTask::check_start_conditions()
 {
 	if (!ai().get_alife()) 			return false;
 
@@ -65,8 +59,8 @@ bool CStateMonsterSmartTerrainTaskAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterSmartTerrainTaskAbstract::check_completion()
+
+bool CStateMonsterSmartTerrainTask::check_completion()
 {
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
 	VERIFY							(monster);
@@ -79,8 +73,8 @@ bool CStateMonsterSmartTerrainTaskAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSmartTerrainTaskAbstract::setup_substates()
+
+void CStateMonsterSmartTerrainTask::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -116,8 +110,8 @@ void CStateMonsterSmartTerrainTaskAbstract::setup_substates()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSmartTerrainTaskAbstract::reselect_state()
+
+void CStateMonsterSmartTerrainTask::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) {
 		if (this->get_state(eStateSmartTerrainTaskGamePathWalk)->check_start_conditions()) {
@@ -141,8 +135,8 @@ void CStateMonsterSmartTerrainTaskAbstract::reselect_state()
 	this->select_state(eStateSmartTerrainTaskWaitCapture);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSmartTerrainTaskAbstract::check_force_state()
+
+void CStateMonsterSmartTerrainTask::check_force_state()
 {
 	// check smart terrain became busy
 	CSE_ALifeMonsterAbstract		*monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
@@ -165,6 +159,5 @@ void CStateMonsterSmartTerrainTaskAbstract::check_force_state()
 	}
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterSmartTerrainTaskAbstract
+
 

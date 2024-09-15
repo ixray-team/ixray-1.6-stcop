@@ -1,12 +1,11 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterMoveToRestrictor : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterMoveToRestrictor : public CState {
+	typedef CState inherited;
 
 public:
-						CStateMonsterMoveToRestrictor	(_Object *obj) : inherited(obj) {}
+						CStateMonsterMoveToRestrictor	(CBaseMonster*obj) : inherited(obj) {}
 	virtual				~CStateMonsterMoveToRestrictor	() {}
 
 	virtual void		initialize					();

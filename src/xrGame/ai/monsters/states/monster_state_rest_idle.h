@@ -2,15 +2,14 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class CStateMonsterRestIdle : public CState<_Object> {
-	typedef CState<_Object> inherited;
-	typedef CState<_Object> *state_ptr;
+class CStateMonsterRestIdle : public CState{
+	typedef CState inherited;
+	typedef CState *state_ptr;
 
 	u32					m_target_node;
 
 public:
-						CStateMonsterRestIdle	(_Object *obj);
+						CStateMonsterRestIdle	(CBaseMonster *obj);
 	virtual void 		initialize				();
 	virtual void 		finalize				();
 	virtual void 		critical_finalize		();

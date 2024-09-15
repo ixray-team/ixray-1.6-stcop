@@ -1,13 +1,6 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CMonsterStateManagerAbstract CMonsterStateManager<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CMonsterStateManagerAbstract::reinit()
+void CMonsterStateManager::reinit()
 {
 	inherited::reinit();
 }
@@ -17,8 +10,7 @@ namespace detail
 	bool object_exists_in_alife_registry (u32 id);
 } // namespace detail
 
-TEMPLATE_SPECIALIZATION
-void CMonsterStateManagerAbstract::update()
+void CMonsterStateManager::update()
 {
 	// Lain: added
 	if ( !::detail::object_exists_in_alife_registry(this->object->ID()))
@@ -34,30 +26,26 @@ void CMonsterStateManagerAbstract::update()
 	this->execute();
 }
 
-TEMPLATE_SPECIALIZATION
-void CMonsterStateManagerAbstract::force_script_state(EMonsterState state)
+void CMonsterStateManager::force_script_state(EMonsterState state)
 {
-	// установить текущее состояние
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	this->select_state(state);
 }
 
-TEMPLATE_SPECIALIZATION
-void CMonsterStateManagerAbstract::execute_script_state()
+void CMonsterStateManager::execute_script_state()
 {
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	this->get_state_current()->execute();
 }
 
-TEMPLATE_SPECIALIZATION
-bool CMonsterStateManagerAbstract::can_eat()
+bool CMonsterStateManager::can_eat()
 {
 	if (!this->object->CorpseMan.get_corpse()) return false;
 
 	return check_state(eStateEat);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CMonsterStateManagerAbstract::check_state(u32 state_id) 
+bool CMonsterStateManager::check_state(u32 state_id)
 {
 	if (this->prev_substate == state_id) {
 		if (!this->get_state_current()->check_completion())		return true;
@@ -68,27 +56,22 @@ bool CMonsterStateManagerAbstract::check_state(u32 state_id)
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CMonsterStateManagerAbstract::critical_finalize()
+void CMonsterStateManager::critical_finalize()
 {
 	inherited::critical_finalize();
 }
 
-TEMPLATE_SPECIALIZATION
-EMonsterState CMonsterStateManagerAbstract::get_state_type() 
+EMonsterState CMonsterStateManager::get_state_type()
 {
 	return inherited::get_state_type();
 }
 
 #ifdef DEBUG
 
-TEMPLATE_SPECIALIZATION
-void   CMonsterStateManagerAbstract::add_debug_info (debug::text_tree& root_s) 
+
+void   CMonsterStateManager::add_debug_info (debug::text_tree& root_s)
 { 
-	CState<_Object>::add_debug_info(root_s); 
+	CState::add_debug_info(root_s); 
 }
 
 #endif
-
-#undef CMonsterStateManagerAbstract 
-#undef TEMPLATE_SPECIALIZATION

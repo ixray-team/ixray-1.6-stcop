@@ -3,11 +3,10 @@
 #include "../state.h"
 #include "../../../ai_debug.h"
 
-template<typename _Object>
-class	CStateGroupAttack : public CState<_Object> 
+class	CStateGroupAttack : public CState
 {
 public:
-	CStateGroupAttack (_Object *obj);
+	CStateGroupAttack (CBaseMonster *obj);
 	virtual				~CStateGroupAttack	();
 
 	virtual void		initialize			();
@@ -18,8 +17,8 @@ public:
 	virtual void		remove_links		(CObject* object);
 
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 	const CEntityAlive* m_enemy;
 	u32					m_time_next_run_away;

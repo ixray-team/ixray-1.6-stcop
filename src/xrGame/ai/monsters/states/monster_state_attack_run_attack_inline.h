@@ -1,42 +1,32 @@
 #pragma once
 #include "../monster_velocity_space.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterAttackRunAttackAbstract CStateMonsterAttackRunAttack<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackRunAttackAbstract::initialize()
+void CStateMonsterAttackRunAttack::initialize()
 {
 	inherited::initialize			();
 	
 	this->object->m_time_last_attack_success		= 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackRunAttackAbstract::execute()
+void CStateMonsterAttackRunAttack::execute()
 {
 	this->object->set_action				(ACT_RUN);
 	this->object->set_state_sound			(MonsterSound::eMonsterSoundAggressive);
 	this->object->anim().SetSpecParams	(ASP_ATTACK_RUN);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackRunAttackAbstract::finalize()
+void CStateMonsterAttackRunAttack::finalize()
 {
 	inherited::finalize					();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterAttackRunAttackAbstract::critical_finalize()
+void CStateMonsterAttackRunAttack::critical_finalize()
 {
 	inherited::critical_finalize		();
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackRunAttackAbstract::check_start_conditions()
+bool CStateMonsterAttackRunAttack::check_start_conditions()
 {
 	float dist			= this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
 	
@@ -56,12 +46,8 @@ bool CStateMonsterAttackRunAttackAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterAttackRunAttackAbstract::check_completion()
+bool CStateMonsterAttackRunAttack::check_completion()
 {
 	if (!this->object->control().path_builder().is_moving_on_path() || (this->object->m_time_last_attack_success != 0)) return true;
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterAttackRunAttackAbstract

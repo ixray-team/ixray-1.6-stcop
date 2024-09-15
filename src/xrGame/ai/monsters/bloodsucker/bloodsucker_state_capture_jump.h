@@ -3,14 +3,13 @@
 #include "../state.h"
 //#include "../../../entitycondition.h"
 
-template<typename _Object>
-class	CStateCaptureJumpBloodsucker : public CState<_Object> {
+class	CStateCaptureJumpBloodsucker : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 public:
-	CStateCaptureJumpBloodsucker		(_Object *obj);
+	CStateCaptureJumpBloodsucker		(CBaseMonster *obj);
 	virtual				~CStateCaptureJumpBloodsucker		();
 
 	virtual	void		execute					();

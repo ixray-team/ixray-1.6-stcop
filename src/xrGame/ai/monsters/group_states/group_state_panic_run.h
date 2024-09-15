@@ -1,11 +1,10 @@
 #pragma once
 
-template<typename _Object>
-class CStateGroupPanicRun : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateGroupPanicRun : public CState{
+	typedef CState inherited;
 
 public:
-						CStateGroupPanicRun	(_Object *obj) : inherited(obj) {}
+						CStateGroupPanicRun	(CBaseMonster*obj) : inherited(obj) {}
 	virtual				~CStateGroupPanicRun	() {}
 
 	virtual void		initialize				();

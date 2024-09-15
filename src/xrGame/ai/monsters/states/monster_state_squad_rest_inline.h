@@ -7,12 +7,6 @@
 #include "state_move_to_point.h"
 #include "../../../restricted_object.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateMonsterSquadRestAbstract CStateMonsterSquadRest<_Object>
-
 #define MIN_TIME_IDLE	5000
 #define MAX_TIME_IDLE	10000
 
@@ -20,27 +14,24 @@
 #define FIND_POINT_ATTEMPTS		5
 
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterSquadRestAbstract::CStateMonsterSquadRest(_Object *obj) : inherited(obj)
+CStateMonsterSquadRest::CStateMonsterSquadRest(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateSquad_Rest_Idle,				xr_new<CStateMonsterCustomAction<_Object> >	(obj));
-	this->add_state	(eStateSquad_Rest_WalkAroundLeader,	xr_new<CStateMonsterMoveToPoint<_Object> >	(obj));
+	this->add_state	(eStateSquad_Rest_Idle,				xr_new<CStateMonsterCustomAction<CBaseMonster> >	(obj));
+	this->add_state	(eStateSquad_Rest_WalkAroundLeader,	xr_new<CStateMonsterMoveToPoint<CBaseMonster> >	(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateMonsterSquadRestAbstract::~CStateMonsterSquadRest	()
+CStateMonsterSquadRest::~CStateMonsterSquadRest	()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSquadRestAbstract::reselect_state()
+
+void CStateMonsterSquadRest::reselect_state()
 {
 	this->select_state(Random.randI(2) ? eStateSquad_Rest_Idle : eStateSquad_Rest_WalkAroundLeader);
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterSquadRestAbstract::setup_substates()
+void CStateMonsterSquadRest::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 

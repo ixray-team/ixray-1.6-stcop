@@ -6,10 +6,6 @@
 #include "../../../../xrCore/_vector3d_ext.h"
 #include "../../../level_graph.h"
 
-#define TEMPLATE_SIGNATURE template <typename _Object>
-
-#define ATTACK_ON_RUN_STATE CStateMonsterAttackOnRun<_Object>
-
 #ifdef DEBUG
 #define	DEBUG_STATE
 #endif
@@ -23,13 +19,11 @@ namespace monsters {
 } // namespace monsters
 } // namespace detail
 
-TEMPLATE_SIGNATURE
-ATTACK_ON_RUN_STATE::CStateMonsterAttackOnRun (_Object *obj) : inherited(obj) 
+CStateMonsterAttackOnRun::CStateMonsterAttackOnRun (CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SIGNATURE
-void ATTACK_ON_RUN_STATE::initialize()
+void CStateMonsterAttackOnRun::initialize()
 {
 	inherited::initialize					();	
 	this->object->m_time_last_attack_success	=	0;
@@ -59,8 +53,7 @@ void ATTACK_ON_RUN_STATE::initialize()
 	choose_next_atack_animation				();
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::choose_next_atack_animation ()
+void   CStateMonsterAttackOnRun::choose_next_atack_animation ()
 {
 	EMotionAnim animation_types[2]		=	{ eAnimAttackOnRunLeft, eAnimAttackOnRunRight };
 
@@ -74,8 +67,7 @@ void   ATTACK_ON_RUN_STATE::choose_next_atack_animation ()
 	}
 }
 
-TEMPLATE_SIGNATURE
-bool   ATTACK_ON_RUN_STATE::check_control_start_conditions	(ControlCom::EControlType type)
+bool   CStateMonsterAttackOnRun::check_control_start_conditions	(ControlCom::EControlType type)
 {
 	if ( type == ControlCom::eAntiAim )
 	{
@@ -99,8 +91,7 @@ bool   ATTACK_ON_RUN_STATE::check_control_start_conditions	(ControlCom::EControl
 #include "../../../level_debug.h"
 #include "../../../debug_text_tree.h"
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::set_movement_phaze (phaze const new_phaze)
+void   CStateMonsterAttackOnRun::set_movement_phaze (phaze const new_phaze)
 {
 	m_phaze								=	new_phaze;
 	m_phaze_chosen_time					=	current_time();
@@ -125,8 +116,7 @@ void   ATTACK_ON_RUN_STATE::set_movement_phaze (phaze const new_phaze)
 	}
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::calculate_predicted_enemy_pos ()
+void   CStateMonsterAttackOnRun::calculate_predicted_enemy_pos ()
 {
 	float const		prediction_factor		=	this->object->get_attack_on_move_prediction_factor();
 
@@ -180,8 +170,7 @@ void   ATTACK_ON_RUN_STATE::calculate_predicted_enemy_pos ()
 	}
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::update_aim_side ()
+void   CStateMonsterAttackOnRun::update_aim_side ()
 {
 	CEntityAlive const * const enemy		=	m_attacking ? m_enemy_to_attack : this->object->EnemyMan.get_enemy();
 	
@@ -237,8 +226,7 @@ bool   is_valid_point_to_move (Fvector const & point, u32 * out_vertex)
 	return										false;
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::update_movement_target ()
+void   CStateMonsterAttackOnRun::update_movement_target ()
 {
 
 	TTime const max_go_close_time			=	(TTime)(1000*this->object->get_attack_on_move_max_go_close_time());
@@ -395,8 +383,7 @@ void   ATTACK_ON_RUN_STATE::update_movement_target ()
 	}
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::select_prepare_fallback_target ()
+void   CStateMonsterAttackOnRun::select_prepare_fallback_target ()
 {
 	float const	far_radius					=	this->object->get_attack_on_move_far_radius();
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
@@ -425,8 +412,7 @@ void   ATTACK_ON_RUN_STATE::select_prepare_fallback_target ()
 
 #include "../../../ai_debug_variables.h"
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::update_try_min_time ()
+void   CStateMonsterAttackOnRun::update_try_min_time ()
 {
 	if ( current_time() > m_try_min_time_chosen_time + m_try_min_time_period )
  	{
@@ -436,8 +422,7 @@ void   ATTACK_ON_RUN_STATE::update_try_min_time ()
  	}
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::update_attack ()
+void   CStateMonsterAttackOnRun::update_attack ()
 {
 	if ( m_attacking )
 	{
@@ -544,8 +529,7 @@ void   ATTACK_ON_RUN_STATE::update_attack ()
 	m_is_jumping							=	this->object->is_jumping();
 }
 
-TEMPLATE_SIGNATURE
-void   ATTACK_ON_RUN_STATE::execute ()
+void   CStateMonsterAttackOnRun::execute ()
 {
 	calculate_predicted_enemy_pos				();
 	update_movement_target						();
@@ -569,13 +553,13 @@ void   ATTACK_ON_RUN_STATE::execute ()
 	this->object->set_state_sound						(MonsterSound::eMonsterSoundAggressive);
 	this->object->path().extrapolate_path				(true);
 	
-	// îáðàáîòàòü squad èíôî	
+	// Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ squad Ð¸Ð½Ñ„Ð¾	
 	this->object->path().set_use_dest_orient			(false);
 
 // 	CMonsterSquad *squad	= monster_squad().get_squad(object);
 // 	if (squad && squad->SquadActive())
 // 	{
-// 		// Ïîëó÷èòü êîìàíäó
+// 		// ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñƒ
 // 		SSquadCommand command;
 // 		squad->GetCommand(object, command);
 // 		if (command.type == SC_ATTACK)
@@ -586,22 +570,19 @@ void   ATTACK_ON_RUN_STATE::execute ()
 // 	}
 }
 
-TEMPLATE_SIGNATURE
-void ATTACK_ON_RUN_STATE::finalize()
+void CStateMonsterAttackOnRun::finalize()
 {
 	this->object->anim().set_override_animation		();
 	inherited::finalize							();
 }
 
-TEMPLATE_SIGNATURE
-void ATTACK_ON_RUN_STATE::critical_finalize()
+void CStateMonsterAttackOnRun::critical_finalize()
 {
 	this->object->anim().set_override_animation		();
 	inherited::critical_finalize				();
 }
 
-TEMPLATE_SIGNATURE
-bool ATTACK_ON_RUN_STATE::check_start_conditions()
+bool CStateMonsterAttackOnRun::check_start_conditions()
 {
 	float dist	=	this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
 	
@@ -623,8 +604,7 @@ bool ATTACK_ON_RUN_STATE::check_start_conditions()
 	return										true;
 }
 
-TEMPLATE_SIGNATURE
-bool ATTACK_ON_RUN_STATE::check_completion()
+bool CStateMonsterAttackOnRun::check_completion()
 {
 	//if (!this->object->control().path_builder().is_moving_on_path() || 
 	//	(this->object->m_time_last_attack_success != 0)) return true;
@@ -633,8 +613,5 @@ bool ATTACK_ON_RUN_STATE::check_completion()
 
 
 #undef DEBUG_STATE
-
-#undef TEMPLATE_SIGNATURE
-#undef ATTACK_ON_RUN_STATE
 
 #endif // MONSTER_STATE_ATTACK_ON_RUN_INLINE_H

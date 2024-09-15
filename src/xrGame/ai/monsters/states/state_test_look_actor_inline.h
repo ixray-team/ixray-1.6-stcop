@@ -2,25 +2,15 @@
 
 #include "../../../level.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterLookActorAbstract CStateMonsterLookActor<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterLookActorAbstract::execute()
+void CStateMonsterLookActor::execute()
 {
 	this->object->set_action			(ACT_STAND_IDLE);
 	this->object->dir().face_target	(Level().CurrentEntity()->Position(), 1200);
 }
 
 
-
-#define CStateMonsterTurnAwayFromActorAbstract CStateMonsterTurnAwayFromActor<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonsterTurnAwayFromActorAbstract::execute()
+void CStateMonsterTurnAwayFromActor::execute()
 {
 	Fvector point;
 	Fvector dir;
@@ -34,16 +24,7 @@ void CStateMonsterTurnAwayFromActorAbstract::execute()
 
 
 
-#define CStateMonstertTestIdleAbstract CStateMonstertTestIdle<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateMonstertTestIdleAbstract::execute()
+void CStateMonstertTestIdle::execute()
 {
 	this->object->set_action			(ACT_STAND_IDLE);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterLookActorAbstract
-#undef CStateMonsterTurnAwayFromActorAbstract
-#undef CStateMonstertTestIdleAbstract
-

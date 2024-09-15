@@ -1,38 +1,33 @@
 #pragma once
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateGroupEatingAbstract CStateGroupEating<_Object>
 
 #define TIME_TO_EAT 20000
 
-TEMPLATE_SPECIALIZATION
-CStateGroupEatingAbstract::CStateGroupEating(_Object *obj) : inherited(obj)
+
+CStateGroupEating::CStateGroupEating(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateGroupEatingAbstract::~CStateGroupEating()
+
+CStateGroupEating::~CStateGroupEating()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatingAbstract::initialize()
+
+void CStateGroupEating::initialize()
 {
 	inherited::initialize();
 	time_last_eat = 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatingAbstract::execute()
+
+void CStateGroupEating::execute()
 {
 	if (this->object->EatedCorpse != corpse)  return;
 
 	this->object->set_action				(ACT_EAT);
 	this->object->set_state_sound			(MonsterSound::eMonsterSoundEat);
 
-	// ñúåñòü ÷àñòü
+	// ÑÑŠÐµÑÑ‚ÑŒ Ñ‡Ð°ÑÑ‚ÑŒ
 	if (time_last_eat + u32(1000/this->object->db().m_fEatFreq) < Device.dwTimeGlobal) {
 		this->object->ChangeSatiety(this->object->db().m_fEatSlice);
 		corpse->m_fFood -= this->object->db().m_fEatSliceWeight;
@@ -40,8 +35,7 @@ void CStateGroupEatingAbstract::execute()
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupEatingAbstract::check_start_conditions()
+bool CStateGroupEating::check_start_conditions()
 {
 	corpse	= const_cast<CEntityAlive*>(this->object->EatedCorpse);
 	VERIFY	(corpse);
@@ -59,8 +53,7 @@ bool CStateGroupEatingAbstract::check_start_conditions()
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateGroupEatingAbstract::check_completion()
+bool CStateGroupEating::check_completion()
 {
 	CMonsterSquad *squad	= monster_squad().get_squad(this->object);
 	if (squad && squad->SquadActive())
@@ -90,12 +83,9 @@ bool CStateGroupEatingAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateGroupEatingAbstract::remove_links(CObject* object_)
+
+void CStateGroupEating::remove_links(CObject* object_)
 {
 	if (corpse == object_)
 		corpse	= 0;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateGroupEatingAbstract

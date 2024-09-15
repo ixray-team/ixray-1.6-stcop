@@ -8,22 +8,16 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateMonsterRestIdleAbstract CStateMonsterRestIdle<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateMonsterRestIdleAbstract::CStateMonsterRestIdle(_Object *obj) : inherited(obj)
+CStateMonsterRestIdle::CStateMonsterRestIdle(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
-	this->add_state	(eStateRest_Idle,			xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<CBaseMonster> >	(obj));
+	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<CBaseMonster> >		(obj));
+	this->add_state	(eStateRest_Idle,			xr_new<CStateMonsterCustomAction<CBaseMonster> >		(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestIdleAbstract::initialize()
+
+void CStateMonsterRestIdle::initialize()
 {
 	inherited::initialize();
 
@@ -42,16 +36,16 @@ void CStateMonsterRestIdleAbstract::initialize()
 	squad->lock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestIdleAbstract::finalize()
+
+void CStateMonsterRestIdle::finalize()
 {
 	inherited::finalize();
 	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestIdleAbstract::critical_finalize()
+
+void CStateMonsterRestIdle::critical_finalize()
 {
 	inherited::critical_finalize();
 
@@ -60,8 +54,8 @@ void CStateMonsterRestIdleAbstract::critical_finalize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestIdleAbstract::reselect_state()
+
+void CStateMonsterRestIdle::reselect_state()
 {
 	if ((this->prev_substate == u32(-1)) && (m_target_node != u32(-1))) {
 		this->select_state(eStateRest_WalkToCover);
@@ -76,8 +70,8 @@ void CStateMonsterRestIdleAbstract::reselect_state()
 	this->select_state(eStateRest_Idle);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterRestIdleAbstract::setup_substates()
+
+void CStateMonsterRestIdle::setup_substates()
 {
 	state_ptr state = this->get_state_current();
 
@@ -132,6 +126,3 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 	}
 
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterRestIdleAbstract

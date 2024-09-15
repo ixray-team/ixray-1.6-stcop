@@ -1,24 +1,19 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateMonsterHittedHideAbstract CStateMonsterHittedHide<_Object>
-
 #define GOOD_DISTANCE_TO_ENEMY	10.f
 #define GOOD_DISTANCE_IN_COVER	15.f
 #define MIN_HIDE_TIME			3.f
 #define DIST_TO_PATH_END		1.5f
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHittedHideAbstract::initialize()
+
+void CStateMonsterHittedHide::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder	();	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateMonsterHittedHideAbstract::execute()
+
+void CStateMonsterHittedHide::execute()
 {
 	this->object->set_action									(ACT_RUN);
 	this->object->set_state_sound								(MonsterSound::eMonsterSoundPanic);
@@ -29,15 +24,15 @@ void CStateMonsterHittedHideAbstract::execute()
 
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHittedHideAbstract::check_start_conditions()
+
+bool CStateMonsterHittedHide::check_start_conditions()
 {
 	if (this->object->HitMemory.is_hit() && !this->object->EnemyMan.get_enemy()) return true;
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateMonsterHittedHideAbstract::check_completion()
+
+bool CStateMonsterHittedHide::check_completion()
 {
 	float dist = this->object->Position().distance_to(this->object->HitMemory.get_last_hit_position());
 
@@ -51,5 +46,3 @@ bool CStateMonsterHittedHideAbstract::check_completion()
 
 #undef GOOD_DISTANCE_IN_COVER
 #undef DIST_TO_PATH_END
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateMonsterHittedHideAbstract

@@ -1,9 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateBloodsuckerVampireExecute : public CState<_Object> {
-	typedef CState<_Object>		inherited;
+class	CStateBloodsuckerVampireExecute : public CState {
+	typedef CState		inherited;
 
 	enum {
 		eActionPrepare,
@@ -18,7 +17,7 @@ class	CStateBloodsuckerVampireExecute : public CState<_Object> {
 	bool				m_effector_activated;
 
 public:
-						CStateBloodsuckerVampireExecute	(_Object *obj) : inherited(obj) {}
+						CStateBloodsuckerVampireExecute	(CBaseMonster *obj) : inherited(obj) {}
 
 	virtual void		initialize						();
 	virtual	void		execute							();

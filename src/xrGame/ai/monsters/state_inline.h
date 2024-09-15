@@ -2,14 +2,7 @@
 
 #include "basemonster/base_monster.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateAbstract CState<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateAbstract::CState(_Object *obj, void *data) 
+CState::CState(CBaseMonster *obj, void *data) 
 {
 	reset		();
 
@@ -17,14 +10,12 @@ CStateAbstract::CState(_Object *obj, void *data)
 	_data		= data;
 }
 
-TEMPLATE_SPECIALIZATION
-CStateAbstract::~CState() 
+CState::~CState()
 {
 	free_mem();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::reinit()
+void CState::reinit()
 {
 	if (current_substate != u32(-1)) get_state_current()->critical_finalize();
 
@@ -35,8 +26,8 @@ void CStateAbstract::reinit()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::initialize() 
+
+void CState::initialize()
 {
 	time_state_started	= Device.dwTimeGlobal;
 
@@ -44,8 +35,8 @@ void CStateAbstract::initialize()
 	prev_substate		= u32(-1);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::execute() 
+
+void CState::execute() 
 { 
 	VERIFY(object->g_Alive());
 	// проверить внешние условия изменения состояния
@@ -85,29 +76,29 @@ void CStateAbstract::execute()
 	} 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::finalize()
+
+void CState::finalize()
 {
 	reset();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::critical_finalize()
+
+void CState::critical_finalize()
 {
 	if (current_substate != u32(-1)) get_state_current()->critical_finalize();
 	reset();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::reset() 
+
+void CState::reset() 
 {
 	current_substate	= u32(-1);
 	prev_substate		= u32(-1);
 	time_state_started	= 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::select_state(u32 new_state_id) 
+
+void CState::select_state(u32 new_state_id) 
 {
 	if (current_substate == new_state_id) return;	
 	CSState *state;
@@ -127,8 +118,8 @@ void CStateAbstract::select_state(u32 new_state_id)
 	state->initialize();
 }
 
-TEMPLATE_SPECIALIZATION
-CStateAbstract* CStateAbstract::get_state(u32 state_id)
+
+CState* CState::get_state(u32 state_id)
 {
 	STATE_MAP_IT it = substates.find(state_id);
 	VERIFY(it != substates.end());
@@ -136,20 +127,20 @@ CStateAbstract* CStateAbstract::get_state(u32 state_id)
 	return it->second;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::add_state(u32 state_id, CSState *s) 
+
+void CState::add_state(u32 state_id, CSState *s) 
 {
 	substates.insert(std::make_pair(state_id, s));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::free_mem()
+
+void CState::free_mem()
 {
 	for (STATE_MAP_IT it = substates.begin(); it != substates.end(); it++) xr_delete(it->second);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::fill_data_with	(void *ptr_src, u32 size)
+
+void CState::fill_data_with	(void *ptr_src, u32 size)
 {
 	VERIFY(ptr_src);
 	VERIFY(_data);
@@ -159,8 +150,8 @@ void CStateAbstract::fill_data_with	(void *ptr_src, u32 size)
 
 #ifdef DEBUG
 
-TEMPLATE_SPECIALIZATION
-void   CStateAbstract::add_debug_info (debug::text_tree& root_s)
+
+void   CState::add_debug_info (debug::text_tree& root_s)
 {
 	typedef debug::text_tree TextTree;
 	if (!substates.empty())
@@ -182,8 +173,8 @@ void   CStateAbstract::add_debug_info (debug::text_tree& root_s)
 
 #endif
 
-TEMPLATE_SPECIALIZATION
-CStateAbstract *CStateAbstract::get_state_current()
+
+CState *CState::get_state_current()
 {
 	if (substates.empty() || (current_substate == u32(-1))) return 0;
 	
@@ -192,8 +183,8 @@ CStateAbstract *CStateAbstract::get_state_current()
 
 	return it->second;
 }
-TEMPLATE_SPECIALIZATION
-EMonsterState CStateAbstract::get_state_type()
+
+EMonsterState CState::get_state_type()
 {
 	if (substates.empty() || (current_substate == u32(-1))) return eStateUnknown;
 	
@@ -201,8 +192,8 @@ EMonsterState CStateAbstract::get_state_type()
 	return ( (state == eStateUnknown) ? EMonsterState(current_substate) : state);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateAbstract::remove_links	(CObject* object_)
+
+void CState::remove_links	(CObject* object_)
 {
 	typename SubStates::iterator	i = substates.begin();
 	typename SubStates::iterator	e = substates.end();
@@ -210,8 +201,8 @@ void CStateAbstract::remove_links	(CObject* object_)
 		(*i).second->remove_links	(object_);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateAbstract::check_control_start_conditions	(ControlCom::EControlType type)
+
+bool CState::check_control_start_conditions	(ControlCom::EControlType type)
 {
 	CState*  child	=	get_state_current();
 	if ( child && !child->check_control_start_conditions(type) )
@@ -221,5 +212,3 @@ bool CStateAbstract::check_control_start_conditions	(ControlCom::EControlType ty
 
 	return true;
 }
-
-#undef TEMPLATE_SPECIALIZATION

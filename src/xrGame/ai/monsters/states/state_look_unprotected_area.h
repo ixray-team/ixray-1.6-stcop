@@ -5,16 +5,15 @@
 #include "../../../ai_space.h"
 #include "../../../level_graph.h"
 
-template<typename _Object>
-class CStateMonsterLookToUnprotectedArea : public CState<_Object> {
-	typedef CState<_Object> inherited;
+class CStateMonsterLookToUnprotectedArea : public CState {
+	typedef CState inherited;
 
 	SStateDataAction	data;
 
 	Fvector				target_point;	
 
 public:
-						CStateMonsterLookToUnprotectedArea	(_Object *obj);
+						CStateMonsterLookToUnprotectedArea	(CBaseMonster*obj);
 	virtual				~CStateMonsterLookToUnprotectedArea	();
 
 	virtual void		initialize					();
