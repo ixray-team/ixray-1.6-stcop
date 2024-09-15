@@ -36,6 +36,137 @@ CEffect_Rain::~CEffect_Rain()
 	p_destroy						();
 }
 
+/*
+	* Добавить моросящий дождь:
+	* Для моросящего дождя характерны меньшие размеры капель и более низкая скорость. Это можно реализовать через изменение скорости и случайное смещение капель.
+
+	void CEffect_Rain::Born(Item& dest, float radius)
+	{
+		Fvector axis;
+		axis.set(0.f, -1.f, 0.f);
+
+		// Вычисление направления дождя
+		float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
+		float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
+		axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
+
+		Fvector& view = Device.vCameraPosition;
+		float angle = ::Random.randF(0.f, PI_MUL_2);
+		float dist = ::Random.randF();
+
+		dist = _sqrt(dist) * radius;
+		float x = dist * _cos(angle);
+		float z = dist * _sin(angle);
+
+		// Увеличение случайного угла для моросящего дождя (делает разброс больше)
+		float drizzle_angle_variation = deg2rad(::Random.randF(0.f, 10.f));
+
+		// Устанавливаем направление капли
+		dest.D.random_dir(axis, drizzle_angle_variation);
+
+		// Позиционирование с учетом источника и случайного разброса
+		dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset,
+				   g_pGamePersistent->Environment().source_offset + view.y,
+				   z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
+
+		// Скорость капли, уменьшаем для моросящего дождя
+		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min * 0.5f,
+									 g_pGamePersistent->Environment().CurrentEnv->rain_speed_max * 0.7f);
+
+		// Высота падения капель
+		float height = g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
+
+		// Пересчитываем положение с учетом препятствий
+		RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
+	}
+
+	* Добавить плотный дождь
+	* Для создания эффекта плотного дождя можно уменьшить радиус разброса и увеличить количество капель.
+
+	void CEffect_Rain::BornDenseRain(Item& dest, float radius)
+	{
+		Fvector axis;
+		axis.set(0.f, -1.f, 0.f);
+
+		// Направление дождя (без изменений)
+		float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
+		float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
+		axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
+
+		Fvector& view = Device.vCameraPosition;
+		float angle = ::Random.randF(0.f, PI_MUL_2);
+		float dist = ::Random.randF();
+
+		// Более плотный дождь – уменьшаем разброс
+		dist = _sqrt(dist) * (radius * 0.5f);  // Уменьшаем радиус разброса
+		float x = dist * _cos(angle);
+		float z = dist * _sin(angle);
+
+		// Устанавливаем направление капли (возможен небольшой случайный угол)
+		float dense_angle_variation = deg2rad(::Random.randF(0.f, 5.f));  // Плотнее – меньший разброс
+		dest.D.random_dir(axis, dense_angle_variation);
+
+		// Позиционирование с учетом источника и уменьшенного разброса
+		dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset,
+				   g_pGamePersistent->Environment().source_offset + view.y,
+				   z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
+
+		// Скорость капель для плотного дождя можно оставить стандартной
+		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+									 g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+
+		// Высота падения капель
+		float height = g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
+
+		// Пересчитываем положение с учетом препятствий
+		RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
+	}
+
+	* Вариант со случайной сферой
+	* Если необходимо создать дождь в форме более плотной сферы, можно сделать следующее:
+	* Добавить случайное смещение координат капель в сферу (например, используя сферическое распределение).
+	* Управлять этим параметром в зависимости от текущей погоды.
+	
+	void CEffect_Rain::BornSphericalRain(Item& dest, float radius)
+	{
+		Fvector axis;
+		axis.set(0.f, -1.f, 0.f);
+
+		// Направление дождя (без изменений)
+		float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
+		float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
+		axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
+
+		Fvector& view = Device.vCameraPosition;
+
+		// Генерация точки в сфере для плотного дождя
+		float theta = ::Random.randF(0.f, PI_MUL_2);
+		float phi = ::Random.randF(0.f, PI_DIV_2);
+		float r = ::Random.randF() * radius;
+
+		float x = r * sinf(phi) * cosf(theta);
+		float y = r * cosf(phi);
+		float z = r * sinf(phi) * sinf(theta);
+
+		// Направление капли в случайной сфере
+		dest.D.random_dir(axis, deg2rad(::Random.randF(0.f, 15.f)));  // Случайный разброс угла
+
+		// Позиционирование
+		dest.P.set(x + view.x, y + view.y, z + view.z);
+
+		// Скорость капли
+		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+									 g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+
+		// Высота падения капель
+		float height = g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
+
+		// Пересчет с учетом препятствий
+		RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
+	}
+*/
+
+
 // Born
 void CEffect_Rain::Born(Item& dest, float radius)
 {
