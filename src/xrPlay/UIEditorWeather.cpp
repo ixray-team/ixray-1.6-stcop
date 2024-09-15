@@ -88,6 +88,15 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_fvector3(el->m_identifier.c_str(), "fog_color", el->fog_color);
 		f.w_fvector3(el->m_identifier.c_str(), "rain_color", el->rain_color);
 		f.w_float(el->m_identifier.c_str(), "rain_density", el->rain_density);
+
+		f.w_float(el->m_identifier.c_str(), "rain_angle", el->rain_angle);
+		f.w_float(el->m_identifier.c_str(), "rain_length", el->rain_length);
+		f.w_float(el->m_identifier.c_str(), "rain_width", el->rain_width);
+		f.w_float(el->m_identifier.c_str(), "rain_speed_min", el->rain_speed_min);
+		f.w_float(el->m_identifier.c_str(), "rain_speed_max", el->rain_speed_max);
+		f.w_float(el->m_identifier.c_str(), "rain_volumeco", el->rain_volume_coefficient);
+		f.w_float(el->m_identifier.c_str(), "rain_aanglec", el->rain_additional_angle_coefficient);
+
 		f.w_fvector3(el->m_identifier.c_str(), "sky_color", el->sky_color);
 		f.w_float(el->m_identifier.c_str(), "sky_rotation", rad2deg(el->sky_rotation));
 		f.w_string(el->m_identifier.c_str(), "sky_texture", el->sky_texture_name.c_str());
@@ -372,6 +381,21 @@ void RenderUIWeather() {
 	if (ImGui::ColorEdit3("rain_color", (float*)&cur->rain_color)) {
 		changed = true;
 	}
+
+	if (ImGui::SliderFloat("rain_angle", &cur->rain_angle, -30.0f, 30.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_length", &cur->rain_length, 0.0f, 10.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_width", &cur->rain_width, 0.0f, 1.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_speed_min", &cur->rain_speed_min, 0.0f, 100.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_speed_max", &cur->rain_speed_max, 0.0f, 100.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_volumeco", &cur->rain_volume_coefficient, -5.0f, 5.0f))
+		changed = true;
+	if (ImGui::SliderFloat("rain_aanglec", &cur->rain_additional_angle_coefficient, 0.0f, 360.0f))
+		changed = true;
 
 	if (ImGui::ColorEdit3("sky_color", (float*)&cur->sky_color)) {
 		changed = true;

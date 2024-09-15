@@ -148,6 +148,14 @@ public:
 	float				rain_density;
 	Fvector3			rain_color;
 
+	float				rain_angle;
+	float				rain_length;
+	float				rain_width;
+	float				rain_speed_min;
+	float				rain_speed_max;
+	float				rain_volume_coefficient;
+	float				rain_additional_angle_coefficient;
+
 	float				bolt_period;
 	float				bolt_duration;
 

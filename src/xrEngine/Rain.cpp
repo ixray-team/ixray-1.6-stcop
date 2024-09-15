@@ -17,17 +17,17 @@
 
 //	Warning: duplicated in dxRainRender
 static const int	max_desired_items	= 2500;
-static const float	source_radius		= 12.5f;
+
 static const float	source_offset		= 40.f;
 static const float	max_distance		= source_offset*1.25f;
 static const float	sink_offset			= -(max_distance-source_offset);
-static const float	drop_length			= 5.f;
-static const float	drop_width			= 0.30f;
+
+
 static const float	drop_angle			= 3.0f;
 static const float	drop_max_angle		= deg2rad(10.f);
 static const float	drop_max_wind_vel	= 20.0f;
-static const float	drop_speed_min		= 40.f;
-static const float	drop_speed_max		= 80.f;
+
+
 
 const int	max_particles		= 1000;
 const int	particles_cache		= 400;
@@ -55,28 +55,30 @@ CEffect_Rain::~CEffect_Rain()
 }
 
 // Born
-void	CEffect_Rain::Born		(Item& dest, float radius)
+void CEffect_Rain::Born(Item& dest, float radius)
 {
-	Fvector		axis;	
-    axis.set			(0,-1,0);
-	float gust			= g_pGamePersistent->Environment().wind_strength_factor/10.f;
-	float k				= g_pGamePersistent->Environment().CurrentEnv->wind_velocity*gust/drop_max_wind_vel;
-	clamp				(k,0.f,1.f);
-	float	pitch		= drop_max_angle*k-PI_DIV_2;
-    axis.setHP			(g_pGamePersistent->Environment().CurrentEnv->wind_direction,pitch);
-    
-	Fvector&	view	= Device.vCameraPosition;
-	float		angle	= ::Random.randF	(0,PI_MUL_2);
-	float		dist	= ::Random.randF	(); dist = _sqrt(dist)*radius; 
-	float		x		= dist*_cos		(angle);
-	float		z		= dist*_sin		(angle);
-	dest.D.random_dir	(axis,deg2rad(drop_angle));
-	dest.P.set			(x+view.x-dest.D.x*source_offset,source_offset+view.y,z+view.z-dest.D.z*source_offset);
-//	dest.P.set			(x+view.x,height+view.y,z+view.z);
-	dest.fSpeed			= ::Random.randF	(drop_speed_min,drop_speed_max);
+	Fvector axis;
+	axis.set(0.f, -1.f, 0.f);
 
-	float height		= max_distance;
-	RenewItem			(dest,height,RayPick(dest.P,dest.D,height,collide::rqtBoth));
+	float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / drop_max_wind_vel;
+	float pitch = drop_max_angle * k - PI_DIV_2;
+	axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_additional_angle_coefficient, pitch);
+
+	Fvector& view = Device.vCameraPosition;
+	float angle = ::Random.randF(0.f, PI_MUL_2);
+	float dist = ::Random.randF();
+
+	dist = _sqrt(dist) * radius;
+	float x = dist * _cos(angle);
+	float z = dist * _sin(angle);
+
+	dest.D.random_dir(axis, deg2rad(drop_angle));
+	dest.P.set(x + view.x - dest.D.x * source_offset, source_offset + view.y, z + view.z - dest.D.z * source_offset);
+	dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+		g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+
+	float height = max_distance + 30.f;
+	RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
 }
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
@@ -167,7 +169,7 @@ void	CEffect_Rain::OnFrame	()
 	// ambient sound
 	if (snd_Ambient._feedback())
 	{
-		snd_Ambient.set_volume(_max(0.1f, factor) * hemi_factor);
+		snd_Ambient.set_volume(_max(0.1f, factor + (g_pGamePersistent->Environment().CurrentEnv->rain_volume_coefficient)) * hemi_factor);
 	}
 }
 

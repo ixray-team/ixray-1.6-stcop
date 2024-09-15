@@ -5,17 +5,17 @@
 
 //	Warning: duplicated in rain.cpp
 static const int	max_desired_items	= 2500;
-static const float	source_radius		= 12.5f;
+
 static const float	source_offset		= 40.f;
 static const float	max_distance		= source_offset*1.25f;
 static const float	sink_offset			= -(max_distance-source_offset);
-static const float	drop_length			= 5.f;
-static const float	drop_width			= 0.30f;
+
+
 static const float	drop_angle			= 3.0f;
 static const float	drop_max_angle		= deg2rad(10.f);
 static const float	drop_max_wind_vel	= 20.0f;
-static const float	drop_speed_min		= 40.f;
-static const float	drop_speed_max		= 80.f;
+
+
 
 const int	max_particles		= 1000;
 const int	particles_cache		= 400;
@@ -65,12 +65,12 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	u32			u_rain_color	= color_rgba_f(f_rain_color.x,f_rain_color.y,f_rain_color.z,factor_visual);
 
 	// born _new_ if needed
-	float	b_radius_wrap_sqr	= _sqr((source_radius+.5f));
+	float	b_radius_wrap_sqr	= _sqr(((12.5f + 40.f) +.5f));
 	if (owner.items.size()<desired_items)	{
 		// owner.items.reserve		(desired_items);
 		while (owner.items.size()<desired_items)	{
 			CEffect_Rain::Item				one;
-			owner.Born				(one,source_radius);
+			owner.Born				(one, 12.5f + 40.f);
 			owner.items.push_back		(one);
 		}
 	}
@@ -91,9 +91,9 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		CEffect_Rain::Item&	one		=	owner.items[I];
 
 		if (one.dwTime_Hit<Device.dwTimeGlobal)		owner.Hit (one.Phit);
-		if (one.dwTime_Life<Device.dwTimeGlobal)	owner.Born(one,source_radius);
+		if (one.dwTime_Life<Device.dwTimeGlobal)	owner.Born(one, 12.5f + 40.f);
 
-		// ïîñëåäíÿÿ äåëüòà ??
+		// Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÑÑ Ð´ÐµÐ»ÑŒÑ‚Ð° ??
 		//.		float xdt		= float(one.dwTime_Hit-Device.dwTimeGlobal)/1000.f;
 		//.		float dt		= Device.fTimeDelta;//xdt<Device.fTimeDelta?xdt:Device.fTimeDelta;
 		float dt		= Device.fTimeDelta;
@@ -112,7 +112,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 				Fvector		inv_dir, src_p;
 				inv_dir.invert(one.D);
 				wdir.div	(wlen);
-				one.P.mad	(one.P, wdir, -(wlen+source_radius));
+				one.P.mad	(one.P, wdir, -(wlen+ 12.5f + 40.f));
 				if (src_plane.intersectRayPoint(one.P,inv_dir,src_p)){
 					float dist_sqr	= one.P.distance_to_sqr(src_p);
 					float height	= max_distance;
@@ -140,7 +140,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 
 		// Build line
 		Fvector&	pos_head	= one.P;
-		Fvector		pos_trail;	pos_trail.mad	(pos_head,one.D,-drop_length*factor_visual);
+		Fvector		pos_trail;	pos_trail.mad	(pos_head,one.D,-g_pGamePersistent->Environment().CurrentEnv->rain_length *factor_visual);
 
 		// Culling
 		Fvector sC,lineD;	float sR; 
@@ -161,7 +161,7 @@ void dxRainRender::Render(CEffect_Rain &owner)
 		camDir.sub			(sC,vEye);
 		camDir.normalize	();
 		lineTop.crossproduct(camDir,lineD);
-		float w = drop_width;
+		float w = g_pGamePersistent->Environment().CurrentEnv->rain_width;
 		u32 s	= one.uv_set;
 		P.mad(pos_trail,lineTop,-w);	verts->set(P,u_rain_color,UV[s][0].x,UV[s][0].y);	verts++;
 		P.mad(pos_trail,lineTop,w);		verts->set(P,u_rain_color,UV[s][1].x,UV[s][1].y);	verts++;
