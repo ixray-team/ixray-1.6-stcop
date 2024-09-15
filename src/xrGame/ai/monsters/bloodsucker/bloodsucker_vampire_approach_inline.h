@@ -1,6 +1,6 @@
 #pragma once
 
-CStateBloodsuckerVampireApproach::CStateBloodsuckerVampireApproach(CBaseMonster*obj) : inherited(obj)
+CStateBloodsuckerVampireApproach::CStateBloodsuckerVampireApproach(CAI_Bloodsucker*obj) : inherited(obj)
 {
 }
 

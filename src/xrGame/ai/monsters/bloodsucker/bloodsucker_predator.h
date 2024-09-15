@@ -9,7 +9,7 @@ class	CStateBloodsuckerPredator : public CState {
 	u32							m_time_start_camp;
 
 public:
-						CStateBloodsuckerPredator		(CBaseMonster *obj);
+						CStateBloodsuckerPredator		(CAI_Bloodsucker*obj);
 
 	virtual void		reinit							();
 

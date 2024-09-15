@@ -9,8 +9,8 @@ class	CStateBloodsuckerVampire : public CState {
 	const CEntityAlive *enemy;
 
 public:
-						CStateBloodsuckerVampire		(CBaseMonster *obj);
-	
+						CStateBloodsuckerVampire		(CAI_Bloodsucker*obj);
+						CAI_Bloodsucker* object;
 	virtual void		reinit							();
 	
 	virtual void		initialize						();

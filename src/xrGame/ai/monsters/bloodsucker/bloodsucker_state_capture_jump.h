@@ -9,7 +9,7 @@ protected:
 	typedef CState*	state_ptr;
 
 public:
-	CStateCaptureJumpBloodsucker		(CBaseMonster *obj);
+	CStateCaptureJumpBloodsucker		(CAI_Bloodsucker*obj);
 	virtual				~CStateCaptureJumpBloodsucker		();
 
 	virtual	void		execute					();

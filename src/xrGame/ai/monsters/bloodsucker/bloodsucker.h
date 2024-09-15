@@ -103,6 +103,7 @@ public:
 	// Vampire
 	//--------------------------------------------------------------------
 public:
+	CAI_Bloodsucker*		object;
 
 	u32						m_vampire_min_delay;
 	static u32				m_time_last_vampire;

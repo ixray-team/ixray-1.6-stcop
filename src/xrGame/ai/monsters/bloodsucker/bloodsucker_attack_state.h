@@ -11,7 +11,7 @@ class	CBloodsuckerStateAttack : public CStateMonsterAttack {
 	bool            m_start_with_encircle;
 
 public:
-					CBloodsuckerStateAttack		(CBaseMonster *obj);
+					CBloodsuckerStateAttack		(CAI_Bloodsucker*obj);
 	virtual			~CBloodsuckerStateAttack	();
 
 	virtual	void	initialize					();
@@ -42,7 +42,7 @@ protected:
 	TTime                   m_next_change_behaviour_tick;
 
 public:
-	CStateMonsterBackstubEnemy	(CBaseMonster *obj) : inherited(obj, &data) {}
+	CStateMonsterBackstubEnemy	(CAI_Bloodsucker*obj) : inherited(obj, &data) {}
 	virtual				~CStateMonsterBackstubEnemy	() {}
 	virtual void		initialize					();
 	virtual	void		execute						();

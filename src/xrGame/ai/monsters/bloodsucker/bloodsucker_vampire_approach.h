@@ -6,7 +6,7 @@ class CStateBloodsuckerVampireApproach : public CState
 	typedef CState inherited;
 
 public:
-						CStateBloodsuckerVampireApproach	(CBaseMonster *obj);
+						CStateBloodsuckerVampireApproach	(CAI_Bloodsucker*obj);
 	virtual				~CStateBloodsuckerVampireApproach	();
 
 	virtual void		initialize							();

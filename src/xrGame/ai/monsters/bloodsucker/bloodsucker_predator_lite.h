@@ -9,7 +9,7 @@ class	CStateBloodsuckerPredatorLite : public CState {
 	bool						m_freezed;
 
 public:
-						CStateBloodsuckerPredatorLite		(CBaseMonster*obj);
+						CStateBloodsuckerPredatorLite		(CAI_Bloodsucker*obj);
 
 	virtual void		reinit							();
 

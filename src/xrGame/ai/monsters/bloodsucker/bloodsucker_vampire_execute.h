@@ -17,7 +17,7 @@ class	CStateBloodsuckerVampireExecute : public CState {
 	bool				m_effector_activated;
 
 public:
-						CStateBloodsuckerVampireExecute	(CBaseMonster *obj) : inherited(obj) {}
+						CStateBloodsuckerVampireExecute	(CAI_Bloodsucker*obj) : inherited(obj) {}
 
 	virtual void		initialize						();
 	virtual	void		execute							();

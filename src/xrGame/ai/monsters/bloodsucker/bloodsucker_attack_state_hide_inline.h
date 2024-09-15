@@ -13,7 +13,7 @@
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 
-CBloodsuckerStateAttackHide::CBloodsuckerStateAttackHide(CBaseMonster *obj) : inherited(obj)
+CBloodsuckerStateAttackHide::CBloodsuckerStateAttackHide(CAI_Bloodsucker*obj) : inherited(obj)
 {
 	add_state	(eStateAttack_HideInCover,	xr_new<CStateMonsterMoveToPointEx>(obj));
 	add_state	(eStateAttack_CampInCover,	xr_new<CStateBloodsuckerPredatorLite>	(obj));

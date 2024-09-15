@@ -11,7 +11,7 @@
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 
-CStateBloodsuckerPredator::CStateBloodsuckerPredator(CBaseMonster *obj) : inherited(obj)
+CStateBloodsuckerPredator::CStateBloodsuckerPredator(CAI_Bloodsucker*obj) : inherited(obj)
 {
 	add_state	(eStatePredator_MoveToCover,	xr_new<CStateMonsterMoveToPointEx >(obj));
 	add_state	(eStatePredator_LookOpenPlace,	xr_new<CStateMonsterLookToPoint>	(obj));

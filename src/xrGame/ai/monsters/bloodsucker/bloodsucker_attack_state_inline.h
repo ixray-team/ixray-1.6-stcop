@@ -3,7 +3,7 @@
 //#include "bloodsucker_attack_state_hide.h"
 #include "../states/state_move_to_point.h"
 
-CBloodsuckerStateAttack::CBloodsuckerStateAttack(CBaseMonster*obj) : inherited_attack(obj)
+CBloodsuckerStateAttack::CBloodsuckerStateAttack(CAI_Bloodsucker*obj) : inherited_attack(obj)
 {
 	add_state	(eStateAttack_Hide,	xr_new<CStateMonsterBackstubEnemy>(obj));
 	add_state	(eStateVampire_Execute,	xr_new<CStateBloodsuckerVampireExecute>(obj));

@@ -3,7 +3,7 @@
 //#include "../states/monster_state_rest_idle.h"
 #include "../states/state_custom_action.h"
 
-CStateCaptureJumpBloodsucker::CStateCaptureJumpBloodsucker(CBaseMonster *obj) : inherited(obj)
+CStateCaptureJumpBloodsucker::CStateCaptureJumpBloodsucker(CAI_Bloodsucker*obj) : inherited(obj)
 {
 	this->add_state(eStateCustom,				xr_new<CStateMonsterCustomAction>		(obj));
 }

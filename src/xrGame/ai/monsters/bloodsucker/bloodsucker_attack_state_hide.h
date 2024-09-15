@@ -1,6 +1,8 @@
 #pragma once
 #include "../state.h"
 
+class CAI_Bloodsucker;
+
 class	CBloodsuckerStateAttackHide : public CState {
 	typedef CState inherited;
 	typedef CState* state_ptr;
@@ -8,7 +10,7 @@ class	CBloodsuckerStateAttackHide : public CState {
 	u32							m_target_node;
 
 public:
-						CBloodsuckerStateAttackHide			(CBaseMonster *obj);
+						CBloodsuckerStateAttackHide			(CAI_Bloodsucker*obj);
 
 	virtual void		reinit							();
 

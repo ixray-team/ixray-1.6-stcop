@@ -7,7 +7,7 @@
 
 #define RUN_AWAY_DISTANCE			50.f
 
-CStateBloodsuckerVampire::CStateBloodsuckerVampire(CBaseMonster* obj) : inherited(obj)
+CStateBloodsuckerVampire::CStateBloodsuckerVampire(CAI_Bloodsucker* obj) : inherited(obj)
 {
 	this->add_state	(eStateVampire_ApproachEnemy,	xr_new<CStateBloodsuckerVampireApproach>	(obj));
 	this->add_state	(eStateVampire_Execute,			xr_new<CStateBloodsuckerVampireExecute>	(obj));

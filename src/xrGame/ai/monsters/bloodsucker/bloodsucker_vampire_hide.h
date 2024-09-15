@@ -6,7 +6,7 @@ class CStateBloodsuckerVampireHide : public CState {
 	typedef CState*	state_ptr;
 
 public:
-						CStateBloodsuckerVampireHide	(CBaseMonster *obj);
+						CStateBloodsuckerVampireHide	(CAI_Bloodsucker*obj);
 
 	virtual	void		reselect_state					();
 	virtual void		setup_substates					();
