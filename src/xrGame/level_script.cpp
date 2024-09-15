@@ -997,41 +997,44 @@ void RenderWeaponManagerWindow()
 
 			if (ImGui::CollapsingHeader("Information"))
 			{
-				if (ImGui::CollapsingHeader("Inventory information"))
+				if (ImGui::TreeNode("Inventory information"))
 				{
 					ImGui::Text("Cost: %d", pItem->Cost());
 					ImGui::Text("Weight: %f", pItem->Weight());
 					ImGui::Text("Name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameItem()).c_str());
 					ImGui::Text("Short name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameShort()).c_str());
 					ImGui::TextWrapped("Description: [%s]", Platform::ANSI_TO_UTF8(pItem->ItemDescription().c_str()).c_str());
+					ImGui::TreePop();
 				}
 
 				CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
 
 				if (pSO)
 				{
-					if (ImGui::CollapsingHeader("Ballistic information"))
+					if (ImGui::TreeNode("Ballistic information"))
 					{
 						ImGui::Text("Fire distance: %.4f", pSO->getFireDistance());
 						ImGui::Text("Bullet speed: %.4f", pSO->getStartBulletSpeed());
 						ImGui::Text("RPM: %.4f", pSO->getRPM());
+						ImGui::TreePop();
 					}
 
 
-					if (ImGui::CollapsingHeader("Hit information"))
+					if (ImGui::TreeNode("Hit information"))
 					{
 						ImGui::Text("Hit impulse: %.4f", pSO->getHitImpulse());
 						const auto& hit_power = pSO->getHitPower();
 						ImGui::Text("Hit power: %.4f %.4f %.4f %.4f", hit_power.x, hit_power.y, hit_power.z, hit_power.z, hit_power.w);
 						const auto& hit_power_critical = pSO->getHitPowerCritical();
 						ImGui::Text("Hit power critical: %.4f %.4f %.4f %.4f", hit_power_critical.x, hit_power_critical.y, hit_power_critical.z, hit_power_critical.w);
+						ImGui::TreePop();
 					}
 				}
 
 				CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
 				if (pWeapon && pSO)
 				{
-					if (ImGui::CollapsingHeader("Ammunition"))
+					if (ImGui::TreeNode("Ammunition"))
 					{
 						ImGui::Text("Magazine size: %d", pWeapon->GetAmmoMagSize());
 
@@ -1045,16 +1048,18 @@ void RenderWeaponManagerWindow()
 						ammos.erase(ammos.rfind(','));
 
 						ImGui::TextWrapped(ammos.c_str());
+						ImGui::TreePop();
 					}
 
-					if (ImGui::CollapsingHeader("Dispersion"))
+					if (ImGui::TreeNode("Dispersion"))
 					{
 						ImGui::Text("Fire dispersion base: %.4f", pSO->getFireDispersionBase());
 						ImGui::Text("Control inertion factor: %.4f", pItem->GetControlInertionFactor());
 						ImGui::Text("Crosshair inertion: %.4f", pWeapon->GetCrosshairInertion());
+						ImGui::TreePop();
 					}
 
-					if (ImGui::CollapsingHeader("Recoil"))
+					if (ImGui::TreeNode("Recoil"))
 					{
 						const auto& cam_recoil = pWeapon->getCameraRecoil();
 						ImGui::Text("Camera return: %s", cam_recoil.ReturnMode ? "enabled" : "disabled");
@@ -1088,7 +1093,7 @@ void RenderWeaponManagerWindow()
 						ImGui::Text("Zoom cam max angle vertical: %.4f", zoom_cam_recoil.MaxAngleVert);
 						ImGui::Text("Zoom cam max angle horizontal: %.4f", zoom_cam_recoil.MaxAngleHorz);
 						ImGui::Text("Zoom step angle horizontal: %.4f", zoom_cam_recoil.StepAngleHorz);
-
+						ImGui::TreePop();
 					}
 
 				}
