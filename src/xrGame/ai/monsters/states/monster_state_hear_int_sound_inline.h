@@ -3,6 +3,9 @@
 #include "state_custom_action_look.h"
 #include "state_move_to_point.h"
 
+#include "../monster_cover_manager.h"
+#include "../monster_sound_memory.h"
+#include "../monster_home.h"
 
 CStateMonsterHearInterestingSound::CStateMonsterHearInterestingSound(CBaseMonster*obj) : inherited(obj)
 {

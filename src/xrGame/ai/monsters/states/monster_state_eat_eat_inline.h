@@ -1,5 +1,8 @@
 #pragma once
 
+#include "PHMovementControl.h"
+#include "CharacterPhysicsSupport.h"
+
 #define TIME_TO_EAT 20000
 
 CStateMonsterEating::CStateMonsterEating(CBaseMonster *obj) : inherited(obj)

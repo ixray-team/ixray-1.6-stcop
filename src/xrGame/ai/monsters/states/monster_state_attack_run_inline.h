@@ -3,6 +3,8 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
+#include "ai_object_location.h"
+
 void CStateMonsterAttackRun::initialize()
 {
 	inherited::initialize();

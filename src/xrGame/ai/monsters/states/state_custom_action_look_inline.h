@@ -1,5 +1,5 @@
 #pragma once
-
+#include "sound_player.h"
 
 CStateMonsterCustomActionLook::CStateMonsterCustomActionLook(CBaseMonster *obj) : inherited(obj, &data)
 {

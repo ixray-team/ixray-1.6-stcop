@@ -6,7 +6,7 @@
 #include "../../../level.h"
 #include "../../../level_debug.h"
 
-void CStateControllerHideLite::initialize()
+void CStateControlHideLite::initialize()
 {
 	inherited::initialize			();
 
@@ -15,7 +15,7 @@ void CStateControllerHideLite::initialize()
 
 }
 
-void CStateControllerHideLite::execute()
+void CStateControlHideLite::execute()
 {
 	this->object->path().set_target_point		(target.position, target.node);
 	this->object->path().set_rebuild_time		(0);
@@ -31,26 +31,26 @@ void CStateControllerHideLite::execute()
 	this->object->custom_anim().set_body_state(CControllerAnimation::eTorsoRun,CControllerAnimation::eLegsTypeRun);
 }
 
-bool CStateControllerHideLite::check_start_conditions()
+bool CStateControlHideLite::check_start_conditions()
 {
 	return true;
 }
 
-void CStateControllerHideLite::reinit()
+void CStateControlHideLite::reinit()
 {
 	inherited::reinit();
 	m_time_finished = 0;
 }
 
 
-void CStateControllerHideLite::finalize()
+void CStateControlHideLite::finalize()
 {
 	inherited::finalize();
 	m_time_finished	= Device.dwTimeGlobal;
 }
 
 
-bool CStateControllerHideLite::check_completion()
+bool CStateControlHideLite::check_completion()
 {
 	if ((this->object->ai_location().level_vertex_id() == target.node) && 
 		!this->object->control().path_builder().is_moving_on_path()) return true;
@@ -58,7 +58,7 @@ bool CStateControllerHideLite::check_completion()
 	return (!this->object->EnemyMan.see_enemy_now());
 }
 
-void CStateControllerHideLite::select_target_point()
+void CStateControlHideLite::select_target_point()
 {
 #ifdef DEBUG
 	DBG().level_info(this).clear();

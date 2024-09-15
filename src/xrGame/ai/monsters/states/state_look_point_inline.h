@@ -1,4 +1,5 @@
 #pragma once
+#include "sound_player.h"
 
 CStateMonsterLookToPoint::CStateMonsterLookToPoint(CBaseMonster*obj) : inherited(obj, &data)
 {

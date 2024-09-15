@@ -1,8 +1,10 @@
 #pragma once
 
 #include "../../../../xrPhysics/PhysicsShell.h"
-//#include "../../../PHInterpolation.h"
-//#include "../../../PHElement.h"
+
+#include "../monster_cover_manager.h"
+#include "../monster_sound_memory.h"
+#include "../monster_home.h"
 
 #define IMPULSE_TO_CORPSE	15.f
 #define MIN_DELAY			100

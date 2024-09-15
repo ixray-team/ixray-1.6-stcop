@@ -26,7 +26,7 @@ private:
 	float					get_attack_radius				() const;
 	float					calculate_min_run_distance		() const;
 
-	typedef CState<Object>	inherited;
+	typedef CState			inherited;
 	virtual void			remove_links	(CObject* object_) { inherited::remove_links(object_); }
 
 	CControl_Com*			m_capturer;
