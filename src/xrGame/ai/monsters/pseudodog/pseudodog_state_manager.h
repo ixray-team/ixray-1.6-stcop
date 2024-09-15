@@ -3,8 +3,8 @@
 
 class CAI_PseudoDog;
 
-class CStateManagerPseudodog : public CMonsterStateManager<CAI_PseudoDog> {
-	typedef CMonsterStateManager<CAI_PseudoDog> inherited;
+class CStateManagerPseudodog : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 	
 public:
 

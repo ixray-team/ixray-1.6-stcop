@@ -2,15 +2,15 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class CStateZombieAttackRun : public CState<_Object> {
-	typedef CState<_Object> inherited;
+
+class CStateZombieAttackRun : public CState {
+	typedef CState inherited;
 
 	TTime				m_time_action_change;
 	EAction				action;
 
 public:
-						CStateZombieAttackRun	(_Object *obj);
+						CStateZombieAttackRun	(CBaseMonster *obj);
 	virtual				~CStateZombieAttackRun	();
 
 	virtual void		initialize				();

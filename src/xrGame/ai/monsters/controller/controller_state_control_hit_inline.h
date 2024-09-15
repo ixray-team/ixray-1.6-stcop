@@ -1,26 +1,20 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateControllerControlHitAbstract CStateControlAttack<_Object>
-
 #define GOOD_DISTANCE_FOR_CONTROL_HIT	8.f
 #define CONTROL_PREPARE_TIME			2900
 
-TEMPLATE_SPECIALIZATION
-CStateControllerControlHitAbstract::CStateControlAttack(_Object *obj) : inherited(obj)
+
+CStateControlAttack::CStateControlAttack(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateControllerControlHitAbstract::~CStateControlAttack()
+
+CStateControlAttack::~CStateControlAttack()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::initialize()
+
+void CStateControlAttack::initialize()
 {
 	inherited::initialize();
 	
@@ -28,8 +22,8 @@ void CStateControllerControlHitAbstract::initialize()
 	time_control_started	= 0;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::execute()
+
+void CStateControlAttack::execute()
 {
 	switch (m_action) {
 		case eActionPrepare:
@@ -61,32 +55,32 @@ void CStateControllerControlHitAbstract::execute()
 	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0,0,object->db().m_dwAttackSndDelay);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerControlHitAbstract::check_start_conditions()
+
+bool CStateControlAttack::check_start_conditions()
 {
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy_position());
 	if (dist < GOOD_DISTANCE_FOR_CONTROL_HIT) return false;
 
 	if (!object->EnemyMan.see_enemy_now()) return false; 
 
-	// всё ок, можно начать атаку
+	// РІСЃС‘ РѕРє, РјРѕР¶РЅРѕ РЅР°С‡Р°С‚СЊ Р°С‚Р°РєСѓ
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerControlHitAbstract::check_completion()
+
+bool CStateControlAttack::check_completion()
 {
 	return (m_action == eActionCompleted);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::finalize()
+
+void CStateControlAttack::finalize()
 {
 	inherited::finalize();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::critical_finalize()
+
+void CStateControlAttack::critical_finalize()
 {
 	inherited::critical_finalize();
 }
@@ -96,8 +90,8 @@ void CStateControllerControlHitAbstract::critical_finalize()
 //////////////////////////////////////////////////////////////////////////
 
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::execute_hit_prepare()
+
+void CStateControlAttack::execute_hit_prepare()
 {
 	object->com_man().ta_activate(object->anim_triple_control);
 	object->play_control_sound_start();
@@ -105,22 +99,19 @@ void CStateControllerControlHitAbstract::execute_hit_prepare()
 	time_control_started = Device.dwTimeGlobal;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::execute_hit_continue()
+
+void CStateControlAttack::execute_hit_continue()
 {
-	// проверить на грави удар
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР° РіСЂР°РІРё СѓРґР°СЂ
 	if (time_control_started + CONTROL_PREPARE_TIME < Device.dwTimeGlobal) {
 		m_action = eActionFire;
 	}
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerControlHitAbstract::execute_hit_fire()
+
+void CStateControlAttack::execute_hit_fire()
 {
 	object->com_man().ta_pointbreak();
 	
 	if (object->EnemyMan.see_enemy_now()) object->control_hit();
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControllerControlHitAbstract

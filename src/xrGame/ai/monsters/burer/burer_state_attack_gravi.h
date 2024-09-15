@@ -1,11 +1,10 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateBurerAttackGravi : public CState<_Object> {
-	typedef CState<_Object> inherited;	
+class CStateBurerAttackGravi : public CState {
+	typedef CState inherited;	
 public:
-							CStateBurerAttackGravi	(_Object *obj);
+							CStateBurerAttackGravi	(CBaseMonster *obj);
 
 		virtual	void		initialize				();
 		virtual	void		execute					();
@@ -17,7 +16,7 @@ public:
 		virtual bool		check_completion		();
 
 private:
-				// выполнять состояние
+				// РІС‹РїРѕР»РЅСЏС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 				void		ExecuteGraviStart		();
 				void		ExecuteGraviContinue	();
 				void		ExecuteGraviFire		();

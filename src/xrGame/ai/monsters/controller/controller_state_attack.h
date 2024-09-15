@@ -3,14 +3,13 @@
 #include "../state.h"
 #include "../../../ai_debug.h"
 
-template<typename _Object>
-class	CStateControllerAttack : public CState<_Object> {
+class	CStateControllerAttack : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 public:
-						CStateControllerAttack	(_Object *obj);
+						CStateControllerAttack	(CBaseMonster *obj);
 	virtual				~CStateControllerAttack	() {}
 
 	virtual void		initialize				();

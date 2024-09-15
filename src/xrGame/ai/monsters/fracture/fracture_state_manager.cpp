@@ -16,14 +16,14 @@
 
 #include "../../../entitycondition.h"
 
-CStateManagerFracture::CStateManagerFracture(CFracture *obj) : inherited(obj)
+CStateManagerFracture::CStateManagerFracture(CFracture* obj) : inherited(obj)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest<CFracture> >				(obj));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CFracture> >				(obj));
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CFracture> >				(obj));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CFracture> >	(obj));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CFracture> >				(obj));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CFracture> >				(obj));
+	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(obj));
 }
 
 CStateManagerFracture::~CStateManagerFracture()
@@ -52,10 +52,10 @@ void CStateManagerFracture::execute()
 		}
 	}
 
-	// установить текущее состояние
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

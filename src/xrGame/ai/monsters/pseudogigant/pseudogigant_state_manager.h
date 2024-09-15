@@ -3,8 +3,8 @@
 
 class CPseudoGigant;
 
-class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant> {
-	typedef CMonsterStateManager<CPseudoGigant> inherited;
+class CStateManagerGigant : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 public:
 
 					CStateManagerGigant	(CPseudoGigant *monster); 

@@ -19,18 +19,19 @@
 
 #include "chimera_attack_state.h"
 
-CStateManagerChimera::CStateManagerChimera(CChimera *obj) : inherited(obj)
+CStateManagerChimera::CStateManagerChimera(CChimera* obj) : inherited(obj)
 {
- 	add_state(eStateRest,					xr_new<CStateMonsterRest<CChimera> >					(obj));
- 	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CChimera> >					(obj));
-	add_state(eStateAttack,					xr_new<ChimeraAttackState<CChimera> >					(obj));
- 	add_state(eStateEat,					xr_new<CStateMonsterEat<CChimera> >						(obj));
- 	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CChimera> >	(obj));
- 	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CChimera> >		(obj));
-// 	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CChimera> >					(obj));
-// 	add_state(eStateThreaten,				xr_new<CStateChimeraThreaten<CChimera> >				(obj));
-// 	add_state(eStateCustom,					xr_new<CStateMonsterTestState<CChimera> >				(obj));
+	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
+	add_state(eStateAttack, xr_new<ChimeraAttackState>(obj));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
+	// 	add_state(eStateHitted,					xr_new<CStateMonsterHitted>					(obj));
+	// 	add_state(eStateThreaten,				xr_new<CStateChimeraThreaten>				(obj));
+	// 	add_state(eStateCustom,					xr_new<CStateMonsterTestState>				(obj));
 }
+
 
 CStateManagerChimera::~CStateManagerChimera()
 {
@@ -63,7 +64,7 @@ void CStateManagerChimera::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

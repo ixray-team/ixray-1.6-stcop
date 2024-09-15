@@ -35,8 +35,6 @@ public:
 	virtual void			on_destroy			()								= 0;
 };
 
-
-template<typename _Object>
 class CControlledEntity : public CControlledEntityBase {
 	
 	SControlledInfo		m_data;
@@ -47,7 +45,7 @@ class CControlledEntity : public CControlledEntityBase {
 		int group_id;
 	} saved_id;
 
-	_Object				*m_object;
+	CBaseMonster		*m_object;
 	CController			*m_controller;
 
 public:
@@ -67,7 +65,7 @@ public:
 	virtual void			on_die					();
 	virtual void			on_destroy				();
 
-			void			init_external			(_Object *obj) {m_object = obj;}
+			void			init_external			(CBaseMonster *obj) {m_object = obj;}
 			
 			CController		*get_controller			() {return m_controller;}
 };

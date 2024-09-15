@@ -5,15 +5,13 @@
 #define GOOD_DISTANCE_FOR_TELE	15.f
 #define MAX_TIME_CHECK_FAILURE	6000
 
-template <typename Object>
-CStateBurerAttackTele<Object>::CStateBurerAttackTele(Object *obj) : inherited(obj)
+CStateBurerAttackTele::CStateBurerAttackTele(CBaseMonster*obj) : inherited(obj)
 {
 	m_anim_end_tick				=	0;
 	m_last_grenade_scan			=	0;
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::initialize()
+void CStateBurerAttackTele::initialize()
 {
 	inherited::initialize			();
 
@@ -32,8 +30,7 @@ void CStateBurerAttackTele<Object>::initialize()
 	this->object->set_script_capture		(false);
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::execute()
+void CStateBurerAttackTele::execute()
 {
 	HandleGrenades ();
 // 	if ( this->object->EnemyMan.see_enemy_now() )
@@ -96,8 +93,7 @@ void CStateBurerAttackTele<Object>::execute()
 	this->object->face_enemy								();
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::deactivate()
+void CStateBurerAttackTele::deactivate()
 {
 	tele_objects.clear								();
 	// clear particles on active objects
@@ -133,28 +129,24 @@ void CStateBurerAttackTele<Object>::deactivate()
 	this->object->set_script_capture						(true);
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::finalize()
+void CStateBurerAttackTele::finalize()
 {
 	deactivate										();
 	inherited::finalize								();
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::critical_finalize()
+void CStateBurerAttackTele::critical_finalize()
 {
 	deactivate										();
 	inherited::critical_finalize					();
 }
 
-template <typename Object>
-bool CStateBurerAttackTele<Object>::check_start_conditions()
+bool CStateBurerAttackTele::check_start_conditions()
 {
 	return										CheckTeleStart();
 }
 
-template <typename Object>
-bool CStateBurerAttackTele<Object>::check_completion()
+bool CStateBurerAttackTele::check_completion()
 {
 	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
 	
@@ -188,8 +180,7 @@ bool CStateBurerAttackTele<Object>::check_completion()
 
 //////////////////////////////////////////////////////////////////////////
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjects, const Fvector &pos)
+void CStateBurerAttackTele::FindFreeObjects(xr_vector<CObject*> &tpObjects, const Fvector &pos)
 {
 	Level().ObjectSpace.GetNearest	(tpObjects, pos, this->object->m_tele_find_radius, NULL);
 
@@ -214,8 +205,7 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjec
 	}
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::FindObjects	()
+void CStateBurerAttackTele::FindObjects	()
 {
 	u32	res_size					= (u32)tele_objects.size		();
 	clear_and_reserve(tele_objects);
@@ -249,8 +239,7 @@ void CStateBurerAttackTele<Object>::FindObjects	()
 	);
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::FireAllToEnemy()
+void CStateBurerAttackTele::FireAllToEnemy()
 {
 	if ( !this->object->CTelekinesis::is_active() )
 	{
@@ -292,8 +281,7 @@ void CStateBurerAttackTele<Object>::FireAllToEnemy()
 	this->object->sound().play			(CBurer::eMonsterSoundTeleAttack);
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::ExecuteTeleContinue()
+void CStateBurerAttackTele::ExecuteTeleContinue()
 {
 	if (time_started + this->object->m_tele_time_to_hold > Device.dwTimeGlobal) return;
 
@@ -328,8 +316,7 @@ void CStateBurerAttackTele<Object>::ExecuteTeleContinue()
 #define HEAD_OFFSET_INDOOR	1.f
 #define HEAD_OFFSET_OUTDOOR 5.f
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::ExecuteTeleFire()
+void CStateBurerAttackTele::ExecuteTeleFire()
 {
 	Fvector enemy_pos;
 	enemy_pos	= get_head_position(const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy()));
@@ -343,14 +330,12 @@ void CStateBurerAttackTele<Object>::ExecuteTeleFire()
 	this->object->sound().play			(CBurer::eMonsterSoundTeleAttack);
 }
 
-template <typename Object>
-bool CStateBurerAttackTele<Object>::IsActiveObjects()
+bool CStateBurerAttackTele::IsActiveObjects()
 {
 	return (this->object->CTelekinesis::get_objects_count() > 0);
 }
 
-template <typename Object>
-bool CStateBurerAttackTele<Object>::CheckTeleStart()
+bool CStateBurerAttackTele::CheckTeleStart()
 {
 	// проверка на текущую активность 
 	if (IsActiveObjects()) return false;
@@ -413,8 +398,7 @@ public:
 };
 
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::SelectObjects()
+void CStateBurerAttackTele::SelectObjects()
 {
 	std::sort(tele_objects.begin(),tele_objects.end(),best_object_predicate2(this->object->Position(), this->object->EnemyMan.get_enemy()->Position()));
 
@@ -455,14 +439,12 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 	}
 }
 
-template <typename Object>
-void  CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade)
+void  CStateBurerAttackTele::OnGrenadeDestroyed (CGrenade* const grenade)
 {
 	this->object->CTelekinesis::remove_links	(grenade);
 }
 
-template <typename Object>
-void CStateBurerAttackTele<Object>::HandleGrenades ()
+void CStateBurerAttackTele::HandleGrenades ()
 {	
 	if ( current_time() < m_last_grenade_scan + 1000 )
 	{

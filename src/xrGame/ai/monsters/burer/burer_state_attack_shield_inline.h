@@ -1,15 +1,13 @@
 #pragma once
 
-template <class Object>
-CStateBurerShield<Object>::CStateBurerShield (Object *obj) : inherited(obj)
+CStateBurerShield::CStateBurerShield (CBaseMonster*obj) : inherited(obj)
 {
 	m_last_shield_started			=	0;
 	m_shield_start_anim_length_sec	=	0;
 	m_next_particle_allowed			=	0;
 }
 
-template <class Object>
-void   CStateBurerShield<Object>::initialize()
+void   CStateBurerShield::initialize()
 {
 	inherited::initialize				();
 	this->object->set_script_capture			(false);
@@ -21,8 +19,7 @@ void   CStateBurerShield<Object>::initialize()
 	this->object->anim().get_animation_info	(eAnimShieldStart, 0, motion, m_shield_start_anim_length_sec);
 }
 
-template <class Object>
-void   CStateBurerShield<Object>::execute()
+void   CStateBurerShield::execute()
 {
 	if ( !m_started ) // && current_time() > m_last_shield_started + TTime(m_shield_start_anim_length_sec*1000) )
 	{
@@ -49,24 +46,21 @@ void   CStateBurerShield<Object>::execute()
 	this->object->anim().set_override_animation	(m_started ? eAnimShieldContinue : eAnimShieldStart);
 }
 
-template <class Object>
-void   CStateBurerShield<Object>::finalize()
+void   CStateBurerShield::finalize()
 {
 	inherited::finalize();
 	this->object->DeactivateShield			();
 	this->object->set_script_capture			(true);
 }
 
-template <class Object>
-void   CStateBurerShield<Object>::critical_finalize()
+void   CStateBurerShield::critical_finalize()
 {
 	inherited::critical_finalize		();
 	this->object->DeactivateShield			();
 	this->object->set_script_capture			(false);
 }
 
-template <class Object>
-bool   CStateBurerShield<Object>::check_start_conditions()
+bool   CStateBurerShield::check_start_conditions()
 {
 	if ( current_time() < m_last_shield_started + this->object->m_shield_time + this->object->m_shield_cooldown )
 		return							false;
@@ -77,8 +71,7 @@ bool   CStateBurerShield<Object>::check_start_conditions()
 	return								true;
 }
 
-template <class Object>
-bool   CStateBurerShield<Object>::check_completion()
+bool   CStateBurerShield::check_completion()
 {
 	if ( current_time() > m_last_shield_started + this->object->m_shield_time )
 		return							true;

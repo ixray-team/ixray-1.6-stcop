@@ -3,13 +3,13 @@
 
 class CSnork;
 
-class CStateManagerSnork : public CMonsterStateManager<CSnork> 
+class CStateManagerSnork : public CMonsterStateManager 
 {
 private:
-	typedef				CMonsterStateManager<CSnork>	inherited;
+	typedef				CMonsterStateManager	inherited;
 
 public:
-						CStateManagerSnork		(CSnork *obj);
+						CStateManagerSnork		(CSnork*obj);
 	virtual				~CStateManagerSnork		();
 
 	virtual	void		execute					();

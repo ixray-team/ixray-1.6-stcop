@@ -2,23 +2,13 @@
 
 #include "psy_dog_state_psy_attack_hide.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStatePsyDogPsyAttackAbstract CStatePsyDogPsyAttack<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStatePsyDogPsyAttackAbstract::CStatePsyDogPsyAttack(_Object *obj) : inherited(obj)
+CStatePsyDogPsyAttack::CStatePsyDogPsyAttack(CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateAttack_HideInCover,	xr_new<CStatePsyDogHide<_Object> >	(obj));
+	this->add_state	(eStateAttack_HideInCover,	xr_new<CStatePsyDogHide>	(obj));
 }
-TEMPLATE_SPECIALIZATION
-void CStatePsyDogPsyAttackAbstract::reselect_state()
+
+void CStatePsyDogPsyAttack::reselect_state()
 {
 	this->select_state(eStateAttack_HideInCover);
 }
-
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStatePsyDogPsyAttackAbstract

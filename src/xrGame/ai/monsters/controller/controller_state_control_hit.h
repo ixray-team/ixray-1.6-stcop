@@ -1,8 +1,7 @@
 #pragma once
 
-template<typename _Object>
-class CStateControlAttack : public CState<_Object> {
-	typedef	CState<_Object> inherited;
+class CStateControlAttack : public CState {
+	typedef	CState inherited;
 
 	enum {
 		eActionPrepare,
@@ -16,7 +15,7 @@ class CStateControlAttack : public CState<_Object> {
 
 public:
 
-					CStateControlAttack		(_Object *p);
+					CStateControlAttack		(CBaseMonster *p);
 	virtual			~CStateControlAttack	();
 
 	virtual void	initialize				();	

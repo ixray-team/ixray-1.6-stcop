@@ -5,27 +5,20 @@
 #include "chimera_state_threaten_roar.h"
 
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateChimeraThreatenAbstract CStateChimeraThreaten<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateChimeraThreatenAbstract::CStateChimeraThreaten(_Object *obj) : inherited(obj)
+CStateChimeraThreaten::CStateChimeraThreaten(CBaseMonster *obj) : inherited(obj)
 {
-	add_state(eStateWalk,		xr_new<CStateChimeraThreatenWalk<_Object> >	(obj));
-	add_state(eStateThreaten,	xr_new<CStateChimeraThreatenRoar<_Object> >	(obj));
-	add_state(eStateSteal,		xr_new<CStateChimeraThreatenSteal<_Object> >(obj));
+	add_state(eStateWalk,		xr_new<CStateChimeraThreatenWalk>	(obj));
+	add_state(eStateThreaten,	xr_new<CStateChimeraThreatenRoar>	(obj));
+	add_state(eStateSteal,		xr_new<CStateChimeraThreatenSteal>(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-CStateChimeraThreatenAbstract::~CStateChimeraThreaten()
+
+CStateChimeraThreaten::~CStateChimeraThreaten()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenAbstract::reinit()
+
+void CStateChimeraThreaten::reinit()
 {
 	inherited::reinit	();
 
@@ -37,8 +30,8 @@ void CStateChimeraThreatenAbstract::reinit()
 #define MORALE_THRESHOLD	0.8f
 #define THREATEN_DELAY		10000
 
-TEMPLATE_SPECIALIZATION
-bool CStateChimeraThreatenAbstract::check_start_conditions()
+
+bool CStateChimeraThreaten::check_start_conditions()
 {
 	if (this->object->tfGetRelationType(this->object->EnemyMan.get_enemy()) == ALife::eRelationTypeWorstEnemy) return false;
 	if (this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY) return false;
@@ -49,8 +42,8 @@ bool CStateChimeraThreatenAbstract::check_start_conditions()
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateChimeraThreatenAbstract::check_completion()
+
+bool CStateChimeraThreaten::check_completion()
 {
 	if (this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position()) < MIN_DIST_TO_ENEMY) return true;
 	if (this->object->HitMemory.is_hit()) return true;
@@ -59,14 +52,14 @@ bool CStateChimeraThreatenAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenAbstract::initialize()
+
+void CStateChimeraThreaten::initialize()
 {
 	inherited::initialize	();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenAbstract::reselect_state()
+
+void CStateChimeraThreaten::reselect_state()
 {
 	if (this->prev_substate == u32(-1)) {
 		this->select_state(eStateThreaten);
@@ -91,20 +84,16 @@ void CStateChimeraThreatenAbstract::reselect_state()
 	select_state(eStateThreaten);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenAbstract::finalize()
+
+void CStateChimeraThreaten::finalize()
 {
 	inherited::finalize		();
 	m_last_time_threaten	 = Device.dwTimeGlobal;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenAbstract::critical_finalize()
+
+void CStateChimeraThreaten::critical_finalize()
 {
 	inherited::critical_finalize();
 	m_last_time_threaten	 = Device.dwTimeGlobal;
 }
-
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateChimeraThreatenAbstract

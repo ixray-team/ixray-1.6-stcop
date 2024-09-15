@@ -1,9 +1,8 @@
 #pragma once
 
-template<typename _Object>
-class CStateControlHide : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
-	typedef	CState<_Object>*	state_ptr;
+class CStateControlHide : public CState {
+	typedef	CState	inherited;
+	typedef	CState*	state_ptr;
 
 	bool			m_cover_reached;
 
@@ -18,7 +17,7 @@ class CStateControlHide : public CState<_Object> {
 
 public:
 
-					CStateControlHide		(_Object *obj) : inherited(obj) {}
+					CStateControlHide		(CBaseMonster *obj) : inherited(obj) {}
 	virtual			~CStateControlHide		() {}
 
 	virtual void	initialize				();

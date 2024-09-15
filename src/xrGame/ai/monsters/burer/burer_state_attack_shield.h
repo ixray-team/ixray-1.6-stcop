@@ -1,14 +1,13 @@
 #pragma once
 #include "../state.h"
 
-template<typename Object>
-class CStateBurerShield : public CState<Object> 
+class CStateBurerShield : public CState
 {
 private:
-	typedef				CState<Object>	inherited;
+	typedef				CState	inherited;
 
 public:
-						CStateBurerShield		(Object *obj);
+						CStateBurerShield		(CBaseMonster*obj);
 
 	virtual	void		initialize				();
 	virtual	void		execute					();

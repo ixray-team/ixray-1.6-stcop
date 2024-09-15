@@ -1,11 +1,9 @@
-#ifndef CHIMERA_ATTACK_STATE_H_INCLUDED
-#define CHIMERA_ATTACK_STATE_H_INCLUDED
+#pragma once
 
-template<typename Object>
-class ChimeraAttackState : public CState<Object> 
+class ChimeraAttackState : public CState
 {
 public:
-							ChimeraAttackState				(Object* obj);
+							ChimeraAttackState				(CBaseMonster* obj);
 	virtual void			initialize						();
 	virtual	void			execute							();
 	virtual void 			finalize						();
@@ -63,5 +61,3 @@ private:
 }; // ChimeraAttackState
 
 #include "chimera_attack_state_inline.h"
-
-#endif // #ifdef CHIMERA_ATTACK_STATE_H_INCLUDED

@@ -1,9 +1,8 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateBurerAttackRunAround : public CState<_Object> {
-	typedef CState<_Object>	inherited;
+class	CStateBurerAttackRunAround : public CState {
+	typedef CState	inherited;
 
 	Fvector				selected_point;
 	u32					time_started;
@@ -11,7 +10,7 @@ class	CStateBurerAttackRunAround : public CState<_Object> {
 	Fvector				dest_direction;
 
 public:
-						CStateBurerAttackRunAround	(_Object *obj);
+						CStateBurerAttackRunAround	(CBaseMonster*obj);
 	virtual void		initialize					();
 	virtual void		execute						();
 

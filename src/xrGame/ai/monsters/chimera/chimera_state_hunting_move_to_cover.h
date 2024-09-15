@@ -1,13 +1,12 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateChimeraHuntingMoveToCover : public CState<_Object> {
+class	CStateChimeraHuntingMoveToCover : public CState {
 protected:
-	typedef CState<_Object> inherited;
+	typedef CState inherited;
 
 public:
-						CStateChimeraHuntingMoveToCover	(_Object *obj);
+						CStateChimeraHuntingMoveToCover	(CBaseMonster *obj);
 
 	virtual void		initialize						();
 	virtual	void		execute							();

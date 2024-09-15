@@ -1,11 +1,10 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateControllerPanic : public CState<_Object> {
+class	CStateControllerPanic : public CState {
 protected:
-	typedef CState<_Object>		inherited;
-	typedef CState<_Object>*	state_ptr;
+	typedef CState		inherited;
+	typedef CState*	state_ptr;
 
 	enum {
 		eStateRun			= u32(0),
@@ -14,7 +13,7 @@ protected:
 	};
 
 public:
-						CStateControllerPanic	(_Object *obj);
+						CStateControllerPanic	(CBaseMonster *obj);
 	virtual				~CStateControllerPanic	();
 
 	virtual void		reselect_state			();

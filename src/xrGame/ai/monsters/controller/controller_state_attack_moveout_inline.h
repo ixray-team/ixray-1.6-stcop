@@ -1,16 +1,10 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateControlMoveOutAbstract CStateControlMoveOut<_Object>
-
 #define MAX_STATE_TIME						10000
 #define DEFAULT_LOOK_POINT_CHANGE_DELAY		2000
 #define LOOK_COVER_PROBABILITY				30
 
-TEMPLATE_SPECIALIZATION
-void CStateControlMoveOutAbstract::initialize()
+void CStateControlMoveOut::initialize()
 {
 	inherited::initialize			();
 
@@ -25,8 +19,7 @@ void CStateControlMoveOutAbstract::initialize()
 	m_enemy_vertex					= this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControlMoveOutAbstract::execute()
+void CStateControlMoveOut::execute()
 {
 	
 	update_target_point						();
@@ -48,16 +41,14 @@ void CStateControlMoveOutAbstract::execute()
 	this->object->custom_anim().set_body_state	(CControllerAnimation::eTorsoSteal,CControllerAnimation::eLegsTypeStealMotion);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControlMoveOutAbstract::check_start_conditions()
+bool CStateControlMoveOut::check_start_conditions()
 {
 	if (this->object->EnemyMan.see_enemy_now())		return false;
 
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControlMoveOutAbstract::check_completion()
+bool CStateControlMoveOut::check_completion()
 {
 	if (this->object->EnemyMan.see_enemy_now())		return true;
 	if (this->time_state_started + 10000 < time())	return true;
@@ -69,8 +60,7 @@ bool CStateControlMoveOutAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControlMoveOutAbstract::update_target_point()
+void CStateControlMoveOut::update_target_point()
 {
 	if (m_state == eMoveToNodeEnemyLastSeen) {
 		if (this->object->Position().similar(m_target_position,0.05f)) m_state = eMoveToLastEnemyLocation;
@@ -88,9 +78,7 @@ void CStateControlMoveOutAbstract::update_target_point()
 	}
 }
 
-
-TEMPLATE_SPECIALIZATION
-void CStateControlMoveOutAbstract::update_look_point()
+void CStateControlMoveOut::update_look_point()
 {
 	if (this->object->HitMemory.get_last_hit_time() > this->object->EnemyMan.get_enemy_time_last_seen()) {
 		m_look_point.mad				(this->object->Position(),this->object->HitMemory.get_last_hit_dir(),5.f);
@@ -113,6 +101,3 @@ void CStateControlMoveOutAbstract::update_look_point()
 	m_look_point.y					+= 1.5f;
 	m_last_time_look_point_updated	= time();
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControlMoveOutAbstract

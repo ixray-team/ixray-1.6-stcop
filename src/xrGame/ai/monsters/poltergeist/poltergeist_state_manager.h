@@ -3,8 +3,8 @@
 
 class CPoltergeist;
 
-class CStateManagerPoltergeist : public CMonsterStateManager<CPoltergeist> {
-	typedef CMonsterStateManager<CPoltergeist> inherited;
+class CStateManagerPoltergeist : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 
 
 public:

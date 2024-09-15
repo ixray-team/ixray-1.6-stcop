@@ -1,10 +1,9 @@
 #pragma once
 
 // Hiding until enemy get out from its sight
-template<typename _Object>
-class CStateControlHideLite : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
-	typedef	CState<_Object>*	state_ptr;
+class CStateControlHideLite : public CState{
+	typedef	CState		inherited;
+	typedef	CState*	state_ptr;
 
 	struct {
 		Fvector position;
@@ -15,7 +14,7 @@ class CStateControlHideLite : public CState<_Object> {
 
 public:
 
-					CStateControlHideLite	(_Object *obj) : inherited(obj) {}
+					CStateControlHideLite	(CBaseMonster *obj) : inherited(obj) {}
 	virtual			~CStateControlHideLite	() {}
 
 	virtual void	reinit					();

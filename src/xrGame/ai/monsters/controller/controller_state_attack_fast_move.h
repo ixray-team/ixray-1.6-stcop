@@ -2,12 +2,11 @@
 
 #include "../state.h"
 
-template<typename _Object>
-class	CStateControllerFastMove : public CState<_Object> {
+class	CStateControllerFastMove : public CState {
 protected:
-	typedef CState<_Object>		inherited;
+	typedef CState		inherited;
 public:
-						CStateControllerFastMove	(_Object *obj) : inherited(obj) {}
+						CStateControllerFastMove	(CBaseMonster *obj) : inherited(obj) {}
 	virtual void		initialize					();	
 	virtual void		finalize					();	
 	virtual void		critical_finalize			();

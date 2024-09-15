@@ -1,8 +1,7 @@
 #pragma once
 
-template<typename _Object>
-class CStateControlCamp : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
+class CStateControlCamp : public CState {
+	typedef	CState		inherited;
 
 	float			m_angle_from;
 	float			m_angle_to;
@@ -12,7 +11,7 @@ class CStateControlCamp : public CState<_Object> {
 
 public:
 
-					CStateControlCamp	(_Object *obj) : inherited(obj) {}
+					CStateControlCamp	(CBaseMonster *obj) : inherited(obj) {}
 	virtual			~CStateControlCamp	() {}
 
 	virtual void	initialize				();

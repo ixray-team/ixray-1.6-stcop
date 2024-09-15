@@ -1,12 +1,7 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateChimeraThreatenWalkAbstract CStateChimeraThreatenWalk<_Object>
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenWalkAbstract::initialize()
+void CStateChimeraThreatenWalk::initialize()
 {
 	inherited::initialize();
 
@@ -26,8 +21,8 @@ void CStateChimeraThreatenWalkAbstract::initialize()
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraThreatenWalkAbstract::execute()
+
+void CStateChimeraThreatenWalk::execute()
 {
 	this->data.point				= this->object->EnemyMan.get_enemy_position	();
 	this->data.vertex				= this->object->EnemyMan.get_enemy_vertex		();
@@ -37,8 +32,8 @@ void CStateChimeraThreatenWalkAbstract::execute()
 
 #define DISTANCE_TO_ENEMY		5.f
 
-TEMPLATE_SPECIALIZATION
-bool CStateChimeraThreatenWalkAbstract::check_completion()
+
+bool CStateChimeraThreatenWalk::check_completion()
 {	
 	if (inherited::check_completion()) return true;
 
@@ -50,8 +45,8 @@ bool CStateChimeraThreatenWalkAbstract::check_completion()
 
 #define MAX_DISTANCE_TO_ENEMY	8.f
 
-TEMPLATE_SPECIALIZATION
-bool CStateChimeraThreatenWalkAbstract::check_start_conditions()
+
+bool CStateChimeraThreatenWalk::check_start_conditions()
 {
 	float dist_to_enemy = this->object->EnemyMan.get_enemy_position().distance_to(this->object->Position());
 	if (dist_to_enemy < MAX_DISTANCE_TO_ENEMY) return true;
@@ -59,6 +54,5 @@ bool CStateChimeraThreatenWalkAbstract::check_start_conditions()
 }
 
 #undef MAX_DISTANCE_TO_ENEMY
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateChimeraThreatenWalkAbstract
+
 

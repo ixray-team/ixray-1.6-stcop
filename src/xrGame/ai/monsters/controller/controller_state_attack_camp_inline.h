@@ -1,10 +1,5 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateControlCampAbstract CStateControlCamp<_Object>
-
 #define ANGLE_DISP					PI_DIV_2
 #define ANGLE_DISP_STEP				deg(10)
 #define TRACE_STATIC_DIST			3.f
@@ -12,8 +7,8 @@
 #define TIME_POINT_CHANGE_MAX		5000
 
 
-TEMPLATE_SPECIALIZATION
-void CStateControlCampAbstract::initialize()
+
+void CStateControlCamp::initialize()
 {
 	inherited::initialize			();
 
@@ -63,8 +58,7 @@ void CStateControlCampAbstract::initialize()
 	this->object->dir().face_target(pos);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControlCampAbstract::execute()
+void CStateControlCamp::execute()
 {
 	update_target_angle						();
 
@@ -75,15 +69,13 @@ void CStateControlCampAbstract::execute()
 	this->object->custom_anim().set_body_state	(CControllerAnimation::eTorsoIdle,CControllerAnimation::eLegsTypeSteal);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControlCampAbstract::check_start_conditions()
+bool CStateControlCamp::check_start_conditions()
 {
 	if (this->object->EnemyMan.see_enemy_now()) return false;
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControlCampAbstract::check_completion()
+bool CStateControlCamp::check_completion()
 {
 	if (this->object->EnemyMan.see_enemy_now()) return true;
 	if (this->time_state_started + 2000 < time()) return true;
@@ -91,8 +83,8 @@ bool CStateControlCampAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControlCampAbstract::update_target_angle()
+
+void CStateControlCamp::update_target_angle()
 {
 	if (m_time_next_updated > time()) return;
 	m_time_next_updated = time() + Random.randI(TIME_POINT_CHANGE_MIN,TIME_POINT_CHANGE_MAX);
@@ -103,5 +95,3 @@ void CStateControlCampAbstract::update_target_angle()
 		m_target_angle = m_angle_from;
 }
 
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControlCampAbstract

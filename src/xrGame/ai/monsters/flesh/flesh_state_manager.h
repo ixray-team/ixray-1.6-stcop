@@ -3,8 +3,8 @@
 
 class CAI_Flesh;
 
-class CStateManagerFlesh : public CMonsterStateManager<CAI_Flesh> {
-	typedef CMonsterStateManager<CAI_Flesh> inherited;
+class CStateManagerFlesh : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 
 public:
 

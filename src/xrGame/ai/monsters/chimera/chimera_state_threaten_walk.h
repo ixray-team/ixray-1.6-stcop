@@ -1,12 +1,11 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class CStateChimeraThreatenWalk : public CStateMonsterMoveToPointEx<_Object> {
-	typedef CStateMonsterMoveToPointEx<_Object>		inherited;
+class CStateChimeraThreatenWalk : public CStateMonsterMoveToPointEx {
+	typedef CStateMonsterMoveToPointEx		inherited;
 
 public:
-	IC					CStateChimeraThreatenWalk	(_Object *obj) : inherited(obj){}
+	IC					CStateChimeraThreatenWalk	(CBaseMonster *obj) : inherited(obj){}
 	virtual	void		initialize					();	
 	virtual	void		execute						();
 	virtual bool		check_completion			();

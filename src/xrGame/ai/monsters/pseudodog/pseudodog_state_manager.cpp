@@ -18,21 +18,22 @@
 #include "../states/monster_state_hitted.h"
 
 
-CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog *monster) : inherited(monster)
+CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog* monster) : inherited(monster)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest<CAI_PseudoDog> >				(monster));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CAI_PseudoDog> >				(monster));
+	add_state(eStateRest, xr_new<CStateMonsterRest>(monster));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(monster));
 
-	CStateMonsterAttackMoveToHomePoint<CAI_PseudoDog>* move2home = 
-		xr_new<CStateMonsterAttackMoveToHomePoint<CAI_PseudoDog> >(monster);
+	CStateMonsterAttackMoveToHomePoint* move2home =
+		xr_new<CStateMonsterAttackMoveToHomePoint>(monster);
 
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CAI_PseudoDog> >				(monster, move2home));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack>(monster, move2home));
 
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CAI_PseudoDog> >				(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CAI_PseudoDog> >(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CAI_PseudoDog> >	(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CAI_PseudoDog> >				(monster));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(monster));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(monster));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(monster));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(monster));
 }
+
 
 #define MIN_ANGRY_TIME		10000
 #define MAX_GROWLING_TIME	20000
@@ -61,7 +62,7 @@ void CStateManagerPseudodog::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

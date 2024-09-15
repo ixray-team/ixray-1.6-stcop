@@ -5,10 +5,10 @@
 #include "../../../../xrScripts/script_export_space.h"
 
 class CAI_Boar : public CBaseMonster,
-				 public CControlledEntity<CAI_Boar> {
+				 public CControlledEntity {
 
 	typedef		CBaseMonster	inherited;
-	typedef		CControlledEntity<CAI_Boar>	CControlled;
+	typedef		CControlledEntity 	CControlled;
 
 public:
 					CAI_Boar			();

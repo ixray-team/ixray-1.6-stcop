@@ -6,13 +6,7 @@
 #include "../../../level.h"
 #include "../../../level_debug.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateControllerHideLiteAbstract CStateControlHideLite<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideLiteAbstract::initialize()
+void CStateControllerHideLite::initialize()
 {
 	inherited::initialize			();
 
@@ -21,8 +15,7 @@ void CStateControllerHideLiteAbstract::initialize()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideLiteAbstract::execute()
+void CStateControllerHideLite::execute()
 {
 	this->object->path().set_target_point		(target.position, target.node);
 	this->object->path().set_rebuild_time		(0);
@@ -38,30 +31,26 @@ void CStateControllerHideLiteAbstract::execute()
 	this->object->custom_anim().set_body_state(CControllerAnimation::eTorsoRun,CControllerAnimation::eLegsTypeRun);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerHideLiteAbstract::check_start_conditions()
+bool CStateControllerHideLite::check_start_conditions()
 {
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideLiteAbstract::reinit()
+void CStateControllerHideLite::reinit()
 {
 	inherited::reinit();
 	m_time_finished = 0;
 }
 
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideLiteAbstract::finalize()
+void CStateControllerHideLite::finalize()
 {
 	inherited::finalize();
 	m_time_finished	= Device.dwTimeGlobal;
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerHideLiteAbstract::check_completion()
+bool CStateControllerHideLite::check_completion()
 {
 	if ((this->object->ai_location().level_vertex_id() == target.node) && 
 		!this->object->control().path_builder().is_moving_on_path()) return true;
@@ -69,8 +58,7 @@ bool CStateControllerHideLiteAbstract::check_completion()
 	return (!this->object->EnemyMan.see_enemy_now());
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideLiteAbstract::select_target_point()
+void CStateControllerHideLite::select_target_point()
 {
 #ifdef DEBUG
 	DBG().level_info(this).clear();
@@ -86,6 +74,3 @@ void CStateControllerHideLiteAbstract::select_target_point()
 		target.position				= ai().level_graph().vertex_position(target.node);			
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControllerHideLiteAbstract

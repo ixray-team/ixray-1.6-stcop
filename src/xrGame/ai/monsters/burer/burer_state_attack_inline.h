@@ -15,26 +15,24 @@ namespace burer
 
 } // namespace detail
 
-template <typename Object>
-CStateBurerAttack<Object>::CStateBurerAttack(Object *obj) : inherited(obj)
+CStateBurerAttack::CStateBurerAttack(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateBurerAttack_Tele,		xr_new<CStateBurerAttackTele<Object> >		(obj));
-	this->add_state(eStateBurerAttack_Gravi,		xr_new<CStateBurerAttackGravi<Object> >		(obj));
-	this->add_state(eStateBurerAttack_Melee,		xr_new<CStateBurerAttackMelee<Object> >		(obj));
-	this->add_state(eStateBurerAttack_FaceEnemy,	xr_new<CStateMonsterLookToPoint<Object> >	(obj));
-	this->add_state(eStateBurerAttack_RunAround,	xr_new<CStateBurerAttackRunAround<Object> >	(obj));
-	this->add_state(eStateBurerAttack_Shield,		xr_new<CStateBurerShield<Object> >			(obj));
-	this->add_state(eStateBurerAttack_AntiAim,	xr_new<CStateBurerAntiAim<Object> >			(obj));
-	this->add_state(eStateAttack_Run,				xr_new<CStateMonsterAttackRun<Object> >		(obj));
-	this->add_state(eStateCustomMoveToRestrictor,	xr_new<CStateMonsterMoveToRestrictor<Object> >(obj));
+	this->add_state(eStateBurerAttack_Tele,		xr_new<CStateBurerAttackTele>		(obj));
+	this->add_state(eStateBurerAttack_Gravi,		xr_new<CStateBurerAttackGravi>		(obj));
+	this->add_state(eStateBurerAttack_Melee,		xr_new<CStateBurerAttackMelee>		(obj));
+	this->add_state(eStateBurerAttack_FaceEnemy,	xr_new<CStateMonsterLookToPoint>	(obj));
+	this->add_state(eStateBurerAttack_RunAround,	xr_new<CStateBurerAttackRunAround>	(obj));
+	this->add_state(eStateBurerAttack_Shield,		xr_new<CStateBurerShield>			(obj));
+	this->add_state(eStateBurerAttack_AntiAim,	xr_new<CStateBurerAntiAim >			(obj));
+	this->add_state(eStateAttack_Run,				xr_new<CStateMonsterAttackRun>		(obj));
+	this->add_state(eStateCustomMoveToRestrictor,	xr_new<CStateMonsterMoveToRestrictor>(obj));
 
 	m_allow_anti_aim						=	false;
 	m_wait_state_end						=	false;
 	m_lost_delta_health						=	false;
 }
 
-template <typename Object>
-void CStateBurerAttack<Object>::initialize()
+void CStateBurerAttack::initialize()
 {
 	inherited::initialize						();
 
@@ -52,8 +50,7 @@ void CStateBurerAttack<Object>::initialize()
 // 	}
 }
 
-template <typename Object>
-void   CStateBurerAttack<Object>::execute ()
+void   CStateBurerAttack::execute ()
 {
 	CEntityAlive*		enemy				=	const_cast<CEntityAlive*>( this->object->EnemyMan.get_enemy() );
 
@@ -208,8 +205,7 @@ void   CStateBurerAttack<Object>::execute ()
 	this->prev_substate							= this->current_substate;
 }
 
-template <typename Object>
-void CStateBurerAttack<Object>::finalize()
+void CStateBurerAttack::finalize()
 {
 	if ( this->object->anim().has_override_animation() )
 	{
@@ -219,8 +215,7 @@ void CStateBurerAttack<Object>::finalize()
 	inherited::finalize							();
 }
 
-template <typename Object>
-void CStateBurerAttack<Object>::critical_finalize()
+void CStateBurerAttack::critical_finalize()
 {
 	if ( this->object->anim().has_override_animation() )
 	{
@@ -231,8 +226,8 @@ void CStateBurerAttack<Object>::critical_finalize()
 }
 
 
-template <typename Object>
-bool   CStateBurerAttack<Object>::check_control_start_conditions (ControlCom::EControlType type)
+
+bool   CStateBurerAttack::check_control_start_conditions (ControlCom::EControlType type)
 {
 	if ( type == ControlCom::eAntiAim )
 	{

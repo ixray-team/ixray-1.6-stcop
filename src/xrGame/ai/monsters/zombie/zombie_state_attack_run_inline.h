@@ -2,24 +2,18 @@
 
 #include "../../../sound_player.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateZombieAttackRunAbstract CStateZombieAttackRun<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateZombieAttackRunAbstract::CStateZombieAttackRun(_Object *obj) : inherited(obj)
+CStateZombieAttackRun::CStateZombieAttackRun(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-CStateZombieAttackRunAbstract::~CStateZombieAttackRun()
+
+CStateZombieAttackRun::~CStateZombieAttackRun()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateZombieAttackRunAbstract::initialize()
+
+void CStateZombieAttackRun::initialize()
 {
 	inherited::initialize			();
 	m_time_action_change			= 0;
@@ -28,26 +22,26 @@ void CStateZombieAttackRunAbstract::initialize()
 	this->object->path().prepare_builder	();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateZombieAttackRunAbstract::execute()
+
+void CStateZombieAttackRun::execute()
 {
 	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
 	
 	this->object->path().set_try_min_time	(false);
 	
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
 	this->object->path().set_target_point			(this->object->EnemyMan.get_enemy_position(), this->object->EnemyMan.get_enemy_vertex());
 	this->object->path().set_rebuild_time			(100 + u32(50.f * dist));
 	this->object->path().set_distance_to_end		(2.5f);
 	this->object->path().set_use_covers			(false);
 
 	//////////////////////////////////////////////////////////////////////////
-	// îáðàáîòàòü squad-äàííûå
+	// Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ squad-Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	//////////////////////////////////////////////////////////////////////////
 	CMonsterSquad *squad	= monster_squad().get_squad(this->object);
 	bool squad_active		= squad && squad->SquadActive();
 	
-	// Ïîëó÷èòü êîìàíäó
+	// ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñƒ
 	SSquadCommand command;
 	squad->GetCommand(this->object, command);
 	if (!squad_active || (command.type != SC_ATTACK)) squad_active = false;
@@ -70,8 +64,8 @@ void CStateZombieAttackRunAbstract::execute()
 	this->object->anim().accel_set_braking			(false);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateZombieAttackRunAbstract::check_completion()
+
+bool CStateZombieAttackRun::check_completion()
 {
 	float m_fDistMin	= this->object->MeleeChecker.get_min_distance		();
 	float dist			= this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
@@ -81,8 +75,8 @@ bool CStateZombieAttackRunAbstract::check_completion()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateZombieAttackRunAbstract::check_start_conditions()
+
+bool CStateZombieAttackRun::check_start_conditions()
 {
 	float m_fDistMax	= this->object->MeleeChecker.get_max_distance		();
 	float dist			= this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
@@ -94,8 +88,8 @@ bool CStateZombieAttackRunAbstract::check_start_conditions()
 
 #define CHANGE_ACTION_FROM_RUN	10000
 
-TEMPLATE_SPECIALIZATION
-void CStateZombieAttackRunAbstract::choose_action()
+
+void CStateZombieAttackRun::choose_action()
 {
 	// for test
 	action = this->object->HitMemory.is_hit() ?  ACT_RUN : ACT_WALK_FWD;
@@ -108,7 +102,7 @@ void CStateZombieAttackRunAbstract::choose_action()
 	//
 	//if ((action == ACT_RUN) && (m_time_action_change + CHANGE_ACTION_FROM_RUN > time())) return;
 
-	//// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
+	//// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
 	//if (this->object->HitMemory.is_hit() && (this->object->conditions().GetHealth() < 0.5f)) 
 	//	action = ACT_RUN;
 	//else 
@@ -116,7 +110,3 @@ void CStateZombieAttackRunAbstract::choose_action()
 
 	//m_time_action_change = time();
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateZombieAttackRunAbstract
-

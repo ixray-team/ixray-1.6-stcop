@@ -6,14 +6,7 @@
 #include "../../../level.h"
 #include "../../../level_debug.h"
 
-
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStateControllerHideAbstract CStateControlHide<_Object>
-
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideAbstract::initialize()
+void CStateControlHide::initialize()
 {
 	inherited::initialize();
 	
@@ -23,8 +16,7 @@ void CStateControllerHideAbstract::initialize()
 	
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideAbstract::execute()
+void CStateControlHide::execute()
 {
 	if (m_state_fast_run) {
 		if (target.position.distance_to(this->object->Position()) < 5.f) {
@@ -56,34 +48,32 @@ void CStateControllerHideAbstract::execute()
 	this->object->custom_anim().set_body_state(CControllerAnimation::eTorsoRun,CControllerAnimation::eLegsTypeRun);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerHideAbstract::check_start_conditions()
+bool CStateControlHide::check_start_conditions()
 {
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideAbstract::finalize()
+void CStateControlHide::finalize()
 {
 	inherited::finalize();
 	this->object->set_mental_state	(CController::eStateDanger);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideAbstract::critical_finalize()
+
+void CStateControlHide::critical_finalize()
 {
 	inherited::finalize();
 	this->object->set_mental_state	(CController::eStateDanger);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerHideAbstract::check_completion()
+
+bool CStateControlHide::check_completion()
 {
 	return ((this->object->ai_location().level_vertex_id() == target.node) && !this->object->control().path_builder().is_moving_on_path());
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerHideAbstract::select_target_point()
+
+void CStateControlHide::select_target_point()
 {
 #ifdef DEBUG
 	DBG().level_info(this).clear();
@@ -102,6 +92,3 @@ void CStateControllerHideAbstract::select_target_point()
 	if (m_state_fast_run && (Random.randI(100) < 50)) 
 		this->object->set_mental_state	(CController::eStateIdle);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControllerHideAbstract

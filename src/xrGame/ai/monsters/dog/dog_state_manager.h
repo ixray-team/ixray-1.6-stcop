@@ -3,8 +3,8 @@
 
 class CAI_Dog;
 
-class CStateManagerDog : public CMonsterStateManager<CAI_Dog> {
-	typedef CMonsterStateManager<CAI_Dog> inherited;
+class CStateManagerDog : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 
 public:
 

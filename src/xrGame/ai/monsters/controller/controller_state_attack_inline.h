@@ -15,28 +15,21 @@
 #define CONTROL_TUBE_PERC 20
 
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateControllerAttackAbstract CStateControllerAttack<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateControllerAttackAbstract::CStateControllerAttack(_Object *obj) : inherited(obj)
+CStateControllerAttack::CStateControllerAttack(CBaseMonster *obj) : inherited(obj)
 {
-	this->add_state(eStateAttack_MoveToHomePoint,	xr_new<CStateMonsterAttackMoveToHomePoint<CController> >(obj));	
- 	this->add_state(eStateAttack_Run,				xr_new<CStateMonsterAttackRun<CController> >			(obj));
- 	this->add_state(eStateAttack_Melee,			xr_new<CStateMonsterAttackMelee<CController> >			(obj));
+	this->add_state(eStateAttack_MoveToHomePoint,	xr_new<CStateMonsterAttackMoveToHomePoint >(obj));	
+ 	this->add_state(eStateAttack_Run,				xr_new<CStateMonsterAttackRun>			(obj));
+ 	this->add_state(eStateAttack_Melee,			xr_new<CStateMonsterAttackMelee>			(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::initialize()
+
+void CStateControllerAttack::initialize()
 {	
 	inherited::initialize				();
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateControllerAttackAbstract::check_home_point()
+
+bool CStateControllerAttack::check_home_point()
 {
 	if (this->prev_substate != eStateAttack_MoveToHomePoint) {
 		if (this->get_state(eStateAttack_MoveToHomePoint)->check_start_conditions())	return true;
@@ -47,8 +40,8 @@ bool CStateControllerAttackAbstract::check_home_point()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::execute()
+
+void CStateControllerAttack::execute()
 {
 	this->object->anim().clear_override_animation	();
 
@@ -107,29 +100,26 @@ void CStateControllerAttackAbstract::execute()
 	this->prev_substate					= this->current_substate;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::setup_substates()
+
+void CStateControllerAttack::setup_substates()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::check_force_state() 
+
+void CStateControllerAttack::check_force_state()
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::finalize()
+
+void CStateControllerAttack::finalize()
 {
 	inherited::finalize();
 	//this->object->set_mental_state(CController::eStateIdle);
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateControllerAttackAbstract::critical_finalize()
+
+void CStateControllerAttack::critical_finalize()
 {
 	inherited::critical_finalize();
 	//this->object->set_mental_state(CController::eStateIdle);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateControllerAttackAbstract

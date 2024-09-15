@@ -1,6 +1,6 @@
 #pragma once
 
-CStateBloodsuckerVampireApproach::CStateBloodsuckerVampireApproach(CCameraBase *obj) : inherited(obj)
+CStateBloodsuckerVampireApproach::CStateBloodsuckerVampireApproach(CBaseMonster*obj) : inherited(obj)
 {
 }
 

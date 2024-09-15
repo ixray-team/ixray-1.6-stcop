@@ -1,9 +1,8 @@
 #pragma once
 
-template<typename _Object>
-class CStatePsyDogHide : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
-	typedef	CState<_Object>*	state_ptr;
+class CStatePsyDogHide : public CState {
+	typedef	CState		inherited;
+	typedef	CState*	state_ptr;
 
 	struct {
 		Fvector position;
@@ -12,7 +11,7 @@ class CStatePsyDogHide : public CState<_Object> {
 
 
 public:
-					CStatePsyDogHide		(_Object *obj) : inherited(obj) {}
+					CStatePsyDogHide		(CBaseMonster*obj) : inherited(obj) {}
 	virtual			~CStatePsyDogHide		() {}
 
 	virtual void	initialize				();

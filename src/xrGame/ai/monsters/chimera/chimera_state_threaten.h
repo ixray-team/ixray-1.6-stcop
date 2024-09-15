@@ -1,11 +1,10 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateChimeraThreaten : public CState<_Object> {
+class	CStateChimeraThreaten : public CState {
 protected:
-	typedef CState<_Object> inherited;
-	typedef CState<_Object>* state_ptr;
+	typedef CState inherited;
+	typedef CState * state_ptr;
 
 	enum {
 		eStateWalk			= u32(0),
@@ -17,7 +16,7 @@ protected:
 	u32					m_last_time_threaten;
 
 public:
-						CStateChimeraThreaten	(_Object *obj);
+						CStateChimeraThreaten	(CBaseMonster *obj);
 	virtual				~CStateChimeraThreaten	();
 
 	virtual void		reinit					();

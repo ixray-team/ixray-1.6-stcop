@@ -1,11 +1,10 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateChimeraHunting : public CState<_Object> {
+class	CStateChimeraHunting : public CState {
 protected:
-	typedef CState<_Object> inherited;
-	typedef CState<_Object>* state_ptr;
+	typedef CState inherited;
+	typedef CState* state_ptr;
 
 	enum {
 		eStateMoveToCover,
@@ -13,7 +12,7 @@ protected:
 	};
 
 public:
-						CStateChimeraHunting	(_Object *obj);
+						CStateChimeraHunting	(CBaseMonster *obj);
 
 	virtual	void		reselect_state			();
 	virtual bool 		check_start_conditions	();	

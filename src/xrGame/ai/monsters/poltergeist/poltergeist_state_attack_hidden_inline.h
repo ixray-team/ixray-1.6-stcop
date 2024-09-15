@@ -3,23 +3,17 @@
 #include "../../../sound_player.h"
 #include "../../../../xrCore/_vector3d_ext.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStatePoltergeistAttackHiddenAbstract CStatePoltergeistAttackHidden<_Object>
-
 #define DIST_TO_PATH_END	1.5f
 
 
-TEMPLATE_SPECIALIZATION
-CStatePoltergeistAttackHiddenAbstract::CStatePoltergeistAttackHidden (_Object *obj) : inherited(obj)
+
+CStatePoltergeistAttackHidden::CStatePoltergeistAttackHidden (CBaseMonster*obj) : inherited(obj)
 {
-	this->add_state	(eStateAttack_MoveToHomePoint,	xr_new<CStateMonsterAttackMoveToHomePoint<_Object> >(obj));
+	this->add_state	(eStateAttack_MoveToHomePoint,	xr_new<CStateMonsterAttackMoveToHomePoint >(obj));
 }
 
-TEMPLATE_SPECIALIZATION
-void CStatePoltergeistAttackHiddenAbstract::initialize()
+
+void CStatePoltergeistAttackHidden::initialize()
 {
 	inherited::initialize();
 	this->object->path().prepare_builder();
@@ -27,8 +21,8 @@ void CStatePoltergeistAttackHiddenAbstract::initialize()
 	m_fly_radius_factor						=	1.f;
 }
 
-TEMPLATE_SPECIALIZATION
-void   CStatePoltergeistAttackHiddenAbstract::select_target_for_move ()
+
+void   CStatePoltergeistAttackHidden::select_target_for_move ()
 {
 	CEntityAlive const* const	enemy		=	this->object->EnemyMan.get_enemy();
 	Fvector	const	enemy_pos				=	enemy->Position();
@@ -98,8 +92,8 @@ void   CStatePoltergeistAttackHiddenAbstract::select_target_for_move ()
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStatePoltergeistAttackHiddenAbstract::check_home_point()
+
+bool CStatePoltergeistAttackHidden::check_home_point()
 {
 	if (this->prev_substate != eStateAttack_MoveToHomePoint) {
 		if (this->get_state(eStateAttack_MoveToHomePoint)->check_start_conditions())	return true;
@@ -110,8 +104,8 @@ bool CStatePoltergeistAttackHiddenAbstract::check_home_point()
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStatePoltergeistAttackHiddenAbstract::execute()
+
+void CStatePoltergeistAttackHidden::execute()
 {
 	if	( check_home_point() )
 	{
@@ -138,6 +132,3 @@ void CStatePoltergeistAttackHiddenAbstract::execute()
 	this->object->anim().accel_set_braking	(false);
 	this->object->sound().play				(MonsterSound::eMonsterSoundAggressive, 0,0,this->object->db().m_dwAttackSndDelay);
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStatePoltergeistAttackHiddenAbstract

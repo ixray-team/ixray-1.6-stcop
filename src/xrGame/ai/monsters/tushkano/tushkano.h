@@ -4,11 +4,11 @@
 #include "../../../../xrScripts/script_export_space.h"
 
 class CTushkano :	public CBaseMonster,
-					public CControlledEntity<CTushkano> {
+					public CControlledEntity {
 
 
 	typedef		CBaseMonster					inherited;
-	typedef		CControlledEntity<CTushkano>	CControlled;
+	typedef		CControlledEntity	CControlled;
 
 public:
 					CTushkano 			();

@@ -3,9 +3,9 @@
 
 class CController;
 
-class CStateManagerController : public CMonsterStateManager<CController> {
+class CStateManagerController : public CMonsterStateManager {
 
-	typedef CMonsterStateManager<CController> inherited;
+	typedef CMonsterStateManager inherited;
 
 public:
 						CStateManagerController			(CController *obj);

@@ -3,9 +3,9 @@
 
 class CCat;
 
-class CStateManagerCat : public CMonsterStateManager<CCat> {
+class CStateManagerCat : public CMonsterStateManager {
 
-	typedef CMonsterStateManager<CCat> inherited;
+	typedef CMonsterStateManager inherited;
 
 	u32					m_rot_jump_last_time;
 

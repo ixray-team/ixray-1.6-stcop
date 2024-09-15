@@ -1,36 +1,27 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
 
-#define CStateChimeraHuntingMoveToCoverAbstract CStateChimeraHuntingMoveToCover<_Object>
-
-TEMPLATE_SPECIALIZATION
-CStateChimeraHuntingMoveToCoverAbstract::CStateChimeraHuntingMoveToCover(_Object *obj) : inherited(obj)
+CStateChimeraHuntingMoveToCover::CStateChimeraHuntingMoveToCover(CBaseMonster *obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraHuntingMoveToCoverAbstract::initialize()
+
+void CStateChimeraHuntingMoveToCover::initialize()
 {
 	inherited::initialize();
 	
 	
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateChimeraHuntingMoveToCoverAbstract::check_completion()
+
+bool CStateChimeraHuntingMoveToCover::check_completion()
 {
 	return false;
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateChimeraHuntingMoveToCoverAbstract::execute()
+
+void CStateChimeraHuntingMoveToCover::execute()
 {
 	
 }
 
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateChimeraHuntingMoveToCoverAbstract

@@ -3,8 +3,8 @@
 
 class CZombie;
 
-class CStateManagerZombie : public CMonsterStateManager<CZombie> {
-	typedef CMonsterStateManager<CZombie> inherited;
+class CStateManagerZombie : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 
 public:
 						CStateManagerZombie		(CZombie *obj);

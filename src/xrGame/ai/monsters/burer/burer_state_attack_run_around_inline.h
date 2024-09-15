@@ -1,21 +1,12 @@
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-
-#define CStateBurerAttackRunAroundAbstract CStateBurerAttackRunAround<_Object>
-
-
 #define DIST_QUANT			10.f
 
-TEMPLATE_SPECIALIZATION
-CStateBurerAttackRunAroundAbstract::CStateBurerAttackRunAround(_Object *obj) : inherited(obj)
+CStateBurerAttackRunAround::CStateBurerAttackRunAround(CBaseMonster*obj) : inherited(obj)
 {
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBurerAttackRunAroundAbstract::initialize()
+void CStateBurerAttackRunAround::initialize()
 {
 	inherited::initialize		();
 
@@ -32,13 +23,13 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 
-	if (dist > 30.f) {							// бежать к врагу
+	if (dist > 30.f) {							// Р±РµР¶Р°С‚СЊ Рє РІСЂР°РіСѓ
 		selected_point.mad(this->object->Position(),dir_to_enemy,DIST_QUANT);
-	} else if ((dist < 20.f) && (dist > 4.f)) {	// убегать от врага
+	} else if ((dist < 20.f) && (dist > 4.f)) {	// СѓР±РµРіР°С‚СЊ РѕС‚ РІСЂР°РіР°
 		selected_point.mad(this->object->Position(),dir_from_enemy,DIST_QUANT);
 		dest_direction.sub			(this->object->EnemyMan.get_enemy()->Position(),selected_point);
 		dest_direction.normalize	();
-	} else {											// выбрать случайную позицию
+	} else {											// РІС‹Р±СЂР°С‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ РїРѕР·РёС†РёСЋ
 		selected_point = random_position(this->object->Position(), DIST_QUANT);
 		dest_direction.sub			(this->object->EnemyMan.get_enemy()->Position(),selected_point);
 		dest_direction.normalize	();
@@ -47,8 +38,7 @@ void CStateBurerAttackRunAroundAbstract::initialize()
 	this->object->path().prepare_builder();
 }
 
-TEMPLATE_SPECIALIZATION
-void CStateBurerAttackRunAroundAbstract::execute()
+void CStateBurerAttackRunAround::execute()
 {
 	if (!fis_zero(dest_direction.square_magnitude())) {
 		this->object->path().set_use_dest_orient		(true);
@@ -65,14 +55,12 @@ void CStateBurerAttackRunAroundAbstract::execute()
 }
 
 
-TEMPLATE_SPECIALIZATION
-bool CStateBurerAttackRunAroundAbstract::check_start_conditions()
+bool CStateBurerAttackRunAround::check_start_conditions()
 {
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStateBurerAttackRunAroundAbstract::check_completion()
+bool CStateBurerAttackRunAround::check_completion()
 {
 	if ((time_started + this->object->m_max_runaway_time < Device.dwTimeGlobal) || 
 		(this->object->control().path_builder().is_moving_on_path() && this->object->control().path_builder().is_path_end(2.f))) {
@@ -83,6 +71,3 @@ bool CStateBurerAttackRunAroundAbstract::check_completion()
 
 	return false;
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStateBurerAttackRunAroundAbstract

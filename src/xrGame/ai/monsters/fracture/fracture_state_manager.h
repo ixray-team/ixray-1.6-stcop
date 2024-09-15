@@ -3,8 +3,8 @@
 
 class CFracture;
 
-class CStateManagerFracture : public CMonsterStateManager<CFracture> {
-	typedef CMonsterStateManager<CFracture> inherited;
+class CStateManagerFracture : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 
 public:
 						CStateManagerFracture	(CFracture *obj);

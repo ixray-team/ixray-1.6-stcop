@@ -4,13 +4,8 @@
 #include "../monster_cover_manager.h"
 #include "../../../cover_point.h"
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _Object\
->
-#define CStatePsyDogHideAbstract CStatePsyDogHide<_Object>
 
-TEMPLATE_SPECIALIZATION
-void CStatePsyDogHideAbstract::initialize()
+void CStatePsyDogHide::initialize()
 {
 	inherited::initialize();
 
@@ -19,8 +14,8 @@ void CStatePsyDogHideAbstract::initialize()
 
 }
 
-TEMPLATE_SPECIALIZATION
-void CStatePsyDogHideAbstract::execute()
+
+void CStatePsyDogHide::execute()
 {
 	this->object->set_action					(ACT_RUN);
 	this->object->path().set_target_point		(target.position, target.node);
@@ -34,20 +29,20 @@ void CStatePsyDogHideAbstract::execute()
 	this->object->sound().play				(MonsterSound::eMonsterSoundAggressive, 0,0,this->object->db().m_dwAttackSndDelay);
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStatePsyDogHideAbstract::check_start_conditions()
+
+bool CStatePsyDogHide::check_start_conditions()
 {
 	return true;
 }
 
-TEMPLATE_SPECIALIZATION
-bool CStatePsyDogHideAbstract::check_completion()
+
+bool CStatePsyDogHide::check_completion()
 {
 	return ((this->object->ai_location().level_vertex_id() == target.node) && !this->object->control().path_builder().is_moving_on_path());
 }
 
-TEMPLATE_SPECIALIZATION
-void CStatePsyDogHideAbstract::select_target_point()
+
+void CStatePsyDogHide::select_target_point()
 {
 	const CCoverPoint	*point = this->object->CoverMan->find_cover(this->object->EnemyMan.get_enemy_position(),10.f,30.f);
 	if (point && (this->object->Position().distance_to(point->position()) > 2.f)) {
@@ -64,6 +59,3 @@ void CStatePsyDogHideAbstract::select_target_point()
 		}
 	}
 }
-
-#undef TEMPLATE_SPECIALIZATION
-#undef CStatePsyDogHideAbstract

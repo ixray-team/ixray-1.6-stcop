@@ -26,18 +26,18 @@ namespace dog
 
 } // detail
 
-CStateManagerDog::CStateManagerDog(CAI_Dog *monster) : inherited(monster)
+CStateManagerDog::CStateManagerDog(CAI_Dog* monster) : inherited(monster)
 {
-	add_state(eStateRest,					xr_new<CStateGroupRest<CAI_Dog> >					(monster));
-	add_state(eStatePanic,					xr_new<CStateGroupPanic<CAI_Dog> >					(monster));
-	add_state(eStateAttack,					xr_new<CStateGroupAttack<CAI_Dog> >					(monster));
-	add_state(eStateEat,					xr_new<CStateGroupEat<CAI_Dog> >					(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CAI_Dog> >	(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateGroupHearDangerousSound<CAI_Dog> >		(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CAI_Dog> >				(monster));
-	add_state(eStateControlled,				xr_new<CStateMonsterControlled<CAI_Dog> >			(monster));
-	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CAI_Dog> >		(monster));
-	object->EatedCorpse	= nullptr;
+	add_state(eStateRest, xr_new<CStateGroupRest>(monster));
+	add_state(eStatePanic, xr_new<CStateGroupPanic>(monster));
+	add_state(eStateAttack, xr_new<CStateGroupAttack>(monster));
+	add_state(eStateEat, xr_new<CStateGroupEat>(monster));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(monster));
+	add_state(eStateHearDangerousSound, xr_new<CStateGroupHearDangerousSound>(monster));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(monster));
+	add_state(eStateControlled, xr_new<CStateMonsterControlled>(monster));
+	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(monster));
+	object->EatedCorpse = nullptr;
 }
 
 void CStateManagerDog::execute()
@@ -161,7 +161,7 @@ void CStateManagerDog::execute()
 		}
 	}
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

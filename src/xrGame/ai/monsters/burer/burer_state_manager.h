@@ -3,8 +3,8 @@
 
 class CBurer;
 
-class CStateManagerBurer : public CMonsterStateManager<CBurer> {
-	typedef CMonsterStateManager<CBurer> inherited;
+class CStateManagerBurer : public CMonsterStateManager {
+	typedef CMonsterStateManager inherited;
 public:
 					CStateManagerBurer		(CBurer *monster); 
 	virtual void	execute					();

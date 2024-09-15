@@ -3,9 +3,8 @@
 #include "../../../grenade.h"
 
 
-template<typename Object>
-class CStateBurerAttackTele : public CState<Object> {
-	typedef CState<Object> inherited;	
+class CStateBurerAttackTele : public CState {
+	typedef CState inherited;	
 
 	xr_vector<CPhysicsShellHolder *>	tele_objects;
 	CPhysicsShellHolder					*selected_object;
@@ -22,7 +21,7 @@ class CStateBurerAttackTele : public CState<Object> {
 	} m_action;
 
 public:
-						CStateBurerAttackTele	(Object *obj);
+						CStateBurerAttackTele	(CBaseMonster*obj);
 
 	virtual	void		initialize				();
 	virtual	void		execute					();
@@ -35,21 +34,21 @@ public:
 
 
 private:
-			// Поиск объектов для телекинеза	
+			// РџРѕРёСЃРє РѕР±СЉРµРєС‚РѕРІ РґР»СЏ С‚РµР»РµРєРёРЅРµР·Р°	
 			void		FindObjects				();
 
 			void		HandleGrenades			();
 
-			// выполнять состояние
+			// РІС‹РїРѕР»РЅСЏС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ
 			void		ExecuteTeleContinue		();
 			void		ExecuteTeleFire			();
 
-			// Проверка, есть ли хоть один объект под контролем
+			// РџСЂРѕРІРµСЂРєР°, РµСЃС‚СЊ Р»Рё С…РѕС‚СЊ РѕРґРёРЅ РѕР±СЉРµРєС‚ РїРѕРґ РєРѕРЅС‚СЂРѕР»РµРј
 			bool		IsActiveObjects			();
 
-			// Проверить, может ли стартовать телекинез
+			// РџСЂРѕРІРµСЂРёС‚СЊ, РјРѕР¶РµС‚ Р»Рё СЃС‚Р°СЂС‚РѕРІР°С‚СЊ С‚РµР»РµРєРёРЅРµР·
 			bool		CheckTeleStart			();
-			// Выбор подходящих объектов для телекинеза
+			// Р’С‹Р±РѕСЂ РїРѕРґС…РѕРґСЏС‰РёС… РѕР±СЉРµРєС‚РѕРІ РґР»СЏ С‚РµР»РµРєРёРЅРµР·Р°
 			void		SelectObjects			();
 
 			// internal for FindObjects

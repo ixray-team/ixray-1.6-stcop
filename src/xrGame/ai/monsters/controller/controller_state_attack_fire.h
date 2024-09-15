@@ -1,15 +1,14 @@
 #pragma once
 
-template<typename _Object>
-class CStateControlFire : public CState<_Object> {
-	typedef	CState<_Object>		inherited;
+class CStateControlFire : public CState {
+	typedef	CState		inherited;
 
 	u32				m_time_started;
 	u32				m_time_state_last_execute;
 
 public:
 
-					CStateControlFire	(_Object *obj) : inherited(obj) {}
+					CStateControlFire	(CBaseMonster *obj) : inherited(obj) {}
 	virtual			~CStateControlFire	() {}
 
 	virtual void	reinit					();

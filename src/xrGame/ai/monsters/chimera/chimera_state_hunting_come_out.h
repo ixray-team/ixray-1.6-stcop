@@ -1,13 +1,12 @@
 #pragma once
 #include "../state.h"
 
-template<typename _Object>
-class	CStateChimeraHuntingComeOut : public CState<_Object> {
+class	CStateChimeraHuntingComeOut : public CState {
 protected:
-	typedef CState<_Object> inherited;
+	typedef CState inherited;
 
 public:
-						CStateChimeraHuntingComeOut	(_Object *obj);
+						CStateChimeraHuntingComeOut	(CBaseMonster *obj);
 
 	virtual	void		reselect_state				();
 	virtual bool 		check_start_conditions		();	
