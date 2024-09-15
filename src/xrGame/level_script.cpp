@@ -42,6 +42,7 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "Inventory.h"
 #include "ShootingObject.h"
+#include "Weapon.h"
 
 
 #include "ai_object_location.h"
@@ -984,7 +985,7 @@ void RenderWeaponManagerWindow()
 				ImGui::Text("Weight: %f", pItem->Weight());
 				ImGui::Text("Name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameItem()).c_str());
 				ImGui::Text("Short name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameShort()).c_str());
-				ImGui::Text("Description: [%s]", Platform::ANSI_TO_UTF8(pItem->ItemDescription().c_str()));
+				ImGui::TextWrapped("Description: [%s]", Platform::ANSI_TO_UTF8(pItem->ItemDescription().c_str()).c_str());
 				CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
 
 				if (pSO)
@@ -993,6 +994,7 @@ void RenderWeaponManagerWindow()
 					ImGui::Text("Fire distance: %.4f", pSO->getFireDistance());
 					ImGui::Text("Bullet speed: %.4f", pSO->getStartBulletSpeed());
 					ImGui::Text("Fire dispersion base: %.4f", pSO->getFireDispersionBase());
+					ImGui::Text("RPM: %.4f", pSO->getRPM());
 
 					ImGui::SeparatorText("Hit information");
 					ImGui::Text("Hit impulse: %.4f", pSO->getHitImpulse());
@@ -1000,6 +1002,13 @@ void RenderWeaponManagerWindow()
 					ImGui::Text("Hit power: %.4f %.4f %.4f %.4f", hit_power.x, hit_power.y, hit_power.z, hit_power.z, hit_power.w);
 					const auto& hit_power_critical = pSO->getHitPowerCritical();
 					ImGui::Text("Hit power critical: %.4f %.4f %.4f %.4f", hit_power_critical.x, hit_power_critical.y, hit_power_critical.z, hit_power_critical.w);
+				}
+
+				CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
+				if (pWeapon)
+				{
+					ImGui::SeparatorText("Weapon information");
+					ImGui::Text("Magazine size: %d", pWeapon->GetAmmoMagSize());
 				}
 			}
 

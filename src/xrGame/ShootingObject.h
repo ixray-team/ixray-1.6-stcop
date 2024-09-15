@@ -66,6 +66,7 @@ public:
 	float getFireDispersionBase(void) const { return fireDispersionBase; }
 	float getStartBulletSpeed(void) const { return m_fStartBulletSpeed; }
 	float getHitImpulse(void) const { return fHitImpulse; }
+	float getRPM(void) const { return fOneShotTime; }
 	const Fvector4& getHitPower(void) const { return fvHitPower; }
 	const Fvector4& getHitPowerCritical(void) const { return fvHitPowerCritical; }
 
