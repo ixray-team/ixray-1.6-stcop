@@ -986,8 +986,38 @@ void RenderSpawnManagerWindow()
 struct 
 {
 	bool init{};
-	u32 inv_cost{};
+
+	int inv_cost{};
+	int cfg_inv_cost{};
+
+	int ammo_mag_size{};
+	int cfg_ammo_mag_size{};
+	
 	float inv_weight{};
+	float cfg_inv_weight{};
+
+	float fire_distance{};
+	float cfg_fire_distance{};
+
+	float bullet_speed{};
+	float cfg_bullet_speed{};
+
+	float rpm{};
+	float cfg_rpm{};
+
+	float hit_impulse{};
+	float cfg_hit_impulse{};
+
+	Fvector4 hit_power;
+	Fvector4 cfg_hit_power;
+
+	Fvector4 hit_power_critical;
+	Fvector4 cfg_hit_power_critical;
+
+	// id for string table
+	char inv_name[128]{};
+	// id for string table
+	char inv_short_name[128]{};
 
 }
 imgui_weapon_manager;
@@ -1010,13 +1040,51 @@ void RenderWeaponManagerWindow()
 			{
 				imgui_weapon_manager.inv_cost = pItem->Cost();
 				imgui_weapon_manager.inv_weight = pItem->Weight();
+
+				// defaults
+				
+				if (pSettings)
+				{
+					if (pSettings->section_exist(pItem->m_section_id.c_str()))
+					{
+						const char* pSectionName = pItem->m_section_id.c_str();
+						
+						imgui_weapon_manager.cfg_inv_cost = pSettings->r_u32(pSectionName, "cost");
+						imgui_weapon_manager.cfg_inv_weight = pSettings->r_float(pSectionName, "inv_weight");
+					
+						imgui_weapon_manager.cfg_fire_distance = pSettings->r_float(pSectionName, "fire_distance");
+						imgui_weapon_manager.cfg_bullet_speed = pSettings->r_float(pSectionName, "bullet_speed");
+						imgui_weapon_manager.cfg_rpm = pSettings->r_float(pSectionName, "rpm");
+						imgui_weapon_manager.cfg_hit_impulse = pSettings->r_float(pSectionName, "hit_impulse");
+						imgui_weapon_manager.cfg_hit_power = pSettings->r_fvector4(pSectionName, "hit_power");
+						imgui_weapon_manager.cfg_hit_power_critical = pSettings->r_fvector4(pSectionName, "hit_power_critical");
+						imgui_weapon_manager.cfg_ammo_mag_size = pSettings->r_u32(pSectionName, "ammo_mag_size");
+					}
+				}
+
 				imgui_weapon_manager.init = true;
 			}
 
+			if (ImGui::Button("Reset to defaults"))
+			{
+
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Save"))
+			{
+
+			}
+
+			CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
+			CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
 
 			if (ImGui::CollapsingHeader("Information"))
 			{
-				if (ImGui::TreeNode("Inventory information"))
+				ImGui::Text("section name: [%s]", pItem->m_section_id.c_str());
+
+				if (ImGui::TreeNode("Inventory"))
 				{
 					ImGui::Text("Cost: %d", pItem->Cost());
 					ImGui::Text("Weight: %f", pItem->Weight());
@@ -1026,11 +1094,11 @@ void RenderWeaponManagerWindow()
 					ImGui::TreePop();
 				}
 
-				CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
+
 
 				if (pSO)
 				{
-					if (ImGui::TreeNode("Ballistic information"))
+					if (ImGui::TreeNode("Ballistic"))
 					{
 						ImGui::Text("Fire distance: %.4f", pSO->getFireDistance());
 						ImGui::Text("Bullet speed: %.4f", pSO->getStartBulletSpeed());
@@ -1039,7 +1107,7 @@ void RenderWeaponManagerWindow()
 					}
 
 
-					if (ImGui::TreeNode("Hit information"))
+					if (ImGui::TreeNode("Hit"))
 					{
 						ImGui::Text("Hit impulse: %.4f", pSO->getHitImpulse());
 						const auto& hit_power = pSO->getHitPower();
@@ -1050,7 +1118,6 @@ void RenderWeaponManagerWindow()
 					}
 				}
 
-				CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
 				if (pWeapon && pSO)
 				{
 					if (ImGui::TreeNode("Ammunition"))
@@ -1118,9 +1185,70 @@ void RenderWeaponManagerWindow()
 				}
 			}
 
-			if (ImGui::CollapsingHeader("Editing"))
+			if (imgui_weapon_manager.init)
 			{
+				if (ImGui::CollapsingHeader("Editing"))
+				{
+					ImGui::Text("section name: [%s]", pItem->m_section_id.c_str());
 
+					if (ImGui::TreeNode("Inventory"))
+					{
+						if (ImGui::SliderInt("Cost", &imgui_weapon_manager.inv_cost, 0, 100000))
+						{
+							pItem->setCost(imgui_weapon_manager.inv_cost);
+						}
+
+						if (ImGui::SliderFloat("Weight", &imgui_weapon_manager.inv_weight, 0, 100000.0f))
+						{
+							pItem->setWeight(imgui_weapon_manager.inv_weight);
+						}
+
+						ImGui::TreePop();
+					}
+
+					if (pSO)
+					{
+						if (ImGui::TreeNode("Ballistic"))
+						{
+							if (ImGui::SliderFloat("Fire distance", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f))
+							{
+								pSO->setFireDistance(imgui_weapon_manager.fire_distance);
+							}
+
+							if (ImGui::SliderFloat("Bullet speed", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f))
+							{
+								pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
+							}
+
+							if (ImGui::SliderFloat("RPM", &imgui_weapon_manager.rpm, 0.0f, 10000.0f))
+							{
+								pSO->setRPM(imgui_weapon_manager.rpm);
+							}
+
+							ImGui::TreePop();
+						}
+
+						if (ImGui::TreeNode("Hit"))
+						{
+							if (ImGui::SliderFloat("Hit impulse", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f))
+							{
+								pSO->setHitImpulse(imgui_weapon_manager.hit_impulse);
+							}
+
+							if (ImGui::SliderFloat4("Hit power", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f))
+							{
+								pSO->setHitPower(imgui_weapon_manager.hit_power);
+							}
+
+							if (ImGui::SliderFloat4("Hit power critical", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f))
+							{
+								pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
+							}
+
+							ImGui::TreePop();
+						}
+					}
+				}
 			}
 		}
 	};
@@ -1135,6 +1263,9 @@ void RenderWeaponManagerWindow()
 
 				if (pActor)
 				{
+					if (imgui_weapon_manager.init)
+						imgui_weapon_manager.init = false;
+
 					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2); 
 
 					draw_item(pItem);

@@ -136,8 +136,10 @@ public:
 
 			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
 	virtual	u32					Cost				()	const	{ return m_cost; }
+	void setCost(u32 nValue);
 //			u32					Cost				()	const	{ return m_cost; }
-	virtual float				Weight				() 	const	{ return m_weight;}		
+	virtual float				Weight				() 	const	{ return m_weight;}	
+	void setWeight(float value);
 
 public:
 	CInventory*					m_pInventory;
