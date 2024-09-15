@@ -1005,7 +1005,7 @@ enum eSelectedType {
 
 struct {
 
-
+	bool show_alive_creatures{};
 	int selected_type{};
 	char search_string[256]{};
 	char category_names[(eSelectedType::kSelectedType_Count)][32];
@@ -1500,6 +1500,16 @@ void RenderSearchManagerWindow()
 			}
 		}
 
+		ImGui::SeparatorText("Settings");
+		ImGui::Checkbox("Alive", &imgui_search_manager.show_alive_creatures);
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::Text("Shows alive or not alive creature(if it is not creature this flag doesn't affect)");
+			ImGui::EndTooltip();
+		}
+
+		ImGui::SeparatorText("Simulation");
+
 		if (ImGui::BeginTabBar("##TB_InGameSearchManager"))
 		{
 			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
@@ -1536,6 +1546,22 @@ void RenderSearchManagerWindow()
 									if (cname.find(imgui_search_manager.search_string) == xr_string::npos && translate_name.find(imgui_search_manager.search_string) == xr_string::npos)
 									{
 										passed_filter = false;
+									}
+								}
+							}
+
+							if (pCasted)
+							{
+								if (imgui_search_manager.show_alive_creatures)
+								{
+									CEntity* pEntity = smart_cast<CEntity*>(pCasted);
+									
+									if (pEntity)
+									{
+										if (!pEntity->g_Alive())
+										{
+											passed_filter = false;
+										}
 									}
 								}
 							}
