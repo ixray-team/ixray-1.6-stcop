@@ -756,7 +756,26 @@ void RenderSpawnManagerWindow()
 							sprintf_s(index, sizeof(index), "##%zu", number_imgui);
 							memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
 
-							if (ImGui::Button(imname))
+							auto surfaceParams = ::Render->getSurface("ui\\ui_icon_equipment");
+							bool isPressed = false;
+							if (surfaceParams.Surface != nullptr)
+							{
+								float x = pSettings->r_float(section_name.data(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
+								float y = pSettings->r_float(section_name.data(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
+								float w = pSettings->r_float(section_name.data(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
+								float h = pSettings->r_float(section_name.data(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+								ImGui::SeparatorText(section_name.data());
+								isPressed = ImGui::ImageButton(imname, surfaceParams.Surface, { w, h },
+									{ x / surfaceParams.w, y / surfaceParams.h },
+									{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h }
+								);
+							}
+							else
+							{
+								isPressed = ImGui::Button(imname);
+							}
+
+							if (isPressed)
 							{
 								int count = atoi(imgui_spawn_manager.weapon_spawn_count);
 
