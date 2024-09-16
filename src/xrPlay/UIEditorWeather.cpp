@@ -391,6 +391,11 @@ void RenderUIWeather() {
 		changed = true;
 	if (ImGui::SliderFloat("rain_speed_max", &cur->rain_speed_max, 0.0f, 100.0f))
 		changed = true;
+
+	if (cur->rain_speed_min > cur->rain_speed_max) {
+		std::swap(cur->rain_speed_min, cur->rain_speed_max);
+	}
+
 	if (ImGui::SliderFloat("rain_angle_rotation", &cur->rain_angle_rotation, 0.0f, 360.0f))
 		changed = true;
 
