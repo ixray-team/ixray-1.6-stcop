@@ -1243,6 +1243,11 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 	F_entity_Destroy				(D);
 }
 
+void CWeapon::SetAmmoMagSize(int size)
+{
+	iMagazineSize = size;
+}
+
 int CWeapon::GetSuitableAmmoTotal( bool use_item_to_spawn ) const
 {
 	int ae_count = iAmmoElapsed;
