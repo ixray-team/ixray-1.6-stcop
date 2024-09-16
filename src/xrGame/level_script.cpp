@@ -1074,6 +1074,7 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.cfg_fire_distance = pSettings->r_float(pSectionName, "fire_distance");
 						imgui_weapon_manager.cfg_bullet_speed = pSettings->r_float(pSectionName, "bullet_speed");
 						imgui_weapon_manager.cfg_rpm = pSettings->r_float(pSectionName, "rpm");
+						imgui_weapon_manager.cfg_rpm = 60.0f / imgui_weapon_manager.cfg_rpm;
 						imgui_weapon_manager.cfg_hit_impulse = pSettings->r_float(pSectionName, "hit_impulse");
 						imgui_weapon_manager.cfg_hit_power = pSettings->r_fvector4(pSectionName, "hit_power");
 						imgui_weapon_manager.cfg_hit_power_critical = pSettings->r_fvector4(pSectionName, "hit_power_critical");
@@ -1082,47 +1083,6 @@ void RenderWeaponManagerWindow()
 				}
 
 				imgui_weapon_manager.init = true;
-			}
-
-			if (ImGui::Button("Reset to defaults"))
-			{
-				imgui_weapon_manager.inv_cost = imgui_weapon_manager.cfg_inv_cost;
-				imgui_weapon_manager.inv_weight = imgui_weapon_manager.cfg_inv_weight;
-				imgui_weapon_manager.ammo_mag_size = imgui_weapon_manager.cfg_ammo_mag_size;
-				imgui_weapon_manager.fire_distance = imgui_weapon_manager.cfg_fire_distance;
-				imgui_weapon_manager.bullet_speed = imgui_weapon_manager.cfg_bullet_speed;
-				imgui_weapon_manager.rpm = imgui_weapon_manager.cfg_rpm;
-				imgui_weapon_manager.hit_impulse = imgui_weapon_manager.cfg_hit_impulse;
-				imgui_weapon_manager.hit_power = imgui_weapon_manager.hit_power;
-				imgui_weapon_manager.hit_power_critical = imgui_weapon_manager.hit_power_critical;
-
-				if (pItem)
-				{
-					pItem->setCost(imgui_weapon_manager.inv_cost);
-					pItem->setWeight(imgui_weapon_manager.inv_weight);
-				}
-
-				if (pSO)
-				{
-					pSO->setFireDistance(imgui_weapon_manager.fire_distance);
-					pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
-					pSO->setRPM(imgui_weapon_manager.rpm);
-					pSO->setHitImpulse(imgui_weapon_manager.hit_impulse);
-					pSO->setHitPower(imgui_weapon_manager.hit_power);
-					pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
-				}
-
-				if (pWeapon)
-				{
-					pWeapon->SetAmmoMagSize(imgui_weapon_manager.ammo_mag_size);
-				}
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::Button("Save"))
-			{
-
 			}
 
 			if (ImGui::CollapsingHeader("Information"))
@@ -1236,14 +1196,55 @@ void RenderWeaponManagerWindow()
 				{
 					ImGui::Text("section name: [%s]", pItem->m_section_id.c_str());
 
-					if (ImGui::TreeNode("Inventory"))
+					if (ImGui::Button("Reset to defaults"))
 					{
-						if (ImGui::SliderInt("Cost", &imgui_weapon_manager.inv_cost, 0, 100000))
+						imgui_weapon_manager.inv_cost = imgui_weapon_manager.cfg_inv_cost;
+						imgui_weapon_manager.inv_weight = imgui_weapon_manager.cfg_inv_weight;
+						imgui_weapon_manager.ammo_mag_size = imgui_weapon_manager.cfg_ammo_mag_size;
+						imgui_weapon_manager.fire_distance = imgui_weapon_manager.cfg_fire_distance;
+						imgui_weapon_manager.bullet_speed = imgui_weapon_manager.cfg_bullet_speed;
+						imgui_weapon_manager.rpm = imgui_weapon_manager.cfg_rpm;
+						imgui_weapon_manager.hit_impulse = imgui_weapon_manager.cfg_hit_impulse;
+						imgui_weapon_manager.hit_power = imgui_weapon_manager.hit_power;
+						imgui_weapon_manager.hit_power_critical = imgui_weapon_manager.hit_power_critical;
+
+						if (pItem)
+						{
+							pItem->setCost(imgui_weapon_manager.inv_cost);
+							pItem->setWeight(imgui_weapon_manager.inv_weight);
+						}
+
+						if (pSO)
+						{
+							pSO->setFireDistance(imgui_weapon_manager.fire_distance);
+							pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
+							pSO->setRPM(imgui_weapon_manager.rpm);
+							pSO->setHitImpulse(imgui_weapon_manager.hit_impulse);
+							pSO->setHitPower(imgui_weapon_manager.hit_power);
+							pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
+						}
+
+						if (pWeapon)
+						{
+							pWeapon->SetAmmoMagSize(imgui_weapon_manager.ammo_mag_size);
+						}
+					}
+
+					ImGui::SameLine();
+
+					if (ImGui::Button("Save"))
+					{
+
+					}
+
+					if (ImGui::TreeNode("Inventory##Editing"))
+					{
+						if (ImGui::SliderInt("Cost##Editing", &imgui_weapon_manager.inv_cost, 0, 100000))
 						{
 							pItem->setCost(imgui_weapon_manager.inv_cost);
 						}
 
-						if (ImGui::SliderFloat("Weight", &imgui_weapon_manager.inv_weight, 0, 100000.0f))
+						if (ImGui::SliderFloat("Weight##Editing", &imgui_weapon_manager.inv_weight, 0.0f, 100000.0f))
 						{
 							pItem->setWeight(imgui_weapon_manager.inv_weight);
 						}
@@ -1253,19 +1254,19 @@ void RenderWeaponManagerWindow()
 
 					if (pSO)
 					{
-						if (ImGui::TreeNode("Ballistic"))
+						if (ImGui::TreeNode("Ballistic##Editing"))
 						{
-							if (ImGui::SliderFloat("Fire distance", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Fire distance##Editing", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f))
 							{
 								pSO->setFireDistance(imgui_weapon_manager.fire_distance);
 							}
 
-							if (ImGui::SliderFloat("Bullet speed", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Bullet speed##Editing", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f))
 							{
 								pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
 							}
 
-							if (ImGui::SliderFloat("RPM", &imgui_weapon_manager.rpm, 0.1f, 100.0f))
+							if (ImGui::SliderFloat("RPM##Editing", &imgui_weapon_manager.rpm, 0.001f, 100.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
 							{
 								pSO->setRPM(imgui_weapon_manager.rpm);
 							}
@@ -1273,19 +1274,19 @@ void RenderWeaponManagerWindow()
 							ImGui::TreePop();
 						}
 
-						if (ImGui::TreeNode("Hit"))
+						if (ImGui::TreeNode("Hit##Editing"))
 						{
-							if (ImGui::SliderFloat("Hit impulse", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Hit impulse##Editing", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f))
 							{
 								pSO->setHitImpulse(imgui_weapon_manager.hit_impulse);
 							}
 
-							if (ImGui::SliderFloat4("Hit power", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat4("Hit power##Editing", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f))
 							{
 								pSO->setHitPower(imgui_weapon_manager.hit_power);
 							}
 
-							if (ImGui::SliderFloat4("Hit power critical", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat4("Hit power critical##Editing", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f))
 							{
 								pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
 							}
@@ -1296,9 +1297,9 @@ void RenderWeaponManagerWindow()
 
 					if (pWeapon)
 					{
-						if (ImGui::TreeNode("Ammunition"))
+						if (ImGui::TreeNode("Ammunition##Editing"))
 						{
-							if (ImGui::SliderInt("Magazine size", &imgui_weapon_manager.ammo_mag_size, 0, 10000))
+							if (ImGui::SliderInt("Magazine size##Editing", &imgui_weapon_manager.ammo_mag_size, 0, 10000))
 							{
 								pWeapon->SetAmmoMagSize(imgui_weapon_manager.ammo_mag_size);
 							}
