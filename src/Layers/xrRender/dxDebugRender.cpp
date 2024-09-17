@@ -5,15 +5,71 @@
 #include "dxDebugRender.h"
 #include "dxUIShader.h"
 
+#ifdef USE_DX11
+#include "../xrRenderDX10/dx10BufferUtils.h"
+#endif // USE_DX11
+
 dxDebugRender DebugRenderImpl;
 dxDebugRender DebugRenderImpl_1;
 dxDebugRender::dxDebugRender()
 {
 	m_lines.reserve			(line_vertex_limit);
+	m_dbgVB = nullptr;
+}
+
+void dxDebugRender::Init()
+{
+#ifdef USE_DX11
+	R_CHK(dx10BufferUtils::CreateVertexBuffer(
+		&m_dbgVB,
+		nullptr,
+		line_vertex_limit,
+		false));
+
+	m_dbgGeom.create(FVF::F_L, m_dbgVB, nullptr);
+	m_dbgShaders[dbgShaderWorld].create("debug_draw");
+#endif
+}
+
+void dxDebugRender::Shutdown()
+{
+#ifdef USE_DX11
+	m_dbgShaders[dbgShaderWorld].destroy();
+	m_dbgGeom.destroy();
+
+	m_dbgVB->Release();
+	m_dbgVB = nullptr;
+#endif // USE_DX11
 }
 
 void dxDebugRender::Render()
 {
+	if (m_lines.empty())
+		return;
+
+#ifdef USE_DX11
+	RContext->UpdateSubresource(
+		m_dbgVB,
+		0,
+		nullptr,
+		m_lines.data(),
+		0,
+		0);
+
+
+	RCache.set_xform_world(Fidentity);
+	RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
+	RCache.set_Geometry(m_dbgGeom);
+	RCache.Render(D3DPT_LINELIST, 0, m_lines.size() / 2);
+#else
+	RCache.set_xform_world(Fidentity);
+	RCache.OnFrameEnd();
+	RCache.set_Z(r_debug_render_depth);
+	CHK_DX(RDevice->SetFVF(FVF::F_L));
+	CHK_DX(RDevice->DrawPrimitiveUP(D3DPT_LINELIST, m_lines.size() / 2, m_lines.data(), sizeof(FVF::L)));
+#endif // USE_DX11
+
+	m_lines.resize(0);
 }
 
 #if 0
@@ -44,6 +100,7 @@ void _add_lines		(  xr_vector<FVF::L> &vertices, xr_vector<u32>& indices, Fvecto
 }
 #endif
 
+#if 0
 void dxDebugRender::add_lines		(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color)
 {
 	for (size_t i = 0; i < pair_count * 2; i += 2) {
@@ -83,6 +140,23 @@ void dxDebugRender::add_lines		(Fvector const *vertices, u32 const &vertex_count
 		v1.p.x = (v1.p.x * 0.5f + 0.5f) * Device.TargetWidth;
 		v1.p.y = (-v1.p.y * 0.5f + 0.5f) * Device.TargetHeight;
 
+		m_lines.emplace_back(v0, v1);
+	}
+
+}
+#endif
+
+void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, u32 const* pairs, u32 const& pair_count, u32 const& color)
+{
+	for (size_t i = 0; i < pair_count * 2; i += 2) {
+		u32 i0 = pairs[i];
+		u32 i1 = pairs[i + 1];
+		FVF::L v0 = {};
+		FVF::L v1 = {};
+		v0.p = vertices[i0];
+		v1.p = vertices[i1];
+		v0.color = color;
+		v1.color = color;
 		m_lines.emplace_back(v0, v1);
 	}
 
@@ -141,6 +215,7 @@ void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)
 	static const LPCSTR dbgShaderParams[][2] = 
 	{
 		{"hud\\default" , "ui\\ui_pop_up_active_back"} ,// dbgShaderWindow
+		{ "debug_draw", nullptr }
 	};
 
 	if(!m_dbgShaders[shdHandle])
@@ -189,10 +264,8 @@ virtual	~RDebugRender()
 
 void OnRender()
 	{
-
-		m_lines =	_lines;
+		m_lines = _lines;
 		Render();
-
 
 	}
 virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color)

@@ -9,6 +9,9 @@ class dxDebugRender : public IDebugRender
 public:
 					dxDebugRender		();
 
+			void	Init				();
+			void	Shutdown			();
+
 	virtual void	Render				();
 	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color);
 
@@ -40,6 +43,8 @@ public:
 
 private:
 	ref_shader		m_dbgShaders[dbgShaderCount];
+	ref_geom		m_dbgGeom;
+	ID3DVertexBuffer* m_dbgVB;
 };
 
 extern dxDebugRender DebugRenderImpl;

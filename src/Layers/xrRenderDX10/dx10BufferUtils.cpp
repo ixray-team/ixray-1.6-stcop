@@ -17,7 +17,7 @@ HRESULT	IC CreateBuffer( ID3DBuffer** ppBuffer, const void* pData, UINT DataSize
 	D3D_SUBRESOURCE_DATA subData;
 	subData.pSysMem = pData;
 
-	HRESULT res = RDevice->CreateBuffer( &desc, &subData, ppBuffer);
+	HRESULT res = RDevice->CreateBuffer( &desc, pData ? &subData : nullptr, ppBuffer);
 	//R_CHK(res);
 	return res;
 }
