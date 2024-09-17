@@ -8,6 +8,10 @@ struct
 {
 	bool init{};
 
+	u16 weapon_id{ u16(-1) };
+
+	int current_slot{ NO_ACTIVE_SLOT };
+
 	int inv_cost{};
 	int cfg_inv_cost{};
 
@@ -109,16 +113,26 @@ void RenderWeaponManagerWindow()
 	if (!ai().get_alife())
 		return;
 
-	auto draw_item = [](CInventoryItem* pItem) {
+	auto draw_item = [](CInventoryItem* pItem, int slot_type) {
 		if (pItem)
 		{
 			CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
 			CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
 
+			if (imgui_weapon_manager.current_slot != slot_type)
+				imgui_weapon_manager.init = false;
+
+			if (imgui_weapon_manager.weapon_id != pItem->object_id())
+				imgui_weapon_manager.init = false;
+
 			if (!imgui_weapon_manager.init)
 			{
+				imgui_weapon_manager.current_slot = slot_type;
+				imgui_weapon_manager.weapon_id = pItem->object_id();
+
 				imgui_weapon_manager.inv_cost = pItem->Cost();
 				imgui_weapon_manager.inv_weight = pItem->Weight();
+				imgui_weapon_manager.control_inertion_factor = pItem->GetControlInertionFactor();
 
 				if (pSO)
 				{
@@ -128,11 +142,19 @@ void RenderWeaponManagerWindow()
 					imgui_weapon_manager.hit_impulse = pSO->getHitImpulse();
 					imgui_weapon_manager.hit_power = pSO->getHitPower();
 					imgui_weapon_manager.hit_power_critical = pSO->getHitPowerCritical();
+					imgui_weapon_manager.fire_dispersion_base = pSO->getFireDispersionBase();
 				}
 
 				if (pWeapon)
 				{
 					imgui_weapon_manager.ammo_mag_size = pWeapon->GetAmmoMagSize();
+					imgui_weapon_manager.crosshair_inertion = pWeapon->GetCrosshairInertion();
+					imgui_weapon_manager.upgrade_disp_base = pWeapon->Get_PDM_Base();
+					imgui_weapon_manager.upgrade_disp_vel_factor = pWeapon->Get_PDM_Vel_F();
+					imgui_weapon_manager.upgrade_disp_accel_factor = pWeapon->Get_PDM_Accel_F();
+					imgui_weapon_manager.upgrade_disp_crouch = pWeapon->Get_PDM_Crouch();
+					imgui_weapon_manager.upgrade_disp_crouch_no_acc = pWeapon->Get_PDM_Crouch_NA();
+					imgui_weapon_manager.fire_dispersion_condition_factor = pWeapon->getFireDispersionConditionFactor();
 				}
 
 
@@ -173,6 +195,7 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.cfg_fire_dispersion_base = pSettings->r_float(pSectionName, "fire_dispersion_base");
 						imgui_weapon_manager.cfg_control_inertion_factor = pSettings->r_float(pSectionName, "control_inertion_factor");
 						imgui_weapon_manager.cfg_crosshair_inertion = pSettings->r_float(pSectionName, "crosshair_inertion");
+						imgui_weapon_manager.cfg_fire_dispersion_condition_factor = pSettings->r_float(pSectionName, "fire_dispersion_condition_factor");
 					}
 				}
 
@@ -427,48 +450,48 @@ void RenderWeaponManagerWindow()
 
 						if (ImGui::TreeNode("Dispersion"))
 						{
-							if (ImGui::SliderFloat("Fire dispersion base: %.4f", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Fire dispersion base", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f))
 							{
 								pWeapon->setFireDispersionBase(imgui_weapon_manager.fire_dispersion_base);
 							}
 
 
-							if (ImGui::SliderFloat("Control inertion factor: %.4f", &imgui_weapon_manager.control_inertion_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Control inertion factor", &imgui_weapon_manager.control_inertion_factor, 0.0f, 100.0f))
 							{
 								pItem->setControlInertionFactor(imgui_weapon_manager.control_inertion_factor);
 							}
 
-							if (ImGui::SliderFloat("Crosshair inertion: %.4f", &imgui_weapon_manager.crosshair_inertion, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Crosshair inertion", &imgui_weapon_manager.crosshair_inertion, 0.0f, 100.0f))
 							{
 								pWeapon->setCrosshairInertion(imgui_weapon_manager.crosshair_inertion);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion base: %.4f", &imgui_weapon_manager.upgrade_disp_base, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion base", &imgui_weapon_manager.upgrade_disp_base, 0.0f, 100.0f))
 							{
 								pWeapon->Set_PDM_Base(imgui_weapon_manager.upgrade_disp_base);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion velocity factor: %.4f", &imgui_weapon_manager.upgrade_disp_vel_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion velocity factor", &imgui_weapon_manager.upgrade_disp_vel_factor, 0.0f, 100.0f))
 							{
 								pWeapon->Set_PDM_Vel_F(imgui_weapon_manager.upgrade_disp_vel_factor);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion acceleration factor: %.4f", &imgui_weapon_manager.upgrade_disp_accel_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion acceleration factor", &imgui_weapon_manager.upgrade_disp_accel_factor, 0.0f, 100.0f))
 							{
 								pWeapon->Set_PDM_Accel_F(imgui_weapon_manager.upgrade_disp_accel_factor);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion crouch: %.4f", &imgui_weapon_manager.upgrade_disp_crouch, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion crouch", &imgui_weapon_manager.upgrade_disp_crouch, 0.0f, 100.0f))
 							{
 								pWeapon->Set_PDM_Crouch(imgui_weapon_manager.upgrade_disp_crouch);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion crouch no acceleration: %.4f", &imgui_weapon_manager.upgrade_disp_crouch_no_acc, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion crouch no acceleration", &imgui_weapon_manager.upgrade_disp_crouch_no_acc, 0.0f, 100.0f))
 							{
 								pWeapon->Set_PDM_Crouch_NA(imgui_weapon_manager.upgrade_disp_crouch_no_acc);
 							}
 
-							if (ImGui::SliderFloat("Dispersion factor when weapon is damaged/broken: %.4f", &imgui_weapon_manager.fire_dispersion_condition_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Dispersion factor when weapon is damaged/broken", &imgui_weapon_manager.fire_dispersion_condition_factor, 0.0f, 100.0f))
 							{
 								pWeapon->setFireDispersionConditionFactor(imgui_weapon_manager.fire_dispersion_condition_factor);
 							}
@@ -485,20 +508,30 @@ void RenderWeaponManagerWindow()
 	{
 		if (ImGui::BeginTabBar("##TB_InGameWeaponManager"))
 		{
+			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 			if (ImGui::BeginTabItem("Slot 2 (INV_SLOT_2)##TB_InGameWeaponManager"))
 			{
-				CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-
 				if (pActor)
 				{
 					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 
-					draw_item(pItem);
+					draw_item(pItem, INV_SLOT_2);
 				}
 
 				ImGui::EndTabItem();
 			}
 
+
+			if (ImGui::BeginTabItem("Slot 3 (INV_SLOT_3)##TB_InGameWeaponManager"))
+			{
+				if (pActor)
+				{
+					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
+					draw_item(pItem, INV_SLOT_3);
+				}
+
+				ImGui::EndTabItem();
+			}
 
 			ImGui::EndTabBar();
 		}
