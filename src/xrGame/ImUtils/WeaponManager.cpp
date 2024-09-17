@@ -448,7 +448,7 @@ void RenderWeaponManagerWindow()
 							ImGui::TreePop();
 						}
 
-						if (ImGui::TreeNode("Dispersion"))
+						if (ImGui::TreeNode("Dispersion##Editing"))
 						{
 							if (ImGui::SliderFloat("Fire dispersion base", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f))
 							{
@@ -509,26 +509,44 @@ void RenderWeaponManagerWindow()
 		if (ImGui::BeginTabBar("##TB_InGameWeaponManager"))
 		{
 			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-			if (ImGui::BeginTabItem("Slot 2 (INV_SLOT_2)##TB_InGameWeaponManager"))
-			{
-				if (pActor)
-				{
-					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 
-					draw_item(pItem, INV_SLOT_2);
+			char slot2_tab_name[128]{ "Slot 2 (INV_SLOT_2) - " };
+			char slot3_tab_name[128]{ "Slot 3 (INV_SLOT_3) - " };
+
+			if (pActor)
+			{
+				CInventoryItem* pItemInSlot2 = pActor->inventory().ItemFromSlot(INV_SLOT_2);
+				CInventoryItem* pItemInSlot3 = pActor->inventory().ItemFromSlot(INV_SLOT_3);
+
+				if (pItemInSlot2)
+				{
+					memcpy_s(&slot2_tab_name[0] + strlen(slot2_tab_name), sizeof(slot2_tab_name), pItemInSlot2->m_section_id.c_str(), pItemInSlot2->m_section_id.size());
 				}
+				memcpy_s(&slot2_tab_name[0] + strlen(slot2_tab_name), sizeof(slot2_tab_name), "##TB_InGameWeaponManager", sizeof("##TB_InGameWeaponManager"));
+
+				if (pItemInSlot3)
+				{
+					memcpy_s(&slot3_tab_name[0] + strlen(slot3_tab_name), sizeof(slot3_tab_name), pItemInSlot3->m_section_id.c_str(), pItemInSlot3->m_section_id.size());
+				}
+				memcpy_s(&slot3_tab_name[0] + strlen(slot3_tab_name), sizeof(slot3_tab_name), "##TB_InGameWeaponManager", sizeof("##TB_InGameWeaponManager"));
+			}
+
+			if (ImGui::BeginTabItem(slot2_tab_name))
+			{
+				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2);
+				draw_item(pItem, INV_SLOT_2);
+
 
 				ImGui::EndTabItem();
 			}
 
 
-			if (ImGui::BeginTabItem("Slot 3 (INV_SLOT_3)##TB_InGameWeaponManager"))
+			if (ImGui::BeginTabItem(slot3_tab_name))
 			{
-				if (pActor)
-				{
-					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
-					draw_item(pItem, INV_SLOT_3);
-				}
+
+				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
+				draw_item(pItem, INV_SLOT_3);
+
 
 				ImGui::EndTabItem();
 			}
