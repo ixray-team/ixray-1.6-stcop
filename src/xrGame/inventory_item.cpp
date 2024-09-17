@@ -1284,6 +1284,11 @@ void CInventoryItem::activate_physic_shell()
 	object().CPhysicsShellHolder::activate_physic_shell();
 }
 
+void CInventoryItem::setControlInertionFactor(float value)
+{
+	m_fControlInertionFactor = value;
+}
+
 void CInventoryItem::UpdateXForm	()
 {
 	if (0==object().H_Parent())	return;
