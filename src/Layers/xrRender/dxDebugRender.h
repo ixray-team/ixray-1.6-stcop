@@ -48,5 +48,5 @@ private:
 };
 
 extern dxDebugRender DebugRenderImpl;
-extern dxDebugRender* rdebug_render;
+
 #endif // DEBUG
