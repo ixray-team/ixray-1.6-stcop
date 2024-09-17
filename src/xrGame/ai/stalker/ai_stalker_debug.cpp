@@ -1707,6 +1707,9 @@ void CAI_Stalker::OnRender				()
 		Level().debug_renderer().draw_line(Fidentity, position, Fvector().mad(position, direction, 20.f), color_xrgb(0, 255, 0));
 	}
 #endif // #if 0
+	
+	if (Visual()->getVisData().hom_frame != Device.dwFrame)
+		return;
 
 	inherited::OnRender		();
 
