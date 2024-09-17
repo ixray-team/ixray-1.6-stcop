@@ -48,19 +48,26 @@ void dxDebugRender::Render()
 		return;
 
 #ifdef USE_DX11
-	RContext->UpdateSubresource(
-		m_dbgVB,
-		0,
-		nullptr,
-		m_lines.data(),
-		0,
-		0);
+	size_t offset = 0;
+	while (offset < m_lines.size())
+	{
+		size_t drawCount = std::min((size_t)line_vertex_limit / sizeof(std::pair<FVF::L, FVF::L>), m_lines.size() - offset);
 
+		RContext->UpdateSubresource(
+			m_dbgVB,
+			0,
+			nullptr,
+			m_lines.data() + offset,
+			drawCount * sizeof(std::pair<FVF::L, FVF::L>),
+			0);
 
-	RCache.set_xform_world(Fidentity);
-	RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
-	RCache.set_Geometry(m_dbgGeom);
-	RCache.Render(D3DPT_LINELIST, 0, m_lines.size() / 2);
+		RCache.set_xform_world(Fidentity);
+		RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
+		RCache.set_Geometry(m_dbgGeom);
+		RCache.Render(D3DPT_LINELIST, 0, drawCount / 2);
+
+		offset += drawCount;
+	}
 #else
 	RCache.set_xform_world(Fidentity);
 	RCache.OnFrameEnd();
@@ -69,7 +76,7 @@ void dxDebugRender::Render()
 	CHK_DX(RDevice->DrawPrimitiveUP(D3DPT_LINELIST, m_lines.size() / 2, m_lines.data(), sizeof(FVF::L)));
 #endif // USE_DX11
 
-	m_lines.resize(0);
+	m_lines.clear();//resize(0);
 }
 
 #if 0
