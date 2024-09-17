@@ -374,15 +374,16 @@ void RenderWeaponManagerWindow()
 					{
 
 					}
+					ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp | ImGuiSliderFlags_Logarithmic;
 
 					if (ImGui::TreeNode("Inventory##Editing"))
 					{
-						if (ImGui::SliderInt("Cost##Editing", &imgui_weapon_manager.inv_cost, 0, 100000))
+						if (ImGui::SliderInt("Cost##Editing", &imgui_weapon_manager.inv_cost, 0, 100000, "%d", flags))
 						{
 							pItem->setCost(imgui_weapon_manager.inv_cost);
 						}
 
-						if (ImGui::SliderFloat("Weight##Editing", &imgui_weapon_manager.inv_weight, 0.0f, 100000.0f))
+						if (ImGui::SliderFloat("Weight##Editing", &imgui_weapon_manager.inv_weight, 0.0f, 100000.0f, "%.3f", flags))
 						{
 							pItem->setWeight(imgui_weapon_manager.inv_weight);
 						}
@@ -394,17 +395,17 @@ void RenderWeaponManagerWindow()
 					{
 						if (ImGui::TreeNode("Ballistic##Editing"))
 						{
-							if (ImGui::SliderFloat("Fire distance##Editing", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Fire distance##Editing", &imgui_weapon_manager.fire_distance, 0.0f, 10000.0f, "%.3f", flags))
 							{
 								pSO->setFireDistance(imgui_weapon_manager.fire_distance);
 							}
 
-							if (ImGui::SliderFloat("Bullet speed##Editing", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Bullet speed##Editing", &imgui_weapon_manager.bullet_speed, 0.0f, 10000.0f, "%.3f", flags))
 							{
 								pSO->setStartBulletSpeed(imgui_weapon_manager.bullet_speed);
 							}
 
-							if (ImGui::SliderFloat("RPM##Editing", &imgui_weapon_manager.rpm, 0.001f, 100.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+							if (ImGui::SliderFloat("RPM##Editing", &imgui_weapon_manager.rpm, 0.001f, 100.0f, "%.3f", flags))
 							{
 								pSO->setRPM(imgui_weapon_manager.rpm);
 							}
@@ -414,17 +415,17 @@ void RenderWeaponManagerWindow()
 
 						if (ImGui::TreeNode("Hit##Editing"))
 						{
-							if (ImGui::SliderFloat("Hit impulse##Editing", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat("Hit impulse##Editing", &imgui_weapon_manager.hit_impulse, 0.0f, 10000.0f, "%.3f", flags))
 							{
 								pSO->setHitImpulse(imgui_weapon_manager.hit_impulse);
 							}
 
-							if (ImGui::SliderFloat4("Hit power##Editing", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat4("Hit power##Editing", &imgui_weapon_manager.hit_power.x, 0.0f, 10000.0f, "%.3f", flags))
 							{
 								pSO->setHitPower(imgui_weapon_manager.hit_power);
 							}
 
-							if (ImGui::SliderFloat4("Hit power critical##Editing", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f))
+							if (ImGui::SliderFloat4("Hit power critical##Editing", &imgui_weapon_manager.hit_power_critical.x, 0.0f, 10000.0f, "%.3f", flags))
 							{
 								pSO->setHitPowerCritical(imgui_weapon_manager.hit_power_critical);
 							}
@@ -437,7 +438,7 @@ void RenderWeaponManagerWindow()
 					{
 						if (ImGui::TreeNode("Ammunition##Editing"))
 						{
-							if (ImGui::SliderInt("Magazine size##Editing", &imgui_weapon_manager.ammo_mag_size, 0, 10000))
+							if (ImGui::SliderInt("Magazine size##Editing", &imgui_weapon_manager.ammo_mag_size, 0, 10000, "%d", flags))
 							{
 								pWeapon->SetAmmoMagSize(imgui_weapon_manager.ammo_mag_size);
 							}
@@ -450,48 +451,48 @@ void RenderWeaponManagerWindow()
 
 						if (ImGui::TreeNode("Dispersion##Editing"))
 						{
-							if (ImGui::SliderFloat("Fire dispersion base", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Fire dispersion base", &imgui_weapon_manager.fire_dispersion_base, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->setFireDispersionBase(imgui_weapon_manager.fire_dispersion_base);
 							}
 
 
-							if (ImGui::SliderFloat("Control inertion factor", &imgui_weapon_manager.control_inertion_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Control inertion factor", &imgui_weapon_manager.control_inertion_factor, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pItem->setControlInertionFactor(imgui_weapon_manager.control_inertion_factor);
 							}
 
-							if (ImGui::SliderFloat("Crosshair inertion", &imgui_weapon_manager.crosshair_inertion, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Crosshair inertion", &imgui_weapon_manager.crosshair_inertion, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->setCrosshairInertion(imgui_weapon_manager.crosshair_inertion);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion base", &imgui_weapon_manager.upgrade_disp_base, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion base", &imgui_weapon_manager.upgrade_disp_base, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->Set_PDM_Base(imgui_weapon_manager.upgrade_disp_base);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion velocity factor", &imgui_weapon_manager.upgrade_disp_vel_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion velocity factor", &imgui_weapon_manager.upgrade_disp_vel_factor, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->Set_PDM_Vel_F(imgui_weapon_manager.upgrade_disp_vel_factor);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion acceleration factor", &imgui_weapon_manager.upgrade_disp_accel_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion acceleration factor", &imgui_weapon_manager.upgrade_disp_accel_factor, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->Set_PDM_Accel_F(imgui_weapon_manager.upgrade_disp_accel_factor);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion crouch", &imgui_weapon_manager.upgrade_disp_crouch, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion crouch", &imgui_weapon_manager.upgrade_disp_crouch, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->Set_PDM_Crouch(imgui_weapon_manager.upgrade_disp_crouch);
 							}
 
-							if (ImGui::SliderFloat("Upgrade dispersion crouch no acceleration", &imgui_weapon_manager.upgrade_disp_crouch_no_acc, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Upgrade dispersion crouch no acceleration", &imgui_weapon_manager.upgrade_disp_crouch_no_acc, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->Set_PDM_Crouch_NA(imgui_weapon_manager.upgrade_disp_crouch_no_acc);
 							}
 
-							if (ImGui::SliderFloat("Dispersion factor when weapon is damaged/broken", &imgui_weapon_manager.fire_dispersion_condition_factor, 0.0f, 100.0f))
+							if (ImGui::SliderFloat("Dispersion factor when weapon is damaged/broken", &imgui_weapon_manager.fire_dispersion_condition_factor, 0.0f, 100.0f, "%.3f", flags))
 							{
 								pWeapon->setFireDispersionConditionFactor(imgui_weapon_manager.fire_dispersion_condition_factor);
 							}
