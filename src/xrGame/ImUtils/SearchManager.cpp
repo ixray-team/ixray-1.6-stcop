@@ -816,24 +816,29 @@ void RenderSearchManagerWindow()
 					{
 						if (pServerObject->ID_Parent == 0xffff)
 						{
-							xr_string name;
+							imgui_search_manager.count(pServerObject->m_tClassID);
 
-							name = pServerObject->name_replace();
-							if (ImGui::Button(name.c_str()))
+							if (imgui_search_manager.filter(pServerObject->m_tClassID))
 							{
-								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+								xr_string name;
 
-								if (pActor)
+								name = pServerObject->name_replace();
+								if (ImGui::Button(name.c_str()))
 								{
-									xr_string cmd;
-									cmd = "set_actor_position ";
-									cmd += std::to_string(pServerObject->Position().x);
-									cmd += ",";
-									cmd += std::to_string(pServerObject->Position().y);
-									cmd += ",";
-									cmd += std::to_string(pServerObject->Position().z);
+									CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
-									execute_console_command_deferred(Console, cmd.c_str());
+									if (pActor)
+									{
+										xr_string cmd;
+										cmd = "set_actor_position ";
+										cmd += std::to_string(pServerObject->Position().x);
+										cmd += ",";
+										cmd += std::to_string(pServerObject->Position().y);
+										cmd += ",";
+										cmd += std::to_string(pServerObject->Position().z);
+
+										execute_console_command_deferred(Console, cmd.c_str());
+									}
 								}
 							}
 						}
