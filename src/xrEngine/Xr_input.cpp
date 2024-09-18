@@ -154,7 +154,7 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 CInput::~CInput()
 {
 	if (pGamePad != nullptr)
-		SDL_CloseGamepad(pGamePad);
+		SDL_GameControllerClose(pGamePad);
 
 #ifdef ENGINE_BUILD
 	Device.seqFrame.Remove			(this);
@@ -546,14 +546,14 @@ IInputReceiver* CInput::CurrentIR()
 
 void CInput::unacquire()
 {
-	SDL_SetRelativeMouseMode(false);
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 	IsAcquire = false;
 }
 
 void CInput::acquire()
 {
 	IsAcquire = true;
-	SDL_SetRelativeMouseMode(true);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 void  CInput::feedback(u16 s1, u16 s2, float time)

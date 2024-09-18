@@ -51,19 +51,19 @@ BOOL IInputReceiver::IR_GetBtnState(int btn)
 	return pInput->iGetAsyncBtnState(btn);
 }
 
-void	IInputReceiver::IR_GetMousePosScreen			(Ivector2& p)
+void	IInputReceiver::IR_GetMousePosScreen(Ivector2& p)
 {
-	float mouse_x, mouse_y;
+	int mouse_x, mouse_y;
 	SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
-	p.x = (int)mouse_x;
-	p.y = (int)mouse_y;
+	p.x = mouse_x;
+	p.y = mouse_y;
 }
-void	IInputReceiver::IR_GetMousePosReal				(Ivector2 &p)
+void	IInputReceiver::IR_GetMousePosReal(Ivector2& p)
 {
-	float mouse_x, mouse_y;
+	int mouse_x, mouse_y;
 	SDL_GetMouseState(&mouse_x, &mouse_y);
-	p.x = (int)mouse_x;
-	p.y = (int)mouse_y;
+	p.x = mouse_x;
+	p.y = mouse_y;
 }
 void	IInputReceiver::IR_GetMousePosIndependent		(Fvector2 &f)
 {

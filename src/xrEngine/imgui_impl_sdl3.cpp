@@ -45,7 +45,7 @@
 #endif
 
 // SDL
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h> // ne hochu...
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 #endif

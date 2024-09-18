@@ -137,7 +137,7 @@ target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd par
 target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 target_include_directories(xrCore PUBLIC ${CORE_DXMATH}/include/)
-target_include_directories(xrCore PUBLIC ${CORE_SDL3}build/native/include/)
+target_include_directories(xrCore PUBLIC ${CORE_SDL2}build/native/include/)
 target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
 target_include_directories(xrCore PUBLIC ${MIMALLOC}/build/native/include/mimalloc-2.1)
 target_include_directories(xrCore PUBLIC ${LZO}/build/native/include/)
@@ -183,13 +183,13 @@ if(WIN32)
     target_link_libraries(xrCore PRIVATE "dbghelp")
     target_link_libraries(xrCore PRIVATE "winmm")
 
-    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.lib)
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL2.lib)
     target_link_libraries(xrCore PUBLIC ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
     target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
     target_link_libraries(xrCore PUBLIC ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.lib)
     target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/mimalloc.lib)
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0)
+    target_link_libraries(xrCore PUBLIC ${CORE_SDL2}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL2.so.0.0.0)
     target_link_libraries(xrCore PUBLIC ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13)
     target_link_libraries(xrCore PUBLIC ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0)
     target_link_libraries(xrCore PUBLIC ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1)
@@ -201,7 +201,7 @@ include(gitver.cmake)
 # Copy SDK binaries
 if(WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
@@ -210,7 +210,7 @@ if(WIN32)
     )
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libSDL3.so.0
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL2}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL2.so.0.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libSDL2.so.0
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libtbb.so.12
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/liblzo2.so.2
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libmimalloc.so.2

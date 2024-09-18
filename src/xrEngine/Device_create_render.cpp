@@ -412,7 +412,7 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		SDL_DisplayMode displayMode;
 		displayMode.w = psCurrentVidMode[0];
 		displayMode.h = psCurrentVidMode[1];
-		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
+		SDL_SetWindowDisplayMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
 	} else {
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);

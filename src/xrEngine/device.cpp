@@ -251,8 +251,8 @@ void CRenderDevice::on_idle		()
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !CImGuiManager::Instance().IsCapturingInputs();
-	SDL_SetWindowGrab(g_AppInfo.Window, Focus);
-	SDL_SetRelativeMouseMode(Focus);
+	SDL_SetWindowGrab(g_AppInfo.Window, Focus ? SDL_TRUE : SDL_FALSE);
+	SDL_SetRelativeMouseMode(Focus ? SDL_TRUE : SDL_FALSE);
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
@@ -583,17 +583,17 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	{
 		app_inactive_time_start = TimerMM.GetElapsed_ms();
 		Device.seqAppDeactivate.Process(rp_AppDeactivate);
-		SDL_ShowCursor();
+		SDL_ShowCursor(1);
 	}
 	else
 	{
 		if (NewState && !g_dedicated_server) 
 		{
-			SDL_HideCursor();
+			SDL_ShowCursor(0);
 		} 
 		else 
 		{
-			SDL_ShowCursor();
+			SDL_ShowCursor(1);
 		}
 	}
 #endif

@@ -29,8 +29,8 @@ else()
 endif()
 
 # SDL3
-set(CORE_SDL3_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
-set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
+set(CORE_SDL2_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
+set(CORE_SDL2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL2_PLATFORM}.2.28.5.1/)
 
 # Optick
 set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)

@@ -26,10 +26,10 @@ public:
 		COUNT_MOUSE_BUTTONS			= 8,
 		COUNT_MOUSE_AXIS			= 3,
 		COUNT_KB_BUTTONS			= 256,
-		COUNT_GP_BUTTONS			= SDL_GamepadButton::SDL_GAMEPAD_BUTTON_MAX + 2,
+		COUNT_GP_BUTTONS			= SDL_CONTROLLER_BUTTON_MAX + 2,
 	};
 
-	SDL_Gamepad* pGamePad = nullptr;
+	SDL_GameController* pGamePad = nullptr;
 
 private:
 	bool						mouseMoved = false;

@@ -29,7 +29,7 @@ void CRenderDevice::Destroy()
 
 	Log("Destroying Direct3D...");
 
-	SDL_ShowCursor();
+	SDL_ShowCursor(1);
 	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
@@ -102,7 +102,7 @@ void CRenderDevice::Reset(bool precache)
 
 	if (!g_dedicated_server)
 	{
-		SDL_ShowCursor();
+		SDL_ShowCursor(1);
 	}
 
 	seqDeviceReset.Process(rp_DeviceReset);
