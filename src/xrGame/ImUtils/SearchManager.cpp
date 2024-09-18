@@ -447,7 +447,11 @@ void RenderSearchManagerWindow()
 
 				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+				char category_name_separator[64]{};
+				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				size_t translate_str_len = strlen(pTranslatedCategoryName);
+				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				ImGui::SeparatorText(category_name_separator);
 
 				auto size = Level().Objects.o_count();
 
@@ -554,7 +558,11 @@ void RenderSearchManagerWindow()
 
 				ImGui::InputText("##IT_InGameSearchManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+				char category_name_separator[64]{};
+				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				size_t translate_str_len = strlen(pTranslatedCategoryName);
+				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				ImGui::SeparatorText(category_name_separator);
 
 				const auto& objects = ai().alife().objects().objects();
 				for (const auto& it : objects)
