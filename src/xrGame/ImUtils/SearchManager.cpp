@@ -38,161 +38,19 @@ struct
 	const xr_set<CLASS_ID>& get_monsters(void) const { return monsters; }
 	const xr_set<CLASS_ID>& get_weapons(void) const { return weapons; }
 
-#pragma todo("wh1t3lord to DrombeyZ: use string table for translation CLASS_ID short strings and provide a method for existance (in g_pStringTable) of id translator string if it doesn't present use CLSID2TEXT for translation")
 	const char* translateCLSID(CLASS_ID id)
 	{
-		if (id == monster_bloodsucker)
+		char name[16]{};
+		CLSID2TEXT(id, name);
+
+		for (int i = 0; i < 16; ++i)
 		{
-			return "Bloodsucker";
+			if (name[i] == 32)
+			{
+				name[i] = '\0';
+			}
 		}
-		else if (id == monster_boar)
-		{
-			return "Boar";
-		}
-		else if (id == monster_burer)
-		{
-			return "Burer";
-		}
-		else if (id == monster_cat)
-		{
-			return "Cat";
-		}
-		else if (id == monster_chimera)
-		{
-			return "Chimera";
-		}
-		else if (id == monster_controller)
-		{
-			return "Controller";
-		}
-		else if (id == monster_dog)
-		{
-			return "Dog";
-		}
-		else if (id == monster_flesh)
-		{
-			return "Flesh";
-		}
-		else if (id == monster_izlom)
-		{
-			return "Izlom";
-		}
-		else if (id == monster_poltergeist)
-		{
-			return "Poltergeist";
-		}
-		else if (id == monster_pseudodog)
-		{
-			return "PseudoDog";
-		}
-		else if (id == monster_pseudogigant)
-		{
-			return "PseudoGigant";
-		}
-		else if (id == monster_psydog)
-		{
-			return "PsyDog";
-		}
-		else if (id == monster_psydogphantom)
-		{
-			return "PsyDog (Phantom)";
-		}
-		else if (id == monster_snork)
-		{
-			return "Snork";
-		}
-		else if (id == monster_tushkano)
-		{
-			return "Tushkano";
-		}
-		else if (id == monster_zombie)
-		{
-			return "Zombie";
-		}
-		else if (id == weapon_ak74)
-		{
-			return "ak74";
-		}
-		else if (id == weapon_autoshotgun)
-		{
-			return "auto-shotgun";
-		}
-		else if (id == weapon_binocular)
-		{
-			return "binocular";
-		}
-		else if (id == weapon_bm16)
-		{
-			return "bm16";
-		}
-		else if (id == weapon_groza)
-		{
-			return "groza";
-		}
-		else if (id == weapon_hpsa)
-		{
-			return "hpsa";
-		}
-		else if (id == weapon_knife)
-		{
-			return "knife";
-		}
-		else if (id == weapon_lr300)
-		{
-			return "lr300";
-		}
-		else if (id == weapon_pm)
-		{
-			return "pm";
-		}
-		else if (id == weapon_rg6)
-		{
-			return "rg6";
-		}
-		else if (id == weapon_rpg7)
-		{
-			return "rpg7";
-		}
-		else if (id == weapon_shotgun)
-		{
-			return "shotgun";
-		}
-		else if (id == weapon_svd)
-		{
-			return "svd";
-		}
-		else if (id == weapon_svu)
-		{
-			return "svu";
-		}
-		else if (id == weapon_usp45)
-		{
-			return "usp45";
-		}
-		else if (id == weapon_val)
-		{
-			return "val";
-		}
-		else if (id == weapon_vintorez)
-		{
-			return "vintorez";
-		}
-		else if (id == weapon_walther)
-		{
-			return "walther";
-		}
-		else if (id == weapon_magazine)
-		{
-			return "magazine";
-		}
-		else if (id == weapon_stationary_machine_gun)
-		{
-			return "stat mgun";
-		}
-		else
-		{
-			return "unknown";
-		}
+		return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
 	}
 
 	// reminder: information took from class_registrator.script because it overloads existed classes (clsids)
@@ -329,7 +187,6 @@ struct {
 		return result;
 	}
 
-#pragma todo("wh1t3lord to DrombeyZ: use string table for translation CLASS_ID short strings and provide a method for existance (in g_pStringTable) of id translator string if it doesn't present use CLSID2TEXT for translation")
 	const char* convertTypeToString(int type)
 	{
 		switch (static_cast<eSelectedType>(type))
@@ -338,183 +195,53 @@ struct {
 		{
 			return "All";
 		}
-		case eSelectedType::kSelectedType_SmartTerrain:
-		{
-			return "Smart terrain";
-		}
-		case eSelectedType::kSelectedType_SmartCover:
-		{
-			return "Smart cover";
-		}
-		case eSelectedType::kSelectedType_LevelChanger:
-		{
-			return "Level changer";
-		}
-		case eSelectedType::kSelectedType_Artefact:
-		{
-			return "Artefact";
-		}
-		case eSelectedType::kSelectedType_Stalker:
-		{
-			return "Stalker";
-		}
-		case eSelectedType::kSelectedType_Car:
-		{
-			return "Car";
-		}
 		case eSelectedType::kSelectedType_Monster_All:
 		{
 			return "Monster - All";
-		}
-		case eSelectedType::kSelectedType_Monster_BloodSucker:
-		{
-			return "Monster - bloodsucker";
-		}
-		case eSelectedType::kSelectedType_Monster_Boar:
-		{
-			return "Monster - Boar";
-		}
-		case eSelectedType::kSelectedType_Monster_Burer:
-		{
-			return "Monster - Burer";
-		}
-		case eSelectedType::kSelectedType_Monster_Cat:
-		{
-			return "Monster - Cat";
-		}
-		case eSelectedType::kSelectedType_Monster_Chimera:
-		{
-			return "Monster - Chimera";
-		}
-		case eSelectedType::kSelectedType_Monster_Controller:
-		{
-			return "Monster - Controller";
-		}
-		case eSelectedType::kSelectedType_Monster_Dog:
-		{
-			return "Monster - Dog";
-		}
-		case eSelectedType::kSelectedType_Monster_Flesh:
-		{
-			return "Monster - Flesh";
-		}
-		case eSelectedType::kSelectedType_Monster_Izlom:
-		{
-			return "Monster - Izlom";
-		}
-		case eSelectedType::kSelectedType_Monster_Poltergeist:
-		{
-			return "Monster - Poltergeist";
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoDog:
-		{
-			return "Monster - Pseudodog";
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoGigant:
-		{
-			return "Monster - PseudoGigant";
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDog:
-		{
-			return "Monster - Psydog";
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDogPhantom:
-		{
-			return "Monster - psydogphantom";
-		}
-		case eSelectedType::kSelectedType_Monster_Snork:
-		{
-			return "Monster - Snork";
-		}
-		case eSelectedType::kSelectedType_Monster_Tushkano:
-		{
-			return "Monster - Tushkano";
-		}
-		case eSelectedType::kSelectedType_Monster_Zombie:
-		{
-			return "Monster - Zombie";
 		}
 		case eSelectedType::kSelectedType_Weapon_All:
 		{
 			return "Weapon - All";
 		}
-		case eSelectedType::kSelectedType_Weapon_Binocular:
+		}
+
+
+		if (type_to_class.find(eSelectedType(type)) != type_to_class.end())
 		{
-			return "Weapon - Binocular";
+			char name[16]{};
+			CLASS_ID id = type_to_class.at(eSelectedType(type));
+			CLSID2TEXT(id, name);
+
+			for (int i = 0; i < 16; ++i)
+			{
+				if (name[i] == 32)
+				{
+					name[i] = '\0';
+				}
+			}
+			const char* pTranslatedName = g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+			char result[32]{};
+
+
+			if (imgui_clsid_manager.is_monster(id))
+			{
+				memcpy_s(result, sizeof(result), "Monster - ", sizeof("Monster -"));
+				memcpy_s(&result[0] + sizeof("Monster - "), sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+			else if (imgui_clsid_manager.is_weapon(id))
+			{
+				memcpy_s(result, sizeof(result), "Weapon - ", sizeof("Weapon - "));
+				memcpy_s(&result[0] + sizeof("Weapon - "), sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+			else
+			{
+				memcpy_s(result, sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+
+			return result;
 		}
-		case eSelectedType::kSelectedType_Weapon_Knife:
-		{
-			return "Weapon - Knife";
-		}
-		case eSelectedType::kSelectedType_Weapon_BM16:
-		{
-			return "Weapon - BM16";
-		}
-		case eSelectedType::kSelectedType_Weapon_Groza:
-		{
-			return "Weapon - Groza";
-		}
-		case eSelectedType::kSelectedType_Weapon_SVD:
-		{
-			return "Weapon - SVD";
-		}
-		case eSelectedType::kSelectedType_Weapon_AK74:
-		{
-			return "Weapon - AK74";
-		}
-		case eSelectedType::kSelectedType_Weapon_LR300:
-		{
-			return "Weapon - LR300";
-		}
-		case eSelectedType::kSelectedType_Weapon_HPSA:
-		{
-			return "Weapon - HPSA";
-		}
-		case eSelectedType::kSelectedType_Weapon_PM:
-		{
-			return "Weapon - PM";
-		}
-		case eSelectedType::kSelectedType_Weapon_RG6:
-		{
-			return "Weapon - RPG6";
-		}
-		case eSelectedType::kSelectedType_Weapon_RPG7:
-		{
-			return "Weapon - RPG7";
-		}
-		case eSelectedType::kSelectedType_Weapon_Shotgun:
-		{
-			return "Weapon - Shotgun";
-		}
-		case eSelectedType::kSelectedType_Weapon_AutoShotgun:
-		{
-			return "Weapon - AutoShotgun";
-		}
-		case eSelectedType::kSelectedType_Weapon_SVU:
-		{
-			return "Weapon - SVU";
-		}
-		case eSelectedType::kSelectedType_Weapon_USP45:
-		{
-			return "Weapon - USP45";
-		}
-		case eSelectedType::kSelectedType_Weapon_VAL:
-		{
-			return "Weapon - VAL";
-		}
-		case eSelectedType::kSelectedType_Weapon_VINTOREZ:
-		{
-			return "Weapon - VINTOREZ";
-		}
-		case eSelectedType::kSelectedType_Weapon_WALTHER:
-		{
-			return "Weapon - WALTHER";
-		}
-		default:
-		{
-			return "unknown";
-		}
-		}
+		
+		return "unknown";
 	}
 
 	bool filter(CLASS_ID id)
@@ -583,16 +310,6 @@ struct {
 
 	void init()
 	{
-		for (int i = 0; i < (eSelectedType::kSelectedType_Count); ++i)
-		{
-			char* pPtr = &category_names[i][0];
-			const char* pStr = convertTypeToString(i);
-
-			memcpy_s(pPtr, sizeof(category_names[i]), pStr, strlen(pStr));
-
-			combo_items[i] = pPtr;
-		}
-
 		type_to_class[eSelectedType::kSelectedType_SmartTerrain] = imgui_clsid_manager.smart_terrain;
 		type_to_class[eSelectedType::kSelectedType_SmartCover] = imgui_clsid_manager.smart_cover;
 		type_to_class[eSelectedType::kSelectedType_LevelChanger] = imgui_clsid_manager.level_changer;
@@ -642,6 +359,16 @@ struct {
 		for (const std::pair<eSelectedType, CLASS_ID>& pair : type_to_class)
 		{
 			class_to_type[pair.second] = pair.first;
+		}
+
+		for (int i = 0; i < (eSelectedType::kSelectedType_Count); ++i)
+		{
+			char* pPtr = &category_names[i][0];
+			const char* pStr = convertTypeToString(i);
+
+			memcpy_s(pPtr, sizeof(category_names[i]), pStr, strlen(pStr));
+
+			combo_items[i] = pPtr;
 		}
 	}
 }
