@@ -77,7 +77,9 @@ void dxRenderDeviceRender::OnDeviceDestroy( BOOL bKeepTextures)
 {
 #ifndef _EDITOR
 #ifdef USE_DX11
+#ifdef DEBUG_DRAW
 	DebugRenderImpl.Shutdown();
+#endif // #ifdef DEBUG_DRAW
 #endif // USE_DX11
 
 	m_WireShader.destroy();
@@ -190,7 +192,9 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
 		DUImpl.OnDeviceCreate			();
 #ifdef USE_DX11
+#ifdef DEBUG_DRAW
 		DebugRenderImpl.Init();
+#endif // DEBUG_DRAW
 #endif // USE_DX11
 
 	}
