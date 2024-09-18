@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../xrCore/_std_extensions.h"
-#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdl2.h"
 #include "IGame_Persistent.h"
 
 #include <d3d11.h>
@@ -198,9 +198,9 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 #ifndef _EDITOR
 	CImGuiManager& ImManager = CImGuiManager::Instance();
 
-	ImManager.PlatformNewFrameCallback = ImGui_ImplSDL3_NewFrame;
-	ImManager.PlatformDestroyCallback = ImGui_ImplSDL3_Shutdown;
-	ImManager.PlatformInitCallback = []() { ImGui_ImplSDL3_InitForD3D(g_AppInfo.Window); };
+	ImManager.PlatformNewFrameCallback = []() { ImGui_ImplSDL2_NewFrame(); };
+	ImManager.PlatformDestroyCallback = ImGui_ImplSDL2_Shutdown;
+	ImManager.PlatformInitCallback = []() { ImGui_ImplSDL2_InitForD3D(g_AppInfo.Window); };
 
 	ImManager.InitPlatform();
 
