@@ -38,6 +38,7 @@ struct
 	const xr_set<CLASS_ID>& get_monsters(void) const { return monsters; }
 	const xr_set<CLASS_ID>& get_weapons(void) const { return weapons; }
 
+#pragma todo("wh1t3lord to DrombeyZ: use string table for translation CLASS_ID short strings and provide a method for existance (in g_pStringTable) of id translator string if it doesn't present use CLSID2TEXT for translation")
 	const char* translateCLSID(CLASS_ID id)
 	{
 		if (id == monster_bloodsucker)
@@ -180,6 +181,14 @@ struct
 		{
 			return "walther";
 		}
+		else if (id == weapon_magazine)
+		{
+			return "magazine";
+		}
+		else if (id == weapon_stationary_machine_gun)
+		{
+			return "stat mgun";
+		}
 		else
 		{
 			return "unknown";
@@ -234,6 +243,8 @@ struct
 	CLASS_ID weapon_val = TEXT2CLSID("WP_VAL");
 	CLASS_ID weapon_vintorez = TEXT2CLSID("WP_VINT");
 	CLASS_ID weapon_walther = TEXT2CLSID("WP_WALTH");
+	CLASS_ID weapon_magazine = TEXT2CLSID("WP_MAGAZ");
+	CLASS_ID weapon_stationary_machine_gun = TEXT2CLSID("W_STMGUN");
 
 private:
 	xr_set<CLASS_ID> weapons;
@@ -291,6 +302,8 @@ enum eSelectedType {
 	kSelectedType_Weapon_VAL,
 	kSelectedType_Weapon_VINTOREZ,
 	kSelectedType_Weapon_WALTHER,
+	kSelectedType_Weapon_Magazine,
+	kSelectedType_Weapon_StationaryMachineGun,
 	kSelectedType_Count
 };
 
@@ -623,6 +636,8 @@ struct {
 		type_to_class[eSelectedType::kSelectedType_Weapon_VAL] = imgui_clsid_manager.weapon_val;
 		type_to_class[eSelectedType::kSelectedType_Weapon_VINTOREZ] = imgui_clsid_manager.weapon_vintorez;
 		type_to_class[eSelectedType::kSelectedType_Weapon_WALTHER] = imgui_clsid_manager.weapon_walther;
+		type_to_class[eSelectedType::kSelectedType_Weapon_Magazine] = imgui_clsid_manager.weapon_magazine;
+		type_to_class[eSelectedType::kSelectedType_Weapon_StationaryMachineGun] = imgui_clsid_manager.weapon_stationary_machine_gun;
 
 		for (const std::pair<eSelectedType, CLASS_ID>& pair : type_to_class)
 		{
