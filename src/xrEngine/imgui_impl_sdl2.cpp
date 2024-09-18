@@ -631,11 +631,14 @@ void ImGui_ImplSDL2_NewFrame()
         io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
     }
 
-    ImGui_ImplSDL2_UpdateMouseData();
-    ImGui_ImplSDL2_UpdateMouseCursor();
+    if (CImGuiManager::Instance().IsCapturingInputs())
+    {
+        ImGui_ImplSDL2_UpdateMouseData();
+        ImGui_ImplSDL2_UpdateMouseCursor();
 
-    // Update game controllers (if enabled and available)
-    ImGui_ImplSDL2_UpdateGamepads();
+        // Update game controllers (if enabled and available)
+        ImGui_ImplSDL2_UpdateGamepads();
+    }
 }
 
 #if defined(__clang__)
