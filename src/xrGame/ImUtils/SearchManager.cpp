@@ -396,12 +396,12 @@ void RenderSearchManagerWindow()
 		ImGui::Text("Level: %s", Level().name().c_str());
 
 		ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
-		ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
-		ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
-		ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
-		ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
-		ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
-		ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_SmartCover), imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_SmartTerrain), imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Stalker), imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Car), imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_LevelChanger), imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Artefact), imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
 
 		char colh_monsters[24]{};
 		sprintf_s(colh_monsters, sizeof(colh_monsters), "Monsters: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Monster_All]);
