@@ -180,6 +180,19 @@ enum eSelectedType {
 	kSelectedType_Monster_Tushkano,
 	kSelectedType_Monster_PsyDog,
 	kSelectedType_Monster_PsyDogPhantom,
+	kSelectedType_Weapon_All,
+	kSelectedType_Weapon_Binocular,
+	kSelectedType_Weapon_Knife,
+	kSelectedType_Weapon_BM16,
+	kSelectedType_Weapon_Groza,
+	kSelectedType_Weapon_SVD,
+	kSelectedType_Weapon_AK74,
+	kSelectedType_Weapon_LR300,
+	kSelectedType_Weapon_HPSA,
+	kSelectedType_Weapon_PM,
+	kSelectedType_Weapon_RG6,
+	kSelectedType_Weapon_RPG7,
+	kSelectedType_Weapon_,
 	kSelectedType_Count
 };
 
@@ -770,11 +783,11 @@ void RenderSearchManagerWindow()
 									{
 										xr_string cmd;
 										cmd = "set_actor_position ";
-										cmd += std::to_string(pObject->Position().x);
+										cmd += cmd.ToString(pObject->Position().x);
 										cmd += ",";
-										cmd += std::to_string(pObject->Position().y);
+										cmd += cmd.ToString(pObject->Position().y);
 										cmd += ",";
-										cmd += std::to_string(pObject->Position().z);
+										cmd += cmd.ToString(pObject->Position().z);
 
 										execute_console_command_deferred(Console, cmd.c_str());
 									}
@@ -831,11 +844,11 @@ void RenderSearchManagerWindow()
 									{
 										xr_string cmd;
 										cmd = "set_actor_position ";
-										cmd += std::to_string(pServerObject->Position().x);
+										cmd += cmd.ToString(pServerObject->Position().x);
 										cmd += ",";
-										cmd += std::to_string(pServerObject->Position().y);
+										cmd += cmd.ToString(pServerObject->Position().y);
 										cmd += ",";
-										cmd += std::to_string(pServerObject->Position().z);
+										cmd += cmd.ToString(pServerObject->Position().z);
 
 										execute_console_command_deferred(Console, cmd.c_str());
 									}
