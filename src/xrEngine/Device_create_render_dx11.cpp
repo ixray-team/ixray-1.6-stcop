@@ -16,25 +16,9 @@ extern void* RenderRTV;
 extern void* RenderDSV;
 extern void* SwapChainRTV;
 
-HWND GetHWNDFromSDLWindow(SDL_Window* window)
-{
-	SDL_SysWMinfo wmInfo;
-	SDL_VERSION(&wmInfo.version);
-
-	if (SDL_GetWindowWMInfo(window, &wmInfo))
-	{
-		return wmInfo.info.win.window;
-	}
-	else
-	{
-		// Msg("! Failed to get window info: %s", SDL_GetError());
-		return nullptr;
-	}
-}
-
 bool UpdateBuffersD3D11()
 {
-	HWND hwnd = GetHWNDFromSDLWindow(g_AppInfo.Window);
+	HWND hwnd = g_AppInfo.GetHWND();
 
 	// Create a render target view
 	ID3D11Texture2D* pBuffer = nullptr;
@@ -141,7 +125,7 @@ bool CreateD3D11(bool ReturnToDX10)
 	// Set up the presentation parameters
 	DXGI_SWAP_CHAIN_DESC sd = {};
 
-	HWND hwnd = GetHWNDFromSDLWindow(g_AppInfo.Window);
+	HWND hwnd = g_AppInfo.GetHWND();
 	sd.BufferDesc.Width = psCurrentVidMode[0];
 	sd.BufferDesc.Height = psCurrentVidMode[1];
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;

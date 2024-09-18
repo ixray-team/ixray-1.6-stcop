@@ -11,6 +11,8 @@ public:
 public:
 	bool IsSecondaryThread() const noexcept;
 	bool IsPrimaryThread() const noexcept;
+
+	HWND GetHWND() const noexcept;
 };
 
 extern XRCORE_API CAppInfo g_AppInfo;
