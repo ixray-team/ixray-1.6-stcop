@@ -99,9 +99,10 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPrevPos = vPos;
-		SDL_GetMouseState(&vPos.x, &vPos.y);
-		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
-		vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+		int mouseX, mouseY;
+		SDL_GetMouseState(&mouseX, &mouseY);
+		vPos.x = static_cast<float>(mouseX) * (UI_BASE_WIDTH / static_cast<float>(Device.TargetWidth));
+		vPos.y = static_cast<float>(mouseY) * (UI_BASE_HEIGHT / static_cast<float>(Device.TargetHeight));
 		clamp(vPos.x, 0.f, UI_BASE_WIDTH);
 		clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
 	}

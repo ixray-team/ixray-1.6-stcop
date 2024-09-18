@@ -416,30 +416,30 @@ void CActor::IR_GamepadUpdateStick(int id, Fvector2 value)
 
 void CActor::IR_GamepadKeyPress(int id)
 {
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
+	if (id == SDL_CONTROLLER_BUTTON_LEFTSHOULDER)
 	{
 		IR_OnKeyboardPress(kPREV_SLOT);
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)
+	else if (id == SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)
 	{
 		IR_OnKeyboardPress(kNEXT_SLOT);
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
+	else if (id == SDL_CONTROLLER_BUTTON_A)
 	{
 		IR_OnKeyboardPress(kUSE);
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_WEST)
+	else if (id == SDL_CONTROLLER_BUTTON_X)
 	{
 		IR_OnKeyboardPress(kWPN_RELOAD);
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_NORTH)
+	else if (id == SDL_CONTROLLER_BUTTON_Y)
 	{
 		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_LEFT_STICK)
+	else if (id == SDL_CONTROLLER_BUTTON_LEFTSTICK)
 	{
 	}
-	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK)
+	else if (id == SDL_CONTROLLER_BUTTON_RIGHTSTICK)
 	{
 	}
 }

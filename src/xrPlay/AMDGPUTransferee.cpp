@@ -316,7 +316,7 @@ void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pIm
 		D3D_FEATURE_LEVEL_10_0
 	};
 
-	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
+	HWND hwnd = g_AppInfo.GetHWND();
 
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = Device.TargetHeight;
