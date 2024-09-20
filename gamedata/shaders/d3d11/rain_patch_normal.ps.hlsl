@@ -71,6 +71,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     // Using fixed fallof factors according to float16 depth coordinate precision.
     float fAtten = 1 - smoothstep(min(RainFallof.y - 15.0f, RainFallof.x), RainFallof.y, _P.z);
     s *= fAtten * fAtten;
+	s *= 1.0f - O.SSS;
 
     //	Apply rain density
     s *= RainDensity.x;

@@ -107,9 +107,9 @@ float hashed_alpha_test(float3 position)
     // Pass into CDF to compute uniformly distrib threshold
     float a = min(lerpFactor, 1.0 - lerpFactor);
     float3 cases;
-    cases.x = x * x / (2.0 * a * (1.0 - a));
-    cases.y = (x - 0.5 * a) / (1.0 - a);
-    cases.z = 1.0 - ((1.0 - x) * (1.0 - x) / (2.0 * a * (1.0 - a)));
+    cases.x = x * x * rcp(2.0 * a * (1.0 - a));
+    cases.y = (x - 0.5 * a) * rcp(1.0 - a);
+    cases.z = 1.0 - ((1.0 - x) * (1.0 - x) * rcp(2.0 * a * (1.0 - a)));
 
     // Find our final, uniformly distributed alpha threshold
     float thresh = (x < (1.0 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
@@ -119,22 +119,24 @@ float hashed_alpha_test(float3 position)
     thresh = frac(thresh + m_taa_jitter.z);
 
     // Clamp alpha
-    return clamp(thresh, 1e-5, 1.0);
+    return clamp(thresh, 0.063f, 1.0f);
 }
+
+#define IMAGE_BITRATE float3(0xff, 0xff, 0xff)
 
 // Deband color function (by Hozar 2002) - may be huita
 float3 deband_color(float3 image, float2 uv)
 {
     float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
 
-    float3 color = saturate(image) * 255.0f;
+    float3 color = saturate(dot(image, IMAGE_BITRATE));
     float3 pq = frac(color);
 
     color -= pq;
     pq = step(dither, pq);
 
     color += pq;
-    color /= 255.0f;
+    color *= rcp(IMAGE_BITRATE);
 
     return color;
 }
@@ -145,9 +147,12 @@ void build_contangent_frame(float3 position, float3 normal, float2 uv, out float
     float4 duv = float4(ddx(uv), ddy(uv));
     float3 dp1perp = cross(normal, ddx(position));
     float3 dp2perp = cross(ddy(position), normal);
+	
     tangent = dp2perp * duv.x + dp1perp * duv.z;
     binormal = dp2perp * duv.y + dp1perp * duv.w;
+	
     float invmax = rsqrt(max(dot(tangent, tangent), dot(binormal, binormal)));
+	
 	tangent *= invmax;
 	binormal *= invmax;
 }
@@ -171,26 +176,32 @@ float3 unpack_normal(float3 v)
 {
     return 2 * v - 1;
 }
+
 float3 unpack_bx2(float3 v)
 {
     return 2 * v - 1;
 }
+
 float3 unpack_bx4(float3 v)
 {
     return 4 * v - 2;
 } //! reduce the amount of stretching from 4*v-2 and increase precision
+
 float2 unpack_tc_lmap(float2 tc)
 {
     return tc * (1.f / 32768.f);
 } // [-1  .. +1 ]
+
 float4 unpack_color(float4 c)
 {
     return c.bgra;
 }
+
 float4 unpack_D3DCOLOR(float4 c)
 {
     return c.bgra;
 }
+
 float3 unpack_D3DCOLOR(float3 c)
 {
     return c.bgr;
