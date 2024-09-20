@@ -40,6 +40,8 @@ struct
 	bool can_show_inv_grid_y{};
 	bool can_show_inv_grid_width{};
 	bool can_show_inv_grid_height{};
+	bool can_show_silencer_x{};
+	bool can_show_silencer_y{};
 
 	bool can_show_modal_icon_selection_window{};
 
@@ -134,6 +136,12 @@ struct
 	int inv_grid_y{};
 	u32 cfg_inv_grid_y{};
 
+	int silencer_x{};
+	int cfg_silencer_x{};
+
+	int silencer_y{};
+	int cfg_silencer_y{};
+
 	size_t icons_count{};
 
 	Fvector4 hit_power;
@@ -190,7 +198,7 @@ void RenderWeaponManagerWindow()
 			if (!imgui_weapon_manager.init)
 			{
 				// clear bool flags that line_exist checking for correct init/uninit cycle
-				memset((&imgui_weapon_manager.init + sizeof(imgui_weapon_manager.init)), 0, 31);
+				memset((&imgui_weapon_manager.init + sizeof(imgui_weapon_manager.init)), 0, 33);
 
 				imgui_weapon_manager.current_slot = slot_type;
 				imgui_weapon_manager.weapon_id = pItem->object_id();
@@ -202,7 +210,7 @@ void RenderWeaponManagerWindow()
 				imgui_weapon_manager.inv_grid_y = pItem->GetInvGridRect().y1;
 				imgui_weapon_manager.inv_grid_width = pItem->GetInvGridRect().x2;
 				imgui_weapon_manager.inv_grid_height = pItem->GetInvGridRect().y2;
-
+				
 				if (Render)
 				{
 					imgui_weapon_manager.ui_icons = Render->getSurface("ui\\ui_icon_equipment");
@@ -229,6 +237,8 @@ void RenderWeaponManagerWindow()
 					imgui_weapon_manager.upgrade_disp_crouch = pWeapon->Get_PDM_Crouch();
 					imgui_weapon_manager.upgrade_disp_crouch_no_acc = pWeapon->Get_PDM_Crouch_NA();
 					imgui_weapon_manager.fire_dispersion_condition_factor = pWeapon->getFireDispersionConditionFactor();
+					imgui_weapon_manager.silencer_x = pWeapon->GetSilencerX();
+					imgui_weapon_manager.silencer_y = pWeapon->GetSilencerY();
 				}
 
 				// icons
@@ -469,6 +479,24 @@ void RenderWeaponManagerWindow()
 							imgui_weapon_manager.can_show_inv_grid_height = true;
 							imgui_weapon_manager.cfg_inv_grid_height = pSettings->r_u32(pSectionName, "inv_grid_height");
 						}
+
+						if (pSettings->line_exist(pSectionName, "silencer_x"))
+						{
+							if (pWeapon)
+							{
+								imgui_weapon_manager.can_show_silencer_x = true;
+								imgui_weapon_manager.cfg_silencer_x = pSettings->r_s32(pSectionName, "silencer_x");
+							}
+						}
+
+						if (pSettings->line_exist(pSectionName, "silencer_y"))
+						{
+							if (pWeapon)
+							{
+								imgui_weapon_manager.can_show_silencer_y = true;
+								imgui_weapon_manager.cfg_silencer_y = pSettings->r_s32(pSectionName, "silencer_y");
+							}
+						}
 					}
 				}
 
@@ -495,7 +523,6 @@ void RenderWeaponManagerWindow()
 						ImGui::Text("Grid Width: %d", pItem->GetInvGridRect().x2);
 						ImGui::Text("Grid Height: %d", pItem->GetInvGridRect().y2);
 
-
 						if (imgui_weapon_manager.ui_icons.Surface != nullptr)
 						{
 							float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(isHQIcons);
@@ -503,7 +530,24 @@ void RenderWeaponManagerWindow()
 							float w = imgui_weapon_manager.inv_grid_width * INV_GRID_WIDTH(isHQIcons);
 							float h = imgui_weapon_manager.inv_grid_height * INV_GRID_HEIGHT(isHQIcons);
 
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.f, 0.f, 0.f, 0.f));
+
 							ImGui::ImageButton("WeaponIconInWeaponManager", imgui_weapon_manager.ui_icons.Surface, { w,h }, { x / imgui_weapon_manager.ui_icons.w, y / imgui_weapon_manager.ui_icons.h }, { (x + w) / imgui_weapon_manager.ui_icons.w, (y + h) / imgui_weapon_manager.ui_icons.h });
+
+							ImGui::PopStyleColor(3);
+						}
+
+						if (ImGui::TreeNode("Addons"))
+						{
+							if (pWeapon)
+							{
+								ImGui::Text("Silencer X: %d", pWeapon->GetSilencerX());
+								ImGui::Text("Silencer Y: %d", pWeapon->GetSilencerY());
+							}
+
+							ImGui::TreePop();
 						}
 
 
@@ -623,7 +667,7 @@ void RenderWeaponManagerWindow()
 
 					static_assert(kWeaponManagerTableColumnSize > 0 && "specify positive number");
 
-					if (ImGui::BeginTable("icons##Editing_WeaponManager", kWeaponManagerTableColumnSize))
+					if (ImGui::BeginTable("icons##Editing_WeaponManager", kWeaponManagerTableColumnSize, ImGuiTableFlags_Borders))
 					{
 						int row_max = std::ceil(imgui_weapon_manager.icons_count / kWeaponManagerTableColumnSize);
 						R_ASSERT(row_max > 0 && "something is wrong");
@@ -687,12 +731,6 @@ void RenderWeaponManagerWindow()
 						ImGui::EndTable();
 					}
 
-					if (ImGui::Button("Close##SelectIcon_Editing_WeaponManager"))
-					{
-						imgui_weapon_manager.can_show_modal_icon_selection_window = false;
-						ImGui::CloseCurrentPopup();
-					}
-
 					ImGui::EndPopup();
 				}
 
@@ -723,6 +761,8 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.inv_grid_width = imgui_weapon_manager.cfg_inv_grid_width;
 						imgui_weapon_manager.inv_grid_x = imgui_weapon_manager.cfg_inv_grid_x;
 						imgui_weapon_manager.inv_grid_y = imgui_weapon_manager.cfg_inv_grid_y;
+						imgui_weapon_manager.silencer_x = imgui_weapon_manager.cfg_silencer_x;
+						imgui_weapon_manager.silencer_y = imgui_weapon_manager.cfg_silencer_y;
 
 						if (pItem)
 						{
@@ -823,6 +863,32 @@ void RenderWeaponManagerWindow()
 										imgui_weapon_manager.can_show_modal_icon_selection_window = true;
 									}
 								}
+							}
+
+							if (ImGui::TreeNode("Addons"))
+							{
+								if (imgui_weapon_manager.can_show_silencer_x)
+								{
+									if (ImGui::SliderInt("Silencer X##Editing", &imgui_weapon_manager.silencer_x, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon)
+										{
+											pWeapon->SetSilencerX(imgui_weapon_manager.silencer_x);
+										}
+									}
+								}
+								if (imgui_weapon_manager.can_show_silencer_y)
+								{
+									if (ImGui::SliderInt("Silencer Y##Editing", &imgui_weapon_manager.silencer_y, -4096, 4096, "%d", flags))
+									{
+										if (pWeapon)
+										{
+											pWeapon->SetSilencerY(imgui_weapon_manager.silencer_y);
+										}
+									}
+								}
+
+								ImGui::TreePop();
 							}
 
 							ImGui::TreePop();

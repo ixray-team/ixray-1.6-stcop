@@ -2397,6 +2397,16 @@ void CWeapon::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd(state);
 }
 
+void CWeapon::SetSilencerX(int value)
+{
+	m_iSilencerX = value;
+}
+
+void CWeapon::SetSilencerY(int value)
+{
+	m_iSilencerY = value;
+}
+
 bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
