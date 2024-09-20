@@ -210,7 +210,7 @@ if(WIN32)
     )
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL2}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL2.so.0.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libSDL2.so.0
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL2}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL2-2.0.so.0.2800.5 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libSDL2-2.0.so.0
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libtbb.so.12
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/liblzo2.so.2
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MIMALLOC}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libmimalloc.so.2.1 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/libmimalloc.so.2
