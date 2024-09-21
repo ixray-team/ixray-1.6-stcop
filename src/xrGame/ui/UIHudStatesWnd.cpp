@@ -299,10 +299,10 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	m_ui_weapon_icon->Show(true);
 
 	Frect texture_rect;
-	texture_rect.x1					= pSettings->r_float(sect_name,  "inv_grid_x")		*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
-	texture_rect.y1					= pSettings->r_float(sect_name,  "inv_grid_y")		*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
-	texture_rect.x2					= pSettings->r_float( sect_name, "inv_grid_width")	*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
-	texture_rect.y2					= pSettings->r_float( sect_name, "inv_grid_height")	*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
+	texture_rect.x1 = pSettings->r_float(sect_name,  "inv_grid_x")		*INV_GRID_WIDTH(isHQIcons);
+	texture_rect.y1 = pSettings->r_float(sect_name,  "inv_grid_y")		*INV_GRID_HEIGHT(isHQIcons);
+	texture_rect.x2 = pSettings->r_float( sect_name, "inv_grid_width")	*INV_GRID_WIDTH(isHQIcons);
+	texture_rect.y2 = pSettings->r_float( sect_name, "inv_grid_height")	*INV_GRID_HEIGHT(isHQIcons);
 	texture_rect.rb.add				(texture_rect.lt);
 	m_ui_weapon_icon->GetUIStaticItem().SetTextureRect(texture_rect);
 	m_ui_weapon_icon->SetStretchTexture(true);
@@ -311,18 +311,18 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	float w = texture_rect.width() * 0.8f;
 
 	// now perform only width scale for ammo, which (W)size >2
-	if (EngineExternal()[EEngineExternalUI::HQIcons])
+	if (isHQIcons)
 	{
-		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]))
-			w = INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * 1.5f / 2;
+		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(isHQIcons))
+			w = INV_GRID_WIDTH(isHQIcons) * 1.5f / 2;
 
 		m_ui_weapon_icon->SetWidth(w * UI().get_current_kx() / 2);
 		m_ui_weapon_icon->SetHeight(h / 2);
 	}
 	else
 	{
-		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]))
-			w = INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * 1.5f;
+		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(isHQIcons))
+			w = INV_GRID_WIDTH(isHQIcons) * 1.5f;
 
 		m_ui_weapon_icon->SetWidth(w * UI().get_current_kx());
 		m_ui_weapon_icon->SetHeight(h);

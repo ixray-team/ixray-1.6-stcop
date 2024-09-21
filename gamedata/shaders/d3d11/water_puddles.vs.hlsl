@@ -12,7 +12,7 @@ static const float2 quad_geometry[6] =
 
 struct VSOutput
 {
-    float4 hpos	: SV_Position;
+    float4 hpos	: SV_POSITION;
 	float3 world_position : TEXCOORD0;	
 };
 

@@ -115,7 +115,7 @@ void CAI_Stalker::reinit			()
 	animation().reinit				();
 //	movement().reinit				();
 
-	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
+	//Р·Р°РіСЂСѓР·РєР° СЃРїРµС†РµРІРёС‡РµСЃРєРѕР№ Р·РІСѓРєРѕРІРѕР№ СЃС…РµРјС‹ РґР»СЏ СЃС‚Р°Р»РєРµСЂР° СЃРѕРіР»Р°СЃРЅРѕ m_SpecificCharacter
 	sound().sound_prefix			(SpecificCharacter().sound_voice_prefix());
 
 	LoadSounds						(*cNameSect());
@@ -466,7 +466,7 @@ void CAI_Stalker::Die				(CObject* who)
 
 	inherited::Die					(who);
 	
-	//запретить использование слотов в инвенторе
+	//Р·Р°РїСЂРµС‚РёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃР»РѕС‚РѕРІ РІ РёРЅРІРµРЅС‚РѕСЂРµ
 	inventory().SetSlotsUseful		(false);
 
 	if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT)
@@ -632,7 +632,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	if (!g_Alive())
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
-	//загрузить иммунитеты из модельки сталкера
+	//Р·Р°РіСЂСѓР·РёС‚СЊ РёРјРјСѓРЅРёС‚РµС‚С‹ РёР· РјРѕРґРµР»СЊРєРё СЃС‚Р°Р»РєРµСЂР°
 	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual()); VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
 	if(ini)
@@ -649,7 +649,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		}
 	}
 
-	//вычислить иммунета в зависимости от ранга
+	//РІС‹С‡РёСЃР»РёС‚СЊ РёРјРјСѓРЅРµС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂР°РЅРіР°
 	static float novice_rank_immunity			= pSettings->r_float("ranks_properties", "immunities_novice_k");
 	static float expirienced_rank_immunity		= pSettings->r_float("ranks_properties", "immunities_experienced_k");
 
@@ -692,7 +692,9 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	sight().update					();
 	Exec_Look						(.001f);
 
-	if (EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor]) {
+	const static bool isNPCLookAtActor = EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor];
+	if (isNPCLookAtActor)
+	{
 		CBoneInstance* bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(
 			smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
 		bone_head->set_callback(bctCustom, BoneCallback, this);

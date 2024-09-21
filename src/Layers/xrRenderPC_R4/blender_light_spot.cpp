@@ -45,6 +45,10 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C) {
 	C.r_dx10Texture("s_lmap", C.L_textures[0]);
 	C.r_dx10Texture("s_accumulator", r2_RT_accum);
 
+	C.r_dx10Sampler("smp_rtlinear");
+	C.r_dx10Sampler("smp_material");
+	C.r_dx10Sampler("smp_nofilter");
+
 	jitter(C);
 
 	if(C.iElement != SE_L_UNSHADOWED) {

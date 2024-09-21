@@ -38,7 +38,7 @@ struct _input
 {
     float4 tc0 : TEXCOORD0; // tc.xy, tc.w = tonemap scale
     float2 tcJ : TEXCOORD1; // jitter coords
-    float4 pos2d : SV_Position;
+    float4 pos2d : SV_POSITION;
 };
 
 float4 main(_input I) : SV_Target0

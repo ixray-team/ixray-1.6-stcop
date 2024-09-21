@@ -355,7 +355,8 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp	*lamp)
 			string64					fixed_bone							;
 			_GetItem					(fixed_bones,i,fixed_bone)			;
 			u16 fixed_bone_id=pKinematics->LL_BoneID(fixed_bone)			;
-			R_ASSERT2(BI_NONE!=fixed_bone_id,"wrong fixed bone")			;
+			R_ASSERT2(BI_NONE != fixed_bone_id, make_string<const char*>("wrong fixed bone [%s] for object with visual [%s]", 
+				fixed_bone, pKinematics->getDebugName().c_str()));
 			bone_map.insert(std::make_pair(fixed_bone_id,physicsBone()))			;
 		}
 	}else{

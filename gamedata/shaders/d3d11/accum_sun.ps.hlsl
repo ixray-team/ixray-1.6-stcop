@@ -6,8 +6,6 @@
 #endif
 
 #include "shadow.hlsli"
-uniform float3 view_shadow_proj;
-
 #include "metalic_roughness_light.hlsli"
 #include "ScreenSpaceContactShadows.hlsl"
 
@@ -43,9 +41,8 @@ float4 main(v2p_volume I) : SV_Target
     O.Roughness *= 1.0f - O.SSS;
 #endif
 
-    O.Normal = normalize(lerp(O.Normal, -Ldynamic_dir.xyz, O.SSS));
-
-    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.PointReal.xyz, O.Color, O.Metalness, O.Roughness);
+    O.Normal = lerp(O.Normal, -Ldynamic_dir.xyz, O.SSS);
+    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness);
 
 #if SUN_QUALITY == 2
     float Shadow = shadow_high(PS);
@@ -59,7 +56,7 @@ float4 main(v2p_volume I) : SV_Target
 #elif defined(USE_HUD_SHADOWS)
     if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > 0.0001f)
     {
-        RayTraceContactShadow(tcProj, O.PointHud, -Ldynamic_dir, Light);
+        RayTraceContactShadow(tcProj, O.PointHud, Ldynamic_dir.xyz, Light);
     }
 #endif
 

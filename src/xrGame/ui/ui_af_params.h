@@ -7,22 +7,35 @@ class CUIXml;
 class CUIStatic;
 class CUITextWnd;
 class UIArtefactParamItem;
+class CInventoryItem;
 
 class CUIArtefactParams : public CUIWindow
 {
 public:
-					CUIArtefactParams		();
+	enum class CParamType
+	{
+		eParamTypeOutfit,
+		eParamTypeArtefact
+	};
+
+					CUIArtefactParams		(const CParamType& type);
 	virtual			~CUIArtefactParams		();
 			void	InitFromXml				(CUIXml& xml);
 			bool	Check					(const shared_str& af_section);
-			void	SetInfo					(const shared_str& af_section);
+			void	SetInfo					(CInventoryItem& pInvItem);
 
 protected:
 	UIArtefactParamItem*	m_immunity_item[ALife::infl_max_count];
 	UIArtefactParamItem*	m_restore_item[ALife::eRestoreTypeMax];
+	UIArtefactParamItem*	m_disp_condition;
 	UIArtefactParamItem*	m_additional_weight;
+	UIArtefactParamItem*	m_af_slots;
 
 	CUIStatic*				m_Prop_line;
+
+	CParamType				object_type;
+
+	bool is_artefact() const { return object_type == CParamType::eParamTypeArtefact; }
 
 }; // class CUIArtefactParams
 

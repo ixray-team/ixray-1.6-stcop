@@ -201,7 +201,7 @@ public:
 	}
 	void 					model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
 	void 					model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
-	virtual	GenerationLevel	get_generation() { return GENERATION_R1; }
+	virtual	GenerationLevel	get_generation() { return GENERATION_R2; }
 	virtual bool			is_sun_static() { return true; };
 
 	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};

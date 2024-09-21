@@ -17,7 +17,7 @@ struct v2p
     float4 tctexgen : TEXCOORD1;
 #endif //	USE_SOFT_PARTICLES
 
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
     float fog : FOG;
 };
 

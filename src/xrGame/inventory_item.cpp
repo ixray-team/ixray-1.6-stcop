@@ -138,6 +138,13 @@ void CInventoryItem::Load(LPCSTR section)
 		m_fControlInertionFactor	= pSettings->r_float(section,"control_inertion_factor");
 	}
 	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",		nullptr);
+
+	u32 inv_grid_x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
+	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
+	u32 inv_grid_width = pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
+	u32 inv_grid_height = pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+
+	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 	
 	ReadCustomTextAndMarks		(section);
 }
@@ -1284,6 +1291,11 @@ void CInventoryItem::activate_physic_shell()
 	object().CPhysicsShellHolder::activate_physic_shell();
 }
 
+void CInventoryItem::setControlInertionFactor(float value)
+{
+	m_fControlInertionFactor = value;
+}
+
 void CInventoryItem::UpdateXForm	()
 {
 	if (0==object().H_Parent())	return;
@@ -1483,14 +1495,17 @@ Frect CInventoryItem::GetKillMsgRect() const
 
 Irect CInventoryItem::GetInvGridRect() const
 {
-	u32 x,y,w,h;
+	return m_inv_rect;
+}
 
-	x = pSettings->r_u32(m_object->cNameSect(),"inv_grid_x");
-	y = pSettings->r_u32(m_object->cNameSect(),"inv_grid_y");
-	w = pSettings->r_u32(m_object->cNameSect(),"inv_grid_width");
-	h = pSettings->r_u32(m_object->cNameSect(),"inv_grid_height");
+void CInventoryItem::SetInvGridRect(const Irect& rect)
+{
+	m_inv_rect.set(rect);
+}
 
-	return Irect().set(x,y,w,h);
+void CInventoryItem::SetInvGridRect(u32 x, u32 y, u32 w, u32 h)
+{
+	SetInvGridRect(Irect().set(x,y,w,h));
 }
 
 Irect CInventoryItem::GetUpgrIconRect() const
@@ -1513,6 +1528,16 @@ bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)
 BOOL CInventoryItem::IsInvalid() const
 {
 	return object().getDestroy() || GetDropManual();
+}
+
+void CInventoryItem::setCost(u32 nValue)
+{
+	m_cost = nValue;
+}
+
+void CInventoryItem::setWeight(float value)
+{
+	m_weight = value;
 }
 
 u16 CInventoryItem::object_id()const

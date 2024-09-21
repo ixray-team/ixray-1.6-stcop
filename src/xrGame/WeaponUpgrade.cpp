@@ -251,9 +251,8 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 		{
 			m_sSilencerName = pSettings->r_string(section, "silencer_name");
 
-			int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-			m_iSilencerX = pSettings->r_s32(section, "silencer_x") * (1 + UseHQ);
-			m_iSilencerY = pSettings->r_s32(section, "silencer_y") * (1 + UseHQ);
+			m_iSilencerX = pSettings->r_s32(section, "silencer_x") * (1 + isHQIcons);
+			m_iSilencerY = pSettings->r_s32(section, "silencer_y") * (1 + isHQIcons);
 
 			if (m_eSilencerStatus == ALife::eAddonPermanent)
 				InitAddons();
@@ -270,9 +269,8 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 		{
 			m_sGrenadeLauncherName = pSettings->r_string(section, "grenade_launcher_name");
 
-			int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-			m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * (1 + UseHQ);
-			m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * (1 + UseHQ);
+			m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * (1 + isHQIcons);
+			m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * (1 + isHQIcons);
 
 			if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 				InitAddons();

@@ -43,7 +43,7 @@ public:
 	void				TryAddConditionInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddWpnInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddKnifeInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
-	void				TryAddArtefactInfo	(const shared_str& af_section);
+	void				TryAddArtefactInfo	(CInventoryItem& pInvItem);
 	void				TryAddOutfitInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddUpgradeInfo	(CInventoryItem& pInvItem);
 	void				TryAddBoosterInfo	(CInventoryItem& pInvItem);
@@ -65,6 +65,7 @@ public:
 	CUIWpnParams*			UIWpnParams;
 	CUIKnifeParams*			UIKnifeParams;
 	CUIArtefactParams*		UIArtefactParams;
+	CUIArtefactParams*		UIOutfitParams;
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;

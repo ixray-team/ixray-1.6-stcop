@@ -484,18 +484,16 @@ void CWeapon::Load		(LPCSTR section)
 	{
 		m_sSilencerName = pSettings->r_string(section,"silencer_name");
 
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		m_iSilencerX = pSettings->r_s32(section, "silencer_x") * (1 + UseHQ);
-		m_iSilencerY = pSettings->r_s32(section, "silencer_y") * (1 + UseHQ);
+		m_iSilencerX = pSettings->r_s32(section, "silencer_x") * (1 + isHQIcons);
+		m_iSilencerY = pSettings->r_s32(section, "silencer_y") * (1 + isHQIcons);
 	}
     
 	if ( m_eGrenadeLauncherStatus == ALife::eAddonAttachable )
 	{
 		m_sGrenadeLauncherName = pSettings->r_string(section,"grenade_launcher_name");
 
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * (1 + UseHQ);
-		m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * (1 + UseHQ);
+		m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * (1 + isHQIcons);
+		m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * (1 + isHQIcons);
 	}
 
 	InitAddons();
@@ -1191,6 +1189,36 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 	return true;
 }
 
+void CWeapon::Set_PDM_Base(float value)
+{
+	m_pdm.m_fPDM_disp_base = value;
+}
+
+void CWeapon::Set_PDM_Vel_F(float value)
+{
+	m_pdm.m_fPDM_disp_vel_factor = value;
+}
+
+void CWeapon::Set_PDM_Accel_F(float value)
+{
+	m_pdm.m_fPDM_disp_accel_factor = value;
+}
+
+void CWeapon::Set_PDM_Crouch(float value)
+{
+	m_pdm.m_fPDM_disp_crouch = value;
+}
+
+void CWeapon::Set_PDM_Crouch_NA(float value)
+{
+	m_pdm.m_fPDM_disp_crouch_no_acc = value;
+}
+
+void CWeapon::setCrosshairInertion(float value)
+{
+	m_crosshair_inertion = value;
+}
+
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
 {
 	if(!m_ammoTypes.size())			return;
@@ -1243,6 +1271,11 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		}
 	}
 	F_entity_Destroy				(D);
+}
+
+void CWeapon::SetAmmoMagSize(int size)
+{
+	iMagazineSize = size;
 }
 
 int CWeapon::GetSuitableAmmoTotal( bool use_item_to_spawn ) const
@@ -1901,8 +1934,11 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 		clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
 	}
 
-	if (!EngineExternal()[EEngineExternalGame::EnableWeaponInertion])
+	const static bool isInertion = EngineExternal()[EEngineExternalGame::EnableWeaponInertion];
+	if (!isInertion)
+	{
 		return;
+	}
 
 	//============= Подготавливаем общие переменные =============//
 	clamp(idx, u8(0), u8(1));
@@ -2361,9 +2397,21 @@ void CWeapon::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd(state);
 }
 
+void CWeapon::SetSilencerX(int value)
+{
+	m_iSilencerX = value;
+}
+
+void CWeapon::SetSilencerY(int value)
+{
+	m_iSilencerY = value;
+}
+
 bool CWeapon::NeedBlockSprint() const
 {
-	return GetState() == eFire || EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload] && GetState() == eReload;
+	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
+
+	return GetState() == eFire || isBlockSprintInReload && GetState() == eReload;
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx()
@@ -2450,3 +2498,14 @@ float CWeapon::GetHudFov() {
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
 }
+
+const CameraRecoil& CWeapon::getCameraRecoil(void) const
+{
+	return cam_recoil;
+}
+
+const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
+{
+	return zoom_cam_recoil;
+}
+ 

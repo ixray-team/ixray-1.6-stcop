@@ -15,7 +15,7 @@ struct v2p
     //	float2	tNoise 		: TEXCOORD3;		// projective noise
     float3 clip0 : SV_ClipDistance0;
     float3 clip1 : SV_ClipDistance1;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 v2p main(float3 P : POSITION)

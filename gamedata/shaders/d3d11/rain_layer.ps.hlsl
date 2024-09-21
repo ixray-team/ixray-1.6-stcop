@@ -8,7 +8,7 @@ float3x4 m_sunmask;
 
 Texture2D s_water;
 
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_Position) : SV_Target
+float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_POSITION) : SV_Target
 {
     gbuffer_data gbd = gbuffer_load_data(tc, pos2d);
 

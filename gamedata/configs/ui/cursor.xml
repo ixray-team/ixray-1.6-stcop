@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <w>
-	<texture_name>ui\ui_ani_cursor</texture_name>
-	<width>40</width>
-	<height>40</height>
-	<texture_rect_x>45</texture_rect_x>
-	<texture_rect_y>45</texture_rect_y>
-
-	<stretch>1</stretch>
+    <cursor x="0" y="0" width="40" height="40" stretch="1">
+        <texture x="0" y="0" width="45" height="45" shader="hud\cursor">ui\ui_ani_cursor</texture>
+    </cursor>
 </w>

@@ -852,7 +852,6 @@ bool	game_cl_Deathmatch::OnKeyboardRelease		(int key)
 #define MAX_VOTE_PARAMS		5
 void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 {
-	CStringTable st;
 	inherited::OnVoteStart(P);
 
 	string1024	Command = "";
@@ -1034,13 +1033,13 @@ IC bool	DM_Compare_Players(game_PlayerState* p1, game_PlayerState* p2)
 void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, Fvector& pos)
 {
 	if (!EffName) return;
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix M; 
 	M.translate(pos);
 
 //	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
-	// установить particles
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ particles
 	CParticlesObject* ps = nullptr;
 
 	ps = CParticlesObject::Create(EffName,TRUE);

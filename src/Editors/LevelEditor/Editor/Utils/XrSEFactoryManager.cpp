@@ -4,7 +4,7 @@ XrSEFactoryManager* g_SEFactoryManager = nullptr;
 
 XrSEFactoryManager::XrSEFactoryManager()
 {
-	m_Module = LoadLibraryA("XrSE_Factory.dll");
+	m_Module = LoadLibraryA("xrSE_Factory.dll");
 	R_CHK(GetLastError());
 	R_ASSERT(m_Module);
 	//m_pFInitialize = (void(__cdecl*)(void))GetProcAddress(m_Module, "initialize"); R_ASSERT(m_pFInitialize);

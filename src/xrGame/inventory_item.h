@@ -136,8 +136,10 @@ public:
 
 			BOOL				IsQuestItem			()	const	{return m_flags.test(FIsQuestItem);}			
 	virtual	u32					Cost				()	const	{ return m_cost; }
+	void setCost(u32 nValue);
 //			u32					Cost				()	const	{ return m_cost; }
-	virtual float				Weight				() 	const	{ return m_weight;}		
+	virtual float				Weight				() 	const	{ return m_weight;}	
+	void setWeight(float value);
 
 public:
 	CInventory*					m_pInventory;
@@ -165,6 +167,8 @@ public:
 	virtual void				OnMoveToRuck		(const SInvItemPlace& prev) {};
 					
 			Irect				GetInvGridRect		() const;
+			void SetInvGridRect(const Irect& rect);
+			void SetInvGridRect(u32 x, u32 y, u32 w, u32 h);
 			Irect				GetUpgrIconRect		() const;
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
 			Frect				GetKillMsgRect		() const;
@@ -224,6 +228,7 @@ public:
 	virtual	bool				IsSprintAllowed				() const		{return !!m_flags.test(FAllowSprint);} ;
 
 	virtual	float				GetControlInertionFactor(	) const			{return m_fControlInertionFactor;};
+	void setControlInertionFactor(float value);
 
 
 	virtual void				UpdateXForm	();
@@ -266,6 +271,7 @@ protected:
 
 private:
 	CPhysicsShellHolder*		m_object;
+	Irect m_inv_rect;
 
 public:
 	virtual CInventoryItem		*cast_inventory_item		()	{return this;}

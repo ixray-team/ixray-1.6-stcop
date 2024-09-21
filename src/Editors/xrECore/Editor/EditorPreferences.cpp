@@ -15,7 +15,7 @@ CCustomPreferences::CCustomPreferences()
 	// view
 	view_np				= 0.1f;
 	view_fp				= 1500.f;
-	view_fov			= deg2rad(60.f);
+	view_fov			= 60.f;
 	// fog    
 	fog_color			= 0x00555555;
 	fog_fogness			= 0.9;
@@ -60,7 +60,7 @@ void CCustomPreferences::ApplyValues()
 	Tools->m_RotateSnapAngle = snap_angle;
 	Tools->m_ScaleFixed = scale_fixed;
 
-	EDevice->m_Camera.SetViewport(view_np, view_fp, rad2deg(view_fov));
+	EDevice->m_Camera.SetViewport(view_np, view_fp, view_fov);
 	Tools->SetFog	(fog_color,fog_fogness);
 
 	UI->m_MouseSM	= 0.2f*tools_sens_move*tools_sens_move;
@@ -169,7 +169,7 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\Fog\\Fogness",			    &fog_fogness, 		0.f, 	100.f);
 	PHelper().CreateFloat	(props,"Viewport\\Near Plane",				    &view_np, 			0.01f,	10.f);
 	PHelper().CreateFloat	(props,"Viewport\\Far Plane", 				    &view_fp,			10.f, 	10000.f);
-	PHelper().CreateAngle	(props,"Viewport\\FOV",		  				    &view_fov,			deg2rad(0.1f), deg2rad(170.f));
+	PHelper().CreateFloat	(props,"Viewport\\FOV",		  				    &view_fov,			0.1f,	170.f);
 	PHelper().CreateColor	(props,"Viewport\\Clear Color",		           	&scene_clear_color	);
 
    ButtonValue* B = PHelper().CreateButton	(props,"Keyboard\\Common\\File","Load,Save", 0);

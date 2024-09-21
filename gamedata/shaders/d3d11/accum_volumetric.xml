@@ -4,7 +4,7 @@
 		<sort status="0" count="2" />
 
         <texture name="s_lmap" rt="t_base" />
-        <texture name="s_smap" rt="null" />
+        <texture name="s_smap" rt="$user$smap_depth" />
 		<texture name="s_noise" rt="fx\\fx_noise" />
 
         <sampler name="smp_rtlinear" />

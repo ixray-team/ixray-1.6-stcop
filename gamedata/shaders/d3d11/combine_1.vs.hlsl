@@ -10,7 +10,7 @@ struct v2p
 {
     float4 tc0 : TEXCOORD0; // tc.xy, tc.w = tonemap scale
     float2 tcJ : TEXCOORD1; // jitter coords
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 // Vertex

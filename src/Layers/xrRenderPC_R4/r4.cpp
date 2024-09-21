@@ -546,6 +546,17 @@ void CRender::rmNormal() {
 	RContext->RSSetViewports(1, &VP);
 }
 
+CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
+{
+	auto texture = DEV->_CreateTexture(nameTexture);
+	SurfaceParams surface = {};
+	surface.Surface = texture->get_SRView();
+	surface.w = texture->get_Width();
+	surface.h = texture->get_Height();
+
+	return surface;
+}
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

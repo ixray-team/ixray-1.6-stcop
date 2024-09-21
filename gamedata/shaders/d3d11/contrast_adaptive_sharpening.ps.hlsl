@@ -3,8 +3,9 @@
 
 float sharpening_intensity;
 
-float4 main(float2 texcoord : TEXCOORD0, float4 hpos : SV_Position) : SV_Target
+float4 main(v2p_TL Input) : SV_Target
 {
+    float2 texcoord = Input.Tex0;
     // fetch a 3x3 neighborhood around the pixel 'e',
     //  a b c
     //  d(e)f

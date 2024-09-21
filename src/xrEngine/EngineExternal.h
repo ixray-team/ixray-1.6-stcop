@@ -21,7 +21,8 @@ enum class EEngineExternalGame
 	EnableAutoreload,
 	EnableMonstersInventory,
 	EnableWeaponInertion,
-	EnableWeaponCollision
+	EnableWeaponCollision,
+	EnableArtefactDegradation
 };
 
 enum class EEngineExternalRender {
@@ -45,6 +46,7 @@ public:
 	~CEngineExternal();
 
 	xr_string GetTitle() const;
+	const char* GetPlayerHudOmfAdditional() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;

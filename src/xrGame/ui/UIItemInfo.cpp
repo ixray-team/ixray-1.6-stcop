@@ -48,6 +48,7 @@ CUIItemInfo::CUIItemInfo()
 	UIOutfitInfo				= nullptr;
 	UIBoosterInfo				= nullptr;
 	UIArtefactParams			= nullptr;
+	UIOutfitParams				= nullptr;
 	UIName						= nullptr;
 	UIBackground				= nullptr;
 	m_pInvItem					= nullptr;
@@ -61,6 +62,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete	(UIWpnParams);
 	xr_delete	(UIKnifeParams);
 	xr_delete	(UIArtefactParams);
+	xr_delete	(UIOutfitParams);
 	xr_delete	(UIProperties);
 	xr_delete	(UIOutfitInfo);
 	xr_delete	(UIBoosterInfo);
@@ -135,8 +137,11 @@ void CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		UIKnifeParams					= new CUIKnifeParams();
 		UIKnifeParams->InitFromXml		(uiXml);
 
-		UIArtefactParams				= new CUIArtefactParams();
+		UIArtefactParams				= new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeArtefact);
 		UIArtefactParams->InitFromXml	(uiXml);
+
+		UIOutfitParams = new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeOutfit);
+		UIOutfitParams->InitFromXml(uiXml);
 
 		UIBoosterInfo					= new CUIBoosterInfo();
 		UIBoosterInfo->InitFromXml		(uiXml);
@@ -306,7 +311,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		TryAddConditionInfo					(*pInvItem, pCompareItem);
 		TryAddWpnInfo						(*pInvItem, pCompareItem);
 		TryAddKnifeInfo						(*pInvItem, pCompareItem);
-		TryAddArtefactInfo					(pInvItem->object().cNameSect());
+		TryAddArtefactInfo					(*pInvItem);
 		TryAddOutfitInfo					(*pInvItem, pCompareItem);
 		TryAddUpgradeInfo					(*pInvItem);
 		TryAddBoosterInfo					(*pInvItem);
@@ -333,25 +338,25 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();
-		Frect texture_rect;
-		texture_rect.lt.set					(item_grid_rect.x1*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y1*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
-		texture_rect.rb.set					(item_grid_rect.x2*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]),	item_grid_rect.y2*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
-		texture_rect.rb.add					(texture_rect.lt);
+		Frect texture_rect = {};
+		texture_rect.lt.set(item_grid_rect.x1*INV_GRID_WIDTH(isHQIcons),	item_grid_rect.y1*INV_GRID_HEIGHT(isHQIcons));
+		texture_rect.rb.set(item_grid_rect.x2*INV_GRID_WIDTH(isHQIcons),	item_grid_rect.y2*INV_GRID_HEIGHT(isHQIcons));
+		texture_rect.rb.add(texture_rect.lt);
 		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->SetStretchTexture		(true);
 
-		Fvector2 v_r{};
+		Fvector2 v_r = {};
 
-		if (EngineExternal()[EEngineExternalUI::HQIcons])
+		if (isHQIcons)
 		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons]) / 2,
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons]) / 2 };
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(isHQIcons) / 2,
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(isHQIcons) / 2 };
 		}
 		else
 		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons]),
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons]) };
+			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(isHQIcons),
+				item_grid_rect.y2 * INV_GRID_HEIGHT2(isHQIcons) };
 		}
 
 		v_r.x								*= UI().get_current_kx();
@@ -389,11 +394,11 @@ void CUIItemInfo::TryAddKnifeInfo( CInventoryItem& pInvItem, CInventoryItem* pCo
 	}
 }
 
-void CUIItemInfo::TryAddArtefactInfo	(const shared_str& af_section)
+void CUIItemInfo::TryAddArtefactInfo	(CInventoryItem& pInvItem)
 {
-	if ( UIArtefactParams->Check( af_section ) )
+	if (UIArtefactParams->Check(pInvItem.object().cNameSect()))
 	{
-		UIArtefactParams->SetInfo( af_section );
+		UIArtefactParams->SetInfo(pInvItem);
 		UIDesc->AddWindow( UIArtefactParams, false );
 	}
 }
@@ -415,6 +420,11 @@ void CUIItemInfo::TryAddOutfitInfo( CInventoryItem& pInvItem, CInventoryItem* pC
 		UIDesc->AddWindow( UIOutfitInfo, false );
 	}
 
+	if (UIOutfitParams && outfit)
+	{
+		UIOutfitParams->SetInfo(pInvItem);
+		UIDesc->AddWindow(UIOutfitParams, false);
+	}
 }
 
 void CUIItemInfo::TryAddUpgradeInfo( CInventoryItem& pInvItem )

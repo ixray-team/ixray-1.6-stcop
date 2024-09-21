@@ -92,6 +92,9 @@ public:
 	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
 	virtual float GetHudFov();
+
+	const CameraRecoil& getCameraRecoil(void) const;
+	const CameraRecoil& getCameraZoomRecoil(void) const;
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
@@ -160,18 +163,18 @@ public:
 
 	int	GetScopeX()
 	{ 
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + UseHQ);
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + isHQIcons);
 	}
 
 	int	GetScopeY()
 	{
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + UseHQ);
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
 	}
 
 	int	GetSilencerX() {return m_iSilencerX;}
 	int	GetSilencerY() {return m_iSilencerY;}
+	void SetSilencerX(int value);
+	void SetSilencerY(int value);
 	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
 	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
@@ -356,6 +359,12 @@ protected:
 public:
 	float					GetBaseDispersion	(float cartridge_k);
 	float					GetFireDispersion	(bool with_cartridge, bool for_crosshair = false);
+	float getFireDispersionConditionFactor(void) const;
+	void setFireDispersionConditionFactor(float value);
+
+
+
+
 	virtual float			GetFireDispersion	(float cartridge_k, bool for_crosshair = false);
 	virtual	int				ShotsFired			() { return 0; }
 	virtual	int				GetCurrentFireMode	() { return 1; }
@@ -430,6 +439,7 @@ protected:
 public:
 	IC int					GetAmmoElapsed		()	const		{	return /*int(m_magazine.size())*/iAmmoElapsed;}
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
+	void SetAmmoMagSize(int size);
 	int						GetSuitableAmmoTotal(bool use_item_to_spawn = false) const;
 
 	void					SetAmmoElapsed		(int ammo_count);
@@ -441,11 +451,17 @@ public:
 	bool					SwitchAmmoType		(u32 flags);
 
 	virtual	float			Get_PDM_Base		()	const	{ return m_pdm.m_fPDM_disp_base			; };
+	void Set_PDM_Base(float value);
 	virtual	float			Get_PDM_Vel_F		()	const	{ return m_pdm.m_fPDM_disp_vel_factor		; };
+	void Set_PDM_Vel_F(float value);
 	virtual	float			Get_PDM_Accel_F		()	const	{ return m_pdm.m_fPDM_disp_accel_factor	; };
+	void Set_PDM_Accel_F(float value);
 	virtual	float			Get_PDM_Crouch		()	const	{ return m_pdm.m_fPDM_disp_crouch			; };
+	void Set_PDM_Crouch(float value);
 	virtual	float			Get_PDM_Crouch_NA	()	const	{ return m_pdm.m_fPDM_disp_crouch_no_acc	; };
+	void Set_PDM_Crouch_NA(float value);
 	virtual	float			GetCrosshairInertion()	const	{ return m_crosshair_inertion; };
+	void setCrosshairInertion(float value);
 			float			GetFirstBulletDisp	()	const	{ return m_first_bullet_controller.get_fire_dispertion(); };
 protected:
 	int						iAmmoElapsed;		// ammo in magazine, currently
@@ -459,6 +475,7 @@ protected:
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
 
 public:
+	const xr_vector<shared_str>& getAmmoTypes(void) const { return m_ammoTypes; }
 	xr_vector<shared_str>	m_ammoTypes;
 /*
 	struct SScopes

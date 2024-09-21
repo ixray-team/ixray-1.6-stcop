@@ -293,7 +293,7 @@ void CEditorRenderDevice::_Create(IReader* F)
     m_WireShader.create			("editor\\wire");
     m_SelectionShader.create	("editor\\selection");
 
-	texture_null.create("ed\\ed_not_existing_texture");
+	texture_null.create("ed\\ed_nodata");
 	texture_null->Load();
 	UIChooseForm::SetNullTexture(texture_null->pSurface);
 

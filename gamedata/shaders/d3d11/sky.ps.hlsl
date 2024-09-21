@@ -10,7 +10,7 @@ struct v2p
     float4 hpos_curr : TEXCOORD2;
     float4 hpos_old : TEXCOORD3;
 
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 TextureCube s_sky0 : register(t0);

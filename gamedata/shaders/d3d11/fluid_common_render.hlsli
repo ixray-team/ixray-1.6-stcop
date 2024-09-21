@@ -86,27 +86,27 @@ struct VS_INPUT
 
 struct PS_INPUT_RAYDATA_BACK
 {
-    float4 pos : SV_Position;
+    float4 pos : SV_POSITION;
     float depth : TEXCOORD0;
 };
 
 struct PS_INPUT_RAYDATA_FRONT
 {
-    float4 pos : SV_Position;
+    float4 pos : SV_POSITION;
     float3 posInGrid : POSITION;
     float depth : TEXCOORD0;
 };
 
 struct PS_INPUT_RAYCAST
 {
-    float4 pos : SV_Position;
+    float4 pos : SV_POSITION;
     float3 posInGrid : POSITION;
 };
 
 struct VS_OUTPUT_EDGE
 {
     // There's no textureUV11 because its weight is zero.
-    float4 position : SV_Position; // vertex position
+    float4 position : SV_POSITION; // vertex position
     float2 textureUV00 : TEXCOORD0; // kernel tap texture coords
     float2 textureUV01 : TEXCOORD1; // kernel tap texture coords
     float2 textureUV02 : TEXCOORD2; // kernel tap texture coords

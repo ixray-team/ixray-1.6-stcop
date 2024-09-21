@@ -130,6 +130,11 @@ void CUIActorMenu::SetInvBox(CInventoryBox* box)
 	}
 }
 
+const CUIDragDropListEx* CUIActorMenu::GetSlotList(u16 slot_idx) const
+{
+	return GetSlotList(slot_idx);
+}
+
 void CUIActorMenu::SetMenuMode(EMenuMode mode)
 {
 	SetCurrentItem( nullptr );

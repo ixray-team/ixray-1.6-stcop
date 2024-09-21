@@ -44,7 +44,6 @@
 #include "Level_Bullet_Manager.h"
 
 extern int g_keypress_on_start;
-static CStringTable strTable;
 
 CGamePersistent::CGamePersistent(void)
 {
@@ -101,7 +100,7 @@ CGamePersistent::CGamePersistent(void)
 	if(DofValue)
 	SetBaseDof				(*DofValue);
 
-	g_Discord.SetStatus(strTable.translate(EngineExternal().GetTitle().c_str()).c_str());
+	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -853,7 +852,7 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 			tip_num				= m_functor(map_name.c_str());
 		}
 //		tip_num = 83;
-		xr_sprintf				(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
+		xr_sprintf				(buff, "%s%d:", g_pStringTable->translate("ls_tip_number").c_str(), tip_num);
 		shared_str				tmp = buff;
 		
 		if(is_single)
@@ -861,7 +860,7 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 		else
 			xr_sprintf			(buff, "ls_mp_tip_%d", tip_num);
 
-		pApp->LoadTitleInt		(CStringTable().translate("ls_header").c_str(), tmp.c_str(), CStringTable().translate(buff).c_str());
+		pApp->LoadTitleInt		(g_pStringTable->translate("ls_header").c_str(), tmp.c_str(), g_pStringTable->translate(buff).c_str());
 	}
 }
 
@@ -939,17 +938,17 @@ void CGamePersistent::OnSectorChanged(int sector)
 void CGamePersistent::OnAssetsChanged()
 {
 	IGame_Persistent::OnAssetsChanged	();
-	CStringTable().rescan				();
+	g_pStringTable->rescan				();
 }
 
 void CGamePersistent::SetDiscordStatus() const {
 	if (g_pGameLevel != nullptr)
 	{	
 		// Get level name
-		xr_string levelName = strTable.translate("st_discord_level").c_str();
+		xr_string levelName = g_pStringTable->translate("st_discord_level").c_str();
 
 		levelName += '\t';
-		levelName += strTable.translate(Level().name().c_str()).c_str();
+		levelName += g_pStringTable->translate(Level().name().c_str()).c_str();
 
 		g_Discord.SetPhase(levelName);
 	}

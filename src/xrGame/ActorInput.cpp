@@ -535,8 +535,9 @@ void CActor::ActorUse()
 			if (IsGameTypeSingle())
 			{			
 				CBaseMonster* pMonster = smart_cast<CBaseMonster*>(pEntityAliveWeLookingAt);
+				const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 				bool TestMonster =	(pMonster == nullptr) ||
-									(pMonster != nullptr && EngineExternal()[EEngineExternalGame::EnableMonstersInventory]);
+									(pMonster != nullptr && isMonstersInventory);
 
 				if(pEntityAliveWeLookingAt->g_Alive())
 				{

@@ -2,11 +2,6 @@
 #define metalic_roughness_ambient_h_ixray_included
 #include "common.hlsli"
 
-float3 FresnelSchlickRoughness(float3 F, float NdotV, float Roughness)
-{
-    return F + max(0.0f, (1.0f - Roughness) - F) * pow(1.0f - NdotV, 5.0f);
-}
-
 float2 EpicGamesEnvBRDFApprox(float NdotV, float Roughness)
 {
     float4 R = Roughness * float4(-1, -0.0275, -0.572, 0.022) + float4(1, 0.0425, 1.04, -0.04);
@@ -18,7 +13,8 @@ void RemapVector(inout float3 vreflect)
 {
     float3 vreflectabs = abs(vreflect);
     float vreflectmax = max(vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
-    vreflect /= vreflectmax;
+	
+    vreflect *= rcp(vreflectmax);
     vreflect.y = vreflect.y * 2.0 - 1.0;
 }
 
@@ -38,6 +34,7 @@ float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
 {
     float3 LightDirection = mul(m_invV, R);
     float4 MipLevels = 0.0f;
+	
     sky_s0.GetDimensions(MipLevels.x, MipLevels.y, MipLevels.z, MipLevels.w);
 
     float Lod = MipLevels.w * Roughness;
@@ -52,18 +49,15 @@ float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
     return Irradance * Hemi * 0.8f;
 }
 
-float3 AmbientLighting(float3 Point, float3 Normal, float3 Color,
-    float Metalness, float Roughness, float Hemi)
+float3 AmbientLighting(float3 View, float3 Normal, float3 Color, float Metalness, float Roughness, float Hemi)
 {
-    float3 N = normalize(Normal);
-    float3 V = normalize(-Point);
-    float3 R = reflect(-V, N);
+    float3 Reflect = reflect(View, Normal);
 
 #ifndef USE_LEGACY_LIGHT
-    float3 DiffuseIrradance = CompureDiffuseIrradance(N, Hemi) + L_ambient.xyz;
-    float3 SpecularIrradance = CompureSpecularIrradance(R, Hemi, Roughness);
+    float3 DiffuseIrradance = CompureDiffuseIrradance(Normal, Hemi) + L_ambient.xyz;
+    float3 SpecularIrradance = CompureSpecularIrradance(Reflect, Hemi, Roughness);
 
-    float NdotV = max(0.0, dot(N, V));
+    float NdotV = max(0.0, -dot(Normal, View));
 
     float2 BRDF = EpicGamesEnvBRDFApprox(NdotV, Roughness);
     float3 F = lerp(F0, Color, Metalness) * BRDF.x + BRDF.y;
@@ -73,13 +67,14 @@ float3 AmbientLighting(float3 Point, float3 Normal, float3 Color,
 
     return SpecularBRDF + DiffuseBRDF;
 #else
-    float Specular = dot(V, R) * 0.5f + 0.5f;
-    float2 Material = s_material.Sample(smp_material, float3(Hemi, Specular, Metalness)).xy;
+    float Specular = 0.5f - 0.5f * dot(View, Reflect);
+    float2 Material = s_material.SampleLevel(smp_material, float3(Hemi, Specular, Metalness), 0).xy;
 
-    float3 DiffuseIrradance = CompureDiffuseIrradance(N, Material.x) + L_ambient.xyz;
-    float3 SpecularIrradance = CompureDiffuseIrradance(R, Material.y);
+    float3 DiffuseIrradance = CompureDiffuseIrradance(Normal, Material.x) + L_ambient.xyz;
+    float3 SpecularIrradance = CompureDiffuseIrradance(Reflect, Material.y);
 
     return DiffuseIrradance * Color + SpecularIrradance * Roughness;
 #endif
 }
 #endif
+

@@ -13,7 +13,7 @@ struct vf
     float4 color : COLOR0; // rgb. intensity, for SM3 - tonemap-prescaled, HI-res
     float2 tc0 : TEXCOORD0;
     float2 tc1 : TEXCOORD1;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 vf main(vi v)

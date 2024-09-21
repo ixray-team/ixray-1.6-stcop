@@ -177,6 +177,10 @@ void UIMainForm::DrawContextMenu()
 		{
 			ExecCommand(COMMAND_PASTE);
 		}
+		if (ImGui::MenuItem("Duplicate"))
+		{
+			ExecCommand(COMMAND_DUPLICATE);
+		}
 		ImGui::Separator();
 		if (ImGui::MenuItem(g_pStringTable->translate("ed_st_cut").c_str()))
 		{

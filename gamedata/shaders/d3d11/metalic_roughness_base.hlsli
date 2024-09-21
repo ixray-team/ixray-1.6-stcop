@@ -3,8 +3,8 @@
 
 #include "common.hlsli"
 
-#define PI 3.141592653589793
-#define F0 float3(0.04, 0.04, 0.04)
+#define PI 3.141592653589793f
+#define F0 float3(0.04f, 0.04f, 0.04f)
 
 // Use legacy lighting pipeline
 #define USE_LEGACY_LIGHT
@@ -51,6 +51,9 @@ struct IXrayGbuffer
     float3 Point;
     float3 PointHud;
     float3 PointReal;
+	
+	float3 View;
+	float ViewDist;
 
     float SSS;
 };
@@ -92,21 +95,25 @@ void GbufferPack(inout IXrayGbufferPack O, inout IXrayMaterial M)
 
 void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
 {
+    float4 NormalHemi = s_normal.Load(int3(HPos, 0));
+	
+    float4 Material = s_surface.Load(int3(HPos, 0));
+    float4 ColorSSS = s_diffuse.Load(int3(HPos, 0));
+
+    O.Depth = s_position.Load(int3(HPos, 0)).x;
+	
     HPos = HPos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
 
     float3 P = float3(HPos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
     float3 P_hud = float3(HPos * pos_decompression_params_hud.zw - pos_decompression_params_hud.xy, 1.0f);
 
-    float4 NormalHemi = s_normal.Sample(smp_nofilter, TexCoord);
-    float4 Material = s_surface.Sample(smp_nofilter, TexCoord);
-    float4 ColorSSS = s_diffuse.Sample(smp_nofilter, TexCoord);
-
-    O.Depth = s_position.Sample(smp_nofilter, TexCoord).x;
-
     O.Point = P * depth_unpack.x * rcp(O.Depth - depth_unpack.y);
-    O.PointHud = P_hud * depth_unpack.z * rcp(min(1.0f, O.Depth * 50.0f) - depth_unpack.w);
+    O.PointHud = P_hud * depth_unpack.z * rcp(O.Depth * 50.0f - depth_unpack.w);
 
-    O.PointReal = O.Depth > 0.02f ? O.Point : O.PointHud;
+    O.PointReal = O.Depth >= 0.02f ? O.Point : O.PointHud;
+	
+	O.ViewDist = length(O.PointReal);
+	O.View = O.PointReal * rcp(O.ViewDist);
 
     O.Normal.xyz = NormalDecode(NormalHemi.xyz);
     O.Hemi = NormalHemi.w;
@@ -119,3 +126,4 @@ void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
 }
 
 #endif
+

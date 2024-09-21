@@ -173,7 +173,7 @@ void CMainMenu::ReadTextureInfo()
 
 extern ENGINE_API BOOL	bShowPauseString;
 extern bool				IsGameTypeSingle();
-static xr_string StrMainMenu = CStringTable().translate("st_discord_menu").c_str();
+static xr_string StrMainMenu = g_pStringTable->translate("st_discord_menu").c_str();
 
 void CMainMenu::Activate	(bool bActivate)
 {
@@ -665,8 +665,7 @@ void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
 		return;
 
 	m_start_time = Device.dwTimeGlobal;
-	CStringTable	st;
-	LPCSTR str = st.translate("ui_st_kicked_by_server").c_str();
+	LPCSTR str = g_pStringTable->translate("ui_st_kicked_by_server").c_str();
 	string256 text;
 
 	if ( reason && xr_strlen(reason) && reason[0] == '@' )
@@ -678,13 +677,13 @@ void	CMainMenu::OnSessionTerminate				(LPCSTR reason)
 		xr_strconcat(text, str, " ", reason );
 	}
 	
-	m_pMB_ErrDlgs[SessionTerminate]->SetText(st.translate(text).c_str());
+	m_pMB_ErrDlgs[SessionTerminate]->SetText(g_pStringTable->translate(text).c_str());
 	SetErrorDialog(CMainMenu::SessionTerminate);
 }
 
 void	CMainMenu::OnLoadError				(LPCSTR module)
 {
-	LPCSTR str=CStringTable().translate("ui_st_error_loading").c_str();
+	LPCSTR str = g_pStringTable->translate("ui_st_error_loading").c_str();
 	string1024 Text;
 	xr_strconcat(Text,str," ");
 	xr_strcat(Text,sizeof(Text),module);

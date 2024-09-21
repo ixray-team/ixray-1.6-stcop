@@ -159,7 +159,7 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
 	xr_sprintf(str, sizeof(str), "%.1f", dist2);
 	m_textDist2Value.SetText(str);
-	xr_sprintf(str, sizeof(str), "%s", *CStringTable().translate("st_m"));
+	xr_sprintf(str, sizeof(str), "%s", *g_pStringTable->translate("st_m"));
 	m_meters_name.SetText(str);
 	xr_sprintf(str, sizeof(str), "|");
 	m_textDistDelimiter.SetText(str);

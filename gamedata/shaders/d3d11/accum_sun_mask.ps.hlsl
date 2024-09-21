@@ -5,7 +5,7 @@
 // #define EPS	(40.f/255.f)
 #define CLIP_THRESHOLD (1.0f / 255.f)
 
-float4 main(p_TL I, float4 pos2d : SV_Position) : SV_Target
+float4 main(p_TL I, float4 pos2d : SV_POSITION) : SV_Target
 {
     IXrayGbuffer O;
     GbufferUnpack(I.Tex0, pos2d, O);
