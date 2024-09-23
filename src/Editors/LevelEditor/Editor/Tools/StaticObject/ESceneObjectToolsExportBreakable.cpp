@@ -15,13 +15,13 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
         CSurface* surf 		= sp_it->first;
 		int gm_id			= surf->_GameMtl(); 
         if (gm_id==GAMEMTL_NONE_ID){ 
-        	ELog.DlgMsg		(mtError,"Object '%s', surface '%s' contain invalid game material.",mesh->Parent()->m_LibName.c_str(),surf->_Name());
+        	ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_obj_invalid_mat").c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
         	bResult 		= FALSE; 
             break; 
         }
         SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
         if (0==M){
-        	ELog.DlgMsg		(mtError,"Object '%s', surface '%s' contain undefined game material.",mesh->Parent()->m_LibName.c_str(),surf->_Name());
+        	ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_obj_unknown_mat").c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
         	bResult 		= FALSE; 
             break; 
         }
@@ -31,12 +31,12 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
         if (!ignore_shader){
             IBlender* 		B = EDevice->Resources->_FindBlender(surf->_ShaderName()); 
             if (FALSE==B){
-                ELog.Msg	(mtError,"Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.",surf->_ShaderName(),mesh->Parent()->m_LibName.c_str(),surf->_Name());
+                ELog.Msg	(mtError,g_pStringTable->translate("ed_st_obj_no_shader").c_str(), surf->_ShaderName(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
                 bResult 	= FALSE; 
                 break; 
             }
             if (TRUE==B->canBeLMAPped()){ 
-                ELog.Msg	(mtError,"Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.",mesh->Parent()->m_LibName.c_str(),surf->_Name(),surf->_ShaderName());
+                ELog.Msg	(mtError,g_pStringTable->translate("ed_st_obj_wrong_shader").c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name(), surf->_ShaderName());
                 bResult 	= FALSE; 
                 break; 
             }
@@ -75,10 +75,10 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
     extractor	= new CGeomPartExtractor();
     extractor->Initialize(bb,EPS_L,2);
 
-    UI->SetStatus	("Export breakable objects...");
+    UI->SetStatus	(g_pStringTable->translate("ed_st_export_breakable").c_str());
 	// collect verts&&faces
     {
-	    SPBItem* pb = UI->ProgressStart(m_Objects.size(),"Prepare geometry...");
+	    SPBItem* pb = UI->ProgressStart(m_Objects.size(),g_pStringTable->translate("ed_st_prepare_geom").c_str());
         for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++){
 	        pb->Inc();
             CSceneObject* obj 		= dynamic_cast<CSceneObject*>(*it); VERIFY(obj);
@@ -95,7 +95,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
     // export parts
     if (bResult){
     	SBPartVec& parts			= extractor->GetParts();
-	    SPBItem* pb = UI->ProgressStart(parts.size(),"Export Parts...");
+	    SPBItem* pb = UI->ProgressStart(parts.size(),g_pStringTable->translate("ed_st_export_parts").c_str());
         for (SBPartVecIt p_it=parts.begin(); p_it!=parts.end(); p_it++){
 	        pb->Inc();
             SBPart*	P				= *p_it;
@@ -107,7 +107,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
                 xr_string fn = Scene->LevelPath() + sn;
                 IWriter* W			= FS.w_open(fn.c_str()); R_ASSERT(W);
                 if (!P->Export(*W,1)){
-                    ELog.DlgMsg		(mtError,"Invalid breakable object.");
+                    ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_invalid_breakable").c_str());
                     bResult 		= false;
                     break;
                 }
@@ -142,7 +142,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
                     g_SEFactoryManager->destroy_entity				(m_Data);
                 }
             }else{
-            	ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
+            	ELog.Msg(mtError,g_pStringTable->translate("ed_st_cant_export_invalid_part").c_str(), p_it - parts.begin());
             }
         }
 	    UI->ProgressEnd(pb);
@@ -185,10 +185,10 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
     extractor	                    = new CGeomPartExtractor();
     extractor->Initialize           (bb,EPS_L,int_max);
 
-    UI->SetStatus	("Export climable objects...");
+    UI->SetStatus	(g_pStringTable->translate("ed_st_export_climable_obj").c_str());
 	// collect verts&&faces
     {
-	    SPBItem* pb                 = UI->ProgressStart(m_Objects.size(), "Prepare geometry...");
+	    SPBItem* pb                 = UI->ProgressStart(m_Objects.size(), g_pStringTable->translate("ed_st_prepare_geom").c_str());
         for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)
         {
 	        pb->Inc();
@@ -216,7 +216,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
     if (bResult)
     {
     	SBPartVec& parts			= extractor->GetParts();
-	    SPBItem* pb                 = UI->ProgressStart(parts.size(),"Export Parts...");
+	    SPBItem* pb                 = UI->ProgressStart(parts.size(),g_pStringTable->translate("ed_st_export_parts").c_str());
         for (SBPartVecIt p_it=parts.begin(); p_it!=parts.end(); p_it++)
         {
 	        pb->Inc                 ();
@@ -259,7 +259,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 					// orientate object
 	          		if (!OrientToNorm(local_normal,P->m_OBB.m_rotate,P->m_OBB.m_halfsize))
                     {
-                    	ELog.Msg(mtError,"Invalid climable object found. [%3.2f, %3.2f, %3.2f]",VPUSH(P->m_RefOffset));
+                    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_invalid_climable").c_str(), VPUSH(P->m_RefOffset));
 					}
                     else
                     {
@@ -287,7 +287,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                 }
             }else
             {
-            	ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
+            	ELog.Msg(mtError,g_pStringTable->translate("ed_st_cant_export_invalid_part").c_str(), p_it - parts.begin());
             }
         }
 	    UI->ProgressEnd     (pb);

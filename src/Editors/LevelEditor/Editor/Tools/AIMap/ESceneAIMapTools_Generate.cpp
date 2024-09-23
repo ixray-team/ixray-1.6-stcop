@@ -396,7 +396,7 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     	cnt=Scene->RayQuery(PQ,Pos,Dir,3,CDB::OPT_ONLYNEAREST|CDB::OPT_CULL,GetSnapList());
 
     if (0==cnt) {
-        ELog.Msg	(mtInformation,"Can't align position.");
+        ELog.Msg	(mtInformation,g_pStringTable->translate("ed_st_cant_align_pos").c_str());
         return		0;
     } else {
         Pos.y 		= Pos.y - PQ.r_begin()->range;
@@ -411,7 +411,7 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     float estimated_nodes	= (2*sz-1)*(2*sz-1);
 
 	SPBItem* pb 	= 0;
-    if (estimated_nodes>1024) pb = UI->ProgressStart(1, "Building nodes...");
+    if (estimated_nodes>1024) pb = UI->ProgressStart(1, g_pStringTable->translate("ed_st_building_nodes").c_str());
     float radius			= sz*m_Params.fPatchSize-EPS_L;
     // General cycle
     for (int k=0; k<(int)m_Nodes.size(); k++){
@@ -475,7 +475,7 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
     m_AIBBox.getsize	(LevelSize);
     float estimated_nodes	= (LevelSize.x/m_Params.fPatchSize)*(LevelSize.z/m_Params.fPatchSize);
 
-    SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
+    SPBItem* pb = UI->ProgressStart(1, g_pStringTable->translate("ed_st_building_nodes").c_str());
     // General cycle
     for (int k=0; k<(int)m_Nodes.size(); k++){
         SAINode* N 			= m_Nodes[k];
@@ -588,7 +588,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 	if (!GetSnapList()->empty()){
 	    if (!RealUpdateSnapList()) return false;
 	    if (m_Nodes.empty()){
-			ELog.DlgMsg(mtError,"Append at least one node.");
+			ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_append_one_node").c_str());
             return false;
         }
 
@@ -615,7 +615,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
                 }
             }
 
-            SPBItem* pb = UI->ProgressStart(mesh_cnt,"Prepare collision model...");
+            SPBItem* pb = UI->ProgressStart(mesh_cnt,g_pStringTable->translate("ed_st_prepare_collision").c_str());
 
             CDB::Collector* CL		= ETOOLS::create_collector();
             Fvector verts[3];
@@ -661,7 +661,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
             UI->ProgressEnd(pb);
 
-            UI->SetStatus		("Building collision model...");
+            UI->SetStatus		(g_pStringTable->translate("ed_st_build_collision").c_str());
             // create CFModel
             m_CFModel 			= ETOOLS::create_model_cl(CL);
             ETOOLS::destroy_collector(CL);
@@ -675,7 +675,7 @@ tm.Start();
 tm.GetElapsed_sec();
         Scene->unlock		();
 //.        Log("-test time: ",	g_tm.GetElapsed_sec());
-		Msg("-building time: %.3f",tm.GetElapsed_sec());
+		Msg(g_pStringTable->translate("ed_st_build_time").c_str(),tm.GetElapsed_sec());
 //.        Msg("-Rate: %3.2f Count: %d",(g_tm.GetElapsed_sec()/tm.GetElapsed_sec())*100.f,g_tm.count);
 
         // unload CFModel
@@ -686,7 +686,7 @@ tm.GetElapsed_sec();
 
         UI->SetStatus		("");
     }else{
-    	ELog.DlgMsg(mtError,"Fill snap list before generating slots!");
+    	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_fill_snap_list").c_str());
     }
     return bRes;
 }
@@ -842,7 +842,7 @@ void ESceneAIMapTool::MakeLinks(u8 side_flag, EMode mode, bool bIgnoreConstraint
 
 void ESceneAIMapTool::ResetNodes()
 {
-    SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
+    SPBItem* pb = UI->ProgressStart(m_Nodes.size(), g_pStringTable->translate("ed_st_smoothing_nodes").c_str());
 
     int	n_cnt	= 0;
     
@@ -860,7 +860,7 @@ void ESceneAIMapTool::ResetNodes()
 #define		merge(pt)	if (fsimilar(P.y,REF.y,m_SmoothHeight)) { c++; pt.add(P); }
 void ESceneAIMapTool::SmoothNodes()
 {
-    SPBItem* pb = UI->ProgressStart(m_Nodes.size(), "Smoothing nodes...");
+    SPBItem* pb = UI->ProgressStart(m_Nodes.size(), g_pStringTable->translate("ed_st_smoothing_nodes").c_str());
 
 	AINodeVec	smoothed;	smoothed.reserve(m_Nodes.size());
 	U8Vec		mark;		mark.assign		(m_Nodes.size(),0);

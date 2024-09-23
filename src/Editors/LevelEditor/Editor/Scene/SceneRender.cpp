@@ -17,7 +17,7 @@ doug_lea_allocator	g_render_lua_allocator("render:lua");
     try{\
         (N->val)->RenderRoot(P,B);\
     }catch(...){\
-        ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s' Object: '%s'",(N->val)->FParentTools->ClassName(),(N->val)->GetName());\
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_render_err_1").c_str(),(N->val)->FParentTools->ClassName(),(N->val)->GetName());\
     }\
 }
     
@@ -40,7 +40,7 @@ void  object_StrictB2F_3(EScene::mapObject_Node *N){RENDER_OBJECT(3,true);}
             try{\
             	(*s_it)->OnRenderRoot(P,B);\
             }catch(...){\
-		        ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'",(*s_it)->ClassName());\
+		        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_render_err_2").c_str(),(*s_it)->ClassName());\
             }\
         }\
     }

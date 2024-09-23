@@ -7,7 +7,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CFrom is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_cform_empty").c_str());
 			return false;
 		}
 	}
@@ -15,7 +15,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AIMap is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_ai_map_empty").c_str());
 			return false;
 		}
 	}
@@ -23,7 +23,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "GameGraph is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_game_graph_empty").c_str());
 			return false;
 		}
 	}
@@ -32,7 +32,7 @@ bool EScene::BuildSpawn()
 	CGameSpawnConstructor SpawnConstructor;
 	if (!SpawnConstructor.build(Scene->m_LevelOp.m_FNLevelPath.c_str(), m_spawn_data, Scene->m_LevelOp.m_FNLevelPath.c_str(), true))
 	{
-		ELog.DlgMsg(mtError, mbOK, "! Failed build spawn! \nSee log.");
+		ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_spawn_failed").c_str());
 		UI->CloseConsole();
 		return false;
 	}
@@ -58,7 +58,7 @@ bool EScene::BuildForPCPlay()
 		!FS.exist("$game_levels$", N4)
 		)
 	{
-		ELog.DlgMsg(mtError, mbOK, "Level is not builded!");
+		ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_level_build_failed").c_str());
 		return false;
 	}
 
@@ -66,7 +66,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CFrom is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_cform_empty").c_str());
 			return false;
 		}
 	}
@@ -74,7 +74,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AIMap is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_ai_map_empty").c_str());
 			return false;
 		}
 	}
@@ -82,21 +82,21 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "GameGraph is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_game_graph_empty").c_str());
 			return false;
 		}
 	}
 	UI->ShowConsole();
 	if (!m_level_graph.save_temp())
 	{
-		ELog.DlgMsg(mtError, mbOK, "level.ai.temp can't save!\nSee log.");
+		ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_level_ai_temp_cant_save").c_str());
 		return false;
 	}
 
 	CGameSpawnConstructor SpawnConstructor;
 	if (!SpawnConstructor.build(Scene->m_LevelOp.m_FNLevelPath.c_str(),"editor", Scene->m_LevelOp.m_FNLevelPath.c_str(), true))
 	{
-		ELog.DlgMsg(mtError, mbOK, "! Failed build spawn! \nSee log.");
+		ELog.DlgMsg(mtError, mbOK, g_pStringTable->translate("ed_st_spawn_failed").c_str());
 		UI->CloseConsole();
 		return false;
 	}

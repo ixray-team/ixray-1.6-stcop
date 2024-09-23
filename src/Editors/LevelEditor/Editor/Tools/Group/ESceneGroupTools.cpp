@@ -37,14 +37,14 @@ void ESceneGroupTool::UngroupObjects(bool bUndo)
                     xr_delete			(obj);
                     bModif				= true;
                 }else
-                    ELog.DlgMsg			(mtError,"Can't ungroup object: '%s'.",obj->GetName());
+                    ELog.DlgMsg			(mtError,g_pStringTable->translate("ed_st_cant_ungroup").c_str(), obj->GetName());
             }
         }
         if (bUndo&&bModif) 
             Scene->UndoSave();
     }
     if (0==sel_cnt)
-        ELog.Msg		(mtError,"Nothing selected.");
+        ELog.Msg		(mtError,g_pStringTable->translate("ed_st_nothing_selected").c_str());
 }
 
 
@@ -70,11 +70,11 @@ void ESceneGroupTool::GroupObjects(bool bUndo)
         
     if (group->ObjectInGroupCount())
     {
-		ELog.DlgMsg(mtInformation,"Group '%s' successfully created.\nContain %d object(s)",group->GetName(),group->ObjectInGroupCount());
+		ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_group_created").c_str(), group->GetName(), group->ObjectInGroupCount());
         Scene->AppendObject(group, bUndo);
     }else
 	{
-		ELog.DlgMsg	(mtError,"Group can't be created.");
+		ELog.DlgMsg	(mtError,g_pStringTable->translate("ed_st_cant_create_group").c_str());
         xr_delete	(group);
     }
 }
@@ -133,7 +133,7 @@ void ESceneGroupTool::OnDrawUI()
     if (m_ChooseIt == m_Objects.end())
     {
         if (0 == m_ChooseCnt)
-            ELog.Msg(mtError, "Nothing selected.");
+            ELog.Msg(mtError, g_pStringTable->translate("ed_st_nothing_selected").c_str());
         else 
             Scene->UndoSave();
         EDevice->seqDrawUI.Remove(this);
@@ -180,7 +180,7 @@ void ESceneGroupTool::ReloadRefsSelectedObject()
                     bModif		= true;
                 }else
                 {
-                    ELog.Msg	(mtError,"Can't reload group: '%s'.",obj->GetName());
+                    ELog.Msg	(mtError,g_pStringTable->translate("ed_st_cant_reload_group").c_str(), obj->GetName());
                 }
             }
         }
@@ -191,7 +191,7 @@ void ESceneGroupTool::ReloadRefsSelectedObject()
 		Scene->LoadToolLTX		(OBJCLASS_PORTAL, temp_file_name_portal);
     }
     if (0==sel_cnt)	
-    	ELog.Msg	(mtError,"Nothing selected.");
+    	ELog.Msg	(mtError,g_pStringTable->translate("ed_st_nothing_selected").c_str());
 }
 
 
@@ -200,12 +200,12 @@ void ESceneGroupTool::SaveSelectedObject()
 	u32 scnt = SelectionCount(true);
 	if(scnt==0)
     {
-        ELog.DlgMsg(mtError,"No object(s) selected.");
+        ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_no_obj_selected").c_str());
         return;
     }else
 	if(scnt>1)
     {
-        if(mrYes != ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Process multiple objects?") )
+        if(mrYes != ELog.DlgMsg(mtConfirmation, mbYes | mbNo, g_pStringTable->translate("ed_st_process_multiple").c_str()) )
         	return;
     }
     
@@ -237,7 +237,7 @@ void ESceneGroupTool::SaveSelectedObject()
                 obj->SaveStream		(*W);
                 FS.w_close			(W);
             }else
-                ELog.DlgMsg			(mtError, "Cant write file [%s]", fn.c_str());
+                ELog.DlgMsg			(mtError, g_pStringTable->translate("ed_st_cant_write").c_str(), fn.c_str());
       }          
     }
 }
@@ -300,13 +300,13 @@ void ESceneGroupTool::MakeThumbnail()
             tex.Save				(FS.get_file_age(fn));
         }else
         {
-            ELog.DlgMsg				(mtError,"Can't make screenshot.");
+            ELog.DlgMsg				(mtError,g_pStringTable->translate("ed_st_cant_make_screenshot").c_str());
         }
         object->Select				(true);
         // restore render params
         psDeviceFlags 				= old_flag;
     }else
     {
-    	ELog.DlgMsg		(mtError,"Select 1 GroupObject.");
+    	ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_sel_one_group_obj").c_str());
     }
 }

@@ -88,7 +88,7 @@ void EScene::OnCreate()
 	
 	m_LastAvailObject 		= 0;
 	m_LevelOp.Reset			();
-	ELog.Msg				( mtInformation, "Scene: initialized" );
+	ELog.Msg				( mtInformation, g_pStringTable->translate("ed_st_scene_init").c_str() );
 	m_Valid 				= true;
 	m_RTFlags.zero			();
 	ExecCommand				(COMMAND_UPDATE_CAPTION);
@@ -102,7 +102,7 @@ void EScene::OnDestroy()
 	//TProperties::DestroyForm(m_SummaryInfo);
 	Unload					(FALSE);
 	UndoClear				();
-	ELog.Msg				( mtInformation, "Scene: cleared" );
+	ELog.Msg				( mtInformation, g_pStringTable->translate("ed_st_scene_clear").c_str() );
 	m_LastAvailObject 		= 0;
 	m_Valid 				= false;
 	DestroySceneTools		();
@@ -330,7 +330,7 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 	m_game_graph.clear();
 	m_RTFlags.set(flIsBuildedAIMap | flIsBuildedGameGraph | flIsBuildedCForm, FALSE);
 
-	SDL_SetWindowTitle(g_AppInfo.Window, "IXR: Level Editor");
+	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Level Editor");
 }
 
 const Fvector& EScene::GetCameraPosition() const
@@ -358,7 +358,7 @@ bool EScene::GetBox(Fbox& box, ObjectList& lst)
 
 		if (bb.max.x > 100000.0f || bb.max.y > 100000.0f || bb.max.z > 100000.0f) 
 		{
-			ELog.Msg(mtError, "ERROR: Bounding box [%s]", Obj->GetName());
+			ELog.Msg(mtError, g_pStringTable->translate("ed_st_bounding_box_err").c_str(), Obj->GetName());
 			continue;
 		}
 
@@ -422,11 +422,11 @@ bool EScene::IsModified()
 bool EScene::IfModified()
 {
 	if (locked()){ 
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str() );
 		return false;
 	}
 	if (m_RTFlags.is(flRT_Unsaved) && (ObjCount()||!Tools->GetEditFileName().empty())){
-		int mr = ELog.DlgMsg(mtConfirmation, "The scene has been modified. Do you want to save your changes?");
+		int mr = ELog.DlgMsg(mtConfirmation, g_pStringTable->translate("ed_st_save_prompt").c_str());
 		switch(mr){
 		case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; break;
 		case mrNo:{ 
@@ -487,7 +487,7 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 	for (; t_it!=t_end; t_it++){
 		if (t_it->second){
 			if (!t_it->second->Validate(bFullTest)){
-				ELog.Msg(mtError,"ERROR: Validate '%s' failed!",t_it->second->ClassDesc());
+				ELog.Msg(mtError,g_pStringTable->translate("ed_st_validate_failed").c_str(), t_it->second->ClassDesc());
 				bRes = false;
 			}
 		}
@@ -506,30 +506,30 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 			if (O->m_objectFlags.is(CEditableObject::eoHOM)){ bHasHOM = true; break; }
 		}
 		if (!bHasHOM)
-			Msg("!Level doesn't contain HOM objects!");
+			Msg(g_pStringTable->translate("ed_st_no_hom_obj").c_str());
 //.			if (mrNo==ELog.DlgMsg(mtConfirmation,mbYes |mbNo,"Level doesn't contain HOM.\nContinue anyway?"))
 //.				return false;
 	}
 	if (ObjCount(OBJCLASS_SPAWNPOINT)==0){
-		ELog.Msg(mtError,"*ERROR: Can't find any Spawn Object.");
+		ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_spawn").c_str());
 		bRes = false;
 	}
 	if (ObjCount(OBJCLASS_LIGHT)==0){
-		ELog.Msg(mtError,"*ERROR: Can't find any Light Object.");
+		ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_lights").c_str());
 		bRes = false;
 	}
 	if (ObjCount(OBJCLASS_SCENEOBJECT)==0){
-		ELog.Msg(mtError,"*ERROR: Can't find any Scene Object.");
+		ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_objects").c_str());
 		bRes = false;
 	}
 	if (bTestGlow){
 		if (ObjCount(OBJCLASS_GLOW)==0){
-			ELog.Msg(mtError,"*ERROR: Can't find any Glow Object.");
+			ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_glow").c_str());
 			bRes = false;
 		}
 	}
 	if (FindDuplicateName()){
-		ELog.Msg(mtError,"*ERROR: Found duplicate object name.");
+		ELog.Msg(mtError,g_pStringTable->translate("ed_st_duplicate_name_exist").c_str());
 		bRes = false;
 	}
 	
@@ -552,11 +552,11 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 			}
 		}
 		if (!res){ 
-			ELog.Msg	(mtError,"*ERROR: Scene has non compatible shaders. See log.");
+			ELog.Msg	(mtError,g_pStringTable->translate("ed_st_uncompatible_shaders").c_str());
 			bRes = false;
 		}
 		if (0==static_obj){ 
-			ELog.Msg	(mtError,"*ERROR: Can't find static geometry.");
+			ELog.Msg	(mtError,g_pStringTable->translate("ed_st_no_geom").c_str());
 			bRes = false;
 		}
 	}
@@ -569,16 +569,16 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		for(ObjectIt it=lst.begin();it!=lst.end();it++){
 			EParticlesObject* S = (EParticlesObject*)(*it);
 			if (!S->GetParticles()){
-				ELog.Msg(mtError,"*ERROR: Particle System hasn't reference.");
+				ELog.Msg(mtError,g_pStringTable->translate("ed_st_no_particle_ref").c_str());
 				bRes = false;
 			}
 		}
 	}
 	
 	if (bRes){
-		if (bNeedOkMsg) ELog.DlgMsg(mtInformation,"Validation OK!");
+		if (bNeedOkMsg) ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_validation_success").c_str());
 	}else{
-		ELog.DlgMsg(mtInformation,"Validation FAILED!");
+		ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_validation_failed").c_str());
 	}
 	return bRes;
 }
@@ -649,37 +649,37 @@ void EScene::OnNameChange(PropValue* sender)
 
 void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 {
-	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Name"),			LTools->m_LastFileName.c_str());
+	PHelper().CreateCaption		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_scene_name").c_str()),			LTools->m_LastFileName.c_str());
 
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Name prefix"),	&m_LevelOp.m_LevelPrefix);
+	PHelper().CreateRText		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_scene_name_prefix").c_str()),	&m_LevelOp.m_LevelPrefix);
 
 	PropValue* V;
-	auto NaneProp = PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Level path"),		&m_LevelOp.m_FNLevelPath);
+	auto NaneProp = PHelper().CreateRText		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_level_path").c_str()),		&m_LevelOp.m_FNLevelPath);
 	NaneProp->OnChangeEvent.bind(this, &EScene::OnNameChange);
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Custom data"),	&m_LevelOp.m_BOPText);
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Map version"),					&m_LevelOp.m_map_version);
+	PHelper().CreateRText		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_scene_custom_data").c_str()),	&m_LevelOp.m_BOPText);
+	PHelper().CreateRText		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_map_version").c_str()),					&m_LevelOp.m_map_version);
 
 	m_LevelOp.m_mapUsage.FillProp("Scene\\Usage", items);
 
 	// common
 	ButtonValue* B;
-	B=PHelper().CreateButton	(items,PrepareKey(pref,"Scene\\Build options\\Quality"), "Draft,High,Custom",0);
+	B=PHelper().CreateButton	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_scene_quality").c_str()), "Draft,High,Custom",0);
 	B->OnBtnClickEvent.bind		(this,&EScene::OnBuildControlClick);
 
 	BOOL enabled				= (m_LevelOp.m_BuildParams.m_quality==ebqCustom);
-	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Hemisphere quality [0-3]"),	&m_LevelOp.m_LightHemiQuality,	0,3);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateU8		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Sun shadow quality [0-3]"),	&m_LevelOp.m_LightSunQuality,	0,3);       V->Owner()->Enable(enabled);
+	V=PHelper().CreateU8		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_hemi_quality").c_str()),	&m_LevelOp.m_LightHemiQuality,	0,3);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateU8		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_sun_shadow_quality").c_str()),	&m_LevelOp.m_LightSunQuality,	0,3);       V->Owner()->Enable(enabled);
 
 	// Build Options
 	// Normals & optimization
-	V=PHelper().CreateFloat		(items,PrepareKey(pref,"Scene\\Build options\\Optimizing\\Normal smooth angle"), 	&m_LevelOp.m_BuildParams.m_sm_angle,					0.f,180.f);	V->Owner()->Enable(enabled);
-	V=PHelper().CreateFloat		(items,PrepareKey(pref,"Scene\\Build options\\Optimizing\\Weld distance (m)"),		&m_LevelOp.m_BuildParams.m_weld_distance,				0.f,1.f,0.001f,4);	V->Owner()->Enable(enabled);
+	V=PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_normal_smooth_angle").c_str()), 	&m_LevelOp.m_BuildParams.m_sm_angle,					0.f,180.f);	V->Owner()->Enable(enabled);
+	V=PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_weld_dist").c_str()),		&m_LevelOp.m_BuildParams.m_weld_distance,				0.f,1.f,0.001f,4);	V->Owner()->Enable(enabled);
 
 	// Light maps
-	V=PHelper().CreateFloat		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Pixel per meter"),			&m_LevelOp.m_BuildParams.m_lm_pixels_per_meter,			0.f,20.f);	V->Owner()->Enable(enabled);
-	V=PHelper().CreateU32		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM collapsing)"), 	&m_LevelOp.m_BuildParams.m_lm_rms,						0,255);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateU32		(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Error (LM zero)"),			&m_LevelOp.m_BuildParams.m_lm_rms_zero,					0,255);		V->Owner()->Enable(enabled);
-	V=PHelper().CreateToken32	(items,PrepareKey(pref,"Scene\\Build options\\Lighting\\Jitter samples"),			&m_LevelOp.m_BuildParams.m_lm_jitter_samples, 			js_token);	V->Owner()->Enable(enabled);
+	V=PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_pixel_per_meter").c_str()),			&m_LevelOp.m_BuildParams.m_lm_pixels_per_meter,			0.f,20.f);	V->Owner()->Enable(enabled);
+	V=PHelper().CreateU32		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_error_lm_collapse").c_str()), 	&m_LevelOp.m_BuildParams.m_lm_rms,						0,255);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateU32		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_error_lm_zero").c_str()),			&m_LevelOp.m_BuildParams.m_lm_rms_zero,					0,255);		V->Owner()->Enable(enabled);
+	V=PHelper().CreateToken32	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_jitter_samples").c_str()),			&m_LevelOp.m_BuildParams.m_lm_jitter_samples, 			js_token);	V->Owner()->Enable(enabled);
 	
 	// tools options
 	{
@@ -832,7 +832,7 @@ bool EScene::BuildCForm()
 	{
 		if (!m_cfrom_builder.build())
 		{
-			Msg("! CForm is empty!");
+			Msg(g_pStringTable->translate("ed_st_cform_empty_log").c_str());
 			return false;
 		}
 		m_RTFlags.set(flIsBuildedCForm, TRUE);
@@ -865,7 +865,7 @@ void EScene::RegisterSubstObjectName(const xr_string& _from, const xr_string& _t
 	xr_string _tmp;
 	bool b = GetSubstObjectName(_from, _tmp);
 	if(b)
-		Msg("! subst for '%s' already exist -'%s'",_from.c_str(), _tmp.c_str());
+		Msg(g_pStringTable->translate("ed_st_subst_exist").c_str(), _from.c_str(), _tmp.c_str());
 
 	TSubstPairs_it It      = m_subst_pairs.begin();
 	TSubstPairs_it It_e    = m_subst_pairs.end();

@@ -18,7 +18,7 @@ bool  TUI_ControlObjectAdd::Start(TShiftState Shift)
         }else{
             N = ((UIObjectTool*)parent_tool->pForm)->Current();
             if(!N){
-                ELog.DlgMsg(mtInformation,"Nothing selected.");
+                ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_nothing_selected").c_str());
                 return false;
             }
         }
@@ -28,7 +28,7 @@ bool  TUI_ControlObjectAdd::Start(TShiftState Shift)
         CSceneObject *obj = new CSceneObject((LPVOID)0,namebuffer);
         CEditableObject* ref = obj->SetReference(N);
         if (!ref){
-        	ELog.DlgMsg(mtError,"TUI_ControlObjectAdd:: Can't load reference object.");
+        	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_cant_load_reference").c_str());
         	xr_delete(obj);
         	return false;
         }

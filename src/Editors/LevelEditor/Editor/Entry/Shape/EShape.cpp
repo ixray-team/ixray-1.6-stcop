@@ -11,7 +11,7 @@
 #define SHAPE_CHUNK_SHAPES 		0x0001
 #define SHAPE_CHUNK_DATA 		0x0002
 
-
+// St4lker0k765: Is it even needed? Because in the code there is no refs for this token...
 xr_token shape_type_tok[]=
 {
 	{ "common",	eShapeCommon		},
@@ -408,7 +408,7 @@ void CEditShape::SaveStream(IWriter& F)
 void CEditShape::FillProp(LPCSTR pref, PropItemVec& values)
 {
 	inherited::FillProp(pref,values);
-	PHelper().CreateCaption	(values, PrepareKey(pref,"Shape usage"),m_shape_type==eShapeCommon?"common":"level bound");
+	PHelper().CreateCaption	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_shape_usage").c_str()),m_shape_type==eShapeCommon?g_pStringTable->translate("ed_st_shape_common").c_str() : g_pStringTable->translate("ed_st_shape_level_bound").c_str());
 }
 
 void CEditShape::Render(int priority, bool strictB2F)

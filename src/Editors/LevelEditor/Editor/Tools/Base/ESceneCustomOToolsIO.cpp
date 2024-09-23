@@ -32,7 +32,7 @@ bool ESceneCustomOTool::LoadSelection(IReader& F)
 	F.r_chunk					(CHUNK_OBJECT_COUNT,&count);
 
     string256 Data = {};
-    sprintf(Data, "Loading %s(stream)...", ClassDesc());
+    sprintf(Data, g_pStringTable->translate("ed_st_loading_stream").c_str(), ClassDesc());
 
     SPBItem* pb 				= UI->ProgressStart(count, Data);
     Scene->ReadObjectsStream	(F,CHUNK_OBJECTS, EScene::TAppendObject(this, &ESceneCustomOTool::OnLoadSelectionAppendObject),pb);
@@ -67,7 +67,7 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
     u32 count			= ini.r_u32("main", "objects_count");
 
     string256 Data = {};
-    sprintf(Data, "Loading %s(ltx)...", ClassDesc());
+    sprintf(Data, g_pStringTable->translate("ed_st_loading_ltx").c_str(), ClassDesc());
 
     SPBItem* pb = UI->ProgressStart(count, Data);
 
@@ -101,7 +101,7 @@ bool ESceneCustomOTool::LoadStream(IReader& F)
 	F.r_chunk					(CHUNK_OBJECT_COUNT,&count);
 
     string256 Data = {};
-    sprintf(Data, "Loading %s...", ClassDesc());
+    sprintf(Data, g_pStringTable->translate("ed_st_loading_class").c_str(), ClassDesc());
 
     SPBItem* pb = UI->ProgressStart(count, Data);
     Scene->ReadObjectsStream	(F,CHUNK_OBJECTS, EScene::TAppendObject(this, &ESceneCustomOTool::OnLoadAppendObject),pb);

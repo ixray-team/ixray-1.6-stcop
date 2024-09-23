@@ -47,7 +47,7 @@ bool EScene::FindDuplicateName()
 			ObjectList& lst = mt->GetObjects(); 
 			for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
 				if (FindObjectByName((*_F)->GetName(), *_F)){
-					ELog.DlgMsg(mtError,"Duplicate object name already exists: '%s'",(*_F)->GetName());
+					ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_duplicate_obj_exists").c_str(), (*_F)->GetName());
 					return true;
 				}
 		}

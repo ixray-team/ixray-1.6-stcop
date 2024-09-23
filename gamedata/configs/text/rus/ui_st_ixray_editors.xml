@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <string_table>
+<!-- 
+NOTE: In case of object keys, you must always replace double slashes (\\) with single ones (\), 
+otherwise XML parser will read it incorrectly. 
+Also, DO NOT CHANGE ENCODING FOR THIS FILE!
+================================================================
+File information: 
+Language name: English (United States)
+Language folder: eng (right now it doesn't matter, the main goal now is to move every SDK string to this file)
+Translation author: IX-Ray Team (for other languages, replace it with your nickname)
+================================================================
+-->
     <string id="ed_st_preferences">
         <text>Preferences</text>
     </string>
@@ -1062,9 +1073,6 @@
     <string id="ed_st_text_editor">
         <text>Text Editor</text>
     </string>
-    <string id="ed_st_clear">
-        <text>Clear</text>
-    </string>
     <string id="ed_st_none_caption">
         <text>[none]</text>
     </string>
@@ -1372,13 +1380,13 @@
         <text>Object '%s', surface '%s' contain undefined game material.</text>
     </string>
     <string id="ed_st_motion_diff_ver">
-        <text>CustomObject: '%s' - motion has different version. Load failed.</text>
+        <text>Custom Object: '%s' - motion has different version. Load failed.</text>
     </string>
     <string id="ed_st_sound_src_no_sounds">
-        <text>SoundSource: '%s' has no sounds.</text>
+        <text>Sound Source: '%s' has no sounds.</text>
     </string>
     <string id="ed_st_same_in_out">
-        <text>SoundEnvironment: '%s' inner and outer environment must be different.</text>
+        <text>Sound Environment: '%s' inner and outer environment must be different.</text>
     </string>
     <string id="ed_st_no_sound_env">
         <text>Scene hasn't sound environment geometry.</text>
@@ -1400,5 +1408,1016 @@
     </string>
     <string id="ed_st_cant_create_portal_1">
         <text>Can't create Portal from one edge!\nPlease check geometry\nfrom '%s' to '%s'</text>
+    </string>
+    <string id="ed_st_only_one_way_point">
+        <text>! Only one selected way point supported.</text>
+    </string>
+    <string id="ed_st_rename_sel_msg">
+        <text>Are you sure to rename selected objects?</text>
+    </string>
+    <string id="ed_st_renamed_objects">
+        <text>%d - objects are renamed.</text>
+    </string>
+    <string id="ed_st_scene_share_vilation">
+        <text>Scene sharing violation</text>
+    </string>
+    <string id="ed_st_level_load">
+        <text>Level loading...</text>
+    </string>
+    <string id="ed_st_cform_rebuild_msg">
+        <text>Need to rebuild CFORM</text>
+    </string>
+    <string id="ed_st_ai_map_rebuild_msg">
+        <text>Need to rebuild AI-Map</text>
+    </string>
+    <string id="ed_st_game_graph_rebuild_msg">
+        <text>Need to rebuild game graph</text>
+    </string>
+    <string id="ed_st_som_export">
+        <text>Are you sure to export Sound Occlusion Model?</text>
+    </string>
+    <string id="ed_st_hom_export">
+        <text>Are you sure to export HOM?</text>
+    </string>
+    <string id="ed_st_details_export">
+        <text>Are you sure to export details?</text>
+    </string>
+    <string id="ed_st_puddles_export">
+        <text>Are you sure to export puddles?</text>
+    </string>
+    <string id="ed_st_game_export">
+        <text>Are you sure to export game?</text>
+    </string>
+    <string id="ed_st_ai_map_export">
+        <text>Are you sure to export ai-map?</text>
+    </string>
+    <string id="ed_st_level_export">
+        <text>Are you sure to build level?</text>
+    </string>
+    <string id="ed_st_redo_empty_buf">
+        <text>Redo buffer empty</text>
+    </string>
+    <string id="ed_st_undo_empty_buf">
+        <text>Undo buffer empty</text>
+    </string>
+    <string id="ed_st_fragment_save">
+        <text>Fragment saving...</text>
+    </string>
+    <string id="ed_st_fragment_load">
+        <text>Fragment loading...</text>
+    </string>
+    <string id="ed_st_scene_must_be_empty_refresh">
+        <text>Scene must be empty before refreshing library!</text>
+    </string>
+    <string id="ed_st_cant_load_map">
+        <text>Can't load map '%s'</text>
+    </string>
+    <string id="ed_st_model_not_found_1">
+        <text>Model [</text>
+    </string>
+    <string id="ed_st_model_not_found_2">
+        <text>] not found. Do you want to select it from library?</text>
+    </string>
+    <string id="ed_st_visual_no_anim">
+        <text>! visual [%s] has no animation [%s]</text>
+    </string>
+    <string id="ed_st_cant_create_entity">
+        <text>! Can't create entity: </text>
+    </string>
+    <string id="ed_st_obj_must_have_shape">
+        <text>Spawn Point: '%s' must contain attached shape.</text>
+    </string>
+    <string id="ed_st_spawn_unsupported">
+        <text>Spawn point: Unsupported version.</text>
+    </string>
+    <string id="ed_st_spawn_unsupported_ver">
+        <text>Spawn point: Unsupported spawn version.</text>
+    </string>
+    <string id="ed_st_spawn_cant_load">
+        <text>Spawn point: Can't load Spawn Data.</text>
+    </string>
+    <string id="ed_st_invalid_spawn_data">
+        <text>! Invalid spawn data:</text>
+    </string>
+    <string id="ed_st_spawn_profile">
+        <text>Profile (spawn section)</text>
+    </string>
+    <string id="ed_st_respawn_profile">
+        <text>Respawn Point\Profile</text>
+    </string>
+    <string id="ed_st_respawn_team">
+        <text>Respawn Point\Team</text>
+    </string>
+    <string id="ed_st_respawn_type">
+        <text>Respawn Point\Spawn Type</text>
+    </string>
+    <string id="ed_st_env_mod_radius">
+        <text>Environment Modificator\Radius</text>
+    </string>
+    <string id="ed_st_env_mod_power">
+        <text>Environment Modificator\Power</text>
+    </string>
+    <string id="ed_st_env_mod_view_dist">
+        <text>Environment Modificator\View Distance</text>
+    </string>
+    <string id="ed_st_env_mod_view_dist_2">
+        <text>Environment Modificator\View Distance\ </text>
+    </string>
+    <string id="ed_st_env_mod_fog_color">
+        <text>Environment Modificator\Fog Color</text>
+    </string>
+    <string id="ed_st_env_mod_fog_color_2">
+        <text>Environment Modificator\Fog Color\ </text>
+    </string>
+    <string id="ed_st_env_mod_fog_density">
+        <text>Environment Modificator\Fog Density</text>
+    </string>
+    <string id="ed_st_env_mod_fog_density_2">
+        <text>Environment Modificator\Fog Density\ </text>
+    </string>
+    <string id="ed_st_env_mod_ambient_color">
+        <text>Environment Modificator\Ambient Color</text>
+    </string>
+    <string id="ed_st_env_mod_ambient_color_2">
+        <text>Environment Modificator\Ambient Color\ </text>
+    </string>
+    <string id="ed_st_env_mod_sky_color">
+        <text>Environment Modificator\Sky Color</text>
+    </string>
+    <string id="ed_st_env_mod_sky_color_2">
+        <text>Environment Modificator\Sky Color\ </text>
+    </string>
+    <string id="ed_st_env_mod_hemi_color">
+        <text>Environment Modificator\Hemi Color</text>
+    </string>
+    <string id="ed_st_env_mod_hemi_color_2">
+        <text>Environment Modificator\Hemi Color\ </text>
+    </string>
+    <string id="ed_st_last_mesh_deleted">
+        <text>Last mesh deleted.\nSector has no meshes and will be removed.</text>
+    </string>
+    <string id="ed_st_capture_unused_face">
+        <text>Capturing unused face...</text>
+    </string>
+    <string id="ed_st_sector_obj_not_found">
+        <text>Sector Item contains object '%s' - can't load.\nObject not found.</text>
+    </string>
+    <string id="ed_st_sector_obj_dynamic">
+        <text>Sector Item contains object '%s' - can't load.\nObject is dynamic.</text>
+    </string>
+    <string id="ed_st_sector_mesh_not_found">
+        <text>Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.</text>
+    </string>
+    <string id="ed_st_sector_obj_unnamed">
+        <text>Sector Item contains unnamed object - can't load</text>
+    </string>
+    <string id="ed_st_sector_unsupported_ver">
+        <text>CSector: Unsupported version.</text>
+    </string>
+    <string id="ed_st_sector_objects">
+        <text>Contents\Objects</text>
+    </string>
+    <string id="ed_st_sector_meshes">
+        <text>Contents\Meshes</text>
+    </string>
+    <string id="ed_st_sector_faces">
+        <text>Contents\Faces</text>
+    </string>
+    <string id="ed_st_color">
+        <text>Color</text>
+    </string>
+    <string id="ed_st_change_levelmap">
+        <text>Change LevelMap to</text>
+    </string>
+    <string id="ed_st_sector_not_enough_faces">
+        <text>* ERROR: Sector: '%s' - face count less than 4!</text>
+    </string>
+    <string id="ed_st_sector_no_renderable_faces">
+        <text>* ERROR: Sector: '%s' - can't find any renderable face!</text>
+    </string>
+    <string id="ed_st_duplicate_obj_exists">
+        <text>Duplicate object name already exists: '%s'</text>
+    </string>
+    <string id="ed_st_cant_calculate_bound_box">
+        <text>Can't calculate bounding box. Nothing selected or some object unsupported this function.</text>
+    </string>
+    <string id="ed_st_render_err_1">
+        <text>Critical render error. Please report this to IX-Ray Team! \n[Type B] - Tools: '%s' Object: '%s'</text>
+    </string>
+    <string id="ed_st_render_err_2">
+        <text>Critical render error. Please report this to IX-Ray Team! \n[Type B] - Tools: '%s'</text>
+    </string>
+    <string id="ed_st_obj_not_found">
+        <text>CSceneObject: '%s' not found in library</text>
+    </string>
+    <string id="ed_st_obj_not_found_replace_1">
+        <text>Object [</text>
+    </string>
+    <string id="ed_st_obj_not_found_replace_2">
+        <text>] not found. Do you want to replace it with [</text>
+    </string>
+    <string id="ed_st_obj_not_found_replace_3">
+        <text>] or you want to select another object from library?</text>
+    </string>
+    <string id="ed_st_level_opt_bad_ver">
+        <text>Skipping bad version of level options.</text>
+    </string>
+    <string id="ed_st_build_params_bad_ver">
+        <text>Skipping bad version of build params.</text>
+    </string>
+    <string id="ed_st_level_part_invalid_ver">
+        <text>Skipping invalid version of level part: '%s\%s.part'</text>
+    </string>
+    <string id="ed_st_level_part_corrupted">
+        <text>Skipping corrupted version of level part: '%s\%s.part'</text>
+    </string>
+    <string id="ed_st_save_time">
+        <text>Saving time: %3.2f sec</text>
+    </string>
+    <string id="ed_st_escene_loading">
+        <text>EScene: loading '%s'</text>
+    </string>
+    <string id="ed_st_escene_unsupported">
+        <text>EScene: unsupported file version. Can't load Level.</text>
+    </string>
+    <string id="ed_st_obj_load_stats">
+        <text>EScene: %d objects loaded, %3.2f sec</text>
+    </string>
+    <string id="ed_st_escene_cant_find_snap">
+        <text>EScene: Can't find snap object '%s'.</text>
+    </string>
+    <string id="ed_st_cant_find_file">
+        <text>Can't find file: '%s'</text>
+    </string>
+    <string id="ed_st_level_opt_old_ver">
+        <text>Skipping old version of level options.\nCheck level options after loading.</text>
+    </string>
+    <string id="ed_st_loading_obj">
+        <text>Loading objects...</text>
+    </string>
+    <string id="ed_st_escene_sel_load_fail">
+        <text>EScene: Failed to load selection.</text>
+    </string>
+    <string id="ed_st_loading_part">
+        <text>EScene: loading part %s...</text>
+    </string>
+    <string id="ed_st_cant_open_clipboard">
+        <text>Failed to open clipboard</text>
+    </string>
+    <string id="ed_st_clipboard_nodata">
+        <text>No data in clipboard</text>
+    </string>
+    <string id="ed_st_cform_empty">
+        <text>CFORM is empty!\nCheck log.</text>
+    </string>
+    <string id="ed_st_ai_map_empty">
+        <text>AI-Map is empty!\nCheck log.</text>
+    </string>
+    <string id="ed_st_game_graph_empty">
+        <text>Game graph is empty!\nCheck log.</text>
+    </string>
+    <string id="ed_st_spawn_failed">
+        <text>! Failed build spawn! \nCheck log.</text>
+    </string>
+    <string id="ed_st_level_build_failed">
+        <text>Unable to build the level!</text>
+    </string>
+    <string id="ed_st_level_ai_temp_cant_save">
+        <text>Unable to save file level.ai.temp!\nCheck log.</text>
+    </string>
+    <string id="ed_st_scene_init">
+        <text>Scene: initialized</text>
+    </string>
+    <string id="ed_st_scene_clear">
+        <text>Scene: cleared</text>
+    </string>
+    <string id="ed_st_bounding_box_err">
+        <text>ERROR: Bounding box [%s]</text>
+    </string>
+    <string id="ed_st_save_prompt">
+        <text>The scene has been modified. Do you want to save your changes?</text>
+    </string>
+    <string id="ed_st_validate_failed">
+        <text>ERROR: Validate '%s' failed!</text>
+    </string>
+    <string id="ed_st_no_hom_obj">
+        <text>! Level doesn't contain HOM objects!</text>
+    </string>
+    <string id="ed_st_no_spawn">
+        <text>* ERROR: Can't find any Spawn Object.</text>
+    </string>
+    <string id="ed_st_no_lights">
+        <text>* ERROR: Can't find any Light Object.</text>
+    </string>
+    <string id="ed_st_no_objects">
+        <text>* ERROR: Can't find any Scene Object.</text>
+    </string>
+    <string id="ed_st_no_glow">
+        <text>* ERROR: Can't find any Glow Object.</text>
+    </string>
+    <string id="ed_st_duplicate_name_exist">
+        <text>* ERROR: Found duplicate object name.</text>
+    </string>
+    <string id="ed_st_uncompatible_shaders">
+        <text>* ERROR: Scene has non compatible shaders. Check log.</text>
+    </string>
+    <string id="ed_st_no_geom">
+        <text>* ERROR: Can't find static geometry.</text>
+    </string>
+    <string id="ed_st_no_particle_ref">
+        <text>* ERROR: Particle System has no reference.</text>
+    </string>
+    <string id="ed_st_validation_success">
+        <text>Validation successful.</text>
+    </string>
+    <string id="ed_st_scene_name">
+        <text>Scene\Name</text>
+    </string>
+    <string id="ed_st_scene_name_prefix">
+        <text>Scene\Name prefix</text>
+    </string>
+    <string id="ed_st_level_path">
+        <text>Scene\Build options\Level path</text>
+    </string>
+    <string id="ed_st_scene_custom_data">
+        <text>Scene\Build options\Custom data</text>
+    </string>
+    <string id="ed_st_map_version">
+        <text>Scene\Map version</text>
+    </string>
+    <string id="ed_st_scene_quality">
+        <text>Scene\Build options\Quality</text>
+    </string>
+    <string id="ed_st_hemi_quality">
+        <text>Scene\Build options\Lighting\Hemisphere quality [0-3]</text>
+    </string>
+    <string id="ed_st_sun_shadow_quality">
+        <text>Scene\Build options\Lighting\Sun shadow quality [0-3]</text>
+    </string>
+    <string id="ed_st_normal_smooth_angle">
+        <text>Scene\Build options\Optimizing\Normal smooth angle</text>
+    </string>
+    <string id="ed_st_weld_dist">
+        <text>Scene\Build options\Optimizing\Weld distance (m)</text>
+    </string>
+    <string id="ed_st_pixel_per_meter">
+        <text>Scene\Build options\Lighting\Pixel per meter</text>
+    </string>
+    <string id="ed_st_error_lm_collapse">
+        <text>Scene\Build options\Lighting\Error (LM collapsing)</text>
+    </string>
+    <string id="ed_st_error_lm_zero">
+        <text>Scene\Build options\Lighting\Error (LM zero)</text>
+    </string>
+    <string id="ed_st_jitter_samples">
+        <text>Scene\Build options\Lighting\Jitter samples</text>
+    </string>
+    <string id="ed_st_cform_empty_log">
+        <text>! CForm is empty!</text>
+    </string>
+    <string id="ed_st_subst_exist">
+        <text>! subst for '%s' already exist -'%s'</text>
+    </string>
+    <string id="ed_st_degenerate_portal">
+        <text>Portal: Degenerate portal found.</text>
+    </string>
+    <string id="ed_st_portal_orientation">
+        <text>Check portal orientation: '%s'</text>
+    </string>
+    <string id="ed_st_portal_unsupported_ver">
+        <text>CPortal: Unsupported version.</text>
+    </string>
+    <string id="ed_st_portal_no_sectors">
+        <text>Portal: Can't find required sectors.\nObject '%s' can't load.</text>
+    </string>
+    <string id="ed_st_portal_not_enough_vert">
+        <text>Unable to create portal '%s'.\nInvalid portal. (vertices count less than 3)</text>
+    </string>
+    <string id="ed_st_scene_targets_enable">
+        <text>Scene\Targets\Enable</text>
+    </string>
+    <string id="ed_st_scene_targets_read_only">
+        <text>Scene\Targets\Read Only</text>
+    </string>
+    <string id="ed_st_freeze_objects">
+        <text>Freeze objects</text>
+    </string>
+    <string id="ed_st_uniq_ref">
+        <text>Unique,Reference</text>
+    </string>
+    <string id="ed_st_glow_unsupported_ver">
+        <text>CGlow: Unsupported version.</text>
+    </string>
+    <string id="ed_st_radius">
+        <text>Radius</text>
+    </string>
+    <string id="ed_st_invalid_face_found">
+        <text>Invalid face found at pos: [%3.2f,%3.2f,%3.2f]</text>
+    </string>
+    <string id="ed_st_br_obj_more_than_63_parts">
+        <text>Breakable object cannot handle more than 63 parts.</text>
+    </string>
+    <string id="ed_st_degenerate_texture">
+        <text>Degenerate part found (Texture '%s').</text>
+    </string>
+    <string id="ed_st_texture_duplicated_faces">
+        <text>Part [texture '%s'] have %d duplicate(degenerate) face(s).</text>
+    </string>
+    <string id="ed_st_extract_parts">
+        <text>Extract Parts...</text>
+    </string>
+    <string id="ed_st_simplify_parts">
+        <text>Simplify Parts...</text>
+    </string>
+    <string id="ed_st_sound_src_unsupported_ver">
+        <text>ESoundSource: Unsupported version.</text>
+    </string>
+    <string id="ed_st_sound_src_invalid_ver">
+        <text>ESoundSource: Can't load Sound Source '%s'. Unsupported version.</text>
+    </string>
+    <string id="ed_st_custom_controls">
+        <text>Custom\Controls</text>
+    </string>
+    <string id="ed_st_play_stop_simulate">
+        <text>Play,Stop,Simulate</text>
+    </string>
+    <string id="ed_st_wave_name">
+        <text>Source\Sound name</text>
+    </string>
+    <string id="ed_st_sound_freq">
+        <text>Source\Frequency</text>
+    </string>
+    <string id="ed_st_sound_volume">
+        <text>Source\Volume</text>
+    </string>
+    <string id="ed_st_sound_min_dist">
+        <text>Source\Min dist</text>
+    </string>
+    <string id="ed_st_sound_max_dist">
+        <text>Source\Max dist</text>
+    </string>
+    <string id="ed_st_sound_max_ai_dist">
+        <text>Source\Max ai dist</text>
+    </string>
+    <string id="ed_st_active_time_hint">
+        <text>Game\Active time\Hint</text>
+    </string>
+    <string id="ed_st_active_time_hint_msg">
+        <text>Zero - play sound looped round the clock.</text>
+    </string>
+    <string id="ed_st_active_time_from">
+        <text>Game\Active time\From</text>
+    </string>
+    <string id="ed_st_active_time_to">
+        <text>Game\Active time\To</text>
+    </string>
+    <string id="ed_st_play_time_hint">
+        <text>Game\Play time\Hint</text>
+    </string>
+    <string id="ed_st_play_time_hint_msg">
+        <text>Zero - play sound once.</text>
+    </string>
+    <string id="ed_st_play_time_from">
+        <text>Game\Play time\From</text>
+    </string>
+    <string id="ed_st_play_time_to">
+        <text>Game\Play time\To</text>
+    </string>
+    <string id="ed_st_pause_delta_hint">
+        <text>Game\Pause delta\Hint</text>
+    </string>
+    <string id="ed_st_pause_delta_hint_msg">
+        <text>Zero - play sound looped.</text>
+    </string>
+    <string id="ed_st_pause_delta_from">
+        <text>Game\Pause delta\From</text>
+    </string>
+    <string id="ed_st_pause_delta_to">
+        <text>Game\Pause delta\To</text>
+    </string>
+    <string id="ed_st_sound_env_unsupported_ver">
+        <text>ESoundEnvironment: Unsupported version.</text>
+    </string>
+    <string id="ed_st_inner_env">
+        <text>Environment Inner</text>
+    </string>
+    <string id="ed_st_outer_env">
+        <text>Environment Outer</text>
+    </string>
+    <string id="ed_st_shape_usage">
+        <text>Shape usage</text>
+    </string>
+    <string id="ed_st_shape_common">
+        <text>common</text>
+    </string>
+    <string id="ed_st_shape_level_bound">
+        <text>level bound</text>
+    </string>
+    <string id="ed_st_tools_unsupported_ver">
+        <text>%s tools: Unsupported version.</text>
+    </string>
+    <string id="ed_st_sel_one_way_obj">
+        <text>Select one Way object.</text>
+    </string>
+    <string id="ed_st_wallmark_unsupported_ver">
+        <text>Static Wallmark: Unsupported version.</text>
+    </string>
+    <string id="ed_st_wallmark_more_than_max_vert">
+        <text>ERROR: Invalid wallmark (Contain more than %d vertices). Removed.</text>
+    </string>
+    <string id="ed_st_wallmark_no_texture">
+        <text>Select texture before adding wallmark.</text>
+    </string>
+    <string id="ed_st_activate_snap_list">
+        <text>Fill and activate snap list.</text>
+    </string>
+    <string id="ed_st_invalid_wm_vert_count">
+        <text>Invalid wallmark vertex count. [Min: %d. Max: %d].</text>
+    </string>
+    <string id="ed_st_wm_draw">
+        <text>Common\Draw Wallmarks</text>
+    </string>
+    <string id="ed_st_wm_align">
+        <text>Common\Alignment</text>
+    </string>
+    <string id="ed_st_wm_width">
+        <text>Common\Width</text>
+    </string>
+    <string id="ed_st_wm_height">
+        <text>Common\Height</text>
+    </string>
+    <string id="ed_st_wm_rotate">
+        <text>Common\Rotate</text>
+    </string>
+    <string id="ed_st_wm_shader">
+        <text>Common\Shader</text>
+    </string>
+    <string id="ed_st_wm_texture">
+        <text>Common\Texture</text>
+    </string>
+    <string id="ed_st_by_camera">
+        <text>By Camera</text>
+    </string>
+    <string id="ed_st_by_world_axis">
+        <text>By World Axis</text>
+    </string>
+    <string id="ed_st_wm_invalid_shader">
+        <text>Wallmarks: Invalid or missing shader '%s'.</text>
+    </string>
+    <string id="ed_st_cta_invalid_actorrp">
+        <text>! incorrect ActorRP teamID [%d] for CTA</text>
+    </string>
+    <string id="ed_st_cta_invalid_af">
+        <text>! incorrect AF teamID [%d] for CTA</text>
+    </string>
+    <string id="ed_st_nothing_selected">
+        <text>Nothing selected.</text>
+    </string>
+    <string id="ed_st_select_one_shape">
+        <text>Select one shape.</text>
+    </string>
+    <string id="ed_st_cant_attach_shape">
+        <text>Attach impossible.</text>
+    </string>
+    <string id="ed_st_draw_solid">
+        <text>Common\Draw Solid</text>
+    </string>
+    <string id="ed_st_draw_simple_model">
+        <text>Common\Draw Simple Model</text>
+    </string>
+    <string id="ed_st_removed_portals_count">
+        <text>Removed '%d' portal(s).</text>
+    </string>
+    <string id="ed_st_obj_invalid_mat">
+        <text>Object '%s', surface '%s' contain invalid game material.</text>
+    </string>
+    <string id="ed_st_obj_unknown_mat">
+        <text>Object '%s', surface '%s' contain undefined game material.</text>
+    </string>
+    <string id="ed_st_obj_no_shader">
+        <text>Can't find engine shader '%s'. Object '%s', surface '%s'. Export interrupted.</text>
+    </string>
+    <string id="ed_st_obj_wrong_shader">
+        <text>Object '%s', surface '%s' contain static engine shader - '%s'. Export interrupted.</text>
+    </string>
+    <string id="ed_st_export_breakable">
+        <text>Export breakable objects...</text>
+    </string>
+    <string id="ed_st_prepare_geom">
+        <text>Prepare geometry...</text>
+    </string>
+    <string id="ed_st_export_parts">
+        <text>Export Parts...</text>
+    </string>
+    <string id="ed_st_invalid_breakable">
+        <text>Invalid breakable object.</text>
+    </string>
+    <string id="ed_st_cant_export_invalid_part">
+        <text>Can't export invalid part #%d</text>
+    </string>
+    <string id="ed_st_export_climable_obj">
+        <text>Export climable objects...</text>
+    </string>
+    <string id="ed_st_invalid_climable">
+        <text>Invalid climable object found. [%3.2f, %3.2f, %3.2f]</text>
+    </string>
+    <string id="ed_st_duplicate_obj_pos">
+        <text>Duplicate object position '%s'-'%s' with reference '%s'.</text>
+    </string>
+    <string id="ed_st_no_texture">
+        <text>! There is no texture '%s'</text>
+    </string>
+    <string id="ed_st_scale_proportional">
+        <text>Scale\Proportional</text>
+    </string>
+    <string id="ed_st_scale_minimum">
+        <text>Scale\Minimum</text>
+    </string>
+    <string id="ed_st_scale_maximum">
+        <text>Scale\Maximum</text>
+    </string>
+    <string id="ed_st_rotate_minimum">
+        <text>Rotate\Minimum</text>
+    </string>
+    <string id="ed_st_rotate_maximum">
+        <text>Rotate\Maximum</text>
+    </string>
+    <string id="ed_st_cant_load_reference">
+        <text>TUI_ControlObjectAdd:: Can't load reference object.</text>
+    </string>
+    <string id="ed_st_sun_shadow_visible">
+        <text>Common\Sun Shadow\Visible</text>
+    </string>
+    <string id="ed_st_sun_shadow_altitude">
+        <text>Common\Sun Shadow\Altitude</text>
+    </string>
+    <string id="ed_st_sun_shadow_longitude">
+        <text>Common\Sun Shadow\Longitude</text>
+    </string>
+    <string id="ed_st_sun_draw_name">
+        <text>Common\Controls\Draw Name</text>
+    </string>
+    <string id="ed_st_sun_count">
+        <text>Common\Controls\Count</text>
+    </string>
+    <string id="ed_st_system">
+        <text>Common\Controls\System</text>
+    </string>
+    <string id="ed_st_user">
+        <text>Common\Controls\User</text>
+    </string>
+    <string id="ed_st_rename_remove">
+        <text>Rename,Remove</text>
+    </string>
+    <string id="ed_st_invalid_light_ctrl">
+        <text>%s: '%s' - Invalid light control.</text>
+    </string>
+    <string id="ed_st_duplicate_name">
+        <text>Duplicate name found.</text>
+    </string>
+    <string id="ed_st_invalid_ctrl_name">
+        <text>Invalid control name.</text>
+    </string>
+    <string id="ed_st_cant_ungroup">
+        <text>Can't ungroup object: '%s'.</text>
+    </string>
+    <string id="ed_st_group_created">
+        <text>Group '%s' successfully created.\nContain %d object(s)</text>
+    </string>
+    <string id="ed_st_cant_create_group">
+        <text>Group can't be created.</text>
+    </string>
+    <string id="ed_st_cant_reload_group">
+        <text>Can't reload group: '%s'.</text>
+    </string>
+    <string id="ed_st_no_obj_selected">
+        <text>No object(s) selected.</text>
+    </string>
+    <string id="ed_st_process_multiple">
+        <text>Process multiple objects?</text>
+    </string>
+    <string id="ed_st_cant_write">
+        <text>Can't write file [%s]</text>
+    </string>
+    <string id="ed_st_cant_make_screenshot">
+        <text>Can't make screenshot.</text>
+    </string>
+    <string id="ed_st_sel_one_group_obj">
+        <text>Select 1 Group object.</text>
+    </string>
+    <string id="ed_st_test_vis">
+        <text>Common\Test Visibility</text>
+    </string>
+    <string id="ed_st_draw_cross">
+        <text>Common\Draw Cross</text>
+    </string>
+    <string id="ed_st_fog_profile">
+        <text>profile (ltx)</text>
+    </string>
+    <string id="ed_st_fog_type">
+        <text>Volume Type</text>
+    </string>
+    <string id="ed_st_emitter">
+        <text>Emitter</text>
+    </string>
+    <string id="ed_st_occ">
+        <text>Occlusion</text>
+    </string>
+    <string id="ed_st_snap_list_empty">
+        <text>Snap list empty!</text>
+    </string>
+    <string id="ed_st_base_tex_empty">
+        <text>Base texture empty!</text>
+    </string>
+    <string id="ed_st_update_bound_box">
+        <text>Updating bounding boxes...</text>
+    </string>
+    <string id="ed_st_invalid_base_tex">
+        <text>Invalid base texture!</text>
+    </string>
+    <string id="ed_st_obj_list_empty">
+        <text>Object list empty!</text>
+    </string>
+    <string id="ed_st_update_obj">
+        <text>Updating objects...</text>
+    </string>
+    <string id="ed_st_cant_open_file">
+        <text>Can't open file '%s'.</text>
+    </string>
+    <string id="ed_st_detail_unsupported_ver">
+        <text>EDetailManager: unsupported version.</text>
+    </string>
+    <string id="ed_st_detail_reinit_obj">
+        <text>EDetailManager: Some objects removed. Reinitialize objects.</text>
+    </string>
+    <string id="ed_st_detail_cant_find_snap">
+        <text>EDetailManager: Can't find snap object '%s'.</text>
+    </string>
+    <string id="ed_st_detail_cant_find_tex">
+        <text>EDetailManager: Can't find base texture '%s'.</text>
+    </string>
+    <string id="ed_st_making_details">
+        <text>Making details...</text>
+    </string>
+    <string id="ed_st_merge_textures">
+        <text>merge textures</text>
+    </string>
+    <string id="ed_st_export_geom">
+        <text>export geometry</text>
+    </string>
+    <string id="ed_st_bad_obj">
+        <text>Bad object or object not found '%s'.</text>
+    </string>
+    <string id="ed_st_export_slots">
+        <text>export slots</text>
+    </string>
+    <string id="ed_st_tex_changed">
+        <text>Texture changed. Reinitialize objects.</text>
+    </string>
+    <string id="ed_st_obj_per_square">
+        <text>Objects per square</text>
+    </string>
+    <string id="ed_st_base_tex">
+        <text>Base Texture</text>
+    </string>
+    <string id="ed_st_detail_draw_obj">
+        <text>Common\Draw objects</text>
+    </string>
+    <string id="ed_st_detail_draw_tex">
+        <text>Common\Draw base texture</text>
+    </string>
+    <string id="ed_st_detail_base_tex_blend">
+        <text>Common\Base texture blended</text>
+    </string>
+    <string id="ed_st_detail_draw_slots">
+        <text>Common\Draw slot boxes</text>
+    </string>
+    <string id="ed_st_loading_stream">
+        <text>Loading %s(stream)...</text>
+    </string>
+    <string id="ed_st_loading_ltx">
+        <text>Loading %s(ltx)...</text>
+    </string>
+    <string id="ed_st_loading_class">
+        <text>Loading %s...</text>
+    </string>
+    <string id="ed_st_invalid_name">
+        <text>!!! Error _name = %s, %s, %s</text>
+    </string>
+    <string id="ed_st_try_fix_name">
+        <text>!!! Try FIX name</text>
+    </string>
+    <string id="ed_st_fill_obj_list">
+        <text>Fill object list and try again.</text>
+    </string>
+    <string id="ed_st_cant_align_pos">
+        <text>Can't align position.</text>
+    </string>
+    <string id="ed_st_building_nodes">
+        <text>Building nodes...</text>
+    </string>
+    <string id="ed_st_append_one_node">
+        <text>Append at least one node.</text>
+    </string>
+    <string id="ed_st_prepare_collision">
+        <text>Prepare collision model...</text>
+    </string>
+    <string id="ed_st_build_collision">
+        <text>Building collision model...</text>
+    </string>
+    <string id="ed_st_build_time">
+        <text>- building time: %.3f</text>
+    </string>
+    <string id="ed_st_fill_snap_list">
+        <text>Fill snap list before generating slots!</text>
+    </string>
+    <string id="ed_st_smoothing_nodes">
+        <text>Smoothing nodes...</text>
+    </string>
+    <string id="ed_st_node_has_wrong_link">
+        <text>Node: has wrong link [%3.2f, %3.2f, %3.2f], {%d,%d,%d,%d}</text>
+    </string>
+    <string id="ed_st_ai_map_unsupported_ver">
+        <text>AI-Map: Unsupported version.</text>
+    </string>
+    <string id="ed_st_ai_map_cant_find_snap">
+        <text>AI-Map: Can't find snap object '%s'.</text>
+    </string>
+    <string id="ed_st_cant_create_node">
+        <text>Can't create node.</text>
+    </string>
+    <string id="ed_st_removing_nodes">
+        <text>Removing nodes...</text>
+    </string>
+    <string id="ed_st_erasing_nodes">
+        <text>erasing nodes</text>
+    </string>
+    <string id="ed_st_updating_hash">
+        <text>updating hash</text>
+    </string>
+    <string id="ed_st_ai_map_end">
+        <text>end</text>
+    </string>
+    <string id="ed_st_ai_map_draw_nodes">
+        <text>Common\Draw Nodes</text>
+    </string>
+    <string id="ed_st_ai_map_slow_calc">
+        <text>Common\Slow Calculate Mode</text>
+    </string>
+    <string id="ed_st_ai_map_vis_radius">
+        <text>Common\Visible Radius</text>
+    </string>
+    <string id="ed_st_ai_map_smooth_height">
+        <text>Common\Smooth Height</text>
+    </string>
+    <string id="ed_st_ai_map_brush_size">
+        <text>Params\Brush Size</text>
+    </string>
+    <string id="ed_st_ai_map_can_up">
+        <text>Params\Can Up</text>
+    </string>
+    <string id="ed_st_ai_map_can_down">
+        <text>Params\Can Down</text>
+    </string>
+    <string id="ed_st_play_stop">
+        <text>Play,Stop</text>
+    </string>
+    <string id="ed_st_range">
+        <text>Range</text>
+    </string>
+    <string id="ed_st_light_constant">
+        <text>Attenuation\Constant</text>
+    </string>
+    <string id="ed_st_light_linear">
+        <text>Attenuation\Linear</text>
+    </string>
+    <string id="ed_st_light_quadratic">
+        <text>Attenuation\Quadratic</text>
+    </string>
+    <string id="ed_st_light_auto">
+        <text>Attenuation\Auto</text>
+    </string>
+    <string id="ed_st_linear_quadratic">
+        <text>Linear,Quadratic</text>
+    </string>
+    <string id="ed_st_light_graphic">
+        <text>Attenuation\Graphic</text>
+    </string>
+    <string id="ed_st_light_lm">
+        <text>Usage\Light Map</text>
+    </string>
+    <string id="ed_st_light_dynamic">
+        <text>Usage\Dynamic</text>
+    </string>
+    <string id="ed_st_light_animated">
+        <text>Usage\Animated</text>
+    </string>
+    <string id="ed_st_fuzzy">
+        <text>Fuzzy</text>
+    </string>
+    <string id="ed_st_fuzzy_count">
+        <text>Fuzzy\Count</text>
+    </string>
+    <string id="ed_st_fuzzy_generate">
+        <text>Fuzzy\Generate</text>
+    </string>
+    <string id="ed_st_random">
+        <text>Random</text>
+    </string>
+    <string id="ed_st_fuzzy_shape">
+        <text>Fuzzy\Shape</text>
+    </string>
+    <string id="ed_st_fuzzy_radius">
+        <text>Fuzzy\Radius</text>
+    </string>
+    <string id="ed_st_fuzzy_half_dim">
+        <text>Fuzzy\Half Dimension</text>
+    </string>
+    <string id="ed_st_spot_cone_angle">
+        <text>Spot R1\Cone Angle</text>
+    </string>
+    <string id="ed_st_spot_texture">
+        <text>Spot R1\Texture</text>
+    </string>
+    <string id="ed_st_type">
+        <text>Type</text>
+    </string>
+    <string id="ed_st_brightness">
+        <text>Brightness</text>
+    </string>
+    <string id="ed_st_light_ctrl">
+        <text>Light Control</text>
+    </string>
+    <string id="ed_st_use_in_d3d">
+        <text>Use in render</text>
+    </string>
+    <string id="ed_st_light_unsupported_ver">
+        <text>CLight: Unsupported version.</text>
+    </string>
+    <string id="ed_st_cant_find_la">
+        <text>Can't find light animation: %s</text>
+    </string>
+    <string id="ed_st_cant_load_sun">
+        <text>CLight: Can't load sun.</text>
+    </string>
+    <string id="ed_st_from_time">
+        <text>From Time</text>
+    </string>
+    <string id="ed_st_to_time">
+        <text>To Time</text>
+    </string>
+    <string id="ed_st_speed_m_sec">
+        <text>Speed (m/sec)</text>
+    </string>
+    <string id="ed_st_motionable">
+        <text>Flags\Motionable</text>
+    </string>
+    <string id="ed_st_motion_hint">
+        <text>Motion\Hint</text>
+    </string>
+    <string id="ed_st_motion_files">
+        <text>Motion\Files</text>
+    </string>
+    <string id="ed_st_motion_hint_msg">
+        <text>Make KEY only on Parent CS</text>
+    </string>
+    <string id="ed_st_import_export">
+        <text>Import,Export</text>
+    </string>
+    <string id="ed_st_motion_commands">
+        <text>Motion\Commands</text>
+    </string>
+    <string id="ed_st_motion_commands_btn">
+        <text>+ K,- K,Scale,Norm,Clamp</text>
+    </string>
+    <string id="ed_st_motion_controls">
+        <text>Motion\Controls</text>
+    </string>
+    <string id="ed_st_auto_key">
+        <text>Motion\Flags\Auto Key</text>
+    </string>
+    <string id="ed_st_camera_view">
+        <text>Motion\Flags\Camera View</text>
+    </string>
+    <string id="ed_st_start_frame">
+        <text>Motion\Start Frame (sec)</text>
+    </string>
+    <string id="ed_st_end_frame">
+        <text>Motion\End Frame (sec)</text>
+    </string>
+    <string id="ed_st_current_frame">
+        <text>Motion\Current Frame (sec)</text>
+    </string>
+    <string id="ed_st_change_key_time">
+        <text>Motion\Change Key Time (sec)</text>
+    </string>
+    <string id="ed_st_key_count">
+        <text>Motion\Key Count</text>
+    </string>
+    <string id="ed_st_motion_length">
+        <text>Motion\Length (sec)</text>
+    </string>
+    <string id="ed_st_light">
+        <text>Light</text>
     </string>
 </string_table>

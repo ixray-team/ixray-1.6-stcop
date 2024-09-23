@@ -13,8 +13,8 @@ bool ESceneSoundEnvTool::LoadLTX(CInifile& ini)
 	u32 version 	= ini.r_u32("main","version");
     if( version!=SOUND_ENV_TOOLS_VERSION )
     {
-            ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
-            return false;
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
+        return false;
     }
 
 	inherited::LoadLTX(ini);
@@ -32,7 +32,7 @@ bool ESceneSoundEnvTool::LoadStream(IReader& F)
 	u16 version 	= 0;
     if(F.r_chunk(CHUNK_VERSION,&version))
         if( version!=SOUND_ENV_TOOLS_VERSION ){
-            ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+            ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
             return false;
         }
 
@@ -55,7 +55,7 @@ bool ESceneSoundEnvTool::LoadSelection(IReader& F)
 	u16 version 	= 0;
     R_ASSERT(F.r_chunk(CHUNK_VERSION,&version));
     if( version!=SOUND_ENV_TOOLS_VERSION ){
-        ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
         return false;
     }
 

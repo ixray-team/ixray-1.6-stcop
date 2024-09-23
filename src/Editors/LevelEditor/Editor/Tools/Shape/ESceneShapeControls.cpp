@@ -32,7 +32,7 @@ bool  TUI_ControlShapeAdd::Start(TShiftState Shift)
         if (from){
             ObjectList lst;
             int cnt 		= Scene->GetQueryObjects(lst,OBJCLASS_SHAPE,1,1,0);
-            if (1!=cnt)		ELog.DlgMsg(mtError,"Select one shape.");
+            if (1!=cnt)		ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_select_one_shape").c_str());
             else{
                 CEditShape* base = dynamic_cast<CEditShape*>(lst.back()); R_ASSERT(base);
                 if (base!=from){

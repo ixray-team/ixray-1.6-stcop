@@ -48,7 +48,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "light";}
-    IC LPCSTR			ClassDesc				(){return "Light";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_light").c_str();}
     IC int				RenderPriority			(){return 10;}
 
     // IO

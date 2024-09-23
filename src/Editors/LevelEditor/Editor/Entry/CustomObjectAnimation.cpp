@@ -208,9 +208,9 @@ void 	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& bModif, boo
         m_FromTime = m_MotionParams->min_t;
         m_ToTime = m_MotionParams->max_t;
         m_ScaleFactor = 1.f;
-		PHelper().CreateFloat	(items,"From Time", 	&m_FromTime, m_FromTime, m_ToTime, 	1.f/30.f, 3);
-		PHelper().CreateFloat	(items,"To Time",   	&m_ToTime, m_FromTime, m_ToTime, 	1.f/30.f, 3);
-		PHelper().CreateFloat	(items,"Scale",			&m_ScaleFactor, 	-1000.f, 1000.f);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_from_time").c_str(), &m_FromTime, m_FromTime, m_ToTime, 1.f / 30.f, 3);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_to_time").c_str(), &m_ToTime, m_FromTime, m_ToTime, 1.f / 30.f, 3);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_scale").c_str(), &m_ScaleFactor, -1000.f, 1000.f);
         UIPropertiesModal::Show(items);
         m_ButtonId = 2;
         EDevice->seqDrawUI.Add(this);
@@ -221,9 +221,9 @@ void 	CCustomObject::OnMotionCommandsClick(ButtonValue* value, bool& bModif, boo
         m_FromTime = m_MotionParams->min_t;
         m_ToTime = m_MotionParams->max_t;
         m_Speed=5.f;
-		PHelper().CreateFloat	(items,"From Time", 	&m_FromTime, m_FromTime, m_ToTime, 	1.f/30.f, 3);
-		PHelper().CreateFloat	(items,"To Time",   	&m_ToTime, m_FromTime, m_ToTime, 	1.f/30.f, 3);
-		PHelper().CreateFloat	(items,"Speed (m/sec)", &m_Speed, 		0.f, 100.f);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_from_time").c_str(), &m_FromTime, m_FromTime, m_ToTime, 1.f / 30.f, 3);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_to_time").c_str(), &m_ToTime, m_FromTime, m_ToTime, 1.f / 30.f, 3);
+		PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_speed_m_sec").c_str(), &m_Speed, 0.f, 100.f);
         UIPropertiesModal::Show(items);
         m_ButtonId = 3;
         EDevice->seqDrawUI.Add(this);
@@ -306,31 +306,31 @@ void 	CCustomObject::OnTransformChange(PropValue* value)
 
 void CCustomObject::AnimationFillProp(LPCSTR pref, PropItemVec& items)
 {
-    PropValue* V		= PHelper().CreateFlag32(items,PrepareKey(pref,"Flags\\Motionable"),&m_CO_Flags, flMotion);
+    PropValue* V		= PHelper().CreateFlag32(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motionable").c_str()),&m_CO_Flags, flMotion);
     V->OnChangeEvent.bind(this,&CCustomObject::OnMotionableChange);
 	if (Motionable()){
-       				      PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Hint"),		"Make KEY only on Parent CS");
-	    ButtonValue* B	= PHelper().CreateButton		(items,PrepareKey(pref,"Motion\\Files"),	"Import,Export", 0);
+       				      PHelper().CreateCaption		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motion_hint").c_str()),		g_pStringTable->translate("ed_st_motion_hint_msg").c_str());
+	    ButtonValue* B	= PHelper().CreateButton		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motion_files").c_str()),	g_pStringTable->translate("ed_st_import_export").c_str(), 0);
         B->OnBtnClickEvent.bind(this,&CCustomObject::OnMotionFilesClick);
-	    B				= PHelper().CreateButton		(items,PrepareKey(pref,"Motion\\Commands"),	"+ K,- K,Scale,Norm,Clamp", 0);
+	    B				= PHelper().CreateButton		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motion_commands").c_str()),	g_pStringTable->translate("ed_st_motion_commands_btn").c_str(), 0);
         B->OnBtnClickEvent.bind(this,&CCustomObject::OnMotionCommandsClick);
-	    B				= PHelper().CreateButton		(items,PrepareKey(pref,"Motion\\Controls"),	" |<<, +<<, <<, >, ||, >>, >>+, >>|", 0); 
+	    B				= PHelper().CreateButton		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motion_controls").c_str()),	" |<<, +<<, <<, >, ||, >>, >>+, >>|", 0); 
         B->OnBtnClickEvent.bind(this,&CCustomObject::OnMotionControlClick);
-        				  PHelper().CreateFlag32		(items,PrepareKey(pref,"Motion\\Flags\\Auto Key"), 		&m_CO_Flags, flAutoKey);
-        V				= PHelper().CreateFlag32		(items,PrepareKey(pref,"Motion\\Flags\\Camera View"), 	&m_CO_Flags, flCameraView);
+        				  PHelper().CreateFlag32		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_auto_key").c_str()), 		&m_CO_Flags, flAutoKey);
+        V				= PHelper().CreateFlag32		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_camera_view").c_str()), 	&m_CO_Flags, flCameraView);
         V->OnChangeEvent.bind(this,&CCustomObject::OnMotionCameraViewChange);
-	    V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\Start Frame (sec)"),		&m_MotionParams->min_t, -10000.f, m_MotionParams->max_t, 	1.f/30.f, 3);
+	    V				= PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_start_frame").c_str()),		&m_MotionParams->min_t, -10000.f, m_MotionParams->max_t, 	1.f/30.f, 3);
     	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionFrameChange);
-		V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\End Frame (sec)"),		&m_MotionParams->max_t, m_MotionParams->min_t, 10000.f, 	1.f/30.f, 3);
+		V				= PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_end_frame").c_str()),		&m_MotionParams->max_t, m_MotionParams->min_t, 10000.f, 	1.f/30.f, 3);
     	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionFrameChange);
-		V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\Current Frame (sec)"),	&m_MotionParams->t_current, -10000.f, 10000.f,	1.f/30.f, 3);
+		V				= PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_current_frame").c_str()),	&m_MotionParams->t_current, -10000.f, 10000.f,	1.f/30.f, 3);
     	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionCurrentFrameChange);
 
-		V				= PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\ChangeKeyTime(sec)"),	&m_MotionParams->tmp, -10000.f, 10000.f,	1.f/30.f, 3);
+		V				= PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_change_key_time").c_str()),	&m_MotionParams->tmp, -10000.f, 10000.f,	1.f/30.f, 3);
     	V->OnChangeEvent.bind(this,&CCustomObject::OnMotionKeyTimeChange);
 
-        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Key Count"),			shared_str().printf("%d",m_Motion->KeyCount()));
-        				  PHelper().CreateCaption		(items,PrepareKey(pref,"Motion\\Length (sec)"),		shared_str().printf("%3.2f",m_Motion->GetLength()));
+        				  PHelper().CreateCaption		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_key_count").c_str()),			shared_str().printf("%d",m_Motion->KeyCount()));
+        				  PHelper().CreateCaption		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_motion_length").c_str()),		shared_str().printf("%3.2f",m_Motion->GetLength()));
 	}
 }
  

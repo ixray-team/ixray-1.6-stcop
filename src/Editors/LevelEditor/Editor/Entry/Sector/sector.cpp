@@ -91,7 +91,7 @@ int CSector::DelMesh	(CSceneObject* O, CEditableMesh* M)
     }
 	if (sector_items.empty()){
     	res = 2;
-    	ELog.Msg(mtInformation,"Last mesh deleted.\nSector has no meshes and will be removed.");
+    	ELog.Msg(mtInformation,g_pStringTable->translate("ed_st_last_mesh_deleted").c_str());
         DeleteThis();
     }
     return res;
@@ -323,7 +323,7 @@ void CSector::CaptureAllUnusedMeshes()
     CSceneObject *obj=NULL;
     ObjectList& lst=Scene->ListObj(OBJCLASS_SCENEOBJECT);
     // ignore dynamic objects
-    SPBItem* pb = UI->ProgressStart(lst.size(),"Capturing unused face...");
+    SPBItem* pb = UI->ProgressStart(lst.size(),g_pStringTable->translate("ed_st_capture_unused_face").c_str());
     for(ObjectIt _F = lst.begin();_F!=lst.end();_F++){
         pb->Inc();
         obj = (CSceneObject*)(*_F);
@@ -385,14 +385,14 @@ void CSector::LoadSectorDef( IReader* F )
 	sitem.object=(CSceneObject*)Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
     if (sitem.object==NULL)
     {
-        ELog.Msg		(mtError,"Sector Item contains object '%s' - can't load.\nObject not found.",o_name);
+        ELog.Msg		(mtError,g_pStringTable->translate("ed_st_sector_obj_not_found").c_str(), o_name);
         m_bHasLoadError = true;
         return;
     }
 
     if (!(sitem.object->IsStatic()||sitem.object->IsMUStatic()))
     {
-    	ELog.Msg(mtError,"Sector Item contains object '%s' - can't load.\nObject is dynamic.",o_name);
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_sector_obj_dynamic").c_str(), o_name);
         m_bHasLoadError = true;
         return;
     }
@@ -401,7 +401,7 @@ void CSector::LoadSectorDef( IReader* F )
 	sitem.mesh=sitem.object->GetReference()->FindMeshByName(m_name);
     if (sitem.mesh==0)
     {
-    	ELog.Msg(mtError,"Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.",o_name,m_name);
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_sector_mesh_not_found").c_str(), o_name, m_name);
         m_bHasLoadError = true;
         return;
     }
@@ -423,19 +423,19 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
 	// sector item
 	o_name = ini.r_string(sect_name, buff);
     if(!o_name)
-            ELog.Msg		(mtError,"Sector Item contains not nnamed object - can't load");
+            ELog.Msg		(mtError,g_pStringTable->translate("ed_st_sector_obj_unnamed").c_str());
     
 	sitem.object=(CSceneObject*)Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
     if (sitem.object==NULL)
     {
-        ELog.Msg		(mtError,"Sector Item contains object '%s' - can't load.\nObject not found.",o_name);
+        ELog.Msg(mtError, g_pStringTable->translate("ed_st_sector_mesh_not_found").c_str(), o_name, m_name);
         m_bHasLoadError = true;
         return;
     }
 
     if (!(sitem.object->IsStatic()||sitem.object->IsMUStatic()))
     {
-    	ELog.Msg(mtError,"Sector Item contains object '%s' - can't load.\nObject is dynamic.",o_name);
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_sector_obj_dynamic").c_str(), o_name);
         m_bHasLoadError = true;
         return;
     }
@@ -446,7 +446,7 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
 	sitem.mesh=sitem.object->GetReference()->FindMeshByName(m_name);
     if (sitem.mesh==0)
     {
-    	ELog.Msg(mtError,"Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.",o_name,m_name);
+        ELog.Msg(mtError, g_pStringTable->translate("ed_st_sector_mesh_not_found").c_str(), o_name, m_name);
         m_bHasLoadError = true;
         return;
     }
@@ -459,7 +459,7 @@ bool CSector::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	u32 version = ini.r_u32		(sect_name, "version");
     if( version<0x0011)
     {
-        ELog.Msg( mtError, "CSector: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_sector_unsupported_ver").c_str());
         return false;
     }
 
@@ -516,7 +516,7 @@ bool CSector::LoadStream(IReader& F)
     char buf[1024];
     R_ASSERT(F.r_chunk(SECTOR_CHUNK_VERSION,&version));
     if( version!=SECTOR_VERSION ){
-        ELog.Msg( mtError, "CSector: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_sector_unsupported_ver").c_str());
         return false;
     }
 
@@ -593,13 +593,13 @@ xr_token level_sub_map[] =
 void CSector::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProp(pref,items);        
-    PHelper().CreateFColor(items, PrepareKey(pref,"Color"), &sector_color);
+    PHelper().CreateFColor(items, PrepareKey(pref,g_pStringTable->translate("ed_st_color").c_str()), &sector_color);
     int faces, objects, meshes;
     GetCounts(&objects,&meshes,&faces);
-    PHelper().CreateCaption(items,PrepareKey(pref,GetName(),"Contents\\Objects"),	xr_string::ToString(objects).c_str());
-    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Meshes"), 	xr_string::ToString(meshes).c_str());
-    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),"Contents\\Faces"), 	xr_string::ToString(faces).c_str());
-	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),"Change LevelMap to"), &m_map_idx, level_sub_map);
+    PHelper().CreateCaption(items,PrepareKey(pref,GetName(),g_pStringTable->translate("ed_st_sector_objects").c_str()),	xr_string::ToString(objects).c_str());
+    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),g_pStringTable->translate("ed_st_sector_meshes").c_str()), 	xr_string::ToString(meshes).c_str());
+    PHelper().CreateCaption(items,PrepareKey(pref, GetName(),g_pStringTable->translate("ed_st_sector_faces").c_str()), 	xr_string::ToString(faces).c_str());
+	PHelper().CreateToken8(items, PrepareKey(pref, GetName(),g_pStringTable->translate("ed_st_change_levelmap").c_str()), &m_map_idx, level_sub_map);
     
 }
 
@@ -618,7 +618,7 @@ bool CSector::Validate(bool bMsg)
     int f_cnt;
     GetCounts		(0,0,&f_cnt);
     if (f_cnt<=4){
-        if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - face count < 4!",GetName());
+        if (bMsg) 	ELog.Msg(mtError,g_pStringTable->translate("ed_st_sector_not_enough_faces").c_str(), GetName());
         bRes		= false;
     }
     // verify shader compatibility
@@ -631,7 +631,7 @@ bool CSector::Validate(bool bMsg)
         }
 	}
     if (!bRenderableFound){
-        if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+        if (bMsg) 	ELog.Msg(mtError,g_pStringTable->translate("ed_st_sector_no_renderable_faces").c_str(), GetName());
     	bRes 		= false;
 	}        
    	return bRes;

@@ -14,7 +14,7 @@ bool ESceneGroupTool::LoadStream(IReader& F)
     if(F.r_chunk(CHUNK_VERSION,&version))
         if( version!=GROUP_TOOLS_VERSION )
         {
-            ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+            ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
             return false;
         }
 
@@ -30,7 +30,7 @@ bool ESceneGroupTool::LoadLTX(CInifile& ini)
 
     if( version!=GROUP_TOOLS_VERSION )
     {
-        ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
         return false;
     }
 	if (!inherited::LoadLTX(ini)) return false;
@@ -60,7 +60,7 @@ bool ESceneGroupTool::LoadSelection(IReader& F)
     R_ASSERT(F.r_chunk(CHUNK_VERSION,&version));
     if( version!=GROUP_TOOLS_VERSION )
     {
-        ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
         return false;
     }
 

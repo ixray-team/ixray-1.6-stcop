@@ -164,7 +164,6 @@ void ESceneLightTool::OnControlAppendClick(ButtonValue* sender, bool& bDataModif
 
 void ESceneLightTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataModified, bool& bSafe)
 {
-	R_ASSERT(!"�������� �� �����������");
   /*  xr_string item_name = V->Owner()->Item()->Text;
 	switch (V->btn_num){
 	case 0:{ 
@@ -192,21 +191,21 @@ void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
 //.	PHelper().CreateRToken32(items, PrepareKey(pref,"Common\\Hemisphere\\Light Control"),	&m_HemiControl, 	&*lcontrols.begin(), lcontrols.size());
 	
 	// sun
-	PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Sun Shadow\\Visible"),			&m_Flags,			flShowSun);
-	PHelper().CreateAngle	(items,	PrepareKey(pref,"Common\\Sun Shadow\\Altitude"),			&m_SunShadowDir.x,	-PI_DIV_2,0);
-	PHelper().CreateAngle	(items,	PrepareKey(pref,"Common\\Sun Shadow\\Longitude"),		&m_SunShadowDir.y,	0,PI_MUL_2);
+	PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_sun_shadow_visible").c_str()),			&m_Flags,			flShowSun);
+	PHelper().CreateAngle	(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_sun_shadow_altitude").c_str()),			&m_SunShadowDir.x,	-PI_DIV_2,0);
+	PHelper().CreateAngle	(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_sun_shadow_longitude").c_str()),		&m_SunShadowDir.y,	0,PI_MUL_2);
 	// light controls
-	PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Controls\\Draw Name"),			&m_Flags,			flShowControlName);
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Common\\Controls\\Count"),				shared_str().printf("%d",lcontrols.size()));
+	PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_sun_draw_name").c_str()),			&m_Flags,			flShowControlName);
+	PHelper().CreateCaption	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_sun_count").c_str()),				shared_str().printf("%d",lcontrols.size()));
 //	B=PHelper().CreateButton(items,PHelper().PrepareKey(pref,"Common\\Controls\\Edit"),	"Append",	ButtonValue::flFirstOnly);
 //	B->OnBtnClickEvent	= OnControlAppendClick;
 	RTokenVecIt		_I 	= lcontrols.begin();
 	RTokenVecIt		_E 	= lcontrols.end();
 	for (;_I!=_E; _I++){
 		if (_I->equal(LCONTROL_HEMI)||_I->equal(LCONTROL_STATIC)||_I->equal(LCONTROL_SUN)){
-			PHelper().CreateCaption(items,	PrepareKey(pref,"Common\\Controls\\System",*_I->name),"");
+			PHelper().CreateCaption(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_system").c_str(), *_I->name), "");
 		}else{
-			B=PHelper().CreateButton(items,	PrepareKey(pref,"Common\\Controls\\User",*_I->name),"Rename,Remove",ButtonValue::flFirstOnly);
+			B=PHelper().CreateButton(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_user").c_str(), *_I->name), g_pStringTable->translate("ed_st_rename_remove").c_str(), ButtonValue::flFirstOnly);
 			B->OnBtnClickEvent.bind		(this,&ESceneLightTool::OnControlRenameRemoveClick);
 		}
 	}                              
@@ -263,7 +262,7 @@ bool ESceneLightTool::Validate(bool full_test)
 		CLight* L = dynamic_cast<CLight*>(*it);
 		if (!L->GetLControlName()){
 			bRes=false;
-			ELog.Msg(mtError,"%s: '%s' - Invalid light control.",ClassDesc(),L->GetName());
+			ELog.Msg(mtError,g_pStringTable->translate("ed_st_invalid_light_ctrl").c_str(), ClassDesc(), L->GetName());
 		}
 	}
 	return bRes;
@@ -300,10 +299,10 @@ void ESceneLightTool::OnDrawUI()
 		if (ok)
 		{
 			if (FindLightControl(result.c_str())) {
-				ELog.DlgMsg(mtError, "Duplicate name found.");
+				ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_duplicate_name").c_str());
 			}
 			else if (result.empty() || result.find("\\")!=result.npos) {
-				ELog.DlgMsg(mtError, "Invalid control name.");
+				ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_invalid_ctrl_name").c_str());
 			}
 			else {
 				RTokenVecIt it = FindLightControlIt(result.c_str());

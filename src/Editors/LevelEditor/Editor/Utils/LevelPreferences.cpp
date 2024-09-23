@@ -61,11 +61,11 @@ void CLevelPreferences::FillProp(PropItemVec& items)
     for (; _I!=_E; _I++)
         if (_I->second&&(_I->first!=OBJCLASS_DUMMY)){
         	if (_I->second->AllowEnabling()){
-                PropValue* V 	= PHelper().CreateFlag32(items,PrepareKey("Scene\\Targets\\Enable",_I->second->ClassDesc()),	&_I->second->m_EditFlags, ESceneToolBase::flEnable);
+                PropValue* V 	= PHelper().CreateFlag32(items,PrepareKey(g_pStringTable->translate("ed_st_scene_targets_enable").c_str(), _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flEnable);
                 V->tag			= _I->second->FClassID;
                 V->OnChangeEvent.bind(this,&CLevelPreferences::OnEnabledChange);
             }
-		    PropValue* V		= PHelper().CreateFlag32(items,PrepareKey("Scene\\Targets\\Read Only",_I->second->ClassDesc()),	&_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
+		    PropValue* V		= PHelper().CreateFlag32(items,PrepareKey(g_pStringTable->translate("ed_st_scene_targets_read_only").c_str(), _I->second->ClassDesc()), &_I->second->m_EditFlags, ESceneToolBase::flForceReadonly);
             V->tag				= _I->second->FClassID;
             V->OnChangeEvent.bind(this,&CLevelPreferences::OnReadonlyChange);
         }

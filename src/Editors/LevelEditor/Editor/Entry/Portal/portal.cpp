@@ -143,7 +143,7 @@ bool CPortal::Update(bool bLoadMode){
     float m=m_Normal.magnitude();
     if (fabsf(m)<=EPS_S){
     	Tools->m_DebugDraw.AppendWireFace(m_Vertices[0],m_Vertices[1],m_Vertices[2]);
-    	ELog.Msg(mtError,"Portal: Degenerate portal found.");
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_degenerate_portal").c_str());
         SetValid(false);
 		return false;
     }
@@ -174,7 +174,7 @@ bool CPortal::Update(bool bLoadMode){
         else if (a<b)
             InvertOrientation(false);
         else
-            ELog.Msg(mtError, "Check portal orientation: '%s'",GetName());
+            ELog.Msg(mtError, g_pStringTable->translate("ed_st_portal_orientation").c_str(), GetName());
     }
 
     return true;
@@ -389,7 +389,7 @@ bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if( version!=PORTAL_VERSION )
     {
-        ELog.Msg( mtError, "CPortal: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_portal_unsupported_ver").c_str());
         return false;
     }
 
@@ -403,7 +403,7 @@ bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if (!m_SectorBack||!m_SectorFront)
     {
-        ELog.Msg( mtError, "Portal: Can't find required sectors.\nObject '%s' can't load.", GetName());
+        ELog.Msg( mtError,g_pStringTable->translate("ed_st_portal_no_sectors").c_str(), GetName());
     	return false;
     }
 
@@ -417,7 +417,7 @@ bool CPortal::LoadLTX(CInifile& ini, LPCSTR sect_name)
     }
     if (cnt<3)
     {
-        ELog.Msg( mtError, "Portal: '%s' can't create.\nInvalid portal. (m_Vertices.size()<3)", GetName());
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_portal_not_enough_vert").c_str(), GetName());
     	return false;
     }
 
@@ -450,7 +450,7 @@ bool CPortal::LoadStream(IReader& F)
     string64 buf;
     R_ASSERT(F.r_chunk(PORTAL_CHUNK_VERSION,&version));
     if( version!=PORTAL_VERSION ){
-        ELog.Msg( mtError, "CPortal: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_portal_unsupported_ver").c_str());
         return false;
     }
 
@@ -466,7 +466,7 @@ bool CPortal::LoadStream(IReader& F)
     }
 
     if (!m_SectorBack||!m_SectorFront){
-        ELog.Msg( mtError, "Portal: Can't find required sectors.\nObject '%s' can't load.", GetName());
+        ELog.Msg( mtError,g_pStringTable->translate("ed_st_portal_no_sectors").c_str(), GetName());
     	return false;
     }
 
@@ -475,7 +475,7 @@ bool CPortal::LoadStream(IReader& F)
 	F.r				(m_Vertices.data(), m_Vertices.size()*sizeof(Fvector));
 
     if (m_Vertices.size()<3){
-        ELog.Msg( mtError, "Portal: '%s' can't create.\nInvalid portal. (m_Vertices.size()<3)", GetName());
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_portal_not_enough_vert").c_str(), GetName());
     	return false;
     }
 

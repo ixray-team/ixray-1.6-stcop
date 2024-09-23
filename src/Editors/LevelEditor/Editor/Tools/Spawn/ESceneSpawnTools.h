@@ -41,7 +41,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "spawn";}
-    IC LPCSTR			ClassDesc				(){return "Spawn Element";}
+    IC LPCSTR			ClassDesc				(){return g_pStringTable->translate("ed_st_spawn_elements").c_str();}
     IC int				RenderPriority			(){return 1;}
 
     void 				FillProp				(LPCSTR pref, PropItemVec& items);

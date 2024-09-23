@@ -131,7 +131,7 @@ bool CGlow::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if(version!=GLOW_VERSION)
     {
-        ELog.DlgMsg( mtError, "CGlow: Unsupported version.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_glow_unsupported_ver").c_str());
         return false;
     }
 
@@ -168,8 +168,9 @@ bool CGlow::LoadStream(IReader& F)
 	u16 version = 0;
 
     R_ASSERT(F.r_chunk(GLOW_CHUNK_VERSION,&version));
-    if((version!=0x0011)&&(version!=GLOW_VERSION)){
-        ELog.DlgMsg( mtError, "CGlow: Unsupported version.");
+    if((version!=0x0011)&&(version!=GLOW_VERSION))
+    {
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_glow_unsupported_ver").c_str());
         return false;
     }
 
@@ -225,9 +226,9 @@ void CGlow::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
     PropValue* V=0;
-    V=PHelper().CreateChoose	(items,PrepareKey(pref,"Texture"), 	&m_TexName,		smTexture);	V->OnChangeEvent.bind(this,&CGlow::ShaderChange);
-    V=PHelper().CreateChoose	(items,PrepareKey(pref,"Shader"),	&m_ShaderName,	smEShader);	V->OnChangeEvent.bind(this,&CGlow::ShaderChange);
-    PHelper().CreateFloat		(items,PrepareKey(pref,"Radius"),	&m_fRadius,		0.01f,10000.f);
+    V=PHelper().CreateChoose	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_texture").c_str()), 	&m_TexName,		smTexture);	V->OnChangeEvent.bind(this,&CGlow::ShaderChange);
+    V=PHelper().CreateChoose	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_shader").c_str()),	&m_ShaderName,	smEShader);	V->OnChangeEvent.bind(this,&CGlow::ShaderChange);
+    PHelper().CreateFloat		(items,PrepareKey(pref,g_pStringTable->translate("ed_st_radius").c_str()),	&m_fRadius,		0.01f,10000.f);
 //.	PHelper().CreateFlag<Flags8>(items,PHelper().PrepareKey(pref,"Fixed size"),	&m_Flags, 		gfFixedSize);
 }
 

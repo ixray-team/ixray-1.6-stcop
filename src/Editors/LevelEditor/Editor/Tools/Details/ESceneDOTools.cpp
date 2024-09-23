@@ -184,7 +184,7 @@ bool EDetailManager::ImportColorIndices(LPCSTR fname)
         FS.r_close			(F);
         return true;
     }else{
-    	ELog.DlgMsg			(mtError,"Can't open file '%s'.",fname);
+    	ELog.DlgMsg			(mtError,g_pStringTable->translate("ed_st_cant_open_file").c_str(), fname);
         return false;
     }
 }
@@ -312,7 +312,7 @@ bool EDetailManager::LoadStream(IReader& F)
 	u32 version			= F.r_u32();
 
     if (version!=DETMGR_VERSION){
-    	ELog.Msg(mtError,"EDetailManager: unsupported version.");
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_detail_unsupported_ver").c_str());
         return false;
     }
 
@@ -330,7 +330,7 @@ bool EDetailManager::LoadStream(IReader& F)
 
     // objects
     if (!LoadColorIndices(F)){
-        ELog.DlgMsg		(mtError,"EDetailManager: Some objects removed. Reinitialize objects.",buf);
+        ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_detail_reinit_obj").c_str(), buf);
         InvalidateSlots	();
     }
 
@@ -345,7 +345,7 @@ bool EDetailManager::LoadStream(IReader& F)
 	        for (int i=0; i<snap_cnt; i++){
     	    	F.r_stringZ	(buf,sizeof(buf));
         	    CCustomObject* O = Scene->FindObjectByName(buf,OBJCLASS_SCENEOBJECT);
-            	if (!O)		ELog.Msg(mtError,"EDetailManager: Can't find snap object '%s'.",buf);
+            	if (!O)		ELog.Msg(mtError,g_pStringTable->translate("ed_st_detail_cant_find_snap").c_str(), buf);
 	            else		m_SnapObjects.push_back(O);
     	    }
         }
@@ -361,7 +361,7 @@ bool EDetailManager::LoadStream(IReader& F)
 		    m_Base.CreateShader();
             m_RTFlags.set(flRTGenerateBaseMesh,TRUE);
         }else{
-        	ELog.Msg(mtError,"EDetailManager: Can't find base texture '%s'.",buf);
+        	ELog.Msg(mtError,g_pStringTable->translate("ed_st_detail_cant_find_tex").c_str(), buf);
             ClearSlots();
             ClearBase();
         }
@@ -432,10 +432,10 @@ bool EDetailManager::Export(LPCSTR path)
     xr_string fn		= xr_string(path)+"build.details";
     bool bRes=true;
 
-    SPBItem* pb = UI->ProgressStart(5,"Making details...");
+    SPBItem* pb = UI->ProgressStart(5,g_pStringTable->translate("ed_st_making_details").c_str());
 	CMemoryWriter F;
 
-    pb->Inc				("merge textures");
+    pb->Inc				(g_pStringTable->translate("ed_st_merge_textures").c_str());
     Fvector2Vec			offsets;
     Fvector2Vec			scales;
     boolVec				rotated;
@@ -468,7 +468,7 @@ bool EDetailManager::Export(LPCSTR path)
     int res = ImageLib.CreateMergedTexture(textures, do_tex_name.c_str(), STextureParams::tfDXT5, 256, 2048, 256, 2048, offsets, scales, rotated, remap);
     if (1!=res)			bRes=FALSE;
 
-    pb->Inc				("export geometry");
+    pb->Inc				(g_pStringTable->translate("ed_st_export_geom").c_str());
     // objects
     int object_idx		= 0;
     if (bRes){
@@ -478,7 +478,7 @@ bool EDetailManager::Export(LPCSTR path)
         	if (remap_object[it-objects.begin()]!=u8(-1)){
                 F.open_chunk	(object_idx++);
                 if (!((EDetail*)(*it))->m_pRefs){
-                    ELog.DlgMsg(mtError, "Bad object or object not found '%s'.", ((EDetail*)(*it))->m_sRefs.c_str());
+                    ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_bad_obj").c_str(), ((EDetail*)(*it))->m_sRefs.c_str());
                     bRes=false;
                 }else{
                     LPCSTR tex_name = ((EDetail*)(*it))->GetTextureName();
@@ -496,7 +496,7 @@ bool EDetailManager::Export(LPCSTR path)
         F.close_chunk		();
     }
     
-    pb->Inc	("export slots");
+    pb->Inc	(g_pStringTable->translate("ed_st_export_slots").c_str());
     // slots
     if (bRes){
     	xr_vector<DetailSlot> dt_slots(slot_cnt); dt_slots.assign(dtSlots,dtSlots+slot_cnt);
@@ -542,20 +542,20 @@ void EDetailManager::OnBaseTextureChange(PropValue* prop)
 {
 	m_Base.OnImageChange	(prop);
     InvalidateSlots			();
-    ELog.DlgMsg				(mtInformation,"Texture changed. Reinitialize objects.");
+    ELog.DlgMsg				(mtInformation,g_pStringTable->translate("ed_st_tex_changed").c_str());
 }
 
 void EDetailManager::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	PropValue* P;
-    P=PHelper().CreateFloat	(items, PrepareKey(pref,"Objects per square"),				&ps_r__Detail_density);
+    P=PHelper().CreateFloat	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_obj_per_square").c_str()),				&ps_r__Detail_density);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnDensityChange);
-    P=PHelper().CreateChoose(items, PrepareKey(pref,"Base Texture"),					&m_Base.name, smTexture);
+    P=PHelper().CreateChoose(items, PrepareKey(pref,g_pStringTable->translate("ed_st_base_tex").c_str()),					&m_Base.name, smTexture);
     P->OnChangeEvent.bind	(this,&EDetailManager::OnBaseTextureChange);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw objects"),			&m_Flags,	flObjectsDraw);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw base texture"),		&m_Flags,	flBaseTextureDraw);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Base texture blended"),	&m_Flags,	flBaseTextureBlended);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw slot boxes"),			&m_Flags,	flSlotBoxesDraw);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_detail_draw_obj").c_str()),			&m_Flags,	flObjectsDraw);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_detail_draw_tex").c_str()),		&m_Flags,	flBaseTextureDraw);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_detail_base_tex_blend").c_str()),	&m_Flags,	flBaseTextureBlended);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_detail_draw_slots").c_str()),			&m_Flags,	flSlotBoxesDraw);
 }
 
 bool EDetailManager::GetSummaryInfo(SSceneSummary* inf)

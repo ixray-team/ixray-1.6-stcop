@@ -397,7 +397,7 @@ void CGroupObject::FillProp(LPCSTR pref, PropItemVec& items)
     V->OnChangeEvent.bind(this,&CGroupObject::ReferenceChange);
 
     ButtonValue* B;
-    B=PHelper().CreateButton	(items,PrepareKey(pref,"FreezeObjects"), 	"Unique,Reference",0);
+    B=PHelper().CreateButton	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_freeze_objects").c_str()), 	g_pStringTable->translate("ed_st_uniq_ref").c_str(), 0);
     B->OnBtnClickEvent.bind		(this,&CGroupObject::OnFreezeAllClick);
 
 	for (ObjectsInGroup::iterator it=m_ObjectsInGroup.begin(); it!=m_ObjectsInGroup.end(); ++it)

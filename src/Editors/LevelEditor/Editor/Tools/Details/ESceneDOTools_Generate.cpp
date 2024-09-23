@@ -80,11 +80,11 @@ void EDetailManager::FindClosestIndex(const Fcolor& C, SIndexDistVec& best)
 bool EDetailManager::Initialize()
 {
 	if (m_SnapObjects.empty()){
-    	ELog.DlgMsg(mtError,"Snap list empty!");
+    	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_snap_list_empty").c_str());
     	return false;
     }
 	if (!m_Base.Valid()){
-    	ELog.DlgMsg(mtError,"Base texture empty!");
+    	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_base_tex_empty").c_str());
     	return false;
     }				
     if (!UpdateHeader())                return false;
@@ -97,12 +97,12 @@ bool EDetailManager::Initialize()
 bool EDetailManager::Reinitialize()
 {
 	if (m_SnapObjects.empty()){
-    	ELog.DlgMsg(mtError,"Snap list empty!");
-    	return false;
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_snap_list_empty").c_str());
+        return false;
     }
 	if (!m_Base.Valid()){
-    	ELog.DlgMsg(mtError,"Base texture empty!");
-    	return false;
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_base_tex_empty").c_str());
+        return false;
     }				
     InvalidateCache();
 
@@ -192,7 +192,7 @@ bool EDetailManager::UpdateSlots()
     xr_free				(dtSlots);
     dtSlots				= xr_alloc<DetailSlot>(dtH.size_x*dtH.size_z);
 
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating bounding boxes...");
+    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,g_pStringTable->translate("ed_st_update_bound_box").c_str());
     for (u32 z=0; z<dtH.size_z; z++){
         for (u32 x=0; x<dtH.size_x; x++){
         	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
@@ -384,15 +384,15 @@ bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
 {
 	m_Base.ReloadImage();
 	if (!m_Base.Valid()){ 
-    	ELog.DlgMsg(mtError,"Invalid base texture!");
+    	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_invalid_base_tex").c_str());
     	return false;
     }
 	if (objects.empty()){
-    	ELog.DlgMsg(mtError,"Object list empty!");
+    	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_obj_list_empty").c_str());
      	return false;
     }
     // update objects
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating objects...");
+    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,g_pStringTable->translate("ed_st_update_obj").c_str());
     for (u32 z=0; z<dtH.size_z; z++)
         for (u32 x=0; x<dtH.size_x; x++){
         	if (!bUpdateSelectedOnly||(bUpdateSelectedOnly&&m_Selected[z*dtH.size_x+x]))

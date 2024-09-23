@@ -110,7 +110,7 @@ bool ESoundSource::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
     if(version!=SOUND_SOURCE_VERSION)
     {
-        ELog.Msg( mtError, "ESoundSource: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_sound_src_unsupported_ver").c_str());
         return false;
     }
 
@@ -176,7 +176,7 @@ bool ESoundSource::LoadStream(IReader& F)
 
     if(F.r_chunk(SOUND_CHUNK_VERSION,&version)){
         if(version!=SOUND_SOURCE_VERSION){
-            ELog.Msg( mtError, "ESoundSource: Unsupported version.");
+            ELog.Msg(mtError, g_pStringTable->translate("ed_st_sound_src_unsupported_ver").c_str());
             return false;
         }
     }else return false;
@@ -208,7 +208,7 @@ bool ESoundSource::LoadStream(IReader& F)
         m_Params.max_ai_distance= F.r_float();
     }else{
     	if (!F.find_chunk(SOUND_CHUNK_SOURCE_PARAMS)){
-            ELog.DlgMsg( mtError, "ESoundSource: Can't load Sound Source '%s'. Unsupported version.",*m_WAVName);
+            ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_sound_src_invalid_ver").c_str(), *m_WAVName);
             return false;
         }
        	m_Params.base_volume	= 1.f;
@@ -303,30 +303,31 @@ void ESoundSource::FillProp(LPCSTR pref, PropItemVec& values)
 {
 	inherited::FillProp			(pref,values);
 	ButtonValue* B;
-    B=PHelper().CreateButton	(values, PrepareKey(pref,"Custom\\Controls"), 	"Play,Stop,Simulate",0);
+    B=PHelper().CreateButton	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_custom_controls").c_str()), 	g_pStringTable->translate("ed_st_play_stop_simulate").c_str(), 0);
     B->OnBtnClickEvent.bind		(this,&ESoundSource::OnControlClick);
     PropValue* V;
-    V=PHelper().CreateChoose	(values,PrepareKey(pref,"Source\\WAVE name"),	&m_WAVName,					smSoundSource);
+    V=PHelper().CreateChoose	(values,PrepareKey(pref,g_pStringTable->translate("ed_st_wave_name").c_str()),	&m_WAVName,					smSoundSource);
     V->OnChangeEvent.bind		(this,&ESoundSource::OnChangeWAV);
-	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Frequency"),	&m_Params.freq,				0.0f,2.f);
+	V=PHelper().CreateFloat		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_sound_freq").c_str()),	&m_Params.freq,				0.0f,2.f);
     V->OnChangeEvent.bind		(this,&ESoundSource::OnChangeSource);
-	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Volume"),		&m_Params.volume,			0.0f,1.f);
+	V=PHelper().CreateFloat		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_sound_volume").c_str()),		&m_Params.volume,			0.0f,1.f);
     V->OnChangeEvent.bind		(this,&ESoundSource::OnChangeSource);
-	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Min dist"),	&m_Params.min_distance,		0.1f, 1000.f, 0.1f, 1);
+	V=PHelper().CreateFloat		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_sound_min_dist").c_str()),	&m_Params.min_distance,		0.1f, 1000.f, 0.1f, 1);
     V->Owner()->Enable			(FALSE);
-	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max dist"),	&m_Params.max_distance,		0.1f, 1000.f, 0.1f, 1);
+	V=PHelper().CreateFloat		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_sound_max_dist").c_str()),	&m_Params.max_distance,		0.1f, 1000.f, 0.1f, 1);
     V->Owner()->Enable			(FALSE);
-	V=PHelper().CreateFloat		(values,PrepareKey(pref,"Source\\Max ai dist"),	&m_Params.max_ai_distance,	0.1f, 1000.f, 0.1f, 1);
+	V=PHelper().CreateFloat		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_sound_max_ai_dist").c_str()),	&m_Params.max_ai_distance,	0.1f, 1000.f, 0.1f, 1);
     V->Owner()->Enable			(FALSE);
-	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Active time\\Hint"),	"Zero - play sound looped round the clock.");
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\From"),	&m_ActiveTime.x);
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Active time\\To"),	&m_ActiveTime.y);
-	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Play time\\Hint"),	"Zero - play sound once.");
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Play time\\From"),	&m_PlayTime.x);
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Play time\\To"),		&m_PlayTime.y);
-	PHelper().CreateCaption		(values,PrepareKey(pref,"Game\\Pause delta\\Hint"),	"Zero - play sound looped.");
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Pause delta\\From"),	&m_RandomPause.x);
-	PHelper().CreateTime		(values,PrepareKey(pref,"Game\\Pause delta\\To"),	&m_RandomPause.y);
+#pragma todo("Fix time for sounds!")
+	PHelper().CreateCaption		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_active_time_hint").c_str()),	g_pStringTable->translate("ed_st_active_time_hint_msg").c_str());
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_active_time_from").c_str()),	&m_ActiveTime.x);
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_active_time_to").c_str()),	&m_ActiveTime.y);
+	PHelper().CreateCaption		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_play_time_hint").c_str()),	g_pStringTable->translate("ed_st_play_time_hint_msg").c_str());
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_play_time_from").c_str()),	&m_PlayTime.x);
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_play_time_to").c_str()),		&m_PlayTime.y);
+	PHelper().CreateCaption		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_pause_delta_hint").c_str()),	g_pStringTable->translate("ed_st_pause_delta_hint_msg").c_str());
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_pause_delta_from").c_str()),	&m_RandomPause.x);
+	PHelper().CreateTime		(values,PrepareKey(pref,g_pStringTable->translate("ed_st_pause_delta_to").c_str()),	&m_RandomPause.y);
 //	V=PHelper().CreateFlag32		(values,PHelper().PrepareKey(pref,"Looped"),	&m_Flags,				flLooped);
 //    V->OnChangeEvent			= OnChangeSource;
 }

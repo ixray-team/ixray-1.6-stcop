@@ -137,7 +137,7 @@ CCommandVar CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2
 {
 	if( !Scene->locked() )
 	{
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to rename selected objects?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_rename_sel_msg").c_str()))
 		{
 			int cnt			= Scene->MultiRenameObjects();
 			if (cnt)
@@ -145,11 +145,11 @@ CCommandVar CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2
 				ExecCommand	(COMMAND_UPDATE_PROPERTIES);
 				Scene->UndoSave();
 			}
-			ELog.DlgMsg		( mtInformation, "%d - objects are renamed.", cnt );
+			ELog.DlgMsg		( mtInformation, g_pStringTable->translate("ed_st_renamed_objects").c_str(), cnt);
 		}
 	}else
 	{
-		ELog.DlgMsg			( mtError, "Scene sharing violation" );
+		ELog.DlgMsg			( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str() );
 	}
 	return 					FALSE;
 }
@@ -184,7 +184,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			if (!Scene->IfModified())
 				return FALSE;
 			
-			UI->SetStatus			("Level loading...");
+			UI->SetStatus			(g_pStringTable->translate("ed_st_level_load").c_str());
 			ExecCommand				(COMMAND_CLEAR);
 			FS.TryLoad(temp_fn.c_str());
 			IReader* R = FS.r_open	(temp_fn.c_str());
@@ -220,7 +220,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 				EPrefs->AppendRecentFile(temp_fn.c_str());
 			}else
 			{
-				ELog.DlgMsg	( mtError, "Can't load map '%s'", temp_fn.c_str() );
+				ELog.DlgMsg	( mtError, g_pStringTable->translate("ed_st_cant_load_map").c_str(), temp_fn.c_str());
 				LTools->m_LastFileName = "";
 			}
 			// update props
@@ -228,7 +228,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 			UI->RedrawScene		();             
 		}
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return FALSE;
 	}
 	return TRUE;
@@ -279,7 +279,7 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 			}
 		}
 	} else {
-		ELog.DlgMsg			( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return				FALSE;
 	}
 }
@@ -301,7 +301,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 		Scene->UndoSave			();
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return					FALSE;
 	}
 }
@@ -387,7 +387,7 @@ CCommandVar CommandValidateScene(CCommandVar p1, CCommandVar p2)
 		Scene->Validate	(true,true,true,true,true,true);
 		return 			TRUE;
 	} else {
-		ELog.DlgMsg		( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 			FALSE;
 	}
 }
@@ -397,7 +397,7 @@ CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 		Lib.CleanLibrary();
 		return 			TRUE;
 	}else{
-		ELog.DlgMsg		(mtError, "Scene must be empty before refreshing library!");
+		ELog.DlgMsg		(mtError, g_pStringTable->translate("ed_st_scene_must_be_empty_refresh").c_str());
 		return 			FALSE;
 	}
 }
@@ -417,7 +417,7 @@ CCommandVar CommandCut(CCommandVar p1, CCommandVar p2)
 		Scene->UndoSave	();
 		return 			TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 			FALSE;
 	}
 	return FALSE;
@@ -428,8 +428,8 @@ CCommandVar CommandCopy(CCommandVar p1, CCommandVar p2)
 		Scene->CopySelection(LTools->CurrentClassID());
 		return 			TRUE;
 	} else {
-		ELog.DlgMsg		( mtError, "Scene sharing violation" );
-		return 			FALSE;
+		  ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
+		  return 			FALSE;
 	}
 	return FALSE;
 }
@@ -441,7 +441,7 @@ CCommandVar CommandPaste(CCommandVar p1, CCommandVar p2)
 		Scene->UndoSave	();
 		return 			TRUE;
 	} else {
-		ELog.DlgMsg		( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return  		FALSE;
 	}
 	return FALSE;
@@ -455,8 +455,8 @@ CCommandVar CommandDuplicate(CCommandVar p1, CCommandVar p2)
         return 			TRUE;
     }
     else {
-        ELog.DlgMsg(mtError, "Scene sharing violation");
-        return 			FALSE;
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
+		return 			FALSE;
     }
     return FALSE;
 }
@@ -471,7 +471,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 			LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
 			if (fn.c_str()==strstr(fn.c_str(),maps_path))
 				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
-			UI->SetStatus		("Fragment loading...");
+			UI->SetStatus		(g_pStringTable->translate("ed_st_fragment_load").c_str());
 
 			Scene->LoadSelection(fn.c_str());
 
@@ -483,7 +483,7 @@ CCommandVar CommandLoadSelection(CCommandVar p1, CCommandVar p2)
 			return 				TRUE;
 		}               	
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return FALSE;
 }        
@@ -495,13 +495,13 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 			LPCSTR maps_path	= FS.get_path(_maps_)->m_Path;
 			if (fn.c_str()==strstr(fn.c_str(),maps_path))
 				LTools->m_LastSelectionName = fn.c_str()+xr_strlen(maps_path);
-			UI->SetStatus		("Fragment saving...");
+			UI->SetStatus		(g_pStringTable->translate("ed_st_fragment_save").c_str());
 			Scene->SaveSelection(LTools->CurrentClassID(),fn.c_str());
 			UI->ResetStatus		();
 			return 				TRUE;
 		}
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -509,14 +509,14 @@ CCommandVar CommandSaveSelection(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if( !Scene->Undo() ) 	ELog.DlgMsg( mtInformation, "Undo buffer empty" );
+		if( !Scene->Undo() ) 	ELog.DlgMsg( mtInformation, g_pStringTable->translate("ed_st_undo_empty_buf").c_str() );
 		else{
 			LTools->Reset		();
 			ExecCommand			(COMMAND_CHANGE_ACTION, etaSelect);
 			return 				TRUE;
 		}
 	} else {
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -524,14 +524,14 @@ CCommandVar CommandUndo(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandRedo(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if( !Scene->Redo() ) 	ELog.DlgMsg( mtInformation, "Redo buffer empty" );
+		if( !Scene->Redo() ) 	ELog.DlgMsg( mtInformation, g_pStringTable->translate("ed_st_redo_empty_buf").c_str() );
 		else{
 			LTools->Reset		();
 			ExecCommand			(COMMAND_CHANGE_ACTION, etaSelect);
 			return 				TRUE;
 		}
 	} else {
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -542,7 +542,7 @@ CCommandVar CommandClearSceneSummary(CCommandVar p1, CCommandVar p2)
 		Scene->ClearSummaryInfo	();
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -552,7 +552,7 @@ CCommandVar CommandCollectSceneSummary(CCommandVar p1, CCommandVar p2)
 		Scene->CollectSummaryInfo();
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -562,7 +562,7 @@ CCommandVar CommandShowSceneSummary(CCommandVar p1, CCommandVar p2)
 		Scene->ShowSummaryInfo();
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -572,7 +572,7 @@ CCommandVar CommandExportSceneSummary(CCommandVar p1, CCommandVar p2)
 		Scene->ExportSummaryInfo(xr_string(p1).c_str());
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -598,7 +598,7 @@ CCommandVar CommandOptions(CCommandVar p1, CCommandVar p2)
 		ExecCommand				(COMMAND_SHOW_PROPERTIES, p1, p2);
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -606,10 +606,10 @@ CCommandVar CommandOptions(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandBuild(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to build level?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_level_export").c_str()))
 			return				Builder.Compile(false);
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -627,60 +627,60 @@ CCommandVar CommandMakeGizmo(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export ai-map?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_ai_map_export").c_str()))
 			return 				Builder.MakeAIMap( );
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
 CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export game?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_game_export").c_str()))
 			return				Builder.MakeGame( );
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
 CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export puddles?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_puddles_export").c_str()))
 			return				Builder.MakePuddles( );
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
 CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export details?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_details_export").c_str()))
 			return 				Builder.MakeDetails();
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
 CCommandVar CommandMakeHOM(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export HOM?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_hom_export").c_str()))
 			return				Builder.MakeHOM();
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
 CCommandVar CommandMakeSOM(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
-		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export Sound Occlusion Model?"))
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, g_pStringTable->translate("ed_st_som_export").c_str()))
 			return				Builder.MakeSOM();
 	}else{
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -690,7 +690,7 @@ CCommandVar CommandInvertSelectionAll(CCommandVar p1, CCommandVar p2)
 		Scene->InvertSelection	(LTools->CurrentClassID());
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -701,7 +701,7 @@ CCommandVar CommandSelectAll(CCommandVar p1, CCommandVar p2)
 		Scene->SelectObjects	(true,LTools->CurrentClassID());
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 	}
 	return 						FALSE;
 }
@@ -712,7 +712,7 @@ CCommandVar CommandDeselectAll(CCommandVar p1, CCommandVar p2)
 		Scene->SelectObjects	(false,LTools->CurrentClassID());
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -724,7 +724,7 @@ CCommandVar CommandDeleteSelection(CCommandVar p1, CCommandVar p2)
 		Scene->UndoSave			();
 		return					TRUE;
 	} else {
-		ELog.DlgMsg( mtError, "Scene sharing violation" );
+		ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -737,7 +737,7 @@ CCommandVar CommandHideUnsel(CCommandVar p1, CCommandVar p2)
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -749,7 +749,7 @@ CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 		return 					TRUE;
 	} else {
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -761,7 +761,7 @@ CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
 		ExecCommand				(COMMAND_UPDATE_PROPERTIES);
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -771,7 +771,7 @@ CCommandVar CommandSetSnapObjects(CCommandVar p1, CCommandVar p2)
 		Scene->SetSnapList		();
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -781,7 +781,7 @@ CCommandVar CommandAddSelSnapObjects(CCommandVar p1, CCommandVar p2)
 		Scene->AddSelToSnapList	();
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -791,7 +791,7 @@ CCommandVar CommandDelSelSnapObjects(CCommandVar p1, CCommandVar p2)
 		Scene->DelSelFromSnapList();
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str());
 		return 					FALSE;
 	}
 }
@@ -801,7 +801,7 @@ CCommandVar CommandClearSnapObjects(CCommandVar p1, CCommandVar p2)
 		Scene->ClearSnapList	(true);
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str() );
 		return 					FALSE;
 	}
 }
@@ -811,7 +811,7 @@ CCommandVar CommandSelectSnapObjects(CCommandVar p1, CCommandVar p2)
 		Scene->SelectSnapList	();
 		return 					TRUE;
 	}else{
-		ELog.DlgMsg				( mtError, "Scene sharing violation" );
+		ELog.DlgMsg				( mtError, g_pStringTable->translate("ed_st_scene_share_vilation").c_str() );
 		return 					FALSE;
 	}
 }
@@ -1355,15 +1355,15 @@ void CLevelMain::OnStats(CGameFont* font)
 	font->SetHeight(14);
 	if (!Scene->m_RTFlags.is(EScene::flIsBuildedCForm))
 	{
-		font->OutNext("NEED REBUILD CFORM");
+		font->OutNext(g_pStringTable->translate("ed_st_cform_rebuild_msg").c_str());
 	}
 	if (!Scene->m_RTFlags.is(EScene::flIsBuildedAIMap))
 	{
-		font->OutNext("NEED REBUILD AIMAP");
+		font->OutNext(g_pStringTable->translate("ed_st_ai_map_rebuild_msg").c_str());
 	}
 	if (!Scene->m_RTFlags.is(EScene::flIsBuildedGameGraph))
 	{
-		font->OutNext("NEED REBUILD GAME GRAPH");
+		font->OutNext(g_pStringTable->translate("ed_st_game_graph_rebuild_msg").c_str());
 	}
 
 

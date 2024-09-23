@@ -321,7 +321,7 @@ bool ESceneWallmarkTool::LoadStream(IReader& F)
 
     if(version!=0x0003 && version!=WM_VERSION)
     {
-        ELog.Msg( mtError, "Static Wallmark: Unsupported version.");
+        ELog.Msg( mtError, g_pStringTable->translate("ed_st_wallmark_unsupported_ver").c_str());
         return false;
     }
 
@@ -411,7 +411,7 @@ bool ESceneWallmarkTool::LoadStream(IReader& F)
         for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
             wallmark*& W	= *w_it;
             if (W->verts.size()>MAX_WALLMARK_VERTEX_COUNT){
-                ELog.Msg	(mtError,"ERROR: Invalid wallmark (Contain more than %d vertices). Removed.", MAX_WALLMARK_VERTEX_COUNT);
+                ELog.Msg	(mtError,g_pStringTable->translate("ed_st_wallmark_more_than_max_vert").c_str(), MAX_WALLMARK_VERTEX_COUNT);
                 wm_destroy	(W);
                 W			= 0;
             }
@@ -657,11 +657,11 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     */
     
     if (0==sh.size()){
-    	ELog.DlgMsg			(mtError,"Select texture before add wallmark.");
+    	ELog.DlgMsg			(mtError,g_pStringTable->translate("ed_st_wallmark_no_texture").c_str());
     	return 				FALSE;
     }
     if (0==tx.size()){
-    	ELog.DlgMsg			(mtError,"Select texture before add wallmark.");
+    	ELog.DlgMsg			(mtError,g_pStringTable->translate("ed_st_wallmark_no_texture").c_str());
     	return 				FALSE;
     }
     // pick contact poly
@@ -669,7 +669,7 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
     float dist				= UI->ZFar();
     ObjectList* snap_list	= Scene->GetSnapList(false);
     if (!snap_list){
-    	ELog.DlgMsg			(mtError,"Fill and activate snap list.");
+    	ELog.DlgMsg			(mtError,g_pStringTable->translate("ed_st_activate_snap_list").c_str());
     	return 				FALSE;
     }
     // pick contact poly
@@ -717,7 +717,7 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 
 	// calc sphere
 	if ((W->verts.size()<3) || (W->verts.size()>MAX_WALLMARK_VERTEX_COUNT)) { 
-    	ELog.DlgMsg		(mtError,"Invalid wallmark vertex count. [Min: %d. Max: %d].",3,MAX_WALLMARK_VERTEX_COUNT);
+    	ELog.DlgMsg		(mtError,g_pStringTable->translate("ed_st_invalid_wm_vert_count").c_str(), 3, MAX_WALLMARK_VERTEX_COUNT);
     	wm_destroy		(W); 
         return 			FALSE; 
     }else{
@@ -790,13 +790,13 @@ BOOL ESceneWallmarkTool::MoveSelectedWallmarkTo(const Fvector& start, const Fvec
 
 void ESceneWallmarkTool::FillPropObjects(LPCSTR pref, PropItemVec& items)
 {
-    PHelper().CreateFlag32		(items, PrepareKey(pref,"Common\\Draw Wallmarks"),	&m_Flags, 		flDrawWallmark);
-    PHelper().CreateFlag32		(items,	PrepareKey(pref,"Common\\Alignment"),		&m_Flags, 		flAxisAlign, "By Camera", "By World Axis");
-    PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Width"),			&m_MarkWidth, 	0.01f, 10.f);
-    PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Height"),			&m_MarkHeight, 	0.01f, 10.f);
-    PHelper().CreateAngle	 	(items, PrepareKey(pref,"Common\\Rotate"),			&m_MarkRotate);
-    PHelper().CreateChoose		(items, PrepareKey(pref,"Common\\Shader"),			&m_ShName, 		smEShader);
-    PHelper().CreateChoose		(items, PrepareKey(pref,"Common\\Texture"),			&m_TxName, 		smTexture);
+    PHelper().CreateFlag32		(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_draw").c_str()),	&m_Flags, 		flDrawWallmark);
+    PHelper().CreateFlag32		(items,	PrepareKey(pref,g_pStringTable->translate("ed_st_wm_align").c_str()),		&m_Flags, 		flAxisAlign, g_pStringTable->translate("ed_st_by_camera").c_str(), g_pStringTable->translate("ed_st_by_world_axis").c_str());
+    PHelper().CreateFloat	 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_width").c_str()),			&m_MarkWidth, 	0.01f, 10.f);
+    PHelper().CreateFloat	 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_height").c_str()),			&m_MarkHeight, 	0.01f, 10.f);
+    PHelper().CreateAngle	 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_rotate").c_str()),			&m_MarkRotate);
+    PHelper().CreateChoose		(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_shader").c_str()),			&m_ShName, 		smEShader);
+    PHelper().CreateChoose		(items, PrepareKey(pref,g_pStringTable->translate("ed_st_wm_texture").c_str()),			&m_TxName, 		smTexture);
 }
 
 
@@ -809,7 +809,7 @@ bool ESceneWallmarkTool::Validate(bool)
         if (slot->items.size()){
             IBlender* 	B 	= EDevice->Resources->_FindBlender(*slot->sh_name); 
             if (!B||B->canBeLMAPped()){
-                ELog.Msg	(mtError,"Wallmarks: Invalid or missing shader '%s'.",*slot->sh_name);
+                ELog.Msg	(mtError,g_pStringTable->translate("ed_st_wm_invalid_shader").c_str(), *slot->sh_name);
                 bRes 		= false;
             }
         }

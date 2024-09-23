@@ -9,8 +9,8 @@ enum{
 };
 xr_token fog_vol_type[] = 
 {
-  {"Emitter", fvEmitter},
-  {"Occlusion", fvOcclusion},
+  {"ed_st_emitter", fvEmitter},
+  {"ed_st_occ", fvOcclusion},
   {NULL, 0},
 };
 
@@ -47,7 +47,7 @@ bool ESceneFogVolumeTool::LoadStream(IReader& F)
     if(F.r_chunk(TOOL_CHUNK_VERSION,&version))
         if( version!=FOG_VOL_TOOLS_VERSION )
         {
-            ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+            ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
             return false;
         }
 
@@ -67,7 +67,7 @@ bool ESceneFogVolumeTool::LoadSelection(IReader& F)
     R_ASSERT(F.r_chunk(TOOL_CHUNK_VERSION,&version));
     if( version!=FOG_VOL_TOOLS_VERSION )
     {
-        ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
         return false;
     }
 
@@ -86,8 +86,8 @@ bool ESceneFogVolumeTool::LoadLTX(CInifile& ini)
 	u32 version 	= ini.r_u32("main","version");
     if( version!=FOG_VOL_TOOLS_VERSION )
     {
-            ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());
-            return false;
+        ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_tools_unsupported_ver").c_str(), ClassDesc());
+        return false;
     }
 
 	inherited::LoadLTX(ini);
@@ -265,11 +265,11 @@ void EFogVolume::FillPropObjects(LPCSTR pref, PropItemVec& values)
 	inherited::FillProp			(pref, values);
 
 	PropValue* P;
-    P=PHelper().CreateToken8	(values, PrepareKey(pref,"VolumeType"),	&m_volumeType, fog_vol_type);
+    P=PHelper().CreateToken8	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_fog_type").c_str()),	&m_volumeType, fog_vol_type);
     P->OnChangeEvent.bind		(this,&EFogVolume::OnChangeEnvs);
 
     if(m_volumeType==fvEmitter)
-    	P=PHelper().CreateRText	(values, PrepareKey(pref,"profile (ltx)"),	&m_volume_profile);
+    	P=PHelper().CreateRText	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_fog_profile").c_str()),	&m_volume_profile);
 }
 
 

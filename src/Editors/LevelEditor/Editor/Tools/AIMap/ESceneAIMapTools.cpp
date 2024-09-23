@@ -228,7 +228,7 @@ void ESceneAIMapTool::DenumerateNodes()
         			 (((u32)(*it)->n2<cnt)||((u32)(*it)->n2==InvalidNode))&&
                      (((u32)(*it)->n3<cnt)||((u32)(*it)->n3==InvalidNode))&&
                      (((u32)(*it)->n4<cnt)||((u32)(*it)->n4==InvalidNode)))){
-                     ELog.Msg(mtError,"Node: has wrong link [%3.2f, %3.2f, %3.2f], {%d,%d,%d,%d}",VPUSH((*it)->Pos),(*it)->n1,(*it)->n2,(*it)->n3,(*it)->n4);
+                     ELog.Msg(mtError,g_pStringTable->translate("ed_st_node_has_wrong_link").c_str(), VPUSH((*it)->Pos), (*it)->n1, (*it)->n2, (*it)->n3, (*it)->n4);
                      (*it)->n1 = 0;
                      (*it)->n2 = 0;
                      (*it)->n3 = 0;
@@ -301,7 +301,7 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 
     R_ASSERT(F.r_chunk(AIMAP_CHUNK_VERSION,&version));
     if( version!=AIMAP_VERSION ){
-        ELog.DlgMsg( mtError, "AIMap: Unsupported version.");
+        ELog.DlgMsg( mtError, g_pStringTable->translate("ed_st_ai_map_unsupported_ver").c_str());
         return false;
     }
 
@@ -338,7 +338,7 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 	        for (int i=0; i<cnt; i++){
     	    	F.r_stringZ	(buf);
         	    CCustomObject* O = Scene->FindObjectByName(buf.c_str(),OBJCLASS_SCENEOBJECT);
-            	if (!O)		ELog.Msg(mtError,"AIMap: Can't find snap object '%s'.",buf.c_str());
+            	if (!O)		ELog.Msg(mtError,g_pStringTable->translate("ed_st_ai_map_cant_find_snap").c_str(), buf.c_str());
 	            else		m_SnapObjects.push_back(O);
     	    }
         }
@@ -441,7 +441,7 @@ int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool b
             if (bAutoLink) 	UpdateLinks(N,bIgnoreConstraints);
             return			1;
         }else{
-            ELog.Msg		(mtError,"Can't create node.");
+            ELog.Msg		(mtError,g_pStringTable->translate("ed_st_cant_create_node").c_str());
             return 			0;
         }
     }else{
@@ -500,16 +500,16 @@ void ESceneAIMapTool::RemoveSelection()
     	if (m_Nodes.size()==(u32)SelectionCount(true)){
         	Clear	(true);
         }else{
-        	SPBItem* pb = UI->ProgressStart(3,"Removing nodes...");
+        	SPBItem* pb = UI->ProgressStart(3,g_pStringTable->translate("ed_st_removing_nodes").c_str());
         	// remove link to sel nodes
-	        pb->Inc("erasing nodes");
+	        pb->Inc(g_pStringTable->translate("erasing nodes").c_str());
             // remove sel nodes
            	AINodeIt result		= std::remove_if(m_Nodes.begin(), m_Nodes.end(), delete_sel_node_pred());
             m_Nodes.erase		(result,m_Nodes.end());
-	        pb->Inc("updating hash");
+	        pb->Inc(g_pStringTable->translate("ed_st_updating_hash").c_str());
             hash_Clear		   	();
 		    hash_FillFromNodes 	();
-	        pb->Inc("end");
+	        pb->Inc(g_pStringTable->translate("ed_st_ai_map_end").c_str());
             UI->ProgressEnd(pb);
         }
     }break;
@@ -546,14 +546,14 @@ int ESceneAIMapTool::SelectionCount(bool testflag)
 
 void ESceneAIMapTool::FillProp(LPCSTR pref, PropItemVec& items)
 {
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw Nodes"),			&m_Flags, 		flHideNodes, 0,0, FlagValueCustom::flInvertedDraw);
-    PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Slow Calculate Mode"),	&m_Flags, 		flSlowCalculate);
-    PHelper().CreateFloat 	(items, PrepareKey(pref,"Common\\Visible Radius"),		&m_VisRadius, 	10.f, 	250.f);
-    PHelper().CreateFloat 	(items, PrepareKey(pref,"Common\\Smooth Height"),		&m_SmoothHeight,0.1f,	100.f);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_draw_nodes").c_str()),			&m_Flags, 		flHideNodes, 0,0, FlagValueCustom::flInvertedDraw);
+    PHelper().CreateFlag32	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_slow_calc").c_str()),	&m_Flags, 		flSlowCalculate);
+    PHelper().CreateFloat 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_vis_radius").c_str()),		&m_VisRadius, 	10.f, 	250.f);
+    PHelper().CreateFloat 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_smooth_height").c_str()),		&m_SmoothHeight,0.1f,	100.f);
 
-    PHelper().CreateU32	 	(items, PrepareKey(pref,"Params\\Brush Size"),			&m_BrushSize, 	1, 100);
-    PHelper().CreateFloat 	(items, PrepareKey(pref,"Params\\Can Up"),				&m_Params.fCanUP, 	0.f, 10.f);
-    PHelper().CreateFloat 	(items, PrepareKey(pref,"Params\\Can Down"),			&m_Params.fCanDOWN, 0.f, 10.f);
+    PHelper().CreateU32	 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_brush_size").c_str()),			&m_BrushSize, 	1, 100);
+    PHelper().CreateFloat 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_can_up").c_str()),				&m_Params.fCanUP, 	0.f, 10.f);
+    PHelper().CreateFloat 	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_ai_map_can_down").c_str()),			&m_Params.fCanDOWN, 0.f, 10.f);
 }
 
 void ESceneAIMapTool::GetBBox(Fbox& bb, bool bSelOnly)

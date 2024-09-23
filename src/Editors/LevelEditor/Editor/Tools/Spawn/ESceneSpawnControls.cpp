@@ -9,7 +9,7 @@ bool  TUI_ControlSpawnAdd::AppendCallback(SBeforeAppendCallbackParams* p)
 {
 	LPCSTR ref_name = ((UISpawnTool*)parent_tool->pForm)->Current();
     if (!ref_name){
-    	ELog.DlgMsg(mtInformation,"Nothing selected.");
+    	ELog.DlgMsg(mtInformation,"ed_st_nothing_selected");
     	return false;
     }
     if(Scene->LevelPrefix().c_str())
@@ -30,7 +30,7 @@ bool  TUI_ControlSpawnAdd::Start(TShiftState Shift)
         if (from&&from->FClassID!=OBJCLASS_SPAWNPOINT){
             ObjectList 	lst;
             int cnt 	= Scene->GetQueryObjects(lst,OBJCLASS_SPAWNPOINT,1,1,0);
-            if (1!=cnt)	ELog.DlgMsg(mtError,"Select one shape.");
+            if (1!=cnt)	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_select_one_shape").c_str());
             else{
                 CSpawnPoint* base = dynamic_cast<CSpawnPoint*>(lst.back()); R_ASSERT(base);
                 if (base->AttachObject(from)){
@@ -39,11 +39,11 @@ bool  TUI_ControlSpawnAdd::Start(TShiftState Shift)
                         ResetActionToSelect		();
                     }
                 }else{
-		        	ELog.DlgMsg(mtError,"Attach impossible.");
+		        	ELog.DlgMsg(mtError,g_pStringTable->translate("ed_st_cant_attach_shape").c_str());
                 }
             }
         }else{
-        	ELog.DlgMsg(mtError,"Attach impossible.");
+            ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_cant_attach_shape").c_str());
         }
     }else{
 	    DefaultAddObject(Shift, TBeforeAppendCallback(this,& TUI_ControlSpawnAdd::AppendCallback));

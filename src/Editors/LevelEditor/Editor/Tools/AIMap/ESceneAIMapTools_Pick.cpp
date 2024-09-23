@@ -36,7 +36,7 @@ bool ESceneAIMapTool::PickObjects(Fvector& dest, const Fvector& start, const Fve
             return true;
         }
     }else{
-    	ELog.DlgMsg(mtInformation,"Fill object list and try again.");
+    	ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_fill_obj_list").c_str());
     }
     return false;
 }

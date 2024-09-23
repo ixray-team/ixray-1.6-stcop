@@ -21,7 +21,7 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
         if (!SetReference(ref_name.c_str()))
         {
-            ELog.Msg            ( mtError, "CSceneObject: '%s' not found in library", ref_name.c_str() );
+            ELog.Msg            ( mtError, g_pStringTable->translate("ed_st_obj_not_found").c_str(), ref_name.c_str());
             bRes                = false;
             int mr              = mrNone;
 
@@ -30,7 +30,7 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
             if(b_found)
             {
                 xr_string _message;
-                _message = "Object ["+ref_name+"] not found. Relace it with ["+_new_name+"] or select other from library?";
+                _message = g_pStringTable->translate("ed_st_obj_not_found_replace_1").c_str()  +ref_name+ g_pStringTable->translate("ed_st_obj_not_found_replace_2").c_str() + _new_name + g_pStringTable->translate("ed_st_obj_not_found_replace_3").c_str();
                 mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _message.c_str());
                 if(mrYes==mr)
                 {
@@ -170,7 +170,7 @@ bool CSceneObject::LoadStream(IReader& F)
 
         if (!SetReference(buf))
         {
-            ELog.Msg            ( mtError, "CSceneObject: '%s' not found in library", buf );
+            ELog.Msg            ( mtError, g_pStringTable->translate("ed_st_obj_not_found").c_str(), buf);
             bRes                = false;
             int mr              = mrNone;
 
@@ -179,7 +179,7 @@ bool CSceneObject::LoadStream(IReader& F)
             if(b_found)
             {
                 xr_string _message;
-                _message = "Object ["+xr_string(buf)+"] not found. Relace it with ["+_new_name+"] or select other from library?";
+                _message = g_pStringTable->translate("ed_st_obj_not_found_replace_1").c_str()  + xr_string(buf) + g_pStringTable->translate("ed_st_obj_not_found_replace_2").c_str() + _new_name + g_pStringTable->translate("ed_st_obj_not_found_replace_3").c_str();
                 mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _message.c_str());
                 if(mrYes==mr)
                 {

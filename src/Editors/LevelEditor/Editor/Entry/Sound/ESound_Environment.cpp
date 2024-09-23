@@ -46,7 +46,7 @@ bool ESoundEnvironment::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
 	if(version!=SOUND_ENV_VERSION)
 	{
-		ELog.DlgMsg	(mtError, "ESoundSource: Unsupported version.");
+		ELog.DlgMsg	(mtError, g_pStringTable->translate("ed_st_sound_env_unsupported_ver").c_str());
 		return 		false;
 	}
 	inherited::LoadLTX			(ini, sect_name);
@@ -73,7 +73,7 @@ bool ESoundEnvironment::LoadStream(IReader& F)
 
 	R_ASSERT(F.r_chunk(SOUND_CHUNK_VERSION,&version));
 	if(version!=SOUND_ENV_VERSION){
-		ELog.DlgMsg( mtError, "ESoundSource: Unsupported version.");
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_sound_env_unsupported_ver").c_str());
 		return false;
 	}
 	inherited::LoadStream			(F);
@@ -111,9 +111,9 @@ void ESoundEnvironment::FillProp(LPCSTR pref, PropItemVec& values)
 {
 	inherited::FillProp			(pref, values);
 	PropValue* P;
-	P=PHelper().CreateChoose	(values, PrepareKey(pref,"Environment Inner"),	&m_EnvInner, smSoundEnv);
+	P=PHelper().CreateChoose	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_inner_env").c_str()),	&m_EnvInner, smSoundEnv);
 	P->OnChangeEvent.bind		(this,&ESoundEnvironment::OnChangeEnvs);
-	P=PHelper().CreateChoose	(values, PrepareKey(pref,"Environment Outer"),	&m_EnvOuter, smSoundEnv);
+	P=PHelper().CreateChoose	(values, PrepareKey(pref,g_pStringTable->translate("ed_st_outer_env").c_str()),	&m_EnvOuter, smSoundEnv);
 	P->OnChangeEvent.bind		(this,&ESoundEnvironment::OnChangeEnvs);
 }
 

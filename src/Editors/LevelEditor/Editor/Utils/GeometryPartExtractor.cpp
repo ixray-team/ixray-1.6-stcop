@@ -75,7 +75,7 @@ bool SBPart::prepare				(SBAdjVec& adjs, u32 bone_face_min)
     for (auto f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
         SBFace* F					= (*f_it);
         if (F->adjs.empty()){	
-            ELog.Msg(mtError,"Error face found at pos: [%3.2f,%3.2f,%3.2f]",VPUSH(F->o[0])); 
+            ELog.Msg(mtError,g_pStringTable->translate("ed_st_invalid_face_found").c_str(), VPUSH(F->o[0]));
             Tools->m_DebugDraw.AppendWireFace(F->o[0],F->o[1],F->o[2]);
             m_bValid				= false;
         }
@@ -193,7 +193,7 @@ bool SBPart::Export	(IWriter& F, u8 infl)
 {
 	VERIFY			(!m_Bones.empty());
     if (m_Bones.size()>63){
-    	ELog.Msg(mtError,"Breakable object cannot handle more than 63 parts.");
+    	ELog.Msg(mtError,g_pStringTable->translate("ed_st_br_obj_more_than_63_parts").c_str());
      	return false;
     }
 
@@ -236,12 +236,12 @@ bool SBPart::Export	(IWriter& F, u8 infl)
     for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); split_it++)
     {
         if (!split_it->valid()){
-            ELog.Msg(mtError,"Degenerate part found (Texture '%s').",*split_it->m_Texture);
+            ELog.Msg(mtError,g_pStringTable->translate("ed_st_degenerate_texture").c_str(), *split_it->m_Texture);
             bRes = false;
             break;
         }
         if (0!=split_it->invalid_faces){
-	        ELog.Msg(mtError,"Part [texture '%s'] have %d duplicate(degenerate) face(s).",*split_it->m_Texture,split_it->invalid_faces);
+	        ELog.Msg(mtError,g_pStringTable->translate("ed_st_texture_duplicated_faces").c_str(), *split_it->m_Texture, split_it->invalid_faces);
         }
     	// calculate T&B components
 		split_it->CalculateTB();
@@ -388,7 +388,7 @@ BOOL CGeomPartExtractor::Process()
     }
     // extract parts
     {
-        SPBItem* pb = UI->ProgressStart(m_Faces.size(),"Extract Parts...");
+        SPBItem* pb = UI->ProgressStart(m_Faces.size(),g_pStringTable->translate("ed_st_extract_parts").c_str());
         for (SBFaceVecIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++){
 	        pb->Inc();
             SBFace* F	= *f_it;
@@ -402,7 +402,7 @@ BOOL CGeomPartExtractor::Process()
     }
     // simplify parts
     {
-	    SPBItem* pb = UI->ProgressStart(m_Parts.size(),"Simplify Parts...");
+	    SPBItem* pb = UI->ProgressStart(m_Parts.size(),g_pStringTable->translate("ed_st_simplify_parts").c_str());
         for (SBPartVecIt p_it=m_Parts.begin(); p_it!=m_Parts.end(); p_it++){	
 	        pb->Inc();
         	(*p_it)->prepare	(m_Adjs,m_PerBoneFaceCountMin);

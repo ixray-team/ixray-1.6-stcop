@@ -31,7 +31,7 @@ bool  TUI_ControlWayPointAdd::Start(TShiftState Shift)
     ObjectList lst; Scene->GetQueryObjects(lst,OBJCLASS_WAY,1,1,-1);
     UIWayTool* frame=(UIWayTool*)parent_tool->pForm;
     if (1!=lst.size()){
-        ELog.DlgMsg(mtInformation,"Select one WayObject.");
+        ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_sel_one_way_obj").c_str());
         return false;
     }
     Fvector p;

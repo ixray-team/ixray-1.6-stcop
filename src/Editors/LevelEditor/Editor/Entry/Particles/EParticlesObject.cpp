@@ -293,7 +293,7 @@ void EParticlesObject::FillProp(LPCSTR pref, PropItemVec& items)
     V=PHelper().CreateChoose	(items,PrepareKey(pref, g_pStringTable->translate("ed_st_reference").c_str()),&m_RefName, smParticles);
     V->OnChangeEvent.bind		(this,&EParticlesObject::OnRefChange);
 	ButtonValue* B;
-    B=PHelper().CreateButton	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_controls").c_str()), 	"Play,Stop",0);
+    B=PHelper().CreateButton	(items,PrepareKey(pref,g_pStringTable->translate("ed_st_controls").c_str()), 	g_pStringTable->translate("ed_st_play_stop").c_str(), 0);
     B->OnBtnClickEvent.bind		(this,&EParticlesObject::OnControlClick);
 
 	m_GameType.FillProp			(pref, items);

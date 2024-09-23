@@ -67,7 +67,7 @@ void CLE_Visual::OnChangeVisual	()
 
 		if(NULL==visual && !g_tmp_lock)
 		{
-		 xr_string _msg = "Model [" + xr_string(source->visual_name.c_str())+"] not found. Do you want to select it from library?";
+		 xr_string _msg = g_pStringTable->translate("ed_st_model_not_found_1").c_str() + xr_string(source->visual_name.c_str()) + g_pStringTable->translate("ed_st_model_not_found_2").c_str();
 			  int mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _msg.c_str());
 			  LPCSTR _new_val = 0;
 			  g_tmp_lock = true;
@@ -132,7 +132,7 @@ void CLE_Visual::PlayAnimationFirstFrame()
 			KA->PlayCycle	(M);
 			PauseAnimation	();
 		}else
-		 Msg("! visual [%s] has no animation [%s]", source->visual_name.c_str(), source->startup_animation.c_str());
+		 Msg(g_pStringTable->translate("ed_st_visual_no_anim").c_str(), source->visual_name.c_str(), source->startup_animation.c_str());
 	}
 	if (K)
 		K->CalculateBones();
@@ -243,7 +243,7 @@ void CSpawnPoint::SSpawnData::Create(LPCSTR _entity_ref)
 	}
 	else 
 	{
-		Log("!Can't create entity: ", _entity_ref);
+		Log(g_pStringTable->translate("ed_st_cant_create_entity").c_str(), _entity_ref);
 	}
 
 	m_owner->SetRenderIfSelected(pSettings->line_exist(_entity_ref, "$render_if_selected"));
@@ -354,7 +354,7 @@ bool CSpawnPoint::SSpawnData::ExportGame(SExportStreams* F, CSpawnPoint* owner)
 	ISE_Shape* cform 			= m_Data->shape();
 // SHAPE
 	if (cform&&!(owner->m_AttachedObject&&(owner->m_AttachedObject->FClassID==OBJCLASS_SHAPE))){
-		ELog.DlgMsg				(mtError,"Spawn Point: '%s' must contain attached shape.",owner->GetName());
+		ELog.DlgMsg				(mtError,g_pStringTable->translate("ed_st_obj_must_have_shape").c_str(), owner->GetName());
 		return false;
 	}
 	if (cform){
@@ -394,7 +394,7 @@ void CSpawnPoint::SSpawnData::PreExportSpawn(CSpawnPoint* owner)
 	ISE_Shape* cform = m_Data->shape();
 	// SHAPE
 	if (cform && !(owner->m_AttachedObject && (owner->m_AttachedObject->FClassID == OBJCLASS_SHAPE))) {
-		ELog.DlgMsg(mtError, "Spawn Point: '%s' must contain attached shape.", owner->GetName());
+		ELog.DlgMsg(mtError, g_pStringTable->translate("ed_st_obj_must_have_shape").c_str(), owner->GetName());
 		;
 	}
 	if (cform) {
@@ -1007,7 +1007,7 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
 	if(version<0x0014)
 	{
-		ELog.Msg( mtError, "SPAWNPOINT: Unsupported version.");
+		ELog.Msg( mtError, g_pStringTable->translate("ed_st_spawn_unsupported").c_str());
 		return false;
 	}
 
@@ -1016,7 +1016,7 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
 	if (m_Type>=ptMaxType)
 	{
-		ELog.Msg( mtError, "SPAWNPOINT: Unsupported spawn version.");
+		ELog.Msg( mtError, g_pStringTable->translate("ed_st_spawn_unsupported_ver").c_str());
 		return false;
 	}
 	switch (m_Type)
@@ -1027,7 +1027,7 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
 		xr_strconcat(buff, sect_name, "_spawndata");
 		if (!m_SpawnData.LoadLTX(ini, buff))
 		{
-			ELog.Msg( mtError, "SPAWNPOINT: Can't load Spawn Data.");
+			ELog.Msg( mtError, g_pStringTable->translate("ed_st_spawn_cant_load").c_str());
 			return false;
 		}
 		SetValid		(true);
@@ -1127,7 +1127,7 @@ bool CSpawnPoint::LoadStream(IReader& F)
 	R_ASSERT(F.r_chunk(SPAWNPOINT_CHUNK_VERSION,&version));
 	if(version<0x0014)
 	{
-		ELog.Msg( mtError, "SPAWNPOINT: Unsupported version.");
+		ELog.Msg(mtError, g_pStringTable->translate("ed_st_spawn_unsupported").c_str());
 		return false;
 	}
 
@@ -1138,7 +1138,7 @@ bool CSpawnPoint::LoadStream(IReader& F)
 	{
 		if (!m_SpawnData.LoadStream(F))
 		{
-			ELog.Msg( mtError, "SPAWNPOINT: Can't load Spawn Data.");
+			ELog.Msg(mtError, g_pStringTable->translate("ed_st_spawn_cant_load").c_str());
 			return false;
 		}
 		SetValid	(true);
@@ -1146,7 +1146,7 @@ bool CSpawnPoint::LoadStream(IReader& F)
 	}else{
 		if (F.find_chunk(SPAWNPOINT_CHUNK_TYPE))     m_Type 		= (EPointType)F.r_u32();
 		if (m_Type>=ptMaxType){
-			ELog.Msg( mtError, "SPAWNPOINT: Unsupported spawn version.");
+			ELog.Msg(mtError, g_pStringTable->translate("ed_st_spawn_unsupported_ver").c_str());
 			return false;
 		}
 		switch (m_Type){
@@ -1262,7 +1262,7 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
 		if (m_SpawnData.m_Data->validate()){
 			m_SpawnData.ExportGame		(F,this);
 		}else{
-			Log	("!Invalid spawn data:",GetName());
+			Log	(g_pStringTable->translate("ed_st_invalid_spawn_data").c_str(), GetName());
 			return false;
 		}
 	}else{
@@ -1379,7 +1379,7 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
 	{
 		shared_str pref1			= PrepareKey(pref,m_SpawnData.m_Data->name());
 		m_SpawnData.m_Profile 		= SectionToEditor(m_SpawnData.m_Data->name());
-		ChooseValue* C				= PHelper().CreateChoose(items,PrepareKey(pref1.c_str(),"Profile (spawn section)"),&m_SpawnData.m_Profile,smCustom,0,0,1,cfFullExpand);
+		ChooseValue* C				= PHelper().CreateChoose(items,PrepareKey(pref1.c_str(),g_pStringTable->translate("ed_st_spawn_profile").c_str()),&m_SpawnData.m_Profile,smCustom,0,0,1,cfFullExpand);
 		C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillChooseItems);
 		C->OnChangeEvent.bind		(this,&CSpawnPoint::OnProfileChange);
 		m_SpawnData.FillProp		(pref,items);
@@ -1391,52 +1391,52 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
 
 			if(m_RP_Type==rptItemSpawn)
 			{                                                            
-				ChooseValue* C				= PHelper().CreateChoose(items,PrepareKey(pref,"Respawn Point\\Profile"),&m_rpProfile,smCustom,0,0,10,cfMultiSelect);
+				ChooseValue* C				= PHelper().CreateChoose(items,PrepareKey(pref,g_pStringTable->translate("ed_st_respawn_profile").c_str()),&m_rpProfile,smCustom,0,0,10,cfMultiSelect);
 				C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillRespawnItemProfile);
 			 }else
 			{
-				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,32);
+				PHelper().CreateU8		(items, PrepareKey(pref,g_pStringTable->translate("ed_st_respawn_team").c_str()), 		&m_RP_TeamID, 	0,32);
 			}
-			Token8Value* TV = PHelper().CreateToken8	(items, PrepareKey(pref,"Respawn Point\\Spawn Type"),	&m_RP_Type, 	rpoint_type);
+			Token8Value* TV = PHelper().CreateToken8	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_respawn_type").c_str()),	&m_RP_Type, 	rpoint_type);
 			TV->OnChangeEvent.bind		(this,&CSpawnPoint::OnRPointTypeChange);
 
 		m_GameType.FillProp			(pref, items);
 		}break;
 		case ptEnvMod:{
-			PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Radius"),			&m_EM_Radius, 	EPS_L,10000.f);
-			PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Power"), 			&m_EM_Power, 	EPS,1000.f);
+			PHelper().CreateFloat	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_radius").c_str()),			&m_EM_Radius, 	EPS_L,10000.f);
+			PHelper().CreateFloat	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_power").c_str()), 			&m_EM_Power, 	EPS,1000.f);
 
 			Flag16Value* FV 		= NULL;
 			
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\View Distance"), &m_EM_Flags, eViewDist);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_view_dist").c_str()), &m_EM_Flags, eViewDist);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eViewDist))
-				PHelper().CreateFloat(items, PrepareKey(pref,"Environment Modificator\\View Distance\\ "),	&m_EM_ViewDist, EPS_L,10000.f);
+				PHelper().CreateFloat(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_view_dist_2").c_str()),	&m_EM_ViewDist, EPS_L,10000.f);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Fog Color"), &m_EM_Flags, eFogColor);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_fog_color").c_str()), &m_EM_Flags, eFogColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eFogColor))
-				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Fog Color\\ "), 		&m_EM_FogColor);
+				PHelper().CreateColor	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_fog_color_2").c_str()), 		&m_EM_FogColor);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Fog Density"), &m_EM_Flags, eFogDensity);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_fog_density").c_str()), &m_EM_Flags, eFogDensity);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eFogDensity))
-				PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Fog Density\\ "), 	&m_EM_FogDensity, 0.f,10000.f);
+				PHelper().CreateFloat	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_fog_density_2").c_str()), 	&m_EM_FogDensity, 0.f,10000.f);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Ambient Color"), &m_EM_Flags, eAmbientColor);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_ambient_color").c_str()), &m_EM_Flags, eAmbientColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eAmbientColor))
-				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Ambient Color\\ "), 	&m_EM_AmbientColor);
+				PHelper().CreateColor	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_ambient_color_2").c_str()), 	&m_EM_AmbientColor);
 
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Sky Color"), &m_EM_Flags, eSkyColor);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_sky_color").c_str()), &m_EM_Flags, eSkyColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eSkyColor))
-				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Sky Color\\ "), 		&m_EM_SkyColor);
+				PHelper().CreateColor	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_sky_color_2").c_str()), 		&m_EM_SkyColor);
 				
-			FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Hemi Color"), &m_EM_Flags, eHemiColor);
+			FV = PHelper().CreateFlag16(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_hemi_color").c_str()), &m_EM_Flags, eHemiColor);
 			FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
 			if(m_EM_Flags.test(eHemiColor))
-				PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Hemi Color\\ "), 	&m_EM_HemiColor);
+				PHelper().CreateColor	(items, PrepareKey(pref,g_pStringTable->translate("ed_st_env_mod_hemi_color_2").c_str()), 	&m_EM_HemiColor);
 		}break;
 		default: THROW;
 		}

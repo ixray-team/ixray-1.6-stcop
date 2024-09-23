@@ -38,7 +38,7 @@ bool ESceneObjectTool::Validate(bool full_test)
             if (A->RefCompare(B->GetReference())){
             	if (A->GetPosition().similar(B->GetPosition(),EPS_L)){
                 	bRes = false;
-                    ELog.Msg(mtError,"Duplicate object position '%s'-'%s' with reference '%s'.",A->GetName(),B->GetName(),A->RefName());
+                    ELog.Msg(mtError,g_pStringTable->translate("ed_st_duplicate_obj_pos").c_str(), A->GetName(), B->GetName(), A->RefName());
                 }
             }
         }
@@ -52,12 +52,12 @@ bool ESceneObjectTool::Validate(bool full_test)
 //.          FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
             FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
             age					= FS.get_file_age(fn);
-            if(age==-1)         Msg("!There is no texture '%s'", fn);
+            if(age==-1)         Msg(g_pStringTable->translate("ed_st_no_texture").c_str(), fn);
             l_name 				+= "_nm";
 //.         FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
             FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
             age_nm				= FS.get_file_age(fn);
-            if(age_nm==-1)      Msg("!There is no texture '%s'", fn);
+            if(age_nm==-1)      Msg(g_pStringTable->translate("ed_st_no_texture").c_str(), fn);
 
             if(age_nm==-1 || age==-1)
                bRes 			= false;
@@ -90,27 +90,27 @@ void ESceneObjectTool::FillAppendRandomPropertiesBegin(bool bUpdateOnly)
 
     PropValue* V;           
     PropItemVec 					items; 
-    V=PHelper().CreateFlag32		(items,"Scale",				&m_Flags, flAppendRandomScale);
+    V=PHelper().CreateFlag32		(items,g_pStringTable->translate("ed_st_scale").c_str(), &m_Flags, flAppendRandomScale);
     V->OnChangeEvent.bind			(this,&ESceneObjectTool::OnChangeAppendRandomFlags);
     if (m_Flags.is(flAppendRandomScale)){
-        V=PHelper().CreateFlag32	(items,"Scale\\Proportional",&m_Flags, flAppendRandomScaleProportional);
+        V=PHelper().CreateFlag32	(items,g_pStringTable->translate("ed_st_scale_proportional").c_str(), &m_Flags, flAppendRandomScaleProportional);
         V->OnChangeEvent.bind		(this,&ESceneObjectTool::OnChangeAppendRandomFlags);
         if (m_Flags.is(flAppendRandomScaleProportional)){
-            PHelper().CreateFloat	(items,"Scale\\Minimum",	&m_AppendRandomMinScale.x,0.001f,1000.f,0.001f,3);
-            PHelper().CreateFloat	(items,"Scale\\Maximum",	&m_AppendRandomMaxScale.x,0.001f,1000.f,0.001f,3);
+            PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_scale_minimum").c_str(), &m_AppendRandomMinScale.x, 0.001f, 1000.f, 0.001f, 3);
+            PHelper().CreateFloat	(items,g_pStringTable->translate("ed_st_scale_maximum").c_str(), &m_AppendRandomMaxScale.x, 0.001f, 1000.f, 0.001f, 3);
         }else{
-            PHelper().CreateVector	(items,"Scale\\Minimum",	&m_AppendRandomMinScale,0.001f,1000.f,0.001f,3);
-            PHelper().CreateVector	(items,"Scale\\Maximum",	&m_AppendRandomMaxScale,0.001f,1000.f,0.001f,3);
+            PHelper().CreateVector	(items, g_pStringTable->translate("ed_st_scale_minimum").c_str(),	&m_AppendRandomMinScale,0.001f,1000.f,0.001f,3);
+            PHelper().CreateVector	(items, g_pStringTable->translate("ed_st_scale_maximum").c_str(),	&m_AppendRandomMaxScale,0.001f,1000.f,0.001f,3);
         }
     }
 
-    V=PHelper().CreateFlag32		(items,"Rotate",			&m_Flags, flAppendRandomRotation);
+    V=PHelper().CreateFlag32		(items,g_pStringTable->translate("ed_st_rotate").c_str(), &m_Flags, flAppendRandomRotation);
     V->OnChangeEvent.bind			(this,&ESceneObjectTool::OnChangeAppendRandomFlags);
     if (m_Flags.is(flAppendRandomRotation)){
-        PHelper().CreateAngle3		(items,"Rotate\\Minimum",	&m_AppendRandomMinRotation);
-        PHelper().CreateAngle3		(items,"Rotate\\Maximum",	&m_AppendRandomMaxRotation);
+        PHelper().CreateAngle3		(items,g_pStringTable->translate("ed_st_rotate_minimum").c_str(), &m_AppendRandomMinRotation);
+        PHelper().CreateAngle3		(items,g_pStringTable->translate("ed_st_rotate_maximum").c_str(), &m_AppendRandomMaxRotation);
     }
-	V=PHelper().CreateChoose		(items,"Objects",&m_AppendRandomObjectsStr,smObject,0,0,32);
+	V=PHelper().CreateChoose		(items,g_pStringTable->translate("ed_st_objects").c_str(), &m_AppendRandomObjectsStr, smObject, 0, 0, 32);
     V->OnChangeEvent.bind			(this,&ESceneObjectTool::OnChangeAppendRandomFlags);
     if (bUpdateOnly)
         UIPropertiesModal::GetProperties()->AssignItems(items);

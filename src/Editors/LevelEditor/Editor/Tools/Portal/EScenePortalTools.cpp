@@ -19,7 +19,7 @@ void EScenePortalTool::RemoveControls()
 
 void EScenePortalTool::FillProp(LPCSTR pref, PropItemVec& items)
 {
-	PHelper().CreateFlag32(items, PrepareKey(pref,"Common\\Draw Simple Model"),&m_Flags,			flDrawSimpleModel);
+	PHelper().CreateFlag32(items, PrepareKey(pref,g_pStringTable->translate("ed_st_draw_simple_model").c_str()),&m_Flags,			flDrawSimpleModel);
 	inherited::FillProp	(pref, items);
 }
 
@@ -129,7 +129,7 @@ void EScenePortalTool::RemoveSimilar()
     {
         xr_delete(*p_del);
     }
-	ELog.DlgMsg(mtInformation,"Removed '%d' portal(s).",p_lst_del.size());
+	ELog.DlgMsg(mtInformation,g_pStringTable->translate("ed_st_removed_portals_count").c_str(), p_lst_del.size());
     p_lst_del.clear();
     
  }
