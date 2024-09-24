@@ -8,15 +8,14 @@
 #include "../../../../xrScripts/script_export_space.h"
 #include "bloodsucker_alien.h"
 
-
-class CAI_Bloodsucker : public CBaseMonster, 
-						public CControlledActor {
-
-	typedef		CBaseMonster	inherited;
+class CustomBloodsucker : public CBaseMonster, 
+						public CControlledActor 
+{
+	using		inherited = CBaseMonster;
 	
 public:
-							CAI_Bloodsucker	();
-	virtual					~CAI_Bloodsucker();	
+	CustomBloodsucker();
+	virtual					~CustomBloodsucker();
 
 	virtual void			reinit					();
 	virtual	void			reload					(LPCSTR section);
@@ -55,8 +54,6 @@ public:
 private:
 	static	void	_BCL	BoneCallback			(CBoneInstance *B);
 			void			vfAssignBones			();
-			void			LookDirection			(Fvector to_dir, float bone_turn_speed);
-
 
 	bonesManipulation		Bones;
 
@@ -103,8 +100,6 @@ public:
 	// Vampire
 	//--------------------------------------------------------------------
 public:
-	CAI_Bloodsucker*		object;
-
 	u32						m_vampire_min_delay;
 	static u32				m_time_last_vampire;
 	SAnimationTripleData	anim_triple_vampire;
@@ -142,7 +137,7 @@ private:
 	// Alien
 	//--------------------------------------------------------------------
 public:
-	CBloodsuckerAlien		m_alien_control;
+	CustomBloodsuckerAlien	m_alien_control;
 	u32						m_time_lunge;
 
 			void			set_alien_control		(bool val);
@@ -209,11 +204,6 @@ public:
 
 	// Lain: added 
 	virtual void add_debug_info  (debug::text_tree& root_s);
-
-#ifdef _DEBUG
-			void debug_on_key						(int key);
-#endif
-
 #endif
 
 //-------------------------------------------------------------------
@@ -254,6 +244,19 @@ public:
 	virtual bool    should_wait_to_use_corspe_visual () { return false; }
 
 public:
+
+	struct SBloodsuckerProperies
+	{
+		static constexpr int defaultVisibilityStateChangeMinDelay = 1000;
+
+		static constexpr int defaultPartialVisibilityRadius = 10;
+		static constexpr int defaultRunawayInvisibleTime = 3000;
+
+		static constexpr const char* fullVisibilityRadiusString = "full_visibility_radius";
+		static constexpr const char* partialVisibilityRadiusString = "partial_visibility_radius";
+		static constexpr const char* visibilityStateChangeMinDelayString = "visibility_state_change_min_delay";
+	};
+
 	u32				m_hits_before_vampire;
 	u32				m_sufficient_hits_before_vampire;
 	int				m_sufficient_hits_before_vampire_random;

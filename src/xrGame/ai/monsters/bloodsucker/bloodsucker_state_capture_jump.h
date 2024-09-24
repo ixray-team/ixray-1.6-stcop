@@ -1,20 +1,18 @@
 #pragma once
 
 #include "../state.h"
-//#include "../../../entitycondition.h"
 
-class	CStateCaptureJumpBloodsucker : public CState {
+class	CustomBloodsuckerStateJump : public CState 
+{
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState;
+	using state_ptr = CState*;
 
 public:
-	CStateCaptureJumpBloodsucker		(CAI_Bloodsucker*obj);
-	virtual				~CStateCaptureJumpBloodsucker		();
+	CustomBloodsuckerStateJump(CustomBloodsucker* object);
+	virtual				~CustomBloodsuckerStateJump();
 
-	virtual	void		execute					();
-	virtual void		setup_substates			();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual	void		execute();
+	virtual void		setup_substates();
+	virtual void		remove_links(CObject* object) { inherited::remove_links(object); }
 };
-
-#include "bloodsucker_state_capture_jump_inline.h"

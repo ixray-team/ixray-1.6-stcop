@@ -2,15 +2,18 @@
 #include "../state.h"
 #include "../../../../xrServerEntities/clsid_game.h"
 
-class	CStateBloodsuckerVampire : public CState {
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+class	CustomBloodsuckerStateVampire : public CState
+{
+	using inherited = CState;
+	using state_ptr = CState*;
 
 	const CEntityAlive *enemy;
+    CustomBloodsucker* m_pBloodsucker;
 
 public:
-						CStateBloodsuckerVampire		(CAI_Bloodsucker*obj);
-						CAI_Bloodsucker* object;
+	CustomBloodsuckerStateVampire(CustomBloodsucker*object);
+	virtual ~CustomBloodsuckerStateVampire();
+
 	virtual void		reinit							();
 	
 	virtual void		initialize						();
@@ -24,5 +27,3 @@ public:
 	virtual void		setup_substates					();
 	virtual void		check_force_state				();
 };
-
-#include "bloodsucker_vampire_inline.h"

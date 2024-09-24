@@ -1,16 +1,21 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CAI_Bloodsucker;
+class CustomBloodsuker;
 
-class CStateManagerBloodsucker : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CustomBloodsukerStateManager : public CMonsterStateManager
+{
+	using inherited = CMonsterStateManager;
+
+	CustomBloodsucker* m_pBloodsucker;
 
 public:
-					CStateManagerBloodsucker	(CAI_Bloodsucker *monster); 
+	CustomBloodsukerStateManager(CustomBloodsucker*object);
+	virtual ~CustomBloodsukerStateManager();
+
 	virtual void	execute						();
 	virtual void	update						();
 			void	drag_object					();
-	virtual void	remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	remove_links				(CObject* object) { inherited::remove_links(object);}
 			bool	check_vampire				();
 };

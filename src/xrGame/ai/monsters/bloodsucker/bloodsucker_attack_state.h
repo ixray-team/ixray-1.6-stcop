@@ -1,54 +1,34 @@
 #pragma once
 #include "../states/monster_state_attack.h"
 
-class	CBloodsuckerStateAttack : public CStateMonsterAttack {
-	typedef CStateMonsterAttack inherited_attack;
+class	CustomBloodsuckerStateAttack : public CStateMonsterAttack 
+{
+	using inherited_attack  = CStateMonsterAttack;
 
 	u32				m_time_stop_invis;
 	Fvector			m_dir_point;
 
 	float           m_last_health;
 	bool            m_start_with_encircle;
+	CustomBloodsucker* m_pBloodsucker;
 
 public:
-					CBloodsuckerStateAttack		(CAI_Bloodsucker*obj);
-	virtual			~CBloodsuckerStateAttack	();
+	CustomBloodsuckerStateAttack(CustomBloodsucker* obj);
+	virtual			~CustomBloodsuckerStateAttack();
 
-	virtual	void	initialize					();
-	virtual	void	execute						();
-	virtual	void	finalize					();
-	virtual	void	critical_finalize			();
-	
-	virtual void	setup_substates				();
-private:
-			bool	check_hiding				();
-			bool	check_vampire				();
-};
+	virtual	void	initialize();
+	virtual	void	execute();
+	virtual	void	finalize();
+	virtual	void	critical_finalize();
 
-class CStateMonsterBackstubEnemy : public CState {
-	typedef CState inherited;
-public:
-	struct StateParams : SStateDataMoveToPointEx
+	virtual void	setup_substates();
+
+	struct SBloodsuckerStateAttackProperies
 	{
-		bool   start_with_encircle;
-		StateParams() : start_with_encircle(false) {}
-	} data;
+		static constexpr float loose_health_diff = 0.15f;
+	};
 
-protected:
-
-	float                   m_last_health;
-	bool                    m_encircle;
-	TTime                   m_encircle_end_tick;
-	TTime                   m_next_change_behaviour_tick;
-
-public:
-	CStateMonsterBackstubEnemy	(CAI_Bloodsucker*obj) : inherited(obj, &data) {}
-	virtual				~CStateMonsterBackstubEnemy	() {}
-	virtual void		initialize					();
-	virtual	void		execute						();
-	virtual bool 		check_start_conditions	    ();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object) { inherited::remove_links(object);}
+private:
+	bool	check_hiding();
+	bool	check_vampire();
 };
-
-#include "bloodsucker_attack_state_inline.h"

@@ -7,6 +7,7 @@
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "bloodsucker_vampire_effector.h"
+#include "bloodsucker_vampire_camera_effector.h"
 #include "../../../detail_path_manager.h"
 #include "../../../level_debug.h"
 #include "../monster_velocity_space.h"
@@ -25,61 +26,71 @@
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
 
+u32	CustomBloodsucker::m_time_last_vampire = 0;
 
-namespace detail
+CustomBloodsucker::CustomBloodsucker()
 {
-namespace bloodsucker
-{
-	// default hit settings
-	float const default_critical_hit_chance							= 	0.25f;
-	float const default_hit_camera_effector_angle					= 	0;
-	float const default_critical_hit_camera_effector_angle			= 	3.1415f / 6;
-		  
-	float const default_camera_effector_move_angular_speed			=	1.5f;
-	u32   const default_visibility_state_change_min_delay			=	1000;
-		  
-	float const default_full_visibility_radius						=	5;
-	float const default_partial_visibility_radius					=	10;
-	float const default_runaway_invisible_time						=	3000;
+	StateMan = new CustomBloodsukerStateManager(this);
+	m_alien_control.init_external(this);
+	m_drag_anim_jump = false;
+	m_animated = false;
+	collision_off = false;
+	m_force_visibility_state = unset;
+	m_runaway_invisible_time = 0;
 
-	char  const * const full_visibility_radius_string				=	"full_visibility_radius";
-	char  const * const partial_visibility_radius_string			=	"partial_visibility_radius";
-	char  const * const visibility_state_change_min_delay_string	=	"visibility_state_change_min_delay";
-
-} // namespace bloodsucker
-} // namespace detail
-
-u32		CAI_Bloodsucker::m_time_last_vampire	=	0;
-
-CAI_Bloodsucker::CAI_Bloodsucker()
-{
-	StateMan						=	new CStateManagerBloodsucker	(this);
-	m_alien_control.init_external		(this);
-	m_drag_anim_jump				= 	false;
-	m_animated						= 	false;
-	collision_off					= 	false;
-	m_force_visibility_state		=	unset;
-	m_runaway_invisible_time		=	0;
-
-	object							=   this;
-
-	using namespace						detail::bloodsucker;
+	bone_head = nullptr;
+	bone_spine = nullptr;
+	collision_hit_off = false;
+	invisible_particle_name = "";
+	invisible_vel = {};
+	j_factor = 0.f;
+	j_position = {};
+	m_cob = nullptr;
+	m_last_critical_hit_tick = {};
+	m_critical_hit_chance = 0.f;
+	m_critical_hit_camera_effector_angle = 0.f;
+	m_vampire_want_value = 0.f;
+	m_vampire_want_speed = 0.f;
+	m_vampire_wound = 0.f;
+	m_vampire_gain_health = 0.f;
+	m_vampire_distance = 0.f;
+	m_vis_state = 0.f;
+	m_full_visibility_radius = 0.f;
+	m_partial_visibility_radius = 0.f;
+	m_drag_anim_jump = false;
+	m_visibility_state = unset;;
+	m_visibility_state_last_changed_time = {};
+	m_client_effector = false;
+	m_hits_before_vampire = 0;
+	m_predator = false;
+	m_str_cel = "";
+	m_sufficient_hits_before_vampire = 0;
+	m_sufficient_hits_before_vampire_random = 0;
+	m_time_lunge = 0;
+	m_vampire_min_delay = 0;
+	m_visibility_state_change_min_delay = 0;
+	m_visual_predator = "";
 }
 
-CAI_Bloodsucker::~CAI_Bloodsucker()
+CustomBloodsucker::~CustomBloodsucker()
 {
 	xr_delete	(StateMan);
 }
 
-void CAI_Bloodsucker::Load(LPCSTR section) 
+void CustomBloodsucker::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	if(pSettings->line_exist(section,"collision_hit_off")){
+	if(pSettings->line_exist(section,"collision_hit_off"))
+	{
 		collision_hit_off = true;
-	}else collision_hit_off = false;
+	}
+	else 
+		collision_hit_off = false;
+
 	if(!pSettings->line_exist(section,"is_friendly"))
 		com_man().add_ability			(ControlCom::eControlRunAttack);	
+
 	com_man().add_ability			(ControlCom::eControlRotationJump);
 	com_man().add_ability			(ControlCom::eControlJump);
 
@@ -184,8 +195,6 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 		anim().AddAnim(eAnimMiscAction_00,	"stand_to_aggressive_",	-1, &velocity_none,		PS_STAND,	"fx_run_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");	
 	}
 
-	// define transitions
-	//	anim().AddTransition(PS_STAND,			eAnimThreaten,	eAnimMiscAction_00,	false);
 	anim().AddTransition(eAnimStandSitDown,	eAnimSleep,		eAnimSitToSleep,	false);
 	anim().AddTransition(PS_STAND,			eAnimSleep,		eAnimStandSitDown,	true);
 	anim().AddTransition(PS_STAND,			PS_SIT,			eAnimStandSitDown,	false);
@@ -193,9 +202,7 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 	anim().AddTransition(PS_SIT,			PS_STAND,		eAnimSitStandUp,	false);
 	anim().AddTransition(PS_LIE,			PS_STAND,		eAnimSitStandUp,	false);
 
-	// define links from Action to animations
 	anim().LinkAction(ACT_STAND_IDLE,	eAnimStandIdle);
-	//anim().LinkAction(ACT_CAPTURE_PREPARE,	eAnimCapturePrepare);
 	anim().LinkAction(ACT_SIT_IDLE,		eAnimSitIdle);
 	anim().LinkAction(ACT_LIE_IDLE,		eAnimSitIdle);
 	anim().LinkAction(ACT_WALK_FWD,		eAnimWalkFwd);
@@ -204,11 +211,9 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 	anim().LinkAction(ACT_EAT,			eAnimEat);
 	anim().LinkAction(ACT_SLEEP,		eAnimSleep);
 	anim().LinkAction(ACT_REST,			eAnimSitIdle);
-	//anim().LinkAction(ACT_DRAG,			eAnimWalkBkwd);
 	anim().LinkAction(ACT_ATTACK,		eAnimAttack);
 	anim().LinkAction(ACT_STEAL,		eAnimSteal);
 	anim().LinkAction(ACT_LOOK_AROUND,	eAnimLookAround); 
-
 
 	m_hits_before_vampire		=	0;
 
@@ -234,27 +239,27 @@ void CAI_Bloodsucker::Load(LPCSTR section)
 
 	invisible_particle_name			= pSettings->r_string(section,"Particle_Invisible");
 
-	using namespace detail::bloodsucker;
-
 	READ_IF_EXISTS(pSettings, r_float, section, "separate_factor", 0.f);
 
-	m_visibility_state_change_min_delay	 = READ_IF_EXISTS(	pSettings, r_u32, section, 
-															"visibility_state_change_min_delay",  
-															default_visibility_state_change_min_delay);
+	m_visibility_state_change_min_delay	 = READ_IF_EXISTS(pSettings, r_u32, section, 
+		SBloodsuckerProperies::visibilityStateChangeMinDelayString,
+		SBloodsuckerProperies::defaultVisibilityStateChangeMinDelay);
 
-	m_full_visibility_radius		=	READ_IF_EXISTS(	pSettings, r_float, section, 
-														full_visibility_radius_string, 
-														default_full_visibility_radius);
+	m_full_visibility_radius		=	READ_IF_EXISTS(pSettings, r_float, section, 
+		SBloodsuckerProperies::fullVisibilityRadiusString,
+		SBloodsuckerProperies::defaultPartialVisibilityRadius);
+
 	m_partial_visibility_radius		=	READ_IF_EXISTS(	pSettings, r_float, section, 
-														partial_visibility_radius_string, 
-														default_partial_visibility_radius);
+		SBloodsuckerProperies::partialVisibilityRadiusString,
+		SBloodsuckerProperies::defaultPartialVisibilityRadius);
+
 	m_visibility_state						=	unset;
 	m_visibility_state_last_changed_time	=	0;
 
 	PostLoad							(section);
 }
 
-void CAI_Bloodsucker::reinit()
+void CustomBloodsucker::reinit()
 {
 	m_force_visibility_state	=	unset;
 
@@ -266,14 +271,13 @@ void CAI_Bloodsucker::reinit()
 
 	Bones.Reset					();
 
-	com_man().ta_fill_data(anim_triple_vampire, "vampire_0", "vampire_1", "vampire_2", TA_EXECUTE_LOOPED, TA_DONT_SKIP_PREPARE, 0);//ControlCom::eCapturePath | ControlCom::eCaptureMovement);
+	com_man().ta_fill_data(anim_triple_vampire, "vampire_0", "vampire_1", "vampire_2", TA_EXECUTE_LOOPED, TA_DONT_SKIP_PREPARE, 0);
 	
 
 	m_alien_control.reinit();
 	
 	state_invisible				= false;
 
-	//com_man().add_rotation_jump_data("run_turn_r_0","run_turn_r_1","run_turn_r_0","run_turn_r_1", PI - 0.01f, SControlRotationJumpData::eStopAtOnce | SControlRotationJumpData::eRotateOnce);
 	com_man().add_rotation_jump_data("run_turn_l_0","run_turn_l_1","run_turn_r_0","run_turn_r_1", PI_DIV_2);
 	
 	com_man().load_jump_data("boloto_jump_prepare",0, "boloto_jump_fly", "boloto_jump_end", u32(-1), MonsterMovement::eBloodsuckerVelocityParameterJumpGround,0);
@@ -288,7 +292,7 @@ void CAI_Bloodsucker::reinit()
 	start_invisible_predator();
 }
 
-void CAI_Bloodsucker::reload(LPCSTR section)
+void CustomBloodsucker::reload(LPCSTR section)
 {
 	inherited::reload(section);
 
@@ -301,7 +305,7 @@ void CAI_Bloodsucker::reload(LPCSTR section)
 	sound().add(pSettings->r_string(section,"Sound_Alien"),						DEFAULT_SAMPLE_COUNT,	SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eCriticalPriority,	u32(MonsterSound::eCaptureAllChannels),	eAlien,				"bip01_head");
 }
 
-void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
+void CustomBloodsucker::LoadVampirePPEffector(LPCSTR section)
 {
 	pp_vampire_effector.duality.h			= pSettings->r_float(section,"duality_h");
 	pp_vampire_effector.duality.v			= pSettings->r_float(section,"duality_v");
@@ -310,87 +314,69 @@ void CAI_Bloodsucker::LoadVampirePPEffector(LPCSTR section)
 	pp_vampire_effector.noise.intensity		= pSettings->r_float(section,"noise_intensity");
 	pp_vampire_effector.noise.grain			= pSettings->r_float(section,"noise_grain");
 	pp_vampire_effector.noise.fps			= pSettings->r_float(section,"noise_fps");
+
 	VERIFY(!fis_zero(pp_vampire_effector.noise.fps));
 
-	sscanf(pSettings->r_string(section,"color_base"),	"%f,%f,%f", &pp_vampire_effector.color_base.r, &pp_vampire_effector.color_base.g, &pp_vampire_effector.color_base.b);
-	sscanf(pSettings->r_string(section,"color_gray"),	"%f,%f,%f", &pp_vampire_effector.color_gray.r, &pp_vampire_effector.color_gray.g, &pp_vampire_effector.color_gray.b);
-	sscanf(pSettings->r_string(section,"color_add"),	"%f,%f,%f", &pp_vampire_effector.color_add.r,  &pp_vampire_effector.color_add.g,  &pp_vampire_effector.color_add.b);
+	if (sscanf(pSettings->r_string(section, "color_base"), "%f,%f,%f", 
+		&pp_vampire_effector.color_base.r, 
+		&pp_vampire_effector.color_base.g, 
+		&pp_vampire_effector.color_base.b) != 3)
+	{
+		Msg("! Failed to parse color_base in section %s", section);
+	}
+
+	if (sscanf(pSettings->r_string(section, "color_gray"), "%f,%f,%f", 
+		&pp_vampire_effector.color_gray.r, 
+		&pp_vampire_effector.color_gray.g, 
+		&pp_vampire_effector.color_gray.b) != 3)
+	{
+		Msg("! Failed to parse color_gray in section %s", section);
+	}
+
+	if (sscanf(pSettings->r_string(section, "color_add"), "%f,%f,%f", 
+		&pp_vampire_effector.color_add.r, 
+		&pp_vampire_effector.color_add.g, 
+		&pp_vampire_effector.color_add.b) != 3)
+	{
+		Msg("! Failed to parse color_add in section %s", section);
+	}
 }
 
-void  CAI_Bloodsucker::BoneCallback(CBoneInstance *B)
+void  CustomBloodsucker::BoneCallback(CBoneInstance *B)
 {
-	CAI_Bloodsucker*	this_class = static_cast<CAI_Bloodsucker*> (B->callback_param());
+	CustomBloodsucker*	this_class = static_cast<CustomBloodsucker*> (B->callback_param());
 
 	this_class->Bones.Update(B, Device.dwTimeGlobal);
 }
 
-void CAI_Bloodsucker::vfAssignBones()
+void CustomBloodsucker::vfAssignBones()
 {
-	// Установка callback на кости
-
 	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
 	bone_head =		&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+
+	if(!PPhysicsShell())
 	{
 		bone_spine->set_callback(bctCustom,BoneCallback,this);
 		bone_head->set_callback(bctCustom,BoneCallback,this);
 	}
 
-	// Bones settings
 	Bones.Reset();
 	Bones.AddBone(bone_spine, AXIS_X);	Bones.AddBone(bone_spine, AXIS_Y);
 	Bones.AddBone(bone_head, AXIS_X);	Bones.AddBone(bone_head, AXIS_Y);
 }
 
-
-//#define MAX_BONE_ANGLE PI_DIV_4
-
-void CAI_Bloodsucker::LookDirection(Fvector to_dir, float bone_turn_speed)
+void CustomBloodsucker::ActivateVampireEffector()
 {
-	//// получаем вектор направления к источнику звука и его мировые углы
-	//float		yaw,pitch;
-	//to_dir.getHP(yaw,pitch);
-
-	//// установить параметры вращения по yaw
-	//float cur_yaw = -movement().m_body.current.yaw;						// текущий мировой угол монстра
-	//float bone_angle;											// угол для боны	
-
-	//float dy = _abs(angle_normalize_signed(yaw - cur_yaw));		// дельта, на которую нужно поворачиваться
-
-	//if (angle_difference(cur_yaw,yaw) <= MAX_BONE_ANGLE) {		// bone turn only
-	//	bone_angle = dy;
-	//} else {													// torso & bone turn 
-	//	if (movement().IsMoveAlongPathFinished() || !movement().enabled()) movement().m_body.target.yaw = angle_normalize(-yaw);
-	//	if (dy / 2 < MAX_BONE_ANGLE) bone_angle = dy / 2;
-	//	else bone_angle = MAX_BONE_ANGLE;
-	//}
-
-	//bone_angle /= 2;
-	//if (from_right(yaw,cur_yaw)) bone_angle *= -1.f;
-
-	//Bones.SetMotion(bone_spine, AXIS_X, bone_angle, bone_turn_speed, 100);
-	//Bones.SetMotion(bone_head,	AXIS_X, bone_angle, bone_turn_speed, 100);
-
-	//// установить параметры вращения по pitch
-	//clamp(pitch, -MAX_BONE_ANGLE, MAX_BONE_ANGLE);
-	//pitch /= 2; 
-
-	//Bones.SetMotion(bone_spine, AXIS_Y, pitch, bone_turn_speed, 100);
-	//Bones.SetMotion(bone_head,	AXIS_Y, pitch, bone_turn_speed, 100);	
+	Actor()->Cameras().AddCamEffector(new CustomBloodsuckerVampireCameraEffector(6.0f, get_head_position(this), get_head_position(Actor())));
+	Actor()->Cameras().AddPPEffector(new CustomBloodsuckerVampirePPEffector(pp_vampire_effector, 6.0f));
 }
 
-void CAI_Bloodsucker::ActivateVampireEffector()
-{
-	Actor()->Cameras().AddCamEffector(new CVampireCameraEffector(6.0f, get_head_position(this), get_head_position(Actor())));
-	Actor()->Cameras().AddPPEffector(new CVampirePPEffector(pp_vampire_effector, 6.0f));
-}
-
-bool CAI_Bloodsucker::WantVampire()
+bool CustomBloodsucker::WantVampire()
 {
 	return							!!fsimilar(m_vampire_want_value,1.f);
 }
 
-void CAI_Bloodsucker::SatisfyVampire ()
+void CustomBloodsucker::SatisfyVampire ()
 {
 	m_vampire_want_value		=	0.f;
 
@@ -401,7 +387,7 @@ void CAI_Bloodsucker::SatisfyVampire ()
 	conditions().SetHealth			(health);
 }
 
-void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
+void CustomBloodsucker::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
@@ -419,7 +405,7 @@ void CAI_Bloodsucker::CheckSpecParams(u32 spec_params)
 
 }
 
-BOOL CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC) 
+BOOL CustomBloodsucker::net_Spawn (CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -429,30 +415,27 @@ BOOL CAI_Bloodsucker::net_Spawn (CSE_Abstract* DC)
 	return(TRUE);
 }
 
-float   CAI_Bloodsucker::get_full_visibility_radius ()
+float   CustomBloodsucker::get_full_visibility_radius ()
 {
-	using namespace detail::bloodsucker;
-	return override_if_debug(full_visibility_radius_string, m_full_visibility_radius);
+	return override_if_debug(SBloodsuckerProperies::fullVisibilityRadiusString, m_full_visibility_radius);
 }
 
-float   CAI_Bloodsucker::get_partial_visibility_radius ()
+float   CustomBloodsucker::get_partial_visibility_radius ()
 {
-	using namespace detail::bloodsucker;
-	return override_if_debug(partial_visibility_radius_string, m_partial_visibility_radius);
+	return override_if_debug(SBloodsuckerProperies::partialVisibilityRadiusString, m_partial_visibility_radius);
 }
 
-TTime   CAI_Bloodsucker::get_visibility_state_change_min_delay ()
+TTime   CustomBloodsucker::get_visibility_state_change_min_delay ()
 {
-	using namespace detail::bloodsucker;
-	return override_if_debug(visibility_state_change_min_delay_string, m_visibility_state_change_min_delay);
+	return override_if_debug(SBloodsuckerProperies::visibilityStateChangeMinDelayString, m_visibility_state_change_min_delay);
 }
 
-CAI_Bloodsucker::visibility_t   CAI_Bloodsucker::get_visibility_state () const
+CustomBloodsucker::visibility_t   CustomBloodsucker::get_visibility_state () const
 {
 	return m_force_visibility_state != unset ? m_force_visibility_state : m_visibility_state;
 }
 
-void   CAI_Bloodsucker::set_visibility_state (visibility_t new_state)
+void   CustomBloodsucker::set_visibility_state (visibility_t new_state)
 {
 	if ( m_force_visibility_state != unset )
 	{
@@ -489,31 +472,29 @@ void   CAI_Bloodsucker::set_visibility_state (visibility_t new_state)
 	}
 	else
 	{
-		sound().play				(CAI_Bloodsucker::eChangeVisibility);
+		sound().play				(eChangeVisibility);
 	}
 }
 
-void   CAI_Bloodsucker::force_visibility_state (int state)
+void   CustomBloodsucker::force_visibility_state (int state)
 {
 	m_force_visibility_state	=	(visibility_t)state;
 	set_visibility_state			((visibility_t)state);
 }
 
-void   CAI_Bloodsucker::update_invisibility ()
+void   CustomBloodsucker::update_invisibility ()
 {
-	if(CCustomMonster::use_simplified_visual())	return;
-
-	using namespace							detail::bloodsucker;
+	if (CCustomMonster::use_simplified_visual())	return;
 
 	if ( !g_Alive() )
 	{
 		set_visibility_state				(full_visibility);
 	}
-	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + default_runaway_invisible_time/6 )
+	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + SBloodsuckerProperies::defaultRunawayInvisibleTime/6 )
 	{
 		set_visibility_state				(partial_visibility);
 	}
-	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + default_runaway_invisible_time )
+	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + SBloodsuckerProperies::defaultRunawayInvisibleTime)
 	{
 		set_visibility_state				(no_visibility);
 	}
@@ -540,8 +521,7 @@ void   CAI_Bloodsucker::update_invisibility ()
 	}
 }
 
-
-u8 CAI_Bloodsucker::GetCustomSyncFlag() const
+u8 CustomBloodsucker::GetCustomSyncFlag() const
 {
 	Flags8 flag;
 	flag.zero();
@@ -568,7 +548,7 @@ u8 CAI_Bloodsucker::GetCustomSyncFlag() const
 	return flag.flags;
 }
 
-void CAI_Bloodsucker::ProcessCustomSyncFlag_CL(u8 flags)
+void CustomBloodsucker::ProcessCustomSyncFlag_CL(u8 flags)
 {
 	Flags8 flag;
 	flag.flags = flags;
@@ -609,11 +589,11 @@ void CAI_Bloodsucker::ProcessCustomSyncFlag_CL(u8 flags)
 	}
 	else
 	{
-		sound().play(CAI_Bloodsucker::eChangeVisibility);
+		sound().play(eChangeVisibility);
 	}
 }
 
-void CAI_Bloodsucker::UpdateCL()
+void CustomBloodsucker::UpdateCL()
 {
 	update_invisibility				();
 	inherited::UpdateCL				();
@@ -628,7 +608,7 @@ void CAI_Bloodsucker::UpdateCL()
 	}
 }
 
-void CAI_Bloodsucker::shedule_Update(u32 dt)
+void CustomBloodsucker::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 	
@@ -655,33 +635,25 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 		global_transform.mul_43(XFORM(), bone_transform);
 
 		CControlledActor::look_point(global_transform.c);
-		sound().play(CAI_Bloodsucker::eVampireSucking);
+		sound().play(eVampireSucking);
 		ActivateVampireEffector();
 		m_client_effector = true;
 	}
 
 }
 
-void CAI_Bloodsucker::Die(CObject* who)
+void CustomBloodsucker::Die(CObject* who)
 {
 	inherited::Die(who);
 	stop_invisible_predator();
 }
 
-void CAI_Bloodsucker::post_fsm_update()
+void CustomBloodsucker::post_fsm_update()
 {
 	inherited::post_fsm_update();
-
-	//EMonsterState state = StateMan->get_state_type();
-	//
-	// установить агрессивность
-	//bool aggressive =	(is_state(state, eStateAttack)) || 
-	//					(is_state(state, eStatePanic))	|| 
-	//					(is_state(state, eStateHitted));
-
 }
 
-bool CAI_Bloodsucker::check_start_conditions(ControlCom::EControlType type)
+bool CustomBloodsucker::check_start_conditions(ControlCom::EControlType type)
 {
 	if ( type == ControlCom::eControlJump )
 	{
@@ -701,40 +673,40 @@ bool CAI_Bloodsucker::check_start_conditions(ControlCom::EControlType type)
 	return true;
 }
 
-void CAI_Bloodsucker::set_alien_control(bool val)
+void CustomBloodsucker::set_alien_control(bool val)
 {
 	val ? m_alien_control.activate() : m_alien_control.deactivate();
 }
 
-void CAI_Bloodsucker::set_vis()
+void CustomBloodsucker::set_vis()
 {
 	m_vis_state = 1;
 	predator_stop();
 }
 
-void CAI_Bloodsucker::set_invis()
+void CustomBloodsucker::set_invis()
 {
 	m_vis_state = -1;
 	predator_start();
 }
 
-void CAI_Bloodsucker::set_collision_off(bool b_collision)
+void CustomBloodsucker::set_collision_off(bool b_collision)
 {
 	collision_off = b_collision;
 }
 
-
-bool CAI_Bloodsucker::is_collision_off()
+bool CustomBloodsucker::is_collision_off()
 {
 	return collision_off;
 }
-void CAI_Bloodsucker::jump(const Fvector &position, float factor)
+
+void CustomBloodsucker::jump(const Fvector &position, float factor)
 {
 	com_man().script_jump	(position, factor);
 	sound().play			(MonsterSound::eMonsterSoundAggressive);
 }
 
-void CAI_Bloodsucker::set_drag_jump(CEntityAlive* e, LPCSTR s, const Fvector &position, float factor)
+void CustomBloodsucker::set_drag_jump(CEntityAlive* e, LPCSTR s, const Fvector &position, float factor)
 {
 	j_position = position;
 	j_factor = factor;
@@ -743,17 +715,18 @@ void CAI_Bloodsucker::set_drag_jump(CEntityAlive* e, LPCSTR s, const Fvector &po
 	m_drag_anim_jump = true;
 	m_animated = true;
 }
-bool CAI_Bloodsucker::is_drag_anim_jump()
+
+bool CustomBloodsucker::is_drag_anim_jump()
 {
 	return m_drag_anim_jump;
 }
 
-bool CAI_Bloodsucker::is_animated()
+bool CustomBloodsucker::is_animated()
 {
 	return m_animated;
 }
 
-void CAI_Bloodsucker::start_drag()
+void CustomBloodsucker::start_drag()
 {
 	if(m_animated){
 		com_man().script_capture(ControlCom::eControlAnimation);
@@ -762,15 +735,14 @@ void CAI_Bloodsucker::start_drag()
 	}
 }
 
-void CAI_Bloodsucker::animation_end_jump(CBlend* B)
+void CustomBloodsucker::animation_end_jump(CBlend* B)
 {
-	((CAI_Bloodsucker*)B->CallbackParam)->set_invis();
-	((CAI_Bloodsucker*)B->CallbackParam)->jump(((CAI_Bloodsucker*)B->CallbackParam)->j_position, ((CAI_Bloodsucker*)B->CallbackParam)->j_factor);
+	((CustomBloodsucker*)B->CallbackParam)->set_invis();
+	((CustomBloodsucker*)B->CallbackParam)->jump(((CustomBloodsucker*)B->CallbackParam)->j_position, ((CustomBloodsucker*)B->CallbackParam)->j_factor);
 }
 
-void CAI_Bloodsucker::predator_start()
+void CustomBloodsucker::predator_start()
 {
-	//if m_predator==false  is_invisible
 	if( m_vis_state!=0 )
 	{
 		if( m_vis_state==1 )
@@ -817,20 +789,16 @@ void CAI_Bloodsucker::predator_start()
 						ik_anim_obj->LL_GetMotionDef(motion)->Speed(), loop, 0, 0, 0));
 				}
 			}
-
-
-
 		}
 	}
 	
 	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
-	sound().play					(CAI_Bloodsucker::eChangeVisibility);
+	sound().play					(eChangeVisibility);
 
 	m_predator						= true;
-	//state_invisible				= false;
 }
 
-void CAI_Bloodsucker::predator_stop()
+void CustomBloodsucker::predator_stop()
 {
 	if( m_vis_state != 0 )
 	{
@@ -841,7 +809,7 @@ void CAI_Bloodsucker::predator_stop()
 
 		m_predator = true;
 	}
-	//if m_predator==true  is_visible
+
 	if ( !m_predator )
 	{
 		return;
@@ -888,21 +856,21 @@ void CAI_Bloodsucker::predator_stop()
 	}
 
 	CParticlesPlayer::StartParticles(invisible_particle_name,Fvector().set(0.0f,0.1f,0.0f),ID());		
-	sound().play					(CAI_Bloodsucker::eChangeVisibility);
+	sound().play					(eChangeVisibility);
 	m_predator						= false;
 }
 
-void CAI_Bloodsucker::predator_freeze()
+void CustomBloodsucker::predator_freeze()
 {
 	control().animation().freeze	();
 }
 
-void CAI_Bloodsucker::predator_unfreeze()
+void CustomBloodsucker::predator_unfreeze()
 {
 	control().animation().unfreeze();
 }
 
-void CAI_Bloodsucker::move_actor_cam (float angle)
+void CustomBloodsucker::move_actor_cam (float angle)
 {
 	if ( Actor()->cam_Active() ) 
 	{
@@ -911,7 +879,7 @@ void CAI_Bloodsucker::move_actor_cam (float angle)
 	}
 }
 
-void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
+void CustomBloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
 	bool is_critical = rand()/(float)RAND_MAX <= m_critical_hit_chance;
 
@@ -923,12 +891,12 @@ void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float imp
 	inherited::HitEntity(pEntity, fDamage, impulse, dir, hit_type, draw_hit_marks);
 }
 
-bool CAI_Bloodsucker::in_solid_state ()
+bool CustomBloodsucker::in_solid_state ()
 {
 	return true;
 }
 
-void CAI_Bloodsucker::Hit(SHit* pHDS)
+void CustomBloodsucker::Hit(SHit* pHDS)
 {
 	if ( !collision_hit_off )
 	{
@@ -936,30 +904,31 @@ void CAI_Bloodsucker::Hit(SHit* pHDS)
 	}
 }
 
-void CAI_Bloodsucker::start_invisible_predator()
+void CustomBloodsucker::start_invisible_predator()
 {
 	state_invisible	= true;
 	predator_start();
 }
-void CAI_Bloodsucker::stop_invisible_predator()
+
+void CustomBloodsucker::stop_invisible_predator()
 {
 	state_invisible	= false;
 	predator_stop();
 }
 
-void CAI_Bloodsucker::manual_activate()
+void CustomBloodsucker::manual_activate()
 {
 	state_invisible = true;
 	setVisible		(FALSE);
 }
 
-void CAI_Bloodsucker::manual_deactivate()
+void CustomBloodsucker::manual_deactivate()
 {
 	state_invisible = false;
 	setVisible		(TRUE);
 }
 
-void   CAI_Bloodsucker::renderable_Render ()
+void   CustomBloodsucker::renderable_Render ()
 {
 	if ( m_visibility_state != no_visibility )
 	{
@@ -967,30 +936,28 @@ void   CAI_Bloodsucker::renderable_Render ()
 	}
 }
 
-bool   CAI_Bloodsucker::done_enough_hits_before_vampire ()
+bool   CustomBloodsucker::done_enough_hits_before_vampire ()
 {
 	return (int)m_hits_before_vampire >= (int)m_sufficient_hits_before_vampire + m_sufficient_hits_before_vampire_random;
 }
 
-void   CAI_Bloodsucker::on_attack_on_run_hit ()
+void   CustomBloodsucker::on_attack_on_run_hit ()
 {
 	++m_hits_before_vampire;	
 }
 
-void   CAI_Bloodsucker::force_stand_sleep_animation (u32 index)
+void   CustomBloodsucker::force_stand_sleep_animation (u32 index)
 {
 	anim().set_override_animation(eAnimSleepStanding, index);
 }
 
-void   CAI_Bloodsucker::release_stand_sleep_animation ()
+void   CustomBloodsucker::release_stand_sleep_animation ()
 {
 	anim().clear_override_animation();
 
 }
 
-
-
-void CAI_Bloodsucker::sendToStartVampire(CActor* pA)
+void CustomBloodsucker::sendToStartVampire(CActor* pA)
 {
 	NET_Packet	tmp_packet;
 	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_START, ID());
@@ -1000,7 +967,7 @@ void CAI_Bloodsucker::sendToStartVampire(CActor* pA)
 	Level().Server->SendTo(xrCData->ID, tmp_packet, net_flags(TRUE, TRUE));
 }
 
-void CAI_Bloodsucker::sendToStopVampire()
+void CustomBloodsucker::sendToStopVampire()
 {
 	NET_Packet	tmp_packet;
 	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_STOP, ID());
@@ -1011,7 +978,7 @@ void CAI_Bloodsucker::sendToStopVampire()
 }
 
 #include "../../../HudManager.h"
-void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
+void CustomBloodsucker::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 
@@ -1037,7 +1004,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 			P.w_u8(u8(true));
 			Actor()->u_EventSend(P);
 
-			sound().play(CAI_Bloodsucker::eVampireGrasp);
+			sound().play(eVampireGrasp);
 			m_client_effector = false;
 			Actor()->set_inventory_disabled(true);
 		}
@@ -1056,7 +1023,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 			P.w_u8(u8(false));
 			Actor()->u_EventSend(P);
 
-			sound().play(CAI_Bloodsucker::eVampireHit);
+			sound().play(eVampireHit);
 			Actor()->set_inventory_disabled(false);
 		}
 		break;
@@ -1066,7 +1033,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 }
 
 #ifdef DEBUG
-CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
+CBaseMonster::SDebugInfo CustomBloodsucker::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
 	if (!info.active) return CBaseMonster::SDebugInfo();
@@ -1080,26 +1047,8 @@ CBaseMonster::SDebugInfo CAI_Bloodsucker::show_debug_info()
 }
 
 // Lain: added
-void   CAI_Bloodsucker::add_debug_info (debug::text_tree& root_s)
+void   CustomBloodsucker::add_debug_info (debug::text_tree& root_s)
 {
 }
-
-#ifdef _DEBUG
-void CAI_Bloodsucker::debug_on_key(int key)
-{
-	switch (key){
-	case SDL_SCANCODE_MINUS:
-		Actor()->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, PI_DIV_2);
-		//set_alien_control(true);
-		break;
-	case SDL_SCANCODE_EQUALS:
-		Actor()->cam_Active()->Move(Random.randI(2) ? kUP	 : kDOWN, PI_DIV_2);
-		//set_alien_control(false);
-		break;
-	}
-}
-#endif //_DEBUG
-
-
 #endif // DEBUG
 

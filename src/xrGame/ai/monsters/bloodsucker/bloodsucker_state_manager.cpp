@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "bloodsucker_state_manager.h"
 #include "bloodsucker.h"
+#include "bloodsucker_state_manager.h"
 
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
@@ -20,26 +20,32 @@
 #include "bloodsucker_predator.h"
 #include "bloodsucker_state_capture_jump.h"
 #include "bloodsucker_attack_state.h"
+#include "bloodsucker_vampire_execute.h"
 
-
-CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : inherited(monster)
+CustomBloodsukerStateManager::CustomBloodsukerStateManager(CustomBloodsucker *object) : inherited(object)
 {
-	add_state(eStateRest,				xr_new<CStateMonsterRest>					(monster));
-	add_state(eStatePanic,				xr_new<CStateMonsterPanic>				(monster));
-	
-	add_state(eStateAttack,				xr_new<CStateMonsterAttack>						(monster));
-	//add_state(eStateAttack,				xr_new<CBloodsuckerStateAttack<CAI_Bloodsucker> >			(monster));
+	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
 
-	add_state(eStateEat,				xr_new<CStateMonsterEat>					(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound>	(monster));
-	add_state(eStateHearDangerousSound,	xr_new<CStateMonsterHearDangerousSound>	(monster));
-	add_state(eStateHitted,				xr_new<CStateMonsterHitted>				(monster));
-	add_state(eStateVampire_Execute,	xr_new<CStateBloodsuckerVampireExecute>	(monster));
+	add_state(eStateRest,					new CStateMonsterRest					(object));
+	add_state(eStatePanic,					new CStateMonsterPanic				(object));
+											    
+	add_state(eStateAttack,					new CStateMonsterAttack						(object));
+											    
+	add_state(eStateEat,					new CStateMonsterEat					(object));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound	(object));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound	(object));
+	add_state(eStateHitted,					new CStateMonsterHitted				(object));
+	add_state(eStateVampire_Execute,		new CustomBloodsuckerStateVampireExecute	(object));
 }
 
-void CStateManagerBloodsucker::drag_object()
+CustomBloodsukerStateManager::~CustomBloodsukerStateManager()
 {
-	CEntityAlive* const ph_obj = object->m_cob;
+
+}
+
+void CustomBloodsukerStateManager::drag_object()
+{
+	CEntityAlive* const ph_obj = m_pBloodsucker->m_cob;
 	if ( !ph_obj )
 	{
 		return;
@@ -58,24 +64,24 @@ void CStateManagerBloodsucker::drag_object()
 	}
 
 	{
-		const u16 drag_bone = kinematics->LL_BoneID(object->m_str_cel);
+		const u16 drag_bone = kinematics->LL_BoneID(m_pBloodsucker->m_str_cel);
 		object->character_physics_support()->movement()->PHCaptureObject(ph_obj, drag_bone);
 	}
 
 	IPHCapture* const capture = object->character_physics_support()->movement()->PHCapture();
 
-	if ( capture && !capture->Failed() && object->is_animated() ) 
+	if ( capture && !capture->Failed() && m_pBloodsucker->is_animated() )
 	{
-		object->start_drag();
+		m_pBloodsucker->start_drag();
 	}
 }
 
-void CStateManagerBloodsucker::update ()
+void CustomBloodsukerStateManager::update ()
 {
 	inherited::update();
 }
 
-bool CStateManagerBloodsucker::check_vampire()
+bool CustomBloodsukerStateManager::check_vampire()
 {
 	if ( prev_substate != eStateVampire_Execute )
 	{
@@ -88,7 +94,7 @@ bool CStateManagerBloodsucker::check_vampire()
 	return false;
 }
 
-void CStateManagerBloodsucker::execute ()
+void CustomBloodsukerStateManager::execute ()
 {
 	u32 state_id = u32(-1);
 
@@ -127,21 +133,8 @@ void CStateManagerBloodsucker::execute ()
 		else			 state_id = eStateRest;
 	}
 
-	// check if start interesting sound state
-// 	if ( (prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound) )
-// 	{
-// 		object->start_invisible_predator();
-// 	} 
-// 	else
-// 	// check if stop interesting sound state
-// 	if ( (prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound) ) 
-// 	{
-// 		object->stop_invisible_predator();
-// 	}
-
 	select_state(state_id); 
 
-	// выполнить текущее состояние
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

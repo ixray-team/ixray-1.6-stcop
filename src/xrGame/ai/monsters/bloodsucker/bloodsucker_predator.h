@@ -1,15 +1,18 @@
 #pragma once
 #include "../state.h"
 
-class	CStateBloodsuckerPredator : public CState {
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+class	CustomBloodsuckerStatePredator : public CState 
+{
+	using inherited = CState;
+	using state_ptr = CState*;
 
 	u32							m_target_node;
 	u32							m_time_start_camp;
+	CustomBloodsucker*			m_pBloodsucker;
 
 public:
-						CStateBloodsuckerPredator		(CAI_Bloodsucker*obj);
+	CustomBloodsuckerStatePredator(CustomBloodsucker* object);
+	virtual ~CustomBloodsuckerStatePredator();
 
 	virtual void		reinit							();
 
@@ -27,5 +30,3 @@ public:
 private:
 			void		select_camp_point				();
 };
-
-#include "bloodsucker_predator_inline.h"
