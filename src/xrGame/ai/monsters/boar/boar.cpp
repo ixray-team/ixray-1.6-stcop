@@ -7,27 +7,31 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-
-CAI_Boar::CAI_Boar()
+CustomBoar::CustomBoar()
 {
-	StateMan = new CStateManagerBoar	(this);
+	velocity = 0.f;
+	cur_delta = 0.f;
+	target_delta = 0.f;
+
+	look_at_enemy = false;
+
+	StateMan = new CustomBoarStateManager(this);
 
 	CControlled::init_external(this);
 }
 
-CAI_Boar::~CAI_Boar()
+CustomBoar::~CustomBoar()
 {
 	xr_delete(StateMan);
 }
 
-
-
-void CAI_Boar::Load(LPCSTR section)
+void CustomBoar::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
 	if(!pSettings->line_exist(section,"is_friendly"))
 		com_man().add_ability(ControlCom::eControlRunAttack);
+
 	com_man().add_ability(ControlCom::eControlRotationJump);
 	
 	anim().AddReplacedAnim(&m_bDamaged,			eAnimRun,		eAnimRunDamaged);
@@ -110,7 +114,7 @@ void CAI_Boar::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CAI_Boar::reinit()
+void CustomBoar::reinit()
 {
 	inherited::reinit();
 	if(CCustomMonster::use_simplified_visual())	return;
@@ -118,72 +122,36 @@ void CAI_Boar::reinit()
 }
 
 
-void  CAI_Boar::BoneCallback(CBoneInstance *B)
+void  CustomBoar::BoneCallback(CBoneInstance *B)
 {
-	CAI_Boar	*P = static_cast<CAI_Boar*>(B->callback_param());
+	CustomBoar*P = static_cast<CustomBoar*>(B->callback_param());
 
 	if (!P->look_at_enemy) return;
 	
 	Fmatrix M;
-	M.setHPB (0.0f,-P->_cur_delta,0.0f);
+	M.setHPB (0.0f,-P->cur_delta,0.0f);
 	B->mTransform.mulB_43(M);
 }
 
-BOOL CAI_Boar::net_Spawn (CSE_Abstract* DC) 
+BOOL CustomBoar::net_Spawn (CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
 	
-	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	if(!PPhysicsShell())//РЅРµР»СЊР·СЏ СЃС‚Р°РІРёС‚СЊ РєРѕР»Р±РµРєРё, РµСЃР»Рё СЃРѕР·РґР°РЅ С„РёР· С€РµР» - Сѓ РЅРµРіРѕ СЃС‚РѕСЏС‚ СЃРІРѕРё РєРѕР»Р±РµРєРё!!!
 	{
 		CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
 		BI.set_callback(bctCustom,BoneCallback,this);
 	}
 	
-	_cur_delta		= _target_delta = 0.f;
-	_velocity		= PI;
+	cur_delta		= target_delta = 0.f;
+	velocity		= PI;
 	look_at_enemy	= false;
 	return TRUE;
 }
 
-void CAI_Boar::CheckSpecParams(u32 spec_params)
-{
-	//if ((spec_params & ASP_ROTATION_JUMP) == ASP_ROTATION_JUMP) {
-	//	float yaw, pitch;
-	//	Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getHP(yaw,pitch);
-	//	yaw *= -1;
-	//	yaw = angle_normalize(yaw);
-
-	//	EMotionAnim anim = eAnimJumpLeft;
-	//	if (from_right(yaw,movement().m_body.current.yaw)) {
-	//		anim = eAnimJumpRight;
-	//		yaw = angle_normalize(yaw + PI / 20);	
-	//	} else yaw = angle_normalize(yaw - PI / 20);
-
-	//	anim().Seq_Add(anim);
-	//	anim().Seq_Switch();
-
-	//	movement().m_body.target.yaw = yaw;
-
-	//	// calculate angular speed
-	//	float new_angular_velocity; 
-	//	float delta_yaw = angle_difference(yaw,movement().m_body.current.yaw);
-	//	float time = anim().GetCurAnimTime();
-	//	new_angular_velocity = 2.5f * delta_yaw / time; 
-
-	//	anim().ForceAngularSpeed(new_angular_velocity);
-
-	//	return;
-	//}
-
-// 	if ( (spec_params & ASP_ATTACK_RUN) == ASP_ATTACK_RUN )
-// 	{
-// 		anim().SetCurAnim(eAnimAttackRun);
-// 	}
-}
-
-void CAI_Boar::UpdateCL()
+void CustomBoar::UpdateCL()
 {
 	inherited::UpdateCL();
-	angle_lerp(_cur_delta, _target_delta, _velocity, client_update_fdelta());
+	angle_lerp(cur_delta, target_delta, velocity, client_update_fdelta());
 }

@@ -17,49 +17,69 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-CStateManagerBoar::CStateManagerBoar(CAI_Boar *monster) : inherited(monster)
+CustomBoarStateManager::CustomBoarStateManager(CustomBoar *object) : inherited(object)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest>				(monster));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic>				(monster));
+	m_pBoar = smart_cast<CustomBoar*>(object);
+
+	add_state(eStateRest,					new CStateMonsterRest				(object));
+	add_state(eStatePanic, new CStateMonsterPanic				(object));
 
  	CStateMonsterAttackMoveToHomePoint* move2home = 
- 		xr_new<CStateMonsterAttackMoveToHomePoint>(monster);
+		new CStateMonsterAttackMoveToHomePoint(object);
  
- 	add_state(eStateAttack,					xr_new<CStateMonsterAttack>				(monster, move2home));
-	add_state(eStateEat,					xr_new<CStateMonsterEat>					(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound >(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound >	(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted>				(monster));
-	add_state(eStateControlled,				xr_new<CStateMonsterControlled>			(monster));
-	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound>		(monster));
+ 	add_state(eStateAttack,					new CStateMonsterAttack				(object, move2home));
+	add_state(eStateEat,					new CStateMonsterEat					(object));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound (object));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound 	(object));
+	add_state(eStateHitted,					new CStateMonsterHitted				(object));
+	add_state(eStateControlled,				new CStateMonsterControlled			(object));
+	add_state(eStateHearHelpSound,			new CStateMonsterHearHelpSound	(object));
 }
 
-void CStateManagerBoar::execute()
+CustomBoarStateManager::~CustomBoarStateManager()
+{
+
+}
+
+void CustomBoarStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!object->is_under_control()) {
-	
+	if (!m_pBoar->is_under_control())
+	{
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
-			switch (object->EnemyMan.get_danger_type()) {
+		if (enemy) 
+		{
+			switch (object->EnemyMan.get_danger_type()) 
+			{
 				case eStrong:	state_id = eStatePanic; break;
 				case eWeak:		state_id = eStateAttack; break;
 			}
-		} else if (object->HitMemory.is_hit()) {
+		} 
+		else if (object->HitMemory.is_hit()) 
+		{
 			state_id = eStateHitted;
-		} else if (check_state(eStateHearHelpSound)) {
+		} 
+		else if (check_state(eStateHearHelpSound)) 
+		{
 			state_id = eStateHearHelpSound;
-		} else if (object->hear_interesting_sound) {
+		} 
+		else if (object->hear_interesting_sound) 
+		{
 			state_id = eStateHearInterestingSound;
-		} else if (object->hear_dangerous_sound) {
+		} 
+		else if (object->hear_dangerous_sound) 
+		{
 			state_id = eStateHearDangerousSound;	
-		} else {
+		} 
+		else 
+		{
 			if (can_eat())	state_id = eStateEat;
 			else			state_id = eStateRest;
 		}
-	} else state_id = eStateControlled;
+	} 
+	else state_id = eStateControlled;
 	
 	select_state(state_id); 
 

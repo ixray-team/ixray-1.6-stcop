@@ -4,15 +4,15 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CAI_Boar : public CBaseMonster,
+class CustomBoar : public CBaseMonster,
 				 public CControlledEntity {
 
-	typedef		CBaseMonster	inherited;
-	typedef		CControlledEntity 	CControlled;
+	using		inherited = CBaseMonster	;
+	using		CControlled = CControlledEntity;
 
 public:
-					CAI_Boar			();
-	virtual			~CAI_Boar			();	
+	CustomBoar();
+	virtual			~CustomBoar();
 
 	virtual void	Load				(LPCSTR section);
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
@@ -21,13 +21,13 @@ public:
 	virtual void	UpdateCL			();
 
 	virtual bool	CanExecRotationJump	() {return true;}
-	virtual void	CheckSpecParams		(u32 spec_params);
 
 	// look at enemy
 	static void	_BCL	BoneCallback	(CBoneInstance *B);
 	
-			float	_velocity;
-			float	_cur_delta, _target_delta;
+			float	velocity;
+			float	cur_delta, target_delta;
+
 			bool	look_at_enemy;
 	
 	virtual bool	ability_can_drag	() {return true;}
