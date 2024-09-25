@@ -46,7 +46,7 @@ void CDetailManager::hw_Load_Shaders()
 	hwc_s_array			= T1.get("array");
 }
 
-void CDetailManager::hw_Render()
+void CDetailManager::hw_Render(light*L)
 {
 	// Render-prepare
 	//	Update timer
@@ -86,17 +86,17 @@ void CDetailManager::hw_Render()
 	wave_old.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos_old);
 
 	consts.set(scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, wave_old.div(PI_MUL_2), dir1_old, 1, LodHQ);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, wave_old.div(PI_MUL_2), dir1_old, 1, LodHQ, L);
 
 	// Wave1
 	wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
 	wave_old.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos_old);
 
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 2, LodHQ);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 2, LodHQ, L);
 
 	// Still
 	consts.set(scale, scale, scale, 1.f);
-	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 0, LodLQ);
+	hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, wave_old.div(PI_MUL_2), dir2_old, 0, LodLQ, L);
 
 	if (m_frame_render != Device.dwFrame) {
 		m_time_pos_old = m_time_pos;
@@ -108,8 +108,11 @@ void CDetailManager::hw_Render()
 	}
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L)
 {
+	if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
+		return;
+
 	static shared_str strConsts("consts");
 	static shared_str strWave("wave");
 	static shared_str strDir2D("dir2D");
@@ -194,17 +197,19 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 						if (sector && PortalTraverser.i_marker != sector->r_marker)
 							continue;
 
+						if (RImplementation.phase == CRender::PHASE_SMAP && L)
+						{
+							if(L->position.distance_to_sqr(Instance.mRotY.c) >= _sqr(L->range))
+								continue;
+						}
+
 						u32			base		= dwBatch*4;
 
 						// Build matrix ( 3x4 matrix, last row - color )
-						float		scale		= Instance.scale_calculated;
-						Fmatrix&	M			= Instance.mRotY;
-						c_storage[base+0].set	(M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
-						c_storage[base+1].set	(M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
-						c_storage[base+2].set	(M._13*scale,	M._23*scale,	M._33*scale,	M._43	);
-						//RCache.set_ca(&*constArray, base+0, M._11*scale,	M._21*scale,	M._31*scale,	M._41	);
-						//RCache.set_ca(&*constArray, base+1, M._12*scale,	M._22*scale,	M._32*scale,	M._42	);
-						//RCache.set_ca(&*constArray, base+2, M._13*scale,	M._23*scale,	M._33*scale,	M._43	);
+						Fmatrix&	M			= Instance.mRotY_calculated;
+						c_storage[base+0].set	(M._11,	M._21, M._31, M._41);
+						c_storage[base+1].set	(M._12,	M._22, M._32, M._42);
+						c_storage[base+2].set	(M._13,	M._23, M._33, M._43);
 
 						// Build color
 						// R2 only needs hemisphere

@@ -9,7 +9,7 @@
 #include "../../xrCore/xrpool.h"
 #include "detailformat.h"
 #include "detailmodel.h"
-
+#include "light.h"
 #ifdef _EDITOR
 //.	#include	"ESceneClassList.h"
 	const int	dm_max_decompress	= 14;
@@ -47,8 +47,8 @@ class CDetailManager
 public:
 	struct	SlotItem	{								// один кустик
 		float						scale;
-		float						scale_calculated;
 		Fmatrix						mRotY;
+		Fmatrix						mRotY_calculated;
 		u32							sector_id;
 		u32							vis_ID;				// индекс в visibility списке он же тип [не качается, качается1, качается2]
 		float						c_hemi;
@@ -167,11 +167,11 @@ public:
 	void							hw_Load_Geom	();
 	void							hw_Load_Shaders	();
 	void							hw_Unload		();
-	void							hw_Render		();
+	void							hw_Render		(light*L=NULL);
 #ifdef USE_DX11
-	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id);
+	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 #else //USE_DX11
-	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id);
+	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, light*L=NULL);
 #endif
 
 public:

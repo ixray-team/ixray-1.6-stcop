@@ -107,6 +107,8 @@ void	CRender::render_lights	(light_Package& LP)
 			if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
 			else							r_pmask	(true,false	);
 			PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
+
+			bool decorative_light = false;
 			if (L->flags.bHudMode)
 			{
 				RImplementation.marker			++;			// !!! critical here
@@ -117,6 +119,7 @@ void	CRender::render_lights	(light_Package& LP)
 					set_Frustum			(&(sector->r_frustums[v_it]));
 					add_Geometry		(root);
 				}
+				decorative_light = true;
 			}
 			else
 			{
@@ -129,6 +132,7 @@ void	CRender::render_lights	(light_Package& LP)
 						if(L->decor_object[f]&&!L->decor_object[f]->getDestroy())
 						{
 							L->decor_object[f]->renderable_Render();
+							decorative_light = true;
 						}
 					}
 				}
@@ -149,6 +153,17 @@ void	CRender::render_lights	(light_Package& LP)
 				RCache.set_xform_view				(L->X.S.view);
 				RCache.set_xform_project			(L->X.S.project);
 				r_dsgraph_render_graph				(0);
+				if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) && 
+					psDeviceFlags.is(rsDetails) &&
+					Details->dtFS &&
+					L->flags.bShadow && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+				{
+					RCache.set_CullMode		(CULL_NONE);
+					RCache.set_xform_world	(Fidentity);
+					RCache.set_Geometry		(Details->hw_Geom);
+					Details->hw_Render(L);
+					RCache.set_CullMode		(CULL_CCW);
+				}
 				L->X.S.transluent					= FALSE;
 				if (bSpecial)						{
 					L->X.S.transluent					= TRUE;

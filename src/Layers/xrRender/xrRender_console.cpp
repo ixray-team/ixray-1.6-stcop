@@ -728,6 +728,7 @@ void		xrRender_initconsole	()
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
+	CMD3(CCC_Mask,		"r2_lights_details",	&ps_r2_ls_flags,			R2FLAG_LIGHTS_DETAILS);
 	CMD3(CCC_Mask,		"r2_exp_donttest_shad",	&ps_r2_ls_flags,			R2FLAG_EXP_DONT_TEST_SHADOWED);
 	
 	CMD4(CCC_Float,		"r2_sun_bias",			&ps_r2_sun_bias,			-0.5,	+0.5	);
