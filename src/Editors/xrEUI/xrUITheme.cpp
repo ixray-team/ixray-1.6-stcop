@@ -35,7 +35,7 @@ void CUIThemeManager::Draw()
 		ImGui::ColorEdit4("Text Color", (float*)&colors[ImGuiCol_Text]);
 
 		ImGui::SeparatorText("Properties");
-		ImGui::ColorEdit4("Header Color", (float*)&colors[ImGuiCol_TableHeaderBg]);
+		ImGui::ColorEdit4("Header Color ##", (float*)&colors[ImGuiCol_TableHeaderBg]);
 		ImGui::ColorEdit4("Header Border Color", (float*)&colors[ImGuiCol_TableBorderStrong]);
 		ImGui::ColorEdit4("Row Color", (float*)&colors[ImGuiCol_TableRowBgAlt]);
 		ImGui::ColorEdit4("Row Color 2", (float*)&colors[ImGuiCol_TableRowBg]);
