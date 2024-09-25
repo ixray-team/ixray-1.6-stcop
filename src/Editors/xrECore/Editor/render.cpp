@@ -85,7 +85,7 @@ void CRender::Calculate()
 		(
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
-			STYPE_RENDERABLE + STYPE_LIGHTSOURCE,
+			STYPE_RENDERABLE + STYPE_LIGHTSOURCE + STYPE_PARTICLE,
 			ViewBase
 		);
 
@@ -117,11 +117,12 @@ void CRender::Calculate()
 			IRenderable* renderable = pSpatial->dcast_Renderable();
 			if (!renderable)
 				continue;
-			if (!(pSpatial->spatial.type & STYPE_RENDERABLE)) 	continue;
 
-			set_Object(renderable);
-			renderable->renderable_Render();
-			set_Object(nullptr);
+			if(!!(pSpatial->spatial.type & STYPE_RENDERABLE) || !!(pSpatial->spatial.type & STYPE_PARTICLE)) {
+				set_Object(renderable);
+				renderable->renderable_Render();
+				set_Object(nullptr);
+			}
 		}
 	}
 }
@@ -187,27 +188,15 @@ void CRender::add_Visual(IRenderVisual* visual, bool) {
 		return;
 	}
 
+	if(!visual) {
+		return;
+	}
+
 	if(auto pKin = PKinematics(visual)) {
 		pKin->CalculateBones(TRUE);
 	}
 
-	CHudInitializer initalizer(false);
-
-	if(get_HUD()) {
-		initalizer.SetHudMode();
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-		RImplementation.rmNear();
-	}
-
 	Models->RenderSingle(dynamic_cast<dxRender_Visual*>(visual), current_matrix, 1.f);
-
-	if(get_HUD()) {
-		initalizer.SetDefaultMode();
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-		RImplementation.rmNormal();
-	}
 }
 
 IRenderVisual* CRender::model_Create(LPCSTR name, IReader* data) { return Models->Create(name, data); }
@@ -217,32 +206,45 @@ IRenderVisual* CRender::model_Duplicate(IRenderVisual* V) { return Models->Insta
 void 			CRender::model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD) { Models->Render(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, priority, strictB2F, m_fLOD); }
 void 			CRender::model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD) { Models->RenderSingle(dynamic_cast<dxRender_Visual*>(m_pVisual), mTransform, m_fLOD); }
 
-void					CRender::reset_begin()
-{
+void CRender::reset_begin() {
 	xr_delete(Target);
 }
-void					CRender::reset_end()
-{
+
+void CRender::reset_end() {
 	Target = xr_new<CRenderTarget>();
 }
 
-bool is_Hud_mode = false;
-
 void CRender::set_HUD(BOOL V)
 {
-	is_Hud_mode = !!V;
+	static CHudInitializer initalizer(false);
+
+	if(!!V) {
+		initalizer = CHudInitializer(false);
+		initalizer.SetHudMode();
+
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+
+		RImplementation.rmNear();
+	}
+	else {
+		initalizer.SetDefaultMode();
+
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+
+		RImplementation.rmNormal();
+	}
 }
 
-BOOL CRender::get_HUD()
-{
-	return is_Hud_mode;
+BOOL CRender::get_HUD() {
+	return false;
 }
 
 void CRender::set_Invisible(BOOL V)
 {
 	val_bInvisible = V;
 }
-
 
 DWORD CRender::get_dx_level()
 {
