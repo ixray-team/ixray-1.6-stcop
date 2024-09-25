@@ -1,14 +1,13 @@
 #ifndef DOF_H_INCLUDED
 #define DOF_H_INCLUDED
 
-// #define USE_DOF
+uniform float4 screen_res;
 
 #ifndef USE_DOF
 
 float3 dof(float2 center)
 {
-    //	float3 	img 	= tex2D		(s_image, center);
-    float3 img = s_image.Sample(smp_rtlinear, center);
+    float3 img = s_image.Sample(smp_rtlinear, center).xyz;
     return img;
 }
 
@@ -31,7 +30,7 @@ float DOFFactor(float depth)
 float sampleDepth(float2 center)
 {
     float P = s_position.SampleLevel(smp_nofilter, center, 0).x;
-    return P > 0.9999f ? dof_params.w : (depth_unpack.x / (P - depth_unpack.y));
+    return P > 0.9999f ? dof_params.w : (depth_unpack.x * rcp(P - depth_unpack.y));
 }
 
     // #define MAXCOF		5.h
@@ -42,7 +41,7 @@ float3 dof(float2 center)
     // Scale tap offsets based on render target size
     float depth = sampleDepth(center);
     float blur = DOFFactor(depth);
-    float2 scale = float2(.5f / 1024.h, .5f / 768.h) * (dof_kernel.z * blur);
+    float2 scale = 0.5f * screen_res.zw * dof_kernel.z * blur;
 
     // poisson
     float2 o[12];
