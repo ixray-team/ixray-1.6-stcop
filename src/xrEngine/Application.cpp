@@ -234,7 +234,7 @@ void CApplication::LoadForceFinish() {
 
 void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
 {
-	if (loadingScreen && EngineExternal()[EEngineExternalRender::LoadScreenTips])
+	if (loadingScreen && !EngineExternal()[EEngineExternalRender::DisableLoadScreenTips])
 		loadingScreen->SetStageTip(str1, str2, str3);
 }
 

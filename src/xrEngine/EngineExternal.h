@@ -2,7 +2,7 @@
 
 enum class EEngineExternalUI {
 	HQIcons,
-	DiasbleCharacterInfo,
+	DisableCharacterInfo,
 	None
 };
 
@@ -25,7 +25,7 @@ enum class EEngineExternalGame
 };
 
 enum class EEngineExternalRender {
-	LoadScreenTips,
+	DisableLoadScreenTips,
 	None
 };
 
