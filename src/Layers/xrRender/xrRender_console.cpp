@@ -99,6 +99,18 @@ float		ps_r__LOD					=  0.75f	;
 float		ps_r__ssaDISCARD			=  3.5f	;					//RO
 float		ps_r__ssaDONTSORT			=  32.f	;					//RO
 float		ps_r__ssaHZBvsTEX			=  96.f	;					//RO
+// Base factor values
+float		ps_r__GLOD_ssa_start = 256.f;
+float		ps_r__GLOD_ssa_end = 64.f;
+float		ps_r__ssaDISCARD = 3.5f;
+float		ps_r__ssaHZBvsTEX = 96.f;
+
+// Distance factor values
+float		ps_r__geomLodSpriteDistF_ = 0.75f;
+float		ps_r__geomDiscardDistF_ = 0.75f;
+float		ps_r__geomLodDistF_ = 0.75f;
+float		ps_r__geomNTextureDistF_ = 0.75f;
+float		ps_r__geomDTextureDistF_ = 0.75f;
 
 int			ps_r__tf_Anisotropic		= 16		;
 
@@ -671,7 +683,15 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.2f,	0.8f	);
+		// Geometry Lod control
+	CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
+	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
+	CMD4(CCC_Float, "r__lod_sprite_dist_f", &ps_r__geomLodSpriteDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__geom_quality_dist_f", &ps_r__geomLodDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__geom_discard_dist_f", &ps_r__geomDiscardDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__dtexture_dist_f", &ps_r__geomDTextureDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float, "r__ntexture_dist_f", &ps_r__geomNTextureDistF_, 0.1f, 3.0f);
+	CMD4(CCC_Float,		"r__detail_density",	&ps_r__Detail_density,		0.2f,	0.8f	);
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);

@@ -346,7 +346,6 @@ CRender::~CRender()
 }
 
 extern float		r_ssaDISCARD;
-extern float		r_ssaDONTSORT;
 extern float		r_ssaLOD_A,			r_ssaLOD_B;
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 extern float		r_ssaHZBvsTEX;
@@ -363,16 +362,23 @@ void CRender::Calculate				()
 	Device.Statistic->RenderCALC.Begin();
 
 	// Transfer to global space to avoid deep pointer access
-	IRender_Target* T				=	getTarget	();
-	float	fov_factor				=	_sqr		(90.f / Device.fFOV);
-	g_fSCREEN						=	float(T->get_width()*T->get_height())*fov_factor*(EPS_S+ps_r__LOD);
-	r_ssaDISCARD					=	_sqr(ps_r__ssaDISCARD)		/g_fSCREEN;
-	r_ssaDONTSORT					=	_sqr(ps_r__ssaDONTSORT/3)	/g_fSCREEN;
-	r_ssaLOD_A						=	_sqr(ps_r1_ssaLOD_A/3)		/g_fSCREEN;
-	r_ssaLOD_B						=	_sqr(ps_r1_ssaLOD_B/3)		/g_fSCREEN;
-	r_ssaGLOD_start					=	_sqr(ps_r__GLOD_ssa_start/3)/g_fSCREEN;
-	r_ssaGLOD_end					=	_sqr(ps_r__GLOD_ssa_end/3)	/g_fSCREEN;
-	r_ssaHZBvsTEX					=	_sqr(ps_r__ssaHZBvsTEX/3)	/g_fSCREEN;
+	IRender_Target* T = getTarget();
+
+	float fov_factor = _sqr(90.f / Device.fFOV);
+
+	g_fSCREEN = float(T->get_width() * T->get_height()) * fov_factor;
+
+	float sprite_lodding_dist_f	= g_fSCREEN * (EPS_S + ps_r__geomLodSpriteDistF_);
+	float geom_q_dist_f			= g_fSCREEN * (EPS_S + ps_r__geomLodDistF_);
+	float geom_discard_dist_f	= g_fSCREEN * (EPS_S + ps_r__geomDiscardDistF_);
+	float geom_nt_dist_f		= g_fSCREEN * (EPS_S + ps_r__geomNTextureDistF_);
+
+	r_ssaDISCARD	= _sqr(ps_r__ssaDISCARD) / geom_discard_dist_f;
+	r_ssaLOD_A		= _sqr(ps_r1_ssaLOD_A / 3) / sprite_lodding_dist_f;
+	r_ssaLOD_B		= _sqr(ps_r1_ssaLOD_B / 3) / sprite_lodding_dist_f;
+	r_ssaGLOD_start	= _sqr(ps_r__GLOD_ssa_start / 3) / geom_q_dist_f;
+	r_ssaGLOD_end	= _sqr(ps_r__GLOD_ssa_end / 3) / geom_q_dist_f;
+	r_ssaHZBvsTEX	= _sqr(ps_r__ssaHZBvsTEX / 3) / geom_nt_dist_f;
 
 	// Frustum & HOM rendering
 	ViewBase.CreateFromMatrix		(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
