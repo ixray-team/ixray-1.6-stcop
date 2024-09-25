@@ -21,4 +21,5 @@ private:
 	u32				BlendValidate(shared_str type);
 	u32				StencilValidate(shared_str type);
 	u32				CMPFunValidate(shared_str type);
+	D3DCULL			CullModeValidate(shared_str type);
 };

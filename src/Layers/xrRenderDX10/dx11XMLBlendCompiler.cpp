@@ -109,6 +109,13 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 		pCompiler->SetParams(Count, bStatus);
 	}
 
+	// Check culling 
+	XML_NODE* pCullMode = Parser.NavigateToNode(pElement, "cull_mode");
+	if (pCullMode)
+	{
+		pCompiler->r_CullMode(CullModeValidate(Parser.ReadAttrib(pCullMode, "mode", "none")));
+	}
+
 	// Distort, emissive and wmark
 	XML_NODE* pFlags = Parser.NavigateToNode(pElement, "flags");
 	if (pFlags)
@@ -276,6 +283,18 @@ u32 CXMLBlend::CMPFunValidate(shared_str type)
 	if (type == "always")		SrcType = D3DCMPFUNC::D3DCMP_ALWAYS;
 
 	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - undefined compare function (D3DCMPFUNC) value: %s", File, type.c_str()));
+
+	return SrcType;
+}
+
+D3DCULL CXMLBlend::CullModeValidate(shared_str type)
+{
+	D3DCULL SrcType;
+	if (type == "none")			SrcType = D3DCULL::D3DCULL_NONE;
+	if (type == "cw")			SrcType = D3DCULL::D3DCULL_CW;
+	if (type == "ccw")			SrcType = D3DCULL::D3DCULL_CCW;
+
+	R_ASSERT2(SrcType != 0, make_string<const char*>("FILE: %s - invalid cull mode (D3DCULL) value: %s", File, type.c_str()));
 
 	return SrcType;
 }
