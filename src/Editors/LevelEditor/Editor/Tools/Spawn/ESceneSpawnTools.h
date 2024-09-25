@@ -16,18 +16,17 @@ protected:
     };
     Flags32				m_Flags;
 
+public:
     // class
     using SSVec = xr_vector<SChooseItem>;
     using SSVecIt = SSVec::iterator;
 
-    
     using ClassSpawnMap = xr_map<CLASS_ID,SSVec>;
     using ClassSpawnMapIt = ClassSpawnMap::iterator;
 
     ClassSpawnMap		m_Classes;
 
     // icon list
-    
     using ShaderMap = xr_map<shared_str,ref_shader>;
     using ShaderPairIt = ClassSpawnMap::iterator;
 
@@ -35,6 +34,7 @@ protected:
     ref_shader 			CreateIcon	(shared_str name);
     ref_shader 			GetIcon		(shared_str name);
     xr_vector<CEditableObject*> m_draw_RP_visuals;
+
 public:
 						ESceneSpawnTool		();
 	virtual				~ESceneSpawnTool		();

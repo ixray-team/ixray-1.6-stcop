@@ -109,6 +109,21 @@ void DragDrop(const xr_string& Path, int Type)
             Scene->SelectObjects(false, Type);
             Scene->AppendObject(obj);
         }
+        else if (Type == OBJCLASS_SPAWNPOINT)
+        {
+            string256 namebuffer;
+            Scene->GenObjectName(OBJCLASS_SPAWNPOINT, namebuffer, Path.data());
+            auto obj = Scene->GetOTool(OBJCLASS_SPAWNPOINT)->CreateObject((void*)Path.data(), namebuffer);
+            if (!obj->Valid()) 
+            {
+                xr_delete(obj);
+                return;
+            }
+
+            obj->MoveTo(p, n);
+            Scene->SelectObjects(false, OBJCLASS_SPAWNPOINT);
+            Scene->AppendObject(obj);
+        }
         else if (Type == OBJCLASS_GROUP)
         {
             FS.update_path(fn, "$groups$", fn);

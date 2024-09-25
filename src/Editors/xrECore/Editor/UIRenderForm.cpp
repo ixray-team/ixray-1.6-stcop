@@ -159,6 +159,10 @@ void UIRenderForm::Draw()
 				{
 					DragFunctor(Data.FileName, 0);
 				}
+				else
+				{
+					DragFunctor(Data.FileName, 6);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}

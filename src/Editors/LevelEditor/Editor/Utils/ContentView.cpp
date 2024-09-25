@@ -37,97 +37,17 @@ void CContentView::Draw()
 		size_t HorBtnIter = 0;
 		xr_string NextDir = CurrentDir;
 
-		if (!RootDir.Contains(CurrentDir))
+		if (!RootDir.Contains(CurrentDir) && !IsSpawnElement)
 		{
-			std::filesystem::path FilePath = CurrentDir.c_str();
-			if (DrawItem({ "..", true }, HorBtnIter, IterCount))
-			{
-				NextDir = FilePath.parent_path().string().data();
-				if(FilePath.parent_path().is_absolute() && !NextDir.Contains(RootDir) || NextDir.empty())
-				{
-					NextDir = RootDir;
-				}
-				Files.clear();
-			}
-
-			for (const FileOptData& FilePath : Files)
-			{
-				if (FilePath.IsDir)
-				{
-					if (DrawItem(FilePath, HorBtnIter, IterCount))
-					{
-						NextDir = FilePath.File.string().data();
-						if (NextDir.ends_with('\\'))
-						{
-							NextDir = NextDir.erase(NextDir.length() - 1);
-						}
-						Files.clear();
-						break;
-					}
-				}
-				else
-				{
-					if (DrawItem(FilePath, HorBtnIter, IterCount))
-					{
-						if (FilePath.File.extension() == ".tga")
-						{
-							string_path fn = {};
-							FS.update_path(fn, _textures_, "");
-							xr_string OldPath = FilePath.File.string().data();
-
-							auto CharIndex = OldPath.find(fn);
-							if (CharIndex != xr_string::npos) 
-							{
-								xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
-								NewPath = NewPath.substr(0, NewPath.find_last_of("."));
-								ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, false);
-							}
-							else 
-							{
-								FS.update_path(fn, _import_, "");
-								CharIndex = OldPath.find(fn);
-
-								if (CharIndex != xr_string::npos) 
-								{
-									xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
-									ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, true);
-								}
-							}
-						}
-					}
-				}
-			}
+			DrawOtherDir(HorBtnIter, IterCount, NextDir);
+		}
+		else if (IsSpawnElement)
+		{
+			DrawISEDir(HorBtnIter, IterCount);
 		}
 		else
 		{
-			string_path FSEntry = {};
-			auto PathClickLambda = [&FSEntry, &HorBtnIter, &IterCount, &NextDir, this]()
-			{
-				xr_string Validate = FSEntry;
-				if (Validate.ends_with('\\'))
-				{
-					Validate = Validate.erase(Validate.length() - 1);
-				}
-
-				if (DrawItem({ Validate.c_str(), true}, HorBtnIter, IterCount))
-				{
-					NextDir = FSEntry;
-					if (NextDir.ends_with('\\'))
-					{
-						NextDir = NextDir.erase(NextDir.length() - 1);
-					}
-					Files.clear();
-				}
-			};
-
-			FS.update_path(FSEntry, "$server_data_root$", "");
-			PathClickLambda();
-
-			FS.update_path(FSEntry, "$import$", "");
-			PathClickLambda();
-
-			FS.update_path(FSEntry, "$game_data$", "");
-			PathClickLambda();
+			DrawRootDir(HorBtnIter, IterCount, NextDir);
 		}
 
 		LockFiles = false;
@@ -145,8 +65,249 @@ void CContentView::Draw()
 	ImGui::End();
 }
 
+void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
+{
+	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
+	{
+		if (ISEPath.empty())
+		{
+			IsSpawnElement = false;
+			ISEPath = "";
+			Files.clear();
+		}
+		else
+		{
+			xr_string Validate = ISEPath;
+			if (Validate.ends_with('\\'))
+			{
+				Validate = Validate.erase(Validate.length() - 1);
+			}
+			std::filesystem::path ISEFS = Validate.data();
+
+			if (ISEFS.has_parent_path())
+			{
+				RescanISEDirectory(ISEFS.parent_path().string().data());
+				ISEPath = ISEFS.parent_path().string().data();
+			}
+			else
+			{
+				RescanISEDirectory("");
+				ISEPath = "";
+			}
+		}
+	}
+
+	for (const FileOptData& Data : Files)
+	{
+		if (DrawItem(Data, HorBtnIter, IterCount))
+		{
+			if (Data.IsDir)
+			{
+				xr_string CopyFileName = Data.File.string().c_str();
+				RescanISEDirectory(CopyFileName);
+			}
+
+			break;
+		}
+	}
+}
+
+void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_string& NextDir)
+{
+	string_path FSEntry = {};
+	auto PathClickLambda = [&FSEntry, &HorBtnIter, &IterCount, &NextDir, this]()
+	{
+		xr_string Validate = FSEntry;
+		if (Validate.ends_with('\\'))
+		{
+			Validate = Validate.erase(Validate.length() - 1);
+		}
+
+		if (DrawItem({ Validate.c_str(), true }, HorBtnIter, IterCount))
+		{
+			NextDir = FSEntry;
+			if (NextDir.ends_with('\\'))
+			{
+				NextDir = NextDir.erase(NextDir.length() - 1);
+			}
+			Files.clear();
+		}
+	};
+
+	IsSpawnElement = false;
+
+	FS.update_path(FSEntry, "$server_data_root$", "");
+	PathClickLambda();
+
+	FS.update_path(FSEntry, "$import$", "");
+	PathClickLambda();
+
+	FS.update_path(FSEntry, "$game_data$", "");
+	PathClickLambda();
+
+	if (DrawItem({ "Spawn Elements", true }, HorBtnIter, IterCount))
+	{
+		RescanISEDirectory("");
+	}
+}
+
+void CContentView::RescanISEDirectory(const xr_string& StartPath)
+{
+	Files.clear();
+
+	if (!StartPath.empty())
+	{
+		ISEPath += StartPath + '\\';
+	}
+
+	xr_map<xr_string, FileOptData> TempPath;
+	CInifile::Root& data = ((CInifile*)pSettings)->sections();
+
+	for (CInifile::RootIt it = data.begin(); it != data.end(); it++) 
+	{
+		LPCSTR val;
+		if ((*it)->line_exist("$spawn", &val))
+		{
+			shared_str caption = pSettings->r_string_wb((*it)->Name, "$spawn");
+			shared_str sect = (*it)->Name;
+			if (caption.size())
+			{
+				xr_string FileName = caption.c_str();
+
+				if (!FileName.Contains(StartPath) && !StartPath.empty())
+					continue;
+
+				if (FileName == StartPath)
+					continue;
+
+				if (StartPath.empty())
+				{
+					size_t DirStart = FileName.find('\\');
+
+					if (DirStart != xr_string::npos)
+					{
+						xr_string DirName = FileName.substr(0, DirStart);
+						if (TempPath.contains(DirName))
+							continue;
+
+						TempPath[DirName] = { DirName.c_str(), true };
+						continue;
+					}
+				}
+				else
+				{
+					const xr_string Delimer = StartPath + '\\';
+
+					size_t DirStart = FileName.find(Delimer);
+
+					if (DirStart != xr_string::npos)
+					{
+						xr_string DirName = FileName.substr(DirStart + Delimer.length());
+						if (TempPath.contains(DirName))
+							continue;
+
+						if (DirName.Contains("\\"))
+						{
+							TempPath[DirName] = { DirName.c_str(), true };
+						}
+						else
+						{
+							TempPath[DirName] = { (DirName + ".ise").c_str(), false, sect };
+						}
+					}
+
+					continue;
+				}
+
+				TempPath[FileName] = { (FileName + ".ise").c_str(), false, sect };
+			}
+		}
+	}
+
+	for (auto& [Name, DirOpt] : TempPath)
+	{
+		if (DirOpt.IsDir)
+		{
+			Files.push_back(DirOpt);
+		}
+	}
+
+	for (auto& [Name, DirOpt] : TempPath)
+	{
+		if (!DirOpt.IsDir)
+		{
+			Files.push_back(DirOpt);
+		}
+	}
+
+	IsSpawnElement = true;
+}
+
+void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir)
+{
+	std::filesystem::path FilePath = CurrentDir.c_str();
+	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
+	{
+		NextDir = FilePath.parent_path().string().data();
+		if (FilePath.parent_path().is_absolute() && !NextDir.Contains(RootDir) || NextDir.empty())
+		{
+			NextDir = RootDir;
+		}
+		Files.clear();
+	}
+
+	for (const FileOptData& FilePath : Files)
+	{
+		if (FilePath.IsDir)
+		{
+			if (DrawItem(FilePath, HorBtnIter, IterCount))
+			{
+				NextDir = FilePath.File.string().data();
+				if (NextDir.ends_with('\\'))
+				{
+					NextDir = NextDir.erase(NextDir.length() - 1);
+				}
+				Files.clear();
+				break;
+			}
+		}
+		else
+		{
+			if (DrawItem(FilePath, HorBtnIter, IterCount))
+			{
+				if (FilePath.File.extension() == ".tga")
+				{
+					string_path fn = {};
+					FS.update_path(fn, _textures_, "");
+					xr_string OldPath = FilePath.File.string().data();
+
+					auto CharIndex = OldPath.find(fn);
+					if (CharIndex != xr_string::npos)
+					{
+						xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
+						NewPath = NewPath.substr(0, NewPath.find_last_of("."));
+						ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, false);
+					}
+					else
+					{
+						FS.update_path(fn, _import_, "");
+						CharIndex = OldPath.find(fn);
+
+						if (CharIndex != xr_string::npos)
+						{
+							xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
+							ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, true);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void CContentView::RescanDirectory()
 {
+	IsDelWatcher = true;
 	xr_delete(WatcherPtr);
 
 	for (const auto& file : std::filesystem::directory_iterator{ CurrentDir.data() })
@@ -169,14 +330,21 @@ void CContentView::RescanDirectory()
 		CurrentDir.data(),
 		[this](const std::string&, const filewatch::Event)
 		{
-			while (LockFiles)
+			while (LockFiles || IsSpawnElement)
+			{
+				if (IsDelWatcher)
+					return;
+
 				continue;
+			}
 
 			LockFiles = true;
 			Files.clear();
 			LockFiles = false;
 		}
 	);
+
+	IsDelWatcher = false;
 }
 
 void CContentView::Destroy()
@@ -264,11 +432,11 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 		}
 	}
 
-	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length() - 1).c_str() : FileName.c_str();
+	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 
 	if (ImGui::BeginDragDropSource())
 	{
-		Data.FileName = FilePath.string().c_str();
+		Data.FileName = InitFileName.ISESect.c_str();
 		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
 		ImGui::ImageButton(FilePath.filename().string().c_str(), IconPtr->Icon->pSurface, BtnSize);
 		ImGui::Text(LabelText.data());
@@ -363,7 +531,23 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 	if (!Icons.contains(IconPath))
 	{
-		if (IconPath.ends_with(".object"))
+		if (IconPath.ends_with(".ise"))
+		{
+			ESceneSpawnTool* SpTool = (ESceneSpawnTool*)Scene->GetTool(OBJCLASS_SPAWNPOINT);
+			xr_string ValidPath = IconPath;
+			ValidPath = ValidPath.erase(ValidPath.length() - 4);
+
+			if (pSettings->line_exist(ValidPath.data(), "$ed_icon"))
+			{
+				Icons[IconPath] = { EDevice->Resources->_CreateTexture(pSettings->r_string_wb(ValidPath.data(), "$ed_icon").c_str()), false };
+				Icons[IconPath].Icon->Load();
+			}
+			else
+			{
+				Icons[IconPath] = Icons["file"];
+			}
+		}
+		else if (IconPath.ends_with(".object"))
 		{
 			string_path fn = {};
 			FS.update_path(fn, _objects_, fn);

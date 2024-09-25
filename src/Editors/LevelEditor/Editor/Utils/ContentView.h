@@ -26,11 +26,21 @@ class CContentView:
 	{
 		std::filesystem::path File;
 		bool IsDir = false;
+		shared_str ISESect;
 	};
+
+	bool IsDelWatcher = false;
+	bool IsSpawnElement = false;
+	xr_string ISEPath;
 
 public:
 	CContentView();
 	virtual void Draw() override;
+	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);
+	void DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_string& NextDir);
+	void DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir);
+
+	void RescanISEDirectory(const xr_string& path);
 	void RescanDirectory();
 	virtual void Init();
 	virtual void Destroy();
