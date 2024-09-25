@@ -1021,12 +1021,22 @@ CInventoryItem *CInventory::get_object_by_id(ALife::_OBJECT_ID tObjectID)
 //скушать предмет 
 #include "game_object_space.h"
 #include "script_game_object.h"
+#include "bandage.h"
 
 bool CInventory::Eat(PIItem pIItem)
 {
 	//устанаовить съедобна ли вещь
 	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);
 	if ( !pItemToEat )			return false;
+
+	if (EngineExternal()[EEngineExternalGame::EnableUseBandage7DaysToDie])
+	{
+		CBandage* pBandage = smart_cast<CBandage*>(pIItem);
+		if (pBandage && !pBandage->CanUseItem())
+		{
+			return false;
+		}
+	}
 
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
 	if ( !entity_alive )		return false;

@@ -697,6 +697,9 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
+
+			template<typename T>
+			void				UseItemsFromFastSlots			(const PIItem realItemData, const T* pRealItem, const shared_str& realItemName);
 #ifndef MASTER_GOLD
 			void				NoClipFly						(int cmd);
 #endif //DEBUG

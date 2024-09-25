@@ -104,6 +104,7 @@
 
 #	include "bolt.h"
 #	include "medkit.h"
+#	include "bandage.h"
 #	include "antirad.h"
 #	include "fooditem.h"
 #	include "bottleitem.h"
@@ -345,7 +346,7 @@ void CObjectFactory::register_classes	()
 	ADD(CBolt					,CSE_ALifeItemBolt				,CLSID_IITEM_BOLT				,"obj_bolt");
 #endif // #ifndef NO_SINGLE
 	ADD(CMedkit					,CSE_ALifeItem					,CLSID_IITEM_MEDKIT				,"obj_medkit");
-	ADD(CMedkit					,CSE_ALifeItem					,CLSID_IITEM_BANDAGE			,"obj_bandage");
+	ADD(CBandage				,CSE_ALifeItem					,CLSID_IITEM_BANDAGE			,"obj_bandage");
 	ADD(CAntirad				,CSE_ALifeItem					,CLSID_IITEM_ANTIRAD			,"obj_antirad");
 	ADD(CFoodItem				,CSE_ALifeItem					,CLSID_IITEM_FOOD				,"obj_food");
 	ADD(CBottleItem				,CSE_ALifeItem					,CLSID_IITEM_BOTTLE				,"obj_bottle");

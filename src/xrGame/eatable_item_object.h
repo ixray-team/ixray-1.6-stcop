@@ -53,6 +53,7 @@ public:
 	virtual void	reinit					();
 	virtual void	activate_physic_shell	();
 	virtual void	on_activate_physic_shell();
+
 public:
 	////////// network //////////////////////////////////////////////////
 	virtual void	make_Interpolation		();
@@ -74,6 +75,9 @@ public:
 
 public:
 	virtual u32		ef_weapon_type			() const;
+	virtual bool	CanUseItem				() const;
+	virtual shared_str GetUseString			() const;
+
 protected:
 	virtual bool	use_parent_ai_locations	() const
 	{

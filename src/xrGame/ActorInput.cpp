@@ -33,6 +33,7 @@
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "bandage.h"
 
 extern u32 hud_adj_mode;
 
@@ -168,27 +169,16 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
 		{
-			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
-			if(item_name.size())
-			{
-				PIItem itm = inventory().GetAny(item_name.c_str());
+			const shared_str& itemName		= g_quick_use_slots[cmd-kQUICK_USE_1];
 
-				if(itm)
+			if (itemName.size())
+			{
+				PIItem realItemData = inventory().GetAny(itemName.c_str());
+				CEatableItemObject* pRealItem = smart_cast<CEatableItemObject*>(realItemData);
+
+				if (realItemData)
 				{
-					if (IsGameTypeSingle())
-					{
-						inventory().Eat				(itm);
-					} else
-					{
-						inventory().ClientEat		(itm);
-					}
-					
-					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
-					string1024					str;
-					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", itm->NameItem());
-					_s->wnd()->TextItemControl()->SetText(str);
-					
-					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
+					UseItemsFromFastSlots(realItemData, pRealItem, itemName);
 				}
 			}
 		}break;
@@ -751,6 +741,42 @@ void CActor::SwitchTorch()
 			return;
 		}
 	}
+}
+
+template<typename T>
+void CActor::UseItemsFromFastSlots(const PIItem realItemData, const T* pRealItem, const shared_str& realItemName)
+{
+	static_assert(std::is_same_v<T, CEatableItemObject>, "Second argument must be of type CEatableItemObject*");
+
+	auto l_CreateTextStatic = [&](shared_str itemStringUse) -> void
+	{
+		string1024 realString = "Unknown";
+		SDrawStaticStruct* DrawStaticItemUsed = CurrentGameUI()->AddCustomStatic("item_used", true);
+
+		xr_strconcat(realString, *g_pStringTable->translate(itemStringUse), ": ", realItemData->NameItem());
+
+		CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
+		DrawStaticItemUsed->wnd()->TextItemControl()->SetText(realString);
+	};
+
+#ifdef DEBUG
+	Msg("- [%s]: Trying use item -> %s", __FUNCTION__, realItemData->NameItem());
+#endif
+
+	if (IsGameTypeSingle())
+	{
+		inventory().Eat(realItemData);
+	}
+	else
+	{ 
+		inventory().ClientEat(realItemData);
+	}
+
+#ifdef DEBUG
+	Msg("- [%s]: Eaten item -> %s", __FUNCTION__, realItemData->NameItem());
+#endif
+
+	l_CreateTextStatic(pRealItem->GetUseString());
 }
 
 #ifndef MASTER_GOLD

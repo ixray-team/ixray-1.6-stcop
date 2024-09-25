@@ -210,6 +210,16 @@ u32	 CEatableItemObject::ef_weapon_type		() const
 	return								(0);
 }
 
+bool CEatableItemObject::CanUseItem() const
+{
+	return true;
+}
+
+shared_str CEatableItemObject::GetUseString() const
+{
+	return "st_item_used";
+}
+
 bool CEatableItemObject::Useful				() const
 {
 	return			(CEatableItem::Useful());
