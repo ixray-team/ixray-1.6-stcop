@@ -407,10 +407,15 @@ CCommandVar 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
 	UIImageEditorForm::Show(false);
 	return				TRUE;
 }
+CCommandVar 	CommandImageEditorSelect(CCommandVar p1, CCommandVar p2)
+{
+	UIImageEditorForm::FindInEditor((xr_string)p1, !!p2);
+	return TRUE;
+}
 CCommandVar 	CommandLightAnimEditor(CCommandVar p1, CCommandVar p2)
 {
 	UIEditLightAnim::Show();
-	return				TRUE;
+	return TRUE;
 }
 
 CCommandVar 	CommandMinimapEditor(CCommandVar p1, CCommandVar p2)
@@ -711,6 +716,7 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_SOUND_EDITOR,   		CommandSoundEditor);
 	REGISTER_CMD_S	    (COMMAND_SYNC_SOUNDS,    		CommandSyncSounds);
 	REGISTER_CMD_S	    (COMMAND_IMAGE_EDITOR,   		CommandImageEditor); 
+	REGISTER_CMD_S	    (COMMAND_IMAGE_EDITOR_SELECT,	CommandImageEditorSelect);
 	REGISTER_CMD_S      (COMMAND_LIGHTANIM_EDITOR,      CommandLightAnimEditor);
 	REGISTER_CMD_S	    (COMMAND_MINIMAP_EDITOR,   		CommandMinimapEditor);
 	REGISTER_CMD_S	    (COMMAND_CHECK_TEXTURES,     	CommandCheckTextures);

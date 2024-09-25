@@ -11,6 +11,7 @@ public:
 	static void Update();
 	static void Show(bool bImport);
 	static void ImportTextures();
+	static void FindInEditor(xr_string, bool = false);
 private:
 	using THMVec = xr_vector<ETextureThumbnail*>;
 	using THMIt = THMVec::iterator;
@@ -38,6 +39,7 @@ private:
 	void InitItemList();
 	void HideLib();
 	void UpdateLib();
+	void UpdateSelected();
 	void OnItemsFocused(ListItem* item);
 	void SaveUsedTHM();
 private:
