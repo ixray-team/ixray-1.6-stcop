@@ -56,7 +56,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader *F, CXml* xml )
 	}
 }
 
-void CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
+bool CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 {
 	shared_str fn			= correct_file_name(path, _xml_filename);
 
@@ -65,14 +65,15 @@ void CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 	return Load				(path_alias, str);
 }
 
-//инициализация и загрузка XML файла
+//инициализациѝ и загрузка XML файла
 void CXml::Load(LPCSTR path, LPCSTR xml_filename)
 {
 	xr_strcpy(m_xml_file_name, xml_filename);
 	// Load and parse xml file
 
 	IReader* F = FS.r_open(path, xml_filename);
-	R_ASSERT2(F, xml_filename);
+	if (!F)
+		return false;
 
 	CMemoryWriter W;
 	ParseFile(path, W, F, this);
@@ -105,10 +106,12 @@ void CXml::Load(LPCSTR path, LPCSTR xml_filename)
 	{
 		string1024 str;
 		xr_sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
-		R_ASSERT2(false, str);
+		return false;
 	}
 
 	m_root = m_Doc.FirstChildElement();
+
+	return true;
 }
 
 XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR  path, int node_index)
@@ -299,12 +302,12 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
 	else
 	{
 /*
-		//обязательно делаем ref_str, а то 
-		//не сможем запомнить строку и return вернет левый указатель
+		//обѝзательно делаем ref_str, а то 
+		//не ѝможем запомнить ѝтроку и return вернет левый указатель
 		shared_str result_str;
 */
 		LPCSTR result_str = nullptr;
-		// Кастаем ниже по иерархии
+		// Каѝтаем ниже по иерархии
 
 		tinyxml2::XMLElement *el = node->ToElement(); 
 		
@@ -429,7 +432,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 	return result;
 }
 
-//нахождение элемнета по его атрибуту
+//нахождение ѝлемнета по его атрибуту
 XML_NODE* CXml::SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
 {
 	XML_NODE* start_node			= NavigateToNode(path, index);
