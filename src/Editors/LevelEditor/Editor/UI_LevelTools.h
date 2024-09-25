@@ -12,8 +12,8 @@ class CLevelTool: public CToolCustom
 {
 	typedef CToolCustom inherited;
 
-	PROCESS_INFORMATION m_CompilerProcess;
-	PROCESS_INFORMATION m_GameProcess;
+	PROCESS_INFORMATION m_CompilerProcess = {};
+	PROCESS_INFORMATION m_GameProcess = {};
 	UIToolCustom*           m_ToolForm;
 	int             sub_target;
 	ObjClassID		target;

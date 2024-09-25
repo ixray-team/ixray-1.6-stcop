@@ -4,7 +4,7 @@ typedef fastdelegate::FastDelegate1<ImVec2>		  				TOnRenderToolBar;
 class ECORE_API UIRenderForm :public XrUI
 {
 public:
-	using DragCallback = void(const xr_string&);
+	using DragCallback = void(const xr_string&, int);
 	DragCallback* DragFunctor;
 
 public:

@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "ContentView.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include <StbImage/stb_image.h>
+#include <StbImage/stb_image_resize.h>
+
 CContentView::CContentView()
 {
 	string_path Dir = {};
@@ -20,73 +25,94 @@ void CContentView::Draw()
 		const size_t IterCount = (ImGui::GetWindowSize().x / (BtnSize.x + 15)) - 1;
 		size_t HorBtnIter = 0;
 		xr_string NextDir = CurrentDir;
-		bool FixVodkaPath = true;
 
 		if (!RootDir.Contains(CurrentDir))
 		{
-			FixVodkaPath = false;
 			std::filesystem::path FilePath = CurrentDir.c_str();
 			if (DrawItem("..", HorBtnIter, IterCount))
 			{
 				NextDir = FilePath.parent_path().string().data();
-				if(!NextDir.Contains(RootDir)) {
+				if(FilePath.parent_path().is_absolute() && !NextDir.Contains(RootDir)) 
+				{
 					NextDir = RootDir;
 				}
 			}
-		}
 
-		for (std::filesystem::path FilePath : std::filesystem::directory_iterator{ CurrentDir.data() })
-		{
-			if (std::filesystem::is_directory(FilePath))
+			for (std::filesystem::path FilePath : std::filesystem::directory_iterator{ CurrentDir.data() })
 			{
-				if (DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount))
+				if (std::filesystem::is_directory(FilePath))
 				{
-					NextDir = FilePath.string().data();
-				}
-			}
-		}
-
-		if(FixVodkaPath) {
-			if(FS.pathes.size() > 0) {
-				for(auto& [Name, Path] : FS.pathes) {
-					xr_string FilePath = Path->m_Path;
-					if(!FilePath.Contains(RootDir)) {
-						if(DrawItem(Name, HorBtnIter, IterCount)) {
-							NextDir = FilePath;
+					if (DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount))
+					{
+						NextDir = FilePath.string().data();
+						if (NextDir.ends_with('\\'))
+						{
+							NextDir = NextDir.erase(NextDir.length() - 1);
 						}
 					}
 				}
 			}
-		}
 
-		for (std::filesystem::path FilePath : std::filesystem::directory_iterator{ CurrentDir.data() })
-		{
-			if (!std::filesystem::is_directory(FilePath) && FilePath.has_extension() && FilePath.extension().string() != ".thm")
+			for (std::filesystem::path FilePath : std::filesystem::directory_iterator{ CurrentDir.data() })
 			{
-				if(DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount)) {
-					if(FilePath.extension() == ".tga") {
-						string_path fn = {};
-						FS.update_path(fn, _textures_, "");
-						xr_string OldPath = FilePath.string().data();
+				if (!std::filesystem::is_directory(FilePath) && FilePath.has_extension() && FilePath.extension().string() != ".thm")
+				{
+					if (DrawItem(FilePath.string().c_str(), HorBtnIter, IterCount)) 
+					{
+						if (FilePath.extension() == ".tga") {
+							string_path fn = {};
+							FS.update_path(fn, _textures_, "");
+							xr_string OldPath = FilePath.string().data();
 
-						auto CharIndex = OldPath.find(fn);
-						if(CharIndex != xr_string::npos) {
-							xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
-							NewPath = NewPath.substr(0, NewPath.find_last_of("."));
-							ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, false);
-						}
-						else {
-							FS.update_path(fn, _import_, "");
-							CharIndex = OldPath.find(fn);
-
-							if(CharIndex != xr_string::npos) {
+							auto CharIndex = OldPath.find(fn);
+							if (CharIndex != xr_string::npos) {
 								xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
-								ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, true);
+								NewPath = NewPath.substr(0, NewPath.find_last_of("."));
+								ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, false);
+							}
+							else {
+								FS.update_path(fn, _import_, "");
+								CharIndex = OldPath.find(fn);
+
+								if (CharIndex != xr_string::npos) {
+									xr_string NewPath = OldPath.substr(OldPath.find(fn) + xr_strlen(fn));
+									ExecCommand(COMMAND_IMAGE_EDITOR_SELECT, NewPath, true);
+								}
 							}
 						}
 					}
 				}
 			}
+		}
+		else
+		{
+			string_path FSEntry = {};
+			auto PathClickLambda = [&]()
+			{
+				xr_string Validate = FSEntry;
+				if (Validate.ends_with('\\'))
+				{
+					Validate = Validate.erase(Validate.length() - 1);
+				}
+
+				if (DrawItem(Validate, HorBtnIter, IterCount))
+				{
+					NextDir = FSEntry;
+					if (NextDir.ends_with('\\'))
+					{
+						NextDir = NextDir.erase(NextDir.length() - 1);
+					}
+				}
+			};
+
+			FS.update_path(FSEntry, "$server_data_root$", "");
+			PathClickLambda();
+
+			FS.update_path(FSEntry, "$import$", "");
+			PathClickLambda();
+
+			FS.update_path(FSEntry, "$game_data$", "");
+			PathClickLambda();
 		}
 
 		CurrentDir = NextDir;
@@ -144,6 +170,7 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 		ImVec2(0, 0), ImVec2(1, 1), 
 		ImVec4(0, 0, 0, 0), IconColor
 	);
+	DrawContext(FilePath);
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length() - 1).c_str() : FileName.c_str();
 
@@ -180,6 +207,20 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 		HorBtnIter = 0;
 	}
 	return OutValue;
+}
+
+bool CContentView::DrawContext(const std::filesystem::path& Path) const
+{
+	if (ImGui::BeginPopupContextItem())
+	{
+		if (ImGui::MenuItem("Delete"))
+		{
+			std::filesystem::remove(Path);
+		}
+		ImGui::EndPopup();
+	}
+
+	return false;
 }
 
 CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
@@ -238,7 +279,30 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				}
 			}
 		}
-		else if(IconPath.ends_with(".tga")) {
+		else if (IconPath.ends_with(".group"))
+		{
+			string_path fn = {};
+			FS.update_path(fn, _groups_, "");
+			Icons[IconPath] = Icons["object"];
+
+			if (IconPath.find(fn) != xr_string::npos) {
+				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
+
+				EGroupThumbnail* m_Thm = xr_new<EGroupThumbnail>(NewPath.data());
+				//EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
+				CTexture* TempTexture = new CTexture();
+				m_Thm->Update(TempTexture->pSurface);
+
+				if (TempTexture->pSurface != nullptr) {
+					Icons[IconPath] = { TempTexture, false };
+				}
+				else {
+					xr_delete(TempTexture);
+				}
+			}
+		}
+		else if(IconPath.ends_with(".tga"))
+		{
 			string_path fn = {};
 			FS.update_path(fn, _textures_, "");
 			Icons[IconPath] = Icons["tga"];
@@ -258,7 +322,33 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				}
 			}
 		}
-		else if(IconPath.ends_with(".dds")) {
+		else if (IconPath.ends_with(".png") || IconPath.ends_with(".tga"))
+		{
+			U8Vec Pixels;
+			int w, h, a;
+			stbi_uc* raw_data = stbi_load((LPSTR)IconPath.c_str(), &w, &h, &a, STBI_rgb_alpha);
+			Pixels.resize(50 * 50 * a);
+			if (raw_data != nullptr)
+			{
+				stbir_resize_uint8(raw_data, w, h, 0, Pixels.data(), 50, 50, 0, a);
+				CTexture* TempTexture = new CTexture();
+				ID3DTexture2D* pTexture = nullptr;
+				Icons[IconPath] = { TempTexture, false };
+				R_CHK(REDevice->CreateTexture(50, 50, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
+				{
+					D3DLOCKED_RECT rect;
+					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
+					memcpy(rect.pBits, Pixels.data(), 50 * 50 * a);
+					R_CHK(pTexture->UnlockRect(0));
+
+					TempTexture->pSurface = pTexture;
+				}
+
+				stbi_image_free(raw_data);
+			}
+		}
+		else if(IconPath.ends_with(".dds")) 
+		{
 			xr_string NewPath = IconPath.substr(0, IconPath.length() - 4);
 
 			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};

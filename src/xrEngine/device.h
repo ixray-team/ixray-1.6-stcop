@@ -224,11 +224,11 @@ public:
 	
 	CRenderDevice();
 
-	void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
+	virtual void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
 	BOOL	Paused							();
 
 	// Scene control
-	void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
+	virtual void PreCache							(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input);
 	BOOL Begin								();
 	virtual void Clear						();
 	void End								();
