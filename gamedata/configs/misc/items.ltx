@@ -58,7 +58,6 @@ $spawn 				= "food and drugs\bread"
 visual				= dynamics\devices\dev_bred\dev_bred.ogf
 description			= st_bread_descr
 
-use_text            = st_eat
 inv_name			= st_bread
 inv_name_short		= st_bread
 inv_weight			= 0.4	;0.2
@@ -90,7 +89,6 @@ $spawn 				= "food and drugs\kolbasa"
 visual				= dynamics\devices\dev_kolbasa\dev_kolbasa.ogf
 description			= st_kolbasa_descr
 
-use_text            = st_eat
 inv_name			= st_kolbasa
 inv_name_short		= st_kolbasa
 inv_weight			= 0.5
@@ -122,7 +120,6 @@ $spawn 				= "food and drugs\conserva"
 visual				= dynamics\devices\dev_conserv\dev_conserv.ogf
 description			= st_conserva_descr
 
-use_text            = st_eat
 inv_name			= st_conserva
 inv_name_short		= st_conserva
 inv_weight			= 0.3
@@ -156,7 +153,6 @@ cform				= skeleton
 visual				= dynamics\devices\dev_vodka\dev_vodka.ogf
 description			= st_vodka_descr
 
-use_text            = st_drink
 inv_name			= st_vodka
 inv_name_short		= st_vodka
 inv_weight			= 0.6	;0.2
@@ -186,7 +182,7 @@ eat_satiety				= -0.2
 
 use_sound			= interface\inv_vodka
 
-[vodka_script]:vodka ; пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+[vodka_script]:vodka ; не использовать
 $spawn 				= "food and drugs\vodka_script"
 inv_weight			= 0
 
@@ -253,7 +249,7 @@ inv_grid_width      	= 2
 inv_grid_height     	= 1
 inv_grid_x        		= 16
 inv_grid_y        		= 12
-attach_angle_offset   	= -1.571,-1.308,-1.458    ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Angle*PI/180
+attach_angle_offset   	= -1.571,-1.308,-1.458    ;устанавливаетсљ в радианах Angle*PI/180
 attach_position_offset  = 0.105, -0.004, 0.003
 attach_bone_name    	= bip01_l_hand
 auto_attach       		= false
@@ -624,7 +620,7 @@ inv_grid_height		= 1
 inv_grid_x			= 6
 inv_grid_y			= 13
 cost				= 20
-attach_angle_offset		= -1.303,0.107,-1.702   ;пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Angle*PI/180
+attach_angle_offset		= -1.303,0.107,-1.702   ;устанавливается в радианах Angle*PI/180
 attach_position_offset	= 0.14,0.001,0.02
 attach_bone_name		= bip01_l_hand
 auto_attach			= false
@@ -696,7 +692,8 @@ inv_grid_width		= 2
 inv_grid_height		= 1
 inv_grid_x			= 16
 inv_grid_y			= 12
-;пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+
+;вещью нельзя торговать
 can_trade			= true
 
 position			= 0.35,0.25,0.0
@@ -712,15 +709,14 @@ night_vision				= on
 night_vision_texture		= wpn\wpn_night
 night_vision_effector		= postprocess_night
 
-snd_click                   = device\torch_click
 snd_night_vision_on			= weapons\nv_start
 snd_night_vision_off		= weapons\nv_off
 snd_night_vision_idle		= weapons\nv_loop
 snd_night_vision_broken		= weapons\nv_off
 
-night_vision_recharge_time			= 6		;(c) пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-night_vision_recharge_time_min		= 2		;(c) пїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-night_vision_discharge_time			= 20	;(c) пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+night_vision_recharge_time			= 6		;(c) время зарядки аккамулятора
+night_vision_recharge_time_min		= 2		;(c) мин. время зарядки аккамулятора, после которого уст-во уже может работать
+night_vision_discharge_time			= 20	;(c) время разрядки (работы) устройства после полной зарядки
 slot								= 9
 default_to_ruck						= false
 sprint_allowed						= true

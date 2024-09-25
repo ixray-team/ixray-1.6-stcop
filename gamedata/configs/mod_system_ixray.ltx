@@ -1,0 +1,89 @@
+;system.ltx
+#include "misc\anim_slot.ltx"
+
+![inventory]
+slot_persistent_4 = false ;grenades
+
+![actor_look_cam_psp]
+!offset
+!autoaim_speed_y
+!autoaim_speed_x
+
+offset_right = -0.4,0.2,0.0
+offset_left = 0.314,0.2,0.0
+
+;actor.ltx
+![actor_hud]
+visual = dynamics\weapons\wpn_hand\wpn_hand_0
+
+;m_burer.ltx
+![m_burer_e]
+icon = ui_npc_monster_burer
+
+;items.ltx
+![bread]
+use_text = st_eat
+
+![kolbasa]
+use_text = st_eat
+
+![conserva]
+use_text = st_eat
+
+![vodka]
+use_text = st_drink
+
+![device_torch]
+snd_click = device\torch_click
+
+;device.ltx
+;![detector_simple_hud]
+;anm_bore = dev_detector_1_idle_bore
+;anm_bore_16x9 = dev_detector_1_idle_bore_ws, dev_detector_1_idle_bore
+;
+;![detector_advanced_hud]
+;anm_bore = dev_detector_2_idle_bore
+;anm_bore_16x9 = dev_detector_2_idle_bore_ws, dev_detector_1_idle_bore
+;
+;![detector_elite_hud]
+;anm_bore = dev_detector_3_idle_bore
+;anm_bore_16x9 = dev_detector_3_idle_bore_ws, dev_detector_1_idle_bore
+;
+;![detector_scientific_hud]
+;anm_bore = dev_detector_3_idle_bore
+;anm_bore_16x9 = dev_detector_3_idle_bore_ws, dev_detector_1_idle_bore
+
+;w_binoc.ltx
+![wpn_binoc]
+use_condition = false
+
+;w_f1.ltx
+![grenade_f1]
+detonation_threshold_hit= 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;w_rg6.ltx
+![wpn_rg-6]
+!reload_dof
+
+;w_rgd5.ltx
+![grenade_rgd5]
+detonation_threshold_hit = 0.3
+explosion_on_hit = true
+explosion_hit_types = 6, 8 
+explosive_while_not_activated = true
+
+;helicopter.ltx
+![helicopter]
+ssa_dyn_factor = 0.001
+ssa_d_cam = 300.0
+
+;prefetch_mp.ltx
+; FreeMP mode
+[prefetch_objects_fmp]:prefetch_objects_mp
+[prefetch_visuals_fmp]:prefetch_visuals_mp
+
+[prefetch_objects_freemp]:prefetch_objects_mp
+[prefetch_visuals_freemp]:prefetch_visuals_mp
