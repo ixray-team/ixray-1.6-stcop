@@ -55,7 +55,6 @@ private:
     ref_texture m_tNuScale;
 
     // Axis
-    ref_texture m_tShowAxisMove;
     ref_texture m_tX;
     ref_texture m_tY;
     ref_texture m_tZ;

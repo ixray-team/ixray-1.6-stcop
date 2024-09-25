@@ -20,14 +20,12 @@ CToolCustom* Tools=0;
 
 CToolCustom::CToolCustom()
 {
-    m_bReady = false;
-    m_Action = etaSelect;
-    m_Settings.assign(etfNormalAlign | etfGSnap | etfOSnap | etfMTSnap | etfVSnap | etfASnap | etfMSnap | etfScaleFixed);
-    m_Axis            = etAxisZX;
-    fFogness          = 0.9f;
-    dwFogColor        = 0xffffffff;
-    m_pAxisMoveObject = NULL;
-    m_axis_xform      = Fidentity;
+	m_bReady = false;
+	m_Action = etaSelect;
+	m_Settings.assign(etfNormalAlign | etfGSnap | etfOSnap | etfMTSnap | etfVSnap | etfASnap | etfMSnap | etfScaleFixed);
+	m_Axis            = etAxisZX;
+	fFogness          = 0.9f;
+	dwFogColor        = 0xffffffff;
 }
 //---------------------------------------------------------------------------
 CToolCustom::~CToolCustom() {}
@@ -43,9 +41,8 @@ bool CToolCustom::OnCreate()
 
 void CToolCustom::OnDestroy()
 {
-	Lib.RemoveEditObject(m_pAxisMoveObject);
-	VERIFY					(m_bReady);
-	m_bReady				= false;
+	VERIFY(m_bReady);
+	m_bReady = false;
 }
 //---------------------------------------------------------------------------
 
@@ -53,55 +50,17 @@ void CToolCustom::SetAction(ETAction action)
 {
 	switch(action)
 	{
-        case etaSelect:
-            m_bHiddenMode = false;
-        break;
-        case etaAdd:
-        case etaMove:
-        case etaRotate:
-        case etaScale:
-            m_bHiddenMode = true;
-        break;
+		case etaSelect:
+			m_bHiddenMode = false;
+		break;
+		case etaAdd:
+		case etaMove:
+		case etaRotate:
+		case etaScale:
+			m_bHiddenMode = true;
+		break;
 	}
 	m_Action = action;
-  /*  switch(m_Action)
-	{
-	case etaSelect:  
-		UI->GetD3DWindow()->Cursor = crCross;     
-	break;
-	case etaAdd:     
-		UI->GetD3DWindow()->Cursor = crArrow;     
-	break;
-	case etaMove:
-		if(!EPrefs->tools_show_move_axis)    
-			UI->GetD3DWindow()->Cursor = crSizeAll;   
-		else
-			UI->GetD3DWindow()->Cursor = crHandPoint;   
-		
-	break;
-	case etaRotate:  
-		UI->GetD3DWindow()->Cursor = crSizeWE;    
-	break;
-	case etaScale:   
-		UI->GetD3DWindow()->Cursor = crVSplit;    
-	break;
-	default:         
-		UI->GetD3DWindow()->Cursor = crHelp;
-	}*/
-
-	if (m_Action == etaMove)
-	{
-		if (!m_pAxisMoveObject && EPrefs->tools_show_move_axis)
-		{
-			m_pAxisMoveObject = Lib.CreateEditObject("editor\\axis");
-			m_Axis = etAxisUndefined;
-		}
-	}
-	else
-	{
-		if (m_pAxisMoveObject)
-			Lib.RemoveEditObject(m_pAxisMoveObject);
-	}
 
 	UI->RedrawScene();
 	ExecCommand(COMMAND_REFRESH_UI_BAR);
@@ -127,72 +86,44 @@ bool  CToolCustom::MouseStart(TShiftState Shift)
 {
 	switch(m_Action)
 	{
-        case etaSelect:	break;
-        case etaAdd:	break;
-        case etaMove:
-            if (etAxisY == m_Axis)
-            {
-                m_MoveXVector.set(0, 0, 0);
-                m_MoveYVector.set(0, 1, 0);
-            }
-            else
-            {
-                m_MoveXVector.set(EDevice->m_Camera.GetRight());
-                m_MoveXVector.y = 0;
-                m_MoveYVector.set(EDevice->m_Camera.GetDirection());
-                m_MoveYVector.y = 0;
-                m_MoveXVector.normalize_safe();
-                m_MoveYVector.normalize_safe();
-            }
-            m_MoveReminder.set(0, 0, 0);
-            m_MovedAmount.set(0, 0, 0);
-        break;
-        case etaRotate:
-            m_RotateCenter.set(0, 0, 0);
-            m_RotateVector.set(0, 0, 0);
-            if (etAxisX == m_Axis)
-                m_RotateVector.set(1, 0, 0);
-            else if (etAxisY == m_Axis)
-                m_RotateVector.set(0, 1, 0);
-            else if (etAxisZ == m_Axis)
-                m_RotateVector.set(0, 0, 1);
-            m_fRotateSnapValue = 0;
-            m_RotateAmount     = 0;
-        break;
-        case etaScale:
-            m_ScaleAmount.set(0, 0, 0);
-            m_fScaleFixedValue.set(0, 0, 0);
-        break;
-    }
-
-    if (m_Action == etaMove && m_pAxisMoveObject)
-    {
-        Fmatrix inv_parent;
-        inv_parent.invert(m_axis_xform);
-        Fvector      start_point, start_dir;
-        float        dist;
-        SRayPickInfo pinfo;
-
-        start_point = UI->m_CurrentRStart;
-        start_dir   = UI->m_CurrentRDir;
-        dist        = 10000;
-        m_pAxisMoveObject->RayPick(dist, start_point, start_dir, inv_parent, &pinfo);
-        if (pinfo.e_mesh)
-        {
-            LPCSTR mn = pinfo.e_mesh->Name().c_str();
-            if (0 == stricmp(mn, "axis_x"))
-                SetAxis(etAxisX);
-            else if (0 == stricmp(mn, "axis_y"))
-                SetAxis(etAxisY);
-            else if (0 == stricmp(mn, "axis_z"))
-                SetAxis(etAxisZ);
-            else if (0 == stricmp(mn, "center"))
-                SetAxis(etAxisZX);
-            else
-                R_ASSERT2(0, "fix axis name");
-        };
+		case etaSelect:	break;
+		case etaAdd:	break;
+		case etaMove:
+			if (etAxisY == m_Axis)
+			{
+				m_MoveXVector.set(0, 0, 0);
+				m_MoveYVector.set(0, 1, 0);
+			}
+			else
+			{
+				m_MoveXVector.set(EDevice->m_Camera.GetRight());
+				m_MoveXVector.y = 0;
+				m_MoveYVector.set(EDevice->m_Camera.GetDirection());
+				m_MoveYVector.y = 0;
+				m_MoveXVector.normalize_safe();
+				m_MoveYVector.normalize_safe();
+			}
+			m_MoveReminder.set(0, 0, 0);
+			m_MovedAmount.set(0, 0, 0);
+		break;
+		case etaRotate:
+			m_RotateCenter.set(0, 0, 0);
+			m_RotateVector.set(0, 0, 0);
+			if (etAxisX == m_Axis)
+				m_RotateVector.set(1, 0, 0);
+			else if (etAxisY == m_Axis)
+				m_RotateVector.set(0, 1, 0);
+			else if (etAxisZ == m_Axis)
+				m_RotateVector.set(0, 0, 1);
+			m_fRotateSnapValue = 0;
+			m_RotateAmount     = 0;
+		break;
+		case etaScale:
+			m_ScaleAmount.set(0, 0, 0);
+			m_fScaleFixedValue.set(0, 0, 0);
+		break;
 	}
-	
+
 	return m_bHiddenMode;
 }
 
@@ -203,8 +134,6 @@ bool  CToolCustom::MouseEnd(TShiftState Shift)
 		case etaSelect: break;
 		case etaAdd: 	break;
 		case etaMove:
-			if (EPrefs->tools_show_move_axis)
-				m_Axis = etAxisUndefined;
 			break;
 		case etaRotate:
 			break;
@@ -249,12 +178,12 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 	break;
 	case etaScale:
 	{
-        if (m_Settings.is(etfScaleFixed))
-        {
-            CHECK_SNAP(m_fScaleFixedValue.x, m_ScaleAmount.x, m_ScaleFixed);
-            CHECK_SNAP(m_fScaleFixedValue.y, m_ScaleAmount.y, m_ScaleFixed);
-            CHECK_SNAP(m_fScaleFixedValue.z, m_ScaleAmount.z, m_ScaleFixed);
-        }
+		if (m_Settings.is(etfScaleFixed))
+		{
+			CHECK_SNAP(m_fScaleFixedValue.x, m_ScaleAmount.x, m_ScaleFixed);
+			CHECK_SNAP(m_fScaleFixedValue.y, m_ScaleAmount.y, m_ScaleFixed);
+			CHECK_SNAP(m_fScaleFixedValue.z, m_ScaleAmount.z, m_ScaleFixed);
+		}
 		float dy = UI->m_DeltaCpH.x * UI->m_MouseSS;
 		if (dy > 1.f)
 			dy = 1.f;
@@ -361,37 +290,5 @@ void CToolCustom::Render()
 
 	EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_CCW);
 	EDevice->ResetNearer();
-
-	if (m_pAxisMoveObject && GetSelectionPosition(m_axis_xform))
-	{
-		for (SurfaceIt s_it = m_pAxisMoveObject->Surfaces().begin(); s_it != m_pAxisMoveObject->Surfaces().end(); ++s_it)
-		{
-			EDevice->SetShader((*s_it)->_Shader());
-			RCache.set_xform_world(m_axis_xform);
-
-			for (int idx = 0; idx < m_pAxisMoveObject->Meshes().size(); ++idx)
-			{
-				CEditableMesh* M = m_pAxisMoveObject->Meshes()[idx];
-				if ((m_Axis == idx) || (idx == etAxisZX) || (m_Axis == etAxisZX && (idx == etAxisX || idx == etAxisZ)) || (m_Axis == etAxisUndefined))
-					M->Render(m_axis_xform, *s_it);
-			}
-		}
-	}
-
-	if (m_pAxisMoveObject && GetSelectionPosition(m_axis_xform))
-	{
-		for (SurfaceIt s_it = m_pAxisMoveObject->Surfaces().begin(); s_it != m_pAxisMoveObject->Surfaces().end(); ++s_it)
-		{
-			EDevice->SetShader((*s_it)->_Shader());
-			RCache.set_xform_world(m_axis_xform);
-
-			for (int idx = 0; idx < m_pAxisMoveObject->Meshes().size(); ++idx)
-			{
-				CEditableMesh* M = m_pAxisMoveObject->Meshes()[idx];
-				if ((m_Axis == idx) || (idx == etAxisZX) || (m_Axis == etAxisZX && (idx == etAxisX || idx == etAxisZ)) || (m_Axis == etAxisUndefined))
-					M->Render(m_axis_xform, *s_it);
-			}
-		}
-	}
 }
 //------------------------------------------------------------------------------
