@@ -377,8 +377,10 @@ void CRender::Calculate				()
 	// Frustum & HOM rendering
 	ViewBase.CreateFromMatrix		(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 	View							= 0;
-	HOM.Enable						();
-	HOM.Render						(ViewBase);
+	if (!ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
+		HOM.Enable									();
+		HOM.Render									(ViewBase);
+	}
 	gm_SetNearer					(FALSE);
 	phase							= PHASE_NORMAL;
 
