@@ -8,6 +8,11 @@ class CContentView:
 		xr_string FileName;
 	};
 
+	struct IconData {
+		ref_texture Icon;
+		bool UseButtonColor = false;
+	};
+
 	DragDropData Data;
 public:
 	CContentView();
@@ -16,9 +21,8 @@ public:
 	virtual void Destroy();
 
 	bool DrawItem(const xr_string& FilePath, size_t& HorBtnIter, const size_t IterCount);
-
 private:
-	ref_texture& GetTexture(const xr_string& IconPath);
+	IconData& GetTexture(const xr_string& IconPath);
 
 private:
 	xr_string CurrentDir;
@@ -26,5 +30,5 @@ private:
 	xr_string LogsDir;
 	ImVec2 BtnSize = { 64, 64 };
 
-	xr_hash_map<xr_string, ref_texture> Icons;
+	xr_hash_map<xr_string, IconData> Icons;
 };
