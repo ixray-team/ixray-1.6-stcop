@@ -234,12 +234,6 @@ public:
 	//	Prefer this function when possible
 	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size)=0;
 
-	//	Prefer this function when possible
-	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
-	virtual void					clear_static_wallmarks	() {};
-
-	//	Prefer this function when possible
-	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) {};
 
 	virtual IRender_ObjectSpecific*	ros_create				(IRenderable* parent)						{ return 0; };
 	virtual void					ros_destroy				(IRender_ObjectSpecific* &)					{};

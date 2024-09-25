@@ -66,7 +66,7 @@ bool CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 }
 
 //инициализациѝ и загрузка XML файла
-void CXml::Load(LPCSTR path, LPCSTR xml_filename)
+bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 {
 	xr_strcpy(m_xml_file_name, xml_filename);
 	// Load and parse xml file

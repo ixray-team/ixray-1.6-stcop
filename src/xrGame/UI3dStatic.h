@@ -1,5 +1,6 @@
 #pragma once
 #include "UIWindow.h"
+#include "UIStatic.h"
 #include "../../Include/xrRender/RenderVisual.h"
 #include "../../Include/xrRender/Kinematics.h"
 
@@ -23,14 +24,14 @@ public:
 
     void SetVisual(IRenderVisual* pVisual);
 
-    //прорисовка окна
+    //РїСЂРѕСЂРёСЃРѕРІРєР° РѕРєРЅР°
     virtual void Draw();
 
 protected:
     float m_x_angle, m_y_angle, m_z_angle;
     float dist, viewport_near;
-    //перевод из координат экрана в координаты той плоскости
-    //где находиться объект
+    //РїРµСЂРµРІРѕРґ РёР· РєРѕРѕСЂРґРёРЅР°С‚ СЌРєСЂР°РЅР° РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕР№ РїР»РѕСЃРєРѕСЃС‚Рё
+    //РіРґРµ РЅР°С…РѕРґРёС‚СЊСЃСЏ РѕР±СЉРµРєС‚
     void FromScreenToItem(int x_screen, int y_screen, float& x_item, float& y_item);
 
     IRenderVisual* m_pCurrentItem;
