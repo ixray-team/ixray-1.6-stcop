@@ -1900,7 +1900,6 @@ public:
 				tips.push_back(section->Name.c_str());
 			}
 		}
-		std::sort(tips.begin(), tips.end());
 	}
 };
 
@@ -2115,8 +2114,6 @@ public:
 				tips.push_back(section->Name.c_str());
 			}
 		}
-
-		std::sort(tips.begin(), tips.end());
 	}
 };
 
