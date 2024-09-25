@@ -23,6 +23,7 @@ public:
 	IRenderable*												val_pObject;
 	Fmatrix*													val_pTransform;
 	BOOL														val_bHUD;
+	BOOL														val_bUI;
 	BOOL														val_bInvisible;
 	BOOL														val_bRecordMP;		// record nearest for multi-pass
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
@@ -45,7 +46,11 @@ public:
 	R_dsgraph::mapSorted_T										mapDistort;
 	R_dsgraph::mapHUD_T											mapHUDSorted;
 
+	R_dsgraph::mapHUD_T											mapUI;
+	R_dsgraph::mapHUD_T											mapUISorted;
 #if RENDER!=R_R1
+	R_dsgraph::mapSorted_T										mapUIEmissive;
+
 	R_dsgraph::mapSorted_T										mapWmark;			// sorted
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
@@ -86,6 +91,7 @@ public:
 	BOOL														b_loaded	;
 public:
 	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
+	virtual		void					set_UI					(BOOL 		V	)				{ val_bUI		= V;				}
 	virtual		void					set_HUD					(BOOL 		V	)				{ val_bHUD		= V;				}
 	virtual		BOOL					get_HUD					()								{ return		val_bHUD;			}
 	virtual		void					set_Invisible			(BOOL 		V	)				{ val_bInvisible= V;				}
@@ -99,6 +105,7 @@ public:
 		val_pObject			= NULL	;
 		val_pTransform		= NULL	;
 		val_bHUD			= FALSE	;
+		val_bUI				= FALSE	;
 		val_bInvisible		= FALSE	;
 		val_bRecordMP		= FALSE	;
 		val_feedback		= 0;
@@ -146,6 +153,7 @@ public:
 		}
 		mapSorted.destroy		();
 		mapHUD.destroy			();
+		mapUI.destroy			();
 		mapLOD.destroy			();
 		mapDistort.destroy		();
 		mapHUDSorted.destroy();
@@ -164,6 +172,8 @@ public:
 
 	void		r_dsgraph_render_landscape						(u32 pass, bool bClear);
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);
+	void		r_dsgraph_render_ui();
+	void		r_dsgraph_render_sorted_ui();
 	void		r_dsgraph_render_hud							();
 	void		r_dsgraph_render_hud_ui							();
 	void		r_dsgraph_render_lods							(bool	_setup_zb,	bool _clear);

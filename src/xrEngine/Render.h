@@ -217,16 +217,22 @@ public:
 
 	// Main 
 	IC		void					set_Frustum				(CFrustum*	O	)							{ VERIFY(O);	View = O;			}
-	virtual void					set_Transform			(Fmatrix*	M	)							{};
-	virtual void					set_HUD					(BOOL 		V	)							{};
-	virtual BOOL					get_HUD					()											{ return 0; };
-	virtual void					set_Invisible			(BOOL 		V	)							{};
-	virtual void					flush					()											{};	
-	virtual void					set_Object				(IRenderable*		O	)					{};
-	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V, bool ignore_opt = false)	{};	// add visual leaf	(no culling performed at all)
-	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
-	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
+	virtual void					set_Transform			(Fmatrix*	M	)							= 0;
+	virtual void					set_UI					(BOOL 		V	)							= 0;
+	virtual void					set_HUD					(BOOL 		V	)							= 0;
+	virtual BOOL					get_HUD					()											= 0;
+	virtual void					set_Invisible			(BOOL 		V	)							= 0;
+	virtual void					flush					()											= 0;	
+	virtual void					set_Object				(IRenderable*		O	)					= 0;
+	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					= 0;	// mask screen region as oclluded (-1..1, -1..1)
+	virtual void					add_Visual				(IRenderVisual*	V, bool ignore_opt = false)	= 0;	// add visual leaf	(no culling performed at all)
+	virtual void					add_Geometry			(IRenderVisual*	V	)					= 0;	// add visual(s)	(all culling performed)
+	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)=0;
+	//	Prefer this function when possible
+	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V)=0;
+	virtual void					clear_static_wallmarks	()=0;
+	//	Prefer this function when possible
+	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size)=0;
 
 	//	Prefer this function when possible
 	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
@@ -260,8 +266,9 @@ public:
 	virtual BOOL					occ_visible				(sPoly&		P)								{return false;};
 
 	// Main
-	virtual void					Calculate				()											{};
-	virtual void					Render					()											{};
+	virtual void					Calculate				()											= 0;
+	virtual void					Render					()											= 0;
+	virtual void					RenderUI				()											= 0;
 	
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) {};
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) {};

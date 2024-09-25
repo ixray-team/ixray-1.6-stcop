@@ -200,6 +200,7 @@ public:
 	// Main
 	virtual void					Calculate				();
 	virtual void					Render					();
+	virtual void					RenderUI();
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
 	virtual void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer);
 	virtual void					ScreenshotAsyncBegin	();

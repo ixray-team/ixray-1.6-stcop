@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIStatic.h"
+#include "UI3dStatic.h"
 #include "UIDialogWnd.h"
 
 class CUIDragItem;
@@ -22,10 +23,10 @@ public:
 	virtual void		OnDraw					(CUIDragItem* drag_item)	= 0;
 };
 
-class CUICellItem :public CUIStatic
+class CUICellItem :public CUI3dStatic
 {
 private:
-	typedef		CUIStatic	inherited;
+	typedef		CUI3dStatic	inherited;
 protected:
 	xr_vector<CUICellItem*> m_childs;
 
