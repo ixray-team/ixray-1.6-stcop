@@ -548,10 +548,12 @@ IInputReceiver* CInput::CurrentIR()
 void CInput::unacquire()
 {
 	SDL_SetRelativeMouseMode(false);
+	IsAcquire = false;
 }
 
 void CInput::acquire()
 {
+	IsAcquire = true;
 	SDL_SetRelativeMouseMode(true);
 }
 

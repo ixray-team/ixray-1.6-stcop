@@ -93,28 +93,53 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 {
                     UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
                     UI->ApplyShortCutInput(Event.key.keysym.scancode);
-                    if(UI->IsPlayInEditor()) {
-                        pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
+
+                    if (UI->IsPlayInEditor())
+                    {
+                        if (pInput->IsAcquire)
+                        {
+                            pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
+                        }
+                        else if (Event.key.keysym.scancode == SDL_SCANCODE_LALT)
+                        {
+                            pInput->acquire();
+                            UI->IsEnableInput = false;
+                            ShowCursor(FALSE);
+                        }
                     }
                 }break;
             case SDL_EVENT_KEY_UP:
                 if (UI) {
                     UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
-                    if(UI->IsPlayInEditor()) {
-                        pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
+                    if(UI->IsPlayInEditor() && pInput->IsAcquire) 
+                    {
+                        if (pInput->IsAcquire)
+                        {
+                            pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
+                        }
                     }
                 }
                 break;
             case SDL_EVENT_MOUSE_MOTION:
-                pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
-                break;
-            case SDL_EVENT_MOUSE_WHEEL:
-                pInput->MouseScroll(Event.wheel.y);
-                break;
+            {
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+                    break;
 
+                pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+            } break;
+            case SDL_EVENT_MOUSE_WHEEL:
+            {
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+                    break;
+
+                pInput->MouseScroll(Event.wheel.y);
+            }break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
             {
+                if (UI->IsPlayInEditor() && !pInput->IsAcquire)
+                    break;
+
                 int mouse_button = 0;
                 if (Event.button.button == SDL_BUTTON_LEFT) { mouse_button = 0; }
                 if (Event.button.button == SDL_BUTTON_RIGHT) { mouse_button = 1; }
