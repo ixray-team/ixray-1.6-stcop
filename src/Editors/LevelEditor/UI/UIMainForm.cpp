@@ -382,7 +382,6 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Size)
     ImGui::SameLine(0, ImGui::GetFontSize() * 1.5);
     // Action
     {
-        Fvector  p, n;
         ETAction Action = LTools->GetAction();
         ImGui::BeginGroup();
         // Select
