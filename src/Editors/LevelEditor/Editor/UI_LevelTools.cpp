@@ -524,7 +524,7 @@ void  CLevelTool::Render()
 	// draw cursor
 	LUI->m_Cursor->Render();
 
-	inherited::Render		();
+    inherited::Render();
 }
 
 

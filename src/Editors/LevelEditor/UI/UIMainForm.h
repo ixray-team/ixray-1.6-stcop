@@ -20,7 +20,7 @@ private:
     class UIWorldPropertiesFrom* m_WorldProperties;
 private:
     void DrawContextMenu();
-    void DrawRenderToolBar(ImVec2 Size);
+    void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
 private:
     ref_texture m_tMenu;
 

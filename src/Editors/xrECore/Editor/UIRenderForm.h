@@ -1,7 +1,7 @@
-#pragma once
-typedef fastdelegate::FastDelegate0<>		  					TOnRenderContextMenu;
-typedef fastdelegate::FastDelegate1<ImVec2>		  				TOnRenderToolBar;
-class ECORE_API UIRenderForm :public XrUI
+﻿#pragma once
+typedef fastdelegate::FastDelegate0<>               TOnRenderContextMenu;
+typedef fastdelegate::FastDelegate2<ImVec2, ImVec2> TOnRenderToolBar;
+class ECORE_API                                     UIRenderForm: public XrUI
 {
 public:
 	using DragCallback = void(const xr_string&, int);

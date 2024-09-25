@@ -1,5 +1,7 @@
 ﻿#include "stdafx.h"
-#include "..\XrECore\Editor\EditorChooseEvents.h"
+#include "../XrECore/Editor/EditorChooseEvents.h"
+#include "../xrEUI/ImGuizmo.h"
+#include "Editor/Utils/Gizmo/IM_Manipulator.h"
 
 UIMainForm* MainForm = nullptr;
 UIMainForm::UIMainForm()
@@ -217,7 +219,7 @@ void UIMainForm::DrawContextMenu()
     }
 }
 
-void UIMainForm::DrawRenderToolBar(ImVec2 Size)
+void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 {
     // Меню
     {
@@ -1417,5 +1419,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Size)
             }
         }
         ImGui::EndGroup();
+    }
+    // Gizmo
+    {
+        imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
     }
 }
