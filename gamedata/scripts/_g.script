@@ -701,7 +701,10 @@ local save_markers = {}
 
 -- Функции для проверки корректности сейв лоад
 function set_save_marker(p, mode, check, prefix)
-	save.set_stage(prefix)
+	if (not IsEditor()) then
+		save.set_stage(prefix)
+	end
+
 	-- определяем ключ маркера.
 	local result = ""
 --	if debug ~= nil then
@@ -728,7 +731,10 @@ function set_save_marker(p, mode, check, prefix)
 			end
 			if dif >= 10240 then
 				callstack()
-				save.call_error()
+				
+				if (not IsEditor()) then
+					save.call_error()
+				end
 			end
 			p:w_u16(dif)
 		else

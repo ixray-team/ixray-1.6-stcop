@@ -164,6 +164,11 @@ bool CheckMP()
 #endif
 }
 
+bool IsEditorMode()
+{
+	return Device.IsEditorMode();
+}
+
 void SemiLog(const char* Msg) {
 	Log(Msg);
 }
@@ -192,7 +197,8 @@ void CScriptEngine::script_register(lua_State *L)
 		def("time_global",						&script_time_global),
 		def("SemiLog",							&SemiLog),
 		def("time_global_async",				&script_time_global_async),
-		def("IsSupportMP",						&CheckMP)
+		def("IsSupportMP",						&CheckMP),
+		def("IsEditor",							&IsEditorMode)
 
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
