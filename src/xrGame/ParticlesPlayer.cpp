@@ -56,8 +56,7 @@ void CParticlesPlayer::SBoneInfo::StopParticles(u16 sender_id, bool bDestroy)
 
 CParticlesPlayer::CParticlesPlayer() : m_bActiveBones(false)
 {
-	bone_mask = 1 << 0;
-	m_Bones.push_back(SBoneInfo(0, Fvector().set(0, 0, 0)));
+	AppendBone(0);
 
 	SetParentVel(zero_vel);
 	m_self_object = nullptr;
@@ -79,7 +78,7 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 	//офсетов  куда можно вешать партиклы
 	CInifile* ini		= K->LL_UserData();
 	if(ini&&ini->section_exist("particle_bones")){
-		bone_mask		= 0;
+		bone_mask.zero();
 		CInifile::Sect& data		= ini->r_section("particle_bones");
 		for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++){
 			const CInifile::Item& item	= *I;
@@ -87,16 +86,57 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 			R_ASSERT3(index != BI_NONE, "Particles bone not found", *item.first);
 			Fvector					offs;
 			sscanf					(*item.second,"%f,%f,%f",&offs.x,&offs.y,&offs.z);
-			m_Bones.push_back		(SBoneInfo(index,offs));
-			bone_mask				|= u64(1)<<u64(index);
+			AppendBone(index, offs);
 		}
 	}
 	if(m_Bones.empty())
+		AppendBone(K->LL_GetBoneRoot());
+}
+
+void CParticlesPlayer::LoadParticles(LPCSTR section, IKinematics* K)
+{
+	VERIFY				(K);
+
+	if(pSettings->section_exist(section))
 	{
-		bone_mask = 1 << 0;
-		m_Bones.push_back	(SBoneInfo(K->LL_GetBoneRoot(),Fvector().set(0,0,0)));
+		CInifile::Sect& data		= pSettings->r_section(section);
+		for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++){
+			const CInifile::Item& item	= *I;
+			u16 index				= K->LL_BoneID(*item.first); 
+			R_ASSERT3(index != BI_NONE, "Particles bone not found", *item.first);
+			Fvector					offs;
+			sscanf					(*item.second,"%f,%f,%f",&offs.x,&offs.y,&offs.z);
+			AppendBone(index, offs);
+		}
 	}
 }
+
+void CParticlesPlayer::LoadParticles(LPCSTR section, LPCSTR line, IKinematics* K)
+{
+	VERIFY				(K);
+
+	LPCSTR line_items = pSettings->r_string(section, line);
+
+	int count = _GetItemCount(line_items);
+	string64 S1;
+	for (int i = 0; i < count; ++i)
+	{
+		_GetItem(line_items, i, S1);
+		u16 bone_id = K->LL_BoneID(S1);
+		R_ASSERT3(bone_id != BI_NONE, "Particles bone not found", K->LL_BoneName_dbg(bone_id));
+		AppendBone(bone_id);
+	}
+}
+
+void CParticlesPlayer::AppendBone(u16 bone_id, Fvector offs)
+{
+	if(get_bone_info(bone_id))
+		return;
+
+	bone_mask.set(bone_id, true);
+	m_Bones.push_back	(SBoneInfo(bone_id,offs));
+}
+
 //уничтожение партиклов на net_Destroy
 void	CParticlesPlayer::net_DestroyParticles	()
 {
@@ -120,7 +160,7 @@ void	CParticlesPlayer::net_DestroyParticles	()
 CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
 {
 	u16 play_bone	= bone_index;
-	while((BI_NONE!=play_bone)&&!(bone_mask&(u64(1)<<u64(play_bone))))
+	while((BI_NONE!=play_bone)&&!bone_mask.is(play_bone))
 	{
 		play_bone	= K->LL_GetData(play_bone).GetParentID();
 	}
@@ -304,7 +344,7 @@ u16 CParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 {
 	u16 play_bone	= bone_id;
 
-	while((BI_NONE!=play_bone)&&!(bone_mask&(u64(1)<<u64(play_bone))))
+	while((BI_NONE!=play_bone)&&!bone_mask.is(play_bone))
 	{
 		play_bone	= K->LL_GetData(play_bone).GetParentID();
 	}

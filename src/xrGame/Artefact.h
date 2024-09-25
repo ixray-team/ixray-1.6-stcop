@@ -38,7 +38,8 @@ public:
 	virtual void					create_physic_shell				();
 
 	virtual CArtefact*				cast_artefact					()		{return this;}
-
+	LPCSTR PS_bone													()		{return m_sParticlesBone.c_str(); };
+	bool has_detector_visibling;
 protected:
 	virtual void					UpdateCLChild					()		{};
 	virtual void					CreateArtefactActivation			();
@@ -48,7 +49,7 @@ protected:
 
 	u16								m_CarringBoneID;
 	shared_str						m_sParticlesName;
-
+	shared_str						m_sParticlesBone;
 	ref_light						m_pTrailLight;
 	Fcolor							m_TrailLightColor;
 	float							m_fTrailLightRange;
@@ -128,9 +129,16 @@ struct SArtefactDetectorsSupport
 	const CPatrolPath::CVertex*		m_currPatrolVertex;
 	Fvector							m_destPoint;
 
+	LPCSTR							det_show_particles;
+	LPCSTR							det_hide_particles;
+	LPCSTR							det_show_snd;
+	LPCSTR							det_hide_snd;
+	LPCSTR							particles_bone;
+
 			SArtefactDetectorsSupport		(CArtefact* A);
 			~SArtefactDetectorsSupport		();
 	void	SetVisible						(bool);
+	void	Load							(LPCSTR section);
 	void	FollowByPath					(LPCSTR path_name, int start_idx, Fvector force);
 	void	UpdateOnFrame					();
 	void	Blink							();
