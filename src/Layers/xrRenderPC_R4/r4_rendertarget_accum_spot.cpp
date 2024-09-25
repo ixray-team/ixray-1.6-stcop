@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../xrRender/du_cone.h"
+#include "..\xrRender\CHudInitializer.h"
 
 void CRenderTarget::accum_spot(light* L) {
 	if (L == nullptr)
@@ -24,6 +25,13 @@ void CRenderTarget::accum_spot(light* L) {
 		if(!shader) {
 			shader = s_accum_spot;
 		}
+	}
+
+	CHudInitializer initalizer(false);
+
+	if(L->flags.bHudMode) {
+		initalizer.SetHudMode();
+		RImplementation.rmNear();
 	}
 
 	BOOL	bIntersect = FALSE; //enable_scissor(L);
@@ -154,6 +162,11 @@ void CRenderTarget::accum_spot(light* L) {
 	increment_light_marker();
 
 	u_DBT_disable();
+
+	if(L->flags.bHudMode) {
+		RImplementation.rmNormal();
+		initalizer.SetDefaultMode();
+	}
 }
 
 void CRenderTarget::accum_volumetric(light* L) {

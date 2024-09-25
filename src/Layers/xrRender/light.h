@@ -2,7 +2,7 @@
 #define LAYERS_XRRENDER_LIGHT_H_INCLUDED
 
 #include "../../xrcdb/ispatial.h"
-
+//#include "../../xrEngine/xr_object.h"
 #if (RENDER==R_R2) || (RENDER==R_R4)
 #	include "light_package.h"
 #	include "light_smapvis.h"
@@ -18,8 +18,9 @@ public:
 		u32			bShadow	:	1;
 		u32			bVolumetric:1;
 		u32			bHudMode:	1;
+		u32			bOccq:		1;
+	} flags;
 
-	}				flags;
 	Fvector			position	;
 	Fvector			direction	;
 	Fvector			right		;
@@ -27,7 +28,7 @@ public:
 	float			virtual_size;
 	float			cone		;
 	Fcolor			color		;
-
+	CObject			*ignore_object, *decor_object[6];
 	vis_data		hom			;
 	u32				frame_render;
 
@@ -116,6 +117,15 @@ public:
 	virtual void	set_texture				(LPCSTR name);
 	virtual void	set_hud_mode			(bool b)						{flags.bHudMode=b;}
 	virtual bool	get_hud_mode			()								{return flags.bHudMode;};
+
+	virtual void	set_occq_mode			(bool b)						{flags.bOccq=b;}
+	virtual bool	get_occq_mode			()								{return flags.bOccq;};
+
+	virtual void	set_ignore_object		(CObject* O)					{ignore_object=O;};
+	virtual CObject* get_ignore_object		()								{return ignore_object;};
+
+	virtual void	set_decor_object		(CObject* O, int index = 0)					{decor_object[index] = O; };
+	virtual CObject* get_decor_object		(int index = 0)								{return decor_object[index];};
 
 	virtual	void	spatial_move			();
 	virtual	Fvector	spatial_sector_point	();
