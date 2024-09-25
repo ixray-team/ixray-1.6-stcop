@@ -4,6 +4,7 @@
 #include "Physics.h"
 #include "MathUtils.h"
 #include "ph_valid_ode.h"
+#include "../xrEngine/device.h"
 
 extern CPHWorld		*ph_world;
 
@@ -63,7 +64,12 @@ void CPHInterpolation::InterpolateRotation(Fmatrix& rot){
 
 void CPHInterpolation::ResetPositions()
 {
-	VERIFY2(dBodyStateValide(m_body),"Invalid body state");
+#ifdef DEBUG
+	if (!Device.IsEditorMode())
+	{
+		VERIFY2(dBodyStateValide(m_body), "Invalid body state");
+	}
+#endif
 	qPositions.fill_in(*((Fvector*) dBodyGetPosition(m_body)));
 }
 

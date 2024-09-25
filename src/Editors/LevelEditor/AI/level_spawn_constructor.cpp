@@ -198,6 +198,9 @@ bool CLevelSpawnConstructor::load_objects()
 	for (auto& Obj : Scene->ListObj(OBJCLASS_SPAWNPOINT))
 	{
 		CSpawnPoint* Spawn = dynamic_cast<CSpawnPoint*>(Obj);
+		if (!Spawn->m_SpawnData.Valid())
+			continue;
+
 		CSE_Abstract* abstract = Spawn->GetEntity();
 		if (!abstract)
 		{

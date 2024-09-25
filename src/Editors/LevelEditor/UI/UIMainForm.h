@@ -11,17 +11,21 @@ public:
     IC UIRenderForm* GetRenderForm() { return m_Render; }
     IC UILPropertiesFrom* GetPropertiesFrom() { return m_Properties; }
     IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
+
 private:
-    UITopBarForm *m_TopBar;
+    void DrawContextMenu();
+    void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
+    void RenderOldCameraButtons();
+    void RenderAxisButtons();
+
+private:
+    UITopBarForm* m_TopBar;
     UIRenderForm* m_Render;
     UIMainMenuForm* m_MainMenu;
     UILeftBarForm* m_LeftBar;
     UILPropertiesFrom* m_Properties;
     class UIWorldPropertiesFrom* m_WorldProperties;
-private:
-    void DrawContextMenu();
-    void DrawRenderToolBar(ImVec2 Pos, ImVec2 Size);
-private:
+
     ref_texture m_tMenu;
 
     // Action

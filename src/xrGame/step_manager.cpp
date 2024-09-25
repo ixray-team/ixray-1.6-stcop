@@ -283,14 +283,17 @@ void CStepManager::load_foot_bones	(CInifile::Sect &data)
 void CStepManager::reload_foot_bones()
 {
 	CInifile* ini = smart_cast<IKinematics*>(m_object->Visual())->LL_UserData();
-	if(ini&&ini->section_exist("foot_bones")){
+
+	if (ini && ini->section_exist("foot_bones"))
+	{
 		load_foot_bones(ini->r_section("foot_bones"));
 	}
-	else {
-		if (!pSettings->line_exist(*m_object->cNameSect(),"foot_bones"))
-			R_ASSERT2(false,"section [foot_bones] not found in monster user_data");
-		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(),"foot_bones")));
-	}
+	else if (pSettings->line_exist(*m_object->cNameSect(), "foot_bones"))
+		load_foot_bones(pSettings->r_section(pSettings->r_string(*m_object->cNameSect(), "foot_bones")));
+	else if (!Device.IsEditorMode())
+		R_ASSERT2(false, "section [foot_bones] not found in monster user_data");
+	else
+		return;
 
 	// проверка на соответсвие
 	int count = 0;

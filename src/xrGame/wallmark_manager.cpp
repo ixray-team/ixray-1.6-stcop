@@ -9,8 +9,10 @@
 #endif
 
 CWalmarkManager::CWalmarkManager()
+    :m_owner(nullptr)
 {
 }
+
 CWalmarkManager::~CWalmarkManager()
 {
 	Clear();
@@ -86,6 +88,9 @@ void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
     m_pos = start_pos;
 
     shared_str sect;
+
+    if (m_owner == nullptr)
+        return;
 
     if (pSettings->line_exist(m_owner->cNameSect(), "wallmark_section"))
     {

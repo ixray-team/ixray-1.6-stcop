@@ -19,7 +19,7 @@ void CPHCollisionDamageReceiver::Init()
 	CPhysicsShellHolder *sh	=PPhysicsShellHolder	();
 	IKinematics			*K	=smart_cast<IKinematics*>(sh->Visual());
 	CInifile			*ini=K->LL_UserData();
-	if(ini->section_exist("collision_damage"))
+	if(ini && ini->section_exist("collision_damage"))
 	{
 		
 		CInifile::Sect& data		= ini->r_section("collision_damage");
