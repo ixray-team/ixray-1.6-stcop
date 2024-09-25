@@ -4,7 +4,7 @@ UILeftBarForm::UILeftBarForm()
 {
 	bUseSnapList = true;
 	bUseObjectsTool = true;
-	bDrawSnapListObjects = false;
+	bDrawSnapListObjects = static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList;
 	m_SnapListMode = false;
 	m_SnapItem_Current = 0;
 }
@@ -93,7 +93,10 @@ void UILeftBarForm::Draw()
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 4));
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
-		ImGui::Checkbox("Enable/Show Snap List", &bDrawSnapListObjects);
+		
+		if (ImGui::Checkbox("Enable/Show Snap List", &bDrawSnapListObjects))
+			static_cast<CLevelPreferences*>(EPrefs)->OpenSnapList = bDrawSnapListObjects;
+		
 		ImGui::Separator();
 		{
 			ImGui::BulletText("Commands", ImGuiDir_Left);

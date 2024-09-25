@@ -13,4 +13,5 @@ public:
 	bool OpenObjectList;
 	bool OpenProperties;
 	bool OpenWorldProperties;
+	bool OpenSnapList;
 };
