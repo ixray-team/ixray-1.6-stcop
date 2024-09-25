@@ -9,10 +9,12 @@ protected:
 
 	const CEntityAlive			*corpse;
 
+	CustomDog* m_pDog;
+
 	u32							m_time_last_eat;
 
 public:
-	CStateGroupEat		(CBaseMonster*obj);
+	CStateGroupEat		(CBaseMonster*object);
 	virtual				~CStateGroupEat		();
 
 	virtual	void		reinit					();
@@ -30,5 +32,3 @@ private:
 
 			bool		hungry					();
 };
-
-#include "group_state_eat_inline.h"

@@ -22,5 +22,3 @@ public:
 	virtual	void		critical_finalize		();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "group_state_rest_inline.h"

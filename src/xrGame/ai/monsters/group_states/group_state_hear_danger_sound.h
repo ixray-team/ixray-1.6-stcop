@@ -9,6 +9,7 @@ protected:
 
 	u32				m_target_node;
 
+	CustomDog* m_pDog;
 
 public:
 	CStateGroupHearDangerousSound		(CBaseMonster*obj);
@@ -19,5 +20,3 @@ public:
 	virtual void	setup_substates					();
 	virtual void	remove_links					(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "group_state_hear_danger_sound_inline.h"

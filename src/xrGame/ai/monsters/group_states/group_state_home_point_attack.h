@@ -29,5 +29,3 @@ public:
 
 			bool		enemy_inaccessible		();
 };
-
-#include "group_state_home_point_attack_inline.h"

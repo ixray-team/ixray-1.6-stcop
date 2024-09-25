@@ -34,5 +34,3 @@ public:
 	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
 
-
-#include "group_state_squad_move_to_radius_inline.h"

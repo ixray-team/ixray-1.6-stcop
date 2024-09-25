@@ -4,17 +4,26 @@
 
 class	CStateCustomGroup : public CState{
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*;
+
+private:
+	CustomDog* m_pDog;
 
 public:
-	CStateCustomGroup		(CBaseMonster *obj);
+	CStateCustomGroup		(CBaseMonster *object);
 	virtual				~CStateCustomGroup		();
 
 	virtual	void		execute					();
 	virtual void		setup_substates			();
-	virtual bool 		check_completion		() {return (this->object->b_state_end);}
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
-};
+	virtual bool 		check_completion		() 
+	{
+		bool result {};
 
-#include "group_state_custom_inline.h"
+		if (m_pDog) result = m_pDog->b_state_end;
+
+		return result;
+	}
+
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+};

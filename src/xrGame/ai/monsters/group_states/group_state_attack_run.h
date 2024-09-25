@@ -3,7 +3,7 @@
 #include "../state.h"
 
 class CStateGroupAttackRun : public CState {
-	typedef CState inherited;
+	using inherited = CState;
 
 	TTime				m_time_path_rebuild;
 	
@@ -19,8 +19,11 @@ class CStateGroupAttackRun : public CState {
 	Fvector             m_memorized_pos;
 	Fvector             m_predicted_vel;
 
+	CustomDog* m_pDog;
+
 public:
-	IC					CStateGroupAttackRun	(CBaseMonster *obj);
+						CStateGroupAttackRun	(CBaseMonster *object);
+	virtual~		CStateGroupAttackRun	();
 
 	virtual void		initialize				();
 	virtual	void		execute					();
@@ -29,7 +32,6 @@ public:
 
 	virtual bool 		check_completion		();
 	virtual bool 		check_start_conditions	();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 };
 
-#include "group_state_attack_run_inline.h"

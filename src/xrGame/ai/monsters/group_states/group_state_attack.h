@@ -6,7 +6,7 @@
 class	CStateGroupAttack : public CState
 {
 public:
-	CStateGroupAttack (CBaseMonster *obj);
+	CStateGroupAttack (CBaseMonster *object);
 	virtual				~CStateGroupAttack	();
 
 	virtual void		initialize			();
@@ -16,9 +16,11 @@ public:
 	virtual	void		finalize		    ();
 	virtual void		remove_links		(CObject* object);
 
+	CustomDog* m_pDog;
+
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState	;
+	using state_ptr = CState*	;
 
 	const CEntityAlive* m_enemy;
 	u32					m_time_next_run_away;
@@ -32,5 +34,3 @@ protected:
 	bool				check_home_point	();
 	bool				check_behinder		();
 };
-
-#include "group_state_attack_inline.h"

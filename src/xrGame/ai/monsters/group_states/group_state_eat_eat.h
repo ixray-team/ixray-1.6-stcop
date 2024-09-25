@@ -7,6 +7,7 @@ protected:
 
 	CEntityAlive	*corpse;
 	u32				time_last_eat;
+	CustomDog* m_pDog;
 
 public:
 	CStateGroupEating		(CBaseMonster *obj);
@@ -19,5 +20,3 @@ public:
 	virtual bool		check_completion		();
 	virtual void		remove_links			(CObject* object);
 };
-
-#include "group_state_eat_eat_inline.h"
