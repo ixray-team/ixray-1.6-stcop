@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 ESceneLightTool::ESceneLightTool():ESceneCustomOTool(OBJCLASS_LIGHT)
 {
@@ -268,20 +268,14 @@ bool ESceneLightTool::Validate(bool full_test)
 	}
 	return bRes;
 }
-class TUI_ControlLightToolsSelect : public TUI_CustomControl
-{
-public:
-	TUI_ControlLightToolsSelect(int st, int act, ESceneToolBase* parent) :TUI_CustomControl(st, act, parent) {}
-	virtual bool IsSupportRotate() { return false; }
-	virtual bool IsSupportScale() { return false; }
-};
+
 void ESceneLightTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	AddControl(xr_new<TUI_ControlLightToolsSelect>(estDefault, etaSelect, this));
+	// AddControl(xr_new<TUI_CustomControl>(estDefault, etaSelect, this));
 	// frame
 	pForm = xr_new<UILightTool>();
-   // pFrame 			= xr_new<TfraLight>((TComponent*)0);
+   // pFrame = xr_new<TfraLight>((TComponent*)0);
 }
 
  

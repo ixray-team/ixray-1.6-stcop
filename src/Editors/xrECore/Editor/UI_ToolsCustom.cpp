@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 
 #include "stdafx.h"
 #pragma hdrstop
@@ -56,14 +56,15 @@ void CToolCustom::SetAction(ETAction action)
 {
 	switch(action)
 	{
-	case etaSelect: 
-		m_bHiddenMode	= false; 
-		break;
-		case etaMove:
-		case etaRotate:
-		case etaScale:
-		m_bHiddenMode	= true; 
-		break;
+        case etaSelect:
+            m_bHiddenMode = false;
+        break;
+        case etaAdd:
+        case etaMove:
+        case etaRotate:
+        case etaScale:
+            m_bHiddenMode = true;
+        break;
 	}
 	m_Action = action;
   /*  switch(m_Action)
@@ -129,9 +130,9 @@ bool  CToolCustom::MouseStart(TShiftState Shift)
 {
 	switch(m_Action)
 	{
-		case etaSelect:	break;
-		case etaAdd:	break;
-    case etaMove:
+        case etaSelect:	break;
+        case etaAdd:	break;
+        case etaMove:
             if (etAxisY == m_Axis)
             {
                 m_MoveXVector.set(0, 0, 0);
@@ -163,6 +164,7 @@ bool  CToolCustom::MouseStart(TShiftState Shift)
         break;
         case etaScale:
             m_ScaleAmount.set(0, 0, 0);
+            m_fScaleFixedValue.set(0, 0, 0);
         break;
     }
 
@@ -226,12 +228,12 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 		m_MovedAmount.mul(m_MoveXVector, UI->m_MouseSM * UI->m_DeltaCpH.x);
 		m_MovedAmount.mad(m_MoveYVector, -UI->m_MouseSM * UI->m_DeltaCpH.y);
 
-		//if (m_Settings.is(etfMSnap))
-		//{
-		//	CHECK_SNAP(m_MoveReminder.x, m_MovedAmount.x, m_MoveSnap);
-		//	CHECK_SNAP(m_MoveReminder.y, m_MovedAmount.y, m_MoveSnap);
-		//	CHECK_SNAP(m_MoveReminder.z, m_MovedAmount.z, m_MoveSnap);
-		//}
+		if (m_Settings.is(etfMSnap))
+		{
+			CHECK_SNAP(m_MoveReminder.x, m_MovedAmount.x, m_MoveSnap);
+			CHECK_SNAP(m_MoveReminder.y, m_MovedAmount.y, m_MoveSnap);
+			CHECK_SNAP(m_MoveReminder.z, m_MovedAmount.z, m_MoveSnap);
+		}
 
 		if (!(etAxisX == m_Axis) && !(etAxisZX == m_Axis))
 			m_MovedAmount.x = 0.f;
@@ -244,12 +246,18 @@ void  CToolCustom::MouseMove(TShiftState Shift)
 	case etaRotate:
 	{
 		m_RotateAmount = -UI->m_DeltaCpH.x * UI->m_MouseSM;
-		//if (m_Settings.is(etfASnap))
-		//	CHECK_SNAP(m_fRotateSnapValue, m_RotateAmount, m_RotateSnapAngle);
+		if (m_Settings.is(etfASnap))
+			CHECK_SNAP(m_fRotateSnapValue, m_RotateAmount, m_RotateSnapAngle);
 	}
 	break;
 	case etaScale:
 	{
+        if (m_Settings.is(etfScaleFixed))
+        {
+            CHECK_SNAP(m_fScaleFixedValue.x, m_ScaleAmount.x, m_ScaleFixed);
+            CHECK_SNAP(m_fScaleFixedValue.y, m_ScaleAmount.y, m_ScaleFixed);
+            CHECK_SNAP(m_fScaleFixedValue.z, m_ScaleAmount.z, m_ScaleFixed);
+        }
 		float dy = UI->m_DeltaCpH.x * UI->m_MouseSS;
 		if (dy > 1.f)
 			dy = 1.f;
@@ -390,4 +398,3 @@ void CToolCustom::Render()
 	}
 }
 //------------------------------------------------------------------------------
-

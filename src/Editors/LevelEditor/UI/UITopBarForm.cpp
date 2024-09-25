@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "UITopBarForm.h"
 #include <shellapi.h>
 
@@ -286,47 +286,3 @@ void UITopBarForm::ClickPlayCleanGame()
 {
 	LTools->RunGame("");
 }
-/*
-void UITopBarForm::ClickZoom()
-{
-	ExecCommand(COMMAND_ZOOM_EXTENTS, FALSE);
-}
-
-void UITopBarForm::ClickZoomSel()
-{
-	ExecCommand(COMMAND_ZOOM_EXTENTS, TRUE);
-}
-void  UITopBarForm::ClickSelect()
-{
-	ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
-	m_bSelect = true;
-	m_bAdd = false;
-}
-void  UITopBarForm::ClickAdd()
-{
-	ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
-	m_bSelect = false;
-	m_bAdd = true;
-}
-
-void  UITopBarForm::ClickCsLocal(){ ExecCommand(COMMAND_SET_SETTINGS, etfCSParent, m_bCsLocal); }
-void  UITopBarForm::ClickNuScale() { ExecCommand(COMMAND_SET_SETTINGS, etfNUScale, m_bNuScale); }
-void  UITopBarForm::ClickGSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfGSnap, m_bGSnap); }
-void  UITopBarForm::ClickOSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfOSnap, m_bOSnap); }
-void  UITopBarForm::ClickMoveToSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfMTSnap, m_bMoveToSnap); }
-void  UITopBarForm::ClickNSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfNormalAlign, m_bNSnap); }
-void  UITopBarForm::ClickVSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfVSnap, m_bVSnap); }
-void  UITopBarForm::ClickASnap() { ExecCommand(COMMAND_SET_SETTINGS, etfASnap, m_bASnap); }
-void  UITopBarForm::ClickMSnap() { ExecCommand(COMMAND_SET_SETTINGS, etfMSnap, m_bMSnap); }
-
-void  UITopBarForm::ClickCameraP(){ EDevice->m_Camera.SetStyle(csPlaneMove); UI->RedrawScene();}
-void  UITopBarForm::ClickCameraA(){ EDevice->m_Camera.SetStyle(cs3DArcBall); UI->RedrawScene();}
-void  UITopBarForm::ClickCameraF(){ EDevice->m_Camera.SetStyle(csFreeFly); UI->RedrawScene();}
-
-void  UITopBarForm::ClickViewB1() { EDevice->m_Camera.ViewBack(); UI->RedrawScene(); }
-void  UITopBarForm::ClickViewB2() { EDevice->m_Camera.ViewBottom();UI->RedrawScene(); }
-void  UITopBarForm::ClickViewF() { EDevice->m_Camera.ViewFront(); UI->RedrawScene();}
-void  UITopBarForm::ClickViewL() { EDevice->m_Camera.ViewLeft();UI->RedrawScene(); }
-void  UITopBarForm::ClickViewR() { EDevice->m_Camera.ViewRight(); UI->RedrawScene();}
-void  UITopBarForm::ClickViewT() { EDevice->m_Camera.ViewTop();UI->RedrawScene(); }
-void  UITopBarForm::ClickViewX() { EDevice->m_Camera.ViewReset(); UI->RedrawScene();}*/

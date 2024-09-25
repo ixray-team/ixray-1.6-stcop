@@ -452,8 +452,10 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 		break;
 	case etaAdd:
 		break;
-   /* case etaMove:	break;
-	case etaRotate:	break;*/
+    case etaMove:
+        break;
+	case etaRotate:
+        break;
 	}
 	return m_bHiddenMode;
 }
@@ -467,8 +469,10 @@ bool  CActorTools::MouseEnd(TShiftState Shift)
 
 	switch (m_Action)
 	{
-	case etaSelect: 	break;
-	case etaAdd: 	break;
+	case etaSelect:
+        break;
+	case etaAdd:
+        break;
 	case etaMove:
 	{
 		switch (m_EditMode)
@@ -526,8 +530,10 @@ void  CActorTools::MouseMove(TShiftState Shift)
 
 	switch (m_Action)
 	{
-	case etaSelect: 	break;
-	case etaAdd: 	break;
+	case etaSelect:
+        break;
+	case etaAdd:
+        break;
 	case etaMove:
 	{
 		switch (m_EditMode)
