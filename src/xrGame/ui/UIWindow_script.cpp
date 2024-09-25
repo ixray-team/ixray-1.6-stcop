@@ -10,6 +10,7 @@
 #include "UIMMShniaga.h"
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
+#include "UICursor.h"
 
 CFontManager& mngr()
 {
@@ -92,6 +93,10 @@ const Fvector2 get_wnd_pos(CUIWindow* w) {
 	return w->GetWndPos();
 }
 
+Fvector2 GetCursorPosition_script() { return GetUICursor().GetCursorPosition(); }
+
+void SetCursorPosition_script(Fvector2& pos) { GetUICursor().SetUICursorPosition(pos); }
+
 using namespace luabind;
 #pragma optimize("s",on)
 void CUIWindow::script_register(lua_State *L)
@@ -111,6 +116,8 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetFontLetterica16Russian",	&ui_font_letterica16_russian),
 		def("GetFontLetterica18Russian",	&ui_font_letterica18_russian),
 		def("GetFontLetterica25",			&ui_font_letter_25),
+		def("GetCursorPosition", &GetCursorPosition_script), def("SetCursorPosition", &SetCursorPosition_script),
+		def("FitInRect", &fit_in_rect),
 
 		class_<CUIWindow>("CUIWindow")
 		.def(							constructor<>())
