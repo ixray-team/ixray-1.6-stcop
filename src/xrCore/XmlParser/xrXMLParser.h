@@ -42,6 +42,10 @@ public:
 	int					ReadAttribInt			(LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
 	int					ReadAttribInt			(XML_NODE* start_node, LPCSTR path, int index, LPCSTR attrib, int default_int_val = 0);
 	int					ReadAttribInt			(XML_NODE* node, LPCSTR attrib, int default_int_val);
+	
+	bool				ReadAttribBool			(const char* path, int index, const char* attrib, bool default_value = false);
+	bool				ReadAttribBool			(XML_NODE* start_node, const char* path, int index, const char* attrib, bool default_value = false);
+	bool				ReadAttribBool			(XML_NODE* node, const char* attrib, bool default_value = false);
 
 	float   			ReadAttribFlt			(LPCSTR path,	int index,  LPCSTR attrib, float default_flt_val = 0.0f);
 	float   			ReadAttribFlt			(XML_NODE* start_node, LPCSTR path, int index,  LPCSTR attrib, float default_flt_val = 0.0f);
