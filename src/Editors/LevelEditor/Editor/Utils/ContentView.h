@@ -27,6 +27,15 @@ private:
 	bool DrawContext(const std::filesystem::path& Path) const;
 	IconData& GetTexture(const xr_string& IconPath);
 
+	struct HintItem
+	{
+		xr_string Name;
+		ImVec2 Pos;
+		bool Active = false;
+	};
+
+	HintItem CurrentItemHint;
+
 private:
 	xr_string CurrentDir;
 	xr_string RootDir;

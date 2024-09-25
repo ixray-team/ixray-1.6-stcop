@@ -54,8 +54,10 @@ IGame_Level::~IGame_Level()
 
 	Sound->set_geometry_occ(nullptr);
 	Sound->set_handler(nullptr);
+
 #ifdef DEBUG
-	Device.DumpResourcesMemoryUsage();
+	if (!Device.IsEditorMode())
+		Device.DumpResourcesMemoryUsage();
 #endif // DEBUG
 
 	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;

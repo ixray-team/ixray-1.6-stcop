@@ -118,6 +118,14 @@ void CContentView::Draw()
 		CurrentDir = NextDir;
 		xr_strlwr(CurrentDir);
 	}
+
+	if (CurrentItemHint.Active)
+	{
+		ImGui::SetCursorPos(CurrentItemHint.Pos);
+		ImGui::Button(CurrentItemHint.Name.c_str());
+		CurrentItemHint.Active = false;
+	}
+
 	ImGui::End();
 }
 
@@ -165,12 +173,21 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 
 	bool OutValue = ImGui::ImageButton
 	(
-		FilePath.filename().string().c_str(),
+		FileName.c_str(),
 		Icon.Icon->pSurface, BtnSize,
 		ImVec2(0, 0), ImVec2(1, 1), 
 		ImVec4(0, 0, 0, 0), IconColor
 	);
-	DrawContext(FilePath);
+	
+	if (!DrawContext(FilePath))
+	{
+		if (ImGui::IsItemHovered())
+		{
+			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos();
+			DrawHintPos.y -= 15;
+			CurrentItemHint = { Platform::ANSI_TO_UTF8(FileName) ,DrawHintPos, true };
+		}
+	}
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length() - 1).c_str() : FileName.c_str();
 
@@ -193,7 +210,7 @@ bool CContentView::DrawItem(const xr_string& InitFileName, size_t& HorBtnIter, c
 		}
 
 		ImGui::SetCursorPosX(XPos + (((10 + BtnSize.x) - TextPixels) / 2));
-		ImGui::Text(LabelText.data());
+		ImGui::Text(Platform::ANSI_TO_UTF8(LabelText).data());
 	}
 
 	if (HorBtnIter != IterCount)
@@ -216,8 +233,10 @@ bool CContentView::DrawContext(const std::filesystem::path& Path) const
 		if (ImGui::MenuItem("Delete"))
 		{
 			std::filesystem::remove(Path);
+			FS.rescan_path(Path.parent_path().string().c_str() , true);
 		}
 		ImGui::EndPopup();
+		return true;
 	}
 
 	return false;
