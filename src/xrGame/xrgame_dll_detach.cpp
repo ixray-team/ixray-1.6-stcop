@@ -118,10 +118,10 @@ void clean_game_globals()
 	xr_delete										(g_sound_collection_storage);
 	
 #ifdef DEBUG
-	xr_delete										(g_profiler);
-	xr_delete										(pGameGlobals);
+	xr_delete(g_profiler);
 #endif
 
+	xr_delete(pGameGlobals);
 	RELATION_REGISTRY::clear_relation_registry		();
 
 	dump_list_wnd									();

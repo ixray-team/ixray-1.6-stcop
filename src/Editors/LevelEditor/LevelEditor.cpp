@@ -90,11 +90,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 {
                     UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
                     UI->ApplyShortCutInput(Event.key.keysym.scancode);
+                    if(UI->IsPlayInEditor()) {
+                        pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
+                    }
                 }break;
             case SDL_EVENT_KEY_UP:
-                if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+                if (UI) {
+                    UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+                    if(UI->IsPlayInEditor()) {
+                        pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
+                    }
+                }
                 break;
-
             case SDL_EVENT_MOUSE_MOTION:
                 pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
                 break;

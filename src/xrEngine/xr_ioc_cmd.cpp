@@ -778,7 +778,9 @@ void CCC_Register()
 	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 0.9f);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
-	CMD1(CCC_r2,		"renderer"				);
+	if(!Device.IsEditorMode()) {
+		CMD1(CCC_r2, "renderer");
+	}
 
 	CMD1(CCC_soundDevice, "snd_device"			);
 
