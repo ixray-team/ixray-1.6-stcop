@@ -24,6 +24,7 @@ private:
     void DrawObjects();
 
     void DrawRightBar();
+    void RenderSaveButton();
     void DrawObject(CCustomObject* obj, const char* name);
     void InitObjects();
     void OnPropertiesClick();
@@ -40,6 +41,8 @@ private:
     void ExportOneOBJ(CEditableObject* EO);
     void ExportObj();
 
+    static void OnModified();
+
     UIItemListForm* m_ObjectList;
     UIPropertiesForm* m_Props;
     UIPropertiesForm* m_PropsObjects;
@@ -49,6 +52,8 @@ private:
     bool m_SelectLods;
     bool m_HighQualityLod;
     bool bShowProps = false;
+
+    bool IsModify = false;
 
     xr_vector<CSceneObject*> m_pEditObjects;
 };
