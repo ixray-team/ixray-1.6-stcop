@@ -9,6 +9,9 @@
 #include "..\XrEngine\x_ray.h"
 #include "Engine/XRayEditor.h"
 #include "../../xrEngine/xr_input.h"
+#include "Editor/Utils/ContentView.h"
+
+void DragDrop(const xr_string& Path);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
@@ -22,6 +25,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     UI = xr_new<CLevelMain>();
     UI->RegisterCommands();
+
     LUI = static_cast<CLevelMain*>(UI);
 
     Scene = xr_new<EScene>();
@@ -44,6 +48,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
     bool NeedExit = false;
+    MainForm->GetRenderForm()->DragFunctor = DragDrop;
+    CContentView ContentBrowser;
+    UI->PushBegin(&ContentBrowser);
+    ContentBrowser.Init();
 
     while (!NeedExit)
     {
@@ -54,6 +62,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             {
             case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
                 EPrefs->SaveConfig();
+                ContentBrowser.Destroy();
                 NeedExit = true;
                 break;
 

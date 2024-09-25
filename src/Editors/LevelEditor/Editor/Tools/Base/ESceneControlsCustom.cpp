@@ -40,6 +40,35 @@ bool TUI_CustomControl::HiddenMode()
     return false;
 }
 
+void DragDrop(const xr_string& Path)
+{
+    Fvector p, n;
+    CCustomObject* obj = 0;
+    if (LUI->PickGround(p, UI->m_CurrentRStart, UI->m_CurrentRDir, 1, &n))
+    {
+        // before callback
+        SBeforeAppendCallbackParams P;
+
+        string_path fn = {};
+
+        FS.update_path(fn, "$objects$", fn);
+        xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+        NewPath = NewPath.substr(0, NewPath.length() - 7);
+
+        string256 namebuffer;
+        Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
+        CSceneObject* obj = xr_new<CSceneObject>((LPVOID)0, namebuffer);
+        CEditableObject* ref = obj->SetReference(NewPath.data());
+        if (!obj->Valid()) {
+            xr_delete(obj);
+        }
+
+        obj->MoveTo(p, n);
+        Scene->SelectObjects(false, OBJCLASS_SCENEOBJECT);
+        Scene->AppendObject(obj);
+    }
+}
+
 // add
 CCustomObject*  TUI_CustomControl::DefaultAddObject(TShiftState Shift, TBeforeAppendCallback before, TAfterAppendCallback after)
 {
