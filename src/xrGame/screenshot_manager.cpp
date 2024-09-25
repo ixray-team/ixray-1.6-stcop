@@ -9,6 +9,8 @@
 	#define CXIMAGE_AS_SHARED_LIBRARY
 #endif
 
+#ifdef XR_MP_BUILD
+
 #include <ddraw.h>
 #include "../3rd party/cximage/cximage/ximage.h"
 #include "../3rd party/cximage/cximage/xmemfile.h"
@@ -362,3 +364,5 @@ void screenshot_manager::timer_end()
 }
 
 #endif
+
+#endif // XR_MP_BUILD
