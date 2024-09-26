@@ -1,15 +1,15 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CFracture;
+class CustomFracture;
 
-class CStateManagerFracture : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CustomFractureStateManager : public CMonsterStateManager {
+	using inherited = CMonsterStateManager;
 
 public:
-						CStateManagerFracture	(CFracture *obj);
-	virtual				~CStateManagerFracture	();
+	CustomFractureStateManager(CustomFracture*object);
+	virtual				~CustomFractureStateManager();
 
 	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 };

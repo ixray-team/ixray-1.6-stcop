@@ -16,21 +16,21 @@
 
 #include "../../../entitycondition.h"
 
-CStateManagerFracture::CStateManagerFracture(CFracture* obj) : inherited(obj)
+CustomFractureStateManager::CustomFractureStateManager(CustomFracture* object) : inherited(object)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
-	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(obj));
+	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(object));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(object));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(object));
 }
 
-CStateManagerFracture::~CStateManagerFracture()
+CustomFractureStateManager::~CustomFractureStateManager()
 {
 }
 
-void CStateManagerFracture::execute()
+void CustomFractureStateManager::execute()
 {
 	u32 state_id = u32(-1);
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
