@@ -4,15 +4,15 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CAI_Dog : public CBaseMonster, 
+class CustomDog : public CBaseMonster, 
 				public CControlledEntity {
 	
-	typedef		CBaseMonster				inherited;
-	typedef		CControlledEntity	CControlled;
+	using	inherited = CBaseMonster			;
+	using	CControlled = CControlledEntity;
 
 public:
-					CAI_Dog				();
-	virtual			~CAI_Dog			();	
+	CustomDog();
+	virtual			~CustomDog();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();
@@ -59,9 +59,6 @@ private:
 
 			LPCSTR			get_current_animation();
 	static	void			animation_end(CBlend* B);
-#ifdef _DEBUG	
-	virtual void	debug_on_key		(int key);
-#endif
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

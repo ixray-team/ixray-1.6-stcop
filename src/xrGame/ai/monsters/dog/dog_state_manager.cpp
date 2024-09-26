@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include "CharacterPhysicsSupport.h"
+
 #include "dog.h"
 #include "dog_state_manager.h"
 #include "../control_animation_base.h"
@@ -15,34 +18,33 @@
 #include "../group_states/group_state_panic.h"
 #include "../group_states/group_state_hear_danger_sound.h"
 
-namespace detail
+CustomDogStateManager::CustomDogStateManager(CustomDog* object) : inherited(object)
 {
+	m_pDog = smart_cast<CustomDog*>(object);
 
-namespace dog
-{
-	const float atack_decision_maxdist = 6.f;
+	add_state(eStateRest, new CStateGroupRest(object));
+	add_state(eStatePanic, new CStateGroupPanic(object));
+	add_state(eStateAttack, new CStateGroupAttack(object));
+	add_state(eStateEat, new CStateGroupEat(object));
+	add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+	add_state(eStateHearDangerousSound, new CStateGroupHearDangerousSound(object));
+	add_state(eStateHitted, new CStateMonsterHitted(object));
+	add_state(eStateControlled, new CStateMonsterControlled(object));
+	add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 
-} // dog
-
-} // detail
-
-CStateManagerDog::CStateManagerDog(CAI_Dog* monster) : inherited(monster)
-{
-	add_state(eStateRest, xr_new<CStateGroupRest>(monster));
-	add_state(eStatePanic, xr_new<CStateGroupPanic>(monster));
-	add_state(eStateAttack, xr_new<CStateGroupAttack>(monster));
-	add_state(eStateEat, xr_new<CStateGroupEat>(monster));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(monster));
-	add_state(eStateHearDangerousSound, xr_new<CStateGroupHearDangerousSound>(monster));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(monster));
-	add_state(eStateControlled, xr_new<CStateMonsterControlled>(monster));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(monster));
 	object->EatedCorpse = nullptr;
 }
 
-void CStateManagerDog::execute()
+CustomDogStateManager::~CustomDogStateManager()
+{
+
+}
+
+void CustomDogStateManager::execute()
 {
 	u32   state_id = u32(-1);
+
+	const float atack_decision_maxdist = 6.f;
 
 	CMonsterSquad* squad = monster_squad().get_squad(object);
 
@@ -60,7 +62,7 @@ void CStateManagerDog::execute()
 				squad->set_home_in_danger();
 			}
 
-			if ( object->Position().distance_to(enemy_pos) < ::detail::dog::atack_decision_maxdist )
+			if ( object->Position().distance_to(enemy_pos) < atack_decision_maxdist )
 			{
 				squad->set_home_in_danger();
 			}
@@ -77,7 +79,7 @@ void CStateManagerDog::execute()
 		}
 	}
 
-	if ( !object->is_under_control() )
+	if ( !m_pDog->is_under_control() )
 	{
 		if ( atack )
 		{
@@ -121,7 +123,7 @@ void CStateManagerDog::execute()
 		} 
 		else
 		{
-			if ( object->get_custom_anim_state() ) 
+			if (m_pDog->get_custom_anim_state() )
 			{
 				return; 
 			}
@@ -148,9 +150,9 @@ void CStateManagerDog::execute()
 
 	select_state(state_id); 
 
-	if ( prev_substate != current_substate && object->get_custom_anim_state() )
+	if ( prev_substate != current_substate && m_pDog->get_custom_anim_state() )
 	{
-		object->anim_end_reinit();
+		m_pDog->anim_end_reinit();
 	}
 
 	if ( prev_substate == eStateEat && current_substate != eStateEat )
@@ -167,7 +169,7 @@ void CStateManagerDog::execute()
 	prev_substate = current_substate;
 }
 
-bool CStateManagerDog::check_eat ()
+bool CustomDogStateManager::check_eat ()
 {
 	if ( !object->CorpseMan.get_corpse() )
 	{
