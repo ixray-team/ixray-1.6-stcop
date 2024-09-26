@@ -291,11 +291,11 @@ void CImGuiManager::UpdateCapture()
 
 	if (CaptureInputs || g_dedicated_server)
 	{
-		SDL_ShowCursor(1);
+		SDL_ShowCursor(SDL_TRUE);
 	}
 	else
 	{
-		SDL_ShowCursor(0);
+		SDL_ShowCursor(SDL_FALSE);
 	}
 }
 

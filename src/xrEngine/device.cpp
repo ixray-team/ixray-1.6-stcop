@@ -583,17 +583,17 @@ void CRenderDevice::OnWM_Activate(bool active, bool minimized)
 	{
 		app_inactive_time_start = TimerMM.GetElapsed_ms();
 		Device.seqAppDeactivate.Process(rp_AppDeactivate);
-		SDL_ShowCursor(1);
+		SDL_ShowCursor(SDL_TRUE);
 	}
 	else
 	{
 		if (NewState && !g_dedicated_server) 
 		{
-			SDL_ShowCursor(0);
+			SDL_ShowCursor(SDL_FALSE);
 		} 
 		else 
 		{
-			SDL_ShowCursor(1);
+			SDL_ShowCursor(SDL_TRUE);
 		}
 	}
 #endif
