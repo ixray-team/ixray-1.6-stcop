@@ -9,6 +9,8 @@ class CStateGroupRestIdle : public CState {
 	u32					m_target_node;
 	int					m_move_type;
 
+	CustomDog* m_pDog;
+
 public:
 						CStateGroupRestIdle	(CBaseMonster*obj);
 	virtual void 		initialize				();

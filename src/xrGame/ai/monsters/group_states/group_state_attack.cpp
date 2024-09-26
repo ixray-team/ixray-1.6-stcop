@@ -1,8 +1,25 @@
 #include "StdAfx.h"
+
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "../monster_home.h"
+
+#include "../dog/dog.h"
+
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
 #include "../states/monster_state_attack_melee.h"
 #include "../states/monster_state_attack_run_attack.h"
 #include "../states/state_hide_from_point.h"
 #include "../states/monster_state_find_enemy.h"
+
+#include "../states/monster_state_attack_on_run.h"
+#include "../states/monster_state_home_point_attack.h"
+
 #include "group_state_squad_move_to_radius.h "
 #include "group_state_home_point_attack.h"
 #include "group_state_custom.h"
@@ -12,7 +29,6 @@
 #include "../../../entity_alive.h"
 #include "../../../actor.h"
 
-#include "../dog/dog.h"
 #include "group_state_attack.h"
 
 CStateGroupAttack::CStateGroupAttack(CBaseMonster* object) : inherited(object)

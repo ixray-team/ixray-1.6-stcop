@@ -1,4 +1,13 @@
 #include "StdAfx.h"
+
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "../monster_home.h"
+
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
 #include "group_state_squad_move_to_radius.h"
 
 void CStateGroupSquadMoveToRadiusEx::initialize()

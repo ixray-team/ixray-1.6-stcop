@@ -1,5 +1,12 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "../monster_home.h"
+
 #include "../basemonster/base_monster.h"
 
 #include "group_state_panic_run.h"

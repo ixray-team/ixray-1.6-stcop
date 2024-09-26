@@ -12,6 +12,8 @@ protected:
 	u32					time_for_life;
 	u32					time_for_sleep;
 
+	CustomDog*			m_pDog;
+
 public:
 						CStateGroupRest		(CBaseMonster *obj);
 	virtual				~CStateGroupRest		();

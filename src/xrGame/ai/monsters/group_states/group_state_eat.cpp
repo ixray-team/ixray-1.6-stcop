@@ -1,5 +1,12 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "../monster_home.h"
+
+#include "../dog/dog.h"
+
 #include "../states/state_data.h"
 #include "../states/state_move_to_point.h"
 #include "../states/state_hide_from_point.h"
@@ -11,8 +18,6 @@
 #include "group_state_custom.h"
 #include "group_state_eat.h"
 #include "group_state_eat_eat.h "
-
-#include "../dog/dog.h"
 
 #define TIME_NOT_HUNGRY 20000
 

@@ -1,5 +1,12 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "../dog/dog.h"
+
 #include "../states/state_move_to_point.h"
 #include "../states/monster_state_home_point_danger.h"
 
@@ -13,7 +20,6 @@
 
 #include "movement_manager.h"
 
-#include "../dog/dog.h"
 
 #define LEADER_RADIUS			20.f
 #define FIND_POINT_ATTEMPTS		5

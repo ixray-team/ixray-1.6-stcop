@@ -2,6 +2,8 @@
 
 #include "../state.h"
 
+class CustomDog;
+
 class	CStateCustomGroup : public CState{
 protected:
 	using inherited = CState		;

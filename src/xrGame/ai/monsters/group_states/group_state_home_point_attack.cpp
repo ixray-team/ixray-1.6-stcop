@@ -1,5 +1,10 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 #include "../states/monster_state_attack_on_run.h"

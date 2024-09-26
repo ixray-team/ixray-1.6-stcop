@@ -2,10 +2,7 @@
 
 #include "../state.h"
 
-//#pragma warning(push)
-//#pragma warning(disable:4995)
-//#include <malloc.h>
-//#pragma warning(pop)
+class CustomDog;
 
 class CStateGroupDrag : public CState {
 	typedef CState	inherited;

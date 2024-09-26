@@ -1,5 +1,17 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "../monster_home.h"
+
+#include "../dog/dog.h"
+
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
 #include "../states/state_move_to_point.h"
 #include "../states/state_look_point.h"
 #include "../../../cover_point.h"
@@ -10,6 +22,8 @@
 
 CStateGroupRestIdle::CStateGroupRestIdle(CBaseMonster* obj) : inherited(obj)
 {
+	m_pDog = smart_cast<CustomDog*>(obj);
+
 	this->add_state(eStateRest_WalkToCover, xr_new<CStateMonsterMoveToPointEx>(obj));
 	this->add_state(eStateRest_LookOpenPlace, xr_new<CStateMonsterLookToPoint>(obj));
 	this->add_state(eStateRest_WalkGraphPoint, xr_new<CStateMonsterMoveToPointEx>(obj));
@@ -22,7 +36,7 @@ void CStateGroupRestIdle::initialize()
 
 	m_target_node = u32(-1);
 
-	if (this->object->b_end_state_eat)
+	if (this->m_pDog->b_end_state_eat)
 	{
 		m_target_node = this->object->Home->get_place_in_min_home();
 
@@ -71,8 +85,8 @@ void CStateGroupRestIdle::critical_finalize()
 
 void CStateGroupRestIdle::reselect_state()
 {
-	if (this->object->saved_state == eStateRest_LookOpenPlace) {
-		this->object->saved_state = u32(-1);
+	if (this->m_pDog->saved_state == eStateRest_LookOpenPlace) {
+		this->m_pDog->saved_state = u32(-1);
 		this->select_state(eStateRest_WalkGraphPoint);
 		return;
 	}
@@ -83,14 +97,14 @@ void CStateGroupRestIdle::reselect_state()
 	}
 
 	if ((this->prev_substate == eStateRest_WalkToCover) || (this->prev_substate == u32(-1))) {
-		this->object->saved_state = eStateRest_LookOpenPlace;
-		if (this->object->b_end_state_eat)
+		this->m_pDog->saved_state = eStateRest_LookOpenPlace;
+		if (this->m_pDog->b_end_state_eat)
 		{
-			this->object->set_current_animation(8);
-			this->object->b_end_state_eat = false;
+			this->m_pDog->set_current_animation(8);
+			this->m_pDog->b_end_state_eat = false;
 		}
 		else {
-			this->object->set_current_animation(this->object->random_anim());
+			this->m_pDog->set_current_animation(this->m_pDog->random_anim());
 		}
 		this->select_state(eStateCustom);
 		return;
@@ -115,18 +129,18 @@ void CStateGroupRestIdle::setup_substates()
 		if (this->object->Position().distance_to(data.point) > 8.f)
 		{
 			m_move_type = 1;
-			this->object->m_start_smelling = u32(-1);
+			this->m_pDog->m_start_smelling = u32(-1);
 		}
 		else {
-			if (this->object->m_start_smelling == u32(-1) || this->object->m_start_smelling > u32(4) + this->object->m_smelling_count)
+			if (this->m_pDog->m_start_smelling == u32(-1) || this->m_pDog->m_start_smelling > u32(4) + this->m_pDog->m_smelling_count)
 			{
 				m_move_type = (Random.randI(2));
-				this->object->m_start_smelling = m_move_type ? u32(1) : u32(-1);
-				this->object->m_smelling_count = Random.randI(3);
+				this->m_pDog->m_start_smelling = m_move_type ? u32(1) : u32(-1);
+				this->m_pDog->m_smelling_count = Random.randI(3);
 			}
 			else {
 				m_move_type = 0;
-				this->object->m_start_smelling = this->object->m_start_smelling + u32(1);
+				this->m_pDog->m_start_smelling = this->m_pDog->m_start_smelling + u32(1);
 			}
 		}
 		data.action.action = m_move_type ? ACT_WALK_FWD : ACT_HOME_WALK_SMELLING;
@@ -153,18 +167,18 @@ void CStateGroupRestIdle::setup_substates()
 		if (this->object->Position().distance_to(data.point) > 8.f)
 		{
 			m_move_type = 1;
-			this->object->m_start_smelling = u32(-1);
+			this->m_pDog->m_start_smelling = u32(-1);
 		}
 		else {
-			if (this->object->m_start_smelling == u32(-1) || this->object->m_start_smelling > u32(4) + this->object->m_smelling_count)
+			if (this->m_pDog->m_start_smelling == u32(-1) || this->m_pDog->m_start_smelling > u32(4) + this->m_pDog->m_smelling_count)
 			{
 				m_move_type = (Random.randI(2));
-				this->object->m_start_smelling = m_move_type ? u32(1) : u32(-1);
-				this->object->m_smelling_count = Random.randI(3);
+				this->m_pDog->m_start_smelling = m_move_type ? u32(1) : u32(-1);
+				this->m_pDog->m_smelling_count = Random.randI(3);
 			}
 			else {
 				m_move_type = 0;
-				this->object->m_start_smelling = this->object->m_start_smelling + u32(1);
+				this->m_pDog->m_start_smelling = this->m_pDog->m_start_smelling + u32(1);
 			}
 		}
 		data.action.action = m_move_type ? ACT_WALK_FWD : ACT_HOME_WALK_SMELLING;
@@ -203,7 +217,7 @@ void CStateGroupRestIdle::setup_substates()
 
 		data.action = ACT_STAND_IDLE;
 		data.time_out = 0;			// do not use time out
-		if (this->object->get_number_animation() == u32(6))
+		if (this->m_pDog->get_number_animation() == u32(6))
 		{
 			data.sound_type = MonsterSound::eMonsterSoundThreaten;
 		}

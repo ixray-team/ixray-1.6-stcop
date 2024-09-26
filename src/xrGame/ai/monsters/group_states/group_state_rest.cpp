@@ -1,5 +1,14 @@
 #include "StdAfx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "restricted_object.h"
+
+#include "../dog/dog.h"
+
 #include "../states/monster_state_rest_sleep.h"
 #include "../states/state_move_to_restrictor.h"
 #include "../ai_monster_squad.h"
@@ -15,6 +24,8 @@
 
 CStateGroupRest::CStateGroupRest(CBaseMonster* obj) : inherited(obj)
 {
+	m_pDog = smart_cast<CustomDog*>(obj);
+
 	this->add_state(eStateRest_Sleep, xr_new<CStateMonsterRestSleep>(obj));
 	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor>(obj));
 	this->add_state(eStateRest_MoveToHomePoint, xr_new<CStateMonsterRestMoveToHomePoint>(obj));
@@ -34,7 +45,7 @@ void CStateGroupRest::initialize()
 {
 	inherited::initialize();
 	time_for_sleep = 0;
-	time_for_life = time() + this->object->m_min_life_time + Random.randI(10) * this->object->m_min_life_time;
+	time_for_life = time() + this->m_pDog->m_min_life_time + Random.randI(10) * this->m_pDog->m_min_life_time;
 	this->object->anomaly_detector().activate();
 }
 
@@ -95,33 +106,33 @@ void CStateGroupRest::execute()
 			if (move_to_home_point) this->select_state(eStateRest_MoveToHomePoint);
 			else {
 				// check squad behaviour
-				if (this->object->saved_state == eStateRest_Sleep)
+				if (this->m_pDog->saved_state == eStateRest_Sleep)
 				{
-					switch (this->object->get_number_animation())
+					switch (this->m_pDog->get_number_animation())
 					{
 					case u32(8):
-						this->object->set_current_animation(13);
+						this->m_pDog->set_current_animation(13);
 						break;
 					case u32(14):
-						this->object->set_current_animation(12);
+						this->m_pDog->set_current_animation(12);
 						break;
 					case u32(12):
-						this->object->set_current_animation(7);
-						this->object->saved_state = u32(-1);
+						this->m_pDog->set_current_animation(7);
+						this->m_pDog->saved_state = u32(-1);
 						break;
 					default:
 						break;
 					}
-					if (this->object->b_state_check)
+					if (this->m_pDog->b_state_check)
 					{
-						this->object->b_state_check = false;
+						this->m_pDog->b_state_check = false;
 						this->select_state(eStateCustom);
 						this->get_state_current()->execute();
 						this->prev_substate = this->current_substate;
 						return;
 					}
 				}
-				if (time() < time_for_sleep && this->object->saved_state == eStateRest_Sleep && this->object->get_number_animation() == u32(13))
+				if (time() < time_for_sleep && this->m_pDog->saved_state == eStateRest_Sleep && this->m_pDog->get_number_animation() == u32(13))
 				{
 					this->select_state(eStateRest_Sleep);
 					this->get_state_current()->execute();
@@ -134,10 +145,10 @@ void CStateGroupRest::execute()
 						use_to_do = true;
 					}
 					else {
-						time_for_life = time() + this->object->m_min_life_time + Random.randI(10) * this->object->m_min_life_time;
-						this->object->set_current_animation(14);
+						time_for_life = time() + this->m_pDog->m_min_life_time + Random.randI(10) * this->m_pDog->m_min_life_time;
+						this->m_pDog->set_current_animation(14);
 						this->select_state(eStateCustom);
-						this->object->b_state_check = false;
+						this->m_pDog->b_state_check = false;
 						this->get_state_current()->execute();
 						this->prev_substate = this->current_substate;
 						return;
@@ -145,30 +156,30 @@ void CStateGroupRest::execute()
 				}
 				if (!use_to_do) {
 					if (time() > time_for_life && this->object->Home->at_min_home(this->object->Position())) {
-						this->object->set_current_animation(8);
+						this->m_pDog->set_current_animation(8);
 						this->select_state(eStateCustom);
-						this->object->saved_state = eStateRest_Sleep;
-						time_for_sleep = time() + this->object->m_min_sleep_time + Random.randI(5) * this->object->m_min_sleep_time;
+						this->m_pDog->saved_state = eStateRest_Sleep;
+						time_for_sleep = time() + this->m_pDog->m_min_sleep_time + Random.randI(5) * this->m_pDog->m_min_sleep_time;
 						use_to_do = true;
-						this->object->b_state_check = false;
+						this->m_pDog->b_state_check = false;
 						this->get_state_current()->execute();
 						this->prev_substate = this->current_substate;
 						return;
 					}
 					else {
-						if (this->object->saved_state != eStateRest_Sleep && this->prev_substate == eStateCustom && this->object->get_number_animation() >= u32(8) && this->object->get_number_animation() < u32(12))
+						if (this->m_pDog->saved_state != eStateRest_Sleep && this->prev_substate == eStateCustom && this->m_pDog->get_number_animation() >= u32(8) && this->m_pDog->get_number_animation() < u32(12))
 						{
-							this->object->set_current_animation(this->object->get_number_animation() + u32(1));
+							this->m_pDog->set_current_animation(this->m_pDog->get_number_animation() + u32(1));
 							this->select_state(eStateCustom);
-							this->object->b_state_check = false;
+							this->m_pDog->b_state_check = false;
 							this->get_state_current()->execute();
 							this->prev_substate = this->current_substate;
 							return;
 						}
-						if (this->object->b_state_check)
+						if (this->m_pDog->b_state_check)
 						{
 							this->select_state(eStateCustom);
-							this->object->b_state_check = false;
+							this->m_pDog->b_state_check = false;
 						}
 						else {
 							this->select_state(eStateRest_Idle);
