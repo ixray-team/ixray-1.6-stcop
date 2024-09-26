@@ -6,22 +6,21 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-
-CAI_Flesh::CAI_Flesh()
+CustomFlesh::CustomFlesh()
 {
-	StateMan = new CStateManagerFlesh(this);
+	StateMan = new CustomFleshStateManager(this);
 	
 	m_fEyeShiftYaw		= PI_DIV_6;
 
 	CControlled::init_external(this);
 }
 
-CAI_Flesh::~CAI_Flesh()
+CustomFlesh::~CustomFlesh()
 {
 	xr_delete(StateMan);
 }
 
-BOOL CAI_Flesh::net_Spawn (CSE_Abstract* DC) 
+BOOL CustomFlesh::net_Spawn (CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -29,7 +28,7 @@ BOOL CAI_Flesh::net_Spawn (CSE_Abstract* DC)
 	return TRUE;
 }
 
-void CAI_Flesh::Load(LPCSTR section)
+void CustomFlesh::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
@@ -106,9 +105,9 @@ void CAI_Flesh::Load(LPCSTR section)
 
 }
 
-// возвращает true, если после выполнения этой функции необходимо прервать обработку
-// т.е. если активирована последовательность
-void CAI_Flesh::CheckSpecParams(u32 spec_params)
+// РІРѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРµСЂРІР°С‚СЊ РѕР±СЂР°Р±РѕС‚РєСѓ
+// С‚.Рµ. РµСЃР»Рё Р°РєС‚РёРІРёСЂРѕРІР°РЅР° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
+void CustomFlesh::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_DRAG_CORPSE) == 	ASP_DRAG_CORPSE) anim().SetCurAnim(eAnimDragCorpse);
 
@@ -124,12 +123,12 @@ void CAI_Flesh::CheckSpecParams(u32 spec_params)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Функция ConeSphereIntersection
-// Пересечение конуса (не ограниченного) со сферой
-// Необходима для определения пересечения копыта плоти с баунд-сферой крысы
-// Параметры: ConeVertex - вершина конуса, ConeAngle - угол конуса (между поверхностью и высотой)
-// ConeDir - направление конуса, SphereCenter - центр сферы, SphereRadius - радиус сферы
-bool CAI_Flesh::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius)
+// Р¤СѓРЅРєС†РёСЏ ConeSphereIntersection
+// РџРµСЂРµСЃРµС‡РµРЅРёРµ РєРѕРЅСѓСЃР° (РЅРµ РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРіРѕ) СЃРѕ СЃС„РµСЂРѕР№
+// РќРµРѕР±С…РѕРґРёРјР° РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РєРѕРїС‹С‚Р° РїР»РѕС‚Рё СЃ Р±Р°СѓРЅРґ-СЃС„РµСЂРѕР№ РєСЂС‹СЃС‹
+// РџР°СЂР°РјРµС‚СЂС‹: ConeVertex - РІРµСЂС€РёРЅР° РєРѕРЅСѓСЃР°, ConeAngle - СѓРіРѕР» РєРѕРЅСѓСЃР° (РјРµР¶РґСѓ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ Рё РІС‹СЃРѕС‚РѕР№)
+// ConeDir - РЅР°РїСЂР°РІР»РµРЅРёРµ РєРѕРЅСѓСЃР°, SphereCenter - С†РµРЅС‚СЂ СЃС„РµСЂС‹, SphereRadius - СЂР°РґРёСѓСЃ СЃС„РµСЂС‹
+bool CustomFlesh::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius)
 {
 	float fInvSin = 1.0f/_sin(ConeAngle);
 	float fCosSqr = _cos(ConeAngle)*_cos(ConeAngle);

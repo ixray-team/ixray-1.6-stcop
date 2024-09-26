@@ -1,14 +1,18 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CAI_Flesh;
+class CustomFlesh;
 
-class CStateManagerFlesh : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CustomFleshStateManager : public CMonsterStateManager {
+	using inherited = CMonsterStateManager;
+
+	CustomFlesh*m_pFlesh;
 
 public:
 
-					CStateManagerFlesh	(CAI_Flesh *monster); 
+			CustomFleshStateManager(CustomFlesh* object);
+			virtual ~CustomFleshStateManager();
+
 	virtual void	execute				();
-	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}
 };

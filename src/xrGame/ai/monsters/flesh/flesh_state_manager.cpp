@@ -18,30 +18,36 @@
 #include "../states/monster_state_help_sound.h"
 #include "../group_states/group_state_home_point_attack.h"
 
-CStateManagerFlesh::CStateManagerFlesh(CAI_Flesh* monster) : inherited(monster)
+CustomFleshStateManager::CustomFleshStateManager(CustomFlesh* object) : inherited(object)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(monster));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(monster));
+	m_pFlesh = smart_cast<CustomFlesh*>(object);
+
+	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));
 
 	CStateMonsterAttackMoveToHomePoint* move2home =
-		xr_new<CStateMonsterAttackMoveToHomePoint>(monster);
+		xr_new<CStateMonsterAttackMoveToHomePoint>(object);
 
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(monster, move2home));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object, move2home));
 
-	add_state(eStateEat, xr_new<CStateMonsterEat>(monster));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(monster));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(monster));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(monster));
-	add_state(eStateControlled, xr_new<CStateMonsterControlled>(monster));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(monster));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(object));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(object));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(object));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(object));
+	add_state(eStateControlled, xr_new<CStateMonsterControlled>(object));
+	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(object));
 }
 
+CustomFleshStateManager::~CustomFleshStateManager()
+{
 
-void CStateManagerFlesh::execute()
+}
+
+void CustomFleshStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!object->is_under_control()) {
+	if (!m_pFlesh->is_under_control()) {
 		
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
