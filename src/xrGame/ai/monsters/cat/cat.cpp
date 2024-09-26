@@ -7,17 +7,17 @@
 #include "../control_movement_base.h"
 
 
-CCat::CCat()
+CustomCat::CustomCat()
 {
-	StateMan = new CStateManagerCat		(this);
+	StateMan = new CustomCatStateManager		(this);
 }
 
-CCat::~CCat()
+CustomCat::~CustomCat()
 {
 	xr_delete(StateMan);
 }
 
-void CCat::Load(LPCSTR section)
+void CustomCat::Load(LPCSTR section)
 {
 	inherited::Load			(section);
 
@@ -86,7 +86,7 @@ void CCat::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CCat::reinit()
+void CustomCat::reinit()
 {
 	inherited::reinit();
 
@@ -100,13 +100,13 @@ void CCat::reinit()
 	//CJumpingAbility::reinit(def1, def2, def3);
 }
 
-void CCat::try_to_jump()
+void CustomCat::try_to_jump()
 {
 	CObject *target = const_cast<CEntityAlive *>(EnemyMan.get_enemy());
 	if (!target || !EnemyMan.see_enemy_now()) return;
 }
 
-void CCat::CheckSpecParams(u32 spec_params)
+void CustomCat::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
@@ -144,12 +144,12 @@ void CCat::CheckSpecParams(u32 spec_params)
 
 }
 
-void CCat::UpdateCL()
+void CustomCat::UpdateCL()
 {
 	inherited::UpdateCL				();
 }
 
-void CCat::HitEntityInJump(const CEntity *pEntity)
+void CustomCat::HitEntityInJump(const CEntity *pEntity)
 {
 	SAAParam &params	= anim().AA_GetParams("jump_attack_2");
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);

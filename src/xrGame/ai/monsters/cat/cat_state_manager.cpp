@@ -14,34 +14,32 @@
 #include "../states/monster_state_hear_int_sound.h"
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
-#include "../states/state_test_look_actor.h"
+//#include "../states/state_test_look_actor.h"
 #include "../../../entitycondition.h"
 #include "../states/monster_state_help_sound.h"
 
-CStateManagerCat::CStateManagerCat(CCat* obj) : inherited(obj)
+CustomCatStateManager::CustomCatStateManager(CustomCat* object) : inherited(object)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
-	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(obj));
+	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
+	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));
+	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object));
+	add_state(eStateEat, xr_new<CStateMonsterEat>(object));
+	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(object));
+	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(object));
+	add_state(eStateHitted, xr_new<CStateMonsterHitted>(object));
 
-	add_state(eStateThreaten, xr_new<CStateMonsterLookActor>(obj));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(obj));
+	//add_state(eStateThreaten, xr_new<CStateMonsterLookActor>(obj));
+	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(object));
 
 	m_rot_jump_last_time = 0;
 }
 
 
-CStateManagerCat::~CStateManagerCat()
+CustomCatStateManager::~CustomCatStateManager()
 {
 }
 
-#define ROTATION_JUMP_DELAY		3000
-
-void CStateManagerCat::execute()
+void CustomCatStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
