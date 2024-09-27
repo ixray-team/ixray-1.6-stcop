@@ -3,15 +3,15 @@
 #include "../state.h"
 
 class CStateGroupPanicRun : public CState{
-	typedef CState inherited;
+	using inherited = CState;
 
 public:
-						CStateGroupPanicRun	(CBaseMonster*obj) : inherited(obj) {}
-	virtual				~CStateGroupPanicRun	() {}
+	CStateGroupPanicRun(CBaseMonster* object);
+						virtual				~CStateGroupPanicRun();
 
 	virtual void		initialize				();
 	virtual	void		execute					();
 
 	virtual bool		check_completion		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
 };

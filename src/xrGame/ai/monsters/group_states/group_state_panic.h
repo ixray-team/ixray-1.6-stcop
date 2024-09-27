@@ -3,11 +3,11 @@
 #include "../state.h"
 
 class	CStateGroupPanic : public CState {
-	typedef CState	inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState;
+	using state_ptr  = CState*;
 	
 public:
-						CStateGroupPanic		(CBaseMonster*obj);
+						CStateGroupPanic		(CBaseMonster*object);
 	virtual				~CStateGroupPanic		();
 
 	virtual void		initialize				();

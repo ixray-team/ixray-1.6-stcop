@@ -4,8 +4,8 @@
 
 class CStateGroupAttackMoveToHomePoint : public CState {
 protected:
-	typedef CState	inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState	;
+	using state_ptr = CState*	;
 
 	u32					m_target_node;
 	bool				m_skip_camp;
@@ -15,7 +15,9 @@ protected:
 	TTime				m_state_started;
 
 public:
-						CStateGroupAttackMoveToHomePoint(CBaseMonster *obj);
+						CStateGroupAttackMoveToHomePoint(CBaseMonster * object);
+						virtual ~CStateGroupAttackMoveToHomePoint();
+
 	virtual	void		initialize				();
 	virtual void 		finalize				();
 	virtual void 		critical_finalize		();

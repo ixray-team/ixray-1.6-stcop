@@ -4,19 +4,19 @@
 
 class	CStateGroupHearDangerousSound : public CState {
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*	;
 
 	u32				m_target_node;
 
 	CustomDog* m_pDog;
 
 public:
-	CStateGroupHearDangerousSound		(CBaseMonster*obj);
-	virtual			~CStateGroupHearDangerousSound	() {}
+	CStateGroupHearDangerousSound		(CBaseMonster*object);
+	virtual			~CStateGroupHearDangerousSound();
 
 	virtual void	initialize						();
 	virtual void	reselect_state					();
 	virtual void	setup_substates					();
-	virtual void	remove_links					(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	remove_links					(CObject* object) { inherited::remove_links(object);}
 };

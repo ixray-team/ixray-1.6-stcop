@@ -4,8 +4,8 @@
 
 class	CStateGroupEat : public CState {
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*	;
 
 	const CEntityAlive			*corpse;
 

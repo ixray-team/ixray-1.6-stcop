@@ -5,7 +5,7 @@
 class CustomDog;
 
 class CStateGroupDrag : public CState {
-	typedef CState	inherited;
+	using inherited = CState	;
 
 	Fvector				m_cover_position;
 	u32					m_cover_vertex_id;

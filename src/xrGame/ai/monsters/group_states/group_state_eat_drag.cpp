@@ -24,6 +24,12 @@
 CStateGroupDrag::CStateGroupDrag(CBaseMonster* object) : inherited(object)
 {
 	m_pDog = smart_cast<CustomDog*>(object);
+
+	m_cover_position = {};
+	m_cover_vertex_id = 0;
+
+	m_failed = false;
+	m_corpse_start_position = {};
 }
 
 CStateGroupDrag::~CStateGroupDrag()
@@ -33,7 +39,7 @@ CStateGroupDrag::~CStateGroupDrag()
 void CStateGroupDrag::initialize()
 {
 	inherited::initialize();
-	IKinematics* K = this->object->EatedCorpse->Visual()->dcast_PKinematics();
+	IKinematics* K = object->EatedCorpse->Visual()->dcast_PKinematics();
 	VERIFY(K);
 	CInifile* ini = K->LL_UserData();
 	VERIFY(ini);
@@ -90,19 +96,19 @@ void CStateGroupDrag::initialize()
 		}
 	} cb(K, vbones, bone_number);
 
-	this->m_pDog->character_physics_support()->movement()->PHCaptureObject(const_cast<CEntityAlive*>(this->object->EatedCorpse), &cb);
+	m_pDog->character_physics_support()->movement()->PHCaptureObject(const_cast<CEntityAlive*>(object->EatedCorpse), &cb);
 
 	m_failed = false;
 
-	IPHCapture* capture = this->m_pDog->character_physics_support()->movement()->PHCapture();
+	IPHCapture* capture = m_pDog->character_physics_support()->movement()->PHCapture();
 	if (capture && !capture->Failed()) {
-		m_cover_vertex_id = this->m_pDog->Home->get_place_in_min_home();
+		m_cover_vertex_id = m_pDog->Home->get_place_in_min_home();
 		if (m_cover_vertex_id != u32(-1)) {
 			m_cover_position = ai().level_graph().vertex_position(m_cover_vertex_id);
 		}
-		else m_cover_position = this->object->Position();
-		if (m_cover_vertex_id == u32(-1) || this->object->Position().distance_to(m_cover_position) < 2.f || !this->m_pDog->Home->at_min_home(m_cover_position)) {
-			const CCoverPoint* point = this->m_pDog->CoverMan->find_cover(this->m_pDog->Home->get_home_point(), 1, this->m_pDog->Home->get_min_radius());
+		else m_cover_position = object->Position();
+		if (m_cover_vertex_id == u32(-1) || object->Position().distance_to(m_cover_position) < 2.f || !m_pDog->Home->at_min_home(m_cover_position)) {
+			const CCoverPoint* point = m_pDog->CoverMan->find_cover(m_pDog->Home->get_home_point(), 1, m_pDog->Home->get_min_radius());
 			if (point)
 			{
 				m_cover_vertex_id = point->level_vertex_id();
@@ -114,8 +120,8 @@ void CStateGroupDrag::initialize()
 		}
 	}
 	else m_failed = true;
-	m_corpse_start_position = this->object->EatedCorpse->Position();
-	this->object->path().prepare_builder();
+	m_corpse_start_position = object->EatedCorpse->Position();
+	object->path().prepare_builder();
 }
 
 
@@ -124,18 +130,18 @@ void CStateGroupDrag::execute()
 	if (m_failed) return;
 
 	// Установить параметры движения
-	this->object->set_action(ACT_DRAG);
-	this->m_pDog->anim().SetSpecParams(ASP_MOVE_BKWD);
+	object->set_action(ACT_DRAG);
+	m_pDog->anim().SetSpecParams(ASP_MOVE_BKWD);
 
 	if (m_cover_vertex_id != u32(-1)) {
-		this->object->path().set_target_point(m_cover_position, m_cover_vertex_id);
+		object->path().set_target_point(m_cover_position, m_cover_vertex_id);
 	}
 	else {
-		this->object->path().set_retreat_from_point(this->object->EatedCorpse->Position());
+		object->path().set_retreat_from_point(object->EatedCorpse->Position());
 	}
 
-	this->object->path().set_generic_parameters();
-	this->m_pDog->anim().accel_activate(eAT_Calm);
+	object->path().set_generic_parameters();
+	m_pDog->anim().accel_activate(eAT_Calm);
 
 }
 
@@ -145,8 +151,8 @@ void CStateGroupDrag::finalize()
 	inherited::finalize();
 
 	// бросить труп
-	if (this->m_pDog->character_physics_support()->movement()->PHCapture())
-		this->m_pDog->character_physics_support()->movement()->PHReleaseObject();
+	if (m_pDog->character_physics_support()->movement()->PHCapture())
+		m_pDog->character_physics_support()->movement()->PHReleaseObject();
 }
 
 
@@ -155,8 +161,8 @@ void CStateGroupDrag::critical_finalize()
 	inherited::critical_finalize();
 
 	// бросить труп
-	if (this->m_pDog->character_physics_support()->movement()->PHCapture())
-		this->m_pDog->character_physics_support()->movement()->PHReleaseObject();
+	if (m_pDog->character_physics_support()->movement()->PHCapture())
+		m_pDog->character_physics_support()->movement()->PHReleaseObject();
 }
 
 
@@ -166,16 +172,16 @@ bool CStateGroupDrag::check_completion()
 		return true;
 	}
 
-	if (!this->m_pDog->character_physics_support()->movement()->PHCapture()) {
+	if (!m_pDog->character_physics_support()->movement()->PHCapture()) {
 		return true;
 	}
 
 	if (m_cover_vertex_id != u32(-1)) {		// valid vertex so wait path end
-		if (this->object->Position().distance_to(m_cover_position) < 2.f)
+		if (object->Position().distance_to(m_cover_position) < 2.f)
 			return true;
 	}
 	else {								// invalid vertex so check distanced that passed
-		if (m_corpse_start_position.distance_to(this->object->Position()) > this->m_pDog->Home->get_min_radius())
+		if (m_corpse_start_position.distance_to(object->Position()) > m_pDog->Home->get_min_radius())
 			return true;
 	}
 

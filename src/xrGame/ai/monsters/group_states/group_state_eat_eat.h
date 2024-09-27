@@ -3,14 +3,15 @@
 
 class CStateGroupEating : public CState {
 protected:
-	typedef CState	inherited;
+	using inherited = CState	;
 
 	CEntityAlive	*corpse;
 	u32				time_last_eat;
+
 	CustomDog* m_pDog;
 
 public:
-	CStateGroupEating		(CBaseMonster *obj);
+	CStateGroupEating		(CBaseMonster * object);
 	virtual				~CStateGroupEating	();
 
 	virtual void		initialize				();

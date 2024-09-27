@@ -14,50 +14,45 @@
 
 #include "group_state_panic.h"
 
-CStateGroupPanic::CStateGroupPanic(CBaseMonster* obj) : inherited(obj)
+CStateGroupPanic::CStateGroupPanic(CBaseMonster* object) : inherited(object)
 {
-	this->add_state(eStatePanic_Run, xr_new<CStateGroupPanicRun>(obj));
-	this->add_state(eStatePanic_FaceUnprotectedArea, xr_new<CStateMonsterLookToUnprotectedArea>(obj));
-	this->add_state(eStatePanic_MoveToHomePoint, xr_new<CStateMonsterAttackMoveToHomePoint>(obj));
+	add_state(eStatePanic_Run, new CStateGroupPanicRun (object));
+	add_state(eStatePanic_FaceUnprotectedArea, new CStateMonsterLookToUnprotectedArea(object));
+	add_state(eStatePanic_MoveToHomePoint, new CStateMonsterAttackMoveToHomePoint(object));
 }
-
-
 
 CStateGroupPanic::~CStateGroupPanic()
 {
 }
-
 
 void CStateGroupPanic::initialize()
 {
 	inherited::initialize();
 }
 
-
 void CStateGroupPanic::reselect_state()
 {
-	if (this->get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
-		this->select_state(eStatePanic_MoveToHomePoint);
+	if (get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
+		select_state(eStatePanic_MoveToHomePoint);
 		return;
 	}
 
-	if (this->prev_substate == eStatePanic_Run) this->select_state(eStatePanic_FaceUnprotectedArea);
-	else this->select_state(eStatePanic_Run);
+	if (prev_substate == eStatePanic_Run) select_state(eStatePanic_FaceUnprotectedArea);
+	else select_state(eStatePanic_Run);
 }
-
 
 void CStateGroupPanic::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStatePanic_FaceUnprotectedArea) {
+	if (current_substate == eStatePanic_FaceUnprotectedArea) {
 		SStateDataAction data;
 
 		data.action = ACT_STAND_IDLE;
 		data.spec_params = ASP_STAND_SCARED;
 		data.time_out = 3000;
 		data.sound_type = MonsterSound::eMonsterSoundPanic;
-		data.sound_delay = this->object->db().m_dwAttackSndDelay;
+		data.sound_delay = object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 
@@ -66,18 +61,17 @@ void CStateGroupPanic::setup_substates()
 
 }
 
-
 void CStateGroupPanic::check_force_state()
 {
-	if ((this->current_substate == eStatePanic_FaceUnprotectedArea)) {
+	if ((current_substate == eStatePanic_FaceUnprotectedArea)) {
 		// если видит врага
-		if (this->object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
-			this->select_state(eStatePanic_Run);
+		if (object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
+			select_state(eStatePanic_Run);
 			return;
 		}
 		// если получил hit
-		if (this->object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
-			this->select_state(eStatePanic_Run);
+		if (object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
+			select_state(eStatePanic_Run);
 			return;
 		}
 	}
