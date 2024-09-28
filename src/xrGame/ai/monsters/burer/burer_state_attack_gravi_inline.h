@@ -4,6 +4,8 @@ CStateBurerAttackGravi::CStateBurerAttackGravi(CBaseMonster *obj) : inherited(ob
 {
 	m_next_gravi_allowed_tick		=	0;
 	m_anim_end_tick					=	0;
+	m_pBurer						= smart_cast<CBurer*>(obj);
+	VERIFY(m_pBurer && "This obj not CBurer");
 }
 
 void CStateBurerAttackGravi::initialize()
@@ -12,9 +14,9 @@ void CStateBurerAttackGravi::initialize()
 	m_action						=	ACTION_GRAVI_STARTED;
 	m_time_gravi_started			=	0;
 	m_anim_end_tick					=	0;
-	m_next_gravi_allowed_tick		=	current_time() + this->object->m_gravi.cooldown;
-	this->object->set_force_gravi_attack		(false);
-	this->object->set_script_capture			(false);
+	m_next_gravi_allowed_tick		=	current_time() + this->m_pBurer->m_gravi.cooldown;
+	this->m_pBurer->set_force_gravi_attack		(false);
+	this->m_pBurer->set_script_capture			(false);
 }
 
 void CStateBurerAttackGravi::execute()
@@ -44,7 +46,7 @@ void CStateBurerAttackGravi::execute()
 			break;
 	}
 
-	this->object->face_enemy						();
+	this->m_pBurer->face_enemy						();
 	
 	if ( current_time() < m_anim_end_tick ) 
 	{
@@ -64,18 +66,18 @@ void CStateBurerAttackGravi::critical_finalize()
 {
 	inherited::critical_finalize		();
 	
-	this->object->StopGraviPrepare			();
+	this->m_pBurer->StopGraviPrepare			();
 	this->object->set_script_capture			(false);
 }
 
 bool CStateBurerAttackGravi::check_start_conditions()
 {
 	// обработать объекты
-	if ( this->object->get_force_gravi_attack() ) return true;
+	if ( this->m_pBurer->get_force_gravi_attack() ) return true;
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 	if ( current_time() < m_next_gravi_allowed_tick ) return false;
-	if ( dist < this->object->m_gravi.min_dist ) return false;
-	if ( dist > this->object->m_gravi.max_dist ) return false;
+	if ( dist < this->m_pBurer->m_gravi.min_dist ) return false;
+	if ( dist > this->m_pBurer->m_gravi.max_dist ) return false;
 	if ( !this->object->EnemyMan.see_enemy_now() ) return false; 
 	if ( !this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), deg(45)) ) return false;
 
@@ -95,7 +97,7 @@ void CStateBurerAttackGravi::ExecuteGraviStart()
 	m_anim_end_tick					=	current_time() + TTime(time*1000);
 	m_action						=	ACTION_GRAVI_CONTINUE;
 	m_time_gravi_started			=	Device.dwTimeGlobal;
-	this->object->StartGraviPrepare			();
+	this->m_pBurer->StartGraviPrepare			();
 }
 
 void CStateBurerAttackGravi::ExecuteGraviContinue()
@@ -104,9 +106,9 @@ void CStateBurerAttackGravi::ExecuteGraviContinue()
 	float dist						=	this->object->Position().distance_to
 										(this->object->EnemyMan.get_enemy()->Position());
 
-	float time_to_hold				=	(abs(dist - this->object->m_gravi.min_dist) / this->object->m_gravi.min_dist);
+	float time_to_hold				=	(abs(dist - this->m_pBurer->m_gravi.min_dist) / this->m_pBurer->m_gravi.min_dist);
 	clamp								(time_to_hold, 0.f, 1.f);
-	time_to_hold					*=	float(this->object->m_gravi.time_to_hold);
+	time_to_hold					*=	float(this->m_pBurer->m_gravi.time_to_hold);
 
 	if ( m_time_gravi_started + u32(time_to_hold) < Device.dwTimeGlobal )
 	{
@@ -123,8 +125,8 @@ void CStateBurerAttackGravi::ExecuteGraviFire()
 	target_pos						=	this->object->EnemyMan.get_enemy()->Position();	
 	target_pos.y					+=	0.5f;
 
-	this->object->m_gravi_object.activate		(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
+	this->m_pBurer->m_gravi_object.activate		(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
 
-	this->object->StopGraviPrepare			();
+	this->m_pBurer->StopGraviPrepare			();
 	this->object->sound().play				(CBurer::eMonsterSoundGraviAttack);
 }
