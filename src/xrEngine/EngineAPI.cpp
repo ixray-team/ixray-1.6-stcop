@@ -212,6 +212,7 @@ void CEngineAPI::CreateRendererList()
 		}
 		if (bSupports_r4)
 		{
+			_tmp.push_back(xr_strdup("renderer_r4_dx10"));
 			_tmp.push_back(xr_strdup("renderer_r4"));
 		}
 
@@ -237,7 +238,11 @@ void CEngineAPI::CreateRendererList()
 
 APILevel CEngineAPI::GetAPI()
 {
-	if (psDeviceFlags.test(rsR4))
+	if (psDeviceFlags.test(rsR4low))
+	{
+		return APILevel::DX10;
+	}
+	else if (psDeviceFlags.test(rsR4))
 	{
 		return APILevel::DX11;
 	}

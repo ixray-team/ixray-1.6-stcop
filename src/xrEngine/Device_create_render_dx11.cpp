@@ -118,7 +118,7 @@ void CreateRDoc()
 	}
 }
 
-bool CreateD3D11()
+bool CreateD3D11(bool ReturnToDX10)
 {
 	CreateRDoc();
 
@@ -157,7 +157,11 @@ bool CreateD3D11()
 			createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 		}
 
-		const D3D_FEATURE_LEVEL pFeatureLevels[] = {
+		constexpr D3D_FEATURE_LEVEL pFeatureLevels10[] = {
+			D3D_FEATURE_LEVEL_10_1
+		};
+
+		constexpr D3D_FEATURE_LEVEL pFeatureLevels[] = {
 			D3D_FEATURE_LEVEL_11_1,
 			D3D_FEATURE_LEVEL_11_0,
 			D3D_FEATURE_LEVEL_10_1,
@@ -165,8 +169,8 @@ bool CreateD3D11()
 		};
 
 		HRESULT R = D3D11CreateDeviceAndSwapChain(
-			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, pFeatureLevels,
-			std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
+			0, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, ReturnToDX10 ? pFeatureLevels10 : pFeatureLevels,
+			ReturnToDX10 ? std::size(pFeatureLevels10) : std::size(pFeatureLevels), D3D11_SDK_VERSION, &sd, (IDXGISwapChain**)&HWSwapchain,
 			(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
 		);
 
