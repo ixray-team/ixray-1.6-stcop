@@ -19,4 +19,7 @@ public:
 private:
 	void IterateElement(tinyxml2::XMLElement* Start, std::function<void(tinyxml2::XMLElement*, EOverrideMode)> Callback);
 	void ApplyNewNode(tinyxml2::XMLNode* Parent, tinyxml2::XMLElement* Inner);
+	void CopyAttributes(tinyxml2::XMLElement* Dest, tinyxml2::XMLElement* Src);
+	void CopyChildren(tinyxml2::XMLElement* Dest, tinyxml2::XMLElement* Src);
+	EOverrideMode GetOverrideMode(tinyxml2::XMLElement* Element) const;
 };
