@@ -874,7 +874,7 @@ void TUI::OnStats()
 
 void SPBItem::GetInfo			(xr_string& txt, float& p, float& m)
 {
-	string128 temp_buff = {};
+	string256 temp_buff = {};
 
 	if (info.size())sprintf(temp_buff, "%s (%s)",text.c_str(),info.c_str());
 	else			sprintf(temp_buff, "%s",text.c_str());
