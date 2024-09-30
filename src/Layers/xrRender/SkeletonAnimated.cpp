@@ -678,165 +678,150 @@ CBlend*	CKinematicsAnimated::IBlend_Create	()
 	// FATAL("Too many blended motions requested");
 	return 0;
 }
-void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
+
+void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 {
-	inherited::Load	(N, data, dwFlags);
+	string_path fn = {};
+	if (!FS.exist(fn, "$level$", path))
+	{
+		if (!FS.exist(fn, "$game_meshes$", path))
+		{
+#ifdef _EDITOR
+			Msg("!Can't find motion file '%s'.", path);
+			return;
+#else
+			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
+#endif
+		}
+	}
+
+	// Check compatibility
+	m_Motions.push_back(SMotionsSlot());
+	bool create_res = true;
+	if (!g_pMotionsContainer->has(path)) // optimize fs operations
+	{
+		IReader* MS = FS.r_open(fn);
+		create_res = m_Motions.back().motions.create(path, MS, bones);
+		FS.r_close(MS);
+	}
+	if (create_res)
+	{
+		m_Motions.back().motions.create(path, NULL, bones);
+	}
+	else
+	{
+		m_Motions.pop_back();
+		Msg("! error in model [%s]. Unable to load motion file '%s'.", name, path);
+	}
+}
+
+void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameOgf) {
+	string_path nm = {};
+	strcpy(nm, pathOmf);
+
+	if (strstr(pathOmf, "\\*.omf"))
+	{
+		FS_FileSet fset;
+		FS.file_list(fset, "$game_meshes$", FS_ListFiles, pathOmf);
+		FS.file_list(fset, "$level$", FS_ListFiles, pathOmf);
+
+		m_Motions.reserve(fset.size() - 1);
+
+		for (auto& it : fset)
+		{
+			LoadOmf(it.name.c_str(), nameOgf);
+		}
+	}
+	else
+	{
+		xr_strcat(nm, ".omf");
+		LoadOmf(nm, nameOgf);
+	}
+}
+
+void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags) {
+	inherited::Load(N, data, dwFlags);
 
 	// Globals
-	blend_instances		= nullptr;
-    m_Partition			= nullptr;
-	Update_LastTime 	= 0;
+	blend_instances = nullptr;
+	m_Partition = nullptr;
+	Update_LastTime = 0;
 
 	// Load animation
-    if (data->find_chunk(OGF_S_MOTION_REFS))
-    {
-    	string_path		items_nm;
-        data->r_stringZ	(items_nm,sizeof(items_nm));
-        u32 set_cnt		= _GetItemCount(items_nm);
-        R_ASSERT		(set_cnt<MAX_ANIM_SLOT);
-		m_Motions.reserve(set_cnt);
-    	string_path		nm;
-        for (u32 k=0; k<set_cnt; ++k)
-        {
-        	_GetItem	(items_nm,k,nm);
-            xr_strcat		(nm,".omf");
-            string_path	fn;
-            if (!FS.exist(fn, "$level$", nm))
-            {
-                if (!FS.exist(fn, "$game_meshes$", nm))
-                {
-#ifdef _EDITOR
-                    Msg			("!Can't find motion file '%s'.",nm);
-                    return;
-#else
-                    Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
-#endif
-                }
-            }
-            // Check compatibility
-            m_Motions.push_back				(SMotionsSlot());
-            bool create_res = true;
-            if( !g_pMotionsContainer->has(nm) ) //optimize fs operations
-			{
-				IReader* MS						= FS.r_open(fn);
-				create_res = m_Motions.back().motions.create	(nm,MS,bones);
-				FS.r_close						(MS);
-			}
-            if(create_res)
-				m_Motions.back().motions.create	(nm,nullptr,bones);
-            else{
-            	m_Motions.pop_back	();
-                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
-                }
-    	}
-    }else
-    if (data->find_chunk(OGF_S_MOTION_REFS2))
-    {
-		u32 set_cnt		= data->r_u32();
-		m_Motions.reserve(set_cnt);
-    	string_path		nm;
-        for (u32 k=0; k<set_cnt; ++k)
-        {
-			data->r_stringZ	(nm,sizeof(nm));
-            xr_strcat			(nm,".omf");
-            string_path	fn;
-            if (!FS.exist(fn, "$level$", nm))
-            {
-                if (!FS.exist(fn, "$game_meshes$", nm))
-                {
-#ifdef _EDITOR
-                    Msg			("!Can't find motion file '%s'.",nm);
-                    return;
-#else
-                    Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",nm);
-#endif
-                }
-            }
-            // Check compatibility
-            m_Motions.push_back				(SMotionsSlot());
-            bool create_res = true;
-            if( !g_pMotionsContainer->has(nm) ) //optimize fs operations
-			{
-				IReader* MS						= FS.r_open(fn);
-				create_res = m_Motions.back().motions.create	(nm,MS,bones);
-				FS.r_close						(MS);
-			}
-            if(create_res)
-				m_Motions.back().motions.create	(nm,nullptr,bones);
-            else{
-            	m_Motions.pop_back	();
-                Msg					("! error in model [%s]. Unable to load motion file '%s'.", N, nm);
-                }
-    	}
-    }else    
+	if (data->find_chunk(OGF_S_MOTION_REFS))
 	{
-		string_path	nm;
-		xr_strconcat(nm,N,".ogf");
+		string_path items_nm = {};
+		data->r_stringZ(items_nm, sizeof(items_nm));
+		u32 set_cnt = _GetItemCount(items_nm);
+		R_ASSERT(set_cnt < MAX_ANIM_SLOT);
+		m_Motions.reserve(set_cnt);
+		string_path nm = {};
+		for (u32 k = 0; k < set_cnt; ++k)
+		{
+			_GetItem(items_nm, k, nm);
+			xr_strcat(nm, ".omf");
+			LoadOmf(nm, N);
+		}
+	}
+	else if (data->find_chunk(OGF_S_MOTION_REFS2))
+	{
+		u32 set_cnt = data->r_u32();
+		m_Motions.reserve(set_cnt);
+		string_path nm = {};
+		for (u32 k = 0; k < set_cnt; ++k)
+		{
+			data->r_stringZ(nm, sizeof(nm));
+			ProcessOmfFiles(nm, N);
+		}
+	}
+	else
+	{
+		string_path nm = {};
+		xr_strconcat(nm, N, ".ogf");
 		m_Motions.push_back(SMotionsSlot());
-		m_Motions.back().motions.create(nm,data,bones);
-    }
+		m_Motions.back().motions.create(nm, data, bones);
+	}
 
-    R_ASSERT				(m_Motions.size());
+	R_ASSERT(m_Motions.size());
 
-    m_Partition				= m_Motions[0].motions.partition();
-	m_Partition->load		(this,N);
-    
+	m_Partition = m_Motions[0].motions.partition();
+	m_Partition->load(this, N);
+
 	// initialize motions
-	for (SMotionsSlot& MS : m_Motions){
-		MS.bone_motions.resize(bones->size());
-		for (u32 i=0; i<bones->size(); i++){
-			CBoneData* BD		= (*bones)[i];
-			MS.bone_motions[i]	= MS.motions.bone_motions(BD->name);
+	for (SMotionsSlot& MS : m_Motions)
+	{
+		MS.bone_motions.clear();
+		MS.bone_motions.reserve(bones->size());
+		
+		for (CBoneData* bone : *bones)
+		{
+			MS.bone_motions.push_back(MS.motions.bone_motions(bone->name));
 		}
 	}
 
 	// Init blend pool
-	IBlend_Startup	();
+	IBlend_Startup();
 }
 
-void CKinematicsAnimated::append_motion_from_path(const char* N)
+void CKinematicsAnimated::append_motion_from_path(const char* nameOgf, const char* pathOmf)
 {
-    string_path	fn;
-    if (!FS.exist(fn, "$level$", N))
-    {
-        if (!FS.exist(fn, "$game_meshes$", N))
-        {
-#ifdef _EDITOR
-         Msg			("!Can't find motion file '%s'.",N);
-         return;
-#else
-        Debug.fatal	(DEBUG_INFO,"Can't find motion file '%s'.",N);
-#endif
-        }
-    }
-    m_Motions.push_back				(SMotionsSlot());
-    bool create_res = true;
-    if( !g_pMotionsContainer->has(N) ) //optimize fs operations
-	{
-		IReader* MS						= FS.r_open(fn);
-		create_res = m_Motions.back().motions.create	(N,MS,bones);
-		FS.r_close						(MS);
-	}
-    if(create_res)
-		m_Motions.back().motions.create	(N,nullptr,bones);
-    else{
-    	m_Motions.pop_back	();
-        Msg					("! Unable to load motion file '%s'.", N);
-        }
-    
+	ProcessOmfFiles(pathOmf, nameOgf);
+
 	// Reinitialize motions
-	for (SMotionsSlot& MS : m_Motions){
-		MS.bone_motions.resize(bones->size());
-		for (u32 i=0; i<bones->size(); i++){
-			CBoneData* BD		= (*bones)[i];
-			MS.bone_motions[i]	= MS.motions.bone_motions(BD->name);
+	for (SMotionsSlot& MS : m_Motions)
+	{
+		MS.bone_motions.clear();
+		MS.bone_motions.reserve(bones->size());
+
+		for (CBoneData* bone : *bones)
+		{
+			MS.bone_motions.push_back(MS.motions.bone_motions(bone->name));
 		}
 	}
 
 	// Reinit blend pool
 	IBlend_Startup	();
 }
-
 
 void CKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys)
 {
