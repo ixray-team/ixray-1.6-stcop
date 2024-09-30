@@ -160,14 +160,12 @@ public:
 
 	int	GetScopeX()
 	{ 
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + UseHQ);
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + isHQIcons);
 	}
 
 	int	GetScopeY()
 	{
-		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + UseHQ);
+		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
 	}
 
 	int	GetSilencerX() {return m_iSilencerX;}

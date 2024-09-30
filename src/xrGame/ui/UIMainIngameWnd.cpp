@@ -143,11 +143,12 @@ void CUIMainIngameWnd::Init()
 	m_ind_bleeding			= UIHelper::CreateStatic(uiXml, "indicator_bleeding", this);
 	m_ind_radiation			= UIHelper::CreateStatic(uiXml, "indicator_radiation", this);
 	m_ind_starvation		= UIHelper::CreateStatic(uiXml, "indicator_starvation", this);
-
-	if (EngineExternal()[EEngineExternalGame::EnableThirst])
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (enableThirst)
 		m_ind_thirst		= UIHelper::CreateStatic(uiXml, "indicator_thirst", this);
-
-	if (EngineExternal()[EEngineExternalGame::EnableSleepiness])
+	
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (enableSleepiness)
 		m_ind_sleepiness	= UIHelper::CreateStatic(uiXml, "indicator_sleepiness", this);
 
 	m_ind_weapon_broken		= UIHelper::CreateStatic(uiXml, "indicator_weapon_broken", this);
@@ -632,19 +633,19 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
 
 	float scale_x = m_iPickUpItemIconWidth /
-		float(m_iGridWidth * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]));
+		float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
 	float scale_y = m_iPickUpItemIconHeight /
-		float(m_iGridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+		float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
 
 	scale_x = (scale_x>1) ? 1.0f : scale_x;
 	scale_y = (scale_y>1) ? 1.0f : scale_y;
 
-	if (EngineExternal()[EEngineExternalUI::HQIcons])
+	if (isHQIcons)
 	{
 		scale_x = m_iPickUpItemIconWidth /
-			(m_iGridWidth * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) / 2);
+			(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
 		scale_y = m_iPickUpItemIconHeight /
-			(m_iGridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) / 2);
+			(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
 
 		scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
 		scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
@@ -652,16 +653,16 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	Frect					texture_rect;
-	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]), m_iYPos*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
-	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]), m_iGridHeight*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]));
+	Frect texture_rect = {};
+	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(isHQIcons), m_iYPos*INV_GRID_HEIGHT(isHQIcons));
+	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(isHQIcons), m_iGridHeight*INV_GRID_HEIGHT(isHQIcons));
 	texture_rect.rb.add		(texture_rect.lt);
 	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
 	UIPickUpItemIcon->SetStretchTexture(true);
 
 
-	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * scale*UI().get_current_kx());
-	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) * scale);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(isHQIcons) * scale*UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(isHQIcons) * scale);
 
 	UIPickUpItemIcon->SetWndPos(Fvector2().set(	m_iPickUpItemIconX+(m_iPickUpItemIconWidth-UIPickUpItemIcon->GetWidth())/2.0f,
 												m_iPickUpItemIconY+(m_iPickUpItemIconHeight-UIPickUpItemIcon->GetHeight())/2.0f) );
@@ -796,7 +797,8 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	}
 
 // Thirst icon
-	if (EngineExternal()[EEngineExternalGame::EnableThirst])
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (enableThirst)
 	{
 		float thirst = pActor->conditions().GetThirst();
 		float thirst_critical = pActor->conditions().ThirstCritical();
@@ -817,7 +819,8 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	}
 
 // Sleepiness icon
-	if (EngineExternal()[EEngineExternalGame::EnableSleepiness])
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (enableSleepiness)
 	{
 		float sleepiness = pActor->conditions().GetSleepiness();
 		float sleepiness_critical = pActor->conditions().SleepinessCritical();
@@ -959,10 +962,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				CUIStatic* main_slot = m_quick_slots_icons[i];
 				main_slot->SetShader(InventoryUtilities::GetEquipmentIconsShader());
 				Frect texture_rect;
-				texture_rect.x1	= pSettings->r_float(item_name, "inv_grid_x")		*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
-				texture_rect.y1	= pSettings->r_float(item_name, "inv_grid_y")		*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
-				texture_rect.x2	= pSettings->r_float(item_name, "inv_grid_width")	*INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]);
-				texture_rect.y2	= pSettings->r_float(item_name, "inv_grid_height")*INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]);
+				texture_rect.x1	= pSettings->r_float(item_name, "inv_grid_x")		*INV_GRID_WIDTH(isHQIcons);
+				texture_rect.y1	= pSettings->r_float(item_name, "inv_grid_y")		*INV_GRID_HEIGHT(isHQIcons);
+				texture_rect.x2	= pSettings->r_float(item_name, "inv_grid_width")	*INV_GRID_WIDTH(isHQIcons);
+				texture_rect.y2	= pSettings->r_float(item_name, "inv_grid_height")	*INV_GRID_HEIGHT(isHQIcons);
 				texture_rect.rb.add(texture_rect.lt);
 				main_slot->SetTextureRect(texture_rect);
 				main_slot->TextureOn();

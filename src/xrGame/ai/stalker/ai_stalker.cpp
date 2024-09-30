@@ -692,7 +692,9 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	sight().update					();
 	Exec_Look						(.001f);
 
-	if (EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor]) {
+	const static bool isNPCLookAtActor = EngineExternal()[EEngineExternalGame::EnableNPCLookAtActor];
+	if (isNPCLookAtActor)
+	{
 		CBoneInstance* bone_head = &smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(
 			smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
 		bone_head->set_callback(bctCustom, BoneCallback, this);

@@ -130,7 +130,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// Thirst
-	if (EngineExternal()[EEngineExternalGame::EnableThirst])
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (enableThirst)
 	{
 		Thirst.Critical = pSettings->r_float(section,"thirst_critical");
 		clamp(Thirst.Critical, 0.0f, 1.0f);
@@ -142,7 +143,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// Sleepiness
-	if (EngineExternal()[EEngineExternalGame::EnableSleepiness])
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (enableSleepiness)
 	{
 		Sleepiness.Critical = pSettings->r_float(section,"sleepiness_critical");
 		clamp(Sleepiness.Critical, 0.0f, 1.0f);
@@ -469,7 +471,8 @@ void CActorCondition::UpdateSatiety()
 
 void CActorCondition::UpdateThirst()
 {
-	if (!EngineExternal()[EEngineExternalGame::EnableThirst])
+	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
+	if (!enableThirst)
 		return;
 
 	if (Thirst.Current > 0)
@@ -488,7 +491,8 @@ void CActorCondition::UpdateThirst()
 
 void CActorCondition::UpdateSleepiness()
 {
-	if (!EngineExternal()[EEngineExternalGame::EnableSleepiness])
+	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
+	if (!enableSleepiness)
 		return;
 
 	if (Sleepiness.Current > 0)

@@ -198,11 +198,14 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	if (EngineExternal()[EEngineExternalGame::EnableAutoreload])
+	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
+	if (isAutoreload)
 	{
-		CActor	*actor = smart_cast<CActor*>(H_Parent());
-		if(m_pInventory && !iAmmoElapsed && actor && GetState()!=eReload)
+		CActor *actor = smart_cast<CActor*>(H_Parent());
+		if (m_pInventory && !iAmmoElapsed && actor && GetState() != eReload)
+		{
 			Reload();
+		}
 	}
 }
 
@@ -829,7 +832,12 @@ void CWeaponMagazined::switch2_Empty()
 {
 	OnZoomOut();
 	
-	if (EngineExternal()[EEngineExternalGame::EnableAutoreload])
+	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
+	if (!isAutoreload)
+	{
+		OnEmptyClick();
+	}
+	else
 	{
 		if (!IsTriStateReload())
 		{
@@ -849,8 +857,6 @@ void CWeaponMagazined::switch2_Empty()
 			}
 		}
 	}
-	else
-		OnEmptyClick();
 }
 
 void CWeaponMagazined::PlayReloadSound()

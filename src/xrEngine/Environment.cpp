@@ -540,7 +540,7 @@ void CEnvironment::OnFrame()
 	lerp					(current_weight);
 
 	// Igor. Dynamic sun position. 
-	bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
+	const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
 	if (!isReadSunConfig && !::Render->is_sun_static()) {
 		calculate_dynamic_sun_dir();
 	}
