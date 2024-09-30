@@ -21,7 +21,7 @@
 
 struct PSInput
 {
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
     float4 texcoord : TEXCOORD0;
 };
 

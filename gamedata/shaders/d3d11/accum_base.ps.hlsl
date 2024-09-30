@@ -9,7 +9,7 @@
 uniform float4 m_lmap[2];
 uniform int Ldynamic_hud;
 
-float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
+float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
 {
     float2 tcProj = I.tc.xy / I.tc.w;
 	

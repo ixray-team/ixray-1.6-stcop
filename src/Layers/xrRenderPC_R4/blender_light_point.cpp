@@ -9,7 +9,8 @@ CBlender_accum_point::CBlender_accum_point() {
 
 CBlender_accum_point::~CBlender_accum_point() {}
 
-void CBlender_accum_point::Compile(CBlender_Compile& C) {
+void CBlender_accum_point::Compile(CBlender_Compile& C) 
+{
 	IBlender::Compile(C);
 
 	if(C.iElement == SE_L_FILL) {
@@ -41,6 +42,10 @@ void CBlender_accum_point::Compile(CBlender_Compile& C) {
 	C.r_dx10Texture("s_normal", r2_RT_N);
 	C.r_dx10Texture("s_material", r2_material);
 	C.r_dx10Texture("s_lmap", C.L_textures[0]);
+
+	C.r_dx10Sampler("smp_rtlinear");
+	C.r_dx10Sampler("smp_material");
+	C.r_dx10Sampler("smp_nofilter");
 
 	jitter(C);
 

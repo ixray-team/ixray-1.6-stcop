@@ -9,7 +9,7 @@ struct vf
 struct v2p
 {
     float4 C : COLOR0;
-    float4 P : SV_Position;
+    float4 P : SV_POSITION;
 };
 
 uniform float4 tfactor;

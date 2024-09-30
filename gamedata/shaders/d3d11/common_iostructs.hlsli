@@ -25,13 +25,13 @@ struct v_TL0uv
 struct v2p_TL0uv
 {
     float4 Color : COLOR;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_TL0uv
 {
     float4 Color : COLOR;
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -54,14 +54,14 @@ struct v2p_TL
 {
     float2 Tex0 : TEXCOORD0;
     float4 Color : COLOR;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_TL
 {
     float2 Tex0 : TEXCOORD0;
     float4 Color : COLOR;
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ struct v2p_TL2uv
     float2 Tex0 : TEXCOORD0;
     float2 Tex1 : TEXCOORD1;
     float4 Color : COLOR;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_TL2uv
@@ -87,7 +87,7 @@ struct p_TL2uv
     float2 Tex0 : TEXCOORD0;
     float2 Tex1 : TEXCOORD1;
     float4 Color : COLOR;
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 ////////////////////////////////////////////////////////////////
 //	postpr
@@ -108,7 +108,7 @@ struct v2p_postpr
     float2 Tex2 : TEXCOORD2; // base  (noise)
     float4 Color : COLOR0; // multiplier, color.w = noise_amount
     float4 Gray : COLOR1; // (.3,.3,.3.,amount)
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_postpr
@@ -118,7 +118,7 @@ struct p_postpr
     float2 Tex2 : TEXCOORD2; // base  (noise)
     float4 Color : COLOR0; // multiplier, color.w = noise_amount
     float4 Gray : COLOR1; // (.3,.3,.3.,amount)
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 ////////////////////////////////////////////////////////////////
 //	build	(bloom_build)
@@ -137,7 +137,7 @@ struct v2p_build
     float2 Tex1 : TEXCOORD1;
     float2 Tex2 : TEXCOORD2;
     float2 Tex3 : TEXCOORD3;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_build
@@ -146,7 +146,7 @@ struct p_build
     float2 Tex1 : TEXCOORD1;
     float2 Tex2 : TEXCOORD2;
     float2 Tex3 : TEXCOORD3;
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 ////////////////////////////////////////////////////////////////
 //	filter	(bloom_filter)
@@ -173,7 +173,7 @@ struct v2p_filter
     float4 Tex5 : TEXCOORD5;
     float4 Tex6 : TEXCOORD6;
     float4 Tex7 : TEXCOORD7;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_filter
@@ -186,7 +186,7 @@ struct p_filter
     float4 Tex5 : TEXCOORD5;
     float4 Tex6 : TEXCOORD6;
     float4 Tex7 : TEXCOORD7;
-    //	float4 	HPos	: SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	: SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ struct v2p_aa_AA
     float2 Tex4 : TEXCOORD4;
     float4 Tex5 : TEXCOORD5;
     float4 Tex6 : TEXCOORD6;
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 struct p_aa_AA
@@ -224,7 +224,7 @@ struct p_aa_AA
     float2 Tex4 : TEXCOORD4;
     float4 Tex5 : TEXCOORD5;
     float4 Tex6 : TEXCOORD6;
-    //	float4 	HPos	:SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 struct p_aa_AA_sun
@@ -235,7 +235,7 @@ struct p_aa_AA_sun
     float2 RT : TEXCOORD3;
     float2 LB : TEXCOORD4;
     float2 RB : TEXCOORD5;
-    //	float4 	HPos	:SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	HPos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -247,7 +247,7 @@ struct v_dumb
 
 struct v2p_dumb
 {
-    float4 HPos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 HPos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 
 ////////////////////////////////////////////////////////////////
@@ -255,12 +255,12 @@ struct v2p_dumb
 struct v2p_volume
 {
     float4 tc : TEXCOORD0;
-    float4 hpos : SV_Position; // Clip-space position 	(for rasterization)
+    float4 hpos : SV_POSITION; // Clip-space position 	(for rasterization)
 };
 struct p_volume
 {
     float4 tc : TEXCOORD0;
-    //	float4 	hpos	:SV_Position;	// Clip-space position 	(for rasterization)
+    //	float4 	hpos	:SV_POSITION;	// Clip-space position 	(for rasterization)
 };
 ////////////////////////////////////////////////////////////////
 //	Static
@@ -327,7 +327,7 @@ struct gbuffer_data
 //	Defer bumped
 struct p_bumped_new
 {
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 
     float4 tcdh : TEXCOORD0; // Texture coordinates, sun_occlusion || lm-hemi
     float4 position : TEXCOORD1; // position + hemi
@@ -341,7 +341,7 @@ struct p_bumped_new
 
 struct p_bilbord
 {
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
     float4 af : COLOR1;
 
     float3 position : TEXCOORD0;
@@ -371,7 +371,7 @@ struct v2p_bumped
 #endif
     float4 hpos_curr : POSITION0;
     float4 hpos_old : POSITION1;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 struct p_bumped
@@ -413,7 +413,7 @@ struct v2p_flat
 #endif
     float4 hpos_curr : POSITION0;
     float4 hpos_old : POSITION1;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 struct p_flat
@@ -450,12 +450,12 @@ struct v_shadow_direct
 struct v2p_shadow_direct_aref
 {
     float2 tc0 : TEXCOORD0; // Diffuse map for aref
-    float4 hpos : SV_Position; // Clip-space position         (for rasterization)
+    float4 hpos : SV_POSITION; // Clip-space position         (for rasterization)
 };
 
 struct v2p_shadow_direct
 {
-    float4 hpos : SV_Position; // Clip-space position         (for rasterization)
+    float4 hpos : SV_POSITION; // Clip-space position         (for rasterization)
 };
 
 struct p_shadow_direct_aref
@@ -466,7 +466,7 @@ struct p_shadow_direct_aref
 struct p_shadow
 {
     float2 tc0 : TEXCOORD0;
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
 };
 
 struct v2p_screen

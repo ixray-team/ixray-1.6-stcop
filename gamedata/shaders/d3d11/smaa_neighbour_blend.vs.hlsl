@@ -15,7 +15,7 @@ uniform float4 scaled_screen_res;
 // Struct
 struct p_smaa
 {
-    float4 hpos : SV_Position;
+    float4 hpos : SV_POSITION;
     float2 tc0 : TEXCOORD0; // Texture coordinates         (for sampling maps)
     float4 offset : TEXCOORD1;
 };

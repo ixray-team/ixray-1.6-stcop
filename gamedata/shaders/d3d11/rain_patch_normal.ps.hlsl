@@ -44,7 +44,7 @@ float3 GetWaterNMap(Texture2D s_texture, float2 tc)
     #define ISAMPLE 0
 #endif
 
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_Position) : SV_Target
+float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_POSITION) : SV_Target
 {
     IXrayGbuffer O;
     GbufferUnpack(tc, pos2d, O);
