@@ -25,5 +25,3 @@ private:
 	bool				m_started;
 };
 
-#include "burer_state_attack_shield_inline.h"
-

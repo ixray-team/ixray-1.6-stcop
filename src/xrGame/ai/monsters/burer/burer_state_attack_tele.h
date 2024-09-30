@@ -64,5 +64,3 @@ private:
 	TTime				m_end_tick;
 	float				m_initial_health;
 };
-
-#include "burer_state_attack_tele_inline.h"

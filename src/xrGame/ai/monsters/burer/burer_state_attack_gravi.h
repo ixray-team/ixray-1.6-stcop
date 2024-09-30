@@ -38,6 +38,3 @@ private:
 	TTime					m_next_gravi_allowed_tick;
 	TTime					m_anim_end_tick;
 };
-
-#include "burer_state_attack_gravi_inline.h"
-

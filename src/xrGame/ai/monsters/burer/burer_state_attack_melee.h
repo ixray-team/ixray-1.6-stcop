@@ -11,5 +11,3 @@ public:
 	virtual	bool		check_start_conditions			();
 	virtual	bool		check_completion				();
 };
-
-#include "burer_state_attack_melee_inline.h"

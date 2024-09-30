@@ -6,12 +6,14 @@ class	CStateBurerAttack : public CState
 	typedef CState inherited;
 	typedef CState *state_ptr;
 
+	CBurer* m_pBurer;
+
 public:
 						CStateBurerAttack			(CBaseMonster *obj);
 
 	virtual	void		initialize					();
 	virtual	void		execute						();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_); }
+	virtual void		remove_links				(CObject* object) { inherited::remove_links(object); }
 
 	virtual void		finalize					();
 	virtual void		critical_finalize			();
@@ -24,5 +26,3 @@ private:
 	float				m_last_health;
 	TTime				m_next_runaway_allowed_tick;
 };
-
-#include "burer_state_attack_inline.h"

@@ -25,6 +25,3 @@ private:
 	bool				m_started;
 	bool				m_allow_anti_aim;
 };
-
-#include "burer_state_attack_antiaim_inline.h"
-
