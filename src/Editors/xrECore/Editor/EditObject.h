@@ -513,8 +513,9 @@ virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const 															{ ret
 	// debug
 #ifdef DEBUG_DRAW
 	virtual void						DebugRender			(Fmatrix& XFORM) 											{VERIFY(false);}
-	virtual shared_str	_BCL			getDebugName		() 															{return m_ModifName;}
 #endif
+	virtual shared_str					getDebugName		() 															{return m_ModifName;}
+
 private:
 	virtual	IKinematics*	 	_BCL	ObjectKinematics		()				 										{ return this;}
 	int m_FaceCount;

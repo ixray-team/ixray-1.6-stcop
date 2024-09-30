@@ -175,11 +175,20 @@ public:
 
 				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
 				accel*					LL_Bones			()						{return bone_map_N;}
-	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
-	ICF const	CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id) const		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
+		VERIFY(bone_instances); 
+		return bone_instances[bone_id];
+	}
+	ICF const CBoneInstance& _BCL LL_GetBoneInstance(u16 bone_id) const
+	{
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
+		VERIFY(bone_instances); 
+		return bone_instances[bone_id];
+	}
 	CBoneData&					_BCL	LL_GetData			(u16 bone_id)
     {
-    	VERIFY(bone_id<LL_BoneCount());
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         VERIFY(bones);
         CBoneData& bd =  *((*bones)[bone_id]) ;
         return bd;
@@ -187,7 +196,7 @@ public:
 
 	virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const
 	{
-		VERIFY(bone_id<LL_BoneCount());
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         VERIFY(bones);
         CBoneData& bd =  *((*bones)[bone_id]) ;
         return bd;
@@ -195,7 +204,7 @@ public:
 	CBoneData*	_BCL	LL_GetBoneData		(u16 bone_id)
 	{
 		
-		VERIFY(bone_id<LL_BoneCount());
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         VERIFY(bones);
 		u32	sz = sizeof(vecBones);
 		u32	sz1=  sizeof(((*bones)[bone_id])->children);
@@ -210,15 +219,17 @@ public:
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
 	ICF Fmatrix&					LL_GetTransform_R_old(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform_old;		}	// rendering only old
-	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
+	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	return (*bones)[bone_id]->obb;	}
 	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
 	void							LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
     int 							LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
 
 	u16						_BCL	LL_GetBoneRoot		()					{	return iRoot;													}
-	void							LL_SetBoneRoot		(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	iRoot=bone_id;					}
+	void							LL_SetBoneRoot		(u16 bone_id)		{ VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	iRoot=bone_id;					}
 
-    BOOL					_BCL	LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(bone_id);	}
+    BOOL					_BCL	LL_GetBoneVisible	(u16 bone_id)		{ 
+		VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
+		return visimask.is(bone_id);	}
 	void							LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
 	VisMask					_BCL	LL_GetBonesVisible	()					{	return visimask;	}
 	void							LL_SetBonesVisible	(VisMask mask);
@@ -240,11 +251,11 @@ public:
 #ifdef DEBUG_DRAW
 	void							DebugRender			(Fmatrix& XFORM);
 #endif
-#ifdef DEBUG
+
 protected:
-	virtual shared_str		_BCL	getDebugName()	{ return dbg_name; }
+	virtual shared_str				getDebugName()	{ return dbg_name; }
 public:
-#endif
+
 
 	// General "Visual" stuff
     virtual void					Copy				(dxRender_Visual *pFrom);

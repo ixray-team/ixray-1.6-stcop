@@ -18,9 +18,9 @@ public:
 
 	bool _ignore_optimization;
 
-#ifdef DEBUG
-	virtual shared_str	_BCL	getDebugName() = 0;
-#endif
+
+	virtual shared_str	getDebugName() = 0;
+
 
 	virtual	IKinematics*	_BCL	dcast_PKinematics			()				{ return 0;	}
 	virtual	IKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return 0;	}
