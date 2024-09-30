@@ -3,8 +3,8 @@
 void ESceneShapeTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-    AddControl		(xr_new<TUI_ControlShapeAdd>(estDefault,etaAdd,	this));
-    pForm = xr_new< UIShapeTool>();
+    AddControl		(new TUI_ControlShapeAdd(estDefault,etaAdd,	this));
+    pForm = new UIShapeTool();
     ((UIShapeTool*)pForm)->Tool = this;
 }
 
@@ -17,7 +17,7 @@ void ESceneShapeTool::RemoveControls()
 
 CCustomObject* ESceneShapeTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CCustomObject* O	= xr_new<CEditShape>(data,name);
+	CCustomObject* O	= new CEditShape(data,name);
     O->FParentTools		= this;
     return O;
 }

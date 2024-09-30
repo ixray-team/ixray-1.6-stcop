@@ -3,7 +3,7 @@
 void ESceneSoundSrcTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	// AddControl(xr_new<TUI_CustomControl>(estDefault, etaSelect, this));
+	// AddControl(new TUI_CustomControl(estDefault, etaSelect, this));
 }
 
 
@@ -15,7 +15,7 @@ void ESceneSoundSrcTool::RemoveControls()
 
 CCustomObject* ESceneSoundSrcTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CCustomObject* O	= xr_new<ESoundSource>(data,name);
+	CCustomObject* O	= new ESoundSource(data,name);
     O->FParentTools		= this;
     return O;
 }

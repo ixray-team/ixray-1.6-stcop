@@ -8,12 +8,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     const char* FSName = "fs.ltx";
     Core._initialize("Shader", ELogCallback, 1, FSName);
 
-    Tools = xr_new<CShaderTool>();
+    Tools = new CShaderTool();
     STools = (CShaderTool*)Tools;
-    UI = xr_new<CShaderMain>();
+    UI = new CShaderMain();
     UI->RegisterCommands();
 
-    UIMainForm* MainForm = xr_new< UIMainForm>();
+    UIMainForm* MainForm = new UIMainForm();
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
 

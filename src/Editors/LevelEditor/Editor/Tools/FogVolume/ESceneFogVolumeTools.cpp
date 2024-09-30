@@ -17,7 +17,7 @@ xr_token fog_vol_type[] =
 void ESceneFogVolumeTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-    pForm 			= xr_new<UIFogVolTool>();
+    pForm 			= new UIFogVolTool();
     ((UIFogVolTool*)pForm)->ParentTools = this;
 }
 
@@ -35,7 +35,7 @@ void ESceneFogVolumeTool::Clear(bool bSpecific)
 CCustomObject* ESceneFogVolumeTool::CreateObject(LPVOID data, LPCSTR name)
 {
 
-	CCustomObject* O	= xr_new<EFogVolume>(data,name);
+	CCustomObject* O	= new EFogVolume(data,name);
     O->FParentTools		= this;
 
     return O;

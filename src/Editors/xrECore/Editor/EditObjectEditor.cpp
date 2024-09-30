@@ -397,7 +397,7 @@ bool CEditableObject::CheckShaderCompatible()
 #if 1
 void CEditableObject::AddBone(CBone* parent_bone)
 {
-	CBone* B 			= xr_new<CBone>();
+	CBone* B 			= new CBone();
 
 	string256			new_name;
     u32 i				= 0;

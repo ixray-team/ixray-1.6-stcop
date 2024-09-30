@@ -20,7 +20,7 @@
 void CEditableMesh::GenerateRenderBuffers()
 {
     if (m_RenderBuffers) return;
-    m_RenderBuffers		= xr_new<RBMap>();
+    m_RenderBuffers		= new RBMap();
 
     GenerateVNormals	(0);
 

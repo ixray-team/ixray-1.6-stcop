@@ -187,7 +187,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	m_ActionPlanner->setup	(this);
 	m_view_actor			= true;
 
-	m_UIPropertiesBox = xr_new<CUIPropertiesBox>();
+	m_UIPropertiesBox = new CUIPropertiesBox();
 	m_UIPropertiesBox->SetAutoDelete(true);
 	m_UIPropertiesBox->InitPropertiesBox(Fvector2().set(0, 0), Fvector2().set(300, 300));
 

@@ -92,7 +92,7 @@ void CALifeSimulatorBase::reload			(LPCSTR section)
 	m_smart_terrains			= new CALifeSmartTerrainRegistry();
 	m_groups					= new CALifeGroupRegistry		();
 	m_registry_container		= new CALifeRegistryContainer	();
-	m_upgrade_manager			= xr_new<inventory::upgrade::Manager>();
+	m_upgrade_manager			= new inventory::upgrade::Manager();
 	m_initialized				= true;
 }
 

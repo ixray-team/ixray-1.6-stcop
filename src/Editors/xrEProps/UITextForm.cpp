@@ -29,7 +29,7 @@ void UITextForm::Draw()
 void UITextForm::RunEditor(const char* str)
 {
     VERIFY(!Form);
-    Form = xr_new< UITextForm>(str);
+    Form = new UITextForm(str);
 }
 
 void UITextForm::Update()

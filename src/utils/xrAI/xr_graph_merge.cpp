@@ -116,12 +116,12 @@ public:
 		
 		// loading graph
 		xr_strcpy				(caFileName,graph_file_name);
-		m_tpGraph				= xr_new<CGameGraph>(caFileName);
+		m_tpGraph				= new CGameGraph(caFileName);
 
 		xr_strcpy				(caFileName,raw_cross_table_file_name);
-		CGameLevelCrossTable	*l_tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName, xr_strlen(caFileName));
+		CGameLevelCrossTable	*l_tpCrossTable = new CGameLevelCrossTable(caFileName, xr_strlen(caFileName));
 
-		CLevelGraph				*l_tpAI_Map = xr_new<CLevelGraph>(S);
+		CLevelGraph				*l_tpAI_Map = new CLevelGraph(S);
 
 		VERIFY2					(l_tpCrossTable->header().level_guid() == l_tpAI_Map->header().guid(), "cross table doesn't correspond to the AI-map, rebuild graph!");
 		VERIFY2					(l_tpCrossTable->header().game_guid() == m_tpGraph->header().guid(), "cross table doesn't correspond to the graph, rebuild graph!");
@@ -173,7 +173,7 @@ public:
 		// updating cross-table
 		{
 			xr_strcpy				(caFileName,raw_cross_table_file_name);
-			CGameLevelCrossTable	*tpCrossTable = xr_new<CGameLevelCrossTable>(caFileName, xr_strlen(caFileName));
+			CGameLevelCrossTable	*tpCrossTable = new CGameLevelCrossTable(caFileName, xr_strlen(caFileName));
 			xr_vector<CGameLevelCrossTable::CCell> tCrossTableUpdate;
 			tCrossTableUpdate.resize(tpCrossTable->header().level_vertex_count());
 			for (int i=0; i<(int)tpCrossTable->header().level_vertex_count(); i++) {
@@ -542,7 +542,7 @@ CGraphMerger::CGraphMerger(
 	// load all the graphs
 	Phase("Processing level graphs");
 	
-	CInifile *Ini = xr_new<CInifile>(INI_FILE);
+	CInifile *Ini = new CInifile(INI_FILE);
 	if (!Ini->section_exist("levels"))
 		THROW(false);
 	R_ASSERT						(Ini->section_exist("levels"));
@@ -589,7 +589,7 @@ CGraphMerger::CGraphMerger(
 		FS.update_path				(level_folder,"$game_levels$",*tLevel.m_name);
 		xr_strcat						(level_folder,"\\");
 		CGameGraphBuilder().build_graph	(path0, path1,level_folder);
-		::CLevelGameGraph			*tpLevelGraph = xr_new<::CLevelGameGraph>(
+		::CLevelGameGraph			*tpLevelGraph = new ::CLevelGameGraph(
 			path0,
 			path1,
 			&tLevel,

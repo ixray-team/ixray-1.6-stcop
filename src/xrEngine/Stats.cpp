@@ -399,7 +399,7 @@ void CStats::OnDeviceCreate			()
 	g_bDisableRedText = Core.ParamsData.test(ECoreParams::xclsx);
 
 	if (!g_dedicated_server) {
-		pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
+		pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
 	}
 	
 	if(!pSettings->section_exist("evaluation")

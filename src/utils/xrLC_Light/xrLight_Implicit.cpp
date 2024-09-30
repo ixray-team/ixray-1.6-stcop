@@ -57,7 +57,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 
 	CThreadManager			tmanager;
  	for (u32 thID = 0; thID < NUM_THREADS; thID++)
-		tmanager.start(xr_new<ImplicitThread>(thID, &defl));
+		tmanager.start(new ImplicitThread(thID, &defl));
 	tmanager.wait();
 }
 

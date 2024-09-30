@@ -53,10 +53,10 @@ dxRender_Visual*	CModelPool::Instance_Create(u32 type)
 		V	= new CSkeletonX_ST			();
 		break;
 	case MT_PARTICLE_EFFECT:
-		V	= xr_new<PS::CParticleEffect>	();
+		V	= new PS::CParticleEffect	();
 		break;
 	case MT_PARTICLE_GROUP:
-		V	= xr_new<PS::CParticleGroup>	();
+		V	= new PS::CParticleGroup	();
 		break;
 #ifndef _EDITOR
 	case MT_LOD:

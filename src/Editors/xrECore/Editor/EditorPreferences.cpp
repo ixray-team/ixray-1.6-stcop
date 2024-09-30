@@ -109,7 +109,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	//switch(B->btn_num){
 	//case 0:
 	//    if(EFS.GetOpenName("$import$", fn, false, NULL, 6)){
-	//        CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), TRUE, TRUE, TRUE);
+	//        CInifile* 	I 	= new CInifile(fn.c_str(), TRUE, TRUE, TRUE);
 	//	    LoadShortcuts	(I);
 	//        xr_delete		(I);
 	//       // m_ItemProps->RefreshForm();
@@ -117,7 +117,7 @@ void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif,
 	//break;
 	//case 1:
 	//    if(EFS.GetSaveName("$import$", fn, NULL, 6)){
-	//	    CInifile* 	I 	= xr_new<CInifile>(fn.c_str(), FALSE, TRUE, TRUE);
+	//	    CInifile* 	I 	= new CInifile(fn.c_str(), FALSE, TRUE, TRUE);
 	//	    SaveShortcuts	(I);
 	//        xr_delete		(I);
 	//    }
@@ -450,7 +450,7 @@ void CCustomPreferences::AppendRecentFile(LPCSTR name)
 void CCustomPreferences::OnCreate()
 {
 	LoadConfig();
-	m_ItemProps = xr_new<UIPropertiesForm>();
+	m_ItemProps = new UIPropertiesForm();
 	//m_ItemProps 		= TProperties::CreateModalForm("Editor Preferences",false,0,0,TOnCloseEvent(this,&CCustomPreferences::OnClose),TProperties::plItemFolders|TProperties::plFullSort); //TProperties::plFullExpand TProperties::plFullSort TProperties::plNoClearStore|TProperties::plFolderStore|
 }
 //---------------------------------------------------------------------------

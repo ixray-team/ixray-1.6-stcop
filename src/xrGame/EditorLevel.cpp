@@ -28,7 +28,7 @@ static void 	build_callback(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* p
 
 BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 {
-	Server = xr_new<xrServer>();
+	Server = new xrServer();
 	map_data.m_name = "test";
 	m_caServerOptions = op_server;
 	m_caClientOptions = op_client;
@@ -105,7 +105,7 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 
 		R_ASSERT(physics_world());
 
-		m_ph_commander_physics_worldstep = xr_new<CPHCommander>();
+		m_ph_commander_physics_worldstep = new CPHCommander();
 		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
 
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
@@ -136,7 +136,7 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 	sended_request_connection_data = FALSE;
 	{
 		IReader F(nullptr, 0, 0);
-		pLevel = xr_new<CInifile>(&F);
+		pLevel = new CInifile(&F);
 	}
 	if (connected_to_server) {
 		// Sync
@@ -157,7 +157,7 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 			game->OnConnected();
 			if (game->Type() != eGameIDSingle)
 			{
-				m_file_transfer = xr_new<file_transfer::client_site>();
+				m_file_transfer = new file_transfer::client_site();
 			}
 		}
 

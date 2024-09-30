@@ -133,10 +133,10 @@ ESceneSpawnTool::~ESceneSpawnTool()
 void ESceneSpawnTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-    AddControl		(xr_new<TUI_ControlSpawnAdd>(estDefault,etaAdd,		this));
+    AddControl		(new TUI_ControlSpawnAdd(estDefault,etaAdd,		this));
 	// frame
 
-    pForm 			= xr_new<UISpawnTool>();
+    pForm 			= new UISpawnTool();
 }
 
  
@@ -175,7 +175,7 @@ ref_shader ESceneSpawnTool::GetIcon(shared_str name)
 
 CCustomObject* ESceneSpawnTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CSpawnPoint* O	= xr_new<CSpawnPoint>(data,name);
+	CSpawnPoint* O	= new CSpawnPoint(data,name);
     O->FParentTools		= this;
 
 	if(data && name)

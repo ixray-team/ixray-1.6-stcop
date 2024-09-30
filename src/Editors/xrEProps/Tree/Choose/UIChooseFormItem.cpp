@@ -321,7 +321,7 @@ bool UIChooseFormItem::CheckFilter()
 
 UITreeItem* UIChooseFormItem::CreateItem(shared_str Name)
 {
-    auto Item =  xr_new<UIChooseFormItem>(Name);
+    auto Item =  new UIChooseFormItem(Name);
 	Item->Form = Form;
 	return Item;
 }

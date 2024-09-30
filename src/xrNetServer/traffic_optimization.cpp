@@ -20,7 +20,7 @@ namespace compression
 		u8* buffer = (u8*)xr_malloc(buffer_size);
 		reader->r(buffer, buffer_size);
 		FS.r_close(reader);
-		dest = xr_new<compression::ppmd::stream>(buffer, buffer_size);
+		dest = new compression::ppmd::stream(buffer, buffer_size);
 	}
 
 	XRNETSERVER_API void deinit_ppmd_trained_stream(ppmd_trained_stream*& src)

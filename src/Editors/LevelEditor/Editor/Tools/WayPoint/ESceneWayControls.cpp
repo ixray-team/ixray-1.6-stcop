@@ -14,9 +14,9 @@ void ESceneWayTool::CreateControls()
 {
     inherited::CreateDefaultControls(estWayModeWay);
     inherited::CreateDefaultControls(estWayModePoint);
-    AddControl(xr_new<TUI_ControlWayPointAdd>(estWayModePoint, etaAdd, this));
+    AddControl(new TUI_ControlWayPointAdd(estWayModePoint, etaAdd, this));
     // frame
-    pForm = xr_new< UIWayTool>();
+    pForm = new UIWayTool();
 }
 
 void ESceneWayTool::RemoveControls()

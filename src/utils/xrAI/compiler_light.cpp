@@ -150,7 +150,7 @@ void	xrLight			()
 	u32	stride			= g_nodes.size()/NUM_THREADS;
 	u32	last			= g_nodes.size()-stride*(NUM_THREADS-1);
 	for (u32 thID=0; thID<NUM_THREADS; thID++)
-		Threads.start(xr_new<LightThread>(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)));
+		Threads.start(new LightThread(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)));
 	Threads.wait			();
 	Msg("%d seconds elapsed.",(timeGetTime()-start_time)/1000);
 

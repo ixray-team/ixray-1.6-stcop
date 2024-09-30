@@ -231,7 +231,7 @@ bool CEditableObject::Load(IReader& F)
 			m_Surfaces.resize(cnt);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
 			{
-				*s_it 		= xr_new<CSurface>();
+				*s_it 		= new CSurface();
 				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
 				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
 				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
@@ -248,7 +248,7 @@ bool CEditableObject::Load(IReader& F)
 			u32 cnt = F.r_u32();
 			m_Surfaces.resize(cnt);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-				*s_it 		= xr_new<CSurface>();
+				*s_it 		= new CSurface();
 				F.r_stringZ	(buf);	(*s_it)->SetName		(buf.c_str());
 				F.r_stringZ	(buf);	(*s_it)->SetShader		(buf.c_str());
 				F.r_stringZ	(buf);	(*s_it)->SetShaderXRLC	(buf.c_str());
@@ -265,7 +265,7 @@ bool CEditableObject::Load(IReader& F)
 			u32 cnt = F.r_u32();
 			m_Surfaces.resize(cnt);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
-				*s_it = xr_new<CSurface>();
+				*s_it = new CSurface();
 				F.r_stringZ(buf);
 				(*s_it)->SetName(buf.c_str());
 				F.r_stringZ(sh_name);
@@ -294,7 +294,7 @@ bool CEditableObject::Load(IReader& F)
 			IReader* M   = OBJ->open_chunk(0);
 			for (int count=1; M; count++) 
 			{
-				CEditableMesh* mesh=xr_new<CEditableMesh>(this);
+				CEditableMesh* mesh=new CEditableMesh(this);
 				if (mesh->LoadMesh(*M))
 					m_Meshes.push_back(mesh);
 				else{
@@ -318,7 +318,7 @@ bool CEditableObject::Load(IReader& F)
                 IReader* O;
                 while (0!=(O=B_CHUNK->open_chunk(chunk++)))
 				{
-                    m_Bones.push_back(xr_new<CBone>());
+                    m_Bones.push_back(new CBone());
                     m_Bones.back()->Load_1(*O);
                     O->close();
                 }
@@ -327,7 +327,7 @@ bool CEditableObject::Load(IReader& F)
             }else if (F.find_chunk(EOBJ_CHUNK_BONES)){
                 m_Bones.resize(F.r_u32());
                 for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
-                    *b_it = xr_new<CBone>();
+                    *b_it = new CBone();
                     (*b_it)->Load_0(F);
                 }
                 PrepareBones();
@@ -339,7 +339,7 @@ bool CEditableObject::Load(IReader& F)
                 m_SMotions.resize(F.r_u32());
                 for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); s_it++)
 				{
-                    *s_it = xr_new<CSMotion>();
+                    *s_it = new CSMotion();
                     if (!(*s_it)->Load(F))
 					{
                         Log		("!Motions has different version. Load failed.");

@@ -99,7 +99,7 @@ void DragDrop(const xr_string& Path, int Type)
 
             string256 namebuffer;
             Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, NewPath.data());
-            CSceneObject* obj = xr_new<CSceneObject>((LPVOID)0, namebuffer);
+            CSceneObject* obj = new CSceneObject((LPVOID)0, namebuffer);
             CEditableObject* ref = obj->SetReference(NewPath.data());
             if (!obj->Valid()) {
                 xr_delete(obj);
@@ -132,7 +132,7 @@ void DragDrop(const xr_string& Path, int Type)
 
             string256 namebuffer;
             Scene->GenObjectName(OBJCLASS_GROUP, namebuffer, NewPath.data());
-            CGroupObject* obj = xr_new<CGroupObject>((LPVOID)0, namebuffer);
+            CGroupObject* obj = new CGroupObject((LPVOID)0, namebuffer);
 
             if (obj->SetReference(NewPath.data())) {
                 string256 			namebuffer;

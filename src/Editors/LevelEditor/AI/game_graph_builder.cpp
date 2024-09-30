@@ -36,7 +36,7 @@ CGameGraphBuilder::~CGameGraphBuilder()
 void CGameGraphBuilder::create_graph()
 {
 	xr_delete(m_graph);
-	m_graph = xr_new<graph_type>();
+	m_graph = new graph_type();
 
 	m_graph_guid = generate_guid();
 }
@@ -288,7 +288,7 @@ void CGameGraphBuilder::build_cross_table()
 	tCrossTableHeader.m_level_guid = level_graph().header().guid();
 	tCrossTableHeader.m_game_guid = m_graph_guid;
 	xr_delete(m_cross_table);
-	CGameLevelCrossTableEditor* cross_table = xr_new<CGameLevelCrossTableEditor>();
+	CGameLevelCrossTableEditor* cross_table = new CGameLevelCrossTableEditor();
 	cross_table->realloc(tCrossTableHeader);
 	m_cross_table = cross_table;
 	for (int i = 0, n = level_graph().header().vertex_count(); i < n; i++)

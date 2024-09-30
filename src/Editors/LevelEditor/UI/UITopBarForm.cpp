@@ -203,11 +203,11 @@ void UITopBarForm::ClickReloadConfigs()
 	xr_delete(pSettings);
 	string_path 			si_name;
 	FS.update_path(si_name, "$game_config$", "system.ltx");
-	pSettings = xr_new<CInifile>(si_name, TRUE);// FALSE,TRUE,TRUE);
+	pSettings = new CInifile(si_name, TRUE);// FALSE,TRUE,TRUE);
 	xr_delete(pGameIni);
 	string_path					fname;
 	FS.update_path(fname, "$game_config$", "game.ltx");
-	pGameIni = xr_new<CInifile>(fname, TRUE);
+	pGameIni = new CInifile(fname, TRUE);
 	g_SEFactoryManager->reload();
 	g_pGamePersistent->OnAppEnd();
 	g_pGamePersistent->OnAppStart();

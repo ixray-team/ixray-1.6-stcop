@@ -10,7 +10,7 @@
 
 CShaderMain::CShaderMain()
 {
-    EPrefs			= xr_new<CCustomPreferences>();
+    EPrefs			= new CCustomPreferences();
 }
 //---------------------------------------------------------------------------
 

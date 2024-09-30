@@ -100,7 +100,7 @@ int				psActorSleepTime = 1;
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
-	game_news_registry		= xr_new<CGameNewsRegistryWrapper		>();
+	game_news_registry		= new CGameNewsRegistryWrapper();
 	// Cameras
 	cameras[eacFirstEye] = new CCameraFirstEye(this, CCameraBase::flKeepPitch);
 	cameras[eacFirstEye]->Load("actor_firsteye_cam");

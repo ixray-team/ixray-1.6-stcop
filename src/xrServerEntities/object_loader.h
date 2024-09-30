@@ -45,7 +45,7 @@ struct CLoader {
 		template <>
 		IC	static void load_data<true>(T &data, M &stream, const P &p)
 		{
-			CLoader<M,P>::load_data	(*(data = xr_new<std::remove_pointer<T>::type>()),stream,p);
+			CLoader<M,P>::load_data	(*(data = new std::remove_pointer<T>::type()),stream,p);
 		}
 	};
 

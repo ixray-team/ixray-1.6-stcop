@@ -76,7 +76,7 @@ void UIChooseForm::CheckFavorite()
 
 UIChooseForm::UIChooseForm():m_Texture(nullptr),m_SelectedItem(nullptr), m_RootItem(""), m_SelectedList(-1)
 {
-	m_Props = xr_new<UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
    // m_Props->AsGroup();
 }
 UIChooseForm::~UIChooseForm()
@@ -344,7 +344,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 {
 	VERIFY(!Form);
 
-	Form = xr_new<UIChooseForm>();
+	Form = new UIChooseForm();
 	Form->m_Flags.assign(mask);
 	Form->m_Flags.set(cfMultiSelect, sel_cnt > 1);
 

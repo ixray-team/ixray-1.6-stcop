@@ -249,7 +249,7 @@ CCommandVar 	TUI::CommandRenderResize(CCommandVar p1, CCommandVar p2)
 //------------------------------------------------------------------------------
 CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 {
-	EDevice = xr_new< CEditorRenderDevice>();
+	EDevice = new CEditorRenderDevice();
 	DevicePtr = EDevice;
 	CCommandVar res		= TRUE;
 	{
@@ -258,10 +258,10 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		FS.update_path(fn, _local_root_, fn);
 		string_path 			si_name;
 		FS.update_path(si_name, "$game_config$", "system.ltx");
-		pSettings = xr_new<CInifile>(si_name, TRUE);// FALSE,TRUE,TRUE);
+		pSettings = new CInifile(si_name, TRUE);// FALSE,TRUE,TRUE);
 		string_path					fname;
 		FS.update_path(fname, "$game_config$", "game.ltx");
-		pGameIni = xr_new<CInifile>(fname, TRUE);
+		pGameIni = new CInifile(fname, TRUE);
 		CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 	}
 	// make interface
@@ -275,7 +275,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 		Lib.OnCreate	();
 		BOOL bWeather = psDeviceFlags.is(rsEnvironment);
 		psDeviceFlags.set(rsEnvironment, FALSE);
-		g_pGamePersistent= xr_new<XrGamePersistentEditors>();
+		g_pGamePersistent= new XrGamePersistentEditors();
 		if (Tools)
 		{
 			if (Tools->OnCreate())
@@ -549,7 +549,7 @@ CCommandVar 	CommandGridSlotSize(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar 	CommandCreateSoundLib(CCommandVar p1, CCommandVar p2)
 {
-	SndLib		= xr_new<CSoundManager>();
+	SndLib		= new CSoundManager();
 	return				TRUE;
 }
 CCommandVar 	CommandMuteSound(CCommandVar p1, CCommandVar p2)

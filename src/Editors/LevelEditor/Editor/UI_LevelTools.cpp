@@ -38,26 +38,11 @@ bool CLevelTool::OnCreate()
 	m_Flags.set(flChangeTarget, FALSE);
 	Scene->OnCreate();
 	ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
-	m_Props = xr_new < UIPropertiesForm>();
+	m_Props = new UIPropertiesForm();
 	m_Props->SetModifiedEvent(TOnCloseEvent(this, &CLevelTool::OnPropsModified));
-	m_WorldProps = xr_new < UIPropertiesForm>();
+	m_WorldProps = new UIPropertiesForm();
 	m_WorldProps->SetModifiedEvent(TOnCloseEvent(this, &CLevelTool::OnPropsModified));
-  /*
-	ssRBOnly << ssRight;
-	paParent 		= fraLeftBar->paFrames;   VERIFY(paParent);
 
-	// scene creating
-  
-	// change target to Object
-	
-	m_Props 		= TProperties::CreateForm(	"Object Inspector",
-												0,
-												alClient,
-												TOnModifiedEvent(this,&CLevelTool::OnPropsModified),
-												0,
-												TOnCloseEvent(this,&CLevelTool::OnPropsClose),
-						  TProperties::plItemFolders|TProperties::plFolderStore|TProperties::plNoClearStore|TProperties::plFullExpand);
-	pObjectListForm = TfrmObjectList::CreateForm();*/
 	return true;
 }
 

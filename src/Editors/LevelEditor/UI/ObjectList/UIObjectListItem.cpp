@@ -148,5 +148,5 @@ void UIObjectListItem::ClearSelcted(UIObjectListItem* Without)
 
 UITreeItem* UIObjectListItem::CreateItem(shared_str Name)
 {
-	return xr_new< UIObjectListItem>(Name);
+	return new UIObjectListItem(Name);
 }

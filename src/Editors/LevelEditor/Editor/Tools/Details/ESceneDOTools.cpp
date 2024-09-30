@@ -225,7 +225,7 @@ bool EDetailManager::LoadColorIndices(IReader& F)
     if (OBJ){
         IReader* O   	= OBJ->open_chunk(0);
         for (int count=1; O; count++) {
-            EDetail* DO	= xr_new<EDetail>();
+            EDetail* DO	= new EDetail();
             if (DO->Load(*O)) 	objects.push_back(DO);
             else				bRes = false;
             O->close();

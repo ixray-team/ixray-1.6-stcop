@@ -8,7 +8,7 @@
 
 void ImplicitCalcGlobs::Allocate()
 {
-		ImplicitHash	= xr_new<IHASH>	();
+		ImplicitHash	= new IHASH	();
 }
 void	ImplicitCalcGlobs::Deallocate()
 {

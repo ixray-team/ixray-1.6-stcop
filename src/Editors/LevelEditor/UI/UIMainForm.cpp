@@ -15,12 +15,12 @@ UIMainForm::UIMainForm()
 	ExecCommand(COMMAND_UPDATE_GRID);
 	ExecCommand(COMMAND_RENDER_FOCUS);
 	FillChooseEvents();
-	m_TopBar = xr_new<UITopBarForm>();
-	m_Render = xr_new<UIRenderForm>();
-	m_MainMenu = xr_new<UIMainMenuForm>();
-	m_LeftBar = xr_new<UILeftBarForm>();
-	m_Properties = xr_new<UILPropertiesFrom>();
-	m_WorldProperties = xr_new<UIWorldPropertiesFrom>();
+	m_TopBar = new UITopBarForm();
+	m_Render = new UIRenderForm();
+	m_MainMenu = new UIMainMenuForm();
+	m_LeftBar = new UILeftBarForm();
+	m_Properties = new UILPropertiesFrom();
+	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
 	if (dynamic_cast<CLevelPreferences*>(EPrefs)->OpenObjectList)

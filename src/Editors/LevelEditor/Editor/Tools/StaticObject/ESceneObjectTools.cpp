@@ -12,9 +12,9 @@ ESceneObjectTool::ESceneObjectTool():ESceneCustomOTool(OBJCLASS_SCENEOBJECT)
 void ESceneObjectTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-    AddControl		(xr_new<TUI_ControlObjectAdd >(estDefault,etaAdd,		this));
+    AddControl		(new TUI_ControlObjectAdd (estDefault,etaAdd,		this));
 	// frame
-    pForm = xr_new< UIObjectTool>();
+    pForm = new UIObjectTool();
     ((UIObjectTool*)pForm)->ParentTools = this;
 }
 
@@ -162,7 +162,7 @@ void ESceneObjectTool::OnFrame		()
 
 CCustomObject* ESceneObjectTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CCustomObject* O	= xr_new<CSceneObject>(data,name);                     
+	CCustomObject* O	= new CSceneObject(data,name);                     
     O->FParentTools		= this;
     return O;
 }

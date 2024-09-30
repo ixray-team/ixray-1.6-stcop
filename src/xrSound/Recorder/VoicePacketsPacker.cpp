@@ -21,7 +21,7 @@ CVoicePacketsPacker::CVoicePacketsPacker()
 
 	for (int i = 0; i < MAX_VOICE_PACKETS; ++i)
 	{
-		m_voicePackets[i] = xr_new<VoicePacket>();
+		m_voicePackets[i] = new VoicePacket();
 	}
 }
 

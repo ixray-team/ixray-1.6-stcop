@@ -142,6 +142,6 @@ void UILogForm::Destroy()
 
 xr_vector<xr_string>* UILogForm::GetList()
 {
-	if (!List)List = xr_new<xr_vector<xr_string>>();
+	if (!List)List = new xr_vector<xr_string>();
 	return List;
 }

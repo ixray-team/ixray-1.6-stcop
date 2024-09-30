@@ -53,11 +53,11 @@ bool CParticleTool::OnCreate()
 
     m_EditPE 		= (PS::CParticleEffect*)((CRender*)::Render)->Models->CreatePE(0);
     m_EditPG		= (PS::CParticleGroup*)((CRender*)::Render)->Models->CreatePG(0);
-    m_ItemProps = xr_new<UIPropertiesForm>();
+    m_ItemProps = new UIPropertiesForm();
     m_ItemProps->SetModifiedEvent(TOnModifiedEvent(this, &CParticleTool::OnItemModified));
 
     // item list
-    m_PList = xr_new<UIItemListForm>();
+    m_PList = new UIItemListForm();
     m_PList->m_Flags.set(UIItemListForm::fMenuEdit, true);
     m_PList->SetOnItemFocusedEvent	(TOnILItemFocused(this,&CParticleTool::OnParticleItemFocused));
     m_PList->SetOnItemCloneEvent(TOnItemClone(this, &CParticleTool::OnParticleCloneItem));
@@ -65,9 +65,9 @@ bool CParticleTool::OnCreate()
 	m_PList->SetOnItemRenameEvent	(TOnItemRename(this,&CParticleTool::OnParticleItemRename));
     m_PList->SetOnItemRemoveEvent	(TOnItemRemove(this,&CParticleTool::OnParticleItemRemove));
     //
-    m_ParentAnimator= xr_new<CObjectAnimator>();
+    m_ParentAnimator= new CObjectAnimator();
 
-    m_ObjectProps = xr_new<UIPropertiesForm>();
+    m_ObjectProps = new UIPropertiesForm();
     FillObjectPrefs();
     return true;
 }

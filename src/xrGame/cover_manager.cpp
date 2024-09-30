@@ -117,7 +117,7 @@ void CCoverManager::compute_static_cover	()
 			m_covers->insert(new CCoverPoint(ai().level_graph().vertex_position(ai().level_graph().vertex(i)),i));
 
 	VERIFY					(!m_smart_covers_storage);
-	m_smart_covers_storage	= xr_new<smart_cover::storage>();
+	m_smart_covers_storage	= new smart_cover::storage();
 }
 
 void CCoverManager::clear_covers			(PointVector &covers)

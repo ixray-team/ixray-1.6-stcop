@@ -59,7 +59,7 @@ CEditorRenderDevice::CEditorRenderDevice()
 	fASPECT 		= 1.f;
 	fFOV 			= 60.f;
     dwPrecacheFrame = 0;
-	GameMaterialLibraryEditors = xr_new<XrGameMaterialLibraryEditors>();
+	GameMaterialLibraryEditors = new XrGameMaterialLibraryEditors();
 	PGMLib = GameMaterialLibraryEditors;
 
 	DevicePtr = this;
@@ -186,7 +186,7 @@ bool CEditorRenderDevice::Create()
 {
 	if (b_is_Ready)	return false;
 
-    Statistic			= xr_new<CStats>();
+    Statistic			= new CStats();
 	//Statistic = EStatistic;
 	ELog.Msg(mtInformation,"Starting RENDER device...");
 
@@ -217,7 +217,7 @@ bool CEditorRenderDevice::Create()
     IReader* F			= 0;
 	if (FS.exist(sh))
 		F				= FS.r_open(0,sh);
-	Resources			= xr_new<CResourceManager>	();
+	Resources			= new CResourceManager	();
 
     // if build options - load textures immediately
     if (strstr(Core.Params,"-build")||strstr(Core.Params,"-ebuild"))
@@ -298,8 +298,8 @@ void CEditorRenderDevice::_Create(IReader* F)
     UI->OnDeviceCreate			();           
 //.	seqDevCreate.Process		(rp_DeviceCreate);
 
-	//pSystemFont					= xr_new<CGameFont>("hud_font_small");
-//	pSystemFont					= xr_new<CGameFont>("hud_font_medium");
+	//pSystemFont					= new CGameFont("hud_font_small");
+//	pSystemFont					= new CGameFont("hud_font_medium");
 }
 
 void CEditorRenderDevice::_Destroy(BOOL	bKeepTextures)

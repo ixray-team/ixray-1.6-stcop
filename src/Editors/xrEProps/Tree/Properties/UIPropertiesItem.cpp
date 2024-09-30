@@ -177,5 +177,5 @@ void UIPropertiesItem::DrawItem()
 
 UITreeItem* UIPropertiesItem::CreateItem(shared_str Name)
 {
-	return xr_new< UIPropertiesItem>(Name,PropertiesFrom);
+	return new UIPropertiesItem(Name,PropertiesFrom);
 }

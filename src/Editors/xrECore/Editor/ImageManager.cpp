@@ -182,7 +182,7 @@ void CImageManager::CreateTextureThumbnail(ETextureThumbnail* THM, const xr_stri
 void CImageManager::CreateGameTexture(LPCSTR src_name, ETextureThumbnail* thumb)
 {
 	R_ASSERT(src_name&&src_name[0]);
-	ETextureThumbnail* THM 	= thumb?thumb:xr_new<ETextureThumbnail>(src_name);
+	ETextureThumbnail* THM 	= thumb?thumb:new ETextureThumbnail(src_name);
 	string_path base_name;
 	strcpy					(base_name,src_name);
 
@@ -239,7 +239,7 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u3
 	{
 		bool e_res = true;
 		LPCSTR e_name = THM->m_TexParams.ext_normal_map_name.c_str();
-		ETextureThumbnail* NM_THM = xr_new<ETextureThumbnail>(e_name);
+		ETextureThumbnail* NM_THM = new ETextureThumbnail(e_name);
 		if (NM_THM->_Format().type == STextureParams::ttNormalMap)
 		{
 			if (NM_THM->_Format().fmt == STextureParams::tfRGBA)
@@ -350,7 +350,7 @@ void CImageManager::SafeCopyLocalToServer(FS_FileSet& files)
 			U32Vec data;
 			u32 w,h,a;
 			R_ASSERT	(Stbi_Load(src_name,data,w,h,a));
-			CXImage* I 	= xr_new<CXImage>();
+			CXImage* I 	= new CXImage();
 			I->Create	(w,h,data.data());
 			I->Vflip	();
 			I->SaveTGA	(dest_name);
@@ -407,7 +407,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		BOOL bFailed 	= FALSE;
 		// check thumbnail
 		if (sync_thm&&bThm){
-			THM = xr_new<ETextureThumbnail>(it->name.c_str());
+			THM = new ETextureThumbnail(it->name.c_str());
 		bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);
 //.             MakeThumbnailImage(THM,data.begin(),w,h,a);
 			THM->Save	(it->time_write);
@@ -415,7 +415,7 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 		}
 		// check game textures
 		if (bForceGame||(sync_game&&bGame)){
-			if (!THM) THM = xr_new<ETextureThumbnail>(it->name.c_str());
+			if (!THM) THM = new ETextureThumbnail(it->name.c_str());
 			R_ASSERT(THM);
 			if (data.empty()){ bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);}
 			if (IsValidSize(w,h)){
@@ -729,8 +729,8 @@ void CImageManager::RemoveTexture(LPCSTR fname, EItemType type)
 EImageThumbnail* CImageManager::CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)
 {
 	switch (type){
-	case ECustomThumbnail::ETObject: 	return xr_new<EObjectThumbnail>	(src_name,bLoad);
-	case ECustomThumbnail::ETTexture:	return xr_new<ETextureThumbnail>(src_name,bLoad);
+	case ECustomThumbnail::ETObject: 	return new EObjectThumbnail	(src_name,bLoad);
+	case ECustomThumbnail::ETTexture:	return new ETextureThumbnail(src_name,bLoad);
 	default: NODEFAULT;
 	}
 	return 0;

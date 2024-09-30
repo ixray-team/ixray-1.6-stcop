@@ -211,7 +211,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 		if (P.b2sided)
 			CL.add_face_packed_D(P.v3,P.v2,P.v1,*(u32*)&P.occ,0.01f);
 	}
-	geom_SOM			= xr_new<CDB::MODEL> ();
+	geom_SOM			= new CDB::MODEL();
 	geom_SOM->build		(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
 #endif
 
@@ -267,7 +267,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	geom_ENV			= ETOOLS::create_model(verts, H.vertcount, tris, H.facecount);
 	env_apply			();
 #else
-	geom_ENV			= xr_new<CDB::MODEL> ();
+	geom_ENV			= new CDB::MODEL();
 	geom_ENV->build		(verts, H.vertcount, tris, H.facecount);
 #endif
 	geom_ch->close			();

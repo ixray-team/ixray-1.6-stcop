@@ -36,7 +36,7 @@ int APIENTRY WinMain
 
 	EngineLoadStage2();
 
-	Console = xr_new<CTextConsole>();
+	Console = new CTextConsole();
 	EngineLoadStage3();
 
 	Engine.External.CreateRendererList();

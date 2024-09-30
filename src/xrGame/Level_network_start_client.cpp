@@ -234,7 +234,7 @@ bool	CLevel::net_start_client6				()
 
 			if (game->Type() != eGameIDSingle)
 			{
-				m_file_transfer = xr_new<file_transfer::client_site>();
+				m_file_transfer = new file_transfer::client_site();
 			}
 		}
 

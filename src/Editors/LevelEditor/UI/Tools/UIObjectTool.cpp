@@ -12,12 +12,12 @@ UIObjectTool::UIObjectTool()
     m_Selection = false;
     m_RealTexture = nullptr;
     m_RemoveTexture = nullptr;
-    m_ObjectList = xr_new<UIItemListForm>();
+    m_ObjectList = new UIItemListForm();
     m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIObjectTool::OnItemFocused));
     m_TextureNull.create("ed\\ed_nodata");
     m_TextureNull->Load();
 
-    m_Props = xr_new< UIPropertiesForm>();
+    m_Props = new UIPropertiesForm();
     RefreshList();
 }
 
@@ -229,7 +229,7 @@ void UIObjectTool::OnDrawUI()
                 {
                     string256 namebuffer;
                     Scene->GenObjectName(OBJCLASS_SCENEOBJECT, namebuffer, it->c_str());
-                    CSceneObject* obj = xr_new<CSceneObject>((LPVOID)0, namebuffer);
+                    CSceneObject* obj = new CSceneObject((LPVOID)0, namebuffer);
                     CEditableObject* ref = obj->SetReference(it->c_str());
                     if (!ref)
                     {

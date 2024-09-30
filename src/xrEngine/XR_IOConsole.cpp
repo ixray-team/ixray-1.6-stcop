@@ -96,8 +96,10 @@ void ConsoleLogCallback(LPCSTR line) {
 	Console->AddLogEntry(line);
 }
 
-CConsole::CConsole() : m_hShader_back(nullptr) {
-	m_editor          = xr_new<text_editor::line_editor>( (u32)CONSOLE_BUF_SIZE );
+CConsole::CConsole() : 
+	m_hShader_back(nullptr) 
+{
+	m_editor = new text_editor::line_editor((u32)CONSOLE_BUF_SIZE);
 	m_cmd_history_max = cmd_history_max;
 	m_disable_tips    = false;
 	Register_callbacks();
@@ -246,7 +248,7 @@ void CConsole::OnRender()
 
 	if (!m_hShader_back)
 	{
-		m_hShader_back = xr_new< FactoryPtr<IUIShader> >();
+		m_hShader_back = new FactoryPtr<IUIShader>();
 		(*m_hShader_back)->create( "hud\\default", "ui\\ui_console" ); // "ui\\ui_empty"
 	}
 

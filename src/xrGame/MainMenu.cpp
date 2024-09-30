@@ -123,10 +123,10 @@ CMainMenu::CMainMenu	()
 		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_copy", MESSAGE_BOX_COPY_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap_CopyURL));
 		m_pMB_ErrDlgs[DownloadMPMap]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadMPMap));
 
-		m_account_mngr			= xr_new<gamespy_gp::account_manager>		(m_pGameSpyFull->GetGameSpyGP());
-		m_login_mngr			= xr_new<gamespy_gp::login_manager>			(m_pGameSpyFull);
-		m_profile_store			= xr_new<gamespy_profile::profile_store>	(m_pGameSpyFull);
-		m_stats_submitter		= xr_new<gamespy_profile::stats_submitter>	(m_pGameSpyFull);
+		m_account_mngr			= new gamespy_gp::account_manager		(m_pGameSpyFull->GetGameSpyGP());
+		m_login_mngr			= new gamespy_gp::login_manager			(m_pGameSpyFull);
+		m_profile_store			= new gamespy_profile::profile_store	(m_pGameSpyFull);
+		m_stats_submitter		= new gamespy_profile::stats_submitter	(m_pGameSpyFull);
 		m_atlas_submit_queue	= new atlas_submit_queue				(m_stats_submitter);
 	}
 	

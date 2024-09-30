@@ -577,7 +577,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 			if (IconPath.find(fn) != xr_string::npos) {
 				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
-				EGroupThumbnail* m_Thm = xr_new<EGroupThumbnail>(NewPath.data());
+				EGroupThumbnail* m_Thm = new EGroupThumbnail(NewPath.data());
 				//EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
 				CTexture* TempTexture = new CTexture();
 				m_Thm->Update(TempTexture->pSurface);

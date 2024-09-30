@@ -30,10 +30,10 @@ void SoundVoiceChat::Destroy()
 ISoundRecorder* SoundVoiceChat::CreateRecorder(IVoicePacketSender* sender)
 {
 	Destroy();
-	m_pVoicePacker = xr_new<CVoicePacketsPacker>();
+	m_pVoicePacker = new CVoicePacketsPacker();
 	m_pVoicePacker->AddSender(sender);
 
-	m_pRecorder = xr_new<CSoundRecorderA>(VOICE_SAMPLE_RATE, VOICE_FORMAT, VOICE_SAMPLES_PER_BUFFER);
+	m_pRecorder = new CSoundRecorderA(VOICE_SAMPLE_RATE, VOICE_FORMAT, VOICE_SAMPLES_PER_BUFFER);
 
 	if (!m_pRecorder->Init(m_pVoicePacker))
 	{
@@ -46,7 +46,7 @@ ISoundRecorder* SoundVoiceChat::CreateRecorder(IVoicePacketSender* sender)
 
 IStreamPlayer* SoundVoiceChat::CreateStreamPlayer()
 {
-	IStreamPlayer* player = (IStreamPlayer*)xr_new<CStreamPlayerA>(VOICE_SAMPLE_RATE, VOICE_FORMAT, m_pContext);
+	IStreamPlayer* player = (IStreamPlayer*)new CStreamPlayerA(VOICE_SAMPLE_RATE, VOICE_FORMAT, m_pContext);
 	m_players.push_back(player);
 	return player;
 }

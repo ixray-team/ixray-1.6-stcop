@@ -272,10 +272,10 @@ bool ESceneLightTool::Validate(bool full_test)
 void ESceneLightTool::CreateControls()
 {
 	inherited::CreateDefaultControls(estDefault);
-	// AddControl(xr_new<TUI_CustomControl>(estDefault, etaSelect, this));
+	// AddControl(new TUI_CustomControl(estDefault, etaSelect, this));
 	// frame
-	pForm = xr_new<UILightTool>();
-   // pFrame = xr_new<TfraLight>((TComponent*)0);
+	pForm = new UILightTool();
+   // pFrame = new TfraLight((TComponent*)0);
 }
 
  
@@ -287,7 +287,7 @@ void ESceneLightTool::RemoveControls()
 
 CCustomObject* ESceneLightTool::CreateObject(LPVOID data, LPCSTR name)
 {
-	CCustomObject* O	= xr_new<CLight>(data,name);
+	CCustomObject* O	= new CLight(data,name);
 	O->FParentTools		= this;
 	return O;
 }

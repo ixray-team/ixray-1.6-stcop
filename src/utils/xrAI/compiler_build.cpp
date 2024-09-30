@@ -221,7 +221,7 @@ void	hash_Initialize ()
 	{
 		for (int j=0; j<HDIM_Z; j++)
 		{
-			HASH[i][j]	= xr_new<vecDW>();
+			HASH[i][j]	= new vecDW();
 			HASH[i][j]->reserve	(64);
 		}
 	}

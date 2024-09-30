@@ -87,12 +87,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	const char* FSName = "fs.ltx";
 	Core._initialize("Actor", ELogCallback, 1, FSName);
 
-	Tools = xr_new<CActorTools>();
+	Tools = new CActorTools();
 	ATools = (CActorTools*)Tools;
-	UI = xr_new<CActorMain>();
+	UI = new CActorMain();
 	UI->RegisterCommands();
 
-	UIMainForm* MainForm = xr_new<UIMainForm>();
+	UIMainForm* MainForm = new UIMainForm();
 	::MainForm = MainForm;
 
 	PGMLib->Load();

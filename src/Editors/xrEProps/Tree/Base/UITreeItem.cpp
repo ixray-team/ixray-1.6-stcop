@@ -72,6 +72,6 @@ UITreeItem* UITreeItem::FindItem(const char* Path, char PathChar )
 
 UITreeItem* UITreeItem::CreateItem(shared_str Name)
 {
-	return xr_new< UITreeItem>(Name);
+	return new UITreeItem(Name);
 }
 

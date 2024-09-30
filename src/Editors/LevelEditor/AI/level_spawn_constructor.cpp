@@ -62,7 +62,7 @@ IC const IGameLevelCrossTable& CLevelSpawnConstructor::cross_table() const
 
 void CLevelSpawnConstructor::init()
 {
-	//m_level_graph = xr_new<ILevelGraph>();
+	//m_level_graph = new ILevelGraph();
 	m_level_graph = Scene->GetLevelGraph();
 	m_game_spawn_constructor->game_graph().set_current_level(game_graph().header().level(*m_level.name()).id());
 	m_cross_table = &game_graph().cross_table();
@@ -148,7 +148,7 @@ void CLevelSpawnConstructor::add_space_restrictor(CSE_ALifeDynamicObject* dynami
 	if (!space_restrictor->m_flags.test(CSE_ALifeObject::flCheckForSeparator))
 		return;
 
-	m_space_restrictors.push_back(xr_new<CSpaceRestrictorWrapper>(space_restrictor));
+	m_space_restrictors.push_back(new CSpaceRestrictorWrapper(space_restrictor));
 }
 
 void CLevelSpawnConstructor::add_level_changer(CSE_Abstract* abstract)
@@ -168,7 +168,7 @@ void CLevelSpawnConstructor::add_free_object(CSE_Abstract* abstract)
 //{
 //	SPAWN_GRPOUP_OBJECTS::iterator	I = m_spawn_objects.find(group_section);
 //	if (I == m_spawn_objects.end()) {
-//		xr_vector<CSE_Abstract*>	*temp = xr_new<GROUP_OBJECTS>();
+//		xr_vector<CSE_Abstract*>	*temp = new GROUP_OBJECTS();
 //		temp->clear					();
 //		temp->push_back				(abstract);
 //		m_spawn_objects.insert		(std::make_pair(group_section,temp));
