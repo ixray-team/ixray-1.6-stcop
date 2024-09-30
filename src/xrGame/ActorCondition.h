@@ -122,7 +122,7 @@ public:
 	PlayerAddiction Sleepiness;
 	PLAYER_ADDICTION_IMPL(Sleepiness);
 
-protected:
+public:
 	SMedicineInfluenceValues m_curr_medicine_influence;
 
 	float m_fPowerLeakSpeed;
