@@ -392,22 +392,23 @@ void xrCompressor::ClosePack()
 	FS.w_close		(fs_pack_writer);
 	Msg				("Pack saved.");
 	size_t dwTimeEnd = CPU::GetTickCount();
-	printf			("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %dK/%dK, %3.1f%%\nElapsed time: %d:%d\nCompression speed: %3.1f Mb/s",
-		filesTOTAL,filesSKIP,filesVFS,filesALIAS,
-		bytesDST/1024,bytesSRC/1024,
-		100.f*float(bytesDST)/float(bytesSRC),
-		((dwTimeEnd-dwTimeStart)/1000)/60,
-		((dwTimeEnd-dwTimeStart)/1000)%60,
-		float((float(bytesDST)/float(1024*1024))/(t_compress.GetElapsed_sec()))
-		);
-	Msg			("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %dK/%dK, %3.1f%%\nElapsed time: %d:%d\nCompression speed: %3.1f Mb/s\n\n",
-		filesTOTAL,filesSKIP,filesVFS,filesALIAS,
-		bytesDST/1024,bytesSRC/1024,
-		100.f*float(bytesDST)/float(bytesSRC),
-		((dwTimeEnd-dwTimeStart)/1000)/60,
-		((dwTimeEnd-dwTimeStart)/1000)%60,
-		float((float(bytesDST)/float(1024*1024))/(t_compress.GetElapsed_sec()))
-		);
+	printf("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %uK/%uK, %3.1f%%\nElapsed time: %zu:%zu\nCompression speed: %3.1f Mb/s",
+		filesTOTAL, filesSKIP, filesVFS, filesALIAS,
+		bytesDST / 1024, bytesSRC / 1024,
+		100.f * float(bytesDST) / float(bytesSRC),
+		((dwTimeEnd - dwTimeStart) / 1000) / 60,
+		((dwTimeEnd - dwTimeStart) / 1000) % 60,
+		float((float(bytesDST) / float(1024 * 1024)) / (t_compress.GetElapsed_sec()))
+	);
+
+	Msg("\n\nFiles total/skipped/VFS/aliased: %d/%d/%d/%d\nOveral: %uK/%uK, %3.1f%%\nElapsed time: %zu:%zu\nCompression speed: %3.1f Mb/s\n\n",
+		filesTOTAL, filesSKIP, filesVFS, filesALIAS,
+		bytesDST / 1024, bytesSRC / 1024,
+		100.f * float(bytesDST) / float(bytesSRC),
+		((dwTimeEnd - dwTimeStart) / 1000) / 60,
+		((dwTimeEnd - dwTimeStart) / 1000) % 60,
+		float((float(bytesDST) / float(1024 * 1024)) / (t_compress.GetElapsed_sec()))
+	);
 }
 
 void xrCompressor::PerformWork()
