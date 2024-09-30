@@ -632,6 +632,9 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 		xr_vector<u32> CheckNodes;
 		l_tpaStack.push_back(Object->m_tNodeID);
 		CheckNodes.push_back(Object->m_tNodeID);
+
+		xr_set<u32> NodeVisited;
+
 		float m_distance_xz = level_graph().header().cell_size();
 		ILevelGraph::CVertex* MainNode = level_graph().vertex(Object->m_tNodeID);
 		while(CheckNodes.size() > 0)
@@ -639,6 +642,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 			u32 CurrentNodeID = CheckNodes.back();
 			CheckNodes.pop_back();
 			ILevelGraph::CVertex* Node = level_graph().vertex(CurrentNodeID);
+			NodeVisited.emplace(CurrentNodeID);
 
 			auto DistanceNode = [this,m_distance_xz](ILevelGraph::CVertex* Node1,ILevelGraph::CVertex* Node2)
 			{
@@ -652,8 +656,11 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions_worker()
 				ILevelGraph::CVertex* NeighborNode = level_graph().vertex(Object->m_tNodeID);
 				if(DistanceNode(MainNode,NeighborNode) < zone->m_offline_interactive_radius)
 				{
-					l_tpaStack.push_back(NeighborID);
-					CheckNodes.push_back(NeighborID);
+					if (!NodeVisited.contains(NeighborID))
+					{
+						l_tpaStack.push_back(NeighborID);
+						CheckNodes.push_back(NeighborID);
+					}
 				}
 			}
 		}
