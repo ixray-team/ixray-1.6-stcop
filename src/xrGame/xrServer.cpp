@@ -1077,7 +1077,7 @@ void xrServer::PerformCheckClientsForMaxPing()
 				if(Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
 				{  //kick
 					string256	reason;
-					xr_strconcat(reason, CStringTable().translate("st_kicked_by_server").c_str() );
+					xr_strconcat(reason, g_pStringTable->translate("st_kicked_by_server").c_str() );
 					Level().Server->DisconnectClient( Client, reason );
 				}
 				else

@@ -1382,7 +1382,7 @@ bool game_sv_CaptureTheArtefact::OnKillResult(KILL_RES KillResult, game_PlayerSt
 					if (tmp_client)
 					{
 						string256 reason;
-						xr_strconcat( reason, CStringTable().translate("st_kicked_by_server").c_str() );
+						xr_strconcat( reason, g_pStringTable->translate("st_kicked_by_server").c_str() );
 						m_server->DisconnectClient( tmp_client, reason );
 					}
 				}

@@ -163,7 +163,6 @@ void game_cl_ArtefactHunt::net_import_state	(NET_Packet& P)
 
 void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 {
-	CStringTable st;
 	string512 Text;
 	string512 tmp;
 //	LPSTR	Color_Teams[3]		= {"%c[255,255,255,255]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
@@ -185,7 +184,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			if (m_reward_generator)
 				m_reward_generator->OnPlayerTakeArtefact(pPlayer);
 
-			xr_sprintf(tmp, "%s%s", "%s%s %s", *st.translate("mp_has_tak_art"));
+			xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_has_tak_art"));
 
 			xr_sprintf(Text, tmp, 
 				CTeamInfo::GetTeam_color_tag(int(Team)), 
@@ -216,7 +215,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			if (m_reward_generator)
 				m_reward_generator->OnPlayerDropArtefact(pPlayer);
 
-            xr_sprintf(tmp, "%s%s", "%s%s %s", *st.translate("mp_has_drop_art"));
+            xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_has_drop_art"));
 
 			xr_sprintf(Text, tmp, 
 				CTeamInfo::GetTeam_color_tag(int(Team)), 
@@ -240,7 +239,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 			if (m_reward_generator)
 				m_reward_generator->OnPlayerBringArtefact(pPlayer);
 
-			xr_sprintf(tmp, "%s%s", "%s%s %s", *st.translate("mp_scores"));
+			xr_sprintf(tmp, "%s%s", "%s%s %s", *g_pStringTable->translate("mp_scores"));
 
 			xr_sprintf(Text, tmp, 
 				CTeamInfo::GetTeam_color_tag(int(Team)), 
@@ -260,7 +259,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	case GAME_EVENT_ARTEFACT_SPAWNED: //ahunt
 		{
 			xr_sprintf(Text, "%s%s", 
-				Color_Main, *st.translate("mp_art_spowned"));
+				Color_Main, *g_pStringTable->translate("mp_art_spowned"));
 			if(CurrentGameUI()) CurrentGameUI()->CommonMessageOut(Text);
 			if (m_reward_generator)
 				m_reward_generator->OnArtefactSpawned();
@@ -270,7 +269,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	case GAME_EVENT_ARTEFACT_DESTROYED:  //ahunt
 		{
 			xr_sprintf(Text, "%s%s", 
-				Color_Main, *st.translate("mp_art_destroyed"));
+				Color_Main, *g_pStringTable->translate("mp_art_destroyed"));
 			u16 ArtefactID = P.r_u16();
 			//-------------------------------------------
 			CObject* pObj = Level().Objects.net_Find(ArtefactID);
@@ -350,7 +349,6 @@ void game_cl_ArtefactHunt::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 
 void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 {
-	CStringTable st;
 	string1024 msg;
 
 	inherited::shedule_Update		(dt);
@@ -392,7 +390,7 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 						if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 							!(pCurSkinMenu && pCurSkinMenu->IsShown()))
 						{					
-							xr_sprintf(msg, *st.translate("mp_press_to_buy"), "B");
+							xr_sprintf(msg, *g_pStringTable->translate("mp_press_to_buy"), "B");
 							if(m_game_ui) m_game_ui->SetBuyMsgCaption(msg);
 						};
 					}					
@@ -668,7 +666,6 @@ void	game_cl_ArtefactHunt::UpdateMapLocations		()
 
 bool game_cl_ArtefactHunt::NeedToSendReady_Spectator(int key, game_PlayerState* ps)
 {
-	CStringTable		st;
 	bool res = ( GAME_PHASE_PENDING	== Phase() && kWPN_FIRE == key) || 
 		( (kJUMP == key) && GAME_PHASE_INPROGRESS==Phase() && 
 		CanBeReady());
@@ -686,7 +683,7 @@ bool game_cl_ArtefactHunt::NeedToSendReady_Spectator(int key, game_PlayerState* 
 		local_player && (local_player->money_for_round+m_iSpawn_Cost)>=0) 
 	{
 		string1024				BuySpawnText;
-		xr_sprintf				(BuySpawnText, *st.translate("mp_press_yes2pay"), 
+		xr_sprintf				(BuySpawnText, *g_pStringTable->translate("mp_press_yes2pay"),
 								abs(local_player->money_for_round), abs(m_iSpawn_Cost));
 		m_game_ui->m_pBuySpawnMsgBox->SetText(BuySpawnText);
 

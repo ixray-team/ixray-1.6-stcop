@@ -1488,13 +1488,13 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	if ( ae != 0 && m_magazine.size() != 0 )
 	{
 		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
-		info.name		= CStringTable().translate( pSettings->r_string(ammo_type, "inv_name_short") );
+		info.name		= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon		= ammo_type;
 	}
 	else
 	{
 		LPCSTR ammo_type	= m_ammoTypes[m_ammoType].c_str();
-		info.name			= CStringTable().translate( pSettings->r_string(ammo_type, "inv_name_short") );
+		info.name			= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon			= ammo_type;
 	}
 	return true;

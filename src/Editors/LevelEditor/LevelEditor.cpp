@@ -2,11 +2,12 @@
 //
 #include "stdafx.h"
 #include "Engine/XrGameManager.h"
-#include "..\XrEngine\std_classes.h"
-#include "..\XrEngine\IGame_Persistent.h"
-#include "..\XrEngine\XR_IOConsole.h"
-#include "..\XrEngine\IGame_Level.h"
-#include "..\XrEngine\x_ray.h"
+#include "..\xrEngine\std_classes.h"
+#include "..\xrEngine\IGame_Persistent.h"
+#include "..\xrEngine\XR_IOConsole.h"
+#include "..\xrEngine\IGame_Level.h"
+#include "..\xrEngine/string_table.h"
+#include "..\xrEngine\x_ray.h"
 #include "Engine/XRayEditor.h"
 #include "../../xrEngine/xr_input.h"
 #include "Editor/Utils/ContentView.h"
@@ -35,6 +36,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     EditorScene = Scene;
     UIMainForm* MainForm = new UIMainForm();
     pApp = new XRayEditor();
+    g_pStringTable = new CStringTable();
     g_XrGameManager = new XrGameManager();
     g_SEFactoryManager = new XrSEFactoryManager();
 

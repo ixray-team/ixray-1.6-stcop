@@ -539,7 +539,7 @@ public:
 #endif
 		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		string256 save_name;
-		xr_strconcat(save_name, CStringTable().translate("st_game_saved").c_str(), ": ", S);
+		xr_strconcat(save_name, g_pStringTable->translate("st_game_saved").c_str(), ": ", S);
 		_s->wnd()->TextItemControl()->SetText(save_name);
 
 		xr_strcat				(S,".dds");

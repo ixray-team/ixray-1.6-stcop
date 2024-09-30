@@ -490,12 +490,12 @@ void CLevel::OnConnectResult(NET_Packet*	P)
 				if (!xr_strlen(ResultStr))
 				{
 					MainMenu()->OnSessionTerminate(
-						CStringTable().translate("st_you_have_been_banned").c_str()
+						g_pStringTable->translate("st_you_have_been_banned").c_str()
 					);
 				} else
 				{
 					MainMenu()->OnSessionTerminate(
-						CStringTable().translate(ResultStr).c_str()
+						g_pStringTable->translate(ResultStr).c_str()
 					);
 				}
 			}break;
@@ -504,12 +504,12 @@ void CLevel::OnConnectResult(NET_Packet*	P)
 				if (!xr_strlen(ResultStr))
 				{
 					MainMenu()->OnSessionTerminate(
-						CStringTable().translate("st_profile_error").c_str()
+						g_pStringTable->translate("st_profile_error").c_str()
 					);
 				} else
 				{
 					MainMenu()->OnSessionTerminate(
-						CStringTable().translate(ResultStr).c_str()
+						g_pStringTable->translate(ResultStr).c_str()
 					);
 				}
 			}

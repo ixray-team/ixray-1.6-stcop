@@ -505,12 +505,12 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListBox *pList
 		{
 			oneLevel.assign(group, 0, pos);
 			shared_str str(oneLevel.c_str());
-			groupTree.push_back(CStringTable().translate(str));
+			groupTree.push_back(g_pStringTable->translate(str));
 			group.erase(0, pos + 1);
 		}
 		else
 		{
-			groupTree.push_back(CStringTable().translate(group.c_str()));
+			groupTree.push_back(g_pStringTable->translate(group.c_str()));
 			break;
 		}
 	}
@@ -580,7 +580,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListBox *pList
 	pTVItem		= xr_new<CUITreeViewItem>();
 	pTVItem->SetFont(pLeafFont);
 	pTVItem->SetReadedColor(leafColor);
-	pTVItem->SetText(*CStringTable().translate(*leafName));
+	pTVItem->SetText(*g_pStringTable->translate(*leafName));
 //	pTVItem->SetValue(leafProperty);
 	pTVItem->SetSelectedTAG(leafProperty);
 	pTVItemChilds->AddItem(pTVItem);

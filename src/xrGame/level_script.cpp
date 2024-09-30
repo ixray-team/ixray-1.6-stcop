@@ -833,7 +833,7 @@ void stop_tutorial()
 
 LPCSTR translate_string(LPCSTR str)
 {
-	return *CStringTable().translate(str);
+	return *g_pStringTable->translate(str);
 }
 
 bool has_active_tutotial()
