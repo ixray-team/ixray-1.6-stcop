@@ -116,7 +116,12 @@ float4 main(vf I, float4 pos2d : SV_Position) : SV_Target
 	
 	float2 CausticTexcoord = mul(m_invV, float4(gbd.P.xyz, 1.0f)).xz * 0.45f;
 	float3 Caustic = s_caustic.Sample(smp_base, CausticTexcoord).yyy;
-	
+
+	//LV: Subtle chromatic abberation effect
+	//https://x.com/XorDev/status/1831738521935360079
+	Caustic += ddx(Caustic) * float3(1.25, 0.0, -1.25); 
+	Caustic += ddy(Caustic) * float3(1.25, 0.0, -1.25);
+
 	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Light.w;
 	final += Caustic * Light.xyz * 0.25f;
 	
