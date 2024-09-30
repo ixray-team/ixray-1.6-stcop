@@ -302,7 +302,8 @@ public:
 			dbg_draw_autopickupbox			=(1<<8),	
 			dbg_draw_rp						=(1<<9),	
 			dbg_draw_climbable				=(1<<10),
-			dbg_draw_skeleton				=(1<<11)
+			dbg_draw_skeleton				=(1<<11),
+			dbg_draw_lchangers				=(1<<12)
 		};
 extern	Flags32	dbg_net_Draw_Flags;
 #endif

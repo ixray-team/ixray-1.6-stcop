@@ -2179,7 +2179,10 @@ void CCC_RegisterCommands()
 	CMD1(CCC_SetCharComm, "g_character_community");
 	CMD1(CCC_SetMonstComm, "g_monster_community");
 
-	CMD1(CCC_Particle_TEST,     "g_ps_test");
+	CMD1(CCC_Particle_TEST, "g_ps_test");
+
+	CMD3(CCC_Mask, "dbg_draw_lchangers", &dbg_net_Draw_Flags, dbg_draw_lchangers);
+
 #endif
 
 	CMD1(CCC_MemStats,			"stat_memory"			);
