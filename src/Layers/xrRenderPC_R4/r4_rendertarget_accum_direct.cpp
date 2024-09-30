@@ -319,34 +319,6 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const u32
 
 	ref_selement Element = s_accum_direct_volumetric->E[0];
 
-	//	Set correct depth surface
-	//	It's slow. Make this when shader is created
-	{
-		const char* pszSMapName;
-		BOOL b_HW_smap = RImplementation.o.HW_smap;
-		BOOL b_HW_PCF = RImplementation.o.HW_smap_PCF;
-		if(b_HW_smap) {
-			if(b_HW_PCF) pszSMapName = r2_RT_smap_depth;
-			else pszSMapName = r2_RT_smap_depth;
-		}
-		else pszSMapName = r2_RT_smap_surf;
-		//s_smap
-		STextureList* _T = &*Element->passes[0]->T;
-
-		STextureList::iterator	_it = _T->begin();
-		STextureList::iterator	_end = _T->end();
-
-		for(; _it != _end; _it++) {
-			std::pair<u32, ref_texture>& loader = *_it;
-			u32			load_id = loader.first;
-			//	Shadowmap texture always uses 0 texture unit
-			if(load_id == 0) {
-				//	Assign correct texture
-				loader.second.create(pszSMapName);
-			}
-		}
-	}
-
 	// Perform lighting
 	{
 		light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();

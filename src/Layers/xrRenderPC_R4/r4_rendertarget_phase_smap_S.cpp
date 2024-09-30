@@ -8,7 +8,7 @@ void CRenderTarget::phase_smap_spot_clear()
 void CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
+	u_setrt(nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
 
 	D3D_VIEWPORT VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
 	RContext->RSSetViewports(1, &VP);
