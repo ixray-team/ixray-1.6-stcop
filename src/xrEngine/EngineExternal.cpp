@@ -18,6 +18,11 @@ xr_string CEngineExternal::GetTitle() const {
 	return READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
 }
 
+const char* CEngineExternal::GetPlayerHudOmfAdditional() const
+{
+	return READ_IF_EXISTS(pOptions, r_string_wb, "player_hud", "PlayerHudOmfAdditional", "").c_str();
+}
+
 bool CEngineExternal::operator[](const EEngineExternalUI& ID) const
 {
 	return READ_IF_EXISTS(pOptions, r_bool, "ui", magic_enum::enum_name(ID).data(), false);

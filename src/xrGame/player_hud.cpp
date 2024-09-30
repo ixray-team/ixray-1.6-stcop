@@ -372,19 +372,19 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	xr_strconcat(val_name,"gl_hud_offset_rot",_prefix);
 	m_hands_offset[1][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
 
-	//--> Ñìåùåíèå â ñòðåéôå
+	//--> Ð¡Ð¼ÐµÑ‰ÐµÐ½Ð¸Ðµ Ð² ÑÑ‚Ñ€ÐµÐ¹Ñ„Ðµ
 	xr_strconcat(val_name, "strafe_hud_offset_pos", _prefix);
 	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.015f, 0.f, 0.f));
 	xr_strconcat(val_name, "strafe_hud_offset_rot", _prefix);
 	m_strafe_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 4.5f));
 
-	//--> Ïîâîðîò â ñòðåéôå
+	//--> ÐŸÐ¾Ð²Ð¾Ñ€Ð¾Ñ‚ Ð² ÑÑ‚Ñ€ÐµÐ¹Ñ„Ðµ
 	xr_strconcat(val_name, "strafe_aim_hud_offset_pos", _prefix);
 	m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.005f, 0.f, 0.f));
 	xr_strconcat(val_name, "strafe_aim_hud_offset_rot", _prefix);
 	m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 2.5f));
 
-	//--> Ïàðàìåòðû ñòðåéôà
+	//--> ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÑ‚Ñ€ÐµÐ¹Ñ„Ð°
 	bool bStrafeEnabled = READ_IF_EXISTS(pSettings, r_bool, sect_name, "strafe_enabled", true);
 	bool bStrafeEnabled_aim = READ_IF_EXISTS(pSettings, r_bool, sect_name, "strafe_aim_enabled", false);
 	float fFullStrafeTime = READ_IF_EXISTS(pSettings, r_float, sect_name, "strafe_transition_time", 0.5f);
@@ -583,6 +583,18 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
 	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+
+	auto pathOmfs = EngineExternal().GetPlayerHudOmfAdditional();
+	if (pathOmfs && pathOmfs[0])
+	{
+		string_path nm = {};
+		for (int i = 0, n = _GetItemCount(pathOmfs); i < n; ++i)
+		{
+			auto path = _GetItem(pathOmfs, i, nm);
+			m_model->append_motion_from_path(model_name.c_str(), path);
+		}
+	}
+
 
 	if(pSettings->line_exist(player_hud_sect, "legs_visual")) {
 		auto model_name = pSettings->r_string(player_hud_sect, "legs_visual");
@@ -1161,7 +1173,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 	return !!m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r);
 
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///èùåì àíèìàöèþ â áèáëèîòåêå àéòåìà íà ïðèìåð anm_show
+	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///Ð¸Ñ‰ÐµÐ¼ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð² Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐµ Ð°Ð¹Ñ‚ÐµÐ¼Ð° Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1170,7 +1182,7 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 		if(m_attached_items[place_idx]->m_hand_motions.find_motion(anim_name_r))
 			return true;
 	}
-	else//èíà÷å áóäåì èñêàòü ïî ïðÿìîìó íàçâàíèþ íà ïðèìåð abakan_draw èëè fn_2000_reload è òï
+	else//Ð¸Ð½Ð°Ñ‡Ðµ Ð±ÑƒÐ´ÐµÐ¼ Ð¸ÑÐºÐ°Ñ‚ÑŒ Ð¿Ð¾ Ð¿Ñ€ÑÐ¼Ð¾Ð¼Ñƒ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÑŽ Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ abakan_draw Ð¸Ð»Ð¸ fn_2000_reload Ð¸ Ñ‚Ð¿
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1181,21 +1193,21 @@ bool player_hud::check_anim(const shared_str& anim_name, u16 place_idx)
 }
 
 //	HUD_HANDS_ANIMATOR
-//	anim_name íàçâàíèå àíèìàöèè
-//	place_idx èíäåêñ àéòåìà 0 - îðóæèå, 1 - äåòåêòîð, ëþáûå äðóãèå çíà÷åíèÿ çàñòàâÿò àíèìàòîð èñêàòü àíèìàöèþ â áèáëèîòåêå ðóê ïî ïðÿìûì íàçâàíèÿì
-//	part_id èíäåêñ áîí ïàðòà 0 - default 1 - left_hand, 2 - right_hand, -1 - îçíà÷àåò ÷òî áóäåò âçÿò áîí ïàðò íàçíà÷åííûé â àíèìàöèè, ëþáûå äðóãèå çíà÷åíèÿ çàïóñòÿò àíèìàöèþ äëÿ âñåõ áîíïàðòîâ
-//	bMixIn ñãëàæèâàíèå ñ ïðåäûäóùåé àíèìàöèåé
-//	speed ìíîæèòåëü ñêîðîñòè àíèìàöèè
-//	anm_idx èíäåêñ àíèìàöèè èç êîíôèãà õóäàéòåìà
-//	impact_on_item çàïóñê àíèìàöèè íà àéòèìå
-//	similar_check äëÿ òîãî åñëè íóæíî çàïðåòèòü çàïóñêàòü àíèìàöèþ åñëè îíà óæå áûëà çàïóùåíà
-//	static void Callback ñòàòè÷åñêàÿ ôóíêöèÿ êîòîðàÿ áóäåò âûçâàíà ïî çàâåðøåíèþ àíèìàöèè
-//	void* CallbackParam ïàðàìåòð â êîòîðûé ìîæíî ïîìåñòèòü ÷òî óãîäíî
-//	UpdateCallbackType òèï êàëëáåêà 0 - ñðàáîòàåò ïî îêîí÷àíèþ àíèìàöèè 1 - áóäåò ñðàáàòûâàòü ïîêà àíèìàöèÿ íå çàêîí÷èòñÿ
+//	anim_name Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
+//	place_idx Ð¸Ð½Ð´ÐµÐºÑ Ð°Ð¹Ñ‚ÐµÐ¼Ð° 0 - Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ, 1 - Ð´ÐµÑ‚ÐµÐºÑ‚Ð¾Ñ€, Ð»ÑŽÐ±Ñ‹Ðµ Ð´Ñ€ÑƒÐ³Ð¸Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ð·Ð°ÑÑ‚Ð°Ð²ÑÑ‚ Ð°Ð½Ð¸Ð¼Ð°Ñ‚Ð¾Ñ€ Ð¸ÑÐºÐ°Ñ‚ÑŒ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð² Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐµ Ñ€ÑƒÐº Ð¿Ð¾ Ð¿Ñ€ÑÐ¼Ñ‹Ð¼ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÑÐ¼
+//	part_id Ð¸Ð½Ð´ÐµÐºÑ Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ð° 0 - default 1 - left_hand, 2 - right_hand, -1 - Ð¾Ð·Ð½Ð°Ñ‡Ð°ÐµÑ‚ Ñ‡Ñ‚Ð¾ Ð±ÑƒÐ´ÐµÑ‚ Ð²Ð·ÑÑ‚ Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚ Ð½Ð°Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ‹Ð¹ Ð² Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸, Ð»ÑŽÐ±Ñ‹Ðµ Ð´Ñ€ÑƒÐ³Ð¸Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ð·Ð°Ð¿ÑƒÑÑ‚ÑÑ‚ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð´Ð»Ñ Ð²ÑÐµÑ… Ð±Ð¾Ð½Ð¿Ð°Ñ€Ñ‚Ð¾Ð²
+//	bMixIn ÑÐ³Ð»Ð°Ð¶Ð¸Ð²Ð°Ð½Ð¸Ðµ Ñ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰ÐµÐ¹ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÐµÐ¹
+//	speed Ð¼Ð½Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
+//	anm_idx Ð¸Ð½Ð´ÐµÐºÑ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð¸Ð· ÐºÐ¾Ð½Ñ„Ð¸Ð³Ð° Ñ…ÑƒÐ´Ð°Ð¹Ñ‚ÐµÐ¼Ð°
+//	impact_on_item Ð·Ð°Ð¿ÑƒÑÐº Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð½Ð° Ð°Ð¹Ñ‚Ð¸Ð¼Ðµ
+//	similar_check Ð´Ð»Ñ Ñ‚Ð¾Ð³Ð¾ ÐµÑÐ»Ð¸ Ð½ÑƒÐ¶Ð½Ð¾ Ð·Ð°Ð¿Ñ€ÐµÑ‚Ð¸Ñ‚ÑŒ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ ÐµÑÐ»Ð¸ Ð¾Ð½Ð° ÑƒÐ¶Ðµ Ð±Ñ‹Ð»Ð° Ð·Ð°Ð¿ÑƒÑ‰ÐµÐ½Ð°
+//	static void Callback ÑÑ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ ÐºÐ¾Ñ‚Ð¾Ñ€Ð°Ñ Ð±ÑƒÐ´ÐµÑ‚ Ð²Ñ‹Ð·Ð²Ð°Ð½Ð° Ð¿Ð¾ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸ÑŽ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
+//	void* CallbackParam Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¼Ð¾Ð¶Ð½Ð¾ Ð¿Ð¾Ð¼ÐµÑÑ‚Ð¸Ñ‚ÑŒ Ñ‡Ñ‚Ð¾ ÑƒÐ³Ð¾Ð´Ð½Ð¾
+//	UpdateCallbackType Ñ‚Ð¸Ð¿ ÐºÐ°Ð»Ð»Ð±ÐµÐºÐ° 0 - ÑÑ€Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚ Ð¿Ð¾ Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸ÑŽ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ 1 - Ð±ÑƒÐ´ÐµÑ‚ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒ Ð¿Ð¾ÐºÐ° Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ Ð½Ðµ Ð·Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ñ‚ÑÑ
 bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 part_id, BOOL bMixIn, float speed, u8 anm_idx, bool impact_on_item, bool similar_check, PlayCallback Callback, LPVOID CallbackParam, BOOL UpdateCallbackType)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///èùåì àíèìàöèþ â áèáëèîòåêå àéòåìà íà ïðèìåð anm_show
+	if(m_attached_items[place_idx] && place_idx>=0&&place_idx!=u16(-1))///Ð¸Ñ‰ÐµÐ¼ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð² Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐµ Ð°Ð¹Ñ‚ÐµÐ¼Ð° Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1224,7 +1236,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//èíà÷å áóäåì èñêàòü ïî ïðÿìîìó íàçâàíèþ íà ïðèìåð abakan_draw èëè fn_2000_reload è òï
+	else//Ð¸Ð½Ð°Ñ‡Ðµ Ð±ÑƒÐ´ÐµÐ¼ Ð¸ÑÐºÐ°Ñ‚ÑŒ Ð¿Ð¾ Ð¿Ñ€ÑÐ¼Ð¾Ð¼Ñƒ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÑŽ Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ abakan_draw Ð¸Ð»Ð¸ fn_2000_reload Ð¸ Ñ‚Ð¿
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1234,7 +1246,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 		}
 	}
 
-	//åñëè èãðàåòñÿ àíèìàöèÿ stop_at_end òî íå áóäåì çàïóñêàòü
+	//ÐµÑÐ»Ð¸ Ð¸Ð³Ñ€Ð°ÐµÑ‚ÑÑ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ stop_at_end Ñ‚Ð¾ Ð½Ðµ Ð±ÑƒÐ´ÐµÐ¼ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ
 	u16 pc = m_model->partitions().count();
 	for(u16 pid=0; pid<pc; ++pid)
 	{
@@ -1254,7 +1266,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 			}
 		}
 	}
-	m_blocked_part_idx = part_id;//áëîêèðóåì ÷òîáû ñòàíäàðòíûå àíèìàöèè íå ìîãëè ïåðåáèòü çàïóùåííóþ
+	m_blocked_part_idx = part_id;//Ð±Ð»Ð¾ÐºÐ¸Ñ€ÑƒÐµÐ¼ Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð½Ðµ Ð¼Ð¾Ð³Ð»Ð¸ Ð¿ÐµÑ€ÐµÐ±Ð¸Ñ‚ÑŒ Ð·Ð°Ð¿ÑƒÑ‰ÐµÐ½Ð½ÑƒÑŽ
 
 	CBlend* B = NULL;
 	switch (part_id)
@@ -1263,7 +1275,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 		case 1:
 		case 2:
 		{
-			if(similar_check)//ïðîâåðèì íà âûáðàííîì áîí ïàðòå
+			if(similar_check)//Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ Ð½Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼ Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ðµ
 			{
 				u32 blends_count = m_model->LL_PartBlendsCount(part_id);
 				for(u32 blend_id=0; blend_id<blends_count; ++blend_id)
@@ -1278,12 +1290,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//çàïóñòèì íà âûáðàííîì áîí ïàðòå
+			//Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð½Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼ Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ðµ
 			B = m_model->PlayCycle(part_id, motion, bMixIn, Callback, CallbackParam);
 		}break;
 		case u16(-1):
 		{
-			if(similar_check)//ïðîâåðèì íà áîí ïàðòå êîòîðûé óêàçàíâ íàñòðîéêàõ àíèìàöèè
+			if(similar_check)//Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ Ð½Ð° Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ðµ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑƒÐºÐ°Ð·Ð°Ð½Ð² Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ°Ñ… Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 			{
 				CMotionDef* m_def = m_model->LL_GetMotionDef(motion);
 				u32 blends_count = m_model->LL_PartBlendsCount(m_def->bone_or_part);
@@ -1299,12 +1311,12 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//çàïóñòèì äëÿ òîãî áîí ïàðòà êîòîðûé óêàçàí â íàñòðîéêàõ àíèìàöèè
+			//Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð´Ð»Ñ Ñ‚Ð¾Ð³Ð¾ Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑƒÐºÐ°Ð·Ð°Ð½ Ð² Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ°Ñ… Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 			B = m_model->PlayCycle(motion, bMixIn, Callback, CallbackParam);
 		}break;
 		default:
 		{
-			if(similar_check)//ïðîâåðèì íà âñåõ áîí ïàðòàõ
+			if(similar_check)//Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ Ð½Ð° Ð²ÑÐµÑ… Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ð°Ñ…
 			{
 				u16 pc = m_model->partitions().count();
 				for(u16 pid=0; pid<pc; ++pid)
@@ -1323,7 +1335,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 					}
 				}
 			}
-			//çàïóñòèì íà âñåõ áîí ïàðòàõ
+			//Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð½Ð° Ð²ÑÐµÑ… Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ð°Ñ…
 			B = m_model->PlayCycle(0, motion, bMixIn, Callback, CallbackParam);
 			B = m_model->PlayCycle(1, motion, bMixIn, Callback, CallbackParam);
 			B = m_model->PlayCycle(2, motion, bMixIn, Callback, CallbackParam);
@@ -1348,11 +1360,11 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 
 	return true;
 }
-// àíèìàöèÿ-ýôôåêò êîòîðàÿ íå áóäåò îòêëþ÷àòü îáû÷íûå àíèìàöèè íî ïîçâîëèò ñîçäàòü ïîäðàãèâàíèÿ óêëîíåíèÿ è ïðî÷èå àíèìàöèîííûå ýôôåêòû
+// Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ñ-ÑÑ„Ñ„ÐµÐºÑ‚ ÐºÐ¾Ñ‚Ð¾Ñ€Ð°Ñ Ð½Ðµ Ð±ÑƒÐ´ÐµÑ‚ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°Ñ‚ÑŒ Ð¾Ð±Ñ‹Ñ‡Ð½Ñ‹Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸ Ð½Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»Ð¸Ñ‚ ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð¿Ð¾Ð´Ñ€Ð°Ð³Ð¸Ð²Ð°Ð½Ð¸Ñ ÑƒÐºÐ»Ð¾Ð½ÐµÐ½Ð¸Ñ Ð¸ Ð¿Ñ€Ð¾Ñ‡Ð¸Ðµ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ðµ ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹
 void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u16 part_id, u8 anm_idx, float blendAccrue, float blendFalloff, float Speed, float Power)
 {
 	MotionID motion;
-	if(m_attached_items[place_idx] && place_idx>=0)///èùåì àíèìàöèþ îòíîñèòåëüíî àéòåìà íà ïðèìåð anm_show
+	if(m_attached_items[place_idx] && place_idx>=0)///Ð¸Ñ‰ÐµÐ¼ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÑŽ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð°Ð¹Ñ‚ÐµÐ¼Ð° Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ anm_show
 	{
 		string256				anim_name_r;
 		bool is_16x9			= UI().is_widescreen();
@@ -1371,7 +1383,7 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 			Msg("! Animation [%s] not found in %s motion container!", anim_name_r, m_attached_items[place_idx]->m_sect_name.c_str());
 		}
 	}
-	else//èíà÷å áóäåì èñêàòü ïî ïðÿìîìó íàçâàíèþ íà ïðèìåð abakan_draw èëè fn_2000_reload è òï
+	else//Ð¸Ð½Ð°Ñ‡Ðµ Ð±ÑƒÐ´ÐµÐ¼ Ð¸ÑÐºÐ°Ñ‚ÑŒ Ð¿Ð¾ Ð¿Ñ€ÑÐ¼Ð¾Ð¼Ñƒ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÑŽ Ð½Ð° Ð¿Ñ€Ð¸Ð¼ÐµÑ€ abakan_draw Ð¸Ð»Ð¸ fn_2000_reload Ð¸ Ñ‚Ð¿
 	{
 		motion = m_model->ID_Cycle_Safe(anim_name);
 
@@ -1387,19 +1399,19 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 		{
 			case 0:
 			case 1:
-			case 2://çàïóñòèì íà âûáðàííîì áîíïàðòå
+			case 2://Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð½Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼ Ð±Ð¾Ð½Ð¿Ð°Ñ€Ñ‚Ðµ
 			{
 				auto bones_vec = m_model->partitions().part(part_id).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			case -1://çàïóñòèì äëÿ òîãî êîòîðûé óêàçàí â íàñòðîéêàõ àíèìàöèè
+			case -1://Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð´Ð»Ñ Ñ‚Ð¾Ð³Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑƒÐºÐ°Ð·Ð°Ð½ Ð² Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ°Ñ… Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸Ð¸
 			{
 				auto bones_vec = m_model->partitions().part(m_def->bone_or_part).bones;
 				for (u32 &it : bones_vec)
 					m_model->LL_PlayFX(it, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
 			}break;
-			default://çàïóñòèì íà âñåõ áîí ïàðòàõ
+			default://Ð·Ð°Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð½Ð° Ð²ÑÐµÑ… Ð±Ð¾Ð½ Ð¿Ð°Ñ€Ñ‚Ð°Ñ…
 			{
 				for (auto &[first,second] : *m_model->dcast_PKinematics()->LL_Bones())
 					m_model->LL_PlayFX(second, motion, m_def->Accrue()*blendAccrue, m_def->Falloff()*blendFalloff, m_def->Speed()*Speed, m_def->Power()*Power);
