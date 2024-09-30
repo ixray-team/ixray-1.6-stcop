@@ -71,12 +71,17 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 
 	AllParticleObjects.push_back(this);
 
-	dwLastTime				= Device.dwTimeGlobal;
+	dwLastTime = Device.dwTimeGlobal;
 }
 
 //----------------------------------------------------
 CParticlesObject::~CParticlesObject()
 {
+	// FX: DX9 выгружает мусор при рестарте девайса
+	// а партиклы могли не обновиться...
+	// Держите пролаг в лицо 
+	WaitForParticles();
+
 	AllParticleObjects.remove(this);
 }
 
