@@ -44,9 +44,12 @@ protected:
 	IGameLevelCrossTable			*m_current_level_cross_table;
 
 public:
-	IGameGraph();
-	virtual						~IGameGraph();
-	virtual		void					save					(IWriter &stream);
+						IGameGraph();
+	virtual				~IGameGraph();
+	virtual		void	save						(IWriter &stream);
+				bool	Search						(u32 start_vertex_id, u32 dest_vertex_id,xr_vector<u32>& OutPath,const xr_vector<GameGraph::STerrainPlace>* VertexTypes = nullptr, float MaxRange = type_max(float), u32 MaxIterationCount = 0xFFFFFFFF,u32 MaxVisitedNodeCount = 0xFFFFFFFF) const;
+				bool	SearchNearestVertex			(u32 start_vertex_id,u8 LevelID,u32&Result) const;
+	
 	IC	const IGameLevelCrossTable	&cross_table			() const;
 
 public:

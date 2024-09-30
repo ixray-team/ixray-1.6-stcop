@@ -18,7 +18,6 @@ IC	CLevelSpawnConstructor::CLevelSpawnConstructor			(const CGameGraph::SLevel &l
 	m_actor						= 0;
 	m_level_graph				= 0;
 	m_cross_table				= 0;
-	m_graph_engine				= 0;
 }
 
 IC	CSE_ALifeCreatureActor *CLevelSpawnConstructor::actor	() const

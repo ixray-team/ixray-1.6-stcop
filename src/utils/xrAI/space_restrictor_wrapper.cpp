@@ -21,7 +21,6 @@ CSpaceRestrictorWrapper::CSpaceRestrictorWrapper	(CSE_ALifeSpaceRestrictor *obje
 {
 	m_object						= object;
 	m_level_graph					= 0;
-	m_graph_engine					= 0;
 	m_xform.setXYZ					(object->o_Angle);
 	m_xform.c.set					(object->o_Position);
 }
@@ -30,7 +29,6 @@ void CSpaceRestrictorWrapper::clear					()
 {
 	m_border.clear					();
 	m_level_graph					= 0;
-	m_graph_engine					= 0;
 }
 
 bool CSpaceRestrictorWrapper::inside				(const Fvector &position, float radius) const
@@ -240,18 +238,7 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 	level_graph().set_mask			(m_border);
 	
 	xr_vector<u32>					nodes;
-	
-	graph_engine().search			(
-		level_graph(),
-		start_vertex_id,
-		start_vertex_id,
-		&nodes,
-		GraphEngineSpace::CFlooder(
-			GraphEngineSpace::_dist_type(6000),
-			GraphEngineSpace::_iteration_type(-1),
-			u32(-1)
-		)
-	);
+	level_graph().Search(start_vertex_id,start_vertex_id,nodes);
 
 	level_graph().clear_mask		(m_border);
 
@@ -268,13 +255,11 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 	);
 }
 
-void CSpaceRestrictorWrapper::verify				(CLevelGraph &level_graph, CGraphEngine &graph_engine, bool no_separator_check)
+void CSpaceRestrictorWrapper::verify				(CLevelGraph &level_graph,  bool no_separator_check)
 {
 	VERIFY							(!m_level_graph);
 	m_level_graph					= &level_graph;
 
-	VERIFY							(!m_graph_engine);
-	m_graph_engine					= &graph_engine;
 
 	build_border					();
 

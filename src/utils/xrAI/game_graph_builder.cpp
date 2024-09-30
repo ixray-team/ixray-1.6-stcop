@@ -458,38 +458,90 @@ float CGameGraphBuilder::path_distance		(const u32 &game_vertex_id0, const u32 &
 {
 //	return					(graph().vertex(game_vertex_id0)->data().level_point().distance_to(graph().vertex(game_vertex_id1)->data().level_point()));
 
-	VERIFY					(m_graph_engine);
 
-	graph_type::CVertex		&vertex0 = *graph().vertex(game_vertex_id0);
-	graph_type::CVertex		&vertex1 = *graph().vertex(game_vertex_id1);
+	graph_type::CVertex& vertex0 = *graph().vertex(game_vertex_id0);
+	graph_type::CVertex& vertex1 = *graph().vertex(game_vertex_id1);
 
-	typedef GraphEngineSpace::CStraightLineParams	CStraightLineParams;
-	CStraightLineParams		parameters(vertex0.data().level_point(),vertex1.data().level_point());
+	Fvector start_position = vertex0.data().level_point();
+	Fvector finish_position = vertex1.data().level_point();
 
-	float					pure_distance = vertex0.data().level_point().distance_to_xz(vertex1.data().level_point());
-//	float					pure_distance = vertex0.data().level_point().distance_to(vertex1.data().level_point());
-	VERIFY					(pure_distance < parameters.max_range);
+	float pure_distance = start_position.distance_to_xz(finish_position);
+	//	float					pure_distance = vertex0.data().level_point().distance_to(vertex1.data().level_point());
+	VERIFY(pure_distance < 6000);
 
-	u32						level_vertex_id = level_graph().check_position_in_direction(vertex0.data().level_vertex_id(),vertex0.data().level_point(),vertex1.data().level_point());
+	u32 level_vertex_id = level_graph().check_position_in_direction(vertex0.data().level_vertex_id(), start_position,
+	                                                                finish_position);
 	if (level_graph().valid_vertex_id(level_vertex_id))
-		return				(pure_distance);
+		return (pure_distance);
 
-	bool					successfull = 
-		m_graph_engine->search(
-			level_graph(),
-			vertex0.data().level_vertex_id(),
-			vertex1.data().level_vertex_id(),
-			&m_path,
-			parameters
-		);
+	xr_vector<u32> Path;
+	bool successfull = level_graph().Search(vertex0.data().level_vertex_id(), vertex1.data().level_vertex_id(), Path,
+	                                        6000);
+
 
 	if (successfull)
-		return				(parameters.m_distance);
+	{
+		auto Calculate = [start_position,&Path,this,finish_position]()
+		{
+			float Result;
+			float fCumulativeDistance = 0, fLastDirectDistance = 0, fDirectDistance;
 
-	Msg						("Cannot build path from [%d] to [%d]",game_vertex_id0,game_vertex_id1);
-	Msg						("Cannot build path from [%f][%f][%f] to [%f][%f][%f]",VPUSH(vertex0.data().level_point()),VPUSH(vertex1.data().level_point()));
-	R_ASSERT2				(false,"Cannot build path, check AI map");
-	return					(flt_max);
+			Fvector tPosition = start_position;
+
+			auto I = Path.begin();
+			auto E = Path.end();
+			u32& dwNode = *I;
+			for (++I; I != E; ++I)
+			{
+				u32 vertex_id = level_graph().check_position_in_direction(
+					dwNode, tPosition, level_graph().vertex_position(*I));
+				if (level_graph().valid_vertex_id(vertex_id))
+					fDirectDistance = tPosition.distance_to(level_graph().vertex_position(*I));
+				else
+					fDirectDistance = 6000;
+				if (fDirectDistance == 6000)
+				{
+					if (fLastDirectDistance == 0)
+					{
+						fCumulativeDistance += level_graph().distance(dwNode, *I);
+						dwNode = *I;
+					}
+					else
+					{
+						fCumulativeDistance += fLastDirectDistance;
+						fLastDirectDistance = 0;
+						dwNode = *--I;
+					}
+					tPosition = level_graph().vertex_position(dwNode);
+				}
+				else
+					fLastDirectDistance = fDirectDistance;
+				if (fCumulativeDistance + fLastDirectDistance >= 6000)
+				{
+					return 6000.f;
+				}
+			}
+
+			u32 vertex_id = level_graph().check_position_in_direction(dwNode, tPosition, finish_position);
+			if (level_graph().valid_vertex_id(vertex_id))
+				fDirectDistance = tPosition.distance_to(finish_position);
+			else
+				fDirectDistance = 6000;
+			if (fDirectDistance == 6000)
+				Result = fCumulativeDistance + fLastDirectDistance + finish_position.distance_to(
+					level_graph().vertex_position(Path[Path.size() - 1]));
+			else
+				Result = fCumulativeDistance + fDirectDistance;
+			return Result;
+		};
+		return Calculate();
+	}
+
+	Msg("Cannot build path from [%d] to [%d]", game_vertex_id0, game_vertex_id1);
+	Msg("Cannot build path from [%f][%f][%f] to [%f][%f][%f]",VPUSH(vertex0.data().level_point()),
+	    VPUSH(vertex1.data().level_point()));
+	R_ASSERT2(false, "Cannot build path, check AI map");
+	return (flt_max);
 }
 
 void CGameGraphBuilder::generate_edges		(const u32 &game_vertex_id)
@@ -701,14 +753,12 @@ void CGameGraphBuilder::build_graph			(const float &start, const float &amount)
 	CTimer					timer;
 	timer.Start				();
 
-	m_graph_engine			= xr_new<CGraphEngine>(level_graph().header().vertex_count());
 	Progress				(start + 0.000000f*amount + amount*0.067204f);
 //	Msg						("BG : %f",timer.GetElapsed_sec());
 
 	generate_edges			(start + 0.067204f*amount, amount*0.922647f);
 //	Msg						("BG : %f",timer.GetElapsed_sec());
 
-	xr_delete				(m_graph_engine);
 	Progress				(start + 0.989851f*amount + amount*0.002150f);
 //	Msg						("BG : %f",timer.GetElapsed_sec());
 

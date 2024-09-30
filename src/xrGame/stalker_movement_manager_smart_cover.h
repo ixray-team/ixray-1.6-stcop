@@ -131,7 +131,7 @@ private:
 	typedef	xr_vector<shared_str>						LoopholePath;
 
 private:
-			void				loophole_path			(smart_cover::cover const &cover, shared_str const &source, shared_str const &target, LoopholePath &path) const;
+			void				loophole_path			(smart_cover::cover const &cover, shared_str const &source, shared_str const &target, LoopholePath &path, float* LastCost = nullptr) const;
 			void				build_enter_path		();
 			void				build_exit_path			();
 			void				build_exit_path_to_cover();

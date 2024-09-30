@@ -19,9 +19,3 @@ IC	ILevelGraph &CSpaceRestrictorWrapper::level_graph						() const
 	VERIFY	(m_level_graph);
 	return	(*m_level_graph);
 }
-
-IC	CGraphEngineEditor &CSpaceRestrictorWrapper::graph_engine						() const
-{
-	VERIFY	(m_graph_engine);
-	return	(*m_graph_engine);
-}

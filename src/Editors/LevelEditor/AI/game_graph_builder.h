@@ -61,7 +61,6 @@ private:
 	IGameLevelCrossTable	*m_cross_table;
 	TRIPPLES				m_tripples;
 	xr_vector<u32>			m_path;
-	CGraphEngineEditor			*m_graph_engine;
 
 private:
 			void		create_graph				();

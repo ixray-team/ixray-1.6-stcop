@@ -53,6 +53,7 @@ target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CH
 target_link_libraries(xrAI PUBLIC xrCDB)
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)
+target_link_libraries(xrAI PUBLIC xrAbstractions)
 target_link_libraries(xrAI PUBLIC imgui)
 
 ## FreeImage

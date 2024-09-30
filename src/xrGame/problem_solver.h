@@ -151,6 +151,7 @@ public:
 	IC		void						evaluate_condition		(typename xr_vector<COperatorCondition>::const_iterator &I, typename xr_vector<COperatorCondition>::const_iterator &E, const _condition_type &condition_id) const;
 
 	// solver interface
+	IC		bool						Search					(const CState start_vertex_id, const CState&dest_vertex_id,xr_vector<_edge_type>& OutPath, u16 MaxRange, u32 MaxIterationCount,u32 MaxVisitedNodeCount) const;
 	IC		void						solve					();
 	IC		const xr_vector<_edge_type>	&solution				() const;
 	virtual	void						clear					();

@@ -284,10 +284,8 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 
 	const CGameGraph::SLevel		&level = game_graph().header().level(start_level_name);
 	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
-	GraphEngineSpace::CGameLevelParams	evaluator(level.id());
-	CGraphEngine					*graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
-
-	bool							failed = !graph_engine->search(game_graph(),m_actor->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
+	u32 Result;
+	bool							failed = game_graph().SearchNearestVertex(m_actor->m_tGraphID,level.id(),Result);
 	if (failed) {
 		Msg							("! Cannot build path via game graph from the current level to the level %s!",start_level_name);
 		float						min_dist = flt_max;
@@ -308,13 +306,12 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 		}
 	}
 	else
-		dest						= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
+		dest						= Result;
 
 	m_actor->m_tGraphID				= dest;
 	m_actor->m_tNodeID				= game_graph().vertex(dest)->level_vertex_id();
 	m_actor->o_Position				= game_graph().vertex(dest)->level_point();
 
-	xr_delete						(graph_engine);
 }
 
 void clear_temp_folder	()

@@ -330,23 +330,14 @@ bool stalker_movement_manager_smart_cover::target_approached			(float const &dis
 	return								(detail().distance_to_target() < distance);
 }
 
-void stalker_movement_manager_smart_cover::loophole_path					(smart_cover::cover const &cover, shared_str const &source_raw, shared_str const &target_raw, LoopholePath &path) const
+void stalker_movement_manager_smart_cover::loophole_path					(smart_cover::cover const &cover, shared_str const &source_raw, shared_str const &target_raw, LoopholePath &path, float* LastCost) const
 {
 	shared_str				source = smart_cover::transform_vertex(source_raw, true);
 	shared_str				target = smart_cover::transform_vertex(target_raw, false);
-
-	typedef GraphEngineSpace::CBaseParameters	CBaseParameters;
-	CBaseParameters			parameters((float)u32(-1),u32(-1),u32(-1));
+	
 	path.resize(0);
-	R_ASSERT2				(
-		ai().graph_engine().search(
-			cover.description()->transitions(),
-			source,
-			target,
-			&path,
-			parameters
-		),
-		make_string<const char*>(
+	R_ASSERT2				(cover.description()->transitions().Search(source,target,path,type_max(float),type_max(u32),type_max(u32), LastCost),
+	make_string<const char*>(
 			"cannot build path via loopholes [%s] -> [%s] (cover %s)",
 			source_raw.c_str(),
 			target_raw.c_str(),

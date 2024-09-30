@@ -10,6 +10,210 @@ ILevelGraph::~ILevelGraph()
 {
 }
 
+bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath,float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
+{
+	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
+	thread_local	xr_hash_map<u32, u32>				TempCameFrom;
+	thread_local	xr_hash_map<u32, float>				TempCostSoFar;
+					float								m_distance_xz = header().cell_size();
+
+	TempPriorityNode.clear();
+	TempCameFrom.clear();
+	TempCostSoFar.clear();
+	OutPath.clear();
+	
+	
+	u32 FromID = start_vertex_id;
+	u32 ToID = dest_vertex_id;
+		
+	if (FromID == ToID)
+	{
+		OutPath.push_back(start_vertex_id);
+		return true;
+	}
+		
+	if(!is_accessible(FromID) || !is_accessible(ToID))
+	{
+		return false;
+	}
+
+	TempPriorityNode.push_back({0.f, FromID});
+	TempCameFrom.insert({FromID, FromID});
+	TempCostSoFar.insert( {FromID, 0.f});
+
+	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
+	{
+		return m_distance_xz;
+	};
+	auto DistanceNode = [this,m_distance_xz](CVertex* Node1,CVertex* Node2)
+	{
+		float x1; float y1;
+		float x2; float y2;
+		unpack_xz(Node1,x1,y1);
+		unpack_xz(Node2,x2,y2);
+		return m_distance_xz*2*(fabs(x1-x2)+fabs(y1-y2));
+	};
+	while (!TempPriorityNode.empty())
+	{
+		u32 CurrentNodeID = TempPriorityNode.back().second;
+		TempPriorityNode.pop_back();
+		if (CurrentNodeID == ToID)
+		{
+			u32 NextNode = ToID;
+			while (NextNode != FromID)
+			{
+				OutPath.insert( OutPath.begin(),NextNode);
+				NextNode = TempCameFrom[NextNode];
+			}
+			OutPath.insert( OutPath.begin(),NextNode);
+			return true;
+		}
+		
+		CVertex* Node = vertex(CurrentNodeID);
+		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
+		{
+			u32 NeighborID = Node->link(NeighborIndex);
+			if (!is_accessible(NeighborID)) continue;
+
+
+			if(MaxIterationCount == 0) continue;
+			MaxIterationCount--;
+
+			CVertex* Neighbor = vertex(NeighborID);
+			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
+			auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
+			if ((TempCostSoFarIterator != TempCostSoFar.end() &&TempCostSoFarIterator->second > NewCost)|| (TempCostSoFarIterator == TempCostSoFar.end() &&MaxVisitedNodeCount > TempCostSoFar.size()))
+			{
+				const float Distance = DistanceNode(vertex(ToID), Neighbor);
+
+				if(Distance>MaxRange)
+				{
+					continue;
+				}
+
+				if(TempCostSoFarIterator != TempCostSoFar.end())
+				{
+					TempCostSoFarIterator->second = NewCost; 
+				}
+				else
+				{
+					TempCostSoFar.insert({NeighborID,NewCost});
+				}
+
+				float  priority = NewCost + Distance;
+				TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(),TempPriorityNode.end(),std::pair<float, u32>{priority,NeighborID},[](const std::pair<float, u32>& Left, const std::pair<float, u32>& Right) {return Left.first > Right.first; }),{priority,NeighborID});
+
+				
+				auto TempCameFromIterator = TempCameFrom.find(NeighborID);
+				if(TempCameFromIterator!=TempCameFrom.end())
+				{
+					TempCameFromIterator->second = CurrentNodeID; 
+				}
+				else
+				{
+					TempCameFrom.insert({NeighborID,CurrentNodeID});
+				}
+			}
+		}
+	}
+	return false;
+}
+
+u32 ILevelGraph::SearchNearestVertex(u32 VertexID, const Fvector& TargetPosition, float Range) const
+{
+	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
+	thread_local	xr_map<u32, u32>					TempCameFrom;
+	thread_local	xr_map<u32, float>					TempCostSoFar;
+					float								m_distance_xz			= header().cell_size();
+
+	float BestDistanceToTarget = flt_max;
+
+	TempPriorityNode.clear();
+	TempCameFrom.clear();
+	TempCostSoFar.clear();
+
+	u32 FromID = VertexID;
+	u32 BestResult = VertexID;
+
+	u32 x0,y0;
+	unpack_xz(vertex(VertexID),x0,y0);
+	
+	int MaxRangeSqr = iFloor(_sqr(Range)/ _sqr(m_distance_xz) + .5f);
+
+	TempPriorityNode.push_back({0.f, FromID});
+	TempCameFrom.insert({FromID, FromID});
+	TempCostSoFar.insert( {FromID, 0.f });
+
+	auto CalcCost = [m_distance_xz](CVertex* Node1,CVertex* Node2)
+	{
+		return m_distance_xz;
+	};
+	auto IsAccessible = [this,x0,y0,MaxRangeSqr](u32 NodeID)
+	{
+		if(!is_accessible(NodeID))
+		{
+			return false;
+		}
+		int x4,y4;
+		unpack_xz(vertex(NodeID),x4,y4);
+		return (static_cast<u32>(_sqr(x0 - x4) + _sqr(y0 - y4)) <= MaxRangeSqr);
+	};
+
+	while (!TempPriorityNode.empty())
+	{
+		u32 CurrentNodeID = TempPriorityNode.back().second;
+		TempPriorityNode.pop_back();
+
+		{
+			float current_distance = TargetPosition.distance_to_xz_sqr(vertex_position(CurrentNodeID));
+			if (current_distance < BestDistanceToTarget) 
+			{
+				BestDistanceToTarget	= current_distance;
+				BestResult = CurrentNodeID;
+			}
+		}
+		
+		CVertex* Node = vertex(CurrentNodeID);
+		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
+		{
+			u32 NeighborID = Node->link(NeighborIndex);
+			if (!IsAccessible(NeighborID)) continue;
+
+
+			CVertex* Neighbor = vertex(NeighborID);
+			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
+			auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
+			if ((TempCostSoFarIterator != TempCostSoFar.end() &&TempCostSoFarIterator->second > NewCost)|| (TempCostSoFarIterator == TempCostSoFar.end()))
+			{
+
+				if(TempCostSoFarIterator != TempCostSoFar.end())
+				{
+					TempCostSoFarIterator->second = NewCost; 
+				}
+				else
+				{
+					TempCostSoFar.insert({NeighborID,NewCost});
+				}
+
+				float  priority = NewCost;
+				TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(),TempPriorityNode.end(),std::pair<float, u32>{priority,NeighborID},[](const std::pair<float, u32>& Left, const std::pair<float, u32>& Right) {return Left.first > Right.first; }),{priority,NeighborID});
+
+				
+				auto TempCameFromIterator = TempCameFrom.find(NeighborID);
+				if(TempCameFromIterator!=TempCameFrom.end())
+				{
+					TempCameFromIterator->second = CurrentNodeID; 
+				}
+				else
+				{
+					TempCameFrom.insert({NeighborID,CurrentNodeID});
+				}
+			}
+		}
+	}
+	return BestResult;
+}
+
 u32	ILevelGraph::vertex(const Fvector& position) const
 {
 	ILevelGraph::CPosition	_node_position;

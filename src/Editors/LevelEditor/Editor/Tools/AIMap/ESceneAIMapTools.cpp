@@ -12,7 +12,7 @@
 #define AIMAP_CHUNK_INTERNAL_DATA	0x0008
 #define AIMAP_CHUNK_INTERNAL_DATA2	0x0009
 
-
+#if 0
 poolSS<SAINode,1024> g_ainode_pool;
 
 void* SAINode::operator new(std::size_t size)
@@ -30,6 +30,7 @@ void SAINode::operator delete(void* ptr)
     auto node = (SAINode*)ptr;
 	g_ainode_pool.destroy(node);
 }
+#endif 
 
 void SAINode::PointLF(Fvector& D, float patch_size)
 {
@@ -172,7 +173,7 @@ void ESceneAIMapTool::Clear(bool bOnlyNodes)
 	    //m_SnapObjects.clear	();
         m_AIBBox.invalidate	();
         ExecCommand		(COMMAND_REFRESH_SNAP_OBJECTS);
-		g_ainode_pool.clear	();
+		//g_ainode_pool.clear	();
         RealUpdateSnapList();
     }
 }
@@ -479,16 +480,17 @@ void ESceneAIMapTool::SelectObjects(bool flag)
 }
 struct delete_sel_node_pred 
 {
-	bool operator()(SAINode*& x)
+    bool operator()(SAINode*& x)
     {
-    	// breaking links
-        for (int k=0; k<4; k++)
-            if (x->n[k]&&x->n[k]->flags.is(SAINode::flSelected))
-                x->n[k]=0;
-		// free memory                
-    	bool res	= x->flags.is(SAINode::flSelected); 
-        if (res) 	xr_delete(x); 
-        return 		res; 
+        // breaking links
+        for (int k = 0; k < 4; k++)
+            if (x->n[k] && x->n[k]->flags.is(SAINode::flSelected))
+                x->n[k] = 0;
+        // free memory                
+        bool res = x->flags.is(SAINode::flSelected);
+        if (res)
+            xr_delete(x);
+        return res;
     }
 };
 void ESceneAIMapTool::RemoveSelection()

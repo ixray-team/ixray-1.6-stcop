@@ -12,7 +12,6 @@
 
 class CSE_ALifeSpaceRestrictor;
 class CLevelGraph;
-class CGraphEngine;
 
 class CSpaceRestrictorWrapper {
 private:
@@ -25,7 +24,6 @@ public:
 private:
 	object_type				*m_object;
 	CLevelGraph				*m_level_graph;
-	CGraphEngine			*m_graph_engine;
 	BORDER					m_border;
 	BORDER					m_internal;
 	Fmatrix					m_xform;
@@ -38,12 +36,11 @@ private:
 			bool			inside					(const Fvector &position, float radius = EPS_L) const;
 			bool			inside					(u32 level_vertex_id, bool partially_inside, float radius = EPS_L) const;
 	IC		CLevelGraph		&level_graph			() const;
-	IC		CGraphEngine	&graph_engine			() const;
 
 public:
 							CSpaceRestrictorWrapper	(CSE_ALifeSpaceRestrictor *object);
 	IC		object_type		&object					() const;
-			void			verify					(CLevelGraph &level_graph, CGraphEngine &graph_engine, bool no_separator_check);
+			void			verify					(CLevelGraph &level_graph, bool no_separator_check);
 };
 
 #include "space_restrictor_wrapper_inline.h"
