@@ -1,5 +1,4 @@
 #include "common.hlsli"
-#include "lmodel.hlsli"
 
 Texture2D s_patched_normal;
 

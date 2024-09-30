@@ -5,10 +5,6 @@ struct vf
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c0 : COLOR0; // color
-//	Igor: for additional depth dest
-#ifdef USE_SOFT_PARTICLES
-    float4 tctexgen : TEXCOORD1;
-#endif //	USE_SOFT_PARTICLES
     float4 hpos : SV_POSITION;
     float fog : FOG;
 };
@@ -19,13 +15,13 @@ vf _main(v_model v)
 
     o.hpos = mul(m_WVP, v.P); // xform, input in world coords
     o.tc0 = v.tc.xy; // copy tc
-    o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f)); // fog, input in world coords
+
     // calculate fade
     float3 dir_v = normalize(mul(m_WV, v.P));
-    float3 norm_v = normalize(mul(m_WV, v.N));
-    //  float   fade     = 0.6*(abs (dot(dir_v,norm_v)));
+    float3 norm_v = normalize(mul((float3x3)m_WV, v.N.xyz));
     float fade = 1.3 * (1 - abs(dot(dir_v, norm_v)));
     o.c0 = fade;
+    o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f).xyz); // fog, input in world coords
 
     return o;
 }

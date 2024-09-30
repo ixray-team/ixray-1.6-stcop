@@ -34,8 +34,9 @@ void main(in v_bolbord I, out p_bilbord O)
     O.tc0 = I.tc0;
     O.tc1 = I.tc1;
 
-    O.hpos_curr = mul(m_VP, pos);
+    O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_VP_old, pos);
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
 }
+

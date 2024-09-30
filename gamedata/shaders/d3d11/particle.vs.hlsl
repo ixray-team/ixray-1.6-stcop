@@ -39,7 +39,7 @@ v2p main(vv v)
     o.tctexgen.z = mul(m_WV, v.P).z;
 #endif //	USE_SOFT_PARTICLES
 
-    o.fog = 1.0f - calc_fogging(v.P); // fog, input in world coords
+    o.fog = 1.0f - calc_fogging(v.P.xyz); // fog, input in world coords
     return o;
 }
 

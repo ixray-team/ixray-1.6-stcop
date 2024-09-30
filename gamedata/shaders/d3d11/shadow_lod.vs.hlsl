@@ -12,7 +12,7 @@ void main(in v_shadow_direct_aref I, out p_shadow O)
 
 #ifdef USE_TREEWAVE
     float base = m_xform._24;
-    float dp = calc_cyclic(wave.w + dot(pos, wave.xyz));
+    float dp = calc_cyclic(wave.w + dot(pos.xyz, wave.xyz));
     float H = pos.y - base;
     float inten = H * dp;
     float frac = I.tc.z * consts.x;

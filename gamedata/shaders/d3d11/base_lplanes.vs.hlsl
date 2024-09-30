@@ -16,9 +16,10 @@ vf main(v_static v)
 
     // calculate fade
     float3 dir_v = normalize(mul(m_WV, v.P));
-    float3 norm_v = normalize(mul(m_WV, unpack_normal(v.Nh).zyx));
+    float3 norm_v = normalize(mul((float3x3)m_WV, unpack_normal(v.Nh.zyx)));
     float fade = abs(dot(dir_v, norm_v));
     o.c0 = fade;
 
     return o;
 }
+

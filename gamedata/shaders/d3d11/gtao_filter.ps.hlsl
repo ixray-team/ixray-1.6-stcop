@@ -32,7 +32,7 @@ float main(PSInput I) : SV_Target
     float center_tap = f16tof32(t_gtao_packed[I.hpos.xy] & 0x0000ffff);
 
     // Texture coordinates used for Gather4
-    float2 gather_texcoord = (floor(I.texcoord * pos_decompression_params2.xy - 0.5) + 1.0) * pos_decompression_params2.zw;
+    float2 gather_texcoord = (floor(I.texcoord.xy * pos_decompression_params2.xy - 0.5f) + 1.0f) * pos_decompression_params2.zw;
 
     // Accumulated moments
     float4 x_x2_y_xy = (float4)0.0;

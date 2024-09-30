@@ -1,5 +1,4 @@
 #include "common.hlsli"
-#include "lmodel.hlsli"
 #include "shadow.hlsli"
 
 #ifndef USE_SUNMASK
@@ -47,21 +46,17 @@ float3 GetWaterNMap(Texture2D s_texture, float2 tc)
 float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_POSITION) : SV_Target
 {
     IXrayGbuffer O;
-    GbufferUnpack(tc, pos2d, O);
+    GbufferUnpack(tc, pos2d.xy, O);
 
-    // gbuffer_data gbd = gbuffer_load_data(tc, pos2d);
-
-    float4 _P = float4(O.PointReal, 1.0);
-    float3 _N = O.Normal;
+    float4 P = float4(O.PointReal, 1.0f);
+    float3 N = O.Normal;
     float3 D = O.Color;
 
-    _N.xyz = normalize(_N.xyz);
+    P.xyz += N.xyz * 0.15f;
+    float4 PS = mul(m_shadow, P);
 
-    _P.xyz += _N.xyz * 0.15f;
-    float4 PS = mul(m_shadow, _P);
-
-    float3 WorldP = mul(m_sunmask, _P);
-    float3 WorldN = mul(m_sunmask, _N.xyz);
+    float3 WorldP = mul(m_sunmask, P);
+    float3 WorldN = mul((float3x3)m_sunmask, N.xyz);
 
     // Read rain projection with some jetter. Also adding pixel normal
     // factor to jitter to make rain strips more realistic.
@@ -69,25 +64,25 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 
     //	Apply distance falloff
     // Using fixed fallof factors according to float16 depth coordinate precision.
-    float fAtten = 1 - smoothstep(min(RainFallof.y - 15.0f, RainFallof.x), RainFallof.y, _P.z);
+    float fAtten = 1 - smoothstep(min(RainFallof.y - 15.0f, RainFallof.x), RainFallof.y, P.z);
     s *= fAtten * fAtten;
+	s *= 1.0f - O.SSS;
 
     //	Apply rain density
     s *= RainDensity.x;
 
-    float fIsUp = -dot(Ldynamic_dir.xyz, _N.xyz);
-    s *= saturate(fIsUp * 10 + (10 * 0.5) + 0.5);
+    float fIsUp = -dot(Ldynamic_dir.xyz, N.xyz);
+    s *= saturate(fIsUp * 10.0f + 5.5);
+	
     fIsUp = max(0, fIsUp);
 
     float fIsX = WorldN.x;
     float fIsZ = WorldN.z;
 
     float3 waterSplash = GetNVNMap(s_water, WorldP.xz, timers.x * 3.0);
-
-    float3 tc1 = WorldP / 2;
+    float3 tc1 = WorldP * 0.5f;
 
     float fAngleFactor = 1 - fIsUp;
-
     fAngleFactor = 0.1 * ceil(10 * fAngleFactor);
 
     //	Just slow down effect.
@@ -110,11 +105,12 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     water += waterFallZ.zxy * (abs(fIsZ) * ApplyNormalCoeff);
 
     //	Translate NM to view space
-    water.xyz = mul(m_V, water.xyz);
+    water.xyz = mul((float3x3)m_V, water.xyz);
 
-    _N += water.xyz;
-    _N = normalize(_N);
+    N += water.xyz;
+    N = normalize(N);
     s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
 
-    return float4(_N, s);
+    return float4(N, s);
 }
+

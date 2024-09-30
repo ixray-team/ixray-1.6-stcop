@@ -6,3 +6,4 @@ float4 main(PS_INPUT_RAYCAST input) : SV_Target
 {
     return Raycast(input);
 }
+

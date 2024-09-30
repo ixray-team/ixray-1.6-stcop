@@ -48,6 +48,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 #ifdef USE_DX11
 		pTexture->Load();
 		auto Format = pTexture->get_Format();
+
 		if(Format >= DXGI_FORMAT_BC1_TYPELESS && Format < DXGI_FORMAT_BC2_TYPELESS) {
 			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
 		}
@@ -76,7 +77,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		RImplementation.addShaderOption("USE_TDETAIL", "1");
 	}
 
-	if(C.bDetail_Bump) {
+	if(C.bDetail_Bump && C.bDetail_Diffuse) {
 		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 	}
 
@@ -141,7 +142,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		C.r_dx10Texture("s_bump", fnameA);
 	}
 
-	if(dt[0] && dt) {
+	if(dt && dt[0]) {
 		C.r_dx10Texture("s_detail", dt);
 	}
 

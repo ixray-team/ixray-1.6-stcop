@@ -57,19 +57,16 @@ void main(in v_detail I, out p_bumped_new O)
     O.tcdh = float4(tc.xy, c0.w, c0.x);
     O.position = float4(Pe, 1.0f);
 
-    float3x3 xform = mul((float3x3)m_WV, float3x3(
-        0.0f, 0.0f, N.x,
-        0.0f, 0.0f, N.y,
-        0.0f, 0.0f, N.z));
+    N.xyz = mul((float3x3)m_WV, N.xyz);
 
-    O.M1 = xform[0];
-    O.M2 = xform[1];
-    O.M3 = xform[2];
+    O.M1 = N.xxx;
+    O.M2 = N.yyy;
+    O.M3 = N.zzz;
 
     O.hpos = mul(m_WVP, pos);
 
 #ifndef DETAIL_SHADOW_PASS
-    O.hpos_curr = mul(m_VP, pos);
+    O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_VP_old, pos_old);
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
@@ -77,3 +74,4 @@ void main(in v_detail I, out p_bumped_new O)
     O.hpos_curr = O.hpos_old = O.hpos;
 #endif
 }
+

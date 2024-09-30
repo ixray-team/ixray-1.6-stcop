@@ -11,7 +11,7 @@ float DistributionGGX(float SqrNdotH, float Roughness)
     float AlphaTwoInv = AlphaTwo - 1.0f;
 
     float Divider = SqrNdotH * AlphaTwoInv + 1.0f;
-    return AlphaTwo / (PI * Divider * Divider);
+    return AlphaTwo * rcp(/*PI **/ Divider * Divider);
 }
 
 // Simple PBR - like attention
@@ -26,8 +26,8 @@ float GeometrySmithD(float NdotL, float NdotV, float Roughness)
     float K = R * R * 0.125f;
     float InvK = 1.0f - K;
 
-    float DivGGXL = 1.0f / (K + NdotL * InvK);
-    float DivGGXV = 1.0f / (K + NdotV * InvK);
+    float DivGGXL = 1.0f * rcp(K + NdotL * InvK);
+    float DivGGXV = 1.0f * rcp(K + NdotV * InvK);
 
     return 0.25f * DivGGXL * DivGGXV;
 }
@@ -37,20 +37,16 @@ float3 FresnelSchlick(float3 F, float NdotV)
     return F + (1.0f - F) * pow(1.0f - NdotV, 5.0f);
 }
 
-float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 Point, float3 Color, float Metalness, float Roughness)
+float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Metalness, float Roughness)
 {
-    float3 N = normalize(Normal);
-    float3 V = normalize(-Point);
-    float3 L = normalize(-Light);
+    float3 Half = normalize(Light + View);
 
-    float3 H = normalize(L + V);
-
-    float NdotL = max(0.0f, dot(N, L));
-    float NdotH = max(0.0f, dot(N, H));
+    float NdotL = max(0.0f, -dot(Normal, Light));
+    float NdotH = max(0.0f, -dot(Normal, Half));
 
 #ifndef USE_LEGACY_LIGHT
-    float NdotV = max(0.0f, dot(N, V));
-    float HdotV = max(0.0f, dot(H, V));
+    float NdotV = max(0.0f, -dot(Normal, View));
+    float HdotV = max(0.0f, dot(Half, View));
 
     float3 D = DistributionGGX(NdotH, Roughness);
     float3 G = GeometrySmithD(NdotL, NdotV, Roughness);
@@ -62,9 +58,10 @@ float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 Point, f
     float3 BRDF = Specular + Diffuse;
     return Radiance.xyz * NdotL * BRDF;
 #else
-    float2 Material = s_material.Sample(smp_material, float3(NdotL, NdotH, Metalness)).xy;
-    return Radiance.xyz * Material.xxx * Color.xyz + Radiance.xyz * Material.yyy * Roughness.xxx * Radiance.www;
+    float2 Material = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Metalness), 0).xy;
+    return Radiance.xyz * (Material.x * Color.xyz + Material.y * Roughness.x * Radiance.w);
 #endif
 }
 
 #endif
+

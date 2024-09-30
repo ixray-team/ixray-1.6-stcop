@@ -23,7 +23,12 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     #endif
 #endif
 
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
     M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
+#else
+	M.Normal = float3(I.M1.z, I.M2.z, I.M3.z);
+#endif
+
     M.Normal = normalize(M.Normal);
 
 #ifdef USE_LM_HEMI
@@ -53,3 +58,4 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     GbufferPack(O, M);
 }
+

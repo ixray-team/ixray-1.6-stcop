@@ -18,10 +18,10 @@ vf _main(v_model v)
 
     // calculate fade
     float3 dir_v = normalize(mul(m_WV, v.P));
-    float3 norm_v = normalize(mul(m_WV, v.N));
+    float3 norm_v = normalize(mul((float3x3)m_WV, v.N.xyz));
     float fade = 1 - abs(dot(dir_v, norm_v));
     o.c0 = fade;
-    o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f)); // fog, input in world coords
+    o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f).xyz); // fog, input in world coords
 
     return o;
 }

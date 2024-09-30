@@ -54,3 +54,4 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     GbufferPack(O, M);
 }
+

@@ -247,7 +247,8 @@ float calc_hdao(float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d)
     fOcclusion *= fDot;
     fOcclusion *= P.z < 0.5f ? 0.0f : lerp(0.0f, 1.0f, saturate(P.z - 0.5f));
     fOcclusion = 1.0f - saturate(fOcclusion);
-    return fOcclusion.xxxx;
+    return fOcclusion;
 }
     #endif
 #endif
+

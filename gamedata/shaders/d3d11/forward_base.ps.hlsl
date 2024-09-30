@@ -1,7 +1,5 @@
 #include "common.hlsli"
 #include "sload.hlsli"
-#include "lmodel.hlsli"
-#include "hmodel.hlsli"
 
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
@@ -19,13 +17,12 @@ void main(p_bumped_new I, out f_forward O)
 
     SloadNew(I, M);
 
-#ifdef USE_AREF
-    #ifdef USE_DXT1_HACK
-    M.Color.xyz /= max(0.0001f, M.Color.w);
-    #endif
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
+    M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
+#else
+	M.Normal = float3(I.M1.z, I.M2.z, I.M3.z);
 #endif
 
-    M.Normal = mul(float3x3(I.M1, I.M2, I.M3), M.Normal);
     M.Normal = normalize(M.Normal);
 
 #ifdef USE_LM_HEMI
@@ -40,25 +37,32 @@ void main(p_bumped_new I, out f_forward O)
 
 #ifdef USE_LEGACY_LIGHT
     #ifndef USE_PBR
-    M.Metalness = L_material.w;
+		M.Metalness = L_material.w;
     #else
-    M.Color.xyz *= M.AO;
-    M.AO = 1.0f;
-    float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
-    M.Color.xyz = lerp(M.Color.xyz, F0, M.Metalness);
-    M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
-    M.Roughness = Specular;
+		M.Color.xyz *= M.AO;
+		M.AO = 1.0f;
+		float Specular = M.Metalness * dot(M.Color.xyz, LUMINANCE_VECTOR);
+		M.Color.xyz = lerp(M.Color.xyz, F0, M.Metalness);
+		M.Metalness = 0.5f - M.Roughness * M.Roughness * 0.5f;
+		M.Roughness = Specular;
     #endif
 #endif
 
-    float3 Light = M.Sun * DirectLight(float4(L_sun_color, 0.5f), L_sun_dir_e.xyz, M.Normal, M.Point.xyz, M.Color.xyz, M.Metalness, M.Roughness);
-    float3 Ambient = AmbientLighting(M.Point, M.Normal, M.Color, M.Metalness, M.Roughness, M.Hemi);
+	float4 LightColor = float4(L_sun_color.xyz, 0.5f);
+	
+	float ViewLength = length(M.Point);
+	float3 View = M.Point.xyz * rcp(ViewLength);
+	
+    float3 Light = M.Sun * DirectLight(LightColor, L_sun_dir_e.xyz, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness);
+    float3 Ambient = AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi);
+	
     O.Color.xyz = Ambient + Light.xyz;
     O.Color.w = M.Color.w;
 
-    float fog = saturate(length(M.Point) * fog_params.w + fog_params.x);
+    float fog = saturate(ViewLength * fog_params.w + fog_params.x);
     O.Color = lerp(O.Color, fog_color, fog);
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     O.Reactive = O.Color.w * 0.9f;
 }
+

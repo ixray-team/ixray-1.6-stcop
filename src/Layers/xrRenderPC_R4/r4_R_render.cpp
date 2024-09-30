@@ -630,11 +630,15 @@ void CRender::Render		()
 		Target->phase_scene_end					();
 	}
 
-	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, nullptr);
+	{
+		PIX_EVENT(ZBUFFER_COPY);
+	RCache.set_ZB(NULL);
 	ID3D11Resource* res;
 	RDepth->GetResource(&res);
 
 	RContext->CopyResource(Target->rt_Position->pSurface, res);
+	_RELEASE(res);
+	}
 
 	// Wall marks
 	if(Wallmarks)	

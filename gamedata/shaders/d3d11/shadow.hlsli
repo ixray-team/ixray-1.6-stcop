@@ -27,10 +27,10 @@ float4 sm_gather(float2 tc, int2 offset)
 
     tc -= fc / scale;
 
-    float s0 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(0, 1));
-    float s1 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(1, 1));
-    float s2 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(1, 0));
-    float s3 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(0, 0));
+    float s0 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(0, 1)).x;
+    float s1 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(1, 1)).x;
+    float s2 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(1, 0)).x;
+    float s3 = s_smap.SampleLevel(smp_nofilter, tc, 0, offset + int2(0, 0)).x;
 
     return float4(s0, s1, s2, s3);
 #endif
@@ -610,8 +610,8 @@ float shadowtest(float4 tc, float4 tcJ) // jittered sampling
     const float scale = (2.7f / float(SMAP_size));
 
     tcJ.xy /= tcJ.w;
-    float4 J0 = jitter0.Sample(smp_jitter, tcJ) * scale;
-    float4 J1 = jitter1.Sample(smp_jitter, tcJ) * scale;
+    float4 J0 = jitter0.Sample(smp_jitter, tcJ.xy) * scale;
+    float4 J1 = jitter1.Sample(smp_jitter, tcJ.xy) * scale;
 
     r.x = test(tc, J0.xy).x;
     r.y = test(tc, J0.wz).y;
@@ -644,7 +644,7 @@ float3x4 m_sunmask;
 
 float sunmask(float4 P)
 {
-    float2 tc = mul(m_sunmask, P);
+    float2 tc = mul(m_sunmask, P).xy;
     return lerp(0.25f, 1.0f, s_lmap.SampleLevel(smp_linear, tc, 0).w);
 }
 #else

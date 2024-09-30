@@ -40,9 +40,9 @@ float fastacos_approx(float x)
 float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float zbuffer, float2 texcoord, float jitter)
 {
     // Exclude HUD, and far plane geometry
-    if (zbuffer < 0.02f || view_position.z > 60.0)
+    if (zbuffer < 0.02f || view_position.z > 60.0f)
     {
-        return 1.0;
+        return 1.0f;
     }
 
     // Few constants
@@ -55,7 +55,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
     float GTAO_SECTORS = 24.0; // Amount of sectors distributed around the hemisphere slice
 
     // Bias the depth to avoid self-intersections
-    view_position *= 0.996;
+    view_position *= 0.996f;
 
     // View direction
     float3 view_direction = -normalize(view_position);
@@ -67,7 +67,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
     float2 slice_scale = float2(pos_decompression_params2.z, -pos_decompression_params2.w) * screen_radius;
 
     // Accumulated occlusion
-    float occlusion = 0.0;
+    float occlusion = 0.0f;
 
     [loop]
     for (int i = 0; i < GTAO_DIRECTIONS; i++)
@@ -156,18 +156,18 @@ uint main(PSInput I) : SV_Target
     // Unpack G-Buffer data...
     float3 Normal, Point; float Depth;
     {
-        Depth = s_position.SampleLevel(smp_nofilter, I.texcoord, 0.0).x;
+        Depth = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
 
-        Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord, 0.0).xyz;
+        Normal = s_normal.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).xyz;
         Normal = normalize(Normal.xyz - 0.5f);
         Normal.z = -Normal.z;
 
-        float s_view_z = depth_unpack.x / (Depth - depth_unpack.y);
-        Point = float3((I.texcoord * 2.0 - 1.0) * pos_decompression_params.xy, 1.0) * s_view_z;
+        float s_view_z = depth_unpack.x * rcp(Depth - depth_unpack.y);
+        Point = float3((I.texcoord.xy * 2.0f - 1.0f) * pos_decompression_params.xy, 1.0f) * s_view_z;
     }
 
     // Init
-    float occlusion = example_how_to_not_implement_gtao(Point, Normal, Depth, I.texcoord, jitter);
+    float occlusion = example_how_to_not_implement_gtao(Point, Normal, Depth, I.texcoord.xy, jitter);
 
     // Pack the data into R32_UINT
     uint2 packed = uint2(asuint(f32tof16(Point.z)), (asuint(f32tof16(occlusion)) << 16));

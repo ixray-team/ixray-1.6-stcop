@@ -65,7 +65,7 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.hpos = mul(m_P, float4(output.position.xyz, 1));
 
-    output.hpos_curr = bp[0].hpos_curr * w + bp[1].hpos_curr * v + bp[2].hpos_curr * u;
+    output.hpos_curr = output.hpos; //bp[0].hpos_curr * w + bp[1].hpos_curr * v + bp[2].hpos_curr * u;
     output.hpos_old = bp[0].hpos_old * w + bp[1].hpos_old * v + bp[2].hpos_old * u;
 
 #if 0
@@ -75,3 +75,4 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.hpos.xy += m_taa_jitter.xy * output.hpos.w;
 }
+

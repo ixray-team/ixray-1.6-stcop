@@ -11,10 +11,11 @@ float4 main(p_fluidsim input) : SV_Target
 
 #ifdef USE_GRAVITY
 
-    float Dencity = Texture_color.SampleLevel(samLinear, npos, 0);
+    float Dencity = Texture_color.SampleLevel(samLinear, npos, 0).x;
     Velocity.y += Dencity * GravityBuoyancy;
 
 #endif //	USE_GRAVITY
 
     return Velocity;
 }
+

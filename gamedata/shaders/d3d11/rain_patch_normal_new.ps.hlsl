@@ -1,5 +1,4 @@
 #include "common.hlsli"
-#include "lmodel.hlsli"
 #include "shadow.hlsli"
 
 #ifndef USE_SUNMASK

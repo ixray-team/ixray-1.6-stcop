@@ -21,20 +21,18 @@ Texture2D s_distort;
 // Pixel
 float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 {
-    float4 t_base = s_base.Sample(smp_base, I.tbase);
-
-    float2 t_d0 = s_distort.Sample(smp_base, I.tnorm0);
-    float2 t_d1 = s_distort.Sample(smp_base, I.tnorm1);
+    float alpha = 1.0f - s_base.Sample(smp_base, I.tbase).w;
+	
+    float2 t_d0 = s_distort.Sample(smp_base, I.tnorm0).xy;
+    float2 t_d1 = s_distort.Sample(smp_base, I.tnorm1).xy;
     float2 distort = (t_d0 + t_d1) * 0.5f;
 
-    float alpha = 1.0f - t_base.w;
 
 #ifdef USE_SOFT_WATER
-    float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
-    gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
+    float4 Point = GbufferGetPoint(pos2d.xy);
 
-    float3 waterPos = gbd.P.xyz * rcp(gbd.P.z) * I.tctexgen.z;
-    float waterDepth = length(waterPos - gbd.P) * 0.75f;
+    float3 waterPos = Point.xyz * rcp(Point.z) * I.tctexgen.z;
+    float waterDepth = length(waterPos - Point.xyz) * 0.75f;
 
     alpha *= saturate(5.0f * waterDepth);
 #endif

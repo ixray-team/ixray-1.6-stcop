@@ -107,9 +107,9 @@ float hashed_alpha_test(float3 position)
     // Pass into CDF to compute uniformly distrib threshold
     float a = min(lerpFactor, 1.0 - lerpFactor);
     float3 cases;
-    cases.x = x * x / (2.0 * a * (1.0 - a));
-    cases.y = (x - 0.5 * a) / (1.0 - a);
-    cases.z = 1.0 - ((1.0 - x) * (1.0 - x) / (2.0 * a * (1.0 - a)));
+    cases.x = x * x * rcp(2.0 * a * (1.0 - a));
+    cases.y = (x - 0.5 * a) * rcp(1.0 - a);
+    cases.z = 1.0 - ((1.0 - x) * (1.0 - x) * rcp(2.0 * a * (1.0 - a)));
 
     // Find our final, uniformly distributed alpha threshold
     float thresh = (x < (1.0 - a)) ? ((x < a) ? cases.x : cases.y) : cases.z;
@@ -119,29 +119,47 @@ float hashed_alpha_test(float3 position)
     thresh = frac(thresh + m_taa_jitter.z);
 
     // Clamp alpha
-    return clamp(thresh, 1e-5, 1.0);
+    return clamp(thresh, 0.063f, 1.0f);
 }
+
+#define IMAGE_BITRATE float3(0xff, 0xff, 0xff)
 
 // Deband color function (by Hozar 2002) - may be huita
 float3 deband_color(float3 image, float2 uv)
 {
     float3 dither = Hash23(cos(uv.xy * timers.x) * 1245.0f);
 
-    float3 color = saturate(image) * 255.0f;
+    float3 color = saturate(image) * IMAGE_BITRATE;
     float3 pq = frac(color);
 
     color -= pq;
     pq = step(dither, pq);
 
     color += pq;
-    color /= 255.0f;
+    color *= rcp(IMAGE_BITRATE);
 
     return color;
 }
 
+//Builds a cotangent frame. Source: http://www.thetenthplanet.de/archives/1180
+void build_contangent_frame(float3 position, float3 normal, float2 uv, out float3 tangent, out float3 binormal)
+{
+    float4 duv = float4(ddx(uv), ddy(uv));
+    float3 dp1perp = cross(normal, ddx(position));
+    float3 dp2perp = cross(ddy(position), normal);
+	
+    tangent = dp2perp * duv.x + dp1perp * duv.z;
+    binormal = dp2perp * duv.y + dp1perp * duv.w;
+	
+    float invmax = rsqrt(max(dot(tangent, tangent), dot(binormal, binormal)));
+	
+	tangent *= invmax;
+	binormal *= invmax;
+}
+
 float4 combine_bloom(float3 low, float4 high)
 {
-    return float4(low + high * high.a, 1.f);
+    return float4(low.xyz + high.xyz * high.w, 1.f);
 }
 
 float calc_fogging(float3 pos)
@@ -158,26 +176,32 @@ float3 unpack_normal(float3 v)
 {
     return 2 * v - 1;
 }
+
 float3 unpack_bx2(float3 v)
 {
     return 2 * v - 1;
 }
+
 float3 unpack_bx4(float3 v)
 {
     return 4 * v - 2;
 } //! reduce the amount of stretching from 4*v-2 and increase precision
+
 float2 unpack_tc_lmap(float2 tc)
 {
     return tc * (1.f / 32768.f);
 } // [-1  .. +1 ]
+
 float4 unpack_color(float4 c)
 {
     return c.bgra;
 }
+
 float4 unpack_D3DCOLOR(float4 c)
 {
     return c.bgra;
 }
+
 float3 unpack_D3DCOLOR(float3 c)
 {
     return c.bgr;
@@ -199,14 +223,9 @@ float get_sun(float4 lmh)
     return lmh.y;
 }
 
-float3 v_hemi(float3 n)
+float3 v_sun(float3 N)
 {
-    return L_hemi_color * L_hemi_color * (.5f + .5f * n.y);
-}
-
-float3 v_sun(float3 n)
-{
-    return L_sun_color * dot(n, -L_sun_dir_w);
+    return L_sun_color.xyz * dot(N, -L_sun_dir_w.xyz);
 }
 
 float3 calc_reflection(float3 pos_w, float3 norm_w)

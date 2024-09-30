@@ -197,6 +197,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 	xr_strconcat(mask, C.L_textures[0].c_str(), "_mask");
 
 	RImplementation.addShaderOption("USE_LM_HEMI", "1");
+	RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 
 	switch(C.iElement) {
 	case SE_R2_NORMAL_HQ:

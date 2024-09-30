@@ -11,6 +11,8 @@
 //	Value for skybox depth
 #define Z_MAX 100000
 
+#pragma warning(disable : 4000)
+
 //--------------------------------------------------------------------------------------
 // Textures
 //--------------------------------------------------------------------------------------
@@ -261,7 +263,7 @@ void DoSample(float weight, float3 O, inout float4 color)
         float lookUpVal = ((s - threshold) / (maxValue - threshold));
         lookUpVal = 1.0 - pow(lookUpVal, RednessFactor);
         lookUpVal = clamp(lookUpVal, 0, 1);
-        float3 interpColor = fireTransferFunction.SampleLevel(samLinearClamp, float2(lookUpVal, 0), 0);
+        float3 interpColor = fireTransferFunction.SampleLevel(samLinearClamp, float2(lookUpVal, 0), 0).xyz;
         float mult = (s - threshold);
         color += float4(weight * interpColor.rgb, weight * mult * mult * fireAlphaMultiplier);
     }
@@ -306,7 +308,7 @@ float4 Raycast(PS_INPUT_RAYCAST input)
     // Sample twice per voxel
     float fSamples = (rayLength / gridScaleFactor * maxGridDim) * 2.0;
     int nSamples = floor(fSamples);
-    float3 stepVec = normalize((rayOrigin - eyeOnGrid) * gridDim) * recGridDim * 0.5;
+    float3 stepVec = normalize((rayOrigin - eyeOnGrid.xyz) * gridDim.xyz) * recGridDim.xyz * 0.5;
 
     float3 O = rayOrigin + stepVec * Offset;
 
@@ -339,3 +341,4 @@ float4 Raycast(PS_INPUT_RAYCAST input)
 
     return color;
 }
+

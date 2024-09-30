@@ -26,15 +26,24 @@ v2g_fluidsim_clip main(v_fluidsim input)
 
     //	float3	clip0				: SV_ClipDistance0;
     //	float3	clip1				: SV_ClipDistance1;
-    for (int i = 0; i < 3; ++i)
-    {
-        output.clip0[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i]);
-        output.clip1[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i + 3]);
-        //	Make box a voxel bigger in each direction
-        //	BOX_EXPANSION - voxel diagonal length
-        // output.clip0[i] += BOX_EXPANSION;
-        // output.clip1[i] += BOX_EXPANSION;
-    }
+    // for (int i = 0; i < 3; ++i)
+    // {
+        // output.clip0[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i]);
+        // output.clip1[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i + 3]);
+        // //	Make box a voxel bigger in each direction
+        // //	BOX_EXPANSION - voxel diagonal length
+        // // output.clip0[i] += BOX_EXPANSION;
+        // // output.clip1[i] += BOX_EXPANSION;
+    // }
+	
+	output.clip0.x = dot(float4(output.cell0, 1), OOBBClipPlane[0]);
+	output.clip0.y = dot(float4(output.cell0, 1), OOBBClipPlane[1]);
+	output.clip0.z = dot(float4(output.cell0, 1), OOBBClipPlane[2]);
+	
+	output.clip1.x = dot(float4(output.cell0, 1), OOBBClipPlane[3]);
+	output.clip1.y = dot(float4(output.cell0, 1), OOBBClipPlane[4]);
+	output.clip1.z = dot(float4(output.cell0, 1), OOBBClipPlane[5]);
 
     return output;
 }
+

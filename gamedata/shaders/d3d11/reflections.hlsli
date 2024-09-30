@@ -30,6 +30,8 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
     float L = 0.025f, DeltaL = 0.0f;
 
     float Fade = saturate(dot(Reflect, normalize(Point)) * 4.0f);
+	
+	Reflect.xyz /= abs(Reflect.z) + 0.00001f;
 
     if (Fade < 0.001f)
     {
@@ -42,10 +44,9 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
         TestPos = Point + Reflect * L;
         ReflUV = gbuf_unpack_uv(TestPos);
         HitPos = gbuf_unpack_position(ReflUV);
-        DeltaL = length(HitPos) - length(Point);
-        if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))) && DeltaL > -0.4f)
+        if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))))
         {
-            L = length(Point - HitPos);
+            L = abs(Point.z - HitPos.z);
         }
         else
         {
@@ -53,7 +54,8 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
         }
     }
 
-    // Fade *= smoothstep(0.0f, 0.15f, DeltaL);
+    DeltaL = length(HitPos) - length(Point);
+    Fade *= step(-0.4f, DeltaL);
 
     float Attention = GetBorderAtten(ReflUV, 0.125f);
     ReflUV -= s_velocity.SampleLevel(smp_rtlinear, ReflUV, 0).xy * float2(0.5f, -0.5f);
@@ -71,7 +73,7 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 float4 calc_reflections(float3 pos, float2 pos2d, float3 vreflect)
 {
     float3 Point = mul(m_V, float4(pos, 1.0));
-    float3 Reflect = mul(m_V, vreflect);
+    float3 Reflect = mul((float3x3)m_V, vreflect);
 
     pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
     float3 P = float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);

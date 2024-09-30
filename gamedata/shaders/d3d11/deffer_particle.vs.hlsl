@@ -10,33 +10,15 @@ struct vv
 struct v2p_particle
 {
     float4 color : COLOR0;
-    v2p_flat base;
+    float4 hpos : SV_POSITION;
 };
 
-v2p_particle main(vv I)
+void main(in vv I, out v2p_particle pp)
 {
-    float4 w_pos = I.P;
-
-    // Eye-space pos/normal
-    v2p_flat O;
-    O.hpos = mul(m_WVP, w_pos);
-    O.N = normalize(eye_position - w_pos);
-    float3 Pe = mul(m_WV, I.P);
-    O.tcdh = float4(I.tc.xyyy);
-    O.position = float4(Pe, .2h);
-
-#ifdef USE_TDETAIL
-    O.tcdbump = O.tcdh * dt_params; // dt tc
-#endif
-
-    O.hpos_curr = mul(m_WVP, I.P);
-    O.hpos_old = mul(m_VP_old, I.P);
-
-    O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
-
-    v2p_particle pp;
     pp.color = I.c;
-    pp.base = O;
-
-    return pp;
+	
+    pp.hpos = mul(m_WVP, I.P);
+    pp.hpos.xy += m_taa_jitter.xy * pp.hpos.w;
 }
+
+// THIS SHADER SHOD BE DELEATED OR FIXED

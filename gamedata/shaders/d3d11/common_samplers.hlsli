@@ -30,6 +30,11 @@ Texture2D s_dn_g; //
 Texture2D s_dn_b; //
 Texture2D s_dn_a; //
 
+TextureCube env_s0;
+TextureCube env_s1;
+TextureCube sky_s0;
+TextureCube sky_s1;
+
 // Lighting/shadowing phase                     //
 
 sampler smp_material;

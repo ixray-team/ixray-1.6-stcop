@@ -31,7 +31,7 @@ float4 main(v2p_TL I) : SV_Target
     return float4(0, 0, 0, 0);
 #else //	SUN_SHAFTS_QUALITY
     IXrayGbuffer O;
-    GbufferUnpack(I.Tex0.xy, I.HPos, O);
+    GbufferUnpack(I.Tex0.xy, I.HPos.xy, O);
 
     float3 P = O.Point;
 
@@ -54,7 +54,7 @@ float4 main(v2p_TL I) : SV_Target
     float4 delta = mul(m_shadow, float4(direction, 0.0f));
 
     float res = 0.0f;
-    float max_density = sun_shafts_intensity;
+    float max_density = sun_shafts_intensity.x;
     float density = max_density / RAY_SAMPLES;
 
     if(O.Depth > 0.9999f) {

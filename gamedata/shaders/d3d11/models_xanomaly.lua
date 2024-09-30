@@ -22,7 +22,7 @@ function normal(shader, t_base, t_second, t_detail)
 end
 
 function l_special(shader, t_base, t_second, t_detail)
-    shader:begin("model_distort4glass", "particle_distort")
+    shader:begin("model_distort4glass", "particle_distort_hard")
         :sorting(2, true)
         :blend(true, blend.srcalpha, blend.invsrcalpha)
         :zb(true, true)

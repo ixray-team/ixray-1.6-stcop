@@ -9,20 +9,20 @@ uniform float4 c_brightness;
 // Pixel
 float4 main(p_postpr I) : SV_Target
 {
-    float3 t_0 = saturate(s_base0.Sample(smp_rtlinear, I.Tex0));
-    float3 t_1 = saturate(s_base1.Sample(smp_rtlinear, I.Tex1));
+    float3 t_0 = saturate(s_base0.Sample(smp_rtlinear, I.Tex0.xy).xyz);
+    float3 t_1 = saturate(s_base1.Sample(smp_rtlinear, I.Tex1.xy).xyz);
     float3 image = (t_0 + t_1) * 0.5f;
 	
-    float gray = dot(image, I.Gray);
+    float gray = dot(image, I.Gray.xyz);
     image = lerp(gray, image, I.Gray.w);
 
-    float4 t_noise = s_noise.Sample(smp_linear, I.Tex2);
+    float3 t_noise = s_noise.Sample(smp_linear, I.Tex2.xy).xyz;
     float3 noised = image * t_noise * 2.0f;
 	
     image = lerp(noised, image, I.Color.w);
-    image = (image * I.Color + c_brightness) * 2.0f;
+    image = (image * I.Color.xyz + c_brightness.xyz) * 2.0f;
 
-    image = deband_color(image, I.Tex0);
+    image = deband_color(image, I.Tex0.xy);
     return float4(image, 1.0h);
 }
 

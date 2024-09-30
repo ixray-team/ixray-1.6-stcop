@@ -17,24 +17,16 @@ struct v2p
 Texture2D s_distort;
 float4 main(v2p I) : SV_Target
 {
-    //	float4	distort	= tex2D		(s_distort,I.tc0);
     float4 distort = s_distort.Sample(smp_linear, I.tc0);
-    float factor = distort.a * dot(I.c.rgb, 0.333f);
-    /*
-    #ifdef	USE_SOFT_PARTICLES
-            float2	zero = float2( 0.5, 0.5);
-            float	alphaDistort;
-            float2 tcProj = I.txtexgen.xy / I.texgen.w;
-            gbuffer_data gbd = gbuffer_load_data( tcProj, I.HPos);
-
-            //float4 _P = tex2Dproj( s_position, I.tctexgen);
-            float4 _P = float4( gbd.P, gbd.mtl );
-            float spaceDepth = _P.z - I.tctexgen.z;
-            if (spaceDepth < -0.1h ) spaceDepth = 100000.0h; //  Skybox doesn't draw into position buffer
-            alphaDistort = saturate(1.3*spaceDepth);
-    //	alphaDistort = 0;
-            distort.xy = lerp  ( zero, distort.xy, alphaDistort);
-    #endif	//	USE_SOFT_PARTICLES
-    */
+    float factor = distort.w * dot(I.c.xyz, 0.3333f);
+	
+	// #ifdef USE_SOFT_PARTICLES
+    // float4 Point = GbufferGetPoint(I.hpos.xy);
+	
+    // float spaceDepth = Point.z - I.tctexgen.z;
+    // factor *= Contrast(saturate(spaceDepth * 1.3f), 2.0f);
+	// #endif //	USE_SOFT_PARTICLES
+	
     return float4(distort.xyz, factor);
 }
+

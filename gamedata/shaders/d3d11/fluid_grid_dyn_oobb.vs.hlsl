@@ -20,26 +20,35 @@ v2g_fluidsim_dyn_aabb main(v_fluidsim input)
     output.velocity = 0;
 
     {
-        output.velocity = OOBBWorldTranslationVelocity;
+        output.velocity = OOBBWorldTranslationVelocity.xyz;
 
-        float3 r = mul(LocalToWorld, float4(output.cell0, 1)) - MassCenter;
+        float3 r = mul(LocalToWorld, float4(output.cell0, 1)).xyz - MassCenter.xyz;
 
         float3 AngularVel = cross(OOBBWorldAngularVelocity.xyz, r);
 
         output.velocity += AngularVel;
 
-        output.velocity = mul(WorldToLocal, output.velocity);
+        output.velocity = mul((float3x3)WorldToLocal, output.velocity);
     }
 
-    for (int i = 0; i < 3; ++i)
-    {
-        output.clip0[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i]);
-        output.clip1[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i + 3]);
-        //	Make box a voxel bigger in each direction
-        //	BOX_EXPANSION - voxel diagonal length
-        // output.clip0[i] += BOX_EXPANSION;
-        // output.clip1[i] += BOX_EXPANSION;
-    }
+    // for (int i = 0; i < 3; ++i)
+    // {
+        // output.clip0[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i]);
+        // output.clip1[i] = dot(float4(output.cell0, 1), OOBBClipPlane[i + 3]);
+        // //	Make box a voxel bigger in each direction
+        // //	BOX_EXPANSION - voxel diagonal length
+        // // output.clip0[i] += BOX_EXPANSION;
+        // // output.clip1[i] += BOX_EXPANSION;
+    // }
+
+	output.clip0.x = dot(float4(output.cell0, 1), OOBBClipPlane[0]);
+	output.clip0.y = dot(float4(output.cell0, 1), OOBBClipPlane[1]);
+	output.clip0.z = dot(float4(output.cell0, 1), OOBBClipPlane[2]);
+	
+	output.clip1.x = dot(float4(output.cell0, 1), OOBBClipPlane[3]);
+	output.clip1.y = dot(float4(output.cell0, 1), OOBBClipPlane[4]);
+	output.clip1.z = dot(float4(output.cell0, 1), OOBBClipPlane[5]);
 
     return output;
 }
+

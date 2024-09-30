@@ -14,6 +14,8 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.position = float4(Pe, 1.0f);
 
     float3 N = I.N * 2.0f;
+	
+#if defined(USE_BUMP) || defined(USE_TDETAIL_BUMP)
     float3 T = I.T * 2.0f;
     float3 B = I.B * 2.0f;
 
@@ -25,10 +27,17 @@ void skinned_main(in v_model I, out p_bumped_new O)
     O.M1 = xform[0];
     O.M2 = xform[1];
     O.M3 = xform[2];
+#else
+	N = mul((float3x3)m_WV, N);
+
+    O.M1 = N.xxx;
+    O.M2 = N.yyy;
+    O.M3 = N.zzz;
+#endif
 
     O.hpos = mul(m_WVP, I.P);
 
-    O.hpos_curr = mul(m_WVP, I.P);
+    O.hpos_curr = O.hpos;
     O.hpos_old = mul(m_WVP_old, I.P_old);
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
@@ -65,3 +74,4 @@ void main(in v_model I, out p_bumped_new O)
     skinned_main(I, O);
 }
 #endif
+

@@ -1,7 +1,7 @@
 #include "fluid_common.hlsli"
 
 //	Pixel
-float4 main(p_fluidsim input) : SV_Target
+float3 main(p_fluidsim input) : SV_Target
 {
     // Texture_tempvector contains the vorticity computed by PS_VORTICITY
     float4 omega = Texture_tempvector.SampleLevel(samPointClamp, input.texcoords, 0);
@@ -20,11 +20,11 @@ float4 main(p_fluidsim input) : SV_Target
 
     eta = normalize(eta + float3(0.001, 0.001, 0.001));
 
-    float4 force;
-    force.xyz = timestep * epsilon * float3(eta.y * omega.z - eta.z * omega.y,
+    float3 force = timestep * epsilon * float3(eta.y * omega.z - eta.z * omega.y,
         eta.z * omega.x - eta.x * omega.z,
         eta.x * omega.y - eta.y * omega.x);
 
     // Note: the result is added to the current velocity at each cell using "additive blending"
     return force;
 }
+

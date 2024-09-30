@@ -21,21 +21,17 @@ struct v2p
     float4 hpos : SV_POSITION;
 };
 
-v2p main(vi v)
+void main(in vi v, out v2p o)
 {
-    v2p o;
-
-    // float4 tpos = mul (1000, v.p);
     o.hpos = mul(m_WVP, v.p);
-    //	o.hpos.z = o.hpos.w;
     o.tc0 = v.tc0;
     o.tc1 = v.tc1;
 
     o.factor = v.c;
-    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 
-    o.hpos_curr = mul(m_WVP, v.p);
+    o.hpos_curr = o.hpos;
     o.hpos_old = mul(m_WVP_old, v.p);
-
-    return o;
+	
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
 }
+

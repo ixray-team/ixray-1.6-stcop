@@ -12,7 +12,7 @@ float4 main(p_fluidsim input) : SV_Target
     float3 npos = GetAdvectedPosTexCoords(input);
 
     float4 r;
-    float3 diff = abs(floatVolumeDim - input.cell0);
+    float3 diff = abs(floatVolumeDim.xyz - input.cell0.xyz);
 
     // Must use regular semi-Lagrangian advection instead of BFECC at the volume boundaries
     if ((diff.x > (floatVolumeDim.x - 4)) || (diff.y > (floatVolumeDim.y - 4)) || (diff.z > (floatVolumeDim.z - 4)))

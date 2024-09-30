@@ -20,8 +20,8 @@ float3 dof_kernel; // x,y - resolution pre-scaled z - just kernel size
 float DOFFactor(float depth)
 {
     float dist_to_focus = depth - dof_params.y;
-    float blur_far = saturate(dist_to_focus / (dof_params.z - dof_params.y));
-    float blur_near = saturate(dist_to_focus / (dof_params.x - dof_params.y));
+    float blur_far = saturate(dist_to_focus * rcp(dof_params.z - dof_params.y));
+    float blur_near = saturate(dist_to_focus * rcp(dof_params.x - dof_params.y));
     float blur = blur_near + blur_far;
     blur *= blur;
     return blur;
@@ -33,9 +33,9 @@ float sampleDepth(float2 center)
     return P > 0.9999f ? dof_params.w : (depth_unpack.x * rcp(P - depth_unpack.y));
 }
 
-    // #define MAXCOF		5.h
-    #define MAXCOF 7.h
-    #define EPSDEPTH 0.0001h
+#define MAXCOF 7.h
+#define EPSDEPTH 0.0001h
+
 float3 dof(float2 center)
 {
     // Scale tap offsets based on render target size
@@ -58,14 +58,14 @@ float3 dof(float2 center)
     o[10] = float2(-0.321940f, -0.932615f) * scale;
     o[11] = float2(-0.791559f, -0.597710f) * scale;
 
-    float3 sum = s_image.Sample(smp_nofilter, center);
+    float3 sum = s_image.Sample(smp_nofilter, center).xyz;
     float contrib = 1.h;
 
     [unroll]
     for (int i = 0; i < 12; i++)
     {
         float2 tap = center + o[i];
-        float4 tap_color = s_image.Sample(smp_nofilter, tap);
+        float3 tap_color = s_image.Sample(smp_nofilter, tap).xyz;
         float tap_depth = sampleDepth(tap);
         float tap_contrib = DOFFactor(tap_depth);
         sum += tap_color * tap_contrib;
@@ -76,5 +76,5 @@ float3 dof(float2 center)
 }
 
 #endif //	USE_DOF
-
 #endif //	DOF_H_INCLUDED
+

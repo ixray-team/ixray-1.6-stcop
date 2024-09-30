@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#pragma warning(disable : 4000)
+
 #include "shared\common.hlsli"
 
 #include "common_defines.hlsli"
