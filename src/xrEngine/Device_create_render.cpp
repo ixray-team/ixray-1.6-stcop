@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "../xrCore/_std_extensions.h"
 #include "imgui_impl_sdl3.h"
 #include "IGame_Persistent.h"
@@ -244,6 +245,17 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
 				ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
+				if (ImGui::MenuItem("Optick Start Capture"))
+				{
+					PROF_START_CAPTURE();
+				}
+
+				if (ImGui::MenuItem("Optick Stop Capture"))
+				{
+					PROF_STOP_CAPTURE();
+					PROF_SAVE_CAPTURE("ixr.opt");
+				}
+				
 				ImGui::EndMenu();
 			}
 
@@ -429,6 +441,7 @@ RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
 
 void CRenderDevice::BeginRender()
 {
+	PROF_EVENT("CRenderDevice::BeginRender");
 #ifndef _EDITOR
 	CImGuiManager::Instance().NewPlatformFrame();
 	CImGuiManager::Instance().UpdateCapture();

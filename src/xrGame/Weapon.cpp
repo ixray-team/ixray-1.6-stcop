@@ -781,6 +781,7 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 
 void CWeapon::shedule_Update	(u32 dT)
 {
+	PROF_EVENT("CWeapon::shedule_Update");
 	// Queue shrink
 //	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
 //	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();	

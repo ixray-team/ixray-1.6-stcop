@@ -318,6 +318,8 @@ void CSoundRender_CoreA::set_master_volume(float f )
 
 void CSoundRender_CoreA::update(const Fvector& P, const Fvector& D, const Fvector& N)
 {
+    PROF_EVENT("Sound: Update Core");
+
     inherited::update(P, D, N);
 
     if (pSoundVoiceChat)

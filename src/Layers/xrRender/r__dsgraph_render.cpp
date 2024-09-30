@@ -28,6 +28,7 @@ IC	bool	cmp_normal_items		(const _NormalItem& N1, const _NormalItem& N2)
 
 void __fastcall pLandscape_0(mapLandscape_Node* N)
 {
+	PROF_EVENT("pLandscape_0");
 	VERIFY(N);
 	dxRender_Visual* V = N->val.pVisual;
 	VERIFY(V && V->shader._get());
@@ -41,6 +42,7 @@ void __fastcall pLandscape_0(mapLandscape_Node* N)
 
 void __fastcall pLandscape_1(mapLandscape_Node* N)
 {
+	PROF_EVENT("pLandscape_1");
 	VERIFY(N);
 	dxRender_Visual* V = N->val.pVisual;
 	VERIFY(V && V->shader._get());
@@ -55,6 +57,8 @@ void __fastcall pLandscape_1(mapLandscape_Node* N)
 
 void R_dsgraph_structure::r_dsgraph_render_landscape(u32 pass, bool bClear)
 {
+	PROF_EVENT("Landscape Z Prepass");
+
 	RCache.set_xform_world(Fidentity);
 
 	if (pass == 0)
@@ -68,6 +72,7 @@ void R_dsgraph_structure::r_dsgraph_render_landscape(u32 pass, bool bClear)
 
 void __fastcall mapNormal_Render	(mapNormalItems& N)
 {
+	PROF_EVENT("mapNormal_Render");
 	// *** DIRECT ***
 	std::sort				(N.begin(),N.end(),cmp_normal_items);
 	_NormalItem				*I=&*N.begin(), *E = &*N.end();
@@ -87,6 +92,7 @@ IC	bool	cmp_matrix_items		(const _MatrixItem& N1, const _MatrixItem& N2)
 
 void __fastcall mapMatrix_Render	(mapMatrixItems& N)
 {
+	PROF_EVENT("mapMatrix_Render");
 	// *** DIRECT ***
 	std::sort				(N.begin(),N.end(),cmp_matrix_items);
 	_MatrixItem				*I=&*N.begin(), *E = &*N.end();
@@ -108,6 +114,7 @@ void __fastcall mapMatrix_Render	(mapMatrixItems& N)
 // ALPHA
 void __fastcall sorted_L1		(mapSorted_Node *N)
 {
+	PROF_EVENT("sorted_L1");
 	VERIFY (N);
 	dxRender_Visual *V				= N->val.pVisual;
 	VERIFY (V && V->shader._get());
@@ -302,7 +309,7 @@ void		sort_tlist_mat
 
 void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 {
-
+	PROF_EVENT("r_dsgraph_render_graph");
 	//PIX_EVENT(r_dsgraph_render_graph);
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 
@@ -313,6 +320,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 		RCache.set_xform_world			(Fidentity);
 
 		// Render several passes
+		PROF_EVENT("NORMAL_SHADER_PASSES");
 		for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 		{
 			//mapNormalVS&	vs				= mapNormal	[_priority];
@@ -372,6 +380,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 								sort_tlist_nrm						(nrmTextures,nrmTexturesTemp,tex,true);
 								for (u32 tex_id=0; tex_id<nrmTextures.size(); tex_id++)
 								{
+									PROF_EVENT("nrmTextures");
 									mapNormalTextures::TNode*	Ntex	= nrmTextures[tex_id];
 									RCache.set_Textures					(Ntex->key);
 									RImplementation.apply_lmaterial		();
@@ -408,6 +417,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 	// Perform sorting based on ScreenSpaceArea
 	// Sorting by SSA and changes minimizations
 	// Render several passes
+	PROF_EVENT("MATERIAL_SHADER_PASSES");
 	for ( u32 iPass = 0; iPass<SHADER_PASSES_MAX; ++iPass)
 	{
 		//mapMatrixVS&	vs				= mapMatrix	[_priority];
@@ -466,6 +476,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 							sort_tlist_mat						(matTextures,matTexturesTemp,tex,true);
 							for (u32 tex_id=0; tex_id<matTextures.size(); tex_id++)
 							{
+								PROF_EVENT("matTextures");
 								mapMatrixTextures::TNode*	Ntex	= matTextures[tex_id];
 								RCache.set_Textures					(Ntex->key);
 								RImplementation.apply_lmaterial		();
@@ -538,6 +549,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 // strict-sorted render
 void	R_dsgraph_structure::r_dsgraph_render_sorted	()
 {
+	PROF_EVENT("r_dsgraph_render_sorted");
 	// Rendering
 	// Sorted (back to front)
 
@@ -605,6 +617,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, Fm
 // sub-space rendering - main procedure
 void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals, CObject* O)
 {
+	PROF_EVENT("r_dsgraph_render_subspace")
 	VERIFY							(_sector);
 	RImplementation.marker			++;			// !!! critical here
 
@@ -614,6 +627,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 	View							= &ViewBase;
 
 	if (_precise_portals && RImplementation.rmPortals)		{
+		PROF_EVENT("precise_portals")
 		// Check if camera is too near to some portal - if so force DualRender
 		Fvector box_radius;		box_radius.set	(EPS_L*20,EPS_L*20,EPS_L*20);
 		RImplementation.Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
@@ -627,7 +641,8 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 
 	// Traverse sector/portal structure
 	PortalTraverser.traverse		( _sector, ViewBase, _cop, mCombined, 0 );
-
+	{
+		PROF_EVENT("add_static")
 	// Determine visibility for static geometry hierrarhy
 	for (u32 s_it=0; s_it<PortalTraverser.r_sectors.size(); s_it++)
 	{
@@ -636,11 +651,13 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		for (u32 v_it=0; v_it<sector->r_frustums.size(); v_it++)	{
 			set_Frustum			(&(sector->r_frustums[v_it]));
 			add_Geometry		(root);
+			}
 		}
 	}
 
 	if (_dynamic)
 	{
+		PROF_EVENT("add__dynamic")
 		set_Object						(0);
 
 		// Traverse object database

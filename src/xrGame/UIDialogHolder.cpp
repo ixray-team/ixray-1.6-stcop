@@ -221,6 +221,7 @@ void CDialogHolder::StopDialog(CUIDialogWnd* pDialog)
 
 void CDialogHolder::OnFrame()
 {
+	PROF_EVENT("CDialogHolder::OnFrame");
 	m_b_in_update = true;
 	CUIDialogWnd* wnd = TopInputReceiver();
 	if ( wnd && wnd->IsEnabled() )

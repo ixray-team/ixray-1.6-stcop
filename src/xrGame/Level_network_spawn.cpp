@@ -17,7 +17,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	// Begin analysis
 	shared_str			s_name;
 	P.r_stringZ			(s_name);
-
+	PROF_EVENT_DYNAMIC(s_name.c_str())
 	// Create DC (xrSE)
 	CSE_Abstract*	E	= F_entity_Create	(*s_name);
 	R_ASSERT2(E, *s_name);

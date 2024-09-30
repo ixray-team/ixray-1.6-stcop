@@ -40,7 +40,7 @@ void	R_occlusion::occq_destroy	(				)
 u32		R_occlusion::occq_begin		(u32&	ID		)
 {
 	if (!enabled)		return 0;
-
+	PROF_EVENT("R_occlusion::occq_begin");
 	//	Igor: prevent release crash if we issue too many queries
 	if (pool.empty())
 	{
@@ -72,7 +72,7 @@ u32		R_occlusion::occq_begin		(u32&	ID		)
 void	R_occlusion::occq_end		(u32&	ID		)
 {
 	if (!enabled)		return;
-
+	PROF_EVENT("R_occlusion::occq_end");
 	//	Igor: prevent release crash if we issue too many queries
 	if (ID == iInvalidHandle) return;
 
@@ -84,6 +84,7 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 {
 	if (!enabled)		return 0xffffffff;
 
+	PROF_EVENT("R_occlusion::occq_get");
 	//	Igor: prevent release crash if we issue too many queries
 	if (ID == iInvalidHandle) return 0xFFFFFFFF;
 
@@ -94,17 +95,20 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 	CTimer	T;
 	T.Start	();
 	Device.Statistic->RenderDUMP_Wait.Begin	();
-	//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
-	VERIFY2( ID<used.size(),make_string<const char*>("_Pos = %d, size() = %d ", ID, used.size()));
-	while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
 	{
-		if (!SwitchToThread())			
-			Sleep(ps_r2_wait_sleep);
-
-		if (T.GetElapsed_ms() > 500)	
+		PROF_EVENT("GPU::GetData");
+		//while	((hr=used[ID].Q->GetData(&fragments,sizeof(fragments),D3DGETDATA_FLUSH))==S_FALSE) {
+		VERIFY2( ID<used.size(),make_string<const char*>("_Pos = %d, size() = %d ", ID, used.size()));
+		while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
 		{
-			fragments	= (occq_result)-1;//0xffffffff;
-			break;
+			if (!SwitchToThread())			
+				Sleep(ps_r2_wait_sleep);
+
+			if (T.GetElapsed_ms() > 500)	
+			{
+				fragments	= (occq_result)-1;//0xffffffff;
+				break;
+			}
 		}
 	}
 	Device.Statistic->RenderDUMP_Wait.End	();

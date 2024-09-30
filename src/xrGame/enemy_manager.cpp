@@ -57,6 +57,7 @@ bool CEnemyManager::is_useful				(const CEntityAlive *entity_alive) const
 
 bool CEnemyManager::useful					(const CEntityAlive *entity_alive) const
 {
+	PROF_EVENT("CEnemyManager::useful");
 	if (!entity_alive->g_Alive())
 		return				(false);
 

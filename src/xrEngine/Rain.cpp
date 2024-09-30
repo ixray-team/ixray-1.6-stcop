@@ -112,6 +112,7 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void	CEffect_Rain::OnFrame	()
 {
+	PROF_EVENT("CEffect_Rain::OnFrame");
 #ifndef _EDITOR
 	if (!g_pGameLevel&&!Device.IsEditorMode())			return;
 #endif

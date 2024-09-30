@@ -361,6 +361,8 @@ void CGameFont::OutSetI(float x, float y)
 
 void CGameFont::OnRender()
 {
+	PROF_EVENT("Render Font");
+
 	pFontRender->OnRender(*this);
 	if (!strings.empty())
 		strings.resize(0);

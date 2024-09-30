@@ -441,24 +441,28 @@ void dxRenderDeviceRender::End()
 	VERIFY	(RDevice);
 
 	RCache.OnFrameEnd();
-
-	DoAsyncScreenshot();
-
+	{
+		PROF_EVENT("Async Screenshot");
+		DoAsyncScreenshot();
+	}
 #ifdef DEBUG_DRAW
-	CImGuiManager& MyImGui = CImGuiManager::Instance();
-	MyImGui.BeginRender();
+	{
+		PROF_EVENT("ImGui EndRender");
+		CImGuiManager& MyImGui = CImGuiManager::Instance();
+		MyImGui.BeginRender();
 
 #ifdef USE_DX11
-	ID3D11RenderTargetView* RTV = RSwapchainTarget;
-	RContext->OMSetRenderTargets(1, &RTV, nullptr);
+		ID3D11RenderTargetView* RTV = RSwapchainTarget;
+		RContext->OMSetRenderTargets(1, &RTV, nullptr);
 #else
-	RDevice->SetRenderTarget(0, RSwapchainTarget);
+		RDevice->SetRenderTarget(0, RSwapchainTarget);
 #endif
 
-	MyImGui.Render();
-	MyImGui.AfterRender();
+		MyImGui.Render();
+		MyImGui.AfterRender();
 
-	DebugRenderImpl.m_lines.resize(0);
+		DebugRenderImpl.m_lines.resize(0);
+	}
 #else
 
 #ifdef USE_DX11
@@ -469,7 +473,7 @@ void dxRenderDeviceRender::End()
 #endif
 
 #endif
-
+	PROF_EVENT("Present");
 #ifdef USE_DX11
 	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
 #else

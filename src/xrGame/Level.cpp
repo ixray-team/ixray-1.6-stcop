@@ -434,6 +434,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 
 void CLevel::ProcessGameEvents		()
 {
+	PROF_EVENT("CLevel::ProcessGameEvents");
 	// Game events
 	{
 		NET_Packet			P;
@@ -453,16 +454,19 @@ void CLevel::ProcessGameEvents		()
 			{
 			case M_SPAWN:
 				{
+					PROF_EVENT("M_SPAWN");
 					u16 dummy16;
 					P.r_begin(dummy16);
 					cl_Process_Spawn(P);
 				}break;
 			case M_EVENT:
 				{
+					PROF_EVENT("M_EVENT");
 					cl_Process_Event(dest, type, P);
 				}break;
 			case M_MOVE_PLAYERS:
 				{
+					PROF_EVENT("M_MOVE_PLAYERS");
 					u8 Count = P.r_u8();
 					for (u8 i=0; i<Count; i++)
 					{
@@ -482,16 +486,19 @@ void CLevel::ProcessGameEvents		()
 				}break;
 			case M_STATISTIC_UPDATE:
 				{
+					PROF_EVENT("M_STATISTIC_UPDATE");
 					if (!IsGameTypeSingle())
 						Game().m_WeaponUsageStatistic->OnUpdateRequest(&P);
 				}break;
 			case M_FILE_TRANSFER:
 				{
+					PROF_EVENT("M_FILE_TRANSFER");
 					if (m_file_transfer)			//in case of net_Stop
 						m_file_transfer->on_message(&P);
 				}break;
 			case M_GAMEMESSAGE:
 				{
+					PROF_EVENT("M_GAMEMESSAGE");
 					Game().OnGameMessage(P);
 				}break;
 			default:
@@ -718,6 +725,7 @@ void CLevel::OnFrame()
 int		psLUA_GCSTEP					= 10			;
 void	CLevel::script_gc				()
 {
+	PROF_EVENT("CLevel::script_gc");
 	lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
 }
 

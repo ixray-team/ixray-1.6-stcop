@@ -198,6 +198,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 void Fvisual::Render		(float )
 {
+	PROF_EVENT("Fvisual::Render");
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP && !RCache.is_TessEnabled())
 	{

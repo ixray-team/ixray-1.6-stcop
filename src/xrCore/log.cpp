@@ -100,6 +100,7 @@ void xrLogger::EnableFastDebugLog()
 
 void LogThreadEntryStartup(void* nullParam)
 {
+	PROF_THREAD("Logger Thread");
 	theLogger->LogThreadEntry();
 }
 
@@ -212,6 +213,7 @@ void xrLogger::LogThreadEntry()
 
 	while (bIsAlive)
 	{
+		PROF_EVENT("Log Frame")
 		bool bHaveMore = true;
 		LogRecord theRecord;
 

@@ -38,6 +38,8 @@ ref_light	precache_light = 0;
 BOOL CRenderDevice::Begin()
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: Begin");
+
 	if (g_dedicated_server)
 	{
 		return TRUE;
@@ -82,6 +84,7 @@ void CRenderDevice::Clear	()
 void CRenderDevice::End		(void)
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: End");
 	if (g_dedicated_server) {
 		return;
 	}
@@ -125,6 +128,7 @@ void CRenderDevice::End		(void)
 volatile u32 mt_Thread_marker = 0x12345678;
 void mt_Thread(void* ptr)
 {
+	PROF_THREAD("SecondaryThread");
 	g_AppInfo.SecondaryThread = GetCurrentThread();
 	while (true)
 	{
@@ -138,18 +142,18 @@ void mt_Thread(void* ptr)
 			return;
 		}
 
-		// we has granted permission to execute
-		mt_Thread_marker = Device.dwFrame;
+			// we has granted permission to execute
+			mt_Thread_marker = Device.dwFrame;
 
 		g_Discord.Update();
 
-		for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-			Device.seqParallel[pit]();
+				for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
+					Device.seqParallel[pit]();
 
-		Device.seqParallel.resize(0);
-		Device.seqFrameMT.Process(rp_Frame);
+				Device.seqParallel.resize(0);
+				Device.seqFrameMT.Process(rp_Frame);
 
-		// now we give control to device - signals that we are ended our work
+			// now we give control to device - signals that we are ended our work
 		Device.mt_csEnter.Leave();
 		// waits for device signal to continue - to start again
 		Device.mt_csLeave.Enter();
@@ -201,6 +205,7 @@ void CRenderDevice::callback(const u32& cb_time, const std::function<void()> &fu
 {
 	m_time_callbacks.insert({dwTimeGlobal+cb_time,func});
 }
+
 void CRenderDevice::on_idle		()
 {
 #ifndef _EDITOR
@@ -221,6 +226,9 @@ void CRenderDevice::on_idle		()
 		dwLastFrameTime = dwCurrentTime;
 	}
 
+
+	PROF_THREAD("MainThread");
+	PROF_FRAME("Main Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
@@ -244,8 +252,10 @@ void CRenderDevice::on_idle		()
 	{
 		if (g_pGamePersistent != nullptr)
 		{
+			PROF_EVENT("Update Particles");
 			g_pGamePersistent->UpdateParticles();
 		}
+
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
 		    if (Device.dwTimeGlobal >= it->first)
@@ -303,29 +313,29 @@ void CRenderDevice::on_idle		()
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
 	mt_csLeave.Enter			();
-	mt_csEnter.Leave			();
-	Sleep						(0);
+		mt_csEnter.Leave			();
+		Sleep						(0);
 
-	if (!g_dedicated_server) {
-		Statistic->RenderTOTAL_Real.FrameStart();
-		Statistic->RenderTOTAL_Real.Begin();
-		if (b_is_Active) {
-			if (Begin()) {
-				seqRender.Process(rp_Render);
-				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-					Statistic->Show();
+		if (!g_dedicated_server) {
+			Statistic->RenderTOTAL_Real.FrameStart();
+			Statistic->RenderTOTAL_Real.Begin();
+			if (b_is_Active) {
+				if (Begin()) {
+					seqRender.Process(rp_Render);
+					if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+						Statistic->Show();
 
-				End();
+					End();
+				}
 			}
+			Statistic->RenderTOTAL_Real.End();
+			Statistic->RenderTOTAL_Real.FrameEnd();
+			Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 		}
-		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
-	}
 
-	// *** Suspend threads
-	// Capture startup point
-	// Release end point - allow thread to wait for startup point
+		// *** Suspend threads
+		// Capture startup point
+		// Release end point - allow thread to wait for startup point
 	mt_csEnter.Enter						();
 	mt_csLeave.Leave						();
 
@@ -416,6 +426,7 @@ void ProcessLoading(RP_FUNC *f);
 void CRenderDevice::FrameMove()
 {
 #ifndef _EDITOR
+	PROF_EVENT("Render: Frame Move");
 	dwFrame			++;
 	dwTimeContinual	= TimerMM.GetElapsed_ms() - app_inactive_time;
 

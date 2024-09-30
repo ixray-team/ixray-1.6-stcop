@@ -69,6 +69,7 @@ void FProgressive::Load		(const char* N, IReader *data, u32 dwFlags)
 
 void FProgressive::Render	(float LOD)
 {
+	PROF_EVENT("FProgressive::Render");
 #if RENDER!=R_R1
 	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP)
 	{

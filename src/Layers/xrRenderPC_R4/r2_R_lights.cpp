@@ -125,6 +125,7 @@ void	CRender::render_lights	(light_Package& LP)
 			{
 				if((L->decor_object[0]&&!L->decor_object[0]->getDestroy()) || (L->decor_object[1]&&!L->decor_object[1]->getDestroy()) || (L->decor_object[2]&&!L->decor_object[2]->getDestroy()) || (L->decor_object[3]&&!L->decor_object[3]->getDestroy()) || (L->decor_object[4]&&!L->decor_object[4]->getDestroy()) || (L->decor_object[5]&&!L->decor_object[5]->getDestroy()))
 				{
+					PROF_EVENT("decor_object")
 					RImplementation.marker			++;			// !!! critical here
 					RImplementation.set_Object		(0);
 					for (int f=0; f<6; f++)
@@ -137,7 +138,10 @@ void	CRender::render_lights	(light_Package& LP)
 					}
 				}
 				else
+				{
+					PROF_EVENT("r_dsgraph_render_subspace")
 					r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
+				}
 			}
 
 			if(L->flags.bOccq&&!L->flags.bHudMode)

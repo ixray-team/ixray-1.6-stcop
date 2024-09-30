@@ -152,6 +152,7 @@ CUIWindow::~CUIWindow()
 
 void CUIWindow::Draw()
 {
+	PROF_EVENT("CUIWindow::Draw");
 	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it){
 		if(!(*it)->IsShown())		continue;
 		if((*it)->GetCustomDraw())	continue;
@@ -168,12 +169,14 @@ void CUIWindow::Draw()
 
 void CUIWindow::Draw(float x, float y)
 {
+	PROF_EVENT("CUIWindow::Draw");
 	SetWndPos		(Fvector2().set(x,y));
 	Draw			();
 }
 
 void CUIWindow::Update()
 {
+	PROF_EVENT("CUIWindow::Update");
 	if (GetUICursor().IsVisible())
 	{
 		bool cursor_on_window;

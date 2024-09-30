@@ -86,6 +86,7 @@ void CAgentManager::remove_links		(CObject *object)
 
 void CAgentManager::update_impl			()
 {
+	PROF_EVENT("CAgentManager::update_impl");
 	VERIFY						(!member().members().empty());
 
 	memory().update				();

@@ -205,6 +205,12 @@ continue_loop:
 	return							(false);
 }
 
+void CSpaceRestrictor::shedule_Update	(u32 dt)
+{
+	PROF_EVENT("CSpaceRestrictor::shedule_Update");
+	inherited::shedule_Update(dt);
+}
+
 #ifdef DEBUG
 
 #include "CustomZone.h"

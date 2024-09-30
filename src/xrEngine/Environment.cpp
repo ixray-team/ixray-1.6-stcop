@@ -507,6 +507,7 @@ void CEnvironment::lerp		(float& current_weight)
 
 void CEnvironment::OnFrame()
 {
+	PROF_EVENT("CEnvironment::OnFrame");
 	if (g_pGameLevel == nullptr && Device.IsEditorMode())
 	{
 		SetGameTime(fGameTime + Device.fTimeDelta * fTimeFactor, fTimeFactor);

@@ -384,6 +384,7 @@ void CDetailManager::UpdateVisibleM()
 
 void CDetailManager::Render	()
 {
+	PROF_EVENT("Render details");
 #ifndef _EDITOR
 	if (0==dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
@@ -425,12 +426,12 @@ void	CDetailManager::MT_CALC		()
 	if (0==RImplementation.Details)		return;	// possibly deleted
 	if (0==dtFS)						return;
 	if (!psDeviceFlags.is(rsDetails))	return;
-#endif    
+#endif
 
 	MT.Enter					();
 	if (m_frame_calc!=RDEVICE.dwFrame)	
 		if ((m_frame_rendered+1)==RDEVICE.dwFrame) //already rendered
-		{
+	{
 			Fvector		EYE				= RDEVICE.vCameraPosition_saved;
 
 			int s_x	= iFloor			(EYE.x/dm_slot_size+.5f);
@@ -442,6 +443,6 @@ void	CDetailManager::MT_CALC		()
 
 			UpdateVisibleM				();
 			m_frame_calc				= RDEVICE.dwFrame;
-		}
+	}
 	MT.Leave					        ();
 }

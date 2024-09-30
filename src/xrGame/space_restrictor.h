@@ -60,6 +60,8 @@ public:
 	virtual	CSpaceRestrictor	*cast_restrictor	() {return this;}
 	virtual	bool				register_schedule	() const {return false;}
 
+	virtual		void	shedule_Update				(u32 dt);
+
 	IC RestrictionSpace::ERestrictorTypes restrictor_type() const; 
 	IC void change_restrictor_type(RestrictionSpace::ERestrictorTypes);
 

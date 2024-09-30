@@ -50,6 +50,7 @@ float CAutosaveManager::shedule_Scale		()
 
 void CAutosaveManager::shedule_Update		(u32 dt)
 {
+	PROF_EVENT("CAutosaveManager::shedule_Update");
 	inherited::shedule_Update	(dt);
 
 	if (!psActorFlags.test(AF_IMPORTANT_SAVE))

@@ -236,6 +236,8 @@ void CDangerManager::add			(const CVisibleObject &object)
 	if (!object.m_enabled || object.m_object->getDestroy())
 		return;
 
+	PROF_EVENT("DangerManager::add_VisibleObject");
+
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
 	if (obj && !obj->g_Alive() && (obj->killer_id() != ALife::_OBJECT_ID(-1))) {
 		add					(CDangerObject(obj,obj->Position(),object.m_level_time,CDangerObject::eDangerTypeFreshEntityCorpse,CDangerObject::eDangerPerceiveTypeVisual));
@@ -248,6 +250,8 @@ void CDangerManager::add			(const CSoundObject &object)
 	if (!object.m_enabled || object.m_object->getDestroy())
 		return;
 	
+	PROF_EVENT("DangerManager::add_SoundObject");
+
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
 	
 	if ((object.m_sound_type & SOUND_TYPE_BULLET_HIT) == SOUND_TYPE_BULLET_HIT) {
@@ -294,12 +298,16 @@ void CDangerManager::add			(const CHitObject &object)
 	if (object.m_object->ID() == m_object->ID())
 		return;
 
+	PROF_EVENT("DangerManager::add_HitObject");
+
 	const CEntityAlive		*obj = smart_cast<const CEntityAlive*>(object.m_object);
 	add						(CDangerObject(obj,obj->Position(),object.m_level_time,CDangerObject::eDangerTypeAttacked,CDangerObject::eDangerPerceiveTypeHit));
 }
 
 void CDangerManager::add			(const CDangerObject &object)
 {
+	PROF_EVENT("DangerManager::add_DangerObject");
+
 	if (m_object->memory().enemy().selected() && object.object())// && !object.object()->g_Alive())
 		ignore				(object.object());
 

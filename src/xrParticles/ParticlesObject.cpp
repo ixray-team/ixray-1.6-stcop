@@ -86,9 +86,12 @@ void CParticlesObject::UpdateAllAsync()
 	{
 		auto UpdateParticle = [particle]()
 		{
+			PROF_THREAD("Particles Worker")
 			u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
 			IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual);
 			VERIFY(V);
+
+			PROF_EVENT("Particle OnFrame")
 			V->OnFrame(dt);
 
 			particle->dwLastTime = Device.dwTimeGlobal;
@@ -206,8 +209,11 @@ void CParticlesObject::PerformAllTheWork()
 
 void CParticlesObject::WaitForParticles()
 {
-	if(psDeviceFlags.test(mtParticles))
+	if (psDeviceFlags.test(mtParticles))
+	{
+		PROF_EVENT("Particles Wait")
 		ParticleObjectTasks.wait();
+	}
 }
 
 void CParticlesObject::SetXFORM			(const Fmatrix& m)

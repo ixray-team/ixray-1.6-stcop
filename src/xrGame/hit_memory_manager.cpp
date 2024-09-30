@@ -104,6 +104,8 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 	if (who && (m_object->ID() == who->ID()))
 		return;
 
+	PROF_EVENT("HitMemory::add");
+
 	if (who && !fis_zero(amount)) {
 		m_last_hit_object_id	= who->ID();
 		m_last_hit_time			= Device.dwTimeGlobal;

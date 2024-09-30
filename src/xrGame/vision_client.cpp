@@ -76,6 +76,7 @@ float vision_client::shedule_Scale				()
 
 void vision_client::shedule_Update				(u32 dt)
 {
+	PROF_EVENT("vision_client::shedule_Update");
 	inherited::shedule_Update	(dt);
 
 	if (!object().g_Alive())

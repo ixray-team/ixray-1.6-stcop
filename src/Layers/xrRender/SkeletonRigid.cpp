@@ -12,6 +12,7 @@ void check_kinematics(CKinematics* _k, LPCSTR s);
 
 void CKinematics::CalculateBones			(BOOL bForceExact)
 {
+	PROF_EVENT("CKinematics::CalculateBones");
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)

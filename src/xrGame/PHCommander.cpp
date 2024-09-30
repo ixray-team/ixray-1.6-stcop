@@ -64,6 +64,7 @@ void CPHCommander::clear	()
 
 void CPHCommander::update	()
 {
+	PROF_EVENT("CPHCommander::update");
 	for(u32 i=0; i<m_calls.size(); i++)
 	{
 		try

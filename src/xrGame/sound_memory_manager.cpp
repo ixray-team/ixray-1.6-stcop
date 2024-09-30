@@ -141,7 +141,7 @@ void CSoundMemoryManager::feel_sound_new(CObject *object, int sound_type, CSound
 	VERIFY					(_valid(sound_power));
 	if (!m_sounds)
 		return;
-
+	PROF_EVENT("SoundMemory::feel_sound_new");
 	if (user_data)
 		user_data->accept	(m_visitor);
 
@@ -227,6 +227,7 @@ void CSoundMemoryManager::add			(const CSoundObject &sound_object, bool check_fo
 
 void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fvector &position, float sound_power)
 {
+	PROF_EVENT("SoundMemory::add");
 #ifndef SAVE_OWN_SOUNDS
 	// we do not want to save our own sounds
 	if (object && (m_object->ID() == object->ID()))

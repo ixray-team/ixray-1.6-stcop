@@ -32,6 +32,8 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 	// ignore my sounds
 	if (this == who)	return;
 
+	PROF_EVENT("CBaseMonster::feel_sound_new");
+
 	if (user_data)
 		user_data->accept	(sound_user_data_visitor());
 

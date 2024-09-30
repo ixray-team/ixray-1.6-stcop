@@ -44,6 +44,7 @@ void CHUDManager::OnFrame()
 
 	if(!b_online)						
 		return;
+	PROF_EVENT("CHUDManager::OnFrame");
 
 	if (pUIGame) 
 		pUIGame->OnFrame();
@@ -131,7 +132,7 @@ void  CHUDManager::RenderUI()
 		return;
 
 	if(!b_online)					return;
-
+	PROF_EVENT("CHUDManager::RenderUI");
 	if (true /*|| psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
 	{
 		HitMarker.Render			();

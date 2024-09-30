@@ -184,6 +184,7 @@ void CLevelSoundManager::Update()
 {
 	if (Device.Paused())				return;
 	if (Device.dwPrecacheFrame!=0)		return;
+	PROF_EVENT("CLevelSoundManager::Update");
 	// static sounds
 	u32 game_time						= Level().GetGameDayTimeMS();
 	u32 engine_time						= Device.dwTimeGlobal;

@@ -156,8 +156,14 @@ bool IsFpsShow = false;
 void	IGame_Level::OnRender		( ) 
 {
 	if (!g_dedicated_server) {
-		Render->Calculate();
-		Render->Render();
+		{
+			PROF_EVENT("IGame_Level::OnRender: Calculate");
+			Render->Calculate();
+		}
+		{
+			PROF_EVENT("IGame_Level::OnRender: Render");
+			Render->Render();
+		}
 
 		if (IsFpsShow) {
 			pFPSCounter->OnRender();
@@ -167,6 +173,7 @@ void	IGame_Level::OnRender		( )
 
 void	IGame_Level::OnFrame		( ) 
 {
+	PROF_EVENT("IGame_Level::OnFrame");
 	// Update all objects
 	VERIFY						(bReady);
 	Objects.Update				(false);
@@ -290,6 +297,7 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 
 void	IGame_Level::SoundEvent_Dispatch	( )
 {
+	PROF_EVENT("IGame_Level::SoundEvent_Dispatch");
 	while	(!snd_Events.empty())	{
 		_esound_delegate&	D	= snd_Events.back	();
 		VERIFY				(D.dest && D.source);

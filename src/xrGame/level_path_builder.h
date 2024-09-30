@@ -106,6 +106,7 @@ public:
 
 	void process()
 	{
+		PROF_EVENT("CLevelPathBuilder::process");
 		if ( Device.dwTimeGlobal < m_last_fail_time + time_to_wait_after_fail )
 			return;
 

@@ -48,6 +48,7 @@ void CDetailManager::hw_Load_Shaders()
 
 void CDetailManager::hw_Render(light*L)
 {
+	PROF_EVENT("CDetailManager::hw_Render")
 	// Render-prepare
 	//	Update timer
 	//	Can't use Device.fTimeDelta since it is smoothed! Don't know why, but smoothed value looks more choppy!

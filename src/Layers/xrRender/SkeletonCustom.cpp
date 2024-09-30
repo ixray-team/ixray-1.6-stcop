@@ -677,7 +677,9 @@ struct zero_wm_pred {
 
 void CKinematics::CalculateWallmarks()
 {
-	if (!wallmarks.empty()&&(wm_frame!=RDEVICE.dwFrame)){
+	PROF_EVENT("Calculate Wallmarks");
+	if (!wallmarks.empty()&&(wm_frame!=RDEVICE.dwFrame))
+	{
 		wm_frame			= RDEVICE.dwFrame;
 		bool need_remove	= false; 
 		for (SkeletonWMVecIt it=wallmarks.begin(); it!=wallmarks.end(); it++){
@@ -702,6 +704,7 @@ void CKinematics::CalculateWallmarks()
 
 void CKinematics::RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT* &V)
 {
+	PROF_EVENT("CKinematics::RenderWallmark");
 	VERIFY(wm);
 	VERIFY(V);
 	VERIFY2(bones,"Invalid visual. Bones already released.");
@@ -761,6 +764,7 @@ int CKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16> >& groups)
 
 void CKinematics::StoreVisualMatrix(Fmatrix& world_matrix)
 {
+	PROF_EVENT("StoreVisualMatrix")
 	if (dwFirstRenderFrame != RDEVICE.dwFrame) {
 		dwFirstRenderFrame = RDEVICE.dwFrame;
 		mOldWorldMartrix.set(mOldWorldMartrixTmp);

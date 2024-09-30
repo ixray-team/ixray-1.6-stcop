@@ -245,6 +245,7 @@ static Fvector2 RayDeltas[CLensFlare::MAX_RAYS] =
 };
 void CLensFlare::OnFrame(shared_str id)
 {
+	PROF_EVENT("CLensFlare::OnFrame");
 	if (dwFrame==Device.dwFrame)return;
 #ifndef _EDITOR
 	if (!g_pGameLevel)			return;

@@ -54,6 +54,7 @@ void	CRenderTarget::phase_combine	()
 
 	if (ps_r_ssao > 0)
 	{
+		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 		phase_downsamp();
 
 		if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_GTAO))
@@ -358,9 +359,10 @@ void	CRenderTarget::phase_combine	()
 		PIX_EVENT(PhaseAberration);
 		PhaseAberration();
 	}
-
-	PIX_EVENT(phase_pp);
-	phase_pp();
+	{
+		PIX_EVENT(phase_pp);
+		phase_pp();
+	}
 
 	//	Re-adapt luminance
 	RCache.set_Stencil(FALSE);

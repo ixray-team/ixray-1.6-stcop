@@ -15,6 +15,7 @@ extern float	r_ssaLOD_B;
 ICF		bool	pred_dot		(const std::pair<float,u32>& _1, const std::pair<float,u32>& _2)	{ return _1.first < _2.first; }
 void R_dsgraph_structure::r_dsgraph_render_lods	(bool _setup_zb, bool _clear)
 {
+	PROF_EVENT("LODS: Render")
 	if (_setup_zb)	mapLOD.getLR	(lstLODs)	;	// front-to-back
 	else			mapLOD.getRL	(lstLODs)	;	// back-to-front
 	if (lstLODs.empty())			return		;

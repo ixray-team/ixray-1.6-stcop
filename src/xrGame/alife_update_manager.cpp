@@ -103,10 +103,11 @@ void CALifeUpdateManager::update_scheduled	(bool init_ef)
 	STOP_PROFILE
 }
 
-void CALifeUpdateManager::update			()
+void CALifeUpdateManager::update()
 {
-	update_switch						();
-	update_scheduled					(false);
+	PROF_EVENT("AI: A-Life Update");
+	update_switch();
+	update_scheduled(false);
 }
 
 void CALifeUpdateManager::new_game_for_editor()

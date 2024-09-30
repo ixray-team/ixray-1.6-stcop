@@ -116,7 +116,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 	SetActiveTask( t );
 
-	//óñòàíîâèòü ôëàæîê íåîáõîäèìîñòè ïðî÷òåíèÿ òàñêîâ â PDA
+	//Ã³Ã±Ã²Ã Ã­Ã®Ã¢Ã¨Ã²Ã¼ Ã´Ã«Ã Ã¦Ã®Ãª Ã­Ã¥Ã®Ã¡ÃµÃ®Ã¤Ã¨Ã¬Ã®Ã±Ã²Ã¨ Ã¯Ã°Ã®Ã·Ã²Ã¥Ã­Ã¨Ã¿ Ã²Ã Ã±ÃªÃ®Ã¢ Ã¢ PDA
 	if ( CurrentGameUI() )
 		CurrentGameUI()->UpdatePda();
 
@@ -127,6 +127,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state)
 {
+	PROF_EVENT("CGameTaskManager::SetTaskState");
 	m_flags.set						(eChanged, TRUE);
 
 	t->SetTaskState					(state);
@@ -151,7 +152,7 @@ void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state)
 void CGameTaskManager::UpdateTasks						()
 {
 	if(Device.Paused())		return;
-
+	PROF_EVENT("CGameTaskManager::UpdateTasks");
 	Level().MapManager().DisableAllPointers();
 
 	u32					task_count = (u32)GetGameTasks().size();

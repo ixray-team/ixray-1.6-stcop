@@ -32,7 +32,7 @@ void dxLensFlareRender::Render(CLensFlare &owner, BOOL bSun, BOOL bFlares, BOOL 
 #ifdef _EDITOR
 	return;
 #endif
-
+	PROF_EVENT("dxLensFlareRender::Render");
 	Fcolor dwLight;
 	Fcolor color;
 	Fvector vec, vecSx, vecSy;

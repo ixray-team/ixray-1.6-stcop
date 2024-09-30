@@ -63,6 +63,7 @@ bool CUIGameCustom::HasShownDialogs() const
 
 void CUIGameCustom::OnFrame() 
 {
+	PROF_EVENT("CUIGameCustom::OnFrame");
 	CDialogHolder::OnFrame();
 	st_vec_it it = m_custom_statics.begin();
 	st_vec_it it_e = m_custom_statics.end();
@@ -94,6 +95,7 @@ void CUIGameCustom::OnFrame()
 
 void CUIGameCustom::Render()
 {
+	PROF_EVENT("CUIGameCustom::Render");
 	st_vec_it it = m_custom_statics.begin();
 	st_vec_it it_e = m_custom_statics.end();
 	for(;it!=it_e;++it)

@@ -4,6 +4,7 @@
 
 bool CRenderDevice::on_event	(SDL_Event& Event)
 {
+	PROF_EVENT("CRenderDevice::on_event");
 	ImGui_ImplSDL3_ProcessEvent(&Event);
 	
 	if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID)

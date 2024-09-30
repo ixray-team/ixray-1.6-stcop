@@ -57,6 +57,7 @@ static bool SimmulateNetworkLag()
 
 void CLevel::ClientReceive()
 {
+	PROF_EVENT("CLevel::ClientReceive");
 	m_dwRPC = 0;
 	m_dwRPS = 0;
 	

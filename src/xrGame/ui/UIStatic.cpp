@@ -77,6 +77,13 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 
 void  CUIStatic::Draw()
 {
+	PROF_EVENT("CUIStatic::Draw");
+
+	if(m_pTextControl)
+	{
+		PROF_EVENT(m_pTextControl->GetText());
+	}
+
 	DrawTexture				();	
 	inherited::Draw			();
 	DrawText				();
@@ -155,6 +162,12 @@ void CUIStatic::DrawTexture()
 
 void CUIStatic::Update()
 {
+	PROF_EVENT("CUIStatic::Update");
+
+	if(m_pTextControl)
+	{
+		PROF_EVENT(m_pTextControl->GetText());
+	}
 	inherited::Update();
 	//update light animation if defined
 	UpdateColorAnimation();

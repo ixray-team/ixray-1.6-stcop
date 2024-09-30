@@ -248,9 +248,9 @@ EGameIDs ParseStringToGameType(LPCSTR str)
 		return eGameIDNoGame; //EGameIDs
 }
 
-void CGamePersistent::UpdateGameType			()
+void CGamePersistent::UpdateGameType()
 {
-	inherited::UpdateGameType		();
+	inherited::UpdateGameType();
 
 	m_game_params.m_e_game_type = ParseStringToGameType(m_game_params.m_game_type);
 
@@ -271,9 +271,10 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
+	PROF_EVENT("CGamePersistent WeathersUpdate");
 	if (g_pGameLevel && !g_dedicated_server)
 	{
-		BOOL bIndoor				= Render->InIndoor();
+		BOOL bIndoor = Render->InIndoor();
 
 		if(bIndoor==FALSE)
 		{
@@ -543,8 +544,9 @@ void CGamePersistent::update_game_intro()
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
-void CGamePersistent::OnFrame	()
+void CGamePersistent::OnFrame()
 {
+	PROF_EVENT("CGamePersistent OnFrame");
 	if(Device.dwPrecacheFrame==5 && m_intro_event.empty())
 	{
 		m_intro_event.bind			(this,&CGamePersistent::game_loaded);
@@ -670,7 +672,7 @@ if (!g_pGameLevel)
 	if(!Device.Paused())
 		Engine.Sheduler.Update		();
 
-	// update weathers ambient
+		// update weathers ambient
 	if(!Device.Paused())
 		WeathersUpdate				();
 
@@ -717,7 +719,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
 		if (Device.Paused())
 			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
-		
+
 		if(CurrentGameUI())
 		{
 			CurrentGameUI()->HideShownDialogs();
@@ -910,7 +912,7 @@ void CGamePersistent::UpdateDof()
 		m_dof[2]	= m_dof[1]; //current
 	}
 	if(m_dof[1].similar(m_dof[0]))
-						return;
+		return;
 
 	float td			= Device.fTimeDelta;
 	Fvector				diff;

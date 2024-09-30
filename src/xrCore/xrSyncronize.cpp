@@ -16,6 +16,7 @@ xrCriticalSection::~xrCriticalSection()
 
 void xrCriticalSection::Enter()
 {
+	PROF_EVENT("xrCriticalSection::Enter");
 #ifdef IXR_WINDOWS
 	EnterCriticalSection((CRITICAL_SECTION*)&pmutex);
 #else
@@ -25,6 +26,7 @@ void xrCriticalSection::Enter()
 
 void xrCriticalSection::Leave()
 {
+	PROF_EVENT("xrCriticalSection::Leave");
 #ifdef IXR_WINDOWS
 	LeaveCriticalSection((CRITICAL_SECTION*)&pmutex);
 #else
@@ -34,6 +36,7 @@ void xrCriticalSection::Leave()
 
 BOOL xrCriticalSection::TryEnter()
 {
+	PROF_EVENT("xrCriticalSection::TryEnter");
 #ifdef IXR_WINDOWS
 	return TryEnterCriticalSection((CRITICAL_SECTION*)&pmutex);
 #else

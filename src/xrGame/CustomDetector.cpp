@@ -264,6 +264,7 @@ void CCustomDetector::Load(LPCSTR section)
 
 void CCustomDetector::shedule_Update(u32 dt) 
 {
+	PROF_EVENT("CCustomDetector::shedule_Update");
 	inherited::shedule_Update(dt);
 	
 	if( !IsWorking() )			return;
