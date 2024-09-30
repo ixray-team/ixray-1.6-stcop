@@ -160,8 +160,7 @@ bool CreateD3D11()
 		const D3D_FEATURE_LEVEL pFeatureLevels[] = {
 			D3D_FEATURE_LEVEL_11_1,
 			D3D_FEATURE_LEVEL_11_0,
-			D3D_FEATURE_LEVEL_10_1,
-			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_10_1
 		};
 
 		HRESULT R = D3D11CreateDeviceAndSwapChain(
