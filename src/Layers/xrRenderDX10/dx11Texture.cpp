@@ -5,59 +5,80 @@
 
 using namespace DirectX;
 
-void fix_texture_name(LPSTR fn) {
+void fix_texture_name(LPSTR fn)
+{
 	auto _ext = strext(fn);
-	if (_ext &&
-		(0 == _stricmp(_ext, ".tga") ||
-			0 == _stricmp(_ext, ".dds") ||
-			0 == _stricmp(_ext, ".bmp") ||
-			0 == _stricmp(_ext, ".ogm")))
+	if (_ext && (0 == _stricmp(_ext, ".tga") ||
+				 0 == _stricmp(_ext, ".dds") ||
+				 0 == _stricmp(_ext, ".bmp") ||
+				 0 == _stricmp(_ext, ".ogm")))
+	{
 		*_ext = 0;
+	}
 }
 
-int get_texture_load_lod(LPCSTR fn) {
+int get_texture_load_lod(LPCSTR fn)
+{
 	auto& sect = pSettings->r_section("reduce_lod_texture_list");
 
-	for (const auto& data : sect.Data) {
-		if (strstr(fn, data.first.c_str())) {
-			if (psTextureLOD < 1) {
+	for (const auto& data : sect.Data)
+	{
+		if (strstr(fn, data.first.c_str()))
+		{
+			if (psTextureLOD < 1)
+			{
 				return 0;
-			} else {
-				if (psTextureLOD < 3) {
+			}
+			else
+			{
+				if (psTextureLOD < 3)
+				{
 					return 1;
-				} else {
+				}
+				else
+				{
 					return 2;
 				}
 			}
 		}
 	}
 
-	if (psTextureLOD < 2) {
+	if (psTextureLOD < 2)
+	{
 		return 0;
-	} else {
-		if (psTextureLOD < 4) {
+	}
+	else
+	{
+		if (psTextureLOD < 4)
+		{
 			return 1;
-		} else {
+		}
+		else
+		{
 			return 2;
 		}
 	}
 }
 
-u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size) {
-	if (1 == mip_cnt) {
+u32 calc_texture_size(int lod, u32 mip_cnt, u32 orig_size)
+{
+	if (1 == mip_cnt)
+	{
 		return orig_size;
 	}
 	int _lod = lod;
 	float res = float(orig_size);
 
-	while (_lod > 0) {
+	while (_lod > 0)
+	{
 		--_lod;
 		res -= res / 1.333f;
 	}
 	return iFloor(res);
 }
 
-IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
+IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip)
+{
 	while ((l > 1) && (w > 4) && (h > 4) && skip)
 	{
 		w /= 2;
@@ -70,7 +91,8 @@ IC void	Reduce(size_t& w, size_t& h, size_t& l, int& skip) {
 	if (h < 4) h = 4;
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging) {
+ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
+{
 	// Moved here just to avoid warning
 	TexMetadata imageInfo{};
 
@@ -80,31 +102,34 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
 	DDS_FLAGS textureFlag = DDS_FLAGS::DDS_FLAGS_NONE;
 	ID3DBaseTexture* pTexture2D = nullptr;
-	string_path fn;
+	string_path fn = {};
 	u32 img_size = 0;
 	int img_loaded_lod = 0;
 	u32 mip_cnt = u32(-1);
 	// validation
-	R_ASSERT(fRName);
-	R_ASSERT(fRName[0]);
+	R_ASSERT(fRName || fRName[0]);
 
 	bool FileExist = false;
 
 	// make file name
-	string_path fname;
+	string_path fname = {};
 	xr_strcpy(fname, fRName);
 	fix_texture_name(fname);
 	IReader* reader = nullptr;
-	if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump")) {
+	if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump"))
+	{
 		goto _BUMP_from_base;
 	}
-	if (FS.exist(fn, "$level$", fname, ".dds")) {
+	if (FS.exist(fn, "$level$", fname, ".dds"))
+	{
 		goto _DDS;
 	}
-	if (FS.exist(fn, "$game_saves$", fname, ".dds")) {
+	if (FS.exist(fn, "$game_saves$", fname, ".dds"))
+	{
 		goto _DDS;
 	}
-	if (FS.exist(fn, "$game_textures$", fname, ".dds")) {
+	if (FS.exist(fn, "$game_textures$", fname, ".dds"))
+	{
 		goto _DDS;
 	}
 
@@ -134,31 +159,35 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			UINT test_flags = D3D11_FORMAT_SUPPORT_SHADER_LOAD | D3D11_FORMAT_SUPPORT_SHADER_SAMPLE;
 			RDevice->CheckFormatSupport(imageInfo.format, &flags);
 
-			if (test_flags != (flags & test_flags)) {
+			if (test_flags != (flags & test_flags))
+			{
 				textureFlag = DDS_FLAGS::DDS_FLAGS_NO_16BPP;
 				VERIFY3(false, fn, "Bad texture format");
 				Msg("! Bad texture format [%s]", fn);
 			}
 		}
 
-		if (imageInfo.IsCubemap() || imageInfo.IsVolumemap()) {
+		if (imageInfo.IsCubemap() || imageInfo.IsVolumemap())
+		{
 			goto _DDS_CUBE;
-		} else {
+		}
+		else
+		{
 			goto _DDS_2D;
 		}
 	_DDS_CUBE: {
-		auto scratchImage = std::make_unique<ScratchImage>();
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
+		ScratchImage scratchImage = {};
+		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		FS.r_close(reader);
+
 		auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
 		auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
 		auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
 		auto miscFlags = imageInfo.miscFlags;
 		
-		hr = CreateTextureEx(RDevice, scratchImage->GetImages(), scratchImage->GetImageCount(),
+		hr = CreateTextureEx(RDevice, scratchImage.GetImages(), scratchImage.GetImageCount(),
 			imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
-
-
-		FS.r_close(reader);
+		scratchImage.Release();
 
 		if (pTexture2D == nullptr)
 		{
@@ -187,23 +216,26 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
 		img_loaded_lod = get_texture_load_lod(fn);
 
-		auto scratchImage = std::make_unique<ScratchImage>();
-		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, *scratchImage);
-		
+		ScratchImage scratchImage = {};
+		HRESULT hr = LoadFromDDSMemory(reader->pointer(), reader->length(), textureFlag, &imageInfo, scratchImage);
+		FS.r_close(reader);
+
 		auto usage = (bStaging) ? D3D_USAGE_STAGING : D3D_USAGE_DEFAULT;
 		auto bindFlags = (bStaging) ? 0 : D3D_BIND_SHADER_RESOURCE;
 		auto cpuAccessFlags = (bStaging) ? D3D_CPU_ACCESS_WRITE : 0;
 		auto miscFlags = imageInfo.miscFlags;
 		int old_mipmap_cnt = 0, mip_lod = 0;
-		if (img_loaded_lod) {
+
+		if (img_loaded_lod)
+		{
 			old_mipmap_cnt = (int)imageInfo.mipLevels;
 			Reduce(imageInfo.width, imageInfo.height, imageInfo.mipLevels, img_loaded_lod);
 			mip_lod = old_mipmap_cnt - (int)imageInfo.mipLevels;
 		}
 
-		hr = CreateTextureEx(RDevice, scratchImage->GetImages() + mip_lod, scratchImage->GetImageCount(),
+		hr = CreateTextureEx(RDevice, scratchImage.GetImages() + mip_lod, scratchImage.GetImageCount(),
 			imageInfo, usage, bindFlags, cpuAccessFlags, miscFlags, CREATETEX_FLAGS::CREATETEX_DEFAULT, &pTexture2D);
-		FS.r_close(reader);
+		scratchImage.Release();
 		
 		if (pTexture2D == nullptr)
 		{
@@ -236,6 +268,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			reader = FS.r_open(fn);
 			R_ASSERT2(reader, fn);
 			img_size = reader->length();
+
 			goto _DDS_2D;
 		}
 		if (strstr(fname, "_bump")) 
@@ -246,6 +279,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			reader = FS.r_open(fn);
 			R_ASSERT2(reader, fn);
 			img_size = reader->length();
+
 			goto _DDS_2D;
 		}
 	}
