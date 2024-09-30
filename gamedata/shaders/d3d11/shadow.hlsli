@@ -126,167 +126,64 @@ float Fw(int r, int c, float fL)
     #define SUN_WIDTH 300.0f
 
 // uses gather for DX11/10.1 and visibilty encoding for DX10.0
-float shadow_extreme_quality(float3 tc)
+static const float2 poissonDisk[16] = {
+        float2( -0.94201624f, -0.39906216f ),
+        float2( 0.94558609f, -0.76890725f ),
+        float2( -0.094184101f, -0.92938870f ),
+        float2( 0.34495938f, 0.29387760f ),
+        float2( -0.91588581f, 0.45771432f ),
+        float2( -0.81544232f, -0.87912464f ),
+        float2( -0.38277543f, 0.27676845f ),
+        float2( 0.97484398f, 0.75648379f ),
+        float2( 0.44323325f, -0.97511554f ),
+        float2( 0.53742981f, -0.47373420f ),
+        float2( -0.26496911f, -0.41893023f ),
+        float2( 0.79197514f, 0.19090188f ),
+        float2( -0.24188840f, 0.99706507f ),
+        float2( -0.81409955f, 0.91437590f ),
+        float2( 0.19984126f, 0.78641367f ),
+        float2( 0.14383161f, -0.14100790f )
+    };
+
+#define PCSS_PIXEL             5
+#define PCSS_STEP             5
+#define PCSS_PIXEL_MIN         1.0f
+#define PCSS_SUN_WIDTH     300.f
+#define PCSS_NUM_SAMPLES     16
+
+float shadow_extreme_quality( float3 tc )
 {
-    float s = 0.0f;
-    float2 stc = (SMAP_size * tc.xy) + float2(0.5, 0.5);
-    float2 tcs = floor(stc);
-    float2 fc;
-    int row;
-    int col;
-    float w = 0.0;
-    float avgBlockerDepth = 0;
-    float blockerCount = 0;
-    float fRatio;
-    float4 v1[FS2 + 1];
-    float2 v0[FS2 + 1];
-    float2 off;
+    int3 uv                     = int3(tc.xy * float(SMAP_size), 0);
+    float     zBlock                = tc.z - 0.0001f;
+    float    avgBlockerDepth     = 0.f;
+    float    blockerCount         = 0.f;
 
-    fc = stc - tcs;
-    tc.xy = tc.xy - ((1.0f / SMAP_size) * fc);
-    tc.z -= 0.0001f;
-
-    #if defined(SM_4_1) || defined(SM_5)
-    // find number of blockers and sum up blocker depth
-    for (row = -BFS2; row <= BFS2; row += 2)
+    [unroll] for( int row = -PCSS_PIXEL; row <= PCSS_PIXEL; row += PCSS_STEP )
     {
-        for (col = -BFS2; col <= BFS2; col += 2)
+        [unroll] for( int col = -PCSS_PIXEL; col <= PCSS_PIXEL; col += PCSS_STEP )
         {
-            float4 d4 = s_smap.Gather(smp_nofilter, tc.xy, int2(col, row));
-            float4 b4 = (tc.zzzz <= d4) ? (0.0f).xxxx : (1.0f).xxxx;
-
-            blockerCount += dot(b4, (1.0f).xxxx);
-            avgBlockerDepth += dot(d4, b4);
-        }
-    }
-    #else // SM_4_0
-    uint vmask[FS + 1];
-
-    [unroll]
-    for (col = 0; col <= FS; ++col)
-    {
-        vmask[col] = uint(0);
-    }
-
-    [unroll(11)]
-    for (row = -FS2; row <= FS2; row += 2)
-    {
-        [unroll]
-        for (int col = -FS2; col <= FS2; col += 2)
-        {
-            float4 d4;
-            float b;
-
-            d4.w = s_smap.SampleLevel(smp_nofilter, tc.xy, 0, int2(col, row)).x;
-            b = (tc.z <= d4.w) ? (0.0f) : (1.0f);
-            vmask[col + FS2 + 0] += ((tc.z <= d4.w) ? (uint(1) << uint(row + FS2 + 0)) : uint(0));
-            blockerCount += b;
-            avgBlockerDepth += d4.w * b;
-
-            d4.z = s_smap.SampleLevel(smp_nofilter, tc.xy, 0, int2(col + 1, row)).x;
-            b = (tc.z <= d4.z) ? (0.0f) : (1.0f);
-            vmask[col + FS2 + 1] += ((tc.z <= d4.z) ? (uint(1) << uint(row + FS2 + 0)) : uint(0));
-            blockerCount += b;
-            avgBlockerDepth += d4.z * b;
-
-            d4.x = s_smap.SampleLevel(smp_nofilter, tc.xy, 0, int2(col, row + 1)).x;
-            vmask[col + FS2 + 0] += ((tc.z <= d4.x) ? (uint(1) << uint(row + FS2 + 1)) : uint(0));
-            b = (tc.z <= d4.x) ? (0.0f) : (1.0f);
-            blockerCount += b;
-            avgBlockerDepth += d4.x * b;
-
-            d4.y = s_smap.SampleLevel(smp_nofilter, tc.xy, 0, int2(col + 1, row + 1)).x;
-            vmask[col + FS2 + 1] += ((tc.z <= d4.y) ? (uint(1) << uint(row + FS2 + 1)) : uint(0));
-            b = (tc.z <= d4.y) ? (0.0f) : (1.0f);
-            blockerCount += b;
-            avgBlockerDepth += d4.y * b;
-        }
-    }
-    #endif
-
-    // compute ratio average blocker depth vs. pixel depth
-    if (blockerCount > 0.0)
-    {
-        avgBlockerDepth /= blockerCount;
-        fRatio = saturate(((tc.z - avgBlockerDepth) * SUN_WIDTH) / avgBlockerDepth);
-        fRatio *= fRatio;
-    }
-    else
-    {
-        fRatio = 0.0;
-    }
-
-    for (row = 0; row < FS; ++row)
-    {
-        for (col = 0; col < FS; ++col)
-        {
-            w += Fw(row, col, fRatio);
+            float shadowMapDepth = s_smap.Load( uv, int2( col, row ) ).x;
+            float b1 = ( shadowMapDepth < zBlock ) ? 1.f : 0.f;
+            blockerCount += b1;
+            avgBlockerDepth += shadowMapDepth * b1;
         }
     }
 
-    // filter shadow map samples using the dynamic weights
-    [unroll(11)]
-    for (row = -FS2; row <= FS2; row += 2)
-    {
-        [unroll]
-        for (int col = -FS2; col <= FS2; col += 2)
-        {
-    #if (defined(SM_5)) || (defined(SM_4_1))
-        #ifdef SM_5
-            v1[(col + FS2) / 2] = s_smap.GatherCmpRed(smp_smap, tc.xy, tc.z,
-                                                      int2(col, row));
-        #else // SM_4_1
-            float4 d4 = s_smap.Gather(smp_linear, tc.xy, int2(col, row));
-            v1[(col + FS2) / 2] = (tc.zzzz <= d4) ? (1.0f).xxxx : (0.0f).xxxx;
-        #endif
-    #else
-            v1[(col + FS2) / 2].w = ((vmask[col + FS2 + 0] & (uint(1) << uint(row + FS2 + 0))) ? 1.0f : 0.0f);
-            v1[(col + FS2) / 2].z = ((vmask[col + FS2 + 1] & (uint(1) << uint(row + FS2 + 0))) ? 1.0f : 0.0f);
-            v1[(col + FS2) / 2].x = ((vmask[col + FS2 + 0] & (uint(1) << uint(row + FS2 + 1))) ? 1.0f : 0.0f);
-            v1[(col + FS2) / 2].y = ((vmask[col + FS2 + 1] & (uint(1) << uint(row + FS2 + 1))) ? 1.0f : 0.0f);
-    #endif
-            if (col == -FS2)
-            {
-                s += (1 - fc.y) * (v1[0].w * (Fw(row + FS2, 0, fRatio) - Fw(row + FS2, 0, fRatio) * fc.x) + v1[0].z * (fc.x * (Fw(row + FS2, 0, fRatio) - Fw(row + FS2, 1, fRatio)) + Fw(row + FS2, 1, fRatio)));
-                s += (fc.y) * (v1[0].x * (Fw(row + FS2, 0, fRatio) - Fw(row + FS2, 0, fRatio) * fc.x) + v1[0].y * (fc.x * (Fw(row + FS2, 0, fRatio) - Fw(row + FS2, 1, fRatio)) + Fw(row + FS2, 1, fRatio)));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[0].x * (Fw(row + FS2 - 1, 0, fRatio) - Fw(row + FS2 - 1, 0, fRatio) * fc.x) + v0[0].y * (fc.x * (Fw(row + FS2 - 1, 0, fRatio) - Fw(row + FS2 - 1, 1, fRatio)) + Fw(row + FS2 - 1, 1, fRatio)));
-                    s += (fc.y) * (v1[0].w * (Fw(row + FS2 - 1, 0, fRatio) - Fw(row + FS2 - 1, 0, fRatio) * fc.x) + v1[0].z * (fc.x * (Fw(row + FS2 - 1, 0, fRatio) - Fw(row + FS2 - 1, 1, fRatio)) + Fw(row + FS2 - 1, 1, fRatio)));
-                }
-            }
-            else if (col == FS2)
-            {
-                s += (1 - fc.y) * (v1[FS2].w * (fc.x * (Fw(row + FS2, FS - 2, fRatio) - Fw(row + FS2, FS - 1, fRatio)) + Fw(row + FS2, FS - 1, fRatio)) + v1[FS2].z * fc.x * Fw(row + FS2, FS - 1, fRatio));
-                s += (fc.y) * (v1[FS2].x * (fc.x * (Fw(row + FS2, FS - 2, fRatio) - Fw(row + FS2, FS - 1, fRatio)) + Fw(row + FS2, FS - 1, fRatio)) + v1[FS2].y * fc.x * Fw(row + FS2, FS - 1, fRatio));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[FS2].x * (fc.x * (Fw(row + FS2 - 1, FS - 2, fRatio) - Fw(row + FS2 - 1, FS - 1, fRatio)) + Fw(row + FS2 - 1, FS - 1, fRatio)) + v0[FS2].y * fc.x * Fw(row + FS2 - 1, FS - 1, fRatio));
-                    s += (fc.y) * (v1[FS2].w * (fc.x * (Fw(row + FS2 - 1, FS - 2, fRatio) - Fw(row + FS2 - 1, FS - 1, fRatio)) + Fw(row + FS2 - 1, FS - 1, fRatio)) + v1[FS2].z * fc.x * Fw(row + FS2 - 1, FS - 1, fRatio));
-                }
-            }
-            else
-            {
-                s += (1 - fc.y) * (v1[(col + FS2) / 2].w * (fc.x * (Fw(row + FS2, col + FS2 - 1, fRatio) - Fw(row + FS2, col + FS2 + 0, fRatio)) + Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                                   v1[(col + FS2) / 2].z * (fc.x * (Fw(row + FS2, col + FS2 - 0, fRatio) - Fw(row + FS2, col + FS2 + 1, fRatio)) + Fw(row + FS2, col + FS2 + 1, fRatio)));
-                s += (fc.y) * (v1[(col + FS2) / 2].x * (fc.x * (Fw(row + FS2, col + FS2 - 1, fRatio) - Fw(row + FS2, col + FS2 + 0, fRatio)) + Fw(row + FS2, col + FS2 + 0, fRatio)) +
-                               v1[(col + FS2) / 2].y * (fc.x * (Fw(row + FS2, col + FS2 - 0, fRatio) - Fw(row + FS2, col + FS2 + 1, fRatio)) + Fw(row + FS2, col + FS2 + 1, fRatio)));
-                if (row > -FS2)
-                {
-                    s += (1 - fc.y) * (v0[(col + FS2) / 2].x * (fc.x * (Fw(row + FS2 - 1, col + FS2 - 1, fRatio) - Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) + Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                       v0[(col + FS2) / 2].y * (fc.x * (Fw(row + FS2 - 1, col + FS2 - 0, fRatio) - Fw(row + FS2 - 1, col + FS2 + 1, fRatio)) + Fw(row + FS2 - 1, col + FS2 + 1, fRatio)));
-                    s += (fc.y) * (v1[(col + FS2) / 2].w * (fc.x * (Fw(row + FS2 - 1, col + FS2 - 1, fRatio) - Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) + Fw(row + FS2 - 1, col + FS2 + 0, fRatio)) +
-                                   v1[(col + FS2) / 2].z * (fc.x * (Fw(row + FS2 - 1, col + FS2 - 0, fRatio) - Fw(row + FS2 - 1, col + FS2 + 1, fRatio)) + Fw(row + FS2 - 1, col + FS2 + 1, fRatio)));
-                }
-            }
-            if (row != FS2)
-            {
-                v0[(col + FS2) / 2] = v1[(col + FS2) / 2].xy;
-            }
-        }
-    }
+    if( blockerCount < 1 || blockerCount >= 9 )
+        return 1.f - min(1.f, blockerCount);
 
-    return s / w;
+    avgBlockerDepth /= blockerCount;
+    float fRatio = saturate( ( ( tc.z - avgBlockerDepth ) * PCSS_SUN_WIDTH ) / avgBlockerDepth );
+    fRatio *= fRatio;
+    fRatio = max(PCSS_PIXEL_MIN, fRatio * float(PCSS_PIXEL)) / float(SMAP_size);
+    
+    float s = 0.f;
+    [unroll] for( uint i = 0; i < PCSS_NUM_SAMPLES; ++i )
+    {
+        float2 offset = poissonDisk[i] * fRatio;
+        s += s_smap.SampleCmpLevelZero( smp_smap, tc.xy + offset, tc.z ).x;
+    }
+    return s / PCSS_NUM_SAMPLES;
 }
 
 float4 Fw(int r, int c)
