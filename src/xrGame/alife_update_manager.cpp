@@ -20,7 +20,6 @@
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"
-#include "profiler.h"
 #include "mt_config.h"
 #include "../xrEngine/string_table.h"
 
@@ -28,7 +27,8 @@ using namespace ALife;
 
 extern string_path g_last_saved_game;
 
-class CSwitchPredicate {
+class CSwitchPredicate 
+{
 private:
 	CALifeSwitchManager *m_switch_manager;
 

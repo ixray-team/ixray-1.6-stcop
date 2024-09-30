@@ -33,7 +33,7 @@ set(CORE_SDL3_PLATFORM win-${NUGET_PACKAGE_PLATFORM})
 set(CORE_SDL3 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Sdl.Runtimes.${CORE_SDL3_PLATFORM}.2024.3.16-open/)
 
 # Optick
-set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.1.4.0/)
+set(CORE_OPT ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Optick.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.0.1/)
 
 # DxMath
 set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2024.2.15.1/)

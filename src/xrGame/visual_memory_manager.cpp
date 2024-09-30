@@ -19,7 +19,6 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai_space.h"
-#include "profiler.h"
 #include "Actor.h"
 #include "../xrEngine/camerabase.h"
 #include "gamepersistent.h"

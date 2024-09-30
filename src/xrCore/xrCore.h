@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include "profiler.h"
 #include "Platform/Platform.h"
 
 // Our headers

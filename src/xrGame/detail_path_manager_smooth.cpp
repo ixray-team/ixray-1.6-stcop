@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "detail_path_manager.h"
 #include "ai_space.h"
-#include "profiler.h"
 #include "level_graph.h"
 
 #ifdef DEBUG

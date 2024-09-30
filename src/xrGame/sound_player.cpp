@@ -14,7 +14,6 @@
 #include "../xrEngine/xr_object.h"
 #include "../xrEngine/bone.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "profiler.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
 

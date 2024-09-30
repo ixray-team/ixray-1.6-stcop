@@ -5,7 +5,6 @@
 #include "../xrEngine/xr_ioconsole.h"
 #include "../xrEngine/gamemtllib.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"
@@ -695,7 +694,7 @@ if (!g_pGameLevel)
 		}
 	}
 
-#ifdef DEBUG
+#if 0
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
@@ -754,7 +753,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGamePersistent::Statistics	(CGameFont* F)
 {
-#ifdef DEBUG
+#if 0
 #	ifndef _EDITOR
 		m_last_stats_frame		= m_frame_counter;
 		profiler().show_stats	(F,!!psAI_Flags.test(aiStats));

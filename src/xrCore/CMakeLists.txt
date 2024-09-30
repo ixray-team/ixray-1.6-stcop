@@ -163,6 +163,17 @@ if (DEVIXRAY_ENABLE_SHIPPING)
     target_compile_definitions(xrCore PUBLIC "$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 endif()
 
+# Profiler
+if (IXRAY_PROFILER)
+    target_include_directories(xrCore PUBLIC "${CORE_OPT}build/native/include/")
+    target_link_directories(xrCore PUBLIC "${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_OPT}runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/OptickCore.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
+    target_compile_definitions(xrCore PUBLIC "IXRAY_PROFILER")
+    target_link_libraries(xrCore PUBLIC "OptickCore")
+endif()
+
 # Linker list
 if(WIN32)
     if (NOT IXR_ARM_ENABLE)

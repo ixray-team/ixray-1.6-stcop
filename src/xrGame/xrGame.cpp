@@ -10,7 +10,6 @@
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "profiler.h"
 
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
@@ -26,10 +25,6 @@ extern "C"
 		CCC_RegisterInput();
 
 		RegisterExpressionDelegates();
-
-#ifdef DEBUG
-		g_profiler = xr_new<CProfiler>();
-#endif
 
 		string_path GameGlobals = {};
 		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");

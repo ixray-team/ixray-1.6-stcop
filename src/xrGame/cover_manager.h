@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "profiler.h"
 #include "quadtree.h"
 
 #include <luabind/luabind.hpp>

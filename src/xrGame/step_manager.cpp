@@ -5,7 +5,6 @@
 #include "Level.h"
 #include "gamepersistent.h"
 #include "material_manager.h"
-#include "profiler.h"
 #include "IKLimbsController.h"
 
 #ifdef	DEBUG

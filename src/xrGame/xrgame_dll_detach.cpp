@@ -22,8 +22,6 @@
 #include "character_rank.h"
 #include "character_reputation.h"
 
-#include "profiler.h"
-
 #include "sound_collection_storage.h"
 #include "relation_registry.h"
 
@@ -116,10 +114,6 @@ void clean_game_globals()
 	InventoryUtilities::ClearCharacterInfoStrings	();
 
 	xr_delete										(g_sound_collection_storage);
-	
-#ifdef DEBUG
-	xr_delete(g_profiler);
-#endif
 
 	xr_delete(pGameGlobals);
 	RELATION_REGISTRY::clear_relation_registry		();

@@ -4,7 +4,11 @@
 
 #ifdef	DEBUG_DRAW
 
+#ifdef IXRAY_PROFILER
+#define PIX_EVENT(Name)	dxPixEventWrapper	pixEvent##Name(L#Name); PROF_EVENT(#Name)
+#else
 #define PIX_EVENT(Name)	dxPixEventWrapper	pixEvent##Name(L#Name)
+#endif
 
 class dxPixEventWrapper
 {
@@ -14,8 +18,11 @@ public:
 };
 #else	//	DEBUG
 
+#ifdef IXRAY_PROFILER
+#define PIX_EVENT(Name) PROF_EVENT(#Name)
+#else
 #define PIX_EVENT(Name)	{;}
-
+#endif
 #endif	//	DEBUG
 
 #endif	//	dxPixEventWrapper_included

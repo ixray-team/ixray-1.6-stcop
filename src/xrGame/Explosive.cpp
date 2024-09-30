@@ -26,13 +26,10 @@
 #	include "PHDebug.h"
 #endif
 
-//#include "Physics.h"
 #include "../xrPhysics/MathUtils.h"
-//#include "../xrPhysics/phvalidevalues.h"
 #include "../xrPhysics/iActivationShape.h"
 #include "../xrPhysics/iphworld.h"
 #include "game_base_space.h"
-#include "profiler.h"
 
 #include "../Include/xrRender/Kinematics.h"
 #define EFFECTOR_RADIUS 30.f
