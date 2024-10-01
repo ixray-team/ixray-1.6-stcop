@@ -36,7 +36,7 @@ void	light::vis_prepare			()
 	//	TODO: DX10: Remove this pessimization
 	//skiptest	= true;
 
-	if (skiptest || Device.vCameraPosition.distance_to(spatial.sphere.P)<=(spatial.sphere.R*1.01f+safe_area))	{	// small error
+	if (skiptest || Device.vCameraPosition.distance_to_sqr(spatial.sphere.P)<=_sqr(spatial.sphere.R*1.01f+safe_area))	{	// small error
 		vis.visible		=	true;
 		vis.pending		=	false;
 		vis.frame2test	=	frame	+ ::Random.randI(delay_small_min,delay_small_max);
@@ -52,12 +52,13 @@ void	light::vis_prepare			()
 	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
 	//	Hope it won't slow down too much since there's not too much volumetric lights
 	//	TODO: sort for performance improvement if this technique hurts
-	if ( (flags.type==IRender_Light::SPOT) && flags.bShadow && flags.bVolumetric )
+	if ( (flags.type==IRender_Light::SPOT||flags.type==IRender_Light::OMNIPART) && flags.bShadow && flags.bVolumetric )
 		RCache.set_Stencil			(FALSE);
 	else
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RImplementation.Target->draw_volume				(this);
 	RImplementation.occq_end						(vis.query_id);
+	if(flags.bVolumetric)vis_update();
 }
 
 void	light::vis_update			()
@@ -69,7 +70,7 @@ void	light::vis_update			()
 	//		. shedule for 'next-frame' interval
 
 	if (!vis.pending)	return;
-
+	PROF_EVENT("light::vis_update")
 	u32	frame			= Device.dwFrame;
 
 

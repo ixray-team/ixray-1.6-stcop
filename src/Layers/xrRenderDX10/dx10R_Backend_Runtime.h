@@ -348,6 +348,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 
 IC void CBackend::Render_noIA(u32 iVertexCount)
 {
+	PROF_EVENT("RCache.Render_noIA")
 	stat.calls++;
 	stat.verts += iVertexCount;
 
