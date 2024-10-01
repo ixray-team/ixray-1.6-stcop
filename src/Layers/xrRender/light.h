@@ -5,7 +5,6 @@
 //#include "../../xrEngine/xr_object.h"
 #if (RENDER==R_R2) || (RENDER==R_R4)
 #	include "light_package.h"
-#	include "light_smapvis.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)
 
 class	light		:	public IRender_Light, public ISpatial
@@ -47,7 +46,10 @@ public:
 
 #ifndef _EDITOR
 	light*						omnipart	[6]	;
-	smapvis			svis;		// used for 6-cubemap faces
+	light*						h_parent;
+	u32				m_test_frame_parent;
+	void	parent_vis_prepare();
+	void	parent_vis_update();
 #endif
 
 	ref_shader		s_spot;
@@ -64,7 +66,9 @@ public:
 		u32			query_order;	// order of occlusion query
 		bool		visible;		// visible/invisible
 		bool		pending;		// test is still pending
-		u16			smap_ID;
+		bool		skipfulltest;
+		bool		camerainbounds;
+		u32			smap_ID;
 	}				vis;
 
 	union			_xform	{

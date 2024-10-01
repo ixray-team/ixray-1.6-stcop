@@ -13,10 +13,6 @@
 
 using namespace PS;
 
-#ifdef _EDITOR
-extern BOOL ps_r2_particle_dt;
-#endif
-
 //------------------------------------------------------------------------------
 CPGDef::CPGDef()
 {                             

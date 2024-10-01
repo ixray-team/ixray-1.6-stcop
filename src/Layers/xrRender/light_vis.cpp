@@ -16,32 +16,15 @@ void	light::vis_prepare			()
 
 	u32	frame	= Device.dwFrame;
 	if (frame	<	vis.frame2test)		return;
-
-	float	safe_area					= VIEWPORT_NEAR;
-	{
-		float	a0	= deg2rad(Device.fFOV*Device.fASPECT/2.f);
-		float	a1	= deg2rad(Device.fFOV/2.f);
-		float	x0	= VIEWPORT_NEAR/_cos	(a0);
-		float	x1	= VIEWPORT_NEAR/_cos	(a1);
-		float	c	= _sqrt					(x0*x0 + x1*x1);
-		safe_area	= _max(_max(VIEWPORT_NEAR,_max(x0,x1)),c);
-	}
-
-	//Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
-	//Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);
-	bool	skiptest	= false;
+	PROF_EVENT("light::vis_prepare")
+	bool	skiptest	= vis.camerainbounds;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_UNSHADOWED) && !flags.bShadow)	skiptest=true;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_DONT_TEST_SHADOWED) && flags.bShadow)	skiptest=true;
 
-	//	TODO: DX10: Remove this pessimization
-	//skiptest	= true;
-
-	if (skiptest || Device.vCameraPosition.distance_to_sqr(spatial.sphere.P)<=_sqr(spatial.sphere.R*1.01f+safe_area))	{	// small error
+	if (skiptest)	{	// small error
 		vis.visible		=	true;
 		vis.pending		=	false;
 		vis.frame2test	=	frame	+ ::Random.randI(delay_small_min,delay_small_max);
-		//	TODO: DX10: Remove this pessimisation
-		//vis.frame2test	=	frame	+ 1;
 		return;
 	}
 
@@ -58,7 +41,6 @@ void	light::vis_prepare			()
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
 	RImplementation.Target->draw_volume				(this);
 	RImplementation.occq_end						(vis.query_id);
-	if(flags.bVolumetric)vis_update();
 }
 
 void	light::vis_update			()
@@ -73,24 +55,12 @@ void	light::vis_update			()
 	PROF_EVENT("light::vis_update")
 	u32	frame			= Device.dwFrame;
 
+	R_occlusion::occq_result fragments = RImplementation.occq_get	(vis.query_id);
 
-#if USE_DX11
-	u64 fragments		= RImplementation.occq_get	(vis.query_id);
-#else
-	u32 fragments		= RImplementation.occq_get	(vis.query_id);
-#endif
-
-	//Log					("",fragments);
 	vis.visible			= (fragments > cullfragments);
 	vis.pending			= false;
 	if (vis.visible)	
-	{
 		vis.frame2test	=	frame	+ ::Random.randI(delay_large_min,delay_large_max);
-		//	TODO: DX10: Remove this pessimisation
-		//vis.frame2test	=	frame	+ 1;
-	} 
 	else 
-	{
 		vis.frame2test	=	frame	+ 1; 
-	}
 }

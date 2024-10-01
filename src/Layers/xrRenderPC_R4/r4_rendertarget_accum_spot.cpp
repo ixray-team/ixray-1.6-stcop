@@ -187,16 +187,9 @@ void CRenderTarget::accum_volumetric(light* L) {
 
 	// *** assume accumulator setted up ***
 	// *****************************	Mask by stencil		*************************************
-	BOOL	bIntersect = FALSE; //enable_scissor(L);
-	{
-		// setup xform
-		RCache.set_xform_world(L->m_xform);
-		RCache.set_xform_view(Device.mView);
-		RCache.set_xform_project(Device.mProject);
-		bIntersect = enable_scissor(L);
-
-		//enable_dbt_bounds				(L);
-	}
+	RCache.set_xform_world(L->m_xform);
+	RCache.set_xform_view(Device.mView);
+	RCache.set_xform_project(Device.mProject);
 
 	RCache.set_ColorWriteEnable();
 	RCache.set_CullMode(CULL_NONE);		// back

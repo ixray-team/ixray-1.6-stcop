@@ -449,6 +449,11 @@ void CDetailManager::MT_CALC()
 
 	if (!psDeviceFlags.is(rsDetails))	
 		return;
+
+	if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
+	{
+		return;
+	}
 #endif
 
 	bWait = true;

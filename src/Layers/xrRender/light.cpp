@@ -61,8 +61,6 @@ light::~light	()
 
 	// remove from Lights_LastFrame
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	for (u32 it=0; it<RImplementation.Lights_LastFrame.size(); it++)
-		if (this==RImplementation.Lights_LastFrame[it])	RImplementation.Lights_LastFrame[it]=0;
 	m_sectors.clear();
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 	ignore_object	= nullptr;
@@ -243,7 +241,6 @@ void	light::spatial_move			()
 	ISpatial::spatial_move			();
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	svis.invalidate					();
 	b_need_detect_sectors = true;
 	b_need_recompute_xform = true;
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
@@ -399,6 +396,16 @@ void	light::export_		(light_Package& package)
 		xform_calc();
 		b_need_recompute_xform = false;
 	}
+	float	safe_area					= VIEWPORT_NEAR;
+	{
+		float	a0	= deg2rad(Device.fFOV*Device.fASPECT*.5f);
+		float	a1	= deg2rad(Device.fFOV*.5f);
+		float	x0	= VIEWPORT_NEAR/_cos	(a0);
+		float	x1	= VIEWPORT_NEAR/_cos	(a1);
+		float	c	= _sqrt					(x0*x0 + x1*x1);
+		safe_area	= _max(_max(VIEWPORT_NEAR,_max(x0,x1)),c);
+	}
+	vis.camerainbounds = Device.vCameraPosition.distance_to_sqr(spatial.sphere.P)<=_sqr(spatial.sphere.R*1.01f+safe_area+EPS_L);
 
 	if (flags.bShadow)			{
 		switch (flags.type)	{
@@ -438,6 +445,9 @@ void	light::export_		(light_Package& package)
 							L->xform_calc();
 							L->b_need_recompute_xform = false;
 						}
+
+						L->vis.camerainbounds = vis.camerainbounds;
+
 						package.v_shadowed.push_back	(L);
 					}
 				}

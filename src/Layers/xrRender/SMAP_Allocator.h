@@ -62,16 +62,11 @@ public:
 		// perform search	(first-fit)
 		for (u32 it=0; it<cpoint.size(); it++)
 		{
-			R.setup				(cpoint[it],_size);
-			if (R.max.x>=int(psize))	continue;
-			if (R.max.y>=int(psize))	continue;
-			BOOL	bIntersect	= false;
-			for (u32 t=0; t<stack.size(); t++)
-				if (stack[t].intersect(R))	{
-					bIntersect	= true;
-					break;
-				}
-			if (bIntersect)		continue;
+			R.setup(cpoint[it],_size);
+			if (R.max.x >= int(psize) || R.max.y >= int(psize)) continue;
+
+			if (std::any_of(stack.begin(), stack.end(), [&R](SMAP_Rect& r) {return r.intersect(R);}))
+				continue;
 			
 			// OK, place
 			cpoint.erase		(cpoint.begin()+it);

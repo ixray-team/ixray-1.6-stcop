@@ -116,7 +116,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 	SetActiveTask( t );
 
-	//Ã³Ã±Ã²Ã Ã­Ã®Ã¢Ã¨Ã²Ã¼ Ã´Ã«Ã Ã¦Ã®Ãª Ã­Ã¥Ã®Ã¡ÃµÃ®Ã¤Ã¨Ã¬Ã®Ã±Ã²Ã¨ Ã¯Ã°Ã®Ã·Ã²Ã¥Ã­Ã¨Ã¿ Ã²Ã Ã±ÃªÃ®Ã¢ Ã¢ PDA
+	//óñòàíîâèòü ôëàæîê íåîáõîäèìîñòè ïðî÷òåíèÿ òàñêîâ â PDA
 	if ( CurrentGameUI() )
 		CurrentGameUI()->UpdatePda();
 
@@ -155,31 +155,17 @@ void CGameTaskManager::UpdateTasks						()
 	PROF_EVENT("CGameTaskManager::UpdateTasks");
 	Level().MapManager().DisableAllPointers();
 
-	u32					task_count = (u32)GetGameTasks().size();
-	if(0==task_count)	return;
-
+	for (auto &task : GetGameTasks())
 	{
-		typedef buffer_vector<SGameTaskKey>	Tasks;
-		Tasks tasks				(
-			_alloca(task_count*sizeof(SGameTaskKey)),
-			task_count,
-			GetGameTasks().begin(),
-			GetGameTasks().end()
-		);
+		CGameTask* const	t = task.game_task;
+		PROF_EVENT_DYNAMIC(t->m_ID.c_str());
+		if (t->GetTaskState()!=eTaskStateInProgress)
+			continue;
 
-		Tasks::const_iterator	I = tasks.begin();
-		Tasks::const_iterator	E = tasks.end();
-		for ( ; I != E; ++I) {
-			CGameTask* const	t = (*I).game_task;
-			if (t->GetTaskState()!=eTaskStateInProgress)
-				continue;
+		ETaskState const	state = t->UpdateState();
 
-			ETaskState const	state = t->UpdateState();
-
-			if ( (state == eTaskStateFail) || (state == eTaskStateCompleted) )
-				SetTaskState	(t, state);
-		}
-
+		if ( (state == eTaskStateFail) || (state == eTaskStateCompleted) )
+			SetTaskState	(t, state);
 	}
 
 	CGameTask*	t = ActiveTask();
