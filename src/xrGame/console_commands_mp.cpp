@@ -1174,6 +1174,8 @@ public:
 		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
 
 		u32	cnt = Level().Server->game->get_players_count();
+		if (g_dedicated_server)
+			cnt--;
 		Msg("- Total Players : %d", cnt);
 		Msg("- ----player list begin-----");
 		struct PlayersEnumerator
@@ -1186,17 +1188,20 @@ public:
 			void operator()(IClient* client)
 			{
 				xrClientData *l_pC	= (xrClientData*)client;
-				if (!l_pC)
+				if (!l_pC || !l_pC->ps)
+					return;
+
+				if (g_dedicated_server && l_pC->ID == Level().Server->GetServerClient()->ID)
 					return;
 				ip_address			Address;
 				DWORD dwPort		= 0;
 				Level().Server->GetClientAddress(client->ID, Address, &dwPort);
 				string512 tmp_string;
-				xr_sprintf(tmp_string, "- (player session id : %u), (name : %s), (ip: %s), (ping: %u);",
-					client->ID.value(),
+				xr_sprintf(tmp_string, "- (player session id : %u), (name : %s), (ip: %s), (ping: %u), (money: %d);", client->ID.value(),
 					l_pC->ps->getName(),
 					Address.to_string().c_str(),
-					l_pC->ps->ping);
+					l_pC->ps->ping,
+					l_pC->ps->money_for_round);
 				if (filter_string)
 				{
 					if (strstr(tmp_string, filter_string))

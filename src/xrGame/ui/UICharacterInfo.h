@@ -6,11 +6,12 @@
 #include "../../xrUI/Widgets/uiwindow.h"
 #include "../../xrEngine/AI/alife_space.h"
 #include "character_info_defs.h"
-
 class CUIStatic;
 class CCharacterInfo;
 class CUIXml;
 class CUIScrollView;
+class CInventoryOwner;
+
 class CUICharacterInfo: public CUIWindow
 {
 private:
@@ -68,6 +69,9 @@ public:
 
 	void				InitCharacter			(u16 id);
 	void				ClearInfo				();
+
+	void				InitCharacterMP			(CInventoryOwner* invOwner);
+
 	void				InitCharacterMP			(LPCSTR player_name, LPCSTR player_icon );
 
 	virtual void		Update					();

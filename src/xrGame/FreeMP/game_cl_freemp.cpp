@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "game_cl_freemp.h"
 #include "clsid_game.h"
 #include "../../xrEngine/xr_level_controller.h"
@@ -62,6 +62,36 @@ void game_cl_freemp::net_import_update(NET_Packet& P)
 	inherited::net_import_update(P);
 }
 
+void game_cl_freemp::shedule_Update(u32 dt)
+{
+	if (!local_player)
+		return;
+
+	for (auto cl : players)
+	{
+		game_PlayerState* ps = cl.second;
+		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
+
+		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
+		if (!pActor || !pActor->g_Alive()) continue;
+
+		pActor->SetName(ps->getName());
+		pActor->cName_set(ps->getName());
+
+		if (ps->team != pActor->Community())
+		{
+			CHARACTER_COMMUNITY	community;
+			community.set(ps->team);
+			pActor->SetCommunity(community.index());
+			pActor->ChangeTeam(community.team(), 0, 0);
+		}
+
+		if (local_player->GameID == ps->GameID)
+		{
+			pActor->set_money((u32)ps->money_for_round, false);
+		}
+	}
+}
 bool game_cl_freemp::OnKeyboardPress(int key)
 {
 	if (kJUMP == key)
@@ -115,6 +145,11 @@ BOOL game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 	CSE_Abstract* e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity)
 		return FALSE;
+
+	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
+	{
+		return OnTouchPlayersBag(e_who, e_entity);
+	}
 
 	return TRUE;
 }
