@@ -38,6 +38,7 @@ void UISectorTool::Draw()
                     Scene->UndoSave();
                 }
             }
+
             ImGui::Separator();
             if (ImGui::Button("Create Default", ImVec2(-1,0)))
             {
@@ -52,6 +53,19 @@ void UISectorTool::Draw()
                 if (!PortalUtils.RemoveDefaultSector()) ELog.DlgMsg(mtInformation, "Default sector not found.");
             }
 
+            ImGui::Separator();
+            if (ImGui::Button("Recalculate Portals", ImVec2(-1, 0)))
+            {
+                int Size = PortalUtils.CalculateAllPortals();
+                if (Size > 0)
+                {
+                    ELog.DlgMsg(mtInformation, "Recalculated %d portals.", Size);
+                }
+                else
+                {
+                    ELog.DlgMsg(mtInformation, "Recalculated portals error! Portals is empty...");
+                }
+            }
         }
         ImGui::Separator();
         ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
