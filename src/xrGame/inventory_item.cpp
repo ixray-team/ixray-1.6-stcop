@@ -1294,6 +1294,11 @@ void CInventoryItem::activate_physic_shell()
 	object().CPhysicsShellHolder::activate_physic_shell();
 }
 
+void CInventoryItem::setControlInertionFactor(float value)
+{
+	m_fControlInertionFactor = value;
+}
+
 void CInventoryItem::UpdateXForm	()
 {
 	if (0==object().H_Parent())	return;
@@ -1520,6 +1525,16 @@ bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)
 BOOL CInventoryItem::IsInvalid() const
 {
 	return object().getDestroy() || GetDropManual();
+}
+
+void CInventoryItem::setCost(u32 nValue)
+{
+	m_cost = nValue;
+}
+
+void CInventoryItem::setWeight(float value)
+{
+	m_weight = value;
 }
 
 u16 CInventoryItem::object_id()const

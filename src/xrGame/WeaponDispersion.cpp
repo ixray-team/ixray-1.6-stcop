@@ -34,6 +34,16 @@ float CWeapon::GetFireDispersion(bool with_cartridge, bool for_crosshair)
 	return GetFireDispersion(m_fCurrentCartirdgeDisp, for_crosshair);
 }
 
+float CWeapon::getFireDispersionConditionFactor(void) const
+{
+	return fireDispersionConditionFactor;
+}
+
+void CWeapon::setFireDispersionConditionFactor(float value)
+{
+	fireDispersionConditionFactor = value;
+}
+
 float CWeapon::GetBaseDispersion(float cartridge_k)
 {
 	return fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor();

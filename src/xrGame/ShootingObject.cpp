@@ -496,6 +496,41 @@ void CShootingObject::FireEnd	()
 	bWorking=false;	
 }
 
+void CShootingObject::setFireDistance(float value)
+{
+	fireDistance = value;
+}
+
+void CShootingObject::setFireDispersionBase(float value)
+{
+	fireDispersionBase = value;
+}
+
+void CShootingObject::setStartBulletSpeed(float value)
+{
+	m_fStartBulletSpeed = value;
+}
+
+void CShootingObject::setHitImpulse(float value)
+{
+	fHitImpulse = value;
+}
+
+void CShootingObject::setRPM(float value)
+{
+	fOneShotTime = value;
+}
+
+void CShootingObject::setHitPower(const Fvector4& vec)
+{
+	fvHitPower = vec;
+}
+
+void CShootingObject::setHitPowerCritical(const Fvector4& vec)
+{
+	fvHitPowerCritical = vec;
+}
+
 void CShootingObject::StartShotParticles	()
 {
 	CParticlesObject* pSmokeParticles = nullptr;

@@ -63,12 +63,19 @@ public:
 	const virtual bool		ParentIsActor() const {return false;}
 
 	float getFireDistance(void) const { return fireDistance; }
+	void setFireDistance(float value);
 	float getFireDispersionBase(void) const { return fireDispersionBase; }
+	void setFireDispersionBase(float value);
 	float getStartBulletSpeed(void) const { return m_fStartBulletSpeed; }
+	void setStartBulletSpeed(float value);
 	float getHitImpulse(void) const { return fHitImpulse; }
+	void setHitImpulse(float value);
 	float getRPM(void) const { return fOneShotTime; }
+	void setRPM(float value);
 	const Fvector4& getHitPower(void) const { return fvHitPower; }
+	void setHitPower(const Fvector4& vec);
 	const Fvector4& getHitPowerCritical(void) const { return fvHitPowerCritical; }
+	void setHitPowerCritical(const Fvector4& vec);
 
 protected:
 	// Weapon fires now

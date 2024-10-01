@@ -2384,6 +2384,36 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	return false;
 }
 
+void CWeapon::Set_PDM_Base(float value)
+{
+	m_pdm.m_fPDM_disp_base = value;
+}
+
+void CWeapon::Set_PDM_Vel_F(float value)
+{
+	m_pdm.m_fPDM_disp_vel_factor = value;
+}
+
+void CWeapon::Set_PDM_Accel_F(float value)
+{
+	m_pdm.m_fPDM_disp_accel_factor = value;
+}
+
+void CWeapon::Set_PDM_Crouch(float value)
+{
+	m_pdm.m_fPDM_disp_crouch = value;
+}
+
+void CWeapon::Set_PDM_Crouch_NA(float value)
+{
+	m_pdm.m_fPDM_disp_crouch_no_acc = value;
+}
+
+void CWeapon::setCrosshairInertion(float value)
+{
+	m_crosshair_inertion = value;
+}
+
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
 {
 	if(!m_ammoTypes.size())			return;
@@ -2436,6 +2466,11 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 		}
 	}
 	F_entity_Destroy				(D);
+}
+
+void CWeapon::SetAmmoMagSize(int size)
+{
+	iMagazineSize = size;
 }
 
 int CWeapon::GetSuitableAmmoTotal( bool use_item_to_spawn ) const
