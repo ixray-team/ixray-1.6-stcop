@@ -48,6 +48,7 @@ CUIItemInfo::CUIItemInfo()
 	UIOutfitInfo				= nullptr;
 	UIBoosterInfo				= nullptr;
 	UIArtefactParams			= nullptr;
+	UIOutfitParams				= nullptr;
 	UIName						= nullptr;
 	UIBackground				= nullptr;
 	m_pInvItem					= nullptr;
@@ -61,6 +62,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete	(UIWpnParams);
 	xr_delete	(UIKnifeParams);
 	xr_delete	(UIArtefactParams);
+	xr_delete	(UIOutfitParams);
 	xr_delete	(UIProperties);
 	xr_delete	(UIOutfitInfo);
 	xr_delete	(UIBoosterInfo);
@@ -135,8 +137,11 @@ void CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		UIKnifeParams					= new CUIKnifeParams();
 		UIKnifeParams->InitFromXml		(uiXml);
 
-		UIArtefactParams				= new CUIArtefactParams();
+		UIArtefactParams				= new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeArtefact);
 		UIArtefactParams->InitFromXml	(uiXml);
+
+		UIOutfitParams = new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeOutfit);
+		UIOutfitParams->InitFromXml(uiXml);
 
 		UIBoosterInfo					= new CUIBoosterInfo();
 		UIBoosterInfo->InitFromXml		(uiXml);
@@ -415,6 +420,11 @@ void CUIItemInfo::TryAddOutfitInfo( CInventoryItem& pInvItem, CInventoryItem* pC
 		UIDesc->AddWindow( UIOutfitInfo, false );
 	}
 
+	if (UIOutfitParams && outfit)
+	{
+		UIOutfitParams->SetInfo(pInvItem.object().cNameSect());
+		UIDesc->AddWindow(UIOutfitParams, false);
+	}
 }
 
 void CUIItemInfo::TryAddUpgradeInfo( CInventoryItem& pInvItem )
