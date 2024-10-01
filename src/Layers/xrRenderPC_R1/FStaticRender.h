@@ -148,7 +148,8 @@ public:
 	virtual IRender_Sector*			detectSector			(const Fvector& P);
 	int								translateSector			(IRender_Sector* pSector);
 	virtual IRender_Target*			getTarget				();
-	
+	virtual SurfaceParams getSurface(const char* nameTexture) override;
+
 	// Main 
 	virtual void					flush					();
 	virtual void					set_Object				(IRenderable*		O	);
