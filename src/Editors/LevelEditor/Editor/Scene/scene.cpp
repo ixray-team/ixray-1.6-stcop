@@ -329,6 +329,8 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 	m_level_graph.clear();
 	m_game_graph.clear();
 	m_RTFlags.set(flIsBuildedAIMap | flIsBuildedGameGraph | flIsBuildedCForm, FALSE);
+
+	SDL_SetWindowTitle(g_AppInfo.Window, "IXR: Level Editor");
 }
 
 const Fvector& EScene::GetCameraPosition() const
