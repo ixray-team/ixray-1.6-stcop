@@ -10,7 +10,7 @@ extern "C"
 
 XrGameManager::XrGameManager()
 {
-	LPCSTR			g_name = "XrGame.dll";
+	LPCSTR			g_name = "xrGame.dll";
 	Log("Loading DLL:", g_name);
 	m_hGame = LoadLibraryA(g_name);
 	if (0 == m_hGame)	R_CHK(GetLastError());
