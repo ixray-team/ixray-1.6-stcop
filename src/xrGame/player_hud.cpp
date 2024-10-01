@@ -16,7 +16,6 @@ Fvector _wpn_root_pos;
 
 float CalcMotionSpeed(const shared_str& anim_name)
 {
-
 	if(!IsGameTypeSingle() && (anim_name=="anm_show" || anim_name=="anm_hide") )
 		return 2.0f;
 	else
@@ -108,75 +107,82 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 	NeedReg = false;
 
-	CImGuiManager::Instance().Subscribe("HudAdjust", CImGuiManager::ERenderPriority::eMedium, [this]
+	if (!Device.IsEditorMode())
 	{
-		if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]) {
-			return;
-		}
 
-		extern u32 hud_adj_mode;
-		extern bool hud_adj_crosshair;
-		static bool EnableAdjust = false;
+		CImGuiManager::Instance().Subscribe
+		(
+			"HudAdjust", 
+			CImGuiManager::ERenderPriority::eMedium, [this]
+			{
+				if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]) {
+					return;
+				}
 
-		ImGui::Begin("HudAdjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]);
-		ImGui::Checkbox("Enable", &EnableAdjust);
+				extern u32 hud_adj_mode;
+				extern bool hud_adj_crosshair;
+				static bool EnableAdjust = false;
 
-		if (EnableAdjust)
-		{
-			float StartY = ImGui::GetCursorPosY();
-			float StartX = ImGui::GetCursorPosX();
-			if (ImGui::Button("Mode 1", { 60, 35 }))
-				hud_adj_mode = 1;
+				ImGui::Begin("HudAdjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]);
+				ImGui::Checkbox("Enable", &EnableAdjust);
 
-			ImGui::SetCursorPos({ StartX + 75 , StartY });
-			if (ImGui::Button("Mode 2", { 60, 35 }))
-				hud_adj_mode = 2;
+				if (EnableAdjust)
+				{
+					float StartY = ImGui::GetCursorPosY();
+					float StartX = ImGui::GetCursorPosX();
+					if (ImGui::Button("Mode 1", { 60, 35 }))
+						hud_adj_mode = 1;
 
-			ImGui::SetCursorPos({ StartX + 150 , StartY });
-			if (ImGui::Button("Mode 3", { 60, 35 }))
-				hud_adj_mode = 3;
+					ImGui::SetCursorPos({ StartX + 75 , StartY });
+					if (ImGui::Button("Mode 2", { 60, 35 }))
+						hud_adj_mode = 2;
 
-			ImGui::SetCursorPos({ StartX + 225 , StartY });
-			if (ImGui::Button("Mode 4", { 60, 35 }))
-				hud_adj_mode = 4;
+					ImGui::SetCursorPos({ StartX + 150 , StartY });
+					if (ImGui::Button("Mode 3", { 60, 35 }))
+						hud_adj_mode = 3;
 
-			ImGui::SetCursorPos({ StartX + 300 , StartY });
-			if (ImGui::Button("Mode 5", { 60, 35 }))
-				hud_adj_mode = 5;
+					ImGui::SetCursorPos({ StartX + 225 , StartY });
+					if (ImGui::Button("Mode 4", { 60, 35 }))
+						hud_adj_mode = 4;
 
-			ImGui::SetCursorPos({ StartX , StartY + 45 });
-			if (ImGui::Button("Mode 6", { 60, 35 }))
-				hud_adj_mode = 6;
+					ImGui::SetCursorPos({ StartX + 300 , StartY });
+					if (ImGui::Button("Mode 5", { 60, 35 }))
+						hud_adj_mode = 5;
 
-			ImGui::SetCursorPos({ StartX + 75 , StartY + 45 });
-			if (ImGui::Button("Mode 7", { 60, 35 }))
-				hud_adj_mode = 7;
+					ImGui::SetCursorPos({ StartX , StartY + 45 });
+					if (ImGui::Button("Mode 6", { 60, 35 }))
+						hud_adj_mode = 6;
 
-			ImGui::SetCursorPos({ StartX + 150 , StartY + 45 });
-			if (ImGui::Button("Mode 8", { 60, 35 }))
-				hud_adj_mode = 8;
+					ImGui::SetCursorPos({ StartX + 75 , StartY + 45 });
+					if (ImGui::Button("Mode 7", { 60, 35 }))
+						hud_adj_mode = 7;
 
-			ImGui::SetCursorPos({ StartX + 225 , StartY + 45 });
-			if (ImGui::Button("Mode 9", { 60, 35 }))
-				hud_adj_mode = 9;
+					ImGui::SetCursorPos({ StartX + 150 , StartY + 45 });
+					if (ImGui::Button("Mode 8", { 60, 35 }))
+						hud_adj_mode = 8;
 
-			ImGui::SetCursorPos({ StartX + 300 , StartY + 45 });
-			if (ImGui::Button("Crosshair", { 100, 35 }))
-				hud_adj_crosshair = !hud_adj_crosshair;
-		}
-		else
-		{
-			hud_adj_mode = 0;
-		}
+					ImGui::SetCursorPos({ StartX + 225 , StartY + 45 });
+					if (ImGui::Button("Mode 9", { 60, 35 }))
+						hud_adj_mode = 9;
 
-		ImGui::End();
+					ImGui::SetCursorPos({ StartX + 300 , StartY + 45 });
+					if (ImGui::Button("Crosshair", { 100, 35 }))
+						hud_adj_crosshair = !hud_adj_crosshair;
+				}
+				else
+				{
+					hud_adj_mode = 0;
+				}
 
-		if (EnableAdjust && hud_adj_mode == 0)
-		{
-			hud_adj_mode = 1;
-		}
+				ImGui::End();
+
+				if (EnableAdjust && hud_adj_mode == 0)
+				{
+					hud_adj_mode = 1;
+				}
+			}
+		);
 	}
-	);
 #endif
 }
 
