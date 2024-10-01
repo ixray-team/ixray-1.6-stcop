@@ -6,709 +6,870 @@
 #include "../alife_time_manager.h"
 #include "../ui/UIInventoryUtilities.h"
 
-#include "../xrEngine/XR_IOConsole.h"
-#include "../xrEngine/string_table.h"
-
 #include "ai_space.h"
+#include "ImUtils.h"
+
+using Section = xr_vector<std::pair<std::string_view, CInifile::Sect*>>;
+struct SectionData
+{
+	Section Sorted{};
+	Section Unsorted{};
+};
 
 struct
 {
 	// weapon tab
-	bool weapon_sort_by_max_cost{};
+	bool sort_by_max_cost{};
 	bool weapon_sort_by_max_hit_power{};
 	bool weapon_sort_by_max_fire_distance{};
-	bool weapon_sort_by_min_cost{};
+	bool sort_by_min_cost{};
 	bool weapon_sort_by_min_hit_power{};
 	bool weapon_sort_by_min_fire_distance{};
-	bool weapon_spawn_on_level{};
-	char weapon_spawn_count[3]{};
+	bool spawn_on_level{};
+	char spawn_count[4]{};
 	// weapon tab
+
+	SectionData WeaponsSections = {};
+	SectionData ItemsSections = {};
+	SectionData AmmoSections = {};
+	SectionData OutfitSections = {};
+	SectionData AddonSections = {};
+	SectionData ArtefactSections = {};
+	SectionData MpStuffSections = {};
+
+	Section Vehicles{};
+	Section Others{};
+} imgui_spawn_manager;
+
+
+static void SectionStatistics(const SectionData& sections) {
+	size_t total = sections.Sorted.size() + sections.Unsorted.size();
+	ImGui::Text("Total sections count: %zu", total);
+	ImGui::Text("Total sections count (can be sorted): %zu", sections.Sorted.size());
+	ImGui::Text("Total sections count (can't be sorted): %zu", sections.Unsorted.size());
+	ImGui::Separator();
 }
 
-imgui_spawn_manager;
+constexpr size_t kSpawnManagerMaxSectionName = 64;
 
-extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position,
-	u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
-void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
+float SpawnManager_ParseHitPower(const shared_str& hit_str);
+void SpawnManager_RenderTooltip(CInifile::Sect* section);
+bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname);
+void SpawnManager_HandleButtonPress(CInifile::Sect* section);
+void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui);
 
-void RenderSpawnManagerWindow()
+void InitSections()
 {
+	if (g_pClsidManager == nullptr)
+	{
+		R_ASSERT(!"! clsid manager uninitialized!");
+		return;
+	}
+
+	//xr_set<xr_string> classes = {};
+	for (const auto& pSection : pSettings->sections())
+	{
+		if (pSection == nullptr)
+			continue;
+
+		std::string_view name = pSection->Name.c_str();
+
+		if (name.empty())
+			continue;
+
+		if (!pSection->line_exist("class"))
+			continue;
+
+		CLASS_ID classId = pSettings->r_clsid(name.data(), "class");
+		
+		bool isInvItem = pSection->line_exist("cost") && pSection->line_exist("inv_weight");
+		size_t mp_index = name.find("mp_");
+		if (g_pClsidManager->is_mp_stuff(classId) || (mp_index != std::string_view::npos && mp_index == 0))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.MpStuffSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.MpStuffSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_weapon(classId))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.WeaponsSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.WeaponsSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_item(classId))
+		{
+			if (!pSection->line_exist("immunities_sect"))
+				continue;
+			
+			if (isInvItem)
+			{
+				imgui_spawn_manager.ItemsSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.ItemsSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_ammo(classId))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.AmmoSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.AmmoSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_outfit(classId))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.OutfitSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.OutfitSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_addon(classId))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.AddonSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.AddonSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_artefact(classId))
+		{
+			if (isInvItem)
+			{
+				imgui_spawn_manager.ArtefactSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.ArtefactSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_vehicle(classId))
+		{
+			imgui_spawn_manager.Vehicles.push_back({ name, pSection });
+		}
+		else {
+			//string32 temp; CLSID2TEXT(classId, temp);
+			//classes.insert(temp);
+
+			imgui_spawn_manager.Others.push_back({ name, pSection });
+		}
+	}
+}
+
+void RenderSpawnManagerWindow() {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)])
 		return;
 
-	if (!g_pGameLevel)
+	if (g_pGameLevel == nullptr)
 		return;
 
-	if (!ai().get_alife())
+	if (ai().get_alife() == nullptr)
 		return;
 
-	if (!g_pStringTable)
+	if (g_pClsidManager == nullptr)
 		return;
 
-	constexpr size_t kSpawnManagerMaxSectionName = 64;
+	auto maxSortCost = [](Section& collection)
+		{
+			std::sort(collection.begin(), collection.end(), [](const auto& pair_left, const auto& pair_right)->bool
+				{
+					if (pair_left.second && pair_right.second)
+					{
+						const char* pLeftName = pair_left.first.data();
+						const char* pRightName = pair_right.first.data();
+
+						float cost_left{};
+						float cost_right{};
+
+						if (pSettings->line_exist(pLeftName, "cost"))
+						{
+							cost_left = pSettings->r_float(pLeftName, "cost");
+						}
+
+						if (pSettings->line_exist(pRightName, "cost"))
+						{
+							cost_right = pSettings->r_float(pRightName, "cost");
+						}
+
+						return cost_left > cost_right;
+					}
+
+					return false;
+				});
+		};
+
+	auto minSortCost = [](Section& collection)
+		{
+			std::sort(collection.begin(), collection.end(), [](const auto& pair_left, const auto& pair_right) -> bool
+			{
+				if (pair_left.second && pair_right.second)
+				{
+					const char* pLeftName = pair_left.first.data();
+					const char* pRightName = pair_right.first.data();
+
+					float value_left{};
+					float value_right{};
+
+					if (pSettings->line_exist(pLeftName, "cost"))
+					{
+						value_left = pSettings->r_float(pLeftName, "cost");
+					}
+
+					if (pSettings->line_exist(pRightName, "cost"))
+					{
+						value_right = pSettings->r_float(pRightName, "cost");
+					}
+
+					return value_left < value_right;
+				}
+
+				return false;
+			});
+		};
 
 	if (ImGui::Begin("Spawn Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SpawnManager)]))
 	{
+		if (ImGui::Checkbox("spawn on Level", &imgui_spawn_manager.spawn_on_level))
+		{
+		}
+		ImGui::SetItemTooltip("if this checkbox is enabled that means it will spawn on level not in inventory");
+
+		ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.spawn_count, sizeof(imgui_spawn_manager).spawn_count);
+		ImGui::SetItemTooltip("How many items to spawn by one click, from 1 to specified number by user input");
+
+		if (ImGui::Checkbox("sort by max cost##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_max_cost))
+		{
+			imgui_spawn_manager.sort_by_min_cost = false;
+		}
+		ImGui::SetItemTooltip("Sorts items by maximum cost field that defined in weapon section in ltx file");
+
+		if (ImGui::Checkbox("sort by min cost##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_min_cost))
+		{
+			imgui_spawn_manager.sort_by_max_cost = false;
+		}
+		ImGui::SetItemTooltip("Sorts items by minimal cost field that defined in weapon section in ltx file");
+
+		ImGui::Separator();
+
 		if (ImGui::BeginTabBar("##TabBar_InGameSpawnManager"))
 		{
 			if (ImGui::BeginTabItem("Items"))
 			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.ItemsSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Sorted, number_imgui);
 
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.ItemsSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.ItemsSections.Sorted);
+				}
 
-
-
-				ImGui::EndTabItem();
-			}
-
-			if (ImGui::BeginTabItem("Artefacts"))
-			{
-
-
-
+				if (imgui_spawn_manager.ItemsSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Unsorted, number_imgui);
+				}
 
 				ImGui::EndTabItem();
 			}
 
 			if (ImGui::BeginTabItem("Weapons"))
 			{
-				if (pSettings)
+				auto translate_difficulty = [](ESingleGameDifficulty value) -> const char* {
+					switch (value)
+					{
+					case egdNovice:
+					{
+						return "novice";
+					}
+					case egdStalker:
+					{
+						return "stalker";
+					}
+					case egdVeteran:
+					{
+						return "veteran";
+					}
+					case egdMaster:
+					{
+						return "master";
+					}
+					default:
+						return "unknown";
+					}
+					};
+
+				if (ImGui::Checkbox("sort by max fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_fire_distance))
 				{
-					size_t total_count_sort{};
-					size_t total_count_unsort{};
+					imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
+					imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
+					imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
+				}
+				ImGui::SetItemTooltip("Sorts items by maximum fire distance field that defined in weapon section in ltx file");
 
-					auto translate_difficulty = [](ESingleGameDifficulty value) -> const char* {
-						switch (value)
+				if (ImGui::Checkbox("sort by max hit power##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_hit_power))
+				{
+					imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
+					imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
+					imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
+				}
+				ImGui::SetItemTooltip("Sorts items by maximum hit_power field for current game difficulty[%s] that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
+
+				if (ImGui::Checkbox("sort by min fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_min_fire_distance))
+				{
+					imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
+					imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
+					imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
+				}
+				ImGui::SetItemTooltip("Sorts items by minimal fire_distance field that defined in weapon section in ltx file");
+
+				if (ImGui::Checkbox("sort by min hit power##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_min_hit_power))
+				{
+					imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
+					imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
+					imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
+				}
+				ImGui::SetItemTooltip("Sorts items by minimal hit_power field for current game difficulty[%s]that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
+
+				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
+				SectionStatistics(imgui_spawn_manager.WeaponsSections);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.WeaponsSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.WeaponsSections.Sorted);
+				}
+
+				if (imgui_spawn_manager.weapon_sort_by_max_fire_distance)
+				{
+					std::sort(imgui_spawn_manager.WeaponsSections.Sorted.begin(), imgui_spawn_manager.WeaponsSections.Sorted.end(),
+						[](const auto& pair_left, const auto& pair_right) -> bool
+					{
+						if (pair_left.second && pair_right.second)
 						{
-						case egdNovice:
+							const char* pLeftName = pair_left.first.data();
+							const char* pRightName = pair_right.first.data();
+
+							float value_left{};
+							float value_right{};
+
+							if (pSettings->line_exist(pLeftName, "fire_distance"))
+							{
+								value_left = pSettings->r_float(pLeftName, "fire_distance");
+							}
+
+							if (pSettings->line_exist(pRightName, "fire_distance"))
+							{
+								value_right = pSettings->r_float(pRightName, "fire_distance");
+							}
+
+							return value_left > value_right;
+						}
+
+						return false;
+					});
+				}
+
+				if (imgui_spawn_manager.weapon_sort_by_min_fire_distance)
+				{
+					std::sort(imgui_spawn_manager.WeaponsSections.Sorted.begin(), imgui_spawn_manager.WeaponsSections.Sorted.end(),
+						[](const auto& pair_left, const auto& pair_right) -> bool
+					{
+						if (pair_left.second && pair_right.second)
 						{
-							return "novice";
+							const char* pLeftName = pair_left.first.data();
+							const char* pRightName = pair_right.first.data();
+
+							float value_left{};
+							float value_right{};
+
+							if (pSettings->line_exist(pLeftName, "fire_distance"))
+							{
+								value_left = pSettings->r_float(pLeftName, "fire_distance");
+							}
+
+							if (pSettings->line_exist(pRightName, "fire_distance"))
+							{
+								value_right = pSettings->r_float(pRightName, "fire_distance");
+							}
+
+							return value_left < value_right;
 						}
-						case egdStalker:
+
+						return false;
+					});
+				}
+
+				if (imgui_spawn_manager.weapon_sort_by_max_hit_power)
+				{
+					std::sort(imgui_spawn_manager.WeaponsSections.Sorted.begin(), imgui_spawn_manager.WeaponsSections.Sorted.end(), [](const auto& pair_left, const auto& pair_right)->bool {
+						if (pair_left.second && pair_right.second)
 						{
-							return "stalker";
+							const char* pLeftName = pair_left.first.data();
+							const char* pRightName = pair_right.first.data();
+
+							float value_left{};
+							float value_right{};
+
+							if (pSettings->line_exist(pLeftName, "hit_power"))
+							{
+								auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
+								string32 buffer{};
+								if (g_SingleGameDifficulty == egdNovice)
+								{
+									_GetItem(*hit_str, 3, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdStalker)
+								{
+									_GetItem(*hit_str, 2, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdVeteran)
+								{
+									_GetItem(*hit_str, 1, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdMaster)
+								{
+									_GetItem(*hit_str, 0, buffer);
+									value_left = atof(buffer);
+								}
+							}
+
+							if (pSettings->line_exist(pRightName, "hit_power"))
+							{
+								auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
+								string32 buffer{};
+								if (g_SingleGameDifficulty == egdNovice)
+								{
+									_GetItem(*hit_str, 3, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdStalker)
+								{
+									_GetItem(*hit_str, 2, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdVeteran)
+								{
+									_GetItem(*hit_str, 1, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdMaster)
+								{
+									_GetItem(*hit_str, 0, buffer);
+									value_right = atof(buffer);
+								}
+							}
+
+							return value_left > value_right;
 						}
-						case egdVeteran:
+
+						return false;
+						});
+				}
+
+				if (imgui_spawn_manager.weapon_sort_by_min_hit_power)
+				{
+					std::sort(imgui_spawn_manager.WeaponsSections.Sorted.begin(), imgui_spawn_manager.WeaponsSections.Sorted.end(),
+						[](const auto& pair_left, const auto& pair_right) -> bool
+					{
+						if (pair_left.second && pair_right.second)
 						{
-							return "veteran";
+							const char* pLeftName = pair_left.first.data();
+							const char* pRightName = pair_right.first.data();
+
+							float value_left{};
+							float value_right{};
+
+							if (pSettings->line_exist(pLeftName, "hit_power"))
+							{
+								auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
+								string32 buffer{};
+								if (g_SingleGameDifficulty == egdNovice)
+								{
+									_GetItem(*hit_str, 3, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdStalker)
+								{
+									_GetItem(*hit_str, 2, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdVeteran)
+								{
+									_GetItem(*hit_str, 1, buffer);
+									value_left = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdMaster)
+								{
+									_GetItem(*hit_str, 0, buffer);
+									value_left = atof(buffer);
+								}
+							}
+
+							if (pSettings->line_exist(pRightName, "hit_power"))
+							{
+								auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
+								string32 buffer{};
+								if (g_SingleGameDifficulty == egdNovice)
+								{
+									_GetItem(*hit_str, 3, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdStalker)
+								{
+									_GetItem(*hit_str, 2, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdVeteran)
+								{
+									_GetItem(*hit_str, 1, buffer);
+									value_right = atof(buffer);
+								}
+								else if (g_SingleGameDifficulty == egdMaster)
+								{
+									_GetItem(*hit_str, 0, buffer);
+									value_right = atof(buffer);
+								}
+							}
+
+							return value_left < value_right;
 						}
-						case egdMaster:
-						{
-							return "master";
-						}
-						default:
-							return "unknown";
-						}
-						};
 
-					/* for fast disabling copy and paste (but delete what is necessary)
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-					*/
+						return false;
+					});
+				}
 
-					if (ImGui::Checkbox("sort by max cost##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_cost))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by maximum cost field that defined in weapon section in ltx file");
+				size_t number_imgui{};
+				SpawnManager_ProcessSections(imgui_spawn_manager.WeaponsSections.Sorted, number_imgui);
 
-
-					if (ImGui::Checkbox("sort by max fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_fire_distance))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by maximum fire distance field that defined in weapon section in ltx file");
-
-					if (ImGui::Checkbox("sort by max hit power##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_hit_power))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by maximum hit_power field for current game difficulty[%s] that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
-
-					if (ImGui::Checkbox("sort by min cost##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_min_cost))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by minimal cost field that defined in weapon section in ltx file");
-
-					if (ImGui::Checkbox("sort by min fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_min_fire_distance))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_hit_power = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by minimal fire_distance field that defined in weapon section in ltx file");
-
-					if (ImGui::Checkbox("sort by min hit power##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_min_hit_power))
-					{
-						imgui_spawn_manager.weapon_sort_by_max_cost = false;
-						imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
-						imgui_spawn_manager.weapon_sort_by_max_fire_distance = false;
-						imgui_spawn_manager.weapon_sort_by_min_cost = false;
-						imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
-					}
-					ImGui::SetItemTooltip("Sorts items by minimal hit_power field for current game difficulty[%s]that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
-
-					ImGui::InputText("count##IT_InGameSpawnManager", imgui_spawn_manager.weapon_spawn_count, sizeof(imgui_spawn_manager).weapon_spawn_count);
-					ImGui::SetItemTooltip("How many items to spawn by one click, from 1 to specified number by user input");
-
-					if (ImGui::Checkbox("spawn on Level", &imgui_spawn_manager.weapon_spawn_on_level))
-					{
-
-					}
-					ImGui::SetItemTooltip("if this checkbox is enabled that means it will spawn on level not in inventory");
-
-					ImGui::Separator();
-
-					// that has all fields for sorting
-					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_sort;
-					// lack of some fields for sorting thus can't be included for 'sorting' categorty
-					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_unsort;
-
-					for (const auto& pSection : pSettings->sections())
-					{
-						if (pSection)
-						{
-							std::string_view name = pSection->Name.c_str();
-
-							if (!name.empty())
-							{
-								size_t index = name.find("wpn_");
-								if (index != std::string_view::npos && index == 0)
-								{
-									if (pSection->line_exist("hit_power") && pSection->line_exist("cost") && pSection->line_exist("fire_distance"))
-									{
-										section_names_sort.push_back({ name, pSection });
-										++total_count_sort;
-									}
-									else
-									{
-										section_names_unsort.push_back({ name, pSection });
-										++total_count_unsort;
-									}
-								}
-							}
-						}
-					}
-
-					ImGui::Text("total [wpn_xxx] sections count: %d", total_count_sort + total_count_unsort);
-					ImGui::Text("total [wpn_xxx] sections count (can be sorted): %d", total_count_sort);
-					ImGui::Text("total [wpn_xxx] sections count (can't be sorted): %d", total_count_unsort);
-					ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
-					ImGui::Separator();
-
-					if (imgui_spawn_manager.weapon_sort_by_max_cost)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float cost_left{};
-								float cost_right{};
-
-								if (pSettings->line_exist(pLeftName, "cost"))
-								{
-									cost_left = pSettings->r_float(pLeftName, "cost");
-								}
-
-								if (pSettings->line_exist(pRightName, "cost"))
-								{
-									cost_right = pSettings->r_float(pRightName, "cost");
-								}
-
-								return cost_left > cost_right;
-							}
-
-							return false;
-							});
-					}
-
-					if (imgui_spawn_manager.weapon_sort_by_min_cost)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float value_left{};
-								float value_right{};
-
-								if (pSettings->line_exist(pLeftName, "cost"))
-								{
-									value_left = pSettings->r_float(pLeftName, "cost");
-								}
-
-								if (pSettings->line_exist(pRightName, "cost"))
-								{
-									value_right = pSettings->r_float(pRightName, "cost");
-								}
-
-								return value_left < value_right;
-							}
-
-							return false;
-							});
-					}
-
-					if (imgui_spawn_manager.weapon_sort_by_max_fire_distance)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float value_left{};
-								float value_right{};
-
-								if (pSettings->line_exist(pLeftName, "fire_distance"))
-								{
-									value_left = pSettings->r_float(pLeftName, "fire_distance");
-								}
-
-								if (pSettings->line_exist(pRightName, "fire_distance"))
-								{
-									value_right = pSettings->r_float(pRightName, "fire_distance");
-								}
-
-								return value_left > value_right;
-							}
-
-							return false;
-							});
-					}
-
-					if (imgui_spawn_manager.weapon_sort_by_min_fire_distance)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float value_left{};
-								float value_right{};
-
-								if (pSettings->line_exist(pLeftName, "fire_distance"))
-								{
-									value_left = pSettings->r_float(pLeftName, "fire_distance");
-								}
-
-								if (pSettings->line_exist(pRightName, "fire_distance"))
-								{
-									value_right = pSettings->r_float(pRightName, "fire_distance");
-								}
-
-								return value_left < value_right;
-							}
-
-							return false;
-							});
-					}
-
-					if (imgui_spawn_manager.weapon_sort_by_max_hit_power)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float value_left{};
-								float value_right{};
-
-
-								if (pSettings->line_exist(pLeftName, "hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_left = atof(buffer);
-									}
-								}
-
-								if (pSettings->line_exist(pRightName, "hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_right = atof(buffer);
-									}
-								}
-
-								return value_left > value_right;
-							}
-
-							return false;
-							});
-					}
-
-					if (imgui_spawn_manager.weapon_sort_by_min_hit_power)
-					{
-						std::sort(section_names_sort.begin(), section_names_sort.end(), [](const auto& pair_left, const auto& pair_right)->bool {
-							if (pSettings && pair_left.second && pair_right.second)
-							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
-								float value_left{};
-								float value_right{};
-
-								if (pSettings->line_exist(pLeftName, "hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_left = atof(buffer);
-									}
-								}
-
-								if (pSettings->line_exist(pRightName, "hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_right = atof(buffer);
-									}
-								}
-
-								return value_left < value_right;
-							}
-
-							return false;
-							});
-					}
-
-					size_t number_imgui{};
-					for (const auto& data : section_names_sort)
-					{
-						const auto& section_name = data.first;
-						const auto& pSection = data.second;
-
-						if (!section_name.empty() && pSection)
-						{
-							char imname[kSpawnManagerMaxSectionName]{};
-							memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
-
-							char index[6]{};
-							sprintf_s(index, sizeof(index), "##%zu", number_imgui);
-							memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
-
-							auto surfaceParams = ::Render->getSurface("ui\\ui_icon_equipment");
-							bool isPressed = false;
-							if (surfaceParams.Surface != nullptr)
-							{
-								float x = pSettings->r_float(section_name.data(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
-								float y = pSettings->r_float(section_name.data(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
-								float w = pSettings->r_float(section_name.data(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
-								float h = pSettings->r_float(section_name.data(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
-								ImGui::SeparatorText(section_name.data());
-								isPressed = ImGui::ImageButton(imname, surfaceParams.Surface, { w, h },
-									{ x / surfaceParams.w, y / surfaceParams.h },
-									{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h }
-								);
-							}
-							else
-							{
-								isPressed = ImGui::Button(imname);
-							}
-
-							if (isPressed)
-							{
-								int count = atoi(imgui_spawn_manager.weapon_spawn_count);
-
-								if (count == 0)
-									count = 1;
-
-								if (Console)
-								{
-									xr_string cmd;
-
-									if (!imgui_spawn_manager.weapon_spawn_on_level)
-									{
-										cmd += "g_spawn_inv ";
-									}
-									else
-									{
-										cmd += "g_spawn ";
-									}
-
-									cmd += section_name.data();
-									cmd += " ";
-									cmd += std::to_string(count);
-
-									execute_console_command_deferred(Console, cmd.c_str());
-								}
-
-							}
-
-							if (ImGui::BeginItemTooltip())
-							{
-								if (pSection->line_exist("inv_name"))
-								{
-									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
-									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
-								}
-
-								if (pSection->line_exist("cost"))
-								{
-									const char* pCost = pSettings->r_string(section_name.data(), "cost");
-									ImGui::Text("cost: [%s]", pCost);
-								}
-
-								if (pSection->line_exist("inv_weight"))
-								{
-									const char* pInvW = pSettings->r_string(section_name.data(), "inv_weight");
-									ImGui::Text("inventory weight: [%s]", pInvW);
-								}
-
-								if (pSection->line_exist("hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(section_name.data(), "hit_power");
-									float value{};
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										value = atof(_GetItem(*hit_str, 3, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										value = atof(_GetItem(*hit_str, 2, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										value = atof(_GetItem(*hit_str, 1, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										value = atof(_GetItem(*hit_str, 0, buffer));
-									}
-
-									ImGui::Text("hit power: [%.2f]", value);
-								}
-
-								if (pSection->line_exist("fire_distance"))
-								{
-									const char* pField = pSettings->r_string(section_name.data(), "fire_distance");
-									ImGui::Text("fire distance: [%s]", pField);
-								}
-
-								ImGui::EndTooltip();
-							}
-
-							ImGui::NewLine();
-							++number_imgui;
-						}
-					}
-
+				if (imgui_spawn_manager.WeaponsSections.Unsorted.size() > 0)
+				{
 					ImGui::SeparatorText("Unsorted");
-
-					for (const auto& data : section_names_unsort)
-					{
-						const auto& section_name = data.first;
-						const auto& pSection = data.second;
-
-						if (!section_name.empty() && pSection)
-						{
-							char imname[kSpawnManagerMaxSectionName]{};
-							memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
-
-							char index[6]{};
-							sprintf_s(index, sizeof(index), "##%zu", number_imgui);
-							memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
-
-							if (ImGui::Button(imname))
-							{
-
-								int count = atoi(imgui_spawn_manager.weapon_spawn_count);
-
-								if (count == 0)
-									count = 1;
-
-								if (Console)
-								{
-									xr_string cmd;
-
-									if (!imgui_spawn_manager.weapon_spawn_on_level)
-									{
-										cmd += "g_spawn_inv ";
-									}
-									else
-									{
-										cmd += "g_spawn ";
-									}
-
-									cmd += section_name.data();
-									cmd += " ";
-									cmd += std::to_string(count);
-
-									execute_console_command_deferred(Console, cmd.c_str());
-								}
-							}
-
-							if (ImGui::BeginItemTooltip())
-							{
-								if (pSection->line_exist("inv_name"))
-								{
-									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
-									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
-								}
-
-								if (pSection->line_exist("cost"))
-								{
-									const char* pCost = pSettings->r_string(section_name.data(), "cost");
-									ImGui::Text("cost: [%s]", pCost);
-								}
-
-								if (pSection->line_exist("inv_weight"))
-								{
-									const char* pInvW = pSettings->r_string(section_name.data(), "inv_weight");
-									ImGui::Text("inventory weight: [%s]", pInvW);
-								}
-
-								if (pSection->line_exist("hit_power"))
-								{
-									auto hit_str = pSettings->r_string_wb(section_name.data(), "hit_power");
-									float value{};
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										value = atof(_GetItem(*hit_str, 3, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										value = atof(_GetItem(*hit_str, 2, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										value = atof(_GetItem(*hit_str, 1, buffer));
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										value = atof(_GetItem(*hit_str, 0, buffer));
-									}
-
-									ImGui::Text("hit power: [%.2f]", value);
-								}
-
-								if (pSection->line_exist("fire_distance"))
-								{
-									const char* pField = pSettings->r_string(section_name.data(), "fire_distance");
-									ImGui::Text("fire distance: [%s]", pField);
-								}
-
-								ImGui::EndTooltip();
-							}
-
-							ImGui::NewLine();
-							++number_imgui;
-						}
-					}
-
-
+					SpawnManager_ProcessSections(imgui_spawn_manager.WeaponsSections.Unsorted, number_imgui);
 				}
 
 				ImGui::EndTabItem();
 			}
 
+			if (ImGui::BeginTabItem("Ammo"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.AmmoSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.AmmoSections.Sorted, number_imgui);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.AmmoSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.AmmoSections.Sorted);
+				}
+
+				if (imgui_spawn_manager.AmmoSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.AmmoSections.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Addons"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.AddonSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.AddonSections.Sorted, number_imgui);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.AddonSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.AddonSections.Sorted);
+				}
+				if (imgui_spawn_manager.AddonSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.AddonSections.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Artefacts"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.ArtefactSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.ArtefactSections.Sorted, number_imgui);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.ArtefactSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.ArtefactSections.Sorted);
+				}
+				if (imgui_spawn_manager.ArtefactSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.ArtefactSections.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Outfits"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.OutfitSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.OutfitSections.Sorted, number_imgui);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.OutfitSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.OutfitSections.Sorted);
+				}
+				if (imgui_spawn_manager.OutfitSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.OutfitSections.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Mp Stuffs"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.MpStuffSections);
+				SpawnManager_ProcessSections(imgui_spawn_manager.MpStuffSections.Sorted, number_imgui);
+
+				if (imgui_spawn_manager.sort_by_max_cost)
+				{
+					maxSortCost(imgui_spawn_manager.MpStuffSections.Sorted);
+				}
+				else if (imgui_spawn_manager.sort_by_min_cost)
+				{
+					minSortCost(imgui_spawn_manager.MpStuffSections.Sorted);
+				}
+				if (imgui_spawn_manager.MpStuffSections.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.MpStuffSections.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (imgui_spawn_manager.Vehicles.size() > 0)
+			{
+				if (ImGui::BeginTabItem("Vehicles"))
+				{
+					size_t number_imgui{};
+					ImGui::Text("total sections count: %d", imgui_spawn_manager.Vehicles.size());
+					SpawnManager_ProcessSections(imgui_spawn_manager.Vehicles, number_imgui);
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			if (imgui_spawn_manager.Others.size() > 0)
+			{
+				if (ImGui::BeginTabItem("Others"))
+				{
+					size_t number_imgui{};
+					ImGui::Text("total sections count: %d", imgui_spawn_manager.Others.size());
+					SpawnManager_ProcessSections(imgui_spawn_manager.Others, number_imgui);
+
+					ImGui::EndTabItem();
+				}
+			}
+
 			ImGui::EndTabBar();
 		}
 
-
 		ImGui::End();
 	}
+}
+
+void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
+{
+	for (const auto& data : sections)
+	{
+		const auto& section_name = data.first;
+		const auto& pSection = data.second;
+
+		if (!section_name.empty() && pSection)
+		{
+			char imname[kSpawnManagerMaxSectionName]{};
+			memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
+
+			char index[10]{};
+			sprintf_s(index, sizeof(index), "##%zu", number_imgui);
+			memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
+
+			if (SpawnManager_RenderButtonOrImage(pSection, imname))
+			{
+				SpawnManager_HandleButtonPress(pSection);
+			}
+
+			SpawnManager_RenderTooltip(pSection);
+
+			ImGui::NewLine();
+			++number_imgui;
+		}
+	}
+
+	std::sort(sections.begin(), sections.end());
+}
+
+bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname)
+{
+	static const auto surfaceParams = ::Render->getSurface("ui\\ui_icon_equipment");
+
+	bool isIcon = section->line_exist("inv_grid_x")
+		&& section->line_exist("inv_grid_y")
+		&& section->line_exist("inv_grid_width")
+		&& section->line_exist("inv_grid_height");
+
+	if (surfaceParams.Surface == nullptr || !isIcon)
+		return ImGui::Button(imname);
+
+	auto name = section->Name.c_str(); 
+	float x = pSettings->r_float(name, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
+	float y = pSettings->r_float(name, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
+	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
+	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+
+	ImGui::SeparatorText(name);
+	return ImGui::ImageButton(imname, surfaceParams.Surface, { w, h },
+		{ x / surfaceParams.w, y / surfaceParams.h },
+		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
+	
+}
+
+void SpawnManager_HandleButtonPress(CInifile::Sect* section)
+{
+	int count = atoi(imgui_spawn_manager.spawn_count);
+	if (count == 0)
+		count = 1;
+
+	xr_string cmd = "g_spawn_inv ";
+	bool isInvItem = section->line_exist("cost") && section->line_exist("inv_weight");
+	if (imgui_spawn_manager.spawn_on_level || !isInvItem)
+	{
+		cmd = "g_spawn ";
+	}
+
+	cmd += section->Name.c_str();
+	cmd += " ";
+	cmd += xr_string::ToString(count);
+
+	execute_console_command_deferred(Console, cmd.c_str());
+}
+
+void SpawnManager_RenderTooltip(CInifile::Sect* section)
+{
+	if (ImGui::BeginItemTooltip())
+	{
+		if (section->line_exist("inv_name"))
+		{
+			const char* pTranslateSectionName = pSettings->r_string(section->Name.c_str(), "inv_name");
+			if (pTranslateSectionName != nullptr)
+			{
+				const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
+				ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
+			}
+		}
+
+		if (section->line_exist("class"))
+		{
+			const char* pClass = pSettings->r_string(section->Name.c_str(), "class");
+			ImGui::Text("class: [%s]", pClass);
+		}
+
+		if (section->line_exist("cost"))
+		{
+			const char* pCost = pSettings->r_string(section->Name.c_str(), "cost");
+			ImGui::Text("cost: [%s]", pCost);
+		}
+
+		if (section->line_exist("inv_weight"))
+		{
+			const char* pInvW = pSettings->r_string(section->Name.c_str(), "inv_weight");
+			ImGui::Text("inventory weight: [%s]", pInvW);
+		}
+
+		if (section->line_exist("hit_power"))
+		{
+			auto hit_str = pSettings->r_string_wb(section->Name.c_str(), "hit_power");
+			float value = SpawnManager_ParseHitPower(hit_str);
+			ImGui::Text("hit power: [%.2f]", value);
+		}
+
+		if (section->line_exist("fire_distance"))
+		{
+			const char* pField = pSettings->r_string(section->Name.c_str(), "fire_distance");
+			ImGui::Text("fire distance: [%s]", pField);
+		}
+
+		ImGui::EndTooltip();
+	}
+}
+
+float SpawnManager_ParseHitPower(const shared_str& hit_str) {
+	string32 buffer{};
+	float result{};
+
+	if (g_SingleGameDifficulty == egdNovice) {
+		result = atof(_GetItem(*hit_str, 3, buffer));
+	}
+	else if (g_SingleGameDifficulty == egdStalker) {
+		result = atof(_GetItem(*hit_str, 2, buffer));
+	}
+	else if (g_SingleGameDifficulty == egdVeteran) {
+		result = atof(_GetItem(*hit_str, 1, buffer));
+	}
+	else if (g_SingleGameDifficulty == egdMaster) {
+		result = atof(_GetItem(*hit_str, 0, buffer));
+	}
+
+	return result;
 }
