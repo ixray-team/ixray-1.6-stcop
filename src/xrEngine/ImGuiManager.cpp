@@ -129,10 +129,10 @@ void CImGuiManager::InitPlatform()
 	ImFontConfig FontConfig = {};
 	FontConfig.OversampleH = 2;
 
-	LoadImGuiFont(ImGui::RegularFont, "RobotoMono.ttf");
-	LoadImGuiFont(ImGui::LightFont, "RobotoMono-Light.ttf");
-	LoadImGuiFont(ImGui::MediumFont, "RobotoMono-Medium.ttf");
-	LoadImGuiFont(ImGui::BoldFont, "RobotoMono-Bold.ttf");
+	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf");
+	LoadImGuiFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf");
+	LoadImGuiFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf");
+	LoadImGuiFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf");
 
 	io.Fonts->Build();
 
