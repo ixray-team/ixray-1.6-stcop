@@ -251,5 +251,14 @@ associations = {
 						},
 	walker_camp		  = {	{name = "play_guitar", predicate = xr_animpoint_predicates.animpoint_predicate_guitar},
 							{name = "play_harmonica", predicate = xr_animpoint_predicates.animpoint_predicate_harmonica}
-						}
+						},
+	kamp			  = {
+							{name = "kamp", predicate = xr_animpoint_predicates.const_predicate_true},
+							{name = "kamp_eat_bread", predicate = xr_animpoint_predicates.animpoint_predicate_bread},
+							{name = "kamp_eat_kolbasa", predicate = xr_animpoint_predicates.animpoint_predicate_kolbasa},
+							{name = "kamp_drink_vodka", predicate = xr_animpoint_predicates.animpoint_predicate_vodka},
+							{name = "kamp_drink_energy", predicate = xr_animpoint_predicates.animpoint_predicate_energy},
+							{name = "kamp_guitar", predicate = xr_animpoint_predicates.animpoint_predicate_guitar},
+							{name = "kamp_harmonica", predicate = xr_animpoint_predicates.animpoint_predicate_harmonica},
+						},
 }
