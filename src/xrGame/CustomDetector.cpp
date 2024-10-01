@@ -264,7 +264,7 @@ void CCustomDetector::Load(LPCSTR section)
 
 void CCustomDetector::shedule_Update(u32 dt) 
 {
-	PROF_EVENT("CCustomDetector::shedule_Update");
+	PROF_EVENT_DYNAMIC(cNameSect_str())
 	inherited::shedule_Update(dt);
 	
 	if( !IsWorking() )			return;
@@ -346,6 +346,7 @@ extern u32 hud_adj_mode;
 
 void CCustomDetector::UpdateCL() 
 {
+	PROF_EVENT_DYNAMIC(cNameSect_str())
 	inherited::UpdateCL();
 
 	if(H_Parent()!=Level().CurrentEntity() )			return;

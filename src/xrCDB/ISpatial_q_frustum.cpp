@@ -53,6 +53,7 @@ public:
 
 void	ISpatial_DB::q_frustum		(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const CFrustum& _frustum)	
 {
+	PROF_EVENT("ISpatial_DB::q_frustum")
 	if (!m_root)
 	{
 		return;

@@ -64,6 +64,7 @@ void CScriptBinder::Load			(LPCSTR section)
 
 void CScriptBinder::reload			(LPCSTR section)
 {
+	PROF_EVENT("CScriptBinder::reload")
 #ifndef DBG_DISABLE_SCRIPTS
 	VERIFY					(!m_object);
 	if (!pSettings->line_exist(section,"script_binding"))
@@ -98,6 +99,7 @@ void CScriptBinder::reload			(LPCSTR section)
 
 BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 {
+	PROF_EVENT("CScriptBinder::net_Spawn")
 	CSE_Abstract			*abstract = (CSE_Abstract*)DC;
 	CSE_ALifeObject			*object = smart_cast<CSE_ALifeObject*>(abstract);
 	if (object && m_object) {
@@ -114,6 +116,7 @@ BOOL CScriptBinder::net_Spawn		(CSE_Abstract* DC)
 
 void CScriptBinder::net_Destroy		()
 {
+	PROF_EVENT("CScriptBinder::net_Destroy")
 	if (m_object) {
 #ifdef _DEBUG
 		Msg						("* Core object %s is UNbinded from the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
@@ -143,6 +146,7 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 
 void CScriptBinder::shedule_Update	(u32 time_delta)
 {
+	PROF_EVENT("CScriptBinder::shedule_Update")
 	if (m_object) {
 		try {
 			m_object->shedule_Update	(time_delta);
@@ -155,6 +159,7 @@ void CScriptBinder::shedule_Update	(u32 time_delta)
 
 void CScriptBinder::save			(NET_Packet &output_packet)
 {
+	PROF_EVENT("CScriptBinder::save")
 	if (m_object) {
 		try {
 			m_object->save	(&output_packet);
@@ -167,6 +172,7 @@ void CScriptBinder::save			(NET_Packet &output_packet)
 
 void CScriptBinder::load			(IReader &input_packet)
 {
+	PROF_EVENT("CScriptBinder::load")
 	if (m_object) {
 		try {
 			m_object->load	(&input_packet);
@@ -192,6 +198,7 @@ BOOL CScriptBinder::net_SaveRelevant()
 
 void CScriptBinder::net_Relcase		(CObject *object)
 {
+	PROF_EVENT("CScriptBinder::net_Relcase")
 	CGameObject						*game_object = smart_cast<CGameObject*>(object);
 	if (m_object && game_object) {
 		try {

@@ -59,6 +59,7 @@ public:
 
 void	ISpatial_DB::q_box			(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
+	PROF_EVENT("ISpatial_DB::q_frustum")
 	cs.Enter			();
 	q_result			= &R;
 	q_result->resize(0);

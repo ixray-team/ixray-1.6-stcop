@@ -331,6 +331,7 @@ void CBaseMonster::update_enemy_accessible_and_at_home_info	()
 
 void CBaseMonster::UpdateCL()
 {
+	PROF_EVENT_DYNAMIC(cNameSect_str())
 #ifdef DEBUG
 	if ( Level().CurrentEntity() == this )
 	{
@@ -369,7 +370,7 @@ void CBaseMonster::UpdateCL()
 
 void CBaseMonster::shedule_Update(u32 dt)
 {
-	PROF_EVENT("CBaseMonster::shedule_Update");
+	PROF_EVENT_DYNAMIC(cNameSect_str())
 #ifdef DEBUG
 	if ( is_paused () )
 	{

@@ -587,6 +587,7 @@ IC float GetDistFromCamera(const Fvector& from_position)
 
 IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm,
 	Fmatrix& transform_matrix, bool ignore_optimize = false) {
+	PROF_EVENT("IsValuableToRender")
 	if (ignore_optimize)
 		return true;
 
@@ -884,11 +885,11 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual, bool ignore)
 {
+	PROF_EVENT("add_leafs_Dynamic")
 	if (0==pVisual)				return;
 
 	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, ignore))
 		return;
-
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be useful for 'hierrarhy' visual
 
@@ -955,6 +956,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual, bool ignore)
 
 void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 {
+	PROF_EVENT("add_leafs_Static")
 	if (!HOM.visible(pVisual->vis))		return;
 
 	if (!pVisual->_ignore_optimization &&
@@ -1046,6 +1048,7 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 {
+	PROF_EVENT("add_Dynamic")
 	if (!pVisual->_ignore_optimization &&
 		!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform))
 		return false;
@@ -1146,6 +1149,7 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 
 void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
+	PROF_EVENT("add_Static")
 	if (!pVisual->_ignore_optimization &&
 		!IsValuableToRender(pVisual, true, phase == 1, *val_pTransform))
 		return;

@@ -99,6 +99,7 @@ public:
 
 void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 {
+	PROF_EVENT("COLLIDER::frustum_query")
 	m_def->syncronize();
 
 	// Get nodes

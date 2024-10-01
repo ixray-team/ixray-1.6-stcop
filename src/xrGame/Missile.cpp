@@ -256,7 +256,6 @@ void CMissile::UpdateCL()
 }
 void CMissile::shedule_Update(u32 dt)
 {
-	PROF_EVENT("CMissile::shedule_Update");
 	inherited::shedule_Update(dt);
 	if(!H_Parent() && getVisible() && m_pPhysicsShell) 
 	{

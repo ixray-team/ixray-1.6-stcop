@@ -224,6 +224,7 @@ public:
 
 void COLLIDER::box_query(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim)
 {
+	PROF_EVENT("COLLIDER::box_query")
 	m_def->syncronize		();
 
 	// Get nodes

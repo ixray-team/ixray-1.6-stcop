@@ -242,6 +242,7 @@ void IGame_Level::SetViewEntity( CObject* O  )
 
 void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 {
+	PROF_EVENT("IGame_Level::SoundEvent_Register")
 	if (!g_bLoaded)									return;
 	if (!S)											return;
 	if (S->g_object && S->g_object->getDestroy())	{S->g_object=0; return;}
@@ -319,6 +320,7 @@ void	IGame_Level::SoundEvent_Dispatch	( )
 // Lain: added
 void   IGame_Level::SoundEvent_OnDestDestroy (Feel::Sound* obj)
 {
+	PROF_EVENT("IGame_Level::SoundEvent_OnDestDestroy")
 	struct rem_pred
 	{
 		rem_pred(Feel::Sound* obj) : m_obj(obj) {}
