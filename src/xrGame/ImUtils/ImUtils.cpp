@@ -1,12 +1,8 @@
 #include "stdafx.h"
 
-void InitImGuiCLSIDInGame();
-void InitImGuiSearchInGame();
+#include "ImUtils.h"
 
-void RenderTimeManagerWindow();
-void RenderSpawnManagerWindow();
-void RenderWeaponManagerWindow();
-void RenderSearchManagerWindow();
+clsid_manager* g_pClsidManager;
 
 void RegisterImGuiInGame()
 {
@@ -19,5 +15,6 @@ void RegisterImGuiInGame()
 
 		InitImGuiCLSIDInGame();
 		InitImGuiSearchInGame();
+		InitSections();
 	}
 }

@@ -1928,13 +1928,6 @@ public:
 				return;
 			}
 		}
-
-		if (g_pGameLevel == nullptr) {
-			return;
-		}
-
-
-
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override {
