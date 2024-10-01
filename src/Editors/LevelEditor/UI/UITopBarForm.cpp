@@ -56,45 +56,93 @@ void UITopBarForm::Draw()
 		{
 			m_timeUndo = EDevice->TimerAsync() + 130;
 			ClickUndo();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Undo the last action.");
+		}
+		ImGui::SameLine();
 		m_tRedo->Load();
 		if (ImGui::ImageButton(m_tRedo->pSurface, ImVec2(20, 20), ImVec2(m_timeRedo > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_timeRedo > EDevice->TimerAsync() ? 1 : 0.5, 1), 0))
 		{
 			m_timeRedo = EDevice->TimerAsync() + 130;
 			ClickRedo();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Repeat the last action.");
+		}
+		ImGui::SameLine();
 
 		m_tNew->Load();
 		if (ImGui::ImageButton(m_tNew->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickNew();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Clear/New Scene");
+		}
+		ImGui::SameLine();
 		m_tOpen->Load();
 		if (ImGui::ImageButton(m_tOpen->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickOpen();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Open level");
+		}
+		ImGui::SameLine();
 		m_tSave->Load();
 		if (ImGui::ImageButton(m_tSave->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickSave();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Save level");
+		}
+		ImGui::SameLine();
 
 		m_tCForm->Load();
 		if (ImGui::ImageButton(m_tCForm->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickCForm();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Build CFORM");
+		}
+		ImGui::SameLine();
 		m_tAIMap->Load();
 		if (ImGui::ImageButton(m_tAIMap->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickAIMap();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Build AI Map");
+		}
+		ImGui::SameLine();
 		m_tGGraph->Load();
 		if (ImGui::ImageButton(m_tGGraph->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickGGraph();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Build game graph");
+		}
+		ImGui::SameLine();
 
 
 
@@ -105,6 +153,11 @@ void UITopBarForm::Draw()
 			{
 				ClickTerminated();
 			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				ImGui::SetTooltip("Stop Play in Editor");
+			}
 		}
 		else
 		{
@@ -113,12 +166,23 @@ void UITopBarForm::Draw()
 			{
 				ClickPlayInEditor();
 			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				ImGui::SetTooltip("Start Play in Editor");
+			}
 		}
 		{
 			ImGui::SameLine(0,0);
-			if (ImGui::ArrowButton("##PlaySettings", ImGuiDir_Down, ImVec2(ImGui::GetFrameHeight(), 20),0))
+			if (ImGui::ArrowButton("##PlaySettings", ImGuiDir_Down, ImVec2(ImGui::GetFrameHeight(), 20), 0))
+			{
 				ImGui::OpenPopup("test");
-
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				ImGui::SetTooltip("Play in Editor settings");
+			}
 			ImGui::SameLine();
 			if (ImGui::BeginPopup("test"))
 			{
@@ -136,12 +200,23 @@ void UITopBarForm::Draw()
 		if (ImGui::ImageButton(m_tReloadConfigs->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickReloadConfigs();
-		}ImGui::SameLine();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Reload configs");
+		}
+		ImGui::SameLine();
 
 		m_tBuildAndMake->Load();
 		if (ImGui::ImageButton(m_tBuildAndMake->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickBuildAndMake();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Build and Make");
 		}
 		ImGui::SameLine();
 		m_tPlayPC->Load();
@@ -150,11 +225,21 @@ void UITopBarForm::Draw()
 		{
 			ClickPlayPC();
 		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Play level");
+		}
 		ImGui::SameLine();
 		m_tPlayCleanGame->Load();
 		if (ImGui::ImageButton(m_tPlayCleanGame->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickPlayCleanGame();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Play level in-game");
 		}
 		ImGui::SameLine();
 
@@ -168,6 +253,11 @@ void UITopBarForm::Draw()
 		if (ImGui::ImageButton(m_tOpenGameData->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
 		{
 			ClickOpenGameData();
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			ImGui::SetTooltip("Open 'gamedata' folder");
 		}
 	}
 	ImGui::SameLine(0,1);
