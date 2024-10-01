@@ -179,7 +179,8 @@ void CLevelGraph::draw_restrictions	()
 	for ( ; I != E; ++I) {
 		if (!(*I).second->m_ref_count)
 			continue;
-		if (!(*I).second->initialized()) continue;
+		if (!(*I).second->initialized())
+			continue;
 
 		u8 b = u8(R.randI(255));
 		u8 g = u8(R.randI(255));
@@ -189,6 +190,9 @@ void CLevelGraph::draw_restrictions	()
 		xr_vector<u32>::const_iterator	e = (*I).second->border().end();
 		for ( ; i != e; ++i) {
 			Fvector temp = ai().level_graph().vertex_position(*i);
+			if (!::Render->ViewBase.testSphere_dirty(temp, 0.6f))
+				continue;
+
 			temp.y += .1f;
 			Level().debug_renderer().draw_aabb(temp,.05f,.05f,.05f,color_xrgb(r,g,b));
 		}

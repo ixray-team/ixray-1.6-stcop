@@ -1110,6 +1110,9 @@ void CGameObject::OnRender			()
 	if (!ai().get_level_graph())
 		return;
 
+	if (Visual()->getVisData().hom_frame != Device.dwFrame)
+		return;
+
 	CDebugRenderer					&renderer = Level().debug_renderer();
 	if (/**bDebug && /**/Visual()) {
 		float						half_cell_size = 1.f*ai().level_graph().header().cell_size()*.5f;

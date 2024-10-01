@@ -213,6 +213,8 @@ float		ps_r__test_exp_to_shaders_4	= 1.0f;
 
 BOOL		ps_r2_particle_dt			= FALSE;
 
+int			r_debug_render_depth		= 0;
+
 #ifndef _EDITOR
 #include	"../../xrEngine/xr_ioconsole.h"
 #include	"../../xrEngine/xr_ioc_cmd.h"
@@ -867,6 +869,8 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r2_shadow_cascede_zcul", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_ZCULLING);
 	CMD3(CCC_Mask, "r2_exp_splitscene", &ps_r2_ls_flags, R2FLAG_EXP_SPLIT_SCENE);
 	CMD3(CCC_Mask, "r2_exp_donttest_uns", &ps_r2_ls_flags, R2FLAG_EXP_DONT_TEST_UNSHADOWED);
+
+	CMD4(CCC_Integer, "rs_dbg_draw_depth", &r_debug_render_depth, 0, 1);
 #endif
 }
 

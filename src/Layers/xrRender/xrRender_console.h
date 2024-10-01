@@ -131,6 +131,8 @@ extern  float					ps_r__test_exp_to_shaders_4;
 extern ECORE_API int opt_static;
 extern ECORE_API int opt_dynamic;
 
+extern ECORE_API int r_debug_render_depth;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
