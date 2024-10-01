@@ -18,12 +18,11 @@ ipch/
 XRay.code-workspace
 
 # Build results
-obj/
-lib/
-bin/
-build/
-build_win32/
-build32/
+obj*/
+lib*/
+bin*/
+build*/
+publish*/
 
 # Common logs
 *.log
@@ -40,9 +39,8 @@ UpgradeLog*.htm
 *.db*
 
 # X-Ray user files
-_appdata_/
-_appdata_ixray_/
-ixr_addons/
+_appdata*/
+ixr_addons*/
 fs_*.ltx
 fsgame_*.ltx
 fsfactory_*.ltx
@@ -53,17 +51,10 @@ fsfactory_*.ltx
 # Windows cache
 Thumbs.db
 
-# Build results
-obj/
-lib/
-bin/
-build/
-publish/
-
 # Dependencies
 sdk/3d_sdk/
-dep/
-packages/
+dep*/
+packages*/
 
 # Temporary files
 temp/

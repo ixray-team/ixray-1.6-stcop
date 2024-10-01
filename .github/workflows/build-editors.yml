@@ -1,0 +1,103 @@
+name: 'Build editors'
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'sdk/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.ltx'
+      - '**/*.json'
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-editors:
+    name: 'Build editors'
+
+    strategy:
+      matrix:
+        system:
+          - windows-2022
+        preset:
+          - Editors
+        platform:
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+          - Release
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache packages
+        uses: actions/cache@v4
+        with:
+          key: ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
+          restore-keys: |
+            ${{ matrix.preset }}-NuGet-${{ hashFiles('**/Packages.config') }}
+            ${{ matrix.preset }}-NuGet-
+          path: |
+            ~/.nuget/packages
+
+      - name: Configure editors
+        run: |
+          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} -DIXRAY_CI=ON
+
+      - name: Build editors
+        run: |
+          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: editors-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.config != 'Release' }}
+        with:
+          name: editors-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
+
+      - name: Upload libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: editors-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        if: ${{ (matrix.config == 'Debug' && matrix.platform == 'x64') }}
+        with:
+          name: editors-packages-${{ matrix.system }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
