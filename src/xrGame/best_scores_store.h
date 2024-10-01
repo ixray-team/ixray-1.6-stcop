@@ -11,7 +11,7 @@ class CGameSpy_SAKE;
 namespace gamespy_profile
 {
 
-typedef fastdelegate::FastDelegate<void (bool, shared_str const &)>	bestscore_operation_cb;
+typedef xr_delegate<void (bool, shared_str const &)>	bestscore_operation_cb;
 
 class best_scores_store
 {

@@ -1026,7 +1026,7 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
 	m_BulletsRendered	= m_Bullets			;
 	if (g_mt_config.test(mtBullets))		{
-		Device.seqParallel.push_back		(fastdelegate::FastDelegate0<>(this,&CBulletManager::UpdateWorkload));
+		Device.seqParallel.push_back		(xr_make_delegate(this,&CBulletManager::UpdateWorkload));
 	} else {
 		UpdateWorkload						();
 	}

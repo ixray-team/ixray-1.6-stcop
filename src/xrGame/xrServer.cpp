@@ -350,7 +350,7 @@ void xrServer::SendUpdatesToAll()
 
 
 	//sending game_update 
-	fastdelegate::FastDelegate1<IClient*,void> sendtofd;
+	xr_delegate<void(IClient*)> sendtofd;
 	sendtofd.bind(this, &xrServer::SendGameUpdateTo);
 	ForEachClientDoSender(sendtofd);
 

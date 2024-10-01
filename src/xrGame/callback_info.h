@@ -7,7 +7,7 @@ class CUIWindow;
 struct SCallbackInfo
 {
 	CScriptCallbackEx<void>	m_callback;
-	fastdelegate::FastDelegate2<CUIWindow*,void*,void>				m_cpp_callback;
+	xr_delegate<void(CUIWindow*,void*)> m_cpp_callback;
 	CUIWindow* 				m_control_ptr;
 	shared_str 				m_control_name;
 	s16						m_event;

@@ -16,12 +16,12 @@ using ChooseItemVec = xr_vector<SChooseItem>;
 using ChooseItemVecIt = ChooseItemVec::iterator;
 
 // typedef
-typedef fastdelegate::FastDelegate2<ChooseItemVec&,void*>	   	TOnChooseFillItems;
-typedef fastdelegate::FastDelegate2<SChooseItem*, PropItemVec&>	TOnChooseSelectItem;
-typedef fastdelegate::FastDelegate3<LPCSTR, HDC, const Irect&> 	TOnDrawThumbnail;
-typedef fastdelegate::FastDelegate0<>						   	TOnChooseClose;
+typedef xr_delegate<void(ChooseItemVec&,void*)>	   	TOnChooseFillItems;
+typedef xr_delegate<void(SChooseItem*, PropItemVec&)>	TOnChooseSelectItem;
+typedef xr_delegate<void(LPCSTR, HDC, const Irect&)> 	TOnDrawThumbnail;
+typedef xr_delegate<void()>						   	TOnChooseClose;
 
-using TGetTexture = fastdelegate::FastDelegate2<LPCSTR, ImTextureID&>;
+using TGetTexture = xr_delegate<void(LPCSTR, ImTextureID&)>;
 
 typedef void (*TOnChooseFillEvents)();
 

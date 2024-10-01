@@ -11,7 +11,7 @@ public:
 	demoplay_control		();
 	~demoplay_control		();
 
-	typedef fastdelegate::FastDelegate0<void> user_callback_t;
+	typedef xr_delegate<void()> user_callback_t;
 
 	enum EAction
 	{

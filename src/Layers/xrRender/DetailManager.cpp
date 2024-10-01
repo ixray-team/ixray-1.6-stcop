@@ -227,13 +227,13 @@ void CDetailManager::Load		()
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
 	{
 		// MT-details (@front)
-		Device.seqParallelRender.push_back(fastdelegate::FastDelegate0<>(this, &CDetailManager::MT_CALC));
+		Device.seqParallelRender.push_back(xr_make_delegate(this, &CDetailManager::MT_CALC));
 	}
 }
 #endif
 void CDetailManager::Unload		()
 {
-	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), fastdelegate::FastDelegate0<>(this, &CDetailManager::MT_CALC));
+	auto I = std::find(Device.seqParallelRender.begin(), Device.seqParallelRender.end(), xr_delegate<void()>(this, &CDetailManager::MT_CALC));
 
 	if (I != Device.seqParallelRender.end())
 		Device.seqParallelRender.erase(I);

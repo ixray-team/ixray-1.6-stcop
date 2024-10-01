@@ -30,8 +30,8 @@ enum ft_command_t		//command byte to M_FILE_TRANSFER message ...
 	receive_rejected	=	0x02	//this command send by dest site, if he doesn't want file..
 };
 
-typedef fastdelegate::FastDelegate3<sending_status_t, u32, u32> sending_state_callback_t;
-typedef fastdelegate::FastDelegate3<receiving_status_t, u32, u32> receiving_state_callback_t;
+typedef xr_delegate<void(sending_status_t, u32, u32)> sending_state_callback_t;
+typedef xr_delegate<void(receiving_status_t, u32, u32)> receiving_state_callback_t;
 
 typedef std::pair<u8*, u32 const>			mutable_buffer_t;
 typedef std::pair<u8 const*, u32 const>		const_buffer_t;

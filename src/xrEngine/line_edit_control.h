@@ -51,7 +51,7 @@ class ENGINE_API line_edit_control
 {
 private:
 	typedef  text_editor::base						Base;
-	typedef  fastdelegate::FastDelegate0<void>	Callback;
+	typedef  xr_delegate<void()>	Callback;
 
 public:
 					line_edit_control	( u32 str_buffer_size );

@@ -9,17 +9,17 @@
 #include "ItemListTypes.h"
 #include "xrEPropsTypes.h"
 
-typedef fastdelegate::FastDelegate2<LPCSTR, LPCSTR>	    TOnItemClone;
-typedef fastdelegate::FastDelegate1<LPCSTR>	            TOnItemCreate;
+typedef fastdelegate::FastDelegate<void(LPCSTR, LPCSTR)>	    TOnItemClone;
+typedef fastdelegate::FastDelegate<void(LPCSTR)>	            TOnItemCreate;
 
-typedef fastdelegate::FastDelegate1<ListItemsVec&> 				TOnILItemsFocused;
-typedef fastdelegate::FastDelegate0<>							TOnILCloseEvent;      
-typedef fastdelegate::FastDelegate3<LPCSTR, LPCSTR, EItemType>	TOnItemRename;
-typedef fastdelegate::FastDelegate2<LPCSTR, EItemType>	        TOnItemRemove;
-typedef fastdelegate::FastDelegate0<>							TOnItemAfterRemove;
-typedef fastdelegate::FastDelegate0<> 							TOnCloseEvent;
-typedef fastdelegate::FastDelegate0<>		  					TOnModifiedEvent;
-typedef fastdelegate::FastDelegate1<ListItem*>			    TOnILItemFocused;
+typedef fastdelegate::FastDelegate<void(ListItemsVec&)> 			TOnILItemsFocused;
+typedef fastdelegate::FastDelegate<void()>							TOnILCloseEvent;
+typedef fastdelegate::FastDelegate<void(LPCSTR, LPCSTR, EItemType)>	TOnItemRename;
+typedef fastdelegate::FastDelegate<void(LPCSTR, EItemType)>	        TOnItemRemove;
+typedef fastdelegate::FastDelegate<void()>							TOnItemAfterRemove;
+typedef fastdelegate::FastDelegate<void()> 							TOnCloseEvent;
+typedef fastdelegate::FastDelegate<void()>		  					TOnModifiedEvent;
+typedef fastdelegate::FastDelegate<void(ListItem*)>			        TOnILItemFocused;
 
 //------------------------------------------------------------------------------
 // Prepare Key

@@ -20,7 +20,7 @@ typedef void (*jpeg_encode_callback_func)(long);
 //CXIMAGE_API jpeg_encode_callback_func g_jpeg_encode_cb;
 extern "C"
 {
-	extern fastdelegate::FastDelegate1<long> g_jpeg_encode_delegate;
+	extern fastdelegate::FastDelegate<void(long)> g_jpeg_encode_delegate;
 }
 
 /////////////////////////////////////////////////////////////////////////////

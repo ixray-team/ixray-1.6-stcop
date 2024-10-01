@@ -1,8 +1,6 @@
 #ifndef xr_iniH
 #define xr_iniH
 
-#include "fastdelegate.h"
-
 // refs
 class	CInifile;
 struct	xr_token;
@@ -35,7 +33,7 @@ public:
 	typedef Root::iterator			RootIt;
 	typedef Root::const_iterator	RootCIt;
 	
-	using allow_include_func_t = fastdelegate::FastDelegate1<LPCSTR, bool>;
+	using allow_include_func_t = xr_delegate<bool(LPCSTR)>;
 
 	static CInifile*	Create		( LPCSTR szFileName, BOOL ReadOnly=TRUE);
 	static void			Destroy		( CInifile*);

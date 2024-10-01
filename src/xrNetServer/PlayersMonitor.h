@@ -1,7 +1,6 @@
 #pragma once
 #include "net_shared.h"
 #include "NET_Common.h"
-#include "../xrCore/fastdelegate.h"
 
 class IClient;
 
@@ -58,7 +57,7 @@ public:
 		csPlayers.Leave();
 	}
 
-	void ForEachClientDo(fastdelegate::FastDelegate1<IClient*, void> & fast_delegate)
+	void ForEachClientDo(xr_delegate<void(IClient*)> & fast_delegate)
 	{
 		csPlayers.Enter();
 		now_iterating_in_net_players = true;

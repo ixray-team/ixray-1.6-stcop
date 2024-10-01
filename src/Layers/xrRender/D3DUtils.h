@@ -21,7 +21,7 @@ struct SPrimitiveBuffer{
     u32						i_cnt;
     D3DPRIMITIVETYPE 		p_type;
     u32						p_cnt;
-	typedef fastdelegate::FastDelegate0<> TOnRender;
+	typedef xr_delegate<void()> TOnRender;
     TOnRender				OnRender;
     void 			RenderDIP()	{DU_DRAW_DIP(p_type,pGeom,0,0,v_cnt,0,p_cnt);}
     void 			RenderDP()	{DU_DRAW_DP	(p_type,pGeom,0,p_cnt);}

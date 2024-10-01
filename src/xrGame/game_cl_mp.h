@@ -7,7 +7,6 @@
 #include "configs_dumper.h"
 #include "configs_dump_verifyer.h"
 #include "screenshot_server.h"
-#include "../xrCore/fastdelegate.h"
 
 #ifdef XR_MP_BUILD
 #include "screenshot_manager.h"
@@ -284,7 +283,7 @@ public:
 
 				void				AddSoundMessage		(LPCSTR sound_name, u32 const sound_priority, u32 const soundID);
 				void				PlaySndMessage		(u32 ID);
-				typedef fastdelegate::FastDelegate<void (u32 const)> player_info_reply_cb_t;
+				typedef xr_delegate<void (u32 const)> player_info_reply_cb_t;
 				bool				RequestPlayersInfo	(player_info_reply_cb_t const pinfo_repl_cb);
 private:
 				u8*					buffer_for_compress;

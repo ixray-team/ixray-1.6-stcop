@@ -283,9 +283,9 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 	game_PlayerState*	tmp_ps = tmp_client->ps;
 	
 	player_exporter		tmp_functor(to, tmp_ps, &P);
-	fastdelegate::FastDelegate1<IClient*, void> pcounter;
+	xr_delegate<void(IClient*)> pcounter;
 	pcounter.bind(&tmp_functor, &player_exporter::count_players);
-	fastdelegate::FastDelegate1<IClient*, void> exporter;
+	xr_delegate<void(IClient*)> exporter;
 	exporter.bind(&tmp_functor, &player_exporter::export_players);
 	
 	m_server->ForEachClientDo(pcounter);

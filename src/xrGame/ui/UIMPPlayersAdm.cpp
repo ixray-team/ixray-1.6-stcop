@@ -146,7 +146,7 @@ void CUIMpPlayersAdm::RefreshPlayersList()
 	if (!tmp_game)
 		return;
 
-	tmp_game->RequestPlayersInfo(fastdelegate::FastDelegate<void (u32 const)>(this,&CUIMpPlayersAdm::FillPlayersList));
+	tmp_game->RequestPlayersInfo(xr_delegate<void (u32 const)>(this,&CUIMpPlayersAdm::FillPlayersList));
 }
 
 void CUIMpPlayersAdm::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

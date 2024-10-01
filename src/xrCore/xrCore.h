@@ -150,6 +150,8 @@ using RTokenVec = xr_vector<xr_rtoken>;
 using RTokenVecIt = RTokenVec::iterator;
 
 #include "TimeUtils.h"
+#include "xr_delegate.h"
+
 #include "FS.h"
 #include "log.h"
 #include "xr_trims.h"
@@ -158,7 +160,6 @@ using RTokenVecIt = RTokenVec::iterator;
 #include "LocatorAPI.h"
 #include "FileSystem.h"
 #include "FTimer.h"
-#include "fastdelegate.h"
 #include "intrusive_ptr.h"
 
 #include "net_utils.h"

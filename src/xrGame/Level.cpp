@@ -589,7 +589,7 @@ void CLevel::OnFrame()
 	if (!g_dedicated_server)
 	{
 		if (g_mt_config.test(mtMap))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(m_map_manager, &CMapManager::Update));
+			Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
 		else
 			MapManager().Update();
 
@@ -706,12 +706,12 @@ void CLevel::OnFrame()
 
 	// update static sounds
 	if (g_mt_config.test(mtLevelSounds))
-		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(m_level_sound_manager, &CLevelSoundManager::Update));
+		Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
 	else
 		m_level_sound_manager->Update();
 
 	if (g_mt_config.test(mtLUA_GC))	
-		Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this, &CLevel::script_gc));
+		Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
 	else						
 		script_gc();
 

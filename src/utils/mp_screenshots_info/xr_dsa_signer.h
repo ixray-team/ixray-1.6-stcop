@@ -3,7 +3,7 @@
 
 #include "../../3rd party/crypto/crypto.h"
 
-typedef fastdelegate::FastDelegate1< long >	sha_process_yielder;
+typedef fastdelegate::FastDelegate<void(long)>	sha_process_yielder;
 
 class xr_dsa_signer
 {

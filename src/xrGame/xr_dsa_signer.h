@@ -1,9 +1,8 @@
-#ifndef XR_DSA_SIGNER_INCLUDED
-#define XR_DSA_SIGNER_INCLUDED
+#pragma once
 
 #include "../3rd party/crypto/crypto.h"
 
-typedef fastdelegate::FastDelegate1< long >	sha_process_yielder;
+using sha_process_yielder = xr_delegate<void(long)>;
 
 class xr_dsa_signer
 {
@@ -29,5 +28,3 @@ private:
 }; //xr_dsa_signer
 
 char const * current_time(string64 & dest_time);
-
-#endif //#ifndef XR_DSA_SIGNER_INCLUDED

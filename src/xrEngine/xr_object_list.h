@@ -23,7 +23,7 @@ private:
 	u32							m_owner_thread_id;
 
 public:
-	typedef fastdelegate::FastDelegate1<CObject*>	RELCASE_CALLBACK;
+	typedef xr_delegate<void(CObject*)>	RELCASE_CALLBACK;
 	struct SRelcasePair{
 		int*					m_ID;
 		RELCASE_CALLBACK		m_Callback;

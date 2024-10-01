@@ -281,7 +281,7 @@ bool CxImageJPG::Decode(CxFile * hFile)
 #if CXIMAGE_SUPPORT_ENCODE
 
 //jpeg_encode_callback_func g_jpeg_encode_cb = nullptr;
-fastdelegate::FastDelegate1< long > g_jpeg_encode_delegate;
+fastdelegate::FastDelegate<void(long)> g_jpeg_encode_delegate;
 
 ////////////////////////////////////////////////////////////////////////////////
 bool CxImageJPG::Encode(CxFile * hFile)

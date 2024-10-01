@@ -94,7 +94,7 @@ public:
 //	IC operator 	LPCSTR 			()							{VERIFY(type==tpStr);return s.c_str();}
 };
 
-typedef fastdelegate::FastDelegate2<CCommandVar,CCommandVar,CCommandVar> TECommandEvent;
+using TECommandEvent = xr_delegate< CCommandVar(CCommandVar,CCommandVar)>;
 
 class SECommand;
 

@@ -12,8 +12,8 @@ struct SBeforeAppendCallbackParams{
         name_prefix	= "";
     }
 };
-typedef  fastdelegate::FastDelegate1 < SBeforeAppendCallbackParams*, bool> TBeforeAppendCallback;
-typedef  fastdelegate::FastDelegate2 < TShiftState , CCustomObject* , bool> TAfterAppendCallback;
+typedef  xr_delegate<bool(SBeforeAppendCallbackParams*)> TBeforeAppendCallback;
+typedef  xr_delegate<bool(TShiftState , CCustomObject*)> TAfterAppendCallback;
 
 class TUI_CustomControl{
 protected:

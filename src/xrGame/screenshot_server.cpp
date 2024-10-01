@@ -5,7 +5,6 @@
 #include "xrServer.h"
 #include "game_sv_base.h"
 #include "game_cl_mp.h"
-#include "../xrCore/fastdelegate.h"
 
 extern BOOL	g_sv_mp_save_proxy_screenshots;
 extern BOOL g_sv_mp_save_proxy_configs;
@@ -98,6 +97,7 @@ void clientdata_proxy::make_config_dump(ClientID const & admin_id, ClientID cons
 	
 	file_transfer::receiving_state_callback_t receiving_cb =
 		fastdelegate::MakeDelegate(this, &clientdata_proxy::download_config_callback);
+
 	if (my_proxy_mem_file.size())
 		my_proxy_mem_file.clear();
 	m_first_receive = true;

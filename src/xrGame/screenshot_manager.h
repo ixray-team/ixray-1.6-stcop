@@ -3,7 +3,9 @@
 
 #define RESULT_WIDTH	640
 #define RESULT_HEIGHT	480
-class screenshot_manager : public ISheduled
+
+class screenshot_manager : 
+	public ISheduled
 {
 public:
 	enum ss_manager_state_mask_t
@@ -11,7 +13,7 @@ public:
 		making_screenshot			=	0x01,
 		drawing_download_states		=	0x02
 	};
-	typedef fastdelegate::FastDelegate3<u8 const*, u32, u32, void> complete_callback_t;
+	typedef xr_delegate<void(u8 const*, u32, u32)> complete_callback_t;
 
 	screenshot_manager();
 	virtual	~screenshot_manager();

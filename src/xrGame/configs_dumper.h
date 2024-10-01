@@ -25,8 +25,8 @@ private:
 class configs_dumper : public ISheduled
 {
 public:
-	typedef fastdelegate::FastDelegate3<u8 const*, u32, u32, void>	complete_callback_t;
-	typedef fastdelegate::FastDelegate1< long >						yield_callback_t;
+	typedef xr_delegate<void(u8 const*, u32, u32)>	complete_callback_t;
+	typedef xr_delegate<void(long)>					yield_callback_t;
 
 							configs_dumper		();
 	virtual					~configs_dumper		();

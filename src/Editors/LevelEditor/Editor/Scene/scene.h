@@ -148,7 +148,7 @@ public:
 	};
 	Flags32			m_RTFlags;
 public:
-	typedef  fastdelegate::FastDelegate1<CCustomObject*, bool> TAppendObject;
+	typedef  xr_delegate<bool(CCustomObject*)> TAppendObject;
 
 	bool 			ReadObjectStream(IReader& F, CCustomObject*& O);
 	bool 			ReadObjectLTX(CInifile& ini, LPCSTR sect_name, CCustomObject*& O);

@@ -18,7 +18,7 @@ CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR c
 	m_animator					= 0;
 }
 
-//XRCORE_API		fastdelegate::FastDelegate< void () >	g_verify_stalkers;
+//XRCORE_API		xr_delegate< void () >	g_verify_stalkers;
 
 CScriptParticlesCustom::~CScriptParticlesCustom()
 {

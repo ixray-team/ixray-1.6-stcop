@@ -167,7 +167,7 @@ void game_sv_Deathmatch::OnRoundStart()
 		m_dwLastRPoints[i] = u32(-1);
 	}
 	//-------------------------------------
-	fastdelegate::FastDelegate1<IClient*, void> tmp_delegate;
+	xr_delegate<void(IClient*)> tmp_delegate;
 	tmp_delegate.bind(this, &game_sv_Deathmatch::RespawnPlayerAsSpectator);
 	m_server->ForEachClientDoSender(tmp_delegate);
 	m_item_respawner.respawn_all_items();

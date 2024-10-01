@@ -212,8 +212,8 @@ public:
 	// Registrators
 	CRegistrator	<pureFrame			>			seqFrameMT;
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
-	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
-	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallelRender;
+	xr_vector		<xr_delegate<void()>>	seqParallel;
+	xr_vector		<xr_delegate<void()>>	seqParallelRender;
 
 	std::unordered_multimap<u32,std::function<void()>> m_time_callbacks;
 	void callback(const u32& cb_time, const std::function<void()> &func);
@@ -268,9 +268,9 @@ public:
 	xrCriticalSection	mt_csLeave;
 	volatile BOOL		mt_bMustExit;
 
-	ICF		void			remove_from_seq_parallel	(const fastdelegate::FastDelegate0<> &delegate)
+	ICF		void			remove_from_seq_parallel	(const xr_delegate<void()> &delegate)
 	{
-		xr_vector<fastdelegate::FastDelegate0<> >::iterator I = std::find(
+		xr_vector<xr_delegate<void()> >::iterator I = std::find(
 			seqParallel.begin(),
 			seqParallel.end(),
 			delegate
@@ -297,7 +297,7 @@ extern ENGINE_API bool loading_save_timer_started;
 #define Device (*DevicePtr)
 #define	RDEVICE	Device
 
-typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
+typedef xr_delegate<bool()>		LOADING_EVENT;
 extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
 
 class ENGINE_API CLoadScreenRenderer :public pureRender

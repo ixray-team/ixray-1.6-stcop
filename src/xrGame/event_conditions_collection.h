@@ -66,7 +66,7 @@ struct event_root_condition_t
 	event_condition_t*	m_root_condition;
 }; //event_root_condition_t
 
-typedef fastdelegate::FastDelegate<void (u32)> event_action_delegate_t;
+typedef xr_delegate<void (u32)> event_action_delegate_t;
 
 class event_conditions_collection
 {

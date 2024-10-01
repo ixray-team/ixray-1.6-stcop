@@ -330,11 +330,11 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	if (g_Alive()) {
 		if (g_mt_config.test(mtAiVision) )
 #ifndef DEBUG
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.seqParallel.push_back	(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
 #else // DEBUG
 		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+				Device.seqParallel.push_back(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
 			else
 				Exec_Visibility				();
 		}
@@ -455,7 +455,7 @@ void CCustomMonster::UpdateCL	()
 	*/
 
 	if (g_mt_config.test(mtSoundPlayer))
-		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::update_sound_player));
+		Device.seqParallel.push_back	(xr_make_delegate(this,&CCustomMonster::update_sound_player));
 	else {
 		START_PROFILE("CustomMonster/client_update/sound_player")
 		update_sound_player	();
@@ -810,13 +810,13 @@ void CCustomMonster::net_Destroy()
 	movement().net_Destroy		();
 	
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_make_delegate(
 			this,
 			&CCustomMonster::update_sound_player
 		)
 	);
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_make_delegate(
 			this,
 			&CCustomMonster::Exec_Visibility
 		)

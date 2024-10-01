@@ -627,8 +627,8 @@ public:
 	IC		float						auto_queue_fire_dist_med		() const;
 	IC		float						auto_queue_fire_dist_far		() const;
 public:
-	typedef fastdelegate::FastDelegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
-	typedef	fastdelegate::FastDelegate<bool (SHit const*)>								HitCallback;
+	typedef xr_delegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
+	typedef	xr_delegate<bool (SHit const*)>								HitCallback;
 
 private:
 	typedef xr_vector<on_best_cover_changed_delegate>	cover_delegates;
@@ -814,7 +814,7 @@ public:
 			bool						use_smart_covers_only						() const;
 
 public:
-	typedef fastdelegate::FastDelegate<void (Fmatrix& )>							EyeMatrixCallback;
+	typedef xr_delegate<void (Fmatrix& )>							EyeMatrixCallback;
 
 private:
 	virtual BOOL						AlwaysTheCrow								();
