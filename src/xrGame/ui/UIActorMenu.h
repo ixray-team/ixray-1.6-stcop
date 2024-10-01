@@ -192,6 +192,7 @@ private:
 	void						PropertiesBoxForPlaying		(PIItem item, bool& b_show);
 	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
 	void						PropertiesBoxForRepair		(PIItem item, bool& b_show);
+	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
 
 private:
 	void						clear_highlight_lists		();
