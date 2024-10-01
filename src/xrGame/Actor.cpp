@@ -630,6 +630,7 @@ void	CActor::Hit(SHit* pHDS)
 		{
 			HDS.power				= hit_power;
 			HDS.add_wound			= true;
+			HitArtefactsCondition	(HDS);
 			inherited::Hit			(&HDS);
 		}
 	}else
@@ -1113,6 +1114,7 @@ void CActor::UpdateCL	()
 	}
 
 	UpdateDefferedMessages();
+	UpdateConditionArtefacts();
 
 	if (g_Alive()) 
 		CStepManager::update(this==Level().CurrentViewEntity());
@@ -1276,6 +1278,144 @@ void CActor::UpdatePlayerView()
 	}
 
 	NET_Jump = 0;
+}
+void CActor::UpdateConditionArtefacts()
+{
+	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
+	if (!enableArtDegradation)
+		return;
+
+	static u32 _tmr = 0;
+
+	if (_tmr && Device.dwTimeGlobal < _tmr)
+		return;
+
+	_tmr = Device.dwTimeGlobal + 2000;
+
+	auto it = inventory().m_belt.begin();
+	auto ite = inventory().m_belt.end();
+	for (; it != ite; ++it)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+			float cond_loss = 0;
+			float val = 0;
+
+			if (conditions().GetHealth() < 1.0f)
+			{
+				val = artefact->m_fHealthRestoreSpeed;
+				if (val > 0)
+					cond_loss += val * 0.2f;
+			}
+
+			if (conditions().GetRadiation() > 0)
+			{
+				val = artefact->m_fRadiationRestoreSpeed;
+				if (val < 0)
+					cond_loss += std::abs(val) * 0.2f;
+			}
+
+			if (conditions().GetSatiety() < 1.0f)
+			{
+				val = artefact->m_fSatietyRestoreSpeed;
+				if (val > 0)
+					cond_loss += val * 0.2f;
+			}
+
+			if (conditions().GetPower() < 1.0f)
+			{
+				val = artefact->m_fPowerRestoreSpeed;
+				if (val > 0)
+					cond_loss += val * 0.2f;
+			}
+
+			if (conditions().BleedingSpeed() > 0)
+			{
+				val = artefact->m_fBleedingRestoreSpeed;
+				if (val > 0)
+					cond_loss += val * 0.2f;
+			}
+
+			val = artefact->AdditionalInventoryWeight();
+			if (val > 0)
+			{
+				float diff = inventory().TotalWeight() - conditions().MaxWalkWeight() - (GetOutfit() ? GetOutfit()->m_additional_weight2 : 0);
+				if (diff > 0)
+					cond_loss += ((diff * 0.0001) / val);
+			}
+
+			if (cond_loss > 0)
+			{
+				val = artefact->GetCondition() - (cond_loss * 1);
+				val -= artefact->GetCondition();
+				artefact->ChangeCondition(val);
+			}
+		}
+	}
+}
+
+std::map<shared_str, float> imm_mul =
+{
+	{"light_burn_immunity", 1.2f},
+	{"burn_immunity", 1.2f},
+	{"strike_immunity", 1.2f},
+	{"shock_immunity", 1.2f},
+	{"wound_immunity", 1.2f},
+	{"radiation_immunity", 1.2f},
+	{"telepatic_immunity", 1.2f},
+	{"chemical_burn_immunity", 1.2f},
+	{"explosion_immunity", 1.2f},
+	{"fire_wound_immunity", 1.2f}
+};
+
+std::map<ALife::EHitType, shared_str> hit_to_section =
+{
+	{ALife::EHitType::eHitTypeLightBurn , "light_burn_immunity"},
+	{ALife::EHitType::eHitTypeBurn, "burn_immunity"},
+	{ALife::EHitType::eHitTypeStrike, "strike_immunity"},
+	{ALife::EHitType::eHitTypeShock, "shock_immunity"},
+	{ALife::EHitType::eHitTypeWound, "wound_immunity"},
+	{ALife::EHitType::eHitTypeRadiation, "radiation_immunity"},
+	{ALife::EHitType::eHitTypeTelepatic, "telepatic_immunity"},
+	{ALife::EHitType::eHitTypeChemicalBurn, "chemical_burn_immunity"},
+	{ALife::EHitType::eHitTypeExplosion, "explosion_immunity"},
+	{ALife::EHitType::eHitTypeFireWound, "fire_wound_immunity"}
+};
+
+void CActor::HitArtefactsCondition(SHit& hit)
+{
+	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
+	if (!enableArtDegradation)
+		return;
+
+	if (hit.power <= 0)
+		return;
+
+	auto it = inventory().m_belt.begin();
+	auto ite = inventory().m_belt.end();
+	for (; it != ite; ++it)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+			shared_str hit_absorbation_sect = READ_IF_EXISTS(pSettings, r_string, artefact->m_section_id.c_str(), "hit_absorbation_sect", "");
+
+			if (hit_absorbation_sect.size() > 0)
+			{
+				shared_str imm_sect = hit_to_section[hit.hit_type];
+				float cond_loss = pSettings->line_exist(hit_absorbation_sect, imm_sect.c_str()) ? pSettings->r_float(hit_absorbation_sect, imm_sect.c_str()) : 0;
+				if (cond_loss > 0)
+				{
+					cond_loss = (hit.power * imm_mul[imm_sect] * cond_loss);
+
+					float val = artefact->GetCondition() - (cond_loss * 1);
+					val -= artefact->GetCondition();
+					artefact->ChangeCondition(val);
+				}
+			}
+		}
+	}
 }
 
 void CActor::set_state_box(u32	mstate)
@@ -1844,26 +1984,28 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		update_time		= 0.0f;
 	}
 
-	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
-		inventory().m_belt.end() != it; ++it) 
+	for (TIItemContainer::iterator it = inventory().m_belt.begin(); inventory().m_belt.end() != it; ++it)
 	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if(artefact)
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
 		{
-			conditions().ChangeBleeding		(artefact->m_fBleedingRestoreSpeed  * f_update_time);
-			conditions().ChangeHealth		(artefact->m_fHealthRestoreSpeed    * f_update_time);
-			conditions().ChangePower		(artefact->m_fPowerRestoreSpeed     * f_update_time);
-			conditions().ChangeSatiety		(artefact->m_fSatietyRestoreSpeed   * f_update_time);
-			if(artefact->m_fRadiationRestoreSpeed>0.0f) 
+			float art_cond = artefact->GetCondition();
+			conditions().ChangeBleeding((artefact->m_fBleedingRestoreSpeed * art_cond) * f_update_time);
+			conditions().ChangeHealth((artefact->m_fHealthRestoreSpeed * art_cond) * f_update_time);
+			conditions().ChangePower((artefact->m_fPowerRestoreSpeed * art_cond) * f_update_time);
+			conditions().ChangeSatiety((artefact->m_fSatietyRestoreSpeed * art_cond) * f_update_time);
+
+			if ((artefact->m_fRadiationRestoreSpeed * art_cond) > 0.0f)
 			{
-				float val = artefact->m_fRadiationRestoreSpeed - conditions().GetBoostRadiationImmunity();
+				float val = (artefact->m_fRadiationRestoreSpeed * art_cond) - conditions().GetBoostRadiationImmunity();
 				clamp(val, 0.0f, val);
 				conditions().ChangeRadiation(val * f_update_time);
 			}
 			else
-				conditions().ChangeRadiation(artefact->m_fRadiationRestoreSpeed	* f_update_time);
+				conditions().ChangeRadiation((artefact->m_fRadiationRestoreSpeed * art_cond) * f_update_time);
 		}
 	}
+
 	CCustomOutfit* outfit = GetOutfit();
 	if ( outfit )
 	{
@@ -1887,36 +2029,56 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 	}
 }
 
-float	CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
-{
-	TIItemContainer::iterator it  = inventory().m_belt.begin(); 
-	TIItemContainer::iterator ite = inventory().m_belt.end() ;
-	for( ; it != ite; ++it )
-	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if ( artefact )
-		{
-			hit_power -= artefact->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
-		}
-	}
-	clamp(hit_power, 0.0f, flt_max);
-
-	return hit_power;
-}
-
-float CActor::GetProtection_ArtefactsOnBelt( ALife::EHitType hit_type )
+float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 {
 	float sum = 0.0f;
-	TIItemContainer::iterator it  = inventory().m_belt.begin(); 
-	TIItemContainer::iterator ite = inventory().m_belt.end() ;
-	for( ; it != ite; ++it )
+
+	auto it = inventory().m_belt.begin();
+	auto ite = inventory().m_belt.end();
+
+	for (; it != ite; ++it)
 	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if ( artefact )
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
 		{
-			sum += artefact->m_ArtefactHitImmunities.AffectHit( 1.0f, hit_type );
+			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
 		}
 	}
+
+	if (sum == 0.0f)
+		return hit_power;
+
+	clamp(sum, -0.99f, 0.99f);
+
+	if (sum > 0.0f)
+	{
+		sum = 1.5f * pow(0.9f, (4.0f / sum));
+		hit_power = hit_power * (1.0f - sum);
+		return hit_power;
+	}
+	else
+	{
+		sum = 1.5f * pow(0.9f, (4.0f / (-1.0f * sum)));
+		hit_power = hit_power * (1.0f + sum);
+		return hit_power;
+	}
+}
+
+float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
+{
+	float sum = 0.0f;
+	auto it = inventory().m_belt.begin();
+	auto ite = inventory().m_belt.end();
+
+	for (; it != ite; ++it)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+			sum += (artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type) * artefact->GetCondition());
+		}
+	}
+
 	return sum;
 }
 
@@ -2086,7 +2248,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
 			if ( artefact )
 			{
-				res += artefact->m_fHealthRestoreSpeed;
+				res += (artefact->m_fHealthRestoreSpeed * artefact->GetCondition());
 			}
 		}
 		CCustomOutfit* outfit = GetOutfit();
@@ -2105,7 +2267,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
 			if ( artefact )
 			{
-				res += artefact->m_fRadiationRestoreSpeed;
+				res += (artefact->m_fRadiationRestoreSpeed * artefact->GetCondition());
 			}
 		}
 		CCustomOutfit* outfit = GetOutfit();
@@ -2126,7 +2288,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
 			if ( artefact )
 			{
-				res += artefact->m_fSatietyRestoreSpeed;
+				res += (artefact->m_fSatietyRestoreSpeed * artefact->GetCondition());
 			}
 		}
 		CCustomOutfit* outfit = GetOutfit();
@@ -2147,7 +2309,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
 			if ( artefact )
 			{
-				res += artefact->m_fPowerRestoreSpeed;
+				res += (artefact->m_fPowerRestoreSpeed * artefact->GetCondition());
 			}
 		}
 		CCustomOutfit* outfit = GetOutfit();
@@ -2172,7 +2334,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 			CArtefact*	artefact = smart_cast<CArtefact*>( *itb );
 			if ( artefact )
 			{
-				res += artefact->m_fBleedingRestoreSpeed;
+				res += (artefact->m_fBleedingRestoreSpeed * artefact->GetCondition());
 			}
 		}
 		CCustomOutfit* outfit = GetOutfit();
