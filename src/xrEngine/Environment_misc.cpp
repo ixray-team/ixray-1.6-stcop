@@ -512,10 +512,12 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	sun_color.lerp			(A.sun_color,B.sun_color,f);
 
 	if (rain_density > 0.f) {
-		Env->wetness_factor += rain_density / 10000.f;
+		Env->wetness_factor += (rain_density * 4.0) / 10000.f;
 	} else {
-		Env->wetness_factor -= 0.00001f;
+		Env->wetness_factor -= 0.0001f * 2.0;
 	}
+
+	clamp(Env->wetness_factor, 0.f, 1.f);
 
 	R_ASSERT				( _valid(A.sun_dir) );
 	R_ASSERT				( _valid(B.sun_dir) );

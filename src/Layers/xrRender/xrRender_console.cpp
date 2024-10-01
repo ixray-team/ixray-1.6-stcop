@@ -818,6 +818,8 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
+	CMD3(CCC_Mask, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);
+
 #ifdef DEBUG_DRAW
 #if RENDER!=R_R1
 	CMD1(CCC_BuildSSA, "build_ssa");

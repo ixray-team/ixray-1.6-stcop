@@ -170,6 +170,12 @@ void	CRenderTarget::phase_combine	()
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 	}
 
+	if(ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
+	{
+		PIX_EVENT(Forward_rendering_puddles);
+		phase_puddles();
+	}
+
 	// Forward rendering
 	{
 		PIX_EVENT(Forward_rendering);

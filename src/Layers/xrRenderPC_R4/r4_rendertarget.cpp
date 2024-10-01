@@ -549,6 +549,11 @@ CRenderTarget::CRenderTarget()
 		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_UINT); //AO.view-z
 	}
 
+	//Puddles
+	{
+		s_puddles.create("effects_water_puddles");
+	}
+
 	// OCCLUSION
 	s_occq.create(b_occq, "r2\\occq");
 

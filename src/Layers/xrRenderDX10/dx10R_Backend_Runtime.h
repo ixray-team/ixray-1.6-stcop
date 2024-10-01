@@ -346,6 +346,26 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
 
+IC void CBackend::Render_noIA(u32 iVertexCount)
+{
+	stat.calls++;
+	stat.verts += iVertexCount;
+
+	SRVSManager.Apply();
+	ApplyRTandZB();
+
+	//Unbind IA (VB, IB)
+	RContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	RContext->IASetInputLayout(nullptr);
+
+	StateManager.Apply();
+
+	//State manager may alter constants
+	constants.flush();
+
+	RContext->Draw(iVertexCount, 0);
+}
+
 IC void CBackend::set_Geometry(SGeometry* _geom)
 {
 	set_Format			(&*_geom->dcl);

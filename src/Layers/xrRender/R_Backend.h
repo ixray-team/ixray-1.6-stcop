@@ -377,6 +377,7 @@ public:
 
 #ifdef USE_DX11
 	ICF	void						Compute				(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
+	ICF void						Render_noIA			(u32 iVertexCount);
 #endif //USE_DX11
 
 	// Device create / destroy / frame signaling

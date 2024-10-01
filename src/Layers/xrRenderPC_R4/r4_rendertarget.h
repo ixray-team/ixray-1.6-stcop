@@ -112,6 +112,7 @@ private:
 	ref_shader					s_scale;
 	ref_shader					s_cas;
 	ref_shader					s_gtao;
+	ref_shader					s_puddles;
 
 	// OCCq
 	ref_shader					s_occq;
@@ -246,6 +247,8 @@ public:
 
 	void						phase_cas				();
 	void						phase_gtao				();
+
+	void						phase_puddles			();
 
 	void						RenderEffect			(ScreenPostProcessType postProcessType);
 	void						PhaseAberration			();
