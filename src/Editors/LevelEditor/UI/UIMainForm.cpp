@@ -167,6 +167,27 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
+	if (ImGui::BeginMenu("Visiblity"))
+	{
+		if (ImGui::MenuItem("Hide Selected"))
+		{
+			ExecCommand(COMMAND_HIDE_SEL, FALSE);
+		}
+		if (ImGui::MenuItem("Hide Unselected"))
+		{
+			ExecCommand(COMMAND_HIDE_UNSEL);
+		}
+		if (ImGui::MenuItem("Hide All"))
+		{
+			ExecCommand(COMMAND_HIDE_ALL, FALSE);
+		}
+		ImGui::Separator();
+		if (ImGui::MenuItem("Unhide All"))
+		{
+			ExecCommand(COMMAND_HIDE_ALL, TRUE);
+		}
+		ImGui::EndMenu();
+	}
 	if (ImGui::BeginMenu("Edit"))
 	{
 		if (ImGui::MenuItem("Copy"))
@@ -190,27 +211,6 @@ void UIMainForm::DrawContextMenu()
 		if (ImGui::MenuItem("Delete"))
 		{
 			ExecCommand(COMMAND_DELETE_SELECTION);
-		}
-		ImGui::EndMenu();
-	}
-	if (ImGui::BeginMenu("Visiblity"))
-	{
-		if (ImGui::MenuItem("Hide Selected"))
-		{
-			ExecCommand(COMMAND_HIDE_SEL, FALSE);
-		}
-		if (ImGui::MenuItem("Hide Unselected"))
-		{
-			ExecCommand(COMMAND_HIDE_UNSEL);
-		}
-		if (ImGui::MenuItem("Hide All"))
-		{
-			ExecCommand(COMMAND_HIDE_ALL, FALSE);
-		}
-		ImGui::Separator();
-		if (ImGui::MenuItem("Unhide All"))
-		{
-			ExecCommand(COMMAND_HIDE_ALL, TRUE);
 		}
 		ImGui::EndMenu();
 	}
