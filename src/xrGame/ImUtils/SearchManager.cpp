@@ -40,78 +40,17 @@ struct
 
 	const char* translateCLSID(CLASS_ID id)
 	{
-		if (id == monster_bloodsucker)
+		char name[16]{};
+		CLSID2TEXT(id, name);
+
+		for (int i = 0; i < 16; ++i)
 		{
-			return "Bloodsucker";
+			if (name[i] == 32)
+			{
+				name[i] = '\0';
+			}
 		}
-		else if (id == monster_boar)
-		{
-			return "Boar";
-		}
-		else if (id == monster_burer)
-		{
-			return "Burer";
-		}
-		else if (id == monster_cat)
-		{
-			return "Cat";
-		}
-		else if (id == monster_chimera)
-		{
-			return "Chimera";
-		}
-		else if (id == monster_controller)
-		{
-			return "Controller";
-		}
-		else if (id == monster_dog)
-		{
-			return "Dog";
-		}
-		else if (id == monster_flesh)
-		{
-			return "Flesh";
-		}
-		else if (id == monster_izlom)
-		{
-			return "Izlom";
-		}
-		else if (id == monster_poltergeist)
-		{
-			return "Poltergeist";
-		}
-		else if (id == monster_pseudodog)
-		{
-			return "PseudoDog";
-		}
-		else if (id == monster_pseudogigant)
-		{
-			return "PseudoGigant";
-		}
-		else if (id == monster_psydog)
-		{
-			return "PsyDog";
-		}
-		else if (id == monster_psydogphantom)
-		{
-			return "PsyDog (Phantom)";
-		}
-		else if (id == monster_snork)
-		{
-			return "Snork";
-		}
-		else if (id == monster_tushkano)
-		{
-			return "Tushkano";
-		}
-		else if (id == monster_zombie)
-		{
-			return "Zombie";
-		}
-		else
-		{
-			return "unknown";
-		}
+		return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
 	}
 
 	// reminder: information took from class_registrator.script because it overloads existed classes (clsids)
@@ -143,6 +82,28 @@ struct
 	CLASS_ID monster_tushkano = TEXT2CLSID("SM_TUSHK");
 	CLASS_ID monster_psydog = TEXT2CLSID("SM_DOG_P");
 	CLASS_ID monster_psydogphantom = TEXT2CLSID("SM_DOG_F");
+
+	CLASS_ID weapon_binocular = TEXT2CLSID("WP_BINOC");
+	CLASS_ID weapon_knife = TEXT2CLSID("WP_KNIFE");
+	CLASS_ID weapon_bm16 = TEXT2CLSID("WP_BM16");
+	CLASS_ID weapon_groza = TEXT2CLSID("WP_GROZA");
+	CLASS_ID weapon_svd = TEXT2CLSID("WP_SVD");
+	CLASS_ID weapon_ak74 = TEXT2CLSID("WP_AK74");
+	CLASS_ID weapon_lr300 = TEXT2CLSID("WP_LR300");
+	CLASS_ID weapon_hpsa = TEXT2CLSID("WP_HPSA");
+	CLASS_ID weapon_pm = TEXT2CLSID("WP_PM");
+	CLASS_ID weapon_rg6 = TEXT2CLSID("WP_RG6");
+	CLASS_ID weapon_rpg7 = TEXT2CLSID("WP_RPG7");
+	CLASS_ID weapon_shotgun = TEXT2CLSID("WP_SHOTG");
+	CLASS_ID weapon_autoshotgun = TEXT2CLSID("WP_ASHTG");
+	CLASS_ID weapon_svu = TEXT2CLSID("WP_SVU");
+	CLASS_ID weapon_usp45 = TEXT2CLSID("WP_USP45");
+	CLASS_ID weapon_val = TEXT2CLSID("WP_VAL");
+	CLASS_ID weapon_vintorez = TEXT2CLSID("WP_VINT");
+	CLASS_ID weapon_walther = TEXT2CLSID("WP_WALTH");
+	CLASS_ID weapon_magazine = TEXT2CLSID("WP_MAGAZ");
+	CLASS_ID weapon_stationary_machine_gun = TEXT2CLSID("W_STMGUN");
+
 private:
 	xr_set<CLASS_ID> weapons;
 	xr_set<CLASS_ID> monsters;
@@ -180,6 +141,27 @@ enum eSelectedType {
 	kSelectedType_Monster_Tushkano,
 	kSelectedType_Monster_PsyDog,
 	kSelectedType_Monster_PsyDogPhantom,
+	kSelectedType_Weapon_All,
+	kSelectedType_Weapon_Binocular,
+	kSelectedType_Weapon_Knife,
+	kSelectedType_Weapon_BM16,
+	kSelectedType_Weapon_Groza,
+	kSelectedType_Weapon_SVD,
+	kSelectedType_Weapon_AK74,
+	kSelectedType_Weapon_LR300,
+	kSelectedType_Weapon_HPSA,
+	kSelectedType_Weapon_PM,
+	kSelectedType_Weapon_RG6,
+	kSelectedType_Weapon_RPG7,
+	kSelectedType_Weapon_Shotgun,
+	kSelectedType_Weapon_AutoShotgun,
+	kSelectedType_Weapon_SVU,
+	kSelectedType_Weapon_USP45,
+	kSelectedType_Weapon_VAL,
+	kSelectedType_Weapon_VINTOREZ,
+	kSelectedType_Weapon_WALTHER,
+	kSelectedType_Weapon_Magazine,
+	kSelectedType_Weapon_StationaryMachineGun,
 	kSelectedType_Count
 };
 
@@ -192,80 +174,17 @@ struct {
 	const char* combo_items[(eSelectedType::kSelectedType_Count)]{};
 	int counts[(eSelectedType::kSelectedType_Count)]{};
 
+	xr_hash_map<eSelectedType, CLASS_ID> type_to_class;
+	xr_hash_map<CLASS_ID, eSelectedType> class_to_type;
+
 	eSelectedType convertCLSIDToType(CLASS_ID id)
 	{
-		if (id == imgui_clsid_manager.monster_bloodsucker)
-		{
-			return eSelectedType::kSelectedType_Monster_BloodSucker;
-		}
-		else if (id == imgui_clsid_manager.monster_boar)
-		{
-			return eSelectedType::kSelectedType_Monster_Boar;
-		}
-		else if (id == imgui_clsid_manager.monster_burer)
-		{
-			return eSelectedType::kSelectedType_Monster_Burer;
-		}
-		else if (id == imgui_clsid_manager.monster_cat)
-		{
-			return eSelectedType::kSelectedType_Monster_Cat;
-		}
-		else if (id == imgui_clsid_manager.monster_chimera)
-		{
-			return eSelectedType::kSelectedType_Monster_Chimera;
-		}
-		else if (id == imgui_clsid_manager.monster_controller)
-		{
-			return eSelectedType::kSelectedType_Monster_Controller;
-		}
-		else if (id == imgui_clsid_manager.monster_dog)
-		{
-			return eSelectedType::kSelectedType_Monster_Dog;
-		}
-		else if (id == imgui_clsid_manager.monster_flesh)
-		{
-			return eSelectedType::kSelectedType_Monster_Flesh;
-		}
-		else if (id == imgui_clsid_manager.monster_izlom)
-		{
-			return eSelectedType::kSelectedType_Monster_Izlom;
-		}
-		else if (id == imgui_clsid_manager.monster_poltergeist)
-		{
-			return eSelectedType::kSelectedType_Monster_Poltergeist;
-		}
-		else if (id == imgui_clsid_manager.monster_pseudodog)
-		{
-			return eSelectedType::kSelectedType_Monster_PseudoDog;
-		}
-		else if (id == imgui_clsid_manager.monster_pseudogigant)
-		{
-			return eSelectedType::kSelectedType_Monster_PseudoGigant;
-		}
-		else if (id == imgui_clsid_manager.monster_psydog)
-		{
-			return eSelectedType::kSelectedType_Monster_PsyDog;
-		}
-		else if (id == imgui_clsid_manager.monster_psydogphantom)
-		{
-			return eSelectedType::kSelectedType_Monster_PsyDogPhantom;
-		}
-		else if (id == imgui_clsid_manager.monster_snork)
-		{
-			return eSelectedType::kSelectedType_Monster_Snork;
-		}
-		else if (id == imgui_clsid_manager.monster_tushkano)
-		{
-			return eSelectedType::kSelectedType_Monster_Tushkano;
-		}
-		else if (id == imgui_clsid_manager.monster_zombie)
-		{
-			return eSelectedType::kSelectedType_Monster_Zombie;
-		}
-		else
-		{
-			return eSelectedType::kSelectedType_Count;
-		}
+		eSelectedType result = eSelectedType::kSelectedType_Count;
+
+		if (class_to_type.find(id) != class_to_type.end())
+			result = class_to_type.at(id);
+
+		return result;
 	}
 
 	const char* convertTypeToString(int type)
@@ -276,112 +195,64 @@ struct {
 		{
 			return "All";
 		}
-		case eSelectedType::kSelectedType_SmartTerrain:
-		{
-			return "Smart terrain";
-		}
-		case eSelectedType::kSelectedType_SmartCover:
-		{
-			return "Smart cover";
-		}
-		case eSelectedType::kSelectedType_LevelChanger:
-		{
-			return "Level changer";
-		}
-		case eSelectedType::kSelectedType_Artefact:
-		{
-			return "Artefact";
-		}
-		case eSelectedType::kSelectedType_Stalker:
-		{
-			return "Stalker";
-		}
-		case eSelectedType::kSelectedType_Car:
-		{
-			return "Car";
-		}
 		case eSelectedType::kSelectedType_Monster_All:
 		{
 			return "Monster - All";
 		}
-		case eSelectedType::kSelectedType_Monster_BloodSucker:
+		case eSelectedType::kSelectedType_Weapon_All:
 		{
-			return "Monster - bloodsucker";
+			return "Weapon - All";
 		}
-		case eSelectedType::kSelectedType_Monster_Boar:
+		}
+
+
+		if (type_to_class.find(eSelectedType(type)) != type_to_class.end())
 		{
-			return "Monster - Boar";
+			char name[16]{};
+			CLASS_ID id = type_to_class.at(eSelectedType(type));
+			CLSID2TEXT(id, name);
+
+			for (int i = 0; i < 16; ++i)
+			{
+				if (name[i] == 32)
+				{
+					name[i] = '\0';
+				}
+			}
+			const char* pTranslatedName = g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
+			char result[32]{};
+
+
+			if (imgui_clsid_manager.is_monster(id))
+			{
+				memcpy_s(result, sizeof(result), "Monster - ", sizeof("Monster - "));
+				memcpy_s(&result[0] + sizeof("Monster -"), sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+			else if (imgui_clsid_manager.is_weapon(id))
+			{
+				memcpy_s(result, sizeof(result), "Weapon - ", sizeof("Weapon - "));
+				memcpy_s(&result[0] + sizeof("Weapon -"), sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+			else
+			{
+				memcpy_s(result, sizeof(result), pTranslatedName, strlen(pTranslatedName));
+			}
+
+			return result;
 		}
-		case eSelectedType::kSelectedType_Monster_Burer:
-		{
-			return "Monster - Burer";
-		}
-		case eSelectedType::kSelectedType_Monster_Cat:
-		{
-			return "Monster - Cat";
-		}
-		case eSelectedType::kSelectedType_Monster_Chimera:
-		{
-			return "Monster - Chimera";
-		}
-		case eSelectedType::kSelectedType_Monster_Controller:
-		{
-			return "Monster - Controller";
-		}
-		case eSelectedType::kSelectedType_Monster_Dog:
-		{
-			return "Monster - Dog";
-		}
-		case eSelectedType::kSelectedType_Monster_Flesh:
-		{
-			return "Monster - Flesh";
-		}
-		case eSelectedType::kSelectedType_Monster_Izlom:
-		{
-			return "Monster - Izlom";
-		}
-		case eSelectedType::kSelectedType_Monster_Poltergeist:
-		{
-			return "Monster - Poltergeist";
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoDog:
-		{
-			return "Monster - Pseudodog";
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoGigant:
-		{
-			return "Monster - PseudoGigant";
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDog:
-		{
-			return "Monster - Psydog";
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDogPhantom:
-		{
-			return "Monster - psydogphantom";
-		}
-		case eSelectedType::kSelectedType_Monster_Snork:
-		{
-			return "Monster - Snork";
-		}
-		case eSelectedType::kSelectedType_Monster_Tushkano:
-		{
-			return "Monster - Tushkano";
-		}
-		case eSelectedType::kSelectedType_Monster_Zombie:
-		{
-			return "Monster - Zombie";
-		}
-		default:
-		{
-			return "unknown";
-		}
-		}
+		
+		return "unknown";
 	}
 
 	bool filter(CLASS_ID id)
 	{
 		bool result{};
+
+		if (selected_type == eSelectedType::kSelectedType_All)
+		{
+			result = true;
+			return result;
+		}
 
 		if (selected_type == eSelectedType::kSelectedType_Monster_All)
 		{
@@ -392,128 +263,18 @@ struct {
 			}
 		}
 
-		switch (static_cast<eSelectedType>(selected_type))
+		if (selected_type == eSelectedType::kSelectedType_Weapon_All)
 		{
-		case eSelectedType::kSelectedType_All:
-		{
-			result = true;
-			break;
+			if (imgui_clsid_manager.is_weapon(id))
+			{
+				result = true;
+				return result;
+			}
 		}
-		case eSelectedType::kSelectedType_SmartTerrain:
+
+		if (class_to_type.find(id) != class_to_type.end())
 		{
-			result = id == imgui_clsid_manager.smart_terrain;
-			break;
-		}
-		case eSelectedType::kSelectedType_SmartCover:
-		{
-			result = id == imgui_clsid_manager.smart_cover;
-			break;
-		}
-		case eSelectedType::kSelectedType_LevelChanger:
-		{
-			result = id == imgui_clsid_manager.level_changer;
-			break;
-		}
-		case eSelectedType::kSelectedType_Artefact:
-		{
-			result = id == imgui_clsid_manager.artefact;
-			break;
-		}
-		case eSelectedType::kSelectedType_Stalker:
-		{
-			result = id == imgui_clsid_manager.stalker;
-			break;
-		}
-		case eSelectedType::kSelectedType_Car:
-		{
-			result = id == imgui_clsid_manager.car;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_BloodSucker:
-		{
-			result = id == imgui_clsid_manager.monster_bloodsucker;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Boar:
-		{
-			result = id == imgui_clsid_manager.monster_boar;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Burer:
-		{
-			result = id == imgui_clsid_manager.monster_burer;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Cat:
-		{
-			result = id == imgui_clsid_manager.monster_cat;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Chimera:
-		{
-			result = id == imgui_clsid_manager.monster_chimera;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Controller:
-		{
-			result = id == imgui_clsid_manager.monster_controller;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Dog:
-		{
-			result = id == imgui_clsid_manager.monster_dog;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Flesh:
-		{
-			result = id == imgui_clsid_manager.monster_flesh;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Izlom:
-		{
-			result = id == imgui_clsid_manager.monster_izlom;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Poltergeist:
-		{
-			result = id == imgui_clsid_manager.monster_poltergeist;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoDog:
-		{
-			result = id == imgui_clsid_manager.monster_pseudodog;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_PseudoGigant:
-		{
-			result = id == imgui_clsid_manager.monster_pseudogigant;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDog:
-		{
-			result = id == imgui_clsid_manager.monster_psydog;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_PsyDogPhantom:
-		{
-			result = id == imgui_clsid_manager.monster_psydogphantom;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Snork:
-		{
-			result = id == imgui_clsid_manager.monster_snork;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Tushkano:
-		{
-			result = id == imgui_clsid_manager.monster_tushkano;
-			break;
-		}
-		case eSelectedType::kSelectedType_Monster_Zombie:
-		{
-			result = id == imgui_clsid_manager.monster_zombie;
-			break;
-		}
+			result = selected_type == class_to_type.at(id);
 		}
 
 		return result;
@@ -523,108 +284,83 @@ struct {
 	{
 		counts[(eSelectedType::kSelectedType_All)] += 1;
 
-		if (id == imgui_clsid_manager.smart_terrain)
-		{
-			counts[(eSelectedType::kSelectedType_SmartTerrain)] += 1;
-		}
-		else if (id == imgui_clsid_manager.smart_cover)
-		{
-			counts[(eSelectedType::kSelectedType_SmartCover)] += 1;
-		}
-		else if (id == imgui_clsid_manager.level_changer)
-		{
-			counts[(eSelectedType::kSelectedType_LevelChanger)] += 1;
-		}
-		else if (id == imgui_clsid_manager.artefact)
-		{
-			counts[(eSelectedType::kSelectedType_Artefact)] += 1;
-		}
-		else if (id == imgui_clsid_manager.stalker)
-		{
-			counts[(eSelectedType::kSelectedType_Stalker)] += 1;
-		}
-		else if (id == imgui_clsid_manager.car)
-		{
-			counts[(eSelectedType::kSelectedType_Car)] += 1;
-		}
-		else if (imgui_clsid_manager.is_monster(id))
+		if (imgui_clsid_manager.is_monster(id))
 		{
 			counts[eSelectedType::kSelectedType_Monster_All] += 1;
 
-			if (id == imgui_clsid_manager.monster_bloodsucker)
-			{
-				counts[eSelectedType::kSelectedType_Monster_BloodSucker] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_boar)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Boar] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_burer)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Burer] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_cat)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Cat] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_chimera)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Chimera] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_controller)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Controller] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_dog)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Dog] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_flesh)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Flesh] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_izlom)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Izlom] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_poltergeist)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Poltergeist] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_pseudodog)
-			{
-				counts[eSelectedType::kSelectedType_Monster_PseudoDog] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_pseudogigant)
-			{
-				counts[eSelectedType::kSelectedType_Monster_PseudoGigant] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_psydog)
-			{
-				counts[eSelectedType::kSelectedType_Monster_PsyDog] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_psydogphantom)
-			{
-				counts[eSelectedType::kSelectedType_Monster_PsyDogPhantom] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_snork)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Snork] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_tushkano)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Tushkano] += 1;
-			}
-			else if (id == imgui_clsid_manager.monster_zombie)
-			{
-				counts[eSelectedType::kSelectedType_Monster_Zombie] += 1;
-			}
+			if (class_to_type.find(id) != class_to_type.end())
+				counts[class_to_type.at(id)] += 1;
 
+		}
+		else if (imgui_clsid_manager.is_weapon(id))
+		{
+			counts[eSelectedType::kSelectedType_Weapon_All] += 1;
+
+			if (class_to_type.find(id) != class_to_type.end())
+				counts[class_to_type.at(id)] += 1;
+		}
+		else
+		{
+			if (class_to_type.find(id) != class_to_type.end())
+			{
+				counts[class_to_type.at(id)] += 1;
+			}
 		}
 	}
 
 	void init()
 	{
+		type_to_class[eSelectedType::kSelectedType_SmartTerrain] = imgui_clsid_manager.smart_terrain;
+		type_to_class[eSelectedType::kSelectedType_SmartCover] = imgui_clsid_manager.smart_cover;
+		type_to_class[eSelectedType::kSelectedType_LevelChanger] = imgui_clsid_manager.level_changer;
+		type_to_class[eSelectedType::kSelectedType_Artefact] = imgui_clsid_manager.artefact;
+		type_to_class[eSelectedType::kSelectedType_Stalker] = imgui_clsid_manager.stalker;
+		type_to_class[eSelectedType::kSelectedType_Car] = imgui_clsid_manager.car;
+		type_to_class[eSelectedType::kSelectedType_Monster_BloodSucker] = imgui_clsid_manager.monster_bloodsucker;
+		type_to_class[eSelectedType::kSelectedType_Monster_Boar] = imgui_clsid_manager.monster_boar;
+		type_to_class[eSelectedType::kSelectedType_Monster_Dog] = imgui_clsid_manager.monster_dog;
+		type_to_class[eSelectedType::kSelectedType_Monster_Flesh] = imgui_clsid_manager.monster_flesh;
+		type_to_class[eSelectedType::kSelectedType_Monster_PseudoDog] = imgui_clsid_manager.monster_pseudodog;
+		type_to_class[eSelectedType::kSelectedType_Monster_Burer] = imgui_clsid_manager.monster_burer;
+		type_to_class[eSelectedType::kSelectedType_Monster_Cat] = imgui_clsid_manager.monster_cat;
+		type_to_class[eSelectedType::kSelectedType_Monster_Chimera] = imgui_clsid_manager.monster_chimera;
+		type_to_class[eSelectedType::kSelectedType_Monster_Controller] = imgui_clsid_manager.monster_controller;
+		type_to_class[eSelectedType::kSelectedType_Monster_Izlom] = imgui_clsid_manager.monster_izlom;
+		type_to_class[eSelectedType::kSelectedType_Monster_Poltergeist] = imgui_clsid_manager.monster_poltergeist;
+		type_to_class[eSelectedType::kSelectedType_Monster_PseudoGigant] = imgui_clsid_manager.monster_pseudogigant;
+		type_to_class[eSelectedType::kSelectedType_Monster_Zombie] = imgui_clsid_manager.monster_zombie;
+		type_to_class[eSelectedType::kSelectedType_Monster_Snork] = imgui_clsid_manager.monster_snork;
+		type_to_class[eSelectedType::kSelectedType_Monster_Tushkano] = imgui_clsid_manager.monster_tushkano;
+		type_to_class[eSelectedType::kSelectedType_Monster_PsyDog] = imgui_clsid_manager.monster_psydog;
+		type_to_class[eSelectedType::kSelectedType_Monster_PsyDogPhantom] = imgui_clsid_manager.monster_psydogphantom;
+
+
+		type_to_class[eSelectedType::kSelectedType_Weapon_Binocular] = imgui_clsid_manager.weapon_binocular;
+		type_to_class[eSelectedType::kSelectedType_Weapon_Knife] = imgui_clsid_manager.weapon_knife;
+		type_to_class[eSelectedType::kSelectedType_Weapon_BM16] = imgui_clsid_manager.weapon_bm16;
+		type_to_class[eSelectedType::kSelectedType_Weapon_Groza] = imgui_clsid_manager.weapon_groza;
+		type_to_class[eSelectedType::kSelectedType_Weapon_SVD] = imgui_clsid_manager.weapon_svd;
+		type_to_class[eSelectedType::kSelectedType_Weapon_AK74] = imgui_clsid_manager.weapon_ak74;
+		type_to_class[eSelectedType::kSelectedType_Weapon_LR300] = imgui_clsid_manager.weapon_lr300;
+		type_to_class[eSelectedType::kSelectedType_Weapon_HPSA] = imgui_clsid_manager.weapon_hpsa;
+		type_to_class[eSelectedType::kSelectedType_Weapon_PM] = imgui_clsid_manager.weapon_pm;
+		type_to_class[eSelectedType::kSelectedType_Weapon_RG6] = imgui_clsid_manager.weapon_rg6;
+		type_to_class[eSelectedType::kSelectedType_Weapon_RPG7] = imgui_clsid_manager.weapon_rpg7;
+		type_to_class[eSelectedType::kSelectedType_Weapon_Shotgun] = imgui_clsid_manager.weapon_shotgun;
+		type_to_class[eSelectedType::kSelectedType_Weapon_AutoShotgun] = imgui_clsid_manager.weapon_autoshotgun;
+		type_to_class[eSelectedType::kSelectedType_Weapon_SVU] = imgui_clsid_manager.weapon_svu;
+		type_to_class[eSelectedType::kSelectedType_Weapon_USP45] = imgui_clsid_manager.weapon_usp45;
+		type_to_class[eSelectedType::kSelectedType_Weapon_VAL] = imgui_clsid_manager.weapon_val;
+		type_to_class[eSelectedType::kSelectedType_Weapon_VINTOREZ] = imgui_clsid_manager.weapon_vintorez;
+		type_to_class[eSelectedType::kSelectedType_Weapon_WALTHER] = imgui_clsid_manager.weapon_walther;
+		type_to_class[eSelectedType::kSelectedType_Weapon_Magazine] = imgui_clsid_manager.weapon_magazine;
+		type_to_class[eSelectedType::kSelectedType_Weapon_StationaryMachineGun] = imgui_clsid_manager.weapon_stationary_machine_gun;
+
+		for (const std::pair<eSelectedType, CLASS_ID>& pair : type_to_class)
+		{
+			class_to_type[pair.second] = pair.first;
+		}
+
 		for (int i = 0; i < (eSelectedType::kSelectedType_Count); ++i)
 		{
 			char* pPtr = &category_names[i][0];
@@ -660,12 +396,12 @@ void RenderSearchManagerWindow()
 		ImGui::Text("Level: %s", Level().name().c_str());
 
 		ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
-		ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
-		ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
-		ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
-		ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
-		ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
-		ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_SmartCover), imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_SmartTerrain), imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Stalker), imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Car), imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_LevelChanger), imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
+		ImGui::Text("%s: %d", imgui_search_manager.convertTypeToString(eSelectedType::kSelectedType_Artefact), imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
 
 		char colh_monsters[24]{};
 		sprintf_s(colh_monsters, sizeof(colh_monsters), "Monsters: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Monster_All]);
@@ -677,6 +413,19 @@ void RenderSearchManagerWindow()
 				char monster_name[32]{};
 				sprintf_s(monster_name, sizeof(monster_name), "%s: %d", imgui_clsid_manager.translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
 				ImGui::Text(monster_name);
+			}
+		}
+
+		char colh_weapons[24]{};
+		sprintf_s(colh_weapons, sizeof(colh_weapons), "Weapons: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Weapon_All]);
+
+		if (ImGui::CollapsingHeader(colh_weapons))
+		{
+			for (const auto& id : imgui_clsid_manager.get_weapons())
+			{
+				char weapon_name[32]{};
+				sprintf_s(weapon_name, sizeof(weapon_name), "%s: %d", imgui_clsid_manager.translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
+				ImGui::Text(weapon_name);
 			}
 		}
 
@@ -698,7 +447,11 @@ void RenderSearchManagerWindow()
 
 				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+				char category_name_separator[64]{};
+				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				size_t translate_str_len = strlen(pTranslatedCategoryName);
+				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				ImGui::SeparatorText(category_name_separator);
 
 				auto size = Level().Objects.o_count();
 
@@ -770,11 +523,11 @@ void RenderSearchManagerWindow()
 									{
 										xr_string cmd;
 										cmd = "set_actor_position ";
-										cmd += std::to_string(pObject->Position().x);
+										cmd += cmd.ToString(pObject->Position().x);
 										cmd += ",";
-										cmd += std::to_string(pObject->Position().y);
+										cmd += cmd.ToString(pObject->Position().y);
 										cmd += ",";
-										cmd += std::to_string(pObject->Position().z);
+										cmd += cmd.ToString(pObject->Position().z);
 
 										execute_console_command_deferred(Console, cmd.c_str());
 									}
@@ -805,7 +558,11 @@ void RenderSearchManagerWindow()
 
 				ImGui::InputText("##IT_InGameSearchManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+				char category_name_separator[64]{};
+				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				size_t translate_str_len = strlen(pTranslatedCategoryName);
+				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				ImGui::SeparatorText(category_name_separator);
 
 				const auto& objects = ai().alife().objects().objects();
 				for (const auto& it : objects)
@@ -816,24 +573,29 @@ void RenderSearchManagerWindow()
 					{
 						if (pServerObject->ID_Parent == 0xffff)
 						{
-							xr_string name;
+							imgui_search_manager.count(pServerObject->m_tClassID);
 
-							name = pServerObject->name_replace();
-							if (ImGui::Button(name.c_str()))
+							if (imgui_search_manager.filter(pServerObject->m_tClassID))
 							{
-								CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+								xr_string name;
 
-								if (pActor)
+								name = pServerObject->name_replace();
+								if (ImGui::Button(name.c_str()))
 								{
-									xr_string cmd;
-									cmd = "set_actor_position ";
-									cmd += std::to_string(pServerObject->Position().x);
-									cmd += ",";
-									cmd += std::to_string(pServerObject->Position().y);
-									cmd += ",";
-									cmd += std::to_string(pServerObject->Position().z);
+									CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
-									execute_console_command_deferred(Console, cmd.c_str());
+									if (pActor)
+									{
+										xr_string cmd;
+										cmd = "set_actor_position ";
+										cmd += cmd.ToString(pServerObject->Position().x);
+										cmd += ",";
+										cmd += cmd.ToString(pServerObject->Position().y);
+										cmd += ",";
+										cmd += cmd.ToString(pServerObject->Position().z);
+
+										execute_console_command_deferred(Console, cmd.c_str());
+									}
 								}
 							}
 						}
