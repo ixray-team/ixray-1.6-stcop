@@ -1107,6 +1107,11 @@ void render_box						(IRenderVisual *visual, const Fmatrix &xform, const Fvector
 
 void CGameObject::OnRender			()
 {
+	if (Visual() == nullptr)
+	{
+		return;
+	}
+
 	if (!ai().get_level_graph())
 		return;
 
@@ -1114,13 +1119,13 @@ void CGameObject::OnRender			()
 		return;
 
 	CDebugRenderer					&renderer = Level().debug_renderer();
-	if (/**bDebug && /**/Visual()) {
-		float						half_cell_size = 1.f*ai().level_graph().header().cell_size()*.5f;
-		Fvector						additional = Fvector().set(half_cell_size,half_cell_size,half_cell_size);
+	
+	float						half_cell_size = 1.f*ai().level_graph().header().cell_size()*.5f;
+	Fvector						additional = Fvector().set(half_cell_size,half_cell_size,half_cell_size);
 
-		render_box					(Visual(),XFORM(),Fvector().set(0.f,0.f,0.f),true,color_rgba(0,0,255,255));
-		render_box					(Visual(),XFORM(),additional,false,color_rgba(0,255,0,255));
-	}
+	render_box					(Visual(),XFORM(),Fvector().set(0.f,0.f,0.f),true,color_rgba(0,0,255,255));
+	render_box					(Visual(),XFORM(),additional,false,color_rgba(0,255,0,255));
+	
 
 	if (0) {
 		Fvector						bc,bd; 
