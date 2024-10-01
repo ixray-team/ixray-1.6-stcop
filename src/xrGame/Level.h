@@ -15,6 +15,8 @@
 #include "secure_messaging.h"
 #include "../xrEngine/xr_level_controller.h"
 
+#include "game_cl_base.h"
+
 class	CHUDManager;
 class	CParticlesObject;
 class	xrServer;
@@ -38,6 +40,7 @@ class	demo_info;
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;
 #endif
+
 
 extern float g_fov;
 
@@ -472,7 +475,6 @@ IC CPHCommander & CLevel::ph_commander_physics_worldstep()
 IC bool		OnServer()			{ return Level().IsServer();}
 IC bool		OnClient()			{ return Level().IsClient();}
 IC bool		IsGameTypeSingle()	{ return (g_pGamePersistent->GameType() == eGameIDSingle);};
-
 bool IsGameTypeSingleCompatible();
 
 //class  CPHWorld;

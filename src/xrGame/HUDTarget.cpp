@@ -129,13 +129,11 @@ void CHUDTarget::CursorOnFrame ()
 		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &PP, nullptr, Level().CurrentEntity()))
 			clamp			(PP.RQ.range, NEAR_LIM, PP.RQ.range);
 	}
-
 }
 
 extern ENGINE_API BOOL g_bRendering; 
 void CHUDTarget::Render()
 {
-
 	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) );
 	
 	if(!b_do_rendering)
@@ -186,37 +184,39 @@ void CHUDTarget::Render()
 			CEntityAlive* E_ = smart_cast<CEntityAlive*>(PP.RQ.O);
 			CEntityAlive* pCurEnt = smart_cast<CEntityAlive*>(Level().CurrentEntity());
 			PIItem l_pI = smart_cast<PIItem>(PP.RQ.O);
-
+			CActor* pActor = smart_cast<CActor*>	(PP.RQ.O);
 			CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(pCurEnt);
 
-			if (E_ && E_->g_Alive() && E_->cast_base_monster())
+			if (E_ && E_->g_Alive())
 			{
-				C = C_ON_ENEMY;
-			}
-			else if (E_ && E_->g_Alive() && !E_->cast_base_monster())
-			{
-				CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E_);
+				if (E_->cast_base_monster())
+				{
+					C = C_ON_ENEMY;
+				}
+				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
+				{
+					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E_);
 
-				if (our_inv_owner && others_inv_owner) {
-
-					switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+					if (our_inv_owner && others_inv_owner)
 					{
-					case ALife::eRelationTypeEnemy:
-						C = C_ON_ENEMY; break;
-					case ALife::eRelationTypeNeutral:
-						C = C_ON_NEUTRAL; break;
-					case ALife::eRelationTypeFriend:
-						C = C_ON_FRIEND; break;
-					}
+						switch (RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
+						{
+						case ALife::eRelationTypeEnemy:
+							C = C_ON_ENEMY; break;
+						case ALife::eRelationTypeNeutral:
+							C = C_ON_NEUTRAL; break;
+						case ALife::eRelationTypeFriend:
+							C = C_ON_FRIEND; break;
+						}
 
-					if (fuzzyShowInfo > 0.5f)
-					{
-						F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-						F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
-						F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
+						if (fuzzyShowInfo > 0.5f)
+						{
+							F->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+							F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
+							F->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
+						}
 					}
 				}
-
 				fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 			else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)

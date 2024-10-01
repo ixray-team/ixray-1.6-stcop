@@ -187,6 +187,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_game_graph = 0;
 	m_chunk = 0;
 	spawn = 0;
+
 }
 
 extern CAI_Space *g_ai_space;
@@ -315,6 +316,7 @@ CLevel::~CLevel()
 	m_chunk->close();
 	FS.r_close(spawn);
 }
+
 
 shared_str	CLevel::name		() const
 {

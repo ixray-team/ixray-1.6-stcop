@@ -328,7 +328,7 @@ void CUIActorMenu::UpdateActor()
 	}
 	else
 	{
-		UpdateActorMP();
+		UpdateActorMoneyMP();
 	}
 	
 	CActor* actor = smart_cast<CActor*>( m_pActorInvOwner );

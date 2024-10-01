@@ -235,6 +235,38 @@ void CUICharacterInfo::InitCharacter(u16 id)
 */
 }
 
+void CUICharacterInfo::InitCharacterMP(CInventoryOwner* invOwner)
+{
+	ClearInfo();
+
+	if (m_icons[eName])
+	{
+		m_icons[eName]->TextItemControl()->SetText(invOwner->Name());
+		m_icons[eName]->Show(true);
+	}
+
+	m_texture_name = invOwner->IconName();
+	if (m_icons[eIcon])
+	{
+		m_icons[eIcon]->InitTexture(m_texture_name.c_str());
+		m_icons[eIcon]->Show(true);
+	}
+	if (m_icons[eIconOver])
+	{
+		m_icons[eIconOver]->Show(true);
+	}
+	if (m_icons[eCommunity])
+	{
+		m_icons[eCommunity]->TextItemControl()->SetTextST(invOwner->CharacterInfo().Community().id().c_str());
+		m_icons[eCommunity]->Show(true);
+	}
+	if (m_icons[eReputation])
+	{
+		m_icons[eReputation]->TextItemControl()->SetTextST(GetReputationAsText(invOwner->CharacterInfo().Reputation().value()));
+		m_icons[eReputation]->Show(true);
+	}
+}
+
 void CUICharacterInfo::InitCharacterMP(LPCSTR player_name, LPCSTR player_icon)
 {
 	ClearInfo();

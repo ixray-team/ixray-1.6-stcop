@@ -20,6 +20,8 @@ public:
 	virtual	void net_import_state(NET_Packet& P);
 	virtual	void net_import_update(NET_Packet& P);
 
+	virtual void shedule_Update(u32 dt);
+
 	virtual	bool OnKeyboardPress(int key);
 	virtual void OnConnected();
 
