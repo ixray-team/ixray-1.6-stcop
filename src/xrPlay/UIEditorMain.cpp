@@ -34,12 +34,44 @@ void RenderActorInfos()
 		return;
 	}
 
-	auto Data = g_pIGameActor->GetKnowedPortions();
+	const auto& Data = g_pIGameActor->GetKnowedPortions();
 
-	for (auto Str : Data)
+	static char buffer[128]{};
+	ImGui::Text("Filter:");
+	ImGui::SameLine();
+	ImGui::InputText("##FilterAP", buffer, sizeof(buffer));
+
+	static char add_info[128]{};
+	ImGui::Text("Add info:");
+	ImGui::SameLine();
+	ImGui::InputText("##AddInfoAP", add_info, sizeof(add_info));
+	ImGui::SameLine();
+
+	if (ImGui::Button("add"))
 	{
-		if (ImGui::Button(Str.c_str(), { 200, 30 })) {
-			g_pIGameActor->DisableInfoPortion(Str.c_str());
+		if (g_pIGameActor)
+		{
+			g_pIGameActor->GiveInfoPortion(add_info);
+		}
+	}
+
+	for (const auto& Str : Data)
+	{
+		bool is_need_to_show = true;
+
+		if (buffer[0]!='\0' || strlen(buffer))
+		{
+			if (Str.find(buffer) == xr_string::npos)
+			{
+				is_need_to_show = false;
+			}
+		}
+
+		if (is_need_to_show)
+		{
+			if (ImGui::Button(Str.c_str(), { 200, 30 })) {
+				g_pIGameActor->DisableInfoPortion(Str.c_str());
+			}
 		}
 	}
 
