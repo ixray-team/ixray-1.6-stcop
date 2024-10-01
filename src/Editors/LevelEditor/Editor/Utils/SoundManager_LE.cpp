@@ -22,15 +22,6 @@ bool CLevelSoundManager::Validate()
     }
     return true;
 }
-/*
-void CLevelSoundManager::RealRefreshEnvGeometry()
-{
-	CMemoryWriter F;
-	if (MakeEnvGeometry(F,false)){
-        IReader R(F.pointer(), F.size());
-        ::Sound->set_geometry_env(&R);
-    }
-}
 
 bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
 {
@@ -45,35 +36,40 @@ bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
 
     CDB::Collector CP;
 	Fbox aabb; aabb.invalidate();
-    for (ObjectIt it=snd_envs.begin(); it!=snd_envs.end(); it++){
-    	ESoundEnvironment* E = dynamic_cast<ESoundEnvironment*>(*it); R_ASSERT(E);
+    for (ObjectIt it = snd_envs.begin(); it != snd_envs.end(); it++) {
+        ESoundEnvironment* E = dynamic_cast<ESoundEnvironment*>(*it); R_ASSERT(E);
         Fbox bb;
-        R_ASSERT	(E->GetBox(bb));
-        aabb.merge	(bb);
+        R_ASSERT(E->GetBox(bb));
+        aabb.merge(bb);
 
         // get env name indices
-        if (E->m_EnvInner==E->m_EnvOuter) continue;
-        if ((0==E->m_EnvInner.size())||(0==E->m_EnvOuter.size())) continue;
+        if (E->m_EnvInner == E->m_EnvOuter) 
+            continue;
+
+        if ((0 == E->m_EnvInner.size()) || (0 == E->m_EnvOuter.size())) 
+            continue;
 
         int inner = -1;
         int outer = -1;
-        for (RStringVecIt e_it=env_names.begin(); e_it!=env_names.end(); e_it++){
-        	if ((-1==inner)&&(E->m_EnvInner==*e_it)) inner = e_it-env_names.begin();
-        	if ((-1==outer)&&(E->m_EnvOuter==*e_it)) outer = e_it-env_names.begin();
-            if ((inner>-1)&&(outer>-1)) break;
+        for (RStringVecIt e_it = env_names.begin(); e_it != env_names.end(); e_it++) {
+            if ((-1 == inner) && (E->m_EnvInner == *e_it)) inner = e_it - env_names.begin();
+            if ((-1 == outer) && (E->m_EnvOuter == *e_it)) outer = e_it - env_names.begin();
+            if ((inner > -1) && (outer > -1)) break;
         }
 
-        if (-1==inner){ inner=env_names.size(); env_names.push_back(E->m_EnvInner);}
-        if (-1==outer){ outer=env_names.size(); env_names.push_back(E->m_EnvOuter);}
-        u32 idx = (inner<<16)|(outer);
+        if (-1 == inner) { inner = env_names.size(); env_names.push_back(E->m_EnvInner); }
+        if (-1 == outer) { outer = env_names.size(); env_names.push_back(E->m_EnvOuter); }
+        u32 idx = (inner << 16) | (outer);
 
         // append to collector
-		Fmatrix M;	E->get_box	(M);
-        
+        Fmatrix M;	E->get_box(M);
+
         Fvector bv[DU_BOX_NUMVERTEX];
-        for (int k=0; k<DU_BOX_NUMVERTEX; k++) M.transform_tiny(bv[k],du_box_vertices[k]);
-    	for (k=0; k<DU_BOX_NUMFACES; k++)
-			CP.add_face_packed_D(bv[du_box_faces[k*3+0]],bv[du_box_faces[k*3+1]],bv[du_box_faces[k*3+2]],idx);
+        for (int k = 0; k < DU_BOX_NUMVERTEX; k++)
+            M.transform_tiny(bv[k], du_box_vertices[k]);
+
+        for (int k = 0; k < DU_BOX_NUMFACES; k++)
+            CP.add_face_packed_D(bv[du_box_faces[k * 3 + 0]], bv[du_box_faces[k * 3 + 1]], bv[du_box_faces[k * 3 + 2]], idx);
     }
 
     if (env_names.empty()) return false;
@@ -100,6 +96,17 @@ bool CLevelSoundManager::MakeEnvGeometry(CMemoryWriter& F, bool bErrMsg)
 
     return true;
 }
+
+/*
+void CLevelSoundManager::RealRefreshEnvGeometry()
+{
+    CMemoryWriter F;
+    if (MakeEnvGeometry(F,false)){
+        IReader R(F.pointer(), F.size());
+        ::Sound->set_geometry_env(&R);
+    }
+}
+
 */
 void CLevelSoundManager::OnFrame()
 {
