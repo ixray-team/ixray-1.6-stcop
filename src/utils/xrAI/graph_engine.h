@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "path_manager.h"
+#include "path_manager_params.h"
 #include "../xrEngine/AI/graph_engine_space.h"
 
 #ifndef AI_COMPILER

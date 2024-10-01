@@ -8,5 +8,5 @@
 
 #pragma once
 
-#include "path_manager.h"
+#include "path_manager_params.h"
 #include "graph_engine_editor_space.h"

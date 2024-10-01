@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "path_manager.h"
 #include "graph_engine_space.h"
 
 #ifndef AI_COMPILER

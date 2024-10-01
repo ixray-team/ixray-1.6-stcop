@@ -183,8 +183,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 #endif
 
 	Register				(m_GlobalMap);
-	m_ActionPlanner			= new CMapActionPlanner();
-	m_ActionPlanner->setup	(this);
+	m_ActionPlanner			= new FRbmkMapActionPlanner(this);
 	m_view_actor			= true;
 
 	m_UIPropertiesBox = new CUIPropertiesBox();
@@ -623,7 +622,7 @@ void CUIMapWnd::Update()
 	if(m_GlobalMap)
 		m_GlobalMap->WorkingArea().set(ActiveMapRect());
 	inherited::Update			();
-	m_ActionPlanner->update		();
+	m_ActionPlanner->Update		();
 	UpdateNav					();
 }
 
@@ -641,9 +640,7 @@ void CUIMapWnd::ViewGlobalMap()
 
 void CUIMapWnd::ResetActionPlanner()
 {
-	m_ActionPlanner->m_storage.set_property(1,false);
-	m_ActionPlanner->m_storage.set_property(2,false);
-	m_ActionPlanner->m_storage.set_property(3,false);
+	m_ActionPlanner->Reset();
 }
 
 void CUIMapWnd::ViewZoomIn()

@@ -1,20 +1,19 @@
 #pragma once
-#include "../action_planner.h"
-#include "../property_evaluator_const.h"
+#include "UIMapWnd.h"
 
-class CUIMapWnd;
-class CUICustomMap;
-class CUILevelMap;
-
-
-class CMapActionPlanner :public CActionPlanner<CUIMapWnd,true> {
-private:
-	typedef CActionPlanner<CUIMapWnd,true> inherited;
+class FRbmkMapActionPlanner
+{
 
 public:
-					CMapActionPlanner	();
-	virtual			~CMapActionPlanner	();
-	virtual	void	setup				(CUIMapWnd *object);
-	virtual	LPCSTR	object_name			() const;
+					FRbmkMapActionPlanner	(CUIMapWnd* Owner);
+	void			Update();
+	void			Reset();
+private:
+	CUIMapWnd*		Owner;
+	u32				CurrentState = 0;
+	
+	float			EndMovingTime;
+	float			TargetZoom;
+	Frect			DesiredMapRect;
 };
 
