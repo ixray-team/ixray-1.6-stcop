@@ -2454,3 +2454,14 @@ float CWeapon::GetHudFov() {
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
 }
+
+const CameraRecoil& CWeapon::getCameraRecoil(void) const
+{
+	return cam_recoil;
+}
+
+const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
+{
+	return zoom_cam_recoil;
+}
+ 

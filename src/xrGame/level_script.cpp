@@ -40,6 +40,10 @@
 #include "HUDAnimItem.h"
 #include "ActorCondition.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "Inventory.h"
+#include "ShootingObject.h"
+#include "Weapon.h"
+
 
 #include "ai_object_location.h"
 
@@ -960,14 +964,169 @@ void RenderSpawnManagerWindow()
 	}
 }
 
+struct 
+{
+	bool init{};
+	u32 inv_cost{};
+	float inv_weight{};
+
+}
+imgui_weapon_manager;
+
 void RenderWeaponManagerWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WeaponManager)])
 		return;
 
+	if (!g_pGameLevel)
+		return;
+
+	if (!ai().get_alife())
+		return;
+
+	auto draw_item = [](CInventoryItem* pItem) {
+		if (pItem)
+		{
+			if (!imgui_weapon_manager.init)
+			{
+				imgui_weapon_manager.inv_cost = pItem->Cost();
+				imgui_weapon_manager.inv_weight = pItem->Weight();
+				imgui_weapon_manager.init = true;
+			}
+
+
+			if (ImGui::CollapsingHeader("Information"))
+			{
+				if (ImGui::TreeNode("Inventory information"))
+				{
+					ImGui::Text("Cost: %d", pItem->Cost());
+					ImGui::Text("Weight: %f", pItem->Weight());
+					ImGui::Text("Name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameItem()).c_str());
+					ImGui::Text("Short name: [%s]", Platform::ANSI_TO_UTF8(pItem->NameShort()).c_str());
+					ImGui::TextWrapped("Description: [%s]", Platform::ANSI_TO_UTF8(pItem->ItemDescription().c_str()).c_str());
+					ImGui::TreePop();
+				}
+
+				CShootingObject* pSO = dynamic_cast<CShootingObject*>(pItem);
+
+				if (pSO)
+				{
+					if (ImGui::TreeNode("Ballistic information"))
+					{
+						ImGui::Text("Fire distance: %.4f", pSO->getFireDistance());
+						ImGui::Text("Bullet speed: %.4f", pSO->getStartBulletSpeed());
+						ImGui::Text("RPM: %.4f", pSO->getRPM());
+						ImGui::TreePop();
+					}
+
+
+					if (ImGui::TreeNode("Hit information"))
+					{
+						ImGui::Text("Hit impulse: %.4f", pSO->getHitImpulse());
+						const auto& hit_power = pSO->getHitPower();
+						ImGui::Text("Hit power: %.4f %.4f %.4f %.4f", hit_power.x, hit_power.y, hit_power.z, hit_power.z, hit_power.w);
+						const auto& hit_power_critical = pSO->getHitPowerCritical();
+						ImGui::Text("Hit power critical: %.4f %.4f %.4f %.4f", hit_power_critical.x, hit_power_critical.y, hit_power_critical.z, hit_power_critical.w);
+						ImGui::TreePop();
+					}
+				}
+
+				CWeapon* pWeapon = dynamic_cast<CWeapon*>(pItem);
+				if (pWeapon && pSO)
+				{
+					if (ImGui::TreeNode("Ammunition"))
+					{
+						ImGui::Text("Magazine size: %d", pWeapon->GetAmmoMagSize());
+
+						xr_string ammos = "Ammo: ";
+						for (const auto& str : pWeapon->getAmmoTypes())
+						{
+							ammos += str.c_str();
+							ammos += ',';
+						}
+
+						ammos.erase(ammos.rfind(','));
+
+						ImGui::TextWrapped(ammos.c_str());
+						ImGui::TreePop();
+					}
+
+					if (ImGui::TreeNode("Dispersion"))
+					{
+						ImGui::Text("Fire dispersion base: %.4f", pSO->getFireDispersionBase());
+						ImGui::Text("Control inertion factor: %.4f", pItem->GetControlInertionFactor());
+						ImGui::Text("Crosshair inertion: %.4f", pWeapon->GetCrosshairInertion());
+						ImGui::TreePop();
+					}
+
+					if (ImGui::TreeNode("Recoil"))
+					{
+						const auto& cam_recoil = pWeapon->getCameraRecoil();
+						ImGui::Text("Camera return: %s", cam_recoil.ReturnMode ? "enabled" : "disabled");
+						ImGui::Text("Camera relax speed: %.4f", cam_recoil.RelaxSpeed);
+						ImGui::Text("Camera relax speed ai: %.4f", cam_recoil.RelaxSpeed_AI);
+						ImGui::Text("Camera dispersion: %.4f", cam_recoil.Dispersion);
+						ImGui::Text("Camera dispersion inc: %.4f", cam_recoil.DispersionInc);
+						ImGui::Text("Camera dispersion frac: %.4f", cam_recoil.DispersionFrac);
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::SetItemTooltip("Where gun will be pointed that described by law cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)");
+							ImGui::EndTooltip();
+						}
+
+						ImGui::Text("Camera max angle vertical: %.4f", cam_recoil.MaxAngleVert);
+						ImGui::Text("Camera max angle horizontal: %.4f", cam_recoil.MaxAngleHorz);
+						ImGui::Text("Camera step angle horizontal: %.4f", cam_recoil.StepAngleHorz);
+
+						ImGui::SeparatorText("Zoom");
+						const auto& zoom_cam_recoil = pWeapon->getCameraZoomRecoil();
+						ImGui::Text("Zoom camera relax speed: %.4f", zoom_cam_recoil.RelaxSpeed);
+						ImGui::Text("Zoom camera relax speed ai: %.4f", zoom_cam_recoil.RelaxSpeed_AI);
+						ImGui::Text("Zoom cam dispersion: %.4f", zoom_cam_recoil.Dispersion);
+						ImGui::Text("Zoom cam dispersion inc: %.4f", zoom_cam_recoil.DispersionInc);
+						ImGui::Text("Zoom cam dispersion frac: %.4f", zoom_cam_recoil.DispersionFrac);
+						if (ImGui::BeginItemTooltip())
+						{
+							ImGui::SetItemTooltip("Where gun will be pointed that described by law cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)");
+							ImGui::EndTooltip();
+						}
+						ImGui::Text("Zoom cam max angle vertical: %.4f", zoom_cam_recoil.MaxAngleVert);
+						ImGui::Text("Zoom cam max angle horizontal: %.4f", zoom_cam_recoil.MaxAngleHorz);
+						ImGui::Text("Zoom step angle horizontal: %.4f", zoom_cam_recoil.StepAngleHorz);
+						ImGui::TreePop();
+					}
+
+				}
+			}
+
+			if (ImGui::CollapsingHeader("Editing"))
+			{
+
+			}
+		}
+	};
+
 	if (ImGui::Begin("Weapon Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WeaponManager)]))
 	{
+		if (ImGui::BeginTabBar("##TB_InGameWeaponManager"))
+		{
+			if (ImGui::BeginTabItem("Slot 2 (INV_SLOT_2)##TB_InGameWeaponManager"))
+			{
+				CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
+				if (pActor)
+				{
+					CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2); 
+
+					draw_item(pItem);
+				}
+
+				ImGui::EndTabItem();
+			}
+
+
+			ImGui::EndTabBar();
+		}
 
 
 		ImGui::End();
