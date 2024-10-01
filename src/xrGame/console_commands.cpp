@@ -1833,6 +1833,21 @@ public:
 
 extern bool	IsGameTypeSingle();
 
+static bool isValidSection(std::string_view section) {
+	std::string_view visual = pSettings->r_string(section.data(), "visual");
+	shared_str full_path;
+
+	if (visual.find(".ogf") == xr_string::npos)
+	{
+		full_path.printf("%s%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data(), ".ogf");
+	}
+	else {
+		full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
+	}
+
+	return FS.exist(full_path.c_str());
+}
+
 class CCC_GSpawn : public IConsole_Command {
 public:
 	CCC_GSpawn(LPCSTR N) : IConsole_Command(N) {
@@ -1854,21 +1869,21 @@ public:
 				return;
 			}
 
-			if (!pSettings->section_exist(nameSection)) {
+			if (!pSettings->section_exist(nameSection))
+			{
 				Msg("! Can't find section: %s", nameSection);
 				return;
 			}
 
-			//if (pSettings->line_exist(nameSection, "visual"))
-			//{
-			//	shared_str full_path;
-			//	full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, pSettings->r_string( nameSection, "visual" ));
-			//	if(!FS.exist(full_path.c_str()))
-			//	{
-			//		Msg("! Visual not found!");
-			//		return;
-			//	}
-			//}
+			if (pSettings->line_exist(nameSection, "visual"))
+			{
+				if (!isValidSection(nameSection))
+				{
+					std::string_view visual = pSettings->r_string(nameSection, "visual");
+					Msg("! Failed insert [%s] visual not found", nameSection);
+					return;
+				}
+			}
 
 			Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 			auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
@@ -1932,15 +1947,19 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode) override {
 
-		if (IsGameTypeSingle()) {
-			if (!ai().get_alife()) {
+		if (IsGameTypeSingle())
+		{
+			if (!ai().get_alife())
+			{
 				Msg("! ALife simulator is needed to perform specified command!");
 				return;
 			}
 		}
 
-		for (const auto& section : pSettings->sections()) {
-			if (section->line_exist("class")) {
+		for (const auto& section : pSettings->sections())
+		{
+			if (section->line_exist("class"))
+			{
 				tips.push_back(section->Name.c_str());
 			}
 		}
@@ -2136,6 +2155,16 @@ public:
 			return;
 		}
 
+		if (pSettings->line_exist(nameSection, "visual"))
+		{
+			if (!isValidSection(nameSection))
+			{
+				std::string_view visual = pSettings->r_string(nameSection, "visual");
+				Msg("! Failed insert [%s] visual not found", nameSection);
+				return;
+			}
+		}
+
 		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
 		if (tpGame == nullptr) {
 			return;
@@ -2153,8 +2182,13 @@ public:
 			return;
 		}
 
-		for (const auto& section : pSettings->sections()) {
-			if (section->line_exist("cost") && section->line_exist("inv_weight")) {
+		for (const auto& section : pSettings->sections())
+		{
+			if (section->line_exist("visual")
+				&& isValidSection(section->Name.c_str())
+				&& section->line_exist("cost") 
+				&& section->line_exist("inv_weight"))
+			{
 				tips.push_back(section->Name.c_str());
 			}
 		}

@@ -81,6 +81,28 @@ void InitSections()
 			continue;
 
 		CLASS_ID classId = pSettings->r_clsid(name.data(), "class");
+
+		if (pSection->line_exist("visual"))
+		{
+			std::string_view visual = pSettings->r_string(name.data(), "visual");
+			shared_str full_path;
+
+			if (visual.find(".ogf") == xr_string::npos)
+			{
+				full_path.printf("%s%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data(), ".ogf");
+			}
+			else {
+				full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
+			}
+			if(!FS.exist(full_path.c_str()))
+			{
+				Msg("! SpawnManager: failed to spawn [%s] visual not found: %s", name.data(), full_path.c_str());
+				continue;
+			}
+		}
+		else {
+			continue;
+		}
 		
 		bool isInvItem = pSection->line_exist("cost") && pSection->line_exist("inv_weight");
 		size_t mp_index = name.find("mp_");
@@ -97,7 +119,13 @@ void InitSections()
 		}
 		else if (g_pClsidManager->is_weapon(classId))
 		{
-			if (isInvItem)
+			bool isValidSect = true;
+			if (pSection->line_exist("parent_section"))
+			{
+				const char* parentSection = pSettings->r_string(name.data(), "parent_section");
+				isValidSect = strcmp(parentSection, name.data()) == 0;
+			}
+			if (isInvItem && isValidSect)
 			{
 				imgui_spawn_manager.WeaponsSections.Sorted.push_back({ name, pSection });
 			}
