@@ -240,6 +240,12 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Game"))
+			{
+				ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
+				ImGui::EndMenu();
+			}
+
 			if (ImGui::BeginMenu("Tools")) 
 			{
 				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
