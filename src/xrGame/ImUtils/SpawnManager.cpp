@@ -916,8 +916,6 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 	if (count == 0)
 		count = 1;
 
-
-
 	if (Actor())
 	{
 		if (imgui_spawn_manager.sound_tip.get())
@@ -925,8 +923,17 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 			imgui_spawn_manager.sound_tip->PlayAtPos(Actor()->lua_game_object(), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f, sm_2D);
 		}
 
-		char text_news[64]{};
-		sprintf_s(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
+		char text_news[128]{};
+		if (section->line_exist("inv_name"))
+		{
+			const char* name = g_pStringTable->translate(pSettings->r_string(section->Name.c_str(), "inv_name")).c_str();
+			sprintf_s(text_news, sizeof(text_news), "[%s] x [%d] (%s)", section->Name.c_str(), count, name);
+		}
+		else
+		{
+			sprintf_s(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
+		}
+
 		GAME_NEWS_DATA				news_data;
 		news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
 		news_data.news_caption = g_pStringTable->translate("general_in_item");
