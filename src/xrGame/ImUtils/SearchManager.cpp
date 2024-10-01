@@ -25,6 +25,7 @@ void RenderSearchManagerWindow()
 	if (g_pClsidManager == nullptr)
 		return;
 
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
 	if (ImGui::Begin("Search Manager"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
 	{
 		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items) / sizeof(imgui_search_manager.combo_items[0]);
@@ -246,6 +247,7 @@ void RenderSearchManagerWindow()
 
 		ImGui::End();
 	}
+	ImGui::PopStyleColor(1);
 }
 
 clsid_manager imgui_clsid_manager;
@@ -311,10 +313,10 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_m209);
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_f1);
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_rgd5);
-	
+
 	imgui_clsid_manager.add_outfit(imgui_clsid_manager.outfit);
 	imgui_clsid_manager.add_outfit(imgui_clsid_manager.helmet);
-	
+
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.addon_scope);
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.addon_silen);
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.addon_glaun);
@@ -350,7 +352,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_weapon_val);
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_weapon_vintorez);
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_weapon_walther);
-	
+
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_ammo_base);
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_ammo_og7b);
 	imgui_clsid_manager.add_mp_stuff(imgui_clsid_manager.mp_ammo_m209);

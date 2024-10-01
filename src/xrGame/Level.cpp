@@ -194,6 +194,7 @@ extern CAI_Space *g_ai_space;
 
 CLevel::~CLevel()
 {
+	DestroyImGuiInGame();
 	xr_delete					(g_player_hud);
 	delete_data					(hud_zones_list);
 	hud_zones_list				= nullptr;

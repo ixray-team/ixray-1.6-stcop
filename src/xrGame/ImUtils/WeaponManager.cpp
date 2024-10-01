@@ -4,6 +4,7 @@
 #include "../inventory_item.h"
 #include "../Weapon.h"
 #include "../ui/UIInventoryUtilities.h"
+#include "ImUtils.h"
 
 struct
 {
@@ -195,6 +196,11 @@ void RenderWeaponManagerWindow()
 			if (imgui_weapon_manager.weapon_id != pItem->object_id())
 				imgui_weapon_manager.init = false;
 
+			if (Render)
+			{
+				imgui_weapon_manager.ui_icons = Render->getSurface("ui\\ui_icon_equipment");
+			}
+
 			if (!imgui_weapon_manager.init)
 			{
 				// clear bool flags that line_exist checking for correct init/uninit cycle
@@ -210,11 +216,6 @@ void RenderWeaponManagerWindow()
 				imgui_weapon_manager.inv_grid_y = pItem->GetInvGridRect().y1;
 				imgui_weapon_manager.inv_grid_width = pItem->GetInvGridRect().x2;
 				imgui_weapon_manager.inv_grid_height = pItem->GetInvGridRect().y2;
-				
-				if (Render)
-				{
-					imgui_weapon_manager.ui_icons = Render->getSurface("ui\\ui_icon_equipment");
-				}
 
 				if (pSO)
 				{
@@ -1059,6 +1060,7 @@ void RenderWeaponManagerWindow()
 		}
 		};
 
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, kGeneralAlphaLevelForImGuiWindows));
 	if (ImGui::Begin("Weapon Manager", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_WeaponManager)]))
 	{
 		if (ImGui::BeginTabBar("##TB_InGameWeaponManager"))
@@ -1112,4 +1114,5 @@ void RenderWeaponManagerWindow()
 
 		ImGui::End();
 	}
+	ImGui::PopStyleColor(1);
 }

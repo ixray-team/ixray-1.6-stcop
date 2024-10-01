@@ -39,5 +39,7 @@
 extern CInifile* pGameGlobals;
 #endif
 
+extern void DestroyImGuiInGame();
+
 #undef min
 #undef max

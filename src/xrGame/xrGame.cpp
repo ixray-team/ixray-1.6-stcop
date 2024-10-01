@@ -18,6 +18,7 @@ CInifile* pGameGlobals = nullptr;
 
 extern void RegisterImGuiInGame();
 
+
 extern "C" 
 {
 	DLL_API void __cdecl xrGameInitialize()
