@@ -124,7 +124,6 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ai/monsters/rats/ai_rat_fsm.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/IUWpnParams.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFaction.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFraction.*")
-list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UITreeViewItem.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIStalkersRankingWnd.*")
 
 # xrGame project

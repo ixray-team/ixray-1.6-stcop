@@ -24,7 +24,7 @@
 #include "../../xrUI/uicursor.h"
 #include "UIPdaSpot.h"
 
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
 
 CUIMapWnd* g_map_wnd = nullptr; // quick temporary solution -(

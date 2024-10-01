@@ -9,7 +9,8 @@ class UI_API CUIFixedScrollBar :
 	public CUIScrollBar
 {
 private:
-	typedef CUIWindow inherited;
+	using inherited = CUIWindow;
+
 protected:
 	CUI3tButton*		m_ScrollBox;
 	Ivector2			m_ScrollBoxOffset;
@@ -17,9 +18,11 @@ protected:
 	virtual void UpdateScrollBar();
 	virtual void ClampByViewRect();
 	virtual	void SetPosScrollFromView(float view_pos, float view_width, float view_offs);
+
 public:
 	CUIFixedScrollBar();
 	virtual	~CUIFixedScrollBar();
+
 	virtual	void InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR profile = "pda");
 	virtual void SetWidth(float width) {};
 	virtual void SetHeight(float height) {};
@@ -31,5 +34,4 @@ public:
 	virtual	bool OnMouseDownEx();
 	virtual void OnMouseUp(int mouse_btn);
 	virtual bool OnKeyboardHold(int dik);
-
 };

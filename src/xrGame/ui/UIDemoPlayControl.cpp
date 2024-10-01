@@ -2,7 +2,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UIListBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "UIDemoPlayControl.h"

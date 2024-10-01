@@ -16,7 +16,7 @@
 #include "object_broker.h"
 
 #include "UIHelperGame.h"
-#include "ui_arrow.h"
+#include "../../xrUI/Widgets/ui_arrow.h"
 #include "UIHudStatesWnd.h"
 
 #include "../Level.h"

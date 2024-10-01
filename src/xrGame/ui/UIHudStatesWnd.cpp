@@ -14,7 +14,7 @@
 #include "../../xrUI/Widgets/UIProgressShape.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
-#include "ui_arrow.h"
+#include "../../xrUI/Widgets/ui_arrow.h"
 #include "UIInventoryUtilities.h"
 #include "CustomDetector.h"
 #include "../ai/monsters/basemonster/base_monster.h"

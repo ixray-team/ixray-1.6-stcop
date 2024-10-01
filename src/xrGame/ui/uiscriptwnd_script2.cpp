@@ -6,7 +6,7 @@
 #include "UIScriptWnd.h"
 #include "../../xrUI/Widgets/UIButton.h"
 #include "UIMessageBox.h"
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UICheckButton.h"
 #include "../../xrUI/Widgets/UIRadioButton.h"
 #include "../../xrUI/Widgets/UIStatic.h"

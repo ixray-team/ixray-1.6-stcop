@@ -53,9 +53,13 @@ file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_BTN_FILES
 )
 
 file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_LIST_FILES "Widgets/UIListBox*.*")
-file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_SCROLL_FILES "Widgets/UIScroll*.*")
-file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_PROGRESS_FILES "Widgets/UIProgress*.*")
+file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_SCROLL_FILES "Widgets/UIScroll*.*" "Widgets/UIFixedScrollBar.*")
+file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_TAB_FILES "Widgets/UITab*.*")
+file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_PROGRESS_FILES "Widgets/UIProgress*.*" "Widgets/UIDoubleProgressBar*.*")
+file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_OPTIONS_FILES "Widgets/UIOptions*.*")
+file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_TRACK_FILES "Widgets/UITrack*.*")
 file(GLOB_RECURSE XRPU_SOURCE_ELEMENTS_EDIT_FILES "Widgets/UIEditBox*.*" "Widgets/UICustomEdit.*")
+
 # Source groups
 source_group("core" FILES ${XRPU_SOURCE_ALL_FILES})
 source_group("xml" FILES ${XRPU_SOURCE_XML_FILES})
@@ -63,15 +67,21 @@ source_group("widgets/progress" FILES ${XRPU_SOURCE_ELEMENTS_PROGRESS_FILES})
 source_group("widgets/editbox" FILES ${XRPU_SOURCE_ELEMENTS_EDIT_FILES})
 source_group("widgets/listbox" FILES ${XRPU_SOURCE_ELEMENTS_LIST_FILES})
 source_group("widgets/scroll" FILES ${XRPU_SOURCE_ELEMENTS_SCROLL_FILES})
+source_group("widgets/track" FILES ${XRPU_SOURCE_ELEMENTS_TRACK_FILES})
 source_group("widgets/hints" FILES ${XRPU_SOURCE_ELEMENTS_HINT_FILES})
 source_group("widgets/buttons" FILES ${XRPU_SOURCE_ELEMENTS_BTN_FILES})
 source_group("widgets/lines" FILES ${XRPU_SOURCE_ELEMENTS_LINES_FILES})
+source_group("widgets/tab" FILES ${XRPU_SOURCE_ELEMENTS_TAB_FILES})
 source_group("widgets/frames" FILES ${XRPU_SOURCE_ELEMENTS_FRAME_FILES})
 source_group("widgets/static" FILES ${XRPU_SOURCE_ELEMENTS_STATIC_FILES})
+source_group("widgets/options components" FILES ${XRPU_SOURCE_ELEMENTS_OPTIONS_FILES})
 source_group("widgets/other" FILES ${XRPU_SOURCE_ELEMENTS_FILES})
 
 # Apply list
 list(APPEND XRPU_SRC_FILES ${XRPU_SOURCE_ALL_FILES})
+
+# Remove unused files
+list(FILTER XRPU_SRC_FILES EXCLUDE REGEX "Widgets/UITreeViewItem.*")
 
 # xrUI project
 add_library(xrUI SHARED ${XRPU_SRC_FILES})

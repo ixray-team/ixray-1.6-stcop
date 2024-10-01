@@ -26,7 +26,7 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIBtnHint.h"
 #include "UIMessageBoxEx.h"
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
 
 

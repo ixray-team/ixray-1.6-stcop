@@ -3,7 +3,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-#include "UIStatix.h"
+#include "../../xrUI/Widgets/UIStatix.h"
 #include "../../xrUI/UICursor.h"
 #include "../UIGameCustom.h"
 #include "../game_cl_deathmatch.h"

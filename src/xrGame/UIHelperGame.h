@@ -5,6 +5,7 @@
 //	Description : UI Helper class
 ////////////////////////////////////////////////////////////////////////////
 #pragma once 
+#include "../xrUI/UIXmlInit.h"
 #include "../xrUI/UIHelper.h"
 
 class UIHelperGame: 

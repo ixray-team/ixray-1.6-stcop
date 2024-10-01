@@ -2,7 +2,7 @@
 #include "UIOutfitInfo.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIStatic.h"
-#include "UIDoubleProgressBar.h"
+#include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 #include "UIHelperGame.h"
 
 #include "../CustomOutfit.h"

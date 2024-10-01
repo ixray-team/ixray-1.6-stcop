@@ -11,7 +11,7 @@
 #include "UICellCustomItems.h"
 #include "UIItemInfo.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "UIMainIngameWnd.h"
 #include "UIGameCustom.h"

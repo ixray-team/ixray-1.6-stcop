@@ -2,7 +2,7 @@
 #include "UIKeyBinding.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/xrUIXmlParser.h"
-#include "UIEditKeyBind.h"
+#include "../../xrUI/Widgets/UIEditKeyBind.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 
 CUIKeyBinding::CUIKeyBinding()

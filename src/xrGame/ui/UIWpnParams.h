@@ -1,7 +1,7 @@
 #pragma once
-#include "../../xrUI/Widgets/UIWindow.h"
 
-#include "UIDoubleProgressBar.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 
 class CUIXml;
 class CInventoryItem;
@@ -10,7 +10,8 @@ class CInventoryItem;
 
 struct SLuaWpnParams;
 
-class CUIWpnParams : public CUIWindow 
+class CUIWpnParams : 
+	public CUIWindow 
 {
 public:
 							CUIWpnParams		();
