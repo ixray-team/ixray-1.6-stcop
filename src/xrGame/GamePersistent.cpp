@@ -668,30 +668,32 @@ if (!g_pGameLevel)
 
 	inherited::OnFrame			();
 
-	if(!Device.Paused())
-		Engine.Sheduler.Update		();
+	if (!Device.Paused())
+	{
+		Engine.Sheduler.Update();
 
 		// update weathers ambient
-	if(!Device.Paused())
-		WeathersUpdate				();
+		WeathersUpdate();
+	}
 
-	if	(0!=pDemoFile)
+	if (0 != pDemoFile)
 	{
-		if	(Device.dwTimeGlobal>uTime2Change){
+		if (Device.dwTimeGlobal > uTime2Change)
+		{
 			// Change level + play demo
-			if			(pDemoFile->elapsed()<3)	pDemoFile->seek(0);		// cycle
+			if (pDemoFile->elapsed() < 3)	pDemoFile->seek(0);		// cycle
 
 			// Read params
 			string512			params;
-			pDemoFile->r_string	(params,sizeof(params));
+			pDemoFile->r_string(params, sizeof(params));
 			string256			o_server, o_client, o_demo;	u32 o_time;
-			sscanf				(params,"%[^,],%[^,],%[^,],%d",o_server,o_client,o_demo,&o_time);
+			sscanf(params, "%[^,],%[^,],%[^,],%d", o_server, o_client, o_demo, &o_time);
 
 			// Start _new level + demo
-			g_pEventManager->Event.Defer	("KERNEL:disconnect");
-			g_pEventManager->Event.Defer	("KERNEL:start",size_t(xr_strdup(_Trim(o_server))),size_t(xr_strdup(_Trim(o_client))));
-			g_pEventManager->Event.Defer	("GAME:demo",	size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
-			uTime2Change		= 0xffffffff;	// Block changer until Event received
+			g_pEventManager->Event.Defer("KERNEL:disconnect");
+			g_pEventManager->Event.Defer("KERNEL:start", size_t(xr_strdup(_Trim(o_server))), size_t(xr_strdup(_Trim(o_client))));
+			g_pEventManager->Event.Defer("GAME:demo", size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+			uTime2Change = 0xffffffff;	// Block changer until Event received
 		}
 	}
 
@@ -699,6 +701,7 @@ if (!g_pGameLevel)
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
+	
 	UpdateDof();
 }
 
@@ -710,45 +713,45 @@ if (!g_pGameLevel)
 
 void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	if(E==eQuickLoad)
+	if (E == eQuickLoad)
 	{
 		loading_save_timer.Start();
 		loading_save_timer_started = true;
 		Msg("* Game Loading Timer: Started from Save Reloading");
 
 		if (Device.Paused())
-			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
+			Device.Pause(FALSE, TRUE, TRUE, "eQuickLoad");
 
-		if(CurrentGameUI())
+		if (CurrentGameUI())
 		{
 			CurrentGameUI()->HideShownDialogs();
 			CurrentGameUI()->UIMainIngameWnd->reset_ui();
 			CurrentGameUI()->PdaMenu().Reset();
 		}
 
-		if(g_tutorial)
+		if (g_tutorial)
 			g_tutorial->Stop();
 
-		if(g_tutorial2)
+		if (g_tutorial2)
 			g_tutorial2->Stop();
 
-		LPSTR		saved_name	= (LPSTR)(P1);
+		LPSTR saved_name = (LPSTR)(P1);
 
-		Level().remove_objects	();
-		game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-		R_ASSERT				(game);
-		game->restart_simulator	(saved_name);
-		xr_free					(saved_name);
+		Level().remove_objects();
+		game_sv_Single* game = smart_cast<game_sv_Single*>(Level().Server->game);
+		R_ASSERT(game);
+		game->restart_simulator(saved_name);
+		xr_free(saved_name);
 		return;
-	}else
-	if(E==eDemoStart)
+	}
+	else if (E == eDemoStart)
 	{
 		string256			cmd;
-		LPCSTR				demo	= LPCSTR(P1);
-		xr_sprintf				(cmd,"demo_play %s",demo);
-		Console->Execute	(cmd);
-		xr_free				(demo);
-		uTime2Change		= Device.TimerAsync() + u32(P2)*1000;
+		LPCSTR				demo = LPCSTR(P1);
+		xr_sprintf(cmd, "demo_play %s", demo);
+		Console->Execute(cmd);
+		xr_free(demo);
+		uTime2Change = Device.TimerAsync() + u32(P2) * 1000;
 	}
 }
 
@@ -895,32 +898,37 @@ void CGamePersistent::RestoreEffectorDOF()
 }
 #include "HUDManager.h"
 
-//	m_dof		[4];	// 0-dest 1-current 2-from 3-original
 void CGamePersistent::UpdateDof()
 {
-	static float diff_far	= pSettings->r_float("zone_pick_dof","far");//70.0f;
-	static float diff_near	= pSettings->r_float("zone_pick_dof","near");//-70.0f;
+	PROF_EVENT("CGamePersistent UpdateDof");
 
-	if(m_bPickableDOF)
+	static float diff_far = pSettings->r_float("zone_pick_dof", "far");//70.0f;
+	static float diff_near = pSettings->r_float("zone_pick_dof", "near");//-70.0f;
+
+	if (m_bPickableDOF)
 	{
 		Fvector pick_dof;
-		pick_dof.y	= HUD().GetCurrentRayQuery().range;
-		pick_dof.x	= pick_dof.y+diff_near;
-		pick_dof.z	= pick_dof.y+diff_far;
-		m_dof[0]	= pick_dof;
-		m_dof[2]	= m_dof[1]; //current
+		pick_dof.y = HUD().GetCurrentRayQuery().range;
+		pick_dof.x = pick_dof.y + diff_near;
+		pick_dof.z = pick_dof.y + diff_far;
+		m_dof[0] = pick_dof;
+		m_dof[2] = m_dof[1]; //current
 	}
+
 	if(m_dof[1].similar(m_dof[0]))
 		return;
 
-	float td			= Device.fTimeDelta;
+	if (m_dof[1].similar(m_dof[0]))
+		return;
+
+	float td = Device.fTimeDelta;
 	Fvector				diff;
-	diff.sub			(m_dof[0], m_dof[2]);
-	diff.mul			(td/0.2f); //0.2 sec
-	m_dof[1].add		(diff);
-	(m_dof[0].x<m_dof[2].x)?clamp(m_dof[1].x,m_dof[0].x,m_dof[2].x):clamp(m_dof[1].x,m_dof[2].x,m_dof[0].x);
-	(m_dof[0].y<m_dof[2].y)?clamp(m_dof[1].y,m_dof[0].y,m_dof[2].y):clamp(m_dof[1].y,m_dof[2].y,m_dof[0].y);
-	(m_dof[0].z<m_dof[2].z)?clamp(m_dof[1].z,m_dof[0].z,m_dof[2].z):clamp(m_dof[1].z,m_dof[2].z,m_dof[0].z);
+	diff.sub(m_dof[0], m_dof[2]);
+	diff.mul(td / 0.2f); //0.2 sec
+	m_dof[1].add(diff);
+	(m_dof[0].x < m_dof[2].x) ? clamp(m_dof[1].x, m_dof[0].x, m_dof[2].x) : clamp(m_dof[1].x, m_dof[2].x, m_dof[0].x);
+	(m_dof[0].y < m_dof[2].y) ? clamp(m_dof[1].y, m_dof[0].y, m_dof[2].y) : clamp(m_dof[1].y, m_dof[2].y, m_dof[0].y);
+	(m_dof[0].z < m_dof[2].z) ? clamp(m_dof[1].z, m_dof[0].z, m_dof[2].z) : clamp(m_dof[1].z, m_dof[2].z, m_dof[0].z);
 }
 
 #include "ui\uimainingamewnd.h"

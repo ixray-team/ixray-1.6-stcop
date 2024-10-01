@@ -152,6 +152,7 @@ public:
 	void							soft_Render		();
 
 	// Hardware processor
+	volatile bool					bWait = false;
 	ref_geom						hw_Geom;
 	u32								hw_BatchSize;
 	ID3DVertexBuffer*			hw_VB;
@@ -196,17 +197,10 @@ public:
 	void							Render			();
 
 	/// MT stuff
-	xrCriticalSection				MT;
 	volatile u32					m_frame_calc;
 	volatile u32					m_frame_rendered;
 
 	void							MT_CALC			() ;
-	ICF	void						MT_SYNC			() {
-		if (m_frame_calc == RDEVICE.dwFrame)
-			return;
-
-		MT_CALC						(); 
-	}
 
 	CDetailManager					();
 	virtual ~CDetailManager			();

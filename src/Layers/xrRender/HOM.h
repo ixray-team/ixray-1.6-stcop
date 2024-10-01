@@ -24,7 +24,6 @@ private:
 	u32						tris_in_frame			;
 #endif
 
-	xrCriticalSection		MT;
 	volatile u32			MT_frame_rendered;
 
 	void					Render_DB	(CFrustum&	base);
@@ -40,12 +39,6 @@ public:
 	void					Enable		();
 
 	void					MT_RENDER	();
-	ICF	void				MT_SYNC		()			{ 
-		if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-			return;
-
-		MT_RENDER			(); 
-	}
 
 	BOOL					visible		(vis_data&	vis);
 	BOOL					visible		(Fbox3&		B);

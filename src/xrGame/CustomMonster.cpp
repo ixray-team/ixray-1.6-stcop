@@ -328,7 +328,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
 	if (g_Alive()) {
-		if ( false && g_mt_config.test(mtAiVision) )
+		if (g_mt_config.test(mtAiVision) )
 #ifndef DEBUG
 			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 #else // DEBUG

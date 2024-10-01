@@ -103,9 +103,8 @@ void	CRender::render_lights	(light_Package& LP)
 				Lights_LastFrame.push_back	(L);
 
 			// render
-			phase									= PHASE_SMAP;
-			if (RImplementation.o.Tshadows)	r_pmask	(true,true	);
-			else							r_pmask	(true,false	);
+			phase = PHASE_SMAP;
+			r_pmask(true, !!RImplementation.o.Tshadows);
 			PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
 
 			bool decorative_light = false;

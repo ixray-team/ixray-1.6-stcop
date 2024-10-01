@@ -213,6 +213,7 @@ public:
 	CRegistrator	<pureFrame			>			seqFrameMT;
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
+	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallelRender;
 
 	std::unordered_multimap<u32,std::function<void()>> m_time_callbacks;
 	void callback(const u32& cb_time, const std::function<void()> &func);

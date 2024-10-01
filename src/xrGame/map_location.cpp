@@ -356,8 +356,8 @@ void CMapLocation::CalcLevelName()
 
 bool CMapLocation::Update() //returns actual
 {
-	R_ASSERT(m_cached.m_updatedFrame!=Device.dwFrame);
-		
+	if (m_cached.m_updatedFrame == Device.dwFrame)
+		return true;
 
 	if(	m_flags.test(eTTL) )
 	{
