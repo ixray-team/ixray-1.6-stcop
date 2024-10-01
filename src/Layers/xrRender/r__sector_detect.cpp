@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "FHierrarhyVisual.h"
 #if (RENDER==R_R4)
 #include "r4.h"
 #endif
@@ -41,6 +42,54 @@ IRender_Sector* CRender::detectSector(const Fvector& P)
 		S					= detectSector(P,dir);
 	}
 	return S;
+}
+
+IRender_Sector* CRender::detectLastSector(const Fvector& P)
+{
+	if(SectorsCount()==1)
+		return pOutdoorSector;
+
+	auto detectSector = [&](const Fvector& P, Fvector& dir)
+	{
+		Sectors_xrc.ray_options		(CDB::OPT_ONLYNEAREST);
+		// Portals model
+		if (rmPortals)	
+		{
+			Sectors_xrc.ray_query	(rmPortals,P,dir,1000.f);
+			if (Sectors_xrc.r_count()) {
+				CDB::RESULT *RP = Sectors_xrc.r_begin();
+				CDB::TRI*	pTri	= rmPortals->get_tris() + RP->id;
+				CPortal*	pPortal	= (CPortal*) Portals[pTri->dummy];
+				CSector* S = pPortal->getSectorFacing(P);
+				FHierrarhyVisual* pV = (FHierrarhyVisual*)S->root();
+				if(pV)
+				{
+					if(pV->vis.box.contains(P))
+						return (IRender_Sector*)S;
+				}
+			}
+		}
+
+		// Geometry model
+		Sectors_xrc.ray_query	(g_pGameLevel->ObjectSpace.GetStaticModel(),P,dir,1000.f);
+		if (Sectors_xrc.r_count()) {
+			CDB::RESULT *RP = Sectors_xrc.r_begin();
+			return getSector(RP->sector);
+		}
+	};
+
+	IRender_Sector*	S	= nullptr;	
+	Fvector			dir; 
+
+	dir.set				(0,-1,0);
+	S					= detectSector(P,dir);
+	if (nullptr==S)		
+	{
+		dir.set				(0,1,0);
+		S					= detectSector(P,dir);
+	}
+	return S;
+
 }
 
 IRender_Sector* CRender::detectSector(const Fvector& P, Fvector& dir)

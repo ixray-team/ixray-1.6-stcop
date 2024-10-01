@@ -167,6 +167,7 @@ public:
 	IRender_Sector*					getSectorActive				();
 	IRenderVisual*					model_CreatePE				(LPCSTR name);
 	IRender_Sector*					detectSector				(const Fvector& P, Fvector& D);
+	IRender_Sector*					detectLastSector			(const Fvector& P);
 	int								translateSector				(IRender_Sector* pSector);
 	
 	virtual SurfaceParams getSurface(const char* nameTexture) override;
