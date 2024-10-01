@@ -210,6 +210,7 @@ public:
 		eoMultipleUsage	= (1<<4),			
 		eoSoundOccluder	= (1<<5),
 		eoHQExport      = (1<<6),           
+		eoSkipOpt       = (1<<7),           
 		eoFORCE32		= u32(-1)           
 	};
 	IC BOOL			IsDynamic				(){return m_objectFlags.is(eoDynamic);}

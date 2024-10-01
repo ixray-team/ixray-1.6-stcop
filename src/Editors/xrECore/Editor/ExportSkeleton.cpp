@@ -816,22 +816,25 @@ bool CExportSkeleton::ExportGeometry(IWriter& F, u8 infl)
 	xr_vector<FvectorVec>	bone_points;
 	bone_points.resize		(m_Source->BoneCount());
 
-	for (SplitIt split_it=m_Splits.begin(); split_it!=m_Splits.end(); ++split_it)
+	for (SSplit& SplitMeshData : m_Splits)
 	{
 		if (m_Source->m_objectFlags.is(CEditableObject::eoProgressive))
-			split_it->MakeProgressive();
-		else
-			split_it->MakeStripify();
-
-		SkelVertVec& lst = split_it->getV_Verts();
-		for (SkelVertIt sv_it=lst.begin(); sv_it!=lst.end(); sv_it++)
 		{
-			bone_points		[sv_it->bones[0].id].push_back						(sv_it->offs);
-			bones			[sv_it->bones[0].id]->_RITransform().transform_tiny(bone_points[sv_it->bones[0].id].back());
+			SplitMeshData.MakeProgressive();
 		}
-#if 1
-		pb->Inc		();
-#endif
+		else if (!m_Source->m_objectFlags.is(CEditableObject::eoSkipOpt))
+		{
+			SplitMeshData.MakeStripify();
+		}
+
+		SkelVertVec& lst = SplitMeshData.getV_Verts();
+		for (SkelVertIt sv_it = lst.begin(); sv_it != lst.end(); sv_it++)
+		{
+			bone_points[sv_it->bones[0].id].push_back(sv_it->offs);
+			bones[sv_it->bones[0].id]->_RITransform().transform_tiny(bone_points[sv_it->bones[0].id].back());
+		}
+
+		pb->Inc();
 	}
 
 	// create OGF

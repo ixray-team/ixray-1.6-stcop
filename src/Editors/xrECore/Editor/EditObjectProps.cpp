@@ -31,6 +31,7 @@ xr_token ECORE_API eo_type_token[]={
 	{ "Static",					0},
 	{ "Dynamic",				CEditableObject::eoDynamic},
 	{ "Progressive Dynamic",	CEditableObject::eoDynamic|CEditableObject::eoProgressive},
+	{ "Disable Opt Dynamic",	CEditableObject::eoDynamic|CEditableObject::eoSkipOpt},
 	{ "HOM",					CEditableObject::eoHOM},
 	{ "Multiple Usage",			CEditableObject::eoMultipleUsage|CEditableObject::eoUsingLOD},
 	{ "Sound Occluder",			CEditableObject::eoSoundOccluder},
