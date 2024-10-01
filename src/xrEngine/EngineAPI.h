@@ -39,6 +39,7 @@ enum class EditorUI : u8
 	HudAdjust,
 	ScenesViewer,
 	CameraEffectors,
+	Game_TimeManager,
 	Count
 };
 
