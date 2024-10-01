@@ -1,5 +1,5 @@
 #pragma once
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 #include "UIDoubleProgressBar.h"
 

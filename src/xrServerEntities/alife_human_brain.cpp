@@ -24,7 +24,7 @@
 #	include "movement_manager_space.h"
 #	include "alife_smart_terrain_registry.h"
 #	include "alife_time_manager.h"
-#	include "date_time.h"
+#	include "../xrEngine/date_time.h"
 #	ifdef DEBUG
 #		include "level.h"
 #		include "map_location.h"

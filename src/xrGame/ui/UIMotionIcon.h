@@ -1,6 +1,6 @@
 #pragma once
-#include "UIProgressBar.h"
-#include "UIProgressShape.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 
 class CUIMotionIcon : public CUIWindow
 {

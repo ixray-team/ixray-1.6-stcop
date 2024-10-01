@@ -9,7 +9,7 @@
 #include "game_cl_base.h"
 #include "../xrEngine/igame_persistent.h"
 
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 #include "InventoryOwner.h"
 #include "relation_registry.h"
 #include "character_info.h"
@@ -21,7 +21,7 @@
 #include "Inventory.h"
 
 #include <ai/monsters/poltergeist/poltergeist.h>
-#include "UIFontDefines.h"
+#include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "UIWindow.h"
-#include "UIWndCallback.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 class CUIXml;
 class CUI3tButton;

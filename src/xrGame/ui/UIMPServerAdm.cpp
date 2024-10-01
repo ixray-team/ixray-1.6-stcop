@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "UIMPServerAdm.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
-#include "UIEditBox.h"
-#include "UISpinNum.h"
-#include "UICheckButton.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UISpinNum.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
 #include "../../xrEngine/xr_ioconsole.h"
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 CUIMpServerAdm::CUIMpServerAdm()
 {

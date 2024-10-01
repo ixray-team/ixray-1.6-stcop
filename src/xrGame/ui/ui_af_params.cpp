@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "ui_af_params.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 #include "../Actor.h"
 #include "../ActorCondition.h"
 #include "../inventory_item.h"
 
 #include "object_broker.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
 
 u32 const red_clr   = color_argb(255,210,50,50);

@@ -3,7 +3,7 @@
 #include "HitMarker.h"
 #include "../xrEngine/render.h"
 #include "../xrEngine/LightAnimLibrary.h"
-#include "UIStaticItem.h"
+#include "../../xrUI/Widgets/UIStaticItem.h"
 
 #include "grenade.h"
 

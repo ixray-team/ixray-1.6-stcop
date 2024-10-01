@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIAchivementsIndicator.h"
-#include "ui/UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "ui/UIGameLog.h"
-#include "ui/xrUIXmlParser.h"
+#include "../../xrUI/xrUIXmlParser.h"
 #include "ui/UIPdaMsgListItem.h"
 #include "profile_data_types.h"
 

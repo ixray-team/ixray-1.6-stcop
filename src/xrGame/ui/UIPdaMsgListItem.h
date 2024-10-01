@@ -1,7 +1,8 @@
 #pragma once
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
-class CUIPdaMsgListItem : public CUIColorAnimConrollerContainer
+class CUIPdaMsgListItem : 
+	public CUIColorAnimConrollerContainer
 {
 	typedef	CUIColorAnimConrollerContainer	inherited;
 public:

@@ -1,12 +1,14 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrScripts/script_space_forward.h"
 #include "../../xrScripts/script_export_space.h"
 
 struct SCallbackInfo;
 
-class CUIDialogWndEx :public CUIDialogWnd, public DLL_Pure
+class CUIDialogWndEx :
+	public CUIDialogWnd,
+	public DLL_Pure
 {
 typedef CUIDialogWnd				inherited;
 typedef xr_vector<SCallbackInfo*>	CALLBACKS;

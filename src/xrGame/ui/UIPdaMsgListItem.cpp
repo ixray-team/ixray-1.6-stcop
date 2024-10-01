@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIPdaMsgListItem.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
 void CUIPdaMsgListItem::SetFont(CGameFont* pFont)
 {

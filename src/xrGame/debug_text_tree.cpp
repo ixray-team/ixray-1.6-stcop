@@ -10,7 +10,7 @@
 #include "debug_text_tree.h"
 
 #include "Level.h"
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 
 namespace debug {
 

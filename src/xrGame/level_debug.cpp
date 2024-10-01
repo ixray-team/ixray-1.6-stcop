@@ -8,7 +8,7 @@
 // Lain: added
 #	include "debug_text_tree.h"
 #	include "ai/monsters/basemonster/base_monster.h"
-#	include "ui_base.h"
+#	include "../../xrUI/ui_base.h"
 #endif
 
 #ifdef DEBUG

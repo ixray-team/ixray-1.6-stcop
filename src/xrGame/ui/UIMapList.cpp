@@ -1,14 +1,14 @@
 #include "StdAfx.h"
 #include "UIMapList.h"
-#include "UIListBox.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UI3tButton.h"
-#include "UISpinText.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UISpinText.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIMapInfo.h"
-#include "UIComboBox.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/Widgets/UIComboBox.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "../../xrEngine/string_table.h"
 
@@ -312,7 +312,7 @@ void CUIMapList::SetServerParams(LPCSTR params){
 	m_srv_params = params;
 }
 
-#include "uilistboxitem.h"
+#include "../../xrUI/Widgets/uilistboxitem.h"
 void CUIMapList::AddWeather(const shared_str& WeatherType, const shared_str& WeatherTime, u32 _id)
 {
 	R_ASSERT2					(m_pWeatherSelector, "m_pWeatherSelector == nullptr");
@@ -441,4 +441,75 @@ const SGameTypeMaps::SMapItm& CUIMapList::GetMapNameInt(EGameIDs _type, u32 idx)
 	const SGameTypeMaps& M		= gMapListHelper.GetMapListFor(_type);
 	R_ASSERT					(M.m_map_names.size()>idx);
 	return						M.m_map_names[idx];
+}
+
+#include "pch_script.h"
+using namespace luabind;
+#include <ServerList.h>
+
+void CUIMapList::script_register(lua_State* L)
+{
+
+	module(L)
+	[
+		class_<SServerFilters>("SServerFilters")
+		.def(							constructor<>())
+		.def_readwrite("empty",				&SServerFilters::empty)
+		.def_readwrite("full",				&SServerFilters::full)
+		.def_readwrite("with_pass",			&SServerFilters::with_pass)
+		.def_readwrite("without_pass",		&SServerFilters::without_pass)
+		.def_readwrite("without_ff",		&SServerFilters::without_ff)
+		.def_readwrite("listen_servers",	&SServerFilters::listen_servers),
+
+		class_<connect_error_cb>("connect_error_cb")
+			.def(						constructor<>())
+			.def(						constructor<connect_error_cb::lua_object_type, connect_error_cb::lua_function_type>())
+			.def("bind",				&connect_error_cb::bind)
+			.def("clear",				&connect_error_cb::clear),
+
+		class_<CServerList, CUIWindow>("CServerList")
+		.def(							constructor<>())
+		.enum_("enum_connect_errcode")
+		[
+			value("ece_unique_nick_not_registred", int(ece_unique_nick_not_registred)),
+			value("ece_unique_nick_expired", int(ece_unique_nick_expired))
+		]
+		.def("SetConnectionErrCb",		&CServerList::SetConnectionErrCb)
+		.def("ConnectToSelected",		&CServerList::ConnectToSelected)
+		.def("SetFilters",				&CServerList::SetFilters)
+		.def("SetPlayerName",			&CServerList::SetPlayerName)
+		.def("RefreshList",				&CServerList::RefreshGameSpyList)
+		.def("RefreshQuick",			&CServerList::RefreshQuick)
+		.def("ShowServerInfo",			&CServerList::ShowServerInfo)
+		.def("NetRadioChanged",			&CServerList::NetRadioChanged)
+		.def("SetSortFunc",				&CServerList::SetSortFunc),
+		
+
+		class_<CUIMapList, CUIWindow>("CUIMapList")
+		.def(							constructor<>())
+		.def("SetWeatherSelector",		&CUIMapList::SetWeatherSelector)
+		.def("SetModeSelector",			&CUIMapList::SetModeSelector)
+		.def("OnModeChange",			&CUIMapList::OnModeChange)
+		.def("LoadMapList",				&CUIMapList::LoadMapList)
+		.def("SaveMapList",				&CUIMapList::SaveMapList)
+		.def("GetCommandLine",			&CUIMapList::GetCommandLine)
+		.def("SetServerParams",			&CUIMapList::SetServerParams)
+		.def("GetCurGameType",			&CUIMapList::GetCurGameType)
+		.def("StartDedicatedServer",	&CUIMapList::StartDedicatedServer)
+		.def("SetMapPic",				&CUIMapList::SetMapPic)
+		.def("SetMapInfo",				&CUIMapList::SetMapInfo)
+		.def("ClearList",				&CUIMapList::ClearList)
+		.def("IsEmpty",					&CUIMapList::IsEmpty),
+		
+		class_<enum_exporter<EGameIDs> >("GAME_TYPE")
+		.enum_("gametype")
+		[
+			value("GAME_UNKNOWN",				int(-1)),
+			value("eGameIDDeathmatch",			int(eGameIDDeathmatch)),
+			value("eGameIDTeamDeathmatch",		int(eGameIDTeamDeathmatch)),
+			value("eGameIDArtefactHunt",		int(eGameIDArtefactHunt)),
+			value("eGameIDCaptureTheArtefact",	int(eGameIDCaptureTheArtefact)),
+			value("eGameIDFreeMp",				int(eGameIDFreeMP))
+		]
+	];
 }

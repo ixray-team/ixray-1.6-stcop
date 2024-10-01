@@ -3,8 +3,9 @@
 #include "object_interfaces.h"
 #include "inventory_space.h"
 #include "gametype_chooser.h"
-#include "UIDialogHolder.h"
+#include "../xrUI/Widgets/UIDialogHolder.h"
 #include "../xrEngine/CustomHUD.h"
+#include "../xrEngine/IGame_UICustom.h"
 // refs
 class CUI;
 class CTeamBaseZone;
@@ -78,7 +79,10 @@ class CUITalkWnd;
 class CInventoryOwner;
 class CInventoryBox;
 
-class CUIGameCustom :public DLL_Pure, public CDialogHolder
+class CUIGameCustom :
+	public IGame_CustomUI, 
+	public DLL_Pure, 
+	public CDialogHolder
 {
 protected:
 	CUIWindow*			m_window;
@@ -119,8 +123,9 @@ public:
 			void		ShowMessagesWindow		();
 			void		HideMessagesWindow		();
 
-	void				ShowGameIndicators		(bool b)			{m_bShowGameIndicators	= b;};
-	bool				GameIndicatorsShown		()					{return m_bShowGameIndicators;};
+	virtual void		ShowGameIndicators		(bool b) override {m_bShowGameIndicators	= b;};
+	virtual bool		GameIndicatorsShown		() const override {return m_bShowGameIndicators;};
+	virtual CDialogHolder* GetDialogHolder		() { return this; };
 	void				ShowCrosshair			(bool b)			{psHUD_Flags.set			(HUD_CROSSHAIR_RT, b);}
 	bool				CrosshairShown			()					{return !!psHUD_Flags.test	(HUD_CROSSHAIR_RT);}
 

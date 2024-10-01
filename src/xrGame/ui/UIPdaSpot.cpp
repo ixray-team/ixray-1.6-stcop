@@ -4,11 +4,11 @@
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
-#include "UIEditBox.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../xrEngine/string_table.h"
 
 CUIPdaSpot::CUIPdaSpot()

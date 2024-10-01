@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "UIMpTradeWnd.h"
 
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "UIHelperGame.h"
 #include "UIMpItemsStoreWnd.h"
-#include "UITabControl.h"
-#include "UITabButtonMP.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
 #include "UIDragDropListEx.h"
 #include "UIItemInfo.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIHelper.h"
 #include "UIBuyWeaponTab.h"
 
 #include "object_broker.h"
@@ -84,7 +85,7 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 			AttachChild					(lst);
 			lst->SetAutoDelete			(true);
 		}
-		CUIXmlInit::InitDragDropListEx	(xml_doc, _list_names[idx], 0, lst);
+		CUIXmlInitGame::InitDragDropListEx	(xml_doc, _list_names[idx], 0, lst);
 		BindDragDropListEvents			(lst, true);
 	}
 

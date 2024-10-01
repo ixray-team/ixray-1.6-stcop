@@ -3,7 +3,7 @@
 #include "UITeamState.h"
 #include "UITeamPanels.h"
 
-#include "ui/UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "ui/UIStatsIcon.h"
 
 #include "game_cl_capture_the_artefact.h"

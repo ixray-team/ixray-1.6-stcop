@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIMainIngameWnd.h"
 #include "UICarPanel.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 
 constexpr LPCSTR CAR_PANEL_XML = "car_panel.xml";
 constexpr LPCSTR POINTER_ARROW_TEX = "ui\\hud_map_arrow";

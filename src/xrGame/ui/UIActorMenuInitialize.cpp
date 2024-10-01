@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "UIActorMenu.h"
-#include "UIXmlInit.h"
-#include "xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
 #include "UIDragDropReferenceList.h"
 #include "UIActorStateInfo.h"
 #include "UIItemInfo.h"
-#include "UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UIMessageBoxEx.h"
 #include "UIPropertiesBox.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "UIInventoryUpgradeWnd.h"
 #include "UIInvUpgradeInfo.h"
@@ -18,10 +18,10 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "object_broker.h"
-#include "UIWndCallback.h"
-#include "UIHelper.h"
-#include "UIProgressBar.h"
-#include "ui_base.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
+#include "../UIHelperGame.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/ui_base.h"
 #include "../../xrEngine/string_table.h"
 
 CUIActorMenu::CUIActorMenu()
@@ -120,7 +120,7 @@ void CUIActorMenu::Construct()
 
 		m_pInvList[i] = new CUIDragDropListEx();
 		AttachChild(m_pInvList[i]);
-		CUIXmlInit::InitDragDropListEx(uiXml, "slot_dragdrop", 0, m_pInvList[i]);
+		CUIXmlInitGame::InitDragDropListEx(uiXml, "slot_dragdrop", 0, m_pInvList[i]);
 		m_pInvList[i]->SetAutoDelete(true);
 
 		BindDragDropListEvents(m_pInvList[i]);
@@ -141,15 +141,15 @@ void CUIActorMenu::Construct()
 	}
 	uiXml.SetLocalRoot(stored_root);
 
-	m_pInventoryBagList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
-	m_pInventoryBeltList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
+	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
+	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
 
-	m_pTradeActorBagList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
-	m_pTradeActorList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
-	m_pTradePartnerBagList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
-	m_pTradePartnerList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_partner_trade", this);
-	m_pDeadBodyBagList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_deadbody_bag", this);
-	m_pQuickSlot				= UIHelper::CreateDragDropReferenceList(uiXml, "dragdrop_quick_slots", this);
+	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
+	m_pTradeActorList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
+	m_pTradePartnerBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
+	m_pTradePartnerList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_partner_trade", this);
+	m_pDeadBodyBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_deadbody_bag", this);
+	m_pQuickSlot				= UIHelperGame::CreateDragDropReferenceList(uiXml, "dragdrop_quick_slots", this);
 	m_pQuickSlot->Initialize	();
 
 	Fvector2 pos;
@@ -197,7 +197,7 @@ void CUIActorMenu::Construct()
 		pos.y += dy;
 	}
 
-	m_pTrashList				= UIHelper::CreateDragDropListEx		(uiXml, "dragdrop_trash", this);
+	m_pTrashList				= UIHelperGame::CreateDragDropListEx		(uiXml, "dragdrop_trash", this);
 	m_pTrashList->m_f_item_drop	= CUIDragDropListEx::DRAG_CELL_EVENT	(this,&CUIActorMenu::OnItemDrop);
 	m_pTrashList->m_f_drag_event= CUIDragDropListEx::DRAG_ITEM_EVENT	(this,&CUIActorMenu::OnDragItemOnTrash);
 

@@ -11,9 +11,10 @@ class demo_info_loader;
 
 #include "../xrEngine/IInputReceiver.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "UIDialogHolder.h"
-#include "ui/UIWndCallback.h"
-#include "ui_base.h"
+#include "../xrEngine/IGame_Menu.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
+#include "../xrUI/ui_base.h"
 #include "DemoInfo.h"
 
 namespace gamespy_gp
@@ -166,11 +167,12 @@ public:
 
 	virtual bool	UseIndicators					()						{return false;}
 
+	virtual CDialogHolder* GetDialogHolder() override { return this; }
 	void			OnDeviceCreate					();
 
 	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0);
-	void			RegisterPPDraw					(CUIWindow* w);
-	void			UnregisterPPDraw				(CUIWindow* w);
+	virtual void	RegisterPPDraw					(CUIWindow* w) override;
+	virtual void	UnregisterPPDraw				(CUIWindow* w) override;
 
 	void			SetErrorDialog					(EErrorDlg ErrDlg);
 	EErrorDlg		GetErrorDialogType				() const { return m_NeedErrDialog; } ;

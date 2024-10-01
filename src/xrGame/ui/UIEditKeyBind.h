@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UIStatic.h"
-#include "UIOptionsItem.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIOptionsItem.h"
 
 struct _action;
 struct _keyboard;

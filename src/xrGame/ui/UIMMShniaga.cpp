@@ -1,15 +1,14 @@
 #include "StdAfx.h"
 
 #include "UIMMShniaga.h"
-#include "UICursor.h"
-#include "UIStatic.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UICursor.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "MMsound.h"
 #include "game_base_space.h"
 #include "../level.h"
 #include "object_broker.h"
-#include <math.h>
 #include "../Actor.h"
 #include "../saved_game_wrapper.h"
 #include "../login_manager.h"
@@ -408,6 +407,26 @@ float CUIMMShniaga::pos(float x1, float x2, u32 t)
 		return x1 - x;
 	else
         return x1 + x;
+}
+
+#include "pch_script.h"
+using namespace luabind;
+
+void CUIMMShniaga::script_register(lua_State* L)
+{
+	module(L)
+		[
+		class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga")
+		.enum_("enum_page_id")
+		[
+			value("epi_main",				CUIMMShniaga::epi_main),
+			value("epi_new_game",			CUIMMShniaga::epi_new_game),
+			value("epi_new_network_game",	CUIMMShniaga::epi_new_network_game)
+		]
+		.def("SetVisibleMagnifier",			&CUIMMShniaga::SetVisibleMagnifier)
+		.def("SetPage",						&CUIMMShniaga::SetPage)
+		.def("ShowPage",					&CUIMMShniaga::ShowPage)
+	];
 }
 
 bool b_shniaganeed_pp = true;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIRankIndicator.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 CUIRankIndicator::CUIRankIndicator()
 {

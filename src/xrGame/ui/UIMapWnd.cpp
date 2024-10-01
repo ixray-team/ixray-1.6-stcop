@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "UIMapWnd.h"
 #include "UIMap.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "../Actor.h"
 #include "../map_manager.h"
@@ -12,20 +12,20 @@
 #include "../xrEngine/string_table.h"
 #include "../xrEngine/xr_input.h"
 
-#include "UIFixedScrollBar.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UITabControl.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIFixedScrollBar.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"
-#include "UIHint.h"
+#include "../../xrUI/Widgets/UIHint.h"
 #include "map_hint.h"
-#include "uicursor.h"
+#include "../../xrUI/uicursor.h"
 #include "UIPdaSpot.h"
 
 #include "UIPropertiesBox.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 
 CUIMapWnd* g_map_wnd = nullptr; // quick temporary solution -(
 CUIMapWnd* GetMapWnd()

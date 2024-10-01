@@ -30,12 +30,12 @@
 #include "ui/UIBuyWndShared.h"
 #include "ui/UIMoneyIndicator.h"
 #include "ui/UIRankIndicator.h"
-#include "ui/UIProgressShape.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIVoteStatusWnd.h"
 #include "ui/UIActorMenu.h"
 #include "ui/UISkinSelector.h"
-#include "ui/UIHelper.h"
+#include "../../xrUI/UIHelper.h"
 
 #define CTA_GAME_WND_XML	"ui_game_cta.xml"
 

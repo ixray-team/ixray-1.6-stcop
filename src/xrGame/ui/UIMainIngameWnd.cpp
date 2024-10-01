@@ -29,10 +29,10 @@
 #include "../../xrEngine/LightAnimLibrary.h"
 
 #include "UIInventoryUtilities.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIMotionIcon.h"
 
-#include "UIXmlInit.h"
 #include "UIPdaMsgListItem.h"
 #include "UIPdaWnd.h"
 #include "../alife_registry_wrappers.h"
@@ -44,7 +44,7 @@
 #	include "../../xrEngine/xr_input.h"
 #endif
 
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "map_hint.h"
 #include "../game_news.h"
 
@@ -81,7 +81,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIZoneMap					= new CUIZoneMap();
 }
 
-#include "UIProgressShape.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 extern CUIProgressShape* g_MissileForceShape;
 
 CUIMainIngameWnd::~CUIMainIngameWnd()

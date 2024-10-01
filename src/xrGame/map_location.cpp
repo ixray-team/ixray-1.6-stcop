@@ -9,7 +9,7 @@
 #include "game_graph.h"
 #include "xrServer.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "ui/UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "ui/UIMap.h"
 #include "alife_simulator.h"
 #include "graph_engine.h"

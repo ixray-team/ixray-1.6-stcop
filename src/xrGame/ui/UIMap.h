@@ -1,6 +1,6 @@
 #pragma once
-#include "UIStatic.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUIGlobalMapSpot;
 class CUIMapWnd;

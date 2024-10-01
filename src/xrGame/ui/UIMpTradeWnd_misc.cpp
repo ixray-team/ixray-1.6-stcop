@@ -3,10 +3,10 @@
 #include "UIMpItemsStoreWnd.h"
 
 #include "UICellItem.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "UIDragDropListEx.h"
 #include "UIItemInfo.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "../inventory_item.h"
 #include "../PhysicsShellHolder.h"

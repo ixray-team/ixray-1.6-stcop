@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 struct game_PlayerState;
 class CUIStatic;

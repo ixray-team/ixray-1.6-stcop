@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UIStatic.h"
-#include "UIProgressBar.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 class CUICarPanel : public CUIWindow
 {

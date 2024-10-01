@@ -1,5 +1,5 @@
 #pragma once
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 class CUIXml;
 class CUIStatic;
@@ -7,9 +7,11 @@ class CUITextWnd;
 class UIHint;
 class CUIScrollView;
 
-class CUIAchievements : public CUIWindow
+class CUIAchievements : 
+	public CUIWindow
 {
 	typedef CUIWindow inherited;
+
 private:
 	CUIScrollView*				m_parent;
 	CUITextWnd*					m_name;

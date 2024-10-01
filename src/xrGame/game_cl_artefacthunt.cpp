@@ -13,7 +13,7 @@
 #include "ui/UIPdaWnd.h"
 #include "ui/UIMapDesc.h"
 #include "ui/UIMessageBoxEx.h"
-#include "ui/UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "Artefact.h"
 #include "map_location.h"

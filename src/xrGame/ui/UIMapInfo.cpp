@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "UIMapInfo.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrEngine/string_table.h"
 
 CUIMapInfo::CUIMapInfo(){

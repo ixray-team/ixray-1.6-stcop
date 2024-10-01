@@ -1,5 +1,3 @@
-#ifndef IGame_PersistentH
-#define IGame_PersistentH
 #pragma once
 
 #include "../xrServerEntities/gametype_chooser.h"
@@ -113,17 +111,7 @@ public:
 	virtual bool					CanBePaused			()		{ return true;}
 };
 
-class IMainMenu
-{
-public:
-	virtual			~IMainMenu						()													{};
-	virtual void	Activate						(bool bActive)										=0; 
-	virtual	bool	IsActive						()													=0; 
-	virtual	bool	CanSkipSceneRendering			()													=0; 
-	virtual void	DestroyInternal					(bool bForce)										=0;
-};
-
 extern ENGINE_API	bool g_dedicated_server;
 extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
-#endif //IGame_PersistentH
 
+#include "IGame_Menu.h"

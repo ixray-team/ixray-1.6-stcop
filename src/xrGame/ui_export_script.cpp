@@ -6,14 +6,16 @@
 
 #include "UIGameCustom.h"
 #include "UI/UIScriptWnd.h"
-#include "UI/UIButton.h"
-#include "UI/UIProgressBar.h"
-#include "UI/UIEditBox.h"
+#include "../xrUI/Widgets/UIButton.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
+#include "../xrUI/Widgets/UIEditBox.h"
 #include "UI/UIMessageBox.h"
 #include "UI/UIPropertiesBox.h"
-#include "UI/UITabControl.h"
-#include "UI/UIComboBox.h"
-#include "ui/UIOptionsManagerScript.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "UI/UIMapList.h"
+#include "UI/UIMMShniaga.h"
+#include "../xrUI/Widgets/UIComboBox.h"
+#include "../xrUI/Widgets/UIOptionsManagerScript.h"
 #include "ui/UIMapInfo.h"
 #include "map_manager.h"
 #include "ScriptXmlInit.h"
@@ -30,6 +32,7 @@ CMainMenu*	MainMenu();
 void UIRegistrator::script_register(lua_State *L)
 {
 	CUIWindow::script_register(L);
+	CUIMMShniaga::script_register(L);
 	CUIStatic::script_register(L);
 	CUIButton::script_register(L);
 	CUIProgressBar::script_register(L);
@@ -38,6 +41,7 @@ void UIRegistrator::script_register(lua_State *L)
 	CUITabControl::script_register(L);
 	CUIMessageBox::script_register(L);
 	CUIListBox::script_register(L);
+	CUIMapList::script_register(L);
 	CUIDialogWndEx::script_register(L);
 	CUIPropertiesBox::script_register(L);
 	CUIOptionsManagerScript::script_register(L);

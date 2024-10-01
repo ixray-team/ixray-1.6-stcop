@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "object_factory.h"
-#include "ui/xrUIXmlParser.h"
+#include "../../xrUI/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
 
 void CCC_RegisterCommands	();

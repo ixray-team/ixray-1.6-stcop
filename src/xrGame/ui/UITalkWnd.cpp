@@ -16,8 +16,8 @@
 #include "../game_cl_base.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/cameraBase.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 CUITalkWnd::CUITalkWnd()
 {

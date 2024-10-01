@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "UIGameTutorial.h"
-#include "UIWindow.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "object_broker.h"
 #include "../../xrEngine/xr_input.h"
 
 #include "../Include/xrRender/UISequenceVideoItem.h"
 #include "../Include/xrRender/UIShader.h"
 #include "../Include/xrRender/UIRender.h"
-#include "uicursor.h"
+#include "../../xrUI/uicursor.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 

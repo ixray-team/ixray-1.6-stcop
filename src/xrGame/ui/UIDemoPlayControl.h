@@ -1,8 +1,8 @@
 #ifndef UIDEMOPLAY_CONTROL
 #define UIDEMOPLAY_CONTROL
 
-#include "UIDialogWnd.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUI3tButton;
 class CUIProgressBar;

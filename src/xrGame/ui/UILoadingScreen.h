@@ -1,13 +1,16 @@
 #pragma once
 
 #include "../../xrEngine/ILoadingScreen.h"
-#include "UIStatic.h"
-#include "UIWindow.h"
-#include "ui/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 class CApplication;
 
-class UILoadingScreen : public ILoadingScreen, public CUIWindow {
+class UILoadingScreen : 
+    public ILoadingScreen, 
+    public CUIWindow 
+{
     CUIStatic* loadingProgressBackground;
     CUIProgressBar* loadingProgress;
     CUIStatic* loadingLogo;

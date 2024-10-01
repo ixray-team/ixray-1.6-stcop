@@ -1,14 +1,17 @@
 #pragma once
+#include "../../xrUI/Widgets/UIWindow.h"
 
-#include "UIWindow.h"
 class CUIStatic;
 class CUIXml;
 class CUIStatic;
-class CUIRankIndicator :public CUIWindow
+
+class CUIRankIndicator :
+	public CUIWindow
 {
 	enum{max_rank=10,};
-	CUIStatic*		m_ranks[max_rank];
-	u8				m_current;
+	CUIStatic* m_ranks[max_rank];
+	u8 m_current;
+
 public:
 
 					CUIRankIndicator		();

@@ -2,7 +2,7 @@
 #include "pch_script.h"
 #include "UIGameCustom.h"
 #include "Level.h"
-#include "ui/uistatic.h"
+#include "../../xrUI/Widgets/uistatic.h"
 
 using namespace luabind;
 

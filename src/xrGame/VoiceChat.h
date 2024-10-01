@@ -1,5 +1,5 @@
 #pragma once
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 #include "../xrSound/Recorder/SoundVoiceChat.h"
 #include "VoiceSender.h"
 

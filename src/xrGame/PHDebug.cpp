@@ -4,7 +4,7 @@
 #include "PHDebug.h"
 #include "../xrPhysics/PHWorld.h"
 
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 float	dbg_text_height_scale = 1.f;
 float	dbg_text_current_height_scale = 1.f;
 

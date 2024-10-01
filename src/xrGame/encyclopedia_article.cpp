@@ -5,8 +5,8 @@
 
 #include "stdafx.h"
 #include "encyclopedia_article.h"
-#include "ui/xrUIXmlParser.h"
-#include "ui/UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "ui/UIInventoryUtilities.h"
 #include "object_broker.h"
 #include "../Include/xrRender/UIShader.h"

@@ -6,8 +6,8 @@
 #include "UIStatsIcon.h"
 #include "../level.h"
 #include "../../xrEngine/string_table.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 
 IC bool	DM_Compare_Players		(game_PlayerState* p1, game_PlayerState* p2);
 

@@ -3,7 +3,7 @@
 #include "UIGameCustom.h"
 #include "UIGameDM.h"
 
-#include "ui/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "ui/UISpawnWnd.h"
 
 // refs 

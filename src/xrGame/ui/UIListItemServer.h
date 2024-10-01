@@ -1,8 +1,8 @@
 #pragma once
 
 //#include "UIListItem.h"
-#include "UIStatic.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 
 
 struct LIST_SRV_SIZES {

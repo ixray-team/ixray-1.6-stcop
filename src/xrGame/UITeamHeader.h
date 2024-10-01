@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ui/UIWindow.h"
-#include "ui/xrUIXmlParser.h"
-#include "ui/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "game_cl_base.h"
 #include "../xrEngine/string_table.h"

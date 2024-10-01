@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIMpItemsStoreWnd.h"
-#include "UIXmlInit.h"
-#include "UITabButtonMP.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
 #include "object_broker.h"
 #include "restrictions.h"
 

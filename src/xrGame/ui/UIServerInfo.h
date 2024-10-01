@@ -1,8 +1,8 @@
 #ifndef UISERVER_INFO_INCLUDED
 #define UISERVER_INFO_INCLUDED
 
-#include "UIDialogWnd.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUIStatic;
 class CUIScrollView;

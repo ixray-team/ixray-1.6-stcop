@@ -332,7 +332,7 @@ public:
 	
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID		GetStartGameTime		();
-	ALife::_TIME_ID		GetGameTime				();
+	virtual ALife::_TIME_ID		GetGameTime				() override;
 	//возвращает время для энвайронмента в милисекундах относительно начала игры
 	ALife::_TIME_ID		GetEnvironmentGameTime	();
 	//игровое время в отформатированном виде

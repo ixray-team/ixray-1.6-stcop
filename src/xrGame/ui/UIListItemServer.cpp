@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIListItemServer.h"
-#include "UITextureMaster.h"
+#include "../../xrUI/UITextureMaster.h"
 
 CUIListItemServer::CUIListItemServer(float height)
 :inherited(height)

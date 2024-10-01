@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "MMSound.h"
-#include "xrUIXmlParser.h"
+#include "../../xrUI/xrUIXmlParser.h"
 
 CMMSound::CMMSound()
 {}

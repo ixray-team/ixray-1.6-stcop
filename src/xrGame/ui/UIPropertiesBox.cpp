@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "UIPropertiesBox.h"
 #include "../level.h"
-#include "UIListBoxItem.h"
-#include "UIXmlInit.h"
-#include "UIFontDefines.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIFontDefines.h"
 
 #define OFFSET_X (5.0f)
 #define OFFSET_Y (5.0f)

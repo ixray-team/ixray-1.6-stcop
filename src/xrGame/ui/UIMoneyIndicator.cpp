@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIMoneyIndicator.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIGameLog.h"
 
 CUIMoneyIndicator::CUIMoneyIndicator(){

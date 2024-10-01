@@ -14,7 +14,7 @@
 #include "InventoryOwner.h"
 #include "../xrEngine/StatGraph.h"
 #include "PhraseDialogManager.h"
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
@@ -62,10 +62,9 @@ class CActorStatisticMgr;
 class CLocationManager;
 class CPickUpManager;
 
-class	CActor: 
+class CActor: 
 	public IGame_Actor, 
 	public CEntityAlive, 
-	public IInputReceiver,
 	public Feel::Touch,
 	public CInventoryOwner,
 	public CPhraseDialogManager,
@@ -410,7 +409,7 @@ public:
 	float					CurrentHeight; // Alex ADD: for smooth crouch
 	bool					CanSprint				();
 	bool					CanRun					();
-	void					StopAnyMove				();
+	virtual void			StopAnyMove				() override;
 
 	bool					AnyAction				()	{return (mstate_real & mcAnyAction) != 0;};
 	bool					AnyMove					()	{return (mstate_real & mcAnyMove) != 0;};
@@ -762,6 +761,7 @@ public:
 
 			void			set_inventory_disabled (bool is_disabled) { m_inventory_disabled = is_disabled; }
 			bool			inventory_disabled () const { return m_inventory_disabled; }
+	virtual IInputReceiver* GetIIR() override { return this; }
 private:
 			void			set_state_box(u32	mstate);
 private:

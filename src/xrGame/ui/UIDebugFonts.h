@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "UIStatic.h"
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIDebugFonts : public CUIDialogWnd 
 {

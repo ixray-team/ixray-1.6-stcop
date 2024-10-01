@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "UICDkey.h"
-#include "UILines.h"
+#include "../../xrUI/Widgets/UILines.h"
 #include "../../xrEngine/line_edit_control.h"
 #include "../MainMenu.h"
 

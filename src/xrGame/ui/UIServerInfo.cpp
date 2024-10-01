@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "UIServerInfo.h"
 
-#include "UIStatic.h"
-#include "UICursor.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UICursor.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIGameCustom.h"
 #include "../level.h"
 #include "../game_cl_mp.h"
 
 #ifdef XR_MP_BUILD
-#include "../3rd party/cximage/cximage/ximage.h"
-#include "../3rd party/cximage/cximage/xmemfile.h"
+#	include "../3rd party/cximage/cximage/ximage.h"
+#	include "../3rd party/cximage/cximage/xmemfile.h"
 #endif // XR_MP_BUILD
 
 CUIServerInfo::CUIServerInfo()

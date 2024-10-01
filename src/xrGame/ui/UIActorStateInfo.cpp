@@ -7,15 +7,15 @@
 
 #include "stdafx.h"
 #include "UIActorStateInfo.h"
-#include "UIProgressBar.h"
-#include "UIProgressShape.h"
-#include "UIScrollView.h"
-#include "UIFrameWindow.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "object_broker.h"
 
-#include "UIHelper.h"
+#include "UIHelperGame.h"
 #include "ui_arrow.h"
 #include "UIHudStatesWnd.h"
 

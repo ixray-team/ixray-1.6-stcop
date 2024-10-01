@@ -2,12 +2,12 @@
 #include "pch_script.h"
 
 #include "uiiteminfo.h"
-#include "uistatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/uistatic.h"
+#include "../../xrUI/UIXmlInit.h"
 
-#include "UIProgressBar.h"
-#include "UIScrollView.h"
-#include "UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 
 #include "ai_space.h"
 #include "alife_simulator.h"

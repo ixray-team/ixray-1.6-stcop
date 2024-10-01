@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "UISpawnWnd.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../level.h"
 #include "../game_cl_teamdeathmatch.h"
 #include "UIStatix.h"
-#include "UIScrollView.h"
-#include "UI3tButton.h"
-#include "uicursor.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/uicursor.h"
 #include "uigamecustom.h"
 
 CUISpawnWnd::CUISpawnWnd()

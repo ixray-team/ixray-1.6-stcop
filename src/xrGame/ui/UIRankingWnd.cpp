@@ -9,12 +9,12 @@
 #include "pch_script.h"
 #include "UIRankingWnd.h"
 
-#include "UIFixedScrollBar.h"
-#include "UIXmlInit.h"
-#include "UIProgressBar.h"
-#include "UIFrameLineWnd.h"
-#include "UIScrollView.h"
-#include "UIHelper.h"
+#include "../../xrUI/Widgets/UIFixedScrollBar.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIHelper.h"
 #include "UIInventoryUtilities.h"
 
 #include "../actor.h"
@@ -27,7 +27,7 @@
 #include "../relation_registry.h"
 #include "../../xrEngine/string_table.h"
 #include "UICharacterInfo.h"
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 
 #define  PDA_RANKING_XML		"pda_ranking.xml"
 

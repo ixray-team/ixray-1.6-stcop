@@ -13,9 +13,9 @@
 #include "UICellItem.h"
 #include "../InventoryOwner.h"
 #include "../Inventory.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "../uigamesp.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "inventory_upgrade.h"
 #include "UITalkWnd.h"

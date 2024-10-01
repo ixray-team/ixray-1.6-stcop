@@ -11,7 +11,7 @@
 #include "../Weapon.h"
 #include "../WeaponMagazinedWGrenade.h"
 #include "UICellCustomItems.h"
-#include "UIFontDefines.h"
+#include "../../xrUI/UIFontDefines.h"
 
 extern "C"
 DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid);

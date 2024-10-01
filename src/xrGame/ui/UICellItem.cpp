@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "UICellItem.h"
-#include "uicursor.h"
+#include "../../xrUI/UICursor.h"
 #include "../inventory_item.h"
 #include "UIDragDropListEx.h"
 #include "../../xrEngine/xr_input.h"
 #include "../level.h"
 #include "object_broker.h"
-#include "UIXmlInit.h"
-#include "UIProgressBar.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 #include "CustomOutfit.h"
 

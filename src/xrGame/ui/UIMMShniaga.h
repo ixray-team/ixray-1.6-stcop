@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 class CUIStatic;
 class CUITextWnd;
@@ -55,6 +55,9 @@ protected:
 	void 				ShowNewGame				();
 	void				ShowNetworkGame			();
 	float				pos						(float x1, float x2, u32 t);
+
+public: 
+	static void script_register(lua_State*);
 
     CUIStatic*			m_shniaga;
 	CUIStatic*			m_magnifier;

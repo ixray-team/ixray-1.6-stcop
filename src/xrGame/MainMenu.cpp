@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "MainMenu.h"
-#include "UI/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
 #include "../xrEngine/xr_IOConsole.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/xr_Level_controller.h"
-#include "ui/UITextureMaster.h"
-#include "ui/UIXmlInit.h"
-#include "ui/UIBtnHint.h"
-#include "UICursor.h"
+#include "../../xrUI/UITextureMaster.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIBtnHint.h"
+#include "../../xrUI/UICursor.h"
 #include "gamespy/GameSpy_Full.h"
 #include "gamespy/GameSpy_HTTP.h"
 #include "gamespy/GameSpy_Available.h"
@@ -408,7 +408,7 @@ bool CMainMenu::OnRenderPPUI_query()
 }
 
 
-extern void draw_wnds_rects();
+extern UI_API  void draw_wnds_rects();
 void CMainMenu::OnRender	()
 {
 	if(m_Flags.test(flGameSaveScreenshot))

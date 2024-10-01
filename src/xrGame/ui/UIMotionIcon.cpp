@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
 CUIMotionIcon* g_pMotionIcon = nullptr;

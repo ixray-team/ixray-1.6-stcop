@@ -2,14 +2,14 @@
 #include "UITaskWnd.h"
 #include "UIMapWnd.h"
 #include "object_broker.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
-#include "UI3tButton.h"
-#include "UIFrameLineWnd.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UISecondTaskWnd.h"
 #include "UIMapLegend.h"
-#include "UIHelper.h"
-#include "UIHint.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/Widgets/UIHint.h"
 
 #include "../gametask.h"
 #include "../map_location.h"
@@ -19,7 +19,7 @@
 #include "../level.h"
 #include "../gametaskmanager.h"
 #include "../actor.h"
-#include "UICheckButton.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
 
 CUITaskWnd::CUITaskWnd()
 {

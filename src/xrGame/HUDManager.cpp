@@ -10,15 +10,15 @@
 #include "spectator.h"
 #include "Car.h"
 #include "UIGameCustom.h"
-#include "UICursor.h"
+#include "../../xrUI/UICursor.h"
 #include "../xrEngine/string_table.h"
 #include "game_cl_base.h"
 #ifdef	DEBUG
 #include "phdebug.h"
 #endif
-#include "UIFontDefines.h"
+#include "../../xrUI/UIFontDefines.h"
 
-extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
+extern CUIGameCustom* CurrentGameUI() {return HUD().GetGameUI();}
 
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager() : pUIGame(nullptr), m_pHUDTarget(new CHUDTarget())
@@ -268,12 +268,4 @@ void CHUDManager::net_Relcase( CObject* obj )
 #ifdef	DEBUG
 	DBG_PH_NetRelcase( obj );
 #endif
-}
-
-CDialogHolder* CurrentDialogHolder()
-{
-	if(MainMenu()->IsActive())
-		return MainMenu();
-	else
-		return HUD().GetGameUI();
 }

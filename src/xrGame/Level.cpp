@@ -25,7 +25,7 @@
 #include "team_base_zone.h"
 #include "infoportion.h"
 #include "patrol_path_storage.h"
-#include "date_time.h"
+#include "../xrEngine/date_time.h"
 #include "space_restriction_manager.h"
 #include "seniority_hierarchy_holder.h"
 #include "space_restrictor.h"
@@ -739,7 +739,7 @@ void test_precise_path	();
 extern	Flags32	dbg_net_Draw_Flags;
 #endif
 
-extern void draw_wnds_rects();
+extern UI_API void draw_wnds_rects();
 
 void CLevel::OnRender()
 {

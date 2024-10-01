@@ -12,9 +12,9 @@
 #include "../../xrEngine/string_table.h"
 #include "../Actor.h"
 
-#include "UIStatic.h"
-#include "UIXmlInit.h"
-#include "UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 
 #include "UIInvUpgradeProperty.h"
 

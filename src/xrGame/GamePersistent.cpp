@@ -6,7 +6,7 @@
 #include "../xrEngine/gamemtllib.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "MainMenu.h"
-#include "UICursor.h"
+#include "../../xrUI/UICursor.h"
 #include "game_base_space.h"
 #include "Level.h"
 #include "game_base_space.h"
@@ -17,7 +17,7 @@
 #include "Actor.h"
 #include "spectator.h"
 
-#include "UI/UItextureMaster.h"
+#include "../../xrUI/UItextureMaster.h"
 
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
@@ -38,7 +38,7 @@
 #ifndef _EDITOR
 #	include "ai_debug.h"
 #endif // _EDITOR
-
+#include "../../xrUI/ui_base.h"
 #include "../xrCore/discord/discord.h"
 #include "../xrEngine/string_table.h"
 #include "Level_Bullet_Manager.h"
@@ -814,7 +814,7 @@ bool CGamePersistent::OnRenderPPUI_query()
 	// enable PP or not
 }
 
-extern void draw_wnds_rects();
+extern UI_API void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
 	if (g_pGameLevel != nullptr) {

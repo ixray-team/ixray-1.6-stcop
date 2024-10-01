@@ -9,7 +9,7 @@
 #include "Level.h"
 #ifdef DEBUG
 #include "PHDebug.h"
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 #endif
 #include "Hit.h"
 #include "PHDestroyable.h"

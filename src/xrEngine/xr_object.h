@@ -199,7 +199,7 @@ virtual	const IObjectPhysicsCollision	*physics_collision	()					{ return  0; }
 
 	virtual void						On_SetEntity		()	{};
 	virtual void						On_LostEntity		()	{};
-
+	virtual class IInputReceiver*		GetIIR				()	{return nullptr;}
 public:
 	virtual bool						register_schedule	() const {return true;}
 

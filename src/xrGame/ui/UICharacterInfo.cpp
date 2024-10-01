@@ -8,11 +8,11 @@
 #include "../../xrServerEntities/character_info.h"
 #include "../relation_registry.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
-#include "uistatic.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/uistatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 
 
 #include "../alife_simulator.h"

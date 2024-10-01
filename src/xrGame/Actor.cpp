@@ -72,7 +72,7 @@
 #include "ui/UIActorMenu.h"
 #include "ActorHelmet.h"
 #include "UI/UIDragDropReferenceList.h"
-#include "UIFontDefines.h"
+#include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
 
 const u32		patch_frames	= 50;
@@ -94,7 +94,6 @@ static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
 Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON};
-int				psActorSleepTime = 1;
 
 
 

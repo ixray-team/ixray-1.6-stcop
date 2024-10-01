@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xrScripts/script_export_space.h"
-#include "ui\xrUIXmlParser.h"
+#include "../../xrUI/xrUIXmlParser.h"
 
 class CUIWindow;
 class CUIFrameWindow;

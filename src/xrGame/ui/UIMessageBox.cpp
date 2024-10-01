@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIMessageBox.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
-#include "UIEditBox.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
 
 CUIMessageBox::CUIMessageBox()
 {

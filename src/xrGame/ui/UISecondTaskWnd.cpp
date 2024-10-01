@@ -8,18 +8,18 @@
 #include "stdafx.h"
 #include "UISecondTaskWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 
-#include "UIFrameWindow.h"
-#include "UIScrollView.h"
-#include "UIStatic.h"
-#include "UI3tButton.h"
-#include "UICheckButton.h"
-#include "UIFrameLineWnd.h"
-#include "UIFixedScrollBar.h"
-#include "UIHint.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFixedScrollBar.h"
+#include "../../xrUI/Widgets/UIHint.h"
 #include "UITaskWnd.h"
 
 #include "../GameTaskDefs.h"
@@ -28,7 +28,7 @@
 #include "UIInventoryUtilities.h"
 #include "../level.h"
 #include "../gametaskmanager.h"
-#include "../actor.h"
+#include "../Actor.h"
 
 
 UITaskListWnd::UITaskListWnd()

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "UIKnifeParams.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../level.h"
 #include "game_base_space.h"
 #include "../ai_space.h"

@@ -1,7 +1,7 @@
 #ifndef UI_SKIN_SELECTOR_H_
 #define UI_SKIN_SELECTOR_H_
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 const u32			SKIN_TEX_HEIGHT			= 232;
 const u32			SKIN_TEX_WIDTH			= 111;

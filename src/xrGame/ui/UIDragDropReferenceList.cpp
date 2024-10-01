@@ -2,14 +2,14 @@
 #include "UIDragDropReferenceList.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../inventory.h"
 #include "../inventoryOwner.h"
 #include "../actor.h"
 #include "../actor_defs.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/xr_input.h"
-#include "../UICursor.h"
+#include "../../xrUI/UICursor.h"
 #include "UICellItemFactory.h"
 
 CUIDragDropReferenceList::CUIDragDropReferenceList()

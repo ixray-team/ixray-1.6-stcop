@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "UIBoosterInfo.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "object_broker.h"
 #include "../EntityCondition.h"
 #include "../actor.h"
 #include "../ActorCondition.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
 
 CUIBoosterInfo::CUIBoosterInfo()

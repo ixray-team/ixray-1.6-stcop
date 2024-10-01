@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "UIDebugFonts.h"
-#include "UIDialogHolder.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
 
 CUIDebugFonts::CUIDebugFonts()
 {

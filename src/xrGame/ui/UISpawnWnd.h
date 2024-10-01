@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 //#include "UIFrameWindow.h"
 //#include "UIButton.h"
 

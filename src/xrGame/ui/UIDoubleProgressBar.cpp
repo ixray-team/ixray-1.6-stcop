@@ -2,7 +2,7 @@
 
 #include "StdAfx.h"
 #include "UIDoubleProgressBar.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 CUIDoubleProgressBar::CUIDoubleProgressBar()
 {

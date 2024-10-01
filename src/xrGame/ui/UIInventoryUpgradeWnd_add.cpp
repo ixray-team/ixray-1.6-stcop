@@ -10,8 +10,8 @@
 #include "pch_script.h"
 #include "object_broker.h"
 #include "UIInventoryUpgradeWnd.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
 void CUIInventoryUpgradeWnd::LoadCellsBacks( CUIXml& uiXml )
 {

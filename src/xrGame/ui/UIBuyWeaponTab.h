@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UITabControl.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 class CUIXml;
 

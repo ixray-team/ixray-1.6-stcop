@@ -17,7 +17,7 @@
 #include "Actor.h"
 #include "huditem.h"
 #include "UIGameCustom.h"
-#include "UI/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../xrEngine/xr_input.h"
 #include "saved_game_wrapper.h"
 

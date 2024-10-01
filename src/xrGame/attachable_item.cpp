@@ -12,7 +12,7 @@
 #include "inventoryowner.h"
 #include "Inventory.h"
 #include "../xrEngine/xr_input.h"
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 
 #ifndef MASTER_GOLD
 	CAttachableItem*	CAttachableItem::m_dbgItem = nullptr;

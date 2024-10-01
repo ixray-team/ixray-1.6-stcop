@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UIWindow.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUIXml;
 class CUIListBox;
@@ -10,7 +10,9 @@ class CUITrackBar;
 class CUITextWnd;
 class CUIComboBox;
 
-class CUIMpPlayersAdm :	public CUIWindow, public CUIWndCallback 
+class CUIMpPlayersAdm :	
+	public CUIWindow, 
+	public CUIWndCallback 
 {
 		typedef CUIWindow	inherited;
 		CUIListBox*			m_pPlayersList;

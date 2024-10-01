@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "UITalkDialogWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
-#include "UIScrollView.h"
-#include "UI3tButton.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UITalkWnd.h"
 #include "UIInventoryUtilities.h"
-#include "UIBtnHint.h"
+#include "../../xrUI/Widgets/UIBtnHint.h"
 
 #include "../game_news.h"
 #include "../level.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "../alife_registry_wrappers.h"
 
 #define				TALK_XML				"talk.xml"

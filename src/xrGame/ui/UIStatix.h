@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 class CUIStatix : public CUIStatic 
 {

@@ -1,8 +1,8 @@
 // sea 08.01.2008
 #pragma once
 
-#include "UIWindow.h"
-#include "UIProgressBar.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 class CUIDoubleProgressBar : public CUIWindow
 {

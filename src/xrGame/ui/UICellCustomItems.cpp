@@ -3,7 +3,7 @@
 #include "UIInventoryUtilities.h"
 #include "../Weapon.h"
 #include "UIDragDropListEx.h"
-#include "UIProgressBar.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 #define INV_GRID_WIDTHF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
 #define INV_GRID_HEIGHTF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))

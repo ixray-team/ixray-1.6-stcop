@@ -2,8 +2,8 @@
 #include "pch_script.h"
 #include "UIGameCustom.h"
 #include "Level.h"
-#include "ui/UIXmlInit.h"
-#include "ui/UIStatic.h"
+#include "UIHelperGame.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "object_broker.h"
 #include "../xrEngine/string_table.h"
 
@@ -45,8 +45,10 @@ CUIGameCustom::CUIGameCustom()
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
 
+	g_pGameCustom = this;
 	TalkMenu = new CUITalkWnd();
 }
+
 bool g_b_ClearGameCaptions = false;
 
 CUIGameCustom::~CUIGameCustom()
@@ -54,6 +56,7 @@ CUIGameCustom::~CUIGameCustom()
 	delete_data(m_custom_statics);
 	g_b_ClearGameCaptions	= false;
 	delete_data(TalkMenu);
+	g_pGameCustom = nullptr;
 }
 
 bool CUIGameCustom::HasShownDialogs() const

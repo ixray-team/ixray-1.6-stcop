@@ -14,7 +14,7 @@ struct SCallbackInfo
 	SCallbackInfo():m_control_ptr(NULL),m_event(-1){};
 };
 
-struct event_comparer
+struct UI_API event_comparer
 {
 	CUIWindow*			pWnd;
 	s16					evt;

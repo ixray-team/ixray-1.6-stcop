@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "UIDragDropListEx.h"
-#include "UIScrollBar.h"
+#include "../../xrUI/Widgets/UIScrollBar.h"
 #include "object_broker.h"
 #include "UICellItem.h"
-#include "UICursor.h"
+#include "../../xrUI/UICursor.h"
 
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;

@@ -2,12 +2,12 @@
 #include "pch_script.h"
 
 #include "UIAchievements.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
-#include "UIHelper.h"
-#include "UIHint.h"
-#include "UIStatic.h"
-#include "UICursor.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/Widgets/UIHint.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UICursor.h"
 
 #include "../ai_space.h"
 #include "../Level.h"

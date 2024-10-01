@@ -7,8 +7,8 @@
 
 #include "entity_alive.h"
 #include "ui/UIInventoryUtilities.h"
-#include "UI/UIXmlInit.h"
-#include "UI/UItextureMaster.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UItextureMaster.h"
 
 #include "InfoPortion.h"
 #include "PhraseDialog.h"
@@ -29,13 +29,13 @@ typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
 extern STORY_PAIRS								story_ids;
 extern STORY_PAIRS								spawn_story_ids;
 
-extern void dump_list_wnd							();
-extern void dump_list_lines							();
-extern void dump_list_sublines						();
-extern void clean_wnd_rects							();
-extern void dump_list_xmls							();
-extern void CreateUIGeom							();
-extern void DestroyUIGeom							();
+extern UI_API void dump_list_wnd							();
+extern UI_API void dump_list_lines							();
+extern UI_API void dump_list_sublines						();
+extern UI_API void clean_wnd_rects							();
+extern UI_API void dump_list_xmls							();
+extern UI_API void CreateUIGeom								();
+extern UI_API void DestroyUIGeom							();
 extern void InitHudSoundSettings					();
 
 #include "../xrEngine/IGame_Persistent.h"

@@ -1,9 +1,9 @@
 #pragma once
-#include "UIWindow.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../../xrCore/associative_vector.h"
 #include "../GameTaskDefs.h"
-#include "UICheckButton.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
 
 class CUIMapWnd;
 class CUIStatic;

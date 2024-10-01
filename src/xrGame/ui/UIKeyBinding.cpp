@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "UIKeyBinding.h"
-#include "UIXmlInit.h"
-#include "xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
 #include "UIEditKeyBind.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 
 CUIKeyBinding::CUIKeyBinding()
 {

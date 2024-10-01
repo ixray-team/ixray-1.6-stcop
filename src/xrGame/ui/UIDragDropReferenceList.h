@@ -10,6 +10,7 @@ private:
 	typedef xr_vector<CUIStatic*> ITEMS_REFERENCES_VEC;
 	typedef ITEMS_REFERENCES_VEC::iterator ITEMS_REFERENCES_VEC_IT;
 	ITEMS_REFERENCES_VEC m_references;
+
 public:
 	CUIDragDropReferenceList();
 	virtual ~CUIDragDropReferenceList();

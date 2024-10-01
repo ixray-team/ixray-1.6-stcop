@@ -1,13 +1,13 @@
 #pragma once
 
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 //#include "UIListWnd.h"
-#include "UIListBox.h"
+#include "../../xrUI/Widgets/UIListBox.h"
 #include "UIListItemServer.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIEditBox.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "mixed_delegate.h"
 
 

@@ -1,12 +1,14 @@
 #pragma once
 
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "UIStatsPlayerList.h"
 
 class CUIXml;
 class CUIFrameWindow;
 
-class CUIStats : public CUIScrollView {
+class CUIStats : 
+	public CUIScrollView
+{
 public:
 				CUIStats		();
 	virtual		~CUIStats		();

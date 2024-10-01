@@ -215,7 +215,7 @@ void CSpaceRestrictor::shedule_Update	(u32 dt)
 #ifdef DEBUG
 
 #include "CustomZone.h"
-#include "ui_base.h"
+#include "../../xrUI/ui_base.h"
 
 extern	Flags32	dbg_net_Draw_Flags;
 

@@ -2,12 +2,12 @@
 #include "UIMpTradeWnd.h"
 
 #include "UIMpItemsStoreWnd.h"
-#include "UITabButtonMP.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
 
-#include "../UIDialogHolder.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
 #include "../game_cl_deathmatch.h"
 
 
