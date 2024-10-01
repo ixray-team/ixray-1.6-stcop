@@ -34,7 +34,7 @@ CParticleManager::~CParticleManager	()
 
 CParticleManager::SharedParticleEffect CParticleManager::GetEffectPtr(int effect_id)
 {
-	xrCriticalSectionGuard guard(m_effect_guard);
+	xrSRWLockGuard guard(m_effect_guard, true);
 	auto effectIter = m_effect_map.find(effect_id);
 	if (effectIter != m_effect_map.end())
 	{
@@ -46,7 +46,7 @@ CParticleManager::SharedParticleEffect CParticleManager::GetEffectPtr(int effect
 
 CParticleManager::SharedParticleActions CParticleManager::GetActionListPtr(int a_list_num)
 {
-	xrCriticalSectionGuard guard(m_action_guard);
+	xrSRWLockGuard guard(m_action_guard, true);
 	auto actionIter = m_alist_map.find(a_list_num);
 	if (actionIter != m_alist_map.end())
 	{
@@ -59,7 +59,7 @@ CParticleManager::SharedParticleActions CParticleManager::GetActionListPtr(int a
 // create
 int CParticleManager::CreateEffect(u32 max_particles)
 {
-	xrCriticalSectionGuard guard(m_effect_guard);
+	xrSRWLockGuard guard(m_effect_guard);
 	int effectId = m_effect_counter++;
 
 	auto EffectResultPair = m_effect_map.emplace(std::make_pair(effectId, xr_make_shared<ParticleEffect>(max_particles)));
@@ -70,13 +70,13 @@ int CParticleManager::CreateEffect(u32 max_particles)
 
 void CParticleManager::DestroyEffect(int effect_id)
 {
-	xrCriticalSectionGuard guard(m_effect_guard);
+	xrSRWLockGuard guard(m_effect_guard);
 	m_effect_map.erase(effect_id);
 }
 
 int	CParticleManager::CreateActionList()
 {
-	xrCriticalSectionGuard guard(m_action_guard);
+	xrSRWLockGuard guard(m_action_guard);
 	int actionId = m_action_counter++;
 
 	while (ActionIter != 0)
@@ -92,7 +92,7 @@ int	CParticleManager::CreateActionList()
 
 void CParticleManager::DestroyActionList(int alist_id)
 {
-	xrCriticalSectionGuard guard(m_action_guard);
+	xrSRWLockGuard guard(m_action_guard);
 
 	while (ActionIter != 0)
 	{

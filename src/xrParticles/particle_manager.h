@@ -24,8 +24,8 @@ namespace PAPI
         xr_atomic_s32 m_effect_counter;
         xr_atomic_s32 m_action_counter;
 
-        xrCriticalSection m_effect_guard;
-        xrCriticalSection m_action_guard;
+        xrSRWLock m_effect_guard;
+        xrSRWLock m_action_guard;
         
         xr_atomic_s32 ActionIter = 0;
     public:
