@@ -138,6 +138,7 @@ public:
 #if (RENDER==R_R2) || (RENDER==R_R4) || defined(_EDITOR)
 	void			xform_calc				();
 #ifndef _EDITOR
+	void			optimize_smap_size		();
 	void			vis_prepare				();
 	void			vis_update				();
 	void			export_ 					(light_Package& dest);
