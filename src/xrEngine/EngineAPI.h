@@ -42,6 +42,7 @@ enum class EditorUI : u8
 	Game_TimeManager,
 	Game_SpawnManager,
 	Game_WeaponManager,
+	Game_SearchManager,
 	Count
 };
 

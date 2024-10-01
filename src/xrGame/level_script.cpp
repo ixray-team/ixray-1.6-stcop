@@ -135,6 +135,38 @@ void RenderTimeManagerWindow()
 	ImGui::End();
 }
 
+struct {
+
+	void add_weapons(CLASS_ID id)
+	{
+		if (weapons.find(id) == weapons.end())
+			weapons.insert(id); 
+	}
+
+	bool is_weapons(CLASS_ID id) 
+	{
+		return weapons.find(id) != weapons.end();
+	}
+
+	CLASS_ID artefact = TEXT2CLSID("SCRPTART");
+	CLASS_ID car = TEXT2CLSID("SCRPTCAR");
+	CLASS_ID stalker = TEXT2CLSID("AI_STL_S");
+	CLASS_ID smart_terrain = TEXT2CLSID("SMRTTRRN");
+	CLASS_ID smart_cover = TEXT2CLSID("SMRT_C_S");
+	CLASS_ID level_changer = TEXT2CLSID("LVL_CHNG");
+	CLASS_ID sim_squad_scripted = TEXT2CLSID("ON_OFF_S");
+	CLASS_ID outfit = TEXT2CLSID("E_STLK");
+	CLASS_ID pda = TEXT2CLSID("S_PDA");
+	CLASS_ID food = TEXT2CLSID("S_FOOD");
+private:
+	xr_set<CLASS_ID> weapons;
+	xr_set<CLASS_ID> monsters;
+	xr_set<CLASS_ID> zones;
+	xr_set<CLASS_ID> devices;
+
+}
+
+imgui_clsid_manager;
 
 struct
 {
@@ -176,6 +208,15 @@ void RenderSpawnManagerWindow()
 		if (ImGui::BeginTabBar("##TabBar_InGameSpawnManager"))
 		{
 			if (ImGui::BeginTabItem("Items"))
+			{
+
+
+
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Artefacts"))
 			{
 
 
@@ -839,6 +880,65 @@ void RenderWeaponManagerWindow()
 	}
 }
 
+struct {
+	int selected_type{};
+	char search_string[256]{};
+}
+
+imgui_search_manager;
+
+void RenderSearchManagerWindow()
+{
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
+		return;
+
+	if (!g_pGameLevel)
+		return;
+
+	if (!ai().get_alife())
+		return;
+
+
+
+	if (ImGui::Begin("Search Manager"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
+	{
+		ImGui::Text("Level: %s", Level().name().c_str());
+		ImGui::Text("Smart covers: %d", 0);
+		ImGui::Text("Smart terrains: %d", 0);
+
+		ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
+
+		ImGui::SeparatorText("All");
+
+		auto size = Level().Objects.o_count();
+		
+		for (auto i = 0; i < size; ++i)
+		{
+			auto* pObject = Level().Objects.o_get_by_iterator(i);
+
+			if (pObject)
+			{
+				char buffer[512]{};
+				memcpy(buffer, pObject->cName().c_str(), strlen(pObject->cName().c_str()));
+				char number[32]{};
+				sprintf_s(number, sizeof(number), "##InGame_SM_%d", i);
+				memcpy(&buffer[0] + strlen(pObject->cName().c_str()), number, sizeof(number));
+				
+				ImGui::Button(buffer);
+			}
+		}
+
+		ImGui::Separator();
+
+		ImGui::End();
+	}
+}
+
+void InitImGuiCLSIDInGame()
+{
+
+}
+
 void RegisterImGuiInGame()
 {
 	if (!Device.IsEditorMode())
@@ -846,6 +946,9 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Time Manager", CImGuiManager::ERenderPriority::eMedium, RenderTimeManagerWindow);
 		CImGuiManager::Instance().Subscribe("Spawn Manager", CImGuiManager::ERenderPriority::eMedium, RenderSpawnManagerWindow);
 		CImGuiManager::Instance().Subscribe("Weapon Manager", CImGuiManager::ERenderPriority::eMedium, RenderWeaponManagerWindow);
+		CImGuiManager::Instance().Subscribe("Search Manager", CImGuiManager::ERenderPriority::eMedium, RenderSearchManagerWindow);
+
+		InitImGuiCLSIDInGame();
 	}
 }
 
