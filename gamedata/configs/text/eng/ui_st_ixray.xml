@@ -180,4 +180,115 @@
     <string id="st_proc">
         <text>%</text>
     </string>
+    <string id="WP_BINOC">
+        <text>Binocular</text>
+    </string>
+    <string id="WP_KNIFE">
+        <text>Knife</text>
+    </string>
+    <string id="WP_BM16">
+        <text>BM16</text>
+    </string>
+    <string id="WP_GROZA">
+        <text>Groza</text>
+    </string>
+    <string id="WP_SVD">
+        <text>SVD</text>
+    </string>
+    <string id="WP_AK74">
+        <text>AK74</text>
+    </string>
+    <string id="WP_LR300">
+        <text>LR300</text>
+    </string>
+    <string id="WP_HPSA">
+        <text>HPSA</text>
+    </string>
+    <string id="WP_PM">
+        <text>PM</text>
+    </string>
+    <string id="WP_RG6">
+        <text>RG6</text>
+    </string>
+    <string id="WP_RPG7">
+        <text>RPG7</text>
+    </string>
+    <string id="WP_SHOTG">
+        <text>Shotgun</text>
+    </string>
+    <string id="WP_ASHTG">
+        <text>AutoShotgun</text>
+    </string>
+    <string id="WP_MAGAZ">
+        <text>Magazine</text>
+    </string>
+    <string id="WP_SVU">
+        <text>SVU</text>
+    </string>
+    <string id="WP_USP45">
+        <text>USP45</text>
+    </string>
+    <string id="WP_VAL">
+        <text>VAL</text>
+    </string>
+    <string id="WP_VINT">
+        <text>Vintorez</text>
+    </string>
+    <string id="WP_WALTH">
+        <text>Walther</text>
+    </string>
+    <string id="W_STMGUN">
+        <text>Stat mgun</text>
+    </string>
+    <string id="SM_BLOOD">
+	    <text>Bloodsucker</text>
+    </string>
+    <string id="SM_BOARW">
+        <text>Boar</text>
+    </string>
+    <string id="SM_DOG_S">
+        <text>Dog</text>
+    </string>
+    <string id="SM_FLESH">
+        <text>Flesh</text>
+    </string>
+    <string id="SM_P_DOG">
+        <text>PseudoDog</text>
+    </string>
+    <string id="SM_BURER">
+        <text>Burer</text>
+    </string>
+    <string id="SM_CAT_S">
+        <text>Cat</text>
+    </string>
+    <string id="SM_CHIMS">
+        <text>Chimera</text>
+    </string>
+    <string id="SM_CONTR">
+        <text>Controller</text>
+    </string>
+    <string id="SM_IZLOM">
+        <text>Izlom</text>
+    </string>
+    <string id="SM_POLTR">
+        <text>Poltergeist</text>
+    </string>
+    <string id="SM_GIANT">
+        <text>PseudoGiant</text>
+    </string>
+    <string id="SM_ZOMBI">
+        <text>Zombie</text>
+    </string>
+    <string id="SM_SNORK">
+        <text>Snork</text>
+    </string>
+    <string id="SM_TUSHK">
+        <text>Tushkano</text>
+    </string>
+    <string id="SM_DOG_P">
+        <text>PsyDog</text>
+    </string>
+    <string id="SM_DOG_F">
+        <text>PsyDog (Phantom)</text>
+    </string>
 </string_table>
