@@ -33,6 +33,7 @@ void UILeftBarForm::Draw()
 													OBJCLASS_AIMAP,
 													OBJCLASS_WM,
 													OBJCLASS_FOG_VOL,
+													OBJCLASS_PUDDLES,
 													OBJCLASS_force_dword
 		};
 

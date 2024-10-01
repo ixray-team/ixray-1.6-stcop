@@ -16,9 +16,13 @@ void CLevelPreferences::Load()
 
     SceneToolsMapPairIt _I 	= Scene->FirstTool();
     SceneToolsMapPairIt _E 	= Scene->LastTool();
-    for (; _I!=_E; _I++)
-        if (_I->second&&(_I->first!=OBJCLASS_DUMMY))
-        	_I->second->m_EditFlags.flags = JSONData["targets"][_I->second->ClassName()];
+    for (; _I != _E; _I++)
+    {
+        if (_I->second && (_I->first != OBJCLASS_DUMMY) && JSONData["targets"].contains(_I->second->ClassName()))
+        {
+            _I->second->m_EditFlags.flags = JSONData["targets"][_I->second->ClassName()];
+        }
+    }
 }
 
 void CLevelPreferences::Save()

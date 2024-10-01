@@ -145,6 +145,55 @@ BOOL SceneBuilder::MakeGame( )
 	return error_text.empty();
 }
 
+BOOL SceneBuilder::MakePuddles()
+{
+    ELog.Msg(mtInformation, "Making started...");
+
+    ESceneCustomOTool* ToolPtr = (ESceneCustomOTool*)Scene->GetTool(OBJCLASS_PUDDLES);
+    auto& ObjectList = ToolPtr->GetObjects();
+
+    if (ObjectList.empty())
+    {
+        ELog.Msg(mtError, "Empty puddles...");
+        return false;
+    }
+
+    PreparePath();
+
+    xr_string ltx_filename = MakeLevelPath("level.puddles");
+
+    if (FS.exist(ltx_filename.c_str()))
+        EFS.MarkFile(ltx_filename.c_str(), true);
+
+    // -- defaults --           
+    IWriter* F = FS.w_open(ltx_filename.c_str());
+
+    for (CCustomObject* Object : ObjectList)
+    {
+        string128 buff;
+        sprintf(buff, "[%s]", Object->FName.c_str());
+        F->w_string(buff);
+
+        RtlZeroMemory(buff, sizeof(buff));
+
+        sprintf(buff, "position= %0.3f, %0.3f, %0.3f", Object->FPosition.x, Object->FPosition.y, Object->FPosition.z);
+        F->w_string(buff);
+        F->w_string("rotation = 0");
+        RtlZeroMemory(buff, sizeof(buff));
+
+        sprintf(buff, "max_height = %0.3f", Object->FScale.y);
+        F->w_string(buff);
+        RtlZeroMemory(buff, sizeof(buff));
+
+        sprintf(buff, "size_xz = %0.3f, %0.3f", Object->FScale.x, Object->FScale.z);
+        F->w_string(buff);
+    }
+
+    FS.w_close(F);
+
+    return true;
+}
+
 
 BOOL SceneBuilder::MakeAIMap()
 {

@@ -630,6 +630,16 @@ CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 	}
 	return 						FALSE;
 }
+CCommandVar CommandMakePuddles(CCommandVar p1, CCommandVar p2)
+{
+	if( !Scene->locked() ){
+		if (mrYes==ELog.DlgMsg(mtConfirmation, mbYes |mbNo, "Are you sure to export puddles?"))
+			return				Builder.MakePuddles( );
+	}else{
+		ELog.DlgMsg( mtError, "Scene sharing violation" );
+	}
+	return 						FALSE;
+}
 CCommandVar CommandMakeDetails(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
@@ -930,6 +940,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_OPTIONS,              		"Scene\\Options",		        CommandOptions,false);
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
+	REGISTER_CMD_SE	    (COMMAND_MAKE_PUDDLES,             	"Compile\\Make Puddles",	    CommandMakePuddles,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
 	REGISTER_CMD_SE	    (COMMAND_MOVE_GIZMO,              	"Gizmo\\Set at camera",	        CommandMakeGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_UPDATE_GIZMO,             	"Gizmo\\Update at camera",	    CommandUpdateGizmo,false);
@@ -1005,10 +1016,10 @@ void RetrieveSceneObjPointAndNormal( Fvector& hitpoint, Fvector* hitnormal, cons
 		else
 			pn.set(verts[2]);
 
-        if (pn.distance_to(pinf.pt) < LTools->m_MoveSnap)
-            hitpoint.set(pn);
-        else
-            hitpoint.set(pinf.pt);
+		if (pn.distance_to(pinf.pt) < LTools->m_MoveSnap)
+			hitpoint.set(pn);
+		else
+			hitpoint.set(pinf.pt);
 	}
 	else
 	{
@@ -1111,11 +1122,11 @@ bool PickGrid(  Fvector& hitpoint,  const Fvector& start, const Fvector& directi
 	hitpoint.y = start.y + direction.y * alpha;
 	hitpoint.z = start.z + direction.z * alpha;
 
-    if (Tools->GetSettings(etfGSnap) && bSnap)
+	if (Tools->GetSettings(etfGSnap) && bSnap)
 	{
-        hitpoint.x = snapto(hitpoint.x, LTools->m_MoveSnap);
-        hitpoint.z = snapto(hitpoint.z, LTools->m_MoveSnap);
-        hitpoint.y = 0.f;
+		hitpoint.x = snapto(hitpoint.x, LTools->m_MoveSnap);
+		hitpoint.z = snapto(hitpoint.z, LTools->m_MoveSnap);
+		hitpoint.y = 0.f;
 	}
 	
 	if (hitnormal)
@@ -1246,10 +1257,10 @@ void CLevelMain::OutCameraPos()
 	if (m_bReady)
 	{
 		TUI::DrawDebugString Str;
-        if (bIsLevelEditor)
-            Str.Pos = { 45, 70 };
-        else
-            Str.Pos = { 15, 50 };
+		if (bIsLevelEditor)
+			Str.Pos = { 45, 70 };
+		else
+			Str.Pos = { 15, 50 };
 		Str.Text.resize(64);
 		Str.Color = ImColor(0, 0, 0);
 

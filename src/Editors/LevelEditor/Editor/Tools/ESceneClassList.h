@@ -25,7 +25,8 @@ enum{
     OBJCLASS_AIMAP		= 13,
     OBJCLASS_WM			= 14,
     OBJCLASS_FOG_VOL	= 15,
-    OBJCLASS_COUNT		= 16,
+    OBJCLASS_PUDDLES	= 16,
+    OBJCLASS_COUNT		,
     OBJCLASS_force_dword = u32(-1)
 };
 
