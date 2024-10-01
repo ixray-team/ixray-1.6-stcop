@@ -4120,3 +4120,13 @@ float CWeapon::GetNightPPEFactor() const
 
 	return val;
 }
+const CameraRecoil& CWeapon::getCameraRecoil(void) const
+{
+	return cam_recoil;
+}
+
+const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
+{
+	return zoom_cam_recoil;
+}
+ 

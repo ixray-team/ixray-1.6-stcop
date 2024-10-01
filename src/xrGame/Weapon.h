@@ -98,6 +98,9 @@ public:
 	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
 	virtual float GetHudFov();
+
+	const CameraRecoil& getCameraRecoil(void) const;
+	const CameraRecoil& getCameraZoomRecoil(void) const;
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
@@ -607,6 +610,7 @@ protected:
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
 
 public:
+	const xr_vector<shared_str>& getAmmoTypes(void) const { return m_ammoTypes; }
 	xr_vector<shared_str>	m_ammoTypes;
 
 	using SCOPES_VECTOR = xr_vector<shared_str>;
