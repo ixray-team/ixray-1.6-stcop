@@ -503,90 +503,15 @@ void CEditorRenderDevice::time_factor(float v)
 	 TimerGlobal.time_factor(v);
 }
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 void CEditorRenderDevice::CreateWindow()
 {
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Editor", DisplayX, DisplayY, SDL_WINDOW_RESIZABLE);
-	//m_WC = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, TEXT("XRay Editor"), NULL };
-	//::RegisterClassEx(&m_WC);
-	//m_hWnd= ::CreateWindowA(m_WC.lpszClassName, TEXT("XRay Editor"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, m_WC.hInstance, NULL);
-	//
-	//::UpdateWindow(m_hWnd);
 }
 
 void CEditorRenderDevice::DestryWindow()
 {
 	SDL_DestroyWindow(g_AppInfo.Window);
-}
-
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg)
-	{
-	case WM_ACTIVATE:
-	{
-		u16 fActive = LOWORD(wParam);
-		BOOL fMinimized = (BOOL)HIWORD(wParam);
-		BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
-		if (bActive != EDevice->b_is_Active)
-		{
-			EDevice->b_is_Active = bActive;
-
-			if (EDevice->b_is_Active)
-			{
-				if (UI)UI->OnAppActivate();
-			}
-			else
-			{
-				
-				if (UI)UI->OnAppDeactivate();
-			}
-		}
-	}
-	break;
-	}
-	if (UI &&UI->WndProcHandler(hWnd, msg, wParam, lParam))
-		return true;
-
-	switch (msg)
-	{
-	case WM_KEYDOWN: 
-	case WM_SYSKEYDOWN:
-		if(UI)UI->KeyDown(wParam,UI->GetShiftState());
-		break;
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		if (UI)UI->KeyUp(wParam, UI->GetShiftState());
-		break;
-	
-	case WM_SIZE:
-
-		if (UI && REDevice)
-		{
-			UI->Resize(LOWORD(lParam), HIWORD(lParam), wParam == SIZE_MAXIMIZED);
-		}
-		/*if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
-		{
-			g_d3dpp.BackBufferWidth = ;
-			g_d3dpp.BackBufferHeight = ;
-			ResetDevice();
-		}*/
-		return 0;
-	
-	case WM_SYSCOMMAND:
-
-		if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-		{
-			return 0;
-		}
-		break;
-	case WM_DESTROY:
-		::PostQuitMessage(0);
-		return 0;
-	}
-	return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }

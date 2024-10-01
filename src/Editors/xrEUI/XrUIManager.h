@@ -21,7 +21,6 @@ public:
 		
 	virtual ~XrUIManager();
 
-	LRESULT WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	void Initialize(HWND hWnd, IDirect3DDevice9* device,const char*ini_path);
 	void Destroy();
 
