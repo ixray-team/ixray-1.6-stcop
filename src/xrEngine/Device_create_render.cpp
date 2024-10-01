@@ -243,6 +243,8 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 			if (ImGui::BeginMenu("Game"))
 			{
 				ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
+				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
+				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
 				ImGui::EndMenu();
 			}
 
