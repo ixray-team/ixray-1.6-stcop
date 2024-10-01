@@ -10,6 +10,7 @@ enum ERPGameType{		// [0..255]
 	rpgtGameTeamDeathmatch,
 	rpgtGameArtefactHunt,
 	rpgtGameCaptureTheArtefact,
+    rpgtFreeMp,
 	rpgtGameCount,
 };
 
@@ -19,6 +20,7 @@ xr_token rpoint_game_type[]={
 	{ "TeamDeathmatch",		rpgtGameTeamDeathmatch		},
 	{ "ArtefactHunt",		rpgtGameArtefactHunt		},
 	{ "CaptureTheArtefact",	rpgtGameCaptureTheArtefact	},
+    { "FreeMp",				rpgtFreeMp					},
 	{ 0,					0	}
 };
 
@@ -52,6 +54,9 @@ bool GameTypeChooser::LoadLTX(CInifile& ini, LPCSTR sect_name, bool bOldFormat)
                 break;
             case rpgtGameCaptureTheArtefact:
                 m_GameType.set(eGameIDCaptureTheArtefact,TRUE);
+                break;
+            case rpgtFreeMp:
+                m_GameType.set(eGameIDFreeMP, TRUE);
                 break;
         }
     }else
