@@ -143,6 +143,7 @@ public:
 		flIsBuildedCForm = (1 << 3),
 		flIsBuildedAIMap = (1 << 4),
 		flIsBuildedGameGraph = (1 << 5),
+		flIsBuildedSndEnv = (1 << 5),
 		flIsStopPlayInEditor = (1 << 6),
 	};
 	Flags32			m_RTFlags;

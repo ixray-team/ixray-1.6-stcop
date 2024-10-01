@@ -115,10 +115,10 @@ public:
 	bool		m_save_as_object;
 	string_path	m_LevelPath;
     xr_string	MakeLevelPath		(LPCSTR nm){return xr_string(m_LevelPath)+xr_string(nm);}
+    bool 	PreparePath				();
 protected:
 	bool 	EvictResource			();
 	bool 	PrepareFolders          ();
-    bool 	PreparePath				();
 
 	bool 	GetBounding            	();
 

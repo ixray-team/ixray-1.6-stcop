@@ -733,6 +733,7 @@ void EScene::Play()
 	g_hud = (CCustomHUD*)NEW_INSTANCE(CLSID_HUDMANAGER);
 	g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_EDITOR_LEVEL);
 	g_pGameLevel->net_Start("all/single/alife/new", "localhost");
+	g_pGameLevel->LoadEditor(m_LevelOp.m_FNLevelPath);
 	g_pGameLevel->IR_Capture();
 	GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, false);
 	ShowCursor(FALSE);
@@ -750,6 +751,9 @@ void EScene::Stop()
 
 	UI->IsEnableInput = true;
 	pInput->unacquire();
+
+	::Sound->set_geometry_env(nullptr);
+	::Sound->set_geometry_som(nullptr);
 
 	Console->Hide();
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
@@ -833,6 +837,18 @@ bool EScene::BuildCForm()
 		UI->RedrawScene();
 	}
 
+	if (!m_RTFlags.is(flIsBuildedSndEnv))
+	{
+		CMemoryWriter stream;
+		Builder.PreparePath();
+		xr_string lev_sound_env = Builder.MakeLevelPath("level.snd_env");
+		EFS.MarkFile(lev_sound_env.c_str(), true);
+
+		if (LSndLib->MakeEnvGeometry(stream, false))
+			stream.save_to(lev_sound_env.c_str());
+
+		m_RTFlags.set(flIsBuildedSndEnv, TRUE);
+	}
 	return true;
 }
 

@@ -122,6 +122,7 @@ public:
 
 	virtual	void				SpawnItem(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
+	virtual void				LoadEditor(shared_str LevelName) {};
 };
 
 //-----------------------------------------------------------------------------------------------------------
