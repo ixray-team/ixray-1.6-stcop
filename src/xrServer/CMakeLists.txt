@@ -3,7 +3,7 @@ set(XRDS_SRC_FILES)
 
 # Files import
 file(GLOB_RECURSE XRDS_SOURCE_ALL_FILES
-    "*.*"
+	"*.*"
 )
 
 # File groups
@@ -29,3 +29,4 @@ target_compile_definitions(xrServer PRIVATE XRSERVER_EXPORT)
 # Linker list
 target_link_libraries(xrServer PUBLIC xrAbstractions)
 add_dependencies(xrServer xrRender_R1)
+add_dependencies(xrServer xrGame)
