@@ -55,7 +55,8 @@ public:
 
 	u32				m_xform_frame;
 	Fmatrix			m_xform;
-
+	bool			b_need_recompute_xform;
+	bool			b_need_detect_sectors;
 	struct _vis		{
 		u32			frame2test;		// frame the test is sheduled to
 		u32			query_id;		// ID of occlusion query

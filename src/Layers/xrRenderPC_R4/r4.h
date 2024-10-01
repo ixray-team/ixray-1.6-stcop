@@ -15,7 +15,6 @@
 
 #include "smap_allocator.h"
 #include "../xrRender/light_db.h"
-#include "light_render_direct.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/r_sun_cascades.h"
 
@@ -111,7 +110,6 @@ public:
 	CRenderTarget*												Target;			// Render-target
 
 	CLight_DB													Lights;
-	CLight_Compute_XFORM_and_VIS								LR;
 	xr_vector<light*>											Lights_LastFrame;
 	SMAP_Allocator												LP_smap_pool;
 	light_Package												LP_normal;

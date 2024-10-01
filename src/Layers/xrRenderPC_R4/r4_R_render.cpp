@@ -196,6 +196,14 @@ void CRender::render_main	(bool deffered, bool zfill)
 							Lights.add_light(L);
 						else
 						{
+							if(Sectors.size()>1)
+							{
+								if(L->b_need_detect_sectors)
+								{
+									L->get_sectors();
+									L->b_need_detect_sectors = false;
+								}
+							}
 							for (u32 s_it = 0; s_it < L->m_sectors.size(); s_it++)
 							{
 								CSector* sector_ = (CSector*)L->m_sectors[s_it];

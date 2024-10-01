@@ -48,7 +48,6 @@ void	light::vis_prepare			()
 
 	// testing
 	vis.pending										= true;
-	xform_calc										();
 	RCache.set_xform_world							(m_xform);
 	vis.query_order	= RImplementation.occq_begin	(vis.query_id);
 	//	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
