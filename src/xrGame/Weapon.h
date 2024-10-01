@@ -184,10 +184,12 @@ public:
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
 	}
 
-	const int GetSilencerX() const {return m_iSilencerX;}
-	const int GetSilencerY() const {return m_iSilencerY;}
-	const int GetGrenadeLauncherX() const {return m_iGrenadeLauncherX;}
-	const int GetGrenadeLauncherY() const {return m_iGrenadeLauncherY;}
+	const int	GetSilencerX() {return m_iSilencerX;}
+	const int	GetSilencerY() {return m_iSilencerY;}
+	void SetSilencerX(int value);
+	void SetSilencerY(int value);
+	const int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
+	const int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
 	const shared_str& GetGrenadeLauncherName	() const {return m_sGrenadeLauncherName;}
 	const shared_str GetScopeName				() const {return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}

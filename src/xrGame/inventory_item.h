@@ -167,6 +167,8 @@ public:
 	virtual void				OnMoveToRuck		(const SInvItemPlace& prev) {};
 					
 	virtual Irect				GetInvGridRect		() const;
+			void				SetInvGridRect(const Irect& rect);
+			void				SetInvGridRect(u32 x, u32 y, u32 w, u32 h);
 			Irect				GetUpgrIconRect		() const;
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
 			Frect				GetKillMsgRect		() const;
@@ -270,6 +272,7 @@ protected:
 
 private:
 	CPhysicsShellHolder*		m_object;
+	Irect m_inv_rect;
 
 public:
 	virtual CInventoryItem		*cast_inventory_item		()	{return this;}

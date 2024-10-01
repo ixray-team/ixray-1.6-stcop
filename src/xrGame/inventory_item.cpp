@@ -1505,6 +1505,16 @@ Irect CInventoryItem::GetInvGridRect() const
 	return m_IconRect;
 }
 
+void CInventoryItem::SetInvGridRect(const Irect& rect)
+{
+	m_IconRect.set(rect);
+}
+
+void CInventoryItem::SetInvGridRect(u32 x, u32 y, u32 w, u32 h)
+{
+	SetInvGridRect(Irect().set(x,y,w,h));
+}
+
 Irect CInventoryItem::GetUpgrIconRect() const
 {
 	u32 x,y,w,h;
