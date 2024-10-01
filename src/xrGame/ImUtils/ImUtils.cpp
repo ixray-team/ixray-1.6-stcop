@@ -18,3 +18,8 @@ void RegisterImGuiInGame()
 		InitSections();
 	}
 }
+
+void DestroyImGuiInGame()
+{
+	DestroySpawnManagerWindow();
+}
