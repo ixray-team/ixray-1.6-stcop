@@ -567,63 +567,68 @@ void CRender::Render		()
 		Target->disable_aniso					();
 	}
 
-	//******* Occlusion testing of volume-limited light-sources
-	Target->phase_occq							();
-	LP_normal.clear								();
-	LP_pending.clear							();
+	if(Lights.package.v_point.empty()&&Lights.package.v_spot.empty()&&Lights.package.v_shadowed.empty())
+		HWOCC.occq_refresh();
+	else
 	{
 		PIX_EVENT(DEFER_TEST_LIGHT_VIS);
-		// perform tests
-		size_t	count = 0;
-		light_Package&	LP	= Lights.package;
+		//******* Occlusion testing of volume-limited light-sources
+		Target->phase_occq							();
+		LP_normal.clear								();
+		LP_pending.clear							();
+		{
+			// perform tests
+			size_t	count = 0;
+			light_Package&	LP	= Lights.package;
 
-		// stats
-		stats.l_shadowed	= (u32)LP.v_shadowed.size();
-		stats.l_unshadowed	= (u32)(LP.v_point.size() + LP.v_spot.size());
-		stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
+			// stats
+			stats.l_shadowed	= (u32)LP.v_shadowed.size();
+			stats.l_unshadowed	= (u32)(LP.v_point.size() + LP.v_spot.size());
+			stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
 
-		// perform tests
-		count = std::max(count, LP.v_point.size());
-		count = std::max(count, LP.v_spot.size());
-		count = std::max(count, LP.v_shadowed.size());
-		for (size_t it = 0; it < count; it++)	{
-			if (it<LP.v_point.size())		{
-				light*	L			= LP.v_point	[it];
-				if(L->flags.bOccq&&!L->flags.bHudMode)
-				{
-					L->vis_prepare		();
-					if (L->vis.pending)	LP_pending.v_point.push_back	(L);
-					else				LP_normal.v_point.push_back		(L);
+			// perform tests
+			count = std::max(count, LP.v_point.size());
+			count = std::max(count, LP.v_spot.size());
+			count = std::max(count, LP.v_shadowed.size());
+			for (size_t it = 0; it < count; it++)	{
+				if (it<LP.v_point.size())		{
+					light*	L			= LP.v_point	[it];
+					if(L->flags.bOccq&&!L->flags.bHudMode)
+					{
+						L->vis_prepare		();
+						if (L->vis.pending)	LP_pending.v_point.push_back	(L);
+						else				LP_normal.v_point.push_back		(L);
+					}
+					else
+						LP_normal.v_point.push_back		(L);
 				}
-				else
-					LP_normal.v_point.push_back		(L);
-			}
-			if (it<LP.v_spot.size())		{
-				light*	L			= LP.v_spot		[it];
-				if(L->flags.bOccq&&!L->flags.bHudMode)
-				{
-					L->vis_prepare		();
-					if (L->vis.pending)	LP_pending.v_spot.push_back		(L);
-					else				LP_normal.v_spot.push_back		(L);
+				if (it<LP.v_spot.size())		{
+					light*	L			= LP.v_spot		[it];
+					if(L->flags.bOccq&&!L->flags.bHudMode)
+					{
+						L->vis_prepare		();
+						if (L->vis.pending)	LP_pending.v_spot.push_back		(L);
+						else				LP_normal.v_spot.push_back		(L);
+					}
+					else
+						LP_normal.v_spot.push_back		(L);
 				}
-				else
-					LP_normal.v_spot.push_back		(L);
-			}
-			if (it<LP.v_shadowed.size())	{
-				light*	L			= LP.v_shadowed	[it];
-				if(L->flags.bOccq&&!L->flags.bHudMode)
-				{
-					L->vis_prepare		();
-					if (L->vis.pending)	LP_pending.v_shadowed.push_back	(L);
-					else				LP_normal.v_shadowed.push_back	(L);
+				if (it<LP.v_shadowed.size())	{
+					light*	L			= LP.v_shadowed	[it];
+					if(L->flags.bOccq&&!L->flags.bHudMode)
+					{
+						L->vis_prepare		();
+						if (L->vis.pending)	LP_pending.v_shadowed.push_back	(L);
+						else				LP_normal.v_shadowed.push_back	(L);
+					}
+					else
+						LP_normal.v_shadowed.push_back	(L);
 				}
-				else
-					LP_normal.v_shadowed.push_back	(L);
 			}
 		}
+		LP_normal.sort							();
+		LP_pending.sort							();
 	}
-	LP_normal.sort							();
-	LP_pending.sort							();
 
    //******* Main render :: PART-1 (second)
 	if (split_the_scene_to_minimize_wait)	
@@ -731,6 +736,8 @@ void CRender::Render		()
 	}
 
 	VERIFY	(0==mapDistort.size());
+
+	//HWOCC.occq_stats();
 }
 
 void CRender::render_forward				()
