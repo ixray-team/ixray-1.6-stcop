@@ -282,8 +282,8 @@ void CDetailManager::UpdateVisibleM()
 	// Initialize 'vis' and 'cache'
 	// Collect objects for rendering
 	RDEVICE.Statistic->RenderDUMP_DT_VIS.Begin	();
-	for (int _mz=0; _mz<dm_cache1_line; _mz++){
-		for (int _mx=0; _mx<dm_cache1_line; _mx++){
+	for (u32 _mz=0; _mz<dm_cache1_line; _mz++){
+		for (u32 _mx=0; _mx<dm_cache1_line; _mx++){
 			CacheSlot1& MS		= cache_level1[_mz][_mx];
 			if (MS.empty)
 			{
@@ -335,8 +335,10 @@ void CDetailManager::UpdateVisibleM()
 					float	alpha		= (dist_sq<fade_start)?0.f:(dist_sq-fade_start)/fade_range;
 					float	alpha_i		= 1.f - alpha;
 					float	dist_sq_rcp	= 1.f / dist_sq;
-
-					S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
+					if(ps_r2_ls_flags.test(R2FLAG_FAST_DETAILS_UPDATE))
+						S.frame			= RDEVICE.dwFrame+1;
+					else
+						S.frame			= RDEVICE.dwFrame+Random.randI(15,30);
 					for (int sp_id=0; sp_id<dm_obj_in_slot; sp_id++){
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;
