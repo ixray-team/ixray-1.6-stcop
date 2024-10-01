@@ -13,7 +13,7 @@
 #include "../xrRender/modelpool.h"
 #include "../xrRender/wallmarksengine.h"
 
-#include "smap_allocator.h"
+#include "../xrRender/smap_allocator.h"
 #include "../xrRender/light_db.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/r_sun_cascades.h"

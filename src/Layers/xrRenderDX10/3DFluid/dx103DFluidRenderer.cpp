@@ -529,7 +529,7 @@ void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 		RCache.set_Element(m_RendererTechnique[RS_QuadRaycastCopyFog]);
 
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
+	Prepare(FluidData, u32(RCache.get_width()), u32(RCache.get_height()), true);
 
 	RCache.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
@@ -547,13 +547,13 @@ void dx103DFluidRenderer::ComputeRayData(const dx103DFluidData& FluidData)
 
 	// Setup viewport to match the window's backbuffer
 	RImplementation.rmNormal();
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), false);
+	Prepare(FluidData, u32(RCache.get_width()), u32(RCache.get_height()), false);
 
 	DrawBox();
 
 	pTarget->u_setrt(RT[RRT_RayDataTex],0,0,0);		// LDR RT
 	RCache.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
-	Prepare(FluidData, RCache.get_width(), RCache.get_height(), true);
+	Prepare(FluidData, u32(RCache.get_width()), u32(RCache.get_height()), true);
 
 	DrawBox();
 

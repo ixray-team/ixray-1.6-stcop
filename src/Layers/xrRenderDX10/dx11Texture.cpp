@@ -191,7 +191,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
 		if (pTexture2D == nullptr)
 		{
-			auto isPowerOfTwo = [](int x)
+			auto isPowerOfTwo = [](size_t x)
 			{
 				return (x && !(x & (x - 1)));
 			};
@@ -239,7 +239,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 		
 		if (pTexture2D == nullptr)
 		{
-			auto isPowerOfTwo = [](int x)
+			auto isPowerOfTwo = [](size_t x)
 			{
 				return (x && !(x & (x - 1)));
 			};
