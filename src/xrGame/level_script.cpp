@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////
 //	Module 		: level_script.cpp
 //	Created 	: 28.06.2004
 //  Modified 	: 28.06.2004
@@ -140,10 +140,10 @@ struct {
 	void add_weapons(CLASS_ID id)
 	{
 		if (weapons.find(id) == weapons.end())
-			weapons.insert(id); 
+			weapons.insert(id);
 	}
 
-	bool is_weapons(CLASS_ID id) 
+	bool is_weapons(CLASS_ID id)
 	{
 		return weapons.find(id) != weapons.end();
 	}
@@ -186,6 +186,7 @@ imgui_spawn_manager;
 
 extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position,
 	u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
 
 void RenderSpawnManagerWindow()
 {
@@ -338,9 +339,9 @@ void RenderSpawnManagerWindow()
 					ImGui::Separator();
 
 					// that has all fields for sorting
-					std::array<std::pair<std::string_view, CInifile::Sect*>, 256> section_names_sort;
+					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_sort;
 					// lack of some fields for sorting thus can't be included for 'sorting' categorty
-					std::array<std::pair<std::string_view, CInifile::Sect*>, 256> section_names_unsort;
+					xr_vector<std::pair<std::string_view, CInifile::Sect*>> section_names_unsort;
 
 					for (const auto& pSection : pSettings->sections())
 					{
@@ -355,14 +356,12 @@ void RenderSpawnManagerWindow()
 								{
 									if (pSection->line_exist("hit_power") && pSection->line_exist("cost") && pSection->line_exist("fire_distance"))
 									{
-										section_names_sort[total_count_sort].first = name;
-										section_names_sort[total_count_sort].second = pSection;
+										section_names_sort.push_back({ name, pSection });
 										++total_count_sort;
 									}
 									else
 									{
-										section_names_unsort[total_count_unsort].first = name;
-										section_names_unsort[total_count_unsort].second = pSection;
+										section_names_unsort.push_back({ name, pSection });
 										++total_count_unsort;
 									}
 								}
@@ -653,29 +652,22 @@ void RenderSpawnManagerWindow()
 
 								if (Console)
 								{
-									string256 cmd{};
-									size_t size{};
+									xr_string cmd;
 
 									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
-										size += sizeof("g_spawn_inv");
+										cmd += "g_spawn_inv ";
 									}
 									else
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
-										size += sizeof("g_spawn");
+										cmd += "g_spawn ";
 									}
 
-									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
-									size += section_name.size();
+									cmd += section_name.data();
+									cmd += " ";
+									cmd += std::to_string(count);
 
-									char to_number[4]{};
-									sprintf_s(to_number, sizeof(to_number), " %d", count);
-
-									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
-
-									Console->ExecuteCommand(cmd);
+									execute_console_command_deferred(Console, cmd.c_str());
 								}
 
 							}
@@ -686,7 +678,7 @@ void RenderSpawnManagerWindow()
 								{
 									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
 									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", pTranslatedString.c_str());
+									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
 								}
 
 								if (pSection->line_exist("cost"))
@@ -766,29 +758,22 @@ void RenderSpawnManagerWindow()
 
 								if (Console)
 								{
-									string256 cmd{};
-									size_t size{};
+									xr_string cmd;
 
 									if (!imgui_spawn_manager.weapon_spawn_on_level)
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn_inv ", sizeof("g_spawn_inv"));
-										size += sizeof("g_spawn_inv");
+										cmd += "g_spawn_inv ";
 									}
 									else
 									{
-										memcpy_s(cmd, sizeof(cmd), "g_spawn ", sizeof("g_spawn"));
-										size += sizeof("g_spawn");
+										cmd += "g_spawn ";
 									}
 
-									memcpy_s(&cmd[0] + size, sizeof(cmd), section_name.data(), section_name.size());
-									size += section_name.size();
+									cmd += section_name.data();
+									cmd += " ";
+									cmd += std::to_string(count);
 
-									char to_number[4]{};
-									sprintf_s(to_number, sizeof(to_number), " %d", count);
-
-									memcpy_s(&cmd[0] + size, sizeof(cmd), to_number, sizeof(to_number));
-
-									Console->ExecuteCommand(cmd);
+									execute_console_command_deferred(Console, cmd.c_str());
 								}
 							}
 
@@ -798,7 +783,7 @@ void RenderSpawnManagerWindow()
 								{
 									const char* pTranslateSectionName = pSettings->r_string(section_name.data(), "inv_name");
 									const auto& pTranslatedString = g_pStringTable->translate(pTranslateSectionName);
-									ImGui::Text("In game name: [%s]", pTranslatedString.c_str());
+									ImGui::Text("In game name: [%s]", Platform::ANSI_TO_UTF8(pTranslatedString.c_str()).c_str());
 								}
 
 								if (pSection->line_exist("cost"))
@@ -880,9 +865,154 @@ void RenderWeaponManagerWindow()
 	}
 }
 
+enum eSelectedType {
+	kSelectedType_All,
+	kSelectedType_SmartTerrain,
+	kSelectedType_SmartCover,
+	kSelectedType_LevelChanger,
+	kSelectedType_Artefact,
+	kSelectedType_Stalker,
+	kSelectedType_Car,
+	kSelectedType_Count
+};
+
 struct {
+
+
 	int selected_type{};
 	char search_string[256]{};
+	char category_names[(eSelectedType::kSelectedType_Count)][32];
+	const char* combo_items[(eSelectedType::kSelectedType_Count)]{};
+	int counts[(eSelectedType::kSelectedType_Count)]{};
+
+	const char* convertTypeToString(int type)
+	{
+		switch (static_cast<eSelectedType>(type))
+		{
+		case eSelectedType::kSelectedType_All:
+		{
+			return "All";
+		}
+		case eSelectedType::kSelectedType_SmartTerrain:
+		{
+			return "Smart terrain";
+		}
+		case eSelectedType::kSelectedType_SmartCover:
+		{
+			return "Smart cover";
+		}
+		case eSelectedType::kSelectedType_LevelChanger:
+		{
+			return "Level changer";
+		}
+		case eSelectedType::kSelectedType_Artefact:
+		{
+			return "Artefact";
+		}
+		case eSelectedType::kSelectedType_Stalker:
+		{
+			return "Stalker";
+		}
+		case eSelectedType::kSelectedType_Car:
+		{
+			return "Car";
+		}
+		default:
+		{
+			return "unknown";
+		}
+		}
+	}
+
+	bool filter(CLASS_ID id)
+	{
+		bool result{};
+
+		switch (static_cast<eSelectedType>(selected_type))
+		{
+		case eSelectedType::kSelectedType_All:
+		{
+			result = true;
+			break;
+		}
+		case eSelectedType::kSelectedType_SmartTerrain:
+		{
+			result = id == imgui_clsid_manager.smart_terrain;
+			break;
+		}
+		case eSelectedType::kSelectedType_SmartCover:
+		{
+			result = id == imgui_clsid_manager.smart_cover;
+			break;
+		}
+		case eSelectedType::kSelectedType_LevelChanger:
+		{
+			result = id == imgui_clsid_manager.level_changer;
+			break;
+		}
+		case eSelectedType::kSelectedType_Artefact:
+		{
+			result = id == imgui_clsid_manager.artefact;
+			break;
+		}
+		case eSelectedType::kSelectedType_Stalker:
+		{
+			result = id == imgui_clsid_manager.stalker;
+			break;
+		}
+		case eSelectedType::kSelectedType_Car:
+		{
+			result = id == imgui_clsid_manager.car;
+			break;
+		}
+		}
+
+		return result;
+	}
+
+	void count(CLASS_ID id)
+	{
+		counts[(eSelectedType::kSelectedType_All)] += 1;
+
+		if (id == imgui_clsid_manager.smart_terrain)
+		{
+			counts[(eSelectedType::kSelectedType_SmartTerrain)] += 1;
+		}
+		else if (id == imgui_clsid_manager.smart_cover)
+		{
+			counts[(eSelectedType::kSelectedType_SmartCover)] += 1;
+		}
+		else if (id == imgui_clsid_manager.level_changer)
+		{
+			counts[(eSelectedType::kSelectedType_LevelChanger)] += 1;
+		}
+		else if (id == imgui_clsid_manager.artefact)
+		{
+			counts[(eSelectedType::kSelectedType_Artefact)] += 1;
+		}
+		else if (id == imgui_clsid_manager.stalker)
+		{
+			counts[(eSelectedType::kSelectedType_Stalker)] += 1;
+		}
+		else if (id == imgui_clsid_manager.car)
+		{
+			counts[(eSelectedType::kSelectedType_Car)] += 1;
+
+		}
+	}
+
+	void init()
+	{
+		for (int i = 0; i < (eSelectedType::kSelectedType_Count); ++i)
+		{
+			char* pPtr = &category_names[i][0];
+			const char* pStr = convertTypeToString(i);
+
+			memcpy_s(pPtr, sizeof(category_names[i]), pStr, strlen(pStr));
+
+			combo_items[i] = pPtr;
+		}
+	}
 }
 
 imgui_search_manager;
@@ -898,37 +1028,124 @@ void RenderSearchManagerWindow()
 	if (!ai().get_alife())
 		return;
 
-
-
 	if (ImGui::Begin("Search Manager"), &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_SearchManager)])
 	{
+		constexpr size_t kItemSize = sizeof(imgui_search_manager.combo_items) / sizeof(imgui_search_manager.combo_items[0]);
+		ImGui::Combo("Category", &imgui_search_manager.selected_type, imgui_search_manager.combo_items, kItemSize);
+
+		ImGui::SeparatorText("Stats");
+		ImGui::Text("Current category: %s (%d)", imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type), imgui_search_manager.selected_type);
 		ImGui::Text("Level: %s", Level().name().c_str());
-		ImGui::Text("Smart covers: %d", 0);
-		ImGui::Text("Smart terrains: %d", 0);
 
-		ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
+		ImGui::Text("All: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_All)]);
+		ImGui::Text("Smart covers: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartCover)]);
+		ImGui::Text("Smart terrains: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_SmartTerrain)]);
+		ImGui::Text("Stalker: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Stalker)]);
+		ImGui::Text("Car: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Car)]);
+		ImGui::Text("Level changer: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
+		ImGui::Text("Artefact: %d", imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
 
-		ImGui::SeparatorText("All");
-
-		auto size = Level().Objects.o_count();
-		
-		for (auto i = 0; i < size; ++i)
+		if (ImGui::BeginTabBar("##TB_InGameSearchManager"))
 		{
-			auto* pObject = Level().Objects.o_get_by_iterator(i);
-
-			if (pObject)
+			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
 			{
-				char buffer[512]{};
-				memcpy(buffer, pObject->cName().c_str(), strlen(pObject->cName().c_str()));
-				char number[32]{};
-				sprintf_s(number, sizeof(number), "##InGame_SM_%d", i);
-				memcpy(&buffer[0] + strlen(pObject->cName().c_str()), number, sizeof(number));
-				
-				ImGui::Button(buffer);
-			}
-		}
+				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
 
-		ImGui::Separator();
+				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
+
+				ImGui::SeparatorText(imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type));
+
+				auto size = Level().Objects.o_count();
+
+				for (auto i = 0; i < size; ++i)
+				{
+					auto* pObject = Level().Objects.o_get_by_iterator(i);
+
+					if (pObject && pObject->H_Parent()==nullptr)
+					{
+						imgui_search_manager.count(pObject->CLS_ID);
+
+						if (imgui_search_manager.filter(pObject->CLS_ID))
+						{
+							auto filter_string_size = strlen(imgui_search_manager.search_string);
+
+							CGameObject* pCasted = smart_cast<CGameObject*>(pObject);
+							bool passed_filter{true};
+							if (filter_string_size)
+							{
+								if (pCasted && pObject)
+								{
+									std::string_view cname = pObject->cName().c_str();
+									std::string_view translate_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str();
+
+									if (cname.find(imgui_search_manager.search_string) == xr_string::npos && translate_name.find(imgui_search_manager.search_string) == xr_string::npos)
+									{
+										passed_filter = false;
+									}
+								}
+							}
+
+							if (passed_filter)
+							{
+								xr_string name;
+
+								name = pObject->cName().c_str();
+
+								if (pCasted)
+								{
+									name += " ";
+									name += "[";
+									name += Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str());
+									name += "]";
+								}
+								name += "##InGame_SM_";
+								name += std::to_string(i);
+
+								if (ImGui::Button(name.c_str()))
+								{
+									CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+
+									if (pActor)
+									{
+										xr_string cmd;
+										cmd = "set_actor_position ";
+										cmd += std::to_string(pObject->Position().x);
+										cmd += ",";
+										cmd += std::to_string(pObject->Position().y);
+										cmd += ",";
+										cmd += std::to_string(pObject->Position().z);
+
+										execute_console_command_deferred(Console, cmd.c_str());
+									}
+								}
+
+								if (ImGui::BeginItemTooltip())
+								{
+									ImGui::Text("system name: [%s]", pObject->cName().c_str());
+									ImGui::Text("section name: [%s]", pObject->cNameSect().c_str());
+									ImGui::Text("translated name: [%s]", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str());
+									ImGui::Text("position: %f %f %f", pObject->Position().x, pObject->Position().y, pObject->Position().z);
+
+
+
+									ImGui::EndTooltip();
+								}
+							}
+						}
+					}
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Offline##TB_Offline_InGameSearchManager"))
+			{
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
 
 		ImGui::End();
 	}
@@ -949,6 +1166,8 @@ void RegisterImGuiInGame()
 		CImGuiManager::Instance().Subscribe("Search Manager", CImGuiManager::ERenderPriority::eMedium, RenderSearchManagerWindow);
 
 		InitImGuiCLSIDInGame();
+
+		imgui_search_manager.init();
 	}
 }
 
