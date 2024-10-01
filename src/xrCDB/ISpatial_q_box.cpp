@@ -2,7 +2,7 @@
 #include "ISpatial.h"
 
 extern Fvector	c_spatial_offset[8];
-
+thread_local xr_vector<ISpatial*>* qb_result;
 template <bool b_first>
 class	walker
 {
@@ -41,7 +41,7 @@ public:
 			Fbox			sB;		sB.set	(sC.x-sR, sC.y-sR, sC.z-sR, sC.x+sR, sC.y+sR, sC.z+sR);
 			if (!sB.intersect(box))	continue;
 
-			space->q_result->push_back	(S);
+			qb_result->push_back	(S);
 			if (b_first)			return;
 		}
 
@@ -52,7 +52,7 @@ public:
 			if (0==N->children[octant])	continue;
 			Fvector		c_C;			c_C.mad	(n_C,c_spatial_offset[octant],c_R);
 			walk						(N->children[octant],c_C,c_R);
-			if (b_first && !space->q_result->empty())	return;
+			if (b_first && !qb_result->empty())	return;
 		}
 	}
 };
@@ -60,12 +60,11 @@ public:
 void	ISpatial_DB::q_box			(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
 	PROF_EVENT("ISpatial_DB::q_frustum")
-	cs.Enter			();
-	q_result			= &R;
-	q_result->resize(0);
+	xrSRWLockGuard guard(&db_lock, true);
+	qb_result			= &R;
+	qb_result->resize(0);
 	if (_o & O_ONLYFIRST)			{ walker<true>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
 	else							{ walker<false>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
-	cs.Leave			();
 }
 
 void	ISpatial_DB::q_sphere		(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)

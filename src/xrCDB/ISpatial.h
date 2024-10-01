@@ -154,7 +154,7 @@ public:
 class XRCDB_API	ISpatial_DB
 {
 private:
-	xrCriticalSection				cs;
+	xrSRWLock						db_lock;
 
 	poolSS< ISpatial_NODE, 128 >	allocator;
 
@@ -164,7 +164,6 @@ public:
 	ISpatial_NODE*					m_root;
 	Fvector							m_center;
 	float							m_bounds;
-	xr_vector<ISpatial*>*			q_result;
 	u32								stat_nodes;
 	u32								stat_objects;
 	CStatTimer						stat_insert;
