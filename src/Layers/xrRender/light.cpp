@@ -45,6 +45,10 @@ light::light		(void)	: ISpatial(g_SpatialSpace)
 	m_sectors = {};
 	b_need_recompute_xform = true;
 	b_need_detect_sectors = true;
+
+	X.S.posX	= 0;
+	X.S.posY	= 0;
+	X.S.size	= SMAP_adapt_max;
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
 
@@ -337,10 +341,6 @@ void	light::xform_calc			()
 		X.S.project.build_projection		(_min(cone + deg2rad(5.f), PI*0.98f), 1.f,virtual_size,range+EPS_S);
 
 		X.S.combine.mul(X.S.project,X.S.view);
-
-		X.S.posX	= 0;
-		X.S.posY	= 0;
-		X.S.size	= SMAP_adapt_max;
 	}
 }
 
