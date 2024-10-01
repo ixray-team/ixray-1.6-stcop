@@ -179,4 +179,7 @@
     <string id="renderer_r4_dx10">
         <text>Ул. полное освещение (DX10)</text>
     </string>
+    <string id="st_proc">
+        <text>%</text>
+    </string>
 </string_table>
