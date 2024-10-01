@@ -416,16 +416,30 @@ void TUI::Redraw()
 	PrepareRedraw();
 
 	try{
-	
-		if (u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
+		if(u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight || !RT->pSurface)
 		{
-			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
+			{
 				GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
 				GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
+
 				RT.destroy();
+				RTCopy.destroy();
 				ZB.destroy();
-				RT.create("rt_color", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-				ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+
+				RTPostion.destroy();
+				RTNormal.destroy();
+				RTDiffuse.destroy();
+
+				RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+				RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+				RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
+
+				RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+
+				ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
+
 				m_Flags.set(flRedraw, TRUE);
 
 				EDevice->m_fNearer = EDevice->mProject._43;
@@ -438,7 +452,8 @@ void TUI::Redraw()
 				RCache.set_xform_project(EDevice->mProject);
 				RCache.set_xform_world(Fidentity);
 			}
-			else {
+			else 
+			{
 				// Soft render update when resizing window
 				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
 				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;
@@ -458,11 +473,25 @@ void TUI::Redraw()
 			{
 				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
+
+				RCache.set_RT(RTNormal->pRT, 0);
+				RCache.set_RT(RTDiffuse->pRT, 1);
+				RCache.set_RT(RTPostion->pRT, 2);
+
+				RCache.set_ZB(0);
+
+				CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
+
 				RCache.set_RT(RT->pRT);
 				RCache.set_ZB(ZB->pRT);
 
 				EDevice->Clear();
 
+				RCache.set_RT(RTDiffuse->pRT, 1);
+				RCache.set_RT(RTNormal->pRT, 2);
+				RCache.set_RT(RTPostion->pRT, 3);
+
+				RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 				//EDevice->Statistic->RenderDUMP_RT.Begin();
 				EDevice->UpdateView();
 				EDevice->ResetMaterial();
@@ -503,7 +532,6 @@ void TUI::Redraw()
 				// draw axis
 				DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
 
-
 				//EDevice->Statistic->RenderDUMP_RT.End();
 				//->EStatistic->Show(EDevice->pSystemFont);
 				EDevice->seqRender.Process(rp_Render);
@@ -511,6 +539,10 @@ void TUI::Redraw()
 				{
 					g_pGamePersistent->OnRenderPPUI_main();
 				}
+
+				RCache.set_RT(0, 1);
+				RCache.set_RT(0, 2);
+				RCache.set_RT(0, 3);
 
 				RCache.set_RT(RSwapchainTarget);
 				RCache.set_ZB(RDepth);
@@ -677,19 +709,28 @@ bool TUI::OnCreate()
 		return 		false;
 	}
 
-	BeginEState		(esEditScene);
+	BeginEState(esEditScene);
+
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
+
 	RTSize = { GetRenderWidth(), GetRenderHeight() };
 	EDevice->fASPECT = (float)RTSize.x / (float)RTSize.y;
+
 	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
 	EDevice->m_fNearer = EDevice->mProject._43;
 
-
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
-	RT.create("rt_color", RTSize .x*EDevice->m_ScreenQuality, RTSize.y * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	ZB.create("rt_depth", RTSize.x * EDevice->m_ScreenQuality, RTSize.y* EDevice->m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+
+	RTPostion.create("$user$position", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTNormal.create("$user$normal", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
+	RTDiffuse.create("$user$diffuse", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
+
+	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+
+	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_D24S8);
 
 	return true;
 }
@@ -698,8 +739,14 @@ void TUI::OnDestroy()
 {
 	Console->Destroy();
 	xr_delete(Console);
+
 	RT.destroy();
+	RTCopy.destroy();
 	ZB.destroy();
+
+	RTPostion.destroy();
+	RTNormal.destroy();
+	RTDiffuse.destroy();
 
 	VERIFY(m_bReady);
 	m_bReady		= false;

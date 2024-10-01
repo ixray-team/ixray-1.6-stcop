@@ -6,6 +6,7 @@
 #pragma hdrstop
 
 #include "Blender_default_aref.h"
+#include "../xrRender/uber_deffer.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -55,22 +56,35 @@ void CBlender_default_aref::Compile(CBlender_Compile& C)
 {
 	IBlender::Compile		(C);
 	if (C.bEditor)	{
-		C.PassBegin		();
-		{
-			C.PassSET_ZB			(TRUE,TRUE);
-			if (oBlend.value)		C.PassSET_Blend			(TRUE, D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	TRUE,oAREF.value);
-			else					C.PassSET_Blend			(TRUE, D3DBLEND_ONE, D3DBLEND_ZERO,				TRUE,oAREF.value);
-			C.PassSET_LightFog		(TRUE,TRUE);
-			
-			// Stage0 - Base texture
-			C.StageBegin		();
-			C.StageSET_Address	(D3DTADDRESS_WRAP);
-			C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-			C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-			C.StageSET_TMC		(oT_Name,oT_xform,"$null",0);
-			C.StageEnd			();
+		//C.PassBegin		();
+		//{
+		//	C.PassSET_ZB			(TRUE,TRUE);
+		//	if (oBlend.value)		C.PassSET_Blend			(TRUE, D3DBLEND_SRCALPHA,D3DBLEND_INVSRCALPHA,	TRUE,oAREF.value);
+		//	else					C.PassSET_Blend			(TRUE, D3DBLEND_ONE, D3DBLEND_ZERO,				TRUE,oAREF.value);
+		//	C.PassSET_LightFog		(TRUE,TRUE);
+		//	
+		//	// Stage0 - Base texture
+		//	C.StageBegin		();
+		//	C.StageSET_Address	(D3DTADDRESS_WRAP);
+		//	C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
+		//	C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
+		//	C.StageSET_TMC		(oT_Name,oT_xform,"$null",0);
+		//	C.StageEnd			();
+		//}
+		//C.PassEnd			();
+
+		if(!!oBlend.value) {
+			RImplementation.addShaderOption("FORWARD_ONLY", "1");
 		}
-		C.PassEnd			();
+
+		uber_deffer(C, true, "deffer_base", "deffer_base", !oBlend.value, 0, true);
+
+		if(!!oBlend.value) {
+		//	C.PassSET_ZB(TRUE, FALSE);
+			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
+		}
+
+		C.r_End();
 	} else {
 		if (C.L_textures.size()<2)	Debug.fatal	(DEBUG_INFO,"Not enought textures for shader, base tex: %s",*C.L_textures[0]);
 		switch (C.iElement)

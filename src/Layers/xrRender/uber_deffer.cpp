@@ -12,8 +12,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	fix_texture_name(fname);
 	ref_texture pTexture; pTexture.create(fname);
 
+#ifdef _EDITOR
+	ps_r__common_flags.set(R2FLAG_USE_BUMP, TRUE);
+#endif
+
 	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && pTexture.bump_exist();
 
+#ifndef _EDITOR
 	bool lmap = false;
 	if(C.L_textures.size() >= 3) {
 		auto tex = C.L_textures[2].c_str();
@@ -21,6 +26,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			lmap = true;
 		}
 	}
+#else 
+	bool lmap = false;
+#endif
 
 	string256 dt;
 	xr_strcpy(dt, sizeof(dt), detail_replace ? detail_replace : (C.detail_texture ? C.detail_texture : ""));
@@ -174,6 +182,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if(lmap) {
 		C.r_Sampler_clf("s_hemi", C.L_textures[2].c_str(), false);
 	}
+#endif
+
+#ifdef _EDITOR
+	C.r_Sampler_clw("s_material", "shaders\\r2_material");
+	C.r_Sampler("env_s0", "$user$env_s0");
+	C.r_Sampler("env_s1", "$user$env_s1");
+	C.r_Sampler("sky_s0", "$user$sky0");
+	C.r_Sampler("sky_s1", "$user$sky1");
 #endif
 
 	if (!DO_NOT_FINISH) {

@@ -1,6 +1,7 @@
+#ifndef _EDITOR
 #include "stdafx.h"
-
 #include "../xrRender/du_sphere.h"
+#endif
 
 /*
 Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]=

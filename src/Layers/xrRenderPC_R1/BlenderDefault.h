@@ -10,6 +10,12 @@ public:
 	virtual		BOOL		canBeDetailed()	{ return TRUE; }
 	virtual		BOOL		canBeLMAPped()	{ return TRUE; }
 
+#ifdef _EDITOR
+	virtual		BOOL		canUseSteepParallax() {
+		return TRUE;
+	}
+#endif
+
 	virtual		void		Save			(IWriter&	fs);
 	virtual		void		Load			(IReader&	fs, u16 version);
 

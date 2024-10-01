@@ -255,6 +255,10 @@ public:
     void CloseConsole();
 public:
     ref_rt				RT;
+    ref_rt				RTPostion   ;
+    ref_rt				RTNormal    ;
+    ref_rt				RTDiffuse   ;
+    ref_rt				RTCopy;
     ref_rt				ZB;
     _vector2<u32>            RTSize;
 protected:

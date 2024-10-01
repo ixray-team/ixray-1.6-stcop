@@ -14,13 +14,97 @@
 #include "../../../Layers/xrRender/ModelPool.h"
 #include "../../../Layers/xrRender/SkeletonCustom.h"
 #include "../../../xrCore/API/xrAPI.h"
+#include <d3dcompiler.h>
+#include "../../../Layers/xrRender/light.h"
+#include "../Render/LightSpot.h"
+
 class ISpatial;
+
+class CBlender_accum : public IBlender {
+public:
+	virtual LPCSTR getComment() {
+		return "INTERNAL: accumulate light";
+	}
+
+	virtual BOOL canBeDetailed() {
+		return FALSE;
+	}
+
+	virtual BOOL canBeLMAPped() {
+		return FALSE;
+	}
+
+	virtual void Compile(CBlender_Compile& C);
+
+	CBlender_accum() {
+		description.CLS = 0;
+	};
+
+	virtual ~CBlender_accum() {};
+};
 
 // definition (Renderer)
 class CRenderTarget :public IRender_Target
 {
 public:
-	CRenderTarget() {}
+	CRenderTarget();
+	virtual ~CRenderTarget();
+
+	// 2D texgen (texture adjustment matrix)
+	void	u_compute_texgen_screen(Fmatrix& m_Texgen) {
+		float	_w = float(RCache.get_width());
+		float	_h = float(RCache.get_height());
+		float	o_w = (.5f / _w);
+		float	o_h = (.5f / _h);
+
+		Fmatrix			m_TexelAdjust =
+		{
+			0.5f,				0.0f,				0.0f,			0.0f,
+			0.0f,				-0.5f,				0.0f,			0.0f,
+			0.0f,				0.0f,				1.0f,			0.0f,
+			0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
+		};
+		m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
+	}
+
+	void reset_light_marker(bool bResetStencil = false) {
+		dwLightMarkerID = 5;
+
+		if(bResetStencil) {
+			CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+		}
+	}
+
+	void increment_light_marker() {
+		dwLightMarkerID += 2;
+
+		if(dwLightMarkerID > 255)
+			reset_light_marker(true);
+	}
+
+	void accum_point_geom_create();
+	void accum_point_geom_destroy();
+	void accum_spot_geom_create();
+	void accum_spot_geom_destroy();
+
+	void accum_spot(light*);
+	void accum_point(light*);
+	void draw_volume(light*);
+
+	u32 dwLightMarkerID = 0;
+
+	ref_shader s_accum;
+	IBlender* b_accum;
+
+	ref_geom g_accum_point;
+	ref_geom g_accum_spot;
+
+	IDirect3DVertexBuffer9* g_accum_point_vb;
+	IDirect3DIndexBuffer9* g_accum_point_ib;
+
+	IDirect3DVertexBuffer9* g_accum_spot_vb;
+	IDirect3DIndexBuffer9* g_accum_spot_ib;
+
 	virtual	void					set_blur(float	f) {}
 	virtual	void					set_gray(float	f) {}
 	virtual void					set_duality_h(float	f) {}
@@ -35,7 +119,7 @@ public:
 	virtual void					set_cm_imfluence(float	f) {}
 	virtual void					set_cm_interpolate(float	f) {}
 	virtual void					set_cm_textures(const shared_str& tex0, const shared_str& tex1) {}
-	virtual ~CRenderTarget() {};
+
 	virtual u32			get_width			()				{ return EDevice->TargetWidth;	}
 	virtual u32			get_height			()				{ return EDevice->TargetHeight;	}
 
@@ -43,15 +127,17 @@ public:
 	virtual u32						get_target_height() { return EDevice->TargetHeight;	}
 	virtual u32						get_core_width()	{ return EDevice->TargetWidth;	}
 	virtual u32						get_core_height()	{ return EDevice->TargetHeight;	}
+
+	CTexture* t_envmap_0;	// env-0
+	CTexture* t_envmap_1;	// env-1
 };
-
-
 
 class	ECORE_API CRender : public IRender_interface
 {
 	CRenderTarget* Target;
 	Fmatrix					current_matrix;
 	BOOL val_bInvisible;
+	u32 dwFrameCalc = 0;
 public:
 	// options
 
@@ -60,6 +146,11 @@ public:
 	CPSLibrary				PSLibrary;
 
 	CModelPool* Models;
+
+	xr_vector<light*> m_pointlights;
+	xr_vector<light*> m_spotlights;
+	CLight_Compute_XFORM_and_VIS LR;
+
 public:
 	// Occlusion culling
 	virtual BOOL			occ_visible(Fbox& B);
@@ -110,7 +201,7 @@ public:
 	}
 	void 					model_Render(IRenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
 	void 					model_RenderSingle(IRenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD);
-	virtual	GenerationLevel	get_generation() { return GENERATION_R1; }
+	virtual	GenerationLevel	get_generation() { return GENERATION_R2; }
 	virtual bool			is_sun_static() { return true; };
 
 	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
@@ -122,7 +213,19 @@ public:
 	virtual void			rmFar();
 	virtual void			rmNormal();
 
-	void 					apply_lmaterial() {}
+	IC void apply_lmaterial() {
+		R_constant* C = &*RCache.get_c("s_base"); // get sampler
+		if(0 == C)			return;
+		VERIFY(RC_dest_sampler == C->destination);
+		VERIFY(RC_sampler == C->type);
+		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
+		VERIFY(T);
+		float	mtl = T->m_material;
+#ifdef	DEBUG_DRAW
+		if(ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))	mtl = ps_r2_gmaterial;
+#endif
+		RCache.hemi.set_material(0.7, 1, 0, (mtl + .5f) / 4.f);
+	}
 
 	virtual LPCSTR			getShaderPath()
 	{
@@ -195,11 +298,31 @@ public:
 	// Render mode
 	virtual u32						memory_usage();
 
-	xr_string getShaderParams() { return ""; };
-	void addShaderOption(const char* name, const char* value) {};
-	void clearAllShaderOptions() {  }
+	xr_string getShaderParams() {
+		xr_string params = "";
+		if(!m_ShaderOptions.empty()) {
+			params.append("(").append(m_ShaderOptions[0].Name);
+
+			for(auto i = 1u; i < m_ShaderOptions.size(); ++i) {
+				params.append(",").append(m_ShaderOptions[i].Name);
+			}
+
+			params.append(")");
+		}
+		return params;
+	};
+
+	void addShaderOption(const char* name, const char* value) {
+		m_ShaderOptions.emplace_back(name, value);
+	};
+
+	void clearAllShaderOptions() {
+		m_ShaderOptions.resize(0);
+	}
 
 protected:
+	xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
+
 	virtual	void					ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {};
 	HRESULT					shader_compile(
 		LPCSTR							name,

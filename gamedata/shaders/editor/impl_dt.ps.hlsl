@@ -16,7 +16,6 @@ uniform sampler2D s_dt_a; //
 // Pixel
 float4 main(v2p I) : COLOR
 {
-
     float4 t_base = tex2D(s_base, I.tc0);
 
     float4 mask = tex2D(s_mask, I.tc0);
@@ -28,15 +27,9 @@ float4 main(v2p I) : COLOR
     float3 d_B = tex2D(s_dt_b, I.tc2) * mask.b;
     float3 d_A = tex2D(s_dt_a, I.tc2) * mask.a;
     float3 dt = d_R + d_G + d_B + d_A;
-    t_base.rgb = 2 * t_base.rgb * dt;
-
-    // calc D-texture
-    float3 detail = tex2D(s_detail, I.tc2);
-
-    // final-color
-    float3 final = (t_base.rgb) * detail * 2;
+    t_base.xyz *= 2.0f * dt;
 
     // out
-    return float4(final.rgb, 1);
-    // return 	float4	(light*detail*2,1);
+    return float4(t_base.xyz, 1);
 }
+

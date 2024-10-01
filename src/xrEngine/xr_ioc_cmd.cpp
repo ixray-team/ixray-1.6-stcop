@@ -781,6 +781,10 @@ void CCC_Register()
 	if(!Device.IsEditorMode()) {
 		CMD1(CCC_r2, "renderer");
 	}
+	else {
+		psDeviceFlags.set(rsR2, TRUE);
+		psDeviceFlags.set(rsR4, FALSE);
+	}
 
 	CMD1(CCC_soundDevice, "snd_device"			);
 

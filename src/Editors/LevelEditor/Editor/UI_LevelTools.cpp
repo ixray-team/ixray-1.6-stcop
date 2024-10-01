@@ -485,10 +485,12 @@ void  CLevelTool::RenderEnvironment()
 void  CLevelTool::Render()
 {
 	// Render update
-	::Render->Calculate		();
-	::Render->Render		();
+	if(!Scene->IsPlayInEditor()) {
+		::Render->Calculate();
+		::Render->Render();
+	}
 
-	EEditorState est 		= UI->GetEState();
+	EEditorState est = UI->GetEState();
 	// draw scene
 	switch(est)
 	{
@@ -502,11 +504,11 @@ void  CLevelTool::Render()
 		if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
 			g_pGamePersistent->Environment().RenderLast();
 	break;
-	case esBuildLevel:  	Builder.OnRender();				break;
+	case esBuildLevel: Builder.OnRender(); break;
 	}
+
 	// draw cursor
 	LUI->m_Cursor->Render();
-
     inherited::Render();
 }
 

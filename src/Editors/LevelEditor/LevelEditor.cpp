@@ -86,7 +86,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 break;
             case SDL_EVENT_WINDOW_HIDDEN:
             case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-                Device.b_is_Active = false;
+                Device.b_is_Active = !!psDeviceFlags.test(rsDeviceActive);
                 //if (UI)UI->OnAppDeactivate();
                 break;
 

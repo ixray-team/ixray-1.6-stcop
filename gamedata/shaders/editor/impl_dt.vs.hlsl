@@ -19,7 +19,6 @@ struct vv
 vf main(vv v)
 {
     vf o;
-    float2 dt = calc_detail(v.P);
     float3 N = unpack_normal(v.N);
     o.hpos = mul(m_WVP, float4(v.P.xyz, 1)); // xform, input in world coords
     o.tc0 = v.tc;
@@ -29,3 +28,4 @@ vf main(vv v)
 
     return o;
 }
+
