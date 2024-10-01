@@ -367,6 +367,15 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 	}
 	else
 	{
+		if (choose_ID == EChooseMode::smTexture)
+		{
+			// FX: Обновление списка текстур
+			string_path Path = {};
+
+			FS.update_path(Path, _game_textures_, "");
+			FS.rescan_path(Path, true);
+		}
+
 		SChooseEvents* e = GetEvents(choose_ID); VERIFY2(e, "Can't find choose event.");
 		Form->E = *e;
 	}
