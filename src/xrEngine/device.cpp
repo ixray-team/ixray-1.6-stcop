@@ -99,8 +99,12 @@ void CRenderDevice::End		(void)
 		{
 			m_pRender->updateGamma();
 
-			if(precache_light) precache_light->set_active	(false);
-			if(precache_light) precache_light.destroy		();
+			if (precache_light)
+			{
+				precache_light->set_active(false);
+				precache_light->set_color(0, 0, 0);
+				precache_light.destroy();
+			}
 			::Sound->set_master_volume						(1.f);
 
 			m_pRender->ResourcesDestroyNecessaryTextures	();
