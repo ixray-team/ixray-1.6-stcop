@@ -8,6 +8,7 @@
 CStateBurerAntiAim::CStateBurerAntiAim(CBaseMonster* obj) : inherited(obj)
 {
 	m_allow_anti_aim = false;
+	m_pBurer = smart_cast<CBurer*>(obj);
 }
 
 void   CStateBurerAntiAim::initialize()
@@ -22,7 +23,7 @@ void   CStateBurerAntiAim::initialize()
 
 void   CStateBurerAntiAim::execute()
 {
-	this->object->face_enemy();
+	this->m_pBurer->face_enemy();
 	this->object->set_action(ACT_STAND_IDLE);
 }
 

@@ -1,7 +1,12 @@
 #include "stdafx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
 #include "burer.h"
 #include "burer_state_attack_melee.h"
+
+#include "../control_animation_base.h"
 
 #define MIN_DIST_MELEE_ATTACK	5.f
 #define MAX_DIST_MELEE_ATTACK	9.f

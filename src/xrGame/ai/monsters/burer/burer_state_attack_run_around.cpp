@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
 #include "burer.h"
 #include "burer_state_attack_run_around.h"
 
@@ -7,6 +10,7 @@
 
 CStateBurerAttackRunAround::CStateBurerAttackRunAround(CBaseMonster* obj) : inherited(obj)
 {
+	m_pBurer = smart_cast<CBurer*>(obj);
 }
 
 void CStateBurerAttackRunAround::initialize()
@@ -68,7 +72,7 @@ bool CStateBurerAttackRunAround::check_start_conditions()
 
 bool CStateBurerAttackRunAround::check_completion()
 {
-	if ((time_started + this->object->m_max_runaway_time < Device.dwTimeGlobal) ||
+	if ((time_started + this->m_pBurer->m_max_runaway_time < Device.dwTimeGlobal) ||
 		(this->object->control().path_builder().is_moving_on_path() && this->object->control().path_builder().is_path_end(2.f))) {
 
 		this->object->dir().face_target(this->object->EnemyMan.get_enemy());

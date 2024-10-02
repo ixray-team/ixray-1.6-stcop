@@ -1,7 +1,16 @@
 #include "stdafx.h"
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
+#include "ai_object_location.h"
+
+#include "sound_player.h"
+
 #include "burer.h"
 #include "burer_state_attack_gravi.h"
+
+#include "../states/monster_state_attack_on_run.h"
 
 CStateBurerAttackGravi::CStateBurerAttackGravi(CBaseMonster* obj) : inherited(obj)
 {

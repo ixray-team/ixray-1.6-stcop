@@ -1,5 +1,10 @@
 #include "stdafx.h"
 
+#include "restricted_object.h"
+
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
 #include "burer.h"
 #include "burer_state_attack.h"
 

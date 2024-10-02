@@ -2,7 +2,6 @@
 #include "../state.h"
 #include "../../../grenade.h"
 
-
 class CStateBurerAttackTele : public CState {
 	typedef CState inherited;	
 
@@ -11,6 +10,8 @@ class CStateBurerAttackTele : public CState {
 	xr_vector<CObject*>					m_nearest;
 	
 	u32									time_started;
+
+	CBurer* m_pBurer;
 
 	enum {
 		ACTION_TELE_STARTED,
