@@ -1,4 +1,4 @@
-<w>
+<w override="add">
 <af_params x="0" y="0" width="260" height="20" override="add">
     <condition x="0" y="0" width="257" height="20">
         <caption x="0" y="0" width="257" height="20" complex_mode="0">

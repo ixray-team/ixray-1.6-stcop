@@ -204,6 +204,24 @@ FS_FileSet CXMLOverride::GetModifFiles(const char* Path, const char* File)
 
 	FS_FileSet ModifyList;
 	FS.file_list(ModifyList, "$game_config$", FS_ListFiles, ModifPathMask.c_str());
+    
+    if (!ValidFileName.Contains("_16"))
+    {
+        xr_vector<FS_File> deleteFiles;
+        xr_string ValidFileName16 = ValidFileName + "_16";
+        for (const FS_File& it : ModifyList)
+        {
+            if (it.name.Contains(ValidFileName16))
+            {
+                deleteFiles.push_back(it);
+            }
+        }
+
+        for (const FS_File& it : deleteFiles)
+        {
+            ModifyList.erase(it);
+        }
+    }
 
 	return std::move(ModifyList);
 }

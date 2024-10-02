@@ -17,13 +17,6 @@
 	<weapon_jammed_static x="0" y="0" width="53" height="64" stretch="1">
 		<texture>ui_hud_icon_weapon</texture>
 	</weapon_jammed_static>
-	
-	<icon_microphone x="808" y="714" width="27" height="36" stretch="1">
-		<texture>ui_microphone_icon</texture>
-	</icon_microphone>
-	<voice_distance x="822" y="737" width="24" height="20" stretch="1">
-		<text align="c" font="letterica16" color="white"/>
-	</voice_distance>
 
     <indicator_starvation x="980" y="350" width="26" height="35" stretch="1"/>
     <indicator_helmet_broken x="980" y="390" width="26" height="35" stretch="1"/>
@@ -193,15 +186,13 @@
 			<texture>ui_inGame2_Patroni_HUD_main_window</texture>
 		</back>
 
-		<progress_bar_health x="885" y="648" width="113" height="16" horz="1" min="0" max="1" pos="0"
-		expression="floor(fltPlayerHealth * 55.0) / 55.0">
+		<progress_bar_health x="885" y="648" width="113" height="16" horz="1" min="0" max="100" pos="0">
 			<progress><!-- light_anim="ui_blinking_1" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1" stretch="1"-->
 				<texture>ui_inGame2_Patroni_HUD_red_bar</texture>
 			</progress>
 		</progress_bar_health>
 
-	    <progress_bar_stamina x="885" y="670" width="113" height="10" horz="1" min="0" max="1" pos="0"
-		expression="floor(fltPlayerPower * 55.0) / 55.0">
+	    <progress_bar_stamina x="885" y="670" width="113" height="10" horz="1" min="0" max="100" pos="0">
 	        <progress><!-- light_anim="ui_blinking_1" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1" stretch="1"-->
 		        <texture>ui_inGame2_Patroni_HUD_blue_bar</texture>
 	        </progress>
