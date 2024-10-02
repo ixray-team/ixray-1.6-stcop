@@ -58,9 +58,17 @@ IC	bool IGameGraph::valid_vertex_id								(u32 const vertex_id) const
 	return						(vertex_id < header().vertex_count());
 }
 
-IC	void IGameGraph::begin											(u32 const vertex_id, const_iterator &start, const_iterator &end) const
+IC	void IGameGraph::begin(u32 const vertex_id, const_iterator& start, const_iterator& end) const
 {
-	end							= (start = (const CEdge *)(m_edges + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
+	if (m_edges == nullptr)
+	{
+		end = (start = (const CEdge*)(m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
+	}
+	else
+	{
+		// FX: TODO: Разберись!!!Ы
+		end = (start = (const CEdge*)(m_edges + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
+	}
 }
 
 IC	const IGameGraph::_GRAPH_ID &IGameGraph::value					(u32 const vertex_id, const_iterator &i) const

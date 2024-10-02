@@ -166,11 +166,28 @@ bool CheckMP()
 
 bool IsEditorMode()
 {
+	if (DevicePtr == nullptr)
+		return false;
+
 	return Device.IsEditorMode();
 }
 
 void SemiLog(const char* Msg) {
 	Log(Msg);
+}
+
+namespace ixray::save
+{
+	xr_string CurrentSaveStage = "";
+	void SaveError()
+	{
+		R_ASSERT2(!"Save file is big. Chunk: ", CurrentSaveStage.c_str());
+	}
+
+	void SaveStage(const char* Name)
+	{
+		CurrentSaveStage = Name;
+	}
 }
 
 #pragma optimize("s",on)
@@ -206,11 +223,17 @@ void CScriptEngine::script_register(lua_State *L)
 #endif // #ifdef XRGAME_EXPORTS
 	];
 
-	if (Device.IsEditorMode())
+	if (DevicePtr != nullptr && Device.IsEditorMode())
 	{
 		module(L)
 		[
 			def("log", &LuaLog)
 		];
 	}
+	
+	module(L, "save")
+	[
+		def("call_error", &ixray::save::SaveError),
+		def("set_stage", &ixray::save::SaveStage)
+	];
 }

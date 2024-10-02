@@ -49,20 +49,6 @@
 
 using namespace luabind;
 
-namespace ixray::save
-{
-	xr_string CurrentSaveStage = "";
-	void SaveError()
-	{
-		R_ASSERT2(!"Save file is big. Chunk: ", CurrentSaveStage.c_str());
-	}
-
-	void SaveStage(const char* Name)
-	{
-		CurrentSaveStage = Name;
-	}
-}
-
 void block_action_script(int cmd) {
 	if (g_pGameLevel == nullptr) {
 		return;
@@ -1186,12 +1172,6 @@ void CLevel::script_register(lua_State* L)
 				def("community_relation", &g_get_community_relation),
 				def("set_community_relation", &g_set_community_relation),
 				def("get_general_goodwill_between", &g_get_general_goodwill_between)
-		];
-
-	module(L, "save")
-		[
-			def("call_error", &ixray::save::SaveError),
-				def("set_stage", &ixray::save::SaveStage)
 		];
 
 	module(L, "game")

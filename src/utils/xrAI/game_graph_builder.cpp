@@ -403,7 +403,7 @@ void CGameGraphBuilder::load_cross_table	(const float &start, const float &amoun
 	Msg						("Loading cross table");
 
 	VERIFY					(!m_cross_table);
-	m_cross_table			= new CGameLevelCrossTable(m_cross_table_name, xr_strlen(m_cross_table_name));
+	m_cross_table			= new CGameLevelCrossTable(m_cross_table_name);
 
 	Progress				(start + amount);
 }
