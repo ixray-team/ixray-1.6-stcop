@@ -1011,6 +1011,8 @@ void CWeapon::OnH_A_Independent()
 	m_dwWeaponIndependencyTime = Level().timeServer();
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
+	UpdateAddonsVisibility();
+	ProcessScope();
 	Engine.Sheduler.Unregister(this);
 };
 
