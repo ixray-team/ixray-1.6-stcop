@@ -298,28 +298,35 @@ bool CWeaponMagazined::TryReload()
 
 		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
 
-		if(m_pCurrentAmmo || unlimited_ammo())  
+		if (m_pCurrentAmmo || unlimited_ammo())
 		{
-			SetPending			(TRUE);
-			SwitchState			(eReload); 
-			return				true;
-		} 
-		else for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
+			SetPending(TRUE);
+			SwitchState(eReload);
+			return true;
+		}
+		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
-			m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() ));
-			if(m_pCurrentAmmo) 
-			{ 
-				m_set_next_ammoType_on_reload = i;
-				SetPending			(TRUE);
-				SwitchState			(eReload);
-				return				true;
+			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+			{
+				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+				if (m_pCurrentAmmo)
+				{
+					m_set_next_ammoType_on_reload = i;
+					SetPending(TRUE);
+					SwitchState(eReload);
+					return true;
+				}
 			}
 		}
-
+		else
+			m_set_next_ammoType_on_reload = undefined_ammo_type;
 	}
 	
 	if(GetState()!=eIdle)
 		SwitchState(eIdle);
+
+	bAmmotypeKeyPressed = false;
+	bReloadKeyPressed = false;
 
 	return false;
 }
