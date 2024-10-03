@@ -9,11 +9,9 @@ CEngineExternal::CEngineExternal() : m_is_modification_gunslinger{}, pOptions{},
 	FS.update_path(fname, "$game_config$", "engine_external.ltx");
 	pOptions = new CInifile(fname);
 
-	m_pTitle = READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
-
-
 	if (pOptions)
 	{
+		m_pTitle = READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
 		m_is_modification_gunslinger = pOptions->r_bool("gunslinger", magic_enum::enum_name(EEngineExternalGunslinger::EnableGunslingerMode).data());
 	}
 }
