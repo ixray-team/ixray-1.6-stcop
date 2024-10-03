@@ -250,12 +250,14 @@ public:
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow();
+	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false);
 
 	virtual bool IsGrenadeMode() { return false; }
 	virtual bool TryReload() { return false; }
 
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
+	shared_str FindStrValueInUpgradesDef(shared_str key, shared_str def);
 
 	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr, int param = 0);
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr, int param = 0);
@@ -273,6 +275,10 @@ public:
 	void ProcessAmmo(bool forced = false);
 	void ProcessAmmoAdv(bool forced = false);
 	void ProcessAmmoGL(bool forced = false);
+
+	int FindIntValueInUpgradesDef(shared_str key, int def);
+
+	float ModifyFloatUpgradedValue(shared_str key, float def);
 
 protected:
 	//состояние подключенных аддонов

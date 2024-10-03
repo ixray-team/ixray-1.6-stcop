@@ -1583,6 +1583,65 @@ void CWeapon::ProcessAmmoGL(bool forced)
 	}
 }
 
+shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def)
+{
+	for (int i = 0; i < m_upgrades.size(); ++i)
+	{
+		shared_str str = m_upgrades[i];
+		str = pSettings->r_string(str, "section");
+		if (pSettings->line_exist(str, key))
+		{
+			shared_str result = pSettings->r_string(str.c_str(), key.c_str());
+			if (strcmp(result.c_str(), def.c_str()) != 0)
+				return result;
+		}
+	}
+	return def;
+}
+
+float CWeapon::ModifyFloatUpgradedValue(shared_str key, float def)
+{
+	float result = def;
+	for (int i = 0; i < m_upgrades.size(); ++i)
+	{
+		shared_str str = m_upgrades[i];
+		str = pSettings->r_string(str, "section");
+		if (pSettings->line_exist(str, key))
+			result += READ_IF_EXISTS(pSettings, r_float, str.c_str(), key.c_str(), 0.0f);
+	}
+	return result;
+}
+
+int CWeapon::FindIntValueInUpgradesDef(shared_str key, int def)
+{
+	int result = def;
+	for (int i = 0; i < m_upgrades.size(); ++i)
+	{
+		shared_str str = m_upgrades[i];
+		str = pSettings->r_string(str, "section");
+		if (pSettings->line_exist(str, key))
+			result = READ_IF_EXISTS(pSettings, r_u32, str.c_str(), key.c_str(), def);
+	}
+	return result;
+}
+
+bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault)
+{
+	bool result = def;
+	for (int i = 0; i < m_upgrades.size(); ++i)
+	{
+		shared_str str = m_upgrades[i];
+		str = pSettings->r_string(str, "section");
+		if (pSettings->line_exist(str, key))
+		{
+			result = pSettings->r_bool(str.c_str(), key.c_str());
+			if (!scan_after_nodefault && result != def)
+				return result;
+		}
+	}
+	return result;
+}
+
 bool  CWeapon::need_renderable()
 {
 	return !( IsZoomed() && ZoomTexture() && !IsRotatingToZoom() );
