@@ -1639,6 +1639,43 @@ void CWeapon::UpdatePosition_alt(const Fmatrix& trans) {
 	VERIFY(!fis_zero(DET(renderable.xform)));
 }
 
+bool CWeapon::Action_PrepareEarlyShotInReload()
+{
+	bool result = false;
+
+	if (!IsReloaded && !IsTriStateReload())
+	{
+		DoReload();
+		IsReloaded = true;
+	}
+
+	bReloadKeyPressed = false;
+	bAmmotypeKeyPressed = false;
+
+	if (iAmmoElapsed <= 0)
+		return result;
+
+	lock_time = 0.f;
+	SetPending(FALSE);
+
+	result = true;
+	return result;
+}
+
+bool CWeapon::OnActWhileReload_CanActNow() const
+{
+	bool result = false;
+
+	if (GetState() == eReload || GetState() == eReload && m_sub_state == eSubstateReloadEnd)
+	{
+		xr_string param = "early_reload_end_delta_" + GetActualCurrentAnim();
+		u32 delay = static_cast<u32>(READ_IF_EXISTS(pSettings, r_float, HudSection(), param.c_str(), 0.f) * 1000.f);
+		result = Device.GetTimeDeltaSafe(m_dwMotionCurrTm, m_dwMotionEndTm) < delay;
+	}
+
+	return result;
+}
+
 bool CWeapon::Action(u16 cmd, u32 flags) 
 {
 	if(inherited::Action(cmd, flags)) return true;
@@ -1653,7 +1690,13 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					bStopReloadSignal = true;
 					return true;
 				}
-				if(IsPending())		
+
+				if (OnActWhileReload_CanActNow())
+				{
+					if (!Action_PrepareEarlyShotInReload())
+						return false;
+				}
+				else if (IsPending())
 					return false;
 
 				if (flags&CMD_START) 

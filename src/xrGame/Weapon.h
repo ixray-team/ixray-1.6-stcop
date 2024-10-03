@@ -231,6 +231,7 @@ public:
 	virtual void GiveAmmoFromMagToChamber();
 	virtual void DeleteAmmoInChamber();
 	virtual void UnloadChamber(bool spawn_ammo = true);
+	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
 
 	CCustomDetector* GetDetector(bool in_slot = false);
@@ -243,6 +244,9 @@ public:
 	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+	bool OnActWhileReload_CanActNow() const;
+	bool Action_PrepareEarlyShotInReload();
+
 	virtual bool IsGrenadeMode() { return false; }
 	virtual bool TryReload() { return false; }
 
