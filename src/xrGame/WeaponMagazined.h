@@ -44,6 +44,7 @@ protected:
 	virtual void	switch2_Hiding	();
 	virtual void	switch2_Hidden	();
 	virtual void	switch2_Showing	();
+	virtual void	switch2_FireMode();
 	
 	virtual void	OnShot			();	
 	
@@ -137,6 +138,7 @@ protected:
 	bool			m_bHasDifferentFireModes;
 	xr_vector<s8>	m_aFireModes;
 	int				m_iCurFireMode;
+	int				m_iOldFireMode;
 	int				m_iPrefferedFireMode;
 
 	//переменная блокирует использование
@@ -168,6 +170,7 @@ protected:
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
 	virtual void	PlayAnimAim			();
+	virtual void	PlayAnimFireMode	();
 	virtual void    PlaySoundAim		(bool in = true);
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
