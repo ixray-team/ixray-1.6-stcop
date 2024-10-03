@@ -1658,14 +1658,14 @@ void CWeaponMagazined::PlayAnimFireMode()
 	if (old_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += std::to_string(old_mode);
+		anm_name += xr_string::ToString(old_mode);
 
 	anm_name += "_to_";
 
 	if (cur_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += std::to_string(cur_mode);
+		anm_name += xr_string::ToString(cur_mode);
 
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
@@ -1723,10 +1723,7 @@ void CWeaponMagazined::PlayAnimReload()
 	if (IsMisfire() && isGuns)
 		anm_name += "_jammed";
 
-	if (GetDetector() && isGuns)
-		bIsNeedCallDet = true;
-	else
-		bIsNeedCallDet = false;
+	bIsNeedCallDet = GetDetector() && isGuns;
 
 	PlayHUDMotion(anm_name, TRUE, GetState());
 
