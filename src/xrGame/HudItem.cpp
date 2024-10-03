@@ -32,6 +32,7 @@ CHudItem::CHudItem()
 	SwitchSprint				= false;
 	lock_time_callback			= nullptr;
 	mark						= 0;
+	fDeviceFlags.zero();
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -203,8 +204,10 @@ void CHudItem::OnAnimationEnd(u32 state)
 	case eSprintStart:
 	case eSprintEnd:
 	case eBore:
+	case eSwitchDevice:
 		{
 			SwitchState	(eIdle);
+			SetPending(FALSE);
 		} break;
 	}
 }
