@@ -924,7 +924,7 @@ bool CWeapon::SendDeactivateItem()
 	if (ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || (GetState() != eIdle && GetState() != eShowing)))
 	{
 		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
-			Actor()->SetMovementState(eReal, mcSprint, false);
+			Actor()->SetMovementState(eWishful, mcSprint, false);
 		return false;
 	}
 
@@ -1320,7 +1320,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
-				if (IsTriStateReload() && GetState() == eReload && m_sub_state == eSubstateReloadInProcess && flags & CMD_START)
+				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
 				{
 					bStopReloadSignal = true;
 					return true;
