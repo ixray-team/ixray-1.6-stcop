@@ -211,6 +211,9 @@ void CWeaponMagazinedWGrenade::FireStart()
 
 	if (!OnActWhileReload_CanActNow())
 	{
+		if (!OnShoot_CanShootNow())
+			return;
+
 		if (GetState() != eIdle)
 			return;
 
