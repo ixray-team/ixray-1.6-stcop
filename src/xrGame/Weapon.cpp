@@ -100,6 +100,7 @@ CWeapon::CWeapon()
 	hud_gl = nullptr;
 
 	bIsNeedCallDet = false;
+	_last_update_time = Device.dwTimeGlobal;
 }
 
 CWeapon::~CWeapon		()
@@ -1098,8 +1099,10 @@ void CWeapon::SetWeaponMultipleBonesStatus(std::string section, std::string line
 
 void CWeapon::ModUpdate()
 {
+	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 	ProcessUpgrade();
 	ProcessScope();
+	_last_update_time = Device.dwTimeGlobal;
 }
 
 void CWeapon::ProcessScope()
