@@ -1398,12 +1398,14 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 
 	if (l_newType != m_ammoType)
 	{
-		m_set_next_ammoType_on_reload = l_newType;					
+		m_set_next_ammoType_on_reload = l_newType;
 		if (OnServer())
-			TryReload();
+			return TryReload();
 	}
+	else
+		bAmmotypeKeyPressed = false;
 
-	return true;
+	return false;
 }
 
 void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID) 
