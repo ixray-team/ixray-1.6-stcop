@@ -1805,12 +1805,17 @@ void CWeaponMagazined::PlayAnimIdle()
 	}
 }
 
+bool CWeaponMagazined::NeedShootMix() const
+{
+	return m_bMixAfterIdle && GetState() == eIdle || m_bMixAfterReload && GetState() == eReload || m_bMixAfterQueue && GetState() == eFire && GetQueueSize() < 0;
+}
+
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState() == eFire);
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", FALSE, GetState());
+	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", NeedShootMix(), GetState());
 	ProcessAmmo(true);
 	MakeLockByConfigParam("lock_time_" + GetActualCurrentAnim(), true);
 }

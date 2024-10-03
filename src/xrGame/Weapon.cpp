@@ -580,6 +580,10 @@ void CWeapon::Load		(LPCSTR section)
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isGuns);
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 
+	m_bMixAfterIdle = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_idle", false);
+	m_bMixAfterReload = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_reload", false);
+	m_bMixAfterQueue = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_shoot_in_queue", false);
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }

@@ -223,6 +223,9 @@ public:
 	bool bIsNeedCallDet;
 	bool IsReloaded;
 	bool IsAimStarted;
+	bool m_bMixAfterIdle;
+	bool m_bMixAfterReload;
+	bool m_bMixAfterQueue;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
