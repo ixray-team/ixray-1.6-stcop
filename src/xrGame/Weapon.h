@@ -161,7 +161,7 @@ public:
 	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
 	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
-	virtual bool UseScopeTexture() {return true;};
+	virtual bool UseScopeTexture() const {return !IsGrenadeMode();}
 
 	//обновление видимости для косточек аддонов
 	virtual void UpdateAddonsVisibility();
@@ -262,7 +262,7 @@ public:
 	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false);
 	bool IsActionProcessing();
 
-	virtual bool IsGrenadeMode() { return false; }
+	virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }
 
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
@@ -368,8 +368,6 @@ public:
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_zoom_params.m_fZoomRotationFactor<1.f);}
 
-	virtual	u8				GetCurrentHudOffsetIdx ();
-
 	virtual float				Weight			() const;		
 	virtual	u32					Cost			() const;
 public:
@@ -413,7 +411,7 @@ protected:
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
 
-	u8 GetCurrentHudOffsetIdx() const;
+	virtual u8 GetCurrentHudOffsetIdx() const;
 
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
