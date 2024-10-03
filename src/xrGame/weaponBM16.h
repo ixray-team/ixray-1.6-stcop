@@ -3,18 +3,18 @@
 #include "weaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponBM16 :public CWeaponShotgun
+class CWeaponBM16 : public CWeaponShotgun
 {
 	typedef CWeaponShotgun inherited;
 
 public:
-	virtual			~CWeaponBM16					();
-	virtual void	Load							(LPCSTR section);
+	virtual ~CWeaponBM16();
+	void Load(LPCSTR section) override;
 
 protected:
-	virtual xr_string	NeedAddSuffix(const xr_string& M);
-	virtual void	PlayAnimShoot					();
-	virtual void	PlayReloadSound					();
-	virtual void	PlayAnimReload					();
+	xr_string NeedAddSuffix(const xr_string& M) override;
+	void PlayAnimShoot() override;
+	void PlayReloadSound() override;
+	void PlayAnimReload() override;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

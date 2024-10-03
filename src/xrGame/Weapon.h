@@ -88,7 +88,7 @@ public:
 	virtual bool			SendDeactivateItem	();
 	virtual void			SendHiddenItem		();	//same as OnHiddenItem but for client... (sends message to a server)...
 
-			bool			ScopeFit			(CScope*);
+		const bool			ScopeFit			(CScope*) const;
 
 public:
 	virtual bool			can_kill			() const;
@@ -134,7 +134,7 @@ public:
 	BOOL					IsUpdating			();
 
 
-	bool					IsMisfire			() const;
+	const bool				IsMisfire			() const;
 	bool					CheckForMisfire		();
 
 
@@ -149,19 +149,19 @@ protected:
 
 	BOOL					m_bAutoSpawnAmmo;
 public:
-			bool IsGrenadeLauncherAttached	() const;
-			bool IsScopeAttached			() const;
-			bool IsSilencerAttached			() const;
+	const bool IsGrenadeLauncherAttached() const;
+	const bool IsScopeAttached() const;
+	const bool IsSilencerAttached() const;
 
-	virtual bool GrenadeLauncherAttachable() const;
-	virtual bool ScopeAttachable() const;
-	virtual bool SilencerAttachable() const;
+	const bool GrenadeLauncherAttachable() const;
+	const bool ScopeAttachable() const;
+	const bool SilencerAttachable() const;
 			
-	ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
-	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
-	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
+	const ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
+	const ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
+	const ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
-	virtual bool UseScopeTexture() const {return !IsGrenadeMode();}
+	const bool UseScopeTexture() const {return !IsGrenadeMode();}
 
 	//обновление видимости для косточек аддонов
 	virtual void UpdateAddonsVisibility();
@@ -169,26 +169,26 @@ public:
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
-	//для отоброажения иконок апгрейдов в интерфейсе
+	//для отображения иконок апгрейдов в интерфейсе
 
-	int	GetScopeX()
+	const int GetScopeX() const
 	{ 
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + isHQIcons);
 	}
 
-	int	GetScopeY()
+	const int GetScopeY() const
 	{
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
 	}
 
-	int	GetSilencerX() {return m_iSilencerX;}
-	int	GetSilencerY() {return m_iSilencerY;}
-	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
-	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
+	const int GetSilencerX() const {return m_iSilencerX;}
+	const int GetSilencerY() const {return m_iSilencerY;}
+	const int GetGrenadeLauncherX() const {return m_iGrenadeLauncherX;}
+	const int GetGrenadeLauncherY() const {return m_iGrenadeLauncherY;}
 
-	const shared_str& GetGrenadeLauncherName	() const{return m_sGrenadeLauncherName;}
-	const shared_str GetScopeName				() const{return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}
-	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
+	const shared_str& GetGrenadeLauncherName	() const {return m_sGrenadeLauncherName;}
+	const shared_str GetScopeName				() const {return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}
+	const shared_str& GetSilencerName			() const {return m_sSilencerName;}
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -304,7 +304,7 @@ public:
 	bool IsActionProcessing() const;
 	bool IsLensedScopeInstalled() const;
 
-	virtual bool IsGrenadeMode() const { return false; }
+	const virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }
 
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
@@ -503,8 +503,8 @@ public:
 	float					GetBaseDispersion	(float cartridge_k);
 	float					GetFireDispersion	(bool with_cartridge, bool for_crosshair = false);
 	virtual float			GetFireDispersion	(float cartridge_k, bool for_crosshair = false);
-	virtual	int				ShotsFired			() { return 0; }
-	virtual	int				GetCurrentFireMode	() { return 1; }
+	virtual	int				ShotsFired			() const { return 0; }
+	virtual	int				GetCurrentFireMode	() const { return 1; }
 
 	//параметы оружия в зависимоти от его состояния исправности
 	float					GetConditionDispersionFactor	() const;
@@ -647,8 +647,7 @@ public:
 	virtual bool			use_crosshair				()	const {return true;}
 			bool			show_crosshair				();
 			bool			show_indicators				();
-	virtual BOOL			ParentMayHaveAimBullet		();
-	virtual BOOL			ParentIsActor				() const;
+	  const bool			ParentIsActor				() const override;
 	
 private:
 	virtual	bool			install_upgrade_ammo_class	( LPCSTR section, bool test );

@@ -119,7 +119,7 @@ public:
 	virtual bool	SwitchMode				();
 	virtual bool	SingleShotMode			() const {return 1 == m_iQueueSize;}
 	virtual void	SetQueueSize			(int size);
-	IC		int		GetQueueSize			() const {return m_iQueueSize;};
+	IC		int		GetQueueSize			() const {return m_iQueueSize;}
 	virtual bool	StopedAfterQueueFired	() const {return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
 	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false);
@@ -165,8 +165,8 @@ public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 			bool	ChangeFiremode		(u16 cmd, u32 flags);
-			bool	HasFireModes		() { return m_aFireModes.size() > 1; }
-	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; }
+			bool	HasFireModes		() const { return m_aFireModes.size() > 1; }
+	virtual	int		GetCurrentFireMode	() const { return m_aFireModes[m_iCurFireMode]; }
 	xr_string		GetFiremodeSuffix() const;
 
 	virtual void	save				(NET_Packet &output_packet);
@@ -179,7 +179,7 @@ protected:
 	virtual void UpdateHUDAddonsVisibility();
 
 protected:
-	virtual bool	AllowFireWhileWorking() {return false;}
+	virtual bool	AllowFireWhileWorking() const {return false;}
 
 	void			OnAmmoTimer();
 	void			KickCallback();

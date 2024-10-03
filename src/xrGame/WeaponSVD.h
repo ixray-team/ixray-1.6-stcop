@@ -1,6 +1,6 @@
 #pragma once
 
-#include "weaponcustompistol.h"
+#include "WeaponCustomPistol.h"
 #include "../xrScripts/script_export_space.h"
 
 class CWeaponSVD :
@@ -8,8 +8,7 @@ class CWeaponSVD :
 {
 	typedef CWeaponCustomPistol inherited;
 protected:
-	virtual void switch2_Fire	();
-	virtual void OnAnimationEnd (u32 state);
+	void switch2_Fire() override;
 public:
 	CWeaponSVD(void);
 	virtual ~CWeaponSVD(void);

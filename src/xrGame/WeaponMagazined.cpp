@@ -1909,7 +1909,6 @@ void CWeaponMagazined::PlayAnimFireMode()
 	else
 		anm_name += xr_string::ToString(cur_mode);
 
-
 	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (Actor()->GetDetector() && isGuns)
@@ -2224,7 +2223,7 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 	return true;
 }
 
-void	CWeaponMagazined::OnH_A_Chield		()
+void CWeaponMagazined::OnH_A_Chield()
 {
 	if (HasFireModes())
 	{
@@ -2235,18 +2234,14 @@ void	CWeaponMagazined::OnH_A_Chield		()
 	inherited::OnH_A_Chield();
 };
 
-void	CWeaponMagazined::SetQueueSize			(int size)  
+void CWeaponMagazined::SetQueueSize(int size)  
 {
 	m_iQueueSize = size; 
 };
 
-float	CWeaponMagazined::GetWeaponDeterioration	()
+float CWeaponMagazined::GetWeaponDeterioration()
 {
-// modified by Peacemaker [17.10.08]
-//	if (!m_bHasDifferentFireModes || m_iPrefferedFireMode == -1 || u32(GetCurrentFireMode()) <= u32(m_iPrefferedFireMode)) 
-//		return inherited::GetWeaponDeterioration();
-//	return m_iShotNum*conditionDecreasePerShot;
-	return (m_iShotNum==1) ? conditionDecreasePerShot : conditionDecreasePerQueueShot;
+	return (m_iShotNum == 1) ? conditionDecreasePerShot : conditionDecreasePerQueueShot;
 };
 
 void CWeaponMagazined::save(NET_Packet &output_packet)

@@ -440,13 +440,7 @@ bool CShootingObject::SendHitAllowed		(CObject* pUser)
 
 extern void random_dir(Fvector& tgt_dir, const Fvector& src_dir, float dispersion);
 
-void CShootingObject::FireBullet(const Fvector& pos, 
-								 const Fvector& shot_dir, 
-								 float fire_disp,
-								 const CCartridge& cartridge,
-								 u16 parent_id,
-								 u16 weapon_id,
-								 bool send_hit)
+void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit)
 {
 	Fvector dir;
 	random_dir(dir,shot_dir,fire_disp);
@@ -455,36 +449,11 @@ void CShootingObject::FireBullet(const Fvector& pos,
 	m_vCurrentShootPos = pos;
 	m_iCurrentParentID = parent_id;
 	
-	bool aim_bullet;
-	if (m_bUseAimBullet)
-	{
-		if (ParentMayHaveAimBullet())
-		{
-			if (m_fPredBulletTime==0.0)
-			{
-				aim_bullet=true;
-			}
-			else
-			{
-				if ((Device.fTimeGlobal-m_fPredBulletTime)>=m_fTimeToAim)
-				{
-					aim_bullet=true;
-				}
-				else
-				{
-					aim_bullet=false;
-				}
-			}
-		}
-		else
-		{
-			aim_bullet=false;
-		}
-	}
-	else
-	{
-		aim_bullet=false;
-	}
+	bool aim_bullet = false;
+
+	if (ParentIsActor() && m_bUseAimBullet)
+		aim_bullet = m_fPredBulletTime == 0.0f || (Device.fTimeGlobal - m_fPredBulletTime) >= m_fTimeToAim;
+
 	m_fPredBulletTime = Device.fTimeGlobal;
 
 	float l_fHitPower = 0.0f;

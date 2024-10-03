@@ -1,5 +1,5 @@
 #pragma once
-#include "weaponcustompistol.h"
+#include "WeaponCustomPistol.h"
 
 class CWeaponPistol :
 	public CWeaponCustomPistol
@@ -13,7 +13,7 @@ public:
 
 	virtual void	UpdateSounds	();
 protected:	
-	virtual bool	AllowFireWhileWorking() {return true;}
+	virtual bool	AllowFireWhileWorking() const {return true;}
 
 	ESoundTypes			m_eSoundClose;
 };

@@ -612,25 +612,25 @@ void CWeapon::Load		(LPCSTR section)
 	m_bAddCartridgeOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
 	m_bEmptyPreloadMode = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "empty_preload_mode", false);
 
-	if (pSettings->line_exist(section, "snd_suicide"))
+	if (WeaponSoundExist(section, "snd_suicide"))
 		m_sounds.LoadSound(section, "snd_suicide", "sndSuicide", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_suicide_stop"))
+	if (WeaponSoundExist(section, "snd_suicide_stop"))
 		m_sounds.LoadSound(section, "snd_suicide_stop", "sndStopSuicide", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_scope_brightness_plus"))
+	if (WeaponSoundExist(section, "snd_scope_brightness_plus"))
 		m_sounds.LoadSound(section, "snd_scope_brightness_plus", "sndScopeBrightnessPlus", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_scope_brightness_minus"))
+	if (WeaponSoundExist(section, "snd_scope_brightness_minus"))
 		m_sounds.LoadSound(section, "snd_scope_brightness_minus", "sndScopeBrightnessMinus", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_scope_zoom_plus"))
+	if (WeaponSoundExist(section, "snd_scope_zoom_plus"))
 		m_sounds.LoadSound(section, "snd_scope_zoom_plus", "sndScopeZoomPlus", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_scope_zoom_minus"))
+	if (WeaponSoundExist(section, "snd_scope_zoom_minus"))
 		m_sounds.LoadSound(section, "snd_scope_zoom_minus", "sndScopeZoomMinus", false, SOUND_TYPE_ITEM_TAKING);
 
-	if (pSettings->line_exist(section, "snd_scope_zoom_gyro"))
+	if (WeaponSoundExist(section, "snd_scope_zoom_gyro"))
 		m_sounds.LoadSound(section, "snd_scope_zoom_gyro", "sndScopeZoomGyro", false, SOUND_TYPE_ITEM_TAKING);
 
 	_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, section, "min_lens_factor", 1.0f);
@@ -940,7 +940,7 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 	}
 };
 
-void CWeapon::shedule_Update	(u32 dT)
+void CWeapon::shedule_Update(u32 dT)
 {
 	PROF_EVENT_DYNAMIC(cNameSect_str())
 	// Queue shrink
@@ -953,71 +953,63 @@ void CWeapon::shedule_Update	(u32 dT)
 
 void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 {
-	RemoveShotEffector			();
+	RemoveShotEffector();
 
 	inherited::OnH_B_Independent(just_before_destroy);
 
-	FireEnd						();
-	SetPending					(FALSE);
-	SwitchState					(eHidden);
+	FireEnd();
+	SetPending(FALSE);
+	SwitchState(eHidden);
 
-	m_strapped_mode				= false;
+	m_strapped_mode = false;
 	m_strapped_mode_rifle = false;
-	m_zoom_params.m_bIsZoomModeNow	= false;
-	UpdateXForm					();
+	m_zoom_params.m_bIsZoomModeNow = false;
+	UpdateXForm();
 
 }
 
-void CWeapon::OnH_A_Independent	()
+void CWeapon::OnH_A_Independent()
 {
 	m_dwWeaponIndependencyTime = Level().timeServer();
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
 	UpdateAddonsVisibility		();
 	Engine.Sheduler.Unregister(this);
-	//Engine.Sheduler.Register(this);
 };
 
-void CWeapon::OnH_A_Chield		()
+void CWeapon::OnH_A_Chield()
 {
-	inherited::OnH_A_Chield		();
-	UpdateAddonsVisibility		();
+	inherited::OnH_A_Chield();
+	UpdateAddonsVisibility();
 	shedule.t_min = shedule.t_max = 1;
-	//Engine.Sheduler.Unregister(this);
 	Engine.Sheduler.Register(this, TRUE);
 };
 
-void CWeapon::OnActiveItem ()
+void CWeapon::OnActiveItem()
 {
-	//. from Activate
 	UpdateAddonsVisibility();
 	m_BriefInfo_CalcFrame = 0;
 
-//. Show
-	SwitchState					(eShowing);
-//-
+	SwitchState(eShowing);
 
 	bReloadKeyPressed = false;
 	bAmmotypeKeyPressed = false;
 	bStopReloadSignal = false;
 
-	inherited::OnActiveItem		();
-	//если мы занружаемся и оружие было в руках
-//.	SetState					(eIdle);
-//.	SetNextState				(eIdle);
+	inherited::OnActiveItem();
 }
 
-void CWeapon::OnHiddenItem ()
+void CWeapon::OnHiddenItem()
 {
 	m_BriefInfo_CalcFrame = 0;
 
-	if(IsGameTypeSingle())
+	if (IsGameTypeSingle())
 		SwitchState(eHiding);
 	else
 		SwitchState(eHidden);
 
 	OnZoomOut();
-	inherited::OnHiddenItem		();
+	inherited::OnHiddenItem();
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 }
@@ -2561,44 +2553,37 @@ bool CWeapon::CheckForMisfire()
 	return false;
 }
 
-bool CWeapon::IsMisfire() const
+const bool CWeapon::IsMisfire() const
 {	
 	return bMisfire;
 }
 
-bool CWeapon::IsGrenadeLauncherAttached() const
+const bool CWeapon::IsGrenadeLauncherAttached() const
 {
-	return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)) || 
-			ALife::eAddonPermanent == m_eGrenadeLauncherStatus;
+	return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher)) || ALife::eAddonPermanent == m_eGrenadeLauncherStatus;
 }
 
-bool CWeapon::IsScopeAttached() const
+const bool CWeapon::IsScopeAttached() const
 {
-	return (ALife::eAddonAttachable == m_eScopeStatus &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope)) || 
-			ALife::eAddonPermanent == m_eScopeStatus;
-
+	return (ALife::eAddonAttachable == m_eScopeStatus && 0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope)) || ALife::eAddonPermanent == m_eScopeStatus;
 }
 
-bool CWeapon::IsSilencerAttached() const
+const bool CWeapon::IsSilencerAttached() const
 {
-	return (ALife::eAddonAttachable == m_eSilencerStatus &&
-			0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer)) || 
-			ALife::eAddonPermanent == m_eSilencerStatus;
+	return (ALife::eAddonAttachable == m_eSilencerStatus && 0 != (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonSilencer)) || ALife::eAddonPermanent == m_eSilencerStatus;
 }
 
-bool CWeapon::GrenadeLauncherAttachable() const
+const bool CWeapon::GrenadeLauncherAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus);
 }
 
-bool CWeapon::ScopeAttachable() const
+const bool CWeapon::ScopeAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eScopeStatus);
 }
 
-bool CWeapon::SilencerAttachable() const
+const bool CWeapon::SilencerAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eSilencerStatus);
 }
@@ -3495,24 +3480,10 @@ float CWeapon::GetConditionToShow() const
 	return GetCondition();
 }
 
-BOOL CWeapon::ParentMayHaveAimBullet()
+const bool CWeapon::ParentIsActor() const
 {
-	CObject* O=H_Parent();
-	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
-	return EA->cast_actor()!=0;
-}
-
-BOOL CWeapon::ParentIsActor() const
-{
-	const CObject* O = H_Parent();
-	if (!O)
-		return FALSE;
-
-	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
-	if (!EA)
-		return FALSE;
-
-	return EA->cast_actor() != 0;
+	const CObject* Parent = H_Parent();
+	return Parent != nullptr && smart_cast<CActor*>(Parent) != nullptr;
 }
 
 void CWeapon::debug_draw_firedeps()
@@ -3728,7 +3699,7 @@ float CWeapon::GetHudFov()
 	return base;
 }
 
-bool CWeapon::ScopeFit(CScope* pIItem)
+const bool CWeapon::ScopeFit(CScope* pIItem) const
 {
 	for (auto& scope : m_scopes) {
 		if (pSettings->r_string(scope, "scope_name") == pIItem->cNameSect())

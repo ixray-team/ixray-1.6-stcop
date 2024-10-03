@@ -58,10 +58,9 @@ protected:
 	virtual void			FireStart			();
 	virtual void			FireEnd				();
 public:
-	IC BOOL					IsWorking			()	const	{return bWorking;}
+	IC bool					IsWorking			() const {return bWorking;}
 	IC void					SetWorkingState		(bool status) { bWorking = status;}
-	virtual BOOL			ParentMayHaveAimBullet()		{return FALSE;}
-	virtual BOOL			ParentIsActor()					{return FALSE;}
+	const virtual bool		ParentIsActor() const {return false;}
 
 protected:
 	// Weapon fires now

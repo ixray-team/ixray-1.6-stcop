@@ -157,7 +157,7 @@ public:
 	};
 
 	virtual float GetHudFov();
-	virtual bool AllowBore() { return !m_bDisableBore; }
+	virtual const bool AllowBore() const { return !m_bDisableBore; }
 	virtual xr_string GetActualCurrentAnim() const;
 	bool CanStartAction(bool allow_aim_state = false) const;
 	bool Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE) const;

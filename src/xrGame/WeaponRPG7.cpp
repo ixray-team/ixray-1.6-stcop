@@ -1,35 +1,28 @@
 #include "stdafx.h"
-#include "weaponrpg7.h"
+#include "WeaponRPG7.h"
 #include "xrServer_Objects_ALife_Items.h"
-#include "explosiverocket.h"
-#include "entity.h"
-#include "Level.h"
-#include "player_hud.h"
-#include "hudmanager.h"
-#include "inventory.h"
-#include "inventoryOwner.h"
+#include "ExplosiveRocket.h"
+#include "HudManager.h"
 
 CWeaponRPG7::CWeaponRPG7()
-{
-}
+{}
 
 CWeaponRPG7::~CWeaponRPG7() 
+{}
+
+void CWeaponRPG7::Load(LPCSTR section)
 {
+	inherited::Load(section);
+	CRocketLauncher::Load(section);
+
+	m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(section,"max_zoom_factor");
+
+	m_sRocketSection = pSettings->r_string(section,"rocket_class");
 }
 
-void CWeaponRPG7::Load	(LPCSTR section)
+const bool CWeaponRPG7::AllowBore() const
 {
-	inherited::Load						(section);
-	CRocketLauncher::Load				(section);
-
-	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
-
-	m_sRocketSection					= pSettings->r_string	(section,"rocket_class");
-}
-
-bool CWeaponRPG7::AllowBore()
-{
-	return inherited::AllowBore() && 0!=iAmmoElapsed;
+	return inherited::AllowBore() && iAmmoElapsed != 0;
 }
 
 void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
@@ -90,28 +83,24 @@ void CWeaponRPG7::FireTrace(const Fvector& P, const Fvector& D)
 			u_EventSend(P);
 		}
 	}
-	UpdateMissileVisibility	();
+	UpdateMissileVisibility();
 }
 
 void CWeaponRPG7::on_a_hud_attach()
 {
-	inherited::on_a_hud_attach		();
-	UpdateMissileVisibility			();
+	inherited::on_a_hud_attach();
+	UpdateMissileVisibility();
 }
 
 void CWeaponRPG7::UpdateMissileVisibility()
 {
-	bool vis_hud,vis_weap;
-	vis_hud		= (!!iAmmoElapsed || GetState()==eReload);
-	vis_weap	= !!iAmmoElapsed;
+	bool vis_hud = (!!iAmmoElapsed || GetState() == eReload), vis_weap = !!iAmmoElapsed;
 
-	if(GetHUDmode())
-	{
+	if (GetHUDmode())
 		HudItemData()->set_bone_visible("grenade",vis_hud,TRUE);
-	}
 
-	IKinematics* pWeaponVisual	= smart_cast<IKinematics*>(Visual()); 
-	VERIFY						(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
+	VERIFY(pWeaponVisual);
 	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID("grenade"), vis_weap, TRUE);
 }
 
@@ -134,15 +123,15 @@ void CWeaponRPG7::OnStateSwitch(u32 S)
 
 void CWeaponRPG7::UnloadMagazine(bool spawn_ammo)
 {
-	inherited::UnloadMagazine	(spawn_ammo);
-	UpdateMissileVisibility		();
+	inherited::UnloadMagazine(spawn_ammo);
+	UpdateMissileVisibility();
 }
 
 void CWeaponRPG7::ReloadMagazine() 
 {
 	inherited::ReloadMagazine();
 
-	if(iAmmoElapsed && !getRocketCount()) 
+	if (iAmmoElapsed && !getRocketCount()) 
 		CRocketLauncher::SpawnRocket(m_sRocketSection.c_str(), this);
 }
 
@@ -177,8 +166,8 @@ void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
-void CWeaponRPG7::net_Import( NET_Packet& P)
+void CWeaponRPG7::net_Import(NET_Packet& P)
 {
-	inherited::net_Import		(P);
-	UpdateMissileVisibility		();
+	inherited::net_Import(P);
+	UpdateMissileVisibility();
 }

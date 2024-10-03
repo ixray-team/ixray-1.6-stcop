@@ -1,27 +1,23 @@
 #include "stdafx.h"
 #include "WeaponRG6.h"
-#include "entity.h"
-#include "explosiveRocket.h"
-#include "Level.h"
-#include "../xrPhysics/MathUtils.h"
-#include "Actor.h"
+#include "ExplosiveRocket.h"
 #include "UIGameCustom.h"
-#include "inventory.h"
-#include "inventoryOwner.h"
+#include "Inventory.h"
+#include "WeaponMagazinedWGrenade.h"
 
 #ifdef DEBUG
 #	include "phdebug.h"
 #endif
 
-
 CWeaponRG6::~CWeaponRG6()
-{
-}
+{}
 
-BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
+BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL l_res = inheritedSG::net_Spawn(DC);
-	if (!l_res) return l_res;
+
+	if (!l_res)
+		return l_res;
 
 	if (iAmmoElapsed && !getCurrentRocket())
 	{
@@ -30,17 +26,14 @@ BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
 
 		if (fake_grenade_name.size())
 		{
-			int k=iAmmoElapsed;
+			int k = iAmmoElapsed;
 			while (k)
 			{
 				k--;
 				inheritedRL::SpawnRocket(*fake_grenade_name, this);
 			}
 		}
-//			inheritedRL::SpawnRocket(*fake_grenade_name, this);
 	}
-	
-
 	
 	return l_res;
 };
@@ -101,8 +94,6 @@ void CWeaponRG6::FireStart()
 		OnEmptyClick();
 	}
 }
-
-#include "WeaponMagazinedWGrenade.h"
 
 void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 {
