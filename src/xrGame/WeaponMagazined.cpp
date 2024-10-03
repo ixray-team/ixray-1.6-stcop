@@ -508,26 +508,39 @@ void CWeaponMagazined::ReloadMagazine()
 
 bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 {
-	if (unlimited_ammo())	return true;
-	if (!m_pInventory)		return false;
+	if (unlimited_ammo())
+		return true;
+
+	if (!m_pInventory)
+		return false;
 
 	u32 ac = GetAmmoCount(m_ammoType);
-	if (ac < cnt)
+
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type || m_set_next_ammoType_on_reload == undefined_ammo_type && m_magazine.size() == 0 && ac == 0)
 	{
 		for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 		{
-			if (m_ammoType == i) continue;
-			ac += GetAmmoCount(i);
-			if (ac >= cnt)
+			if (m_ammoType == i)
+				continue;
+
+			if (ac = GetAmmoCount(i) >= cnt)
 			{
-				m_ammoType = i;
+				m_set_next_ammoType_on_reload = i;
 				break;
 			}
+			else
+				m_set_next_ammoType_on_reload = undefined_ammo_type;
 		}
 	}
+
+	if (ac < cnt)
+	{
+		bAmmotypeKeyPressed = false;
+		bReloadKeyPressed = false;
+	}
+
 	return ac >= cnt;
 }
-
 
 u8 CWeaponMagazined::AddCartridge(u8 cnt)
 {
