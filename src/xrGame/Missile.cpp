@@ -366,7 +366,7 @@ void CMissile::State(u32 state)
 		} break;
 	case eThrowEnd:
 		{
-			if(g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item)
+			if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item)
 				g_player_hud->attached_item(1)->m_parent_hud_item->PlayAnimIdle();
 			SwitchState			(eShowing); 
 		} break;
