@@ -56,7 +56,7 @@ public:
 public:
 			void	SwitchNightVision		();
 			void	SwitchNightVision		(bool light_on, bool use_sounds=true);
-
+			bool	IsSwitched				() const { return m_switched_on; }
 			bool	GetNightVisionStatus	() { return m_bNightVisionOn; }
 CNightVisionEffector* GetNightVision		() { return m_night_vision; }
 protected:
