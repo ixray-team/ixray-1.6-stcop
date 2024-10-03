@@ -817,8 +817,12 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 	}
 	else if (item && item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
 	{
-		item->fDeviceFlags.zero();
-		item->fDeviceFlags.set(device, true);
+		if (device > 0)
+		{
+			item->fDeviceFlags.zero();
+			item->fDeviceFlags.set(device, true);
+		}
+
 		item->SwitchState(state);
 		return true;
 	}
