@@ -1002,6 +1002,10 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eFire:
 		case eFire2:
 		case eSwitchMode:
+			bNextModeKeyPressed = false;
+			bPrevModeKeyPressed = false;
+			SwitchState(eIdle);
+		break;
 		case eEmptyClick:
 		case eShowing:
 		case eCheckMisfire:
@@ -1192,6 +1196,8 @@ void CWeaponMagazined::switch2_Showing()
 	bReloadKeyPressed = false;
 	bAmmotypeKeyPressed = false;
 	bUnjamKeyPressed = false;
+	bNextModeKeyPressed = false;
+	bPrevModeKeyPressed = false;
 }
 
 void CWeaponMagazined::switch2_FireMode()
@@ -1768,6 +1774,16 @@ void CWeaponMagazined::OnNextFireMode()
 	if (!m_bHasDifferentFireModes)
 		return;
 
+	if (bNextModeKeyPressed || bPrevModeKeyPressed)
+		return;
+
+	if (m_bUseChangeFireModeAnim)
+	{
+		bNextModeKeyPressed = true;
+		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
+			return;
+	}
+
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
@@ -1789,6 +1805,16 @@ void CWeaponMagazined::OnPrevFireMode()
 {
 	if (!m_bHasDifferentFireModes)
 		return;
+
+	if (bPrevModeKeyPressed || bNextModeKeyPressed)
+		return;
+
+	if (m_bUseChangeFireModeAnim)
+	{
+		bPrevModeKeyPressed = true;
+		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
+			return;
+	}
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
