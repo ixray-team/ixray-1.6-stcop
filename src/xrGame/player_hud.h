@@ -105,6 +105,9 @@ struct attachable_hud_item
 	Fvector&						hands_offset_pos();
 	Fvector&						hands_offset_rot();
 
+	void							set_hands_offset_pos(Fvector3 offset);
+	void							set_hands_offset_rot(Fvector3 offset);
+
 //props
 	u32								m_upd_firedeps_frame;
 	void		tune				(Ivector values);
@@ -149,9 +152,59 @@ public:
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	void			RestoreHandBlends(LPCSTR ignored_part);
 
+	struct default_hud_coords_params
+	{
+		shared_str hud_sect;
+		Fvector3 hands_position = {0,0,0};
+		Fvector3 hands_orientation = {0,0,0};
+		bool is16x9 = true;
+	};
+
+	struct cached_cfg_param_float
+	{
+		shared_str last_section;
+		float value = 0.f;
+		bool is_default = true;
+	};
+
 	void			ResetBlockedPartID(){m_blocked_part_idx=u16(-1); };
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
+	void			UpdateWeaponOffset(u32 delta);
+	default_hud_coords_params GetDefaultHudCoords(shared_str hud_sect);
+	default_hud_coords_params _last_default_hud_params;
+	float GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def);
+	void GetCurrentTargetOffset_aim(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
+	void GetCurrentTargetOffset(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
+	void AddOffsets(const xr_string base, shared_str section, Fvector3& pos, Fvector3& rot, float koef = 1.0f);
+	void AddSuicideOffset(shared_str section, Fvector3& pos, Fvector3& rot);
+	void ResetItmHudOffset(CHudItem* itm);
+
+	cached_cfg_param_float cached_hud_move_weaponhide_factor;
+	cached_cfg_param_float cached_hud_move_unzoom_factor;
+
+	cached_cfg_param_float cached_hud_move_speed_rot;
+	cached_cfg_param_float cached_hud_move_speed_pos;
+
+	cached_cfg_param_float cached_suicide_speed_rot;
+	cached_cfg_param_float cached_suicide_speed_pos;
+
+	cached_cfg_param_float cached_hud_move_stabilize_factor;
+	cached_cfg_param_float cached_hud_move_slow_crouch_factor;
+	cached_cfg_param_float cached_hud_move_crouch_factor;
+	cached_cfg_param_float cached_hud_move_slow_factor;
+
+	u32 time_accumulator;
+
+	u32 tocrouch_time_remains;
+	u32 fromcrouch_time_remains;
+	u32 toslowcrouch_time_remains;
+	u32 fromslowcrouch_time_remains;
+
+	u32 torlookout_time_remains;
+	u32 fromrlookout_time_remains;
+	u32 tollookout_time_remains;
+	u32 fromllookout_time_remains;
 
 	IKinematics* m_legs_model;
 private:
