@@ -614,7 +614,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 1 : iAmmoElapsed == 1;
 
 	if (!IsMisfire() && TempTest)
-		new_name = AddSuffixName(new_name, "_last");
+		new_name = AddSuffixName(new_name, isGuns ? "_last" : "_l");
 
 	TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
 
@@ -635,7 +635,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
-	if (GetDetector() && isGuns)
+	if (GetDetector())
 		new_name = AddSuffixName(new_name, "_detector");
 
 	if (IsSilencerAttached())
