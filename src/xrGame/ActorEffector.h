@@ -19,6 +19,7 @@ protected:
 public:
 							CActorCameraManager():inherited(false){}
 	virtual					~CActorCameraManager() {}
+	virtual	void			Update_Lens_FOV_manipulation(float& value);
 
 	IC void					hud_camera_Matrix		(Fmatrix& M){M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);}
 };

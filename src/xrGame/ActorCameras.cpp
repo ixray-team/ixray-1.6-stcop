@@ -375,53 +375,6 @@ static const float	ik_cam_shift_tolerance = 0.2f;
 static const float	ik_cam_shift_speed = 0.01f;
 #endif
 
-void CActor::Update_Lens_FOV_manipulation(float& value)
-{
-	//if (!IsLensEnabled())
-	{
-		CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
-		if (wpn != nullptr && wpn->GetAimFactor() > 0.999f && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled())
-		{
-			//if (!IsAlterZoomMode())
-				value = wpn->GetLensFOV(value);
-		}
-		return;
-	}
-
-	/*if (GetDevicedwFrame() == _last_fov_changed_frame)
-	{
-		value = GetLensFOV(&value);
-		return;
-	}
-
-	bool need_lens_frame_now = NeedLensFrameNow();
-
-	if (_restore_fov_after_lens_frame == 0)
-	{
-		if (need_lens_frame_now)
-		{
-			_restore_fov_after_lens_frame = *value;
-			_last_fov_changed_frame = GetDevicedwFrame();
-			value = GetLensFOV(*value);
-			_is_lens_frame = true;
-		}
-	}
-	else
-	{
-		if (need_lens_frame_now)
-		{
-			value = GetLensFOV(&value);
-			_last_fov_changed_frame = GetDevicedwFrame();
-			_is_lens_frame = true;
-		}
-		else
-		{
-			value = _restore_fov_after_lens_frame;
-			_restore_fov_after_lens_frame = 0;
-		}
-	}*/
-}
-
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if(m_holder)
@@ -528,8 +481,6 @@ void CActor::cam_Update(float dt, float fFOV)
 	xform.transform_tiny			(point);
 
 	CCameraBase* C					= cam_Active();
-
-	Update_Lens_FOV_manipulation(fFOV);
 
 	C->Update						(point,dangle);
 	C->f_fov						= fFOV;

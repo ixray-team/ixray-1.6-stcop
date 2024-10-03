@@ -361,6 +361,9 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	float src					= 10*Device.fTimeDelta;	clamp(src,0.f,1.f);
 	float dst					= 1-src;
 	m_cam_info.fFov				= m_cam_info.fFov*dst		+ fFOV_Dest*src;
+
+	Update_Lens_FOV_manipulation(m_cam_info.fFov);
+
 	m_cam_info.fFar				= m_cam_info.fFar*dst		+ fFAR_Dest*src;
 	m_cam_info.fAspect			= m_cam_info.fAspect*dst	+ (fASPECT_Dest*aspect)*src;
 	m_cam_info.dont_apply			= false;
