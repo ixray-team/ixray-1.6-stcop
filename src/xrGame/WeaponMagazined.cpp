@@ -781,7 +781,8 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 
 			if (bMisfireReload)
 			{
-				bMisfire = false;
+				if (!IsGrenadeMode())
+					bMisfire = false;
 				bMisfireReload = false;
 			}
 			else
