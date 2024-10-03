@@ -1787,7 +1787,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 	float disp_hor = ModifyFloatUpgradedValue("kick_disp_hor", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_hor", 0.0f));
 	float disp_ver = ModifyFloatUpgradedValue("kick_disp_ver", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_ver", 0.0f));
 
-	Level().BulletManager().AddBullet(pos, dir, 10000.f, 0.f, 0.f, 0.f, ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+	Level().BulletManager().AddBullet(pos, dir, 10000.f, 0.f, 0.f, Actor()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
 
 	c.bullet_material_idx = GMLib.GetMaterialIdx("objects\\clothes");
 	c.param_s.fWallmarkSize = 0.0001f;
@@ -1810,7 +1810,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 		tmpdir.add(up);
 		tmpdir.add(right);
 
-		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, 0.f, ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, Actor()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
 	}
 }
 
