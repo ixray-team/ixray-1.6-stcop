@@ -299,19 +299,19 @@ void CActor::IR_OnKeyboardHold(int cmd)
 
 void CActor::IR_OnMouseMove_CorrectMouseSense(int& p_dx, int& p_dy, float& sense)
 {
-	/*if (wpn != nullptr && IsAimNow(wpn))
+	CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+	if (wpn != nullptr && wpn->IsZoomed())
 	{
-		const char* sect = nullptr;
-		if (IsScopeAttached(wpn) && GetScopeStatus(wpn) == 2 && !IsAlterZoom(wpn))
-			sect = game_ini_read_string(GetCurrentScopeSection(wpn), "scope_name");
-		else
-			sect = GetSection(wpn);
+		shared_str sect = wpn->m_section_id;
 
-		if (!IsGrenadeMode(wpn))
-			sense *= ModifyFloatUpgradedValue(wpn, "zoom_mouse_sense_koef", game_ini_r_single_def(sect, "zoom_mouse_sense_koef", 1.0f));
+		if (wpn->IsScopeAttached() && wpn->get_ScopeStatus() == 2/* && !wpn->IsAlterZoom()*/)
+			sect = pSettings->r_string(wpn->GetCurrentScopeSection(), "scope_name");
+
+		if (!wpn->IsGrenadeMode())
+			sense *= wpn->ModifyFloatUpgradedValue("zoom_mouse_sense_koef", READ_IF_EXISTS(pSettings, r_float, sect, "zoom_mouse_sense_koef", 1.0f));
 		else
-			sense *= game_ini_r_single_def(sect, "zoom_gl_mouse_sense_koef", 1.0f);
-	}*/
+			sense *= READ_IF_EXISTS(pSettings, r_float, sect, "zoom_gl_mouse_sense_koef", 1.0f);
+	}
 
 	controller_input_correction_params controller_correction = GetCurrentControllerInputCorrectionParams();
 	if (controller_correction.reverse_axis_y)
