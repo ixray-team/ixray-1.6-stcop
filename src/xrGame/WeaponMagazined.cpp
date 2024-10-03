@@ -1698,12 +1698,12 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 		{
 			//уничтожить подсоединенную вещь из инвентаря
 			pIItem->object().DestroyObject();
-		}
 
-		ProcessUpgrade();
-		ProcessScope();
-		UpdateAddonsVisibility();
-		InitAddons();
+			InitAddons();
+			UpdateAddonsVisibility();
+			UpdateHUDAddonsVisibility();
+			ProcessScope();
+		}
 
 		return true;
 	}
@@ -1739,9 +1739,9 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
-		UpdateAddonsVisibility();
 		InitAddons();
-		ProcessUpgrade();
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
 		ProcessScope();
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
@@ -1755,10 +1755,11 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
-		UpdateAddonsVisibility();
 		InitAddons();
-		ProcessUpgrade();
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
 		ProcessScope();
+
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else if (m_eGrenadeLauncherStatus == ALife::eAddonAttachable && (m_sGrenadeLauncherName == item_section_name))
@@ -1770,10 +1771,11 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
-		UpdateAddonsVisibility();
 		InitAddons();
-		ProcessUpgrade();
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
 		ProcessScope();
+
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else
@@ -2351,7 +2353,7 @@ void CWeaponMagazined::UpdateAddonsVisibility()
 {
 	inherited::UpdateAddonsVisibility();
 
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
 	R_ASSERT(pWeaponVisual);
 
 	pWeaponVisual->CalculateBones_Invalidate();

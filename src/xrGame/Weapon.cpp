@@ -112,6 +112,19 @@ CWeapon::CWeapon()
 	bUpdateHUDBonesVisibility = false;
 	_is_just_after_reload = false;
 	_lens_night_brightness_saved_step = -1;
+
+	m_bDefHideBones.clear();
+	m_bDefShowBones.clear();
+	m_bHideBonesOverride.clear();
+	m_bDefHideBonesGLAttached.clear();
+	m_bHideBonesGLAttached.clear();
+	m_bHideBonesSilAttached.clear();
+	m_bHideBonesScopeAttached.clear();
+	m_bHideBonesUpgrade.clear();
+	m_bScopeShowBones.clear();
+	m_bScopeHideBones.clear();
+	m_bShowBonesUpgToHide.clear();
+	m_bShowBonesUpgToShow.clear();
 }
 
 CWeapon::~CWeapon		()
@@ -648,6 +661,30 @@ void CWeapon::Load		(LPCSTR section)
 	bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", false);
 	bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", false);
 
+	auto LoadVector = [&](RStringVec& vec, const char* sect)
+	{
+		if (pSettings->line_exist(section, sect))
+		{
+			LPCSTR S = pSettings->r_string(section, sect);
+			if (S && S[0])
+			{
+				string128 Item = "";
+				int count = _GetItemCount(S);
+				for (int it = 0; it < count; ++it)
+				{
+					_GetItem(S, it, Item);
+					vec.push_back(Item);
+				}
+			}
+		}
+	};
+
+	LoadVector(m_bDefHideBones, "def_hide_bones");
+	LoadVector(m_bDefShowBones, "def_show_bones");
+	LoadVector(m_bDefHideBonesGLAttached, "def_hide_bones_override_when_gl_attached");
+	LoadVector(m_bScopeShowBones, "no_scope_overriding_show_bones");
+	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -722,10 +759,10 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	ProcessAmmo();
 	ProcessAmmoGL();
-	ProcessUpgrade();
+	UpdateHUDAddonsVisibility();
+	UpdateAddonsVisibility();
 	ProcessScope();
 
-	UpdateAddonsVisibility();
 	InitAddons();
 
 	shared_str scope_sect = m_section_id;
@@ -807,7 +844,6 @@ void CWeapon::net_Import(NET_Packet& P)
 	P.r_u8					(NewAddonState);
 
 	m_flagsAddOnState		= NewAddonState;
-	UpdateAddonsVisibility	();
 
 	u8 ammoType, wstate;
 	P.r_u8					(ammoType);
@@ -889,7 +925,6 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(iAmmoElapsed,					input_packet);
 	load_data		(m_cur_scope,					input_packet);
 	load_data		(m_flagsAddOnState,				input_packet);
-	UpdateAddonsVisibility			();
 	load_data		(m_ammoType,					input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
 
@@ -908,20 +943,21 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 {
 	switch (type)
 	{
-	case GE_ADDON_CHANGE:
+	case GE_ADDON_CHANGE: //MP
 		{
-			P.r_u8					(m_flagsAddOnState);
+			P.r_u8(m_flagsAddOnState);
 			InitAddons();
 			UpdateAddonsVisibility();
+			UpdateHUDAddonsVisibility();
+			ProcessScope();
 		}break;
 
 	case GE_WPN_STATE_CHANGE:
 		{
-			u8				state;
-			P.r_u8			(state);
-			P.r_u8			(m_sub_state);		
-//			u8 NewAmmoType = 
-				P.r_u8();
+			u8 state;
+			P.r_u8(state);
+			P.r_u8(m_sub_state);		
+			P.r_u8();
 			u8 AmmoElapsed = P.r_u8();
 			u8 NextAmmo = P.r_u8();
 			if (NextAmmo == undefined_ammo_type)
@@ -929,8 +965,10 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 			else
 				m_set_next_ammoType_on_reload = NextAmmo;
 
-			if (OnClient()) SetAmmoElapsed(int(AmmoElapsed));			
-			OnStateSwitch	(u32(state));
+			if (OnClient())
+				SetAmmoElapsed(int(AmmoElapsed));			
+
+			OnStateSwitch(u32(state));
 		}
 		break;
 	default:
@@ -973,21 +1011,18 @@ void CWeapon::OnH_A_Independent()
 	m_dwWeaponIndependencyTime = Level().timeServer();
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
-	UpdateAddonsVisibility		();
 	Engine.Sheduler.Unregister(this);
 };
 
 void CWeapon::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield();
-	UpdateAddonsVisibility();
 	shedule.t_min = shedule.t_max = 1;
 	Engine.Sheduler.Register(this, TRUE);
 };
 
 void CWeapon::OnActiveItem()
 {
-	UpdateAddonsVisibility();
 	m_BriefInfo_CalcFrame = 0;
 
 	SwitchState(eShowing);
@@ -1059,7 +1094,6 @@ extern u32 hud_adj_mode;
 void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
-	UpdateHUDAddonsVisibility();
 	//подсветка от выстрела
 	UpdateLight				();
 
@@ -1069,6 +1103,24 @@ void CWeapon::UpdateCL		()
 
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
+
+	bool need_update_hud = false;
+
+	if (HudItemData() && !bUpdateHUDBonesVisibility)
+	{
+		bUpdateHUDBonesVisibility = true;
+		need_update_hud = true;
+	}
+	else if (HudItemData() == nullptr)
+		bUpdateHUDBonesVisibility = false;
+
+	if (need_update_hud)
+	{
+		ProcessAmmo();
+		ProcessAmmoGL();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
+	}
 
 	if (ParentIsActor())
 	{
@@ -1199,30 +1251,33 @@ void CWeapon::SetWeaponMultipleBonesStatus(const xr_string section, const xr_str
 	}
 }
 
+void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
+{
+	if (!pSettings->section_exist(section))
+		return;
+
+	if (!!pSettings->line_exist(section, line))
+	{
+		LPCSTR	S = pSettings->r_string(section, line);
+		if (S && S[0])
+		{
+			string128 _Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, _Item);
+				m_bShowBonesUpgToHide.push_back(_Item);
+			}
+		}
+	}
+}
+
 void CWeapon::ModUpdate()
 {
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 
 	if (!IsZoomed() && IsAimStarted)
 		IsAimStarted = false;
-
-	bool need_update_hud = false;
-
-	if (HudItemData() && !bUpdateHUDBonesVisibility)
-	{
-		bUpdateHUDBonesVisibility = true;
-		need_update_hud = true;
-	}
-	else if (HudItemData() == nullptr)
-		bUpdateHUDBonesVisibility = false;
-
-	if (need_update_hud)
-	{
-		ProcessAmmo();
-		ProcessAmmoGL();
-		ProcessUpgrade();
-		ProcessScope();
-	}
 
 	if (!H_Parent() || H_Parent() && smart_cast<CEntityAlive*>(H_Parent()))
 		ReassignWorldAnims();
@@ -1288,70 +1343,41 @@ void CWeapon::ProcessScope()
 	}
 	else
 	{
-		SetWeaponMultipleBonesStatus(cNameSect().c_str(), "no_scope_overriding_hide_bones", FALSE);
-		SetWeaponMultipleBonesStatus(cNameSect().c_str(), "no_scope_overriding_show_bones", TRUE);
-	}
-}
+		IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
+		R_ASSERT(pWeaponVisual);
 
-void CWeapon::ProcessUpgrade()
-{
-	if (pSettings->line_exist(cNameSect(), "def_hide_bones"))
-		SetWeaponMultipleBonesStatus(cNameSect().c_str(), "def_hide_bones", FALSE);
+		pWeaponVisual->CalculateBones_Invalidate();
 
-	if (pSettings->line_exist(cNameSect(), "def_show_bones"))
-		SetWeaponMultipleBonesStatus(cNameSect().c_str(), "def_show_bones", TRUE);
-
-	if (!!pSettings->line_exist(cNameSect().c_str(), "upgrades"))
-	{
-		LPCSTR	S = pSettings->r_string(cNameSect().c_str(), "upgrades");
-		if (S && S[0])
+		auto ChangeBoneVisible = [&](const shared_str& bone, bool status)
 		{
-			string128 _Item;
-			int	count = _GetItemCount(S);
-			for (int it = 0; it < count; ++it)
-			{
-				_GetItem(S, it, _Item);
-				HideOneUpgradeLevel(_Item);
-			}
-		}
-	}
+			u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
-	for (u32 i = 0; i < m_upgrades.size(); i++)
-	{
-		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
-		if (pSettings->line_exist(section, "hide_bones"))
-			SetWeaponMultipleBonesStatus(section, "hide_bones", FALSE);
+			if (bone_id != BI_NONE)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, status, TRUE);
+		};
 
-		if (pSettings->line_exist(section, "show_bones"))
-			SetWeaponMultipleBonesStatus(section, "show_bones", TRUE);
-
-		if (pSettings->line_exist(section, "hide_bones_override"))
-			SetWeaponMultipleBonesStatus(section, "hide_bones_override", false);
-
-		if (IsSilencerAttached())
+		for (auto& bone : m_bScopeHideBones)
 		{
-			if (pSettings->line_exist(section, "hide_bones_override_when_silencer_attached"))
-				SetWeaponMultipleBonesStatus(section, "hide_bones_override_when_silencer_attached", false);
+			ChangeBoneVisible(bone, false);
 		}
 
-		if (IsScopeAttached())
+		for (auto& bone : m_bScopeShowBones)
 		{
-			if (pSettings->line_exist(section, "hide_bones_override_when_scope_attached"))
-				SetWeaponMultipleBonesStatus(section, "hide_bones_override_when_scope_attached", false);
+			ChangeBoneVisible(bone, true);
 		}
 
-		if (get_GrenadeLauncherStatus() == 1 || get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached())
+		if (HudItemData() == nullptr)
+			return;
+
+		for (auto& bone : m_bScopeHideBones)
 		{
-			if (pSettings->line_exist(section, "hide_bones_override_when_gl_attached"))
-				SetWeaponMultipleBonesStatus(section, "hide_bones_override_when_gl_attached", false);
+			HudItemData()->set_bone_visible(bone, false, TRUE);
 		}
 
-	}
-
-	if (get_GrenadeLauncherStatus() == 1 || get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached())
-	{
-		if (pSettings->line_exist(cNameSect().c_str(), "def_hide_bones_override_when_gl_attached"))
-			SetWeaponMultipleBonesStatus(cNameSect().c_str(), "def_hide_bones_override_when_gl_attached", false);
+		for (auto& bone : m_bScopeShowBones)
+		{
+			HudItemData()->set_bone_visible(bone, true, TRUE);
+		}
 	}
 }
 
@@ -1383,7 +1409,7 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 				}
 
 				LPCSTR up_sect = pSettings->r_string(_Item, "section");
-				SetWeaponMultipleBonesStatus(up_sect, "show_bones", FALSE);
+				LoadUpgradeBonesToHide(up_sect, "show_bones");
 			}
 		}
 	}
@@ -1977,7 +2003,7 @@ void CWeapon::ReassignWorldAnims()
 	else if (IsGrenadeLauncherAttached() && pSettings->line_exist(cNameSect(), (anm + "_w_gl").c_str()))
 		anm += "_w_gl";
 
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
 
 	if (pWeaponVisual && pWeaponVisual->dcast_PKinematicsAnimated())
 	{
@@ -2588,9 +2614,9 @@ const bool CWeapon::SilencerAttachable() const
 	return (ALife::eAddonAttachable == m_eSilencerStatus);
 }
 
-shared_str wpn_scope = "wpn_scope";
-shared_str wpn_silencer = "wpn_silencer";
-shared_str wpn_grenade_launcher = "wpn_launcher";
+static const char* wpn_scope = "wpn_scope";
+static const char* wpn_silencer = "wpn_silencer";
+static const char* wpn_grenade_launcher = "wpn_launcher";
 
 void CWeapon::UpdateHUDAddonsVisibility()
 {
@@ -2608,11 +2634,99 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
 
 	HudItemData()->set_bone_visible(wpn_grenade_launcher, test, TRUE);
+
+	for (auto& bone : m_bDefHideBones)
+	{
+		HudItemData()->set_bone_visible(bone, false, TRUE);
+	}
+
+	for (auto& bone : m_bDefShowBones)
+	{
+		HudItemData()->set_bone_visible(bone, true, TRUE);
+	}
+
+	if (m_bShowBonesUpgToHide.empty())
+	{
+		if (!!pSettings->line_exist(m_section_id.c_str(), "upgrades"))
+		{
+			LPCSTR S = pSettings->r_string(m_section_id.c_str(), "upgrades");
+			if (S && S[0])
+			{
+				string128 _Item;
+				int	count = _GetItemCount(S);
+				for (int it = 0; it < count; ++it)
+				{
+					_GetItem(S, it, _Item);
+					HideOneUpgradeLevel(_Item);
+				}
+			}
+		}
+	}
+
+	for (auto& bone : m_bShowBonesUpgToHide)
+	{
+		HudItemData()->set_bone_visible(bone, false, TRUE);
+	}
+
+	for (auto& bone : m_bShowBonesUpgToShow)
+	{
+		HudItemData()->set_bone_visible(bone, true, TRUE);
+	}
+
+	for (auto& bone : m_bHideBonesUpgrade)
+	{
+		HudItemData()->set_bone_visible(bone, false, TRUE);
+	}
+
+	for (u32 i = 0; i < m_upgrades.size(); i++)
+	{
+		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+
+		if (pSettings->line_exist(section, "show_bones"))
+			SetWeaponMultipleBonesStatus(section, "show_bones", TRUE);
+	}
+
+	for (auto& bone : m_bHideBonesOverride)
+	{
+		HudItemData()->set_bone_visible(bone, false, TRUE);
+	}
+
+	if (IsSilencerAttached())
+	{
+		for (auto& bone : m_bHideBonesSilAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, TRUE);
+		}
+	}
+
+	if (IsScopeAttached())
+	{
+		for (auto& bone : m_bHideBonesScopeAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, TRUE);
+		}
+	}
+
+	if (IsGrenadeLauncherAttached())
+	{
+		for (auto& bone : m_bHideBonesGLAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, TRUE);
+		}
+	}
+
+	if (IsGrenadeLauncherAttached())
+	{
+		for (auto& bone : m_bDefHideBonesGLAttached)
+		{
+			HudItemData()->set_bone_visible(bone, false, TRUE);
+		}
+	}
 }
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
 	R_ASSERT(pWeaponVisual);
 
 	pWeaponVisual->CalculateBones_Invalidate();
@@ -2633,6 +2747,95 @@ void CWeapon::UpdateAddonsVisibility()
 
 	test = !!(get_GrenadeLauncherStatus() == 2 && IsGrenadeLauncherAttached() || get_GrenadeLauncherStatus() == 1);
 	ChangeBoneVisible(wpn_grenade_launcher, test);
+
+	for (auto& bone : m_bDefHideBones)
+	{
+		ChangeBoneVisible(bone, false);
+	}
+
+	for (auto& bone : m_bDefShowBones)
+	{
+		ChangeBoneVisible(bone, true);
+	}
+
+	if (m_bShowBonesUpgToHide.empty())
+	{
+		if (!!pSettings->line_exist(m_section_id.c_str(), "upgrades"))
+		{
+			LPCSTR S = pSettings->r_string(m_section_id.c_str(), "upgrades");
+			if (S && S[0])
+			{
+				string128 _Item;
+				int	count = _GetItemCount(S);
+				for (int it = 0; it < count; ++it)
+				{
+					_GetItem(S, it, _Item);
+					HideOneUpgradeLevel(_Item);
+				}
+			}
+		}
+	}
+
+	for (auto& bone : m_bShowBonesUpgToHide)
+	{
+		ChangeBoneVisible(bone, false);
+	}
+
+	for (auto& bone : m_bShowBonesUpgToShow)
+	{
+		ChangeBoneVisible(bone, true);
+	}
+
+	for (auto& bone : m_bHideBonesUpgrade)
+	{
+		ChangeBoneVisible(bone, false);
+	}
+
+	for (u32 i = 0; i < m_upgrades.size(); i++)
+	{
+		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
+
+		if (pSettings->line_exist(section, "show_bones"))
+			SetWeaponMultipleBonesStatus(section, "show_bones", TRUE);
+
+	}
+
+	for (auto& bone : m_bHideBonesOverride)
+	{
+		ChangeBoneVisible(bone, false);
+	}
+
+	if (IsSilencerAttached())
+	{
+		for (auto& bone : m_bHideBonesSilAttached)
+		{
+			ChangeBoneVisible(bone, false);
+		}
+	}
+
+	if (IsScopeAttached())
+	{
+		for (auto& bone : m_bHideBonesScopeAttached)
+		{
+			ChangeBoneVisible(bone, false);
+		}
+	}
+
+	if (IsGrenadeLauncherAttached())
+	{
+		for (auto& bone : m_bHideBonesGLAttached)
+		{
+			ChangeBoneVisible(bone, false);
+		}
+	}
+
+	if (IsGrenadeLauncherAttached())
+	{
+		for (auto& bone : m_bDefHideBonesGLAttached)
+		{
+			ChangeBoneVisible(bone, false);
+		}
+	}
 
 	pWeaponVisual->CalculateBones_Invalidate();
 	pWeaponVisual->CalculateBones(TRUE);

@@ -36,8 +36,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_smoke_particles(section, test);
 	result |= install_upgrade_flame_particles(section, test);
 	result |= install_upgrade_quick_kick(section, test);
+	result |= install_upgrade_bones(section, test);
 
-	ProcessUpgrade();
 	ProcessScope();
 
 	return result;
@@ -442,6 +442,129 @@ bool CWeapon::install_upgrade_quick_kick(LPCSTR section, bool test)
 
 	if (result2 && !test)
 		bBlockQKGLM = !!value;
+
+	result |= result2;
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = false;
+
+	bool result2 = process_if_exists_set(section, "hide_bones_override", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "hide_bones_override");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bHideBonesOverride.push_back(Item);
+			}
+		}
+	}
+
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "hide_bones_override_when_silencer_attached", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_silencer_attached");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bHideBonesSilAttached.push_back(Item);
+			}
+		}
+	}
+
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "hide_bones_override_when_gl_attached", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_gl_attached");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bHideBonesGLAttached.push_back(Item);
+			}
+		}
+	}
+
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "hide_bones_override_when_scope_attached", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "hide_bones_override_when_scope_attached");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bHideBonesScopeAttached.push_back(Item);
+			}
+		}
+	}
+
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "hide_bones", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "hide_bones");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bHideBonesUpgrade.push_back(Item);
+			}
+		}
+	}
+
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "show_bones", &CInifile::r_string, str, test);
+
+	if (result2 && !test)
+	{
+		LPCSTR S = pSettings->r_string(section, "show_bones");
+		if (S && S[0])
+		{
+			string128 Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				m_bShowBonesUpgToShow.push_back(Item);
+			}
+		}
+	}
 
 	result |= result2;
 

@@ -269,15 +269,19 @@ public:
 	shared_str hud_scope;
 	shared_str hud_gl;
 
+	RStringVec m_bDefHideBones, m_bDefShowBones, m_bHideBonesOverride, m_bDefHideBonesGLAttached,
+	m_bHideBonesGLAttached, m_bHideBonesSilAttached, m_bHideBonesScopeAttached,
+	m_bHideBonesUpgrade, m_bScopeShowBones, m_bScopeHideBones, m_bShowBonesUpgToHide, m_bShowBonesUpgToShow;
+
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
 
 	void HideOneUpgradeLevel(const char* section);
 	void ModUpdate();
-	void ProcessUpgrade();
 	void ProcessScope();
 	void SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const;
 	void SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const;
+	void LoadUpgradeBonesToHide(const char* section, const char* line);
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 	void ReassignWorldAnims();
@@ -661,6 +665,7 @@ private:
 			bool			install_upgrade_flame_particles(LPCSTR section, bool test);
 			bool			install_upgrade_smoke_particles(LPCSTR section, bool test);
 			bool			install_upgrade_quick_kick(LPCSTR section, bool test);
+			bool			install_upgrade_bones(LPCSTR section, bool test);
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 

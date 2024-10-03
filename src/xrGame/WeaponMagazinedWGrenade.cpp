@@ -509,12 +509,12 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 		{
 			if (OnServer()) 
 				pIItem->object().DestroyObject	();
-		}
 
-		InitAddons				();
-		UpdateAddonsVisibility	();
-		ProcessUpgrade();
-		ProcessScope();
+			InitAddons();
+			UpdateAddonsVisibility();
+			UpdateHUDAddonsVisibility();
+			ProcessScope();
+		}
 
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
@@ -540,12 +540,13 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 		UnloadMagazine();
 		PerformSwitchGL();
 
-		UpdateAddonsVisibility();
-		ProcessUpgrade();
-		ProcessScope();
-
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
+
+		InitAddons();
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
