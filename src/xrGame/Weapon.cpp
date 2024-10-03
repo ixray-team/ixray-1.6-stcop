@@ -27,6 +27,7 @@
 #include "WeaponBinoculars.h"
 #include "../xrEngine/gamemtllib.h"
 #include "level_bullet_manager.h"
+#include "WeaponKnife.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1151,23 +1152,29 @@ void CWeapon::ModUpdate()
 	if (!H_Parent() || H_Parent() && smart_cast<CEntityAlive*>(H_Parent()))
 		ReassignWorldAnims();
 
-	if (!H_Parent())
-	{
-		lock_time_callback = nullptr;
-		lock_time = 0.f;
-	}
+	CWeaponKnife* knf = smart_cast<CWeaponKnife*>(this);
+	CWeaponBinoculars* bino = smart_cast<CWeaponBinoculars*>(this);
 
-	if (lock_time > delta)
-		lock_time -= delta;
-	else
+	if (!knf && !bino)
 	{
-		lock_time = 0.f;
-		curr_anim = "";
-
-		if (lock_time_callback != nullptr)
+		if (!H_Parent())
 		{
-			lock_time_callback(this);
 			lock_time_callback = nullptr;
+			lock_time = 0.f;
+		}
+
+		if (lock_time > delta)
+			lock_time -= delta;
+		else
+		{
+			lock_time = 0.f;
+			curr_anim = "";
+
+			if (lock_time_callback != nullptr)
+			{
+				lock_time_callback(this);
+				lock_time_callback = nullptr;
+			}
 		}
 	}
 
@@ -1340,7 +1347,7 @@ u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooti
 
 void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimationEffector fun)
 {
-	if (pSettings->line_exist(hud_sect, key.c_str()))
+	if (pSettings->line_exist(hud_sect, key.c_str()) && smart_cast<CWeaponKnife*>(this) == nullptr && smart_cast<CWeaponBinoculars*>(this) == nullptr)
 	{
 		float time = pSettings->r_float(hud_sect, key.c_str());
 		lock_time = floor(time * 1000.f);
