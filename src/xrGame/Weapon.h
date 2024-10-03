@@ -193,6 +193,8 @@ public:
 
 	bool	NeedBlockSprint						() const; 
 
+	int ammo_cnt_to_reload;
+	int _last_shot_ammotype;
 	u32 _last_update_time;
 
 	bool bReloadKeyPressed;
@@ -237,6 +239,15 @@ public:
 
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
+
+
+	u8 GetAmmoTypeIndex(bool second = false);
+	u8 GetAmmoTypeToReload();
+	u8 GetOrdinalAmmoType();
+	u8 GetGlAmmotype();
+	u8 GetCartridgeType(CCartridge* c);
+	CCartridge* GetCartridgeFromMagVector(u32 index);
+	u32 GetAmmoInGLCount();
 
 protected:
 	//состояние подключенных аддонов
