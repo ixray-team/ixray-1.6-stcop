@@ -69,6 +69,33 @@ struct hud_item_measures
 	void load						(const shared_str& sect_name, IKinematics* K);
 };
 
+struct HudLightTorch
+{
+	xr_string m_section;
+	ref_light render_light;
+	ref_light omni_light;
+	bool is_render_light = false;
+	xr_string light_bone;
+	xr_string lightdir_bone_name;
+	bool is_lightdir_by_bone = false;
+	Fvector3 light_offset;
+	Fvector3 light_world_offset;
+	Fvector3 omni_offset;
+	Fvector3 omni_world_offset;
+	Fcolor light_color;
+	Fcolor omni_color;
+	bool torch_installed;
+
+	HudLightTorch();
+	~HudLightTorch();
+
+	void NewTorchlight(const char* section);
+	void SwitchTorchlight(bool is_active);
+	void UpdateTorchFromObject(CHudItem* item);
+	bool GetTorchActive() { return is_render_light; }
+	bool GetTorchInstalled() { return torch_installed; }
+};
+
 struct attachable_hud_item
 {
 	player_hud*						m_parent;

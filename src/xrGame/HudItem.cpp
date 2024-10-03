@@ -134,6 +134,8 @@ void CHudItem::Load(LPCSTR section)
 
 	if (pSettings->line_exist(section, "snd_nv_off"))
 		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", true);
+
+	m_HudLight.NewTorchlight(section);
 }
 
 
@@ -703,6 +705,7 @@ void CHudItem::UpdateCL()
 			}
 		}
 	}
+	m_HudLight.UpdateTorchFromObject(this);
 }
 
 void CHudItem::OnH_A_Chield		()
@@ -1123,4 +1126,34 @@ float CHudItem::getControllerShootExplMinDist(void) const
 bool CHudItem::isSuicideByAnimation(void) const
 {
 	return m_bSuicideByAnimation;
+}
+
+
+void CHudItem::SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const {
+	if (HudItemData())
+		HudItemData()->set_bone_visible(bone.c_str(), show, TRUE);
+
+	IKinematics* pWeaponVisual = object().Visual()->dcast_PKinematics();
+	if (pWeaponVisual && pWeaponVisual->LL_BoneID(bone.c_str()) != BI_NONE)
+		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone.c_str()), show, FALSE);
+}
+
+void CHudItem::SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const {
+	if (!pSettings->section_exist(section.c_str()))
+		return;
+
+	if (!!pSettings->line_exist(section.c_str(), line.c_str()))
+	{
+		LPCSTR	S = pSettings->r_string(section.c_str(), line.c_str());
+		if (S && S[0])
+		{
+			string128 _Item = "";
+			int count = _GetItemCount(S);
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, _Item);
+				SetWeaponModelBoneStatus(_Item, show);
+			}
+		}
+	}
 }

@@ -279,8 +279,6 @@ public:
 	void HideOneUpgradeLevel(const char* section);
 	void ModUpdate();
 	void ProcessScope();
-	void SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const;
-	void SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const;
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);

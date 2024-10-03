@@ -203,19 +203,42 @@ bool  CCustomDetector::need_renderable()
 void CCustomDetector::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
+	SetWeaponMultipleBonesStatus(m_HudLight.m_section.c_str(), "torch_cone_bones", m_HudLight.GetTorchActive());
+
+	float CurrentAnimTime = -1.0f;
+	bool TorchActive = false;
 
 	switch(S)
 	{
 		case eShowing:
 		{
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode?"anm_show_fast":"anm_show", !!(m_old_state != eHidden), this, S);
+			if (m_bFastAnimMode)
+			{
+				PlayHUDMotion("anm_show_fast", !!(m_old_state != eHidden), this, S);
+				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_enable_time_anm_show_fast", CurrentAnimTime);
+			}
+			else
+			{
+				PlayHUDMotion("anm_show", !!(m_old_state != eHidden), this, S);
+				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_enable_time_anm_show", CurrentAnimTime);
+			}
+			TorchActive = true;
 			SetPending					(TRUE);
 		}break;
 		case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode?"anm_hide_fast":"anm_hide", TRUE, this, S);
+			if (m_bFastAnimMode)
+			{
+				PlayHUDMotion("anm_hide_fast", TRUE, this, S);
+				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_disable_time_anm_hide_fast", CurrentAnimTime);
+			}
+			else
+			{
+				PlayHUDMotion("anm_hide", TRUE, this, S);
+				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_disable_time_anm_hide", CurrentAnimTime);
+			}
 			SetPending					(TRUE);
 			SetHideDetStateInWeapon();
 		}break;
@@ -270,6 +293,19 @@ void CCustomDetector::OnStateSwitch(u32 S)
 			SetPending(FALSE);
 		}break;
 	}
+
+	if (CurrentAnimTime > 0.0f)
+	{
+		Device.callback(u32(CurrentAnimTime * 1000),
+			[this, TorchActive]()
+			{
+				m_HudLight.SwitchTorchlight(TorchActive);
+				
+				// TODO Hozar to Rawlik: Redo the hiding of dice not on realtime
+				SetWeaponMultipleBonesStatus(m_HudLight.m_section.c_str(), "torch_cone_bones", m_HudLight.GetTorchActive());
+			});
+	}
+
 	m_old_state=S;
 }
 
@@ -409,6 +445,8 @@ void CCustomDetector::Load(LPCSTR section)
 
 	m_sounds.LoadSound( section, "snd_draw", "sndShow");
 	m_sounds.LoadSound( section, "snd_holster", "sndHide");
+
+	m_HudLight.SwitchTorchlight(true);
 }
 
 
@@ -503,6 +541,11 @@ void CCustomDetector::UpdateCL()
 {
 	PROF_EVENT_DYNAMIC(cNameSect_str())
 	inherited::UpdateCL();
+	
+	if (m_HudLight.GetTorchActive() && !IsWorking())
+	{
+		m_HudLight.SwitchTorchlight(false);
+	}
 
 	if (H_Parent() != Level().CurrentEntity())
 		return;
@@ -530,7 +573,9 @@ void CCustomDetector::UpdateCL()
 	UpdateVisibility();
 
 	if (!IsWorking())
+	{
 		return;
+	}
 
 	UpfateWork();
 }

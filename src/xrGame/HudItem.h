@@ -11,6 +11,9 @@ class CMotionDef;
 #include "hudsound.h"
 #include "InertionData.h"
 
+// TODO: Rework
+#include "player_hud.h"
+
 struct attachable_hud_item;
 class motion_marks;
 
@@ -73,6 +76,7 @@ protected:
 		u8						m_started_rnd_anim_idx;
 		bool					m_bStopAtEndAnimIsRunning;
 	};
+	HudLightTorch m_HudLight;
 public:
 	virtual void				Load				(LPCSTR section);
 	virtual	BOOL				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
@@ -125,7 +129,8 @@ public:
 
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
-
+	virtual void				SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const;
+	virtual void				SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const;
 
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
 
