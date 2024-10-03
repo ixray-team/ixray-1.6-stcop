@@ -69,7 +69,6 @@ protected:
 			void	ResetSilencerKoeffs();
 
 	virtual void	state_Fire		(float dt);
-	virtual void	state_FireChamber(float dt);
 	virtual void	state_Misfire	(float dt);
 public:
 					CWeaponMagazined	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);

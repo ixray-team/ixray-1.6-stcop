@@ -169,9 +169,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 		{
 			u32 state = wpn->GetState();
 
-			bool TempTest = wpn->m_bAmmoInChamber ? wpn->iAmmoInChamberElapsed == 0 && wpn->GetAmmoElapsed() == 0 : wpn->GetAmmoElapsed() == 0;
-
-			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && !TempTest))
+			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && !wpn->GetAmmoElapsed() == 0))
 				return;
 		}
 
@@ -393,9 +391,8 @@ void CCustomDetector::UpdateVisibility()
 			if(wpn)
 			{
 				u32 state = wpn->GetState();
-				bool TempTest = wpn->m_bAmmoInChamber ? wpn->iAmmoInChamberElapsed == 0 && wpn->GetAmmoElapsed() == 0 : wpn->GetAmmoElapsed() == 0;
 				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && TempTest))
+				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
 				{
 					HideDetector(true);
 					m_bNeedActivation = true;
