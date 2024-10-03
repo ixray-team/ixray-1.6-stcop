@@ -163,7 +163,7 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 	{
 		IsFail = false;
 	}
-	else if (Key >= SDL_SCANCODE_0 && Key <= SDL_SCANCODE_9)
+	else if (Key >= SDL_SCANCODE_1 && Key <= SDL_SCANCODE_0)
 	{
 		IsFail = false;
 	}
@@ -198,6 +198,12 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 		case SDL_SCANCODE_F11:
 		case SDL_SCANCODE_F12:
 		case SDL_SCANCODE_DELETE:
+		case SDL_SCANCODE_RIGHTBRACKET:
+		case SDL_SCANCODE_LEFTBRACKET:
+		case SDL_SCANCODE_MENU:
+		case SDL_SCANCODE_MINUS:
+		case SDL_SCANCODE_EQUALS:
+		case SDL_SCANCODE_BACKSLASH:
 		//case SDL_SCANCODE_ADD:
 		//case SDL_SCANCODE_SUBTRACT:
 		//case SDL_SCANCODE_MULTIPLY:
