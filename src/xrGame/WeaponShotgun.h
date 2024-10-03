@@ -26,6 +26,10 @@ public:
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon	();
 
+	bool			m_bAddCartridgeOpen;
+	bool			m_bEmptyPreloadMode;
+	bool			bPreloadAnimAdapter;
+
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
 	void			TriStateReload		();
