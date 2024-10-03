@@ -259,6 +259,10 @@ void CCustomDetector::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd	(state);
 	switch(state)
 	{
+	case eIdle:
+	{
+		SwitchState(eIdle);
+	}break;
 	case eShowing:
 		{
 			SwitchState					(eIdle);
