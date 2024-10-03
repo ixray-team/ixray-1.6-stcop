@@ -1109,6 +1109,10 @@ void CWeapon::SetWeaponMultipleBonesStatus(std::string section, std::string line
 void CWeapon::ModUpdate()
 {
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
+
+	ProcessAmmo();
+	ProcessAmmoGL();
+
 	ProcessUpgrade();
 	ProcessScope();
 
@@ -1414,6 +1418,161 @@ u32 CWeapon::GetAmmoInGLCount()
 	}
 
 	return result;
+}
+
+void CWeapon::ProcessAmmo(bool forced)
+{
+    if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_advanced_ammo_bones", false))
+	{
+        ProcessAmmoAdv(forced);
+        return;
+    }
+
+    if (!READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_ammo_bones", false))
+        return;
+
+    xr_string prefix = pSettings->r_string(hud_sect, "ammo_bones_prefix");
+    xr_string prefix_hide = READ_IF_EXISTS(pSettings, r_string, hud_sect, "ammo_hide_bones_prefix", "");
+    xr_string prefix_var = READ_IF_EXISTS(pSettings, r_string, hud_sect, "ammo_var_bones_prefix", "");
+    int start_index = READ_IF_EXISTS(pSettings, r_u32, hud_sect, "start_ammo_bone_index", 0);
+    int limitator = READ_IF_EXISTS(pSettings, r_u32, hud_sect, "end_ammo_bone_index", 0);
+
+    int finish_index = start_index + m_magazine.size() - 1;
+
+    if (IsMisfire() && pSettings->line_exist(hud_sect, "additional_ammo_bone_when_jammed") && pSettings->r_bool(hud_sect, "additional_ammo_bone_when_jammed"))
+        finish_index += 1;
+
+    if (pSettings->line_exist(hud_sect, "ammo_divisor_up"))
+        finish_index = ceil(finish_index / READ_IF_EXISTS(pSettings, r_u32, hud_sect, "ammo_divisor_up", 1));
+	else if (pSettings->line_exist(hud_sect, "ammo_divisor_down"))
+        finish_index = floor(finish_index / READ_IF_EXISTS(pSettings, r_u32, hud_sect, "ammo_divisor_down", 1));
+
+    if (finish_index > limitator)
+        finish_index = limitator;
+
+    for (int i = start_index; i <= finish_index; i++)
+	{
+        SetWeaponModelBoneStatus((prefix + xr_string().ToString(i)).c_str(), TRUE);
+        if (prefix_hide.length() > 0)
+            SetWeaponModelBoneStatus((prefix_hide + xr_string().ToString(i)).c_str(), FALSE);
+    }
+
+    for (int i = finish_index + 1; i <= limitator; i++)
+	{
+        SetWeaponModelBoneStatus((prefix + xr_string().ToString(i)).c_str(), FALSE);
+        if (prefix_hide.length() > 0)
+            SetWeaponModelBoneStatus((prefix_hide + xr_string().ToString(i)).c_str(), TRUE);
+    }
+
+    if (prefix_var.length() > 0)
+	{
+        for (int i = start_index - 1; i <= limitator; i++)
+		{
+            SetWeaponModelBoneStatus((prefix_var + xr_string().ToString(i)).c_str(), i == finish_index);
+        }
+    }
+}
+
+void CWeapon::ProcessAmmoAdv(bool forced)
+{
+    if (!IsGrenadeMode() && (GetState() == eFire) && !forced && READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false))
+        return;
+
+    int cnt = m_magazine.size();
+    int ammotype = 0;
+    shared_str bones_sect = nullptr;
+
+    if (IsGrenadeMode())
+        ammotype = GetOrdinalAmmoType();
+	else if (GetState() == eUnjam)
+	{
+		if (IsMisfire())
+			ammotype = GetOrdinalAmmoType();
+	}
+	else if (GetState() == eReload)
+	{
+		if (IsTriStateReload())
+		{
+            if (strncmp(GetActualCurrentAnim().c_str(), "anm_open", strlen("anm_open")) == 0)
+			{
+                xr_string param = "ejection_delay_" + GetActualCurrentAnim();
+				u32 ejection_delay = READ_IF_EXISTS(pSettings, r_u32, hud_sect, param.c_str(), 0);
+                if (ejection_delay > 0 && Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm) < ejection_delay)
+                    return;
+            }
+
+            ammotype = GetAmmoTypeToReload();
+        }
+		else
+		{
+            ammotype = GetAmmoTypeIndex(IsGrenadeMode());
+
+            if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "minus_ammo_in_usual_reloads", false) && cnt >= 1 && strncmp(GetActualCurrentAnim().c_str(), "_empty", strlen("_empty")) != 0)
+                cnt -= 1;
+        }
+    }
+	else
+	{
+        ammotype = GetOrdinalAmmoType();
+
+        if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "minus_ammo_in_bore", false) && cnt >= 1 && strncmp(GetActualCurrentAnim().c_str(), "anm_bore", strlen("anm_bore")) == 0)
+            cnt -= 1;
+    }
+
+	xr_string sect_w_ammotype = "ammo_params_section_" + xr_string().ToString(ammotype);
+
+    if (pSettings->line_exist(hud_sect, sect_w_ammotype.c_str()))
+        bones_sect = pSettings->r_string(hud_sect, sect_w_ammotype.c_str());
+	else if (pSettings->line_exist(hud_sect, "ammo_params_section"))
+        bones_sect = pSettings->r_string(hud_sect, "ammo_params_section");
+
+    if (bones_sect != nullptr)
+	{
+        if (IsMisfire() && pSettings->line_exist(bones_sect, "additional_ammo_bone_when_jammed") && pSettings->r_bool(bones_sect, "additional_ammo_bone_when_jammed"))
+            cnt += 1;
+
+        SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", FALSE);
+
+        xr_string configuration = "configuration_" + xr_string().ToString(cnt);
+        SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), TRUE);
+    }
+}
+
+void CWeapon::ProcessAmmoGL(bool forced)
+{
+	if (get_GrenadeLauncherStatus() == 0)
+		return;
+
+	int cnt = GetAmmoInGLCount();
+	int ammotype = 0;
+	if (IsGrenadeMode() && (GetState() == eReload))
+	{
+		if (cnt == 0)
+		{
+			ammotype = GetAmmoTypeToReload();
+			cnt = 1;
+		}
+		else
+			ammotype = GetGlAmmotype();
+	}
+	else
+		ammotype = GetGlAmmotype();
+
+	xr_string sect_w_ammotype = "gl_ammo_params_section_" + xr_string().ToString(ammotype);
+
+	shared_str bones_sect = nullptr;
+	if (pSettings->line_exist(hud_sect, sect_w_ammotype.c_str()))
+		bones_sect = pSettings->r_string(hud_sect, sect_w_ammotype.c_str());
+	else if (pSettings->line_exist(hud_sect, "gl_ammo_params_section"))
+		bones_sect = pSettings->r_string(hud_sect, "gl_ammo_params_section");
+
+	if (bones_sect != nullptr)
+	{
+		SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", false);
+
+		xr_string configuration = "configuration_" + xr_string().ToString(cnt);
+		SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), true);
+	}
 }
 
 bool  CWeapon::need_renderable()

@@ -261,6 +261,10 @@ public:
 	CCartridge* GetCartridgeFromMagVector(u32 index);
 	u32 GetAmmoInGLCount();
 
+	void ProcessAmmo(bool forced = false);
+	void ProcessAmmoAdv(bool forced = false);
+	void ProcessAmmoGL(bool forced = false);
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
