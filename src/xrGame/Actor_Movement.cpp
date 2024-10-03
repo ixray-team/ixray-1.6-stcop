@@ -479,24 +479,24 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 
 void CActor::LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt)
 {
-	float speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 1.0f);
-	float ampl_k = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
+	float speed = m_fLookOutSpeed;
+	float ampl_k = m_fLookOutAmplK;
 
 	float koef = 0.f;
 
     CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
     if (itm)
 	{
-		koef = READ_IF_EXISTS(pSettings, r_float, itm->HudSection(), "lookout_speed_koef", 1.0f);
+		koef = itm->getLookOutSpeedKoef();
 		speed *= koef;
 
-		koef = READ_IF_EXISTS(pSettings, r_float, itm->HudSection(), "lookout_ampl_k", 1.0f);
+		koef = m_fLookOutAmplK;
 		ampl_k *= koef;
     }
 
     tgt_roll = tgt_roll * ampl_k;
 
-	float dx_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
+	float dx_pow = m_fLookOutSpeedAmplDXPow;
 
     float dx = tgt_roll - cur_roll;
     float delta = abs(pow(abs(dx), dx_pow) * dt * speed);

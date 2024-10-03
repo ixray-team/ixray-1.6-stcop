@@ -39,6 +39,8 @@ CHudItem::CHudItem()
 	mark						= 0;
 	fDeviceFlags.zero();
 	_action_ppe					= -1;
+	m_fLookOutSpeedKoef = 0.0f;
+	m_fLookOutAmplK = 0.0f;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -92,6 +94,8 @@ void CHudItem::Load(LPCSTR section)
 
 	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
 
+	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_speed_koef", 1.0f);
+	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_ampl_k", 1.0f);
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", isGuns);
 
 	if (!m_bDisableBore)
@@ -1086,4 +1090,14 @@ CHudItem::jitter_params CHudItem::GetCurJitterParams(const char* hud_sect)
 	result.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", result.pos_amplitude);
 	result.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", result.rot_amplitude);
 	return result;
+}
+
+float CHudItem::getLookOutSpeedKoef(void) const
+{
+	return m_fLookOutSpeedKoef;
+}
+
+float CHudItem::getLookOutAmplK(void) const
+{
+	return m_fLookOutAmplK;
 }
