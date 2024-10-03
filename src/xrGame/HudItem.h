@@ -165,7 +165,7 @@ public:
 	bool WpnCanShoot() const;
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
-	jitter_params GetCurJitterParams(const char* hud_sect);
+	const jitter_params& GetCurJitterParams() const;
 	using TAnimationEffector = fastdelegate::FastDelegate<void()>;
 
 	enum EDeviceFlags
@@ -210,7 +210,7 @@ protected:
 	TAnimationEffector			lock_time_callback;
 	u32							mark;
 	int							_action_ppe;
-
+	jitter_params  m_jitter_params;
 private:
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;

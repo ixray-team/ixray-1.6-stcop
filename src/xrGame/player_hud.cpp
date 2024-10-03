@@ -1873,7 +1873,7 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 
 		if (Actor()->IsHandJitter(itm))
 		{
-			jitter = itm->GetCurJitterParams(section.c_str());
+			jitter = itm->GetCurJitterParams();
 
 			pos.x = ::Random.randF(0.f, 1000.f) - 500.f;
 			pos.y = ::Random.randF(0.f, 500.f) - 250.f;
@@ -1902,7 +1902,7 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 
 	if (Actor()->IsActorSuicideNow() && Actor()->CheckActorVisibilityForController() && !(READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false) || READ_IF_EXISTS(pSettings, r_bool, section, "suicide_by_animation", false)))
 	{
-		jitter = itm->GetCurJitterParams(section.c_str());
+		jitter = itm->GetCurJitterParams();
 		pos = HID->hands_attach_pos();
 		rot = HID->hands_attach_rot();
 
