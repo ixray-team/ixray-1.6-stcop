@@ -1183,6 +1183,8 @@ void CWeaponMagazined::switch2_Empty()
 
 void CWeaponMagazined::switch2_CheckMisfire()
 {
+	SetPending(TRUE);
+
 	PlayAnimFakeshoot();
 
 	if (m_sounds.FindSoundItem("sndJammedClick", false))
