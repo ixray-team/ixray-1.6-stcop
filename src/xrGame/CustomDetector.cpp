@@ -383,22 +383,14 @@ void CCustomDetector::UpdateVisibility()
 	else
 	{
 		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
-		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn) && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
+		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn))
 		{
-			HideDetector		(true);
-			m_bNeedActivation	= true;
-		}else
-		{
-			CWeapon* wpn			= smart_cast<CWeapon*>(i0->m_parent_hud_item);
-			if(wpn)
+			u32 state = wpn->GetState();
+			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
 			{
-				u32 state = wpn->GetState();
-				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-				if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
-				{
-					HideDetector(true);
-					m_bNeedActivation = true;
-				}
+				HideDetector(true);
+				m_bNeedActivation = true;
 			}
 		}
 	}
