@@ -921,6 +921,13 @@ bool CWeapon::SendDeactivateItem()
 	if (GetState() == eFire)
 		return false;
 
+	if (ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || (GetState() != eIdle && GetState() != eShowing)))
+	{
+		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+			Actor()->SetMovementState(eReal, mcSprint, false);
+		return false;
+	}
+
 	return inherited::SendDeactivateItem();
 }
 
