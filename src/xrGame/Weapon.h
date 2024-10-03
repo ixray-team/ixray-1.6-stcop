@@ -246,12 +246,17 @@ public:
 	void ProcessScope();
 	void SetWeaponModelBoneStatus(std::string bone, BOOL show);
 	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
+	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow();
+	bool IsCollimatorInstalled();
+	bool IsHudModelForceUnhide();
+	bool IsUIForceUnhiding();
+	bool IsUIForceHiding();
 	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false);
 
 	virtual bool IsGrenadeMode() { return false; }

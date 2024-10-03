@@ -24,6 +24,7 @@
 #include "Torch.h"
 #include "script_game_object.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "WeaponBinoculars.h"
 #include "../xrEngine/gamemtllib.h"
 #include "level_bullet_manager.h"
 
@@ -1585,6 +1586,54 @@ void CWeapon::ProcessAmmoGL(bool forced)
 	}
 }
 
+bool CWeapon::IsCollimatorInstalled()
+{
+	if (!IsScopeAttached() || get_ScopeStatus() != 2)
+		return false;
+
+	shared_str scope = nullptr;
+	scope = GetCurrentScopeSection();
+	scope = pSettings->r_string(scope, "scope_name");
+
+	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
+}
+
+bool CWeapon::IsHudModelForceUnhide()
+{
+	return IsCollimatorInstalled() /* || IsLensedScopeInstalled(wpn) && IsLensEnabled() || IsAlterZoomMode()*/;
+}
+
+bool CWeapon::IsUIForceUnhiding()
+{
+	bool result = IsHudModelForceUnhide();
+
+	if (result)
+	{
+		/*if (buf.IsAlterZoomMode())
+			result = true;
+		else */if (get_ScopeStatus() == 1)
+			result = !READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+		else if (get_ScopeStatus() == 2 && IsScopeAttached())
+			result = !READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+	}
+
+	return result;
+}
+
+bool CWeapon::IsUIForceHiding()
+{
+	CWeaponBinoculars* bino = smart_cast<CWeaponBinoculars*>(this);
+
+	if (bino && IsZoomed())
+		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+	else if (get_ScopeStatus() == 1 && IsZoomed())
+		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
+		return READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+	else
+		return false;
+}
+
 shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def)
 {
 	for (int i = 0; i < m_upgrades.size(); ++i)
@@ -1705,7 +1754,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 
 bool  CWeapon::need_renderable()
 {
-	return !( IsZoomed() && ZoomTexture() && !IsRotatingToZoom() );
+	return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom() && !IsHudModelForceUnhide());
 }
 
 void CWeapon::renderable_Render		()
@@ -1717,7 +1766,7 @@ void CWeapon::renderable_Render		()
 	RenderLight				();	
 
 	//если мы в режиме снайперки, то сам HUD рисовать не надо
-	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture())
+	if(IsZoomed() && !IsRotatingToZoom() && ZoomTexture() && !IsHudModelForceUnhide())
 		RenderHud		(FALSE);
 	else
 		RenderHud		(TRUE);
@@ -2635,7 +2684,8 @@ bool CWeapon::ready_to_kill() const
 	return !IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (iAmmoInChamberElapsed || GetAmmoElapsed());
 }
 
-u8 CWeapon::GetCurrentHudOffsetIdx() const {
+u8 CWeapon::GetCurrentHudOffsetIdx() const
+{
 	auto pActor = smart_cast<const CActor*>(H_Parent());
 	if (!pActor)
 		return 0;
@@ -2652,10 +2702,41 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const {
 		return 1;
 }
 
-void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
+void CWeapon::SelectCurrentOffset(Fvector& pos, Fvector& rot)
+{
+	u8 idx = GetCurrentHudOffsetIdx();
+
+	s32 cur_index;
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
+		cur_index = m_cur_scope;
+	else
+		cur_index = -1;
+
+	string32 offset_name;
+	xr_sprintf(offset_name, "%s_hud_offset_pos%s", idx == 0 ? "hands" : idx == 1 ? "aim" : idx == 2 ? "gl" : "", UI().is_widescreen() ? "_16x9" : "");
+
+	string32 rot_name;
+	xr_sprintf(rot_name, "%s_hud_offset_rot%s", idx == 0 ? "hands" : idx == 1 ? "aim" : idx == 2 ? "gl" : "", UI().is_widescreen() ? "_16x9" : "");
+
+	if (cur_index >= 0)
+	{
+		if (pSettings->line_exist(GetCurrentScopeSection(), offset_name) && pSettings->line_exist(GetCurrentScopeSection(), rot_name))
+		{
+			pos = pSettings->r_fvector3(GetCurrentScopeSection(), offset_name);
+			rot = pSettings->r_fvector3(GetCurrentScopeSection(), rot_name);
+			return;
+		}
+	}
+
+	pos = HudItemData()->m_measures.m_hands_offset[0][idx];
+	rot = HudItemData()->m_measures.m_hands_offset[1][idx];
+}
+
+void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
 	auto pActor = smart_cast<const CActor*>(H_Parent());
-	if(!pActor)		return;
+	if (!pActor)
+		return;
 
 	u8 idx = GetCurrentHudOffsetIdx();
 
@@ -2667,11 +2748,9 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f))
 	{
 		Fvector						curr_offs, curr_rot;
-		curr_offs					= hi->m_measures.m_hands_offset[0][idx];//pos,aim
-		curr_rot					= hi->m_measures.m_hands_offset[1][idx];//rot,aim
+		SelectCurrentOffset(curr_offs, curr_rot);
 		curr_offs.mul				(m_zoom_params.m_fZoomRotationFactor);
 		curr_rot.mul				(m_zoom_params.m_fZoomRotationFactor);
-
 		Fmatrix						hud_rotation;
 		hud_rotation.identity		();
 		hud_rotation.rotateX		(curr_rot.x);
@@ -3091,7 +3170,7 @@ bool CWeapon::show_crosshair()
 
 bool CWeapon::show_indicators()
 {
-	return ! ( IsZoomed() && ZoomTexture() );
+	return !(IsZoomed() && ZoomTexture() && IsUIForceHiding() && !IsUIForceUnhiding());
 }
 
 float CWeapon::GetConditionToShow	() const
