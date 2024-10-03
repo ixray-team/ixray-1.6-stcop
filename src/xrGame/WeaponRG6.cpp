@@ -90,7 +90,7 @@ void CWeaponRG6::FireStart()
 		if (smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity() == H_Parent()))
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 		if (isGuns)
 		{

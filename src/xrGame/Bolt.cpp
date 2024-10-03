@@ -77,7 +77,7 @@ u16	CBolt::Initiator				()
 
 bool CBolt::SendDeactivateItem()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
 	if (isGuns && pActor && (GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow || GetState() == eThrowEnd))
 		return false;

@@ -38,7 +38,7 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	//// Sounds
 	m_sounds.LoadSound(section,"snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	m_sounds.LoadSound(section, isGuns ? "snd_load_grenade" : "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
 
 	if (WeaponSoundExist(section, "snd_change_grenade"))
@@ -153,7 +153,9 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 	if (!IsGrenadeLauncherAttached())
 		return false;
 
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (!isGuns)
 	{
 		bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
 
@@ -233,7 +235,9 @@ void CWeaponMagazinedWGrenade::FireStart()
 
 	if (!iAmmoElapsed && (GetState() == eEmptyClick && !lock_time || GetState() == eIdle))
 	{
-		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		
+		if (isGuns)
 			SwitchState(eEmptyClick);
 		else
 			OnEmptyClick();
@@ -572,7 +576,7 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 
 xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(const xr_string& M)
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	xr_string new_name = M;
 

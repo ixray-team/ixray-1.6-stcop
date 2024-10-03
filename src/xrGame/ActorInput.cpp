@@ -899,7 +899,8 @@ void CActor::SwitchNightVision()
 
 	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 	{
-		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		if (isGuns)
 		{
 			CHudItemObject* itm = smart_cast<CHudItemObject*>(inventory().ActiveItem());
 
@@ -955,7 +956,7 @@ void CActor::NVCallback()
 
 void CActor::SwitchTorch()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
 		CHelmet* pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));

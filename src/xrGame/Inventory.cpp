@@ -832,8 +832,9 @@ void CInventory::Update()
 					{
 						bool is_sprint = false;
 						CActor* actor = smart_cast<CActor*>(pActor_owner);
+						const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 						if (actor && actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
-							is_sprint = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+							is_sprint = isGuns;
 
 						if (!is_sprint)
 							hi->SendDeactivateItem();

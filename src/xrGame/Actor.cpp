@@ -953,7 +953,7 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 
 	if (Local() && g_Alive()) 
 	{
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 		if (!isGuns && character_physics_support()->movement()->gcontact_Was)
 			Cameras().AddCamEffector(new CEffectorFall (character_physics_support()->movement()->gcontact_Power));
 
@@ -1004,7 +1004,7 @@ float CActor::currentFOV()
 
 	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 		if (isGuns)
 		{
 			float fov = (g_fov / 2.f) * PI / 180.f;
@@ -1022,7 +1022,8 @@ extern ENGINE_API int m_look_cam_fp_zoom;
 void CActor::UpdateCL	()
 {
 	PROF_EVENT("CActor UpdateCL");
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
 	{
 		u32 ct = Device.dwTimeGlobal;
 		u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
@@ -1839,7 +1840,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	{
 		outfit->ApplySkinModel	(this, false, false);
 
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 		if (isGuns && !outfit->bIsHelmetAvaliable)
 		{
 			CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
@@ -1855,7 +1856,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		if (torch && torch->GetNightVisionStatus())
 			torch->SwitchNightVision(false);
 
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 		if (isGuns)
 		{
 			if (torch && torch->IsSwitched())

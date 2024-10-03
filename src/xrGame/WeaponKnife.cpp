@@ -50,7 +50,7 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
 		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
@@ -215,7 +215,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (!isGuns)
 		PlaySound("sndShot",pos);
 
@@ -298,7 +298,7 @@ void CWeaponKnife::state_Attacking	(float)
 
 void CWeaponKnife::switch2_Attacking(u32 state)
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	SetPending(TRUE);
 
@@ -337,21 +337,25 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 	{
 		PlayHUDMotion("anm_attack", FALSE, state, false, false);
 
-		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && Actor()->GetDetector())
-			Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick);
-
 		if (isGuns)
+		{
+			if (ParentIsActor() && Actor()->GetDetector())
+				Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick);
+			
 			PlaySound("sndKick1", Position());
+		}
 	}
 	else
 	{//eFire2
 		PlayHUDMotion("anm_attack2", FALSE, state, false, false);
 
-		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && Actor()->GetDetector())
-			Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick2);
-
 		if (isGuns)
+		{
+			if (ParentIsActor() && Actor()->GetDetector())
+				Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick2);
+			
 			PlaySound("sndKick2", Position());
+		}
 	}
 }
 

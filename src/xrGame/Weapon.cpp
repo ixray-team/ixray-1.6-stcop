@@ -58,7 +58,9 @@ CWeapon::CWeapon()
 
 	eHandDependence			= hdNone;
 
-	m_zoom_params.m_fCurrentZoomFactor			= EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] ? 1.0f : g_fov;
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	m_zoom_params.m_fCurrentZoomFactor			= isGuns ? 1.0f : g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
 	m_zoom_params.m_pVision						= nullptr;
 	m_zoom_params.m_pNight_vision				= nullptr;
@@ -304,7 +306,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_d", 0.0f);
 	m_zoom_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_n", 0.0f);
 
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (isGuns)
 	{
 		float origin_offset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", -1.f);
 
@@ -598,7 +602,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseChangeFireModeAnim = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_firemode_change_anim", false);
 	m_bRestGL_and_Sil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isGuns);
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 
@@ -1025,7 +1028,8 @@ void CWeapon::OnHiddenItem ()
 
 bool CWeapon::SendDeactivateItem()
 {
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || IsActionProcessing()))
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns && ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || IsActionProcessing()))
 	{
 		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
 			Actor()->SetMovementState(eWishful, mcSprint, false);
@@ -2097,7 +2101,9 @@ bool CWeapon::CanAimNow()
 	if (!ParentIsActor())
 		return true;
 
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (!isGuns)
 		return true;
 
 	bool result = true;
@@ -2136,7 +2142,9 @@ bool CWeapon::CanLeaveAimNow()
 	if (!ParentIsActor())
 		return true;
 
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (!isGuns)
 		return true;
 
 	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
@@ -2280,7 +2288,9 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		case kWPN_ZOOM_DEC:
 			if (IsZoomEnabled() && IsZoomed() && (flags & CMD_START))
 			{
-				if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+				const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+				
+				if (!isGuns)
 				{
 					if (cmd == kWPN_ZOOM_INC)
 						ZoomInc();
@@ -2335,7 +2345,9 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
 		return false;
 
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (!isGuns)
 	{
 		if (IsPending())
 			return false;
@@ -2544,7 +2556,7 @@ BOOL CWeapon::CheckForMisfire	()
 		FireEnd();
 		bMisfire = true;
 
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 		if (!isGuns)
 			SwitchState(eMisfire);		
 		
@@ -2740,7 +2752,10 @@ void CWeapon::OnZoomOut()
 
 	m_zoom_params.m_bIsZoomModeNow		= false;
 	m_fRTZoomFactor = GetZoomFactor();//store current
-	m_zoom_params.m_fCurrentZoomFactor = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] ? 1.0f : g_fov;
+	
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	m_zoom_params.m_fCurrentZoomFactor = isGuns ? 1.0f : g_fov;
 
 	GamePersistent().SetPickableEffectorDOF(false);
 
@@ -3642,7 +3657,7 @@ void CWeapon::OnAnimationEnd(u32 state)
 bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 		return GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden || GetActualCurrentAnim().find("anm_idle_aim") == 0;
 	else

@@ -131,7 +131,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		}
 	}
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (isGuns)
 	{
@@ -245,7 +245,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 bool CWeaponMagazined::OnShoot_CanShootNow()
 {
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	if (!isGuns)
 		return true;
 
 	if (ParentIsActor() && (Actor()->IsActorPlanningSuicide() || Actor()->IsActorSuicideNow()))
@@ -280,7 +282,7 @@ bool CWeaponMagazined::OnShoot_CanShootNow()
 
 void CWeaponMagazined::FireStart()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if(!IsMisfire())
 	{
 		if (iAmmoElapsed)
@@ -781,7 +783,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 
 xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	xr_string new_name = M;
 
@@ -1043,7 +1045,7 @@ void CWeaponMagazined::OnShot()
 	// Shell Drop
 	Fvector vel;
 	PHGetLinearVell(vel);
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (!isGuns)
 		OnShellDrop(get_LastSP(), vel);
 	
@@ -1240,7 +1242,7 @@ void CWeaponMagazined::switch2_Fire	()
 
 void CWeaponMagazined::switch2_Empty()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
 
 	if (isAutoreload && !isGuns)
@@ -1362,7 +1364,10 @@ void CWeaponMagazined::TriStateReload()
 		if (HaveCartridgeInInventory(1))
 		{
 			switch2_StartReload();
-			if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+			
+			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			
+			if (isGuns)
 			{
 				if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
 					AddCartridge(1);
@@ -1476,7 +1481,7 @@ void CWeaponMagazined::PlayAnimCloseWeapon()
 
 void CWeaponMagazined::switch2_Reload()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (IsMisfire() && !isGuns && !HudAnimationExist("anm_reload_misfire") || !IsMisfire())
 	{
 		if (IsTriStateReload())
@@ -1540,7 +1545,9 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 {
 	if(inherited::Action(cmd, flags)) return true;
 	
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	if (!isGuns)
 	{
 		//если оружие чем-то занято, то ничего не делать
 		if (IsPending())
@@ -1557,7 +1564,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			if (!(flags&CMD_START))
 				return false;
 
-			if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+			if (!isGuns)
 			{
 				if (IsZoomed())
 					return false;
@@ -1916,7 +1923,7 @@ void CWeaponMagazined::PlayAnimFireMode()
 		anm_name += xr_string::ToString(cur_mode);
 
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (Actor()->GetDetector() && isGuns)
 	{
@@ -1969,7 +1976,7 @@ void CWeaponMagazined::PlayAnimReload()
 
 	xr_string anm_name = "anm_reload";
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (IsMisfire() && isGuns)
 		anm_name += "_jammed";
@@ -2012,7 +2019,9 @@ void CWeaponMagazined::PlayAnimAim()
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	xr_string anm_name = "anm_idle_aim";
 
-	if (actor && actor->AnyMove() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (actor && actor->AnyMove() && isGuns)
 	{
 		bool use_scope_anims = ScopeAttachable() && IsScopeAttached() && READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "use_scope_anims", false);
 		if (m_bAimScopeAnims && use_scope_anims)
@@ -2040,7 +2049,7 @@ void CWeaponMagazined::PlayAnimIdle()
 	if (GetState() != eIdle)
 		return;
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (IsZoomed())
 	{
@@ -2085,7 +2094,7 @@ void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState() == eFire);
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", NeedShootMix(), GetState());
 	ProcessAmmo(true);
 	MakeLockByConfigParam("lock_time_" + GetActualCurrentAnim(), true);
@@ -2184,7 +2193,7 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 
 bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 {
-	static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (!HasFireModes())
 		return false;

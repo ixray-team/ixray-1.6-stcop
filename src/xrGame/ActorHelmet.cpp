@@ -44,7 +44,9 @@ void CHelmet::Load(LPCSTR section)
 	else
 		m_NightVisionSect = "";
 
-	bIsTorchAvaliable = READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode]);
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	bIsTorchAvaliable = READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !isGuns);
 
 	m_fHealthRestoreSpeed			= READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed",    0.0f );
 	m_fRadiationRestoreSpeed		= READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed", 0.0f );
@@ -127,7 +129,7 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 			if(pTorch)
 				pTorch->SwitchNightVision(false);
 
-			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 			if (isGuns)
 			{
 				if (pTorch && pTorch->IsSwitched())
