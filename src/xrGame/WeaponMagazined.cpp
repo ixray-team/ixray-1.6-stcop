@@ -112,6 +112,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_jam"))
 		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundReload);
 
+	if (WeaponSoundExist(section, "snd_breechblock"))
+		m_sounds.LoadSound(section, "snd_breechblock", "sndPump", true, m_eSoundReload);
+
 	if (WeaponSoundExist(section, "snd_aim"))
 		m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
 
@@ -813,6 +816,17 @@ void CWeaponMagazined::OnShot()
 	// Sound
 	PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), true);
 
+	if (!IsMisfire())
+	{
+		if (m_sounds.FindSoundItem("sndPump", false))
+			PlaySound("sndPump", get_LastFP());
+	}
+	else
+	{
+		if (m_sounds.FindSoundItem("sndJam", false))
+			PlaySound("sndJam", get_LastFP());
+	}
+	
 	// Camera	
 	AddShotEffector				();
 
