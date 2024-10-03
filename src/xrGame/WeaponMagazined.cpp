@@ -662,7 +662,10 @@ void CWeaponMagazined::UpdateCL			()
 		switch (GetState())
 		{
 		case eShowing:
+		case eShowingDet:
+		case eShowingEndDet:
 		case eHiding:
+		case eHideDet:
 		case eReload:
 		case eSwitchMode:
 		case eEmptyClick:

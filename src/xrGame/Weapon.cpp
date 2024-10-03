@@ -2595,6 +2595,23 @@ void CWeapon::OnStateSwitch	(u32 S)
 	inherited::OnStateSwitch(S);
 	m_BriefInfo_CalcFrame = 0;
 
+	switch (S)
+	{
+        case eShowingDet:
+			PlayHUDMotion("anm_prepare_detector", TRUE, this, GetState());
+            SetPending(true);
+        break;
+        case eShowingEndDet:
+			PlayHUDMotion("anm_draw_detector", FALSE, this, GetState());
+            SetPending(true);
+        break;
+        break;
+        case eHideDet:
+			PlayHUDMotion("anm_finish_detector", TRUE, this, GetState());
+            SetPending(true);
+        break;
+	}
+
 	if(EnableDof && GetState()==eReload)
 	{
 		if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
@@ -2609,6 +2626,23 @@ void CWeapon::OnStateSwitch	(u32 S)
 void CWeapon::OnAnimationEnd(u32 state) 
 {
 	inherited::OnAnimationEnd(state);
+
+	switch (state)
+	{
+		case eShowingDet:
+		{
+			if (GetDetector(true))
+			{
+				GetDetector(true)->SwitchState(CCustomDetector::eShowing);
+				GetDetector(true)->TurnDetectorInternal(true);
+				SwitchState(eShowingEndDet);
+			}
+		}break;
+		case eShowingEndDet:
+		case eHideDet:
+			SwitchState(eIdle);
+		break;
+	}
 }
 
 bool CWeapon::NeedBlockSprint() const
