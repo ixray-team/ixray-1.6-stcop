@@ -824,3 +824,46 @@ xr_string CHudItem::GetActualCurrentAnim() const
 
 	return "";
 }
+
+bool CHudItem::StartCompanionAnimIfNeeded(const xr_string anim_name)
+{
+	if (Actor() != object().H_Parent())
+		return false;
+
+	xr_string new_anm = anim_name;
+	if (new_anm.Contains("anm_"))
+		new_anm.erase(0, 4);
+
+	if (Actor()->GetDetector() != nullptr)
+	{
+		string128 det_anm = "";
+		xr_sprintf(det_anm, "anm_lefthand_%s_wpn_%s", Actor()->GetDetector()->m_section_id.c_str(), new_anm.c_str());
+		if (!pSettings->line_exist(hud_sect, det_anm))
+			return false;
+
+		AssignDetectorAnim(det_anm, true, true);
+		return true;
+	}
+
+	return false;
+}
+
+void CHudItem::AssignDetectorAnim(const xr_string anm_alias, bool bMixIn, bool use_companion_section)
+{
+	if (Actor()->GetDetector() == nullptr || Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+		return;
+
+	LPCSTR section = Actor()->GetDetector()->HudSection().c_str();
+
+	if (use_companion_section)
+		section = HudSection().c_str();
+
+	string128 anm = "";
+	xr_sprintf(anm, "anm_lefthand_%s_wpn_draw%s", Actor()->GetDetector()->m_section_id.c_str(), UI().is_widescreen() ? "_16x9" : "");
+	if (pSettings->line_exist(section, anm))
+	{
+		swap(this->HudItemData()->m_hand_motions, Actor()->GetDetector()->HudItemData()->m_hand_motions);
+		Actor()->GetDetector()->PlayHUDMotion(anm_alias, true, Actor()->GetDetector(), eIdle);
+		swap(this->HudItemData()->m_hand_motions, Actor()->GetDetector()->HudItemData()->m_hand_motions);
+	}
+}
