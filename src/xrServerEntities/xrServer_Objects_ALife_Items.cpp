@@ -558,6 +558,11 @@ void CSE_ALifeItemWeapon::clone_addons(CSE_ALifeItemWeapon* parent)
 	m_addon_flags = parent->m_addon_flags;
 }
 
+void CSE_ALifeItemWeapon::clone_upgrades(CSE_ALifeItemWeapon* parent)
+{
+	m_upgrades = parent->m_upgrades;
+}
+
 void CSE_ALifeItemWeapon::UPDATE_Write(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
