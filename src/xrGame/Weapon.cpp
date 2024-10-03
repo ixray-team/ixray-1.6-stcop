@@ -1574,7 +1574,7 @@ void CWeapon::ProcessAmmoAdv(bool forced)
 		{
             ammotype = GetAmmoTypeIndex(IsGrenadeMode());
 
-            if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "minus_ammo_in_usual_reloads", false) && cnt >= 1 && strncmp(GetActualCurrentAnim().c_str(), "_empty", strlen("_empty")) != 0)
+            if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "minus_ammo_in_usual_reloads", false) && cnt >= 1 && GetActualCurrentAnim().find("_empty") == -1)
                 cnt -= 1;
         }
     }
