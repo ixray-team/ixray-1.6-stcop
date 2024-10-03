@@ -788,7 +788,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 	if (IsZoomed())
 		new_name = AddSuffixName(new_name, "_aim");
 
-	if (IsScopeAttached())
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
 		new_name = AddSuffixName(new_name, "_scope");
 
 	int firemode = GetQueueSize();
