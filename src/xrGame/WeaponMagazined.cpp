@@ -602,10 +602,10 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 		new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str());
 
-	if (iAmmoElapsed == 1)
+	if (!IsMisfire() && iAmmoElapsed == 1)
 		new_name = AddSuffixName(new_name, "_last");
 
-	if (iAmmoElapsed == 0)
+	if (!IsMisfire() && iAmmoElapsed == 0)
 		new_name = AddSuffixName(new_name, "_empty");
 
 	if (IsChangeAmmoType())
@@ -1439,7 +1439,12 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion("anm_reload", TRUE, this, GetState());
+	std::string anm_name = "anm_reload";
+
+	if (IsMisfire())
+		anm_name += "_jammed";
+
+	PlayHUDMotion(anm_name, TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimAim()
