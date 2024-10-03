@@ -444,18 +444,19 @@ bool CArtefact::Action(u16 cmd, u32 flags)
 void CArtefact::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch	(S);
+
 	switch(S){
 	case eShowing:
 		{
-			PlayHUDMotion("anm_show", FALSE, this, S);
+			PlayHUDMotion("anm_show", FALSE, this, S, false);
 		}break;
 	case eHiding:
 		{
-			PlayHUDMotion("anm_hide", FALSE, this, S);
+			PlayHUDMotion("anm_hide", FALSE, this, S, false);
 		}break;
 	case eActivating:
 		{
-			PlayHUDMotion("anm_activate", FALSE, this, S);
+			PlayHUDMotion("anm_activate", FALSE, this, S, false);
 		}break;
 	case eIdle:
 		{
@@ -466,7 +467,7 @@ void CArtefact::OnStateSwitch(u32 S)
 
 void CArtefact::PlayAnimIdle()
 {
-	PlayHUDMotion("anm_idle", FALSE, nullptr, eIdle);
+	PlayHUDMotion("anm_idle", FALSE, nullptr, eIdle, false);
 }
 
 void CArtefact::OnAnimationEnd(u32 state)

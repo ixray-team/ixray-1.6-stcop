@@ -288,16 +288,15 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 		return;
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-
 	if (state == eFire)
 	{
-		PlayHUDMotion("anm_attack", FALSE, this, state);
+		PlayHUDMotion("anm_attack", FALSE, this, state, false);
 		if (isGuns)
 			PlaySound("sndKick1", Position());
 	}
 	else
 	{//eFire2
-		PlayHUDMotion("anm_attack2", FALSE, this, state);
+		PlayHUDMotion("anm_attack2", FALSE, this, state, false);
 		if (isGuns)
 			PlaySound("sndKick2", Position());
 	}
@@ -317,7 +316,8 @@ void CWeaponKnife::switch2_Hiding	()
 {
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anm_hide", TRUE, this, GetState());
+
+	PlayHUDMotion("anm_hide", TRUE, this, GetState(), false);
 	if (m_sounds.FindSoundItem("SndHide", false))
 		PlaySound("SndHide", get_LastFP());
 }
@@ -331,7 +331,8 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", FALSE, this, GetState());
+
+	PlayHUDMotion("anm_show", FALSE, this, GetState(), false);
 	if (m_sounds.FindSoundItem("SndShow", false))
 		PlaySound("SndShow", get_LastFP());
 }

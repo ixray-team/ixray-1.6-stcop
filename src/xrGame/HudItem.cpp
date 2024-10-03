@@ -178,7 +178,7 @@ void CHudItem::OnAnimationEnd(u32 state)
 
 void CHudItem::PlayAnimBore()
 {
-	PlayHUDMotion	("anm_bore", TRUE, this, GetState());
+	PlayHUDMotion("anm_bore", TRUE, this, GetState());
 }
 
 bool CHudItem::ActivateItem() 
@@ -560,9 +560,12 @@ bool CHudItem::HudAnimationExist(LPCSTR anim_name)
 }
 //-AVO
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state)
+u32 CHudItem::PlayHUDMotion(std::string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix)
 {
-	u32 anim_time					= PlayHUDMotion_noCB(M, bMixIn);
+	if (need_suffix)
+		M = NeedAddSuffix(M);
+
+	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
 	{
 		m_bStopAtEndAnimIsRunning	= true;
@@ -576,6 +579,15 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 
 	return anim_time;
 }
 
+std::string CHudItem::AddSuffixName(std::string M, std::string suffix)
+{
+	std::string new_name = M + suffix;
+
+	if (HudAnimationExist(new_name.c_str()))
+		return new_name;
+
+	return M;
+}
 
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
 {
@@ -622,7 +634,8 @@ BOOL CHudItem::GetHUDmode()
 
 void CHudItem::PlayAnimIdle()
 {
-	if (TryPlayAnimIdle()) return;
+	if (TryPlayAnimIdle())
+		return;
 
 	PlayHUDMotion("anm_idle", TRUE, nullptr, GetState());
 }

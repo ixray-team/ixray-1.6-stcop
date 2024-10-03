@@ -205,6 +205,8 @@ public:
 	RStringVec m_vHideBonesOverrideScopeUpg;
 	RStringVec m_vHideBonesOverrideGLUpg;
 
+	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;

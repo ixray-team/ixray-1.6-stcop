@@ -525,6 +525,39 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
+std::string CWeaponMagazined::NeedAddSuffix(std::string M)
+{
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	std::string new_name = M;
+
+	if (IsZoomed())
+		new_name = AddSuffixName(new_name, "_aim");
+
+	if (iAmmoElapsed == 1)
+		new_name = AddSuffixName(new_name, "_last");
+
+	if (iAmmoElapsed == 0)
+		new_name = AddSuffixName(new_name, "_empty");
+
+	if (IsChangeAmmoType())
+		new_name = AddSuffixName(new_name, "_ammochange");
+
+	if (IsMisfire())
+	{
+		if (isGuns)
+			new_name = AddSuffixName(new_name, "_jammed");
+		else
+			new_name = AddSuffixName(new_name, "_misfire");
+
+		if (iAmmoElapsed == 0)
+			new_name = AddSuffixName(new_name, "_last");
+
+		bMisfireReload = true;
+	}
+
+	return new_name;
+}
 
 void CWeaponMagazined::UpdateCL			()
 {
@@ -1258,12 +1291,14 @@ void CWeaponMagazined::ResetSilencerKoeffs()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
+
 	PlayHUDMotion("anm_show", FALSE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
+
 	PlayHUDMotion("anm_hide", TRUE, this, GetState());
 }
 
@@ -1271,15 +1306,7 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	if (HudAnimationExist("anm_reload_misfire") && IsMisfire())
-	{
-		PlayHUDMotion("anm_reload_misfire", TRUE, this, GetState());
-		bMisfireReload = true;
-	}
-	else if (HudAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
-		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
-	else
-		PlayHUDMotion("anm_reload", TRUE, this, GetState());
+	PlayHUDMotion("anm_reload", TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimAim()
@@ -1311,8 +1338,10 @@ void CWeaponMagazined::PlayAnimIdle()
 
 void CWeaponMagazined::PlayAnimShoot()
 {
-	VERIFY(GetState()==eFire);
-	PlayHUDMotion("anm_shots", FALSE, this, GetState());
+	VERIFY(GetState() == eFire);
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", FALSE, this, GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
