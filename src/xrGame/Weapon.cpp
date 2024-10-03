@@ -1979,11 +1979,10 @@ bool CWeapon::CanAimNow()
 {
 	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
 	{
-		shared_str sect = "";
+		shared_str sect = HudSection();
+
 		if (IsScopeAttached())
 			sect = GetCurrentScopeSection();
-		else
-			sect = HudSection();
 
 		if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
 			return false;
