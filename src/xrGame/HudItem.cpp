@@ -16,6 +16,9 @@
 #include "HUDManager.h"
 #include "Torch.h"
 #include "Weapon.h"
+#include "WeaponBinoculars.h"
+#include "WeaponKnife.h"
+#include "HUDAnimItem.h"
 #include "ActorEffector.h"
 
 ENGINE_API extern float psHUD_FOV_def;
@@ -593,54 +596,60 @@ void CHudItem::UpdateCL()
 		mark = 0;
 	}
 
-	u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
-
-	if (lock_time_callback != nullptr && mark > 0 && mark < anim_time)
+	if (Actor() && object().H_Parent() == Actor())
 	{
-		lock_time_callback();
-		SetAnimationCallback(nullptr);
-		mark = 0;
-	}
+		u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
 
-	xr_string use_ppe_key = "use_ppe_effector_" + GetActualCurrentAnim();
-
-	if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, use_ppe_key.c_str(), false))
-	{
-		xr_string ppe_key = "ppe_effector_" + GetActualCurrentAnim();
-		xr_string ppe = pSettings->r_string(hud_sect, ppe_key.c_str());
-		xr_string ppe_start_key = "ppe_start_" + GetActualCurrentAnim();
-		xr_string ppe_end_key = "ppe_end_" + GetActualCurrentAnim();
-		int ppe_start = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_start_key.c_str(), 0.f) * 1000.f);
-		int ppe_end = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_end_key.c_str(), 100.f) * 1000.f);
-
-		if (anim_time > ppe_start && anim_time < ppe_end)
+		if (smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr || smart_cast<CHUDAnimItem*>(this) != nullptr)
 		{
-			// Включим PPE, если он выключен
-			if (_action_ppe < 0)
+			if (lock_time_callback != nullptr && mark > 0 && mark < anim_time)
 			{
-				_action_ppe = 2014;
-				add_pp_effector(ppe.c_str(), _action_ppe, false);
-				set_pp_effector_factor2(_action_ppe, 1.f);
+				lock_time_callback();
+				SetAnimationCallback(nullptr);
+				mark = 0;
+			}
+		}
+
+		xr_string use_ppe_key = "use_ppe_effector_" + GetActualCurrentAnim();
+
+		if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, use_ppe_key.c_str(), false))
+		{
+			xr_string ppe_key = "ppe_effector_" + GetActualCurrentAnim();
+			xr_string ppe = pSettings->r_string(hud_sect, ppe_key.c_str());
+			xr_string ppe_start_key = "ppe_start_" + GetActualCurrentAnim();
+			xr_string ppe_end_key = "ppe_end_" + GetActualCurrentAnim();
+			int ppe_start = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_start_key.c_str(), 0.f) * 1000.f);
+			int ppe_end = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_end_key.c_str(), 100.f) * 1000.f);
+
+			if (anim_time > ppe_start && anim_time < ppe_end)
+			{
+				// Включим PPE, если он выключен
+				if (_action_ppe < 0)
+				{
+					_action_ppe = 2014;
+					add_pp_effector(ppe.c_str(), _action_ppe, false);
+					set_pp_effector_factor2(_action_ppe, 1.f);
+				}
+			}
+			else
+			{
+				// Выключим PPE, если он включен
+				if (_action_ppe >= 0)
+				{
+					set_pp_effector_factor2(_action_ppe, 0.001f);
+					remove_pp_effector(_action_ppe);
+					_action_ppe = -1;
+				}
 			}
 		}
 		else
 		{
-			// Выключим PPE, если он включен
 			if (_action_ppe >= 0)
 			{
 				set_pp_effector_factor2(_action_ppe, 0.001f);
 				remove_pp_effector(_action_ppe);
 				_action_ppe = -1;
 			}
-		}
-	}
-	else
-	{
-		if (_action_ppe >= 0)
-		{
-			set_pp_effector_factor2(_action_ppe, 0.001f);
-			remove_pp_effector(_action_ppe);
-			_action_ppe = -1;
 		}
 	}
 }
@@ -739,8 +748,11 @@ u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, b
 		PlaySound("sndByMotion", object().Position());
 	}
 
-	if (pSettings->line_exist(hud_sect, ("mark_" + M).c_str()))
-		mark = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ("mark_" + M).c_str(), 100.f) * 1000.f);
+	if (smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr || smart_cast<CHUDAnimItem*>(this) != nullptr)
+	{
+		if (pSettings->line_exist(hud_sect, ("mark_" + M).c_str()))
+			mark = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ("mark_" + M).c_str(), 100.f) * 1000.f);
+	}
 
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
