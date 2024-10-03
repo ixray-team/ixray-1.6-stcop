@@ -87,6 +87,7 @@ CWeapon::CWeapon()
 	m_bRememberActorNVisnStatus = false;
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
+	bUnjamKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
 
 	hud_silencer = nullptr;
@@ -938,18 +939,20 @@ void CWeapon::UpdateCL		()
 		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
 		if (det && (det->GetState() == CCustomDetector::eIdle || !det->NeedActivation()))
 		{
-			if (bAmmotypeKeyPressed || bReloadKeyPressed)
+			if (bUnjamKeyPressed)
 			{
-				if (bReloadKeyPressed)
-				{
-					bReloadKeyPressed = false;
-					Action(kWPN_RELOAD, CMD_START);
-				}
-				else
-				{
-					bAmmotypeKeyPressed = false;
-					Action(kWPN_NEXT, CMD_START);
-				}
+				bUnjamKeyPressed = false;
+				Action(kWPN_RELOAD, CMD_START);
+			}
+			else if (bAmmotypeKeyPressed)
+			{
+				bAmmotypeKeyPressed = false;
+				Action(kWPN_NEXT, CMD_START);
+			}
+			else if (bReloadKeyPressed)
+			{
+				bReloadKeyPressed = false;
+				Action(kWPN_RELOAD, CMD_START);
 			}
 		}
 	}
@@ -1340,21 +1343,35 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	return false;
 }
 
-bool CWeapon::SwitchAmmoType( u32 flags ) 
+bool CWeapon::SwitchAmmoType(u32 flags) 
 {
-	if ( IsPending() || OnClient() )
+	if (OnClient())
 		return false;
 
-	if ( !(flags & CMD_START) )
+	if (IsPending())
 		return false;
 
 	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
 		return false;
 
-	if (bReloadKeyPressed || bAmmotypeKeyPressed)
+	if (GetState() != eIdle)
 		return false;
-	
-	bAmmotypeKeyPressed = true;
+
+	if (IsZoomed())
+		return false;
+
+	if (!(flags & CMD_START))
+		return false;
+
+	if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
+	{
+		if (IsMisfire())
+			bUnjamKeyPressed = true;
+		else
+			bAmmotypeKeyPressed = true;
+	}
+	else
+		return false;
 
 	auto i1 = g_player_hud->attached_item(1);
 	if (i1 && HudItemData())
@@ -1364,23 +1381,28 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 			return false;
 	}
 
+	if (IsMisfire())
+	{
+		SwitchState(eUnjam);
+		return false;
+	}
+
 	u8 l_newType = m_ammoType;
 	bool b1, b2;
 	do 
 	{
-		l_newType = u8( (u32(l_newType+1)) % m_ammoTypes.size() );
+		l_newType = u8((u32(l_newType+1)) % m_ammoTypes.size());
 		b1 = (l_newType != m_ammoType);
-		b2 = unlimited_ammo() ? false : ( !m_pInventory->GetAny( m_ammoTypes[l_newType].c_str() ) );						
-	} while( b1 && b2 );
+		b2 = unlimited_ammo() ? false : (!m_pInventory->GetAny(m_ammoTypes[l_newType].c_str()));						
+	} while(b1 && b2);
 
-	if ( l_newType != m_ammoType )
+	if (l_newType != m_ammoType)
 	{
 		m_set_next_ammoType_on_reload = l_newType;					
-		if ( OnServer() )
-		{
-			Reload();
-		}
+		if (OnServer())
+			TryReload();
 	}
+
 	return true;
 }
 
@@ -1553,11 +1575,6 @@ BOOL CWeapon::IsMisfire() const
 {	
 	return bMisfire;
 }
-void CWeapon::Reload()
-{
-	OnZoomOut();
-}
-
 
 bool CWeapon::IsGrenadeLauncherAttached() const
 {
