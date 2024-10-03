@@ -1582,7 +1582,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 					return false;
 			}
-			else if (iAmmoElapsed != iMagazineSize && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
+			else if ((iAmmoElapsed != iMagazineSize || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
 				return false;
 
 			if (IsMisfire() && !IsGrenadeMode())
