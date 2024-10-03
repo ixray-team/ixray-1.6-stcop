@@ -651,15 +651,32 @@ bool CHudItem::TryPlayAnimIdle()
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);
-			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
+			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			if(state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
 				PlayAnimIdleSprint();
 				return true;
 			}
-			else if(!(state & ACTOR_DEFS::EMoveCommand::mcCrouch) && pActor->AnyMove())
+			else if (pActor->AnyMove())
 			{
-				PlayAnimIdleMoving();
-				return true;
+				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && isGuns)
+				{
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel)
+						PlayAnimIdleMovingCrouchSlow();
+					else
+						PlayAnimIdleMovingCrouch();
+
+					return true;
+				}
+				else
+				{
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && isGuns)
+						PlayAnimIdleMovingSlow();
+					else
+						PlayAnimIdleMoving();
+
+					return true;
+				}
 			}
 		}
 	}
@@ -671,6 +688,21 @@ void CHudItem::PlayAnimIdleMoving()
 	PlayHUDMotion("anm_idle_moving", TRUE, nullptr, GetState());
 }
 
+void CHudItem::PlayAnimIdleMovingSlow()
+{
+	PlayHUDMotion("anm_idle_moving_slow", TRUE, NULL, GetState());
+}
+
+void CHudItem::PlayAnimIdleMovingCrouch()
+{
+	PlayHUDMotion("anm_idle_moving_crouch", TRUE, NULL, GetState());
+}
+
+void CHudItem::PlayAnimIdleMovingCrouchSlow()
+{
+	PlayHUDMotion("anm_idle_moving_crouch_slow", TRUE, NULL, GetState());
+}
+
 void CHudItem::PlayAnimIdleSprint()
 {
 	PlayHUDMotion("anm_idle_sprint", TRUE, nullptr,GetState());
@@ -678,13 +710,10 @@ void CHudItem::PlayAnimIdleSprint()
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
-	if(GetState()==eIdle && !m_bStopAtEndAnimIsRunning)
+	if (GetState() == eIdle && !m_bStopAtEndAnimIsRunning)
 	{
-		if( (cmd == ACTOR_DEFS::mcSprint) || (cmd == ACTOR_DEFS::mcAnyMove)  )
-		{
-			PlayAnimIdle						();
-			ResetSubStateTime					();
-		}
+		PlayAnimIdle();
+		ResetSubStateTime();
 	}
 }
 
