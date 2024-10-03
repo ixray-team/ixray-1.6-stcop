@@ -381,7 +381,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		return;
 
 	// HUD FOV Update
-	if (this == Level().CurrentControlEntity())
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && this == Level().CurrentControlEntity())
 	{
 		if (eacFirstEye == cam_active)
 		{

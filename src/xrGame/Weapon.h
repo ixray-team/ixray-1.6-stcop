@@ -355,6 +355,7 @@ public:
 	virtual void			OnZoomIn			();
 	virtual void			OnZoomOut			();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
+	float					GetAimFactor		() const {return m_zoom_params.m_fZoomRotationFactor;}
 	CUIWindow*				ZoomTexture			();	
 
 	bool ZoomHideCrosshair() {
