@@ -1045,6 +1045,9 @@ bool CHudItem::CanStartAction(bool allow_aim_state)
 
 bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return true;
+
 	if (object().H_Parent() != Actor())
 		return true;
 

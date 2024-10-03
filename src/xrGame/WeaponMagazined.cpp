@@ -245,6 +245,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 bool CWeaponMagazined::OnShoot_CanShootNow()
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return true;
+
 	if (ParentIsActor() && (Actor()->IsActorPlanningSuicide() || Actor()->IsActorSuicideNow()))
 		return Actor()->IsSuicideInreversible();
 
