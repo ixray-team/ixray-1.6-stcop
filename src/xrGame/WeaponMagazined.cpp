@@ -57,7 +57,6 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_fOldBulletSpeed			= 0;
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
-	bMisfireReload				= false;
 
 	m_sFireModeMask_1 = nullptr;
 	m_sFireModeMask_3 = nullptr;
@@ -93,7 +92,7 @@ bool CWeaponMagazined::WeaponSoundExist(LPCSTR section, LPCSTR sound_name)
 void CWeaponMagazined::Load	(LPCSTR section)
 {
 	inherited::Load		(section);
-		
+
 	// Sounds
 	m_sounds.LoadSound(section,"snd_draw", "sndShow"		, false, m_eSoundShow		);
 	m_sounds.LoadSound(section,"snd_holster", "sndHide"		, false, m_eSoundHide		);
@@ -101,11 +100,17 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_sounds.LoadSound(section,"snd_empty", "sndEmptyClick"	, false, m_eSoundEmptyClick	);
 	m_sounds.LoadSound(section,"snd_reload", "sndReload"	, true, m_eSoundReload		);
 
-	if (WeaponSoundExist(section, "snd_reload_empty") && HudAnimationExist("anm_reload_empty"))
+	if (WeaponSoundExist(section, "snd_reload_empty"))
 		m_sounds.LoadSound(section,"snd_reload_empty", "sndReloadEmpty"	, true, m_eSoundReload);
 	
-	if (WeaponSoundExist(section, "snd_reload_misfire") && HudAnimationExist("anm_reload_misfire"))
-		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
+	if (WeaponSoundExist(section, "snd_reload_jammed"))
+		m_sounds.LoadSound(section, "snd_reload_jammed", "sndReloadJammed", true, m_eSoundReload); 
+
+	if (WeaponSoundExist(section, "snd_reload_jammed_last"))
+		m_sounds.LoadSound(section, "snd_reload_jammed_last", "sndReloadJammedLast", true, m_eSoundReload);
+
+	if (WeaponSoundExist(section, "snd_jam"))
+		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundReload);
 
 	if (WeaponSoundExist(section, "snd_aim"))
 		m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
@@ -620,8 +625,6 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 
 		if (iAmmoElapsed == 0)
 			new_name = AddSuffixName(new_name, "_last");
-
-		bMisfireReload = true;
 	}
 
 	if (IsSilencerAttached())
@@ -690,18 +693,18 @@ void CWeaponMagazined::UpdateSounds	()
 	{
 		if (m_sounds.FindSoundItem("sndReloadEmpty", false))
 			m_sounds.SetPosition("sndReloadEmpty", P);
-		if (m_sounds.FindSoundItem("sndReloadMis", false))
-			m_sounds.SetPosition("sndReloadMis", P);
+		if (m_sounds.FindSoundItem("sndReloadJammed", false))
+			m_sounds.SetPosition("sndReloadJammed", P);
 	}
 }
 
 void CWeaponMagazined::state_Fire(float dt)
 {
-	if(iAmmoElapsed > 0)
+	if (iAmmoElapsed > 0)
 	{
-		VERIFY(fOneShotTime>0.f);
+		VERIFY(fOneShotTime > 0.f);
 
-		Fvector					p1, d; 
+		Fvector p1, d;
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 
@@ -712,8 +715,8 @@ void CWeaponMagazined::state_Fire(float dt)
 			return;
 		}
 
-		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(nullptr == io->inventory().ActiveItem())
+		CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
+		if (nullptr == io->inventory().ActiveItem())
 		{
 			Msg("current_state %d", GetState() );
 			Msg("next_state %d", GetNextState());
@@ -724,9 +727,9 @@ void CWeaponMagazined::state_Fire(float dt)
 		}
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
-		E->g_fireParams	(this, p1,d);
+		E->g_fireParams(this, p1, d);
 
-		if( !E->g_stateFire() )
+		if (!E->g_stateFire())
 			StopShooting();
 
 		if (m_iShotNum == 0)
@@ -734,62 +737,58 @@ void CWeaponMagazined::state_Fire(float dt)
 			m_vStartPos = p1;
 			m_vStartDir = d;
 		};
-		
+
 		VERIFY(!m_magazine.empty());
 
-		while (	!m_magazine.empty() && 
-				fShotTimeCounter<0 && 
-				(IsWorking() || m_bFireSingleShot) && 
-				(m_iQueueSize<0 || m_iShotNum<m_iQueueSize)
-			   )
+		while (!m_magazine.empty() && fShotTimeCounter < 0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
 		{
-			if( CheckForMisfire() )
+			if (m_bJamNotShot)
+			{
+				if (CheckForMisfire())
+				{
+					OnShotJammed();
+					SwitchState(eIdle);
+					return;
+				}
+			}
+
+			m_bFireSingleShot = false;
+
+			fShotTimeCounter += fOneShotTime;
+
+			++m_iShotNum;
+
+			if (!m_bJamNotShot)
+				CheckForMisfire();
+
+			OnShot();
+
+			if (m_iShotNum > m_iBaseDispersionedBulletsCount)
+				FireTrace(p1, d);
+			else
+				FireTrace(m_vStartPos, m_vStartDir);
+
+			if (!m_bJamNotShot && IsMisfire())
 			{
 				StopShooting();
 				return;
 			}
-
-			m_bFireSingleShot		= false;
-
-			fShotTimeCounter		+=	fOneShotTime;
-			
-			++m_iShotNum;
-			
-			OnShot					();
-
-			if (m_iShotNum>m_iBaseDispersionedBulletsCount)
-				FireTrace		(p1,d);
-			else
-				FireTrace		(m_vStartPos, m_vStartDir);
 		}
-	
-		if(m_iShotNum == m_iQueueSize)
-			m_bStopedAfterQueueFired = true;
 
-		UpdateSounds			();
+		if (m_iShotNum == m_iQueueSize)
+			m_bStopedAfterQueueFired = true;
 	}
 
-	if(fShotTimeCounter<0)
+	if (fShotTimeCounter < 0)
 	{
-/*
-		if(bDebug && H_Parent() && (H_Parent()->ID() != Actor()->ID()))
-		{
-			Msg("stop shooting w=[%s] magsize=[%d] sshot=[%s] qsize=[%d] shotnum=[%d]",
-					IsWorking()?"true":"false", 
-					m_magazine.size(),
-					m_bFireSingleShot?"true":"false",
-					m_iQueueSize,
-					m_iShotNum);
-		}
-*/
-		if(iAmmoElapsed == 0)
+		if (iAmmoElapsed == 0)
 			OnMagazineEmpty();
 
 		StopShooting();
 	}
 	else
 	{
-		fShotTimeCounter			-=	dt;
+		fShotTimeCounter -= dt;
 	}
 }
 
@@ -838,6 +837,13 @@ void CWeaponMagazined::OnShot()
 		object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
 }
 
+void CWeaponMagazined::OnShotJammed()
+{
+	if (m_sounds.FindSoundItem("sndJam", false))
+		PlaySound("sndJam", get_LastFP());
+
+	PlayAnimShoot();
+}
 
 void CWeaponMagazined::OnEmptyClick	()
 {
@@ -997,9 +1003,14 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
-	if (m_sounds.FindSoundItem("sndReloadMis", false) && HudAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
-		PlaySound("sndReloadMis", get_LastFP());
-	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && HudAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+	if (IsMisfire())
+	{
+		if (m_sounds.FindSoundItem("sndReloadJammedLast", false) && iAmmoElapsed == 0)
+			PlaySound("sndReloadJammedLast", get_LastFP());
+		else if (m_sounds.FindSoundItem("sndReloadJammed", false))
+			PlaySound("sndReloadJammed", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && iAmmoElapsed == 0)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
 		PlaySound("sndReload", get_LastFP());

@@ -557,6 +557,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseChangeFireModeAnim = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_firemode_change_anim", false);
 	m_bRestGL_and_Sil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
 
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isGuns);
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -1532,19 +1534,19 @@ BOOL CWeapon::CheckForMisfire	()
 
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
-	if(rnd < mp)
+	if (rnd < mp)
 	{
 		FireEnd();
-
 		bMisfire = true;
-		SwitchState(eMisfire);		
+
+		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		if (!isGuns)
+			SwitchState(eMisfire);		
 		
 		return TRUE;
 	}
-	else
-	{
-		return FALSE;
-	}
+
+	return FALSE;
 }
 
 BOOL CWeapon::IsMisfire() const
