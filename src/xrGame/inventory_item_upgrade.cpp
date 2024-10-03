@@ -188,6 +188,23 @@ bool CInventoryItem::install_upgrade_impl( LPCSTR section, bool test )
 		result |= process_if_exists( section, "control_inertion_factor", &CInifile::r_float, m_fControlInertionFactor, test );
 	}
 
+	u32 temp_x = 0;
+	u32 temp_y = 0;
+	u32 temp_width = 0;
+	u32 temp_height = 0;
+
+	result2 = process_if_exists_set(section, "inv_grid_x", &CInifile::r_u32, temp_x, test);
+	result2 = process_if_exists_set(section, "inv_grid_y", &CInifile::r_u32, temp_y, test);
+	result2 = process_if_exists_set(section, "inv_grid_width", &CInifile::r_u32, temp_width, test);
+	result2 = process_if_exists_set(section, "inv_grid_height", &CInifile::r_u32, temp_height, test);
+
+	temp_x += m_IconRect.x1;
+	temp_y += m_IconRect.y1;
+	temp_width += m_IconRect.x2;
+	temp_height += m_IconRect.y2;
+
+	m_IconRect.set(temp_x, temp_y, temp_width, temp_height);
+
 	LPCSTR str;
 	result2 = process_if_exists_set( section, "immunities_sect", &CInifile::r_string, str, test );
 	if ( result2 && !test )

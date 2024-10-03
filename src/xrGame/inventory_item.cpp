@@ -138,7 +138,14 @@ void CInventoryItem::Load(LPCSTR section)
 		m_fControlInertionFactor	= pSettings->r_float(section,"control_inertion_factor");
 	}
 	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",		nullptr);
-	
+
+	u32 x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
+	u32 y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
+	u32 w = pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
+	u32 h = pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+
+	m_IconRect.set(x, y, w, h);
+
 	ReadCustomTextAndMarks		(section);
 }
 
@@ -1483,14 +1490,7 @@ Frect CInventoryItem::GetKillMsgRect() const
 
 Irect CInventoryItem::GetInvGridRect() const
 {
-	u32 x,y,w,h;
-
-	x = pSettings->r_u32(m_object->cNameSect(),"inv_grid_x");
-	y = pSettings->r_u32(m_object->cNameSect(),"inv_grid_y");
-	w = pSettings->r_u32(m_object->cNameSect(),"inv_grid_width");
-	h = pSettings->r_u32(m_object->cNameSect(),"inv_grid_height");
-
-	return Irect().set(x,y,w,h);
+	return m_IconRect;
 }
 
 Irect CInventoryItem::GetUpgrIconRect() const

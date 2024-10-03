@@ -196,6 +196,7 @@ protected:
 	float						m_weight;
 	float						m_fCondition;
 	shared_str					m_Description;
+	Irect						m_IconRect;
 protected:
 	ALife::_TIME_ID				m_dwItemIndependencyTime;
 
