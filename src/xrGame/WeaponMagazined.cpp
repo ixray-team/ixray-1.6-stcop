@@ -293,13 +293,6 @@ bool CWeaponMagazined::TryReload()
 		}
 
 		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
-		
-		if(IsMisfire() && iAmmoElapsed)
-		{
-			SetPending			(TRUE);
-			SwitchState			(eReload); 
-			return				true;
-		}
 
 		if(m_pCurrentAmmo || unlimited_ammo())  
 		{
@@ -394,9 +387,6 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 void CWeaponMagazined::ReloadMagazine() 
 {
 	m_BriefInfo_CalcFrame = 0;	
-
-	//устранить осечку при перезарядке
-	if(IsMisfire())	bMisfire = false;
 	
 	if (!m_bLockType)
 	{
@@ -563,6 +553,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		break;
+	case eUnjam:
 	case eReload:
 		if(owner)
 			m_sounds_enabled = owner->CanPlayShHdRldSounds();
@@ -661,6 +652,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eReload:
 		case eSwitchMode:
 		case eEmptyClick:
+		case eUnjam:
 		case eIdle:
 			{
 				fShotTimeCounter	-=	dt;
@@ -863,17 +855,13 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				bReloadKeyPressed = false;
 				bAmmotypeKeyPressed = false;
 			}
-
-			if (bMisfireReload)
-			{
-				if (!IsGrenadeMode())
-					bMisfire = false;
-				bMisfireReload = false;
-			}
-			else
-				ReloadMagazine();
+			ReloadMagazine();
 			SwitchState(eIdle);
 		} break;
+		case eUnjam:
+			bMisfire = false;
+			SwitchState(eIdle);
+		break;
 		case eHiding:
 			SwitchState(eHidden);  
 		break;
@@ -1083,7 +1071,10 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 					if (!bReloadKeyPressed || !bAmmotypeKeyPressed)
 						bReloadKeyPressed = true;
 
-					Reload();
+					if (IsMisfire() && !IsGrenadeMode())
+						SwitchState(eUnjam);
+					else
+						Reload();
 				}
 			}
 		} 
