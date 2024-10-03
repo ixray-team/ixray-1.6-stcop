@@ -609,7 +609,7 @@ bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		if(b_own_item && result && slot_id==DETECTOR_SLOT)
 		{
 			CCustomDetector* det			= smart_cast<CCustomDetector*>(iitem);
-			det->ToggleDetector				(g_player_hud->attached_item(0)!=nullptr, true);
+			det->ToggleDetector				(g_player_hud->attached_item(0)!=nullptr);
 		}
 
 		return result;

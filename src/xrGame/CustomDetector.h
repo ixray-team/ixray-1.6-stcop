@@ -16,8 +16,6 @@ protected:
 	CUIArtefactDetectorBase*			m_ui;
 	bool			m_bFastAnimMode;
 	bool			m_bNeedActivation;
-	bool			m_bDetectorActive;
-	bool			m_bHideAndRestore;
 	u32				m_old_state;
 public:
 					CCustomDetector		();
@@ -34,7 +32,6 @@ public:
 
 			void	switch_detector		();
 			bool 	IsWorking			();
-	inline	bool	IsActive			() const { return m_bDetectorActive; };
 	virtual bool	need_renderable		();
 	virtual void 	OnMoveToSlot		(const SInvItemPlace& prev);
 	virtual void 	OnMoveToRuck		(const SInvItemPlace& prev);
@@ -45,7 +42,7 @@ public:
 	virtual void	OnAnimationEnd		(u32 state);
 	virtual	void	UpdateXForm			();
 	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
-	void			ToggleDetector		(bool bFastMode, bool switching = false);
+	void			ToggleDetector		(bool bFastMode);
 	void			HideDetector		(bool bFastMode);
 	void			ShowDetector		(bool bFastMode);
 	float			m_fAfDetectRadius;
@@ -53,11 +50,7 @@ public:
 
 	virtual u32		ef_detector_type	() const	{return 1;};
 
-	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
-	void			SetActive		(bool val){m_bDetectorActive = val;};
-	virtual bool	HasActive		() const	{return m_bDetectorActive;};
-
-	void			SetHideAndRestore(bool val){m_bHideAndRestore = val;};
+	virtual bool	NeedActivation		() const	{return m_bNeedActivation;}
 
 	virtual bool	can_be_attached		() const;
 	void 	TurnDetectorInternal(bool b);
@@ -74,8 +67,6 @@ protected:
 
 	bool			m_bWorking;
 	float			m_fAfVisRadius;
-	bool			isTryToToggle;
-	bool			bNeedHideDet;
 
 	CAfList			m_artefacts;
 };
