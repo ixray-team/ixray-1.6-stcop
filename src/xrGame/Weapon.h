@@ -188,6 +188,12 @@ public:
 	bool bAmmotypeKeyPressed;
 	bool bStopReloadSignal;
 	bool m_bUseSilHud;
+	bool m_bUseScopeHud;
+	bool m_bUseGLHud;
+
+	shared_str hud_silencer;
+	shared_str hud_scope;
+	shared_str hud_gl;
 
 	RStringVec m_vDefHideBones;
 	RStringVec m_vDefShowBones;
@@ -534,6 +540,9 @@ private:
 			bool			install_upgrade_hit			( LPCSTR section, bool test );
 			bool			install_upgrade_addon		( LPCSTR section, bool test );
 			bool			install_upgrade_hud_sect	(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_silencer (LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_scope(LPCSTR section, bool test);
+			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
 			bool			install_upgrade_show_bones	(LPCSTR section, bool test);
 			bool			install_upgrade_hide_bones	(LPCSTR section, bool test);
 			bool			install_upgrade_hide_bones_override (LPCSTR section, bool test);

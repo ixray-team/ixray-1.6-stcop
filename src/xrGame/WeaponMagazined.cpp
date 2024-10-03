@@ -1215,7 +1215,11 @@ void CWeaponMagazined::InitAddons()
 void CWeaponMagazined::HudSelector()
 {
 	if (m_bUseSilHud && SilencerAttachable() && IsSilencerAttached())
-		hud_sect = pSettings->r_string(cNameSect(), "hud_silencer");
+		hud_sect = hud_silencer;
+	else if (m_bUseScopeHud && ScopeAttachable() && IsScopeAttached())
+		hud_sect = hud_scope;
+	else if (m_bUseGLHud && GrenadeLauncherAttachable() && IsGrenadeLauncherAttached())
+		hud_sect = hud_gl;
 	else
 		hud_sect = hud_sect_cache;
 }

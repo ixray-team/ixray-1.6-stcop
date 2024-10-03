@@ -88,6 +88,10 @@ CWeapon::CWeapon()
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
+
+	hud_silencer = nullptr;
+	hud_scope = nullptr;
+	hud_gl = nullptr;
 }
 
 CWeapon::~CWeapon		()
@@ -574,6 +578,17 @@ void CWeapon::Load		(LPCSTR section)
 	}
 
 	m_bUseSilHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_silencer_is_attached", false);
+	m_bUseScopeHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_scope_is_attached", false);
+	m_bUseGLHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_gl_is_attached", false);
+
+	if (m_bUseSilHud)
+		hud_silencer = pSettings->r_string(section, "hud_silencer");
+
+	if (m_bUseScopeHud)
+		hud_scope = pSettings->r_string(section, "hud_scope");
+
+	if (m_bUseGLHud)
+		hud_gl = pSettings->r_string(section, "hud_gl");
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
