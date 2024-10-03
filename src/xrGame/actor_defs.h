@@ -41,6 +41,8 @@ enum EActorKeyflags
 	kfGLAUNCHSWITCH = (1ul << 5ul),
 	kfNEXTFIREMODE = (1ul << 6ul),
 	kfPREVFIREMODE = (1ul << 7ul),
+	kfRELOAD = (1ul << 8ul),
+	kfNEXTAMMO = (1ul << 9ul),
 };
 
 enum EMoveCommand

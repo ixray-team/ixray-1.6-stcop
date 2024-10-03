@@ -2332,32 +2332,37 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	if (OnClient())
 		return false;
 
-	if (IsPending())
+	if (!(flags & CMD_START))
 		return false;
 
 	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
 		return false;
 
-	if (GetState() != eIdle)
-		return false;
-
-	if (IsZoomed())
-		return false;
-
-	if (!(flags & CMD_START))
-		return false;
-
-	if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 	{
-		if (IsMisfire())
-			bUnjamKeyPressed = true;
-		else
-			bAmmotypeKeyPressed = true;
-	}
-	else
-		return false;
+		if (IsPending())
+			return false;
 
-	if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+		if (GetState() != eIdle)
+			return false;
+
+		if (IsZoomed())
+			return false;
+
+		if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
+		{
+			if (IsMisfire())
+				bUnjamKeyPressed = true;
+			else
+				bAmmotypeKeyPressed = true;
+		}
+		else
+			return false;
+
+		if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+			return false;
+	}
+	else if (!Weapon_SetKeyRepeatFlagIfNeeded(kfNEXTAMMO))
 		return false;
 
 	if (IsMisfire())

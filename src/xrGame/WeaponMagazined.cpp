@@ -1554,20 +1554,25 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			if (!(flags&CMD_START))
 				return false;
 
-			if (IsZoomed())
-				return false;
-
-			if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
+			if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 			{
-				if (IsMisfire())
-					bUnjamKeyPressed = true;
-				else
-					bReloadKeyPressed = true;
-			}
-			else
-				return false;
+				if (IsZoomed())
+					return false;
 
-			if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+				if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
+				{
+					if (IsMisfire())
+						bUnjamKeyPressed = true;
+					else
+						bReloadKeyPressed = true;
+				}
+				else
+					return false;
+
+				if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+					return false;
+			}
+			else if (iAmmoElapsed != iMagazineSize && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
 				return false;
 
 			if (IsMisfire() && !IsGrenadeMode())
