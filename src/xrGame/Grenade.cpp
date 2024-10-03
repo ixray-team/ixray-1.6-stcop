@@ -191,24 +191,6 @@ void CGrenade::DiscardState()
 		OnStateSwitch(eIdle);
 }
 
-bool CGrenade::SendDeactivateItem()
-{
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
-	if (!isGuns)
-	{
-		if (pActor && (GetState() == eReady || GetState() == eThrow))
-			return false;
-	}
-	else
-	{
-		if (pActor && (GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow || GetState() == eThrowEnd))
-			return false;
-	}
-
-	return inherited::SendDeactivateItem();
-}
-
 void CGrenade::Throw() 
 {
 	if (m_thrown)
