@@ -594,6 +594,13 @@ u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, b
 	if (need_suffix)
 		M = NeedAddSuffix(M);
 
+	xr_string snd_name = "snd_" + M;
+	if (pSettings->line_exist(hud_sect, snd_name.c_str()))
+	{
+		m_sounds.LoadSound(HudSection().c_str(), snd_name.c_str(), "sndByMotion", false);
+		PlaySound("sndByMotion", object().Position());
+	}
+
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
 	{

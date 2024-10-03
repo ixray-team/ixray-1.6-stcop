@@ -117,6 +117,16 @@ void HUD_SOUND_ITEM::StopSound(HUD_SOUND_ITEM& hud_snd)
 }
 
 //----------------------------------------------------------
+HUD_SOUND_COLLECTION::HUD_SOUND_COLLECTION()
+{
+	m_sound_items.clear();
+
+	m_sound_items.resize(m_sound_items.size() + 1);
+	HUD_SOUND_ITEM& snd_item = m_sound_items.back();
+	snd_item.m_alias = "sndByMotion";
+	snd_item.m_b_exclusive = false;
+}
+
 HUD_SOUND_COLLECTION::~HUD_SOUND_COLLECTION()
 {
 	xr_vector<HUD_SOUND_ITEM>::iterator it		= m_sound_items.begin();
@@ -194,16 +204,21 @@ void HUD_SOUND_COLLECTION::StopAllSounds()
 	}
 }
 
-void HUD_SOUND_COLLECTION::LoadSound(	LPCSTR section, 
-										LPCSTR line,
-										LPCSTR alias,
-										bool exclusive,
-										int type)
+void HUD_SOUND_COLLECTION::LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
 {
-	R_ASSERT					(nullptr==FindSoundItem(alias, false));
-	m_sound_items.resize		(m_sound_items.size()+1);
-	HUD_SOUND_ITEM& snd_item	= m_sound_items.back();
-	HUD_SOUND_ITEM::LoadSound	(section, line, snd_item, type);
-	snd_item.m_alias			= alias;
-	snd_item.m_b_exclusive		= exclusive;
+	HUD_SOUND_ITEM& snd_item = *FindSoundItem(alias, false);
+	if (&snd_item)
+	{
+		HUD_SOUND_ITEM::LoadSound(section, line, snd_item, type);
+		snd_item.m_alias = alias;
+		snd_item.m_b_exclusive = exclusive;
+	}
+	else
+	{
+		m_sound_items.resize(m_sound_items.size() + 1);
+		HUD_SOUND_ITEM& snd_item_new = m_sound_items.back();
+		HUD_SOUND_ITEM::LoadSound(section, line, snd_item_new, type);
+		snd_item_new.m_alias = alias;
+		snd_item_new.m_b_exclusive = exclusive;
+	}
 }

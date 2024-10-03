@@ -728,7 +728,11 @@ void CWeaponMagazined::UpdateSounds	()
 	Fvector P						= get_LastFP();
 
 	if (Device.dwFrame % 3 == 0)
+	{
 		m_sounds.SetPosition("sndShow", P);
+		if (m_sounds.FindSoundItem("sndByMotion", false))
+			m_sounds.SetPosition("sndByMotion", P);
+	}
 	else if (Device.dwFrame % 3 == 1)
 	{
 		m_sounds.SetPosition("sndReload", P);
