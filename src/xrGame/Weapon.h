@@ -188,6 +188,9 @@ public:
 	bool bAmmotypeKeyPressed;
 	bool bStopReloadSignal;
 
+	RStringVec m_vDefHideBones;
+	RStringVec m_vDefShowBones;
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;

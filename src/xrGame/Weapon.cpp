@@ -537,6 +537,29 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_params.m_sUseZoomPostprocess			= 0;
 	m_zoom_params.m_sUseBinocularVision			= 0;
 
+	m_vDefHideBones.clear();
+	if (pSettings->line_exist(section, "def_hide_bones"))
+	{
+		LPCSTR str = pSettings->r_string(section, "def_hide_bones");
+		for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+		{
+			string128 bone_name;
+			_GetItem(str, i, bone_name);
+			m_vDefHideBones.push_back(bone_name);
+		}
+	}
+
+	m_vDefShowBones.clear();
+	if (pSettings->line_exist(section, "def_show_bones"))
+	{
+		LPCSTR str = pSettings->r_string(section, "def_show_bones");
+		for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+		{
+			string128 bone_name;
+			_GetItem(str, i, bone_name);
+			m_vDefShowBones.push_back(bone_name);
+		}
+	}
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -1409,9 +1432,18 @@ shared_str wpn_grenade_launcher		= "wpn_launcher";
 
 void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
-	if(!GetHUDmode())										return;
+	if(!GetHUDmode())
+		return;
 
-//.	return;
+	for (auto bone_to_hide : m_vDefHideBones)
+	{
+		HudItemData()->set_bone_visible(bone_to_hide, FALSE);
+	}
+
+	for (auto bone_to_show : m_vDefShowBones)
+	{
+		HudItemData()->set_bone_visible(bone_to_show, TRUE);
+	}
 
 	if(ScopeAttachable())
 	{
@@ -1458,6 +1490,20 @@ void CWeapon::UpdateAddonsVisibility()
 	UpdateHUDAddonsVisibility								();	
 
 	pWeaponVisual->CalculateBones_Invalidate				();
+
+	for (auto bone_to_hide : m_vDefHideBones)
+	{
+		bone_id = pWeaponVisual->LL_BoneID(bone_to_hide);
+		if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+			pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+	}
+
+	for (auto bone_to_show : m_vDefShowBones)
+	{
+		bone_id = pWeaponVisual->LL_BoneID(bone_to_show);
+		if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+			pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+	}
 
 	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
 	if(ScopeAttachable())
