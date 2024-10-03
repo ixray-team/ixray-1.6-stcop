@@ -227,7 +227,7 @@ void CWeaponMagazined::FireStart()
 {
 	if(!IsMisfire())
 	{
-		if(IsValid()) 
+		if (m_bAmmoInChamber && iAmmoInChamberElapsed || iAmmoElapsed)
 		{
 			if(!IsWorking() || AllowFireWhileWorking())
 			{
@@ -538,6 +538,8 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(TRUE);
 
+	GiveAmmoFromMagToChamber();
+
 	return cnt;
 }
 
@@ -609,10 +611,14 @@ xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 		new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str());
 
-	if (!IsMisfire() && iAmmoElapsed == 1)
+	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 1 : iAmmoElapsed == 1;
+
+	if (!IsMisfire() && TempTest)
 		new_name = AddSuffixName(new_name, "_last");
 
-	if (!IsMisfire() && iAmmoElapsed == 0)
+	TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
+
+	if (!IsMisfire() && TempTest)
 		new_name = AddSuffixName(new_name, "_empty");
 
 	if (IsChangeAmmoType())
@@ -625,7 +631,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 		else
 			new_name = AddSuffixName(new_name, "_misfire");
 
-		if (iAmmoElapsed == 0)
+		if (TempTest)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
@@ -666,7 +672,10 @@ void CWeaponMagazined::UpdateCL			()
 			}break;
 		case eFire:			
 			{
-				state_Fire		(dt);
+				if (m_bAmmoInChamber && !IsGrenadeMode())
+					state_FireChamber(dt);
+				else
+					state_Fire(dt);
 			}break;
 		case eMisfire:		state_Misfire	(dt);	break;
 		case eHidden:		break;
@@ -795,6 +804,100 @@ void CWeaponMagazined::state_Fire(float dt)
 	}
 }
 
+void CWeaponMagazined::state_FireChamber(float dt)
+{
+	if (iAmmoInChamberElapsed > 0)
+	{
+		VERIFY(fOneShotTime > 0.f);
+
+		Fvector p1, d;
+		p1.set(get_LastFP());
+		d.set(get_LastFD());
+
+		if (!H_Parent()) return;
+		if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
+		{
+			Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+			return;
+		}
+
+		CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
+		if (nullptr == io->inventory().ActiveItem())
+		{
+			Msg("current_state %d", GetState() );
+			Msg("next_state %d", GetNextState());
+			Msg("item_sect %s", cNameSect().c_str());
+			Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
+			StopShooting();
+			return;
+		}
+
+		CEntity* E = smart_cast<CEntity*>(H_Parent());
+		E->g_fireParams(this, p1, d);
+
+		if (!E->g_stateFire())
+			StopShooting();
+
+		if (m_iShotNum == 0)
+		{
+			m_vStartPos = p1;
+			m_vStartDir = d;
+		};
+
+		VERIFY(!m_chamber.empty());
+
+		while (!m_chamber.empty() && fShotTimeCounter < 0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
+		{
+			if (m_bJamNotShot)
+			{
+				if (CheckForMisfire())
+				{
+					OnShotJammed();
+					SwitchState(eIdle);
+					return;
+				}
+			}
+
+			m_bFireSingleShot = false;
+
+			fShotTimeCounter += fOneShotTime;
+
+			++m_iShotNum;
+
+			if (!m_bJamNotShot)
+				CheckForMisfire();
+
+			OnShot();
+
+			if (m_iShotNum > m_iBaseDispersionedBulletsCount)
+				FireTraceChamber(p1, d);
+			else
+				FireTraceChamber(m_vStartPos, m_vStartDir);
+
+			if (!m_bJamNotShot && IsMisfire())
+			{
+				StopShooting();
+				return;
+			}
+		}
+
+		if (m_iShotNum == m_iQueueSize)
+			m_bStopedAfterQueueFired = true;
+	}
+
+	if (fShotTimeCounter < 0)
+	{
+		if (iAmmoInChamberElapsed == 0)
+			OnMagazineEmpty();
+
+		StopShooting();
+	}
+	else
+	{
+		fShotTimeCounter -= dt;
+	}
+}
+
 void CWeaponMagazined::state_Misfire	(float dt)
 {
 	OnEmptyClick			();
@@ -878,11 +981,13 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				bAmmotypeKeyPressed = false;
 			}
 			ReloadMagazine();
+			GiveAmmoFromMagToChamber();
 			SwitchState(eIdle);
 		} break;
 		case eUnjam:
-			bMisfire = false;
+			SetMisfireStatus(false);
 			bUnjamKeyPressed = false;
+			GiveAmmoFromMagToChamber();
 			SwitchState(eIdle);
 		break;
 		case eHiding:
@@ -1029,14 +1134,16 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
+	bool TempTest = m_bAmmoInChamber ? iAmmoInChamberElapsed == 0 && iAmmoElapsed == 0 : iAmmoElapsed == 0;
+
 	if (IsMisfire())
 	{
-		if (m_sounds.FindSoundItem("sndReloadJammedLast", false) && iAmmoElapsed == 0)
+		if (m_sounds.FindSoundItem("sndReloadJammedLast", false) && TempTest)
 			PlaySound("sndReloadJammedLast", get_LastFP());
 		else if (m_sounds.FindSoundItem("sndReloadJammed", false))
 			PlaySound("sndReloadJammed", get_LastFP());
 	}
-	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && iAmmoElapsed == 0)
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && TempTest)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
 		PlaySound("sndReload", get_LastFP());
@@ -1114,9 +1221,6 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			if (IsZoomed())
 				return false;
 
-			if (iAmmoElapsed == iMagazineSize)
-				return false;
-
 			if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
 			{
 				if (IsMisfire())
@@ -1134,6 +1238,12 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			{
 				SwitchState(eUnjam);
 				return true;
+			}
+
+			if (iAmmoElapsed == iMagazineSize)
+			{
+				bReloadKeyPressed = false;
+				return false;
 			}
 
 			return TryReload();
@@ -1734,6 +1844,10 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	string32	int_str;
 
 	int	ae				= GetAmmoElapsed();
+
+	if (!IsGrenadeMode())
+		ae += iAmmoInChamberElapsed;
+
 	xr_sprintf			( int_str, "%d", ae );
 	info.cur_ammo		= int_str;
 
@@ -1767,33 +1881,55 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	{
 		//GetSuitableAmmoTotal(); //mp = all type
 		int add_ammo_count = 0;
-		for (int i = 0; i < at_size; i++) {
-			if (m_ammoType == i) {
+		for (int i = 0; i < at_size; i++)
+		{
+			if (m_bAmmoInChamber && m_ammoTypeInChamber == i && !IsGrenadeMode() || m_ammoType == i)
+			{
 				xr_sprintf(int_str, "%d", GetAmmoCount(i));
 				info.fmj_ammo = int_str;
-			} else {
-				add_ammo_count += GetAmmoCount(i);
 			}
+			else
+				add_ammo_count += GetAmmoCount(i);
 		}
+
 		if (at_size > 1)
 			xr_sprintf(int_str, "%d", add_ammo_count);
 		else
 			xr_sprintf(int_str, "%s", "");
 		info.ap_ammo = int_str;
 	}
-	
-	if ( ae != 0 && m_magazine.size() != 0 )
+
+	if (m_bAmmoInChamber && !IsGrenadeMode())
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
-		info.name		= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
-		info.icon		= ammo_type;
+		if (ae != 0 && m_chamber.size() != 0)
+		{
+			LPCSTR ammo_type = m_ammoTypes[m_chamber.back().m_LocalAmmoType].c_str();
+			info.name = g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short"));
+			info.icon = ammo_type;
+		}
+		else
+		{
+			LPCSTR ammo_type = m_ammoTypes[m_ammoTypeInChamber].c_str();
+			info.name = g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short"));
+			info.icon = ammo_type;
+		}
 	}
 	else
 	{
-		LPCSTR ammo_type	= m_ammoTypes[m_ammoType].c_str();
-		info.name			= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
-		info.icon			= ammo_type;
+		if (ae != 0 && m_magazine.size() != 0)
+		{
+			LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
+			info.name = g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short"));
+			info.icon = ammo_type;
+		}
+		else
+		{
+			LPCSTR ammo_type = m_ammoTypes[m_ammoType].c_str();
+			info.name = g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short"));
+			info.icon = ammo_type;
+		}
 	}
+
 	return true;
 }
 

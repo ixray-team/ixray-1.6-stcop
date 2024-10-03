@@ -123,7 +123,6 @@ public:
 	};
 	enum { undefined_ammo_type = u8(-1) };
 
-	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}
 	// Does weapon need's update?
 	BOOL					IsUpdating			();
 
@@ -202,10 +201,18 @@ public:
 	bool m_bUseChangeFireModeAnim;
 	bool m_bRestGL_and_Sil;
 	bool m_bJamNotShot;
+	bool m_bAmmoInChamber;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
+
+	int iAmmoInChamberElapsed;
+
+	virtual void GiveAmmoFromMagToChamber();
+	virtual void DeleteAmmoInChamber();
+	virtual void UnloadChamber(bool spawn_ammo = true);
+	void SetMisfireStatus(bool status) { bMisfire = status; }
 
 	CCustomDetector* GetDetector(bool in_slot = false);
 
@@ -370,6 +377,7 @@ protected:
 
 	//трассирование полета пули
 	virtual	void			FireTrace			(const Fvector& P, const Fvector& D);
+	virtual	void			FireTraceChamber	(const Fvector& P, const Fvector& D);
 	virtual float			GetWeaponDeterioration	();
 
 	virtual void			FireStart			() {CShootingObject::FireStart();}
@@ -480,8 +488,9 @@ public:
 	virtual	float			GetCrosshairInertion()	const	{ return m_crosshair_inertion; };
 			float			GetFirstBulletDisp	()	const	{ return m_first_bullet_controller.get_fire_dispertion(); };
 protected:
-	int						iAmmoElapsed;		// ammo in magazine, currently
-	int						iMagazineSize;		// size (in bullets) of magazine
+	int iAmmoElapsed;
+	int iMagazineSize;
+	int iChamberSize;
 
 	//для подсчета в GetSuitableAmmoTotal
 	mutable int				m_iAmmoCurrentTotal;
@@ -492,21 +501,7 @@ protected:
 
 public:
 	xr_vector<shared_str>	m_ammoTypes;
-/*
-	struct SScopes
-	{
-		shared_str			m_sScopeName;
-		int					m_iScopeX;
-		int					m_iScopeY;
-	};
 
-	using SCOPES_VECTOR = xr_vector<SScopes*>;
-	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
-	
-	SCOPES_VECTOR			m_scopes;
-
-	u8						cur_scope;
-*/
 	using SCOPES_VECTOR = xr_vector<shared_str>;
 	using SCOPES_VECTOR_IT = SCOPES_VECTOR::iterator;
 
@@ -515,13 +510,15 @@ public:
 
 	CWeaponAmmo*			m_pCurrentAmmo;
 	u8						m_ammoType;
-//-	shared_str				m_ammoName; <== deleted
+	u32						m_ammoTypeInChamber;
 	bool					m_bHasTracers;
 	u8						m_u8TracerColorID;
 	u8						m_set_next_ammoType_on_reload;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
+	xr_vector<CCartridge>	m_chamber;
 	CCartridge				m_DefaultCartridge;
+	CCartridge				m_DefaultCartridgeInChamber;
 	float					m_fCurrentCartirdgeDisp;
 
 		bool				unlimited_ammo				();

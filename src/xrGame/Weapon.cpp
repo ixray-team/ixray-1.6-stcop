@@ -51,6 +51,10 @@ CWeapon::CWeapon()
 	iMagazineSize			= -1;
 	m_ammoType				= 0;
 
+	iAmmoInChamberElapsed = 1;
+	iChamberSize = 1;
+	m_ammoTypeInChamber = 0;
+
 	eHandDependence			= hdNone;
 
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
@@ -559,6 +563,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isGuns);
+	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -616,6 +622,23 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 			m_magazine.push_back(m_DefaultCartridge);
 	}
 
+	if (m_bAmmoInChamber)
+	{
+		m_DefaultCartridgeInChamber.Load(*m_ammoTypes[m_ammoTypeInChamber], u8(m_ammoTypeInChamber));
+		if (iAmmoInChamberElapsed) 
+		{
+			m_fCurrentCartirdgeDisp = m_DefaultCartridgeInChamber.param_s.kDisp;
+			for (int i = 0; i < iAmmoInChamberElapsed; ++i) 
+				m_chamber.push_back(m_DefaultCartridgeInChamber);
+		}
+	}
+	else
+	{
+		m_chamber.clear();
+		iAmmoInChamberElapsed = 0;
+		iChamberSize = 0;
+	}
+
 	UpdateAddonsVisibility();
 	InitAddons();
 
@@ -638,7 +661,11 @@ void CWeapon::net_Destroy	()
 	StopLight			();
 	Light_Destroy		();
 
-	while (m_magazine.size()) m_magazine.pop_back();
+	while (m_magazine.size())
+		m_magazine.pop_back();
+
+	while (m_chamber.size())
+		m_chamber.pop_back();
 }
 
 BOOL CWeapon::IsUpdating()
@@ -737,9 +764,11 @@ void CWeapon::save(NET_Packet &output_packet)
 {
 	inherited::save	(output_packet);
 	save_data		(iAmmoElapsed,					output_packet);
+	save_data		(iAmmoInChamberElapsed,			output_packet);
 	save_data		(m_cur_scope, 					output_packet);
 	save_data		(m_flagsAddOnState, 			output_packet);
 	save_data		(m_ammoType,					output_packet);
+	save_data		(m_ammoTypeInChamber,			output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bRememberActorNVisnStatus,	output_packet);
 }
@@ -748,10 +777,12 @@ void CWeapon::load(IReader &input_packet)
 {
 	inherited::load	(input_packet);
 	load_data		(iAmmoElapsed,					input_packet);
+	load_data		(iAmmoInChamberElapsed,			input_packet);
 	load_data		(m_cur_scope,					input_packet);
 	load_data		(m_flagsAddOnState,				input_packet);
 	UpdateAddonsVisibility			();
 	load_data		(m_ammoType,					input_packet);
+	load_data		(m_ammoTypeInChamber,			input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
@@ -2029,13 +2060,9 @@ const CInventoryItem *CWeapon::can_kill	(const xr_vector<const CGameObject*> &it
 	return					(0);
 }
 
-bool CWeapon::ready_to_kill	() const
+bool CWeapon::ready_to_kill() const
 {
-	return					(
-		!IsMisfire() && 
-		((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && 
-		GetAmmoElapsed()
-	);
+	return !IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (iAmmoInChamberElapsed || GetAmmoElapsed());
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx() const {
@@ -2475,6 +2502,14 @@ float CWeapon::Weight() const
 	
 	res += GetMagazineWeight(m_magazine);
 
+	if (iAmmoInChamberElapsed)
+	{
+		float w = pSettings->r_float(*m_ammoTypes[m_ammoTypeInChamber], "inv_weight");
+		float bs = pSettings->r_float(*m_ammoTypes[m_ammoTypeInChamber], "box_size");
+
+		res += w * (iAmmoInChamberElapsed / bs);
+	}
+
 	return res;
 }
 
@@ -2626,6 +2661,7 @@ void CWeapon::ZoomDec()
 	SetZoomFactor			( f );
 	LastZoomFactor = f;
 }
+
 u32 CWeapon::Cost() const
 {
 	u32 res = CInventoryItem::Cost();
@@ -2645,6 +2681,14 @@ u32 CWeapon::Cost() const
 		float bs	= pSettings->r_float(m_ammoTypes[m_ammoType].c_str(),"box_size");
 
 		res			+= iFloor(w*(iAmmoElapsed/bs));
+	}
+
+	if (iAmmoInChamberElapsed)
+	{
+		float w = pSettings->r_float(m_ammoTypes[m_ammoTypeInChamber].c_str(), "cost");
+		float bs = pSettings->r_float(m_ammoTypes[m_ammoTypeInChamber].c_str(), "box_size");
+
+		res += iFloor(w * (iAmmoInChamberElapsed / bs));
 	}
 
 	return res;
@@ -2679,4 +2723,97 @@ CCustomDetector* CWeapon::GetDetector(bool in_slot)
 	}
 
 	return nullptr;
+}
+
+void CWeapon::GiveAmmoFromMagToChamber()
+{
+    if (!m_bAmmoInChamber)
+        return;
+
+    if (IsGrenadeMode())
+        return;
+
+	if (m_magazine.empty())
+		return;
+
+	if (!m_chamber.empty())
+		return;
+
+	CCartridge FirstBulletInMag;
+	while (iAmmoInChamberElapsed < iChamberSize)
+	{
+		FirstBulletInMag = m_magazine.back();
+		m_ammoTypeInChamber = m_ammoType;
+		m_DefaultCartridgeInChamber = FirstBulletInMag;
+		m_magazine.pop_back();
+		--iAmmoElapsed;
+
+		m_chamber.push_back(FirstBulletInMag);
+		++iAmmoInChamberElapsed;
+	}
+}
+
+void CWeapon::DeleteAmmoInChamber()
+{
+    if (!m_bAmmoInChamber)
+        return;
+
+    if (m_chamber.empty())
+        return;
+
+	--iAmmoInChamberElapsed;
+	m_chamber.pop_back();
+}
+
+void CWeapon::UnloadChamber(bool spawn_ammo)
+{
+	xr_map<LPCSTR, u16> l_ammo;
+	
+	while(!m_chamber.empty()) 
+	{
+		CCartridge &l_cartridge = m_chamber.back();
+		xr_map<LPCSTR, u16>::iterator l_it;
+		for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
+		{
+            if(!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first)) 
+            { 
+				 ++(l_it->second); 
+				 break; 
+			}
+		}
+
+		if(l_it == l_ammo.end()) l_ammo[*l_cartridge.m_ammoSect] = 1;
+		m_chamber.pop_back();
+		--iAmmoInChamberElapsed;
+	}
+
+	VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
+
+	if (ParentIsActor())
+	{
+		int	AC = GetSuitableAmmoTotal();
+		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+	}
+
+	if (!spawn_ammo)
+		return;
+
+	xr_map<LPCSTR, u16>::iterator l_it;
+	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
+	{
+		if(m_pInventory)
+		{
+			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(l_it->first));
+			if(l_pA) 
+			{
+				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
+				l_pA->m_boxCurr = l_pA->m_boxCurr + (l_free < l_it->second ? l_free : l_it->second);
+				l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
+			}
+		}
+		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
+	}
+
+	if (GetState() == eIdle)
+		SwitchState(eIdle);
 }
