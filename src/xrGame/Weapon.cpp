@@ -2100,7 +2100,7 @@ bool CWeapon::CanAimNow()
 		result = false;
 	else if (GetActualCurrentAnim().find("anm_idle_aim") == 0)
 		result = true;
-	else if (IsActionProcessing() || (Actor()->GetMovementState(eReal) & mcSprint) != 0 || GetState() == eSprintEnd || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
+	else if (IsActionProcessing() || GetActualCurrentAnim().find("anm_idle_sprint") == 0 || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
 		result = false;
 	else
 	{
@@ -2248,7 +2248,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							if (!IsPending())
 							{
-								if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle)
+								if (GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
 									SwitchState(eIdle);
 
 								OnZoomIn();
@@ -2264,7 +2264,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						if (!IsZoomed() && !IsPending())
 						{
-							if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle)
+							if (GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
 								SwitchState(eIdle);
 
 							OnZoomIn();
