@@ -3531,3 +3531,15 @@ CCustomDetector* CWeapon::GetDetector(bool in_slot)
 
 	return nullptr;
 }
+
+bool CWeapon::ScopeFit(CScope* pIItem)
+{
+	SCOPES_VECTOR_IT it = m_scopes.begin();
+	for (; it != m_scopes.end(); it++)
+	{
+		if (pSettings->r_string((*it), "scope_name") == pIItem->cNameSect())
+			return true;
+	}
+
+	return false;
+}
