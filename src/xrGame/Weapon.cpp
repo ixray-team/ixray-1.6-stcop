@@ -1416,6 +1416,22 @@ CCartridge* CWeapon::GetCartridgeFromMagVector(u32 index)
 		return &(m_magazine[index]);
 }
 
+CCartridge* CWeapon::GetGrenadeCartridgeFromGLVector(u32 index)
+{
+	if (!IsGrenadeLauncherAttached() || index >= GetAmmoInGLCount())
+		return nullptr;
+
+	CWeaponMagazinedWGrenade* wpn_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+
+	if (!wpn_gl)
+		return nullptr;
+
+	if (IsGrenadeMode())
+		return &(wpn_gl->m_magazine[index]);
+	else
+		return &(wpn_gl->m_magazine2[index]);
+}
+
 u32 CWeapon::GetAmmoInGLCount()
 {
 	u32 result = 0;
@@ -1431,6 +1447,32 @@ u32 CWeapon::GetAmmoInGLCount()
 			result = m_magazine.size();
 		else
 			result = wpngl->m_magazine2.size();
+	}
+
+	return result;
+}
+
+int CWeapon::GetMagCapacity()
+{
+	int result = 0;
+	int ammotype = -1;
+
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+	{
+		CWeaponMagazinedWGrenade* w_gl = static_cast<CWeaponMagazinedWGrenade*>(this);
+		result = w_gl->iMagazineSize2;
+	}
+	else
+	{
+		result = iMagazineSize;
+		ammotype = GetAmmoTypeToReload();
+	}
+
+	if (ammotype >= 0)
+	{
+		xr_string param = "ammo_mag_size_for_type_" + xr_string().ToString(ammotype);
+		result = READ_IF_EXISTS(pSettings, r_u32, cNameSect(), param.c_str(), result);
+		result = FindIntValueInUpgradesDef(param.c_str(), result);
 	}
 
 	return result;

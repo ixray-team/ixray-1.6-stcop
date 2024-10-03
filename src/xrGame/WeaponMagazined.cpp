@@ -1042,7 +1042,7 @@ void CWeaponMagazined::DoReload()
 		return;
 	}
 
-	int def_magsize = iMagazineSize;
+	int def_magsize = GetMagCapacity();
 	int mod_magsize = def_magsize;
 
 	CWeaponBM16* bm = smart_cast<CWeaponBM16*>(this);

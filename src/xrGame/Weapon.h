@@ -281,7 +281,9 @@ public:
 	u8 GetGlAmmotype();
 	u8 GetCartridgeType(CCartridge* c);
 	CCartridge* GetCartridgeFromMagVector(u32 index);
+	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index);
 	u32 GetAmmoInGLCount();
+	int GetMagCapacity();
 
 	void ProcessAmmo(bool forced = false);
 	void ProcessAmmoAdv(bool forced = false);
