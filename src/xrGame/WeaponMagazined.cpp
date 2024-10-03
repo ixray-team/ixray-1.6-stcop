@@ -1584,7 +1584,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 					return false;
 			}
-			else if ((iAmmoElapsed != iMagazineSize || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
+			else if ((iAmmoElapsed != GetMagCapacity() || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
 				return false;
 
 			if (IsMisfire() && !IsGrenadeMode())
@@ -1593,7 +1593,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				return true;
 			}
 
-			if (iAmmoElapsed == iMagazineSize)
+			if (iAmmoElapsed == GetMagCapacity())
 			{
 				bReloadKeyPressed = false;
 				return false;
