@@ -41,6 +41,9 @@ CHudItem::CHudItem()
 	_action_ppe					= -1;
 	m_fLookOutSpeedKoef = 0.0f;
 	m_fLookOutAmplK = 0.0f;
+	m_fControllerTime = 0.0f;
+	m_bSuicideByAnimation = false;
+	m_fControllerShootExplMinDist = 0.0f;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -105,8 +108,11 @@ void CHudItem::Load(LPCSTR section)
 	{
 		m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", m_jitter_params.pos_amplitude);
 		m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
+		m_fControllerTime = READ_IF_EXISTS(pSettings, r_float, hud_sect, "controller_time", Actor()->_controlled_time_remains / 1000.0f);
+		m_bSuicideByAnimation = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "suicide_by_animation", false);
+		m_fControllerShootExplMinDist = READ_IF_EXISTS(pSettings, r_float, hud_sect, "controller_shoot_expl_min_dist", 10.f);
 	}
-	
+
 	if (!m_bDisableBore)
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
 
@@ -1102,4 +1108,19 @@ float CHudItem::getLookOutSpeedKoef(void) const
 float CHudItem::getLookOutAmplK(void) const
 {
 	return m_fLookOutAmplK;
+}
+
+float CHudItem::getControllerTime(void) const
+{
+	return m_fControllerTime;
+}
+
+float CHudItem::getControllerShootExplMinDist(void) const
+{
+	return m_fControllerShootExplMinDist;
+}
+
+bool CHudItem::isSuicideByAnimation(void) const
+{
+	return m_bSuicideByAnimation;
 }

@@ -382,44 +382,50 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller)
 	}
 	else if (smart_cast<CWeaponRG6*>(wpn) != nullptr || smart_cast<CWeaponRPG7*>(wpn) != nullptr)
 	{
-		if (READ_IF_EXISTS(pSettings, r_float, wpn->HudSection(), "controller_shoot_expl_min_dist", 10.f) > c_pos_cp.magnitude())
+		if (wpn)
 		{
-			Actor()->g_PerformDrop();
-			return true;
+			if (wpn->getControllerShootExplMinDist() > c_pos_cp.magnitude())
+			{
+				Actor()->g_PerformDrop();
+				return true;
+			}
 		}
 	}
 
 	Actor()->_planning_suicide = false;
 	Actor()->_suicide_now = false;
 
-	if (READ_IF_EXISTS(pSettings, r_bool, wpn->HudSection(), "suicide_by_animation", false))
+	if (wpn)
 	{
-		Actor()->_suicide_now = wpn->IsSuicideAnimPlaying() || (Actor()->_lastshot_done_time > 0);
-		if (!Actor()->_suicide_now)
+		if (wpn->isSuicideByAnimation())
 		{
-			wpn->SwitchState(CHUDState::eSuicide);
-			Actor()->_suicide_now = true;
+			Actor()->_suicide_now = wpn->IsSuicideAnimPlaying() || (Actor()->_lastshot_done_time > 0);
+			if (!Actor()->_suicide_now)
+			{
+				wpn->SwitchState(CHUDState::eSuicide);
+				Actor()->_suicide_now = true;
+			}
+
+			if (Actor()->_suicide_now)
+				Actor()->_controlled_time_remains = floor(wpn->getControllerTime() * 1000.f);
+
+			Actor()->_planning_suicide = true;
+		}
+		else
+		{
+			if (wpn->CanStartAction())
+			{
+				Actor()->_suicide_now = true;
+				Actor()->_controlled_time_remains = floor(wpn->getControllerTime() * 1000.f);
+			}
+			Actor()->_planning_suicide = true;
 		}
 
-		if (Actor()->_suicide_now)
-			Actor()->_controlled_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, wpn->HudSection(), "controller_time", Actor()->_controlled_time_remains / 1000.0f) * 1000.f);
-
-		Actor()->_planning_suicide = true;
-	}
-	else
-	{
-		if (wpn->CanStartAction())
+		if (wpn->GetState() == CWeapon::eFire)
 		{
-			Actor()->_suicide_now = true;
-			Actor()->_controlled_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, wpn->HudSection(), "controller_time", Actor()->_controlled_time_remains / 1000.0f) * 1000.f);
+			if (m_controller_queue_stop_prob >= ::Random.randF(0.f, 1.f))
+				static_cast<CWeapon*>(wpn)->SetWorkingState(false);
 		}
-		Actor()->_planning_suicide = true;
-	}
-
-	if (wpn->GetState() == CWeapon::eFire)
-	{
-		if (m_controller_queue_stop_prob >= ::Random.randF(0.f, 1.f))
-			static_cast<CWeapon*>(wpn)->SetWorkingState(false);
 	}
 
 	return true;
