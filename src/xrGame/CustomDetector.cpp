@@ -610,6 +610,8 @@ void CCustomDetector::OnH_A_Chield()
 void CCustomDetector::OnH_B_Independent(bool just_before_destroy) 
 {
 	inherited::OnH_B_Independent(just_before_destroy);
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
 	SwitchState					(eHidden);
 	m_artefacts.clear			();
 }
@@ -620,6 +622,8 @@ void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 	inherited::OnMoveToRuck	(prev);
 	if(prev.type==eItemPlaceSlot)
 	{
+		m_HudLight.SwitchTorchlight(false);
+		m_HudLight.UpdateTorchFromObject(this);
 		SwitchState					(eHidden);
 		g_player_hud->detach_item	(this);
 	}
