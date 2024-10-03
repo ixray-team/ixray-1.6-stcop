@@ -388,6 +388,27 @@ u32	CRenderDevice::GetSwapchainHeight()
 	return TargetHeight;
 }
 
+u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime)
+{
+	u32 curtime = dwTimeGlobal;
+	u32 result = curtime - starttime;
+
+	if (result > curtime)
+		result = u32(-1) - starttime + curtime;
+
+	return result;
+}
+
+u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
+{
+	u32 result = endtime - starttime;
+
+	if (result > endtime)
+		result = u32(-1) - starttime + endtime;
+
+	return result;
+}
+
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
 	switch (CurrentAPILevel) {

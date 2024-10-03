@@ -168,6 +168,10 @@ public:
 	void* GetRenderTexture() override;
 	void* GetDepthTexture() override;
 	void* GetSwapchainTexture() override;
+
+	u32 GetTimeDeltaSafe(u32 starttime);
+	u32 GetTimeDeltaSafe(u32 starttime, u32 endtime);
+
 	void* GetSwapchain() override;
 	u32	GetSwapchainWidth() override;
 	u32	GetSwapchainHeight() override;
