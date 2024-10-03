@@ -35,6 +35,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_gl(section, test);
 	result |= install_upgrade_smoke_particles(section, test);
 	result |= install_upgrade_flame_particles(section, test);
+	result |= install_upgrade_quick_kick(section, test);
 
 	ProcessUpgrade();
 	ProcessScope();
@@ -391,6 +392,58 @@ bool CWeapon::install_upgrade_flame_particles(LPCSTR section, bool test)
 		m_sFlameParticles = pSettings->r_string(section, "flame_particles");
 		m_sFlameParticlesCurrent = m_sFlameParticles;
 	}
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_quick_kick(LPCSTR section, bool test)
+{
+	bool result = false;
+
+	BOOL value = bBlockQK;
+
+	bool result2 = process_if_exists_set(section, "disable_kick_anim", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+		bBlockQK = !!value;
+
+	result |= result2;
+
+	value = bBlockQKScp;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_scope_attached", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+		bBlockQKScp = !!value;
+
+	result |= result2;
+
+	value = bBlockQKSil;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_sil_attached", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+		bBlockQKSil = !!value;
+
+	result |= result2;
+
+	value = bBlockQKGL;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_gl_attached", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+		bBlockQKGL = !!value;
+
+	result |= result2;
+
+	value = bBlockQKGLM;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_gl_enabled", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+		bBlockQKGLM = !!value;
+
+	result |= result2;
 
 	return result;
 }

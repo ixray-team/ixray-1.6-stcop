@@ -643,6 +643,12 @@ void CWeapon::Load		(LPCSTR section)
 
 	_lens_zoom_params.last_gyro_snd_time = Device.dwTimeGlobal;
 
+	bBlockQK = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim", false);
+	bBlockQKSil = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_sil_attached", false);
+	bBlockQKScp = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_scope_attached", false);
+	bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", false);
+	bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", false);
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -2192,19 +2198,10 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			if (!(flags & CMD_START))
 				return false;
 
-			if (FindBoolValueInUpgradesDef("disable_kick_anim", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim", false), true))
-				return false;
+			bool test = bBlockQK || bBlockQKScp && IsScopeAttached() && get_ScopeStatus() == 2 || bBlockQKSil && IsSilencerAttached() && get_SilencerStatus() == 2 ||
+				bBlockQKGL && IsGrenadeLauncherAttached() && get_GrenadeLauncherStatus() == 2 || bBlockQKGLM && IsGrenadeMode();
 
-			if (IsScopeAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_scope_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_scope_attached", false)))
-				return false;
-
-			if (IsSilencerAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_sil_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_sil_attached", false), true))
-				return false;
-
-			if (IsGrenadeMode() && FindBoolValueInUpgradesDef("disable_kick_anim_when_gl_enabled", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_gl_enabled", false), true))
-				return false;
-
-			if (IsGrenadeLauncherAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_gl_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_gl_attached", false), true))
+			if (test)
 				return false;
 
 			if (IsZoomed())

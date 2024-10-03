@@ -259,6 +259,11 @@ public:
 	bool bPreloadAnimAdapter;
 	bool bUpdateHUDBonesVisibility;
 	bool _is_just_after_reload;
+	bool bBlockQK;
+	bool bBlockQKSil;
+	bool bBlockQKScp;
+	bool bBlockQKGL;
+	bool bBlockQKGLM;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -657,6 +662,7 @@ private:
 			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
 			bool			install_upgrade_flame_particles(LPCSTR section, bool test);
 			bool			install_upgrade_smoke_particles(LPCSTR section, bool test);
+			bool			install_upgrade_quick_kick(LPCSTR section, bool test);
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
