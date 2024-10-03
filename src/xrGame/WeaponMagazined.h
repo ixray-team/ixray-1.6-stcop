@@ -46,6 +46,7 @@ protected:
 	virtual void	switch2_Showing	();
 	virtual void	switch2_FireMode();
 	virtual void	switch2_CheckMisfire();
+	virtual void	switch2_Kick();
 	
 	virtual void	OnShot			();	
 	virtual void	OnShotJammed	();
@@ -175,6 +176,7 @@ protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
 	static void		OnAmmoTimer(CWeapon* wpn, int param);
+	static void		KickCallback(CWeapon* wpn, int param);
 	bool			NeedShootMix() const;
 
 	//виртуальные функции для проигрывания анимации HUD

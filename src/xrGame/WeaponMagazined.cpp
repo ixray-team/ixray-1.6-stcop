@@ -121,6 +121,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_jammed_click"))
 		m_sounds.LoadSound(section, "snd_jammed_click", "sndJammedClick", true, m_eSoundEmptyClick);
 
+	if (WeaponSoundExist(section, "snd_kick"))
+		m_sounds.LoadSound(section, "snd_kick", "sndKick", true, m_eSoundShot);
+
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (isGuns)
@@ -612,6 +615,9 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eCheckMisfire:
 		switch2_CheckMisfire();
 		break;
+	case eKick:
+		switch2_Kick();
+		break;
 	}
 }
 
@@ -699,6 +705,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eSprintStart:
 		case eSprintEnd:
 		case eIdle:
+		case eKick:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1070,6 +1077,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eCheckMisfire:
 		case eFire2:
 		case eFire:
+		case eKick:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1177,6 +1185,20 @@ void CWeaponMagazined::switch2_CheckMisfire()
 
 	if (m_sounds.FindSoundItem("sndJammedClick", false))
 		PlaySound("sndJammedClick", get_LastFP());
+}
+
+void CWeaponMagazined::KickCallback(CWeapon* wpn, int param)
+{
+	wpn->MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
+	wpn->MakeLockByConfigParam(("lock_time_end_" + wpn->GetActualCurrentAnim()).c_str());
+}
+
+void CWeaponMagazined::switch2_Kick()
+{
+	SetPending(TRUE);
+	PlaySound("sndKick", get_LastFP());
+	PlayHUDMotion("anm_kick", TRUE, eKick);
+	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, KickCallback, 0);
 }
 
 void CWeaponMagazined::PlayAnimFakeshoot()

@@ -1847,6 +1847,37 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 				return true;
 			} 
+		case kQUICK_KICK:
+		{
+			if (!(flags & CMD_START))
+				return false;
+
+			if (FindBoolValueInUpgradesDef("disable_kick_anim", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim", false), true))
+				return false;
+
+			if (IsScopeAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_scope_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_scope_attached", false)))
+				return false;
+
+			if (IsSilencerAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_sil_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_sil_attached", false), true))
+				return false;
+
+			if (IsGrenadeMode() && FindBoolValueInUpgradesDef("disable_kick_anim_when_gl_enabled", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_gl_enabled", false), true))
+				return false;
+
+			if (IsGrenadeLauncherAttached() && FindBoolValueInUpgradesDef("disable_kick_anim_when_gl_attached", READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "disable_kick_anim_when_gl_attached", false), true))
+				return false;
+
+			if (IsZoomed())
+				return false;
+
+			if (GetState() == eIdle || GetState() == eKick && !lock_time)
+			{
+				SwitchState(eKick);
+				return true;
+			}
+
+			return false;
+		}
 		case kWPN_NEXT: 
 			{
 				return SwitchAmmoType(flags);
@@ -3055,7 +3086,7 @@ float CWeapon::Weight() const
 extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
-	return !IsPending() && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
+	return (!IsPending() || IsPending() && GetState() == eKick) && ((!IsZoomed() || !ZoomHideCrosshair()) || hud_adj_mode != 0 && hud_adj_crosshair);
 }
 
 bool CWeapon::show_indicators()
