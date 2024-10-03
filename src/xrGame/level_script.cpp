@@ -1034,6 +1034,10 @@ bool inventory_shown() {
 	return CurrentGameUI()->ActorMenu().IsShown();
 }
 bool electronics_break() {
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (actor != nullptr)
+		return actor->ElectronicsProblemsInc();
+
 	return false;
 }
 bool pickup_mode() {
@@ -1047,13 +1051,28 @@ bool is_actor_burned() {
 	return false;
 }
 bool electronics_restore() {
-	return true;
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (actor != nullptr)
+		 return actor->ElectronicsProblemsDec();
+
+	return false;
 }
 bool electronics_reset() {
-	return true;
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (actor != nullptr)
+	{
+		actor->ResetElectronicsProblems();
+		return true;
+	}
+
+	return false;
 }
 bool electronics_apply() {
-	return true;
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (actor != nullptr)
+		return actor->ElectronicsProblemsImmediateApply();
+
+	return false;
 }
 int get_parameter_upgraded_int() {
 	return 0;
