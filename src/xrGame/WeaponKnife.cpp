@@ -50,7 +50,14 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
 
-	m_sounds.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+	{
+		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
+		m_sounds.LoadSound(section, "snd_kick_2", "sndKick2", false, SOUND_TYPE_WEAPON_SHOOTING);
+	}
+	else
+		m_sounds.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	
 	if (pSettings->line_exist(section, "snd_draw"))
 		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
@@ -204,7 +211,9 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	PlaySound						("sndShot",pos);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns)
+		PlaySound("sndShot",pos);
 
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	if (actor->active_cam() != eacFirstEye) {
@@ -275,12 +284,23 @@ void CWeaponKnife::state_Attacking	(float)
 
 void CWeaponKnife::switch2_Attacking	(u32 state)
 {
-	if(IsPending())	return;
+	if(IsPending())
+		return;
 
-	if(state==eFire)
-		PlayHUDMotion("anm_attack",		FALSE, this, state);
-	else //eFire2
-		PlayHUDMotion("anm_attack2",	FALSE, this, state);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (state == eFire)
+	{
+		PlayHUDMotion("anm_attack", FALSE, this, state);
+		if (isGuns)
+			PlaySound("sndKick1", Position());
+	}
+	else
+	{//eFire2
+		PlayHUDMotion("anm_attack2", FALSE, this, state);
+		if (isGuns)
+			PlaySound("sndKick2", Position());
+	}
 
 	SetPending			(TRUE);
 }
