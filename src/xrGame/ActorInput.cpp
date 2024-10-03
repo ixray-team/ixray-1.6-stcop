@@ -33,6 +33,7 @@
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "../xrEngine/XR_IOConsole.h"
 
 extern u32 hud_adj_mode;
 
@@ -444,6 +445,45 @@ void CActor::IR_GamepadKeyPress(int id)
 	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK)
 	{
 	}
+}
+
+bool IsKeyPressed(int dik)
+{
+	if (pInput)
+		return pInput->iGetAsyncKeyState(dik);
+
+	return false;
+}
+
+bool IsActionKeyPressed(EGameActions EGameAction)
+{
+	int key1 = get_action_dik(EGameAction, 0);
+	int key2 = get_action_dik(EGameAction, 1);
+
+	return ((key1 != 0) && IsKeyPressed(key1)) || ((key2 != 0) && IsKeyPressed(key2));
+}
+
+bool IsActionKeyPressedInGame(EGameActions EGameAction)
+{
+	if (IsActionKeyPressed(EGameAction) && !Console->bVisible && !Level().IsDemoPlay() && CurrentGameUI() && !CurrentGameUI()->TopInputReceiver())
+		return true;
+
+	return false;
+}
+
+void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
+{
+	//if (!ignore_suicide && IsActorSuicideNow())
+		//return;
+
+	if (state)
+		_keyflags |= mask;
+	else
+		_keyflags &= ~mask;
+}
+
+void CActor::ProcessKeys()
+{
 }
 
 #include "HudItem.h"
