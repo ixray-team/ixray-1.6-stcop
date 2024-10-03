@@ -211,6 +211,7 @@ public:
 	RStringVec m_vHideBonesOverrideGLUpg;
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+	virtual bool IsGrenadeMode() { return false; }
 
 protected:
 	//состояние подключенных аддонов
