@@ -1735,10 +1735,10 @@ void CWeaponMagazined::PlayAnimReload()
 
 	xr_string anm_name = "anm_reload";
 
-	if (IsMisfire())
-		anm_name += "_jammed";
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (IsMisfire() && isGuns)
+		anm_name += "_jammed";
 
 	if (GetDetector() && isGuns)
 		bIsNeedCallDet = true;
