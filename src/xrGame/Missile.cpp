@@ -324,6 +324,7 @@ void CMissile::State(u32 state)
 			{
 				SetPending			(TRUE);
 				PlayHUDMotion		("anm_hide", TRUE, this, GetState());
+				StartCompanionAnimIfNeeded("hide");
 				if (m_sounds.FindSoundItem("SndHide", false))
 					PlaySound("SndHide", Position());
 			}
@@ -351,6 +352,7 @@ void CMissile::State(u32 state)
 				PlaySound("sndThrowBegin", Position());
 
 			PlayHUDMotion		("anm_throw_begin", TRUE, this, GetState());
+			StartCompanionAnimIfNeeded("throw_begin");
 		} break;
 	case eReady:
 		{
@@ -363,6 +365,7 @@ void CMissile::State(u32 state)
 			if (m_sounds.FindSoundItem("sndThrow", false))
 				PlaySound("sndThrow", Position());
 			PlayHUDMotion		("anm_throw", TRUE, this, GetState());
+			StartCompanionAnimIfNeeded("throw_end");
 		} break;
 	case eThrowEnd:
 		{

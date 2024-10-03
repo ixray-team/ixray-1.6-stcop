@@ -242,6 +242,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		}
 		fDeviceFlags.zero();
 	}break;
+	case eShowing:
+	{
+		g_player_hud->attach_item(this);
+	}break;
 	}
 
 	if (S != eIdle && S != eSprintStart && S != eSprintEnd)
