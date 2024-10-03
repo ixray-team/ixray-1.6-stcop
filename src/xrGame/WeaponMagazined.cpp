@@ -278,6 +278,7 @@ bool CWeaponMagazined::OnShoot_CanShootNow()
 
 void CWeaponMagazined::FireStart()
 {
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if(!IsMisfire())
 	{
 		if (iAmmoElapsed)
@@ -301,8 +302,13 @@ void CWeaponMagazined::FireStart()
 		}
 		else 
 		{
-			if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle) 
-				SwitchState(eEmptyClick);
+			if (isGuns)
+			{
+				if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle)
+					SwitchState(eEmptyClick);
+			}
+			else
+				OnEmptyClick();
 		}
 	}
 	else
@@ -317,8 +323,6 @@ void CWeaponMagazined::FireStart()
 
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			CurrentGameUI()->AddCustomStatic("gun_jammed",true);
-
-		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 		if (isGuns)
 		{
