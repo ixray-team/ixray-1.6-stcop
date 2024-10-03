@@ -191,6 +191,13 @@ public:
 
 	RStringVec m_vDefHideBones;
 	RStringVec m_vDefShowBones;
+	RStringVec m_vDefHideBonesGLAttached;
+	RStringVec m_vHideBonesUpg;
+	RStringVec m_vShowBonesUpg;
+	RStringVec m_vHideBonesOverrideUpg;
+	RStringVec m_vHideBonesOverrideSilUpg;
+	RStringVec m_vHideBonesOverrideScopeUpg;
+	RStringVec m_vHideBonesOverrideGLUpg;
 
 protected:
 	//состояние подключенных аддонов
@@ -526,6 +533,12 @@ private:
 			bool			install_upgrade_disp		( LPCSTR section, bool test );
 			bool			install_upgrade_hit			( LPCSTR section, bool test );
 			bool			install_upgrade_addon		( LPCSTR section, bool test );
+			bool			install_upgrade_show_bones	(LPCSTR section, bool test);
+			bool			install_upgrade_hide_bones	(LPCSTR section, bool test);
+			bool			install_upgrade_hide_bones_override (LPCSTR section, bool test);
+			bool			install_upgrade_hide_bones_override_silencer(LPCSTR section, bool test);
+			bool			install_upgrade_hide_bones_override_scope(LPCSTR section, bool test);
+			bool			install_upgrade_hide_bones_override_gl(LPCSTR section, bool test);
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
