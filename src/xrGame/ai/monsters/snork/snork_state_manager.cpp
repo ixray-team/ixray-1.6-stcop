@@ -17,14 +17,14 @@
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
 #include "../states/state_look_point.h"
-#include "../states/state_test_look_actor.h"
-#include "../states/state_test_state.h"
 #include "../states/monster_state_help_sound.h"
 
 #include "../../../entitycondition.h"
 
 CStateManagerSnork::CStateManagerSnork(CSnork* obj) : inherited(obj)
 {
+	m_pSnork = smart_cast<CSnork*>(obj);
+
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
 	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
@@ -33,7 +33,6 @@ CStateManagerSnork::CStateManagerSnork(CSnork* obj) : inherited(obj)
 	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
 	add_state(eStateHitted, xr_new<CStateMonsterHitted>(obj));
 
-	add_state(eStateFindEnemy, xr_new<CStateMonsterTestCover>(obj));
 	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(obj));
 }
 
@@ -72,7 +71,7 @@ void CStateManagerSnork::execute()
 	select_state(state_id); 
 
 	if ((current_substate == eStateAttack) && (current_substate != prev_substate)) {
-		object->start_threaten = true;
+		m_pSnork->start_threaten = true;
 	}
 
 	// выполнить текущее состояние

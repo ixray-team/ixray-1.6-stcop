@@ -20,6 +20,8 @@
 
 CStateManagerBurer::CStateManagerBurer(CBurer *monster) : inherited(monster)
 {
+	m_pBurer = smart_cast<CBurer*>(monster);
+
 	add_state(eStateRest,					xr_new<CStateMonsterRest>					(monster));
 	add_state(eStatePanic,					xr_new<CStateMonsterPanic>					(monster));
 	add_state(eStateAttack,					xr_new<CStateBurerAttack >					(monster));
@@ -47,7 +49,7 @@ void CStateManagerBurer::execute()
 		state = eStateHearInterestingSound;
 	 else if (object->hear_dangerous_sound )
 		state = eStateHearDangerousSound;
-	 else if (object->time_last_scan + SCAN_STATE_TIME > Device.dwTimeGlobal)
+	 else if (m_pBurer->time_last_scan + SCAN_STATE_TIME > Device.dwTimeGlobal)
 		state = eStateBurerScanning;
 	 else if (can_eat())
 			state = eStateEat;

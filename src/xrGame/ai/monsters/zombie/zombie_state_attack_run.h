@@ -2,7 +2,6 @@
 
 #include "../state.h"
 
-
 class CStateZombieAttackRun : public CState {
 	typedef CState inherited;
 
@@ -24,5 +23,3 @@ private:
 			void		choose_action			();
 
 };
-
-#include "zombie_state_attack_run_inline.h"

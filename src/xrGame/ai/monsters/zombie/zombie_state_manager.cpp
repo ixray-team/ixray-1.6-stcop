@@ -19,6 +19,8 @@
 
 CStateManagerZombie::CStateManagerZombie(CZombie* obj) : inherited(obj)
 {
+	m_pZombie = smart_cast<CZombie*>(obj);
+
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStateAttack,
 		xr_new<CStateMonsterAttack>(obj,
@@ -43,7 +45,7 @@ void CStateManagerZombie::execute()
 	
 	u32 state_id = u32(-1);
 	
-	if (!object->is_under_control()) {
+	if (!m_pZombie->is_under_control()) {
 	
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 

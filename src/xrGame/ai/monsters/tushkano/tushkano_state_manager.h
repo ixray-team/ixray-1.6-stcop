@@ -6,6 +6,8 @@ class CTushkano;
 class CStateManagerTushkano : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
+	CTushkano* m_pTushkano;
+
 public:
 						CStateManagerTushkano	(CTushkano *obj);
 	virtual				~CStateManagerTushkano	();

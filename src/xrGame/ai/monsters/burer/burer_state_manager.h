@@ -5,6 +5,9 @@ class CBurer;
 
 class CStateManagerBurer : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
+
+	CBurer* m_pBurer;
+
 public:
 					CStateManagerBurer		(CBurer *monster); 
 	virtual void	execute					();

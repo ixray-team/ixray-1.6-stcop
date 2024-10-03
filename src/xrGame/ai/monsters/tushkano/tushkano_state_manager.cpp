@@ -21,6 +21,8 @@
 
 CStateManagerTushkano::CStateManagerTushkano(CTushkano* obj) : inherited(obj)
 {
+	m_pTushkano = smart_cast<CTushkano*>(obj);
+
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
 	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
@@ -40,7 +42,7 @@ void CStateManagerTushkano::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!object->is_under_control()) {
+	if (!m_pTushkano->is_under_control()) {
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 //		const CEntityAlive* corpse	= 
 			object->CorpseMan.get_corpse();

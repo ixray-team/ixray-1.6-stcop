@@ -8,6 +8,8 @@ class CStateManagerSnork : public CMonsterStateManager
 private:
 	typedef				CMonsterStateManager	inherited;
 
+	CSnork* m_pSnork;
+
 public:
 						CStateManagerSnork		(CSnork*obj);
 	virtual				~CStateManagerSnork		();

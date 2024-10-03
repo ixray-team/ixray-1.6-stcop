@@ -6,6 +6,8 @@ class CZombie;
 class CStateManagerZombie : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
+	CZombie* m_pZombie;
+
 public:
 						CStateManagerZombie		(CZombie *obj);
 	virtual				~CStateManagerZombie	();

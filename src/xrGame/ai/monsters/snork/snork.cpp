@@ -111,32 +111,6 @@ void CSnork::reinit()
 void CSnork::UpdateCL()
 {
 	inherited::UpdateCL	();
-
-	//////////////////////////////////////////////////////////////////////////
-	//CObject *obj = Level().CurrentEntity();
-	//if (!obj) return;
-	
-	//find_geometry	();
-	//////////////////////////////////////////////////////////////////////////
-	
-#ifdef _DEBUG
-	// test 
-	CObject *obj = Level().CurrentEntity();
-	if (!obj) return;
-	const CCoverPoint *point = CoverMan->find_cover(obj->Position(), 10.f, 30.f);
-	
-	DBG().level_info(this).clear();
-	if (point) {
-		DBG().level_info(this).add_item	(point->position(),COLOR_RED);
-		
-		Fvector pos;
-		pos.set(Position());
-		pos.y+=5.f;
-
-		DBG().level_info(this).add_item	(Position(),pos,COLOR_GREEN);
-	}
-#endif
-
 }
 
 #define TRACE_RANGE 30.f
@@ -285,18 +259,3 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-
-
-#ifdef _DEBUG
-void CSnork::debug_on_key(int key)
-{
-	CActor *actor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (!actor) return;
-
-	switch (key){
-	case SDL_SCANCODE_1:
-		m_target_node = actor->ai_location().level_vertex_id();
-	}
-}
-#endif
-
