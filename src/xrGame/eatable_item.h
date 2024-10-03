@@ -20,7 +20,7 @@ protected:
 	float m_fWeightEmpty;
 	bool m_bUseHUDAnim = false;
 	bool m_bIsEated = false;
-	bool m_bNoTrash = false;
+	bool m_bNoTrash = true;
 	bool m_bTrashSpawned = false;
 
 	s32 m_siTiming = 0;
