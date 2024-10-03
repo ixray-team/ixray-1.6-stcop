@@ -1965,8 +1965,6 @@ void CWeaponMagazined::PlayAnimReload()
 
 	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	if (IsMisfire() && isGuns)
-		anm_name += "_jammed";
 
 	bIsNeedCallDet = Actor()->GetDetector() && isGuns;
 
