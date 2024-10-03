@@ -110,6 +110,7 @@ CWeapon::CWeapon()
 	ammo_cnt_to_reload = -1;
 	IsReloaded = false;
 	_last_shot_ammotype = 0;
+	IsAimStarted = false;
 }
 
 CWeapon::~CWeapon		()
@@ -1109,6 +1110,9 @@ void CWeapon::SetWeaponMultipleBonesStatus(std::string section, std::string line
 void CWeapon::ModUpdate()
 {
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
+
+	if (!IsZoomed() && IsAimStarted)
+		IsAimStarted = false;
 
 	ProcessAmmo();
 	ProcessAmmoGL();

@@ -121,11 +121,21 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_jammed_click"))
 		m_sounds.LoadSound(section, "snd_jammed_click", "sndJammedClick", true, m_eSoundEmptyClick);
 
-	if (WeaponSoundExist(section, "snd_aim"))
-		m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	if (WeaponSoundExist(section, "snd_aim_out"))
-		m_sounds.LoadSound(section, "snd_aim_out", "sndAimOut", true, m_eSoundAimOut);
+	if (isGuns)
+	{
+		m_sounds.LoadSound(section, "snd_aim_start", "sndAim", true, m_eSoundAim);
+		m_sounds.LoadSound(section, "snd_aim_end", "sndAimOut", true, m_eSoundAimOut);
+	}
+	else
+	{
+		if (WeaponSoundExist(section, "snd_aim"))
+			m_sounds.LoadSound(section, "snd_aim", "sndAim", true, m_eSoundAim);
+
+		if (WeaponSoundExist(section, "snd_aim_out"))
+			m_sounds.LoadSound(section, "snd_aim_out", "sndAimOut", true, m_eSoundAimOut);
+	}
 
 	m_sSndShotCurrent = "sndShot";
 		
@@ -239,6 +249,7 @@ void CWeaponMagazined::FireStart()
 				if(GetState()==eShowing) return;
 				if(GetState()==eHiding) return;
 				if(GetState()==eMisfire) return;
+				if (lock_time) return;
 
 				inherited::FireStart();
 				
@@ -1758,10 +1769,34 @@ void CWeaponMagazined::PlayAnimIdle()
 	if (GetState() != eIdle)
 		return;
 
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
 	if (IsZoomed())
+	{
+		if (isGuns)
+		{
+			if (!IsAimStarted)
+			{
+				IsAimStarted = true;
+				PlayHUDMotion("anm_idle_aim_start", TRUE, GetState());
+				return;
+			}
+		}
 		PlayAnimAim();
+	}
 	else
+	{
+		if (isGuns)
+		{
+			if (IsAimStarted)
+			{
+				IsAimStarted = false;
+				PlayHUDMotion("anm_idle_aim_end", TRUE, GetState());
+				return;
+			}
+		}
 		inherited::PlayAnimIdle();
+	}
 }
 
 void CWeaponMagazined::PlayAnimShoot()
