@@ -199,8 +199,6 @@ public:
 
 	float lock_time;
 
-	TAnimationEffector lock_time_callback;
-
 	xr_string curr_anim;
 
 	int ammo_cnt_to_reload;

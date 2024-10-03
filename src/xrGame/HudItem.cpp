@@ -29,6 +29,8 @@ CHudItem::CHudItem()
 	m_fLR_InertiaFactor			= 0.f;
 	m_fUD_InertiaFactor			= 0.f;
 	SwitchSprint				= false;
+	lock_time_callback			= nullptr;
+	mark						= 0;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -505,6 +507,21 @@ void CHudItem::UpdateCL()
 			}
 		}
 	}
+
+	if (object().H_Parent() == nullptr)
+	{
+		lock_time_callback = nullptr;
+		mark = 0;
+	}
+
+	u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+
+	if (lock_time_callback != nullptr && mark > 0 && mark < anim_time)
+	{
+		lock_time_callback(this);
+		lock_time_callback = nullptr;
+		mark = 0;
+	}
 }
 
 void CHudItem::OnH_A_Chield		()
@@ -600,6 +617,9 @@ u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, b
 		m_sounds.LoadSound(HudSection().c_str(), snd_name.c_str(), "sndByMotion", false);
 		PlaySound("sndByMotion", object().Position());
 	}
+
+	if (pSettings->line_exist(hud_sect, ("mark_" + M).c_str()))
+		mark = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ("mark_" + M).c_str(), 100.f) * 1000.f);
 
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
 	if (anim_time>0)
