@@ -1243,10 +1243,10 @@ void CWeaponMagazined::switch2_CheckMisfire()
 		PlaySound("sndJammedClick", get_LastFP());
 }
 
-void CWeaponMagazined::KickCallback(CHudItem* item)
+void CWeaponMagazined::KickCallback()
 {
-	static_cast<CWeapon*>(item)->MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
-	static_cast<CWeapon*>(item)->MakeLockByConfigParam(("lock_time_end_" + static_cast<CWeapon*>(item)->GetActualCurrentAnim()).c_str());
+	MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
+	MakeLockByConfigParam("lock_time_end_" + GetActualCurrentAnim());
 }
 
 void CWeaponMagazined::switch2_Kick()
@@ -1254,7 +1254,6 @@ void CWeaponMagazined::switch2_Kick()
 	SetPending(TRUE);
 	PlaySound("sndKick", get_LastFP());
 	PlayHUDMotion("anm_kick", TRUE, eKick);
-	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, KickCallback);
 }
 
 void CWeaponMagazined::PlayAnimFakeshoot()
@@ -1888,19 +1887,17 @@ void CWeaponMagazined::PlayAnimHide()
 	PlayHUDMotion("anm_hide", TRUE, GetState());
 }
 
-void CWeaponMagazined::OnAmmoTimer(CHudItem* item)
+void CWeaponMagazined::OnAmmoTimer()
 {
-	if (!static_cast<CWeapon*>(item)->ParentIsActor())
+	if (!ParentIsActor())
 		return;
 
-	CWeaponMagazined* wpnmag = smart_cast<CWeaponMagazined*>(item);
-	if (wpnmag)
-	{
-		static_cast<CWeapon*>(item)->IsReloaded = false;
-		wpnmag->DoReload();
-		static_cast<CWeapon*>(item)->IsReloaded = true;
-		static_cast<CWeapon*>(item)->MakeLockByConfigParam("lock_time_end_" + static_cast<CWeapon*>(item)->GetActualCurrentAnim(), false);
-	}
+	IsReloaded = false;
+	DoReload();
+	IsReloaded = true;
+	ProcessAmmo();
+	ProcessAmmoGL();
+	MakeLockByConfigParam("lock_time_end_" + GetActualCurrentAnim(), false);
 }
 
 void CWeaponMagazined::PlayAnimReload()
@@ -1918,7 +1915,7 @@ void CWeaponMagazined::PlayAnimReload()
 
 	PlayHUDMotion(anm_name, TRUE, GetState());
 
-	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
+	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazined::OnAmmoTimer) });
 }
 
 void CWeaponMagazined::ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main) const

@@ -211,10 +211,10 @@ void CHudItem::OnStateSwitch(u32 S)
 				string64 anm = "";
 				xr_sprintf(anm, "anm_headlamp_%s", torch->IsSwitched() ? "off" : "on");
 				PlayHUDMotion(anm, true, this, eSwitchDevice);
-				SetAnimationCallback(Actor()->HeadlampCallback);
+				SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback) });
 				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
 				{
-					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, Actor()->HeadlampCallback);
+					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback)});
 				}
 
 				StartCompanionAnimIfNeeded(GetActualCurrentAnim());
@@ -229,10 +229,10 @@ void CHudItem::OnStateSwitch(u32 S)
 				string64 anm = "";
 				xr_sprintf(anm, "anm_nv_%s", torch->GetNightVisionStatus() ? "off" : "on");
 				PlayHUDMotion(anm, true, this, eSwitchDevice);
-				SetAnimationCallback(Actor()->NVCallback);
+				SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback)});
 				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
 				{
-					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, Actor()->NVCallback);
+					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback) });
 				}
 
 				StartCompanionAnimIfNeeded(GetActualCurrentAnim());
@@ -578,7 +578,7 @@ void CHudItem::UpdateCL()
 
 	if (lock_time_callback != nullptr && mark > 0 && mark < anim_time)
 	{
-		lock_time_callback(this);
+		lock_time_callback();
 		SetAnimationCallback(nullptr);
 		mark = 0;
 	}
