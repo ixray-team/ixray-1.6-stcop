@@ -133,20 +133,28 @@ public:
 	void 					ChangeEntityMorale		(const float value);
 
 	virtual CWound*			ConditionHit			(SHit* pHDS);
-	//обновления состояния с течением времени
+	//РѕР±РЅРѕРІР»РµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃ С‚РµС‡РµРЅРёРµРј РІСЂРµРјРµРЅРё
 	virtual void			UpdateCondition			();
 	void					UpdateWounds			();
 	void					UpdateConditionTime		();
 	IC void					SetConditionDeltaTime	(float DeltaTime) { m_fDeltaTime = DeltaTime; };
 
 	
-	//скорость потери крови из всех открытых ран 
+	//СЃРєРѕСЂРѕСЃС‚СЊ РїРѕС‚РµСЂРё РєСЂРѕРІРё РёР· РІСЃРµС… РѕС‚РєСЂС‹С‚С‹С… СЂР°РЅ 
 	float					BleedingSpeed			();
 
 	CObject*				GetWhoHitLastTime		() {return m_pWho;}
 	u16						GetWhoHitLastTimeID		() {return m_iWhoID;}
 
 	CWound*					AddWound				(float hit_power, ALife::EHitType hit_type, u16 element);
+	float					CorrectBleedingForHitType(ALife::EHitType hit_type, float bleeding);
+	float					GetWoundComponentByHitType(CWound* wound, ALife::EHitType hit_type);
+	void					SetWoundComponentByHitType(CWound* wound, float value, ALife::EHitType hit_type);
+	float					CalcModifiedWoundTotalSize(CWound* wound, int hit_type_mask = -1);
+	float					BleedingSpeed_reimpl(int hit_type_mask = -1);
+	bool					ChangeBleedingForWound(CWound* wound, float percent, float min_wound_size, int hit_type_mask = -1);
+	void					ChangeBleeding_custom(float percent, int hit_type_mask = -1);
+	void					ChangeBleeding_reimpl(float percent);
 
 	IC void 				SetCanBeHarmedState		(bool CanBeHarmed) 			{m_bCanBeHarmed = CanBeHarmed;}
 	IC bool					CanBeHarmed				() const					{return OnServer() && m_bCanBeHarmed;};
@@ -172,29 +180,29 @@ protected:
 	void					UpdateEntityMorale		();
 
 
-	//изменение силы хита в зависимости от надетого костюма
-	//(только для InventoryOwner)
+	//РёР·РјРµРЅРµРЅРёРµ СЃРёР»С‹ С…РёС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°РґРµС‚РѕРіРѕ РєРѕСЃС‚СЋРјР°
+	//(С‚РѕР»СЊРєРѕ РґР»СЏ InventoryOwner)
 	float					HitOutfitEffect			(float hit_power, ALife::EHitType hit_type, s16 element, float ap, bool& add_wound );
-	//изменение потери сил в зависимости от надетого костюма
+	//РёР·РјРµРЅРµРЅРёРµ РїРѕС‚РµСЂРё СЃРёР» РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°РґРµС‚РѕРіРѕ РєРѕСЃС‚СЋРјР°
 	float					HitPowerEffect			(float power_loss);
 	
-	//для подсчета состояния открытых ран,
-	//запоминается кость куда был нанесен хит
-	//и скорость потери крови из раны
+	//РґР»СЏ РїРѕРґСЃС‡РµС‚Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕС‚РєСЂС‹С‚С‹С… СЂР°РЅ,
+	//Р·Р°РїРѕРјРёРЅР°РµС‚СЃСЏ РєРѕСЃС‚СЊ РєСѓРґР° Р±С‹Р» РЅР°РЅРµСЃРµРЅ С…РёС‚
+	//Рё СЃРєРѕСЂРѕСЃС‚СЊ РїРѕС‚РµСЂРё РєСЂРѕРІРё РёР· СЂР°РЅС‹
 	using WOUND_VECTOR = xr_vector<CWound*>;
 	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
 
 	WOUND_VECTOR			m_WoundVector;
-	//очистка массива ран
+	//РѕС‡РёСЃС‚РєР° РјР°СЃСЃРёРІР° СЂР°РЅ
 	
 
-	//все величины от 0 до 1			
-	float m_fPower;					//сила
-	float m_fRadiation;				//доза радиактивного облучения
-	float m_fPsyHealth;				//здоровье
-	float m_fEntityMorale;			//мораль
+	//РІСЃРµ РІРµР»РёС‡РёРЅС‹ РѕС‚ 0 РґРѕ 1			
+	float m_fPower;					//СЃРёР»Р°
+	float m_fRadiation;				//РґРѕР·Р° СЂР°РґРёР°РєС‚РёРІРЅРѕРіРѕ РѕР±Р»СѓС‡РµРЅРёСЏ
+	float m_fPsyHealth;				//Р·РґРѕСЂРѕРІСЊРµ
+	float m_fEntityMorale;			//РјРѕСЂР°Р»СЊ
 
-	//максимальные величины
+	//РјР°РєСЃРёРјР°Р»СЊРЅС‹Рµ РІРµР»РёС‡РёРЅС‹
 	//	float m_fSatietyMax;
 	float m_fPowerMax;
 	float m_fRadiationMax;
@@ -202,7 +210,7 @@ protected:
 
 	float m_fEntityMoraleMax;
 
-	//величины изменения параметров на каждом обновлении
+	//РІРµР»РёС‡РёРЅС‹ РёР·РјРµРЅРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ РЅР° РєР°Р¶РґРѕРј РѕР±РЅРѕРІР»РµРЅРёРё
 	float m_fDeltaHealth;
 	float m_fDeltaPower;
 	float m_fDeltaRadiation;
@@ -227,9 +235,9 @@ protected:
 	SConditionChangeV m_change_v;
 
 	float				m_fMinWoundSize;
-	bool				m_bIsBleeding;		//есть кровотечение
+	bool				m_bIsBleeding;		//РµСЃС‚СЊ РєСЂРѕРІРѕС‚РµС‡РµРЅРёРµ
 
-	//части хита, затрачиваемые на уменьшение здоровья и силы
+	//С‡Р°СЃС‚Рё С…РёС‚Р°, Р·Р°С‚СЂР°С‡РёРІР°РµРјС‹Рµ РЅР° СѓРјРµРЅСЊС€РµРЅРёРµ Р·РґРѕСЂРѕРІСЊСЏ Рё СЃРёР»С‹
 	float				m_fHealthHitPart;
 	float				m_fPowerHitPart;
 
@@ -246,21 +254,21 @@ protected:
 	float 				m_fBoostTelepaticProtection;
 	float 				m_fBoostChemicalBurnProtection;
 
-	//потеря здоровья от последнего хита
+	//РїРѕС‚РµСЂСЏ Р·РґРѕСЂРѕРІСЊСЏ РѕС‚ РїРѕСЃР»РµРґРЅРµРіРѕ С…РёС‚Р°
 	float				m_fHealthLost;
 
 	float				m_fKillHitTreshold;
 	float				m_fLastChanceHealth;
 	float				m_fInvulnerableTime;
 	float				m_fInvulnerableTimeDelta;
-	//для отслеживания времени 
+	//РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ РІСЂРµРјРµРЅРё 
 	u64					m_iLastTimeCalled;
 	float				m_fDeltaTime;
-	//кто нанес последний хит
+	//РєС‚Рѕ РЅР°РЅРµСЃ РїРѕСЃР»РµРґРЅРёР№ С…РёС‚
 	CObject*			m_pWho;
 	u16					m_iWhoID;
 
-	//для передачи параметров из DamageManager
+	//РґР»СЏ РїРµСЂРµРґР°С‡Рё РїР°СЂР°РјРµС‚СЂРѕРІ РёР· DamageManager
 	float				m_fHitBoneScale;
 	float				m_fWoundBoneScale;
 
