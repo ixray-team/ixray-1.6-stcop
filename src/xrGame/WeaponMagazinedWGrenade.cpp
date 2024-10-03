@@ -228,7 +228,11 @@ void CWeaponMagazinedWGrenade::FireStart()
 
 	if (!iAmmoElapsed && (GetState() == eEmptyClick && !lock_time || GetState() == eIdle))
 	{
-		SwitchState(eEmptyClick);
+		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+			SwitchState(eEmptyClick);
+		else
+			OnEmptyClick();
+
 		return;
 	}
 
