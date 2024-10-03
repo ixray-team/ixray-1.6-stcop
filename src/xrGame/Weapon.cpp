@@ -109,6 +109,7 @@ CWeapon::CWeapon()
 	bPreloadAnimAdapter = false;
 	bUpdateHUDBonesVisibility = false;
 	_is_just_after_reload = false;
+	_lens_night_brightness_saved_step = -1;
 }
 
 CWeapon::~CWeapon		()
@@ -618,6 +619,21 @@ void CWeapon::Load		(LPCSTR section)
 	if (pSettings->line_exist(section, "snd_suicide_stop"))
 		m_sounds.LoadSound(section, "snd_suicide_stop", "sndStopSuicide", false, SOUND_TYPE_ITEM_TAKING);
 
+	if (pSettings->line_exist(section, "snd_scope_brightness_plus"))
+		m_sounds.LoadSound(section, "snd_scope_brightness_plus", "sndScopeBrightnessPlus", false, SOUND_TYPE_ITEM_TAKING);
+
+	if (pSettings->line_exist(section, "snd_scope_brightness_minus"))
+		m_sounds.LoadSound(section, "snd_scope_brightness_minus", "sndScopeBrightnessMinus", false, SOUND_TYPE_ITEM_TAKING);
+
+	if (pSettings->line_exist(section, "snd_scope_zoom_plus"))
+		m_sounds.LoadSound(section, "snd_scope_zoom_plus", "sndScopeZoomPlus", false, SOUND_TYPE_ITEM_TAKING);
+
+	if (pSettings->line_exist(section, "snd_scope_zoom_minus"))
+		m_sounds.LoadSound(section, "snd_scope_zoom_minus", "sndScopeZoomMinus", false, SOUND_TYPE_ITEM_TAKING);
+
+	if (pSettings->line_exist(section, "snd_scope_zoom_gyro"))
+		m_sounds.LoadSound(section, "snd_scope_zoom_gyro", "sndScopeZoomGyro", false, SOUND_TYPE_ITEM_TAKING);
+
 	_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, section, "min_lens_factor", 1.0f);
 	_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, section, "max_lens_factor", 1.0f);
 	_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, section, "lens_speed", 0.0f);
@@ -706,6 +722,12 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	UpdateAddonsVisibility();
 	InitAddons();
+
+	shared_str scope_sect = m_section_id;
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
+		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+
+	LoadNightBrightnessParamsFromSection(scope_sect);
 
 	m_dwWeaponIndependencyTime = 0;
 
@@ -852,6 +874,8 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ammoType,					output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bRememberActorNVisnStatus,	output_packet);
+	save_data		(_lens_zoom_params.target_position,output_packet);
+	save_data		(_lens_night_brightness.cur_step,output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -870,6 +894,8 @@ void CWeapon::load(IReader &input_packet)
 			OnZoomOut();
 
 	load_data		(m_bRememberActorNVisnStatus,	input_packet);
+	load_data		(_lens_zoom_params.target_position,input_packet);
+	load_data		(_lens_night_brightness_saved_step,input_packet);
 }
 
 
@@ -1109,6 +1135,10 @@ void CWeapon::UpdateCL		()
 			m_zoom_params.m_pNight_vision->Start(m_zoom_params.m_sUseZoomPostprocess, pA, false);
 		}
 
+		float val = GetNightPPEFactor();
+
+		if (m_zoom_params.m_pNight_vision->IsActive() && val >= 0.f)
+			set_pp_effector_factor2(effNightvision, val);
 	}
 	else if(m_bRememberActorNVisnStatus)
 	{
@@ -1224,6 +1254,8 @@ void CWeapon::ModUpdate()
 			}
 		}
 	}
+
+	UpdateLensFactor(delta);
 
 	_last_update_time = Device.dwTimeGlobal;
 }
@@ -2186,6 +2218,20 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 			return false;
 		}
+		case kBRIGHTNESS_PLUS:
+		case kBRIGHTNESS_MINUS:
+		{
+			if ((flags & CMD_START) && IsZoomEnabled() && IsZoomed() && GetState() == eIdle && !IsActionProcessing())
+			{
+				ReloadNightBrightnessParams();
+				if (cmd == kBRIGHTNESS_MINUS)
+					ChangeNightBrightness(-1);
+				else
+					ChangeNightBrightness(1);
+
+				return true;
+			}
+		}break;
 		case kWPN_NEXT: 
 			{
 				return SwitchAmmoType(flags);
@@ -2237,11 +2283,46 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		case kWPN_ZOOM_DEC:
 			if (IsZoomEnabled() && IsZoomed() && (flags & CMD_START))
 			{
-				if(cmd==kWPN_ZOOM_INC)  ZoomInc();
-				else					ZoomDec();
+				if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+				{
+					if (cmd == kWPN_ZOOM_INC)
+						ZoomInc();
+					else
+						ZoomDec();
+				}
+				else
+				{
+					lens_zoom_params lens_params = _lens_zoom_params;
+					float dt = lens_params.delta;
+					float oldpos = lens_params.target_position;
+					bool force_zoom_sound = false;
+
+					if (IsScopeAttached() && get_ScopeStatus() == 2)
+					{
+						shared_str scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+						dt = 1.0f / READ_IF_EXISTS(pSettings, r_u32, scope_sect, "lens_factor_levels_count", 5);
+						force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, scope_sect, "force_zoom_sound", false);
+					}
+
+					if (cmd == kWPN_ZOOM_INC)
+						lens_params.target_position += dt;
+					else
+						lens_params.target_position -= dt;
+
+					SetLensParams(lens_params);
+
+					lens_params = _lens_zoom_params;
+					if ((lens_params.target_position != oldpos) && (force_zoom_sound || (lens_params.factor_min != lens_params.factor_max)) && (abs(oldpos - lens_params.target_position) > 0.0001f))
+					{
+						if (cmd == kWPN_ZOOM_INC)
+							PlaySound("sndScopeZoomPlus", get_LastFP());
+						else
+							PlaySound("sndScopeZoomMinus", get_LastFP());
+					}
+				}
+
 				return true;
-			}else
-				return false;
+			}
 	}
 	return false;
 }
@@ -2620,13 +2701,13 @@ void CWeapon::OnZoomIn()
 	if (IsAlterZoomMode())
 	{
 		SetZoomFactor(GetAlterScopeZoomFactor());
-	}
+	}*/
 
 	ReloadNightBrightnessParams();
 	UpdateZoomCrosshairUI();
 
-	if (IsPDAWindowVisible())
-		_is_pda_lookout_mode = false;*/
+	//if (IsPDAWindowVisible())
+		//_is_pda_lookout_mode = false;
 
 	GamePersistent().SetPickableEffectorDOF(true);
 
@@ -3661,7 +3742,227 @@ float CWeapon::GetLensFOV(float default_value) const
 	float factor = lens_params.factor_min + (lens_params.factor_max - lens_params.factor_min) * lens_params.real_position;
 
 	float fov = (g_fov / 2.f) * PI / 180.0f;
-	result = 2 * atan(tan(fov) / factor) * 180.0f / PI;
+	result = 2.f * atan(tan(fov) / factor) * 180.0f / PI;
 
 	return result;
+}
+
+void CWeapon::ReloadNightBrightnessParams()
+{
+	shared_str scope_sect = m_section_id;
+
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
+		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+
+	LoadNightBrightnessParamsFromSection(scope_sect);
+}
+
+void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
+{
+	stepped_params last = _lens_night_brightness;
+
+	if (sect == m_section_id)
+	{
+		_lens_night_brightness.max_value = ModifyFloatUpgradedValue("max_night_brightness", READ_IF_EXISTS(pSettings, r_float, sect, "max_night_brightness", 1.0f) / 3.f);
+		_lens_night_brightness.min_value = ModifyFloatUpgradedValue("min_night_brightness", READ_IF_EXISTS(pSettings, r_float, sect, "min_night_brightness", 1.0f) / 3.f);
+		_lens_night_brightness.steps = FindIntValueInUpgradesDef("steps_brightness", READ_IF_EXISTS(pSettings, r_u32, sect, "steps_brightness", 0));
+		_lens_night_brightness.jitter = ModifyFloatUpgradedValue("jitter_brightness", READ_IF_EXISTS(pSettings, r_float, sect, "jitter_brightness", 1.0f));
+	}
+	else
+	{
+		_lens_night_brightness.max_value = READ_IF_EXISTS(pSettings, r_float, sect, "max_night_brightness", 1.0f) / 3.f;
+		_lens_night_brightness.min_value = READ_IF_EXISTS(pSettings, r_float, sect, "min_night_brightness", 1.0f) / 3.f;
+		_lens_night_brightness.steps = READ_IF_EXISTS(pSettings, r_u32, sect, "steps_brightness", 0);
+		_lens_night_brightness.jitter = READ_IF_EXISTS(pSettings, r_float, sect, "jitter_brightness", 1.0f);
+	}
+
+	bool b_r2 = !!psDeviceFlags.test(rsR2);
+	b_r2 |= !!psDeviceFlags.test(rsR4);
+
+	if (!b_r2 && _lens_night_brightness.max_value > 1.0f)
+		_lens_night_brightness.max_value = 1.0f;
+
+	if (abs(_lens_night_brightness.max_value - last.max_value) > EPS || fabs(_lens_night_brightness.min_value - last.min_value) > EPS || _lens_night_brightness.steps != last.steps)
+	{
+		if (_lens_night_brightness_saved_step >= 0)
+		{
+			_lens_night_brightness.cur_step = _lens_night_brightness_saved_step;
+			_lens_night_brightness_saved_step = -1;
+		}
+		else
+			_lens_night_brightness.cur_step = READ_IF_EXISTS(pSettings, r_u32, sect, "default_brightness_step", _lens_night_brightness.steps);
+
+		SetNightBrightness(_lens_night_brightness.cur_step, false);
+	}
+}
+
+void CWeapon::ChangeNightBrightness(int steps)
+{
+	if (_lens_night_brightness.steps == 0)
+	{
+		_lens_night_brightness.cur_value = _lens_night_brightness.min_value;
+		return;
+	}
+
+	SetNightBrightness(_lens_night_brightness.cur_step + steps, true);
+}
+
+void CWeapon::SetNightBrightness(int steps, bool use_sound)
+{
+	int last_steps = _lens_night_brightness.cur_step;
+
+	_lens_night_brightness.cur_step = steps;
+	if (_lens_night_brightness.cur_step <= 0)
+	{
+		_lens_night_brightness.cur_step = 0;
+		_lens_night_brightness.cur_value = _lens_night_brightness.min_value;
+	}
+	else if (_lens_night_brightness.cur_step >= _lens_night_brightness.steps)
+	{
+		_lens_night_brightness.cur_step = _lens_night_brightness.steps;
+		_lens_night_brightness.cur_value = _lens_night_brightness.max_value;
+	}
+	else
+	{
+		float delta = (_lens_night_brightness.max_value - _lens_night_brightness.min_value) / _lens_night_brightness.steps;
+		_lens_night_brightness.cur_value = _lens_night_brightness.min_value + delta * _lens_night_brightness.cur_step;
+	}
+
+	if (use_sound)
+	{
+		if (last_steps > _lens_night_brightness.cur_step)
+			PlaySound("sndScopeBrightnessMinus", get_LastFP());
+		else if (last_steps < _lens_night_brightness.cur_step)
+			PlaySound("sndScopeBrightnessPlus", get_LastFP());
+	}
+
+	if (last_steps != _lens_night_brightness.cur_step)
+		UpdateZoomCrosshairUI();
+}
+
+void CWeapon::UpdateZoomCrosshairUI()
+{
+	if (m_UIScope != nullptr)
+	{
+		if (m_UIScope->WindowName() == "switchable_zoom_wnd")
+		{
+			for (int i = 0; i <= _lens_night_brightness.steps; ++i)
+			{
+				CUIWindow* child = m_UIScope->FindChild(("auto_static_" + xr_string::ToString(i)).c_str());
+				if (child != nullptr)
+				{
+					if (i == _lens_night_brightness.cur_step)
+						child->Show(true);
+					else
+						child->Show(false);
+				}
+			}
+		}
+	}
+}
+
+void CWeapon::SetLensParams(lens_zoom_params& params)
+{
+	if (params.factor_max < params.factor_min)
+	{
+		float t = params.factor_min;
+		params.factor_min = params.factor_max;
+		params.factor_max = t;
+	}
+
+	if (params.target_position < 0.f)
+		params.target_position = 0.f;
+	else if (params.target_position > 1.f)
+		params.target_position = 1.f;
+
+	if (params.real_position < 0.f)
+		params.real_position = 0.f;
+	else if (params.real_position > 1.f)
+		params.real_position = 1.f;
+
+	_lens_zoom_params = params;
+}
+
+void CWeapon::UpdateLensFactor(u32 timedelta)
+{
+	lens_zoom_params lens_params_tmp = _lens_zoom_params;
+	lens_zoom_params lens_params_final = lens_params_tmp;
+
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
+	{
+		shared_str scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+		lens_params_tmp.factor_min = READ_IF_EXISTS(pSettings, r_float, scope_sect, "min_lens_factor", 1.0f);
+		lens_params_tmp.factor_max = READ_IF_EXISTS(pSettings, r_float, scope_sect, "max_lens_factor", 1.0f);
+		lens_params_tmp.speed = READ_IF_EXISTS(pSettings, r_float, scope_sect, "lens_speed", 0.0f);
+		lens_params_tmp.gyro_period = READ_IF_EXISTS(pSettings, r_float, scope_sect, "lens_gyro_sound_period", 0.0f);
+	}
+
+	float dt_needed = lens_params_tmp.target_position - lens_params_tmp.real_position;
+
+	if (lens_params_tmp.speed < EPS)
+	{
+		lens_params_final.real_position = lens_params_tmp.target_position;
+		SetLensParams(lens_params_final);
+	}
+	else if (abs(dt_needed) > EPS)
+	{
+		if (lens_params_tmp.gyro_period > EPS)
+		{
+			float zoom_remains = abs(dt_needed) / lens_params_tmp.speed;
+			float snd_remains = lens_params_tmp.gyro_period - Device.GetTimeDeltaSafe(lens_params_tmp.last_gyro_snd_time) / 1000.0f;
+
+			if (snd_remains > zoom_remains && snd_remains > 0.f)
+				lens_params_tmp.speed = abs(dt_needed) / snd_remains;
+		}
+
+		float dt = timedelta * lens_params_tmp.speed / 1000.0f;
+
+		if (dt < abs(dt_needed))
+		{
+			if (lens_params_tmp.gyro_period > EPS)
+			{
+				if (Device.GetTimeDeltaSafe(lens_params_tmp.last_gyro_snd_time) / 1000.0f > lens_params_tmp.gyro_period)
+				{
+					PlaySound("sndScopeZoomGyro", get_LastFP());
+					lens_params_final.last_gyro_snd_time = Device.dwTimeGlobal;
+				}
+			}
+			lens_params_final.real_position += copysign(dt, dt_needed);
+		}
+		else
+			lens_params_final.real_position = lens_params_tmp.target_position;
+
+		SetLensParams(lens_params_final);
+	}
+}
+
+float CWeapon::GetNightPPEFactor()
+{
+	shared_str PP_MIN_FACTOR = "scope_nightvision_min_factor";
+	float val = -1.0f;
+	float min_factor = 0.0f;
+	shared_str scope_sect = nullptr;
+
+	if (IsScopeAttached() && get_ScopeStatus() == 2)
+	{
+		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+		min_factor = READ_IF_EXISTS(pSettings, r_float, scope_sect, PP_MIN_FACTOR.c_str(), 0.0f);
+	}
+	else if (get_ScopeStatus() == 1)
+	{
+		scope_sect = m_section_id;
+		min_factor = ModifyFloatUpgradedValue(PP_MIN_FACTOR, static_cast<float>(READ_IF_EXISTS(pSettings, r_s32, scope_sect, PP_MIN_FACTOR.c_str(), 0.f)));
+	}
+
+	if (scope_sect != nullptr)
+	{
+		if (min_factor < 0.0f) min_factor = 0.0f;
+		if (min_factor > 1.0f) min_factor = 1.0f;
+
+		float brightness = (_lens_night_brightness.steps > 0) ? _lens_night_brightness.cur_step / static_cast<float>(_lens_night_brightness.steps) : 1.0f;
+
+		val = min_factor + (1.0f - min_factor) * brightness;
+	}
+
+	return val;
 }

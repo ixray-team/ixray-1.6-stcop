@@ -199,17 +199,29 @@ public:
 
 	struct lens_zoom_params
 	{
-		float delta = 0.f;
-		float target_position = 0.f;
-		float speed = 0.f;
-		float factor_min = 0.f;
-		float factor_max = 0.f;
-		float gyro_period = 0.f;
-		float real_position = 0.f;
+		float delta = 0.0f;
+		float target_position = 0.0f;
+		float speed = 0.0f;
+		float factor_min = 0.0f;
+		float factor_max = 0.0f;
+		float gyro_period = 0.0f;
+		float real_position = 0.0f;
 		u32   last_gyro_snd_time = 0;
 	};
 
 	lens_zoom_params _lens_zoom_params;
+
+	struct stepped_params
+	{
+		float max_value = 1.f;
+		float min_value = 0.f;
+		float cur_value = 0.5f;
+		int cur_step = 1;
+		int steps = 2;
+		float jitter = 0.1f;
+	};
+
+	stepped_params _lens_night_brightness;
 
 	float lock_time;
 
@@ -218,6 +230,7 @@ public:
 	int ammo_cnt_to_reload;
 	int _last_shot_ammotype;
 	u32 _last_update_time;
+	s32 _lens_night_brightness_saved_step;
 
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
@@ -265,6 +278,14 @@ public:
 	void ReassignWorldAnims();
 	void switch2_Suicide();
 	void switch2_SuicideStop();
+	void ReloadNightBrightnessParams();
+	void LoadNightBrightnessParamsFromSection(shared_str sect);
+	void ChangeNightBrightness(int steps);
+	void SetNightBrightness(int steps, bool use_sound);
+	void UpdateZoomCrosshairUI();
+	void SetLensParams(lens_zoom_params& params);
+	void UpdateLensFactor(u32 timedelta);
+
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
@@ -311,6 +332,7 @@ public:
 
 	float ModifyFloatUpgradedValue(shared_str key, float def);
 	float GetLensFOV(float default_value) const;
+	float GetNightPPEFactor();
 
 protected:
 	//состояние подключенных аддонов
