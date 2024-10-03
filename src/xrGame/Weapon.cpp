@@ -1693,6 +1693,11 @@ bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_aft
 	return result;
 }
 
+bool CWeapon::IsActionProcessing()
+{
+	return H_Parent() && (lock_time > 0.f /* || ParentIsActor() && IsActorSuicideNow() || IsActorPlanningSuicide()*/);
+}
+
 void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 {
 	shared_str sect = cNameSect();

@@ -258,6 +258,7 @@ public:
 	bool IsUIForceUnhiding();
 	bool IsUIForceHiding();
 	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false);
+	bool IsActionProcessing();
 
 	virtual bool IsGrenadeMode() { return false; }
 	virtual bool TryReload() { return false; }
