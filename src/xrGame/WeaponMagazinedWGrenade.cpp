@@ -36,9 +36,15 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 	
 	
 	//// Sounds
-	m_sounds.LoadSound(section,"snd_shoot_grenade"	, "sndShotG"		, false, m_eSoundShot);
-	m_sounds.LoadSound(section,"snd_reload_grenade"	, "sndReloadG"	, true, m_eSoundReload);
-	m_sounds.LoadSound(section,"snd_switch"			, "sndSwitch"		, true, m_eSoundReload);
+	m_sounds.LoadSound(section,"snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	m_sounds.LoadSound(section, isGuns ? "snd_load_grenade" : "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
+
+	if (WeaponSoundExist(section, "snd_change_grenade"))
+		m_sounds.LoadSound(section, "snd_change_grenade", "sndChangeGrenade", true, m_eSoundReload);
+
+	m_sounds.LoadSound(section,"snd_switch", "sndSwitch", true, m_eSoundReload);
 	
 
 	m_sFlameParticles2 = pSettings->r_string(section, "grenade_flame_particles");
@@ -128,7 +134,11 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	VERIFY(GetState()==eReload);
 	if(m_bGrenadeMode) 
 	{
-		PlaySound("sndReloadG", get_LastFP2());
+		if (m_sounds.FindSoundItem("sndChangeGrenade", false) && iAmmoElapsed != 0)
+			PlaySound("sndChangeGrenade", get_LastFP2());
+		else
+			PlaySound("sndReloadG", get_LastFP2());
+
 		PlayHUDMotion("anm_reload", FALSE, this, GetState());
 		SetPending			(TRUE);
 	}
