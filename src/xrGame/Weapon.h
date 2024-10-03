@@ -43,6 +43,8 @@ public:
 	// Generic
 	virtual void			Load				(LPCSTR section);
 
+	virtual bool			WeaponSoundExist	(LPCSTR section, LPCSTR sound_name);
+
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
 	virtual void			net_Export			(NET_Packet& P);
