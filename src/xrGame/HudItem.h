@@ -150,6 +150,8 @@ public:
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 	virtual xr_string GetActualCurrentAnim() const;
+	bool CanStartAction(bool allow_aim_state = false);
+	bool Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE);
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
 	using TAnimationEffector = void(*)(CHudItem*);
