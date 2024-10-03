@@ -47,11 +47,46 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 
 	if(can_repair)
 	{
-		m_repair_mode = true;
+		m_repair_mode = 1;
 		CallMessageBoxYesNo( question );
 	} 
 	else
 		CallMessageBoxOK( question );
+}
+
+void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
+{
+	PIItem item = get_upgrade_item();
+	if (!item)
+		return;
+
+	const char* partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
+
+	luabind::functor<bool> funct;
+
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.gunsl_can_disassemble_item", funct),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_can_disassemble_item>, item = %s", item->m_section_id.c_str())
+	);
+
+	bool can_disassemble = funct(item->m_section_id.c_str(), item->GetCondition(), partner);
+
+	luabind::functor<const char*> funct2;
+
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.gunsl_question_disassemble_item", funct2),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_question_disassemble_item>, item = %s", item->m_section_id.c_str())
+	);
+
+	const char* question = funct2(item->m_section_id.c_str(), item->GetCondition(), can_disassemble, partner);
+
+	if (can_disassemble)
+	{
+		m_repair_mode = 2;
+		CallMessageBoxYesNo(question);
+	}
+	else
+		CallMessageBoxOK(question);
 }
 
 void CUIActorMenu::RepairEffect_CurItem()
@@ -74,6 +109,26 @@ void CUIActorMenu::RepairEffect_CurItem()
 	if(itm)
 		itm->UpdateConditionProgressBar();
 
+}
+
+void CUIActorMenu::PerformDisassemble()
+{
+	PIItem item = CurrentIItem();
+	if (!item)
+		return;
+
+	const char* partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
+	luabind::functor<void> funct;
+
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.gunsl_effect_disassemble", funct),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_effect_disassemble>, item = %s", item->m_section_id.c_str())
+	);
+
+	funct(item->m_section_id.c_str(), item->GetCondition(), partner);
+
+	SetCurrentItem(nullptr);
+	item->object().DestroyObject();
 }
 
 bool CUIActorMenu::CanUpgradeItem( PIItem item )

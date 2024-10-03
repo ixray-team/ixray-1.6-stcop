@@ -35,7 +35,10 @@
 #include "../WeaponRPG7.h"
 #include "../CustomOutfit.h"
 #include "../ActorHelmet.h"
+#include "../ai_space.h"
+#include "../../xrScripts/script_engine.h"
 
+using namespace luabind;
 // -----
 
 const LPCSTR g_inventory_upgrade_xml = "inventory_upgrade.xml";
@@ -61,6 +64,7 @@ CUIInventoryUpgradeWnd::CUIInventoryUpgradeWnd()
 	m_cur_upgrade_id = nullptr;
 	m_current_scheme = nullptr;
 	m_btn_repair     = nullptr;
+	m_btn_disassemble = nullptr;
 }
 
 CUIInventoryUpgradeWnd::~CUIInventoryUpgradeWnd()
@@ -97,6 +101,9 @@ void CUIInventoryUpgradeWnd::Init()
 
 	m_btn_repair = UIHelper::Create3tButton( uiXml, "repair_button", this );
 
+	if (EngineExternal().isModificationGunslinger())
+		m_btn_disassemble = UIHelper::Create3tButton(uiXml, "disassemble_button", this);
+
 	LoadCellsBacks( uiXml );
 	LoadSchemes( uiXml );
 }
@@ -105,7 +112,7 @@ void CUIInventoryUpgradeWnd::InitInventory( CInventoryItem* item, bool can_upgra
 {
 	m_inv_item = item;
 	bool is_shader = false;
-	// Загружаем картинку
+	// Р—Р°РіСЂСѓР¶Р°РµРј РєР°СЂС‚РёРЅРєСѓ
 	if(smart_cast<CWeapon*>(item))
 	{
 		is_shader = true;
@@ -147,6 +154,8 @@ void CUIInventoryUpgradeWnd::InitInventory( CInventoryItem* item, bool can_upgra
 	m_back->DetachAll();
 	m_back->Show(false);
 	m_btn_repair->Enable( false );
+	if (EngineExternal().isModificationGunslinger())
+		m_btn_disassemble->Enable(false);
 	
 	if ( ai().get_alife() && m_inv_item )
 	{
@@ -218,6 +227,21 @@ void CUIInventoryUpgradeWnd::SetCurScheme( const shared_str& id )
 	VERIFY2( 0, make_string<const char*>( "Scheme <%s> does not loaded !", id.c_str() ) );
 }
 
+bool CUIInventoryUpgradeWnd::CheckEnableDisassembleButton(CInventoryItem& inv_item)
+{
+	LPCSTR item_name = inv_item.m_section_id.c_str();
+	float condition = inv_item.GetCondition();
+
+	luabind::functor<bool> funct;
+
+	R_ASSERT2(
+		ai().script_engine().functor("inventory_upgrades.gunsl_need_disassemble_button", funct),
+		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_need_disassemble_button>, item = %s", item_name)
+	);
+
+	return funct(item_name, condition);
+}
+
 bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_upgrade )
 {
 	m_scheme_wnd->DetachAll();
@@ -226,6 +250,9 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 	bool CanBeRepared = inv_item.cast_weapon() != nullptr || smart_cast<CCustomOutfit*>(&inv_item) != nullptr || smart_cast<CHelmet*>(&inv_item) != nullptr;
 
 	m_btn_repair->Enable(CanBeRepared && inv_item.GetCondition() < 0.99f);
+
+	if (EngineExternal().isModificationGunslinger())
+		m_btn_disassemble->Enable(CanBeRepared && CheckEnableDisassembleButton(inv_item));
 
 	if ( !can_upgrade )
 	{

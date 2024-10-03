@@ -362,7 +362,7 @@ void CUIActorMenu::Construct()
 
 	m_actor_trade					= nullptr;
 	m_partner_trade					= nullptr;
-	m_repair_mode					= false;
+	m_repair_mode					= 0;
 	m_item_info_view				= false;
 	m_highlight_clear				= true;
 
@@ -397,6 +397,8 @@ void CUIActorMenu::InitCallbacks()
 	Register						(m_UIPropertiesBox);
 	VERIFY							(m_pUpgradeWnd);
 	Register						(m_pUpgradeWnd->m_btn_repair);
+	if (EngineExternal().isModificationGunslinger())
+		Register						(m_pUpgradeWnd->m_btn_disassemble);
 
 	AddCallback(m_trade_buy_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeBuy));
 	AddCallback(m_trade_sell_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeSell));
@@ -405,6 +407,8 @@ void CUIActorMenu::InitCallbacks()
 	AddCallback(m_exit_button,     BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnExitClicked));
 	AddCallback(m_UIPropertiesBox, PROPERTY_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::ProcessPropertiesBoxClicked));
 	AddCallback(m_pUpgradeWnd->m_btn_repair, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryRepairItem));
+	if (EngineExternal().isModificationGunslinger())
+		AddCallback(m_pUpgradeWnd->m_btn_disassemble, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryDisassembleItem));
 }
 
 void CUIActorMenu::UpdateButtonsLayout()

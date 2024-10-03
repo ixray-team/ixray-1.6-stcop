@@ -169,7 +169,7 @@ protected:
 //	CUIStatic*					m_clock_value;
 
 	u32							m_last_time;
-	bool						m_repair_mode;
+	u8							m_repair_mode;
 	bool						m_item_info_view;
 	bool						m_highlight_clear;
 	u32							m_trade_partner_inventory_state;
@@ -243,6 +243,7 @@ protected:
 
 	void						CurModeToScript				();
 	void						RepairEffect_CurItem		();
+	void						PerformDisassemble			();
 
 	void						SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*				CurrentItem					();
@@ -273,7 +274,8 @@ protected:
 	void						UpdateOutfit				();
 	void						MoveArtefactsToBag			();
 	bool						TryActiveSlot				(CUICellItem* itm);
-	void				TryRepairItem				(CUIWindow* w, void* d);
+	void						TryRepairItem				(CUIWindow* w, void* d);
+	void						TryDisassembleItem			(CUIWindow* w, void* d);
 	bool						CanUpgradeItem				(PIItem item);
 
 	bool						ToActorTrade				(CUICellItem* itm, bool b_use_cursor_pos);
