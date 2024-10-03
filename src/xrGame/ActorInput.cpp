@@ -449,7 +449,7 @@ void CActor::IR_GamepadKeyPress(int id)
 	}
 }
 
-bool IsKeyPressed(int dik)
+static bool IsKeyPressed(int dik)
 {
 	if (pInput)
 		return pInput->iGetAsyncKeyState(dik);
@@ -457,7 +457,7 @@ bool IsKeyPressed(int dik)
 	return false;
 }
 
-bool IsActionKeyPressed(EGameActions EGameAction)
+static bool IsActionKeyPressed(const EGameActions& EGameAction)
 {
 	int key1 = get_action_dik(EGameAction, 0);
 	int key2 = get_action_dik(EGameAction, 1);
@@ -465,9 +465,9 @@ bool IsActionKeyPressed(EGameActions EGameAction)
 	return ((key1 != 0) && IsKeyPressed(key1)) || ((key2 != 0) && IsKeyPressed(key2));
 }
 
-bool IsActionKeyPressedInGame(EGameActions EGameAction)
+static bool IsActionKeyPressedInGame(const EGameActions& EGameAction)
 {
-	if (IsActionKeyPressed(EGameAction) && !Console->bVisible && !Level().IsDemoPlay() && CurrentGameUI() && !CurrentGameUI()->TopInputReceiver())
+	if (IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr)
 		return true;
 
 	return false;
