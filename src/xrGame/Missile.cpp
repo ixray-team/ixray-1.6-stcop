@@ -304,15 +304,12 @@ void CMissile::shedule_Update(u32 dt)
 #include "player_hud.h"
 void CMissile::State(u32 state) 
 {
-	std::string anm_name = "";
-
 	switch(GetState()) 
 	{
 	case eShowing:
         {
 			SetPending			(TRUE);
-			anm_name = "anm_show";
-			PlayHUDMotion(anm_name, FALSE, this, GetState(), false);
+			PlayHUDMotion("anm_show", FALSE, this, GetState(), false);
 			if (m_sounds.FindSoundItem("SndShow", false))
 				PlaySound("SndShow", Position());
 		} break;
@@ -326,8 +323,7 @@ void CMissile::State(u32 state)
 			if(H_Parent())
 			{
 				SetPending			(TRUE);
-				anm_name = "anm_hide";
-				PlayHUDMotion		(anm_name, TRUE, this, GetState(), false);
+				PlayHUDMotion		("anm_hide", TRUE, this, GetState(), false);
 				if (m_sounds.FindSoundItem("SndHide", false))
 					PlaySound("SndHide", Position());
 			}
@@ -354,13 +350,11 @@ void CMissile::State(u32 state)
 			if (m_sounds.FindSoundItem("sndThrowBegin", false))
 				PlaySound("sndThrowBegin", Position());
 
-			anm_name = "anm_throw_begin";
-			PlayHUDMotion		(anm_name, TRUE, this, GetState(), false);
+			PlayHUDMotion		("anm_throw_begin", TRUE, this, GetState(), false);
 		} break;
 	case eReady:
 		{
-			anm_name = "anm_throw_idle";
-			PlayHUDMotion		(anm_name, TRUE, this, GetState(), false);
+			PlayHUDMotion		("anm_throw_idle", TRUE, this, GetState(), false);
 		} break;
 	case eThrow:
 		{
@@ -368,9 +362,7 @@ void CMissile::State(u32 state)
 			m_throw				= false;
 			if (m_sounds.FindSoundItem("sndThrow", false))
 				PlaySound("sndThrow", Position());
-
-			anm_name = "anm_throw";
-			PlayHUDMotion		(anm_name, TRUE, this, GetState(), false);
+			PlayHUDMotion		("anm_throw", TRUE, this, GetState(), false);
 		} break;
 	case eThrowEnd:
 		{

@@ -588,11 +588,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
-std::string CWeaponMagazined::NeedAddSuffix(std::string M)
+xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	std::string new_name = M;
+	xr_string new_name = M;
 
 	if (IsZoomed())
 		new_name = AddSuffixName(new_name, "_aim");
@@ -1008,7 +1008,7 @@ void CWeaponMagazined::switch2_CheckMisfire()
 
 void CWeaponMagazined::PlayAnimFakeshoot()
 {
-	std::string anm_name = "anm_fakeshoot";
+	xr_string anm_name = "anm_fakeshoot";
 	int firemode = GetQueueSize();
 
 	if (IsZoomed())
@@ -1463,20 +1463,20 @@ void CWeaponMagazined::PlayAnimFireMode()
 {
 	VERIFY(GetState() == eSwitchMode);
 
-	std::string anm_name = "anm_changefiremode_from_";
+	xr_string anm_name = "anm_changefiremode_from_";
 	auto cur_mode = GetQueueSize();
 	auto old_mode = m_iOldFireMode;
 	if (old_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += std::to_string(old_mode);
+		anm_name += old_mode;
 
 	anm_name += "_to_";
 
 	if (cur_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += std::to_string(cur_mode);
+		anm_name += cur_mode;
 
 	PlayHUDMotion(anm_name, TRUE, this, eSwitchMode);
 }
@@ -1499,7 +1499,7 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	std::string anm_name = "anm_reload";
+	xr_string anm_name = "anm_reload";
 
 	if (IsMisfire())
 		anm_name += "_jammed";
@@ -1513,7 +1513,7 @@ void CWeaponMagazined::PlayAnimAim()
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns && actor && actor->AnyMove())
 	{
-		std::string anm_name = IsScopeAttached() ? "anm_idle_aim_scope_moving" : "anm_idle_aim_moving";
+		xr_string anm_name = IsScopeAttached() ? "anm_idle_aim_scope_moving" : "anm_idle_aim_moving";
 
 		if (!IsScopeAttached())
 		{

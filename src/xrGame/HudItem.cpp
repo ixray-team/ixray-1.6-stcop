@@ -560,7 +560,7 @@ bool CHudItem::HudAnimationExist(LPCSTR anim_name)
 }
 //-AVO
 
-u32 CHudItem::PlayHUDMotion(std::string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix)
+u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix)
 {
 	if (need_suffix)
 		M = NeedAddSuffix(M);
@@ -579,10 +579,10 @@ u32 CHudItem::PlayHUDMotion(std::string M, BOOL bMixIn, CHudItem*  W, u32 state,
 	return anim_time;
 }
 
-std::string CHudItem::AddSuffixName(std::string M, std::string suffix, std::string test_suffix)
+xr_string CHudItem::AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix)
 {
-	std::string new_name = M + suffix;
-	std::string test_name = new_name + test_suffix;
+	xr_string new_name = M + suffix;
+	xr_string test_name = new_name + test_suffix;
 
 	if (HudAnimationExist(new_name.c_str()))
 		return new_name;
