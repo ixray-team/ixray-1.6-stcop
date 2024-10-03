@@ -605,9 +605,6 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 	if (iAmmoElapsed == 1)
 		new_name = AddSuffixName(new_name, "_last");
 
-	if (IsSilencerAttached())
-		new_name = AddSuffixName(new_name, "_sil");
-
 	if (iAmmoElapsed == 0)
 		new_name = AddSuffixName(new_name, "_empty");
 
@@ -626,6 +623,9 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 
 		bMisfireReload = true;
 	}
+
+	if (IsSilencerAttached())
+		new_name = AddSuffixName(new_name, "_sil");
 
 	if (!IsScopeAttached())
 		new_name = AddSuffixName(new_name, "_noscope");
