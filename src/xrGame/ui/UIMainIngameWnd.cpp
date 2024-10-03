@@ -626,11 +626,11 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	shared_str sect_name	= m_pPickUpItem->object().cNameSect();
 
 	//properties used by inventory menu
-	int m_iGridWidth	= pSettings->r_u32(sect_name, "inv_grid_width");
-	int m_iGridHeight	= pSettings->r_u32(sect_name, "inv_grid_height");
+	int m_iGridWidth	= m_pPickUpItem->GetInvGridRect().x2;
+	int m_iGridHeight	= m_pPickUpItem->GetInvGridRect().y2;
 
-	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
-	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
+	int m_iXPos			= m_pPickUpItem->GetInvGridRect().x1;
+	int m_iYPos			= m_pPickUpItem->GetInvGridRect().y1;
 
 	float scale_x = m_iPickUpItemIconWidth /
 		float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));

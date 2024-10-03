@@ -203,7 +203,12 @@ bool CInventoryItem::install_upgrade_impl( LPCSTR section, bool test )
 	temp_width += m_IconRect.x2;
 	temp_height += m_IconRect.y2;
 
+	Irect old_rect = m_IconRect;
+
 	m_IconRect.set(temp_x, temp_y, temp_width, temp_height);
+
+	if (!m_IconRect.cmp(old_rect))
+		bNeedUpdateIcon = true;
 
 	LPCSTR str;
 	result2 = process_if_exists_set( section, "immunities_sect", &CInifile::r_string, str, test );

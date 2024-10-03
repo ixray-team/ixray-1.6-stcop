@@ -99,6 +99,22 @@ void CUIInventoryCellItem::Update()
 	}
 
 	SetTextureColor(color);
+
+	PIItem itm = smart_cast<PIItem>((PIItem)m_pData);
+	if (itm != nullptr && itm->bNeedUpdateIcon)
+	{
+		itm->bNeedUpdateIcon = false;
+
+		m_grid_size.set(itm->GetInvGridRect().rb);
+		Frect rect;
+		rect.lt.set(INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * itm->GetInvGridRect().y1);
+
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHTF(EngineExternal()[EEngineExternalUI::HQIcons]) * m_grid_size.y);
+
+		inherited::SetTextureRect(rect);
+	}
 }
 
 void CUIInventoryCellItem::UpdateItemText()

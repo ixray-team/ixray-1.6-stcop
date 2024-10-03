@@ -156,6 +156,7 @@ public:
 	Fvector2					m_custom_mark_size;
 	u32							m_custom_mark_clr;
 	LPCSTR						m_custom_mark_lanim;
+	bool						bNeedUpdateIcon;
 
 	SInvItemPlace				m_ItemCurrPlace;
 
