@@ -77,6 +77,12 @@ public:
 	BOOL									b_is_Ready;
 	BOOL									b_is_Active;
 public:
+	struct {
+		float renderZoomFactor = 1.0f;
+		float renderZoomRotateFactor = 0.0f;
+		bool isRenderActive{};
+		bool isRenderProcess{};
+	} hudViewportData;
 
 	// Engine flow-control
 	u32										dwFrame;
