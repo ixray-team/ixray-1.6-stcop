@@ -330,10 +330,9 @@ bool CGrenade::Action(u16 cmd, u32 flags)
 						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
 						if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
 						{
-							m_pInventory->Ruck			(this);
-							m_pInventory->SetActiveSlot	(NO_ACTIVE_SLOT);
-							m_pInventory->Slot			(pGrenade->BaseSlot(),pGrenade);
-							return						true;
+
+							m_pInventory->PutGrenade(pGrenade);
+							return true;
 						}
 					}
 					return true;

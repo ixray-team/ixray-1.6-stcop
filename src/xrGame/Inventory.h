@@ -5,6 +5,7 @@ class CInventory;
 class CInventoryItem;
 class CHudItem;
 class CInventoryOwner;
+class CGrenade;
 
 class CInventorySlot
 {									
@@ -64,6 +65,7 @@ public:
 
 
 	void					Activate			(u16 slot, /*EActivationReason reason=eGeneral, */bool bForce=false);
+	void					PutGrenade			(CGrenade* new_grenade);
 	
 	static u32 const		qs_priorities_count = 5;
 	PIItem					GetNextItemInActiveSlot		(u8 const priority_value, bool ignore_ammo);
@@ -77,15 +79,15 @@ public:
 	bool					Action				(u16 cmd, u32 flags);
 	void					ActiveWeapon		(u16 slot);
 	void					Update				();
-	// Ищет на поясе аналогичный IItem
+	// РС‰РµС‚ РЅР° РїРѕСЏСЃРµ Р°РЅР°Р»РѕРіРёС‡РЅС‹Р№ IItem
 	PIItem					Same				(const PIItem pIItem, bool bSearchRuck) const;
-	// Ищет на поясе IItem для указанного слота
+	// РС‰РµС‚ РЅР° РїРѕСЏСЃРµ IItem РґР»СЏ СѓРєР°Р·Р°РЅРЅРѕРіРѕ СЃР»РѕС‚Р°
 	PIItem					SameSlot			(const u16 slot, PIItem pIItem, bool bSearchRuck) const;
-	// Ищет на поясе или в рюкзаке IItem с указанным именем (cName())
+	// РС‰РµС‚ РЅР° РїРѕСЏСЃРµ РёР»Рё РІ СЂСЋРєР·Р°РєРµ IItem СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РёРјРµРЅРµРј (cName())
 	PIItem					Get					(LPCSTR name, bool bSearchRuck) const;
-	// Ищет на поясе или в рюкзаке IItem с указанным именем (id)
+	// РС‰РµС‚ РЅР° РїРѕСЏСЃРµ РёР»Рё РІ СЂСЋРєР·Р°РєРµ IItem СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РёРјРµРЅРµРј (id)
 	PIItem					Get					(const u16  id,	 bool bSearchRuck) const;
-	// Ищет на поясе или в рюкзаке IItem с указанным CLS_ID
+	// РС‰РµС‚ РЅР° РїРѕСЏСЃРµ РёР»Рё РІ СЂСЋРєР·Р°РєРµ IItem СЃ СѓРєР°Р·Р°РЅРЅС‹Рј CLS_ID
 	PIItem					Get					(CLASS_ID cls_id,  bool bSearchRuck) const;
 	PIItem					GetAny				(LPCSTR name) const;//search both (ruck and belt)
 	PIItem					item				(CLASS_ID cls_id) const;
@@ -130,7 +132,7 @@ public:
 protected:
 	TISlotArr				m_slots;
 public:
-	//возвращает все кроме PDA в слоте и болта
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЃРµ РєСЂРѕРјРµ PDA РІ СЃР»РѕС‚Рµ Рё Р±РѕР»С‚Р°
 	void				AddAvailableItems			(TIItemContainer& items_container, bool for_trade) const;
 
 	float				GetMaxWeight				() const				{return m_fMaxWeight;}
@@ -153,8 +155,8 @@ protected:
 	void					UpdateDropTasks		();
 	void					UpdateDropItem		(PIItem pIItem);
 
-	// Активный слот и слот который станет активным после смены
-    //значения совпадают в обычном состоянии (нет смены слотов)
+	// РђРєС‚РёРІРЅС‹Р№ СЃР»РѕС‚ Рё СЃР»РѕС‚ РєРѕС‚РѕСЂС‹Р№ СЃС‚Р°РЅРµС‚ Р°РєС‚РёРІРЅС‹Рј РїРѕСЃР»Рµ СЃРјРµРЅС‹
+    //Р·РЅР°С‡РµРЅРёСЏ СЃРѕРІРїР°РґР°СЋС‚ РІ РѕР±С‹С‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё (РЅРµС‚ СЃРјРµРЅС‹ СЃР»РѕС‚РѕРІ)
 	u16 				m_iActiveSlot;
 	u16 				m_iNextActiveSlot;
 	u16 				m_iPrevActiveSlot;
@@ -162,18 +164,19 @@ protected:
 	u16					m_iDeferredSlot;
 
 	CInventoryOwner*	m_pOwner;
+	CGrenade*			new_grenade;
 
-	//флаг, показывающий наличие пояса в инвенторе
+	//С„Р»Р°Рі, РїРѕРєР°Р·С‹РІР°СЋС‰РёР№ РЅР°Р»РёС‡РёРµ РїРѕСЏСЃР° РІ РёРЅРІРµРЅС‚РѕСЂРµ
 	bool				m_bBeltUseful;
-	//флаг, допускающий использование слотов
+	//С„Р»Р°Рі, РґРѕРїСѓСЃРєР°СЋС‰РёР№ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃР»РѕС‚РѕРІ
 	bool				m_bSlotsUseful;
 
-	// максимальный вес инвентаря
+	// РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ РёРЅРІРµРЅС‚Р°СЂСЏ
 	float				m_fMaxWeight;
-	// текущий вес в инвентаре
+	// С‚РµРєСѓС‰РёР№ РІРµСЃ РІ РёРЅРІРµРЅС‚Р°СЂРµ
 	float				m_fTotalWeight;
 
-	//кадр на котором произошло последнее изменение в инвенторе
+	//РєР°РґСЂ РЅР° РєРѕС‚РѕСЂРѕРј РїСЂРѕРёР·РѕС€Р»Рѕ РїРѕСЃР»РµРґРЅРµРµ РёР·РјРµРЅРµРЅРёРµ РІ РёРЅРІРµРЅС‚РѕСЂРµ
 	u32					m_dwModifyFrame;
 
 	bool				m_drop_last_frame;
