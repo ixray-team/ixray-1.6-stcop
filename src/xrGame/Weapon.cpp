@@ -591,6 +591,7 @@ void CWeapon::Load		(LPCSTR section)
 		hud_gl = pSettings->r_string(section, "hud_gl");
 
 	m_bUseChangeFireModeAnim = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_firemode_change_anim", false);
+	m_bRestGL_and_Sil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
