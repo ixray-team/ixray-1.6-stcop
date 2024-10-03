@@ -195,6 +195,7 @@ protected:
 	bool						SwitchSprint;
 	TAnimationEffector			lock_time_callback;
 	u32							mark;
+	int							_action_ppe;
 
 private:
 	CPhysicItem					*m_object;
