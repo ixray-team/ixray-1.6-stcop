@@ -204,17 +204,14 @@ Fvector& attachable_hud_item::hands_offset_rot()
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
 {
-	u16  bone_id;
-	BOOL bVisibleNow;
-	bone_id			= m_model->LL_BoneID			(bone_name);
+	u16 bone_id = m_model->LL_BoneID(bone_name);
+
 	if(bone_id==BI_NONE)
 	{
 		if(bSilent)	return;
 		R_ASSERT2	(0, make_string<const char*>("model [%s] has no bone [%s]",pSettings->r_string(m_sect_name, "item_visual"), bone_name.c_str()));
 	}
-	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
-	if(bVisibleNow!=bVisibility)
-		m_model->LL_SetBoneVisible	(bone_id,bVisibility, TRUE);
+	m_model->LL_SetBoneVisible	(bone_id,bVisibility, FALSE);
 }
 
 void attachable_hud_item::update(bool bForce)

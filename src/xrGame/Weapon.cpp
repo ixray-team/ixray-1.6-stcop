@@ -1021,7 +1021,7 @@ void CWeapon::SetWeaponModelBoneStatus(std::string bone, BOOL show)
 
 	IKinematics* pWeaponVisual = Visual()->dcast_PKinematics();
 	if (pWeaponVisual && pWeaponVisual->LL_BoneID(bone.c_str()) != BI_NONE)
-		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone.c_str()), show, TRUE);
+		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone.c_str()), show, FALSE);
 }
 
 void CWeapon::SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show)
