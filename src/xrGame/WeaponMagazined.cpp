@@ -2084,10 +2084,17 @@ void CWeaponMagazined::PlayAnimShoot()
 	StartCompanionAnimIfNeeded(anm_name);
 }
 
+extern BOOL	b_toggle_weapon_aim;
+
 void CWeaponMagazined::OnZoomIn			()
 {
 	if (!CanAimNow())
+	{
+		if (ParentIsActor() && !b_toggle_weapon_aim && Actor()->GetMovementState(eReal) & mcSprint)
+			Actor()->SetMovementState(eWishful, mcSprint, false);
+
 		return;
+	}
 
 	inherited::OnZoomIn();
 
