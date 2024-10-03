@@ -200,18 +200,17 @@ public:
 	shared_str hud_scope;
 	shared_str hud_gl;
 
-	RStringVec m_vDefHideBones;
-	RStringVec m_vDefShowBones;
-	RStringVec m_vDefHideBonesGLAttached;
-	RStringVec m_vHideBonesUpg;
-	RStringVec m_vShowBonesUpg;
-	RStringVec m_vHideBonesOverrideUpg;
-	RStringVec m_vHideBonesOverrideSilUpg;
-	RStringVec m_vHideBonesOverrideScopeUpg;
-	RStringVec m_vHideBonesOverrideGLUpg;
+	void HideOneUpgradeLevel(std::string section);
+	void ModUpdate();
+	void ProcessUpgrade();
+	void ProcessScope();
+	void SetWeaponModelBoneStatus(std::string bone, BOOL show);
+	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	virtual bool IsGrenadeMode() { return false; }
+	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
+	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
 
 protected:
 	//состояние подключенных аддонов
@@ -551,12 +550,6 @@ private:
 			bool			install_upgrade_hud_sect_silencer (LPCSTR section, bool test);
 			bool			install_upgrade_hud_sect_scope(LPCSTR section, bool test);
 			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
-			bool			install_upgrade_show_bones	(LPCSTR section, bool test);
-			bool			install_upgrade_hide_bones	(LPCSTR section, bool test);
-			bool			install_upgrade_hide_bones_override (LPCSTR section, bool test);
-			bool			install_upgrade_hide_bones_override_silencer(LPCSTR section, bool test);
-			bool			install_upgrade_hide_bones_override_scope(LPCSTR section, bool test);
-			bool			install_upgrade_hide_bones_override_gl(LPCSTR section, bool test);
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
