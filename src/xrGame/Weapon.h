@@ -271,7 +271,7 @@ public:
 	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr);
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr);
 	xr_string AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix = "");
-	xr_string GetActualCurrentAnim() const;
+	virtual xr_string GetActualCurrentAnim() const;
 	xr_string GetFiremodeSuffix() const { return ""; }
 
 	u8 GetAmmoTypeIndex(bool second = false);

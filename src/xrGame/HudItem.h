@@ -149,6 +149,7 @@ public:
 
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
+	virtual xr_string GetActualCurrentAnim() const;
 
 protected:
 

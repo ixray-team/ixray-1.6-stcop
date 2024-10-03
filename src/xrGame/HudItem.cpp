@@ -796,3 +796,11 @@ float CHudItem::GetHudFov()
 
 	return m_nearwall_last_hud_fov;
 }
+
+xr_string CHudItem::GetActualCurrentAnim() const
+{
+	if (m_current_motion != nullptr)
+		return m_current_motion.c_str();
+
+	return "";
+}
