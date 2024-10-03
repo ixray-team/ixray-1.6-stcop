@@ -114,27 +114,19 @@ public:
     void ShowHint(const xr_string& s);
     bool ShowHint(const AStringVec& SS);
     void HideHint();
+
 public:
     // mouse sensetive
     float m_MouseSM, m_MouseSS, m_MouseSR;
+    xr_vector<std::function<void()>> CommandList;
+
 protected:
     virtual void 	RealUpdateScene	()=0;
     void			RealRedrawScene	();
     void			RealResize		();
     void			OnFrame			();
+
 public:
-    struct DrawDebugString
-    {
-        ImVec2 Pos;
-        u32 Color;
-        xr_string Text;
-    };
-
-    xr_vector<std::function<void()>> CommandList;
-    xr_vector<DrawDebugString> ViewportLines;
-    xr_vector<DrawDebugString> ViewportFrameLines;
-    ImVec2 ViewportPos;
-
     				TUI				();
     virtual 		~TUI			();
 
@@ -268,7 +260,6 @@ protected:
 public:
    IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, TRUE); if (bForced) RealResetUI(); }
    virtual Ivector2 GetRenderMousePosition()const { return Ivector2().set(0, 0); }
-   virtual void	OnStats();
 };
 //---------------------------------------------------------------------------
 extern ECORE_API TUI* UI;  

@@ -22,7 +22,7 @@
 #include "../XrEngine/XR_IOConsole.h"
 
 
-ECORE_API extern bool bIsLevelEditor = false;
+ECORE_API extern bool bIsLevelEditor;
 namespace ImGui
 {
 	XREUI_API ImFont* LightFont;
@@ -471,7 +471,6 @@ void TUI::Redraw()
 				m_Flags.set(flRedraw, TRUE);
 			if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
 			{
-				ViewportLines.clear();
 				m_Flags.set(flRedraw, FALSE);
 
 				RCache.set_RT(RTNormal->pRT, 0);
@@ -532,6 +531,17 @@ void TUI::Redraw()
 				// draw axis
 				DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
 
+
+				EDevice->Statistic->RenderDUMP_RT.End();
+				EDevice->Statistic->Show();
+				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+				g_FontManager->Render();
+
+				//EDevice->pSystemFont->OnRender();
+				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+				EDevice->seqRender.Process(rp_Render);
+
 				//EDevice->Statistic->RenderDUMP_RT.End();
 				//->EStatistic->Show(EDevice->pSystemFont);
 				EDevice->seqRender.Process(rp_Render);
@@ -555,8 +565,6 @@ void TUI::Redraw()
 
 			try
 			{
-				ViewportFrameLines.clear();
-
 				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 				g_bRendering = FALSE;
 				// 
@@ -564,7 +572,7 @@ void TUI::Redraw()
 				 //  Draw(); 
 				   // end draw
 				UI->BeginFrame();
-				UI->OnStats();
+
 				Draw();
 
 				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
@@ -586,7 +594,6 @@ void TUI::Redraw()
 		Callback();
 
 	CommandList.clear();
-
 	OutInfo();
 }
 //---------------------------------------------------------------------------
@@ -871,52 +878,6 @@ void TUI::RealResetUI()
 		UI->Resize(1280, 800);
 		ImGui::LoadIniSettingsFromDisk(ini_path);
 	}
-}
-
-void TUI::OnStats()
-{
-	auto& io = ImGui::GetIO();
-
-	DrawDebugString Str;
-	Str.Color = ImColor(0, 0, 0);
-    if (bIsLevelEditor)
-	    Str.Pos = { 45, 50 };
-    else
-	    Str.Pos = { 15, 30 };
-
-	Str.Text.reserve(64);
-	sprintf(Str.Text.data(), "FPS: %.2f %.2gms", io.Framerate, io.Framerate ? 1000.0f / io.Framerate : 0.0f);
-	ViewportFrameLines.push_back(Str);
-
-    if (bIsLevelEditor)
-        Str.Pos = { 45, 60 };
-    else
-	    Str.Pos = { 15, 40 };
-
-	auto Mode = Tools->GetAction();
-	auto Axis = Tools->GetAxis();
-
-	switch (Mode)
-	{
-	case ETAction::etaAdd    : Str.Text = "Mode: Add"; break;
-	case ETAction::etaMove   : Str.Text = "Mode: Move"; break;
-	case ETAction::etaScale  : Str.Text = "Mode: Scale"; break;
-	case ETAction::etaSelect : Str.Text = "Mode: Select"; break;
-	case ETAction::etaRotate : Str.Text = "Mode: Rotate"; break;
-	default					 : Str.Text = "Mode: Select"; break;
-	}
-	 
-	switch (Axis)
-	{
-	case ETAxis::etAxisX : Str.Text += "[X]"; break;
-	case ETAxis::etAxisY : Str.Text += "[Y]"; break;
-	case ETAxis::etAxisZ : Str.Text += "[Z]"; break;
-	case ETAxis::etAxisZX: Str.Text += "[XZ]"; break;
-	default              : Str.Text += "[-]"; break;
-	}
-
-	ViewportFrameLines.push_back(Str);
-	UI->OutCameraPos();
 }
 
 void SPBItem::GetInfo			(xr_string& txt, float& p, float& m)

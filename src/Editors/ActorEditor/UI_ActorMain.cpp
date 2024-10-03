@@ -266,17 +266,13 @@ void CActorMain::ProgressDraw()
 //---------------------------------------------------------------------------
 void CActorMain::OutCameraPos()
 {
-	if (m_bReady)
+	static u32 LastFrame = Device.dwFrame;
+
+	if (m_bReady && LastFrame != Device.dwFrame)
 	{
-		TUI::DrawDebugString Str;
-		Str.Pos = { 15, 50 };
-		Str.Text.resize(64);
-		Str.Color = ImColor(0, 0, 0);
-
 		const Fvector& c = EDevice->m_Camera.GetPosition();
-		sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-
-		UI->ViewportFrameLines.push_back(Str);
+		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
+		LastFrame = Device.dwFrame;
 	}
 }
 //---------------------------------------------------------------------------

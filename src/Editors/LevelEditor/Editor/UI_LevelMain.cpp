@@ -1271,18 +1271,10 @@ void CLevelMain::OutCameraPos()
 {
 	if (m_bReady)
 	{
-		TUI::DrawDebugString Str;
-		if (bIsLevelEditor)
-			Str.Pos = { 45, 70 };
-		else
-			Str.Pos = { 15, 50 };
-		Str.Text.resize(64);
-		Str.Color = ImColor(0, 0, 0);
-
 		const Fvector& c = EDevice->m_Camera.GetPosition();
-		sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-
-		UI->ViewportFrameLines.push_back(Str);
+		//xr_string Str;
+		//sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
+		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
 	}
 }
 

@@ -88,62 +88,73 @@ bool CEditableObject::BoxPick(CCustomObject* obj, const Fbox& box, const Fmatrix
 extern float 	ssaLIMIT;
 extern float	g_fSCREEN;
 static const float ssaLim = 64.f*64.f/(640*480);
-void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces){
+void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
+{
     if (!(m_LoadState.is(LS_RBUFFERS)))
-    	DefferedLoadRP();
-	Fvector v; 
+        DefferedLoadRP();
+    Fvector v;
     float r;
-    Fbox bb; 
-    bb.xform			(m_BBox,parent); 
-    bb.getsphere		(v,r);
+    Fbox bb;
+    bb.xform(m_BBox, parent);
+    bb.getsphere(v, r);
 
-    if (EPrefs->object_flags.is(epoDrawLOD)&&(m_objectFlags.is(eoUsingLOD)&&(CalcSSA(v,r)<ssaLim)))
+    if (EPrefs->object_flags.is(epoDrawLOD) && (m_objectFlags.is(eoUsingLOD) && (CalcSSA(v, r) < ssaLim)))
     {
-		if ((1==priority)&&(true==strictB2F))
-        	RenderLOD(parent);
-    }else{
-        RCache.set_xform_world	(parent);
+        if ((1 == priority) && (true == strictB2F))
+            RenderLOD(parent);
+    }
+    else {
+        RCache.set_xform_world(parent);
         if (m_objectFlags.is(eoHOM))
         {
-            if ((1==priority)&&(false==strictB2F))
-            	RenderEdge		(parent,0,0,0x40B64646);
+            if ((1 == priority) && (false == strictB2F))
+                RenderEdge(parent, 0, 0, 0x40B64646);
 
-            if ((2==priority)&&(true==strictB2F))
-            	RenderSelection	(parent,0,0,0xA0FFFFFF);
+            if ((2 == priority) && (true == strictB2F))
+                RenderSelection(parent, 0, 0, 0xA0FFFFFF);
 
-        }else if (m_objectFlags.is(eoSoundOccluder))
+        }
+        else if (m_objectFlags.is(eoSoundOccluder))
         {
-            if ((1==priority)&&(false==strictB2F))
-            	RenderEdge		(parent,0,0,0xFF000000);
+            if ((1 == priority) && (false == strictB2F))
+                RenderEdge(parent, 0, 0, 0xFF000000);
 
-            if ((2==priority)&&(true==strictB2F))
-            	RenderSelection	(parent,0,0,0xA00000FF);
-        }else{
-            if(psDeviceFlags.is(rsEdgedFaces)&&(1==priority)&&(false==strictB2F))
+            if ((2 == priority) && (true == strictB2F))
+                RenderSelection(parent, 0, 0, 0xA00000FF);
+        }
+        else 
+        {
+            if (psDeviceFlags.is(rsEdgedFaces) && (1 == priority) && (false == strictB2F))
                 RenderEdge(parent);
             size_t s_id = 0;
-            for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
+            for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
             {
-            	int pr = (*s_it)->_Priority();
+                int pr = (*s_it)->_Priority();
                 bool strict = (*s_it)->_StrictB2F();
-                
-                if ((priority==pr)&&(strictB2F==strict))
+
+                if ((priority == pr) && (strictB2F == strict))
                 {
-                    if (surfaces)
+                    // FX: Панда написал систему инстансов для объектов, 
+                    // однако, если мы релоадим объекты и в новом объекте
+                    // полей больше, чем в старом, то получам выход за 
+                    // пределы. Поэтому просто регаем дефолтный материал.
+
+                    if (surfaces != nullptr && surfaces->size() > s_id)
                     {
                         EDevice->SetShader((*surfaces)[s_id]->_Shader());
-                       
                     }
                     else
                     {
-
                         EDevice->SetShader((*s_it)->_Shader());
                     }
-                    for (EditMeshIt _M=m_Meshes.begin(); _M!=m_Meshes.end(); _M++)
+
+                    for (EditMeshIt _M = m_Meshes.begin(); _M != m_Meshes.end(); _M++)
+                    {
                         if (IsSkeleton())
-                        	(*_M)->RenderSkeleton	(parent,*s_it);
+                            (*_M)->RenderSkeleton(parent, *s_it);
                         else
-                        	(*_M)->Render			(parent,*s_it);
+                            (*_M)->Render(parent, *s_it);
+                    }
                 }
                 s_id++;
             }
@@ -284,7 +295,7 @@ void CEditableObject::DefferedLoadRP()
 		vs_SkeletonGeom.create(FVF_SV,RCache.Vertex.Buffer(),RCache.Index.Buffer());
 
 //*/
-	// ������� LOD shader
+	// создать LOD shader
 	xr_string l_name = GetLODTextureName();
     xr_string fname = xr_string(l_name)+xr_string(".dds");
     m_LODShader.destroy();
@@ -298,10 +309,10 @@ void CEditableObject::DefferedUnloadRP()
 	if (!(m_LoadState.is(LS_RBUFFERS))) return;
     // skeleton
 	vs_SkeletonGeom.destroy();
-    // ������� ������
+    // удалить буфера
 	for (EditMeshIt _M=m_Meshes.begin(); _M!=m_Meshes.end(); _M++)
     	if (*_M) (*_M)->GenerateRenderBuffers();
-	// ������� shaders
+	// удалить shaders
     for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
         (*s_it)->OnDeviceDestroy();
     // LOD

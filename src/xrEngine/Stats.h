@@ -103,7 +103,7 @@ public:
 	shared_str	eval_line_2;
 	shared_str	eval_line_3;
 
-	void			Show			(void);
+	virtual void	Show			(void);
 	virtual void 	OnRender		();
 	void			OnDeviceCreate	(void);
 	void			OnDeviceDestroy	(void);

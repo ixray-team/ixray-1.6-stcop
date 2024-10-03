@@ -41,8 +41,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     g_SEFactoryManager = new XrSEFactoryManager();
 
     // Initialize APP
-	g_FontManager = new CFontManager();
-	g_FontManager->InitializeFonts();
     GameMaterialLibraryEditors->Load();
 
     g_pGamePersistent = static_cast<IGame_Persistent*>(g_XrGameManager->Create(CLSID_GAME_PERSISTANT));

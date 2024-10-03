@@ -124,6 +124,8 @@ void CUI_Camera::BuildCamera()
 	EDevice->vCameraDirection.set	(m_CamMat.k);
 	EDevice->vCameraTop.set		(m_CamMat.j);
     EDevice->vCameraRight.set		(m_CamMat.i);
+
+    UI->OutCameraPos();
 }
 
 void CUI_Camera::SetDepth(float _far, bool bForcedUpdate)

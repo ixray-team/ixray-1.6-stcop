@@ -85,8 +85,6 @@ void UIRenderForm::Draw()
 		if(m_OnToolBar)
             m_OnToolBar(canvas_pos, canvas_size);
 
-		UI->ViewportPos = canvas_pos;
-
 		ImGui::SetCursorScreenPos(canvas_pos);
 
         if (!ImGuizmo::IsUsing())
@@ -166,29 +164,6 @@ void UIRenderForm::Draw()
 			}
 			ImGui::EndDragDropTarget();
 		}
-
-		auto WndSize = ImGui::GetWindowSize();
-
-		for (auto& Data : UI->ViewportLines)
-		{
-			if (WndSize.x < Data.Pos.x || WndSize.y < Data.Pos.y)
-				continue;
-
-			ImColor Color = Data.Color;
-			ImGui::SetCursorPos(Data.Pos);
-			ImGui::TextColored(Color, Data.Text.c_str());
-		}
-
-		for (auto& Data : UI->ViewportFrameLines)
-		{
-			if (WndSize.x < Data.Pos.x || WndSize.y < Data.Pos.y)
-				continue;
-
-			ImColor Color = Data.Color;
-			ImGui::SetCursorPos(Data.Pos);
-			ImGui::TextColored(Color, Data.Text.c_str());
-		}
-
 	}
 	ImGui::End();
 }

@@ -6,9 +6,9 @@
 #include "../../../xrengine/stats.h"
 // refs
 class CGameFont;
-#if 0
+
 class ECORE_API CEStats:
-	public CStatsPhysics, public CStats
+	public CStats
 {
 public:
 	float		fFPS,fRFPS,fTPS;	// FPS, RenderFPS, TPS
@@ -43,13 +43,10 @@ public:
 	CStatTimer	TEST2;				// debug counter
 	CStatTimer	TEST3;				// debug counter
 
-	virtual void	Show		(CGameFont* font);
+	virtual void	Show		() override;
 
 	CEStats	();
 	virtual	~CEStats	();
 };
 
 #define UPDATEC(vert,poly,pass)		{ EDevice->Statistic->dwVert+=(vert)*(pass);EDevice->Statistic->dwPoly+=(poly)*pass; EDevice->Statistic->dwCalls+=pass; }
-#else
-#define UPDATEC(vert,poly,pass)
-#endif

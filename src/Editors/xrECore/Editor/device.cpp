@@ -186,7 +186,6 @@ bool CEditorRenderDevice::Create()
 {
 	if (b_is_Ready)	return false;
 
-    Statistic			= new CStats();
 	//Statistic = EStatistic;
 	ELog.Msg(mtInformation,"Starting RENDER device...");
 
@@ -223,10 +222,16 @@ bool CEditorRenderDevice::Create()
     if (strstr(Core.Params,"-build")||strstr(Core.Params,"-ebuild"))
         EDevice->Resources->DeferredLoad(FALSE);
 
+	g_FontManager = new CFontManager();
+
     _Create				(F);
 	FS.r_close			(F);
 
 	::Render->create();
+
+	g_FontManager->InitializeFonts();
+
+	Statistic = new CEStats();
 
 	ELog.Msg			(mtInformation, "D3D: initialized");
 
@@ -237,22 +242,24 @@ bool CEditorRenderDevice::Create()
 void CEditorRenderDevice::Destroy()
 {
 	if (!b_is_Ready) return;
-	ELog.Msg( mtInformation, "Destroying Direct3D...");
+	ELog.Msg(mtInformation, "Destroying Direct3D...");
 
 	//HW.Validate			();
 	::Render->destroy();
 
 	// before destroy
-	_Destroy			(FALSE);
-	xr_delete			(Resources);
+	_Destroy(FALSE);
+
+	xr_delete(Resources);
 
 	UI->Destroy();
 	// real destroy
 	//HW.DestroyDevice	();
 
-	ELog.Msg( mtInformation, "D3D: device cleared" );
-   // xr_delete			(Statistic);
+	ELog.Msg(mtInformation, "D3D: device cleared");
+	// xr_delete			(Statistic);
 }
+
 //---------------------------------------------------------------------------
 void CEditorRenderDevice::_SetupStates()
 {

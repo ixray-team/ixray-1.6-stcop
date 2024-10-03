@@ -110,6 +110,9 @@ void CStringTable::ReparseKeyBindings()
 
 xr_string CStringTable::LangName()
 {
+	if (pData == nullptr)
+		return "rus";
+
 	return pData->m_sLanguage.c_str();
 }
 
