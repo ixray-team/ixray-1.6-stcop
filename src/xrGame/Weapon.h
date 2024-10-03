@@ -272,12 +272,12 @@ public:
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
 
-	void HideOneUpgradeLevel(std::string section);
+	void HideOneUpgradeLevel(const xr_string section);
 	void ModUpdate();
 	void ProcessUpgrade();
 	void ProcessScope();
-	void SetWeaponModelBoneStatus(std::string bone, BOOL show);
-	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
+	void SetWeaponModelBoneStatus(const xr_string bone, BOOL show);
+	void SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show);
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 	void ReassignWorldAnims();
@@ -318,15 +318,15 @@ public:
 	virtual xr_string GetActualCurrentAnim() const;
 	xr_string GetFiremodeSuffix() const { return ""; }
 
-	u8 GetAmmoTypeIndex(bool second = false);
-	u8 GetAmmoTypeToReload();
+	u8 GetAmmoTypeIndex(bool second = false) const;
+	u8 GetAmmoTypeToReload() const;
 	u8 GetOrdinalAmmoType();
-	u8 GetGlAmmotype();
-	u8 GetCartridgeType(CCartridge* c);
+	u8 GetGlAmmotype() const;
+	u8 GetCartridgeType(CCartridge* c) const;
 	CCartridge* GetCartridgeFromMagVector(u32 index);
-	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index);
-	u32 GetAmmoInGLCount();
-	u32 GetAmmoInMagCount();
+	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index) const;
+	u32 GetAmmoInGLCount() const;
+	u32 GetAmmoInMagCount() const;
 	int GetMagCapacity();
 
 	void ProcessAmmo(bool forced = false);

@@ -1180,7 +1180,7 @@ void CWeapon::UpdateCL		()
 	ModUpdate();
 }
 
-void CWeapon::SetWeaponModelBoneStatus(std::string bone, BOOL show)
+void CWeapon::SetWeaponModelBoneStatus(const xr_string bone, BOOL show)
 {
 	if (HudItemData())
 		HudItemData()->set_bone_visible(bone.c_str(), show, TRUE);
@@ -1190,7 +1190,7 @@ void CWeapon::SetWeaponModelBoneStatus(std::string bone, BOOL show)
 		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone.c_str()), show, FALSE);
 }
 
-void CWeapon::SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show)
+void CWeapon::SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show)
 {
 	if (!pSettings->section_exist(section.c_str()))
 		return;
@@ -1367,7 +1367,7 @@ void CWeapon::ProcessUpgrade()
 	}
 }
 
-void CWeapon::HideOneUpgradeLevel(std::string section)
+void CWeapon::HideOneUpgradeLevel(const xr_string section)
 {
 	if (!!pSettings->line_exist(section.c_str(), "elements"))
 	{
@@ -1471,7 +1471,7 @@ xr_string CWeapon::GetActualCurrentAnim() const
 	return "";
 }
 
-u8 CWeapon::GetAmmoTypeIndex(bool second)
+u8 CWeapon::GetAmmoTypeIndex(bool second) const
 {
 	if (second)
 	{
@@ -1483,7 +1483,7 @@ u8 CWeapon::GetAmmoTypeIndex(bool second)
 	return m_ammoType;
 }
 
-u8 CWeapon::GetAmmoTypeToReload()
+u8 CWeapon::GetAmmoTypeToReload() const
 {
 	u8 result = m_set_next_ammoType_on_reload;
 	if (result == undefined_ammo_type)
@@ -1502,12 +1502,12 @@ u8 CWeapon::GetOrdinalAmmoType()
 		return GetAmmoTypeIndex(IsGrenadeMode());
 }
 
-u8 CWeapon::GetGlAmmotype()
+u8 CWeapon::GetGlAmmotype() const
 {
 	return GetAmmoTypeIndex(!IsGrenadeMode());
 }
 
-u8 CWeapon::GetCartridgeType(CCartridge* c)
+u8 CWeapon::GetCartridgeType(CCartridge* c) const
 {
 	return c->m_LocalAmmoType;
 }
@@ -1526,7 +1526,7 @@ CCartridge* CWeapon::GetCartridgeFromMagVector(u32 index)
 		return &(m_magazine[index]);
 }
 
-CCartridge* CWeapon::GetGrenadeCartridgeFromGLVector(u32 index)
+CCartridge* CWeapon::GetGrenadeCartridgeFromGLVector(u32 index) const
 {
 	if (!IsGrenadeLauncherAttached() || index >= GetAmmoInGLCount())
 		return nullptr;
@@ -1542,7 +1542,7 @@ CCartridge* CWeapon::GetGrenadeCartridgeFromGLVector(u32 index)
 		return &(wpn_gl->m_magazine2[index]);
 }
 
-u32 CWeapon::GetAmmoInGLCount()
+u32 CWeapon::GetAmmoInGLCount() const
 {
 	u32 result = 0;
 
@@ -1562,7 +1562,7 @@ u32 CWeapon::GetAmmoInGLCount()
 	return result;
 }
 
-u32 CWeapon::GetAmmoInMagCount()
+u32 CWeapon::GetAmmoInMagCount() const
 {
 	u32 result = 0;
 
