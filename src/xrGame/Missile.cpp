@@ -14,6 +14,7 @@
 #include "characterphysicssupport.h"
 #include "Inventory.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "ai_sounds.h"
 #ifdef DEBUG
 #	include "phdebug.h"
 #endif
@@ -74,6 +75,12 @@ void CMissile::Load(LPCSTR section)
 	m_vThrowDir			= pSettings->r_fvector3(section,"throw_dir");
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
+
+	if (pSettings->line_exist(section, "snd_draw"))
+		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+
+	if (pSettings->line_exist(section, "snd_holster"))
+		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
@@ -253,7 +260,18 @@ void CMissile::UpdateCL()
 		}
 	}
 
+	if (Device.dwFrame == dwUpdateSounds_Frame)
+		return;
+
+	dwUpdateSounds_Frame = Device.dwFrame;
+
+	Fvector P;
+	Center(P);
+
+	m_sounds.SetPosition("SndShow", P);
+	m_sounds.SetPosition("SndHide", P);
 }
+
 void CMissile::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
@@ -277,6 +295,7 @@ void CMissile::State(u32 state)
         {
 			SetPending			(TRUE);
 			PlayHUDMotion("anm_show", FALSE, this, GetState());
+			PlaySound("SndShow", Position());
 		} break;
 	case eIdle:
 		{
@@ -289,6 +308,7 @@ void CMissile::State(u32 state)
 			{
 				SetPending			(TRUE);
 				PlayHUDMotion		("anm_hide", TRUE, this, GetState());
+				PlaySound("SndHide", Position());
 			}
 		} break;
 	case eHidden:
