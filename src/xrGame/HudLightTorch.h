@@ -15,6 +15,7 @@ public:
 	const char* LightDirBoneName = {};
 	bool IsLightDirByBone = false;
 	Fvector3 LightOffset;
+	Fvector3 AimOffset;
 	Fvector3 LightWorldOffset;
 	Fvector3 OmniOffset;
 	Fvector3 OmniWorldOffset;

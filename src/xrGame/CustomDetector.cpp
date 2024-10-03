@@ -204,46 +204,18 @@ void CCustomDetector::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
 
-	// TODO: Drombeys to Rawlik: Rework
-	if (pSettings->section_exist(m_HudLight.Section))
-	{
-		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
-	}
-
-	float CurrentAnimTime = -1.0f;
-	bool TorchActive = false;
-
 	switch(S)
 	{
 		case eShowing:
 		{
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
-			if (m_bFastAnimMode)
-			{
-				PlayHUDMotion("anm_show_fast", !!(m_old_state != eHidden), this, S);
-				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_enable_time_anm_show_fast", CurrentAnimTime);
-			}
-			else
-			{
-				PlayHUDMotion("anm_show", !!(m_old_state != eHidden), this, S);
-				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_enable_time_anm_show", CurrentAnimTime);
-			}
-			TorchActive = true;
+			PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", !!(m_old_state != eHidden), this, S);
 			SetPending					(TRUE);
 		}break;
 		case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
-			if (m_bFastAnimMode)
-			{
-				PlayHUDMotion("anm_hide_fast", TRUE, this, S);
-				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_disable_time_anm_hide_fast", CurrentAnimTime);
-			}
-			else
-			{
-				PlayHUDMotion("anm_hide", TRUE, this, S);
-				CurrentAnimTime = READ_IF_EXISTS(pSettings, r_float, HudSection(), "torch_disable_time_anm_hide", CurrentAnimTime);
-			}
+			PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, S);
 			SetPending					(TRUE);
 			SetHideDetStateInWeapon();
 		}break;
@@ -297,21 +269,6 @@ void CCustomDetector::OnStateSwitch(u32 S)
 			PlayHUDMotion("anm_show_hand", true, this, eDetShowHand);
 			SetPending(FALSE);
 		}break;
-	}
-
-	if (pSettings->section_exist(m_HudLight.Section))
-	{
-		if (CurrentAnimTime > 0.0f)
-		{
-			Device.callback(u32(CurrentAnimTime * 1000),
-				[this, TorchActive]()
-				{
-					m_HudLight.SwitchTorchlight(TorchActive);
-
-					// TODO Hozar to Rawlik: Redo the hiding of dice not on realtime
-					SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
-				});
-		}
 	}
 
 	m_old_state=S;
@@ -453,8 +410,6 @@ void CCustomDetector::Load(LPCSTR section)
 
 	m_sounds.LoadSound( section, "snd_draw", "sndShow");
 	m_sounds.LoadSound( section, "snd_holster", "sndHide");
-
-	m_HudLight.SwitchTorchlight(true);
 }
 
 
@@ -548,12 +503,63 @@ extern u32 hud_adj_mode;
 void CCustomDetector::UpdateCL() 
 {
 	PROF_EVENT_DYNAMIC(cNameSect_str())
-	inherited::UpdateCL();
-	
-	if (m_HudLight.GetTorchActive() && !IsWorking())
+	if (m_HudLight.GetTorchInstalled())
 	{
-		m_HudLight.SwitchTorchlight(false);
+		if (Actor() != nullptr && Actor()->GetDetector() != nullptr && m_HudLight.GetTorchInstalled())
+		{
+			if (!psHUD_Flags.test(HUD_WEAPON_RT2))
+			{
+				// Hud рендера оружия отключен - возможно, сценка
+				m_HudLight.SwitchTorchlight(false);
+			}
+			else
+			{
+				float light_time_treshold_f = 0.0f;
+				u32 light_cur_time = 0;
+
+				if (GetState() == eShowing)
+				{
+					light_time_treshold_f = READ_IF_EXISTS(pSettings, r_float, HudSection(), ("torch_enable_time_" + GetActualCurrentAnim()).c_str(), 0.0f) * 1000.0f;
+
+					if (light_time_treshold_f >= 0.0f)
+					{
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+						m_HudLight.SwitchTorchlight(light_cur_time >= light_time_treshold_f);
+					}
+					else
+					{
+						light_time_treshold_f *= -1.0f;
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionCurrTm, m_dwMotionEndTm);
+						m_HudLight.SwitchTorchlight(light_cur_time <= light_time_treshold_f);
+					}
+				}
+				else if (GetState() == eHiding)
+				{
+					light_time_treshold_f = READ_IF_EXISTS(pSettings, r_float, HudSection(), ("torch_disable_time_" + GetActualCurrentAnim()).c_str(), 0.0f) * 1000.0f;
+
+					if (light_time_treshold_f >= 0.0f)
+					{
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+						m_HudLight.SwitchTorchlight(!(light_cur_time >= light_time_treshold_f));
+					}
+					else
+					{
+						light_time_treshold_f *= -1.0f;
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionCurrTm, m_dwMotionEndTm);
+						m_HudLight.SwitchTorchlight(!(light_cur_time <= light_time_treshold_f));
+					}
+				}
+				else
+					m_HudLight.SwitchTorchlight(true);
+			}
+		}
+		else if (m_HudLight.RenderLight != nullptr)
+			m_HudLight.SwitchTorchlight(false);
+
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
 	}
+
+	inherited::UpdateCL();
 
 	if (H_Parent() != Level().CurrentEntity())
 		return;

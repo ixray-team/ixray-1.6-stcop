@@ -5,6 +5,9 @@
 #include "player_hud.h"
 #include "HudItem.h"
 #include "physic_item.h"
+#include "CustomDetector.h"
+#include "Weapon.h"
+#include "Inventory.h"
 
 void TransformToHudTemp(Fvector& pos) {
 	Fmatrix inv_v;
@@ -74,6 +77,10 @@ void HudLightTorch::NewTorchlight(const char* section) {
 	LightOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_attach_offset_y", 0.0f);
 	LightOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_attach_offset_z", 0.0f);
 
+	AimOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_x", 0.0f);
+	AimOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_y", 0.0f);
+	AimOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_aim_attach_offset_z", 0.0f);
+
 	LightWorldOffset.x = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_x", 0.0f);
 	LightWorldOffset.y = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_y", 0.0f);
 	LightWorldOffset.z = READ_IF_EXISTS(pSettings, r_float, section, "torch_world_attach_offset_z", 0.0f);
@@ -106,8 +113,6 @@ void HudLightTorch::NewTorchlight(const char* section) {
 	{
 		LightDirBoneName = pSettings->r_string(section, "light_dir_bone");
 	}
-
-	SwitchTorchlight(IsRenderLight);
 }
 
 void HudLightTorch::SwitchTorchlight(bool isActive) {
@@ -152,8 +157,24 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const {
 			xform = item->HudItemData()->m_item_transform;
 			kin = item->HudItemData()->m_model;
 			lightBoneId = kin->LL_BoneID(LightBone);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightOffset);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, OmniOffset);
+
+			Fvector3 curr_light_offset = LightOffset;
+			Fvector3 curr_omni_offset = OmniOffset;
+
+			if (smart_cast<CCustomDetector*>(item) != nullptr)
+			{
+				CWeapon* wpn = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
+				if (wpn != nullptr && wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
+				{
+					Fvector3 aim_offset = AimOffset;
+					aim_offset.mul(wpn->GetAimFactor());
+					curr_light_offset.add(aim_offset);
+					curr_omni_offset.add(aim_offset);
+				}
+			}
+
+			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
+			kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, curr_omni_offset);
 
 			if (IsLightDirByBone)
 			{
