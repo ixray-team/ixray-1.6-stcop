@@ -780,7 +780,7 @@ void CActor::SwitchNightVision()
 		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 		{
 			auto sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
-			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, NVCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION);
+			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, NVCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION, true);
 		}
 		else
 		{
@@ -795,7 +795,7 @@ void CActor::SwitchNightVision()
 	}
 }
 
-bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device)
+bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device, bool sup_det)
 {
 	auto* det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT));
 	if (det && !det->IsHidden() && det->GetState() != CCustomDetector::eIdle)
@@ -812,7 +812,7 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 			return false;
 
 		CHUDAnimItem::LoadSound(animator_item_section.c_str(), "snd_draw", false);
-		CHUDAnimItem::PlayHudAnim(pSettings->r_string(animator_item_section, "hud"), "anm_show", "", callback, true);
+		CHUDAnimItem::PlayHudAnim(pSettings->r_string(animator_item_section, "hud"), "anm_show", "", callback, sup_det);
 		return true;
 	}
 	else if (item && item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
@@ -861,7 +861,7 @@ void CActor::SwitchTorch()
 		if (isGuns)
 		{
 			auto sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
-			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, HeadlampCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP);
+			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, HeadlampCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP, true);
 		}
 		else
 			torch->Switch();
