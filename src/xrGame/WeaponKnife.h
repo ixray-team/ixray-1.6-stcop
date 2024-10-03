@@ -20,6 +20,8 @@ protected:
 	virtual void		OnMotionMark				(u32 state, const motion_marks&);
 	virtual void		OnStateSwitch				(u32 S);
 
+	virtual void		UpdateCL					();
+
 	void				state_Attacking				(float dt);
 
 	virtual void		KnifeStrike					(const Fvector& pos, const Fvector& dir);
@@ -43,6 +45,8 @@ protected:
 	float				fCurrentHit;
 
 	float				fHitImpulse_cur;
+
+	u32					dwUpdateSounds_Frame;
 
 protected:
 	virtual void		LoadFireParams					(LPCSTR section);
