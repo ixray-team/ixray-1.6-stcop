@@ -1993,7 +1993,7 @@ void CWeaponMagazined::PlayAnimAim()
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	xr_string anm_name = "anm_idle_aim";
 
-	if (actor && actor->AnyMove())
+	if (actor && actor->AnyMove() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 	{
 		bool use_scope_anims = ScopeAttachable() && IsScopeAttached() && READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "use_scope_anims", false);
 		if (m_bAimScopeAnims && use_scope_anims)
