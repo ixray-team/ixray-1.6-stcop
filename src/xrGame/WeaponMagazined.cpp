@@ -1258,10 +1258,10 @@ void CWeaponMagazined::switch2_CheckMisfire()
 		PlaySound("sndJammedClick", get_LastFP());
 }
 
-void CWeaponMagazined::KickCallback(CWeapon* wpn, int param)
+void CWeaponMagazined::KickCallback(CHudItem* item)
 {
-	wpn->MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
-	wpn->MakeLockByConfigParam(("lock_time_end_" + wpn->GetActualCurrentAnim()).c_str());
+	static_cast<CWeapon*>(item)->MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
+	static_cast<CWeapon*>(item)->MakeLockByConfigParam(("lock_time_end_" + static_cast<CWeapon*>(item)->GetActualCurrentAnim()).c_str());
 }
 
 void CWeaponMagazined::switch2_Kick()
@@ -1269,7 +1269,7 @@ void CWeaponMagazined::switch2_Kick()
 	SetPending(TRUE);
 	PlaySound("sndKick", get_LastFP());
 	PlayHUDMotion("anm_kick", TRUE, eKick);
-	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, KickCallback, 0);
+	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, KickCallback);
 }
 
 void CWeaponMagazined::PlayAnimFakeshoot()
@@ -1903,18 +1903,18 @@ void CWeaponMagazined::PlayAnimHide()
 	PlayHUDMotion("anm_hide", TRUE, GetState());
 }
 
-void CWeaponMagazined::OnAmmoTimer(CWeapon* wpn, int param)
+void CWeaponMagazined::OnAmmoTimer(CHudItem* item)
 {
-	if (!wpn->ParentIsActor())
+	if (!static_cast<CWeapon*>(item)->ParentIsActor())
 		return;
 
-	CWeaponMagazined* wpnmag = smart_cast<CWeaponMagazined*>(wpn);
+	CWeaponMagazined* wpnmag = smart_cast<CWeaponMagazined*>(item);
 	if (wpnmag)
 	{
-		wpn->IsReloaded = false;
+		static_cast<CWeapon*>(item)->IsReloaded = false;
 		wpnmag->DoReload();
-		wpn->IsReloaded = true;
-		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim(), false);
+		static_cast<CWeapon*>(item)->IsReloaded = true;
+		static_cast<CWeapon*>(item)->MakeLockByConfigParam("lock_time_end_" + static_cast<CWeapon*>(item)->GetActualCurrentAnim(), false);
 	}
 }
 

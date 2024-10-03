@@ -197,8 +197,6 @@ public:
 
 	bool	NeedBlockSprint						() const; 
 
-	typedef void (*TAnimationEffector)(CWeapon* wpn, int param);
-
 	float lock_time;
 
 	TAnimationEffector lock_time_callback;
@@ -207,7 +205,6 @@ public:
 
 	int ammo_cnt_to_reload;
 	int _last_shot_ammotype;
-	int lock_time_param;
 	u32 _last_update_time;
 
 	bool bReloadKeyPressed;
@@ -273,8 +270,8 @@ public:
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
 	shared_str FindStrValueInUpgradesDef(shared_str key, shared_str def);
 
-	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr, int param = 0);
-	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr, int param = 0);
+	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr);
+	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr);
 	xr_string AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix = "");
 	xr_string GetActualCurrentAnim() const;
 	xr_string GetFiremodeSuffix() const { return ""; }

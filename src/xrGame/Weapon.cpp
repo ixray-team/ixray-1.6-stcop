@@ -98,7 +98,6 @@ CWeapon::CWeapon()
 	bIsNeedCallDet = false;
 
 	lock_time = 0.f;
-	lock_time_param = 0;
 	lock_time_callback = nullptr;
 	_last_update_time = Device.dwTimeGlobal;
 	ammo_cnt_to_reload = -1;
@@ -1155,9 +1154,8 @@ void CWeapon::ModUpdate()
 
 		if (lock_time_callback != nullptr)
 		{
-			lock_time_callback(this, lock_time_param);
+			lock_time_callback(this);
 			lock_time_callback = nullptr;
-			lock_time_param = 0;
 		}
 	}
 
@@ -1313,14 +1311,14 @@ void CWeapon::EnableActorNVisnAfterZoom()
 	}
 }
 
-u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting, bool need_suffix, TAnimationEffector fun, int param)
+u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting, bool need_suffix, TAnimationEffector fun)
 {
 	if (need_suffix)
 		M = NeedAddSuffix(M);
 
 	u32 result = CHudItem::PlayHUDMotion(M, bMixIn, this, state, need_suffix);
 
-	MakeLockByConfigParam("lock_time_" + M, lock_shooting, fun, param);
+	MakeLockByConfigParam("lock_time_" + M, lock_shooting, fun);
 
 	if (lock_time > 0.f)
 		curr_anim = M;
@@ -1328,7 +1326,7 @@ u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooti
 	return result;
 }
 
-void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimationEffector fun, int param)
+void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimationEffector fun)
 {
 	if (pSettings->line_exist(hud_sect, key.c_str()))
 	{
@@ -1339,10 +1337,7 @@ void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimatio
 			fShotTimeCounter = floor(time * 1000.f);
 
 		if (fun != nullptr)
-		{
 			lock_time_callback = fun;
-			lock_time_param = param;
-		}
 	}
 }
 

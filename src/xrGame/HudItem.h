@@ -179,6 +179,8 @@ protected:
 	bool						m_bDisableBore;
 	bool						SwitchSprint;
 
+	typedef void (*TAnimationEffector)(CHudItem* item);
+
 private:
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;
