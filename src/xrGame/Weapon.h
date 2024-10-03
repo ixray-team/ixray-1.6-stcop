@@ -16,6 +16,8 @@
 #include "Actor.h"
 #include "script_game_object.h"
 
+#include "CustomDetector.h"
+
 class CEntity;
 class ENGINE_API CMotionDef;
 class CSE_ALifeItemWeapon;
@@ -25,6 +27,7 @@ class CParticlesObject;
 class CUIWindow;
 class CBinocularsVision;
 class CNightVisionEffector;
+class CCustomDetector;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
@@ -203,6 +206,8 @@ public:
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
+
+	CCustomDetector* GetDetector(bool in_slot = false);
 
 	void HideOneUpgradeLevel(std::string section);
 	void ModUpdate();

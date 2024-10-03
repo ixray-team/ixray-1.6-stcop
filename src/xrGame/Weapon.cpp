@@ -22,7 +22,6 @@
 #include "ui/UIWindow.h"
 #include "ui/UIXmlInit.h"
 #include "Torch.h"
-#include "CustomDetector.h"
 #include "script_game_object.h"
 
 #define WEAPON_REMOVE_TIME		60000
@@ -933,27 +932,22 @@ void CWeapon::UpdateCL		()
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
 
-	auto i1 = g_player_hud->attached_item(1);
-	if (i1 && HudItemData())
+	if (GetDetector() && (GetDetector()->GetState() == CCustomDetector::eIdle || !GetDetector()->NeedActivation()))
 	{
-		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && (det->GetState() == CCustomDetector::eIdle || !det->NeedActivation()))
+		if (bUnjamKeyPressed)
 		{
-			if (bUnjamKeyPressed)
-			{
-				bUnjamKeyPressed = false;
-				Action(kWPN_RELOAD, CMD_START);
-			}
-			else if (bAmmotypeKeyPressed)
-			{
-				bAmmotypeKeyPressed = false;
-				Action(kWPN_NEXT, CMD_START);
-			}
-			else if (bReloadKeyPressed)
-			{
-				bReloadKeyPressed = false;
-				Action(kWPN_RELOAD, CMD_START);
-			}
+			bUnjamKeyPressed = false;
+			Action(kWPN_RELOAD, CMD_START);
+		}
+		else if (bAmmotypeKeyPressed)
+		{
+			bAmmotypeKeyPressed = false;
+			Action(kWPN_NEXT, CMD_START);
+		}
+		else if (bReloadKeyPressed)
+		{
+			bReloadKeyPressed = false;
+			Action(kWPN_RELOAD, CMD_START);
 		}
 	}
 
@@ -1373,13 +1367,8 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 	else
 		return false;
 
-	auto i1 = g_player_hud->attached_item(1);
-	if (i1 && HudItemData())
-	{
-		auto det = smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
-		if (det && det->GetState() != CCustomDetector::eIdle)
-			return false;
-	}
+	if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
+		return false;
 
 	if (IsMisfire())
 	{
@@ -2666,4 +2655,28 @@ float CWeapon::GetHudFov() {
 	auto zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
+}
+
+CCustomDetector* CWeapon::GetDetector(bool in_slot)
+{
+	if (in_slot)
+	{
+		if (m_pInventory)
+		{
+			CCustomDetector* in_slot = smart_cast<CCustomDetector*>(m_pInventory->ItemFromSlot(DETECTOR_SLOT));
+			if (in_slot)
+				return in_slot;
+		}
+	}
+	else
+	{
+		if (HudItemData())
+		{
+			attachable_hud_item* i1 = g_player_hud->attached_item(1);
+			if (i1)
+				return smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		}
+	}
+
+	return nullptr;
 }
