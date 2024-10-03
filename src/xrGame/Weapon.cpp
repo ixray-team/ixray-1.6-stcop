@@ -641,6 +641,21 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 			m_magazine.push_back(m_DefaultCartridge);
 	}
 
+	xr_vector<u8> ammo_ids = E->m_AmmoIDs;
+
+	for (u32 i = 0; i < ammo_ids.size(); i++)
+	{
+		u8 LocalAmmoType = ammo_ids[i];
+		if (i >= m_magazine.size())
+			continue;
+
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
+		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+			continue;
+
+		l_cartridge.Load(*m_ammoTypes[LocalAmmoType], LocalAmmoType);
+	}
+
 	UpdateAddonsVisibility();
 	InitAddons();
 
@@ -691,6 +706,13 @@ void CWeapon::net_Export(NET_Packet& P)
 	P.w_u8					((u8)bMisfire);
 	P.w_float				(m_fRTZoomFactor);
 	P.w_u8					((u8)m_cur_scope);
+
+	P.w_u8(u8(m_magazine.size()));
+	for (u32 i = 0; i < m_magazine.size(); i++)
+	{
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
+		P.w_u8(l_cartridge.m_LocalAmmoType);
+	}
 }
 
 void CWeapon::net_Import(NET_Packet& P)
@@ -731,6 +753,20 @@ void CWeapon::net_Import(NET_Packet& P)
 	u8 scope;
 	P.r_u8					(scope);
 	m_cur_scope				= scope;
+
+	u8 AmmoCount = P.r_u8();
+	for (u32 i = 0; i < AmmoCount; i++)
+	{
+		u8 LocalAmmoType = P.r_u8();
+		if (i >= m_magazine.size())
+			continue;
+
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
+		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+			continue;
+
+		l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+	}
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
