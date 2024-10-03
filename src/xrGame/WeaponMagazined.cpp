@@ -264,7 +264,7 @@ bool CWeaponMagazined::OnShoot_CanShootNow()
 	}
 	else
 	{
-		if (ParentIsActor() && (Actor()->GetMovementState(eReal) & mcSprint || GetState() == eSprintEnd))
+		if (ParentIsActor() && GetActualCurrentAnim().find("anm_idle_sprint") == 0)
 		{
 			Actor()->SetMovementState(eWishful, mcSprint, false);
 			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
