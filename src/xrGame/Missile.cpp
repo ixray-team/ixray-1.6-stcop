@@ -88,6 +88,15 @@ void CMissile::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "snd_throw"))
 		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 
+	if (pSettings->line_exist(section, "snd_suicide_begin"))
+		m_sounds.LoadSound(section, "snd_suicide_begin", "sndSuicideBegin", true, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
+	if (pSettings->line_exist(section, "snd_suicide_throw"))
+		m_sounds.LoadSound(section, "snd_suicide_throw", "sndSuicideThrow", true, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
+	if (pSettings->line_exist(section, "snd_suicide_stop"))
+		m_sounds.LoadSound(section, "snd_suicide_stop", "sndSuicideStop", true, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
 		m_sCheckoutBones.clear();
@@ -346,13 +355,25 @@ void CMissile::State(u32 state)
 		} break;
 	case eThrowStart:
 		{
-			SetPending			(TRUE);
-			m_fThrowForce		= m_fMinForce;
-			if (m_sounds.FindSoundItem("sndThrowBegin", false))
-				PlaySound("sndThrowBegin", Position());
+			SetPending(TRUE);
+			if (Actor() == H_Parent() && Actor()->IsActorControlled() && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "allow_suicide", false))
+			{
+				PlayHUDMotion("anm_suicide_begin", TRUE, this, GetState());
+				PlaySound("sndSuicideBegin", Position());
+				SetConstPowerStatus(true);
+				SetImmediateThrowStatus(true);
+			}
+			else
+			{
+				m_fThrowForce = m_fMinForce;
+				if (m_sounds.FindSoundItem("sndThrowBegin", false))
+					PlaySound("sndThrowBegin", Position());
 
-			PlayHUDMotion		("anm_throw_begin", TRUE, this, GetState());
-			StartCompanionAnimIfNeeded("throw_begin");
+				PlayHUDMotion("anm_throw_begin", TRUE, this, GetState());
+
+				//if (Actor() && Actor() == H_Parent() && Actor()->GetDetector() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+					//Actor()->GetDetector()->SwitchState(CCustomDetector::eDetThrowStart);
+			}
 		} break;
 	case eReady:
 		{
@@ -360,12 +381,43 @@ void CMissile::State(u32 state)
 		} break;
 	case eThrow:
 		{
-			SetPending			(TRUE);
-			m_throw				= false;
-			if (m_sounds.FindSoundItem("sndThrow", false))
-				PlaySound("sndThrow", Position());
-			PlayHUDMotion		("anm_throw", TRUE, this, GetState());
-			StartCompanionAnimIfNeeded("throw_end");
+			SetPending(TRUE);
+			m_throw = false;
+			bool is_suicide_anim = IsMissileInSuicideState();
+			bool is_suicide_allowed = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "allow_suicide", false);
+
+			if (Actor() == H_Parent() && is_suicide_allowed && is_suicide_anim && Actor()->IsActorControlled())
+			{
+				Actor()->NotifySuicideShotCallbackIfNeeded();
+
+				set_destroy_time_max(READ_IF_EXISTS(pSettings, r_u32, m_section_id, "suicide_success_destroy_time", destroy_time_max()));
+				PrepareGrenadeForSuicideThrow(READ_IF_EXISTS(pSettings, r_float, m_section_id, "suicide_success_force", 20.f));
+				Action(kWPN_ZOOM, CMD_STOP);
+
+				PlaySound("sndSuicideThrow", Position());
+				PlayHUDMotion("anm_suicide_throw", TRUE, this, GetState());
+			}
+			else if (Actor() == H_Parent() && is_suicide_anim && is_suicide_allowed)
+			{
+				Actor()->NotifySuicideStopCallbackIfNeeded();
+
+				set_destroy_time_max(READ_IF_EXISTS(pSettings, r_u32, m_section_id, "suicide_fail_destroy_time", destroy_time_max()));
+				PrepareGrenadeForSuicideThrow(READ_IF_EXISTS(pSettings, r_float, m_section_id, "suicide_fail_force", 20.f));
+				Action(kWPN_ZOOM, CMD_STOP);
+
+				PlayHUDMotion("anm_suicide_stop", TRUE, this, GetState());
+				PlaySound("sndSuicideStop", Position());
+			}
+			else
+			{
+				if (m_sounds.FindSoundItem("sndThrow", false))
+					PlaySound("sndThrow", Position());
+
+				PlayHUDMotion("anm_throw", TRUE, this, GetState());
+
+				//if (Actor() && Actor() == H_Parent() && Actor()->GetDetector() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+					//Actor()->GetDetector()->SwitchState(CCustomDetector::eDetThrowEnd);
+			}
 		} break;
 	case eThrowEnd:
 		{
@@ -392,6 +444,12 @@ void CMissile::OnStateSwitch	(u32 S)
 
 void CMissile::OnAnimationEnd(u32 state) 
 {
+	if (IsMissileInSuicideState())
+	{
+		SetConstPowerStatus(true);
+		SetImmediateThrowStatus(true);
+	}
+
 	switch(state) 
 	{
 	case eHiding:
@@ -910,3 +968,14 @@ bool CMissile::GetBriefInfo( II_BriefInfo& info )
 	return true;
 }
 
+void CMissile::PrepareGrenadeForSuicideThrow(float force)
+{
+	m_fMinForce = force;
+	m_fMaxForce = force;
+	m_fConstForce = force;
+}
+
+bool CMissile::IsMissileInSuicideState() const
+{
+	return GetActualCurrentAnim().find("anm_suicide") == 0;
+}

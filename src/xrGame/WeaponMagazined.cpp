@@ -245,8 +245,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 bool CWeaponMagazined::OnShoot_CanShootNow()
 {
-	//if (ParentIsActor() && (IsActorPlanningSuicide() || IsActorSuicideNow()))
-		//return IsSuicideInreversible();
+	if (ParentIsActor() && (Actor()->IsActorPlanningSuicide() || Actor()->IsActorSuicideNow()))
+		return Actor()->IsSuicideInreversible();
 
 	if (IsActionProcessing())
 	{
@@ -797,6 +797,9 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 		new_name = AddSuffixName(new_name, m_sFireModeMask_1.c_str());
 	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 		new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str());
+
+	if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
+		new_name = AddSuffixName(new_name, "_suicide");
 
 	if (!IsMisfire() && iAmmoElapsed == 1)
 		new_name = AddSuffixName(new_name, isGuns ? "_last" : "_l");

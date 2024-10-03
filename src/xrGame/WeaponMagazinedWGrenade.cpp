@@ -577,6 +577,9 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(const xr_string& M)
 			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_g");
 
+			if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
+				new_name = AddSuffixName(new_name, "_suicide", "_g");
+
 			if (!IsMisfire() && iAmmoElapsed2 == 0)
 				new_name = AddSuffixName(new_name, "_empty", "_g");
 
@@ -609,6 +612,9 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(const xr_string& M)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_1.c_str(), "_w_gl");
 			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_w_gl");
+
+			if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
+				new_name = AddSuffixName(new_name, "_suicide", "_w_gl");
 
 			if (!IsMisfire() && iAmmoElapsed == 1)
 				new_name = AddSuffixName(new_name, isGuns ? "_last" : "_l", "_w_gl");

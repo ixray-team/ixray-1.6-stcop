@@ -285,8 +285,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 					if (mstate_real&mcBack)
 						scale *= m_fWalkBackFactor;
 
-
-
 				if (mstate_real&mcCrouch)	scale *= m_fCrouchFactor;
 				if (mstate_real&mcClimb)	scale *= m_fClimbFactor;
 				if (mstate_real&mcSprint)	scale *= m_fSprintFactor;
@@ -298,6 +296,9 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 					else
 						scale *= m_fWalk_StrafeFactor;
 				}
+
+				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+					scale *= GetCurrentSuicideWalkKoef();
 
 				vControlAccel.mul			(scale);
 				cam_eff_factor				= scale;

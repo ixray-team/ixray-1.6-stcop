@@ -612,6 +612,12 @@ void CWeapon::Load		(LPCSTR section)
 	m_bAddCartridgeOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
 	m_bEmptyPreloadMode = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "empty_preload_mode", false);
 
+	if (pSettings->line_exist(section, "snd_suicide"))
+		m_sounds.LoadSound(section, "snd_suicide", "sndSuicide", false, SOUND_TYPE_ITEM_TAKING);
+
+	if (pSettings->line_exist(section, "snd_suicide_stop"))
+		m_sounds.LoadSound(section, "snd_suicide_stop", "sndStopSuicide", false, SOUND_TYPE_ITEM_TAKING);
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -1505,6 +1511,20 @@ u32 CWeapon::GetAmmoInGLCount()
 	return result;
 }
 
+u32 CWeapon::GetAmmoInMagCount()
+{
+	u32 result = 0;
+
+	CWeaponMagazinedWGrenade* wpngl = smart_cast<CWeaponMagazinedWGrenade*>(this);
+
+	if (wpngl && IsGrenadeMode())
+		result = wpngl->m_magazine2.size();
+	else
+		result = m_magazine.size();
+
+	return result;
+}
+
 int CWeapon::GetMagCapacity()
 {
 	int result = 0;
@@ -1785,7 +1805,7 @@ bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_aft
 
 bool CWeapon::IsActionProcessing()
 {
-	return H_Parent() && (lock_time > 0.f /* || ParentIsActor() && IsActorSuicideNow() || IsActorPlanningSuicide()*/);
+	return H_Parent() && (lock_time > 0.f  || ParentIsActor() && Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide());
 }
 
 void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
@@ -2016,10 +2036,9 @@ bool CWeapon::CanAimNow()
 
 	bool result = true;
 
-	/*if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
+	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
 		result = false;
-	else */
-	if (GetState() == eIdle)
+	else if (GetState() == eIdle)
 		result = true;
 	else if (IsActionProcessing() || GetState() == eSprintStart || GetState() == eSprintEnd || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
 		result = false;
@@ -2051,11 +2070,11 @@ bool CWeapon::CanLeaveAimNow()
 	if (!ParentIsActor())
 		return true;
 
-	//if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
-		//return true;
 	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 		return true;
 
+	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
+		return true;
 
 	if ((IsActionProcessing() && GetActualCurrentAnim().find("anm_idle_aim_start") == -1 || GetState() != eIdle))
 	{
@@ -3387,6 +3406,12 @@ void CWeapon::OnStateSwitch	(u32 S)
 			PlayHUDMotion("anm_finish_detector", TRUE, GetState());
             SetPending(true);
         break;
+		case eSuicide:
+			switch2_Suicide();
+			break;
+		case eSuicideStop:
+			switch2_SuicideStop();
+			break;
 		case eFire:
 		case eReload:
 		case eUnjam:
@@ -3424,6 +3449,20 @@ void CWeapon::OnStateSwitch	(u32 S)
 	}
 }
 
+void CWeapon::switch2_Suicide()
+{
+	SetPending(TRUE);
+	PlaySound("sndSuicide", get_LastFP());
+	PlayHUDMotion("anm_suicide", TRUE, eSuicide, false, true, { CHudItem::TAnimationEffector(Actor(), &CActor::OnSuicideAnimEnd) });
+}
+
+void CWeapon::switch2_SuicideStop()
+{
+	SetPending(TRUE);
+	PlaySound("sndStopSuicide", get_LastFP());
+	PlayHUDMotion("anm_stop_suicide", TRUE, eSuicideStop);
+}
+
 void CWeapon::OnAnimationEnd(u32 state) 
 {
 	inherited::OnAnimationEnd(state);
@@ -3439,6 +3478,10 @@ void CWeapon::OnAnimationEnd(u32 state)
 				SwitchState(eShowingEndDet);
 			}
 		}break;
+		case eSuicide:
+			SwitchState(eSuicideStop);
+		break;
+		case eSuicideStop:
 		case eShowingEndDet:
 		case eHideDet:
 			SwitchState(eIdle);

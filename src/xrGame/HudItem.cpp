@@ -1025,3 +1025,25 @@ bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
 
 	return result;
 }
+
+bool CHudItem::IsSuicideAnimPlaying() const
+{
+	return GetActualCurrentAnim().find("anm_prepare_suicide") == 0 || GetState() == eSuicide || GetActualCurrentAnim().find("anm_suicide") == 0;
+}
+
+bool CHudItem::WpnCanShoot() const
+{
+	return !!(smart_cast<CWeaponMagazined*>(this) != nullptr && smart_cast<CWeaponBinoculars*>(this) == nullptr);
+}
+
+CHudItem::jitter_params CHudItem::GetCurJitterParams(shared_str hud_sect)
+{
+	jitter_params result;
+
+	result.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
+	result.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
+
+	result.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", result.pos_amplitude);
+	result.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", result.rot_amplitude);
+	return result;
+}

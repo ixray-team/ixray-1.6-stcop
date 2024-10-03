@@ -249,6 +249,8 @@ public:
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 	void ReassignWorldAnims();
+	void switch2_Suicide();
+	void switch2_SuicideStop();
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
@@ -283,6 +285,7 @@ public:
 	CCartridge* GetCartridgeFromMagVector(u32 index);
 	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index);
 	u32 GetAmmoInGLCount();
+	u32 GetAmmoInMagCount();
 	int GetMagCapacity();
 
 	void ProcessAmmo(bool forced = false);
