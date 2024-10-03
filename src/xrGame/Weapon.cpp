@@ -1297,20 +1297,20 @@ void CWeapon::ProcessScope()
 		bool status = (i == cur_index);
 
 		if (pSettings->line_exist(tmp, "bones"))
-			SetWeaponMultipleBonesStatus(tmp.c_str(), "bones", status);
+			SetMultipleBonesStatus(tmp.c_str(), "bones", status);
 
 		if (pSettings->line_exist(tmp, "hide_bones"))
-			SetWeaponMultipleBonesStatus(tmp.c_str(), "hide_bones", !status);
+			SetMultipleBonesStatus(tmp.c_str(), "hide_bones", !status);
 	}
 
 	if (cur_index >= 0)
 	{
 		shared_str tmp = GetScopeSection(cur_index);
 		if (pSettings->line_exist(tmp, "overriding_hide_bones"))
-			SetWeaponMultipleBonesStatus(tmp.c_str(), "overriding_hide_bones", false);
+			SetMultipleBonesStatus(tmp.c_str(), "overriding_hide_bones", false);
 
 		if (pSettings->line_exist(tmp, "overriding_show_bones"))
-			SetWeaponMultipleBonesStatus(tmp.c_str(), "overriding_show_bones", true);
+			SetMultipleBonesStatus(tmp.c_str(), "overriding_show_bones", true);
 	}
 	else
 	{
@@ -1619,23 +1619,23 @@ void CWeapon::ProcessAmmo(bool forced)
 
     for (int i = start_index; i <= finish_index; i++)
 	{
-        SetWeaponModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), TRUE);
+        SetModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), TRUE);
         if (prefix_hide.length() > 0)
-            SetWeaponModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), FALSE);
+            SetModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), FALSE);
     }
 
     for (int i = finish_index + 1; i <= limitator; i++)
 	{
-        SetWeaponModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), FALSE);
+        SetModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), FALSE);
         if (prefix_hide.length() > 0)
-            SetWeaponModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), TRUE);
+            SetModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), TRUE);
     }
 
     if (prefix_var.length() > 0)
 	{
         for (int i = start_index - 1; i <= limitator; i++)
 		{
-            SetWeaponModelBoneStatus((prefix_var + xr_string::ToString(i)).c_str(), i == finish_index);
+            SetModelBoneStatus((prefix_var + xr_string::ToString(i)).c_str(), i == finish_index);
         }
     }
 }
@@ -1689,10 +1689,10 @@ void CWeapon::ProcessAmmoAdv(bool forced)
         if (IsMisfire() && pSettings->line_exist(bones_sect, "additional_ammo_bone_when_jammed") && pSettings->r_bool(bones_sect, "additional_ammo_bone_when_jammed"))
             cnt += 1;
 
-        SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", FALSE);
+        SetMultipleBonesStatus(bones_sect.c_str(), "all_bones", FALSE);
 
         xr_string configuration = "configuration_" + xr_string::ToString(cnt);
-        SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), TRUE);
+        SetMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), TRUE);
     }
 }
 
@@ -1726,10 +1726,10 @@ void CWeapon::ProcessAmmoGL(bool forced)
 
 	if (bones_sect != nullptr)
 	{
-		SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", false);
+		SetMultipleBonesStatus(bones_sect.c_str(), "all_bones", false);
 
 		xr_string configuration = "configuration_" + xr_string::ToString(cnt);
-		SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), true);
+		SetMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), true);
 	}
 }
 
@@ -2654,7 +2654,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
-			SetWeaponMultipleBonesStatus(section, "show_bones", TRUE);
+			SetMultipleBonesStatus(section, "show_bones", TRUE);
 	}
 
 	for (auto& bone : m_bHideBonesOverride)
@@ -2767,7 +2767,7 @@ void CWeapon::UpdateAddonsVisibility()
 		LPCSTR section = pSettings->r_string(m_upgrades.at(i).c_str(), "section");
 
 		if (pSettings->line_exist(section, "show_bones"))
-			SetWeaponMultipleBonesStatus(section, "show_bones", TRUE);
+			SetMultipleBonesStatus(section, "show_bones", TRUE);
 
 	}
 

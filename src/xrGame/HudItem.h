@@ -5,14 +5,14 @@ class CPhysicItem;
 class NET_Packet;
 class CInventoryItem;
 class CMotionDef;
+class HudLightTorch;
 
 #include "actor_defs.h"
 #include "inventory_space.h"
 #include "hudsound.h"
 #include "InertionData.h"
 
-// TODO: Rework
-#include "player_hud.h"
+#include "HudLightTorch.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -129,8 +129,8 @@ public:
 
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
-	virtual void				SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const;
-	virtual void				SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const;
+	virtual void				SetModelBoneStatus(const char* bone, BOOL show) const;
+	virtual void				SetMultipleBonesStatus(const char* section, const char* line, BOOL show) const;
 
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
 

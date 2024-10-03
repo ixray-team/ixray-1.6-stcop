@@ -203,7 +203,12 @@ bool  CCustomDetector::need_renderable()
 void CCustomDetector::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
-	SetWeaponMultipleBonesStatus(m_HudLight.m_section.c_str(), "torch_cone_bones", m_HudLight.GetTorchActive());
+
+	// TODO: Drombeys to Rawlik: Rework
+	if (pSettings->section_exist(m_HudLight.Section))
+	{
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
+	}
 
 	float CurrentAnimTime = -1.0f;
 	bool TorchActive = false;
@@ -294,16 +299,19 @@ void CCustomDetector::OnStateSwitch(u32 S)
 		}break;
 	}
 
-	if (CurrentAnimTime > 0.0f)
+	if (pSettings->section_exist(m_HudLight.Section))
 	{
-		Device.callback(u32(CurrentAnimTime * 1000),
-			[this, TorchActive]()
-			{
-				m_HudLight.SwitchTorchlight(TorchActive);
-				
-				// TODO Hozar to Rawlik: Redo the hiding of dice not on realtime
-				SetWeaponMultipleBonesStatus(m_HudLight.m_section.c_str(), "torch_cone_bones", m_HudLight.GetTorchActive());
-			});
+		if (CurrentAnimTime > 0.0f)
+		{
+			Device.callback(u32(CurrentAnimTime * 1000),
+				[this, TorchActive]()
+				{
+					m_HudLight.SwitchTorchlight(TorchActive);
+
+					// TODO Hozar to Rawlik: Redo the hiding of dice not on realtime
+					SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
+				});
+		}
 	}
 
 	m_old_state=S;
