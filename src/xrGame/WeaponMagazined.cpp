@@ -257,8 +257,6 @@ void CWeaponMagazined::FireStart()
 					return;
 
 				inherited::FireStart();
-				
-				R_ASSERT(H_Parent());
 				SwitchState(eFire);
 			}
 		}
