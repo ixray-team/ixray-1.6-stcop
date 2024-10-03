@@ -193,8 +193,18 @@ public:
 
 	bool	NeedBlockSprint						() const; 
 
+	typedef void (*TAnimationEffector)(CWeapon* wpn, int param);
+
+	float lock_time;
+
+	TAnimationEffector lock_time_callback;
+
+	xr_string curr_anim;
+
+	int iAmmoInChamberElapsed;
 	int ammo_cnt_to_reload;
 	int _last_shot_ammotype;
+	int lock_time_param;
 	u32 _last_update_time;
 
 	bool bReloadKeyPressed;
@@ -206,18 +216,16 @@ public:
 	bool m_bUseSilHud;
 	bool m_bUseScopeHud;
 	bool m_bUseGLHud;
-
 	bool m_bUseChangeFireModeAnim;
 	bool m_bRestGL_and_Sil;
 	bool m_bJamNotShot;
 	bool m_bAmmoInChamber;
 	bool bIsNeedCallDet;
+	bool IsReloaded;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
 	shared_str hud_gl;
-
-	int iAmmoInChamberElapsed;
 
 	virtual void GiveAmmoFromMagToChamber();
 	virtual void DeleteAmmoInChamber();
@@ -240,6 +248,10 @@ public:
 	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
 
+	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr, int param = 0);
+	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr, int param = 0);
+	xr_string AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix = "");
+	xr_string GetActualCurrentAnim() const;
 
 	u8 GetAmmoTypeIndex(bool second = false);
 	u8 GetAmmoTypeToReload();

@@ -101,8 +101,14 @@ CWeapon::CWeapon()
 	hud_gl = nullptr;
 
 	bIsNeedCallDet = false;
+
+	lock_time = 0.f;
+	lock_time_param = 0;
+	lock_time_callback = nullptr;
 	_last_update_time = Device.dwTimeGlobal;
+	curr_anim = "";
 	ammo_cnt_to_reload = -1;
+	IsReloaded = false;
 	_last_shot_ammotype = 0;
 }
 
@@ -1105,6 +1111,28 @@ void CWeapon::ModUpdate()
 	u32 delta = Device.GetTimeDeltaSafe(_last_update_time);
 	ProcessUpgrade();
 	ProcessScope();
+
+	if (!H_Parent())
+	{
+		lock_time_callback = nullptr;
+		lock_time = 0.f;
+	}
+
+	if (lock_time > delta)
+		lock_time -= delta;
+	else
+	{
+		lock_time = 0.f;
+		curr_anim = "";
+
+		if (lock_time_callback != nullptr)
+		{
+			lock_time_callback(this, lock_time_param);
+			lock_time_callback = nullptr;
+			lock_time_param = 0;
+		}
+	}
+
 	_last_update_time = Device.dwTimeGlobal;
 }
 
@@ -1257,6 +1285,61 @@ void CWeapon::EnableActorNVisnAfterZoom()
 	}
 }
 
+u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting, bool need_suffix, TAnimationEffector fun, int param)
+{
+	if (need_suffix)
+		M = NeedAddSuffix(M);
+
+	u32 result = CHudItem::PlayHUDMotion(M, bMixIn, this, state, need_suffix);
+
+	MakeLockByConfigParam("lock_time_" + M, lock_shooting, fun, param);
+
+	if (lock_time > 0.f)
+		curr_anim = M;
+
+	return result;
+}
+
+void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimationEffector fun, int param)
+{
+	if (pSettings->line_exist(hud_sect, key.c_str()))
+	{
+		float time = pSettings->r_float(hud_sect, key.c_str());
+		lock_time = floor(time * 1000.f);
+
+		if (lock_shooting)
+			fShotTimeCounter = floor(time * 1000.f);
+
+		if (fun != nullptr)
+		{
+			lock_time_callback = fun;
+			lock_time_param = param;
+		}
+	}
+}
+
+xr_string CWeapon::AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix)
+{
+	xr_string new_name = M + suffix;
+	xr_string test_name = new_name + test_suffix;
+
+	if (HudAnimationExist(new_name.c_str()))
+		return new_name;
+	else if (HudAnimationExist(test_name.c_str()))
+		return test_name;
+
+	return M;
+}
+
+xr_string CWeapon::GetActualCurrentAnim() const
+{
+	if (curr_anim != "")
+		return curr_anim;
+	else if (m_current_motion != nullptr)
+		return m_current_motion.c_str();
+
+	return "";
+}
 
 u8 CWeapon::GetAmmoTypeIndex(bool second)
 {
@@ -2687,16 +2770,16 @@ void CWeapon::OnStateSwitch	(u32 S)
 	switch (S)
 	{
         case eShowingDet:
-			PlayHUDMotion("anm_prepare_detector", TRUE, this, GetState());
+			PlayHUDMotion("anm_prepare_detector", TRUE, GetState());
             SetPending(true);
         break;
         case eShowingEndDet:
-			PlayHUDMotion("anm_draw_detector", FALSE, this, GetState());
+			PlayHUDMotion("anm_draw_detector", FALSE, GetState());
             SetPending(true);
         break;
         break;
         case eHideDet:
-			PlayHUDMotion("anm_finish_detector", TRUE, this, GetState());
+			PlayHUDMotion("anm_finish_detector", TRUE, GetState());
             SetPending(true);
         break;
 	}

@@ -463,7 +463,6 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	trans.mulB_43(hud_rotation);
 }
 
-
 void CHudItem::UpdateCL()
 {
 	if(m_current_motion_def)
@@ -607,19 +606,6 @@ u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, b
 		m_bStopAtEndAnimIsRunning	= false;
 
 	return anim_time;
-}
-
-xr_string CHudItem::AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix)
-{
-	xr_string new_name = M + suffix;
-	xr_string test_name = new_name + test_suffix;
-
-	if (HudAnimationExist(new_name.c_str()))
-		return new_name;
-	else if (HudAnimationExist(test_name.c_str()))
-		return test_name;
-
-	return M;
 }
 
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
