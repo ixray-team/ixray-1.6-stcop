@@ -916,9 +916,7 @@ void CHudItem::AssignDetectorAnim(const xr_string anm_alias, bool bMixIn, bool u
 	if (use_companion_section)
 		section = HudSection().c_str();
 
-	string128 anm = "";
-	xr_sprintf(anm, "anm_lefthand_%s_wpn_draw%s", Actor()->GetDetector()->m_section_id.c_str(), UI().is_widescreen() ? "_16x9" : "");
-	if (pSettings->line_exist(section, anm))
+	if (pSettings->line_exist(section, anm_alias.c_str()))
 	{
 		swap(this->HudItemData()->m_hand_motions, Actor()->GetDetector()->HudItemData()->m_hand_motions);
 		Actor()->GetDetector()->PlayHUDMotion(anm_alias, true, Actor()->GetDetector(), eIdle);
