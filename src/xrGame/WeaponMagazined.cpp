@@ -1577,7 +1577,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	case kWPN_FIREMODE_PREV:
 	case kWPN_FIREMODE_NEXT:
 	{
-		return ChangeFiremode(cmd);
+		return ChangeFiremode(cmd, flags);
 	}break;
 	}
 	return false;
@@ -2141,11 +2141,13 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 		return xr_string::ToString(GetQueueSize());
 }
 
-bool CWeaponMagazined::ChangeFiremode(u16 cmd)
+bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (!HasFireModes())
+		return false;
+	else if (!(flags & CMD_START))
 		return false;
 	else if (bPrevModeKeyPressed || bNextModeKeyPressed)
 		return false;
