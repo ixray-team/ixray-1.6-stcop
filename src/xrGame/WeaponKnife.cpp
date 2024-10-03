@@ -314,7 +314,8 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 			}
 			else
 			{
-				//SetDisableInputStatus(true);
+				extern bool g_bDisableAllInput;
+				g_bDisableAllInput = true;
 				PlaySound("sndSelfKill", Position());
 				Actor()->NotifySuicideShotCallbackIfNeeded();
 				PlayHUDMotion("anm_selfkill", FALSE, state, false, false);
