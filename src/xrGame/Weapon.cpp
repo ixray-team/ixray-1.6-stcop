@@ -114,6 +114,7 @@ CWeapon::CWeapon()
 	IsReloaded = false;
 	_last_shot_ammotype = 0;
 	IsAimStarted = false;
+	_wanim_force_assign = false;
 }
 
 CWeapon::~CWeapon		()
@@ -669,6 +670,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 	m_bAmmoWasSpawned		= false;
 
+	_wanim_force_assign = true;
 
 	return bResult;
 }
@@ -1126,6 +1128,9 @@ void CWeapon::ModUpdate()
 
 	ProcessUpgrade();
 	ProcessScope();
+
+	if (!H_Parent() || H_Parent() && smart_cast<CEntityAlive*>(H_Parent()))
+		ReassignWorldAnims();
 
 	if (!H_Parent())
 	{
@@ -1754,6 +1759,70 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 		tmpdir.add(right);
 
 		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, 0.f, ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+	}
+}
+
+void CWeapon::ReassignWorldAnims()
+{
+	if (!_wanim_force_assign)
+		return;
+
+	if (!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "use_world_anims", false))
+		return;
+
+	xr_string anm;
+	switch (GetState())
+	{
+	case eIdle:
+		anm = "wanm_idle";
+		break;
+	case eShowing:
+		anm = "wanm_draw";
+		break;
+	case eHiding:
+		anm = "wanm_holster";
+		break;
+	case eFire:
+		anm = "wanm_shoot";
+		if (m_magazine.size() <= 0 && pSettings->line_exist(cNameSect(), (anm + "_last").c_str()))
+			anm += "_last";
+
+		break;
+	case eReload:
+		anm = "wanm_reload";
+		break;
+	default:
+		anm = "wanm_idle";
+		break;
+	}
+
+	xr_string result = READ_IF_EXISTS(pSettings, r_string, cNameSect(), anm.c_str(), "");
+
+	if (result.length() == 0)
+		anm = "wanm_idle";
+
+	if (IsMisfire() && pSettings->line_exist(cNameSect(), (anm + "_jammed").c_str()))
+		anm += "_jammed";
+	else if (m_magazine.size() <= 0 && GetState() != eFire && pSettings->line_exist(cNameSect(), (anm + "_empty").c_str()))
+		anm += "_empty";
+	/*else if (IsFirstShotAnimationNeeded() && IsJustAfterReload() && GetState() != eFire)
+		AddSuffixIfStringExist(cNameSect(), "_first", anm);*/
+
+	if (pSettings->line_exist(cNameSect(), (anm + GetFiremodeSuffix()).c_str()))
+		anm += GetFiremodeSuffix();
+
+	if (IsGrenadeMode() && pSettings->line_exist(cNameSect(), (anm + "_g").c_str()))
+		anm += "_g";
+	else if (IsGrenadeLauncherAttached() && pSettings->line_exist(cNameSect(), (anm + "_w_gl").c_str()))
+		anm += "_w_gl";
+
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+
+	if (pWeaponVisual && pWeaponVisual->dcast_PKinematicsAnimated())
+	{
+		MotionID m = pWeaponVisual->dcast_PKinematicsAnimated()->ID_Cycle(pSettings->r_string(cNameSect(), anm.c_str()));
+		pWeaponVisual->dcast_PKinematicsAnimated()->PlayCycle(m, true);
+		_wanim_force_assign = false;
 	}
 }
 
@@ -3250,6 +3319,21 @@ void CWeapon::OnStateSwitch	(u32 S)
 			PlayHUDMotion("anm_finish_detector", TRUE, GetState());
             SetPending(true);
         break;
+	}
+
+	switch (S)
+	{
+	case eShowing:
+	case eIdle:
+	case eHiding:
+	case eFire:
+	case eReload:
+	case eHidden:
+	case eSwitch:
+	case eSwitchMode:
+		_wanim_force_assign = true;
+		ReassignWorldAnims();
+		break;
 	}
 
 	if(EnableDof && GetState()==eReload)

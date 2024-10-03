@@ -414,6 +414,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
+
+	_wanim_force_assign = true;
 }
 
 void CWeaponMagazined::ReloadMagazine() 
@@ -1902,6 +1904,14 @@ bool CWeaponMagazined::SwitchMode			()
 	return true;
 }
  
+xr_string CWeaponMagazined::GetFiremodeSuffix() const
+{
+	if (GetQueueSize() < 0)
+		return "a";
+	else
+		return xr_string().ToString(GetQueueSize());
+}
+
 void CWeaponMagazined::OnNextFireMode()
 {
 	if (!m_bHasDifferentFireModes)

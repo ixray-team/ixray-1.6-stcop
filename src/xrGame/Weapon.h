@@ -227,6 +227,7 @@ public:
 	bool m_bMixAfterIdle;
 	bool m_bMixAfterReload;
 	bool m_bMixAfterQueue;
+	bool _wanim_force_assign;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -248,6 +249,7 @@ public:
 	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
+	void ReassignWorldAnims();
 
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
@@ -271,6 +273,7 @@ public:
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr, int param = 0);
 	xr_string AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix = "");
 	xr_string GetActualCurrentAnim() const;
+	xr_string GetFiremodeSuffix() const { return ""; }
 
 	u8 GetAmmoTypeIndex(bool second = false);
 	u8 GetAmmoTypeToReload();
