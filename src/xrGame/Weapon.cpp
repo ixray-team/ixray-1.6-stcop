@@ -285,14 +285,10 @@ void CWeapon::ForceUpdateFireParticles()
 	}
 }
 
-bool CWeapon::WeaponSoundExist(LPCSTR section, LPCSTR sound_name)
+bool CWeapon::WeaponSoundExist(const char* section, const char* sound_name)
 {
-	LPCSTR str = "";
-	bool sec_exist = process_if_exists_set(section, sound_name, &CInifile::r_string, str, true);
-	if (sec_exist)
-		return true;
-
-	return false;
+	const char* str = {};
+	return process_if_exists_set(section, sound_name, &CInifile::r_string, str, true);
 }
 
 void CWeapon::Load		(LPCSTR section)
@@ -736,7 +732,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	if (IsScopeAttached() && get_ScopeStatus() == 2)
 		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
-	LoadNightBrightnessParamsFromSection(scope_sect);
+	LoadNightBrightnessParamsFromSection(scope_sect.c_str());
 
 	m_dwWeaponIndependencyTime = 0;
 
@@ -763,8 +759,8 @@ void CWeapon::net_Destroy	()
 
 BOOL CWeapon::IsUpdating()
 {	
-	bool bIsActiveItem = m_pInventory && m_pInventory->ActiveItem()==this;
-	return bIsActiveItem || bWorking;// || IsPending() || getVisible();
+	bool bIsActiveItem = m_pInventory != nullptr && m_pInventory->ActiveItem() == this;
+	return bIsActiveItem || bWorking;
 }
 
 void CWeapon::net_Export(NET_Packet& P)
@@ -1180,7 +1176,7 @@ void CWeapon::UpdateCL		()
 	ModUpdate();
 }
 
-void CWeapon::SetWeaponModelBoneStatus(const xr_string bone, BOOL show)
+void CWeapon::SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const
 {
 	if (HudItemData())
 		HudItemData()->set_bone_visible(bone.c_str(), show, TRUE);
@@ -1190,7 +1186,7 @@ void CWeapon::SetWeaponModelBoneStatus(const xr_string bone, BOOL show)
 		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone.c_str()), show, FALSE);
 }
 
-void CWeapon::SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show)
+void CWeapon::SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const
 {
 	if (!pSettings->section_exist(section.c_str()))
 		return;
@@ -1367,11 +1363,11 @@ void CWeapon::ProcessUpgrade()
 	}
 }
 
-void CWeapon::HideOneUpgradeLevel(const xr_string section)
+void CWeapon::HideOneUpgradeLevel(const char* section)
 {
-	if (!!pSettings->line_exist(section.c_str(), "elements"))
+	if (!!pSettings->line_exist(section, "elements"))
 	{
-		LPCSTR	S = pSettings->r_string(section.c_str(), "elements");
+		LPCSTR	S = pSettings->r_string(section, "elements");
 		if (S && S[0])
 		{
 			string128 _Item;
@@ -1519,7 +1515,7 @@ CCartridge* CWeapon::GetCartridgeFromMagVector(u32 index)
 
 	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
 	{
-		CWeaponMagazinedWGrenade* wpn_gl = static_cast<CWeaponMagazinedWGrenade*>(this);
+		CWeaponMagazinedWGrenade* wpn_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 		return &(wpn_gl->m_magazine2[index]);
 	}
 	else
@@ -1576,14 +1572,14 @@ u32 CWeapon::GetAmmoInMagCount() const
 	return result;
 }
 
-int CWeapon::GetMagCapacity()
+int CWeapon::GetMagCapacity() const
 {
 	int result = 0;
 	int ammotype = -1;
 
 	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
 	{
-		CWeaponMagazinedWGrenade* w_gl = static_cast<CWeaponMagazinedWGrenade*>(this);
+		CWeaponMagazinedWGrenade* w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
 		result = w_gl->iMagazineSize2;
 	}
 	else
@@ -1594,7 +1590,7 @@ int CWeapon::GetMagCapacity()
 
 	if (ammotype >= 0)
 	{
-		xr_string param = "ammo_mag_size_for_type_" + xr_string().ToString(ammotype);
+		xr_string param = "ammo_mag_size_for_type_" + xr_string::ToString(ammotype);
 		result = READ_IF_EXISTS(pSettings, r_u32, cNameSect(), param.c_str(), result);
 		result = FindIntValueInUpgradesDef(param.c_str(), result);
 	}
@@ -1634,23 +1630,23 @@ void CWeapon::ProcessAmmo(bool forced)
 
     for (int i = start_index; i <= finish_index; i++)
 	{
-        SetWeaponModelBoneStatus((prefix + xr_string().ToString(i)).c_str(), TRUE);
+        SetWeaponModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), TRUE);
         if (prefix_hide.length() > 0)
-            SetWeaponModelBoneStatus((prefix_hide + xr_string().ToString(i)).c_str(), FALSE);
+            SetWeaponModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), FALSE);
     }
 
     for (int i = finish_index + 1; i <= limitator; i++)
 	{
-        SetWeaponModelBoneStatus((prefix + xr_string().ToString(i)).c_str(), FALSE);
+        SetWeaponModelBoneStatus((prefix + xr_string::ToString(i)).c_str(), FALSE);
         if (prefix_hide.length() > 0)
-            SetWeaponModelBoneStatus((prefix_hide + xr_string().ToString(i)).c_str(), TRUE);
+            SetWeaponModelBoneStatus((prefix_hide + xr_string::ToString(i)).c_str(), TRUE);
     }
 
     if (prefix_var.length() > 0)
 	{
         for (int i = start_index - 1; i <= limitator; i++)
 		{
-            SetWeaponModelBoneStatus((prefix_var + xr_string().ToString(i)).c_str(), i == finish_index);
+            SetWeaponModelBoneStatus((prefix_var + xr_string::ToString(i)).c_str(), i == finish_index);
         }
     }
 }
@@ -1691,7 +1687,7 @@ void CWeapon::ProcessAmmoAdv(bool forced)
             cnt -= 1;
     }
 
-	xr_string sect_w_ammotype = "ammo_params_section_" + xr_string().ToString(ammotype);
+	xr_string sect_w_ammotype = "ammo_params_section_" + xr_string::ToString(ammotype);
 
 	shared_str bones_sect;
     if (pSettings->line_exist(hud_sect, sect_w_ammotype.c_str()))
@@ -1706,7 +1702,7 @@ void CWeapon::ProcessAmmoAdv(bool forced)
 
         SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", FALSE);
 
-        xr_string configuration = "configuration_" + xr_string().ToString(cnt);
+        xr_string configuration = "configuration_" + xr_string::ToString(cnt);
         SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), TRUE);
     }
 }
@@ -1731,7 +1727,7 @@ void CWeapon::ProcessAmmoGL(bool forced)
 	else
 		ammotype = GetGlAmmotype();
 
-	xr_string sect_w_ammotype = "gl_ammo_params_section_" + xr_string().ToString(ammotype);
+	xr_string sect_w_ammotype = "gl_ammo_params_section_" + xr_string::ToString(ammotype);
 
 	shared_str bones_sect;
 	if (pSettings->line_exist(hud_sect, sect_w_ammotype.c_str()))
@@ -1743,7 +1739,7 @@ void CWeapon::ProcessAmmoGL(bool forced)
 	{
 		SetWeaponMultipleBonesStatus(bones_sect.c_str(), "all_bones", false);
 
-		xr_string configuration = "configuration_" + xr_string().ToString(cnt);
+		xr_string configuration = "configuration_" + xr_string::ToString(cnt);
 		SetWeaponMultipleBonesStatus(bones_sect.c_str(), configuration.c_str(), true);
 	}
 }
@@ -1814,7 +1810,7 @@ bool CWeapon::IsUIForceHiding() const
 		return false;
 }
 
-shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def) const
+shared_str CWeapon::FindStrValueInUpgradesDef(const char* key, const char* def) const
 {
 	for (int i = 0; i < m_upgrades.size(); ++i)
 	{
@@ -1822,15 +1818,15 @@ shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def) co
 		str = pSettings->r_string(str, "section");
 		if (pSettings->line_exist(str, key))
 		{
-			shared_str result = pSettings->r_string(str.c_str(), key.c_str());
-			if (strcmp(result.c_str(), def.c_str()) != 0)
+			shared_str result = pSettings->r_string(str.c_str(), key);
+			if (strcmp(result.c_str(), def) != 0)
 				return result;
 		}
 	}
 	return def;
 }
 
-float CWeapon::ModifyFloatUpgradedValue(shared_str key, float def)
+float CWeapon::ModifyFloatUpgradedValue(const char* key, float def) const
 {
 	float result = def;
 	for (int i = 0; i < m_upgrades.size(); ++i)
@@ -1838,12 +1834,12 @@ float CWeapon::ModifyFloatUpgradedValue(shared_str key, float def)
 		shared_str str = m_upgrades[i];
 		str = pSettings->r_string(str, "section");
 		if (pSettings->line_exist(str, key))
-			result += READ_IF_EXISTS(pSettings, r_float, str.c_str(), key.c_str(), 0.0f);
+			result += READ_IF_EXISTS(pSettings, r_float, str.c_str(), key, 0.0f);
 	}
 	return result;
 }
 
-int CWeapon::FindIntValueInUpgradesDef(shared_str key, int def)
+int CWeapon::FindIntValueInUpgradesDef(const char* key, int def) const
 {
 	int result = def;
 	for (int i = 0; i < m_upgrades.size(); ++i)
@@ -1851,12 +1847,12 @@ int CWeapon::FindIntValueInUpgradesDef(shared_str key, int def)
 		shared_str str = m_upgrades[i];
 		str = pSettings->r_string(str, "section");
 		if (pSettings->line_exist(str, key))
-			result = READ_IF_EXISTS(pSettings, r_u32, str.c_str(), key.c_str(), def);
+			result = READ_IF_EXISTS(pSettings, r_u32, str.c_str(), key, def);
 	}
 	return result;
 }
 
-bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault) const
+bool CWeapon::FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_after_nodefault) const
 {
 	bool result = def;
 	for (int i = 0; i < m_upgrades.size(); ++i)
@@ -1865,7 +1861,7 @@ bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_aft
 		str = pSettings->r_string(str, "section");
 		if (pSettings->line_exist(str, key))
 		{
-			result = pSettings->r_bool(str.c_str(), key.c_str());
+			result = pSettings->r_bool(str.c_str(), key);
 			if (!scan_after_nodefault && result != def)
 				return result;
 		}
@@ -1873,7 +1869,7 @@ bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_aft
 	return result;
 }
 
-bool CWeapon::IsActionProcessing()
+bool CWeapon::IsActionProcessing() const
 {
 	return H_Parent() && (lock_time > 0.f  || ParentIsActor() && Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide());
 }
@@ -1884,7 +1880,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 	shared_str material = READ_IF_EXISTS(pSettings, r_string, sect, "kick_material", "objects\\knife");
 	CCartridge c;
 
-	material = FindStrValueInUpgradesDef("kick_material", material);
+	material = FindStrValueInUpgradesDef("kick_material", material.c_str());
 
 	c.param_s.buckShot = 1;
 	c.param_s.impair = 1.0f;
@@ -2049,7 +2045,8 @@ void CWeapon::UpdatePosition(const Fmatrix& trans)
 	VERIFY				(!fis_zero(DET(renderable.xform)));
 }
 
-void CWeapon::UpdatePosition_alt(const Fmatrix& trans) {
+void CWeapon::UpdatePosition_alt(const Fmatrix& trans)
+{
 	Position().set(trans.c);
 	if (m_strapped_mode || m_strapped_mode_rifle)
 		XFORM().mul(trans, m_StrapOffset_alt);
@@ -2096,7 +2093,7 @@ bool CWeapon::OnActWhileReload_CanActNow() const
 	return result;
 }
 
-bool CWeapon::CanAimNow()
+bool CWeapon::CanAimNow() const
 {
 	if (!ParentIsActor())
 		return true;
@@ -2137,7 +2134,7 @@ bool CWeapon::CanAimNow()
 	return result;
 }
 
-bool CWeapon::CanLeaveAimNow()
+bool CWeapon::CanLeaveAimNow() const
 {
 	if (!ParentIsActor())
 		return true;
@@ -2206,7 +2203,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			if (!(flags & CMD_START))
 				return false;
 
-			bool test = bBlockQK || bBlockQKScp && IsScopeAttached() && get_ScopeStatus() == 2 || bBlockQKSil && IsSilencerAttached() && get_SilencerStatus() == 2 ||
+			const bool test = bBlockQK || bBlockQKScp && IsScopeAttached() && get_ScopeStatus() == 2 || bBlockQKSil && IsSilencerAttached() && get_SilencerStatus() == 2 ||
 				bBlockQKGL && IsGrenadeLauncherAttached() && get_GrenadeLauncherStatus() == 2 || bBlockQKGLM && IsGrenadeMode();
 
 			if (test)
@@ -2526,14 +2523,11 @@ int CWeapon::GetAmmoCount_forType( shared_str const& ammo_type ) const
 
 float CWeapon::GetConditionMisfireProbability() const
 {
-// modified by Peacemaker [17.10.08]
-//	if(GetCondition() > 0.95f) 
-//		return 0.0f;
 	if(GetCondition() > misfireStartCondition) 
 		return 0.0f;
 	if(GetCondition() < misfireEndCondition) 
 		return misfireEndProbability;
-//	float mis = misfireProbability+powf(1.f-GetCondition(), 3.f)*misfireConditionK;
+
 	float mis = misfireStartProbability + (
 		(misfireStartCondition - GetCondition()) *				// condition goes from 1.f to 0.f
 		(misfireEndProbability - misfireStartProbability) /		// probability goes from 0.f to 1.f
@@ -2545,9 +2539,10 @@ float CWeapon::GetConditionMisfireProbability() const
 	return mis;
 }
 
-BOOL CWeapon::CheckForMisfire	()
+bool CWeapon::CheckForMisfire()
 {
-	if (OnClient()) return FALSE;
+	if (OnClient())
+		return false;
 
 	float rnd = ::Random.randF(0.f,1.f);
 	float mp = GetConditionMisfireProbability();
@@ -2560,13 +2555,13 @@ BOOL CWeapon::CheckForMisfire	()
 		if (!isGuns)
 			SwitchState(eMisfire);		
 		
-		return TRUE;
+		return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
-BOOL CWeapon::IsMisfire() const
+bool CWeapon::IsMisfire() const
 {	
 	return bMisfire;
 }
@@ -2593,15 +2588,17 @@ bool CWeapon::IsSilencerAttached() const
 			ALife::eAddonPermanent == m_eSilencerStatus;
 }
 
-bool CWeapon::GrenadeLauncherAttachable()
+bool CWeapon::GrenadeLauncherAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eGrenadeLauncherStatus);
 }
-bool CWeapon::ScopeAttachable()
+
+bool CWeapon::ScopeAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eScopeStatus);
 }
-bool CWeapon::SilencerAttachable()
+
+bool CWeapon::SilencerAttachable() const
 {
 	return (ALife::eAddonAttachable == m_eSilencerStatus);
 }
@@ -2660,7 +2657,7 @@ void CWeapon::InitAddons()
 {
 }
 
-float CWeapon::CurrentZoomFactor()
+float CWeapon::CurrentZoomFactor() const
 {
 	return IsScopeAttached() && !IsGrenadeMode() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
 };
@@ -2769,12 +2766,9 @@ void CWeapon::OnZoomOut()
 	}
 }
 
-CUIWindow* CWeapon::ZoomTexture()
+CUIWindow* CWeapon::ZoomTexture() const
 {
-	if (UseScopeTexture())
-		return m_UIScope;
-	else
-		return nullptr;
+	return UseScopeTexture() ? m_UIScope : nullptr;
 }
 
 void CWeapon::SwitchState(u32 S)
@@ -2804,7 +2798,7 @@ void CWeapon::SwitchState(u32 S)
 	}
 }
 
-void CWeapon::OnMagazineEmpty	()
+void CWeapon::OnMagazineEmpty()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
@@ -2816,28 +2810,29 @@ void CWeapon::OnMagazineEmpty	()
 }
 
 
-void CWeapon::reinit			()
+void CWeapon::reinit()
 {
-	CShootingObject::reinit		();
-	CHudItemObject::reinit			();
+	CShootingObject::reinit();
+	CHudItemObject::reinit();
 }
 
-void CWeapon::reload(LPCSTR section) {
+void CWeapon::reload(LPCSTR section)
+{
 	CShootingObject::reload(section);
 	CHudItemObject::reload(section);
 
 	m_can_be_strapped = true;
-	m_can_be_strapped_rifle = (/*BaseSlot() == INV_SLOT_2 ||*/ BaseSlot() == INV_SLOT_3);
+	m_can_be_strapped_rifle = BaseSlot() == INV_SLOT_3;
 	m_strapped_mode = false;
 	m_strapped_mode_rifle = false;
 
-	if (m_eScopeStatus == ALife::eAddonAttachable) {
-		m_addon_holder_range_modifier = READ_IF_EXISTS(
-			pSettings, r_float, GetScopeName(), "holder_range_modifier", m_holder_range_modifier);
-		m_addon_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, GetScopeName(),
-			"holder_fov_modifier", m_holder_fov_modifier);
+	if (m_eScopeStatus == ALife::eAddonAttachable)
+	{
+		m_addon_holder_range_modifier = READ_IF_EXISTS(pSettings, r_float, GetScopeName(), "holder_range_modifier", m_holder_range_modifier);
+		m_addon_holder_fov_modifier = READ_IF_EXISTS(pSettings, r_float, GetScopeName(), "holder_fov_modifier", m_holder_fov_modifier);
 	}
-	else {
+	else
+	{
 		m_addon_holder_range_modifier = m_holder_range_modifier;
 		m_addon_holder_fov_modifier = m_holder_fov_modifier;
 	}
@@ -2852,16 +2847,19 @@ void CWeapon::reload(LPCSTR section) {
 		m_Offset.translate_over(pos);
 	}
 
-	if (BaseSlot() == INV_SLOT_3) {
+	if (BaseSlot() == INV_SLOT_3)
+	{
 		// Strap bones:
 		if (pSettings->line_exist(section, "strap_bone0"))
 			m_strap_bone0 = pSettings->r_string(section, "strap_bone0");
-		else {
+		else
+		{
 			m_strap_bone0 = "bip01_spine2";
 		}
 		if (pSettings->line_exist(section, "strap_bone1"))
 			m_strap_bone1 = pSettings->r_string(section, "strap_bone1");
-		else {
+		else
+		{
 			m_strap_bone1 = "bip01_spine1";
 		}
 
@@ -2869,11 +2867,13 @@ void CWeapon::reload(LPCSTR section) {
 		m_StrapOffset = m_Offset;
 		Fvector pos, ypr;
 		if (pSettings->line_exist(section, "strap_position") &&
-			pSettings->line_exist(section, "strap_orientation")) {
+			pSettings->line_exist(section, "strap_orientation"))
+		{
 			pos = pSettings->r_fvector3(section, "strap_position");
 			ypr = pSettings->r_fvector3(section, "strap_orientation");
 		}
-		else {
+		else
+		{
 			pos = Fvector().set(-0.34f, -0.20f, 0.15f);
 			ypr = Fvector().set(-0.0f, 0.0f, 84.0f);
 		}
@@ -2885,11 +2885,13 @@ void CWeapon::reload(LPCSTR section) {
 		m_StrapOffset_alt = m_Offset;
 		Fvector pos_alt, ypr_alt;
 		if (pSettings->line_exist(section, "strap_position_alt") &&
-			pSettings->line_exist(section, "strap_orientation_alt")) {
+			pSettings->line_exist(section, "strap_orientation_alt"))
+		{
 			pos_alt = pSettings->r_fvector3(section, "strap_position_alt");
 			ypr_alt = pSettings->r_fvector3(section, "strap_orientation_alt");
 		}
-		else {
+		else
+		{
 			pos_alt = Fvector().set(-0.34f, 0.20f, 0.15f);
 			ypr_alt = Fvector().set(0.0f, 0.0f, 94.0f);
 		}
@@ -2897,15 +2899,14 @@ void CWeapon::reload(LPCSTR section) {
 		m_StrapOffset_alt.setHPB(ypr_alt.x, ypr_alt.y, ypr_alt.z);
 		m_StrapOffset_alt.translate_over(pos_alt);
 	}
-	else {
+	else
+	{
 		m_can_be_strapped = false;
 		m_can_be_strapped_rifle = false;
 	}
 
-	m_ef_main_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_main_weapon_type", u32(-1));
-	m_ef_weapon_type =
-		READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
+	m_ef_main_weapon_type = READ_IF_EXISTS(pSettings, r_u32, section, "ef_main_weapon_type", u32(-1));
+	m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
 }
 
 void CWeapon::create_physic_shell()
@@ -2913,20 +2914,18 @@ void CWeapon::create_physic_shell()
 	CPhysicsShellHolder::create_physic_shell();
 }
 
-bool CWeapon::ActivationSpeedOverriden (Fvector& dest, bool clear_override)
+bool CWeapon::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
 {
-	if ( m_activation_speed_is_overriden )
+	if (m_activation_speed_is_overriden)
 	{
-		if ( clear_override )
-		{
-			m_activation_speed_is_overriden	=	false;
-		}
+		if (clear_override)
+			m_activation_speed_is_overriden	= false;
 
-		dest						=	m_overriden_activation_speed;
-		return							true;
+		dest = m_overriden_activation_speed;
+		return true;
 	}
 	
-	return								false;
+	return false;
 }
 
 void CWeapon::SetActivationSpeedOverride	(Fvector const& speed)
@@ -3408,7 +3407,7 @@ u32	CWeapon::ef_weapon_type	() const
 	return	(m_ef_weapon_type);
 }
 
-bool CWeapon::IsNecessaryItem	    (const shared_str& item_sect)
+bool CWeapon::IsNecessaryItem(const shared_str& item_sect)
 {
 	return (std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() );
 }
@@ -3425,7 +3424,7 @@ void CWeapon::modify_holder_params		(float &range, float &fov) const
 
 bool CWeapon::render_item_ui_query()
 {
-	bool b_is_active_item = (m_pInventory && m_pInventory->ActiveItem()==this);
+	bool b_is_active_item = (m_pInventory != nullptr && m_pInventory->ActiveItem() == this);
 	bool res = b_is_active_item && IsZoomed() && ZoomHideCrosshair() && ZoomTexture() && !IsRotatingToZoom();
 	return res;
 }
@@ -3439,20 +3438,12 @@ void CWeapon::render_item_ui()
 	ZoomTexture()->Draw		();
 }
 
-bool CWeapon::unlimited_ammo() 
+bool CWeapon::unlimited_ammo()
 { 
 	if (IsGameTypeSingle())
-	{
-		if(m_pInventory)
-		{
-			return inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
-		}else
-			return false;
-	}
+		return m_pInventory != nullptr &&inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
 
-	return ((GameID() == eGameIDDeathmatch) && 
-			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited)); 
-			
+	return ((GameID() & eGameIDDeathmatch) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited)); 
 };
 
 float CWeapon::GetMagazineWeight(const decltype(CWeapon::m_magazine)& mag) const {
@@ -3499,29 +3490,29 @@ bool CWeapon::show_indicators()
 	return !(IsZoomed() && ZoomTexture() && IsUIForceHiding() && !IsUIForceUnhiding());
 }
 
-float CWeapon::GetConditionToShow	() const
+float CWeapon::GetConditionToShow() const
 {
-	return	(GetCondition());//powf(GetCondition(),4.0f));
+	return GetCondition();
 }
 
-BOOL CWeapon::ParentMayHaveAimBullet	()
+BOOL CWeapon::ParentMayHaveAimBullet()
 {
 	CObject* O=H_Parent();
 	CEntityAlive* EA=smart_cast<CEntityAlive*>(O);
 	return EA->cast_actor()!=0;
 }
 
-BOOL CWeapon::ParentIsActor	()
+BOOL CWeapon::ParentIsActor() const
 {
-	CObject* O			= H_Parent();
+	const CObject* O = H_Parent();
 	if (!O)
 		return FALSE;
 
-	CEntityAlive* EA	= smart_cast<CEntityAlive*>(O);
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
 	if (!EA)
 		return FALSE;
 
-	return EA->cast_actor()!=0;
+	return EA->cast_actor() != 0;
 }
 
 void CWeapon::debug_draw_firedeps()
@@ -3676,7 +3667,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return (HudItemData()!=nullptr);
+	return HudItemData() != nullptr;
 }
 
 void CWeapon::ZoomInc()
@@ -3729,19 +3720,18 @@ u32 CWeapon::Cost() const
 	return res;
 }
 
-float CWeapon::GetHudFov() {
-	auto base = inherited::GetHudFov();
-	auto zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
+float CWeapon::GetHudFov()
+{
+	float base = inherited::GetHudFov();
+	float zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
 }
 
 bool CWeapon::ScopeFit(CScope* pIItem)
 {
-	SCOPES_VECTOR_IT it = m_scopes.begin();
-	for (; it != m_scopes.end(); it++)
-	{
-		if (pSettings->r_string((*it), "scope_name") == pIItem->cNameSect())
+	for (auto& scope : m_scopes) {
+		if (pSettings->r_string(scope, "scope_name") == pIItem->cNameSect())
 			return true;
 	}
 
@@ -3776,10 +3766,10 @@ void CWeapon::ReloadNightBrightnessParams()
 	if (IsScopeAttached() && get_ScopeStatus() == 2)
 		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
-	LoadNightBrightnessParamsFromSection(scope_sect);
+	LoadNightBrightnessParamsFromSection(scope_sect.c_str());
 }
 
-void CWeapon::LoadNightBrightnessParamsFromSection(shared_str sect)
+void CWeapon::LoadNightBrightnessParamsFromSection(const char* sect)
 {
 	stepped_params last = _lens_night_brightness;
 
@@ -3864,21 +3854,21 @@ void CWeapon::SetNightBrightness(int steps, bool use_sound)
 
 void CWeapon::UpdateZoomCrosshairUI()
 {
-	if (m_UIScope != nullptr)
+	if (ZoomTexture() == nullptr)
+		return;
+
+	if (ZoomTexture()->WindowName() != "switchable_zoom_wnd")
+		return;
+
+	for (int i = 0; i <= _lens_night_brightness.steps; ++i)
 	{
-		if (m_UIScope->WindowName() == "switchable_zoom_wnd")
+		CUIWindow* child = m_UIScope->FindChild(("auto_static_" + xr_string::ToString(i)).c_str());
+		if (child != nullptr)
 		{
-			for (int i = 0; i <= _lens_night_brightness.steps; ++i)
-			{
-				CUIWindow* child = m_UIScope->FindChild(("auto_static_" + xr_string::ToString(i)).c_str());
-				if (child != nullptr)
-				{
-					if (i == _lens_night_brightness.cur_step)
-						child->Show(true);
-					else
-						child->Show(false);
-				}
-			}
+			if (i == _lens_night_brightness.cur_step)
+				child->Show(true);
+			else
+				child->Show(false);
 		}
 	}
 }
@@ -3958,7 +3948,7 @@ void CWeapon::UpdateLensFactor(u32 timedelta)
 	}
 }
 
-float CWeapon::GetNightPPEFactor()
+float CWeapon::GetNightPPEFactor() const
 {
 	shared_str PP_MIN_FACTOR = "scope_nightvision_min_factor";
 	float val = -1.0f;
@@ -3973,7 +3963,7 @@ float CWeapon::GetNightPPEFactor()
 	else if (get_ScopeStatus() == 1)
 	{
 		scope_sect = m_section_id;
-		min_factor = ModifyFloatUpgradedValue(PP_MIN_FACTOR, static_cast<float>(READ_IF_EXISTS(pSettings, r_s32, scope_sect, PP_MIN_FACTOR.c_str(), 0.f)));
+		min_factor = ModifyFloatUpgradedValue(PP_MIN_FACTOR.c_str(), READ_IF_EXISTS(pSettings, r_float, scope_sect, PP_MIN_FACTOR.c_str(), 0.0f));
 	}
 
 	if (scope_sect != nullptr)

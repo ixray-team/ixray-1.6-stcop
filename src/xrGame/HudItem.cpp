@@ -937,7 +937,7 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 }
 
-attachable_hud_item* CHudItem::HudItemData()
+attachable_hud_item* CHudItem::HudItemData() const
 {
 	attachable_hud_item* hi = nullptr;
 	if (!g_player_hud)
@@ -1031,7 +1031,7 @@ void CHudItem::AssignDetectorAnim(const xr_string anm_alias, bool bMixIn, bool u
 	}
 }
 
-bool CHudItem::CanStartAction(bool allow_aim_state)
+bool CHudItem::CanStartAction(bool allow_aim_state) const
 {
 	if (GetState() != eIdle || GetActualCurrentAnim().find("anm_idle_sprint") == 0 || Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 		return false;
@@ -1043,7 +1043,7 @@ bool CHudItem::CanStartAction(bool allow_aim_state)
 	return true;
 }
 
-bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
+bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE) const
 {
 	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	
@@ -1076,7 +1076,7 @@ bool CHudItem::WpnCanShoot() const
 	return !!(smart_cast<CWeaponMagazined*>(this) != nullptr && smart_cast<CWeaponBinoculars*>(this) == nullptr);
 }
 
-CHudItem::jitter_params CHudItem::GetCurJitterParams(shared_str hud_sect)
+CHudItem::jitter_params CHudItem::GetCurJitterParams(const char* hud_sect)
 {
 	jitter_params result;
 

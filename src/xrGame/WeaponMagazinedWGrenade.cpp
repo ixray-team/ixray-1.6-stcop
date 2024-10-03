@@ -663,11 +663,11 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(const xr_string& M)
 
 		if (!IsScopeAttached())
 			new_name = AddSuffixName(new_name, "_noscope");
-	}
-	else
-		return inherited::NeedAddSuffix(M);
 
-	return new_name;
+		return new_name;
+	}
+
+	return inherited::NeedAddSuffix(M);
 }
 
 void CWeaponMagazinedWGrenade::UpdateSounds	()
