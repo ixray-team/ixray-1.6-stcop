@@ -424,6 +424,11 @@ void CMissile::OnAnimationEnd(u32 state)
 	}
 }
 
+bool CMissile::NeedBlockSprint() const
+{
+	return EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
+}
+
 bool CMissile::SendDeactivateItem()
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
@@ -435,6 +440,13 @@ bool CMissile::SendDeactivateItem()
 	}
 	else
 	{
+		if (pActor && Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+		{
+			if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+				Actor()->SetMovementState(eWishful, mcSprint, false);
+			return false;
+		}
+
 		if (pActor && GetState() != eIdle && GetState() != eShowing)
 			return false;
 	}
@@ -861,7 +873,7 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
 		grenade->set_destroy_time_now(0xffffffff);
 	else if (delay_time != 0 && delay_time > time_from_throw)
 	{
-        // ������ ���������� �������
+        // Просто пропускаем контакт
     }
 	else if (READ_IF_EXISTS(pSettings, r_bool, grenade->cNameSect(), "explosion_on_kick", false))
 	{
