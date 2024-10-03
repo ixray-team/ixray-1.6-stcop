@@ -16,6 +16,7 @@ xr_task_group ParticleObjectTasks;
 
 PARTICLES_API const Fvector zero_vel = {0.f,0.f,0.f};
 xr_list<CParticlesObject*> CParticlesObject::AllParticleObjects;
+static xrCriticalSection particles_lock;
 
 CParticlesObject::CParticlesObject	(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) :
 	inherited				(destroy_on_game_load)
