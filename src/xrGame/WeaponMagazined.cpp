@@ -1733,33 +1733,47 @@ void CWeaponMagazined::PlayAnimReload()
 	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
 }
 
+void CWeaponMagazined::ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main) const
+{
+	if (!config_enabler_main.empty())
+	{
+		if (!pSettings->line_exist(hud_sect, config_enabler_main.c_str()) || !pSettings->r_bool(hud_sect, config_enabler_main.c_str()))
+			return;
+	}
+
+	anim_name += "_moving";
+
+	if (!pSettings->line_exist(hud_sect, config_enabler_directions.c_str()) || !pSettings->r_bool(hud_sect, config_enabler_directions.c_str()))
+		return;
+
+	u32 state = Actor()->GetMovementState(eReal);
+
+	if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
+		anim_name += "_forward";
+	else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
+		anim_name += "_back";
+
+	if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
+		anim_name += "_left";
+	else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
+		anim_name += "_right";
+}
+
 void CWeaponMagazined::PlayAnimAim()
 {
 	CActor* actor = smart_cast<CActor*>(H_Parent());
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (isGuns && actor && actor->AnyMove())
+	xr_string anm_name = "anm_idle_aim";
+
+	if (actor && actor->AnyMove())
 	{
-		xr_string anm_name = IsScopeAttached() ? "anm_idle_aim_scope_moving" : "anm_idle_aim_moving";
+		bool use_scope_anims = ScopeAttachable() && IsScopeAttached() && READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "use_scope_anims", false);
+		if (m_bAimScopeAnims && use_scope_anims)
+			anm_name += "_scope";
 
-		if (!IsScopeAttached())
-		{
-			u32 state = actor->GetMovementState(eReal);
-
-			if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
-				anm_name += "_forward";
-			else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
-				anm_name += "_back";
-
-			if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
-				anm_name += "_left";
-			else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
-				anm_name += "_right";
-		}
-
-		PlayHUDMotion(anm_name, TRUE, GetState());
+		ModifierMoving(anm_name, "enable_directions_" + anm_name);
 	}
-	else
-		PlayHUDMotion("anm_idle_aim", TRUE, GetState());
+
+	PlayHUDMotion(anm_name, TRUE, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)

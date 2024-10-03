@@ -580,6 +580,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bMixAfterReload = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_reload", false);
 	m_bMixAfterQueue = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_shoot_in_queue", false);
 
+	m_bAimScopeAnims = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "aim_scope_anims", true);
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
