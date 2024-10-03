@@ -33,6 +33,7 @@
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "HUDAnimItem.h"
 
 extern u32 hud_adj_mode;
 
@@ -777,6 +778,38 @@ void CActor::SwitchNightVision()
 			return;
 		}
 	}
+}
+
+bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device)
+{
+	auto* det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+	if (det && !det->IsHidden() && det->GetState() != CCustomDetector::eIdle)
+		return false;
+
+	if (smart_cast<CHUDAnimItem*>(inventory().ActiveItem()))
+		return false;
+
+	CHudItem* item = smart_cast<CHudItem*>(inventory().ActiveItem());
+	CWeapon* wpn = smart_cast<CWeapon*>(item);
+	if (!item || restrictor_config_param.size() == 0 || wpn && wpn->FindBoolValueInUpgradesDef(restrictor_config_param, READ_IF_EXISTS(pSettings, r_bool, wpn->m_section_id.c_str(), restrictor_config_param.c_str(), false), true))
+	{
+		if (item && !item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
+			return false;
+
+		CHUDAnimItem::LoadSound(animator_item_section.c_str(), "snd_draw", false);
+		CHUDAnimItem::PlayHudAnim(pSettings->r_string(animator_item_section, "hud"), "anm_show", "", callback, true);
+		return true;
+	}
+	else if (item && item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
+	{
+		item->fDeviceFlags.zero();
+		item->fDeviceFlags.set(device, true);
+		item->SetAnimationCallback(callback);
+		item->SwitchState(state);
+		return true;
+	}
+
+	return false;
 }
 
 void CActor::SwitchTorch()
