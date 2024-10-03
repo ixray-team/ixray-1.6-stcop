@@ -139,7 +139,6 @@ protected:
 	//(даже если очень быстро нажали на курок и вызвалось FireEnd)
 	bool			m_bFireSingleShot;
 	//режимы стрельбы
-	bool			m_bHasDifferentFireModes;
 	xr_vector<s8>	m_aFireModes;
 	int				m_iCurFireMode;
 	int				m_iOldFireMode;
@@ -162,7 +161,7 @@ public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 			bool	ChangeFiremode		(u16 cmd);
-			bool	HasFireModes		() { return m_bHasDifferentFireModes; };
+			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 	xr_string		GetFiremodeSuffix() const;
 
