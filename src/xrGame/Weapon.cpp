@@ -107,6 +107,7 @@ CWeapon::CWeapon()
 	_wanim_force_assign = false;
 	is_firstlast_ammo_swapped = false;
 	bPreloadAnimAdapter = false;
+	bUpdateHUDBonesVisibility = false;
 }
 
 CWeapon::~CWeapon		()
@@ -669,6 +670,11 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 		l_cartridge.Load(*m_ammoTypes[LocalAmmoType], LocalAmmoType);
 	}
 
+	ProcessAmmo();
+	ProcessAmmoGL();
+	ProcessUpgrade();
+	ProcessScope();
+
 	UpdateAddonsVisibility();
 	InitAddons();
 
@@ -1143,11 +1149,23 @@ void CWeapon::ModUpdate()
 	if (!IsZoomed() && IsAimStarted)
 		IsAimStarted = false;
 
-	ProcessAmmo();
-	ProcessAmmoGL();
+	bool need_update_hud = false;
 
-	ProcessUpgrade();
-	ProcessScope();
+	if (HudItemData() && !bUpdateHUDBonesVisibility)
+	{
+		bUpdateHUDBonesVisibility = true;
+		need_update_hud = true;
+	}
+	else if (HudItemData() == nullptr)
+		bUpdateHUDBonesVisibility = false;
+
+	if (need_update_hud)
+	{
+		ProcessAmmo();
+		ProcessAmmoGL();
+		ProcessUpgrade();
+		ProcessScope();
+	}
 
 	if (!H_Parent() || H_Parent() && smart_cast<CEntityAlive*>(H_Parent()))
 		ReassignWorldAnims();
@@ -1183,11 +1201,10 @@ void CWeapon::ModUpdate()
 
 void CWeapon::ProcessScope()
 {
-	s32 cur_index;
+	s32 cur_index = -1;
+
 	if (IsScopeAttached() && get_ScopeStatus() == 2)
 		cur_index = m_cur_scope;
-	else
-		cur_index = -1;
 
 	for (u32 i = 0; i < m_scopes.size(); ++i)
 	{
@@ -3291,6 +3308,15 @@ void CWeapon::OnStateSwitch	(u32 S)
 			PlayHUDMotion("anm_finish_detector", TRUE, GetState());
             SetPending(true);
         break;
+		case eFire:
+		case eReload:
+		case eUnjam:
+		case eBore:
+		case eMisfire:
+		{
+			ProcessAmmo();
+			ProcessAmmoGL();
+		}break;
 	}
 
 	switch (S)
