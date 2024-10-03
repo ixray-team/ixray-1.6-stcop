@@ -1348,21 +1348,17 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 
 		}break;
 	case kWPN_FIREMODE_PREV:
-		{
-			if(flags&CMD_START) 
-			{
-				OnPrevFireMode();
-				return true;
-			};
-		}break;
 	case kWPN_FIREMODE_NEXT:
+	{
+		if (flags & CMD_START) 
 		{
-			if(flags&CMD_START) 
-			{
-				OnNextFireMode();
+				if (cmd == kWPN_FIREMODE_PREV)
+					OnPrevFireMode();
+				else
+					OnNextFireMode();
 				return true;
-			};
-		}break;
+		};
+	}break;
 	}
 	return false;
 }
@@ -1914,17 +1910,17 @@ void CWeaponMagazined::OnNextFireMode()
 	if (bNextModeKeyPressed || bPrevModeKeyPressed)
 		return;
 
-	if (m_bUseChangeFireModeAnim)
-	{
-		bNextModeKeyPressed = true;
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
-	}
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
 		if (IsZoomed())
+			return;
+	}
+
+	if (m_bUseChangeFireModeAnim)
+	{
+		bNextModeKeyPressed = true;
+		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
 			return;
 	}
 
@@ -1946,17 +1942,17 @@ void CWeaponMagazined::OnPrevFireMode()
 	if (bPrevModeKeyPressed || bNextModeKeyPressed)
 		return;
 
-	if (m_bUseChangeFireModeAnim)
-	{
-		bPrevModeKeyPressed = true;
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
-	}
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
 		if (IsZoomed())
+			return;
+	}
+
+	if (m_bUseChangeFireModeAnim)
+	{
+		bPrevModeKeyPressed = true;
+		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
 			return;
 	}
 
