@@ -264,9 +264,8 @@ bool CWeaponMagazined::OnShoot_CanShootNow()
 	}
 	else
 	{
-		if (ParentIsActor() && Actor()->GetMovementState(eReal) & mcSprint)
+		if (ParentIsActor() && (Actor()->GetMovementState(eReal) & mcSprint || GetState() == eSprintEnd))
 		{
-			//Add sprint stopping anm
 			Actor()->SetMovementState(eWishful, mcSprint, false);
 			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
 			return false;
@@ -1538,12 +1537,15 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 {
 	if(inherited::Action(cmd, flags)) return true;
 	
-	//если оружие чем-то занято, то ничего не делать
-	if(IsPending())
-		return false;
-	
-	if (GetState() != eIdle)
-		return false;
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		//если оружие чем-то занято, то ничего не делать
+		if (IsPending())
+			return false;
+
+		if (GetState() != eIdle)
+			return false;
+	}
 
 	switch(cmd) 
 	{
@@ -2163,7 +2165,7 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 
 bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (!HasFireModes())
 		return false;
@@ -2176,13 +2178,21 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 
 	if (m_bUseChangeFireModeAnim)
 	{
-		if (cmd == kWPN_FIREMODE_NEXT)
-			bNextModeKeyPressed = true;
+		if (isGuns)
+		{
+			if (!Weapon_SetKeyRepeatFlagIfNeeded(cmd == kWPN_FIREMODE_NEXT ? kfNEXTFIREMODE : kfPREVFIREMODE))
+				return false;
+		}
 		else
-			bPrevModeKeyPressed = true;
+		{
+			if (cmd == kWPN_FIREMODE_NEXT)
+				bNextModeKeyPressed = true;
+			else
+				bPrevModeKeyPressed = true;
 
-		if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
-			return false;
+			if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+				return false;
+		}
 	}
 
 	m_iOldFireMode = m_iQueueSize;

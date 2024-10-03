@@ -38,6 +38,9 @@ enum EActorKeyflags
 	kfHEADLAMP = (1ul << 2ul),
 	kfNIGHTVISION = (1ul << 3ul),
 	kfQUICKKICK = (1ul << 4ul),
+	kfGLAUNCHSWITCH = (1ul << 5ul),
+	kfNEXTFIREMODE = (1ul << 6ul),
+	kfPREVFIREMODE = (1ul << 7ul),
 };
 
 enum EMoveCommand
