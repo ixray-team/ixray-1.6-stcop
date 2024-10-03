@@ -109,6 +109,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_reload_jammed_last"))
 		m_sounds.LoadSound(section, "snd_reload_jammed_last", "sndReloadJammedLast", true, m_eSoundReload);
 
+	if (WeaponSoundExist(section, "snd_changecartridgetype"))
+		m_sounds.LoadSound(section, "snd_changecartridgetype", "sndChangeCartridgeType", true, m_eSoundReload);
+
 	if (WeaponSoundExist(section, "snd_jam"))
 		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundReload);
 
@@ -1193,7 +1196,12 @@ void CWeaponMagazined::PlayReloadSound()
 	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && TempTest)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
-		PlaySound("sndReload", get_LastFP());
+	{
+		if (IsChangeAmmoType() && m_sounds.FindSoundItem("sndChangeCartridgeType", false))
+			PlaySound("sndChangeCartridgeType", get_LastFP());
+		else
+			PlaySound("sndReload", get_LastFP());
+	}
 }
 
 void CWeaponMagazined::switch2_Reload()
