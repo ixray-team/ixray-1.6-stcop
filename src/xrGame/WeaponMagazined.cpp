@@ -1458,17 +1458,21 @@ void CWeaponMagazined::PlayAnimAim()
 	if (isGuns && actor && actor->AnyMove())
 	{
 		std::string anm_name = IsScopeAttached() ? "anm_idle_aim_scope_moving" : "anm_idle_aim_moving";
-		u32 state = actor->GetMovementState(eReal);
 
-		if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
-			anm_name += "_forward";
-		else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
-			anm_name += "_back";
+		if (!IsScopeAttached())
+		{
+			u32 state = actor->GetMovementState(eReal);
 
-		if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
-			anm_name += "_left";
-		else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
-			anm_name += "_right";
+			if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
+				anm_name += "_forward";
+			else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
+				anm_name += "_back";
+
+			if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
+				anm_name += "_left";
+			else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
+				anm_name += "_right";
+		}
 
 		PlayHUDMotion(anm_name, TRUE, nullptr, GetState());
 	}
