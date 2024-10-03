@@ -222,7 +222,10 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 {
 	m_scheme_wnd->DetachAll();
 	m_back->DetachAll();
-	m_btn_repair->Enable( (inv_item.GetCondition() < 0.99f) );
+
+	bool CanBeRepared = inv_item.cast_weapon() != nullptr || smart_cast<CCustomOutfit*>(&inv_item) != nullptr || smart_cast<CHelmet*>(&inv_item) != nullptr;
+
+	m_btn_repair->Enable(CanBeRepared && inv_item.GetCondition() < 0.99f);
 
 	if ( !can_upgrade )
 	{
