@@ -818,8 +818,8 @@ void CInventory::Update()
 						bool is_sprint = false;
 						CActor* actor = smart_cast<CActor*>(pActor_owner);
 						if (actor && actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
-							is_sprint = true;
-						
+							is_sprint = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
 						if (!is_sprint)
 							hi->SendDeactivateItem();
 					}

@@ -942,10 +942,7 @@ void CWeapon::OnHiddenItem ()
 
 bool CWeapon::SendDeactivateItem()
 {
-	if (GetState() == eFire)
-		return false;
-
-	if (ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || (GetState() != eIdle && GetState() != eShowing)))
+	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed()))
 	{
 		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
 			Actor()->SetMovementState(eWishful, mcSprint, false);
