@@ -580,7 +580,7 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 				new_name = AddSuffixName(new_name, "_aim", "_w_gl");
 
 			if (IsScopeAttached())
-				new_name += AddSuffixName(new_name, "_scope", "_w_gl");
+				new_name = AddSuffixName(new_name, "_scope", "_w_gl");
 
 			if (iAmmoElapsed == 1)
 				new_name = AddSuffixName(new_name, "_last", "_w_gl");
