@@ -2098,14 +2098,14 @@ bool CWeapon::CanAimNow()
 
 	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
 		result = false;
-	else if (GetState() == eIdle)
+	else if (GetActualCurrentAnim().find("anm_idle_aim") == 0)
 		result = true;
-	else if (IsActionProcessing() || GetState() == eSprintStart || GetState() == eSprintEnd || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
+	else if (IsActionProcessing() || (Actor()->GetMovementState(eReal) & mcSprint) != 0 || GetState() == eSprintEnd || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
 		result = false;
 	else
 	{
-		if (ParentIsActor())
-			result = !!(Actor()->GetDetector() && Actor()->GetDetector()->GetState() == CCustomDetector::eIdle);
+		if (ParentIsActor() && Actor()->GetDetector() != nullptr)
+			result = !!(Actor()->GetDetector()->GetState() == CCustomDetector::eIdle);
 
 		if (result)
 		{
