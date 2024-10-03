@@ -43,13 +43,16 @@ enum class EEngineExternalGunslinger
 
 class ENGINE_API CEngineExternal final
 {
-	CInifile* pOptions = nullptr;
-
+	bool m_is_modification_gunslinger;
+	CInifile* pOptions;
+	const char* m_pTitle;
 public:
 	CEngineExternal();
 	~CEngineExternal();
 
-	xr_string GetTitle() const;
+	const char* GetTitle() const;
+
+	bool isModificationGunslinger(void) const;
 	const char* GetPlayerHudOmfAdditional() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;

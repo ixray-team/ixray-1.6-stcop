@@ -110,7 +110,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_BonesProtectionSect	= READ_IF_EXISTS(pSettings, r_string, section, "bones_koeff_protection",  "" );
 	bIsHelmetAvaliable		= !!READ_IF_EXISTS(pSettings, r_bool, section, "helmet_avaliable", true);
 	
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	bIsTorchAvaliable		= READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !isGuns);
 
@@ -291,7 +291,7 @@ void	CCustomOutfit::OnMoveToRuck		(const SInvItemPlace& prev)
 			if(pTorch && !bIsHelmetAvaliable)
 				pTorch->SwitchNightVision(false);
 
-			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			bool isGuns = EngineExternal().isModificationGunslinger();
 			if (isGuns && !bIsHelmetAvaliable)
 			{
 				if (pTorch && pTorch->IsSwitched())

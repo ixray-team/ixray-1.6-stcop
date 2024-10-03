@@ -50,7 +50,7 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (isGuns)
 	{
 		m_sounds.LoadSound(section, "snd_kick_1", "sndKick1", false, SOUND_TYPE_WEAPON_SHOOTING);
@@ -215,7 +215,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (!isGuns)
 		PlaySound("sndShot",pos);
 
@@ -298,7 +298,7 @@ void CWeaponKnife::state_Attacking	(float)
 
 void CWeaponKnife::switch2_Attacking(u32 state)
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	SetPending(TRUE);
 

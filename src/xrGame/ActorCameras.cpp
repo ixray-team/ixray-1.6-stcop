@@ -382,7 +382,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	// HUD FOV Update
 	
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (!isGuns && this == Level().CurrentControlEntity())
 	{

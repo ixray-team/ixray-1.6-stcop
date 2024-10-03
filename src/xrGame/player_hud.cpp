@@ -852,7 +852,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	{
-		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		bool isGuns = EngineExternal().isModificationGunslinger();
 		CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
 		bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow);
 		bool left_hand_active = !throwing_missile && m_attached_items[1];
@@ -889,7 +889,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 		part_id = m_model->partitions().part_id((part==0)?"right_hand":"left_hand");
 	}
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
 	bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow) && attached_item(1);

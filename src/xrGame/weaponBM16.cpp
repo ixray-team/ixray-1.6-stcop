@@ -9,7 +9,7 @@ void CWeaponBM16::Load	(LPCSTR section)
 {
 	inherited::Load		(section);
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (!isGuns)
 		m_sounds.LoadSound	(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
 	else
@@ -24,7 +24,7 @@ void CWeaponBM16::Load	(LPCSTR section)
 
 void CWeaponBM16::PlayReloadSound()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (isGuns)
 	{
 		LPCSTR sound = "sndReload";
@@ -74,7 +74,7 @@ void CWeaponBM16::PlayReloadSound()
 
 void CWeaponBM16::PlayAnimShoot()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	xr_string anm_name = isGuns ? "anm_shoot" : "anm_shot";
 
 	PlayHUDMotion(anm_name, NeedShootMix(), GetState());
@@ -84,7 +84,7 @@ void CWeaponBM16::PlayAnimReload()
 {
 	VERIFY(GetState()==eReload);
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	xr_string anm_name = "anm_reload";
 	if (!isGuns)
 	{
@@ -139,7 +139,7 @@ xr_string CWeaponBM16::NeedAddSuffix(const xr_string& M)
 
 	if (IsMisfire())
 	{
-		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		bool isGuns = EngineExternal().isModificationGunslinger();
 		new_name = AddSuffixName(new_name, isGuns ? "_jammed" : "_misfire", "_" + xr_string::ToString(iAmmoElapsed));
 	}
 

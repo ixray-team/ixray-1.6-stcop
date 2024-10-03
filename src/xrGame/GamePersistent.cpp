@@ -100,7 +100,7 @@ CGamePersistent::CGamePersistent(void)
 	if(DofValue)
 	SetBaseDof				(*DofValue);
 
-	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
+	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)

@@ -178,7 +178,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	if (mstate_wf&mcLStrafe)	vControlAccel.x += -1;
 	if (mstate_wf&mcRStrafe)	vControlAccel.x +=  1;
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	CPHMovementControl::EEnvironment curr_env = character_physics_support()->movement()->Environment();
 	if(curr_env==CPHMovementControl::peOnGround || curr_env==CPHMovementControl::peAtWall)
@@ -462,7 +462,7 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 			tgt_roll	= 0.0f;
 	}
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (isGuns)
 	{
 		LookoutFunctionReplace(r_torso_tgt_roll, tgt_roll, dt);
