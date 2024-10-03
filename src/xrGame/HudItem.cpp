@@ -876,17 +876,16 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 
 attachable_hud_item* CHudItem::HudItemData()
 {
-	attachable_hud_item* hi = nullptr;
-	if(!g_player_hud)		
-		return				hi;
+	if (g_player_hud != nullptr)
+	{
+		attachable_hud_item* hi = g_player_hud->attached_item(0);
 
-	hi = g_player_hud->attached_item(0);
-	if (hi && hi->m_parent_hud_item == this)
-		return hi;
+		if (hi == nullptr)
+			hi = g_player_hud->attached_item(1);
 
-	hi = g_player_hud->attached_item(1);
-	if (hi && hi->m_parent_hud_item == this)
-		return hi;
+		if (hi != nullptr && hi->m_parent_hud_item == this)
+			return hi;
+	}
 
 	return nullptr;
 }
