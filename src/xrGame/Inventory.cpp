@@ -1253,10 +1253,11 @@ CInventoryItem	*CInventory::GetItemFromInventory(LPCSTR caItemName)
 	return	(0);
 }
 
-
 bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 {
-	VERIFY			(inventory_item);
+	if (inventory_item == nullptr)
+		return false;
+
 	VERIFY			(m_pOwner);
 
 	if (inventory_item->object().getDestroy()) return false;
