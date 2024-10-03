@@ -109,6 +109,7 @@ void CCustomOutfit::Load(LPCSTR section)
 
 	m_BonesProtectionSect	= READ_IF_EXISTS(pSettings, r_string, section, "bones_koeff_protection",  "" );
 	bIsHelmetAvaliable		= !!READ_IF_EXISTS(pSettings, r_bool, section, "helmet_avaliable", true);
+	bIsTorchAvaliable		= READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode]);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -286,6 +287,13 @@ void	CCustomOutfit::OnMoveToRuck		(const SInvItemPlace& prev)
 			CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
 			if(pTorch && !bIsHelmetAvaliable)
 				pTorch->SwitchNightVision(false);
+
+			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			if (isGuns)
+			{
+				if (pTorch && pTorch->IsSwitched())
+					pTorch->Switch(false);
+			}
 		}
 	}
 };
@@ -338,6 +346,13 @@ bool CCustomOutfit::install_upgrade_impl( LPCSTR section, bool test )
 	result |= process_if_exists( section, "satiety_restore_speed",   &CInifile::r_float, m_fSatietyRestoreSpeed,   test );
 	result |= process_if_exists( section, "power_restore_speed",     &CInifile::r_float, m_fPowerRestoreSpeed,     test );
 	result |= process_if_exists( section, "bleeding_restore_speed",  &CInifile::r_float, m_fBleedingRestoreSpeed,  test );
+
+	BOOL value = bIsTorchAvaliable;
+	result2 = process_if_exists_set(section, "torch_available", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		bIsTorchAvaliable = !!value;
+	}
 
 	result |= process_if_exists( section, "power_loss", &CInifile::r_float, m_fPowerLoss, test );
 	clamp( m_fPowerLoss, 0.0f, 1.0f );
