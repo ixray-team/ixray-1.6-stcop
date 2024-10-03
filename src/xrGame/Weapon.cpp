@@ -107,6 +107,7 @@ CWeapon::CWeapon()
 	IsAimStarted = false;
 	_wanim_force_assign = false;
 	is_firstlast_ammo_swapped = false;
+	bPreloadAnimAdapter = false;
 }
 
 CWeapon::~CWeapon		()
@@ -581,6 +582,11 @@ void CWeapon::Load		(LPCSTR section)
 	m_bMixAfterQueue = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "mix_shoot_after_shoot_in_queue", false);
 
 	m_bAimScopeAnims = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "aim_scope_anims", true);
+
+	m_bTriStateReload = READ_IF_EXISTS(pSettings, r_bool, section, "tri_state_reload", false);
+
+	m_bAddCartridgeOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", false);
+	m_bEmptyPreloadMode = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "empty_preload_mode", false);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));

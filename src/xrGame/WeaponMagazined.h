@@ -30,6 +30,9 @@ protected:
 	ESoundTypes		m_eSoundReload;
 	ESoundTypes		m_eSoundAim;
 	ESoundTypes		m_eSoundAimOut;
+	ESoundTypes		m_eSoundOpen;
+	ESoundTypes		m_eSoundAddCartridge;
+	ESoundTypes		m_eSoundClose;
 
 	bool			m_sounds_enabled;
 	// General
@@ -181,6 +184,11 @@ protected:
 	static void		KickCallback(CWeapon* wpn, int param);
 	void ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main = "") const;
 	bool			NeedShootMix() const;
+	void			TriStateReload();
+	void			switch2_StartReload();
+	void			switch2_AddCartridge();
+	void			switch2_EndReload();
+	void			TriStateEnd();
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow		();
@@ -193,6 +201,9 @@ protected:
 	virtual void	PlayAnimFireMode	();
 	virtual void    PlaySoundAim		(bool in = true);
 	virtual void	PlayAnimFakeshoot	();
+	virtual void	PlayAnimOpenWeapon();
+	virtual void	PlayAnimAddOneCartridgeWeapon();
+	void			PlayAnimCloseWeapon();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();

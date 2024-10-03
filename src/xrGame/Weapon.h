@@ -232,6 +232,9 @@ public:
 	bool _wanim_force_assign;
 	bool is_firstlast_ammo_swapped;
 	bool m_bAimScopeAnims;
+	bool m_bAddCartridgeOpen;
+	bool m_bEmptyPreloadMode;
+	bool bPreloadAnimAdapter;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
