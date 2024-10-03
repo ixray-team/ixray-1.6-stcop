@@ -102,6 +102,8 @@ void CWeaponRG6::FireStart()
 	}
 }
 
+#include "WeaponMagazinedWGrenade.h"
+
 void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 {
 	inheritedSG::FireTrace(P, D);
@@ -148,9 +150,9 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 			Fvector res[2];
 			u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed, EffectiveGravity(), res);
 			if (canfire0 != 0)
-			{
 				d = res[0];
-			};
+			else
+				CWeaponMagazinedWGrenade::LaunchGrenade_Correct(d);
 		}
 	};
 
