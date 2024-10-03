@@ -24,6 +24,8 @@
 #include "Torch.h"
 #include "script_game_object.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "../xrEngine/gamemtllib.h"
+#include "level_bullet_manager.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1640,6 +1642,65 @@ bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_aft
 		}
 	}
 	return result;
+}
+
+void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
+{
+	shared_str sect = cNameSect();
+	shared_str material = nullptr;
+	CCartridge c;
+
+	material = READ_IF_EXISTS(pSettings, r_string, sect, "kick_material", "objects\\knife");
+
+	material = FindStrValueInUpgradesDef("kick_material", material);
+
+	c.param_s.buckShot = 1;
+	c.param_s.impair = 1.0f;
+	c.param_s.kDisp = 1.0f;
+	c.param_s.kHit = 1.0f;
+	c.param_s.kImpulse = 1.0f;
+	c.param_s.kAP = ModifyFloatUpgradedValue("kick_ap", READ_IF_EXISTS(pSettings, r_float, sect, "kick_ap", EPS_L));
+	c.param_s.fWallmarkSize = ModifyFloatUpgradedValue("kick_wallmark_size", READ_IF_EXISTS(pSettings, r_float, sect, "kick_wallmark_size", 0.05f));
+	c.bullet_material_idx = GMLib.GetMaterialIdx(material.c_str());
+	c.param_s.u8ColorID = 0;
+	c.m_LocalAmmoType = 0;
+	c.param_s.kAirRes = 1.0f;
+	c.m_InvShortName = nullptr;
+
+	int cnt = FindIntValueInUpgradesDef("kick_hit_count", READ_IF_EXISTS(pSettings, r_u32, sect, "kick_hit_count", 1));
+	float hp = ModifyFloatUpgradedValue("kick_hit_power", READ_IF_EXISTS(pSettings, r_float, sect, "kick_hit_power", 0.0f));
+	float imp = ModifyFloatUpgradedValue("kick_hit_impulse", READ_IF_EXISTS(pSettings, r_float, sect, "kick_hit_impulse", 0.0f));
+	int htype = FindIntValueInUpgradesDef("kick_hit_type", READ_IF_EXISTS(pSettings, r_u32, sect, "kick_hit_type", ALife::EHitType::eHitTypeWound));
+	float hdist = ModifyFloatUpgradedValue("kick_distance", READ_IF_EXISTS(pSettings, r_float, sect, "kick_distance", 0.0f));
+
+	float disp_hor = ModifyFloatUpgradedValue("kick_disp_hor", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_hor", 0.0f));
+	float disp_ver = ModifyFloatUpgradedValue("kick_disp_ver", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_ver", 0.0f));
+
+	Level().BulletManager().AddBullet(pos, dir, 10000.f, 0.f, 0.f, 0.f, ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+
+	c.bullet_material_idx = GMLib.GetMaterialIdx("objects\\clothes");
+	c.param_s.fWallmarkSize = 0.0001f;
+
+	Fvector3 tmpdir, right, up;
+	for (int i = 0; i < cnt; ++i)
+	{
+		tmpdir = dir;
+		tmpdir.generate_orthonormal_basis_normalized(tmpdir, up, right);
+
+		up.mul(disp_ver);
+		right.mul(disp_hor);
+
+		tmpdir.sub(up);
+		tmpdir.sub(right);
+
+		up.mul(2.f * i / static_cast<float>(cnt));
+		right.mul(2.f * i / static_cast<float>(cnt));
+
+		tmpdir.add(up);
+		tmpdir.add(right);
+
+		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, 0.f, ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+	}
 }
 
 bool  CWeapon::need_renderable()
