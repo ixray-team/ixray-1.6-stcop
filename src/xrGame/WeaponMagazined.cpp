@@ -1464,19 +1464,19 @@ void CWeaponMagazined::PlayAnimFireMode()
 	VERIFY(GetState() == eSwitchMode);
 
 	xr_string anm_name = "anm_changefiremode_from_";
-	auto cur_mode = GetQueueSize();
-	auto old_mode = m_iOldFireMode;
+	int cur_mode = GetQueueSize();
+	int old_mode = m_iOldFireMode;
 	if (old_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += old_mode;
+		anm_name += std::to_string(old_mode);
 
 	anm_name += "_to_";
 
 	if (cur_mode < 0)
 		anm_name += "a";
 	else
-		anm_name += cur_mode;
+		anm_name += std::to_string(cur_mode);
 
 	PlayHUDMotion(anm_name, TRUE, this, eSwitchMode);
 }
