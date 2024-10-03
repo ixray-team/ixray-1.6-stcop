@@ -163,6 +163,54 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(hud_sect, "mask_firemode_a"))
 		m_sFireModeMask_a = pSettings->r_string(hud_sect, "mask_firemode_a");
+
+	if (pSettings->line_exist(hud_sect, "firemode_bones_total"))
+	{
+		m_sFireModeBonesTotal.clear();
+		LPCSTR str = pSettings->r_string(hud_sect, "firemode_bones_total");
+		for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+		{
+			string128 bone_name;
+			_GetItem(str, i, bone_name);
+			m_sFireModeBonesTotal.push_back(bone_name);
+		}
+
+		m_sFireModeBone_1.clear();
+		if (pSettings->line_exist(hud_sect, "firemode_bones_1"))
+		{
+			LPCSTR str = pSettings->r_string(hud_sect, "firemode_bones_1");
+			for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+			{
+				string128 bone_name;
+				_GetItem(str, i, bone_name);
+				m_sFireModeBone_1.push_back(bone_name);
+			}
+		}
+
+		m_sFireModeBone_3.clear();
+		if (pSettings->line_exist(hud_sect, "firemode_bones_3"))
+		{
+			LPCSTR str = pSettings->r_string(hud_sect, "firemode_bones_3");
+			for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+			{
+				string128 bone_name;
+				_GetItem(str, i, bone_name);
+				m_sFireModeBone_3.push_back(bone_name);
+			}
+		}
+
+		m_sFireModeBone_a.clear();
+		if (pSettings->line_exist(hud_sect, "firemode_bones_a"))
+		{
+			LPCSTR str = pSettings->r_string(hud_sect, "firemode_bones_a");
+			for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+			{
+				string128 bone_name;
+				_GetItem(str, i, bone_name);
+				m_sFireModeBone_a.push_back(bone_name);
+			}
+		}
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1673,6 +1721,97 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 		info.icon			= ammo_type;
 	}
 	return true;
+}
+
+void CWeaponMagazined::UpdateAddonsVisibility()
+{
+	inherited::UpdateAddonsVisibility();
+
+	IKinematics* pWeaponVisual = dynamic_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+
+	u16 bone_id;
+
+	UpdateHUDAddonsVisibility();
+	pWeaponVisual->CalculateBones_Invalidate();
+
+	auto firemode = GetQueueSize();
+
+	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
+	{
+		bone_id = pWeaponVisual->LL_BoneID(boneNameTotal);
+		if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+			pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+	}
+
+	if (firemode == 1)
+	{
+		for (shared_str boneName1 : m_sFireModeBone_1)
+		{
+			bone_id = pWeaponVisual->LL_BoneID(boneName1);
+			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+		}
+	}
+	if (firemode == 3)
+	{
+		for (shared_str boneName3 : m_sFireModeBone_3)
+		{
+			bone_id = pWeaponVisual->LL_BoneID(boneName3);
+			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+		}
+	}
+	if (firemode == -1)
+	{
+		for (shared_str boneNameAuto : m_sFireModeBone_a)
+		{
+			bone_id = pWeaponVisual->LL_BoneID(boneNameAuto);
+			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+		}
+	}
+
+	pWeaponVisual->CalculateBones_Invalidate();
+	pWeaponVisual->CalculateBones(TRUE);
+}
+
+void CWeaponMagazined::UpdateHUDAddonsVisibility()
+{
+	if (!GetHUDmode())
+		return;
+
+	inherited::UpdateHUDAddonsVisibility();
+
+	auto firemode = GetQueueSize();
+
+	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
+	{
+		HudItemData()->set_bone_visible(boneNameTotal, FALSE, TRUE);
+	}
+
+	if (firemode == 1)
+	{
+		for (shared_str boneName1 : m_sFireModeBone_1)
+		{
+			HudItemData()->set_bone_visible(boneName1, TRUE, TRUE);
+		}
+	}
+
+	if (firemode == 3)
+	{
+		for (shared_str boneName3 : m_sFireModeBone_3)
+		{
+			HudItemData()->set_bone_visible(boneName3, TRUE, TRUE);
+		}
+	}
+
+	if (firemode == -1)
+	{
+		for (shared_str boneNameAuto : m_sFireModeBone_a)
+		{
+			HudItemData()->set_bone_visible(boneNameAuto, TRUE, TRUE);
+		}
+	}
 }
 
 bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
