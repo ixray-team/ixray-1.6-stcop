@@ -157,10 +157,9 @@ public:
 	u32							m_custom_mark_clr;
 	LPCSTR						m_custom_mark_lanim;
 	bool						bNeedUpdateIcon;
-
 	SInvItemPlace				m_ItemCurrPlace;
 
-
+	bool isCanTakeWhenControlled(void) const;
 	virtual void				OnMoveToSlot		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToRuck		(const SInvItemPlace& prev) {};
@@ -234,7 +233,7 @@ protected:
 	net_updateInvData*				m_net_updateData;
 	net_updateInvData*				NetSync						();
 	void						CalculateInterpolationParams();
-
+	bool						m_bCanTakeWhenControlled;
 public:
 	virtual BOOL				net_Spawn				(CSE_Abstract* DC);
 	virtual void				net_Destroy				();

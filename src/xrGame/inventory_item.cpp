@@ -148,6 +148,8 @@ void CInventoryItem::Load(LPCSTR section)
 	m_IconRect.set(x, y, w, h);
 
 	ReadCustomTextAndMarks		(section);
+
+	m_bCanTakeWhenControlled = READ_IF_EXISTS(pSettings, r_bool, m_section_id, "can_take_when_controlled", false);
 }
 
 void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section) {
@@ -1489,6 +1491,10 @@ Frect CInventoryItem::GetKillMsgRect() const
 	return Frect().set(x,y,w,h);
 }
 
+bool CInventoryItem::isCanTakeWhenControlled(void) const
+{
+	return m_bCanTakeWhenControlled;
+}
 Irect CInventoryItem::GetInvGridRect() const
 {
 	return m_IconRect;

@@ -1278,8 +1278,9 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 	{
 		if (pActor->IsActorControlled() || pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide())
 		{
-			if (inventory_item->m_section_id != nullptr && !READ_IF_EXISTS(pSettings, r_bool, inventory_item->m_section_id, "can_take_when_controlled", false))
-				return false;
+			if (inventory_item)
+				if (inventory_item->m_section_id != nullptr && !inventory_item->isCanTakeWhenControlled())
+					return false;
 		}
 	}
 
