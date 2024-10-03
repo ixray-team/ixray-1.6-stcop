@@ -2008,6 +2008,9 @@ bool CWeapon::OnActWhileReload_CanActNow() const
 
 bool CWeapon::CanAimNow()
 {
+	if (!ParentIsActor())
+		return true;
+
 	bool result = true;
 
 	/*if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
