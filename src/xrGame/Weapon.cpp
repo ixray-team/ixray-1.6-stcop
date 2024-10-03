@@ -96,6 +96,8 @@ CWeapon::CWeapon()
 	hud_silencer = nullptr;
 	hud_scope = nullptr;
 	hud_gl = nullptr;
+
+	bIsNeedCallDet = false;
 }
 
 CWeapon::~CWeapon		()
