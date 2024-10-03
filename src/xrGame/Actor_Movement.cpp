@@ -309,206 +309,61 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	if (IsGameTypeSingle() && (!isGuns && cam_eff_factor > EPS || isGuns))
 	{
 		ECamEffectorType anm_id = eCEActorMoving;
-		xr_string state_anm = "";
+		xr_string state_anm;
 		xr_string HUD_PREFIX = "cam_";
 		CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+
+		auto change_name = [&](const xr_string naming, const ECamEffectorType& effector_type)
+		{
+			state_anm = naming;
+			if (wpn)
+			{
+				if (wpn->IsZoomed())
+					state_anm += "_aim";
+
+				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
+			}
+
+			anm_id = effector_type;
+		};
+
 		if (mstate_real & mcSprint)
-		{
-			state_anm = "sprint";
-			if (wpn)
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-
-			anm_id = eCEActorMovingSprint;
-		}
+			change_name("sprint", eCEActorMovingSprint);
 		else if (mstate_real & mcLStrafe && !(mstate_old & mcLStrafe))
-		{
-			state_anm = "strafe_left";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingLeft;
-		}
+			change_name("strafe_left", eCEActorMovingLeft);
 		else if (mstate_real & mcRStrafe && !(mstate_old & mcRStrafe))
-		{
-			state_anm = "strafe_right";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingRight;
-		}
+			change_name("strafe_right", eCEActorMovingRight);
 		else if (mstate_real & mcFwd && !(mstate_old & mcFwd))
-		{
-			state_anm = "move_fwd";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingFwd;
-		}
+			change_name("move_fwd", eCEActorMovingFwd);
 		else if (mstate_real & mcBack && !(mstate_old & mcBack))
-		{
-			state_anm = "move_back";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingBack;
-		}
+			change_name("move_back", eCEActorMovingBack);
 		else if (mstate_real & mcLanding)
-		{
-			state_anm = "landing";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingLanding;
-		}
+			change_name("landing", eCEActorMovingLanding);
 		else if (mstate_real & mcLanding2)
-		{
-			state_anm = "landing2";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingLanding;
-		}
+			change_name("landing2", eCEActorMovingLanding);
 		else if (mstate_real & mcJump && !(mstate_old & mcJump))
-		{
-			state_anm = "jump";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingJump;
-		}
+			change_name("jump", eCEActorMovingJump);
 		else if (mstate_real & mcFall && !(mstate_old & mcFall))
-		{
-			state_anm = "fall";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingFall;
-		}
+			change_name("fall", eCEActorMovingFall);
 		else if (!(mstate_real & mcLLookout) && mstate_wishful & mcLLookout)
-		{
-			state_anm = "lookout_left_start";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorLLookoutStart;
-		}
+			change_name("lookout_left_start", eCEActorLLookoutStart);
 		else if (!(mstate_real & mcRLookout) && mstate_wishful & mcRLookout)
-		{
-			state_anm = "lookout_right_start";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorRLookoutStart;
-		}
+			change_name("lookout_right_start", eCEActorRLookoutStart);
 		else if (mstate_real & mcLLookout && !(mstate_wishful & mcLLookout))
-		{
-			state_anm = "lookout_left_end";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorLLookoutEnd;
-		}
+			change_name("lookout_left_end", eCEActorLLookoutEnd);
 		else if (mstate_real & mcRLookout && !(mstate_wishful & mcRLookout))
-		{
-			state_anm = "lookout_right_end";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorRLookoutEnd;
-		}
+			change_name("lookout_right_end", eCEActorRLookoutEnd);
 		else if (mstate_real & mcCrouch && !(mstate_old & mcCrouch))
-		{
-			state_anm = "crouch_down";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
-
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingCrouchDown;
-		}
+			change_name("crouch_down", eCEActorMovingCrouchDown);
 		else if (mstate_real & mcCrouch && !(mstate_wishful & mcCrouch))
-		{
-			state_anm = "crouch_up";
-			if (wpn)
-			{
-				if (wpn->IsZoomed())
-					state_anm += "_aim";
+			change_name("crouch_up", eCEActorMovingCrouchUp);
 
-				state_anm = READ_IF_EXISTS(pSettings, r_string, wpn->HudSection(), (HUD_PREFIX + state_anm).c_str(), state_anm.c_str());
-			}
-
-			anm_id = eCEActorMovingCrouchUp;
-		}
-
-		if (state_anm != "")
+		if (!state_anm.empty())
 		{ //play moving cam effect
 			CActor*	control_entity = static_cast<CActor*>(Level().CurrentControlEntity());
 			R_ASSERT2(control_entity, "current control entity is nullptr");
 			CEffectorCam* ec = control_entity->Cameras().GetCamEffector(anm_id);
-			if (!ec)
+			if (ec == nullptr)
 			{
 				string_path	eff_name;
 				xr_sprintf(eff_name, sizeof(eff_name), "%s.anm", state_anm.c_str());
@@ -608,7 +463,7 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
-		LookoutFunctionReplace(&r_torso_tgt_roll, tgt_roll, dt);
+		LookoutFunctionReplace(r_torso_tgt_roll, tgt_roll, dt);
 		r_torso_tgt_roll = angle_normalize_signed(r_torso_tgt_roll);
 		return;
 	}
@@ -620,14 +475,12 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 	}
 }
 
-void CActor::LookoutFunctionReplace(float* cur_roll, float tgt_roll, float dt)
+void CActor::LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt)
 {
-    float dx, delta;
-    float speed, koef, ampl_k, dx_pow;
+	float speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 1.0f);
+	float ampl_k = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
 
-    speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 1.0f);
-    ampl_k = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
-    dx_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
+	float koef = 0.f;
 
     CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
     if (itm)
@@ -641,8 +494,10 @@ void CActor::LookoutFunctionReplace(float* cur_roll, float tgt_roll, float dt)
 
     tgt_roll = tgt_roll * ampl_k;
 
-    dx = tgt_roll - *cur_roll;
-    delta = abs(pow(abs(dx), dx_pow) * dt * speed);
+	float dx_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
+
+    float dx = tgt_roll - cur_roll;
+    float delta = abs(pow(abs(dx), dx_pow) * dt * speed);
 
     if (dx < 0.0f)
         delta *= -1.0f;
@@ -650,7 +505,7 @@ void CActor::LookoutFunctionReplace(float* cur_roll, float tgt_roll, float dt)
     if (abs(delta) > abs(dx))
         delta = dx;
 
-    *cur_roll += delta;
+    cur_roll += delta;
 }
 
 bool CActor::g_LadderOrient()
