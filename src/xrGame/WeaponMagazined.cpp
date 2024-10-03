@@ -367,14 +367,14 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 {
 	xr_map<LPCSTR, u16> l_ammo;
 	
-	while(!m_magazine.empty()) 
+	while (!is_firstlast_ammo_swapped && !m_magazine.empty() || is_firstlast_ammo_swapped && m_magazine.size() > 1)
 	{
 		CCartridge &l_cartridge = m_magazine.back();
 		xr_map<LPCSTR, u16>::iterator l_it;
 		for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 		{
-            if(!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first)) 
-            { 
+	        if(!xr_strcmp(*l_cartridge.m_ammoSect, l_it->first)) 
+	        { 
 				 ++(l_it->second); 
 				 break; 
 			}
@@ -416,6 +416,95 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		SwitchState(eIdle);
 
 	_wanim_force_assign = true;
+}
+
+void CWeaponMagazined::SwapFirstLastAmmo()
+{
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+		return;
+
+	int cnt = m_magazine.size();
+	if (cnt > 1)
+	{
+		cnt -= 1;
+		CCartridge* cs = GetCartridgeFromMagVector(0);
+		CCartridge* ce = GetCartridgeFromMagVector(cnt);
+		CCartridge tmp;
+		CopyCartridge(*cs, tmp);
+		CopyCartridge(*ce, *cs);
+		CopyCartridge(tmp, *ce);
+	}
+}
+
+void CWeaponMagazined::SwapLastPrevAmmo()
+{
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+		return;
+
+	int cnt = m_magazine.size();
+	if (cnt > 1)
+	{
+		cnt -= 1;
+		CCartridge* cs = GetCartridgeFromMagVector(cnt - 1);
+		CCartridge* ce = GetCartridgeFromMagVector(cnt);
+		CCartridge tmp;
+		CopyCartridge(*cs, tmp);
+		CopyCartridge(*ce, *cs);
+		CopyCartridge(tmp, *ce);
+	}
+}
+
+void CWeaponMagazined::CopyCartridge(CCartridge & src, CCartridge & dst)
+{
+	std::memcpy(&dst, &src, sizeof(CCartridge));
+}
+
+void CWeaponMagazined::PerformUnloadAmmo()
+{
+	is_firstlast_ammo_swapped = false;
+
+	if (!IsGrenadeMode() && m_bAmmoInChamber)
+	{
+		SwapFirstLastAmmo();
+		is_firstlast_ammo_swapped = true;
+	}
+
+    bool need_unload = false;
+    int cnt = 0;
+
+    if (IsGrenadeMode())
+	{
+        cnt = GetAmmoInGLCount();
+        if (cnt > 0)
+		{
+            for (int i = 0; i < cnt; ++i)
+			{
+                if (GetCartridgeType(GetGrenadeCartridgeFromGLVector(i)) != GetAmmoTypeIndex())
+				{
+                    need_unload = true;
+                    break;
+                }
+            }
+        }
+    }
+	else
+	{
+        cnt = m_magazine.size();
+        if (cnt > 0)
+		{
+            for (int i = 0; i < cnt; ++i)
+			{
+                if (GetCartridgeType(GetCartridgeFromMagVector(i)) != GetAmmoTypeIndex())
+				{
+                    need_unload = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (need_unload)
+        UnloadMagazine();
 }
 
 void CWeaponMagazined::ReloadMagazine() 
@@ -463,16 +552,12 @@ void CWeaponMagazined::ReloadMagazine()
 		}
 	}
 
-
-
 	//нет патронов для перезарядки
 	if(!m_pCurrentAmmo && !unlimited_ammo() ) return;
 
 	//разрядить магазин, если загружаем патронами другого типа
-	if(!m_bLockType && !m_magazine.empty() && 
-		(!m_pCurrentAmmo || xr_strcmp(m_pCurrentAmmo->cNameSect(), 
-					 *m_magazine.back().m_ammoSect)))
-		UnloadMagazine();
+	if (!m_bLockType && !m_magazine.empty())
+		PerformUnloadAmmo();
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
@@ -501,6 +586,12 @@ void CWeaponMagazined::ReloadMagazine()
 		m_bLockType = true; 
 		ReloadMagazine(); 
 		m_bLockType = false; 
+	}
+
+	if (is_firstlast_ammo_swapped)
+	{
+		is_firstlast_ammo_swapped = false;
+		SwapFirstLastAmmo();
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -581,6 +672,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(TRUE);
 
+	SwapLastPrevAmmo();
 
 	return cnt;
 }
@@ -948,6 +1040,8 @@ void CWeaponMagazined::DoReload()
 
 	if (bm)
 		mod_magsize = ammo_cnt_to_reload;
+	else if (!IsGrenadeMode() && m_bAmmoInChamber && GetAmmoElapsed() == 0)
+		mod_magsize = def_magsize - 1;
 
 	iMagazineSize = mod_magsize;
 	ReloadMagazine();
