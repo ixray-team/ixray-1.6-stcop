@@ -16,7 +16,6 @@
 #include "Actor.h"
 #include "script_game_object.h"
 
-#include "CustomDetector.h"
 #include "Scope.h"
 
 class CEntity;
@@ -28,7 +27,6 @@ class CParticlesObject;
 class CUIWindow;
 class CBinocularsVision;
 class CNightVisionEffector;
-class CCustomDetector;
 
 class CWeapon : public CHudItemObject,
 				public CShootingObject
@@ -241,8 +239,6 @@ public:
 
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
-
-	CCustomDetector* GetDetector(bool in_slot = false);
 
 	void HideOneUpgradeLevel(std::string section);
 	void ModUpdate();
