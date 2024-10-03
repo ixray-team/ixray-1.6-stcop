@@ -1027,8 +1027,8 @@ bool electronics_apply() {
 int get_parameter_upgraded_int() {
 	return 0;
 }
-int valid_saved_game_int() {
-	return 0;
+int valid_saved_game_int(int number, const char* name) {
+	return 1;
 }
 
 #pragma optimize("s",on)
