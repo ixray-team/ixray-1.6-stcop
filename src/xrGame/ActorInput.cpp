@@ -806,7 +806,7 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 
 	CHudItem* item = smart_cast<CHudItem*>(inventory().ActiveItem());
 	CWeapon* wpn = smart_cast<CWeapon*>(item);
-	if (!item || restrictor_config_param.size() == 0 || wpn && wpn->FindBoolValueInUpgradesDef(restrictor_config_param, READ_IF_EXISTS(pSettings, r_bool, wpn->m_section_id.c_str(), restrictor_config_param.c_str(), false), true))
+	if (!item || restrictor_config_param.size() == 0 || READ_IF_EXISTS(pSettings, r_bool, item->object().cNameSect(), restrictor_config_param.c_str(), false) || wpn && wpn->FindBoolValueInUpgradesDef(restrictor_config_param, READ_IF_EXISTS(pSettings, r_bool, wpn->m_section_id.c_str(), restrictor_config_param.c_str(), false), true))
 	{
 		if (item && !item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
 			return false;
