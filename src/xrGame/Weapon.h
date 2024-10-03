@@ -231,6 +231,7 @@ public:
 	bool m_bEmptyPreloadMode;
 	bool bPreloadAnimAdapter;
 	bool bUpdateHUDBonesVisibility;
+	bool _is_just_after_reload;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -253,6 +254,7 @@ public:
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow();
+	bool CanLeaveAimNow();
 	bool IsCollimatorInstalled();
 	bool IsHudModelForceUnhide();
 	bool IsUIForceUnhiding();

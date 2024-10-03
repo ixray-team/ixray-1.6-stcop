@@ -108,6 +108,7 @@ CWeapon::CWeapon()
 	is_firstlast_ammo_swapped = false;
 	bPreloadAnimAdapter = false;
 	bUpdateHUDBonesVisibility = false;
+	_is_just_after_reload = false;
 }
 
 CWeapon::~CWeapon		()
@@ -1994,14 +1995,61 @@ bool CWeapon::OnActWhileReload_CanActNow() const
 
 bool CWeapon::CanAimNow()
 {
-	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+	bool result = true;
+
+	/*if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
+		result = false;
+	else */
+	if (GetState() == eIdle)
+		result = true;
+	else if (IsActionProcessing() || GetState() == eSprintStart || GetState() == eSprintEnd || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
+		result = false;
+	else
+	{
+		if (ParentIsActor())
+			result = !!(Actor()->GetDetector() && Actor()->GetDetector()->GetState() == CCustomDetector::eIdle);
+
+		if (result)
+		{
+			if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+			{
+				shared_str sect = HudSection();
+
+				if (IsScopeAttached())
+					sect = GetCurrentScopeSection();
+
+				if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
+					result = false;
+			}
+		}
+	}
+
+	return result;
+}
+
+bool CWeapon::CanLeaveAimNow()
+{
+	if (!ParentIsActor())
+		return true;
+
+	//if (IsActorSuicideNow() || IsActorPlanningSuicide() || IsControllerPreparing())
+		//return true;
+
+	if ((IsActionProcessing() && GetActualCurrentAnim().find("anm_idle_aim_start") == -1 || GetState() != eIdle))
 	{
 		shared_str sect = HudSection();
 
-		if (IsScopeAttached())
-			sect = GetCurrentScopeSection();
+		if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_halfaimstate", false))
+		{
+			if (IsScopeAttached())
+			{
+				sect = GetCurrentScopeSection();
 
-		if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
+				if (!pSettings->line_exist(sect, "allow_halfaimstate") || !pSettings->r_bool(sect, "allow_halfaimstate"))
+					return false;
+			}
+		}
+		else
 			return false;
 	}
 
@@ -2081,7 +2129,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
-						if (!IsZoomed() && CanAimNow())
+						if (!IsZoomed())
 						{
 							if (!IsPending())
 							{
@@ -2099,7 +2147,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				{
 					if (flags & CMD_START)
 					{
-						if (!IsZoomed() && !IsPending() && CanAimNow())
+						if (!IsZoomed() && !IsPending())
 						{
 							if (GetState() != eIdle)
 								SwitchState(eIdle);
@@ -2459,6 +2507,9 @@ float LastZoomFactor = 0.f;
 
 void CWeapon::OnZoomIn()
 {
+	if (!CanAimNow())
+		return;
+
 	m_zoom_params.m_bIsZoomModeNow		= true;
 	if (m_zoom_params.m_bUseDynamicZoom && IsScopeAttached())
 	{
@@ -2490,6 +2541,12 @@ void CWeapon::OnZoomIn()
 
 void CWeapon::OnZoomOut()
 {
+	if (!CanLeaveAimNow())
+	{
+		Actor()->SetActorKeyRepeatFlag(kfUNZOOM, true);
+		return;
+	}
+
 	m_zoom_params.m_bIsZoomModeNow		= false;
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor	= g_fov;

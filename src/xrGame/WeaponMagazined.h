@@ -86,6 +86,7 @@ public:
 	virtual CWeaponMagazined*cast_weapon_magazined	()		 {return this;}
 
 	virtual void	SetDefaults		();
+			bool	OnShoot_CanShootNow();
 	virtual void	FireStart		();
 	virtual void	FireEnd			();
 	
