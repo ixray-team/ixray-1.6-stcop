@@ -1078,7 +1078,7 @@ bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE) const
 	bool result = CanStartAction();
 	if (!result)
 	{
-		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() != eIdle)
 		{
 			Actor()->SetMovementState(eWishful, mcSprint, false);
 			Actor()->SetActorKeyRepeatFlag((ACTOR_DEFS::EActorKeyflags)kfACTTYPE, true);
