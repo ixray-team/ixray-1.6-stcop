@@ -249,7 +249,7 @@ public:
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 	void ReassignWorldAnims();
 
-	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
+	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow();
