@@ -58,7 +58,7 @@ CWeapon::CWeapon()
 
 	eHandDependence			= hdNone;
 
-	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
+	m_zoom_params.m_fCurrentZoomFactor			= EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] ? 1.0f : g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
 	m_zoom_params.m_pVision						= nullptr;
 	m_zoom_params.m_pNight_vision				= nullptr;
@@ -617,6 +617,15 @@ void CWeapon::Load		(LPCSTR section)
 
 	if (pSettings->line_exist(section, "snd_suicide_stop"))
 		m_sounds.LoadSound(section, "snd_suicide_stop", "sndStopSuicide", false, SOUND_TYPE_ITEM_TAKING);
+
+	_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, section, "min_lens_factor", 1.0f);
+	_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, section, "max_lens_factor", 1.0f);
+	_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, section, "lens_speed", 0.0f);
+	_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, section, "lens_gyro_sound_period", 0.0f);
+	_lens_zoom_params.delta = 1.f / READ_IF_EXISTS(pSettings, r_float, section, "lens_factor_levels_count", 5.0f);
+	_lens_zoom_params.target_position = 1.0f;
+
+	_lens_zoom_params.last_gyro_snd_time = Device.dwTimeGlobal;
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -1697,7 +1706,7 @@ void CWeapon::ProcessAmmoGL(bool forced)
 	}
 }
 
-bool CWeapon::IsCollimatorInstalled()
+bool CWeapon::IsCollimatorInstalled() const
 {
 	if (!IsScopeAttached() || get_ScopeStatus() != 2)
 		return false;
@@ -1708,12 +1717,31 @@ bool CWeapon::IsCollimatorInstalled()
 	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
 }
 
-bool CWeapon::IsHudModelForceUnhide()
+bool CWeapon::IsLensedScopeInstalled() const
+{
+	bool result = false;
+
+	if (get_ScopeStatus() == 2 && IsScopeAttached())
+	{
+		shared_str scope = GetCurrentScopeSection();
+		scope = pSettings->r_string(scope, "scope_name");
+		result = READ_IF_EXISTS(pSettings, r_bool, scope, "need_lens_frame", false);
+	}
+	else if (get_ScopeStatus() == 1)
+	{
+		result = READ_IF_EXISTS(pSettings, r_bool, m_section_id, "need_lens_frame", false);
+		result = FindBoolValueInUpgradesDef("need_lens_frame", result, true);
+	}
+
+	return result;
+}
+
+bool CWeapon::IsHudModelForceUnhide() const
 {
 	return IsCollimatorInstalled() /* || IsLensedScopeInstalled(wpn) && IsLensEnabled() || IsAlterZoomMode()*/;
 }
 
-bool CWeapon::IsUIForceUnhiding()
+bool CWeapon::IsUIForceUnhiding() const
 {
 	bool result = IsHudModelForceUnhide();
 
@@ -1730,7 +1758,7 @@ bool CWeapon::IsUIForceUnhiding()
 	return result;
 }
 
-bool CWeapon::IsUIForceHiding()
+bool CWeapon::IsUIForceHiding() const
 {
 	CWeaponBinoculars* bino = smart_cast<CWeaponBinoculars*>(this);
 
@@ -1744,7 +1772,7 @@ bool CWeapon::IsUIForceHiding()
 		return false;
 }
 
-shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def)
+shared_str CWeapon::FindStrValueInUpgradesDef(shared_str key, shared_str def) const
 {
 	for (int i = 0; i < m_upgrades.size(); ++i)
 	{
@@ -1786,7 +1814,7 @@ int CWeapon::FindIntValueInUpgradesDef(shared_str key, int def)
 	return result;
 }
 
-bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault)
+bool CWeapon::FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault) const
 {
 	bool result = def;
 	for (int i = 0; i < m_upgrades.size(); ++i)
@@ -2566,6 +2594,40 @@ void CWeapon::OnZoomIn()
 	else if (CurrentZoomFactor() != 0)
 		m_zoom_params.m_fCurrentZoomFactor = CurrentZoomFactor();
 
+	if (IsGrenadeMode())
+	{
+		shared_str scope_sect = m_section_id;
+		if (pSettings->line_exist(scope_sect, "gl_zoom_factor"))
+			SetZoomFactor(pSettings->r_float(scope_sect, "gl_zoom_factor"));
+
+		if (IsScopeAttached())
+		{
+			scope_sect = GetCurrentScopeSection();
+			if (pSettings->line_exist(scope_sect, "gl_zoom_factor"))
+			{
+				SetZoomFactor(pSettings->r_float(scope_sect, "gl_zoom_factor"));
+			}
+		}
+	}
+	else if (!IsScopeAttached())
+	{
+		if (pSettings->line_exist(m_section_id, "nonscoped_zoom_factor"))
+			SetZoomFactor(pSettings->r_float(m_section_id, "nonscoped_zoom_factor"));
+	}
+
+	/*SetLastZoomAlter(IsAlterZoomMode());
+
+	if (IsAlterZoomMode())
+	{
+		SetZoomFactor(GetAlterScopeZoomFactor());
+	}
+
+	ReloadNightBrightnessParams();
+	UpdateZoomCrosshairUI();
+
+	if (IsPDAWindowVisible())
+		_is_pda_lookout_mode = false;*/
+
 	GamePersistent().SetPickableEffectorDOF(true);
 
 	if (m_zoom_params.m_sUseBinocularVision.size() && IsScopeAttached() && nullptr == m_zoom_params.m_pVision)
@@ -2590,7 +2652,7 @@ void CWeapon::OnZoomOut()
 
 	m_zoom_params.m_bIsZoomModeNow		= false;
 	m_fRTZoomFactor = GetZoomFactor();//store current
-	m_zoom_params.m_fCurrentZoomFactor	= g_fov;
+	m_zoom_params.m_fCurrentZoomFactor = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] ? 1.0f : g_fov;
 
 	GamePersistent().SetPickableEffectorDOF(false);
 
@@ -3581,4 +3643,25 @@ bool CWeapon::ScopeFit(CScope* pIItem)
 	}
 
 	return false;
+}
+
+float CWeapon::GetLensFOV(float default_value) const
+{
+	float result = default_value;
+
+	lens_zoom_params lens_params = _lens_zoom_params;
+
+	if (get_ScopeStatus() == 2 && IsScopeAttached())
+	{
+		shared_str scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
+		lens_params.factor_min = READ_IF_EXISTS(pSettings, r_float, scope_sect, "min_lens_factor", 1.0f);
+		lens_params.factor_max = READ_IF_EXISTS(pSettings, r_float, scope_sect, "max_lens_factor", 1.0f);
+	}
+
+	float factor = lens_params.factor_min + (lens_params.factor_max - lens_params.factor_min) * lens_params.real_position;
+
+	float fov = (g_fov / 2.f) * PI / 180.0f;
+	result = 2 * atan(tan(fov) / factor) * 180.0f / PI;
+
+	return result;
 }

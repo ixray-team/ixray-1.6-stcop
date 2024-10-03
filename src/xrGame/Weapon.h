@@ -197,6 +197,20 @@ public:
 
 	bool	NeedBlockSprint						() const; 
 
+	struct lens_zoom_params
+	{
+		float delta = 0.f;
+		float target_position = 0.f;
+		float speed = 0.f;
+		float factor_min = 0.f;
+		float factor_max = 0.f;
+		float gyro_period = 0.f;
+		float real_position = 0.f;
+		u32   last_gyro_snd_time = 0;
+	};
+
+	lens_zoom_params _lens_zoom_params;
+
 	float lock_time;
 
 	xr_string curr_anim;
@@ -257,19 +271,20 @@ public:
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow();
 	bool CanLeaveAimNow();
-	bool IsCollimatorInstalled();
-	bool IsHudModelForceUnhide();
-	bool IsUIForceUnhiding();
-	bool IsUIForceHiding();
-	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false);
+	bool IsCollimatorInstalled() const;
+	bool IsHudModelForceUnhide() const;
+	bool IsUIForceUnhiding() const;
+	bool IsUIForceHiding() const;
+	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false) const;
 	bool IsActionProcessing();
+	bool IsLensedScopeInstalled() const;
 
 	virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }
 
-	shared_str GetCurrentScopeSection() { return m_scopes[m_cur_scope]; }
-	shared_str GetScopeSection(int idx) { return m_scopes[idx]; }
-	shared_str FindStrValueInUpgradesDef(shared_str key, shared_str def);
+	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
+	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
+	shared_str FindStrValueInUpgradesDef(shared_str key, shared_str def) const;
 
 	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr);
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr);
@@ -295,6 +310,7 @@ public:
 	int FindIntValueInUpgradesDef(shared_str key, int def);
 
 	float ModifyFloatUpgradedValue(shared_str key, float def);
+	float GetLensFOV(float default_value) const;
 
 protected:
 	//состояние подключенных аддонов
