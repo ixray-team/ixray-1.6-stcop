@@ -308,6 +308,8 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 					d = res[0];
 				else
 					LaunchGrenade_Correct(d);
+
+				LaunchGrenade_controller_Correct(this, d);
 			}
 		};
 		
@@ -349,6 +351,12 @@ void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3& v)
 	camdir.normalize();
 
 	v = camdir;
+}
+
+void CWeaponMagazinedWGrenade::LaunchGrenade_controller_Correct(CWeaponMagazined* wpn, Fvector3& v)
+{
+	if (wpn->ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()))
+		v.set(0, -2, 0);
 }
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type) 
