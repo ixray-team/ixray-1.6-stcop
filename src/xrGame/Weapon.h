@@ -187,6 +187,7 @@ public:
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
 	bool bStopReloadSignal;
+	bool m_bUseSilHud;
 
 	RStringVec m_vDefHideBones;
 	RStringVec m_vDefShowBones;

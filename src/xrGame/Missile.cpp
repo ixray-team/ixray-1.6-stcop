@@ -14,7 +14,7 @@
 #include "characterphysicssupport.h"
 #include "Inventory.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #ifdef DEBUG
 #	include "phdebug.h"
 #endif

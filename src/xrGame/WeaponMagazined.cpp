@@ -1208,7 +1208,16 @@ void CWeaponMagazined::InitAddons()
 		ResetSilencerKoeffs();
 	}
 
+	HudSelector();
 	inherited::InitAddons();
+}
+
+void CWeaponMagazined::HudSelector()
+{
+	if (m_bUseSilHud && SilencerAttachable() && IsSilencerAttached())
+		hud_sect = pSettings->r_string(cNameSect(), "hud_silencer");
+	else
+		hud_sect = hud_sect_cache;
 }
 
 void CWeaponMagazined::LoadSilencerKoeffs()
