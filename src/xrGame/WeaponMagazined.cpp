@@ -834,9 +834,11 @@ void CWeaponMagazined::OnShot()
 	PlayAnimShoot				();
 	
 	// Shell Drop
-	Fvector vel; 
-	PHGetLinearVell				(vel);
-	OnShellDrop					(get_LastSP(), vel);
+	Fvector vel;
+	PHGetLinearVell(vel);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns)
+		OnShellDrop(get_LastSP(), vel);
 	
 	// Огонь из ствола
 	StartFlameParticles			();
