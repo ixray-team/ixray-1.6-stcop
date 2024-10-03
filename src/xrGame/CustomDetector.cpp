@@ -63,8 +63,9 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	{
 		CWeapon* W = smart_cast<CWeapon*>(itm);
 		if (W && !smart_cast<CWeaponBinoculars*>(W))
-			bres =	bres && W->GetState() != CHUDState::eBore && W->GetState() != CWeapon::eReload && W->GetState() != CWeapon::eSwitch && W->GetState() != CWeapon::eUnjam && !W->IsZoomed();
+			bres = bres && !W->IsZoomed() && !W->IsPending();
 	}
+
 	return bres;
 }
 
@@ -355,42 +356,42 @@ void CCustomDetector::UpdateHudAdditonal(Fmatrix& trans)
 
 void CCustomDetector::UpdateVisibility()
 {
-	//check visibility
-
 	if (!m_pInventory)
 		return;
 
-	PIItem pItem = m_pInventory->ActiveItem();
-
-	bool bClimborTalking = ((Actor()->GetMovementState(eReal)&mcClimb) != 0 || Actor()->IsTalking());
-	if (bClimborTalking)
+	attachable_hud_item* i0 = g_player_hud->attached_item(0);
+	if (i0 && HudItemData())
 	{
-		HideDetector(true);
-		m_bNeedActivation = true;
-	}
-	else
-	{
-		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
-		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn))
+		bool bClimb = (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb) || Actor()->IsTalking();
+		if (bClimb)
 		{
-			u32 state = wpn->GetState();
-			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-			if (wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
+			HideDetector(true);
+			m_bNeedActivation = true;
+		}
+		else
+		{
+			CWeapon* wpn = smart_cast<CWeapon*>(i0->m_parent_hud_item);
+			if (wpn)
 			{
-				HideDetector(true);
-				m_bNeedActivation = true;
+				u32 state = wpn->GetState();
+				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+				if (wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
+				{
+					HideDetector(true);
+					m_bNeedActivation = true;
+				}
 			}
 		}
 	}
-
-	if (m_bNeedActivation)
+	else if (m_bNeedActivation)
 	{
-		bool bClimborTalking = ((Actor()->GetMovementState(eReal)&mcClimb) != 0 || Actor()->IsTalking());
-		if (!bClimborTalking)
+		attachable_hud_item* i0_ = g_player_hud->attached_item(0);
+		bool bClimb = (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb) || Actor()->IsTalking();
+		if (!bClimb)
 		{
-			CHudItem* huditem = (pItem) ? pItem->cast_hud_item() : NULL;
+			CHudItem* huditem = (i0_) ? i0_->m_parent_hud_item : NULL;
 			bool bChecked = !huditem || CheckCompatibilityInt(huditem, 0);
-			
+
 			if (bChecked)
 				ShowDetector(true);
 		}
