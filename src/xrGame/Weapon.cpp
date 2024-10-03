@@ -2555,8 +2555,11 @@ void CWeapon::OnAnimationEnd(u32 state)
 bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
-
-	return GetState() == eFire || isBlockSprintInReload && GetState() == eReload;
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+		return GetState() != eIdle;
+	else
+		return GetState() == eFire || GetState() == eFire2 || isBlockSprintInReload && GetState() == eReload;
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx()
