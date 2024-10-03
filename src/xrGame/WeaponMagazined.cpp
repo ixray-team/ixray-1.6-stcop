@@ -1938,7 +1938,6 @@ void CWeaponMagazined::PlayAnimShow()
 	VERIFY(GetState()==eShowing);
 
 	PlayHUDMotion("anm_show", FALSE, GetState());
-	StartCompanionAnimIfNeeded("draw");
 }
 
 void CWeaponMagazined::PlayAnimHide()
@@ -1946,7 +1945,6 @@ void CWeaponMagazined::PlayAnimHide()
 	VERIFY(GetState()==eHiding);
 
 	PlayHUDMotion("anm_hide", TRUE, GetState());
-	StartCompanionAnimIfNeeded("hide");
 }
 
 void CWeaponMagazined::OnAmmoTimer()
@@ -2049,6 +2047,9 @@ void CWeaponMagazined::PlayAnimIdle()
 			{
 				IsAimStarted = true;
 				PlayHUDMotion("anm_idle_aim_start", TRUE, GetState());
+				if (ParentIsActor() && Actor()->GetDetector())
+					Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimStart);
+
 				return;
 			}
 		}
@@ -2062,6 +2063,9 @@ void CWeaponMagazined::PlayAnimIdle()
 			{
 				IsAimStarted = false;
 				PlayHUDMotion("anm_idle_aim_end", TRUE, GetState());
+				if (ParentIsActor() && Actor()->GetDetector())
+					Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimEnd);
+
 				return;
 			}
 		}

@@ -336,14 +336,20 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 	if (state == eFire)
 	{
 		PlayHUDMotion("anm_attack", FALSE, state, false, false);
-		StartCompanionAnimIfNeeded("knife_attack");
+
+		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && Actor()->GetDetector())
+			Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick);
+
 		if (isGuns)
 			PlaySound("sndKick1", Position());
 	}
 	else
 	{//eFire2
 		PlayHUDMotion("anm_attack2", FALSE, state, false, false);
-		StartCompanionAnimIfNeeded("knife_attack2");
+
+		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && ParentIsActor() && Actor()->GetDetector())
+			Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetKick2);
+
 		if (isGuns)
 			PlaySound("sndKick2", Position());
 	}
@@ -363,7 +369,6 @@ void CWeaponKnife::switch2_Hiding	()
 	VERIFY(GetState()==eHiding);
 
 	PlayHUDMotion("anm_hide", TRUE, GetState(), false, false);
-	StartCompanionAnimIfNeeded("hide");
 	if (m_sounds.FindSoundItem("SndHide", false))
 		PlaySound("SndHide", get_LastFP());
 }
@@ -379,7 +384,6 @@ void CWeaponKnife::switch2_Showing	()
 	VERIFY(GetState()==eShowing);
 
 	PlayHUDMotion("anm_show", FALSE, GetState(), false, false);
-	StartCompanionAnimIfNeeded("draw");
 	if (m_sounds.FindSoundItem("SndShow", false))
 		PlaySound("SndShow", get_LastFP());
 }

@@ -52,11 +52,28 @@ public:
 
 	virtual bool	NeedActivation		() const	{return m_bNeedActivation;}
 
+	bool			NeedBlockSprint		() const;
+
 	virtual bool	can_be_attached		() const;
 	void 	TurnDetectorInternal(bool b);
-	void	ForceHide					() { SwitchState(eHiding); }
+	void	ForceHide					() { SwitchState(eHiding);}
+	virtual void PlayAnimIdle();
+	virtual void PlayAnimAim();
 
-	virtual void	PlayAnimIdle();
+	void StartDetectorAction(u32 state);
+
+	enum EDetectorStates
+	{
+		eDetThrowStart = eLastBaseState + 1,
+		eDetThrowIdle,
+		eDetThrowEnd,
+		eDetAimStart,
+		eDetAimEnd,
+		eDetKick,
+		eDetKick2,
+		eDetHideHand,
+		eDetShowHand
+	};
 
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);

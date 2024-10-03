@@ -901,8 +901,26 @@ void CActor::SwitchNightVision()
 	{
 		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 		{
-			auto sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
-			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, { CHudItem::TAnimationEffector(this, &CActor::NVCallback) }, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION, true);
+			CHudItemObject* itm = smart_cast<CHudItemObject*>(inventory().ActiveItem());
+
+			if (itm != nullptr && smart_cast<CHUDAnimItem*>(itm) == nullptr && itm->Weapon_SetKeyRepeatFlagIfNeeded(kfNIGHTVISION) && (GetDetector() != nullptr && GetDetector()->GetState() == CCustomDetector::eIdle && !GetDetector()->IsPending() || GetDetector() == nullptr))
+			{
+				itm->fDeviceFlags.set(CHudItem::DF_NIGHTVISION, TRUE);
+				itm->SwitchState(CHUDState::eSwitchDevice);
+			}
+
+			if (GetDetector() != nullptr && GetDetector()->GetState() == CCustomDetector::eIdle && !GetDetector()->IsPending() && (itm != nullptr && smart_cast<CHUDAnimItem*>(itm) == nullptr && itm->Weapon_SetKeyRepeatFlagIfNeeded(kfNIGHTVISION) || itm == nullptr))
+			{
+				GetDetector()->fDeviceFlags.set(CCustomDetector::DF_NIGHTVISION, TRUE);
+				GetDetector()->SwitchState(CCustomDetector::eSwitchDevice);
+			}
+
+			if (itm == nullptr && GetDetector() == nullptr)
+			{
+				shared_str sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
+				CHUDAnimItem::LoadSound(sect.c_str(), "snd_draw", false);
+				CHUDAnimItem::PlayHudAnim(pSettings->r_string(sect, "hud"), "anm_show", "", { CHudItem::TAnimationEffector(this, &CActor::NVCallback) });
+			}
 		}
 		else
 		{
@@ -915,41 +933,6 @@ void CActor::SwitchNightVision()
 			torch->SwitchNightVision();
 		}
 	}
-}
-
-bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device, bool sup_det)
-{
-	auto* det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT));
-	if (det && !det->IsHidden() && det->GetState() != CCustomDetector::eIdle)
-		return false;
-
-	if (smart_cast<CHUDAnimItem*>(inventory().ActiveItem()))
-		return false;
-
-	CHudItem* item = smart_cast<CHudItem*>(inventory().ActiveItem());
-	CWeapon* wpn = smart_cast<CWeapon*>(item);
-	if (!item || restrictor_config_param.size() == 0 || READ_IF_EXISTS(pSettings, r_bool, item->object().cNameSect(), restrictor_config_param.c_str(), false) || wpn && wpn->FindBoolValueInUpgradesDef(restrictor_config_param, READ_IF_EXISTS(pSettings, r_bool, wpn->m_section_id.c_str(), restrictor_config_param.c_str(), false), true))
-	{
-		if (item && !item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
-			return false;
-
-		CHUDAnimItem::LoadSound(animator_item_section.c_str(), "snd_draw", false);
-		CHUDAnimItem::PlayHudAnim(pSettings->r_string(animator_item_section, "hud"), "anm_show", "", callback, sup_det);
-		return true;
-	}
-	else if (item && item->Weapon_SetKeyRepeatFlagIfNeeded(key_repeat))
-	{
-		if (device > 0)
-		{
-			item->fDeviceFlags.zero();
-			item->fDeviceFlags.set(device, true);
-		}
-
-		item->SwitchState(state);
-		return true;
-	}
-
-	return false;
 }
 
 void CActor::HeadlampCallback()
@@ -986,8 +969,26 @@ void CActor::SwitchTorch()
 	{
 		if (isGuns)
 		{
-			auto sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
-			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, { CHudItem::TAnimationEffector(this, &CActor::HeadlampCallback) }, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP, true);
+			CHudItemObject* itm = smart_cast<CHudItemObject*>(inventory().ActiveItem());
+
+			if (itm != nullptr && smart_cast<CHUDAnimItem*>(itm) == nullptr && itm->Weapon_SetKeyRepeatFlagIfNeeded(kfHEADLAMP) && (GetDetector() != nullptr && GetDetector()->GetState() == CCustomDetector::eIdle && !GetDetector()->IsPending() || GetDetector() == nullptr))
+			{
+				itm->fDeviceFlags.set(CHudItem::EDeviceFlags::DF_HEADLAMP, TRUE);
+				itm->SwitchState(CHUDState::eSwitchDevice);
+			}
+
+			if (GetDetector() != nullptr && GetDetector()->GetState() == CCustomDetector::eIdle && !GetDetector()->IsPending() && (itm != nullptr && smart_cast<CHUDAnimItem*>(itm) == nullptr && itm->Weapon_SetKeyRepeatFlagIfNeeded(kfHEADLAMP) || itm == nullptr))
+			{
+				GetDetector()->fDeviceFlags.set(CHudItem::EDeviceFlags::DF_HEADLAMP, TRUE);
+				GetDetector()->SwitchState(CCustomDetector::eSwitchDevice);
+			}
+
+			if (itm == nullptr && GetDetector() == nullptr)
+			{
+				shared_str sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
+				CHUDAnimItem::LoadSound(sect.c_str(), "snd_draw", false);
+				CHUDAnimItem::PlayHudAnim(pSettings->r_string(sect, "hud"), "anm_show", "", { CHudItem::TAnimationEffector(this, &CActor::HeadlampCallback) });
+			}
 		}
 		else
 			torch->Switch();
