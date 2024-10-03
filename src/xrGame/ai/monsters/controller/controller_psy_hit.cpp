@@ -25,6 +25,12 @@
 void CControllerPsyHit::load(LPCSTR section)
 {
 	m_min_tube_dist = pSettings->r_float(section,"tube_condition_min_distance");
+	m_controller_prepare_time = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_prepare_time", 3.f);
+	m_feel_params.min_dist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_min_feel_dist", 10.0f);
+	m_feel_params.max_dist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_max_feel_dist", 30.0f);
+	m_controller_psyblocked_time = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psyblocked_time", 5.0f);
+	m_controller_time = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_time", 3.f);
+	m_controller_queue_stop_prob = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_queue_stop_prob", 0.95f);
 }
 
 void CControllerPsyHit::reinit()
@@ -126,7 +132,7 @@ void CControllerPsyHit::OnPsyHitActivate(CController* monster_controller)
 		funct("", monster_controller->ID());*/
 
 	if ((!Actor()->IsPsiBlocked() || Actor()->IsPsiBlockFailed()) && Actor()->_controlled_time_remains > 0)
-		Actor()->_controlled_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_prepare_time", 3.f) * 1000.f);
+		Actor()->_controlled_time_remains = floor(m_controller_prepare_time * 1000.f);
 }
 
 void CControllerPsyHit::activate()
@@ -275,22 +281,6 @@ bool CControllerPsyHit::see_enemy ()
 
 */
 
-struct controller_feel_params
-{
-	float min_dist = 0.0f;
-	float max_dist = 0.0f;
-};
-
-static controller_feel_params GetControllerFeelParams()
-{
-	controller_feel_params result;
-
-	result.min_dist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_min_feel_dist", 10.0f);
-	result.max_dist = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_max_feel_dist", 30.0f);
-
-	return result;
-}
-
 bool CControllerPsyHit::PsiEffects(CController* monster_controller)
 {
 	if (Actor() == nullptr)
@@ -299,7 +289,7 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller)
 	bool psi_blocked = Actor()->IsPsiBlocked() && !Actor()->IsPsiBlockFailed();
 	bool not_seen = !Actor()->IsControllerSeeActor(monster_controller);
 	float dist = Actor()->DistToSelectedContr(monster_controller);
-	controller_feel_params contr_feel = GetControllerFeelParams();
+	const controller_feel_params& contr_feel = m_feel_params;
 
 	bool dist_forcer = false;
 	if (dist < contr_feel.min_dist)
@@ -315,11 +305,11 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller)
 	{
 		Actor()->_planning_suicide = false;
 		Actor()->_suicide_now = false;
-		Actor()->SetHandsJitterTime(floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_psyblocked_time", 5.0f) * 1000.0f));
+		Actor()->SetHandsJitterTime(floor(m_controller_psyblocked_time * 1000.0f));
 		return not_seen;
 	}
 
-	Actor()->_controlled_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_time", 3.f) * 1000.f);
+	Actor()->_controlled_time_remains = floor(m_controller_time * 1000.f);
 
 	CHudItemObject* wpn = smart_cast<CHudItemObject*>(Actor()->inventory().ActiveItem());
 
@@ -428,7 +418,7 @@ bool CControllerPsyHit::PsiEffects(CController* monster_controller)
 
 	if (wpn->GetState() == CWeapon::eFire)
 	{
-		if (READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "controller_queue_stop_prob", 0.95f) >= ::Random.randF(0.f, 1.f))
+		if (m_controller_queue_stop_prob >= ::Random.randF(0.f, 1.f))
 			static_cast<CWeapon*>(wpn)->SetWorkingState(false);
 	}
 
