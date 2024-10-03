@@ -1016,7 +1016,6 @@ void CWeaponMagazined::SetDefaults	()
 	CWeapon::SetDefaults		();
 }
 
-
 void CWeaponMagazined::OnShot()
 {
 	// Sound
@@ -1734,10 +1733,10 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
-		ProcessUpgrade();
-		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
+		ProcessUpgrade();
+		ProcessScope();
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
@@ -1751,10 +1750,10 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
-		ProcessUpgrade();
-		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
+		ProcessUpgrade();
+		ProcessScope();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else if(m_eGrenadeLauncherStatus == ALife::eAddonAttachable &&
@@ -1767,10 +1766,10 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
-		ProcessUpgrade();
-		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
+		ProcessUpgrade();
+		ProcessScope();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else
@@ -1852,6 +1851,8 @@ void CWeaponMagazined::HudSelector()
 		hud_sect = hud_gl;
 	else
 		hud_sect = hud_sect_cache;
+
+	bUpdateHUDBonesVisibility = false;
 }
 
 void CWeaponMagazined::LoadSilencerKoeffs()
