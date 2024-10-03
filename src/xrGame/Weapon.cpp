@@ -1680,6 +1680,23 @@ bool CWeapon::OnActWhileReload_CanActNow() const
 	return result;
 }
 
+bool CWeapon::CanAimNow()
+{
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+	{
+		shared_str sect = "";
+		if (IsScopeAttached())
+			sect = GetCurrentScopeSection();
+		else
+			sect = HudSection();
+
+		if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
+			return false;
+	}
+
+	return true;
+}
+
 bool CWeapon::Action(u16 cmd, u32 flags) 
 {
 	if(inherited::Action(cmd, flags)) return true;
@@ -1716,39 +1733,45 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			} 
 
 		case kWPN_ZOOM:
-			if(IsZoomEnabled())
+			if (IsZoomEnabled())
 			{
-				if(b_toggle_weapon_aim)
+				if (b_toggle_weapon_aim)
 				{
-					if(flags&CMD_START)
+					if (flags & CMD_START)
 					{
-						if(!IsZoomed())
+						if (!IsZoomed() && CanAimNow())
 						{
-							if(!IsPending())
+							if (!IsPending())
 							{
-								if(GetState()!=eIdle)
+								if (GetState() != eIdle)
 									SwitchState(eIdle);
-								OnZoomIn	();
+
+								OnZoomIn();
 							}
-						}else
-							OnZoomOut	();
-					}
-				}else
-				{
-					if(flags&CMD_START)
-					{
-						if(!IsZoomed() && !IsPending())
-						{
-							if(GetState()!=eIdle)
-								SwitchState(eIdle);
-							OnZoomIn	();
 						}
-					}else 
-						if(IsZoomed())
-							OnZoomOut	();
+						else
+							OnZoomOut();
+					}
+				}
+				else
+				{
+					if (flags & CMD_START)
+					{
+						if (!IsZoomed() && !IsPending() && CanAimNow())
+						{
+							if (GetState() != eIdle)
+								SwitchState(eIdle);
+
+							OnZoomIn();
+						}
+					}
+					else 
+						if (IsZoomed())
+							OnZoomOut();
 				}
 				return true;
-			}else 
+			}
+			else 
 				return false;
 
 		case kWPN_ZOOM_INC:

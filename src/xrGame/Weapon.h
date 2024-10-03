@@ -249,6 +249,7 @@ public:
 	bool IsChangeAmmoType() { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
+	bool CanAimNow();
 
 	virtual bool IsGrenadeMode() { return false; }
 	virtual bool TryReload() { return false; }
