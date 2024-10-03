@@ -58,6 +58,10 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
 	bMisfireReload				= false;
+
+	m_sFireModeMask_1 = nullptr;
+	m_sFireModeMask_3 = nullptr;
+	m_sFireModeMask_a = nullptr;
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -150,6 +154,15 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (WeaponSoundExist(section, "snd_changefiremode") && m_bUseChangeFireModeAnim)
 		m_sounds.LoadSound(section, "snd_changefiremode", "sndFireMode", true, m_eSoundShow);
+
+	if (pSettings->line_exist(hud_sect, "mask_firemode_1"))
+		m_sFireModeMask_1 = pSettings->r_string(hud_sect, "mask_firemode_1");
+
+	if (pSettings->line_exist(hud_sect, "mask_firemode_3"))
+		m_sFireModeMask_3 = pSettings->r_string(hud_sect, "mask_firemode_3");
+
+	if (pSettings->line_exist(hud_sect, "mask_firemode_a"))
+		m_sFireModeMask_a = pSettings->r_string(hud_sect, "mask_firemode_a");
 }
 
 void CWeaponMagazined::FireStart()
@@ -542,6 +555,15 @@ std::string CWeaponMagazined::NeedAddSuffix(std::string M)
 
 	if (IsScopeAttached())
 		new_name = AddSuffixName(new_name, "_scope");
+
+	int firemode = GetQueueSize();
+
+	if (firemode == -1 && m_sFireModeMask_a != nullptr)
+		new_name = AddSuffixName(new_name, m_sFireModeMask_a.c_str());
+	else if (firemode == 1 && m_sFireModeMask_1 != nullptr)
+		new_name = AddSuffixName(new_name, m_sFireModeMask_1.c_str());
+	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
+		new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str());
 
 	if (iAmmoElapsed == 1)
 		new_name = AddSuffixName(new_name, "_last");
