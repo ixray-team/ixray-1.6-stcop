@@ -872,6 +872,8 @@ void CWeaponMagazined::UpdateCL			()
 		case eFire:			
 			{
 				state_Fire(dt);
+				ProcessAmmo();
+				ProcessAmmoGL();
 			}break;
 		case eMisfire:		state_Misfire	(dt);	break;
 		case eHidden:		break;

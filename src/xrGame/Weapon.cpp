@@ -1586,6 +1586,9 @@ int CWeapon::GetMagCapacity() const
 
 void CWeapon::ProcessAmmo(bool forced)
 {
+	if (!ParentIsActor())
+		return;
+
     if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_advanced_ammo_bones", false))
 	{
         ProcessAmmoAdv(forced);
@@ -1695,6 +1698,9 @@ void CWeapon::ProcessAmmoAdv(bool forced)
 
 void CWeapon::ProcessAmmoGL(bool forced)
 {
+	if (!ParentIsActor())
+		return;
+
 	if (get_GrenadeLauncherStatus() == 0)
 		return;
 
@@ -3745,7 +3751,6 @@ void CWeapon::OnStateSwitch	(u32 S)
 		case eSuicideStop:
 			switch2_SuicideStop();
 			break;
-		case eFire:
 		case eReload:
 		case eUnjam:
 		case eBore:
