@@ -852,30 +852,33 @@ void CWeapon::net_Import(NET_Packet& P)
 	u8 Zoom;
 	P.r_u8					(Zoom);
 
-	u8 Misfire;
-	P.r_u8					(Misfire);
-	bMisfire				= Misfire;
-
-	float RTZoom;
-	P.r_float				(RTZoom);
-	m_fRTZoomFactor			= RTZoom;
-
-	u8 scope;
-	P.r_u8					(scope);
-	m_cur_scope				= scope;
-
-	u8 AmmoCount = P.r_u8();
-	for (u32 i = 0; i < AmmoCount; i++)
+	if (!P.r_eof())
 	{
-		u8 LocalAmmoType = P.r_u8();
-		if (i >= m_magazine.size())
-			continue;
+		u8 Misfire;
+		P.r_u8(Misfire);
+		bMisfire = Misfire;
 
-		CCartridge& l_cartridge = *(m_magazine.begin() + i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
-			continue;
+		float RTZoom;
+		P.r_float(RTZoom);
+		m_fRTZoomFactor = RTZoom;
 
-		l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+		u8 scope;
+		P.r_u8(scope);
+		m_cur_scope = scope;
+
+		u8 AmmoCount = P.r_u8();
+		for (u32 i = 0; i < AmmoCount; i++)
+		{
+			u8 LocalAmmoType = P.r_u8();
+			if (i >= m_magazine.size())
+				continue;
+
+			CCartridge& l_cartridge = *(m_magazine.begin() + i);
+			if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+				continue;
+
+			l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+		}
 	}
 
 	if (H_Parent() && H_Parent()->Remote())
