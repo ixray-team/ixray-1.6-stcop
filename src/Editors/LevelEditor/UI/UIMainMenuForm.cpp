@@ -328,7 +328,7 @@ void UIMainMenuForm::Draw()
 				ImGui::EndMenu();
 			}
 			/*
-			* FX: νΰυσι - ςΰκ νΰυσι 
+			* FX: Π½Π°Ρ…ΡƒΠΉ - Ρ‚Π°ΠΊ Π½Π°Ρ…ΡƒΠΉ 
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsDrawSafeRect);
@@ -468,10 +468,19 @@ void UIMainMenuForm::Draw()
 
 		{
 			bool selected = UIObjectList::IsOpen();
-			if (ImGui::MenuItem("Object List", "", &selected)){ if (selected) UIObjectList::Show(); else UIObjectList::Close(); }
+			if (ImGui::MenuItem("Object List", "", &selected))
+			{ 
+				if (selected) 
+					UIObjectList::Show(); 
+				else 
+					UIObjectList::Close(); 
+			}
 		}
 		
-		if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
+		if (ImGui::MenuItem("Preferences", "")) 
+		{ 
+			ExecCommand(COMMAND_EDITOR_PREF); 
+		}
 		//ImGui::EndMenu();
 
 		ImGui::EndMainMenuBar();

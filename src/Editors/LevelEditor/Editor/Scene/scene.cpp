@@ -514,20 +514,22 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		ELog.Msg(mtError,"*ERROR: Can't find any Spawn Object.");
 		bRes = false;
 	}
-	if (ObjCount(OBJCLASS_LIGHT)==0){
+/* St4lker0k765: what's the point of these checks?
+	if (ObjCount(OBJCLASS_LIGHT) == 0) {
 		ELog.Msg(mtError,"*ERROR: Can't find any Light Object.");
 		bRes = false;
-	}
+	}*/
 	if (ObjCount(OBJCLASS_SCENEOBJECT)==0){
 		ELog.Msg(mtError,"*ERROR: Can't find any Scene Object.");
 		bRes = false;
 	}
-	if (bTestGlow){
+/*	if (bTestGlow)
+	{
 		if (ObjCount(OBJCLASS_GLOW)==0){
 			ELog.Msg(mtError,"*ERROR: Can't find any Glow Object.");
 			bRes = false;
 		}
-	}
+	}*/
 	if (FindDuplicateName()){
 		ELog.Msg(mtError,"*ERROR: Found duplicate object name.");
 		bRes = false;
@@ -569,7 +571,7 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		for(ObjectIt it=lst.begin();it!=lst.end();it++){
 			EParticlesObject* S = (EParticlesObject*)(*it);
 			if (!S->GetParticles()){
-				ELog.Msg(mtError,"*ERROR: Particle System hasn't reference.");
+				ELog.Msg(mtError,"*ERROR: Particle System has no reference.");
 				bRes = false;
 			}
 		}
@@ -646,7 +648,7 @@ void EScene::OnNameChange(PropValue* sender)
 	UI->RedrawScene();
 }
 
-
+// TODO: Fix this shit (it doesn't show up in LE props)
 void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 {
 	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Name"),			LTools->m_LastFileName.c_str());
