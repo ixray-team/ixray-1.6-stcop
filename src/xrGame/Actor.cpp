@@ -489,17 +489,17 @@ void CActor::Load(LPCSTR section)
 	m_fActorCameraFinishLandingSpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_factor", 1.f);
 	m_fActorCameraFinishLandingSpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_pow_factor", 1.f);
 	m_fActorCameraFinishLandingTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_time", 0.5f);
-	m_pActorNightVisionDisableAnimatorName = pSettings->r_string("gunslinger_base", "nv_disable_animator");
-	m_pActorNightVisionEnableAnimatorName = pSettings->r_string("gunslinger_base", "nv_enable_animator");
+	m_pActorNightVisionDisableAnimatorName = READ_IF_EXISTS(pSettings, r_string, "gunslinger_base", "nv_disable_animator", "");
+	m_pActorNightVisionEnableAnimatorName = READ_IF_EXISTS(pSettings, r_string, "gunslinger_base", "nv_enable_animator", "");
 
-	m_pActorNightVisionHUDDisableAnimationName = pSettings->r_string(m_pActorNightVisionDisableAnimatorName, "hud");
-	m_pActorNightVisionHUDEnableAnimationName = pSettings->r_string(m_pActorNightVisionEnableAnimatorName, "hud");
+	m_pActorNightVisionHUDDisableAnimationName = READ_IF_EXISTS(pSettings, r_string, m_pActorNightVisionDisableAnimatorName, "hud", "");
+	m_pActorNightVisionHUDEnableAnimationName = READ_IF_EXISTS(pSettings, r_string, m_pActorNightVisionEnableAnimatorName, "hud", "");
 
-	m_pActorHeadLampDisableAnimatorSectionName = pSettings->r_string("gunslinger_base", "headlamp_disable_animator");
-	m_pActorHeadLampEnableAnimatorSectionName = pSettings->r_string("gunslinger_base", "headlamp_enable_animator");
+	m_pActorHeadLampDisableAnimatorSectionName = READ_IF_EXISTS(pSettings, r_string, "gunslinger_base", "headlamp_disable_animator", "");
+	m_pActorHeadLampEnableAnimatorSectionName = READ_IF_EXISTS(pSettings, r_string, "gunslinger_base", "headlamp_enable_animator", "");
 
-	m_pActorHeadLampDisableHUDAnimationName = pSettings->r_string(m_pActorHeadLampDisableAnimatorSectionName, "hud");
-	m_pActorHeadLampEnableHUDAnimationName = pSettings->r_string(m_pActorHeadLampEnableAnimatorSectionName, "hud");
+	m_pActorHeadLampDisableHUDAnimationName = READ_IF_EXISTS(pSettings, r_string, m_pActorHeadLampDisableAnimatorSectionName, "hud", "");
+	m_pActorHeadLampEnableHUDAnimationName = READ_IF_EXISTS(pSettings, r_string, m_pActorHeadLampEnableAnimatorSectionName, "hud", "");
 
 	m_fLookOutSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 1.0f);
 	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
