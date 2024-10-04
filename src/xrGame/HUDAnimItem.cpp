@@ -62,6 +62,7 @@ void CHUDAnimItem::UpdateCL()
 		if (Device.dwTimeGlobal >= m_dwMotionEndTm)
 		{
 			SetState(eHidden);
+			Actor()->inventory().Activate(NO_ACTIVE_SLOT);
 			Actor()->inventory().Activate(OldSlot);
 
 			if (!SupportsDetector && DetectorActive)
