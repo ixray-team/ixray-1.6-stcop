@@ -1,5 +1,5 @@
 #pragma once
-#include "pseudodog_state_manager.h"
+#include "../pseudodog/pseudodog_state_manager.h"
 
 class CStateManagerPsyDog : public CStateManagerPseudodog {
 	typedef CStateManagerPseudodog inherited;

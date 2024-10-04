@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStatePsyDogHide : public CState {
 	typedef	CState		inherited;
 	typedef	CState*	state_ptr;
@@ -24,6 +26,3 @@ public:
 private:
 			void	select_target_point		();
 };
-
-#include "psy_dog_state_psy_attack_hide_inline.h"
-
