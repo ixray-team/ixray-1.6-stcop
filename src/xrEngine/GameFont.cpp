@@ -200,6 +200,8 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 	req.vertResolution = 0;
 	FT_Request_Size(OurFont, &req);
 
+	FT_Set_Pixel_Sizes(OurFont, 0, Data.Size);
+
 #define FT_CEIL(X)  (((X + 63) & -64) / 64)
 
 	float FontSizeInPixels = (float)FT_CEIL(OurFont->size->metrics.height);

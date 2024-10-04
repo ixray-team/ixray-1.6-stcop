@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.script": "lua",
+        "*.txt": "c"
+    }
+}
