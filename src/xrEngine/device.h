@@ -293,6 +293,8 @@ virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
+extern ENGINE_API void* g_pAnnotation;
+
 
 #define Device (*DevicePtr)
 #define	RDEVICE	Device

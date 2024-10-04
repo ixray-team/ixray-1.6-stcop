@@ -5,16 +5,16 @@
 #ifdef	DEBUG_DRAW
 
 #ifdef IXRAY_PROFILER
-#define PIX_EVENT(Name)	dxPixEventWrapper	pixEvent##Name(L#Name); PROF_EVENT(#Name)
+#define PIX_EVENT(Name)	PixEventWrapper	pixEvent##Name(L#Name); PROF_EVENT(#Name)
 #else
-#define PIX_EVENT(Name)	dxPixEventWrapper	pixEvent##Name(L#Name)
+#define PIX_EVENT(Name)	PixEventWrapper	pixEvent##Name(L#Name)
 #endif
 
-class dxPixEventWrapper
+class PixEventWrapper
 {
 public:
-	dxPixEventWrapper(LPCWSTR wszName) { D3DPERF_BeginEvent(color_rgba(127,0,0,255), wszName );}
-	~dxPixEventWrapper() {D3DPERF_EndEvent();}
+	PixEventWrapper(LPCWSTR wszName);
+	~PixEventWrapper();
 };
 #else	//	DEBUG
 

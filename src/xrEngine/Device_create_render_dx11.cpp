@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include "ICore_GPU.h"
 #include <renderdoc/api/app/renderdoc_app.h>
+
+ENGINE_API void* g_pAnnotation = nullptr;
 
 extern D3D_FEATURE_LEVEL FeatureLevel;
 extern void* HWSwapchain;
@@ -169,6 +171,13 @@ bool CreateD3D11()
 			(ID3D11Device**)&HWRenderDevice, &FeatureLevel, (ID3D11DeviceContext**)&HWRenderContext
 		);
 
+		// main anotation
+		
+		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
+		{
+			R_CHK(((ID3D11DeviceContext*)HWRenderContext)->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
+		}
+
 		if (FAILED(R))
 		{
 			Msg("Failed to initialize graphics hardware.\n"
@@ -300,6 +309,12 @@ void DestroyD3D11()
 	}
 	else
 	{
+		if (g_pAnnotation != nullptr)
+		{
+			((ID3DUserDefinedAnnotation*)g_pAnnotation)->Release();
+			g_pAnnotation = nullptr;
+		}
+
 		if (HWRenderContext != nullptr) {
 			((ID3D11DeviceContext*)HWRenderContext)->Release();
 			HWRenderContext = nullptr;
