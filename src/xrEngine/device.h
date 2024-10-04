@@ -86,6 +86,11 @@ public:
 		bool IsElectronicsProblemsDecreasing{};
 		float CurrentElectronicsProblemsCnt = 0.0f;
 		float TargetElectronicsProblemsCnt = 0.0f;
+
+		float ActorHealth = -1.0f;
+		float ActorOutfitCondition = -1.0f;
+		float ActorWeaponCondition = -1.0f;
+		float ActorWeaponLoading = -1.0f;
 	} hudViewportData;
 
 	// Engine flow-control
