@@ -464,10 +464,8 @@ void format_message	(LPSTR buffer, const u32 &buffer_size)
     LocalFree	(message);
 }
 
-#ifndef _EDITOR
-    #include <errorrep.h>
-    #pragma comment( lib, "faultrep.lib" )
-#endif
+#include <errorrep.h>
+#pragma comment( lib, "faultrep.lib" )
 
 #include "StackTrace/StackTrace.h"
 static bool EnabledStackTrace = true;
@@ -523,9 +521,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		MessageBoxA			(nullptr,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	}
 
-#ifndef _EDITOR
 	ReportFault				( pExceptionInfo, 0 );
-#endif
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	if (Debug.get_on_dialog())
@@ -575,11 +571,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			__FILE__,
 			__LINE__,
 	#endif
-	#ifndef _EDITOR
 			__FUNCTION__,
-	#else // _EDITOR
-			"",
-	#endif // _EDITOR
 			assertion_info
 		);
 		
