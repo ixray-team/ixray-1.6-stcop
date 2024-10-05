@@ -125,6 +125,7 @@ CWeapon::CWeapon()
 	m_bScopeHideBones.clear();
 	m_bShowBonesUpgToHide.clear();
 	m_bShowBonesUpgToShow.clear();
+	m_sCollimatorSightsBones.clear();
 }
 
 CWeapon::~CWeapon		()
@@ -661,6 +662,8 @@ void CWeapon::Load		(LPCSTR section)
 	bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", false);
 	bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", false);
 
+	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
+
 	auto LoadVector = [&](RStringVec& vec, const char* sect)
 	{
 		if (pSettings->line_exist(section, sect))
@@ -684,6 +687,15 @@ void CWeapon::Load		(LPCSTR section)
 	LoadVector(m_bDefHideBonesGLAttached, "def_hide_bones_override_when_gl_attached");
 	LoadVector(m_bScopeShowBones, "no_scope_overriding_show_bones");
 	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
+	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
+
+	Fvector3 tmp_vector = { -1.0f, -1.0f, 0.0f };
+	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "collimator_breaking_params", tmp_vector);
+	CollimatorBreakingParams.start_condition = tmp_vector.x;
+	CollimatorBreakingParams.end_condition = tmp_vector.y;
+	CollimatorBreakingParams.start_probability = tmp_vector.z;
+
+	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -1126,6 +1138,8 @@ void CWeapon::UpdateCL		()
 		UpdateHUDAddonsVisibility();
 		ProcessScope();
 	}
+
+	UpdateCollimatorSight();
 
 	if (ParentIsActor())
 	{
@@ -1987,6 +2001,61 @@ void CWeapon::ReassignWorldAnims()
 		MotionID m = pWeaponVisual->dcast_PKinematicsAnimated()->ID_Cycle(pSettings->r_string(cNameSect(), anm.c_str()));
 		pWeaponVisual->dcast_PKinematicsAnimated()->PlayCycle(m, true);
 		_wanim_force_assign = false;
+	}
+}
+
+void CWeapon::UpdateCollimatorSight()
+{
+	if (!ParentIsActor())
+		return;
+
+	if (HudItemData() == nullptr)
+		return;
+
+	if (m_sCollimatorSightsBones.empty())
+		return;
+
+	conditional_breaking_params bp = CollimatorBreakingParams;
+	float current_problems_cnt = Actor()->CurrentElectronicsProblemsCnt();
+
+	if (/*GetAimFactor() > 0.0f && (IsLastZoomAlter() || GetAlterZoomDirectSwitchMixupFactor() > EPS) && m_bHideColimSightInAlter) || */ GetCondition() < bp.end_condition)
+	{
+		for (auto& bone : m_sCollimatorSightsBones)
+		{
+			HudItemData()->set_bone_visible(bone, false, TRUE);
+		}
+	}
+	else if (GetCondition() < bp.start_condition || current_problems_cnt > 0.0f)
+	{
+		float probability = 0.0f;
+		float probability2 = 0.0f;
+
+		if (bp.start_condition == bp.end_condition)
+			probability = bp.end_condition;
+		else
+			probability = bp.start_probability + (bp.start_condition - GetCondition()) * (1.0f - bp.start_probability) / (bp.start_condition - bp.end_condition);
+
+		int collim_problems_cnt = m_fCollimatorLevelsProblem;
+		if (current_problems_cnt > 0 && collim_problems_cnt > 0.0f)
+		{
+			if (current_problems_cnt >= collim_problems_cnt)
+				probability = 1.0f;
+			else
+			{
+				probability2 = current_problems_cnt / collim_problems_cnt;
+				if (probability2 > probability)
+					probability = probability2;
+			}
+		}
+
+		for (auto& bone : m_sCollimatorSightsBones)
+		{
+			HudItemData()->set_bone_visible(bone, !(::Random.randF(0.0f, 1.0f) < probability), TRUE);
+		}
+	}
+	else for (auto& bone : m_sCollimatorSightsBones)
+	{
+		HudItemData()->set_bone_visible(bone, true, TRUE);
 	}
 }
 
