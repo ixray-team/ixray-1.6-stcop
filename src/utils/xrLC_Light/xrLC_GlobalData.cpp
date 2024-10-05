@@ -89,9 +89,12 @@ void		xrLC_GlobalData	::				initialize		()
 }
 
 xr_vector<base_Face*> FacesStorage;
+xrSRWLock NaxGuard;
 
 XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 {
+	xrSRWLockGuard guard(NaxGuard, true);
+
 	if (FacesStorage.size() < dummy) {
 		DebugBreak();
 	}
@@ -101,6 +104,8 @@ XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 
 XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 {
+	xrSRWLockGuard guard(NaxGuard);
+
 	FacesStorage.push_back(F);
 	return FacesStorage.size() - 1;
 }
