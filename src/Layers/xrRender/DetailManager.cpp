@@ -238,9 +238,10 @@ void CDetailManager::Unload		()
 	if (I != Device.seqParallelRender.end())
 		Device.seqParallelRender.erase(I);
 
-
-	if (UseVS())	hw_Unload	();
-	else			soft_Unload	();
+	if (UseVS() && !Device.IsEditorMode())
+		hw_Unload();
+	else
+		soft_Unload();
 
 	for (DetailIt it=objects.begin(); it!=objects.end(); it++){
 		(*it)->Unload();
@@ -315,7 +316,7 @@ void CDetailManager::UpdateVisibleM()
 				// if upper test = fcvPartial - test inner slots
 				if (fcvPartial==res){
 					u32 _mask	= mask;
-					u32 _res	= View.testSphere(S.vis.sphere.P,S.vis.sphere.R,_mask);
+					u32 _res = View.testSphere(S.vis.sphere.P, S.vis.sphere.R, _mask);
 					if (fcvNone==_res)
 					{
 						continue;	// invisible-view frustum
@@ -404,10 +405,17 @@ void CDetailManager::Render	()
 	if (!psDeviceFlags.is(rsDetails))	return;
 #endif
 
-	while(bWait)
+	if (Device.IsEditorMode())
 	{
-		PROF_EVENT("Wait details");
-		Sleep(0);
+		MT_CALC();
+	}
+	else
+	{
+		while (bWait)
+		{
+			PROF_EVENT("Wait details");
+			Sleep(0);
+		}
 	}
 
 	RDEVICE.Statistic->RenderDUMP_DT_Render.Begin	();
