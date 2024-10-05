@@ -2812,12 +2812,12 @@ void CWeapon::UpdateAddonsVisibility()
 
 	pWeaponVisual->CalculateBones_Invalidate();
 
-	auto ChangeBoneVisible = [&](const shared_str& bone, bool status)
+	auto ChangeBoneVisible = [&](const shared_str& bone, bool status, bool child = true)
 	{
 		u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
 		if (bone_id != BI_NONE)
-			pWeaponVisual->LL_SetBoneVisible(bone_id, status, TRUE);
+			pWeaponVisual->LL_SetBoneVisible(bone_id, status, child);
 	};
 
 	bool test = !!(get_ScopeStatus() == 2 && IsScopeAttached() || get_ScopeStatus() == 1);
@@ -2831,12 +2831,12 @@ void CWeapon::UpdateAddonsVisibility()
 
 	for (auto& bone : m_bDefHideBones)
 	{
-		ChangeBoneVisible(bone, false);
+		ChangeBoneVisible(bone, false, false);
 	}
 
 	for (auto& bone : m_bDefShowBones)
 	{
-		ChangeBoneVisible(bone, true);
+		ChangeBoneVisible(bone, true, false);
 	}
 
 	if (m_bShowBonesUpgToHide.empty())
@@ -2859,17 +2859,17 @@ void CWeapon::UpdateAddonsVisibility()
 
 	for (auto& bone : m_bShowBonesUpgToHide)
 	{
-		ChangeBoneVisible(bone, false);
+		ChangeBoneVisible(bone, false, false);
 	}
 
 	for (auto& bone : m_bShowBonesUpgToShow)
 	{
-		ChangeBoneVisible(bone, true);
+		ChangeBoneVisible(bone, true, false);
 	}
 
 	for (auto& bone : m_bHideBonesUpgrade)
 	{
-		ChangeBoneVisible(bone, false);
+		ChangeBoneVisible(bone, false, false);
 	}
 
 	for (u32 i = 0; i < m_upgrades.size(); i++)
@@ -2883,14 +2883,14 @@ void CWeapon::UpdateAddonsVisibility()
 
 	for (auto& bone : m_bHideBonesOverride)
 	{
-		ChangeBoneVisible(bone, false);
+		ChangeBoneVisible(bone, false, false);
 	}
 
 	if (IsSilencerAttached())
 	{
 		for (auto& bone : m_bHideBonesSilAttached)
 		{
-			ChangeBoneVisible(bone, false);
+			ChangeBoneVisible(bone, false, false);
 		}
 	}
 
@@ -2898,7 +2898,7 @@ void CWeapon::UpdateAddonsVisibility()
 	{
 		for (auto& bone : m_bHideBonesScopeAttached)
 		{
-			ChangeBoneVisible(bone, false);
+			ChangeBoneVisible(bone, false, false);
 		}
 	}
 
@@ -2906,7 +2906,7 @@ void CWeapon::UpdateAddonsVisibility()
 	{
 		for (auto& bone : m_bHideBonesGLAttached)
 		{
-			ChangeBoneVisible(bone, false);
+			ChangeBoneVisible(bone, false, false);
 		}
 	}
 
@@ -2914,7 +2914,7 @@ void CWeapon::UpdateAddonsVisibility()
 	{
 		for (auto& bone : m_bDefHideBonesGLAttached)
 		{
-			ChangeBoneVisible(bone, false);
+			ChangeBoneVisible(bone, false, false);
 		}
 	}
 
