@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
 #define DIST_TO_PATH_END		1.5f
 
 

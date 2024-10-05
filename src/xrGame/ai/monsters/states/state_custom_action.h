@@ -1,4 +1,8 @@
 #pragma once
+
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
+
 #include "../state.h"
 #include "state_data.h"
 

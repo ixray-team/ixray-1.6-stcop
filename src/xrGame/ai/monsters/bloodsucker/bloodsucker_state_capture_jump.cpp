@@ -5,7 +5,6 @@
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 
-//#include "../states/monster_state_rest_idle.h"
 #include "../states/state_custom_action.h"
 
 CustomBloodsuckerStateJump::CustomBloodsuckerStateJump(CustomBloodsucker* object) : inherited(object)

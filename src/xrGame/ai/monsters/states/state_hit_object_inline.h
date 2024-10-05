@@ -5,6 +5,7 @@
 #define TIME_POINTBREAK		500
 #define IMPULSE				20
 
+#include "../basemonster/base_monster.h"
 
 void CStateMonsterHitObject::initialize()
 {

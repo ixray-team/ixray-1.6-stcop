@@ -1,7 +1,11 @@
 #pragma once
 
+#include "../state.h"
+
 class ChimeraAttackState : public CState
 {
+	CChimera* m_pChimera;
+
 public:
 							ChimeraAttackState				(CBaseMonster* obj);
 	virtual void			initialize						();
@@ -59,5 +63,3 @@ private:
 	float					m_min_run_distance;
 
 }; // ChimeraAttackState
-
-#include "chimera_attack_state_inline.h"

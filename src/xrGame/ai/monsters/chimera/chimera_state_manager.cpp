@@ -15,7 +15,7 @@
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
 #include "chimera_state_threaten.h"
-#include "../states/state_test_state.h"
+//#include "../states/state_test_state.h"
 
 #include "chimera_attack_state.h"
 

@@ -12,5 +12,3 @@ public:
 	virtual bool		check_start_conditions		();
 	
 };
-
-#include "chimera_state_threaten_walk_inline.h"

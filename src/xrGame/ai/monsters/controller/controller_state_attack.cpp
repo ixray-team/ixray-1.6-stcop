@@ -8,6 +8,8 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 
+#include "controller.h"
+
 #include "controller_state_attack.h"
 
 #include "controller_state_attack_hide.h"

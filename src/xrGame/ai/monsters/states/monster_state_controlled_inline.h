@@ -11,13 +11,15 @@ CStateMonsterControlled::CStateMonsterControlled(CBaseMonster *obj) : inherited(
 
 void CStateMonsterControlled::execute()
 {
-	switch (this->object->get_data().m_task) {
+	CControlledEntityBase* pEntityBase = smart_cast<CControlledEntityBase*>(this->object);
+
+	switch (pEntityBase->get_data().m_task) {
 		case eTaskFollow:	this->select_state(eStateControlled_Follow);	break;
 		case eTaskAttack:	{
 			// проверить валидность данных атаки
-			const CEntity *enemy = this->object->get_data().m_object;
+			const CEntity *enemy = pEntityBase->get_data().m_object;
 			if (!enemy || enemy->getDestroy() || !enemy->g_Alive()) {
-				this->object->get_data().m_object = this->object->get_controller();
+				pEntityBase->get_data().m_object = smart_cast<CController*>(this->object);
 				this->select_state(eStateControlled_Follow);
 			} else 
 				this->select_state(eStateControlled_Attack);	break;

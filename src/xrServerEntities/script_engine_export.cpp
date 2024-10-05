@@ -233,15 +233,15 @@ void export_classes	(lua_State *L)
 
 	CArtefact::script_register(L);
 	CAI_Crow::script_register(L);
-	CAI_Bloodsucker::script_register(L);
-	CAI_Boar::script_register(L);
+	CustomBloodsucker::script_register(L);
+	CustomBoar::script_register(L);
 	CBurer::script_register(L);
-	CCat::script_register(L);
+	CustomCat::script_register(L);
 	CChimera::script_register(L);
 	CController::script_register(L);
-	CAI_Dog::script_register(L);
-	CAI_Flesh::script_register(L);
-	CFracture::script_register(L);
+	CustomDog::script_register(L);
+	CustomFlesh::script_register(L);
+	CustomFracture::script_register(L);
 	CPoltergeist::script_register(L);
 	CAI_PseudoDog::script_register(L);
 	CPsyDog::script_register(L);

@@ -86,7 +86,7 @@
 #	include "ai/monsters/dog/dog.h"
 #	include "ai/monsters/flesh/flesh.h"
 #	include "ai/monsters/pseudodog/pseudodog.h"
-#	include "ai/monsters/pseudodog/psy_dog.h"
+#	include "ai/monsters/pseudodog_Psy/psy_dog.h"
 #	include "ai/monsters/burer/burer.h"
 #	include "ai/monsters/chimera/chimera.h"
 #	include "ai/monsters/pseudogigant/pseudo_gigant.h"
