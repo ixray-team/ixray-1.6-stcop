@@ -1,7 +1,12 @@
 #include "stdafx.h"
 
+#include "../ai_monster_defs.h"
+#include "../states/state_data.h"
+
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
+
+#include "../monster_home.h"
 
 #include "bloodsucker.h"
 #include "bloodsucker_attack_state.h"

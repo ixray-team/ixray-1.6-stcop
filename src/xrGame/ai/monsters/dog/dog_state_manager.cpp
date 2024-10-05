@@ -1,6 +1,12 @@
 #include "stdafx.h"
 
 #include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
+
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
+#include "../monster_home.h"
 
 #include "dog.h"
 #include "dog_state_manager.h"

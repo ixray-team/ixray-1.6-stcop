@@ -17,6 +17,8 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
+#include "../states/monster_state_attack_melee.h"
+
 CStateManagerZombie::CStateManagerZombie(CZombie* obj) : inherited(obj)
 {
 	m_pZombie = smart_cast<CZombie*>(obj);

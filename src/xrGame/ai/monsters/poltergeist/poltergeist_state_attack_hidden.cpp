@@ -14,6 +14,11 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
+#include "../states/monster_state_attack_run.h"
+#include "../states/monster_state_attack_on_run.h"
+
+#include "sound_player.h"
+
 CStatePoltergeistAttackHidden::CStatePoltergeistAttackHidden(CBaseMonster* obj) : inherited(obj)
 {
 	m_pPoltergeist = smart_cast<CPoltergeist*>(obj);

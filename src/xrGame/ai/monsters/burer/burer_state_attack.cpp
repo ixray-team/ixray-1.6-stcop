@@ -1,9 +1,13 @@
 #include "stdafx.h"
+#include "../xrCore/_vector3d_ext.h"
 
 #include "restricted_object.h"
 
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
+
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
 
 #include "burer.h"
 #include "burer_state_attack.h"
@@ -16,6 +20,9 @@
 #include "../states/state_move_to_restrictor.h"
 #include "burer_state_attack_run_around.h"
 #include "burer_state_attack_antiaim.h"
+
+#include "../states/monster_state_attack_run.h"
+#include "../states/monster_state_attack_on_run.h"
 
 namespace burer
 {

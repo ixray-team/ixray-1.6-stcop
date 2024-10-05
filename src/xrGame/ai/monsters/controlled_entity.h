@@ -68,5 +68,3 @@ public:
 			void			init_external			(CBaseMonster *obj) {m_object = obj;}
 };
 
-#include "controlled_entity_inline.h"
-

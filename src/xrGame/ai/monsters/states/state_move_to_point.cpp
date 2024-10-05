@@ -5,6 +5,45 @@
 
 #include "state_move_to_point.h"
 
+void CStateMonsterMoveToPoint::initialize()
+{
+	inherited::initialize();
+	this->object->path().prepare_builder();
+}
+
+
+void CStateMonsterMoveToPoint::execute()
+{
+	this->object->set_action(data.action.action);
+	this->object->anim().SetSpecParams(data.action.spec_params);
+
+	this->object->path().set_target_point(data.point, data.vertex);
+	this->object->path().set_generic_parameters();
+	this->object->path().set_distance_to_end(data.completion_dist);
+
+	if (data.accelerated) {
+		this->object->anim().accel_activate(EAccelType(data.accel_type));
+		this->object->anim().accel_set_braking(data.braking);
+	}
+
+	if (data.action.sound_type != u32(-1)) {
+		this->object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
+	}
+}
+
+
+bool CStateMonsterMoveToPoint::check_completion()
+{
+	if (data.action.time_out != 0) {
+		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;
+	}
+
+	bool real_path_end = ((fis_zero(data.completion_dist)) ? (data.point.distance_to_xz(this->object->Position()) < ai().level_graph().header().cell_size()) : true);
+	if (this->object->control().path_builder().is_path_end(data.completion_dist) && real_path_end) return true;
+
+	return false;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // CStateMonsterMoveToPointEx with path rebuild options
 //////////////////////////////////////////////////////////////////////////

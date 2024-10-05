@@ -18,6 +18,8 @@
 #include "../states/monster_state_help_sound.h"
 #include "../group_states/group_state_home_point_attack.h"
 
+#include "../states/monster_state_home_point_attack.h"
+
 CustomFleshStateManager::CustomFleshStateManager(CustomFlesh* object) : inherited(object)
 {
 	m_pFlesh = smart_cast<CustomFlesh*>(object);

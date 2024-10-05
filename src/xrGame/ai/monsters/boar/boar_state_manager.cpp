@@ -17,6 +17,8 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
+#include "../states/monster_state_home_point_attack.h"
+
 CustomBoarStateManager::CustomBoarStateManager(CustomBoar *object) : inherited(object)
 {
 	m_pBoar = smart_cast<CustomBoar*>(object);

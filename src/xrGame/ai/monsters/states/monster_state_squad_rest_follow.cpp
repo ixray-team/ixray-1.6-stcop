@@ -9,6 +9,7 @@
 #include "../ai_monster_squad_manager.h"
 
 #include "space_restriction.h"
+#include "restricted_object.h"
 
 #include "state_custom_action.h"
 #include "state_move_to_point.h"

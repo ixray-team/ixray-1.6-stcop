@@ -3,6 +3,13 @@
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
 
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
+#include "CharacterPhysicsSupport.h"
+#include "PHMovementControl.h"
+#include "../xrPhysics/IPHCapture.h"
+
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -42,6 +49,7 @@ CustomBloodsukerStateManager::~CustomBloodsukerStateManager()
 {
 
 }
+
 
 void CustomBloodsukerStateManager::drag_object()
 {

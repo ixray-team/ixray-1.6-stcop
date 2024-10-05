@@ -17,6 +17,7 @@
 #include "../states/monster_state_hear_danger_sound.h"
 #include "../states/monster_state_hitted.h"
 
+#include "../states/monster_state_home_point_attack.h"
 
 CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog* monster) : inherited(monster)
 {

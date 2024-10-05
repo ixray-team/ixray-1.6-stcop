@@ -5,6 +5,11 @@
 
 #include "ai_object_location.h"
 
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
+#include "../monster_home.h"
+
 #include "../dog/dog.h"
 
 #include "../states/state_move_to_point.h"

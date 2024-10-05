@@ -34,5 +34,3 @@ protected:
 			bool	can_eat					();
 			bool	check_state				(u32 state_id);
 };
-
-#include "monster_state_manager_inline.h"

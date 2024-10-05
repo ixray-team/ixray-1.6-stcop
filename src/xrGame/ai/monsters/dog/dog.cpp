@@ -228,6 +228,10 @@ void CustomDog::reinit()
 	Home->set_move_dists(min_move_dist, max_move_dist);
 }
 
+namespace detail
+{ // helper function implemented in file alife_simulator.cpp
+	bool object_exists_in_alife_registry(u32 id);
+} // namespace detail
 
 void CustomDog::UpdateCL()
 {

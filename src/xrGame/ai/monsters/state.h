@@ -85,8 +85,3 @@ public:
 		this->object->path().prepare_builder();
 	}
 };
-
-
-
-#include "state_inline.h"
-

@@ -3,6 +3,9 @@
 #include "../control_animation_base.h"
 #include "../control_direction_base.h"
 
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
+
 #include "bloodsucker.h"
 #include "bloodsucker_attack_state.h"
 #include "bloodsucker_vampire_execute.h"
