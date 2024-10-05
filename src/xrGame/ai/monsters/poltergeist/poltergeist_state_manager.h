@@ -6,7 +6,7 @@ class CPoltergeist;
 class CStateManagerPoltergeist : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
-
+	CPoltergeist* m_pPoltergeist;
 public:
 						CStateManagerPoltergeist		(CPoltergeist *obj);
 	virtual				~CStateManagerPoltergeist	();

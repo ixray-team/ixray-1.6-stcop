@@ -19,6 +19,8 @@
 
 CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist* obj) : inherited(obj)
 {
+	m_pPoltergeist = smart_cast<CPoltergeist*>(obj);
+
 	add_state(eStateRest, xr_new<CPoltergeistStateRest>(obj));
 	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
 	add_state(eStateAttack_AttackHidden, xr_new<CStatePoltergeistAttackHidden>(obj));
@@ -47,7 +49,7 @@ void CStateManagerPoltergeist::execute()
 {
 	u32 state_id = u32(-1);
 
-	if ( object->EnemyMan.get_enemy() && object->detected_enemy() )
+	if ( object->EnemyMan.get_enemy() && m_pPoltergeist->detected_enemy() )
 	{
 		state_id = eStateAttack_AttackHidden;
 	}

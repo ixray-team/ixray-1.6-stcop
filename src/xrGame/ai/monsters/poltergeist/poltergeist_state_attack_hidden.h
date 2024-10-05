@@ -7,6 +7,8 @@ protected:
 	typedef CState		inherited;
 	typedef CState*	state_ptr;
 
+	CPoltergeist* m_pPoltergeist;
+
 public:
 					CStatePoltergeistAttackHidden	(CBaseMonster*obj);
 	virtual			~CStatePoltergeistAttackHidden	() {}
@@ -27,5 +29,3 @@ private:
 			Fvector	m_target;
 			u32		m_target_vertex;
 };
-
-#include "poltergeist_state_attack_hidden_inline.h"
