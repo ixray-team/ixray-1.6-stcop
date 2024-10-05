@@ -5,13 +5,13 @@
 class	CStateControllerFastMove : public CState {
 protected:
 	typedef CState		inherited;
+	CController* m_pController;
+
 public:
-						CStateControllerFastMove	(CBaseMonster *obj) : inherited(obj) {}
+	CStateControllerFastMove(CBaseMonster* obj);
 	virtual void		initialize					();	
 	virtual void		finalize					();	
 	virtual void		critical_finalize			();
 
 	virtual void		execute						();
 };
-
-#include "controller_state_attack_fast_move_inline.h"

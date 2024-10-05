@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../monster_state_manager.h"
+
 class CStateControlCamp : public CState {
 	typedef	CState		inherited;
 
@@ -9,9 +11,11 @@ class CStateControlCamp : public CState {
 	float			m_target_angle;
 	u32				m_time_next_updated;
 
+	CController* m_pController;
+
 public:
 
-					CStateControlCamp	(CBaseMonster *obj) : inherited(obj) {}
+	CStateControlCamp(CBaseMonster* obj);
 	virtual			~CStateControlCamp	() {}
 
 	virtual void	initialize				();
@@ -26,5 +30,3 @@ private:
 	virtual void	update_target_angle		();
 
 };
-
-#include "controller_state_attack_camp_inline.h"

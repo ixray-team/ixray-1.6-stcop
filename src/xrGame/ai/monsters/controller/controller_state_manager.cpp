@@ -23,10 +23,13 @@
 
 #include "../../../entitycondition.h"
 
+#include "controller_state_attack_hide.h"
 //#include "../states/state_test_state.h"
 
 CStateManagerController::CStateManagerController(CController* obj) : inherited(obj)
 {
+	m_pController = smart_cast<CController*>(obj);
+
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
 	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
@@ -56,7 +59,7 @@ CStateManagerController::~CStateManagerController()
 void CStateManagerController::reinit()
 {
 	inherited::reinit();
-	object->set_mental_state(CController::eStateIdle);
+	m_pController->set_mental_state(CController::eStateIdle);
 }
 
 

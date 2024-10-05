@@ -3,13 +3,10 @@
 
 class CStateControllerTube : public CState {
 	typedef CState		inherited;
-
+	CController* m_pController;
 public:
-						CStateControllerTube	(CBaseMonster *obj) : inherited(obj){}
+	CStateControllerTube(CBaseMonster* obj);
 	virtual void		execute					();
 	virtual bool		check_start_conditions	();
 	virtual bool		check_completion		();
 };
-
-#include "controller_tube_inline.h"
-

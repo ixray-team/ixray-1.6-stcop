@@ -1,9 +1,11 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateControlHide : public CState {
 	typedef	CState	inherited;
 	typedef	CState*	state_ptr;
-
+	CController* m_pController;
 	bool			m_cover_reached;
 
 	struct {
@@ -17,7 +19,7 @@ class CStateControlHide : public CState {
 
 public:
 
-					CStateControlHide		(CBaseMonster *obj) : inherited(obj) {}
+	CStateControlHide(CBaseMonster* obj);
 	virtual			~CStateControlHide		() {}
 
 	virtual void	initialize				();
@@ -34,7 +36,4 @@ public:
 private:
 			void	select_target_point		();
 };
-
-
-#include "controller_state_attack_hide_inline.h"
 

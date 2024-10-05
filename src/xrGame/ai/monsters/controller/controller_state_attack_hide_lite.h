@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 // Hiding until enemy get out from its sight
 class CStateControlHideLite : public CState{
 	typedef	CState		inherited;
@@ -9,12 +11,12 @@ class CStateControlHideLite : public CState{
 		Fvector position;
 		u32		node;
 	} target;
-
+	CController* m_pController;
 	u32				m_time_finished;
 
 public:
 
-					CStateControlHideLite	(CBaseMonster *obj) : inherited(obj) {}
+	CStateControlHideLite(CBaseMonster* obj);
 	virtual			~CStateControlHideLite	() {}
 
 	virtual void	reinit					();
@@ -32,7 +34,3 @@ public:
 private:
 	void	select_target_point		();
 };
-
-
-#include "controller_state_attack_hide_lite_inline.h"
-

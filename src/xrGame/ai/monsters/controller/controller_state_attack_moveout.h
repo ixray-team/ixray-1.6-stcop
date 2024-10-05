@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateControlMoveOut : public CState {
 	typedef	CState		inherited;
 	typedef	CState*	state_ptr;
@@ -8,6 +10,8 @@ class CStateControlMoveOut : public CState {
 	
 	u32				m_last_time_look_point_updated;
 	u32				m_current_delay;
+
+	CController* m_pController;
 
 	enum {
 		eMoveToNodeEnemyLastSeen,
@@ -21,7 +25,7 @@ class CStateControlMoveOut : public CState {
 
 public:
 
-					CStateControlMoveOut	(CBaseMonster *obj) : inherited(obj) {}
+	CStateControlMoveOut(CBaseMonster* obj);
 	virtual			~CStateControlMoveOut	() {}
 
 	virtual void	initialize				();
@@ -36,6 +40,3 @@ private:
 			void	update_look_point		();
 
 };
-
-#include "controller_state_attack_moveout_inline.h"
-

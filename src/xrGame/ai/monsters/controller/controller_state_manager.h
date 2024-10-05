@@ -6,6 +6,7 @@ class CController;
 class CStateManagerController : public CMonsterStateManager {
 
 	typedef CMonsterStateManager inherited;
+	CController* m_pController;
 
 public:
 						CStateManagerController			(CController *obj);

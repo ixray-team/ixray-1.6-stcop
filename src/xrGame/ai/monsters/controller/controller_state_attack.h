@@ -22,5 +22,3 @@ public:
 	virtual void		remove_links			(CObject * ) {}
 			bool		check_home_point		();
 };
-
-#include "controller_state_attack_inline.h"

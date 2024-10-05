@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateControlAttack : public CState {
 	typedef	CState inherited;
 
@@ -12,6 +14,8 @@ class CStateControlAttack : public CState {
 	} m_action;
 
 	u32				time_control_started;
+
+	CController* m_pController;
 
 public:
 
@@ -32,5 +36,3 @@ private:
 			void	execute_hit_continue	();
 			void	execute_hit_prepare		();
 };
-
-#include "controller_state_control_hit_inline.h"
