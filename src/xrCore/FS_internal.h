@@ -20,7 +20,8 @@ public:
 		VerifyPath	(*fName);
         if (exclusive){
     		int handle	= _wopen(wName,_O_WRONLY|_O_TRUNC|_O_CREAT|_O_BINARY,SH_DENYWR);
-#ifdef _EDITOR
+
+#ifdef IXR_WINDOWS
     		if (handle==-1)
     			Msg	("!Can't create file: '%s'. Error: '%s'.",*fName,_sys_errlist[errno]);
 #endif

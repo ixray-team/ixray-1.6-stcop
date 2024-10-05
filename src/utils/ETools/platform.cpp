@@ -118,9 +118,7 @@ void timer_clear(void *timer)
 #define mkdir(x,y) _mkdir((x))
 
 /* MSVC does this, borland doesn't? */
-#ifndef __BORLANDC__
 #define stat _stat
-#endif
 
 #else
 
@@ -163,8 +161,6 @@ int create_directories(char *fn)
         }
 #if defined(_WIN32) && !defined(__BORLANDC__)
         else if(!(_S_IFDIR & statbuf.st_mode)) {
-#elif defined(__BORLANDC__)
-        else if(!(S_IFDIR & statbuf.st_mode)) {
 #else
         else if(!S_ISDIR(statbuf.st_mode)) {
 #endif

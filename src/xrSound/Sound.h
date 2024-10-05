@@ -1,20 +1,9 @@
-#ifndef SoundH
-#define SoundH
 #pragma once
 
 #ifdef XRSOUND_EXPORTS
 	#define XRSOUND_API __declspec(dllexport)
 #else
 	#define XRSOUND_API __declspec(dllimport)
-#endif
-
-#ifdef __BORLANDC__
-	#define XRSOUND_EDITOR_API XRSOUND_API
-
-	// editor only refs
-	class XRSOUND_EDITOR_API SoundEnvironment_LIB;
-#else
-	#define XRSOUND_EDITOR_API
 #endif
 
 #define SNDENV_FILENAME				"sEnvironment.xr"
@@ -331,5 +320,3 @@ IC void	ref_sound::set_params					( CSound_params* p )
         _feedback()->set_volume   	(p->volume);
     }
 }
-
-#endif

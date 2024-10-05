@@ -1,11 +1,7 @@
-#ifndef _STL_EXT_internal
-#define _STL_EXT_internal
+#pragma once
 
 using std::swap;
 
-#ifdef	__BORLANDC__
-#define M_NOSTDCONTAINERS_EXT
-#endif
 #ifdef	_M_AMD64
 #define M_DONTDEFERCLEAR_EXT
 #endif
@@ -208,7 +204,6 @@ using U8It = U8Vec::iterator;
 using LPU32Vec = xr_vector<u32*>;
 using LPU32It = LPU32Vec::iterator;
 
-
 template<class RandomIt>
 void random_shuffle(RandomIt first, RandomIt last)
 {
@@ -223,6 +218,3 @@ void random_shuffle(RandomIt first, RandomIt last)
 		// a variation of the C++11 std::uniform_int_distribution implementation.
 	}
 }
-
-
-#endif

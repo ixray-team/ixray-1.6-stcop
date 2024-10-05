@@ -113,12 +113,8 @@ namespace CDB
 #if 1
 		VERIFY							(faces.size() < 65536);
 		const u32						edge_count = (u32)faces.size()*3;
-#ifdef _EDITOR
-		xr_vector<edge> _edges			(edge_count);
-		edge 							*edges = &*_edges.begin();
-#else
 		edge							*edges = (edge*)_alloca(edge_count*sizeof(edge));
-#endif
+
 		edge							*i = edges;
 		xr_vector<TRI>::const_iterator	B = faces.begin(), I = B;
 		xr_vector<TRI>::const_iterator	E = faces.end();

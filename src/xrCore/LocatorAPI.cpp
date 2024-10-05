@@ -16,11 +16,7 @@ constexpr u32 BIG_FILE_READER_WINDOW_SIZE = 1024*1024;
 
 CLocatorAPI* xr_FS = nullptr;
 
-#ifdef _EDITOR
-#	define FSLTX "fs.ltx"
-#else
-#	define FSLTX "fsgame.ltx"
-#endif
+#define FSLTX "fsgame.ltx"
 
 void CLocatorAPI::ParseIgnoreList()
 {
@@ -1356,9 +1352,7 @@ IWriter* CLocatorAPI::w_open	(LPCSTR path, LPCSTR _fname)
 	xr_strlwr(fname);//,".$");
 	if (path&&path[0]) update_path(fname,path,fname);
     CFileWriter* W 	= new CFileWriter(fname,false); 
-#ifdef _EDITOR
-	if (!W->valid()) xr_delete(W);
-#endif    
+
 	return W;
 }
 

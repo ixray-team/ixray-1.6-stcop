@@ -10,9 +10,7 @@ XRCORE_API CDUInterface*		DU = nullptr;
 XRCORE_API xr_token*			vid_mode_token = nullptr;
 XRCORE_API IUIRender*			UIRender = nullptr;
 
-#ifndef	_EDITOR
 XRCORE_API CGameMtlLibrary*		PGMLib = nullptr;
-#endif
 
 XRCORE_API XrEditorSceneInterface* EditorScene = nullptr;
 

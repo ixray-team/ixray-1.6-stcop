@@ -16,10 +16,6 @@
 
 #define IC inline
 
-#if defined(XRCORE_STATIC) || defined(_EDITOR)
-#	define NO_FS_SCAN
-#endif
-
 #define _inline			inline
 #define __inline		inline
 #define ICF				__forceinline			// !!! this should be used only in critical places found by PROFILER
@@ -28,9 +24,7 @@
 #ifndef DEBUG
 	#pragma inline_depth	( 254 )
 	#pragma inline_recursion( on )
-	#ifndef __BORLANDC__
-		#pragma intrinsic	(abs, fabs, fmod, sin, cos, tan, asin, acos, atan, sqrt, exp, log, log10, strcat)
-	#endif
+	#pragma intrinsic	(abs, fabs, fmod, sin, cos, tan, asin, acos, atan, sqrt, exp, log, log10, strcat)
 #endif
 
 #include <filesystem>

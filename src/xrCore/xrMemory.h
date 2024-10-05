@@ -38,11 +38,7 @@ public:
 extern XRCORE_API xrMemory Memory;
 
 // delete
-#ifdef __BORLANDC__
-	#include "xrMemory_subst_borland.h"
-#else
-	#include "xrMemory_subst_msvc.h"
-#endif
+#include "xrMemory_subst_msvc.h"
 
 // generic "C"-like allocations/deallocations
 template <class T>
@@ -55,12 +51,10 @@ IC void*	xr_realloc	(void* P, size_t size)	{	return Memory.mem_realloc(P,size);	
 XRCORE_API	char* 	xr_strdup	(const char* string);
 XRCORE_API	wchar_t* 	xr_strdup	(const wchar_t* string);
 
-#	if !(defined(__BORLANDC__) || defined(NO_XRNEW))
-	IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
-	IC void		operator delete		(void *p)			{	xr_free(p);											}
-	IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
-	IC void		operator delete[]	(void* p)			{	xr_free(p);											}
-#	endif
+IC void*	operator new		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
+IC void		operator delete		(void *p)			{	xr_free(p);											}
+IC void*	operator new[]		(size_t size)		{	return Memory.mem_alloc(size?size:1);				}
+IC void		operator delete[]	(void* p)			{	xr_free(p);											}
 
 
 // POOL-ing

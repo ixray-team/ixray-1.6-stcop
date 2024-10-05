@@ -50,22 +50,17 @@ CSoundRender_Core::CSoundRender_Core	()
 	fTimer_Delta				= 0.0f;
 	m_iPauseCounter				= 1;
 
-#ifndef _EDITOR
+#ifdef IXR_WINDOWS
 	pSysNotification = new CNotificationClient;
 #endif
 }
 
 CSoundRender_Core::~CSoundRender_Core()
 {
-#ifdef _EDITOR
-	ETOOLS::destroy_model		(geom_ENV);
-	ETOOLS::destroy_model		(geom_SOM);
-#else
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
 
 	xr_delete					(pSysNotification);
-#endif
 }
 
 void CSoundRender_Core::_initialize(int stage)
@@ -191,18 +186,6 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 		float		occ;
 	};
 	// Create AABB-tree
-#ifdef _EDITOR    
-	CDB::Collector*	CL			= ETOOLS::create_collector();
-	while (!geom->eof()){
-		SOM_poly				P;
-		geom->r					(&P,sizeof(P));
-        ETOOLS::collector_add_face_pd		(CL,P.v1,P.v2,P.v3,*(u32*)&P.occ,0.01f);
-		if (P.b2sided)
-			ETOOLS::collector_add_face_pd	(CL,P.v3,P.v2,P.v1,*(u32*)&P.occ,0.01f);
-	}
-	geom_SOM					= ETOOLS::create_model_cl(CL);
-    ETOOLS::destroy_collector	(CL);
-#else
 	CDB::Collector				CL;			
 	while (!geom->eof()){
 		SOM_poly				P;
@@ -213,7 +196,6 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 	}
 	geom_SOM			= new CDB::MODEL();
 	geom_SOM->build		(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
-#endif
 
 	geom->close();
 }
@@ -263,13 +245,10 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 		R_ASSERT		(id_back<(u16)ids.size());
 		T->dummy		= u32(ids[id_back]<<16) | u32(ids[id_front]);
 	}
-#ifdef _EDITOR    
-	geom_ENV			= ETOOLS::create_model(verts, H.vertcount, tris, H.facecount);
-	env_apply			();
-#else
+
 	geom_ENV			= new CDB::MODEL();
 	geom_ENV->build		(verts, H.vertcount, tris, H.facecount);
-#endif
+
 	geom_ch->close			();
 	geom->close				();
 	xr_free					(_data);
@@ -420,46 +399,51 @@ void CSoundRender_Core::_destroy_data( ref_sound_data& S)
 	S.handle						= nullptr;
 }
 
-CSoundRender_Environment*	CSoundRender_Core::get_environment			( const Fvector& P )
+CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 {
 	static CSoundRender_Environment	identity;
 
-	if (bUserEnvironment){
+	if (bUserEnvironment)
+	{
 		return &s_user_environment;
-	}else{
-		if (geom_ENV){
-			Fvector	dir				= {0,-1,0};
-#ifdef _EDITOR
-			ETOOLS::ray_options		(CDB::OPT_ONLYNEAREST);
-			ETOOLS::ray_query		(geom_ENV,P,dir,1000.f);
-			if (ETOOLS::r_count()){
-				CDB::RESULT*		r	= ETOOLS::r_begin();
-#else
-			geom_DB.ray_options		(CDB::OPT_ONLYNEAREST);
-			geom_DB.ray_query		(geom_ENV,P,dir,1000.f);
-			if (geom_DB.r_count()){
-				CDB::RESULT*		r	= geom_DB.r_begin();
-#endif            
-				CDB::TRI*			T	= geom_ENV->get_tris()+r->id;
-				Fvector*			V	= geom_ENV->get_verts();
-				Fvector tri_norm;
-				tri_norm.mknormal		(V[T->verts[0]],V[T->verts[1]],V[T->verts[2]]);
-				float	dot				= dir.dotproduct(tri_norm);
-				if (dot<0){
-					u16		id_front	= (u16)((T->dummy&0x0000ffff)>>0);		//	front face
-					return	s_environment->Get(id_front);
-				}else{
-					u16		id_back		= (u16)((T->dummy&0xffff0000)>>16);	//	back face
-					return	s_environment->Get(id_back);
-				}
-			}else{
-				identity.set_identity	();
-				return &identity;
+	}
+	else if (geom_ENV)
+	{
+		Fvector	dir = { 0,-1,0 };
+		geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
+		geom_DB.ray_query(geom_ENV, P, dir, 1000.f);
+
+		if (geom_DB.r_count()) 
+		{
+			CDB::RESULT* r = geom_DB.r_begin();
+			CDB::TRI* T = geom_ENV->get_tris() + r->id;
+			Fvector* V = geom_ENV->get_verts();
+
+			Fvector tri_norm;
+			tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+
+			float dot = dir.dotproduct(tri_norm);
+			if (dot < 0)
+			{
+				u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0);	//	front face
+				return s_environment->Get(id_front);
 			}
-		}else{
-			identity.set_identity	();
+			else
+			{
+				u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16);	//	back face
+				return s_environment->Get(id_back);
+			}
+		}
+		else
+		{
+			identity.set_identity();
 			return &identity;
 		}
+	}
+	else
+	{
+		identity.set_identity();
+		return &identity;
 	}
 }
 

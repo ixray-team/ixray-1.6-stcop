@@ -8,8 +8,8 @@ void  xrMemFill32_x86(LPVOID dest, size_t value, size_t count)
 	for (; ptr != end; ) *ptr++ = (u32)value;
 }
 
-#if defined(M_BORLAND) || defined(IXR_X64)
-void 	xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
+#if defined(IXR_X64)
+void xrMemFill32_MMX(LPVOID dest, size_t value, size_t count)
 {
 	xrMemFill32_x86(dest, value, count);
 }

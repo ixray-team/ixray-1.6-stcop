@@ -35,9 +35,7 @@ public:
 	sound_event*						Handler;
 protected:
 	// Collider
-#ifndef _EDITOR
 	CDB::COLLIDER						geom_DB;
-#endif
 	CDB::MODEL*							geom_SOM;
 	CDB::MODEL*							geom_MODEL;
 	CDB::MODEL*							geom_ENV;

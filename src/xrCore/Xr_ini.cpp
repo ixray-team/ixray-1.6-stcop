@@ -628,11 +628,7 @@ u32 CInifile::r_u32(LPCSTR S, LPCSTR L)const
 u64 CInifile::r_u64(LPCSTR S, LPCSTR L)const
 {
 	LPCSTR		C = r_string(S,L);
-#ifndef _EDITOR
 	return		_strtoui64(C,nullptr,10);
-#else
-	return		(u64)_atoi64(C);
-#endif
 }
 
 s64 CInifile::r_s64(LPCSTR S, LPCSTR L)const
@@ -853,26 +849,18 @@ void	CInifile::w_u32			( LPCSTR S, LPCSTR L, u32				V, LPCSTR comment )
 	w_string	(S,L,temp,comment);
 }
 
-void	CInifile::w_u64			( LPCSTR S, LPCSTR L, u64				V, LPCSTR comment )
+void CInifile::w_u64(LPCSTR S, LPCSTR L, u64 V, LPCSTR comment)
 {
-	string128 temp; 
-#ifndef _EDITOR
-	_ui64toa_s			(V, temp, sizeof(temp), 10);
-#else
-	_ui64toa			(V, temp, 10);
-#endif
-	w_string			(S,L,temp,comment);
+	string128 temp;
+	_ui64toa_s(V, temp, sizeof(temp), 10);
+	w_string(S, L, temp, comment);
 }
 
-void	CInifile::w_s64			( LPCSTR S, LPCSTR L, s64				V, LPCSTR comment )
+void CInifile::w_s64(LPCSTR S, LPCSTR L, s64 V, LPCSTR comment)
 {
 	string128			temp;
-#ifndef _EDITOR
-	_i64toa_s			(V, temp, sizeof(temp), 10);
-#else
-	_i64toa				(V, temp, 10);
-#endif
-	w_string			(S,L,temp,comment);
+	_i64toa_s(V, temp, sizeof(temp), 10);
+	w_string(S, L, temp, comment);
 }
 
 void	CInifile::w_s8			( LPCSTR S, LPCSTR L, s8				V, LPCSTR comment )

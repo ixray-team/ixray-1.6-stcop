@@ -522,131 +522,112 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #endif
 
 //////////////////////////////////////////////////////////////////////
-#ifdef M_BORLAND
-	namespace std{
-		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );
-	};
-
-	static void __cdecl def_new_handler() 
-    {
-		FATAL		("Out of memory.");
-    }
-
-    void	xrDebug::_initialize		(const bool &dedicated)
-    {
-		handler							= 0;
-		m_on_dialog						= 0;
-        std::set_new_handler			(def_new_handler);	// exception-handler for 'out of memory' condition
-//		::SetUnhandledExceptionFilter	(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-    }
-#else
-	void _terminate		()
-	{
-		if (strstr(GetCommandLineA(),"-silent_error_mode"))
-			exit				(-1);
-
-		string4096				assertion_info;
-		
-		Debug.gather_info			(
-		//gather_info				(
-			"<no expression>",
-			"Unexpected application termination",
-			0,
-			0,
-	#ifdef ANONYMOUS_BUILD
-			"",
-			0,
-	#else
-			__FILE__,
-			__LINE__,
-	#endif
-			__FUNCTION__,
-			assertion_info
-		);
-		
-		LPCSTR endline = "\r\n";
-		LPSTR buffer = assertion_info + xr_strlen(assertion_info);
-		buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
-
-#ifdef IXR_WINDOWS
-		MessageBoxA				(
-			/*GetTopWindow(nullptr)*/ nullptr,
-			assertion_info,
-			"Fatal Error",
-			MB_OK|MB_ICONERROR|MB_SYSTEMMODAL
-		);
-#endif
+void _terminate()
+{
+	if (strstr(GetCommandLineA(), "-silent_error_mode"))
 		exit(-1);
-	}
+
+	string4096				assertion_info;
+
+	Debug.gather_info(
+		//gather_info				(
+		"<no expression>",
+		"Unexpected application termination",
+		0,
+		0,
+#ifdef ANONYMOUS_BUILD
+		"",
+		0,
+#else
+		__FILE__,
+		__LINE__,
+#endif
+		__FUNCTION__,
+		assertion_info
+	);
+
+	LPCSTR endline = "\r\n";
+	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
+	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
 #ifdef IXR_WINDOWS
-	IC void handler_base(const char* reason_string)
-	{
-		bool skip;
-		Debug.backend("Error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO, skip);
-	}
-
-	void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t reserved)
-	{
-		string4096	expression_,
-			function_,
-			file_;
-
-		size_t converted_chars = 0;
-
-		if (expression)
-			wcstombs_s(&converted_chars, expression_, sizeof(expression_), expression, (wcslen(expression) + 1) * 2 * sizeof(char));
-		else
-			xr_strcpy(expression_, "");
-
-		if (function)
-			wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
-		else
-			xr_strcpy(function_, __FUNCTION__);
-
-		if (file)
-			wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
-		else
-		{
-			line = __LINE__;
-			xr_strcpy(file_, __FILE__);
-		}
-
-		bool skip;
-		Debug.backend("Error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_, skip);
-	}
+	MessageBoxA(
+		/*GetTopWindow(nullptr)*/ nullptr,
+		assertion_info,
+		"Fatal Error",
+		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
+	);
 #endif
+	exit(-1);
+}
 
-	void __cdecl debug_on_thread_spawn(void)
-	{
 #ifdef IXR_WINDOWS
-		SetUnhandledExceptionFilter(UnhandledFilter);
+IC void handler_base(const char* reason_string)
+{
+	bool skip;
+	Debug.backend("Error handler is invoked!", reason_string, nullptr, nullptr, DEBUG_INFO, skip);
+}
 
-		auto abort_handler = [](int signal) { handler_base("Application is aborting"); };
-		auto floating_point_handler = [](int signal) { handler_base("Floating point error"); };
-		auto pure_call_handler = []() { handler_base("Pure virtual function call"); };
-		auto illegal_instruction_handler = [](int signal) { handler_base("Illegal instruction"); };
+void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t reserved)
+{
+	string4096	expression_,
+		function_,
+		file_;
 
-		signal(SIGABRT, abort_handler);
-		signal(SIGFPE, floating_point_handler);
-		signal(SIGILL, illegal_instruction_handler);
+	size_t converted_chars = 0;
 
-		_set_invalid_parameter_handler(&invalid_parameter_handler);
+	if (expression)
+		wcstombs_s(&converted_chars, expression_, sizeof(expression_), expression, (wcslen(expression) + 1) * 2 * sizeof(char));
+	else
+		xr_strcpy(expression_, "");
 
-		_set_new_mode(1);
-		_set_new_handler(&out_of_memory_handler);
+	if (function)
+		wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
+	else
+		xr_strcpy(function_, __FUNCTION__);
 
-		_set_purecall_handler(pure_call_handler);
-#endif
-	}
-
-	void xrDebug::_initialize(const bool& dedicated)
+	if (file)
+		wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
+	else
 	{
-		static bool is_dedicated = dedicated;
-
-		*g_bug_report_file = 0;
-#ifdef IXR_WINDOWS
-		previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-#endif
+		line = __LINE__;
+		xr_strcpy(file_, __FILE__);
 	}
+
+	bool skip;
+	Debug.backend("Error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_, skip);
+}
 #endif
+
+void __cdecl debug_on_thread_spawn(void)
+{
+#ifdef IXR_WINDOWS
+	SetUnhandledExceptionFilter(UnhandledFilter);
+
+	auto abort_handler = [](int signal) { handler_base("Application is aborting"); };
+	auto floating_point_handler = [](int signal) { handler_base("Floating point error"); };
+	auto pure_call_handler = []() { handler_base("Pure virtual function call"); };
+	auto illegal_instruction_handler = [](int signal) { handler_base("Illegal instruction"); };
+
+	signal(SIGABRT, abort_handler);
+	signal(SIGFPE, floating_point_handler);
+	signal(SIGILL, illegal_instruction_handler);
+
+	_set_invalid_parameter_handler(&invalid_parameter_handler);
+
+	_set_new_mode(1);
+	_set_new_handler(&out_of_memory_handler);
+
+	_set_purecall_handler(pure_call_handler);
+#endif
+}
+
+void xrDebug::_initialize(const bool& dedicated)
+{
+	static bool is_dedicated = dedicated;
+
+	*g_bug_report_file = 0;
+#ifdef IXR_WINDOWS
+	previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
+#endif
+}

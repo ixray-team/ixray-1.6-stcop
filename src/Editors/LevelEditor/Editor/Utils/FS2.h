@@ -135,11 +135,8 @@ public:
 	void	clear	()  { file_size=0; position=0;	}
 	void	SaveTo	(const char* fn)
 	{
-    #ifdef M_BORLAND
-        int H = open(fn,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,S_IREAD|S_IWRITE);
-    #else
         int H = _open(fn,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,S_IREAD|S_IWRITE);
-    #endif
+
         R_ASSERT(H>0);
         _write(H,pointer(),size());
         _close(H);
