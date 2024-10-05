@@ -402,6 +402,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("ammo_set_count",				&CScriptGameObject::AmmoSetCount)
 		.def("ammo_box_size",				&CScriptGameObject::AmmoBoxSize)
 		.def("is_ammo",						&CScriptGameObject::IsAmmo)
+		// Actor
+		.def("set_character_icon", &CScriptGameObject::SetCharacterIcon)
 
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)

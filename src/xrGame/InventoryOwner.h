@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////
-// ƒÎˇ ÔÂÒÓÌ‡ÊÂÈ, ËÏÂ˛˘Ëı ËÌ‚ÂÌÚ‡¸
+// –î–ª—è –ø–µ—Ä—Å–æ–Ω–∞–∂–µ–π, –∏–º–µ—é—â–∏—Ö –∏–Ω–≤–µ–Ω—Ç–∞—Ä—å
 // InventoryOwner.h
 //////////////////////////////////////////////////////
 
@@ -51,7 +51,7 @@ public:
 	virtual void	load						(IReader &input_packet);
 
 	
-	//Ó·ÌÓ‚ÎÂÌËÂ
+	//–æ–±–Ω–æ–≤–ª–µ–Ω–∏–µ
 	virtual void	UpdateInventoryOwner		(u32 deltaT);
 	virtual bool	CanPutInSlot				(PIItem item, u32 slot){return true;};
 
@@ -59,19 +59,19 @@ public:
 	CPda* GetPDA		() const;
 
 
-	// ËÌ‚ÂÌÚ‡¸
+	// –∏–Ω–≤–µ–Ω—Ç–∞—Ä—å
 	CInventory	*m_inventory;			
 	
 	////////////////////////////////////
-	//ÚÓ„Ó‚Îˇ Ë Ó·˘ÂÌËÂ Ò ÔÂÒÓÌ‡ÊÂÏ
+	//—Ç–æ—Ä–≥–æ–≤–ª—è –∏ –æ–±—â–µ–Ω–∏–µ —Å –ø–µ—Ä—Å–æ–Ω–∞–∂–µ–º
 
 	virtual bool	AllowItemToTrade 	(CInventoryItem const * item, const SInvItemPlace& place) const;
 	virtual void	OnFollowerCmd		(int cmd)		{};//redefine for CAI_Stalkker
 			bool	bDisableBreakDialog;
-	//ËÌËˆË‡ÎËÁ‡ˆËˇ Ó·˙ÂÍÚ‡ ÚÓ„Ó‚ÎË
+	//–∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∞—Ü–∏—è –æ–±—ä–µ–∫—Ç–∞ —Ç–æ—Ä–≥–æ–≤–ª–∏
 	CTrade* GetTrade();
 
-	//‰Îˇ ‚ÍÎ˛˜ÂÌËˇ ‡Á„Ó‚Ó‡
+	//–¥–ª—è –≤–∫–ª—é—á–µ–Ω–∏—è —Ä–∞–∑–≥–æ–≤–æ—Ä–∞
 	virtual bool OfferTalk		(CInventoryOwner* talk_partner);
 	virtual void StartTalk		(CInventoryOwner* talk_partner, bool start_trade = true);
 	virtual void StopTalk		();
@@ -97,7 +97,7 @@ public:
 	virtual void	 NewPdaContact		(CInventoryOwner*);
 	virtual void	 LostPdaContact		(CInventoryOwner*);
 
-	//Ë„Ó‚ÓÂ ËÏˇ 
+	//–∏–≥—Ä–æ–≤–æ–µ –∏–º—è 
 	virtual LPCSTR	Name        () const;
 	void				SetName(LPCSTR name);
 	LPCSTR				IconName		() const;
@@ -107,7 +107,7 @@ public:
 
 protected:
 	u32					m_money;
-	// ÚÓ„Ó‚Îˇ
+	// —Ç–æ—Ä–≥–æ–≤–ª—è
 	CTrade*				m_pTrade;
 	bool				m_bTrading;
 	bool				m_bTalking; 
@@ -121,15 +121,15 @@ protected:
 	
 	bool				m_play_show_hide_reload_sounds;
 	//////////////////////////////////////////////////////////////////////////
-	// Ò˛ÊÂÚÌ‡ˇ ËÌÙÓÏ‡ˆËˇ
+	// —Å—é–∂–µ—Ç–Ω–∞—è –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—è
 public:
-	//ÔÂÒÓÌ‡Ê ÔÓÎÛ˜ËÎ ÌÓ‚Û˛ ÔÓˆË˛ ËÌÙÓÏ‡ˆËË
+	//–ø–µ—Ä—Å–æ–Ω–∞–∂ –ø–æ–ª—É—á–∏–ª –Ω–æ–≤—É—é –ø–æ—Ä—Ü–∏—é –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏–∏
 	virtual bool OnReceiveInfo	(shared_str info_id) const;
-	//Û·‡Ú¸ ËÌÙÓÏ‡ˆË˛
+	//—É–±—Ä–∞—Ç—å –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—é
 	virtual void OnDisableInfo	(shared_str info_id) const;
-	//ÔÂÂ‰‡Ú¸/Û‰‡ÎËÚ¸ ËÌÙÓÏ‡ˆË˛ ˜ÂÂÁ ÒÂ‚Â
+	//–ø–µ—Ä–µ–¥–∞—Ç—å/—É–¥–∞–ª–∏—Ç—å –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—é —á–µ—Ä–µ–∑ —Å–µ—Ä–≤–µ—Ä
 	virtual void TransferInfo	(shared_str info_id, bool add_info) const;
-	//ÂÒÚ¸ ÎË ËÌÙÓÏ‡ˆËˇ Û ÔÂÒÓÌ‡Ê‡
+	//–µ—Å—Ç—å –ª–∏ –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—è —É –ø–µ—Ä—Å–æ–Ω–∞–∂–∞
 	virtual bool				HasInfo		(shared_str info_id) const;
 //	virtual bool				GetInfo		(shared_str info_id, INFO_DATA&) const;
 
@@ -140,14 +140,14 @@ public:
 	CInfoPortionWrapper			*m_known_info_registry;
 
 	//////////////////////////////////////////////////////////////////////////
-	// ËÌ‚ÂÌÚ‡¸ 
+	// –∏–Ω–≤–µ–Ω—Ç–∞—Ä—å 
 public:
 	const CInventory &inventory() const {VERIFY (m_inventory); return(*m_inventory);}
 	CInventory		 &inventory()		{VERIFY (m_inventory); return(*m_inventory);}
 
-	//‚ÓÁ‚‡˘‡ÂÚ ÚÂÍÛ¯ËÈ ‡Á·ÓÒ ÒÚÂÎ¸·˚ (‚ ‡‰Ë‡Ì‡ı) Ò Û˜ÂÚÓÏ ‰‚ËÊÂÌËˇ
+	//–≤–æ–∑–≤—Ä–∞—â–∞–µ—Ç —Ç–µ–∫—É—à–∏–π —Ä–∞–∑–±—Ä–æ—Å —Å—Ç—Ä–µ–ª—å–±—ã (–≤ —Ä–∞–¥–∏–∞–Ω–∞—Ö) —Å —É—á–µ—Ç–æ–º –¥–≤–∏–∂–µ–Ω–∏—è
 	virtual float GetWeaponAccuracy			() const;
-	//Ï‡ÍÒËÏ‡Î¸Ì˚È ÔÂÂÌÓÒËÏ˚ ‚ÂÒ
+	//–º–∞–∫—Å–∏–º–∞–ª—å–Ω—ã–π –ø–µ—Ä–µ–Ω–æ—Å–∏–º—ã –≤–µ—Å
 	virtual float MaxCarryWeight			() const;
 
 	CCustomOutfit* GetOutfit				() const;
@@ -155,20 +155,22 @@ public:
 	bool CanPlayShHdRldSounds				() const {return m_play_show_hide_reload_sounds;};
 	void SetPlayShHdRldSounds				(bool play) {m_play_show_hide_reload_sounds = play;};
 //////////////////////////////////////////////////////////////////////////
-	//Ë„Ó‚˚Â ı‡‡ÍÚÂËÒÚËÍË ÔÂÒÓÌ‡Ê‡
+	//–∏–≥—Ä–æ–≤—ã–µ —Ö–∞—Ä–∞–∫—Ç–µ—Ä–∏—Å—Ç–∏–∫–∏ –ø–µ—Ä—Å–æ–Ω–∞–∂–∞
 public:
 	CCharacterInfo&						CharacterInfo		() const {VERIFY(m_pCharacterInfo); return *m_pCharacterInfo;}
 	IC const CSpecificCharacter&		SpecificCharacter	() const {return CharacterInfo().m_SpecificCharacter;};
 	bool								InfinitiveMoney		()	{return CharacterInfo().m_SpecificCharacter.MoneyDef().inf_money;}
 
-	//ÛÒÚ‡ÌÓ‚Í‡ „ÛÔÔËÓ‚ÍË Ì‡ ÍÎËÂÌÚÒÍÓÏ Ë ÒÂ‚ÂÌÓÏ Ó·˙ÍÚÂ
+	//—É—Å—Ç–∞–Ω–æ–≤–∫–∞ –≥—Ä—É–ø–ø–∏—Ä–æ–≤–∫–∏ –Ω–∞ –∫–ª–∏–µ–Ω—Ç—Å–∫–æ–º –∏ —Å–µ—Ä–≤–µ—Ä–Ω–æ–º –æ–±—ä–∫—Ç–µ
 	virtual void			SetCommunity	(CHARACTER_COMMUNITY_INDEX);
 	virtual void			SetRank			(CHARACTER_RANK_VALUE);
 	virtual void			ChangeRank		(CHARACTER_RANK_VALUE);
 	virtual void			SetReputation	(CHARACTER_REPUTATION_VALUE);
 	virtual void			ChangeReputation(CHARACTER_REPUTATION_VALUE);
 
-	//‰Îˇ ‡·ÓÚ˚ Ò relation system
+	virtual void			SetIcon(const shared_str& iconName) { CharacterInfo().m_SpecificCharacter.data()->m_icon_name = iconName; };
+
+	//–¥–ª—è —Ä–∞–±–æ—Ç—ã —Å relation system
 	u16								object_id	() const;
 	CHARACTER_COMMUNITY_INDEX		Community	() const {return CharacterInfo().Community().index();};
 	CHARACTER_RANK_VALUE			Rank		() const {return CharacterInfo().Rank().value();};
