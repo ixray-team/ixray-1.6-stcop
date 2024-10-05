@@ -14,5 +14,3 @@ public:
 	virtual bool		check_completion		();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_smart_terrain_task_graph_walk_inline.h"

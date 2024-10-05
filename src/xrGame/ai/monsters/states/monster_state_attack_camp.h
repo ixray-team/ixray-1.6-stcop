@@ -22,5 +22,3 @@ public:
     virtual void reselect_state();
     virtual void setup_substates();
 };
-
-#include "monster_state_attack_camp_inline.h"

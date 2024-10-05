@@ -14,6 +14,3 @@ public:
 
 	virtual	void		reselect_state			();
 };
-
-#include "monster_state_find_enemy_inline.h"
-

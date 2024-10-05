@@ -73,6 +73,7 @@ private:
 };
 
 #include "control_path_builder_base.h"
+
 class CStateMove : public CState 
 {
 	typedef CState inherited;

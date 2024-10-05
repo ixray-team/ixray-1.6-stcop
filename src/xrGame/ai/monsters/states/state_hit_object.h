@@ -16,5 +16,3 @@ public:
 	virtual bool	check_start_conditions	();
 	virtual bool	check_completion		();
 };
-
-#include "state_hit_object_inline.h"

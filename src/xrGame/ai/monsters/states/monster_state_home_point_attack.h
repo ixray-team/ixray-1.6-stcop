@@ -27,5 +27,3 @@ private:
 			void		select_target			();
 			void		clean					();
 };
-
-#include "monster_state_home_point_attack_inline.h"

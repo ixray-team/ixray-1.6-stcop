@@ -16,5 +16,3 @@ public:
 	virtual	bool		check_start_conditions	();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_rest_fun_inline.h"

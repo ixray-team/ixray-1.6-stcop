@@ -1,5 +1,4 @@
-#ifndef MONSTER_STATE_ATTACK_ON_RUN_H
-#define MONSTER_STATE_ATTACK_ON_RUN_H
+#pragma once
 
 #include "../state.h"
 
@@ -74,7 +73,3 @@ private:
 
 inline
 bool				is_valid_point_to_move			(Fvector const & point);
-
-#include "monster_state_attack_on_run_inline.h"
-
-#endif // MONSTER_STATE_ATTACK_ON_RUN_H

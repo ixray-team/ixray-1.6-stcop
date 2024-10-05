@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateMonsterHittedHide : public CState {
 	typedef	CState		inherited;
 	typedef	CState*	state_ptr;
@@ -16,6 +18,3 @@ public:
 	virtual bool 	check_completion		();
 	virtual bool 	check_start_conditions	();
 };
-
-#include "monster_state_hitted_hide_inline.h"
-

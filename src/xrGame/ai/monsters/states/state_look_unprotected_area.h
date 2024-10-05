@@ -22,5 +22,3 @@ public:
 
 	virtual bool		check_completion			();
 };
-
-#include "state_look_unprotected_area_inline.h"

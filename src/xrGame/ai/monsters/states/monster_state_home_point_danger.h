@@ -26,5 +26,3 @@ public:
 private:
 			Fvector		&get_most_danger_pos	();
 };
-
-#include "monster_state_home_point_danger_inline.h"

@@ -16,5 +16,3 @@ public:
 	virtual bool 		check_completion				();
 	virtual bool 		check_start_conditions			();
 };
-
-#include "monster_state_attack_run_attack_inline.h"

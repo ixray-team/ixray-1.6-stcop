@@ -18,5 +18,3 @@ public:
 	virtual	void		reselect_state			();
 	virtual	void		setup_substates			();
 };
-
-#include "monster_state_rest_idle_inline.h"

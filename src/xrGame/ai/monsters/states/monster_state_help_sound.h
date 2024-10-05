@@ -19,5 +19,3 @@ public:
 
 	virtual void	remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_help_sound_inline.h"

@@ -17,4 +17,4 @@ private:
 	const CEntityAlive	*get_enemy						();
 };
 
-#include "monster_state_controlled_attack_inline.h"
+

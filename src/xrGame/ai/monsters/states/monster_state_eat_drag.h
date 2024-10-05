@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateMonsterDrag : public CState {
 	typedef CState		inherited;
 
@@ -22,5 +24,3 @@ public:
 	virtual bool		check_completion		();
 };
 
-
-#include "monster_state_eat_drag_inline.h"

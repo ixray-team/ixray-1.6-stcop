@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../state.h"
+
 class CStateMonsterPanicRun : public CState {
 	typedef CState inherited;
 
@@ -13,5 +15,3 @@ public:
 
 	virtual bool		check_completion		();
 };
-
-#include "monster_state_panic_run_inline.h"

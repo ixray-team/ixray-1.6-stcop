@@ -16,5 +16,3 @@ public:
 	virtual bool		check_completion		();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_home_point_rest_inline.h"

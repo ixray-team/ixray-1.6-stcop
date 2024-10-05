@@ -1,4 +1,5 @@
 #pragma once
+#include "../state.h"
 
 #include "../../../detail_path_manager.h"
 
@@ -25,6 +26,3 @@ private:
 			void	select_target				();
 
 };
-
-#include "monster_state_hitted_moveout_inline.h"
-

@@ -18,5 +18,3 @@ public:
 private:
 			bool		check_conditions		();
 };
-
-#include "monster_state_steal_inline.h"

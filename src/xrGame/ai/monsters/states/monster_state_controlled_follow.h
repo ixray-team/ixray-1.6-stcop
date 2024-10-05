@@ -12,5 +12,3 @@ public:
 	virtual void		setup_substates					();
 	virtual void		remove_links					(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_controlled_follow_inline.h"

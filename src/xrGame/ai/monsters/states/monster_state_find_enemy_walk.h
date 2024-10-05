@@ -11,5 +11,3 @@ public:
 	virtual bool		check_completion			() {return false;}
 	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_find_enemy_walk_inline.h"

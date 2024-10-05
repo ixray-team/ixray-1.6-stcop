@@ -32,5 +32,3 @@ protected:
 			bool		check_home_point		();
 			bool		check_behinder			();
 };
-
-#include "monster_state_attack_inline.h"

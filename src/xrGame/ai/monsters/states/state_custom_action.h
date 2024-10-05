@@ -19,5 +19,3 @@ public:
 	virtual bool		check_completion			();
 	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "state_custom_action_inline.h"

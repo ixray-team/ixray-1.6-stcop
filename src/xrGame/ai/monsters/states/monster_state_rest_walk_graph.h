@@ -11,5 +11,3 @@ public:
 	virtual	void		execute					();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_rest_walk_graph_inline.h"

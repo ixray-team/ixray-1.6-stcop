@@ -30,5 +30,3 @@ public:
 
 	virtual void		setup_substates				();
 };
-
-#include "monster_state_find_enemy_look_inline.h"

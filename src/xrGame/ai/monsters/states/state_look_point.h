@@ -17,5 +17,3 @@ public:
 
 	virtual bool		check_completion			();
 };
-
-#include "state_look_point_inline.h"

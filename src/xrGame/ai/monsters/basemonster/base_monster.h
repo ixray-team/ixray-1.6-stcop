@@ -41,6 +41,8 @@ class CMovementManager;
 class IStateManagerBase;
 class CAnomalyDetector;
 
+#include "../control_animation_base.h"
+#include "../control_direction_base.h"
 class CControlAnimationBase;
 class CControlMovementBase;
 class CControlPathBuilderBase;

@@ -16,5 +16,3 @@ public:
 	virtual void		setup_substates			();
 	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_panic_inline.h"

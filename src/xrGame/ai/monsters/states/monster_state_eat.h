@@ -31,5 +31,3 @@ private:
 			bool		hungry					();
 
 };
-
-#include "monster_state_eat_inline.h"

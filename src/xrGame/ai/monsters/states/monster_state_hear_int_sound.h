@@ -19,5 +19,3 @@ private:
 			Fvector	get_target_position					();
 
 };
-
-#include "monster_state_hear_int_sound_inline.h"

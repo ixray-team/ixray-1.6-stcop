@@ -19,5 +19,3 @@ public:
 	virtual void		check_force_state				();
 	virtual void		remove_links					(CObject* object_) { inherited::remove_links(object_);}
 };
-
-#include "monster_state_squad_rest_follow_inline.h"

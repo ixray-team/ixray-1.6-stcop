@@ -18,5 +18,3 @@ public:
 	virtual bool		check_completion			();
 						
 };
-
-#include "state_hide_from_point_inline.h"
