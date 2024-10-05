@@ -213,8 +213,12 @@ protected:
         								 const Fvector& dir, 
 										 float fire_disp,
 										 const CCartridge& cartridge,
-										 u16 parent_id,
+										 u16 parent_ids,
 										 u16 weapon_id,
 										 bool send_hit);
+
+	//Alundaio: LAYERED_SND_SHOOT
+	HUD_SOUND_COLLECTION_LAYERED m_layered_sounds;
+	//-Alundaio
 
 };

@@ -40,8 +40,8 @@ struct HUD_SOUND_ITEM
 
 	struct SSnd		{
 		ref_sound	snd;
-		float		delay;		//задержка перед проигрыванием
-		float		volume;		//громкость
+		float		delay;		//Р·Р°РґРµСЂР¶РєР° РїРµСЂРµРґ РїСЂРѕРёРіСЂС‹РІР°РЅРёРµРј
+		float		volume;		//РіСЂРѕРјРєРѕСЃС‚СЊ
 	};
 	shared_str		m_alias;
 	SSnd*			m_activeSnd;
@@ -58,6 +58,7 @@ public:
 	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
 	HUD_SOUND_COLLECTION();
 	~HUD_SOUND_COLLECTION();
+	shared_str		m_alias; //Alundaio: For use when it's part of a layered Collection
 								void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, 
 									bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
@@ -72,3 +73,19 @@ public:
 	void						SetPosition		(	LPCSTR alias, 	const Fvector& pos);
 	void						StopAllSounds	();
 };
+
+//Alundaio:
+class HUD_SOUND_COLLECTION_LAYERED
+{
+	xr_vector<HUD_SOUND_COLLECTION>	m_sound_items;
+public:
+	~HUD_SOUND_COLLECTION_LAYERED();
+	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
+	void						PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, u8 index = u8(-1));
+	void						StopSound(LPCSTR alias);
+	void						StopAllSounds();
+	void						LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+	void						LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+	void						SetPosition(LPCSTR alias, const Fvector& pos);
+};
+//-Alundaio
