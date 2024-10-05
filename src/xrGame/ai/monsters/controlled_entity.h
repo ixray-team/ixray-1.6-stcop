@@ -66,8 +66,6 @@ public:
 	virtual void			on_destroy				();
 
 			void			init_external			(CBaseMonster *obj) {m_object = obj;}
-			
-			CController		*get_controller			() {return m_controller;}
 };
 
 #include "controlled_entity_inline.h"

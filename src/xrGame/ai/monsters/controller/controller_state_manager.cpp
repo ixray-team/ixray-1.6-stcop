@@ -23,7 +23,7 @@
 
 #include "../../../entitycondition.h"
 
-#include "../states/state_test_state.h"
+//#include "../states/state_test_state.h"
 
 CStateManagerController::CStateManagerController(CController* obj) : inherited(obj)
 {
