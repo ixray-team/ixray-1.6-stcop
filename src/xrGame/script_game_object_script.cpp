@@ -113,10 +113,12 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_detach_vehicle", 			int(GameObject::eDetachVehicle)),
 				value("on_use_vehicle", 			int(GameObject::eUseVehicle)),
 
-				value("key_press", int(GameObject::eKeyPress)),
-				value("key_release", int(GameObject::eKeyRelease)),
-				value("key_hold", int(GameObject::eKeyHold)),
-					
+				value("key_press",					int(GameObject::eKeyPress)),
+				value("key_release",				int(GameObject::eKeyRelease)),
+				value("key_hold",					int(GameObject::eKeyHold)),
+				value("mouse_move",                 int(GameObject::eMouseMove)),
+                value("mouse_wheel",                int(GameObject::eMouseWheel)),
+	
 
 				value("map_location_added",			int(GameObject::eMapLocationAdded))
 			],

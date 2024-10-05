@@ -55,6 +55,8 @@ namespace GameObject {
 		eKeyPress,
 		eKeyRelease,
 		eKeyHold,
+		eMouseMove,
+		eMouseWheel,
 
 		eOnWeaponFired,
 		eOnWeaponJammed,
