@@ -427,6 +427,8 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 		}
 	}
 
+	m_icon_name = selected_char.IconName();
+
 	m_character_name = *(g_pStringTable->translate(selected_char.Name()));
 	
 	LPCSTR gen_name = "GENERATE_NAME_";
