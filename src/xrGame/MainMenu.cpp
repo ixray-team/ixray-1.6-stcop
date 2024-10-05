@@ -23,7 +23,6 @@
 #include "ui/UICDkey.h"
 
 #include <shellapi.h>
-#pragma comment(lib, "shell32.lib")
 
 #include "object_broker.h"
 

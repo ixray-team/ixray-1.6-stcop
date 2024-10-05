@@ -3,6 +3,9 @@
 // are changed infrequently
 
 #pragma once
+
+#include <d3d9.h>
+
 // DXGI joke
 #define DXGI_RGBA D3DCOLORVALUE
 

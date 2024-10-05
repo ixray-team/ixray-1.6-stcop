@@ -180,8 +180,9 @@ if(WIN32)
         target_link_libraries(xrCore PRIVATE dxerr)
     endif()
 
-    target_link_libraries(xrCore PRIVATE "dbghelp")
-    target_link_libraries(xrCore PRIVATE "winmm")
+    target_link_libraries(xrCore PRIVATE "dbghelp.lib")
+    target_link_libraries(xrCore PRIVATE "winmm.lib")
+    target_link_libraries(xrCore PRIVATE "faultrep.lib")
 
     target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.lib)
     target_link_libraries(xrCore PUBLIC ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)

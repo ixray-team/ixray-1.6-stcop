@@ -13,7 +13,6 @@
 #include "secure_messaging.h"
 
 #include <shellapi.h>
-//#pragma comment(lib, "shell32.lib")
 
 namespace gamespy_gp
 {

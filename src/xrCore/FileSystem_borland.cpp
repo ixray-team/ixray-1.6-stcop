@@ -13,8 +13,6 @@
 //#include "commdlg.h"
 
 #include <Shlobj.h>
-//#include "OSDialog.h"
-//#pragma comment(lib, "OSDialogB.lib")
 
 int CALLBACK BrowseCallbackProc( HWND hWnd, UINT uMsg, LPARAM lParam,
   LPARAM lpData )

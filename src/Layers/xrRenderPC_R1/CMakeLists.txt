@@ -75,6 +75,7 @@ target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
 target_link_libraries(xrRender_R1 PRIVATE xrAbstractions)
 target_link_libraries(xrRender_R1 PRIVATE xrParticles)
 target_link_libraries(xrRender_R1 PRIVATE "d3dcompiler.lib")
+target_link_libraries(xrRender_R1 PRIVATE "d3d9.lib")
 
 ## DirectX SDK
 target_include_directories(xrRender_R1 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")

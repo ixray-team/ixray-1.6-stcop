@@ -163,6 +163,8 @@ target_link_libraries(xrGame PUBLIC xrParticles)
 target_link_libraries(xrGame PUBLIC luabind)
 target_link_libraries(xrGame PUBLIC crypto)
 
+target_link_libraries(xrGame PRIVATE "shlwapi.lib")
+
 if(IXRAY_MP)
     target_link_libraries(xrGame PUBLIC CxImage)
 endif()

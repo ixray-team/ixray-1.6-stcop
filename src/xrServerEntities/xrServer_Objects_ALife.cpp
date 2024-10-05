@@ -36,8 +36,6 @@
 #		include <shlwapi.h>
 #	pragma warning(pop)
 
-#pragma comment(lib, "shlwapi.lib")
-
 // #HACK: Definition copied from <shlwapi.h>
 LWSTDAPI_(int) StrCmpLogicalW(__in LPCWSTR psz1, __in LPCWSTR psz2);
 

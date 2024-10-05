@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <d3d9.h>
+
 extern void* HWSwapchain;
 
 IDirect3D9* D3D = nullptr;

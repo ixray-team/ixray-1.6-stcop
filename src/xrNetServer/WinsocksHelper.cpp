@@ -11,8 +11,6 @@
 
 #pragma warning(pop)
 
-#pragma comment(lib, "ws2_32.lib")
-
 unsigned long WinsocksHelper::GetIpAddress(LPCSTR hostName)
 {
     // Initialize Winsock

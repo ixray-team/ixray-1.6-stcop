@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <d3d9.h>
+
 #pragma warning(disable:4995)
 #include "../../xrEngine/stdafx.h"
 #pragma warning(disable:4714)

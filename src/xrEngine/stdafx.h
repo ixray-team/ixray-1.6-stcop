@@ -9,10 +9,6 @@
 #	define D3D_DEBUG_INFO
 #endif
 
-#pragma warning(disable:4995)
-#include <d3d9.h>
-//#include <dplay8.h>
-#pragma warning(default:4995)
 
 // you must define ENGINE_BUILD then building the engine itself
 // and not define it if you are about to build DLL
@@ -48,10 +44,6 @@
 
 extern ENGINE_API CInifile *pGameIni;
 
-#pragma comment( lib, "winmm.lib"		)
-
-#pragma comment( lib, "d3d9.lib"		)
-#pragma comment( lib, "dxguid.lib"		)
 
 #ifndef DEBUG
 #	define LUABIND_NO_ERROR_CHECKING

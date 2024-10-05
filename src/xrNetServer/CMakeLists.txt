@@ -34,7 +34,9 @@ endif()
 
 # Linker list
 target_link_libraries(xrNetServer PUBLIC xrCore)
-target_link_libraries(xrNetServer PUBLIC "Ws2_32.lib")
+
+target_link_libraries(xrNetServer PRIVATE "Ws2_32.lib")
+target_link_libraries(xrNetServer PRIVATE "dxguid.lib")
 
 # Move precompiled header
 target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
