@@ -126,6 +126,9 @@ CWeapon::CWeapon()
 	m_bShowBonesUpgToHide.clear();
 	m_bShowBonesUpgToShow.clear();
 	m_sCollimatorSightsBones.clear();
+
+	_last_recharge_time = 0.0f;
+	_last_shot_time = 0;
 }
 
 CWeapon::~CWeapon		()
@@ -662,6 +665,7 @@ void CWeapon::Load		(LPCSTR section)
 	bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", false);
 	bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", false);
 
+	m_fRechargeTime = READ_IF_EXISTS(pSettings, r_float, section, "recharge_time", 0.0f);
 	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
 
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
@@ -1309,6 +1313,11 @@ void CWeapon::ModUpdate()
 			}
 		}
 	}
+
+	if (m_fRechargeTime > fOneShotTime)
+		SetLastRechargeTime(m_fRechargeTime);
+	else
+		SetLastRechargeTime(fOneShotTime);
 
 	UpdateLensFactor(delta);
 

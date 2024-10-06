@@ -272,6 +272,9 @@ bool CWeaponMagazined::OnShoot_CanShootNow() const
 	}
 	else
 	{
+		if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(_last_shot_time) < floor(m_fRechargeTime * 1000.0f))
+			return false;
+
 		if (ParentIsActor() && GetActualCurrentAnim().find("anm_idle_sprint") == 0)
 		{
 			Actor()->SetMovementState(eWishful, mcSprint, false);
@@ -1594,6 +1597,9 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			else if ((iAmmoElapsed != GetMagCapacity() || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
 				return false;
 
+			if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(_last_shot_time) < floor(m_fRechargeTime * 1000.0f))
+				return false;
+
 			if (IsMisfire() && !IsGrenadeMode())
 			{
 				SwitchState(eUnjam);
@@ -2087,6 +2093,8 @@ bool CWeaponMagazined::NeedShootMix() const
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState() == eFire);
+
+	_last_shot_time = Device.dwTimeGlobal;
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
 	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", NeedShootMix(), GetState());

@@ -269,6 +269,8 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		if (!iAmmoElapsed)
 			return;
 
+		_last_shot_time = Device.dwTimeGlobal;
+
 		Fvector	p1, d; 
 		p1.set(get_LastFP2());
 		d.set(get_LastFD());
