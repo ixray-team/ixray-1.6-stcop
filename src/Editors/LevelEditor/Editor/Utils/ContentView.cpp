@@ -496,6 +496,7 @@ void CContentView::Init()
 	Icons["thm"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\thm"),		true};
 	Icons["logs"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\log"),		true};
 	Icons["ogg"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\ogg"),		true};
+	Icons["level"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\level"),	true};
 	Icons["wav"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\wav"),		true};
 	Icons["object"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\object"),	true};
 	Icons["image"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\image"),	true};
@@ -512,6 +513,9 @@ void CContentView::Init()
 
 bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
 {
+	if (InitFileName.File.empty())
+		return false;
+
 	std::filesystem::path FilePath = InitFileName.File.c_str();
 	const ImVec2& CursorPos = ImGui::GetCursorPos();
 
@@ -567,7 +571,15 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 
-	if (ImGui::BeginDragDropSource())
+	bool WeCanDrag = false;
+
+	if (FilePath.has_extension())
+	{
+		xr_string Extension = FilePath.extension().string().c_str();
+		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".ise";
+	}
+
+	if (WeCanDrag && ImGui::BeginDragDropSource())
 	{
 		if (IsSpawnElement)
 		{
@@ -628,6 +640,32 @@ bool CContentView::DrawContext(const std::filesystem::path& Path) const
 {
 	if (ImGui::BeginPopupContextItem())
 	{
+		bool ShowOpen = Path.has_extension() && Path.extension().string() == ".level";
+
+		if (ShowOpen)
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+				UI->SetStatus("Level loading...");
+				ExecCommand(COMMAND_CLEAR);
+				FS.TryLoad(Path.string().c_str());
+				IReader* R = FS.r_open(Path.string().c_str());
+				if (!R)return false;
+				char ch;
+				R->r(&ch, sizeof(ch));
+				bool is_ltx = (ch == '[');
+				FS.r_close(R);
+				bool res;
+				LTools->m_LastFileName = Path.string().c_str();
+
+				if (is_ltx)
+					Scene->LoadLTX(Path.string().c_str(), false);
+				else
+					Scene->Load(Path.string().c_str(), false);
+			}
+			ImGui::Separator();
+		}
+
 		if (ImGui::MenuItem("Delete"))
 		{
 			std::filesystem::remove(Path);
@@ -650,6 +688,9 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".ogg"))
 		return Icons["ogg"];
+	
+	if (IconPath.ends_with(".level"))
+		return Icons["level"];
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];

@@ -54,18 +54,33 @@ void UIObjectTool::Draw()
         }
         ImGui::Separator();
         {
-            float size = float(ImGui::CalcItemWidth());
+            //float size = float(ImGui::CalcItemWidth());
             {
                 if (ImGui::Checkbox("Random Append", &m_RandomAppend))
                 {
                     ParentTools->ActivateAppendRandom(m_RandomAppend);
                 }
-                ImGui::SameLine(0,10);
-                if (ImGui::Button("Random Props...", ImVec2(-1, 0)))
+                ImGui::SameLine();
+
+                // FX: TODO
+                ImGui::BeginDisabled();
+                if (ImGui::Button("Load"))
+                {
+
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Save"))
+                {
+
+                }
+                ImGui::EndDisabled();
+
+                ImGui::SameLine();
+                if (ImGui::Button("Custom..."))
                 {
                     m_PropRandom = true;
                     ParentTools->FillAppendRandomPropertiesBegin();
-               }
+                }
 
             }
         }

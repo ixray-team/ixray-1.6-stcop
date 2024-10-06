@@ -264,6 +264,12 @@ bool UIChooseForm::GetResult(bool& change, shared_str& result)
 				reuslt_temp.append(item->name.c_str());
 				i++;
 			}
+
+			if (reuslt_temp.size() >= 4096)
+			{
+				Msg("! Error: out string len > 4096");
+			}
+
 			result = reuslt_temp.c_str();
 			change = true;
 			xr_delete(Form);
