@@ -41,16 +41,8 @@ void st_LevelOptions::SetHighQuality()
 	m_LightSunQuality	= 3;
 }
 
-
-#define MAX_VISUALS 16384
-#ifdef USE_ARENA_ALLOCATOR
-extern char* s_fake_array;
-#endif
 EScene::EScene()
 {
-#ifdef USE_ARENA_ALLOCATOR
-	s_fake_array = new char(64 * 1024 * 1024);
-#endif
 	m_Valid = false;
 	m_Locked = 0;
 
@@ -58,14 +50,9 @@ EScene::EScene()
 		m_SceneTools.insert(std::make_pair((ObjClassID)i,(ESceneToolBase*)NULL));
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
-	// first init scene graph for objects
-   // mapRenderObjects.init(MAX_VISUALS);
+
 // 	Build options
 	m_SummaryInfo	= 0;
-	//ClearSnapList	(false);
-//   g_frmConflictLoadObject 		= new TfrmAppendObjectInfo((TComponent*)NULL);
-
-
 }
 
 EScene::~EScene()
@@ -76,10 +63,6 @@ EScene::~EScene()
 
 	VERIFY( m_Valid == false );
 	m_ESO_SnapObjects.clear	();
-
-#ifdef USE_ARENA_ALLOCATOR
-	xr_free(s_fake_array);
-#endif
 }
 
 void EScene::OnCreate()
@@ -92,14 +75,12 @@ void EScene::OnCreate()
 	m_Valid 				= true;
 	m_RTFlags.zero			();
 	ExecCommand				(COMMAND_UPDATE_CAPTION);
-	//m_SummaryInfo 			= TProperties::CreateForm("Level Summary Info", 0, alNone, 0,0,0, TProperties::plFolderStore|TProperties::plItemFolders);
 }
 
 void EScene::OnDestroy()
 {
 	g_scene_physics.DestroyAll();
 
-	//TProperties::DestroyForm(m_SummaryInfo);
 	Unload					(FALSE);
 	UndoClear				();
 	ELog.Msg				( mtInformation, "Scene: cleared" );
@@ -291,11 +272,10 @@ void EScene::Reset()
 	g_scene_physics.UpdateLevelCollision();
 }
 
-void EScene::Unload		(BOOL bEditableOnly)
+void EScene::Unload(BOOL bEditableOnly)
 {
-	m_LastAvailObject 	= 0;
-	Clear				(bEditableOnly);
-	//if (m_SummaryInfo) 	m_SummaryInfo->HideProperties();
+	m_LastAvailObject = 0;
+	Clear(bEditableOnly);
 }
 
 ECORE_API xrGUID generate_guid();
@@ -441,26 +421,29 @@ bool EScene::IfModified()
 
 void EScene::OnObjectsUpdate()
 {
-	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-	for (; t_it!=t_end; t_it++)
-		if (t_it->second)		t_it->second->OnSceneUpdate();
+	for (auto& [ClassID, ToolPtr] : m_SceneTools)
+	{
+		if (ToolPtr != nullptr)
+			ToolPtr->OnSceneUpdate();
+	}
 }
 
 void EScene::OnDeviceCreate()
 {
-	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-	for (; t_it!=t_end; t_it++)
-		if (t_it->second)		t_it->second->OnDeviceCreate();
+	for (auto& [ClassID, ToolPtr] : m_SceneTools)
+	{
+		if (ToolPtr != nullptr)
+			ToolPtr->OnDeviceCreate();
+	}
 }
 
 void EScene::OnDeviceDestroy()
 {
-	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-	for (; t_it!=t_end; t_it++)
-		if (t_it->second)		t_it->second->OnDeviceDestroy();
+	for (auto& [ClassID, ToolPtr] : m_SceneTools)
+	{
+		if (ToolPtr != nullptr)
+			ToolPtr->OnDeviceDestroy();
+	}
 }
 
 void EScene::OnShowHint(AStringVec& dest)

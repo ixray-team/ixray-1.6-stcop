@@ -40,6 +40,7 @@ public:
 
 	void RescanISEDirectory(const xr_string& path);
 	void RescanDirectory();
+
 	virtual void Init();
 	virtual void Destroy();
 	virtual void ResetBegin();
@@ -50,6 +51,9 @@ private:
 	bool DrawContext(const std::filesystem::path& Path) const;
 	bool Contains();
 	IconData& GetTexture(const xr_string& IconPath);
+
+	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
+	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);
 
 private:
 
@@ -70,6 +74,7 @@ private:
 
 	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
+	bool IsFindResult = false;
 	xr_string ISEPath;
 	string32 FindStr = {};
 

@@ -25,7 +25,7 @@ void CContentView::Draw()
 	{
 		DrawHeader();
 
-		if (Files.empty())
+		if (Files.empty() && !IsFindResult && !IsSpawnElement)
 		{
 			RescanDirectory();
 		}
@@ -35,33 +35,38 @@ void CContentView::Draw()
 
 		LockFiles = true;
 
-		const size_t IterCount = (ImGui::GetWindowSize().x / (BtnSize.x + 15)) - 1;
-		size_t HorBtnIter = 0;
-		xr_string NextDir = CurrentDir;
+		if (ImGui::BeginChild("##contentbrowserscroll"))
+		{
+			const size_t IterCount = (ImGui::GetWindowSize().x / (BtnSize.x + 15)) - 1;
+			size_t HorBtnIter = 0;
+			xr_string NextDir = CurrentDir;
 
-		if (!RootDir.Contains(CurrentDir) && !IsSpawnElement)
-		{
-			DrawOtherDir(HorBtnIter, IterCount, NextDir);
+			if ((!RootDir.Contains(CurrentDir) && !IsSpawnElement) || IsFindResult)
+			{
+				DrawOtherDir(HorBtnIter, IterCount, NextDir);
+			}
+			else if (IsSpawnElement)
+			{
+				DrawISEDir(HorBtnIter, IterCount);
+			}
+			else
+			{
+				DrawRootDir(HorBtnIter, IterCount, NextDir);
+			}
+
+			CurrentDir = NextDir;
+			xr_strlwr(CurrentDir);
 		}
-		else if (IsSpawnElement)
+
+		if (CurrentItemHint.Active)
 		{
-			DrawISEDir(HorBtnIter, IterCount);
-		}
-		else
-		{
-			DrawRootDir(HorBtnIter, IterCount, NextDir);
+			ImGui::SetCursorPos(CurrentItemHint.Pos);
+			ImGui::Button(CurrentItemHint.Name.c_str());
+			CurrentItemHint.Active = false;
 		}
 
 		LockFiles = false;
-		CurrentDir = NextDir;
-		xr_strlwr(CurrentDir);
-	}
-
-	if (CurrentItemHint.Active)
-	{
-		ImGui::SetCursorPos(CurrentItemHint.Pos);
-		ImGui::Button(CurrentItemHint.Name.c_str());
-		CurrentItemHint.Active = false;
+		ImGui::EndChild();
 	}
 
 	ImGui::End();
@@ -73,6 +78,8 @@ void CContentView::DrawHeader()
 	{
 		CurrentDir = RootDir;
 		IsSpawnElement = false;
+		IsFindResult = false;
+		std::memset(FindStr, 0, sizeof(FindStr));
 		Files.clear();
 	}
 	ImGui::SameLine();
@@ -136,9 +143,6 @@ void CContentView::DrawHeader()
 		DrawByPathLambda(CurrentDir);
 	}
 
-	// FX: Текущая реализация отрисовки не позволяет 
-	// одновременно работать с SP и реальными файлами
-	ImGui::BeginDisabled(CurrentDir == RootDir);
 	{
 		ImGui::SameLine();
 		int FindStartPosX = (int)ImGui::GetWindowSize().x;
@@ -154,7 +158,6 @@ void CContentView::DrawHeader()
 		ImGui::SameLine();
 
 		ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 });
-		ImGui::EndDisabled();
 	}
 
 	ImGui::Separator();
@@ -166,9 +169,34 @@ void CContentView::FindFile()
 	size_t Len = ParseStr.length();
 	if (Len > 2)
 	{
-		if (IsSpawnElement)
+		IsFindResult = true;
+		if (CurrentDir == RootDir && !IsSpawnElement)
 		{
-			// FX: TODO
+			IsDelWatcher = true;
+			xr_delete(WatcherPtr);
+
+			Files.clear();
+			for (const auto& file : std::filesystem::recursive_directory_iterator{ CurrentDir.data() })
+			{
+				if (std::filesystem::is_directory(file))
+					continue;
+
+				const xr_string& FName = file.path().filename().string().data();
+				if (FName.Contains(ParseStr) && !FName.ends_with(".thm"))
+				{
+					Files.push_back({ file, false });
+				}
+			}
+
+			auto TempPath = ScanConfigs("");
+			ScanConfigsRecursive(TempPath, ParseStr);
+		}
+		else if (IsSpawnElement)
+		{
+			Files.clear();
+
+			auto TempPath = ScanConfigs("");
+			ScanConfigsRecursive(TempPath, ParseStr);
 		}
 		else
 		{
@@ -191,13 +219,34 @@ void CContentView::FindFile()
 	}
 	else if (Len == 0)
 	{
+		IsFindResult = false;
+
 		if (IsSpawnElement)
 		{
-			RescanISEDirectory("");
+			RescanISEDirectory(ISEPath);
 		}
 		else
 		{
 			RescanDirectory();
+		}
+	}
+}
+
+void CContentView::ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr)
+{
+	auto Pathes = ISEPath.Split('\\');
+
+	for (auto& [Name, DirOpt] : TempPath)
+	{
+		if (DirOpt.IsDir && std::find(Pathes.begin(), Pathes.end(), Name) != Pathes.end())
+		{
+			auto RecFiles = ScanConfigs(Name);
+			ScanConfigsRecursive(RecFiles, ParseStr);
+		}
+
+		if (Name.Contains(ParseStr) && !DirOpt.IsDir)
+		{
+			Files.push_back(DirOpt);
 		}
 	}
 }
@@ -300,71 +349,7 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 		ISEPath += StartPath + '\\';
 	}
 
-	xr_map<xr_string, FileOptData> TempPath;
-	CInifile::Root& data = ((CInifile*)pSettings)->sections();
-
-	for (CInifile::RootIt it = data.begin(); it != data.end(); it++) 
-	{
-		LPCSTR val;
-		if ((*it)->line_exist("$spawn", &val))
-		{
-			shared_str caption = pSettings->r_string_wb((*it)->Name, "$spawn");
-			shared_str sect = (*it)->Name;
-			if (caption.size())
-			{
-				xr_string FileName = caption.c_str();
-
-				if (!FileName.Contains(StartPath) && !StartPath.empty())
-					continue;
-
-				if (FileName == StartPath)
-					continue;
-
-				if (StartPath.empty())
-				{
-					size_t DirStart = FileName.find('\\');
-
-					if (DirStart != xr_string::npos)
-					{
-						xr_string DirName = FileName.substr(0, DirStart);
-						if (TempPath.contains(DirName))
-							continue;
-
-						TempPath[DirName] = { DirName.c_str(), true };
-						continue;
-					}
-				}
-				else
-				{
-					const xr_string Delimer = StartPath + '\\';
-
-					size_t DirStart = FileName.find(Delimer);
-
-					if (DirStart != xr_string::npos)
-					{
-						xr_string DirName = FileName.substr(DirStart + Delimer.length());
-						if (TempPath.contains(DirName))
-							continue;
-
-						int DirIter = DirName.find('\\');
-						if (DirIter != xr_string::npos)
-						{
-							xr_string ExtractedDirName = DirName.substr(0, DirIter);
-							TempPath[ExtractedDirName] = { ExtractedDirName.c_str(), true };
-						}
-						else
-						{
-							TempPath[DirName] = { (DirName + ".ise").c_str(), false, sect };
-						}
-					}
-
-					continue;
-				}
-
-				TempPath[FileName] = { (FileName + ".ise").c_str(), false, sect };
-			}
-		}
-	}
+	auto TempPath = ScanConfigs(StartPath);
 
 	for (auto& [Name, DirOpt] : TempPath)
 	{
@@ -388,7 +373,7 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir)
 {
 	std::filesystem::path FilePath = CurrentDir.c_str();
-	if (DrawItem({ "..", true }, HorBtnIter, IterCount))
+	if (!IsFindResult && DrawItem({ "..", true }, HorBtnIter, IterCount))
 	{
 		NextDir = FilePath.parent_path().string().data();
 		if (FilePath.parent_path().is_absolute() && !NextDir.Contains(RootDir) || NextDir.empty())
@@ -478,6 +463,7 @@ void CContentView::RescanDirectory()
 				if (IsDelWatcher)
 				{
 					IsDelWatcher = false;
+					LockFiles = false;
 					return;
 				}
 
@@ -812,4 +798,79 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	}
 
 	return Icons[IconPath];
+}
+
+xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_string& StartPath)
+{
+	xr_map<xr_string, FileOptData> TempPath;
+	CInifile::Root& data = ((CInifile*)pSettings)->sections();
+
+	for (CInifile::RootIt it = data.begin(); it != data.end(); it++)
+	{
+		LPCSTR val;
+		if ((*it)->line_exist("$spawn", &val))
+		{
+			shared_str caption = pSettings->r_string_wb((*it)->Name, "$spawn");
+			shared_str sect = (*it)->Name;
+			if (caption.size())
+			{
+				xr_string FileName = caption.c_str();
+
+				if (!FileName.Contains(StartPath) && !StartPath.empty())
+					continue;
+
+				if (FileName == StartPath)
+					continue;
+
+				if (StartPath.empty())
+				{
+					size_t DirStart = FileName.find('\\');
+
+					if (DirStart != xr_string::npos)
+					{
+						xr_string DirName = FileName.substr(0, DirStart);
+						if (TempPath.contains(DirName))
+							continue;
+
+						TempPath[DirName] = { DirName.c_str(), true };
+						continue;
+					}
+				}
+				else
+				{
+					xr_string Delimer = StartPath;
+					if (!Delimer.ends_with('\\'))
+					{
+						Delimer += '\\';
+					}
+
+					size_t DirStart = FileName.find(Delimer);
+
+					if (DirStart != xr_string::npos)
+					{
+						xr_string DirName = FileName.substr(DirStart + Delimer.length());
+						if (TempPath.contains(DirName))
+							continue;
+
+						int DirIter = DirName.find('\\');
+						if (DirIter != xr_string::npos)
+						{
+							xr_string ExtractedDirName = DirName.substr(0, DirIter);
+							TempPath[ExtractedDirName] = { ExtractedDirName.c_str(), true };
+						}
+						else
+						{
+							TempPath[DirName] = { (DirName + ".ise").c_str(), false, sect };
+						}
+					}
+
+					continue;
+				}
+
+				TempPath[FileName] = { (FileName + ".ise").c_str(), false, sect };
+			}
+		}
+	}
+
+	return std::move(TempPath);
 }
