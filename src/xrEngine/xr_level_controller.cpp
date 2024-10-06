@@ -90,7 +90,22 @@ ENGINE_API _action  actions[]		= {
 	{ "quick_save",			kQUICK_SAVE				,_sp},		
 	{ "quick_load",			kQUICK_LOAD				,_sp},		
 //	{ "alife_command",		kALIFE_CMD				,_sp},		
-	
+	{ "custom1",			kCUSTOM1				,_sp},
+	{ "custom2",			kCUSTOM2				,_sp},
+	{ "custom3",			kCUSTOM3				,_sp},
+	{ "custom4",			kCUSTOM4				,_sp},
+	{ "custom5",			kCUSTOM5				,_sp},
+	{ "custom6",			kCUSTOM6				,_sp},
+	{ "custom7",			kCUSTOM7				,_sp},
+	{ "custom8",			kCUSTOM8				,_sp},
+	{ "custom9",			kCUSTOM9				,_sp},
+	{ "custom10",			kCUSTOM10				,_sp},
+	{ "custom11",			kCUSTOM11				,_sp},
+	{ "custom12",			kCUSTOM12				,_sp},
+	{ "custom13",			kCUSTOM13				,_sp},
+	{ "custom14",			kCUSTOM14				,_sp},
+	{ "custom15",			kCUSTOM15				,_sp},
+	{ "cam_autoaim",		kCAM_AUTOAIM			,_sp},
 																
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
