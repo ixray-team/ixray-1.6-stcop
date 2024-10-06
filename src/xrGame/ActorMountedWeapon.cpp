@@ -12,8 +12,10 @@
 bool CActor::use_MountedWeapon(CHolderCustom* object)
 {
 	CHolderCustom* wpn = object;
-	if (m_holder){
-		if (!wpn || (m_holder == wpn)){
+	if (m_holder)
+	{
+		if (!wpn || (m_holder == wpn))
+		{
 			m_holder->detach_Actor();
 			CGameObject* go = smart_cast<CGameObject*>(m_holder);
 			if (go)
@@ -23,16 +25,21 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 		}
 		return true;
 	}
-	else{
-		if (wpn){
+	else
+	{
+		if (wpn)
+		{
 			Fvector center;	Center(center);
-			if (wpn->Use(Device.vCameraPosition, Device.vCameraDirection, center)){
-				if (wpn->attach_Actor(this)){
+			if (wpn->Use(Device.vCameraPosition, Device.vCameraDirection, center))
+			{
+				if (wpn->attach_Actor(this))
+				{
 					// destroy actor character
 					character_physics_support()->movement()->DestroyCharacter();
 					//PickupModeOff();
 					m_holder = wpn;
-					if (pCamBobbing){
+					if (pCamBobbing)
+					{
 						Cameras().RemoveCamEffector(eCEBobbing);
 						pCamBobbing = nullptr;
 					}

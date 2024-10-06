@@ -248,7 +248,7 @@ void CEntity::KillEntity(u16 whoID)
 	if (ID() == Actor()->ID())
 	{
 		Actor()->detach_Vehicle();
-		Actor()->use_MountedWeapon(NULL);
+		Actor()->use_MountedWeapon(nullptr);
 		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
 	}
 
