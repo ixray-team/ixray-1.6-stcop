@@ -126,7 +126,8 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
 
-	if (GetState() == eHidden || !isGuns && GetState() == eHiding)
+	EHudStates current_state = static_cast<EHudStates>(GetState());
+	if (current_state == eHidden || !isGuns && current_state == eHiding)
 	{
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
 
@@ -159,17 +160,17 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 			}
 		}
 	}
-	else if (GetState()==eIdle || GetState()==eShowing)
+	else if (current_state == eIdle || current_state == eShowing)
 	{
 		if (wpn && isGuns)
 		{
-			u32 state = wpn->GetState();
+			CWeapon::EWeaponStates state = static_cast<CWeapon::EWeaponStates>(wpn->GetState());
 
 			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() != 0) || wpn->IsZoomed())
 				return;
 		}
 
-		if (GetState() == eIdle || !isGuns && GetState() == eShowing)
+		if (current_state == eIdle || current_state == eShowing)
 			SwitchState(eHiding);
 	}
 
@@ -208,12 +209,32 @@ void CCustomDetector::OnStateSwitch(u32 S)
 	{
 		case eShowing:
 		{
-			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
+			HUD_SOUND_ITEM* pHideSound = m_sounds.FindSoundItem("sndHide", false);
+
+			if (pHideSound)
+			{
+				if (pHideSound->playing())
+				{
+					HUD_SOUND_ITEM::StopSound(*pHideSound);
+				}
+			}
+
+			m_sounds.PlaySound("sndShow", Fvector().set(0, 0, 0), this, true, false);
 			PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", !!(m_old_state != eHidden), this, S);
 			SetPending					(TRUE);
 		}break;
 		case eHiding:
 		{
+			HUD_SOUND_ITEM* pShowSound = m_sounds.FindSoundItem("sndShow",false);
+
+			if (pShowSound)
+			{
+				if (pShowSound->playing())
+				{
+					HUD_SOUND_ITEM::StopSound(*pShowSound);
+				}
+			}
+
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, S);
 			SetPending					(TRUE);
