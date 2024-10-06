@@ -23,6 +23,8 @@ void CContentView::Draw()
 {
 	if (ImGui::Begin("Content Browser"))
 	{
+		DrawHeader();
+
 		if (Files.empty())
 		{
 			RescanDirectory();
@@ -63,6 +65,86 @@ void CContentView::Draw()
 	}
 
 	ImGui::End();
+}
+
+void CContentView::DrawHeader()
+{
+	if (ImGui::Button("root"))
+	{
+		CurrentDir = RootDir;
+		IsSpawnElement = false;
+		Files.clear();
+	}
+	ImGui::SameLine();
+	ImGui::Text("/");
+
+	auto DrawByPathLambda = [&](const xr_string& ViewDir)
+	{
+		auto Pathes = ViewDir.Split('\\');
+
+		for (const xr_string& Path : Pathes)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button(Path.data()))
+			{
+				xr_string NewPath = "";
+				for (const xr_string& LocPath : Pathes)
+				{
+					NewPath += LocPath;
+
+					if (LocPath == Path)
+						break;
+
+					NewPath += "\\";
+				}
+
+				if (IsSpawnElement)
+				{
+					ISEPath = NewPath;
+					RescanISEDirectory(ISEPath);
+				}
+				else
+				{
+					CurrentDir = NewPath;
+					RescanDirectory();
+				}
+			}
+
+			ImGui::SameLine();
+			ImGui::Text("/");
+		}
+	};
+
+	if (IsSpawnElement)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Spawn Element"))
+		{
+			ISEPath.clear();
+			RescanISEDirectory(ISEPath);
+		}
+		ImGui::SameLine();
+		ImGui::Text("/");
+
+		if (!ISEPath.empty())
+		{
+			DrawByPathLambda(ISEPath);
+		}
+	}
+	else if (CurrentDir != RootDir)
+	{
+		DrawByPathLambda(CurrentDir);
+	}
+
+	ImGui::BeginDisabled();
+
+	ImGui::SameLine();
+	float FindStartPosX = ImGui::GetWindowSize().x - 150 - 10;
+	ImGui::SetCursorPosX(FindStartPosX);
+	ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr));
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
 }
 
 void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
@@ -155,8 +237,11 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 {
 	Files.clear();
 
-	if (!StartPath.empty())
+	if (!StartPath.empty() && StartPath != ISEPath)
 	{
+		if (!ISEPath.empty() && !ISEPath.ends_with('\\'))
+			ISEPath += "\\";
+
 		ISEPath += StartPath + '\\';
 	}
 
@@ -206,9 +291,11 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 						if (TempPath.contains(DirName))
 							continue;
 
-						if (DirName.Contains("\\"))
+						int DirIter = DirName.find('\\');
+						if (DirIter != xr_string::npos)
 						{
-							TempPath[DirName] = { DirName.c_str(), true };
+							xr_string ExtractedDirName = DirName.substr(0, DirIter);
+							TempPath[ExtractedDirName] = { ExtractedDirName.c_str(), true };
 						}
 						else
 						{
@@ -310,6 +397,7 @@ void CContentView::RescanDirectory()
 	IsDelWatcher = true;
 	xr_delete(WatcherPtr);
 
+	Files.clear();
 	for (const auto& file : std::filesystem::directory_iterator{ CurrentDir.data() })
 	{
 		if (std::filesystem::is_directory(file))

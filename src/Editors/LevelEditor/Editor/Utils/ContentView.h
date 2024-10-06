@@ -32,10 +32,12 @@ class CContentView:
 	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
 	xr_string ISEPath;
+	string32 FindStr = {};
 
 public:
 	CContentView();
 	virtual void Draw() override;
+	void DrawHeader();
 	void DrawISEDir(size_t& HorBtnIter, const size_t IterCount);
 	void DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_string& NextDir);
 	void DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir);
