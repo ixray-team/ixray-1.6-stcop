@@ -23,7 +23,8 @@ enum{
 	epoSelectInGroup    = (1<<11),
 };
 
-class ECORE_API CCustomPreferences:protected XrUI
+class ECORE_API CCustomPreferences:
+	protected XrUI
 {
 protected:	// User declarations
 	UIPropertiesForm*	m_ItemProps;
@@ -75,6 +76,7 @@ public:
 	// objects
 	Flags32			object_flags;
 	shared_str      sWeather;
+	xr_string		CompilersPath;
 protected:
 	void 			OnKeyboardCommonFileClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 	void 	        OnClose();

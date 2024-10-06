@@ -667,9 +667,20 @@ void CLevelTool::RunXrLC()
 	si.cb = sizeof(si);
 	ZeroMemory(&m_CompilerProcess, sizeof(m_CompilerProcess));
 
+	;
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "XrLC.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+
+	if (CompPath.empty())
+	{
+		xr_sprintf(CommandLine, " xrLC.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
+	else
+	{
+		xr_sprintf(CommandLine, " %s\\xrLC.exe -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
+
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)

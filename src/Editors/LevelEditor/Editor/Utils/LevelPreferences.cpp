@@ -9,6 +9,11 @@ void CLevelPreferences::Load()
     OpenProperties = JSONData["windows"]["properties"];
     OpenWorldProperties = JSONData["windows"]["world_properties"];
     
+    if (JSONData.contains("compilers") && JSONData["compilers"].contains("path"))
+    {
+        CompilersPath = ((std::string)JSONData["compilers"]["path"]).c_str();
+    }
+
     if (JSONData["windows"].contains("snap_list"))
     {
         OpenSnapList = JSONData["windows"]["snap_list"];
@@ -33,6 +38,7 @@ void CLevelPreferences::Save()
     JSONData["windows"]["properties"] = OpenProperties;
     JSONData["windows"]["world_properties"] = OpenWorldProperties;
     JSONData["windows"]["snap_list"] = OpenSnapList;
+    JSONData["compilers"]["path"] = CompilersPath.c_str();
 
     SceneToolsMapPairIt _I 	= Scene->FirstTool();
     SceneToolsMapPairIt _E 	= Scene->LastTool();
