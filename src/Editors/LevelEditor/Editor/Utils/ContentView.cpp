@@ -136,15 +136,70 @@ void CContentView::DrawHeader()
 		DrawByPathLambda(CurrentDir);
 	}
 
-	ImGui::BeginDisabled();
+	// FX: Текущая реализация отрисовки не позволяет 
+	// одновременно работать с SP и реальными файлами
+	ImGui::BeginDisabled(CurrentDir == RootDir);
+	{
+		ImGui::SameLine();
+		int FindStartPosX = (int)ImGui::GetWindowSize().x;
+		int FindSizeX = FindStartPosX / 5;
+		FindStartPosX -= FindSizeX;
 
-	ImGui::SameLine();
-	float FindStartPosX = ImGui::GetWindowSize().x - 150 - 10;
-	ImGui::SetCursorPosX(FindStartPosX);
-	ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr));
-	ImGui::EndDisabled();
+		ImGui::SetCursorPosX(FindStartPosX);
+		ImGui::SetNextItemWidth(FindSizeX - 35);
+		if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
+		{
+			FindFile();
+		}
+		ImGui::SameLine();
+
+		ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 });
+		ImGui::EndDisabled();
+	}
 
 	ImGui::Separator();
+}
+
+void CContentView::FindFile()
+{
+	xr_string ParseStr = IsUTF8(FindStr) ? Platform::UTF8_to_CP1251(FindStr) : FindStr;
+	size_t Len = ParseStr.length();
+	if (Len > 2)
+	{
+		if (IsSpawnElement)
+		{
+			// FX: TODO
+		}
+		else
+		{
+			IsDelWatcher = true;
+			xr_delete(WatcherPtr);
+
+			Files.clear();
+			for (const auto& file : std::filesystem::recursive_directory_iterator{ CurrentDir.data() })
+			{
+				if (std::filesystem::is_directory(file))
+					continue;
+
+				const xr_string& FName = file.path().filename().string().data();
+				if (FName.Contains(ParseStr) && !FName.ends_with(".thm"))
+				{
+					Files.push_back({ file, false });
+				}
+			}
+		}
+	}
+	else if (Len == 0)
+	{
+		if (IsSpawnElement)
+		{
+			RescanISEDirectory("");
+		}
+		else
+		{
+			RescanDirectory();
+		}
+	}
 }
 
 void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
@@ -421,7 +476,10 @@ void CContentView::RescanDirectory()
 			while (LockFiles || IsSpawnElement)
 			{
 				if (IsDelWatcher)
+				{
+					IsDelWatcher = false;
 					return;
+				}
 
 				continue;
 			}
@@ -431,12 +489,11 @@ void CContentView::RescanDirectory()
 			LockFiles = false;
 		}
 	);
-
-	IsDelWatcher = false;
 }
 
 void CContentView::Destroy()
 {
+	MenuIcon.destroy();
  	Icons.clear();
 }
 
@@ -463,6 +520,8 @@ void CContentView::Init()
 	Icons["cmd"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\cmd"),		true};
 	Icons["dll"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"),		true};
 	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"),	true};
+
+	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
 }
 
 bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
