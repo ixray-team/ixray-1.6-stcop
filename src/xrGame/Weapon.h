@@ -125,6 +125,7 @@ public:
 		eShowingEndDet,
 		eHideDet,
 		eKick,
+		eLightMis,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -237,8 +238,19 @@ public:
 
 	conditional_breaking_params CollimatorBreakingParams;
 
+	struct light_misfire_params
+	{
+		float startcond = 1.0f;
+		float endcond = 0.0f;
+		float startprob = 1.0f;
+		float endprob = 0.0f;
+	};
+
+	light_misfire_params light_misfire;
+
 	float lock_time;
 	float m_fCollimatorLevelsProblem;
+	float m_fMisfireAfterProblemsLevel;
 
 	xr_string curr_anim;
 
@@ -280,6 +292,11 @@ public:
 	bool bBlockQKGL;
 	bool bBlockQKGLM;
 	bool m_bHideColimSightInAlter;
+	bool m_bPreviousShotType;
+	bool m_bNoJamFirstShot;
+	bool m_bActorCanShoot;
+	bool m_bUseLightMis;
+	bool m_bDisableLightMisDet;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -309,6 +326,7 @@ public:
 	void SetLensParams(lens_zoom_params& params);
 	void UpdateLensFactor(u32 timedelta);
 	void UpdateCollimatorSight();
+	virtual void OnShotJammed() {}
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
@@ -322,6 +340,9 @@ public:
 	bool FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_after_nodefault = false) const;
 	bool IsActionProcessing() const;
 	bool IsLensedScopeInstalled() const;
+	bool IsJamProhibited();
+	bool OnWeaponJam();
+	bool CheckForMisfire_validate_NoMisfire();
 
 	const virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }

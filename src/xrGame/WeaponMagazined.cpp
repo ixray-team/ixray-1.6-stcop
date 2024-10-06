@@ -108,6 +108,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_kick"))
 		m_sounds.LoadSound(section, "snd_kick", "sndKick", true, m_eSoundShot);
 
+	if (WeaponSoundExist(section, "snd_light_misfire"))
+		m_sounds.LoadSound(section, "snd_light_misfire", "sndLightMisfire", true, m_eSoundEmptyClick);
+
 	if (m_bTriStateReload)
 	{
 		m_sounds.LoadSound(section, "snd_open_weapon", "sndOpen", false, m_eSoundOpen);
@@ -778,6 +781,9 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eKick:
 		switch2_Kick();
 		break;
+	case eLightMis:
+		switch2_LightMis();
+		break;
 	}
 }
 
@@ -865,6 +871,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eSprintEnd:
 		case eIdle:
 		case eKick:
+		case eLightMis:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -956,14 +963,11 @@ void CWeaponMagazined::state_Fire(float dt)
 
 		while (!m_magazine.empty() && fShotTimeCounter < 0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
 		{
-			if (m_bJamNotShot)
+			if (CheckForMisfire())
 			{
-				if (CheckForMisfire())
-				{
-					OnShotJammed();
-					SwitchState(eIdle);
-					return;
-				}
+				StopShooting();
+				SwitchState(eIdle);
+				return;
 			}
 
 			m_bFireSingleShot = false;
@@ -972,21 +976,12 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			++m_iShotNum;
 
-			if (!m_bJamNotShot)
-				CheckForMisfire();
-
 			OnShot();
 
 			if (m_iShotNum > m_iBaseDispersionedBulletsCount)
 				FireTrace(p1, d);
 			else
 				FireTrace(m_vStartPos, m_vStartDir);
-
-			if (!m_bJamNotShot && IsMisfire())
-			{
-				StopShooting();
-				return;
-			}
 		}
 
 		if (m_iShotNum == m_iQueueSize)
@@ -1178,6 +1173,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eFire2:
 		case eFire:
 		case eKick:
+		case eLightMis:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1301,6 +1297,14 @@ void CWeaponMagazined::switch2_Kick()
 	PlaySound("sndKick", get_LastFP());
 	PlayHUDMotion("anm_kick", TRUE, eKick);
 	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazined::KickCallback) });
+}
+
+void CWeaponMagazined::switch2_LightMis()
+{
+	//SendMessage("gunsl_light_misfire", gd_novice);
+	SetPending(TRUE);
+	PlaySound("sndLightMisfire", get_LastFP());
+	PlayHUDMotion("anm_shoot_lightmisfire", TRUE, eLightMis);
 }
 
 void CWeaponMagazined::PlayAnimFakeshoot()

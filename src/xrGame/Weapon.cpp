@@ -662,7 +662,21 @@ void CWeapon::Load		(LPCSTR section)
 	bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", false);
 	bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", false);
 
+	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
+
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
+
+	m_bPreviousShotType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_previous_shot_type", false);
+	m_bNoJamFirstShot = READ_IF_EXISTS(pSettings, r_bool, section, "no_jam_in_first_shot", false);
+	m_bActorCanShoot = READ_IF_EXISTS(pSettings, r_bool, section, "actor_can_shoot", true);
+
+	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
+	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
+
+	light_misfire.startcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_condition", 1.0f);
+	light_misfire.endcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_condition", 0.0f);
+	light_misfire.startprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_probability", 1.0f);
+	light_misfire.endprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_probability", 0.0f);
 
 	auto LoadVector = [&](RStringVec& vec, const char* sect)
 	{
@@ -1496,7 +1510,7 @@ u8 CWeapon::GetAmmoTypeToReload() const
 
 u8 CWeapon::GetOrdinalAmmoType()
 {
-	if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_previous_shot_type", false))
+	if (m_bPreviousShotType)
 		return _last_shot_ammotype;
 	else if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false) && m_magazine.size() > 0)
 		return GetCartridgeType(GetCartridgeFromMagVector(m_magazine.size() - 1));
@@ -2638,24 +2652,155 @@ float CWeapon::GetConditionMisfireProbability() const
 	return mis;
 }
 
+bool CWeapon::IsJamProhibited()
+{
+	// [bug] в классе РГ-6 выстрел ракеты происходит до заклина оружия, что может мешать.
+	//if (smart_cast<CWeaponRG6*>(this) != nullptr && m_bJamNotShot)
+	//{
+	//	if (rg6_misfire_assign_allowed)
+	//		return true;
+	//}
+
+	if (IsGrenadeMode())
+		return false;
+
+	// Запрет клина в первом выстреле после перезарядке
+	if (_is_just_after_reload && m_bNoJamFirstShot)
+		return true;
+
+	// Если тип патрона в стволе и следующего патрона различаются — заклинивание невозможно
+	int ammoc = GetAmmoInMagCount();
+	if (ammoc <= 0)
+		return false;
+
+	CCartridge* c_cur = GetCartridgeFromMagVector(ammoc - 1);
+
+	if (ammoc == 1)
+		return GetAmmoTypeIndex(false) != GetCartridgeType(c_cur);
+	else
+	{
+		CCartridge* c_next = GetCartridgeFromMagVector(ammoc - 2);
+		return GetCartridgeType(c_cur) != GetCartridgeType(c_next);
+	}
+
+	// На барабанных дробовиках при "шахматной" зарядке
+	if (_last_shot_ammotype != GetCartridgeType(c_cur) && m_bPreviousShotType)
+		return true;
+
+	return false;
+}
+
+bool CWeapon::OnWeaponJam()
+{
+	SetMisfireStatus(true);
+	_wanim_force_assign = true;
+
+	if (!ParentIsActor())
+		return true;
+
+	// Проверка на суицид игрока
+	if (Actor()->IsActorSuicideNow())
+	{
+		SetMisfireStatus(false);
+		return true;
+	}
+
+	bool result = true;
+
+	// Обработка легких осечек
+	if (m_bUseLightMis && !(Actor()->GetDetector() != nullptr && m_bDisableLightMisDet))
+	{
+		float curcond = GetCondition();
+		float startcond = light_misfire.startcond;
+		float endcond = light_misfire.endcond;
+		float startprob = light_misfire.startprob;
+		float endprob = light_misfire.endprob;
+
+		float curprob = 0.0f;
+
+		if (curcond < endcond)
+			curprob = endprob;
+		else if (curcond > startcond)
+			curprob = 0.0f;
+		else
+			curprob = endprob + curcond * (startprob - endprob) / (startcond - endcond);
+
+		if (::Random.randF(0.0f, 1.0f) < curprob)
+		{
+			// Осечка
+			SetMisfireStatus(false);
+			result = false;
+			//ApplyLensRecoil(GetMisfireRecoil());
+			SwitchState(eLightMis);
+			return true;
+		}
+	}
+
+	// Клин оружия
+	result = !m_bJamNotShot;
+	if (!result)
+		OnShotJammed();
+
+	return result;
+}
+
+bool CWeapon::CheckForMisfire_validate_NoMisfire()
+{
+	// По умолчанию осечка не должна произойти
+	bool result = false;
+
+	// Проверка: если владелец оружия — актер, и он не может стрелять
+	if (ParentIsActor() && !m_bActorCanShoot)
+		result = true;
+
+	// Получаем буфер оружия
+	float problems_lvl = m_fMisfireAfterProblemsLevel;
+
+	// Проверка: если уровень проблем выше нуля и количество электронных проблем >= уровня
+	if (problems_lvl > 0.0f && Actor()->CurrentElectronicsProblemsCnt() >= problems_lvl)
+	{
+		// Устанавливаем статус клина
+		SetMisfireStatus(true);
+		SwitchState(eMisfire);
+
+		// Проводим проверку на клин с помощью OnWeaponJam
+		result = !OnWeaponJam();
+	}
+
+	return result;
+}
+
 bool CWeapon::CheckForMisfire()
 {
 	if (OnClient())
 		return false;
 
-	float rnd = ::Random.randF(0.f,1.f);
+	float rnd = ::Random.randF(0.f, 1.f);
 	float mp = GetConditionMisfireProbability();
+
+	bool isGuns = EngineExternal().isModificationGunslinger();
+
 	if (rnd < mp)
 	{
 		FireEnd();
-		bMisfire = true;
 
-		bool isGuns = EngineExternal().isModificationGunslinger();
 		if (!isGuns)
-			SwitchState(eMisfire);		
-		
-		return true;
+		{
+			bMisfire = true;
+			SwitchState(eMisfire);
+			return true;
+		}
+
+		if (IsJamProhibited())
+		{
+			bMisfire = false;
+			return false;
+		}
+		else
+			return !OnWeaponJam();
 	}
+	else if (isGuns)
+		return CheckForMisfire_validate_NoMisfire();
 
 	return false;
 }
