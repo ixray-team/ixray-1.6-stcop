@@ -159,6 +159,19 @@ void UITopBarForm::Draw()
 				ImGui::SetTooltip("Stop Play in Editor");
 			}
 		}
+		else if (Scene->IsPlayInEditor())
+		{
+			m_tTerminated->Load();
+			if (ImGui::ImageButton(m_tTerminated->pSurface, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), 0))
+			{
+				Scene->Stop();
+			}
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				ImGui::SetTooltip("Stop Play in Editor");
+			}
+		}
 		else
 		{
 			m_tPlayInEditor->Load();
