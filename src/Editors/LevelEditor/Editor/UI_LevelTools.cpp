@@ -715,7 +715,15 @@ void CLevelTool::RunXrDO()
 
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "xrDO_light.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	if (CompPath.empty())
+	{
+		xr_sprintf(CommandLine, "xrDO_light.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
+	else
+	{
+		xr_sprintf(CommandLine, "%s\\xrDO_light.exe -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)
@@ -750,7 +758,15 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "xrAI.exe -no_separator_check -s %s -out all", current_level? Scene->m_LevelOp.m_FNLevelPath.c_str():"");
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	if (CompPath.empty())
+	{
+		xr_sprintf(CommandLine, "xrAI.exe -no_separator_check -s %s -out all", current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
+	}
+	else
+	{
+		xr_sprintf(CommandLine, "%s\\xrAI.exe -no_separator_check -s %s -out all", CompPath.data(), current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
+	}
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)
@@ -785,7 +801,16 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "xrAI.exe -f %s %s", Scene->m_LevelOp.m_FNLevelPath.c_str(), draw?"-draft":"");
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	if (CompPath.empty())
+	{
+		xr_sprintf(CommandLine, "xrAI.exe -f %s %s", Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
+	}
+	else
+	{
+		xr_sprintf(CommandLine, "%s\\xrAI.exe -f %s %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
+	}
+	
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)
@@ -820,7 +845,16 @@ void CLevelTool::RunXrAI_Verify()
 
 
 	string_path CommandLine;
-	xr_sprintf(CommandLine, "xrAI.exe -verify %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	if (CompPath.empty())
+	{
+		xr_sprintf(CommandLine, "xrAI.exe -verify %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
+	else
+	{
+	    xr_sprintf(CommandLine, "%s\\xrAI.exe -verify %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+	}
+	
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
 	if (!CreateProcessA(NULL,   // No module name (use command line)
