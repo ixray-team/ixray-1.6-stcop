@@ -21,6 +21,7 @@ protected:
 	float			m_delta_h;
 	Fvector2		m_prev_hp;
 	bool			m_switched_on;
+	bool _AnimationSwitch;
 	ref_light		light_render;
 	ref_light		light_omni;
 	ref_glow		glow_render;
@@ -58,6 +59,8 @@ public:
 			void	SwitchNightVision		(bool light_on, bool use_sounds=true);
 			bool	IsSwitched				() const { return m_switched_on; }
 			bool	GetNightVisionStatus	() { return m_bNightVisionOn; }
+			void setAnimationSwitch(bool value);
+			bool getAnimationSwitch() const;
 CNightVisionEffector* GetNightVision		() { return m_night_vision; }
 protected:
 	bool					m_bNightVisionEnabled;

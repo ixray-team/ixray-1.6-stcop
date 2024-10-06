@@ -47,7 +47,7 @@ CTorch::CTorch(void)
 	m_prev_hp.set				(0,0);
 	m_delta_h					= 0;
 	m_night_vision				= nullptr;
-
+	_AnimationSwitch = false;
 	// Disabling shift by x and z axes for 1st render, 
 	// because we don't have dynamic lighting in it. 
 	if( g_current_renderer == 1 )
@@ -166,6 +166,16 @@ void CTorch::SwitchNightVision(bool vision_on, bool use_sounds)
 			m_night_vision->Stop(100000.0f, use_sounds);
 		}
 	}
+}
+
+void CTorch::setAnimationSwitch(bool value)
+{
+	_AnimationSwitch = value;
+}
+
+bool CTorch::getAnimationSwitch() const
+{
+	return _AnimationSwitch;
 }
 
 void CTorch::Switch()

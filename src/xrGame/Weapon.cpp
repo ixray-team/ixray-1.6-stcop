@@ -1450,6 +1450,12 @@ void CWeapon::MakeLockByConfigParam(xr_string key, bool lock_shooting, TAnimatio
 	}
 }
 
+void CWeapon::resetAnimationCallbackLock()
+{
+	lock_time = 0.0f;
+	SetAnimationCallback(nullptr);
+}
+
 xr_string CWeapon::AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix)
 {
 	xr_string new_name = M + suffix;
@@ -1880,7 +1886,7 @@ bool CWeapon::FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_af
 
 bool CWeapon::IsActionProcessing() const
 {
-	return H_Parent() && (lock_time > 0.f  || ParentIsActor() && Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide());
+	return H_Parent() && ((lock_time > 0.f && !getIgnoreLockTime()) || ParentIsActor() && Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide());
 }
 
 void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)

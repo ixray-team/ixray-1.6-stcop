@@ -77,6 +77,9 @@ protected:
 		bool					m_bStopAtEndAnimIsRunning;
 	};
 	HudLightTorch m_HudLight;
+
+	bool _IgnoreLockTime;
+	bool _ForceStartAction;
 public:
 	virtual void				Load				(LPCSTR section);
 	virtual	BOOL				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
@@ -109,7 +112,10 @@ public:
 	bool						IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
 	bool						IsHiding			()	const		{	return GetState() == eHiding;}
 	bool						IsShowing			()	const		{	return GetState() == eShowing;}
-
+	void setIgnoreLockTime(bool value);
+	bool getIgnoreLockTime(void) const;
+	void setForceStartAction(bool value);
+	bool getForceStartAction() const;
 	virtual void				SwitchState			(u32 S);
 	virtual void				OnStateSwitch		(u32 S);
 

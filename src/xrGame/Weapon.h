@@ -331,6 +331,7 @@ public:
 	shared_str FindStrValueInUpgradesDef(const char* key, const char* def) const;
 
 	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr);
+	void resetAnimationCallbackLock();
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr);
 	xr_string AddSuffixName(xr_string M, xr_string suffix, xr_string test_suffix = "");
 	virtual xr_string GetActualCurrentAnim() const;
