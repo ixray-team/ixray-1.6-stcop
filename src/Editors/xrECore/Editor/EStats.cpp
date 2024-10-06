@@ -16,7 +16,7 @@ CEStats::CEStats()
     dwLevelSelFaceCount = 0;
     dwLevelSelVertexCount = 0;
 
-    pFont = g_FontManager->GetFont("stat_font", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
+    pFont = g_FontManager->GetFont("sdk_font_statistic", CGameFont::fsDeviceIndependent);// new CGameFont("stat_font", CGameFont::fsDeviceIndependent);
 }
 
 CEStats::~CEStats() {}
@@ -76,9 +76,6 @@ void CEStats::Show()
 
         CGameFont& F = *pFont;
 
-        constexpr float f_base_size = 12.0f;
-        F.SetHeight(f_base_size);
-
         if (bIsLevelEditor)
             F.OutSet(30, ImGui::GetFrameHeight() * 1.5);
         else
@@ -87,7 +84,7 @@ void CEStats::Show()
         F.SetColor(0xFFFFFFFF);
         F.OutNext("FPS/RFPS:     %3.1f/%3.1f", fFPS, fRFPS);
         F.OutSkip();
-        F.SetColor(0xC8DCAFFF);
+        F.SetColor(0xDDDDDDDD);
         F.OutNext("TPS:          %2.2f M", fTPS);
         F.OutNext("VERT:         %d", DPS.verts);
         F.OutNext("POLY:         %d", DPS.polys);
