@@ -82,7 +82,7 @@ namespace luabind { namespace detail
     };
 
 	template<>
-	struct type_name_unless_void<null_type>
+	struct type_name_unless_void<void>
 	{
 		static void apply(string_class&, lua_State*, const bool) {}
 	};
