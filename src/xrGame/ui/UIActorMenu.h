@@ -343,6 +343,8 @@ public:
 	void						TakeAllFromInventoryBox		();
 	void						UpdateConditionProgressBars	();
 
+	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
+
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
 
 }; // class CUIActorMenu
