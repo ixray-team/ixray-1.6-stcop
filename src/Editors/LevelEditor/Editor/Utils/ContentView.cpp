@@ -367,6 +367,12 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 		}
 	}
 
+	if (ISEPath.empty())
+	{
+		Files.push_back({ xr_string(ENVMOD_CHOOSE_NAME) + ".ise" , false, ENVMOD_CHOOSE_NAME });
+		Files.push_back({ xr_string(RPOINT_CHOOSE_NAME) + ".ise" , false, RPOINT_CHOOSE_NAME });
+	}
+
 	IsSpawnElement = true;
 }
 
@@ -507,6 +513,7 @@ void CContentView::Init()
 	Icons["cmd"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\cmd"),		true};
 	Icons["dll"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"),		true};
 	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"),	true};
+	Icons["env_mod"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\env_mod"),	true};
 
 	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
 }
@@ -718,6 +725,11 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	{
 		if (IconPath.ends_with(".ise"))
 		{
+			if (IconPath == "$env_mod.ise")
+			{
+				return Icons["env_mod"];
+			}
+
 			ESceneSpawnTool* SpTool = (ESceneSpawnTool*)Scene->GetTool(OBJCLASS_SPAWNPOINT);
 			xr_string ValidPath = IconPath;
 			ValidPath = ValidPath.erase(ValidPath.length() - 4);
