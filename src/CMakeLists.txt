@@ -28,6 +28,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     endif()
 
     if(IXR_TEST_CI)
+        add_subdirectory("Layers/xrRenderInterface")
         add_subdirectory("Layers/xrRenderPC_R4")
         add_subdirectory("xrGame")
     endif()
