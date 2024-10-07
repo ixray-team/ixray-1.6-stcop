@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Dx11Device.h"
 #include "Dx11Texture.h"
 
 D3D11_USAGE GetD3D11Usage(eResourceUsage usage)
