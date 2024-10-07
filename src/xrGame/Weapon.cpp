@@ -2387,7 +2387,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		}break;
 		case kTACTICALTORCH:
 		{
-			if (flags & CMD_START && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfTACTICALTORCH))
+			if (flags & CMD_START && m_HudLight.GetTorchInstalled() && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfTACTICALTORCH))
 			{
 				fDeviceFlags.set(EDeviceFlags::DF_TACTICALTORCH, true);
 				SwitchState(eSwitchDevice);
