@@ -18,20 +18,8 @@ void _VertexStream::Create	()
 	DEV->Evict();
 
 	mSize					= rsDVB_Size*1024;
-#ifdef USE_DX11
-	D3D_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth        = mSize;
-	bufferDesc.Usage            = D3D_USAGE_DYNAMIC;	
-	bufferDesc.BindFlags        = D3D_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags   = D3D_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags        = 0;
 
-	R_CHK					(RDevice->CreateBuffer	( &bufferDesc, 0, &pVB ));
-#else //USE_DX11
-	R_CHK					(RDevice->CreateVertexBuffer	( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, 0, D3DPOOL_DEFAULT, &pVB, nullptr));
-#endif
-
-	R_ASSERT				(pVB);
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, 0, mSize, false));
 
 	mPosition				= 0;
 	mDiscardID				= 0;
@@ -47,9 +35,7 @@ void _VertexStream::Destroy	()
 
 void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 {
-#ifdef USE_DX11
-	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
-#endif
+	SMappedSubresource MappedSubRes;
 
 #ifdef DEBUG
 	PGO					(Msg("PGO:VB_LOCK:%d",vl_Count));
@@ -74,33 +60,18 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 		vOffset				= 0;
 		mDiscardID			++;
 
-#ifdef USE_DX11
-		RContext->Map(pVB, 0, D3D_MAP_WRITE_DISCARD, 0, &MappedSubRes);
+		pVB->Map(MAPPING_WRITE_DISCARD, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset;
-#else //USE_DX11
-		HRESULT res = pVB->Lock( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_FLUSH);
-
-		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_FLUSH", res, mPosition, bytes_need, (void**)&pData );
-
-#endif
 	} else {
 		// APPEND-LOCK
 		mPosition			= vl_mPosition*Stride;
 		vOffset				= vl_mPosition;
 
-#ifdef USE_DX11
-		RContext->Map(pVB, 0, D3D_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
+		pVB->Map(MAPPING_WRITE_NO_OVERWRITE, 0, &MappedSubRes);
 		pData=(BYTE*)MappedSubRes.pData;
 		pData += vOffset*Stride;
-#else //USE_DX11
-		HRESULT res = pVB->Lock			( mPosition, bytes_need, (void**)&pData, LOCKFLAGS_APPEND);
-		
-		if( res != D3D_OK )
-			Msg( " pVB->Lock - failed: res = %d,mPosition = %d, bytes_need = %d, &pData = %x, LOCKFLAGS_APPEND", res, mPosition, bytes_need, (void**)&pData );
 
-#endif
 	}
 	VERIFY				( pData );
 
@@ -118,11 +89,7 @@ void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 
 	VERIFY				(pVB);
 
-#ifdef USE_DX11
-	RContext->Unmap(pVB, 0);
-#else //USE_DX11
-	pVB->Unlock();
-#endif
+	pVB->Unmap();
 }
 
 void	_VertexStream::reset_begin	()
@@ -160,19 +127,7 @@ void	_IndexStream::Create	()
 
 	mSize					= rsDIB_Size*1024;
 
-#ifdef USE_DX11
-	D3D_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth        = mSize;
-	bufferDesc.Usage            = D3D_USAGE_DYNAMIC;	
-	bufferDesc.BindFlags        = D3D_BIND_INDEX_BUFFER;
-	bufferDesc.CPUAccessFlags   = D3D_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags        = 0;
-
-	R_CHK					(RDevice->CreateBuffer( &bufferDesc, 0, &pIB ));
-#else //USE_DX11
-	R_CHK					(RDevice->CreateIndexBuffer( mSize, D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &pIB, nullptr));
-#endif
-	R_ASSERT				(pIB);
+	R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, 0, mSize, false));
 
 	mPosition				= 0;
 	mDiscardID				= 0;
@@ -188,9 +143,8 @@ void	_IndexStream::Destroy()
 
 u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 {
-#ifdef USE_DX11
-	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
-#endif
+	SMappedSubresource MappedSubRes;
+
 	PGO						(Msg("PGO:IB_LOCK:%d",Count));
 	vOffset					= 0;
 	BYTE* pLockedData		= 0;
@@ -208,15 +162,14 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 		dwFlags		= LOCKFLAGS_FLUSH;			// discard it's contens
 		mDiscardID	++;
 	}
-#ifdef USE_DX11
-	D3D_MAP MapMode = (dwFlags==LOCKFLAGS_APPEND) ? 
-		D3D_MAP_WRITE_NO_OVERWRITE : D3D_MAP_WRITE_DISCARD;
-	RContext->Map(pIB, 0, MapMode, 0, &MappedSubRes);
+
+	eBufferMapping MapMode = (dwFlags==LOCKFLAGS_APPEND) ?
+		MAPPING_WRITE_NO_OVERWRITE : MAPPING_WRITE_DISCARD;
+
+	pIB->Map(MapMode, 0, &MappedSubRes);
 	pLockedData = (BYTE*)MappedSubRes.pData;
 	pLockedData += mPosition * 2;
-#else //USE_DX11
-	pIB->Lock				( mPosition * 2, Count * 2, (void**) &pLockedData, dwFlags);
-#endif
+
 	VERIFY					(pLockedData);
 
 	vOffset					=	mPosition;
@@ -229,11 +182,8 @@ void	_IndexStream::Unlock(u32 RealCount)
 	PGO						(Msg("PGO:IB_UNLOCK:%d",RealCount));
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
-#ifdef USE_DX11
-	RContext->Unmap(pIB, 0);
-#else //USE_DX11
-	pIB->Unlock();
-#endif
+
+	pIB->Unmap();
 }
 
 void	_IndexStream::reset_begin	()
