@@ -6,9 +6,6 @@ file(GLOB XR_RHI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
-file(GLOB XR_RHI_SOURCE_DX9_FILES CONFIGURE_DEPENDS
-    "Dx9/*.*"
-)
 file(GLOB XR_RHI_SOURCE_DX11_FILES CONFIGURE_DEPENDS
     "Dx11/*.*"
 )
@@ -18,12 +15,11 @@ file(GLOB XR_RHI_SOURCE_DXGI_FILES CONFIGURE_DEPENDS
 
 # Source groups
 source_group("render/src" FILES ${XR_RHI_SOURCE_ALL_FILES})
-source_group("render/dx9" FILES ${XR_RHI_SOURCE_DX9_FILES})
 source_group("render/dx11" FILES ${XR_RHI_SOURCE_DX11_FILES})
+source_group("render/dxgi" FILES ${XR_RHI_SOURCE_DXGI_FILES})
 
 # Apply list
 list(APPEND XR_RHI_SRC_FILES ${XR_RHI_SOURCE_ALL_FILES})
-list(APPEND XR_RHI_SRC_FILES ${XR_RHI_SOURCE_DX9_FILES})
 list(APPEND XR_RHI_SRC_FILES ${XR_RHI_SOURCE_DX11_FILES})
 list(APPEND XR_RHI_SRC_FILES ${XR_RHI_SOURCE_DXGI_FILES})
 
@@ -39,8 +35,10 @@ target_compile_definitions(xrRenderInterface PRIVATE xrRenderInterface_EXPORTS)
 target_compile_definitions(xrRenderInterface PRIVATE _USRDLL)
 
 # Linker list
-target_link_libraries(xrRenderInterface PRIVATE xrAbstractions)
+target_link_libraries(xrRenderInterface PRIVATE xrCore)
 target_link_libraries(xrRenderInterface PRIVATE "d3dcompiler.lib")
+target_link_libraries(xrRenderInterface PRIVATE "d3d11.lib")
+target_link_libraries(xrRenderInterface PRIVATE "dxgi.lib")
 
 ## DirectX SDK
 #target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")

@@ -1,24 +1,9 @@
 #include "stdafx.h"
-#include <d3d11_1.h>
-#include "ICore_GPU.h"
+#include "Dx11Device.h"
+
 #include <renderdoc/api/app/renderdoc_app.h>
 
-ENGINE_API void* g_pAnnotation = nullptr;
-
-extern D3D_FEATURE_LEVEL FeatureLevel;
-extern void* HWSwapchain;
-
-extern void* HWRenderDevice ;
-extern void* HWRenderContext;
-
-extern void* RenderTexture;
-extern void* RenderSRV;
-extern void* RenderRTV;
-
-extern void* RenderDSV;
-extern void* SwapChainRTV;
-
-bool UpdateBuffersD3D11()
+bool CRenderRHI_DX11::UpdateBuffers()
 {
 	HWND hwnd = (HWND)SDL_GetProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 
@@ -78,8 +63,8 @@ bool UpdateBuffersD3D11()
 	R = ((ID3D11Device*)HWRenderDevice)->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
 	R_CHK(R);
 
-	descDepth.Width = UINT(sd.BufferDesc.Width * Device.RenderScale);			// TODO: render scale
-	descDepth.Height = UINT(sd.BufferDesc.Height * Device.RenderScale);		// TODO: render scale
+	descDepth.Width = UINT(sd.BufferDesc.Width * RenderScale);			// TODO: render scale
+	descDepth.Height = UINT(sd.BufferDesc.Height * RenderScale);		// TODO: render scale
 
 	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -102,25 +87,25 @@ bool UpdateBuffersD3D11()
 	return true;
 }
 
-void CreateRDoc() 
+void CRenderRHI_DX11::CreateRDoc()
 {
 	if (Core.ParamsData.test(ECoreParams::renderdoc))
 	{
-		if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
-		{
-			pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
-
-			int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&Device.pRDocAPI);
-			assert(ret == 1);
-
-			int Major, Minor, Path;
-			Device.pRDocAPI->GetAPIVersion(&Major, &Minor, &Path);
-			Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
-		}
+		//if (HMODULE mod = LoadLibraryA("renderdoc.dll")) 
+		//{
+		//	pRENDERDOC_GetAPI RENDERDOC_GetAPI = (pRENDERDOC_GetAPI)GetProcAddress(mod, "RENDERDOC_GetAPI");
+		//
+		//	int ret = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_5_0, (void**)&Device.pRDocAPI);
+		//	assert(ret == 1);
+		//
+		//	int Major, Minor, Path;
+		//	Device.pRDocAPI->GetAPIVersion(&Major, &Minor, &Path);
+		//	Msg("RenderDoc API: %d.%d.%d", Major, Minor, Path);
+		//}
 	}
 }
 
-bool CreateD3D11()
+bool CRenderRHI_DX11::Create()
 {
 	CreateRDoc();
 
@@ -175,7 +160,7 @@ bool CreateD3D11()
 		
 		if (FeatureLevel == D3D_FEATURE_LEVEL_11_1)
 		{
-			R_CHK(((ID3D11DeviceContext*)HWRenderContext)->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&g_pAnnotation));
+			R_CHK(((ID3D11DeviceContext*)HWRenderContext)->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&RenderAnnotation));
 		}
 
 		if (FAILED(R))
@@ -224,7 +209,7 @@ bool CreateD3D11()
 	//	g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
 	//}
 
-	if (!UpdateBuffersD3D11())
+	if (!UpdateBuffers())
 	{
 		return false;
 	}
@@ -232,30 +217,34 @@ bool CreateD3D11()
 	return true;
 }
 
-void ResizeBuffersD3D11(u16 Width, u16 Height)
+void CRenderRHI_DX11::ResizeBuffers(u16 Width, u16 Height)
 {
-	if (RenderDSV != nullptr) {
-		((ID3D11DepthStencilView*)RenderDSV)->Release();
+	if (RenderDSV != nullptr)
+	{
+		RenderDSV->Release();
 		RenderDSV = nullptr;
 	}
 
-	if (RenderSRV != nullptr) {
+	if (RenderSRV != nullptr) 
+	{
 		((ID3D11ShaderResourceView*)RenderSRV)->Release();
 		RenderSRV = nullptr;
 	}
 
-	if (RenderRTV != nullptr) {
-		((ID3D11RenderTargetView*)RenderRTV)->Release();
+	if (RenderRTV != nullptr)
+	{
+		RenderRTV->Release();
 		RenderRTV = nullptr;
 	}
 
-	if (SwapChainRTV != nullptr) {
-		((ID3D11RenderTargetView*)SwapChainRTV)->Release();
+	if (SwapChainRTV != nullptr) 
+	{
+		SwapChainRTV->Release();
 		SwapChainRTV = nullptr;
 	}
 
 	if (RenderTexture != nullptr) {
-		((ID3D11Texture2D*)RenderTexture)->Release();
+		RenderTexture->Release();
 		RenderTexture = nullptr;
 	}
 
@@ -272,61 +261,69 @@ void ResizeBuffersD3D11(u16 Width, u16 Height)
 	R = ((IDXGISwapChain*)HWSwapchain)->ResizeBuffers(0, Width, Height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 	R_CHK(R);
 
-	UpdateBuffersD3D11();
+	UpdateBuffers();
 }
 
-void DestroyD3D11()
+void CRenderRHI_DX11::Destroy()
 {
-	if (RenderDSV != nullptr) {
-		((ID3D11DepthStencilView*)RenderDSV)->Release();
+	if (RenderDSV != nullptr) 
+	{
+		RenderDSV->Release();
 		RenderDSV = nullptr;
 	}
 
-	if (RenderSRV != nullptr) {
+	if (RenderSRV != nullptr)
+	{
 		((ID3D11ShaderResourceView*)RenderSRV)->Release();
 		RenderSRV = nullptr;
 	}
 
-	if (RenderRTV != nullptr) {
-		((ID3D11RenderTargetView*)RenderRTV)->Release();
+	if (RenderRTV != nullptr) 
+	{
+		RenderRTV->Release();
 		RenderRTV = nullptr;
 	}
 
-	if (SwapChainRTV != nullptr) {
-		((ID3D11RenderTargetView*)SwapChainRTV)->Release();
+	if (SwapChainRTV != nullptr) 
+	{
+		SwapChainRTV->Release();
 		SwapChainRTV = nullptr;
 	}
 
-	if (RenderTexture != nullptr) {
-		((ID3D11Texture2D*)RenderTexture)->Release();
+	if (RenderTexture != nullptr) 
+	{
+		RenderTexture->Release();
 		RenderTexture = nullptr;
 	}
 
-	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
-	if (!bHasDebugRender && g_pGPU != nullptr && !g_pGPU->IsAMD)
+	//bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
+	//if (!bHasDebugRender && g_pGPU != nullptr && !g_pGPU->IsAMD)
+	//{
+	//	g_pGPU->Destroy();
+	//}
+	//else
 	{
-		g_pGPU->Destroy();
-	}
-	else
-	{
-		if (g_pAnnotation != nullptr)
+		if (RenderAnnotation != nullptr)
 		{
-			((ID3DUserDefinedAnnotation*)g_pAnnotation)->Release();
-			g_pAnnotation = nullptr;
+			RenderAnnotation->Release();
+			RenderAnnotation = nullptr;
 		}
 
-		if (HWRenderContext != nullptr) {
-			((ID3D11DeviceContext*)HWRenderContext)->Release();
+		if (HWRenderContext != nullptr) 
+		{
+			HWRenderContext->Release();
 			HWRenderContext = nullptr;
 		}
 
-		if (HWRenderDevice != nullptr) {
-			((ID3D11Device*)HWRenderDevice)->Release();
+		if (HWRenderDevice != nullptr) 
+		{
+			HWRenderDevice->Release();
 			HWRenderDevice = nullptr;
 		}
 
-		if (HWSwapchain != nullptr) {
-			((IDXGISwapChain*)HWSwapchain)->Release();
+		if (HWSwapchain != nullptr)
+		{
+			HWSwapchain->Release();
 			HWSwapchain = nullptr;
 		}
 	}

@@ -23,12 +23,6 @@ union SDL_Event;
 
 #pragma pack(push,4)
 
-enum class APILevel
-{
-	DX9,
-	DX11
-};
-
 #ifdef IXR_WINDOWS
   enum D3D_FEATURE_LEVEL;
 #endif
@@ -40,24 +34,14 @@ public:
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
 
-	virtual				bool				InitRenderDevice(APILevel API) = 0;
+	virtual				bool				InitRenderDevice(ERHI_API API) = 0;
 	virtual				void				DestroyRenderDevice() = 0;
 
-	virtual				void*               GetRenderDevice() = 0;
-	virtual				void*               GetRenderContext() = 0;
-	virtual				void*               GetRenderTexture() = 0;
-	virtual				void*               GetDepthTexture() = 0;
-	virtual				void*               GetSwapchainTexture() = 0;
-
-	virtual				void*				GetSwapchain() = 0;
 	virtual				u32					GetSwapchainWidth() = 0;
 	virtual				u32					GetSwapchainHeight() = 0;
 
 	virtual				void				ResizeWindow(u32 width, u32 height) = 0;
 
-#ifdef IXR_WINDOWS
-	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
-#endif
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
 	virtual				void				BeginRender() = 0;
@@ -71,7 +55,6 @@ class ENGINE_API CRenderDeviceData
 public:
 	u32										TargetWidth;
 	u32										TargetHeight;
-	float									RenderScale = 1.0f;
 	
 	u32										dwPrecacheFrame;
 	BOOL									b_is_Ready;
@@ -143,7 +126,8 @@ public:
 
 #pragma pack(pop)
 // refs
-class ENGINE_API CRenderDevice: public CRenderDeviceBase
+class ENGINE_API CRenderDevice:
+	public CRenderDeviceBase
 {
 	friend void CreateRDoc();
 	friend class CPHWorld;
@@ -160,24 +144,15 @@ public:
 	void									_SetupStates();
 
 	bool InitRenderDeviceEditor();
-	bool InitRenderDevice(APILevel API) override;
+	bool InitRenderDevice(ERHI_API API) override;
 	void DestroyRenderDevice() override;
 
-	void* GetRenderDevice() override;
-	void* GetRenderContext() override;
-	void* GetRenderTexture() override;
-	void* GetDepthTexture() override;
-	void* GetSwapchainTexture() override;
-	void* GetSwapchain() override;
 	u32	GetSwapchainWidth() override;
 	u32	GetSwapchainHeight() override;
 
 	void ResizeBuffers(u32 Width, u32 Height);
 	void ResizeWindow(u32 width, u32 height);
 
-#ifdef IXR_WINDOWS
-	D3D_FEATURE_LEVEL GetFeatureLevel() override;
-#endif
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
 	void BeginRender() override;
@@ -293,8 +268,6 @@ virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
-extern ENGINE_API void* g_pAnnotation;
-
 
 #define Device (*DevicePtr)
 #define	RDEVICE	Device

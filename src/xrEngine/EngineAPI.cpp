@@ -14,8 +14,10 @@ extern xr_token* vid_quality_token;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-void __cdecl dummy		(void)	{
-};
+void __cdecl dummy(void)	
+{
+}
+
 CEngineAPI::CEngineAPI	()
 {
 	hGame			= 0;
@@ -235,12 +237,7 @@ void CEngineAPI::CreateRendererList()
 	}
 }
 
-APILevel CEngineAPI::GetAPI()
+ERHI_API CEngineAPI::GetAPI()
 {
-	if (psDeviceFlags.test(rsR4))
-	{
-		return APILevel::DX11;
-	}
-
-	return APILevel::DX9;
+	return ERHI_API::DX11;
 }

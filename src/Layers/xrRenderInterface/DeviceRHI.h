@@ -1,8 +1,11 @@
 #pragma once
+#include "linker.h"
+#include "RHIRenderFlags.h"
 
-#include "../../xrEngine/device.h"
-
-#include <d3d11.h>
+enum class ERHI_API
+{
+	DX11
+};
 
 enum ERHITextureFormat
 {
@@ -261,21 +264,21 @@ class RefCount
 public:
 	virtual ~RefCount() {}
 
-	uint64_t AddRef();
-	uint64_t Release();
+	u64 AddRef();
+	u64 Release();
 
 private:
 	// Ref counting
-	uint64_t m_RefCount = 0;
+	u64 m_RefCount = 0;
 };
 
-inline uint64_t RefCount::AddRef()
+inline u64 RefCount::AddRef()
 {
 	++m_RefCount;
 	return m_RefCount;
 }
 
-inline uint64_t RefCount::Release()
+inline u64 RefCount::Release()
 {
 	assert(m_RefCount > 0);
 	--m_RefCount;
@@ -382,6 +385,11 @@ public:
 class IRender_RHI
 {
 public:
+	// ID3D11ShaderResourceView
+	void* RenderSRV = nullptr;
+	float RenderScale = 1.0f;
+
+public:
 	virtual void Create(void* renderDevice, void* renderContext) = 0;
 
 	virtual ITexture1D* CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc) = 0;
@@ -410,91 +418,34 @@ public:
 	virtual void SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView) = 0;
 
 	virtual void CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
+
+
+	virtual bool Create() = 0;
+	virtual void Destroy() = 0;
+
+	virtual bool UpdateBuffers() = 0;
+	virtual void ResizeBuffers(u16 Width, u16 Height) = 0;
+
+	virtual void CreateRDoc() = 0;
 };
 
-typedef IRender_RHI* (*GetRenderRHIAPIFunc)(APILevel API);
-
-// To ForserX: !!! g_CreateRHIFunc and g_RenderRHI should be in xrAbstractions
-//extern ENGINE_API GetRenderRHIAPIFunc g_CreateRHIFunc;
-//extern ENGINE_API IRender_RHI* g_RenderRHI;
-
-extern IRender_RHI* g_RenderRHI;
+extern RHI_API u32 psCurrentVidMode[2];
+extern RHI_API IRender_RHI* g_RenderRHI;
 
 // #TODO: COSTYL
 class IRHI_ResourceHack
 {
 public:
-	virtual ID3D11Resource* GetD3D11Resource() = 0;
+	virtual void* GetD3D11Resource() = 0;
 };
-
-// RHI Device ???
-class CRenderRHI_DX11 : 
-	public IRender_RHI
-{
-public:
-	CRenderRHI_DX11();
-	~CRenderRHI_DX11();
-
-	void Create(void* renderDevice, void* renderContext);
-
-	ITexture1D* CreateTexture1D(const STexture1DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
-	ITexture2D* CreateTexture2D(const STexture2DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
-	ITexture3D* CreateTexture3D(const STexture3DDesc& textureDesc, const SubresourceData* pSubresourceDesc) override;
-
-	IRenderTargetView* CreateRenderTargetView(IRHIResource* pResource, const SRenderTargetViewDesc* pDesc) override;
-	IDepthStencilView* CreateDepthStencilView(IRHIResource* pResource, const SDepthStencilViewDesc* pDesc) override;
-
-	IBuffer* CreateBuffer(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable) override;
-
-	void SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset) override;
-	void SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset) override;
-
-	void VSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-	void PSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-	void HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-	void CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-	void DSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-	void GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers) override;
-
-	void ClearRenderTargetView(IRenderTargetView* pRenderTargetView, const float ColorRGBA[4]) override;
-	void ClearDepthStencilView(IDepthStencilView* pDepthStencilView, u32 ClearFlags, float Depth, u8 Stencil) override;
-
-	// Note: maximum is 8 render targets.
-	void SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView) override;
-
-	void CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
-
-	// DX11 Stuff
-	ID3D11Device* GetDevice();
-	ID3D11DeviceContext* GetDeviceContext();
-
-};
-
-// D3D11 Stuff
-D3D11_MAP GetD3D11Map(eBufferMapping Mapping);
-u32 GetD3D11BindFlags(eBufferType bufferType);
-
-extern CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
 
 struct SPixelFormats
 {
 	ERHITextureFormat	Format;
-	DXGI_FORMAT			PlatformFormat;
+	enum DXGI_FORMAT	PlatformFormat;
 };
 
 extern SPixelFormats g_PixelFormats[FMT_MAX_COUNT];
-
-// old globals
-extern void* HWRenderDevice;
-extern void* HWRenderContext;
-extern void* HWSwapchain;
-
-extern void* RenderTexture;
-extern void* RenderSRV;
-extern void* RenderDSV;
-
-extern void* RenderRTV;
-extern void* SwapChainRTV;
 
 namespace RHIUtils
 {

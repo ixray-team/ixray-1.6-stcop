@@ -1,5 +1,5 @@
 #pragma once
-
+#include <d3d11.h>
 #include "DeviceRHI.h"
 
 class CD3D11RenderTargetView :

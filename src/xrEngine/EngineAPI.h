@@ -6,7 +6,7 @@
 #pragma once
 #include <array>
 
-enum class APILevel;
+#include "../Layers/xrRenderInterface/DeviceRHI.h"
 
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure {
@@ -67,7 +67,7 @@ public:
 
 	void				CreateRendererList();
 
-	APILevel			GetAPI();
+	ERHI_API			GetAPI();
 
 	CEngineAPI	();
 	~CEngineAPI	();

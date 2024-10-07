@@ -2,16 +2,17 @@
 #include "linker.h"
 #include "DeviceRHI.h"
 
+#include "Dx11/Dx11Device.h"
+
+extern CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
 extern "C"
 {
 
-RHI_API IRender_RHI* GetRenderRHIAPI(APILevel API)
+RHI_API IRender_RHI* GetRenderRHIAPI(ERHI_API API)
 {
 	switch (API)
 	{
-	case APILevel::DX9:
-		return nullptr;
-	case APILevel::DX11:
+	case ERHI_API::DX11:
 		return (IRender_RHI*)&g_RenderRHI_DX11Implementation;
 	}
 

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include "../Layers/xrRenderInterface/DeviceRHI.h"
+
 #include "device.h"
 #include "Stats.h"
 #include "GameFont.h"

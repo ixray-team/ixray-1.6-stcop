@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include <d3d11.h>
+
 #include "Dx11Buffer.h"
+#include "Dx11Device.h"
 
 D3D11_MAP GetD3D11Map(eBufferMapping Mapping)
 {

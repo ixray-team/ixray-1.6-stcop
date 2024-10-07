@@ -1,5 +1,5 @@
 #pragma once
-
+#include <d3d11.h>
 #include "DeviceRHI.h"
 
 class CD3D11Texture1D :
@@ -23,7 +23,7 @@ public:
 	void Unmap(u32 Subresource) override;
 
 	// IRHI_ResourceHack
-	ID3D11Resource* GetD3D11Resource() override { return m_pTexture1D; }
+	void* GetD3D11Resource() override { return m_pTexture1D; }
 
 	// D3D11
 	ID3D11Texture1D* GetD3D11Texture() { return m_pTexture1D; }
@@ -55,7 +55,7 @@ public:
 	void Unmap(u32 Subresource) override;
 
 	// IRHI_ResourceHack
-	ID3D11Resource* GetD3D11Resource() override { return m_pTexture2D; }
+	void* GetD3D11Resource() override { return m_pTexture2D; }
 
 	// D3D11
 	ID3D11Texture2D* GetD3D11Texture() { return m_pTexture2D; }
@@ -87,7 +87,7 @@ public:
 	void Unmap(u32 Subresource) override;
 
 	// IRHI_ResourceHack
-	ID3D11Resource* GetD3D11Resource() override { return m_pTexture3D; }
+	void* GetD3D11Resource() override { return m_pTexture3D; }
 
 	// D3D11
 	ID3D11Texture3D* GetD3D11Texture() { return m_pTexture3D; }
