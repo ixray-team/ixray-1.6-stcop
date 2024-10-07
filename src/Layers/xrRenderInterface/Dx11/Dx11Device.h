@@ -5,7 +5,6 @@
 class CRenderRHI_DX11 :
 	public IRender_RHI
 {
-
 public:
 	CRenderRHI_DX11();
 	~CRenderRHI_DX11();
@@ -37,36 +36,38 @@ public:
 	// Note: maximum is 8 render targets.
 	void SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView) override;
 
-	void CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
+	void CopyTexture1D(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
+	void CopyTexture2D(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
+	void CopyTexture3D(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
 
 	// DX11 Stuff
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 
-private:
-	D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-	IDXGISwapChain* HWSwapchain = nullptr;
-
-
-	ID3D11Device* HWRenderDevice = nullptr;
-	ID3D11DeviceContext* HWRenderContext = nullptr;
-
-	ID3DUserDefinedAnnotation* RenderAnnotation = nullptr;
-
-	ID3D11Texture2D* RenderTexture = nullptr;
-	ID3D11RenderTargetView* RenderRTV = nullptr;
-
-	ID3D11DepthStencilView* RenderDSV = nullptr;
-	ID3D11RenderTargetView* SwapChainRTV = nullptr;
-
-protected:
 	virtual bool Create() override;
 	virtual void Destroy() override;
 
-	virtual bool UpdateBuffers() override; 
+	virtual bool UpdateBuffers() override;
 	virtual void ResizeBuffers(u16 Width, u16 Height) override;
 
 	virtual void CreateRDoc() override;
+
+private:
+	D3D_FEATURE_LEVEL m_FeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
+	IDXGISwapChain* m_pHWSwapchain = nullptr;
+
+
+	ID3D11Device* m_pHWRenderDevice = nullptr;
+	ID3D11DeviceContext* m_pHWRenderContext = nullptr;
+
+	ID3DUserDefinedAnnotation* m_pRenderAnnotation = nullptr;
+
+	ID3D11Texture2D* m_pRenderTexture = nullptr;
+	ID3D11RenderTargetView* m_pRenderRTV = nullptr;
+
+	ID3D11DepthStencilView* m_pRenderDSV = nullptr;
+	ID3D11RenderTargetView* m_pSwapChainRTV = nullptr;
+
 };
 
 // D3D11 Stuff

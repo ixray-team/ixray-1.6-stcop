@@ -39,6 +39,7 @@ target_link_libraries(xrRenderInterface PRIVATE xrCore)
 target_link_libraries(xrRenderInterface PRIVATE "d3dcompiler.lib")
 target_link_libraries(xrRenderInterface PRIVATE "d3d11.lib")
 target_link_libraries(xrRenderInterface PRIVATE "dxgi.lib")
+target_link_libraries(xrRenderInterface PRIVATE "dxguid.lib")
 
 ## DirectX SDK
 #target_include_directories(xrRenderInterface PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2023.10.31.1/include/")

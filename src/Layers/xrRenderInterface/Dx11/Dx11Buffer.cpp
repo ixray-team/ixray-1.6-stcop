@@ -26,11 +26,11 @@ u32 GetD3D11BindFlags(eBufferType bufferType)
 {
 	switch (bufferType)
 	{
-	case VERTEX:
+	case EBUFFER_VERTEX:
 		return D3D11_BIND_VERTEX_BUFFER;
-	case INDEX:
+	case EBUFFER_INDEX:
 		return D3D11_BIND_INDEX_BUFFER;
-	case CONSTANT:
+	case EBUFFER_CONSTANT:
 		return D3D11_BIND_CONSTANT_BUFFER;
 	}
 

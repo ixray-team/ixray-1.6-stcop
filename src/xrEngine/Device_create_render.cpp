@@ -32,7 +32,7 @@ void DrawMainViewport()
 		ImGui::SetCursorPos(ImVec2(0, 0));
 		ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::Image(g_RenderRHI->RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		ImGui::Image(g_RenderRHI->m_pRenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
 	ImGui::End();
 

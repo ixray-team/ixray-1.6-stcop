@@ -4,7 +4,8 @@
 
 enum class ERHI_API
 {
-	DX11
+	DX11,
+	OPENGL
 };
 
 enum ERHITextureFormat
@@ -50,9 +51,9 @@ enum ERHITextureFormat
 
 enum eBufferType
 {
-	VERTEX,
-	INDEX,
-	CONSTANT
+	EBUFFER_VERTEX,
+	EBUFFER_INDEX,
+	EBUFFER_CONSTANT
 };
 
 enum eBufferAccess
@@ -386,8 +387,8 @@ class IRender_RHI
 {
 public:
 	// ID3D11ShaderResourceView
-	void* RenderSRV = nullptr;
-	float RenderScale = 1.0f;
+	void* m_pRenderSRV = nullptr;
+	float m_RenderScale = 1.0f;
 
 public:
 	virtual void Create(void* renderDevice, void* renderContext) = 0;
@@ -417,8 +418,9 @@ public:
 	// Note: maximum is 8 render targets.
 	virtual void SetRenderTargets(u32 NumViews, IRenderTargetView* const* ppRenderTargetViews, IDepthStencilView* pDepthStencilView) = 0;
 
-	virtual void CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
-
+	virtual void CopyTexture1D(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
+	virtual void CopyTexture2D(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
+	virtual void CopyTexture3D(IRHIResource* pDstResource, IRHIResource* pSrcResource) = 0;
 
 	virtual bool Create() = 0;
 	virtual void Destroy() = 0;
@@ -432,13 +434,6 @@ public:
 extern RHI_API u32 psCurrentVidMode[2];
 extern RHI_API IRender_RHI* g_RenderRHI;
 
-// #TODO: COSTYL
-class IRHI_ResourceHack
-{
-public:
-	virtual void* GetD3D11Resource() = 0;
-};
-
 struct SPixelFormats
 {
 	ERHITextureFormat	Format;
@@ -451,7 +446,7 @@ namespace RHIUtils
 {
 	inline bool CreateVertexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(VERTEX, pData, DataSize, bImmutable);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(EBUFFER_VERTEX, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -461,7 +456,7 @@ namespace RHIUtils
 
 	inline bool CreateIndexBuffer(IBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(INDEX, pData, DataSize, bImmutable);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(EBUFFER_INDEX, pData, DataSize, bImmutable);
 		if (!pBuffer)
 			return false;
 
@@ -472,7 +467,7 @@ namespace RHIUtils
 	// Will return nullptr on DX9
 	inline bool CreateConstantBuffer(IBuffer** ppBuffer, u32 DataSize)
 	{
-		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(CONSTANT, NULL, DataSize, FALSE);
+		IBuffer* pBuffer = g_RenderRHI->CreateBuffer(EBUFFER_CONSTANT, NULL, DataSize, FALSE);
 		if (!pBuffer)
 			return false;
 

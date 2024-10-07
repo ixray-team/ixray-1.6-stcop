@@ -5,6 +5,16 @@
 #include "Dx11Texture.h"
 #include "Dx11RenderTarget.h"
 
+#define CHECK_RESOURCED_DIMENSION(pResource, Dimension) \
+	{ \
+		if (pResource) \
+		{ \
+			eResourceDimension dimension = RESOURCE_DIMENSION_UNKNOWN; \
+			pResource->GetType(&dimension); \
+			R_ASSERT(dimension == Dimension); \
+		} \
+	}
+
 CRenderRHI_DX11 g_RenderRHI_DX11Implementation;
 
 CRenderRHI_DX11::CRenderRHI_DX11()
@@ -17,8 +27,8 @@ CRenderRHI_DX11::~CRenderRHI_DX11()
 
 void CRenderRHI_DX11::Create(void* renderDevice, void* renderContext)
 {
-	HWRenderDevice = (ID3D11Device*)renderDevice;
-	HWRenderContext = (ID3D11DeviceContext*)renderContext;
+	m_pHWRenderDevice = (ID3D11Device*)renderDevice;
+	m_pHWRenderContext = (ID3D11DeviceContext*)renderContext;
 
 	// Initialize pixel formats
 	g_PixelFormats[FMT_UNKNOWN].PlatformFormat = DXGI_FORMAT_UNKNOWN;
@@ -99,7 +109,7 @@ IBuffer* CRenderRHI_DX11::CreateBuffer(eBufferType bufferType, const void* pData
 
 void CRenderRHI_DX11::SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, const u32 Stride, const u32 Offset)
 {
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pVertexBuffer;
@@ -119,7 +129,7 @@ void CRenderRHI_DX11::SetVertexBuffer(u32 StartSlot, IBuffer* pVertexBuffer, con
 
 void CRenderRHI_DX11::SetIndexBuffer(IBuffer* pIndexBuffer, bool Is32BitBuffer, u32 Offset)
 {
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	CD3D11Buffer* pAPIBuffer = (CD3D11Buffer*)pIndexBuffer;
@@ -139,7 +149,7 @@ void CRenderRHI_DX11::VSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 {
 	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -157,7 +167,7 @@ void CRenderRHI_DX11::PSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 {
 	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -175,7 +185,7 @@ void CRenderRHI_DX11::HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 {
 	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -192,7 +202,7 @@ void CRenderRHI_DX11::HSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 void CRenderRHI_DX11::CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
 {	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -209,7 +219,7 @@ void CRenderRHI_DX11::CSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 void CRenderRHI_DX11::DSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffer* const* ppConstantBuffers)
 {	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -227,7 +237,7 @@ void CRenderRHI_DX11::GSSetConstantBuffers(u32 StartSlot, u32 NumBuffers, IBuffe
 {
 	// #TODO: TO SLOW
 
-	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)HWRenderContext;
+	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)m_pHWRenderContext;
 	R_ASSERT(pImmediateContext);
 
 	xr_vector< ID3D11Buffer* > buffers;
@@ -273,24 +283,51 @@ void CRenderRHI_DX11::SetRenderTargets(u32 NumViews, IRenderTargetView* const* p
 		pD3D11DepthStencilView ? pD3D11DepthStencilView->GetDepthStencilView() : nullptr);
 }
 
-void CRenderRHI_DX11::CopyResource(IRHIResource* pDstResource, IRHIResource* pSrcResource)
+void CRenderRHI_DX11::CopyTexture1D(IRHIResource* pDstResource, IRHIResource* pSrcResource)
 {
-	// #TODO: RHI - Refactor, ugly and slow shit
+	CHECK_RESOURCED_DIMENSION(pDstResource, RESOURCE_DIMENSION_TEXTURE1D);
+	CHECK_RESOURCED_DIMENSION(pSrcResource, RESOURCE_DIMENSION_TEXTURE1D);
 
-	IRHI_ResourceHack* pRHIDstResource = dynamic_cast<IRHI_ResourceHack*>(pDstResource);
-	IRHI_ResourceHack* pRHISrcResource = dynamic_cast<IRHI_ResourceHack*>(pSrcResource);
+	CD3D11Texture1D* pRHIDstResource = (CD3D11Texture1D*)pDstResource;
+	CD3D11Texture1D* pRHISrcResource = (CD3D11Texture1D*)pSrcResource;
 
 	GetDeviceContext()->CopyResource(
-		pRHIDstResource ? (ID3D11Resource*)pRHIDstResource->GetD3D11Resource() : 0,
-		pRHISrcResource ? (ID3D11Resource*)pRHISrcResource->GetD3D11Resource() : 0);
+		pRHIDstResource ? (ID3D11Resource*)pRHIDstResource->GetD3D11Texture() : 0,
+		pRHISrcResource ? (ID3D11Resource*)pRHISrcResource->GetD3D11Texture() : 0);
+}
+
+void CRenderRHI_DX11::CopyTexture2D(IRHIResource* pDstResource, IRHIResource* pSrcResource)
+{
+	CHECK_RESOURCED_DIMENSION(pDstResource, RESOURCE_DIMENSION_TEXTURE2D);
+	CHECK_RESOURCED_DIMENSION(pSrcResource, RESOURCE_DIMENSION_TEXTURE2D);
+
+	CD3D11Texture2D* pRHIDstResource = (CD3D11Texture2D*)pDstResource;
+	CD3D11Texture2D* pRHISrcResource = (CD3D11Texture2D*)pSrcResource;
+
+	GetDeviceContext()->CopyResource(
+		pRHIDstResource ? (ID3D11Resource*)pRHIDstResource->GetD3D11Texture() : 0,
+		pRHISrcResource ? (ID3D11Resource*)pRHISrcResource->GetD3D11Texture() : 0);
+}
+
+void CRenderRHI_DX11::CopyTexture3D(IRHIResource* pDstResource, IRHIResource* pSrcResource)
+{
+	CHECK_RESOURCED_DIMENSION(pDstResource, RESOURCE_DIMENSION_TEXTURE3D);
+	CHECK_RESOURCED_DIMENSION(pSrcResource, RESOURCE_DIMENSION_TEXTURE3D);
+
+	CD3D11Texture3D* pRHIDstResource = (CD3D11Texture3D*)pDstResource;
+	CD3D11Texture3D* pRHISrcResource = (CD3D11Texture3D*)pSrcResource;
+
+	GetDeviceContext()->CopyResource(
+		pRHIDstResource ? (ID3D11Resource*)pRHIDstResource->GetD3D11Texture() : 0,
+		pRHISrcResource ? (ID3D11Resource*)pRHISrcResource->GetD3D11Texture() : 0);
 }
 
 ID3D11Device* CRenderRHI_DX11::GetDevice()
 {
-	return (ID3D11Device*)HWRenderDevice;
+	return (ID3D11Device*)m_pHWRenderDevice;
 }
 
 ID3D11DeviceContext* CRenderRHI_DX11::GetDeviceContext()
 {
-	return (ID3D11DeviceContext*)HWRenderContext;
+	return (ID3D11DeviceContext*)m_pHWRenderContext;
 }
