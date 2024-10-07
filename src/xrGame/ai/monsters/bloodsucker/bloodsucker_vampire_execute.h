@@ -17,10 +17,10 @@ class	CustomBloodsuckerStateVampireExecute : public CState
 
 	bool				m_effector_activated;
 
-	CustomBloodsucker* m_pBloodsucker;
+	CBloodsuckerBase* m_pBloodsucker;
 
 public:
-	CustomBloodsuckerStateVampireExecute(CustomBloodsucker* object);
+	CustomBloodsuckerStateVampireExecute(CBloodsuckerBase* object);
 	virtual ~CustomBloodsuckerStateVampireExecute();
 
 	virtual void		initialize();

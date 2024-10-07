@@ -2,7 +2,7 @@
 
 #include "../state.h"
 
-class CustomDog;
+class CDogBase;
 
 class CStateGroupDrag : public CState {
 	using inherited = CState	;
@@ -13,7 +13,7 @@ class CStateGroupDrag : public CState {
 	bool				m_failed;
 	Fvector				m_corpse_start_position;
 
-	CustomDog*			m_pDog;
+	CDogBase*			m_pDog;
 
 public:
 						CStateGroupDrag		(CBaseMonster* object);

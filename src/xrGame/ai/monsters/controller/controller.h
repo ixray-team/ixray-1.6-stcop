@@ -10,7 +10,7 @@ class SndShockEffector;
 class CControllerPsyHit;
 class CControllerAura;
 
-class CController : public CBaseMonster,
+class CControllerBase : public CBaseMonster,
 					public CControlledActor 
 {
 	typedef		CBaseMonster	inherited;
@@ -70,8 +70,8 @@ public:
 	xr_vector<CEntity*> m_controlled_objects;
 
 public:
-					CController			();
-	virtual			~CController		();	
+					CControllerBase			();
+	virtual			~CControllerBase		();	
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reload				(LPCSTR section);

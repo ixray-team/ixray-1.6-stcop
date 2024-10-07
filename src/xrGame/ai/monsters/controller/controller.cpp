@@ -54,7 +54,7 @@ namespace controller::detail
 	const float default_stamina_hit = 0.2f;
 }
 
-CController::CController()
+CControllerBase::CControllerBase()
 {
 	StateMan = new CStateManagerController(this);
 	time_control_hit_started = 0;
@@ -69,13 +69,13 @@ CController::CController()
 #endif
 }
 
-CController::~CController()
+CControllerBase::~CControllerBase()
 {
 	xr_delete(StateMan);
 	xr_delete(m_psy_hit);
 }
 
-void CController::Load(LPCSTR section)
+void CControllerBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
@@ -257,7 +257,7 @@ void CController::Load(LPCSTR section)
 	PostLoad						(section);
 }
 
-void CController::load_friend_community_overrides(LPCSTR section)
+void CControllerBase::load_friend_community_overrides(LPCSTR section)
 {
 	LPCSTR src = pSettings->r_string(section,"Friend_Community_Overrides");
 	
@@ -271,7 +271,7 @@ void CController::load_friend_community_overrides(LPCSTR section)
 	}
 }
 
-bool CController::is_community_friend_overrides(const CEntityAlive *entity_alive) const
+bool CControllerBase::is_community_friend_overrides(const CEntityAlive *entity_alive) const
 {
 	const CInventoryOwner	*IO = smart_cast<const CInventoryOwner*>(entity_alive);
 	if (!IO) return false;
@@ -288,7 +288,7 @@ bool CController::is_community_friend_overrides(const CEntityAlive *entity_alive
 	);
 }
 
-BOOL CController::net_Spawn(CSE_Abstract *DC)
+BOOL CControllerBase::net_Spawn(CSE_Abstract *DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -297,7 +297,7 @@ BOOL CController::net_Spawn(CSE_Abstract *DC)
 }
 
 
-void CController::UpdateControlled()
+void CControllerBase::UpdateControlled()
 {
 	// если есть враг, проверить может ли быть враг взят под контроль
 	if (EnemyMan.get_enemy()) {
@@ -313,7 +313,7 @@ void CController::UpdateControlled()
 	}
 }
 
-void CController::set_controlled_task(u32 task)
+void CControllerBase::set_controlled_task(u32 task)
 {
 	if (!HasUnderControl()) return;
 	
@@ -326,14 +326,14 @@ void CController::set_controlled_task(u32 task)
 	}
 }
 
-void CController::CheckSpecParams(u32 spec_params)
+void CControllerBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
 	}
 } 
 
-void CController::InitThink()
+void CControllerBase::InitThink()
 {
 	for	(u32 i=0; i<m_controlled_objects.size(); i++) {	
 		CBaseMonster *base = smart_cast<CBaseMonster*>(m_controlled_objects[i]);
@@ -347,7 +347,7 @@ void CController::InitThink()
 	}
 }
 
-void CController::play_control_sound_start()
+void CControllerBase::play_control_sound_start()
 {
 	Fvector pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
@@ -356,7 +356,7 @@ void CController::play_control_sound_start()
 	control_start_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()),pos);
 }
 
-void CController::play_control_sound_hit()
+void CControllerBase::play_control_sound_hit()
 {
 	Fvector pos = EnemyMan.get_enemy()->Position();
 	pos.y += 1.5f;
@@ -365,13 +365,13 @@ void CController::play_control_sound_hit()
 	control_hit_sound.play_at_pos(const_cast<CEntityAlive*>(EnemyMan.get_enemy()),pos);
 }
 
-void CController::reload(LPCSTR section)
+void CControllerBase::reload(LPCSTR section)
 {
 	inherited::reload			(section);
 	com_man().ta_fill_data(anim_triple_control,	"stand_sit_down_attack_0",	"control_attack_0",	"sit_stand_up_attack_0", true, false);
 }
 
-void CController::reinit()
+void CControllerBase::reinit()
 {
 	// must be before inherited call because of its use in ControlAnimation com
 	m_mental_state = eStateIdle;
@@ -389,7 +389,7 @@ void CController::reinit()
 	active_control_fx		 = false;
 }
 
-void CController::control_hit()
+void CControllerBase::control_hit()
 {
 	Hit_Psy						(const_cast<CEntityAlive*>(EnemyMan.get_enemy()), 30.f);
 	
@@ -409,7 +409,7 @@ void CController::control_hit()
 
 #define TEXTURE_SIZE_PERCENT 2.f
 
-void CController::UpdateCL()
+void CControllerBase::UpdateCL()
 {
 	inherited::UpdateCL();
 	
@@ -454,7 +454,7 @@ void CController::UpdateCL()
 	}
 }
 
-void CController::shedule_Update(u32 dt)
+void CControllerBase::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 	
@@ -467,7 +467,7 @@ void CController::shedule_Update(u32 dt)
 	test_covers();
 }
 
-void CController::Die(CObject* who)
+void CControllerBase::Die(CObject* who)
 {
 	inherited::Die(who);
 	FreeFromControl();
@@ -475,25 +475,25 @@ void CController::Die(CObject* who)
 	m_psy_hit->on_death	();
 }
 
-void CController::net_Destroy()
+void CControllerBase::net_Destroy()
 {
 	inherited::net_Destroy();
 
 	FreeFromControl		();
 }
 
-void CController::net_Relcase(CObject *O)
+void CControllerBase::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 }
 
-void CController::FreeFromControl()
+void CControllerBase::FreeFromControl()
 {
 	for	(u32 i=0; i<m_controlled_objects.size(); i++) smart_cast<CControlledEntityBase *>(m_controlled_objects[i])->free_from_control();
 	m_controlled_objects.clear();
 }
 
-void CController::OnFreedFromControl(const CEntity *entity)
+void CControllerBase::OnFreedFromControl(const CEntity *entity)
 {
 	for	(u32 i=0; i<m_controlled_objects.size(); i++) 
 		if (m_controlled_objects[i] == entity) {
@@ -505,7 +505,7 @@ void CController::OnFreedFromControl(const CEntity *entity)
 
 //////////////////////////////////////////////////////////////////////////
 
-void CController::draw_fire_particles()
+void CControllerBase::draw_fire_particles()
 {
 	if (!EnemyMan.get_enemy()) return;
 	CEntityAlive *enemy	= const_cast<CEntityAlive*>(EnemyMan.get_enemy());
@@ -540,7 +540,7 @@ void CController::draw_fire_particles()
 	//m_sound_hit_fx.play_at_pos(this, Level().CurrentEntity()->Position());
 }
 
-void CController::psy_fire()
+void CControllerBase::psy_fire()
 {
 	if (!EnemyMan.get_enemy())	return;
 	
@@ -551,7 +551,7 @@ void CController::psy_fire()
 */
 }
 
-bool CController::can_psy_fire()
+bool CControllerBase::can_psy_fire()
 {
 	if ( m_psy_fire_start_time + m_psy_fire_delay > time () )
 	{
@@ -581,11 +581,11 @@ bool CController::can_psy_fire()
 	return true;
 }
 
-void CController::set_psy_fire_delay_zero()
+void CControllerBase::set_psy_fire_delay_zero()
 {
 	m_psy_fire_delay = 0;
 }
-void CController::set_psy_fire_delay_default()
+void CControllerBase::set_psy_fire_delay_default()
 {
 	m_psy_fire_delay = _pmt_psy_attack_delay;
 }
@@ -595,12 +595,12 @@ void CController::set_psy_fire_delay_default()
 // TUBE
 //////////////////////////////////////////////////////////////////////////
 
-void CController::tube_fire()
+void CControllerBase::tube_fire()
 {
 	control().activate(ControlCom::eComCustom1);
 }
 
-bool CController::can_tube_fire()
+bool CControllerBase::can_tube_fire()
 {
 	using namespace controller::detail;
 
@@ -632,19 +632,19 @@ bool CController::can_tube_fire()
 //////////////////////////////////////////////////////////////////////////
 
 
-const MonsterSpace::SBoneRotation &CController::head_orientation	() const
+const MonsterSpace::SBoneRotation &CControllerBase::head_orientation	() const
 {
 	return m_custom_dir_base->get_head_orientation();
 }
 
-void CController::test_covers()
+void CControllerBase::test_covers()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// update covers
 	//////////////////////////////////////////////////////////////////////////
 }
 
-void CController::create_base_controls()
+void CControllerBase::create_base_controls()
 {
 	m_custom_anim_base	= new CControllerAnimation		(); 
 	m_custom_dir_base	= new CControllerDirection		(); 
@@ -656,7 +656,7 @@ void CController::create_base_controls()
 	m_path_base			= new CControlPathBuilderBase	();
 }
 
-void CController::TranslateActionToPathParams()
+void CControllerBase::TranslateActionToPathParams()
 {
 	//if (m_mental_state == eStateIdle) {
 	//	inherited::TranslateActionToPathParams();
@@ -681,7 +681,7 @@ void CController::TranslateActionToPathParams()
 
 }
 
-bool CController::is_relation_enemy(const CEntityAlive *tpEntityAlive) const
+bool CControllerBase::is_relation_enemy(const CEntityAlive *tpEntityAlive) const
 {
 	//	MONSTER_COMMUNITY_ID
 	if (xr_strcmp(*(tpEntityAlive->cNameSect()), "stalker_zombied") == 0) return false;
@@ -690,7 +690,7 @@ bool CController::is_relation_enemy(const CEntityAlive *tpEntityAlive) const
 	return inherited::is_relation_enemy(tpEntityAlive);
 }
 
-void CController::set_mental_state(EMentalState state)
+void CControllerBase::set_mental_state(EMentalState state)
 {
 	if (m_mental_state == state) return;
 	
@@ -699,7 +699,7 @@ void CController::set_mental_state(EMentalState state)
 	m_custom_anim_base->on_switch_controller	();
 }
 
-void   CController::HitEntity (const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
+void   CControllerBase::HitEntity (const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
 	if ( pEntity == Actor() && !GodMode() )
 	{
@@ -716,7 +716,7 @@ void   CController::HitEntity (const CEntity *pEntity, float fDamage, float impu
 	inherited::HitEntity(pEntity, fDamage, impulse, dir, hit_type, draw_hit_marks);
 }
 
-bool    CController::tube_ready () const
+bool    CControllerBase::tube_ready () const
 {
 	return m_psy_hit && m_psy_hit->tube_ready();
 }
@@ -726,7 +726,7 @@ bool    CController::tube_ready () const
 #include "../../../../xrEngine/CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 
-void CController::OnEvent(NET_Packet& P, u16 type)
+void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 {
 	inherited::OnEvent(P, type);
 
@@ -748,7 +748,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 			{
 				HUD().SetRenderable(false);
 
-				if (CController* controller = smart_cast<CController*>(this))
+				if (CControllerBase* controller = smart_cast<CControllerBase*>(this))
 				{
 					controller->CControlledActor::install();
 					controller->CControlledActor::dont_need_turn();
@@ -839,7 +839,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 
 				HUD().SetRenderable(true);
 
-				if (CController* controller = smart_cast<CController*>(this))
+				if (CControllerBase* controller = smart_cast<CControllerBase*>(this))
 					if (controller->CControlledActor::is_controlling())
 						controller->CControlledActor::release();
 
@@ -861,7 +861,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 #ifdef DEBUG
-CBaseMonster::SDebugInfo CController::show_debug_info()
+CBaseMonster::SDebugInfo CControllerBase::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
 	if (!info.active) return CBaseMonster::SDebugInfo();
@@ -896,7 +896,7 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 #endif
 
 #ifdef _DEBUG
-void CController::debug_on_key(int key)
+void CControllerBase::debug_on_key(int key)
 {
 	switch (key){
 	case SDL_SCANCODE_MINUS:

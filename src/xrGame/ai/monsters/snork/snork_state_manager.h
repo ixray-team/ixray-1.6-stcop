@@ -1,17 +1,17 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CSnork;
+class CSnorkBase;
 
 class CStateManagerSnork : public CMonsterStateManager 
 {
 private:
 	typedef				CMonsterStateManager	inherited;
 
-	CSnork* m_pSnork;
+	CSnorkBase* m_pSnork;
 
 public:
-						CStateManagerSnork		(CSnork*obj);
+						CStateManagerSnork		(CSnorkBase*obj);
 	virtual				~CStateManagerSnork		();
 
 	virtual	void		execute					();

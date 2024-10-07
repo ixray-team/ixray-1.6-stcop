@@ -20,12 +20,12 @@
 #include "../../../actor_memory.h"
 #include "../../../visual_memory_manager.h"
 
-CustomBloodsuckerStatePredator::CustomBloodsuckerStatePredator(CustomBloodsucker*object) : inherited(object)
+CustomBloodsuckerStatePredator::CustomBloodsuckerStatePredator(CBloodsuckerBase*object) : inherited(object)
 {
 	m_target_node = 0;
 	m_time_start_camp = 0;
 
-	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
+	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
 
 	add_state	(eStatePredator_MoveToCover,	new CStateMonsterMoveToPointEx(object));
 	add_state	(eStatePredator_LookOpenPlace, new CStateMonsterLookToPoint(object));

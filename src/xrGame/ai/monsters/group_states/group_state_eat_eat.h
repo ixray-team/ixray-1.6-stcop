@@ -8,7 +8,7 @@ protected:
 	CEntityAlive	*corpse;
 	u32				time_last_eat;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
 	CStateGroupEating		(CBaseMonster * object);

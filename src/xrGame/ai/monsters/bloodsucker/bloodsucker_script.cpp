@@ -5,12 +5,12 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CustomBloodsucker::script_register(lua_State *L)
+void CBloodsuckerBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CustomBloodsucker,CGameObject>("CAI_Bloodsucker")
+		class_<CBloodsuckerBase,CGameObject>("CBloodsuckerBase")
 			.def(constructor<>())
-			.def("force_visibility_state", &CustomBloodsucker::force_visibility_state)
+			.def("force_visibility_state", &CBloodsuckerBase::force_visibility_state)
 	];
 }

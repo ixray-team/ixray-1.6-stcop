@@ -18,7 +18,7 @@
 
 CStateControlHideLite::CStateControlHideLite(CBaseMonster* obj) : inherited(obj)
 {
-	m_pController = smart_cast<CController*>(obj);
+	m_pController = smart_cast<CControllerBase*>(obj);
 }
 
 void CStateControlHideLite::initialize()

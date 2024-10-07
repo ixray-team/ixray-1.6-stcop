@@ -24,7 +24,7 @@
 
 CStateGroupRest::CStateGroupRest(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	time_for_life = 0;
 	time_for_sleep = 0;

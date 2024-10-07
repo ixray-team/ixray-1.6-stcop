@@ -3,15 +3,15 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CustomFlesh : public CBaseMonster,
+class CFleshBase : public CBaseMonster,
 				  public CControlledEntity {
 
 	using		inherited = CBaseMonster					;
 	using		CControlled = CControlledEntity	;
 
 public:
-	CustomFlesh();
-	virtual					~CustomFlesh();
+	CFleshBase();
+	virtual					~CFleshBase();
 	
 	virtual	void	Load					(LPCSTR section);
 	virtual	BOOL	net_Spawn				(CSE_Abstract* DC);

@@ -3,7 +3,7 @@
 
 class CStateControllerTube : public CState {
 	typedef CState		inherited;
-	CController* m_pController;
+	CControllerBase* m_pController;
 public:
 	CStateControllerTube(CBaseMonster* obj);
 	virtual void		execute					();

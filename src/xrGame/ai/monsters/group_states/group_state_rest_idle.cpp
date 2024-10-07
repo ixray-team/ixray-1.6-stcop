@@ -22,7 +22,7 @@
 
 CStateGroupRestIdle::CStateGroupRestIdle(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	m_target_node = 0;
 	m_move_type = 0;

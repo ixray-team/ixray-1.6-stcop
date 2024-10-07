@@ -6,7 +6,7 @@ class	CStateBurerAttack : public CState
 	typedef CState inherited;
 	typedef CState *state_ptr;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 public:
 						CStateBurerAttack			(CBaseMonster *obj);

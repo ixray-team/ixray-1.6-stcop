@@ -19,7 +19,7 @@ class CStateGroupAttackRun : public CState {
 	Fvector             m_memorized_pos;
 	Fvector             m_predicted_vel;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
 						CStateGroupAttackRun	(CBaseMonster *object);

@@ -9,7 +9,7 @@ protected:
 
 	u32				m_target_node;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
 	CStateGroupHearDangerousSound		(CBaseMonster*object);

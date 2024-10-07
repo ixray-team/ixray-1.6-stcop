@@ -2,15 +2,15 @@
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CSnork :	public CBaseMonster {
+class CSnorkBase :	public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 
 	SVelocityParam	m_fsVelocityJumpPrepare;
 	SVelocityParam	m_fsVelocityJumpGround;
 
 public:
-					CSnork				();
-	virtual			~CSnork				();	
+					CSnorkBase				();
+	virtual			~CSnorkBase				();	
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();				

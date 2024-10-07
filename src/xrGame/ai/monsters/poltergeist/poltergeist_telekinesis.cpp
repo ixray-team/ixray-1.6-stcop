@@ -4,7 +4,7 @@
 #include "../../../level.h"
 #include "../../../actor.h"
 #include "../../../../xrPhysics/icolisiondamageinfo.h"
-CPolterTele::CPolterTele(CPoltergeist *polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
+CPolterTele::CPolterTele(CPoltergeistBase *polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
 {
 }
 

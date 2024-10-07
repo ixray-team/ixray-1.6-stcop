@@ -5,7 +5,7 @@
 #include "../states/state_hide_from_point.h"
 #include "bloodsucker_predator.h"
 
-CustomBloodsuckerStateVampireHide::CustomBloodsuckerStateVampireHide(CustomBloodsucker* object) : inherited(object)
+CustomBloodsuckerStateVampireHide::CustomBloodsuckerStateVampireHide(CBloodsuckerBase* object) : inherited(object)
 {
 	add_state(eStateVampire_RunAway, new CStateMonsterHideFromPoint (object));
 	add_state(eStatePredator, new CustomBloodsuckerStatePredator(object));

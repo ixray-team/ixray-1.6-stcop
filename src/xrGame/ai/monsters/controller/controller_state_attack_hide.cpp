@@ -17,7 +17,7 @@
 
 CStateControlHide::CStateControlHide(CBaseMonster* obj) : inherited(obj)
 {
-	m_pController = smart_cast<CController*>(obj);
+	m_pController = smart_cast<CControllerBase*>(obj);
 }
 
 void CStateControlHide::initialize()
@@ -35,7 +35,7 @@ void CStateControlHide::execute()
 	if (m_state_fast_run) {
 		if (target.position.distance_to(this->object->Position()) < 5.f) {
 			m_state_fast_run = false;
-			this->m_pController->set_mental_state(CController::eStateDanger);
+			this->m_pController->set_mental_state(CControllerBase::eStateDanger);
 		}
 	}
 
@@ -71,14 +71,14 @@ bool CStateControlHide::check_start_conditions()
 void CStateControlHide::finalize()
 {
 	inherited::finalize();
-	this->m_pController->set_mental_state(CController::eStateDanger);
+	this->m_pController->set_mental_state(CControllerBase::eStateDanger);
 }
 
 
 void CStateControlHide::critical_finalize()
 {
 	inherited::finalize();
-	this->m_pController->set_mental_state(CController::eStateDanger);
+	this->m_pController->set_mental_state(CControllerBase::eStateDanger);
 }
 
 
@@ -106,5 +106,5 @@ void CStateControlHide::select_target_point()
 
 	m_state_fast_run = (target.position.distance_to(this->object->Position()) > 20.f);
 	if (m_state_fast_run && (Random.randI(100) < 50))
-		this->m_pController->set_mental_state(CController::eStateIdle);
+		this->m_pController->set_mental_state(CControllerBase::eStateIdle);
 }

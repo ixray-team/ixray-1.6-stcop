@@ -21,9 +21,9 @@
 
 #include "../../../entitycondition.h"
 
-CStateManagerSnork::CStateManagerSnork(CSnork* obj) : inherited(obj)
+CStateManagerSnork::CStateManagerSnork(CSnorkBase* obj) : inherited(obj)
 {
-	m_pSnork = smart_cast<CSnork*>(obj);
+	m_pSnork = smart_cast<CSnorkBase*>(obj);
 
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));

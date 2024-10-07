@@ -1,15 +1,15 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CustomDog;
+class CDogBase;
 
 class CustomDogStateManager : public CMonsterStateManager {
 	using inherited = CMonsterStateManager;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
-	CustomDogStateManager(CustomDog*object);
+	CustomDogStateManager(CDogBase*object);
 					virtual ~CustomDogStateManager();
 
 	virtual void	execute				();

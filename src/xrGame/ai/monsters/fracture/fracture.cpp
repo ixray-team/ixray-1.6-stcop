@@ -6,17 +6,17 @@
 #include "../control_movement_base.h"
 
 
-CustomFracture::CustomFracture()
+CFractureBase::CFractureBase()
 {
 	StateMan = new CustomFractureStateManager(this);
 }
 
-CustomFracture::~CustomFracture()
+CFractureBase::~CFractureBase()
 {
 	xr_delete(StateMan);
 }
 
-void CustomFracture::Load(LPCSTR section)
+void CFractureBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
@@ -79,7 +79,7 @@ void CustomFracture::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CustomFracture::CheckSpecParams(u32 spec_params)
+void CFractureBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));

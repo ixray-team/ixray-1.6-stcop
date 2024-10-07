@@ -1,16 +1,16 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CustomFlesh;
+class CFleshBase;
 
 class CustomFleshStateManager : public CMonsterStateManager {
 	using inherited = CMonsterStateManager;
 
-	CustomFlesh*m_pFlesh;
+	CFleshBase*m_pFlesh;
 
 public:
 
-			CustomFleshStateManager(CustomFlesh* object);
+			CustomFleshStateManager(CFleshBase* object);
 			virtual ~CustomFleshStateManager();
 
 	virtual void	execute				();

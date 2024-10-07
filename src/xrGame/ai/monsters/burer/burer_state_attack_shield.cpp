@@ -12,7 +12,7 @@
 
 CStateBurerShield::CStateBurerShield(CBaseMonster* obj) : inherited(obj)
 {
-	m_pBurer = smart_cast<CBurer*>(obj);
+	m_pBurer = smart_cast<CBurerBase*>(obj);
 
 	m_last_shield_started = 0;
 	m_shield_start_anim_length_sec = 0;

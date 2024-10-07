@@ -26,7 +26,7 @@ void CStateMonsterControlled::execute()
 		// проверить валидность данных атаки
 		const CEntity* enemy = pEntityBase->get_data().m_object;
 		if (!enemy || enemy->getDestroy() || !enemy->g_Alive()) {
-			pEntityBase->get_data().m_object = smart_cast<CController*>(this->object);
+			pEntityBase->get_data().m_object = smart_cast<CControllerBase*>(this->object);
 			this->select_state(eStateControlled_Follow);
 		}
 		else

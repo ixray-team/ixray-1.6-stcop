@@ -21,7 +21,7 @@ void CControlledEntity::set_task_attack(const CEntity *e)
 }
 
 
-void CControlledEntity::set_under_control(CController *controller)
+void CControlledEntity::set_under_control(CControllerBase *controller)
 {
 	m_controller		= controller;
 	

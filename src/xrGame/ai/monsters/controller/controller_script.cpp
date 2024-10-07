@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CController::script_register(lua_State *L)
+void CControllerBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CController,CGameObject>("CController")
+		class_<CControllerBase,CGameObject>("CControllerBase")
 			.def(constructor<>())
 	];
 }

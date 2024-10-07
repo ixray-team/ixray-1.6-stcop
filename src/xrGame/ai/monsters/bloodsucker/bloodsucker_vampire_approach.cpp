@@ -8,7 +8,7 @@
 #include "bloodsucker.h"
 #include "bloodsucker_vampire_approach.h"
 
-CustomBloodsuckerVampireApproach::CustomBloodsuckerVampireApproach(CustomBloodsucker* object) : inherited(object)
+CustomBloodsuckerVampireApproach::CustomBloodsuckerVampireApproach(CBloodsuckerBase* object) : inherited(object)
 {
 	
 }

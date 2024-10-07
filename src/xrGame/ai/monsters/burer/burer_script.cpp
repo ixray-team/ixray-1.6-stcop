@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CBurer::script_register(lua_State *L)
+void CBurerBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CBurer,CGameObject>("CBurer")
+		class_<CBurerBase,CGameObject>("CBurerBase")
 			.def(constructor<>())
 	];
 }

@@ -127,12 +127,12 @@ void CStateControllerAttack::check_force_state()
 void CStateControllerAttack::finalize()
 {
 	inherited::finalize();
-	//this->object->set_mental_state(CController::eStateIdle);
+	//this->object->set_mental_state(CControllerBase::eStateIdle);
 }
 
 
 void CStateControllerAttack::critical_finalize()
 {
 	inherited::critical_finalize();
-	//this->object->set_mental_state(CController::eStateIdle);
+	//this->object->set_mental_state(CControllerBase::eStateIdle);
 }

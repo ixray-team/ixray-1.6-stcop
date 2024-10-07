@@ -9,7 +9,7 @@ class	CStateBurerAttackRunAround : public CState {
 
 	Fvector				dest_direction;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 public:
 						CStateBurerAttackRunAround	(CBaseMonster*obj);

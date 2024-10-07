@@ -11,7 +11,7 @@ class CStateBurerAttackTele : public CState {
 	
 	u32									time_started;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 	enum {
 		ACTION_TELE_STARTED,

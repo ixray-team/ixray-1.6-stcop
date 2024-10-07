@@ -21,7 +21,7 @@ float	const	scan_angle = deg2rad(360.f) / num_scan_points;
 
 ChimeraAttackState::ChimeraAttackState(CBaseMonster* obj) : inherited(obj)
 {
-	m_pChimera = smart_cast<CChimera*>(obj);
+	m_pChimera = smart_cast<CChimeraBase*>(obj);
 }
 
 float   ChimeraAttackState::calculate_min_run_distance() const

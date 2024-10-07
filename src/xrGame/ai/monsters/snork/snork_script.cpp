@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CSnork::script_register(lua_State *L)
+void CSnorkBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CSnork,CGameObject>("CSnork")
+		class_<CSnorkBase,CGameObject>("CSnorkBase")
 			.def(constructor<>())
 	];
 }

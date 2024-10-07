@@ -9,7 +9,7 @@ protected:
 
 	const CEntityAlive			*corpse;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 	u32							m_time_last_eat;
 

@@ -8,7 +8,7 @@
 CStateBurerAntiAim::CStateBurerAntiAim(CBaseMonster* obj) : inherited(obj)
 {
 	m_allow_anti_aim = false;
-	m_pBurer = smart_cast<CBurer*>(obj);
+	m_pBurer = smart_cast<CBurerBase*>(obj);
 }
 
 void   CStateBurerAntiAim::initialize()

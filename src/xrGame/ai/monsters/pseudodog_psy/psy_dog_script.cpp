@@ -5,11 +5,11 @@
 
 using namespace luabind;
 
-void CPsyDog::script_register(lua_State *L)
+void CPseudoPsyDogBase::script_register(lua_State *L)
 {
 	module(L)
 		[
-			class_<CPsyDog,CGameObject>("CPsyDog")
+			class_<CPseudoPsyDogBase,CGameObject>("CPseudoPsyDogBase")
 			.def(constructor<>())
 		];
 }

@@ -6,7 +6,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-CustomFlesh::CustomFlesh()
+CFleshBase::CFleshBase()
 {
 	StateMan = new CustomFleshStateManager(this);
 	
@@ -15,12 +15,12 @@ CustomFlesh::CustomFlesh()
 	CControlled::init_external(this);
 }
 
-CustomFlesh::~CustomFlesh()
+CFleshBase::~CFleshBase()
 {
 	xr_delete(StateMan);
 }
 
-BOOL CustomFlesh::net_Spawn (CSE_Abstract* DC)
+BOOL CFleshBase::net_Spawn (CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -28,7 +28,7 @@ BOOL CustomFlesh::net_Spawn (CSE_Abstract* DC)
 	return TRUE;
 }
 
-void CustomFlesh::Load(LPCSTR section)
+void CFleshBase::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
@@ -107,7 +107,7 @@ void CustomFlesh::Load(LPCSTR section)
 
 // возвращает true, если после выполнения этой функции необходимо прервать обработку
 // т.е. если активирована последовательность
-void CustomFlesh::CheckSpecParams(u32 spec_params)
+void CFleshBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_DRAG_CORPSE) == 	ASP_DRAG_CORPSE) anim().SetCurAnim(eAnimDragCorpse);
 
@@ -128,7 +128,7 @@ void CustomFlesh::CheckSpecParams(u32 spec_params)
 // Необходима для определения пересечения копыта плоти с баунд-сферой крысы
 // Параметры: ConeVertex - вершина конуса, ConeAngle - угол конуса (между поверхностью и высотой)
 // ConeDir - направление конуса, SphereCenter - центр сферы, SphereRadius - радиус сферы
-bool CustomFlesh::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius)
+bool CFleshBase::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fvector ConeDir, Fvector SphereCenter, float SphereRadius)
 {
 	float fInvSin = 1.0f/_sin(ConeAngle);
 	float fCosSqr = _cos(ConeAngle)*_cos(ConeAngle);

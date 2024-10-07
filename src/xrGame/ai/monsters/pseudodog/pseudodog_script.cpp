@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CAI_PseudoDog::script_register(lua_State *L)
+void CPseudoDogBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CAI_PseudoDog,CGameObject>("CAI_PseudoDog")
+		class_<CPseudoDogBase,CGameObject>("CPseudoDogBase")
 			.def(constructor<>())
 	];
 }

@@ -7,7 +7,7 @@
 
 CStateCustomGroup::CStateCustomGroup(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	add_state(eStateCustom, new CStateMonsterCustomAction(object));
 }

@@ -4,15 +4,15 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CustomBoar : public CBaseMonster,
+class CBoarBase : public CBaseMonster,
 				 public CControlledEntity {
 
 	using		inherited = CBaseMonster	;
 	using		CControlled = CControlledEntity;
 
 public:
-	CustomBoar();
-	virtual			~CustomBoar();
+	CBoarBase();
+	virtual			~CBoarBase();
 
 	virtual void	Load				(LPCSTR section);
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);

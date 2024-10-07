@@ -13,7 +13,7 @@ class CPolterTele;
 //////////////////////////////////////////////////////////////////////////
 
 
-class CPoltergeist :	public CBaseMonster ,
+class CPoltergeistBase :	public CBaseMonster ,
 						public CTelekinesis,
 						public CEnergyHolder {
 	
@@ -51,8 +51,8 @@ public:
 	bool					m_detect_without_sight;
 
 public:
-					CPoltergeist		();
-	virtual			~CPoltergeist		();	
+					CPoltergeistBase		();
+	virtual			~CPoltergeistBase		();	
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reload				(LPCSTR section);
@@ -170,10 +170,10 @@ class CPolterSpecialAbility {
 	u32					m_last_hit_frame;
 
 protected:
-	CPoltergeist		*m_object;	
+	CPoltergeistBase		*m_object;	
 
 public:			
-					CPolterSpecialAbility		(CPoltergeist *polter);
+					CPolterSpecialAbility		(CPoltergeistBase *polter);
 	virtual			~CPolterSpecialAbility		();
 
 	virtual void	load						(LPCSTR section);
@@ -261,7 +261,7 @@ private:
 	FLAME_ELEMS_VEC			m_flames;
 
 public:	
-					CPolterFlame				(CPoltergeist *polter);
+					CPolterFlame				(CPoltergeistBase *polter);
 	virtual			~CPolterFlame				();
 
 	virtual void	load						(LPCSTR section);
@@ -315,7 +315,7 @@ class CPolterTele : public CPolterSpecialAbility {
 	u32					m_time_next;
 
 public:	
-					CPolterTele						(CPoltergeist *polter);
+					CPolterTele						(CPoltergeistBase *polter);
 	virtual			~CPolterTele					();
 
 	virtual void	load							(LPCSTR section);

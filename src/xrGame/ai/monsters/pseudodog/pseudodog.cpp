@@ -19,25 +19,25 @@
 #	include "../../../xrserver.h"
 #endif
 
-CAI_PseudoDog::CAI_PseudoDog()
+CPseudoDogBase::CPseudoDogBase()
 {
 	com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlRotationJump);
 }
 
-DLL_Pure *CAI_PseudoDog::_construct()
+DLL_Pure *CPseudoDogBase::_construct()
 {
 	inherited::_construct			();
 	StateMan = create_state_manager	();
 	return							(this);
 }
 
-CAI_PseudoDog::~CAI_PseudoDog()
+CPseudoDogBase::~CPseudoDogBase()
 {
 	xr_delete(StateMan);
 }
 
-void CAI_PseudoDog::reinit()
+void CPseudoDogBase::reinit()
 {
 	inherited::reinit();
 
@@ -48,7 +48,7 @@ void CAI_PseudoDog::reinit()
 	com_man().add_rotation_jump_data	("1","2","3","4", deg(90));
 }
 
-void CAI_PseudoDog::Load(LPCSTR section)
+void CPseudoDogBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
@@ -137,7 +137,7 @@ void CAI_PseudoDog::Load(LPCSTR section)
 }
 
 
-void CAI_PseudoDog::reload(LPCSTR section)
+void CPseudoDogBase::reload(LPCSTR section)
 {
 	inherited::reload			(section);
 
@@ -151,7 +151,7 @@ void CAI_PseudoDog::reload(LPCSTR section)
 
 }
 
-void CAI_PseudoDog::CheckSpecParams(u32 spec_params)
+void CPseudoDogBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_PSI_ATTACK) == ASP_PSI_ATTACK) {
 		com_man().seq_run(anim().get_motion_id(eAnimAttackPsi));
@@ -163,7 +163,7 @@ void CAI_PseudoDog::CheckSpecParams(u32 spec_params)
 }
 
 
-void CAI_PseudoDog::HitEntityInJump		(const CEntity *pEntity) 
+void CPseudoDogBase::HitEntityInJump		(const CEntity *pEntity) 
 {
 	SAAParam &params	= anim().AA_GetParams("run_jamp_1");
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
@@ -171,12 +171,12 @@ void CAI_PseudoDog::HitEntityInJump		(const CEntity *pEntity)
 
 
 #ifdef _DEBUG
-void CAI_PseudoDog::debug_on_key(int key)
+void CPseudoDogBase::debug_on_key(int key)
 {
 }
 #endif
 
-IStateManagerBase *CAI_PseudoDog::create_state_manager()
+IStateManagerBase *CPseudoDogBase::create_state_manager()
 {
 	return new CStateManagerPseudodog(this);
 }

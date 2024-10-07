@@ -6,7 +6,7 @@ class CustomBloodsuckerVampireApproach : public CState
 	using inherited = CState;
 
 public:
-	CustomBloodsuckerVampireApproach(CustomBloodsucker* object);
+	CustomBloodsuckerVampireApproach(CBloodsuckerBase* object);
 	virtual				~CustomBloodsuckerVampireApproach();
 
 	virtual void		initialize();

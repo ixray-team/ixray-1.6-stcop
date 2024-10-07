@@ -23,7 +23,7 @@
 
 CStateGroupEat::CStateGroupEat(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	corpse = nullptr;
 

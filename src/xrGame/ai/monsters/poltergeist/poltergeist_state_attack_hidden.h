@@ -7,7 +7,7 @@ protected:
 	typedef CState		inherited;
 	typedef CState*	state_ptr;
 
-	CPoltergeist* m_pPoltergeist;
+	CPoltergeistBase* m_pPoltergeist;
 
 public:
 					CStatePoltergeistAttackHidden	(CBaseMonster*obj);

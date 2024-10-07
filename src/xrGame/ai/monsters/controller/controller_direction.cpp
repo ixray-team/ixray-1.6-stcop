@@ -11,7 +11,7 @@ const float	_pmt_min_speed			= deg(10);
 void CControllerDirection::reinit()
 {
 	inherited::reinit		();
-	m_controller			= smart_cast<CController *>(m_object);
+	m_controller			= smart_cast<CControllerBase *>(m_object);
 
 	assign_bones			();
 

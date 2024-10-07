@@ -4,8 +4,8 @@
 
 class CPsyDogPhantom;
 
-class CPsyDog : public CAI_PseudoDog {
-	typedef CAI_PseudoDog inherited;
+class CPseudoPsyDogBase : public CPseudoDogBase {
+	typedef CPseudoDogBase inherited;
 
 	friend class CPsyDogPhantom;
 	friend class CPsyDogAura;
@@ -26,8 +26,8 @@ class CPsyDog : public CAI_PseudoDog {
 	TTime*			m_phantoms_die_time;
 
 public:
-						CPsyDog				();
-		virtual			~CPsyDog			();
+						CPseudoPsyDogBase				();
+		virtual			~CPseudoPsyDogBase			();
 
 		virtual void	Load				(LPCSTR section);
 		virtual BOOL	net_Spawn			(CSE_Abstract *dc);
@@ -63,10 +63,10 @@ private:
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
 
-class CPsyDogPhantom : public CAI_PseudoDog {
-	typedef CAI_PseudoDog inherited;
+class CPsyDogPhantom : public CPseudoDogBase {
+	typedef CPseudoDogBase inherited;
 	
-	CPsyDog			*m_parent;
+	CPseudoPsyDogBase			*m_parent;
 
 	enum {
 		eWaitToAppear,

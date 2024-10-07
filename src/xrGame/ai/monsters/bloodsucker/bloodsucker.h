@@ -8,14 +8,14 @@
 #include "../../../../xrScripts/script_export_space.h"
 #include "bloodsucker_alien.h"
 
-class CustomBloodsucker : public CBaseMonster, 
+class CBloodsuckerBase : public CBaseMonster, 
 						public CControlledActor 
 {
 	using		inherited = CBaseMonster;
 	
 public:
-	CustomBloodsucker();
-	virtual					~CustomBloodsucker();
+	CBloodsuckerBase();
+	virtual					~CBloodsuckerBase();
 
 	virtual void			reinit					();
 	virtual	void			reload					(LPCSTR section);

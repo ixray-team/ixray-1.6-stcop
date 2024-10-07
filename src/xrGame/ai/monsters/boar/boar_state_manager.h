@@ -1,17 +1,17 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CustomBoar;
+class CBoarBase;
 
 class CustomBoarStateManager : public CMonsterStateManager
 {
 	using inherited = CMonsterStateManager;
 
-	CustomBoar* m_pBoar;
+	CBoarBase* m_pBoar;
 
 public:
 
-	CustomBoarStateManager(CustomBoar*object);
+	CustomBoarStateManager(CBoarBase*object);
 					virtual ~CustomBoarStateManager();
 
 	virtual void	execute				();

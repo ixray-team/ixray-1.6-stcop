@@ -5,12 +5,12 @@
 #include "../../../ai_monster_space.h"
 
 
-class CController;
+class CControllerBase;
 
 class CControllerDirection : public CControlDirectionBase {
 	typedef CControlDirectionBase inherited;
 
-	CController						*m_controller;
+	CControllerBase						*m_controller;
 	
 	bonesManipulation				m_bones;
 	CBoneInstance					*m_bone_spine;

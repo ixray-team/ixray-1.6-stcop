@@ -8,7 +8,7 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
-class CBurer :	public CBaseMonster,
+class CBurerBase :	public CBaseMonster,
 				public CTelekinesis 
 {
 
@@ -122,8 +122,8 @@ public:
 	CBurerFastGravi	*m_fast_gravi;
 
 public:
-					CBurer				();
-	virtual			~CBurer				();	
+					CBurerBase				();
+	virtual			~CBurerBase				();	
 
 
 	virtual void	reinit				();

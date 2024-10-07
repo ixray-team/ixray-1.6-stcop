@@ -29,7 +29,7 @@ CustomBloodsuckerAlien::~CustomBloodsuckerAlien()
 
 }
 
-void CustomBloodsuckerAlien::init_external(CustomBloodsucker*obj)
+void CustomBloodsuckerAlien::init_external(CBloodsuckerBase*obj)
 {
 	m_object	= obj;
 }

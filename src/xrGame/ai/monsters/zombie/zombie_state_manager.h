@@ -1,15 +1,15 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CZombie;
+class CZombieBase;
 
 class CStateManagerZombie : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
-	CZombie* m_pZombie;
+	CZombieBase* m_pZombie;
 
 public:
-						CStateManagerZombie		(CZombie *obj);
+						CStateManagerZombie		(CZombieBase *obj);
 	virtual				~CStateManagerZombie	();
 
 	virtual	void		execute					();

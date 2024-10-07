@@ -4,7 +4,7 @@
 ////////////////////////////////////////////////////////////////////////
 #include "../../../pp_effector_custom.h"
 
-class CController;
+class CControllerBase;
 
 struct SAuraSound {
 	ref_sound	left;
@@ -32,7 +32,7 @@ public:
 class CControllerAura : public CPPEffectorCustomController<CPPEffectorControllerAura>{
 	typedef CPPEffectorCustomController<CPPEffectorControllerAura> inherited;
 
-	CController			*m_object;
+	CControllerBase			*m_object;
 	u32					m_time_last_update;
 
 	SAuraSound			aura_sound;
@@ -49,7 +49,7 @@ class CControllerAura : public CPPEffectorCustomController<CPPEffectorController
 
 
 public:
-					CControllerAura			(CController *monster) : m_object(monster){}
+					CControllerAura			(CControllerBase *monster) : m_object(monster){}
 	virtual void	load					(LPCSTR section);
 
 			void	on_death				();

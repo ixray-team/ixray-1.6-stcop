@@ -23,7 +23,7 @@ CStateBurerAttackTele::CStateBurerAttackTele(CBaseMonster* obj) : inherited(obj)
 {
 	m_anim_end_tick = 0;
 	m_last_grenade_scan = 0;
-	m_pBurer = smart_cast<CBurer*>(obj);
+	m_pBurer = smart_cast<CBurerBase*>(obj);
 }
 
 void CStateBurerAttackTele::initialize()
@@ -291,7 +291,7 @@ void CStateBurerAttackTele::FireAllToEnemy()
 		}
 	}
 
-	this->object->sound().play(CBurer::eMonsterSoundTeleAttack);
+	this->object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
 }
 
 void CStateBurerAttackTele::ExecuteTeleContinue()
@@ -342,7 +342,7 @@ void CStateBurerAttackTele::ExecuteTeleFire()
 	this->m_pBurer->fire_t(selected_object, enemy_pos, fire_time);
 
 	this->m_pBurer->StopTeleObjectParticle(selected_object);
-	this->object->sound().play(CBurer::eMonsterSoundTeleAttack);
+	this->object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
 }
 
 bool CStateBurerAttackTele::IsActiveObjects()

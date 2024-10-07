@@ -179,7 +179,7 @@ void CHUDTarget::Render()
 
 	if (psHUD_Flags.test(HUD_INFO))
 	{ 
-		bool const is_poltergeist	= PP.RQ.O && !!smart_cast<CPoltergeist*> (PP.RQ.O);
+		bool const is_poltergeist	= PP.RQ.O && !!smart_cast<CPoltergeistBase*> (PP.RQ.O);
 
 		if ((PP.RQ.O && PP.RQ.O->getVisible()) || is_poltergeist)
 		{

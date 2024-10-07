@@ -29,9 +29,9 @@
 #include "bloodsucker_attack_state.h"
 #include "bloodsucker_vampire_execute.h"
 
-CustomBloodsukerStateManager::CustomBloodsukerStateManager(CustomBloodsucker *object) : inherited(object)
+CustomBloodsukerStateManager::CustomBloodsukerStateManager(CBloodsuckerBase *object) : inherited(object)
 {
-	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
+	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
 
 	add_state(eStateRest,					new CStateMonsterRest					(object));
 	add_state(eStatePanic,					new CStateMonsterPanic				(object));

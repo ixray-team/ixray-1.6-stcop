@@ -25,9 +25,9 @@
 #include "../../../../xrCore/_vector3d_ext.h"
 #include "../control_direction_base.h"
 
-bool CBurer::can_scan = true;
+bool CBurerBase::can_scan = true;
 
-CBurer::CBurer()
+CBurerBase::CBurerBase()
 {
 	StateMan				=	new CStateManagerBurer(this);
 
@@ -36,14 +36,14 @@ CBurer::CBurer()
  	control().add				(m_fast_gravi,  ControlCom::eComCustom1);
 }
 
-CBurer::~CBurer()
+CBurerBase::~CBurerBase()
 {
 	xr_delete					(StateMan);
 	xr_delete					(m_fast_gravi);
 }
 
 
-void CBurer::reinit()
+void CBurerBase::reinit()
 {
 	inherited::reinit			();
 
@@ -52,12 +52,12 @@ void CBurer::reinit()
 	time_last_scan			=	0;
 }
 
-void CBurer::net_Destroy()
+void CBurerBase::net_Destroy()
 {
 	inherited::net_Destroy();
 }
 
-void CBurer::reload(LPCSTR section)
+void CBurerBase::reload(LPCSTR section)
 {
 	inherited::reload		(section);
 
@@ -71,17 +71,17 @@ void CBurer::reload(LPCSTR section)
 							u32(MonsterSound::eBaseChannel),	eMonsterSoundTeleAttack, "head");
 }
 
-void CBurer::ActivateShield () 
+void CBurerBase::ActivateShield () 
 {
 	m_shield_active						=	true;
 }
 
-void CBurer::DeactivateShield () 
+void CBurerBase::DeactivateShield () 
 {
 	m_shield_active						=	false;
 }
 
-void CBurer::Load(LPCSTR section)
+void CBurerBase::Load(LPCSTR section)
 {
 	inherited::Load							(section);
 
@@ -210,24 +210,24 @@ void CBurer::Load(LPCSTR section)
 	PostLoad								(section);
 }
 
-void CBurer::PostLoad (LPCSTR section)
+void CBurerBase::PostLoad (LPCSTR section)
 {
 	inherited::PostLoad						(section);
-	m_anti_aim->set_callback				(anti_aim_ability::hit_callback(this, &CBurer::StaminaHit));
+	m_anti_aim->set_callback				(anti_aim_ability::hit_callback(this, &CBurerBase::StaminaHit));
 }
 
-void CBurer::shedule_Update(u32 dt)
+void CBurerBase::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update		(dt);
 
 	CTelekinesis::schedule_update	();
 }
 
-void CBurer::CheckSpecParams(u32 spec_params)
+void CBurerBase::CheckSpecParams(u32 spec_params)
 {
 }
 
-void  CBurer::StaminaHit ()
+void  CBurerBase::StaminaHit ()
 {
 	if ( GodMode() )
 	{
@@ -263,7 +263,7 @@ void  CBurer::StaminaHit ()
 	}
 }
 
-void CBurer::UpdateGraviObject()
+void CBurerBase::UpdateGraviObject()
 {
 	if ( !m_gravi_object.active ) 
 	{
@@ -376,7 +376,7 @@ void CBurer::UpdateGraviObject()
 	} else ::Sound->play_at_pos			(sound_gravi_wave,0,snd_pos);
 }
 
-void CBurer::UpdateCL()
+void CBurerBase::UpdateCL()
 {
 	inherited::UpdateCL();
 
@@ -385,7 +385,7 @@ void CBurer::UpdateCL()
 	//	control().activate(ControlCom::eComCustom1);
 }
 
-void CBurer::StartGraviPrepare() 
+void CBurerBase::StartGraviPrepare() 
 {
 	const CEntityAlive *enemy = EnemyMan.get_enemy();
 	if (!enemy) return;
@@ -397,14 +397,14 @@ void CBurer::StartGraviPrepare()
 													 Fvector().set(0.0f, 0.1f, 0.0f),
 													 pA->ID());
 }
-void CBurer::StopGraviPrepare() 
+void CBurerBase::StopGraviPrepare() 
 {
 	CActor *pA = Actor();
 	if ( !pA ) return;
 	pA->CParticlesPlayer::StopParticles				(particle_gravi_prepare, BI_NONE, true);
 }
 
-void CBurer::StartTeleObjectParticle(CGameObject *pO) 
+void CBurerBase::StartTeleObjectParticle(CGameObject *pO) 
 {
 	CParticlesPlayer* PP						=	smart_cast<CParticlesPlayer*>(pO);
 	if(!PP) return;
@@ -412,14 +412,14 @@ void CBurer::StartTeleObjectParticle(CGameObject *pO)
 													 Fvector().set(0.0f, 0.1f, 0.0f),
 													 pO->ID());
 }
-void CBurer::StopTeleObjectParticle(CGameObject *pO) 
+void CBurerBase::StopTeleObjectParticle(CGameObject *pO) 
 {
 	CParticlesPlayer* PP						=	smart_cast<CParticlesPlayer*>(pO);
 	if(!PP) return;
 	PP->StopParticles								(particle_tele_object, BI_NONE, true);
 }
 
-void	CBurer::Hit								(SHit* pHDS)
+void	CBurerBase::Hit								(SHit* pHDS)
 {
 	if ( m_shield_active							&& 
 		 pHDS->hit_type == ALife::eHitTypeFireWound	&& 
@@ -445,7 +445,7 @@ void	CBurer::Hit								(SHit* pHDS)
 	last_hit_frame								=	Device.dwFrame;
 }
 
-void CBurer::Die(CObject* who)
+void CBurerBase::Die(CObject* who)
 {
 	inherited::Die(who);
 
@@ -457,7 +457,7 @@ void CBurer::Die(CObject* who)
 	CTelekinesis::Deactivate();
 }
 
-void CBurer::net_Relcase(CObject *O)
+void CBurerBase::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase		(O);
 
@@ -465,7 +465,7 @@ void CBurer::net_Relcase(CObject *O)
 }
 
 #ifdef DEBUG
-CBaseMonster::SDebugInfo CBurer::show_debug_info()
+CBaseMonster::SDebugInfo CBurerBase::show_debug_info()
 {
 	CBaseMonster::SDebugInfo info = inherited::show_debug_info();
 	if (!info.active) return CBaseMonster::SDebugInfo();
@@ -478,7 +478,7 @@ CBaseMonster::SDebugInfo CBurer::show_debug_info()
 }
 #endif
 
-void   CBurer::face_enemy ()
+void   CBurerBase::face_enemy ()
 {
 	if ( !EnemyMan.get_enemy() )
 	{

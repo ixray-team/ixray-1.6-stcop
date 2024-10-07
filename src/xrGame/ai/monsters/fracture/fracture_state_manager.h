@@ -1,13 +1,13 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CustomFracture;
+class CFractureBase;
 
 class CustomFractureStateManager : public CMonsterStateManager {
 	using inherited = CMonsterStateManager;
 
 public:
-	CustomFractureStateManager(CustomFracture*object);
+	CustomFractureStateManager(CFractureBase*object);
 	virtual				~CustomFractureStateManager();
 
 	virtual	void		execute					();

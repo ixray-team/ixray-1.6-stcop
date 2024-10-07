@@ -6,7 +6,7 @@ class CStateBurerAntiAim : public CState
 private:
 	typedef				CState	inherited;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 public:
 						CStateBurerAntiAim		(CBaseMonster *obj);

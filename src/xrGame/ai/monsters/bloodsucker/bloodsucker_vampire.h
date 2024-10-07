@@ -8,10 +8,10 @@ class	CustomBloodsuckerStateVampire : public CState
 	using state_ptr = CState*;
 
 	const CEntityAlive *enemy;
-    CustomBloodsucker* m_pBloodsucker;
+    CBloodsuckerBase* m_pBloodsucker;
 
 public:
-	CustomBloodsuckerStateVampire(CustomBloodsucker*object);
+	CustomBloodsuckerStateVampire(CBloodsuckerBase*object);
 	virtual ~CustomBloodsuckerStateVampire();
 
 	virtual void		reinit							();

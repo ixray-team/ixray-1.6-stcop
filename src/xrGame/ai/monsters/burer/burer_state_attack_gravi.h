@@ -32,7 +32,7 @@ private:
 
 	}						m_action;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 	u32						m_time_gravi_started;
 	TTime					m_next_gravi_allowed_tick;

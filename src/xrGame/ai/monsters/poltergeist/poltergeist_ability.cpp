@@ -6,7 +6,7 @@
 #include "../../../level_debug.h"
 
 
-CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist *polter)
+CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeistBase *polter)
 {
 	m_object					= polter;
 
@@ -105,7 +105,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 #define TRACE_DISTANCE			10.f
 #define TRACE_ATTEMPT_COUNT		3
 
-void CPoltergeist::PhysicalImpulse	(const Fvector &position)
+void CPoltergeistBase::PhysicalImpulse	(const Fvector &position)
 {
 	m_nearest.resize(0);
 	Level().ObjectSpace.GetNearest	(m_nearest,position, IMPULSE_RADIUS, nullptr); 
@@ -126,7 +126,7 @@ void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 	E->applyImpulse(dir,IMPULSE * E->getMass());
 }
 
-void CPoltergeist::StrangeSounds(const Fvector &position)
+void CPoltergeistBase::StrangeSounds(const Fvector &position)
 {
 	if (m_strange_sound._feedback()) return;
 	

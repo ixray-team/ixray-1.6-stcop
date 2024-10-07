@@ -7,7 +7,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-CustomBoar::CustomBoar()
+CBoarBase::CBoarBase()
 {
 	velocity = 0.f;
 	cur_delta = 0.f;
@@ -20,12 +20,12 @@ CustomBoar::CustomBoar()
 	CControlled::init_external(this);
 }
 
-CustomBoar::~CustomBoar()
+CBoarBase::~CBoarBase()
 {
 	xr_delete(StateMan);
 }
 
-void CustomBoar::Load(LPCSTR section)
+void CBoarBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
@@ -114,7 +114,7 @@ void CustomBoar::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CustomBoar::reinit()
+void CBoarBase::reinit()
 {
 	inherited::reinit();
 	if(CCustomMonster::use_simplified_visual())	return;
@@ -122,9 +122,9 @@ void CustomBoar::reinit()
 }
 
 
-void  CustomBoar::BoneCallback(CBoneInstance *B)
+void  CBoarBase::BoneCallback(CBoneInstance *B)
 {
-	CustomBoar*P = static_cast<CustomBoar*>(B->callback_param());
+	CBoarBase*P = static_cast<CBoarBase*>(B->callback_param());
 
 	if (!P->look_at_enemy) return;
 	
@@ -133,7 +133,7 @@ void  CustomBoar::BoneCallback(CBoneInstance *B)
 	B->mTransform.mulB_43(M);
 }
 
-BOOL CustomBoar::net_Spawn (CSE_Abstract* DC)
+BOOL CBoarBase::net_Spawn (CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -150,7 +150,7 @@ BOOL CustomBoar::net_Spawn (CSE_Abstract* DC)
 	return TRUE;
 }
 
-void CustomBoar::UpdateCL()
+void CBoarBase::UpdateCL()
 {
 	inherited::UpdateCL();
 	angle_lerp(cur_delta, target_delta, velocity, client_update_fdelta());

@@ -17,9 +17,9 @@
 #include "../states/monster_state_hitted.h"
 #include "../../../entitycondition.h"
 
-CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeist* obj) : inherited(obj)
+CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeistBase* obj) : inherited(obj)
 {
-	m_pPoltergeist = smart_cast<CPoltergeist*>(obj);
+	m_pPoltergeist = smart_cast<CPoltergeistBase*>(obj);
 
 	add_state(eStateRest, xr_new<CPoltergeistStateRest>(obj));
 	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));

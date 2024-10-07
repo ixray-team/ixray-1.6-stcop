@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "pseudo_gigant.h"
+#include "pseudogigant.h"
 #include "pseudogigant_state_manager.h" 
 
 #include "../control_animation_base.h"
@@ -18,7 +18,7 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-CStateManagerGigant::CStateManagerGigant(CPseudoGigant* monster) : inherited(monster)
+CStateManagerGigant::CStateManagerGigant(CPseudoGiantBase* monster) : inherited(monster)
 {
 	add_state(eStateRest, xr_new<CStateMonsterRest>(monster));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(monster));

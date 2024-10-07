@@ -1,7 +1,7 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CChimera;
+class CChimeraBase;
 
 class CStateManagerChimera : public CMonsterStateManager
 {
@@ -9,7 +9,7 @@ private:
 	typedef				CMonsterStateManager	inherited;
 
 public:
-						CStateManagerChimera	(CChimera *obj);
+						CStateManagerChimera	(CChimeraBase *obj);
 	virtual				~CStateManagerChimera	();
 
 	virtual	void		execute					();

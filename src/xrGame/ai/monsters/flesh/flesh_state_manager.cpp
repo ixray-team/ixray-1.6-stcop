@@ -20,9 +20,9 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CustomFleshStateManager::CustomFleshStateManager(CustomFlesh* object) : inherited(object)
+CustomFleshStateManager::CustomFleshStateManager(CFleshBase* object) : inherited(object)
 {
-	m_pFlesh = smart_cast<CustomFlesh*>(object);
+	m_pFlesh = smart_cast<CFleshBase*>(object);
 
 	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));

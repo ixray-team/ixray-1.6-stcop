@@ -10,7 +10,7 @@
 #include "../../../actorEffector.h"
 #include "../ai_monster_effector.h"
 
-CPolterFlame::CPolterFlame(CPoltergeist *polter) : inherited (polter)
+CPolterFlame::CPolterFlame(CPoltergeistBase *polter) : inherited (polter)
 {
 }
 

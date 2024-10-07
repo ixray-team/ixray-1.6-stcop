@@ -19,7 +19,7 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CStateManagerPseudodog::CStateManagerPseudodog(CAI_PseudoDog* monster) : inherited(monster)
+CStateManagerPseudodog::CStateManagerPseudodog(CPseudoDogBase* monster) : inherited(monster)
 {
 	add_state(eStateRest, xr_new<CStateMonsterRest>(monster));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(monster));

@@ -2,12 +2,12 @@
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CustomCat : public CBaseMonster{
+class CCatBase : public CBaseMonster{
 	using		inherited = CBaseMonster;
 
 public:
-	CustomCat();
-	virtual			~CustomCat();
+	CCatBase();
+	virtual			~CCatBase();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();

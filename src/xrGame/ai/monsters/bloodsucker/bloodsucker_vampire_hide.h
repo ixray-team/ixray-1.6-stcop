@@ -7,7 +7,7 @@ class CustomBloodsuckerStateVampireHide : public CState
 	using state_ptr = CState*;
 
 public:
-	CustomBloodsuckerStateVampireHide(CustomBloodsucker* object);
+	CustomBloodsuckerStateVampireHide(CBloodsuckerBase* object);
 	virtual ~CustomBloodsuckerStateVampireHide();
 
 	virtual	void		reselect_state();

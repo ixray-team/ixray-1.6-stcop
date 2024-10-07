@@ -13,9 +13,9 @@
 
 #include "../../../HudManager.h"
 
-CustomBloodsuckerStateVampireExecute::CustomBloodsuckerStateVampireExecute(CustomBloodsucker* object) : inherited(object)
+CustomBloodsuckerStateVampireExecute::CustomBloodsuckerStateVampireExecute(CBloodsuckerBase* object) : inherited(object)
 {
-	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
+	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
 }
 
 CustomBloodsuckerStateVampireExecute::~CustomBloodsuckerStateVampireExecute()
@@ -42,7 +42,7 @@ void CustomBloodsuckerStateVampireExecute::initialize()
 	m_action = eActionPrepare;
 	time_vampire_started = 0;
 
-	this->m_pBloodsucker->set_visibility_state(CustomBloodsucker::full_visibility);
+	this->m_pBloodsucker->set_visibility_state(CBloodsuckerBase::full_visibility);
 
 	this->m_pBloodsucker->m_hits_before_vampire = 0;
 	this->m_pBloodsucker->m_sufficient_hits_before_vampire_random = -1 + (rand() % 3);
@@ -214,7 +214,7 @@ void CustomBloodsuckerStateVampireExecute::execute_vampire_prepare()
 	this->object->com_man().ta_activate(this->m_pBloodsucker->anim_triple_vampire);
 	time_vampire_started = Device.dwTimeGlobal;
 
-	this->m_pBloodsucker->sound().play(CustomBloodsucker::eVampireGrasp);
+	this->m_pBloodsucker->sound().play(CBloodsuckerBase::eVampireGrasp);
 }
 
 void CustomBloodsuckerStateVampireExecute::execute_vampire_continue()
@@ -227,7 +227,7 @@ void CustomBloodsuckerStateVampireExecute::execute_vampire_continue()
 		return;
 	}
 
-	this->m_pBloodsucker->sound().play(CustomBloodsucker::eVampireSucking);
+	this->m_pBloodsucker->sound().play(CBloodsuckerBase::eVampireSucking);
 
 	if (time_vampire_started + SBloodsuckerStateVampireExecuteProperies::TimeHold < Device.dwTimeGlobal) {
 		m_action = eActionFire;
@@ -237,7 +237,7 @@ void CustomBloodsuckerStateVampireExecute::execute_vampire_continue()
 void CustomBloodsuckerStateVampireExecute::execute_vampire_hit()
 {
 	this->object->com_man().ta_pointbreak();
-	this->object->sound().play(CustomBloodsucker::eVampireHit);
+	this->object->sound().play(CBloodsuckerBase::eVampireHit);
 	this->m_pBloodsucker->SatisfyVampire();
 }
 

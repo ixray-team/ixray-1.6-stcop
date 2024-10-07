@@ -4,28 +4,28 @@
 
 CStateControllerFastMove::CStateControllerFastMove(CBaseMonster* obj) : inherited(obj) 
 {
-	m_pController = smart_cast<CController*>(obj);
+	m_pController = smart_cast<CControllerBase*>(obj);
 }
 
 void CStateControllerFastMove::initialize()
 {
 	inherited::initialize();
 
-	m_pController->set_mental_state(CController::eStateIdle);
+	m_pController->set_mental_state(CControllerBase::eStateIdle);
 }
 
 
 void CStateControllerFastMove::finalize()
 {
 	inherited::finalize();
-	m_pController->set_mental_state(CController::eStateDanger);
+	m_pController->set_mental_state(CControllerBase::eStateDanger);
 }
 
 
 void CStateControllerFastMove::critical_finalize()
 {
 	inherited::critical_finalize();
-	m_pController->set_mental_state(CController::eStateDanger);
+	m_pController->set_mental_state(CControllerBase::eStateDanger);
 }
 
 

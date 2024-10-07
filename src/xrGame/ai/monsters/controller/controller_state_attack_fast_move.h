@@ -5,7 +5,7 @@
 class	CStateControllerFastMove : public CState {
 protected:
 	typedef CState		inherited;
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 public:
 	CStateControllerFastMove(CBaseMonster* obj);

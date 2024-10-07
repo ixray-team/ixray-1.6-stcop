@@ -26,9 +26,9 @@
 #include "controller_state_attack_hide.h"
 //#include "../states/state_test_state.h"
 
-CStateManagerController::CStateManagerController(CController* obj) : inherited(obj)
+CStateManagerController::CStateManagerController(CControllerBase* obj) : inherited(obj)
 {
-	m_pController = smart_cast<CController*>(obj);
+	m_pController = smart_cast<CControllerBase*>(obj);
 
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
@@ -59,7 +59,7 @@ CStateManagerController::~CStateManagerController()
 void CStateManagerController::reinit()
 {
 	inherited::reinit();
-	m_pController->set_mental_state(CController::eStateIdle);
+	m_pController->set_mental_state(CControllerBase::eStateIdle);
 }
 
 

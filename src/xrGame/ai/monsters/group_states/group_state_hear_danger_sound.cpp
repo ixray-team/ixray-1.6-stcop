@@ -31,7 +31,7 @@
 
 CStateGroupHearDangerousSound::CStateGroupHearDangerousSound(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	m_target_node = 0;
 

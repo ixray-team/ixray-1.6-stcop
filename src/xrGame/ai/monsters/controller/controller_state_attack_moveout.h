@@ -11,7 +11,7 @@ class CStateControlMoveOut : public CState {
 	u32				m_last_time_look_point_updated;
 	u32				m_current_delay;
 
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 	enum {
 		eMoveToNodeEnemyLastSeen,

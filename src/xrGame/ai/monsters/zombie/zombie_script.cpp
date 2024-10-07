@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CZombie::script_register(lua_State *L)
+void CZombieBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CZombie,CGameObject>("CZombie")
+		class_<CZombieBase,CGameObject>("CZombieBase")
 			.def(constructor<>())
 	];
 }

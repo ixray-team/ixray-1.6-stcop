@@ -1,15 +1,15 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CTushkano;
+class CTushkanoBase;
 
 class CStateManagerTushkano : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
-	CTushkano* m_pTushkano;
+	CTushkanoBase* m_pTushkano;
 
 public:
-						CStateManagerTushkano	(CTushkano *obj);
+						CStateManagerTushkano	(CTushkanoBase *obj);
 	virtual				~CStateManagerTushkano	();
 
 	virtual	void		execute					();

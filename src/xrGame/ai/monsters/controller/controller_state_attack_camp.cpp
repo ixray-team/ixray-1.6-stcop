@@ -20,7 +20,7 @@
 
 CStateControlCamp::CStateControlCamp(CBaseMonster* obj) : inherited(obj) 
 { 
-	m_pController = smart_cast<CController*>(obj);
+	m_pController = smart_cast<CControllerBase*>(obj);
 }
 
 void CStateControlCamp::initialize()

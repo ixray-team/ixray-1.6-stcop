@@ -6,7 +6,7 @@ class CStateBurerShield : public CState
 private:
 	typedef				CState	inherited;
 
-	CBurer* m_pBurer;
+	CBurerBase* m_pBurer;
 
 public:
 						CStateBurerShield		(CBaseMonster*obj);

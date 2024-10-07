@@ -19,9 +19,9 @@
 
 #include "../states/monster_state_attack_melee.h"
 
-CStateManagerZombie::CStateManagerZombie(CZombie* obj) : inherited(obj)
+CStateManagerZombie::CStateManagerZombie(CZombieBase* obj) : inherited(obj)
 {
-	m_pZombie = smart_cast<CZombie*>(obj);
+	m_pZombie = smart_cast<CZombieBase*>(obj);
 
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStateAttack,

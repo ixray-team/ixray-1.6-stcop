@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CChimera::script_register(lua_State *L)
+void CChimeraBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CChimera,CGameObject>("CChimera")
+		class_<CChimeraBase,CGameObject>("CChimeraBase")
 			.def(constructor<>())
 	];
 }

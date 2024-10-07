@@ -3,7 +3,7 @@
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CAI_PseudoDog : public CBaseMonster {
+class CPseudoDogBase : public CBaseMonster {
 	typedef		CBaseMonster	inherited;
 
 public:
@@ -20,8 +20,8 @@ public:
 		ePsyAttack				= eAdditionalSounds | 0,
 	};
 public:
-					CAI_PseudoDog		();
-	virtual			~CAI_PseudoDog		();	
+					CPseudoDogBase		();
+	virtual			~CPseudoDogBase		();	
 
 	virtual DLL_Pure	*_construct		();
 

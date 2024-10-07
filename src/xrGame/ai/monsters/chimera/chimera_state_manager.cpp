@@ -19,7 +19,7 @@
 
 #include "chimera_attack_state.h"
 
-CStateManagerChimera::CStateManagerChimera(CChimera* obj) : inherited(obj)
+CStateManagerChimera::CStateManagerChimera(CChimeraBase* obj) : inherited(obj)
 {
 	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));

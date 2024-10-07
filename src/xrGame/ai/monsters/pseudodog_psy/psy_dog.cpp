@@ -18,19 +18,19 @@
 #include "../../../alife_object_registry.h"
 #include "../../../../xrServerEntities/xrserver_objects_alife_monsters.h"
 
-CPsyDog::CPsyDog()
+CPseudoPsyDogBase::CPseudoPsyDogBase()
 {
 	m_aura						=	new CPsyDogAura(this);
 	m_max_phantoms_count		=	0;
 	m_phantoms_die_time			=	nullptr;
 }
-CPsyDog::~CPsyDog()
+CPseudoPsyDogBase::~CPseudoPsyDogBase()
 {
 	xr_delete						(m_aura);
 	xr_free							(m_phantoms_die_time);
 }
 
-void CPsyDog::Load(LPCSTR section)
+void CPseudoPsyDogBase::Load(LPCSTR section)
 {
 	inherited::Load					(section);
 	
@@ -46,18 +46,18 @@ void CPsyDog::Load(LPCSTR section)
 	m_time_phantom_respawn		=	pSettings->r_u32(section,"Time_Phantom_Respawn");
 }
 
-BOOL CPsyDog::net_Spawn(CSE_Abstract *dc)
+BOOL CPseudoPsyDogBase::net_Spawn(CSE_Abstract *dc)
 {
 	if (!inherited::net_Spawn(dc)) return FALSE;
 
 	return TRUE;
 }
-void CPsyDog::reinit()
+void CPseudoPsyDogBase::reinit()
 {
 	inherited::reinit	();
 	m_aura->reinit		();
 }
-void CPsyDog::reload(LPCSTR section)
+void CPseudoPsyDogBase::reload(LPCSTR section)
 {
 	inherited::reload(section);
 }
@@ -67,12 +67,12 @@ void CPsyDog::reload(LPCSTR section)
 // Register/Unregister
 //////////////////////////////////////////////////////////////////////////
 
-void CPsyDog::register_phantom(CPsyDogPhantom *phantom)
+void CPseudoPsyDogBase::register_phantom(CPsyDogPhantom *phantom)
 {
  	m_storage.push_back(phantom);
 }
 
-void CPsyDog::unregister_phantom(CPsyDogPhantom *phantom)
+void CPseudoPsyDogBase::unregister_phantom(CPsyDogPhantom *phantom)
 {
 	xr_vector<CPsyDogPhantom*>::iterator it = std::find(m_storage.begin(),m_storage.end(), phantom);
 
@@ -93,7 +93,7 @@ void CPsyDog::unregister_phantom(CPsyDogPhantom *phantom)
 // Spawn phantom
 //////////////////////////////////////////////////////////////////////////
 
-bool CPsyDog::spawn_phantom()
+bool CPseudoPsyDogBase::spawn_phantom()
 {
 	u32 node;
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
@@ -118,7 +118,7 @@ bool CPsyDog::spawn_phantom()
 //////////////////////////////////////////////////////////////////////////
 // Destroy all phantoms
 //////////////////////////////////////////////////////////////////////////
-void CPsyDog::delete_all_phantoms()
+void CPseudoPsyDogBase::delete_all_phantoms()
 {
 	for (xr_vector<CPsyDogPhantom*>::iterator it = m_storage.begin(); it != m_storage.end(); it++) 
 		(*it)->destroy_from_parent();
@@ -126,7 +126,7 @@ void CPsyDog::delete_all_phantoms()
 	m_storage.clear();
 }
 
-void CPsyDog::Think()
+void CPseudoPsyDogBase::Think()
 {
 	inherited::Think();
 	if (!g_Alive()) return;
@@ -155,7 +155,7 @@ void CPsyDog::Think()
 }
 
 
-void CPsyDog::net_Destroy()
+void CPseudoPsyDogBase::net_Destroy()
 {
 	m_aura->on_death();
 
@@ -163,19 +163,19 @@ void CPsyDog::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CPsyDog::Die(CObject* who)
+void CPseudoPsyDogBase::Die(CObject* who)
 {
 	inherited::Die		(who);
 	m_aura->on_death	();
 	delete_all_phantoms	();
 }
 
-IStateManagerBase *CPsyDog::create_state_manager()
+IStateManagerBase *CPseudoPsyDogBase::create_state_manager()
 {
 	return new CStateManagerPsyDog(this);
 }
 
-u8 CPsyDog::get_phantoms_count()
+u8 CPseudoPsyDogBase::get_phantoms_count()
 {
 	return u8(m_storage.size());
 }
@@ -314,7 +314,7 @@ void CPsyDogPhantom::try_to_register_to_parent()
 	
 	CObject	*obj = Level().Objects.net_Find(m_parent_id);
 	if (obj) {
-		CPsyDog *dog = smart_cast<CPsyDog *>(obj);
+		CPseudoPsyDogBase *dog = smart_cast<CPseudoPsyDogBase *>(obj);
 		VERIFY(dog);
 		
 		m_parent = dog;

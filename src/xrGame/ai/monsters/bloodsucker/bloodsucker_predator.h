@@ -8,10 +8,10 @@ class	CustomBloodsuckerStatePredator : public CState
 
 	u32							m_target_node;
 	u32							m_time_start_camp;
-	CustomBloodsucker*			m_pBloodsucker;
+	CBloodsuckerBase*			m_pBloodsucker;
 
 public:
-	CustomBloodsuckerStatePredator(CustomBloodsucker* object);
+	CustomBloodsuckerStatePredator(CBloodsuckerBase* object);
 	virtual ~CustomBloodsuckerStatePredator();
 
 	virtual void		reinit							();

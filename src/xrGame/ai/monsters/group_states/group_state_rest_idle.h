@@ -9,7 +9,7 @@ class CStateGroupRestIdle : public CState {
 	u32					m_target_node;
 	int					m_move_type;
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
 						CStateGroupRestIdle	(CBaseMonster* object);

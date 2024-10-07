@@ -15,7 +15,7 @@
 
 #include "../states/state_move_to_point.h"
 
-CustomBloodsuckerBackstubEnemy::CustomBloodsuckerBackstubEnemy(CustomBloodsucker* object) : inherited(object, &data)
+CustomBloodsuckerBackstubEnemy::CustomBloodsuckerBackstubEnemy(CBloodsuckerBase* object) : inherited(object, &data)
 {
 
 };

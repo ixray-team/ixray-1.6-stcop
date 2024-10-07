@@ -4,15 +4,15 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CustomDog : public CBaseMonster, 
+class CDogBase : public CBaseMonster, 
 				public CControlledEntity {
 	
 	using	inherited = CBaseMonster			;
 	using	CControlled = CControlledEntity;
 
 public:
-	CustomDog();
-	virtual			~CustomDog();
+	CDogBase();
+	virtual			~CDogBase();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	reinit				();

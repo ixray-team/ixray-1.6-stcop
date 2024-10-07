@@ -9,19 +9,19 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-CZombie::CZombie()
+CZombieBase::CZombieBase()
 {
 	StateMan = new CStateManagerZombie(this);
 	
 	CControlled::init_external(this);
 }
 
-CZombie::~CZombie()
+CZombieBase::~CZombieBase()
 {
 	xr_delete		(StateMan);
 }
 
-void CZombie::Load(LPCSTR section)
+void CZombieBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
@@ -70,7 +70,7 @@ void CZombie::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CZombie::reinit()
+void CZombieBase::reinit()
 {
 	inherited::reinit();
 
@@ -84,7 +84,7 @@ void CZombie::reinit()
 	active_triple_idx		= u8(-1);
 }
 
-void CZombie::reload(LPCSTR section)
+void CZombieBase::reload(LPCSTR section)
 {
 	inherited::reload(section);
 
@@ -95,9 +95,9 @@ void CZombie::reload(LPCSTR section)
 }
 
 
-void CZombie::BoneCallback(CBoneInstance *B)
+void CZombieBase::BoneCallback(CBoneInstance *B)
 {
-	CZombie*	this_class = static_cast<CZombie*>(B->callback_param());
+	CZombieBase*	this_class = static_cast<CZombieBase*>(B->callback_param());
 
 	START_PROFILE("Zombie/Bones Update");
 	this_class->Bones.Update(B, Device.dwTimeGlobal);
@@ -105,7 +105,7 @@ void CZombie::BoneCallback(CBoneInstance *B)
 }
 
 
-void CZombie::vfAssignBones()
+void CZombieBase::vfAssignBones()
 {
 	// Установка callback на кости
 	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
@@ -122,7 +122,7 @@ void CZombie::vfAssignBones()
 	Bones.AddBone(bone_head, AXIS_Z);	Bones.AddBone(bone_head, AXIS_Y);
 }
 
-BOOL CZombie::net_Spawn (CSE_Abstract* DC) 
+BOOL CZombieBase::net_Spawn (CSE_Abstract* DC) 
 {
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
@@ -135,8 +135,8 @@ BOOL CZombie::net_Spawn (CSE_Abstract* DC)
 #define TIME_FAKE_DEATH			5000
 #define TIME_RESURRECT_RESTORE	2000
 
-//void CZombie::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
-void	CZombie::Hit								(SHit* pHDS)
+//void CZombieBase::Hit(float P,Fvector &dir,CObject*who,s16 element,Fvector p_in_object_space,float impulse, ALife::EHitType hit_type)
+void	CZombieBase::Hit								(SHit* pHDS)
 {
 //	inherited::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 	inherited::Hit(pHDS);
@@ -161,7 +161,7 @@ void	CZombie::Hit								(SHit* pHDS)
 }
 
 
-void CZombie::shedule_Update(u32 dt)
+void CZombieBase::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
 
@@ -177,7 +177,7 @@ void CZombie::shedule_Update(u32 dt)
 }
 
 
-bool CZombie::fake_death_fall_down()
+bool CZombieBase::fake_death_fall_down()
 {
 	if (com_man().ta_is_active()) return false;
 
@@ -187,7 +187,7 @@ bool CZombie::fake_death_fall_down()
 	return true;
 }
 
-void CZombie::fake_death_stand_up()
+void CZombieBase::fake_death_stand_up()
 {
 	// check if state active
 	bool active = false;

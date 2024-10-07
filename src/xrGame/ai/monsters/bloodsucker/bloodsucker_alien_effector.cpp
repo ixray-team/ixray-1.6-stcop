@@ -11,7 +11,7 @@
 #include "bloodsucker_alien.h"
 #include "bloodsucker_alien_effector.h"
 
-CustomBloodsuckerAlienEffector::CustomBloodsuckerAlienEffector(ECamEffectorType type, CustomBloodsucker* object) :
+CustomBloodsuckerAlienEffector::CustomBloodsuckerAlienEffector(ECamEffectorType type, CBloodsuckerBase* object) :
 	inherited(type, flt_max)
 {
 	m_time_total = 0.f;

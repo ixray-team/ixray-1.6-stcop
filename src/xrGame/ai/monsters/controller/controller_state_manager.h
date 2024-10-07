@@ -1,15 +1,15 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CController;
+class CControllerBase;
 
 class CStateManagerController : public CMonsterStateManager {
 
 	typedef CMonsterStateManager inherited;
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 public:
-						CStateManagerController			(CController *obj);
+						CStateManagerController			(CControllerBase *obj);
 	virtual				~CStateManagerController		();
 
 	virtual void		reinit							();

@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CPoltergeist::script_register(lua_State *L)
+void CPoltergeistBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CPoltergeist,CGameObject>("CPoltergeist")
+		class_<CPoltergeistBase,CGameObject>("CPoltergeistBase")
 			.def(constructor<>())
 	];
 }

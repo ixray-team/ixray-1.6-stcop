@@ -2,11 +2,11 @@
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CChimera : public CBaseMonster 
+class CChimeraBase : public CBaseMonster 
 {
 public:
-							CChimera					();
-	virtual					~CChimera					();	
+							CChimeraBase					();
+	virtual					~CChimeraBase					();	
 
 	virtual void			Load						(LPCSTR section);
 	virtual void			reinit						();

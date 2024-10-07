@@ -2,7 +2,7 @@
 
 #include "../state.h"
 
-class CustomDog;
+class CDogBase;
 
 class	CStateCustomGroup : public CState{
 protected:
@@ -10,7 +10,7 @@ protected:
 	using state_ptr = CState*;
 
 private:
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 public:
 	CStateCustomGroup		(CBaseMonster *object);

@@ -15,7 +15,7 @@ class CStateControlAttack : public CState {
 
 	u32				time_control_started;
 
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 public:
 

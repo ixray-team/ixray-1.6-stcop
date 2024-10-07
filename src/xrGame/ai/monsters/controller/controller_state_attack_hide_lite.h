@@ -11,7 +11,7 @@ class CStateControlHideLite : public CState{
 		Fvector position;
 		u32		node;
 	} target;
-	CController* m_pController;
+	CControllerBase* m_pController;
 	u32				m_time_finished;
 
 public:

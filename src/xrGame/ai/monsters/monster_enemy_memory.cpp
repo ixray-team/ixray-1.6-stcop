@@ -52,7 +52,7 @@ void CMonsterEnemyMemory::update()
 			{
 				add_enemy					(enemy);
 
-				bool const self_is_dog	=	!!smart_cast<const CustomDog*>(monster);
+				bool const self_is_dog	=	!!smart_cast<const CDogBase*>(monster);
 				if ( self_is_dog )
 				{
 					CMonsterSquad* const squad	=	monster_squad().get_squad(monster);
@@ -81,7 +81,7 @@ void CMonsterEnemyMemory::update()
 				{
 					add_enemy					(enemy);
 
-					bool const self_is_dog	=	!!smart_cast<const CustomDog*>(monster);
+					bool const self_is_dog	=	!!smart_cast<const CDogBase*>(monster);
 					if ( self_is_dog )
 					{
 						CMonsterSquad* const squad	=	monster_squad().get_squad(monster);

@@ -5,7 +5,7 @@
 class CStateControlHide : public CState {
 	typedef	CState	inherited;
 	typedef	CState*	state_ptr;
-	CController* m_pController;
+	CControllerBase* m_pController;
 	bool			m_cover_reached;
 
 	struct {

@@ -1,7 +1,7 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CustomCat;
+class CCatBase;
 
 class CustomCatStateManager : public CMonsterStateManager {
 
@@ -10,7 +10,7 @@ class CustomCatStateManager : public CMonsterStateManager {
 	u32					m_rot_jump_last_time;
 
 public:
-	CustomCatStateManager(CustomCat* object);
+	CustomCatStateManager(CCatBase* object);
 	virtual				~CustomCatStateManager();
 
 	virtual	void		execute				();

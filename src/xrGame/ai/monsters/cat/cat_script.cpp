@@ -5,11 +5,11 @@
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CustomCat::script_register(lua_State *L)
+void CCatBase::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CustomCat,CGameObject>("CCat")
+		class_<CCatBase,CGameObject>("CCatBase")
 			.def(constructor<>())
 	];
 }

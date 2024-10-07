@@ -16,8 +16,8 @@ CStateBurerAttackGravi::CStateBurerAttackGravi(CBaseMonster* obj) : inherited(ob
 {
 	m_next_gravi_allowed_tick = 0;
 	m_anim_end_tick = 0;
-	m_pBurer = smart_cast<CBurer*>(obj);
-	VERIFY(m_pBurer && "This obj not CBurer");
+	m_pBurer = smart_cast<CBurerBase*>(obj);
+	VERIFY(m_pBurer && "This obj not CBurerBase");
 }
 
 void CStateBurerAttackGravi::initialize()
@@ -140,5 +140,5 @@ void CStateBurerAttackGravi::ExecuteGraviFire()
 	this->m_pBurer->m_gravi_object.activate(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
 
 	this->m_pBurer->StopGraviPrepare();
-	this->object->sound().play(CBurer::eMonsterSoundGraviAttack);
+	this->object->sound().play(CBurerBase::eMonsterSoundGraviAttack);
 }

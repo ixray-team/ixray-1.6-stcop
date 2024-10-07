@@ -8,14 +8,14 @@ class CustomBloodsuckerAlienEffector : public CEffectorCam
 	Fvector	dangle_target;
 	Fvector dangle_current;
 
-	CustomBloodsucker* object;
+	CBloodsuckerBase* object;
 
 	float		m_current_fov;
 	Fmatrix		m_prev_eye_matrix;
 	float		m_inertion;
 
 public:
-	CustomBloodsuckerAlienEffector(ECamEffectorType type, CustomBloodsucker* object);
+	CustomBloodsuckerAlienEffector(ECamEffectorType type, CBloodsuckerBase* object);
 	virtual ~CustomBloodsuckerAlienEffector();
 
 	virtual BOOL	ProcessCam(SCamEffectorInfo& info);

@@ -1,12 +1,12 @@
 #pragma once
 
-class CustomBloodsucker;
+class CBloodsuckerBase;
 class CustomBloodsuckerAlienEffector;
 class CustomBloodsuckerAlienEffectorPP;
 
 class CustomBloodsuckerAlien
 {
-	CustomBloodsucker			*m_object;
+	CBloodsuckerBase			*m_object;
 	
 	bool						m_active;
 
@@ -19,7 +19,7 @@ public:
 	CustomBloodsuckerAlien	();
 			virtual ~CustomBloodsuckerAlien	();
 	
-	void	init_external		(CustomBloodsucker*object);
+	void	init_external		(CBloodsuckerBase*object);
 	void	reinit				();
 
 	void	activate			();

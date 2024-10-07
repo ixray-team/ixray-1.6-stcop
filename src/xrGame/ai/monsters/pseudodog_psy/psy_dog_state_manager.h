@@ -4,7 +4,7 @@
 class CStateManagerPsyDog : public CStateManagerPseudodog {
 	typedef CStateManagerPseudodog inherited;
 public:
-					CStateManagerPsyDog	(CAI_PseudoDog *monster); 
+					CStateManagerPsyDog	(CPseudoDogBase *monster); 
 	virtual void	execute				();
 	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
 };

@@ -16,7 +16,7 @@
 #include "../../../ai_object_location.h"
 #include "../../../actor.h"
 
-CustomDog::CustomDog()
+CDogBase::CDogBase()
 {
 	StateMan = new CustomDogStateManager(this);
 	
@@ -45,12 +45,12 @@ CustomDog::CustomDog()
     com_man().add_ability(ControlCom::eControlRotationJump);
 }
 
-CustomDog::~CustomDog()
+CDogBase::~CDogBase()
 {
 	xr_delete(StateMan);
 }
 
-void CustomDog::Load(LPCSTR section)
+void CDogBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 	if(pSettings->line_exist(section,"anim_factor"))
@@ -206,7 +206,7 @@ void CustomDog::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CustomDog::reinit()
+void CDogBase::reinit()
 {
 	inherited::reinit();
 
@@ -233,7 +233,7 @@ namespace detail
 	bool object_exists_in_alife_registry(u32 id);
 } // namespace detail
 
-void CustomDog::UpdateCL()
+void CDogBase::UpdateCL()
 {
 	inherited::UpdateCL();
 
@@ -249,7 +249,7 @@ void CustomDog::UpdateCL()
 	}
 }
 
-bool CustomDog::is_night()
+bool CDogBase::is_night()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
@@ -260,7 +260,7 @@ bool CustomDog::is_night()
 	return false;
 }
 
-void CustomDog::CheckSpecParams(u32 spec_params)
+void CDogBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));
@@ -275,12 +275,12 @@ void CustomDog::CheckSpecParams(u32 spec_params)
 	}
 }
 
-u32 CustomDog::get_number_animation()
+u32 CDogBase::get_number_animation()
 {
 	return current_anim;
 }
 
-u32 CustomDog::random_anim()
+u32 CDogBase::random_anim()
 {
 	if (m_anim_factor > u32(Random.randI(100)))
 	{
@@ -290,14 +290,14 @@ u32 CustomDog::random_anim()
 	return Random.randI(4);
 }
 
-void CustomDog::set_current_animation(u32 curr_anim)
+void CDogBase::set_current_animation(u32 curr_anim)
 {
 	b_state_check = true;
 	b_state_end = false;
 	current_anim = curr_anim;
 }
 
-bool CustomDog::check_start_conditions (ControlCom::EControlType type)
+bool CDogBase::check_start_conditions (ControlCom::EControlType type)
 {
 	if ( type == ControlCom::eControlJump )
 	{
@@ -322,7 +322,7 @@ bool CustomDog::check_start_conditions (ControlCom::EControlType type)
 	return inherited::check_start_conditions(type);
 }
 
-void CustomDog::start_animation()
+void CDogBase::start_animation()
 {
 	// Lain: check if animation is captured
 	CControl_Com* capturer = control().get_capturer(ControlCom::eControlAnimation);
@@ -337,32 +337,32 @@ void CustomDog::start_animation()
 	b_state_end = true;
 }
 
-void CustomDog::animation_end(CBlend* B)
+void CDogBase::animation_end(CBlend* B)
 {
-	((CustomDog*)B->CallbackParam)->b_state_anim = false;
-	((CustomDog*)B->CallbackParam)->b_anim_end = true;
-	((CustomDog*)B->CallbackParam)->com_man().script_release(ControlCom::eControlAnimation);
-	((CustomDog*)B->CallbackParam)->b_state_end = false;
+	((CDogBase*)B->CallbackParam)->b_state_anim = false;
+	((CDogBase*)B->CallbackParam)->b_anim_end = true;
+	((CDogBase*)B->CallbackParam)->com_man().script_release(ControlCom::eControlAnimation);
+	((CDogBase*)B->CallbackParam)->b_state_end = false;
 }
 
-void CustomDog::anim_end_reinit()
+void CDogBase::anim_end_reinit()
 {
 	b_state_anim = false;
 	b_anim_end = true;
 	com_man().script_release(ControlCom::eControlAnimation);
 }
 
-bool CustomDog::get_custom_anim_state()
+bool CDogBase::get_custom_anim_state()
 {
 	return b_state_anim;
 }
 
-void CustomDog::set_custom_anim_state(bool b_state_animation)
+void CDogBase::set_custom_anim_state(bool b_state_animation)
 {
 	b_state_anim = b_state_animation;
 }
 
-LPCSTR CustomDog::get_current_animation()
+LPCSTR CDogBase::get_current_animation()
 {
 	switch(current_anim)
 	{
@@ -386,7 +386,7 @@ LPCSTR CustomDog::get_current_animation()
 	}
 }
 
-void CustomDog::reload(LPCSTR section)
+void CDogBase::reload(LPCSTR section)
 {
 	inherited::reload (section);
 	com_man().load_jump_data(0, "jump_ataka_01", "jump_ataka_02", "jump_ataka_03",
@@ -394,7 +394,7 @@ void CustomDog::reload(LPCSTR section)
 						     MonsterMovement::eVelocityParameterRunNormal, 0);
 }
 
-void CustomDog::HitEntityInJump (const CEntity *pEntity)
+void CDogBase::HitEntityInJump (const CEntity *pEntity)
 {
 	SAAParam &params = anim().AA_GetParams("jump_ataka_02");
 	
@@ -402,13 +402,13 @@ void CustomDog::HitEntityInJump (const CEntity *pEntity)
 }
 
 // Lain: added
-u32 CustomDog::get_attack_rebuild_time ()
+u32 CDogBase::get_attack_rebuild_time ()
 {
 	float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
 	return 100 + u32(25*dist);
 }
 
-bool  CustomDog::can_use_agressive_jump (const CObject* enemy)
+bool  CDogBase::can_use_agressive_jump (const CObject* enemy)
 {
 	float delta_y = 0.8f;
 	if ( enemy == Actor() )

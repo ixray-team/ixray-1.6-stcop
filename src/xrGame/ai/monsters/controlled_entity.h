@@ -27,7 +27,7 @@ public:
 	virtual void			set_task_follow		(const CEntity *e)				= 0;
 	virtual void			set_task_attack		(const CEntity *e)				= 0;
 	
-	virtual void			set_under_control	(CController *controller)		= 0;
+	virtual void			set_under_control	(CControllerBase *controller)		= 0;
 	virtual void			free_from_control	()								= 0;
 
 	virtual void			on_reinit			()								= 0;
@@ -46,7 +46,7 @@ class CControlledEntity : public CControlledEntityBase {
 	} saved_id;
 
 	CBaseMonster		*m_object;
-	CController			*m_controller;
+	CControllerBase			*m_controller;
 
 public:
 
@@ -58,7 +58,7 @@ public:
 	virtual void			set_task_follow			(const CEntity *e);
 	virtual void			set_task_attack			(const CEntity *e);
 
-	virtual void			set_under_control		(CController *controller); 
+	virtual void			set_under_control		(CControllerBase *controller); 
 	virtual void			free_from_control		();
 
 	virtual void			on_reinit				();

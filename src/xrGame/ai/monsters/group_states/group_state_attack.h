@@ -16,7 +16,7 @@ public:
 	virtual	void		finalize		    ();
 	virtual void		remove_links		(CObject* object);
 
-	CustomDog* m_pDog;
+	CDogBase* m_pDog;
 
 protected:
 	using inherited = CState	;

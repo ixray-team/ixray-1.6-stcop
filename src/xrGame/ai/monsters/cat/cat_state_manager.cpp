@@ -18,7 +18,7 @@
 #include "../../../entitycondition.h"
 #include "../states/monster_state_help_sound.h"
 
-CustomCatStateManager::CustomCatStateManager(CustomCat* object) : inherited(object)
+CustomCatStateManager::CustomCatStateManager(CCatBase* object) : inherited(object)
 {
 	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
 	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));

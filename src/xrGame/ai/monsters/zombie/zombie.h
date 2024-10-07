@@ -7,7 +7,7 @@
 
 #define FAKE_DEATH_TYPES_COUNT	4
 
-class CZombie :	public CBaseMonster,
+class CZombieBase :	public CBaseMonster,
 				public CControlledEntity {
 	
 	typedef		CBaseMonster				inherited;
@@ -16,8 +16,8 @@ class CZombie :	public CBaseMonster,
 	bonesManipulation	Bones;
 
 public:
-					CZombie		();
-	virtual			~CZombie	();	
+					CZombieBase		();
+	virtual			~CZombieBase	();	
 
 	virtual void	Load				(LPCSTR section);
 	virtual BOOL	net_Spawn			(CSE_Abstract* DC);

@@ -23,7 +23,7 @@
 
 CStateGroupDrag::CStateGroupDrag(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	m_cover_position = {};
 	m_cover_vertex_id = 0;

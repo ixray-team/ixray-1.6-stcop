@@ -4,12 +4,12 @@
 
 class CStateManagerFracture;
 
-class CustomFracture : public CBaseMonster {
+class CFractureBase : public CBaseMonster {
 	using	inherited =	CBaseMonster	;
 	
 public:
-	CustomFracture();
-	virtual			~CustomFracture();
+	CFractureBase();
+	virtual			~CFractureBase();
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	CheckSpecParams		(u32 spec_params);

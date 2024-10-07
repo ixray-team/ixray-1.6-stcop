@@ -10,10 +10,10 @@ class	CustomBloodsuckerStateAttack : public CStateMonsterAttack
 
 	float           m_last_health;
 	bool            m_start_with_encircle;
-	CustomBloodsucker* m_pBloodsucker;
+	CBloodsuckerBase* m_pBloodsucker;
 
 public:
-	CustomBloodsuckerStateAttack(CustomBloodsucker* obj);
+	CustomBloodsuckerStateAttack(CBloodsuckerBase* obj);
 	virtual			~CustomBloodsuckerStateAttack();
 
 	virtual	void	initialize();

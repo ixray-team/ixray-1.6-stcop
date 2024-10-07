@@ -34,7 +34,7 @@
 
 CStateGroupAttack::CStateGroupAttack(CBaseMonster* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	m_enemy = nullptr;
 

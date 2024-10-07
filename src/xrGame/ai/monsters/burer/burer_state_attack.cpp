@@ -32,7 +32,7 @@ namespace burer
 
 CStateBurerAttack::CStateBurerAttack(CBaseMonster* obj) : inherited(obj)
 {
-	m_pBurer = smart_cast<CBurer*>(obj);
+	m_pBurer = smart_cast<CBurerBase*>(obj);
 
 	this->add_state(eStateBurerAttack_Tele, xr_new<CStateBurerAttackTele>(obj));
 	this->add_state(eStateBurerAttack_Gravi, xr_new<CStateBurerAttackGravi>(obj));

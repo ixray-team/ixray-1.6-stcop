@@ -1,14 +1,14 @@
 #pragma once
 #include "../monster_state_manager.h"
 
-class CPoltergeist;
+class CPoltergeistBase;
 
 class CStateManagerPoltergeist : public CMonsterStateManager {
 	typedef CMonsterStateManager inherited;
 
-	CPoltergeist* m_pPoltergeist;
+	CPoltergeistBase* m_pPoltergeist;
 public:
-						CStateManagerPoltergeist		(CPoltergeist *obj);
+						CStateManagerPoltergeist		(CPoltergeistBase *obj);
 	virtual				~CStateManagerPoltergeist	();
 
 	virtual void		reinit						();

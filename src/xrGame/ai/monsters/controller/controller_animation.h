@@ -4,12 +4,12 @@
 #include "../ai_monster_defs.h"
 #include "../../../../Include/xrRender/KinematicsAnimated.h"
 
-class CController;
+class CControllerBase;
 
 class CControllerAnimation : public CControlAnimationBase {
 	typedef CControlAnimationBase inherited;
 
-	CController	*m_controller;
+	CControllerBase	*m_controller;
 
 public:
 	enum ELegsActionType {

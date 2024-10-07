@@ -18,9 +18,9 @@
 #include "burer_state_attack.h"
 
 
-CStateManagerBurer::CStateManagerBurer(CBurer *monster) : inherited(monster)
+CStateManagerBurer::CStateManagerBurer(CBurerBase *monster) : inherited(monster)
 {
-	m_pBurer = smart_cast<CBurer*>(monster);
+	m_pBurer = smart_cast<CBurerBase*>(monster);
 
 	add_state(eStateRest,					xr_new<CStateMonsterRest>					(monster));
 	add_state(eStatePanic,					xr_new<CStateMonsterPanic>					(monster));

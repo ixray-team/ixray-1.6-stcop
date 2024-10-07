@@ -9,7 +9,7 @@ protected:
 	using state_ptr = CState*;
 
 public:
-	CustomBloodsuckerStateJump(CustomBloodsucker* object);
+	CustomBloodsuckerStateJump(CBloodsuckerBase* object);
 	virtual				~CustomBloodsuckerStateJump();
 
 	virtual	void		execute();

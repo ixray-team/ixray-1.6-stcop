@@ -14,14 +14,14 @@
 
 #include "bloodsucker_backstub_enemy.h"
 
-CustomBloodsuckerStateAttack::CustomBloodsuckerStateAttack(CustomBloodsucker* object) : inherited_attack(object)
+CustomBloodsuckerStateAttack::CustomBloodsuckerStateAttack(CBloodsuckerBase* object) : inherited_attack(object)
 {
 	m_dir_point = {};
 	m_last_health = 0;
 	m_start_with_encircle = false;
 	m_time_stop_invis = 0;
 
-	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
+	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
 
 	add_state(eStateAttack_Hide, new CustomBloodsuckerBackstubEnemy(object));
 	add_state(eStateVampire_Execute, new CustomBloodsuckerStateVampireExecute(object));

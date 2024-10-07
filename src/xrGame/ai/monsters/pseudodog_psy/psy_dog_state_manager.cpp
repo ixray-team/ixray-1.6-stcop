@@ -12,7 +12,7 @@
 
 #include "psy_dog_state_psy_attack.h"
 
-CStateManagerPsyDog::CStateManagerPsyDog(CAI_PseudoDog *monster) : inherited(monster)
+CStateManagerPsyDog::CStateManagerPsyDog(CPseudoDogBase *monster) : inherited(monster)
 {
 
 }

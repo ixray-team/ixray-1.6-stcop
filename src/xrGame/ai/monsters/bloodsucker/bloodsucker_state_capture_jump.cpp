@@ -7,7 +7,7 @@
 
 #include "../states/state_custom_action.h"
 
-CustomBloodsuckerStateJump::CustomBloodsuckerStateJump(CustomBloodsucker* object) : inherited(object)
+CustomBloodsuckerStateJump::CustomBloodsuckerStateJump(CBloodsuckerBase* object) : inherited(object)
 {
 	this->add_state(eStateCustom, new CStateMonsterCustomAction(object));
 }

@@ -11,7 +11,7 @@ class CStateControlCamp : public CState {
 	float			m_target_angle;
 	u32				m_time_next_updated;
 
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 public:
 

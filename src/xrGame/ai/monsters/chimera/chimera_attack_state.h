@@ -4,7 +4,7 @@
 
 class ChimeraAttackState : public CState
 {
-	CChimera* m_pChimera;
+	CChimeraBase* m_pChimera;
 
 public:
 							ChimeraAttackState				(CBaseMonster* obj);

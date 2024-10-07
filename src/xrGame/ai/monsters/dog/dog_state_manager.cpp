@@ -24,9 +24,9 @@
 #include "../group_states/group_state_panic.h"
 #include "../group_states/group_state_hear_danger_sound.h"
 
-CustomDogStateManager::CustomDogStateManager(CustomDog* object) : inherited(object)
+CustomDogStateManager::CustomDogStateManager(CDogBase* object) : inherited(object)
 {
-	m_pDog = smart_cast<CustomDog*>(object);
+	m_pDog = smart_cast<CDogBase*>(object);
 
 	add_state(eStateRest, new CStateGroupRest(object));
 	add_state(eStatePanic, new CStateGroupPanic(object));

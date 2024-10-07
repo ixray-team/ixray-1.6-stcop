@@ -16,7 +16,7 @@
 
 #include "../../../entitycondition.h"
 
-CustomFractureStateManager::CustomFractureStateManager(CustomFracture* object) : inherited(object)
+CustomFractureStateManager::CustomFractureStateManager(CFractureBase* object) : inherited(object)
 {
 	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
 	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object));

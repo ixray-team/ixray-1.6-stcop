@@ -21,19 +21,19 @@
 
 
 
-CSnork::CSnork() 
+CSnorkBase::CSnorkBase() 
 {
 	StateMan		= new CStateManagerSnork	(this);
 	com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlThreaten);
 }
 
-CSnork::~CSnork()
+CSnorkBase::~CSnorkBase()
 {
 	xr_delete		(StateMan);
 }
 
-void CSnork::Load(LPCSTR section)
+void CSnorkBase::Load(LPCSTR section)
 {
 	inherited::Load			(section);
 
@@ -93,7 +93,7 @@ void CSnork::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-void CSnork::reinit()
+void CSnorkBase::reinit()
 {
 	inherited::reinit	();
 	
@@ -108,14 +108,14 @@ void CSnork::reinit()
 	m_target_node = 0;
 }
 
-void CSnork::UpdateCL()
+void CSnorkBase::UpdateCL()
 {
 	inherited::UpdateCL	();
 }
 
 #define TRACE_RANGE 30.f
 
-float CSnork::trace(const Fvector &dir)
+float CSnorkBase::trace(const Fvector &dir)
 {
 	float ret_val = flt_max;
 
@@ -135,7 +135,7 @@ float CSnork::trace(const Fvector &dir)
 }
 
 #define JUMP_DISTANCE 10.f
-bool CSnork::find_geometry(Fvector &dir)
+bool CSnorkBase::find_geometry(Fvector &dir)
 {
 	// 1. trace direction
 	dir		= Direction();
@@ -150,7 +150,7 @@ bool CSnork::find_geometry(Fvector &dir)
 	return false;
 }
 
-bool CSnork::trace_geometry(const Fvector &d, float &range)
+bool CSnorkBase::trace_geometry(const Fvector &d, float &range)
 {
 	Fvector				dir;
 	float				h, p;
@@ -208,7 +208,7 @@ bool CSnork::trace_geometry(const Fvector &d, float &range)
 	return (fsimilar(h1,h2,0.1f) && fsimilar(p1,p2,0.1f));
 }
 
-void CSnork::CheckSpecParams(u32 spec_params)
+void CSnorkBase::CheckSpecParams(u32 spec_params)
 {
 	if ((spec_params & ASP_CHECK_CORPSE) == ASP_CHECK_CORPSE) {
 		com_man().seq_run(anim().get_motion_id(eAnimCheckCorpse));	
@@ -220,7 +220,7 @@ void CSnork::CheckSpecParams(u32 spec_params)
 	}
 }
 
-void CSnork::HitEntityInJump(const CEntity *pEntity)
+void CSnorkBase::HitEntityInJump(const CEntity *pEntity)
 {
 	
 	SAAParam &params	= anim().AA_GetParams("stand_attack_2_1");
@@ -228,13 +228,13 @@ void CSnork::HitEntityInJump(const CEntity *pEntity)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CSnork::jump(const Fvector &position, float factor)
+void CSnorkBase::jump(const Fvector &position, float factor)
 {
 	com_man().script_jump	(position, factor);
 	sound().play			(MonsterSound::eMonsterSoundAggressive);
 }
 
-bool CSnork::check_start_conditions(ControlCom::EControlType type)
+bool CSnorkBase::check_start_conditions(ControlCom::EControlType type)
 {
 	if (!inherited::check_start_conditions(type))	return false;
 
@@ -250,7 +250,7 @@ bool CSnork::check_start_conditions(ControlCom::EControlType type)
 	return true;
 }
 
-void CSnork::on_activate_control(ControlCom::EControlType type)
+void CSnorkBase::on_activate_control(ControlCom::EControlType type)
 {
 	if (type == ControlCom::eControlThreaten) 
 	{

@@ -8,7 +8,7 @@ class CStateControlFire : public CState {
 	u32				m_time_started;
 	u32				m_time_state_last_execute;
 
-	CController* m_pController;
+	CControllerBase* m_pController;
 
 public:
 

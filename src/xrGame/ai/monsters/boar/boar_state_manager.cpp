@@ -19,9 +19,9 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CustomBoarStateManager::CustomBoarStateManager(CustomBoar *object) : inherited(object)
+CustomBoarStateManager::CustomBoarStateManager(CBoarBase *object) : inherited(object)
 {
-	m_pBoar = smart_cast<CustomBoar*>(object);
+	m_pBoar = smart_cast<CBoarBase*>(object);
 
 	add_state(eStateRest,					new CStateMonsterRest				(object));
 	add_state(eStatePanic, new CStateMonsterPanic				(object));

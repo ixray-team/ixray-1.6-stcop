@@ -35,7 +35,7 @@
 #	include "ai/monsters/pseudodog/pseudodog.h"
 #	include "ai/monsters/pseudodog_Psy/psy_dog.h"
 #	include "ai/monsters/Burer/burer.h"
-#	include "ai/monsters/PseudoGigant/pseudo_gigant.h"
+#	include "ai/monsters/PseudoGigant/pseudogigant.h"
 #	include "ai/monsters/controller/controller.h"
 #	include "ai/monsters/poltergeist/poltergeist.h"
 #	include "ai/monsters/zombie/zombie.h"
@@ -253,24 +253,24 @@ void CObjectFactory::register_classes	()
 	ADD(CSpectator				,CSE_Spectator					,CLSID_SPECTATOR				,"spectator");
 
 #ifndef NO_SINGLE
-	ADD(CustomFlesh				,CSE_ALifeMonsterBase			,CLSID_AI_FLESH					,"flesh");
-	ADD(CChimera				,CSE_ALifeMonsterBase			,CLSID_AI_CHIMERA				,"chimera");
-	ADD(CustomDog					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_RED				,"dog_red");
+	ADD(CFleshBase				,CSE_ALifeMonsterBase			,CLSID_AI_FLESH					,"flesh");
+	ADD(CChimeraBase				,CSE_ALifeMonsterBase			,CLSID_AI_CHIMERA				,"chimera");
+	ADD(CDogBase					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_RED				,"dog_red");
 	ADD(CAI_Stalker				,CSE_ALifeHumanStalker			,CLSID_AI_STALKER				,"stalker");
-	ADD(CustomBloodsucker			,CSE_ALifeMonsterBase			,CLSID_AI_BLOODSUCKER			,"bloodsucker");
-	ADD(CustomBoar				,CSE_ALifeMonsterBase			,CLSID_AI_BOAR					,"boar");
-	ADD(CAI_PseudoDog			,CSE_ALifeMonsterBase			,CLSID_AI_DOG_BLACK				,"dog_black");
-	ADD(CPsyDog					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_PSY				,"psy_dog");
+	ADD(CBloodsuckerBase			,CSE_ALifeMonsterBase			,CLSID_AI_BLOODSUCKER			,"bloodsucker");
+	ADD(CBoarBase				,CSE_ALifeMonsterBase			,CLSID_AI_BOAR					,"boar");
+	ADD(CPseudoDogBase			,CSE_ALifeMonsterBase			,CLSID_AI_DOG_BLACK				,"dog_black");
+	ADD(CPseudoPsyDogBase					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_PSY				,"psy_dog");
 	ADD(CPsyDogPhantom			,CSE_ALifePsyDogPhantom			,CLSID_AI_DOG_PSY_PHANTOM		,"psy_dog_phantom");
-	ADD(CBurer					,CSE_ALifeMonsterBase			,CLSID_AI_BURER					,"burer");
-	ADD(CPseudoGigant			,CSE_ALifeMonsterBase			,CLSID_AI_GIANT					,"pseudo_gigant");
-	ADD(CController				,CSE_ALifeMonsterBase			,CLSID_AI_CONTROLLER			,"controller");
-	ADD(CPoltergeist			,CSE_ALifeMonsterBase			,CLSID_AI_POLTERGEIST			,"poltergeist");
-	ADD(CZombie					,CSE_ALifeMonsterBase			,CLSID_AI_ZOMBIE				,"zombie");
-	ADD(CustomFracture				,CSE_ALifeMonsterBase			,CLSID_AI_FRACTURE				,"fracture");
-	ADD(CSnork					,CSE_ALifeMonsterBase			,CLSID_AI_SNORK					,"snork");
-	ADD(CustomCat					,CSE_ALifeMonsterBase			,CLSID_AI_CAT					,"cat");
-	ADD(CTushkano				,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO				,"tushkano");
+	ADD(CBurerBase					,CSE_ALifeMonsterBase			,CLSID_AI_BURER					,"burer");
+	ADD(CPseudoGiantBase			,CSE_ALifeMonsterBase			,CLSID_AI_GIANT					,"pseudo_gigant");
+	ADD(CControllerBase				,CSE_ALifeMonsterBase			,CLSID_AI_CONTROLLER			,"controller");
+	ADD(CPoltergeistBase			,CSE_ALifeMonsterBase			,CLSID_AI_POLTERGEIST			,"poltergeist");
+	ADD(CZombieBase					,CSE_ALifeMonsterBase			,CLSID_AI_ZOMBIE				,"zombie");
+	ADD(CFractureBase				,CSE_ALifeMonsterBase			,CLSID_AI_FRACTURE				,"fracture");
+	ADD(CSnorkBase					,CSE_ALifeMonsterBase			,CLSID_AI_SNORK					,"snork");
+	ADD(CCatBase					,CSE_ALifeMonsterBase			,CLSID_AI_CAT					,"cat");
+	ADD(CTushkanoBase				,CSE_ALifeMonsterBase			,CLSID_AI_TUSHKANO				,"tushkano");
 	
 	ADD(CPhantom				,CSE_ALifeCreaturePhantom		,CLSID_AI_PHANTOM				,"phantom");
 

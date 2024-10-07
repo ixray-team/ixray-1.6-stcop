@@ -12,7 +12,7 @@ const float	_pmt_psy_attack_time  = 0.5f;
 
 void CControllerAnimation::reinit()
 {
-	m_controller			= smart_cast<CController *>(m_object);
+	m_controller			= smart_cast<CControllerBase *>(m_object);
 	
 	load					();
 	inherited::reinit		();
@@ -83,7 +83,7 @@ void CControllerAnimation::update_frame()
 	return;
 
 	
-	//if (m_controller->m_mental_state == CController::eStateIdle) {
+	//if (m_controller->m_mental_state == CControllerBase::eStateIdle) {
 	//	inherited::update_frame();
 	//	return;
 	//}
@@ -352,7 +352,7 @@ void CControllerAnimation::set_path_params()
 
 void CControllerAnimation::on_switch_controller()
 {
-	if (m_controller->m_mental_state == CController::eStateDanger) {
+	if (m_controller->m_mental_state == CControllerBase::eStateDanger) {
 		m_wait_torso_anim_end	= false;
 		set_body_state			(eTorsoIdle, eLegsTypeStand);
 

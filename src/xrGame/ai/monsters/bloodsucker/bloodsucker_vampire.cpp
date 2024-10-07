@@ -10,11 +10,11 @@
 #include "bloodsucker_vampire_approach.h"
 #include "bloodsucker_vampire_hide.h"
 
-CustomBloodsuckerStateVampire::CustomBloodsuckerStateVampire(CustomBloodsucker* object) : inherited(object)
+CustomBloodsuckerStateVampire::CustomBloodsuckerStateVampire(CBloodsuckerBase* object) : inherited(object)
 {
 	enemy = nullptr;
 
-	m_pBloodsucker = smart_cast<CustomBloodsucker*>(object);
+	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
 
 	this->add_state	(eStateVampire_ApproachEnemy,	new CustomBloodsuckerVampireApproach(object));
 	this->add_state	(eStateVampire_Execute,			new CustomBloodsuckerStateVampireExecute(object));
@@ -35,11 +35,11 @@ void CustomBloodsuckerStateVampire::reinit()
 void CustomBloodsuckerStateVampire::initialize()
 {
 	inherited::initialize						();
-	this->m_pBloodsucker->set_visibility_state				(CustomBloodsucker::partial_visibility);
+	this->m_pBloodsucker->set_visibility_state				(CBloodsuckerBase::partial_visibility);
 
 	enemy	= this->object->EnemyMan.get_enemy		();
 
-	this->m_pBloodsucker->sound().play						(CustomBloodsucker::eVampireStartHunt);
+	this->m_pBloodsucker->sound().play						(CBloodsuckerBase::eVampireStartHunt);
 }
 
 void CustomBloodsuckerStateVampire::reselect_state()
@@ -83,16 +83,16 @@ void CustomBloodsuckerStateVampire::finalize()
 {
 	inherited::finalize();
 
-	this->m_pBloodsucker->set_visibility_state	(CustomBloodsucker::full_visibility);
-	CustomBloodsucker::m_time_last_vampire				= Device.dwTimeGlobal;
+	this->m_pBloodsucker->set_visibility_state	(CBloodsuckerBase::full_visibility);
+	CBloodsuckerBase::m_time_last_vampire				= Device.dwTimeGlobal;
 }
 
 void CustomBloodsuckerStateVampire::critical_finalize()
 {
 	inherited::critical_finalize	();
 	
-	this->m_pBloodsucker->set_visibility_state	(CustomBloodsucker::full_visibility);
-	CustomBloodsucker::m_time_last_vampire				= Device.dwTimeGlobal;
+	this->m_pBloodsucker->set_visibility_state	(CBloodsuckerBase::full_visibility);
+	CBloodsuckerBase::m_time_last_vampire				= Device.dwTimeGlobal;
 }
 
 bool CustomBloodsuckerStateVampire::check_start_conditions()
@@ -110,7 +110,7 @@ bool CustomBloodsuckerStateVampire::check_start_conditions()
 	VERIFY(actor);
 	if (actor->input_external_handler_installed()) return false;
 
-	if (CustomBloodsucker::m_time_last_vampire + this->m_pBloodsucker->m_vampire_min_delay > Device.dwTimeGlobal) return false;
+	if (CBloodsuckerBase::m_time_last_vampire + this->m_pBloodsucker->m_vampire_min_delay > Device.dwTimeGlobal) return false;
 
 	return true;
 }

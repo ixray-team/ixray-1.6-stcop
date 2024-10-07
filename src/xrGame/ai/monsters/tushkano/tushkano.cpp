@@ -6,19 +6,19 @@
 #include "../control_movement_base.h"
 
 
-CTushkano::CTushkano()
+CTushkanoBase::CTushkanoBase()
 {
 	StateMan = new CStateManagerTushkano(this);
 
 	CControlled::init_external(this);
 }
 
-CTushkano::~CTushkano()
+CTushkanoBase::~CTushkanoBase()
 {
 	xr_delete(StateMan);
 }
 
-void CTushkano::Load(LPCSTR section)
+void CTushkanoBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 

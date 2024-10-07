@@ -7,10 +7,10 @@ class CustomBloodsukerStateManager : public CMonsterStateManager
 {
 	using inherited = CMonsterStateManager;
 
-	CustomBloodsucker* m_pBloodsucker;
+	CBloodsuckerBase* m_pBloodsucker;
 
 public:
-	CustomBloodsukerStateManager(CustomBloodsucker*object);
+	CustomBloodsukerStateManager(CBloodsuckerBase*object);
 	virtual ~CustomBloodsukerStateManager();
 
 	virtual void	execute						();

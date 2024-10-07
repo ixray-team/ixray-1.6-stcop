@@ -20,7 +20,7 @@ protected:
 	TTime                   m_next_change_behaviour_tick;
 
 public:
-	CustomBloodsuckerBackstubEnemy(CustomBloodsucker* object);
+	CustomBloodsuckerBackstubEnemy(CBloodsuckerBase* object);
 	virtual				~CustomBloodsuckerBackstubEnemy();
 
 	virtual void		initialize();
