@@ -482,7 +482,7 @@ void CActor::LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt)
 	float speed = m_fLookOutSpeed;
 	float ampl_k = m_fLookOutAmplK;
 
-	float koef = 0.f;
+	float koef = 0.0f;
 
     CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
     if (itm)
@@ -490,11 +490,11 @@ void CActor::LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt)
 		koef = itm->getLookOutSpeedKoef();
 		speed *= koef;
 
-		koef = m_fLookOutAmplK;
+		koef = itm->getLookOutAmplK();
 		ampl_k *= koef;
     }
 
-    tgt_roll = tgt_roll * ampl_k;
+    tgt_roll *= ampl_k;
 
 	float dx_pow = m_fLookOutSpeedAmplDXPow;
 

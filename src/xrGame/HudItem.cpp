@@ -39,8 +39,8 @@ CHudItem::CHudItem()
 	mark						= 0;
 	fDeviceFlags.zero();
 	_action_ppe					= -1;
-	m_fLookOutSpeedKoef = 0.0f;
-	m_fLookOutAmplK = 0.0f;
+	m_fLookOutSpeedKoef = 1.0f;
+	m_fLookOutAmplK = 1.0f;
 	m_fControllerTime = 0.0f;
 	m_bSuicideByAnimation = false;
 	m_fControllerShootExplMinDist = 0.0f;
