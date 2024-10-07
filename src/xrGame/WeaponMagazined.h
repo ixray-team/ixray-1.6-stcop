@@ -184,6 +184,7 @@ protected:
 
 	void			OnAmmoTimer();
 	void			KickCallback();
+	void			TacticalTorchSwitch();
 	void			ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main = "") const;
 	bool			NeedShootMix() const;
 	void			TriStateReload();
@@ -203,9 +204,10 @@ protected:
 	virtual void	PlayAnimFireMode	();
 	virtual void    PlaySoundAim		(bool in = true);
 	virtual void	PlayAnimFakeshoot	();
-	virtual void	PlayAnimOpenWeapon();
+	virtual void	PlayAnimDevice		();
+	virtual void	PlayAnimOpenWeapon	();
 	virtual void	PlayAnimAddOneCartridgeWeapon();
-	void			PlayAnimCloseWeapon();
+	void			PlayAnimCloseWeapon	();
 
 	virtual	int		ShotsFired() const { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();

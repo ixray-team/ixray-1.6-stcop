@@ -111,6 +111,12 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	if (WeaponSoundExist(section, "snd_light_misfire"))
 		m_sounds.LoadSound(section, "snd_light_misfire", "sndLightMisfire", true, m_eSoundEmptyClick);
 
+	if (WeaponSoundExist(section, "snd_torch_on"))
+		m_sounds.LoadSound(section, "snd_torch_on", "sndTorchOn", true, m_eSoundEmptyClick);
+
+	if (WeaponSoundExist(section, "snd_torch_off"))
+		m_sounds.LoadSound(section, "snd_torch_off", "sndTorchOff", true, m_eSoundEmptyClick);
+
 	if (m_bTriStateReload)
 	{
 		m_sounds.LoadSound(section, "snd_open_weapon", "sndOpen", false, m_eSoundOpen);
@@ -1551,6 +1557,39 @@ void CWeaponMagazined::switch2_FireMode()
 
 	SetPending(TRUE);
 	PlayAnimFireMode();
+}
+
+void CWeaponMagazined::TacticalTorchSwitch()
+{
+	SwitchTorch(!bIsTorchEnabled);
+	MakeLockByConfigParam("lock_time_end_" + GetActualCurrentAnim());
+}
+
+void CWeaponMagazined::PlayAnimDevice()
+{
+	if (fDeviceFlags.test(EDeviceFlags::DF_HEADLAMP) || fDeviceFlags.test(EDeviceFlags::DF_NIGHTVISION))
+	{
+		inherited::PlayAnimDevice();
+		return;
+	}
+
+	SetPending(TRUE);
+
+	if (fDeviceFlags.test(EDeviceFlags::DF_TACTICALTORCH))
+	{
+		bool torch_enabled = bIsTorchEnabled;
+		string256 string = {};
+		xr_sprintf(string, "anm_torch_%s", torch_enabled ? "on" : "off");
+		PlayHUDMotion(string, true, eSwitchDevice);
+		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazined::TacticalTorchSwitch) });
+		PlaySound(torch_enabled ? "sndTorchOn" : "sndTorchOff", get_LastFP());
+	}
+	else if (fDeviceFlags.test(EDeviceFlags::DF_TACTICALLASER))
+	{
+
+	}
+
+	fDeviceFlags.zero();
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 

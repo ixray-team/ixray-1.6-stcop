@@ -135,6 +135,7 @@ void CHudItem::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "snd_nv_off"))
 		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", true);
 
+	m_HudLight.SetInstalled(READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false));
 	m_HudLight.NewTorchlight(section);
 }
 
@@ -241,65 +242,7 @@ void CHudItem::OnStateSwitch(u32 S)
 	}break;
 	case eSwitchDevice:
 	{
-		SetPending(TRUE);
-
-		if (fDeviceFlags.test(DF_HEADLAMP))
-		{
-			if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
-			{
-				string64 anm = "";
-				xr_sprintf(anm, "anm_headlamp_%s", torch->IsSwitched() ? "off" : "on");
-				PlayHUDMotion(anm, true, this, eSwitchDevice);
-
-				bool test = Actor()->GetDetector() == nullptr || Actor()->GetDetector() == this && g_player_hud->attached_item(0) == nullptr || Actor()->GetDetector() != this && g_player_hud->attached_item(0) != nullptr;
-
-				if (test)
-				{
-					xr_sprintf(anm, "sndHeadlamp%s", torch->IsSwitched() ? "Off" : "On");
-					PlaySound(anm, HudItemData()->m_item_transform.c);
-				}
-
-				test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
-					smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr);
-
-				if (test)
-					SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback) });
-
-				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
-				{
-					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback) });
-				}
-			}
-		}
-		else if (fDeviceFlags.test(DF_NIGHTVISION))
-		{
-			if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
-			{
-				string64 anm = "";
-				xr_sprintf(anm, "anm_nv_%s", torch->GetNightVisionStatus() ? "off" : "on");
-				PlayHUDMotion(anm, true, this, eSwitchDevice);
-
-				bool test = Actor()->GetDetector() == nullptr || Actor()->GetDetector() == this && g_player_hud->attached_item(0) == nullptr || Actor()->GetDetector() != this && g_player_hud->attached_item(0) != nullptr;
-
-				if (test)
-				{
-					xr_sprintf(anm, "sndNV%s", torch->GetNightVisionStatus() ? "Off" : "On");
-					PlaySound(anm, HudItemData()->m_item_transform.c);
-				}
-
-				test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
-					smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr);
-
-				if (test)
-					SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback) });
-
-				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
-				{
-					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback) });
-				}
-			}
-		}
-		fDeviceFlags.zero();
+		PlayAnimDevice();
 	}break;
 	case eShowing:
 	{
@@ -360,6 +303,8 @@ void CHudItem::DeactivateItem()
 }
 void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 {
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
 	SwitchState(eHidden);
 }
 
@@ -957,6 +902,69 @@ void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 		PlayAnimIdle();
 		ResetSubStateTime();
 	}
+}
+
+void CHudItem::PlayAnimDevice()
+{
+	SetPending(TRUE);
+
+	if (fDeviceFlags.test(DF_HEADLAMP))
+	{
+		if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+		{
+			string64 anm = "";
+			xr_sprintf(anm, "anm_headlamp_%s", torch->IsSwitched() ? "off" : "on");
+			PlayHUDMotion(anm, true, this, eSwitchDevice);
+
+			bool test = Actor()->GetDetector() == nullptr || Actor()->GetDetector() == this && g_player_hud->attached_item(0) == nullptr || Actor()->GetDetector() != this && g_player_hud->attached_item(0) != nullptr;
+
+			if (test)
+			{
+				xr_sprintf(anm, "sndHeadlamp%s", torch->IsSwitched() ? "Off" : "On");
+				PlaySound(anm, HudItemData()->m_item_transform.c);
+			}
+
+			test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
+				smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr);
+
+			if (test)
+				SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback) });
+
+			if (CWeapon* wpn = smart_cast<CWeapon*>(this))
+			{
+				wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::HeadlampCallback) });
+			}
+		}
+	}
+	else if (fDeviceFlags.test(DF_NIGHTVISION))
+	{
+		if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+		{
+			string64 anm = "";
+			xr_sprintf(anm, "anm_nv_%s", torch->GetNightVisionStatus() ? "off" : "on");
+			PlayHUDMotion(anm, true, this, eSwitchDevice);
+
+			bool test = Actor()->GetDetector() == nullptr || Actor()->GetDetector() == this && g_player_hud->attached_item(0) == nullptr || Actor()->GetDetector() != this && g_player_hud->attached_item(0) != nullptr;
+
+			if (test)
+			{
+				xr_sprintf(anm, "sndNV%s", torch->GetNightVisionStatus() ? "Off" : "On");
+				PlaySound(anm, HudItemData()->m_item_transform.c);
+			}
+
+			test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
+				smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr);
+
+			if (test)
+				SetAnimationCallback({ CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback) });
+
+			if (CWeapon* wpn = smart_cast<CWeapon*>(this))
+			{
+				wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(Actor(), &CActor::NVCallback) });
+			}
+		}
+	}
+	fDeviceFlags.zero();
 }
 
 attachable_hud_item* CHudItem::HudItemData() const

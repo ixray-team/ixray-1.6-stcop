@@ -129,6 +129,8 @@ CWeapon::CWeapon()
 
 	_last_recharge_time = 0.0f;
 	_last_shot_time = 0;
+
+	bIsTorchEnabled = false;
 }
 
 CWeapon::~CWeapon		()
@@ -715,6 +717,11 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
 
+	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+	TorchBreakingParams.start_condition = tmp_vector.x;
+	TorchBreakingParams.end_condition = tmp_vector.y;
+	TorchBreakingParams.start_probability = tmp_vector.z;
+
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
 }
@@ -950,6 +957,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_bRememberActorNVisnStatus,	output_packet);
 	save_data		(_lens_zoom_params.target_position,output_packet);
 	save_data		(_lens_night_brightness.cur_step,output_packet);
+	save_data		(bIsTorchEnabled, output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -969,6 +977,8 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_bRememberActorNVisnStatus,	input_packet);
 	load_data		(_lens_zoom_params.target_position,input_packet);
 	load_data		(_lens_night_brightness_saved_step,input_packet);
+	load_data		(bIsTorchEnabled, input_packet);
+	SwitchTorch(bIsTorchEnabled);
 }
 
 
@@ -1126,19 +1136,61 @@ void CWeapon::OnH_B_Chield		()
 
 extern u32 hud_adj_mode;
 
+void CWeapon::SwitchTorch(bool status, bool forced)
+{
+	if (!forced && status == bIsTorchEnabled)
+		return;
+
+	if (!m_HudLight.GetTorchInstalled())
+		return;
+
+	bIsTorchEnabled = status;
+
+	m_HudLight.SwitchTorchlight(status);
+}
+
+void CWeapon::UpdateTorch()
+{
+	if (!m_HudLight.GetTorchInstalled())
+		return;
+
+	if (H_Parent() != nullptr && !ParentIsActor())
+		SwitchTorch(false);
+
+	if (bIsTorchEnabled)
+	{
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", true);
+		SwitchTorch(true, true);
+	}
+	else
+	{
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", false);
+		SwitchTorch(false);
+	}
+
+	bool is_broken = false;
+	float current_condition = GetCondition();
+
+	if (current_condition < TorchBreakingParams.end_condition)
+		is_broken = true;
+	else if (current_condition < TorchBreakingParams.start_condition)
+	{
+		is_broken = (::Random.randF(0.0f, 1.0f) < TorchBreakingParams.start_probability +
+			(TorchBreakingParams.start_condition - current_condition) *
+			(1 - TorchBreakingParams.start_probability) /
+			(TorchBreakingParams.start_condition - TorchBreakingParams.end_condition));
+	}
+
+	if (is_broken)
+	{
+		SwitchTorch(false);
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", false);
+		bIsTorchEnabled = true;
+	}
+}
+
 void CWeapon::UpdateCL		()
 {
-	inherited::UpdateCL		();
-	//подсветка от выстрела
-	UpdateLight				();
-
-	//нарисовать партиклы
-	UpdateFlameParticles	();
-	UpdateFlameParticles2	();
-
-	if(!IsGameTypeSingle())
-		make_Interpolation		();
-
 	bool need_update_hud = false;
 
 	if (HudItemData() && !bUpdateHUDBonesVisibility)
@@ -1158,6 +1210,18 @@ void CWeapon::UpdateCL		()
 	}
 
 	UpdateCollimatorSight();
+	UpdateTorch();
+
+	inherited::UpdateCL		();
+	//подсветка от выстрела
+	UpdateLight				();
+
+	//нарисовать партиклы
+	UpdateFlameParticles	();
+	UpdateFlameParticles2	();
+
+	if(!IsGameTypeSingle())
+		make_Interpolation		();
 
 	if (ParentIsActor())
 	{
@@ -2319,6 +2383,14 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					ChangeNightBrightness(1);
 
 				return true;
+			}
+		}break;
+		case kTACTICALTORCH:
+		{
+			if (flags & CMD_START && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfTACTICALTORCH))
+			{
+				fDeviceFlags.set(EDeviceFlags::DF_TACTICALTORCH, true);
+				SwitchState(eSwitchDevice);
 			}
 		}break;
 		case kWPN_NEXT: 
