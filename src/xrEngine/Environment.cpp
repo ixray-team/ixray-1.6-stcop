@@ -498,7 +498,7 @@ void CEnvironment::lerp		(float& current_weight)
 
 	Fvector	view			= Device.vCameraPosition;
 	float	mpower			= 0;
-	for (xr_vector<CEnvModifier>::iterator mit=Modifiers.begin(); mit!=Modifiers.end(); mit++)
+	for (xr_list<CEnvModifier>::iterator mit=Modifiers.begin(); mit!=Modifiers.end(); mit++)
 		mpower				+= EM.sum(*mit,view);
 
 	// final lerp

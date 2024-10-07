@@ -1,6 +1,6 @@
 #pragma once
 
-#define SPAWNPOINT_VERSION   			0x0017
+#define SPAWNPOINT_VERSION   			0x0018
 
 // refs
 class CSE_Visual;
@@ -24,6 +24,8 @@ public:
     CLE_Visual(CSE_Visual* src);
     virtual			~CLE_Visual();
 };
+class CEnvModifier;
+
 class CSpawnPoint : public CCustomObject,
 	public CPhysicsShellHolderEditorBase
 {
@@ -114,6 +116,9 @@ public:
             u32		m_EM_SkyColor;
             u32		m_EM_HemiColor;
             Flags16	m_EM_Flags;
+
+            u8		m_EM_ShapeType;
+            CEnvModifier* m_EM_Ptr;
         };
     };
 

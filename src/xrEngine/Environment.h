@@ -39,6 +39,9 @@ public:
 	Fvector3			hemi_color;
 	Flags16				use_flags;
 
+	u8					shape_type;
+	Fobb				obb;
+
 	void				load		(IReader* fs, u32 version);
 	float				sum			(CEnvModifier&	_another, Fvector3& view);
 };
@@ -279,7 +282,7 @@ public:
 
 	EnvsMap					WeatherCycles;
 	EnvsMap					WeatherFXs;
-	xr_vector<CEnvModifier>	Modifiers;
+	xr_list<CEnvModifier>	Modifiers;
 	EnvAmbVec				Ambients;
 
 	CEffect_Rain*			eff_Rain;
@@ -304,6 +307,9 @@ public:
 
 	void					mods_load			();
 	void					mods_unload			();
+
+	CEnvModifier*			new_modifier		();
+	void					remove_modifier		(CEnvModifier *ptr);
 
 	void					OnFrame				();
 	void					lerp				(float& current_weight);

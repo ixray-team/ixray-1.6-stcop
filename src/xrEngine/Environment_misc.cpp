@@ -9,6 +9,7 @@
 #include "IGame_Level.h"
 #include "../xrServerEntities/object_broker.h"
 #include "../xrServerEntities/LevelGameDef.h"
+#include "../xrServerEntities/ShapeData.h"
 
 void CEnvModifier::load	(IReader* fs, u32 version)
 {
@@ -27,12 +28,62 @@ void CEnvModifier::load	(IReader* fs, u32 version)
 	{
 		use_flags.assign(fs->r_u16());
 	}
+
+	if(version>=0x0018)
+	{
+		shape_type = fs->r_u8();
+		Fvector R, S;
+		fs->r_fvector3(R);
+		fs->r_fvector3(S);
+
+		obb.m_translate.set(position);
+		obb.m_rotate.set(Fmatrix().setXYZ(R));
+		obb.m_halfsize.set(S);
+	}
+	else
+		shape_type = CShapeData::cfSphere;
+
 }
 
 float	CEnvModifier::sum	(CEnvModifier& M, Fvector3& view)
 {
-	float	_dist_sq	=	view.distance_to_sqr(M.position);
-	if (_dist_sq>=(M.radius*M.radius))	
+	float	_dist_sq;
+
+	switch(M.shape_type)
+	{
+	case CShapeData::cfSphere:
+	{
+		_dist_sq	=	view.distance_to_sqr(M.position);
+	}
+	break;
+	case CShapeData::cfBox:
+	{
+		Fmatrix xform; M.obb.xform_get(xform);
+		Fvector n, p;
+		// make 6 planes from OBB
+		Fplane pl[6];
+
+		pl[0].build_unit_normal(p.set( M.obb.m_halfsize.x, 0, 0), n.set( 1, 0, 0) ).transform(xform); // +X
+		pl[1].build_unit_normal(p.set(-M.obb.m_halfsize.x, 0, 0), n.set(-1, 0, 0) ).transform(xform); // -X
+		pl[2].build_unit_normal(p.set( 0, M.obb.m_halfsize.y, 0), n.set( 0, 1, 0) ).transform(xform); // +Y
+		pl[3].build_unit_normal(p.set( 0,-M.obb.m_halfsize.y, 0), n.set( 0,-1, 0) ).transform(xform); // -Y
+		pl[4].build_unit_normal(p.set( 0, 0, M.obb.m_halfsize.z), n.set( 0, 0, 1) ).transform(xform); // +Z
+		pl[5].build_unit_normal(p.set( 0, 0,-M.obb.m_halfsize.z), n.set( 0, 0,-1) ).transform(xform); // -Z
+
+		p.set(view);
+
+		for(int i = 0; i < 6; i++)
+			if(pl[i].classify(p) > 0.0f)
+				pl[i].project(p, p);
+
+		_dist_sq	=	view.distance_to_sqr(p);
+	}
+	break;
+	default:
+		NODEFAULT;
+	}
+
+	if (_dist_sq>=(M.radius*M.radius))
 		return			0;
 
 	float	_att		=	1-_sqrt(_dist_sq)/M.radius;	//[0..1];
@@ -578,6 +629,24 @@ void	CEnvironment::mods_load			()
 void	CEnvironment::mods_unload		()
 {
 	Modifiers.clear();
+}
+
+CEnvModifier*	CEnvironment::new_modifier	()
+{
+	CEnvModifier em;
+    em.shape_type = CShapeData::cfSphere;
+	Modifiers.push_back(em);
+    return &Modifiers.back();
+}
+
+void	CEnvironment::remove_modifier	(CEnvModifier *ptr)
+{
+	xr_list<CEnvModifier>::iterator it = Modifiers.begin(), end = Modifiers.end();
+	for(; it != end; it++)
+		if(&*it == ptr) {
+			Modifiers.erase(it);
+		return;
+		}
 }
 
 void    CEnvironment::load_level_specific_ambients ()
