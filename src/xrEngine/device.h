@@ -14,6 +14,8 @@
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
+#include "../Layers/xrRenderInterface/DeviceRHI.h"
+
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
