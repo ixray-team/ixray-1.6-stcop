@@ -310,8 +310,8 @@ class IBuffer :
 public:
 	virtual ~IBuffer() {}
 
-	virtual void* Map(eBufferMapping Mapping) = 0;
-	virtual void  Unmap() = 0;
+	virtual bool Map(eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pData) = 0;
+	virtual void Unmap() = 0;
 
 	virtual void UpdateSubresource(void* pData, size_t Size) = 0;
 };

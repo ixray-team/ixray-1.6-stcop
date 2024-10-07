@@ -76,20 +76,20 @@ HRESULT CD3D11Buffer::Create(eBufferType bufferType, const void* pData, u32 Data
 	return res;
 }
 
-void* CD3D11Buffer::Map(eBufferMapping Mapping)
+bool CD3D11Buffer::Map(eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pData)
 {
 	ID3D11DeviceContext* pImmediateContext = (ID3D11DeviceContext*)g_RenderRHI_DX11Implementation.GetDeviceContext();
 	R_ASSERT(pImmediateContext);
 
 	D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
-	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, GetD3D11Map(Mapping), 0, &mappedSubresource);
+	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, GetD3D11Map(MapType), 0, &mappedSubresource);
 	if (FAILED(hr))
 	{
 		Msg("! CD3D11Buffer::Map: Failed to map buffer. DirectX Error: %s", Debug.error2string(hr));
-		return nullptr;
+		return false;
 	}
 
-	return mappedSubresource.pData;
+	return true;
 }
 
 void CD3D11Buffer::Unmap()

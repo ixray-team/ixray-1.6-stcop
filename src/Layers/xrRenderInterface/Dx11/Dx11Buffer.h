@@ -11,8 +11,8 @@ public:
 
 	HRESULT Create(eBufferType bufferType, const void* pData, u32 DataSize, bool bImmutable);
 
-	void* Map(eBufferMapping Mapping) override;
-	void  Unmap() override;
+	bool Map(eBufferMapping MapType, u32 MapFlags, SMappedSubresource* pData) override;
+	void Unmap() override;
 
 	void UpdateSubresource(void* pData, size_t Size) override;
 

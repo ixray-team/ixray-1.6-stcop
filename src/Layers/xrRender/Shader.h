@@ -79,8 +79,8 @@ typedef	resptr_core<SConstantList,resptr_base<SConstantList> >								ref_consta
 //////////////////////////////////////////////////////////////////////////
 struct	 ECORE_API		SGeometry		: public xr_resource_flagged									{
 	ref_declaration		dcl;
-	ID3DVertexBuffer*	vb;
-	ID3DIndexBuffer*	ib;
+	IBuffer*			vb;
+	IBuffer*			ib;
 	u32					vb_stride;
 						~SGeometry		();
 						SGeometry& operator=(const SGeometry& Other) = delete;
@@ -88,8 +88,8 @@ struct	 ECORE_API		SGeometry		: public xr_resource_flagged									{
 
 struct 	ECORE_API	resptrcode_geom	: public resptr_base<SGeometry>
 {
-	void 				create			(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-	void				create			(u32 FVF				, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+	void 				create			(D3DVERTEXELEMENT9* decl, IBuffer* vb, IBuffer* ib);
+	void				create			(u32 FVF				, IBuffer* vb, IBuffer* ib);
 	void				destroy			()			{ _set(NULL);		}
 	u32					stride			()	const	{ return _get()->vb_stride;	}
 };
