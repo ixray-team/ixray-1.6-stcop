@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xrEngine/feel_touch.h"
-#include "inventory_item_object.h"
+#include "hud_item_object.h"
 
 #include "InfoPortionDefs.h"
 #include "character_info_defs.h"
@@ -15,10 +15,10 @@ using PDA_LIST = xr_vector<CPda*>;
 using PDA_LIST_it = PDA_LIST::iterator;
 
 class CPda :
-	public CInventoryItemObject,
+	public CHudItemObject,
 	public Feel::Touch
 {
-	typedef	CInventoryItemObject inherited;
+	typedef	CHudItemObject inherited;
 public:
 											CPda					();
 	virtual									~CPda					();
@@ -26,6 +26,7 @@ public:
 	virtual BOOL 							net_Spawn				(CSE_Abstract* DC);
 	virtual void 							Load					(LPCSTR section);
 	virtual void 							net_Destroy				();
+
 
 	virtual void 							OnH_A_Chield			();
 	virtual void 							OnH_B_Independent		(bool just_before_destroy);
@@ -41,6 +42,9 @@ public:
 	virtual CInventoryOwner*				GetOriginalOwner		();
 	virtual CObject*						GetOwnerObject			();
 
+	virtual void							PlayAnimIdle			();
+	virtual void							OnStateSwitch			(u32 S) override;
+	virtual void							OnAnimationEnd			(u32 state) override;
 
 			void							TurnOn					() {m_bTurnedOff = false;}
 			void							TurnOff					() {m_bTurnedOff = true;}
@@ -55,12 +59,25 @@ public:
 			u32								ActiveContactsNum		()							{return (u32)m_active_contacts.size();}
 			void							PlayScriptFunction		();
 			bool							CanPlayScriptFunction	() {if(!xr_strcmp(m_functor_str, "")) return false; return true;};
+	virtual void							UpdateXForm();
 
+	virtual void							OnMoveToRuck			(const SInvItemPlace& prev) override;
+
+	virtual	u8								GetCurrentHudOffsetIdx	();
+	virtual void							UpdateHudAdditonal		(Fmatrix&);
+	virtual void							UpdateCL				();
+	virtual bool							Action					(u16 cmd, u32 flags);
+
+	virtual void							OnHiddenItem			() override;
+	virtual void							OnActiveItem			() override;
 
 	virtual void							save					(NET_Packet &output_packet);
 	virtual void							load					(IReader &input_packet);
 
 //*	virtual LPCSTR							Name					();
+public:
+	bool m_bZoomed = false;
+	float m_fZoomfactor = 0.f;
 
 protected:
 	void									UpdateActiveContacts	();

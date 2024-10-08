@@ -483,6 +483,10 @@ void	CRenderTarget::phase_combine	()
 	dbg_lines.clear		();
 	dbg_planes.clear	();
 #endif
+
+	if(g_pGamePersistent->pda_shader_data.pda_display_factor > 0.0f) {
+		u_setrt(rt_ui_pda, 0, 0);
+	}
 }
 
 void CRenderTarget::phase_wallmarks		()

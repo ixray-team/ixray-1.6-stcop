@@ -18,15 +18,19 @@ class ENGINE_API IGame_Persistent	:
 	public pureFrame
 {
 public:
-	union params {
-		struct {
+	union params 
+	{
+		struct 
+		{
 			string256	m_game_or_spawn;
 			string256	m_game_type;
 			string256	m_alife;
 			string256	m_new_or_load;
 			EGameIDs	m_e_game_type;
 		};
+
 		string256		m_params[4];
+
 						params		()	{	reset();	}
 		void			reset		()
 		{
@@ -43,11 +47,20 @@ public:
 			}
 		}
 	};
+
 	params							m_game_params;
+
 public:
 	xr_set<CPS_Instance*>			ps_active;
 	xr_vector<CPS_Instance*>		ps_destroy;
 	xr_vector<CPS_Instance*>		ps_needtoplay;
+
+	struct pda_data
+	{
+		float pda_display_factor;
+		float pda_psy_influence;
+		float pda_displaybrightness;
+	} pda_shader_data;
 
 public:
 			void					destroy_particles	(const bool &all_particles);

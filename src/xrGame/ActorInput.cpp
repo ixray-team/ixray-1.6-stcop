@@ -598,15 +598,17 @@ BOOL CActor::HUDview				( )const
 		((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView() ) ); 
 }
 
-static	u16 SlotsToCheck [] = {
+static u16 SlotsToCheck[] =
+{
 		KNIFE_SLOT		,		// 0
 		INV_SLOT_2		,		// 1
 		INV_SLOT_3		,		// 2
 		GRENADE_SLOT	,		// 3
 		ARTEFACT_SLOT	,		// 10
+		PDA_SLOT		,
 };
 
-void	CActor::OnNextWeaponSlot()
+void CActor::OnNextWeaponSlot()
 {
 	u32 ActiveSlot = inventory().GetActiveSlot();
 	if (ActiveSlot == NO_ACTIVE_SLOT) 
@@ -634,6 +636,10 @@ void	CActor::OnNextWeaponSlot()
 			{
 				IR_OnKeyboardPress(kARTEFACT);
 			}
+			else if (SlotsToCheck[i] == PDA_SLOT)
+			{
+				IR_OnKeyboardPress(kACTIVE_JOBS);
+			}
 			else
 				IR_OnKeyboardPress(kWPN_1 + i);
 			return;
@@ -641,7 +647,7 @@ void	CActor::OnNextWeaponSlot()
 	}
 };
 
-void	CActor::OnPrevWeaponSlot()
+void CActor::OnPrevWeaponSlot()
 {
 	u32 ActiveSlot = inventory().GetActiveSlot();
 	if (ActiveSlot == NO_ACTIVE_SLOT) 

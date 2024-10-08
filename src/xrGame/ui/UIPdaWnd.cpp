@@ -27,7 +27,10 @@
 #include "UIRankingWnd.h"
 #include "UILogsWnd.h"
 
-#define PDA_XML		"pda.xml"
+#include "..\Actor.h"
+#include "..\Inventory.h"
+
+#define PDA_XML "pda.xml"
 
 u32 g_pda_info_state = 0;
 
@@ -328,13 +331,37 @@ void RearrangeTabButtons(CUITabControl* pTab)
 
 bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if ( is_binded(kACTIVE_JOBS, dik) )
+	if (is_binded(kACTIVE_JOBS, dik))
 	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action )
+		if(WINDOW_KEY_PRESSED == keyboard_action) {
 			HideDialog();
-
+		}
+	
 		return true;
 	}	
 
+	if(is_binded(kWPN_ZOOM, dik) && Actor()) {
+		if(WINDOW_KEY_PRESSED == keyboard_action) {
+			Actor()->inventory().Action(kWPN_ZOOM, CMD_START);
+			Actor()->inventory().Action(kWPN_ZOOM, CMD_STOP);
+			return true;
+		}
+	}
+
 	return inherited::OnKeyboardAction(dik,keyboard_action);
+}
+
+bool CUIPdaWnd::IR_process() {
+	auto pPda = Actor()->GetPDA();
+	if(pPda) {
+		if(!pPda->m_bZoomed) {
+			return false;
+		}
+	}
+	return inherited::IR_process();
+}
+
+bool CUIPdaWnd::OnMouseAction(float x, float y, EUIMessages mouse_action) {
+	CUIDialogWnd::OnMouseAction(x, y, mouse_action);
+	return false;
 }
