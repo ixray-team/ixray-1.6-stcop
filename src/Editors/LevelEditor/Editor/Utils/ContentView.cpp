@@ -309,11 +309,7 @@ void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_s
 			Validate = Validate.erase(Validate.length() - 1);
 		}
 
-		bool DirIsNotExist = !FS.exist(FSEntry);
-		if (DirIsNotExist)
-		{
-			ImGui::BeginDisabled();
-		}
+		ImGui::BeginDisabled(!FS.TryLoad(FSEntry));
 
 		if (DrawItem({ Validate.c_str(), true }, HorBtnIter, IterCount))
 		{
@@ -325,10 +321,7 @@ void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_s
 			Files.clear();
 		}
 
-		if (DirIsNotExist)
-		{
-			ImGui::EndDisabled();
-		}
+		ImGui::EndDisabled();
 	};
 
 	IsSpawnElement = false;
