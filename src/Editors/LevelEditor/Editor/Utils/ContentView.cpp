@@ -80,7 +80,7 @@ void CContentView::DrawHeader()
 		IsSpawnElement = false;
 		IsFindResult = false;
 		std::memset(FindStr, 0, sizeof(FindStr));
-		Files.clear();
+		ISEPath.clear();
 	}
 	ImGui::SameLine();
 	ImGui::Text("/");
@@ -649,44 +649,48 @@ bool CContentView::Contains()
 
 bool CContentView::DrawContext(const std::filesystem::path& Path) const
 {
-	if (ImGui::BeginPopupContextItem())
+	if (Path.string() == ".." || !ImGui::BeginPopupContextItem())
 	{
-		bool ShowOpen = Path.has_extension() && Path.extension().string() == ".level";
+		return false;
+	}
+	
+	bool ShowOpen = Path.has_extension() && Path.extension().string() == ".level";
 
-		if (ShowOpen)
+	if (ShowOpen)
+	{
+		if (ImGui::MenuItem("Open"))
 		{
-			if (ImGui::MenuItem("Open"))
+			UI->SetStatus("Level loading...");
+			ExecCommand(COMMAND_CLEAR);
+			FS.TryLoad(Path.string().c_str());
+			IReader* R = FS.r_open(Path.string().c_str());
+			if (!R) 
 			{
-				UI->SetStatus("Level loading...");
-				ExecCommand(COMMAND_CLEAR);
-				FS.TryLoad(Path.string().c_str());
-				IReader* R = FS.r_open(Path.string().c_str());
-				if (!R)return false;
-				char ch;
-				R->r(&ch, sizeof(ch));
-				bool is_ltx = (ch == '[');
-				FS.r_close(R);
-				bool res;
-				LTools->m_LastFileName = Path.string().c_str();
-
-				if (is_ltx)
-					Scene->LoadLTX(Path.string().c_str(), false);
-				else
-					Scene->Load(Path.string().c_str(), false);
+				ImGui::EndPopup();
+				return false;
 			}
-			ImGui::Separator();
-		}
+			char ch;
+			R->r(&ch, sizeof(ch));
+			bool is_ltx = (ch == '[');
+			FS.r_close(R);
+			bool res;
+			LTools->m_LastFileName = Path.string().c_str();
 
-		if (ImGui::MenuItem("Delete"))
-		{
-			std::filesystem::remove(Path);
-			FS.rescan_path(Path.parent_path().string().c_str() , true);
+			if (is_ltx)
+				Scene->LoadLTX(Path.string().c_str(), false);
+			else
+				Scene->Load(Path.string().c_str(), false);
 		}
-		ImGui::EndPopup();
-		return true;
+		ImGui::Separator();
 	}
 
-	return false;
+	if (ImGui::MenuItem("Delete"))
+	{
+		std::filesystem::remove(Path);
+		FS.rescan_path(Path.parent_path().string().c_str() , true);
+	}
+	ImGui::EndPopup();
+	return true;
 }
 
 CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
