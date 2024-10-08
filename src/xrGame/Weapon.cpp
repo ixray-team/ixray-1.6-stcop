@@ -1967,7 +1967,7 @@ bool CWeapon::FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_af
 
 bool CWeapon::IsActionProcessing() const
 {
-	return H_Parent() && (lock_time > 0.f  || ParentIsActor() && Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide());
+	return H_Parent() && (lock_time > 0.0f || ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide()));
 }
 
 void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
