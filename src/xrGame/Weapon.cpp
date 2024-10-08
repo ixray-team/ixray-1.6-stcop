@@ -2777,18 +2777,14 @@ bool CWeapon::OnWeaponJam()
 	_wanim_force_assign = true;
 
 	if (!ParentIsActor())
-		return true;
+		return false;
 
-	// Проверка на суицид игрока
 	if (Actor()->IsActorSuicideNow())
 	{
 		SetMisfireStatus(false);
-		return true;
+		return false;
 	}
 
-	bool result = true;
-
-	// Обработка легких осечек
 	if (m_bUseLightMis && !(Actor()->GetDetector() != nullptr && m_bDisableLightMisDet))
 	{
 		float curcond = GetCondition();
@@ -2808,47 +2804,33 @@ bool CWeapon::OnWeaponJam()
 
 		if (::Random.randF(0.0f, 1.0f) < curprob)
 		{
-			// Осечка
 			SetMisfireStatus(false);
-			result = false;
 			//ApplyLensRecoil(GetMisfireRecoil());
 			SwitchState(eLightMis);
 			return true;
 		}
 	}
 
-	// Клин оружия
-	result = !m_bJamNotShot;
-	if (!result)
-		OnShotJammed();
+	if (m_bJamNotShot)
+	{
+		SwitchState(eMisfire);
+		return true;
+	}
 
-	return result;
+	return false;
 }
 
 bool CWeapon::CheckForMisfire_validate_NoMisfire()
 {
-	// По умолчанию осечка не должна произойти
-	bool result = false;
-
-	// Проверка: если владелец оружия — актер, и он не может стрелять
-	if (ParentIsActor() && !m_bActorCanShoot)
-		result = true;
-
-	// Получаем буфер оружия
 	float problems_lvl = m_fMisfireAfterProblemsLevel;
 
-	// Проверка: если уровень проблем выше нуля и количество электронных проблем >= уровня
 	if (problems_lvl > 0.0f && Actor()->CurrentElectronicsProblemsCnt() >= problems_lvl)
-	{
-		// Устанавливаем статус клина
-		SetMisfireStatus(true);
-		SwitchState(eMisfire);
+		return OnWeaponJam();
 
-		// Проводим проверку на клин с помощью OnWeaponJam
-		result = !OnWeaponJam();
-	}
+	if (ParentIsActor() && !m_bActorCanShoot)
+		return true;
 
-	return result;
+	return false;
 }
 
 bool CWeapon::CheckForMisfire()
@@ -2878,7 +2860,7 @@ bool CWeapon::CheckForMisfire()
 			return false;
 		}
 		else
-			return !OnWeaponJam();
+			return OnWeaponJam();
 	}
 	else if (isGuns)
 		return CheckForMisfire_validate_NoMisfire();
