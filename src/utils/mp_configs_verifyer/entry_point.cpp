@@ -152,7 +152,7 @@ void run_configs_verifyer_server()
 {
 	string_path	file_to_check;
 	file_to_check[0] = 0;
-	while (scanf_s("%s", file_to_check, sizeof(file_to_check)) == 1)
+	while (scanf_s("%s", file_to_check, (unsigned)sizeof(file_to_check)) == 1)
 	{
 		check_file(file_to_check);
 	}
