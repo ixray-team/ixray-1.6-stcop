@@ -333,6 +333,8 @@ public:
 	void SetLastRechargeTime(float time) { _last_recharge_time = time; }
 	void UpdateCollimatorSight();
 	void UpdateTorch();
+	void LaunchGrenade_Correct(Fvector3& v);
+	void LaunchGrenade_controller_Correct(Fvector3& v);
 	virtual void OnShotJammed() {}
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }

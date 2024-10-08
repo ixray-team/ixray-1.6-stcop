@@ -322,7 +322,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 				else
 					LaunchGrenade_Correct(d);
 
-				LaunchGrenade_controller_Correct(this, d);
+				LaunchGrenade_controller_Correct(d);
 			}
 		};
 		
@@ -351,25 +351,6 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 	//режим стрельбы очередями
 	else 
 		inherited::state_Fire(dt);
-}
-
-void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3& v)
-{
-	Fvector3 camdir = Device.vCameraDirection;
-
-	camdir.y = 0.0f;
-	camdir.normalize();
-
-	camdir.y = 1.0f;
-	camdir.normalize();
-
-	v = camdir;
-}
-
-void CWeaponMagazinedWGrenade::LaunchGrenade_controller_Correct(CWeaponMagazined* wpn, Fvector3& v)
-{
-	if (wpn->ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()))
-		v.set(0, -2, 0);
 }
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type) 

@@ -143,9 +143,9 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 			if (canfire0 != 0)
 				d = res[0];
 			else
-				CWeaponMagazinedWGrenade::LaunchGrenade_Correct(d);
+				LaunchGrenade_Correct(d);
 
-			CWeaponMagazinedWGrenade::LaunchGrenade_controller_Correct(this, d);
+			LaunchGrenade_controller_Correct(d);
 		}
 	};
 
