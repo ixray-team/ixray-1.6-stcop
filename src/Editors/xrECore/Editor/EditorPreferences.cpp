@@ -171,7 +171,11 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateFloat	(props,"Viewport\\Far Plane", 				    &view_fp,			10.f, 	10000.f);
 	PHelper().CreateFloat	(props,"Viewport\\FOV",		  				    &view_fov,			0.1f,	170.f);
 	PHelper().CreateColor	(props,"Viewport\\Clear Color",		           	&scene_clear_color	);
-	PHelper().CreateSText	(props,"Compilers\\Path",		           		&CompilersPath);
+
+	PHelper().CreateSText	(props, "Compilers Path\\xrLC",					&Compiler_xrLC);
+	PHelper().CreateSText	(props,	"Compilers Path\\xrAI",		           	&Compiler_xrAI);
+	PHelper().CreateSText	(props, "Compilers Path\\xrDO",					&Compiler_xrDO);
+	
 
    ButtonValue* B = PHelper().CreateButton	(props,"Keyboard\\Common\\File","Load,Save", 0);
 	B->OnBtnClickEvent.bind	(this,&CCustomPreferences::OnKeyboardCommonFileClick);

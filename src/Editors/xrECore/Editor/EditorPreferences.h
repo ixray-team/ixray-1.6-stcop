@@ -76,7 +76,11 @@ public:
 	// objects
 	Flags32			object_flags;
 	shared_str      sWeather;
-	xr_string		CompilersPath;
+
+	xr_string		Compiler_xrAI;
+	xr_string		Compiler_xrLC;
+	xr_string		Compiler_xrDO;
+
 protected:
 	void 			OnKeyboardCommonFileClick	(ButtonValue* value, bool& bModif, bool& bSafe);
 	void 	        OnClose();

@@ -670,7 +670,7 @@ void CLevelTool::RunXrLC()
 	;
 
 	string_path CommandLine;
-	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->Compiler_xrLC.c_str();
 
 	if (CompPath.empty())
 	{
@@ -678,7 +678,7 @@ void CLevelTool::RunXrLC()
 	}
 	else
 	{
-		xr_sprintf(CommandLine, " %s\\xrLC.exe -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+		xr_sprintf(CommandLine, " %s -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 
 	Msg("~ Run %s.\n", CommandLine);
@@ -715,14 +715,14 @@ void CLevelTool::RunXrDO()
 
 
 	string_path CommandLine;
-	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->Compiler_xrDO.c_str();
 	if (CompPath.empty())
 	{
 		xr_sprintf(CommandLine, "xrDO_light.exe -f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	else
 	{
-		xr_sprintf(CommandLine, "%s\\xrDO_light.exe -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+		xr_sprintf(CommandLine, "%s -f %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
@@ -758,14 +758,14 @@ void CLevelTool::RunXrAI_Spawn(bool current_level)
 
 
 	string_path CommandLine;
-	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->Compiler_xrAI.c_str();
 	if (CompPath.empty())
 	{
 		xr_sprintf(CommandLine, "xrAI.exe -no_separator_check -s %s -out all", current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
 	}
 	else
 	{
-		xr_sprintf(CommandLine, "%s\\xrAI.exe -no_separator_check -s %s -out all", CompPath.data(), current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
+		xr_sprintf(CommandLine, "%s -no_separator_check -s %s -out all", CompPath.data(), current_level ? Scene->m_LevelOp.m_FNLevelPath.c_str() : "");
 	}
 	Msg("~ Run %s.\n", CommandLine);
 	// Start the child process. 
@@ -801,14 +801,14 @@ void CLevelTool::RunXrAI_AIMap(bool draw)
 
 
 	string_path CommandLine;
-	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->Compiler_xrAI.c_str();
 	if (CompPath.empty())
 	{
 		xr_sprintf(CommandLine, "xrAI.exe -f %s %s", Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
 	}
 	else
 	{
-		xr_sprintf(CommandLine, "%s\\xrAI.exe -f %s %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
+		xr_sprintf(CommandLine, "%s -f %s %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str(), draw ? "-draft" : "");
 	}
 	
 	Msg("~ Run %s.\n", CommandLine);
@@ -845,14 +845,14 @@ void CLevelTool::RunXrAI_Verify()
 
 
 	string_path CommandLine;
-	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->CompilersPath.c_str();
+	const xr_string& CompPath = ((CLevelPreferences*)EPrefs)->Compiler_xrAI.c_str();
 	if (CompPath.empty())
 	{
 		xr_sprintf(CommandLine, "xrAI.exe -verify %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	else
 	{
-	    xr_sprintf(CommandLine, "%s\\xrAI.exe -verify %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
+	    xr_sprintf(CommandLine, "%s -verify %s", CompPath.data(), Scene->m_LevelOp.m_FNLevelPath.c_str());
 	}
 	
 	Msg("~ Run %s.\n", CommandLine);

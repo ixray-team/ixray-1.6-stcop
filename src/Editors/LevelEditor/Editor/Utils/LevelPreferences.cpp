@@ -9,9 +9,19 @@ void CLevelPreferences::Load()
     OpenProperties = JSONData["windows"]["properties"];
     OpenWorldProperties = JSONData["windows"]["world_properties"];
     
-    if (JSONData.contains("compilers") && JSONData["compilers"].contains("path"))
+    if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrLC"))
     {
-        CompilersPath = ((std::string)JSONData["compilers"]["path"]).c_str();
+        Compiler_xrLC = ((std::string)JSONData["Compilers Path"]["xrLC"]).c_str();
+    }
+
+    if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrAI"))
+    {
+        Compiler_xrAI = ((std::string)JSONData["Compilers Path"]["xrAI"]).c_str();
+    }
+
+    if (JSONData.contains("Compilers Path") && JSONData["Compilers Path"].contains("xrDO"))
+    {
+        Compiler_xrDO = ((std::string)JSONData["Compilers Path"]["xrDO"]).c_str();
     }
 
     if (JSONData["windows"].contains("snap_list"))
@@ -38,7 +48,9 @@ void CLevelPreferences::Save()
     JSONData["windows"]["properties"] = OpenProperties;
     JSONData["windows"]["world_properties"] = OpenWorldProperties;
     JSONData["windows"]["snap_list"] = OpenSnapList;
-    JSONData["compilers"]["path"] = CompilersPath.c_str();
+    JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
+    JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
+    JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
 
     SceneToolsMapPairIt _I 	= Scene->FirstTool();
     SceneToolsMapPairIt _E 	= Scene->LastTool();
