@@ -245,8 +245,16 @@ void CUIPdaWnd::Show_MapLegendWnd( bool status )
 	pUITaskWnd->ShowMapLegend( status );
 }
 
+u32 pda_render_frame = 0;
+
 void CUIPdaWnd::Draw()
 {
+	if(pda_render_frame == Device.dwFrame) {
+		return;
+	}
+
+	pda_render_frame = Device.dwFrame;
+
 	inherited::Draw();
 //.	DrawUpdatedSections();
 	DrawHint();
