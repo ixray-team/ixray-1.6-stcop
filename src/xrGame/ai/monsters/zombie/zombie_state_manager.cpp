@@ -21,20 +21,21 @@
 
 CStateManagerZombie::CStateManagerZombie(CZombieBase* obj) : inherited(obj)
 {
-	m_pZombie = smart_cast<CZombieBase*>(obj);
+    m_pZombie = smart_cast<CZombieBase*>(obj);
 
-	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
-	add_state(eStateAttack,
-		xr_new<CStateMonsterAttack>(obj,
-			xr_new<CStateZombieAttackRun>(obj),
-			xr_new<CStateMonsterAttackMelee>(obj)
-		)
-	);
-	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
-	add_state(eStateControlled, xr_new<CStateMonsterControlled>(obj));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(obj));
+    add_state(eStateRest, new CStateMonsterRest(obj));
+    add_state(eStateAttack,
+        new CStateMonsterAttack(obj,
+            new CStateZombieAttackRun(obj),
+            new CStateMonsterAttackMelee(obj)
+        )
+    );
+    add_state(eStateEat, new CStateMonsterEat(obj));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
+    add_state(eStateControlled, new CStateMonsterControlled(obj));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(obj));
 }
+
 
 
 CStateManagerZombie::~CStateManagerZombie()

@@ -22,14 +22,15 @@
 
 CStateMonsterEat::CStateMonsterEat(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateEat_CorpseApproachRun, xr_new<CStateMonsterMoveToPoint>(obj));
-	this->add_state(eStateEat_CorpseApproachWalk, xr_new<CStateMonsterMoveToPoint>(obj));
-	this->add_state(eStateEat_CheckCorpse, xr_new<CStateMonsterCustomAction>(obj));
-	this->add_state(eStateEat_Eat, xr_new<CStateMonsterEating>(obj));
-	this->add_state(eStateEat_WalkAway, xr_new<CStateMonsterHideFromPoint>(obj));
-	this->add_state(eStateEat_Rest, xr_new<CStateMonsterCustomAction>(obj));
-	this->add_state(eStateEat_Drag, xr_new<CStateMonsterDrag>(obj));
+    this->add_state(eStateEat_CorpseApproachRun, new CStateMonsterMoveToPoint(obj));
+    this->add_state(eStateEat_CorpseApproachWalk, new CStateMonsterMoveToPoint(obj));
+    this->add_state(eStateEat_CheckCorpse, new CStateMonsterCustomAction(obj));
+    this->add_state(eStateEat_Eat, new CStateMonsterEating(obj));
+    this->add_state(eStateEat_WalkAway, new CStateMonsterHideFromPoint(obj));
+    this->add_state(eStateEat_Rest, new CStateMonsterCustomAction(obj));
+    this->add_state(eStateEat_Drag, new CStateMonsterDrag(obj));
 }
+
 
 
 CStateMonsterEat::~CStateMonsterEat()

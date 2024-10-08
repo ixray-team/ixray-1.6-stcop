@@ -18,10 +18,11 @@
 
 CStateMonsterDangerMoveToHomePoint::CStateMonsterDangerMoveToHomePoint(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStatePanic_HomePoint_Hide, xr_new<CStateMonsterMoveToPointEx>(obj));
-	this->add_state(eStatePanic_HomePoint_LookOpenPlace, xr_new<CStateMonsterLookToPoint>(obj));
-	this->add_state(eStatePanic_HomePoint_Camp, xr_new<CStateMonsterCustomAction >(obj));
+    this->add_state(eStatePanic_HomePoint_Hide, new CStateMonsterMoveToPointEx(obj));
+    this->add_state(eStatePanic_HomePoint_LookOpenPlace, new CStateMonsterLookToPoint(obj));
+    this->add_state(eStatePanic_HomePoint_Camp, new CStateMonsterCustomAction(obj));
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // Initialize/Finalize

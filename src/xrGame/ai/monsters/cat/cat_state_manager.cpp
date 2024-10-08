@@ -20,18 +20,17 @@
 
 CustomCatStateManager::CustomCatStateManager(CCatBase* object) : inherited(object)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object));
-	add_state(eStateEat, xr_new<CStateMonsterEat>(object));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(object));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(object));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(object));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateAttack, new CStateMonsterAttack(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
 
-	//add_state(eStateThreaten, xr_new<CStateMonsterLookActor>(obj));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(object));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 
-	m_rot_jump_last_time = 0;
+    m_rot_jump_last_time = 0;
 }
 
 

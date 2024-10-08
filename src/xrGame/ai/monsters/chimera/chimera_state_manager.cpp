@@ -21,17 +21,13 @@
 
 CStateManagerChimera::CStateManagerChimera(CChimeraBase* obj) : inherited(obj)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
-	add_state(eStateAttack, xr_new<ChimeraAttackState>(obj));
-	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
-	// 	add_state(eStateHitted,					xr_new<CStateMonsterHitted>					(obj));
-	// 	add_state(eStateThreaten,				xr_new<CStateChimeraThreaten>				(obj));
-	// 	add_state(eStateCustom,					xr_new<CStateMonsterTestState>				(obj));
+    add_state(eStateRest, new CStateMonsterRest(obj));
+    add_state(eStatePanic, new CStateMonsterPanic(obj));
+    add_state(eStateAttack, new ChimeraAttackState(obj));
+    add_state(eStateEat, new CStateMonsterEat(obj));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
 }
-
 
 CStateManagerChimera::~CStateManagerChimera()
 {

@@ -22,7 +22,7 @@
 CStatePoltergeistAttackHidden::CStatePoltergeistAttackHidden(CBaseMonster* obj) : inherited(obj)
 {
 	m_pPoltergeist = smart_cast<CPoltergeistBase*>(obj);
-	this->add_state(eStateAttack_MoveToHomePoint, xr_new<CStateMonsterAttackMoveToHomePoint >(obj));
+	this->add_state(eStateAttack_MoveToHomePoint, new CStateMonsterAttackMoveToHomePoint(obj));
 }
 
 

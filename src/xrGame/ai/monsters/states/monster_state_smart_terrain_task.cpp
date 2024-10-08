@@ -14,10 +14,11 @@
 
 CStateMonsterSmartTerrainTask::CStateMonsterSmartTerrainTask(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateSmartTerrainTaskGamePathWalk, xr_new<CStateMonsterSmartTerrainTaskGraphWalk>(obj));
-	this->add_state(eStateSmartTerrainTaskLevelPathWalk, xr_new<CStateMonsterMoveToPointEx>(obj));
-	this->add_state(eStateSmartTerrainTaskWaitCapture, xr_new<CStateMonsterCustomAction>(obj));
+    this->add_state(eStateSmartTerrainTaskGamePathWalk, new CStateMonsterSmartTerrainTaskGraphWalk(obj));
+    this->add_state(eStateSmartTerrainTaskLevelPathWalk, new CStateMonsterMoveToPointEx(obj));
+    this->add_state(eStateSmartTerrainTaskWaitCapture, new CStateMonsterCustomAction(obj));
 }
+
 
 
 CStateMonsterSmartTerrainTask::~CStateMonsterSmartTerrainTask()

@@ -23,18 +23,19 @@
 
 CStateManagerSnork::CStateManagerSnork(CSnorkBase* obj) : inherited(obj)
 {
-	m_pSnork = smart_cast<CSnorkBase*>(obj);
+    m_pSnork = smart_cast<CSnorkBase*>(obj);
 
-	add_state(eStateRest, xr_new<CStateMonsterRest>(obj));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(obj));
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(obj));
-	add_state(eStateEat, xr_new<CStateMonsterEat>(obj));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(obj));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(obj));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(obj));
+    add_state(eStateRest, new CStateMonsterRest(obj));
+    add_state(eStatePanic, new CStateMonsterPanic(obj));
+    add_state(eStateAttack, new CStateMonsterAttack(obj));
+    add_state(eStateEat, new CStateMonsterEat(obj));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
+    add_state(eStateHitted, new CStateMonsterHitted(obj));
 
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(obj));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(obj));
 }
+
 
 
 CStateManagerSnork::~CStateManagerSnork()

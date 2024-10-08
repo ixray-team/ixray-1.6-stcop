@@ -15,9 +15,9 @@
 
 CStateChimeraThreaten::CStateChimeraThreaten(CBaseMonster* obj) : inherited(obj)
 {
-	add_state(eStateWalk, xr_new<CStateChimeraThreatenWalk>(obj));
-	add_state(eStateThreaten, xr_new<CStateChimeraThreatenRoar>(obj));
-	add_state(eStateSteal, xr_new<CStateChimeraThreatenSteal>(obj));
+	add_state(eStateWalk, new CStateChimeraThreatenWalk(obj));
+	add_state(eStateThreaten, new CStateChimeraThreatenRoar(obj));
+	add_state(eStateSteal, new CStateChimeraThreatenSteal(obj));
 }
 
 

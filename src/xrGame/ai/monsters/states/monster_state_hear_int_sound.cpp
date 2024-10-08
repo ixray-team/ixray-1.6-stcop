@@ -10,9 +10,10 @@
 
 CStateMonsterHearInterestingSound::CStateMonsterHearInterestingSound(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateHearInterestingSound_MoveToDest, xr_new<CStateMonsterMoveToPoint>(obj));
-	this->add_state(eStateHearInterestingSound_LookAround, xr_new<CStateMonsterCustomActionLook>(obj));
+    this->add_state(eStateHearInterestingSound_MoveToDest, new CStateMonsterMoveToPoint(obj));
+    this->add_state(eStateHearInterestingSound_LookAround, new CStateMonsterCustomActionLook(obj));
 }
+
 
 
 void CStateMonsterHearInterestingSound::reselect_state()

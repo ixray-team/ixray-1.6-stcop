@@ -9,10 +9,10 @@
 
 CStateMonsterHearDangerousSound::CStateMonsterHearDangerousSound(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateHearDangerousSound_Hide, xr_new<CStateMonsterHideFromPoint>(obj));
-	this->add_state(eStateHearDangerousSound_FaceOpenPlace, xr_new<CStateMonsterLookToUnprotectedArea>(obj));
-	this->add_state(eStateHearDangerousSound_StandScared, xr_new<CStateMonsterCustomAction>(obj));
-	this->add_state(eStateHearDangerousSound_Home, xr_new<CStateMonsterDangerMoveToHomePoint>(obj));
+    this->add_state(eStateHearDangerousSound_Hide, new CStateMonsterHideFromPoint(obj));
+    this->add_state(eStateHearDangerousSound_FaceOpenPlace, new CStateMonsterLookToUnprotectedArea(obj));
+    this->add_state(eStateHearDangerousSound_StandScared, new CStateMonsterCustomAction(obj));
+    this->add_state(eStateHearDangerousSound_Home, new CStateMonsterDangerMoveToHomePoint(obj));
 }
 
 void CStateMonsterHearDangerousSound::reselect_state()

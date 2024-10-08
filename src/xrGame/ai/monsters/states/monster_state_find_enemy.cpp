@@ -9,11 +9,12 @@
 
 CStateMonsterFindEnemy::CStateMonsterFindEnemy(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateFindEnemy_Run, xr_new<CStateMonsterFindEnemyRun>(obj));
-	this->add_state(eStateFindEnemy_LookAround, xr_new<CStateMonsterFindEnemyLook>(obj));
-	this->add_state(eStateFindEnemy_Angry, xr_new<CStateMonsterFindEnemyAngry>(obj));
-	this->add_state(eStateFindEnemy_WalkAround, xr_new<CStateMonsterFindEnemyWalkAround>(obj));
+    this->add_state(eStateFindEnemy_Run, new CStateMonsterFindEnemyRun(obj));
+    this->add_state(eStateFindEnemy_LookAround, new CStateMonsterFindEnemyLook(obj));
+    this->add_state(eStateFindEnemy_Angry, new CStateMonsterFindEnemyAngry(obj));
+    this->add_state(eStateFindEnemy_WalkAround, new CStateMonsterFindEnemyWalkAround(obj));
 }
+
 
 
 CStateMonsterFindEnemy::~CStateMonsterFindEnemy()

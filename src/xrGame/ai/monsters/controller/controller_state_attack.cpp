@@ -29,9 +29,9 @@
 
 CStateControllerAttack::CStateControllerAttack(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateAttack_MoveToHomePoint, xr_new<CStateMonsterAttackMoveToHomePoint >(obj));
-	this->add_state(eStateAttack_Run, xr_new<CStateMonsterAttackRun>(obj));
-	this->add_state(eStateAttack_Melee, xr_new<CStateMonsterAttackMelee>(obj));
+	this->add_state(eStateAttack_MoveToHomePoint, new CStateMonsterAttackMoveToHomePoint(obj));
+	this->add_state(eStateAttack_Run, new CStateMonsterAttackRun(obj));
+	this->add_state(eStateAttack_Melee, new CStateMonsterAttackMelee(obj));
 }
 
 

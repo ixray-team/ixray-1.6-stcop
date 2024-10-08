@@ -8,10 +8,11 @@
 
 CStateMonsterFindEnemyLook::CStateMonsterFindEnemyLook(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateFindEnemy_LookAround_MoveToPoint, xr_new<CStateMonsterMoveToPoint>(obj));
-	this->add_state(eStateFindEnemy_LookAround_LookAround, xr_new<CStateMonsterCustomAction>(obj));
-	this->add_state(eStateFindEnemy_LookAround_TurnToPoint, xr_new<CStateMonsterLookToPoint>(obj));
+    this->add_state(eStateFindEnemy_LookAround_MoveToPoint, new CStateMonsterMoveToPoint(obj));
+    this->add_state(eStateFindEnemy_LookAround_LookAround, new CStateMonsterCustomAction(obj));
+    this->add_state(eStateFindEnemy_LookAround_TurnToPoint, new CStateMonsterLookToPoint(obj));
 }
+
 
 CStateMonsterFindEnemyLook::~CStateMonsterFindEnemyLook()
 {

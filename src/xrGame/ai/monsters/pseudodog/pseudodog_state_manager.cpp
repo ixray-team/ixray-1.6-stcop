@@ -21,19 +21,20 @@
 
 CStateManagerPseudodog::CStateManagerPseudodog(CPseudoDogBase* monster) : inherited(monster)
 {
-	add_state(eStateRest, xr_new<CStateMonsterRest>(monster));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(monster));
+    add_state(eStateRest, new CStateMonsterRest(monster));
+    add_state(eStatePanic, new CStateMonsterPanic(monster));
 
-	CStateMonsterAttackMoveToHomePoint* move2home =
-		xr_new<CStateMonsterAttackMoveToHomePoint>(monster);
+    CStateMonsterAttackMoveToHomePoint* move2home =
+        new CStateMonsterAttackMoveToHomePoint(monster);
 
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(monster, move2home));
+    add_state(eStateAttack, new CStateMonsterAttack(monster, move2home));
 
-	add_state(eStateEat, xr_new<CStateMonsterEat>(monster));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(monster));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(monster));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(monster));
+    add_state(eStateEat, new CStateMonsterEat(monster));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(monster));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(monster));
+    add_state(eStateHitted, new CStateMonsterHitted(monster));
 }
+
 
 
 #define MIN_ANGRY_TIME		10000

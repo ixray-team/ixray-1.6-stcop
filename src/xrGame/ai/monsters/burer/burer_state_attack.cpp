@@ -34,15 +34,15 @@ CStateBurerAttack::CStateBurerAttack(CBaseMonster* obj) : inherited(obj)
 {
 	m_pBurer = smart_cast<CBurerBase*>(obj);
 
-	this->add_state(eStateBurerAttack_Tele, xr_new<CStateBurerAttackTele>(obj));
-	this->add_state(eStateBurerAttack_Gravi, xr_new<CStateBurerAttackGravi>(obj));
-	this->add_state(eStateBurerAttack_Melee, xr_new<CStateBurerAttackMelee>(obj));
-	this->add_state(eStateBurerAttack_FaceEnemy, xr_new<CStateMonsterLookToPoint>(obj));
-	this->add_state(eStateBurerAttack_RunAround, xr_new<CStateBurerAttackRunAround>(obj));
-	this->add_state(eStateBurerAttack_Shield, xr_new<CStateBurerShield>(obj));
-	this->add_state(eStateBurerAttack_AntiAim, xr_new<CStateBurerAntiAim >(obj));
-	this->add_state(eStateAttack_Run, xr_new<CStateMonsterAttackRun>(obj));
-	this->add_state(eStateCustomMoveToRestrictor, xr_new<CStateMonsterMoveToRestrictor>(obj));
+	this->add_state(eStateBurerAttack_Tele, new CStateBurerAttackTele(obj));
+	this->add_state(eStateBurerAttack_Gravi, new CStateBurerAttackGravi(obj));
+	this->add_state(eStateBurerAttack_Melee, new CStateBurerAttackMelee(obj));
+	this->add_state(eStateBurerAttack_FaceEnemy, new CStateMonsterLookToPoint(obj));
+	this->add_state(eStateBurerAttack_RunAround, new CStateBurerAttackRunAround(obj));
+	this->add_state(eStateBurerAttack_Shield, new CStateBurerShield(obj));
+	this->add_state(eStateBurerAttack_AntiAim, new CStateBurerAntiAim (obj));
+	this->add_state(eStateAttack_Run, new CStateMonsterAttackRun(obj));
+	this->add_state(eStateCustomMoveToRestrictor, new CStateMonsterMoveToRestrictor(obj));
 
 	m_allow_anti_aim = false;
 	m_wait_state_end = false;

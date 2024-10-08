@@ -12,7 +12,7 @@
 
 CStatePsyDogPsyAttack::CStatePsyDogPsyAttack(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateAttack_HideInCover, xr_new<CStatePsyDogHide>(obj));
+	this->add_state(eStateAttack_HideInCover, new CStatePsyDogHide(obj));
 }
 
 void CStatePsyDogPsyAttack::reselect_state()

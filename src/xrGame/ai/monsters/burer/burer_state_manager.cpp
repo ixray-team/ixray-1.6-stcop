@@ -22,14 +22,14 @@ CStateManagerBurer::CStateManagerBurer(CBurerBase *monster) : inherited(monster)
 {
 	m_pBurer = smart_cast<CBurerBase*>(monster);
 
-	add_state(eStateRest,					xr_new<CStateMonsterRest>					(monster));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic>					(monster));
-	add_state(eStateAttack,					xr_new<CStateBurerAttack >					(monster));
-	add_state(eStateEat,					xr_new<CStateMonsterEat >					(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound >	(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound >	(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted>				(monster));
-	add_state(eStateBurerScanning,			xr_new<CStateMonsterCustomAction >				(monster));
+	add_state(eStateRest,					new CStateMonsterRest					(monster));
+	add_state(eStatePanic,					new CStateMonsterPanic					(monster));
+	add_state(eStateAttack,					new CStateBurerAttack 					(monster));
+	add_state(eStateEat,					new CStateMonsterEat 					(monster));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound 	(monster));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound 	(monster));
+	add_state(eStateHitted,					new CStateMonsterHitted				(monster));
+	add_state(eStateBurerScanning,			new CStateMonsterCustomAction 				(monster));
 }
 
 #define SCAN_STATE_TIME 4000

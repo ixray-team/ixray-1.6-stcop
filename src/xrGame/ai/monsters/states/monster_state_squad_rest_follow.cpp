@@ -22,9 +22,10 @@
 
 CStateMonsterSquadRestFollow::CStateMonsterSquadRestFollow(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateSquad_RestFollow_Idle, xr_new<CStateMonsterCustomAction >(obj));
-	this->add_state(eStateSquad_RestFollow_WalkToPoint, xr_new<CStateMonsterMoveToPointEx>(obj));
+    this->add_state(eStateSquad_RestFollow_Idle, new CStateMonsterCustomAction(obj));
+    this->add_state(eStateSquad_RestFollow_WalkToPoint, new CStateMonsterMoveToPointEx(obj));
 }
+
 
 
 CStateMonsterSquadRestFollow::~CStateMonsterSquadRestFollow()

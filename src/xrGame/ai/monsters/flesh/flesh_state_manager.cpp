@@ -22,22 +22,22 @@
 
 CustomFleshStateManager::CustomFleshStateManager(CFleshBase* object) : inherited(object)
 {
-	m_pFlesh = smart_cast<CFleshBase*>(object);
+    m_pFlesh = smart_cast<CFleshBase*>(object);
 
-	add_state(eStateRest, xr_new<CStateMonsterRest>(object));
-	add_state(eStatePanic, xr_new<CStateMonsterPanic>(object));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
 
-	CStateMonsterAttackMoveToHomePoint* move2home =
-		xr_new<CStateMonsterAttackMoveToHomePoint>(object);
+    CStateMonsterAttackMoveToHomePoint* move2home =
+        new CStateMonsterAttackMoveToHomePoint(object);
 
-	add_state(eStateAttack, xr_new<CStateMonsterAttack>(object, move2home));
+    add_state(eStateAttack, new CStateMonsterAttack(object, move2home));
 
-	add_state(eStateEat, xr_new<CStateMonsterEat>(object));
-	add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound>(object));
-	add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound>(object));
-	add_state(eStateHitted, xr_new<CStateMonsterHitted>(object));
-	add_state(eStateControlled, xr_new<CStateMonsterControlled>(object));
-	add_state(eStateHearHelpSound, xr_new<CStateMonsterHearHelpSound>(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
+    add_state(eStateControlled, new CStateMonsterControlled(object));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
 CustomFleshStateManager::~CustomFleshStateManager()

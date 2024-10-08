@@ -12,9 +12,9 @@
 
 CStateMonsterAttackCamp::CStateMonsterAttackCamp(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateAttackCamp_Hide, xr_new<CStateMonsterMoveToPointEx>(obj));
-	this->add_state(eStateAttackCamp_Camp, xr_new<CStateMonsterLookToPoint>(obj));
-	this->add_state(eStateAttackCamp_StealOut, xr_new<CStateMonsterAttackCampStealOut >(obj));
+    this->add_state(eStateAttackCamp_Hide, new CStateMonsterMoveToPointEx(obj));
+    this->add_state(eStateAttackCamp_Camp, new CStateMonsterLookToPoint(obj));
+    this->add_state(eStateAttackCamp_StealOut, new CStateMonsterAttackCampStealOut(obj));
 }
 
 void CStateMonsterAttackCamp::initialize()
