@@ -475,7 +475,7 @@ void CActorCondition::UpdateThirst()
 	if (!enableThirst)
 		return;
 
-	if (Thirst.Current > 0)
+	if (Thirst.Current < 1)
 	{
 		Thirst.Current += Thirst.Variability * m_fDeltaTime;
 		clamp(Thirst.Current, 0.0f, 1.0f);
@@ -595,6 +595,9 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_condition_flags, output_packet);
 	save_data			(Satiety.Current, output_packet);
 
+	save_data(Thirst.Current, output_packet);
+	save_data(Sleepiness.Current, output_packet);
+
 	save_data			(m_curr_medicine_influence.fHealth, output_packet);
 	save_data			(m_curr_medicine_influence.fPower, output_packet);
 	save_data			(m_curr_medicine_influence.fSatiety, output_packet);
@@ -621,6 +624,9 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(Alcohol.Current, input_packet);
 	load_data			(m_condition_flags, input_packet);
 	load_data			(Satiety.Current, input_packet);
+
+	load_data(Thirst.Current, input_packet);
+	load_data(Sleepiness.Current, input_packet);
 
 	load_data			(m_curr_medicine_influence.fHealth, input_packet);
 	load_data			(m_curr_medicine_influence.fPower, input_packet);
