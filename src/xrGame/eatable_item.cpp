@@ -62,6 +62,7 @@ void CEatableItem::Load(LPCSTR section)
 	m_iPortionsMarker = m_iMaxUses;
 
 	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
+	m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
 	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
@@ -90,7 +91,7 @@ bool CEatableItem::Useful() const
 {
 	if(!inherited::Useful()) return false;
 
-	//ïðîâåðèòü íå âñå ëè åùå ñúåäåíî
+	//Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ðµ Ð²ÑÐµ Ð»Ð¸ ÐµÑ‰Ðµ ÑÑŠÐµÐ´ÐµÐ½Ð¾
 	if (GetRemainingUses() == 0 && CanDelete()) return false;
 
 	return true;
@@ -139,7 +140,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 	}
 
 	if (m_iPortionsMarker > 0)
-		--m_iPortionsMarker;
+		m_iPortionsMarker -= m_eat_condition;
 	else
 		m_iPortionsMarker = 0;
 
