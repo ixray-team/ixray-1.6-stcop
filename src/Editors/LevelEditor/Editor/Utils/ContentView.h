@@ -48,13 +48,14 @@ public:
 
 private:
 	bool DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
-	bool DrawContext(const std::filesystem::path& Path) const;
+	bool DrawFormContext();
+	bool DrawContext(const std::filesystem::path& Path);
 	bool Contains();
 	IconData& GetTexture(const xr_string& IconPath);
 
 	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
 	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);
-
+	void CheckFileNameCopyRecursive(std::filesystem::path &FilePath) const;
 private:
 
 	HintItem CurrentItemHint;
@@ -64,6 +65,8 @@ private:
 	filewatch::FileWatch<std::string>* WatcherPtr;
 
 	ref_texture MenuIcon;
+
+	mutable std::filesystem::path CopyObjectPath;
 
 	xr_string CurrentDir;
 	xr_string RootDir;

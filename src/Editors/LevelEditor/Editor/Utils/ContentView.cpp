@@ -14,6 +14,7 @@ CContentView::CContentView():
 
 	RootDir = std::filesystem::path(Dir).string().data();
 	CurrentDir = RootDir;
+	CopyObjectPath.clear();
 
 	FS.update_path(Dir, "$logs$", "");
 	LogsDir = Dir;
@@ -37,6 +38,13 @@ void CContentView::Draw()
 
 		if (ImGui::BeginChild("##contentbrowserscroll"))
 		{
+			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_None) && ImGui::IsMouseReleased(1) && !ImGui::IsItemHovered())
+			{
+				ImGui::OpenPopup("##contentbrowsercontext");
+			}
+
+			DrawFormContext();
+
 			const size_t IterCount = (ImGui::GetWindowSize().x / (BtnSize.x + 15)) - 1;
 			size_t HorBtnIter = 0;
 			xr_string NextDir = CurrentDir;
@@ -56,6 +64,8 @@ void CContentView::Draw()
 
 			CurrentDir = NextDir;
 			xr_strlwr(CurrentDir);
+
+			
 		}
 
 		if (CurrentItemHint.Active)
@@ -647,7 +657,51 @@ bool CContentView::Contains()
 	return IsNotAfter && IsNotBefor;
 }
 
-bool CContentView::DrawContext(const std::filesystem::path& Path) const
+void CContentView::CheckFileNameCopyRecursive(std::filesystem::path &FilePath) const
+{
+	std::filesystem::path NewFileName = FilePath.stem();
+	NewFileName += " - Copy";
+	NewFileName += FilePath.extension();
+
+	FilePath.replace_filename(NewFileName);
+	if (std::filesystem::exists(FilePath))
+	{
+		CheckFileNameCopyRecursive(FilePath);
+	}
+	
+	return;
+}
+
+bool CContentView::DrawFormContext()
+{
+	if (!ImGui::BeginPopupContextItem("##contentbrowsercontext"))
+	{
+		return false;
+	}
+
+	ImGui::BeginDisabled(CopyObjectPath.empty());
+	if (ImGui::MenuItem("Paste"))
+	{
+		std::filesystem::path OutDir = CurrentDir.c_str() / CopyObjectPath.filename();
+
+		if (CopyObjectPath == OutDir || std::filesystem::exists(OutDir))
+		{
+			CheckFileNameCopyRecursive(OutDir);
+		}
+
+		std::filesystem::copy(CopyObjectPath, OutDir);
+
+		CopyObjectPath.clear();
+
+		FS.rescan_path(OutDir.parent_path().string().c_str(), true);
+	}
+	ImGui::EndDisabled();
+
+	ImGui::EndPopup();
+	return true;
+}
+
+bool CContentView::DrawContext(const std::filesystem::path& Path)
 {
 	if (Path.string() == ".." || !ImGui::BeginPopupContextItem())
 	{
@@ -684,11 +738,22 @@ bool CContentView::DrawContext(const std::filesystem::path& Path) const
 		ImGui::Separator();
 	}
 
+	if (ImGui::MenuItem("Copy"))
+	{
+		CopyObjectPath = Path;
+	}
+
 	if (ImGui::MenuItem("Delete"))
 	{
-		std::filesystem::remove(Path);
-		FS.rescan_path(Path.parent_path().string().c_str() , true);
+		std::filesystem::remove_all(Path);
+
+		// For some reason, FS does not want to register that the file has been deleted. \
+				Temporarily removed the "const" and made the Rescan Directory();
+		
+		//FS.rescan_path(Path.parent_path().string().c_str() , true);
+		RescanDirectory();
 	}
+
 	ImGui::EndPopup();
 	return true;
 }
