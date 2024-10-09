@@ -13,11 +13,6 @@
 
 #include "../../xrCore/xrCore.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include "d3dx9.h"
-#pragma warning(pop)
-
 // Warnings
 #pragma warning (disable : 4786 )		// too long names
 #pragma warning (disable : 4503 )		// decorated name length exceeded
