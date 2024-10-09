@@ -53,8 +53,6 @@ add_dependencies(LevelEditor xrSE_Factory)
 # Move precompiled header
 target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_include_directories(LevelEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_include_directories(LevelEditor PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_win10.2023.4.28.1/include/")
 
 ## LibOGG
 target_link_libraries(LevelEditor PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
