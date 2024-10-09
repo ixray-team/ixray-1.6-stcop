@@ -29,6 +29,17 @@ protected:
 private:
 	inline	bool	can_use_dynamic_lights	();
 
+	struct blowout_problems_level
+	{
+		float m_fBlowoutDisablingLevel = 10.0f;
+		float m_fBlowoutDisablingProbability = 1.0f;
+		bool m_bBlowoutDisableOnlyNvEffector = true;
+		float m_fBlowoutDisablingSpeed = 100000.0f;
+		bool m_fBlowoutDisablingSound = false;
+	};
+
+	blowout_problems_level m_TorchProblemsLevel;
+
 public:
 					CTorch					();
 	virtual			~CTorch					();
@@ -59,6 +70,7 @@ public:
 			bool	IsSwitched				() const { return m_switched_on; }
 			bool	GetNightVisionStatus	() { return m_bNightVisionOn; }
 CNightVisionEffector* GetNightVision		() { return m_night_vision; }
+blowout_problems_level& GetBlowoutProblemsLevel() { return m_TorchProblemsLevel; }
 protected:
 	bool					m_bNightVisionEnabled;
 	bool					m_bNightVisionOn;
