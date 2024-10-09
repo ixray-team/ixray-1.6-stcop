@@ -769,7 +769,11 @@ private:
 	bool					m_inventory_disabled;
 //static CPhysicsShell		*actor_camera_shell;
 
-DECLARE_SCRIPT_REGISTER_FUNCTION
+	DECLARE_SCRIPT_REGISTER_FUNCTION
+
+public:
+	bool OnLadder = false;
+	IC bool is_ladder() const { return OnLadder; };
 };
 
 extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);

@@ -54,6 +54,8 @@ void CActor::cam_SetLadder()
 		C->lim_yaw[1]		= hi;
 		C->bClampYaw		= true;
 	}
+
+	OnLadder = true;
 }
 void CActor::camUpdateLadder(float dt)
 {
@@ -94,7 +96,10 @@ void CActor::cam_UnsetLadder()
 	C->lim_yaw[0]			= 0;
 	C->lim_yaw[1]			= 0;
 	C->bClampYaw			= false;
+
+	OnLadder = false;
 }
+
 float cammera_into_collision_shift = 0.05f;
 float CActor::CameraHeight()
 {
@@ -399,7 +404,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
 
-	// Âûñ÷èòûâàåì ðàçíèöó ìåæäó ïðåäûäóùèì è òåêóùèì Yaw \ Pitch îò 1-ãî ëèöà //--#SM+ Begin#--
+	// Ð’Ñ‹ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ñ€Ð°Ð·Ð½Ð¸Ñ†Ñƒ Ð¼ÐµÐ¶Ð´Ñƒ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð¸Ð¼ Ð¸ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¼ Yaw \ Pitch Ð¾Ñ‚ 1-Ð³Ð¾ Ð»Ð¸Ñ†Ð° //--#SM+ Begin#--
 	float& cam_yaw_cur = cameras[eacFirstEye]->yaw;
 	static float cam_yaw_prev = cam_yaw_cur;
 
