@@ -53,7 +53,7 @@ bool CUITabControl::IsChangedOptValue() const
 	return GetActiveId() != m_opt_backup_value;
 }
 
-// äîáàâëåíèå êíîïêè-çàêëàäêè â ñïèñîê çàêëàäîê êîíòðîëà
+// Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ½Ð¾Ð¿ÐºÐ¸-Ð·Ð°ÐºÐ»Ð°Ð´ÐºÐ¸ Ð² ÑÐ¿Ð¸ÑÐ¾Ðº Ð·Ð°ÐºÐ»Ð°Ð´Ð¾Ðº ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ð°
 bool CUITabControl::AddItem(LPCSTR pItemName, LPCSTR pTexName, Fvector2 pos, Fvector2 size)
 {
 	CUITabButton *pNewButton = new CUITabButton();
@@ -146,7 +146,10 @@ void CUITabControl::OnTabChange(const shared_str& sCur, const shared_str& sPrev)
 	if(tb_prev)	
 		tb_prev->SendMessage				(tb_cur, TAB_CHANGED, nullptr);
 
-	tb_cur->SendMessage						(tb_cur, TAB_CHANGED, nullptr);	
+	if (tb_cur)
+	{
+		tb_cur->SendMessage(tb_cur, TAB_CHANGED, nullptr);
+	}
 
 	GetMessageTarget()->SendMessage			(this, TAB_CHANGED, nullptr);
 }

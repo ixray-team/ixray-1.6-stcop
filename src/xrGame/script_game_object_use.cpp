@@ -95,7 +95,12 @@ shared_str CScriptGameObject::cName				() const
 
 LPCSTR CScriptGameObject::Section				() const
 {
-	return			(*object().cNameSect());
+	if (m_game_object == nullptr)
+	{
+		return nullptr;
+	}
+
+	return *object().cNameSect();
 }
 
 void CScriptGameObject::Kill					(CScriptGameObject* who)
