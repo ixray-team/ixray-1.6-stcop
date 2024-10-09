@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include <FlexibleVertexFormat.h>
+
 #include "../xrEngine/GameFont.h"
 #include "d3dutils.h"
 #include "du_box.h"
@@ -16,7 +18,7 @@
 
 ECORE_API CDrawUtilities DU_impl;
 
-#define LINE_DIVISION  32  // не меньше 6!!!!!
+#define LINE_DIVISION  32  // РЅРµ РјРµРЅСЊС€Рµ 6!!!!!
 // for drawing sphere
 static Fvector circledef1[LINE_DIVISION];
 static Fvector circledef2[LINE_DIVISION];
@@ -102,7 +104,7 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
 	p_type				= _pt;
 	v_cnt				= _v_cnt;
 	i_cnt				= _i_cnt;
-	u32 stride			= D3DXGetFVFVertexSize(FVF);
+	u32 stride = FVF::ComputeVertexSize(FVF);
 	R_CHK(REDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
 	u8* 				bytes;
 	R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));

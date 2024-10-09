@@ -11,7 +11,8 @@
 #include "ui_main.h"
 #include "d3dutils.h"
 #include "render.h"
-#include <d3dx9.h>
+
+#include <FlexibleVertexFormat.h>
 
 //----------------------------------------------------
 #define F_LIM (10000)
@@ -42,7 +43,7 @@ void CEditableMesh::GenerateRenderBuffers()
             if (_S->m_Flags.is(CSurface::sf2Sided)) 	rb.dwNumVertex *= 2;
             num_face			= (v_cnt<V_LIM)?v_cnt/3:F_LIM;
 
-            int buf_size		= D3DXGetFVFVertexSize(_S->_FVF())*rb.dwNumVertex;
+            int buf_size = FVF::ComputeVertexSize(_S->_FVF()) * rb.dwNumVertex;
             R_ASSERT2			(buf_size,"Empty buffer size or bad FVF.");
 			u8*	bytes			= 0;
 			IDirect3DVertexBuffer9*	pVB=0;
@@ -66,7 +67,7 @@ void CEditableMesh::GenerateRenderBuffers()
                 rb.dwNumVertex *= 2;
             num_face = v_cnt / 3;
 
-            int buf_size = D3DXGetFVFVertexSize(_S->_FVF()) * rb.dwNumVertex;
+            int buf_size = FVF::ComputeVertexSize(_S->_FVF()) * rb.dwNumVertex;
             R_ASSERT2(buf_size, "Empty buffer size or bad FVF.");
             u8* bytes = 0;
             IDirect3DVertexBuffer9* pVB = 0;
