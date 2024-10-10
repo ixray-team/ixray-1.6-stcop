@@ -29,6 +29,12 @@ class CContentView:
 		shared_str ISESect;
 	};
 
+	enum class EViewMode
+	{
+		Tile,
+		List
+	};
+
 public:
 	CContentView();
 	virtual void Draw() override;
@@ -48,6 +54,9 @@ public:
 
 private:
 	bool DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
+	bool DrawItemByList(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
+	bool DrawItemHelper(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr);
+	bool DrawItemByTile(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
 	bool DrawFormContext();
 	bool DrawContext(const xr_path& Path);
 	bool Contains();
@@ -60,6 +69,7 @@ private:
 	bool CheckFile(const xr_path& File) const;
 
 private:
+	EViewMode ViewMode = EViewMode::Tile;
 
 	HintItem CurrentItemHint;
 
@@ -85,4 +95,6 @@ private:
 	string32 FindStr = {};
 
 	volatile xr_atomic_bool LockFiles = false;
+
+	float TextHeight = 0.f;
 };

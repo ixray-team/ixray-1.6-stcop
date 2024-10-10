@@ -81,6 +81,10 @@ void CEStats::Show()
         else
             F.OutSet(5, 5);
 
+        float Height = UI->GetRenderHeight() / 41.6666679f;
+
+        F.SetHeight(Height);
+
         F.SetColor(0xFFFFFFFF);
         F.OutNext("FPS/RFPS:     %3.1f/%3.1f", fFPS, fRFPS);
         F.OutSkip();

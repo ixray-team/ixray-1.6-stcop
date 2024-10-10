@@ -92,45 +92,48 @@ void CContentView::DrawHeader()
 		std::memset(FindStr, 0, sizeof(FindStr));
 		ISEPath.clear();
 	}
+
+	TextHeight = ImGui::CalcTextSize("1").y;
+
 	ImGui::SameLine();
 	ImGui::Text("/");
 
 	auto DrawByPathLambda = [&](const xr_string& ViewDir)
-	{
-		auto Pathes = ViewDir.Split('\\');
-
-		for (const xr_string& Path : Pathes)
 		{
-			ImGui::SameLine();
-			if (ImGui::Button(Path.data()))
+			auto Pathes = ViewDir.Split('\\');
+
+			for (const xr_string& Path : Pathes)
 			{
-				xr_string NewPath = "";
-				for (const xr_string& LocPath : Pathes)
+				ImGui::SameLine();
+				if (ImGui::Button(Path.data()))
 				{
-					NewPath += LocPath;
+					xr_string NewPath = "";
+					for (const xr_string& LocPath : Pathes)
+					{
+						NewPath += LocPath;
 
-					if (LocPath == Path)
-						break;
+						if (LocPath == Path)
+							break;
 
-					NewPath += "\\";
+						NewPath += "\\";
+					}
+
+					if (IsSpawnElement)
+					{
+						ISEPath = NewPath;
+						RescanISEDirectory(ISEPath);
+					}
+					else
+					{
+						CurrentDir = NewPath;
+						RescanDirectory();
+					}
 				}
 
-				if (IsSpawnElement)
-				{
-					ISEPath = NewPath;
-					RescanISEDirectory(ISEPath);
-				}
-				else
-				{
-					CurrentDir = NewPath;
-					RescanDirectory();
-				}
+				ImGui::SameLine();
+				ImGui::Text("/");
 			}
-
-			ImGui::SameLine();
-			ImGui::Text("/");
-		}
-	};
+		};
 
 	if (IsSpawnElement)
 	{
@@ -153,21 +156,43 @@ void CContentView::DrawHeader()
 		DrawByPathLambda(CurrentDir);
 	}
 
+	ImGui::SameLine();
+	int FindStartPosX = (int)ImGui::GetWindowSize().x;
+	int FindSizeX = FindStartPosX / 5;
+	FindStartPosX -= FindSizeX;
+
+	ImGui::SetCursorPosX(FindStartPosX);
+	ImGui::SetNextItemWidth(FindSizeX - 35);
+	if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
 	{
-		ImGui::SameLine();
-		int FindStartPosX = (int)ImGui::GetWindowSize().x;
-		int FindSizeX = FindStartPosX / 5;
-		FindStartPosX -= FindSizeX;
+		FindFile();
+	}
+	ImGui::SameLine();
 
-		ImGui::SetCursorPosX(FindStartPosX);
-		ImGui::SetNextItemWidth(FindSizeX - 35);
-		if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
+	if (ImGui::BeginPopupContextItem("MenuCBPpp"))
+	{
+		if (ImGui::BeginMenu("View mode"))
 		{
-			FindFile();
-		}
-		ImGui::SameLine();
+			if (ImGui::MenuItem("Tile"))
+			{
+				ViewMode = EViewMode::Tile;
+				BtnSize = { 64, 64 };
+			}
+			if (ImGui::MenuItem("List"))
+			{
+				BtnSize = { 32, 32 };
+				ViewMode = EViewMode::List;
+			}
 
-		ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 });
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 }))
+	{
+		ImGui::OpenPopup("MenuCBPpp");
 	}
 
 	ImGui::Separator();
@@ -188,7 +213,7 @@ void CContentView::FindFile()
 			Files.clear();
 			for (const auto& file : xr_dir_recursive_iter { CurrentDir.data() })
 			{
-				if (std::filesystem::is_directory(file))
+				if (file.is_directory())
 					continue;
 
 				const xr_string& FName = file.path().filename().string().data();
@@ -287,8 +312,8 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 			}
 			else
 			{
-				RescanISEDirectory("");
 				ISEPath = "";
+				RescanISEDirectory("");
 			}
 		}
 	}
@@ -532,7 +557,20 @@ void CContentView::Init()
 	MenuIcon = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
 }
 
-bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
+bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount)
+{
+	bool IsClicked = false;
+
+	switch (ViewMode)
+	{
+	case EViewMode::Tile: IsClicked = DrawItemByTile(FilePath, HorBtnIter, IterCount); break;
+	case EViewMode::List: IsClicked = DrawItemByList(FilePath, HorBtnIter, IterCount); break;
+	}
+
+	return IsClicked;
+}
+
+bool CContentView::DrawItemByList(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
 {
 	if (InitFileName.File.empty())
 		return false;
@@ -544,7 +582,7 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 	IconData* IconPtr = nullptr;
 
 	bool OutValue = false;
-	if (Contains())
+	//if (Contains())
 	{
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath);
@@ -561,36 +599,71 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 			ImVec4(0, 0, 0, 0), IconColor
 		);
 	}
-	else
+
+	DrawItemHelper(FilePath, FileName, InitFileName, IconPtr);
+
+	ImVec2 NextCursorPos = ImGui::GetCursorPos();
+	ImGui::SameLine(); 
+
+	ImVec2 StartCursorPos = ImGui::GetCursorPos();
+	StartCursorPos.y += BtnSize.y / 2.f;
+	StartCursorPos.y -= (TextHeight + 2) ;
+	ImGui::SetCursorPos(StartCursorPos);
+
+	ImGui::Text(FileName.c_str());
+	
+	StartCursorPos.y += TextHeight + 2.f;
+	ImGui::SetCursorPos(StartCursorPos);
+
+	ImVec4 TooltipTextColor = ImGui::GetStyle().Colors[ImGuiCol_Text];
+	TooltipTextColor.w *= 0.5f;
+
+	if (InitFileName.IsDir)
 	{
-		ImGui::Button(FileName.c_str(), BtnSize);
-		ImGui::Text(FileName.c_str());
-
-		if (HorBtnIter != IterCount)
-		{
-			ImGui::SetCursorPosY(CursorPos.y);
-			ImGui::SetCursorPosX(CursorPos.x + 15 + BtnSize.x);
-			HorBtnIter++;
-		}
-		else
-		{
-			HorBtnIter = 0;
-		}
-
-		return false;
+		ImGui::TextColored(TooltipTextColor, "Directory");
+	}
+	else if (FileName.ends_with(".dds"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Texture Asset");
+	}
+	else if (FileName.ends_with(".tga"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Raw Texture Asset");
+	}
+	else if (FileName.ends_with(".png"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Image");
+	}
+	else if (FileName.ends_with(".object"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Object Asset");
+	}
+	else if (FileName.ends_with(".group"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Group object Asset");
+	}
+	else if (FileName.ends_with(".ogf"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Object");
 	}
 
+	ImGui::SetCursorPos(NextCursorPos);
+	ImGui::Separator();
+
+	return OutValue;
+}
+
+bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
+{
 	if (!DrawContext(FilePath))
 	{
-		if (ImGui::IsItemHovered())
+		if (ViewMode == EViewMode::Tile && ImGui::IsItemHovered())
 		{
-			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos() + ImVec2{ ImGui::GetScrollX(), ImGui::GetScrollY()};
+			ImVec2 DrawHintPos = ImGui::GetMousePos() - ImGui::GetWindowPos() + ImVec2{ ImGui::GetScrollX(), ImGui::GetScrollY() };
 			DrawHintPos.y -= 15;
 			CurrentItemHint = { Platform::ANSI_TO_UTF8(FileName) ,DrawHintPos, true };
 		}
 	}
-
-	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 
 	bool WeCanDrag = false;
 
@@ -614,6 +687,8 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 			Data.FileName = FilePath;
 		}
 
+		xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
+
 		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
 		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
 		ImGui::Text(LabelText.data());
@@ -621,6 +696,66 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 	}
 	else
 	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
+{
+	if (InitFileName.File.empty())
+		return false;
+	
+	xr_path FilePath = InitFileName.File;
+	xr_string FileName = FilePath.xfilename();
+	const ImVec2& CursorPos = ImGui::GetCursorPos();
+	IconData* IconPtr = nullptr;
+	bool OutValue = false;
+	
+	auto InvalidateLambda = [&FileName, this, &CursorPos, &HorBtnIter, IterCount]()
+	{
+		if (HorBtnIter != IterCount)
+		{
+			ImGui::SetCursorPosY(CursorPos.y);
+			ImGui::SetCursorPosX(CursorPos.x + 15 + BtnSize.x);
+			HorBtnIter++;
+		}
+		else
+		{
+			HorBtnIter = 0;
+		}
+	};
+
+	if (Contains())
+	{
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath);
+		ImVec4 IconColor = IconPtr->UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
+
+		if (!IconPtr->Icon)
+			return false;
+
+		OutValue = ImGui::ImageButton
+		(
+			FileName.c_str(),
+			IconPtr->Icon->pSurface, BtnSize,
+			ImVec2(0, 0), ImVec2(1, 1),
+			ImVec4(0, 0, 0, 0), IconColor
+		);
+	}
+	else
+	{
+		ImGui::Button(FileName.c_str(), BtnSize);
+		ImGui::Text(FileName.c_str());
+
+		InvalidateLambda();
+		return false;
+	}
+
+	if (!DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
+	{
+		xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 		float TextPixels = ImGui::CalcTextSize(LabelText.data()).x;
 
 		while (TextPixels > BtnSize.x)
@@ -634,16 +769,7 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 		ImGui::Text(Platform::ANSI_TO_UTF8(LabelText).data());
 	}
 
-	if (HorBtnIter != IterCount)
-	{
-		ImGui::SetCursorPosY(CursorPos.y);
-		ImGui::SetCursorPosX(CursorPos.x + 15 + BtnSize.x);
-		HorBtnIter++;
-	}
-	else
-	{
-		HorBtnIter = 0;
-	}
+	InvalidateLambda();
 	return OutValue;
 }
 
@@ -894,18 +1020,18 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 			U8Vec Pixels;
 			int w, h, a;
 			stbi_uc* raw_data = stbi_load((LPSTR)IconPath.c_str(), &w, &h, &a, STBI_rgb_alpha);
-			Pixels.resize(50 * 50 * a);
+			Pixels.resize(BtnSize.x * BtnSize.x * a);
 			if (raw_data != nullptr)
 			{
-				stbir_resize_uint8(raw_data, w, h, 0, Pixels.data(), 50, 50, 0, a);
+				stbir_resize_uint8(raw_data, w, h, 0, Pixels.data(), BtnSize.x, BtnSize.x, 0, a);
 				CTexture* TempTexture = new CTexture();
 				ID3DTexture2D* pTexture = nullptr;
 				Icons[IconPath] = { TempTexture, false };
-				R_CHK(REDevice->CreateTexture(50, 50, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
+				R_CHK(REDevice->CreateTexture(BtnSize.x, BtnSize.x, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
 				{
 					D3DLOCKED_RECT rect;
 					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-					memcpy(rect.pBits, Pixels.data(), 50 * 50 * a);
+					memcpy(rect.pBits, Pixels.data(), BtnSize.x * BtnSize.x * a);
 					R_CHK(pTexture->UnlockRect(0));
 
 					TempTexture->pSurface = pTexture;
