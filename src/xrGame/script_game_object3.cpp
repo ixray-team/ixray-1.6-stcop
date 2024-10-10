@@ -374,7 +374,6 @@ bool CScriptGameObject::ActorIsJump() const
 bool CScriptGameObject::RayPick(const Fvector3& Pos, const Fvector3& Dir, float Range)
 {
 	collide::rq_result R;
-	return Level().ObjectSpace.RayPick(Pos, Dir, Range, collide::rq_target::rqtNone, R, nullptr);
 	return Level().ObjectSpace.RayPick(Pos, Dir, Range, (collide::rq_target)(collide::rq_target::rqtBoth | collide::rq_target::rqtObstacle), R, nullptr);
 }
 
