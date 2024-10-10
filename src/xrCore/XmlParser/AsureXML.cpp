@@ -192,8 +192,8 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 
 FS_FileSet CXMLOverride::GetModifFiles(const char* Path, const char* File)
 {
-	std::filesystem::path OrigXML = File;
-	xr_string ValidFileName = OrigXML.filename().generic_string().c_str();
+    xr_path OrigXML = File;
+	xr_string ValidFileName = OrigXML.xfilename();
 	ValidFileName = ValidFileName.substr(0, ValidFileName.length() - OrigXML.extension().generic_string().length());
 
 	xr_string AddPath = OrigXML.parent_path().generic_string().c_str();

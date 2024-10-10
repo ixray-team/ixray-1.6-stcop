@@ -60,8 +60,8 @@ void DragFile(xr_string File)
 			}
 			else
 			{
-				std::filesystem::path FilePath = File.c_str();
-				xr_string FileName = FilePath.filename().generic_string().c_str();
+				xr_path FilePath = File;
+				xr_string FileName = FilePath.xfilename();
 				xr_string OutPath = CurrentWD + FileName;
 
 				// Make temp file

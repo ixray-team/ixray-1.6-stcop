@@ -66,7 +66,7 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 	auto OldFont = ImCurrentFont;
 	for (auto& File : Files)
 	{
-		xr_string FileName = std::filesystem::path(File.name.c_str()).filename().string().c_str();
+		xr_string FileName = xr_path(File.name).xfilename();
 		LoadImGuiFontBase(FileName.c_str());
 	}
 

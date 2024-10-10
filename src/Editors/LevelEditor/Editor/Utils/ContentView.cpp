@@ -12,7 +12,7 @@ CContentView::CContentView():
 	string_path Dir = {};
 	FS.update_path(Dir, "$fs_root$", "");
 
-	RootDir = std::filesystem::path(Dir).string().data();
+	RootDir = xr_path(Dir).xstring();
 	CurrentDir = RootDir;
 	CopyObjectPath.clear();
 
@@ -186,7 +186,7 @@ void CContentView::FindFile()
 			xr_delete(WatcherPtr);
 
 			Files.clear();
-			for (const auto& file : std::filesystem::recursive_directory_iterator{ CurrentDir.data() })
+			for (const auto& file : xr_dir_recursive_iter { CurrentDir.data() })
 			{
 				if (std::filesystem::is_directory(file))
 					continue;
@@ -214,13 +214,13 @@ void CContentView::FindFile()
 			xr_delete(WatcherPtr);
 
 			Files.clear();
-			for (const auto& file : std::filesystem::recursive_directory_iterator{ CurrentDir.data() })
+			for (const xr_dir_entry& file : xr_dir_recursive_iter { CurrentDir.data() })
 			{
-				if (std::filesystem::is_directory(file))
+				if (file.is_directory())
 					continue;
 
-				const xr_string& FName = file.path().filename().string().data();
-				if (FName.Contains(ParseStr) && !FName.ends_with(".thm"))
+				const xr_string& FName = xr_path(file.path()).xfilename();
+				if (FName.Contains(ParseStr) && CheckFile(FName))
 				{
 					Files.push_back({ file, false });
 				}
@@ -278,7 +278,7 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 			{
 				Validate = Validate.erase(Validate.length() - 1);
 			}
-			std::filesystem::path ISEFS = Validate.data();
+			xr_path ISEFS = Validate;
 
 			if (ISEFS.has_parent_path())
 			{
@@ -299,7 +299,7 @@ void CContentView::DrawISEDir(size_t& HorBtnIter, const size_t IterCount)
 		{
 			if (Data.IsDir)
 			{
-				xr_string CopyFileName = Data.File.string().c_str();
+				const xr_string& CopyFileName = Data.File.xstring();
 				RescanISEDirectory(CopyFileName);
 			}
 
@@ -383,8 +383,8 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 
 	if (ISEPath.empty())
 	{
-		Files.push_back({ xr_string(ENVMOD_CHOOSE_NAME) + ".ise" , false, ENVMOD_CHOOSE_NAME });
-		Files.push_back({ xr_string(RPOINT_CHOOSE_NAME) + ".ise" , false, RPOINT_CHOOSE_NAME });
+		Files.push_back({ xr_string(xr_string(ENVMOD_CHOOSE_NAME) + ".ise") , false, ENVMOD_CHOOSE_NAME });
+		Files.push_back({ xr_string(xr_string(RPOINT_CHOOSE_NAME) + ".ise") , false, RPOINT_CHOOSE_NAME });
 	}
 
 	IsSpawnElement = true;
@@ -392,7 +392,7 @@ void CContentView::RescanISEDirectory(const xr_string& StartPath)
 
 void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_string& NextDir)
 {
-	std::filesystem::path FilePath = CurrentDir.c_str();
+	xr_path FilePath = CurrentDir;
 	if (!IsFindResult && DrawItem({ "..", true }, HorBtnIter, IterCount))
 	{
 		NextDir = FilePath.parent_path().string().data();
@@ -409,7 +409,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 		{
 			if (DrawItem(FilePath, HorBtnIter, IterCount))
 			{
-				NextDir = FilePath.File.string().data();
+				NextDir = FilePath.File.xstring();
 				if (NextDir.ends_with('\\'))
 				{
 					NextDir = NextDir.erase(NextDir.length() - 1);
@@ -426,7 +426,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 				{
 					string_path fn = {};
 					FS.update_path(fn, _textures_, "");
-					xr_string OldPath = FilePath.File.string().data();
+					xr_string OldPath = FilePath.File;
 
 					auto CharIndex = OldPath.find(fn);
 					if (CharIndex != xr_string::npos)
@@ -458,16 +458,16 @@ void CContentView::RescanDirectory()
 	xr_delete(WatcherPtr);
 
 	Files.clear();
-	for (const auto& file : std::filesystem::directory_iterator{ CurrentDir.data() })
+	for (const auto& file : xr_dir_iter{ CurrentDir.data() })
 	{
 		if (std::filesystem::is_directory(file))
 		{
 			Files.push_back({ file, true });
 		}
 	}
-	for (const std::filesystem::path& file : std::filesystem::directory_iterator{ CurrentDir.data() })
+	for (const xr_path& file : xr_dir_iter { CurrentDir.data() })
 	{
-		if (!std::filesystem::is_directory(file) && file.has_extension() && file.extension().string() != ".thm")
+		if (!std::filesystem::is_directory(file) && CheckFile(file))
 		{
 			Files.push_back({ file, false });
 		}
@@ -537,17 +537,17 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 	if (InitFileName.File.empty())
 		return false;
 
-	std::filesystem::path FilePath = InitFileName.File.c_str();
+	xr_path FilePath = InitFileName.File;
 	const ImVec2& CursorPos = ImGui::GetCursorPos();
 
-	xr_string FileName = FilePath.filename().string().data();
+	xr_string FileName = FilePath.xfilename();
 	IconData* IconPtr = nullptr;
 
 	bool OutValue = false;
 	if (Contains())
 	{
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath.string().data());
+		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath);
 		ImVec4 IconColor = IconPtr->UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
 
 		if (!IconPtr->Icon)
@@ -611,11 +611,11 @@ bool CContentView::DrawItem(const FileOptData& InitFileName, size_t& HorBtnIter,
 		}
 		else
 		{
-			Data.FileName = FilePath.string().c_str();
+			Data.FileName = FilePath;
 		}
 
 		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
-		ImGui::ImageButton(FilePath.filename().string().c_str(), IconPtr->Icon->pSurface, BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
 		ImGui::Text(LabelText.data());
 		ImGui::EndDragDropSource();
 	}
@@ -657,9 +657,9 @@ bool CContentView::Contains()
 	return IsNotAfter && IsNotBefor;
 }
 
-void CContentView::CheckFileNameCopyRecursive(std::filesystem::path &FilePath) const
+void CContentView::CheckFileNameCopyRecursive(xr_path& FilePath) const
 {
-	std::filesystem::path NewFileName = FilePath.stem();
+	xr_path NewFileName = FilePath.stem();
 	NewFileName += " - Copy";
 	NewFileName += FilePath.extension();
 
@@ -672,6 +672,14 @@ void CContentView::CheckFileNameCopyRecursive(std::filesystem::path &FilePath) c
 	return;
 }
 
+bool CContentView::CheckFile(const xr_path& File) const
+{
+	bool TestTHM = File.has_extension() && File.extension().string() != ".thm";
+	bool TestWinTrash = File.xfilename() != "desktop.ini";
+
+	return TestTHM && TestWinTrash;
+}
+
 bool CContentView::DrawFormContext()
 {
 	if (!ImGui::BeginPopupContextItem("##contentbrowsercontext"))
@@ -682,7 +690,7 @@ bool CContentView::DrawFormContext()
 	ImGui::BeginDisabled(CopyObjectPath.empty());
 	if (ImGui::MenuItem("Paste"))
 	{
-		std::filesystem::path OutDir = CurrentDir.c_str() / CopyObjectPath.filename();
+		xr_path OutDir = xr_path(CurrentDir) / CopyObjectPath.xfilename();
 
 		if (CopyObjectPath == OutDir || std::filesystem::exists(OutDir))
 		{
@@ -701,9 +709,9 @@ bool CContentView::DrawFormContext()
 	return true;
 }
 
-bool CContentView::DrawContext(const std::filesystem::path& Path)
+bool CContentView::DrawContext(const xr_path& Path)
 {
-	if (Path.string() == ".." || !ImGui::BeginPopupContextItem())
+	if (Path.xstring() == ".." || !ImGui::BeginPopupContextItem())
 	{
 		return false;
 	}
@@ -716,8 +724,8 @@ bool CContentView::DrawContext(const std::filesystem::path& Path)
 		{
 			UI->SetStatus("Level loading...");
 			ExecCommand(COMMAND_CLEAR);
-			FS.TryLoad(Path.string().c_str());
-			IReader* R = FS.r_open(Path.string().c_str());
+			FS.TryLoad(Path.xstring());
+			IReader* R = FS.r_open(Path.xstring().c_str());
 			if (!R) 
 			{
 				ImGui::EndPopup();
@@ -728,12 +736,12 @@ bool CContentView::DrawContext(const std::filesystem::path& Path)
 			bool is_ltx = (ch == '[');
 			FS.r_close(R);
 			bool res;
-			LTools->m_LastFileName = Path.string().c_str();
+			LTools->m_LastFileName = Path.xstring();
 
 			if (is_ltx)
-				Scene->LoadLTX(Path.string().c_str(), false);
+				Scene->LoadLTX(Path.xstring().c_str(), false);
 			else
-				Scene->Load(Path.string().c_str(), false);
+				Scene->Load(Path.xstring().c_str(), false);
 		}
 		ImGui::Separator();
 	}
@@ -760,7 +768,7 @@ bool CContentView::DrawContext(const std::filesystem::path& Path)
 
 CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 {
-	if (IconPath.find(".~") != xr_string::npos)
+	if (IconPath.Contains(".~"))
 		return Icons["backup"];
 
 	if (IconPath.ends_with(".ltx"))

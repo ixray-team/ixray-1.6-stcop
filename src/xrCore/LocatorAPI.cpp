@@ -503,9 +503,9 @@ bool CLocatorAPI::Recurse(const char* path)
 
     rec_files.reserve(512);
 
-	for (const std::filesystem::directory_entry& CurrentFile : std::filesystem::directory_iterator{ N })
+	for (const xr_dir_entry& CurrentFile : xr_dir_iter { N })
     {
-		std::filesystem::path currentPath = CurrentFile.path();
+		xr_path currentPath = CurrentFile;
 #ifdef IXR_WINDOWS
 		xr_string ValidFileName = Platform::TCHAR_TO_ANSI_U8(currentPath.generic_wstring().c_str());
 #else
@@ -588,9 +588,9 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
 	setup_fs_path		(fs_name, fs_path);
 
 
-	string_path			full_current_directory;
+	string_path full_current_directory;
 #ifdef IXR_WINDOWS
-	_fullpath			(full_current_directory, fs_path, sizeof(full_current_directory));
+	_fullpath(full_current_directory, fs_path, sizeof(full_current_directory));
 #else
     char *tmp_path = realpath(fs_path, 0);
     xr_strcpy(full_current_directory, tmp_path);
@@ -602,7 +602,7 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
 	{
 		auto TryTestPath = [&TestPath, fs_name](auto Path)
 		{
-			std::filesystem::path TryPath = Path;
+			xr_path TryPath = Path;
 			xr_string StrPath = TryPath.parent_path().generic_string().c_str();
 
 			if (std::filesystem::exists(StrPath + "/" + fs_name))
@@ -621,9 +621,9 @@ void CLocatorAPI::setup_fs_path		(LPCSTR fs_name)
 		}
 	}
 
-	FS_Path				*path = new FS_Path(TestPath.c_str(), "", "", "", 0);
+	FS_Path *path = new FS_Path(TestPath.c_str(), "", "", "", 0);
 #ifdef DEBUG
-	Msg					("$fs_root$ = %s", TestPath.c_str());
+	Msg("$fs_root$ = %s", TestPath.c_str());
 #endif // #ifdef DEBUG
 
 	pathes.insert		(
@@ -1691,7 +1691,7 @@ void CLocatorAPI::check_pathes()
 
 BOOL CLocatorAPI::file_find(LPCSTR full_name, FS_File& f)
 {
-	std::filesystem::path Path = full_name;
+	xr_path Path = full_name;
 	
 	if (!strchr(full_name, ':'))
 	{

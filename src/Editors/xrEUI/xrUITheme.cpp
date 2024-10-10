@@ -74,7 +74,7 @@ void CUIThemeManager::Draw()
 		{
 			for (auto& File : Files)
 			{
-				xr_string FileName = std::filesystem::path(File.name.c_str()).filename().string().c_str();
+				xr_string FileName = xr_path(File.name).xfilename();
 				bool is_selected = (ImCurrentFont == FileName);
 				if (ImGui::Selectable(FileName.c_str(), is_selected))
 				{

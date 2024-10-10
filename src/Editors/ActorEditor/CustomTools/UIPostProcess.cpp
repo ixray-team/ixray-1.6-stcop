@@ -106,9 +106,9 @@ size_t CMainPPE::GetSelectedItemID() const
 void CMainPPE::Apply(xr_string FileName)
 {
 	// action if OK
-	std::filesystem::path Path = FileName.c_str();
+	xr_path Path = FileName;
 	xr_string filePathName = FileName;
-	MyForm.FileName = Path.filename().generic_string().c_str();
+	MyForm.FileName = Path.xfilename();
 	// action
 
 	if (MyForm.DrawDialogType == DialogType::Save)

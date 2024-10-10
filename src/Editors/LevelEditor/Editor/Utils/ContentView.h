@@ -24,7 +24,7 @@ class CContentView:
 
 	struct FileOptData
 	{
-		std::filesystem::path File;
+		xr_path File;
 		bool IsDir = false;
 		shared_str ISESect;
 	};
@@ -49,13 +49,16 @@ public:
 private:
 	bool DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, const size_t IterCount);
 	bool DrawFormContext();
-	bool DrawContext(const std::filesystem::path& Path);
+	bool DrawContext(const xr_path& Path);
 	bool Contains();
 	IconData& GetTexture(const xr_string& IconPath);
 
 	xr_map<xr_string, FileOptData> ScanConfigs(const xr_string& StartPath);
 	void ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr);
-	void CheckFileNameCopyRecursive(std::filesystem::path &FilePath) const;
+	void CheckFileNameCopyRecursive(xr_path&FilePath) const;
+
+	bool CheckFile(const xr_path& File) const;
+
 private:
 
 	HintItem CurrentItemHint;
@@ -66,7 +69,7 @@ private:
 
 	ref_texture MenuIcon;
 
-	mutable std::filesystem::path CopyObjectPath;
+	mutable xr_path CopyObjectPath;
 
 	xr_string CurrentDir;
 	xr_string RootDir;
