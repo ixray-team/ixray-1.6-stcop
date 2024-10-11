@@ -183,7 +183,7 @@ void UIRenderForm::Draw()
 			}
 		}
 
-		if (ImGui::BeginDragDropTarget())
+		if (ViewportID == 0 && ImGui::BeginDragDropTarget())
 		{
 			auto ImData = ImGui::AcceptDragDropPayload("TEST");
 
