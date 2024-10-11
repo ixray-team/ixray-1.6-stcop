@@ -19,15 +19,16 @@ public:
 	IC void		SetContextMenuEvent(TOnRenderContextMenu e) { m_OnContextMenu = e; }
 	IC void		SetToolBarEvent(TOnRenderToolBar e) { m_OnToolBar = e; }
 
+	xr_delegate<void()> OnFocusCallback;
+	int ViewportID = 0;
+	string32 ViewportName;
 private:
 	Ivector2	m_mouse_position;
 	Frect		m_render_pos;
 
-	ref_texture m_rt;
 	TOnRenderToolBar m_OnToolBar;
 	TOnRenderContextMenu m_OnContextMenu;
 	bool m_mouse_down;
 	bool m_mouse_move;
 	bool m_shiftstate_down;
-
 };

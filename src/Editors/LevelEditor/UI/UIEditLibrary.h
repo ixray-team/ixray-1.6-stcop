@@ -49,6 +49,8 @@ private:
     LPCSTR m_Current;
     bool m_Preview;
 
+    UIRenderForm View;
+
     bool m_SelectLods;
     bool m_HighQualityLod;
     bool bShowProps = false;

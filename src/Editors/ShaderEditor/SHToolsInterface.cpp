@@ -52,7 +52,7 @@ void ISHTools::ZoomObject(bool bOnlySel)
 {
     Fbox BB;
     BB.set(-5,-5,-5,5,5,5);
-    EDevice->m_Camera.ZoomExtents(BB);
+    UI->CurrentView().m_Camera.ZoomExtents(BB);
 }
 //---------------------------------------------------------------------------
 

@@ -70,6 +70,7 @@ TUI::TUI()
 	   //    DisplayX -= rect.right - rect.left;
 	   //}
 
+	Viewport& MainView = Views.emplace_back();
 	m_Size.set(DisplayX, DisplayY);
 }
 //---------------------------------------------------------------------------
@@ -82,7 +83,6 @@ TUI::~TUI()
 void TUI::OnDeviceCreate()
 {
 	DU_impl.OnDeviceCreate();
-
 }
 
 void TUI::OnDeviceDestroy()
@@ -126,7 +126,7 @@ bool  TUI::KeyDown (WORD Key, TShiftState Shift)
 	}
 //	m_ShiftState = Shift;
 //	Log("Dn  ",Shift.Contains(ssShift)?"1":"0");
-	if (EDevice->m_Camera.KeyDown(Key,Shift)) return true;
+	if (UI->CurrentView().m_Camera.KeyDown(Key,Shift)) return true;
 	return Tools->KeyDown(Key, Shift);
 }
 
@@ -134,7 +134,7 @@ bool  TUI::KeyUp   (WORD Key, TShiftState Shift)
 {
 	if (!m_bReady) return false;
 //	m_ShiftState = Shift;
-	if (EDevice->m_Camera.KeyUp(Key,Shift)) return true;
+	if (UI->CurrentView().m_Camera.KeyUp(Key,Shift)) return true;
 	return Tools->KeyUp(Key, Shift);
 }
 
@@ -155,7 +155,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 	m_ShiftState = Shift;
 
 	// camera activate
-	if(!EDevice->m_Camera.MoveStart(m_ShiftState))
+	if(!UI->CurrentView().m_Camera.MoveStart(m_ShiftState))
 	{
 		if (Tools->Pick(Shift)) 
 			return;
@@ -171,7 +171,7 @@ void TUI::MousePress(TShiftState Shift, int X, int Y)
 			{
 				m_CurrentCp = GetRenderMousePosition();
 				m_StartCp = m_CurrentCp;
-				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp );
 				m_StartRStart = m_CurrentRStart;
 				m_StartRDir = m_CurrentRDir;
 			}
@@ -192,14 +192,14 @@ void TUI::MouseRelease(TShiftState Shift, int X, int Y)
 
 	m_ShiftState = Shift;
 
-	if( EDevice->m_Camera.IsMoving() ){
-		if (EDevice->m_Camera.MoveEnd(m_ShiftState)) bMouseInUse = false;
+	if( UI->CurrentView().m_Camera.IsMoving() ){
+		if (UI->CurrentView().m_Camera.MoveEnd(m_ShiftState)) bMouseInUse = false;
 	}else{
 		bMouseInUse = false;
 		if( m_MouseCaptured ){
 			if( !Tools->HiddenMode() ){
 				m_CurrentCp = GetRenderMousePosition();
-				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp );
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp );
 			}
 			bool bIsHiddenMode = Tools->HiddenMode();
 			if( Tools->MouseEnd(m_ShiftState) ){
@@ -229,7 +229,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 
 	bool bRayUpdated = false;
 
-	if (!EDevice->m_Camera.Process(m_ShiftState,x,y))
+	if (!UI->CurrentView().m_Camera.Process(m_ShiftState,x,y))
 	{
 		if( m_MouseCaptured || m_MouseMultiClickCaptured )
 		{
@@ -244,7 +244,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 			else
 			{
 				m_CurrentCp = GetRenderMousePosition();
-				EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp);
+				UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart,m_CurrentRDir,m_CurrentCp);
 				Tools->MouseMove(m_ShiftState);
 			}
 
@@ -256,7 +256,7 @@ void TUI::IR_OnMouseMove(int x, int y)
 	if (!bRayUpdated)
 	{
 		m_CurrentCp = GetRenderMousePosition();
-		EDevice->m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
+		UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 	}
 
 	// Out cursor pos
@@ -339,7 +339,7 @@ void TUI::ShowObjectHint()
 //    	if (m_bHintShowing) HideHint();
 		return;
 	}
-	if (EDevice->m_Camera.IsMoving()||m_MouseCaptured) return;
+	if (UI->CurrentView().m_Camera.IsMoving()||m_MouseCaptured) return;
 	if (!m_bAppActive) return;
 
 	GetCursorPos(&m_HintPoint);
@@ -410,22 +410,32 @@ void TUI::PrepareRedraw()
 
 	RCache.set_xform_world	(Fidentity);
 }
+
 extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
 	PrepareRedraw();
 
-	try{
-		if(u32(RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight || !RT->pSurface)
+	try
+	{
+		Viewport& View = CurrentView();
+
+		if
+		(
+			u32(View.RTSize.x * EDevice->m_ScreenQuality) != RT->dwWidth  || 
+			u32(View.RTSize.y * EDevice->m_ScreenQuality) != RT->dwHeight || 
+			!RT->pSurface
+		)
 		{
 			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
 			{
-				GetRenderWidth() = RTSize.x * EDevice->m_ScreenQuality;
-				GetRenderHeight() = RTSize.y * EDevice->m_ScreenQuality;
+				GetRenderWidth() = View.RTSize.x * EDevice->m_ScreenQuality;
+				GetRenderHeight() = View.RTSize.y * EDevice->m_ScreenQuality;
 
 				RT.destroy();
 				RTCopy.destroy();
 				ZB.destroy();
+				View.RTFreez.destroy();
 
 				RTPostion.destroy();
 				RTNormal.destroy();
@@ -436,6 +446,7 @@ void TUI::Redraw()
 				RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
 
 				RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+				View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
 
 				ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
@@ -443,8 +454,8 @@ void TUI::Redraw()
 				m_Flags.set(flRedraw, TRUE);
 
 				EDevice->m_fNearer = EDevice->mProject._43;
-				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
-				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;
+				EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
+				EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
 				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
 
 				EDevice->seqDeviceReset.Process(rp_DeviceReset);
@@ -455,14 +466,15 @@ void TUI::Redraw()
 			else 
 			{
 				// Soft render update when resizing window
-				EDevice->HalfTargetWidth = float(RTSize.x) * 0.5f;
-				EDevice->HalfTargetHeight = float(RTSize.y) * 0.5f;
+				EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
+				EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
 				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
+				m_Flags.set(flRedraw, TRUE); 
 			}
 		}
 		if (!UI->IsPlayInEditor())
 		{
-			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
+			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
 		}
 
 		if (EDevice->Begin())
@@ -529,7 +541,7 @@ void TUI::Redraw()
 				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
 
 				// draw axis
-				DU_impl.DrawAxis(EDevice->m_Camera.GetTransform());
+				DU_impl.DrawAxis(UI->CurrentView().m_Camera.GetTransform());
 
 
 				EDevice->Statistic->RenderDUMP_RT.End();
@@ -590,10 +602,12 @@ void TUI::Redraw()
 		EDevice->End();
 	}
 
-	for (auto Callback : CommandList)
+	for (auto Callback : CommandList[TUI::ECommandListID::CurrentFrame])
 		Callback();
 
-	CommandList.clear();
+	CommandList[TUI::ECommandListID::CurrentFrame].clear();
+	std::swap(CommandList[TUI::ECommandListID::CurrentFrame], CommandList[TUI::ECommandListID::NextFrame]);
+
 	OutInfo();
 }
 //---------------------------------------------------------------------------
@@ -721,10 +735,15 @@ bool TUI::OnCreate()
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
 
-	RTSize = { GetRenderWidth(), GetRenderHeight() };
-	EDevice->fASPECT = (float)RTSize.x / (float)RTSize.y;
+	int Iter = 0;
+	for (Viewport& View : Views)
+	{
+		View.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
+		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	}
+	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
 
-	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, EDevice->m_Camera.m_Znear, EDevice->m_Camera.m_Zfar);
+	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
 	EDevice->m_fNearer = EDevice->mProject._43;
 
 	RCache.set_xform_project(EDevice->mProject);
@@ -739,6 +758,8 @@ bool TUI::OnCreate()
 
 	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_D24S8);
 
+	ViewID = 0;
+
 	return true;
 }
 
@@ -746,6 +767,11 @@ void TUI::OnDestroy()
 {
 	Console->Destroy();
 	xr_delete(Console);
+
+	for (Viewport& View : Views)
+	{
+		View.RTFreez.destroy();
+	}
 
 	RT.destroy();
 	RTCopy.destroy();
@@ -856,6 +882,23 @@ void TUI::CloseConsole()
 	//	FreeConsole();
 	//	m_HConsole = 0;
 	//}
+}
+
+TUI::Viewport& TUI::CurrentView()
+{
+	return Views[ViewID];
+}
+
+void TUI::CreateViewport(int ID)
+{
+	Viewport& MainView = Views.emplace_back();
+	MainView.m_Camera.SetViewport(EPrefs->view_np, EPrefs->view_fp, EPrefs->view_fov, true);
+	MainView.m_Camera.SetSensitivity(EPrefs->cam_sens_move, EPrefs->cam_sens_rot);
+	MainView.m_Camera.SetFlyParams(EPrefs->cam_fly_speed, EPrefs->cam_fly_alt);
+	MainView.m_Camera.Reset();
+
+	MainView.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
+	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 }
 
 void TUI::OnDrawUI()

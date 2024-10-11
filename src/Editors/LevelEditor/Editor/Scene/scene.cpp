@@ -315,7 +315,7 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 
 const Fvector& EScene::GetCameraPosition() const
 {
-	return EDevice->m_Camera.GetPosition();
+	return UI->CurrentView().m_Camera.GetPosition();
 }
 
 bool EScene::GetBox(Fbox& box, ObjClassID classfilter)

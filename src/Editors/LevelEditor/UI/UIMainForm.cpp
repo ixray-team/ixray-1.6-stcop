@@ -4,6 +4,13 @@
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
 
 UIMainForm* MainForm = nullptr;
+
+static void ViewportFocusCallback()
+{
+	LUI->EndEState(esEditLibrary);
+	LUI->BeginEState(esEditScene);
+}
+
 UIMainForm::UIMainForm()
 {
 	EnableReceiveCommands();
@@ -23,6 +30,7 @@ UIMainForm::UIMainForm()
 	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
+	m_Render->OnFocusCallback = ViewportFocusCallback;
 	if (dynamic_cast<CLevelPreferences*>(EPrefs)->OpenObjectList)
 	{
 		UIObjectList::Show();
@@ -1088,7 +1096,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVFront->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewFront();
+					UI->CurrentView().m_Camera.ViewFront();
 					UI->RedrawScene();
 				}
 			}
@@ -1105,7 +1113,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVBack->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewBack();
+					UI->CurrentView().m_Camera.ViewBack();
 					UI->RedrawScene();
 				}
 			}
@@ -1122,7 +1130,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVLeft->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewLeft();
+					UI->CurrentView().m_Camera.ViewLeft();
 					UI->RedrawScene();
 				}
 			}
@@ -1139,7 +1147,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVRight->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewRight();
+					UI->CurrentView().m_Camera.ViewRight();
 					UI->RedrawScene();
 				}
 			}
@@ -1156,7 +1164,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVTop->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewTop();
+					UI->CurrentView().m_Camera.ViewTop();
 					UI->RedrawScene();
 				}
 			}
@@ -1173,7 +1181,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVBottom->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewBottom();
+					UI->CurrentView().m_Camera.ViewBottom();
 					UI->RedrawScene();
 				}
 			}
@@ -1190,7 +1198,7 @@ void UIMainForm::RenderOldCameraButtons()
 			{
 				if (ImGui::ImageButton(m_tVReset->pSurface, ImVec2(16, ImGui::GetFontSize())))
 				{
-					EDevice->m_Camera.ViewReset();
+					UI->CurrentView().m_Camera.ViewReset();
 					UI->RedrawScene();
 				}
 			}
@@ -1207,7 +1215,7 @@ void UIMainForm::RenderOldCameraButtons()
 	// Camera
 	{
 		ImGui::BeginGroup();
-		ECameraStyle Camera = EDevice->m_Camera.GetStyle();
+		ECameraStyle Camera = UI->CurrentView().m_Camera.GetStyle();
 		// Свободный режим камеры
 		{
 			bool bPushColor = false;
@@ -1220,7 +1228,7 @@ void UIMainForm::RenderOldCameraButtons()
 			m_tPlaneMove->Load();
 			if (ImGui::ImageButton(m_tPlaneMove->pSurface, ImVec2(16, ImGui::GetFontSize())))
 			{
-				EDevice->m_Camera.SetStyle(csPlaneMove);
+				UI->CurrentView().m_Camera.SetStyle(csPlaneMove);
 				UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
@@ -1247,7 +1255,7 @@ void UIMainForm::RenderOldCameraButtons()
 			m_tArcBall->Load();
 			if (ImGui::ImageButton(m_tArcBall->pSurface, ImVec2(16, ImGui::GetFontSize())))
 			{
-				EDevice->m_Camera.SetStyle(cs3DArcBall);
+				UI->CurrentView().m_Camera.SetStyle(cs3DArcBall);
 				UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())
@@ -1274,7 +1282,7 @@ void UIMainForm::RenderOldCameraButtons()
 			m_tFreeFly->Load();
 			if (ImGui::ImageButton(m_tFreeFly->pSurface, ImVec2(16, ImGui::GetFontSize())))
 			{
-				EDevice->m_Camera.SetStyle(csFreeFly);
+				UI->CurrentView().m_Camera.SetStyle(csFreeFly);
 				UI->RedrawScene();
 			}
 			if (ImGui::IsItemHovered())

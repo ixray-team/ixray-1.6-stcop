@@ -133,11 +133,31 @@ void CUI_Camera::SetDepth(float _far, bool bForcedUpdate)
     if (m_Zfar!=_far)	{m_Zfar=_far; UI->Resize(bForcedUpdate);}
 }
 
-void CUI_Camera::SetViewport(float _near, float _far, float _fov)
+void CUI_Camera::SetViewport(float _near, float _far, float _fov, bool Silent)
 {
-    if (m_Znear!=_near)		{m_Znear=_near; UI->Resize();}
-    if (m_Zfar!=_far)		{m_Zfar=_far; UI->Resize();}
-    if (EDevice->fFOV!=_fov)	{EDevice->fFOV=_fov; UI->Resize();}
+    if (m_Znear != _near)
+    {
+        m_Znear = _near;
+
+        if (!Silent)
+            UI->Resize();
+    }
+
+    if (m_Zfar != _far)
+    {
+        m_Zfar = _far;
+
+        if (!Silent)
+            UI->Resize();
+    }
+
+    if (EDevice->fFOV != _fov)
+    {
+        EDevice->fFOV = _fov;
+
+        if (!Silent)
+            UI->Resize();
+    }
 }
 
 void CUI_Camera::SetSensitivity(float sm, float sr)

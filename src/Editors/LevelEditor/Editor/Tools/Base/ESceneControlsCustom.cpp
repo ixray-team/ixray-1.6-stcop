@@ -10,6 +10,9 @@ TUI_CustomControl::TUI_CustomControl(int st, int act, ESceneToolBase* parent)
 
 bool TUI_CustomControl::Start(TShiftState _Shift)
 {
+    if (LUI->GetEState() == esEditLibrary)
+        return false;
+
     switch(action)
     {
         case etaSelect:
@@ -285,7 +288,7 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
                 Fvector p, n;
                 // UI->IR_GetMousePosReal(EDevice->m_hWnd, UI->m_CurrentCp);
                 UI->GetRenderMousePosition();
-                EDevice->m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp);
+                UI->CurrentView().m_Camera.MouseRayFromPoint(UI->m_CurrentRStart, UI->m_CurrentRDir, UI->m_CurrentCp);
                 if (LUI->PickGround(p, UI->m_CurrentRStart, UI->m_CurrentRDir, 1, &n))
                 {
                     for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
@@ -317,9 +320,9 @@ bool TUI_CustomControl::MovingStart(TShiftState Shift)
         }
         else
         {
-            m_MovingXVector.set(EDevice->m_Camera.GetRight());
+            m_MovingXVector.set(UI->CurrentView().m_Camera.GetRight());
             m_MovingXVector.y = 0;
-            m_MovingYVector.set(EDevice->m_Camera.GetDirection());
+            m_MovingYVector.set(UI->CurrentView().m_Camera.GetDirection());
             m_MovingYVector.y = 0;
             m_MovingXVector.normalize_safe();
             m_MovingYVector.normalize_safe();

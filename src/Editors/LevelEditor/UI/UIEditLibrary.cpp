@@ -5,6 +5,12 @@
 static FS_FileSet modif_map;
 UIEditLibrary* UIEditLibrary::Form = nullptr;
 
+static void ViewportFocusCallback()
+{
+	LUI->EndEState(esEditScene);
+	LUI->BeginEState(esEditLibrary);
+}
+
 UIEditLibrary::UIEditLibrary()
 {
 	m_ObjectList = new UIItemListForm();
@@ -16,6 +22,8 @@ UIEditLibrary::UIEditLibrary()
 	m_Preview = false;
 	m_SelectLods = false;
 	m_RealTexture = nullptr;
+
+	View.OnFocusCallback = ViewportFocusCallback;
 }
 
 void UIEditLibrary::OnItemFocused(ListItem* item)
@@ -310,12 +318,23 @@ void UIEditLibrary::DrawRightBar()
 
 			if (ImGui::Button("Make Thumbnail", ImVec2(-1, 0)))
 			{
-				OnMakeThmClick();
+				UI->RedrawScene(false);
 
-				for (auto Item : m_ObjectList->m_SelectedItems)
+				UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back([this]
 				{
-					OnItemFocused(Item);
-				}
+					UI->ViewID = View.ViewportID;
+					View.OnFocusCallback();
+				});
+				
+				UI->CommandList[TUI::ECommandListID::NextFrame].push_back([this]
+				{
+					OnMakeThmClick();
+
+					for (auto Item : m_ObjectList->m_SelectedItems)
+					{
+						OnItemFocused(Item);
+					}
+				});
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -693,6 +712,11 @@ void UIEditLibrary::Draw()
 
 	ImGui::PopStyleVar(1);
 	ImGui::End();
+
+	if (m_Preview)
+	{
+		View.Draw();
+	}
 }
 
 void UIEditLibrary::ImportClick()

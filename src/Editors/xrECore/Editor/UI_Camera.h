@@ -26,8 +26,8 @@ protected:
 	friend class	CEditorRenderDevice;
 	friend class	TUI;
 
-	float 			m_Znear;
-	float 			m_Zfar;
+	float 			m_Znear = 0.2f;
+	float 			m_Zfar = 300;
     float			m_SR, m_SM;
 
     void 			Pan			(float X, float Z);
@@ -72,7 +72,7 @@ public:
     void			Set			(float h, float p, float b, float x, float y, float z);
     void			Set			(const Fvector& hpb, const Fvector& pos);
     void			SetSensitivity(float sm, float sr);
-    void			SetViewport	(float _near, float _far, float _fov);
+    void			SetViewport	(float _near, float _far, float _fov, bool Silent = false);
     void			SetDepth	(float _far, bool bForcedUpdate);
     void			SetFlyParams(float speed, float fAltitude){ m_FlySpeed=speed; m_FlyAltitude=fAltitude; }
 

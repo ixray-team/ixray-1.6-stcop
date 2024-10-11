@@ -103,7 +103,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
                             DetailSlot* slot = dtSlots+z*dtH.size_x+x;
                             c.x			= fromSlotX(x);
                             c.y			= slot->r_ybase()+slot->r_yheight()*0.5f; //(slot->y_max+slot->y_min)*0.5f;
-                            float dist = EDevice->m_Camera.GetPosition().distance_to_sqr(c);
+                            float dist = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(c);
                          	if ((dist<dist_lim)&&::Render->ViewBase.testSphere_dirty(c,DETAIL_SLOT_SIZE_2)){
 								bbox.min.set(c.x-DETAIL_SLOT_SIZE_2, slot->r_ybase(), 					c.z-DETAIL_SLOT_SIZE_2);
                             	bbox.max.set(c.x+DETAIL_SLOT_SIZE_2, slot->r_ybase()+slot->r_yheight(),	c.z+DETAIL_SLOT_SIZE_2);

@@ -160,7 +160,7 @@ void CObjectAnimator::DrawPath()
         for (KeyIt k_it = E->keys.begin(); k_it != E->keys.end(); k_it++)
         {
             m_Current->_Evaluate((*k_it)->time, T, r);
-            if (EDevice->m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f) {
+            if (UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T) < 50.f * 50.f) {
                 DU_impl.DrawCross(T, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, clr, false);
                 string64 buff;
                 sprintf(buff, "K: %3.3f", (*k_it)->time);

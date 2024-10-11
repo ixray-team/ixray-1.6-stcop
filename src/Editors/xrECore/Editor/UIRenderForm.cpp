@@ -3,6 +3,8 @@
 #include "ui_main.h"
 #include "../xrEUI/ImGuizmo.h"
 
+static int GlobalViewportIndex = 0;
+
 namespace ImGui
 {
 	XREUI_API ImFont* LightFont;
@@ -16,16 +18,44 @@ UIRenderForm::UIRenderForm()
 	m_mouse_down = false;
 	m_mouse_move = false;
 	m_shiftstate_down = false;
+
+	ViewportID = GlobalViewportIndex++;
+	sprintf(ViewportName, "%s##%d", "Render", ViewportID);
+
+	if (ViewportID != 0)
+	{
+		UI->CreateViewport(ViewportID);
+	}
 }
 
 UIRenderForm::~UIRenderForm()
 {
-
 }
 
 void UIRenderForm::Draw()
 {
-	ImGui::Begin("Render", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
+	{
+		UI->ViewID = ViewportID;
+
+		if (OnFocusCallback)
+		{
+			OnFocusCallback();
+		}
+
+		//RDevice->UpdateTexture(UI->Views[ViewportID].RT->pSurface, UI->Views[ViewportID].RTFreez->pSurface);
+	}
+
+	if (UI->ViewID == ViewportID)
+	{
+		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
+	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
 	m_render_pos.left = ImGui::GetWindowPos().x;
@@ -33,17 +63,26 @@ void UIRenderForm::Draw()
 	m_render_pos.bottom = ImGui::GetWindowSize().y;
 	m_render_pos.top = ImGui::GetWindowPos().y;
 
-	if (UI && UI->RT->pSurface)
+	if (UI && UI->Views[ViewportID].RTFreez->pSurface)
 	{
 		int ShiftState = ssNone;
 
-		if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
-		if (ImGui::GetIO().KeyCtrl)ShiftState |= ssCtrl;
-		if (ImGui::GetIO().KeyAlt)ShiftState |= ssAlt;
+		if (ViewportID == UI->ViewID)
+		{
+			if (ImGui::GetIO().KeyShift)
+				ShiftState |= ssShift;
+
+			if (ImGui::GetIO().KeyCtrl)
+				ShiftState |= ssCtrl;
+
+			if (ImGui::GetIO().KeyAlt)
+				ShiftState |= ssAlt;
 
 
-		if (ImGui::IsMouseDown(ImGuiMouseButton_Left))ShiftState |= ssLeft;
-		if (ImGui::IsMouseDown(ImGuiMouseButton_Right))ShiftState |= ssRight;
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))ShiftState |= ssLeft;
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Right))ShiftState |= ssRight;
+		}
+
 		//VERIFY(!(ShiftState & ssLeft && ShiftState & ssRight));
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
 		ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
@@ -77,18 +116,24 @@ void UIRenderForm::Draw()
 
 		if (canvas_size.x < 32.0f) canvas_size.x = 32.0f;
 		if (canvas_size.y < 32.0f) canvas_size.y = 32.0f;
-		UI->RTSize.set(canvas_size.x, canvas_size.y);
+		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(UI->RT->pSurface, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+
+		if (ViewportID != UI->ViewID)
+		{
+			ImGui::End();
+			return;
+		}
 
 		if(m_OnToolBar)
-            m_OnToolBar(canvas_pos, canvas_size);
+			m_OnToolBar(canvas_pos, canvas_size);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
 
-        if (!ImGuizmo::IsUsing())
-            ImGui::InvisibleButton("canvas", canvas_size);
+		if (!ImGuizmo::IsUsing())
+			ImGui::InvisibleButton("canvas", canvas_size);
 
 		if (ImGui::IsItemFocused())
 		{
