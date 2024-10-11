@@ -59,7 +59,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                 EDevice->SetShader	(m_Shader);
                 EDevice->SetRS		(D3DRS_CULLMODE,		D3DCULL_NONE);
                 Irect rect;
-                HashRect			(EDevice->m_Camera.GetPosition(),m_VisRadius,rect);
+                HashRect			(UI->CurrentView().m_Camera.GetPosition(),m_VisRadius,rect);
 
                 u32 vBase;
                 _VertexStream* Stream= &RCache.Vertex;

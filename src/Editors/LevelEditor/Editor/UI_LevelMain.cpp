@@ -46,14 +46,14 @@ CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 // Main commands
 CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
-	if (Scene->ObjCount() || (LUI->GetEState() != esEditScene))
-	{
-		if (LUI->GetEState() == esEditLibrary)
-			UIEditLibrary::Show();
-		else
-			ELog.DlgMsg(mtError, "! Scene must be empty before editing library!");
-	}
-	else
+	//if (Scene->ObjCount() || (LUI->GetEState() != esEditScene))
+	//{
+	//	if (LUI->GetEState() == esEditLibrary)
+	//		UIEditLibrary::Show();
+	//	else
+	//		ELog.DlgMsg(mtError, "! Scene must be empty before editing library!");
+	//}
+	//else
 		UIEditLibrary::Show();
 
 	return TRUE;
@@ -288,7 +288,7 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
 		if (!Scene->IfModified()) return TRUE;
-		EDevice->m_Camera.Reset	();
+		UI->CurrentView().m_Camera.Reset	();
 		Scene->Reset			();
 		Scene->m_LevelOp.Reset	();
 		Tools->m_LastFileName 		= "";
@@ -1189,22 +1189,22 @@ bool CLevelMain::SelectionFrustum(CFrustum& frustum)
 
 	SRayPickInfo pinf;
 	for (int i=0; i<4; i++){
-		EDevice->m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
 		if (EPrefs->bp_lim_depth){
-			pinf.inf.range = EDevice->m_Camera._Zfar(); // max pick range
+			pinf.inf.range = UI->CurrentView().m_Camera._Zfar(); // max pick range
 			if (Scene->RayPickObject(pinf.inf.range, st, d, OBJCLASS_SCENEOBJECT, &pinf, 0))
 				if (pinf.inf.range > depth) depth = pinf.inf.range;
 		}
 	}
-	if (depth<EDevice->m_Camera._Znear()) depth = EDevice->m_Camera._Zfar();
+	if (depth<UI->CurrentView().m_Camera._Znear()) depth = UI->CurrentView().m_Camera._Zfar();
 	else depth += EPrefs->bp_depth_tolerance;
 
 	for (int i=0; i<4; i++){
-		EDevice->m_Camera.MouseRayFromPoint(st, d, pt[i]);
+		UI->CurrentView().m_Camera.MouseRayFromPoint(st, d, pt[i]);
 		p[i].mad(st,d,depth);
 	}
 
-	Fvector pos = EDevice->m_Camera.GetPosition();
+	Fvector pos = UI->CurrentView().m_Camera.GetPosition();
 	frustum.CreateFromPoints(p,4,pos);
 
 	Fplane P; P.build(p[0],p[1],p[2]);
@@ -1271,7 +1271,7 @@ void CLevelMain::OutCameraPos()
 {
 	if (m_bReady)
 	{
-		const Fvector& c = EDevice->m_Camera.GetPosition();
+		const Fvector& c = UI->CurrentView().m_Camera.GetPosition();
 		//xr_string Str;
 		//sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
 		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);

@@ -24,7 +24,7 @@ IC void SetCamera(float angle, const Fvector& C, float height, float radius, flo
     float asp 	= height/radius;
 	float fp	= dist+4.f*radius;
     float np	= dist-4.f*radius; clamp(np,0.1f,fp);
-    EDevice->m_Camera.Set		(hpb,D);
+    UI->CurrentView().m_Camera.Set		(hpb,D);
     P.build_projection_HAT	(ta,asp,np,fp);
     RCache.set_xform_project(P);
 }
@@ -46,17 +46,17 @@ void CImageManager::CreateLODTexture(const Fbox& bb, U32Vec& tgt_data, u32 tgt_w
     bb.getcenter				(C);
 
     Fmatrix save_projection		= EDevice->mProjection;
-    Fvector save_pos 			= EDevice->m_Camera.GetPosition();
-    Fvector save_hpb 			= EDevice->m_Camera.GetHPB();
-    float save_far		 		= EDevice->m_Camera._Zfar();
-	ECameraStyle save_style 	= EDevice->m_Camera.GetStyle();
+    Fvector save_pos 			= UI->CurrentView().m_Camera.GetPosition();
+    Fvector save_hpb 			= UI->CurrentView().m_Camera.GetHPB();
+    float save_far		 		= UI->CurrentView().m_Camera._Zfar();
+	ECameraStyle save_style 	= UI->CurrentView().m_Camera.GetStyle();
 
     float D		= 500.f;
     u32 pitch 					= tgt_w*samples;
 
     tgt_data.resize				(pitch*tgt_h);
-	EDevice->m_Camera.SetStyle	(csPlaneMove);
-    EDevice->m_Camera.SetDepth	(D*2,true);
+	UI->CurrentView().m_Camera.SetStyle	(csPlaneMove);
+    UI->CurrentView().m_Camera.SetDepth	(D*2,true);
 
     // save render params
     Flags32 old_flag			= psDeviceFlags;
@@ -98,11 +98,11 @@ void CImageManager::CreateLODTexture(const Fbox& bb, U32Vec& tgt_data, u32 tgt_w
     psDeviceFlags 				= old_flag;
     EPrefs.scene_clear_color 	= cc;
 
-	EDevice->m_Camera.SetStyle	(save_style);
+	UI->CurrentView().m_Camera.SetStyle	(save_style);
     RCache.set_xform_project	(save_projection);
-    EDevice->m_Camera.Set			(save_hpb,save_pos);
-    EDevice->m_Camera.Set			(save_hpb,save_pos);
-    EDevice->m_Camera.SetDepth	(save_far,false);
+    UI->CurrentView().m_Camera.Set			(save_hpb,save_pos);
+    UI->CurrentView().m_Camera.Set			(save_hpb,save_pos);
+    UI->CurrentView().m_Camera.SetDepth	(save_far,false);
 }
 */
 using Fvector4Vec = xr_vector<Fvector4>;

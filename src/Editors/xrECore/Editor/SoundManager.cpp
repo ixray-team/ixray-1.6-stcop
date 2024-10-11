@@ -60,7 +60,7 @@ void CSoundManager::OnDestroy()
 void CSoundManager::OnFrame()
 {
 	::psSoundVEffects		= psDeviceFlags.is(rsMuteSounds)?0.f:1.f;
-	Sound->update			(EDevice->m_Camera.GetPosition(), EDevice->m_Camera.GetDirection(), EDevice->m_Camera.GetNormal());
+	Sound->update			(UI->CurrentView().m_Camera.GetPosition(), UI->CurrentView().m_Camera.GetDirection(), UI->CurrentView().m_Camera.GetNormal());
 }
 
 void CSoundManager::MuteSounds(BOOL bVal)

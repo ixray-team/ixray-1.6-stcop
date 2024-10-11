@@ -60,15 +60,15 @@ void CCustomPreferences::ApplyValues()
 	Tools->m_RotateSnapAngle = snap_angle;
 	Tools->m_ScaleFixed = scale_fixed;
 
-	EDevice->m_Camera.SetViewport(view_np, view_fp, view_fov);
+	UI->CurrentView().m_Camera.SetViewport(view_np, view_fp, view_fov);
 	Tools->SetFog	(fog_color,fog_fogness);
 
 	UI->m_MouseSM	= 0.2f*tools_sens_move*tools_sens_move;
 	UI->m_MouseSR	= 0.02f*tools_sens_rot*tools_sens_rot;
 	UI->m_MouseSS	= 0.02f*tools_sens_scale*tools_sens_scale;
 
-	EDevice->m_Camera.SetSensitivity	(cam_sens_move, cam_sens_rot);
-	EDevice->m_Camera.SetFlyParams	(cam_fly_speed, cam_fly_alt);
+	UI->CurrentView().m_Camera.SetSensitivity	(cam_sens_move, cam_sens_rot);
+	UI->CurrentView().m_Camera.SetFlyParams	(cam_fly_speed, cam_fly_alt);
 
 	ExecCommand		(COMMAND_UPDATE_GRID);
 }

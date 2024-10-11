@@ -337,9 +337,10 @@ protected:
 		xr_vector<ISpatial*> lstRenderables;
 };
 #ifdef REDITOR
+#include "ui_main.h"
 IC  float   CalcSSA(Fvector& C, float R)
 {
-    float distSQ  = EDevice->m_Camera.GetPosition().distance_to_sqr(C);
+    float distSQ  = UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(C);
     return  R*R/distSQ;
 }
 #endif

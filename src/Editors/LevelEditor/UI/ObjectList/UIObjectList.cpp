@@ -59,7 +59,7 @@ void UIObjectList::Draw()
 					RItem->Object->Select(true);
 					Fbox bb;
 					if (RItem->Object->GetBox(bb))
-						EDevice->m_Camera.ZoomExtents(bb);
+						UI->CurrentView().m_Camera.ZoomExtents(bb);
 
 					UI->RedrawScene();
 

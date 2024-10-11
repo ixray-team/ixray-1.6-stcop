@@ -270,7 +270,7 @@ void CActorMain::OutCameraPos()
 
 	if (m_bReady && LastFrame != Device.dwFrame)
 	{
-		const Fvector& c = EDevice->m_Camera.GetPosition();
+		const Fvector& c = UI->CurrentView().m_Camera.GetPosition();
 		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
 		LastFrame = Device.dwFrame;
 	}
@@ -459,7 +459,7 @@ CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 		return FALSE;
 
 	m_LastFileName = "";
-	EDevice->m_Camera.Reset();
+	UI->CurrentView().m_Camera.Reset();
 	Clear();
 	ExecCommand(COMMAND_UPDATE_CAPTION);
 	ExecCommand(COMMAND_UPDATE_PROPERTIES);

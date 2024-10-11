@@ -39,7 +39,7 @@ void CCustomObject::AnimationUpdate(float t)
     UpdateTransform			(true);
     m_CO_Flags.set			(flAutoKey,bAK);
     if (m_CO_Flags.is(flCameraView))
-    	EDevice->m_Camera.Set	(-r.y,-r.x,-r.z,P.x,P.y,P.z);
+    	UI->CurrentView().m_Camera.Set	(-r.y,-r.x,-r.z,P.x,P.y,P.z);
 }
 
 void CCustomObject::AnimationOnFrame()
@@ -79,7 +79,7 @@ void CCustomObject::AnimationDrawPath()
         CEnvelope* E 			= m_Motion->Envelope();
         for (KeyIt k_it=E->keys.begin(); k_it!=E->keys.end(); k_it++){
             m_Motion->_Evaluate	((*k_it)->time,T,r);
-            if (EDevice->m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
+            if (UI->CurrentView().m_Camera.GetPosition().distance_to_sqr(T)<50.f*50.f){
                 DU_impl.DrawCross	(T,0.1f,0.1f,0.1f, 0.1f,0.1f,0.1f, clr,false);
 
                 string256 Data = {};

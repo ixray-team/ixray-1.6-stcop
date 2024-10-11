@@ -316,7 +316,7 @@ void CActorTools::ZoomObject(BOOL bSelOnly)
 		default:
 			BB = m_pEditObject->GetBox();
 		}
-		EDevice->m_Camera.ZoomExtents(BB);
+		UI->CurrentView().m_Camera.ZoomExtents(BB);
 	}
 }
 

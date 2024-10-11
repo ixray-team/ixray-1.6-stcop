@@ -118,7 +118,13 @@ public:
 public:
     // mouse sensetive
     float m_MouseSM, m_MouseSS, m_MouseSR;
-    xr_vector<std::function<void()>> CommandList;
+
+    enum class ECommandListID
+    {
+        NextFrame,
+        CurrentFrame
+    };
+    xr_hash_map<ECommandListID, xr_vector<std::function<void()>>> CommandList;
 
 protected:
     virtual void 	RealUpdateScene	()=0;
@@ -137,7 +143,7 @@ public:
     int 			GetRealWidth	()	{   return EDevice->dwRealWidth; }
     int 			GetRealHeight	()  {   return EDevice->dwRealHeight; }
 
-    IC float 		ZFar			()	{	return EDevice->m_Camera.m_Zfar; }
+    IC float 		ZFar			()	{	return CurrentView().m_Camera.m_Zfar; }
     IC TShiftState	GetShiftState 	()	{	return m_ShiftState; }
 
     virtual bool 	OnCreate		();
@@ -176,7 +182,7 @@ public:
     void 			BeginEState			(EEditorState st){ m_EditorState.push_back(st); }
     void 			EndEState			(){ m_EditorState.pop_back(); }
     void 			EndEState			(EEditorState st){
-    	VERIFY(std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end());
+    	//VERIFY(std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end());
         for (EStateIt it=m_EditorState.end()-1; it>=m_EditorState.begin(); it--)
         	if (*it==st){
             	m_EditorState.erase(it,m_EditorState.end());
@@ -245,14 +251,27 @@ public:
 	void ShowConsole();
     void WriteConsole(TMsgDlgType mt, const char* txt);
     void CloseConsole();
+
 public:
-    ref_rt				RT;
-    ref_rt				RTPostion   ;
-    ref_rt				RTNormal    ;
-    ref_rt				RTDiffuse   ;
-    ref_rt				RTCopy;
-    ref_rt				ZB;
-    _vector2<u32>            RTSize;
+    ref_rt RT;
+    ref_rt RTPostion;
+    ref_rt RTNormal;
+    ref_rt RTDiffuse;
+    ref_rt RTCopy;
+    ref_rt ZB;
+
+    struct Viewport
+    {
+        CUI_Camera m_Camera;
+        ref_rt RTFreez;
+        Ivector2 RTSize;
+    };
+
+    Viewport& CurrentView();
+    void CreateViewport(int ID);
+    size_t ViewID = -1;
+    xr_vector<Viewport> Views;
+
 protected:
     virtual void OnDrawUI();
     void RealResetUI();

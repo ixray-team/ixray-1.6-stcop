@@ -60,7 +60,6 @@ public:
 
 public:
 	// camera
-	CUI_Camera m_Camera;
 	CRegistrator<pureDrawUI> seqDrawUI;
 
 	// Dependent classes

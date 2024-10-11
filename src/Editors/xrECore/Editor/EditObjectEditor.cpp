@@ -236,7 +236,7 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 void CEditableObject::RenderLOD(const Fmatrix& parent)
 {
     Fvector C;
-    C.sub			(parent.c,EDevice->m_Camera.GetPosition()); C.y = 0;
+    C.sub			(parent.c,UI->CurrentView().m_Camera.GetPosition()); C.y = 0;
     float m 		= C.magnitude();
     if (m<EPS) return;
     C.div			(m);

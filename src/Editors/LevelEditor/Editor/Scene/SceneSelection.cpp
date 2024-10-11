@@ -152,7 +152,7 @@ void EScene::ZoomExtents( ObjClassID cls, BOOL bSel )
         ESceneToolBase* mt = GetTool(cls);
         if (mt) 			mt->GetBBox(BB,bSel);
     }
-    if (BB.is_valid()) EDevice->m_Camera.ZoomExtents(BB);
+    if (BB.is_valid()) UI->CurrentView().m_Camera.ZoomExtents(BB);
     else ELog.Msg(mtError,"Can't calculate bounding box. Nothing selected or some object unsupported this function.");
 }
 

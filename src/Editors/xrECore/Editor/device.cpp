@@ -435,7 +435,7 @@ void CEditorRenderDevice::UpdateView()
 // set camera matrix
 	if (!Tools->UpdateCamera())
 	{
-		m_Camera.GetView(mView);
+		UI->CurrentView().m_Camera.GetView(mView);
 	}
     RCache.set_xform_view(mView);
     mFullTransform.mul(mProject,mView);
@@ -460,7 +460,7 @@ void CEditorRenderDevice::FrameMove()
 
 	if (!Tools->UpdateCamera())
 	{
-		m_Camera.Update(fTimeDelta);
+		UI->CurrentView().m_Camera.Update(fTimeDelta);
 	}
 
     // process objects
