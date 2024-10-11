@@ -709,6 +709,10 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 	
 	xr_path FilePath = InitFileName.File;
 	xr_string FileName = FilePath.xfilename();
+
+	if (FileName.empty())
+		return false;
+
 	const ImVec2& CursorPos = ImGui::GetCursorPos();
 	IconData* IconPtr = nullptr;
 	bool OutValue = false;
