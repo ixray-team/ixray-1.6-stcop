@@ -829,6 +829,11 @@ bool CContentView::DrawFormContext()
 
 		std::filesystem::copy(CopyObjectPath, OutDir);
 
+		if (CopyObjectPath.extension() != ".thm" && std::filesystem::exists(CopyObjectPath.replace_extension(".thm")))
+		{
+			std::filesystem::copy(CopyObjectPath, OutDir.replace_extension(".thm"));
+		}
+
 		CopyObjectPath.clear();
 
 		FS.rescan_path(OutDir.parent_path().string().c_str(), true);
@@ -883,7 +888,19 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (ImGui::MenuItem("Delete"))
 	{
-		std::filesystem::remove_all(Path);
+		if (std::filesystem::is_directory(Path))
+		{
+			std::filesystem::remove_all(Path);
+		}
+		else
+		{
+			std::filesystem::remove(Path);
+
+			if (auto ThmFile = Path; Path.extension() != ".thm" && std::filesystem::exists(ThmFile.replace_extension(".thm")))
+			{
+				std::filesystem::remove(ThmFile);
+			}
+		}
 
 		// For some reason, FS does not want to register that the file has been deleted. \
 				Temporarily removed the "const" and made the Rescan Directory();
