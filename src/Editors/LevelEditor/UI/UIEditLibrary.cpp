@@ -471,7 +471,7 @@ void UIEditLibrary::RefreshSelected()
 
 	if (m_Preview)
 	{
-		if (m_ObjectList->m_SelectedItems.empty())
+		if (!m_ObjectList->m_SelectedItems.empty())
 		{
 			ListItemsVec vec;
 			for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
