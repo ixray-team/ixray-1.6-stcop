@@ -22,6 +22,7 @@ public:
 	xr_delegate<void()> OnFocusCallback;
 	int ViewportID = 0;
 	string32 ViewportName;
+	int DockId = -1;
 private:
 	Ivector2	m_mouse_position;
 	Frect		m_render_pos;
