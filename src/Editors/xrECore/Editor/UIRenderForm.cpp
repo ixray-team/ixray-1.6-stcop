@@ -34,7 +34,11 @@ UIRenderForm::~UIRenderForm()
 
 void UIRenderForm::Draw()
 {
-	ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
+	{
+		ImGui::End();
+		return;
+	}
 
 	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
 	{

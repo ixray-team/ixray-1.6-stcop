@@ -170,7 +170,7 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 							OnMotionKeysModified();
 						};
 
-						UI->CommandList.push_back(DeleteCallback);
+						UI->CommandList[TUI::ECommandListID::CurrentFrame].push_back(DeleteCallback);
 						bModif = true;
 					}
 					else
