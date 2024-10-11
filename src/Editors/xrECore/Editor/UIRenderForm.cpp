@@ -52,6 +52,8 @@ void UIRenderForm::Draw()
 		//RDevice->UpdateTexture(UI->Views[ViewportID].RT->pSurface, UI->Views[ViewportID].RTFreez->pSurface);
 	}
 
+	DockId = ImGui::GetWindowDockID();
+
 	if (UI->ViewID == ViewportID)
 	{
 		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
