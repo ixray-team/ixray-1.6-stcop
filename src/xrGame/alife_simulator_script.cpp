@@ -207,6 +207,29 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, LPCSTR sect
 	return								(self_->server().Process_spawn(packet,clientID));
 }
 
+//Alundaio: Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent
+CSE_Abstract *CALifeSimulator__spawn_item3(CALifeSimulator *self, LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, bool reg = true)
+{
+	if (reg == true)
+		return CALifeSimulator__spawn_item2(self, section, position, level_vertex_id, game_vertex_id, id_parent);
+		
+	if (id_parent == ALife::_OBJECT_ID(-1))
+		return							(self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
+
+	CSE_ALifeDynamicObject				*object = ai().alife().objects().object(id_parent, true);
+	if (!object) {
+		Msg("! invalid parent id [%d] specified", id_parent);
+		return							(0);
+	}
+
+	if (!object->m_bOnline)
+		return							(self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent));
+
+	CSE_Abstract						*item = self->spawn_item(section, position, level_vertex_id, game_vertex_id, id_parent, false);
+
+	return								(item);
+}
+
 CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent, int ammo_to_spawn)
 {
 //	if (id_parent == ALife::_OBJECT_ID(-1))
@@ -282,6 +305,12 @@ void CALifeSimulator__release					(CALifeSimulator *self_, CSE_Abstract *object,
 	Level().Send						(packet,net_flags(TRUE,TRUE));
 }
 
+void CALifeSimulator__release2(CALifeSimulator *self, CSE_Abstract *object)
+{
+	CALifeSimulator__release(self, object, false);
+						 
+}
+
 LPCSTR get_level_name							(const CALifeSimulator *self_, int level_id)
 {
 	LPCSTR								result_ = *ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
@@ -322,6 +351,28 @@ bool dont_has_info								(const CALifeSimulator *self_, const ALife::_OBJECT_ID
 void set_objects_per_update(CALifeSimulator* self, u32 count)
 {
 	self->objects_per_update(count);
+}
+
+void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LPCSTR info_id)
+{
+	KNOWN_INFO_VECTOR *known_info = alife->registry(info_portions).object(id, true);
+	if (!known_info)
+		return;
+
+	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
+	{
+		known_info->push_back(info_id);
+	}
+
+	return;
+}
+
+void AlifeRemoveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LPCSTR info_id)
+{
+	KNOWN_INFO_VECTOR	*known_info = alife->registry(info_portions).object(id, true);
+	if (!known_info)
+		return;
+	known_info->erase(std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)),known_info->end());
 }
 
 void teleport_object(CALifeSimulator* alife, ALife::_OBJECT_ID id, GameGraph::_GRAPH_ID game_vertex_id, u32 level_vertex_id, const Fvector& position)
@@ -419,14 +470,18 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("create",					&CALifeSimulator__create)
 			.def("create",					&CALifeSimulator__spawn_item2)
 			.def("create",					&CALifeSimulator__spawn_item)
+			.def("create",					&CALifeSimulator__spawn_item3)												
 			.def("create_ammo",				&CALifeSimulator__spawn_ammo)
 			.def("release",					&CALifeSimulator__release)
+			.def("release",					&CALifeSimulator__release2)												  
 			.def("spawn_id",				&CALifeSimulator__spawn_id)
 			.def("actor",					&get_actor)
 			.def("has_info",				&has_info)
 			.def("dont_has_info",			&dont_has_info)
+			.def("give_info",				&AlifeGiveInfo)
+			.def("disable_info",			&AlifeRemoveInfo)										   
 			.def("switch_distance",			&CALifeSimulator::switch_distance)
-			.def("switch_distance",			&CALifeSimulator::set_switch_distance)
+			.def("set_switch_distance",		&CALifeSimulator::set_switch_distance)
 			.def("objects",					&alife_objects, return_stl_pair_iterator)
 			.def("jump_to_level",			(void (CALifeSimulator::*) (LPCSTR))(&CALifeSimulator::jump_to_level))
 
