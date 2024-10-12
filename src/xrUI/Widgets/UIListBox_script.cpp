@@ -39,6 +39,8 @@ void CUIListBox::script_register(lua_State *L)
 		.def("GetSelectedIndex",		&CUIListBox::GetSelectedIDX)		
 		.def("SetSelectedIndex", &CUIListBox::SetSelectedIDX)
 
+		.def("SetItemHeight", 			&CUIListBox::SetItemHeight)
+		.def("GetItemHeight", 			&CUIListBox::GetItemHeight)
 		.def("GetItemByIndex",			&CUIListBox::GetItemByIDX)		
 		.def("GetItem",					&CUIListBox::GetItem)		
 		.def("RemoveItem",				&CUIListBox::RemoveWindow)
