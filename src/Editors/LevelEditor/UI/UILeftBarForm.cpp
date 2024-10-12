@@ -51,12 +51,21 @@ void UILeftBarForm::Draw()
 			ESceneToolBase* tool = Scene->GetTool(Tools[id]);
 			bool visble = tool->IsVisible();
 			ImGui::PushID(tool->ClassName());
-			if (ImGui::Checkbox("##value", &visble)) { tool->m_EditFlags.set(ESceneToolBase::flVisible, visble); UI->RedrawScene(); }; ImGui::SameLine();
+
+			ImGui::BeginDisabled(!tool->IsEnabled());
+
+			if (ImGui::Checkbox("##value", &visble)) 
+			{ 
+				tool->m_EditFlags.set(ESceneToolBase::flVisible, visble); 
+				UI->RedrawScene(); 
+			}; 
+			ImGui::SameLine();
 
 			if (ImGui::RadioButton(tool->ClassDesc(), LTools->GetTarget() == Tools[id]))
 			{
 				ExecCommand(COMMAND_CHANGE_TARGET, Tools[id]);
 			}
+			ImGui::EndDisabled();
 			ImGui::PopID();
 			ImGui::NextColumn();
 		}
