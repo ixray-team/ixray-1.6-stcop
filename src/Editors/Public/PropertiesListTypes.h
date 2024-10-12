@@ -189,6 +189,10 @@ public:
     IC xr_string		GetDrawText		()
     {
     	VERIFY(!values.empty()); 
+        if (values.empty())
+        {
+            return "";
+        }
         return (m_Flags.is(flMixed) && !m_Flags.is(flIgnoreMixed) )? xr_string("(mixed)") : values.front()->GetDrawText(OnDrawTextEvent);
     }
 	IC void				CheckMixed		()
