@@ -121,11 +121,20 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_ui_weapon_ap_ammo			= UIHelper::CreateTextWnd( xml, "static_ap_ammo", this );
 
 	//Alundaio: Option to display a third ammo type
-	m_ui_weapon_third_ammo = UIHelper::CreateTextWnd(xml, "static_third_ammo", this);
+	if(xml.NavigateToNode("static_third_ammo", 0))
+		m_ui_weapon_third_ammo = UIHelper::CreateTextWnd(xml, "static_third_ammo", this);
 	//-Alundaio
 
-	m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
-	m_ui_weapon_ammo_color_inactive = CUIXmlInit::GetColor(xml, "inactive_ammo_color", 0, color_rgba(238, 155, 23, 150));
+	// HACK: St4lker0k765: idk why, but default values in CUIXmlInit::GetColor are glitchy as hell, so i'll try this instead
+	if (xml.NavigateToNode("active_ammo_color", 0))
+		m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
+	else
+		m_ui_weapon_ammo_color_active = color_rgba(238, 155, 23, 255);
+
+	if (xml.NavigateToNode("inactive_ammo_color", 0))
+		m_ui_weapon_ammo_color_inactive = CUIXmlInit::GetColor(xml, "inactive_ammo_color", 0, color_rgba(238, 155, 23, 150));
+	else
+		m_ui_weapon_ammo_color_inactive = color_rgba(238, 155, 23, 150);
 
 	m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
 	m_ui_grenade				= UIHelper::CreateTextWnd( xml, "static_grenade", this );
@@ -264,7 +273,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
 		m_ui_weapon_cur_ammo->Show	( true );
 		m_ui_weapon_fmj_ammo->Show	( true );
 		m_ui_weapon_ap_ammo->Show	( true );
-		m_ui_weapon_third_ammo->Show( true ); //Alundaio: third_ammo
+		if(m_ui_weapon_third_ammo)
+			m_ui_weapon_third_ammo->Show( true ); //Alundaio: third_ammo
 		m_fire_mode->Show			( true );
 		m_ui_grenade->Show			( true );
 
@@ -297,7 +307,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
 		m_ui_weapon_cur_ammo->Show	( false );
 		m_ui_weapon_fmj_ammo->Show	( false );
 		m_ui_weapon_ap_ammo->Show	( false );
-		m_ui_weapon_third_ammo->Show( false ); //Alundaio: Third Ammo
+		if(m_ui_weapon_third_ammo)
+			m_ui_weapon_third_ammo->Show( false ); //Alundaio: Third Ammo
 		m_fire_mode->Show			( false );
 		m_ui_grenade->Show			( false );
 	}

@@ -245,7 +245,7 @@ void CEntity::net_Destroy()
 
 void CEntity::KillEntity(u16 whoID)
 {
-	if (ID() == Actor()->ID())
+	if (IsGameTypeSingle() && (this->ID() == Actor()->ID()))
 	{
 		Actor()->detach_Vehicle();
 		Actor()->use_MountedWeapon(nullptr);
