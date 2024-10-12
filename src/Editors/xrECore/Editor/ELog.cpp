@@ -205,23 +205,18 @@ void CLog::Msg(TMsgDlgType mt, LPCSTR _Format, ...)
 {
 	char buf[4096];
 	va_list l;
-	va_start( l, _Format );
-	vsprintf( buf, _Format, l );
+	va_start(l, _Format);
+	vsprintf(buf, _Format, l);
 
-#if 1
-    UILogForm::AddMessage(xr_string(buf));
-#endif
-#ifdef _MAX_EXPORT
-	EConsole.print(mt,buf);
-#endif
-#ifdef _LW_EXPORT
-	switch (mt){
-	case mtError: g_msg->error(buf,0); break;
+	xr_string OutString = buf;
+
+	switch (mt)
+	{
+		case mtError: OutString = "! " + OutString; break;
 	}
-#endif
 
-	//::LogExecCB = FALSE;
-    ::Msg		(buf);
-	//::LogExecCB	= TRUE;
+	//UILogForm::AddMessage(OutString);
+
+	::Msg(OutString.c_str());
 }
 //----------------------------------------------------

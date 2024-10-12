@@ -37,16 +37,10 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
                     bRes = SetReference(_new_name.c_str());
                 }
             }
+
             if(!bRes)
             {
-             
-
-               /* if ( (mr==mrNone||mr==mrYes) && TfrmChoseItem::SelectItem(smObject,new_val,1))
-                {
-                    bRes = SetReference(new_val);
-                    if(bRes)
-                        Scene->RegisterSubstObjectName(ref_name.c_str(), new_val);
-                }*/
+                ELog.DlgMsg(mtError, "CSceneObject: '%s' not found in library", ref_name.data());
             }
 
             Scene->Modified();
@@ -170,32 +164,26 @@ bool CSceneObject::LoadStream(IReader& F)
 
         if (!SetReference(buf))
         {
-            ELog.Msg            ( mtError, "CSceneObject: '%s' not found in library", buf );
-            bRes                = false;
-            int mr              = mrNone;
+            ELog.Msg(mtError, "CSceneObject: '%s' not found in library", buf);
+            bRes = false;
+            int mr = mrNone;
 
             xr_string       _new_name;
-            bool b_found    = Scene->GetSubstObjectName(buf, _new_name);
-            if(b_found)
+            bool b_found = Scene->GetSubstObjectName(buf, _new_name);
+            if (b_found)
             {
                 xr_string _message;
-                _message = "Object ["+xr_string(buf)+"] not found. Relace it with ["+_new_name+"] or select other from library?";
-                mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _message.c_str());
-                if(mrYes==mr)
+                _message = "Object [" + xr_string(buf) + "] not found. Relace it with [" + _new_name + "] or select other from library?";
+                mr = ELog.DlgMsg(mtConfirmation, mbYes | mbNo, _message.c_str());
+                if (mrYes == mr)
                 {
                     bRes = SetReference(_new_name.c_str());
                 }
             }
-            if(!bRes)
-            {
-     
 
-                /*if ( (mr==mrNone||mr==mrYes) && TfrmChoseItem::SelectItem(smObject,new_val,1))
-                {
-                    bRes = SetReference(new_val);
-                    if(bRes)
-                        Scene->RegisterSubstObjectName(buf, new_val);
-                }*/
+            if (!bRes)
+            {
+                ELog.DlgMsg(mtError, "CSceneObject: '%s' not found in library", buf);
             }
 
             Scene->Modified();
