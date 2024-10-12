@@ -155,14 +155,19 @@ void UIObjectTool::DrawObjectsList()
     {
         if (!RefreshInProgress)
         {
-            ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
-            ImGui::SameLine();
-            ImGui::BeginChild("Props", ImVec2(0, 128));
-            m_Props->Draw();
+            //if (ImGui::BeginChild("Props"))
+            {
+                ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
+                ImGui::SameLine();
+                m_Props->Draw();
+                ImGui::Separator();
+            }
+            //ImGui::EndChild();
+            if (ImGui::BeginChild("##objectslist"))
+            {
+                m_ObjectList->Draw();
+            }
             ImGui::EndChild();
-
-            ImGui::Separator();
-            m_ObjectList->Draw();
         }
         else
             ImGui::Text("Loading...");

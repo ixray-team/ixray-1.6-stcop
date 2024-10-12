@@ -77,8 +77,15 @@ void UILeftBarForm::Draw()
 			}
 			ImGui::End();
 
-			UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm());
-			if (pTool)
+			if (UIObjectTool* pTool = smart_cast<UIObjectTool*>(LTools->GetToolForm()))
+			{
+				pTool->DrawObjectsList();
+			}
+			else if (UISpawnTool* pTool = smart_cast<UISpawnTool*>(LTools->GetToolForm()))
+			{
+				pTool->DrawObjectsList();
+			}
+			else if (UIParticlesTool* pTool = smart_cast<UIParticlesTool*>(LTools->GetToolForm()))
 			{
 				pTool->DrawObjectsList();
 			}

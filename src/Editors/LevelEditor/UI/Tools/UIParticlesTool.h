@@ -5,6 +5,9 @@ public:
 	UIParticlesTool();
 	virtual ~UIParticlesTool();
 	virtual void Draw();
+
+	void DrawObjectsList();
+
 	IC const char* Current()const { return m_Current; }
 private:
 	void SelByRef(bool flag);

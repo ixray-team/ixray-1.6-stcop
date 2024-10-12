@@ -5,6 +5,8 @@ public:
 	UISpawnTool();
 	virtual ~UISpawnTool();
 	virtual void Draw();
+	
+	void DrawObjectsList();
 	void SelByRefObject(bool flag);
 	void MultiSelByRefObject(bool clear_prev);
 	IC const char* Current() { return m_Current; }

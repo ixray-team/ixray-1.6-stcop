@@ -56,13 +56,15 @@ void UIParticlesTool::Draw()
 	}
 	ImGui::Separator();
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-    if (ImGui::TreeNode("Particles"))
-	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-		m_ParticlesList->Draw();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
+}
+
+void UIParticlesTool::DrawObjectsList()
+{
+    if (ImGui::Begin("Objects List"))
+    {
+        m_ParticlesList->Draw();
     }
+    ImGui::End();
 }
 
 void UIParticlesTool::SelByRef(bool flag)

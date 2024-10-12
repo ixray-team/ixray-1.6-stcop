@@ -59,13 +59,16 @@ void UISpawnTool::Draw()
 	}
 	ImGui::Separator();
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Object List"))
+}
+
+void UISpawnTool::DrawObjectsList()
+{
+	if (ImGui::Begin("Objects List"))
 	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		m_SpawnList->Draw();
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
 	}
+
+	ImGui::End();
 }
 
 void UISpawnTool::SelByRefObject(bool flag)
