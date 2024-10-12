@@ -55,7 +55,7 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 	}
 
 	luabind::functor<void> funct;
-	if (ai().script_engine().functor("save_manager.BeforeSaveEvent", funct))
+	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct))
 		funct((LPCSTR)save_name);
 
 	u32							source_count;
@@ -152,7 +152,7 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 	}
 
 	luabind::functor<void> funct;
-	if (ai().script_engine().functor("save_manager.BeforeLoadEvent", funct))
+	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_load", funct))
 		funct(save_name);
 
 	string_path					file_name;
