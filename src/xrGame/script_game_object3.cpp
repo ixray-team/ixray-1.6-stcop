@@ -8,6 +8,7 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
+#include "actor.h"
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
@@ -39,6 +40,7 @@
 #include "stalker_decision_space.h"
 #include "space_restriction_manager.h"
 #include "eatable_item.h"
+#include "holder_custom.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -149,6 +151,45 @@ bool CScriptGameObject::IsAmmo() const
 {
 	CInventoryItem* IItm = smart_cast<CWeaponAmmo*>(&object());
 	return IItm != nullptr;
+}
+
+void CScriptGameObject::AttachVehicle(CScriptGameObject* veh, bool bForce)
+{
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (actor)
+	{
+		CHolderCustom* vehicle = smart_cast<CHolderCustom*>(&veh->object());
+		if (vehicle)
+			actor->use_HolderEx(vehicle, bForce);
+		else
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot be cast to CHolderCustom!");
+	}
+}
+
+void CScriptGameObject::DetachVehicle(bool bForce)
+{
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (actor)
+	{
+		actor->use_HolderEx(NULL, bForce);
+	}
+}
+
+CScriptGameObject* CScriptGameObject::GetAttachedVehicle()
+{
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (!actor)
+		return (0);
+
+	CHolderCustom* H = actor->Holder();
+	if (!H)
+		return (0);
+
+	CGameObject* GO = smart_cast<CGameObject*>(H);
+	if (!GO)
+		return (0);
+
+	return GO->lua_game_object();
 }
 
 u32 CScriptGameObject::PlayHudMotion(LPCSTR M, bool bMixIn, u32 state)

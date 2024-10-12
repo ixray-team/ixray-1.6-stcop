@@ -804,6 +804,12 @@ public:
 			u8 GetMaxUses();
 			bool IsAmmo() const;
 			bool ActorIsJump() const;
+
+			//Car
+			CScriptGameObject* GetAttachedVehicle();
+			void				AttachVehicle(CScriptGameObject* veh, bool bForce = false);
+			void				DetachVehicle(bool bForce = false);
+
 			u32 PlayHudMotion(LPCSTR M, bool bMixIn, u32 state);
 			void AmmoSetCount(u16 count);
 			u16 AmmoBoxSize();
