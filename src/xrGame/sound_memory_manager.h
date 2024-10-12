@@ -87,6 +87,7 @@ public:
 	virtual void				feel_sound_new			(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power);
 	virtual	void				update					();
 			void				remove_links			(CObject *object);
+			void				remove					(const MemorySpace::CSoundObject *sound_object);
 
 public:
 			void				enable					(const CObject *object, bool enable);

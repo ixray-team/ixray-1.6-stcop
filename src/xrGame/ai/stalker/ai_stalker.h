@@ -219,6 +219,9 @@ public:
 	virtual	void						PHHit								(SHit &H);
 	virtual BOOL						feel_vision_isRelevant				(CObject* who);
 	virtual float						Radius								() const;
+
+	virtual void						ChangeVisual						( shared_str NewVisual );
+
 #ifdef DEBUG_DRAW
 	virtual void						OnHUDDraw							(CCustomHUD* hud);
 	virtual void						OnRender							();
@@ -276,6 +279,7 @@ public:
 			bool						ready_to_detour			();
 			void						update_best_item_info	();
 			void						update_best_item_info_impl();
+			void						ResetBoneProtections	(LPCSTR imm_sect, LPCSTR bone_sect);
 	virtual float						GetWeaponAccuracy		() const;
 	virtual bool						unlimited_ammo			();
 	virtual	void						spawn_supplies			();
@@ -312,8 +316,8 @@ public:
 	virtual BOOL						feel_touch_contact		(CObject* O);
 	virtual BOOL						feel_touch_on_contact	(CObject* O);
 
-	//флаги, какие действия совершал актер по отношению к сталкеру
-	//(помог, атаковал и т.д.)
+	//С„Р»Р°РіРё, РєР°РєРёРµ РґРµР№СЃС‚РІРёСЏ СЃРѕРІРµСЂС€Р°Р» Р°РєС‚РµСЂ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє СЃС‚Р°Р»РєРµСЂСѓ
+	//(РїРѕРјРѕРі, Р°С‚Р°РєРѕРІР°Р» Рё С‚.Рґ.)
 	Flags32								m_actor_relation_flags;
 
 	// ALife

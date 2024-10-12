@@ -1417,3 +1417,38 @@ bool CAI_Stalker::unlimited_ammo()
 {
 	return infinite_ammo() && CObjectHandler::planner().object().g_Alive();
 }
+
+void CAI_Stalker::ResetBoneProtections(LPCSTR imm_sect, LPCSTR bone_sect)
+{
+	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
+	CInifile* ini = pKinematics->LL_UserData();
+	if (ini)
+	{
+		if (imm_sect || ini->section_exist("immunities"))
+		{
+			imm_sect = imm_sect ? imm_sect : ini->r_string("immunities", "immunities_sect");
+			conditions().LoadImmunities(imm_sect, pSettings);
+		}
+
+		if (bone_sect || ini->line_exist("bone_protection", "bones_protection_sect"))
+		{
+			bone_sect = ini->r_string("bone_protection", "bones_protection_sect");
+			m_boneHitProtection->reload(bone_sect, pKinematics);
+		}
+	}
+}
+
+void CAI_Stalker::ChangeVisual(shared_str NewVisual)
+{
+	if (!NewVisual.size()) return;
+	if (cNameVisual().size())
+	{
+		if (cNameVisual() == NewVisual) return;
+	}
+
+	cNameVisual_set(NewVisual);
+
+	Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
+	Visual()->dcast_PKinematics()->CalculateBones(TRUE);
+};
+
