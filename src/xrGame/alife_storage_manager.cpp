@@ -54,10 +54,6 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 		}
 	}
 
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct))
-		funct((LPCSTR)save_name);
-
 	u32							source_count;
 	u32							dest_count;
 	void						*dest_data;
@@ -92,12 +88,21 @@ void CALifeStorageManager::save	(LPCSTR save_name_no_check, bool update_name)
 	Msg							("* Game %s is successfully saved to file '%s'",m_save_name,temp);
 #endif // DEBUG
 
+	luabind::functor<void> funct;
+	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct))
+		funct((LPCSTR)save_name);
+
 	if (!update_name)
 		xr_strcpy					(m_save_name,save);
 }
 
 void CALifeStorageManager::load	(void *buffer, const u32 &buffer_size, LPCSTR file_name)
 {
+	luabind::functor<void>	funct;
+	ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_load", funct);
+	if (funct)
+		funct(file_name);
+
 	IReader						source(buffer,buffer_size);
 	header().load				(source);
 	time_manager().load			(source);
@@ -151,9 +156,9 @@ bool CALifeStorageManager::load	(LPCSTR save_name_no_check)
 		xr_strconcat(m_save_name, save_name, SAVE_EXTENSION);
 	}
 
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_load", funct))
-		funct(save_name);
+	//luabind::functor<void> funct;
+	//if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_load", funct))
+	//	funct(save_name);
 
 	string_path					file_name;
 	FS.update_path				(file_name,"$game_saves$",m_save_name);
