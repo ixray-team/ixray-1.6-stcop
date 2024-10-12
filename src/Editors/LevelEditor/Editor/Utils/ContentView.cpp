@@ -156,13 +156,21 @@ void CContentView::DrawHeader()
 		DrawByPathLambda(CurrentDir);
 	}
 
-	ImGui::SameLine();
 	int FindStartPosX = (int)ImGui::GetWindowSize().x;
-	int FindSizeX = FindStartPosX / 5;
-	FindStartPosX -= FindSizeX;
+	if (FindStartPosX > 300)
+	{
+		ImGui::SameLine();
+		int FindSizeX = FindStartPosX / 3.5f;
+		FindStartPosX -= FindSizeX;
 
-	ImGui::SetCursorPosX(FindStartPosX);
-	ImGui::SetNextItemWidth(FindSizeX - 35);
+		ImGui::SetCursorPosX(FindStartPosX);
+		ImGui::SetNextItemWidth(FindSizeX - 35);
+	}
+	else
+	{
+		ImGui::SetNextItemWidth(FindStartPosX - 45);
+	}
+
 	if (ImGui::InputTextWithHint("##Search", "Search", FindStr, sizeof(FindStr)))
 	{
 		FindFile();
