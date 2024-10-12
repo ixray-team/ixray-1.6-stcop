@@ -142,7 +142,8 @@ void UIEditLibrary::Close()
 {
 	UI->EndEState(esEditLibrary);
 	// TODO: возможно еще кого то надо грохнуть
-	xr_delete(Form);
+	Form->bOpen = false;
+	//xr_delete(Form);
 }
 
 void UIEditLibrary::DrawObjects()
@@ -290,9 +291,18 @@ void UIEditLibrary::OnPropertiesClick()
 
 		/////////////////////////////////////////////
 		NE->FillBasicProps("", Info);
-		for (auto Surf : NE->m_Surfaces)
+
+		//for (auto Surf : NE->m_Surfaces)
+		//{
+		//	NE->FillSurfaceProps(Surf, Surf->_GameMtlName(), Info);
+		//}
+
+		for (SurfaceIt it = NE->m_Surfaces.begin(); it != NE->m_Surfaces.end(); it++)
 		{
-			NE->FillSurfaceProps(Surf, Surf->_GameMtlName(), Info);
+			AnsiString	pref = AnsiString("Surfaces\\") + (*it)->_Name();
+			PropValue* V = PHelper().CreateCaption(Info, pref.c_str(), "");
+			V->tag = (int)*it;
+			NE->FillSurfaceProps(*it, pref.c_str(), Info);
 		}
 
 		xr_delete(SO);
@@ -304,14 +314,6 @@ void UIEditLibrary::OnPropertiesClick()
 
 void UIEditLibrary::DrawRightBar()
 {
-
-	if (bShowProps)
-	{
-		ImGui::Begin("Objects properties", &bShowProps);
-		m_PropsObjects->Draw();
-		ImGui::End();
-	}
-
 	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
 	{
 		ImGui::Image(m_RealTexture ? m_RealTexture : EDevice->texture_null->pSurface, ImVec2(200, 200));
@@ -705,6 +707,24 @@ void UIEditLibrary::Draw()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(550, 650));
 
+	// Render child windows
+	if (bOpen)
+	{
+		if (m_Preview)
+		{
+			View.Draw();
+		}
+
+		if (bShowProps)
+		{
+			if (ImGui::Begin("Objects properties", &bShowProps))
+			{
+				m_PropsObjects->Draw();
+			}
+			ImGui::End();
+		}
+	}
+
 	if (!ImGui::Begin("Object Library", &bOpen))
 	{
 		ImGui::PopStyleVar(1);
@@ -740,11 +760,6 @@ void UIEditLibrary::Draw()
 
 	ImGui::PopStyleVar(1);
 	ImGui::End();
-
-	if (m_Preview)
-	{
-		View.Draw();
-	}
 }
 
 void UIEditLibrary::ImportClick()
