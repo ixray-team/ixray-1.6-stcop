@@ -35,8 +35,12 @@ using namespace luabind;
 
 CUIRankingWnd::CUIRankingWnd()
 {
+	m_actor_ch_info				= nullptr;
 	m_previous_time				= Device.dwTimeGlobal;
 	m_delay						= 3000;
+	m_last_monster_icon_back	= "";
+	m_last_monster_icon			= "";
+	m_last_weapon_icon			= "";
 }
 
 CUIRankingWnd::~CUIRankingWnd()
@@ -46,20 +50,33 @@ CUIRankingWnd::~CUIRankingWnd()
 		xr_delete(*b);
 	m_achieves_vec.clear();
 
-	//Alundaio: CoC Rankings
-	RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), en = m_coc_ranking_vec.end();
-	for (; be != en; be++)
-		xr_delete(*be);
-	m_coc_ranking_vec.clear();
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Rankings
+		RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), en = m_coc_ranking_vec.end();
+		for (; be != en; be++)
+			xr_delete(*be);
+		m_coc_ranking_vec.clear();
 
-	xr_delete(m_coc_ranking_actor);
-	//-Alundaio
+		xr_delete(m_coc_ranking_actor);
+		//-Alundaio
+	}
 }
 
 void CUIRankingWnd::Show( bool status )
 {
 	if ( status )
 	{
+		if (m_actor_ch_info)
+			m_actor_ch_info->InitCharacter( Actor()->object_id() );
+		
+		if (m_money_value)
+		{
+			string64 buf;
+			xr_sprintf(buf, sizeof(buf), "%d %s", Actor()->get_money(), "RU");
+			m_money_value->SetText(buf);
+			m_money_value->AdjustWidthToText();
+		}
 		update_info();
 	}
 	inherited::Show( status );
@@ -86,7 +103,35 @@ void CUIRankingWnd::Init()
 	m_background				= UIHelper::CreateFrameWindow(xml, "background", this);
 	m_down_background			= UIHelper::CreateFrameWindow(xml, "down_background", this);
 
-	//Dynamic stats
+	const static bool isCharacterInfo = EngineExternal()[EEngineExternalUI::DisableCharacterInfo];
+	if (!isCharacterInfo)
+	{
+		if (xml.NavigateToNode("actor_ch_info", 0))
+		{
+			m_actor_ch_info = new CUICharacterInfo();
+			m_actor_ch_info->SetAutoDelete(true);
+			AttachChild(m_actor_ch_info);
+			m_actor_ch_info->InitCharacterInfo(&xml, "actor_ch_info");
+		}
+		if (xml.NavigateToNode("actor_icon_over", 0))
+			m_icon_overlay = UIHelper::CreateFrameWindow(xml, "actor_icon_over", this);
+		if (xml.NavigateToNode("money_caption", 0))
+			m_money_caption = UIHelper::CreateTextWnd(xml, "money_caption", this);
+		if (xml.NavigateToNode("money_value", 0))
+			m_money_value = UIHelper::CreateTextWnd(xml, "money_value", this);
+
+		if (m_money_caption)
+		{
+			m_money_caption->AdjustWidthToText();
+			pos = m_money_caption->GetWndPos();
+			pos.x += m_money_caption->GetWndSize().x + 10.0f;
+		}
+		if (m_money_value)
+			m_money_value->SetWndPos(pos);
+
+		if (xml.NavigateToNode("center_caption", 0))
+			m_center_caption = UIHelper::CreateTextWnd(xml, "center_caption", this);
+	}	
 	XML_NODE* stored_root = xml.GetLocalRoot();
 	XML_NODE* node = xml.NavigateToNode( "stat_info", 0 );
 	xml.SetLocalRoot( node );
@@ -118,7 +163,32 @@ void CUIRankingWnd::Init()
 	}
 	xml.SetLocalRoot( stored_root );
 
-	//Achievements
+	if (m_center_caption)
+	{
+		string256 buf;
+		xr_strcpy(buf, sizeof(buf), m_center_caption->GetText());
+		xr_strcat(buf, sizeof(buf), g_pStringTable->translate("ui_ranking_center_caption").c_str());
+		m_center_caption->SetText(buf);
+	}
+
+	if (xml.NavigateToNode("monster_icon_back", 0))
+		m_monster_icon_back		= UIHelper::CreateStatic(xml, "monster_icon_back", this);
+	if (xml.NavigateToNode("monster_icon", 0))
+		m_monster_icon			= UIHelper::CreateStatic(xml, "monster_icon", this);
+	if (xml.NavigateToNode("monster_background", 0))
+		m_monster_background	= UIHelper::CreateFrameWindow(xml, "monster_background", this);
+	if (xml.NavigateToNode("monster_over", 0))
+		m_monster_over			= UIHelper::CreateFrameWindow(xml, "monster_over", this);
+
+	if (xml.NavigateToNode("favorite_weapon_back", 0))
+		m_favorite_weapon_bckgrnd	= UIHelper::CreateStatic(xml, "favorite_weapon_back", this);
+	if (xml.NavigateToNode("favorite_weapon_icon", 0))
+		m_favorite_weapon_icon		= UIHelper::CreateStatic(xml, "favorite_weapon_icon", this);
+	if (xml.NavigateToNode("favorite_weapon_ramka", 0))
+		m_favorite_weapon_ramka		= UIHelper::CreateFrameWindow(xml, "favorite_weapon_ramka", this);
+	if (xml.NavigateToNode("favorite_weapon_over", 0))
+		m_favorite_weapon_over		= UIHelper::CreateFrameWindow(xml, "favorite_weapon_over", this);
+
 	m_achievements_background	= UIHelper::CreateFrameWindow(xml, "achievements_background", this);
 	m_achievements = new CUIScrollView();
 	CUIXmlInit::InitScrollView(xml, "achievements_wnd", 0, m_achievements);
@@ -135,13 +205,20 @@ void CUIRankingWnd::Init()
 	for(u8 i = 0; ib != ie ; ++ib, ++i)
 		add_achievement(xml, (*ib).first);
 		
-	//Alundaio: CoC Rankings
-	m_coc_ranking_background = UIHelper::CreateFrameWindow(xml, "coc_ranking_background", this);
-	m_coc_ranking = new CUIScrollView();
-	CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd", 0, m_coc_ranking);
-	m_coc_ranking->SetAutoDelete(true);
-	AttachChild(m_coc_ranking);
-	m_coc_ranking->SetWindowName("coc_ranking_list");
+	// Alundaio: CoC Rankings
+	// St4lker0k765: it's not necessary for CoP anymore
+	if (xml.NavigateToNode("coc_ranking_background", 0))
+	{
+		m_coc_ranking_background = UIHelper::CreateFrameWindow(xml, "coc_ranking_background", this);
+	}
+	if (xml.NavigateToNode("coc_ranking_wnd", 0))
+	{
+		m_coc_ranking = new CUIScrollView();
+		CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd", 0, m_coc_ranking);
+		m_coc_ranking->SetAutoDelete(true);
+		AttachChild(m_coc_ranking);
+		m_coc_ranking->SetWindowName("coc_ranking_list");
+	}
 
 	u8 topRankCount = 50;
 	luabind::functor<u8> getRankingArraySize;
@@ -151,21 +228,26 @@ void CUIRankingWnd::Init()
 		topRankCount = getRankingArraySize();
 	}
 	
-	for(u8 i=1; i <= topRankCount; i++)
+	if (m_coc_ranking != nullptr)
 	{
-		CUIRankingsCoC* character_rank_item = new CUIRankingsCoC(m_coc_ranking);
-		character_rank_item->init_from_xml(xml,i, false);
-		m_coc_ranking_vec.push_back(character_rank_item);
+		for (u8 i = 1; i <= topRankCount; i++)
+		{
+			CUIRankingsCoC* character_rank_item = new CUIRankingsCoC(m_coc_ranking);
+			character_rank_item->init_from_xml(xml, i, false);
+			m_coc_ranking_vec.push_back(character_rank_item);
+		}
 	}
-	
-	m_coc_ranking_actor_view = new CUIScrollView();
-	CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd_actor", 0, m_coc_ranking_actor_view);
-	m_coc_ranking_actor_view->SetAutoDelete(true);
-	AttachChild(m_coc_ranking_actor_view);
-	m_coc_ranking_actor_view->SetWindowName("coc_ranking_list_actor");
+	if (xml.NavigateToNode("coc_ranking_wnd_actor", 0))
+	{
+		m_coc_ranking_actor_view = new CUIScrollView();
+		CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd_actor", 0, m_coc_ranking_actor_view);
+		m_coc_ranking_actor_view->SetAutoDelete(true);
+		AttachChild(m_coc_ranking_actor_view);
+		m_coc_ranking_actor_view->SetWindowName("coc_ranking_list_actor");
 
-	m_coc_ranking_actor = new CUIRankingsCoC(m_coc_ranking_actor_view);
-	m_coc_ranking_actor->init_from_xml(xml, topRankCount + 1, true);
+		m_coc_ranking_actor = new CUIRankingsCoC(m_coc_ranking_actor_view);
+		m_coc_ranking_actor->init_from_xml(xml, topRankCount + 1, true);
+	}
 	//-Alundaio
 	
 	xml.SetLocalRoot(stored_root);
@@ -193,15 +275,19 @@ void CUIRankingWnd::update_info()
 	for(; b!=e; b++)
 		(*b)->Update();
 
-	//Alundaio: CoC Ranking
-	RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
-	for (; begin != end; begin++)
-		(*begin)->Update();
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Ranking
+		RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
+		for (; begin != end; begin++)
+			(*begin)->Update();
 
-	m_coc_ranking_actor->Update();
-	//-Alundaio
-
+		m_coc_ranking_actor->Update();
+		//-Alundaio
+	}
 	get_statistic();
+	get_best_monster();
+	get_favorite_weapon();
 }
 
 void CUIRankingWnd::DrawHint()
@@ -214,15 +300,18 @@ void CUIRankingWnd::DrawHint()
 	}
 
 	//Alundaio: CoC Ranking
-	RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
-	for (; begin != end; begin++)
+	if (m_coc_ranking_actor)
 	{
-		if ((*begin)->IsShown())
-			(*begin)->DrawHint();
-	}
+		RANKINGCOC_VEC_IT begin = m_coc_ranking_vec.begin(), end = m_coc_ranking_vec.end();
+		for (; begin != end; begin++)
+		{
+			if ((*begin)->IsShown())
+				(*begin)->DrawHint();
+		}
 
-	if (m_coc_ranking_actor->IsShown())
-		m_coc_ranking_actor->DrawHint();
+		if (m_coc_ranking_actor->IsShown())
+			m_coc_ranking_actor->DrawHint();
+	}
 	//-Alundaio
 }
 
@@ -248,19 +337,99 @@ void CUIRankingWnd::get_statistic()
 	}
 
 }
+void CUIRankingWnd::get_best_monster()
+{
+	luabind::functor<LPCSTR> funct;
+	LPCSTR str;
+	if (ai().script_engine().functor("pda.get_monster_back", funct))
+	{
+		str = funct();
+		if (!xr_strcmp(str, ""))
+			return;
 
+		if (xr_strcmp(str, m_last_monster_icon_back))
+		{
+			m_monster_icon_back->TextureOn();
+			m_monster_icon_back->InitTexture(str);
+			m_last_monster_icon_back = str;
+		}
+	}
+	if (ai().script_engine().functor("pda.get_monster_icon", funct))
+	{
+		str = funct();
+		if (!xr_strcmp(str, ""))
+			return;
+
+		if (xr_strcmp(str, m_last_monster_icon))
+		{
+			m_monster_icon->TextureOn();
+			m_monster_icon->InitTexture(str);
+			m_last_monster_icon = str;
+		}
+	}
+}
+void CUIRankingWnd::get_favorite_weapon()
+{
+	luabind::functor<LPCSTR> funct;
+	if (ai().script_engine().functor("pda.get_favorite_weapon", funct))
+	{
+		LPCSTR str = funct();
+
+		if (!xr_strcmp(str, ""))
+			return;
+
+		if (xr_strcmp(str, m_last_weapon_icon))
+		{
+			if (pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
+			{
+				if (m_favorite_weapon_icon)
+				{
+					m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader());
+					if (!xr_strcmp(str, "wpn_rpg7"))
+						m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader());
+
+					Frect				tex_rect;
+					tex_rect.x1 = float(pSettings->r_u32(str, "upgr_icon_x"));
+					tex_rect.y1 = float(pSettings->r_u32(str, "upgr_icon_y"));
+					tex_rect.x2 = float(pSettings->r_u32(str, "upgr_icon_width"));
+					tex_rect.y2 = float(pSettings->r_u32(str, "upgr_icon_height"));
+					tex_rect.rb.add(tex_rect.lt);
+					m_favorite_weapon_icon->SetTextureRect(tex_rect);
+					m_favorite_weapon_icon->TextureOn();
+					m_favorite_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+					m_favorite_weapon_icon->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() * 0.8, (tex_rect.y2 - tex_rect.y1) * 0.8));
+					m_favorite_weapon_icon->SetStretchTexture(true);
+				}
+			}
+			m_last_weapon_icon = str;
+		}
+	}
+}
 void CUIRankingWnd::ResetAll()
 {
+	m_last_monster_icon_back = "";
+	m_last_monster_icon = "";
+	m_last_weapon_icon = "";
+	if (m_monster_icon_back)
+		m_monster_icon_back->TextureOff();
+	if (m_monster_icon)
+		m_monster_icon->TextureOff();
+	if (m_favorite_weapon_icon)
+		m_favorite_weapon_icon->TextureOff();
+
 	ACHIEVES_VEC_IT b = m_achieves_vec.begin(), e = m_achieves_vec.end();
 	for(; b!=e; b++)
 		(*b)->Reset();
 
-	//Alundaio: CoC Rankings
-	RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), ed = m_coc_ranking_vec.end();
-	for (; be != ed; be++)
-		(*be)->Reset();
+	if (m_coc_ranking_actor)
+	{
+		//Alundaio: CoC Rankings
+		RANKINGCOC_VEC_IT be = m_coc_ranking_vec.begin(), ed = m_coc_ranking_vec.end();
+		for (; be != ed; be++)
+			(*be)->Reset();
 
-	m_coc_ranking_actor->Reset();
+		m_coc_ranking_actor->Reset();
+	}
 	//-Alundaio 
 
 	inherited::ResetAll();
