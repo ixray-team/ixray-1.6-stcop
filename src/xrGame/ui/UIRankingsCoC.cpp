@@ -1,3 +1,5 @@
+#include "StdAfx.h"
+
 #include "pch_script.h"
 #include "UIRankingsCoC.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
