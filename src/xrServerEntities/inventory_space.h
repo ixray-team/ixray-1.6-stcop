@@ -76,6 +76,7 @@ struct II_BriefInfo
 	shared_str		cur_ammo;
 	shared_str		fmj_ammo;
 	shared_str		ap_ammo;
+	shared_str		third_ammo; //Alundaio
 	shared_str		fire_mode;
 
 	shared_str		grenade;
@@ -88,6 +89,7 @@ struct II_BriefInfo
 		icon		= "";
 		cur_ammo	= "";
 		fmj_ammo	= "";
+		third_ammo	= ""; //Alundaio
 		ap_ammo		= "";
 		fire_mode	= "";
 		grenade		= "";

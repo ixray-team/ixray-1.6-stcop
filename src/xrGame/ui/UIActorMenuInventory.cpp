@@ -529,6 +529,30 @@ bool CUIActorMenu::TryActiveSlot(CUICellItem* itm)
 	return false;
 }
 
+bool CUIActorMenu::ToSlotScript(CScriptGameObject* GO, bool force_place, u16 slot_id)
+{
+	CInventoryItem* iitem = smart_cast<CInventoryItem*>(GO->object().dcast_CObject());
+
+	if (!iitem || !m_pActorInvOwner->inventory().InRuck(iitem))
+		return false;
+
+	CUIDragDropListEx* invlist = GetListByType(iActorBag);
+	CUICellContainer* c = invlist->GetContainer();
+	CUIWindow::WINDOW_LIST child_list = c->GetChildWndList();
+
+	for (WINDOW_LIST_it it = child_list.begin(); child_list.end() != it; ++it)
+	{
+		CUICellItem* i = (CUICellItem*)(*it);
+		PIItem	pitm = (PIItem)i->m_pData;
+		if (pitm == iitem)
+		{
+			ToSlot(i, force_place, slot_id);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 {
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
@@ -658,6 +682,30 @@ bool CUIActorMenu::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 			ColorizeItem( itm, !CanMoveToPartner( iitem ) );
 		}
 		return true;
+	}
+	return false;
+}
+
+bool CUIActorMenu::ToBeltScript(CScriptGameObject* GO, bool b_use_cursor_pos)
+{
+	CInventoryItem* iitem = smart_cast<CInventoryItem*>(GO->object().dcast_CObject());
+
+	if (!iitem || !m_pActorInvOwner->inventory().InRuck(iitem))
+		return false;
+
+	CUIDragDropListEx* invlist = GetListByType(iActorBag);
+	CUICellContainer* c = invlist->GetContainer();
+	CUIWindow::WINDOW_LIST child_list = c->GetChildWndList();
+
+	for (WINDOW_LIST_it it = child_list.begin(); child_list.end() != it; ++it)
+	{
+		CUICellItem* i = (CUICellItem*)(*it);
+		PIItem	pitm = (PIItem)i->m_pData;
+		if (pitm == iitem)
+		{
+			ToBelt(i, b_use_cursor_pos);
+			return true;
+		}
 	}
 	return false;
 }

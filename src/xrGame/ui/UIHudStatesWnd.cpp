@@ -119,6 +119,14 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_ui_weapon_cur_ammo		= UIHelper::CreateTextWnd( xml, "static_cur_ammo", this );
 	m_ui_weapon_fmj_ammo		= UIHelper::CreateTextWnd( xml, "static_fmj_ammo", this );
 	m_ui_weapon_ap_ammo			= UIHelper::CreateTextWnd( xml, "static_ap_ammo", this );
+
+	//Alundaio: Option to display a third ammo type
+	m_ui_weapon_third_ammo = UIHelper::CreateTextWnd(xml, "static_third_ammo", this);
+	//-Alundaio
+
+	m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
+	m_ui_weapon_ammo_color_inactive = CUIXmlInit::GetColor(xml, "inactive_ammo_color", 0, color_rgba(238, 155, 23, 150));
+
 	m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
 	m_ui_grenade				= UIHelper::CreateTextWnd( xml, "static_grenade", this );
 	
@@ -256,25 +264,30 @@ void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
 		m_ui_weapon_cur_ammo->Show	( true );
 		m_ui_weapon_fmj_ammo->Show	( true );
 		m_ui_weapon_ap_ammo->Show	( true );
+		m_ui_weapon_third_ammo->Show( true ); //Alundaio: third_ammo
 		m_fire_mode->Show			( true );
 		m_ui_grenade->Show			( true );
 
 		m_ui_weapon_cur_ammo->SetText	( m_item_info.cur_ammo.c_str() );
 		m_ui_weapon_fmj_ammo->SetText	( m_item_info.fmj_ammo.c_str() );
 		m_ui_weapon_ap_ammo->SetText	( m_item_info.ap_ammo.c_str() );
-		
+
+		//Alundaio: Third ammo type and also set text color for each ammo type
+		if (m_ui_weapon_third_ammo)
+			m_ui_weapon_third_ammo->SetText(m_item_info.third_ammo.c_str());
+
 		m_ui_grenade->SetText	( m_item_info.grenade.c_str() );
 
 		CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
 		if(wpn && wpn->m_bGrenadeMode)
 		{
-			m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238,155,23,150));
-			m_ui_grenade->SetTextColor(color_rgba(238,155,23,255));
+			m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
+			m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_active);
 		}
 		else
 		{
-			m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238,155,23,255));
-			m_ui_grenade->SetTextColor(color_rgba(238,155,23,150));
+			m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
+			m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
 		}
 	}
 	else
@@ -284,6 +297,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
 		m_ui_weapon_cur_ammo->Show	( false );
 		m_ui_weapon_fmj_ammo->Show	( false );
 		m_ui_weapon_ap_ammo->Show	( false );
+		m_ui_weapon_third_ammo->Show( false ); //Alundaio: Third Ammo
 		m_fire_mode->Show			( false );
 		m_ui_grenade->Show			( false );
 	}

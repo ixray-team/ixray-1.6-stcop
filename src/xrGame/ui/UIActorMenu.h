@@ -5,6 +5,8 @@
 #include "../../xrServerEntities/inventory_space.h"
 #include "../../xrUI/Widgets/UIHint.h"
 
+#include "../script_game_object.h" //Alundaio
+
 class CUICharacterInfo;
 class CUIDragDropListEx;
 class CUIDragDropReferenceList;
@@ -265,8 +267,10 @@ protected:
 	void						UpdateButtonsLayout			();
 
 	// inventory
+	bool						ToSlotScript				(CScriptGameObject* GO, bool force_place, u16 slot_id);
 	bool						ToSlot						(CUICellItem* itm, bool force_place, u16 slot_id);
 	bool						ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
+	bool						ToBeltScript				(CScriptGameObject* GO, bool b_use_cursor_pos);
 	bool						ToBelt						(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						TryUseItem					(CUICellItem* cell_itm);
 	bool						ToQuickSlot					(CUICellItem* itm);
@@ -343,5 +347,9 @@ public:
 	void						UpdateConditionProgressBars	();
 
 	IC	UIHint*					get_hint_wnd				() { return m_hint_wnd; }
+
+	void HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id = 0);
+	CScriptGameObject* GetCurrentItemAsGameObject();
+	void HighlightForEachInSlot(const luabind::functor<bool>& functor, u8 type, u16 slot_id);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIActorMenu
