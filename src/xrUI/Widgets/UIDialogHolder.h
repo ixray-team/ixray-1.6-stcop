@@ -33,7 +33,6 @@ class UI_API CDialogHolder :
 
 	void					StartMenu						(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					StopMenu						(CUIDialogWnd* pDialog);
-	void					SetMainInputReceiver			(CUIDialogWnd* ir, bool _find_remove);
 protected:
 	void					DoRenderDialogs					();
 	void					CleanInternals					();
@@ -44,6 +43,7 @@ public:
 	//dialogs
 	void					OnExternalHideIndicators		();
 	CUIDialogWnd*			TopInputReceiver				();
+	void					SetMainInputReceiver			(CUIDialogWnd* ir, bool _find_remove);
 	void					AddDialogToRender				(CUIWindow* pDialog);
 	void					RemoveDialogToRender			(CUIWindow* pDialog);
 	virtual void	_BCL	OnFrame							();
