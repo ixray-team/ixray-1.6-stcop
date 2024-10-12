@@ -1049,10 +1049,12 @@ bool CInventory::Eat(PIItem pIItem)
 	if(IsGameTypeSingle() && Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
-	if(pItemToEat->Empty())
+	if (pItemToEat->Empty())
 	{
+		if (!pItemToEat->CanDelete())
+			return false;
+
 		pIItem->SetDropManual(TRUE);
-		return		false;
 	}
 	return			true;
 }

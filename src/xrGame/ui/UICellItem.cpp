@@ -8,6 +8,7 @@
 #include "object_broker.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../eatable_item.h"
 
 #include "CustomOutfit.h"
 
@@ -251,7 +252,6 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if (GetAccelerator() == dik)
 		{
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, nullptr);
 			return		true;
 		}
 	}
@@ -296,8 +296,35 @@ void CUICellItem::UpdateConditionProgressBar()
 	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
 	{
 		PIItem itm = (PIItem)m_pData;
-		if (itm && itm->IsUsingCondition())
+		if (itm->IsUsingCondition())
 		{
+			float cond = itm->GetCondition();
+
+			CEatableItem* eitm = smart_cast<CEatableItem*>(itm);
+			if (eitm)
+			{
+				u16 max_uses = eitm->GetMaxUses();
+				if (max_uses > 1)
+				{
+					u16 remaining_uses = eitm->GetRemainingUses();
+					if (remaining_uses < 1)
+					{
+						cond = 0.0f;
+					}
+					else if (max_uses > 8)
+					{
+						cond = (float)remaining_uses / (float)max_uses;
+					}
+					else
+					{
+						cond = ((float)remaining_uses * 0.125f) - 0.0625f;
+						m_pConditionState->ShowBackground(false);
+					}
+
+					m_pConditionState->m_bNoLerp = false;
+				}
+			}
+
 			Ivector2 itm_grid_size = GetGridSize();
 			if(m_pParentList->GetVerticalPlacement())
 				std::swap(itm_grid_size.x, itm_grid_size.y);
@@ -308,7 +335,7 @@ void CUICellItem::UpdateConditionProgressBar()
 			float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
 
 			m_pConditionState->SetWndPos(Fvector2().set(x,y));
-			m_pConditionState->SetProgressPos(iCeil(itm->GetCondition()*13.0f)/13.0f);
+			m_pConditionState->SetProgressPos( iCeil( cond * 13.0f ) / 13.0f );
 			m_pConditionState->Show(true);
 			return;
 		}
