@@ -99,41 +99,41 @@ void CContentView::DrawHeader()
 	ImGui::Text("/");
 
 	auto DrawByPathLambda = [&](const xr_string& ViewDir)
+	{
+		auto Pathes = ViewDir.Split('\\');
+
+		for (const xr_string& Path : Pathes)
 		{
-			auto Pathes = ViewDir.Split('\\');
-
-			for (const xr_string& Path : Pathes)
+			ImGui::SameLine();
+			if (ImGui::Button(Platform::ANSI_TO_UTF8(Path).data()))
 			{
-				ImGui::SameLine();
-				if (ImGui::Button(Path.data()))
+				xr_string NewPath = "";
+				for (const xr_string& LocPath : Pathes)
 				{
-					xr_string NewPath = "";
-					for (const xr_string& LocPath : Pathes)
-					{
-						NewPath += LocPath;
+					NewPath += LocPath;
 
-						if (LocPath == Path)
-							break;
+					if (LocPath == Path)
+						break;
 
-						NewPath += "\\";
-					}
-
-					if (IsSpawnElement)
-					{
-						ISEPath = NewPath;
-						RescanISEDirectory(ISEPath);
-					}
-					else
-					{
-						CurrentDir = NewPath;
-						RescanDirectory();
-					}
+					NewPath += "\\";
 				}
 
-				ImGui::SameLine();
-				ImGui::Text("/");
+				if (IsSpawnElement)
+				{
+					ISEPath = NewPath;
+					RescanISEDirectory(ISEPath);
+				}
+				else
+				{
+					CurrentDir = NewPath;
+					RescanDirectory();
+				}
 			}
-		};
+
+			ImGui::SameLine();
+			ImGui::Text("/");
+		}
+	};
 
 	if (IsSpawnElement)
 	{
@@ -490,9 +490,9 @@ void CContentView::RescanDirectory()
 			Files.push_back({ file, true });
 		}
 	}
-	for (const xr_path& file : xr_dir_iter { CurrentDir.data() })
+	for (const xr_dir_entry& file : xr_dir_iter { CurrentDir.data() })
 	{
-		if (!std::filesystem::is_directory(file) && CheckFile(file))
+		if (!file.is_directory() && CheckFile(file))
 		{
 			Files.push_back({ file, false });
 		}
@@ -610,7 +610,7 @@ bool CContentView::DrawItemByList(const FileOptData& InitFileName, size_t& HorBt
 	StartCursorPos.y -= (TextHeight + 2) ;
 	ImGui::SetCursorPos(StartCursorPos);
 
-	ImGui::Text(FileName.c_str());
+	ImGui::Text(Platform::ANSI_TO_UTF8(FileName).c_str());
 	
 	StartCursorPos.y += TextHeight + 2.f;
 	ImGui::SetCursorPos(StartCursorPos);
@@ -760,12 +760,12 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 	if (!DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
 	{
 		xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
-		float TextPixels = ImGui::CalcTextSize(LabelText.data()).x;
+		float TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
 
 		while (TextPixels > BtnSize.x)
 		{
 			LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
-			TextPixels = ImGui::CalcTextSize(LabelText.data()).x;
+			TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
 		}
 
 		ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
