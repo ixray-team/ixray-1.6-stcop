@@ -16,6 +16,7 @@ UIEditLibrary::UIEditLibrary()
 	m_ObjectList = new UIItemListForm();
 	InitObjects();
 	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
+	m_ObjectList->SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
 	m_ObjectList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 	m_Props = new UIPropertiesForm();
 	m_PropsObjects = new UIPropertiesForm();
@@ -53,9 +54,8 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 
 		if (m_Preview)
 		{
-			ListItemsVec vec;
-			vec.push_back(item);
-			SelectionToReference(&vec);
+			FocusedItems = m_ObjectList->m_SelectedItems;
+			SelectionToReference(&FocusedItems);
 		}
 
 		if (bShowProps)
@@ -67,6 +67,23 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 	}
 
 	UI->RedrawScene();
+}
+
+void UIEditLibrary::OnItemUnfocused(ListItem* item)
+{
+	if (!m_Preview)
+		return;
+
+	if (item != nullptr)
+	{
+		auto Iter = std::find(FocusedItems.begin(), FocusedItems.end(), item);
+		
+		if (Iter != FocusedItems.end())
+		{
+			FocusedItems.erase(Iter);
+			SelectionToReference(&FocusedItems);
+		}
+	}
 }
 
 UIEditLibrary::~UIEditLibrary() 

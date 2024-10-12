@@ -418,7 +418,9 @@ void TUI::Redraw()
 {
 	PrepareRedraw();
 
+#ifndef DEBUG
 	try
+#endif
 	{
 		Viewport& View = CurrentView();
 
@@ -532,13 +534,17 @@ void TUI::Redraw()
 					DU_impl.DrawPivot(m_Pivot);
 				}
 
-				try {
+#ifndef DEBUG
+				try
+#endif
+				{
 					Tools->Render();
 				}
+#ifndef DEBUG
 				catch (...) {
 					ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
 				}
-
+#endif
 				// draw selection rect
 				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
 
@@ -573,7 +579,9 @@ void TUI::Redraw()
 				RDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			}
 
+#ifndef DEBUG
 			try
+#endif
 			{
 				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 				g_bRendering = FALSE;
@@ -589,16 +597,21 @@ void TUI::Redraw()
 				UI->EndFrame();
 				EDevice->End();
 			}
+#ifndef DEBUG
 			catch (...)
 			{
 				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
 			}
+#endif
 		}
-	}catch(...)
+	}
+#ifndef DEBUG
+	catch(...)
 	{
 		ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
 		EDevice->End();
 	}
+#endif
 
 	for (auto Callback : CommandList[TUI::ECommandListID::CurrentFrame])
 		Callback();

@@ -224,8 +224,8 @@ target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM
 target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")
 
 ## RedImage
-target_link_libraries(xrECore PRIVATE ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
-target_include_directories(xrECore PRIVATE "${REDIMAGE_PATH}/build/native/include/")
+target_link_libraries(xrECore PUBLIC ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
+target_include_directories(xrECore PUBLIC "${REDIMAGE_PATH}/build/native/include/")
 
 ### Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME}

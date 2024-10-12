@@ -467,6 +467,9 @@ void UIItemListForm::DrawItem(Node* Node)
 					});
 				VERIFY(p != m_SelectedItems.end());
 				m_SelectedItems.erase(p);
+
+				if (!OnItemUnfocusedEvent.empty())
+					OnItemUnfocusedEvent(Node->Object);
 			}
 			else
 			{

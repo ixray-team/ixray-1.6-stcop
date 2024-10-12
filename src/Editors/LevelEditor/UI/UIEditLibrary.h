@@ -15,9 +15,11 @@ public:
     ImTextureID m_RealTexture;
 
     void OnItemFocused(ListItem* item);
+    void OnItemUnfocused(ListItem* item);
 
 private:
     static UIEditLibrary* Form;
+    ListItemsVec FocusedItems;
 
     virtual void Draw();
     void ImportClick();

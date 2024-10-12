@@ -6,6 +6,7 @@ class XREPROPS_API UIItemListForm :
 {
 	TOnILItemsFocused OnItemsFocusedEvent;
 	TOnILItemFocused  OnItemFocusedEvent;
+	TOnILItemFocused  OnItemUnfocusedEvent;
 	TOnItemRemove     OnItemRemoveEvent;
 	TOnItemRename     OnItemRenameEvent;
 	TOnItemCreate     OnItemCreateEvent;
@@ -51,6 +52,10 @@ public:
 	IC void SetOnItemFocusedEvent(TOnILItemFocused e)
 	{
 		OnItemFocusedEvent = e;
+	}
+	IC void SetOnItemUnfocusedEvent(TOnILItemFocused e)
+	{
+		OnItemUnfocusedEvent = e;
 	}
 	IC void SetOnItemRemoveEvent(TOnItemRemove e)
 	{

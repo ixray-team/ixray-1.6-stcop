@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ContentView.h"
 
+#include <RedImage.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <StbImage/stb_image.h>
@@ -858,7 +860,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 	{
 		return false;
 	}
-	
+
 	bool ShowOpen = Path.has_extension() && Path.extension().string() == ".level";
 
 	if (ShowOpen)
@@ -869,7 +871,7 @@ bool CContentView::DrawContext(const xr_path& Path)
 			ExecCommand(COMMAND_CLEAR);
 			FS.TryLoad(Path.xstring());
 			IReader* R = FS.r_open(Path.xstring().c_str());
-			if (!R) 
+			if (!R)
 			{
 				ImGui::EndPopup();
 				return false;
@@ -912,9 +914,49 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 		// For some reason, FS does not want to register that the file has been deleted. \
 				Temporarily removed the "const" and made the Rescan Directory();
-		
+
 		//FS.rescan_path(Path.parent_path().string().c_str() , true);
 		RescanDirectory();
+	}
+
+	bool ShowConvert = Path.has_extension() && (Path.extension().string() == ".dds" || Path.extension().string() == ".tga" || Path.extension().string() == ".png");
+
+	if (ShowConvert)
+	{
+		ImGui::Separator();
+
+		if (ImGui::BeginMenu("Convert"))
+		{
+			if (Path.extension().string() != ".tga" && ImGui::MenuItem("TGA"))
+			{
+				RedImageTool::RedImage Surface;
+				if (Surface.LoadFromFile(Path.xstring().data()))
+				{
+					xr_string OutFile = Path.xstring();
+					OutFile.erase(OutFile.length() - 3);
+					OutFile.append("tga");
+
+					Surface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+					Surface.SaveToTga(OutFile.data());
+				}
+			}
+
+			if (Path.extension().string() != ".png" && ImGui::MenuItem("PNG"))
+			{
+				RedImageTool::RedImage Surface;
+				if (Surface.LoadFromFile(Path.xstring().data()))
+				{
+					xr_string OutFile = Path.xstring();
+					OutFile.erase(OutFile.length() - 3);
+					OutFile.append("png");
+
+					Surface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+					Surface.SaveToPng(OutFile.data());
+				}
+			}
+
+			ImGui::EndMenu();
+		}
 	}
 
 	ImGui::EndPopup();
@@ -1023,50 +1065,61 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				}
 			}
 		}
-		else if(IconPath.ends_with(".tga"))
-		{
-			string_path fn = {};
-			FS.update_path(fn, _textures_, "");
-			Icons[IconPath] = Icons["tga"];
-
-			if(IconPath.find(fn) != xr_string::npos) {
-				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
-
-				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
-				CTexture* TempTexture = new CTexture();
-				m_Thm->Update(TempTexture->pSurface);
-
-				if(TempTexture->pSurface != nullptr) {
-					Icons[IconPath] = {TempTexture, false};
-				}
-				else {
-					xr_delete(TempTexture);
-				}
-			}
-		}
+		//else if(IconPath.ends_with(".tga"))
+		//{
+		//	string_path fn = {};
+		//	FS.update_path(fn, _textures_, "");
+		//	Icons[IconPath] = Icons["tga"];
+		//
+		//	if(IconPath.find(fn) != xr_string::npos) {
+		//		xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
+		//
+		//		EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
+		//		CTexture* TempTexture = new CTexture();
+		//		m_Thm->Update(TempTexture->pSurface);
+		//
+		//		if(TempTexture->pSurface != nullptr) {
+		//			Icons[IconPath] = {TempTexture, false};
+		//		}
+		//		else {
+		//			xr_delete(TempTexture);
+		//		}
+		//	}
+		//}
 		else if (IconPath.ends_with(".png") || IconPath.ends_with(".tga"))
 		{
-			U8Vec Pixels;
 			int w, h, a;
 			stbi_uc* raw_data = stbi_load((LPSTR)IconPath.c_str(), &w, &h, &a, STBI_rgb_alpha);
-			Pixels.resize(BtnSize.x * BtnSize.x * a);
 			if (raw_data != nullptr)
 			{
+				U8Vec Pixels;
+				Pixels.resize(BtnSize.x * BtnSize.x * a);
 				stbir_resize_uint8(raw_data, w, h, 0, Pixels.data(), BtnSize.x, BtnSize.x, 0, a);
 				CTexture* TempTexture = new CTexture();
 				ID3DTexture2D* pTexture = nullptr;
 				Icons[IconPath] = { TempTexture, false };
 				R_CHK(REDevice->CreateTexture(BtnSize.x, BtnSize.x, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
 				{
+					for (size_t Iter = 0; Iter < Pixels.size();)
+					{
+						std::swap(Pixels[Iter], Pixels[Iter + 2]);
+
+						Iter += 4;
+					}
+
 					D3DLOCKED_RECT rect;
 					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-					memcpy(rect.pBits, Pixels.data(), BtnSize.x * BtnSize.x * a);
+					memcpy(rect.pBits, Pixels.data(), Pixels.size());
 					R_CHK(pTexture->UnlockRect(0));
 
 					TempTexture->pSurface = pTexture;
 				}
 
 				stbi_image_free(raw_data);
+			}
+			else if (IconPath.ends_with(".tga"))
+			{
+				Icons[IconPath] = Icons["tga"];
 			}
 		}
 		else if(IconPath.ends_with(".dds")) 
