@@ -249,6 +249,7 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 	{
 		Actor()->use_HolderEx(nullptr, true);
 		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
+		return;
 	}
 
 	if (whoID != ID()) {
@@ -266,13 +267,13 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 		}
 #endif
 	}
-	/*
+	
 	else 
 	{
 		if (m_killer_id != ALife::_OBJECT_ID(-1))
 			return;
 	}
-	*/
+	
 	m_killer_id			= whoID;
 
 	set_death_time		();
