@@ -123,7 +123,7 @@ void UIRenderForm::Draw()
 		ImGui::SetCursorScreenPos(canvas_pos);
 		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
 
-		if (ViewportID != UI->ViewID)
+		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
 		{
 			ImGui::End();
 			return;
