@@ -279,11 +279,11 @@ void CContentView::FindFile()
 
 void CContentView::ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr)
 {
-	auto Pathes = ISEPath.Split('\\');
+	//auto Pathes = ISEPath.Split('\\');
 
 	for (auto& [Name, DirOpt] : TempPath)
 	{
-		if (DirOpt.IsDir && std::find(Pathes.begin(), Pathes.end(), Name) != Pathes.end())
+		if (DirOpt.IsDir /* && std::find(Pathes.begin(), Pathes.end(), Name) != Pathes.end() */)
 		{
 			auto RecFiles = ScanConfigs(Name);
 			ScanConfigsRecursive(RecFiles, ParseStr);
@@ -656,6 +656,46 @@ bool CContentView::DrawItemByList(const FileOptData& InitFileName, size_t& HorBt
 	{
 		ImGui::TextColored(TooltipTextColor, "Object");
 	}
+	else if (FileName.ends_with(".wav"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Raw Sound");
+	}
+	else if (FileName.ends_with(".ogg"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Sound Asset");
+	}
+	else if (FileName.ends_with(".ise"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Spawn Component");
+	}
+	else if (FileName.ends_with(".skl"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Raw Single Animation Asset");
+	}
+	else if (FileName.ends_with(".skls"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Raw Animations Asset");
+	}
+	else if (FileName.ends_with(".omf"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Animations Asset");
+	}
+	else if (FileName.ends_with(".ltx"))
+	{
+		xr_string PathName = FilePath;
+		if (PathName.Contains("scripts\\"))
+		{
+			ImGui::TextColored(TooltipTextColor, "Logic Preference");
+		}
+		else
+		{
+			ImGui::TextColored(TooltipTextColor, "Config");
+		}
+	}
+	else if (FileName.ends_with(".script"))
+	{
+		ImGui::TextColored(TooltipTextColor, "Lua Script");
+	}
 
 	ImGui::SetCursorPos(NextCursorPos);
 	ImGui::Separator();
@@ -685,7 +725,7 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 
 	if (WeCanDrag && ImGui::BeginDragDropSource())
 	{
-		if (IsSpawnElement)
+		if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
 		{
 			if (InitFileName.ISESect.size() > 0)
 			{
@@ -744,7 +784,22 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 	if (Contains())
 	{
 		ImVec4* colors = ImGui::GetStyle().Colors;
-		IconPtr = InitFileName.IsDir ? &GetTexture("Folder") : &GetTexture(FilePath);
+
+		if (InitFileName.IsDir)
+		{
+			IconPtr = &GetTexture("Folder");
+		}
+		else if (InitFileName.ISESect.size() > 0)
+		{
+			xr_string HackName = InitFileName.ISESect.c_str();
+			HackName += ".ise";
+
+			IconPtr = &GetTexture(HackName.c_str());
+		}
+		else
+		{
+			IconPtr = &GetTexture(FilePath);
+		}
 		ImVec4 IconColor = IconPtr->UseButtonColor ? colors[ImGuiCol_CheckMark] : ImVec4(1, 1, 1, 1);
 
 		if (!IconPtr->Icon)
