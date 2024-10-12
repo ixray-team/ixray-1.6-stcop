@@ -1,6 +1,6 @@
 #pragma once
 class UILeftBarForm :
-	public XrUI
+	public IEditorWnd
 {
 public:
 	enum RenderMode

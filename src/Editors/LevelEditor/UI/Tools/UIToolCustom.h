@@ -1,5 +1,5 @@
 #pragma once
-class UIToolCustom:public XrUI
+class UIToolCustom:public IEditorWnd
 {
 public :
 	virtual void OnDrawUI() {}

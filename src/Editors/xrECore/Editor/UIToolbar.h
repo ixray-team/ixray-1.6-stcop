@@ -2,7 +2,7 @@
 #include "UI_ToolsCustom.h"
 
 class ECORE_API CUIToolbar :
-	public XrUI
+	public IEditorWnd
 {
 	ref_texture Select;
 	ref_texture Move;

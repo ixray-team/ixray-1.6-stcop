@@ -15,8 +15,8 @@ class XREUI_API XrUIManager
 {
 public:
 	XrUIManager();
-	void PushBegin(XrUI*ui,bool need_deleted =true);
-	void Push(XrUI*ui,bool need_deleted =true);
+	void PushBegin(IEditorWnd*ui,bool need_deleted =true);
+	void Push(IEditorWnd*ui,bool need_deleted =true);
 	void Draw();
 		
 	virtual ~XrUIManager();
@@ -47,7 +47,7 @@ public:
 private:
 	float m_MenuBarHeight;
 	TShiftState m_ShiftState;
-	xr_vector<XrUI*> m_UIArray;
+	xr_vector<IEditorWnd*> m_UIArray;
 	string_path m_name_ini;
 
 public: 
@@ -57,7 +57,7 @@ public:
 		return std::any_of
 		(
 			m_UIArray.begin(), m_UIArray.end(),
-			[](XrUI* Form)
+			[](IEditorWnd* Form)
 			{
 				return smart_cast<T*>(Form);
 			}

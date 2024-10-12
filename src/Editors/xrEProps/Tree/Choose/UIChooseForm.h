@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UIChooseForm :  public XrUI
+class XREPROPS_API UIChooseForm :  public IEditorWnd
 {
     friend class UIChooseFormItem;
  /*   virtual void DrawItem(Node* Node);

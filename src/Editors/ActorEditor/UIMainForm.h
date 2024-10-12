@@ -1,7 +1,7 @@
 #pragma once
 #include "../xrECore/Editor/UIToolbar.h"
 
-class UIMainForm :public XrUI
+class UIMainForm :public IEditorWnd
 {
 public:
 	UIMainForm();

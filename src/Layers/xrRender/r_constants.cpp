@@ -44,7 +44,7 @@ IC bool	p_search	(ref_constant C, LPCSTR S)
 {
 	return xr_strcmp(*C->name,S)<0;
 }
-IC bool	p_sort		(ref_constant C1, ref_constant C2)
+IC bool	p_sort_constants(ref_constant C1, ref_constant C2)
 {
 	return xr_strcmp(C1->name,C2->name)<0;
 }
@@ -196,7 +196,7 @@ BOOL	R_constant_table::parse	(void* _desc, u32 destination)
 			L.cls				=	r_type;
 		}
 	}
-	std::sort	(table.begin(),table.end(),p_sort);
+	std::sort	(table.begin(),table.end(), p_sort_constants);
 	return		TRUE;
 }
 #endif
@@ -251,7 +251,7 @@ void R_constant_table::merge(R_constant_table* T)
 		std::move(table_tmp.begin(), table_tmp.end(), std::back_inserter(table));
 
 		// Sort
-		std::sort(table.begin(), table.end(), p_sort);
+		std::sort(table.begin(), table.end(), p_sort_constants);
 	}
 
 #ifdef USE_DX11

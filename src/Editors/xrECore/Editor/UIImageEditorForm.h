@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-class UIImageEditorForm :public XrUI
+class UIImageEditorForm :public IEditorWnd
 {
 public:
 	UIImageEditorForm();

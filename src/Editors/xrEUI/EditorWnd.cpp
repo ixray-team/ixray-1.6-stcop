@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "xrUITheme.h"
 
-XrUI::~XrUI()
+IEditorWnd::~IEditorWnd()
 {
 }
 
-void XrUI::ResetBegin()
-{
-
-}
-
-void XrUI::ResetEnd()
+void IEditorWnd::ResetBegin()
 {
 
 }
 
-void XrUI::BeginDraw() const
+void IEditorWnd::ResetEnd()
+{
+
+}
+
+void IEditorWnd::BeginDraw() const
 {
 	if (!IsFocused && !IsDocked)
 	{
@@ -23,7 +23,7 @@ void XrUI::BeginDraw() const
 	}
 }
 
-void XrUI::EndDraw() const
+void IEditorWnd::EndDraw() const
 {
 	ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentDefault);
 }

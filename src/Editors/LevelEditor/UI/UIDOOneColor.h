@@ -1,7 +1,7 @@
 #pragma once
 class UIDOShuffle;
 class UIDOOneColor :
-	public XrUI
+	public IEditorWnd
 {
 public:
 	UIDOOneColor();

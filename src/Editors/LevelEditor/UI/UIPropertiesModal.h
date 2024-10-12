@@ -1,6 +1,6 @@
 #pragma once
 class UIPropertiesModal :
-	public XrUI
+	public IEditorWnd
 {
 public:
 	UIPropertiesModal();

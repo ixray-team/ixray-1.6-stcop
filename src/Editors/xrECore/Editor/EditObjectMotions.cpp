@@ -6,23 +6,14 @@
 
 #include "EditObject.h"
 
-#if 1
-	#include "ui_main.h"
-#endif
+#include "ui_main.h"
 
 #include "../xrEngine/motion.h"
 #include "../xrEngine/bone.h"
 #include "EditMesh.h"
 
-
-#if 1
-	#include "../Layers/xrRender/SkeletonAnimated.h"
-	#include "../Layers/xrRender/AnimationKeyCalculate.h"
-#endif
-
-#if 0
-	bool check_scale( Fmatrix F ){ return true;}
-#endif
+#include "../Layers/xrRender/SkeletonAnimated.h"
+#include "../Layers/xrRender/AnimationKeyCalculate.h"
 
 //----------------------------------------------------
 class fBoneNameEQ {
@@ -587,16 +578,12 @@ bool CEditableObject::CheckBoneCompliance(CSMotion* M)
 
 void CEditableObject::OptimizeSMotions()
 {
-#if 1
-	SPBItem* pb				= UI->ProgressStart(m_SMotions.size(),"Motions optimizing...");
-#endif
-	for (SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end(); s_it++){
-        (*s_it)->Optimize	();
-#if 1
-		pb->Inc				();
-#endif
-	}
-#if 1
-    UI->ProgressEnd				(pb);
-#endif
+    SPBItem* pb = UI->ProgressStart(m_SMotions.size(), "Motions optimizing...");
+    for (SMotionIt s_it = m_SMotions.begin(); s_it != m_SMotions.end(); s_it++)
+    {
+        (*s_it)->Optimize();
+        pb->Inc();
+    }
+
+    UI->ProgressEnd(pb);
 }

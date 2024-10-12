@@ -120,7 +120,7 @@ void XrUIManager::EndFrame()
 	{
 		if (m_UIArray[i - 1]->IsClosed())
 		{
-			if (!m_UIArray[i - 1]->Flags.test(XrUI::F_NoDelete))
+			if (!m_UIArray[i - 1]->Flags.test(IEditorWnd::F_NoDelete))
 			{
 				xr_delete(m_UIArray[i - 1]);
 			}
@@ -241,16 +241,16 @@ void XrUIManager::ApplyShortCutInput(DWORD Key)
 	ApplyShortCut(Key, ShiftState);
 }
 
-void XrUIManager::Push(XrUI* ui, bool need_deleted)
+void XrUIManager::Push(IEditorWnd* ui, bool need_deleted)
 {
 	m_UIArray.push_back(ui);
-	ui->Flags.set(!need_deleted, XrUI::F_NoDelete);
+	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
 }
 
-void XrUIManager::PushBegin(XrUI* ui, bool need_deleted)
+void XrUIManager::PushBegin(IEditorWnd* ui, bool need_deleted)
 {
 	m_UIArray.insert(m_UIArray.begin(), ui);
-	ui->Flags.set(!need_deleted, XrUI::F_NoDelete);
+	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
 }
 
 void XrUIManager::Draw()
@@ -298,7 +298,7 @@ void XrUIManager::Draw()
 	
 	OnDrawUI();
 
-	for (XrUI* ui : m_UIArray)
+	for (IEditorWnd* ui : m_UIArray)
 	{
 		ui->BeginDraw();
 		ui->Draw();

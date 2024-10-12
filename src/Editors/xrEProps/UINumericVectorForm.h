@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UINumericVectorForm :public XrUI
+class XREPROPS_API UINumericVectorForm :public IEditorWnd
 {
 public:
 	UINumericVectorForm(const char* title, Fvector* data, Fvector* Reset=0, int decimal = 0, Fvector* Min = 0, Fvector* Max = 0);

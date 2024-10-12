@@ -1,6 +1,6 @@
 #pragma once
 class CLAItem;
-class UIEditLightAnim :public XrUI
+class UIEditLightAnim :public IEditorWnd
 {
 public:
 	UIEditLightAnim();

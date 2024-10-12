@@ -11,7 +11,7 @@ using ImTextureID = IDirect3DBaseTexture9*;
 
 #include "..\..\xrCore\xrCore.h"
 
-#include "XrUI.h"
+#include "EditorWnd.h"
 #include "XrUIManager.h"
 
 #define IMGUI_API XREUI_API

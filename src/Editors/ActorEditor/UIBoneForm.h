@@ -1,7 +1,7 @@
 #pragma once
 
 class UIBoneForm : 
-    public XrUI
+    public IEditorWnd
 {
 public:
     UIBoneForm();

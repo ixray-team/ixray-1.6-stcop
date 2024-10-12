@@ -1,6 +1,6 @@
 #pragma once
 class UIRightBarForm :
-	public XrUI
+	public IEditorWnd
 {
 public:
 	UIRightBarForm();

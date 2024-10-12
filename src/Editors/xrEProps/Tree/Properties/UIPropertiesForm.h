@@ -1,5 +1,5 @@
 #pragma once
-class XREPROPS_API UIPropertiesForm :public XrUI
+class XREPROPS_API UIPropertiesForm :public IEditorWnd
 {
 	friend class UIPropertiesItem;
 	std::atomic_bool bAsyncUpdated = true;

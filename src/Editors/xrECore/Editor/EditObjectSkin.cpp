@@ -28,10 +28,10 @@ void CEditableObject::ResetBones()
     	(*b_it)->ResetData();
 }
 
-class fBoneNameEQ {
+class fBoneNameEQPred {
 	shared_str	name;
 public:
-	fBoneNameEQ(shared_str N) : name(N) {};
+    fBoneNameEQPred(shared_str N) : name(N) {};
 	IC bool operator() (CBone* B) { return (xr_strcmp(B->Name(),name)==0); }
 };
 
@@ -52,7 +52,7 @@ bool CEditableObject::LoadBoneData(IReader& F)
     if (!load_bones.empty()){
 		for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); b_it++){
         	CBone* B	= *b_it;
-            BoneIt n_it = std::find_if(load_bones.begin(),load_bones.end(),fBoneNameEQ(B->Name()));
+            BoneIt n_it = std::find_if(load_bones.begin(),load_bones.end(),fBoneNameEQPred(B->Name()));
             if (n_it!=load_bones.end())
             {
                 B->CopyData	(*n_it);
@@ -114,15 +114,6 @@ void CEditableObject::RenderSkeletonSingle(const Fmatrix& parent)
     RenderBones(parent);
 }
 
-IC float _x2real(float x)
-{
-    return (x + 1) * Device.TargetWidth * 0.5f;
-}
-IC float _y2real(float y)
-{
-    return (y + 1) * Device.TargetHeight * 0.5f;
-}
-
 void CEditableObject::RenderBones(const Fmatrix& parent)
 {
 	if (IsSkeleton()){
@@ -174,7 +165,7 @@ void CEditableObject::RenderBones(const Fmatrix& parent)
                 if (w >= 0) 
                 {
                     EDevice->mFullTransform.transform(p, p1);
-                    p.x = (float)iFloor(_x2real(p.x)); p.y = (float)iFloor(_y2real(-p.y));
+                    p.x = (float)iFloor(EDevice->_x2real(p.x)); p.y = (float)iFloor(EDevice->_y2real(-p.y));
                 }
 
             	DU_impl.OutText(p1,(*b_it)->Name().c_str(),c,s);

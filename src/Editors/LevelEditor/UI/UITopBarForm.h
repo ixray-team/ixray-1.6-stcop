@@ -1,5 +1,5 @@
 ﻿#pragma once
-class UITopBarForm :public XrUI
+class UITopBarForm :public IEditorWnd
 {
 public:
 	UITopBarForm();

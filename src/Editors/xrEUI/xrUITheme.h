@@ -1,7 +1,7 @@
 #pragma once
 
 class XREUI_API CUIThemeManager :
-	public XrUI
+	public IEditorWnd
 {
 
 	CUIThemeManager();

@@ -1,15 +1,15 @@
 #pragma once
 #include "stdafx.h"
-class XREUI_API XrUI
+class XREUI_API IEditorWnd
 {
 public:
-	XrUI() :bOpen(true) {}
+	IEditorWnd() :bOpen(true) {}
 	enum FUI
 	{
 		F_NoDelete=1,
 	};
 	Flags32 Flags;
-	virtual ~XrUI();
+	virtual ~IEditorWnd();
 	/*сдюкхрэ еякх ме опхцндхряъ*/
 	virtual void ResetBegin();
 	virtual void ResetEnd();

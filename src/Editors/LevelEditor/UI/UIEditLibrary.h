@@ -1,7 +1,7 @@
 #pragma once
 
 class UIEditLibrary :
-    public XrUI
+    public IEditorWnd
 {
 public:
     UIEditLibrary();

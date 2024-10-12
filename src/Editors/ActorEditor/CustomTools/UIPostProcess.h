@@ -2,7 +2,7 @@
 #include "../../xrGame/PostprocessAnimator.h"
 
 class CMainPPE:
-    public XrUI
+    public IEditorWnd
 {
 public:
     struct PointItem

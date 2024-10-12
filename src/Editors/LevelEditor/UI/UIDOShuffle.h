@@ -3,7 +3,7 @@ class EDetailManager;
 class EImageThumbnail;
 class UIDOOneColor;
 class UIDOShuffle :
-	public XrUI
+	public IEditorWnd
 {
 	friend UIDOOneColor;
 public:

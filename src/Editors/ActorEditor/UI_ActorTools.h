@@ -78,7 +78,7 @@ private:
 };
 
 class PreviewModel:
-	public XrUI
+	public IEditorWnd
 {
 	UIPropertiesForm*	m_Props;
 	float			m_fSpeed;

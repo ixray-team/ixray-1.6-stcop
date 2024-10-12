@@ -2,7 +2,7 @@
 #include <fswatcher/filewatch.hpp>
 
 class CContentView:
-	public XrUI
+	public IEditorWnd
 {
 	struct DragDropData 
 	{

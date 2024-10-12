@@ -24,7 +24,7 @@ enum{
 };
 
 class ECORE_API CCustomPreferences:
-	protected XrUI
+	protected IEditorWnd
 {
 protected:	// User declarations
 	UIPropertiesForm*	m_ItemProps;

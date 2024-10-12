@@ -1,5 +1,5 @@
 #pragma once
-class UIMainForm :public XrUI
+class UIMainForm :public IEditorWnd
 {
 public:
 	UIMainForm();

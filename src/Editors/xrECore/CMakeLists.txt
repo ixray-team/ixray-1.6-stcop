@@ -178,8 +178,18 @@ target_link_libraries(xrECore PUBLIC MagicFM)
 target_link_libraries(xrECore PUBLIC "d3d9.lib")
 target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
-# Move precompiled header
-target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
+# UnityBuild Preferences
+#if (IXRAY_UNITYBUILD)
+#	set_target_properties(xrECore PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 32)
+#	target_compile_options(xrECore PRIVATE /bigobj)
+#    
+#	file(GLOB_RECURSE ECORE_SOURCE_ALL_C_FILES "*.c")
+#	set_source_files_properties(${ECORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+#else()
+    # Move precompiled header
+    target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
+#endif()
+
 
 ## DirectX SDK
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")

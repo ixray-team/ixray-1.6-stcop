@@ -1,6 +1,6 @@
 #pragma once
 class UIWorldPropertiesFrom :
-	public XrUI
+	public IEditorWnd
 {
 public:
 	UIWorldPropertiesFrom();
