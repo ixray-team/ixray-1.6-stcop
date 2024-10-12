@@ -9,6 +9,8 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../eatable_item.h"
+#include "UIGameCustom.h"
+#include "UIActorMenu.h"
 
 #include "CustomOutfit.h"
 
@@ -234,6 +236,7 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	else if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
 	{
 		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DB_CLICK, nullptr );
+		CurrentGameUI()->ActorMenu().SetCurrentConsumable(this);
 		return true;
 	}
 	else if ( mouse_action == WINDOW_RBUTTON_DOWN )
@@ -252,6 +255,7 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if (GetAccelerator() == dik)
 		{
+			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
 			return		true;
 		}
 	}
@@ -318,10 +322,14 @@ void CUICellItem::UpdateConditionProgressBar()
 					else
 					{
 						cond = ((float)remaining_uses * 0.125f) - 0.0625f;
+					}
+
+					if (max_uses < 8)
+					{
 						m_pConditionState->ShowBackground(false);
 					}
 
-					m_pConditionState->m_bNoLerp = false;
+					m_pConditionState->m_bUseGradient = false;
 				}
 			}
 
