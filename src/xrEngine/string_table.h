@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// string_table.h:		таблица строк используемых в игре
+// string_table.h:		С‚Р°Р±Р»РёС†Р° СЃС‚СЂРѕРє РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РІ РёРіСЂРµ
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -28,6 +28,7 @@ public:
 	static	BOOL				m_bWriteErrorsToLog;
 	static	void				ReparseKeyBindings		();
 	static	xr_string			LangName				();
+			void				ReloadLanguage			();
 private:
 			void				Init					();
 			void				Load					(LPCSTR xml_file);

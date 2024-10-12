@@ -168,3 +168,21 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 	else
 		return str_id;
 }
+
+void CStringTable::ReloadLanguage()
+{
+	if (0 == xr_strcmp(pSettings->r_string("string_table", "language"), *(pData->m_sLanguage)))
+		return;
+
+	xr_delete(pData);
+
+	Init();
+
+	// St4lker0k765: how to port this into xrAbstractions?
+	//reload language in menu
+/*	if (MainMenu()->IsActive())
+	{
+		MainMenu()->Activate(FALSE);
+		MainMenu()->Activate(TRUE);
+	}*/
+}
