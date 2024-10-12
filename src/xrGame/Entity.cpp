@@ -243,11 +243,11 @@ void CEntity::net_Destroy()
 	set_ready_to_save		();
 }
 
-void CEntity::KillEntity(u16 whoID)
+void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for actor_before_death callback*/)
 {
-	if (IsGameTypeSingle() && (this->ID() == Actor()->ID()))
+	if (IsGameTypeSingle() && (this->ID() == Actor()->ID()) && (bypass_actor_check != true))
 	{
-		Actor()->use_HolderEx(NULL, true);
+		Actor()->use_HolderEx(nullptr, true);
 		Actor()->callback(GameObject::eActorBeforeDeath)(whoID);
 	}
 
@@ -266,11 +266,13 @@ void CEntity::KillEntity(u16 whoID)
 		}
 #endif
 	}
-	else {
+	/*
+	else 
+	{
 		if (m_killer_id != ALife::_OBJECT_ID(-1))
 			return;
 	}
-
+	*/
 	m_killer_id			= whoID;
 
 	set_death_time		();
