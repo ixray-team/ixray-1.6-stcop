@@ -1,7 +1,7 @@
 #pragma once
 
 class UIPuddleTool :
-	public UIToolCustom
+	public UIShapeTool
 {
 public:
 	UIPuddleTool();

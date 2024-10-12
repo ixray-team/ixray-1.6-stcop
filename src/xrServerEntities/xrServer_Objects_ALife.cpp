@@ -346,9 +346,9 @@ static Fvector PT [5] = {
 	if(!bSelected)
 		C.a		*= 0.6f;
 
-	du->DrawIndexedPrimitive(2/*D3DPT_LINELIST*/, 8, parent.c, PT, 6, IL, 16, C.get());
+	du->DrawIndexedPrimitive(2/*D3DPT_LINELIST*/, 8, parent.c, PT, 5, IL, 16, C.get());
 	C.mul_rgba(0.75f);
-	du->DrawIndexedPrimitive(4/*D3DPT_TRIANGLELIST*/, 4, parent.c, PT, 6, IT, 12, C.get());
+	du->DrawIndexedPrimitive(4/*D3DPT_TRIANGLELIST*/, 4, parent.c, PT, 5, IT, 12, C.get());
 	
 	if(bSelected)
 		du->DrawSelectionBox(parent.c, Fvector().set(0.5f,1.0f,0.5f),nullptr);

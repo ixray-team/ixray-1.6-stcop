@@ -71,6 +71,8 @@ TUI::TUI()
 	   //}
 
 	Viewport& MainView = Views.emplace_back();
+	ViewID = 0;
+
 	m_Size.set(DisplayX, DisplayY);
 }
 //---------------------------------------------------------------------------
@@ -550,13 +552,9 @@ void TUI::Redraw()
 
 				g_FontManager->Render();
 
-				//EDevice->pSystemFont->OnRender();
 				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 				EDevice->seqRender.Process(rp_Render);
 
-				//EDevice->Statistic->RenderDUMP_RT.End();
-				//->EStatistic->Show(EDevice->pSystemFont);
-				EDevice->seqRender.Process(rp_Render);
 				if (g_pGamePersistent->OnRenderPPUI_query())
 				{
 					g_pGamePersistent->OnRenderPPUI_main();
@@ -757,8 +755,6 @@ bool TUI::OnCreate()
 	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 
 	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_D24S8);
-
-	ViewID = 0;
 
 	return true;
 }
