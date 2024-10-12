@@ -1,5 +1,8 @@
 //---------------------------------------------------------------------------
-class UIMinimapEditorForm :public XrUI
+#pragma once
+
+class UIMinimapEditorForm:
+	public XrUI
 {
 public:
 	UIMinimapEditorForm();
