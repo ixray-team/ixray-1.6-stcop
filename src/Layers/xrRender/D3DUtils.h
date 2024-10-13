@@ -15,6 +15,8 @@
 #	define DU_DRAW_DP	RCache.dbg_DP
 #endif
 
+class CEditableObject;
+
 struct SPrimitiveBuffer{
     ref_geom				pGeom;
     u32						v_cnt;
