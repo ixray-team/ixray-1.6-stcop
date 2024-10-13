@@ -249,6 +249,7 @@ protected:
 	void						CurModeToScript				();
 	void						RepairEffect_CurItem		();
 
+	void						RefreshCurrentItemCell		();
 	void						SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*				CurrentItem					();
 	PIItem						CurrentIItem				();

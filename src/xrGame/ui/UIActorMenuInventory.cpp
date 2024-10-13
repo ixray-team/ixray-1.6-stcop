@@ -1507,3 +1507,28 @@ void CUIActorMenu::RefreshConsumableCells()
 		SetCurrentConsumable(NULL);
 	}
 }
+
+void CUIActorMenu::RefreshCurrentItemCell()
+{
+	CUICellItem* ci = CurrentItem();
+	if (!ci)
+		return;
+
+	if (ci->ChildsCount() > 0)
+	{
+		CUIDragDropListEx* invlist = GetListByType(iActorBag);
+
+		if (invlist->IsOwner(ci))
+		{
+			CUICellItem* parent = invlist->RemoveItem(ci, true);
+
+			while (parent->ChildsCount())
+			{
+				CUICellItem* child = parent->PopChild(NULL);
+				invlist->SetItem(child);
+			}
+
+			invlist->SetItem(parent, GetUICursor().GetCursorPosition());
+		}
+	}
+}
