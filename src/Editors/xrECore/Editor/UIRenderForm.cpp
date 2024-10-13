@@ -200,6 +200,18 @@ void UIRenderForm::Draw()
 		{
 			//Statistic
 			DrawStatistics();
+
+			if (!psDeviceFlags.test(rsDrawAxis) && !psDeviceFlags.test(rsDisableAxisCube))
+			{
+				ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
+				ImGuizmo::SetDrawlist();
+				ImGuizmo::AllowAxisFlip(true);
+				ImVec2 size = { 150, 150 };
+				ImVec2 pos = { canvas_pos.x, canvas_pos.y + canvas_size.y - size.y };
+
+				//Device.mView for only read
+				ImGuizmo::ViewManipulate((float*)&Device.mView, 10, pos, size, ImColor());
+			}
 		}
 
 		ImGui::SetCursorScreenPos(canvas_pos);
