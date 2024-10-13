@@ -3,15 +3,17 @@
 
 class CTushkanoBase;
 
-class CStateManagerTushkano : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CTushkanoBaseStateManager : public CMonsterStateManager 
+{
+protected:
+	using inherited = CMonsterStateManager;
 
-	CTushkanoBase* m_pTushkano;
+	CTushkanoBase* pTushkanoBase;
 
 public:
-						CStateManagerTushkano	(CTushkanoBase *obj);
-	virtual				~CStateManagerTushkano	();
+	CTushkanoBaseStateManager(CBaseMonster*object);
+	virtual				~CTushkanoBaseStateManager();
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual	void		execute					() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 };

@@ -19,55 +19,58 @@
 
 #include "../states/monster_state_attack_melee.h"
 
-CStateManagerZombie::CStateManagerZombie(CZombieBase* obj) : inherited(obj)
+CZombieBaseStateManager::CZombieBaseStateManager(CBaseMonster* object) : inherited(object)
 {
-    m_pZombie = smart_cast<CZombieBase*>(obj);
+	pZombieBase = smart_cast<CZombieBase*>(object);
 
-    add_state(eStateRest, new CStateMonsterRest(obj));
-    add_state(eStateAttack,
-        new CStateMonsterAttack(obj,
-            new CStateZombieAttackRun(obj),
-            new CStateMonsterAttackMelee(obj)
-        )
-    );
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
-    add_state(eStateControlled, new CStateMonsterControlled(obj));
-    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(obj));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStateAttack, new CStateMonsterAttack(object, 
+		new CStateZombieAttackRun(object), new CStateMonsterAttackMelee(object)));
+
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateControlled, new CStateMonsterControlled(object));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
-
-
-CStateManagerZombie::~CStateManagerZombie()
+CZombieBaseStateManager::~CZombieBaseStateManager() 
 {
+
 }
 
-void CStateManagerZombie::execute()
+void CZombieBaseStateManager::execute()
 {
 	if (object->com_man().ta_is_active()) return;
 	
 	u32 state_id = u32(-1);
 	
-	if (!m_pZombie->is_under_control()) {
-	
+	if (!pZombieBase->is_under_control())
+	{
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
+		if (enemy) 
+		{
 			state_id = eStateAttack;
-		} else if (check_state(eStateHearHelpSound)) {
+		} 
+		else if (check_state(eStateHearHelpSound)) 
+		{
 			state_id = eStateHearHelpSound;
-		} else if (object->hear_interesting_sound || object->hear_dangerous_sound) {
+		} 
+		else if (object->hear_interesting_sound || object->hear_dangerous_sound) 
+		{
 			state_id = eStateHearInterestingSound;
-		} else {
-			if (can_eat())	state_id = eStateEat;
-			else			state_id = eStateRest;
+		} 
+		else 
+		{
+			if (can_eat())	
+				state_id = eStateEat;
+			else			
+				state_id = eStateRest;
 		}
 	} else state_id = eStateControlled;
 
-	// установить текущее состояние
 	select_state(state_id); 
 
-	// выполнить текущее состояние
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

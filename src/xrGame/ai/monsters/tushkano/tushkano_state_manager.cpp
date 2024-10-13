@@ -18,57 +18,72 @@
 
 #include "../../../entitycondition.h"
 
-
-CStateManagerTushkano::CStateManagerTushkano(CTushkanoBase* obj) : inherited(obj)
+CTushkanoBaseStateManager::CTushkanoBaseStateManager(CBaseMonster* object) : inherited(object)
 {
-    m_pTushkano = smart_cast<CTushkanoBase*>(obj);
+	pTushkanoBase = smart_cast<CTushkanoBase*>(object);
 
-    add_state(eStateRest, new CStateMonsterRest(obj));
-    add_state(eStateAttack, new CStateMonsterAttack(obj));
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
-    add_state(eStatePanic, new CStateMonsterPanic(obj));
-    add_state(eStateHitted, new CStateMonsterHitted(obj));
-    add_state(eStateControlled, new CStateMonsterControlled(obj));
-    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(obj));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStateAttack, new CStateMonsterAttack(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
+    add_state(eStateControlled, new CStateMonsterControlled(object));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
-
-
-CStateManagerTushkano::~CStateManagerTushkano()
+CTushkanoBaseStateManager::~CTushkanoBaseStateManager()
 {
+
 }
 
-void CStateManagerTushkano::execute()
+void CTushkanoBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!m_pTushkano->is_under_control()) {
+	if (!pTushkanoBase->is_under_control())
+	{
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-//		const CEntityAlive* corpse	= 
-			object->CorpseMan.get_corpse();
 
-		if (enemy) {
-			switch (object->EnemyMan.get_danger_type()) {
-				case eStrong:	state_id = eStatePanic; break;
-				case eWeak:		state_id = eStateAttack; break;
+		object->CorpseMan.get_corpse();
+
+		if (enemy) 
+		{
+			switch (object->EnemyMan.get_danger_type()) 
+			{
+				case eStrong:	
+					state_id = eStatePanic;
+					break;
+				case eWeak:		
+					state_id = eStateAttack; 
+					break;
 			}
-		} else if (object->HitMemory.is_hit()) {
+		} 
+		else if (object->HitMemory.is_hit()) 
+		{
 			state_id = eStateHitted;
-		} else if (check_state(eStateHearHelpSound)) {
+		} 
+		else if (check_state(eStateHearHelpSound))
+		{
 			state_id = eStateHearHelpSound;
-		} else if (object->hear_interesting_sound || object->hear_dangerous_sound) {
+		} 
+		else if (object->hear_interesting_sound || object->hear_dangerous_sound) 
+		{
 			state_id = eStateHearDangerousSound;
-		} else {
-			if (can_eat())	state_id = eStateEat;
-			else 			state_id = eStateRest;
+		} 
+		else 
+		{
+			if (can_eat())	
+				state_id = eStateEat;
+			else 			
+				state_id = eStateRest;
 		}
-	} else state_id = eStateControlled;
+	} 
+	else 
+		state_id = eStateControlled;
 
-	// установить текущее состояние
 	select_state(state_id); 
 
-	// выполнить текущее состояние
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

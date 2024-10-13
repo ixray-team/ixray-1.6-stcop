@@ -3,15 +3,17 @@
 
 class CZombieBase;
 
-class CStateManagerZombie : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CZombieBaseStateManager : public CMonsterStateManager 
+{
+protected:
+	using inherited = CMonsterStateManager;
 
-	CZombieBase* m_pZombie;
+	CZombieBase* pZombieBase;
 
 public:
-						CStateManagerZombie		(CZombieBase *obj);
-	virtual				~CStateManagerZombie	();
+	CZombieBaseStateManager(CBaseMonster* object);
+	virtual				~CZombieBaseStateManager() override;
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual	void		execute					() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 };

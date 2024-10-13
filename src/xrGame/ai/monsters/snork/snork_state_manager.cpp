@@ -21,64 +21,78 @@
 
 #include "../../../entitycondition.h"
 
-CStateManagerSnork::CStateManagerSnork(CSnorkBase* obj) : inherited(obj)
+CSnorkBaseStateManager::CSnorkBaseStateManager(CBaseMonster* object) : inherited(object)
 {
-    m_pSnork = smart_cast<CSnorkBase*>(obj);
+	pSnorkBase = smart_cast<CSnorkBase*>(object);
 
-    add_state(eStateRest, new CStateMonsterRest(obj));
-    add_state(eStatePanic, new CStateMonsterPanic(obj));
-    add_state(eStateAttack, new CStateMonsterAttack(obj));
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
-    add_state(eStateHitted, new CStateMonsterHitted(obj));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateAttack, new CStateMonsterAttack(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
 
-    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(obj));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
-
-
-CStateManagerSnork::~CStateManagerSnork()
+CSnorkBaseStateManager::~CSnorkBaseStateManager()
 {
+
 }
 
-void CStateManagerSnork::execute()
+void CSnorkBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-	if (enemy) {
-		switch (object->EnemyMan.get_danger_type()) {
-				case eStrong:	state_id = eStatePanic; break;
-				case eWeak:		state_id = eStateAttack; break;
+	if (enemy) 
+	{
+		switch (object->EnemyMan.get_danger_type()) 
+		{
+			case eStrong:	
+				state_id = eStatePanic; 
+				break;
+			case eWeak:		
+				state_id = eStateAttack; 
+				break;
 		}
-	} else if (object->HitMemory.is_hit()) {
+	} 
+	else if (object->HitMemory.is_hit()) 
+	{
 		state_id = eStateHitted;
-	} else if (check_state(eStateHearHelpSound)) {
+	} 
+	else if (check_state(eStateHearHelpSound)) 
+	{
 		state_id = eStateHearHelpSound;
-	} else if (object->hear_dangerous_sound) {
-		state_id = eStateHearDangerousSound;
-	} else if (object->hear_interesting_sound) {
-		state_id = eStateHearInterestingSound;
-	} else {
-		if (can_eat())	state_id = eStateEat;
-		else			state_id = eStateRest;
 	}
+	else if (object->hear_dangerous_sound) 
+	{
+		state_id = eStateHearDangerousSound;
 
-
-	//state_id = eStateFindEnemy;
+	} 
+	else if (object->hear_interesting_sound)
+	{
+		state_id = eStateHearInterestingSound;
+	} 
+	else 
+	{
+		if (can_eat())	
+			state_id = eStateEat;
+		else			
+			state_id = eStateRest;
+	}
 
 	select_state(state_id); 
 
-	if ((current_substate == eStateAttack) && (current_substate != prev_substate)) {
-		m_pSnork->start_threaten = true;
+	if ((current_substate == eStateAttack) && (current_substate != prev_substate)) 
+	{
+		pSnorkBase->start_threaten = true;
 	}
 
-	// выполнить текущее состояние
 	get_state_current()->execute();
 
 	prev_substate = current_substate;
-
 }
 

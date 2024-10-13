@@ -3,17 +3,17 @@
 
 class CSnorkBase;
 
-class CStateManagerSnork : public CMonsterStateManager 
+class CSnorkBaseStateManager : public CMonsterStateManager 
 {
-private:
-	typedef				CMonsterStateManager	inherited;
+protected:
+	using				inherited = CMonsterStateManager;
 
-	CSnorkBase* m_pSnork;
+	CSnorkBase* pSnorkBase;
 
 public:
-						CStateManagerSnork		(CSnorkBase*obj);
-	virtual				~CStateManagerSnork		();
+	CSnorkBaseStateManager(CBaseMonster* object);
+	virtual				~CSnorkBaseStateManager();
 
 	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		remove_links			(CObject* object) { inherited::remove_links(object); }
 };
