@@ -227,13 +227,13 @@ void CDrawUtilities::OnDeviceCreate()
 
     m_Font = g_FontManager->GetFont("stat_font");
 
-   // m_axis_object = NULL;
+    m_axis_object = NULL;
 }
 
-//void CDrawUtilities::DestroyObjects()
-//{
-//    Lib.RemoveEditObject(m_axis_object);
-//}
+void CDrawUtilities::DestroyObjects()
+{
+    Lib.RemoveEditObject(m_axis_object);
+}
 
 void CDrawUtilities::OnDeviceDestroy()
 {
@@ -1006,10 +1006,10 @@ void CDrawUtilities::DrawPivot(const Fvector& pos, float sz){
 
 void CDrawUtilities::DrawAxis(const Fmatrix& T)
 {
-    //if(!m_axis_object)
-    //	m_axis_object = Lib.CreateEditObject("editor\\axis");
-    //R_ASSERT(m_axis_object);
-    //
+    if(!m_axis_object)
+    	m_axis_object = Lib.CreateEditObject("editor\\axis");
+    R_ASSERT(m_axis_object);
+    
     Fmatrix	M 				= Fidentity;
     Fmatrix	S;
     S.scale					(0.04f,0.04f,0.04f);
@@ -1025,8 +1025,9 @@ void CDrawUtilities::DrawAxis(const Fmatrix& T)
 	pt.y  = iFloor(UI->GetRenderHeight()-_wh);
 
     UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
+
     M.c.mad(dir, _kl);
-    //m_axis_object->Render	(M, 2, false);
+    m_axis_object->Render	(M, 2, false);
 }
 
 void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)

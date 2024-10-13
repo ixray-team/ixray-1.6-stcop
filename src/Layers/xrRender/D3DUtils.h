@@ -52,6 +52,7 @@ public:
 	ref_geom 	vs_TL;
 	ref_geom 	vs_LIT;
 protected:
+    CEditableObject* m_axis_object;
     FVF::L*		m_DD_pv;
     FVF::L*		m_DD_pv_start;
     u32 		m_DD_base;
@@ -77,7 +78,7 @@ public:
     virtual void  OnDeviceDestroy();
 
 	void UpdateGrid(int number_of_cell, float square_size, int subdiv=10);
-
+    void DestroyObjects();
     //----------------------------------------------------
     virtual void  DrawCross(const Fvector& p, float szx1, float szy1, float szz1, float szx2, float szy2, float szz2, u32 clr, BOOL bRot45=false);
     virtual void  DrawCross(const Fvector& p, float sz, u32 clr, BOOL bRot45=false){ DrawCross(p, sz,sz,sz, sz,sz,sz, clr, bRot45); }

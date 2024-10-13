@@ -96,7 +96,6 @@ void UIRenderForm::DrawStatistics()
 	ImGui::EndTable();
 	ImGui::PopStyleVar();
 }
-
 void UIRenderForm::Draw()
 {
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
@@ -201,30 +200,6 @@ void UIRenderForm::Draw()
 		{
 			//Statistic
 			DrawStatistics();
-
-			//AXIS
-			ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
-			ImGuizmo::SetDrawlist();
-			ImGuizmo::AllowAxisFlip(false);
-
-			Fmatrix	M = Fidentity;
-			Fmatrix	S;
-			S.scale(0.04f, 0.04f, 0.04f);
-			M.mulB_44(S);
-
-			Fvector dir;
-			Ivector2 pt;
-
-			static int _wh = 80;
-			static float _kl = 1.0f;
-
-			pt.x = _wh;
-			pt.y = iFloor(UI->GetRenderHeight() - _wh);
-
-			UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
-			M.c.mad(dir, _kl);
-
-			ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject.m, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, (float*)&M);
 		}
 
 		ImGui::SetCursorScreenPos(canvas_pos);
