@@ -106,19 +106,20 @@ void UIRenderForm::Draw()
 
 	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
 	{
-		UI->ViewID = ViewportID;
-
-		if (OnFocusCallback)
+		if ((UI->IsPlayInEditor() && ViewportID == 0) || !UI->IsPlayInEditor())
 		{
-			OnFocusCallback();
-		}
+			UI->ViewID = ViewportID;
 
-		//RDevice->UpdateTexture(UI->Views[ViewportID].RT->pSurface, UI->Views[ViewportID].RTFreez->pSurface);
+			if (OnFocusCallback)
+			{
+				OnFocusCallback();
+			}
+		}
 	}
 
 	DockId = ImGui::GetWindowDockID();
 
-	if (UI->ViewID == ViewportID)
+	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
 		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
 	}

@@ -709,11 +709,15 @@ void EScene::Play()
 {
 	if (IsPlayInEditor())
 		return;
+
 	if (!BuildSpawn())
 		return;
 
 	pInput->acquire();
 	UI->IsEnableInput = false;
+
+	// FX: Set first viewport for PIE
+	UI->ViewID = 0;
 
 	g_pGamePersistent->m_game_params.reset();
 	g_pGamePersistent->m_game_params.m_e_game_type = eGameIDNoGame;
