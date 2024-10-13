@@ -65,6 +65,7 @@ CInventoryItem::CInventoryItem()
 	m_Description					= "";
 	m_section_id					= 0;
 	m_flags.set						(FIsHelperItem,FALSE);
+	m_flags.set						(FCanStack, TRUE);
 
 	m_custom_text					= nullptr;
 	m_custom_text_font				= nullptr;
@@ -126,6 +127,7 @@ void CInventoryItem::Load(LPCSTR section)
 	m_can_trade = READ_IF_EXISTS(pSettings, r_bool, section, "can_take",	TRUE);
 	m_flags.set(FCanTake,		m_can_trade);
 	m_flags.set(FCanTrade,		READ_IF_EXISTS(pSettings, r_bool, section, "can_trade",	TRUE));
+	m_flags.set(FCanStack,		READ_IF_EXISTS(pSettings, r_bool, section, "can_stack", TRUE));
 	m_flags.set(FIsQuestItem,	READ_IF_EXISTS(pSettings, r_bool, section, "quest_item",FALSE));
 
 	// Added by Axel, to enable optional condition use on any item

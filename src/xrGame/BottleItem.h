@@ -1,12 +1,13 @@
 ///////////////////////////////////////////////////////////////
 // BottleItem.h
-// BottleItem - бутылка с напитком, которую можно разбить
+// BottleItem - Р±СѓС‚С‹Р»РєР° СЃ РЅР°РїРёС‚РєРѕРј, РєРѕС‚РѕСЂСѓСЋ РјРѕР¶РЅРѕ СЂР°Р·Р±РёС‚СЊ
 ///////////////////////////////////////////////////////////////
 
 
 #pragma once
 
 #include "fooditem.h"
+#include "../xrScripts/script_export_space.h"
 
 
 class CBottleItem: public CFoodItem
@@ -29,7 +30,8 @@ public:
 
 			void					BreakToPieces		();
 protected:
-	//партиклы разбивания бутылки
+	//РїР°СЂС‚РёРєР»С‹ СЂР°Р·Р±РёРІР°РЅРёСЏ Р±СѓС‚С‹Р»РєРё
 	shared_str m_sBreakParticles;
 	ref_sound sndBreaking;
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

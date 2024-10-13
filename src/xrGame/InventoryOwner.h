@@ -10,6 +10,7 @@
 #include "../xrScripts/script_space_forward.h"
 #include "character_info.h"
 #include "inventory_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CSE_Abstract;
 class CInventory;
@@ -238,6 +239,7 @@ public:
 	IC		bool				deadbody_can_take_status() const { return m_deadbody_can_take; }
 			void				deadbody_closed			(bool status);
 	IC		bool				deadbody_closed_status	() const { return m_deadbody_closed; }
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 #include "inventory_owner_inline.h"

@@ -13,6 +13,7 @@
 #include "attachable_item.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
+#include "../xrScripts/script_export_space.h"
 
 enum EHandDependence{
 	hdNone	= 0,
@@ -78,6 +79,7 @@ protected:
 								FInInterpolate		=(1<<10),
 								FIsQuestItem		=(1<<11),
 								FIsHelperItem		=(1<<12),
+								FCanStack			=(1<<13),
 	};
 
 	Flags16						m_flags;
@@ -99,6 +101,7 @@ public:
 	
 	virtual bool				Useful				() const;									// !!! Переопределить. (см. в Inventory.cpp)
 	virtual bool				IsUsingCondition	() const { return m_flags.test(FUsingCondition); }
+	virtual bool				CanStack			() const { return (m_flags.test(FCanStack) > 0); };
 	virtual bool				Attach				(PIItem pIItem, bool b_send_event) {return false;}
 	virtual bool				Detach				(PIItem pIItem) {return false;}
 	//при детаче спаунится новая вещь при заданно названии секции
@@ -333,6 +336,7 @@ protected:
 public:
 	IC bool	is_helper_item				()				 { return !!m_flags.test(FIsHelperItem); }
 	IC void	set_is_helper				(bool is_helper) { m_flags.set(FIsHelperItem,is_helper); }
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CInventoryItem
 
 #include "inventory_item_inline.h"

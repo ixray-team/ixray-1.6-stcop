@@ -1,16 +1,18 @@
 ///////////////////////////////////////////////////////////////
 // Antirad.h
-// Antirad - таблетки выводящие радиацию
+// Antirad - С‚Р°Р±Р»РµС‚РєРё РІС‹РІРѕРґСЏС‰РёРµ СЂР°РґРёР°С†РёСЋ
 ///////////////////////////////////////////////////////////////
 
 
 #pragma once
 
 #include "eatable_item_object.h"
+#include "../xrScripts/script_export_space.h"
 
 class CAntirad: public CEatableItemObject {
 
 public:
 				 CAntirad			();
 	virtual		 ~CAntirad			();
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

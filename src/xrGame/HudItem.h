@@ -10,6 +10,7 @@ class CMotionDef;
 #include "inventory_space.h"
 #include "hudsound.h"
 #include "InertionData.h"
+#include "../xrScripts/script_export_space.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -47,10 +48,11 @@ public:
 
 class CHudItem :public CHUDState
 {
-protected:
+public:
 							CHudItem			();
 	virtual					~CHudItem			();
 	virtual DLL_Pure*		_construct			();
+protected:
 	
 	Flags16					m_huditem_flags;
 	enum{
@@ -186,5 +188,7 @@ public:
 	virtual void				debug_draw_firedeps		() {};
 
 	virtual CHudItem*			cast_hud_item			()				{ return this; }
+protected:
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
