@@ -196,7 +196,7 @@ void UIRenderForm::Draw()
 		if(m_OnToolBar)
 			m_OnToolBar(canvas_pos, canvas_size);
 
-		if (ViewportID == UI->ViewID)
+		if (ViewportID == UI->ViewID && !UI->IsPlayInEditor())
 		{
 			//Statistic
 			DrawStatistics();
