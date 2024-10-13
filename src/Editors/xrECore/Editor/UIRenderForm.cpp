@@ -50,7 +50,7 @@ void UIRenderForm::DrawStatistics()
 		};
 
 	ImGui::SetCursorPos(ImVec2(48, 48));
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 2.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, .5f));
 
 	if (!ImGui::BeginTable("stats", 2))
 	{
