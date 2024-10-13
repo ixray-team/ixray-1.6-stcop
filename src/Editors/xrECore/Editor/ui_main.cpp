@@ -549,7 +549,7 @@ void TUI::Redraw()
 				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
 
 				// draw axis
-				DU_impl.DrawAxis(UI->CurrentView().m_Camera.GetTransform());
+				//DU_impl.DrawAxis(UI->CurrentView().m_Camera.GetTransform());
 
 
 				EDevice->Statistic->RenderDUMP_RT.End();

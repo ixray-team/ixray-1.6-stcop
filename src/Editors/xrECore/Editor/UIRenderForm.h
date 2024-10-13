@@ -24,6 +24,7 @@ public:
 	string32 ViewportName;
 	int DockId = -1;
 private:
+	void DrawStatistics();
 	Ivector2	m_mouse_position;
 	Frect		m_render_pos;
 

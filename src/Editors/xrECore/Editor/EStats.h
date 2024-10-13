@@ -21,6 +21,10 @@ public:
 	u32		dwLevelSelFaceCount;	// Number of faces in scene
 	u32		dwLevelSelVertexCount;	// Number of vertices in scene
 
+	u32		lastDPS_verts;
+	u32		lastDPS_polys;
+	u32		lastDPS_calls;
+
 	CStatTimer	RenderDUMP_RT;
 	CStatTimer	RenderTOTAL;		//
 	CStatTimer	RenderTOTAL_Real;

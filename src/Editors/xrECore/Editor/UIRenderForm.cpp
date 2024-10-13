@@ -32,6 +32,71 @@ UIRenderForm::~UIRenderForm()
 {
 }
 
+void UIRenderForm::DrawStatistics()
+{
+	if (!psDeviceFlags.is(rsStatistic))
+		return;
+
+	auto print = [](const char* param, const char* value_fmt, ...)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s:", param);
+			ImGui::TableSetColumnIndex(1);
+			va_list args;
+			va_start(args, value_fmt);
+			ImGui::TextV(value_fmt, args);
+			va_end(args);
+		};
+
+	ImGui::SetCursorPos(ImVec2(48, 48));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 2.0f));
+
+	if (!ImGui::BeginTable("stats", 2))
+	{
+		return;
+	}
+	ImGui::TableSetupColumn("AAA", ImGuiTableColumnFlags_WidthFixed);
+
+	CEStats* s = static_cast<CEStats*>(EDevice->Statistic);
+
+	//color(0xFFFFFFFF);
+	print("FPS/RFPS", "%3.1f/%3.1f", (s->fFPS), s->fRFPS);
+	ImGui::NewLine();
+	//color(0xDDDDDDDD);
+	print("TPS", "%2.2f M", s->fTPS);
+
+	print("VERT", "%d",		s->lastDPS_verts);
+	print("POLY", "%d",		s->lastDPS_polys);
+	print("DIP/DP", "%d",	s->lastDPS_calls);
+
+	if (ViewportID == 0)
+	{
+		print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
+		print("LIGHT S/T", "%d/%d", s->dwLightInScene, s->dwTotalLight);
+		print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
+		print("Skinning", "%2.2fms", s->RenderDUMP_SKIN.result);
+		ImGui::NewLine();
+		print("Input", "%2.2fms", s->Input.result);
+		print("clRAY", "%2.2fms, %d", s->clRAY.result, s->clRAY.count);
+		print("clBOX", "%2.2fms, %d", s->clBOX.result, s->clBOX.count);
+		print("clFRUSTUM", "%2.2fms, %d", s->clFRUSTUM.result, s->clFRUSTUM.count);
+		ImGui::NewLine();
+		print("RT", "%2.2fms, %d", s->RenderDUMP_RT.result, s->RenderDUMP_RT.count);
+		print("DT_Vis", "%2.2fms", s->RenderDUMP_DT_VIS.result);
+		print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
+		print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
+		ImGui::NewLine();
+		print("TEST 0", "%2.2fms, %d", s->TEST0.result, s->TEST0.count);
+		print("TEST 1", "%2.2fms, %d", s->TEST1.result, s->TEST1.count);
+		print("TEST 2", "%2.2fms, %d", s->TEST2.result, s->TEST2.count);
+		print("TEST 3", "%2.2fms, %d", s->TEST3.result, s->TEST3.count);
+	}
+
+	ImGui::EndTable();
+	ImGui::PopStyleVar();
+}
+
 void UIRenderForm::Draw()
 {
 	if (!ImGui::Begin(ViewportName, nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
@@ -131,6 +196,36 @@ void UIRenderForm::Draw()
 
 		if(m_OnToolBar)
 			m_OnToolBar(canvas_pos, canvas_size);
+
+		if (ViewportID == UI->ViewID)
+		{
+			//Statistic
+			DrawStatistics();
+
+			//AXIS
+			ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::AllowAxisFlip(false);
+
+			Fmatrix	M = Fidentity;
+			Fmatrix	S;
+			S.scale(0.04f, 0.04f, 0.04f);
+			M.mulB_44(S);
+
+			Fvector dir;
+			Ivector2 pt;
+
+			static int _wh = 80;
+			static float _kl = 1.0f;
+
+			pt.x = _wh;
+			pt.y = iFloor(UI->GetRenderHeight() - _wh);
+
+			UI->CurrentView().m_Camera.MouseRayFromPoint(M.c, dir, pt);
+			M.c.mad(dir, _kl);
+
+			ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject.m, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, (float*)&M);
+		}
 
 		ImGui::SetCursorScreenPos(canvas_pos);
 

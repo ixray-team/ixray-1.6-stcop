@@ -69,6 +69,12 @@ void CEStats::Show()
     // Show them
     if (psDeviceFlags.is(rsStatistic))
     {
+        lastDPS_verts = DPS.verts;
+        lastDPS_polys = DPS.polys;
+        lastDPS_calls = DPS.calls;
+
+#if 0
+
         //auto& env = g_pGamePersistent->Environment();
         //float time = g_pGameLevel ? g_pGameLevel->GetEnvironmentGameDayTimeSec() : env.GetGameTime();
         //u32   hours, minutes, seconds;
@@ -120,6 +126,7 @@ void CEStats::Show()
         // F.OutNext(" Sel Faces: %d", dwLevelSelFaceCount);
         // F.OutNext(" Sel Verts: %d", dwLevelSelVertexCount);
         //UI->OnStats(EDevice->pSystemFont);
+#endif
     }
 
     {

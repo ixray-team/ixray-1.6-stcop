@@ -1274,7 +1274,7 @@ void CLevelMain::OutCameraPos()
 		const Fvector& c = UI->CurrentView().m_Camera.GetPosition();
 		//xr_string Str;
 		//sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
+		//Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
 	}
 }
 
