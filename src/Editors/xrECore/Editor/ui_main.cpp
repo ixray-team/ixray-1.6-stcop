@@ -594,7 +594,6 @@ void TUI::Redraw()
 
 				Draw();
 
-				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 				UI->EndFrame();
 				EDevice->End();
 			}
