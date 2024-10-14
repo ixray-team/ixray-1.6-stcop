@@ -16,21 +16,21 @@ void CBaseMonster::Think()
 
 	if (!g_Alive() || getDestroy())			return;
 
-	// Èíèöèàëèçèğîâàòü
+	// Ğ˜Ğ½Ğ¸Ñ†Ğ¸Ğ°Ğ»Ğ¸Ğ·Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ
 	InitThink								();
 	anim().ScheduledInit					();
 
-	// Îáíîâèòü ïàìÿòü
+	// ĞĞ±Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ Ğ¿Ğ°Ğ¼ÑÑ‚ÑŒ
 	START_PROFILE("Base Monster/Think/Update Memory");
 	UpdateMemory							();
 	STOP_PROFILE;
 
-	// Îáíîâèòü ñêâàä
+	// ĞĞ±Ğ½Ğ¾Ğ²Ğ¸Ñ‚ÑŒ ÑĞºĞ²Ğ°Ğ´
 	START_PROFILE("Base Monster/Think/Update Squad");
 	monster_squad().update					(this);
 	STOP_PROFILE;
 
-	// Çàïóñòèòü FSM
+	// Ğ—Ğ°Ğ¿ÑƒÑÑ‚Ğ¸Ñ‚ÑŒ FSM
 	START_PROFILE("Base Monster/Think/FSM");
 	update_fsm								();
 	STOP_PROFILE;	
@@ -40,14 +40,14 @@ void CBaseMonster::Think()
 
 void CBaseMonster::update_fsm()
 {
-	StateMan->update				();
+	pStateManagerBase->update				();
 	
-	// çàâåğøèòü îáğàáîòêó óñòàíîâëåííûõ â FSM ïàğàìåòğîâ
+	// Ğ·Ğ°Ğ²ĞµÑ€ÑˆĞ¸Ñ‚ÑŒ Ğ¾Ğ±Ñ€Ğ°Ğ±Ğ¾Ñ‚ĞºÑƒ ÑƒÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ½Ñ‹Ñ… Ğ² FSM Ğ¿Ğ°Ñ€Ğ°Ğ¼ĞµÑ‚Ñ€Ğ¾Ğ²
 	post_fsm_update					();
 	
 	TranslateActionToPathParams		();
 
-	// èíôîğìèğîâàòü squad î ñâîèõ öåëÿõ
+	// Ğ¸Ğ½Ñ„Ğ¾Ñ€Ğ¼Ğ¸Ñ€Ğ¾Ğ²Ğ°Ñ‚ÑŒ squad Ğ¾ ÑĞ²Ğ¾Ğ¸Ñ… Ñ†ĞµĞ»ÑÑ…
 	squad_notify					();
 
 #ifdef DEBUG
@@ -59,13 +59,11 @@ void CBaseMonster::post_fsm_update()
 {
 	if (!EnemyMan.get_enemy()) return;
 	
-	EMonsterState state = StateMan->get_state_type();
-
+	EMonsterState state = pStateManagerBase->get_state_type();
 
 	// Look at enemy while running
 	m_bRunTurnLeft = m_bRunTurnRight = false;
 	
-
 	Fvector direction;
 	if ( is_state(state, eStateAttack) && 
 		 control().path_builder().is_moving_on_path() &&
@@ -92,7 +90,7 @@ void CBaseMonster::squad_notify()
 	CMonsterSquad	*squad = monster_squad().get_squad(this);
 	SMemberGoal		goal;
 
-	EMonsterState state = StateMan->get_state_type();
+	EMonsterState state = pStateManagerBase->get_state_type();
 
 	if (is_state(state, eStateAttack)) {
 		

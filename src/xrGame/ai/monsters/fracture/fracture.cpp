@@ -8,12 +8,12 @@
 
 CFractureBase::CFractureBase()
 {
-	StateMan = new CustomFractureStateManager(this);
+	pStateManagerBase = new CustomFractureStateManager(this);
 }
 
 CFractureBase::~CFractureBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CFractureBase::Load(LPCSTR section)

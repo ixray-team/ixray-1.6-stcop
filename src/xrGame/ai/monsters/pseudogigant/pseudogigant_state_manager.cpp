@@ -18,49 +18,73 @@
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
 
-CStateManagerGigant::CStateManagerGigant(CPseudoGiantBase* monster) : inherited(monster)
+CPseudoGiantBaseStateManager::CPseudoGiantBaseStateManager(CBaseMonster* object) : inherited(object)
 {
-    add_state(eStateRest, new CStateMonsterRest(monster));
-    add_state(eStatePanic, new CStateMonsterPanic(monster));
-    add_state(eStateAttack, new CStateMonsterAttack(monster));
-    add_state(eStateEat, new CStateMonsterEat(monster));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(monster));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(monster));
-    add_state(eStateHitted, new CStateMonsterHitted(monster));
-    add_state(eStateControlled, new CStateMonsterControlled(monster));
-    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(monster));
+	pPseudoGiantBase = smart_cast<CPseudoGiantBase*>(object);
+
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateAttack, new CStateMonsterAttack(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
+    add_state(eStateControlled, new CStateMonsterControlled(object));
+    add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
-void CStateManagerGigant::execute()
+CPseudoGiantBaseStateManager::~CPseudoGiantBaseStateManager()
+{
+
+}
+
+void CPseudoGiantBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!m_pGiant->is_under_control()) {
+	if (!pPseudoGiantBase->is_under_control()) 
+	{
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 
-		if (enemy) {
-			switch (object->EnemyMan.get_danger_type()) {
-			case eStrong:	state_id = eStatePanic; break;
-			case eWeak:		state_id = eStateAttack; break;
+		if (enemy) 
+		{
+			switch (object->EnemyMan.get_danger_type()) 
+			{
+			case eStrong:	
+				state_id = eStatePanic; break;
+			case eWeak:		
+				state_id = eStateAttack; break;
 			}
-
-		} else if (object->HitMemory.is_hit()) {
+		} 
+		else if (object->HitMemory.is_hit()) 
+		{
 			state_id = eStateHitted;
-		} else if (check_state(eStateHearHelpSound)) {
-			state_id = eStateHearHelpSound;
-		} else if (object->hear_interesting_sound) {
-			state_id = eStateHearInterestingSound;
-		} else if (object->hear_dangerous_sound) {
-			state_id = eStateHearDangerousSound;	
-		} else {
-			if (can_eat())	state_id = eStateEat;
-			else			state_id = eStateRest;
 		}
-	} else state_id = eStateControlled;
+		else if (check_state(eStateHearHelpSound)) 
+		{
+			state_id = eStateHearHelpSound;
+		} 
+		else if (object->hear_interesting_sound) 
+		{
+			state_id = eStateHearInterestingSound;
+		} 
+		else if (object->hear_dangerous_sound) 
+		{
+			state_id = eStateHearDangerousSound;	
+		} 
+		else 
+		{
+			if (can_eat())	
+				state_id = eStateEat;
+			else			
+				state_id = eStateRest;
+		}
+	} 
+	else 
+		state_id = eStateControlled;
 
 	select_state(state_id); 
-
-	// выполнить текущее состояние
+	
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

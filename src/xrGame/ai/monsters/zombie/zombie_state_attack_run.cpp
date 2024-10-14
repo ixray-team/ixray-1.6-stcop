@@ -44,9 +44,11 @@ void CStateZombieAttackRun::execute()
 	CMonsterSquad* squad = monster_squad().get_squad(object);
 	bool squad_active = squad && squad->SquadActive();
 
-	SSquadCommand command;
+	SSquadCommand command{};
 	squad->GetCommand(object, command);
-	if (!squad_active || (command.type != SC_ATTACK)) squad_active = false;
+
+	if (!squad_active || (command.type != SC_ATTACK)) 
+		squad_active = false;
 
 	if (squad_active) 
 	{

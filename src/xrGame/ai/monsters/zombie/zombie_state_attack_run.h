@@ -12,7 +12,7 @@ protected:
 
 public:
 						CStateZombieAttackRun	(CBaseMonster* object);
-	virtual				~CStateZombieAttackRun	();
+	virtual				~CStateZombieAttackRun	() override;
 
 	virtual void		initialize				() override;
 	virtual	void		execute					() override;

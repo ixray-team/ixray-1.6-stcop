@@ -6,8 +6,7 @@
 #include "../anim_triple.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CZombieBase :	public CBaseMonster,
-				public CControlledEntity 
+class CZombieBase :	public CBaseMonster, public CControlledEntity 
 {
 protected:
 	using	inherited =	CBaseMonster;

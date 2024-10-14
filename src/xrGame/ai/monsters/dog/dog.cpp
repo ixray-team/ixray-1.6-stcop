@@ -18,7 +18,7 @@
 
 CDogBase::CDogBase()
 {
-	StateMan = new CustomDogStateManager(this);
+	pStateManagerBase = new CustomDogStateManager(this);
 	
 	min_move_dist		= u32(5);
 	max_move_dist		= u32(7);
@@ -47,7 +47,7 @@ CDogBase::CDogBase()
 
 CDogBase::~CDogBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CDogBase::Load(LPCSTR section)
@@ -245,7 +245,7 @@ void CDogBase::UpdateCL()
 	if ( b_anim_end )
 	{
 		b_anim_end = false;
-		StateMan->update();
+		pStateManagerBase->update();
 	}
 }
 

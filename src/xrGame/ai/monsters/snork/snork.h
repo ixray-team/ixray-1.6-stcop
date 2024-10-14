@@ -3,7 +3,7 @@
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CSnorkBase :	public CBaseMonster 
+class CSnorkBase : public CBaseMonster 
 {
 protected:
 	using inherited = CBaseMonster;

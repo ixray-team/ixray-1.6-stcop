@@ -3,8 +3,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CTushkanoBase :	public CBaseMonster,
-					public CControlledEntity 
+class CTushkanoBase : public CBaseMonster, public CControlledEntity 
 {
 protected:
 	using		inherited = CBaseMonster;

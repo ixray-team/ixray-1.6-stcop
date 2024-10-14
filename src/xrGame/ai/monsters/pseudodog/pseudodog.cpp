@@ -28,13 +28,13 @@ CPseudoDogBase::CPseudoDogBase()
 DLL_Pure *CPseudoDogBase::_construct()
 {
 	inherited::_construct			();
-	StateMan = create_state_manager	();
+	pStateManagerBase = create_state_manager	();
 	return							(this);
 }
 
 CPseudoDogBase::~CPseudoDogBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CPseudoDogBase::reinit()

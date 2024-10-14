@@ -11,7 +11,7 @@
 
 CZombieBase::CZombieBase()
 {
-	StateMan = new CZombieBaseStateManager(this);
+	pStateManagerBase = new CZombieBaseStateManager(this);
 	
 	active_triple_idx = {};
 
@@ -28,7 +28,7 @@ CZombieBase::CZombieBase()
 
 CZombieBase::~CZombieBase()
 {
-	xr_delete		(StateMan);
+	xr_delete		(pStateManagerBase);
 }
 
 void CZombieBase::Load(LPCSTR section)
@@ -179,7 +179,8 @@ void CZombieBase::shedule_Update(u32 dt)
 
 bool CZombieBase::fake_death_fall_down()
 {
-	if (com_man().ta_is_active()) return false;
+	if (com_man().ta_is_active()) 
+		return false;
 
 	com_man().ta_activate		(anim_triple_death[u8(Random.randI(EntityDefinitions::CZombieBaseDef::FAKE_DEATH_TYPES_COUNT))]);
 	move().stop					();

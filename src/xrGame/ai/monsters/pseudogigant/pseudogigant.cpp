@@ -15,24 +15,39 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "../control_path_builder_base.h"
 
-
 CPseudoGiantBase::CPseudoGiantBase()
 {
 	CControlled::init_external(this);
 
-	StateMan = new CStateManagerGigant(this);
+	pStateManagerBase = new CPseudoGiantBaseStateManager(this);
 	
+	m_time_next_threaten = {};
+
+	m_threaten_delay_min = {};
+	m_threaten_delay_max = {};
+	m_threaten_dist_min = {};
+	m_threaten_dist_max = {};
+
+	m_kick_damage = {};
+
+	m_time_kick_actor_slow_down = {};
+
+	m_fsVelocityJumpPrepare = {};
+	m_fsVelocityJumpGround = {};
+
+	m_kick_particles = {};
+
+	step_effector = {};
+
 	com_man().add_ability(ControlCom::eControlRunAttack);
 	com_man().add_ability(ControlCom::eControlThreaten);
-	//com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlRotationJump);
 }
 
 CPseudoGiantBase::~CPseudoGiantBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
-
 
 void CPseudoGiantBase::Load(LPCSTR section)
 {
@@ -40,14 +55,7 @@ void CPseudoGiantBase::Load(LPCSTR section)
 
 	anim().AddReplacedAnim(&m_bDamaged,			eAnimRun,		eAnimRunDamaged);
 	anim().AddReplacedAnim(&m_bDamaged,			eAnimWalkFwd,	eAnimWalkDamaged);
-	//anim().AddReplacedAnim(&m_bRunTurnLeft,		eAnimRun,		eAnimRunTurnLeft);
-	//anim().AddReplacedAnim(&m_bRunTurnRight,	eAnimRun,		eAnimRunTurnRight);
-
 	anim().accel_load			(section);
-	//anim().accel_chain_add		(eAnimWalkFwd,		eAnimRun);
-	//anim().accel_chain_add		(eAnimWalkFwd,		eAnimRunTurnLeft);
-	//anim().accel_chain_add		(eAnimWalkFwd,		eAnimRunTurnRight);
-	//anim().accel_chain_add		(eAnimWalkDamaged,	eAnimRunDamaged);
 
 	step_effector.time			= pSettings->r_float(section,	"step_effector_time");
 	step_effector.amplitude		= pSettings->r_float(section,	"step_effector_amplitude");
@@ -56,11 +64,8 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	SVelocityParam &velocity_none		= move().get_velocity(MonsterMovement::eVelocityParameterIdle);	
 	SVelocityParam &velocity_turn		= move().get_velocity(MonsterMovement::eVelocityParameterStand);
 	SVelocityParam &velocity_walk		= move().get_velocity(MonsterMovement::eVelocityParameterWalkNormal);
-//	SVelocityParam &velocity_run		= move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
 	SVelocityParam &velocity_walk_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterWalkDamaged);
-//	SVelocityParam &velocity_run_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterRunDamaged);
 	SVelocityParam &velocity_steal		= move().get_velocity(MonsterMovement::eVelocityParameterSteal);
-
 
 	anim().AddAnim(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 	anim().AddAnim(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
@@ -80,29 +85,6 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	anim().AddAnim(eAnimStandLieDown,	"stand_lie_down_",		-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");	
 	anim().AddAnim(eAnimLieToSleep,		"lie_to_sleep_",		-1, &velocity_none,		PS_LIE,		"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
 
-
-	//anim().AddAnim(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimLieIdle,		"stand_sleep_",			-1, &velocity_none,		PS_LIE,		"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT,		"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimSleep,			"stand_sleep_",			-1, &velocity_none,		PS_LIE,		"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimWalkFwd,		"stand_walk_fwd_",		-1, &velocity_walk,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimWalkDamaged,	"stand_walk_fwd_dmg_",	-1, &velocity_walk_dmg,	PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimRun,			"stand_run_fwd_",		-1,	&velocity_run,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimRunDamaged,		"stand_run_dmg_",		-1,	&velocity_run_dmg,	PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimEat,			"stand_eat_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimAttack,			"stand_attack_",		-1, &velocity_turn,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimLookAround,		"stand_idle_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimSteal,			"stand_steal_",			-1, &velocity_steal,	PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimDie,			"stand_idle_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimStandLieDown,	"stand_lie_down_",		-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");	
-	//anim().AddAnim(eAnimLieToSleep,		"lie_to_sleep_",		-1, &velocity_none,		PS_LIE,		"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-	//anim().AddAnim(eAnimThreaten,		"stand_kick_",			-1, &velocity_none,		PS_STAND,	"fx_stand_f", "fx_stand_b", "fx_stand_l", "fx_stand_r");
-
-// 	anim().AddAnim(eAnimRunTurnLeft,	"stand_run_left_",		-1, &velocity_run,		PS_STAND);
-// 	anim().AddAnim(eAnimRunTurnRight,	"stand_run_right_",		-1, &velocity_run,		PS_STAND);
-
 	anim().LinkAction(ACT_STAND_IDLE,	eAnimStandIdle);
 	anim().LinkAction(ACT_SIT_IDLE,		eAnimSitIdle);
 	anim().LinkAction(ACT_LIE_IDLE,		eAnimLieIdle);
@@ -116,8 +98,7 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	anim().LinkAction(ACT_ATTACK,		eAnimAttack);
 	anim().LinkAction(ACT_STEAL,		eAnimSteal);
 	anim().LinkAction(ACT_LOOK_AROUND,	eAnimStandIdle);
-
-	// define transitions																											
+																											
 	anim().AddTransition(eAnimStandLieDown,	eAnimSleep,		eAnimLieToSleep,		false);										
 	anim().AddTransition(PS_STAND,			eAnimSleep,		eAnimStandLieDown,		true);
 	anim().AddTransition(PS_STAND,			PS_LIE,			eAnimStandLieDown,		false);
@@ -126,8 +107,6 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	anim().accel_chain_test		();
 #endif
 
-
-	// Load psi postprocess --------------------------------------------------------
 	LPCSTR ppi_section = pSettings->r_string(section, "threaten_effector");
 	m_threaten_effector.ppi.duality.h		= pSettings->r_float(ppi_section,"duality_h");
 	m_threaten_effector.ppi.duality.v		= pSettings->r_float(ppi_section,"duality_v");
@@ -138,9 +117,29 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	m_threaten_effector.ppi.noise.fps		= pSettings->r_float(ppi_section,"noise_fps");
 	VERIFY(!fis_zero(m_threaten_effector.ppi.noise.fps));
 
-	sscanf(pSettings->r_string(ppi_section,"color_base"),	"%f,%f,%f", &m_threaten_effector.ppi.color_base.r,	&m_threaten_effector.ppi.color_base.g,	&m_threaten_effector.ppi.color_base.b);
-	sscanf(pSettings->r_string(ppi_section,"color_gray"),	"%f,%f,%f", &m_threaten_effector.ppi.color_gray.r,	&m_threaten_effector.ppi.color_gray.g,	&m_threaten_effector.ppi.color_gray.b);
-	sscanf(pSettings->r_string(ppi_section,"color_add"),	"%f,%f,%f", &m_threaten_effector.ppi.color_add.r,	&m_threaten_effector.ppi.color_add.g,	&m_threaten_effector.ppi.color_add.b);
+	if (sscanf(pSettings->r_string(ppi_section, "color_base"), "%f,%f,%f",
+		&m_threaten_effector.ppi.color_base.r,
+		&m_threaten_effector.ppi.color_base.g,
+		&m_threaten_effector.ppi.color_base.b) != 3) 
+	{
+		Msg("! Error parsing 'color_base'\n");
+	}
+
+	if (sscanf(pSettings->r_string(ppi_section, "color_gray"), "%f,%f,%f",
+		&m_threaten_effector.ppi.color_gray.r,
+		&m_threaten_effector.ppi.color_gray.g,
+		&m_threaten_effector.ppi.color_gray.b) != 3) 
+	{
+		Msg("! Error parsing 'color_gray'\n");
+	}
+
+	if (sscanf(pSettings->r_string(ppi_section, "color_add"), "%f,%f,%f",
+		&m_threaten_effector.ppi.color_add.r,
+		&m_threaten_effector.ppi.color_add.g,
+		&m_threaten_effector.ppi.color_add.b) != 3) 
+	{
+		Msg("! Error parsing 'color_add'\n");
+	}
 
 	m_threaten_effector.time			= pSettings->r_float(ppi_section,"time");
 	m_threaten_effector.time_attack	= pSettings->r_float(ppi_section,"time_attack");
@@ -150,9 +149,6 @@ void CPseudoGiantBase::Load(LPCSTR section)
 	m_threaten_effector.ce_amplitude		= pSettings->r_float(ppi_section,"ce_amplitude");
 	m_threaten_effector.ce_period_number	= pSettings->r_float(ppi_section,"ce_period_number");
 	m_threaten_effector.ce_power			= pSettings->r_float(ppi_section,"ce_power");
-
-	// --------------------------------------------------------------------------------
-	
 
 	::Sound->create(m_sound_threaten_hit,pSettings->r_string(section,"sound_threaten_hit"),		st_Effect,SOUND_TYPE_WORLD);
 	::Sound->create(m_sound_start_threaten,pSettings->r_string(section,"sound_threaten_start"), st_Effect,SOUND_TYPE_MONSTER_ATTACKING);
@@ -178,39 +174,35 @@ void CPseudoGiantBase::reinit()
 	move().load_velocity(*cNameSect(), "Velocity_JumpPrepare",MonsterMovement::eGiantVelocityParameterJumpPrepare);
 	move().load_velocity(*cNameSect(), "Velocity_JumpGround",MonsterMovement::eGiantVelocityParameterJumpGround);
 	
-	//com_man().load_jump_data(0,"jump_attack_0", "jump_attack_1", "jump_attack_2", MonsterMovement::eGiantVelocityParameterJumpPrepare, MonsterMovement::eGiantVelocityParameterJumpGround,0);
 	com_man().add_rotation_jump_data("1","2","3","4", PI_DIV_2);
 
 	com_man().set_threaten_data	("stand_kick_0", 0.43f);
 }
 
-
-
-#define MAX_STEP_RADIUS 60.f
-
 void CPseudoGiantBase::event_on_step()
 {
-	//////////////////////////////////////////////////////////////////////////
-	// Earthquake Effector	//////////////
 	CActor* pActor =  smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor)
+
+	if (pActor)
 	{
 		float dist_to_actor = pActor->Position().distance_to(Position());
-		float max_dist		= MAX_STEP_RADIUS;
+
+		float max_dist		= EntityDefinitions::CPseudoGiantBaseDef::MAX_STEP_RADIUS;
+
 		if (dist_to_actor < max_dist) 
-			Actor()->Cameras().AddCamEffector(new CPseudogigantStepEffector(
+			Actor()->Cameras().AddCamEffector(new CPseudoGiantBaseStepEffector(
 				step_effector.time, 
 				step_effector.amplitude, 
 				step_effector.period_number, 
 				(max_dist - dist_to_actor) / (1.2f * max_dist))
 			);
 	}
-	//////////////////////////////////
 }
 
 bool CPseudoGiantBase::check_start_conditions(ControlCom::EControlType type)
 {
-	if (!inherited::check_start_conditions(type))	return false;
+	if (!inherited::check_start_conditions(type))	
+		return false;
 
 	if (type == ControlCom::eControlRunAttack)		
 		return true;
@@ -220,10 +212,9 @@ bool CPseudoGiantBase::check_start_conditions(ControlCom::EControlType type)
 		if (m_time_next_threaten > time()) 
 			return false;
 
-		if ( !EnemyMan.get_enemy() )
+		if (!EnemyMan.get_enemy())
 			return false;
 
-		// check distance to enemy
 		float dist = EnemyMan.get_enemy()->Position().distance_to(Position());
 
 		if ((dist > m_threaten_dist_max) || (dist < m_threaten_dist_min)) 
@@ -235,7 +226,8 @@ bool CPseudoGiantBase::check_start_conditions(ControlCom::EControlType type)
 
 void CPseudoGiantBase::on_activate_control(ControlCom::EControlType type)
 {
-	if (type == ControlCom::eControlThreaten) {
+	if (type == ControlCom::eControlThreaten) 
+	{
 		m_sound_start_threaten.play_at_pos(this,get_head_position(this));
 		m_time_next_threaten = time() + Random.randI(m_threaten_delay_min,m_threaten_delay_max);
 	}
@@ -243,15 +235,18 @@ void CPseudoGiantBase::on_activate_control(ControlCom::EControlType type)
 
 void CPseudoGiantBase::on_threaten_execute()
 {
-	// разбросить объекты
 	m_nearest.resize(0);
 	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, nullptr); 
-	for (u32 i=0;i<m_nearest.size();i++) {
-		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell) continue;
 
-		Fvector dir;
-		Fvector pos;
+	for (u32 i=0; i<m_nearest.size(); i++) 
+	{
+		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
+
+		if (!obj || !obj->m_pPhysicsShell) 
+			continue;
+
+		Fvector dir{};
+		Fvector pos{};
 		pos.set(obj->Position());
 		pos.y += 2.f;
 		dir.sub(pos, Position());
@@ -261,105 +256,105 @@ void CPseudoGiantBase::on_threaten_execute()
 	
 	if (IsGameTypeSingle())
 	{
-		// играть звук
-		Fvector		pos;
+		Fvector		pos{};
 		pos.set		(Position());
 		pos.y		+= 0.1f;
 		m_sound_threaten_hit.play_at_pos(this,pos);
 
-		// играть партиклы
 		PlayParticles(m_kick_particles, pos, Direction());
 
-		CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
-	if (!pA)
-		return;
+		CActor *pA = const_cast<CActor*>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
+
+		if (!pA)
+			return;
 
 		if (pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump || pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcFall)
 			return;
 
 		float dist_to_enemy = pA->Position().distance_to(Position());
-		float			hit_value;
-	hit_value		= m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
-	clamp			(hit_value,0.f,1.f);
+		float			hit_value{};
+		hit_value		= m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
+		clamp			(hit_value,0.f,1.f);
 
-		// запустить эффектор
-	Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
-	Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
+		Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
+		Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
 
-		// развернуть камеру
-		if (pA->cam_Active()) {
+		if (pA->cam_Active()) 
+		{
 			pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
 			pA->cam_Active()->Move(Random.randI(2) ? kUP	: kDOWN, Random.randF(0.3f * hit_value));
 		}
 
 		Actor()->lock_accel_for(m_time_kick_actor_slow_down);
 
-		// Нанести хит
-		NET_Packet	l_P;
-		SHit		HS;
+		NET_Packet	l_P{};
+		SHit		HS{};
 
-		HS.GenHeader(GE_HIT, pA->ID());														//	u_EventGen	(l_P,GE_HIT, pA->ID());
-		HS.whoID = (ID());														//	l_P.w_u16	(ID());
-		HS.weaponID = (ID());														//	l_P.w_u16	(ID());
-		HS.dir = (Fvector().set(0.f, 1.f, 0.f));									//	l_P.w_dir	(Fvector().set(0.f,1.f,0.f));
-		HS.power = (hit_value);													//	l_P.w_float	(m_kick_damage);
-		HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
-		HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));									//	l_P.w_vec3	(Fvector().set(0.f,0.f,0.f));
-		HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());						//	l_P.w_float	(20 * pA->movement_control()->GetMass());
-		HS.hit_type = (ALife::eHitTypeStrike);										//	l_P.w_u16	( u16(ALife::eHitTypeWound) );
+		HS.GenHeader(GE_HIT, pA->ID());
+		HS.whoID = (ID());
+		HS.weaponID = (ID());
+		HS.dir = (Fvector().set(0.f, 1.f, 0.f));
+		HS.power = (hit_value);
+		HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
+		HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));
+		HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());
+		HS.hit_type = (ALife::eHitTypeStrike);
 		HS.Write_Packet(l_P);
 		u_EventSend(l_P);
 	}
 	else
 	{
-	
 		struct SendFunctor
 		{
-			CPseudoGiantBase*	pObj;
+			CPseudoGiantBase* pPseudoGiantBase;
 
-			SendFunctor(CPseudoGiantBase* obj) :
-				pObj(obj)
-			{}
+			SendFunctor(CPseudoGiantBase* object) : pPseudoGiantBase(object)
+			{
+
+			}
+
 			void operator()(IClient* client)
 			{
 				xrClientData* CL = static_cast<xrClientData*>(client);
+
 				if (!CL->owner)
 					return;
+
 				CActor* pA = smart_cast<CActor*>(Level().Objects.net_Find(CL->owner->ID));
+
 				if (!pA)
 					return;
 
-				NET_Packet	tmp_packet;
-				CGameObject::u_EventGen(tmp_packet, GE_PSEUDO_GIGANT_KICK, pObj->ID());
+				NET_Packet tmp_packet{};
+				CGameObject::u_EventGen(tmp_packet, GE_PSEUDO_GIGANT_KICK, pPseudoGiantBase->ID());
 				Level().Server->SendTo(client->ID, tmp_packet, net_flags(TRUE, TRUE));
 
-				if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0) return;
-
-				Fvector pos = pObj->Position();
-
-				// check distance to enemy
-				float dist = pA->Position().distance_to(pObj->Position());
-
-				if ((dist > pObj->m_threaten_dist_max) || (dist < pObj->m_threaten_dist_min))
+				if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0) 
 					return;
 
-				float	hit_value;
-				hit_value = pObj->m_kick_damage - pObj->m_kick_damage * dist / pObj->m_threaten_dist_max;
+				Fvector pos = pPseudoGiantBase->Position();
+
+				float dist = pA->Position().distance_to(pPseudoGiantBase->Position());
+
+				if ((dist > pPseudoGiantBase->m_threaten_dist_max) || (dist < pPseudoGiantBase->m_threaten_dist_min))
+					return;
+
+				float hit_value{};
+				hit_value = pPseudoGiantBase->m_kick_damage - pPseudoGiantBase->m_kick_damage * dist / pPseudoGiantBase->m_threaten_dist_max;
 				clamp(hit_value, 0.f, 1.f);
 
-				// Нанести хит
-				NET_Packet	l_P;
-				SHit		HS;
+				NET_Packet	l_P{};
+				SHit		HS{};
 
-				HS.GenHeader(GE_HIT, pA->ID());														//	u_EventGen	(l_P,GE_HIT, pA->ID());
-				HS.whoID = (pObj->ID());														//	l_P.w_u16	(ID());
-				HS.weaponID = (pObj->ID());														//	l_P.w_u16	(ID());
-				HS.dir = (Fvector().set(0.f, 1.f, 0.f));									//	l_P.w_dir	(Fvector().set(0.f,1.f,0.f));
-				HS.power = (hit_value);													//	l_P.w_float	(m_kick_damage);
-				HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
-				HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));									//	l_P.w_vec3	(Fvector().set(0.f,0.f,0.f));
-				HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());						//	l_P.w_float	(20 * pA->movement_control()->GetMass());
-				HS.hit_type = (ALife::eHitTypeStrike);										//	l_P.w_u16	( u16(ALife::eHitTypeWound) );
+				HS.GenHeader(GE_HIT, pA->ID());
+				HS.whoID = (pPseudoGiantBase->ID());
+				HS.weaponID = (pPseudoGiantBase->ID());
+				HS.dir = (Fvector().set(0.f, 1.f, 0.f));
+				HS.power = (hit_value);
+				HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
+				HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));
+				HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());
+				HS.hit_type = (ALife::eHitTypeStrike);
 				HS.Write_Packet(l_P);
 				u_EventSend(l_P);
 			}
@@ -370,7 +365,7 @@ void CPseudoGiantBase::on_threaten_execute()
 	}
 }
 
-void CPseudoGiantBase::HitEntityInJump		(const CEntity *pEntity) 
+void CPseudoGiantBase::HitEntityInJump(const CEntity *pEntity) 
 {
 	SAAParam &params	= anim().AA_GetParams("jump_attack_1");
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
@@ -378,7 +373,8 @@ void CPseudoGiantBase::HitEntityInJump		(const CEntity *pEntity)
 
 void CPseudoGiantBase::TranslateActionToPathParams()
 {
-	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD)) {
+	if ((anim().m_tAction != ACT_RUN) && (anim().m_tAction != ACT_WALK_FWD)) 
+	{
 		inherited::TranslateActionToPathParams();
 		return;
 	}
@@ -386,7 +382,8 @@ void CPseudoGiantBase::TranslateActionToPathParams()
 	u32 vel_mask = (m_bDamaged ? MonsterMovement::eVelocityParamsWalkDamaged : MonsterMovement::eVelocityParamsWalk);
 	u32 des_mask = (m_bDamaged ? MonsterMovement::eVelocityParameterWalkDamaged : MonsterMovement::eVelocityParameterWalkNormal);
 
-	if (m_force_real_speed) vel_mask = des_mask;
+	if (m_force_real_speed) 
+		vel_mask = des_mask;
 
 	path().set_velocity_mask	(vel_mask);
 	path().set_desirable_mask	(des_mask);
@@ -399,41 +396,42 @@ void CPseudoGiantBase::OnEvent(NET_Packet& P, u16 type)
 
 	switch (type)
 	{
-	case GE_PSEUDO_GIGANT_KICK:
-		CActor* pA = Actor();
-		if (!pA) break;
+		case GE_PSEUDO_GIGANT_KICK:
+			CActor* pA = Actor();
 
-		// играть звук
-		Fvector		pos;
-		pos.set(Position());
-		pos.y += 0.1f;
-		m_sound_threaten_hit.play_at_pos(this, pos);
+			if (!pA) 
+				break;
 
-		// играть партиклы
-		PlayParticles(m_kick_particles, pos, Direction());
+			Fvector	pos{};
+			pos.set(Position());
+			pos.y += 0.1f;
+			m_sound_threaten_hit.play_at_pos(this, pos);
 
-		float dist_to_enemy = pA->Position().distance_to(Position());
+			PlayParticles(m_kick_particles, pos, Direction());
 
-		if ((dist_to_enemy > m_threaten_dist_max) || (dist_to_enemy < m_threaten_dist_min))
-			break;
+			float dist_to_enemy = pA->Position().distance_to(Position());
 
-		if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0) break;
+			if ((dist_to_enemy > m_threaten_dist_max) || (dist_to_enemy < m_threaten_dist_min))
+				break;
 
-		float			hit_value;
-		hit_value = m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
-		clamp(hit_value, 0.f, 1.f);
+			if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0) 
+				break;
 
-		// запустить эффектор
-		Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_threaten_effector.ce_time, m_threaten_effector.ce_amplitude * hit_value, m_threaten_effector.ce_period_number, m_threaten_effector.ce_power * hit_value));
-		Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
+			float hit_value{};
 
-		// развернуть камеру
-		if (pA->cam_Active()) {
-			pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
-			pA->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, Random.randF(0.3f * hit_value));
-		}
+			hit_value = m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
+			clamp(hit_value, 0.f, 1.f);
 
-		Actor()->lock_accel_for(m_time_kick_actor_slow_down);
+			Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_threaten_effector.ce_time, m_threaten_effector.ce_amplitude * hit_value, m_threaten_effector.ce_period_number, m_threaten_effector.ce_power * hit_value));
+			Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_threaten_effector.ppi, m_threaten_effector.time, m_threaten_effector.time_attack, m_threaten_effector.time_release, hit_value));
+
+			if (pA->cam_Active()) 
+			{
+				pA->cam_Active()->Move(Random.randI(2) ? kRIGHT : kLEFT, Random.randF(0.3f * hit_value));
+				pA->cam_Active()->Move(Random.randI(2) ? kUP : kDOWN, Random.randF(0.3f * hit_value));
+			}
+
+			Actor()->lock_accel_for(m_time_kick_actor_slow_down);
 
 		break;
 	}

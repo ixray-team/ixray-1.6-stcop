@@ -9,12 +9,12 @@
 
 CCatBase::CCatBase()
 {
-	StateMan = new CustomCatStateManager		(this);
+	pStateManagerBase = new CustomCatStateManager		(this);
 }
 
 CCatBase::~CCatBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CCatBase::Load(LPCSTR section)

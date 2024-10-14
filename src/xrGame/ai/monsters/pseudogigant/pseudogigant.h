@@ -1,28 +1,28 @@
 #pragma once
+#include "../../ai_entity_definitions.h"
 #include "../BaseMonster/base_monster.h"
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-
-class CPseudoGiantBase : public CBaseMonster,
-					  public CControlledEntity {
-	
-	typedef		CBaseMonster						inherited;
-	typedef		CControlledEntity	CControlled;
+class CPseudoGiantBase : public CBaseMonster, public CControlledEntity 
+{
+protected:
+	using		inherited = CBaseMonster						;
+	using		CControlled = CControlledEntity	;
 
 private:
 	xr_vector<CObject*>		m_nearest;
 
-	// step_effector
-	struct {
+	struct 
+	{
 		float time;
 		float amplitude;	
 		float period_number;
 	} step_effector;
 
 	SAttackEffector m_threaten_effector;
-	ref_sound		m_sound_threaten_hit;		// звук, который играется в голове у актера
-	ref_sound		m_sound_start_threaten;		// звук, который играется в голове у актера
+	ref_sound		m_sound_threaten_hit;
+	ref_sound		m_sound_start_threaten;
 	
 	u32				m_time_next_threaten;
 	
@@ -40,27 +40,26 @@ private:
 
 	LPCSTR			m_kick_particles;
 
-
 public:
 					CPseudoGiantBase				();
-	virtual			~CPseudoGiantBase				();	
+	virtual			~CPseudoGiantBase				() override;	
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	reinit				();
+	virtual void	Load				(LPCSTR section) override;
+	virtual void	reinit				() override;
 
-	virtual bool	ability_earthquake	() {return true;}
-	virtual void	event_on_step		();
+	virtual bool	ability_earthquake	() override { return true; }
+	virtual void	event_on_step		() override;
 
-	virtual bool	check_start_conditions	(ControlCom::EControlType type);
-	virtual void	on_activate_control		(ControlCom::EControlType);
+	virtual bool	check_start_conditions	(ControlCom::EControlType type) override;
+	virtual void	on_activate_control		(ControlCom::EControlType) override;
 
-	virtual	void	on_threaten_execute	();
+	virtual	void	on_threaten_execute	() override;
 
-	virtual void	HitEntityInJump		(const CEntity *pEntity);
-	virtual void	TranslateActionToPathParams	();
-	virtual	char*	get_monster_class_name () { return (char*) "pseudogigant"; }
+	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
+	virtual void	TranslateActionToPathParams	() override;
+	virtual	char*	get_monster_class_name () override { return (char*) "pseudogigant"; }
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
+	virtual void	OnEvent(NET_Packet& P, u16 type) override;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

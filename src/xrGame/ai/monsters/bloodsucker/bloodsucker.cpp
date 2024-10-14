@@ -30,7 +30,8 @@ u32	CBloodsuckerBase::m_time_last_vampire = 0;
 
 CBloodsuckerBase::CBloodsuckerBase()
 {
-	StateMan = new CustomBloodsukerStateManager(this);
+	pStateManagerBase = new CustomBloodsukerStateManager(this);
+
 	m_alien_control.init_external(this);
 	m_drag_anim_jump = false;
 	m_animated = false;
@@ -74,7 +75,7 @@ CBloodsuckerBase::CBloodsuckerBase()
 
 CBloodsuckerBase::~CBloodsuckerBase()
 {
-	xr_delete	(StateMan);
+	xr_delete	(pStateManagerBase);
 }
 
 void CBloodsuckerBase::Load(LPCSTR section)

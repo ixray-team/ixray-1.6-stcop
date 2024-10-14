@@ -277,7 +277,7 @@ void CBaseMonster::reinit()
 	EnemyMan.reinit						();
 	CorpseMan.reinit					();
 
-	StateMan->reinit					();
+	pStateManagerBase->reinit			();
 	
 	Morale.reinit						();
 
@@ -362,7 +362,7 @@ void CBaseMonster::net_Destroy()
 {
 	// функция должена быть вызвана перед inherited
 	if (m_controlled) m_controlled->on_destroy	();
-	if (StateMan) StateMan->critical_finalize	();
+	if (pStateManagerBase) pStateManagerBase->critical_finalize	();
 
 	inherited::net_Destroy				();
 	CInventoryOwner::net_Destroy		();

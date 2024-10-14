@@ -40,7 +40,8 @@ CZombieBaseStateManager::~CZombieBaseStateManager()
 
 void CZombieBaseStateManager::execute()
 {
-	if (object->com_man().ta_is_active()) return;
+	if (object->com_man().ta_is_active()) 
+		return;
 	
 	u32 state_id = u32(-1);
 	
@@ -67,7 +68,9 @@ void CZombieBaseStateManager::execute()
 			else			
 				state_id = eStateRest;
 		}
-	} else state_id = eStateControlled;
+	} 
+	else 
+		state_id = eStateControlled;
 
 	select_state(state_id); 
 

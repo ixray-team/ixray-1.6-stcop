@@ -12,8 +12,8 @@ protected:
 
 public:
 	CSnorkBaseStateManager(CBaseMonster* object);
-	virtual				~CSnorkBaseStateManager();
+	virtual				~CSnorkBaseStateManager() override;
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object); }
+	virtual	void		execute					() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object); }
 };

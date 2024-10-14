@@ -56,22 +56,17 @@ namespace controller::detail
 
 CControllerBase::CControllerBase()
 {
-	StateMan = new CStateManagerController(this);
+	pStateManagerBase = new CStateManagerController(this);
 	time_control_hit_started = 0;
 
 	m_psy_hit			= new CControllerPsyHit();
 
 	control().add		(m_psy_hit,  ControlCom::eComCustom1);
-
-#ifdef _DEBUG	
-	P1.set(0.f,0.f,0.f);
-	P2.set(0.f,0.f,0.f);
-#endif
 }
 
 CControllerBase::~CControllerBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 	xr_delete(m_psy_hit);
 }
 

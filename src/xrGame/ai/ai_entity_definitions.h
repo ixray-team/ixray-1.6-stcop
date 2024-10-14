@@ -2,6 +2,11 @@
 
 namespace EntityDefinitions 
 {
+	struct CPseudoGiantBaseDef
+	{
+		static constexpr float MAX_STEP_RADIUS = 60.f;
+	};
+
 	struct CSnorkBaseDef 
 	{
 		static constexpr float TRACE_RANGE = 30.f;

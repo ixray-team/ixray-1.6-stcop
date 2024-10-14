@@ -29,7 +29,7 @@ bool CBurerBase::can_scan = true;
 
 CBurerBase::CBurerBase()
 {
-	StateMan				=	new CStateManagerBurer(this);
+	pStateManagerBase =	new CStateManagerBurer(this);
 
  	m_fast_gravi			=	new CBurerFastGravi();
 
@@ -38,7 +38,7 @@ CBurerBase::CBurerBase()
 
 CBurerBase::~CBurerBase()
 {
-	xr_delete					(StateMan);
+	xr_delete					(pStateManagerBase);
 	xr_delete					(m_fast_gravi);
 }
 

@@ -323,7 +323,7 @@ public:
 	CCoverEvaluatorCloseToEnemy		*m_cover_evaluator_close_point;
 
 	// ---------------------------------------------------------------------------------
-	IStateManagerBase		*StateMan;
+	IStateManagerBase		*pStateManagerBase;
 	// ---------------------------------------------------------------------------------
 
 	CMonsterEnemyMemory		EnemyMemory;

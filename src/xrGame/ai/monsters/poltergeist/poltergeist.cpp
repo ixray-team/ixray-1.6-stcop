@@ -24,7 +24,7 @@ void SetActorVisibility(u16 who, float value);
 
 CPoltergeistBase::CPoltergeistBase()
 {
-	StateMan					= new CStateManagerPoltergeist(this);
+	pStateManagerBase = new CStateManagerPoltergeist(this);
 	
 	invisible_vel.set			(0.1f, 0.1f);
 	
@@ -37,7 +37,7 @@ CPoltergeistBase::~CPoltergeistBase()
 {
 	remove_pp_effector	();
 
-	xr_delete		(StateMan);
+	xr_delete		(pStateManagerBase);
 	xr_delete		(m_flame);
 	xr_delete		(m_tele);
 }
@@ -351,7 +351,7 @@ BOOL CPoltergeistBase::net_Spawn (CSE_Abstract* DC)
 	VERIFY(character_physics_support());
 	VERIFY(character_physics_support()->movement());
 	character_physics_support()->movement()->DestroyCharacter();
-	// ñïàóíèòñÿ íèâèäèìûì
+	// ÑÐ¿Ð°ÑƒÐ½Ð¸Ñ‚ÑÑ Ð½Ð¸Ð²Ð¸Ð´Ð¸Ð¼Ñ‹Ð¼
 	setVisible		(false);
 	ability()->on_hide();
 	

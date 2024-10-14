@@ -8,7 +8,7 @@
 
 CFleshBase::CFleshBase()
 {
-	StateMan = new CustomFleshStateManager(this);
+	pStateManagerBase = new CustomFleshStateManager(this);
 	
 	m_fEyeShiftYaw		= PI_DIV_6;
 
@@ -17,7 +17,7 @@ CFleshBase::CFleshBase()
 
 CFleshBase::~CFleshBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 BOOL CFleshBase::net_Spawn (CSE_Abstract* DC)

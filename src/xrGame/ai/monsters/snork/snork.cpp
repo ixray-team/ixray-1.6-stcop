@@ -12,7 +12,8 @@
 
 CSnorkBase::CSnorkBase() 
 {
-	StateMan = new CSnorkBaseStateManager(this);
+	pStateManagerBase = new CSnorkBaseStateManager(this);
+
 	com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlThreaten);
 
@@ -21,7 +22,7 @@ CSnorkBase::CSnorkBase()
 
 CSnorkBase::~CSnorkBase()
 {
-	xr_delete		(StateMan);
+	xr_delete		(pStateManagerBase);
 }
 
 void CSnorkBase::Load(LPCSTR section)
@@ -106,7 +107,7 @@ float CSnorkBase::trace(const Fvector &dir)
 {
 	float ret_val = flt_max;
 
-	collide::rq_result	l_rq;
+	collide::rq_result	l_rq{};
 
 	Fvector		trace_from;
 	Center		(trace_from);
@@ -125,7 +126,7 @@ float CSnorkBase::trace(const Fvector &dir)
 bool CSnorkBase::find_geometry(Fvector &dir)
 {
 	dir		= Direction();
-	float	range;
+	float	range{};
 	
 	if (trace_geometry(dir, range)) 
 	{
@@ -140,11 +141,11 @@ bool CSnorkBase::find_geometry(Fvector &dir)
 
 bool CSnorkBase::trace_geometry(const Fvector &d, float &range)
 {
-	Fvector				dir;
-	float				h, p;
+	Fvector				dir{};
+	float				h{}, p{};
 
-	Fvector				Pl,Pc,Pr;
-	Fvector				center;
+	Fvector				Pl{}, Pc{}, Pr{};
+	Fvector				center{};
 	Center				(center);
 
 	range				= trace (d);
@@ -168,7 +169,7 @@ bool CSnorkBase::trace_geometry(const Fvector &d, float &range)
 
 	Pc.mad				(center, dir, range);
 
-	Fvector				temp_p;
+	Fvector				temp_p{};
 	temp_p.mad			(Pc, XFORM().i, Radius() / 2);
 	dir.sub				(temp_p, center);
 	dir.normalize_safe	();
@@ -193,7 +194,7 @@ bool CSnorkBase::trace_geometry(const Fvector &d, float &range)
 
 	Pr.mad				(center, dir, range);
 
-	float				h1,p1,h2,p2;
+	float				h1{}, p1{}, h2{}, p2{};
 
 	Fvector().sub(Pl, Pc).getHP(h1,p1);
 	Fvector().sub(Pc, Pr).getHP(h2,p2);

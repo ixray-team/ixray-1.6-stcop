@@ -14,13 +14,13 @@
 
 CChimeraBase::CChimeraBase ()
 {
-	StateMan							=	new CStateManagerChimera	(this);
+	pStateManagerBase =	new CStateManagerChimera	(this);
 	com_man().add_ability					(ControlCom::eControlJump);
 }
 
 CChimeraBase::~CChimeraBase ()
 {
-	xr_delete								(StateMan);
+	xr_delete								(pStateManagerBase);
 }
 
 void   CChimeraBase::Load (LPCSTR section)

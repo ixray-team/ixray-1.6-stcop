@@ -294,7 +294,7 @@ bool CBaseMonster::bfAssignWatch(CScriptEntityAction *tpEntityAction)
 	if (!inherited::bfAssignWatch(tpEntityAction))
 		return		(false);
 	
-	// Èíèöèàëèçèðîâàòü action
+	// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ action
 	anim().m_tAction = ACT_STAND_IDLE;
 
 	CScriptWatchAction	&l_tWatchAction = tpEntityAction->m_tWatchAction;
@@ -380,27 +380,27 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction *tpEntityAction)
 
 	switch(l_tAction.m_tAction) {
 		case eGA_Rest:		
-			StateMan->force_script_state(eStateRest);	
+			pStateManagerBase->force_script_state(eStateRest);
 			break;
 		case eGA_Eat:		
 			if (pE && !pE->getDestroy() && !pE->g_Alive()){
 				CorpseMan.force_corpse(pE);
-				StateMan->force_script_state(eStateEat);	
-			} else StateMan->force_script_state(eStateRest);	
+				pStateManagerBase->force_script_state(eStateEat);
+			} else pStateManagerBase->force_script_state(eStateRest);
 
 			break;
 		case eGA_Attack:
 			if (pE && !pE->getDestroy() && pE->g_Alive()){
 				EnemyMan.force_enemy(pE);
-				StateMan->force_script_state(eStateAttack);
-			} else StateMan->force_script_state(eStateRest);
+				pStateManagerBase->force_script_state(eStateAttack);
+			} else pStateManagerBase->force_script_state(eStateRest);
 
 			break;
 		case eGA_Panic:		
 			if (pE && !pE->getDestroy() && pE->g_Alive()){
 				EnemyMan.force_enemy			(pE);
-				StateMan->force_script_state	(eStatePanic);
-			} else StateMan->force_script_state	(eStateRest);	
+				pStateManagerBase->force_script_state	(eStatePanic);
+			} else pStateManagerBase->force_script_state	(eStateRest);
 			break;
 	}
 
@@ -422,33 +422,33 @@ void CBaseMonster::ProcessScripts()
 
 	//movement().Update_Initialize			();
 	
-	// Âûïîëíèòü ñêðèïòîâûå actions
+	// Ð’Ñ‹Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²Ñ‹Ðµ actions
 	m_script_state_must_execute					= false;
 	inherited::ProcessScripts					();
 
 	Device.dwTimeGlobal							= Device.dwTimeGlobal;
 
-	// îáíîâèòü ìèð (ïàìÿòü, âðàãè, îáúåêòû)
+	// Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¼Ð¸Ñ€ (Ð¿Ð°Ð¼ÑÑ‚ÑŒ, Ð²Ñ€Ð°Ð³Ð¸, Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹)
 	UpdateMemory								();
 	
 	anim().accel_deactivate					();
 
-	// åñëè èç ñêðèïòà âûáðàíî äåéñòâèå ïî óíèâåðñàëüíîé ñõåìå, âûïîëíèòü åãî
+	// ÐµÑÐ»Ð¸ Ð¸Ð· ÑÐºÑ€Ð¸Ð¿Ñ‚Ð° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ Ð¿Ð¾ ÑƒÐ½Ð¸Ð²ÐµÑ€ÑÐ°Ð»ÑŒÐ½Ð¾Ð¹ ÑÑ…ÐµÐ¼Ðµ, Ð²Ñ‹Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ ÐµÐ³Ð¾
 	if (m_script_state_must_execute) 	
-		StateMan->execute_script_state			();		
+		pStateManagerBase->execute_script_state			();
 	
 	TranslateActionToPathParams					();
 
-	// îáíîâèòü ïóòü
+	// Ð¾Ð±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð¿ÑƒÑ‚ÑŒ
 	//movement().Update_Execute			();
 
 	//anim().Update							();
 	
-	// óñòàíîâèòü òåêóùóþ ñêîðîñòü
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ
 	//movement().Update_Finalize			();
 
-	// Óäàëèòü âñå âðàãè è îáúåêòû, êîòîðûå áûëè ïðèíóäèòåëüíî óñòàíîâëåíû
-	// âî âðåìÿ âûïîëíåíèÿ ñêðèïòîâîãî äåéñòâèÿ
+	// Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð²Ñ€Ð°Ð³Ð¸ Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð±Ñ‹Ð»Ð¸ Ð¿Ñ€Ð¸Ð½ÑƒÐ´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ñ‹
+	// Ð²Ð¾ Ð²Ñ€ÐµÐ¼Ñ Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ñ ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð²Ð¾Ð³Ð¾ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ
 	if (m_script_state_must_execute) {
 		EnemyMan.unforce_enemy();
 		CorpseMan.unforce_corpse();
@@ -505,7 +505,7 @@ void CBaseMonster::SetEnemy(const CEntityAlive *sent)
 
 void CBaseMonster::SetScriptControl(const bool bScriptControl, shared_str caScriptName)
 {
-	if (StateMan) StateMan->critical_finalize();
+	if (pStateManagerBase) pStateManagerBase->critical_finalize();
 
 	if ( !m_bScriptControl && bScriptControl )
 	{

@@ -77,12 +77,12 @@ CBaseMonster::CBaseMonster() :	m_psy_aura(this, "psy"),
 
 	// Инициализация параметров анимации	
 
-	StateMan						= 0;
+	pStateManagerBase				= nullptr;
 
 	MeleeChecker.init_external		(this);
 	Morale.init_external			(this);
 
-	m_controlled					= 0;
+	m_controlled					= nullptr;
 	
 	control().add					(&m_com_manager,  ControlCom::eControlCustom);
 	
@@ -412,7 +412,7 @@ void CBaseMonster::shedule_Update(u32 dt)
 
 void CBaseMonster::Die(CObject* who)
 {
-	if (StateMan) StateMan->critical_finalize();
+	if (pStateManagerBase) pStateManagerBase->critical_finalize();
 
 	m_psy_aura.on_monster_death();
 	m_radiation_aura.on_monster_death();
@@ -793,7 +793,7 @@ void CBaseMonster::net_Relcase(CObject *O)
 {
 	inherited::net_Relcase(O);
 
-	StateMan->remove_links			(O);
+	pStateManagerBase->remove_links			(O);
 
 	com_man().remove_links			(O);
 
@@ -849,7 +849,7 @@ void CBaseMonster::on_restrictions_change()
 {
 	inherited::on_restrictions_change();
 
-	if (StateMan) StateMan->reinit();
+	if (pStateManagerBase) pStateManagerBase->reinit();
 }
 
 void CBaseMonster::load_effector(LPCSTR section, LPCSTR line, SAttackEffector &effector)
@@ -880,14 +880,14 @@ void CBaseMonster::load_effector(LPCSTR section, LPCSTR line, SAttackEffector &e
 
 bool CBaseMonster::check_start_conditions(ControlCom::EControlType type)
 {
-	if ( !StateMan->check_control_start_conditions(type) )
+	if ( !pStateManagerBase->check_control_start_conditions(type) )
 	{
 		return					false;
 	}
 
 	if ( type == ControlCom::eControlRotationJump )
 	{
-		EMonsterState state	=	StateMan->get_state_type();
+		EMonsterState state	= pStateManagerBase->get_state_type();
 		
 		if ( !is_state(state, eStateAttack_Run) && 
 			 !is_state(state, eStateAttack_RunAttack) ) 
@@ -897,7 +897,7 @@ bool CBaseMonster::check_start_conditions(ControlCom::EControlType type)
 	} 
 	if ( type == ControlCom::eControlMeleeJump ) 
 	{
-		EMonsterState state	=	StateMan->get_state_type();
+		EMonsterState state	= pStateManagerBase->get_state_type();
 
 		if (!is_state(state, eStateAttack_Run) && 
 			!is_state(state, eStateAttack_Melee) &&

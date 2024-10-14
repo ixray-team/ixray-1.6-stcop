@@ -11,7 +11,6 @@ class CStatePsyDogHide : public CState {
 		u32		node;
 	} target;
 
-
 public:
 					CStatePsyDogHide		(CBaseMonster*obj) : inherited(obj) {}
 	virtual			~CStatePsyDogHide		() {}

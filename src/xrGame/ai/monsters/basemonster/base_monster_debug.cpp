@@ -180,7 +180,7 @@ void CBaseMonster::debug_fsm()
 		return;
 	}
 	
-	EMonsterState state = StateMan->get_state_type();
+	EMonsterState state = pStateManagerBase->get_state_type();
 	
 	string128 st;
 

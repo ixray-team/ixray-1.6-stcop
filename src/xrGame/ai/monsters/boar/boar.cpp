@@ -15,14 +15,14 @@ CBoarBase::CBoarBase()
 
 	look_at_enemy = false;
 
-	StateMan = new CustomBoarStateManager(this);
+	pStateManagerBase = new CustomBoarStateManager(this);
 
 	CControlled::init_external(this);
 }
 
 CBoarBase::~CBoarBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CBoarBase::Load(LPCSTR section)

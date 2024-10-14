@@ -8,8 +8,8 @@ using namespace luabind;
 void CTushkanoBase::script_register(lua_State *L)
 {
 	module(L)
-		[
-			class_<CTushkanoBase,CGameObject>("CTushkanoBase")
-			.def(constructor<>())
-		];
+	[
+		class_<CTushkanoBase,CGameObject>("CTushkanoBase")
+		.def(constructor<>())
+	];
 }

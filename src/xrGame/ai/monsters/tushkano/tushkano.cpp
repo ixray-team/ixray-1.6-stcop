@@ -7,14 +7,14 @@
 
 CTushkanoBase::CTushkanoBase()
 {
-	StateMan = new CTushkanoBaseStateManager(this);
+	pStateManagerBase = new CTushkanoBaseStateManager(this);
 
 	CControlled::init_external(this);
 }
 
 CTushkanoBase::~CTushkanoBase()
 {
-	xr_delete(StateMan);
+	xr_delete(pStateManagerBase);
 }
 
 void CTushkanoBase::Load(LPCSTR section)
