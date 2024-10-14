@@ -249,7 +249,6 @@ protected:
 	void						CurModeToScript				();
 	void						RepairEffect_CurItem		();
 
-	void						RefreshCurrentItemCell		();
 	void						SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*				CurrentItem					();
 	PIItem						CurrentIItem				();
@@ -339,6 +338,7 @@ public:
 	void						UpdateActor					();
 	void						UpdatePartnerBag			();
 	void						UpdateDeadBodyBag			();
+	void						RefreshCurrentItemCell		();
 
 	void				OnBtnPerformTradeBuy		(CUIWindow* w, void* d);
 	void				OnBtnPerformTradeSell		(CUIWindow* w, void* d);
@@ -355,6 +355,5 @@ public:
 	void HighlightForEachInSlot(const luabind::functor<bool>& functor, u8 type, u16 slot_id);
 	CUICellItem* GetCurrentConsumable() { return m_pCurrentConsumable; };
 	void SetCurrentConsumable(CUICellItem* ci) { m_pCurrentConsumable = ci; };
-	void RefreshConsumableCells();
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIActorMenu

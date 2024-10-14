@@ -1476,38 +1476,6 @@ void CUIActorMenu::MoveArtefactsToBag()
 	m_pInventoryBeltList->ClearAll( true );
 }
 
-void CUIActorMenu::RefreshConsumableCells()
-{
-	CUICellItem* ci = GetCurrentConsumable();
-	if (ci)
-	{
-		CEatableItem* eitm = smart_cast<CEatableItem*>((CEatableItem*)ci->m_pData);
-		if (eitm)
-		{
-			Fvector2 cp = GetUICursor().GetCursorPosition();
-			CUIDragDropListEx* invlist = GetListByType(iActorBag);
-
-			CUICellItem* parent = invlist->RemoveItem(ci, true);
-			u32 c = parent->ChildsCount();
-			if (c > 0)
-			{
-				while (parent->ChildsCount())
-				{
-					CUICellItem* child = parent->PopChild(NULL);
-					invlist->SetItem(child);
-				}
-
-				invlist->SetItem(parent);
-			}
-			else
-			{
-				invlist->SetItem(parent);
-			}
-		}
-		SetCurrentConsumable(NULL);
-	}
-}
-
 void CUIActorMenu::RefreshCurrentItemCell()
 {
 	CUICellItem* ci = CurrentItem();
