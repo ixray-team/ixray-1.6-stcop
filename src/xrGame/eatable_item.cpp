@@ -59,8 +59,6 @@ void CEatableItem::Load(LPCSTR section)
 	if (m_iMaxUses < 1)
 		m_iMaxUses = 1;
 
-	m_iPortionsMarker = m_iMaxUses;
-
 	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
 	m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
 	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
@@ -72,13 +70,13 @@ void CEatableItem::Load(LPCSTR section)
 void CEatableItem::load(IReader& packet)
 {
 	inherited::load(packet);
-	m_iPortionsMarker = packet.r_u8();
+	m_iMaxUses = packet.r_u8();
 }
 
 void CEatableItem::save(NET_Packet& packet)
 {
 	inherited::save(packet);
-	packet.w_u8((u8)m_iPortionsMarker);
+	packet.w_u8((u8)m_iMaxUses);
 }
 
 BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
@@ -139,10 +137,10 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 		}
 	}
 
-	if (m_iPortionsMarker > 0)
-		m_iPortionsMarker -= m_eat_condition;
+	if (m_iMaxUses > 0)
+		m_iMaxUses -= m_eat_condition;
 	else
-		m_iPortionsMarker = 0;
+		m_iMaxUses = 0;
 
 	if (bUseHUDAnim)
 	{
