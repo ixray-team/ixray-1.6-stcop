@@ -1143,7 +1143,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 		RenderOldCameraButtons();
 
 	// Gizmo
-	imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
+	if (UI->ViewID == 0)
+		imManipulator.Render(Pos.x, Pos.y, Size.x, Size.y);
 }
 
 void UIMainForm::RenderOldCameraButtons()
