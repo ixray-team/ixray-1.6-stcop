@@ -26,7 +26,7 @@ void move_item_from_to (u16 from_id, u16 to_id, u16 what_id)
 	P.w_u16									(what_id);
 	CGameObject::u_EventSend				(P);
 
-	//äðóãîìó èíâåíòàðþ - âçÿòü âåùü 
+	//Ð´Ñ€ÑƒÐ³Ð¾Ð¼Ñƒ Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŽ - Ð²Ð·ÑÑ‚ÑŒ Ð²ÐµÑ‰ÑŒ 
 	CGameObject::u_EventGen					(P, GE_TRADE_BUY, to_id);
 	P.w_u16									(what_id);
 	CGameObject::u_EventSend				(P);
@@ -136,11 +136,30 @@ void CUIActorMenu::DeInitDeadBodySearchMode()
 
 bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
+	PIItem quest_item = (PIItem)itm->m_pData;
+	if (quest_item->IsQuestItem())
+		return false;
+
 	if ( m_pPartnerInvOwner )
 	{
 		if ( !m_pPartnerInvOwner->deadbody_can_take_status() )
 		{
 			return false;
+		}
+		if (m_pPartnerInvOwner->is_alive())
+		{
+			//Alundaio: 
+			luabind::functor<bool> funct;
+			if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_CanMoveToPartner", funct))
+			{
+				float itmWeight = quest_item->Weight();
+				float partner_inv_weight = m_pPartnerInvOwner->inventory().CalcTotalWeight();
+				float partner_max_weight = m_pPartnerInvOwner->MaxCarryWeight();
+
+				if (funct(m_pPartnerInvOwner->cast_game_object()->lua_game_object(), quest_item->object().lua_game_object(), 0, 0, itmWeight, partner_inv_weight, partner_max_weight) == false)
+					return false;
+			}
+			//-Alundaio
 		}
 	}
 	else // box
@@ -150,9 +169,6 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 			return false;
 		}
 	}
-	PIItem quest_item					= (PIItem)itm->m_pData;
-	if(quest_item->IsQuestItem())
-		return false;
 
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= nullptr;
