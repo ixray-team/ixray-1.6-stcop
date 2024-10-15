@@ -81,6 +81,7 @@ public:
     virtual BOOL 		FrustumPick				(ObjectList& lst, const CFrustum& frustum);
     virtual BOOL 		SpherePick				(ObjectList& lst, const Fvector& center, float radius);
     virtual int 		GetQueryObjects			(ObjectList& lst, int iSel, int iVis, int iLock);
+    virtual int 		LockObjects				(bool flag, bool bAllowSelectionFlag, bool bSelFlag);
 
     virtual CCustomObject* FindObjectByName		(LPCSTR name, CCustomObject* pass=0);
 

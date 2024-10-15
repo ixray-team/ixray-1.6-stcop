@@ -509,7 +509,7 @@ void CWayObject::Render(int priority, bool strictB2F)
         EDevice->SetShader		(EDevice->m_WireShader);
         for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++) (*it)->Render(GetName(),Selected());
         if( Selected() ){
-            u32 clr = 0xFFFFFFFF;
+            u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
             Fbox bb; GetBox(bb);
             DU_impl.DrawSelectionBoxB(bb,&clr);
         }

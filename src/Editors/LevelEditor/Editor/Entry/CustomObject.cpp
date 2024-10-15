@@ -90,6 +90,10 @@ void CCustomObject::Show( BOOL flag )
     UI->RedrawScene();
 };
 
+void CCustomObject::Lock( BOOL flag )
+{
+    m_CO_Flags.set		(flRT_Locked,flag);
+}
 
 BOOL   CCustomObject::Editable() const 
 {
@@ -100,7 +104,14 @@ BOOL   CCustomObject::Editable() const
 
 bool  CCustomObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 {
-	m_CO_Flags.assign	(ini.r_u32(sect_name, "co_flags") );
+	u32 flags;
+
+    if(ini.line_exist(sect_name, "co_flags2"))
+    	flags = ini.r_u32(sect_name, "co_flags2");
+    else
+    	flags = ini.r_u32(sect_name, "co_flags") | flRT_Visible;
+
+    m_CO_Flags.assign	(flags);
 
 	FName				= ini.r_string(sect_name, "name");
     FPosition			= ini.r_fvector3 	(sect_name, "position");
@@ -170,6 +181,7 @@ bool CCustomObject::LoadStream(IReader& F)
 void CCustomObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
 {
 	ini.w_u32		(sect_name, "co_flags", m_CO_Flags.get());
+    ini.w_u32		(sect_name, "co_flags2", m_CO_Flags.get());
 
 	ini.w_string	(sect_name, "name", FName.c_str());
 

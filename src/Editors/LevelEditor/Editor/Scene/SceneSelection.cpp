@@ -128,6 +128,25 @@ void EScene::ShowObjects( bool flag, ObjClassID classfilter, bool bAllowSelectio
     UI->RedrawScene();
 }
 
+int EScene::LockObjects( bool flag, ObjClassID classfilter, bool bAllowSelectionFlag, bool bSelFlag )
+{
+	int count = 0;
+    if (classfilter==OBJCLASS_DUMMY){
+        SceneToolsMapPairIt _I = m_SceneTools.begin();
+        SceneToolsMapPairIt _E = m_SceneTools.end();
+        for (; _I!=_E; _I++)
+            if (_I->second){
+		        ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
+                if (mt)				count+=mt->LockObjects(flag, bAllowSelectionFlag, bSelFlag);
+            }
+    }else{
+        ESceneCustomOTool* mt 		= GetOTool(classfilter);
+        if (mt) 					count+=mt->LockObjects(flag, bAllowSelectionFlag, bSelFlag);
+    }
+    UI->RedrawScene();
+	return count;
+}
+
 void EScene::SynchronizeObjects()
 {
     SceneToolsMapPairIt _I = m_SceneTools.begin();

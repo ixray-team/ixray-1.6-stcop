@@ -260,7 +260,7 @@ void CGroupObject::Render(int priority, bool strictB2F)
         {
             EDevice->SetShader(EDevice->m_WireShader);
             RCache.set_xform_world(Fidentity);
-            u32 clr = 0xFF7070FF;
+            u32 clr = Locked()?0xFFFF0000:0xFF7070FF;
             DU_impl.DrawSelectionBoxB(bb,&clr);
         }
     }

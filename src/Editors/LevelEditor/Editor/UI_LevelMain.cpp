@@ -765,6 +765,39 @@ CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
 		return 					FALSE;
 	}
 }
+CCommandVar CommandLockAll(CCommandVar p1, CCommandVar p2)
+{
+    if( !Scene->locked() ){
+        Scene->LockObjects		(bool(p1),LTools->CurrentClassID(),false);
+        Scene->UndoSave			();
+	    return 					TRUE;
+    }else{
+        ELog.DlgMsg				( mtError, "Scene sharing violation" );
+	    return 					FALSE;
+    }
+}
+CCommandVar CommandLockSel(CCommandVar p1, CCommandVar p2)
+{
+    if( !Scene->locked() ){
+        Scene->LockObjects		(bool(p1),LTools->CurrentClassID(),true,true);
+        Scene->UndoSave			();
+	    return 					TRUE;
+    }else{
+        ELog.DlgMsg				( mtError, "Scene sharing violation" );
+	    return 					FALSE;
+    }
+}
+CCommandVar CommandLockUnsel(CCommandVar p1, CCommandVar p2)
+{
+    if( !Scene->locked() ){
+        Scene->LockObjects		(bool(p1),LTools->CurrentClassID(),true,false);
+        Scene->UndoSave			();
+        return					TRUE;
+   }else{
+        ELog.DlgMsg				( mtError, "Scene sharing violation" );                   
+	    return 					FALSE;
+    }
+}
 CCommandVar CommandSetSnapObjects(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
@@ -969,6 +1002,9 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_HIDE_UNSEL,              	"Visibility\\Hide Unselected",	CommandHideUnsel,false);
 	REGISTER_CMD_SE	    (COMMAND_HIDE_SEL,              	"Visibility\\Hide Selected", 	CommandHideSel,false);
 	REGISTER_CMD_SE	    (COMMAND_HIDE_ALL,              	"Visibility\\Hide All", 		CommandHideAll,false);
+	REGISTER_CMD_S	    (COMMAND_LOCK_ALL,              	CommandLockAll);
+	REGISTER_CMD_S	    (COMMAND_LOCK_SEL,					CommandLockSel);
+	REGISTER_CMD_S	    (COMMAND_LOCK_UNSEL,              	CommandLockUnsel);
 	REGISTER_CMD_S		(COMMAND_SET_SNAP_OBJECTS,          CommandSetSnapObjects);
 	REGISTER_CMD_S	    (COMMAND_ADD_SEL_SNAP_OBJECTS,      CommandAddSelSnapObjects);
 	REGISTER_CMD_S	    (COMMAND_DEL_SEL_SNAP_OBJECTS,      CommandDelSelSnapObjects);

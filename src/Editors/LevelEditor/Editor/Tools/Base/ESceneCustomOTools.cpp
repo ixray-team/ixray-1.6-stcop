@@ -160,7 +160,7 @@ void ESceneCustomOTool::RemoveSelection()
     ObjectIt _F = m_Objects.begin();
     while(_F!=m_Objects.end())
     {
-        if((*_F)->Selected() && !(*_F)->m_CO_Flags.test(CCustomObject::flObjectInGroup))
+        if((*_F)->Selected() && !(*_F)->Locked() && !(*_F)->m_CO_Flags.test(CCustomObject::flObjectInGroup))
         {
             if ((*_F)->OnSelectionRemove())
             {
@@ -172,6 +172,9 @@ void ESceneCustomOTool::RemoveSelection()
                 _F++;
             }
         }else{
+            if((*_F)->Selected() && (*_F)->Locked() && !(*_F)->m_CO_Flags.test(CCustomObject::flObjectInGroup))
+                ELog.Msg(mtError, "Cannot delete locked object '%s'", (*_F)->GetName());
+
             _F++;
         }
     }
@@ -266,12 +269,29 @@ int ESceneCustomOTool::GetQueryObjects(ObjectList& lst, int iSel, int iVis, int 
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
     {
         if(	((iSel==-1)||((*_F)->Selected()==iSel))&&
-            ((iVis==-1)||((*_F)->Visible()==iVis)) )
+            ((iVis==-1)||((*_F)->Visible()==iVis))&&
+            ((iLock==-1)||((*_F)->Locked()==iLock)) )
             {
                 lst.push_back(*_F);
                 count++;
         	}
     }
+    return count;
+}
+
+int ESceneCustomOTool::LockObjects(bool flag, bool bAllowSelectionFlag, bool bSelFlag)
+{
+	int count=0;
+    for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
+        if(bAllowSelectionFlag){
+            if((*_F)->Selected()==bSelFlag){
+                (*_F)->Lock( flag );
+                count++;
+            }
+        }else{
+            (*_F)->Lock( flag );
+            count++;
+        }
     return count;
 }
 

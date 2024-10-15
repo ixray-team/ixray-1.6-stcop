@@ -196,6 +196,36 @@ void UIMainForm::DrawContextMenu()
 		}
 		ImGui::EndMenu();
 	}
+	if(ImGui::BeginMenu("Locking"))
+	{
+		if(ImGui::MenuItem("Lock selection"))
+		{
+            ExecCommand(COMMAND_LOCK_SEL, TRUE);
+		}
+        if(ImGui::MenuItem("Lock unselected"))
+		{
+            ExecCommand(COMMAND_LOCK_UNSEL, TRUE);
+		}
+        if(ImGui::MenuItem("Lock all"))
+		{
+			ExecCommand(COMMAND_LOCK_ALL, TRUE);
+		}
+        ImGui::Separator();
+		if(ImGui::MenuItem("Unlock selection"))
+		{
+			ExecCommand(COMMAND_LOCK_SEL, FALSE);
+		}
+		if(ImGui::MenuItem("Unlock unselected"))
+		{
+			ExecCommand(COMMAND_LOCK_UNSEL, FALSE);
+		}
+		if(ImGui::MenuItem("Unlock all"))
+		{
+			ExecCommand(COMMAND_LOCK_ALL, FALSE);
+		}
+		ImGui::EndMenu();
+	}
+
 	if (ImGui::BeginMenu("Edit"))
 	{
 		if (ImGui::MenuItem("Copy"))

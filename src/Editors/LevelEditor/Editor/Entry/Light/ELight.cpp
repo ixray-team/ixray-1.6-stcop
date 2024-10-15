@@ -90,7 +90,7 @@ void CLight::Render(int priority, bool strictB2F)
     if ((1==priority)&&(false==strictB2F)){
         EDevice->SetShader		(EDevice->m_WireShader);
         RCache.set_xform_world	(Fidentity);
-    	u32 clr = Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
+    	u32 clr = Locked()?LOCK_COLOR:Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
     	switch (m_Type){
         case ELight::ltPoint:
             if (Selected())
@@ -136,7 +136,7 @@ void CLight::Render(int priority, bool strictB2F)
         case ELight::ltPoint:
             if (m_Flags.is(ELight::flPointFuzzy))
             {
-		    	u32 clr = Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
+		    	u32 clr = Locked()?LOCK_COLOR:Selected()?SEL_COLOR:(m_Flags.is(ELight::flAffectDynamic)?NORM_DYN_COLOR:NORM_COLOR);
                 clr 	= subst_alpha(clr,0x40);
             	const Fvector zero={0.f,0.f,0.f};
                 VERIFY(m_FuzzyData);

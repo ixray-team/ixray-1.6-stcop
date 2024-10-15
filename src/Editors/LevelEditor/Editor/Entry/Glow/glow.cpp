@@ -90,7 +90,7 @@ void CGlow::Render(int priority, bool strictB2F)
         }
         if( Selected() ){
             Fbox bb; GetBox(bb);
-            u32 clr = 0xFFFFFFFF;
+            u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
             EDevice->SetShader(EDevice->m_WireShader);
             DU_impl.DrawSelectionBoxB(bb,&clr);
             if (gt->m_Flags.is(ESceneGlowTool::flDrawCross))
