@@ -327,9 +327,30 @@ void UIPropertiesForm::DrawEditText()
 		ImGui::SameLine(0);
 		if (ImGui::Button("Clear")) { m_EditTextValueData[0] = 0; }
 		ImGui::EndGroup();
-		if(m_EditTextValueData)
-		ImGui::InputTextMultiline("##text", m_EditTextValueData, m_EditTextValueDataSize, ImVec2(500, 200) ,ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data)->int {return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data); }, reinterpret_cast<void*>(this));
 
+		if (m_EditTextValueData)
+		{
+			if (!IsUTF8(m_EditTextValueData))
+			{
+				xr_string CopyStr = m_EditTextValueData;
+				xr_free(m_EditTextValueData);
+				m_EditTextValueData = xr_strdup(Platform::ANSI_TO_UTF8(CopyStr).c_str());
+			}
+
+			ImGui::InputTextMultiline
+			(
+				"##text",
+				m_EditTextValueData,
+				m_EditTextValueDataSize,
+				ImVec2(500, 200),
+				ImGuiInputTextFlags_CallbackResize,
+				[](ImGuiInputTextCallbackData* data)->int
+				{
+					return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data);
+				},
+				reinterpret_cast<void*>(this)
+			);
+		}
 		
 		ImGui::EndPopup();
 	}
@@ -337,6 +358,12 @@ void UIPropertiesForm::DrawEditText()
 
 int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
 {
+	if (IsUTF8(m_EditTextValueData))
+	{
+		xr_string CopyStr = m_EditTextValueData;
+		xr_free(m_EditTextValueData);
+		m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(CopyStr).c_str());
+	}
 	m_EditTextValueData =(char*) xr_realloc(m_EditTextValueData, data->BufSize);
 	m_EditTextValueDataSize = data->BufSize;
 	data->Buf = m_EditTextValueData;

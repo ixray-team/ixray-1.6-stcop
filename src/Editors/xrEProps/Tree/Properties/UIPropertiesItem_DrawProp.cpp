@@ -478,7 +478,7 @@ void UIPropertiesItem::DrawProp()
 					strrchr(Str, '\n')[0] = 0;
 				}
 				xr_strcat(Str, "...");
-				if (ImGui::Button(Str, ImVec2(-1, 0)))
+				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, 0)))
 				{
 				}
 			}
