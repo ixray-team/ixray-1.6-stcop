@@ -60,7 +60,6 @@ void CEatableItem::Load(LPCSTR section)
 		m_iMaxUses = 1;
 
 	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
-	m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
 	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
@@ -138,7 +137,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 	}
 
 	if (m_iMaxUses > 0)
-		m_iMaxUses -= m_eat_condition;
+		m_iMaxUses -= m_fCondition;
 	else
 		m_iMaxUses = 0;
 
