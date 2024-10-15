@@ -732,16 +732,6 @@ void UIEditLibrary::Draw()
 		return;
 	}
 
-	ImGuiID FormDockId = ImGui::GetWindowDockID();
-
-	if (m_Preview && FormDockId != 0 && FormDockId == View.DockId)
-	{
-		ImGuiID NewDock = ImGui::DockBuilderSplitNode(FormDockId, ImGuiDir_Down, 0.5f, nullptr, &FormDockId);
-		ImGui::DockBuilderDockWindow(View.ViewportName, NewDock);
-		ImGui::DockBuilderFinish(FormDockId);
-		ELog.DlgMsg(mtInformation, "! The Object Library cannot be blocked by the viewport.");
-	}
-
 	{
 		ImGui::BeginGroup();
 
