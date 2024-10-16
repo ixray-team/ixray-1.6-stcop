@@ -44,7 +44,10 @@ CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
     xr_string temp_fn;
     if (EFS.GetOpenName("$game_data$", temp_fn, false, NULL, 0))
     {
-        size_t Pos = temp_fn.find("gamedata", 0);
+        string_path gamedata = {};
+        FS.update_path(gamedata, "$game_data$", "");
+        xr_path temp = gamedata;
+        size_t Pos = temp_fn.find(temp.xfilename(), 0);
 
         if (Pos == xr_string::npos)
         {
