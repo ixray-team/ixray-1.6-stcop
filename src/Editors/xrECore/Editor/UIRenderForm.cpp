@@ -207,8 +207,11 @@ void UIRenderForm::Draw()
 				ImGuizmo::SetRect(canvas_pos.x, canvas_pos.y, canvas_size.x, canvas_size.y);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::AllowAxisFlip(true);
-				ImVec2 size = { 150, 150 };
-				ImVec2 pos = { canvas_pos.x, canvas_pos.y + canvas_size.y - size.y };
+
+				float calcSide = (canvas_size.x > canvas_size.y) ? canvas_size.y : canvas_size.x;
+
+				ImVec2 size{ calcSide*0.15f, calcSide * 0.15f };
+				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y };
 
 				//Device.mView for only read
 				ImGuizmo::ViewManipulate((float*)&Device.mView, 10, pos, size, ImColor());
