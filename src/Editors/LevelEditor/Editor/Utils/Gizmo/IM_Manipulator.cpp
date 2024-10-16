@@ -32,96 +32,133 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 
 	switch (LTools->GetAction())
 	{
-		case etaMove:
+	case etaMove:
+	{
+		float  MoveSnap[3];
+		float* PtrMoveSnap = LTools->GetSettings(etfMSnap) ? MoveSnap : nullptr;
+
+		if (PtrMoveSnap)
+			std::fill_n(MoveSnap, std::size(MoveSnap), Tools->m_MoveSnap);
+
+		const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap);
+
+		if (IsManipulated)
 		{
-			float  MoveSnap[3];
-			float* PtrMoveSnap = LTools->GetSettings(etfMSnap) ? MoveSnap : nullptr;
-
-			if (PtrMoveSnap)
-				std::fill_n(MoveSnap, std::size(MoveSnap), Tools->m_MoveSnap);
-
-			const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::TRANSLATE, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrMoveSnap);
-
-			if (IsManipulated)
+			for (CCustomObject* ObjPtr : lst)
 			{
-				for (CCustomObject* ObjPtr : lst)
+				if (CWayObject* WayPtr = smart_cast<CWayObject*>(ObjPtr))
 				{
-					if (CWayObject* WayPtr = smart_cast<CWayObject*>(ObjPtr))
-					{
-						ObjPtr->Move(DeltaMatrix.c);
-						ObjPtr->UpdateTransform();
-					}
-					else
-					{
-						ObjPtr->Move(DeltaMatrix.c);
-					}
+					ObjPtr->Move(DeltaMatrix.c);
+					ObjPtr->UpdateTransform();
+				}
+				else
+				{
+					ObjPtr->Move(DeltaMatrix.c);
 				}
 			}
 		}
-		break;
-		case etaRotate:
+	}
+	break;
+	case etaRotate:
+	{
+		float  RotateSnap;
+		float* PtrRotateSnap = LTools->GetSettings(etfASnap) ? &RotateSnap : nullptr;
+
+		if (PtrRotateSnap)
+			RotateSnap = rad2deg(Tools->m_RotateSnapAngle);
+
+		Fvector OriginalRotation;
+
+		ObjectMatrix.getXYZ(OriginalRotation);
+
+		const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::ROTATE, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrRotateSnap);
+
+		if (IsManipulated)
 		{
-			float  RotateSnap;
-			float* PtrRotateSnap = LTools->GetSettings(etfASnap) ? &RotateSnap : nullptr;
+			Fvector DeltaXYZ;
 
-			if (PtrRotateSnap)
-				RotateSnap = rad2deg(Tools->m_RotateSnapAngle);
+			DeltaMatrix.getXYZ(DeltaXYZ);
 
-			Fvector OriginalRotation;
-
-			ObjectMatrix.getXYZ(OriginalRotation);
-
-			const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::ROTATE, ImGuizmo::WORLD, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrRotateSnap);
-
-			if (IsManipulated)
+			for (ObjectIt it = lst.begin(); it != lst.end(); it++)
 			{
-				Fvector DeltaXYZ;
+				void (CCustomObject:: * Handler)(Fvector&, float);
 
-				DeltaMatrix.getXYZ(DeltaXYZ);
+				if (IsCSParent)
+					Handler = &CCustomObject::RotateParent;
+				else
+					Handler = &CCustomObject::RotateLocal;
 
-				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-				{
-					void (CCustomObject::*Handler)(Fvector&, float);
-
-					if (IsCSParent)
-						Handler = &CCustomObject::RotateParent;
-					else
-						Handler = &CCustomObject::RotateLocal;
-
-					(*it->*Handler)(Fvector().set(0, 0, 1), -DeltaXYZ.z);
-					(*it->*Handler)(Fvector().set(1, 0, 0), -DeltaXYZ.x);
-					(*it->*Handler)(Fvector().set(0, 1, 0), -DeltaXYZ.y);
-				}
-				UI->UpdateScene();
+				(*it->*Handler)(Fvector().set(0, 0, 1), -DeltaXYZ.z);
+				(*it->*Handler)(Fvector().set(1, 0, 0), -DeltaXYZ.x);
+				(*it->*Handler)(Fvector().set(0, 1, 0), -DeltaXYZ.y);
 			}
+			UI->UpdateScene();
 		}
-		break;
-		case etaScale:
+	}
+	break;
+	case etaScale:
+	{
+		float  ScaleSnap[3];
+		float* PtrScaleSnap = LTools->GetSettings(etfScaleFixed) ? ScaleSnap : nullptr;
+
+		if (PtrScaleSnap)
+			std::fill_n(ScaleSnap, std::size(ScaleSnap), Tools->m_ScaleFixed);
+
+		const bool IsSingleObject = lst.size() == 1;
+
+		Fbox test;
+		if (IsSingleObject)
 		{
-			float  ScaleSnap[3];
-			float* PtrScaleSnap = LTools->GetSettings(etfScaleFixed) ? ScaleSnap : nullptr;
-
-			if (PtrScaleSnap)
-				std::fill_n(ScaleSnap, std::size(ScaleSnap), Tools->m_ScaleFixed);
-
-			const bool IsManipulated = ImGuizmo::Manipulate((float*)&Device.mView, (float*)&Device.mProject, ImGuizmo::SCALE, ImGuizmo::LOCAL, (float*)&ObjectMatrix, (float*)&DeltaMatrix, PtrScaleSnap);
-
-			if (IsManipulated)
-			{
-				Fvector Scale;
-				Scale.x = DeltaMatrix.i.magnitude();
-				Scale.y = DeltaMatrix.j.magnitude();
-				Scale.z = DeltaMatrix.k.magnitude();
-
-				for (ObjectIt it = lst.begin(); it != lst.end(); it++)
-				{
-					Scale.mul((*it)->GetScale());
-					(*it)->SetScale(Scale);
-				}
-				UI->UpdateScene();
-			}
+			lst.front()->GetUTBox(test);
 		}
-		break;
+
+		const bool IsManipulated = ImGuizmo::Manipulate
+		(
+			(float*)&Device.mView, 
+			(float*)&Device.mProject,
+			ImGuizmo::SCALE | ImGuizmo::BOUNDS, 
+			IsSingleObject ? ImGuizmo::WORLD : ImGuizmo::LOCAL,
+			(float*)&ObjectMatrix, 
+			(float*)&DeltaMatrix, 
+			PtrScaleSnap, 
+			IsSingleObject ? (float*)&test.min.x : nullptr,
+			IsSingleObject ? PtrScaleSnap : nullptr
+		);
+
+		if (IsManipulated)
+		{
+			Fvector Scale;
+			Scale.x = DeltaMatrix.i.magnitude();
+			Scale.y = DeltaMatrix.j.magnitude();
+			Scale.z = DeltaMatrix.k.magnitude();
+
+			for (ObjectIt it = lst.begin(); it != lst.end(); it++)
+			{
+				Scale.mul((*it)->GetScale());
+				(*it)->SetScale(Scale);
+			}
+			UI->UpdateScene();
+		}
+		else if (IsSingleObject && ImGuizmo::IsUsing())
+		{
+			Fmatrix DeltaMatrixScale = lst.front()->FTransform;
+			DeltaMatrixScale.invert();
+			DeltaMatrixScale.mulA_44(ObjectMatrix);
+
+			Fvector Scale;
+			Scale.x = DeltaMatrixScale.i.magnitude();
+			Scale.y = DeltaMatrixScale.j.magnitude();
+			Scale.z = DeltaMatrixScale.k.magnitude();
+
+			CCustomObject* Obj = lst.front();
+
+			Scale.mul(Obj->GetScale());
+			Obj->FPosition = ObjectMatrix.c;
+			Obj->SetScale(Scale);
+			UI->UpdateScene();
+		}
+	}
+	break;
 	}
 
 	if (ImGuizmo::IsUsing() && !m_active)
