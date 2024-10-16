@@ -117,8 +117,6 @@ void UIRenderForm::Draw()
 		}
 	}
 
-	DockId = ImGui::GetWindowDockID();
-
 	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
 		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
@@ -136,15 +134,9 @@ void UIRenderForm::Draw()
 
 		if (ViewportID == UI->ViewID)
 		{
-			if (ImGui::GetIO().KeyShift)
-				ShiftState |= ssShift;
-
-			if (ImGui::GetIO().KeyCtrl)
-				ShiftState |= ssCtrl;
-
-			if (ImGui::GetIO().KeyAlt)
-				ShiftState |= ssAlt;
-
+			if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
+			if (ImGui::GetIO().KeyCtrl)	ShiftState |= ssCtrl;
+			if (ImGui::GetIO().KeyAlt)	ShiftState |= ssAlt;
 
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))ShiftState |= ssLeft;
 			if (ImGui::IsMouseDown(ImGuiMouseButton_Right))ShiftState |= ssRight;
@@ -271,32 +263,41 @@ void UIRenderForm::Draw()
 			}
 		}
 
-		if (ViewportID == 0 && ImGui::BeginDragDropTarget())
-		{
-			auto ImData = ImGui::AcceptDragDropPayload("TEST");
-
-			if (ImData != nullptr)
-			{
-				struct DragDropData
-				{
-					xr_string FileName;
-				} Data = *(DragDropData*)ImData->Data;
-
-				if (Data.FileName.ends_with(".object"))
-				{
-					DragFunctor(Data.FileName, 2);
-				}
-				else if (Data.FileName.ends_with(".group"))
-				{
-					DragFunctor(Data.FileName, 0);
-				}
-				else
-				{
-					DragFunctor(Data.FileName, 6);
-				}
-			}
-			ImGui::EndDragDropTarget();
-		}
+		HandleDragDrop(canvas_pos);
 	}
 	ImGui::End();
+}
+
+void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
+{
+	if (ViewportID != 0 || !ImGui::BeginDragDropTarget())
+		return;
+
+	auto ImData = ImGui::AcceptDragDropPayload("TEST");
+
+	if (ImData == nullptr)
+	{
+		ImGui::EndDragDropTarget();
+		return;
+	}
+
+	struct DragDropData
+	{
+		xr_string FileName;
+	} Data = *(DragDropData*)ImData->Data;
+
+
+	if (Data.FileName.ends_with(".object"))
+	{
+		DragFunctor(Data.FileName, 2);
+	}
+	else if (Data.FileName.ends_with(".group"))
+	{
+		DragFunctor(Data.FileName, 0);
+	}
+	else {
+		DragFunctor(Data.FileName, 6);
+	}
+
+	ImGui::EndDragDropTarget();
 }

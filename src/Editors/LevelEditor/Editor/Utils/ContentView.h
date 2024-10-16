@@ -68,6 +68,14 @@ private:
 
 	bool CheckFile(const xr_path& File) const;
 
+	void CopyAction(const xr_path&) const;
+	void PasteAction(const xr_string&) /*const*/;
+	void DeleteAction(const xr_path&) /*const*/;
+	void CutAction(const xr_path&) const;
+
+	void AcceptDragDropAction(xr_path&);
+	bool BeginDragDropAction(xr_path&, xr_string&, const CContentView::FileOptData&, CContentView::IconData*);
+
 private:
 	EViewMode ViewMode = EViewMode::Tile;
 
@@ -80,6 +88,7 @@ private:
 	ref_texture MenuIcon;
 
 	mutable xr_path CopyObjectPath;
+	mutable bool IsCutting;
 
 	xr_string CurrentDir;
 	xr_string RootDir;

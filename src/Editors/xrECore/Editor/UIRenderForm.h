@@ -22,9 +22,10 @@ public:
 	xr_delegate<void()> OnFocusCallback;
 	int ViewportID = 0;
 	string32 ViewportName;
-	int DockId = -1;
 private:
 	void DrawStatistics();
+	void HandleDragDrop(const ImVec2&);
+
 	Ivector2	m_mouse_position;
 	Frect		m_render_pos;
 

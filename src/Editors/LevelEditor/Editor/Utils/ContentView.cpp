@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ContentView.h"
 
 #include <RedImage.hpp>
@@ -17,6 +17,7 @@ CContentView::CContentView():
 	RootDir = xr_path(Dir).xstring();
 	CurrentDir = RootDir;
 	CopyObjectPath.clear();
+	IsCutting = false;
 
 	FS.update_path(Dir, "$logs$", "");
 	LogsDir = Dir;
@@ -703,6 +704,67 @@ bool CContentView::DrawItemByList(const FileOptData& InitFileName, size_t& HorBt
 	return OutValue;
 }
 
+
+void CContentView::AcceptDragDropAction(xr_path& FilePath)
+{
+	if (!ImGui::BeginDragDropTarget() || !std::filesystem::is_directory(FilePath) || !xr_path(Data.FileName).has_extension())
+	{
+		return;
+	}
+
+	//
+	auto ImData = ImGui::AcceptDragDropPayload("TEST");
+
+	if (ImData != nullptr)
+	{
+		Data = *(DragDropData*)ImData->Data;
+
+		if (Data.FileName != FilePath.xstring()) //На всякий случай
+		{
+			CutAction(Data.FileName);
+			PasteAction(FilePath);
+		}
+	}
+
+	ImGui::EndDragDropTarget();
+}
+
+bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
+{
+	bool WeCanDrag = false;
+
+	if (FilePath.has_extension())
+	{
+		xr_string Extension = FilePath.extension().string().c_str();
+		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".ise";
+	}
+
+	if (!WeCanDrag || !ImGui::BeginDragDropSource())
+	{
+		return false;
+	}
+
+	if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
+	{
+		if (InitFileName.ISESect.size() > 0)
+		{
+			Data.FileName = InitFileName.ISESect.c_str();
+		}
+	}
+	else
+	{
+		Data.FileName = FilePath;
+	}
+
+	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
+
+	ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
+	ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
+	ImGui::Text(LabelText.data());
+	ImGui::EndDragDropSource();
+	return true;
+}
+
 bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
 {
 	if (!DrawContext(FilePath))
@@ -715,41 +777,8 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 		}
 	}
 
-	bool WeCanDrag = false;
-
-	if (FilePath.has_extension())
-	{
-		xr_string Extension = FilePath.extension().string().c_str();
-		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".ise";
-	}
-
-	if (WeCanDrag && ImGui::BeginDragDropSource())
-	{
-		if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
-		{
-			if (InitFileName.ISESect.size() > 0)
-			{
-				Data.FileName = InitFileName.ISESect.c_str();
-			}
-		}
-		else
-		{
-			Data.FileName = FilePath;
-		}
-
-		xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
-
-		ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
-		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
-		ImGui::Text(LabelText.data());
-		ImGui::EndDragDropSource();
-	}
-	else
-	{
-		return false;
-	}
-
-	return true;
+	AcceptDragDropAction(FilePath);
+	return BeginDragDropAction(FilePath, FileName, InitFileName, IconPtr);
 }
 
 bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
@@ -805,6 +834,9 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 		if (!IconPtr->Icon)
 			return false;
 
+		if (FilePath == CopyObjectPath && IsCutting)
+			IconColor.w = 0.3;
+
 		OutValue = ImGui::ImageButton
 		(
 			FileName.c_str(),
@@ -852,20 +884,7 @@ bool CContentView::Contains()
 	return IsNotAfter && IsNotBefor;
 }
 
-void CContentView::CheckFileNameCopyRecursive(xr_path& FilePath) const
-{
-	xr_path NewFileName = FilePath.stem();
-	NewFileName += " - Copy";
-	NewFileName += FilePath.extension();
 
-	FilePath.replace_filename(NewFileName);
-	if (std::filesystem::exists(FilePath))
-	{
-		CheckFileNameCopyRecursive(FilePath);
-	}
-	
-	return;
-}
 
 bool CContentView::CheckFile(const xr_path& File) const
 {
@@ -885,23 +904,7 @@ bool CContentView::DrawFormContext()
 	ImGui::BeginDisabled(CopyObjectPath.empty());
 	if (ImGui::MenuItem("Paste"))
 	{
-		xr_path OutDir = xr_path(CurrentDir) / CopyObjectPath.xfilename();
-
-		if (CopyObjectPath == OutDir || std::filesystem::exists(OutDir))
-		{
-			CheckFileNameCopyRecursive(OutDir);
-		}
-
-		std::filesystem::copy(CopyObjectPath, OutDir);
-
-		if (CopyObjectPath.extension() != ".thm" && std::filesystem::exists(CopyObjectPath.replace_extension(".thm")))
-		{
-			std::filesystem::copy(CopyObjectPath, OutDir.replace_extension(".thm"));
-		}
-
-		CopyObjectPath.clear();
-
-		FS.rescan_path(OutDir.parent_path().string().c_str(), true);
+		PasteAction(CurrentDir);
 	}
 	ImGui::EndDisabled();
 
@@ -948,30 +951,19 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (ImGui::MenuItem("Copy"))
 	{
-		CopyObjectPath = Path;
+		CopyAction(Path);
 	}
 
-	if (ImGui::MenuItem("Delete"))
+	if (!ShowOpen) //Actions are temporarily unavailable for levels. The logic is not worked out
 	{
-		if (std::filesystem::is_directory(Path))
+		if (ImGui::MenuItem("Cut"))
 		{
-			std::filesystem::remove_all(Path);
+			CutAction(Path);
 		}
-		else
+		if (ImGui::MenuItem("Delete"))
 		{
-			std::filesystem::remove(Path);
-
-			if (auto ThmFile = Path; Path.extension() != ".thm" && std::filesystem::exists(ThmFile.replace_extension(".thm")))
-			{
-				std::filesystem::remove(ThmFile);
-			}
+			DeleteAction(Path);
 		}
-
-		// For some reason, FS does not want to register that the file has been deleted. \
-				Temporarily removed the "const" and made the Rescan Directory();
-
-		//FS.rescan_path(Path.parent_path().string().c_str() , true);
-		RescanDirectory();
 	}
 
 	bool ShowConvert = Path.has_extension() && (Path.extension().string() == ".dds" || Path.extension().string() == ".tga" || Path.extension().string() == ".png");
@@ -1271,3 +1263,90 @@ xr_map<xr_string, CContentView::FileOptData> CContentView::ScanConfigs(const xr_
 
 	return std::move(TempPath);
 }
+
+#pragma region ObjectActions
+
+void CContentView::CheckFileNameCopyRecursive(xr_path& FilePath) const
+{
+	xr_path NewFileName = FilePath.stem();
+	NewFileName += " - Copy";
+	NewFileName += FilePath.extension();
+
+	FilePath.replace_filename(NewFileName);
+	if (std::filesystem::exists(FilePath))
+	{
+		CheckFileNameCopyRecursive(FilePath);
+	}
+
+	return;
+}
+
+void CContentView::PasteAction(const xr_string& Path) /*const*/
+{
+	
+	xr_path OutDir = ((Path == "..")? CurrentDir / xr_path(Path) : xr_path(Path)) / CopyObjectPath.xfilename();
+
+	if (CopyObjectPath == OutDir || std::filesystem::exists(OutDir))
+	{
+		CheckFileNameCopyRecursive(OutDir);
+	}
+
+	if (std::filesystem::is_directory(CopyObjectPath))
+	{
+		std::filesystem::copy(CopyObjectPath, OutDir, std::filesystem::copy_options::recursive);
+	}
+	else 
+	{
+		std::filesystem::copy(CopyObjectPath, OutDir);
+
+		if (auto ThmFile = CopyObjectPath; ThmFile.extension() != ".thm" && std::filesystem::exists(ThmFile.replace_extension(".thm")))
+		{
+			std::filesystem::copy(ThmFile, OutDir.replace_extension(".thm"));
+		}
+	}
+	if (IsCutting)
+	{
+		DeleteAction(CopyObjectPath);
+		IsCutting = false;
+	}
+
+	CopyObjectPath.clear();
+
+	FS.rescan_path(OutDir.parent_path().string().c_str(), true);
+
+	return;
+}
+void CContentView::DeleteAction(const xr_path& Path) /*const*/
+{
+	if (std::filesystem::is_directory(Path))
+	{
+		std::filesystem::remove_all(Path);
+	}
+	else
+	{
+		std::filesystem::remove(Path);
+
+		if (auto ThmFile = Path; Path.extension() != ".thm" && std::filesystem::exists(ThmFile.replace_extension(".thm")))
+		{
+			std::filesystem::remove(ThmFile);
+		}
+	}
+
+	// For some reason, FS does not want to register that the file has been deleted. \
+				Temporarily removed the "const" and made the Rescan Directory();
+
+		//FS.rescan_path(Path.parent_path().string().c_str() , true);
+	RescanDirectory();
+}
+void CContentView::CopyAction(const xr_path& Path) const
+{
+	CopyObjectPath = Path;
+	IsCutting = false;
+}
+void CContentView::CutAction(const xr_path& Path) const
+{
+	CopyAction(Path);
+	IsCutting = true;
+}
+
+#pragma endregion
