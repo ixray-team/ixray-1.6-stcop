@@ -6,22 +6,9 @@
 xr_token					tparam_token							[ ]={
 	{ "Advanced",			STextureParams::kMIPFilterAdvanced			},
 																		
-	{ "Point",				STextureParams::kMIPFilterPoint				},
 	{ "Box",				STextureParams::kMIPFilterBox				},
 	{ "Triangle",			STextureParams::kMIPFilterTriangle			},
-	{ "Quadratic",			STextureParams::kMIPFilterQuadratic			},
-	{ "Cubic",				STextureParams::kMIPFilterCubic				},
 																		
-	{ "Catrom",				STextureParams::kMIPFilterCatrom			},
-	{ "Mitchell",			STextureParams::kMIPFilterMitchell			},
-																		
-	{ "Gaussian",			STextureParams::kMIPFilterGaussian			},
-	{ "Sinc",				STextureParams::kMIPFilterSinc				},
-	{ "Bessel",				STextureParams::kMIPFilterBessel			},
-																		
-	{ "Hanning",			STextureParams::kMIPFilterHanning			},
-	{ "Hamming",			STextureParams::kMIPFilterHamming			},
-	{ "Blackman",			STextureParams::kMIPFilterBlackman			},
 	{ "Kaiser",				STextureParams::kMIPFilterKaiser			},
 	{ 0,					0											}
 };
@@ -186,6 +173,17 @@ void STextureParams::OnTypeChange(PropValue* prop)
 void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::TOnChange on_type_change)
 {                             
 #if 1
+
+    if (
+        mip_filter != STextureParams::kMIPFilterAdvanced &&
+        mip_filter != STextureParams::kMIPFilterBox &&
+        mip_filter != STextureParams::kMIPFilterKaiser &&
+        mip_filter != STextureParams::kMIPFilterTriangle
+        )
+    {
+        mip_filter = STextureParams::kMIPFilterKaiser;
+    }
+
 	OnTypeChangeEvent	            = on_type_change;
     PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
     P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);
