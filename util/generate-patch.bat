@@ -1,3 +1,12 @@
+@echo off
+
+:: Set compressor
+if "%~1"=="" (
+    echo Usage: %~0 compressor
+    exit /b 1
+)
+set compressor=%~1
+
 :: Get assets
 if not exist gamedata_origin (
     git clone ./.git ./temp
@@ -8,9 +17,9 @@ if not exist gamedata_origin (
 )
 
 :: Generate patch
-build\x64\Compressor-Windows\bin\Release\xrCompress.exe -diff gamedata gamedata_origin -out patch
+%compressor% -diff gamedata gamedata_origin -out patch
 
 :: Pack patch
-build\x64\Compressor-Windows\bin\Release\xrCompress.exe patch -ltx datapack.ltx
+%compressor% patch -ltx datapack.ltx
 mkdir patches
 move patch.pack_#0 patches\xpatch_03.db

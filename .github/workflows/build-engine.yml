@@ -102,75 +102,8 @@ jobs:
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/packages/
 
-  build-compressor:
-    name: 'Build compressor'
-
-    strategy:
-      matrix:
-        system:
-          - windows-2022
-          - ubuntu-22.04
-        preset:
-          - Compressor
-        platform:
-          - x64
-        config:
-          - Debug
-          - RelWithDebInfo
-          - Release
-
-    runs-on: ${{ matrix.system }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Ninja
-        if: contains(matrix.system, 'ubuntu')
-        uses: imesense/gha-setup-ninja@v0.2
-
-      - name: Configure compressor
-        run: |
-          cmake --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
-
-      - name: Build compressor
-        run: |
-          cmake --build --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: compressor-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
-            !build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
-            !build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.debug
-          if-no-files-found: ignore
-
-      - name: Upload symbols
-        uses: actions/upload-artifact@v4
-        if: ${{ matrix.config != 'Release' }}
-        with:
-          name: compressor-symbols-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.pdb
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.debug
-          if-no-files-found: ignore
-
-      - name: Upload libraries
-        uses: actions/upload-artifact@v4
-        with:
-          name: compressor-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
-          if-no-files-found: ignore
-
   pack-assets:
     name: 'Pack assets'
-
-    needs: build-compressor
 
     strategy:
       matrix:
@@ -192,22 +125,19 @@ jobs:
           fetch-depth: 0
 
       - name: Get compressor
-        uses: actions/download-artifact@v4
+        uses: ixray-team/setup-compressor@v0.1
         with:
-          name: compressor-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
+          codebase: '1.6-stcop'
 
       - name: Generate patch
         run: |
-          ${{ github.workspace }}/util/generate-patch.bat
-          type *.log
-          move ${{ github.workspace }}/gamedata ${{ github.workspace }}/gamedata_full
-          move ${{ github.workspace }}/patch ${{ github.workspace }}/gamedata
+          ${{ github.workspace }}/util/generate-patch.bat xrCompress.exe
 
       - name: Upload assets
         uses: actions/upload-artifact@v4
         with:
           name: compressor-assets-${{ github.sha }}
+          include-hidden-files: true
           path: |
             gamedata/
             patches/xpatch_03.db
@@ -235,6 +165,11 @@ jobs:
     runs-on: ${{ matrix.system }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Get engine
         uses: actions/download-artifact@v4
         with:
@@ -256,6 +191,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: engine-publish-${{ matrix.system }}-${{ matrix.platform }}-${{ github.sha }}
+          include-hidden-files: true
           path: |
             bin/
             gamedata/
