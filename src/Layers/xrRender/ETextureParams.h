@@ -49,8 +49,22 @@ struct ECORE_API STextureParams{
 	enum{
 		kMIPFilterAdvanced			= 5,
 
+		kMIPFilterPoint				= 2,    
 		kMIPFilterBox				= 0,      
-		kMIPFilterTriangle			= 3,
+		kMIPFilterTriangle			= 3, 
+		kMIPFilterQuadratic			= 4,
+		kMIPFilterCubic				= 1,    
+
+		kMIPFilterCatrom			= 6,   
+		kMIPFilterMitchell			= 7,
+
+		kMIPFilterGaussian			= 8,
+		kMIPFilterSinc				= 9,
+		kMIPFilterBessel			= 10,
+
+		kMIPFilterHanning			= 11,
+		kMIPFilterHamming			= 12,
+		kMIPFilterBlackman			= 13,
 		kMIPFilterKaiser			= 14,
 	};
 

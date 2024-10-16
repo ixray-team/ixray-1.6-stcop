@@ -6,9 +6,22 @@
 xr_token					tparam_token							[ ]={
 	{ "Advanced",			STextureParams::kMIPFilterAdvanced			},
 																		
+	{ "Point",				STextureParams::kMIPFilterPoint				},
 	{ "Box",				STextureParams::kMIPFilterBox				},
 	{ "Triangle",			STextureParams::kMIPFilterTriangle			},
+	{ "Quadratic",			STextureParams::kMIPFilterQuadratic			},
+	{ "Cubic",				STextureParams::kMIPFilterCubic				},
 																		
+	{ "Catrom",				STextureParams::kMIPFilterCatrom			},
+	{ "Mitchell",			STextureParams::kMIPFilterMitchell			},
+																		
+	{ "Gaussian",			STextureParams::kMIPFilterGaussian			},
+	{ "Sinc",				STextureParams::kMIPFilterSinc				},
+	{ "Bessel",				STextureParams::kMIPFilterBessel			},
+																		
+	{ "Hanning",			STextureParams::kMIPFilterHanning			},
+	{ "Hamming",			STextureParams::kMIPFilterHamming			},
+	{ "Blackman",			STextureParams::kMIPFilterBlackman			},
 	{ "Kaiser",				STextureParams::kMIPFilterKaiser			},
 	{ 0,					0											}
 };
