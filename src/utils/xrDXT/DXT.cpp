@@ -125,6 +125,7 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	case STextureParams::tfADXT1: 	compOpt.setFormat(nvtt::Format_DXT1a); 	break;
 	case STextureParams::tfDXT3: 	compOpt.setFormat(nvtt::Format_DXT3); 	break;
 	case STextureParams::tfDXT5: 	compOpt.setFormat(nvtt::Format_DXT5); 	break;
+	case STextureParams::tfBC7: 	compOpt.setFormat(nvtt::Format_BC7); 	break;
 	case STextureParams::tfRGB: 	compOpt.setFormat(nvtt::Format_RGB); 	break;
 	case STextureParams::tfRGBA: 	compOpt.setFormat(nvtt::Format_RGBA); 	break;
 	}
@@ -143,9 +144,9 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	outOpt.setErrorHandler(&handler);
 	if ((fmt->flags.is(STextureParams::flGenerateMipMaps)) && (STextureParams::kMIPFilterAdvanced == fmt->mip_filter))
 	{
-		inOpt.setMipmapGeneration(false);
 		u8* pImagePixels = 0;
 		int numMipmaps = GetPowerOf2Plus1(__min(w, h));
+		inOpt.setMipmapGeneration(true, numMipmaps); 
 		u32 dwW = w;
 		u32 dwH = h;
 		u32 dwP = pitch;
