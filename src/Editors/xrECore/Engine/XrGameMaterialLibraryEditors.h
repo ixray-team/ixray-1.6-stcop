@@ -15,18 +15,8 @@ public:
 class ECORE_API SGameMtlPairEditor:public SGameMtlPair
 {
 public:
-	shared_str			BreakingSounds;
-	shared_str			StepSounds;
-	shared_str			CollideSounds;
-	shared_str			CollideParticles;
-	shared_str			CollideMarks;
     bool m_EditParent;
     bool m_EditCommand;
-    PropValue* propBreakingSounds;
-    PropValue* propStepSounds;
-    PropValue* propCollideSounds;
-    PropValue* propCollideParticles;
-    PropValue* propCollideMarks;
     void OnFlagChange(PropValue* sender);
     void OnParentClick(ButtonValue* sender, bool& bModif, bool& bSafe);
     void OnCommandClick(ButtonValue* sender, bool& bModif, bool& bSafe);

@@ -16,7 +16,8 @@ void UIPropertiesItem::Draw()
 	ImGui::TableNextColumn();
 	if (PItem&&PItem->m_Flags.test(PropItem::flShowCB))
 	{
-		if (ImGui::CheckboxFlags("##value", &PItem->m_Flags.flags, PropItem::flCBChecked))
+		const char* CheckName = make_string<const char*>("##value_%s", PItem->Key());
+		if (ImGui::CheckboxFlags(CheckName, &PItem->m_Flags.flags, PropItem::flCBChecked))
 		{
 			PItem->OnChange();
 			PropertiesFrom->Modified();

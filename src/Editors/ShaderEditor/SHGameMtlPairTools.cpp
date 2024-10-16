@@ -69,6 +69,15 @@ void CSHGameMtlPairTools::FillItemList()
                 LHelper().CreateItem(items, GameMaterialLibraryEditors->MtlPairToName(M0->GetID(),M1->GetID()),0);
         }
     }
+
+    // Sort motions 
+    std::sort(items.begin(), items.end(), [](ListItem* ItemA, ListItem* ItemB)
+    {
+        xr_string NameA = ItemA->Key();
+        xr_string NameB = ItemB->Key();
+        return NameA < NameB;
+    });
+
 	Ext.m_Items->AssignItems(items);
 	m_MtlPair=0;
 }
@@ -110,7 +119,7 @@ void CSHGameMtlPairTools::RealUpdateProperties()
 	PropItemVec items;
 
     if (m_MtlPair)
-        static_cast<SGameMtlPairEditor*>(m_MtlPair)->FillProp(items);
+        dynamic_cast<SGameMtlPairEditor*>(m_MtlPair)->FillProp(items);
 
     Ext.m_ItemProps->ClearProperties();
     Ext.m_ItemProps->AssignItems(items);
