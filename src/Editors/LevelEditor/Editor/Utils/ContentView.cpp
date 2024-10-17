@@ -43,6 +43,7 @@ void CContentView::Draw()
 		{
 			if (ImGui::IsWindowHovered(ImGuiHoveredFlags_None) && ImGui::IsMouseReleased(1) && !ImGui::IsItemHovered())
 			{
+				if (!xr_path(CurrentDir).has_root_path() && !IsSpawnElement)
 				ImGui::OpenPopup("##contentbrowsercontext");
 			}
 
@@ -67,8 +68,6 @@ void CContentView::Draw()
 
 			CurrentDir = NextDir;
 			xr_strlwr(CurrentDir);
-
-			
 		}
 
 		if (CurrentItemHint.Active)
@@ -707,17 +706,20 @@ bool CContentView::DrawItemByList(const FileOptData& InitFileName, size_t& HorBt
 
 void CContentView::AcceptDragDropAction(xr_path& FilePath)
 {
-	if (!ImGui::BeginDragDropTarget() || !std::filesystem::is_directory(FilePath) || !xr_path(Data.FileName).has_extension())
+	if (!std::filesystem::is_directory(FilePath) || (FilePath==".." && xr_path(CurrentDir).parent_path().empty()) || IsSpawnElement || !ImGui::BeginDragDropTarget())
 	{
 		return;
 	}
-
-	//
+	
 	auto ImData = ImGui::AcceptDragDropPayload("TEST");
+
+	if (ImData == nullptr)
+		ImData = ImGui::AcceptDragDropPayload("FLDR");
 
 	if (ImData != nullptr)
 	{
-		Data = *(DragDropData*)ImData->Data;
+		if (ImData != nullptr)
+			Data = *(DragDropData*)ImData->Data;
 
 		if (Data.FileName != FilePath.xstring()) //На всякий случай
 		{
@@ -731,38 +733,73 @@ void CContentView::AcceptDragDropAction(xr_path& FilePath)
 
 bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
 {
+	/*
+		Разделение на 3 типа dnd:
+
+			TEST - ".object", ".group", ".ise"
+					Объекты, которые принимает вьюпорт
+
+			FLDR - Только папки.
+					Для работы только в Content View
+
+			OTHR - Все иные объекты.
+					В дальнейшем можно как-нибудь использовать.
+					Или просто удалить совместив с FLDR.
+	*/
+
 	bool WeCanDrag = false;
 
-	if (FilePath.has_extension())
+	
+	if (FilePath.has_extension()) //File DnD
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
 		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".ise";
-	}
 
-	if (!WeCanDrag || !ImGui::BeginDragDropSource())
-	{
-		return false;
-	}
-
-	if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
-	{
-		if (InitFileName.ISESect.size() > 0)
+		if (WeCanDrag)
 		{
-			Data.FileName = InitFileName.ISESect.c_str();
+			if (!ImGui::BeginDragDropSource())
+			{
+				return false;
+			}
+
+			if (IsSpawnElement || FilePath.xstring().ends_with(".ise"))
+			{
+				if (InitFileName.ISESect.size() > 0)
+				{
+					Data.FileName = InitFileName.ISESect.c_str();
+				}
+			}
+			else
+			{
+				Data.FileName = FilePath;
+			}
+
+			ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
+		}
+		else 
+		{
+			//ImGui::SetDragDropPayload("OTHR", &Data, sizeof(DragDropData));
+			return false;
 		}
 	}
 	else
 	{
+		if (FilePath == ".." || !std::filesystem::is_directory(FilePath)
+			|| FilePath.parent_path().empty() || !ImGui::BeginDragDropSource())
+		{
+			return false;
+		}
+
 		Data.FileName = FilePath;
+		ImGui::SetDragDropPayload("FLDR", &Data, sizeof(DragDropData));
 	}
 
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 
-	ImGui::SetDragDropPayload("TEST", &Data, sizeof(DragDropData));
 	ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
 	ImGui::Text(LabelText.data());
 	ImGui::EndDragDropSource();
-	return true;
+	return true; 
 }
 
 bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const CContentView::FileOptData& InitFileName, CContentView::IconData* IconPtr)
@@ -914,7 +951,7 @@ bool CContentView::DrawFormContext()
 
 bool CContentView::DrawContext(const xr_path& Path)
 {
-	if (Path.xstring() == ".." || !ImGui::BeginPopupContextItem())
+	if (Path.xstring() == ".." || Path.parent_path().empty() || !ImGui::BeginPopupContextItem())
 	{
 		return false;
 	}
@@ -949,13 +986,12 @@ bool CContentView::DrawContext(const xr_path& Path)
 		ImGui::Separator();
 	}
 
-	if (ImGui::MenuItem("Copy"))
-	{
-		CopyAction(Path);
-	}
-
 	if (!ShowOpen) //Actions are temporarily unavailable for levels. The logic is not worked out
 	{
+		if (ImGui::MenuItem("Copy"))
+		{
+			CopyAction(Path);
+		}
 		if (ImGui::MenuItem("Cut"))
 		{
 			CutAction(Path);
