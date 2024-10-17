@@ -16,6 +16,9 @@
 #define ECORE_API
 #define NVTT_SHARED 1
 
+#undef min
+#undef max
+
 #ifndef MAKEFOURCC
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
 	((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \
