@@ -891,21 +891,25 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 		return false;
 	}
 
-	if (!DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
+	ImVec4 TextColor = ImVec4(1, 1, 1, 1);
+
+	if (DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
+		TextColor.w = 0.3;
+
+	
+	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
+	float TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
+
+	while (TextPixels > BtnSize.x)
 	{
-		xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
-		float TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
-
-		while (TextPixels > BtnSize.x)
-		{
-			LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
-			TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
-		}
-
-		ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
-
-		ImGui::Text(Platform::ANSI_TO_UTF8(LabelText).data());
+		LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
+		TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
 	}
+
+	ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
+
+	ImGui::TextColored(TextColor, Platform::ANSI_TO_UTF8(LabelText).data());
+	
 
 	InvalidateLambda();
 	return OutValue;
