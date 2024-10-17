@@ -6,9 +6,7 @@
 #pragma once
 
 #include "../../xrCore/xrCore.h"
-#include <io.h>
-#include <fcntl.h>
-#include <sys\stat.h>
+#include "xrDXT.h"
 
 #undef ENGINE_API
 #define ENGINE_API

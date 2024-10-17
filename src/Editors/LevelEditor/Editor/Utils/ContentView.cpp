@@ -1,12 +1,7 @@
 ﻿#include "stdafx.h"
 #include "ContentView.h"
 
-#include <RedImage.hpp>
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include <StbImage/stb_image.h>
-#include <StbImage/stb_image_resize.h>
+#include "../../utils/xrDXT/xrDXT.h"
 
 CContentView::CContentView():
 	WatcherPtr(nullptr)
@@ -1016,30 +1011,21 @@ bool CContentView::DrawContext(const xr_path& Path)
 		{
 			if (Path.extension().string() != ".tga" && ImGui::MenuItem("TGA"))
 			{
-				RedImageTool::RedImage Surface;
-				if (Surface.LoadFromFile(Path.xstring().data()))
-				{
-					xr_string OutFile = Path.xstring();
-					OutFile.erase(OutFile.length() - 3);
-					OutFile.append("tga");
+				xr_string OutFile = Path.xstring();
+				OutFile.erase(OutFile.length() - 3);
+				OutFile.append("tga");
 
-					Surface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-					Surface.SaveToTga(OutFile.data());
-				}
+				DXTUtils::Converter::MakeTGA(Path, OutFile);
+
 			}
 
 			if (Path.extension().string() != ".png" && ImGui::MenuItem("PNG"))
 			{
-				RedImageTool::RedImage Surface;
-				if (Surface.LoadFromFile(Path.xstring().data()))
-				{
-					xr_string OutFile = Path.xstring();
-					OutFile.erase(OutFile.length() - 3);
-					OutFile.append("png");
+				xr_string OutFile = Path.xstring();
+				OutFile.erase(OutFile.length() - 3);
+				OutFile.append("png");
 
-					Surface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-					Surface.SaveToPng(OutFile.data());
-				}
+				DXTUtils::Converter::MakePNG(Path, OutFile);
 			}
 
 			ImGui::EndMenu();
@@ -1152,48 +1138,16 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				}
 			}
 		}
-		//else if(IconPath.ends_with(".tga"))
-		//{
-		//	string_path fn = {};
-		//	FS.update_path(fn, _textures_, "");
-		//	Icons[IconPath] = Icons["tga"];
-		//
-		//	if(IconPath.find(fn) != xr_string::npos) {
-		//		xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
-		//
-		//		EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
-		//		CTexture* TempTexture = new CTexture();
-		//		m_Thm->Update(TempTexture->pSurface);
-		//
-		//		if(TempTexture->pSurface != nullptr) {
-		//			Icons[IconPath] = {TempTexture, false};
-		//		}
-		//		else {
-		//			xr_delete(TempTexture);
-		//		}
-		//	}
-		//}
 		else if (IconPath.ends_with(".png") || IconPath.ends_with(".tga"))
 		{
-			int w, h, a;
-			stbi_uc* raw_data = stbi_load((LPSTR)IconPath.c_str(), &w, &h, &a, STBI_rgb_alpha);
-			if (raw_data != nullptr)
+			U8Vec Pixels = DXTUtils::GitPixels(IconPath.c_str(), BtnSize.x, BtnSize.y);
+			if (!Pixels.empty())
 			{
-				U8Vec Pixels;
-				Pixels.resize(BtnSize.x * BtnSize.x * a);
-				stbir_resize_uint8(raw_data, w, h, 0, Pixels.data(), BtnSize.x, BtnSize.x, 0, a);
 				CTexture* TempTexture = new CTexture();
 				ID3DTexture2D* pTexture = nullptr;
 				Icons[IconPath] = { TempTexture, false };
 				R_CHK(REDevice->CreateTexture(BtnSize.x, BtnSize.x, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
 				{
-					for (size_t Iter = 0; Iter < Pixels.size();)
-					{
-						std::swap(Pixels[Iter], Pixels[Iter + 2]);
-
-						Iter += 4;
-					}
-
 					D3DLOCKED_RECT rect;
 					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
 					memcpy(rect.pBits, Pixels.data(), Pixels.size());
@@ -1201,8 +1155,6 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 					TempTexture->pSurface = pTexture;
 				}
-
-				stbi_image_free(raw_data);
 			}
 			else if (IconPath.ends_with(".tga"))
 			{

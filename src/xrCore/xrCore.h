@@ -53,6 +53,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <fcntl.h>
 
 // stl
 #pragma warning (push)

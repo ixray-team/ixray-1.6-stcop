@@ -7,6 +7,8 @@
 #include "../xrEUI/stdafx.h"
 #include "..\..\Layers\xrRenderDX9\xrD3DDefs.h"
 
+#include "../../utils/xrDXT/xrDXT.h"
+
 #ifdef	XRECORE_EXPORTS
 #define ECORE_API		__declspec(dllexport)
 #else

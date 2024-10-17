@@ -53,7 +53,6 @@ add_dependencies(LevelEditor xrSE_Factory)
 # Move precompiled header
 target_validate_pch(LevelEditor ${CMAKE_CURRENT_SOURCE_DIR})
 
-
 ## LibOGG
 target_link_libraries(LevelEditor PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
 target_include_directories(LevelEditor PRIVATE "${SND_OGG}/native/include/")

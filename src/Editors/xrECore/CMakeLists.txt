@@ -153,7 +153,6 @@ target_precompile_headers(xrECore PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrECore PRIVATE XRECORE_EXPORTS)
-#target_compile_definitions(xrECore PRIVATE _EDITOR)
 target_compile_definitions(xrECore PRIVATE _WINDOWS)
 target_compile_definitions(xrECore PRIVATE _USRDLL)
 target_compile_definitions(xrECore PUBLIC XR_EDITOR_NEW)
@@ -222,13 +221,3 @@ target_include_directories(xrECore PRIVATE "${SNDE_VOB}/native/include/")
 ## OpenAL
 target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
 target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")
-
-## RedImage
-target_link_libraries(xrECore PUBLIC ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
-target_include_directories(xrECore PUBLIC "${REDIMAGE_PATH}/build/native/include/")
-
-### Copy binaries
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)

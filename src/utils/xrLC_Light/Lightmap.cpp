@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-//#include "build.h"
+
 #include "Lightmap.h"
 #include "xrDeflector.h"
 #include "xrDXTC.h"
@@ -11,8 +11,6 @@
 #include "xrface.h"
 #include "ETextureParams.h"
 #include <xrLC_GlobalData.h>
-
-extern "C" bool __declspec(dllimport) __stdcall DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -160,7 +158,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
+		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
 	lm_packed.clear();
 	Status			("Compression hemi..."); //.
@@ -181,7 +179,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
+		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
 
 

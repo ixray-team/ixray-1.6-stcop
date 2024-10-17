@@ -12,9 +12,7 @@
 #include "xrface.h"
 #include "xrlight_implicitcalcglobs.h"
 
-#include "../../xrcdb/xrcdb.h"
-
-extern "C" bool __declspec(dllimport) __stdcall DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+#include "../../xrCDB/xrCDB.h"
 
 using Implicit = xr_map<u32, ImplicitDeflector>;
 using Implicit_it = Implicit::iterator;
@@ -247,7 +245,7 @@ void ImplicitLightingExec()
 			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-			DXTCompress				(out_name,raw_data,0,w,h,pitch,&fmt,4);
+			DXTUtils::Compress(out_name,raw_data,0,w,h,pitch,&fmt,4);
 		}
 
 		// lmap
@@ -272,7 +270,7 @@ void ImplicitLightingExec()
 			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-			DXTCompress				(out_name,raw_data,0,w,h,pitch,&fmt,4);
+			DXTUtils::Compress(out_name,raw_data,0,w,h,pitch,&fmt,4);
 		}
 		//defl.Deallocate				();
 	}

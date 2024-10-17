@@ -45,24 +45,24 @@ target_link_libraries(xrDXT PUBLIC xrCore)
 target_link_libraries(xrDXT PUBLIC xrCDB)
 
 # NVTT
-if (USE_NVTT)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}runtimes/win-x64/native/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-    
-    target_link_libraries(xrDXT PRIVATE ${NVTT}runtimes/win-x64/native/Release/nvtt.lib)
-    target_include_directories(xrDXT PRIVATE "${NVTT}build/native/include/")
-else()
+target_link_libraries(xrDXT PRIVATE ${NVTT}runtimes/win-x64/native/Release/nvtt.lib)
+target_include_directories(xrDXT PRIVATE "${NVTT}build/native/include/")
+
+## Copy binaries
+add_custom_command(TARGET ${PROJECT_NAME} 
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}runtimes/win-x64/native/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
+
 # RedImage
-    target_link_libraries(xrDXT PUBLIC ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
-    target_include_directories(xrDXT PUBLIC "${REDIMAGE_PATH}/build/native/include/")
-    
-    ## Copy binaries
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-endif()
+target_link_libraries(xrDXT PRIVATE ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
+target_include_directories(xrDXT PRIVATE "${REDIMAGE_PATH}/build/native/include/")
+
+## Copy binaries
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
 
 
 #target_include_directories(xrDXT PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
