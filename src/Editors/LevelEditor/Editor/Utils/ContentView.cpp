@@ -948,6 +948,12 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 
 		ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
 		ImGui::TextColored(TextColor, Platform::ANSI_TO_UTF8(LabelText).data());
+
+		if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered())
+		{
+			if (FilePath.xstring() != ".." && !FilePath.parent_path().empty() && !IsSpawnElement)
+			RenameActionActivate(FilePath);
+		}
 	}
 	//}
 
