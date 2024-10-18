@@ -181,13 +181,13 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 
 	const SDL_MessageBoxData messageboxdata = 
 	{
-		SDL_MESSAGEBOX_ERROR, /* .flags */
-		NULL,						/* .window */
-		"Fatal Error",						/* .title */
-		message.c_str(),	/* .message */
-		SDL_arraysize(buttons),		/* .numbuttons */
+		SDL_MESSAGEBOX_ERROR,		/* .flags */
+		nullptr,					/* .window */
+		"Fatal Error",				/* .title */
+		message.c_str(),			/* .message */
+		std::size(buttons),			/* .numbuttons */
 		buttons,					/* .buttons */
-		NULL						/* .colorScheme */
+		nullptr						/* .colorScheme */
 	};
 
 	int ret = SDL_ShowMessageBox(&messageboxdata, &buttonid);
