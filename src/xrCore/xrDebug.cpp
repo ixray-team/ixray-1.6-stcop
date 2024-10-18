@@ -510,7 +510,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		//SDL_ShowWindow(g_AppInfo.Window);
 		//SDL_MinimizeWindow(g_AppInfo.Window);
-		MessageBoxA			(nullptr,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", "Fatal error occured\n\nPress OK to abort program execution", nullptr);
 	}
 
 	ReportFault				( pExceptionInfo, 0 );
@@ -553,14 +553,7 @@ void _terminate()
 	LPSTR buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += xr_sprintf(buffer, xr_strlen(assertion_info), "Press OK to abort execution%s", endline);
 
-#ifdef IXR_WINDOWS
-	MessageBoxA(
-		/*GetTopWindow(nullptr)*/ nullptr,
-		assertion_info,
-		"Fatal Error",
-		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
-	);
-#endif
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", assertion_info, nullptr);
 	exit(-1);
 }
 
