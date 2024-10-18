@@ -190,7 +190,7 @@ bool CPSLibrary::Load2()
 
 bool CPSLibrary::Load(const char* nm)
 {
-    if (!FS.exist(nm))
+    if (!FS.TryLoad(nm))
     {
         Msg("Can't find file: '%s'",nm);
         return 				false;
