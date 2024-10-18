@@ -12,6 +12,7 @@ on:
       - '**/CMakeLists.txt'
       - '**/*.ltx'
       - '**/*.json'
+      - '**/.xrignore'
   pull_request:
     branches:
       - '**'
@@ -23,6 +24,7 @@ on:
       - '**/CMakeLists.txt'
       - '**/*.ltx'
       - '**/*.json'
+      - '**/.xrignore'
 
 defaults:
   run:
