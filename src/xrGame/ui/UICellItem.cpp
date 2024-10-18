@@ -308,23 +308,29 @@ void CUICellItem::UpdateConditionProgressBar()
 			if (eitm)
 			{
 				u16 max_uses = eitm->GetMaxUses();
-				u16 remaining_uses = eitm->GetRemainingUses();
-
-				if (max_uses < 8)
+				if (max_uses > 1)
 				{
-					m_pConditionState->ShowBackground(false);
-				}
+					u16 remaining_uses = eitm->GetRemainingUses();
+					if (remaining_uses < 1)
+					{
+						cond = 0.0f;
+					}
+					else if (max_uses > 8)
+					{
+						cond = (float)remaining_uses / (float)max_uses;
+					}
+					else
+					{
+						cond = ((float)remaining_uses * 0.125f) - 0.0625f;
+					}
 
-				 if (max_uses > 8)
-				{
-					cond = (float)remaining_uses / (float)max_uses;
-				}
-				else
-				{
-					cond = ((float)remaining_uses * 0.125f) - 0.0625f;
-				}
+					if (max_uses < 8)
+					{
+						m_pConditionState->ShowBackground(false);
+					}
 
-				m_pConditionState->m_bUseGradient = false;
+					m_pConditionState->m_bUseGradient = false;
+				}
 			}
 
 			Ivector2 itm_grid_size = GetGridSize();
