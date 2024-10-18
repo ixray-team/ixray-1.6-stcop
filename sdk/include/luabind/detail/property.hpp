@@ -82,7 +82,7 @@ namespace luabind { namespace detail
 		}
 	};
 
-	using match_fun_ptr = int (*)(lua_State*, ptrdiff_t);
+	using match_fun_ptr = int (*)(lua_State*, int);
 
 	template<typename T, typename... Policies>
 	struct set_matcher
