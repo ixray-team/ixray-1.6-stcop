@@ -29,6 +29,15 @@ class CContentView:
 		shared_str ISESect;
 	};
 
+	struct RenameObjectData
+	{
+		xr_string RenameBuf;
+		xr_path Path{};
+		bool Active{ false };
+		bool Focus{ false };
+		bool SetText{ false };
+	};
+
 	enum class EViewMode
 	{
 		Tile,
@@ -72,6 +81,11 @@ private:
 	void PasteAction(const xr_string&) /*const*/;
 	void DeleteAction(const xr_path&) /*const*/;
 	void CutAction(const xr_path&) const;
+	void RenameAction(const xr_path& FilePath,const xr_string NewName);
+
+	void RenameActionActivate(const xr_path& Path);
+	void RenameActionEnd();
+
 
 	void AcceptDragDropAction(xr_path&);
 	bool BeginDragDropAction(xr_path&, xr_string&, const CContentView::FileOptData&, CContentView::IconData*);
@@ -87,6 +101,7 @@ private:
 
 	ref_texture MenuIcon;
 
+	RenameObjectData RenameObject;
 	mutable xr_path CopyObjectPath;
 	mutable bool IsCutting;
 

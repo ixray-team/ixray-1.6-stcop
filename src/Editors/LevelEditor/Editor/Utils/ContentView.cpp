@@ -41,6 +41,10 @@ void CContentView::Draw()
 				if (!xr_path(CurrentDir).has_root_path() && !IsSpawnElement)
 				ImGui::OpenPopup("##contentbrowsercontext");
 			}
+			else if (!RenameObject.Focus && ImGui::IsMouseClicked(0) /*ImGui::IsMouseReleased(0)*/)
+			{
+				RenameObject.Active = false;
+			}
 
 			DrawFormContext();
 
@@ -813,6 +817,7 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 	return BeginDragDropAction(FilePath, FileName, InitFileName, IconPtr);
 }
 
+
 bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
 {
 	if (InitFileName.File.empty())
@@ -888,23 +893,63 @@ bool CContentView::DrawItemByTile(const FileOptData& InitFileName, size_t& HorBt
 
 	ImVec4 TextColor = ImVec4(1, 1, 1, 1);
 
-	if (DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
+	bool RenameThisItem = RenameObject.Active && RenameObject.Path == FilePath;
+
+	if (!RenameThisItem && DrawItemHelper(FilePath, FileName, InitFileName, IconPtr))
 		TextColor.w = 0.3;
 
-	
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
-	float TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
-
-	while (TextPixels > BtnSize.x)
-	{
-		LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
-		TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
-	}
-
-	ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
-
-	ImGui::TextColored(TextColor, Platform::ANSI_TO_UTF8(LabelText).data());
 	
+	if (RenameObject.Path == FilePath)
+	{
+		if (RenameObject.Active)
+		{
+			if (RenameObject.SetText)
+			{
+				RenameObject.SetText = false;
+				RenameObject.RenameBuf = LabelText;
+				ImGui::SetKeyboardFocusHere();
+			}
+
+			ImGuiIO& io = ImGui::GetIO();
+
+			ImGui::SetCursorPosX(CursorPos.x);
+			ImGui::SetNextItemWidth(BtnSize.x + 10);
+			if (ImGui::InputText("##ren", RenameObject.RenameBuf.data(), 255,ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				RenameObject.Active = false;
+			}
+			 
+			if (io.KeysDown[ImGuiKey_Escape]) {
+				RenameActionEnd();
+			}
+
+			RenameObject.Focus = ImGui::IsItemHovered();
+		}
+		else 
+		{
+			
+			bool c = strcmp(LabelText.c_str(), RenameObject.RenameBuf.c_str());
+			if (c) 
+				RenameAction(FilePath, RenameObject.RenameBuf.c_str());
+			
+			RenameActionEnd();
+		}
+	}
+	else 
+	{
+		float TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
+
+		while (TextPixels > BtnSize.x)
+		{
+			LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
+			TextPixels = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
+		}
+
+		ImGui::SetCursorPosX(CursorPos.x + (((10 + BtnSize.x) - TextPixels) / 2));
+		ImGui::TextColored(TextColor, Platform::ANSI_TO_UTF8(LabelText).data());
+	}
+	//}
 
 	InvalidateLambda();
 	return OutValue;
@@ -987,13 +1032,17 @@ bool CContentView::DrawContext(const xr_path& Path)
 
 	if (!ShowOpen) //Actions are temporarily unavailable for levels. The logic is not worked out
 	{
+		if (ImGui::MenuItem("Cut"))
+		{
+			CutAction(Path);
+		}
 		if (ImGui::MenuItem("Copy"))
 		{
 			CopyAction(Path);
 		}
-		if (ImGui::MenuItem("Cut"))
+		if (ImGui::MenuItem("Rename"))
 		{
-			CutAction(Path);
+			RenameActionActivate(Path);
 		}
 		if (ImGui::MenuItem("Delete"))
 		{
@@ -1340,5 +1389,47 @@ void CContentView::CutAction(const xr_path& Path) const
 	CopyAction(Path);
 	IsCutting = true;
 }
+void CContentView::RenameAction(const xr_path& FilePath, const xr_string NewName)
+{
+	xr_path TempFileName = xr_path(FilePath).replace_filename(std::filesystem::path(std::tmpnam(nullptr)).stem());
+	xr_path NewFileName = FilePath;
+	NewFileName.replace_filename(NewName.c_str());
+	NewFileName.replace_extension(FilePath.extension());
 
+	std::filesystem::rename(FilePath, TempFileName);
+
+	if (std::filesystem::exists(NewFileName))
+	{
+		CheckFileNameCopyRecursive(NewFileName);
+	}
+
+	std::filesystem::rename(TempFileName, NewFileName);
+
+	if (!std::filesystem::is_directory(NewFileName))
+	{
+		if (auto ThmFile = FilePath; ThmFile.extension() != ".thm" && std::filesystem::exists(ThmFile.replace_extension(".thm")))
+		{
+			std::filesystem::rename(ThmFile, NewFileName.replace_extension(".thm"));
+		}
+	}
+
+	FS.rescan_path(NewFileName.parent_path().string().c_str(), true);
+
+}
+
+void CContentView::RenameActionActivate(const xr_path& Path)
+{
+	RenameObject.SetText = true;
+	RenameObject.Focus = false;
+	RenameObject.Active = true;
+	RenameObject.RenameBuf.clear();
+	RenameObject.Path = Path;
+}
+
+void CContentView::RenameActionEnd()
+{
+	RenameObject.Active = false;
+	RenameObject.RenameBuf.clear();
+	RenameObject.Path.clear();
+}
 #pragma endregion
