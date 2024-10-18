@@ -7,6 +7,7 @@ option(IXRAY_EDITORS "Apply editors to solution" OFF)
 option(IXRAY_MP "Apply multiplayer xrGame and multiplayer utilities to solution" OFF)
 option(IXRAY_PLUGINS "Enable X-Ray Plugins" OFF)
 option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
+option(IXRAY_LDEBUG "Enable LUA_DEBUG mode" OFF)
 option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
@@ -40,9 +41,14 @@ include("cmake/shipping.cmake")
 set(CMAKE_CONFIGURATION_TYPES ${IXR_CONFIGURATIONS_STR} CACHE STRING "" FORCE)
 set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
-# Asan
+# ASan
 if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
+endif()
+
+# LuaBind Debug
+if (IXRAY_LDEBUG)
+    add_compile_definitions(LUA_DEBUG)
 endif()
 
 # Download API from GitHub Releases
