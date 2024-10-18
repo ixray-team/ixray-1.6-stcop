@@ -6,6 +6,8 @@
 
 using namespace luabind;
 
+class CActorCondition;
+
 void BoosterForEach(CActorCondition* conditions, const luabind::functor<bool> &funct)
 {
 	CEntityCondition::BOOSTER_MAP& cur_booster_influences = conditions->GetCurBoosterInfluences();
