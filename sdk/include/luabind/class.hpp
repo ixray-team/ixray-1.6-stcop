@@ -1119,7 +1119,7 @@ namespace luabind
 			add_setter(
 				name
 				, std::bind(detail::set_caller<T, Setter>(), _1, _2, s)
-				, &detail::set_matcher<Setter>::apply
+				, detail::gen_set_matcher(static_cast<Setter>(nullptr), detail::policy_cons<>())
 				, &detail::get_member_signature<Setter>::apply);
 #else
 			add_setter(name, std::bind(detail::set_caller<T, Setter>(), _1, _2, s));
