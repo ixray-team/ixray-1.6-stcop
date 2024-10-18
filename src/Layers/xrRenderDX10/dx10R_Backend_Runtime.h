@@ -298,7 +298,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV,
 	constants.flush();
 //	Msg("DrawIndexed: Start");
 //	Msg("iIndexCount=%d, startI=%d, baseV=%d", iIndexCount, startI, baseV);
-	RContext->DrawIndexed(iIndexCount, startI, baseV);
+	g_RenderRHI->DrawIndexed(iIndexCount, startI, baseV);
 //	Msg("DrawIndexed: End\n");
 
 	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));
@@ -331,7 +331,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 //	Msg("Draw: Start");
 //	Msg("iVertexCount=%d, startV=%d", iVertexCount, startV);
 	//CHK_DX				(RDevice->DrawPrimitive(T, startV, PC));
-	RContext->Draw(iVertexCount, startV);
+	g_RenderRHI->Draw(iVertexCount, startV);
 //	Msg("Draw: End\n");
 	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
@@ -354,7 +354,7 @@ IC void CBackend::Render_noIA(u32 iVertexCount)
 	//State manager may alter constants
 	constants.flush();
 
-	RContext->Draw(iVertexCount, 0);
+	g_RenderRHI->Draw(iVertexCount, 0);
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)

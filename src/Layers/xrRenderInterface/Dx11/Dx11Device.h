@@ -40,6 +40,9 @@ public:
 	void CopyTexture2D(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
 	void CopyTexture3D(IRHIResource* pDstResource, IRHIResource* pSrcResource) override;
 
+	void Draw(u32 VertexCount, u32 StartVertexLocation) override;
+	void DrawIndexed(u32 IndexCount, u32 StartIndexLocation, s32 BaseVertexLocation) override;
+
 	// DX11 Stuff
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();

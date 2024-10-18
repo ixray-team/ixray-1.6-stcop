@@ -322,6 +322,16 @@ void CRenderRHI_DX11::CopyTexture3D(IRHIResource* pDstResource, IRHIResource* pS
 		pRHISrcResource ? (ID3D11Resource*)pRHISrcResource->GetD3D11Texture() : 0);
 }
 
+void CRenderRHI_DX11::Draw(u32 VertexCount, u32 StartVertexLocation)
+{
+	m_pHWRenderContext->Draw(VertexCount, StartVertexLocation);
+}
+
+void CRenderRHI_DX11::DrawIndexed(u32 IndexCount, u32 StartIndexLocation, s32 BaseVertexLocation)
+{
+	m_pHWRenderContext->DrawIndexed(IndexCount, StartIndexLocation, BaseVertexLocation);
+}
+
 ID3D11Device* CRenderRHI_DX11::GetDevice()
 {
 	return (ID3D11Device*)m_pHWRenderDevice;
