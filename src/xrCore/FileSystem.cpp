@@ -110,13 +110,13 @@ UINT_PTR CALLBACK OFNHookProcOldStyle(HWND , UINT , WPARAM , LPARAM )
 	return 0;
 }
 
-bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext)
+bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext, const char* ext)
 {
 #ifdef IXR_WINDOWS
 	VERIFY(buffer && (sz_buf > 0));
 	FS_Path& P = *FS.get_path(initial);
 	string1024 			flt;
-	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
+	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", ext ? ext : P.m_DefExt);
 
 	OPENFILENAMEA 		ofn;
 	memset(&ofn, 0, sizeof(ofn));
@@ -199,12 +199,12 @@ bool EFS_Utils::GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bo
 }
 
 
-bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext, const char* ext)
 {
 	char			buf	[255*255]; //max files to select
 	xr_strcpy			(buf, buffer.c_str());
 
-	bool bRes		= GetOpenNameInternal(initial, buf, sizeof(buf), bMulti, offset, start_flt_ext);
+	bool bRes		= GetOpenNameInternal(initial, buf, sizeof(buf), bMulti, offset, start_flt_ext, ext);
 
 	if (bRes)
 		buffer=(char*)buf;
@@ -212,7 +212,7 @@ bool EFS_Utils::GetOpenName(LPCSTR initial, xr_string& buffer, bool bMulti, LPCS
 	return bRes;
 }
 
-bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext)
+bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, int start_flt_ext, const char* ext)
 {
 #ifdef IXR_WINDOWS
 	FS_Path& P = *FS.get_path(initial);
@@ -220,7 +220,7 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 
 	LPCSTR def_ext = P.m_DefExt;
 
-	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", def_ext);
+	MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", ext ? ext : def_ext);
 	OPENFILENAMEA ofn;
 	memset(&ofn, 0, sizeof(ofn));
 	if (xr_strlen(buffer)) {
@@ -259,11 +259,11 @@ bool EFS_Utils::GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset, 
 }
 
 
-bool EFS_Utils::GetSaveName( LPCSTR initial, xr_string& buffer, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetSaveName( LPCSTR initial, xr_string& buffer, LPCSTR offset, int start_flt_ext, const char* ext)
 {
 	string_path				buf;
 	xr_strcpy				(buf,sizeof(buf), buffer.c_str());
-	bool bRes				= GetSaveName(initial, buf ,offset, start_flt_ext);
+	bool bRes				= GetSaveName(initial, buf ,offset, start_flt_ext, ext);
 	if (bRes) 
 		buffer				= buf;
 

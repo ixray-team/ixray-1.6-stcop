@@ -104,19 +104,43 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 		if (PtrScaleSnap)
 			std::fill_n(ScaleSnap, std::size(ScaleSnap), Tools->m_ScaleFixed);
 
-		const bool IsSingleObject = lst.size() == 1;
+		bool IsSingleObject = lst.size() == 1;
 
 		Fbox test;
+		u32 Flags = ImGuizmo::SCALE;
+
 		if (IsSingleObject)
 		{
-			lst.front()->GetUTBox(test);
+			if (LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
+			{
+				lst.front()->GetUTBox(test);
+				Flags |= ImGuizmo::BOUNDS;
+			}
+			if (LTools->CurrentClassID() == OBJCLASS_SHAPE)
+			{
+				CEditShape* Shape = (CEditShape*)lst.front();
+				if (Shape->shapes[0].type == CShapeData::cfBox)
+				{
+					test = Shape->m_Box;
+					Flags |= ImGuizmo::BOUNDS;
+				}
+				else
+				{
+					IsSingleObject = false;
+					Flags = ImGuizmo::SCALE_XU;
+				}
+			}
+			else
+			{
+				IsSingleObject = false;
+			}
 		}
 
 		const bool IsManipulated = ImGuizmo::Manipulate
 		(
 			(float*)&Device.mView, 
 			(float*)&Device.mProject,
-			ImGuizmo::SCALE | ImGuizmo::BOUNDS, 
+			(ImGuizmo::OPERATION)Flags, //ImGuizmo::SCALE | ImGuizmo::BOUNDS,
 			IsSingleObject ? ImGuizmo::WORLD : ImGuizmo::LOCAL,
 			(float*)&ObjectMatrix, 
 			(float*)&DeltaMatrix, 

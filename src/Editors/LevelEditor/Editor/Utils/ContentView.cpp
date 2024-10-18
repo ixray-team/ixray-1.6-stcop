@@ -278,11 +278,9 @@ void CContentView::FindFile()
 
 void CContentView::ScanConfigsRecursive(xr_map<xr_string, CContentView::FileOptData>& TempPath, const xr_string& ParseStr)
 {
-	//auto Pathes = ISEPath.Split('\\');
-
 	for (auto& [Name, DirOpt] : TempPath)
 	{
-		if (DirOpt.IsDir /* && std::find(Pathes.begin(), Pathes.end(), Name) != Pathes.end() */)
+		if (DirOpt.IsDir)
 		{
 			auto RecFiles = ScanConfigs(Name);
 			ScanConfigsRecursive(RecFiles, ParseStr);
@@ -783,8 +781,12 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	}
 	else
 	{
-		if (FilePath == ".." || !std::filesystem::is_directory(FilePath)
-			|| FilePath.parent_path().empty() || !ImGui::BeginDragDropSource())
+		if (
+				FilePath == ".." || 
+				!std::filesystem::is_directory(FilePath) ||
+				FilePath.parent_path().empty() || 
+				!ImGui::BeginDragDropSource()
+		   )
 		{
 			return false;
 		}
@@ -1330,8 +1332,7 @@ void CContentView::CheckFileNameCopyRecursive(xr_path& FilePath) const
 
 void CContentView::PasteAction(const xr_string& Path) /*const*/
 {
-	
-	xr_path OutDir = ((Path == "..")? CurrentDir / xr_path(Path) : xr_path(Path)) / CopyObjectPath.xfilename();
+	xr_path OutDir = ((Path == "..") ? CurrentDir / xr_path(Path) : xr_path(Path)) / CopyObjectPath.xfilename();
 
 	if (CopyObjectPath == OutDir || std::filesystem::exists(OutDir))
 	{
@@ -1360,9 +1361,8 @@ void CContentView::PasteAction(const xr_string& Path) /*const*/
 	CopyObjectPath.clear();
 
 	FS.rescan_path(OutDir.parent_path().string().c_str(), true);
-
-	return;
 }
+
 void CContentView::DeleteAction(const xr_path& Path) /*const*/
 {
 	if (std::filesystem::is_directory(Path))
@@ -1385,16 +1385,19 @@ void CContentView::DeleteAction(const xr_path& Path) /*const*/
 		//FS.rescan_path(Path.parent_path().string().c_str() , true);
 	RescanDirectory();
 }
+
 void CContentView::CopyAction(const xr_path& Path) const
 {
 	CopyObjectPath = Path;
 	IsCutting = false;
 }
+
 void CContentView::CutAction(const xr_path& Path) const
 {
 	CopyAction(Path);
 	IsCutting = true;
 }
+
 void CContentView::RenameAction(const xr_path& FilePath, const xr_string NewName)
 {
 	xr_path TempFileName = xr_path(FilePath).replace_filename(std::filesystem::path(std::tmpnam(nullptr)).stem());

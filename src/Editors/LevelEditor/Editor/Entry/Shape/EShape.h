@@ -8,7 +8,8 @@ class CEditShape:
 	protected CShapeData
 {
 	typedef CCustomObject inherited;
-protected:
+	friend class IM_Manipulator;
+public:
 // bounds
 	Fbox			m_Box;
 	Fsphere			m_Sphere;

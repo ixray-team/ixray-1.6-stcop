@@ -138,11 +138,8 @@ void CMainPPE::ClickHandle()
 {
 	if (LoadClick)
 	{
-		string_path AnimDir = {};
-		FS.update_path(AnimDir, "$game_anims$", "");
-
 		xr_string temp_fn;
-		EFS.GetOpenName(AnimDir, temp_fn);
+		EFS.GetOpenName("$game_anims$", temp_fn, false, 0, -1, "*.ppe");
 
 		LoadClick = false;
 
@@ -151,11 +148,8 @@ void CMainPPE::ClickHandle()
 	}
 	else if (SaveClick)
 	{
-		string_path AnimDir = {};
-		FS.update_path(AnimDir, "$game_anims$", "");
-
 		xr_string temp_fn;
-		EFS.GetSaveName(AnimDir, temp_fn);
+		EFS.GetSaveName("$game_anims$", temp_fn, 0, -1, "*.ppe");
 
 		//FileOpen->ShowDialog(AnimDir, ".ppe");
 		SaveClick = false;

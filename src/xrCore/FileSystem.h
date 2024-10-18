@@ -7,7 +7,7 @@
 class XRCORE_API EFS_Utils 
 {
 protected:
-	bool 		GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti = false, LPCSTR offset = 0, int start_flt_ext = -1);
+	bool 		GetOpenNameInternal(LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti = false, LPCSTR offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
 
 public:
 				EFS_Utils		() = default;
@@ -17,11 +17,10 @@ public:
 
 	LPCSTR		GenerateName	(LPCSTR base_path, LPCSTR base_name, LPCSTR def_ext, LPSTR out_name, u32 const out_name_size);
 
-	bool 		GetOpenName		(LPCSTR initial, string_path& buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
-	bool 		GetOpenName		(LPCSTR initial, xr_string& buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetOpenName		(LPCSTR initial, xr_string& buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1, const char* ext = nullptr);
 
-	bool 		GetSaveName		(LPCSTR initial, string_path& buffer, LPCSTR offset=0, int start_flt_ext=-1 );
-	bool 		GetSaveName		(LPCSTR initial, xr_string& buf, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetSaveName		(LPCSTR initial, string_path& buffer, LPCSTR offset=0, int start_flt_ext=-1, const char* ext = nullptr);
+	bool 		GetSaveName		(LPCSTR initial, xr_string& buf, LPCSTR offset=0, int start_flt_ext=-1, const char* ext = nullptr);
 
 	void 		MarkFile		(LPCSTR fn, bool bDeleteSource);
 
