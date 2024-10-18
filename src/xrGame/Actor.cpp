@@ -1517,8 +1517,16 @@ void CActor::shedule_Update	(u32 DT)
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
 	
 	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
-	Center(ActorPos);
+	//Center(ActorPos);
+	ActorPos = Position();
+	ActorPos.y += ACTOR_HEIGHT * 0.5f;
+
 	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
+	if (RQ.O)
+	{
+		//PickPos = RQ.O->Position();
+		RQ.O->Center(PickPos);
+	}
 	const static bool isMonstersInventory = EngineExternal()[EEngineExternalGame::EnableMonstersInventory];
 
 	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 6.0f)
