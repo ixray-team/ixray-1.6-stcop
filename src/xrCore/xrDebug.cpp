@@ -108,8 +108,8 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	xrLogger::FlushLog			();
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
 #ifdef IXR_WINDOWS
-	MessageBoxA			(nullptr,message.c_str(),"Error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
 	TerminateProcess	(GetCurrentProcess(),1);
 #else
     kill(getpid(), SIGKILL);
@@ -169,18 +169,40 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		get_on_dialog()	(true);
 
 	xrLogger::FlushLog();
-#ifdef IXR_WINDOWS
-	int result = MessageBoxA
-	(
-		nullptr, 
-		message.c_str(), 
-		"Fatal Error",
-		MB_CANCELTRYCONTINUE | MB_ICONERROR | MB_DEFBUTTON3 | MB_SYSTEMMODAL | MB_DEFAULT_DESKTOP_ONLY
-	);
 
-	switch (result) 
+	int buttonid = -1;
+
+	const SDL_MessageBoxButtonData buttons[] = 
 	{
-	case IDCANCEL: 
+		{ 0, 0, "Cancel" },
+		{ 0, 1, "Try again" },
+		{ 0, 2, "Continue" },
+	};
+
+	const SDL_MessageBoxData messageboxdata = 
+	{
+		SDL_MESSAGEBOX_ERROR, /* .flags */
+		NULL,						/* .window */
+		"Fatal Error",						/* .title */
+		message.c_str(),	/* .message */
+		SDL_arraysize(buttons),		/* .numbuttons */
+		buttons,					/* .buttons */
+		NULL						/* .colorScheme */
+	};
+
+	int ret = SDL_ShowMessageBox(&messageboxdata, &buttonid);
+
+	if (buttonid == 1)
+	{
+		// Return to main menu
+		error_after_dialog = false;
+	}
+	else if (buttonid == 2)
+	{
+		error_after_dialog = false;
+		ignore_always = true;
+	}
+	else
 	{
 		if (IsDebuggerPresent())
 		{
@@ -188,26 +210,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		}
 		// TODO: Maybe not correct
 		exit(-1);
-		break;
 	}
-	case IDTRYAGAIN: 
-	{
-		error_after_dialog = false;
-		break;
-	}
-	case IDCONTINUE: 
-	{
-		error_after_dialog = false;
-		ignore_always = true;
-		break;
-	}
-	default: 
-	{
-		Msg("! xrDebug::backend default reached");
-		break;
-	}
-	}
-#endif
 	if (get_on_dialog())
 		get_on_dialog()	(false);
 }
