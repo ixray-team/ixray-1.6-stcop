@@ -36,7 +36,7 @@ CLog ELog;
 //----------------------------------------------------
 inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 {
-	UINT Flags = 0;
+	SDL_MessageBoxFlags Flags = SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT;
 	const char* Title = "";
 	switch (mt)
 	{
@@ -44,61 +44,136 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		break;
 	case mtError:
 		Title = "Error";
-		Flags = MB_ICONERROR;
+		Flags = SDL_MESSAGEBOX_ERROR;
 		break;
 	case mtInformation:
 		Title = "Info";
-		Flags = MB_ICONINFORMATION;
+		Flags = SDL_MESSAGEBOX_INFORMATION;
 		break;
 	case mtConfirmation:
 		Title = "Warning";
-		Flags = MB_ICONWARNING;
+		Flags = SDL_MESSAGEBOX_WARNING;
 		break;
 	default:
 		R_ASSERT(0);
 		break;
 	}
+
+	const SDL_MessageBoxButtonData btnOk[] =
+	{
+		{ 0, 0, "OK" },
+	};
+
+	const SDL_MessageBoxButtonData btnYes[] =
+	{
+		{ 0, 0, "OK" },
+	};
+
+	const SDL_MessageBoxButtonData btnYesNo[] =
+	{
+		{ 0, 0, "Yes" },
+		{ 0, 1, "No" },
+	};
+
+	const SDL_MessageBoxButtonData btnYesNoCancel[] =
+	{
+		{ 0, 0, "Yes" },
+		{ 0, 1, "No" },
+		{ 0, 2, "Cancel" },
+	};
+
+	const SDL_MessageBoxData messageboxYes =
+	{
+		Flags, /* .flags */
+		nullptr,						/* .window */
+		Title,						/* .title */
+		text,						/* .message */
+		SDL_arraysize(btnYes),		/* .numbuttons */
+		btnYes,					/* .buttons */
+		nullptr						/* .colorScheme */
+	};
+
+	const SDL_MessageBoxData messageboxOk =
+	{
+		Flags, /* .flags */
+		nullptr,						/* .window */
+		Title,						/* .title */
+		text,						/* .message */
+		SDL_arraysize(btnOk),		/* .numbuttons */
+		btnOk,					/* .buttons */
+		nullptr						/* .colorScheme */
+	};
+
+	const SDL_MessageBoxData messageboxYesNo =
+	{
+		Flags, /* .flags */
+		nullptr,						/* .window */
+		Title,						/* .title */
+		text,						/* .message */
+		SDL_arraysize(btnYesNo),		/* .numbuttons */
+		btnYesNo,					/* .buttons */
+		nullptr						/* .colorScheme */
+	};
+
+	const SDL_MessageBoxData messageboxYesNoCancel =
+	{
+		Flags, /* .flags */
+		nullptr,						/* .window */
+		Title,						/* .title */
+		text,						/* .message */
+		SDL_arraysize(btnYesNoCancel),		/* .numbuttons */
+		btnYesNoCancel,					/* .buttons */
+		nullptr						/* .colorScheme */
+	};
+
+	int buttonid = -1;
+
 	if (btn == mbYes)
 	{
-		Flags |=  MB_OK;
+		SDL_ShowMessageBox(&messageboxYes, &buttonid);
 	}
 	if (btn == mbOK)
 	{
-		Flags |= MB_OK;
+		SDL_ShowMessageBox(&messageboxOk, &buttonid);
 	}
-	else if(btn==(mbYes|mbNo))
+	else if (btn == (mbYes | mbNo))
 	{
-		Flags |= MB_YESNO;
+		SDL_ShowMessageBox(&messageboxYesNo, &buttonid);
 	}
-	else if (btn == (mbYes | mbNo|mbCancel))
+	else if (btn == (mbYes | mbNo | mbCancel))
 	{
-		Flags |= MB_YESNOCANCEL;
+		SDL_ShowMessageBox(&messageboxYesNoCancel, &buttonid);
 	}
 	else
 	{
 		R_ASSERT(0);
 	}
-	int msgboxID = MessageBoxA(
-		NULL,
-		text,
-		Title,
-		Flags
-	);
-	switch (msgboxID)
+
+	if (btn != mbOK)
 	{
-	case IDCANCEL:
-		return mrCancel;	// TODO: add code
-		break;
-	case IDYES:
-		return mrYes;
-		break;
-	case IDNO:
-		return mrNo;
-		break;
-	case IDOK:
-		return mrOK;
-		break;
+		switch (buttonid)
+		{
+		case 0:
+			return mrYes;
+			break;
+		case 1:
+			return mrNo;
+			break;
+		case 2:
+			return mrCancel;	// TODO: add code
+			break;
+		}
 	}
+	else 
+	{
+		switch (buttonid)
+		{
+		case 0:
+			return mrOK;
+			break;
+		}
+	}
+
 	if (btn | mbCancel)return mrCancel;
 	if (btn | mbNo)return mrNo;
 	if (btn == mbOK)return mrOK;

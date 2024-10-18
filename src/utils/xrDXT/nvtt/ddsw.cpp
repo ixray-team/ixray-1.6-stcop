@@ -39,5 +39,5 @@ void DDSErrorHandler::error(nvtt::Error e) {
 	case nvtt::Error_FileOpen:              msg = "File open error"; break;
 	case nvtt::Error_FileWrite:             msg = "File write error"; break;
 	}
-	MessageBoxA(0, msg, "DXT compress error", MB_ICONERROR | MB_OK);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "DXT compress error", msg, nullptr);
 }
