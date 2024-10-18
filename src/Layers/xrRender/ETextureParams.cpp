@@ -187,16 +187,6 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 {                             
 #if 1
 
-    if (
-        mip_filter != STextureParams::kMIPFilterAdvanced &&
-        mip_filter != STextureParams::kMIPFilterBox &&
-        mip_filter != STextureParams::kMIPFilterKaiser &&
-        mip_filter != STextureParams::kMIPFilterTriangle
-        )
-    {
-        mip_filter = STextureParams::kMIPFilterKaiser;
-    }
-
 	OnTypeChangeEvent	            = on_type_change;
     PropValue* P		            = PHelper().CreateToken32	(items, "Type",		(u32*)&type,		ttype_token);
     P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);

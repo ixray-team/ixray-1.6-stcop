@@ -218,7 +218,7 @@ u32	hsample(s32 w, s32 h, s32 p, s32 x, s32 y, u8* src)
 #include "../../Layers/xrRender/ETextureParams.h"
 #include "Image_DXTC.h"
 
-extern int DXTCompressImage(LPCSTR out_name, u8* raw_data,
+extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data,
     u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 int DXTCompressBump(LPCSTR out_name, u8* T_height_gloss, u8* T_normal_map,
@@ -253,7 +253,7 @@ int DXTCompressBump(LPCSTR out_name, u8* T_height_gloss, u8* T_normal_map,
 	fmt0.flags.assign(STextureParams::flGenerateMipMaps);
 	fmt0.type = STextureParams::ttImage;
 	fmt0.fmt = STextureParams::tfDXT5;
-	int res = DXTCompressImage(out_name, T_normal_1, w, h, pitch, &fmt0, depth);
+	int res = DXTCompressImageNVTT(out_name, T_normal_1, w, h, pitch, &fmt0, depth);
 
 	// stage 1
 	if (res == 1)
@@ -344,7 +344,7 @@ int DXTCompressBump(LPCSTR out_name, u8* T_height_gloss, u8* T_normal_map,
 				*strext(out_name1) = 0;
 
 			strcat(out_name1, "#.dds");
-			res |= DXTCompressImage(out_name1, T_normal_1D, w, h, pitch, &fmt0, depth);
+			res |= DXTCompressImageNVTT(out_name1, T_normal_1D, w, h, pitch, &fmt0, depth);
 			free(T_height_pf);
 			free(T_normal_1D);
 		}

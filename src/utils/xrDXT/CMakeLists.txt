@@ -1,7 +1,7 @@
 project(xrDXT)
 set(DXT_SRC_FILES)
 
-set(USE_NVTT ON)
+#set(USE_NVTT ON)
 
 # Files import
 file(GLOB_RECURSE DXT_SOURCE_ALL_FILES CONFIGURE_DEPENDS
@@ -24,11 +24,11 @@ list(APPEND DXT_SRC_FILES ${DXT_SOURCE_ALL_FILES})
 # Remove unused files
 list(FILTER DXT_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
 
-if (USE_NVTT)
-    list(FILTER DXT_SRC_FILES EXCLUDE REGEX "RedImage/*.*")
-else()
-    list(FILTER DXT_SRC_FILES EXCLUDE REGEX "nvtt/*.*")
-endif()
+#if (USE_NVTT)
+#    list(FILTER DXT_SRC_FILES EXCLUDE REGEX "RedImage/*.*")
+#else()
+#    list(FILTER DXT_SRC_FILES EXCLUDE REGEX "nvtt/*.*")
+#endif()
 
 # xrDXT project
 add_library(xrDXT SHARED ${DXT_SRC_FILES})

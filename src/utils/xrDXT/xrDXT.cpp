@@ -3,7 +3,11 @@
 
 #include <RedImage.hpp>
 
-extern int DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+#include "../../Layers/xrRender/ETextureParams.h"
+
+extern int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+extern int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
+extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 void DXTUtils::Converter::MakeTGA(xr_path From, xr_path To)
 {
@@ -27,7 +31,48 @@ void DXTUtils::Converter::MakePNG(xr_path From, xr_path To)
 
 int DXT_API DXTUtils::Compress(const char* out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
-	return DXTCompress(out_name, raw_data, normal_map, w, h, pitch, fmt, depth);
+	switch (fmt->type) 
+	{
+	case STextureParams::ttImage:
+	case STextureParams::ttCubeMap:
+	case STextureParams::ttNormalMap:
+	case STextureParams::ttTerrain:
+	{
+		switch (fmt->mip_filter)
+		{
+			case STextureParams::kMIPFilterAdvanced:
+			case STextureParams::kMIPFilterBox:
+			case STextureParams::kMIPFilterTriangle:
+			case STextureParams::kMIPFilterKaiser:
+				return DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
+
+			case STextureParams::kMIPFilterPoint:
+			case STextureParams::kMIPFilterCubic:
+			case STextureParams::kMIPFilterCatrom:
+			case STextureParams::kMIPFilterMitchell:
+				return DXTCompressImageRI(out_name, raw_data, w, h, pitch, fmt, depth);
+				
+			case STextureParams::kMIPFilterGaussian:
+			case STextureParams::kMIPFilterSinc	:
+			case STextureParams::kMIPFilterBessel:
+			case STextureParams::kMIPFilterHanning:
+			case STextureParams::kMIPFilterHamming:
+			case STextureParams::kMIPFilterBlackman:
+			{
+				Msg("Unsupported mip filter in %s!", out_name);
+				fmt->mip_filter = STextureParams::kMIPFilterKaiser;
+				return DXTCompressImageNVTT(out_name, raw_data, w, h, pitch, fmt, depth);
+			}
+		}
+		
+		break;
+	}
+	case STextureParams::ttBumpMap:
+		return DXTCompressBump(out_name, raw_data, normal_map, w, h, pitch, fmt, depth);
+		break;
+	default: NODEFAULT;
+	}
+	return -1;
 }
 
 U8Vec DXT_API DXTUtils::GitPixels(const char* FileName, u32 NewW, u32 NewH)

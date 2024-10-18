@@ -2,7 +2,7 @@
 #include "../../Layers/xrRender/ETextureParams.h"
 #include <RedImage.hpp>
 
-int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
+int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
     CTimer T;
     T.Start();
@@ -45,6 +45,9 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STe
     RedImageTool::RedResizeFilter ResizeFilter = RedImageTool::RedResizeFilter::Default;
     switch (fmt->mip_filter)
     {
+    case STextureParams::kMIPFilterPoint:
+        ResizeFilter = RedImageTool::RedResizeFilter::Default;
+        break;
     case STextureParams::kMIPFilterBox:
         ResizeFilter = RedImageTool::RedResizeFilter::Box;
         break;
@@ -54,7 +57,7 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STe
     case STextureParams::kMIPFilterCubic:
         ResizeFilter = RedImageTool::RedResizeFilter::Cubicbspline;
         break;
-    case STextureParams::kMIPFilterKaiser:
+    case STextureParams::kMIPFilterCatrom:
         ResizeFilter = RedImageTool::RedResizeFilter::Catmullrom;
         break;
     case STextureParams::kMIPFilterMitchell:
@@ -65,25 +68,4 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STe
     Image.Convert(Format);
     Msg("# DXT: Compressing Image: 2 [Closing File]. Time from start %f ms", T.GetElapsed_sec() * 1000.f);
     return Image.SaveToDds(out_name);
-}
-
-//extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
-
-extern "C" __declspec(dllexport) int DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
-{
-    switch (fmt->type)
-    {
-    case STextureParams::ttImage:
-    case STextureParams::ttCubeMap:
-    case STextureParams::ttNormalMap:
-    case STextureParams::ttTerrain:
-        return DXTCompressImage(out_name, raw_data, w, h, pitch, fmt, depth);
-        break;
-    //case STextureParams::ttBumpMap:
-    //    return DXTCompressBump(out_name, raw_data, normal_map, w, h, pitch, fmt, depth);
-    //    break;
-    default:
-        NODEFAULT;
-    }
-    return -1;
 }

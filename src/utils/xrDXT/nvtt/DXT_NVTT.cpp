@@ -52,8 +52,7 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 static HFILE gFileOut;
 static HFILE gFileIn;
 
-int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
-	STextureParams* fmt, u32 depth)
+int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
 	R_ASSERT(0 != w && 0 != h);
 	gFileOut = _open(out_name, _O_WRONLY | _O_BINARY | _O_CREAT | _O_TRUNC, _S_IWRITE);
@@ -127,23 +126,4 @@ int DXTCompressImage(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		return 0;
 	}
 	return 1;
-}
-
-extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
-
-int DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
-{
-	switch (fmt->type){
-	case STextureParams::ttImage:	
-	case STextureParams::ttCubeMap: 
-	case STextureParams::ttNormalMap:
-	case STextureParams::ttTerrain:
-		return DXTCompressImage	(out_name, raw_data, w, h, pitch, fmt, depth);
-	break;
-	case STextureParams::ttBumpMap: 
-		return DXTCompressBump	(out_name, raw_data, normal_map, w, h, pitch, fmt, depth);
-	break;
-	default: NODEFAULT;
-	}
-	return -1;
 }
