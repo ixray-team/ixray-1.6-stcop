@@ -3,12 +3,15 @@
 
 class CPseudoDogBase;
 
-class CStateManagerPseudodog : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CStateManagerPseudodog : public CMonsterStateManager 
+{
+	using inherited = CMonsterStateManager;
 	
 public:
 
-					CStateManagerPseudodog	(CPseudoDogBase *monster); 
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+					CStateManagerPseudodog	(CBaseMonster* object);
+					virtual ~CStateManagerPseudodog() override;
+
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object) override { inherited::remove_links(object);}
 };

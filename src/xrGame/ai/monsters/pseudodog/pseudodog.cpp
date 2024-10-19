@@ -9,18 +9,15 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-#ifdef _DEBUG
-#	include "../../../ai_object_location.h"
-#	include "../../../level_debug.h"
-#	include "../../../level_graph.h"
-#	include "../../../ai_space.h"
-#	include "../../../alife_simulator.h"
-#	include "../../../../xrServerEntities/xrServer_Object_Base.h"
-#	include "../../../xrserver.h"
-#endif
-
 CPseudoDogBase::CPseudoDogBase()
 {
+	m_anger_hunger_threshold = {};
+	m_anger_loud_threshold = {};
+
+	m_time_became_angry = {};
+
+	time_growling = {};
+
 	com_man().add_ability(ControlCom::eControlJump);
 	com_man().add_ability(ControlCom::eControlRotationJump);
 }
@@ -73,8 +70,6 @@ void CPseudoDogBase::Load(LPCSTR section)
 	SVelocityParam &velocity_steal		= move().get_velocity(MonsterMovement::eVelocityParameterSteal);
 	SVelocityParam &velocity_drag		= move().get_velocity(MonsterMovement::eVelocityParameterDrag);
 
-
-	// define animation set
 	anim().AddAnim(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
 	anim().AddAnim(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND);
@@ -105,16 +100,12 @@ void CPseudoDogBase::Load(LPCSTR section)
 	anim().AddAnim(eAnimRunTurnLeft,	"stand_run_turn_left_",	-1, &velocity_run,		PS_STAND);
 	anim().AddAnim(eAnimRunTurnRight,	"stand_run_turn_right_",-1, &velocity_run,		PS_STAND);
 
-
-	// define transitions
-	// order : 1. [anim -> anim]	2. [anim->state]	3. [state -> anim]		4. [state -> state]
 	anim().AddTransition(eAnimLieIdle,	eAnimSleep,	eAnimLieToSleep,	false);
 	anim().AddTransition(eAnimSleep,	PS_STAND,	eAnimSleepStandUp,	false);
 	anim().AddTransition(PS_SIT,		PS_LIE,		eAnimSitLieDown,	false);
 	anim().AddTransition(PS_STAND,		PS_SIT,		eAnimStandSitDown,	false);
 	anim().AddTransition(PS_SIT,		PS_STAND,	eAnimSitStandUp,	false);
 
-	// define links from Action to animations
 	anim().LinkAction(ACT_STAND_IDLE,	eAnimStandIdle);
 	anim().LinkAction(ACT_SIT_IDLE,		eAnimSitIdle);
 	anim().LinkAction(ACT_LIE_IDLE,		eAnimLieIdle);
@@ -136,45 +127,35 @@ void CPseudoDogBase::Load(LPCSTR section)
 	PostLoad					(section);
 }
 
-
 void CPseudoDogBase::reload(LPCSTR section)
 {
 	inherited::reload			(section);
 
 	if(CCustomMonster::use_simplified_visual())	return;
 	
-	// load additional sounds
 	sound().add					(pSettings->r_string(section,"sound_psy_attack"), DEFAULT_SAMPLE_COUNT,	SOUND_TYPE_MONSTER_ATTACKING,	MonsterSound::eHighPriority+3,	MonsterSound::eBaseChannel,	ePsyAttack, "bip01_head");
 	
-	// load jump params
 	com_man().load_jump_data			(0,"run_jamp_0", "run_jamp_1", "run_jamp_2", MonsterMovement::eVelocityParameterRunNormal,MonsterMovement::eVelocityParameterRunNormal,0);
-
 }
 
 void CPseudoDogBase::CheckSpecParams(u32 spec_params)
 {
-	if ((spec_params & ASP_PSI_ATTACK) == ASP_PSI_ATTACK) {
+	if ((spec_params & ASP_PSI_ATTACK) == ASP_PSI_ATTACK) 
+	{
 		com_man().seq_run(anim().get_motion_id(eAnimAttackPsi));
 	}
 
-	if ((spec_params & ASP_THREATEN) == ASP_THREATEN) {
+	if ((spec_params & ASP_THREATEN) == ASP_THREATEN) 
+	{
 		anim().SetCurAnim(eAnimThreaten);
 	}
 }
-
 
 void CPseudoDogBase::HitEntityInJump		(const CEntity *pEntity) 
 {
 	SAAParam &params	= anim().AA_GetParams("run_jamp_1");
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
-
-
-#ifdef _DEBUG
-void CPseudoDogBase::debug_on_key(int key)
-{
-}
-#endif
 
 IStateManagerBase *CPseudoDogBase::create_state_manager()
 {

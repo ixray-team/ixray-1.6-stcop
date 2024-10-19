@@ -2,6 +2,20 @@
 
 namespace EntityDefinitions 
 {
+	struct CPseudoDogBase
+	{
+		struct CPseudoPsyDogPhantomBase
+		{
+			static constexpr unsigned int PMT_TIME_WAIT_PARENT = 10000;
+		};
+
+		struct CPseudoPsyDogBase
+		{
+			static constexpr unsigned int s_phantom_immediate_respawn_flag = 0;
+			static constexpr unsigned int s_phantom_alive_flag = 1;
+		};
+	};
+
 	struct CPseudoGiantBaseDef
 	{
 		static constexpr float MAX_STEP_RADIUS = 60.f;

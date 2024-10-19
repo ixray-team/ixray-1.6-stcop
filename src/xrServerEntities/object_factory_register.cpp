@@ -33,7 +33,8 @@
 #	include "ai/monsters/bloodsucker/bloodsucker.h"
 #	include "ai/monsters/boar/boar.h"
 #	include "ai/monsters/pseudodog/pseudodog.h"
-#	include "ai/monsters/pseudodog_Psy/psy_dog.h"
+#	include "ai/monsters/pseudodog_psy/pseudodog_psy.h"
+#	include "ai/monsters/pseudodog_phantom/pseudodog_phantom.h"
 #	include "ai/monsters/Burer/burer.h"
 #	include "ai/monsters/PseudoGigant/pseudogigant.h"
 #	include "ai/monsters/controller/controller.h"
@@ -261,7 +262,7 @@ void CObjectFactory::register_classes	()
 	ADD(CBoarBase				,CSE_ALifeMonsterBase			,CLSID_AI_BOAR					,"boar");
 	ADD(CPseudoDogBase			,CSE_ALifeMonsterBase			,CLSID_AI_DOG_BLACK				,"dog_black");
 	ADD(CPseudoPsyDogBase					,CSE_ALifeMonsterBase			,CLSID_AI_DOG_PSY				,"psy_dog");
-	ADD(CPsyDogPhantom			,CSE_ALifePsyDogPhantom			,CLSID_AI_DOG_PSY_PHANTOM		,"psy_dog_phantom");
+	ADD(CPseudoPsyDogPhantomBase,CSE_ALifePsyDogPhantom			,CLSID_AI_DOG_PSY_PHANTOM		,"psy_dog_phantom");
 	ADD(CBurerBase					,CSE_ALifeMonsterBase			,CLSID_AI_BURER					,"burer");
 	ADD(CPseudoGiantBase			,CSE_ALifeMonsterBase			,CLSID_AI_GIANT					,"pseudo_gigant");
 	ADD(CControllerBase				,CSE_ALifeMonsterBase			,CLSID_AI_CONTROLLER			,"controller");

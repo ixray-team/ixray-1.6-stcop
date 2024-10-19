@@ -2,7 +2,8 @@
 
 #include "../state.h"
 
-class	CStatePsyDogPsyAttack : public CState {
+class	CStatePsyDogPsyAttack : public CState 
+{
 protected:
 	typedef CState		inherited;
 	typedef CState*	state_ptr;

@@ -2,11 +2,14 @@
 
 #include "../state.h"
 
-class CStatePsyDogHide : public CState {
-	typedef	CState		inherited;
-	typedef	CState*	state_ptr;
+class CStatePsyDogHide : public CState 
+{
+protected:
+	using inherited = CState;
+	using state_ptr = CState*;
 
-	struct {
+	struct 
+	{
 		Fvector position;
 		u32		node;
 	} target;

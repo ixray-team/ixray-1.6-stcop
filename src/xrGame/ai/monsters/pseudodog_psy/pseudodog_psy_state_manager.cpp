@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "psy_dog.h"
-#include "psy_dog_state_manager.h"
+#include "pseudodog_psy.h"
+#include "pseudodog_psy_state_manager.h"
 #include "../../../actor.h"
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
@@ -10,7 +10,7 @@
 #include "../../../sound_player.h"
 #include "../../../level_graph.h"
 
-#include "psy_dog_state_psy_attack.h"
+#include "pseudodog_psy_state_psy_attack.h"
 
 CStateManagerPsyDog::CStateManagerPsyDog(CPseudoDogBase *monster) : inherited(monster)
 {

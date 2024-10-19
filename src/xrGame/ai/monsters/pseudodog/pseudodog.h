@@ -1,50 +1,48 @@
 #pragma once
-
+#include "../../ai_entity_definitions.h"
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CPseudoDogBase : public CBaseMonster {
-	typedef		CBaseMonster	inherited;
+class CPseudoDogBase : public CBaseMonster 
+{
+protected:
+	using	inherited =	CBaseMonster	;
 
 public:
-
 	float			m_anger_hunger_threshold;
 	float			m_anger_loud_threshold;
 
 	TTime			m_time_became_angry;
 
-	TTime			time_growling;			// время нахождения в состоянии пугания
+	TTime			time_growling;			// РІСЂРµРјСЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РІ СЃРѕСЃС‚РѕСЏРЅРёРё РїСѓРіР°РЅРёСЏ
 
 	enum {
 		eAdditionalSounds		= MonsterSound::eMonsterSoundCustom,
 		ePsyAttack				= eAdditionalSounds | 0,
 	};
-public:
+
 					CPseudoDogBase		();
-	virtual			~CPseudoDogBase		();	
+	virtual			~CPseudoDogBase		() override;	
 
-	virtual DLL_Pure	*_construct		();
+	virtual DLL_Pure	*_construct		() override;
 
-	virtual void	Load				(LPCSTR section);
+	virtual void	Load				(LPCSTR section) override;
 
-	virtual void	reinit				();
-	virtual void	reload				(LPCSTR section);
+	virtual void	reinit				() override;
+	virtual void	reload				(LPCSTR section) override;
 
-	virtual bool	ability_can_drag	() {return true;}
-	virtual bool	ability_psi_attack	() {return true;}
+	virtual bool	ability_can_drag	() override { return true; }
+	virtual bool	ability_psi_attack	() override { return true; }
 
-	virtual void	CheckSpecParams		(u32 spec_params);
-	//virtual void	play_effect_sound	();
+	virtual void	CheckSpecParams		(u32 spec_params) override;
 
-	virtual void	HitEntityInJump		(const CEntity *pEntity);
+	virtual void	HitEntityInJump		(const CEntity *pEntity) override;
 
-	virtual IStateManagerBase *create_state_manager	();
-	virtual	char*	get_monster_class_name () { return (char*)"pseudodog"; }
+	IStateManagerBase *create_state_manager();
+
+	virtual	char*	get_monster_class_name () override { return (char*)"pseudodog"; }
 
 private:
-#ifdef _DEBUG	
-	virtual void	debug_on_key		(int key);
-#endif
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

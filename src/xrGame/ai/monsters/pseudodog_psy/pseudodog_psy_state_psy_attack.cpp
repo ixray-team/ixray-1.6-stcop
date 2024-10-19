@@ -7,15 +7,15 @@
 
 #include "sound_player.h"
 
-#include "psy_dog_state_psy_attack.h"
-#include "psy_dog_state_psy_attack_hide.h"
+#include "pseudodog_psy_state_psy_attack.h"
+#include "pseudodog_psy_state_psy_attack_hide.h"
 
 CStatePsyDogPsyAttack::CStatePsyDogPsyAttack(CBaseMonster* obj) : inherited(obj)
 {
-	this->add_state(eStateAttack_HideInCover, new CStatePsyDogHide(obj));
+	add_state(eStateAttack_HideInCover, new CStatePsyDogHide(obj));
 }
 
 void CStatePsyDogPsyAttack::reselect_state()
 {
-	this->select_state(eStateAttack_HideInCover);
+	select_state(eStateAttack_HideInCover);
 }

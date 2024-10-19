@@ -52,7 +52,7 @@ function register(object_factory)
 	cs_register	(object_factory, "CSnorkBase",          		"se_monster.se_monster",				"SM_SNORK",			"snork_s")
 	cs_register	(object_factory, "CTushkanoBase",       		"se_monster.se_monster",				"SM_TUSHK",			"tushkano_s")
 	cs_register	(object_factory, "CPseudoPsyDogBase",         	"se_monster.se_monster",				"SM_DOG_P",			"psy_dog_s")
-	cs_register	(object_factory, "CPsyDogPhantom",  			"se_monster.se_monster",				"SM_DOG_F",			"psy_dog_phantom_s")
+	cs_register	(object_factory, "CPseudoPsyDogPhantomBase",  			"se_monster.se_monster",				"SM_DOG_F",			"psy_dog_phantom_s")
 
 	-- DEVICES ----------------------------------------------------------------------------------------------------------------------------
 

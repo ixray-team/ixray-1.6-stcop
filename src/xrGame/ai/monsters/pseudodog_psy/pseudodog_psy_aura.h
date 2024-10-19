@@ -1,11 +1,10 @@
-	#pragma once
-////////////////////////////////////////////////////////////////////////
-// Effector controlling class
-////////////////////////////////////////////////////////////////////////
+#pragma once
 #include "../../../pp_effector_custom.h"
 
-class CPPEffectorPsyDogAura : public CPPEffectorCustom {
-	typedef CPPEffectorCustom inherited;
+class CPPEffectorPsyDogAura : public CPPEffectorCustom 
+{
+protected:
+	using inherited = CPPEffectorCustom;
 	
 	enum {eStateFadeIn, eStateFadeOut, eStatePermanent} m_effector_state;
 	
@@ -18,10 +17,11 @@ public:
 			void	switch_off				();
 };
 
-class CPseudoPsyDogBase;
 class CActor;
+class CPseudoPsyDogBase;
 
-class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>{
+class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
+{
 	
 	CPseudoPsyDogBase					*m_object;
 	CActor					*m_actor;

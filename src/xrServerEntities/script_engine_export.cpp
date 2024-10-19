@@ -245,7 +245,7 @@ void export_classes	(lua_State *L)
 	CPoltergeistBase::script_register(L);
 	CPseudoDogBase::script_register(L);
 	CPseudoPsyDogBase::script_register(L);
-	CPsyDogPhantom::script_register(L);
+	CPseudoPsyDogPhantomBase::script_register(L);
 	CPseudoGiantBase::script_register(L);
 	CSnorkBase::script_register(L);
 	CTushkanoBase::script_register(L);
