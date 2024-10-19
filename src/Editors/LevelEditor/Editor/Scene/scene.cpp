@@ -310,7 +310,7 @@ void EScene::Clear(BOOL bEditableToolsOnly)
 	m_game_graph.clear();
 	m_RTFlags.set(flIsBuildedAIMap | flIsBuildedGameGraph | flIsBuildedCForm, FALSE);
 
-	SDL_SetWindowTitle(g_AppInfo.Window, "IXR: Level Editor");
+	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Level Editor");
 }
 
 const Fvector& EScene::GetCameraPosition() const

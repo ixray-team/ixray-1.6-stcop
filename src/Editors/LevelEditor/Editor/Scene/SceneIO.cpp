@@ -773,7 +773,7 @@ bool EScene::LoadLTX(LPCSTR map_name, bool bUndo)
 	DWORD version = 0;
 	if (!map_name||(0==map_name[0])) return false;
 
-	xr_string Name = "IXR: Level Editor [";
+	xr_string Name = "IX-Ray Level Editor [";
 	Name += map_name;
 	Name += "]";
 
@@ -870,7 +870,7 @@ bool EScene::Load(LPCSTR map_name, bool bUndo)
 
 	if (!map_name||(0==map_name[0])) return false;
 
-	xr_string Name = "IXR: Level Editor [";
+	xr_string Name = "IX-Ray Level Editor [";
 	Name += map_name;
 	Name += "]";
 

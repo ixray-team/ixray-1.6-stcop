@@ -339,6 +339,13 @@ bool CActorTools::Load(LPCSTR obj_name)
 		MainForm->GetLeftBarForm()->SetRenderMode(false);
 
 		UpdateProperties();
+
+		xr_string Name = "IX-Ray Actor Editor [";
+		Name += obj_name;
+		Name += "]";
+
+		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
+
 		return true;
 	}
 	else 
@@ -407,6 +414,7 @@ void CActorTools::Clear()
 	m_Flags.set(flUpdateGeometry | flUpdateMotionDefs | flUpdateMotionKeys | flReadOnlyMode, FALSE);
 	m_EditMode = emObject;
 
+	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Actor Editor");
 	UI->RedrawScene();
 }
 
