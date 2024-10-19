@@ -406,14 +406,6 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 							UI->RedrawScene();
 						}
 					}
-					{
-						bool selected = psDeviceFlags.test(rsLighting);
-						if (ImGui::MenuItem("Lighting", "", &selected))
-						{
-							psDeviceFlags.set(rsLighting, selected);
-							UI->RedrawScene();
-						}
-					}
 					ImGui::EndMenu();
 				}
 				ImGui::Separator();

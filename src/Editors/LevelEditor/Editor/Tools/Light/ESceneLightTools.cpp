@@ -60,64 +60,6 @@ void ESceneLightTool::AppendFrameLight(CLight* src)
 
 void ESceneLightTool::BeforeRender()
 {
-	if (psDeviceFlags.is(rsLighting)){
-		int l_cnt		= 0;
-		// set scene lights
-		for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++){
-			CLight* l 		= (CLight*)(*_F);
-			l_cnt++;
-			if (l->Visible()&&l->m_UseInD3D&&l->m_Flags.is_any(ELight::flAffectDynamic|ELight::flAffectStatic))
-				if (::Render->ViewBase.testSphere_dirty(l->GetPosition(),l->m_Range))
-					AppendFrameLight(l);
-		}
-		// set sun
-		if (m_Flags.is(flShowSun))
-		{
-			Flight L;
-			Fvector C;
-			if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
-			{
-				C = g_pGamePersistent->Environment().CurrentEnv->sun_color;
-			}
-			else
-			{
-				C.set(1.f, 1.f, 1.f);
-			}
-			
-			if (EngineExternal()[EEngineExternalEnvironment::ReadSunConfig])
-				L.direction = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
-			else
-				L.direction.setHP(m_SunShadowDir.y, m_SunShadowDir.x);
-
-//            if (psDeviceFlags.is(rsEnvironment)){
-//	            C			= g_pGamePersistent->Environment().CurrentEnv->sun_color;
-//            }else{
-				C.set		(1.f,1.f,1.f);
-//            }
-			L.direction.setHP(m_SunShadowDir.y,m_SunShadowDir.x);
-			L.diffuse.set	(C.x,C.y,C.z,1.f);
-			L.ambient.set	(0.f,0.f,0.f,0.f);
-			L.specular.set	(C.x,C.y,C.z,1.f);
-			L.type			= D3DLIGHT_DIRECTIONAL;
-			EDevice->SetLight	(frame_light.size(),L);
-			EDevice->LightEnable(frame_light.size(),TRUE);
-		}
-		// ambient
-		if (psDeviceFlags.is(rsEnvironment) || UI->IsPlayInEditor())
-		{
-			Fcolor C;
-			Fvector4& V = g_pGamePersistent->Environment().CurrentEnv->hemi_color;
-			C.set(V.x, V.y, V.z, 1.f);
-
-			EDevice->SetRS(D3DRS_AMBIENT, C.get());
-		}
-		else
-			EDevice->SetRS(D3DRS_AMBIENT, 0x00000000);
-#if 0
-		EDevice->EStatistic->dwTotalLight 	= l_cnt;
-		EDevice->EStatistic->dwLightInScene = frame_light.size();
-#endif
-	}
 }
 
 void ESceneLightTool::AfterRender()

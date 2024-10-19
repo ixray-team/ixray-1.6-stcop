@@ -17,7 +17,6 @@ public:
 	u32		dwShader_Matrices;	// Number of times the shader-xform changes
 	u32		dwShader_Constants;	// Number of times the shader-consts changes
 	u32		dwSND_Played,dwSND_Allocated;	// Play/Alloc
-    u32		dwTotalLight,dwLightInScene;
 	u32		dwLevelSelFaceCount;	// Number of faces in scene
 	u32		dwLevelSelVertexCount;	// Number of vertices in scene
 

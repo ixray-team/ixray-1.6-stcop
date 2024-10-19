@@ -404,8 +404,7 @@ void TUI::PrepareRedraw()
 		}
 	}
 	// ligthing
-	if (psDeviceFlags.is(rsLighting)) 	EDevice->SetRS(D3DRS_AMBIENT,0x00000000);
-	else                				EDevice->SetRS(D3DRS_AMBIENT,0xFFFFFFFF);
+	EDevice->SetRS(D3DRS_AMBIENT,0xFFFFFFFF);
 
 	EDevice->SetRS			(D3DRS_FILLMODE, EDevice->dwFillMode);
 	EDevice->SetRS			(D3DRS_SHADEMODE,EDevice->dwShadeMode);

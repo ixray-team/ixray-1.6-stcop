@@ -73,7 +73,6 @@ void UIRenderForm::DrawStatistics()
 	if (ViewportID == 0)
 	{
 		print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
-		print("LIGHT S/T", "%d/%d", s->dwLightInScene, s->dwTotalLight);
 		print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
 		print("Skinning", "%2.2fms", s->RenderDUMP_SKIN.result);
 		ImGui::NewLine();

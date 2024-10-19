@@ -100,7 +100,6 @@ void CEStats::Show()
         F.OutNext("POLY:         %d", DPS.polys);
         F.OutNext("DIP/DP:       %d", DPS.calls);
         F.OutNext("SH/T/M/C:     %d/%d/%d/%d", dwShader_Codes, dwShader_Textures, dwShader_Matrices, dwShader_Constants);
-        F.OutNext("LIGHT S/T:    %d/%d", dwLightInScene, dwTotalLight);
         F.OutNext("Skeletons:    %2.2fms, %d", Animation.result, Animation.count);
         F.OutNext("Skinning:     %2.2fms", RenderDUMP_SKIN.result);
         F.OutSkip();
@@ -152,7 +151,6 @@ void CEStats::Show()
     }
     dwShader_Codes = dwShader_Textures = dwShader_Matrices = dwShader_Constants = 0;
     dwSND_Played = dwSND_Allocated = 0;
-    dwTotalLight = dwLightInScene = 0;
 
     DPS.polys = 0;
     DPS.verts = 0;

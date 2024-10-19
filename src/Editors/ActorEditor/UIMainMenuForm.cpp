@@ -209,15 +209,6 @@ void UIMainMenuForm::Draw()
 					UI->RedrawScene();
 				}
 			}
-			ImGui::Separator();
-			{
-				bool selected = psDeviceFlags.test(rsLighting);
-				if (ImGui::MenuItem("Lighting", "", &selected))
-				{
-					psDeviceFlags.set(rsLighting, selected);
-					UI->RedrawScene();
-				}
-			}
 			{
 				bool selected = psDeviceFlags.test(rsMuteSounds);
 				if (ImGui::MenuItem("Mute Sounds", "", &selected))

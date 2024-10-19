@@ -185,7 +185,6 @@ enum
 	rsFilterLinear = (1ul << 20ul),
 	rsEdgedFaces = (1ul << 21ul),
 	rsRenderTextures = (1ul << 22ul),
-	rsLighting = (1ul << 23ul),
 	rsFog = (1ul << 24ul),
 	rsRenderRealTime = (1ul << 25ul),
 	rsDrawGrid = (1ul << 26ul),
