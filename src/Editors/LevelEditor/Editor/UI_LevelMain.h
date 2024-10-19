@@ -95,10 +95,6 @@ public:
     virtual void 	ResetStatus				();
     virtual void 	SetStatus				(LPCSTR s, bool bOutLog=true);
     virtual void	ProgressDraw			();
-    virtual void 	OutCameraPos			();
-    virtual void 	OutUICursorPos			();
-    virtual void 	OutGridSize				();
-    virtual void 	OutInfo					();
 
     virtual LPCSTR	EditorName				(){return "level";}
     virtual LPCSTR	EditorDesc				(){return "Level Editor";}

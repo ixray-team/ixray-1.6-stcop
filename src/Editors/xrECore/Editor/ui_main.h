@@ -76,13 +76,11 @@ protected:
 
     void PrepareRedraw	();
     void Redraw			();
+
 protected:
     void D3D_CreateStateBlocks();
     void D3D_DestroyStateBlocks();
-public:
-    virtual void OutUICursorPos	()=0;
-	virtual void OutGridSize	()=0;
-	virtual void OutInfo		()=0;
+
 public:
 	// non-hidden ops
 	Ivector2 m_StartCp;
@@ -192,7 +190,6 @@ public:
     EEditorState 	GetEState			(){ return m_EditorState.back(); }
     bool 			ContainEState		(EEditorState st){ return std::find(m_EditorState.begin(),m_EditorState.end(),st)!=m_EditorState.end(); }
 
-    virtual void 	OutCameraPos		()=0;
     virtual void 	SetStatus			(LPCSTR s, bool bOutLog=true)=0;
     virtual void 	ResetStatus			()=0;
     

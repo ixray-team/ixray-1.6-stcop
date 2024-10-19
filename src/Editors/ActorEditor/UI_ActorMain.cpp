@@ -263,43 +263,6 @@ void CActorMain::ProgressDraw()
 	inherited::ProgressDraw();
 	/*fraBottomBar->RedrawBar();*/
 }
-//---------------------------------------------------------------------------
-void CActorMain::OutCameraPos()
-{
-	static u32 LastFrame = Device.dwFrame;
-
-	if (m_bReady && LastFrame != Device.dwFrame)
-	{
-		const Fvector& c = UI->CurrentView().m_Camera.GetPosition();
-		Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-		LastFrame = Device.dwFrame;
-	}
-}
-//---------------------------------------------------------------------------
-void CActorMain::OutUICursorPos()
-{
-	
-/*	VERIFY(fraBottomBar);
-	AnsiString s; POINT pt;
-	GetCursorPos(&pt);
-	s.sprintf("Cur: %d, %d",pt.x,pt.y);
-	fraBottomBar->paUICursor->Caption=s; fraBottomBar->paUICursor->Repaint();*/
-}
-//---------------------------------------------------------------------------
-void CActorMain::OutGridSize()
-{
-	
-	/*VERIFY(fraBottomBar);
-	AnsiString s;
-	s.sprintf("Grid: %1.1f",EPrefs->grid_cell_size);
-	fraBottomBar->paGridSquareSize->Caption=s; fraBottomBar->paGridSquareSize->Repaint();*/
-}
-//---------------------------------------------------------------------------
-void CActorMain::OutInfo()
-{
-	
-	//fraBottomBar->paSel->Caption = Tools->GetInfo();
-}
 
 //---------------------------------------------------------------------------
 extern ECORE_API BOOL g_force16BitTransformQuant;

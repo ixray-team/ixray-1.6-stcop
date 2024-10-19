@@ -56,6 +56,8 @@ public:
 	float			tools_sens_move;
 	float			tools_sens_scale;
 
+	BOOL			bMoreStats = false;
+
 	// box pick
 	BOOL			bp_lim_depth;
 	BOOL			bp_cull;

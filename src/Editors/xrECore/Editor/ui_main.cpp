@@ -260,9 +260,6 @@ void TUI::IR_OnMouseMove(int x, int y)
 		m_CurrentCp = GetRenderMousePosition();
 		UI->CurrentView().m_Camera.MouseRayFromPoint(m_CurrentRStart, m_CurrentRDir, m_CurrentCp);
 	}
-
-	// Out cursor pos
-	OutUICursorPos	();
 }
 //---------------------------------------------------------------------------
 
@@ -617,8 +614,6 @@ void TUI::Redraw()
 
 	CommandList[TUI::ECommandListID::CurrentFrame].clear();
 	std::swap(CommandList[TUI::ECommandListID::CurrentFrame], CommandList[TUI::ECommandListID::NextFrame]);
-
-	OutInfo();
 }
 //---------------------------------------------------------------------------
 void TUI::RealResize()

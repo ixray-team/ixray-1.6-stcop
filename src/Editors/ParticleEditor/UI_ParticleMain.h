@@ -34,10 +34,6 @@ public:
     virtual void 	ResetStatus				();
     virtual void 	SetStatus				(LPCSTR s, bool bOutLog);
     virtual void	ProgressDraw			();
-    virtual void 	OutCameraPos			();
-    virtual void 	OutUICursorPos			();
-    virtual void 	OutGridSize				();
-    virtual void 	OutInfo					();
 
     virtual LPCSTR	EditorName				(){return "particle";}
     virtual LPCSTR	EditorDesc				(){return "Particle Editor";}

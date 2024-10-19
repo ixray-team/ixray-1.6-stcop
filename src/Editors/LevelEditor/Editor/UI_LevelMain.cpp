@@ -1303,39 +1303,6 @@ void CLevelMain::ProgressDraw()
 	//fraBottomBar->RedrawBar();
 }
 
-void CLevelMain::OutCameraPos()
-{
-	if (m_bReady)
-	{
-		const Fvector& c = UI->CurrentView().m_Camera.GetPosition();
-		//xr_string Str;
-		//sprintf(Str.Text.data(), "C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-		//Device.Statistic->pFont->OutNext("C: %3.1f, %3.1f, %3.1f", c.x, c.y, c.z);
-	}
-}
-
-void CLevelMain::OutUICursorPos()
-{
-	/*VERIFY(fraBottomBar);
-	xr_string s; POINT pt;
-	GetCursorPos(&pt);
-	s.sprintf("Cur: %d, %d",pt.x,pt.y);
-	fraBottomBar->paUICursor->Caption=s; fraBottomBar->paUICursor->Repaint();*/
-}
-
-void CLevelMain::OutGridSize()
-{
-	/*VERIFY(fraBottomBar);
-	xr_string s;
-	s.sprintf("Grid: %1.1f",EPrefs->grid_cell_size);
-	fraBottomBar->paGridSquareSize->Caption=s; fraBottomBar->paGridSquareSize->Repaint();*/
-}
-
-void CLevelMain::OutInfo()
-{
-	//fraBottomBar->paSel->Caption = Tools->GetInfo();
-}
-
 void CLevelMain::RealQuit()
 {
 	//frmMain->Close();

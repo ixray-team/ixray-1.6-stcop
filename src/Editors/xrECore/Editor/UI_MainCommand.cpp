@@ -520,7 +520,6 @@ CCommandVar 	CommandToggleGrid(CCommandVar p1, CCommandVar p2)
 CCommandVar 	CommandUpdateGrid(CCommandVar p1, CCommandVar p2)
 {
 	DU_impl.UpdateGrid		(EPrefs->grid_cell_count,EPrefs->grid_cell_size);
-	UI->OutGridSize		();
 	UI->RedrawScene		();
 	return				TRUE;
 }

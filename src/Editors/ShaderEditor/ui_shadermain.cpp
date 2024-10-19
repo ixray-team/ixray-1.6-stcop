@@ -153,39 +153,6 @@ void CShaderMain::ProgressDraw()
 	//fraBottomBar->RedrawBar();
 }
 //---------------------------------------------------------------------------
-void CShaderMain::OutCameraPos()
-{
-/*	VERIFY(m_bReady);
-    xr_string s;
-	const Fvector& c 	= UI->CurrentView().m_Camera.GetPosition();
-	s.sprintf("C: %3.1f, %3.1f, %3.1f",c.x,c.y,c.z);
-//	const Fvector& hpb 	= UI->CurrentView().m_Camera.GetHPB();
-//	s.sprintf(" Cam: %3.1f�, %3.1f�, %3.1f�",rad2deg(hpb.y),rad2deg(hpb.x),rad2deg(hpb.z));
-    fraBottomBar->paCamera->Caption=s; fraBottomBar->paCamera->Repaint();*/
-}
-//---------------------------------------------------------------------------
-void CShaderMain::OutUICursorPos()
-{
-/*	VERIFY(fraBottomBar);
-    xr_string s; POINT pt;
-    GetCursorPos(&pt);
-    s.sprintf("Cur: %d, %d",pt.x,pt.y);
-    fraBottomBar->paUICursor->Caption=s; fraBottomBar->paUICursor->Repaint();*/
-}
-//---------------------------------------------------------------------------
-void CShaderMain::OutGridSize()
-{
-	/*VERIFY(fraBottomBar);
-    xr_string s;
-    s.sprintf("Grid: %1.1f",EPrefs->grid_cell_size);
-    fraBottomBar->paGridSquareSize->Caption=s; fraBottomBar->paGridSquareSize->Repaint();*/
-}
-//---------------------------------------------------------------------------
-void CShaderMain::OutInfo()
-{
-	//fraBottomBar->paSel->Caption = Tools->GetInfo();
-}
-//---------------------------------------------------------------------------
 void CShaderMain::RealQuit()
 {
     UI->Quit();

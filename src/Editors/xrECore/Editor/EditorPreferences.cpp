@@ -142,6 +142,7 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 
 	PHelper().CreateU32		(props,"Scene\\Common\\Recent Count", 		    &scene_recent_count,0, 		25);
 	PHelper().CreateU32		(props,"Scene\\Common\\Undo Level", 		    &scene_undo_level,	0, 		125);
+	PHelper().CreateBOOL	(props,"Scene\\Common\\More Stats Info",		&bMoreStats);
 	PHelper().CreateFloat	(props,"Scene\\Grid\\Cell Size", 	           	&grid_cell_size,	0.1f,	10.f);
 	PHelper().CreateU32		(props,"Scene\\Grid\\Cell Count", 	           	&grid_cell_count,	10, 	1000);
 	PHelper().CreateFloat(props, "Scene\\RadiusRender", &EDevice->RadiusRender,10.f,100000.f);
@@ -238,7 +239,15 @@ void CCustomPreferences::Load()
 	tools_sens_rot = JSONData["editor_prefs"]["tools_sens_rot"];
 	tools_sens_scale = JSONData["editor_prefs"]["tools_sens_scale"];
 	bp_lim_depth = JSONData["editor_prefs"]["bp_lim_depth"];
-	bp_cull = JSONData["editor_prefs"]["bp_lim_depth"];
+
+	if (JSONData["editor_prefs"].contains("bMoreStats"))
+	{
+		bMoreStats = JSONData["editor_prefs"]["bMoreStats"];
+	}
+
+	if (JSONData["editor_prefs"].contains("bp_cull"))
+		bp_cull = JSONData["editor_prefs"]["bp_cull"];
+
 	bp_depth_tolerance = JSONData["editor_prefs"]["tools_sens_rot"];
 	snap_angle = JSONData["editor_prefs"]["snap_angle"];
 	snap_move = JSONData["editor_prefs"]["snap_move"];
@@ -310,9 +319,10 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["tools_sens_rot"]=tools_sens_rot;
 	JSONData["editor_prefs"]["tools_sens_move"]=tools_sens_move;
 	JSONData["editor_prefs"]["tools_sens_scale"]=tools_sens_scale;
+	JSONData["editor_prefs"]["bMoreStats"]=bMoreStats;
 
 	JSONData["editor_prefs"]["bp_lim_depth"]=bp_lim_depth;
-	JSONData["editor_prefs"]["bp_lim_depth"]=bp_cull;
+	JSONData["editor_prefs"]["bp_cull"]=bp_cull;
 	JSONData["editor_prefs"]["bp_depth_tolerance"]=bp_depth_tolerance;
 
 	JSONData["editor_prefs"]["snap_angle"]=snap_angle;

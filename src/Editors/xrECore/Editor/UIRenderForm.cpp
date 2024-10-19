@@ -70,7 +70,7 @@ void UIRenderForm::DrawStatistics()
 	print("POLY", "%d",		s->lastDPS_polys);
 	print("DIP/DP", "%d",	s->lastDPS_calls);
 
-	if (ViewportID == 0)
+	if (ViewportID == 0 && EPrefs->bMoreStats)
 	{
 		print("SH/T/M/C", "%d/%d/%d/%d", s->dwShader_Codes, s->dwShader_Textures, s->dwShader_Matrices, s->dwShader_Constants);
 		print("Skeletons", "%2.2fms, %d", s->Animation.result, s->Animation.count);
@@ -85,12 +85,10 @@ void UIRenderForm::DrawStatistics()
 		print("DT_Vis", "%2.2fms", s->RenderDUMP_DT_VIS.result);
 		print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
 		print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
-		ImGui::NewLine();
-		print("TEST 0", "%2.2fms, %d", s->TEST0.result, s->TEST0.count);
-		print("TEST 1", "%2.2fms, %d", s->TEST1.result, s->TEST1.count);
-		print("TEST 2", "%2.2fms, %d", s->TEST2.result, s->TEST2.count);
-		print("TEST 3", "%2.2fms, %d", s->TEST3.result, s->TEST3.count);
 	}
+
+	ImGui::NewLine();
+	print("Camera Pos", "%2.2f, %2.2f, %2.2f", UI->CurrentView().m_Camera.GetPosition().x, UI->CurrentView().m_Camera.GetPosition().y, UI->CurrentView().m_Camera.GetPosition().z);
 
 	ImGui::EndTable();
 	ImGui::PopStyleVar();
