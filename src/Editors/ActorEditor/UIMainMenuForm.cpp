@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CustomTools/UIPostProcess.h"
+#include "../xrEUI/xrUITheme.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -246,6 +247,22 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Post Process", nullptr)) 
 				{
 					PPE.OpenState() = true;
+				}
+
+				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+				bool selected2 = !ThemeInstance.IsClosed();
+				if (ImGui::MenuItem("Theme", "", &selected2))
+				{
+					if (selected2)
+					{
+						if (!UI->HasWindow<CUIThemeManager>())
+						{
+							UI->Push(&ThemeInstance);
+						}
+						ThemeInstance.Show(true);
+					}
+					else
+						ThemeInstance.Show(false);
 				}
 			}
 			ImGui::EndMenu();

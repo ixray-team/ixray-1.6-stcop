@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../xrEUI/xrUITheme.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -206,6 +207,22 @@ void UIMainMenuForm::Draw()
                 bool selected = AllowLogCommands();
 
                 if (ImGui::MenuItem("Log", "", &selected)) { ExecCommand(COMMAND_LOG_COMMANDS); }
+
+                CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
+                bool selected2 = !ThemeInstance.IsClosed();
+                if (ImGui::MenuItem("Theme", "", &selected2))
+                {
+                    if (selected2)
+                    {
+                        if (!UI->HasWindow<CUIThemeManager>())
+                        {
+                            UI->Push(&ThemeInstance);
+                        }
+                        ThemeInstance.Show(true);
+                    }
+                    else
+                        ThemeInstance.Show(false);
+                }
             }
             ImGui::EndMenu();
         }
