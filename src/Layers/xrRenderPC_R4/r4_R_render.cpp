@@ -467,7 +467,6 @@ void CRender::Render		()
 	// Msg						("sstatic: %s, sun: %s",o.sunstatic?;"true":"false", bSUN?"true":"false");
 
 	RCache.set_xform_world(Fidentity);
-	RCache.set_xform_world_old(Fidentity);
 
 	// HOM
 	ViewBase.CreateFromMatrix					(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
