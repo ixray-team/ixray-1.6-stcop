@@ -339,6 +339,7 @@ public:
 				{
 					if (node.IsFolder() && IsDrawFolder(&node))
 					{
+						ImGui::Separator();
 						DrawNode(&node);
 					}
 				}
@@ -346,6 +347,7 @@ public:
 				{
 					if (!node.IsFolder())
 					{
+						ImGui::Separator();
 						DrawNode(&node);
 					}
 				}
