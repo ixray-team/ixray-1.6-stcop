@@ -332,7 +332,7 @@ public:
 			if (IsFolderSelected(N))FloderFlags |= ImGuiTreeNodeFlags_Selected;
 			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
 			{
-				DrawAfterFloderNode(true, N);
+				DrawAfterFolderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)
 					IsItemClicked(N);
 				for (Node& node : N->Nodes)
@@ -353,7 +353,7 @@ public:
 			}
 			else
 			{
-				DrawAfterFloderNode(false, N);
+				DrawAfterFolderNode(false, N);
 				if (ImGui::IsItemClicked() && N->Object)
 					IsItemClicked(N);
 			}
@@ -365,7 +365,7 @@ public:
 			if (N->Selected)N->Selected = false;
 		}
 	}
-	virtual void DrawAfterFloderNode(bool is_open = false, Node* Node = 0) {}
+	virtual void DrawAfterFolderNode(bool is_open = false, Node* Node = 0) {}
 	virtual bool IsFolderBullet(Node* Node) { return false; }
 	virtual bool IsFolderSelected(Node* Node) { return false; }
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) {}
