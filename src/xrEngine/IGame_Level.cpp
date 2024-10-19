@@ -17,6 +17,8 @@
 ENGINE_API	IGame_Level*	g_pGameLevel	= nullptr;
 extern	BOOL g_bLoaded;
 
+xr_task_group IGame_Level::BonesCalcGroup;
+
 IGame_Level::IGame_Level	()
 {
 	m_pCameras					= new CCameraManager(true);
@@ -170,14 +172,47 @@ void	IGame_Level::OnRender		( )
 		}
 	}
 }
+#include "../Include/xrRender/Kinematics.h"
 
-void	IGame_Level::OnFrame		( ) 
+void IGame_Level::OnFrame()
 {
 	PROF_EVENT("IGame_Level::OnFrame");
 	// Update all objects
 	VERIFY						(bReady);
 	Objects.Update				(false);
-	g_hud->OnFrame				();
+
+	BonesCalcGroup.run([]
+	{
+		PROF_EVENT("Calc Bones");
+
+		xr_vector<ISpatial*> lstRenderablesMain;
+		g_SpatialSpace->q_sphere
+		(
+			lstRenderablesMain,
+			ISpatial_DB::O_ORDERED,
+			STYPE_RENDERABLE,
+			Device.vCameraPosition_saved, g_pGamePersistent->Environment().CurrentEnv->fog_distance
+		);
+
+		xr_parallel_for
+		(
+			lstRenderablesMain.begin(), lstRenderablesMain.end(),
+			[](ISpatial* Obj)
+			{
+				if (IRenderable* renderable = Obj->dcast_Renderable())
+				{
+					if (renderable->renderable.visual == nullptr)
+						return;
+
+					IKinematics* IK = renderable->renderable.visual->dcast_PKinematics();
+					IK->CalculateBones(true);
+				}
+			}
+		);
+	});
+
+
+	g_hud->OnFrame();
 
 	// Ambience
 	if (Sounds_Random.size() && (Device.dwTimeGlobal > Sounds_Random_dwNextTime))

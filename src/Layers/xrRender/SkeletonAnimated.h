@@ -18,10 +18,11 @@ public:
 	typedef BlendSVec::const_iterator		BlendSVecCIt;
 private:
 	BlendSVec			Blend;
+	xrSRWLock BlendLock;
 public:
 
 	// methods
-IC	BlendSVec			&blend_vector	()	{ return Blend;}
+IC	BlendSVec			&blend_vector	()	{ xrSRWLockGuard guard(&BlendLock, true); return Blend;}
 	void				construct		();
 	void				blend_add		(CBlend* H);
 	void				blend_remove	(CBlend* H);

@@ -18,8 +18,11 @@ void		CBlendInstance::construct()
 {	
 	ZeroMemory			(this,sizeof(*this));
 }
-void		CBlendInstance::blend_add	(CBlend* H)
-{	
+
+void CBlendInstance::blend_add	(CBlend* H)
+{
+	xrSRWLockGuard guard(&BlendLock);
+
 	if ( Blend.size() == MAX_BLENDED )	{
 		if(H->fall_at_end)
 						return;
@@ -31,8 +34,11 @@ void		CBlendInstance::blend_add	(CBlend* H)
 	VERIFY (Blend.size()<MAX_BLENDED);
 	Blend.push_back(H);
 }
-void		CBlendInstance::blend_remove	(CBlend* H)
+
+void CBlendInstance::blend_remove	(CBlend* H)
 {
+	xrSRWLockGuard guard(&BlendLock);
+
 	CBlend** I = std::find(Blend.begin(),Blend.end(),H);
 	if (I!=Blend.end())	Blend.erase(I);
 }

@@ -543,6 +543,8 @@ void CRender::Render		()
 	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
 	r_dsgraph_render_landscape(0, false);
 
+	IGame_Level::BonesCalcGroup.wait();
+
 	//******* Main render :: PART-0	-- first
 	if (!split_the_scene_to_minimize_wait)
 	{

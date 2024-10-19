@@ -77,6 +77,9 @@ public:	// deferred sound events
 		float					power	;
 	};
 	xr_vector<_esound_delegate>	snd_Events;
+
+	static xr_task_group		BonesCalcGroup;
+
 public:
 	// Main, global functions
 	IGame_Level					();
