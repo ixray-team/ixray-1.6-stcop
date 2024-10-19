@@ -1,6 +1,8 @@
 ﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
+#include <fstream>
+
 #include "../xrEUI/xrUITheme.h"
 
 #include "ui_main.h"
@@ -46,6 +48,15 @@ CCustomPreferences::CCustomPreferences()
 	scene_clear_color	= DEFAULT_CLEARCOLOR;
 	// objects
 	object_flags.zero	();
+
+	string_path AppDataPath = {};
+	FS.update_path(AppDataPath, "$app_data_root$", "");
+
+	if (!std::filesystem::exists(AppDataPath))
+	{
+		std::filesystem::create_directory(AppDataPath);
+	}
+
 }
 //---------------------------------------------------------------------------
 
@@ -103,26 +114,38 @@ void CheckValidate(ShortcutValue*, const xr_shortcut& new_val, bool& result)
 
 void CCustomPreferences::OnKeyboardCommonFileClick(ButtonValue* B, bool& bModif, bool&)
 {
-#pragma todo(FIXME)
 	bModif = false;
 	xr_string fn;
-	//switch(B->btn_num){
-	//case 0:
-	//    if(EFS.GetOpenName("$import$", fn, false, NULL, 6)){
-	//        CInifile* 	I 	= new CInifile(fn.c_str(), TRUE, TRUE, TRUE);
-	//	    LoadShortcuts	(I);
-	//        xr_delete		(I);
-	//       // m_ItemProps->RefreshForm();
-	//    }
-	//break;
-	//case 1:
-	//    if(EFS.GetSaveName("$import$", fn, NULL, 6)){
-	//	    CInifile* 	I 	= new CInifile(fn.c_str(), FALSE, TRUE, TRUE);
-	//	    SaveShortcuts	(I);
-	//        xr_delete		(I);
-	//    }
-	//break;
-	//}
+	switch(B->btn_num)
+	{
+	case 0:
+	    if(EFS.GetOpenName("$import$", fn, false, NULL, 6, "*.json"))
+		{
+			json File;
+			if (std::filesystem::exists(xr_path(fn)))
+			{
+				std::ifstream f(fn.data());
+				f >> File;
+				LoadShortcuts(File);
+			}
+	    }
+	break;
+	case 1:
+	    if(EFS.GetSaveName("$import$", fn, NULL, 6, "*.json"))
+		{
+			json File;
+		    SaveShortcuts(File);
+
+			if (!fn.ends_with(".json"))
+			{
+				fn += ".json";
+			}
+
+			std::ofstream o(fn.data());
+			o << File;
+	    }
+	break;
+	}
 }
 
 void CCustomPreferences::FillProp(PropItemVec& props)
@@ -399,7 +422,6 @@ void CCustomPreferences::Draw()
 	ImGui::End();
 }
 
-#include <fstream>
 void CCustomPreferences::LoadConfig()
 {
 	string_path fn;
@@ -421,6 +443,17 @@ void CCustomPreferences::LoadConfig()
 		EDevice->dwRealHeight = DisplayY;
 		EDevice->dwRealWidth = DisplayX;
 
+		string_path dscfn;
+		FS.update_path(dscfn, "$server_data_root$", "default_shortcuts.json");
+
+		if (std::filesystem::exists(dscfn))
+		{
+			json File;
+			std::ifstream f(dscfn);
+			f >> File;
+			LoadShortcuts(File);
+		}
+		
 		Save();
 	}
 

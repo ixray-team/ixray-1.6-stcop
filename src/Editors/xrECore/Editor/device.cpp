@@ -198,7 +198,7 @@ bool CEditorRenderDevice::Create()
 		string_path			ini_name;
 		xr_strcpy			(ini_name, UI->EditorName());
 		xr_strcat			(ini_name, "_imgui.ini");
-		FS.update_path(ini_path, "$local_root$", ini_name);
+		FS.update_path(ini_path, "$app_data_root$", ini_name);
 		
 		if (!FS.exist(ini_path))
 			UI->ResetUI();

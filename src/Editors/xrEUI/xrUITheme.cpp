@@ -269,7 +269,7 @@ void CUIThemeManager::Save()
 	JSONData["Theme"]["Font"] = ImCurrentFont;
 
 	string_path jfn;
-	FS.update_path(jfn, "$local_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
+	FS.update_path(jfn, "$app_data_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
 
 	std::ofstream o(jfn);
 	o << JSONData;
@@ -280,7 +280,7 @@ void CUIThemeManager::Load()
 {
 	json JSONData = {};
 	string_path jfn; 
-	FS.update_path(jfn, "$local_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
+	FS.update_path(jfn, "$app_data_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
 
 	if (std::filesystem::exists(jfn))
 	{
