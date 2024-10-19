@@ -4,6 +4,10 @@
 class CContentView:
 	public IEditorWnd
 {
+	friend class CLevelPreferences;
+
+private:
+
 	struct DragDropData 
 	{
 		xr_string FileName;
@@ -122,3 +126,5 @@ private:
 
 	float TextHeight = 0.f;
 };
+
+extern CContentView* GContentView;

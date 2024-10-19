@@ -3,6 +3,8 @@
 
 #include "../../utils/xrDXT/xrDXT.h"
 
+CContentView* GContentView = nullptr;
+
 CContentView::CContentView():
 	WatcherPtr(nullptr)
 {
@@ -85,6 +87,7 @@ void CContentView::Draw()
 
 void CContentView::DrawHeader()
 {
+	BtnSize = (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
 	if (ImGui::Button("root"))
 	{
 		CurrentDir = RootDir;
@@ -216,11 +219,9 @@ void CContentView::DrawHeader()
 			if (ImGui::MenuItem("Tile"))
 			{
 				ViewMode = EViewMode::Tile;
-				BtnSize = { 64, 64 };
 			}
 			if (ImGui::MenuItem("List"))
 			{
-				BtnSize = { 32, 32 };
 				ViewMode = EViewMode::List;
 			}
 
