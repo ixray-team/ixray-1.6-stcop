@@ -177,6 +177,7 @@ void EDetailManager::ExportColorIndices(LPCSTR fname)
 
 bool EDetailManager::ImportColorIndices(LPCSTR fname)
 {
+    FS.TryLoad(fname);
 	IReader* F=FS.r_open(fname);
     if (F){
         ClearColorIndices	();
