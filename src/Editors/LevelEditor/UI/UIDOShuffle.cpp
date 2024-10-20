@@ -164,8 +164,11 @@ void UIDOShuffle::Draw()
 						m_list.push_back(l);
 					}
 				}
-				OnItemFocused(list.back().c_str());
-				bModif = true;
+				if (!list.empty())
+				{
+					OnItemFocused(list.back().c_str());
+					bModif = true;
+				}
 			}
 			m_ChooseObject = false;
 		}
