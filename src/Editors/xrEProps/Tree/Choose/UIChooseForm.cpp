@@ -229,7 +229,7 @@ void UIChooseForm::Update()
 	if (Form&& !Form->IsClosed())
 	{
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("ChooseForm", nullptr,0,true))
+		if (ImGui::BeginPopupModal("Choose form", nullptr,0,true))
 		{
 			Form->Draw();
 			ImGui::EndPopup();
@@ -362,7 +362,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 	// fill items
 	if (items) 
 	{
-		VERIFY2(item_fill.empty(), "ChooseForm: Duplicate source.");
+		VERIFY2(item_fill.empty(), "UIChooseForm: Duplicate source.");
 		Form->m_Items = *items;
 		Form->E.Set("Select Item", 0, item_select, 0, 0, 0);
 	}
@@ -375,7 +375,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 	{
 		if (choose_ID == EChooseMode::smTexture)
 		{
-			// FX: Обновление списка текстур
+			// FX: РћР±РЅРѕРІР»РµРЅРёРµ СЃРїРёСЃРєР° С‚РµРєСЃС‚СѓСЂ
 			string_path Path = {};
 
 			FS.update_path(Path, _game_textures_, "");
