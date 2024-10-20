@@ -94,15 +94,27 @@ void UIMainForm::LoadWindowsStates()
 	{
 		UIObjectList::Show();
 	}
+	else
+	{
+		UIObjectList::Close();
+	}
 
 	if (LPrefs->OpenProperties)
 	{
 		m_Properties->Open();
 	}
+	else
+	{
+		m_Properties->Close();
+	}
 
 	if (LPrefs->OpenWorldProperties)
 	{
 		m_WorldProperties->Open();
+	}
+	else
+	{
+		m_WorldProperties->Close();
 	}
 
 	if (LPrefs->OpenLightAnim)

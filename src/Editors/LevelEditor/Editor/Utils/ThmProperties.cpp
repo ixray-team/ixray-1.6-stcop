@@ -3,6 +3,11 @@
 
 #include "../xrECore/Editor/EThumbnail.h"
 
+CUIThmProperties::CUIThmProperties()
+{
+	bOpen = false;
+}
+
 void CUIThmProperties::Load(const xr_path& File)
 {
 	xr_delete(ThmPtr);

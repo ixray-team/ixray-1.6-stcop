@@ -4,6 +4,8 @@ class CUIThmProperties:
 	public IEditorWnd
 {
 public:
+	CUIThmProperties();
+
 	void Load(const xr_path& File);
 	void Show();
 
