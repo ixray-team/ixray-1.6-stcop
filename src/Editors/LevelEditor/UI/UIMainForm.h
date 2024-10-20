@@ -3,6 +3,7 @@ class UIMainForm :public IEditorWnd
 {
 public:
     UIMainForm();
+    void LoadWindowsStates();
     virtual ~UIMainForm();
     virtual void Draw();
     bool Frame();

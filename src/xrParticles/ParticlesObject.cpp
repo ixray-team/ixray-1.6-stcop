@@ -28,18 +28,17 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	m_bLooped				= false;
 	m_bStopping				= false;
 	m_bAutoRemove			= bAutoRemove;
-	float time_limit		= 0.0f;
+	float time_limit		= 1.0f;
 
 	if(!g_dedicated_server)
 	{
 		// create visual
 		renderable.visual		= Render->model_CreateParticles(p_name);
-		VERIFY					(renderable.visual);
-		IParticleCustom* V		= smart_cast<IParticleCustom*>(renderable.visual);  VERIFY(V);
-		time_limit				= V->GetTimeLimit();
-	}else
-	{
-		time_limit					= 1.0f;
+		if (renderable.visual != nullptr)
+		{
+			IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);  VERIFY(V);
+			time_limit = V->GetTimeLimit();
+		}
 	}
 
 	if(time_limit > 0.f)
@@ -94,7 +93,9 @@ void CParticlesObject::UpdateAllAsync()
 			PROF_THREAD("Particles Worker")
 			u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
 			IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual);
-			VERIFY(V);
+			
+			if (V == nullptr)
+				return;
 
 			PROF_EVENT("Particle OnFrame")
 			V->OnFrame(dt);
@@ -153,24 +154,26 @@ const shared_str CParticlesObject::Name()
 }
 
 //----------------------------------------------------
-void CParticlesObject::Play		(bool bHudMode)
+void CParticlesObject::Play(bool bHudMode)
 {
-	if(g_dedicated_server)		return;
+	if (g_dedicated_server || renderable.visual == nullptr)
+		return;
 
-	IParticleCustom* V			= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
-	if(bHudMode)
-		V->SetHudMode			(bHudMode);
+	IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
+	if (bHudMode)
+		V->SetHudMode(bHudMode);
 
-	V->Play						();
-	dwLastTime					= Device.dwTimeGlobal-33ul;
+	V->Play();
+	dwLastTime = Device.dwTimeGlobal - 33ul;
 
-	PerformAllTheWork			();
-	m_bStopping					= false;
+	PerformAllTheWork();
+	m_bStopping = false;
 }
 
 void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 {
-	if(g_dedicated_server)		return;
+	if (g_dedicated_server || renderable.visual == nullptr)
+		return;
 
 	IParticleCustom* V			= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
 	Fmatrix m; m.translate		(pos); 
@@ -182,9 +185,10 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 	m_bStopping					= false;
 }
 
-void CParticlesObject::Stop		(BOOL bDefferedStop)
+void CParticlesObject::Stop(BOOL bDefferedStop)
 {
-	if(g_dedicated_server)		return;
+	if (g_dedicated_server || renderable.visual == nullptr)
+		return;
 
 	IParticleCustom* V			= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
 	V->Stop						(bDefferedStop);
@@ -235,13 +239,17 @@ void CParticlesObject::SetLiveUpdate(BOOL b)
 {
 	if(g_dedicated_server)		return;
 
-	IParticleCustom* V	= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
-	return V->SetLiveUpdate(b);
+	if (renderable.visual)
+	{
+		IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
+		V->SetLiveUpdate(b);
+	}
 }
 
 BOOL CParticlesObject::GetLiveUpdate()
 {
-	if(g_dedicated_server)		return 0;
+	if(g_dedicated_server || renderable.visual == nullptr)
+		return 0;
 
 	IParticleCustom* V	= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
 	return V->GetLiveUpdate();
@@ -249,7 +257,8 @@ BOOL CParticlesObject::GetLiveUpdate()
 
 void CParticlesObject::UpdateParent		(const Fmatrix& m, const Fvector& vel)
 {
-	if(g_dedicated_server)		return;
+	if(g_dedicated_server || renderable.visual == nullptr)
+		return;
 
 	IParticleCustom* V	= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
 	V->UpdateParent		(m,vel,FALSE);

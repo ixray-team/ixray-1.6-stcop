@@ -1,6 +1,10 @@
 ﻿#include "stdafx.h"
-#include "../XrECore/Editor/EditorChooseEvents.h"
+
+#include "../xrECore/Editor/EditorChooseEvents.h"
+#include "../xrECore/Editor/UIEditLightAnim.h"
+
 #include "../xrEUI/ImGuizmo.h"
+
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
 
 UIMainForm* MainForm = nullptr;
@@ -31,18 +35,6 @@ UIMainForm::UIMainForm()
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
 	m_Render->OnFocusCallback = ViewportFocusCallback;
-	if (dynamic_cast<CLevelPreferences*>(EPrefs)->OpenObjectList)
-	{
-		UIObjectList::Show();
-	}
-	if (!dynamic_cast<CLevelPreferences*>(EPrefs)->OpenProperties)
-	{
-		m_Properties->Close();
-	}
-	if (!dynamic_cast<CLevelPreferences*>(EPrefs)->OpenWorldProperties)
-	{
-		m_WorldProperties->Close();
-	}
 
 	// Action
 	m_tMenu         = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
@@ -90,13 +82,44 @@ UIMainForm::UIMainForm()
 	m_tPlaneMove    = EDevice->Resources->_CreateTexture("ed\\bar\\PlaneMove");
 	m_tArcBall      = EDevice->Resources->_CreateTexture("ed\\bar\\ArcBall");
 	m_tFreeFly      = EDevice->Resources->_CreateTexture("ed\\bar\\FreeFly");
+
+	LoadWindowsStates();
+}
+
+void UIMainForm::LoadWindowsStates()
+{
+	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
+
+	if (LPrefs->OpenObjectList)
+	{
+		UIObjectList::Show();
+	}
+
+	if (LPrefs->OpenProperties)
+	{
+		m_Properties->Open();
+	}
+
+	if (LPrefs->OpenWorldProperties)
+	{
+		m_WorldProperties->Open();
+	}
+
+	if (LPrefs->OpenLightAnim)
+	{
+		UIEditLightAnim::Show();
+	}
 }
 
 UIMainForm::~UIMainForm()
 {
-	dynamic_cast<CLevelPreferences*>(EPrefs)->OpenProperties = !m_Properties->IsClosed();
-	dynamic_cast<CLevelPreferences*>(EPrefs)->OpenWorldProperties = !m_WorldProperties->IsClosed();
-	dynamic_cast<CLevelPreferences*>(EPrefs)->OpenObjectList = UIObjectList::IsOpen();
+	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);
+
+	LPrefs->OpenProperties = !m_Properties->IsClosed();
+	LPrefs->OpenWorldProperties = !m_WorldProperties->IsClosed();
+	LPrefs->OpenObjectList = UIObjectList::IsOpen();
+	LPrefs->OpenLightAnim = UIEditLightAnim::IsOpen();
+
 	ClearChooseEvents();
 	xr_delete(m_WorldProperties);
 	xr_delete(m_Properties);

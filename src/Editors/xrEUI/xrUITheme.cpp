@@ -103,10 +103,12 @@ void CUIThemeManager::Draw()
 		{
 			InitDefault(true);
 		}
+		ImGui::SameLine();
 		if (ImGui::Button("Save to..."))
 		{
 			SaveTo();
 		}
+		ImGui::SameLine();
 		if (ImGui::Button("Load from..."))
 		{
 			LoadFrom();

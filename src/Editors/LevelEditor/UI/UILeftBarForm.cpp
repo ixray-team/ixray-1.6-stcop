@@ -70,7 +70,6 @@ void UILeftBarForm::Draw()
 			ImGui::NextColumn();
 		}
 		ImGui::Columns(1);
-		ImGui::Separator();
 		ImGui::PopStyleVar(2);
 	}
 	ImGui::End();

@@ -465,16 +465,14 @@ void CCustomPreferences::LoadConfig()
 
 void CCustomPreferences::SaveConfig()
 {
-	string_path			fn;
-	INI_NAME			(fn);
-
 	string_path jfn;
 	JSON_NAME(jfn);
+
+	Save();
 
 	std::ofstream o(jfn);
 	o << JSONData;
 
-	Save();
 }
 
 void CCustomPreferences::AppendRecentFile(LPCSTR name)

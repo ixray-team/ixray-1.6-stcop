@@ -21,4 +21,5 @@ public:
 	bool OpenProperties;
 	bool OpenWorldProperties;
 	bool OpenSnapList;
+	bool OpenLightAnim;
 };

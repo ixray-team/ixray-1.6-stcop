@@ -65,7 +65,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 			switch (Event.type)
 			{
 			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-				EPrefs->SaveConfig();
+				//EPrefs->SaveConfig();
 				GContentView->Destroy();
 				NeedExit = true;
 				break;

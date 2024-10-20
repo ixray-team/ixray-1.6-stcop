@@ -30,6 +30,11 @@ void CLevelPreferences::Load()
 		OpenSnapList = JSONData["windows"]["snap_list"];
 	}
 
+	if (JSONData["windows"].contains("light_anim"))
+	{
+		OpenLightAnim = JSONData["windows"]["light_anim"];
+	}
+
 	if (JSONData["ContentBrowser"].contains("CurPath"))
 	{
 		GContentView->CurrentDir = JSONData["ContentBrowser"]["CurPath"];
@@ -74,6 +79,8 @@ void CLevelPreferences::Save()
 	JSONData["windows"]["properties"] = OpenProperties;
 	JSONData["windows"]["world_properties"] = OpenWorldProperties;
 	JSONData["windows"]["snap_list"] = OpenSnapList;
+	JSONData["windows"]["light_anim"] = OpenLightAnim;
+
 	JSONData["Compilers Path"]["xrLC"] = Compiler_xrLC.c_str();
 	JSONData["Compilers Path"]["xrAI"] = Compiler_xrAI.c_str();
 	JSONData["Compilers Path"]["xrDO"] = Compiler_xrDO.c_str();
