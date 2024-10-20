@@ -37,9 +37,14 @@ bool EObjectThumbnail::Load(LPCSTR src_name, LPCSTR path)
 {
 	string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
-    if (path) 		FS.update_path(fn,path,fn);
-    else			FS.update_path(fn,_objects_,fn);
-    if (!FS.exist(fn)) return false;
+
+    if (path && xr_strlen(path))
+        FS.update_path(fn,path,fn);
+    else if (path == nullptr)	
+        FS.update_path(fn,_objects_,fn);
+
+    if (!FS.TryLoad(fn)) 
+        return false;
 
     IReader* F 		= FS.r_open(fn);
     u16 version 	= 0;

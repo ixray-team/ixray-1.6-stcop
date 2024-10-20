@@ -120,7 +120,7 @@ void EImageThumbnail::Update(ImTextureID& Texture)
     
 }
 
-EImageThumbnail* CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)
+ECORE_API EImageThumbnail* CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)
 {
     switch (type){
     case ECustomThumbnail::ETObject: 	return new EObjectThumbnail	(src_name,bLoad);

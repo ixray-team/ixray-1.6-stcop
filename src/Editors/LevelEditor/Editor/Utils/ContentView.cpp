@@ -83,6 +83,8 @@ void CContentView::Draw()
 	}
 
 	ImGui::End();
+
+	ThmPropWnd.Draw();
 }
 
 void CContentView::DrawHeader()
@@ -214,6 +216,12 @@ void CContentView::DrawHeader()
 
 	if (ImGui::BeginPopupContextItem("MenuCBPpp"))
 	{
+		if (ImGui::Checkbox("Show THM", &IsThmMode) && !IsSpawnElement)
+		{
+			RescanDirectory();
+		}
+		ImGui::Separator();
+
 		if (ImGui::BeginMenu("View mode"))
 		{
 			if (ImGui::MenuItem("Tile"))
@@ -227,7 +235,7 @@ void CContentView::DrawHeader()
 
 			ImGui::EndMenu();
 		}
-		
+
 		ImGui::EndPopup();
 	}
 
@@ -258,7 +266,7 @@ void CContentView::FindFile()
 					continue;
 
 				const xr_string& FName = file.path().filename().string().data();
-				if (FName.Contains(ParseStr) && !FName.ends_with(".thm"))
+				if (FName.Contains(ParseStr) && CheckFile(FName))
 				{
 					Files.push_back({ file, false });
 				}
@@ -467,7 +475,7 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 		Files.clear();
 	}
 
-	for (const FileOptData& FilePath : Files)
+	for (FileOptData FilePath : Files)
 	{
 		if (FilePath.IsDir)
 		{
@@ -486,7 +494,12 @@ void CContentView::DrawOtherDir(size_t& HorBtnIter, const size_t IterCount, xr_s
 		{
 			if (DrawItem(FilePath, HorBtnIter, IterCount))
 			{
-				if (FilePath.File.extension() == ".tga")
+				if (FilePath.File.extension() == ".thm")
+				{
+					ThmPropWnd.Load(FilePath.File);
+					ThmPropWnd.Show();
+				}
+				else if (FilePath.File.extension() == ".tga")
 				{
 					string_path fn = {};
 					FS.update_path(fn, _textures_, "");
@@ -1055,7 +1068,7 @@ bool CContentView::Contains()
 
 bool CContentView::CheckFile(const xr_path& File) const
 {
-	bool TestTHM = File.has_extension() && File.extension().string() != ".thm";
+	bool TestTHM = IsThmMode || (File.has_extension() && File.extension().string() != ".thm");
 	bool TestWinTrash = File.xfilename() != "desktop.ini";
 
 	return TestTHM && TestWinTrash;

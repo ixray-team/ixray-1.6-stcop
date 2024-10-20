@@ -7,7 +7,8 @@
 //------------------------------------------------------------------------------
 // Custom class
 //------------------------------------------------------------------------------
-class ECORE_API ECustomThumbnail{   
+class ECORE_API ECustomThumbnail
+{   
 public:
 	enum THMType{
     	ETUndef		= -1,
@@ -35,7 +36,7 @@ public:
 	virtual bool 	Load			(LPCSTR src_name=0, LPCSTR path=0)=0;
 	virtual void 	Save			(int age=0,LPCSTR path=0)=0;
     virtual bool	Valid			()=0;
-//	virtual void	FillProp		(PropItemVec& values)=0;
+	//virtual void	FillProp		(PropItemVec& values)=0;
 	virtual void	FillInfo		(PropItemVec& values)=0;
 };
 //------------------------------------------------------------------------------
@@ -163,7 +164,7 @@ public:
 };
 //------------------------------------------------------------------------------
 
-EImageThumbnail* CreateThumbnail	(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad=true);
+ECORE_API EImageThumbnail* CreateThumbnail	(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad=true);
 
 #endif
 

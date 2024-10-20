@@ -1,6 +1,8 @@
 #pragma once
 #include <fswatcher/filewatch.hpp>
 
+#include "ThmProperties.h"
+
 class CContentView:
 	public IEditorWnd
 {
@@ -119,12 +121,17 @@ private:
 	bool IsDelWatcher = false;
 	bool IsSpawnElement = false;
 	bool IsFindResult = false;
+
+	bool IsThmMode = false;
+
 	xr_string ISEPath;
 	string32 FindStr = {};
 
 	volatile xr_atomic_bool LockFiles = false;
 
 	float TextHeight = 0.f;
+
+	CUIThmProperties ThmPropWnd;
 };
 
 extern CContentView* GContentView;
