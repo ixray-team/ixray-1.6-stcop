@@ -165,7 +165,7 @@ void CEditorRenderDevice::Clear()
 
 	if (EPrefs)
 	{
-		float color[3] = { color_get_B(EPrefs->scene_clear_color) / 255.f, color_get_G(EPrefs->scene_clear_color) / 255.f, color_get_R(EPrefs->scene_clear_color) / 255.f };
+		float color[3] = { color_get_R(EPrefs->scene_clear_color) / 255.f, color_get_G(EPrefs->scene_clear_color) / 255.f, color_get_B(EPrefs->scene_clear_color) / 255.f };
 		ClearColor = color_rgba_f(color[0], color[1], color[2], 1.f);
 	}
 
