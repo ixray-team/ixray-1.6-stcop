@@ -47,6 +47,7 @@ void CUIThmProperties::Load(const xr_path& File)
 void CUIThmProperties::Show()
 {
 	bOpen = true;
+	ImGui::SetWindowFocus("Thumbnail View");
 }
 
 void CUIThmProperties::Draw()
@@ -74,6 +75,7 @@ void CUIThmProperties::Draw()
 	if (ImGui::Button("Save"))
 	{
 		ThmPtr->Save(0, "");
+		FS.set_file_age(FileName.c_str(), xr_chrono_to_time_t(std::chrono::system_clock::now()));
 	}
 	ImGui::End();
 
