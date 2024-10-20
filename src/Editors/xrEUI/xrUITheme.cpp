@@ -103,6 +103,14 @@ void CUIThemeManager::Draw()
 		{
 			InitDefault(true);
 		}
+		if (ImGui::Button("Save to..."))
+		{
+			SaveTo();
+		}
+		if (ImGui::Button("Load from..."))
+		{
+			LoadFrom();
+		}
 	}
 
 	ImGui::End();
@@ -276,10 +284,116 @@ void CUIThemeManager::Save()
 }
 
 
+void CUIThemeManager::SaveTo()
+{
+	if (!IsLoaded)
+		return;
+
+	xr_string jfn;
+	if (EFS.GetSaveName("$app_data_root$", jfn, 0, 6, "*.json"))
+	{
+		json JSONData = {};
+		ImVec4* colors = ImGui::GetStyle().Colors;
+
+		FastJSonWriteImColor(ImGuiCol_WindowBg);
+		FastJSonWriteImColor(ImGuiCol_MenuBarBg);
+		FastJSonWriteImColor(ImGuiCol_Text);
+		FastJSonWriteImColor(ImGuiCol_TableHeaderBg);
+		FastJSonWriteImColor(ImGuiCol_TableBorderStrong);
+		FastJSonWriteImColor(ImGuiCol_TableBorderLight);
+		FastJSonWriteImColor(ImGuiCol_TableRowBg);
+		FastJSonWriteImColor(ImGuiCol_TableRowBgAlt);
+		FastJSonWriteImColor(ImGuiCol_FrameBg);
+		FastJSonWriteImColor(ImGuiCol_CheckMark);
+		FastJSonWriteImColor(ImGuiCol_Border);
+		FastJSonWriteImColor(ImGuiCol_TitleBg);
+		FastJSonWriteImColor(ImGuiCol_TabUnfocusedActive);
+		FastJSonWriteImColor(ImGuiCol_TabUnfocused);
+		FastJSonWriteImColor(ImGuiCol_TabActive);
+		FastJSonWriteImColor(ImGuiCol_TabHovered);
+		FastJSonWriteImColor(ImGuiCol_TitleBgActive);
+		FastJSonWriteImColor(ImGuiCol_ButtonHovered);
+		FastJSonWriteImColor(ImGuiCol_ButtonActive);
+		FastJSonWriteImColor(ImGuiCol_Button);
+		FastJSonWriteImColor(ImGuiCol_Header);
+		FastJSonWriteImColor(ImGuiCol_HeaderHovered);
+		FastJSonWriteImColor(ImGuiCol_PopupBg);
+
+		JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
+		JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
+		JSONData["Theme"]["Font"] = ImCurrentFont;
+
+
+		std::ofstream o(jfn.c_str());
+		o << JSONData;
+	}
+}
+
+
+void CUIThemeManager::LoadFrom()
+{
+	json JSONData = {};
+	xr_string jfn;
+	if (EFS.GetOpenName("$app_data_root$", jfn, false, NULL, 6, "*.json"))
+	{
+		std::ifstream f(jfn.c_str());
+		f >> JSONData;
+
+		if (!JSONData.contains("Theme"))
+		{
+			return;
+		}
+
+		ImVec4* colors = ImGui::GetStyle().Colors;
+
+		FastJSonReadImColor(ImGuiCol_WindowBg);
+		FastJSonReadImColor(ImGuiCol_MenuBarBg);
+		FastJSonReadImColor(ImGuiCol_Text);
+		FastJSonReadImColor(ImGuiCol_TableHeaderBg);
+		FastJSonReadImColor(ImGuiCol_TableBorderStrong);
+		FastJSonReadImColor(ImGuiCol_TableBorderLight);
+		FastJSonReadImColor(ImGuiCol_TableRowBg);
+		FastJSonReadImColor(ImGuiCol_TableRowBgAlt);
+		FastJSonReadImColor(ImGuiCol_FrameBg);
+		FastJSonReadImColor(ImGuiCol_CheckMark);
+		FastJSonReadImColor(ImGuiCol_Border);
+		FastJSonReadImColor(ImGuiCol_TitleBg);
+		FastJSonReadImColor(ImGuiCol_TabUnfocusedActive);
+		FastJSonReadImColor(ImGuiCol_TabUnfocused);
+		FastJSonReadImColor(ImGuiCol_TabActive);
+		FastJSonReadImColor(ImGuiCol_TabHovered);
+		FastJSonReadImColor(ImGuiCol_TitleBgActive);
+		FastJSonReadImColor(ImGuiCol_ButtonHovered);
+		FastJSonReadImColor(ImGuiCol_ButtonActive);
+		FastJSonReadImColor(ImGuiCol_Button);
+		FastJSonReadImColor(ImGuiCol_Header);
+		FastJSonReadImColor(ImGuiCol_HeaderHovered);
+		FastJSonReadImColor(ImGuiCol_PopupBg);
+
+
+		if (JSONData["Theme"].contains("InactiveAlpha"))
+		{
+			TransparentDefault = JSONData["Theme"]["InactiveAlpha"];
+		}
+
+		if (JSONData["Theme"].contains("ActiveAlpha"))
+		{
+			TransparentUnfocused = JSONData["Theme"]["ActiveAlpha"];
+		}
+
+		if (JSONData["Theme"].contains("Font"))
+		{
+			ImCurrentFont = JSONData["Theme"]["Font"];
+		}
+
+		IsLoaded = true;
+	}
+}
+
 void CUIThemeManager::Load()
 {
 	json JSONData = {};
-	string_path jfn; 
+	string_path jfn;
 	FS.update_path(jfn, "$app_data_root$", EFS.ChangeFileExt("editor_theme", ".json").c_str());
 
 	if (std::filesystem::exists(jfn))

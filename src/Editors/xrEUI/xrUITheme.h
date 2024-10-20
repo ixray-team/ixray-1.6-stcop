@@ -14,6 +14,8 @@ public:
 
 	void Save();
 	void Load();
+	void SaveTo();
+	void LoadFrom();
 
 protected:
 	virtual void Draw();
