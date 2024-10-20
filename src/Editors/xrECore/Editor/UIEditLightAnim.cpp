@@ -68,6 +68,8 @@ void UIEditLightAnim::Draw()
         if (ImGui::BeginChild("Left", ImVec2(0, 0), true))
         {
             m_Items->Draw();
+
+            IsContextMenu = m_Items->m_UseMenuEdit;
             if (!IsDocked)
                 IsDocked = ImGui::IsWindowDocked();
             if (!IsFocused)

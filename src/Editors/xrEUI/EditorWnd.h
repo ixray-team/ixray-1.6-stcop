@@ -10,7 +10,7 @@ public:
 	};
 	Flags32 Flags;
 	virtual ~IEditorWnd();
-	/*”ƒ¿À»“‹ ≈—À» Õ≈ œ–»√Œƒ»“—ﬂ*/
+	/*√ì√Ñ√Ä√ã√à√í√ú √Ö√ë√ã√à √ç√Ö √è√ê√à√É√é√Ñ√à√í√ë√ü*/
 	virtual void ResetBegin();
 	virtual void ResetEnd();
 	bool IsClosed()const { return !bOpen; }
@@ -24,5 +24,6 @@ protected:
 	bool bOpen;
 	bool IsDocked = true;
 	bool IsFocused = false;
+	bool IsContextMenu = false;
 };
 

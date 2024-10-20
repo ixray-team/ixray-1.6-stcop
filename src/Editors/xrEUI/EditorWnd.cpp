@@ -17,7 +17,7 @@ void IEditorWnd::ResetEnd()
 
 void IEditorWnd::BeginDraw() const
 {
-	if (!IsFocused && !IsDocked)
+	if (!IsFocused && !IsDocked && !IsContextMenu)
 	{
 		ImGui::SetNextWindowBgAlpha(CUIThemeManager::Get().TransparentUnfocused);
 	}
