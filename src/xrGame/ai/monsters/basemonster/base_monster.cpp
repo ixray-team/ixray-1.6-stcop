@@ -1033,17 +1033,17 @@ float   CBaseMonster::get_attack_on_move_prepare_time()
 	return override_if_debug("aom_prepare_time", m_attack_on_move_params.prepare_time);
 }
 
-float   CBaseMonster::get_psy_influence ()
+float CBaseMonster::get_psy_influence () const
 {
 	return m_psy_aura.calculate();
 }
 
-float   CBaseMonster::get_radiation_influence ()
+float CBaseMonster::get_radiation_influence () const
 {
 	return m_radiation_aura.calculate();
 }
 
-float   CBaseMonster::get_fire_influence ()
+float CBaseMonster::get_fire_influence () const
 {
 	return m_fire_aura.calculate();
 }
