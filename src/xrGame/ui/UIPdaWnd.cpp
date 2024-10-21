@@ -359,17 +359,22 @@ bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return inherited::OnKeyboardAction(dik,keyboard_action);
 }
 
-bool CUIPdaWnd::IR_process() {
-	auto pPda = Actor()->GetPDA();
-	if(pPda) {
-		if(!pPda->m_bZoomed) {
+bool CUIPdaWnd::IR_process() 
+{
+	static bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+	if(CPda* pPda = Actor()->GetPDA(); Use3DPDA)
+	{
+		if(!pPda->m_bZoomed) 
+		{
 			return false;
 		}
 	}
+
 	return inherited::IR_process();
 }
 
-bool CUIPdaWnd::OnMouseAction(float x, float y, EUIMessages mouse_action) {
+bool CUIPdaWnd::OnMouseAction(float x, float y, EUIMessages mouse_action) 
+{
 	CUIDialogWnd::OnMouseAction(x, y, mouse_action);
 	return false;
 }

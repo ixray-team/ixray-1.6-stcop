@@ -711,16 +711,21 @@ bool CInventory::Action(u16 cmd, u32 flags)
 
 		case kACTIVE_JOBS:
 		{
-			b_send_event = true;
-			if (flags & CMD_START)
+			static bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+
+			if (Use3DPDA)
 			{
-				if (GetActiveSlot() == PDA_SLOT && ActiveItem())
+				b_send_event = true;
+				if (flags & CMD_START)
 				{
-					Activate(NO_ACTIVE_SLOT);
-				}
-				else
-				{
-					Activate(PDA_SLOT);
+					if (GetActiveSlot() == PDA_SLOT && ActiveItem())
+					{
+						Activate(NO_ACTIVE_SLOT);
+					}
+					else
+					{
+						Activate(PDA_SLOT);
+					}
 				}
 			}
 		}break;

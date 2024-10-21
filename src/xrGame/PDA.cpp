@@ -139,18 +139,26 @@ void CPda::OnAnimationEnd(u32 state)
 
 void CPda::Load(LPCSTR section) 
 {
-	inherited::Load(section);
-
 	m_fRadius = pSettings->r_float(section, "radius");
 	m_functor_str = READ_IF_EXISTS(pSettings, r_string, section, "play_function", "");
 
-	m_sounds.LoadSound(section, "snd_draw", "sndShow", true);
-	m_sounds.LoadSound(section, "snd_holster", "sndHide", true);
-	m_sounds.LoadSound(section, "snd_draw_empty", "sndShowEmpty", true);
-	m_sounds.LoadSound(section, "snd_holster_empty", "sndHideEmpty", true);
-	m_sounds.LoadSound(section, "snd_btn_press", "sndButtonPress");
-	m_sounds.LoadSound(section, "snd_btn_release", "sndButtonRelease");
-	m_sounds.LoadSound(section, "snd_empty", "sndEmptyBattery", true);
+	if (pSettings->line_exist(section, "hud"))
+	{
+		// FX: Is HUD mode
+		inherited::Load(section);
+
+		m_sounds.LoadSound(section, "snd_draw", "sndShow", true);
+		m_sounds.LoadSound(section, "snd_holster", "sndHide", true);
+		m_sounds.LoadSound(section, "snd_draw_empty", "sndShowEmpty", true);
+		m_sounds.LoadSound(section, "snd_holster_empty", "sndHideEmpty", true);
+		m_sounds.LoadSound(section, "snd_btn_press", "sndButtonPress");
+		m_sounds.LoadSound(section, "snd_btn_release", "sndButtonRelease");
+		m_sounds.LoadSound(section, "snd_empty", "sndEmptyBattery", true);
+	}
+	else
+	{
+		CInventoryItemObject::Load(section);
+	}
 }
 
 void CPda::shedule_Update(u32 dt) {
