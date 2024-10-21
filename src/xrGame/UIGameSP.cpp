@@ -106,11 +106,13 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	if( !pActor->g_Alive() )	
 		return false;
 
+
 	switch ( get_binded_action(dik) )
 	{
 	case kACTIVE_JOBS:
 		{
-			if ( !pActor->inventory_disabled() )
+			static bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+			if (!pActor->inventory_disabled() && !Use3DPDA)
 				ShowPdaMenu();
 			break;
 		}

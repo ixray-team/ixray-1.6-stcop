@@ -707,6 +707,28 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				}
 			}
 		}break;
+
+
+		case kACTIVE_JOBS:
+		{
+			static bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+
+			if (Use3DPDA)
+			{
+				b_send_event = true;
+				if (flags & CMD_START)
+				{
+					if (GetActiveSlot() == PDA_SLOT && ActiveItem())
+					{
+						Activate(NO_ACTIVE_SLOT);
+					}
+					else
+					{
+						Activate(PDA_SLOT);
+					}
+				}
+			}
+		}break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

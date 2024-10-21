@@ -38,11 +38,7 @@ void CUICursor::Show()
 	if (bVisible)
 		return;
 
-	u32 screenWidth = psCurrentVidMode[0];
-	u32 screenHeight = psCurrentVidMode[1];
-
 	SetUICursorPosition(Fvector2().set(512.0f, 384.0f));
-	SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
 
 	bVisible = true;
 }
@@ -59,13 +55,17 @@ void CUICursor::InitInternal()
 u32 last_render_frame = 0;
 void CUICursor::OnRender	()
 {
+	if(last_render_frame == Device.dwFrame) {
+		return;
+	}
+
 	g_btnHint->OnRender();
 	g_statHint->OnRender();
 
+	last_render_frame = Device.dwFrame;
+
 	if( !IsVisible() ) return;
 #ifdef DEBUG
-	VERIFY(last_render_frame != Device.dwFrame);
-	last_render_frame = Device.dwFrame;
 
 	if(bDebug)
 	{
@@ -112,5 +112,11 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPos = pos;
+
+		SDL_WarpMouseInWindow(
+			g_AppInfo.Window,
+			Device.TargetWidth * pos.x / UI_BASE_WIDTH,
+			Device.TargetHeight * pos.y / UI_BASE_HEIGHT
+		);
 	}
 }

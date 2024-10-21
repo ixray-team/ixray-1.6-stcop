@@ -220,6 +220,7 @@ CRenderTarget::CRenderTarget		()
 		rt_Position.create			(r2_RT_P,		w,h,D3DFMT_A16B16G16R16F);
 		rt_Normal.create			(r2_RT_N,		w,h,D3DFMT_A16B16G16R16F);
 
+		rt_ui_pda.create(r_ui_pda, w, h, D3DFMT_A8R8G8B8);
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
 		{
@@ -249,6 +250,8 @@ CRenderTarget::CRenderTarget		()
 		//	Igor: for volumetric lights
 		//	temp: for higher quality blends
 		rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F);
+
+
 	}
 
 	// OCCLUSION

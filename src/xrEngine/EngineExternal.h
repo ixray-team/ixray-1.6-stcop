@@ -22,6 +22,7 @@ enum class EEngineExternalGame
 	EnableMonstersInventory,
 	EnableWeaponInertion,
 	EnableWeaponCollision,
+	Enable3DPDA,
 	EnableArtefactDegradation
 };
 

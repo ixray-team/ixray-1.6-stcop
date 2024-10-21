@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "../../xrEngine/igame_persistent.h"
+#include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/FBasicVisual.h"
 #include "../../xrEngine/customhud.h"
 #include "../../xrEngine/xr_object.h"
 #include "../xrRender/SkeletonCustom.h"
+
 static	float	CalcSSADynamic				(const Fvector& C, float R)
 {
     Fvector4 v_res1, v_res2;
@@ -398,6 +400,31 @@ void CRender::Render		()
 		return;
 	}
 
+	//*******
+	// Sync point
+	Device.Statistic->RenderDUMP_Wait_S.Begin();
+	if (1)
+	{
+		CTimer	T;							T.Start();
+		BOOL	result = FALSE;
+		HRESULT	hr = S_FALSE;
+		while ((hr = q_sync_point[q_sync_count]->GetData(&result, sizeof(result), D3DGETDATA_FLUSH)) == S_FALSE) {
+			if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
+			if (T.GetElapsed_ms() > 500) {
+				result = FALSE;
+				break;
+			}
+		}
+	}
+	Device.Statistic->RenderDUMP_Wait_S.End();
+	q_sync_count = (q_sync_count + 1) % Caps.iGPUNum;
+	CHK_DX(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
+
+	if (g_pIGameActor) {
+		Target->u_setrt(Target->rt_ui_pda, 0, 0, RDepth);
+		g_pIGameActor->RenderItemUI();
+	}
+
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);
 
 	// Configure
@@ -432,26 +459,6 @@ void CRender::Render		()
 	} else {
 		Target->phase_scene_prepare					();
 	}
-
-	//*******
-	// Sync point
-	Device.Statistic->RenderDUMP_Wait_S.Begin	();
-	if (1)
-	{
-		CTimer	T;							T.Start	();
-		BOOL	result						= FALSE;
-		HRESULT	hr							= S_FALSE;
-		while	((hr=q_sync_point[q_sync_count]->GetData	(&result,sizeof(result),D3DGETDATA_FLUSH))==S_FALSE) {
-			if (!SwitchToThread())			Sleep(ps_r2_wait_sleep);
-			if (T.GetElapsed_ms() > 500)	{
-				result	= FALSE;
-				break;
-			}
-		}
-	}
-	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%Caps.iGPUNum;
-	CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc

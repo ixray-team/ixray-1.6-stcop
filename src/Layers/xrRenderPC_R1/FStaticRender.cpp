@@ -20,6 +20,7 @@
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
+#include "../../xrEngine/IGame_Actor.h"
 
 using	namespace		R_dsgraph;
 
@@ -600,6 +601,11 @@ void	CRender::Render		()
 	{
 		m_bFirstFrameAfterReset = false;
 		return;
+	}
+
+	if (g_pIGameActor) {
+		Target->u_setrt(Target->rt_ui_pda, 0, 0, RDepth);
+		g_pIGameActor->RenderItemUI();
 	}
 
 	g_r											= 1;

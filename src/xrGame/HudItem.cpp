@@ -657,6 +657,19 @@ void CHudItem::PlayAnimIdleSprint()
 	PlayHUDMotion("anm_idle_sprint", TRUE, nullptr,GetState());
 }
 
+bool CHudItem::ParentIsActor() const
+{
+	if (CObject* O = object().H_Parent())
+	{
+		if (CEntityAlive* EA = smart_cast<CEntityAlive*>(O))
+		{
+			return !!EA->cast_actor();
+		}
+	}
+
+	return false;
+}
+
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
 	if(GetState()==eIdle && !m_bStopAtEndAnimIsRunning)

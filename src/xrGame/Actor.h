@@ -621,6 +621,8 @@ public:
 
 	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, const ui_shader &IndShader);
 	virtual void			RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
+	virtual void			RenderItemUI			();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// Controlled Routines

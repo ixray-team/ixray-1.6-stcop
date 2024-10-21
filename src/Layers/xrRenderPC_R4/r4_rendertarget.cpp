@@ -434,6 +434,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Position);
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
+		DisplayRT(rt_ui_pda);
 
 #undef DisplayRT
 
@@ -503,6 +504,8 @@ CRenderTarget::CRenderTarget()
 		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1, RFeatureLevel >= D3D_FEATURE_LEVEL_11_0);
+	
+		rt_ui_pda.create(r_ui_pda, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 	}
 
 	init_fsr();
