@@ -348,22 +348,18 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 	float radiation_influence			=	GetInjuriousMaterialDamage(); // Get Radiation from Material
 
 	// Add Radiation and Psy Level from Monsters
-	CPda* const pda						=	m_object->GetPDA();
-
-	if ( pda )
+	if (m_object && m_object->g_Alive())
 	{
-		typedef xr_vector<CObject*>				monsters;
+		typedef xr_vector<CObject*> monsters;
 
-		for ( monsters::const_iterator	it	=	pda->feel_touch.begin();
-										it	!=	pda->feel_touch.end();
-										++it )
+		for (const CObject* Object : m_object->feel_touch)
 		{
-			CBaseMonster* const	monster		=	smart_cast<CBaseMonster*>(*it);
-			if ( !monster || !monster->g_Alive() ) continue;
+			const CBaseMonster* monster = smart_cast<CBaseMonster*>(Object);
+			if (!monster || !monster->g_Alive()) continue;
 
-			psy_influence					+=	monster->get_psy_influence();
-			radiation_influence				+=	monster->get_radiation_influence();
-			fire_influence					+=	monster->get_fire_influence();
+			psy_influence += monster->get_psy_influence();
+			radiation_influence += monster->get_radiation_influence();
+			fire_influence += monster->get_fire_influence();
 		}
 	}
 
