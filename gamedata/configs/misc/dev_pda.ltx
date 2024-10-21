@@ -1,0 +1,85 @@
+;;--==========================< PDA >=============================
+;;--==========================< Devices >=============================
+[device_pda]:identity_immunities
+GroupControlSection                                = spawn_group
+discovery_dependency                               =
+$spawn                                             = "devices\pda"
+$prefetch                                          = 16
+class                                              = D_PDA	                                       ;Change to S_PDA if you want to use se_item.se_explosive script binding!
+cform                                              = skeleton
+visual                                             = dynamics\devices\dev_pda\dev_pda.ogf
+description                                        = st_pda_descr
+radius                                             = 68	                                       ; 50
+slot                                               = 7
+default_to_ruck                                    = false
+sprint_allowed                                     = true
+control_inertion_factor                            = 1
+script_binding                                     = bind_physic_object.init
+release_on_first_update							   = true
+inv_name                                           = st_pda_name
+inv_name_short                                     = st_pda_name
+inv_weight                                         = 0.1	                                       ;0.2
+inv_grid_width                                     = 1
+inv_grid_height                                    = 1
+inv_grid_x                                         = 6
+inv_grid_y                                         = 13
+cost                                               = 0
+attach_angle_offset                                = -1.303,0.107,-1.702	                                       ;onoaiaaeeaaaony a ?aaeaiao Angle*PI/180
+attach_position_offset                             = 0.14,0.001,0.02
+attach_bone_name                                   = bip01_l_hand
+auto_attach                                        = false
+anim_item								           = true
+hud                                                = pda_hud
+animation_slot                                     = 2
+joystick_bone                                      = joystick
+snd_btn_press                                      = device\pda\pda_btn_press
+snd_btn_release                                    = device\pda\pda_btn_release
+snd_draw                             	           = device\pda\pda_draw
+snd_draw_empty					   = device\pda\pda_draw_empty
+snd_holster                          	 	   = device\pda\pda_holster
+snd_holster_empty                      	 	   = device\pda\pda_holster_empty
+snd_empty					   = device\pda\pda_dead
+screen_on_delay							 		   = 0.7
+screen_off_delay						 		   = 0.5
+thumb_rot_x										   = 1
+thumb_rot_y										   = -0.1
+
+[pda_hud]:hud_base
+attach_place_idx = 0
+item_visual = dynamics\devices\dev_pda\dev_pda_hud.ogf
+
+hands_position = 0,0,0
+hands_orientation = 0,0,0
+
+aim_hud_offset_pos = 0,0,0
+aim_hud_offset_rot = 0,0,0
+
+gl_hud_offset_pos = 0,0,0
+gl_hud_offset_rot = 0,0,0
+
+hands_position_16x9 = -0.005,-0.11,0.1
+hands_orientation_16x9 = 0,0,0
+
+aim_hud_offset_pos_16x9 = 0.001,-0.069,-0.19
+aim_hud_offset_rot_16x9 = -0.4,0,0.01
+
+gl_hud_offset_pos_16x9 = 0,0,0
+gl_hud_offset_rot_16x9 = 0,0,0
+
+item_position = 0,0,0
+item_orientation = 0,0,0
+
+inertion_pitch_offset_r = 0
+inertion_pitch_offset_d = 0
+inertion_pitch_offset_n = 0
+
+anm_show = hands_draw
+anm_show_empty = hands_draw_empty
+anm_idle = hands_idle
+anm_hide = hands_holster
+anm_hide_empty = hands_holster_empty
+anm_idle_aim = hands_idle_aim
+anm_idle_moving = hands_walk_new
+anm_idle_sprint = hands_run_new
+anm_empty = hands_dead
+anm_bore = hands_dead

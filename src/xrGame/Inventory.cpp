@@ -707,6 +707,23 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				}
 			}
 		}break;
+
+
+		case kACTIVE_JOBS:
+		{
+			b_send_event = true;
+			if (flags & CMD_START)
+			{
+				if (GetActiveSlot() == PDA_SLOT && ActiveItem())
+				{
+					Activate(NO_ACTIVE_SLOT);
+				}
+				else
+				{
+					Activate(PDA_SLOT);
+				}
+			}
+		}break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

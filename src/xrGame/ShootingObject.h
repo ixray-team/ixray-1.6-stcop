@@ -60,7 +60,7 @@ protected:
 public:
 	IC BOOL					IsWorking			()	const	{return bWorking;}
 	virtual BOOL			ParentMayHaveAimBullet()		{return FALSE;}
-	virtual BOOL			ParentIsActor()					{return FALSE;}
+	virtual bool			ParentIsActor		()	const	{return false;}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);

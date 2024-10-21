@@ -2337,13 +2337,13 @@ BOOL CWeapon::ParentMayHaveAimBullet	()
 	return EA->cast_actor()!=0;
 }
 
-BOOL CWeapon::ParentIsActor	()
+bool CWeapon::ParentIsActor() const
 {
-	CObject* O			= H_Parent();
+	CObject* O = Parent;
 	if (!O)
 		return FALSE;
 
-	CEntityAlive* EA	= smart_cast<CEntityAlive*>(O);
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
 	if (!EA)
 		return FALSE;
 

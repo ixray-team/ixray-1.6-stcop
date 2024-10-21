@@ -56,8 +56,10 @@
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"shaders\\shaders_sunmask"
 
-#define		r2_RT_smaa_edgetex "$user$edgetex"
+#define		r2_RT_smaa_edgetex  "$user$edgetex"
 #define		r2_RT_smaa_blendtex "$user$blendtex"
+
+#define		r_ui_pda			"$user$ui_pda"
 
 #define		JITTER(a) r2_jitter #a
 
