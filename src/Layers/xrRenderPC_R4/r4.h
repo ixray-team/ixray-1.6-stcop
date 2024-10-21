@@ -323,8 +323,8 @@ public:
 	virtual ~CRender											();
 
 	xr_string						getShaderParams				();
-	void							addShaderOption				(const char* name, const char* value);
-	void							clearAllShaderOptions		() { m_ShaderOptions.resize(0); }
+	void							addShaderOption				(const char* name, const char* value = "");
+	void							clearAllShaderOptions		() { m_ShaderOptions.clear(); }
 
 	auto							ShaderOptionsCount			() { return m_ShaderOptions.size(); }
 
@@ -332,7 +332,7 @@ public:
 	virtual size_t					SectorsCount				() { return Sectors.size(); }
 
 private:
-	xr_vector<D3D_SHADER_MACRO>									m_ShaderOptions;
+	xr_string_map<xr_string, xr_string>							m_ShaderOptions;
 
 protected:
 	virtual	void					ScreenshotImpl				(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);

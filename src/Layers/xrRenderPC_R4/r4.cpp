@@ -426,6 +426,7 @@ FSlideWindowItem* CRender::getSWI(int id) {
 	VERIFY(id<int(SWIs.size()));
 	return &SWIs[id];
 }
+
 IRender_Target* CRender::getTarget() {
 	return Target;
 }
@@ -433,6 +434,7 @@ IRender_Target* CRender::getTarget() {
 IRender_Light* CRender::light_create() {
 	return Lights.Create();
 }
+
 IRender_Glow* CRender::glow_create() {
 	return new CGlow();
 }
@@ -583,22 +585,21 @@ void CRender::Statistics(CGameFont* _F) {
 }
 
 xr_string CRender::getShaderParams() {
-	xr_string params = "";
 	if(!m_ShaderOptions.empty()) {
-		params.append("(").append(m_ShaderOptions[0].Name);
+		xr_string params = "(";
 
-		for(size_t i = 1u; i < m_ShaderOptions.size(); ++i) {
-			params.append(",").append(m_ShaderOptions[i].Name);
+		for(auto& [Name, Value] : m_ShaderOptions) {
+			params += Name + (Value[0] ? "_" + Value : "") + ",";
 		}
 
-		params.append(")");
+		params[params.size() - 1] = ')';
+		return params;
 	}
-	return params;
+	return "";
 }
 
 void CRender::addShaderOption(const char* name, const char* value) {
-	D3D_SHADER_MACRO macro = {name, value};
-	m_ShaderOptions.push_back(macro);
+	m_ShaderOptions[name] = value;
 }
 
 template <typename T>
@@ -805,8 +806,11 @@ HRESULT	CRender::shader_compile(
 
 	char sh_name[MAX_PATH] = "";
 
-	for(u32 i = 0; i < m_ShaderOptions.size(); ++i) {
-		defines[def_it++] = m_ShaderOptions[i];
+	for(auto& [Name, Value] : m_ShaderOptions) {
+		defines[def_it++] = {
+			Name.c_str(),
+			Value.c_str()
+		};
 	}
 
 	u32 len = xr_strlen(sh_name);

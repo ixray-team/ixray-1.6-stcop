@@ -12,14 +12,7 @@ void CBlender_scale::Compile(CBlender_Compile& C)
 		return;
 	}
 
-	if(C.iElement == 0) {
-		RImplementation.addShaderOption("FILTER_TYPE", "smp_nofilter");
-		RImplementation.addShaderOption("USE_POINT_FILTER", "1");
-	}
-	else {
-		RImplementation.addShaderOption("FILTER_TYPE", "smp_rtlinear");
-		RImplementation.addShaderOption("USE_LINEAR_FILTER", "1");
-	}
+	RImplementation.addShaderOption("FILTER_TYPE", C.iElement == 0 ? "smp_nofilter" : "smp_rtlinear");
 
 	C.r_Pass("stub_notransform_t", "copy_image", FALSE, FALSE, FALSE);
 	C.r_dx10Texture("s_image", r2_RT_generic0);
