@@ -22,13 +22,14 @@ float3 SpecularPhong(float3 Point, float3 Normal, float3 Light)
 // Pixel
 float4 main(PSInput I) : SV_Target
 {
-	float4 base = s_base.Sample(smp_base, I.world_position.xz);
-	float3 normal = s_nmap.Sample(smp_base, I.world_position.xz).xyz * 2.0 - 1.0;
+	float2 tcdh = I.world_position.xz * 0.3f;
+	float4 base = s_base.Sample(smp_base, tcdh);
+	float3 normal = s_nmap.Sample(smp_base, tcdh).xyz * 2.0 - 1.0;
 
 	//Build cotangent frame and transform our normal to world space
 	float3x3 TBN = {float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 1.0, 0.0)};
 	
-	build_contangent_frame(I.world_position.xyz, TBN[2], I.world_position.xz, TBN[0], TBN[1]);
+	build_contangent_frame(I.world_position.xyz, TBN[2], tcdh, TBN[0], TBN[1]);
 
     float3 Nw = normalize(mul(TBN, normal));
 
@@ -79,10 +80,6 @@ float4 main(PSInput I) : SV_Target
 #ifdef USE_SOFT_WATER
     float4 Point = GbufferGetPoint(I.hpos.xy);
 	float waterDepth = length(mul(m_V, float4(I.world_position, 1.0)).xyz - Point.xyz) * 0.75f;
-
-	//	water fog
-	float3 Fc = 0.1f * water_intensity.xxx;
-	final = lerp(Fc, final, alpha);
 
 	alpha = min(alpha, saturate(waterDepth));
 	alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);

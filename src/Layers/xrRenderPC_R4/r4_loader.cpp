@@ -108,6 +108,7 @@ void CRender::level_Load(IReader* fs)
 	// Lights
 	// pApp->LoadTitle			("Loading lights...");
 	LoadLights					(fs);
+	LoadPuddles					();
 
 	// End
 	pApp->LoadEnd				();
@@ -119,6 +120,36 @@ void CRender::level_Load(IReader* fs)
 
 	// signal loaded
 	b_loaded					= TRUE	;
+}
+
+void CRender::LoadPuddles()
+{
+	m_levels_puddles.resize(0);
+	string_path ini_file;
+
+	if(!FS.exist(ini_file, "$level$", "level.puddles")) {
+		return;
+	}
+
+	CInifile ini(ini_file);
+
+	for(CInifile::Sect* Section : ini.sections()) {
+		PuddleBase& m_puddle = m_levels_puddles.emplace_back();
+
+		Fvector position = ini.r_fvector3(Section->Name, "position");
+		float max_height = ini.r_float(Section->Name, "max_height");
+
+		Fvector2 size_xz = ini.r_fvector2(Section->Name, "size_xz");
+		float rotation = ini.r_float(Section->Name, "rotation");
+
+		m_puddle.m_world.rotateY(deg2rad(rotation));
+		m_puddle.m_world.mulB_43(Fmatrix().scale(size_xz.x, 1.0f, size_xz.y));
+
+		m_puddle.m_world.translate_over(position);
+
+		m_puddle.m_height = max_height;
+		m_puddle.m_radius = size_xz.magnitude();
+	}
 }
 
 void CRender::level_Unload()
@@ -175,6 +206,8 @@ void CRender::level_Unload()
 	//*** Components
 	xr_delete					(Details);
 	xr_delete					(Wallmarks);
+
+	m_levels_puddles.resize(0);
 
 	//*** Shaders
 	Shaders.clear();

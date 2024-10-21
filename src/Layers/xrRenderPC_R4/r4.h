@@ -237,6 +237,17 @@ public:
 		DWORD                           Flags,
 		void*&							result);
 
+	struct PuddleBase {
+		Fmatrix m_world = Fidentity;
+
+		float m_height = EPS;
+		float m_radius = EPS;
+	};
+
+	xr_vector<PuddleBase> m_levels_puddles;
+
+	void							LoadPuddles();
+
 	// Information
 	virtual void					Statistics					(CGameFont* F);
 	virtual LPCSTR					getShaderPath				()									{ return "d3d11\\";	}
