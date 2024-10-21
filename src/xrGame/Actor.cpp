@@ -28,6 +28,10 @@
 #include "Grenade.h"
 #include "Torch.h"
 
+#include "Pda.h"
+#include "ui/UIPdaWnd.h"
+#include "../xrUI/UICursor.h"
+
 // breakpoints
 #include "../xrEngine/xr_input.h"
 //
@@ -1830,7 +1834,22 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	//-------------------------------------------------
 //	pFont->SetHeight(OldFontSize);
 	*pdup = delta_up;
-};
+}
+
+void CActor::RenderItemUI() {
+	if(CPda* pPda = GetPDA()) {
+		if(m_inventory->ActiveItem() == pPda) {
+			CUIPdaWnd* PdaMenu = &CurrentGameUI()->PdaMenu();
+			CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
+			if(PdaMenu->IsShown()) {
+				PdaMenu->Draw();
+				if(PdaMenu == TopInputReceiver) {
+					GetUICursor().OnRender();
+				}
+			}
+		}
+	}
+}
 
 void CActor::SetPhPosition(const Fmatrix &transform)
 {

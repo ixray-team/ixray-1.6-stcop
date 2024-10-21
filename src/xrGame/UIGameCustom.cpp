@@ -243,7 +243,7 @@ void CUIGameCustom::ShowMessagesWindow()
 bool CUIGameCustom::ShowPdaMenu()
 {
 	HideActorMenu();
-	m_PdaMenu->ShowDialog(true);
+	m_PdaMenu->ShowDialog(false);
 	return true;
 }
 

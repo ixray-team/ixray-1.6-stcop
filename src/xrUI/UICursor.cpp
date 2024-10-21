@@ -55,13 +55,18 @@ void CUICursor::InitInternal()
 u32 last_render_frame = 0;
 void CUICursor::OnRender	()
 {
+	if(last_render_frame == Device.dwFrame) {
+		return;
+	}
+
 	g_btnHint->OnRender();
 	g_statHint->OnRender();
+
+	last_render_frame = Device.dwFrame;
 
 	if( !IsVisible() ) return;
 #ifdef DEBUG
 	VERIFY(last_render_frame != Device.dwFrame);
-	last_render_frame = Device.dwFrame;
 
 	if(bDebug)
 	{
