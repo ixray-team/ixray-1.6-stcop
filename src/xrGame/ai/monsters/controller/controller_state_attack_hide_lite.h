@@ -3,33 +3,32 @@
 #include "../state.h"
 
 // Hiding until enemy get out from its sight
-class CStateControlHideLite : public CState{
-	typedef	CState		inherited;
-	typedef	CState*	state_ptr;
+class CStateControlHideLite : public CState {
+protected:
+	using	inherited = CState	;
+	using	state_ptr = CState*;
 
 	struct {
 		Fvector position;
 		u32		node;
 	} target;
-	CControllerBase* m_pController;
+	CControllerBase* pControllerBase;
 	u32				m_time_finished;
 
 public:
+	CStateControlHideLite(CBaseMonster* object);
+	virtual			~CStateControlHideLite() override;
+	
+	virtual void	reinit					() override;
 
-	CStateControlHideLite(CBaseMonster* obj);
-	virtual			~CStateControlHideLite	() {}
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
 
-	virtual void	reinit					();
+	virtual void	finalize				() override;
 
-	virtual void	initialize				();
-	virtual void	execute					();
-
-	virtual void	finalize				();
-
-	virtual bool 	check_completion		();
-	virtual bool 	check_start_conditions	();
-	virtual void	remove_links			(CObject* object) {}
-
+	virtual bool 	check_completion		() override;
+	virtual bool 	check_start_conditions	() override;
+	virtual void	remove_links(CObject* object) override { inherited::remove_links(object); }
 
 private:
 	void	select_target_point		();

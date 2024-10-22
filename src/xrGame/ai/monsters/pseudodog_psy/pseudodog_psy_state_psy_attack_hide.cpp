@@ -13,6 +13,16 @@
 
 #include "pseudodog_psy_state_psy_attack_hide.h"
 
+CStatePsyDogHide::CStatePsyDogHide(CBaseMonster* object) : inherited(object) 
+{
+
+}
+
+CStatePsyDogHide::~CStatePsyDogHide()
+{
+
+}
+
 void CStatePsyDogHide::initialize()
 {
 	inherited::initialize();

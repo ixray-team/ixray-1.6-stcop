@@ -21,21 +21,21 @@ BOOL CustomBloodsuckerVampirePPEffector::Process(SPPInfo& pp)
 
     float factor = 0.f;
 
-    if (time_past_perc < SBloodsuckerVampirePPEffectorProperies::TimeAttack)
+    if (time_past_perc < EntityDefinitions::CBloodsuckerBase::TimeAttack)
     {
-        factor = 0.75f * time_past_perc / SBloodsuckerVampirePPEffectorProperies::TimeAttack;
+        factor = 0.75f * time_past_perc / EntityDefinitions::CBloodsuckerBase::TimeAttack;
     }
-    else if (time_past_perc > (1 - SBloodsuckerVampirePPEffectorProperies::TimeAttack))
+    else if (time_past_perc > (1 - EntityDefinitions::CBloodsuckerBase::TimeAttack))
     {
-        factor = 0.75f * (1 - time_past_perc) / SBloodsuckerVampirePPEffectorProperies::TimeAttack;
+        factor = 0.75f * (1 - time_past_perc) / EntityDefinitions::CBloodsuckerBase::TimeAttack;
     }
     else
     {
         float time_past_sine_perc = 
-            (time_past_perc - SBloodsuckerVampirePPEffectorProperies::TimeAttack) * (1 / (1 - SBloodsuckerVampirePPEffectorProperies::TimeAttack + 
-                SBloodsuckerVampirePPEffectorProperies::TimeAttack));
+            (time_past_perc - EntityDefinitions::CBloodsuckerBase::TimeAttack) * (1 / (1 - EntityDefinitions::CBloodsuckerBase::TimeAttack +
+                EntityDefinitions::CBloodsuckerBase::TimeAttack));
 
-        factor = 0.5f + 0.25f * std::sin(SBloodsuckerVampirePPEffectorProperies::PercToRad(time_past_sine_perc));
+        factor = 0.5f + 0.25f * std::sin(EntityDefinitions::CBloodsuckerBase::PercToRad(time_past_sine_perc));
     }
 
     factor = std::clamp(factor, 0.01f, 1.0f);

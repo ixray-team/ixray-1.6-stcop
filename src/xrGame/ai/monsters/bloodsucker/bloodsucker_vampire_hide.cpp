@@ -18,30 +18,30 @@ CustomBloodsuckerStateVampireHide::~CustomBloodsuckerStateVampireHide()
 
 void CustomBloodsuckerStateVampireHide::reselect_state()
 {
-	if (this->prev_substate == eStateVampire_RunAway) {
-		if (this->get_state(eStatePredator)->check_start_conditions()) {
-			this->select_state(eStatePredator);
+	if (prev_substate == eStateVampire_RunAway) {
+		if (get_state(eStatePredator)->check_start_conditions()) {
+			select_state(eStatePredator);
 			return;
 		}
 	}
 
-	this->select_state(eStateVampire_RunAway);
+	select_state(eStateVampire_RunAway);
 }
 
 void CustomBloodsuckerStateVampireHide::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStateVampire_RunAway) {
-		SStateHideFromPoint		data;
-		data.point = this->object->EnemyMan.get_enemy_position();
+	if (current_substate == eStateVampire_RunAway) {
+		SStateHideFromPoint		data{};
+		data.point = object->EnemyMan.get_enemy_position();
 		data.accelerated = true;
 		data.braking = false;
 		data.accel_type = eAT_Aggressive;
 		data.distance = 50.f;
 		data.action.action = ACT_RUN;
 		data.action.sound_type = MonsterSound::eMonsterSoundAggressive;
-		data.action.sound_delay = this->object->db().m_dwAttackSndDelay;
+		data.action.sound_delay = object->db().m_dwAttackSndDelay;
 		data.action.time_out = 15000;
 
 		state->fill_data_with(&data, sizeof(SStateHideFromPoint));
@@ -52,8 +52,8 @@ void CustomBloodsuckerStateVampireHide::setup_substates()
 
 bool CustomBloodsuckerStateVampireHide::check_completion()
 {
-	if ((this->current_substate == eStatePredator) &&
-		this->get_state_current()->check_completion())	return true;
+	if ((current_substate == eStatePredator) &&
+		get_state_current()->check_completion())	return true;
 
 	return false;
 }

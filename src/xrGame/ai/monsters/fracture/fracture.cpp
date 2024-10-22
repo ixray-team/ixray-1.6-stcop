@@ -5,10 +5,9 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-
 CFractureBase::CFractureBase()
 {
-	pStateManagerBase = new CustomFractureStateManager(this);
+	pStateManagerBase = new CFractureBaseStateManager(this);
 }
 
 CFractureBase::~CFractureBase()

@@ -6,15 +6,16 @@ class CPoltergeistBase;
 class CCustomMonster;
 
 class CPoltergeisMovementManager : public CControlPathBuilder {
-	typedef CControlPathBuilder inherited;
+protected:
+	using inherited = CControlPathBuilder;
 
 	CPoltergeistBase	*m_monster;
 
 public:
-					CPoltergeisMovementManager	(CPoltergeistBase *monster) : inherited((CCustomMonster*)monster), m_monster(monster) {}
-	virtual			~CPoltergeisMovementManager	(){}
+	CPoltergeisMovementManager(CPoltergeistBase* object);
+					virtual			~CPoltergeisMovementManager() override;
 
-	virtual	void	move_along_path				(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta);
+	virtual	void	move_along_path				(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta) override;
 
 			Fvector	CalculateRealPosition		();
 };

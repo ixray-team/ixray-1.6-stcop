@@ -3,6 +3,7 @@
 
 class	CustomBloodsuckerStatePredator : public CState 
 {
+protected:
 	using inherited = CState;
 	using state_ptr = CState*;
 
@@ -12,20 +13,20 @@ class	CustomBloodsuckerStatePredator : public CState
 
 public:
 	CustomBloodsuckerStatePredator(CBloodsuckerBase* object);
-	virtual ~CustomBloodsuckerStatePredator();
+	virtual ~CustomBloodsuckerStatePredator() override;
 
-	virtual void		reinit							();
+	virtual void		reinit							() override;
 
-	virtual void		initialize						();
-	virtual	void		reselect_state					();
-	virtual	void		finalize						();
-	virtual	void		critical_finalize				();
-	virtual bool		check_start_conditions			();
-	virtual bool		check_completion				();
-	virtual void		remove_links					(CObject* object) { inherited::remove_links(object);}
+	virtual void		initialize						() override;
+	virtual	void		reselect_state					() override;
+	virtual	void		finalize						() override;
+	virtual	void		critical_finalize				() override;
+	virtual bool		check_start_conditions			() override;
+	virtual bool		check_completion				() override;
+	virtual void		remove_links					(CObject* object) override { inherited::remove_links(object);}
 
-	virtual void		setup_substates					();
-	virtual void		check_force_state				();
+	virtual void		setup_substates					() override;
+	virtual void		check_force_state				() override;
 
 private:
 			void		select_camp_point				();

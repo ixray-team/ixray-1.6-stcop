@@ -3,6 +3,7 @@
 
 class	CustomBloodsuckerStateVampireExecute : public CState 
 {
+protected:
 	using inherited = CState;
 
 	enum {
@@ -17,24 +18,19 @@ class	CustomBloodsuckerStateVampireExecute : public CState
 
 	bool				m_effector_activated;
 
-	CBloodsuckerBase* m_pBloodsucker;
+	CBloodsuckerBase* pBloodsuckerBase;
 
 public:
 	CustomBloodsuckerStateVampireExecute(CBloodsuckerBase* object);
 	virtual ~CustomBloodsuckerStateVampireExecute();
 
-	virtual void		initialize();
-	virtual	void		execute();
-	virtual	void		finalize();
-	virtual	void		critical_finalize();
-	virtual bool		check_start_conditions();
-	virtual bool		check_completion();
-	virtual void		remove_links(CObject* object) { inherited::remove_links(object); }
-
-	struct SBloodsuckerStateVampireExecuteProperies
-	{
-		static constexpr int TimeHold = 4000;           // Время удержания вампира в миллисекундах
-	};
+	virtual void		initialize() override;
+	virtual	void		execute() override;
+	virtual	void		finalize() override;
+	virtual	void		critical_finalize() override;
+	virtual bool		check_start_conditions() override;
+	virtual bool		check_completion() override;
+	virtual void		remove_links(CObject* object) override { inherited::remove_links(object); }
 
 private:
 	void		execute_vampire_prepare();

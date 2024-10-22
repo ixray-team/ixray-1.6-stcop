@@ -8,7 +8,7 @@
 
 CFleshBase::CFleshBase()
 {
-	pStateManagerBase = new CustomFleshStateManager(this);
+	pStateManagerBase = new CFleshBaseStateManager(this);
 	
 	m_fEyeShiftYaw		= PI_DIV_6;
 
@@ -134,7 +134,7 @@ bool CFleshBase::ConeSphereIntersection(Fvector ConeVertex, float ConeAngle, Fve
 	float fCosSqr = _cos(ConeAngle)*_cos(ConeAngle);
 
 	
-	Fvector kCmV;	kCmV.sub(SphereCenter,ConeVertex);
+	Fvector kCmV{};	kCmV.sub(SphereCenter, ConeVertex);
 	Fvector kD		= kCmV;
 	Fvector tempV	= ConeDir;
 	tempV.mul		(SphereRadius* fInvSin);

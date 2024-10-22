@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "controller_psy_aura_effector.h"
 #include "controller_psy_aura.h"
 #include "controller.h"
 #include "../../../actor.h"
@@ -6,69 +7,23 @@
 #include "../../../CameraEffector.h"
 #include "../../../ActorEffector.h"
 
-CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo &ppi, u32 time_to_fade, const ref_sound &snd_left, const ref_sound &snd_right)
-: inherited(ppi)
+CControllerAura::CControllerAura(CControllerBase* object) : m_object(object) 
 {
-	m_time_to_fade			= time_to_fade;
-	m_effector_state		= eStateFadeIn;
-	m_time_state_started	= Device.dwTimeGlobal;
+	m_object = {};
+	m_time_last_update = {};
 
-	m_snd_left.clone		(snd_left,st_Effect,sg_SourceType);	
-	m_snd_right.clone		(snd_right,st_Effect,sg_SourceType);	
+	aura_sound = {};
+	aura_radius = {};
 
-	m_snd_left.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
-	m_snd_right.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
+	m_time_fake_aura = {};
 
+	m_time_fake_aura_duration = {};
+	m_time_fake_aura_delay = {};
+	m_fake_max_add_dist = {};
+	m_fake_min_add_dist = {};
+
+	m_time_started = {};
 }
-
-void CPPEffectorControllerAura::switch_off()
-{
-	m_effector_state		= eStateFadeOut;		
-	m_time_state_started	= Device.dwTimeGlobal;
-}
-
-
-BOOL CPPEffectorControllerAura::update()
-{
-	// update factor
-	if (m_effector_state == eStatePermanent) {
-		m_factor = 1.f;
-	} else {
-		m_factor = float(Device.dwTimeGlobal - m_time_state_started) / float(m_time_to_fade);
-		if (m_effector_state == eStateFadeOut) m_factor = 1 - m_factor;
-
-		if (m_factor > 1) {
-			m_effector_state	= eStatePermanent;
-			m_factor			= 1.f;
-		} else if (m_factor < 0) {
-			if (m_snd_left._feedback())		m_snd_left.stop();
-			if (m_snd_right._feedback())	m_snd_right.stop();
-		
-			return FALSE;
-		}
-	}
-
-	// start new or play again?
-	if (!m_snd_left._feedback() && !m_snd_right._feedback()) {
-		m_snd_left.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
-		m_snd_right.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
-	} 
-
-	if (m_snd_left._feedback())		m_snd_left.set_volume	(m_factor);
-	if (m_snd_right._feedback())	m_snd_right.set_volume	(m_factor);
-
-	return TRUE;
-}
-
-//////////////////////////////////////////////////////////////////////////
-//
-//////////////////////////////////////////////////////////////////////////
-
-#define	FAKE_AURA_DURATION	3000
-#define	FAKE_AURA_DELAY		8000
-#define FAKE_MAX_ADD_DIST	90.f
-#define FAKE_MIN_ADD_DIST	20.f
-
 
 void CControllerAura::update_schedule()
 {
@@ -76,12 +31,13 @@ void CControllerAura::update_schedule()
 
 	float dist_to_actor		= Actor()->Position().distance_to(m_object->Position());
 
-	if ((dist_to_actor > aura_radius + FAKE_MIN_ADD_DIST) && (dist_to_actor < aura_radius + FAKE_MAX_ADD_DIST)) 
+	if ((dist_to_actor > aura_radius + 
+		EntityDefinitions::CControllerBase::FAKE_MIN_ADD_DIST) && (dist_to_actor < aura_radius + EntityDefinitions::CControllerBase::FAKE_MAX_ADD_DIST))
 	{
 		
 		// first time? 
 		if (m_time_fake_aura == 0) {
-			m_time_fake_aura = time() + 5000 + Random.randI(FAKE_AURA_DELAY);
+			m_time_fake_aura = time() + 5000 + Random.randI(EntityDefinitions::CControllerBase::FAKE_AURA_DELAY);
 			
 			if (active()) {
 				m_effector->switch_off	();
@@ -93,7 +49,7 @@ void CControllerAura::update_schedule()
 				if (m_time_fake_aura < time())  {
 					m_effector->switch_off	();
 					m_effector				= 0;
-					m_time_fake_aura		= time() + 5000 + Random.randI(FAKE_AURA_DELAY);
+					m_time_fake_aura		= time() + 5000 + Random.randI(EntityDefinitions::CControllerBase::FAKE_AURA_DELAY);
 				}
 			} else {
 				// check to start
@@ -101,7 +57,7 @@ void CControllerAura::update_schedule()
 					m_effector = new CPPEffectorControllerAura	(m_state, 5000, aura_sound.left, aura_sound.right);
 					Actor()->Cameras().AddPPEffector				(m_effector);
 
-					m_time_fake_aura		= time() + 5000 + Random.randI(FAKE_AURA_DURATION);
+					m_time_fake_aura		= time() + 5000 + Random.randI(EntityDefinitions::CControllerBase::FAKE_AURA_DURATION);
 				}
 			}
 		}

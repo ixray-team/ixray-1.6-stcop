@@ -14,7 +14,8 @@
 
 CChimeraBase::CChimeraBase ()
 {
-	pStateManagerBase =	new CStateManagerChimera	(this);
+	m_attack_params = {};
+	pStateManagerBase =	new CChimeraBaseStateManager(this);
 	com_man().add_ability					(ControlCom::eControlJump);
 }
 
@@ -142,18 +143,6 @@ void   CChimeraBase::reinit ()
 											 u32(-1),//MonsterMovement::eVelocityParameterRunNormal,
 											 MonsterMovement::eChimeraVelocityParameterJumpGround,
 											 0);
-}
-
-void   CChimeraBase::CheckSpecParams (u32 spec_params)
-{
-// 	if ( (spec_params & ASP_THREATEN) == ASP_THREATEN )
-// 	{
-// 		anim().SetCurAnim(eAnimThreaten);
-// 	}
-// 	if ( (spec_params & ASP_ATTACK_RUN) == ASP_ATTACK_RUN ) 
-// 	{
-// 		anim().SetCurAnim(eAnimAttackRun);
-// 	}
 }
 
 void   CChimeraBase::HitEntityInJump (const CEntity *pEntity)

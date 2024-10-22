@@ -18,7 +18,7 @@
 
 CDogBase::CDogBase()
 {
-	pStateManagerBase = new CustomDogStateManager(this);
+	pStateManagerBase = new CDogBaseStateManager(this);
 	
 	min_move_dist		= u32(5);
 	max_move_dist		= u32(7);

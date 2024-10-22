@@ -17,24 +17,29 @@
 #include "../states/monster_state_hitted.h"
 #include "../../../entitycondition.h"
 
-CStateManagerPoltergeist::CStateManagerPoltergeist(CPoltergeistBase* obj) : inherited(obj)
+CPoltergeistBaseStateManager::CPoltergeistBaseStateManager(CPoltergeistBase* object) : inherited(object)
 {
-    m_pPoltergeist = smart_cast<CPoltergeistBase*>(obj);
+	pPoltergeistBase = smart_cast<CPoltergeistBase*>(object);
 
-    add_state(eStateRest, new CPoltergeistStateRest(obj));
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateAttack_AttackHidden, new CStatePoltergeistAttackHidden(obj));
-    add_state(eStatePanic, new CStateMonsterPanic(obj));
-    add_state(eStateHitted, new CStateMonsterHitted(obj));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
+	time_next_flame_attack = {};
+	time_next_tele_attack = {};
+	time_next_scare_attack = {};
+
+    add_state(eStateRest, new CPoltergeistStateRest(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateAttack_AttackHidden, new CStatePoltergeistAttackHidden(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
 }
 
-CStateManagerPoltergeist::~CStateManagerPoltergeist()
+CPoltergeistBaseStateManager::~CPoltergeistBaseStateManager()
 {
+
 }
 
-void CStateManagerPoltergeist::reinit()
+void CPoltergeistBaseStateManager::reinit()
 {
 	inherited::reinit();
 	
@@ -44,11 +49,11 @@ void CStateManagerPoltergeist::reinit()
 
 }
 
-void CStateManagerPoltergeist::execute()
+void CPoltergeistBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if ( object->EnemyMan.get_enemy() && m_pPoltergeist->detected_enemy() )
+	if ( object->EnemyMan.get_enemy() && pPoltergeistBase->detected_enemy() )
 	{
 		state_id = eStateAttack_AttackHidden;
 	}
@@ -57,80 +62,10 @@ void CStateManagerPoltergeist::execute()
 		state_id = eStateRest;
 	}
 
-	//const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-
-	//if (enemy) {
-	//	if (object->is_hidden()) state_id = eStateAttack_AttackHidden;
-	//	else {
-	//		switch (object->EnemyMan.get_danger_type()) {
-	//			case eStrong:	state_id = eStatePanic; break;
-	//			case eWeak:		state_id = eStateAttack; break;
-	//		}
-	//	}
-	//} else if (object->HitMemory.is_hit() && !object->is_hidden()) {
-	//	state_id = eStateHitted;
-	//} else if (object->hear_dangerous_sound) {
-	//	if (!object->is_hidden()) state_id = eStateHearDangerousSound;
-	//	else state_id = eStateHearInterestingSound;
-	//} else if (object->hear_interesting_sound ) {
-	//	state_id = eStateHearInterestingSound;
-	//} else {
-	//	if (can_eat()) state_id = eStateEat;
-	//	else state_id = eStateRest;
-	//	
-	//	if (state_id == eStateEat) {
-	//		if (object->CorpseMan.get_corpse()->Position().distance_to(object->Position()) < 5.f) {
-	//			if (object->is_hidden()) {
-	//				object->CEnergyHolder::deactivate();
-	//			}
-	//			
-	//			object->DisableHide();
-	//		}
-	//	}
-
-	//}
-
-	////if (state_id == eStateAttack_AttackHidden) polter_attack();
-
-	//if ((prev_substate == eStateEat) && (state_id != eStateEat)) 
-	//	object->EnableHide();
-
-
 	select_state(state_id); 
 
 	// выполнить текущее состояние
 	get_state_current()->execute();
 
 	prev_substate = current_substate;
-}
-
-#define TIME_SEEN_FOR_FIRE 5000
-
-void CStateManagerPoltergeist::polter_attack()
-{
-	//u32 cur_time = Device.dwTimeGlobal;
-	//const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
-	//
-	//bool b_aggressive = object->conditions().GetHealth() < 0.5f;
-
-	//if ((time_next_flame_attack < cur_time) && (object->EnemyMan.get_enemy_time_last_seen() + TIME_SEEN_FOR_FIRE > cur_time)) {
-	//	
-
-	//	object->FireFlame(enemy);
-	//	time_next_flame_attack = cur_time + Random.randI(object->m_flame_delay.min, (b_aggressive) ? object->m_flame_delay.aggressive : object->m_flame_delay.normal);
-	//}
-
-	//if (time_next_tele_attack < cur_time) {
-	//	//object->ProcessTelekinesis(enemy);
-	//	time_next_tele_attack = cur_time + Random.randI(object->m_tele_delay.min, (b_aggressive) ? object->m_tele_delay.aggressive : object->m_tele_delay.normal);
-	//}
-
-	//if (time_next_scare_attack < cur_time) {
-	//	if (Random.randI(2))
-	//		object->PhysicalImpulse(enemy->Position());
-	//	else 
-	//		object->StrangeSounds(enemy->Position());
-	//	
-	//	time_next_scare_attack = cur_time + Random.randI(object->m_scare_delay.min, (b_aggressive) ? object->m_scare_delay.aggressive : object->m_scare_delay.normal);
-	//}
 }

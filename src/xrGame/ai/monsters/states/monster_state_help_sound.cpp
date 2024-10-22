@@ -9,41 +9,41 @@
 
 CStateMonsterHearHelpSound::CStateMonsterHearHelpSound(CBaseMonster* obj) : inherited(obj)
 {
-    this->add_state(eStateHearHelpSound_MoveToDest, new CStateMonsterMoveToPointEx(obj));
-    this->add_state(eStateHearHelpSound_LookAround, new CStateMonsterCustomActionLook(obj));
+    add_state(eStateHearHelpSound_MoveToDest, new CStateMonsterMoveToPointEx(obj));
+    add_state(eStateHearHelpSound_LookAround, new CStateMonsterCustomActionLook(obj));
 }
 
 
 bool CStateMonsterHearHelpSound::check_start_conditions()
 {
-	if (!this->object->SoundMemory.hear_help_sound()) return false;
-	if (this->object->Home->has_home())				return this->object->Home->at_home(ai().level_graph().vertex_position(this->object->SoundMemory.hear_help_sound_node()));
+	if (!object->SoundMemory.hear_help_sound()) return false;
+	if (object->Home->has_home())				return object->Home->at_home(ai().level_graph().vertex_position(object->SoundMemory.hear_help_sound_node()));
 
 	return true;
 }
 
 bool CStateMonsterHearHelpSound::check_completion()
 {
-	if (this->current_substate == u32(-1)) return true;
+	if (current_substate == u32(-1)) return true;
 	return false;
 }
 
 void CStateMonsterHearHelpSound::reselect_state()
 {
-	if (this->prev_substate == u32(-1))
-		this->select_state(eStateHearHelpSound_MoveToDest);
-	else if (this->prev_substate == eStateHearHelpSound_MoveToDest)
-		this->select_state(eStateHearHelpSound_LookAround);
+	if (prev_substate == u32(-1))
+		select_state(eStateHearHelpSound_MoveToDest);
+	else if (prev_substate == eStateHearHelpSound_MoveToDest)
+		select_state(eStateHearHelpSound_LookAround);
 }
 
 void CStateMonsterHearHelpSound::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStateHearHelpSound_MoveToDest) {
+	if (current_substate == eStateHearHelpSound_MoveToDest) {
 		SStateDataMoveToPointEx data;
 
-		data.vertex = this->object->SoundMemory.hear_help_sound_node();
+		data.vertex = object->SoundMemory.hear_help_sound_node();
 		data.point = ai().level_graph().vertex_position(data.vertex);
 		data.action.action = ACT_RUN;
 		data.action.time_out = 0;		// do not use time out
@@ -53,19 +53,19 @@ void CStateMonsterHearHelpSound::setup_substates()
 		data.braking = true;
 		data.accel_type = eAT_Aggressive;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataMoveToPointEx));
 
 		return;
 	}
 
-	if (this->current_substate == eStateHearHelpSound_LookAround) {
+	if (current_substate == eStateHearHelpSound_LookAround) {
 		SStateDataAction	data;
 		data.action = ACT_LOOK_AROUND;
 		data.time_out = 3000;
 		data.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 

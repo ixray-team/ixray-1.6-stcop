@@ -1,13 +1,15 @@
 #pragma once
 #include "../pseudodog/pseudodog_state_manager.h"
 
-class CStateManagerPsyDog : public CStateManagerPseudodog 
+class CPseudoPsyDogBaseStateManager : public CPseudoDogBaseStateManager
 {
 protected:
-	typedef CStateManagerPseudodog inherited;
+	using inherited = CPseudoDogBaseStateManager;
 
 public:
-					CStateManagerPsyDog	(CPseudoDogBase *monster); 
-	virtual void	execute				();
-	virtual void	remove_links		(CObject* object_) { inherited::remove_links(object_);}
+	CPseudoPsyDogBaseStateManager(CPseudoDogBase* object);
+					virtual ~CPseudoPsyDogBaseStateManager() override;
+
+	virtual void	execute				() override;
+	virtual void	remove_links		(CObject* object) override { inherited::remove_links(object);}
 };

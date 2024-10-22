@@ -14,37 +14,37 @@
 void CStateMonsterHittedHide::initialize()
 {
 	inherited::initialize();
-	this->object->path().prepare_builder();
+	object->path().prepare_builder();
 }
 
 
 void CStateMonsterHittedHide::execute()
 {
-	this->object->set_action(ACT_RUN);
-	this->object->set_state_sound(MonsterSound::eMonsterSoundPanic);
-	this->object->anim().accel_activate(eAT_Aggressive);
-	this->object->anim().accel_set_braking(false);
-	this->object->path().set_retreat_from_point(this->object->HitMemory.get_last_hit_position());
-	this->object->path().set_generic_parameters();
+	object->set_action(ACT_RUN);
+	object->set_state_sound(MonsterSound::eMonsterSoundPanic);
+	object->anim().accel_activate(eAT_Aggressive);
+	object->anim().accel_set_braking(false);
+	object->path().set_retreat_from_point(object->HitMemory.get_last_hit_position());
+	object->path().set_generic_parameters();
 
 }
 
 
 bool CStateMonsterHittedHide::check_start_conditions()
 {
-	if (this->object->HitMemory.is_hit() && !this->object->EnemyMan.get_enemy()) return true;
+	if (object->HitMemory.is_hit() && !object->EnemyMan.get_enemy()) return true;
 	return false;
 }
 
 
 bool CStateMonsterHittedHide::check_completion()
 {
-	float dist = this->object->Position().distance_to(this->object->HitMemory.get_last_hit_position());
+	float dist = object->Position().distance_to(object->HitMemory.get_last_hit_position());
 
 	// good dist  
 	if (dist < GOOD_DISTANCE_IN_COVER) return false;
 	// +hide more than 3 sec
-	if (this->time_state_started + MIN_HIDE_TIME > Device.dwTimeGlobal) return false;
+	if (time_state_started + MIN_HIDE_TIME > Device.dwTimeGlobal) return false;
 
 	return true;
 }

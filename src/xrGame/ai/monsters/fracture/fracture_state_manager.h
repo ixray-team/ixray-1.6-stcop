@@ -3,13 +3,14 @@
 
 class CFractureBase;
 
-class CustomFractureStateManager : public CMonsterStateManager {
+class CFractureBaseStateManager : public CMonsterStateManager {
+protected:
 	using inherited = CMonsterStateManager;
 
 public:
-	CustomFractureStateManager(CFractureBase*object);
-	virtual				~CustomFractureStateManager();
+	CFractureBaseStateManager(CFractureBase*object);
+	virtual				~CFractureBaseStateManager() override;
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual	void		execute					() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 };

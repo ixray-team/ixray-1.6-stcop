@@ -3,15 +3,15 @@
 
 class CChimeraBase;
 
-class CStateManagerChimera : public CMonsterStateManager
+class CChimeraBaseStateManager : public CMonsterStateManager
 {
-private:
-	typedef				CMonsterStateManager	inherited;
+protected:
+	using	inherited =			CMonsterStateManager;
 
 public:
-						CStateManagerChimera	(CChimeraBase *obj);
-	virtual				~CStateManagerChimera	();
+	CChimeraBaseStateManager(CChimeraBase* object);
+	virtual				~CChimeraBaseStateManager() override;
 
-	virtual	void		execute					();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual	void		execute					() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object); }
 };

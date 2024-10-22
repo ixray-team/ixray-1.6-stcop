@@ -10,9 +10,14 @@
 #include "pseudodog_psy_state_psy_attack.h"
 #include "pseudodog_psy_state_psy_attack_hide.h"
 
-CStatePsyDogPsyAttack::CStatePsyDogPsyAttack(CBaseMonster* obj) : inherited(obj)
+CStatePsyDogPsyAttack::CStatePsyDogPsyAttack(CBaseMonster* object) : inherited(object)
 {
-	add_state(eStateAttack_HideInCover, new CStatePsyDogHide(obj));
+	add_state(eStateAttack_HideInCover, new CStatePsyDogHide(object));
+}
+
+CStatePsyDogPsyAttack::~CStatePsyDogPsyAttack()
+{
+
 }
 
 void CStatePsyDogPsyAttack::reselect_state()

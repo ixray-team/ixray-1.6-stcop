@@ -3,7 +3,8 @@
 
 class	CustomBloodsuckerStateAttack : public CStateMonsterAttack 
 {
-	using inherited_attack  = CStateMonsterAttack;
+protected:
+	using inherited_attack = CStateMonsterAttack;
 
 	u32				m_time_stop_invis;
 	Fvector			m_dir_point;
@@ -13,20 +14,15 @@ class	CustomBloodsuckerStateAttack : public CStateMonsterAttack
 	CBloodsuckerBase* m_pBloodsucker;
 
 public:
-	CustomBloodsuckerStateAttack(CBloodsuckerBase* obj);
-	virtual			~CustomBloodsuckerStateAttack();
+	CustomBloodsuckerStateAttack(CBloodsuckerBase* object);
+	virtual			~CustomBloodsuckerStateAttack() override;
 
-	virtual	void	initialize();
-	virtual	void	execute();
-	virtual	void	finalize();
-	virtual	void	critical_finalize();
+	virtual	void	initialize() override;
+	virtual	void	execute() override;
+	virtual	void	finalize() override;
+	virtual	void	critical_finalize() override;
 
-	virtual void	setup_substates();
-
-	struct SBloodsuckerStateAttackProperies
-	{
-		static constexpr float loose_health_diff = 0.15f;
-	};
+	virtual void	setup_substates() override;
 
 private:
 	bool	check_hiding();

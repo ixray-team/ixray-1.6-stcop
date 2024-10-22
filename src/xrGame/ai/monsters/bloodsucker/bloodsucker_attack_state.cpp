@@ -36,50 +36,50 @@ void CustomBloodsuckerStateAttack::initialize()
 {
 	inherited::initialize();
 	m_time_stop_invis = 0;
-	m_last_health = this->object->conditions().GetHealth();
+	m_last_health = object->conditions().GetHealth();
 }
 
 void CustomBloodsuckerStateAttack::finalize()
 {
 	inherited::finalize();
-	this->m_pBloodsucker->start_invisible_predator();
+	m_pBloodsucker->start_invisible_predator();
 }
 
 void CustomBloodsuckerStateAttack::critical_finalize()
 {
 	inherited::critical_finalize();
-	this->m_pBloodsucker->start_invisible_predator();
+	m_pBloodsucker->start_invisible_predator();
 }
 
 void CustomBloodsuckerStateAttack::execute()
 {
-	if (this->check_home_point())				this->select_state(eStateAttack_MoveToHomePoint);
-	else if (check_vampire())				this->select_state(eStateVampire_Execute);
-	else if (this->check_steal_state())			this->select_state(eStateAttack_Steal);
-	else if (this->check_camp_state())			this->select_state(eStateAttackCamp);
-	else if (this->check_find_enemy_state())	this->select_state(eStateAttack_FindEnemy);
-	else if (check_hiding())				this->select_state(eStateAttack_Hide);
-	else if (this->check_run_attack_state())	this->select_state(eStateAttack_RunAttack);
+	if (check_home_point())				select_state(eStateAttack_MoveToHomePoint);
+	else if (check_vampire())				select_state(eStateVampire_Execute);
+	else if (check_steal_state())			select_state(eStateAttack_Steal);
+	else if (check_camp_state())			select_state(eStateAttackCamp);
+	else if (check_find_enemy_state())	select_state(eStateAttack_FindEnemy);
+	else if (check_hiding())				select_state(eStateAttack_Hide);
+	else if (check_run_attack_state())	select_state(eStateAttack_RunAttack);
 	else
 	{
 		// определить тип атаки
 		bool b_melee = false;
 
-		if (this->prev_substate == eStateAttack_Melee)
+		if (prev_substate == eStateAttack_Melee)
 		{
-			if (!this->get_state_current()->check_completion())
+			if (!get_state_current()->check_completion())
 			{
 				b_melee = true;
 			}
 		}
-		else if (this->get_state(eStateAttack_Melee)->check_start_conditions())
+		else if (get_state(eStateAttack_Melee)->check_start_conditions())
 		{
 			b_melee = true;
 		}
 
-		if (!b_melee && (this->prev_substate == eStateAttack_Melee))
+		if (!b_melee && (prev_substate == eStateAttack_Melee))
 		{
-			this->select_state(eStateAttack_Hide);
+			select_state(eStateAttack_Hide);
 		}
 		else
 			// установить целевое состояние
@@ -90,91 +90,91 @@ void CustomBloodsuckerStateAttack::execute()
 				//if (check_behinder()) 
 				//	select_state(eStateAttack_RunAway);
 				//else 
-				this->select_state(eStateAttack_Melee);
+				select_state(eStateAttack_Melee);
 			}
 			else
 			{
-				this->select_state(eStateAttack_Run);
+				select_state(eStateAttack_Run);
 			}
 	}
 
 	// clear behinder var if not melee state selected
-	if (this->current_substate != eStateAttack_Melee)
+	if (current_substate != eStateAttack_Melee)
 	{
-		this->m_time_start_check_behinder = 0;
+		m_time_start_check_behinder = 0;
 	}
 	else
 	{
-		this->m_pBloodsucker->clear_runaway_invisible();
+		m_pBloodsucker->clear_runaway_invisible();
 	}
 
-	this->get_state_current()->execute();
-	this->prev_substate = this->current_substate;
+	get_state_current()->execute();
+	prev_substate = current_substate;
 
 	// Notify squad	
-	CMonsterSquad* squad = monster_squad().get_squad(this->object);
+	CMonsterSquad* squad = monster_squad().get_squad(object);
 	if (squad)
 	{
-		SMemberGoal goal;
+		SMemberGoal goal{};
 
 		goal.type = MG_AttackEnemy;
-		goal.entity = const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
+		goal.entity = const_cast<CEntityAlive*>(object->EnemyMan.get_enemy());
 
-		squad->UpdateGoal(this->object, goal);
+		squad->UpdateGoal(object, goal);
 	}
 }
 
 bool CustomBloodsuckerStateAttack::check_vampire()
 {
-	if (this->prev_substate != eStateVampire_Execute)
+	if (prev_substate != eStateVampire_Execute)
 	{
-		if (this->get_state(eStateVampire_Execute)->check_start_conditions())	return true;
+		if (get_state(eStateVampire_Execute)->check_start_conditions())	return true;
 	}
 	else
 	{
-		if (!this->get_state(eStateVampire_Execute)->check_completion())		return true;
+		if (!get_state(eStateVampire_Execute)->check_completion())		return true;
 	}
 	return false;
 }
 
 bool CustomBloodsuckerStateAttack::check_hiding()
 {
-	const bool health_step_lost = this->object->conditions().GetHealth() <
-		m_last_health - SBloodsuckerStateAttackProperies::loose_health_diff;
+	const bool health_step_lost = object->conditions().GetHealth() <
+		m_last_health - EntityDefinitions::CBloodsuckerBase::loose_health_diff;
 
 	if (health_step_lost)
 	{
-		this->m_pBloodsucker->start_runaway_invisible();
-		m_last_health = this->object->conditions().GetHealth();
+		m_pBloodsucker->start_runaway_invisible();
+		m_last_health = object->conditions().GetHealth();
 		m_start_with_encircle = true;
 		return true;
 	}
 
 	// if we get here before 1 sec after last critical hit: 
-	u32 last_critical_hit_tick = this->m_pBloodsucker->get_last_critical_hit_tick();
+	u32 last_critical_hit_tick = m_pBloodsucker->get_last_critical_hit_tick();
 	if (last_critical_hit_tick && time() < last_critical_hit_tick + 1000)
 	{
-		this->m_pBloodsucker->clear_last_critical_hit_tick();
+		m_pBloodsucker->clear_last_critical_hit_tick();
 		m_start_with_encircle = true;
 		return true;
 	}
 
-	if (this->current_substate == eStateAttack_Hide)
+	if (current_substate == eStateAttack_Hide)
 	{
-		return !this->get_state_current()->check_completion();
+		return !get_state_current()->check_completion();
 	}
 
 	m_start_with_encircle = false;
-	return this->get_state(eStateAttack_Hide)->check_start_conditions();
+	return get_state(eStateAttack_Hide)->check_start_conditions();
 }
 
 void CustomBloodsuckerStateAttack::setup_substates()
 {
-	auto state = this->get_state_current();
+	auto state = get_state_current();
 
-	if (this->current_substate == eStateAttack_Hide)
+	if (current_substate == eStateAttack_Hide)
 	{
-		typename CustomBloodsuckerBackstubEnemy::StateParams data;
+		typename CustomBloodsuckerBackstubEnemy::StateParams data{};
 
 		data.action.action = ACT_RUN;
 		data.action.time_out = 0;
@@ -184,7 +184,7 @@ void CustomBloodsuckerStateAttack::setup_substates()
 		data.braking = false;
 		data.accel_type = eAT_Aggressive;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 		data.start_with_encircle = m_start_with_encircle;
 
 		state->fill_data_with(&data, sizeof(CustomBloodsuckerBackstubEnemy::StateParams));

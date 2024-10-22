@@ -10,9 +10,9 @@ protected:
 
 public:
 	CustomBloodsuckerStateJump(CBloodsuckerBase* object);
-	virtual				~CustomBloodsuckerStateJump();
+	virtual				~CustomBloodsuckerStateJump() override;
 
-	virtual	void		execute();
-	virtual void		setup_substates();
-	virtual void		remove_links(CObject* object) { inherited::remove_links(object); }
+	virtual	void		execute() override;
+	virtual void		setup_substates() override;
+	virtual void		remove_links(CObject* object) override { inherited::remove_links(object); }
 };

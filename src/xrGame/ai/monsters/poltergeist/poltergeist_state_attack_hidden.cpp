@@ -19,31 +19,41 @@
 
 #include "sound_player.h"
 
-CStatePoltergeistAttackHidden::CStatePoltergeistAttackHidden(CBaseMonster* obj) : inherited(obj)
+CStatePoltergeistAttackHidden::CStatePoltergeistAttackHidden(CBaseMonster* object) : inherited(object)
 {
-	m_pPoltergeist = smart_cast<CPoltergeistBase*>(obj);
-	this->add_state(eStateAttack_MoveToHomePoint, new CStateMonsterAttackMoveToHomePoint(obj));
+	m_pPoltergeist = smart_cast<CPoltergeistBase*>(object);
+
+	m_fly_side_select_tick = {};
+	m_fly_radius_factor = {};
+	m_fly_left = {};
+	m_target = {};
+	m_target_vertex = {};
+
+	add_state(eStateAttack_MoveToHomePoint, new CStateMonsterAttackMoveToHomePoint(object));
 }
 
+CStatePoltergeistAttackHidden::~CStatePoltergeistAttackHidden()
+{
+
+}
 
 void CStatePoltergeistAttackHidden::initialize()
 {
 	inherited::initialize();
-	this->object->path().prepare_builder();
+	object->path().prepare_builder();
 	m_fly_side_select_tick = 0;
 	m_fly_radius_factor = 1.f;
 }
 
-
 void   CStatePoltergeistAttackHidden::select_target_for_move()
 {
-	CEntityAlive const* const	enemy = this->object->EnemyMan.get_enemy();
+	CEntityAlive const* const	enemy = object->EnemyMan.get_enemy();
 	Fvector	const	enemy_pos = enemy->Position();
-	Fvector	const	self_pos = this->object->Position();
+	Fvector	const	self_pos = object->Position();
 
 	Fvector	const	self2enemy = enemy_pos - self_pos;
 
-	float	const	fly_radius = this->m_pPoltergeist->get_fly_around_distance() * m_fly_radius_factor;
+	float	const	fly_radius = m_pPoltergeist->get_fly_around_distance() * m_fly_radius_factor;
 
 	Fvector	const	enemy_dir = normalize(enemy->Direction());
 	Fvector	const	front_point = enemy_pos + (enemy_dir * fly_radius);
@@ -61,7 +71,7 @@ void   CStatePoltergeistAttackHidden::select_target_for_move()
 
 		m_fly_left = left_side;
 		m_fly_side_select_tick = current_time() +
-			(u32)(1000 * this->m_pPoltergeist->get_fly_around_change_direction_time());
+			(u32)(1000 * m_pPoltergeist->get_fly_around_change_direction_time());
 	}
 
 	Fvector const 	enemy2self = -fly_radius * normalize(self2enemy);
@@ -101,48 +111,45 @@ void   CStatePoltergeistAttackHidden::select_target_for_move()
 	}
 
 	m_target = self_pos;
-	m_target_vertex = this->object->ai_location().level_vertex_id();
+	m_target_vertex = object->ai_location().level_vertex_id();
 }
-
-
 
 bool CStatePoltergeistAttackHidden::check_home_point()
 {
-	if (this->prev_substate != eStateAttack_MoveToHomePoint) {
-		if (this->get_state(eStateAttack_MoveToHomePoint)->check_start_conditions())	return true;
+	if (prev_substate != eStateAttack_MoveToHomePoint) {
+		if (get_state(eStateAttack_MoveToHomePoint)->check_start_conditions())	return true;
 	}
 	else {
-		if (!this->get_state(eStateAttack_MoveToHomePoint)->check_completion())		return true;
+		if (!get_state(eStateAttack_MoveToHomePoint)->check_completion())		return true;
 	}
 
 	return false;
 }
 
-
 void CStatePoltergeistAttackHidden::execute()
 {
 	if (check_home_point())
 	{
-		this->select_state(eStateAttack_MoveToHomePoint);
-		this->get_state_current()->execute();
-		this->prev_substate = this->current_substate;
+		select_state(eStateAttack_MoveToHomePoint);
+		get_state_current()->execute();
+		prev_substate = current_substate;
 		return;
 	}
 	else
 	{
-		this->current_substate = (u32)eStateUnknown;
-		this->prev_substate = this->current_substate;
+		current_substate = (u32)eStateUnknown;
+		prev_substate = current_substate;
 	}
 
 	select_target_for_move();
 
-	this->object->path().set_target_point(m_target, m_target_vertex);
-	this->object->path().set_rebuild_time(200);
-	this->object->path().set_distance_to_end(3.f);
-	this->object->path().set_use_covers(false);
+	object->path().set_target_point(m_target, m_target_vertex);
+	object->path().set_rebuild_time(200);
+	object->path().set_distance_to_end(3.f);
+	object->path().set_use_covers(false);
 
-	this->object->anim().m_tAction = ACT_RUN;
-	this->object->anim().accel_activate(eAT_Aggressive);
-	this->object->anim().accel_set_braking(false);
-	this->object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, this->object->db().m_dwAttackSndDelay);
+	object->anim().m_tAction = ACT_RUN;
+	object->anim().accel_activate(eAT_Aggressive);
+	object->anim().accel_set_braking(false);
+	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
 }

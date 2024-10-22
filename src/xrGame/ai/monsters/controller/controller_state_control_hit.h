@@ -3,7 +3,8 @@
 #include "../state.h"
 
 class CStateControlAttack : public CState {
-	typedef	CState inherited;
+protected:
+	using	inherited = CState;
 
 	enum {
 		eActionPrepare,
@@ -15,20 +16,20 @@ class CStateControlAttack : public CState {
 
 	u32				time_control_started;
 
-	CControllerBase* m_pController;
+	CControllerBase* pControllerBase;
 
 public:
 
-					CStateControlAttack		(CBaseMonster *p);
-	virtual			~CStateControlAttack	();
+					CStateControlAttack		(CBaseMonster* object);
+	virtual			~CStateControlAttack	() override;
 
-	virtual void	initialize				();	
-	virtual void	execute					();
-	virtual void	finalize				();
-	virtual void	critical_finalize		();
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	finalize				() override;
+	virtual void	critical_finalize		() override;
 
-	virtual bool 	check_completion		();
-	virtual bool 	check_start_conditions	();
+	virtual bool 	check_completion		() override;
+	virtual bool 	check_start_conditions	() override;
 
 private:
 

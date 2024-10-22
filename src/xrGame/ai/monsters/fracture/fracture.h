@@ -5,16 +5,17 @@
 class CStateManagerFracture;
 
 class CFractureBase : public CBaseMonster {
+protected:
 	using	inherited =	CBaseMonster	;
 	
 public:
 	CFractureBase();
-	virtual			~CFractureBase();
+	virtual			~CFractureBase() override;
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	CheckSpecParams		(u32 spec_params);
+	virtual void	Load				(LPCSTR section) override;
+	virtual void	CheckSpecParams		(u32 spec_params) override;
 
-	virtual	char*	get_monster_class_name () { return (char*)"fracture"; }
+	virtual	char*	get_monster_class_name () override { return (char*)"fracture"; }
 
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

@@ -5,20 +5,21 @@
 
 class	CStateControllerAttack : public CState {
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*	;
 
 public:
-						CStateControllerAttack	(CBaseMonster *obj);
-	virtual				~CStateControllerAttack	() {}
+						CStateControllerAttack	(CBaseMonster *object);
+						virtual				~CStateControllerAttack() override;
 
-	virtual void		initialize				();
-	virtual void		finalize				();
-	virtual void		critical_finalize		();
+	virtual void		initialize				() override;
+	virtual void		finalize				() override;
+	virtual void		critical_finalize		() override;
 	
-	virtual void		execute					();
-	virtual void		setup_substates			();
-	virtual void		check_force_state		();
-	virtual void		remove_links			(CObject * ) {}
+	virtual void		execute					() override;
+	virtual void		setup_substates			() override;
+	virtual void		check_force_state		() override;
+	virtual void		remove_links(CObject* object) override { inherited::remove_links(object); }
+
 			bool		check_home_point		();
 };

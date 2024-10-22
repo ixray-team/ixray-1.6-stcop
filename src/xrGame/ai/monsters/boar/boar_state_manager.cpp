@@ -19,9 +19,9 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CustomBoarStateManager::CustomBoarStateManager(CBoarBase *object) : inherited(object)
+CBoarBaseStateManager::CBoarBaseStateManager(CBaseMonster *object) : inherited(object)
 {
-	m_pBoar = smart_cast<CBoarBase*>(object);
+	pBoarBase = smart_cast<CBoarBase*>(object);
 
 	add_state(eStateRest,					new CStateMonsterRest				(object));
 	add_state(eStatePanic, new CStateMonsterPanic				(object));
@@ -38,16 +38,16 @@ CustomBoarStateManager::CustomBoarStateManager(CBoarBase *object) : inherited(ob
 	add_state(eStateHearHelpSound,			new CStateMonsterHearHelpSound	(object));
 }
 
-CustomBoarStateManager::~CustomBoarStateManager()
+CBoarBaseStateManager::~CBoarBaseStateManager()
 {
 
 }
 
-void CustomBoarStateManager::execute()
+void CBoarBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!m_pBoar->is_under_control())
+	if (!pBoarBase->is_under_control())
 	{
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 

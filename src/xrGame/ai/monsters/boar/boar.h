@@ -6,21 +6,19 @@
 
 class CBoarBase : public CBaseMonster,
 				 public CControlledEntity {
-
+protected:
 	using		inherited = CBaseMonster	;
 	using		CControlled = CControlledEntity;
 
 public:
 	CBoarBase();
-	virtual			~CBoarBase();
+	virtual			~CBoarBase() override;
 
-	virtual void	Load				(LPCSTR section);
-	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
-	virtual void	reinit				();
+	virtual void	Load				(LPCSTR section) override;
+	virtual BOOL	net_Spawn			(CSE_Abstract* DC) override;
+	virtual void	reinit				() override;
 
-	virtual void	UpdateCL			();
-
-	virtual bool	CanExecRotationJump	() {return true;}
+	virtual void	UpdateCL			() override;
 
 	// look at enemy
 	static void	_BCL	BoneCallback	(CBoneInstance *B);
@@ -30,9 +28,9 @@ public:
 
 			bool	look_at_enemy;
 	
-	virtual bool	ability_can_drag	() {return true;}
+	virtual bool	ability_can_drag	() override {return true;}
 
-	virtual	char*	get_monster_class_name () { return (char*) "boar"; }
+	virtual	char*	get_monster_class_name () override { return (char*) "boar"; }
 	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 

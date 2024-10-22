@@ -6,10 +6,9 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-
 CCatBase::CCatBase()
 {
-	pStateManagerBase = new CustomCatStateManager		(this);
+	pStateManagerBase = new CCatBaseStateManager(this);
 }
 
 CCatBase::~CCatBase()
@@ -90,7 +89,7 @@ void CCatBase::reinit()
 {
 	inherited::reinit();
 
-	MotionID			def1, def2, def3;
+	MotionID			def1{}, def2{}, def3{};
 	IKinematicsAnimated	*pSkel = smart_cast<IKinematicsAnimated*>(Visual());
 
 	def1 = pSkel->ID_Cycle_Safe("jump_attack_0");	VERIFY(def1);
@@ -140,8 +139,6 @@ void CCatBase::CheckSpecParams(u32 spec_params)
 
 		//return;
 	}
-
-
 }
 
 void CCatBase::UpdateCL()

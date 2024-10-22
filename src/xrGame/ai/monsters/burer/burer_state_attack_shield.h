@@ -3,22 +3,23 @@
 
 class CStateBurerShield : public CState
 {
-private:
-	typedef				CState	inherited;
+protected:
+	using inherited = CState;
 
-	CBurerBase* m_pBurer;
+	CBurerBase* pBurerBase;
 
 public:
-						CStateBurerShield		(CBaseMonster*obj);
+						CStateBurerShield		(CBaseMonster* object);
+						virtual ~CStateBurerShield() override;
 
-	virtual	void		initialize				();
-	virtual	void		execute					();
-	virtual void		finalize				();
-	virtual void		critical_finalize		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual	void		initialize				() override;
+	virtual	void		execute					() override;
+	virtual void		finalize				() override;
+	virtual void		critical_finalize		() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object); }
 
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
 
 private:
 	TTime				m_last_shield_started;

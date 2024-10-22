@@ -9,57 +9,58 @@
 
 #include "chimera_state_threaten_steal.h"
 
+CStateChimeraThreatenSteal::CStateChimeraThreatenSteal(CBaseMonster* object) : inherited(object)
+{
+
+}
+
+CStateChimeraThreatenSteal::~CStateChimeraThreatenSteal()
+{
+
+}
+
 void CStateChimeraThreatenSteal::initialize()
 {
 	inherited::initialize();
 
-	this->data.action.action = ACT_STEAL;
+	data.action.action = ACT_STEAL;
 
-	this->data.accelerated = true;
-	this->data.braking = false;
-	this->data.accel_type = eAT_Calm;
+	data.accelerated = true;
+	data.braking = false;
+	data.accel_type = eAT_Calm;
 
-	this->data.completion_dist = 2.f;
-	this->data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-	this->data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+	data.completion_dist = 2.f;
+	data.action.sound_type = MonsterSound::eMonsterSoundIdle;
+	data.action.sound_delay = object->db().m_dwIdleSndDelay;
 }
-
 
 void CStateChimeraThreatenSteal::finalize()
 {
 	inherited::finalize();
 }
 
-
-
 void CStateChimeraThreatenSteal::execute()
 {
-	this->data.point = this->object->EnemyMan.get_enemy_position();
-	this->data.vertex = this->object->EnemyMan.get_enemy_vertex();
-	this->data.time_to_rebuild = this->object->get_attack_rebuild_time();
+	data.point = object->EnemyMan.get_enemy_position();
+	data.vertex = object->EnemyMan.get_enemy_vertex();
+	data.time_to_rebuild = object->get_attack_rebuild_time();
 
 	inherited::execute();
 }
-
-#define MIN_DISTANCE_TO_ENEMY	8.f
-
 
 bool CStateChimeraThreatenSteal::check_completion()
 {
 	if (inherited::check_completion()) return true;
 
-	float dist_to_enemy = this->object->EnemyMan.get_enemy_position().distance_to(this->object->Position());
-	if (dist_to_enemy < MIN_DISTANCE_TO_ENEMY) return true;
+	float dist_to_enemy = object->EnemyMan.get_enemy_position().distance_to(object->Position());
+	if (dist_to_enemy < EntityDefinitions::CChimeraBase::MIN_DISTANCE_TO_ENEMY) return true;
 
 	return false;
 }
-
 
 bool CStateChimeraThreatenSteal::check_start_conditions()
 {
-	float dist_to_enemy = this->object->EnemyMan.get_enemy_position().distance_to(this->object->Position());
-	if (dist_to_enemy > MIN_DISTANCE_TO_ENEMY) return true;
+	float dist_to_enemy = object->EnemyMan.get_enemy_position().distance_to(object->Position());
+	if (dist_to_enemy > EntityDefinitions::CChimeraBase::MIN_DISTANCE_TO_ENEMY) return true;
 	return false;
 }
-
-#undef MIN_DISTANCE_TO_ENEMY

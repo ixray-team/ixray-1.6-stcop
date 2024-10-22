@@ -15,7 +15,7 @@ CBoarBase::CBoarBase()
 
 	look_at_enemy = false;
 
-	pStateManagerBase = new CustomBoarStateManager(this);
+	pStateManagerBase = new CBoarBaseStateManager(this);
 
 	CControlled::init_external(this);
 }
@@ -128,7 +128,7 @@ void  CBoarBase::BoneCallback(CBoneInstance *B)
 
 	if (!P->look_at_enemy) return;
 	
-	Fmatrix M;
+	Fmatrix M{};
 	M.setHPB (0.0f,-P->cur_delta,0.0f);
 	B->mTransform.mulB_43(M);
 }

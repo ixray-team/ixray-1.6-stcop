@@ -9,45 +9,45 @@
 
 CStateMonsterHearDangerousSound::CStateMonsterHearDangerousSound(CBaseMonster* obj) : inherited(obj)
 {
-    this->add_state(eStateHearDangerousSound_Hide, new CStateMonsterHideFromPoint(obj));
-    this->add_state(eStateHearDangerousSound_FaceOpenPlace, new CStateMonsterLookToUnprotectedArea(obj));
-    this->add_state(eStateHearDangerousSound_StandScared, new CStateMonsterCustomAction(obj));
-    this->add_state(eStateHearDangerousSound_Home, new CStateMonsterDangerMoveToHomePoint(obj));
+    add_state(eStateHearDangerousSound_Hide, new CStateMonsterHideFromPoint(obj));
+    add_state(eStateHearDangerousSound_FaceOpenPlace, new CStateMonsterLookToUnprotectedArea(obj));
+    add_state(eStateHearDangerousSound_StandScared, new CStateMonsterCustomAction(obj));
+    add_state(eStateHearDangerousSound_Home, new CStateMonsterDangerMoveToHomePoint(obj));
 }
 
 void CStateMonsterHearDangerousSound::reselect_state()
 {
-	if (this->get_state(eStateHearDangerousSound_Home)->check_start_conditions()) {
-		this->select_state(eStateHearDangerousSound_Home);
+	if (get_state(eStateHearDangerousSound_Home)->check_start_conditions()) {
+		select_state(eStateHearDangerousSound_Home);
 		return;
 	}
 
-	if (this->prev_substate == u32(-1)) {
-		this->select_state(eStateHearDangerousSound_Hide);
+	if (prev_substate == u32(-1)) {
+		select_state(eStateHearDangerousSound_Hide);
 		return;
 	}
 
-	if (this->prev_substate == eStateHearDangerousSound_Hide) {
-		this->select_state(eStateHearDangerousSound_FaceOpenPlace);
+	if (prev_substate == eStateHearDangerousSound_Hide) {
+		select_state(eStateHearDangerousSound_FaceOpenPlace);
 		return;
 	}
 
-	this->select_state(eStateHearDangerousSound_StandScared);
+	select_state(eStateHearDangerousSound_StandScared);
 }
 
 
 void CStateMonsterHearDangerousSound::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStateHearDangerousSound_Hide) {
+	if (current_substate == eStateHearDangerousSound_Hide) {
 		SStateHideFromPoint data;
 
 		Fvector run_away_point;
 		Fvector dir;
-		dir.sub(this->object->Position(), this->object->SoundMemory.GetSound().position);
+		dir.sub(object->Position(), object->SoundMemory.GetSound().position);
 		dir.normalize_safe();
-		run_away_point.mad(this->object->Position(), dir, 1.f);
+		run_away_point.mad(object->Position(), dir, 1.f);
 
 		data.point = run_away_point;
 		data.accelerated = true;
@@ -56,32 +56,32 @@ void CStateMonsterHearDangerousSound::setup_substates()
 		data.distance = 40.f;
 		data.action.action = ACT_RUN;
 		data.action.sound_type = (u32)MonsterSound::eMonsterSoundDummy;
-		data.action.sound_delay = this->object->db().m_dwAttackSndDelay;
+		data.action.sound_delay = object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateHideFromPoint));
 
 		return;
 	}
 
-	if (this->current_substate == eStateHearDangerousSound_FaceOpenPlace) {
+	if (current_substate == eStateHearDangerousSound_FaceOpenPlace) {
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;
 		data.spec_params = ASP_STAND_SCARED;
 		data.time_out = 2000;
 		data.sound_type = (u32)MonsterSound::eMonsterSoundDummy;
-		data.sound_delay = this->object->db().m_dwAttackSndDelay;
+		data.sound_delay = object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 
 		return;
 	}
 
-	if (this->current_substate == eStateHearDangerousSound_StandScared) {
+	if (current_substate == eStateHearDangerousSound_StandScared) {
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;
 		data.spec_params = ASP_STAND_SCARED;
 		data.sound_type = (u32)MonsterSound::eMonsterSoundDummy;
-		data.sound_delay = this->object->db().m_dwAttackSndDelay;
+		data.sound_delay = object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 

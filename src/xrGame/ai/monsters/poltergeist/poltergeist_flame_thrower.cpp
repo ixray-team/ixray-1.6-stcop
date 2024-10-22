@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "poltergeist.h"
+#include "poltergeist_special_ability.h"
+#include "poltergeist_flame.h"
 #include "../../../../xrServerEntities/xrmessages.h"
 #include "../../../ai_object_location.h"
 #include "../../../level_graph.h"
@@ -10,12 +12,48 @@
 #include "../../../actorEffector.h"
 #include "../ai_monster_effector.h"
 
-CPolterFlame::CPolterFlame(CPoltergeistBase *polter) : inherited (polter)
+CPolterFlame::CPolterFlame(CPoltergeistBase *object) : inherited (object)
 {
+	m_sound = {};
+	m_particles_prepare = {};
+	m_particles_fire = {};
+	m_particles_stop = {};
+	m_time_fire_delay = {};
+	m_time_fire_play = {};
+
+	m_length = {};
+	m_hit_value = {};
+	m_hit_delay = {};
+
+	m_count = {};
+	m_delay = {};
+
+	m_time_flame_started = {};
+
+	m_min_flame_dist = {};
+	m_max_flame_dist = {};
+	m_min_flame_height = {};
+	m_max_flame_height = {};
+
+	m_pmt_aura_radius = {};
+
+	m_scan_radius = {};
+	m_scan_delay_min = {};
+	m_scan_delay_max = {};
+
+	m_scan_effector_info = {};
+	m_scan_effector_time = {};
+	m_scan_effector_time_attack = {};
+	m_scan_effector_time_release = {};
+	m_scan_sound = {};
+
+	m_state_scanning = {};
+	m_scan_next_time = {};
 }
 
 CPolterFlame::~CPolterFlame()
 {
+
 }
 
 void CPolterFlame::load(LPCSTR section) 
@@ -62,16 +100,32 @@ void CPolterFlame::load(LPCSTR section)
 	m_scan_effector_info.noise.fps			= pSettings->r_float(ppi_section,"noise_fps");
 	VERIFY(!fis_zero(m_scan_effector_info.noise.fps));
 
-	sscanf(pSettings->r_string(ppi_section,"color_base"),	"%f,%f,%f", &m_scan_effector_info.color_base.r,	&m_scan_effector_info.color_base.g,	&m_scan_effector_info.color_base.b);
-	sscanf(pSettings->r_string(ppi_section,"color_gray"),	"%f,%f,%f", &m_scan_effector_info.color_gray.r,	&m_scan_effector_info.color_gray.g,	&m_scan_effector_info.color_gray.b);
-	sscanf(pSettings->r_string(ppi_section,"color_add"),	"%f,%f,%f", &m_scan_effector_info.color_add.r,	&m_scan_effector_info.color_add.g,	&m_scan_effector_info.color_add.b);
+	if (sscanf(pSettings->r_string(ppi_section, "color_base"), "%f,%f,%f",
+		&m_scan_effector_info.color_base.r,
+		&m_scan_effector_info.color_base.g,
+		&m_scan_effector_info.color_base.b) != 3) {
+		Msg("! Error read color_base from section: %s", ppi_section);
+	}
+
+	if (sscanf(pSettings->r_string(ppi_section, "color_gray"), "%f,%f,%f",
+		&m_scan_effector_info.color_gray.r,
+		&m_scan_effector_info.color_gray.g,
+		&m_scan_effector_info.color_gray.b) != 3) {
+		Msg("! Error read color_gray from section: %s", ppi_section);
+	}
+
+	if (sscanf(pSettings->r_string(ppi_section, "color_add"), "%f,%f,%f",
+		&m_scan_effector_info.color_add.r,
+		&m_scan_effector_info.color_add.g,
+		&m_scan_effector_info.color_add.b) != 3) {
+		Msg("! Error read color_add from section: %s", ppi_section);
+	}
 
 	m_scan_effector_time			= pSettings->r_float(ppi_section,"time");
 	m_scan_effector_time_attack		= pSettings->r_float(ppi_section,"time_attack");
 	m_scan_effector_time_release	= pSettings->r_float(ppi_section,"time_release");
 
 	m_scan_sound.create		(pSettings->r_string(section,"flame_scan_sound"), st_Effect,SOUND_TYPE_WORLD);
-	//-----------------------------------------------------------------------------------------
 
 	m_state_scanning	= false;
 	m_scan_next_time	= 0;
@@ -136,7 +190,6 @@ struct remove_predicate {
 	}
 };
 
-
 void CPolterFlame::update_schedule()
 {
 	inherited::update_schedule();
@@ -158,14 +211,14 @@ void CPolterFlame::update_schedule()
 				// check if we need test hit to enemy
 				if (elem->time_last_hit + m_hit_delay < time()) {
 					// test hit
-					collide::rq_result rq;
+					collide::rq_result rq{};
 					if (Level().ObjectSpace.RayPick(elem->position, elem->target_dir, m_length, collide::rqtBoth, rq, nullptr)) {
 						if ((rq.O == elem->target_object) && (rq.range < m_length)) {
 							float		hit_value;
 							hit_value	= m_hit_value - m_hit_value * rq.range / m_length;
 
-							NET_Packet			P;
-							SHit				HS;
+							NET_Packet			P{};
+							SHit				HS{};
 							HS.GenHeader		(GE_HIT, elem->target_object->ID());	//					u_EventGen		(P,GE_HIT, element->target_object->ID());
 							HS.whoID			= (m_object->ID());						//					P.w_u16			(ID());
 							HS.weaponID			= (m_object->ID());						//					P.w_u16			(ID());
@@ -249,22 +302,18 @@ void CPolterFlame::on_die()
 	if (m_scan_sound._feedback()) m_scan_sound.stop();
 }
 
-
-
-#define FIND_POINT_ATTEMPT_COUNT	5
-
 bool CPolterFlame::get_valid_flame_position(const CObject *target_object, Fvector &res_pos)
 {
 	const CGameObject *Obj = smart_cast<const CGameObject *>(target_object);
 	if (!Obj) return (false);
 
-	Fvector dir;
-	float h,p;
+	Fvector dir{};
+	float h{}, p{};
 
-	Fvector vertex_position;
-	Fvector new_pos;
+	Fvector vertex_position{};
+	Fvector new_pos{};
 
-	for (u32 i=0; i<FIND_POINT_ATTEMPT_COUNT; i++) {
+	for (u32 i=0; i< EntityDefinitions::CPoltergeistBase::FIND_POINT_ATTEMPT_COUNT; i++) {
 		
 		target_object->Direction().getHP(h,p);
 		h = Random.randF(0, PI_MUL_2);

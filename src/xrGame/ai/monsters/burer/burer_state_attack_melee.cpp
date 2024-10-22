@@ -8,17 +8,20 @@
 
 #include "../control_animation_base.h"
 
-#define MIN_DIST_MELEE_ATTACK	5.f
-#define MAX_DIST_MELEE_ATTACK	9.f
-
-CStateBurerAttackMelee::CStateBurerAttackMelee(CBaseMonster* obj) : inherited(obj)
+CStateBurerAttackMelee::CStateBurerAttackMelee(CBaseMonster* object) : inherited(object)
 {
+
+}
+
+CStateBurerAttackMelee::~CStateBurerAttackMelee()
+{
+
 }
 
 bool CStateBurerAttackMelee::check_start_conditions()
 {
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
-	if (dist > MIN_DIST_MELEE_ATTACK) return false;
+	if (dist > EntityDefinitions::CBurerBase::MIN_DIST_MELEE_ATTACK) return false;
 
 	return true;
 }
@@ -26,8 +29,7 @@ bool CStateBurerAttackMelee::check_start_conditions()
 bool CStateBurerAttackMelee::check_completion()
 {
 	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
-	if (dist < MAX_DIST_MELEE_ATTACK) return false;
+	if (dist < EntityDefinitions::CBurerBase::MAX_DIST_MELEE_ATTACK) return false;
 
 	return true;
-
 }

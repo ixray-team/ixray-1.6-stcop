@@ -14,24 +14,24 @@ void CStateMonsterPanicRun::initialize()
 {
 	inherited::initialize();
 
-	this->object->path().prepare_builder();
+	object->path().prepare_builder();
 }
 
 
 void CStateMonsterPanicRun::execute()
 {
-	this->object->set_action(ACT_RUN);
-	this->object->set_state_sound(MonsterSound::eMonsterSoundPanic);
-	this->object->anim().accel_activate(eAT_Aggressive);
-	this->object->anim().accel_set_braking(false);
-	this->object->path().set_retreat_from_point(this->object->EnemyMan.get_enemy_position());
-	this->object->path().set_generic_parameters();
+	object->set_action(ACT_RUN);
+	object->set_state_sound(MonsterSound::eMonsterSoundPanic);
+	object->anim().accel_activate(eAT_Aggressive);
+	object->anim().accel_set_braking(false);
+	object->path().set_retreat_from_point(object->EnemyMan.get_enemy_position());
+	object->path().set_generic_parameters();
 }
 
 bool CStateMonsterPanicRun::check_completion()
 {
-	float dist_to_enemy = this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position());
-	u32 time_delta = Device.dwTimeGlobal - this->object->EnemyMan.get_enemy_time_last_seen();
+	float dist_to_enemy = object->Position().distance_to(object->EnemyMan.get_enemy_position());
+	u32 time_delta = Device.dwTimeGlobal - object->EnemyMan.get_enemy_time_last_seen();
 
 	if (dist_to_enemy < MIN_DIST_TO_ENEMY)  return false;
 	if (time_delta < MIN_UNSEEN_TIME)	return false;

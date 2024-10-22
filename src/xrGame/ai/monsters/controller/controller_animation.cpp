@@ -8,18 +8,28 @@
 #include "controller_direction.h"
 #include "../monster_velocity_space.h"
 
-const float	_pmt_psy_attack_time  = 0.5f;
+CControllerAnimation::CControllerAnimation()
+{
+
+}
+
+CControllerAnimation::~CControllerAnimation()
+{
+
+}
 
 void CControllerAnimation::reinit()
 {
-	m_controller			= smart_cast<CControllerBase *>(m_object);
+	pControllerBase = smart_cast<CControllerBase *>(m_object);
 	
 	load					();
 	inherited::reinit		();
 
 	set_body_state			(eTorsoIdle, eLegsTypeStand);
 
-	m_man->animation().add_anim_event(m_torso[eTorsoPsyAttack], _pmt_psy_attack_time, CControlAnimation::eAnimationHit);
+	m_man->animation().add_anim_event(m_torso[eTorsoPsyAttack], 
+		EntityDefinitions::CControllerBase::PMT_PSY_ATTACK_TIME, CControlAnimation::eAnimationHit);
+
 	m_wait_torso_anim_end	= false;
 
 }
@@ -68,7 +78,7 @@ void CControllerAnimation::on_event(ControlCom::EEventType type, ControlCom::IEv
 				SAnimationSignalEventData *event_data = (SAnimationSignalEventData *)data;
 				if (event_data->event_id == CControlAnimation::eAnimationHit) {
 					if (event_data->motion == m_torso[eTorsoPsyAttack])
-						m_controller->psy_fire();
+						pControllerBase->psy_fire();
 					else
 						check_hit(event_data->motion,event_data->time_perc);	break;
 				}
@@ -78,22 +88,7 @@ void CControllerAnimation::on_event(ControlCom::EEventType type, ControlCom::IEv
 
 void CControllerAnimation::update_frame()
 {
-	
 	inherited::update_frame();
-	return;
-
-	
-	//if (m_controller->m_mental_state == CControllerBase::eStateIdle) {
-	//	inherited::update_frame();
-	//	return;
-	//}
-	//
-	//if (is_moving()) set_path_direction();
-	//
-	//select_legs_animation	();	
-	//select_torso_animation	();	
-	//
-	//select_velocity			();
 }
 
 void CControllerAnimation::load()
@@ -151,13 +146,13 @@ void CControllerAnimation::load()
 
 void CControllerAnimation::add_path_rotation(ELegsActionType action, float angle, ELegsActionType type)
 {
-	SPathRotations	rot;
+	SPathRotations	rot{};
 	rot.angle		= angle;
 	rot.legs_motion	= type;
 
 	PATH_ROTATIONS_MAP_IT map_it = m_path_rotations.find(action);
 	if (map_it == m_path_rotations.end()) {
-		PATH_ROTATIONS_VEC vec;
+		PATH_ROTATIONS_VEC vec{};
 		vec.push_back(rot);
 		m_path_rotations.insert(std::make_pair(action, vec));
 	} else {
@@ -170,7 +165,7 @@ void CControllerAnimation::select_velocity()
 	if (m_current_legs_action == eLegsTypeRun) {
 		
 		// if we are moving, get yaw from path
-		float cur_yaw, target_yaw;
+		float cur_yaw{}, target_yaw{};
 		m_man->direction().get_heading(cur_yaw, target_yaw);
 		SPathRotations	path_rot = get_path_rotation(cur_yaw);
 		if ((path_rot.legs_motion == eLegsBackRun) ||
@@ -191,7 +186,7 @@ void CControllerAnimation::select_velocity()
 // and according to point it has to look at
 void CControllerAnimation::set_path_direction()
 {
-	float cur_yaw = Fvector().sub(m_controller->custom_dir().get_head_look_point(), m_object->Position()).getH();
+	float cur_yaw = Fvector().sub(pControllerBase->custom_dir().get_head_look_point(), m_object->Position()).getH();
 	cur_yaw = angle_normalize(-cur_yaw);
 
 	float target_yaw = m_man->path_builder().detail().direction().getH();
@@ -210,10 +205,10 @@ void CControllerAnimation::select_torso_animation()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	if (!ctrl_data) return;
 
-	MotionID target_motion;
+	MotionID target_motion{};
 
 	// check fire animation
-	if (m_controller->can_psy_fire()) {
+	if (pControllerBase->can_psy_fire()) {
 		target_motion			= m_torso[eTorsoPsyAttack];
 		m_wait_torso_anim_end	= true;
 	} else {
@@ -234,7 +229,7 @@ void CControllerAnimation::select_legs_animation()
 
 	if (is_moving()) {
 		// if we are moving, get yaw from path
-		float cur_yaw, target_yaw;
+		float cur_yaw{}, target_yaw{};
 		m_man->direction().get_heading(cur_yaw, target_yaw);
 
 		SPathRotations	path_rot = get_path_rotation(cur_yaw);
@@ -352,7 +347,7 @@ void CControllerAnimation::set_path_params()
 
 void CControllerAnimation::on_switch_controller()
 {
-	if (m_controller->m_mental_state == CControllerBase::eStateDanger) {
+	if (pControllerBase->m_mental_state == CControllerBase::eStateDanger) {
 		m_wait_torso_anim_end	= false;
 		set_body_state			(eTorsoIdle, eLegsTypeStand);
 

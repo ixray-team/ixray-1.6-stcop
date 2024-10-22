@@ -2,21 +2,24 @@
 #include "../state.h"
 
 class	CStateBurerAttackRunAround : public CState {
-	typedef CState	inherited;
+protected:
+	using inherited = CState;
 
 	Fvector				selected_point;
 	u32					time_started;
 
 	Fvector				dest_direction;
 
-	CBurerBase* m_pBurer;
+	CBurerBase* pBurerBase;
 
 public:
-						CStateBurerAttackRunAround	(CBaseMonster*obj);
-	virtual void		initialize					();
-	virtual void		execute						();
+						CStateBurerAttackRunAround	(CBaseMonster* object);
+						virtual ~CStateBurerAttackRunAround() override;
 
-	virtual bool		check_start_conditions		();
-	virtual bool		check_completion			();
-	virtual void		remove_links				(CObject* object_) { inherited::remove_links(object_);}
+	virtual void		initialize					() override;
+	virtual void		execute						() override;
+
+	virtual bool		check_start_conditions		() override;
+	virtual bool		check_completion			() override;
+	virtual void		remove_links				(CObject* object) override { inherited::remove_links(object);}
 };

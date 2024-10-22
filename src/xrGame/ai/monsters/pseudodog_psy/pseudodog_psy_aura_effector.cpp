@@ -1,4 +1,24 @@
 #include "stdafx.h"
+#include "../pseudodog/pseudodog.h"
+#include "../pseudodog_phantom/pseudodog_phantom.h"
+#include "pseudodog_psy_aura.h"
+#include "pseudodog_psy.h"
+#include "pseudodog_psy_aura_effector.h"
+#include "../../../actor.h"
+#include "../../../ActorEffector.h"
+#include "../../../actor_memory.h"
+#include "../../../visual_memory_manager.h"
+#include "../../../level.h"
+
+CPsyDogAura::CPsyDogAura(CBaseMonster* object)
+{
+	m_object = smart_cast<CPseudoPsyDogBase*>(object);
+}
+
+CPsyDogAura::~CPsyDogAura()
+{
+
+}
 
 void CPsyDogAura::reinit()
 {

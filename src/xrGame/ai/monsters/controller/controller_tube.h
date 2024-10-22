@@ -2,11 +2,15 @@
 #include "../state.h"
 
 class CStateControllerTube : public CState {
-	typedef CState		inherited;
-	CControllerBase* m_pController;
+protected:
+	using inherited = CState	;
+	CControllerBase* pControllerBase;
+
 public:
-	CStateControllerTube(CBaseMonster* obj);
-	virtual void		execute					();
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
+	CStateControllerTube(CBaseMonster* object);
+	virtual ~CStateControllerTube() override;
+
+	virtual void		execute					() override;
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
 };

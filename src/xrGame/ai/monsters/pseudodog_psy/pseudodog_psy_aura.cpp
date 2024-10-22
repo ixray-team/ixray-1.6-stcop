@@ -18,6 +18,11 @@ CPPEffectorPsyDogAura::CPPEffectorPsyDogAura(const SPPInfo &ppi, u32 time_to_fad
 
 }
 
+CPPEffectorPsyDogAura::~CPPEffectorPsyDogAura()
+{
+
+}
+
 void CPPEffectorPsyDogAura::switch_off()
 {
 	m_effector_state		= eStateFadeOut;		

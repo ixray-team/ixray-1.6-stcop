@@ -3,14 +3,15 @@
 
 class CustomBloodsuckerVampireApproach : public CState
 {
+protected:
 	using inherited = CState;
 
 public:
 	CustomBloodsuckerVampireApproach(CBloodsuckerBase* object);
-	virtual				~CustomBloodsuckerVampireApproach();
+	virtual				~CustomBloodsuckerVampireApproach() override;
 
-	virtual void		initialize();
-	virtual	void		execute();
-	virtual void		remove_links(CObject* object) { inherited::remove_links(object); }
+	virtual void		initialize() override;
+	virtual	void		execute() override;
+	virtual void		remove_links(CObject* object) override { inherited::remove_links(object); }
 };
 

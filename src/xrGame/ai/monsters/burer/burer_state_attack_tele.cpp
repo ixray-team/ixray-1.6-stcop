@@ -16,14 +16,16 @@
 
 #include "../../../level.h"
 
-#define GOOD_DISTANCE_FOR_TELE	15.f
-#define MAX_TIME_CHECK_FAILURE	6000
-
-CStateBurerAttackTele::CStateBurerAttackTele(CBaseMonster* obj) : inherited(obj)
+CStateBurerAttackTele::CStateBurerAttackTele(CBaseMonster* object) : inherited(object)
 {
 	m_anim_end_tick = 0;
 	m_last_grenade_scan = 0;
-	m_pBurer = smart_cast<CBurerBase*>(obj);
+	pBurerBase = smart_cast<CBurerBase*>(object);
+}
+
+CStateBurerAttackTele::~CStateBurerAttackTele()
+{
+
 }
 
 void CStateBurerAttackTele::initialize()
@@ -38,17 +40,17 @@ void CStateBurerAttackTele::initialize()
 	time_started = 0;
 	m_anim_end_tick = 0;
 	m_last_grenade_scan = 0;
-	m_initial_health = this->object->conditions().GetHealth();
-	m_end_tick = current_time() + this->m_pBurer->m_tele_max_time;
+	m_initial_health = object->conditions().GetHealth();
+	m_end_tick = current_time() + pBurerBase->m_tele_max_time;
 
 	// запретить взятие скриптом
-	this->object->set_script_capture(false);
+	object->set_script_capture(false);
 }
 
 void CStateBurerAttackTele::execute()
 {
 	HandleGrenades();
-	// 	if ( this->object->EnemyMan.see_enemy_now() )
+	// 	if ( object->EnemyMan.see_enemy_now() )
 	// 	{
 	// 		m_last_saw_enemy_tick					=	current_time();
 	// 	}
@@ -56,10 +58,10 @@ void CStateBurerAttackTele::execute()
 	switch (m_action)
 	{
 	case ACTION_TELE_STARTED:
-		this->object->anim().set_override_animation(eAnimTelekinesis, 0);
+		object->anim().set_override_animation(eAnimTelekinesis, 0);
 		if (!time_started)
 		{
-			float const time = this->object->anim().get_animation_length(eAnimTelekinesis, 0);
+			float const time = object->anim().get_animation_length(eAnimTelekinesis, 0);
 			m_anim_end_tick = current_time() + TTime(time * 1000);
 			time_started = Device.dwTimeGlobal;
 		}
@@ -73,22 +75,22 @@ void CStateBurerAttackTele::execute()
 		break;
 
 	case ACTION_TELE_CONTINUE:
-		this->object->anim().set_override_animation(eAnimTelekinesis, 1);
+		object->anim().set_override_animation(eAnimTelekinesis, 1);
 		ExecuteTeleContinue();
 		break;
 
 	case ACTION_TELE_FIRE:
 	{
-		this->object->anim().set_override_animation(eAnimTeleFire, 0);
+		object->anim().set_override_animation(eAnimTeleFire, 0);
 		ExecuteTeleFire();
-		float const time = this->object->anim().get_animation_length(eAnimTeleFire, 0);
+		float const time = object->anim().get_animation_length(eAnimTeleFire, 0);
 		m_anim_end_tick = current_time() + TTime(time * 1000);
 		m_action = ACTION_WAIT_FIRE_END;
 		break;
 	}
 
 	case ACTION_WAIT_FIRE_END:
-		this->object->anim().set_override_animation(eAnimTeleFire, 0);
+		object->anim().set_override_animation(eAnimTeleFire, 0);
 		if (current_time() > m_anim_end_tick)
 		{
 			if (IsActiveObjects())
@@ -105,18 +107,18 @@ void CStateBurerAttackTele::execute()
 		break;
 	}
 
-	this->m_pBurer->face_enemy();
+	pBurerBase->face_enemy();
 }
 
 void CStateBurerAttackTele::deactivate()
 {
 	tele_objects.clear();
 	// clear particles on active objects
-	if (this->m_pBurer->is_active())
+	if (pBurerBase->is_active())
 	{
-		for (u32 i = 0; i < this->m_pBurer->get_objects_total_count(); i++)
+		for (u32 i = 0; i < pBurerBase->get_objects_total_count(); i++)
 		{
-			CPhysicsShellHolder* cur_object = this->m_pBurer->get_object_by_index(i).get_object();
+			CPhysicsShellHolder* cur_object = pBurerBase->get_object_by_index(i).get_object();
 			if (!cur_object || !cur_object->m_pPhysicsShell || !cur_object->m_pPhysicsShell->isActive())
 			{
 				continue;
@@ -128,20 +130,20 @@ void CStateBurerAttackTele::deactivate()
 		}
 	}
 
-	for (u32 i = 0; i < this->m_pBurer->get_objects_total_count(); ++i)
+	for (u32 i = 0; i < pBurerBase->get_objects_total_count(); ++i)
 	{
-		CPhysicsShellHolder* const cur_object = this->m_pBurer->get_object_by_index(i).object;
+		CPhysicsShellHolder* const cur_object = pBurerBase->get_object_by_index(i).object;
 		if (!cur_object || !cur_object->m_pPhysicsShell || !cur_object->m_pPhysicsShell->isActive())
 		{
 			continue;
 		}
 
-		this->m_pBurer->StopTeleObjectParticle(cur_object);
+		pBurerBase->StopTeleObjectParticle(cur_object);
 	}
 
 	FireAllToEnemy();
-	this->m_pBurer->deactivate();
-	this->object->set_script_capture(true);
+	pBurerBase->deactivate();
+	object->set_script_capture(true);
 }
 
 void CStateBurerAttackTele::finalize()
@@ -163,19 +165,19 @@ bool CStateBurerAttackTele::check_start_conditions()
 
 bool CStateBurerAttackTele::check_completion()
 {
-	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
+	float dist = object->EnemyMan.get_enemy()->Position().distance_to(object->Position());
 
-	if (dist < this->m_pBurer->m_tele_min_distance)
+	if (dist < pBurerBase->m_tele_min_distance)
 	{
 		return									true;
 	}
 
-	if (dist > this->m_pBurer->m_tele_max_distance)
+	if (dist > pBurerBase->m_tele_max_distance)
 	{
 		return									true;
 	}
 
-	if (this->object->conditions().GetHealth() < m_initial_health)
+	if (object->conditions().GetHealth() < m_initial_health)
 	{
 		return									true;
 	}
@@ -197,7 +199,7 @@ bool CStateBurerAttackTele::check_completion()
 
 void CStateBurerAttackTele::FindFreeObjects(xr_vector<CObject*>& tpObjects, const Fvector& pos)
 {
-	Level().ObjectSpace.GetNearest(tpObjects, pos, this->m_pBurer->m_tele_find_radius, NULL);
+	Level().ObjectSpace.GetNearest(tpObjects, pos, pBurerBase->m_tele_find_radius, NULL);
 
 	for (u32 i = 0; i < tpObjects.size(); i++) {
 		CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(tpObjects[i]);
@@ -210,10 +212,10 @@ void CStateBurerAttackTele::FindFreeObjects(xr_vector<CObject*>& tpObjects, cons
 			!obj->PPhysicsShell()->isActive() ||
 			custom_monster ||
 			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
-			(obj->m_pPhysicsShell->getMass() < this->m_pBurer->m_tele_object_min_mass) ||
-			(obj->m_pPhysicsShell->getMass() > this->m_pBurer->m_tele_object_max_mass) ||
-			(obj == this->object) ||
-			this->m_pBurer->is_active_object(obj) ||
+			(obj->m_pPhysicsShell->getMass() < pBurerBase->m_tele_object_min_mass) ||
+			(obj->m_pPhysicsShell->getMass() > pBurerBase->m_tele_object_max_mass) ||
+			(obj == object) ||
+			pBurerBase->is_active_object(obj) ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
 
 		tele_objects.push_back(obj);
@@ -228,19 +230,19 @@ void CStateBurerAttackTele::FindObjects()
 	// получить список объектов вокруг врага
 	m_nearest.clear();
 	m_nearest.reserve(res_size);
-	FindFreeObjects(m_nearest, this->object->EnemyMan.get_enemy()->Position());
+	FindFreeObjects(m_nearest, object->EnemyMan.get_enemy()->Position());
 
 	// получить список объектов вокруг монстра
-	FindFreeObjects(m_nearest, this->object->Position());
+	FindFreeObjects(m_nearest, object->Position());
 
 	// получить список объектов между монстром и врагом
-	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
-	Fvector dir;
-	dir.sub(this->object->EnemyMan.get_enemy()->Position(), this->object->Position());
+	float dist = object->EnemyMan.get_enemy()->Position().distance_to(object->Position());
+	Fvector dir{};
+	dir.sub(object->EnemyMan.get_enemy()->Position(), object->Position());
 	dir.normalize();
 
-	Fvector pos;
-	pos.mad(this->object->Position(), dir, dist / 2.f);
+	Fvector pos{};
+	pos.mad(object->Position(), dir, dist / 2.f);
 	FindFreeObjects(m_nearest, pos);
 
 
@@ -256,34 +258,34 @@ void CStateBurerAttackTele::FindObjects()
 
 void CStateBurerAttackTele::FireAllToEnemy()
 {
-	if (!this->m_pBurer->is_active())
+	if (!pBurerBase->is_active())
 	{
 		return;
 	}
 
-	if (!this->object->EnemyMan.get_enemy())
+	if (!object->EnemyMan.get_enemy())
 	{
 		return;
 	}
 
-	Fvector enemy_pos;
-	enemy_pos = get_head_position(const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy()));
+	Fvector enemy_pos{};
+	enemy_pos = get_head_position(const_cast<CEntityAlive*>(object->EnemyMan.get_enemy()));
 
-	for (u32 i = 0; i < this->m_pBurer->get_objects_count(); ++i)
+	for (u32 i = 0; i < pBurerBase->get_objects_count(); ++i)
 	{
-		u32 const prev_num_objects = this->m_pBurer->get_objects_count();
+		u32 const prev_num_objects = pBurerBase->get_objects_count();
 
-		CPhysicsShellHolder* const cur_object = this->m_pBurer->get_object_by_index(i).object;
+		CPhysicsShellHolder* const cur_object = pBurerBase->get_object_by_index(i).object;
 		if (!cur_object)
 		{
 			continue;
 		}
 		float const dist_to_enemy = cur_object->Position().distance_to(enemy_pos);
-		float const	fire_time = dist_to_enemy / this->m_pBurer->m_tele_fly_velocity;
+		float const	fire_time = dist_to_enemy / pBurerBase->m_tele_fly_velocity;
 
-		this->m_pBurer->fire_t(cur_object, enemy_pos, fire_time);
+		pBurerBase->fire_t(cur_object, enemy_pos, fire_time);
 
-		u32 const new_num_objects = this->m_pBurer->get_objects_count();
+		u32 const new_num_objects = pBurerBase->get_objects_count();
 		if (new_num_objects < prev_num_objects)
 		{
 			VERIFY(new_num_objects == prev_num_objects - 1);
@@ -291,22 +293,22 @@ void CStateBurerAttackTele::FireAllToEnemy()
 		}
 	}
 
-	this->object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
+	object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
 }
 
 void CStateBurerAttackTele::ExecuteTeleContinue()
 {
-	if (time_started + this->m_pBurer->m_tele_time_to_hold > Device.dwTimeGlobal) return;
+	if (time_started + pBurerBase->m_tele_time_to_hold > Device.dwTimeGlobal) return;
 
-	if (!this->object->EnemyMan.see_enemy_now()) return;
+	if (!object->EnemyMan.see_enemy_now()) return;
 
 	// найти объект для атаки
 	bool object_found = false;
-	CTelekineticObject tele_object;
+	CTelekineticObject tele_object{};
 
 	u32 i = 0;
-	while (i < this->m_pBurer->get_objects_count()) {
-		tele_object = this->m_pBurer->get_object_by_index(i);
+	while (i < pBurerBase->get_objects_count()) {
+		tele_object = pBurerBase->get_object_by_index(i);
 
 		if ((tele_object.get_state() == TS_Keep) && (tele_object.time_keep_started + 1500 < Device.dwTimeGlobal)) {
 
@@ -322,32 +324,29 @@ void CStateBurerAttackTele::ExecuteTeleContinue()
 		selected_object = tele_object.get_object();
 	}
 	else {
-		if (!IsActiveObjects() || (time_started + MAX_TIME_CHECK_FAILURE < Device.dwTimeGlobal)) {
+		if (!IsActiveObjects() || (time_started + EntityDefinitions::CBurerBase::MAX_TIME_CHECK_FAILURE < Device.dwTimeGlobal)) {
 			m_action = ACTION_COMPLETED;
 		}
 	}
 }
 
-#define HEAD_OFFSET_INDOOR	1.f
-#define HEAD_OFFSET_OUTDOOR 5.f
-
 void CStateBurerAttackTele::ExecuteTeleFire()
 {
-	Fvector enemy_pos;
-	enemy_pos = get_head_position(const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy()));
+	Fvector enemy_pos{};
+	enemy_pos = get_head_position(const_cast<CEntityAlive*>(object->EnemyMan.get_enemy()));
 
 	float const dist_to_enemy = selected_object->Position().distance_to(enemy_pos);
-	float const	fire_time = dist_to_enemy / this->m_pBurer->m_tele_fly_velocity;
+	float const	fire_time = dist_to_enemy / pBurerBase->m_tele_fly_velocity;
 
-	this->m_pBurer->fire_t(selected_object, enemy_pos, fire_time);
+	pBurerBase->fire_t(selected_object, enemy_pos, fire_time);
 
-	this->m_pBurer->StopTeleObjectParticle(selected_object);
-	this->object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
+	pBurerBase->StopTeleObjectParticle(selected_object);
+	object->sound().play(CBurerBase::eMonsterSoundTeleAttack);
 }
 
 bool CStateBurerAttackTele::IsActiveObjects()
 {
-	return (this->m_pBurer->get_objects_count() > 0);
+	return (pBurerBase->get_objects_count() > 0);
 }
 
 bool CStateBurerAttackTele::CheckTeleStart()
@@ -356,9 +355,9 @@ bool CStateBurerAttackTele::CheckTeleStart()
 	if (IsActiveObjects()) return false;
 
 	// проверить дистанцию до врага
-	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
-	if (dist < this->m_pBurer->m_tele_min_distance) return false;
-	if (dist > this->m_pBurer->m_tele_max_distance) return false;
+	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
+	if (dist < pBurerBase->m_tele_min_distance) return false;
+	if (dist > pBurerBase->m_tele_max_distance) return false;
 
 	// найти телекинетические объекты
 	FindObjects();
@@ -385,7 +384,6 @@ public:
 
 	bool operator()	 (const CGameObject* tpObject1, const CGameObject* tpObject2) const
 	{
-
 		float dist1 = monster_pos.distance_to(tpObject1->Position());
 		float dist2 = enemy_pos.distance_to(tpObject2->Position());
 		float dist3 = enemy_pos.distance_to(monster_pos);
@@ -415,7 +413,7 @@ public:
 
 void CStateBurerAttackTele::SelectObjects()
 {
-	std::sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(this->object->Position(), this->object->EnemyMan.get_enemy()->Position()));
+	std::sort(tele_objects.begin(), tele_objects.end(), best_object_predicate2(object->Position(), object->EnemyMan.get_enemy()->Position()));
 
 	// выбрать объект
 	for (u32 i = 0; i < tele_objects.size(); ++i)
@@ -424,30 +422,30 @@ void CStateBurerAttackTele::SelectObjects()
 
 		// применить телекинез на объект
 
-		float				height = this->m_pBurer->m_tele_object_height;
+		float				height = pBurerBase->m_tele_object_height;
 
-		if (this->object->m_monster_type == CBaseMonster::eMonsterTypeIndoor)
+		if (object->m_monster_type == CBaseMonster::eMonsterTypeIndoor)
 		{
 			height *= 0.7f;
 		}
 
-		bool const rotate = this->object->m_monster_type != CBaseMonster::eMonsterTypeIndoor;
+		bool const rotate = object->m_monster_type != CBaseMonster::eMonsterTypeIndoor;
 
-		CTelekineticObject* tele_obj = this->m_pBurer->activate(obj,
-			this->m_pBurer->m_tele_raise_speed,
+		CTelekineticObject* tele_obj = pBurerBase->activate(obj,
+			pBurerBase->m_tele_raise_speed,
 			height,
 			10000,
 			rotate);
 
-		tele_obj->set_sound(this->m_pBurer->sound_tele_hold, this->m_pBurer->sound_tele_throw);
+		tele_obj->set_sound(pBurerBase->sound_tele_hold, pBurerBase->sound_tele_throw);
 
-		this->m_pBurer->StartTeleObjectParticle(obj);
+		pBurerBase->StartTeleObjectParticle(obj);
 
 		// удалить из списка
 		tele_objects[i] = tele_objects[tele_objects.size() - 1];
 		tele_objects.pop_back();
 
-		if (this->m_pBurer->get_objects_count() >= this->m_pBurer->m_tele_max_handled_objects)
+		if (pBurerBase->get_objects_count() >= pBurerBase->m_tele_max_handled_objects)
 		{
 			break;
 		}
@@ -456,7 +454,7 @@ void CStateBurerAttackTele::SelectObjects()
 
 void  CStateBurerAttackTele::OnGrenadeDestroyed(CGrenade* const grenade)
 {
-	this->m_pBurer->remove_links(grenade);
+	pBurerBase->remove_links(grenade);
 }
 
 void CStateBurerAttackTele::HandleGrenades()
@@ -467,7 +465,7 @@ void CStateBurerAttackTele::HandleGrenades()
 	}
 
 	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest(m_nearest, this->object->Position(), this->m_pBurer->m_tele_find_radius, NULL);
+	Level().ObjectSpace.GetNearest(m_nearest, object->Position(), pBurerBase->m_tele_find_radius, NULL);
 
 	for (u32 i = 0; i < m_nearest.size(); ++i)
 	{
@@ -476,7 +474,7 @@ void CStateBurerAttackTele::HandleGrenades()
 		if (!grenade ||
 			!grenade->PPhysicsShell() ||
 			!grenade->PPhysicsShell()->isActive() ||
-			this->m_pBurer->is_active_object(grenade) ||
+			pBurerBase->is_active_object(grenade) ||
 			!grenade->m_pPhysicsShell->get_ApplyByGravity())
 		{
 			continue;
@@ -488,11 +486,11 @@ void CStateBurerAttackTele::HandleGrenades()
 		float const height = 2.5f;
 		bool  const rotate = false;
 
-		CTelekineticObject* tele_obj = this->m_pBurer->activate(grenade, 3.f, height, 10000, rotate);
-		tele_obj->set_sound(this->m_pBurer->sound_tele_hold, this->m_pBurer->sound_tele_throw);
-		this->m_pBurer->StartTeleObjectParticle(grenade);
+		CTelekineticObject* tele_obj = pBurerBase->activate(grenade, 3.f, height, 10000, rotate);
+		tele_obj->set_sound(pBurerBase->sound_tele_hold, pBurerBase->sound_tele_throw);
+		pBurerBase->StartTeleObjectParticle(grenade);
 
-		if (this->m_pBurer->get_objects_count() >= this->m_pBurer->m_tele_max_handled_objects + 1)
+		if (pBurerBase->get_objects_count() >= pBurerBase->m_tele_max_handled_objects + 1)
 		{
 			break;
 		}

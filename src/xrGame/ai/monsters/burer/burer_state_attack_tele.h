@@ -3,7 +3,8 @@
 #include "../../../grenade.h"
 
 class CStateBurerAttackTele : public CState {
-	typedef CState inherited;	
+protected:
+	using inherited = CState;
 
 	xr_vector<CPhysicsShellHolder *>	tele_objects;
 	CPhysicsShellHolder					*selected_object;
@@ -11,7 +12,7 @@ class CStateBurerAttackTele : public CState {
 	
 	u32									time_started;
 
-	CBurerBase* m_pBurer;
+	CBurerBase* pBurerBase;
 
 	enum {
 		ACTION_TELE_STARTED,
@@ -22,17 +23,17 @@ class CStateBurerAttackTele : public CState {
 	} m_action;
 
 public:
-						CStateBurerAttackTele	(CBaseMonster*obj);
+						CStateBurerAttackTele	(CBaseMonster* object);
+						virtual ~CStateBurerAttackTele() override;
 
-	virtual	void		initialize				();
-	virtual	void		execute					();
-	virtual void		finalize				();
-	virtual void		critical_finalize		();
-	virtual void		remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual	void		initialize				() override;
+	virtual	void		execute					() override;
+	virtual void		finalize				() override;
+	virtual void		critical_finalize		() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 
-	virtual bool		check_start_conditions	();
-	virtual bool		check_completion		();
-
+	virtual bool		check_start_conditions	() override;
+	virtual bool		check_completion		() override;
 
 private:
 			// Поиск объектов для телекинеза	

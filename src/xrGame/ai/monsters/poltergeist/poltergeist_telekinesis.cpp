@@ -1,15 +1,41 @@
 #include "stdafx.h"
 #include "poltergeist.h"
+#include "poltergeist_special_ability.h"
+#include "poltergeist_tele.h"
 #include "../../../PhysicsShellHolder.h"
 #include "../../../level.h"
 #include "../../../actor.h"
 #include "../../../../xrPhysics/icolisiondamageinfo.h"
-CPolterTele::CPolterTele(CPoltergeistBase *polter) : inherited (polter),m_pmt_object_collision_damage(0.5f)
+
+CPolterTele::CPolterTele(CPoltergeistBase *objcet) : inherited (objcet), m_pmt_object_collision_damage(0.5f)
 {
+	m_pmt_radius = {};
+	m_pmt_object_min_mass = {};
+	m_pmt_object_max_mass = {};
+	m_pmt_object_count = {};
+	m_pmt_time_to_hold = {};
+	m_pmt_time_to_wait = {};
+	m_pmt_time_to_wait_in_objects = {};
+	m_pmt_raise_time_to_wait_in_objects = {};
+	m_pmt_distance = {};
+	m_pmt_object_height = {};
+	m_pmt_time_object_keep = {};
+	m_pmt_raise_speed = {};
+	m_pmt_fly_velocity = {};
+
+	m_pmt_object_collision_damage = {};
+
+	m_sound_tele_hold = {};
+	m_sound_tele_throw = {};
+	m_state = {};
+
+	m_time = {};
+	m_time_next = {};
 }
 
 CPolterTele::~CPolterTele()
 {
+
 }
 
 void CPolterTele::load(LPCSTR section)
@@ -153,15 +179,13 @@ public:
 	};
 };
 
-//////////////////////////////////////////////////////////////////////////
-
 bool CPolterTele::trace_object(CObject *obj, const Fvector &target)
 {
-	Fvector			trace_from;
+	Fvector			trace_from{};
 	obj->Center		(trace_from);
 	
-	Fvector			dir;
-	float			range;
+	Fvector			dir{};
+	float			range{};
 	dir.sub			(target, trace_from);
 	
 	range			= dir.magnitude();
@@ -209,7 +233,7 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 bool CPolterTele::tele_raise_objects()
 {
 	// find objects near actor
-	xr_vector<CObject*>		tele_objects;
+	xr_vector<CObject*>		tele_objects{};
 	tele_objects.reserve	(20);
 
 	// получить список объектов вокруг врага
@@ -220,7 +244,7 @@ bool CPolterTele::tele_raise_objects()
 
 	// получить список объектов между монстром и врагом
 	float dist			= Actor()->Position().distance_to(m_object->Position());
-	Fvector dir;
+	Fvector dir{};
 	dir.sub				(Actor()->Position(), m_object->Position());
 	dir.normalize		();
 
@@ -240,19 +264,6 @@ bool CPolterTele::tele_raise_objects()
 		tele_objects.end()
 	);
 
-	// оставить необходимое количество объектов
-	//if (tele_objects.size() > m_pmt_tele_object_count) tele_objects.resize	(m_pmt_tele_object_count);
-
-	//// активировать
-	//for (u32 i=0; i<tele_objects.size(); i++) {
-	//	CPhysicsShellHolder *obj = smart_cast<CPhysicsShellHolder *>(tele_objects[i]);
-
-	//	// применить телекинез на объект
-	//	bool	rotate = false;
-
-	//	CTelekinesis::activate		(obj, m_pmt_tele_raise_speed, m_pmt_tele_object_height, m_pmt_tele_time_object_keep, rotate);
-	//}
-
 	if (!tele_objects.empty()) {
 		CPhysicsShellHolder *obj = smart_cast<CPhysicsShellHolder *>(tele_objects[0]);
 
@@ -267,13 +278,13 @@ bool CPolterTele::tele_raise_objects()
 
 	return false;
 }
+
 struct SCollisionHitCallback:
 	public ICollisionHitCallback
-
 {
 //	CollisionHitCallbackFun				*m_collision_hit_callback																																						;
-	CPhysicsShellHolder *m_object;
-	float m_pmt_object_collision_damage;
+	CPhysicsShellHolder* m_object{};
+	float m_pmt_object_collision_damage{};
 	SCollisionHitCallback( CPhysicsShellHolder *object, float pmt_object_collision_damage ):
 	m_object(object), m_pmt_object_collision_damage( pmt_object_collision_damage )
 	{

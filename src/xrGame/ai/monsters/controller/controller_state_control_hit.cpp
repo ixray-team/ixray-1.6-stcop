@@ -11,20 +11,14 @@
 
 #include "sound_player.h"
 
-#define GOOD_DISTANCE_FOR_CONTROL_HIT	8.f
-#define CONTROL_PREPARE_TIME			2900
-
-
-CStateControlAttack::CStateControlAttack(CBaseMonster* obj) : inherited(obj)
+CStateControlAttack::CStateControlAttack(CBaseMonster* object) : inherited(object)
 {
-	m_pController = smart_cast<CControllerBase*>(obj);
+	pControllerBase = smart_cast<CControllerBase*>(object);
 }
-
 
 CStateControlAttack::~CStateControlAttack()
 {
 }
-
 
 void CStateControlAttack::initialize()
 {
@@ -33,7 +27,6 @@ void CStateControlAttack::initialize()
 	m_action = eActionPrepare;
 	time_control_started = 0;
 }
-
 
 void CStateControlAttack::execute()
 {
@@ -67,11 +60,10 @@ void CStateControlAttack::execute()
 	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
 }
 
-
 bool CStateControlAttack::check_start_conditions()
 {
 	float dist = object->Position().distance_to(object->EnemyMan.get_enemy_position());
-	if (dist < GOOD_DISTANCE_FOR_CONTROL_HIT) return false;
+	if (dist < EntityDefinitions::CControllerBase::GOOD_DISTANCE_FOR_CONTROL_HIT) return false;
 
 	if (!object->EnemyMan.see_enemy_now()) return false;
 
@@ -79,51 +71,40 @@ bool CStateControlAttack::check_start_conditions()
 	return true;
 }
 
-
 bool CStateControlAttack::check_completion()
 {
 	return (m_action == eActionCompleted);
 }
-
 
 void CStateControlAttack::finalize()
 {
 	inherited::finalize();
 }
 
-
 void CStateControlAttack::critical_finalize()
 {
 	inherited::critical_finalize();
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Processing
-//////////////////////////////////////////////////////////////////////////
-
-
-
 void CStateControlAttack::execute_hit_prepare()
 {
-	m_pController->com_man().ta_activate(m_pController->anim_triple_control);
-	m_pController->play_control_sound_start();
+	pControllerBase->com_man().ta_activate(pControllerBase->anim_triple_control);
+	pControllerBase->play_control_sound_start();
 
 	time_control_started = Device.dwTimeGlobal;
 }
 
-
 void CStateControlAttack::execute_hit_continue()
 {
 	// проверить на грави удар
-	if (time_control_started + CONTROL_PREPARE_TIME < Device.dwTimeGlobal) {
+	if (time_control_started + EntityDefinitions::CControllerBase::CONTROL_PREPARE_TIME < Device.dwTimeGlobal) {
 		m_action = eActionFire;
 	}
 }
-
 
 void CStateControlAttack::execute_hit_fire()
 {
 	object->com_man().ta_pointbreak();
 
-	if (object->EnemyMan.see_enemy_now()) m_pController->control_hit();
+	if (object->EnemyMan.see_enemy_now()) pControllerBase->control_hit();
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../ai_entity_definitions.h"
 #include "../BaseMonster/base_monster.h"
 #include "../telekinesis.h"
 #include "../anim_triple.h"
@@ -11,8 +12,8 @@ class CBurerFastGravi;
 class CBurerBase :	public CBaseMonster,
 				public CTelekinesis 
 {
-
-	typedef		CBaseMonster				inherited;
+protected:
+	using		inherited = CBaseMonster			;
 
 private:
 	xr_vector<CObject*>	m_nearest;
@@ -24,7 +25,7 @@ public:
 				u32		time_last_scan;
 	
 
-	typedef		CTelekinesis				TTelekinesis;
+				using		TTelekinesis = CTelekinesis				;
 
 	struct	GraviObject {
 		bool		active;
@@ -39,8 +40,13 @@ public:
 		GraviObject() {
 			active = false;
 			enemy = 0;
+
+			cur_pos = {};
+			target_pos = {};
+			from_pos = {};
+
+			time_last_update = {};
 		}
-		
 		
 		void		activate(const CEntityAlive *e, const Fvector &cp, const Fvector &tp) {
 			active				= true;
@@ -123,23 +129,23 @@ public:
 
 public:
 					CBurerBase				();
-	virtual			~CBurerBase				();	
+	virtual			~CBurerBase				() override;	
 
 
-	virtual void	reinit				();
-	virtual void	reload				(LPCSTR section);
+	virtual void	reinit				() override;
+	virtual void	reload				(LPCSTR section) override;
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	PostLoad			(LPCSTR section);
+	virtual void	Load				(LPCSTR section) override;
+	virtual void	PostLoad			(LPCSTR section) override;
 
-	virtual void	net_Destroy			();
-	virtual void	net_Relcase			(CObject *O);
-	virtual	void	shedule_Update		(u32 dt);
-	virtual void	UpdateCL			();
-	virtual	void	Hit					(SHit* pHDS);
-	virtual void	Die					(CObject* who);
-			void	ProcessTurn			();
-	virtual void	CheckSpecParams		(u32 spec_params);
+	virtual void	net_Destroy			() override;
+	virtual void	net_Relcase			(CObject *O) override;
+	virtual	void	shedule_Update		(u32 dt) override;
+	virtual void	UpdateCL			() override;
+	virtual	void	Hit					(SHit* pHDS) override;
+	virtual void	Die					(CObject* who) override;
+
+	virtual void	CheckSpecParams		(u32 spec_params) override;
 
 			void	UpdateGraviObject	();
 
@@ -154,11 +160,11 @@ public:
 
 			bool	need_shotmark () const { return !m_shield_active; }
 
-	virtual bool	ability_distant_feel() {return true;}
-	virtual	char*	get_monster_class_name () { return (char*) "burer"; }
+	virtual bool	ability_distant_feel() override {return true;}
+	virtual	char*	get_monster_class_name () override { return (char*) "burer"; }
 
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 			void			set_force_gravi_attack (bool force_gravi) { m_force_gravi_attack = force_gravi; }

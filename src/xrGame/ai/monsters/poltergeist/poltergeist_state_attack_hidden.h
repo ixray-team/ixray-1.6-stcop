@@ -4,19 +4,19 @@
 
 class	CStatePoltergeistAttackHidden : public CState {
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*;
 
 	CPoltergeistBase* m_pPoltergeist;
 
 public:
-					CStatePoltergeistAttackHidden	(CBaseMonster*obj);
-	virtual			~CStatePoltergeistAttackHidden	() {}
+					CStatePoltergeistAttackHidden	(CBaseMonster* object);
+					virtual			~CStatePoltergeistAttackHidden() override;
 
 
-	virtual void	initialize				();
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object) override { inherited::remove_links(object); }
 
 			bool	check_home_point		();
 

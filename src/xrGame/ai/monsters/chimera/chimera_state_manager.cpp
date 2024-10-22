@@ -19,21 +19,22 @@
 
 #include "chimera_attack_state.h"
 
-CStateManagerChimera::CStateManagerChimera(CChimeraBase* obj) : inherited(obj)
+CChimeraBaseStateManager::CChimeraBaseStateManager(CChimeraBase* object) : inherited(object)
 {
-    add_state(eStateRest, new CStateMonsterRest(obj));
-    add_state(eStatePanic, new CStateMonsterPanic(obj));
-    add_state(eStateAttack, new ChimeraAttackState(obj));
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateAttack, new ChimeraAttackState(object));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
 }
 
-CStateManagerChimera::~CStateManagerChimera()
+CChimeraBaseStateManager::~CChimeraBaseStateManager()
 {
+
 }
 
-void CStateManagerChimera::execute()
+void CChimeraBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 

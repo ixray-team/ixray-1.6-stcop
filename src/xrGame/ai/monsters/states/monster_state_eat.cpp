@@ -15,20 +15,17 @@
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../PHMovementControl.h"
 #include "../../../CharacterPhysicsSupport.h"
-#ifdef _DEBUG
-#	include "../../../level.h"
-#	include "../../../level_debug.h"
-#endif
+
 
 CStateMonsterEat::CStateMonsterEat(CBaseMonster* obj) : inherited(obj)
 {
-    this->add_state(eStateEat_CorpseApproachRun, new CStateMonsterMoveToPoint(obj));
-    this->add_state(eStateEat_CorpseApproachWalk, new CStateMonsterMoveToPoint(obj));
-    this->add_state(eStateEat_CheckCorpse, new CStateMonsterCustomAction(obj));
-    this->add_state(eStateEat_Eat, new CStateMonsterEating(obj));
-    this->add_state(eStateEat_WalkAway, new CStateMonsterHideFromPoint(obj));
-    this->add_state(eStateEat_Rest, new CStateMonsterCustomAction(obj));
-    this->add_state(eStateEat_Drag, new CStateMonsterDrag(obj));
+    add_state(eStateEat_CorpseApproachRun, new CStateMonsterMoveToPoint(obj));
+    add_state(eStateEat_CorpseApproachWalk, new CStateMonsterMoveToPoint(obj));
+    add_state(eStateEat_CheckCorpse, new CStateMonsterCustomAction(obj));
+    add_state(eStateEat_Eat, new CStateMonsterEating(obj));
+    add_state(eStateEat_WalkAway, new CStateMonsterHideFromPoint(obj));
+    add_state(eStateEat_Rest, new CStateMonsterCustomAction(obj));
+    add_state(eStateEat_Drag, new CStateMonsterDrag(obj));
 }
 
 
@@ -49,9 +46,9 @@ void CStateMonsterEat::reinit()
 void CStateMonsterEat::initialize()
 {
 	inherited::initialize();
-	corpse = this->object->CorpseMan.get_corpse();
+	corpse = object->CorpseMan.get_corpse();
 
-	monster_squad().get_squad(this->object)->lock_corpse(this->object->CorpseMan.get_corpse());
+	monster_squad().get_squad(object)->lock_corpse(object->CorpseMan.get_corpse());
 }
 
 
@@ -59,7 +56,7 @@ void CStateMonsterEat::finalize()
 {
 	inherited::finalize();
 
-	monster_squad().get_squad(this->object)->unlock_corpse(this->object->CorpseMan.get_corpse());
+	monster_squad().get_squad(object)->unlock_corpse(object->CorpseMan.get_corpse());
 }
 
 
@@ -67,75 +64,75 @@ void CStateMonsterEat::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	monster_squad().get_squad(this->object)->unlock_corpse(this->object->CorpseMan.get_corpse());
+	monster_squad().get_squad(object)->unlock_corpse(object->CorpseMan.get_corpse());
 }
 
 
 
 void CStateMonsterEat::reselect_state()
 {
-	if (this->prev_substate == u32(-1)) { this->select_state(eStateEat_CorpseApproachRun); return; }
-	if (this->prev_substate == eStateEat_CorpseApproachRun) { this->select_state(eStateEat_CheckCorpse); return; }
+	if (prev_substate == u32(-1)) { select_state(eStateEat_CorpseApproachRun); return; }
+	if (prev_substate == eStateEat_CorpseApproachRun) { select_state(eStateEat_CheckCorpse); return; }
 
-	if (this->prev_substate == eStateEat_CheckCorpse) {
-		if (this->object->ability_can_drag())
+	if (prev_substate == eStateEat_CheckCorpse) {
+		if (object->ability_can_drag())
 		{
-			this->select_state(eStateEat_Drag);
+			select_state(eStateEat_Drag);
 		}
 		else
 		{
-			if (this->get_state(eStateEat_Eat)->check_start_conditions())
-				this->select_state(eStateEat_Eat);
+			if (get_state(eStateEat_Eat)->check_start_conditions())
+				select_state(eStateEat_Eat);
 			else
-				this->select_state(eStateEat_CorpseApproachWalk);
+				select_state(eStateEat_CorpseApproachWalk);
 		}
 		return;
 	}
 
-	if (this->prev_substate == eStateEat_Drag) {
-		if (this->get_state(eStateEat_Eat)->check_start_conditions())
-			this->select_state(eStateEat_Eat);
+	if (prev_substate == eStateEat_Drag) {
+		if (get_state(eStateEat_Eat)->check_start_conditions())
+			select_state(eStateEat_Eat);
 		else
-			this->select_state(eStateEat_CorpseApproachWalk);
+			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (this->prev_substate == eStateEat_Eat) {
+	if (prev_substate == eStateEat_Eat) {
 		m_time_last_eat = time();
 
 		if (!hungry())
-			this->select_state(eStateEat_WalkAway);
+			select_state(eStateEat_WalkAway);
 		else
-			this->select_state(eStateEat_CorpseApproachWalk);
+			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (this->prev_substate == eStateEat_CorpseApproachWalk) {
-		if (this->get_state(eStateEat_Eat)->check_start_conditions())
-			this->select_state(eStateEat_Eat);
+	if (prev_substate == eStateEat_CorpseApproachWalk) {
+		if (get_state(eStateEat_Eat)->check_start_conditions())
+			select_state(eStateEat_Eat);
 		else
-			this->select_state(eStateEat_CorpseApproachWalk);
+			select_state(eStateEat_CorpseApproachWalk);
 		return;
 	}
 
-	if (this->prev_substate == eStateEat_WalkAway) { this->select_state(eStateEat_Rest);		return; }
-	if (this->prev_substate == eStateEat_Rest) { this->select_state(eStateEat_Rest);		return; }
+	if (prev_substate == eStateEat_WalkAway) { select_state(eStateEat_Rest);		return; }
+	if (prev_substate == eStateEat_Rest) { select_state(eStateEat_Rest);		return; }
 }
 
 
 void CStateMonsterEat::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStateEat_CorpseApproachRun) {
+	if (current_substate == eStateEat_CorpseApproachRun) {
 
 		// Определить позицию ближайшей боны у трупа
 		Fvector nearest_bone_pos;
-		const CEntityAlive* corpse_ = this->object->CorpseMan.get_corpse();
+		const CEntityAlive* corpse_ = object->CorpseMan.get_corpse();
 		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
 			nearest_bone_pos = corpse_->Position();
 		}
-		else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
+		else nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
 
 #ifdef _DEBUG
 		DBG().level_info(this).clear();
@@ -152,31 +149,31 @@ void CStateMonsterEat::setup_substates()
 		data.accelerated = true;
 		data.braking = true;
 		data.accel_type = eAT_Calm;
-		data.completion_dist = this->object->db().m_fDistToCorpse;
+		data.completion_dist = object->db().m_fDistToCorpse;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataMoveToPoint));
 		return;
 	}
 
-	if (this->current_substate == eStateEat_CheckCorpse) {
+	if (current_substate == eStateEat_CheckCorpse) {
 		SStateDataAction data;
 		data.action = ACT_STAND_IDLE;
 		data.spec_params = 0;
 		data.time_out = 1500;
 		data.sound_type = MonsterSound::eMonsterSoundEat;
-		data.sound_delay = this->object->db().m_dwEatSndDelay;
+		data.sound_delay = object->db().m_dwEatSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 
 		return;
 	}
 
-	if (this->current_substate == eStateEat_WalkAway) {
+	if (current_substate == eStateEat_WalkAway) {
 		SStateHideFromPoint data;
 
-		data.point = this->object->CorpseMan.get_corpse_position();
+		data.point = object->CorpseMan.get_corpse_position();
 		data.action.action = ACT_WALK_FWD;
 		data.distance = 15.f;
 		data.accelerated = true;
@@ -186,34 +183,34 @@ void CStateMonsterEat::setup_substates()
 		data.cover_max_dist = 30.f;
 		data.cover_search_radius = 25.f;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateHideFromPoint));
 
 		return;
 	}
 
-	if (this->current_substate == eStateEat_Rest) {
+	if (current_substate == eStateEat_Rest) {
 		SStateDataAction data;
 		data.action = ACT_REST;
 		data.spec_params = 0;
 		data.time_out = 8500;
 		data.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 		return;
 	}
 
-	if (this->current_substate == eStateEat_CorpseApproachWalk) {
+	if (current_substate == eStateEat_CorpseApproachWalk) {
 
 		// Определить позицию ближайшей боны у трупа
 		Fvector nearest_bone_pos;
-		const CEntityAlive* corpse_ = this->object->CorpseMan.get_corpse();
+		const CEntityAlive* corpse_ = object->CorpseMan.get_corpse();
 		if ((corpse_->m_pPhysicsShell == NULL) || (!corpse_->m_pPhysicsShell->isActive())) {
 			nearest_bone_pos = corpse_->Position();
 		}
-		else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
+		else nearest_bone_pos = object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse_);
 
 		SStateDataMoveToPoint data;
 		data.point = nearest_bone_pos;
@@ -222,9 +219,9 @@ void CStateMonsterEat::setup_substates()
 		data.accelerated = true;
 		data.braking = true;
 		data.accel_type = eAT_Calm;
-		data.completion_dist = this->object->db().m_fDistToCorpse;
+		data.completion_dist = object->db().m_fDistToCorpse;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataMoveToPoint));
 		return;
@@ -234,7 +231,7 @@ void CStateMonsterEat::setup_substates()
 
 bool CStateMonsterEat::check_completion()
 {
-	if (corpse != this->object->CorpseMan.get_corpse()) return true;
+	if (corpse != object->CorpseMan.get_corpse()) return true;
 	if (!hungry()) return true;
 
 	return false;
@@ -244,10 +241,10 @@ bool CStateMonsterEat::check_completion()
 bool CStateMonsterEat::check_start_conditions()
 {
 	return (
-		this->object->CorpseMan.get_corpse() &&
-		this->object->Home->at_home(this->object->CorpseMan.get_corpse()->Position()) &&
+		object->CorpseMan.get_corpse() &&
+		object->Home->at_home(object->CorpseMan.get_corpse()->Position()) &&
 		hungry() &&
-		!monster_squad().get_squad(this->object)->is_locked_corpse(this->object->CorpseMan.get_corpse())
+		!monster_squad().get_squad(object)->is_locked_corpse(object->CorpseMan.get_corpse())
 		);
 
 }

@@ -16,9 +16,17 @@
 
 #include "sound_player.h"
 
-CStateControlHideLite::CStateControlHideLite(CBaseMonster* obj) : inherited(obj)
+CStateControlHideLite::CStateControlHideLite(CBaseMonster* object) : inherited(object)
 {
-	m_pController = smart_cast<CControllerBase*>(obj);
+	pControllerBase = smart_cast<CControllerBase*>(object);
+
+	target = {};
+	m_time_finished = {};
+}
+
+CStateControlHideLite::~CStateControlHideLite()
+{
+
 }
 
 void CStateControlHideLite::initialize()
@@ -26,24 +34,23 @@ void CStateControlHideLite::initialize()
 	inherited::initialize();
 
 	select_target_point();
-	this->object->path().prepare_builder();
-
+	object->path().prepare_builder();
 }
 
 void CStateControlHideLite::execute()
 {
-	this->object->path().set_target_point(target.position, target.node);
-	this->object->path().set_rebuild_time(0);
-	this->object->path().set_distance_to_end(0.f);
-	this->object->path().set_use_covers(true);
+	object->path().set_target_point(target.position, target.node);
+	object->path().set_rebuild_time(0);
+	object->path().set_distance_to_end(0.f);
+	object->path().set_use_covers(true);
 
-	this->object->anim().accel_activate(eAT_Aggressive);
-	this->object->anim().accel_set_braking(false);
+	object->anim().accel_activate(eAT_Aggressive);
+	object->anim().accel_set_braking(false);
 
-	this->object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, this->object->db().m_dwAttackSndDelay);
-	this->m_pController->custom_dir().head_look_point(this->object->EnemyMan.get_enemy_position());
+	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0, 0, object->db().m_dwAttackSndDelay);
+	pControllerBase->custom_dir().head_look_point(object->EnemyMan.get_enemy_position());
 
-	this->m_pController->custom_anim().set_body_state(CControllerAnimation::eTorsoRun, CControllerAnimation::eLegsTypeRun);
+	pControllerBase->custom_anim().set_body_state(CControllerAnimation::eTorsoRun, CControllerAnimation::eLegsTypeRun);
 }
 
 bool CStateControlHideLite::check_start_conditions()
@@ -57,20 +64,18 @@ void CStateControlHideLite::reinit()
 	m_time_finished = 0;
 }
 
-
 void CStateControlHideLite::finalize()
 {
 	inherited::finalize();
 	m_time_finished = Device.dwTimeGlobal;
 }
 
-
 bool CStateControlHideLite::check_completion()
 {
-	if ((this->object->ai_location().level_vertex_id() == target.node) &&
-		!this->object->control().path_builder().is_moving_on_path()) return true;
+	if ((object->ai_location().level_vertex_id() == target.node) &&
+		!object->control().path_builder().is_moving_on_path()) return true;
 
-	return (!this->object->EnemyMan.see_enemy_now());
+	return (!object->EnemyMan.see_enemy_now());
 }
 
 void CStateControlHideLite::select_target_point()
@@ -79,7 +84,7 @@ void CStateControlHideLite::select_target_point()
 	DBG().level_info(this).clear();
 #endif
 
-	const CCoverPoint* point = this->object->CoverMan->find_cover(this->object->EnemyMan.get_enemy_position(), 10.f, 30.f);
+	const CCoverPoint* point = object->CoverMan->find_cover(object->EnemyMan.get_enemy_position(), 10.f, 30.f);
 	//VERIFY(point);
 	if (point) {
 		target.node = point->level_vertex_id();

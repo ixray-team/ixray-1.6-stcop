@@ -5,6 +5,16 @@
 #include "../control_direction_base.h"
 #include "../control_movement_base.h"
 
+CBurerFastGravi::CBurerFastGravi()
+{
+
+}
+
+CBurerFastGravi::~CBurerFastGravi()
+{
+
+}
+
 bool CBurerFastGravi::check_start_conditions()
 {
 	if (is_active())				return false;	

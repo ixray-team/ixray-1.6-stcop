@@ -16,19 +16,19 @@ CustomBloodsuckerAlienEffector::CustomBloodsuckerAlienEffector(ECamEffectorType 
 {
 	m_time_total = 0.f;
 
-	dangle_target.set(angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleX)),
-		angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleY)),
-		angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleZ)));
+	dangle_target.set(angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleX)),
+		angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleY)),
+		angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleZ)));
 
 	dangle_current.set(0.f, 0.f, 0.f);
 
-	this->object = object;
+	object = object;
 
-	m_prev_eye_matrix.c = get_head_position(this->object);
-	m_prev_eye_matrix.k = this->object->Direction();
+	m_prev_eye_matrix.c = get_head_position(object);
+	m_prev_eye_matrix.k = object->Direction();
 	Fvector::generate_orthonormal_basis(m_prev_eye_matrix.k, m_prev_eye_matrix.j, m_prev_eye_matrix.i);
 	m_inertion = 1.f;
-	m_current_fov = SBloodsuckerAlienCameraEffectorProperies::MinFov;
+	m_current_fov = EntityDefinitions::CBloodsuckerBase::MinFov;
 }
 
 CustomBloodsuckerAlienEffector::~CustomBloodsuckerAlienEffector()
@@ -39,7 +39,7 @@ CustomBloodsuckerAlienEffector::~CustomBloodsuckerAlienEffector()
 BOOL CustomBloodsuckerAlienEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	// Инициализация
-	Fmatrix	Mdef;
+	Fmatrix	Mdef{};
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(info.d);
@@ -47,24 +47,24 @@ BOOL CustomBloodsuckerAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	Mdef.c.set(info.p);
 
 	// set angle 
-	if (angle_lerp(dangle_current.x, dangle_target.x, SBloodsuckerAlienCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-		dangle_target.x = angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleX));
+	if (angle_lerp(dangle_current.x, dangle_target.x, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+		dangle_target.x = angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleX));
 	}
 
-	if (angle_lerp(dangle_current.y, dangle_target.y, SBloodsuckerAlienCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-		dangle_target.y = angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleY));
+	if (angle_lerp(dangle_current.y, dangle_target.y, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+		dangle_target.y = angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleY));
 	}
 
-	if (angle_lerp(dangle_current.z, dangle_target.z, SBloodsuckerAlienCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-		dangle_target.z = angle_normalize(Random.randFs(SBloodsuckerAlienCameraEffectorProperies::DeltaAngleZ));
+	if (angle_lerp(dangle_current.z, dangle_target.z, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+		dangle_target.z = angle_normalize(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleZ));
 	}
 
 	// update inertion
-	Fmatrix cur_matrix;
+	Fmatrix cur_matrix{};
 	cur_matrix.k = object->Direction();
 	cur_matrix.c = get_head_position(object);
 
-	float	rel_dist = m_prev_eye_matrix.c.distance_to(cur_matrix.c) / SBloodsuckerAlienCameraEffectorProperies::MaxCameraDist;
+	float	rel_dist = m_prev_eye_matrix.c.distance_to(cur_matrix.c) / EntityDefinitions::CBloodsuckerBase::MaxCameraDist;
 	clamp(rel_dist, 0.f, 1.f);
 
 	def_lerp(m_inertion, 1 - rel_dist, rel_dist, Device.fTimeDelta);
@@ -81,19 +81,19 @@ BOOL CustomBloodsuckerAlienEffector::ProcessCam(SCamEffectorInfo& info)
 	float	rel_speed = object->m_fCurSpeed / 15.f;
 	clamp(rel_speed, 0.f, 1.f);
 
-	float	m_target_fov = SBloodsuckerAlienCameraEffectorProperies::MinFov + 
-		(SBloodsuckerAlienCameraEffectorProperies::MaxFov - SBloodsuckerAlienCameraEffectorProperies::MinFov) * rel_speed;
+	float	m_target_fov = EntityDefinitions::CBloodsuckerBase::MinFov +
+		(EntityDefinitions::CBloodsuckerBase::MaxFov - EntityDefinitions::CBloodsuckerBase::MinFov) * rel_speed;
 
-	def_lerp(m_current_fov, m_target_fov, SBloodsuckerAlienCameraEffectorProperies::FovSpeed, Device.fTimeDelta);
+	def_lerp(m_current_fov, m_target_fov, EntityDefinitions::CBloodsuckerBase::FovSpeed, Device.fTimeDelta);
 
 	info.fFov = m_current_fov;
 	//////////////////////////////////////////////////////////////////////////
 
 	// Установить углы смещения
-	Fmatrix		R;
+	Fmatrix		R{};
 	R.setHPB(dangle_current.x, dangle_current.y, dangle_current.z);
 
-	Fmatrix		mR;
+	Fmatrix		mR{};
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

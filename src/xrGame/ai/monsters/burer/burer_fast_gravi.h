@@ -2,17 +2,19 @@
 #include "../control_combase.h"
 
 class CBurerFastGravi : public CControl_ComCustom<> {
-	typedef CControl_ComCustom<> inherited;
+protected:
+	using inherited = CControl_ComCustom<>;
 
 public:
-	
-	virtual bool	check_start_conditions	();
-	virtual void	activate				();
-	virtual void	deactivate				();
-	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*);
+	CBurerFastGravi();
+	virtual ~CBurerFastGravi() override;
+
+	virtual bool	check_start_conditions	() override;
+	virtual void	activate				() override;
+	virtual void	deactivate				() override;
+	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*) override;
 	
 private:	
 			void	process_hit				();
-
 };
 

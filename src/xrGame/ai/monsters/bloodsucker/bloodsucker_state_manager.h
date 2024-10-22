@@ -3,19 +3,20 @@
 
 class CustomBloodsuker;
 
-class CustomBloodsukerStateManager : public CMonsterStateManager
+class CBloodsuckerBaseStateManager : public CMonsterStateManager
 {
+protected:
 	using inherited = CMonsterStateManager;
 
-	CBloodsuckerBase* m_pBloodsucker;
+	CBloodsuckerBase* pBloodsuckerBase;
 
 public:
-	CustomBloodsukerStateManager(CBloodsuckerBase*object);
-	virtual ~CustomBloodsukerStateManager();
+	CBloodsuckerBaseStateManager(CBloodsuckerBase* object);
+	virtual ~CBloodsuckerBaseStateManager() override;
 
-	virtual void	execute						();
-	virtual void	update						();
+	virtual void	execute						() override;
+	virtual void	update						() override;
 			void	drag_object					();
-	virtual void	remove_links				(CObject* object) { inherited::remove_links(object);}
+	virtual void	remove_links				(CObject* object) override { inherited::remove_links(object);}
 			bool	check_vampire				();
 };

@@ -4,9 +4,12 @@
 
 class	CPoltergeistStateRest : public CStateMonsterRest {
 protected:
-	typedef CStateMonsterRest		inherited;
+	using inherited = CStateMonsterRest	;
+
 public:
-						CPoltergeistStateRest		(CBaseMonster *obj) : inherited(obj) {}
-	virtual	void		execute					();
+	CPoltergeistStateRest(CBaseMonster* object);
+	virtual ~CPoltergeistStateRest() override;
+
+	virtual	void		execute					() override;
 };
 

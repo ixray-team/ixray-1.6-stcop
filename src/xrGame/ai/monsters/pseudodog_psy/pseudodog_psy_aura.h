@@ -13,6 +13,8 @@ protected:
 
 public:
 					CPPEffectorPsyDogAura	(const SPPInfo &ppi, u32 time_to_fade);
+					~CPPEffectorPsyDogAura();
+
 	virtual BOOL	update					();
 			void	switch_off				();
 };

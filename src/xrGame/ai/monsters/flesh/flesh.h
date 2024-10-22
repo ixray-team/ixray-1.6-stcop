@@ -5,22 +5,22 @@
 
 class CFleshBase : public CBaseMonster,
 				  public CControlledEntity {
-
+protected:
 	using		inherited = CBaseMonster					;
 	using		CControlled = CControlledEntity	;
 
 public:
 	CFleshBase();
-	virtual					~CFleshBase();
+	virtual					~CFleshBase() override;
 	
-	virtual	void	Load					(LPCSTR section);
-	virtual	BOOL	net_Spawn				(CSE_Abstract* DC);
+	virtual	void	Load					(LPCSTR section) override;
+	virtual	BOOL	net_Spawn				(CSE_Abstract* DC) override;
 
-	virtual	void	CheckSpecParams			(u32 spec_params);
+	virtual	void	CheckSpecParams			(u32 spec_params) override;
 
-	virtual bool	ability_can_drag		() {return true;}
+	virtual bool	ability_can_drag		() override { return true; }
 
-	virtual	char*	get_monster_class_name () { return (char*)"flesh"; }
+	virtual	char*	get_monster_class_name () override { return (char*)"flesh"; }
 
 
 private:

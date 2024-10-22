@@ -16,6 +16,7 @@
 #include "../ai_monster_effector.h"
 #include "../../../ActorEffector.h"
 #include "pseudodog_psy_aura.h"
+#include "pseudodog_psy_aura_effector.h"
 #include "pseudodog_psy_state_manager.h"
 #include "../../../alife_object_registry.h"
 #include "../../../../xrServerEntities/xrserver_objects_alife_monsters.h"
@@ -94,7 +95,7 @@ void CPseudoPsyDogBase::unregister_phantom(CPseudoPsyDogPhantomBase*phantom)
 
 bool CPseudoPsyDogBase::spawn_phantom()
 {
-	u32 node;
+	u32 node{};
 	if (!control().path_builder().get_node_in_radius(ai_location().level_vertex_id(), 4,8,5,node)) return false;
 	
 	LPCSTR phantomSection = READ_IF_EXISTS(pSettings, r_string, get_section(), "phantom_section", "psy_dog_phantom");
@@ -104,7 +105,7 @@ bool CPseudoPsyDogBase::spawn_phantom()
 
 	pSE_Monster->m_spec_object_id = ID();
 	
-	NET_Packet					P;
+	NET_Packet					P{};
 	phantom->Spawn_Write		(P,TRUE);
 	Level().Send				(P,net_flags(TRUE));
 	F_entity_Destroy			(phantom);
@@ -164,7 +165,7 @@ void CPseudoPsyDogBase::Die(CObject* who)
 
 IStateManagerBase *CPseudoPsyDogBase::create_state_manager()
 {
-	return new CStateManagerPsyDog(this);
+	return new CPseudoPsyDogBaseStateManager(this);
 }
 
 u8 CPseudoPsyDogBase::get_phantoms_count()

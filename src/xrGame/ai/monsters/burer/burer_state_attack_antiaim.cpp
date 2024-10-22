@@ -5,26 +5,36 @@
 
 #include "../anti_aim_ability.h"
 
-CStateBurerAntiAim::CStateBurerAntiAim(CBaseMonster* obj) : inherited(obj)
+CStateBurerAntiAim::CStateBurerAntiAim(CBaseMonster* object) : inherited(object)
 {
 	m_allow_anti_aim = false;
-	m_pBurer = smart_cast<CBurerBase*>(obj);
+	pBurerBase = smart_cast<CBurerBase*>(object);
+
+	m_last_shield_started = {};
+	m_next_particle_allowed = {};
+	m_shield_start_anim_length_sec = {};
+	m_started = {};
+}
+
+CStateBurerAntiAim::~CStateBurerAntiAim()
+{
+
 }
 
 void   CStateBurerAntiAim::initialize()
 {
 	inherited::initialize();
 	m_allow_anti_aim = true;
-	this->object->control().activate(ControlCom::eAntiAim);
+	object->control().activate(ControlCom::eAntiAim);
 	m_allow_anti_aim = false;
 
-	VERIFY(this->object->get_anti_aim()->is_active());
+	VERIFY(object->get_anti_aim()->is_active());
 }
 
 void   CStateBurerAntiAim::execute()
 {
-	this->m_pBurer->face_enemy();
-	this->object->set_action(ACT_STAND_IDLE);
+	pBurerBase->face_enemy();
+	object->set_action(ACT_STAND_IDLE);
 }
 
 void   CStateBurerAntiAim::finalize()
@@ -39,12 +49,12 @@ void   CStateBurerAntiAim::critical_finalize()
 
 bool   CStateBurerAntiAim::check_start_conditions()
 {
-	return									this->object->get_anti_aim()->check_start_condition();
+	return									object->get_anti_aim()->check_start_condition();
 }
 
 bool   CStateBurerAntiAim::check_completion()
 {
-	if (!this->object->get_anti_aim()->is_active())
+	if (!object->get_anti_aim()->is_active())
 	{
 		return								true;
 	}

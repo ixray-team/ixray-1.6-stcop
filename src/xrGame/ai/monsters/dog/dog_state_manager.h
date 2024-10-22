@@ -3,16 +3,17 @@
 
 class CDogBase;
 
-class CustomDogStateManager : public CMonsterStateManager {
+class CDogBaseStateManager : public CMonsterStateManager {
+protected:
 	using inherited = CMonsterStateManager;
 
-	CDogBase* m_pDog;
+	CDogBase* pDogBase;
 
 public:
-	CustomDogStateManager(CDogBase*object);
-					virtual ~CustomDogStateManager();
+	CDogBaseStateManager(CDogBase* object);
+					virtual ~CDogBaseStateManager() override;
 
-	virtual void	execute				();
+	virtual void	execute				() override;
 			bool	check_eat			();
-	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}
+	virtual void	remove_links		(CObject* object) override { inherited::remove_links(object);}
 };

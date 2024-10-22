@@ -2,13 +2,16 @@
 #include "../state.h"
 
 class CStateChimeraThreatenSteal : public CStateMonsterMoveToPointEx {
-	typedef CStateMonsterMoveToPointEx	inherited;
+protected:
+	using inherited = CStateMonsterMoveToPointEx;
 
 public:
-	IC					CStateChimeraThreatenSteal	(CBaseMonster *obj) : inherited(obj){}
-	virtual	void		initialize					();	
-	virtual void		finalize					();
-	virtual	void		execute						();
-	virtual bool		check_completion			();
-	virtual bool		check_start_conditions		();
+	CStateChimeraThreatenSteal(CBaseMonster* object);
+	virtual ~CStateChimeraThreatenSteal() override;
+
+	virtual	void		initialize					() override;
+	virtual void		finalize					() override;
+	virtual	void		execute						() override;
+	virtual bool		check_completion			() override;
+	virtual bool		check_start_conditions		() override;
 };

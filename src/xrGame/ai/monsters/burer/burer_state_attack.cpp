@@ -24,36 +24,38 @@
 #include "../states/monster_state_attack_run.h"
 #include "../states/monster_state_attack_on_run.h"
 
-namespace burer
+CStateBurerAttack::CStateBurerAttack(CBaseMonster* object) : inherited(object)
 {
-	float const health_delta = 0.01f;
+	pBurerBase = smart_cast<CBurerBase*>(object);
 
-} // namespace detail
-
-CStateBurerAttack::CStateBurerAttack(CBaseMonster* obj) : inherited(obj)
-{
-	m_pBurer = smart_cast<CBurerBase*>(obj);
-
-	this->add_state(eStateBurerAttack_Tele, new CStateBurerAttackTele(obj));
-	this->add_state(eStateBurerAttack_Gravi, new CStateBurerAttackGravi(obj));
-	this->add_state(eStateBurerAttack_Melee, new CStateBurerAttackMelee(obj));
-	this->add_state(eStateBurerAttack_FaceEnemy, new CStateMonsterLookToPoint(obj));
-	this->add_state(eStateBurerAttack_RunAround, new CStateBurerAttackRunAround(obj));
-	this->add_state(eStateBurerAttack_Shield, new CStateBurerShield(obj));
-	this->add_state(eStateBurerAttack_AntiAim, new CStateBurerAntiAim (obj));
-	this->add_state(eStateAttack_Run, new CStateMonsterAttackRun(obj));
-	this->add_state(eStateCustomMoveToRestrictor, new CStateMonsterMoveToRestrictor(obj));
+	add_state(eStateBurerAttack_Tele, new CStateBurerAttackTele(object));
+	add_state(eStateBurerAttack_Gravi, new CStateBurerAttackGravi(object));
+	add_state(eStateBurerAttack_Melee, new CStateBurerAttackMelee(object));
+	add_state(eStateBurerAttack_FaceEnemy, new CStateMonsterLookToPoint(object));
+	add_state(eStateBurerAttack_RunAround, new CStateBurerAttackRunAround(object));
+	add_state(eStateBurerAttack_Shield, new CStateBurerShield(object));
+	add_state(eStateBurerAttack_AntiAim, new CStateBurerAntiAim (object));
+	add_state(eStateAttack_Run, new CStateMonsterAttackRun(object));
+	add_state(eStateCustomMoveToRestrictor, new CStateMonsterMoveToRestrictor(object));
 
 	m_allow_anti_aim = false;
 	m_wait_state_end = false;
 	m_lost_delta_health = false;
+
+	m_last_health = {};
+	m_next_runaway_allowed_tick = {};
+}
+
+CStateBurerAttack::~CStateBurerAttack()
+{
+
 }
 
 void CStateBurerAttack::initialize()
 {
 	inherited::initialize();
 
-	m_last_health = this->object->conditions().GetHealth();
+	m_last_health = object->conditions().GetHealth();
 	m_lost_delta_health = false;
 	m_next_runaway_allowed_tick = 0;
 	m_allow_anti_aim = false;
@@ -63,74 +65,76 @@ void CStateBurerAttack::initialize()
 	// 	CMonsterSquad *squad					=	monster_squad().get_squad(object);
 	// 	if ( squad )
 	// 	{
-	// 		squad->InformSquadAboutEnemy			(this->object->EnemyMan.get_enemy());
+	// 		squad->InformSquadAboutEnemy			(object->EnemyMan.get_enemy());
 	// 	}
 }
 
 void   CStateBurerAttack::execute()
 {
-	CEntityAlive* enemy = const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
+	CEntityAlive* enemy = const_cast<CEntityAlive*>(object->EnemyMan.get_enemy());
 
 	// Notify squad	
-	CMonsterSquad* squad = monster_squad().get_squad(this->object);
+	CMonsterSquad* squad = monster_squad().get_squad(object);
 	if (squad) {
 		SMemberGoal								goal;
 		goal.type = MG_AttackEnemy;
 		goal.entity = enemy;
-		squad->UpdateGoal(this->object, goal);
+		squad->UpdateGoal(object, goal);
 	}
 
-	if (this->object->anim().has_override_animation())
+	if (object->anim().has_override_animation())
 	{
-		this->object->anim().clear_override_animation();
+		object->anim().clear_override_animation();
 	}
 
-	if (this->object->conditions().GetHealth() <= m_last_health - burer::health_delta)
+	float health_delta = 0.01f;
+
+	if (object->conditions().GetHealth() <= m_last_health - health_delta)
 	{
-		m_last_health = this->object->conditions().GetHealth();
+		m_last_health = object->conditions().GetHealth();
 		m_lost_delta_health = true;
 	}
 
 	if (m_wait_state_end)
 	{
-		if (this->get_state_current()->check_completion())
+		if (get_state_current()->check_completion())
 		{
 			m_wait_state_end = false;
 		}
 		else
 		{
-			this->get_state_current()->execute();
-			this->prev_substate = this->current_substate;
+			get_state_current()->execute();
+			prev_substate = current_substate;
 			return;
 		}
 	}
 
 	m_allow_anti_aim = true;
-	bool const	anti_aim_ready = this->get_state(eStateBurerAttack_AntiAim)->check_start_conditions();
+	bool const	anti_aim_ready = get_state(eStateBurerAttack_AntiAim)->check_start_conditions();
 	m_allow_anti_aim = false;
 
-	bool const	gravi_ready = this->get_state(eStateBurerAttack_Gravi)->check_start_conditions();
-	bool const	shield_ready = this->get_state(eStateBurerAttack_Shield)->check_start_conditions();
-	bool const	tele_ready = this->get_state(eStateBurerAttack_Tele)->check_start_conditions();
+	bool const	gravi_ready = get_state(eStateBurerAttack_Gravi)->check_start_conditions();
+	bool const	shield_ready = get_state(eStateBurerAttack_Shield)->check_start_conditions();
+	bool const	tele_ready = get_state(eStateBurerAttack_Tele)->check_start_conditions();
 
 	bool		selected_state = true;
 
 	if (gravi_ready)
 	{
-		this->select_state(eStateBurerAttack_Gravi);
+		select_state(eStateBurerAttack_Gravi);
 	}
 	else if (m_lost_delta_health && shield_ready)
 	{
 		m_lost_delta_health = false;
-		this->select_state(eStateBurerAttack_Shield);
+		select_state(eStateBurerAttack_Shield);
 	}
 	else if (anti_aim_ready)
 	{
-		this->select_state(eStateBurerAttack_AntiAim);
+		select_state(eStateBurerAttack_AntiAim);
 	}
-	else if (tele_ready && this->current_substate != eStateBurerAttack_RunAround)
+	else if (tele_ready && current_substate != eStateBurerAttack_RunAround)
 	{
-		this->select_state(eStateBurerAttack_Tele);
+		select_state(eStateBurerAttack_Tele);
 	}
 	else
 	{
@@ -139,41 +143,41 @@ void   CStateBurerAttack::execute()
 
 	if (selected_state)
 	{
-		this->get_state_current()->execute();
+		get_state_current()->execute();
 		m_wait_state_end = true;
-		this->prev_substate = this->current_substate;
+		prev_substate = current_substate;
 		return;
 	}
 
 	Fvector	const		enemy_pos = enemy->Position();
-	Fvector	const		self_pos = this->object->Position();
+	Fvector	const		self_pos = object->Position();
 	Fvector	const		self2enemy = enemy_pos - self_pos;
 	float	const		self2enemy_dist = magnitude(self2enemy);
 
-	bool	const		in_runaway_range = self2enemy_dist < this->m_pBurer->m_runaway_distance;
-	bool	const		in_normal_range = self2enemy_dist < this->m_pBurer->m_normal_distance;
+	bool	const		in_runaway_range = self2enemy_dist < pBurerBase->m_runaway_distance;
+	bool	const		in_normal_range = self2enemy_dist < pBurerBase->m_normal_distance;
 
-	if (this->current_substate == eStateCustomMoveToRestrictor)
+	if (current_substate == eStateCustomMoveToRestrictor)
 	{
-		if (!this->get_state_current()->check_completion())
+		if (!get_state_current()->check_completion())
 		{
-			this->get_state_current()->execute();
-			this->prev_substate = this->current_substate;
+			get_state_current()->execute();
+			prev_substate = current_substate;
 			return;
 		}
 	}
 
-	if (this->get_state(eStateCustomMoveToRestrictor)->check_start_conditions())
+	if (get_state(eStateCustomMoveToRestrictor)->check_start_conditions())
 	{
-		this->select_state(eStateCustomMoveToRestrictor);
-		this->get_state_current()->execute();
-		this->prev_substate = this->current_substate;
+		select_state(eStateCustomMoveToRestrictor);
+		get_state_current()->execute();
+		prev_substate = current_substate;
 		return;
 	}
 
-	if (this->current_substate == eStateBurerAttack_RunAround)
+	if (current_substate == eStateBurerAttack_RunAround)
 	{
-		if (this->get_state_current()->check_completion())
+		if (get_state_current()->check_completion())
 		{
 			if (in_runaway_range)
 			{
@@ -182,8 +186,8 @@ void   CStateBurerAttack::execute()
 		}
 		else
 		{
-			this->get_state_current()->execute();
-			this->prev_substate = this->current_substate;
+			get_state_current()->execute();
+			prev_substate = current_substate;
 			return;
 		}
 	}
@@ -192,41 +196,41 @@ void   CStateBurerAttack::execute()
 		(in_runaway_range && current_time() > m_next_runaway_allowed_tick))
 	{
 		m_lost_delta_health = false;
-		this->select_state(eStateBurerAttack_RunAround);
+		select_state(eStateBurerAttack_RunAround);
 	}
 	else if (!in_normal_range)
 	{
-		this->select_state(eStateAttack_Run);
+		select_state(eStateAttack_Run);
 	}
 	else
 	{
 		Fvector	const	self2enemy_ = enemy_pos - self_pos;
-		bool  	const 	good_aiming = angle_between_vectors(self2enemy_, this->object->Direction())
+		bool  	const 	good_aiming = angle_between_vectors(self2enemy_, object->Direction())
 			< deg2rad(20.f);
 
-		this->select_state(eStateBurerAttack_FaceEnemy);
+		select_state(eStateBurerAttack_FaceEnemy);
 
 		if (!good_aiming)
 		{
-			bool const rotate_right = this->object->control().direction().is_from_right(enemy_pos);
-			this->object->anim().set_override_animation
+			bool const rotate_right = object->control().direction().is_from_right(enemy_pos);
+			object->anim().set_override_animation
 			(rotate_right ? eAnimStandTurnRight : eAnimStandTurnLeft, 0);
-			this->object->dir().face_target(enemy_pos);
+			object->dir().face_target(enemy_pos);
 		}
 
-		this->object->set_action(ACT_STAND_IDLE);
+		object->set_action(ACT_STAND_IDLE);
 		return;
 	}
 
-	this->get_state_current()->execute();
-	this->prev_substate = this->current_substate;
+	get_state_current()->execute();
+	prev_substate = current_substate;
 }
 
 void CStateBurerAttack::finalize()
 {
-	if (this->object->anim().has_override_animation())
+	if (object->anim().has_override_animation())
 	{
-		this->object->anim().clear_override_animation();
+		object->anim().clear_override_animation();
 	}
 
 	inherited::finalize();
@@ -234,9 +238,9 @@ void CStateBurerAttack::finalize()
 
 void CStateBurerAttack::critical_finalize()
 {
-	if (this->object->anim().has_override_animation())
+	if (object->anim().has_override_animation())
 	{
-		this->object->anim().clear_override_animation();
+		object->anim().clear_override_animation();
 	}
 
 	inherited::critical_finalize();

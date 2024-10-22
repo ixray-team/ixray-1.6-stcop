@@ -159,6 +159,6 @@ void CPseudoDogBase::HitEntityInJump		(const CEntity *pEntity)
 
 IStateManagerBase *CPseudoDogBase::create_state_manager()
 {
-	return new CStateManagerPseudodog(this);
+	return new CPseudoDogBaseStateManager(this);
 }
 

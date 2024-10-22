@@ -20,9 +20,9 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CustomFleshStateManager::CustomFleshStateManager(CFleshBase* object) : inherited(object)
+CFleshBaseStateManager::CFleshBaseStateManager(CFleshBase* object) : inherited(object)
 {
-    m_pFlesh = smart_cast<CFleshBase*>(object);
+	pFleshBase = smart_cast<CFleshBase*>(object);
 
     add_state(eStateRest, new CStateMonsterRest(object));
     add_state(eStatePanic, new CStateMonsterPanic(object));
@@ -40,16 +40,16 @@ CustomFleshStateManager::CustomFleshStateManager(CFleshBase* object) : inherited
     add_state(eStateHearHelpSound, new CStateMonsterHearHelpSound(object));
 }
 
-CustomFleshStateManager::~CustomFleshStateManager()
+CFleshBaseStateManager::~CFleshBaseStateManager()
 {
 
 }
 
-void CustomFleshStateManager::execute()
+void CFleshBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 
-	if (!m_pFlesh->is_under_control()) {
+	if (!pFleshBase->is_under_control()) {
 		
 		const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
 

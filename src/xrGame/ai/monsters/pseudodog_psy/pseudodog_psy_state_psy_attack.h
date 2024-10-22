@@ -5,13 +5,13 @@
 class	CStatePsyDogPsyAttack : public CState 
 {
 protected:
-	typedef CState		inherited;
-	typedef CState*	state_ptr;
+	using inherited = CState		;
+	using state_ptr = CState*;
 
 public:
-						CStatePsyDogPsyAttack	(CBaseMonster *obj);
-	virtual				~CStatePsyDogPsyAttack	() {}
+						CStatePsyDogPsyAttack	(CBaseMonster* object);
+						virtual				~CStatePsyDogPsyAttack() override;
 
-	virtual void		reselect_state			();
-	virtual void		remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual void		reselect_state			() override;
+	virtual void		remove_links			(CObject* object) override { inherited::remove_links(object);}
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../ai_entity_definitions.h"
 #include "../BaseMonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
@@ -6,21 +7,20 @@ class CChimeraBase : public CBaseMonster
 {
 public:
 							CChimeraBase					();
-	virtual					~CChimeraBase					();	
+	virtual					~CChimeraBase					() override;	
 
-	virtual void			Load						(LPCSTR section);
-	virtual void			reinit						();
-	virtual	void			UpdateCL					();
+	virtual void			Load						(LPCSTR section) override;
+	virtual void			reinit						() override;
+	virtual	void			UpdateCL					() override;
 
-	virtual void			CheckSpecParams				(u32 spec_params);
-	virtual void			HitEntityInJump				(const CEntity *pEntity);
-	virtual void			jump						(Fvector const &position, float factor);
+	virtual void			HitEntityInJump				(const CEntity *pEntity) override;
+	virtual void			jump						(Fvector const &position, float factor) override;
 
 private:
-	virtual	char*			get_monster_class_name		() { return (char*) "chimera"; }
-	virtual EAction			CustomVelocityIndex2Action	(u32 velocity_index);
+	virtual	char*			get_monster_class_name		() override { return (char*) "chimera"; }
+	virtual EAction			CustomVelocityIndex2Action	(u32 velocity_index) override;
 
-	typedef					CBaseMonster				inherited;
+	using					inherited = CBaseMonster				;
 	
 	SVelocityParam 			m_velocity_rotate;
 	SVelocityParam 			m_velocity_jump_start;
@@ -40,8 +40,6 @@ private:
 
 public:
 	attack_params const&	get_attack_params			() const { return m_attack_params; }
-
-
 	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

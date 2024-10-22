@@ -14,25 +14,25 @@ void CStateMonsterHideFromPoint::initialize()
 {
 	inherited::initialize();
 
-	this->object->path().prepare_builder();
+	object->path().prepare_builder();
 }
 
 
 void CStateMonsterHideFromPoint::execute()
 {
-	this->object->set_action(data.action.action);
-	this->object->anim().SetSpecParams(data.action.spec_params);
+	object->set_action(data.action.action);
+	object->anim().SetSpecParams(data.action.spec_params);
 
-	this->object->path().set_retreat_from_point(data.point);
-	this->object->path().set_generic_parameters();
+	object->path().set_retreat_from_point(data.point);
+	object->path().set_generic_parameters();
 
 	if (data.accelerated) {
-		this->object->anim().accel_activate(EAccelType(data.accel_type));
-		this->object->anim().accel_set_braking(data.braking);
+		object->anim().accel_activate(EAccelType(data.accel_type));
+		object->anim().accel_set_braking(data.braking);
 	}
 
 	if (data.action.sound_type != u32(-1)) {
-		this->object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
+		object->set_state_sound(data.action.sound_type, data.action.sound_delay == u32(-1));
 	}
 }
 
@@ -40,7 +40,7 @@ void CStateMonsterHideFromPoint::execute()
 bool CStateMonsterHideFromPoint::check_completion()
 {
 	if (data.action.time_out != 0) {
-		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal)
+		if (time_state_started + data.action.time_out < Device.dwTimeGlobal)
 			return true;
 	}
 

@@ -3,6 +3,17 @@
 #include "poltergeist.h"
 #include "../../../detail_path_manager.h"
 
+CPoltergeisMovementManager::CPoltergeisMovementManager(CPoltergeistBase* object) : 
+	inherited((CCustomMonster*)object), m_monster(object)
+{
+
+}
+
+CPoltergeisMovementManager::~CPoltergeisMovementManager()
+{
+
+}
+
 void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta)
 {
 	if (!m_monster->is_hidden()) {
@@ -39,7 +50,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_co
 	float				desirable_dist		=	dist;
 
 	// определить целевую точку
-	Fvector				target;
+	Fvector				target{};
 
 	u32 prev_cur_point_index = detail().curr_travel_point_index();
 
@@ -57,7 +68,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_co
 
 	target.set			(detail().path()[detail().curr_travel_point_index() + 1].position);
 	// определить направление к целевой точке
-	Fvector				dir_to_target;
+	Fvector				dir_to_target{};
 	dir_to_target.sub	(target, dest_position);
 
 	// дистанция до целевой точки
@@ -88,7 +99,7 @@ void CPoltergeisMovementManager::move_along_path(CPHMovementControl *movement_co
 	}
 
 	// установить позицию
-	Fvector				motion;
+	Fvector				motion{};
 	motion.mul			(dir_to_target, dist / dist_to_target);
 	dest_position.add	(motion);
 

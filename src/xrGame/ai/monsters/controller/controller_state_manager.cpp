@@ -24,24 +24,24 @@
 #include "../../../entitycondition.h"
 
 #include "controller_state_attack_hide.h"
-//#include "../states/state_test_state.h"
 
-CStateManagerController::CStateManagerController(CControllerBase* obj) : inherited(obj)
+
+CControllerBaseStateManager::CControllerBaseStateManager(CControllerBase* object) : inherited(object)
 {
-    m_pController = smart_cast<CControllerBase*>(obj);
+    pControllerBase = smart_cast<CControllerBase*>(object);
 
-    add_state(eStateRest, new CStateMonsterRest(obj));
-    add_state(eStatePanic, new CStateMonsterPanic(obj));
-    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(obj));
-    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(obj));
-    add_state(eStateHitted, new CStateMonsterHitted(obj));
-    add_state(eStateAttack, new CStateControllerAttack(obj));
+    add_state(eStateRest, new CStateMonsterRest(object));
+    add_state(eStatePanic, new CStateMonsterPanic(object));
+    add_state(eStateHearInterestingSound, new CStateMonsterHearInterestingSound(object));
+    add_state(eStateHearDangerousSound, new CStateMonsterHearDangerousSound(object));
+    add_state(eStateHitted, new CStateMonsterHitted(object));
+    add_state(eStateAttack, new CStateControllerAttack(object));
 
-    add_state(eStateEat, new CStateMonsterEat(obj));
-    add_state(eStateCustom, new CStateControlHide(obj));
+    add_state(eStateEat, new CStateMonsterEat(object));
+    add_state(eStateCustom, new CStateControlHide(object));
 }
 
-bool   CStateManagerController::check_control_start_conditions	(ControlCom::EControlType type)
+bool   CControllerBaseStateManager::check_control_start_conditions	(ControlCom::EControlType type)
 {
 	if ( type == ControlCom::eAntiAim )
 	{		
@@ -51,21 +51,17 @@ bool   CStateManagerController::check_control_start_conditions	(ControlCom::ECon
 	return false;
 }
 
-CStateManagerController::~CStateManagerController()
+CControllerBaseStateManager::~CControllerBaseStateManager()
 {
 }
 
-void CStateManagerController::reinit()
+void CControllerBaseStateManager::reinit()
 {
 	inherited::reinit();
-	m_pController->set_mental_state(CControllerBase::eStateIdle);
+	pControllerBase->set_mental_state(CControllerBase::eStateIdle);
 }
 
-
-#define FIND_ENEMY_TIME_ENEMY_HIDDEN	5000
-#define FIND_ENEMY_MAX_DISTANCE			10.f
-
-void CStateManagerController::execute()
+void CControllerBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 		

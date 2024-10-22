@@ -3,16 +3,17 @@
 
 class CBoarBase;
 
-class CustomBoarStateManager : public CMonsterStateManager
+class CBoarBaseStateManager : public CMonsterStateManager
 {
+protected:
 	using inherited = CMonsterStateManager;
 
-	CBoarBase* m_pBoar;
+	CBoarBase* pBoarBase;
 
 public:
 
-	CustomBoarStateManager(CBoarBase*object);
-					virtual ~CustomBoarStateManager();
+	CBoarBaseStateManager(CBaseMonster* object);
+					virtual ~CBoarBaseStateManager();
 
 	virtual void	execute				();
 	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}

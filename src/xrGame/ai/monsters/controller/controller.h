@@ -1,4 +1,5 @@
 #pragma once
+#include "../../ai_entity_definitions.h"
 #include "../BaseMonster/base_monster.h"
 #include "../anim_triple.h"
 #include "../../../../xrScripts/script_export_space.h"
@@ -13,7 +14,7 @@ class CControllerAura;
 class CControllerBase : public CBaseMonster,
 					public CControlledActor 
 {
-	typedef		CBaseMonster	inherited;
+	using		inherited = CBaseMonster;
 
 	u8					m_max_controlled_number;
 	ref_sound			control_start_sound;		// звук, который играется в голове у актера
@@ -40,8 +41,6 @@ class CControllerBase : public CBaseMonster,
 public:	
 	float			aura_radius;
 	float			aura_damage;
-
-	//////////////////////////////////////////////////////////////////////////
 
 public:	
 	CControllerPsyHit	*m_psy_hit;
@@ -71,42 +70,42 @@ public:
 
 public:
 					CControllerBase			();
-	virtual			~CControllerBase		();	
+	virtual			~CControllerBase		() override;	
 
-	virtual void	Load				(LPCSTR section);
-	virtual void	reload				(LPCSTR section);
-	virtual void	reinit				();
-	virtual void	UpdateCL			();
-	virtual void	shedule_Update		(u32 dt);
-	virtual void	Die					(CObject* who);
+	virtual void	Load				(LPCSTR section) override;
+	virtual void	reload				(LPCSTR section) override;
+	virtual void	reinit				() override;
+	virtual void	UpdateCL			() override;
+	virtual void	shedule_Update		(u32 dt) override;
+	virtual void	Die					(CObject* who) override;
 
-	virtual void	net_Destroy			();
-	virtual BOOL	net_Spawn			(CSE_Abstract *DC);
-	virtual void	net_Relcase			(CObject *O);
+	virtual void	net_Destroy			() override;
+	virtual BOOL	net_Spawn			(CSE_Abstract *DC) override;
+	virtual void	net_Relcase			(CObject *O) override;
 
-	virtual void	OnEvent(NET_Packet& P, u16 type);
+	virtual void	OnEvent(NET_Packet& P, u16 type) override;
 
-	virtual	void	CheckSpecParams		(u32 spec_params);
-	virtual void	InitThink			();
+	virtual	void	CheckSpecParams		(u32 spec_params) override;
+	virtual void	InitThink			() override;
 
-	virtual void	create_base_controls();	
+	virtual void	create_base_controls() override;
 	
-	virtual const MonsterSpace::SBoneRotation &head_orientation	() const;
+	virtual const MonsterSpace::SBoneRotation &head_orientation	() const override;
 
-	virtual void	TranslateActionToPathParams	();
+	virtual void	TranslateActionToPathParams	() override;
 
-	virtual bool	ability_pitch_correction () {return false;}
+	virtual bool	ability_pitch_correction ()  override {return false;}
 
 	//-------------------------------------------------------------------
 
-	virtual	bool	is_relation_enemy	(const CEntityAlive *tpEntityAlive) const;
+	virtual	bool	is_relation_enemy	(const CEntityAlive *tpEntityAlive) const override;
 	xr_vector<shared_str>				m_friend_community_overrides;
 	void								load_friend_community_overrides	(LPCSTR section);
 	bool								is_community_friend_overrides	(const CEntityAlive *tpEntityAlive) const;
 	//-------------------------------------------------------------------
 	// Controller ability
 			bool	HasUnderControl		() {return (!m_controlled_objects.empty());}
-			void	TakeUnderControl	(CEntity *);
+
 			void	UpdateControlled	();
 			void	FreeFromControl		();
 			void	OnFreedFromControl	(const CEntity *);  // если монстр сам себя освободил (destroyed || die)
@@ -144,9 +143,6 @@ public:
 public: 
 
 	void						draw_fire_particles();
-	
-	void						test_covers();
-
 
 public:
 	enum EMentalState {
@@ -156,29 +152,21 @@ public:
 
 	void				set_mental_state			(EMentalState state);
 	virtual void		HitEntity					(const CEntity *pEntity, float fDamage, 
-													 float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks);
+													 float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks) override;
 
 public:
-	virtual bool		use_center_to_aim			() const {return true;}
+	virtual bool		use_center_to_aim			() const override {return true;}
 
 	SAnimationTripleData anim_triple_control;
 
-	virtual	char*		get_monster_class_name		() { return (char*) "controller"; }
+	virtual	char*		get_monster_class_name		() override { return (char*) "controller"; }
 
 private:
 	float				m_stamina_hit;
 
 
 #ifdef DEBUG
-	virtual CBaseMonster::SDebugInfo show_debug_info();
-
-#endif
-
-private:
-#ifdef _DEBUG	
-		virtual void	debug_on_key		(int key);
-
-		Fvector			P1,P2;
+	virtual CBaseMonster::SDebugInfo show_debug_info() override;
 #endif
 
 public:

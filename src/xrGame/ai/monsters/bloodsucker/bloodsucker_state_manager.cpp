@@ -29,9 +29,9 @@
 #include "bloodsucker_attack_state.h"
 #include "bloodsucker_vampire_execute.h"
 
-CustomBloodsukerStateManager::CustomBloodsukerStateManager(CBloodsuckerBase *object) : inherited(object)
+CBloodsuckerBaseStateManager::CBloodsuckerBaseStateManager(CBloodsuckerBase *object) : inherited(object)
 {
-	m_pBloodsucker = smart_cast<CBloodsuckerBase*>(object);
+	pBloodsuckerBase = smart_cast<CBloodsuckerBase*>(object);
 
 	add_state(eStateRest,					new CStateMonsterRest					(object));
 	add_state(eStatePanic,					new CStateMonsterPanic				(object));
@@ -45,15 +45,14 @@ CustomBloodsukerStateManager::CustomBloodsukerStateManager(CBloodsuckerBase *obj
 	add_state(eStateVampire_Execute,		new CustomBloodsuckerStateVampireExecute	(object));
 }
 
-CustomBloodsukerStateManager::~CustomBloodsukerStateManager()
+CBloodsuckerBaseStateManager::~CBloodsuckerBaseStateManager()
 {
 
 }
 
-
-void CustomBloodsukerStateManager::drag_object()
+void CBloodsuckerBaseStateManager::drag_object()
 {
-	CEntityAlive* const ph_obj = m_pBloodsucker->m_cob;
+	CEntityAlive* const ph_obj = pBloodsuckerBase->m_cob;
 	if ( !ph_obj )
 	{
 		return;
@@ -72,24 +71,24 @@ void CustomBloodsukerStateManager::drag_object()
 	}
 
 	{
-		const u16 drag_bone = kinematics->LL_BoneID(m_pBloodsucker->m_str_cel);
+		const u16 drag_bone = kinematics->LL_BoneID(pBloodsuckerBase->m_str_cel);
 		object->character_physics_support()->movement()->PHCaptureObject(ph_obj, drag_bone);
 	}
 
 	IPHCapture* const capture = object->character_physics_support()->movement()->PHCapture();
 
-	if ( capture && !capture->Failed() && m_pBloodsucker->is_animated() )
+	if ( capture && !capture->Failed() && pBloodsuckerBase->is_animated() )
 	{
-		m_pBloodsucker->start_drag();
+		pBloodsuckerBase->start_drag();
 	}
 }
 
-void CustomBloodsukerStateManager::update ()
+void CBloodsuckerBaseStateManager::update ()
 {
 	inherited::update();
 }
 
-bool CustomBloodsukerStateManager::check_vampire()
+bool CBloodsuckerBaseStateManager::check_vampire()
 {
 	if ( prev_substate != eStateVampire_Execute )
 	{
@@ -102,7 +101,7 @@ bool CustomBloodsukerStateManager::check_vampire()
 	return false;
 }
 
-void CustomBloodsukerStateManager::execute ()
+void CBloodsuckerBaseStateManager::execute ()
 {
 	u32 state_id = u32(-1);
 

@@ -19,7 +19,7 @@
 
 #include "../states/monster_state_home_point_attack.h"
 
-CStateManagerPseudodog::CStateManagerPseudodog(CBaseMonster* object) : inherited(object)
+CPseudoDogBaseStateManager::CPseudoDogBaseStateManager(CBaseMonster* object) : inherited(object)
 {
     add_state(eStateRest, new CStateMonsterRest(object));
     add_state(eStatePanic, new CStateMonsterPanic(object));
@@ -35,12 +35,12 @@ CStateManagerPseudodog::CStateManagerPseudodog(CBaseMonster* object) : inherited
     add_state(eStateHitted, new CStateMonsterHitted(object));
 }
 
-CStateManagerPseudodog::~CStateManagerPseudodog()
+CPseudoDogBaseStateManager::~CPseudoDogBaseStateManager()
 {
 
 }
 
-void CStateManagerPseudodog::execute()
+void CPseudoDogBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 

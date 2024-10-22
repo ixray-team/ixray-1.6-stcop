@@ -3,16 +3,16 @@
 
 class CCatBase;
 
-class CustomCatStateManager : public CMonsterStateManager {
-
+class CCatBaseStateManager : public CMonsterStateManager {
+protected:
 	using inherited = CMonsterStateManager;
 
 	u32					m_rot_jump_last_time;
 
 public:
-	CustomCatStateManager(CCatBase* object);
-	virtual				~CustomCatStateManager();
+	CCatBaseStateManager(CCatBase* object);
+	virtual				~CCatBaseStateManager() override;
 
-	virtual	void		execute				();
-	virtual void		remove_links		(CObject* object) { inherited::remove_links(object);}
+	virtual	void		execute				() override;
+	virtual void		remove_links		(CObject* object) override { inherited::remove_links(object);}
 };

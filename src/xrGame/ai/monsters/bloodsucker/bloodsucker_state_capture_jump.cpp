@@ -9,7 +9,7 @@
 
 CustomBloodsuckerStateJump::CustomBloodsuckerStateJump(CBloodsuckerBase* object) : inherited(object)
 {
-	this->add_state(eStateCustom, new CStateMonsterCustomAction(object));
+	add_state(eStateCustom, new CStateMonsterCustomAction(object));
 }
 
 CustomBloodsuckerStateJump::~CustomBloodsuckerStateJump()
@@ -19,17 +19,17 @@ CustomBloodsuckerStateJump::~CustomBloodsuckerStateJump()
 
 void CustomBloodsuckerStateJump::execute()
 {
-	this->select_state(eStateCustom);
+	select_state(eStateCustom);
 
-	this->get_state_current()->execute();
-	this->prev_substate = this->current_substate;
+	get_state_current()->execute();
+	prev_substate = current_substate;
 }
 
 void CustomBloodsuckerStateJump::setup_substates()
 {
-	state_ptr state = this->get_state_current();
-	if (this->current_substate == eStateCustom) {
-		SStateDataAction data;
+	state_ptr state = get_state_current();
+	if (current_substate == eStateCustom) {
+		SStateDataAction data{};
 
 		data.action = ACT_STAND_IDLE;
 		data.time_out = 0;			// do not use time out

@@ -4,14 +4,16 @@
 
 class	CStateControllerFastMove : public CState {
 protected:
-	typedef CState		inherited;
-	CControllerBase* m_pController;
+	using inherited = CState;
+	CControllerBase* pControllerBase;
 
 public:
-	CStateControllerFastMove(CBaseMonster* obj);
-	virtual void		initialize					();	
-	virtual void		finalize					();	
-	virtual void		critical_finalize			();
+	CStateControllerFastMove(CBaseMonster* object);
+	virtual ~CStateControllerFastMove() override;
 
-	virtual void		execute						();
+	virtual void		initialize					() override;
+	virtual void		finalize					() override;
+	virtual void		critical_finalize			() override;
+
+	virtual void		execute						() override;
 };

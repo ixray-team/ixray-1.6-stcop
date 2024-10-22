@@ -39,29 +39,56 @@
 
 #include "controller_psy_hit.h"
 #include "../monster_cover_manager.h"
+#include "controller_psy_aura_effector.h"
 #include "controller_psy_aura.h"
-
-const u32	_pmt_psy_attack_delay		= 2000;
-const float	_pmt_psy_attack_min_angle	= deg(5);
-
-
-namespace controller::detail
-{
-	// default settings for tube fire:
-	const u32	default_tube_condition_see_duration = 50;
-	const u32	default_tube_condition_min_delay = 10000;
-	const float default_tube_condition_min_distance = 10;
-	const float default_stamina_hit = 0.2f;
-}
 
 CControllerBase::CControllerBase()
 {
-	pStateManagerBase = new CStateManagerController(this);
+	pStateManagerBase = new CControllerBaseStateManager(this);
 	time_control_hit_started = 0;
 
 	m_psy_hit			= new CControllerPsyHit();
 
 	control().add		(m_psy_hit,  ControlCom::eComCustom1);
+
+	m_max_controlled_number = {};
+	control_start_sound = {};
+	control_hit_sound = {};
+
+	m_sound_hit_fx = {};
+	m_sndShockEffector = {};
+
+	m_control_effector = {};
+
+	active_control_fx = {};
+
+	particles_fire = {};
+
+	m_custom_anim_base = {};
+	m_custom_dir_base = {};
+
+	m_psy_fire_start_time = {};
+	m_psy_fire_delay = {};
+
+	m_tube_at_once = {};
+
+	aura_radius = {};
+	aura_damage = {};
+
+	m_sound_aura_left_channel = {};
+	m_sound_aura_right_channel = {};
+	m_sound_aura_hit_left_channel = {};
+	m_sound_aura_hit_right_channel = {};
+
+	m_sound_tube_start = {};
+	m_sound_tube_pull = {};
+	m_sound_tube_hit_left = {};
+	m_sound_tube_hit_right = {};
+
+	m_sound_tube_prepare = {};
+
+	m_velocity_move_fwd = {};
+	m_velocity_move_bkwd = {};
 }
 
 CControllerBase::~CControllerBase()
@@ -74,16 +101,10 @@ void CControllerBase::Load(LPCSTR section)
 {
 	inherited::Load	(section);
 
-	// Load Control FX texture
-//	m_UIControlFX.Init(pSettings->r_string(section, "control_fx_texture"), "hud\\default",0,0,0);
-//	m_UIControlFX2.Init(pSettings->r_string(section, "control_fx_texture2"), "hud\\default",0,0,0);
-
 	m_max_controlled_number			= pSettings->r_u8(section,"Max_Controlled_Count");
 	m_controlled_objects.reserve	(m_max_controlled_number);
 
 	anim().accel_load			(section);
-	//anim().accel_chain_add		(eAnimWalkFwd,		eAnimRun);
-	//anim().accel_chain_add		(eAnimWalkDamaged,	eAnimRunDamaged);
 
 	::Sound->create(control_start_sound,pSettings->r_string(section,"sound_control_start"),	st_Effect,SOUND_TYPE_WORLD);
 	::Sound->create(control_hit_sound,	pSettings->r_string(section,"sound_control_hit"),	st_Effect,SOUND_TYPE_WORLD);
@@ -119,12 +140,7 @@ void CControllerBase::Load(LPCSTR section)
 	SVelocityParam &velocity_none		= move().get_velocity(MonsterMovement::eVelocityParameterIdle);	
 	SVelocityParam &velocity_turn		= move().get_velocity(MonsterMovement::eVelocityParameterStand);
 	SVelocityParam &velocity_walk		= move().get_velocity(MonsterMovement::eVelocityParameterWalkNormal);
-	//SVelocityParam &velocity_run		= move().get_velocity(MonsterMovement::eVelocityParameterRunNormal);
-	//SVelocityParam &velocity_walk_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterWalkDamaged);
-	//SVelocityParam &velocity_run_dmg	= move().get_velocity(MonsterMovement::eVelocityParameterRunDamaged);
 	SVelocityParam &velocity_steal		= move().get_velocity(MonsterMovement::eVelocityParameterSteal);
-	//SVelocityParam &velocity_drag		= move().get_velocity(MonsterMovement::eVelocityParameterDrag);
-
 
 	anim().AddAnim(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
 	anim().AddAnim(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
@@ -143,45 +159,6 @@ void CControllerBase::Load(LPCSTR section)
 	anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND);	
 	anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT);
 	anim().AddAnim(eAnimSleep,			"sit_sleep_",			-1, &velocity_none,		PS_SIT);
-
-
-
-	//anim().AddAnim(eAnimStandIdle,		"new_torso_steal_",			-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimStandTurnLeft,	"new_torso_steal_",			-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimStandTurnRight,	"new_torso_steal_",			-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimStandDamaged,	"new_torso_steal_",			-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimEat,			"sit_eat_",				-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimWalkFwd,		"new_torso_steal_",			-1, &velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimWalkDamaged,	"new_torso_steal_",			-1, &velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimRun,			"new_torso_steal_",			-1,	&velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimRunDamaged,		"new_torso_steal_",			-1, &velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimAttack,			"stand_attack_",		-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimSteal,			"new_torso_steal_",			-1, &velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimCheckCorpse,	"stand_check_corpse_",	-1,	&velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimDie,			"stand_die_",			-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND);	
-	//anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimSleep,			"sit_sleep_",			-1, &velocity_none,		PS_SIT);
-
-
-	//anim().AddAnim(eAnimStandIdle,		"stand_idle_",			-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimStandTurnLeft,	"stand_turn_ls_",		-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimStandTurnRight,	"stand_turn_rs_",		-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimStandDamaged,	"stand_idle_dmg_",		-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimSitIdle,		"sit_idle_",			-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimEat,			"sit_eat_",				-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimWalkFwd,		"stand_walk_fwd_",		-1, &velocity_walk,		PS_STAND);
-	//anim().AddAnim(eAnimWalkDamaged,	"stand_walk_dmg_",		-1, &velocity_walk_dmg,	PS_STAND);
-	//anim().AddAnim(eAnimRun,			"run_scared_",			-1,	&velocity_run,		PS_STAND);
-	//anim().AddAnim(eAnimRunDamaged,		"stand_run_dmg_",		-1, &velocity_run_dmg,	PS_STAND);
-	//anim().AddAnim(eAnimAttack,			"stand_attack_",		-1, &velocity_turn,		PS_STAND);
-	//anim().AddAnim(eAnimSteal,			"stand_steal_",			-1, &velocity_steal,	PS_STAND);
-	//anim().AddAnim(eAnimCheckCorpse,	"stand_check_corpse_",	-1,	&velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimDie,			"stand_die_",			-1, &velocity_none,		PS_STAND);
-	//anim().AddAnim(eAnimStandSitDown,	"stand_sit_down_",		-1, &velocity_none,		PS_STAND);	
-	//anim().AddAnim(eAnimSitStandUp,		"sit_stand_up_",		-1, &velocity_none,		PS_SIT);
-	//anim().AddAnim(eAnimSleep,			"sit_sleep_",			-1, &velocity_none,		PS_SIT);
 
 	anim().LinkAction(ACT_STAND_IDLE,	eAnimStandIdle);
 	anim().LinkAction(ACT_SIT_IDLE,		eAnimSitIdle);
@@ -233,21 +210,20 @@ void CControllerBase::Load(LPCSTR section)
 	LPCSTR tube_condition_min_delay_line    = "tube_condition_min_delay";
 	LPCSTR tube_condition_min_distance_line = "tube_condition_min_distance";
 
-	using namespace controller::detail;
 	m_tube_condition_see_duration = pSettings->line_exist(section, tube_see_duration_line) ?
 	                             	pSettings->r_u32(section, tube_see_duration_line) :
-									default_tube_condition_see_duration;
+		EntityDefinitions::CControllerBase::DEFAULT_TUBE_CONDITION_SEE_DURATION;
 
 	m_tube_condition_min_delay    = pSettings->line_exist(section, tube_condition_min_delay_line) ?
 	                             	pSettings->r_u32(section, tube_condition_min_delay_line) :
-									default_tube_condition_min_delay;
+		EntityDefinitions::CControllerBase::DEFAULT_TUBE_CONDITION_MIN_DELAY;
 
 	m_tube_condition_min_distance = pSettings->line_exist(section, tube_condition_min_distance_line) ?
 	                             	pSettings->r_float(section, tube_condition_min_distance_line) :
-									default_tube_condition_min_distance;
+		EntityDefinitions::CControllerBase::DEFAULT_TUBE_CONDITION_MIN_DISTANCE;
 
 	m_stamina_hit				  = READ_IF_EXISTS(pSettings, r_float, section, "stamina_hit",
-									default_stamina_hit);
+		EntityDefinitions::CControllerBase::DEFAULT_STAMINA_HIT);
 
 	PostLoad						(section);
 }
@@ -260,7 +236,7 @@ void CControllerBase::load_friend_community_overrides(LPCSTR section)
 	int item_count = _GetItemCount(src);
 	m_friend_community_overrides.resize(item_count);
 	for (int i=0; i<item_count; i++) {
-		string128	st;
+		string128	st{};
 		_GetItem	(src,i,st);
 		m_friend_community_overrides[i] = st;
 	}
@@ -375,7 +351,7 @@ void CControllerBase::reinit()
 	inherited::reinit();
 
 	m_psy_fire_start_time	= 0;
-	m_psy_fire_delay		= _pmt_psy_attack_delay;
+	m_psy_fire_delay		= EntityDefinitions::CControllerBase::PMT_PSY_ATTACK_DELAY;
 
 	control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveFwd,	CDetailPathManager::STravelParams(m_velocity_move_fwd.velocity.linear,	m_velocity_move_fwd.velocity.angular_path,	m_velocity_move_fwd.velocity.angular_real));
 	control().path_builder().detail().add_velocity(MonsterMovement::eControllerVelocityParameterMoveBkwd,	CDetailPathManager::STravelParams(m_velocity_move_bkwd.velocity.linear,	m_velocity_move_bkwd.velocity.angular_path, m_velocity_move_bkwd.velocity.angular_real));
@@ -396,10 +372,6 @@ void CControllerBase::control_hit()
 	Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
 
 	play_control_sound_hit		();
-/*
-	active_control_fx			= true;
-	time_control_hit_started	= Device.dwTimeGlobal;
-*/
 }
 
 #define TEXTURE_SIZE_PERCENT 2.f
@@ -457,9 +429,6 @@ void CControllerBase::shedule_Update(u32 dt)
 		UpdateControlled();
 		if (can_tube_fire()) tube_fire();
 	}
-
-	// DEBUG
-	test_covers();
 }
 
 void CControllerBase::Die(CObject* who)
@@ -498,8 +467,6 @@ void CControllerBase::OnFreedFromControl(const CEntity *entity)
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 void CControllerBase::draw_fire_particles()
 {
 	if (!EnemyMan.get_enemy()) return;
@@ -507,32 +474,20 @@ void CControllerBase::draw_fire_particles()
 	if (!EnemyMan.see_enemy_now()) return;
 
 	// вычислить позицию и направленность партикла
-	Fvector my_head_pos;
+	Fvector my_head_pos{};
 	my_head_pos.set	(get_head_position(this));
 	
-	Fvector position;
+	Fvector position{};
 	position.set	(get_head_position(enemy));
 	position.y		-= 0.5f;
 	
-	Fvector			dir;
+	Fvector			dir{};
 	dir.sub			(position, my_head_pos);
 	dir.normalize	();
 
 	PlayParticles(particles_fire, my_head_pos, dir);
 
-	// check probability
-	/*if (Random.randI(100) > 30)*/
-	{
-//		Hit_Psy						(enemy, m_tube_damage / 2.f);
-		play_control_sound_hit		();
-	}
-
-	//m_sound_hit_fx.set_volume(10.0f);
-	//if(!m_sndShockEffector)
-	//	m_sndShockEffector = new SndShockEffector();
-
-	//m_sndShockEffector->Start(m_sound_hit_fx._handle()->length_ms(), 10.f );
-	//m_sound_hit_fx.play_at_pos(this, Level().CurrentEntity()->Position());
+	play_control_sound_hit		();
 }
 
 void CControllerBase::psy_fire()
@@ -540,10 +495,6 @@ void CControllerBase::psy_fire()
 	if (!EnemyMan.get_enemy())	return;
 	
 	draw_fire_particles			();
-/*	
-	active_control_fx			= true;
-	time_control_hit_started	= Device.dwTimeGlobal;
-*/
 }
 
 bool CControllerBase::can_psy_fire()
@@ -567,7 +518,7 @@ bool CControllerBase::can_psy_fire()
 	float dir_yaw = Fvector().sub(EnemyMan.get_enemy()->Position(), Position()).getH();
 	dir_yaw		  = angle_normalize(-dir_yaw);
 
-	if ( angle_difference(cur_yaw, dir_yaw) > _pmt_psy_attack_min_angle )
+	if ( angle_difference(cur_yaw, dir_yaw) > EntityDefinitions::CControllerBase::PMT_PSY_ATTACK_MIN_ANGLE)
 	{
 		return false;
 	}
@@ -582,13 +533,9 @@ void CControllerBase::set_psy_fire_delay_zero()
 }
 void CControllerBase::set_psy_fire_delay_default()
 {
-	m_psy_fire_delay = _pmt_psy_attack_delay;
+	m_psy_fire_delay = EntityDefinitions::CControllerBase::PMT_PSY_ATTACK_DELAY;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// TUBE
-//////////////////////////////////////////////////////////////////////////
 
 void CControllerBase::tube_fire()
 {
@@ -597,8 +544,6 @@ void CControllerBase::tube_fire()
 
 bool CControllerBase::can_tube_fire()
 {
-	using namespace controller::detail;
-
 	if ( 0 && m_tube_at_once )
 	{
 		if ( EnemyMan.get_enemy() && EnemyMan.see_enemy_now() && m_psy_hit->check_start_conditions() )
@@ -624,19 +569,9 @@ bool CControllerBase::can_tube_fire()
 	return true;
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-
 const MonsterSpace::SBoneRotation &CControllerBase::head_orientation	() const
 {
 	return m_custom_dir_base->get_head_orientation();
-}
-
-void CControllerBase::test_covers()
-{
-	//////////////////////////////////////////////////////////////////////////
-	// update covers
-	//////////////////////////////////////////////////////////////////////////
 }
 
 void CControllerBase::create_base_controls()
@@ -653,12 +588,6 @@ void CControllerBase::create_base_controls()
 
 void CControllerBase::TranslateActionToPathParams()
 {
-	//if (m_mental_state == eStateIdle) {
-	//	inherited::TranslateActionToPathParams();
-	//	return;
-	//}
-	//custom_anim().set_path_params();
-
 	if ((anim().m_tAction != ACT_RUN) && 
 		(anim().m_tAction != ACT_WALK_FWD)) {
 		inherited::TranslateActionToPathParams();
@@ -728,8 +657,8 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 	switch (type)
 	{
 	case GE_CONTROLLER_PSY_FIRE: {
-		u16 actor_id;
-		u8 state;
+		u16 actor_id{};
+		u8 state{};
 		P.r_u16(actor_id);
 		P.r_u8(state);
 
@@ -757,7 +686,7 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 				Fvector target_pos = Position();
 				target_pos.y += 1.2f;
 
-				Fvector				dir;
+				Fvector				dir{};
 				dir.sub(target_pos, src_pos);
 
 				float dist = dir.magnitude();
@@ -786,7 +715,7 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 
 				dir.sub(src_pos, target_pos);
 				dir.normalize();
-				float h, p;
+				float h{}, p{};
 				dir.getHP(h, p);
 				dir.setHP(h, p + PI_DIV_3);
 				Actor()->character_physics_support()->movement()->ApplyImpulse(dir, Actor()->GetMass() * 530.f);
@@ -798,14 +727,14 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 			}
 
 			CObject* obj = Level().Objects.net_Find(actor_id);
-			Fvector my_head_pos;
+			Fvector my_head_pos{};
 			my_head_pos.set(get_head_position(this));
 
-			Fvector position;
+			Fvector position{};
 			position.set(get_head_position(obj));
 			position.y -= 0.5f;
 
-			Fvector			dir;
+			Fvector			dir{};
 			dir.sub(position, my_head_pos);
 			dir.normalize();
 
@@ -815,14 +744,14 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 		if (state == 2)
 		{
 			CObject* obj = Level().Objects.net_Find(actor_id);
-			Fvector my_head_pos;
+			Fvector my_head_pos{};
 			my_head_pos.set(get_head_position(this));
 
-			Fvector position;
+			Fvector position{};
 			position.set(get_head_position(obj));
 			position.y -= 0.5f;
 
-			Fvector			dir;
+			Fvector			dir{};
 			dir.sub(position, my_head_pos);
 			dir.normalize();
 
@@ -855,6 +784,7 @@ void CControllerBase::OnEvent(NET_Packet& P, u16 type)
 	}
 	}
 }
+
 #ifdef DEBUG
 CBaseMonster::SDebugInfo CControllerBase::show_debug_info()
 {
@@ -873,10 +803,10 @@ CBaseMonster::SDebugInfo CControllerBase::show_debug_info()
 	{
 		Fvector enemy_pos = m_controlled_objects[i]->Position();
 		
-		Fvector dir;
+		Fvector dir{};
 		dir.sub(enemy_pos, Position());
 		dir.div(2.f);
-		Fvector new_pos;
+		Fvector new_pos{};
 		new_pos.add(Position(),dir);
 		new_pos.y += 10.f;
 
@@ -889,55 +819,3 @@ CBaseMonster::SDebugInfo CControllerBase::show_debug_info()
 	return CBaseMonster::SDebugInfo();
 }
 #endif
-
-#ifdef _DEBUG
-void CControllerBase::debug_on_key(int key)
-{
-	switch (key){
-	case SDL_SCANCODE_MINUS:
-		//m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		//m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-		
-		if (m_psy_hit->check_start_conditions()) {
-			control().activate(ControlCom::eComCustom1);
-		}
-		//P1.set		(Actor()->Position());		
-		//
-		//DBG().level_info(this).remove_item	(u32(0));
-		//DBG().level_info(this).add_item(P1,0.5f,COLOR_BLUE,0);
-	
-
-		//if (!fsimilar(P1.square_magnitude(),0.f) && 
-		//	!fsimilar(P2.square_magnitude(),0.f)) {
-		//	const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-		//	if (cover) {
-		//		DBG().level_info(this).remove_item	(3);
-		//		DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-		//	}
-		//}
-
-
-		break;
-	case SDL_SCANCODE_EQUALS:
-		P2.set		(Actor()->Position());
-		DBG().level_info(this).remove_item	(1);
-		DBG().level_info(this).add_item(P2,0.5f,COLOR_GREEN,1);
-
-		if (!fsimilar(P1.square_magnitude(),0.f) && 
-			!fsimilar(P2.square_magnitude(),0.f)) {
-			const CCoverPoint *cover = CoverMan->find_cover(P1,P2,10.f,40.f);
-			if (cover) {
-				DBG().level_info(this).remove_item	(3);
-				DBG().level_info(this).add_item		(cover->position(),0.8f,COLOR_RED,3);
-			}
-		}
-		
-		//m_sound_aura_hit_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
-		//m_sound_aura_hit_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
-		break;
-	}
-}
-#endif
-
-
-

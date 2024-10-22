@@ -16,7 +16,7 @@
 
 #include "../../../entitycondition.h"
 
-CustomFractureStateManager::CustomFractureStateManager(CFractureBase* object) : inherited(object)
+CFractureBaseStateManager::CFractureBaseStateManager(CFractureBase* object) : inherited(object)
 {
     add_state(eStateRest, new CStateMonsterRest(object));
     add_state(eStateAttack, new CStateMonsterAttack(object));
@@ -27,11 +27,12 @@ CustomFractureStateManager::CustomFractureStateManager(CFractureBase* object) : 
 }
 
 
-CustomFractureStateManager::~CustomFractureStateManager()
+CFractureBaseStateManager::~CFractureBaseStateManager()
 {
+
 }
 
-void CustomFractureStateManager::execute()
+void CFractureBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();

@@ -6,6 +6,7 @@ class CustomBloodsuckerAlienEffectorPP;
 
 class CustomBloodsuckerAlien
 {
+protected:
 	CBloodsuckerBase			*m_object;
 	
 	bool						m_active;
@@ -16,10 +17,10 @@ class CustomBloodsuckerAlien
 	bool						m_crosshair_show;
 
 public:
-	CustomBloodsuckerAlien	();
-			virtual ~CustomBloodsuckerAlien	();
+	CustomBloodsuckerAlien();
+	~CustomBloodsuckerAlien();
 	
-	void	init_external		(CBloodsuckerBase*object);
+	void	init_external		(CBloodsuckerBase* object);
 	void	reinit				();
 
 	void	activate			();

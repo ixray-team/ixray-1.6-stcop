@@ -30,7 +30,7 @@ u32	CBloodsuckerBase::m_time_last_vampire = 0;
 
 CBloodsuckerBase::CBloodsuckerBase()
 {
-	pStateManagerBase = new CustomBloodsukerStateManager(this);
+	pStateManagerBase = new CBloodsuckerBaseStateManager(this);
 
 	m_alien_control.init_external(this);
 	m_drag_anim_jump = false;
@@ -243,16 +243,16 @@ void CBloodsuckerBase::Load(LPCSTR section)
 	READ_IF_EXISTS(pSettings, r_float, section, "separate_factor", 0.f);
 
 	m_visibility_state_change_min_delay	 = READ_IF_EXISTS(pSettings, r_u32, section, 
-		SBloodsuckerProperies::visibilityStateChangeMinDelayString,
-		SBloodsuckerProperies::defaultVisibilityStateChangeMinDelay);
+		EntityDefinitions::CBloodsuckerBase::visibilityStateChangeMinDelayString,
+		EntityDefinitions::CBloodsuckerBase::defaultVisibilityStateChangeMinDelay);
 
 	m_full_visibility_radius		=	READ_IF_EXISTS(pSettings, r_float, section, 
-		SBloodsuckerProperies::fullVisibilityRadiusString,
-		SBloodsuckerProperies::defaultPartialVisibilityRadius);
+		EntityDefinitions::CBloodsuckerBase::fullVisibilityRadiusString,
+		EntityDefinitions::CBloodsuckerBase::defaultPartialVisibilityRadius);
 
 	m_partial_visibility_radius		=	READ_IF_EXISTS(	pSettings, r_float, section, 
-		SBloodsuckerProperies::partialVisibilityRadiusString,
-		SBloodsuckerProperies::defaultPartialVisibilityRadius);
+		EntityDefinitions::CBloodsuckerBase::partialVisibilityRadiusString,
+		EntityDefinitions::CBloodsuckerBase::defaultPartialVisibilityRadius);
 
 	m_visibility_state						=	unset;
 	m_visibility_state_last_changed_time	=	0;
@@ -418,17 +418,17 @@ BOOL CBloodsuckerBase::net_Spawn (CSE_Abstract* DC)
 
 float   CBloodsuckerBase::get_full_visibility_radius ()
 {
-	return override_if_debug(SBloodsuckerProperies::fullVisibilityRadiusString, m_full_visibility_radius);
+	return override_if_debug(EntityDefinitions::CBloodsuckerBase::fullVisibilityRadiusString, m_full_visibility_radius);
 }
 
 float   CBloodsuckerBase::get_partial_visibility_radius ()
 {
-	return override_if_debug(SBloodsuckerProperies::partialVisibilityRadiusString, m_partial_visibility_radius);
+	return override_if_debug(EntityDefinitions::CBloodsuckerBase::partialVisibilityRadiusString, m_partial_visibility_radius);
 }
 
 TTime   CBloodsuckerBase::get_visibility_state_change_min_delay ()
 {
-	return override_if_debug(SBloodsuckerProperies::visibilityStateChangeMinDelayString, m_visibility_state_change_min_delay);
+	return override_if_debug(EntityDefinitions::CBloodsuckerBase::visibilityStateChangeMinDelayString, m_visibility_state_change_min_delay);
 }
 
 CBloodsuckerBase::visibility_t   CBloodsuckerBase::get_visibility_state () const
@@ -491,11 +491,11 @@ void   CBloodsuckerBase::update_invisibility ()
 	{
 		set_visibility_state				(full_visibility);
 	}
-	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + SBloodsuckerProperies::defaultRunawayInvisibleTime/6 )
+	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + EntityDefinitions::CBloodsuckerBase::defaultRunawayInvisibleTime/6 )
 	{
 		set_visibility_state				(partial_visibility);
 	}
-	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + SBloodsuckerProperies::defaultRunawayInvisibleTime)
+	else if ( Device.dwTimeGlobal < m_runaway_invisible_time + EntityDefinitions::CBloodsuckerBase::defaultRunawayInvisibleTime)
 	{
 		set_visibility_state				(no_visibility);
 	}
@@ -524,7 +524,7 @@ void   CBloodsuckerBase::update_invisibility ()
 
 u8 CBloodsuckerBase::GetCustomSyncFlag() const
 {
-	Flags8 flag;
+	Flags8 flag{};
 	flag.zero();
 
 	switch (get_visibility_state())
@@ -551,7 +551,7 @@ u8 CBloodsuckerBase::GetCustomSyncFlag() const
 
 void CBloodsuckerBase::ProcessCustomSyncFlag_CL(u8 flags)
 {
-	Flags8 flag;
+	Flags8 flag{};
 	flag.flags = flags;
 
 	visibility_t new_state;
@@ -629,10 +629,10 @@ void CBloodsuckerBase::shedule_Update(u32 dt)
 
 	if (!CControlledActor::is_turning() && !m_client_effector) {
 		IKinematics* pK = smart_cast<IKinematics*>(Visual());
-		Fmatrix bone_transform;
+		Fmatrix bone_transform{};
 		bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
 
-		Fmatrix global_transform;
+		Fmatrix global_transform{};
 		global_transform.mul_43(XFORM(), bone_transform);
 
 		CControlledActor::look_point(global_transform.c);
@@ -762,7 +762,7 @@ void CBloodsuckerBase::predator_start()
 		control().animation().restart();
 	else
 	{
-		MotionID mid;
+		MotionID mid{};
 		mid.idx = u_last_motion_idx;
 		mid.slot = u_last_motion_slot;
 		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
@@ -825,7 +825,7 @@ void CBloodsuckerBase::predator_stop()
 		control().animation().restart();
 	else
 	{
-		MotionID mid;
+		MotionID mid{};
 		mid.idx = u_last_motion_idx;
 		mid.slot = u_last_motion_slot;
 		if (mid.valid() && u_last_motion_idx != u16(-1) && u_last_motion_slot != u16(-1)) {
@@ -960,7 +960,7 @@ void   CBloodsuckerBase::release_stand_sleep_animation ()
 
 void CBloodsuckerBase::sendToStartVampire(CActor* pA)
 {
-	NET_Packet	tmp_packet;
+	NET_Packet	tmp_packet{};
 	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_START, ID());
 	//tmp_packet.w_u16(pA->ID());
 	CSE_Abstract* e_who = Level().Server->ID_to_entity(pA->ID());
@@ -970,7 +970,7 @@ void CBloodsuckerBase::sendToStartVampire(CActor* pA)
 
 void CBloodsuckerBase::sendToStopVampire()
 {
-	NET_Packet	tmp_packet;
+	NET_Packet	tmp_packet{};
 	CGameObject::u_EventGen(tmp_packet, GE_BLOODSUCKER_VAMPIRE_STOP, ID());
 	//tmp_packet.w_u16(CControlledActor::m_actor->ID());
 	CSE_Abstract* e_who = Level().Server->ID_to_entity(CControlledActor::m_actor->ID());
@@ -990,16 +990,16 @@ void CBloodsuckerBase::OnEvent(NET_Packet& P, u16 type)
 		{
 			CControlledActor::install(Actor());
 			IKinematics* pK = smart_cast<IKinematics*>(Visual());
-			Fmatrix bone_transform;
+			Fmatrix bone_transform{};
 			bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
 
-			Fmatrix global_transform;
+			Fmatrix global_transform{};
 			global_transform.mul_43(XFORM(), bone_transform);
 
 			CControlledActor::look_point(global_transform.c);
 
 			HUD().SetRenderable(false);
-			NET_Packet			P;
+			NET_Packet			P{};
 			Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
 			P.w_u16(INV_STATE_BLOCK_ALL);
 			P.w_u8(u8(true));
@@ -1018,7 +1018,7 @@ void CBloodsuckerBase::OnEvent(NET_Packet& P, u16 type)
 				CControlledActor::release();
 
 			HUD().SetRenderable(true);
-			NET_Packet			P;
+			NET_Packet			P{};
 			Actor()->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
 			P.w_u16(INV_STATE_BLOCK_ALL);
 			P.w_u8(u8(false));

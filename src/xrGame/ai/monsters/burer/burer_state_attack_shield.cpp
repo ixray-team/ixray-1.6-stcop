@@ -10,25 +10,32 @@
 
 #include "../states/monster_state_attack_on_run.h"
 
-CStateBurerShield::CStateBurerShield(CBaseMonster* obj) : inherited(obj)
+CStateBurerShield::CStateBurerShield(CBaseMonster* object) : inherited(object)
 {
-	m_pBurer = smart_cast<CBurerBase*>(obj);
+	pBurerBase = smart_cast<CBurerBase*>(object);
+
+	m_started = {};
 
 	m_last_shield_started = 0;
 	m_shield_start_anim_length_sec = 0;
 	m_next_particle_allowed = 0;
 }
 
+CStateBurerShield::~CStateBurerShield()
+{
+
+}
+
 void   CStateBurerShield::initialize()
 {
 	inherited::initialize();
-	this->object->set_script_capture(false);
+	object->set_script_capture(false);
 	m_last_shield_started = current_time();
 	m_next_particle_allowed = 0;
 	m_started = false;
 
-	MotionID	motion;
-	this->object->anim().get_animation_info(eAnimShieldStart, 0, motion, m_shield_start_anim_length_sec);
+	MotionID	motion{};
+	object->anim().get_animation_info(eAnimShieldStart, 0, motion, m_shield_start_anim_length_sec);
 }
 
 void   CStateBurerShield::execute()
@@ -36,48 +43,48 @@ void   CStateBurerShield::execute()
 	if (!m_started) // && current_time() > m_last_shield_started + TTime(m_shield_start_anim_length_sec*1000) )
 	{
 		m_started = true;
-		this->m_pBurer->ActivateShield();
+		pBurerBase->ActivateShield();
 	}
 
 	if (m_started &&
-		this->m_pBurer->m_shield_keep_particle != 0 &&
+		pBurerBase->m_shield_keep_particle != 0 &&
 		current_time() > m_next_particle_allowed)
 	{
-		this->object->CParticlesPlayer::StartParticles(this->m_pBurer->m_shield_keep_particle,
+		object->CParticlesPlayer::StartParticles(pBurerBase->m_shield_keep_particle,
 			Fvector().set(0, 1, 0),
-			this->object->ID(),
+			object->ID(),
 			-1,
 			true);
 
-		m_next_particle_allowed = current_time() + this->m_pBurer->m_shield_keep_particle_period;
+		m_next_particle_allowed = current_time() + pBurerBase->m_shield_keep_particle_period;
 	}
 
-	this->m_pBurer->face_enemy();
-	this->object->set_action(ACT_STAND_IDLE);
+	pBurerBase->face_enemy();
+	object->set_action(ACT_STAND_IDLE);
 
-	this->object->anim().set_override_animation(m_started ? eAnimShieldContinue : eAnimShieldStart);
+	object->anim().set_override_animation(m_started ? eAnimShieldContinue : eAnimShieldStart);
 }
 
 void   CStateBurerShield::finalize()
 {
 	inherited::finalize();
-	this->m_pBurer->DeactivateShield();
-	this->object->set_script_capture(true);
+	pBurerBase->DeactivateShield();
+	object->set_script_capture(true);
 }
 
 void   CStateBurerShield::critical_finalize()
 {
 	inherited::critical_finalize();
-	this->m_pBurer->DeactivateShield();
-	this->object->set_script_capture(false);
+	pBurerBase->DeactivateShield();
+	object->set_script_capture(false);
 }
 
 bool   CStateBurerShield::check_start_conditions()
 {
-	if (current_time() < m_last_shield_started + this->m_pBurer->m_shield_time + this->m_pBurer->m_shield_cooldown)
+	if (current_time() < m_last_shield_started + pBurerBase->m_shield_time + pBurerBase->m_shield_cooldown)
 		return							false;
 
-	if (!this->object->EnemyMan.enemy_see_me_now())
+	if (!object->EnemyMan.enemy_see_me_now())
 		return							false;
 
 	return								true;
@@ -85,10 +92,10 @@ bool   CStateBurerShield::check_start_conditions()
 
 bool   CStateBurerShield::check_completion()
 {
-	if (current_time() > m_last_shield_started + this->m_pBurer->m_shield_time)
+	if (current_time() > m_last_shield_started + pBurerBase->m_shield_time)
 		return							true;
 
-	CEntityAlive const* enemy = this->object->EnemyMan.get_enemy();
+	CEntityAlive const* enemy = object->EnemyMan.get_enemy();
 	if (!enemy)
 		return							true;
 
@@ -98,7 +105,7 @@ bool   CStateBurerShield::check_completion()
 			return						true;
 	}
 
-	if (!this->object->EnemyMan.get_enemy())
+	if (!object->EnemyMan.get_enemy())
 		return							true;
 
 	return								false;

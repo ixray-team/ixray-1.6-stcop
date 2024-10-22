@@ -31,9 +31,7 @@ BOOL CustomBloodsuckerAlienEffectorPP::Process(SPPInfo& pp)
 		target_factor = (target_factor > 0.5f) ? .3f : .6f;
 	}
 
-	const float PERIOD_SPEED = 0.3f;
-
-	def_lerp(factor, target_factor, PERIOD_SPEED, Device.fTimeDelta);
+	def_lerp(factor, target_factor, EntityDefinitions::CBloodsuckerBase::PERIOD_SPEED, Device.fTimeDelta);
 	pp.lerp(pp_identity, state, factor);
 
 	return TRUE;

@@ -6,7 +6,7 @@ class CPseudoPsyDogBase;
 
 class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
 {
-	
+protected:
 	CPseudoPsyDogBase					*m_object;
 	CActor					*m_actor;
 
@@ -14,7 +14,9 @@ class CPsyDogAura : public CPPEffectorCustomController<CPPEffectorPsyDogAura>
 	u32						m_time_phantom_saw_actor;
 
 public:
-					CPsyDogAura						(CPseudoPsyDogBase *dog) : m_object(dog){}
+	CPsyDogAura(CBaseMonster* object);
+	~CPsyDogAura();
+
 			void	reinit							();
 			void	on_death						();
 			void	update_schedule					();

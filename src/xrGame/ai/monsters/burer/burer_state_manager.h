@@ -3,15 +3,18 @@
 
 class CBurerBase;
 
-class CStateManagerBurer : public CMonsterStateManager {
-	typedef CMonsterStateManager inherited;
+class CBurerBaseBaseStateManager : public CMonsterStateManager {
+protected:
+	using inherited = CMonsterStateManager;
 
-	CBurerBase* m_pBurer;
+	CBurerBase* pBurerBase;
 
 public:
-					CStateManagerBurer		(CBurerBase *monster); 
-	virtual void	execute					();
-	virtual void	setup_substates			();
-	virtual void	remove_links			(CObject* object_) { inherited::remove_links(object_);}
+	CBurerBaseBaseStateManager(CBaseMonster* object);
+					virtual ~CBurerBaseBaseStateManager() override;
+
+	virtual void	execute					() override;
+	virtual void	setup_substates			() override;
+	virtual void	remove_links			(CObject* object) override { inherited::remove_links(object);}
 };
 

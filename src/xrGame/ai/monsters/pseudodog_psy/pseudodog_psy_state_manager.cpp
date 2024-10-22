@@ -12,12 +12,17 @@
 
 #include "pseudodog_psy_state_psy_attack.h"
 
-CStateManagerPsyDog::CStateManagerPsyDog(CPseudoDogBase *monster) : inherited(monster)
+CPseudoPsyDogBaseStateManager::CPseudoPsyDogBaseStateManager(CPseudoDogBase* object) : inherited(object)
 {
 
 }
 
-void CStateManagerPsyDog::execute()
+CPseudoPsyDogBaseStateManager::~CPseudoPsyDogBaseStateManager()
+{
+
+}
+
+void CPseudoPsyDogBaseStateManager::execute()
 {
 	inherited::execute();
 }

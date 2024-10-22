@@ -21,8 +21,8 @@
 
 CStateMonsterSquadRest::CStateMonsterSquadRest(CBaseMonster* obj) : inherited(obj)
 {
-    this->add_state(eStateSquad_Rest_Idle, new CStateMonsterCustomAction(obj));
-    this->add_state(eStateSquad_Rest_WalkAroundLeader, new CStateMonsterMoveToPoint(obj));
+    add_state(eStateSquad_Rest_Idle, new CStateMonsterCustomAction(obj));
+    add_state(eStateSquad_Rest_WalkAroundLeader, new CStateMonsterMoveToPoint(obj));
 }
 
 
@@ -33,19 +33,19 @@ CStateMonsterSquadRest::~CStateMonsterSquadRest()
 
 void CStateMonsterSquadRest::reselect_state()
 {
-	this->select_state(Random.randI(2) ? eStateSquad_Rest_Idle : eStateSquad_Rest_WalkAroundLeader);
+	select_state(Random.randI(2) ? eStateSquad_Rest_Idle : eStateSquad_Rest_WalkAroundLeader);
 }
 
 
 void CStateMonsterSquadRest::setup_substates()
 {
-	state_ptr state = this->get_state_current();
+	state_ptr state = get_state_current();
 
-	if (this->current_substate == eStateSquad_Rest_Idle) {
+	if (current_substate == eStateSquad_Rest_Idle) {
 		SStateDataAction data;
 		data.action = ACT_REST;
 		data.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.sound_delay = object->db().m_dwIdleSndDelay;
 		data.time_out = Random.randI(MIN_TIME_IDLE, MAX_TIME_IDLE);
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
@@ -53,18 +53,18 @@ void CStateMonsterSquadRest::setup_substates()
 		return;
 	}
 
-	if (this->current_substate == eStateSquad_Rest_WalkAroundLeader) {
+	if (current_substate == eStateSquad_Rest_WalkAroundLeader) {
 		SStateDataMoveToPoint data;
-		CMonsterSquad* squad = monster_squad().get_squad(this->object);
+		CMonsterSquad* squad = monster_squad().get_squad(object);
 
-		if (this->object->control().path_builder().get_node_in_radius(squad->GetLeader()->ai_location().level_vertex_id(), 8.f, LEADER_RADIUS, FIND_POINT_ATTEMPTS, data.vertex)) {
+		if (object->control().path_builder().get_node_in_radius(squad->GetLeader()->ai_location().level_vertex_id(), 8.f, LEADER_RADIUS, FIND_POINT_ATTEMPTS, data.vertex)) {
 			data.point = ai().level_graph().vertex_position(data.vertex);
 		}
 		else {
 
 			Fvector dest_pos = random_position(squad->GetLeader()->Position(), LEADER_RADIUS);
-			if (!this->object->control().path_builder().restrictions().accessible(dest_pos)) {
-				data.vertex = this->object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);
+			if (!object->control().path_builder().restrictions().accessible(dest_pos)) {
+				data.vertex = object->control().path_builder().restrictions().accessible_nearest(dest_pos, data.point);
 			}
 			else {
 				data.point = dest_pos;
@@ -78,7 +78,7 @@ void CStateMonsterSquadRest::setup_substates()
 		data.accel_type = eAT_Calm;
 		data.completion_dist = 2.f;
 		data.action.sound_type = MonsterSound::eMonsterSoundIdle;
-		data.action.sound_delay = this->object->db().m_dwIdleSndDelay;
+		data.action.sound_delay = object->db().m_dwIdleSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataMoveToPoint));
 

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "poltergeist.h"
+#include "poltergeist_special_ability.h"
+#include "poltergeist_flame.h"
+#include "poltergeist_tele.h"
 #include "poltergeist_state_manager.h"
 #include "../../../characterphysicssupport.h"
 #include "../../../PHMovementControl.h"
@@ -24,13 +27,48 @@ void SetActorVisibility(u16 who, float value);
 
 CPoltergeistBase::CPoltergeistBase()
 {
-	pStateManagerBase = new CStateManagerPoltergeist(this);
+	pStateManagerBase = new CPoltergeistBaseStateManager(this);
 	
 	invisible_vel.set			(0.1f, 0.1f);
 	
 	m_flame						= 0;
 	m_tele						= 0;
 	m_actor_ignore				= false;
+
+	m_height = {};
+	m_disable_hide = {};
+
+	invisible_vel = {};
+
+	m_last_detection_time = {};
+	m_last_actor_pos = {};
+	m_detection_pp_effector_name = {};
+	m_detection_pp_type_index = {};
+	m_detection_near_range_factor = {};
+	m_detection_far_range_factor = {};
+	m_detection_far_range = {};
+	m_detection_speed_factor = {};
+	m_detection_loose_speed = {};
+	m_current_detection_level = {};
+	m_detection_success_level = {};
+	m_detection_max_level = {};
+
+	m_detect_without_sight = {};
+
+	m_height_change_velocity = {};
+	m_height_change_min_time = {};
+	m_height_change_max_time = {};
+	m_height_min = {};
+	m_height_max = {};
+
+	m_fly_around_level = {};
+	m_fly_around_distance = {};
+	m_fly_around_change_direction_time = {};
+
+	m_current_position = {};
+
+	time_height_updated = {};
+	target_height = {};
 }
 
 CPoltergeistBase::~CPoltergeistBase()
@@ -326,7 +364,6 @@ void CPoltergeistBase::ForceFinalAnimation()
 		anim().SetCurAnim(eAnimMiscAction_01);
 }
 
-
 void CPoltergeistBase::shedule_Update(u32 dt)
 {
 	if ( !check_work_condition() ) 
@@ -342,7 +379,6 @@ void CPoltergeistBase::shedule_Update(u32 dt)
 
 	ability()->update_schedule();
 }
-
 
 BOOL CPoltergeistBase::net_Spawn (CSE_Abstract* DC) 
 {
@@ -368,20 +404,6 @@ void CPoltergeistBase::net_Destroy()
 
 void CPoltergeistBase::Die(CObject* who)
 {
-// 	if (m_tele) {
-// 		if (state_invisible) {
-// 			setVisible(true);
-// 
-// 			if (PPhysicsShell()) {
-// 				Fmatrix M;
-// 				M.set							(XFORM());
-// 				M.translate_over				(m_current_position);
-// 				PPhysicsShell()->SetTransform	(M);
-// 			} else 
-// 				Position() = m_current_position;
-// 		}
-// 	}
-
 	inherited::Die				(who);
 	Energy::disable				();
 
@@ -439,7 +461,6 @@ CMovementManager *CPoltergeistBase::create_movement_manager	()
 
 	return							(m_movement_manager);
 }
-
 
 void CPoltergeistBase::net_Relcase(CObject *O)
 {

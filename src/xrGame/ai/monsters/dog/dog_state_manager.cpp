@@ -24,9 +24,9 @@
 #include "../group_states/group_state_panic.h"
 #include "../group_states/group_state_hear_danger_sound.h"
 
-CustomDogStateManager::CustomDogStateManager(CDogBase* object) : inherited(object)
+CDogBaseStateManager::CDogBaseStateManager(CDogBase* object) : inherited(object)
 {
-	m_pDog = smart_cast<CDogBase*>(object);
+	pDogBase = smart_cast<CDogBase*>(object);
 
 	add_state(eStateRest, new CStateGroupRest(object));
 	add_state(eStatePanic, new CStateGroupPanic(object));
@@ -41,12 +41,12 @@ CustomDogStateManager::CustomDogStateManager(CDogBase* object) : inherited(objec
 	object->EatedCorpse = nullptr;
 }
 
-CustomDogStateManager::~CustomDogStateManager()
+CDogBaseStateManager::~CDogBaseStateManager()
 {
 
 }
 
-void CustomDogStateManager::execute()
+void CDogBaseStateManager::execute()
 {
 	u32   state_id = u32(-1);
 
@@ -85,7 +85,7 @@ void CustomDogStateManager::execute()
 		}
 	}
 
-	if ( !m_pDog->is_under_control() )
+	if ( !pDogBase->is_under_control() )
 	{
 		if ( atack )
 		{
@@ -129,7 +129,7 @@ void CustomDogStateManager::execute()
 		} 
 		else
 		{
-			if (m_pDog->get_custom_anim_state() )
+			if (pDogBase->get_custom_anim_state() )
 			{
 				return; 
 			}
@@ -156,9 +156,9 @@ void CustomDogStateManager::execute()
 
 	select_state(state_id); 
 
-	if ( prev_substate != current_substate && m_pDog->get_custom_anim_state() )
+	if ( prev_substate != current_substate && pDogBase->get_custom_anim_state() )
 	{
-		m_pDog->anim_end_reinit();
+		pDogBase->anim_end_reinit();
 	}
 
 	if ( prev_substate == eStateEat && current_substate != eStateEat )
@@ -175,7 +175,7 @@ void CustomDogStateManager::execute()
 	prev_substate = current_substate;
 }
 
-bool CustomDogStateManager::check_eat ()
+bool CDogBaseStateManager::check_eat ()
 {
 	if ( !object->CorpseMan.get_corpse() )
 	{

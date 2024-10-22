@@ -17,24 +17,26 @@
 
 #include "burer_state_attack.h"
 
-
-CStateManagerBurer::CStateManagerBurer(CBurerBase *monster) : inherited(monster)
+CBurerBaseBaseStateManager::CBurerBaseBaseStateManager(CBaseMonster*object) : inherited(object)
 {
-	m_pBurer = smart_cast<CBurerBase*>(monster);
+	pBurerBase = smart_cast<CBurerBase*>(object);
 
-	add_state(eStateRest,					new CStateMonsterRest					(monster));
-	add_state(eStatePanic,					new CStateMonsterPanic					(monster));
-	add_state(eStateAttack,					new CStateBurerAttack 					(monster));
-	add_state(eStateEat,					new CStateMonsterEat 					(monster));
-	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound 	(monster));
-	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound 	(monster));
-	add_state(eStateHitted,					new CStateMonsterHitted				(monster));
-	add_state(eStateBurerScanning,			new CStateMonsterCustomAction 				(monster));
+	add_state(eStateRest,					new CStateMonsterRest					(object));
+	add_state(eStatePanic,					new CStateMonsterPanic					(object));
+	add_state(eStateAttack,					new CStateBurerAttack 					(object));
+	add_state(eStateEat,					new CStateMonsterEat 					(object));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound 	(object));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound 	(object));
+	add_state(eStateHitted,					new CStateMonsterHitted				(object));
+	add_state(eStateBurerScanning,			new CStateMonsterCustomAction 				(object));
 }
 
-#define SCAN_STATE_TIME 4000
+CBurerBaseBaseStateManager::~CBurerBaseBaseStateManager()
+{
 
-void CStateManagerBurer::execute()
+}
+
+void CBurerBaseBaseStateManager::execute()
 {
 	u32 state = u32(-1);
 
@@ -49,7 +51,7 @@ void CStateManagerBurer::execute()
 		state = eStateHearInterestingSound;
 	 else if (object->hear_dangerous_sound )
 		state = eStateHearDangerousSound;
-	 else if (m_pBurer->time_last_scan + SCAN_STATE_TIME > Device.dwTimeGlobal)
+	 else if (pBurerBase->time_last_scan + EntityDefinitions::CBurerBase::SCAN_STATE_TIME > Device.dwTimeGlobal)
 		state = eStateBurerScanning;
 	 else if (can_eat())
 			state = eStateEat;
@@ -63,10 +65,10 @@ void CStateManagerBurer::execute()
 	prev_substate = current_substate;
 }
 
-void CStateManagerBurer::setup_substates()
+void CBurerBaseBaseStateManager::setup_substates()
 {
 	if (current_substate == eStateBurerScanning) {
-		SStateDataAction	data;
+		SStateDataAction	data{};
 		
 		data.action			= ACT_LOOK_AROUND;
 		data.sound_type		= MonsterSound::eMonsterSoundIdle;

@@ -3,6 +3,7 @@
 
 class CustomBloodsuckerBackstubEnemy : public CState
 {
+protected:
 	using inherited = CState;
 
 public:
@@ -13,7 +14,6 @@ public:
 	} data;
 
 protected:
-
 	float                   m_last_health;
 	bool                    m_encircle;
 	TTime                   m_encircle_end_tick;
@@ -21,18 +21,11 @@ protected:
 
 public:
 	CustomBloodsuckerBackstubEnemy(CBloodsuckerBase* object);
-	virtual				~CustomBloodsuckerBackstubEnemy();
+	virtual				~CustomBloodsuckerBackstubEnemy() override;
 
-	virtual void		initialize();
-	virtual	void		execute();
-	virtual bool 		check_start_conditions();
-	virtual bool		check_completion();
-	virtual void		remove_links(CObject* object) { inherited::remove_links(object); }
-
-	struct SBloodsuckerStateBackstubEnemyProperies
-	{
-		static constexpr int encircle_time = 3000;
-		static constexpr float loose_health_diff = 0.15f;
-		static constexpr int change_behaviour_time = 1000;
-	};
+	virtual void		initialize() override;
+	virtual	void		execute() override;
+	virtual bool 		check_start_conditions() override;
+	virtual bool		check_completion() override;
+	virtual void		remove_links(CObject* object) override { inherited::remove_links(object); }
 };

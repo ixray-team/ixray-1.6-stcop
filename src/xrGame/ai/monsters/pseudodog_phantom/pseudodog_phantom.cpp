@@ -135,7 +135,7 @@ void	CPseudoPsyDogPhantomBase::Hit					(SHit* pHDS)
 
 void CPseudoPsyDogPhantomBase::net_Destroy()
 {
-	Fvector center;
+	Fvector center{};
 	Center(center);
 	PlayParticles(m_particles_disappear,center,Fvector().set(0.f,1.f,0.f));
 	
@@ -186,7 +186,7 @@ void CPseudoPsyDogPhantomBase::destroy_me()
 		m_parent_id						= 0xffff;
 	}
 
-	NET_Packet		P;
+	NET_Packet		P{};
 	u_EventGen		(P,GE_DESTROY,ID());
 	u_EventSend		(P);
 }
@@ -195,7 +195,7 @@ void CPseudoPsyDogPhantomBase::destroy_from_parent()
 {
 	m_parent_id		= 0xffff;
 
-	NET_Packet		P;
+	NET_Packet		P{};
 	u_EventGen		(P,GE_DESTROY,ID());
 	u_EventSend		(P);
 }

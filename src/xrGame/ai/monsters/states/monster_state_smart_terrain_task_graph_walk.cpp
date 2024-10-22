@@ -13,7 +13,7 @@ void CStateMonsterSmartTerrainTaskGraphWalk::initialize()
 {
 	inherited::initialize();
 
-	CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
+	CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(object->ID()));
 	VERIFY(monster);
 	VERIFY(monster->m_smart_terrain_id != 0xffff);
 
@@ -24,14 +24,14 @@ void CStateMonsterSmartTerrainTaskGraphWalk::initialize()
 
 bool CStateMonsterSmartTerrainTaskGraphWalk::check_start_conditions()
 {
-	CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(this->object->ID()));
+	CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(object->ID()));
 	VERIFY(monster);
 
 	if (monster->m_smart_terrain_id == 0xffff) return false;
 
 	m_task = monster->brain().smart_terrain().task(monster);
-	VERIFY3(m_task, "Smart terrain selected, but task was not set for monster ", *this->object->cName());
-	if (this->object->ai_location().game_vertex_id() == m_task->game_vertex_id()) return false;
+	VERIFY3(m_task, "Smart terrain selected, but task was not set for monster ", *object->cName());
+	if (object->ai_location().game_vertex_id() == m_task->game_vertex_id()) return false;
 
 	return							true;
 }
@@ -39,14 +39,14 @@ bool CStateMonsterSmartTerrainTaskGraphWalk::check_start_conditions()
 bool CStateMonsterSmartTerrainTaskGraphWalk::check_completion()
 {
 	// if we get to the graph point - work complete
-	if (this->object->ai_location().game_vertex_id() == m_task->game_vertex_id()) return true;
+	if (object->ai_location().game_vertex_id() == m_task->game_vertex_id()) return true;
 	return false;
 }
 
 void CStateMonsterSmartTerrainTaskGraphWalk::execute()
 {
-	this->object->set_action(ACT_WALK_FWD);
-	this->object->set_state_sound(MonsterSound::eMonsterSoundIdle);
+	object->set_action(ACT_WALK_FWD);
+	object->set_state_sound(MonsterSound::eMonsterSoundIdle);
 
-	this->object->path().detour_graph_points(m_task->game_vertex_id());
+	object->path().detour_graph_points(m_task->game_vertex_id());
 }

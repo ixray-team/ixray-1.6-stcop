@@ -3,16 +3,17 @@
 
 class CFleshBase;
 
-class CustomFleshStateManager : public CMonsterStateManager {
+class CFleshBaseStateManager : public CMonsterStateManager {
+protected:
 	using inherited = CMonsterStateManager;
 
-	CFleshBase*m_pFlesh;
+	CFleshBase* pFleshBase;
 
 public:
 
-			CustomFleshStateManager(CFleshBase* object);
-			virtual ~CustomFleshStateManager();
+	CFleshBaseStateManager(CFleshBase* object);
+			virtual ~CFleshBaseStateManager() override;
 
-	virtual void	execute				();
-	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}
+	virtual void	execute				() override;
+	virtual void	remove_links		(CObject* object) override { inherited::remove_links(object);}
 };

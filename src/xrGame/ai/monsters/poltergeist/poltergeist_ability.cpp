@@ -1,14 +1,22 @@
 #include "stdafx.h"
 #include "poltergeist.h"
+#include "poltergeist_special_ability.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
 
-
-CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeistBase *polter)
+CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeistBase *object)
 {
-	m_object					= polter;
+	m_object					= object;
+
+	m_particles_hidden = {};
+	m_particles_damage = {};
+	m_particles_death = {};
+	m_particles_idle = {};
+
+	m_sound_base = {};
+	m_last_hit_frame = {};
 
 	m_particles_object			= 0;
 	m_particles_object_electro	= 0;
@@ -94,12 +102,6 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 	m_last_hit_frame = Device.dwFrame;
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-// Other
-//////////////////////////////////////////////////////////////////////////
-
-
 #define IMPULSE					10.f
 #define IMPULSE_RADIUS			5.f
 #define TRACE_DISTANCE			10.f
@@ -117,7 +119,7 @@ void CPoltergeistBase::PhysicalImpulse	(const Fvector &position)
 	CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[index]);
 	if (!obj || !obj->m_pPhysicsShell) return;
 
-	Fvector dir;
+	Fvector dir{};
 	dir.sub(obj->Position(), position);
 	dir.normalize();
 	
@@ -131,10 +133,10 @@ void CPoltergeistBase::StrangeSounds(const Fvector &position)
 	if (m_strange_sound._feedback()) return;
 	
 	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++) {
-		Fvector dir;
+		Fvector dir{};
 		dir.random_dir();
 
-		collide::rq_result	l_rq;
+		collide::rq_result	l_rq{};
 		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, nullptr)) {
 			if (l_rq.range < TRACE_DISTANCE) {
 
@@ -146,7 +148,7 @@ void CPoltergeistBase::StrangeSounds(const Fvector &position)
 				// Играть звук
 				if (!mtl_pair->CollideSounds.empty()) {
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
-					Fvector pos;
+					Fvector pos{};
 					pos.mad(position, dir, ((l_rq.range - 0.1f > 0) ? l_rq.range - 0.1f  : l_rq.range));
 					m_strange_sound.play_at_pos(this,pos);
 					return;

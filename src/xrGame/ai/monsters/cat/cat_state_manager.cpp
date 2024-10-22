@@ -18,7 +18,7 @@
 #include "../../../entitycondition.h"
 #include "../states/monster_state_help_sound.h"
 
-CustomCatStateManager::CustomCatStateManager(CCatBase* object) : inherited(object)
+CCatBaseStateManager::CCatBaseStateManager(CCatBase* object) : inherited(object)
 {
     add_state(eStateRest, new CStateMonsterRest(object));
     add_state(eStatePanic, new CStateMonsterPanic(object));
@@ -33,12 +33,12 @@ CustomCatStateManager::CustomCatStateManager(CCatBase* object) : inherited(objec
     m_rot_jump_last_time = 0;
 }
 
-
-CustomCatStateManager::~CustomCatStateManager()
+CCatBaseStateManager::~CCatBaseStateManager()
 {
+
 }
 
-void CustomCatStateManager::execute()
+void CCatBaseStateManager::execute()
 {
 	u32 state_id = u32(-1);
 

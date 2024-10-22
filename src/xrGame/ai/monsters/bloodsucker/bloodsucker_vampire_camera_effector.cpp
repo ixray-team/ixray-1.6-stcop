@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../ai_entity_definitions.h"
 #include "bloodsucker_vampire_camera_effector.h"
 
 CustomBloodsuckerVampireCameraEffector::CustomBloodsuckerVampireCameraEffector(float time, const Fvector& src, const Fvector& tgt) :
@@ -9,19 +10,19 @@ CustomBloodsuckerVampireCameraEffector::CustomBloodsuckerVampireCameraEffector(f
 
 	m_dist = src.distance_to(tgt);
 
-	if (m_dist < SBloodsuckerVampireCameraEffectorProperies::BestDistance) {
+	if (m_dist < EntityDefinitions::CBloodsuckerBase::BestDistance) {
 		m_direction.sub(src, tgt);
-		m_dist = SBloodsuckerVampireCameraEffectorProperies::BestDistance - m_dist;
+		m_dist = EntityDefinitions::CBloodsuckerBase::BestDistance - m_dist;
 	}
 	else {
 		m_direction.sub(tgt, src);
-		m_dist = m_dist - SBloodsuckerVampireCameraEffectorProperies::BestDistance;
+		m_dist = m_dist - EntityDefinitions::CBloodsuckerBase::BestDistance;
 	}
 
 	m_direction.normalize();
 
-	dangle_target.set(Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleX), 
-		Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleY), Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleZ));
+	dangle_target.set(Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleX),
+		Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleY), Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleZ));
 	dangle_current.set(0.f, 0.f, 0.f);
 }
 
@@ -40,7 +41,7 @@ BOOL CustomBloodsuckerVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	float time_left_perc = fLifeTime / m_time_total;
 
 	// Инициализация
-	Fmatrix	Mdef;
+	Fmatrix	Mdef{};
 	Mdef.identity();
 	Mdef.j.set(info.n);
 	Mdef.k.set(info.d);
@@ -70,26 +71,26 @@ BOOL CustomBloodsuckerVampireCameraEffector::ProcessCam(SCamEffectorInfo& info)
 	}
 	else {
 
-		if (angle_lerp(dangle_current.x, dangle_target.x, SBloodsuckerVampireCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-			dangle_target.x = Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleX);
+		if (angle_lerp(dangle_current.x, dangle_target.x, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+			dangle_target.x = Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleX);
 		}
 
-		if (angle_lerp(dangle_current.y, dangle_target.y, SBloodsuckerVampireCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-			dangle_target.y = Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleY);
+		if (angle_lerp(dangle_current.y, dangle_target.y, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+			dangle_target.y = Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleY);
 		}
 
-		if (angle_lerp(dangle_current.z, dangle_target.z, SBloodsuckerVampireCameraEffectorProperies::AngleSpeed, Device.fTimeDelta)) {
-			dangle_target.z = Random.randFs(SBloodsuckerVampireCameraEffectorProperies::DeltaAngleZ);
+		if (angle_lerp(dangle_current.z, dangle_target.z, EntityDefinitions::CBloodsuckerBase::AngleSpeed, Device.fTimeDelta)) {
+			dangle_target.z = Random.randFs(EntityDefinitions::CBloodsuckerBase::DeltaAngleZ);
 		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 
 	// Установить углы смещения
-	Fmatrix			R;
+	Fmatrix			R{};
 	R.setHPB(dangle_current.x, dangle_current.y, dangle_current.z);
 
-	Fmatrix			mR;
+	Fmatrix			mR{};
 	mR.mul(Mdef, R);
 
 	info.d.set(mR.k);

@@ -15,15 +15,15 @@ protected:
 	} target;
 
 public:
-					CStatePsyDogHide		(CBaseMonster*obj) : inherited(obj) {}
-	virtual			~CStatePsyDogHide		() {}
+	CStatePsyDogHide(CBaseMonster* object);
+	virtual			~CStatePsyDogHide() override;
 
-	virtual void	initialize				();
-	virtual void	execute					();
-	virtual void	remove_links			(CObject* object) { inherited::remove_links(object);}
+	virtual void	initialize				() override;
+	virtual void	execute					() override;
+	virtual void	remove_links			(CObject* object) override { inherited::remove_links(object);}
 
-	virtual bool 	check_completion		();
-	virtual bool 	check_start_conditions	();
+	virtual bool 	check_completion		() override;
+	virtual bool 	check_start_conditions	() override;
 
 private:
 			void	select_target_point		();

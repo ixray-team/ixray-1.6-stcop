@@ -32,8 +32,8 @@ CStateMonsterAttackOnRun::CStateMonsterAttackOnRun(CBaseMonster* obj) : inherite
 void CStateMonsterAttackOnRun::initialize()
 {
 	inherited::initialize();
-	this->object->m_time_last_attack_success = 0;
-	this->object->path().prepare_builder();
+	object->m_time_last_attack_success = 0;
+	object->path().prepare_builder();
 
 	m_target_vertex = (u32)(-1);
 	m_attacking = false;
@@ -52,7 +52,7 @@ void CStateMonsterAttackOnRun::initialize()
 	set_movement_phaze(go_close);
 	m_attack_end_time = 0;
 
-	m_is_jumping = this->object->is_jumping();
+	m_is_jumping = object->is_jumping();
 	m_reach_old_target = false;
 	m_attack_side_chosen_time = 0;
 
@@ -65,10 +65,10 @@ void   CStateMonsterAttackOnRun::choose_next_atack_animation()
 
 	for (int i = 0; i < 2; ++i)
 	{
-		u32 num_animations = this->object->anim().get_animation_variants_count(animation_types[i]);
+		u32 num_animations = object->anim().get_animation_variants_count(animation_types[i]);
 		VERIFY(num_animations > 0);
 		m_animation_index[i] = rand() % num_animations;
-		m_animation_hit_time[i] = this->object->anim().get_animation_hit_time
+		m_animation_hit_time[i] = object->anim().get_animation_hit_time
 		(animation_types[i], m_animation_index[i]);
 	}
 }
@@ -82,9 +82,9 @@ bool   CStateMonsterAttackOnRun::check_control_start_conditions(ControlCom::ECon
 
 	if (type == ControlCom::eControlRotationJump)
 	{
-		CEntityAlive const* const enemy = this->object->EnemyMan.get_enemy();
+		CEntityAlive const* const enemy = object->EnemyMan.get_enemy();
 		Fvector const   enemy_pos = enemy->Position();
-		float const		self2enemy_mag = enemy_pos.distance_to(this->object->Position());
+		float const		self2enemy_mag = enemy_pos.distance_to(object->Position());
 
 		return								m_phaze == go_close &&
 			m_can_do_rotation_jump &&
@@ -109,12 +109,12 @@ void   CStateMonsterAttackOnRun::set_movement_phaze(phaze const new_phaze)
 	}
 	else if (m_phaze == go_prepare)
 	{
-		m_go_far_start_point = this->object->Position();
+		m_go_far_start_point = object->Position();
 		m_can_do_rotation_jump = !(rand() % 2);
-		CEntityAlive const* const enemy = this->object->EnemyMan.get_enemy();
+		CEntityAlive const* const enemy = object->EnemyMan.get_enemy();
 		Fvector const   enemy_pos = enemy->Position();
-		Fvector const   self2enemy = enemy_pos - this->object->Position();
-		Fvector const   self_dir = this->object->Direction();
+		Fvector const   self2enemy = enemy_pos - object->Position();
+		Fvector const   self_dir = object->Direction();
 
 		bool		left_side = ((self2enemy.x * self_dir.z) - (self2enemy.z * self_dir.x)) > 0.f;
 		m_prepare_side = left_side ? left : right;
@@ -124,13 +124,13 @@ void   CStateMonsterAttackOnRun::set_movement_phaze(phaze const new_phaze)
 
 void   CStateMonsterAttackOnRun::calculate_predicted_enemy_pos()
 {
-	float const		prediction_factor = this->object->get_attack_on_move_prediction_factor();
+	float const		prediction_factor = object->get_attack_on_move_prediction_factor();
 
 	float const		epsilon = 0.0001f;
-	CEntityAlive const* const enemy = this->object->EnemyMan.get_enemy();
+	CEntityAlive const* const enemy = object->EnemyMan.get_enemy();
 	Fvector const   enemy_pos = enemy->Position();
-	float const		self2enemy_mag = magnitude(enemy_pos - this->object->Position());
-	float const		far_radius = this->object->get_attack_on_move_far_radius();
+	float const		self2enemy_mag = magnitude(enemy_pos - object->Position());
+	float const		far_radius = object->get_attack_on_move_far_radius();
 
 	if (self2enemy_mag > far_radius * 2)
 	{
@@ -138,7 +138,7 @@ void   CStateMonsterAttackOnRun::calculate_predicted_enemy_pos()
 		return;
 	}
 
-	float const		self_velocity = this->object->movement().speed();
+	float const		self_velocity = object->movement().speed();
 	float const		self2enemy_time = self_velocity > epsilon ?
 		self2enemy_mag / self_velocity : 0;
 
@@ -165,11 +165,11 @@ void   CStateMonsterAttackOnRun::calculate_predicted_enemy_pos()
 	m_predicted_enemy_pos = enemy_pos +
 		m_predicted_enemy_velocity * self2enemy_time * prediction_factor;
 
-	if (magnitude(m_predicted_enemy_pos - this->object->Position()) < 0.01f)
+	if (magnitude(m_predicted_enemy_pos - object->Position()) < 0.01f)
 	{
 		m_predicted_enemy_pos = enemy_pos;
 
-		if (magnitude(m_predicted_enemy_pos - this->object->Position()) < 0.01f)
+		if (magnitude(m_predicted_enemy_pos - object->Position()) < 0.01f)
 		{
 			m_predicted_enemy_pos.x += 1.f;
 		}
@@ -178,15 +178,15 @@ void   CStateMonsterAttackOnRun::calculate_predicted_enemy_pos()
 
 void   CStateMonsterAttackOnRun::update_aim_side()
 {
-	CEntityAlive const* const enemy = m_attacking ? m_enemy_to_attack : this->object->EnemyMan.get_enemy();
+	CEntityAlive const* const enemy = m_attacking ? m_enemy_to_attack : object->EnemyMan.get_enemy();
 
-	Fvector const self_dir = this->object->Direction();
-	Fvector const self_to_enemy = enemy->Position() - this->object->Position();
+	Fvector const self_dir = object->Direction();
+	Fvector const self_to_enemy = enemy->Position() - object->Position();
 
 	aim_side const	new_attack_side = (self_dir.x * self_to_enemy.z - self_dir.z * self_to_enemy.x > 0) ?
 		right : left;
 
-	TTime const update_side_period = (TTime)(this->object->get_attack_on_move_update_side_period() * 1000);
+	TTime const update_side_period = (TTime)(object->get_attack_on_move_update_side_period() * 1000);
 
 	if (current_time() > m_attack_side_chosen_time + update_side_period)
 	{
@@ -235,14 +235,14 @@ bool   is_valid_point_to_move(Fvector const& point, u32* out_vertex)
 void   CStateMonsterAttackOnRun::update_movement_target()
 {
 
-	TTime const max_go_close_time = (TTime)(1000 * this->object->get_attack_on_move_max_go_close_time());
-	float const	far_radius = this->object->get_attack_on_move_far_radius();
-	float const	attack_radius = this->object->get_attack_on_move_attack_radius();
-	float const	prepare_time = this->object->get_attack_on_move_prepare_time();
+	TTime const max_go_close_time = (TTime)(1000 * object->get_attack_on_move_max_go_close_time());
+	float const	far_radius = object->get_attack_on_move_far_radius();
+	float const	attack_radius = object->get_attack_on_move_attack_radius();
+	float const	prepare_time = object->get_attack_on_move_prepare_time();
 
-	CEntityAlive const* const enemy = this->object->EnemyMan.get_enemy();
+	CEntityAlive const* const enemy = object->EnemyMan.get_enemy();
 	Fvector	const		enemy_pos = enemy->Position();
-	Fvector const		self_pos = this->object->Position();
+	Fvector const		self_pos = object->Position();
 	Fvector	const		self2enemy = enemy_pos - self_pos;
 	float const			self2enemy_mag = self2enemy.magnitude();
 
@@ -254,7 +254,7 @@ void   CStateMonsterAttackOnRun::update_movement_target()
 		return;
 	}
 
-	Fvector	const		self_dir = Fvector(this->object->Direction()).normalize();
+	Fvector	const		self_dir = Fvector(object->Direction()).normalize();
 
 	Fvector				self2target;
 
@@ -282,7 +282,7 @@ void   CStateMonsterAttackOnRun::update_movement_target()
 	}
 	else if (m_phaze == go_close)
 	{
-		if (angle_between_vectors(this->object->Direction(), self2enemy) > deg2rad(140.f) &&
+		if (angle_between_vectors(object->Direction(), self2enemy) > deg2rad(140.f) &&
 			self2predicted_mag < 4.f &&
 			current_time() > m_phaze_chosen_time + 3000)
 		{
@@ -379,7 +379,7 @@ void   CStateMonsterAttackOnRun::update_movement_target()
 			m_target = ai().level_graph().vertex_position(m_target_vertex);
 			m_predicted_enemy_pos = m_target;
 
-			if (this->object->ai_location().level_vertex_id() == m_target_vertex)
+			if (object->ai_location().level_vertex_id() == m_target_vertex)
 				set_movement_phaze(go_prepare);
 		}
 		else
@@ -391,8 +391,8 @@ void   CStateMonsterAttackOnRun::update_movement_target()
 
 void   CStateMonsterAttackOnRun::select_prepare_fallback_target()
 {
-	float const	far_radius = this->object->get_attack_on_move_far_radius();
-	CEntityAlive const* const	enemy = this->object->EnemyMan.get_enemy();
+	float const	far_radius = object->get_attack_on_move_far_radius();
+	CEntityAlive const* const	enemy = object->EnemyMan.get_enemy();
 	Fvector	const	enemy_pos = enemy->Position();
 
 	float	const	move_scan_points = 8;
@@ -439,18 +439,18 @@ void   CStateMonsterAttackOnRun::update_attack()
 
 			//set_movement_phaze				(go_prepare);
 
-			EMotionAnim override_animation = this->object->anim().get_override_animation();
+			EMotionAnim override_animation = object->anim().get_override_animation();
 			if (override_animation == eAnimAttackOnRunLeft ||
 				override_animation == eAnimAttackOnRunRight)
 			{
-				this->object->anim().clear_override_animation();
+				object->anim().clear_override_animation();
 			}
 		}
 	}
-	else if (!m_is_jumping && !this->object->anim().has_override_animation() && m_phaze == go_close)
+	else if (!m_is_jumping && !object->anim().has_override_animation() && m_phaze == go_close)
 	{
-		ENEMIES_MAP const& memory = this->object->EnemyMemory.get_memory();
-		CEntityAlive const* const main_enemy = this->object->EnemyMan.get_enemy();
+		ENEMIES_MAP const& memory = object->EnemyMemory.get_memory();
+		CEntityAlive const* const main_enemy = object->EnemyMan.get_enemy();
 		m_enemy_to_attack = main_enemy;
 
 		bool can_attack = false;
@@ -463,25 +463,25 @@ void   CStateMonsterAttackOnRun::update_attack()
 				m_predicted_enemy_pos : enemy->Position();
 
 
-			float		velocity = this->object->movement().speed();
-			Fvector self_to_enemy_xz = enemy_pos - this->object->Position();
+			float		velocity = object->movement().speed();
+			Fvector self_to_enemy_xz = enemy_pos - object->Position();
 			self_to_enemy_xz.y = 0;
 			float const current_atack_dist = magnitude(self_to_enemy_xz);
 
 			float const prepare_atack_dist = m_animation_hit_time[m_attack_side] * velocity;
-			float const melee_max_distance = this->object->MeleeChecker.get_max_distance();
-			float const melee_min_distance = this->object->MeleeChecker.get_min_distance();
+			float const melee_max_distance = object->MeleeChecker.get_max_distance();
+			float const melee_min_distance = object->MeleeChecker.get_min_distance();
 
 			float const allowed_atack_distance = (prepare_atack_dist + melee_max_distance) * 0.9f;
 			float const disallowed_atack_distance = (prepare_atack_dist + melee_min_distance * 0.5f) * 0.9f;
 
-			Fvector self_direction_xz = this->object->Direction();
+			Fvector self_direction_xz = object->Direction();
 			self_direction_xz.y = 0;
 			float const attack_angle = angle_between_vectors(self_to_enemy_xz, self_direction_xz);
 
 			bool const good_attack_angle = attack_angle < deg2rad(30.f);
 
-			//bool const see_enemy_now		=	this->object->EnemyMan.see_enemy_now(enemy);
+			//bool const see_enemy_now		=	object->EnemyMan.see_enemy_now(enemy);
 			bool const good_attack_dist = current_atack_dist < allowed_atack_distance &&
 				current_atack_dist > disallowed_atack_distance;
 
@@ -503,7 +503,7 @@ void   CStateMonsterAttackOnRun::update_attack()
 
 		if (can_attack)
 		{
-			this->object->on_attack_on_run_hit();
+			object->on_attack_on_run_hit();
 			m_attacking = true;
 			m_reach_old_target = true;
 			m_reach_old_target_start_time = current_time();
@@ -514,7 +514,7 @@ void   CStateMonsterAttackOnRun::update_attack()
 			MotionID motion;
 			EMotionAnim const anim = m_attack_side == left ?
 				eAnimAttackOnRunLeft : eAnimAttackOnRunRight;
-			bool const got_animation_info = this->object->anim().get_animation_info
+			bool const got_animation_info = object->anim().get_animation_info
 			(anim,
 				m_animation_index[m_attack_side],
 				motion,
@@ -523,16 +523,16 @@ void   CStateMonsterAttackOnRun::update_attack()
 			got_animation_info; VERIFY(got_animation_info);
 
 			m_attack_end_time = current_time() + TTime(1000 * attack_animation_length);
-			this->object->anim().set_override_animation(anim, m_animation_index[m_attack_side]);
+			object->anim().set_override_animation(anim, m_animation_index[m_attack_side]);
 		}
 	}
 
-	if (m_is_jumping && !this->object->is_jumping())
+	if (m_is_jumping && !object->is_jumping())
 	{
 		set_movement_phaze(go_prepare);
 	}
 
-	m_is_jumping = this->object->is_jumping();
+	m_is_jumping = object->is_jumping();
 }
 
 void   CStateMonsterAttackOnRun::execute()
@@ -543,24 +543,24 @@ void   CStateMonsterAttackOnRun::execute()
 	update_attack();
 	update_aim_side();
 
-	this->object->set_action(ACT_RUN);
+	object->set_action(ACT_RUN);
 
-	this->object->anim().accel_activate(eAT_Aggressive);
-	this->object->anim().accel_set_braking(false);
+	object->anim().accel_activate(eAT_Aggressive);
+	object->anim().accel_set_braking(false);
 
-	this->object->path().set_target_point(m_target, m_target_vertex);
-	this->object->path().set_rebuild_time(m_attacking ? 20 : 150);//this->object->get_attack_rebuild_time());
+	object->path().set_target_point(m_target, m_target_vertex);
+	object->path().set_rebuild_time(m_attacking ? 20 : 150);//object->get_attack_rebuild_time());
 
-	this->object->path().set_use_covers();
-	this->object->path().set_cover_params(0.1f, 30.f, 1.f, 30.f);
+	object->path().set_use_covers();
+	object->path().set_cover_params(0.1f, 30.f, 1.f, 30.f);
 
-	this->object->path().set_try_min_time(m_phaze == go_close);
+	object->path().set_try_min_time(m_phaze == go_close);
 
-	this->object->set_state_sound(MonsterSound::eMonsterSoundAggressive);
-	this->object->path().extrapolate_path(true);
+	object->set_state_sound(MonsterSound::eMonsterSoundAggressive);
+	object->path().extrapolate_path(true);
 
 	// обработать squad инфо	
-	this->object->path().set_use_dest_orient(false);
+	object->path().set_use_dest_orient(false);
 
 	// 	CMonsterSquad *squad	= monster_squad().get_squad(object);
 	// 	if (squad && squad->SquadActive())
@@ -570,39 +570,39 @@ void   CStateMonsterAttackOnRun::execute()
 	// 		squad->GetCommand(object, command);
 	// 		if (command.type == SC_ATTACK)
 	// 		{
-	// 			this->object->path().set_use_dest_orient	(true);
-	// 			this->object->path().set_dest_direction	(command.direction);
+	// 			object->path().set_use_dest_orient	(true);
+	// 			object->path().set_dest_direction	(command.direction);
 	// 		}
 	// 	}
 }
 
 void CStateMonsterAttackOnRun::finalize()
 {
-	this->object->anim().set_override_animation();
+	object->anim().set_override_animation();
 	inherited::finalize();
 }
 
 void CStateMonsterAttackOnRun::critical_finalize()
 {
-	this->object->anim().set_override_animation();
+	object->anim().set_override_animation();
 	inherited::critical_finalize();
 }
 
 bool CStateMonsterAttackOnRun::check_start_conditions()
 {
-	float dist = this->object->MeleeChecker.distance_to_enemy(this->object->EnemyMan.get_enemy());
+	float dist = object->MeleeChecker.distance_to_enemy(object->EnemyMan.get_enemy());
 
-	if (dist > this->object->db().m_run_attack_start_dist)
+	if (dist > object->db().m_run_attack_start_dist)
 	{
 		return									false;
 	}
-	if (dist < this->object->MeleeChecker.get_min_distance())
+	if (dist < object->MeleeChecker.get_min_distance())
 	{
 		return									false;
 	}
 
 	// check angle
-	if (!this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), deg(30)))
+	if (!object->control().direction().is_face_target(object->EnemyMan.get_enemy(), deg(30)))
 	{
 		return									false;
 	}
@@ -612,7 +612,7 @@ bool CStateMonsterAttackOnRun::check_start_conditions()
 
 bool CStateMonsterAttackOnRun::check_completion()
 {
-	//if (!this->object->control().path_builder().is_moving_on_path() || 
-	//	(this->object->m_time_last_attack_success != 0)) return true;
+	//if (!object->control().path_builder().is_moving_on_path() || 
+	//	(object->m_time_last_attack_success != 0)) return true;
 	return										false;
 }
