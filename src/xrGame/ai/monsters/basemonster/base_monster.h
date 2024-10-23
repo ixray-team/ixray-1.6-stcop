@@ -622,9 +622,9 @@ public:
 // CBaseMonster's  Auras
 //-------------------------------------------------------------------
 public:
-	float							get_psy_influence			();
-	float							get_radiation_influence		();
-	float							get_fire_influence			();
+	float							get_psy_influence			() const;
+	float							get_radiation_influence		() const;
+	float							get_fire_influence			() const;
 	void							play_detector_sound			();
 
 private:
