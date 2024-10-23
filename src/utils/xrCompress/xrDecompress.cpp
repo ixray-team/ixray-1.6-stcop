@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "xrDecompress.h"
 
-const char xrDecompressor::s_Separators[3] = "\\/";
+const char xrDecompressor::s_Separators[4] = "\\/";
 
 xrDecompressor::xrDecompressor(const char* outDir)
     : m_OutDir(outDir)
@@ -123,20 +123,30 @@ void xrDecompressor::Decompress()
 {
     FS.load_all_unloaded_archives();
 
+    CTimer timer = {};
+    printf("Start Decompress\n");
+    timer.Start();
+
     auto files = FS.file_list_open("$game_data$");
     VERIFY(files);
 
     printf("%d file(s) to decompress in %d archive(s)\n\n", (int)files->size(), (int)FS.m_archives.size());
 
-    for (auto File : *files)
-    {
-        if (int err = ExtractFile(File))
+    xr_parallel_for(xr_blocked_range<size_t>(0, files->size()), [&](const xr_blocked_range<size_t>& r)
         {
-            printf("[ERROR] Failed to extract %s: %d", File, err);
-            FS.file_list_close(files);
-            return;
+            for (size_t i = r.begin(); i < r.end(); ++i)
+            {
+                const char* File = (*files)[i];
+                if (int err = ExtractFile(File))
+                {
+                    printf("[ERROR] Failed to extract %s: %d", File, err);
+                }
+            }
         }
-    }
+    );
+
+    printf("End Decompress: %d\n", timer.GetElapsed_ms());
+    Msg("End Decompress: %d\n", timer.GetElapsed_ms());
 
     FS.file_list_close(files);
 

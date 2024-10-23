@@ -2,10 +2,10 @@
 
 class xrDecompressor
 {
-    static const char s_Separators[3];
+    static const char s_Separators[4];
     const char *m_OutDir;
 
-    xr_hash_map<xr_string, xr_string> m_PathCache;
+    tbb::concurrent_unordered_map<xr_string, xr_string> m_PathCache;
     virtual int ExtractFile(const char *filename);
     virtual const char * CreatePath(const char *path);
     virtual int CreateDir(const char *base, const char *path);

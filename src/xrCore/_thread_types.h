@@ -4,6 +4,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for_each.h>
+#include <tbb/concurrent_unordered_map.h>
 
 #include <atomic>
 
@@ -12,6 +13,9 @@ using xr_task_group = tbb::task_group;
 
 template <typename T>
 using xr_blocked_range = tbb::blocked_range<T>;
+
+template <typename T, typename U>
+using xr_concurrent_unordered_map = tbb::concurrent_unordered_map<T, U>;
 
 template<typename BlockRange, typename Body>
 inline void xr_parallel_for(BlockRange Range, Body Functor)
