@@ -2243,6 +2243,44 @@ public:
 	}
 };
 
+
+class CCC_SetGameTime : public IConsole_Command {
+public:
+	CCC_SetGameTime(LPCSTR N) : IConsole_Command(N) {
+	}
+
+	virtual void Execute(LPCSTR args) {
+		if (!g_pGamePersistent && !OnServer())
+		{
+			return;
+		}
+
+		u32 new_hours = 0, new_mins = 0;
+		int sc = sscanf_s(args, "%d %d", &new_hours, &new_mins);
+
+		if (new_hours > 24 || new_mins > 60)
+		{
+			Msg("! Time entered incorrectly");
+			return;
+		}
+
+		luabind::object obj = luabind::newtable(ai().script_engine().lua());
+		obj[1] = new_hours;
+		obj[2] = new_mins;
+
+		luabind::functor<void> funct;
+		if (ai().script_engine().functor("xr_effects.set_game_time", funct))
+		{
+			funct(0, 0, obj);
+		}
+	}
+
+	virtual void Info(TInfo& I)
+	{
+		xr_strcpy(I, "Set new time");
+	}
+};
+
 void CCC_RegisterCommands()
 {
 	// options
@@ -2251,6 +2289,7 @@ void CCC_RegisterCommands()
 #ifndef MASTER_GOLD
 	CMD1(CCC_SetActorPosition, "set_actor_position");
 	CMD1(CCC_SetWeather, "set_weather");
+	CMD1(CCC_SetGameTime, "set_game_time");
 	CMD1(CCC_ReceiveInfo, "g_info");
 	CMD1(CCC_DisableInfo, "d_info");
 	CMD1(CCC_GiveMoney, "g_money");
