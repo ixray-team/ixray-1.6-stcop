@@ -347,6 +347,36 @@ void UIMainMenuForm::Draw()
 					UI->RedrawScene();
 				}
 			}
+			{
+				if (ImGui::BeginMenu("Coordinate Axes"))
+				{
+					bool disabled = psDeviceFlags.test(rsDisableAxisCube);
+
+					if (ImGui::MenuItem("None", "", &disabled))
+					{
+						psDeviceFlags.set(rsDisableAxisCube, disabled);
+					}
+
+					ImGui::BeginDisabled(disabled);
+
+					bool selected_a = false;
+					bool selected_c = false;
+
+					(!psDeviceFlags.test(rsDrawAxis) ? selected_c : selected_a) = true;
+
+					if (ImGui::MenuItem("Axis", "", &selected_a))
+					{
+						psDeviceFlags.set(rsDrawAxis, true);
+					}
+					if (ImGui::MenuItem("Cube", "", &selected_c))
+					{
+						psDeviceFlags.set(rsDrawAxis, false);
+					}
+
+					ImGui::EndDisabled();
+					ImGui::EndMenu();
+				}
+			}
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsFog);
