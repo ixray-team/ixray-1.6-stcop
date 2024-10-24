@@ -400,8 +400,15 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 		xr_string result;
 		for (int i = 0; i < cnt; i++)
 		{
+			_GetItem(init_name, i, result);
+
 			if (auto* Item = Form->m_RootItem.FindItem(result.c_str()))
+			{
 				((UIChooseFormItem*)Item)->bSelected = true;
+				continue;
+			}
+
+			Msg("! Not found item: %s", result.c_str());
 		}
 
 		Form->m_RootItem.SelectedToFavorite(true);

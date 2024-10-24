@@ -35,6 +35,14 @@ void UILogForm::Show()
 	bAllowLogCommands = true;
 }
 
+void UILogForm::SetActive()
+{
+	if (!bAllowLogCommands)
+		bAllowLogCommands = true;
+
+	//ImGui::SetWindowFocus("Log");
+}
+
 void UILogForm::Hide()
 {
 	bAllowLogCommands = false;

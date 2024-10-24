@@ -10,25 +10,26 @@
 #include "ui_main.h"
 void  ELogCallback(LPCSTR txt)
 {
-	if (0 == txt[0]) return;
+	if (0 == txt[0])
+		return;
+
 	TMsgDlgType mt = TMsgDlgType::mtCustom;
 	if (strncmp(txt, "! ", 2) == 0)
 	{
 		mt = mtError;
+		UILogForm::SetActive();
+	
 	}
-	if (strncmp(txt, "~ ", 2) == 0)
+	else if (strncmp(txt, "~ ", 2) == 0)
 	{
 		mt = mtConfirmation;
 	}
-	if (strncmp(txt, "* ", 2) == 0)
+	else if (strncmp(txt, "* ", 2) == 0)
 	{
 		mt = mtInformation;
 	}
 
 	UILogForm::AddMessage(txt);
-	//if(UI)
-	//	UI->WriteConsole(mt, txt);
-
 }
 
 //----------------------------------------------------

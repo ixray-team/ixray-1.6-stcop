@@ -152,14 +152,6 @@ void CGameMtlLibrary::Load()
     }
 #endif
 
-/*
-	for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){
-		SGameMtlPair* S	= *p_it;
-		for (int k=0; k<S->StepSounds.size(); k++){
-			Msg("%40s - 0x%x", S->StepSounds[k].handle->file_name(), S->StepSounds[k].g_type);
-		}
-	}
-*/
 	FS.r_close		(F);
 }
 

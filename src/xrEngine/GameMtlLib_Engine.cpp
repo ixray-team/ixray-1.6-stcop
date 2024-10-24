@@ -26,7 +26,9 @@ void DestroyPSs(PSVec& lst)
 void CreateSounds(SoundVec& lst, LPCSTR buf)
 {
 	string128 tmp;
-	int cnt			=	_GetItemCount(buf);	R_ASSERT(cnt<=GAMEMTL_SUBITEM_COUNT+2);
+	int cnt = _GetItemCount(buf);	
+	R_ASSERT(cnt <= GAMEMTL_STEPSOUND_SUBITEM_COUNT);
+
 	lst.resize		(cnt);
 	for (int k=0; k<cnt; ++k)
 		lst[k].create	(_GetItem(buf,k,tmp),st_Effect,sg_SourceType);

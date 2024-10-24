@@ -303,13 +303,15 @@ void UIPropertiesItem::DrawProp()
 			if (!edit_val.size()) 	edit_val = V->m_StartPath;
 			prop->BeforeEdit<ChooseValue, shared_str>(edit_val);
 			//
-			ChooseItemVec			items;
+
+			ChooseItemVec Items;
+
 			if (!V->OnChooseFillEvent.empty())
 			{
-				V->m_Items = &items;
+				V->m_Items = &Items;
 				V->OnChooseFillEvent(V);
 			}
-			UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, items.size() ? &items : 0, V->m_ChooseFlags);
+			UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
 			PropertiesFrom->m_EditChooseValue = prop;
 
 		}

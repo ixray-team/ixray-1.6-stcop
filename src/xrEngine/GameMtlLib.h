@@ -32,6 +32,7 @@ class ButtonValue;
 //----------------------------------------------------
 
 #define GAMEMTL_SUBITEM_COUNT			4
+#define GAMEMTL_STEPSOUND_SUBITEM_COUNT	12
 
 #define GAMEMTL_NONE_ID					u32(-1)
 #define GAMEMTL_NONE_IDX				u16(-1)
