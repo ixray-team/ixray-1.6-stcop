@@ -3,7 +3,7 @@
 
 #include "EThumbnail.h"
 //#include "ImageManager.h"
-#pragma package(smart_init)
+
 
 //------------------------------------------------------------------------------
 #define THM_SOUND_VERSION				0x0014

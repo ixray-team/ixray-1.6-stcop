@@ -366,7 +366,7 @@ void CCustomPreferences::Save()
 	{
 		string256 buffer1 = {};
 		string256 buffer2 = {};
-		sprintf(buffer1, "recent_files_%d", it - scene_recent_list.begin());
+		sprintf(buffer1, "recent_files_%d", int(it - scene_recent_list.begin()));
 		sprintf(buffer2, "%s", it->c_str());
 
 		xr_string L = buffer1;

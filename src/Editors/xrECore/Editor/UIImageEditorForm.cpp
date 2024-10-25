@@ -357,12 +357,17 @@ void UIImageEditorForm::UpdateLib()
 	}
 }
 
-void UIImageEditorForm::UpdateSelected() {
+void UIImageEditorForm::UpdateSelected() 
+{
 	texture_map.clear();
-	RStringVec items; string_path fn{};
-	if(m_ItemList->GetSelected(items) > 0) {
+	RStringVec items; 
+	string_path fn{};
+
+	if(m_ItemList->GetSelected(items)) 
+	{
 		for(auto item : items) {
-			if(auto file = FS.exist(fn, _import_, *item)) {
+			if(auto file = FS.exist(fn, _import_, *item)) 
+			{
 				texture_map.insert(xr_string(item.c_str()));
 			}
 		}

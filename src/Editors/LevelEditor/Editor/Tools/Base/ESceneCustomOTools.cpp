@@ -196,20 +196,25 @@ int ESceneCustomOTool::SelectionCount(bool testflag)
 	int count = 0;
 
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
-        if((*_F)->Visible()	&& ((*_F)->Selected() == testflag)) count++;
+        if((*_F)->Visible()	&& ((bool)(*_F)->Selected() == testflag)) count++;
         
     return count;
 }
 
 void ESceneCustomOTool::ShowObjects(bool flag, bool bAllowSelectionFlag, bool bSelFlag)
 {
-    for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++){
-        if (bAllowSelectionFlag){
-            if ((*_F)->Selected()==bSelFlag){
-                (*_F)->Show( flag );
+    for (ObjectIt _F = m_Objects.begin(); _F != m_Objects.end(); _F++)
+    {
+        if (bAllowSelectionFlag)
+        {
+            if ((bool)(*_F)->Selected() == bSelFlag)
+            {
+                (*_F)->Show(flag);
             }
-        }else{
-            (*_F)->Show( flag );
+        }
+        else
+        {
+            (*_F)->Show(flag);
         }
     }
     UI->RedrawScene();
@@ -284,7 +289,7 @@ int ESceneCustomOTool::LockObjects(bool flag, bool bAllowSelectionFlag, bool bSe
 	int count=0;
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
         if(bAllowSelectionFlag){
-            if((*_F)->Selected()==bSelFlag){
+            if((bool)(*_F)->Selected()==bSelFlag){
                 (*_F)->Lock( flag );
                 count++;
             }

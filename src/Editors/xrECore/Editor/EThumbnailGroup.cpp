@@ -3,7 +3,7 @@
 
 #include "EThumbnail.h"
 //#include "ImageManager.h"
-#pragma package(smart_init)
+
 
 //------------------------------------------------------------------------------
 #define THM_GROUP_VERSION				0x0001
@@ -121,7 +121,7 @@ void EGroupThumbnail::FillProp(PropItemVec& items)
     for (SStringVecIt it = objects.begin(); it != objects.end(); it++)
     {
         string256 Buffer;
-        sprintf(Buffer, "Objects\\#%d", it - objects.begin());
+        sprintf(Buffer, "Objects\\#%d", int(it - objects.begin()));
         PHelper().CreateCaption(items, Buffer, it->c_str());
     }
 }

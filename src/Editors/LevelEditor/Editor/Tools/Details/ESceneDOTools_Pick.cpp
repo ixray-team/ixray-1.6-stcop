@@ -100,7 +100,7 @@ int EDetailManager::SelectionCount(bool testflag)
 //	for (int i=0; i<m_Selected.size(); i++)
 //    	if (m_Selected[i]==testflag) count++;
 	for (U8It it=m_Selected.begin(); it!=m_Selected.end(); it++)
-    	if (*it==testflag) count++;
+    	if ((bool)*it==testflag) count++;
     return count;
 }
 

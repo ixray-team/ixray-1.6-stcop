@@ -3,7 +3,7 @@
 
 #include "EThumbnail.h"
 #include "../../xrEngine/xrImage_Resampler.h"
-#pragma package(smart_init)
+
 //------------------------------------------------------------------------------
 // Custom Thumbnail
 //------------------------------------------------------------------------------
@@ -91,11 +91,14 @@ void EImageThumbnail::Update(ImTextureID& Texture)
 {
     if (m_Pixels.size() == 0)
     {
-        if(Texture)
-        Texture->Release();
-        Texture == nullptr;
+        if (Texture)
+            Texture->Release();
+
+        Texture = nullptr;
+
         return;
     }
+
     ID3DTexture2D* pTexture = nullptr;
     if (Texture != nullptr)
     {
@@ -106,18 +109,16 @@ void EImageThumbnail::Update(ImTextureID& Texture)
         R_CHK(REDevice->CreateTexture(THUMB_WIDTH, THUMB_HEIGHT, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
         Texture = pTexture;
     }
-    {
-        D3DLOCKED_RECT rect;
-        R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-        for (int i = 0; i < THUMB_HEIGHT; i++)
-        {
 
-            unsigned char* dest = static_cast<unsigned char*>(rect.pBits)+(rect.Pitch*i);
-            memcpy(dest, Pixels()+(THUMB_WIDTH*(THUMB_HEIGHT-i-1)), sizeof(unsigned char) * THUMB_WIDTH  * 4);
-        }
-        R_CHK(pTexture->UnlockRect(0));
+    D3DLOCKED_RECT rect;
+    R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
+    for (int i = 0; i < THUMB_HEIGHT; i++)
+    {
+
+        unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
+        memcpy(dest, Pixels() + (THUMB_WIDTH * (THUMB_HEIGHT - i - 1)), sizeof(unsigned char) * THUMB_WIDTH * 4);
     }
-    
+    R_CHK(pTexture->UnlockRect(0));
 }
 
 ECORE_API EImageThumbnail* CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)

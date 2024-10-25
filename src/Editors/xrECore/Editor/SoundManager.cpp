@@ -9,7 +9,7 @@
 
 CSoundManager* SndLib=0;
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+
 
 //------------------------------------------------------------------------------
 xr_string CSoundManager::UpdateFileName(xr_string& fn)

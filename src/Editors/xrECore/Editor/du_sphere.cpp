@@ -4,7 +4,7 @@
 
 #include "du_sphere.h"
 //---------------------------------------------------------------------------
-//#pragma package(smart_init)
+//
 Fvector du_sphere_vertices[DU_SPHERE_NUMVERTEX]={
     {0.0000f,	1.0000f, 	0.0000f },
     {0.8944f,	0.4472f, 	0.0000f },

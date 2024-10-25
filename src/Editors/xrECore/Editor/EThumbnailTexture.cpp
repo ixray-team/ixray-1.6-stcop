@@ -5,7 +5,7 @@
 #ifndef XR_EPROPS_EXPORTS
 	#include "ImageManager.h"
 #endif
-#pragma package(smart_init)
+
 
 //------------------------------------------------------------------------------
 #define THM_TEXTURE_VERSION				0x0012

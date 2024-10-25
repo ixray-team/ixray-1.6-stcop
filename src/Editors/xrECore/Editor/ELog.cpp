@@ -85,7 +85,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 
 	const SDL_MessageBoxData messageboxYes =
 	{
-		Flags, /* .flags */
+		(u32)Flags, /* .flags */
 		nullptr,						/* .window */
 		Title,						/* .title */
 		text,						/* .message */
@@ -96,7 +96,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 
 	const SDL_MessageBoxData messageboxOk =
 	{
-		Flags, /* .flags */
+		(u32)Flags, /* .flags */
 		nullptr,						/* .window */
 		Title,						/* .title */
 		text,						/* .message */
@@ -107,7 +107,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 
 	const SDL_MessageBoxData messageboxYesNo =
 	{
-		Flags, /* .flags */
+		(u32)Flags, /* .flags */
 		nullptr,						/* .window */
 		Title,						/* .title */
 		text,						/* .message */
@@ -118,7 +118,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 
 	const SDL_MessageBoxData messageboxYesNoCancel =
 	{
-		Flags, /* .flags */
+		(u32)Flags, /* .flags */
 		nullptr,						/* .window */
 		Title,						/* .title */
 		text,						/* .message */

@@ -307,7 +307,7 @@ void SSceneSummary::FillProp(PropItemVec& items)
     BB->OnBtnClickEvent.bind(this,&SSceneSummary::OnHighlightClick);
     for (PDVecIt pd_it=pm_colors.begin(); pd_it!=pm_colors.end(); pd_it++){
     	string128 tmp;		
-        sprintf				(tmp,"Textures\\Highlight Textures\\Color Legend\\Item #%d",pd_it-pm_colors.begin());
+        sprintf				(tmp,"Textures\\Highlight Textures\\Color Legend\\Item #%d", int(pd_it-pm_colors.begin()));
     	PHelper().CreateColor(items,PrepareKey(tmp,"Color").c_str(),&pd_it->color);
     	FloatValue* V		= PHelper().CreateFloat(items,PrepareKey(tmp,"Weight (p/m)").c_str(),&pd_it->pm,0,1000000,1,0);
         V->OnAfterEditEvent.bind(this,&SSceneSummary::OnWeightAfterEditClick);
