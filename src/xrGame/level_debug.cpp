@@ -186,6 +186,11 @@ void CLevelDebug::draw_object_info()
 			break;
 		}
 
+		Fvector objpos = it->first->Position();
+		float distance = Device.vCameraPosition.distance_to(objpos);
+		if (distance >= 15.0f)
+			continue;
+
 		Fmatrix		res;
 		res.mul		(Device.mFullTransform,it->first->XFORM());
 
