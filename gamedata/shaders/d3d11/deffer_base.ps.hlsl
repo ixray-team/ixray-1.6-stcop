@@ -5,6 +5,10 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
 {
     IXrayMaterial M;
     M.Depth = I.position.z;
+	
+#ifdef USE_CLIP_NEAR_PLANE
+	clip(I.hpos_curr.z - I.hpos_curr.w * 0.02f);
+#endif
 
     M.Sun = I.tcdh.w;
     M.Hemi = I.tcdh.z;
