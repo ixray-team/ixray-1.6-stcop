@@ -195,12 +195,13 @@ void dx10SamplerStateCache::SetMaxAnisotropy( UINT uiMaxAniso)
 	}
 }
 
-void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) {
-	clamp(mipMapLodBias, -3.0f, 3.0f);
-
+void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) 
+{
 	if (ps_r_scale_mode > 1) {
-		mipMapLodBias = std::min(0.0f, log2(RCache.get_width() / RCache.get_target_width()) - 1.0f + EPS);
+		mipMapLodBias += std::min(0.0f, log2(RCache.get_width() / RCache.get_target_width()) - 1.0f + EPS);
 	}
+
+	clamp(mipMapLodBias, -3.0f, 3.0f);
 
 	if (m_mipLodBias == mipMapLodBias) {
 		return;
@@ -211,14 +212,22 @@ void dx10SamplerStateCache::SetMipLodBias(float mipMapLodBias) {
 	for (u32 i = 0; i < m_StateArray.size(); ++i)
 	{
 		StateRecord& rec = m_StateArray[i];
-		StateDecs desc;
+		StateDecs desc{};
 
 		if (rec.m_pState != nullptr)
 		{
 			rec.m_pState->GetDesc(&desc);
-			desc.MipLODBias = m_mipLodBias;
+
+			if(desc.Filter == D3D_FILTER_ANISOTROPIC) {
+				desc.MipLODBias = m_mipLodBias;
+			}
+			else {
+				desc.MipLODBias = 0.0f;
+			}
+
 			dx10StateUtils::ValidateState(desc);
 			rec.m_pState->Release();
+
 			CreateState(desc, &rec.m_pState);
 		}
 	}
