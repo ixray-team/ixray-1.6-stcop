@@ -72,6 +72,20 @@ void CEngineAPI::InitializeNotDedicated()
 	}
 }
 
+void CEngineAPI::InitializeDedicated()
+{
+	LPCSTR			r1_name	= "xrRender_DS0.dll";
+	psDeviceFlags.set	(rsR4,FALSE);
+	psDeviceFlags.set	(rsR2,FALSE);
+	renderer_value		= 0; //con cmd
+
+	Msg("Loading DLL: %s",	r1_name);
+	hRender			= LoadLibraryA		(r1_name);
+	if (0==hRender)	R_CHK				(GetLastError());
+	//R_ASSERT		(hRender);
+	g_current_renderer	= 0;
+}
+
 extern ENGINE_API bool g_dedicated_server;
 
 void __cdecl Null_Factory_Destroy(DLL_Pure* O)
@@ -91,6 +105,8 @@ void CEngineAPI::Initialize(void)
 
 	if (!g_dedicated_server)
 		InitializeNotDedicated();
+	else
+		InitializeDedicated();
 
 	if (0==hRender)		
 	{
