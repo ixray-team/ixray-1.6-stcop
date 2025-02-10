@@ -1,0 +1,130 @@
+{
+    "version": 3,
+
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+
+    "configurePresets": [
+        {
+            "name": "Common-Parameters-Base",
+            "displayName": "Common-Parameters-Base",
+            "hidden": true,
+            "cacheVariables": {
+                "LUAJIT_ENABLE_CLI": "ON"
+            }
+        },
+
+        {
+            "name": "VisualStudio-VS2019-Base",
+            "displayName": "VisualStudio-VS2019-Base",
+            "hidden": true,
+            "inherits": [
+                "Common-Parameters-Base"
+            ],
+            "generator": "Visual Studio 16 2019",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl"
+            }
+        },
+        {
+            "name": "VisualStudio-VS2019-Win32",
+            "displayName": "VisualStudio-VS2019-Win32",
+            "inherits": [
+                "VisualStudio-VS2019-Base"
+            ],
+            "architecture": "Win32",
+            "binaryDir": "${sourceDir}/build/Win32",
+            "installDir": "${sourceDir}/build/Win32/install"
+        },
+        {
+            "name": "VisualStudio-VS2019-x64",
+            "displayName": "VisualStudio-VS2019-x64",
+            "inherits": [
+                "VisualStudio-VS2019-Base"
+            ],
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/build/x64",
+            "installDir": "${sourceDir}/build/x64/install"
+        },
+
+        {
+            "name": "VisualStudio-VS2022-Base",
+            "displayName": "VisualStudio-VS2022-Base",
+            "hidden": true,
+            "inherits": [
+                "Common-Parameters-Base"
+            ],
+            "generator": "Visual Studio 17 2022",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl"
+            }
+        },
+        {
+            "name": "VisualStudio-VS2022-Win32",
+            "displayName": "VisualStudio-VS2022-Win32",
+            "inherits": [
+                "VisualStudio-VS2022-Base"
+            ],
+            "architecture": "Win32",
+            "binaryDir": "${sourceDir}/build/Win32",
+            "installDir": "${sourceDir}/build/Win32/install"
+        },
+        {
+            "name": "VisualStudio-VS2022-x64",
+            "displayName": "VisualStudio-VS2022-x64",
+            "inherits": [
+                "VisualStudio-VS2022-Base"
+            ],
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/build/x64",
+            "installDir": "${sourceDir}/build/x64/install"
+        },
+
+        {
+            "name": "UnixMakefiles-GCC-Base",
+            "displayName": "UnixMakefiles-GCC-Base",
+            "hidden": true,
+            "inherits": [
+                "Common-Parameters-Base"
+            ],
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        },
+        {
+            "name": "UnixMakefiles-GCC-x64",
+            "displayName": "UnixMakefiles-GCC-x64",
+            "inherits": [
+                "UnixMakefiles-GCC-Base"
+            ],
+            "binaryDir": "${sourceDir}/build/x64",
+            "installDir": "${sourceDir}/build/x64/install"
+        },
+
+        {
+            "name": "UnixMakefiles-Clang-Base",
+            "displayName": "UnixMakefiles-Clang-Base",
+            "hidden": true,
+            "inherits": [
+                "Common-Parameters-Base"
+            ],
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang"
+            }
+        },
+        {
+            "name": "UnixMakefiles-Clang-x64",
+            "displayName": "UnixMakefiles-Clang-x64",
+            "inherits": [
+                "UnixMakefiles-Clang-Base"
+            ],
+            "binaryDir": "${sourceDir}/build/x64",
+            "installDir": "${sourceDir}/build/x64/install"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "folders": [
+        {
+            "name": "LuaJIT",
+            "path": "."
+        }
+    ],
+
+    "settings": {
+        "cmake.automaticReconfigure": false,
+        "cmake.configureOnOpen": false,
+        "cmake.configureOnEdit": false
+    }
+}
