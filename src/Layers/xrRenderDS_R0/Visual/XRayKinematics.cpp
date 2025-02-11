@@ -59,7 +59,7 @@ void XRayKinematics::LL_Validate()
 		}
 	}
 }
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void XRayKinematics::DebugRender(Fmatrix& XFORM)
 {
 }
