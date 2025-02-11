@@ -1,7 +1,9 @@
+#include "stdafx.h"
 #include "XRayKinematicsAnimated.h"
 
-#include "stdafx.h"
 #include "XRayKinematics.h"
+#include "Visual/AnimationKeyCalculate.h"
+
 extern int	psSkeletonUpdate;
 using	namespace animation;
 //////////////////////////////////////////////////////////////////////////
@@ -163,10 +165,11 @@ MotionID XRayKinematicsAnimated::LL_MotionID(LPCSTR B)
 u16 XRayKinematicsAnimated::LL_PartID(LPCSTR B)
 {
 	if (0 == m_Partition)	return BI_NONE;
-	for (u16 id = 0; id < MAX_PARTS; id++) {
+	for (u16 id = 0; id < MAX_PARTS; id++)
+	{
 		CPartDef& P = (*m_Partition)[id];
 		if (0 == P.Name)	continue;
-		if (0 == BearString::CompareWithoutCase(B, *P.Name)) return id;
+		if (0 == _stricmp(B, *P.Name)) return id;
 	}
 	return BI_NONE;
 }
@@ -409,6 +412,15 @@ CBlend* XRayKinematicsAnimated::PlayFX(MotionID motion_ID, float power_scale)
 		m_def->Accrue(), m_def->Falloff(),
 		m_def->Speed(), m_def->Power() * power_scale);
 }
+
+CBlend* XRayKinematicsAnimated::PlayFX_Safe(LPCSTR N, float power_scale)
+{
+	MotionID motion_ID = ID_FX_Safe(N);
+	if (motion_ID.valid())
+		return PlayFX(motion_ID, power_scale);
+	return nullptr;
+}
+
 CBlend* XRayKinematicsAnimated::PlayFX(LPCSTR  N, float power_scale)
 {
 	MotionID motion_ID = ID_FX(N);
@@ -457,9 +469,9 @@ void XRayKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_
 		for (; I != E; I++)
 		{
 			CBlend& B = *(*I);
-			if (!b_force && B.dwFrame == Device->dwFrame)
+			if (!b_force && B.dwFrame == Device.dwFrame)
 				continue;
-			B.dwFrame = Device->dwFrame;
+			B.dwFrame = Device.dwFrame;
 			if (B.update(dt, B.Callback) && !leave_blends)
 			{
 				DestroyCycle(B);
@@ -528,21 +540,105 @@ void	XRayKinematicsAnimated::LL_UpdateFxTracks(float dt)
 void XRayKinematicsAnimated::UpdateTracks()
 {
 	;
-	if (Update_LastTime == Device->dwTimeGlobal) return;
-	u32 DT = Device->dwTimeGlobal - Update_LastTime;
+	if (Update_LastTime == Device.dwTimeGlobal) return;
+	u32 DT = Device.dwTimeGlobal - Update_LastTime;
 	if (DT > 66) DT = 66;
 	float dt = float(DT) / 1000.f;
 
 	if (GetUpdateTracksCalback())
 	{
-		if ((*GetUpdateTracksCalback())(float(Device->dwTimeGlobal - Update_LastTime) / 1000.f, *this))
-			Update_LastTime = Device->dwTimeGlobal;
+		if ((*GetUpdateTracksCalback())(float(Device.dwTimeGlobal - Update_LastTime) / 1000.f, *this))
+			Update_LastTime = Device.dwTimeGlobal;
 		return;
 	}
-	Update_LastTime = Device->dwTimeGlobal;
+	Update_LastTime = Device.dwTimeGlobal;
 	LL_UpdateTracks(dt, false, false);
 }
 
+void XRayKinematicsAnimated::LoadOmf(const char* path, const char* name)
+{
+	string_path fn = {};
+	if (!FS.exist(fn, "$level$", path))
+	{
+		if (!FS.exist(fn, "$game_meshes$", path))
+		{
+#ifdef _EDITOR
+			Msg("!Can't find motion file '%s'.", path);
+			return;
+#else
+			Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", path);
+#endif
+		}
+	}
+
+	// Check compatibility
+	m_Motions.push_back(SMotionsSlot());
+	bool create_res = true;
+	if (!g_pMotionsContainer->has(path)) // optimize fs operations
+	{
+		IReader* MS = FS.r_open(fn);
+		create_res = m_Motions.back().motions.create(path, MS, bones);
+		FS.r_close(MS);
+	}
+	if (create_res)
+	{
+		m_Motions.back().motions.create(path, NULL, bones);
+	}
+	else
+	{
+		m_Motions.pop_back();
+		Msg("! error in model [%s]. Unable to load motion file '%s'.", name, path);
+	}
+}
+
+void XRayKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameOgf) {
+	string_path nm = {};
+	strcpy(nm, pathOmf);
+
+	if (strstr(pathOmf, "\\*.omf"))
+	{
+		FS_FileSet fset;
+		FS.file_list(fset, "$game_meshes$", FS_ListFiles, pathOmf);
+		FS.file_list(fset, "$level$", FS_ListFiles, pathOmf);
+
+		if (fset.size() == 0)
+		{
+			return;
+		}
+
+		m_Motions.reserve(fset.size() - 1);
+
+		for (auto& it : fset)
+		{
+			LoadOmf(it.name.c_str(), nameOgf);
+		}
+	}
+	else
+	{
+		xr_strcat(nm, ".omf");
+		LoadOmf(nm, nameOgf);
+	}
+}
+
+void XRayKinematicsAnimated::append_motion_from_path(const char* nameOgf, const char* pathOmf)
+{
+		ProcessOmfFiles(pathOmf, nameOgf);
+
+		// Reinitialize motions
+		for (SMotionsSlot& MS : m_Motions)
+		{
+			MS.bone_motions.clear();
+			MS.bone_motions.reserve(bones->size());
+
+			for (CBoneData* bone : *bones)
+			{
+				MS.bone_motions.push_back(MS.motions.bone_motions(bone->name));
+			}
+		}
+
+		// Reinit blend pool
+		IBlend_Startup();
+}
 
 XRayKinematicsAnimated::~XRayKinematicsAnimated()
 {
@@ -562,9 +658,9 @@ XRayKinematicsAnimated::XRayKinematicsAnimated() : ::XRayKinematics(),
 void	XRayKinematicsAnimated::IBoneInstances_Create()
 {
 	inherited::IBoneInstances_Create();
-	bsize				size = bones->size();
+	size_t				size = bones->size();
 	blend_instances = xr_alloc<CBlendInstance>(size);
-	for (bsize i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 		blend_instances[i].construct();
 }
 
@@ -661,11 +757,11 @@ void XRayKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 	{
 		string_path		items_nm;
 		data->r_stringZ(items_nm, sizeof(items_nm));
-		bsize set_cnt = _GetItemCount(items_nm);
+		size_t set_cnt = _GetItemCount(items_nm);
 		R_ASSERT(set_cnt < MAX_ANIM_SLOT);
 		m_Motions.reserve(set_cnt);
 		string_path		nm;
-		for (bsize k = 0; k < set_cnt; ++k)
+		for (size_t k = 0; k < set_cnt; ++k)
 		{
 			_GetItem(items_nm, k, nm);
 			xr_strcat(nm, ".omf");
@@ -745,7 +841,7 @@ void XRayKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 	else
 	{
 		string_path	nm;
-		strconcat(sizeof(nm), nm, N, ".ogf");
+		xr_strconcat(nm, N, ".ogf");
 		m_Motions.push_back(SMotionsSlot());
 		m_Motions.back().motions.create(nm, data, bones);
 	}
@@ -773,32 +869,62 @@ void XRayKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 }
 
 
-void	XRayKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys)
+IC void QuatL(const CKeyQR32& K, Fquaternion& Q)
 {
-	u16							SelfID = bd->GetSelfID();
+	Q.x = K.x;
+	Q.y = K.y;
+	Q.z = K.z;
+	Q.w = K.w;
+}
+IC void QT_FFT_l(const CKeyQT32& K, Fvector& T)
+{
+	T.x = K.x1;
+	T.y = K.y1;
+	T.z = K.z1;
+}
+
+void XRayKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 channel_mask, SKeyTable& keys)
+{
+	u16 SelfID = bd->GetSelfID();
 	CBlendInstance& BLEND_INST = LL_GetBlendInstance(SelfID);
+	xrSRWLockGuard guard(&BLEND_INST.blend_lock, true);
 	const	CBlendInstance::BlendSVec& Blend = BLEND_INST.blend_vector();
 	CKey						BK[MAX_CHANNELS][MAX_BLENDED];	//base keys
 	BlendSVecCIt				BI;
-	for (BI = Blend.begin(); BI != Blend.end(); BI++)
+	for (CBlend* BI : Blend)
 	{
-		CBlend* B = *BI;
+		CBlend* B = BI;
 		int& b_count = keys.chanel_blend_conts[B->channel];
 		CKey* D = &keys.keys[B->channel][b_count];
+
 		if (!(channel_mask & (1 << B->channel)))
 			continue;
+
 		u8	channel = B->channel;
 		//keys.blend_factors[channel][b_count]	=  B->blendAmount;
 		keys.blends[channel][b_count] = B;
 		CMotion& M = *LL_GetMotion(B->motionID, SelfID);
 		Dequantize(*D, *B, M);
-		QR2Quat(M._keysR[0], BK[channel][b_count].Q);
+
+		if (M.test_flag(flTKeyFFT_Bit))
+			QuatL(M._keysR32[0], BK[channel][b_count].Q);
+		else
+			QR2Quat(M._keysR[0], BK[channel][b_count].Q);
+
 		if (M.test_flag(flTKeyPresent))
 		{
-			if (M.test_flag(flTKey16IsBit))
+			if (M.test_flag(flTKeyFFT_Bit))
+			{
+				QT_FFT_l(M._keysT32[0], BK[channel][b_count].T);
+			}
+			else if (M.test_flag(flTKey16IsBit))
+			{
 				QT16_2T(M._keysT16[0], M, BK[channel][b_count].T);
+			}
 			else
+			{
 				QT8_2T(M._keysT8[0], M, BK[channel][b_count].T);
+			}
 		}
 		else
 			BK[channel][b_count].T.set(M._initT);

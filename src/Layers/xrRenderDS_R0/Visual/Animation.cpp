@@ -1,6 +1,6 @@
-#include	"pch.h"
+#include "stdafx.h"
 
-#include	"animation.h"
+#include "animation.h"
 
 using	namespace animation;
 

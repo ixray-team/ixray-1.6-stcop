@@ -1,4 +1,8 @@
 #include "stdafx.h"
+#include "Visual/XRayModelPool.h"
+#include "Light/XRayRenderLight.h"
+#include "Light/XRayRenderGlow.h"
+#include "Light/XRayObjectSpecific.h"
 
 XRayRenderInterface GRenderInterface;
 
@@ -19,10 +23,14 @@ DWORD XRayRenderInterface::get_dx_level()
 
 void XRayRenderInterface::create()
 {
+	Device.seqFrame.Add(this);
+	GModelPool = new XRayModelPool;
 }
 
 void XRayRenderInterface::destroy()
 {
+	Device.seqFrame.Remove(this);
+	xr_delete(GModelPool);
 }
 
 void XRayRenderInterface::reset_begin()
@@ -68,7 +76,7 @@ IRender_Sector* XRayRenderInterface::detectSector(const Fvector& P)
 
 IRender_Target* XRayRenderInterface::getTarget()
 {
-	return nullptr;
+	return &Target;
 }
 
 void XRayRenderInterface::set_Transform(Fmatrix* M)
@@ -126,7 +134,8 @@ void XRayRenderInterface::flush()
 
 IRender_ObjectSpecific* XRayRenderInterface::ros_create(IRenderable* parent)
 {
-	return nullptr;
+	static XRayRenderObjectSpecific Fake;
+	return &Fake;
 }
 
 void XRayRenderInterface::ros_destroy(IRender_ObjectSpecific*&)
@@ -135,44 +144,50 @@ void XRayRenderInterface::ros_destroy(IRender_ObjectSpecific*&)
 
 IRender_Light* XRayRenderInterface::light_create()
 {
-	return nullptr;
+	static XRayRenderLight Fake;
+	return &Fake;
 }
 
 IRender_Glow* XRayRenderInterface::glow_create()
 {
-	return nullptr;
+	static XRayRenderGlow Fake;
+	return &Fake;
 }
 
 IRenderVisual* XRayRenderInterface::model_CreateParticles(LPCSTR name)
 {
 	return nullptr;
 }
-
 IRenderVisual* XRayRenderInterface::model_Create(LPCSTR name, IReader* data)
 {
-	return nullptr;
+	return GModelPool->Create(name, data);
 }
 
 IRenderVisual* XRayRenderInterface::model_CreateChild(LPCSTR name, IReader* data)
 {
-	return nullptr;
+	return  GModelPool->CreateChild(name, data);
 }
 
 IRenderVisual* XRayRenderInterface::model_Duplicate(IRenderVisual* V)
 {
-	return nullptr;
+	return GModelPool->Instance_Duplicate((XRayRenderVisual*)V);
 }
 
 void XRayRenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
 {
+	XRayRenderVisual* pVisual = (XRayRenderVisual*)V;
+	GModelPool->Delete(pVisual, bDiscard);
+	V = 0;
 }
 
 void XRayRenderInterface::model_Logging(BOOL bEnable)
 {
+	GModelPool->Logging(bEnable);
 }
 
 void XRayRenderInterface::models_Prefetch()
 {
+	GModelPool->Prefetch();
 }
 
 void XRayRenderInterface::models_Clear(BOOL b_complete)
@@ -246,10 +261,12 @@ u32 XRayRenderInterface::active_phase()
 
 void XRayRenderInterface::Render()
 {
+	GModelPool->Render();
 }
 
 void XRayRenderInterface::OnFrame()
 {
+	Render();
 }
 
 void XRayRenderInterface::Calculate()

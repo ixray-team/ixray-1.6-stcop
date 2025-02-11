@@ -1,14 +1,15 @@
 #pragma once
 class XRayRenderInterface :public IRender_interface,public pureFrame
 {
+	IRender_Target Target;
 public:
 	XRayRenderInterface();
 
 	virtual bool is_sun_static();
 	virtual DWORD get_dx_level();
 
-	virtual void create();
-	virtual void destroy();
+	virtual void create() override;
+	virtual void destroy() override;
 	virtual void reset_begin();
 	virtual void reset_end();
 

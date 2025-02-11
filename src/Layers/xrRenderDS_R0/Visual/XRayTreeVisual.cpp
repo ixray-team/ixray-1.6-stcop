@@ -58,7 +58,7 @@ void XRayTreeVisual::Load(LPCSTR N, IReader* data, u32 dwFlags)
 		OffsetVertex = data->r_u32();
 		CountVertex = data->r_u32();
 
-		R_ASSERT(VertexBuffer.empty());
+		//R_ASSERT(VertexBuffer.empty());
 
 		//VertexBuffer = GRenderInterface.GetVertexBuffer(ID);
 		//FVF = GRenderInterface.GetVertexState(ID);

@@ -1,7 +1,9 @@
 #pragma once
 class XRayKinematics;
 #include "../../xrEngine/bone.h"
-#include "XRayFSkinned.h"
+
+class XRayFVisual;
+
 class XRaySkeletonX
 {
 protected:
