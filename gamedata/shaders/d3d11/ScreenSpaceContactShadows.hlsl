@@ -21,15 +21,6 @@ float2 GetPointTexCoord(float3 Point)
     return saturate(Point.xy * 0.5f + 0.5f);
 }
 
-float GetMaxDirLength(float3 Point, float3 RDir)
-{
-	float3 FirstPoint = RDir - Point * RDir;
-	float3 LastPoint = -Point * RDir;
-	
-	float3 MaxPoint = max(FirstPoint, LastPoint);
-	return min(MaxPoint.x, min(MaxPoint.z, MaxPoint.y));
-}
-
 void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightDir, inout float3 Light)
 {
 	Point.xyz *= 0.99f;

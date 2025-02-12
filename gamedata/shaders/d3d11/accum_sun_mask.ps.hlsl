@@ -8,8 +8,8 @@ float4 main(p_TL I, float4 pos2d : SV_POSITION) : SV_Target
     IXrayGbuffer O;
     GbufferUnpack(I.Tex0, pos2d.xy, O);
 
-    float4 NH = float4(O.Normal, O.Hemi);
-    float L = NH.w - 0.001f + O.SSS * 3.0f;
+    // float4 NH = float4(O.Normal, O.Hemi);
+    float L = O.Hemi - 0.003f + O.SSS;
 
     clip(L);
 
