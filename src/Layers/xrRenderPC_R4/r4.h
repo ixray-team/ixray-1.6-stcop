@@ -31,6 +31,7 @@ public:
 	{
 		PHASE_NORMAL	= 0,	// E[0]
 		PHASE_SMAP		= 1,	// E[1]
+		PHASE_REFLECT	= 2,
 	};
 	
 	enum
@@ -66,6 +67,8 @@ public:
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;
 		u32		volumetricfog		: 1;
+		u32		offscreen_reflecitons	: 1;
+		u32		deffered_reflecitons	: 1;
 		
 	  u32		dx11_enable_tessellation : 1;
 	} o;

@@ -589,7 +589,13 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm,
 	Fmatrix& transform_matrix, bool ignore_optimize = false) {
 	//PROF_EVENT("IsValuableToRender")
 	if (ignore_optimize)
+	{
 		return true;
+	}
+
+	if(!!RImplementation.val_bHUD) {
+		return true;
+	}
 
 	if ((isStatic && opt_static >= 1) || (!isStatic && opt_dynamic >= 1)) {
 		float sphere_volume = pVisual->getVisData().sphere.volume();
