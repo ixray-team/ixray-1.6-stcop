@@ -37,7 +37,7 @@ public:
 	typedef xr_vector<COLLISION_TIME>					COLLISIONS;
 
 private:
-	typedef xr_vector<ISpatial*>						Spatials;
+	typedef xr_vector<ISpatialShared>					Spatials;
 
 
 public:

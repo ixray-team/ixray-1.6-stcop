@@ -630,28 +630,28 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, Fo
 
 	u32 iNumRenderables = (u32)m_lstRenderables.size();
 	// Determine visibility for dynamic part of scene
-	for (u32 i=0; i<iNumRenderables; ++i)
+	for (u32 i = 0; i < iNumRenderables; ++i)
 	{
-		ISpatial*	spatial		= m_lstRenderables[i];
+		ISpatial* spatial = m_lstRenderables[i].get();
 
 		// Light
-		light*	pLight = (light*) spatial->dcast_Light();
+		light* pLight = (light*)spatial->dcast_Light();
 		VERIFY(pLight);
 
 		if (pLight->flags.bStatic) continue;
 
-		float	d	=	pLight->position.distance_to(Transform.c);
+		float	d = pLight->position.distance_to(Transform.c);
 
-		float	R				= pLight->range + _max( size.x, _max( size.y, size.z ) );
-		if ( d >= R )
+		float	R = pLight->range + _max(size.x, _max(size.y, size.z));
+		if (d >= R)
 			continue;
 
-		Fvector3	LightIntencity;
+		Fvector3 LightIntencity;
 
 		LightIntencity.set(pLight->color.r, pLight->color.g, pLight->color.b);
 
-		float	r	=	pLight->range;
-		float	a	=	clampr(1.f - d/(r+EPS),0.f,1.f)*(pLight->flags.bStatic?1.f:2.f);
+		float r = pLight->range;
+		float a = clampr(1.f - d / (r + EPS), 0.f, 1.f) * (pLight->flags.bStatic ? 1.f : 2.f);
 
 		LightIntencity.mul(a);
 

@@ -25,11 +25,8 @@ void CPhantom::Load( LPCSTR section )
 {
 	inherited::Load		(section);
 	//////////////////////////////////////////////////////////////////////////
-	ISpatial* self		= smart_cast<ISpatial*> (this);
-	if (self) {
-		self->spatial.type &=~STYPE_VISIBLEFORAI;
-		self->spatial.type &=~STYPE_REACTTOSOUND;
-	}
+	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &=~STYPE_REACTTOSOUND;
 	//////////////////////////////////////////////////////////////////////////
 	fSpeed							= pSettings->r_float(section,"speed");
 	fASpeed							= pSettings->r_float(section,"angular_speed");
@@ -238,7 +235,7 @@ void CPhantom::UpdateFlyMedia()
 
 void CPhantom::shedule_Update(u32 DT)
 {
-	spatial.type &=~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
 

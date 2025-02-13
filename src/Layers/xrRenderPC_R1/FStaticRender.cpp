@@ -375,7 +375,7 @@ extern float		r_ssaLOD_A,			r_ssaLOD_B;
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 extern float		r_ssaHZBvsTEX;
 
-ICF bool			pred_sp_sort		(ISpatial* _1, ISpatial* _2)
+ICF bool pred_sp_sort(ISpatialShared _1, ISpatialShared _2)
 {
 	float	d1		= _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
 	float	d2		= _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
@@ -504,7 +504,7 @@ void CRender::Calculate				()
 			}
 			for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 			{
-				ISpatial*	spatial		= lstRenderables[o_it];		spatial->spatial_updatesector	();
+				ISpatial*	spatial		= lstRenderables[o_it].get();		spatial->spatial_updatesector	();
 				CSector*	sector		= (CSector*)spatial->spatial.sector	;
 				if	(0==sector)										
 					continue;	// disassociated from S/P structure
@@ -543,12 +543,10 @@ void CRender::Calculate				()
 							renderable->renderable_Render	();
 							set_Object						(0);	//? is it needed at all
 						}
-						else
+						else if (CGlow* glow = spatial->dcast_CGlow())
 						{
 							// It may be an glow
-							CGlow*		glow				= fast_dynamic_cast<CGlow*>(spatial);
-							VERIFY							(glow);
-							L_Glows->add					(glow);
+							L_Glows->add(glow);
 						}
 						break;	// exit loop on frustums
 					}
@@ -558,13 +556,14 @@ void CRender::Calculate				()
 				{
 					if ( ViewBase.testSphere_dirty(spatial->spatial.sphere.P,spatial->spatial.sphere.R) )
 					{
-						VERIFY								(spatial->spatial.type & STYPE_LIGHTSOURCE);
+						VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
 						// lightsource
-						if(light*			L					= (light*)	spatial->dcast_Light	())
+						if (light* L = (light*)spatial->dcast_Light())
 						{
-							if (L->spatial.sector)				{
-								vis_data&		vis		= L->get_homdata	( );
-								if	(HOM.visible(vis))	L_DB->add_light		(L);
+							if (L->SpatialComponent->spatial.sector)
+							{
+								vis_data& vis = L->get_homdata();
+								if (HOM.visible(vis))	L_DB->add_light(L);
 							}
 						}
 					}

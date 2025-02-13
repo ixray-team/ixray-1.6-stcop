@@ -732,7 +732,7 @@ public:
 	virtual	void				On_B_NotCurrentEntity			();
 
 private:
-	xr_vector<ISpatial*>		ISpatialResult;
+	xr_vector<ISpatialShared>		ISpatialResult;
 
 private:
 	CLocationManager				*m_location_manager;

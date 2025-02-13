@@ -309,11 +309,19 @@ void CTorch::UpdateCL()
 		CActor*			actor = smart_cast<CActor*>(H_Parent());
 		if (actor)		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
 
-		if ((H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition)<_sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle)) {
+		if ((H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle))
+		{
 			// near camera
-			PKinematics(H_Parent()->Visual())->CalculateBones	(!!Render->ViewBase.testSphere_dirty(H_Parent()->spatial.sphere.P,H_Parent()->spatial.sphere.R+spatial.sphere.R+light_render->get_homdata().sphere.R));
-			M.mul_43				(XFORM(),BI.mTransform);
-		} else {
+			PKinematics(H_Parent()->Visual())->CalculateBones
+			(
+				!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->spatial.sphere.P,
+				H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
+			);
+
+			M.mul_43(XFORM(), BI.mTransform);
+		}
+		else 
+		{
 			// approximately the same
 			M		= H_Parent()->XFORM		();
 			H_Parent()->Center				(M.c);

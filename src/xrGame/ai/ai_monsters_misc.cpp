@@ -110,12 +110,12 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 	GroupHierarchyHolder::MEMBER_REGISTRY	Members;
 	if (!tpEntity)
 		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
 				Members.push_back(Group.members()[k]);
 		}
 	else
 		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
 				if (tpEntity->Position().distance_to(Group.members()[k]->Position()) < fGroupDistance) {
 
 					if (!stalker) {

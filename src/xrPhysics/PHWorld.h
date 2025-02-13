@@ -54,7 +54,7 @@ class CPHWorld	:	public	pureFrame,
 	CObjectList*			m_level_objects;
 
 public:
-	xr_vector<ISpatial*>		r_spatial;
+	xr_vector<ISpatialShared>	r_spatial;
 	u64							m_steps_num;
 
 private:

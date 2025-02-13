@@ -20,8 +20,7 @@ CHelicopter::CHelicopter()
 	m_light_render	= nullptr;
 	m_lanim			= nullptr;
 
-	ISpatial*		self				=	smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type  |=  STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type  |=  STYPE_VISIBLEFORAI;
 
 	m_movement.parent	= this;
 	m_body.parent		= this;

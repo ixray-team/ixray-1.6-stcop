@@ -137,7 +137,7 @@ void	CRender::render_lights	(light_Package& LP)
 					else
 					{
 						PROF_EVENT("r_dsgraph_render_subspace")
-							r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
+							r_dsgraph_render_subspace(L->SpatialComponent->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
 					}
 				}
 
@@ -158,7 +158,7 @@ void	CRender::render_lights	(light_Package& LP)
 					if (ps_r2_ls_flags.test(R2FLAG_LIGHTS_DETAILS) &&
 						psDeviceFlags.is(rsDetails) &&
 						Details->dtFS &&
-						L->flags.bShadow && !decorative_light && L->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
+						L->flags.bShadow && !decorative_light && L->SpatialComponent->spatial.sphere.P.distance_to_sqr(RDEVICE.vCameraPosition) < _sqr(40.f))
 					{
 						Details->hw_Render(L);
 					}

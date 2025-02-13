@@ -64,11 +64,14 @@ void CRender::render_main	(bool deffered, bool zfill)
 				);
 
 			// (almost) Exact sorting order (front-to-back)
-			std::sort(lstRenderablesMain.begin(), lstRenderablesMain.end(), [](ISpatial* _1, ISpatial* _2) {
-			float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-			float d2 = _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-			return d1 < d2;
-			});
+			std::sort(lstRenderablesMain.begin(), lstRenderablesMain.end(), 
+				[](ISpatialShared _1, ISpatialShared _2)
+				{
+					float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
+					float d2 = _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
+					return d1 < d2;
+				}
+			);
 
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);
@@ -151,7 +154,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
-			ISpatial*	spatial	= lstRenderablesMain[o_it];
+			ISpatial* spatial = lstRenderablesMain[o_it].get();
 			if	(0==spatial) continue; spatial->spatial_updatesector();
 			CSector* sector = (CSector*)spatial->spatial.sector;
 			if	(0==sector) continue;

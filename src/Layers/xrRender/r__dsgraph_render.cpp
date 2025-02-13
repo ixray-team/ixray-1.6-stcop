@@ -676,7 +676,7 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 		// Determine visibility for dynamic part of scene
 		for (u32 o_it=0; o_it<lstRenderables.size(); o_it++)
 		{
-			ISpatial*	spatial		= lstRenderables[o_it];
+			ISpatial*	spatial		= lstRenderables[o_it].get();
 			CSector*	sector		= (CSector*)spatial->spatial.sector;
 			if	(0==sector)										continue;	// disassociated from S/P structure
 			if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector

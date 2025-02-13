@@ -57,8 +57,8 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 
 
 	// spatial
-	spatial.type			= 0;
-	spatial.sector			= S;
+	SpatialComponent->spatial.type			= 0;
+	SpatialComponent->spatial.sector			= S;
 	
 	NeedUpdate = CParticlesAsync::Push(this);
 
@@ -68,7 +68,6 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 //----------------------------------------------------
 CParticlesObject::~CParticlesObject()
 {
-	CPS_Instance::~CPS_Instance();
 	CParticlesAsync::Pop(this);
 }
 
@@ -81,20 +80,25 @@ void CParticlesObject::UpdateSpatial()
 	if (_valid(vis.sphere))
 	{
 		Fvector	P;	float	R;
-		renderable.xform.transform_tiny	(P,vis.sphere.P);
-		R								= vis.sphere.R;
-		if (0==spatial.type)	{
+		renderable.xform.transform_tiny(P, vis.sphere.P);
+		R = vis.sphere.R;
+		if (0 == SpatialComponent->spatial.type) 
+		{
 			// First 'valid' update - register
-			spatial.type			= STYPE_PARTICLE;
-			spatial.sphere.set		(P,R);
-			spatial_register		();
-		} else {
-			BOOL	bMove			= FALSE;
-			if		(!P.similar(spatial.sphere.P,EPS_L*10.f))		bMove	= TRUE;
-			if		(!fsimilar(R,spatial.sphere.R,0.15f))			bMove	= TRUE;
-			if		(bMove)			{
-				spatial.sphere.set	(P, R);
-				spatial_move		();
+			SpatialComponent->spatial.type = STYPE_PARTICLE;
+			SpatialComponent->spatial.sphere.set(P, R);
+			spatial_register();
+		}
+		else
+		{
+			bool bMove = false;
+			if (!P.similar(SpatialComponent->spatial.sphere.P, EPS_L * 10.f))		bMove = true;
+			if (!fsimilar(R, SpatialComponent->spatial.sphere.R, 0.15f))			bMove = true;
+
+			if (bMove) 
+			{
+				SpatialComponent->spatial.sphere.set(P, R);
+				spatial_move();
 			}
 		}
 	}

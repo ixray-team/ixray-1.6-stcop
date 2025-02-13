@@ -8,17 +8,19 @@
 #	include "light_smapvis.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)
 
-class	light		:	public IRender_Light, public ISpatial
+class light :	
+	public IRender_Light
 {
 public:
-	struct {
-		u32			type	:	4;
-		u32			bStatic	:	1;
-		u32			bActive	:	1;
-		u32			bShadow	:	1;
-		u32			bVolumetric:1;
-		u32			bHudMode:	1;
-		u32			bOccq:		1;
+	struct
+	{
+		u32 type	:	4;
+		u32 bStatic	:	1;
+		u32 bActive	:	1;
+		u32 bShadow	:	1;
+		u32 bVolumetric:1;
+		u32 bHudMode:	1;
+		u32 bOccq:		1;
 	} flags;
 
 	Fvector			position	;
@@ -31,10 +33,11 @@ public:
 	CObject			*ignore_object, *decor_object[6];
 	vis_data		hom			;
 	u32				frame_render;
-
+	
 #if RENDER!=R_R1
 	xr_vector<IRender_Sector*> m_sectors;
 #endif	//	RENDER!=R_R1
+
 	float			m_volumetric_quality;
 	float			m_volumetric_intensity;
 	float			m_volumetric_distance;

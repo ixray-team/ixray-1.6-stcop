@@ -11,10 +11,12 @@
 #endif
 extern CPHWorld* ph_world;
 
-CPHObject::CPHObject	()	: ISpatial(g_SpatialSpacePhysic)
+CPHObject::CPHObject()
 {
+	SpatialComponent = xr_make_shared<ISpatial>(g_SpatialSpacePhysic, this);
+
 	m_flags.flags	=	0;
-	spatial.type	|=	STYPE_PHYSIC;
+	SpatialComponent->spatial.type	|=	STYPE_PHYSIC;
 	m_island.Init	();
 	m_check_count	=0;
 	m_flags.set(fl_collision_disable,FALSE);
@@ -72,72 +74,76 @@ void CPHObject::check_recently_deactivated()
 void CPHObject::spatial_move()
 {
 	get_spatial_params();
-	ISpatial::spatial_move();
+	ISpatialOwner::spatial_move();
 	m_flags.set(st_dirty,TRUE);
 }
 
 void CPHObject::Collide()
 {
-	if(m_flags.test(fl_ray_motions))
+	if (m_flags.test(fl_ray_motions))
 	{
-		CPHMoveStorage* tracers=MoveStorage();
-		CPHMoveStorage::iterator I=tracers->begin(),E=tracers->end();
-		for(;E!=I;I++)
+		CPHMoveStorage* tracers = MoveStorage();
+		CPHMoveStorage::iterator I = tracers->begin(), E = tracers->end();
+		for (; E != I; I++)
 		{
-				const Fvector	*from=0,	*to=0;
-				Fvector dir;
-				I.Positions(from,to);
-				if(from->x==-dInfinity) continue;
-				dir.sub(*to,*from);
-				float	magnitude=dir.magnitude();
-				if(magnitude<EPS) continue;
-				dir.mul(1.f/magnitude);
-				g_SpatialSpacePhysic->q_ray(ph_world->r_spatial,0,STYPE_PHYSIC,*from,dir,magnitude);//|ISpatial_DB::O_ONLYFIRST
+			const Fvector* from = 0, * to = 0;
+			Fvector dir;
+			I.Positions(from, to);
+			if (from->x == -dInfinity) continue;
+			dir.sub(*to, *from);
+			float	magnitude = dir.magnitude();
+			if (magnitude < EPS) continue;
+			dir.mul(1.f / magnitude);
+			g_SpatialSpacePhysic->q_ray(ph_world->r_spatial, 0, STYPE_PHYSIC, *from, dir, magnitude);//|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
-				if(debug_output().ph_dbg_draw_mask().test(phDbgDrawRayMotions))
-				{
-					debug_output().DBG_OpenCashedDraw();
-					debug_output().DBG_DrawLine(*from, Fvector().add(*from, Fvector().mul(dir, magnitude)), color_xrgb(0, 255, 0));
-					debug_output().DBG_ClosedCashedDraw(30000);
-				}
+			if (debug_output().ph_dbg_draw_mask().test(phDbgDrawRayMotions))
+			{
+				debug_output().DBG_OpenCashedDraw();
+				debug_output().DBG_DrawLine(*from, Fvector().add(*from, Fvector().mul(dir, magnitude)), color_xrgb(0, 255, 0));
+				debug_output().DBG_ClosedCashedDraw(30000);
+			}
 
 #endif
-				qResultVec& result=ph_world->r_spatial;
-				qResultIt i=result.begin(),e=result.end();
-				for(;i!=e;++i)	{
-					CPHObject* obj2=static_cast<CPHObject*>(*i);
-					if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
-					dGeomID	motion_ray=ph_world->GetMotionRayGeom();
-					dGeomRayMotionSetGeom(motion_ray,I.dGeom());
-					dGeomRayMotionsSet(motion_ray,(const dReal*) from,(const dReal*)&dir,magnitude);
-					NearCallback(this,obj2,motion_ray,obj2->dSpacedGeom());
-				}
+			qResultVec& result = ph_world->r_spatial;
+			qResultIt i = result.begin(), e = result.end();
+			for (; i != e; ++i)
+			{
+				CPHObject* obj2 = (*i)->dcast_CPHObject();
+				if (obj2 == this || !obj2->m_flags.test(st_dirty))		continue;
+				dGeomID	motion_ray = ph_world->GetMotionRayGeom();
+				dGeomRayMotionSetGeom(motion_ray, I.dGeom());
+				dGeomRayMotionsSet(motion_ray, (const dReal*)from, (const dReal*)&dir, magnitude);
+				NearCallback(this, obj2, motion_ray, obj2->dSpacedGeom());
+			}
 		}
 	}
+
 	CollideDynamics					();
 ///////////////////////////////
 	if(CPHCollideValidator::DoCollideStatic(*this) && !m_flags.test(fl_collision_disable)) CollideStatic(dSpacedGeom(),this);
 	m_flags.set(st_dirty,FALSE);
 }
-void	CPHObject::		CollideDynamics					()
+
+void CPHObject::CollideDynamics()
 {
-	g_SpatialSpacePhysic->q_box				(ph_world->r_spatial,0,STYPE_PHYSIC,spatial.sphere.P,AABB);
-	qResultVec& result=ph_world->r_spatial	;
-	qResultIt i=result.begin(),e=result.end();
-	for(;i!=e;++i)	{
-		CPHObject* obj2=static_cast<CPHObject*>(*i);
-		if(obj2==this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || obj2->m_flags.test(fl_collision_disable))		continue;
-		if(CPHCollideValidator::DoCollide(*this,*obj2)) NearCallback(this,obj2,dSpacedGeom(),obj2->dSpacedGeom());
+	g_SpatialSpacePhysic->q_box(ph_world->r_spatial, 0, STYPE_PHYSIC, SpatialComponent->spatial.sphere.P, AABB);
+	qResultVec& result = ph_world->r_spatial;
+	qResultIt i = result.begin(), e = result.end();
+	for (; i != e; ++i) {
+		CPHObject* obj2 = (*i)->dcast_CPHObject();
+		if (obj2 == this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || obj2->m_flags.test(fl_collision_disable))		continue;
+		if (CPHCollideValidator::DoCollide(*this, *obj2)) NearCallback(this, obj2, dSpacedGeom(), obj2->dSpacedGeom());
 	}
 }
-void	CPHObject::reinit_single()
+
+void CPHObject::reinit_single()
 {
 	IslandReinit					();
 	qResultVec& result=ph_world->r_spatial	;
 	qResultIt i=result.begin(),e=result.end();
 	for(;i!=e;++i)	
 	{
-		CPHObject* obj=static_cast<CPHObject*>(*i);
+		CPHObject* obj= (*i)->dcast_CPHObject();
 		obj->IslandReinit();
 	}
 	result.resize(0);
@@ -207,18 +213,18 @@ void CPHObject::UnFreezeContent()
 void CPHObject::spatial_register()
 {
 	get_spatial_params();
-	ISpatial::spatial_register();
+	ISpatialOwner::spatial_register();
 	m_flags.set(st_dirty,TRUE);
 }
 
 void CPHObject::collision_disable()
 {
-	ISpatial::spatial_unregister();
+	spatial_unregister();
 	m_flags.set(fl_collision_disable,TRUE);
 }
 void CPHObject::collision_enable()
 {
-	ISpatial::spatial_register();
+	spatial_register();
 	m_flags.set(fl_collision_disable,FALSE);
 }
 

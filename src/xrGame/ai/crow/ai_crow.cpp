@@ -110,30 +110,26 @@ void CAI_Crow::init		()
 	o_workload_rframe = 0;
 }
 
-void CAI_Crow::Load( LPCSTR section )
+void CAI_Crow::Load(LPCSTR section)
 {
-	inherited::Load				(section);
+	inherited::Load(section);
 	//////////////////////////////////////////////////////////////////////////
-	ISpatial*			self = smart_cast<ISpatial*> (this);
-	if (self) {
-		self->spatial.type &=~STYPE_VISIBLEFORAI;
-		self->spatial.type &=~STYPE_REACTTOSOUND;
-	}
+	SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &= ~STYPE_REACTTOSOUND;
 	//////////////////////////////////////////////////////////////////////////
 
 	// sounds
-	m_Sounds.m_idle.Load		("monsters\\crow\\idle");
+	m_Sounds.m_idle.Load("monsters\\crow\\idle");
 	// play defaut
-	
-	fSpeed						= pSettings->r_float	(section,"speed");
-	fASpeed						= pSettings->r_float	(section,"angular_speed");
-	fGoalChangeDelta			= pSettings->r_float	(section,"goal_change_delta");
-	fMinHeight					= pSettings->r_float	(section,"min_height");
-	vVarGoal					= pSettings->r_fvector3	(section,"goal_variability");
-	fIdleSoundDelta				= pSettings->r_float	(section,"idle_sound_delta");
-	fIdleSoundTime				= fIdleSoundDelta+fIdleSoundDelta*Random.randF(-.5f,.5f);
-	VERIFY2( valid_pos( Position() ), dbg_valide_pos_string(Position(),this,"CAI_Crow::Load( LPCSTR section )").c_str());
 
+	fSpeed = pSettings->r_float(section, "speed");
+	fASpeed = pSettings->r_float(section, "angular_speed");
+	fGoalChangeDelta = pSettings->r_float(section, "goal_change_delta");
+	fMinHeight = pSettings->r_float(section, "min_height");
+	vVarGoal = pSettings->r_fvector3(section, "goal_variability");
+	fIdleSoundDelta = pSettings->r_float(section, "idle_sound_delta");
+	fIdleSoundTime = fIdleSoundDelta + fIdleSoundDelta * Random.randF(-.5f, .5f);
+	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, "CAI_Crow::Load( LPCSTR section )").c_str());
 }
 
 BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
@@ -194,8 +190,7 @@ void CAI_Crow::switch2_FlyIdle()
 void CAI_Crow::switch2_DeathDead()
 {
 	// AI need to pickup this
-	ISpatial*		self				=	smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type	|=	STYPE_VISIBLEFORAI;	
+	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;
 	//
 	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle	(m_Anims.m_death_dead.GetRandom());
 }
@@ -318,8 +313,8 @@ void CAI_Crow::renderable_Render	()
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
 void CAI_Crow::shedule_Update		(u32 DT)
 {
-	float fDT				= float(DT)/1000.F;
-	spatial.type			&=~STYPE_VISIBLEFORAI;
+	float fDT = float(DT)/1000.F;
+	SpatialComponent->spatial.type &=~STYPE_VISIBLEFORAI;
 
 	inherited::shedule_Update(DT);
 

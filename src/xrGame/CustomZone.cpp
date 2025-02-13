@@ -87,8 +87,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_StateTime[eZoneStateAccumulate]	= pSettings->r_s32(section, "accamulate_time");
 	
 //////////////////////////////////////////////////////////////////////////
-	ISpatial*		self				=	smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
+	SpatialComponent->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
 //////////////////////////////////////////////////////////////////////////
 
 	LPCSTR sound_str = nullptr;
@@ -1411,7 +1410,7 @@ void CCustomZone::GoEnabledState()
 
 BOOL CCustomZone::feel_touch_on_contact	(CObject *O)
 {
-	if ((spatial.type | STYPE_VISIBLEFORAI) != spatial.type)
+	if ((SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != SpatialComponent->spatial.type)
 		return			(FALSE);
 
 	return				(inherited::feel_touch_on_contact(O));
