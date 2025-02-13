@@ -346,7 +346,8 @@ void CShootingObject::StartFlameParticles	()
 	{
 		in_hud_mode = false;
 	}
-	m_pFlameParticles->Play(in_hud_mode);
+	if(m_pFlameParticles)
+		m_pFlameParticles->Play(in_hud_mode);
 		
 
 }
