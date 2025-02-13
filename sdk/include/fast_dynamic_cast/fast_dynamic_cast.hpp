@@ -101,14 +101,21 @@ namespace fast_dcast
     }
     else {
       // Need to construct cache entry
-      auto result = dynamic_cast<_To>(ptr);
-      if (result == nullptr)
-        return nullptr;
+#ifndef DEBUG
+      try{
+#endif // !DEBUG
+          auto result = dynamic_cast<_To>(ptr);
+          if (result == nullptr)
+              return nullptr;
 
-      src_vtable_ptr = this_vtable;
-      offset = reinterpret_cast<const char*>(result) - reinterpret_cast<const char*>(ptr);
-      return result;
+          src_vtable_ptr = this_vtable;
+          offset = reinterpret_cast<const char*>(result) - reinterpret_cast<const char*>(ptr);
+          return result;
+#ifndef DEBUG
+      }catch(...){}
+#endif // !DEBUG
     }
+    return nullptr;
   };
 
   // const T*
