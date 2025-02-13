@@ -175,7 +175,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 	{
 		{ 0, 0, "Cancel" },
 		{ 0, 1, "Try again" },
-		{ 0, 2, "Continue" },
+		{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2, "Continue" },
 	};
 
 	auto utf8_message = Platform::ANSI_TO_UTF8(Platform::UTF8_to_CP1251(message.c_str()));
