@@ -962,6 +962,18 @@ void CUICellContainer::Draw()
 				{
 					select_mode = 3;
 				}
+				else
+				{
+					//Alundaio: Highlight equipped items
+					PIItem	iitem = (PIItem)ui_cell.m_item->m_pData;
+					if (iitem)
+					{
+						u16 slot = iitem->BaseSlot();
+						if (iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(slot) == iitem)
+							select_mode = 3;
+					}
+					//-Alundaio:
+				}
 			}
 			
 			Fvector2			tp;
