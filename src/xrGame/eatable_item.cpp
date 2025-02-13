@@ -17,6 +17,8 @@
 #include "UIGameCustom.h"
 #include "ui/UIActorMenu.h"
 #include "HUDAnimItem.h"
+#include "Inventory.h"
+#include "Actor.h"
 
 CEatableItem::CEatableItem()
 {
@@ -119,6 +121,12 @@ void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 
 bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 {
+	CActor* parent = smart_cast<CActor*>(entity_alive);
+	if (parent != nullptr && m_pInventory != nullptr && (smart_cast<CHUDAnimItem*>(m_pInventory->ActiveItem()) != nullptr || m_pInventory->GetNextActiveSlot() == ANIM_SLOT))
+	{
+		return false;
+	}
+
 	SMedicineInfluenceValues	V;
 	V.Load						(m_physic_item->cNameSect());
 
@@ -146,7 +154,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 
 	if (bUseHUDAnim)
 	{
-		CHUDAnimItem::PlayHudAnim(m_section_id.c_str(), "anm_use");
+		CHUDAnimItem::PlayHudAnim(m_section_id.c_str(), "anm_use", true);
 	}
 
 	return true;

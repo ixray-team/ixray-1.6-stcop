@@ -33,6 +33,7 @@
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
+#include "HUDAnimItem.h"
 
 extern u32 hud_adj_mode;
 
@@ -184,6 +185,11 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
 		{
+			if (smart_cast<CHUDAnimItem*>(inventory().ActiveItem()) != nullptr || inventory().GetNextActiveSlot() == ANIM_SLOT)
+			{
+				break;
+			}
+
 			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
 			if(item_name.size())
 			{
