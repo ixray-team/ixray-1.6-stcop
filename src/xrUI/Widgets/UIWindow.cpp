@@ -153,10 +153,12 @@ CUIWindow::~CUIWindow()
 
 void CUIWindow::Draw()
 {
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it){
-		if(!(*it)->IsShown())		continue;
-		if((*it)->GetCustomDraw())	continue;
-		(*it)->Draw					();
+	for(CUIWindow* W : m_ChildWndList)
+	{
+		if (!W)		continue;
+		if(!W->IsShown())		continue;
+		if(W->GetCustomDraw())	continue;
+		W->Draw();
 	}
 #ifdef DEBUG
 	if(g_show_wnd_rect2){
