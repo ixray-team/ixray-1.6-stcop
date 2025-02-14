@@ -14,9 +14,7 @@
 struct OMFEditorState
 {
 	bool is_file_loaded;
-
-
-	xr_stack_wstring<sizeof(string_path)> path;
+	xr_stack_string<sizeof(string_path) * 2> path;
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
@@ -27,8 +25,17 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 	{
 		if (xr_EFS)
 		{
-			bool status = xr_EFS->GetOpenName(pEditor->path, L"OMF file\0*.omf\0");
-			pEditor->is_file_loaded = status;
+			xr_stack_wstring<sizeof(string_path)> local_path;
+			bool status = xr_EFS->GetOpenName(local_path, L"OMF file\0*.omf\0");
+			p_state->is_file_loaded = status;
+
+			if (p_state->is_file_loaded)
+			{
+				status = Platform::WCHAR_TO_CHAR(local_path, p_state->path);
+				R_ASSERT2(status, "report to developers! Unable to convert your path to multibyte string");
+
+				p_state->is_file_loaded = status;
+			}
 		}
 	}
 }
@@ -46,7 +53,7 @@ void RenderToolsOMFEditorWindow()
 			for (unsigned char row = 0; row < 1; ++row)
 			{
 				ImGui::TableNextRow();
-				
+
 				ImGui::TableSetColumnIndex(0);
 				if (ImGui::Button("Load##ToolsInGameImGui_OMFEditor"))
 				{
@@ -60,6 +67,7 @@ void RenderToolsOMFEditorWindow()
 					if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
 					{
 						g_omf_editor.is_file_loaded = false;
+						pEditor->path[0] = 0;
 					}
 
 					ImGui::TableSetColumnIndex(2);
