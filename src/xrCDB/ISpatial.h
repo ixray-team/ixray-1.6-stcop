@@ -123,6 +123,7 @@ private:
 
 public:
 	Fvector OwnerSectorPoint();
+	void OwnerReset(ISpatialOwner* ptr) { RawOwner = ptr; };
 
 	ICF void spatial_updatesector()	
 	{
@@ -162,6 +163,8 @@ public:
 	virtual IRender_Light*	dcast_Light			() { return nullptr; };
 	virtual CPHObject*		dcast_CPHObject		() { return nullptr; };
 	virtual CGlow*			dcast_CGlow			() { return nullptr; };
+
+	virtual ~ISpatialOwner() { SpatialComponent->OwnerReset(nullptr); }
 };
 
 

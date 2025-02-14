@@ -120,6 +120,7 @@ void CObject::processing_deactivate	()
 
 void CObject::setEnabled(BOOL _enabled)
 {
+	if (Props.bDestroy) return;
 	if (_enabled)
 	{
 		Props.bEnabled = 1;	
@@ -135,6 +136,7 @@ void CObject::setEnabled(BOOL _enabled)
 
 void CObject::setVisible(BOOL _visible, BOOL _visibleshadow)
 {
+	if (Props.bDestroy) return;
 	if (_visible)
 	{ // Parent should control object visibility itself (??????)
 		Props.bVisible = 1;
@@ -261,6 +263,7 @@ const	float	base_spu_epsP		= 0.05f;
 const	float	base_spu_epsR		= 0.05f;
 void	CObject::spatial_update		(float eps_P, float eps_R)
 {
+	if (Props.bDestroy) return;
 	//
 	BOOL	bUpdate=FALSE;
 	if (PositionStack.empty())
@@ -379,6 +382,7 @@ void CObject::spatial_unregister()
 
 void CObject::spatial_move()
 {
+	if (Props.bDestroy) return;
 	Center(SpatialComponent->spatial.sphere.P);
 	SpatialComponent->spatial.sphere.R = Radius();
 	ISpatialOwner::spatial_move();

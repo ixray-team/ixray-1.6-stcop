@@ -27,32 +27,32 @@ Fvector	c_spatial_offset	[8]	=
 
 CObject* ISpatial::dcast_CObject()
 {
-	return RawOwner->dcast_CObject();
+	return RawOwner ? RawOwner->dcast_CObject() : nullptr;
 }
 
 IRender_Light* ISpatial::dcast_Light()
 {
-	return RawOwner->dcast_Light();
+	return RawOwner ? RawOwner->dcast_Light() : nullptr;
 }
 
 Feel::Sound* ISpatial::dcast_FeelSound()
 {
-	return RawOwner->dcast_FeelSound();
+	return RawOwner ? RawOwner->dcast_FeelSound() : nullptr;
 }
 
 IRenderable* ISpatial::dcast_Renderable() 
 {
-	return RawOwner->dcast_Renderable();
+	return RawOwner ? RawOwner->dcast_Renderable() : nullptr;
 }
 
 CPHObject* ISpatial::dcast_CPHObject()
 {
-	return RawOwner->dcast_CPHObject();
+	return RawOwner ? RawOwner->dcast_CPHObject() : nullptr;
 }
 
 CGlow* ISpatial::dcast_CGlow()
 {
-	return RawOwner->dcast_CGlow();
+	return RawOwner ? RawOwner->dcast_CGlow() : nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ Fvector ISpatial::SectorPoint()
 
 Fvector ISpatial::OwnerSectorPoint()
 {
-	return RawOwner->spatial_sector_point();
+	return RawOwner ? RawOwner->spatial_sector_point() : spatial.sphere.P;
 }
 
 void ISpatial::spatial_updatesector_internal()
