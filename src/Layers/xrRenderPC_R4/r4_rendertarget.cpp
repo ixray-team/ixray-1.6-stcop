@@ -651,11 +651,12 @@ CRenderTarget::CRenderTarget()
 		t_LUM_dest.create(r2_RT_luminance_cur);
 
 		// create pool
-		for(u32 it = 0; it < Caps.iGPUNum * 2; it++) {
-			xr_sprintf(name, "%s_%d", r2_RT_luminance_pool, it);
-			rt_LUM_pool[it].create(name, 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
+		for (u32 it = 0; it < 2; it++)
+		{
+			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
+			rt_LUM_pool[it].create(name.c_str(), 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
 
-			FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f};
+			FLOAT ColorRGBA[4] = { 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f };
 			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
 		}
 

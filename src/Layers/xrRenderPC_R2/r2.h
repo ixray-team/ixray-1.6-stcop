@@ -113,15 +113,11 @@ public:
 	light_Package												LP_normal;
 	light_Package												LP_pending;
 
-	xr_vector<Fbox3,render_alloc<Fbox3> >						main_coarse_structure;
-
 	shared_str													c_sbase			;
 	shared_str													c_lmaterial		;
 	float														o_hemi			;
 	float														o_hemi_cube[CROS_impl::NUM_FACES]	;
 	float														o_sun			;
-	IDirect3DQuery9*											q_sync_point[CHWCaps::MAX_GPUS];
-	u32															q_sync_count	;
 
 	bool														m_bMakeAsyncSS;
 	bool														m_bFirstFrameAfterReset;	// Determines weather the frame is the first after resetting device.
@@ -142,7 +138,7 @@ private:
 
 	BOOL							add_Dynamic					(dxRender_Visual*pVisual, u32 planes);		// normal processing
 	void							add_Static					(dxRender_Visual*pVisual, u32 planes);
-	void							add_leafs_Dynamic			(dxRender_Visual*pVisual, bool ignore = false); // if detected node's full visibility
+	void							add_leafs_Dynamic			(dxRender_Visual*pVisual); // if detected node's full visibility
 	void							add_leafs_Static			(dxRender_Visual*pVisual);						// if detected node's full visibility
 
 public:
@@ -248,7 +244,7 @@ public:
 	virtual void					flush						();
 	virtual void					set_Object					(IRenderable*		O	);
 	virtual	void					add_Occluder				(Fbox2&	bb_screenspace	);			// mask screen region as oclluded
-	virtual void					add_Visual					(IRenderVisual*	V, bool ignore_opt = false);			// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual					(IRenderVisual*	V);			// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry				(IRenderVisual*	V	);			// add visual(s)	(all culling performed)
 
 	// wallmarks

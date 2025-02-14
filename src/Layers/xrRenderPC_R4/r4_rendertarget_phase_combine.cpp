@@ -46,10 +46,11 @@ void CRenderTarget::phase_combine()
 	Fvector2 p0, p1;
 
 	//*** exposure-pipeline
-	u32 gpu_id	= Device.dwFrame % Caps.iGPUNum;
 	{
-		t_LUM_src->surface_set		(rt_LUM_pool[gpu_id*2+0]->pSurface);
-		t_LUM_dest->surface_set		(rt_LUM_pool[gpu_id*2+1]->pSurface);
+		if (t_LUM_src != rt_LUM_pool[0]->pTexture)
+			t_LUM_src->surface_set(rt_LUM_pool[0]->pSurface);
+		if (t_LUM_dest != rt_LUM_pool[1]->pTexture)
+			t_LUM_dest->surface_set(rt_LUM_pool[1]->pSurface);
 	}
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
@@ -381,7 +382,7 @@ void CRenderTarget::phase_combine()
 
 	//*** exposure-pipeline-clear
 	{
-		std::swap					(rt_LUM_pool[gpu_id*2+0],rt_LUM_pool[gpu_id*2+1]);
+		std::swap(rt_LUM_pool[0], rt_LUM_pool[1]);
 		t_LUM_src->surface_set		(nullptr);
 		t_LUM_dest->surface_set		(nullptr);
 	}

@@ -362,12 +362,12 @@ CRenderTarget::CRenderTarget		()
 		t_LUM_dest.create			(r2_RT_luminance_cur);
 
 		// create pool
-		for (u32 it=0; it<Caps.iGPUNum*2; it++)	{
-			string256					name;
-			xr_sprintf						(name,"%s_%d",	r2_RT_luminance_pool,it	);
-			rt_LUM_pool[it].create		(name,	1,	1,	D3DFMT_R32F				);
-			u_setrt						(rt_LUM_pool[it],	0,	0,	0			);
-			CHK_DX						(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	0x7f7f7f7f,	1.0f, 0L));
+		for (u32 it = 0; it < 2; it++)
+		{
+			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
+			rt_LUM_pool[it].create(name.c_str(), 1, 1, D3DFMT_R32F);
+			u_setrt(rt_LUM_pool[it], 0, 0, 0);
+			CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET, 0x7f7f7f7f, 1.0f, 0L));
 		}
 		u_setrt						( RCache.get_width(),RCache.get_height(),RTarget,nullptr,nullptr,RDepth);
 	}
