@@ -871,13 +871,13 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 		if ((ItemID & 0x00ff) != u16(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()))) continue;
 
 		found = true;
-		CWeaponAmmo* pAmmo = 	pItem->cast_weapon_ammo();
+		CWeaponAmmo* pAmmo = 	smart_cast<CWeaponAmmo*>(pItem);
 		if (pAmmo)
 		{
 			if (pAmmo->m_boxCurr != pAmmo->m_boxSize) break;
 		};
 		//----- Check for Addon Changes ---------------------
-		CWeapon		*pWeapon	=	pItem->cast_weapon();
+		CWeapon		*pWeapon	=	smart_cast<CWeapon*>(pItem);
 		if (pWeapon)
 		{
 			u8 OldAddons  = pWeapon->GetAddonsState();

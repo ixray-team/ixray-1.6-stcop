@@ -739,10 +739,10 @@ void CActor::SwitchNightVision()
 	CWeapon* wpn1 = nullptr;
 	CWeapon* wpn2 = nullptr;
 	if(inventory().ItemFromSlot(INV_SLOT_2))
-		wpn1 = inventory().ItemFromSlot(INV_SLOT_2)->cast_weapon();
+		wpn1 = smart_cast<CWeapon*>(inventory().ItemFromSlot(INV_SLOT_2));
 
 	if(inventory().ItemFromSlot(INV_SLOT_3))
-		wpn2 = inventory().ItemFromSlot(INV_SLOT_3)->cast_weapon();
+		wpn2 = smart_cast<CWeapon*>(inventory().ItemFromSlot(INV_SLOT_3));
 
 	xr_vector<CAttachableItem*> const& all = CAttachmentOwner::attached_objects();
 	xr_vector<CAttachableItem*>::const_iterator it = all.begin();

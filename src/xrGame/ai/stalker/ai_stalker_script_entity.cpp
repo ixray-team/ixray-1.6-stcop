@@ -22,7 +22,7 @@
 
 CWeapon	*CAI_Stalker::GetCurrentWeapon() const
 {
-	return			(inventory().ActiveItem()->cast_weapon());
+	return			(smart_cast<CWeapon*>(inventory().ActiveItem()));
 }
 
 u32 CAI_Stalker::GetWeaponAmmo() const
@@ -145,8 +145,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 	if (!l_tpInventoryItem->object().H_Parent())
 		return			(true);
 
-	CWeapon				*l_tpWeapon				= inventory().ActiveItem()->cast_weapon();
-	CWeaponMagazined	*l_tpWeaponMagazined	= l_tpWeapon->cast_weapon_magazined();
+	CWeapon				*l_tpWeapon				= smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeaponMagazined	*l_tpWeaponMagazined	= smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
 
 	if (l_tpWeaponMagazined)
 		l_tpWeaponMagazined->SetQueueSize		(l_tObjectAction.m_dwQueueSize);
