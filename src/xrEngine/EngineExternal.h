@@ -32,7 +32,6 @@ enum class EEngineExternalGame
 enum class EEngineExternalRender 
 {
 	DisableLoadScreenTips,
-	LargeFontAtlas,
 	None
 };
 
@@ -60,6 +59,8 @@ public:
 	const char* PlatformMode() const;
 	bool ClearSkyMode() const;
 	bool CallOfPripyatMode() const;
+
+	u32 GetFontAltasSize() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;

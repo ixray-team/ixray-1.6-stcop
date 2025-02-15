@@ -113,3 +113,8 @@ bool CEngineExternal::CallOfPripyatMode() const
 {
 	return !xr_strcmp(PlatformMode(), "cop");
 }
+
+u32 CEngineExternal::GetFontAltasSize() const
+{
+	return READ_IF_EXISTS(pOptions, r_u32, "render", "FontAtlasSize", 4096);
+}

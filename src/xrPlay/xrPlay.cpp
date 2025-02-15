@@ -20,8 +20,6 @@
 #define NO_MULTI_INSTANCES
 #endif
 
-INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
-
 void EnumerateDisplayModes()
 {
 	SDL_DisplayID primaryDisplay = SDL_GetPrimaryDisplay();

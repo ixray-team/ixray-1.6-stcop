@@ -19,10 +19,7 @@ CFontManager::CFontManager()
 	pFontSystem16 = nullptr;
 	pFontStat = nullptr;
 
-	if (EngineExternal()[EEngineExternalRender::LargeFontAtlas])
-	{
-		TextureDimension *= 2;
-	}
+	TextureDimension = EngineExternal().GetFontAltasSize();
 
 	FontBitmap.resize(TextureDimension * TextureDimension);
 }
