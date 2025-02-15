@@ -876,7 +876,7 @@ void CActorCondition::UpdateTutorialThresholds()
 
 	if(b && !m_condition_flags.test(eWeaponJammedReached)&&m_object->inventory().GetActiveSlot()!=NO_ACTIVE_SLOT){
 		PIItem item							= m_object->inventory().ItemFromSlot(m_object->inventory().GetActiveSlot());
-		CWeapon* pWeapon					= smart_cast<CWeapon*>(item); 
+		CWeapon* pWeapon					= item->cast_weapon(); 
 		if(pWeapon&&pWeapon->GetCondition()<_cWpnCondition){
 			m_condition_flags.set			(eWeaponJammedReached, TRUE);b=false;
 			xr_strcpy(cb_name,"_G.on_actor_weapon_jammed");

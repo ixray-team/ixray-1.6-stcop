@@ -42,7 +42,7 @@ CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
 	if (!object->inventory().ItemFromSlot(INV_SLOT_2))
 		return			(object->best_weapon());
 
-	CWeaponMagazined	*temp = smart_cast<CWeaponMagazined*>(object->inventory().ItemFromSlot(INV_SLOT_2));
+	CWeaponMagazined	*temp = object->inventory().ItemFromSlot(INV_SLOT_2)->cast_weapon()->cast_weapon_magazined();
 	if (!temp)
 		return			(object->best_weapon());
 

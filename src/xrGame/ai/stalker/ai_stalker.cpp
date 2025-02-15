@@ -483,7 +483,7 @@ void CAI_Stalker::Die				(CObject* who)
 	if (!active_item)
 		return;
 
-	CWeapon							*weapon = smart_cast<CWeapon*>(active_item);
+	CWeapon							*weapon = active_item->cast_weapon();
 	if (!weapon)
 		return;
 
@@ -1130,7 +1130,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 float CAI_Stalker::Radius() const
 { 
 	float R		= inherited::Radius();
-	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon* W	= inventory().ActiveItem()->cast_weapon();
 	if (W) R	+= W->Radius();
 	return R;
 }
@@ -1427,7 +1427,7 @@ bool CAI_Stalker::can_fire_right_now							( )
 		return				(false);
 
 	VERIFY					(best_weapon());
-	CWeapon&				best_weapon = smart_cast<CWeapon&>(*this->best_weapon());
+	CWeapon&				best_weapon = *this->best_weapon()->cast_weapon();
 	return					best_weapon.GetAmmoElapsed() > 0;
 }
 

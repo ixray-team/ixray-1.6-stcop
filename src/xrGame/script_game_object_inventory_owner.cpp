@@ -292,7 +292,7 @@ bool CScriptGameObject::MarkedDropped		(CScriptGameObject *item)
 
 void CScriptGameObject::UnloadMagazine		()
 {
-	CWeaponMagazined		*weapon_magazined = smart_cast<CWeaponMagazined*>(&object());
+	CWeaponMagazined		*weapon_magazined = object().cast_weapon()->cast_weapon_magazined();
 	if (!weapon_magazined) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::UnloadMagazine non-CWeaponMagazined object !!!");
 		return;
@@ -1046,7 +1046,7 @@ void CScriptGameObject::HideDetector()
 
 int CScriptGameObject::Weapon_GrenadeLauncher_Status()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_GrenadeLauncher_Status!");
@@ -1057,7 +1057,7 @@ int CScriptGameObject::Weapon_GrenadeLauncher_Status()
 
 int CScriptGameObject::Weapon_Scope_Status()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_Scope_Status!");
@@ -1068,7 +1068,7 @@ int CScriptGameObject::Weapon_Scope_Status()
 
 int CScriptGameObject::Weapon_Silencer_Status()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_Silencer_Status!");
@@ -1079,7 +1079,7 @@ int CScriptGameObject::Weapon_Silencer_Status()
 
 bool CScriptGameObject::Weapon_IsGrenadeLauncherAttached()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_IsGrenadeLauncherAttached!");
@@ -1090,7 +1090,7 @@ bool CScriptGameObject::Weapon_IsGrenadeLauncherAttached()
 
 bool CScriptGameObject::Weapon_IsScopeAttached()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_IsScopeAttached!");
@@ -1101,7 +1101,7 @@ bool CScriptGameObject::Weapon_IsScopeAttached()
 
 bool CScriptGameObject::Weapon_IsSilencerAttached()
 {
-	CWeapon*	weapon = smart_cast<CWeapon*>( &object() );
+	CWeapon* weapon = object().cast_weapon();
 	if ( !weapon )
 	{
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CWeapon : cannot access class member Weapon_IsSilencerAttached!");
@@ -1397,7 +1397,7 @@ void CScriptGameObject::aim_time					(CScriptGameObject *weapon, u32 aim_time)
 		return;
 	}
 
-	CWeapon								*weapon_ = smart_cast<CWeapon*>(&weapon->object());
+	CWeapon								*weapon_ = weapon->object().cast_weapon();
 	if (!weapon_) {
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member aim_time (not a weapon passed)!");
 		return;
@@ -1414,7 +1414,7 @@ u32 CScriptGameObject::aim_time						(CScriptGameObject *weapon)
 		return							(u32(-1));
 	}
 
-	CWeapon								*weapon_ = smart_cast<CWeapon*>(&weapon->object());
+	CWeapon								*weapon_ = weapon->object().cast_weapon();
 	if (!weapon_) {
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member aim_time (not a weapon passed)!");
 		return							(u32(-1));

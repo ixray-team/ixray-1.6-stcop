@@ -483,7 +483,7 @@ CWeapon* game_state_accumulator::get_active_weapon(game_PlayerState* player)
 	if (!tmp_inv_item)
 		return nullptr;
 
-	return smart_cast<CWeapon*>(tmp_inv_item);
+	return tmp_inv_item->cast_weapon();
 }
 
 CActor*	 game_state_accumulator::get_players_actor(u16 game_id)

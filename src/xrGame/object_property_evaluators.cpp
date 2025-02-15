@@ -124,7 +124,7 @@ CObjectPropertyEvaluatorQueue::CObjectPropertyEvaluatorQueue(CWeapon *item, CAI_
 	inherited		(item,owner),
 	m_type			(type)
 {
-	m_magazined		= smart_cast<CWeaponMagazined*>(item);
+	m_magazined		= item->cast_weapon();
 }
 
 CObjectPropertyEvaluatorQueue::_value_type CObjectPropertyEvaluatorQueue::evaluate	()

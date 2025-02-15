@@ -237,7 +237,7 @@ bool CWeaponMagazined::TryReload()
 			Actor()->callback(GameObject::eWeaponNoAmmoAvailable)(lua_game_object(), AC);
 		}
 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
+		m_pCurrentAmmo = m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() )->cast_weapon_ammo();
 		
 		if(IsMisfire() && iAmmoElapsed)
 		{
@@ -254,7 +254,7 @@ bool CWeaponMagazined::TryReload()
 		} 
 		else for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
 		{
-			m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() ));
+			m_pCurrentAmmo = m_pInventory->GetAny( m_ammoTypes[i].c_str() )->cast_weapon_ammo();
 			if(m_pCurrentAmmo) 
 			{ 
 				m_set_next_ammoType_on_reload = i;
@@ -274,11 +274,11 @@ bool CWeaponMagazined::TryReload()
 
 bool CWeaponMagazined::IsAmmoAvailable()
 {
-	if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() )))
+	if (m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() )->cast_weapon_ammo())
 		return	(true);
 	else
 		for(u32 i = 0; i < m_ammoTypes.size(); ++i)
-			if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() )))
+			if (m_pInventory->GetAny( m_ammoTypes[i].c_str() )->cast_weapon_ammo())
 				return	(true);
 	return		(false);
 }
@@ -321,7 +321,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	{
 		if(m_pInventory)
 		{
-			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(l_it->first));
+			CWeaponAmmo *l_pA = m_pInventory->GetAny(l_it->first)->cast_weapon_ammo();
 			if(l_pA) 
 			{
 				u16 l_free = l_pA->m_boxSize - l_pA->m_boxCurr;
@@ -367,14 +367,14 @@ void CWeaponMagazined::ReloadMagazine()
 			return;
 
 		//попытаться найти в инвентаре патроны текущего типа 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
+		m_pCurrentAmmo = m_pInventory->GetAny(tmp_sect_name)->cast_weapon_ammo();
 		
 		if(!m_pCurrentAmmo && !m_bLockType) 
 		{
 			for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
 			{
 				//проверить патроны всех подходящих типов
-				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() ));
+				m_pCurrentAmmo = m_pInventory->GetAny( m_ammoTypes[i].c_str() )->cast_weapon_ammo();
 				if(m_pCurrentAmmo) 
 				{ 
 					m_ammoType = i;
@@ -463,7 +463,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	if (!HaveCartridgeInInventory(1))
 		return 0;
 
-	m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str()));
+	m_pCurrentAmmo = m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str())->cast_weapon_ammo();
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
 

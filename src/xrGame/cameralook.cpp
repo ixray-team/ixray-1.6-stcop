@@ -218,7 +218,7 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 	CActor* pActor = smart_cast<CActor*>(parent);
 	if (pActor)
 	{
-		CWeapon* pWeap = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
+		CWeapon* pWeap = pActor->inventory().ActiveItem()->cast_weapon();
 		if(pWeap && pWeap->render_item_ui_query())
 		{
 			if(!vPosition.similar(point))

@@ -341,7 +341,7 @@ struct AmmoSearcherPredicate
 
 	bool operator()(PIItem const & item)
 	{
-		CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* temp_ammo = item->cast_weapon_ammo();
 		if (!temp_ammo)
 			return false;
 		
@@ -514,11 +514,11 @@ void CUIGameCTA::BuyMenuItemInserter(PIItem const & item)
 		return;
 	
 	u8 addons = 0;
-	CWeapon* pWeapon = smart_cast<CWeapon*>(item);
+	CWeapon* pWeapon = item->cast_weapon();
 	if (pWeapon)
 		addons = pWeapon->GetAddonsState();
 	
-	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(item);
+	CWeaponAmmo* pAmmo = item->cast_weapon_ammo();
 	if (pAmmo && (pAmmo->m_boxCurr != pAmmo->m_boxSize))
 		return;
 	

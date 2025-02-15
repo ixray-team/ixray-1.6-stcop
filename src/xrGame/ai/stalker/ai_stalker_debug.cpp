@@ -483,7 +483,7 @@ void CAI_Stalker::debug_text			()
 	DBG_OutText	("%s%sammo in box to spawn: %d",indent,indent,item_to_spawn().size() ? ammo_in_box_to_spawn() : 0);
 	
 #if USE_OLD_OBJECT_PLANNER
-	CWeaponMagazined					*weapon = smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
+	CWeaponMagazined					*weapon = inventory().ActiveItem()->cast_weapon()->cast_weapon_magazined();
 	if (weapon) {
 		CObjectHandlerPlanner			&planner = CObjectHandler::planner();
 		DBG_OutText("%s%squeue size          : %d",indent,indent,weapon->GetQueueSize());
@@ -502,7 +502,7 @@ void CAI_Stalker::debug_text			()
 	if (inventory().ActiveItem()) {
 		DBG_OutText	("%s%sactive item",indent,indent);
 		DBG_OutText	("%s%s%sobject         : %s",indent,indent,indent,inventory().ActiveItem() ? *inventory().ActiveItem()->object().cName() : "");
-		CWeapon	*weapon_ = smart_cast<CWeapon*>(inventory().ActiveItem());
+		CWeapon	*weapon_ = inventory().ActiveItem()->cast_weapon();
 		if (weapon_) {
 			DBG_OutText("%s%s%sstrapped       : %s",indent,indent,indent,weapon_strapped(weapon_) ? "+" : "-");
 			DBG_OutText("%s%s%sunstrapped     : %s",indent,indent,indent,weapon_unstrapped(weapon_) ? "+" : "-");
@@ -1438,7 +1438,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	Fmatrix							spine_bone;
 	spine_bone.mul_43				(transform, g_stalker_skeleton[spine_bone_id]);
 
-	CWeapon* weapon					= smart_cast<CWeapon*>(self.best_weapon());
+	CWeapon* weapon					= self.best_weapon()->cast_weapon();
 	VERIFY							(weapon);
 	
 	Fvector							pos,ypr;
@@ -1588,7 +1588,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	CDebugRenderer&					renderer = Level().debug_renderer();
 
 	if (self.inventory().ActiveItem()) {
-		CWeapon*					weapon_ = smart_cast<CWeapon*>(self.inventory().ActiveItem());
+		CWeapon*					weapon_ = self.inventory().ActiveItem()->cast_weapon();
 		if (weapon_) {
 			Fvector position		= weapon_->get_LastFP();
 			Fvector direction		= weapon_->get_LastFD();

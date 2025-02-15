@@ -42,7 +42,7 @@ void CObjectActionCommand::initialize	()
 CObjectActionShow::CObjectActionShow	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
 	inherited		(item,owner,storage,action_name)
 {
-	m_weapon						= smart_cast<CWeapon*>(item);
+	m_weapon						= item->cast_weapon();
 }
 
 void CObjectActionShow::initialize		()
