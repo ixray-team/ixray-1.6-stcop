@@ -4,10 +4,10 @@
 #include "../inventory_item.h"
 #include "UIDragDropListEx.h"
 #include "../xr_level_controller.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/xr_input.h"
 #include "../HUDManager.h"
 #include "../level.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UIProgressBar.h"
 
 #include "../Weapon.h"

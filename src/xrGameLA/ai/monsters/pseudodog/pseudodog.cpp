@@ -10,7 +10,6 @@
 #include "../control_movement_base.h"
 
 #ifdef _DEBUG
-#	include <dinput.h>
 #	include "../../../ai_object_location.h"
 #	include "../../../level_debug.h"
 #	include "../../../level_graph.h"

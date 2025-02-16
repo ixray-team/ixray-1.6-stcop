@@ -8,7 +8,6 @@
 #include "xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
-#include <dinput.h>
 #include "ui\UIBtnHint.h"
 #include "UICursor.h"
 #include "string_table.h"
@@ -302,7 +301,7 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 		Console->Show();
 		return;
 	}
-	if (DIK_F12 == dik){
+	if (SDL_SCANCODE_F12 == dik){
 		Render->Screenshot();
 		return;
 	}

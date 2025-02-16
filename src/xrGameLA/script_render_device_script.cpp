@@ -35,7 +35,7 @@ u32 time_global(const CRenderDevice *self)
 #include "ui_defs.h"
 bool is_widescreen(const CRenderDevice *self)
 {
-	return (self->dwWidth)/float(self->dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT +0.01f);
+	return (self->TargetWidth)/float(self->TargetHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT +0.01f);
 }
 
 #pragma optimize("s",on)
@@ -44,8 +44,8 @@ void CScriptRenderDevice::script_register(lua_State *L)
 	module(L)
 	[
 		class_<CRenderDevice>("render_device")
-			.def_readonly("width",					&CRenderDevice::dwWidth)
-			.def_readonly("height",					&CRenderDevice::dwHeight)
+			.def_readonly("width",					&CRenderDevice::TargetWidth)
+			.def_readonly("height",					&CRenderDevice::TargetHeight)
 			.def_readonly("time_delta",				&CRenderDevice::dwTimeDelta)
 			.def_readonly("f_time_delta",			&CRenderDevice::fTimeDelta)
 			.def_readonly("cam_pos",				&CRenderDevice::vCameraPosition)
@@ -62,9 +62,9 @@ void CScriptRenderDevice::script_register(lua_State *L)
 			.def_readonly("frame",					&CRenderDevice::dwFrame)
 			.def("is_paused",						&is_device_paused)
 			.def("is_widescreen",					&is_widescreen)
-			.def("is_r2_active",					&CRenderDevice::IsR2Active)
-			.def("is_r3_active",					&CRenderDevice::IsR3Active)
-			.def("is_r4_active",					&CRenderDevice::IsR4Active)
+//			.def("is_r2_active",					&CRenderDevice::IsR2Active)
+//			.def("is_r3_active",					&CRenderDevice::IsR3Active)
+//			.def("is_r4_active",					&CRenderDevice::IsR4Active)
 			.def("pause",							&set_device_paused),
 			def("app_ready",						&is_app_ready)
 	];

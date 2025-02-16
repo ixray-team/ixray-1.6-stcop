@@ -57,7 +57,7 @@ protected:
 			void  	press_tab();
 
 protected:
-	typedef  xr_delegate<void>		Callback;
+	typedef  xr_delegate<void()>		Callback;
 
 	enum								{ EDIT_BUF_SIZE = 256 };
 	text_editor::line_edit_control*		m_editor_control;

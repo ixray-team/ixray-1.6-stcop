@@ -1,4 +1,4 @@
-// HUDCrosshair.cpp:  êðåñòèê ïðèöåëà, îòîáðàæàþùèé òåêóùóþ äèñïåðñèþ
+// HUDCrosshair.cpp:  ÐºÑ€ÐµÑÑ‚Ð¸Ðº Ð¿Ñ€Ð¸Ñ†ÐµÐ»Ð°, Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°ÑŽÑ‰Ð¸Ð¹ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ð´Ð¸ÑÐ¿ÐµÑ€ÑÐ¸ÑŽ
 // 
 //////////////////////////////////////////////////////////////////////
 
@@ -13,8 +13,8 @@ CHUDCrosshair::CHUDCrosshair	()
 //.	hShader.create				("editor\\wire");
 	hShader->create				("hud\\crosshair");
 
-	//âû÷èñëèòü è çàïîìíèòü öåíòð ýêðàíà
-//	center.set(int(Device.dwWidth)/2,int(Device.dwHeight)/2);
+	//Ð²Ñ‹Ñ‡Ð¸ÑÐ»Ð¸Ñ‚ÑŒ Ð¸ Ð·Ð°Ð¿Ð¾Ð¼Ð½Ð¸Ñ‚ÑŒ Ñ†ÐµÐ½Ñ‚Ñ€ ÑÐºÑ€Ð°Ð½Ð°
+//	center.set(int(Device.TargetWidth)/2,int(Device.TargetHeight)/2);
 	radius = 0;
 }
 
@@ -25,16 +25,16 @@ CHUDCrosshair::~CHUDCrosshair	()
 
 void CHUDCrosshair::Load		()
 {
-	//âñå ðàçìåðû â ïðîöåíòàõ îò äëèíû ýêðàíà
-	//äëèíà êðåñòèêà 
+	//Ð²ÑÐµ Ñ€Ð°Ð·Ð¼ÐµÑ€Ñ‹ Ð² Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚Ð°Ñ… Ð¾Ñ‚ Ð´Ð»Ð¸Ð½Ñ‹ ÑÐºÑ€Ð°Ð½Ð°
+	//Ð´Ð»Ð¸Ð½Ð° ÐºÑ€ÐµÑÑ‚Ð¸ÐºÐ° 
 	cross_length_perc = pSettings->r_float (HUD_CURSOR_SECTION, "cross_length");
-//	cross_length = iFloor(0.5f + cross_length_perc*float(Device.dwWidth));
+//	cross_length = iFloor(0.5f + cross_length_perc*float(Device.TargetWidth));
 
 	min_radius_perc = pSettings->r_float (HUD_CURSOR_SECTION, "min_radius");
-	//min_radius = iFloor(0.5f + min_radius_perc*float(Device.dwWidth));
+	//min_radius = iFloor(0.5f + min_radius_perc*float(Device.TargetWidth));
 
 	max_radius_perc = pSettings->r_float (HUD_CURSOR_SECTION, "max_radius");
-	//max_radius = iFloor(0.5f + max_radius_perc*float(Device.dwWidth));
+	//max_radius = iFloor(0.5f + max_radius_perc*float(Device.TargetWidth));
 
 	cross_color = pSettings->r_fcolor (HUD_CURSOR_SECTION, "cross_color").get();
 
@@ -42,7 +42,7 @@ void CHUDCrosshair::Load		()
 	radius_speed_perc = pSettings->r_float (HUD_CURSOR_SECTION, "radius_lerp_speed");
 }
 
-//âûñòàâëÿåò radius îò min_radius äî max_radius
+//Ð²Ñ‹ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ radius Ð¾Ñ‚ min_radius Ð´Ð¾ max_radius
 void CHUDCrosshair::SetDispersion	(float disp)
 { 
 	Fvector4 r;
@@ -85,40 +85,40 @@ void CHUDCrosshair::OnRender ()
 
 	if (crosshairAnimationType == 2)
 	{
-		// Ïðàâàÿ
+		// ÐŸÑ€Ð°Ð²Ð°Ñ
 		UIRender->PushPoint(center.x + 1 + x_min,			center.y - y_min, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x + smeshenie + x_min,	center.y - y_max * 0.75, 0, cross_color, 0, 0);
-		// Ëåâàÿ
+		// Ð›ÐµÐ²Ð°Ñ
 		UIRender->PushPoint(center.x + 1 - x_min,			center.y - y_min, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x - smeshenie - x_min,	center.y - y_max * 0.75, 0, cross_color, 0, 0);
-		// Íèæíÿÿ
+		// ÐÐ¸Ð¶Ð½ÑÑ
 		UIRender->PushPoint(center.x + 1,					center.y + y_min, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x + 1,					center.y + y_max, 0, cross_color, 0, 0);
 	}
 	else if (crosshairAnimationType == 3)
 	{
-		// Ïðàâàÿ
+		// ÐŸÑ€Ð°Ð²Ð°Ñ
 		UIRender->PushPoint(center.x + 1 + x_min,			center.y + y_min,	0, cross_color, 0,0);
 		UIRender->PushPoint(center.x + smeshenie + x_min,	center.y + y_max * 0.75,	0, cross_color, 0,0);
-		// Ëåâàÿ
+		// Ð›ÐµÐ²Ð°Ñ
 		UIRender->PushPoint(center.x + 1 - x_min,			center.y + y_min,	0, cross_color, 0,0);
 		UIRender->PushPoint(center.x - smeshenie - x_min,	center.y + y_max * 0.75,	0, cross_color, 0,0);
-		// Âåðõíÿÿ
+		// Ð’ÐµÑ€Ñ…Ð½ÑÑ
 		UIRender->PushPoint(center.x+1,						center.y - y_min,	0, cross_color, 0,0);
 		UIRender->PushPoint(center.x+1,						center.y - y_max,	0, cross_color, 0,0);
 	}
 	else if (crosshairAnimationType == 4)
 	{
-		// 0 Íèæíÿÿ
+		// 0 ÐÐ¸Ð¶Ð½ÑÑ
 		UIRender->PushPoint(center.x + 1, center.y + y_min, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x + 1, center.y + y_max, 0, cross_color, 0, 0);
-		// 1 Âåðõíÿÿ
+		// 1 Ð’ÐµÑ€Ñ…Ð½ÑÑ
 		UIRender->PushPoint(center.x + 1, center.y - y_min, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x + 1, center.y - y_max, 0, cross_color, 0, 0);
-		// 2 Ïðàâàÿ
+		// 2 ÐŸÑ€Ð°Ð²Ð°Ñ
 		UIRender->PushPoint(center.x + x_min + 1, center.y, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x + x_max + 1, center.y, 0, cross_color, 0, 0);
-		// 3 Ëåâàÿ
+		// 3 Ð›ÐµÐ²Ð°Ñ
 		UIRender->PushPoint(center.x - x_min, center.y, 0, cross_color, 0, 0);
 		UIRender->PushPoint(center.x - x_max, center.y, 0, cross_color, 0, 0);
 	}

@@ -23,7 +23,7 @@
 #include "UIStalkersRankingWnd.h"
 #include "UIActorInfo.h"
 #include "UIEventsWnd.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UIMessagesWindow.h"
 #include "UIMainIngameWnd.h"
 #include "uidialogwnd.h"
@@ -99,7 +99,7 @@ void CUIPdaWnd::Init()
 	AttachChild				(UIMainPdaFrame);
 	xml_init.InitStatic		(uiXml, "background_static", 0, UIMainPdaFrame);
 
-	//Ýëåìåíòû àâòîìàòè÷åñêîãî äîáàâëåíèÿ
+	//Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	xml_init.InitAutoStatic	(uiXml, "auto_static", this);
 
 	// Main buttons background
@@ -112,30 +112,30 @@ void CUIPdaWnd::Init()
 	UIMainPdaFrame->AttachChild(UITimerBackground);
 	xml_init.InitFrameLine	(uiXml, "timer_frame_line", 0, UITimerBackground);
 
-	// Oêíî êàðòû
+	// OÐºÐ½Ð¾ ÐºÐ°Ñ€Ñ‚Ñ‹
 	UIMapWnd				= new CUIMapWnd();
 	UIMapWnd->Init			("pda_map.xml","map_wnd");
 
 	if( IsGameTypeSingle() )
 	{
-		// Oêíî êîììóíèêaöèè
+		// OÐºÐ½Ð¾ ÐºÐ¾Ð¼Ð¼ÑƒÐ½Ð¸ÐºaÑ†Ð¸Ð¸
 		UIPdaContactsWnd		= new CUIPdaContactsWnd();
 		UIPdaContactsWnd->Init	();
 
 
-		// Oêíî íîâîñòåé
+		// OÐºÐ½Ð¾ Ð½Ð¾Ð²Ð¾ÑÑ‚ÐµÐ¹
 		UIDiaryWnd				= new CUIDiaryWnd();
 		UIDiaryWnd->Init		();
 
-		// Îêíî ýíöèêëîïåäèè
+		// ÐžÐºÐ½Ð¾ ÑÐ½Ñ†Ð¸ÐºÐ»Ð¾Ð¿ÐµÐ´Ð¸Ð¸
 		UIEncyclopediaWnd		= new CUIEncyclopediaWnd();
 		UIEncyclopediaWnd->Init	();
 
-		// Îêíî ñòàòèñòèêè î àêòåðå
+		// ÐžÐºÐ½Ð¾ ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ¸ Ð¾ Ð°ÐºÑ‚ÐµÑ€Ðµ
 		UIActorInfo				= new CUIActorInfoWnd();
 		UIActorInfo->Init		();
 
-		// Îêíî ðåéòèíãà ñòàëêåðîâ
+		// ÐžÐºÐ½Ð¾ Ñ€ÐµÐ¹Ñ‚Ð¸Ð½Ð³Ð° ÑÑ‚Ð°Ð»ÐºÐµÑ€Ð¾Ð²
 		UIStalkersRanking		= new CUIStalkersRankingWnd();
 		UIStalkersRanking->Init	();
 

@@ -118,6 +118,7 @@ list(APPEND XGM_SRC_FILES ${XGM_SOURCE_ALL_FILES})
 # Remove unused files
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "DynamicHeightMap.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "LevelFogOfWar.*")
+list(FILTER XGM_SRC_FILES EXCLUDE REGEX "CustomTimer*.cpp")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ai/monsters/rats/ai_rat_fsm.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/IUWpnParams.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFaction.*")

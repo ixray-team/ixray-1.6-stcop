@@ -47,7 +47,7 @@ void CUICursor::InitInternal()
 
 	u32 screen_size_x	= GetSystemMetrics( SM_CXSCREEN );
 	u32 screen_size_y	= GetSystemMetrics( SM_CYSCREEN );
-	m_b_use_win_cursor	= (screen_size_y >=Device.dwHeight && screen_size_x>=Device.dwWidth);
+	m_b_use_win_cursor	= (screen_size_y >=Device.TargetHeight && screen_size_x>=Device.TargetWidth);
 }
 
 //--------------------------------------------------------------------
@@ -104,8 +104,8 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 		if(!r)		return;
 		p.x			= (float)pti.x;
 		p.y			= (float)pti.y;
-		vPos.x		= p.x * (UI_BASE_WIDTH/(float)Device.dwWidth);
-		vPos.y		= p.y * (UI_BASE_HEIGHT/(float)Device.dwHeight);
+		vPos.x		= p.x * (UI_BASE_WIDTH/(float)Device.TargetWidth);
+		vPos.y		= p.y * (UI_BASE_HEIGHT/(float)Device.TargetHeight);
 	}else
 	{
 		float sens = 1.0f;
@@ -120,8 +120,8 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
 	vPos		= pos;
 	POINT		p;
-	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.dwWidth));
-	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.dwHeight));
+	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.TargetWidth));
+	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.TargetHeight));
 
 	SetCursorPos(p.x, p.y);
 }

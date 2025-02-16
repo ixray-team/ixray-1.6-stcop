@@ -3,8 +3,8 @@
 #include "UICustomEdit.h"
 #include "UILines.h"
 
-#include "../../line_edit_control.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/line_edit_control.h"
+#include "../../xrEngine/xr_input.h"
 
 CUICustomEdit::CUICustomEdit()
 {
@@ -49,18 +49,18 @@ text_editor::line_edit_control const & CUICustomEdit::ec() const
 
 void CUICustomEdit::Register_callbacks()
 {
-	ec().assign_callback( DIK_ESCAPE,      text_editor::ks_free, Callback( this, &CUICustomEdit::press_escape ) );
-	ec().assign_callback( DIK_RETURN,      text_editor::ks_free, Callback( this, &CUICustomEdit::press_commit ) );
-	ec().assign_callback( DIK_NUMPADENTER, text_editor::ks_free, Callback( this, &CUICustomEdit::press_commit ) );
-	ec().assign_callback( DIK_GRAVE,       text_editor::ks_free, Callback( this, &CUICustomEdit::nothing ) );
-	ec().assign_callback( DIK_TAB,		   text_editor::ks_free, Callback( this, &CUICustomEdit::press_tab ) );
+	ec().assign_callback( SDL_SCANCODE_ESCAPE,      text_editor::ks_free, Callback( this, &CUICustomEdit::press_escape ) );
+	ec().assign_callback( SDL_SCANCODE_RETURN,      text_editor::ks_free, Callback( this, &CUICustomEdit::press_commit ) );
+	ec().assign_callback( SDL_SCANCODE_KP_ENTER, text_editor::ks_free, Callback( this, &CUICustomEdit::press_commit ) );
+	ec().assign_callback( SDL_SCANCODE_GRAVE,       text_editor::ks_free, Callback( this, &CUICustomEdit::nothing ) );
+	ec().assign_callback( SDL_SCANCODE_TAB,		   text_editor::ks_free, Callback( this, &CUICustomEdit::press_tab ) );
 }
 
 void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_mode, bool fn_mode, bool translate)
 {
 	if ( read_mode )
 	{
-		m_editor_control->init( max_char_count, text_editor::im_read_only, translate );
+		m_editor_control->init( max_char_count, text_editor::im_read_only );
 		m_editor_control->set_selected_mode( true );
 		m_read_mode = true;
 	}
@@ -68,15 +68,15 @@ void  CUICustomEdit::Init( u32 max_char_count, bool number_only_mode, bool read_
 	{
 		if ( number_only_mode )
 		{
-			m_editor_control->init( max_char_count, text_editor::im_number_only, translate );
+			m_editor_control->init( max_char_count, text_editor::im_number_only );
 		}
 		else if ( fn_mode )
 		{
-			m_editor_control->init( max_char_count, text_editor::im_file_name_mode, translate );
+			m_editor_control->init( max_char_count, text_editor::im_file_name_mode );
 		}
 		else
 		{
-			m_editor_control->init( max_char_count, text_editor::im_standart, translate );
+			m_editor_control->init( max_char_count, text_editor::im_standart );
 		}
 		m_editor_control->set_selected_mode( false );
 		m_read_mode = false;
@@ -106,7 +106,7 @@ void CUICustomEdit::OnFocusLost()
 
 void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	//кто-то другой захватил клавиатуру
+	//РєС‚Рѕ-С‚Рѕ РґСЂСѓРіРѕР№ Р·Р°С…РІР°С‚РёР» РєР»Р°РІРёР°С‚СѓСЂСѓ
 	if ( msg == WINDOW_KEYBOARD_CAPTURE_LOST && m_bInputFocus)
 	{
 		m_bInputFocus = false;

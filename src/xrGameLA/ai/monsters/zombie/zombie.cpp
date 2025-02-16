@@ -15,7 +15,6 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #ifdef _DEBUG
-#include <dinput.h>
 #endif
 
 
@@ -125,10 +124,10 @@ void CZombie::BoneCallback(CBoneInstance *B)
 
 void CZombie::vfAssignBones()
 {
-	// Установка callback на кости
+	// РЈСЃС‚Р°РЅРѕРІРєР° callback РЅР° РєРѕСЃС‚Рё
 	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
 	bone_head =		&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	//if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	//if(!PPhysicsShell())//РЅРµР»СЊР·СЏ СЃС‚Р°РІРёС‚СЊ РєРѕР»Р±РµРєРё, РµСЃР»Рё СЃРѕР·РґР°РЅ С„РёР· С€РµР» - Сѓ РЅРµРіРѕ СЃС‚РѕСЏС‚ СЃРІРѕРё РєРѕР»Р±РµРєРё!!!
 	//{
 		//bone_spine->set_callback(BoneCallback,this);
 		//bone_head->set_callback(BoneCallback,this);
@@ -271,12 +270,12 @@ void CZombie::fake_death_stand_up()
 void CZombie::debug_on_key(int key)
 {
 	switch (key){
-	case DIK_MINUS:
+	case SDL_SCANCODE_MINUS:
 		{
 			fake_death_fall_down();
 		}
 		break;
-	case DIK_EQUALS:
+	case SDL_SCANCODE_EQUALS:
 		{
 			fake_death_stand_up();
 		}

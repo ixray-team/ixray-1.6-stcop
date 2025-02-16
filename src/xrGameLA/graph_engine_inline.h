@@ -10,12 +10,12 @@
 
 IC	CGraphEngine::CGraphEngine		(u32 max_vertex_count)
 {
-	m_algorithm			= xr_new<CAlgorithm>				(max_vertex_count);
+	m_algorithm			= new CAlgorithm				(max_vertex_count);
 	m_algorithm->data_storage().set_min_bucket_value		(_dist_type(0));
 	m_algorithm->data_storage().set_max_bucket_value		(_dist_type(2000));
 
 #ifndef AI_COMPILER
-	m_solver_algorithm	= xr_new<CSolverAlgorithm>			(16*1024);
+	m_solver_algorithm	= new CSolverAlgorithm			(16*1024);
 #endif // AI_COMPILER
 }
 

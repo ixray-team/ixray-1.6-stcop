@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "HUDmanager.h"
 #include "../xr_ioconsole.h"
 #include "entity_alive.h"
@@ -81,24 +80,6 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 		if (IR)				IR->IR_OnMouseMove					(dx,dy);
 	}
 }
-
-class		vtune_		{
-	BOOL	enabled_	;
-public:
-			vtune_	()		{
-		enabled_	= FALSE;
-	}
-	void	enable	()	{ if (!enabled_)	{ 
-		Engine.External.tune_resume	();	enabled_=TRUE;	
-		Msg	("vtune : enabled");
-	}}
-	void	disable	()	{ if (enabled_)		{ 
-		Engine.External.tune_pause	();	enabled_=FALSE; 
-		Msg	("vtune : disabled");
-	}}
-}	vtune	;
-
-
 
 extern CUISequencer* g_tutorial;
 
@@ -290,7 +271,7 @@ case DIK_MULTIPLY:
 #endif // MASTER_GOLD
 
 #ifdef DEBUG
-	case DIK_RETURN:
+	case SDL_SCANCODE_RETURN:
 			bDebug	= !bDebug;
 		return;
 

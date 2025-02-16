@@ -15,6 +15,8 @@ u8 mainLayer_ = 1;
 
 void CActor::ComputeHudWetness()
 {
+#pragma todo("Implement hud wetness???")
+	/*
 	COutfitBase* outfit_with_visor = nullptr;
 
 	// outfit with helmet and regular helmets are exlcluding each other, so no need to do extra checks for priority
@@ -120,4 +122,5 @@ void CActor::ComputeHudWetness()
 	{
 		g_pGamePersistent->Environment().SetCastHudGlassEffects(false);
 	}
+	*/
 }

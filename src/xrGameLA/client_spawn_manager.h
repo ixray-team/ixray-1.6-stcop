@@ -22,7 +22,7 @@ class CGameObject;
 
 class CClientSpawnManager {
 public:
-	typedef xr_delegate<CObject*()>			CALLBACK_TYPE;
+	using CALLBACK_TYPE = xr_delegate<void(CObject*)>;
 
 public:
 	struct CSpawnCallback {

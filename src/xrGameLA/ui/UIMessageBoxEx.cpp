@@ -94,7 +94,7 @@ bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
-		if ( dik == DIK_NUMPADENTER || dik == DIK_RETURN || dik == DIK_SPACE)
+		if ( dik == SDL_SCANCODE_KP_ENTER || dik == SDL_SCANCODE_RETURN || dik == SDL_SCANCODE_SPACE)
 		{
 			m_pMessageBox->OnYesOk();
 			return true;

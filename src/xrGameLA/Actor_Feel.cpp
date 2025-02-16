@@ -141,7 +141,7 @@ void CActor::PickupModeUpdate()
 	if (eacFirstEye != cam_active)
 		feel_touch_update	(Position(), m_fPickupInfoRadius);
 	else {
-		feel_touch_update	(get_bone_position(this, "bip01_spine"), m_fPickupInfoRadius);
+		feel_touch_update	((Fvector&)get_bone_position(this, "bip01_spine"), m_fPickupInfoRadius);
 	}
 	
 	CFrustum frustum;

@@ -22,7 +22,7 @@ using namespace luabind;
 
 #pragma optimize("s",on)
 
-export_class &script_register_ui_window2(export_class &&instance)
+export_class script_register_ui_window2(export_class &&instance)
 {
 	return std::move(instance)
 		.def("GetStatic",		(CUIStatic* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIStatic>)

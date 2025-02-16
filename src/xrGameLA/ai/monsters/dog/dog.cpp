@@ -5,10 +5,6 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 
-#ifdef _DEBUG
-#	include <dinput.h>
-#endif
-
 CAI_Dog::CAI_Dog()
 {
 	StateMan = new CStateManagerDog(this);
@@ -144,20 +140,20 @@ void CAI_Dog::debug_on_key(int key)
 	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated *>(Visual());
 
 	switch (key){
-	case DIK_1:
+	case SDL_SCANCODE_1:
 		Msg("Ohhhhhhhhhhhhhhh! Here it is!");
 		// strafe left
 		//com_man().seq_run(skel->ID_Cycle_Safe("stand_turn_ls_0"));
 		break;
-	case DIK_2:
+	case SDL_SCANCODE_2:
 		// strafe right
 		com_man().seq_run(skel->ID_Cycle_Safe("stand_turn_ls_0"));
 		break;
-	case DIK_3:
+	case SDL_SCANCODE_3:
 		// threaten
 		com_man().seq_run(skel->ID_Cycle_Safe("stand_threaten_0"));
 		break;
-	case DIK_0:
+	case SDL_SCANCODE_0:
 		Msg("Ohhhhhhhhhhhhhhh! Here it is!");
 		break;
 	}

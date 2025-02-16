@@ -147,7 +147,7 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex *tpNode, float f
 
 	if (!bDifferenceLook || !bOk) 
 		for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += fMaxHeadTurnAngle/18.f) {
-			float fSquare = ai().level_graph().compute_square(-fIncrement,fAngleOfView,tpNode);
+			float fSquare = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNode);
 			if (fSquare > fMaxSquare) {
 				fMaxSquare = fSquare;
 				fBestAngle = fIncrement;
@@ -156,8 +156,8 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex *tpNode, float f
 	else {
 		float fMaxSquareSingle = -1.f, fSingleIncrement = object().movement().m_head.target.yaw;
 		for (float fIncrement = object().movement().m_body.target.yaw - fMaxHeadTurnAngle; fIncrement <= object().movement().m_body.target.yaw + fMaxHeadTurnAngle; fIncrement += 2*fMaxHeadTurnAngle/60.f) {
-			float fSquare0 = ai().level_graph().compute_square(-fIncrement,fAngleOfView,tpNode);
-			float fSquare1 = ai().level_graph().compute_square(-fIncrement,fAngleOfView,tpNextNode);
+			float fSquare0 = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNode);
+			float fSquare1 = ai().level_graph().compute_high_square(-fIncrement,fAngleOfView,tpNextNode);
 			if	(
 					(fSquare1 - fSquare0 > fMaxSquare) || 
 					(

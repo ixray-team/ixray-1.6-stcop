@@ -5,7 +5,7 @@
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
-#include "../../../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
@@ -39,10 +39,6 @@
 #include "controller_psy_hit.h"
 #include "../monster_cover_manager.h"
 #include "controller_psy_aura.h"
-
-#ifdef _DEBUG
-#	include <dinput.h>
-#endif
 
 const u32	_pmt_psy_attack_delay		= 2000;
 const float	_pmt_psy_attack_min_angle	= deg(5);
@@ -420,20 +416,20 @@ void CController::UpdateCL()
 			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent);
+			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent);
+			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else if (percent2 > 0){
 			CurrentGameUI()->RemoveCustomStatic("controller_fx");
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx2", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent2);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent2);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent2);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent2);
+			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent2);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent2);
+			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent2);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent2);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else {
@@ -746,7 +742,7 @@ CBaseMonster::SDebugInfo CController::show_debug_info()
 void CController::debug_on_key(int key)
 {
 	switch (key){
-	case DIK_MINUS:
+	case SDL_SCANCODE_MINUS:
 		//m_sound_aura_left_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(-1.f, 0.f, 1.f), sm_2D);
 		//m_sound_aura_right_channel.play_at_pos(Level().CurrentEntity(), Fvector().set(1.f, 0.f, 1.f), sm_2D);
 		
@@ -770,7 +766,7 @@ void CController::debug_on_key(int key)
 
 
 		break;
-	case DIK_EQUALS:
+	case SDL_SCANCODE_EQUALS:
 		P2.set		(Actor()->Position());
 		DBG().level_info(this).remove_item	(1);
 		DBG().level_info(this).add_item(P2,0.5f,COLOR_GREEN,1);

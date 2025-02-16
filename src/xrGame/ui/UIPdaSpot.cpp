@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "UIPdaSpot.h"
-#include <dinput.h>
 #include "Level.h"
 #include "map_manager.h"
 #include "map_location.h"
@@ -118,7 +117,7 @@ bool CUIPdaSpot::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	switch (dik)
 	{
-	case DIK_ESCAPE:
+	case SDL_SCANCODE_ESCAPE:
 	{
 		if (IsShown())
 		{

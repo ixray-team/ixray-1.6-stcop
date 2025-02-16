@@ -1,9 +1,8 @@
-// CUIEditBox.cpp: ввод строки с клавиатуры
+// CUIEditBox.cpp: РІРІРѕРґ СЃС‚СЂРѕРєРё СЃ РєР»Р°РІРёР°С‚СѓСЂС‹
 // 
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include <dinput.h>
 #include "uieditbox.h"
 #include "UIFrameLineWnd.h"
 

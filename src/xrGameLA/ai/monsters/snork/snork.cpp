@@ -11,7 +11,6 @@
 #include "../../../PHMovementControl.h"
 
 #ifdef _DEBUG
-#	include <dinput.h>
 #	include "../../../actor.h"
 #	include "../../../ai_object_location.h"
 #	include "../../../level_debug.h"
@@ -298,7 +297,7 @@ void CSnork::debug_on_key(int key)
 	if (!actor) return;
 
 	switch (key){
-	case DIK_1:
+	case SDL_SCANCODE_1:
 		m_target_node = actor->ai_location().level_vertex_id();
 	}
 }

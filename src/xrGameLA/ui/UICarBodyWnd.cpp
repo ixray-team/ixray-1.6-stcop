@@ -1,5 +1,4 @@
 #include "pch_script.h"
-#include <dinput.h>
 #include "UICarBodyWnd.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
@@ -113,7 +112,7 @@ void CUICarBodyWnd::Init()
 	xml_init.InitDragDropListEx		(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
 
 
-	//информация о предмете
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїСЂРµРґРјРµС‚Рµ
 	m_pUIDescWnd					= new CUIFrameWindow(); m_pUIDescWnd->SetAutoDelete(true);
 	AttachChild						(m_pUIDescWnd);
 	xml_init.InitFrameWindow		(uiXml, "frame_window", 0, m_pUIDescWnd);
@@ -228,8 +227,8 @@ void CUICarBodyWnd::InitCustomInventory(CInventoryOwner* pOur, CInventoryOwner* 
 			NET_Packet		P;
 			CGameObject::u_EventGen		(P,GE_INFO_TRANSFER, our_id);
 			P.w_u16						(0);//not used
-			P.w_stringZ					((*it).info_id);			//сообщение
-			P.w_u8						(1);						//добавление сообщения
+			P.w_stringZ					((*it).info_id);			//СЃРѕРѕР±С‰РµРЅРёРµ
+			P.w_u8						(1);						//РґРѕР±Р°РІР»РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ
 			CGameObject::u_EventSend	(P);
 		}
 		known_info.clear	();
@@ -263,7 +262,7 @@ void CUICarBodyWnd::UpdateLists()
 	m_pUIOurBagList->ClearAll					(true);
 	m_pUIOthersBagList->ClearAll				(true);
 
-	//Наш рюкзак
+	//РќР°С€ СЂСЋРєР·Р°Рє
 	ruck_list.clear								();
 	m_pOurObject->inventory().AddAvailableItems	(ruck_list, true);
 	std::sort									(ruck_list.begin(),ruck_list.end(),InventoryUtilities::GreaterRoomInRuck);
@@ -276,7 +275,7 @@ void CUICarBodyWnd::UpdateLists()
 		m_pUIOurBagList->SetItem		(itm);
 	}
 
-	//Чужой рюкзак
+	//Р§СѓР¶РѕР№ СЂСЋРєР·Р°Рє
 	ruck_list.clear									();
 	if(m_pOthersObject)
 	{
@@ -317,7 +316,7 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		{
 			switch(m_pUIPropertiesBox->GetClickedItem()->GetTAG())
 			{
-			case INVENTORY_EAT_ACTION:	//съесть объект
+			case INVENTORY_EAT_ACTION:	//СЃСЉРµСЃС‚СЊ РѕР±СЉРµРєС‚
 				EatItem();
 				break;
 			case INVENTORY_UNLOAD_MAGAZINE:
@@ -459,7 +458,7 @@ bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 			HideDialog();
 			return true;
 		}
-		if(DIK_LSHIFT == dik)
+		if(SDL_SCANCODE_LSHIFT == dik)
 		{
 			TakeAll();
 			return true;
@@ -648,7 +647,7 @@ void move_item (u16 from_id, u16 to_id, u16 what_id)
 	P.w_u8				(1); // send just_before_destroy flag, so physical shell does not activates and disrupts nearby objects
 	CGameObject::u_EventSend	(P);
 
-	//другому инвентарю - взять вещь 
+	//РґСЂСѓРіРѕРјСѓ РёРЅРІРµРЅС‚Р°СЂСЋ - РІР·СЏС‚СЊ РІРµС‰СЊ 
 	CGameObject::u_EventGen		(P, GE_OWNERSHIP_TAKE, to_id);
 	P.w_u16				(what_id);
 	CGameObject::u_EventSend	(P);

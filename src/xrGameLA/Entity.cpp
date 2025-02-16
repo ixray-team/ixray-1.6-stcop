@@ -87,7 +87,7 @@ void CEntity::Die(CObject* who)
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
-//обновление состояния
+//РѕР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 float CEntity::CalcCondition(float hit)
 {
 
@@ -151,7 +151,7 @@ void CEntity::Load		(LPCSTR section)
 #pragma todo("Jim to Dima: no specific figures or comments needed")	
 	m_fMorale			= 66.f;
 
-	//время убирания тела с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ С‚РµР»Р° СЃ СѓСЂРѕРІРЅСЏ
 	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
 	//////////////////////////////////////
 }
@@ -169,7 +169,7 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 	if (E) {
 		SetfHealth			(E->fHealth);
 	
-		R_ASSERT2(!((E->get_killer_id() != ALife::_OBJECT_ID(-1)) && g_Alive()), make_string("server entity [%s][%d] has an killer [%d] and not dead",
+		R_ASSERT2(!((E->get_killer_id() != ALife::_OBJECT_ID(-1)) && g_Alive()), make_string<const char*>("server entity [%s][%d] has an killer [%d] and not dead",
 			E->name_replace(), E->ID, E->get_killer_id()).c_str());
 		m_killer_id			= E->m_killer_id;
 		if (m_killer_id == ID())

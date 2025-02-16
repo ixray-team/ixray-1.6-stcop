@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "..\XrEngine\game_level_cross_table.h"
+#include "..\XrEngine\ai\game_level_cross_table.h"
 
 #define CROSS_TABLE_NAME					"level.gct"
 

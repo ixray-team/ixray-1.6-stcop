@@ -32,8 +32,7 @@ public:
 	IC		void								clear				();
 	IC		bool								operator<			(const CConditionState &condition) const;
 	IC		CConditionState<_world_property>	&operator-=			(const CConditionState &condition);
-	IC		bool 								operator==			(const CConditionState &condition);
-	IC											operator u32		() const;
+	IC		bool 								operator==			(const CConditionState &condition) const;
 	IC		u32									hash_value			() const;
 	IC		const COperatorCondition			*property			(const typename COperatorCondition::_condition_type &condition) const;
 };

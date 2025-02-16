@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "pch_script.h"
 #include "Actor.h"
 #include "Torch.h"
@@ -40,7 +39,7 @@ extern int hud_adj_mode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
-	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote())		return;
 
@@ -69,29 +68,9 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		m_holder->OnKeyboardPress			(cmd);
 		if(m_holder->allowWeapon() && inventory().Action(cmd, CMD_START))		return;
 		return;
-	} else {
-		if (cmd==kWPN_ZOOM&&!psHoldZoom.test(1)) 
-		{
-			if(inventory().ActiveItem())
-			{
-				CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
-				if (pWM)
-				{
-					if (IsZoomAimingMode())
-					{
-						if(inventory().Action(cmd, CMD_STOP))					return;
-					}else{
-						if(inventory().Action(cmd, CMD_START))					return;
-					}
-				}else{
-					if(inventory().Action(cmd, CMD_START))					return;
-				}
-			}else{
-				if(inventory().Action(cmd, CMD_START))					return;
-			}
-		} else {
-			if(inventory().Action(cmd, CMD_START))					return;
-		}
+	} else 
+	{
+		if(inventory().Action(cmd, CMD_START))					return;
 	}
 
 	switch(cmd){
@@ -143,7 +122,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				mstate_wishful |= mcSprint;
 			}
 		}break;
-	case kCAM_1:{	cam_Set(eacFirstEye);	CCustomDetectorR * detectortoshow = inventory().CurrentDetector();	if (detectortoshow)g_player_hud->attach_item(detectortoshow); }break; //Для востановления детектора в руке
+	case kCAM_1:{	cam_Set(eacFirstEye);	CCustomDetectorR * detectortoshow = inventory().CurrentDetector();	if (detectortoshow)g_player_hud->attach_item(detectortoshow); }break; //Р”Р»СЏ РІРѕСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РґРµС‚РµРєС‚РѕСЂР° РІ СЂСѓРєРµ
 	case kCAM_2:	cam_Set(eacLookAt);				break;
 	case kCAM_3:	cam_Set(eacFreeLook);				break;
 	case kNIGHT_VISION: SwitchNightVision();					break;
@@ -297,7 +276,7 @@ void CActor::IR_OnMouseWheel(int direction)
 }
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
-	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote())		return;
 
@@ -319,21 +298,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 			if(m_holder->allowWeapon() && inventory().Action(cmd, CMD_STOP))		return;
 			return;
 		}else{
-			if (cmd==kWPN_ZOOM&&!psHoldZoom.test(1))
-			{
-				if(inventory().ActiveItem())
-				{
-					CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
-					if (!pWM || (pWM&&!pWM->IsZoomEnabled()))
-					{
-						if(inventory().Action(cmd, CMD_STOP))		return;
-					}
-				} else {
-					if(inventory().Action(cmd, CMD_STOP))		return;
-				}
-			} else {
-				if(inventory().Action(cmd, CMD_STOP))		return;
-			}
+			if(inventory().Action(cmd, CMD_STOP))		return;
 		}
 
 
@@ -349,7 +314,7 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
-	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(DIK_LSHIFT))	return;
+	if (CAttachableItem::m_dbgItem || hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
 
 	if (Remote() || !g_Alive())					return;
 //	if (conditions().IsSleeping())				return;
@@ -535,8 +500,8 @@ void CActor::ActorUse()
 				{
 					TryToTalk();
 				}
-				//обыск трупа
-				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
+				//РѕР±С‹СЃРє С‚СЂСѓРїР°
+				else  if(!Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 				{
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 					if (pGameSP)pGameSP->StartStashUI(this, m_pPersonWeLookingAt);
@@ -550,7 +515,7 @@ void CActor::ActorUse()
 		if(object) 
 			element = (u16)RQ.element;
 
-		if(object && Level().IR_GetKeyState(DIK_LSHIFT))
+		if(object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 		{
 			bool b_allow = !!pSettings->line_exist("ph_capture_visuals",object->cNameVisual());
 
@@ -606,7 +571,8 @@ void	CActor::OnNextWeaponSlot()
 		ActiveSlot = KNIFE_SLOT;
 	
 	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
 	};
@@ -637,7 +603,8 @@ void	CActor::OnPrevWeaponSlot()
 		ActiveSlot = KNIFE_SLOT;
 
 	u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);	
-	for (u32 CurSlot=0; CurSlot<NumSlotsToCheck; CurSlot++)
+	u32 CurSlot = 0;
+	for (; CurSlot<NumSlotsToCheck; CurSlot++)
 	{
 		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
 	};
