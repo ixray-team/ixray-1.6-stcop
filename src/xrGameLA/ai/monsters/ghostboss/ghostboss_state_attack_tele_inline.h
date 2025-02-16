@@ -146,7 +146,7 @@ bool CStateGhostBossAttackTeleAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateGhostBossAttackTeleAbstract::FindFreeObjects(xr_vector<CObject*> &tpObjects, const Fvector &pos)
 {
-	Level().ObjectSpace.GetNearest	(tpObjects, pos, this->object->m_tele_find_radius, NULL);
+	Level().ObjectSpace.GetNearest	(tpObjects, pos, this->object->m_tele_find_radius, nullptr);
 
 	for (u32 i=0;i<tpObjects.size();i++) {
 		CPhysicsShellHolder *obj			= smart_cast<CPhysicsShellHolder *>(tpObjects[i]);

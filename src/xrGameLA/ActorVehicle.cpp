@@ -41,7 +41,7 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	IKinematicsAnimated* VA		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(VA);
 	
 	if(!m_holder->attach_Actor(this)){
-		m_holder=NULL;
+		m_holder=nullptr;
 		return;
 	}
 	// temp play animation
@@ -94,7 +94,7 @@ void CActor::detach_Vehicle()
 	r_model_yaw=-m_holder->Camera()->yaw;
 	r_torso.yaw=r_model_yaw;
 	r_model_yaw_dest=r_model_yaw;
-	m_holder=NULL;
+	m_holder=nullptr;
 	SetCallbacks		();
 	IKinematicsAnimated* V= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(V);
 	V->PlayCycle		(m_anims->m_normal.legs_idle);
@@ -128,7 +128,7 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 				if (pCamBobbing)
 				{
 					Cameras().RemoveCamEffector(eCEBobbing);
-					pCamBobbing = NULL;
+					pCamBobbing = nullptr;
 				}
 
 				attach_Vehicle(vehicle);
@@ -168,5 +168,5 @@ void CActor::on_requested_spawn(CObject *object)
 
 CCar* CActor::GetAttachedCar()
 {
-	return m_holder ? smart_cast<CCar*>(m_holder) : NULL;
+	return m_holder ? smart_cast<CCar*>(m_holder) : nullptr;
 }

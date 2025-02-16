@@ -3,13 +3,12 @@
 #include "gamepersistent.h"
 #include "../fmesh.h"
 #include "../xr_ioconsole.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"
 #include "level.h"
-#include "ParticlesObject.h"
 #include "actor.h"
 #include "game_base_space.h"
 #include "player_hud.h"
@@ -68,9 +67,9 @@ CGamePersistent::CGamePersistent(void)
 
 	ZeroMemory(ambient_sound_next_time, sizeof(ambient_sound_next_time));
 
-	m_pUI_core					= NULL;
-	m_pMainMenu					= NULL;
-	m_intro						= NULL;
+	m_pUI_core					= nullptr;
+	m_pMainMenu					= nullptr;
+	m_intro						= nullptr;
 	m_intro_event.bind			(this,&CGamePersistent::start_logo_intro);
 #ifdef DEBUG
 	m_frame_counter				= 0;
@@ -95,8 +94,8 @@ CGamePersistent::CGamePersistent(void)
 		eDemoStart			= g_pEventManager->Event.Handler_Attach("GAME:demo",this);
 		uTime2Change		=	0;
 	} else {
-		pDemoFile			=	NULL;
-		eDemoStart			=	NULL;
+		pDemoFile			=	nullptr;
+		eDemoStart			=	nullptr;
 	}
 
 	eQuickLoad					= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
@@ -417,9 +416,9 @@ void CGamePersistent::start_logo_intro		()
 	if (Device.dwPrecacheFrame==0)
 	{
 		m_intro_event.bind		(this,&CGamePersistent::update_logo_intro);
-		if (!g_dedicated_server && 0==xr_strlen(m_game_params.m_game_or_spawn) && NULL==g_pGameLevel)
+		if (!g_dedicated_server && 0==xr_strlen(m_game_params.m_game_or_spawn) && nullptr==g_pGameLevel)
 		{
-			if (NULL!=m_intro)	return;
+			if (nullptr!=m_intro)	return;
 			m_intro				= new CUISequencer();
 			m_intro->Start		("intro_logo");
 			Console->Hide		();
@@ -450,7 +449,7 @@ void CGamePersistent::game_loaded()
 		{
 	//		pApp->ClearTitle();
 
-			if (NULL!=m_intro)	return;
+			if (nullptr!=m_intro)	return;
 
 			m_intro				= new CUISequencer();
 			m_intro->Start		("game_loaded");
@@ -479,7 +478,7 @@ void CGamePersistent::start_game_intro		()
 		bool load_spawn = (0==stricmp(m_game_params.m_new_or_load,"load") && 0==xr_strcmp(m_game_params.m_game_or_spawn, spawn_name));	//skyloader: flag if load save and (save == spawn_name), for example, all.sav
 		if (0==stricmp(m_game_params.m_new_or_load,"new") || load_spawn)
 		{
-			if (NULL!=m_intro)	return;
+			if (nullptr!=m_intro)	return;
 			m_intro				= new CUISequencer();
 			m_intro->Start		("intro_game");
 
@@ -561,7 +560,7 @@ void CGamePersistent::OnFrame	()
 			}
 			else 
 			{
-				CCameraBase* C = NULL;
+				CCameraBase* C = nullptr;
 				if (g_actor)
 				{
 					if(!Actor()->Holder())
@@ -577,7 +576,7 @@ void CGamePersistent::OnFrame	()
 #else // MASTER_GOLD
 		if (g_actor)
 		{
-			CCameraBase* C = NULL;
+			CCameraBase* C = nullptr;
 			if(!Actor()->Holder())
 				C = Actor()->cam_Active();
 			else
@@ -644,8 +643,8 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		if (Device.Paused())
 			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
 
-		CUIGameCustom* ui_game_custom = NULL;
-		if ((ui_game_custom = CurrentGameUI()) != NULL)
+		CUIGameCustom* ui_game_custom = nullptr;
+		if ((ui_game_custom = CurrentGameUI()) != nullptr)
 		{
 			ui_game_custom->HideShownDialogs();
 			ui_game_custom->UIMainIngameWnd->reset_ui();

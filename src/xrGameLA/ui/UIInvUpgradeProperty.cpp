@@ -24,8 +24,8 @@
 UIProperty::UIProperty()
 {
 	m_text[0] = 0;
-	m_ui_icon = NULL;
-	m_ui_text = NULL;
+	m_ui_icon = nullptr;
+	m_ui_text = nullptr;
 }
 
 UIProperty::~UIProperty()
@@ -62,7 +62,7 @@ UIProperty::Property_type* UIProperty::get_property()
 {
 	if ( !ai().get_alife() )
 	{
-		return NULL;
+		return nullptr;
 	}
 	Property_type* proper = ai().alife().inventory_upgrade_manager().get_property( m_property_id );
 	VERIFY( proper );

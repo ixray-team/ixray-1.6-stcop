@@ -57,7 +57,7 @@ void CUIWndCallback::AddCallbackStr(const shared_str& control_id, s16 evt, const
 {
 	SCallbackInfo* c	= NewCallback ();
 	c->m_cpp_callback	= f;
-	c->m_control_ptr	= NULL;
+	c->m_control_ptr	= nullptr;
 	c->m_control_name	= control_id;
 	c->m_event			= evt;
 }

@@ -645,7 +645,7 @@ void CMountedTurret::Action(int id, u32 flags)
 			processing_deactivate													();
 			if (OwnerActor())
 				OwnerActor()->use_MountedWeapon											(0);
-			CHolderCustom::SetNpcOwner												(NULL);
+			CHolderCustom::SetNpcOwner												(nullptr);
 			break;
 		}
 		case eFireStart:

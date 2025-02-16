@@ -11,7 +11,7 @@ class CUIMapHint :public CUIWindow
 	CUIFrameWindow*		m_border;
 	CUIWindow*			m_owner;
 public:
-					CUIMapHint	():m_owner(NULL){};
+					CUIMapHint	():m_owner(nullptr){};
 	virtual 		~CUIMapHint	();
 	void			Init		();
 	void			SetText		(LPCSTR text);

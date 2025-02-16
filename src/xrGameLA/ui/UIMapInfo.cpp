@@ -44,7 +44,7 @@ void CUIMapInfo::InitMapInfo(Fvector2 pos, Fvector2 size)
 void CUIMapInfo::InitMap(LPCSTR map_name, LPCSTR map_ver)
 {
 	m_view->Clear();
-	if (NULL == map_name)
+	if (nullptr == map_name)
 		return;
 
 	CStringTable str_tbl;

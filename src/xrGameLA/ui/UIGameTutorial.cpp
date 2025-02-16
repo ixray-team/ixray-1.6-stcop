@@ -43,7 +43,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 	
 	for(int i=0; i<disabled_cnt; ++i)
 	{
-		LPCSTR str					= xml->Read			("disabled_key", i, NULL);
+		LPCSTR str					= xml->Read			("disabled_key", i, nullptr);
 		m_disabled_actions.push_back( action_name_to_id(str) );
 	}
 
@@ -51,15 +51,15 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 	int			f_num				= xml->GetNodesNum(xml->GetLocalRoot(),"function_on_start");
 	m_start_lua_functions.resize	(f_num);
 	for(j=0; j<f_num; ++j)
-		m_start_lua_functions[j]	= xml->Read(xml->GetLocalRoot(), "function_on_start", j, NULL);
+		m_start_lua_functions[j]	= xml->Read(xml->GetLocalRoot(), "function_on_start", j, nullptr);
 	
 	f_num							= xml->GetNodesNum(xml->GetLocalRoot(),"function_on_stop");
 	m_stop_lua_functions.resize		(f_num);
 	for(j=0; j<f_num; ++j)
-		m_stop_lua_functions[j]		= xml->Read(xml->GetLocalRoot(), "function_on_stop", j, NULL);
+		m_stop_lua_functions[j]		= xml->Read(xml->GetLocalRoot(), "function_on_stop", j, nullptr);
 
-	m_check_lua_function			= xml->Read(xml->GetLocalRoot(), "function_check_start", 0, NULL);
-	m_onframe_lua_function			= xml->Read(xml->GetLocalRoot(), "function_on_frame", 0, NULL);
+	m_check_lua_function			= xml->Read(xml->GetLocalRoot(), "function_check_start", 0, nullptr);
+	m_onframe_lua_function			= xml->Read(xml->GetLocalRoot(), "function_on_frame", 0, nullptr);
 
 	xml->SetLocalRoot				(_stored_root);
 }
@@ -193,7 +193,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 		Device.Pause			(FALSE, TRUE, FALSE, "tutorial_start");
 
 	if (m_global_sound._handle())		
-		m_global_sound.play(NULL, sm_2D);
+		m_global_sound.play(nullptr, sm_2D);
 
 	if(m_start_lua_function.size())
 		CallFunction(m_start_lua_function);
@@ -201,7 +201,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 
 CUISequenceItem* CUISequencer::GetNextItem()
 {
-	CUISequenceItem* result			= NULL;
+	CUISequenceItem* result			= nullptr;
 
 	while(m_sequencer_items.size())
 	{
@@ -221,7 +221,7 @@ CUISequenceItem* CUISequencer::GetNextItem()
 		if(!call_result)
 		{
 			m_sequencer_items.pop_front();
-			result					= NULL;
+			result					= nullptr;
 		}else
 		{
 			break;
@@ -246,18 +246,18 @@ void CUISequencer::Destroy()
 	delete_data					(m_UIWindow);
 	IR_Release					();
 	m_flags.set					(etsActive, FALSE);
-	m_pStoredInputReceiver		= NULL;
+	m_pStoredInputReceiver		= nullptr;
 	
 	if(!m_on_destroy_event.empty())
 		m_on_destroy_event		();
 
 	if(g_tutorial==this)
 	{
-		g_tutorial = NULL;
+		g_tutorial = nullptr;
 	}
 	if(g_tutorial2==this)
 	{
-		g_tutorial2 = NULL;
+		g_tutorial2 = nullptr;
 	}
 }
 

@@ -46,7 +46,7 @@ u32	disk_file_reader::tell()
 }
 bool disk_file_reader::opened() const
 {
-	return (m_reader != NULL);
+	return (m_reader != nullptr);
 }
 
 // memory reader
@@ -89,7 +89,7 @@ u32	memory_reader::tell()
 
 bool memory_reader::opened() const
 {
-	return (m_reader != NULL);
+	return (m_reader != nullptr);
 }
 
 // buffers_vector reader
@@ -250,7 +250,7 @@ u32	memory_writer_reader::tell()
 }
 bool memory_writer_reader::opened() const
 {
-	return (m_writer_as_src != NULL);
+	return (m_writer_as_src != nullptr);
 }
 
 

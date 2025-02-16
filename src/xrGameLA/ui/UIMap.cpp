@@ -344,7 +344,7 @@ float CUIGlobalMap::CalcOpenRect(const Fvector2& center_point, Frect& map_desire
 CUILevelMap::CUILevelMap(CUIMapWnd* p)
 {
 	m_mapWnd			= p;
-//	m_anomalies_map		= NULL;
+//	m_anomalies_map		= nullptr;
 	Show				(false);
 }
 

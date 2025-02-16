@@ -212,7 +212,7 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self, LPCSTR secti
 CStoreHouse *get_store(CALifeSimulator *self)
 {
 	return &(self->store_house());
-	//return NULL;
+	//return nullptr;
 }
 #ifdef USE_TIMERS_MANAGER
 CTimersManager *get_timers_manager(CALifeSimulator *self)
@@ -222,8 +222,8 @@ CTimersManager *get_timers_manager(CALifeSimulator *self)
 #endif
 CSE_Abstract *CALifeSimulator__spawn_item3		(CALifeSimulator *self, LPCSTR section, ALife::_STORY_ID sid, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id)
 {
-	CSE_Abstract			*entity		= NULL;
-	CSE_ALifeDynamicObject	*object		= NULL;
+	CSE_Abstract			*entity		= nullptr;
+	CSE_ALifeDynamicObject	*object		= nullptr;
 	THROW																		(self);
 	//R_ASSERT																	(!self->story_objects().object(sid, false));
 	entity								= self->spawn_item						(section, position, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1), false);
@@ -237,8 +237,8 @@ CSE_Abstract *CALifeSimulator__spawn_item3		(CALifeSimulator *self, LPCSTR secti
 CSE_Abstract *CALifeSimulator__spawn_item4		(CALifeSimulator *self, LPCSTR section, const Fvector &position, const Fvector &direction,
 													 u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_STORY_ID sid = INVALID_STORY_ID)
 {
-	CSE_Abstract			*entity		= NULL;
-	CSE_ALifeDynamicObject	*object		= NULL;
+	CSE_Abstract			*entity		= nullptr;
+	CSE_ALifeDynamicObject	*object		= nullptr;
 	THROW																		(self);
 	//R_ASSERT																	(!self->story_objects().object(sid, false));
 	entity								= self->spawn_item						(section, position, level_vertex_id, game_vertex_id, ALife::_OBJECT_ID(-1), false);

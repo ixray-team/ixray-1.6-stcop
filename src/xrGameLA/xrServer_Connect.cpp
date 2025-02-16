@@ -29,7 +29,7 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	R_ASSERT2(xr_strlen(options) <= sizeof(type), "session_name too BIIIGGG!!!");
 	xr_strcpy					(type,options);
 	if (strchr(type,'/'))	*strchr(type,'/') = 0;
-	game					= NULL;
+	game					= nullptr;
 
 	CLASS_ID clsid			= game_GameState::getCLASS_ID(type,true);
 	game					= smart_cast<game_sv_GameState*> (NEW_INSTANCE(clsid));

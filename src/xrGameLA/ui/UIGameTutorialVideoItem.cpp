@@ -21,8 +21,8 @@ CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner):CUISequenceItem(
 {
 	m_flags.set				(etiPlaying|etiNeedStart|etiDelayed|etiBackVisible,FALSE);
 	m_delay					= 0.f;
-	m_wnd					= NULL;
-	m_wnd_bg				= NULL;
+	m_wnd					= nullptr;
+	m_wnd_bg				= nullptr;
 	m_delay					= 0.f;
 	m_time_start			= 0;
 	m_sync_time				= 0;
@@ -142,7 +142,7 @@ void CUISequenceVideoItem::Update()
 			// sync start
 			if (m_flags.test(etiNeedStart))
 			{
-				m_sound.play_at_pos		(NULL, Fvector().set(0.0f,0.f,0.0f), sm_2D);
+				m_sound.play_at_pos		(nullptr, Fvector().set(0.0f,0.f,0.0f), sm_2D);
 				m_texture->video_Play	(FALSE, m_sync_time);
 				m_flags.set				(etiNeedStart,FALSE);
 				CUIWindow* w			= m_owner->MainWnd()->FindChild("back");

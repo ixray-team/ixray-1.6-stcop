@@ -278,8 +278,8 @@ void CPHCapture::ReleaseInCallBack()
 void CPHCapture::object_contactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
 
-	dxGeomUserData *l_pUD1 = NULL;
-	dxGeomUserData *l_pUD2 = NULL;
+	dxGeomUserData *l_pUD1 = nullptr;
+	dxGeomUserData *l_pUD2 = nullptr;
 	l_pUD1 = retrieveGeomUserData(c.geom.g1);
 	l_pUD2 = retrieveGeomUserData(c.geom.g2);
 

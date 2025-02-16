@@ -5,7 +5,7 @@
 #include "UIStatic.h"
 
 CUIListBoxItem::CUIListBoxItem(void)
-:m_text(NULL),tag(u32(-1))
+:m_text(nullptr),tag(u32(-1))
 {
 	txt_color			= 0xffffffff;
 	txt_color_s			= 0xffffffff;
@@ -58,7 +58,7 @@ void CUIListBoxItem::SetFont(CGameFont* F)
 
 CGameFont* CUIListBoxItem::GetFont()
 {
-	return (m_text)?m_text->GetFont():NULL;
+	return (m_text)?m_text->GetFont():nullptr;
 }
 
 #define DOUBLE_CLICK_TIME 250

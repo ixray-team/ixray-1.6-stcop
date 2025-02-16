@@ -7,7 +7,7 @@
 void draw_rect(Fvector2 LTp, Fvector2 RBp, Fvector2 LTt, Fvector2 RBt, u32 clr, Fvector2 const& ts);
 
 CUIFrameWindow::CUIFrameWindow(bool use_static_text)
-	:m_bTextureVisible(false), UITitleText(NULL)
+	:m_bTextureVisible(false), UITitleText(nullptr)
 {
 	m_texture_color	= color_argb(255,255,255,255);
 	if (use_static_text)

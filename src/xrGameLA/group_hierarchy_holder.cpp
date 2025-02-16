@@ -44,7 +44,7 @@ void CGroupHierarchyHolder::update_leader				()
 
 void CGroupHierarchyHolder::register_in_group			(CEntity *member)
 {
-	if (member==NULL) return; //skyloader: hack
+	if (member==nullptr) return; //skyloader: hack
 
 	MEMBER_REGISTRY::iterator	I = std::find(m_members.begin(),m_members.end(),member);
 	VERIFY3						(I == m_members.end(),"Specified group member has already been found",*member->cName());
@@ -75,7 +75,7 @@ void CGroupHierarchyHolder::register_in_squad			(CEntity *member)
 
 void CGroupHierarchyHolder::register_in_agent_manager	(CEntity *member)
 {
-	if (!get_agent_manager() && smart_cast<CAI_Stalker*>(member) != NULL)
+	if (!get_agent_manager() && smart_cast<CAI_Stalker*>(member) != nullptr)
 	{
 		m_agent_manager								= new CAgentManager();
 		agent_manager().memory().set_squad_objects	(&visible_objects());

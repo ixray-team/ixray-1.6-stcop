@@ -15,7 +15,7 @@
 
 CAI_PhraseDialogManager::CAI_PhraseDialogManager	(void)
 {
-	m_sStartDialog = m_sDefaultStartDialog = NULL;
+	m_sStartDialog = m_sDefaultStartDialog = nullptr;
 }
 
 CAI_PhraseDialogManager::~CAI_PhraseDialogManager	(void)

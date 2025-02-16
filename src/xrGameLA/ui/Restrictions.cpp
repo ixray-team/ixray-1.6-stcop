@@ -177,7 +177,7 @@ shared_str CRestrictions::GetItemGroup(const shared_str& item) const
 			if ((*IT) == item)
 				return (*it).first;		
 
-	return		NULL;
+	return		nullptr;
 }
 
 u32 CRestrictions::GetItemCount(const shared_str& item_sect) const
@@ -215,7 +215,7 @@ CRestrictions::restr_item* CRestrictions::find_restr_item_internal(const u32& ra
 		if(it->first==group_name)
 			return &(*it);
 	}
-	return	NULL;
+	return	nullptr;
 }
 
 const CRestrictions::restr_item* CRestrictions::find_restr_item(const u32& rank, const shared_str& group_name ) const
@@ -230,7 +230,7 @@ const CRestrictions::restr_item* CRestrictions::find_restr_item(const u32& rank,
 			return &(*it);
 	}
 	VERIFY	(it!=it_e);
-	return	NULL;
+	return	nullptr;
 }
 
 void CRestrictions::Dump() const

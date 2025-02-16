@@ -39,7 +39,7 @@ public:
 	{
 		block_position=block_size;
 		block_count=0;
-		current_block=NULL;
+		current_block=nullptr;
 	}
 	IC	void clear()
 	{

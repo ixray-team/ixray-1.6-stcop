@@ -1,11 +1,11 @@
-#include "stdafx.h"
+#include "../xrParticles/stdafx.h"
 #include "ZoneCampfire.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "GamePersistent.h"
 #include "../LightAnimLibrary.h"
 
 CZoneCampfire::CZoneCampfire()
-:m_pDisabledParticles(NULL),m_pEnablingParticles(NULL),m_turned_on(true),m_turn_time(0)
+:m_pDisabledParticles(nullptr),m_pEnablingParticles(nullptr),m_turned_on(true),m_turn_time(0)
 {
 //.	g_zone = this;
 }
@@ -45,7 +45,7 @@ void CZoneCampfire::GoDisabledState()
 {
 	inherited::GoDisabledState		();
 
-	R_ASSERT						(NULL==m_pDisabledParticles);
+	R_ASSERT						(nullptr==m_pDisabledParticles);
 	LPCSTR str						= pSettings->r_string(cNameSect(),"disabled_particles");
 	m_pDisabledParticles			= CParticlesObject::Create(str,FALSE);
 	m_pDisabledParticles->UpdateParent	(XFORM(),zero_vel);

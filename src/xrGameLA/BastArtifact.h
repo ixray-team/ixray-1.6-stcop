@@ -39,7 +39,7 @@ public:
 	virtual void feel_touch_delete	(CObject* O);
 	virtual BOOL feel_touch_contact	(CObject* O);
 
-	bool IsAttacking() {return NULL!=m_AttakingEntity;}
+	bool IsAttacking() {return nullptr!=m_AttakingEntity;}
 
 protected:
 	virtual void	UpdateCLChild	();

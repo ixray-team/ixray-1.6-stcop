@@ -327,7 +327,7 @@ public:
 		if (MainMenu()->IsActive() || !g_pGameLevel)
 			return;
 
-		CUIGameSP* pGameSP = NULL;
+		CUIGameSP* pGameSP = nullptr;
 		if (CurrentGameUI())
 		{
 			pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
@@ -802,7 +802,7 @@ public:
 	virtual void	Execute(LPCSTR args)
 	{
 		if (CAttachableItem::m_dbgItem){
-			CAttachableItem::m_dbgItem = NULL;
+			CAttachableItem::m_dbgItem = nullptr;
 			Msg("---TuneAttachableItem switched to off");
 			return;
 		};
@@ -988,7 +988,7 @@ public:
 	virtual void	Execute(LPCSTR args)
 	{
 		CCC_Integer::Execute(args);
-		dWorldSetQuickStepNumIterations(NULL, phIterations);
+		dWorldSetQuickStepNumIterations(nullptr, phIterations);
 	}
 };
 
@@ -1430,7 +1430,7 @@ public:
 	CCC_RadioMask(LPCSTR N, Flags32* V, u32 M):
 	  CCC_Mask(N,V,M)
 	 {
-		group=NULL;
+		group=nullptr;
 	 }
 		void	SetGroup	(CCC_RadioGroupMask2		*G)
 	{

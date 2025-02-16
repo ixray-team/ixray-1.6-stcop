@@ -7,7 +7,7 @@
 
 CUIProgressShape::CUIProgressShape()
 {
-	m_pBackground	= NULL;
+	m_pBackground	= nullptr;
 	m_bText			= false;
 	m_pTexture		= new CUIStatic();
 	AttachChild		(m_pTexture);	

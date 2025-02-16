@@ -5,9 +5,9 @@
 #include "actor.h"
 #include "physic_item.h"
 #include "actoreffector.h"
-#include "../IGame_Persistent.h"
+#include "../xrEngine/IGame_Persistent.h"
 
-player_hud* g_player_hud = NULL;
+player_hud* g_player_hud = nullptr;
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 
@@ -21,7 +21,7 @@ player_hud_motion* player_hud_motion_container::find_motion(const shared_str& na
 		if( s == name)
 			return &(*it);
 	}
-	return NULL;
+	return nullptr;
 }
 
 void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect)
@@ -29,7 +29,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 	CInifile::Sect& _sect		= pSettings->r_section(sect);
 	CInifile::SectCIt _b		= _sect.Data.begin();
 	CInifile::SectCIt _e		= _sect.Data.end();
-	player_hud_motion* pm		= NULL;
+	player_hud_motion* pm		= nullptr;
 	
 	string512					buff;
 	MotionID					motion_ID;
@@ -295,7 +295,7 @@ attachable_hud_item::~attachable_hud_item()
 {
 	IRenderVisual* v			= m_model->dcast_RenderVisual();
 	::Render->model_Delete		(v);
-	m_model						= NULL;
+	m_model						= nullptr;
 }
 
 void attachable_hud_item::load(const shared_str& sect_name)
@@ -362,7 +362,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		m_model->CalculateBones_Invalidate	();
 	}
 
-	R_ASSERT2		(m_parent_hud_item, "parent hud item is NULL");
+	R_ASSERT2		(m_parent_hud_item, "parent hud item is nullptr");
 	CPhysicItem&	parent_object = m_parent_hud_item->object();
 	//R_ASSERT2		(parent_object, "object has no parent actor");
 	//CObject*		parent_object = static_cast_checked<CObject*>(&m_parent_hud_item->object());
@@ -398,9 +398,9 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 player_hud::player_hud()
 {
-	m_model					= NULL;
-	m_attached_items[0]		= NULL;
-	m_attached_items[1]		= NULL;
+	m_model					= nullptr;
+	m_attached_items[0]		= nullptr;
+	m_attached_items[1]		= nullptr;
 	m_transform.identity	();
 	m_bobbing			= new CWeaponBobbing();
 	m_collision			= new CWeaponCollision();
@@ -411,7 +411,7 @@ player_hud::~player_hud()
 {
 	IRenderVisual* v			= m_model->dcast_RenderVisual();
 	::Render->model_Delete		(v);
-	m_model						= NULL;
+	m_model						= nullptr;
 
 	xr_vector<attachable_hud_item*>::iterator it	= m_pool.begin();
 	xr_vector<attachable_hud_item*>::iterator it_e	= m_pool.end();
@@ -428,7 +428,7 @@ player_hud::~player_hud()
 void player_hud::load(const shared_str& player_hud_sect)
 {
 	if(player_hud_sect ==m_sect_name)	return;
-	bool b_reload = (m_model!=NULL);
+	bool b_reload = (m_model!=nullptr);
 	if(m_model)
 	{
 		IRenderVisual* v			= m_model->dcast_RenderVisual();
@@ -728,12 +728,12 @@ void player_hud::attach_item(CHudItem* item)
 
 void player_hud::detach_item_idx(u16 idx)
 {
-	if( NULL==attached_item(idx) )					return;
+	if( nullptr==attached_item(idx) )					return;
 
 	m_attached_items[idx]->m_parent_hud_item->on_b_hud_detach();
 
-	m_attached_items[idx]->m_parent_hud_item		= NULL;
-	m_attached_items[idx]							= NULL;
+	m_attached_items[idx]->m_parent_hud_item		= nullptr;
+	m_attached_items[idx]							= nullptr;
 
 	if(idx==1 && attached_item(0))
 	{
@@ -771,7 +771,7 @@ void player_hud::detach_item_idx(u16 idx)
 
 void player_hud::detach_item(CHudItem* item)
 {
-	if( NULL==item->HudItemData() )		return;
+	if( nullptr==item->HudItemData() )		return;
 	u16 item_idx						= item->HudItemData()->m_attach_place_idx;
 
 	if( m_attached_items[item_idx]==item->HudItemData() )

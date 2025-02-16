@@ -217,7 +217,7 @@ void CGhostBoss::UpdateGraviObject()
 	float trace_dist = float(m_gravi_step);
 
 	collide::rq_result	l_rq;
-	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, NULL)) {
+	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr)) {
 		const CObject *enemy = smart_cast<const CObject *>(m_gravi_object.enemy);
 		if ((l_rq.O == enemy) && (l_rq.range < trace_dist)) {
 			
@@ -267,7 +267,7 @@ void CGhostBoss::UpdateGraviObject()
 	
 	// hit objects
 	m_nearest.clear		();
-	Level().ObjectSpace.GetNearest	(m_nearest,m_gravi_object.cur_pos, m_gravi_radius, NULL); 
+	Level().ObjectSpace.GetNearest	(m_nearest,m_gravi_object.cur_pos, m_gravi_radius, nullptr); 
 	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
 	for (u32 i=0;i<m_nearest.size();i++) {

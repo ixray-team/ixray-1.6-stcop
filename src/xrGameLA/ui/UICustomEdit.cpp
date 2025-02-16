@@ -17,12 +17,12 @@ CUICustomEdit::CUICustomEdit()
 	TextItemControl()->SetCutWordsMode( true );
 	TextItemControl()->SetUseNewLineMode( false );
 	
-	m_out_str[0]   = NULL;
+	m_out_str[0]   = 0;
 	m_dx_cur       = 0.0f;
 	m_read_mode    = false;
 	m_force_update = true;
 	m_last_key_state_time = 0;
-	m_next_focus_capturer = NULL;
+	m_next_focus_capturer = nullptr;
 	m_bFocusByDbClick = false;
 
 	m_textColor[0]=color_argb(255,235,219,185);
@@ -110,7 +110,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	if ( msg == WINDOW_KEYBOARD_CAPTURE_LOST && m_bInputFocus)
 	{
 		m_bInputFocus = false;
-		GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, NULL );
+		GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	}
 }
 
@@ -304,7 +304,7 @@ void CUICustomEdit::press_escape()
 	{
 		m_bInputFocus					= false;
 		GetParent()->SetKeyboardCapture	( this, false );
-		GetMessageTarget()->SendMessage	( this, EDIT_TEXT_CANCEL, NULL );
+		GetMessageTarget()->SendMessage	( this, EDIT_TEXT_CANCEL, nullptr );
 	}
 }
 
@@ -312,7 +312,7 @@ void CUICustomEdit::press_commit()
 {
 	m_bInputFocus						= false;
 	GetParent()->SetKeyboardCapture		( this, false );
-	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, NULL );
+	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 }
 
 void CUICustomEdit::press_tab()
@@ -322,7 +322,7 @@ void CUICustomEdit::press_tab()
 
 	m_bInputFocus						= false;
 	GetParent()->SetKeyboardCapture		( this, false );
-	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, NULL );
+	GetMessageTarget()->SendMessage		( this, EDIT_TEXT_COMMIT, nullptr );
 	GetParent()->SetKeyboardCapture		( m_next_focus_capturer, true );
 	m_next_focus_capturer->CaptureFocus	( true );
 }

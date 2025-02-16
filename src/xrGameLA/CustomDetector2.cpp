@@ -11,7 +11,7 @@
 
 CCustomDetectorR::CCustomDetectorR()
 {
-	m_ui = NULL;
+	m_ui = nullptr;
 	m_bFastAnimMode = false;
 	m_bNeedActivation = false;
 
@@ -55,7 +55,7 @@ void CCustomDetectorR::OnStateSwitch(u32 S)
 		}break;
 	case eHidden:
 		{
-			m_pCurrentInventory->SetCurrentDetector(NULL);
+			m_pCurrentInventory->SetCurrentDetector(nullptr);
 			g_player_hud->detach_item	(this);
 			StopCurrentAnimWithoutCallback	();
 			TurnDetectorInternal			(false);
@@ -166,7 +166,7 @@ void CCustomDetectorR::Load(LPCSTR section)
 	m_sounds.LoadSound(section, "snd_holster", "sndHide");
 
 	//Этот звук берется по дефолту если не задана строка "sounds"
-	detect_sndsnd_line = READ_IF_EXISTS(pSettings, r_string, section, "af_sound_if_no_artefact_sound", NULL);
+	detect_sndsnd_line = READ_IF_EXISTS(pSettings, r_string, section, "af_sound_if_no_artefact_sound", nullptr);
 	if (detect_sndsnd_line){
 		detect_snd.create(pSettings->r_string(section, "af_sound_if_no_artefact_sound"), st_Effect, SOUND_TYPE_ITEM);
 	}
@@ -221,7 +221,7 @@ void CCustomDetectorR::OnH_B_Independent(bool just_before_destroy)
 void CCustomDetectorR::TurnDetectorInternal(bool b)
 {
 	m_bWorking				= b;
-	if(b && m_ui==NULL)
+	if(b && m_ui==nullptr)
 	{
 		CreateUI			();
 	}else
@@ -251,7 +251,7 @@ void CCustomDetectorR::ShowDetector(bool bFastMode)
 	if (!IsHidden()) return;
 
 	PIItem iitem = m_pCurrentInventory->ActiveItem();
-	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : NULL;
+	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
 
 	if (iitem == nullptr)
 	{
@@ -311,7 +311,7 @@ void CCustomDetectorR::UpdateVisibility()//Подгонка нахождения
 	attachable_hud_item* i0 = g_player_hud->attached_item(0);
 	if (i0 != nullptr
 		&& HudItemData()
-		&& m_pCurrentInventory->CurrentDetector() != NULL
+		&& m_pCurrentInventory->CurrentDetector() != nullptr
 		&& !IsItemStateCompatible(i0->m_parent_hud_item))
 	{
 		HideDetectorInstantly(true);

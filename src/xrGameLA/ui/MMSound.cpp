@@ -39,7 +39,7 @@ bool CMMSound::check_file(LPCSTR fname){
 
 void CMMSound::whell_Play(){
 	if (m_whell._handle() && !m_whell._feedback())
-		m_whell.play(NULL, sm_Looped | sm_2D);
+		m_whell.play(nullptr, sm_Looped | sm_2D);
 }
 
 void CMMSound::whell_Stop(){
@@ -49,7 +49,7 @@ void CMMSound::whell_Stop(){
 
 void CMMSound::whell_Click(){
    	if (m_whell_click._handle())
-		m_whell_click.play(NULL, sm_2D);
+		m_whell_click.play(nullptr, sm_2D);
 }
 
 void CMMSound::whell_UpdateMoving(float frequency){
@@ -72,8 +72,8 @@ void CMMSound::music_Play(){
 	m_music_l.create(_path,st_Music,sg_SourceType);
 	m_music_r.create(_path2,st_Music,sg_SourceType);
 
-    m_music_l.play_at_pos(NULL, Fvector().set(-0.5f,0.f,0.3f), sm_2D);
-    m_music_r.play_at_pos(NULL, Fvector().set(+0.5f,0.f,0.3f), sm_2D);
+    m_music_l.play_at_pos(nullptr, Fvector().set(-0.5f,0.f,0.3f), sm_2D);
+    m_music_r.play_at_pos(nullptr, Fvector().set(+0.5f,0.f,0.3f), sm_2D);
 }
 
 void CMMSound::music_Update(){

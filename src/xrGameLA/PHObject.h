@@ -110,7 +110,7 @@ virtual		void			ClearRecentlyDeactivated		()										{;}
 virtual		void			Collide							()										;
 virtual		void			near_callback					(CPHObject* obj)						{;}
 virtual		void			RMotionsQuery					(qResultVec	&res)						{;}
-virtual		CPHMoveStorage*	MoveStorage						()										{return NULL;}
+virtual		CPHMoveStorage*	MoveStorage						()										{return nullptr;}
 virtual		ECastType		CastType						(){return tpNotDefinite;}
 virtual		void			vis_update_activate				()										{}
 virtual		void			vis_update_deactivate			()										{}

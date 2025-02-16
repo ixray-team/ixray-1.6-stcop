@@ -54,7 +54,7 @@ class CMountedTurret :  public CEntity,
 		virtual		void				renderable_Render			();
 
 		virtual		BOOL				UsedAI_Locations			()						{ return FALSE; }
-//		virtual		void				ResetScriptData				(void *P = NULL);
+//		virtual		void				ResetScriptData				(void *P = nullptr);
 					Fvector3			GetFirePoint				() const;
 		// control functions
 		virtual		void				OnMouseMove					(int x, int y);

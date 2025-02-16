@@ -2,6 +2,7 @@
 #define ParticlesObjectH
 
 #include "../xrEngine/PS_instance.h"
+#include "../xrParticles/stdafx.h"
 
 extern PARTICLES_API const Fvector zero_vel;
 

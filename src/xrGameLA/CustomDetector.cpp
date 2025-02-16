@@ -14,7 +14,7 @@
 
 ZONE_INFO::ZONE_INFO	()
 {
-	pParticle=NULL;
+	pParticle=nullptr;
 }
 
 ZONE_INFO::~ZONE_INFO	()
@@ -40,8 +40,8 @@ CCustomDetector::~CCustomDetector(void)
 
 BOOL CCustomDetector::net_Spawn(CSE_Abstract* DC) 
 {
-	m_pCurrentActor		 = NULL;
-	m_pCurrentInvOwner	 = NULL;
+	m_pCurrentActor		 = nullptr;
+	m_pCurrentInvOwner	 = nullptr;
 
 	return		(inherited::net_Spawn(DC));
 }
@@ -190,7 +190,7 @@ void CCustomDetector::feel_touch_delete(CObject* O)
 
 BOOL CCustomDetector::feel_touch_contact(CObject* O) 
 {
-	return (NULL != smart_cast<CCustomZone*>(O));
+	return (nullptr != smart_cast<CCustomZone*>(O));
 }
 
 void CCustomDetector::OnH_A_Chield() 
@@ -204,8 +204,8 @@ void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 	
-	m_pCurrentActor				= NULL;
-	m_pCurrentInvOwner			= NULL;
+	m_pCurrentActor				= nullptr;
+	m_pCurrentInvOwner			= nullptr;
 
 	StopAllSounds				();
 
@@ -280,7 +280,7 @@ void CCustomDetector::UpdateNightVisionMode()
 	bool bNightVision = false;
 	if (GameID() == GAME_SINGLE)
 	{
-		bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
+		bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=nullptr;
 	}
 	else
 	{
@@ -289,7 +289,7 @@ void CCustomDetector::UpdateNightVisionMode()
 		{
 			CActor* pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
 			if (pActor)
-				bNightVision = pActor->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
+				bNightVision = pActor->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=nullptr;
 		}
 	}
 

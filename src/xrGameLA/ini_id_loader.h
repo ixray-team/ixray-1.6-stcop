@@ -72,7 +72,7 @@ public:
 		const ITEM_DATA* item = GetById(str_id, no_assert);
 		return item?item->index:default_index;
 	}
-	static const T_ID						IndexToId					(T_INDEX index, T_ID default_id = NULL, bool no_assert = false)
+	static const T_ID						IndexToId					(T_INDEX index, T_ID default_id = nullptr, bool no_assert = false)
 	{
 		const ITEM_DATA* item = GetByIndex(index, no_assert);
 		return item?item->id:default_id;
@@ -86,12 +86,12 @@ public:
 
 
 TEMPLATE_SPECIALIZATION
-typename CSINI_IdToIndex::T_VECTOR* CSINI_IdToIndex::m_pItemDataVector = NULL;
+typename CSINI_IdToIndex::T_VECTOR* CSINI_IdToIndex::m_pItemDataVector = nullptr;
 
 TEMPLATE_SPECIALIZATION
-const char* CSINI_IdToIndex::section_name = NULL;
+const char* CSINI_IdToIndex::section_name = nullptr;
 TEMPLATE_SPECIALIZATION
-const char* CSINI_IdToIndex::line_name = NULL;
+const char* CSINI_IdToIndex::line_name = nullptr;
 
 
 TEMPLATE_SPECIALIZATION
@@ -119,7 +119,7 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetById (const T_ID& str_id, bool no_
 	if(m_pItemDataVector->end() == it)
 	{
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
-		return NULL;
+		return nullptr;
 	}
 
 	return &(*it);
@@ -132,7 +132,7 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_ass
 	{
 		if(!no_assert)
 			Debug.fatal(DEBUG_INFO,"item by index not found in section %s, line %s", section_name, line_name);
-		return NULL;
+		return nullptr;
 	}
 	return &(m_pItemDataVector->at(index));
 }

@@ -56,9 +56,9 @@ RELATION_REGISTRY::RELATION_MAP_SPOTS::RELATION_MAP_SPOTS()
 }
 //////////////////////////////////////////////////////////////////////////
 
-CRelationRegistryWrapper*					RELATION_REGISTRY::m_relation_registry	= NULL;
-RELATION_REGISTRY::FIGHT_VECTOR*			RELATION_REGISTRY::m_fight_registry		= NULL;
-RELATION_REGISTRY::RELATION_MAP_SPOTS*		RELATION_REGISTRY::m_spot_names			= NULL;
+CRelationRegistryWrapper*					RELATION_REGISTRY::m_relation_registry	= nullptr;
+RELATION_REGISTRY::FIGHT_VECTOR*			RELATION_REGISTRY::m_fight_registry		= nullptr;
+RELATION_REGISTRY::RELATION_MAP_SPOTS*		RELATION_REGISTRY::m_spot_names			= nullptr;
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -112,8 +112,8 @@ CActor::CActor() : CEntityAlive()
 	fCurAVelocity			= 0.0f;
 	// эффекторы
 	pCamBobbing				= 0;
-	m_pSleepEffector		= NULL;
-	m_pSleepEffectorPP		= NULL;
+	m_pSleepEffector		= nullptr;
+	m_pSleepEffectorPP		= nullptr;
 
 
 	r_torso.yaw				= 0;
@@ -139,9 +139,9 @@ CActor::CActor() : CEntityAlive()
 	m_bAnimTorsoPlayed		=	false;
 	b_saveAllowed			=	true;
 
-	m_pPhysicsShell			=	NULL;
+	m_pPhysicsShell			=	nullptr;
 
-	m_holder				=	NULL;
+	m_holder				=	nullptr;
 	m_holderID				=	u16(-1);
 
 
@@ -152,18 +152,18 @@ CActor::CActor() : CEntityAlive()
 	//разрешить использование пояса в inventory
 	inventory().SetBeltUseful(true);
 
-	m_pPersonWeLookingAt	= NULL;
-	m_pHolderWeLookingAt	= NULL;
-	m_pObjectWeLookingAt	= NULL;
+	m_pPersonWeLookingAt	= nullptr;
+	m_pHolderWeLookingAt	= nullptr;
+	m_pObjectWeLookingAt	= nullptr;
 	m_bPickupMode			= false;
 
-	pStatGraph				= NULL;
+	pStatGraph				= nullptr;
 
-	m_pActorEffector		= NULL;
+	m_pActorEffector		= nullptr;
 
 	m_bZoomAimingMode		= false;
 
-	m_sDefaultObjAction		= NULL;
+	m_sDefaultObjAction		= nullptr;
 
 	m_fSprintFactor			= 4.f;
 
@@ -174,16 +174,16 @@ CActor::CActor() : CEntityAlive()
 
 //	TODO: Friendly Indicator
 	m_icons_state.zero		 ();
-	m_pUsableObject			= NULL;
+	m_pUsableObject			= nullptr;
 
 
 	m_anims					= new SActorMotions();
 	m_vehicle_anims			= new SActorVehicleAnims();
-	m_entity_condition		= NULL;
+	m_entity_condition		= nullptr;
 	m_iLastHitterID			= u16(-1);
 	m_iLastHittingWeaponID	= u16(-1);
-	m_game_task_manager		= NULL;
-	m_statistic_manager		= NULL;
+	m_game_task_manager		= nullptr;
+	m_statistic_manager		= nullptr;
 	//-----------------------------------------------------------------------------------
 	m_memory				= g_dedicated_server ? 0 : new CActorMemory(this);
 	m_bOutBorder			= false;
@@ -195,7 +195,7 @@ CActor::CActor() : CEntityAlive()
 	m_location_manager		= new CLocationManager(this);
 	m_current_torch = 0;
 //	m_torch_battery_duration = 0;
-	inventory().SetCurrentDetector(NULL);
+	inventory().SetCurrentDetector(nullptr);
 	m_secondRifleSlotAllowed = false;
 
 	trySprintCounter_		= 0;
@@ -246,7 +246,7 @@ void CActor::reinit	()
 	character_physics_support()->in_Init		();
 	material().reinit							();
 
-	m_pUsableObject								= NULL;
+	m_pUsableObject								= nullptr;
 	if (!g_dedicated_server)
 		memory().reinit							();
 	
@@ -456,7 +456,7 @@ struct playing_pred
 {
 	IC	bool	operator()			(ref_sound &s)
 	{
-		return	(NULL != s._feedback() );
+		return	(nullptr != s._feedback() );
 	}
 };
 
@@ -773,7 +773,7 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	{
 			const ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
 			Fvector hdir;di->HitDir(hdir);
-			SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
+			SetHitInfo(this, nullptr, 0, Fvector().set(0, 0, 0), hdir);
 			//				Hit	(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 + 2*::Random.randI(0,2))
 			if (Level().CurrentControlEntity() == this)
 			{
@@ -993,7 +993,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	if(m_holder || !getEnabled() || !Ready())
 	{
-		m_sDefaultObjAction				= NULL;
+		m_sDefaultObjAction				= nullptr;
 		inherited::shedule_Update		(DT);
 		return;
 	}
@@ -1243,19 +1243,19 @@ void CActor::shedule_Update	(u32 DT)
 //.				else if (m_pInvBoxWeLookingAt)
 //.					m_sDefaultObjAction = m_sInventoryBoxUseAction;
 				else 
-					m_sDefaultObjAction = NULL;
+					m_sDefaultObjAction = nullptr;
 			}
 		}
 	}
 	else 
 	{
-		inventory().m_pTarget	= NULL;
-		m_pPersonWeLookingAt	= NULL;
-		m_sDefaultObjAction		= NULL;
-		m_pUsableObject			= NULL;
-		m_pObjectWeLookingAt	= NULL;
-		m_pHolderWeLookingAt	= NULL;
-		m_pInvBoxWeLookingAt	= NULL;
+		inventory().m_pTarget	= nullptr;
+		m_pPersonWeLookingAt	= nullptr;
+		m_sDefaultObjAction		= nullptr;
+		m_pUsableObject			= nullptr;
+		m_pObjectWeLookingAt	= nullptr;
+		m_pHolderWeLookingAt	= nullptr;
+		m_pInvBoxWeLookingAt	= nullptr;
 	}
 
 //	UpdateSleep									();
@@ -1870,7 +1870,7 @@ bool CActor::is_on_ground()
 CCustomOutfit* CActor::GetOutfit() const
 {
 	PIItem _of	= inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	return _of?smart_cast<CCustomOutfit*>(_of):NULL;
+	return _of?smart_cast<CCustomOutfit*>(_of):nullptr;
 }
 
 // lost alpha start

@@ -165,7 +165,7 @@ void CWeaponStatMgun::UpdateCL()
 //							float impulse, ALife::EHitType hit_type)
 void	CWeaponStatMgun::Hit(SHit* pHDS)
 {
-	if(NULL==Owner())
+	if(nullptr==Owner())
 //		inheritedPH::Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
 		inheritedPH::Hit(pHDS);
 }

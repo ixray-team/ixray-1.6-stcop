@@ -15,7 +15,7 @@
 #include "../gametaskmanager.h"
 
 CUITaskItem::CUITaskItem			(CUIEventsWnd* w)
-:m_GameTask			(NULL),
+:m_GameTask			(nullptr),
 m_TaskObjectiveIdx(u16(-1)),
 m_EventsWnd(w),
 CUIWindow()
@@ -43,7 +43,7 @@ SGameTaskObjective*	CUITaskItem::Objective	()
 	if (m_TaskObjectiveIdx > m_GameTask->m_Objectives.size())
 	{
 		Msg("! no objective(%d) for task item %s size=[%d]", m_TaskObjectiveIdx, m_GameTask->m_ID.c_str(), m_GameTask->m_Objectives.size());
-		return NULL;
+		return nullptr;
 	}
 	return &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
 }
@@ -198,7 +198,7 @@ void CUITaskRootItem::OnSwitchDescriptionClicked	(CUIWindow*, void*)
 	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 
 	m_EventsWnd->SetDescriptionMode						(!m_EventsWnd->GetDescriptionMode());
-	OnItemClicked										(this, NULL);
+	OnItemClicked										(this, nullptr);
 	m_can_update = !m_can_update;
 }
 
@@ -336,7 +336,7 @@ void CUITaskSubItem::MarkSelected (bool b)
 CUIUserTaskItem::CUIUserTaskItem(CUIEventsWnd* w)
 :inherited(w)
 {
-	m_edtWnd = NULL;
+	m_edtWnd = nullptr;
 	Init();
 }
 
@@ -397,7 +397,7 @@ void CUIUserTaskItem::Update					()
 	inherited::Update		();
 	SGameTaskObjective	*obj				= &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
 	CMapLocation* ml						= obj->LinkedMapLocation();
-	bool bHasLocation						= (NULL != ml);
+	bool bHasLocation						= (nullptr != ml);
 	m_showPointerBtn->Show					(bHasLocation && ml->SpotEnabled());
 	if(bHasLocation)
 	{

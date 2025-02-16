@@ -94,7 +94,7 @@ namespace ALife {
 		eHitTypeStrike,
 		eHitTypeExplosion,
 		eHitTypeWound_2,		//knife's alternative fire
-//		eHitTypePhysicStrike,
+		eHitTypePhysicStrike,
 		eHitTypeLightBurn,
 		eHitTypeMax,
 	};

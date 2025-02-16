@@ -20,7 +20,7 @@ CUICellItem* CUIInventoryWnd::CurrentItem()
 
 PIItem CUIInventoryWnd::CurrentIItem()
 {
-	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : NULL;
+	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : nullptr;
 }
 
 void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
@@ -70,8 +70,8 @@ void CUIInventoryWnd::InitInventory()
 
 	UIPropertiesBox.Hide		();
 	ClearAllLists				();
-	m_pMouseCapturer			= NULL;
-	SetCurrentItem				(NULL);
+	m_pMouseCapturer			= nullptr;
+	SetCurrentItem				(nullptr);
 
 	// Slots
 	InitSlotItem(m_pUIPistolList, PISTOL_SLOT);
@@ -129,7 +129,7 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 	if(!b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
 	{
 		SendEvent_Item_Drop		(CurrentIItem());
-		SetCurrentItem			(NULL);
+		SetCurrentItem			(nullptr);
 		//InventoryUtilities::UpdateWeight			(UIBagWnd, true);
 		return;
 	}
@@ -140,13 +140,13 @@ void CUIInventoryWnd::DropCurrentItem(bool b_all)
 
 		for(u32 i=0; i<cnt; ++i)
 		{
-			CUICellItem*	itm				= CurrentItem()->PopChild(NULL);
+			CUICellItem*	itm				= CurrentItem()->PopChild(nullptr);
 			PIItem			iitm			= (PIItem)itm->m_pData;
 			SendEvent_Item_Drop				(iitm);
 		}
 
 		SendEvent_Item_Drop					(CurrentIItem());
-		SetCurrentItem						(NULL);
+		SetCurrentItem						(nullptr);
 		//InventoryUtilities::UpdateWeight	(UIBagWnd, true);
 		return;
 	}
@@ -250,7 +250,7 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 	if(GetInventory()->CanPutInRuck(iitem))
 	{
 		CUIDragDropListEx*	old_owner		= itm->OwnerList();
-		CUIDragDropListEx*	new_owner		= NULL;
+		CUIDragDropListEx*	new_owner		= nullptr;
 		if(b_use_cursor_pos){
 				new_owner					= CUIDragDropListEx::m_drag_item->BackList();
 				VERIFY						(new_owner==m_pUIBagList);
@@ -283,7 +283,7 @@ bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 		if (GetInventory()->CanPutInBelt(iitem, true))
 		{
 			CUIDragDropListEx*	old_owner		= itm->OwnerList();
-			CUIDragDropListEx*	new_owner		= NULL;
+			CUIDragDropListEx*	new_owner		= nullptr;
 			if(b_use_cursor_pos){
 					new_owner					= CUIDragDropListEx::m_drag_item->BackList();
 					VERIFY						(new_owner==m_pUIBeltList);
@@ -499,7 +499,7 @@ bool CUIInventoryWnd::OnItemRButtonClick(CUICellItem* itm)
 
 CUIDragDropListEx* CUIInventoryWnd::GetSlotList(TSlotId slot_idx)
 {
-	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return NULL;
+	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return nullptr;
 	switch (slot_idx)
 	{
 		case PISTOL_SLOT:
@@ -548,7 +548,7 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList(TSlotId slot_idx)
 
 
 	};
-	return NULL;
+	return nullptr;
 }
 
 

@@ -11,7 +11,7 @@
 CUICheckButton::CUICheckButton()
 {	
 	TextItemControl()->SetTextAlignment(CGameFont::alLeft);
-	m_pDependControl = NULL;
+	m_pDependControl = nullptr;
 }
 
 CUICheckButton::~CUICheckButton()
@@ -103,7 +103,7 @@ bool CUICheckButton::OnMouseDown( int mouse_btn )
 		else
 			SetButtonState(BUTTON_NORMAL);
 	}
-	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
+	GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 	return true;
 }
 

@@ -5,7 +5,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "geometry.h"
 #include "PhysicsShell.h"
-#include "../GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "Physics.h"
 #include "../../xrCore/net_utils.h"
 #include "xrMessages.h"
@@ -54,7 +54,7 @@ void CPHCollisionDamageReceiver::CollisionCallback(bool& do_colide,bool bo1,dCon
 	SGameMtl					*material_damager	=	bo1 ? material_2:material_1;
 	VERIFY						(ud_self);
 	CPhysicsShellHolder			*o_self			=	ud_self->ph_ref_object;
-	CPhysicsShellHolder			*o_damager		=	NULL;if(ud_damager)o_damager=ud_damager->ph_ref_object;
+	CPhysicsShellHolder			*o_damager		=	nullptr;if(ud_damager)o_damager=ud_damager->ph_ref_object;
 	u16							source_id		=	o_damager ? o_damager->ID():u16(-1);
 	CPHCollisionDamageReceiver	*dr	=o_self->PHCollisionDamageReceiver();
 	VERIFY2(dr,"wrong callback");
@@ -109,7 +109,7 @@ void CPHCollisionDamageReceiver::Clear()
 	//for(;e!=i;++i)
 	//{
 	//	CODEGeom* og= sh->PPhysicsShell()->get_GeomByID(i->first);
-	//	if(og)og->set_obj_contact_cb(NULL);
+	//	if(og)og->set_obj_contact_cb(nullptr);
 	//}
 		m_controled_bones.clear();
 }

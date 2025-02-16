@@ -15,8 +15,8 @@ CUI3tButton::CUI3tButton()
 	m_dwTextColor[S_Highlighted]	= 0xFFFFFFFF;
 	m_dwTextColor[S_Touched] 		= 0xFFFFFFFF;
 
-	m_background		= NULL;
-	m_back_frameline	= NULL;
+	m_background		= nullptr;
+	m_back_frameline	= nullptr;
 	m_frameline_mode	= false;
 
 	m_bEnableTextHighlighting = false;
@@ -63,13 +63,13 @@ void CUI3tButton::InitSoundT(LPCSTR sound_file)
 void CUI3tButton::PlaySoundT()
 {
 	if (m_sound_t._handle())
-        m_sound_t.play(NULL, sm_2D);
+        m_sound_t.play(nullptr, sm_2D);
 }
 
 void CUI3tButton::PlaySoundH()
 {
 	if (m_sound_h._handle())
-		m_sound_h.play(NULL, sm_2D);
+		m_sound_h.play(nullptr, sm_2D);
 }
 
 void CUI3tButton::Init(LPCSTR tex_name, float x, float y, float width, float height)

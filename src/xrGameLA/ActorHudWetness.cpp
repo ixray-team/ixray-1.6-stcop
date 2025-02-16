@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Actor.h"
-#include "../CameraBase.h"
+#include "../xrEngine/CameraBase.h"
 #include "Inventory.h"
 #include "CustomOutfit.h"
 #include "gamepersistent.h"

@@ -3,7 +3,6 @@
 #include "player_hud.h"
 #include "HUDManager.h"
 #include "entity.h"
-#include "ParticlesObject.h"
 #include "GrenadeLauncher.h"
 #include "xrserver_objects_alife_items.h"
 #include "ExplosiveRocket.h"
@@ -226,7 +225,7 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 
 		if (E){
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-			if(NULL == io->inventory().ActiveItem())
+			if(nullptr == io->inventory().ActiveItem())
 			{
 				Msg("current_state %d", GetState());
 				Msg("next_state %d", GetNextState());
@@ -543,9 +542,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		if(IsZoomed())
 		{
 			if (grenadeMode_)
-				PlayHUDMotion("anim_idle_g_aim", TRUE, NULL, GetState());
+				PlayHUDMotion("anim_idle_g_aim", TRUE, nullptr, GetState());
 			else
-				PlayHUDMotion("anim_idle_w_gl_aim", TRUE, NULL, GetState());
+				PlayHUDMotion("anim_idle_w_gl_aim", TRUE, nullptr, GetState());
 		}else
 		{
 			int act_state = 0;
@@ -567,24 +566,24 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 			if (grenadeMode_)
 			{
 				if(act_state==0)
-					PlayHUDMotion("anim_idle_g", TRUE, NULL, GetState());
+					PlayHUDMotion("anim_idle_g", TRUE, nullptr, GetState());
 				else
 				if(act_state==1)
-					PlayHUDMotion("anim_idle_sprint_g", TRUE, NULL,GetState());
+					PlayHUDMotion("anim_idle_sprint_g", TRUE, nullptr,GetState());
 				else
 				if(act_state==2)
-					PlayHUDMotion("anim_idle_moving_g", TRUE, NULL,GetState());
+					PlayHUDMotion("anim_idle_moving_g", TRUE, nullptr,GetState());
 
 			}else
 			{
 				if(act_state==0)
-					PlayHUDMotion("anim_idle_w_gl", TRUE, NULL, GetState());
+					PlayHUDMotion("anim_idle_w_gl", TRUE, nullptr, GetState());
 				else
 				if(act_state==1)
-					PlayHUDMotion("anim_idle_sprint_w_gl", TRUE, NULL,GetState());
+					PlayHUDMotion("anim_idle_sprint_w_gl", TRUE, nullptr,GetState());
 				else
 				if(act_state==2)
-					PlayHUDMotion("anim_idle_moving_w_gl", TRUE, NULL,GetState());
+					PlayHUDMotion("anim_idle_moving_w_gl", TRUE, nullptr,GetState());
 			}
 		
 		}

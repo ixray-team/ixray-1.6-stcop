@@ -63,7 +63,7 @@ CEntityCondition::CEntityCondition(CEntityAlive *object)
 
 
 	m_fHealthLost			= 0.f;
-	m_pWho					= NULL;
+	m_pWho					= nullptr;
 	m_iWhoID				= 0;
 
 	m_WoundVector.clear		();
@@ -138,8 +138,8 @@ void CEntityCondition::reinit	()
 
 
 	m_fHealthLost			= 0.f;
-	m_pWho					= NULL;
-	m_iWhoID				= NULL;
+	m_pWho					= nullptr;
+	m_iWhoID				= 0;
 
 	ClearWounds				();
 
@@ -346,7 +346,7 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 			break;
 	}
 	
-	CWound* pWound = NULL;
+	CWound* pWound = nullptr;
 
 	//новая рана
 	if (it == m_WoundVector.end())
@@ -371,7 +371,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 {
 	//кто нанес последний хит
 	m_pWho = pHDS->who;
-	m_iWhoID = (NULL != pHDS->who) ? pHDS->who->ID() : 0;
+	m_iWhoID = (nullptr != pHDS->who) ? pHDS->who->ID() : 0;
 
 	float hit_power_org = pHDS->damage();
 	float hit_power = hit_power_org;
@@ -413,7 +413,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		break;
 		//	case ALife::eHitTypeRadiation:
 		//		m_fDeltaRadiation += hit_power;
-		//		return NULL;
+		//		return nullptr;
 		//		break;
 	case ALife::eHitTypeRadiation:
 		if (hit_power < 0.f)
@@ -421,7 +421,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		hit_power *= GetHitImmunity(pHDS->hit_type);
 		m_fDeltaRadiation += hit_power;
 		bAddWound = false;
-		return NULL;
+		return nullptr;
 		break;
 	case ALife::eHitTypeExplosion:
 	case ALife::eHitTypeStrike:
@@ -449,7 +449,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	if (bAddWound && GetHealth()>0)
 		return AddWound(hit_power*m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);
 	else
-		return NULL;
+		return nullptr;
 }
 
 

@@ -68,7 +68,7 @@ void CAgentMemberManager::remove				(CEntity *member)
 	if (registered_in_combat(stalker))
 		unregister_in_combat	(stalker);
 
-	stalker->set_agent_manager	(NULL);
+	stalker->set_agent_manager	(nullptr);
 	squad_mask_type							m = mask(stalker);
 	object().memory().update_memory_masks	(m);
 	object().memory().update_memory_mask	(m,m_combat_mask);

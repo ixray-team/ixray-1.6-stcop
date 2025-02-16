@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 CUITalkDialogWnd::CUITalkDialogWnd()
-	:	m_pNameTextFont		(NULL)
+	:	m_pNameTextFont		(nullptr)
 {
 	m_ClickedQuestionID = "";
 }
@@ -91,7 +91,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	// шрифт для индикации имени персонажа в окне разговора
 	CUIXmlInit::InitFont		(*m_uiXml, "font", 0, m_iNameTextColor, m_pNameTextFont);
 
-	CGameFont * pFont			= NULL;
+	CGameFont * pFont			= nullptr;
 	CUIXmlInit::InitFont		(*m_uiXml, "font", 1, m_uOurReplicsColor, pFont);
 
 

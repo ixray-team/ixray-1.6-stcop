@@ -12,7 +12,7 @@ public:
 			void	 SetText			(LPCSTR text);
 			LPCSTR	GetText				();
 	virtual void	InitMessageBox		(LPCSTR xml_template);
-	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
+	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = nullptr);
 
 	LPCSTR			GetHost				();
 	LPCSTR			GetPassword			();

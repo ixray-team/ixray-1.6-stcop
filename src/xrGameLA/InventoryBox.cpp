@@ -47,7 +47,7 @@ void CInventoryBox::OnEvent(NET_Packet& P, u16 type)
 			xr_vector<u16>::iterator it;
 			it = std::find(m_items.begin(),m_items.end(),id); VERIFY(it!=m_items.end());
 			m_items.erase		(it);
-			itm->H_SetParent	(NULL,!P.r_eof() && P.r_u8());
+			itm->H_SetParent	(nullptr,!P.r_eof() && P.r_u8());
 
 			if( m_in_use )
 			{

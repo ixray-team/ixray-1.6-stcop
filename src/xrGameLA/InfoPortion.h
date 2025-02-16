@@ -69,7 +69,7 @@ public:
 	const DIALOG_ID_VECTOR&							DialogNames	()	const {return info_data()->m_DialogNames;}
 	const SInfoPortionData::INFO_ID_VECTOR&			DisableInfos()	const {return info_data()->m_DisableInfo;}
 	
-			void									RunScriptActions		(const CGameObject* pOwner)	{info_data()->m_PhraseScript.Action(pOwner, NULL, NULL);}
+			void									RunScriptActions		(const CGameObject* pOwner)	{info_data()->m_PhraseScript.Action(pOwner, nullptr, nullptr);}
 
 	//текстовое представление информации
 			shared_str								GetText () const ;

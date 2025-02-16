@@ -20,9 +20,9 @@ float STEP=0.02f;
 
 CHelicopter::CHelicopter()
 {
-	m_pParticle		= NULL;
-	m_light_render	= NULL;
-	m_lanim			= NULL;
+	m_pParticle		= nullptr;
+	m_light_render	= nullptr;
+	m_lanim			= nullptr;
 
 	ISpatial*		self				=	smart_cast<ISpatial*> (this);
 	if (self)		self->spatial.type  |=  STYPE_VISIBLEFORAI;

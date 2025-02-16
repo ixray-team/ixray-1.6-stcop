@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "zonemine.h"
 #include "hudmanager.h"
-#include "ParticlesObject.h"
 #include "level.h"
 #include "physicsshellholder.h"
 #include "../xr_collide_form.h"

@@ -147,7 +147,7 @@ void CSpecificCharacterSupplyTemplate::Load(shared_str id)
 {
 	R_ASSERT(id.size());
 	m_OwnId = id;
-	inherited_shared::load_shared(m_OwnId, NULL);
+	inherited_shared::load_shared(m_OwnId, nullptr);
 }
 
 void CSpecificCharacterSupplyTemplate::load_shared(LPCSTR)

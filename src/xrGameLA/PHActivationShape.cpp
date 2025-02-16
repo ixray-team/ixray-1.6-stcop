@@ -8,7 +8,7 @@
 #include "SpaceUtils.h"
 #include "MathUtilsOde.h"
 #include "MathUtils.h"
-#include "../GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "Level.h"
 #include "PHWorld.h"
 #include "../3rd party/ode/ode/src/util.h"
@@ -92,8 +92,8 @@ void RestoreVelocityState(V_PH_WORLD_STATE& state)
 
 CPHActivationShape::CPHActivationShape()
 {
-	m_geom=NULL;
-	m_body=NULL;
+	m_geom=nullptr;
+	m_body=nullptr;
 	m_flags.zero();
 	m_flags.set(flFixedRotation,TRUE);
 }
@@ -138,9 +138,9 @@ void CPHActivationShape::	Destroy	()
 	CPHObject::deactivate	()			;
 	dGeomDestroyUserData	(m_geom)	;
 	dGeomDestroy			(m_geom)	;
-	m_geom					=NULL		;
+	m_geom					=nullptr		;
 	dBodyDestroy			(m_body)	;
-	m_body					=NULL		;
+	m_body					=nullptr		;
 }
 bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,float max_displacement,float max_rotation,bool	un_freeze_later/*	=false*/)										
 {

@@ -91,5 +91,5 @@ xrClientData*	xrClientsPool::Get(xrClientData* new_client)
 		m_dclients.erase		(tmp_iter);
 		return result;
 	}
-	return NULL;
+	return nullptr;
 }

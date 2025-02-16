@@ -41,7 +41,7 @@ bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 		}break;
 	};	
 		
-	res = RegQueryValueExA(hKey, rKeyName, NULL, &rKeyType, (LPBYTE)rBuf, &KeyValueSize);
+	res = RegQueryValueExA(hKey, rKeyName, nullptr, &rKeyType, (LPBYTE)rBuf, &KeyValueSize);
 	if (hKey != 0) RegCloseKey(hKey);
 
 	if (res != ERROR_SUCCESS)
@@ -91,7 +91,7 @@ bool	WriteRegistryValue	(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 		}break;
 	};	
 	
-	res = RegSetValueExA(hKey, rKeyName, NULL, rKeyType, (LPBYTE)value, KeyValueSize);
+	res = RegSetValueExA(hKey, rKeyName, 0, rKeyType, (LPBYTE)value, KeyValueSize);
 
 	if (hKey) RegCloseKey(hKey);
 	return true;
@@ -135,7 +135,7 @@ u32 const	ReadRegistry_BinaryValue	(LPCSTR rKeyName, u8 * buffer_dest, u32 const
 	DWORD	value_type = REG_BINARY;
 	DWORD	tmp_buffer_size = buffer_size;
 
-	res		= RegQueryValueExA(hKey, rKeyName, NULL, &value_type, buffer_dest, &tmp_buffer_size);
+	res		= RegQueryValueExA(hKey, rKeyName, nullptr, &value_type, buffer_dest, &tmp_buffer_size);
 	
 	if (res != ERROR_SUCCESS)
 	{
@@ -165,7 +165,7 @@ void	WriteRegistry_BinaryValue	(LPCSTR rKeyName, u8 const * buffer_src, u32 cons
 		return;
 	}
 
-	res = RegSetValueExA(hKey, rKeyName, NULL, REG_BINARY, buffer_src, buffer_size);
+	res = RegSetValueExA(hKey, rKeyName, 0, REG_BINARY, buffer_src, buffer_size);
 
 	RegCloseKey(hKey);
 }

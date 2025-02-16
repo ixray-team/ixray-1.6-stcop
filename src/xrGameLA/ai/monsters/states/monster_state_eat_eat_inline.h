@@ -47,7 +47,7 @@ bool CStateMonsterEatingAbstract::check_start_conditions()
 	VERIFY	(corpse);
 
 	Fvector nearest_bone_pos;
-	if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive())) {
+	if ((corpse->m_pPhysicsShell == nullptr) || (!corpse->m_pPhysicsShell->isActive())) {
 		nearest_bone_pos	= corpse->Position(); 
 	} else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 
@@ -66,7 +66,7 @@ bool CStateMonsterEatingAbstract::check_completion()
 	if (this->object->CorpseMan.get_corpse() != corpse)	return true;
 	
 	Fvector nearest_bone_pos;
-	if ((corpse->m_pPhysicsShell == NULL) || (!corpse->m_pPhysicsShell->isActive())) {
+	if ((corpse->m_pPhysicsShell == nullptr) || (!corpse->m_pPhysicsShell->isActive())) {
 		nearest_bone_pos	= corpse->Position(); 
 	} else nearest_bone_pos = this->object->character_physics_support()->movement()->PHCaptureGetNearestElemPos(corpse);
 

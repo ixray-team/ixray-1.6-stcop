@@ -60,8 +60,8 @@ shell_root CPHShellSplitterHolder::SplitJoint(u16 aspl)
 	new_shell_desc->PureActivate();
 	//new_shell_desc->ObjectInRoot().identity();
 	m_pShell->DeleteJoint(start_joint);
-	new_shell->set_ObjectContactCallback(NULL);
-	new_shell->set_PhysicsRefObject(NULL);
+	new_shell->set_ObjectContactCallback(nullptr);
+	new_shell->set_PhysicsRefObject(nullptr);
 	return ret;
 }
 
@@ -345,13 +345,13 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &sp
 ///////////////////temporary for initialization set old Kinematics in new shell/////////////////
 	new_shell_last->set_Kinematics(m_pShell->PKinematics());
 	new_shell_last_desc->AfterSetActive();
-	new_shell_last->set_Kinematics(NULL);
+	new_shell_last->set_Kinematics(nullptr);
 	VERIFY2(split_elem.second.m_bone_id<64,"strange root");
 	VERIFY(_valid(new_shell_last->mXFORM));
 	VERIFY(dBodyStateValide(source_element->get_bodyConst()));
 	VERIFY(dBodyStateValide(split_elem.first->get_body()));
-	new_shell_last->set_ObjectContactCallback(NULL);
-	new_shell_last->set_PhysicsRefObject(NULL);
+	new_shell_last->set_ObjectContactCallback(nullptr);
+	new_shell_last->set_PhysicsRefObject(nullptr);
 	return std::make_pair(new_shell_last,split_elem.second.m_bone_id);
 
 }

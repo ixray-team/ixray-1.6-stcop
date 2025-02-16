@@ -34,7 +34,7 @@
 
 CInventoryOwner::CInventoryOwner			()
 {
-	m_pTrade					= NULL;
+	m_pTrade					= nullptr;
 	m_trade_parameters			= 0;
 
 	m_inventory					= new CInventory();
@@ -96,7 +96,7 @@ void CInventoryOwner::reload				(LPCSTR section)
 
 	m_money						= 0;
 	m_bTalking					= false;
-	m_pTalkPartner				= NULL;
+	m_pTalkPartner				= nullptr;
 
 	CAttachmentOwner::reload	(section);
 }
@@ -129,7 +129,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 
 	if ( IsGameTypeSingle() )
 	{
-		CSE_ALifeTraderAbstract* pTrader = NULL;
+		CSE_ALifeTraderAbstract* pTrader = nullptr;
 		if(E) pTrader = smart_cast<CSE_ALifeTraderAbstract*>(E);
 		if(!pTrader) return FALSE;
 
@@ -292,7 +292,7 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
 
 void CInventoryOwner::StopTalk()
 {
-	m_pTalkPartner			= NULL;
+	m_pTalkPartner			= nullptr;
 	m_bTalking				= false;
 
 	GetTrade()->StopTrade	();

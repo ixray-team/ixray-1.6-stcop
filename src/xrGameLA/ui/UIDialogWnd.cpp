@@ -3,7 +3,7 @@
 
 CUIDialogWnd::CUIDialogWnd()
 {
-	m_pParentHolder		= NULL;
+	m_pParentHolder		= nullptr;
 	m_bWorkInPause		= false;
 	m_bShowMe		= false;
 	m_bNeedToCenter	= true;

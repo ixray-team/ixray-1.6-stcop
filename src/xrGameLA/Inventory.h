@@ -82,7 +82,7 @@ public:
 	bool					Activate			(TSlotId slot, EActivationReason reason = eGeneral, bool bForce = false);
 	bool					TryActivate			(TSlotId slot, EActivationReason reason, bool bForce);
 	void					Activate_deffered	(TSlotId slot, u32 _frame);
-	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? NULL :m_slots[m_iActiveSlot].m_pIItem;}
+	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? nullptr :m_slots[m_iActiveSlot].m_pIItem;}
 	PIItem					ItemFromSlot		(TSlotId slot) const;
 	void					ActivateNextItemInActiveSlot();
 	bool					Action				(u16 cmd, u32 flags);

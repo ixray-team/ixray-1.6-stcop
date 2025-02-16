@@ -18,11 +18,11 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 {
 	CPHUpdateObject::Activate();
 
-	m_joint					=NULL;	
-	m_ajoint				=NULL;
-	m_body					=NULL;
-	m_taget_object			=NULL;
-	m_character				=NULL;
+	m_joint					=nullptr;	
+	m_ajoint				=nullptr;
+	m_body					=nullptr;
+	m_taget_object			=nullptr;
+	m_character				=nullptr;
 	b_failed				=false;
 	b_disabled				=false;	
 	b_character_feedback	=false;
@@ -34,14 +34,14 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 	   smart_cast<CInventoryItem*>(a_taget_object)
 	   ) 
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
 
 	if(!a_character||!a_character->b_exist)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -52,7 +52,7 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 
 	if(!capturer_object)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -61,7 +61,7 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 
 	if(!p_kinematics)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -70,14 +70,14 @@ CPHCapture::CPHCapture	(CPHCharacter   *a_character, CPhysicsShellHolder	*a_tage
 
 	if(!ini)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
 
 	if(!ini->section_exist("capture"))
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -98,29 +98,29 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 {
 
 	CPHUpdateObject::Activate();
-	m_joint					=NULL;	
-	m_ajoint				=NULL;
-	m_body					=NULL;
+	m_joint					=nullptr;	
+	m_ajoint				=nullptr;
+	m_body					=nullptr;
 	b_failed				=false;
 	b_disabled				=false;
 	e_state					=cstPulling;
 	b_character_feedback	=false;
-	m_taget_object			=NULL;
-	m_character				=NULL;
+	m_taget_object			=nullptr;
+	m_character				=nullptr;
 	if(!a_taget_object								||
 	   !a_taget_object->m_pPhysicsShell				||
 	   !a_taget_object->m_pPhysicsShell->isActive()	||
 	   smart_cast<CInventoryItem*>(a_taget_object)
 	   ) 
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
 
 	if(!a_character||!a_character->b_exist)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -131,7 +131,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!capturer_object)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -140,7 +140,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!p_kinematics)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -149,21 +149,21 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!ini)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
 
 	if(a_taget_element==BI_NONE)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
 
 	if(!ini->section_exist("capture"))
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -178,7 +178,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!V)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -187,7 +187,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!K)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -196,7 +196,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!tag_bone.callback_param())
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -205,7 +205,7 @@ CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_
 
 	if(!m_taget_element)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -232,7 +232,7 @@ void CPHCapture::Init(CInifile* ini)
 	m_pull_distance=ini->r_float("capture","pull_distance");
 	if(dir.magnitude()>m_pull_distance)
 	{
-		m_taget_object=NULL;
+		m_taget_object=nullptr;
 		b_failed=true;
 		return;
 	}
@@ -272,19 +272,19 @@ void CPHCapture::Release()
 		dJointDestroy(m_joint);
 
 	}
-	m_joint=NULL;
+	m_joint=nullptr;
 	if(m_ajoint)
 	{
 		m_island.RemoveJoint(m_ajoint);
 		dJointDestroy(m_ajoint);
 	}
-	m_ajoint=NULL;
+	m_ajoint=nullptr;
 	if(m_body) 
 	{
 		m_island.RemoveBody(m_body);
 		dBodyDestroy(m_body);
 	}
-	m_body=NULL;
+	m_body=nullptr;
 
 	if(e_state==cstPulling&&m_taget_element&&!m_taget_object->getDestroy()&&m_taget_object->PPhysicsShell()&&m_taget_object->PPhysicsShell()->isActive())
 	{
@@ -312,7 +312,7 @@ void CPHCapture::Deactivate()
 	//}
 	if(m_character)m_character->SetObjectContactCallback(0);
 	CPHUpdateObject::Deactivate();
-	m_character		=NULL;
-	m_taget_object	=NULL;
-	m_taget_element	=NULL;
+	m_character		=nullptr;
+	m_taget_object	=nullptr;
+	m_taget_element	=nullptr;
 }

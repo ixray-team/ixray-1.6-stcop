@@ -10,7 +10,7 @@ CUIListItem::CUIListItem(void)
 {
 	m_eButtonState = BUTTON_NORMAL;
 
-	m_pData = NULL;
+	m_pData = nullptr;
 
 	m_iIndex = -1;
 	m_iValue = 0;

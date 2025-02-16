@@ -72,7 +72,7 @@ void UIHint::Draw()
 // =================================================================================================
 
 UIHintWindow::UIHintWindow()
-:m_hint_wnd(NULL),m_hint_delay(1000),m_enable(false)
+:m_hint_wnd(nullptr),m_hint_delay(1000),m_enable(false)
 {}
 
 void UIHintWindow::disable_hint()
@@ -82,7 +82,7 @@ void UIHintWindow::disable_hint()
 //		Msg( "! class <UIHintWindow> has not <hint_wnd>!" );
 		return;
 	}		
-	m_hint_wnd->set_text( NULL );
+	m_hint_wnd->set_text( nullptr );
 	m_enable = false;
 }
 

@@ -54,8 +54,8 @@ bool	CLevel::net_start_client2				()
 bool	CLevel::net_start_client3				()
 {
 	if(connected_to_server){
-		LPCSTR					level_name = NULL;
-		LPCSTR					level_ver = NULL;
+		LPCSTR					level_name = nullptr;
+		LPCSTR					level_ver = nullptr;
 		if(psNET_direct_connect)
 		{
 			shared_str const & server_options = Server->GetConnectOptions();

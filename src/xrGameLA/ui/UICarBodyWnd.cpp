@@ -33,9 +33,9 @@ void move_item (u16 from_id, u16 to_id, u16 what_id);
 
 CUICarBodyWnd::CUICarBodyWnd()
 {
-	m_pInventoryBox		= NULL;
-	m_pCar				= NULL;
-    m_pOthersObject		= NULL;
+	m_pInventoryBox		= nullptr;
+	m_pCar				= nullptr;
+    m_pOthersObject		= nullptr;
 	Init				();
 	m_b_need_update		= false;
 }
@@ -133,8 +133,8 @@ void CUICarBodyWnd::Init()
 	m_pUIPropertiesBox->InitPropertiesBox	(Fvector2().set(0,0),Fvector2().set(300,300));
 	m_pUIPropertiesBox->Hide		();
 
-	SetCurrentItem					(NULL);
-	m_pUIStaticDesc->TextItemControl()->SetText		(NULL);
+	SetCurrentItem					(nullptr);
+	m_pUIStaticDesc->TextItemControl()->SetText		(nullptr);
 
 	m_pUITakeAll					= new CUI3tButton(); m_pUITakeAll->SetAutoDelete(true);
 	AttachChild						(m_pUITakeAll);
@@ -149,7 +149,7 @@ void CUICarBodyWnd::Init()
 void CUICarBodyWnd::InitInventoryBox(CInventoryOwner* pOur, CInventoryBox* pInvBox)
 {
     m_pOurObject									= pOur;
-	m_pOthersObject = m_pCar = NULL;
+	m_pOthersObject = m_pCar = nullptr;
 	m_pInventoryBox									= pInvBox;
 	m_pInventoryBox->m_in_use						= true;
 
@@ -168,7 +168,7 @@ void CUICarBodyWnd::InitCustomInventory(CInventoryOwner* pOur, CInventoryOwner* 
 
     m_pOurObject									= pOur;
 	m_pOthersObject									= pOthers;
-	m_pInventoryBox									= NULL;
+	m_pInventoryBox									= nullptr;
 	
 	u16 our_id										= smart_cast<CGameObject*>(m_pOurObject)->ID();
 	u16 other_id									= smart_cast<CGameObject*>(m_pOthersObject)->ID();
@@ -176,7 +176,7 @@ void CUICarBodyWnd::InitCustomInventory(CInventoryOwner* pOur, CInventoryOwner* 
 	m_pUICharacterInfoLeft->InitCharacter			(our_id);
 	m_pUIOthersIcon->Show							(true);
 	
-	CBaseMonster *monster = NULL;
+	CBaseMonster *monster = nullptr;
 	
 	if(m_pOthersObject)
 	{
@@ -370,7 +370,7 @@ void CUICarBodyWnd::ShowDialog(bool bDoHideIndicators)
 {
 	InventoryUtilities::SendInfoToActor		("ui_car_body");
 	inherited::ShowDialog(bDoHideIndicators);
-	SetCurrentItem							(NULL);
+	SetCurrentItem							(nullptr);
 	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd);
 	if (m_pCar)
 	{
@@ -401,7 +401,7 @@ CUICellItem* CUICarBodyWnd::CurrentItem()
 
 PIItem CUICarBodyWnd::CurrentIItem()
 {
-	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : NULL;
+	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : nullptr;
 }
 
 void CUICarBodyWnd::SetCurrentItem(CUICellItem* itm)
@@ -485,7 +485,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	CBattery*				pBattery		= smart_cast<CBattery*>			(CurrentIItem());
     bool					b_show			= false;
 	
-	LPCSTR _action				= NULL;
+	LPCSTR _action				= nullptr;
 	if(pMedkit || pAntirad || pBattery)
 	{
 		_action						= "st_use";
@@ -500,7 +500,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		b_show						= true;
 	}
 	if(_action)
-		m_pUIPropertiesBox->AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
+		m_pUIPropertiesBox->AddItem(_action,  nullptr, INVENTORY_EAT_ACTION);
 
 
 	if(b_show){
@@ -577,7 +577,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 		CUICellItem* ci			= old_owner->RemoveItem(CurrentItem(), false);
 		new_owner->SetItem		(ci);
 	}
-	SetCurrentItem					(NULL);
+	SetCurrentItem					(nullptr);
 
 	return				true;
 }
@@ -617,7 +617,7 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 //.		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), CurrentIItem()->object().lua_game_object() );
 
 	}
-	SetCurrentItem				(NULL);
+	SetCurrentItem				(nullptr);
 
 	return						true;
 }
@@ -656,7 +656,7 @@ void move_item (u16 from_id, u16 to_id, u16 what_id)
 
 bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check)
 {
-	VERIFY									(NULL==m_pInventoryBox);
+	VERIFY									(nullptr==m_pInventoryBox);
 	CGameObject* go_from					= smart_cast<CGameObject*>(owner_from);
 	CGameObject* go_to						= smart_cast<CGameObject*>(owner_to);
 

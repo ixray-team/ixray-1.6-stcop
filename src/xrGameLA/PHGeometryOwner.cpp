@@ -9,10 +9,10 @@ CPHGeometryOwner::CPHGeometryOwner()
 	b_builded=false;
 	m_mass_center.set(0,0,0);
 	contact_callback=ContactShotMark;
-	object_contact_callback=NULL;
+	object_contact_callback=nullptr;
 	ul_material=GMLib.GetMaterialIdx("objects\\small_box");
-	m_group=NULL;
-	m_phys_ref_object=NULL;
+	m_group=nullptr;
+	m_phys_ref_object=nullptr;
 }
 
 CPHGeometryOwner::~CPHGeometryOwner()
@@ -274,7 +274,7 @@ void CPHGeometryOwner::remove_ObjectContactCallback(ObjectContactCallbackFun* ca
 
 	if(object_contact_callback==callback)
 	{
-		object_contact_callback= NULL;
+		object_contact_callback= nullptr;
 	}
 	if(!b_builded)return;
 	{
@@ -392,7 +392,7 @@ CODEGeom* CPHGeometryOwner::GeomByBoneID(u16 bone_id)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

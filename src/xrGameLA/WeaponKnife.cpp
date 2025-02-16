@@ -8,7 +8,7 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "level_bullet_manager.h"
 #include "../xrSound/ai_sounds.h"
 #include "game_cl_single.h"

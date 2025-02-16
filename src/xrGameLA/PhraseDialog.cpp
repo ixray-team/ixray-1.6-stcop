@@ -19,9 +19,9 @@ SPhraseDialogData::~SPhraseDialogData ()
 CPhraseDialog::CPhraseDialog()
 {
 	m_bFinished			= false;
-	m_pSpeakerFirst		= NULL;
-	m_pSpeakerSecond	= NULL;
-	m_DialogId			= NULL;
+	m_pSpeakerFirst		= nullptr;
+	m_pSpeakerSecond	= nullptr;
+	m_DialogId			= nullptr;
 }
 
 CPhraseDialog::~CPhraseDialog()
@@ -195,7 +195,7 @@ int	 CPhraseDialog::Priority()
 void CPhraseDialog::Load(shared_str dialog_id)
 {
 	m_DialogId = dialog_id;
-	inherited_shared::load_shared(m_DialogId, NULL);
+	inherited_shared::load_shared(m_DialogId, nullptr);
 }
 
 #include "../xrScripts/script_engine.h"
@@ -218,7 +218,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	SetPriority	( pXML->ReadAttribInt(dialog_node, "priority", 0) );
 
 	//заголовок 
-	SetCaption	( pXML->Read(dialog_node, "caption", 0, NULL) );
+	SetCaption	( pXML->Read(dialog_node, "caption", 0, nullptr) );
 
 	//предикаты начала диалога
 	data()->m_PhraseScript.Load(pXML, dialog_node);
@@ -227,7 +227,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 	data()->m_PhraseGraph.clear();
 
 	XML_NODE* phrase_list_node = pXML->NavigateToNode(dialog_node, "phrase_list", 0);
-	if(NULL == phrase_list_node){
+	if(nullptr == phrase_list_node){
 		LPCSTR func = pXML->Read(dialog_node, "init_func", 0, "");
 
 		luabind::functor<void>	lua_function;
@@ -244,7 +244,7 @@ void CPhraseDialog::load_shared	(LPCSTR)
 
 #ifdef DEBUG // debug & mixed
 	LPCSTR wrong_phrase_id = pXML->CheckUniqueAttrib(phrase_list_node, "phrase", "id");
-	THROW3(wrong_phrase_id == NULL, *item_data.id, wrong_phrase_id);
+	THROW3(wrong_phrase_id == nullptr, *item_data.id, wrong_phrase_id);
 #endif	
 
 	//ищем стартовую фразу
@@ -265,7 +265,7 @@ void CPhraseDialog::SetPriority	(int val)
 
 CPhrase* CPhraseDialog::AddPhrase	(LPCSTR text, const shared_str& phrase_id, const shared_str& prev_phrase_id, int goodwil_level)
 {
-	CPhrase* phrase					= NULL;
+	CPhrase* phrase					= nullptr;
 	CPhraseGraph::CVertex* _vertex	= data()->m_PhraseGraph.vertex(phrase_id);
 	if(!_vertex) 
 	{

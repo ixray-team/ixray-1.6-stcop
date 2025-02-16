@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "wallmark_manager.h"
 #include "Level.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "CalculateTriangle.h"
 #ifdef DEBUG
 #include "phdebug.h"
@@ -42,7 +42,7 @@ void CWalmarkManager::AddWallmark(const Fvector& dir, const Fvector& start_pos,
 		}
 
 		/*
-		ref_shader* pWallmarkShader = wallmarks_vector.empty()?NULL:
+		ref_shader* pWallmarkShader = wallmarks_vector.empty()?nullptr:
 		&wallmarks_vector[::Random.randI(0,wallmarks_vector.size())];
 
 		if (pWallmarkShader)
@@ -162,7 +162,7 @@ void CWalmarkManager::StartWorkflow()
 		
 		if(test>0.f)
 		{
-			if(Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, NULL, m_owner))
+			if(Level().ObjectSpace.RayTest(m_pos, pdir, test, collide::rqtStatic, nullptr, m_owner))
 			{
 				++_ray_test;
 				continue;

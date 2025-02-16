@@ -15,7 +15,7 @@ CDynamicPatrolPoint::CDynamicPatrolPoint(const ILevelGraph *level_graph, const I
 
 CDynamicPatrolPoint::CDynamicPatrolPoint(const CPatrolPath *path, CDynamicPatrolPoint *old) : inherited(path)
 {
-	if (old != NULL)
+	if (old != nullptr)
 	{
 #ifdef DEBUG
 		old->initialized(true);

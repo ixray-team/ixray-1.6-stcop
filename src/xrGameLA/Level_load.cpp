@@ -2,14 +2,13 @@
 #include "HUDmanager.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
-#include "ParticlesObject.h"
 #include "../xrScripts/script_process.h"
 #include "../xrScripts/script_engine.h"
 #include "../xrScripts/script_engine_space.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "../x_ray.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "PhysicsCommon.h"
 #include "level_sounds.h"
 #include "GamePersistent.h"
@@ -51,7 +50,7 @@ BOOL CLevel::Load_GameSpecific_After()
 			OBJ->r						(&transform,sizeof(Fmatrix));transform.c.y+=0.01f;
 			pStaticParticles			= CParticlesObject::Create(ref_name,FALSE,false);
 			pStaticParticles->UpdateParent	(transform,zero_vel);
-			pStaticParticles->PlayStatic	(false);
+			pStaticParticles->Play	(false);
 			m_StaticParticles.push_back		(pStaticParticles);
 		}
 		FS.r_close		(F);

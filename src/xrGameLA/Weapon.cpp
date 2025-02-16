@@ -5,7 +5,6 @@
 #include "stdafx.h"
 
 #include "Weapon.h"
-#include "ParticlesObject.h"
 #include "HUDManager.h"
 #include "player_hud.h"
 #include "entity_alive.h"
@@ -79,20 +78,20 @@ CWeapon::CWeapon(LPCSTR name)
 	iAmmoElapsed			= -1;
 	maxMagazineSize_		= -1;
 	m_ammoType				= 0;
-	m_ammoName				= NULL;
+	m_ammoName				= nullptr;
 
 	eHandDependence			= hdNone;
 
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
-	m_zoom_params.m_pVision						= NULL;
-	m_zoom_params.m_pNight_vision				= NULL;
+	m_zoom_params.m_pVision						= nullptr;
+	m_zoom_params.m_pNight_vision				= nullptr;
 
-	m_pAmmo					= NULL;
+	m_pAmmo					= nullptr;
 
 
-	m_pFlameParticles2		= NULL;
-	m_sFlameParticles2		= NULL;
+	m_pFlameParticles2		= nullptr;
+	m_sFlameParticles2		= nullptr;
 
 
 	m_fCurrentCartirdgeDisp = 1.f;
@@ -108,7 +107,7 @@ CWeapon::CWeapon(LPCSTR name)
 	m_can_be_strapped		= false;
 	m_ef_main_weapon_type	= u32(-1);
 	m_ef_weapon_type		= u32(-1);
-	m_UIScope				= NULL;
+	m_UIScope				= nullptr;
 	m_set_next_ammoType_on_reload = u8(-1);
 	m_cur_scope				= 0;
 	m_bRememberActorNVisnStatus = false;
@@ -238,7 +237,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		}
 		catch (...)
 		{
-			Msg("! Failed to update xform for [%s] parent [%s]", cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "NULL Parent");
+			Msg("! Failed to update xform for [%s] parent [%s]", cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "nullptr Parent");
 			XFORM().set(xform); // last matrix
 		}
 
@@ -947,7 +946,7 @@ void CWeapon::UpdateCL		()
 				GetState()==eIdle && 
 				(Device.dwTimeGlobal-m_dw_curr_substate_time>20000) && 
 				!IsZoomed()&&
-				g_player_hud->attached_item(1)==NULL)
+				g_player_hud->attached_item(1)==nullptr)
 			{
 				if(AllowBore())
 					SwitchState		(eBore);
@@ -1095,7 +1094,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						m_set_next_ammoType_on_reload = l_newType;						
 /*						m_ammoType = l_newType;
-						m_pAmmo = NULL;
+						m_pAmmo = nullptr;
 						if (unlimited_ammo())
 						{
 							m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
@@ -1489,7 +1488,7 @@ void CWeapon::OnZoomIn()
 		CActor *pA = smart_cast<CActor *>(H_Parent());
 		if(pA)
 		{
-			if(NULL==m_zoom_params.m_pNight_vision)
+			if(nullptr==m_zoom_params.m_pNight_vision)
 			{
 				m_zoom_params.m_pNight_vision	= new CNightVisionEffector(m_zoom_params.m_sUseZoomPostprocess/*"device_torch"*/);
 			}
@@ -1525,7 +1524,7 @@ CUIWindow* CWeapon::ZoomTexture()
 	if (UseScopeTexture() && !hud_adj_mode)
 		return m_UIScope;
 	else
-		return NULL;
+		return nullptr;
 }
 
 void CWeapon::SwitchState(u32 S)
@@ -1536,7 +1535,7 @@ void CWeapon::SwitchState(u32 S)
 	if ( bDebug )
 	{
 		Msg("---Server is going to send GE_WPN_STATE_CHANGE to [%d], weapon_section[%s], parent[%s]",
-			S, cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "NULL Parent");
+			S, cNameSect().c_str(), H_Parent() ? H_Parent()->cName().c_str() : "nullptr Parent");
 	}
 #endif // #ifndef MASTER_GOLD
 	SetNextState		( S );	// Very-very important line of code!!! :)
@@ -1991,7 +1990,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return (HudItemData()!=NULL);
+	return (HudItemData()!=nullptr);
 }
 
 void CWeapon::ZoomDec()

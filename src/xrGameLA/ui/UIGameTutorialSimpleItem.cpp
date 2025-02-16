@@ -43,7 +43,7 @@ CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
 	CUIWindow::WINDOW_LIST_it _I	= wl.begin();
 	CUIWindow::WINDOW_LIST_it _E	= wl.end();
 	for(;_I!=_E;++_I) if((*_I)->WindowName()==_name) return (*_I);
-	return NULL;
+	return nullptr;
 }
 
 void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
@@ -68,11 +68,11 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	m_flags.set										(etiNeedPauseOff,	0==_stricmp(str, "off"));
 	m_flags.set										(etiNeedPauseSound, 0==_stricmp(str, "on"));
 
-	str						= xml->Read				("guard_key",0,NULL		);
+	str						= xml->Read				("guard_key",0,nullptr		);
 	m_continue_dik_guard	= -1;
 	if (str && !_stricmp(str,"any")){
 		m_continue_dik_guard = 9999;
-		str					= NULL;
+		str					= nullptr;
 	}
 	if(str){
 		EGameActions cmd		= action_name_to_id	(str);
@@ -225,7 +225,7 @@ void CUISequenceSimpleItem::Start()
 
 	m_owner->MainWnd()->AttachChild	(m_UIWindow);
 
-	if (m_sound._handle())		m_sound.play(NULL, sm_2D);
+	if (m_sound._handle())		m_sound.play(nullptr, sm_2D);
 
 	if (g_pGameLevel)
 	{

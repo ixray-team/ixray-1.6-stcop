@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "weaponshotgun.h"
 #include "entity.h"
-#include "ParticlesObject.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "inventory.h"
 #include "level.h"
@@ -176,7 +175,7 @@ bool CWeaponShotgun::HaveCartridgeInInventory(u8 cnt)
 {
 	if (unlimited_ammo())	return true;
 
-	m_pAmmo = NULL;
+	m_pAmmo = nullptr;
 	if(m_pCurrentInventory) 
 	{
 		//попытаться найти в инвентаре патроны текущего типа 
@@ -196,7 +195,7 @@ bool CWeaponShotgun::HaveCartridgeInInventory(u8 cnt)
  			}
  		}
  	}
-	return (m_pAmmo!=NULL)&&(m_pAmmo->m_boxCurr>=cnt) ;
+	return (m_pAmmo!=nullptr)&&(m_pAmmo->m_boxCurr>=cnt) ;
 }
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)

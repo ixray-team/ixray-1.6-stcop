@@ -134,7 +134,7 @@ bool CUITrackBarVariable::OnMouseAction(float x, float y, EUIMessages mouse_acti
 			m_i_val -= GetInvert() ? -m_i_step : m_i_step;
 			clamp(m_i_val, m_i_min, m_i_max);
 		}
-		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
+		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 		UpdatePos();
 		OnChangedValue();
 	}
@@ -153,7 +153,7 @@ bool CUITrackBarVariable::OnMouseAction(float x, float y, EUIMessages mouse_acti
 			m_i_val += GetInvert() ? -m_i_step : m_i_step;
 			clamp(m_i_val, m_i_min, m_i_max);
 		}
-		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
+		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 		UpdatePos();
 		OnChangedValue();
 	}
@@ -226,7 +226,7 @@ void CUITrackBarVariable::UpdatePosRelativeToMouse()
 	}
 
 	if (b_ch)
-		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, NULL);
+		GetMessageTarget()->SendMessage(this, BUTTON_CLICKED, nullptr);
 
 	UpdatePos();
 	OnChangedValue();

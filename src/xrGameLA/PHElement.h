@@ -118,7 +118,7 @@ public:																																				//
 	virtual void						setDensityMC							(float M,const Fvector& mass_center);											//aux
 	virtual void						setInertia								(const dMass& M);																//aux
 	virtual void						addInertia								(const dMass& M);
-	virtual void						add_Mass								(const SBoneShape& shape,const Fmatrix& offset,const Fvector& mass_center,float mass,CPHFracture* fracture=NULL);//aux
+	virtual void						add_Mass								(const SBoneShape& shape,const Fmatrix& offset,const Fvector& mass_center,float mass,CPHFracture* fracture=nullptr);//aux
 	virtual	void						set_BoxMass								(const Fobb& box, float mass);													//aux
 	virtual void						setMass									(float M);																		//aux
 	virtual float						getMass									(){return m_mass.mass;}															//aux

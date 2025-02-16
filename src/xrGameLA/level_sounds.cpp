@@ -129,7 +129,7 @@ void SMusicTrack::Play()
 
 BOOL SMusicTrack::IsPlaying()
 {
-	BOOL  ret = (NULL!=m_SourceStereo._feedback());
+	BOOL  ret = (nullptr!=m_SourceStereo._feedback());
 	return ret;
 }
 

@@ -129,7 +129,7 @@ void CUIAmmoCellItem::Update()
 
 void CUIAmmoCellItem::UpdateItemText()
 {
-	if(NULL==m_custom_draw)
+	if(nullptr==m_custom_draw)
 	{
 		xr_vector<CUICellItem*>::iterator it = m_childs.begin();
 		xr_vector<CUICellItem*>::iterator it_e = m_childs.end();
@@ -197,7 +197,7 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t)
 void CUIWeaponCellItem::DestroyIcon(eAddonType t)
 {
 	DetachChild		(m_addons[t].icon);
-	m_addons[t].icon	= NULL;
+	m_addons[t].icon	= nullptr;
 }
 
 CUIStatic* CUIWeaponCellItem::GetIcon(eAddonType t)
@@ -397,7 +397,7 @@ void CUIWeaponCellItem::InitAddonsForDrag(CUIDragItem* drag, bool behind)
 CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 {
 	CUIDragItem* i		= inherited::CreateDragItem();
-	CUIStatic* s		= NULL;
+	CUIStatic* s		= nullptr;
 
 	InitAddonsForDrag(i, true);
 	InitAddonsForDrag(i, false);

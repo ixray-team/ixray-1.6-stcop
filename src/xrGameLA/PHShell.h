@@ -207,7 +207,7 @@ public:
 	virtual		void				NetInterpolationModeOFF			(){CPHObject::NetInterpolationOFF();}
 	virtual		void				StepFrameUpdate					(dReal step){};
 	virtual		CPHMoveStorage*		MoveStorage						(){return &m_traced_geoms;}
-	virtual		void				build_FromKinematics			(IKinematics* K,BONE_P_MAP* p_geting_map=NULL);
+	virtual		void				build_FromKinematics			(IKinematics* K,BONE_P_MAP* p_geting_map=nullptr);
 	virtual		void				preBuild_FromKinematics			(IKinematics* K,BONE_P_MAP* p_geting_map);
 	virtual		void                ZeroCallbacks					();
 	virtual		void				ResetCallbacks(u16 id, VisMask& mask);

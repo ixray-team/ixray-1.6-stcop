@@ -10,7 +10,7 @@
 #include "PHCapture.h"
 #include "ai_space.h"
 #include "detail_path_manager.h"
-#include "../GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "Level.h"
 #include "ElevatorState.h"
 #include "CalculateTriangle.h"
@@ -39,7 +39,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 #endif
 
 	m_material			=0;
-	m_capture			=NULL;
+	m_capture			=nullptr;
 	b_exect_position	=true;
 	m_start_index		=0;
 	eOldEnvironment =	peInAir;
@@ -67,7 +67,7 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 
 	fContactSpeed		=	0.f;
 	fAirControlParam	=	0.f;
-	m_character			=	NULL;
+	m_character			=	nullptr;
 	m_dwCurBox			=	0xffffffff;
 	fCollisionDamageFactor=1.f;
 	in_dead_area_count	=0;
@@ -166,7 +166,7 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 	}
 
 	//CPhysicsShellHolder * O=di->DamageObject();
-	//SCollisionHitCallback* cc= O ? O->get_collision_hit_callback() : NULL;
+	//SCollisionHitCallback* cc= O ? O->get_collision_hit_callback() : nullptr;
 	const ICollisionDamageInfo	*cdi=CollisionDamageInfo();
 	if(cdi->HitCallback())cdi->HitCallback()->call(static_cast<CGameObject*>(m_character->PhysicsRefObject()),fMinCrashSpeed,fMaxCrashSpeed,fContactSpeed,gcontact_HealthLost,CollisionDamageInfo());
 	
@@ -885,7 +885,7 @@ void	CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object,u16 element
 
 Fvector CPHMovementControl::PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object)
 {
-	R_ASSERT3((object->m_pPhysicsShell != NULL), "NO Phisics Shell for object ", *object->cName());
+	R_ASSERT3((object->m_pPhysicsShell != nullptr), "NO Phisics Shell for object ", *object->cName());
 
 	CPhysicsElement *ph_elem =  object->m_pPhysicsShell->NearestToPoint(vPosition);
 
@@ -1075,7 +1075,7 @@ void CPHMovementControl::MulFrictionFactor(float f)
 
 CElevatorState	*CPHMovementControl::ElevatorState()
 {
-	if(!m_character || !m_character->b_exist)return NULL;
+	if(!m_character || !m_character->b_exist)return nullptr;
 	return m_character->ElevatorState();
 	//m_character->SetElevator()
 }
@@ -1097,7 +1097,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 {
 	STraceBorderQParams& p	= *(STraceBorderQParams*)params;
 	u16 mtl_idx			=	GAMEMTL_NONE_IDX;
-	CDB::TRI* T			=	NULL;
+	CDB::TRI* T			=	nullptr;
 	if(result.O){
 		return true;
 	}else{
@@ -1132,7 +1132,7 @@ void	CPHMovementControl::TraceBorder(const Fvector &prev_position)
 
 	STraceBorderQParams			p(this,dir);
 	storage.r_clear				();
-	g_pGameLevel->ObjectSpace.RayQuery(storage,RD,BorderTraceCallback,&p,NULL,static_cast<CObject*>(m_character->PhysicsRefObject()));
+	g_pGameLevel->ObjectSpace.RayQuery(storage,RD,BorderTraceCallback,&p,nullptr,static_cast<CObject*>(m_character->PhysicsRefObject()));
 }
 
 void	CPHMovementControl::				UpdateObjectBox(CPHCharacter *ach)

@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "../xr_ioconsole.h"
-#include "customzone.h"
+#include "CustomZone.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "actor.h"
 #include "hudmanager.h"
-#include "ParticlesObject.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../LightAnimLibrary.h"
 #include "level.h"
@@ -34,11 +33,11 @@ CCustomZone::CCustomZone(void)
 	m_fEffectiveRadius			= 0.75f;
 	m_bZoneActive				= false;
 	m_eHitTypeBlowout			= ALife::eHitTypeWound;
-	m_pLocalActor				= NULL;
-	m_pIdleParticles			= NULL;
-	m_pLight					= NULL;
-	m_pIdleLight				= NULL;
-	m_pIdleLAnim				= NULL;
+	m_pLocalActor				= nullptr;
+	m_pIdleParticles			= nullptr;
+	m_pLight					= nullptr;
+	m_pIdleLight				= nullptr;
+	m_pIdleLAnim				= nullptr;
 	
 
 	m_StateTime.resize(eZoneStateMax);
@@ -56,7 +55,7 @@ CCustomZone::CCustomZone(void)
 	m_ef_weapon_type			= u32(-1);
 	m_owner_id					= u32(-1);
 
-	m_effector					= NULL;
+	m_effector					= nullptr;
 	m_bIdleObjectParticlesDontStop = FALSE;
 	m_b_always_fastmode			= FALSE;
 }
@@ -107,7 +106,7 @@ void CCustomZone::Load(LPCSTR section)
 	if (self)		self->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
 //////////////////////////////////////////////////////////////////////////
 
-	LPCSTR sound_str = NULL;
+	LPCSTR sound_str = nullptr;
 	
 	if(pSettings->line_exist(section,"idle_sound")) 
 	{
@@ -280,7 +279,7 @@ void CCustomZone::Load(LPCSTR section)
 		if(pSettings->line_exist(section,"artefact_spawn_particles")) 
 			m_sArtefactSpawnParticles = pSettings->r_string(section,"artefact_spawn_particles");
 		else
-			m_sArtefactSpawnParticles = NULL;
+			m_sArtefactSpawnParticles = nullptr;
 
 		if(pSettings->line_exist(section,"artefact_born_sound"))
 		{
@@ -362,14 +361,14 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 		m_pIdleLight->set_shadow(true);
 	}
 	else
-		m_pIdleLight = NULL;
+		m_pIdleLight = nullptr;
 
 	if ( m_zone_flags.test(eBlowoutLight) ) 
 	{
 		m_pLight = ::Render->light_create();
 		m_pLight->set_shadow(true);
 	}else
-		m_pLight = NULL;
+		m_pLight = nullptr;
 
 	setEnabled					(TRUE);
 
@@ -651,7 +650,7 @@ void CCustomZone::feel_touch_delete(CObject* O)
 	if(bDebug) Msg("%s %s",*O->cName(),"leaving a zone.");
 #endif
 
-	if(smart_cast<CActor*>(O)) m_pLocalActor = NULL;
+	if(smart_cast<CActor*>(O)) m_pLocalActor = nullptr;
 	CGameObject* pGameObject =smart_cast<CGameObject*>(O);
 	if(!pGameObject->getDestroy())
 	{
@@ -717,7 +716,7 @@ void CCustomZone::PlayIdleParticles()
 	{
 		if (!m_pIdleParticles)
 		{
-			m_pIdleParticles = CParticlesObject::Create(*m_sIdleParticles,FALSE);
+			m_pIdleParticles = CParticlesObject::Create(m_sIdleParticles.c_str(), FALSE);
 			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
 		}
 		m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
@@ -794,7 +793,7 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 {
 	m_hit_sound.play_at_pos(0, pObject->Position());
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -824,7 +823,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 
 	m_entrance_sound.play_at_pos(0, pObject->Position());
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -895,7 +894,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if(!PP) return;
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	//ðàçíûå ïàðòèêëû äëÿ îáúåêòîâ ðàçíîãî ðàçìåðà
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
@@ -933,7 +932,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 	if(m_ObjectInfoMap.end() == it) return;
 	
 	
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 	//ðàçíûå ïàðòèêëû äëÿ îáúåêòîâ ðàçíîãî ðàçìåðà
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
@@ -1150,7 +1149,7 @@ void	CCustomZone::OnEvent (NET_Packet& P, u16 type)
 				 if(artefact)
 				 {
 					 bool			just_before_destroy = !P.r_eof() && P.r_u8();
-					artefact->H_SetParent(NULL,just_before_destroy);
+					artefact->H_SetParent(nullptr,just_before_destroy);
 					if (!just_before_destroy)
 						ThrowOutArtefact(artefact);
 				 }

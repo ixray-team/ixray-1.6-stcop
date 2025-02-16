@@ -279,7 +279,7 @@ public:
 	virtual void					SpawnInitPhysics	(CSE_Abstract	*D);
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()						{return PhysicsShellHolder();}
 	virtual void					net_Save			(NET_Packet& P);
-	virtual	BOOL					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell()!=NULL))||m_exploded;};					
+	virtual	BOOL					net_SaveRelevant	()						{return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell()!=nullptr))||m_exploded;};					
 
 	virtual void					renderable_Render				()			{ inherited::renderable_Render();};
 	virtual BOOL					renderable_ShadowGenerate		()			{ return FALSE;	}

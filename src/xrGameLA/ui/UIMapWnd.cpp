@@ -33,13 +33,13 @@ static bool			MAP_FLY_MODE				= true;
 
 CUIMapWnd::CUIMapWnd()
 {
-	m_tgtMap				= NULL;
-	m_GlobalMap				= NULL;
+	m_tgtMap				= nullptr;
+	m_GlobalMap				= nullptr;
 	m_flags.zero			();
 	m_currentZoom			= 1.0f;
-	m_hint					= NULL;
-//.	m_selected_location		= NULL;
-	m_text_hint				= NULL;
+	m_hint					= nullptr;
+//.	m_selected_location		= nullptr;
+	m_text_hint				= nullptr;
 }
 
 CUIMapWnd::~CUIMapWnd()
@@ -257,7 +257,7 @@ void CUIMapWnd::Show(bool status)
 		}
 		if(	m_flags.test(lmFirst)){
 			inherited::Update		();// only maps, not action planner
-			OnToolActorClicked		(NULL,NULL);
+			OnToolActorClicked		(nullptr,nullptr);
 			m_flags.set				(lmFirst,FALSE);
 			}
 		InventoryUtilities::SendInfoToActor("ui_pda_map_local");
@@ -271,7 +271,7 @@ void CUIMapWnd::Show(bool status)
 			it->second->DetachAll();
 	}
 
-	m_hint->SetOwner		(NULL);
+	m_hint->SetOwner		(nullptr);
 }
 
 
@@ -364,7 +364,7 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 				if(dik== SDL_SCANCODE_RIGHT)				pos_delta.x	-= 1.0f;
 				GlobalMap()->MoveWndDelta		(pos_delta);
 				UpdateScroll					();
-				m_hint->SetOwner				(NULL);
+				m_hint->SetOwner				(nullptr);
 				return true;
 			}break;
 	}
@@ -403,7 +403,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 			if( pInput->iGetAsyncBtnState(0) ){
 				GlobalMap()->MoveWndDelta	(GetUICursor().GetCursorPositionDelta());
 				UpdateScroll					();
-				m_hint->SetOwner				(NULL);
+				m_hint->SetOwner				(nullptr);
 				return							true;
 			}
 		break;
@@ -422,20 +422,20 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 				m_tgtCenter.sub					(_p);
 				m_tgtCenter.div					(gm->GetCurrentZoom());
 				ResetActionPlanner				();
-				m_hint->SetOwner				(NULL);
+				m_hint->SetOwner				(nullptr);
 				return							true;
 			}
 		break;
 
 		case WINDOW_MOUSE_WHEEL_UP:
 			m_UIMainScrollV->TryScrollDec		();
-			m_hint->SetOwner					(NULL);
+			m_hint->SetOwner					(nullptr);
 			return								true;
 		break;
 
 		case WINDOW_MOUSE_WHEEL_DOWN:
 			m_UIMainScrollV->TryScrollInc		();
-			m_hint->SetOwner					(NULL);
+			m_hint->SetOwner					(nullptr);
 			return								true;
 		break;
 */
@@ -462,7 +462,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 				m_tgtCenter.sub					(_p);
 				m_tgtCenter.div					(gm->GetCurrentZoom());
 				ResetActionPlanner				();
-				m_hint->SetOwner				(NULL);
+				m_hint->SetOwner				(nullptr);
 			}
 			return								true;
 	}
@@ -474,7 +474,7 @@ bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 				CMapLocation* _mapLoc = UnderSpot(RealPosition);
 
-				if (_mapLoc==NULL) {
+				if (_mapLoc==nullptr) {
 					CreateSpotWindow(RealPosition);
 				} else {
 
@@ -513,7 +513,7 @@ CMapLocation* CUIMapWnd::UnderSpot(Fvector RealPosition)
 	Fvector2 m_position_on_map;
 	Fvector2 m_position_mouse = m_tgtMap->ConvertRealToLocal(RealPositionXZ);
 	float TargetLocationDistance = 100.0f;
-	CMapLocation* ml = NULL;
+	CMapLocation* ml = nullptr;
 
 	for (it = Spots.begin(); it!=Spots.end(); ++it) {
 		if ( (*it).location->IsUserDefined() ) {
@@ -697,7 +697,7 @@ void CUIMapWnd::RemoveSpot			()
 {
 	if(m_selected_location&&m_selected_location->CanBeUserRemoved()){
 		Level().MapManager().RemoveMapLocation(m_selected_location);
-		m_selected_location				= NULL;
+		m_selected_location				= nullptr;
 		m_flags.set						(lmUserSpotRemove,FALSE);
 		m_ToolBar[eRemoveSpot]->SetButtonMode(CUIButton::BUTTON_NORMAL);
 	}
@@ -732,7 +732,7 @@ void CUIMapWnd::HighlightSpot			(CMapLocation* ml, bool state)
 
 void CUIMapWnd::ValidateToolBar			()
 {
-	CUI3tButton* btn	= NULL;
+	CUI3tButton* btn	= nullptr;
 	btn					= m_ToolBar[eZoomIn];
 	if (btn)
 		btn->SetCheck	(!!m_flags.test(lmZoomIn));
@@ -769,7 +769,7 @@ void CUIMapWnd::OnToolActorClicked		(CUIWindow*, void*)
 	Fvector2 v2;
 	v2.set						(v.x,v.z);
 
-	CUICustomMap* lm			= NULL;
+	CUICustomMap* lm			= nullptr;
 	u16	idx						= GetIdxByName			(Level().name());
 	if (idx!=u16(-1)){
 		lm						= GetMapByIdx			(idx);
@@ -887,13 +887,13 @@ void CUIMapWnd::ShowHint					(CUIWindow* parent, LPCSTR text)
 void CUIMapWnd::HideHint					(CUIWindow* parent)
 {
 	if(m_hint->GetOwner() == parent)
-		m_hint->SetOwner	(NULL);
+		m_hint->SetOwner	(nullptr);
 }
 
 /*
 void CUIMapWnd::Select				(CMapLocation* ml)
 {
-	m_selected_location		= NULL;
+	m_selected_location		= nullptr;
 
 	if(!ml)		return;
 	if(ml->CanBeSelected())

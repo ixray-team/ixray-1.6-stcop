@@ -28,7 +28,7 @@ public:
 	virtual shared_str	GetStartDialog						()								{return m_sStartDialog;}
 	virtual void				RestoreDefaultStartDialog	();
 protected:
-	//диалог, если не NULL, то его персонаж запустит
+	//диалог, если не nullptr, то его персонаж запустит
 	//при встрече с актером
 	shared_str m_sStartDialog;
 	shared_str m_sDefaultStartDialog;

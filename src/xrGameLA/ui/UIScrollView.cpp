@@ -15,8 +15,8 @@ CUIScrollView::CUIScrollView()
 	m_downIndent		= 0.0f;
 	m_flags.zero		();
 	SetFixedScrollBar	(true);
-	m_pad = NULL;
-	m_VScrollBar = NULL;
+	m_pad = nullptr;
+	m_VScrollBar = nullptr;
 	m_visible_rgn.set	(-1,-1);
 }
 
@@ -222,7 +222,7 @@ void CUIScrollView::Draw				()
 		for(int idx=m_visible_rgn.x; idx<=m_visible_rgn.y; ++it,++idx)
 		{
 			CUIScrollView* sw			= smart_cast<CUIScrollView*>(*it);
-			VERIFY						(sw==NULL);
+			VERIFY						(sw==nullptr);
 
 			if ((*it)->GetVisible()){
                 (*it)->Draw();
@@ -322,7 +322,7 @@ void CUIScrollView::SetScrollPos(int value)
 
 	clamp(value,GetMinScrollPos(),GetMaxScrollPos());
 	m_VScrollBar->SetScrollPos(value);
-	OnScrollV(NULL,NULL);
+	OnScrollV(nullptr,nullptr);
 }
 
 void CUIScrollView::ScrollToBegin		()
@@ -331,7 +331,7 @@ void CUIScrollView::ScrollToBegin		()
 		RecalcSize			();
 
 	m_VScrollBar->SetScrollPos(m_VScrollBar->GetMinRange());
-	OnScrollV(NULL,NULL);
+	OnScrollV(nullptr,nullptr);
 }
 
 void CUIScrollView::ScrollToEnd			()
@@ -340,7 +340,7 @@ void CUIScrollView::ScrollToEnd			()
 		RecalcSize			();
 
 	m_VScrollBar->SetScrollPos(m_VScrollBar->GetMaxRange());
-	OnScrollV(NULL,NULL);
+	OnScrollV(nullptr,nullptr);
 }
 
 void CUIScrollView::SetRightIndention	(float val)
@@ -373,7 +373,7 @@ u32 CUIScrollView::GetSize				()
 CUIWindow* CUIScrollView::GetItem		(u32 idx)
 {
 	if(m_pad->GetChildWndList().size()<=idx)
-		return NULL;
+		return nullptr;
 
 	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
 	std::advance(it, idx);
@@ -418,7 +418,7 @@ void CUIScrollView::SetSelected			(CUIWindow* w)
 CUIWindow* CUIScrollView::GetSelected()
 {
 	if(!m_flags.test(eItemsSelectabe))
-		return NULL;
+		return nullptr;
 
 	if (m_pad)
 		{
@@ -431,7 +431,7 @@ CUIWindow* CUIScrollView::GetSelected()
 				}
 			}
 		}
-	return NULL;
+	return nullptr;
 }
 
 void CUIScrollView::UpdateChildrenLenght()

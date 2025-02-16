@@ -118,7 +118,7 @@ struct dummy {
 void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 {
 	IReader		*chunk;
-	bool		no_check		= strstr(Core.Params, "-nospawncheck") != NULL;
+	bool		no_check		= strstr(Core.Params, "-nospawncheck") != nullptr;
 	chunk						= file_stream.open_chunk(0);
 	m_header.load				(*chunk);
 	chunk->close				();

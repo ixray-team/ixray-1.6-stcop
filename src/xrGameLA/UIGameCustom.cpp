@@ -37,7 +37,7 @@ struct predicate_find_stat
 };
 
 CUIGameCustom::CUIGameCustom()
-	:m_pgameCaptions(NULL), m_msgs_xml(NULL), m_actor_menu_item(NULL), m_window(NULL), m_InventoryMenu(NULL), m_PdaMenu(NULL), m_UICarBodyMenu(NULL), UIMainIngameWnd(NULL), m_pMessagesWnd(NULL), m_WeatherEditor(NULL)
+	:m_pgameCaptions(nullptr), m_msgs_xml(nullptr), m_actor_menu_item(nullptr), m_window(nullptr), m_InventoryMenu(nullptr), m_PdaMenu(nullptr), m_UICarBodyMenu(nullptr), UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr), m_WeatherEditor(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
@@ -178,7 +178,7 @@ SDrawStaticStruct* CUIGameCustom::GetCustomStatic(LPCSTR id)
 	if(it!=m_custom_statics.end())
 		return (*it);
 
-	return NULL;
+	return nullptr;
 }
 
 void CUIGameCustom::RemoveCustomStatic(LPCSTR id)
@@ -234,37 +234,37 @@ void CUIGameCustom::Load()
 {
 	if(g_pGameLevel)
 	{
-		R_ASSERT				(NULL==m_pgameCaptions);
+		R_ASSERT				(nullptr==m_pgameCaptions);
 		m_pgameCaptions				= new CUICaption();
 
-		R_ASSERT				(NULL==m_msgs_xml);
+		R_ASSERT				(nullptr==m_msgs_xml);
 		m_msgs_xml				= new CUIXml();
 		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
 
-		R_ASSERT				(NULL==m_actor_menu_item);
+		R_ASSERT				(nullptr==m_actor_menu_item);
 		m_actor_menu_item		= new CUIXml();
 		m_actor_menu_item->Load	(CONFIG_PATH, UI_PATH, "actor_menu_item.xml");
 
-		R_ASSERT				(NULL==m_PdaMenu);
+		R_ASSERT				(nullptr==m_PdaMenu);
 		m_PdaMenu				= new CUIPdaWnd			();
 		
-		R_ASSERT				(NULL==m_window);
+		R_ASSERT				(nullptr==m_window);
 		m_window				= new CUIWindow			();
 
-		R_ASSERT				(NULL==UIMainIngameWnd);
+		R_ASSERT				(nullptr==UIMainIngameWnd);
 		UIMainIngameWnd			= new CUIMainIngameWnd	();
 		UIMainIngameWnd->Init	();
 
-		R_ASSERT				(NULL==m_InventoryMenu);
+		R_ASSERT				(nullptr==m_InventoryMenu);
 		m_InventoryMenu	= new CUIInventoryWnd	();
 
-		R_ASSERT				(NULL==m_UICarBodyMenu);
+		R_ASSERT				(nullptr==m_UICarBodyMenu);
 		m_UICarBodyMenu	= new CUICarBodyWnd		();
 
-		R_ASSERT				(NULL==m_pMessagesWnd);
+		R_ASSERT				(nullptr==m_pMessagesWnd);
 		m_pMessagesWnd	= new CUIMessagesWindow();
 
-		R_ASSERT				(NULL==m_WeatherEditor);
+		R_ASSERT				(nullptr==m_WeatherEditor);
 		m_WeatherEditor = new CUIWeatherEditor();
 		
 		Init					(0);
@@ -291,7 +291,7 @@ void CUIGameCustom::CommonMessageOut(LPCSTR text)
 
 SDrawStaticStruct::SDrawStaticStruct	()
 {
-	m_static	= NULL;
+	m_static	= nullptr;
 	m_endTime	= -1.0f;	
 }
 
@@ -308,7 +308,7 @@ bool SDrawStaticStruct::IsActual() const
 
 void SDrawStaticStruct::SetText(LPCSTR text)
 {
-	m_static->Show(text!=NULL);
+	m_static->Show(text!=nullptr);
 	if(text)
 	{
 		m_static->TextItemControl()->SetTextST(text);
@@ -454,7 +454,7 @@ SGameTypeMaps* CMapListHelper::GetMapListInt(const shared_str& game_type)
 		if(game_type==(*it).m_game_type_name )
 			return &(*it);
 	}
-	return NULL;
+	return nullptr;
 }
 
 const SGameTypeMaps& CMapListHelper::GetMapListFor(const EGameTypes game_id)

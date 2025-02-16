@@ -136,7 +136,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 
 CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 {
-	if(!Level().CurrentViewEntity())return NULL;
+	if(!Level().CurrentViewEntity())return nullptr;
 
 	ALife::ERelationType relation = ALife::eRelationTypeFriend;
 	CInventoryOwner* pActor = smart_cast<CInventoryOwner*>(Level().CurrentViewEntity());
@@ -280,7 +280,7 @@ void CMapManager::PrintMapLocationsInfo()
 	Msg("--Begin of map_locations dump");
 	Locations_it it = Locations().begin();
 	for(; it!=Locations().end();++it){
-		CInventoryOwner* InvOwner = NULL;
+		CInventoryOwner* InvOwner = nullptr;
 		InvOwner = smart_cast<CInventoryOwner*>(Level().Objects.net_Find((*it).object_id));
 
 		LPCSTR name = "IndependantMapSpot";

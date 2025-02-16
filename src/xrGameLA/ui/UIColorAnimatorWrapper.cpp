@@ -17,9 +17,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper()
-	:	colorAnimation		(NULL),
+	:	colorAnimation		(nullptr),
 		animationTime		(0),
-		color				(NULL),
+		color				(nullptr),
 		isDone				(false),
 		reverse				(false),
 		kRev				(0.0f)
@@ -29,9 +29,9 @@ CUIColorAnimatorWrapper::CUIColorAnimatorWrapper()
 }
 
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32 *colorToModify)
-	:	colorAnimation		(NULL),
+	:	colorAnimation		(nullptr),
 	animationTime		(0),
-	color				(NULL),
+	color				(nullptr),
 	isDone				(false),
 	reverse				(false),
 	kRev				(0.0f)
@@ -45,7 +45,7 @@ CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(u32 *colorToModify)
 CUIColorAnimatorWrapper::CUIColorAnimatorWrapper(const shared_str &animationName)
 	:	colorAnimation		(LALib.FindItem(*animationName)),
 		animationTime		(0),
-		color				(NULL),
+		color				(nullptr),
 		isDone				(false),
 		reverse				(false),
 		kRev				(0.0f)
@@ -64,7 +64,7 @@ void CUIColorAnimatorWrapper::SetColorAnimation(const shared_str &animationName)
 	}
 	else
 	{
-		colorAnimation	= NULL;
+		colorAnimation	= nullptr;
 	}
 }
 

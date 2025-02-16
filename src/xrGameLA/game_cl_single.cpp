@@ -35,7 +35,7 @@ CUIGameCustom* game_cl_Single::createGameUI()
 
 char*	game_cl_Single::getTeamSection(int Team)
 {
-	return NULL;
+	return nullptr;
 };
 
 void game_cl_Single::OnDifficultyChanged()

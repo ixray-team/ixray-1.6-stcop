@@ -34,14 +34,14 @@ using namespace InventoryUtilities;
 #include "UI3tButton.h"
 
 
-CUIInventoryWnd*	g_pInvWnd = NULL;
+CUIInventoryWnd*	g_pInvWnd = nullptr;
 
 CUIInventoryWnd::CUIInventoryWnd()
 {
 	m_iCurrentActiveSlot				= NO_ACTIVE_SLOT;
-	UIRank								= NULL;
+	UIRank								= nullptr;
 	Init								();
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;	
@@ -188,16 +188,16 @@ void CUIInventoryWnd::Init()
 	//Load sounds
 	XML_NODE* stored_root				= uiXml.GetLocalRoot		();
 	uiXml.SetLocalRoot					(uiXml.NavigateToNode		("action_sounds",0));
-	::Sound->create						(sounds[eInvSndOpen],		uiXml.Read("snd_open",			0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvSndClose],		uiXml.Read("snd_close",			0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvItemToSlot],	uiXml.Read("snd_item_to_slot",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvItemToBelt],	uiXml.Read("snd_item_to_belt",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvItemToRuck],	uiXml.Read("snd_item_to_ruck",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvProperties],	uiXml.Read("snd_properties",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvDropItem],		uiXml.Read("snd_drop_item",		0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvAttachAddon],	uiXml.Read("snd_attach_addon",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvDetachAddon],	uiXml.Read("snd_detach_addon",	0,	NULL),st_Effect,sg_SourceType);
-	::Sound->create						(sounds[eInvItemUse],		uiXml.Read("snd_item_use",		0,	NULL),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvSndOpen],		uiXml.Read("snd_open",			0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvSndClose],		uiXml.Read("snd_close",			0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvItemToSlot],	uiXml.Read("snd_item_to_slot",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvItemToBelt],	uiXml.Read("snd_item_to_belt",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvItemToRuck],	uiXml.Read("snd_item_to_ruck",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvProperties],	uiXml.Read("snd_properties",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvDropItem],		uiXml.Read("snd_drop_item",		0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvAttachAddon],	uiXml.Read("snd_attach_addon",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvDetachAddon],	uiXml.Read("snd_detach_addon",	0,	nullptr),st_Effect,sg_SourceType);
+	::Sound->create						(sounds[eInvItemUse],		uiXml.Read("snd_item_use",		0,	nullptr),st_Effect,sg_SourceType);
 
 	uiXml.SetLocalRoot					(stored_root);
 }
@@ -261,7 +261,7 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 void CUIInventoryWnd::PlaySnd(eInventorySndAction a)
 {
 	if (sounds[a]._handle())
-        sounds[a].play					(NULL, sm_2D);
+        sounds[a].play					(nullptr, sm_2D);
 }
 
 CUIInventoryWnd::~CUIInventoryWnd()
@@ -480,7 +480,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 			m_iCurrentActiveSlot				= pActor->inventory().GetActiveSlot();
 			pActor->inventory().Activate		(NO_ACTIVE_SLOT);
 	}
-	SetCurrentItem								(NULL);
+	SetCurrentItem								(nullptr);
 }
 
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
@@ -620,7 +620,7 @@ void CUIInventoryWnd::PlayUseSound(LPCSTR sound_path)
 	ref_sound* sound = new ref_sound;
 
 	sound->create(sound_path, st_Effect, sg_SourceType);
-	sound->play(NULL, sm_2D);
+	sound->play(nullptr, sm_2D);
 
 	use_sounds.push_back(sound);
 }

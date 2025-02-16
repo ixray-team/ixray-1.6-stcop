@@ -46,14 +46,14 @@ CMainMenu*	MainMenu()	{return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
 CMainMenu::CMainMenu	()
 {
 	m_Flags.zero					();
-	m_startDialog					= NULL;
+	m_startDialog					= nullptr;
 	m_screenshotFrame				= u32(-1);
 	g_pGamePersistent->m_pMainMenu	= this;
 	if (Device.b_is_Ready)			OnDeviceCreate();  	
 	ReadTextureInfo					();
 	CUIXmlInit::InitColorDefs		();
-	g_btnHint						= NULL;
-	g_statHint						= NULL;
+	g_btnHint						= nullptr;
+	g_statHint						= nullptr;
 	m_deactivated_frame				= 0;	
 	
 	m_sPatchURL						= "";
@@ -97,7 +97,7 @@ CMainMenu::~CMainMenu	()
 	xr_delete						(g_btnHint);
 	xr_delete						(g_statHint);
 	xr_delete						(m_startDialog);
-	g_pGamePersistent->m_pMainMenu	= NULL;
+	g_pGamePersistent->m_pMainMenu	= nullptr;
 	delete_data						(m_pMB_ErrDlgs);	
 }
 
@@ -430,7 +430,7 @@ void CMainMenu::OnFrame()
 		if(b_is_16_9 !=m_activatedScreenRatio)
 		{
 			ReloadUI();
-			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, NULL);
+			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, nullptr);
 		}
 	}
 }

@@ -7,7 +7,6 @@
 #include "BastArtifact.h"
 #include "PhysicsShell.h"
 #include "extendedgeom.h"
-#include "ParticlesObject.h"
 
 
 CBastArtefact::CBastArtefact(void) 
@@ -18,7 +17,7 @@ CBastArtefact::CBastArtefact(void)
 	m_fStrikeImpulse = 15.f;
 
 	m_bStrike = false;
-	m_AttakingEntity = NULL;
+	m_AttakingEntity = nullptr;
 
 	m_fEnergy = 0.f;
 	m_fEnergyMax = m_fStrikeImpulse * 100.f;
@@ -33,22 +32,22 @@ CBastArtefact::~CBastArtefact(void)
 //вызывается при столкновении мочалки с чем-то
 void CBastArtefact::ObjectContactCallback(bool& /**do_colide/**/,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/) 
 {
-	dxGeomUserData *l_pUD1 = NULL;
-	dxGeomUserData *l_pUD2 = NULL;
+	dxGeomUserData *l_pUD1 = nullptr;
+	dxGeomUserData *l_pUD2 = nullptr;
 	l_pUD1 = retrieveGeomUserData(c.geom.g1);
 	l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
 	if(!l_pUD1 || !l_pUD2) return;
 
 	//определить кто есть кто, из двух столкнувшихся предметов
-	CBastArtefact *pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : NULL;
-	if(!pBastArtefact) pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : NULL;
+	CBastArtefact *pBastArtefact = l_pUD1 ? smart_cast<CBastArtefact*>(l_pUD1->ph_ref_object) : nullptr;
+	if(!pBastArtefact) pBastArtefact = l_pUD2 ? smart_cast<CBastArtefact*>(l_pUD2->ph_ref_object) : nullptr;
 	if(!pBastArtefact) return;
 	if(!pBastArtefact->IsAttacking()) return;
 
-	CEntityAlive *pEntityAlive = NULL;
-	pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : NULL;
-	if(!pEntityAlive) pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : NULL;
+	CEntityAlive *pEntityAlive = nullptr;
+	pEntityAlive = l_pUD1 ? smart_cast<CEntityAlive*>(l_pUD1->ph_ref_object) : nullptr;
+	if(!pEntityAlive) pEntityAlive = l_pUD2 ? smart_cast<CEntityAlive*>(l_pUD2->ph_ref_object) : nullptr;
 
 	pBastArtefact->BastCollision(pEntityAlive);
 }
@@ -58,7 +57,7 @@ void CBastArtefact::BastCollision(CEntityAlive* pEntityAlive)
 	//попали во что-то живое
 	if(pEntityAlive && pEntityAlive->g_Alive())
 	{
-		m_AttakingEntity = NULL;
+		m_AttakingEntity = nullptr;
 		m_pHitedEntity = pEntityAlive;
 
 
@@ -86,8 +85,8 @@ BOOL CBastArtefact::net_Spawn(CSE_Abstract* DC)
 	if(!result) return FALSE;
 
 	m_bStrike = false;
-	m_AttakingEntity = NULL;
-	m_pHitedEntity = NULL;
+	m_AttakingEntity = nullptr;
+	m_pHitedEntity = nullptr;
 	m_AliveList.clear();
 
 	return TRUE;
@@ -98,8 +97,8 @@ void CBastArtefact::net_Destroy		()
 	inherited::net_Destroy();
 
 	m_bStrike = false;
-	m_AttakingEntity = NULL;
-	m_pHitedEntity = NULL;
+	m_AttakingEntity = nullptr;
+	m_pHitedEntity = nullptr;
 	m_AliveList.clear();
 }
 
@@ -139,8 +138,8 @@ void CBastArtefact::UpdateCLChild()
 	if (getVisible() && m_pPhysicsShell) {
 		if(m_bStrike) {
 			//выбрать жертву, если она еще не выбрана
-			if(!m_AliveList.empty() && m_AttakingEntity == NULL) {
-				CEntityAlive* pEntityToHit = NULL;
+			if(!m_AliveList.empty() && m_AttakingEntity == nullptr) {
+				CEntityAlive* pEntityToHit = nullptr;
 				if(m_AliveList.size()>1)
 				{
 					do
@@ -176,7 +175,7 @@ void CBastArtefact::UpdateCLChild()
 			}
 			else
 			{
-				m_AttakingEntity = NULL;
+				m_AttakingEntity = nullptr;
 				m_bStrike = false;
 			}
 		}
@@ -213,7 +212,7 @@ void	CBastArtefact::Hit					(SHit* pHDS)
 	if(HDS.impulse>m_fImpulseThreshold && !m_AliveList.empty())
 	{
 		m_bStrike = true;
-		m_AttakingEntity = m_pHitedEntity = NULL;
+		m_AttakingEntity = m_pHitedEntity = nullptr;
 		
 		m_fEnergy += m_fStrikeImpulse*HDS.impulse;
 
@@ -275,5 +274,5 @@ void CBastArtefact::setup_physic_shell	()
 	inherited::setup_physic_shell();
 	m_pPhysicsShell->set_PhysicsRefObject(this);
 	m_pPhysicsShell->set_ObjectContactCallback(ObjectContactCallback);
-	m_pPhysicsShell->set_ContactCallback(NULL);
+	m_pPhysicsShell->set_ContactCallback(nullptr);
 }

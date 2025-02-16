@@ -7,7 +7,7 @@ namespace compression
 
 void init_ppmd_trained_stream	(ppmd_trained_stream* & dest)
 {
-	VERIFY				(dest == NULL);
+	VERIFY				(dest == nullptr);
 	string_path			file_name;
 	FS.update_path		(file_name,"$game_config$", "mp\\ppmd_updates.mdl");
 	R_ASSERT2			(FS.exist(file_name), "can't find configs\\mp\\ppmd_updates.mdl");

@@ -71,7 +71,7 @@ const Fvector& CWeapon::GetRecoilDeltaAngle()
 {
 	CActor* pActor		= smart_cast<CActor*>(H_Parent());
 
-	CCameraShotEffector* S = NULL;
+	CCameraShotEffector* S = nullptr;
 	if(pActor)
 		S = smart_cast<CCameraShotEffector*>(pActor->EffectorManager().GetEffector(eCEShot)); 
 

@@ -1004,7 +1004,7 @@ void fill_points			(CCustomMonster *self, const Fvector &position, const Fvector
 	
 	ray_query_param					params(self,self->memory().visual().transparency_threshold(),distance,position,direction,points);
 
-	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,_ray_query_callback,&params,NULL,self);
+	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,_ray_query_callback,&params,nullptr,self);
 
 	pick_distance					= params.m_pick_distance;
 }

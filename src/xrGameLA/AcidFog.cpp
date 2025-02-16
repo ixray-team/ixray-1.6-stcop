@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "AcidFog.h"
 #include "hudmanager.h"
-#include "ParticlesObject.h"
 #include "level.h"
 #include "actor.h"
 #include "inventory.h"

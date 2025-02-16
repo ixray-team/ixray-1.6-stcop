@@ -495,7 +495,7 @@ void			CLevel::ClearAllObjects				()
 	for (u32 i=0; i<CLObjNum; i++)
 	{
 		CObject* pObj = Level().Objects.o_get_by_iterator(i);
-		R_ASSERT(pObj->H_Parent()==NULL);
+		R_ASSERT(pObj->H_Parent()==nullptr);
 		//-----------------------------------------------------------
 		NET_Packet			GEN;
 		GEN.w_begin			(M_EVENT);

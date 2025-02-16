@@ -147,7 +147,7 @@ public:
 #endif
 
 	void				SetPLastMaterialIDX	(u16* p){m_character->SetPLastMaterialIDX(p);}
-	dBodyID				GetBody						( )		{if(m_character) return m_character->get_body(); else return NULL;}
+	dBodyID				GetBody						( )		{if(m_character) return m_character->get_body(); else return nullptr;}
 	const Fvector&		GetVelocity					( )		{ return vVelocity;	}
 	const Fvector&		GetPathDir					( )		{ return _vPathDir;	}
 	void				SetPathDir					( const Fvector& v);
@@ -262,7 +262,7 @@ public:
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback){if(m_character)m_character->SetObjectContactCallback(callback);}
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback){VERIFY(m_character);m_character->SetWheelContactCallback(callback);}
 	static BOOL			BorderTraceCallback(collide::rq_result& result, LPVOID params);
-	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return NULL; }
+	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return nullptr; }
 	u16					ContactBone				(){return m_character->ContactBone();}
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const {VERIFY(m_character);return m_character->CollisionDamageInfo ();}
 	void				GetDesiredPos			(Fvector& dpos)

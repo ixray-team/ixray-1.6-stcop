@@ -41,7 +41,7 @@ float time_to_next_mark( const CBlend &b, const motion_marks& marks )
 
 bool blend_in( const CBlend &b, const motion_marks& marks )
 {
-	return NULL!=marks.pick_mark( blend_time( b ) );
+	return nullptr!=marks.pick_mark( blend_time( b ) );
 }
 
 IC bool b_is_blending( const CBlend* current_blend, const CBlend* b )

@@ -25,17 +25,17 @@
 #define  INV_GRID_HEIGHT2 40.0f
 CUIItemInfo::CUIItemInfo()
 {
-	UICondProgresBar			= NULL;
-	UICondition					= NULL;
-	UICost						= NULL;
-	UIWeight					= NULL;
-	UIItemImage					= NULL;
-	UIDesc						= NULL;
-	UIWpnParams					= NULL;
-	UIArtefactParams			= NULL;
-	UIOutfitParams				= NULL;
-	UIName						= NULL;
-	m_pInvItem					= NULL;
+	UICondProgresBar			= nullptr;
+	UICondition					= nullptr;
+	UICost						= nullptr;
+	UIWeight					= nullptr;
+	UIItemImage					= nullptr;
+	UIDesc						= nullptr;
+	UIWpnParams					= nullptr;
+	UIArtefactParams			= nullptr;
+	UIOutfitParams				= nullptr;
+	UIName						= nullptr;
+	m_pInvItem					= nullptr;
 	m_b_force_drawing			= false;
 }
 

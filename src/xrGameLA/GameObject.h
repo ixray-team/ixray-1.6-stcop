@@ -70,28 +70,28 @@ public:
 	virtual ~CGameObject();
 public:
 	//functions used for avoiding most of the smart_cast
-	virtual CAttachmentOwner*			cast_attachment_owner		()						{return NULL;}
-	virtual CInventoryOwner*			cast_inventory_owner		()						{return NULL;}
-	virtual CInventoryItem*				cast_inventory_item			()						{return NULL;}
-	virtual CEntity*					cast_entity					()						{return NULL;}
-	virtual CEntityAlive*				cast_entity_alive			()						{return NULL;}
-	virtual CActor*						cast_actor					()						{return NULL;}
+	virtual CAttachmentOwner*			cast_attachment_owner		()						{return nullptr;}
+	virtual CInventoryOwner*			cast_inventory_owner		()						{return nullptr;}
+	virtual CInventoryItem*				cast_inventory_item			()						{return nullptr;}
+	virtual CEntity*					cast_entity					()						{return nullptr;}
+	virtual CEntityAlive*				cast_entity_alive			()						{return nullptr;}
+	virtual CActor*						cast_actor					()						{return nullptr;}
 	virtual CGameObject*				cast_game_object			()						{return this;}
-	virtual CCustomZone*				cast_custom_zone			()						{return NULL;}
-	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return NULL;}
-	virtual IInputReceiver*				cast_input_receiver			()						{return NULL;}
-	virtual CParticlesPlayer*			cast_particles_player		()						{return NULL;}
-	virtual CArtefact*					cast_artefact				()						{return NULL;}
-	virtual CCustomMonster*				cast_custom_monster			()						{return NULL;}
-	virtual CAI_Stalker*				cast_stalker				()						{return NULL;}
-	virtual CScriptEntity*				cast_script_entity			()						{return NULL;}
-	virtual CWeapon*					cast_weapon					()						{return NULL;}
-	virtual CExplosive*					cast_explosive				()						{return NULL;}
-	virtual CSpaceRestrictor*			cast_restrictor				()						{return NULL;}
-	virtual CAttachableItem*			cast_attachable_item		()						{return NULL;}
-	virtual CHolderCustom*				cast_holder_custom			()						{return NULL;}
-	virtual CBaseMonster*				cast_base_monster			()						{return NULL;}
-	virtual CMountedTurret*				cast_mounted_turret			()						{return NULL;}
+	virtual CCustomZone*				cast_custom_zone			()						{return nullptr;}
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()						{return nullptr;}
+	virtual IInputReceiver*				cast_input_receiver			()						{return nullptr;}
+	virtual CParticlesPlayer*			cast_particles_player		()						{return nullptr;}
+	virtual CArtefact*					cast_artefact				()						{return nullptr;}
+	virtual CCustomMonster*				cast_custom_monster			()						{return nullptr;}
+	virtual CAI_Stalker*				cast_stalker				()						{return nullptr;}
+	virtual CScriptEntity*				cast_script_entity			()						{return nullptr;}
+	virtual CWeapon*					cast_weapon					()						{return nullptr;}
+	virtual CExplosive*					cast_explosive				()						{return nullptr;}
+	virtual CSpaceRestrictor*			cast_restrictor				()						{return nullptr;}
+	virtual CAttachableItem*			cast_attachable_item		()						{return nullptr;}
+	virtual CHolderCustom*				cast_holder_custom			()						{return nullptr;}
+	virtual CBaseMonster*				cast_base_monster			()						{return nullptr;}
+	virtual CMountedTurret*				cast_mounted_turret			()						{return nullptr;}
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}

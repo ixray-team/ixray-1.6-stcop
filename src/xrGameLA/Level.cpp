@@ -4,7 +4,8 @@
 #include "../fdemoplay.h"
 #include "../environment.h"
 #include "../igame_persistent.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
 #include "net_queue.h"
@@ -77,9 +78,9 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 {
 	g_bDebugEvents				= strstr(Core.Params,"-debug_ge")?TRUE:FALSE;
 
-	Server						= NULL;
+	Server						= nullptr;
 
-	game						= NULL;
+	game						= nullptr;
 	game_events					= new NET_Queue_Event();
 
 	game_configured				= FALSE;
@@ -97,7 +98,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	if(!g_dedicated_server)
 		m_map_manager				= new CMapManager();
 	else
-		m_map_manager				= NULL;
+		m_map_manager				= nullptr;
 
 //	m_pFogOfWarMngr				= new CFogOfWarMngr();
 //----------------------------------------------------
@@ -125,15 +126,15 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	
 	}else
 	{
-		m_level_sound_manager		= NULL;
-		m_client_spawn_manager		= NULL;
-		m_autosave_manager			= NULL;
-		m_space_restriction_manager = NULL;
+		m_level_sound_manager		= nullptr;
+		m_client_spawn_manager		= nullptr;
+		m_autosave_manager			= nullptr;
+		m_space_restriction_manager = nullptr;
 	#ifdef DEBUG_DRAW
-		m_debug_renderer			= NULL;
+		m_debug_renderer			= nullptr;
 	#endif
 	#ifdef DEBUG
-		m_level_debug				= NULL;
+		m_level_debug				= nullptr;
 	#endif
 		
 	}
@@ -149,8 +150,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_bSynchronization			= false;
 #endif	
 	//---------------------------------------------------------
-	pStatGraphR = NULL;
-	pStatGraphS = NULL;
+	pStatGraphR = nullptr;
+	pStatGraphS = nullptr;
 	//---------------------------------------------------------
 	pObjects4CrPr.clear();
 	pActors4CrPr.clear();
@@ -158,7 +159,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	g_player_hud = new player_hud();
 	g_player_hud->load_default();
 	//---------------------------------------------------------
-	pCurrentControlEntity = NULL;
+	pCurrentControlEntity = nullptr;
 
 	//---------------------------------------------------------
 	m_dwCL_PingLastSendTime = 0;
@@ -169,8 +170,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_sDemoName[0] = 0;
 	m_bDemoSaveMode = FALSE;
 	m_dwStoredDemoDataSize = 0;
-	m_pStoredDemoData = NULL;
-	m_pOldCrashHandler = NULL;
+	m_pStoredDemoData = nullptr;
+	m_pOldCrashHandler = nullptr;
 	m_we_used_old_crach_handler	= false;
 
 	Msg("%s", Core.Params);
@@ -556,7 +557,7 @@ void CLevel::OnFrame	()
 		//TODO: why CLevel::OnFrame is calling before CLevel::Load_GameSpecific_After?
 		//is it logic error?
 		CScriptProcess * levelScript = ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel);
-		if (levelScript != NULL)
+		if (levelScript != nullptr)
 			levelScript->update();
 	}
 	//Device.Statistic->Scripting.End	();

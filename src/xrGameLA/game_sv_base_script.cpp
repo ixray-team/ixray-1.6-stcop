@@ -20,8 +20,8 @@
 
 using namespace luabind;
 
-CUISequencer* g_tutorial = NULL;
-CUISequencer* g_tutorial2 = NULL;
+CUISequencer* g_tutorial = nullptr;
+CUISequencer* g_tutorial2 = nullptr;
 
 void start_tutorial(LPCSTR name)
 {
@@ -54,7 +54,7 @@ void reload_language()
 
 bool has_active_tutotial()
 {
-	return (g_tutorial!=NULL);
+	return (g_tutorial!=nullptr);
 }
 
 bool is_r2_active()

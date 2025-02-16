@@ -3,7 +3,7 @@
 #include "ExtendedGeom.h"
 #include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "MathUtilsOde.h"
 void CPHContactBodyEffector::Init(dBodyID body,const dContact& contact,SGameMtl* material)
 {
@@ -58,5 +58,5 @@ void CPHContactBodyEffector::Apply()
 		force[2]
 		);
 	}
-	dBodySetData(m_body,NULL);
+	dBodySetData(m_body,nullptr);
 }

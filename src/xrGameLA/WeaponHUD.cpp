@@ -89,7 +89,7 @@ CWeaponHUD::CWeaponHUD			(CHudItem* pHudItem)
 	m_pParentWeapon				= pHudItem;
 	m_bHidden					= true;
 	m_bStopAtEndAnimIsRunning	= false;
-	m_pCallbackItem				= NULL;
+	m_pCallbackItem				= nullptr;
 	m_Transform.identity		();
 #ifdef WPN_BOBBING
 	m_bobbing			= new CWeaponBobbing();
@@ -117,14 +117,14 @@ void CWeaponHUD::Load(LPCSTR section)
 void  CWeaponHUD::Init()
 {
 	m_bStopAtEndAnimIsRunning	= false;
-	m_pCallbackItem				= NULL;
+	m_pCallbackItem				= nullptr;
 }
 
 
 void  CWeaponHUD::net_DestroyHud()
 {
 	m_bStopAtEndAnimIsRunning	= false;
-	m_pCallbackItem				= NULL;
+	m_pCallbackItem				= nullptr;
 	Visible						(false);
 }
 
@@ -178,7 +178,7 @@ void CWeaponHUD::animPlay			(MotionID M,	BOOL bMixIn, CHudItem* W, u32 state)
 			m_pCallbackItem->OnAnimationStart(state, anim_time);
 		m_dwAnimEndTime				= Device.dwTimeGlobal + anim_time;	
 	}else{
-		m_pCallbackItem				= NULL;
+		m_pCallbackItem				= nullptr;
 	}
 //	Msg("%d:animPlay %d state %d start %d end %d for %s", Device.dwTimeGlobal, M.idx, state, anim_time, m_dwAnimEndTime, m_pParentWeapon->object().cName().c_str());
 }
@@ -207,7 +207,7 @@ void CWeaponHUD::StopCurrentAnimWithoutCallback		()
 	m_dwAnimEndTime = 0;
 	m_bStopAtEndAnimIsRunning = false;
 
-	m_pCallbackItem = NULL;
+	m_pCallbackItem = nullptr;
 }
 
 void CWeaponHUD::CreateSharedContainer	()

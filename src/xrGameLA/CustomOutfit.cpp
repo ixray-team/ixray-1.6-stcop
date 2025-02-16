@@ -49,12 +49,12 @@ void CCustomOutfit::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "actor_visual"))
 		m_ActorVisual = pSettings->r_string(section, "actor_visual");
 	else
-		m_ActorVisual = NULL;
+		m_ActorVisual = nullptr;
 
 	if (pSettings->line_exist(section, "actor_visual_legs"))
 		m_ActorVisual_legs = pSettings->r_string(section, "actor_visual_legs");
 	else
-		m_ActorVisual_legs = NULL;
+		m_ActorVisual_legs = nullptr;
 
 	m_ef_equipment_type		= pSettings->r_u32(section,"ef_equipment_type");
 
@@ -69,7 +69,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "nightvision_sect"))
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	else
-		m_NightVisionSect = NULL;
+		m_NightVisionSect = nullptr;
 
 	block_pnv_slot						= READ_IF_EXISTS(pSettings, r_u32, section, "block_pnv_slot", 0);
 	block_helmet_slot					= READ_IF_EXISTS(pSettings, r_u32, section, "block_helmet_slot", 0);
@@ -202,7 +202,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 			} else {
 				if (m_ActorVisual.size())
 				{
-					shared_str NewVisual = NULL;
+					shared_str NewVisual = nullptr;
 					char* TeamSection = Game().getTeamSection(pActor->g_Team());
 					if (TeamSection)
 					{

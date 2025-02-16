@@ -38,7 +38,7 @@ using namespace StalkerDecisionSpace;
 
 CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
 {
-	PIItem				item  = NULL;
+	PIItem				item  = nullptr;
 	if (!(item = object->inventory().ItemFromSlot(RIFLE_SLOT)))
 		return			(object->best_weapon());
 

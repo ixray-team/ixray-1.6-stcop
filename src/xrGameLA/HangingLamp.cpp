@@ -187,7 +187,7 @@ void	CHangingLamp::net_Save			(NET_Packet& P)
 
 BOOL	CHangingLamp::net_SaveRelevant	()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
+	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=nullptr));
 }
 
 void	CHangingLamp::	save			(NET_Packet &output_packet)

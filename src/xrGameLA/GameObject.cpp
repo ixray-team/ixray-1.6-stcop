@@ -243,7 +243,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	setID							(E->ID);
 //	if (GameID() != GAME_SINGLE)
 //		Msg ("CGameObject::net_Spawn -- object %s[%x] setID [%d]", *(E->s_name), this, E->ID);
-//	R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
+//	R_ASSERT(Level().Objects.net_Find(E->ID) == nullptr);
 	
 	// XForm
 	XFORM().setXYZ					(E->o_Angle);
@@ -476,15 +476,15 @@ void CGameObject::spawn_supplies()
 			if (n > 0)
 				j			= atoi(_GetItem(V,0,temp)); //count
 			
-			if(NULL!=strstr(V,"prob="))
+			if(nullptr!=strstr(V,"prob="))
 				p			=(float)atof(strstr(V,"prob=")+5);
 			if (fis_zero(p))p = 1.f;
 			if (!j)	j		= 1;
-			if(NULL!=strstr(V,"cond="))
+			if(nullptr!=strstr(V,"cond="))
 				f_cond		= (float)atof(strstr(V,"cond=")+5);
-			bScope			=	(NULL!=strstr(V,"scope"));
-			bSilencer		=	(NULL!=strstr(V,"silencer"));
-			bLauncher		=	(NULL!=strstr(V,"launcher"));
+			bScope			=	(nullptr!=strstr(V,"scope"));
+			bSilencer		=	(nullptr!=strstr(V,"silencer"));
+			bLauncher		=	(nullptr!=strstr(V,"launcher"));
 
 		}
 		for (u32 i=0; i<j; ++i)

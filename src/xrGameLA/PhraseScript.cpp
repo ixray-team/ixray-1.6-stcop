@@ -21,7 +21,7 @@ CPhraseScript::~CPhraseScript	()
 //загрузка из XML файла
 void CPhraseScript::Load		(CUIXml* uiXml, XML_NODE* phrase_node)
 {
-//	m_sScriptTextFunc = uiXml.Read(phrase_node, "script_text", 0, NULL);
+//	m_sScriptTextFunc = uiXml.Read(phrase_node, "script_text", 0, nullptr);
 
 	LoadSequence(uiXml,phrase_node, "precondition",		m_Preconditions);
 	LoadSequence(uiXml,phrase_node, "action",			m_ScriptActions);
@@ -41,7 +41,7 @@ void  CPhraseScript::LoadSequence (CUIXml* uiXml, XML_NODE* phrase_node,
 	str_vector.clear();
 	for(int i=0; i<tag_num; i++)
 	{
-		LPCSTR tag_text = uiXml->Read(phrase_node, tag, i, NULL);
+		LPCSTR tag_text = uiXml->Read(phrase_node, tag, i, nullptr);
 		str_vector.push_back(tag_text);
 	}
 }

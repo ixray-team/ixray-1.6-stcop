@@ -353,6 +353,6 @@ void CUIScrollBar::Draw()
 
 void CUIScrollBar::Refresh()
 {
-	SendMessage(m_ScrollBox, SCROLLBOX_MOVE, NULL);
+	SendMessage(m_ScrollBox, SCROLLBOX_MOVE, nullptr);
 }
 

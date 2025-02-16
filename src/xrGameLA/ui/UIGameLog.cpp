@@ -16,12 +16,12 @@ CUIGameLog::CUIGameLog()
 {
 	kill_msg_height					= 20;
 	txt_color						= 0xff000000;
-	m_pFont							= NULL;
+	m_pFont							= nullptr;
 }
 
 CUITextWnd* CUIGameLog::AddLogMessage(LPCSTR msg)
 {
-	CUITextWnd* pItem				= NULL;
+	CUITextWnd* pItem				= nullptr;
 	ADD_TEXT_TO_VIEW3				(msg, pItem, this);
 	pItem->SetFont					(m_pFont);
 	pItem->SetTextColor				(txt_color);

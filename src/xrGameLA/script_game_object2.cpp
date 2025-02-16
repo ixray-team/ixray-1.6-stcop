@@ -328,10 +328,10 @@ CScriptGameObject* CScriptGameObject::GetActorCar()
 	if (actor)
 	{
 		CCar* car = actor->GetAttachedCar();
-		return car ? car->lua_game_object() : NULL;
+		return car ? car->lua_game_object() : nullptr;
 	}
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call GetActorCar method for non-actor object");
-	return NULL;
+	return nullptr;
 }
 
 void CScriptGameObject::SetActorPosition			(Fvector pos)
@@ -486,7 +486,7 @@ CHolderCustom* CScriptGameObject::get_current_holder()
 	if(actor)
 		return actor->Holder();
 	else
-		return NULL;
+		return nullptr;
 }
 
 u16 CScriptGameObject::get_current_holder_id()
@@ -496,7 +496,7 @@ u16 CScriptGameObject::get_current_holder_id()
 	if(actor)
 		return actor->HolderID();
 	else
-		return NULL;
+		return 0;
 }
 
 

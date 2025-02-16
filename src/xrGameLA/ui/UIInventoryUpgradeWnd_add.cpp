@@ -26,8 +26,8 @@ void CUIInventoryUpgradeWnd::LoadCellsBacks( CUIXml& uiXml )
 		uiXml.SetLocalRoot( uiXml.NavigateToNode( "state", i_st ) );
 
 		LPCSTR type  = uiXml.Read( "type", 0, "" );
-		LPCSTR txr   = uiXml.Read( "back_texture", 0, NULL );
-		LPCSTR txr2  = uiXml.Read( "point_texture", 0, NULL );
+		LPCSTR txr   = uiXml.Read( "back_texture", 0, nullptr );
+		LPCSTR txr2  = uiXml.Read( "point_texture", 0, nullptr );
 		u32    color = CUIXmlInit::GetColor( uiXml, "item_color", 0, 0 );
 		LoadCellStates( type, txr, txr2, color );
 
@@ -41,11 +41,11 @@ void CUIInventoryUpgradeWnd::LoadCellStates( LPCSTR state_str, LPCSTR texture_na
 	VERIFY( state_str    && xr_strcmp( state_str, "" ) );
 	if ( texture_name && !xr_strcmp( texture_name, "" ) )
 	{
-		texture_name = NULL;
+		texture_name = nullptr;
 	}
 	if ( texture_name2 && !xr_strcmp( texture_name2, "" ) )
 	{
-		texture_name2 = NULL;
+		texture_name2 = nullptr;
 	}
 
 	SetCellState( SelectCellState( state_str ), texture_name, texture_name2, color );

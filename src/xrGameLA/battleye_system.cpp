@@ -14,8 +14,8 @@ int	g_be_message_out = 1;
 
 BattlEyeSystem::BattlEyeSystem()
 {
-	client = NULL;
-	server = NULL;
+	client = nullptr;
+	server = nullptr;
 
 	m_test_load_client = false;
 //-	auto_update = 1;
@@ -52,7 +52,7 @@ LPCSTR	BattlEyeSystem::GetClientPath()
 bool BattlEyeSystem::ReloadServerDLL( xrServer* xr_server )
 {
 	xr_delete( server );
-	server = NULL;
+	server = nullptr;
 
 	LPCSTR			dll_file_name = m_server_path.c_str();
 	string_path		old_file_name;
@@ -87,7 +87,7 @@ bool BattlEyeSystem::ReloadServerDLL( xrServer* xr_server )
 	}
 
 	xr_delete( server );
-	server = NULL;
+	server = nullptr;
 
 	if ( rename( dll_file_name, err_file_name ) )
 	{
@@ -108,14 +108,14 @@ bool BattlEyeSystem::ReloadServerDLL( xrServer* xr_server )
 	}
 
 	xr_delete( server );
-	server = NULL;
+	server = nullptr;
 	return false;
 }
 
 bool BattlEyeSystem::ReloadClientDLL()
 {
 	xr_delete( client );
-	client = NULL;
+	client = nullptr;
 
 	LPCSTR			dll_file_name = m_client_path.c_str();
 	string_path		old_file_name;
@@ -148,7 +148,7 @@ bool BattlEyeSystem::ReloadClientDLL()
 	}
 
 	xr_delete( client );
-	client = NULL;
+	client = nullptr;
 
 	if ( rename( dll_file_name, err_file_name ) )
 	{
@@ -168,7 +168,7 @@ bool BattlEyeSystem::ReloadClientDLL()
 	}
 
 	xr_delete( client );
-	client = NULL;
+	client = nullptr;
 	return false;
 }
 
@@ -186,7 +186,7 @@ bool BattlEyeSystem::LoadClient()
 			return true;
 		}
 		xr_delete( client );
-		client = NULL;
+		client = nullptr;
 		Msg( "! Error loading BattlEye Client!" );
 		MainMenu()->OnLoadError( BATTLEYE_CLIENT_DLL );
 	}
@@ -205,7 +205,7 @@ bool BattlEyeSystem::LoadServer( xrServer* xr_server )
 		return true;
 	}
 	xr_delete( server );
-	server = NULL;
+	server = nullptr;
 
 	Msg( "! Error loading BattlEye Server!" );
 	MainMenu()->OnLoadError( BATTLEYE_SERVER_DLL );
@@ -279,7 +279,7 @@ bool BattlEyeSystem::TestLoadClient()
 	if ( LoadClient() ) // test load
 	{
 		xr_delete( client );
-		client = NULL;
+		client = nullptr;
 		
 		m_test_load_client = true;
 	}
@@ -292,9 +292,9 @@ bool BattlEyeSystem::InitDir()
 	FS.update_path( dir_be, "$app_data_root$", "" );
 	xr_strcat( dir_be, sizeof(dir_be), BATTLEYE_DIR );
 
-	if( FS.can_write_to_folder(dir_be) == NULL )
+	if( FS.can_write_to_folder(dir_be) == nullptr )
 	{
-		if ( !CreateDirectory( dir_be, NULL ) )
+		if ( !CreateDirectory( dir_be, nullptr ) )
 		{
 			Msg( "! Cannot make folder >>> %s", dir_be );
 			return false;
@@ -325,7 +325,7 @@ bool BattlEyeSystem::InitDLL( LPCSTR dll_name, string_path& out_file )
 	xr_strcat( out_file, sizeof(out_file), dll_name );
 
 	ft = fopen( out_file, "r" );
-	if( ft == NULL )
+	if( ft == nullptr )
 	{
 		HMODULE h_game = GetModuleHandle("xrGame.dll");
 		R_ASSERT( h_game );
@@ -340,7 +340,7 @@ bool BattlEyeSystem::InitDLL( LPCSTR dll_name, string_path& out_file )
 		strconcat( sizeof(fn_orig), fn_orig, disk, cur_dir, dll_name );
 		
 		ft = fopen( fn_orig, "r" );
-		if( ft == NULL )
+		if( ft == nullptr )
 		{
 			Msg( "! File not found >>> %s", fn_orig );
 			return false;
@@ -349,7 +349,7 @@ bool BattlEyeSystem::InitDLL( LPCSTR dll_name, string_path& out_file )
 
 		CopyFile( fn_orig, out_file, FALSE );
 		ft = fopen( out_file, "r" );
-		if( ft == NULL )
+		if( ft == nullptr )
 		{
 			Msg( "! File not found >>> %s", out_file );
 			return false;

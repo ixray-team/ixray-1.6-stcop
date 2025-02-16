@@ -6,7 +6,7 @@
 #include "../../xrEngine/string_table.h"
 
 CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd	()
-:m_Article(NULL)
+:m_Article(nullptr)
 {
 }
 

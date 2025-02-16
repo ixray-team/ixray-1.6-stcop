@@ -12,7 +12,7 @@
 
 CInfoDocument::CInfoDocument(void) 
 {
-	m_Info = NULL;
+	m_Info = nullptr;
 }
 
 CInfoDocument::~CInfoDocument(void) 

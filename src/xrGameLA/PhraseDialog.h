@@ -14,7 +14,7 @@ struct SPhraseDialogData : CSharedResource
 	SPhraseDialogData ();
 	virtual ~SPhraseDialogData ();
 
-	//заголовок диалога, если NULL, то принимается за стартовую фразу
+	//заголовок диалога, если nullptr, то принимается за стартовую фразу
 	shared_str		m_sCaption;
 
 	//однонаправленый граф фраз
@@ -58,7 +58,7 @@ public:
 	//связь диалога между двумя DialogManager
 	virtual void			Init				(CPhraseDialogManager* speaker_first, CPhraseDialogManager* speaker_second);
 
-	IC		bool			IsInited			() const {return ((FirstSpeaker()!=NULL)&& (SecondSpeaker()!=NULL));}
+	IC		bool			IsInited			() const {return ((FirstSpeaker()!=nullptr)&& (SecondSpeaker()!=nullptr));}
 
 	//реинициализация диалога
 	virtual void			Reset				();

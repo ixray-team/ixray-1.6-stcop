@@ -3,7 +3,6 @@
 #include "PhysicsShell.h"
 #include "player_hud.h"
 #include "entity.h"
-#include "ParticlesObject.h"
 #include "actor.h"
 #include "inventory.h"
 #include "level.h"
@@ -214,7 +213,7 @@ void CGrenade::PutNextToSlot()
 		this->u_EventSend				(P);
 	}
 	else
-		Msg ("! PutNextToSlot : m_pInventory = NULL [%d][%d]", ID(), Device.dwFrame);
+		Msg ("! PutNextToSlot : m_pInventory = nullptr [%d][%d]", ID(), Device.dwFrame);
 
 	if (smart_cast<CInventoryOwner*>(H_Parent()) && m_pCurrentInventory)
 	{

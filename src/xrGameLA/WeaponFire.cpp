@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "Weapon.h"
 #include "player_hud.h"
-#include "ParticlesObject.h"
 #include "HUDManager.h"
 #include "entity.h"
 #include "actor.h"

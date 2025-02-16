@@ -103,7 +103,7 @@ void CUIVideoPlayerWnd::OnTabChanged			(CUIWindow* pWnd, void* pData)
 void CUIVideoPlayerWnd::Play	()
 {
 	if (m_sound._handle())
-        m_sound.play(NULL, sm_2D);
+        m_sound.play(nullptr, sm_2D);
 
 	if(m_texture){
 		if(!m_texture->video_IsPlaying())

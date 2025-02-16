@@ -80,7 +80,7 @@ CUICellItem* CUIDragDropReferenceList::RemoveItem(CUICellItem* itm, bool force_r
 		m_references[index]->SetTextureColor(color_rgba(255,255,255,0));
 	}
 	inherited::RemoveItem(itm, force_root);
-	return NULL;
+	return nullptr;
 }
 
 void CUIDragDropReferenceList::LoadItemTexture(LPCSTR section, Ivector2 cell_pos)
@@ -108,7 +108,7 @@ void CUIDragDropReferenceList::ReloadReferences(CInventoryOwner* pActor)
 		DestroyDragItem();
 
 	m_container->ClearAll(true);
-	m_selected_item	= NULL;
+	m_selected_item	= nullptr;
 
 	for(u8 i=0; i<m_container->CellsCapacity().x; i++)
 	{

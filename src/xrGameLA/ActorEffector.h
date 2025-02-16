@@ -37,7 +37,7 @@ protected:
 	CEffectorCam*				m_ce;
 	CEffectorPP*				m_pe;
 public:
-								CEffectorController():m_ce(NULL),m_pe(NULL)	{}
+								CEffectorController():m_ce(nullptr),m_pe(nullptr)	{}
 	virtual						~CEffectorController();
 
 				void			SetPP		(CEffectorPP* p)				{m_pe=p;}

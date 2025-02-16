@@ -11,7 +11,7 @@ class CStoreHierarchy
 public:
 	struct item :public IPureDestroyableObject
 	{
-								item				():m_parent(NULL),m_button(NULL){}
+								item				():m_parent(nullptr),m_button(nullptr){}
 	virtual void				destroy				();
 
 		shared_str				m_name;
@@ -37,7 +37,7 @@ public:
 							~CStoreHierarchy	();
 					
 	void					Init				(CUIXml& xml, LPCSTR path);
-	void					InitItemsInGroup	(const shared_str& sect, item* =NULL);
+	void					InitItemsInGroup	(const shared_str& sect, item* =nullptr);
 	const item&				GetRoot				()								{VERIFY(m_root); return *m_root;};
 	void					Reset				()								{VERIFY(m_root); m_current_level = m_root;};
 	IC bool					CurrentIsRoot		()								{return m_current_level == m_root;}
@@ -45,6 +45,6 @@ public:
 	const item&				CurrentLevel		()								{VERIFY(m_current_level); return *m_current_level;};
 	bool					MoveUp				();
 	bool					MoveDown			(u32 idx);
-	item*					FindItem			(const shared_str& name_sect, item* recurse_from=NULL);
+	item*					FindItem			(const shared_str& name_sect, item* recurse_from=nullptr);
 	int						TeamIdx				() const	{return m_team_idx;}
 };

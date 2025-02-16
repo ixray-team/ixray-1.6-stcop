@@ -20,7 +20,7 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 			character_physics_support()->movement()->SetPosition(m_holder->ExitPosition());
 			character_physics_support()->movement()->SetVelocity(m_holder->ExitVelocity());
 			SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
-			m_holder=NULL;
+			m_holder=nullptr;
 		}
 		return true;
 	}else{
@@ -35,7 +35,7 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 					m_holder=wpn;
 					if (pCamBobbing){
 						Cameras().RemoveCamEffector(eCEBobbing);
-						pCamBobbing = NULL;
+						pCamBobbing = nullptr;
 					}
 					return true;
 				}

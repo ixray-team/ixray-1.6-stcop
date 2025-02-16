@@ -16,7 +16,7 @@ Flags32		ph_dbg_draw_mask						;
 Flags32		ph_dbg_draw_mask1						;
 bool		draw_frame=0;
 
-LPCSTR	dbg_trace_object						=NULL;
+LPCSTR	dbg_trace_object						=nullptr;
 string64 s_dbg_tsrace_obj						;
 u32	 	dbg_bodies_num							=0;
 u32	 	dbg_joints_num							=0;
@@ -595,7 +595,7 @@ void DBG_DrawStatAfterFrameStep()
 
 CFunctionGraph::CFunctionGraph()
 {
-	m_stat_graph=NULL;
+	m_stat_graph=nullptr;
 	m_function.clear();
 }
 CFunctionGraph::~CFunctionGraph()

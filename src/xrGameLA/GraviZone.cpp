@@ -52,12 +52,12 @@ void CBaseGraviZone ::Load(LPCSTR section)
 	if(pSettings->line_exist(section,	"tele_particles_big"))
 		m_sTeleParticlesBig = pSettings->r_string(section,	"tele_particles_big");
 	else
-		m_sTeleParticlesBig = NULL;
+		m_sTeleParticlesBig = nullptr;
 	
 	if(pSettings->line_exist(section, "tele_particles_small"))
 		m_sTeleParticlesSmall = pSettings->r_string(section, "tele_particles_small");
 	else
-		m_sTeleParticlesSmall = NULL;
+		m_sTeleParticlesSmall = nullptr;
 }
 
 BOOL CBaseGraviZone ::net_Spawn(CSE_Abstract* DC)
@@ -247,7 +247,7 @@ void CBaseGraviZone ::PlayTeleParticles(CGameObject* pObject)
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if(!PP) return;
 
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	//разные партиклы для объектов разного размера
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
@@ -267,7 +267,7 @@ void CBaseGraviZone ::StopTeleParticles(CGameObject* pObject)
 {
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if(!PP) return;
-	shared_str particle_str = NULL;
+	shared_str particle_str = nullptr;
 
 	//разные партиклы для объектов разного размера
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)

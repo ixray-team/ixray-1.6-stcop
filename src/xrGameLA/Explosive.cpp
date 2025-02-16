@@ -8,8 +8,8 @@
 
 #include "PhysicsShell.h"
 #include "entity.h"
-//#include "PSObject.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 
 //для вызова статических функций поражения осколками
 #include "Weapon.h"
@@ -19,7 +19,7 @@
 #include "level.h"
 #include "level_bullet_manager.h"
 #include "xrmessages.h"
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "clsid_game.h"
 #ifdef DEBUG
 #include "../StatGraph.h"
@@ -65,7 +65,7 @@ CExplosive::CExplosive(void)
 	m_bHideInExplosion	= TRUE;
 	m_fExplodeHideDurationMax = 0;
 	m_bDynamicParticles		= FALSE;
-	m_pExpParticle			= NULL;
+	m_pExpParticle			= nullptr;
 }
 
 void CExplosive::LightCreate()
@@ -303,7 +303,7 @@ float CExplosive::TestPassEffect(const	Fvector	&source_p,	const	Fvector	&dir,flo
 #else
 		SExpQParams			ep;
 #endif
-		g_pGameLevel->ObjectSpace.RayQuery(storage,RD,grenade_hit_callback,&ep,NULL,blasted_obj);
+		g_pGameLevel->ObjectSpace.RayQuery(storage,RD,grenade_hit_callback,&ep,nullptr,blasted_obj);
 		shoot_factor=ep.shoot_factor;
 	}
 	else return dist_factor;
@@ -518,7 +518,7 @@ void CExplosive::OnAfterExplosion()
 	if(m_pExpParticle){
 		m_pExpParticle->Stop();
 		CParticlesObject::Destroy(m_pExpParticle);
-		m_pExpParticle = NULL;
+		m_pExpParticle = nullptr;
 	}
 	//ликвидировать сам объект 
 	if (cast_game_object()->Local()) cast_game_object()->DestroyObject();
@@ -605,7 +605,7 @@ void CExplosive::FindNormal(Fvector& normal)
 	cast_game_object()->Center(pos);
 
 	BOOL result = Level().ObjectSpace.RayPick(pos, dir, cast_game_object()->Radius(), 
-											 collide::rqtBoth, RQ, NULL);
+											 collide::rqtBoth, RQ, nullptr);
 	if(!result || RQ.O){
 		normal.set(0,1,0);
 	//если лежим на статике
@@ -773,7 +773,7 @@ u16	CExplosive::Initiator()
 
 void CExplosive::UpdateExplosionParticles ()
 {
-	if (!m_bDynamicParticles || m_pExpParticle == NULL || !m_pExpParticle->IsPlaying()) return;
+	if (!m_bDynamicParticles || m_pExpParticle == nullptr || !m_pExpParticle->IsPlaying()) return;
 	CGameObject	*GO=cast_game_object();
 	if (!GO) return;
 

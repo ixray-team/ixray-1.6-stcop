@@ -669,7 +669,7 @@ void CCar::SDoor::ApplyDamage(u16 level)
 }
 CCar::SDoor::SDoorway::SDoorway()
 {
-	door=NULL;
+	door=nullptr;
 	door_plane_ext.set(0.f,0.f);
 	door_plane_axes.set(0,0);
 }

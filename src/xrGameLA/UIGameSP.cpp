@@ -23,8 +23,8 @@
 
 CUIGameSP::CUIGameSP()
 {
-	m_game			= NULL;
-	StoredInvBox	= NULL;
+	m_game			= nullptr;
+	StoredInvBox	= nullptr;
 
 	TalkMenu		= new CUITalkWnd			();
 	UIChangeLevelWnd= new CChangeLevelWnd		();

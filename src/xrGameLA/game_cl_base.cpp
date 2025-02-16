@@ -21,7 +21,7 @@ game_cl_GameState::game_cl_GameState()
 
 	shedule.t_min				= 5;
 	shedule.t_max				= 20;
-	m_game_ui_custom			= NULL;
+	m_game_ui_custom			= nullptr;
 	shedule_register			();
 
 	m_u16VotingEnabled			= 0;
@@ -250,7 +250,7 @@ game_PlayerState* game_cl_GameState::lookat_player()
 	{
 		return GetPlayerByGameID(current_entity->ID());
 	}
-	return NULL;
+	return nullptr;
 }
 
 game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
@@ -263,7 +263,7 @@ game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
 		game_PlayerState* P = I->second;
 		if (P->GameID == GameID) return P;
 	};
-	return NULL;
+	return nullptr;
 };
 
 game_PlayerState* game_cl_GameState::GetPlayerByOrderID		(u32 idx)

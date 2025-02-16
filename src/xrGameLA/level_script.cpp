@@ -99,7 +99,7 @@ CScriptGameObject *get_object_by_name(LPCSTR caObjectName)
 {
 	CGameObject*	pGameObject = smart_cast<CGameObject*>(Level().Objects.FindObjectByName(caObjectName));
 	if (!pGameObject)
-		return NULL;
+		return nullptr;
 	
 	return pGameObject->lua_game_object();
 }
@@ -108,7 +108,7 @@ CScriptGameObject *get_object_by_id(u32 id)
 {
 	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
 	if(!pGameObject)
-		return NULL;
+		return nullptr;
 
 	return pGameObject->lua_game_object();
 }
@@ -346,7 +346,7 @@ void map_remove_object_spot(u16 id, LPCSTR spot_type)
 void map_highlight_spot(u16 id, LPCSTR spot_type, bool state)
 {
 	CMapLocation* ml	= Level().MapManager().GetMapLocation(spot_type, id);
-	if (ml==NULL) return;
+	if (ml==nullptr) return;
 	ml->HighlightSpot(state);
 }
 

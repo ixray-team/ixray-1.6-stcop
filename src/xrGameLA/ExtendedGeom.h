@@ -25,7 +25,7 @@ class CObjectContactCallback
 		CObjectContactCallback		(ObjectContactCallbackFun			*c)
 			:callback(c)
 		{
-			next=NULL; VERIFY(c);
+			next=nullptr; VERIFY(c);
 		}
 		~CObjectContactCallback()
 		{
@@ -65,7 +65,7 @@ static	void RemoveCallback(CObjectContactCallback*	&callbacks,ObjectContactCallb
 			{
 				CObjectContactCallback	*del=callbacks;
 				callbacks=callbacks->next;
-				del->next=NULL;
+				del->next=nullptr;
 				xr_delete(del);
 				VERIFY(!callbacks||!callbacks->HasCallback(c));
 			} else{
@@ -79,7 +79,7 @@ static	void RemoveCallback(CObjectContactCallback*	&callbacks,ObjectContactCallb
 					if(c==i->callback)
 					{
 						CObjectContactCallback	*del=i;
-						p->next=i->next;del->next=NULL;xr_delete(del);
+						p->next=i->next;del->next=nullptr;xr_delete(del);
 						VERIFY(!callbacks->HasCallback(c));
 						break;
 					}
@@ -157,7 +157,7 @@ IC CPhysicsShellHolder* retrieveRefObject(dGeomID geom)
 {
 	dxGeomUserData* ud=dGeomGetUserData(retrieveGeom(geom));
 	if(ud)return ud->ph_ref_object;
-	else return NULL;
+	else return nullptr;
 }
 IC void dGeomCreateUserData(dxGeom* geom)
 {
@@ -169,15 +169,15 @@ IC void dGeomCreateUserData(dxGeom* geom)
 	(dGeomGetUserData(geom))->last_pos[0]=-dInfinity;
 	(dGeomGetUserData(geom))->last_pos[1]=-dInfinity;
 	(dGeomGetUserData(geom))->last_pos[2]=-dInfinity;
-	(dGeomGetUserData(geom))->ph_object=NULL;
+	(dGeomGetUserData(geom))->ph_object=nullptr;
 	(dGeomGetUserData(geom))->material=0;
 	(dGeomGetUserData(geom))->tri_material=0;
-	(dGeomGetUserData(geom))->callback=NULL;
-	(dGeomGetUserData(geom))->object_callbacks=NULL;
-	(dGeomGetUserData(geom))->ph_ref_object=NULL;
+	(dGeomGetUserData(geom))->callback=nullptr;
+	(dGeomGetUserData(geom))->object_callbacks=nullptr;
+	(dGeomGetUserData(geom))->ph_ref_object=nullptr;
 	(dGeomGetUserData(geom))->element_position=u16(-1);
 	(dGeomGetUserData(geom))->bone_id=u16(-1);
-	(dGeomGetUserData(geom))->callback_data=NULL;
+	(dGeomGetUserData(geom))->callback_data=nullptr;
 	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::mu=1.f;
 	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::damping=1.f;
 	//((dxGeomUserData*)dGeomGetData(geom))->ContactsParameters::spring=1.f;

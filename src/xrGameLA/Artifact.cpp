@@ -63,9 +63,9 @@ CArtefact::CArtefact(void)
 {
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
-	m_sParticlesName			= NULL;
-	m_pTrailLight				= NULL;
-	m_activationObj				= NULL;
+	m_sParticlesName			= nullptr;
+	m_pTrailLight				= nullptr;
+	m_activationObj				= nullptr;
 }
 
 
@@ -85,7 +85,7 @@ void CArtefact::Load(LPCSTR section)
 	m_bLightsEnabled		= !!pSettings->r_bool(section, "lights_enabled");
 	detect_radius_koef		= READ_IF_EXISTS(pSettings,r_float,section,"detect_radius_koef",1.0f);
 
-	custom_detect_sound_string = READ_IF_EXISTS(pSettings, r_string, section, "custom_detect_sound", NULL);
+	custom_detect_sound_string = READ_IF_EXISTS(pSettings, r_string, section, "custom_detect_sound", nullptr);
 	if (custom_detect_sound_string)
 	{
 		custom_detect_sound.create(pSettings->r_string(section, "custom_detect_sound"), st_Effect, SOUND_TYPE_ITEM);
@@ -128,7 +128,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 		CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
 	}
 
-	VERIFY(m_pTrailLight == NULL);
+	VERIFY(m_pTrailLight == nullptr);
 	m_pTrailLight = ::Render->light_create();
 	m_pTrailLight->set_shadow(true);
 
@@ -302,7 +302,7 @@ void CArtefact::PhDataUpdate	(dReal step)
 bool CArtefact::CanTake() const
 {
 	if(!inherited::CanTake())return false;
-	return (m_activationObj==NULL);
+	return (m_activationObj==nullptr);
 }
 
 void CArtefact::Hide()
@@ -414,7 +414,7 @@ void CArtefact::OnStateSwitch		(u32 S)
 
 void CArtefact::PlayAnimIdle()
 {
-	PlayHUDMotion("anim_idle", FALSE, NULL, eIdle);
+	PlayHUDMotion("anim_idle", FALSE, nullptr, eIdle);
 }
 
 void CArtefact::OnAnimationEnd		(u32 state)
@@ -533,7 +533,7 @@ void SArtefactActivation::PhDataUpdate(dReal step)
 {
 	if (m_cur_activation_state==eFlying) {
 		Fvector dir	= {0, -1.f, 0};
-		if(Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth,NULL,m_af) ){
+		if(Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth,nullptr,m_af) ){
 			dir.y = ph_world->Gravity()*1.1f; 
 			m_af->m_pPhysicsShell->applyGravityAccel(dir);
 		}
@@ -628,7 +628,7 @@ shared_str clear_brackets(LPCSTR src)
 {
 	if	(0==src)					return	shared_str(0);
 	
-	if( NULL == strchr(src,'"') )	return	shared_str(src);
+	if( nullptr == strchr(src,'"') )	return	shared_str(src);
 
 	string512						_original;	
 	xr_strcpy						(_original,src);

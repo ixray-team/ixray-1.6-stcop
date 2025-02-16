@@ -13,8 +13,8 @@ void CStoreHierarchy::item::destroy()
 
 CStoreHierarchy::CStoreHierarchy()
 {
-	m_root					= NULL;
-	m_current_level			= NULL;
+	m_root					= nullptr;
+	m_current_level			= nullptr;
 }
 
 CStoreHierarchy::~CStoreHierarchy()
@@ -28,8 +28,8 @@ void CStoreHierarchy::LoadLevel(CUIXml& xml, int index, item* _item, int depth_l
 	XML_NODE* stored_root = xml.GetLocalRoot();
 
 	XML_NODE* node					= xml.NavigateToNode	("level", index);
-	_item->m_name					= xml.ReadAttrib		("level", index, "name",	NULL);
-	_item->m_btn_xml_name			= xml.ReadAttrib		("level", index, "btn_ref", NULL);
+	_item->m_name					= xml.ReadAttrib		("level", index, "name",	nullptr);
+	_item->m_btn_xml_name			= xml.ReadAttrib		("level", index, "btn_ref", nullptr);
 
 	if( depth_level>0 && _item->m_btn_xml_name.size() )
 	{
@@ -148,7 +148,7 @@ CStoreHierarchy::item* CStoreHierarchy::FindItem(const shared_str& name_sect, CS
 		for(;it!=it_e;++it)
 			if(*it==name_sect)	return recurse_from;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool CStoreHierarchy::MoveUp()

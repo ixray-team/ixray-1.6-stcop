@@ -206,14 +206,14 @@ void CStalkerCombatPlanner::add_evaluators		()
 	add_evaluator			(eWorldPropertyUseSuddenness	, new CStalkerPropertyEvaluatorMember((CPropertyStorage*)0,eWorldPropertyUseSuddenness,true,true,"use suddenness"));
 	add_evaluator			(eWorldPropertyCriticallyWounded, new CStalkerPropertyEvaluatorMember(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyCriticallyWounded,true,true,"critically wounded"));
 	add_evaluator			(eWorldPropertyKilledWounded	, new CStalkerPropertyEvaluatorMember(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyKilledWounded,true,true,"killed critically wounded"));
-	if (strstr(Core.Params, "-grenades_throwing") != NULL)
+	if (strstr(Core.Params, "-grenades_throwing") != nullptr)
 		add_evaluator			(eWorldPropertyShouldThrowGrenade, new CStalkerPropertyEvaluatorShouldThrowGrenade(m_object,"should throw grenade"));
 }
 
 void CStalkerCombatPlanner::add_actions			()
 {
 	CStalkerActionBase		*action;
-	bool					grenades_throwing = (strstr(Core.Params, "-grenades_throwing") != NULL);
+	bool					grenades_throwing = (strstr(Core.Params, "-grenades_throwing") != nullptr);
 	action					= new CStalkerActionGetItemToKill(m_object,"get_item_to_kill");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyFoundItemToKill,	true);

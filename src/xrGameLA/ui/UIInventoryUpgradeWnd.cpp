@@ -50,10 +50,10 @@ CUIInventoryUpgradeWnd::Scheme::~Scheme()
 
 CUIInventoryUpgradeWnd::CUIInventoryUpgradeWnd()
 {
-	m_inv_item       = NULL;
-	m_cur_upgrade_id = NULL;
-	m_current_scheme = NULL;
-	m_btn_repair     = NULL;
+	m_inv_item       = nullptr;
+	m_cur_upgrade_id = nullptr;
+	m_current_scheme = nullptr;
+	m_btn_repair     = nullptr;
 }
 
 CUIInventoryUpgradeWnd::~CUIInventoryUpgradeWnd()
@@ -231,7 +231,7 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 #ifdef DEBUG
 		Msg( "Inventory item <%s> cannot upgrade - Mechanic say.", inv_item.m_section_id.c_str() );
 #endif // DEBUG
-		m_current_scheme = NULL;
+		m_current_scheme = nullptr;
 		return false;
 	}
 
@@ -241,7 +241,7 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 #ifdef DEBUG
 		Msg( "Inventory item <%s> does not contain upgrade scheme.", inv_item.m_section_id.c_str() );
 #endif // DEBUG
-		m_current_scheme = NULL;
+		m_current_scheme = nullptr;
 		return false;
 	}
 
@@ -254,7 +254,7 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 		UIUpgrade* ui_item = (*ib);
 
 		LPCSTR upgrade_name = get_manager().get_upgrade_by_index( inv_item, ui_item->get_scheme_index() );
-		if (upgrade_name != NULL)
+		if (upgrade_name != nullptr)
 		{
 			m_scheme_wnd->AttachChild(ui_item);
 			//m_back->AttachChild( ui_item->m_point );
@@ -296,7 +296,7 @@ UIUpgrade* CUIInventoryUpgradeWnd::FindUIUpgrade( Upgrade_type const* upgr )
 {
 	if ( !m_current_scheme )
 	{
-		return NULL;
+		return nullptr;
 	}
 	UI_Upgrades_type::iterator ib = m_current_scheme->cells.begin();
 	UI_Upgrades_type::iterator ie = m_current_scheme->cells.end();
@@ -308,7 +308,7 @@ UIUpgrade* CUIInventoryUpgradeWnd::FindUIUpgrade( Upgrade_type const* upgr )
 			return (*ib);
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool CUIInventoryUpgradeWnd::DBClickOnUIUpgrade( Upgrade_type const* upgr )
@@ -372,9 +372,9 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 	if ( uiu )
 	{
 		if ( Device.dwTimeGlobal < uiu->FocusReceiveTime())
-			upgrade = NULL; // visible = false
+			upgrade = nullptr; // visible = false
 	} else
-		upgrade = NULL;
+		upgrade = nullptr;
 
 	CUIUpgradeWnd* parent_wnd = smart_cast<CUIUpgradeWnd*>(m_pParentWnd);
 	if (parent_wnd && parent_wnd->SetInfoCurUpgrade(upgrade, m_inv_item))

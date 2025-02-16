@@ -68,7 +68,7 @@ void CEatableItem::Load(LPCSTR section)
 	m_fMaxPowerUpInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_max_power",0.0f);
 	VERIFY2						(m_iPortionsNum<10000 || m_iPortionsNum == -1, make_string<const char*>("'eat_portions_num' should be < 10000. Wrong section [%s]",section));
 
-	use_sound_line				= READ_IF_EXISTS(pSettings, r_string, section, "use_sound", NULL);
+	use_sound_line				= READ_IF_EXISTS(pSettings, r_string, section, "use_sound", nullptr);
 
 	notForQSlot_				= READ_IF_EXISTS(pSettings, r_bool, section, "not_for_quick_slot", FALSE);
 

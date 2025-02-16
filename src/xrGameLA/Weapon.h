@@ -474,7 +474,7 @@ public:
 
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
-													LPCSTR ammoSect = NULL, 
+													LPCSTR ammoSect = nullptr, 
 													u32 ParentID = 0xffffffff);
 
 	virtual	float			Get_PDM_Base		()	const	{ return m_pdm.m_fPDM_disp_base			; };

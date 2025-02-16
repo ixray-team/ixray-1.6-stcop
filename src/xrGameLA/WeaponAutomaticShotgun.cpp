@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "WeaponAutomaticShotgun.h"
 #include "entity.h"
-#include "ParticlesObject.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "inventory.h"
 #include "level.h"
@@ -162,7 +161,7 @@ void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 bool CWeaponAutomaticShotgun::HaveCartridgeInInventory(u8 cnt)
 {
 	if (unlimited_ammo()) return true;
-	m_pAmmo = NULL;
+	m_pAmmo = nullptr;
 	if (m_pCurrentInventory)
 	{
 		//попытаться найти в инвентаре патроны текущего типа 
@@ -182,7 +181,7 @@ bool CWeaponAutomaticShotgun::HaveCartridgeInInventory(u8 cnt)
 			}
 		}
 	}
-	return (m_pAmmo != NULL) && (m_pAmmo->m_boxCurr >= cnt);
+	return (m_pAmmo != nullptr) && (m_pAmmo->m_boxCurr >= cnt);
 }
 
 
@@ -217,7 +216,7 @@ u8 CWeaponAutomaticShotgun::AddCartridge		(u8 cnt)
 		m_magazine.push_back(l_cartridge);
 		//		m_fCurrentCartirdgeDisp = l_cartridge.m_kDisp;
 	}
-	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : NULL;
+	m_ammoName = (m_pAmmo) ? m_pAmmo->m_nameShort : nullptr;
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 

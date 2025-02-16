@@ -1,7 +1,7 @@
 #include	"stdafx.h"
 #include	"ik_foot_collider.h"
 
-#include "../gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../../Include/xrRender/Kinematics.h"
 
 #include "Level.h"

@@ -29,11 +29,11 @@ CUITreeViewBoxItem::CUITreeViewBoxItem()
 	:	isRoot				(false),
 		isOpened			(false),
 		iTextShift			(0),
-		pOwner				(NULL),
+		pOwner				(nullptr),
 		m_uUnreadedColor	(UNREAD_COLOR),
 		m_uReadedColor		(READ_COLOR),
 		m_value				(-1),
-		m_real_parent		(NULL)
+		m_real_parent		(nullptr)
 {
 	AttachChild(&UIBkg);
 	UIBkg.InitTexture(treeItemBackgroundTexture);
@@ -249,7 +249,7 @@ CUITreeViewBoxItem* CUITreeViewBoxItem::Find(LPCSTR text) const
 {
 	// Пробегаемся по списку подчиненных элементов, и ищем элемент с заданным текстом
 	// Если среди подч. эл-тов есть root'ы, то ищем рекурсивно в них
-	CUITreeViewBoxItem *pResult = NULL;
+	CUITreeViewBoxItem *pResult = nullptr;
 	xr_string caption;
 
 	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
@@ -277,7 +277,7 @@ CUITreeViewBoxItem* CUITreeViewBoxItem::Find(LPCSTR text) const
 
 CUITreeViewBoxItem * CUITreeViewBoxItem::Find(int value) const
 {
-	CUITreeViewBoxItem *pResult = NULL;
+	CUITreeViewBoxItem *pResult = nullptr;
 
 	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
@@ -296,7 +296,7 @@ CUITreeViewBoxItem * CUITreeViewBoxItem::Find(int value) const
 
 CUITreeViewBoxItem * CUITreeViewBoxItem::Find(CUITreeViewBoxItem * pItem) const
 {
-	CUITreeViewBoxItem *pResult = NULL;
+	CUITreeViewBoxItem *pResult = nullptr;
 
 	for (SubItems::const_iterator it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
@@ -412,7 +412,7 @@ bool CUITreeViewBoxItem::OnMouseDown(int mouse_btn)
 	return false;
 }
 
-static CUITreeViewBoxItem *pPrevFocusedItem = NULL;
+static CUITreeViewBoxItem *pPrevFocusedItem = nullptr;
 
 void CUITreeViewBoxItem::OnFocusReceive()
 {
@@ -429,7 +429,7 @@ void CUITreeViewBoxItem::OnFocusLost()
 {
 	CUIWindow::OnFocusLost();
 	UIBkg.TextureOff();
-	pPrevFocusedItem = NULL;		
+	pPrevFocusedItem = nullptr;		
 }
 
 
@@ -456,7 +456,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListBox *pList
 		CUITreeViewBoxItem * operator () (GroupStringTree_it it, GroupStringTree &cont, CUITreeViewBoxItem *pItemToIns)
 		{
 			// Вставляем иерархию разделов в энциклопедию
-			CUITreeViewBoxItem *pNewItem = NULL;
+			CUITreeViewBoxItem *pNewItem = nullptr;
 
 			for (GroupStringTree_it it2 = it; it2 != cont.end(); ++it2)
 			{
@@ -508,7 +508,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListBox *pList
 	}
 
 	// Теперь ищем нет ли затребованных групп уже в наличии
-	CUITreeViewBoxItem *pTVItem = NULL, *pTVItemChilds = NULL;
+	CUITreeViewBoxItem *pTVItem = nullptr, *pTVItemChilds = nullptr;
 	bool status = false;
 
 	// Для всех рутовых элементов
@@ -561,7 +561,7 @@ void CreateTreeBranch(shared_str nesting, shared_str leafName, CUIListBox *pList
 			pTVItemChilds = AddTreeTail(groupTree.begin() + 1, groupTree, pTVItemChilds);
 	}
 
-	// К этому моменту pTVItemChilds обязательно должна быть не NULL
+	// К этому моменту pTVItemChilds обязательно должна быть не nullptr
 	R_ASSERT(pTVItemChilds);
 
 	// Cначала проверяем нет ли записи с таким названием, и добавляем если нет

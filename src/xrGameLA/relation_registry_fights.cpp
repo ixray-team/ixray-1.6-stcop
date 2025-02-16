@@ -66,7 +66,7 @@ RELATION_REGISTRY::FIGHT_DATA* RELATION_REGISTRY::FindFight(u16 object_id, bool 
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 

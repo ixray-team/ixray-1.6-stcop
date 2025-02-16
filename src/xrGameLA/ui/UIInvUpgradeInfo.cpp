@@ -30,12 +30,12 @@
 
 UIInvUpgradeInfo::UIInvUpgradeInfo()
 {
-	m_upgrade    = NULL;
-	m_background = NULL;
-	m_name       = NULL;
-	m_desc       = NULL;
-	m_prereq     = NULL;
-	m_properties_wnd = NULL;
+	m_upgrade    = nullptr;
+	m_background = nullptr;
+	m_name       = nullptr;
+	m_desc       = nullptr;
+	m_prereq     = nullptr;
+	m_properties_wnd = nullptr;
 }
 
 UIInvUpgradeInfo::~UIInvUpgradeInfo()
@@ -92,7 +92,7 @@ bool UIInvUpgradeInfo::init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_ite
 {
 	if ( !upgr || !inv_item )
 	{
-		m_upgrade = NULL;
+		m_upgrade = nullptr;
 		Show( false );
 		return false;
 	}

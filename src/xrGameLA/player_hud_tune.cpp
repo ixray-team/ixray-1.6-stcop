@@ -6,8 +6,8 @@
 #include "HudManager.h"
 #include "HudItem.h"
 #include "../Effector.h"
-#include "../CameraManager.h"
-#include "../FDemoRecord.h"
+#include "../xrEngine/CameraManager.h"
+#include "../xrEngine/FDemoRecord.h"
 #include "ui_base.h"
 #include "debug_renderer.h"
 
@@ -219,7 +219,7 @@ void player_hud::tune(Ivector _values)
 
 		float _curr_dr = hud_adj_delta_rot;
 
-		if ((hud_adj_item_idx > 0) && (m_attached_items[hud_adj_item_idx] == NULL))
+		if ((hud_adj_item_idx > 0) && (m_attached_items[hud_adj_item_idx] == nullptr))
 			return;
 
 			u8 idx = m_attached_items[hud_adj_item_idx]->m_parent_hud_item->GetCurrentHudOffsetIdx();
@@ -303,7 +303,7 @@ void hud_draw_adjust_mode()
 		return;
 	}
 
-	LPCSTR _text = NULL;
+	LPCSTR _text = nullptr;
 	if(pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT) && hud_adj_mode)
 		_text = "press SHIFT+NUM 0-return 1-hud_pos 2-hud_rot 3-itm_pos 4-itm_rot 5-fire_point 6-fire_2_point 7-shell_point 8-pos_step 9-rot_step";
 

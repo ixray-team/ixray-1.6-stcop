@@ -66,8 +66,8 @@ struct CUIUpgradeInternal
 CUIUpgradeWnd::CUIUpgradeWnd()
 	: bStarted(false),
 	bRepairMode(false),
-	m_upgrade_selected(NULL),
-	m_upgrade_info(NULL)
+	m_upgrade_selected(nullptr),
+	m_upgrade_info(nullptr)
 {
 	m_uidata = new CUIUpgradeInternal();
 	m_pUpgradeWnd = new CUIInventoryUpgradeWnd();
@@ -229,7 +229,7 @@ void CUIUpgradeWnd::Show()
 
 void CUIUpgradeWnd::Hide()
 {
-	SetCurrentItem(NULL);
+	SetCurrentItem(nullptr);
 	InventoryUtilities::SendInfoToActor("ui_trade_hide");
 	inherited::Show(false);
 	inherited::Enable(false);
@@ -416,7 +416,7 @@ CUICellItem* CUIUpgradeWnd::CurrentItem()
 
 PIItem CUIUpgradeWnd::CurrentIItem()
 {
-	return	(m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : NULL;
+	return	(m_pCurrentCellItem) ? (PIItem)m_pCurrentCellItem->m_pData : nullptr;
 }
 
 void CUIUpgradeWnd::SwitchToTalk()
@@ -545,7 +545,7 @@ bool CUIUpgradeWnd::SetInfoCurUpgrade(Upgrade_type* upgrade_type, CInventoryItem
 
 void CUIUpgradeWnd::TryRepairItem()
 {
-	PIItem item = (m_upgrade_selected) ? (PIItem)m_upgrade_selected->m_pData : NULL;
+	PIItem item = (m_upgrade_selected) ? (PIItem)m_upgrade_selected->m_pData : nullptr;
 	if (!item)
 	{
 		return;

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "pch_script.h"
-#include "ParticlesObject.h"
 #include "Physics.h"
 
 #ifdef DEBUG
@@ -28,7 +27,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "CarWeapon.h"
 #include "game_object_space.h"
-#include "../GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
@@ -41,7 +40,7 @@ extern CPHWorld*	ph_world;
 
 CCar::CCar()
 {
-	m_memory		= NULL;
+	m_memory		= nullptr;
 	m_driver_anim_type = 0;
 	m_bone_steer	= BI_NONE;
 	m_bone_trunk	= BI_NONE;
@@ -89,7 +88,7 @@ CCar::CCar()
 	m_breaks_to_back_rate=1.f;
 
 	b_exploded=false;
-	m_car_weapon=NULL;
+	m_car_weapon=nullptr;
 	m_power_neutral_factor=0.25f;
 	m_steer_angle=0.f;
 	m_current_rpm = 0.f;
@@ -1967,8 +1966,8 @@ void CCar::CarExplode()
 //void CCar::object_contactCallbackFun(bool& do_colide,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 //{
 //
-//	dxGeomUserData *l_pUD1 = NULL;
-//	dxGeomUserData *l_pUD2 = NULL;
+//	dxGeomUserData *l_pUD1 = nullptr;
+//	dxGeomUserData *l_pUD2 = nullptr;
 //	l_pUD1 = retrieveGeomUserData(c.geom.g1);
 //	l_pUD2 = retrieveGeomUserData(c.geom.g2);
 //

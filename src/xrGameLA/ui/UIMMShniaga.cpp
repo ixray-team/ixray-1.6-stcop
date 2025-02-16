@@ -28,7 +28,7 @@ CUIMMShniaga::CUIMMShniaga(){
 
 	m_mag_pos = 0;
 
-	m_selected = NULL;
+	m_selected = nullptr;
 
 	m_start_time = 0;
 	m_origin = 0;

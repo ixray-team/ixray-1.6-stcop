@@ -147,7 +147,7 @@ Upgrade* Root::get_upgrade_by_index( Ivector2 const& index )
 			return (*ib);
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Root::highlight_hierarchy( shared_str const& upgrade_id )

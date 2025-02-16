@@ -97,7 +97,7 @@ LPCSTR CScriptGameObject::GetUnlockInfo()
 		return obj->UnlockInfo;
 	}
 	Msg("GetUnlockInfo():The object is not a CInventoryBox");
-	return NULL;
+	return nullptr;
 }
 
 Fvector CScriptGameObject::GetCurrentDirection()
@@ -199,7 +199,7 @@ IC	T	*CScriptGameObject::action_planner()
 	{
 		ai().script_engine().script_log				(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member action_planner for '%s'!",
 																							object().cName().c_str());
-		return NULL;
+		return nullptr;
 	}
 	return					(&manager->brain());
 }

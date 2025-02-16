@@ -36,19 +36,19 @@ u32			g_pda_info_state		= 0;
 
 CUIPdaWnd::CUIPdaWnd()
 {
-	UIMapWnd				= NULL;
-	UIPdaContactsWnd		= NULL;
-	UIEncyclopediaWnd		= NULL;
-	UIDiaryWnd				= NULL;
-	UIActorInfo				= NULL;
-	UIStalkersRanking		= NULL;
-	UIEventsWnd				= NULL;
-	UIChatWnd				= NULL;
-	UISkillsWnd				= NULL;
-	UIDownloadsWnd			= NULL;
-	UIGamesWnd				= NULL;
-	UIMPlayerWnd			= NULL;
-	m_pActiveDialog			= NULL;
+	UIMapWnd				= nullptr;
+	UIPdaContactsWnd		= nullptr;
+	UIEncyclopediaWnd		= nullptr;
+	UIDiaryWnd				= nullptr;
+	UIActorInfo				= nullptr;
+	UIStalkersRanking		= nullptr;
+	UIEventsWnd				= nullptr;
+	UIChatWnd				= nullptr;
+	UISkillsWnd				= nullptr;
+	UIDownloadsWnd			= nullptr;
+	UIGamesWnd				= nullptr;
+	UIMPlayerWnd			= nullptr;
+	m_pActiveDialog			= nullptr;
 	bUpgraded				= false;
 	m_initialized			= false;
 }
@@ -62,7 +62,7 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data		(UIActorInfo);
 	delete_data		(UIStalkersRanking);
 	delete_data		(UIEventsWnd);
-	m_pActiveDialog	= NULL;
+	m_pActiveDialog	= nullptr;
 	//delete_data		(UISkillsWnd);
 	//delete_data		(UIDownloadsWnd);
 	//delete_data		(UIGamesWnd);
@@ -89,7 +89,7 @@ void CUIPdaWnd::Init()
 
 	CUIXmlInit xml_init;
 	
-	m_pActiveDialog			= NULL;
+	m_pActiveDialog			= nullptr;
 
 	xml_init.InitWindow		(uiXml, "main", 0, this);
 
@@ -273,7 +273,7 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 		m_pActiveDialog->Show(false);
 	}
 
-	m_pActiveDialog				= NULL;
+	m_pActiveDialog				= nullptr;
 
 	switch (section) 
 	{
@@ -334,7 +334,7 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 		break;
 	default:
 		Msg("not registered button identifier [%d]",UITabControl->GetActiveIndex());
-		m_pActiveDialog = NULL;
+		m_pActiveDialog = nullptr;
 		break;
 	}
 
@@ -342,7 +342,7 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 
 	if (UIMainPdaFrame->IsChild(m_pActiveDialog)) {
 		UIMainPdaFrame->DetachChild(m_pActiveDialog);
-		m_pActiveDialog->SetParent(NULL);
+		m_pActiveDialog->SetParent(nullptr);
 	}
 	
 	UIMainPdaFrame->AttachChild		(m_pActiveDialog);

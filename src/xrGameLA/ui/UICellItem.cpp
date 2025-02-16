@@ -13,15 +13,15 @@
 #include "../Weapon.h"
 #include "../CustomOutfit.h"
 
-CUICellItem* CUICellItem::m_mouse_selected_item = NULL;
+CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
 
 CUICellItem::CUICellItem()
 {
-	m_pParentList		= NULL;
-	m_pData				= NULL;
-	m_custom_draw		= NULL;
-	m_text				= NULL;
-	m_pConditionState	= NULL;
+	m_pParentList		= nullptr;
+	m_pData				= nullptr;
+	m_custom_draw		= nullptr;
+	m_text				= nullptr;
+	m_pConditionState	= nullptr;
 	m_drawn_frame		= 0;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
@@ -70,7 +70,7 @@ void CUICellItem::Update()
 		m_pParentList->GetClientArea(clientArea);
 		Fvector2 cp			= GetUICursor().GetCursorPosition();
 		if(clientArea.in(cp))
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_FOCUSED_UPDATE, NULL);
+			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_FOCUSED_UPDATE, nullptr);
 	}
 }
 
@@ -80,8 +80,8 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if ( mouse_action == WINDOW_LBUTTON_DOWN )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, NULL );
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_SELECTED, NULL );
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_LBUTTON_CLICK, nullptr );
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_SELECTED, nullptr );
 		m_mouse_selected_item = this;
 		return false;
 	}
@@ -89,22 +89,22 @@ bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	{
 		if ( pInput->iGetAsyncBtnState(0) && m_mouse_selected_item && m_mouse_selected_item == this )
 		{
-			GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DRAG, NULL );
+			GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DRAG, nullptr );
 			return true;
 		}
 	}
 	else if ( mouse_action == WINDOW_LBUTTON_DB_CLICK )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DB_CLICK, NULL );
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_DB_CLICK, nullptr );
 		return true;
 	}
 	else if ( mouse_action == WINDOW_RBUTTON_DOWN )
 	{
-		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_RBUTTON_CLICK, NULL );
+		GetMessageTarget()->SendMessage( this, DRAG_DROP_ITEM_RBUTTON_CLICK, nullptr );
 		return true;
 	}
 	
-	m_mouse_selected_item = NULL;
+	m_mouse_selected_item = nullptr;
 	return false;
 };
 
@@ -114,7 +114,7 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if (GetAccelerator() == dik)
 		{
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
+			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, nullptr);
 			return		true;
 		}
 	}
@@ -173,7 +173,7 @@ CUICellItem* CUICellItem::PopChild(CUICellItem* needed)
 	}
 	UpdateItemText		();
 	R_ASSERT			(itm->ChildsCount()==0);
-	itm->SetOwnerList	(NULL);
+	itm->SetOwnerList	(nullptr);
 	return				itm;
 }
 
@@ -214,8 +214,8 @@ void CUICellItem::SetCustomDraw(ICustomDrawCellItem* c)
 
 CUIDragItem::CUIDragItem(CUICellItem* parent)
 {
-	m_custom_draw					= NULL;
-	m_back_list						= NULL;
+	m_custom_draw					= nullptr;
+	m_back_list						= nullptr;
 	m_pParent						= parent;
 	AttachChild						(&m_static);
 	Device.seqRender.Add			(this, REG_PRIORITY_LOW-5000);
@@ -254,7 +254,7 @@ bool CUIDragItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if(mouse_action == WINDOW_LBUTTON_UP)
 	{
-		m_pParent->GetMessageTarget()->SendMessage(m_pParent,DRAG_DROP_ITEM_DROP,NULL);
+		m_pParent->GetMessageTarget()->SendMessage(m_pParent,DRAG_DROP_ITEM_DROP,nullptr);
 		return true;
 	}
 	return false;

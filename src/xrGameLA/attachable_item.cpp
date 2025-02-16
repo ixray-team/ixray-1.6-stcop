@@ -13,7 +13,7 @@
 #include "inventory.h"
 
 
-CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
+CAttachableItem*	CAttachableItem::m_dbgItem = nullptr;
 
 
 IC	CPhysicsShellHolder &CAttachableItem::object	() const

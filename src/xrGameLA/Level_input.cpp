@@ -45,7 +45,7 @@ extern	float	g_fTimeFactor;
 extern int quick_save_counter;
 extern int max_quick_saves;
 
-#define CURRENT_ENTITY()	(game?((GameID() == GAME_SINGLE) ? CurrentEntity() : CurrentControlEntity()):NULL)
+#define CURRENT_ENTITY()	(game?((GameID() == GAME_SINGLE) ? CurrentEntity() : CurrentControlEntity()):nullptr)
 
 void CLevel::IR_OnMouseWheel( int direction )
 {

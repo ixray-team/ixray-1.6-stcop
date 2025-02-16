@@ -808,8 +808,8 @@ BOOL CSE_ALifeItemArtefact::Net_Relevant	()
 CSE_ALifeItemPDA::CSE_ALifeItemPDA		(LPCSTR caSection) : CSE_ALifeItem(caSection)
 {
 	m_original_owner		= 0xffff;
-	m_specific_character	= NULL;
-	m_info_portion			= NULL;
+	m_specific_character	= nullptr;
+	m_info_portion			= nullptr;
 }
 
 
@@ -830,8 +830,8 @@ void CSE_ALifeItemPDA::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 		int tmp,tmp2;
 		tNetPacket.r			(&tmp,		sizeof(int));
 		tNetPacket.r			(&tmp2,		sizeof(int));
-		m_info_portion			=	NULL;
-		m_specific_character	= NULL;
+		m_info_portion			=	nullptr;
+		m_specific_character	= nullptr;
 	}else{
 		tNetPacket.r_stringZ	(m_specific_character);
 		tNetPacket.r_stringZ	(m_info_portion);
@@ -847,8 +847,8 @@ void CSE_ALifeItemPDA::STATE_Write		(NET_Packet	&tNetPacket)
 	tNetPacket.w_stringZ		(m_specific_character);
 	tNetPacket.w_stringZ		(m_info_portion);
 #else
-	shared_str		tmp_1	= NULL;
-	shared_str						tmp_2	= NULL;
+	shared_str		tmp_1	= nullptr;
+	shared_str						tmp_2	= nullptr;
 
 	tNetPacket.w_stringZ		(tmp_1);
 	tNetPacket.w_stringZ		(tmp_2);
@@ -879,7 +879,7 @@ CSE_ALifeItemDocument::CSE_ALifeItemDocument(LPCSTR caSection): CSE_ALifeItem(ca
 	if (pSettings->line_exist(caSection, "info_portion"))
 		m_wDoc					= pSettings->r_string(caSection,"info_portion");
 	else
-		m_wDoc					= NULL;
+		m_wDoc					= nullptr;
 }
 
 CSE_ALifeItemDocument::~CSE_ALifeItemDocument()
@@ -893,7 +893,7 @@ void CSE_ALifeItemDocument::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if ( m_wVersion < 98  ){
 		u16 tmp;
 		tNetPacket.r_u16			(tmp);
-		m_wDoc = NULL;
+		m_wDoc = nullptr;
 	}else
 		tNetPacket.r_stringZ		(m_wDoc);
 }

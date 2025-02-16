@@ -29,7 +29,7 @@ COutfitBase::COutfitBase()
 		m_HitTypeProtection[i] = 1.0f;
 
 	m_boneProtection = new SBoneProtections();
-	m_BonesProtectionSect = NULL;
+	m_BonesProtectionSect = nullptr;
 	hasVisorEffects_		= false;
 
 	visorWetness_1_			= 0.f;

@@ -141,7 +141,7 @@ public:
 	virtual float GetOutfitWeightBonus		() const;
 	virtual float GetAdditionalWeight		() const;
 
-	virtual CCustomOutfit*			GetOutfit()	const {return NULL;};
+	virtual CCustomOutfit*			GetOutfit()	const {return nullptr;};
 
 	//////////////////////////////////////////////////////////////////////////
 	//игровые характеристики персонажа

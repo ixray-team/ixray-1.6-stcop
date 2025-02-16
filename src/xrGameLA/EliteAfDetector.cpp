@@ -21,7 +21,7 @@ CEliteDetector::~CEliteDetector()
 
 void CEliteDetector::CreateUI()
 {
-	R_ASSERT(NULL == m_ui);
+	R_ASSERT(nullptr == m_ui);
 	m_ui = new CUIArtefactDetectorElite();
 	ui().construct(this);
 

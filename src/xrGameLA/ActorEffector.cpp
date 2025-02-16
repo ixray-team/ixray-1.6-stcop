@@ -255,7 +255,7 @@ CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c)
 
 CCameraEffectorControlled::~CCameraEffectorControlled()
 {
-	m_controller->SetCam(NULL);
+	m_controller->SetCam(nullptr);
 }
 
 BOOL CCameraEffectorControlled::Valid()
@@ -270,7 +270,7 @@ SndShockEffector::SndShockEffector	()
 	m_snd_length			= 0.0f;
 	m_cur_length			= 0.0f;
 	m_stored_volume			= -1.0f;
-	m_actor					= NULL;
+	m_actor					= nullptr;
 }
 
 SndShockEffector::~SndShockEffector	()
@@ -481,7 +481,7 @@ CScriptCameraDirection::CScriptCameraDirection()
 	m_target_point.set(0.f,0.f,0.f);
 	m_speed 	= 0.0f;
 	m_need_turn 	= false;
-	m_actor		= NULL;
+	m_actor		= nullptr;
 	m_turned_yaw 	= false;
 	m_turned_pitch 	= false;
 }

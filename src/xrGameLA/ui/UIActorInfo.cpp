@@ -307,7 +307,7 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 	xml_init.InitAutoStaticGroup		(*xml, "auto", 0, this);
 
 #ifndef PRIQUEL
-	m_id								= xml->ReadAttrib(xml->GetLocalRoot(),"id",NULL);
+	m_id								= xml->ReadAttrib(xml->GetLocalRoot(),"id",nullptr);
 #else
 	LPCSTR _id							= strstr(path,"master_part_")+xr_strlen("master_part_");
 	m_id								= _id;

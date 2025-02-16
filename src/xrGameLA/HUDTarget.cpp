@@ -6,14 +6,14 @@
 #include "stdafx.h"
 #include "hudtarget.h"
 #include "hudmanager.h"
-#include "../GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 
-#include "../Environment.h"
-#include "../CustomHUD.h"
+#include "../xrEngine/Environment.h"
+#include "../xrEngine/CustomHUD.h"
 #include "Entity.h"
 #include "level.h"
 #include "game_cl_base.h"
-#include "../igame_persistent.h"
+#include "../xrEngine/IGame_Persistent.h"
 #include "ai/stalker/ai_stalker.h"
 #include "uifontdefines.h"
 
@@ -64,7 +64,7 @@ CHUDTarget::CHUDTarget	()
 	RQ.range			= 0.f;
 	hShader->create		("hud\\cursor","ui\\cursor");
 
-	RQ.set				(NULL, 0.f, -1);
+	RQ.set				(nullptr, 0.f, -1);
 
 	Load				();
 	m_bShowCrosshair	= false;
@@ -77,7 +77,7 @@ CHUDTarget::~CHUDTarget	()
 void CHUDTarget::net_Relcase(CObject* O)
 {
 	if(RQ.O == O)
-		RQ.O = NULL;
+		RQ.O = nullptr;
 
 	RQR.r_clear	();
 }
@@ -119,7 +119,7 @@ void CHUDTarget::CursorOnFrame ()
 		collide::ray_defs	RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear			();
 		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
-		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
+		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
 			clamp			(RQ.range,NEAR_LIM,RQ.range);
 	}
 

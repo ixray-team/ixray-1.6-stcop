@@ -11,7 +11,7 @@ bool CUIListWnd::AddItem(const char*  str, const float shift, void* pData,
 						 int value, int insertBeforeIdx)
 {
 	//создать новый элемент и добавить его в список
-	Element* pItem = NULL;
+	Element* pItem = nullptr;
 	pItem = new Element();
 
 	VERIFY(pItem);

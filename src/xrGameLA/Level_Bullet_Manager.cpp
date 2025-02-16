@@ -175,7 +175,7 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvector& pos)
 {
 	if (m_WhineSounds.empty())						return;
-	if (bullet->m_whine_snd._feedback() != NULL)	return;
+	if (bullet->m_whine_snd._feedback() != nullptr)	return;
 	if(bullet->hit_type!=ALife::eHitTypeFireWound ) return;
 
 	bullet->m_whine_snd								= m_WhineSounds[Random.randI(0, m_WhineSounds.size())];
@@ -763,7 +763,7 @@ bool CBulletManager::trajectory_check_error	(
 	bullet.dir				= start_to_target;
 
 	collide::ray_defs RD	(start, start_to_target, distance, CDB::OPT_FULL_TEST, collide::rqtBoth);
-	BOOL const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, NULL);
+	BOOL const result		= Level().ObjectSpace.RayQuery(storage, RD, CBulletManager::firetrace_callback, &data, CBulletManager::test_callback, nullptr);
 	if ( !result || (data.collide_time == 0.f) ) {
 		add_bullet_point	(bullet.start_position, previous_position, bullet.start_velocity, gravity, air_resistance, high);
 		return				(true);

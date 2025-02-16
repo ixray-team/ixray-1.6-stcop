@@ -375,7 +375,7 @@ void				CLevel::OnMessage				(void* data, u32 size)
 
 NET_Packet*				CLevel::net_msg_Retreive		()
 {
-	NET_Packet* P = NULL;
+	NET_Packet* P = nullptr;
 
 	DemoCS.Enter();
 

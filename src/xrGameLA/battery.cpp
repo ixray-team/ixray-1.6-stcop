@@ -57,7 +57,7 @@ void CBattery::renderable_Render()
 bool CBattery::UseBy (CEntityAlive* entity_alive)
 {
 	CInventoryOwner *IO				= smart_cast<CInventoryOwner*>(entity_alive);
-	CActor			*actor			= NULL;
+	CActor			*actor			= nullptr;
 	
 	R_ASSERT						(IO);
 

@@ -50,7 +50,7 @@ game_PlayerState*	game_sv_GameState::get_it					(u32 it)
 game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->GetClientByID	(id);
-	if (0==C)			return NULL;
+	if (0==C)			return nullptr;
 	else				return C->ps;
 }
 
@@ -125,7 +125,7 @@ game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
 		if (ps->HasOldID(id)) return ps;
 	};
 	//-------------------------------------------------
-	return NULL;
+	return nullptr;
 }
 
 void* game_sv_GameState::get_client (u16 id) //if exist
@@ -143,7 +143,7 @@ void* game_sv_GameState::get_client (u16 id) //if exist
 		if (C->ps->HasOldID(id)) return C;
 	};
 	//-------------------------------------------------
-	return NULL;
+	return nullptr;
 }
 
 CSE_Abstract*		game_sv_GameState::get_entity_from_eid		(u16 id)
@@ -621,7 +621,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 	case GAME_EVENT_CREATE_CLIENT:
 		{
 			IClient* CL					= (IClient*)m_server->ID_to_client(sender);
-			if ( CL == NULL ) { break; }
+			if ( CL == nullptr ) { break; }
 			
 			CL->flags.bConnected		= TRUE;
 			m_server->AttachNewClient	(CL);
@@ -702,7 +702,7 @@ void game_sv_GameState::AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 ti
 
 void game_sv_GameState::ProcessDelayedEvent		()
 {
-	GameEvent* ge = NULL;
+	GameEvent* ge = nullptr;
 	while ((ge = m_event_queue->Retreive()) != 0) {
 		OnEvent(ge->P,ge->type,ge->time,ge->sender);
 		m_event_queue->Release();

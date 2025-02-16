@@ -324,7 +324,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	sign_sz.set					(9.0f+3.0f, 11.0f);
 	u32 idx						= 0;
 	float	btn_text_len		= 0.0f;
-	CUIStatic* st				= NULL;
+	CUIStatic* st				= nullptr;
 
 	for(;it!=it_e;++it,++idx)
 	{

@@ -11,7 +11,7 @@ public:
 							~CUsableScriptObject	();
 		virtual bool		use						(CGameObject* who_use);
 	
-		//строчка появляющаяся при наведении на объект (если NULL, то нет)
+		//строчка появляющаяся при наведении на объект (если nullptr, то нет)
 		virtual LPCSTR		tip_text				();
 		void				set_tip_text			(LPCSTR new_text);
 		virtual void		set_tip_text_default	();

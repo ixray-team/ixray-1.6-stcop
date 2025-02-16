@@ -11,10 +11,10 @@ extern int g_be_message_out;
 
 BattlEyeClient::BattlEyeClient()
 {
-	m_module     = NULL;
-	pfnRun       = NULL;
-	pfnCommand   = NULL;
-	pfnNewPacket = NULL;
+	m_module     = nullptr;
+	pfnRun       = nullptr;
+	pfnCommand   = nullptr;
+	pfnNewPacket = nullptr;
 	m_succefull  = false;
 	InitDLL();
 }
@@ -44,7 +44,7 @@ void BattlEyeClient::InitDLL()
 		{
 			Msg( "! Error FreeLibrary for %s " BATTLEYE_CLIENT_DLL );
 		}
-		m_module = NULL;
+		m_module = nullptr;
 		return;
 	}
 
@@ -65,10 +65,10 @@ void BattlEyeClient::InitDLL()
 		{
 			Msg( "! Error FreeLibrary for %s", BATTLEYE_CLIENT_DLL );
 		}
-		m_module     = NULL;
-		pfnRun       = NULL;
-		pfnCommand   = NULL;
-		pfnNewPacket = NULL;
+		m_module     = nullptr;
+		pfnRun       = nullptr;
+		pfnCommand   = nullptr;
+		pfnNewPacket = nullptr;
 		return;
 	}
 }
@@ -123,7 +123,7 @@ void BattlEyeClient::NewPacket( void* packet, int len )
 
 bool BattlEyeClient::IsLoaded()
 {
-	return m_module != NULL;
+	return m_module != nullptr;
 }
 
 BattlEyeClient::~BattlEyeClient()
@@ -147,10 +147,10 @@ void BattlEyeClient::ReleaseDLL()
 			Msg( "! Error FreeLibrary for %s", BATTLEYE_CLIENT_DLL );
 		}
 	}
-	m_module     = NULL;
-	pfnRun       = NULL;
-	pfnCommand   = NULL;
-	pfnNewPacket = NULL;
+	m_module     = nullptr;
+	pfnRun       = nullptr;
+	pfnCommand   = nullptr;
+	pfnNewPacket = nullptr;
 	m_succefull  = false;
 }
 

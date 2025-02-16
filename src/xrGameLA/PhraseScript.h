@@ -30,7 +30,7 @@ public:
 	virtual void				Action			(const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, LPCSTR phrase_id) const;
 	//текст из скриптовой функции
 //	virtual LPCSTR Text			(LPCSTR original_text, const CGameObject* pSpeaker1, const CGameObject* pSpeaker2, LPCSTR dialog_id, int phrase_num) const;
-//	virtual bool   HasText		() const {return *m_sScriptTextFunc!=NULL;}
+//	virtual bool   HasText		() const {return *m_sScriptTextFunc!=nullptr;}
 
 
 	using PRECONDITION_VECTOR = xr_vector<shared_str>;

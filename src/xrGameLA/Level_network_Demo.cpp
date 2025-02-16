@@ -165,12 +165,12 @@ void						CLevel::Demo_Load				(LPCSTR DemoName)
 	string_path			DemoFileName;
 	FS.update_path      (DemoFileName,"$logs$",DemoName);
 	//-----------------------------------------------------
-	HANDLE hDemoFile = CreateFileA(DemoFileName, FILE_ALL_ACCESS, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hDemoFile == NULL) return;
+	HANDLE hDemoFile = CreateFileA(DemoFileName, FILE_ALL_ACCESS, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	if (hDemoFile == nullptr) return;
 
-	u32	FileSize = GetFileSize(hDemoFile, NULL);
+	u32	FileSize = GetFileSize(hDemoFile, nullptr);
 	u8* pDemoData = xr_alloc<u8>(FileSize/sizeof(u8));
-	ReadFile(hDemoFile, pDemoData, FileSize, (LPDWORD)&FileSize, NULL);
+	ReadFile(hDemoFile, pDemoData, FileSize, (LPDWORD)&FileSize, nullptr);
 	CloseHandle(hDemoFile);
 	u8* pTDemoData = pDemoData;
 	//-----------------------------------------------------
