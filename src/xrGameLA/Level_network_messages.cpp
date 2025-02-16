@@ -45,8 +45,8 @@ void CLevel::ClientReceive()
 				if(_name.size() && _name!=map_name && OnClient())
 				{
 					Msg("!!! map sync failed. current is[%s] server is[%s]",m_name.c_str(), map_name.c_str());
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
+					g_pEventManager->Event.Defer	("KERNEL:disconnect");
+					g_pEventManager->Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
 				}
 			}break;
 		case M_SPAWN:			
@@ -228,14 +228,14 @@ void CLevel::ClientReceive()
 						CSavedGameWrapper			wrapper(saved_name);
 						if (wrapper.level_id() == ai().level_graph().level_id()) 
 						{
-							Engine.Event.Defer	("Game:QuickLoad", size_t(xr_strdup(saved_name)), 0);
+							g_pEventManager->Event.Defer	("Game:QuickLoad", size_t(xr_strdup(saved_name)), 0);
 
 							break;
 						}
 					}
 				}
-				Engine.Event.Defer	("KERNEL:disconnect");
-				Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
+				g_pEventManager->Event.Defer	("KERNEL:disconnect");
+				g_pEventManager->Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
 			}break;
 		case M_SAVE_GAME:
 			{
@@ -274,8 +274,8 @@ void CLevel::ClientReceive()
 
 				if (OnClient())
 				{
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0,m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
+					g_pEventManager->Event.Defer	("KERNEL:disconnect");
+					g_pEventManager->Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0,m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
 				}
 				else
 				{
@@ -297,8 +297,8 @@ void CLevel::ClientReceive()
 					if (m_SO) xr_strcat(NewServerOptions, m_SO);
 					m_caServerOptions = NewServerOptions;
 
-					Engine.Event.Defer	("KERNEL:disconnect");
-					Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
+					g_pEventManager->Event.Defer	("KERNEL:disconnect");
+					g_pEventManager->Event.Defer	("KERNEL:start",size_t(xr_strdup(*m_caServerOptions)),size_t(xr_strdup(*m_caClientOptions)));
 				};
 			}break;
 		case M_CHANGE_SELF_NAME:

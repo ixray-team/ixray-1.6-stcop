@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "alife_space.h"
 #include "hit.h"
 #include "ode_include.h"
@@ -137,20 +137,23 @@ void SHit::Write_Packet			(NET_Packet	&Packet)
 
 	Write_Packet_Cont (Packet);	
 };
-
+/*
+		█░█ █▀█ █░█ ▄▀█ █▄░█
+		▀▄▀ █▄█ ▀▄▀ █▀█ █░▀█
+*/
 #ifdef DEBUG
 void SHit::_dump()
 {
 	Msg("SHit::_dump()---begin");
-	Log("power=",power);
-	Log("impulse=",impulse);
-	Log("dir=",dir);
-	Log("whoID=",whoID);
-	Log("weaponID=",weaponID);
-	Log("element=",boneID);
-	Log("p_in_bone_space=",p_in_bone_space);
-	Log("hit_type=",(int)hit_type);
-	Log("ap=",ap);
+	Msg("power=%f", power);
+	Msg("impulse=%f", impulse);
+	Log("dir=", dir);
+	Msg("whoID=%d", whoID);
+	Msg("weaponID=%d", weaponID);
+	Msg("element=%d", boneID);
+	Log("p_in_bone_space=", p_in_bone_space);
+	Msg("hit_type=%d", (int)hit_type);
+	Msg("armor_piercing=%", ap);
 	Msg("SHit::_dump()---end");
 }
 #endif

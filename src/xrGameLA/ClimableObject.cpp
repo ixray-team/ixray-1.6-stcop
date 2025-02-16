@@ -12,7 +12,7 @@
 #endif
 
 #ifdef DEBUG
-#	include "debug_renderer.h"
+#	include "../xrGame/debug_renderer.h"
 #endif
 
 static const float down_leader_extension_tolerance=0.2f;
