@@ -11,6 +11,7 @@
 #include "../xrUI/Widgets/UIEditBox.h"
 #include "UI/UIListWnd.h"
 #include "UI/UIMessageBox.h"
+#include "ui/UIMMShniaga.h"
 #include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../xrUI/Widgets/UITabControl.h"
 #include "../xrUI/Widgets/UIComboBox.h"
@@ -26,6 +27,7 @@ CMainMenu*	MainMenu();
 void UIRegistrator::script_register(lua_State *L)
 {
 	CUIWindow::script_register(L);
+	CUIMMShniaga::script_register(L);
 	CUIStatic::script_register(L);
 	CUIButton::script_register(L);
 	CUIProgressBar::script_register(L);
