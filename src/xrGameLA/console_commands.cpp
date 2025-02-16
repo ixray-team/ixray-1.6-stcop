@@ -1714,7 +1714,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,					"g_first_person_death", &psActorFlags, AF_FST_PSN_DEATH);
 
 	CMD4(CCC_Float,					"fov", &g_fov, 45.0f, 120.0f);
-	CMD4(CCC_Float,					"hud_fov", &psHUD_FOV, 0.4f, 0.8f);
+	CMD4(CCC_Float,					"hud_fov", &psHUD_FOV, 5.0f, 180.0f);
 	CMD3(CCC_Mask,					"hud_weapon", &psHUD_Flags, HUD_WEAPON);
 	CMD3(CCC_Mask,					"hud_info", &psHUD_Flags, HUD_INFO);
 	CMD3(CCC_Mask,					"hud_draw", &psHUD_Flags, HUD_DRAW);
