@@ -10,7 +10,7 @@ class ICollisionDamageInfo;
 class CElevatorState;
 class CPHActorCharacter;
 class CPHAICharacter;
- static enum EEnvironment
+ enum EEnvironment
 			{
 				peOnGround,
 				peAtWall,

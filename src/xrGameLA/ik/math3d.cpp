@@ -83,9 +83,9 @@ void hmatmult(Matrix A,Matrix B,Matrix C)
  * A *CAN* point to the same matrix as B or C.
  */
 {
-    register float	*a,*b,*c,*bp,*cp;
-    register float	*bmax,*cmax,*cpmax;
-    register float	*b32,*c00,*c03;
+    float	*a,*b,*c,*bp,*cp;
+    float	*bmax,*cmax,*cpmax;
+    float	*b32,*c00,*c03;
     Matrix		Bt,Ct;
 
     if (A == B) {
@@ -233,9 +233,9 @@ axisangletomatrix(Matrix m, float axis[], float theta)
  * like the coordinate axes.
  */
 {
-    register float	s,v,c;
-    register float	*p;
-    register float	a01,a02,a12,a0s,a1s,a2s,a01v,a02v,a12v;
+    float	s,v,c;
+    float	*p;
+    float	a01,a02,a12,a0s,a1s,a2s,a01v,a02v,a12v;
     
     c = _cos(theta);
     s = _sin(theta);
