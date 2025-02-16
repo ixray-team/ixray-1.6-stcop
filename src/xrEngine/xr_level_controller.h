@@ -104,8 +104,6 @@ enum EGameActions
 
 	kCAM_AUTOAIM,
 
-	kUSE_BANDAGE,
-	kUSE_MEDKIT,
 	kENGINE,
 	kMAP,
 	kCONTACTS,

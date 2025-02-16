@@ -31,8 +31,4 @@ IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared
 #define REGISTRY_VALUE_VERSION	"InstallVers"
 #define REGISTRY_VALUE_USERNAME	"InstallUserName"
 
-#ifdef DEBUG_DRAW
-#	define DRENDER
-#endif
-
 #define USE_OLD_OBJECT_PLANNER 1

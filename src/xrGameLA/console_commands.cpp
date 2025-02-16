@@ -46,7 +46,7 @@
 
 #ifdef DEBUG
 #	include "PHDebug.h"
-#	include "ui/UIDebugFonts.h" 
+//#	include "ui/UIDebugFonts.h" 
 #	include "game_graph.h"
 #endif
 
@@ -1241,10 +1241,10 @@ public:
 
 	virtual void Execute				(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()))
 			return;
 
-		ai().level_graph().setup_current_level	(-1);
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(-1);
 	}
 };
 
@@ -1257,10 +1257,10 @@ public:
 
 	virtual void Execute					(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
 
-		ai().level_graph().setup_current_level	(
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(
 			ai().level_graph().level_id()
 		);
 	}
@@ -1268,69 +1268,27 @@ public:
 
 class CCC_DrawGameGraphLevel : public IConsole_Command {
 public:
-				 CCC_DrawGameGraphLevel	(LPCSTR N) : IConsole_Command(N)
+	CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command(N)
 	{
 	}
 
-	virtual void Execute					(LPCSTR args)
+	virtual void Execute(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
 
-		string256			S;
-		S[0]				= 0;
-		sscanf				(args,"%s",S);
-
-		if (!*S) {
-			ai().level_graph().setup_current_level	(-1);
+		if (!*args) {
+			dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(-1);
 			return;
 		}
 
-		const GameGraph::SLevel	*level = ai().game_graph().header().level(S,true);
+		const GameGraph::SLevel* level = ai().game_graph().header().level(args, true);
 		if (!level) {
-			Msg				("! There is no level %s in the game graph",S);
+			Msg("! There is no level %s in the game graph", args);
 			return;
 		}
 
-		ai().level_graph().setup_current_level	(level->id());
-	}
-};
-
-class CCC_ScriptDbg : public IConsole_Command {
-public:
-	CCC_ScriptDbg(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args) {
-		
-		if(strstr(cName,"script_debug_break")==cName ){
-		
-		CScriptDebugger* d = ai().script_engine().debugger();
-		if(d){
-			if(d->Active())
-				d->initiateDebugBreak();
-			else
-				Msg("Script debugger not active.");
-		}else
-			Msg("Script debugger not present.");
-		}
-		else if(strstr(cName,"script_debug_stop")==cName ){
-			ai().script_engine().stopDebugger();
-		}
-		else if(strstr(cName,"script_debug_restart")==cName ){
-			ai().script_engine().restartDebugger();
-		};
-	};
-	
-
-	virtual void	Info	(TInfo& I)		
-	{
-		if(strstr(cName,"script_debug_break")==cName )
-			xr_strcpy(I,"initiate script debugger [DebugBreak] command"); 
-
-		else if(strstr(cName,"script_debug_stop")==cName )
-			xr_strcpy(I,"stop script debugger activity"); 
-
-		else if(strstr(cName,"script_debug_restart")==cName )
-			xr_strcpy(I,"restarts script debugger or start if no script debugger presents"); 
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(level->id());
 	}
 };
 
@@ -1361,12 +1319,13 @@ public:
 
 class CCC_DebugFonts : public IConsole_Command {
 public:
-	CCC_DebugFonts (LPCSTR N) : IConsole_Command(N) {bEmptyArgsHandled = true; }
-	virtual void Execute				(LPCSTR args) {
-		CUIDebugFonts* temp = new CUIDebugFonts();
-		temp->ShowDialog(true);
+	CCC_DebugFonts(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+	virtual void Execute(LPCSTR args)
+	{
+		//(new CUIDebugFonts())->ShowDialog(true);
 	}
 };
+
 
 class CCC_DebugNode : public IConsole_Command {
 public:
@@ -1834,9 +1793,9 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ShowMonsterInfo,		"ai_monster_info");
 
 	CMD4(CCC_Integer,				"lua_gcstep", &psLUA_GCSTEP, 1, 1000);
-	CMD1(CCC_ScriptDbg,				"script_debug_break");
-	CMD1(CCC_ScriptDbg,				"script_debug_stop");
-	CMD1(CCC_ScriptDbg,				"script_debug_restart");
+	//CMD1(CCC_ScriptDbg,				"script_debug_break");
+	//CMD1(CCC_ScriptDbg,				"script_debug_stop");
+	//CMD1(CCC_ScriptDbg,				"script_debug_restart");
 
 	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
 	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");

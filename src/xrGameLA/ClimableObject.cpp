@@ -11,10 +11,6 @@
 #	include "PHDebug.h"
 #endif
 
-#ifdef DEBUG
-#	include "../xrGame/debug_renderer.h"
-#endif
-
 static const float down_leader_extension_tolerance=0.2f;
 static const float up_leader_extension_tolerance=0.0f;
 

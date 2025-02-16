@@ -153,7 +153,7 @@ std::pair<LPCSTR,LPCSTR> *CStalkerAnimationPair::blend_id	(IKinematicsAnimated *
 #if 0
 	VERIFY2					(
 		blends[blends.size() - 2]->motionID != animation(),
-		make_string(
+		make_string<const char*>(
 			"animation is blending with itself (%s)",
 			skeleton_animated->LL_MotionDefName_dbg(animation()).first
 		)

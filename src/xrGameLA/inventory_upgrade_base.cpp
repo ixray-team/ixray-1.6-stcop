@@ -94,7 +94,7 @@ bool UpgradeBase::contain_upgrade( const shared_str& upgrade_id )
 
 void UpgradeBase::fill_root_container( Root* root )
 {
-//!=R_ASSERT2( 0, make_string( "! Can`t fill <%s> in <UpgradeBase::fill_root_container> for root = %s", id_str(), root->id_str() ) );
+//!=R_ASSERT2( 0, make_string<const char*>( "! Can`t fill <%s> in <UpgradeBase::fill_root_container> for root = %s", id_str(), root->id_str() ) );
 	Groups_type::iterator ib = m_depended_groups.begin();
 	Groups_type::iterator ie = m_depended_groups.end();
 	for ( ; ib != ie ; ++ib )
@@ -122,7 +122,7 @@ UpgradeStateResult UpgradeBase::can_install( CInventoryItem& item, bool loading 
 		}
 		/*if ( loading )
 		{
-			FATAL( make_string( "Loading item: Upgrade <%s> (id = %d) is installed already.", id_str(), item.object_id() ).c_str() );
+			FATAL( make_string<const char*>( "Loading item: Upgrade <%s> (id = %d) is installed already.", id_str(), item.object_id() ).c_str() );
 		}*/
 		return result_e_installed; // true
 	}

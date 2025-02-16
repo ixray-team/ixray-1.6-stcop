@@ -16,6 +16,7 @@
 #include "../xrEngine/bone.h"
 #include "sound_collection_storage.h"
 #include "../xrCore/object_broker.h"
+#include <ai_debug.h>
 
 CSoundPlayer::CSoundPlayer			(CObject *object)
 {

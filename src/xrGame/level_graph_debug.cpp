@@ -23,6 +23,7 @@
 #include "alife_monster_detail_path_manager.h"
 
 #include "debug_renderer.h"
+#include "../xrUI/ui_base.h"
 
 void CLevelGraph::setup_current_level	(const int &level_id)
 {
@@ -172,7 +173,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		radius = 1.f;
 	const u32					color = color_xrgb(255,0,0);
 	const IGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *HUD().Font().pFontDI;
+	CGameFont					&font = *UI().Font().pFontDI;
 
 	Fvector						position;
 	if (psAI_Flags.test(aiDrawGameGraphRealPos))

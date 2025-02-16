@@ -11,7 +11,7 @@
 
 CGameGraph::CGameGraph											()
 {
-	VERIFY(!Device->IsEditorMode());
+	VERIFY(!Device.IsEditorMode());
 	string_path						file_name;
 	FS.update_path					(file_name,"$game_data$",GRAPH_NAME);
 
@@ -29,7 +29,7 @@ CGameGraph::CGameGraph											()
 
 IC CGameGraph::~CGameGraph											()
 {
-	VERIFY(!Device->IsEditorMode());
+	VERIFY(!Device.IsEditorMode());
 	FS.r_close(m_reader);
 }
 

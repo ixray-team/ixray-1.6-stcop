@@ -277,7 +277,7 @@ void CGamePersistent::WeathersUpdate()
                 }
             }
             /*
-            if (Device->dwTimeGlobal > ambient_sound_next_time)
+            if (Device.dwTimeGlobal > ambient_sound_next_time)
             {
                 ref_sound* snd          = env_amb->get_rnd_sound();
                 ambient_sound_next_time = Device->dwTimeGlobal + env_amb->get_rnd_sound_time();
@@ -288,7 +288,7 @@ void CGamePersistent::WeathersUpdate()
                     pos.x         = _cos(angle);
                     pos.y         = 0;
                     pos.z         = _sin(angle);
-                    pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device->vCameraPosition);
+                    pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
                     pos.y += 10.f;
                     snd->play_at_pos(0, pos);
                 }
@@ -621,7 +621,7 @@ void CGamePersistent::OnFrame	()
 		}
 	}
 
-#ifdef DEBUG
+#if 0
 	if ((m_last_stats_frame + 1) < m_frame_counter)
 		profiler().clear		();
 #endif
@@ -687,7 +687,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGamePersistent::Statistics	(CGameFont* F)
 {
-#ifdef DEBUG
+#if 0
 #	ifndef _EDITOR
 		m_last_stats_frame		= m_frame_counter;
 		profiler().show_stats	(F,!!psAI_Flags.test(aiStats));

@@ -236,7 +236,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject	*I)
 			tempposition3 = l_tpALifeCreatureAbstract->o_Position;
 		}
 
-		VERIFY2(!l_tpALifeCreatureAbstract || (l_tpALifeCreatureAbstract->fHealth >= EPS_L), make_string("Variable l_tpALifeCreatureAbstract is not null _OR_ Health of alifecreture is less than %f. Health = %f, pos = [x %f, y %f, z %f]",
+		VERIFY2(!l_tpALifeCreatureAbstract || (l_tpALifeCreatureAbstract->fHealth >= EPS_L), make_string<const char*>("Variable l_tpALifeCreatureAbstract is not null _OR_ Health of alifecreture is less than %f. Health = %f, pos = [x %f, y %f, z %f]",
 			EPS_L, l_tpALifeCreatureAbstract->fHealth, tempposition3.x, tempposition3.y, tempposition3.z));*/
 
 		// checking if parent is online too

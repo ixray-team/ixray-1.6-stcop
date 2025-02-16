@@ -25,6 +25,7 @@
 #	include "level.h"
 #	include "space_restrictor.h"
 #endif // DEBUG
+#include <ai_debug.h>
 
 int g_restriction_checker = 0;
 

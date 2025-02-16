@@ -656,7 +656,7 @@ void CWeaponMagazined::switch2_Fire	()
 #ifdef LOG_ACTION
 	if (!io)
 		return;
-	//VERIFY2					(io,make_string("no inventory owner, item %s",*cName()));
+	//VERIFY2					(io,make_string<const char*>("no inventory owner, item %s",*cName()));
 
 	if (ii != io->inventory().ActiveItem())
 		Msg					("! not an active item, item %s, owner %s, active item %s",*cName(),*H_Parent()->cName(),io->inventory().ActiveItem() ? *io->inventory().ActiveItem()->object().cName() : "no_active_item");
@@ -678,7 +678,7 @@ void CWeaponMagazined::switch2_Fire	()
 //
 //	VERIFY2(
 //		io && (ii == io->inventory().ActiveItem()),
-//		make_string(
+//		make_string<const char*>(
 //			"item[%s], parent[%s]",
 //			*cName(),
 //			H_Parent() ? *H_Parent()->cName() : "no_parent"

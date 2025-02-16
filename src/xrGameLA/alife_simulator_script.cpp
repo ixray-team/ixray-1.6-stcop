@@ -629,7 +629,7 @@ void CALifeSimulator::validate			()
 		lua_State				**_state = &_dummy->state;
 		VERIFY2					(
 			base->m_self.state(),
-			make_string(
+			make_string<const char*>(
 				"0x%08x name[%s] name_replace[%s]",
 				*(int*)&_state,
 				(*I).second->data()->object().name(),

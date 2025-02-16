@@ -270,7 +270,7 @@ void CStalkerMovementManager::setup_movement_params	()
 				Fvector							vertex_position = ai().level_graph().vertex_position(level_path().dest_vertex_id());
 				VERIFY2							(
 					restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
-					make_string(
+					make_string<const char*>(
 						"vertex_id[%d],position[%f][%f][%f],object[%s]",
 						vertex_id,
 						VPUSH(vertex_position),

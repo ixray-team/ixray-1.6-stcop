@@ -20,7 +20,7 @@ void check_path	(const CBaseMonster *monster, const CPatrolPath *path)
 		)->level_id()
 		==
 		ai().level_graph().level_id(),
-		make_string(
+		make_string<const char*>(
 			"invalid patrol path [%s] as home specified for monster [%s]\nmonster is on level %s\npatrol path is on level %s",
 			*path->m_name,
 			*monster->cName(),

@@ -65,7 +65,7 @@ static void	_stdcall callback_rotation_blend	(CBoneInstance* const bone)
 	VERIFY							(parameter->m_rotation);
 	VERIFY							(parameter->m_object);
 	VERIFY							(parameter->m_blend);
-//	VERIFY2							( *parameter->m_blend, make_string( "%d %s[%s]", Device.dwTimeGlobal, parameter->m_object->cName().c_str(), parameter->m_object->g_Alive() ? "+" : "-") );
+//	VERIFY2							( *parameter->m_blend, make_string<const char*>( "%d %s[%s]", Device.dwTimeGlobal, parameter->m_object->cName().c_str(), parameter->m_object->g_Alive() ? "+" : "-") );
 
 	float multiplier				= 1.f;
 	if ( *parameter->m_blend ) {

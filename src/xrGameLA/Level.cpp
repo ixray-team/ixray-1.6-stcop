@@ -116,7 +116,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_space_restriction_manager = new CSpaceRestrictionManager();
 		m_client_spawn_manager		= new CClientSpawnManager();
 		m_autosave_manager			= new CAutosaveManager();
-	#ifdef DRENDER
+	#ifdef DEBUG_DRAW
 		m_debug_renderer			= new CDebugRenderer();
 	#endif
 	#ifdef DEBUG
@@ -129,7 +129,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_client_spawn_manager		= NULL;
 		m_autosave_manager			= NULL;
 		m_space_restriction_manager = NULL;
-	#ifdef DRENDER
+	#ifdef DEBUG_DRAW
 		m_debug_renderer			= NULL;
 	#endif
 	#ifdef DEBUG
@@ -223,7 +223,7 @@ CLevel::~CLevel()
 
 	xr_delete					(m_autosave_manager);
 
-#ifdef DRENDER
+#ifdef DEBUG_DRAW
 	xr_delete					(m_debug_renderer);
 #endif
 
@@ -640,8 +640,8 @@ void CLevel::OnRender()
 #endif
 
 #ifdef DEBUG
-	if (ai().get_level_graph())
-		ai().level_graph().render();
+	if (ai().get_level_graph() && dynamic_cast<CLevelGraph*>(&ai().level_graph()))
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->render();
 
 #ifdef DEBUG_PRECISE_PATH
 	test_precise_path		();
@@ -714,7 +714,7 @@ void CLevel::OnRender()
 	}
 #endif
 
-#ifdef DRENDER
+#ifdef DEBUG_DRAW
 	debug_renderer().render					();
 #endif
 

@@ -186,15 +186,7 @@ void CStalkerAnimationManager::update_impl					()
 //	Msg("* %s %6d sync", *object().cName(), Device.dwTimeGlobal);
 	torso().synchronize		(m_skeleton_animated,m_legs);
 }
-#ifdef DEBUG
-int anim_manager_exception_filter(CAI_Stalker* stk, u32 code, _EXCEPTION_POINTERS* ep)
-{
-	Msg("! error in stalker [%s]", stk->Name());
-	Msg("anim_manager_exception_filter: code=[0x%x][%s]", code, Debug.exception_name(code));
-	Debug.exception_stacktrace(ep);
-	return EXCEPTION_EXECUTE_HANDLER;
-}
-#endif
+
 void CStalkerAnimationManager::update						()
 {
 #ifndef DEBUG
@@ -213,12 +205,17 @@ void CStalkerAnimationManager::update						()
 	}*/
 #else
 	
-	__try
-	{
-		update_impl			();
+	try {
+		update_impl();
 	}
-	__except(anim_manager_exception_filter(m_object, GetExceptionCode(), GetExceptionInformation()))
-	{
+	catch (...) {
+		Msg("! error in stalker [%s] with visual [%s]", object().cNameSect().c_str(), object().cNameVisual().c_str());
+		// Prevent game from crashing
+		global().reset();
+		head().reset();
+		torso().reset();
+		legs().reset();
+		return;
 	}
 	
 #endif

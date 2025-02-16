@@ -190,7 +190,7 @@ u32 CStoreHouse::type_to_size(StoreData d)
 		case lua_float: return sizeof(float);
 		case lua_ctime: return sizeof(u64);
 	};
-	R_ASSERT2(0,make_string("StoreHouse unknown type [%d]", d.type));
+	R_ASSERT2(0,make_string<const char*>("StoreHouse unknown type [%d]", d.type));
 	return u32(-1);
 }
 
@@ -621,7 +621,7 @@ void CStoreHouse::SerializeTable(luabind::object& tbl)
 					}
 					catch (...)
 					{
-						R_ASSERT2(0, make_string("unsupported userdata '%s'", str));
+						R_ASSERT2(0, make_string<const char*>("unsupported userdata '%s'", str));
 					}
 				}
 				break;

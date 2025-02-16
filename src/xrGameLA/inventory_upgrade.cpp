@@ -90,7 +90,7 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 
 	/*R_ASSERT2(
 		ai().script_engine().functor( tooltip_functor_str, m_tooltip.functr ),
-		make_string( "Failed to get tooltip functor in section[%s], functor[%s]",
+		make_string<const char*>( "Failed to get tooltip functor in section[%s], functor[%s]",
 		id_str(), tooltip_functor_str
 		)
 	);

@@ -24,6 +24,7 @@
 #include "alife_monster_detail_path_manager.h"
 
 #include "debug_renderer.h"
+#include "ui_base.h"
 
 void CLevelGraph::setup_current_level	(const int &level_id)
 {
@@ -155,7 +156,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	const float					radius = .0105f;
 	const u32					color = color_xrgb(255,0,0);
 	const IGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *HUD().Font().pFontDI;
+	CGameFont					&font = *UI().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
 	font.SetColor				(color_xrgb(255,255,0));
@@ -299,7 +300,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	const float					radius = .0105f;
 	const u32					color = color_xrgb(255,0,0);
 	const IGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *HUD().Font().pFontDI;
+	CGameFont					&font = *UI().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
 	font.SetColor				(color_xrgb(255,255,0));
@@ -504,7 +505,7 @@ void CLevelGraph::draw_game_graph	()
 		T.set			(t1);
 		//T.y+= 1.5f;
 		T.y+= 1.5f/10.f;
-		Device->mFullTransform.transform (S,T);
+		Device.mFullTransform.transform (S,T);
 		//out of screen
 		if (S.z < 0 || S.w < 0)												continue;
 		if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;
@@ -547,7 +548,7 @@ void CLevelGraph::draw_game_graph	()
 				T.set			(t1);
 				//T.y+= 1.5f;
 				T.y+= 1.5f;
-				Device->mFullTransform.transform (S,T);
+				Device.mFullTransform.transform (S,T);
 				//out of screen
 				if (S.z < 0 || S.w < 0)												continue;
 				if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;

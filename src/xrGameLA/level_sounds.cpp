@@ -241,7 +241,7 @@ void CLevelSoundManager::Update()
 				SMusicTrack& T	= m_MusicTracks[m_CurrentTrack];
 				T.Play			();
 #ifdef DEBUG
-				Log				("- Play music track:",T.m_DbgName.c_str());
+				Msg("- Play music track: %s", T.m_DbgName.c_str());
 #endif
 			}else{
 				m_NextTrackTime	= engine_time+10000; // next check after 10 sec

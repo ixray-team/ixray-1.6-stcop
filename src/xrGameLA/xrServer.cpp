@@ -388,7 +388,7 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 
 	VERIFY							(verify_entities());
 	xrClientData* CL				= ID_to_client(sender);
-	//R_ASSERT2						(CL, make_string("packet type [%d]",type).c_str());
+	//R_ASSERT2						(CL, make_string<const char*>("packet type [%d]",type).c_str());
 
 	switch (type)
 	{

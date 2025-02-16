@@ -30,7 +30,7 @@ Property::~Property()
 void Property::construct( shared_str const& property_id, Manager& manager_r )
 {
 	m_id._set( property_id );
-	VERIFY2( pSettings->section_exist( m_id ), make_string( "Section of upgrade property [%s] does not exist!", m_id.c_str() ) );
+	VERIFY2( pSettings->section_exist( m_id ), make_string<const char*>( "Section of upgrade property [%s] does not exist!", m_id.c_str() ) );
 
 	m_name = CStringTable().translate( pSettings->r_string( id(), "name" ) );
 	m_icon._set( pSettings->r_string(id(), "icon") );

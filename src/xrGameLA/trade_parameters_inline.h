@@ -130,7 +130,7 @@ IC	void CTradeParameters::process							(_action_type type, Container cnt)
 	CTradeActionParameters	&_action = action(type);
 	_action.clear			();
 	for (auto I = cnt.begin(); I != cnt.end(); ++I) {
-		//R_ASSERT2(pSettings->section_exist((*I).first), make_string("%s has invalid section %s", *section, (*I).first.c_str())); 
+		//R_ASSERT2(pSettings->section_exist((*I).first), make_string<const char*>("%s has invalid section %s", *section, (*I).first.c_str())); 
 		if (!pSettings->section_exist((*I).first))
 		{
 			Msg("! Invalid section %s", (*I).first.c_str()); 

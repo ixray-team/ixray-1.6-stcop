@@ -165,8 +165,8 @@ void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
 
 	LPCSTR properties_section = "upgrades_properties";
 
-	VERIFY2( pSettings->section_exist( properties_section ), make_string( "Section [%s] does not exist !", properties_section ) );
-	VERIFY2( pSettings->line_count( properties_section ),    make_string( "Section [%s] is empty !",       properties_section ) );
+	VERIFY2( pSettings->section_exist( properties_section ), make_string<const char*>( "Section [%s] does not exist !", properties_section ) );
+	VERIFY2( pSettings->line_count( properties_section ),    make_string<const char*>( "Section [%s] is empty !",       properties_section ) );
 	shared_str property_id;
 
 	CInifile::Sect&		inv_section = pSettings->r_section( properties_section );

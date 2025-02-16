@@ -12,6 +12,7 @@
 #include "ai_space.h"
 #include "level_graph.h"
 #include "space_restriction_base.h"
+#include <ai_debug.h>
 
 const float dependent_distance = 100.f;
 
