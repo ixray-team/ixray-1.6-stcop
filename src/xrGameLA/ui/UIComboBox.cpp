@@ -144,7 +144,7 @@ void CUIComboBox::SetCurrentOptValue()
 	} else {
 		xr_token* tok		= GetOptToken();
 
-		while (tok->name)
+		while (tok && tok->name)
 		{		
 			if(m_disabled.end()==std::find(m_disabled.begin(),m_disabled.end(),tok->id))
 			{
@@ -156,9 +156,11 @@ void CUIComboBox::SetCurrentOptValue()
 
 	xr_string cur_val;
 	if (IsLanguangeItem())
-		cur_val		= CStringTable().LangName();
+		cur_val = CStringTable().LangName();
+	else if (*CStringTable().translate(GetOptTokenValue()))
+		cur_val = *CStringTable().translate(GetOptTokenValue());
 	else
-		cur_val		= *CStringTable().translate( GetOptTokenValue());
+		cur_val = "rus";
 
 	m_text.SetText		( cur_val.c_str() );
 	m_list_box.SetSelectedText( cur_val.c_str() );

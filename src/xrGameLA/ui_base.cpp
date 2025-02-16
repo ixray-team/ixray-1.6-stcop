@@ -213,7 +213,6 @@ ui_core::ui_core()
 
 ui_core::~ui_core()
 {
-	xr_delete						(m_pFontManager);
 	xr_delete						(m_pUICursor);
 }
 

@@ -27,7 +27,10 @@ void restart_all				()
 
 	destroy_lua_wpn_params		();
 	MainMenu()->DestroyInternal	(true);
-	xr_delete					(g_object_factory);
+
+	xr_delete(g_object_factory);
+	object_factory();
+
 	ai().script_engine().init	();
 }
 

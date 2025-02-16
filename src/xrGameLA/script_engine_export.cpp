@@ -232,5 +232,6 @@ void export_classes	(lua_State *L)
 	CAI_SwampBeast::script_register(L);
 	CInventoryItemObject::script_register(L);
 	CWeaponZoomable::script_register(L);
+	game_sv_GameState::script_register(L);
 #endif
 }

@@ -74,6 +74,8 @@ bool developer_mode()
 #pragma optimize("s",on)
 void game_sv_GameState::script_register(lua_State *L)
 {
+	game_PlayerState::script_register(L);
+	game_GameState::script_register(L);
 
 	module(L,"game")
 	[

@@ -189,6 +189,14 @@ namespace ixray::save
 	}
 }
 
+void lua_debug_print(LPCSTR str)
+{
+	if (!xr_strlen(str))
+		return;
+
+	Msg("$ DBG:[%lu] %s", Device.dwTimeGlobal, str);
+}
+
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -212,6 +220,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("user_name",						&user_name),
 		def("time_global",						&script_time_global),
 		def("SemiLog",							&SemiLog),
+		def("debug_print",						&lua_debug_print),
 		def("time_global_async",				&script_time_global_async),
 		def("IsSupportMP",						&CheckMP),
 		def("IsEditor",							&IsEditorMode)

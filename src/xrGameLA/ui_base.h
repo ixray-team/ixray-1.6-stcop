@@ -23,8 +23,7 @@ class ui_core: public CDeviceResetNotifier
 	C2DFrustum		m_FrustumLIT;
 
 	bool			m_bPostprocess;
-
-	CFontManager*	m_pFontManager;
+	
 	CUICursor*		m_pUICursor;
 
 	Fvector2		m_pp_scale_;
@@ -36,7 +35,7 @@ public:
 	
 					ui_core							();
 					~ui_core						();
-	CFontManager&	Font							()								{return *m_pFontManager;}
+	CFontManager&	Font							()								{return *g_FontManager;}
 	CUICursor&		GetUICursor						()								{return *m_pUICursor;}
 
 	IC float		ClientToScreenScaledX			(float left)	const			{return left * m_current_scale->x;};
