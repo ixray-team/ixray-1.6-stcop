@@ -1,8 +1,7 @@
 #pragma once
 
 #pragma warning(disable:4995)
-#include "../stdafx.h"
-#include <dplay8.h>
+#include "../xrEngine/stdafx.h"
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )
 #pragma warning( 4 : 4244 )
@@ -23,9 +22,9 @@ IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared
 #	define		THROW3					VERIFY3
 #endif
 
-#include "../gamefont.h"
-#include "../xr_object.h"
-#include "../igame_level.h"
+#include "../xrEngine/gamefont.h"
+#include "../xrEngine/xr_object.h"
+#include "../xrEngine/igame_level.h"
 
 #define REGISTRY_VALUE_GSCDKEY	"InstallCDKEY"
 #define REGISTRY_VALUE_VERSION	"InstallVers"

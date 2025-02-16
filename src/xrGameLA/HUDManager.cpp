@@ -3,7 +3,7 @@
 #include "hudtarget.h"
 
 #include "actor.h"
-#include "../igame_level.h"
+#include "../xrEngine/igame_level.h"
 #include "clsid_game.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
@@ -245,7 +245,7 @@ void   CHUDManager::RenderActiveItemUI()
 
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
-//отрисовка элементов интерфейса
+//РѕС‚СЂРёСЃРѕРІРєР° СЌР»РµРјРµРЅС‚РѕРІ РёРЅС‚РµСЂС„РµР№СЃР°
 #include "string_table.h"
 void  CHUDManager::RenderUI()
 {

@@ -15,7 +15,7 @@
 #include "../isheduled.h"
 #include "../irenderable.h"
 #include "../icollidable.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "entity.h"
 #include "ai_space.h"
 #include "script_engine.h"

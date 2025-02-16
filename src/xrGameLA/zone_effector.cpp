@@ -2,7 +2,7 @@
 #include "zone_effector.h"
 #include "level.h"
 #include "clsid_game.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "../cameramanager.h"
 #include "actor.h"
 #include "actoreffector.h"

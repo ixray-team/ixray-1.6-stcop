@@ -12,7 +12,7 @@
 #include "physicsshellholder.h"
 
 #include "../Include/xrRender/Kinematics.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "../bone.h"
 extern CPHWorld			*ph_world;
 CPhysicsShell::~CPhysicsShell()

@@ -6,13 +6,13 @@
 #define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
-#include "../igame_level.h"
+#include "../xrEngine/igame_level.h"
 #include "../../xrNetServer/net_client.h"
 #include "script_export_space.h"
 #include "../StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
-#include "xrDebug.h"
+#include "../xrCore/xrDebug.h"
 #include "xrServer.h"
 #include "battleye_system.h"
 
@@ -133,7 +133,8 @@ private:
 	u32							m_dwNumSteps;
 	bool						m_bIn_CrPr;
 
-	DEF_VECTOR					(OBJECTS_LIST, CGameObject*);
+	using OBJECTS_LIST = xr_vector<CGameObject*>;
+	using OBJECTS_LIST_it = OBJECTS_LIST::iterator;
 
 	OBJECTS_LIST				pObjects4CrPr;
 	OBJECTS_LIST				pActors4CrPr;
@@ -169,7 +170,8 @@ public:
 public:
 	//////////////////////////////////////////////	
 	// static particles
-	DEFINE_VECTOR				(CParticlesObject*,POVec,POIt);
+	using POVec = xr_vector<CParticlesObject*>;
+	using POIt = POVec::iterator;
 	POVec						m_StaticParticles;
 
 	game_cl_GameState			*game;
@@ -188,7 +190,8 @@ public:
 
 private:
 	// preload sounds registry
-	DEFINE_MAP					(shared_str,ref_sound,SoundRegistryMap,SoundRegistryMapIt);
+	using SoundRegistryMap = xr_map<shared_str, ref_sound>;
+	using SoundRegistryMapIt = SoundRegistryMap::iterator;
 	SoundRegistryMap			sound_registry;
 
 public:
@@ -299,20 +302,20 @@ public:
 	CLevel();
 	virtual ~CLevel();
 
-	//названияе текущего уровня
+	//РЅР°Р·РІР°РЅРёСЏРµ С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ
 	virtual shared_str			name				() const;
 	virtual void				GetLevelInfo		( CServerInfo* si );
 
-	//Функция перезагрузки кофигоф и погоды
+	//Р¤СѓРЅРєС†РёСЏ РїРµСЂРµР·Р°РіСЂСѓР·РєРё РєРѕС„РёРіРѕС„ Рё РїРѕРіРѕРґС‹
 	void						ReloadEnvironment();
 
 	//gets the time from the game simulation
 	
-	//возвращает время в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetGameTime				();
-	//возвращает время для энвайронмента в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РґР»СЏ СЌРЅРІР°Р№СЂРѕРЅРјРµРЅС‚Р° РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetEnvironmentGameTime	();
-	//игровое время в отформатированном виде
+	//РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ РІ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅРѕРј РІРёРґРµ
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 	void				GetGameTimeHour			(u32& hours);
 	void				GetGameTimeMinute		(u32& minute);
@@ -338,7 +341,7 @@ public:
 	CMapManager&			MapManager					()	{return *m_map_manager;}
 //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
-	//работа с пулями
+	//СЂР°Р±РѕС‚Р° СЃ РїСѓР»СЏРјРё
 protected:	
 	CBulletManager*		m_pBulletManager;
 public:

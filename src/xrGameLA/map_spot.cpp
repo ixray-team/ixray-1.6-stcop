@@ -5,7 +5,7 @@
 #include "ui/UIXmlInit.h"
 #include "ui/UIMApWnd.h"
 #include "level.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "object_broker.h"
 #include "ui/UITextureMaster.h"
 

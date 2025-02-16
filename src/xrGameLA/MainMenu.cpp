@@ -3,7 +3,7 @@
 #include "UI/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
 #include "../xr_IOConsole.h"
-#include "../IGame_Level.h"
+#include "../xrEngine/igame_level.h"
 #include "../CameraManager.h"
 #include "xr_Level_controller.h"
 #include "ui\UITextureMaster.h"

@@ -2,7 +2,7 @@
 #include "PHCommander.h"
 #include "script_space_forward.h"
 #include "script_callback_ex.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "PHScriptCall.h"
 
 /*

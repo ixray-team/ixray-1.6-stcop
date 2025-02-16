@@ -11,7 +11,7 @@
 #include "script_engine.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
-#include "../xr_object.h"
+#include "../xrEngine/xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../bone.h"
 #include "profiler.h"
