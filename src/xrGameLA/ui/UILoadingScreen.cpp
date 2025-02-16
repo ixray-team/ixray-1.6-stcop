@@ -16,9 +16,10 @@ void UILoadingScreen::Initialize() {
     CUIXml uiXml;
     uiXml.Load(CONFIG_PATH, UI_PATH, "ui_mm_loading_screen.xml");
 
-    const auto loadProgressBar = [&]() {
-        loadingProgressBackground =
-            UIHelper::CreateStatic(uiXml, "loading_progress_background", this);
+    const auto loadProgressBar = [&]() 
+        {
+        if (uiXml.NavigateToNode("loading_progress_background", 0))
+            loadingProgressBackground = UIHelper::CreateStatic(uiXml, "loading_progress_background", this);
         loadingProgress = UIHelper::CreateProgressBar(uiXml, "loading_progress", this);
     };
 
@@ -35,11 +36,20 @@ void UILoadingScreen::Initialize() {
     }
 
     loadingLogo = UIHelper::CreateStatic(uiXml, "loading_logo", this);
-    loadingProgressPercent = UIHelper::CreateStatic(uiXml, "loading_progress_percent", this);
+
+    if (uiXml.NavigateToNode("loading_progress_percent", 0))
+        loadingProgressPercent = UIHelper::CreateStatic(uiXml, "loading_progress_percent", this);
+
     loadingStage = UIHelper::CreateStatic(uiXml, "loading_stage", this);
-    loadingHeader = UIHelper::CreateStatic(uiXml, "loading_header", this);
-    loadingTipNumber = UIHelper::CreateStatic(uiXml, "loading_tip_number", this);
-    loadingTip = UIHelper::CreateStatic(uiXml, "loading_tip", this);
+
+    if (uiXml.NavigateToNode("loading_header", 0))
+        loadingHeader = UIHelper::CreateStatic(uiXml, "loading_header", this);
+
+    if (uiXml.NavigateToNode("loading_tip_number", 0))
+        loadingTipNumber = UIHelper::CreateStatic(uiXml, "loading_tip_number", this);
+
+    if (uiXml.NavigateToNode("loading_tip", 0))
+        loadingTip = UIHelper::CreateStatic(uiXml, "loading_tip", this);
 }
 
 void UILoadingScreen::Update(const int stagesCompleted, const int stagesTotal) {
@@ -63,7 +73,12 @@ void UILoadingScreen::SetStageTitle(const char* title) const {
 
 void UILoadingScreen::SetStageTip(const char* header, const char* tipNumber,
                                   const char* tip) const {
-    loadingHeader->TextItemControl()->SetText(header);
-    loadingTipNumber->TextItemControl()->SetText(tipNumber);
-    loadingTip->TextItemControl()->SetText(tip);
+    if (loadingHeader)
+        loadingHeader->TextItemControl()->SetText(header);
+
+    if (loadingTipNumber)
+        loadingTipNumber->TextItemControl()->SetText(tipNumber);
+
+    if (loadingTip)
+        loadingTip->TextItemControl()->SetText(tip);
 }
