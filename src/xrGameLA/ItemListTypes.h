@@ -18,7 +18,7 @@ public:
     TOnListItemFocused	OnItemFocused;
   //  TOnDrawThumbnail	OnDrawThumbnail;
 public:
-    UIItemListForm* Parent;
+    //UIItemListForm* Parent;
     int 				tag;
     LPVOID				m_Object;
     int					icon_index;

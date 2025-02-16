@@ -20,8 +20,8 @@
 #include "Car.h"
 
 //////////////////////////////////////////////////////////////////////////
-#define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
-#define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
+#define PREFETCHED_ARTEFACTS_NUM 1	//ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® ГЇГ°ГҐГ¤ГўГ Г°ГЁГІГҐГ«ГјГ­Г® ГЇГ°Г®Г±ГЇГ ГўГ­ГҐГ­Г»Гµ Г Г°ГІГҐГґГ ГЄГІГ®Гў
+#define WIND_RADIUS (4*Radius())	//Г°Г Г±Г±ГІГ®ГїГ­ГЁГҐ Г¤Г® Г ГЄГІГҐГ°Г , ГЄГ®ГЈГ¤Г  ГЇГ®ГїГўГ«ГїГҐГІГ±Гї ГўГҐГІГҐГ° 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
 
 CCustomZone::CCustomZone(void) 
@@ -96,7 +96,7 @@ void CCustomZone::Load(LPCSTR section)
 
 
 
-	//загрузить времена для зоны
+	//Г§Г ГЈГ°ГіГ§ГЁГІГј ГўГ°ГҐГ¬ГҐГ­Г  Г¤Г«Гї Г§Г®Г­Г»
 	m_StateTime[eZoneStateIdle]			= -1;
 	m_StateTime[eZoneStateAwaking]		= pSettings->r_s32(section, "awaking_time");
 	m_StateTime[eZoneStateBlowout]		= pSettings->r_s32(section, "blowout_time");
@@ -243,7 +243,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fBlowoutWindPowerMax = pSettings->r_float(section,"blowout_wind_power");
 	}
 
-	//загрузить параметры световой вспышки от взрыва
+	//Г§Г ГЈГ°ГіГ§ГЁГІГј ГЇГ Г°Г Г¬ГҐГІГ°Г» Г±ГўГҐГІГ®ГўГ®Г© ГўГ±ГЇГ»ГёГЄГЁ Г®ГІ ГўГ§Г°Г»ГўГ 
 	m_zone_flags.set(eBlowoutLight, pSettings->r_bool (section, "blowout_light"));
 
 	if(m_zone_flags.test(eBlowoutLight) ){
@@ -255,7 +255,7 @@ void CCustomZone::Load(LPCSTR section)
 		m_fLightHeight		= pSettings->r_float(section,"light_height");
 	}
 
-	//загрузить параметры idle подсветки
+	//Г§Г ГЈГ°ГіГ§ГЁГІГј ГЇГ Г°Г Г¬ГҐГІГ°Г» idle ГЇГ®Г¤Г±ГўГҐГІГЄГЁ
 	m_zone_flags.set(eIdleLight,	pSettings->r_bool (section, "idle_light"));
 	if( m_zone_flags.test(eIdleLight) )
 	{
@@ -267,7 +267,7 @@ void CCustomZone::Load(LPCSTR section)
 	}
 
 
-	//загрузить параметры для разбрасывания артефактов
+	//Г§Г ГЈГ°ГіГ§ГЁГІГј ГЇГ Г°Г Г¬ГҐГІГ°Г» Г¤Г«Гї Г°Г Г§ГЎГ°Г Г±Г»ГўГ Г­ГЁГї Г Г°ГІГҐГґГ ГЄГІГ®Гў
 	m_zone_flags.set(eSpawnBlowoutArtefacts,	pSettings->r_bool(section,"spawn_blowout_artefacts"));
 	if(m_zone_flags.test(eSpawnBlowoutArtefacts) )
 	{
@@ -315,8 +315,8 @@ void CCustomZone::Load(LPCSTR section)
 
 		if (total_probability == 0.f) total_probability = 1.0;
 		R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!",*cName());
-		//нормализировать вероятности
-		for(i=0; i<m_ArtefactSpawn.size(); ++i)
+		//Г­Г®Г°Г¬Г Г«ГЁГ§ГЁГ°Г®ГўГ ГІГј ГўГҐГ°Г®ГїГІГ­Г®Г±ГІГЁ
+		for(u16 i=0; i<m_ArtefactSpawn.size(); ++i)
 		{
 			m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability/total_probability;
 		}
@@ -355,7 +355,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_StartTime					= Device.dwTimeGlobal;
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
-	//добавить источники света
+	//Г¤Г®ГЎГ ГўГЁГІГј ГЁГ±ГІГ®Г·Г­ГЁГЄГЁ Г±ГўГҐГІГ 
 	if ( m_zone_flags.test(eIdleLight) )
 	{
 		m_pIdleLight = ::Render->light_create();
@@ -499,7 +499,7 @@ void CCustomZone::UpdateWorkload	(u32 dt)
 	default: NODEFAULT;
 	}
 
-	//вычислить время срабатывания зоны
+	//ГўГ»Г·ГЁГ±Г«ГЁГІГј ГўГ°ГҐГ¬Гї Г±Г°Г ГЎГ ГІГ»ГўГ Г­ГЁГї Г§Г®Г­Г»
 	if(m_bZoneActive)	m_dwDeltaTime	+=	dt;
 	else				m_dwDeltaTime	=	0;
 
@@ -540,8 +540,8 @@ void CCustomZone::shedule_Update(u32 dt)
 		//Msg("%s sphere range = %f", Name(), s.R);
 		feel_touch_update		(P,s.R);
 
-		//пройтись по всем объектам в зоне
-		//и проверить их состояние
+		//ГЇГ°Г®Г©ГІГЁГ±Гј ГЇГ® ГўГ±ГҐГ¬ Г®ГЎГєГҐГЄГІГ Г¬ Гў Г§Г®Г­ГҐ
+		//ГЁ ГЇГ°Г®ГўГҐГ°ГЁГІГј ГЁГµ Г±Г®Г±ГІГ®ГїГ­ГЁГҐ
 		for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); 
 			m_ObjectInfoMap.end() != it; ++it) 
 		{
@@ -569,8 +569,8 @@ void CCustomZone::shedule_Update(u32 dt)
 //					StopObjectIdleParticles(smart_cast<CPhysicsShellHolder*>(pObject));
 			}
 
-			//если есть хотя бы один не дисабленый объект, то
-			//зона считается активной
+			//ГҐГ±Г«ГЁ ГҐГ±ГІГј ГµГ®ГІГї ГЎГ» Г®Г¤ГЁГ­ Г­ГҐ Г¤ГЁГ±Г ГЎГ«ГҐГ­Г»Г© Г®ГЎГєГҐГЄГІ, ГІГ®
+			//Г§Г®Г­Г  Г±Г·ГЁГІГ ГҐГІГ±Гї Г ГЄГІГЁГўГ­Г®Г©
 			if(info.zone_ignore == false) 
 				m_bZoneActive = true;
 		}
@@ -766,7 +766,7 @@ void CCustomZone::UpdateIdleLight	()
 	VERIFY(m_pIdleLAnim);
 
 	int frame = 0;
-	u32 clr					= m_pIdleLAnim->CalculateBGR(Device.fTimeGlobal,frame); // возвращает в формате BGR
+	u32 clr					= m_pIdleLAnim->CalculateBGR(Device.fTimeGlobal,frame); // ГўГ®Г§ГўГ°Г Г№Г ГҐГІ Гў ГґГ®Г°Г¬Г ГІГҐ BGR
 	Fcolor					fclr;
 	fclr.set				((float)color_get_B(clr)/255.f,(float)color_get_G(clr)/255.f,(float)color_get_R(clr)/255.f,1.f);
 	
@@ -844,7 +844,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	else 
 		vel.set(0,0,0);
 	
-	//выбрать случайную косточку на объекте
+	//ГўГ»ГЎГ°Г ГІГј Г±Г«ГіГ·Г Г©Г­ГіГѕ ГЄГ®Г±ГІГ®Г·ГЄГі Г­Г  Г®ГЎГєГҐГЄГІГҐ
 	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
 	if (PP){
 		u16 play_bone = PP->GetRandomBone(); 
@@ -897,7 +897,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 
 	shared_str particle_str = NULL;
 
-	//разные партиклы для объектов разного размера
+	//Г°Г Г§Г­Г»ГҐ ГЇГ Г°ГІГЁГЄГ«Г» Г¤Г«Гї Г®ГЎГєГҐГЄГІГ®Гў Г°Г Г§Г­Г®ГЈГ® Г°Г Г§Г¬ГҐГ°Г 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
 		if(!m_sIdleObjectParticlesSmall) return;
@@ -910,7 +910,7 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 	}
 
 	
-	//запустить партиклы на объекте
+	//Г§Г ГЇГіГ±ГІГЁГІГј ГЇГ Г°ГІГЁГЄГ«Г» Г­Г  Г®ГЎГєГҐГЄГІГҐ
 	//. new
 	PP->StopParticles (particle_str, BI_NONE, true);
 
@@ -934,7 +934,7 @@ void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 	
 	
 	shared_str particle_str = NULL;
-	//разные партиклы для объектов разного размера
+	//Г°Г Г§Г­Г»ГҐ ГЇГ Г°ГІГЁГЄГ«Г» Г¤Г«Гї Г®ГЎГєГҐГЄГІГ®Гў Г°Г Г§Г­Г®ГЈГ® Г°Г Г§Г¬ГҐГ°Г 
 	if(pObject->Radius()<SMALL_OBJECT_RADIUS)
 	{
 		if(!m_sIdleObjectParticlesSmall) return;
@@ -1025,7 +1025,7 @@ void CCustomZone::AffectObjects()
 				//Msg("%s affects %s", Name(), (*it).object->Name());
 
 				if (EA->g_Alive()){
-					// Занесем монстра в список, если его там еще нет
+					// Г‡Г Г­ГҐГ±ГҐГ¬ Г¬Г®Г­Г±ГІГ°Г  Гў Г±ГЇГЁГ±Г®ГЄ, ГҐГ±Г«ГЁ ГҐГЈГ® ГІГ Г¬ ГҐГ№ГҐ Г­ГҐГІ
 					bool found = false;
 					for (int i = 0; i < affectedgameobjects.size(); ++i)
 					{
@@ -1040,7 +1040,7 @@ void CCustomZone::AffectObjects()
 					}
 				}
 				else if (!EA->g_Alive()){
-					// Отчистим список если монстр в списоке и он мертв, резрешим спавн арта
+					// ГЋГІГ·ГЁГ±ГІГЁГ¬ Г±ГЇГЁГ±Г®ГЄ ГҐГ±Г«ГЁ Г¬Г®Г­Г±ГІГ° Гў Г±ГЇГЁГ±Г®ГЄГҐ ГЁ Г®Г­ Г¬ГҐГ°ГІГў, Г°ГҐГ§Г°ГҐГёГЁГ¬ Г±ГЇГ ГўГ­ Г Г°ГІГ 
 					bool found = false;
 					for (int i = 0; i < affectedgameobjects.size(); ++i)
 					{
@@ -1267,8 +1267,8 @@ bool CCustomZone::ShouldIgnoreObject(CGameObject* pObject)
 
 void CCustomZone::SpawnArtefact()
 {
-	//вычислить согласно распределению вероятностей
-	//какой артефакт из списка ставить
+	//ГўГ»Г·ГЁГ±Г«ГЁГІГј Г±Г®ГЈГ«Г Г±Г­Г® Г°Г Г±ГЇГ°ГҐГ¤ГҐГ«ГҐГ­ГЁГѕ ГўГҐГ°Г®ГїГІГ­Г®Г±ГІГҐГ©
+	//ГЄГ ГЄГ®Г© Г Г°ГІГҐГґГ ГЄГІ ГЁГ§ Г±ГЇГЁГ±ГЄГ  Г±ГІГ ГўГЁГІГј
 	float rnd = ::Random.randF(.0f,1.f-EPS_L);
 	float prob_threshold = 0.f;
 

@@ -84,12 +84,12 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	game_configured				= FALSE;
 	m_bGameConfigStarted		= FALSE;
 
-	eChangeRP					= Engine.Event.Handler_Attach	("LEVEL:ChangeRP",this);
-	eDemoPlay					= Engine.Event.Handler_Attach	("LEVEL:PlayDEMO",this);
-	eChangeTrack				= Engine.Event.Handler_Attach	("LEVEL:PlayMusic",this);
-	eEnvironment				= Engine.Event.Handler_Attach	("LEVEL:Environment",this);
+	eChangeRP					= g_pEventManager->Event.Handler_Attach	("LEVEL:ChangeRP",this);
+	eDemoPlay					= g_pEventManager->Event.Handler_Attach	("LEVEL:PlayDEMO",this);
+	eChangeTrack				= g_pEventManager->Event.Handler_Attach	("LEVEL:PlayMusic",this);
+	eEnvironment				= g_pEventManager->Event.Handler_Attach	("LEVEL:Environment",this);
 
-	eEntitySpawn				= Engine.Event.Handler_Attach	("LEVEL:spawn",this);
+	eEntitySpawn				= g_pEventManager->Event.Handler_Attach	("LEVEL:spawn",this);
 
 	m_pBulletManager			= new CBulletManager();
 
@@ -183,12 +183,12 @@ CLevel::~CLevel()
 
 	Msg							("- Destroying level");
 
-	Engine.Event.Handler_Detach	(eEntitySpawn,	this);
+	g_pEventManager->Event.Handler_Detach	(eEntitySpawn,	this);
 
-	Engine.Event.Handler_Detach	(eEnvironment,	this);
-	Engine.Event.Handler_Detach	(eChangeTrack,	this);
-	Engine.Event.Handler_Detach	(eDemoPlay,		this);
-	Engine.Event.Handler_Detach	(eChangeRP,		this);
+	g_pEventManager->Event.Handler_Detach	(eEnvironment,	this);
+	g_pEventManager->Event.Handler_Detach	(eChangeTrack,	this);
+	g_pEventManager->Event.Handler_Detach	(eDemoPlay,		this);
+	g_pEventManager->Event.Handler_Detach	(eChangeRP,		this);
 
 	if (ph_world)
 	{
@@ -451,7 +451,7 @@ void CLevel::OnFrame	()
 		if (OnClient() && GameID() != GAME_SINGLE) 
 			ClearAllObjects();
 
-		Engine.Event.Defer				("kernel:disconnect");
+		g_pEventManager->Event.Defer				("kernel:disconnect");
 		return;
 	} else {
 
@@ -470,7 +470,7 @@ void CLevel::OnFrame	()
 	if(!g_dedicated_server )
 	{
 		if (g_mt_config.test(mtMap)) 
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(m_map_manager,&CMapManager::Update));
+			Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
 		else								
 			MapManager().Update		();
 	}
@@ -496,21 +496,29 @@ void CLevel::OnFrame	()
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
 				F->SetColor	(color_xrgb(255,255,255));
-				for (u32 I=0; I<Server->GetClientsCount(); ++I)	
+				struct net_stats_functor
 				{
-					IClient*	C = Server->client_Get(I);
-					Server->UpdateClientStatistic(C);
-					F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
-						//Server->game->get_option_s(*C->Name,"name",*C->Name),
-						//					C->Name,
-						C->stats.getPing(),
-						float(C->stats.getBPS()),// /1024,
-						C->stats.getMPS_Receive	(),
-						C->stats.getMPS_Send	(),
-						C->stats.getRetriedCount(),
-						C->stats.dwTimesBlocked
+					xrServer* m_server;
+					CGameFont* F;
+					void operator()(IClient* C)
+					{
+						m_server->UpdateClientStatistic(C);
+						F->OutNext("0x%08x: P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
+							//Server->game->get_option_s(*C->Name,"name",*C->Name),
+							C->ID.value(),
+							C->stats.getPing(),
+							float(C->stats.getBPS()),// /1024,
+							C->stats.getMPS_Receive(),
+							C->stats.getMPS_Send(),
+							C->stats.getRetriedCount(),
+							C->stats.dwTimesBlocked
 						);
-				}
+					}
+				};
+				net_stats_functor tmp_functor;
+				tmp_functor.m_server = Server;
+				tmp_functor.F = F;
+				Server->ForEachClientDo(tmp_functor);
 			}
 			if (IsClient())
 			{
@@ -569,15 +577,17 @@ void CLevel::OnFrame	()
 	if(!g_dedicated_server)
 	{
 		if (g_mt_config.test(mtLevelSounds)) 
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(m_level_sound_manager,&CLevelSoundManager::Update));
+			Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
 		else								
 			m_level_sound_manager->Update	();
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		if (g_mt_config.test(mtLUA_GC))	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
-		else							script_gc	()	;
+		if (g_mt_config.test(mtLUA_GC))
+			Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
+		else
+			script_gc();
 	}
 	//-----------------------------------------------------
 	if (pStatGraphR)
@@ -1097,7 +1107,7 @@ GlobalFeelTouch::~GlobalFeelTouch()
 {
 }
 
-struct delete_predicate_by_time : public std::binary_function<Feel::Touch::DenyTouch, DWORD, bool>
+struct delete_predicate_by_time 
 {
 	bool operator () (Feel::Touch::DenyTouch const & left, DWORD const expire_time) const
 	{
@@ -1106,7 +1116,7 @@ struct delete_predicate_by_time : public std::binary_function<Feel::Touch::DenyT
 		return false;
 	};
 };
-struct objects_ptrs_equal : public std::binary_function<Feel::Touch::DenyTouch, CObject const *, bool>
+struct objects_ptrs_equal
 {
 	bool operator() (Feel::Touch::DenyTouch const & left, CObject const * const right) const
 	{
@@ -1119,21 +1129,17 @@ struct objects_ptrs_equal : public std::binary_function<Feel::Touch::DenyTouch, 
 void GlobalFeelTouch::update()
 {
 	//we ignore P and R arguments, we need just delete evaled denied objects...
-	xr_vector<Feel::Touch::DenyTouch>::iterator new_end = 
-		std::remove_if(feel_touch_disable.begin(), feel_touch_disable.end(), 
-			std::bind2nd(delete_predicate_by_time(), Device.dwTimeGlobal));
+	xr_vector<Feel::Touch::DenyTouch>::iterator new_end =
+		std::remove_if(feel_touch_disable.begin(), feel_touch_disable.end(),
+			std::bind(delete_predicate_by_time(), std::placeholders::_1, Device.dwTimeGlobal));
 	feel_touch_disable.erase(new_end, feel_touch_disable.end());
 }
 
-bool GlobalFeelTouch::is_object_denied(CObject const * O)
+bool GlobalFeelTouch::is_object_denied(CObject const* O)
 {
-	/*Fvector temp_vector;
-	feel_touch_update(temp_vector, 0.f);*/
 	if (std::find_if(feel_touch_disable.begin(), feel_touch_disable.end(),
-		std::bind2nd(objects_ptrs_equal(), O)) == feel_touch_disable.end())
-	{
+		std::bind(objects_ptrs_equal(), std::placeholders::_1, O)) == feel_touch_disable.end())
 		return false;
-	}
 	return true;
 }
 

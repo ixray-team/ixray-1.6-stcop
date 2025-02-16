@@ -27,16 +27,6 @@
 
 using namespace GraphEngineSpace;
 
-
-namespace hash_fixed_vertex_manager {
-	
-IC	u32 to_u32	(GraphEngineSpace::CWorldState const &other)
-{
-	return	(other.hash_value());
-}
-
-} // namespace hash_fixed_vertex_manager
-
 class CGraphEngine {
 public:
 #ifndef AI_COMPILER

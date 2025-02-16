@@ -712,7 +712,7 @@ SCollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
 {
   CCharacterPhysicsSupport *cs=character_physics_support();
   if(cs)return cs->get_collision_hit_callback();
-  else return false;
+  else return nullptr;
 }
 
 bool					CEntityAlive::	set_collision_hit_callback		(SCollisionHitCallback *cc)

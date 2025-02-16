@@ -1,4 +1,4 @@
-#include "pch_script.h"
+п»ї#include "pch_script.h"
 #include "inventory.h"
 #include "actor.h"
 #include "trade.h"
@@ -258,7 +258,7 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 	CWeaponMagazined*	pWeapon = smart_cast<CWeaponMagazined*>(pIItem);
 	if (pWeapon)
-		pWeapon->InitAddons(); //skyloader: need to do it as in CoP when UI will be ported | надо взять реализацию зум текстур из чн\зп, когда будет пересен уи из зп
+		pWeapon->InitAddons(); //skyloader: need to do it as in CoP when UI will be ported | Г­Г Г¤Г® ГўГ§ГїГІГј Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГѕ Г§ГіГ¬ ГІГҐГЄГ±ГІГіГ° ГЁГ§ Г·Г­\Г§ГЇ, ГЄГ®ГЈГ¤Г  ГЎГіГ¤ГҐГІ ГЇГҐГ°ГҐГ±ГҐГ­ ГіГЁ ГЁГ§ Г§ГЇ
 
 
 	CalcTotalWeight						();
@@ -332,7 +332,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 	return							true;
 }
 
-//положить вещь в слот
+//ГЇГ®Г«Г®Г¦ГЁГІГј ГўГҐГ№Гј Гў Г±Г«Г®ГІ
 bool CInventory::Slot(TSlotId slot_id, PIItem pIItem, bool bNotActivate)
 {
 	VERIFY(pIItem);
@@ -340,12 +340,12 @@ bool CInventory::Slot(TSlotId slot_id, PIItem pIItem, bool bNotActivate)
 	if(ItemFromSlot(slot_id) == pIItem)
 		return false;
 
-	//tatarinrafa: block putting pnv or helmet in slot if outfit does not allow that Здесь это нужно чтобы пнв и шлем не воложились автоматически в слот при их получении
+	//tatarinrafa: block putting pnv or helmet in slot if outfit does not allow that Г‡Г¤ГҐГ±Гј ГЅГІГ® Г­ГіГ¦Г­Г® Г·ГІГ®ГЎГ» ГЇГ­Гў ГЁ ГёГ«ГҐГ¬ Г­ГҐ ГўГ®Г«Г®Г¦ГЁГ«ГЁГ±Гј Г ГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ Гў Г±Г«Г®ГІ ГЇГ°ГЁ ГЁГµ ГЇГ®Г«ГіГ·ГҐГ­ГЁГЁ
 	if (pIItem->BaseSlot() == HELMET_SLOT || pIItem->BaseSlot() == PNV_SLOT){
 		PIItem	itemformoutfitslot = ItemFromSlot(OUTFIT_SLOT);
 		if (itemformoutfitslot)
 		{
-			CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//на всякий случай проверим если это броня в слоте брони, а то..
+			CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//Г­Г  ГўГ±ГїГЄГЁГ© Г±Г«ГіГ·Г Г© ГЇГ°Г®ГўГҐГ°ГЁГ¬ ГҐГ±Г«ГЁ ГЅГІГ® ГЎГ°Г®Г­Гї Гў Г±Г«Г®ГІГҐ ГЎГ°Г®Г­ГЁ, Г  ГІГ®..
 			if (outfit)
 			{
 				if (pIItem->BaseSlot() == HELMET_SLOT && outfit->block_helmet_slot == 1){
@@ -391,7 +391,7 @@ bool CInventory::Slot(TSlotId slot_id, PIItem pIItem, bool bNotActivate)
 
 	m_slots[slot_id].m_pIItem = pIItem;
 
-	//удалить из рюкзака или пояса
+	//ГіГ¤Г Г«ГЁГІГј ГЁГ§ Г°ГѕГЄГ§Г ГЄГ  ГЁГ«ГЁ ГЇГ®ГїГ±Г 
 	TIItemContainer::iterator it = std::find(m_ruck.begin(), m_ruck.end(), pIItem);
 	if(m_ruck.end() != it) m_ruck.erase(it);
 	it = std::find(m_belt.begin(), m_belt.end(), pIItem);
@@ -498,7 +498,7 @@ bool CInventory::Belt(PIItem pIItem)
 		}
 	}
 
-	//вещь была в слоте
+	//ГўГҐГ№Гј ГЎГ»Г«Г  Гў Г±Г«Г®ГІГҐ
 	auto currSlot = pIItem->CurrSlot();
 	if (currSlot != NO_ACTIVE_SLOT)
 	{
@@ -604,7 +604,7 @@ bool CInventory::Ruck(PIItem pIItem)
 	}
 	else
 	{
-		//вещь была на поясе или вообще только поднята с земли
+		//ГўГҐГ№Гј ГЎГ»Г«Г  Г­Г  ГЇГ®ГїГ±ГҐ ГЁГ«ГЁ ГўГ®Г®ГЎГ№ГҐ ГІГ®Г«ГјГЄГ® ГЇГ®Г¤Г­ГїГІГ  Г± Г§ГҐГ¬Г«ГЁ
 		TIItemContainer::iterator it = std::find(m_belt.begin(), m_belt.end(), pIItem);
 		if(m_belt.end() != it) m_belt.erase(it);
 	}
@@ -714,7 +714,7 @@ bool CInventory::TryActivate(TSlotId slot, EActivationReason reason, bool bForce
 			tmp_hud_item = tmp_item->cast_hud_item();
 	}
 
-	// Если в руке находится детектор и орцжие не совместимо с ним, то отложить доставание оружия, спрятать детектор, а потом достать оружие
+	// Г…Г±Г«ГЁ Гў Г°ГіГЄГҐ Г­Г ГµГ®Г¤ГЁГІГ±Гї Г¤ГҐГІГҐГЄГІГ®Г° ГЁ Г®Г°Г¶Г¦ГЁГҐ Г­ГҐ Г±Г®ГўГ¬ГҐГ±ГІГЁГ¬Г® Г± Г­ГЁГ¬, ГІГ® Г®ГІГ«Г®Г¦ГЁГІГј Г¤Г®Г±ГІГ ГўГ Г­ГЁГҐ Г®Г°ГіГ¦ГЁГї, Г±ГЇГ°ГїГІГ ГІГј Г¤ГҐГІГҐГЄГІГ®Г°, Г  ГЇГ®ГІГ®Г¬ Г¤Г®Г±ГІГ ГІГј Г®Г°ГіГ¦ГЁГҐ
 	if (slot != NO_ACTIVE_SLOT && slot <= LAST_SLOT)
 	{
 		if (m_currentDetectorInHand && tmp_item && !tmp_item->IsSingleHand())
@@ -778,7 +778,7 @@ bool CInventory::TryActivate(TSlotId slot, EActivationReason reason, bool bForce
 	}
 	*/
 
-	//активный слот не выбран
+	//Г ГЄГІГЁГўГ­Г»Г© Г±Г«Г®ГІ Г­ГҐ ГўГ»ГЎГ°Г Г­
 	if(m_iActiveSlot == NO_ACTIVE_SLOT)
 	{
 		if(tmp_item)
@@ -803,7 +803,7 @@ bool CInventory::TryActivate(TSlotId slot, EActivationReason reason, bool bForce
 			//Msg("Activate: No item");
 		}
 	}
-	//активный слот задействован
+	//Г ГЄГІГЁГўГ­Г»Г© Г±Г«Г®ГІ Г§Г Г¤ГҐГ©Г±ГІГўГ®ГўГ Г­
 	else if(slot == NO_ACTIVE_SLOT || tmp_item)
 	{
 		PIItem active_item = ActiveItem();
@@ -1066,7 +1066,7 @@ void CInventory::UpdateDropTasks()
 			UpdateDropItem		(itm);
 	}
 
-	for(i = 0; i < 2; ++i)
+	for(TSlotId i = 0; i < 2; ++i)
 	{
 		TIItemContainer &list			= i?m_ruck:m_belt;
 		TIItemContainer::iterator it	= list.begin();
@@ -1109,7 +1109,7 @@ void CInventory::UpdateDropItem(PIItem pIItem)
 	}
 }
 
-//ищем на поясе гранату такоже типа
+//ГЁГ№ГҐГ¬ Г­Г  ГЇГ®ГїГ±ГҐ ГЈГ°Г Г­Г ГІГі ГІГ ГЄГ®Г¦ГҐ ГІГЁГЇГ 
 PIItem CInventory::Same(const PIItem pIItem, bool bSearchRuck) const
 {
 	const TIItemContainer &list = bSearchRuck ? m_ruck : m_belt;
@@ -1126,7 +1126,7 @@ PIItem CInventory::Same(const PIItem pIItem, bool bSearchRuck) const
 	return NULL;
 }
 
-//ищем на поясе вещь для слота
+//ГЁГ№ГҐГ¬ Г­Г  ГЇГ®ГїГ±ГҐ ГўГҐГ№Гј Г¤Г«Гї Г±Г«Г®ГІГ 
 
 PIItem CInventory::SameSlot(const TSlotId slot, PIItem pIItem, bool bSearchRuck) const
 {
@@ -1150,7 +1150,7 @@ static bool GetItemPredicate(PIItem item, const char* name)
 		&& item->Useful();
 }
 
-//найти в инвенторе вещь с указанным именем
+//Г­Г Г©ГІГЁ Гў ГЁГ­ГўГҐГ­ГІГ®Г°ГҐ ГўГҐГ№Гј Г± ГіГЄГ Г§Г Г­Г­Г»Г¬ ГЁГ¬ГҐГ­ГҐГ¬
 PIItem CInventory::Get(const char *name, bool bSearchRuck) const
 {
 	const TIItemContainer &list = bSearchRuck ? m_ruck : m_belt;
@@ -1209,7 +1209,7 @@ PIItem CInventory::GetAmmo(const char *name, bool bSearchRuck) const
 PIItem CInventory::GetAny(const char *name) const
 {
 	PIItem itm = GetAmmo(name, false);
-	//для ГГ ищем только на поясе
+	//Г¤Г«Гї ГѓГѓ ГЁГ№ГҐГ¬ ГІГ®Г«ГјГЄГ® Г­Г  ГЇГ®ГїГ±ГҐ
 	if (!itm && (this != &g_actor->inventory()))
 	{
 		itm = GetAmmo(name, true);
@@ -1300,11 +1300,11 @@ CInventoryItem *CInventory::get_object_by_id(ALife::_OBJECT_ID tObjectID)
 	return		(0);
 }
 
-//скушать предмет
+//Г±ГЄГіГёГ ГІГј ГЇГ°ГҐГ¤Г¬ГҐГІ
 bool CInventory::Eat(PIItem pIItem)
 {
 	R_ASSERT(pIItem->m_pCurrentInventory==this);
-	//устанаовить съедобна ли вещь
+	//ГіГ±ГІГ Г­Г Г®ГўГЁГІГј Г±ГєГҐГ¤Г®ГЎГ­Г  Г«ГЁ ГўГҐГ№Гј
 	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);
 	R_ASSERT				(pItemToEat);
 
@@ -1363,8 +1363,8 @@ bool CInventory::CanPutInSlot(PIItem pIItem, TSlotId slot_id) const
 
 	return false;
 }
-//проверяет можем ли поместить вещь на пояс,
-//при этом реально ничего не меняется
+//ГЇГ°Г®ГўГҐГ°ГїГҐГІ Г¬Г®Г¦ГҐГ¬ Г«ГЁ ГЇГ®Г¬ГҐГ±ГІГЁГІГј ГўГҐГ№Гј Г­Г  ГЇГ®ГїГ±,
+//ГЇГ°ГЁ ГЅГІГ®Г¬ Г°ГҐГ Г«ГјГ­Г® Г­ГЁГ·ГҐГЈГ® Г­ГҐ Г¬ГҐГ­ГїГҐГІГ±Гї
 bool CInventory::CanPutInBelt(PIItem pIItem, bool forceRoomCheck)
 {
 	if(!pIItem)					              return false;
@@ -1376,8 +1376,8 @@ bool CInventory::CanPutInBelt(PIItem pIItem, bool forceRoomCheck)
 
 	return !needRoom || FreeRoom_inBelt(m_belt, pIItem, BeltWidth(), 1);
 }
-//проверяет можем ли поместить вещь в рюкзак,
-//при этом реально ничего не меняется
+//ГЇГ°Г®ГўГҐГ°ГїГҐГІ Г¬Г®Г¦ГҐГ¬ Г«ГЁ ГЇГ®Г¬ГҐГ±ГІГЁГІГј ГўГҐГ№Гј Гў Г°ГѕГЄГ§Г ГЄ,
+//ГЇГ°ГЁ ГЅГІГ®Г¬ Г°ГҐГ Г«ГјГ­Г® Г­ГЁГ·ГҐГЈГ® Г­ГҐ Г¬ГҐГ­ГїГҐГІГ±Гї
 bool CInventory::CanPutInRuck(PIItem pIItem) const
 {
 	if(InRuck(pIItem)) return false;
@@ -1445,19 +1445,19 @@ CInventoryItem	*CInventory::GetItemFromInventory(LPCSTR caItemName)
 }
 
 
-bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
+bool CInventory::CanTakeItem(CInventoryItem* inventory_item) const
 {
 	if (inventory_item->object().getDestroy()) return false;
 
-	if(!inventory_item->CanTake()) return false;
-
-	for(TIItemContainer::const_iterator it = m_all.begin(); it != m_all.end(); it++)
-		if((*it)->object().ID() == inventory_item->object().ID()) break;
-	VERIFY3(it == m_all.end(), "item already exists in inventory",*inventory_item->object().cName());
+	if (!inventory_item->CanTake()) return false;
+	TIItemContainer::const_iterator it = m_all.begin();
+	for (it = m_all.begin(); it != m_all.end(); it++)
+		if ((*it)->object().ID() == inventory_item->object().ID()) break;
+	VERIFY3(it == m_all.end(), "item already exists in inventory", *inventory_item->object().cName());
 
 	CActor* pActor = smart_cast<CActor*>(m_pOwner);
-	//актер всегда может взять вещь
-	if(!pActor && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
+	//Р°РєС‚РµСЂ РІСЃРµРіРґР° РјРѕР¶РµС‚ РІР·СЏС‚СЊ РІРµС‰СЊ
+	if (!pActor && (TotalWeight() + inventory_item->Weight() > m_pOwner->MaxCarryWeight()))
 		return	false;
 
 	return	true;

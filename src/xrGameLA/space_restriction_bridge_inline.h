@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "level_graph.h"
+#include "ai_space.h"
 
 IC	CSpaceRestrictionBridge::CSpaceRestrictionBridge		(CSpaceRestrictionBase *object)
 {
@@ -39,12 +41,13 @@ IC	u32	CSpaceRestrictionBridge::accessible_nearest	(T &restriction, const Fvecto
 			selected				= *I;
 		}
 	}
-	VERIFY2							(ai().level_graph().valid_vertex_id(selected),*name());
+	VERIFY2(ai().level_graph().valid_vertex_id(selected),
+		make_string<const char*>("vertex_id[%d], object[%s], position[%f][%f][%f]", selected, *name(), VPUSH(position)));
 
 	{
 		min_dist_sqr = flt_max;
 		u32	new_selected = u32(-1);
-		CLevelGraph::const_iterator	I, E;
+		typename ILevelGraph::const_iterator	I, E;
 		ai().level_graph().begin(selected,I,E);
 		for ( ; I != E; ++I) {
 			u32	current = ai().level_graph().value(selected,I);

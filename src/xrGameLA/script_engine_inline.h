@@ -8,11 +8,15 @@
 
 #pragma once
 
-IC	void CScriptEngine::add_script_process		(const EScriptProcessors &process_id, CScriptProcess *script_process)
+IC	void CScriptEngine::add_script_process(const EScriptProcessors& process_id, CScriptProcess* script_process)
 {
-	CScriptProcessStorage::const_iterator	I = m_script_processes.find(process_id);
-	VERIFY									(I == m_script_processes.end());
-	m_script_processes.insert				(std::make_pair(process_id,script_process));
+	auto I = m_script_processes.find(process_id);
+	if (I != m_script_processes.end())
+	{
+		remove_script_process(process_id);
+	}
+
+	m_script_processes.insert(std::make_pair(process_id, script_process));
 }
 
 CScriptProcess *CScriptEngine::script_process	(const EScriptProcessors &process_id) const
@@ -35,7 +39,7 @@ IC	void CScriptEngine::parse_script_namespace(LPCSTR function_to_call, LPSTR nam
 	if (!J)
 		xr_strcpy			(function,function_size,function_to_call);
 	else {
-		CopyMemory		(name_space,function_to_call, u32(J - function_to_call)*sizeof(char));
+		CopyMemory			(name_space,function_to_call, u32(J - function_to_call)*sizeof(char));
 		name_space[u32(J - function_to_call)] = 0;
 		xr_strcpy			(function,function_size,J + 1);
 	}
@@ -48,19 +52,6 @@ IC	bool CScriptEngine::functor(LPCSTR function_to_call, luabind::functor<_result
 	if (!function_object(function_to_call,object))
 		return				(false);
 
-	try {
-		lua_function		= luabind::object_cast<luabind::functor<_result_type> >(object);
-	}
-	catch(...) {
-		return				(false);
-	}
-
+	lua_function = luabind::object_cast<luabind::functor<_result_type>>(object);
 	return					(true);
 }
-
-#ifdef USE_DEBUGGER
-IC CScriptDebugger *CScriptEngine::debugger			()
-{
-	return m_scriptDebugger;
-}
-#endif

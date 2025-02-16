@@ -257,7 +257,7 @@ case DIK_MULTIPLY:
 
 #ifndef MASTER_GOLD
 	switch (key) {
-	case DIK_NUMPAD5: 
+	case SDL_SCANCODE_KP_5:
 		{
 			if (GameID() != GAME_SINGLE) 
 			{
@@ -275,16 +275,16 @@ case DIK_MULTIPLY:
 			bDebug	= !bDebug;
 		return;
 
-	case DIK_BACK:
+	case SDL_SCANCODE_BACKSPACE:
 		if (GameID() == GAME_SINGLE)
 			DRender->NextSceneMode();
 		return;
 
-	case DIK_F4: {
-		if (pInput->iGetAsyncKeyState(DIK_LALT))
+	case SDL_SCANCODE_KP_4: {
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT))
 			break;
 
-		if (pInput->iGetAsyncKeyState(DIK_RALT))
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_RALT))
 			break;
 
 		bool bOk = false;
@@ -360,6 +360,7 @@ case DIK_MULTIPLY:
 		break;
 	}
 #endif  
+				/*
 	case DIK_DIVIDE:
 		if( OnServer() ){
 //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
@@ -386,10 +387,11 @@ case DIK_MULTIPLY:
 		}
 		break;
 	/**/
+				
 #endif
 #ifdef DEBUG
 //#ifdef NDEBUG
-	case DIK_F9:{
+	case SDL_SCANCODE_F9:{
 //		if (!ai().get_alife())
 //			break;
 //		const_cast<CALifeSimulatorHeader&>(ai().alife().header()).set_state(ALife::eZoneStateSurge);

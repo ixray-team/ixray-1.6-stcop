@@ -634,17 +634,18 @@ void CUIWeatherEditor::InitVars()
 	UI_f_sky_color_g.f_controlledfloat = &TargetWeather->sky_color.y;
 	UI_f_sky_color_b.f_controlledfloat = &TargetWeather->sky_color.x;
 
-	UI_f_dof_x.f_controlledfloat = &TargetWeather->dof_value.x;
-	UI_f_dof_y.f_controlledfloat = &TargetWeather->dof_value.y;
-	UI_f_dof_z.f_controlledfloat = &TargetWeather->dof_value.z;
 
-	UI_f_dof_kernel.f_controlledfloat = &TargetWeather->dof_kernel;
+	UI_f_dof_x.f_controlledfloat = 0;// &TargetWeather->dof_value.x;
+	UI_f_dof_y.f_controlledfloat = 0;//&TargetWeather->dof_value.y;
+	UI_f_dof_z.f_controlledfloat = 0;//&TargetWeather->dof_value.z;
 
-	UI_f_dof_sky.f_controlledfloat = &TargetWeather->dof_sky;
+	UI_f_dof_kernel.f_controlledfloat = 0;//&TargetWeather->dof_kernel;
+
+	UI_f_dof_sky.f_controlledfloat = 0;//&TargetWeather->dof_sky;
 
 	UI_f_sun_shafts_intensity.f_controlledfloat = &TargetWeather->m_fSunShaftsIntensity;
 
-	UI_f_sun_lumscale.f_controlledfloat = &TargetWeather->sun_lumscale;
+	UI_f_sun_lumscale.f_controlledfloat = 0;//&TargetWeather->sun_lumscale;
 
 	if (pSettings->line_exist(TargetWeather->m_identifier.c_str(), "sun_dir")) sun_pos = pSettings->r_fvector2(TargetWeather->m_identifier.c_str(), "sun_dir");
 	UI_f_sun_dir_a.f_controlledfloat = &sun_pos.x;
@@ -667,39 +668,39 @@ void CUIWeatherEditor::InitVars()
 
 	UI_f_far_plane.f_controlledfloat = &TargetWeather->far_plane;
 
-	UI_f_clouds_velocity_0.f_controlledfloat = &TargetWeather->clouds_velocity_0;
+	UI_f_clouds_velocity_0.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_0;
 
-	UI_f_clouds_velocity_1.f_controlledfloat = &TargetWeather->clouds_velocity_1;
+	UI_f_clouds_velocity_1.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_1;
 
-	UI_f_water_intensity.f_controlledfloat = &TargetWeather->m_fWaterIntensity;
+	UI_f_water_intensity.f_controlledfloat = 0;//&TargetWeather->m_fWaterIntensity;
 
-	UI_f_trees_amplitude.f_controlledfloat = &TargetWeather->m_fTreeAmplitude;
+	UI_f_trees_amplitude.f_controlledfloat = 0;//&TargetWeather->m_fTreeAmplitude;
 
-	UI_f_swing_fast_speed.f_controlledfloat = &TargetWeather->m_cSwingDesc[1].speed;
+	UI_f_swing_fast_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].speed;
 
-	UI_f_swing_normal_speed.f_controlledfloat = &TargetWeather->m_cSwingDesc[0].speed;
+	UI_f_swing_normal_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].speed;
 
-	UI_f_swing_fast_rot1.f_controlledfloat = &TargetWeather->m_cSwingDesc[1].rot1;
+	UI_f_swing_fast_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot1;
 
-	UI_f_swing_fast_rot2.f_controlledfloat = &TargetWeather->m_cSwingDesc[1].rot2;
+	UI_f_swing_fast_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot2;
 
-	UI_f_swing_fast_amp1.f_controlledfloat = &TargetWeather->m_cSwingDesc[1].amp1;
+	UI_f_swing_fast_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp1;
 
-	UI_f_swing_fast_amp2.f_controlledfloat = &TargetWeather->m_cSwingDesc[1].amp2;
+	UI_f_swing_fast_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp2;
 
-	UI_f_swing_normal_rot1.f_controlledfloat = &TargetWeather->m_cSwingDesc[0].rot1;
+	UI_f_swing_normal_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot1;
 
-	UI_f_swing_normal_rot2.f_controlledfloat = &TargetWeather->m_cSwingDesc[0].rot2;
+	UI_f_swing_normal_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot2;
 
-	UI_f_swing_normal_amp1.f_controlledfloat = &TargetWeather->m_cSwingDesc[0].amp1;
+	UI_f_swing_normal_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp1;
 
-	UI_f_swing_normal_amp2.f_controlledfloat = &TargetWeather->m_cSwingDesc[0].amp2;
+	UI_f_swing_normal_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp2;
 
 	UI_f_wind_velocity.f_controlledfloat = &TargetWeather->wind_velocity;
 
 	UI_f_wind_direction.f_controlledfloat = &TargetWeather->wind_direction;
 
-	UI_f_wind_sound_volume.f_controlledfloat = &TargetWeather->wind_volume;
+	UI_f_wind_sound_volume.f_controlledfloat = 0;//&TargetWeather->wind_volume;
 
 	UpdateTracksPositions();
 }
@@ -763,7 +764,7 @@ void CUIWeatherEditor::Update()
 	xr_sprintf(value, "%f", TargetWeather->sky_color.z);
 	UI_sky_color_bValue.SetText(value);
 
-	xr_sprintf(value, "%f", TargetWeather->dof_value.x);
+	/*xr_sprintf(value, "%f", TargetWeather->dof_value.x);
 	UI_dof_xValue.SetText(value);
 	xr_sprintf(value, "%f", TargetWeather->dof_value.y);
 	UI_dof_yValue.SetText(value);
@@ -778,10 +779,10 @@ void CUIWeatherEditor::Update()
 
 	xr_sprintf(value, "%f", TargetWeather->m_fSunShaftsIntensity);
 	UI_sun_shafts_intensity_Value.SetText(value);
-
+	
 	xr_sprintf(value, "%f", TargetWeather->sun_lumscale);
 	UI_sun_lumscale_Value.SetText(value);
-
+	*/
 	xr_sprintf(value, "%f", sun_pos.x);
 	UI_sun_dir_a_Value.SetText(value);
 	xr_sprintf(value, "%f", sun_pos.y);
@@ -809,16 +810,16 @@ void CUIWeatherEditor::Update()
 
 	xr_sprintf(value, "%f", TargetWeather->far_plane);
 	UI_far_plane_Value.SetText(value);
-
+	/*
 	xr_sprintf(value, "%f", TargetWeather->clouds_velocity_0);
 	UI_clouds_velocity_0_Value.SetText(value);
 
 	xr_sprintf(value, "%f", TargetWeather->clouds_velocity_1);
 	UI_clouds_velocity_1_Value.SetText(value);
-
+	*/
 	xr_sprintf(value, "%f", TargetWeather->m_fWaterIntensity);
 	UI_water_intensity_Value.SetText(value);
-
+	/*
 	xr_sprintf(value, "%f", TargetWeather->m_fTreeAmplitude);
 	UI_trees_amplitude_Value.SetText(value);
 
@@ -851,15 +852,15 @@ void CUIWeatherEditor::Update()
 
 	xr_sprintf(value, "%f", TargetWeather->m_cSwingDesc[0].amp2);
 	UI_swing_normal_amp2_Value.SetText(value);
-
+	*/
 	xr_sprintf(value, "%f", TargetWeather->wind_velocity);
 	UI_wind_velocity_Value.SetText(value);
 
 	xr_sprintf(value, "%f", TargetWeather->wind_direction);
 	UI_wind_direction_Value.SetText(value);
 
-	xr_sprintf(value, "%f", TargetWeather->wind_volume);
-	UI_wind_sound_volume_Value.SetText(value);
+	//xr_sprintf(value, "%f", TargetWeather->wind_volume);
+	//UI_wind_sound_volume_Value.SetText(value);
 
 
 }
@@ -895,8 +896,8 @@ void CUIWeatherEditor::PrintToLog()
 	Msg("		sky_rotation			= %f", sky_rotation);
 	Msg("		sky_color				= %f, %f, %f", TargetWeather->sky_color.x, TargetWeather->sky_color.y, TargetWeather->sky_color.z);
 	Msg("		clouds_color			= %f, %f, %f, %f", TargetWeather->clouds_color.x, TargetWeather->clouds_color.y, TargetWeather->clouds_color.z, TargetWeather->clouds_color.w);
-	Msg("		clouds_velocity_0		= %f", TargetWeather->clouds_velocity_0);
-	Msg("		clouds_velocity_1		= %f", TargetWeather->clouds_velocity_1);
+	/*Msg("		clouds_velocity_0		= %f", TargetWeather->clouds_velocity_0);
+	Msg("		clouds_velocity_1		= %f", TargetWeather->clouds_velocity_1);*/
 	Msg("		far_plane				= %f", TargetWeather->far_plane);
 	Msg("		fog_distance			= %f", TargetWeather->fog_distance);
 	Msg("		fog_color				= %f, %f, %f", TargetWeather->fog_color.x, TargetWeather->fog_color.y, TargetWeather->fog_color.z);
@@ -907,7 +908,7 @@ void CUIWeatherEditor::PrintToLog()
 	Msg("		bolt_period				= %f", TargetWeather->bolt_period);
 	Msg("		wind_direction			= %f", TargetWeather->wind_direction);
 	Msg("		wind_velocity			= %f", TargetWeather->wind_velocity);
-	Msg("		wind_sound_volume		= %f", TargetWeather->wind_volume);
+	/*Msg("		wind_sound_volume		= %f", TargetWeather->wind_volume);
 	Msg("		trees_amplitude			= %f", TargetWeather->m_fTreeAmplitude);
 	Msg("		swing_normal_amp1		= %f", TargetWeather->m_cSwingDesc[0].amp1);
 	Msg("		swing_normal_amp2		= %f", TargetWeather->m_cSwingDesc[0].amp2);
@@ -918,17 +919,17 @@ void CUIWeatherEditor::PrintToLog()
 	Msg("		swing_fast_amp2			= %f", TargetWeather->m_cSwingDesc[1].amp2);
 	Msg("		swing_fast_rot1			= %f", TargetWeather->m_cSwingDesc[1].rot1);
 	Msg("		swing_fast_rot2			= %f", TargetWeather->m_cSwingDesc[1].rot2);
-	Msg("		swing_fast_speed		= %f", TargetWeather->m_cSwingDesc[1].speed);
+	Msg("		swing_fast_speed		= %f", TargetWeather->m_cSwingDesc[1].speed);*/
 	Msg("		hemi_color				= %f, %f, %f, %f", TargetWeather->hemi_color.x, TargetWeather->hemi_color.y, TargetWeather->hemi_color.z, TargetWeather->hemi_color.w);
 	Msg("		sun_color				= %f, %f, %f", TargetWeather->sun_color.x, TargetWeather->sun_color.y, TargetWeather->sun_color.z);
 	Msg("		sun_dir					= %f, %f", sun_pos.x ,sun_pos.y);
 	Msg("		sun_shafts_intensity	= %f", TargetWeather->m_fSunShaftsIntensity);
-	Msg("		sun_lumscale			= %f", TargetWeather->sun_lumscale);
+	//Msg("		sun_lumscale			= %f", TargetWeather->sun_lumscale);
 	Msg("		water_intensity			= %f", TargetWeather->m_fWaterIntensity);
 	Msg("		ambient					= %f, %f, %f", TargetWeather->ambient.x, TargetWeather->ambient.y, TargetWeather->ambient.z);
-	Msg("		dof						= %f, %f, %f", TargetWeather->dof_value.x, TargetWeather->dof_value.y, TargetWeather->dof_value.z);
-	Msg("		dof_kernel				= %f", TargetWeather->dof_kernel);
-	Msg("		dof_sky					= %f", TargetWeather->dof_sky);
+	//Msg("		dof						= %f, %f, %f", TargetWeather->dof_value.x, TargetWeather->dof_value.y, TargetWeather->dof_value.z);
+	//Msg("		dof_kernel				= %f", TargetWeather->dof_kernel);
+	//Msg("		dof_sky					= %f", TargetWeather->dof_sky);
 	Msg("		env_ambient				= %s", pSettings->r_string(TargetWeather->m_identifier.c_str(), "env_ambient"));
 	Msg("		sky_texture				= %s", pSettings->r_string(TargetWeather->m_identifier.c_str(), "sky_texture"));
 	Msg("		clouds_texture			= %s", pSettings->r_string(TargetWeather->m_identifier.c_str(), "clouds_texture"));
@@ -951,9 +952,9 @@ void CUIWeatherEditor::SaveParams(SavedData* saveid)
 	saveid->Saved_fog_color = TargetWeather->fog_color;
 	saveid->Saved_clouds_color = TargetWeather->clouds_color;
 	saveid->Saved_sky_color = TargetWeather->sky_color;
-	saveid->Saved_dof = TargetWeather->dof_value;
+	//saveid->Saved_dof = TargetWeather->dof_value;
 	saveid->Saved_sun_shafts_intensity = TargetWeather->m_fSunShaftsIntensity;
-	saveid->Saved_sun_lumscale = TargetWeather->sun_lumscale;
+	//saveid->Saved_sun_lumscale = TargetWeather->sun_lumscale;
 	saveid->Saved_sun_pos = sun_pos;
 	saveid->Saved_sky_rotation = sky_rotation;
 	saveid->Saved_bolt_period = TargetWeather->bolt_period;
@@ -962,10 +963,10 @@ void CUIWeatherEditor::SaveParams(SavedData* saveid)
 	saveid->Saved_fog_density = TargetWeather->fog_density;
 	saveid->Saved_fog_distance = TargetWeather->fog_distance;
 	saveid->Saved_far_plane = TargetWeather->far_plane;
-	saveid->Saved_clouds_velocity_0 = TargetWeather->clouds_velocity_0;
-	saveid->Saved_clouds_velocity_1 = TargetWeather->clouds_velocity_1;
+	/*saveid->Saved_clouds_velocity_0 = TargetWeather->clouds_velocity_0;
+	saveid->Saved_clouds_velocity_1 = TargetWeather->clouds_velocity_1;*/
 	saveid->Saved_water_intensity = TargetWeather->m_fWaterIntensity;
-	saveid->Saved_trees_amplitude = TargetWeather->m_fTreeAmplitude;
+	/*saveid->Saved_trees_amplitude = TargetWeather->m_fTreeAmplitude;
 	saveid->Saved_swing_fast_speed = TargetWeather->m_cSwingDesc[1].speed;
 	saveid->Saved_swing_normal_speed = TargetWeather->m_cSwingDesc[0].speed;
 	saveid->Saved_swing_fast_rot1 = TargetWeather->m_cSwingDesc[1].rot1;
@@ -975,12 +976,12 @@ void CUIWeatherEditor::SaveParams(SavedData* saveid)
 	saveid->Saved_swing_normal_rot1 = TargetWeather->m_cSwingDesc[0].rot1;
 	saveid->Saved_swing_normal_rot2 = TargetWeather->m_cSwingDesc[0].rot2;
 	saveid->Saved_swing_normal_amp1 = TargetWeather->m_cSwingDesc[0].amp1;
-	saveid->Saved_swing_normal_amp2 = TargetWeather->m_cSwingDesc[0].amp2;
+	saveid->Saved_swing_normal_amp2 = TargetWeather->m_cSwingDesc[0].amp2;*/
 	saveid->Saved_wind_velocity = TargetWeather->wind_velocity;
 	saveid->Saved_wind_direction = TargetWeather->wind_direction;
-	saveid->Saved_wind_sound_volume = TargetWeather->wind_volume;
-	saveid->Saved_dof_kernel = TargetWeather->dof_kernel;
-	saveid->Saved_dof_sky = TargetWeather->dof_sky;
+	//saveid->Saved_wind_sound_volume = TargetWeather->wind_volume;
+	//saveid->Saved_dof_kernel = TargetWeather->dof_kernel;
+	//saveid->Saved_dof_sky = TargetWeather->dof_sky;
 
 	saveid->is_empty = false;
 }
@@ -998,9 +999,9 @@ void CUIWeatherEditor::LoadParams(SavedData* saveid)
 		TargetWeather->fog_color = saveid->Saved_fog_color;
 		TargetWeather->clouds_color = saveid->Saved_clouds_color;
 		TargetWeather->sky_color = saveid->Saved_sky_color;
-		TargetWeather->dof_value = saveid->Saved_dof;
+		//TargetWeather->dof_value = saveid->Saved_dof;
 		TargetWeather->m_fSunShaftsIntensity = saveid->Saved_sun_shafts_intensity;
-		TargetWeather->sun_lumscale = saveid->Saved_sun_lumscale;
+		//TargetWeather->sun_lumscale = saveid->Saved_sun_lumscale;
 
 		sun_pos = saveid->Saved_sun_pos;
 		TargetWeather->sun_dir.setHP(deg2rad(sun_pos.y), deg2rad(sun_pos.x));
@@ -1014,11 +1015,11 @@ void CUIWeatherEditor::LoadParams(SavedData* saveid)
 		TargetWeather->fog_density = saveid->Saved_fog_density;
 		TargetWeather->fog_distance = saveid->Saved_fog_distance;
 		TargetWeather->far_plane = saveid->Saved_far_plane;
-		TargetWeather->clouds_velocity_0 = saveid->Saved_clouds_velocity_0;
-		TargetWeather->clouds_velocity_1 = saveid->Saved_clouds_velocity_1;
+		//TargetWeather->clouds_velocity_0 = saveid->Saved_clouds_velocity_0;
+		//TargetWeather->clouds_velocity_1 = saveid->Saved_clouds_velocity_1;
 		TargetWeather->m_fWaterIntensity = saveid->Saved_water_intensity;
-		TargetWeather->m_fTreeAmplitude = saveid->Saved_trees_amplitude;
-		TargetWeather->m_cSwingDesc[1].speed = saveid->Saved_swing_fast_speed;
+		//TargetWeather->m_fTreeAmplitude = saveid->Saved_trees_amplitude;
+		/*TargetWeather->m_cSwingDesc[1].speed = saveid->Saved_swing_fast_speed;
 		TargetWeather->m_cSwingDesc[0].speed = saveid->Saved_swing_normal_speed;
 		TargetWeather->m_cSwingDesc[1].rot1 = saveid->Saved_swing_fast_rot1;
 		TargetWeather->m_cSwingDesc[1].rot2 = saveid->Saved_swing_fast_rot2;
@@ -1027,12 +1028,12 @@ void CUIWeatherEditor::LoadParams(SavedData* saveid)
 		TargetWeather->m_cSwingDesc[0].rot1 = saveid->Saved_swing_normal_rot1;
 		TargetWeather->m_cSwingDesc[0].rot2 = saveid->Saved_swing_normal_rot2;
 		TargetWeather->m_cSwingDesc[0].amp1 = saveid->Saved_swing_normal_amp1;
-		TargetWeather->m_cSwingDesc[0].amp2 = saveid->Saved_swing_normal_amp2;
+		TargetWeather->m_cSwingDesc[0].amp2 = saveid->Saved_swing_normal_amp2;*/
 		TargetWeather->wind_velocity = saveid->Saved_wind_velocity;
 		TargetWeather->wind_direction = saveid->Saved_wind_direction;
-		TargetWeather->wind_volume = saveid->Saved_wind_sound_volume;
+		/*TargetWeather->wind_volume = saveid->Saved_wind_sound_volume;
 		TargetWeather->dof_kernel = saveid->Saved_dof_kernel;
-		TargetWeather->dof_sky = saveid->Saved_dof_sky;
+		TargetWeather->dof_sky = saveid->Saved_dof_sky;*/
 
 		UpdateTracksPositions();
 	}

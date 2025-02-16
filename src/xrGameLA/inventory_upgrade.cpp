@@ -42,10 +42,10 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 
 	// section --------------------------------------------------------------------------
 	LPCSTR section_str = pSettings->r_string( id(), "section" );
-	VERIFY2( pSettings->section_exist( section_str ),
-		make_string( "Upgrade <%s> : settings section [%s] not exist!", id_str(), section_str ) );
-	VERIFY2( pSettings->line_count( section_str ),
-		make_string( "Upgrade <%s> : settings section [%s] is empty !", id_str(), section_str ) );
+	VERIFY2(pSettings->section_exist(section_str),
+		make_string<const char*>("Upgrade <%s> : settings section [%s] not exist!", id_str(), section_str));
+	VERIFY2(pSettings->line_count(section_str),
+		make_string<const char*>("Upgrade <%s> : settings section [%s] is empty !", id_str(), section_str));
 
 	m_section._set( section_str );
 	
@@ -54,9 +54,9 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 	m_preconditions.parameter		= pSettings->r_string( id(), "precondition_parameter" );
 	m_preconditions.parameter2		= m_section.c_str();
 	R_ASSERT2(
-		ai().script_engine().functor( precondition_functor_str, m_preconditions.functr ),
-		make_string( "Failed to get precondition functor in section[%s], functor[%s]",
-		id_str(), precondition_functor_str
+		ai().script_engine().functor(precondition_functor_str, m_preconditions.functr),
+		make_string<const char*>("Failed to get precondition functor in section[%s], functor[%s]",
+			id_str(), precondition_functor_str
 		)
 	);		
 	m_preconditions();
@@ -67,9 +67,9 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 	m_effects.parameter2		= m_section.c_str();
 	m_effects.parameter3		= 1;
 	R_ASSERT2(
-		ai().script_engine().functor( effect_functor_str, m_effects.functr ),
-		make_string( "Failed to get effect functor in section[%s], functor[%s]",
-		id_str(), effect_functor_str
+		ai().script_engine().functor(effect_functor_str, m_effects.functr),
+		make_string<const char*>("Failed to get effect functor in section[%s], functor[%s]",
+			id_str(), effect_functor_str
 		)
 	);
 	m_effects();
@@ -81,9 +81,9 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 	m_prerequisites.parameter2	= m_section.c_str();
 	//	m_tooltip.parameter			= pSettings->r_string( id(), "prereq_params" );
 	R_ASSERT2(
-		ai().script_engine().functor( prereq_functor_str, m_prerequisites.functr ),
-		make_string( "Failed to get prerequisites functor in section[%s], functor[%s]",
-		id_str(), prereq_functor_str
+		ai().script_engine().functor(prereq_functor_str, m_prerequisites.functr),
+		make_string<const char*>("Failed to get prerequisites functor in section[%s], functor[%s]",
+			id_str(), prereq_functor_str
 		)
 	);
 	m_prerequisites();
@@ -106,7 +106,7 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 	m_known = !!READ_IF_EXISTS( pSettings, r_bool, id(), "known", false );
 
 	shared_str properties = pSettings->r_string( id(), "property" );
-	VERIFY2( properties.size(), make_string( "Upgrade <%s> : property is empty !", id_str() ) );
+	VERIFY2(properties.size(), make_string<const char*>("Upgrade <%s> : property is empty !", id_str()));
 
 	string256			buffer;
 	for(u8 i = 0; i < max_properties_count; i++)
@@ -115,8 +115,8 @@ void Upgrade::construct( const shared_str& upgrade_id, Group& parental_group, Ma
 		if(prop.size())
 		{
 			m_properties[i] = prop;
-			VERIFY2( manager_r.get_property( prop ),
-				make_string( "Upgrade <%s> : property [%s] is unknown (not found in upgrade manager) !", id_str(), prop.c_str() ) );
+			VERIFY2(manager_r.get_property(prop),
+				make_string<const char*>("Upgrade <%s> : property [%s] is unknown (not found in upgrade manager) !", id_str(), prop.c_str()));
 		}
 	}
 

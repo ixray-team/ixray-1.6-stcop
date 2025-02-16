@@ -1,5 +1,5 @@
 #include "pch_script.h"
-#include "game_cl_mp_script.h"
+/*#include "game_cl_mp_script.h"
 #include "xrServer_script_macroses.h"
 #include "UIGameCustom.h"
 #include "level.h"
@@ -127,3 +127,4 @@ void game_cl_mp_script::script_register(lua_State *L)
 			.def("createGameUI",		&BaseType::createGameUI, &WrapType::createGameUI_static, adopt(result) )
 	];
 }
+*/

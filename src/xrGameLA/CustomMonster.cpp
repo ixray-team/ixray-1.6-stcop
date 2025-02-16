@@ -1042,7 +1042,9 @@ bool CCustomMonster::update_critical_wounded	(const u16 &bone_id, const float &p
 	return (false);
 }
 
-#ifdef DEBUG
+#pragma todo("IX-PORT: !!!")
+//#ifdef DEBUG
+#if 0
 
 extern void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::rq_results& rq_storage);

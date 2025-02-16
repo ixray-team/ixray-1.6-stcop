@@ -15,7 +15,7 @@
 #include "xrserver_objects_alife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "game_cl_base.h"
-#include "../xrCore/object_factory.h"
+#include "object_factory.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location_impl.h"
 #include "game_graph.h"

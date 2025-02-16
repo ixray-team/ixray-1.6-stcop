@@ -83,14 +83,14 @@ CGamePersistent::CGamePersistent(void)
 		Msg					("- playing in demo mode '%s'",fname);
 		pDemoFile			=	FS.r_open	(fname);
 		Device.seqFrame.Add	(this);
-		eDemoStart			=	Engine.Event.Handler_Attach("GAME:demo",this);	
+		eDemoStart			= g_pEventManager->Event.Handler_Attach("GAME:demo",this);
 		uTime2Change		=	0;
 	} else {
 		pDemoFile			=	NULL;
 		eDemoStart			=	NULL;
 	}
 
-	eQuickLoad					= Engine.Event.Handler_Attach("Game:QuickLoad",this);
+	eQuickLoad					= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	SetBaseDof				(*DofValue);
@@ -100,8 +100,8 @@ CGamePersistent::~CGamePersistent(void)
 {	
 	FS.r_close					(pDemoFile);
 	Device.seqFrame.Remove		(this);
-	Engine.Event.Handler_Detach	(eDemoStart,this);
-	Engine.Event.Handler_Detach	(eQuickLoad,this);
+	g_pEventManager->Event.Handler_Detach	(eDemoStart,this);
+	g_pEventManager->Event.Handler_Detach	(eQuickLoad,this);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)

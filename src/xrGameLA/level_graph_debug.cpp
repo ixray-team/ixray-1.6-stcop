@@ -163,7 +163,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,position);
+		Device.mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
 		font.SetHeight			(.05f/_sqrt(temp.w));
 		
@@ -267,7 +267,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,direction);
+		Device.mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;
@@ -307,7 +307,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,position);
+		Device.mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
 		font.SetHeight			(.05f/_sqrt(temp.w));
 		
@@ -411,7 +411,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,direction);
+		Device.mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;

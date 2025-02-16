@@ -146,7 +146,7 @@ void CCar::cb_Steer			(CBoneInstance* B)
 #ifdef DEBUG
 	if( !fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS) ){
 	
-		Log("RotatingZ angle=",C->m_steer_angle);	
+		Msg("RotatingZ angle= %f",C->m_steer_angle);	
 		VERIFY2(0,"Bones callback returns BAD!!! matrix");
 	}
 #endif

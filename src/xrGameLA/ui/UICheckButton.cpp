@@ -1,11 +1,11 @@
-// UICheckButton.cpp: класс кнопки, имеющей 2 состояния:
-// с галочкой и без
+// UICheckButton.cpp: ГЄГ«Г Г±Г± ГЄГ­Г®ГЇГЄГЁ, ГЁГ¬ГҐГѕГ№ГҐГ© 2 Г±Г®Г±ГІГ®ГїГ­ГЁГї:
+// Г± ГЈГ Г«Г®Г·ГЄГ®Г© ГЁ ГЎГҐГ§
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include ".\uicheckbutton.h"
 #include "UIXmlInit.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/xr_input.h"
 #include "UIHint.h"
 
 CUICheckButton::CUICheckButton()

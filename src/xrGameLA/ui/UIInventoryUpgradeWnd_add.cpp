@@ -66,7 +66,7 @@ UIUpgrade::ViewState CUIInventoryUpgradeWnd::SelectCellState( LPCSTR state_str )
 
 	if ( !xr_strcmp( state_str, "disabled_highlight" ) ) { return UIUpgrade::STATE_DISABLED_FOCUSED; }
 	
-	VERIFY2( 0, make_string( "Such UI upgrade state (%s) does not exist !", state_str ) );
+	VERIFY2(0, make_string<const char*>("Such UI upgrade state (%s) does not exist !", state_str));
 	return UIUpgrade::STATE_UNKNOWN;
 }
 

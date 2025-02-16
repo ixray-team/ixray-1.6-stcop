@@ -217,7 +217,7 @@ void CUIInventoryUpgradeWnd::SetCurScheme( const shared_str& id )
 			return;
 		}
 	}
-	VERIFY2( 0, make_string( "Scheme <%s> does not loaded !", id.c_str() ) );
+	VERIFY2(0, make_string<const char*>("Scheme <%s> does not loaded !", id.c_str()));
 }
 
 bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_upgrade )
