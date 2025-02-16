@@ -306,7 +306,7 @@ void CUIUpgradeWnd::UpdateLists(EListType mode)
 	UpdatePrices();
 
 	ruck_list.clear();
-	m_pInv->AddAvailableItems(ruck_list, SUpgradeSelector(this));
+	m_pInv->AddAvailableItems(ruck_list, (SUpgradeSelector&)SUpgradeSelector(this));
 	std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
 	FillList(ruck_list, m_uidata->UIOurBagList, true);
 }

@@ -11,10 +11,13 @@
 #include "script_export_space.h"
 #include "patrol_path_manager_space.h"
 #include "game_graph_space.h"
+#include "../xrEngine/IGame_Patrol.h"
 
 class CPatrolPath;
 
-class CPatrolPathParams {
+class CPatrolPathParams :
+	public IGame_Patrol
+{
 public:
 	const CPatrolPath						*m_path;
 	shared_str								m_path_name;

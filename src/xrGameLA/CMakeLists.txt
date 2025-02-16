@@ -154,10 +154,12 @@ add_compile_options(/FS)
 target_compile_definitions(xrGameLA PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
+target_link_libraries(xrGameLA PUBLIC xrCore)
 target_link_libraries(xrGameLA PUBLIC xrAbstractions)
 target_link_libraries(xrGameLA PUBLIC xrParticles)
 target_link_libraries(xrGameLA PUBLIC luabind)
 target_link_libraries(xrGameLA PUBLIC crypto)
+target_link_libraries(xrGameLA PUBLIC ODE)
 
 target_link_libraries(xrGameLA PRIVATE "shlwapi.lib")
 

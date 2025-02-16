@@ -11,9 +11,6 @@
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
 
-#pragma comment(lib,"ode.lib")
-#pragma comment(lib,"xrEngine.lib")
-
 #ifdef NDEBUG
 //namespace std {
 //	void terminate()

@@ -623,7 +623,6 @@ public:
 			void				buy_condition						(bool);
 			void				show_condition						(luabind::object tbl);
 			void				show_condition						(CScriptIniFile *ini_file, LPCSTR section);
-			void				buy_supplies						(luabind::object tbl);
 			void				buy_supplies						(CScriptIniFile *ini_file, LPCSTR section);
 			void				buy_item_condition_factor			(float factor);
 

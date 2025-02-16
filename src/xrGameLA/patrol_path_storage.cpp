@@ -130,5 +130,5 @@ void CPatrolPathStorage::add_patrol_path(CDynamicPatrolPath *patrol) const
 {
 	m_registry.insert(std::make_pair(patrol->GetName(),
 								&(new CDynamicPatrolPath(patrol))->load_raw(ai().get_level_graph(), ai().get_cross_table(),
-									ai().get_game_graph(), IReader())));
+									ai().get_game_graph(), (IReader&)IReader())));
 }

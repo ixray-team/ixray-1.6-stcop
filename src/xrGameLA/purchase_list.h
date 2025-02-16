@@ -26,8 +26,8 @@ private:
 public:
 			void			process			(CInifile &ini_file, LPCSTR section, CInventoryOwner &owner);
 
-	template <typename Container>
-	IC		void			process			(Container, CInventoryOwner &owner);
+//	template <typename Container>
+//	IC		void			process			(Container, CInventoryOwner &owner);
 
 public:
 	IC		void			deficit			(const shared_str &section, const float &deficit);

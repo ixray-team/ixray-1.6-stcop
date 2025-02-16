@@ -961,14 +961,6 @@ void CScriptGameObject::show_condition			(CScriptIniFile *ini_file, LPCSTR secti
 	);
 }
 
-void CScriptGameObject::buy_supplies			(luabind::object tbl)
-{
-	auto inventory_owner = GetCheckInvOwner(*this, "buy_supplies");
-	if (!inventory_owner) return;
-
-	inventory_owner->get_create_purchase_list()->process(TradeParamsTableWrapper(tbl), *inventory_owner);
-}
-
 void CScriptGameObject::buy_supplies			(CScriptIniFile *ini_file, LPCSTR section)
 {
 	auto inventory_owner = GetCheckInvOwner(*this, "buy_supplies");

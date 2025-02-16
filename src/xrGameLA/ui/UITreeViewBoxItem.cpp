@@ -18,10 +18,10 @@
 //////////////////////////////////////////////////////////////////////////
 
 // Смещение относительно родителя
-extern const int				subShift;
-extern const char* const		treeItemBackgroundTexture;
+const int				_subShift = 1;
+const char* const		treeItemBackgroundTexture = "ui\\ui_pda_over_list";
 // Цвет непрочитанного элемента
-extern const u32		unreadColor;
+static const u32		unreadColor = 0xff00ff00;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +187,7 @@ void CUITreeViewBoxItem::AddSubItem(CUITreeViewBoxItem *pItem)
 	R_ASSERT(pItem);
 	if (!pItem) return;
 
-	pItem->SetTextShift(subShift + iTextShift);
+	pItem->SetTextShift(_subShift + iTextShift);
 
 	vSubItems.push_back(pItem);
 	pItem->SetOwner(this);
