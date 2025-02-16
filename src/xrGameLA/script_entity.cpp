@@ -32,7 +32,7 @@
 #include "movement_manager.h"
 #include "game_object_space.h"
 
-void __stdcall ActionCallback(IKinematics *tpKinematics);
+void  ActionCallback(IKinematics *tpKinematics);
 
 CScriptEntity::CScriptEntity()
 {
@@ -125,12 +125,7 @@ void CScriptEntity::SetScriptControl(const bool bScriptControl, shared_str caSci
 
 	m_bScriptControl	= bScriptControl;
 	m_caScriptName		= caSciptName;
-#ifdef DEBUG
-	if (bScriptControl)
-		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeInfo,"Script %s set object %s under its control",*caSciptName,*object().cName());
-	else
-		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeInfo,"Script %s freed object %s from its control",*caSciptName,*object().cName());
-#endif
+
 	if (!bScriptControl)
 		ResetScriptData(this);
 }
@@ -181,7 +176,7 @@ void CScriptEntity::AddAction(const CScriptEntityAction *tpEntityAction, bool bH
 		vfFinishAction	(m_tpActionQueue.front());
 		xr_delete		(m_tpActionQueue.front());
 		m_tpActionQueue.front() = l_tpEntityAction;
-		m_tpActionQueue.insert(m_tpActionQueue.begin(), new CScriptEntityAction(*tpEntityAction));
+		m_tpActionQueue.insert(m_tpActionQueue.begin(),new CScriptEntityAction(*tpEntityAction));
 	}
 
 	if (empty && m_initialized)
@@ -196,7 +191,7 @@ CScriptEntityAction *CScriptEntity::GetCurrentAction()
 		return(m_tpActionQueue.front());
 }
 
-void __stdcall ActionCallback(IKinematics *tpKinematics)
+void  ActionCallback(IKinematics *tpKinematics)
 {
 	// sounds
 	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->GetUpdateCallbackParam()));
@@ -236,17 +231,16 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
 void CScriptEntity::ProcessScripts()
 {
 	CScriptEntityAction	*l_tpEntityAction = 0;
+
 #ifdef DEBUG
-	bool			empty_queue = m_tpActionQueue.empty();
+	bool empty_queue = m_tpActionQueue.empty();
 #endif
-	while (!m_tpActionQueue.empty()) {
+
+	while (!m_tpActionQueue.empty()) 
+	{
 		l_tpEntityAction= m_tpActionQueue.front();
 		VERIFY		(l_tpEntityAction);
-#ifdef _DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Processing action : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
-		
+
 		if (m_tpCurrentEntityAction != l_tpEntityAction)
 			l_tpEntityAction->initialize	();
 
@@ -255,23 +249,16 @@ void CScriptEntity::ProcessScripts()
 		if (!l_tpEntityAction->CheckIfActionCompleted())
 			break;
 
-#ifdef _DEBUG
-//		if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-//			Msg			("%6d Action completed : %s",Device.dwTimeGlobal,*l_tpEntityAction->m_tAnimationAction.m_caAnimationToPlay);
-#endif
-
 		vfFinishAction(l_tpEntityAction);
 
-#ifdef DEBUG
-		if (psAI_Flags.is(aiLua))
-			Msg("Entity Action removed!!!");
-#endif
+		object().callback(GameObject::eActionTypeRemoved)(object().lua_game_object(), u32(GameObject::eActionTypeRemoved));
 
 		xr_delete	(l_tpEntityAction);
 		m_tpActionQueue.erase(m_tpActionQueue.begin());
 	}
 
-	if (m_tpActionQueue.empty()) {
+	if (m_tpActionQueue.empty()) 
+	{
 #ifdef DEBUG
 		if (empty_queue)
 			ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"Object %s has an empty script queue!",*object().cName());
@@ -406,8 +393,8 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction *tpEntityAction)
 		if (true/** !l_tParticleAction.m_tpParticleSystem/**/)
 			if (!l_tParticleAction.m_bStartedToPlay) {
 				const Fmatrix	&l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName,l_tParticleAction.m_tParticlePosition,l_tParticleAction.m_tParticleAngles);
-				Fvector zero_vel={0.f,0.f,0.f};
-				l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix,zero_vel);
+				Fvector zero_vel_={0.f,0.f,0.f};
+				l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix,zero_vel_);
 				l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
 				l_tParticleAction.m_bStartedToPlay = true;
 			}
@@ -469,6 +456,7 @@ bool CScriptEntity::bfAssignMovement(CScriptEntityAction *tpEntityAction)
 			}
 			break;
 		}
+		//case CScriptMovementAction::eGoalTypeFollowLeader :
 		case CScriptMovementAction::eGoalTypePathPosition : {
 			m_monster->movement().set_path_type(MovementManager::ePathTypeLevelPath);
 			m_monster->movement().detail().set_dest_position(l_tMovementAction.m_tDestinationPosition);
@@ -551,7 +539,10 @@ BOOL CScriptEntity::net_Spawn		(CSE_Abstract* DC)
 void CScriptEntity::shedule_Update	(u32 DT)
 {
 	if (m_bScriptControl)
+	{
+		PROF_EVENT("CScriptEntity::shedule_Update");
 		ProcessScripts				();
+	}
 }
 
 void ScriptCallBack(CBlend* B)
@@ -583,10 +574,6 @@ bool CScriptEntity::bfScriptAnimation()
 			if (m_tpScriptAnimation == m_tpNextAnimation)
 				return			(true);
 
-#ifdef DEBUG
-			//if (!xr_strcmp("m_stalker_wounded",*object().cName()))
-			//	Msg				("%6d Playing animation : %s , Object %s",Device.dwTimeGlobal,*GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay, *object().cName());
-#endif
 			m_tpScriptAnimation = m_tpNextAnimation;
 			IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(object().Visual());
 			LPCSTR				animation_id = *GetCurrentAction()->m_tAnimationAction.m_caAnimationToPlay;
@@ -602,10 +589,11 @@ bool CScriptEntity::bfScriptAnimation()
 				blend			= skeleton_animated->LL_PlayCycle(i,animation,TRUE,ScriptCallBack,this);
 				if (!blend)
 					continue;
-
 				result			= blend;
-				if (m_use_animation_movement_controller)
-					m_object->create_anim_mov_ctrl	(blend);
+				CMotionDef	*MD = skeleton_animated->LL_GetMotionDef( animation );
+				VERIFY( MD );
+				if ( m_use_animation_movement_controller )
+					m_object->create_anim_mov_ctrl	( blend/*, 0, true*/ );
 			}
 
 			return				(true);
@@ -618,12 +606,13 @@ bool CScriptEntity::bfScriptAnimation()
 
 void CScriptEntity::UpdateCL		()
 {
+	PROF_EVENT("CScriptEntity::UpdateCL")
 	bfScriptAnimation				();
 }
 
 u32	 CScriptEntity::GetActionCount	() const
 {
-	return							(m_tpActionQueue.size());
+	return u32(m_tpActionQueue.size());
 }
 
 const CScriptEntityAction *CScriptEntity::GetActionByIndex	(u32 action_index) const
@@ -633,6 +622,7 @@ const CScriptEntityAction *CScriptEntity::GetActionByIndex	(u32 action_index) co
 
 void CScriptEntity::sound_callback	(const CObject *object, int sound_type, const Fvector &position, float sound_power)
 {
+	PROF_EVENT("IGame_Level::SoundEvent_Dispatch");
 	if (!smart_cast<const CGameObject*>(object))
 		return;
 
@@ -641,7 +631,7 @@ void CScriptEntity::sound_callback	(const CObject *object, int sound_type, const
 
 	m_saved_sounds.push_back		(
 		CSavedSound(
-			smart_cast<const CGameObject*>(object)->lua_game_object(),
+			object->ID(),
 			sound_type,
 			position,
 			sound_power
@@ -671,7 +661,7 @@ void CScriptEntity::process_sound_callbacks()
 		
 		object().callback(GameObject::eSound)(
 			object().lua_game_object(),
-			(*I).m_lua_game_object,
+			(*I).m_game_object_id,
 			(*I).m_sound_type,
 			(*I).m_position,
 			(*I).m_sound_power

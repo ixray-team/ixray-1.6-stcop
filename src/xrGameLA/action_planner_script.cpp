@@ -6,9 +6,11 @@
 //	Description : Action planner script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "script_action_planner_wrapper.h"
 #include "script_game_object.h"
+#include "action_base.h"
 
 using namespace luabind;
 
@@ -24,25 +26,25 @@ bool get_actual(const CScriptActionPlanner *action_planner)
 
 CScriptActionPlanner *cast_planner(CScriptActionBase *action)
 {
-	return	(smart_cast<CScriptActionPlanner*>(action));
+	return	smart_cast<CScriptActionPlanner*>(action);
 }
 
 #pragma optimize("s",on)
-void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
+void CScriptActionPlanner::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CScriptActionPlanner,CScriptActionPlannerWrapper>("action_planner")
+		class_<CScriptActionPlanner, CScriptActionPlannerWrapper>("action_planner")
 			.def_readonly("object",				&CScriptActionPlanner::m_object)
 			.def_readonly("storage",			&CScriptActionPlanner::m_storage)
 			.def(								constructor<>())
 			.def("actual",						&get_actual)
 			.def("setup",						&CScriptActionPlanner::setup,	&CScriptActionPlannerWrapper::setup_static)
 			.def("update",						&CScriptActionPlanner::update,	&CScriptActionPlannerWrapper::update_static)
-			.def("add_action",					&CScriptActionPlanner::add_operator,adopt<3>())
+			.def("add_action",					&CScriptActionPlanner::add_operator, adopt<3>())
 			.def("remove_action",				(void (CScriptActionPlanner::*)(const CScriptActionPlanner::_edge_type &))(&CScriptActionPlanner::remove_operator))
 			.def("action",						&CScriptActionPlanner::action)
-			.def("add_evaluator",				&CScriptActionPlanner::add_evaluator,adopt<3>())
+			.def("add_evaluator",				&CScriptActionPlanner::add_evaluator, adopt<3>())
 			.def("remove_evaluator",			(void (CScriptActionPlanner::*)(const CScriptActionPlanner::_condition_type &))(&CScriptActionPlanner::remove_evaluator))
 			.def("evaluator",					&CScriptActionPlanner::evaluator)
 			.def("current_action_id",			&CScriptActionPlanner::current_action_id)
@@ -52,7 +54,8 @@ void CActionPlanner<CScriptGameObject>::script_register(lua_State *L)
 			.def("clear",						&CScriptActionPlanner::clear)
 #ifdef LOG_ACTION
 			.def("show",						&CScriptActionPlanner::show)
-#endif
+#endif // LOG_ACTION
+
 		,def("cast_planner",					&cast_planner)
 	];
 }

@@ -6,6 +6,7 @@
 //	Description : Stalker danger planner
 ////////////////////////////////////////////////////////////////////////////
 
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "stalker_danger_planner.h"
 #include "ai/stalker/ai_stalker.h"
@@ -74,18 +75,18 @@ void CStalkerDangerPlanner::initialize		()
 
 void CStalkerDangerPlanner::add_evaluators		()
 {
-	add_evaluator			(eWorldPropertyDanger				, new CStalkerPropertyEvaluatorDangers(m_object,"danger"));
-	add_evaluator			(eWorldPropertyDangerUnknown		, new CStalkerPropertyEvaluatorDangerUnknown(m_object,"danger unknown"));
-	add_evaluator			(eWorldPropertyDangerInDirection	, new CStalkerPropertyEvaluatorDangerInDirection(m_object,"danger in direction"));
-	add_evaluator			(eWorldPropertyDangerGrenade		, new CStalkerPropertyEvaluatorDangerWithGrenade(m_object,"danger with grenade"));
-	add_evaluator			(eWorldPropertyDangerBySound		, new CStalkerPropertyEvaluatorDangerBySound(m_object,"danger by sound"));
+	add_evaluator			(eWorldPropertyDanger				,new CStalkerPropertyEvaluatorDangers			(m_object,"danger"));
+	add_evaluator			(eWorldPropertyDangerUnknown		,new CStalkerPropertyEvaluatorDangerUnknown		(m_object,"danger unknown"));
+	add_evaluator			(eWorldPropertyDangerInDirection	,new CStalkerPropertyEvaluatorDangerInDirection	(m_object,"danger in direction"));
+	add_evaluator			(eWorldPropertyDangerGrenade		,new CStalkerPropertyEvaluatorDangerWithGrenade	(m_object,"danger with grenade"));
+	add_evaluator			(eWorldPropertyDangerBySound		,new CStalkerPropertyEvaluatorDangerBySound		(m_object,"danger by sound"));
 }
 
 void CStalkerDangerPlanner::add_actions			()
 {
 	CActionPlannerActionScript<CAI_Stalker>		*action;
 
-	action					= new CStalkerDangerUnknownPlanner(m_object,"danger unknown planner");
+	action					= new CStalkerDangerUnknownPlanner	(m_object,"danger unknown planner");
 	add_condition			(action,eWorldPropertyDangerUnknown,true);
 	add_effect				(action,eWorldPropertyDanger,		false);
 	add_operator			(eWorldOperatorDangerUnknownPlanner,		action);

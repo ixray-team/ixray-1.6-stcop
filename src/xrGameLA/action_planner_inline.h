@@ -30,7 +30,8 @@
 
 TEMPLATE_SPECIALIZATION
 IC	CPlanner::CActionPlanner			() :
-	m_initialized			(false)
+	m_initialized			(false),
+	m_solving				(false)
 {
 #ifdef LOG_ACTION
 	m_use_log				= false;
@@ -64,7 +65,9 @@ IC	_object_type &CPlanner::object		() const
 TEMPLATE_SPECIALIZATION
 void CPlanner::update				()
 {
+	m_solving				= true;
 	this->solve					();
+	m_solving				= false;
 
 #ifdef LOG_ACTION
 	// printing solution
@@ -96,20 +99,41 @@ void CPlanner::update				()
 
 	THROW							(!this->solution().empty());
 
-	if (initialized()) {
-		if (current_action_id() != this->solution().front()) {
-			current_action().finalize	();
-			m_current_action_id			= this->solution().front();
-			current_action().initialize	();
+	if (this->solution().empty())
+	{
+		if (initialized()) {
+#ifdef DEBUG
+			Msg("! [CPlanner::update]: %s has solution().empty()", m_object->cName().c_str());
+#endif
+			current_action().finalize();	
+			m_current_action_id = _action_id_type(-1);
+			m_initialized = false;
 		}
 	}
-	else {
-		m_initialized				= true;
-		m_current_action_id			= this->solution().front();
-		current_action().initialize	();
-	}
+	else
+	{
+		if (initialized()) {
+			if (current_action_id() != this->solution().front()) {
+				current_action().finalize();
+				m_current_action_id = this->solution().front();
+				current_action().initialize();
+			}
+		}
+		else {
+			m_initialized = true;
+			m_current_action_id = this->solution().front();
+			current_action().initialize();
+		}
 
-	current_action().execute	();
+		current_action().execute();
+	}
+}
+
+TEMPLATE_SPECIALIZATION
+IC	void CPlanner::finalize							()
+{
+	current_action().finalize	();
+	m_initialized				= false;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -146,12 +170,28 @@ IC	bool CPlanner::initialized	() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_condition	(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
+	VERIFY2					(
+		!m_solving,
+		make_string<const char*>(
+			"do not change preconditions during planner update, object %s, id[%d]",
+			object_name(),
+			condition_id
+		)
+	);
 	action->add_condition	(CWorldProperty(condition_id,condition_value));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_effect		(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
+	VERIFY2					(
+		!m_solving,
+		make_string<const char*>(
+			"do not change effects during planner update, object %s, id[%d]",
+			object_name(),
+			condition_id
+		)
+	);
 	action->add_effect		(CWorldProperty(condition_id,condition_value));
 }
 
@@ -178,6 +218,14 @@ LPCSTR CPlanner::object_name		() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _operator)
 {
+	VERIFY2					(
+		!m_solving,
+		make_string<const char*>(
+			"do not add operators during planner update, object %s, id[%d]",
+			object_name(),
+			operator_id
+		)
+	);
 	inherited::add_operator	(operator_id,_operator);
 	_operator->setup		(m_object,&m_storage);
 #ifdef LOG_ACTION
@@ -186,10 +234,46 @@ IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _o
 }
 
 TEMPLATE_SPECIALIZATION
+IC	void CPlanner::remove_operator	(const _edge_type	&operator_id)
+{
+	VERIFY2					(
+		!m_solving,
+		make_string<const char*>(
+			"do not remove operators during planner update, object %s, id[%d]",
+			object_name(),
+			operator_id
+		)
+	);
+	inherited::remove_operator	(operator_id);
+}
+
+TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition_evaluator_ptr evaluator)
 {
+	VERIFY2						(
+		!m_solving,
+		make_string<const char*>(
+			"do not add evaluators during planner update, object %s, id[%d]",
+			object_name(),
+			condition_id
+		)
+	);
 	inherited::add_evaluator	(condition_id,evaluator);
 	evaluator->setup			(m_object,&m_storage);
+}
+
+TEMPLATE_SPECIALIZATION
+IC	void CPlanner::remove_evaluator	(const _condition_type &condition_id)
+{
+	VERIFY2						(
+		!m_solving,
+		make_string<const char*>(
+			"do not remove evaluators during planner update, object %s, id[%d]",
+			object_name(),
+			condition_id
+		)
+	);
+	inherited::remove_evaluator	(condition_id);
 }
 
 #ifdef LOG_ACTION
@@ -239,7 +323,7 @@ TEMPLATE_SPECIALIZATION
 IC	void CPlanner::show				(LPCSTR offset)
 {
 	string256		temp;
-	strconcat		(sizeof(temp),temp,offset,"    ");
+	xr_strconcat(temp,offset,"    ");
 	{
 		Msg			("\n%sEVALUATORS : %d\n",offset, this->evaluators().size());
 		auto	I = this->evaluators().begin();

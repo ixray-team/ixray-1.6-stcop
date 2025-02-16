@@ -225,18 +225,7 @@ void CAI_Stalker::LoadSounds		(LPCSTR section)
 
 void CAI_Stalker::reload			(LPCSTR section)
 {
-#ifdef DEBUG_MEMORY_MANAGER
-	u32									start = 0;
-	if (g_bMEMO)
-		start							= Memory.mem_usage();
-#endif // DEBUG_MEMORY_MANAGER
-
 	brain().setup					(this);
-
-#ifdef DEBUG_MEMORY_MANAGER
-	if (g_bMEMO)
-		Msg					("brain().setup() : %d",Memory.mem_usage() - start);
-#endif // DEBUG_MEMORY_MANAGER
 
 	CCustomMonster::reload			(section);
 	if (!already_dead())
