@@ -205,6 +205,8 @@ ENGINE_API void EngineLoadStage4()
 	execUserScript();
 	InitSound2();
 
+	if (EngineExternal().LostAlphaMode())
+		g_pStringTable = new CStringTable();
 	// ...command line for auto start
 	{
 		LPCSTR	pStartup = strstr(Core.Params, "-start ");
@@ -419,7 +421,8 @@ ENGINE_API void EngineLoadStage2()
 
 	InitInput();
 
-	g_pStringTable = new CStringTable();
+	if (!EngineExternal().LostAlphaMode())
+		g_pStringTable = new CStringTable();
 }
 
 ENGINE_API void EngineLoadStage3()
