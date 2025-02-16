@@ -21,7 +21,7 @@ using xr_char_t = char16_t;
 #define XR_TEXT(text) L##text
 #else
 using xr_char_t = char;
-#define XR_TEXT(text) ##text
+#define XR_TEXT(text) text
 #endif
 
 template<typename char_t, unsigned int _kStringLength>
