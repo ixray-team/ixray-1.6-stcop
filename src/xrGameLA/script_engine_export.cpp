@@ -225,5 +225,12 @@ void export_classes	(lua_State *L)
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
 	CStoreHouse::script_register(L);
+	UIRegistrator::script_register(L);
+	CSmartZone::script_register(L);
+	CKarlik::script_register(L);
+	CGhostBoss::script_register(L);
+	CAI_SwampBeast::script_register(L);
+	CInventoryItemObject::script_register(L);
+	CWeaponZoomable::script_register(L);
 #endif
 }
