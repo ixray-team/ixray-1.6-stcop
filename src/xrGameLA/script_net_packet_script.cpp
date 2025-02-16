@@ -5,7 +5,6 @@
 //	Author		: Dmitriy Iassenev
 //	Description : XRay Script net packet class script export
 ////////////////////////////////////////////////////////////////////////////
-
 #include "pch_script.h"
 #include "script_net_packet.h"
 #include "../../xrCore/net_utils.h"
@@ -48,7 +47,8 @@ ClientID r_clientID(NET_Packet *self)
 	return clientID;
 }
 
-extern u16	script_server_object_version	();
+
+extern u16 script_server_object_version();
 
 #pragma optimize("s",on)
 void CScriptNetPacket::script_register(lua_State *L)

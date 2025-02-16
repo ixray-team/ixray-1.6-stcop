@@ -16,7 +16,7 @@ class CScriptThread;
 
 
 //CUSTOM
-#	define	USE_DEBUGGER
+//#	define	USE_DEBUGGER
 
 #ifdef	DEBUG
 	#ifndef ENGINE_BUILD

@@ -14,7 +14,7 @@
 #include "stalker_movement_manager.h"
 #include "../Include/xrRender/animation_blend.h"
 
-IC	void CStalkerAnimationManager::play_delayed_callbacks	()
+void CStalkerAnimationManager::play_delayed_callbacks	()
 {
 	if (!m_call_script_callback)
 		return;

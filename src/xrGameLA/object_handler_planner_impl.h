@@ -8,7 +8,7 @@
 
 #pragma once
 
-IC	CObjectHandlerPlanner::_condition_type CObjectHandlerPlanner::uid(const u32 id0, const u32 id1) const
+const CObjectHandlerPlanner::_condition_type CObjectHandlerPlanner::uid(const u32 id0, const u32 id1) const
 {
 	VERIFY				(!((id0 << 16) & id1));
 	return				((id0 << 16) | id1);

@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#if USE_OLD_OBJECT_PLANNER
 #include "object_handler_planner.h"
 #include "object_property_evaluators.h"
 #include "object_actions.h"
@@ -370,3 +372,4 @@ void CObjectHandlerPlanner::add_operators		(CWeapon *weapon)
 	this->action(uid(id,eWorldOperatorQueueWait1)).set_inertia_time(300);
 	this->action(uid(id,eWorldOperatorQueueWait2)).set_inertia_time(300);
 }
+#endif

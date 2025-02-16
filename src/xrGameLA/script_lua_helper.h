@@ -4,7 +4,7 @@ struct lua_State;
 struct Proto;
 struct lua_Debug;
 class CScriptFile;
-class CScriptDebugger;
+//class CScriptDebugger;
 
 class CDbgLuaHelper  
 {
@@ -18,7 +18,7 @@ public:
 	void		DrawLocalVariables			();
 	const char* GetSource					();
 
-	CDbgLuaHelper							(CScriptDebugger* d);
+	CDbgLuaHelper							(/*CScriptDebugger* d*/);
 	virtual ~CDbgLuaHelper					();
 
 	// debugger functions
@@ -41,9 +41,9 @@ public:
 	void		DrawVariable				(lua_State * l, const char* name, bool bOpenTable);
 	void		DrawTable					(lua_State *l, const char* name, bool bRecursive=true);
 	void		DrawVariableInfo			(char*);
-	CScriptDebugger*	debugger			(){return m_debugger;}
+	//CScriptDebugger*	debugger			(){return m_debugger;}
 protected:
-	CScriptDebugger*						m_debugger;
+	//CScriptDebugger*						m_debugger;
 	static		CDbgLuaHelper*				m_pThis;
 
 

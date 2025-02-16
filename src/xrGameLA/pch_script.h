@@ -11,6 +11,11 @@
 
 #include "stdafx.h"
 
+#ifdef XRSE_FACTORY_EXPORTS
+#undef SCRIPTS_API
+#define SCRIPTS_API
+#endif
+
 //#pragma warning(disable:4244)
 //#pragma warning(disable:4995)
 //#pragma warning(disable:4530)

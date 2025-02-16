@@ -1,6 +1,6 @@
 #pragma once
 
-class CScriptDebugger;
+//class CScriptDebugger;
 struct SPath{
 	string_path path;
 };
@@ -8,11 +8,11 @@ struct SPath{
 class CScriptCallStack
 {
 public:
-	CScriptDebugger*			m_debugger;
+	//CScriptDebugger*			m_debugger;
 	void GotoStackTraceLevel	(int nLevel);
 	void Add					(const char* szDesc, const char* szFile, int nLine);
 	void Clear					();
-	CScriptCallStack			(CScriptDebugger* d);
+	CScriptCallStack			(/*CScriptDebugger* d*/);
 	~CScriptCallStack			();
 
 	int		GetLevel			()			{ return m_nCurrentLevel; };

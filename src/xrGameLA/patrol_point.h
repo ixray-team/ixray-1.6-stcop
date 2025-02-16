@@ -31,7 +31,7 @@ protected:
 #endif
 
 protected:
-	IC			void						correct_position	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph);
+				void						correct_position	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph);
 #ifdef DEBUG
 				void						verify_vertex_id	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph) const;
 #endif

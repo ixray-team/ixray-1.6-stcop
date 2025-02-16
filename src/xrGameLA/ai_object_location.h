@@ -15,22 +15,27 @@ namespace LevelGraph {
 };
 
 class CAI_ObjectLocation {
+public:
+	typedef GameGraph::_GRAPH_ID				_GRAPH_ID;
+	typedef GameGraph::CVertex					CVertex;
+	typedef LevelGraph::CVertex					ILevelGraph;
+
 private:
-	u32										m_level_vertex_id;
-	GameGraph::_GRAPH_ID					m_game_vertex_id;
+	u32						m_level_vertex_id;
+	_GRAPH_ID				m_game_vertex_id;
 
 public:
-	IC										CAI_ObjectLocation	();
-	IC			void						init				();
-	IC	virtual	void						reinit				();
-	IC			void						game_vertex			(const GameGraph::CVertex	*game_vertex);
-	IC			void						game_vertex			(const GameGraph::_GRAPH_ID	game_vertex_id);
-	IC			const GameGraph::CVertex	*game_vertex		() const;
-	IC			const GameGraph::_GRAPH_ID	game_vertex_id		() const;
-	IC			void						level_vertex		(const LevelGraph::CVertex	*level_vertex);
-	IC			void						level_vertex		(const u32					level_vertex_id);
-	IC			const LevelGraph::CVertex	*level_vertex		() const;
-	IC			const u32					level_vertex_id		() const;
+	IC						CAI_ObjectLocation();
+	IC	void				init();
+	IC	void				reinit();
+	IC	void				game_vertex(CVertex const* game_vertex);
+	IC	void				game_vertex(_GRAPH_ID const& game_vertex_id);
+	IC	const CVertex* game_vertex() const;
+	IC	const _GRAPH_ID		game_vertex_id() const;
+	IC	void				level_vertex(ILevelGraph const* level_vertex);
+	IC	void				level_vertex(u32 const& level_vertex_id);
+	const ILevelGraph* level_vertex() const;
+	IC	const u32			level_vertex_id() const;
 };
 
 #include "ai_object_location_inline.h"

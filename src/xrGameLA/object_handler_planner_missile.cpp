@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#if USE_OLD_OBJECT_PLANNER
 #include "object_handler_planner.h"
 #include "object_property_evaluators.h"
 #include "object_actions.h"
@@ -97,3 +98,4 @@ void CObjectHandlerPlanner::add_operators		(CMissile *missile)
 
 	this->action(uid(id,eWorldOperatorThrowIdle)).set_inertia_time	(2000);
 }
+#endif

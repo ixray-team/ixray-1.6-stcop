@@ -136,7 +136,7 @@ public:
 	virtual					~CScriptGameObject		();
 							operator CObject*		();
 
-	IC		CGameObject			&object				() const;
+			CGameObject			&object				() const;
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
 			int					clsid				() const;

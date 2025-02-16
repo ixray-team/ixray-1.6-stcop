@@ -274,3 +274,8 @@ void CSightAction::execute_fire_object			()
 		default : NODEFAULT;
 	}
 }
+
+const ILevelGraph::CVertex* CAI_ObjectLocation::level_vertex() const {
+	VERIFY(ai().level_graph().valid_vertex_id(m_level_vertex_id));
+	return (ai().level_graph().vertex(m_level_vertex_id));
+}

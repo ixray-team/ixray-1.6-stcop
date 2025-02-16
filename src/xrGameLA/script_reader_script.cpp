@@ -23,7 +23,7 @@ LPCSTR r_stringZ(IReader *self)
 	return			(*temp);
 }
 
-bool r_bool(IReader *self)
+bool r_bool_semi(IReader *self)
 {
 	return			(!!self->r_u8());
 }
@@ -51,7 +51,7 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_s16",			(void (IReader::*)(s16&	))(&IReader::r_s16		))
 			.def("r_u8",			(void (IReader::*)(u8&)	)(&IReader::r_u8			))
 			.def("r_s8",			(void (IReader::*)(s8&)	)(&IReader::r_s8			))
-			.def("r_bool",			&::r_bool				)
+			.def("r_bool",			&::r_bool_semi				)
 			.def("r_float",			(float	(IReader::*)()	)(&IReader::r_float		))
 			.def("r_u64",			(u64	(IReader::*)()	)(&IReader::r_u64		))
 			.def("r_s64",			(s64	(IReader::*)()	)(&IReader::r_s64		))

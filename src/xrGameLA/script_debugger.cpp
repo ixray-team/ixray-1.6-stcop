@@ -5,7 +5,7 @@
 // #include "../XR_IOConsole.h"
 
 //CScriptDebugger* CScriptDebugger::m_pDebugger = NULL;
-
+#if 0
 
 void CScriptDebugger::SendMessageToIde	(CMailSlotMsg& msg)
 {
@@ -518,3 +518,4 @@ void CScriptDebugger::AddThread(SScriptThread& th)
 {
 	_SendMessage(DMSG_ADD_THREAD, (WPARAM)(&th), 0);
 }
+#endif

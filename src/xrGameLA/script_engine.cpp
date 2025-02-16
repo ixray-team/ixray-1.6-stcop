@@ -99,12 +99,12 @@ void lua_cast_failed					(lua_State *L, LUABIND_TYPE_INFO info)
 void CScriptEngine::setup_callbacks		()
 {
 #ifdef USE_DEBUGGER
-	if( debugger() )
-		debugger()->PrepareLuaBind	();
+	//if( debugger() )
+	//	debugger()->PrepareLuaBind	();
 #endif
 
 #ifdef USE_DEBUGGER
-	if (!debugger() || !debugger()->Active() ) 
+	if (!debugger() /*|| !debugger()->Active()*/ ) 
 #endif
 	{
 #if !XRAY_EXCEPTIONS
@@ -351,8 +351,8 @@ void CScriptEngine::restartDebugger				()
 	if(debugger())
 		stopDebugger();
 
-	m_scriptDebugger = new CScriptDebugger();
-	debugger()->PrepareLuaBind();
+	//m_scriptDebugger = new CScriptDebugger();
+	//debugger()->PrepareLuaBind();
 	Msg				("Script debugger succesfully restarted.");
 }
 #endif

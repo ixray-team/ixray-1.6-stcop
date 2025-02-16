@@ -18,7 +18,7 @@ struct lua_State;
 
 #define DMOD_BREAK					10
 #define DMOD_STOP					11
-
+#if 0
 struct SBreakPoint{
 	shared_str	fileName;
 	s32			nLine;
@@ -104,3 +104,4 @@ protected:
 	xr_vector<SBreakPoint>				m_breakPoints;
 	string_path							m_curr_connected_mslot;
 };
+#endif
