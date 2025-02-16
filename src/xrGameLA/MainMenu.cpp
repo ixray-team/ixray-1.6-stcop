@@ -126,7 +126,6 @@ void CMainMenu::ReadTextureInfo()
 
 extern ENGINE_API BOOL	bShowPauseString;
 extern bool				IsGameTypeSingle();
-static xr_string StrMainMenu = g_pStringTable->translate("st_discord_menu").c_str();
 
 void CMainMenu::Activate	(bool bActivate)
 {
@@ -177,7 +176,7 @@ void CMainMenu::Activate	(bool bActivate)
 
 		Console->Execute					("stat_memory");
 
-		g_Discord.SetPhase(StrMainMenu);
+		g_Discord.SetPhase(g_pStringTable->translate("st_discord_menu").c_str());
 	}else{
 		m_deactivated_frame					= Device.dwFrame;
 		m_Flags.set							(flActive,				FALSE);
