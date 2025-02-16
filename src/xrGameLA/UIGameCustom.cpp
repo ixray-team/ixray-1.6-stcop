@@ -5,7 +5,7 @@
 #include "ui/UIStatic.h"
 #include "ui/UIMultiTextStatic.h"
 #include "../xrCore/object_broker.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #include "InventoryOwner.h"
 

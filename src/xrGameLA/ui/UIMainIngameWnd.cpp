@@ -38,7 +38,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../actorcondition.h"
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../clsid_game.h"
 #include "../mounted_turret.h"
 #include "UIArtefactPanel.h"

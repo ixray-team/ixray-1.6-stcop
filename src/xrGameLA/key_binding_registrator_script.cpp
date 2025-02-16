@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "key_binding_registrator.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 using namespace luabind;
 

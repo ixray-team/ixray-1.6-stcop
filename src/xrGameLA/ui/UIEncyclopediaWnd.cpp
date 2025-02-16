@@ -91,7 +91,7 @@ void CUIEncyclopediaWnd::Init()
 	CUIXmlInit::InitAutoStatic(uiXml, "right_auto_static", UIEncyclopediaIdxBkg);
 }
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 {
 	if (UIIdxList == pWnd && LIST_ITEM_CLICKED == msg)

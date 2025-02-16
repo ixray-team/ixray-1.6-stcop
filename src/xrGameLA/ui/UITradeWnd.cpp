@@ -15,7 +15,7 @@
 #include "../eatable_item.h"
 #include "../inventory.h"
 #include "../level.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../character_info.h"
 #include "UIMultiTextStatic.h"
 #include "UI3tButton.h"

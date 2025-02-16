@@ -3,7 +3,7 @@
 
 #ifdef  XRGAME_EXPORTS
 #include "PhraseDialog.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 SSpecificCharacterData::SSpecificCharacterData()
 {
@@ -121,7 +121,7 @@ void CSpecificCharacter::load_shared	(LPCSTR)
 #pragma todo("this line disables the infoportion dependancy that is already coded")
 	data()->m_can_upgrade = can_upgrade == "true" ? "1" : "0";
 
-	//игровое имя персонажа
+	//РёРіСЂРѕРІРѕРµ РёРјСЏ РїРµСЂСЃРѕРЅР°Р¶Р°
 	data()->m_sGameName		= pXML->Read("name", 0, "");
 	data()->m_sBioText		= CStringTable().translate(pXML->Read("bio", 0, ""));
 

@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "UITreeViewItem.h"
 #include "UIListWnd.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 
 #define UNREAD_COLOR	0xff00ff00

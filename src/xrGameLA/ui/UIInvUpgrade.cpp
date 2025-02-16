@@ -8,7 +8,7 @@
 
 #include "pch_script.h"
 #include "../xrCore/object_broker.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #include "UIInvUpgrade.h"
 

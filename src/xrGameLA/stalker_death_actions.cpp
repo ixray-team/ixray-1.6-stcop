@@ -17,7 +17,7 @@
 #include "inventory.h"
 #include "weapon.h"
 #include "clsid_game.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 using namespace StalkerDecisionSpace;
 

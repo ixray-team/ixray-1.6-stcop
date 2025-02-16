@@ -27,7 +27,7 @@
 #include "../BottleItem.h"
 #include "../Car.h"
 #include "../uicursor.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 void move_item (u16 from_id, u16 to_id, u16 what_id);
 
@@ -445,7 +445,7 @@ void CUICarBodyWnd::TakeAll()
 }
 
 
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 
 bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {

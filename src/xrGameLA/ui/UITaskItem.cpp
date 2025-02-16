@@ -3,7 +3,7 @@
 #include "UIXmlInit.h"
 #include "UI3tButton.h"
 #include "../gametask.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "UIEventsWnd.h"
 #include "UIEditBoxEx.h"
 #include "UIEditBox.h"

@@ -8,7 +8,7 @@
 #include "xrserver_objects_alife_items.h"
 #include "ExplosiveRocket.h"
 #include "Actor_Flags.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "level.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../xrCore/object_broker.h"

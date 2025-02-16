@@ -8,7 +8,7 @@
 #include "actor.h"
 #include "actorEffector.h"
 #include "camerafirsteye.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "game_object_space.h"
 #include "level.h"
 

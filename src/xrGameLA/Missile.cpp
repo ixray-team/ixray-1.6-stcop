@@ -7,7 +7,7 @@
 #include "xrserver_objects_alife.h"
 #include "ActorEffector.h"
 #include "level.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "ExtendedGeom.h"

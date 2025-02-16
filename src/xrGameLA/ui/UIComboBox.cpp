@@ -3,7 +3,7 @@
 #include "UITextureMaster.h"
 #include "UIScrollBar.h"
 #include "uilistboxitem.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #define CB_HEIGHT 20.0f
 
@@ -154,14 +154,14 @@ void CUIComboBox::SetCurrentOptValue()
 		}
 	}
 
-	LPCSTR cur_val;
+	xr_string cur_val;
 	if (IsLanguangeItem())
-		cur_val		= *CStringTable().ReturnLanguage();
+		cur_val		= CStringTable().LangName();
 	else
 		cur_val		= *CStringTable().translate( GetOptTokenValue());
 
-	m_text.SetText		( cur_val );
-	m_list_box.SetSelectedText( cur_val );
+	m_text.SetText		( cur_val.c_str() );
+	m_list_box.SetSelectedText( cur_val.c_str() );
 	
 	CUIListBoxItem* itm	= m_list_box.GetSelectedItem();
 	if(itm)

@@ -3,7 +3,7 @@
 #include "UIStatic.h"
 #include "../encyclopedia_article.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd	()
 :m_Article(NULL)

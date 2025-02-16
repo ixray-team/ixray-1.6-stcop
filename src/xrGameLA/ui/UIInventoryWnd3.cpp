@@ -11,7 +11,7 @@
 #include "../inventory.h"
 #include "../game_base.h"
 #include "../game_cl_base.h"
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "UICellItem.h"
 #include "UIListBoxItem.h"
 #include "../CustomOutfit.h"

@@ -13,7 +13,7 @@
 #include "xr_time.h"
 #include "../../xrCore/net_utils.h"
 #include "UI/UIGameTutorial.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrCore/object_broker.h"
 #include "infoportion.h"
 #include "../xrEngine/x_ray.h"
@@ -49,7 +49,7 @@ LPCSTR translate_string(LPCSTR str)
 
 void reload_language()
 {
-	CStringTable().ReloadLanguage();
+//	CStringTable().ReloadLanguage();
 }
 
 bool has_active_tutotial()

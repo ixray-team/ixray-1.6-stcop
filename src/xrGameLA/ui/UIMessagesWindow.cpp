@@ -17,7 +17,7 @@
 #include "UIPdaMsgListItem.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../InfoPortion.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIMessagesWindow::CUIMessagesWindow(){
 	m_pChatLog = NULL;

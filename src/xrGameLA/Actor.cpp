@@ -45,7 +45,7 @@
 #include "game_cl_base.h"
 #include "game_cl_single.h"
 #include "xrmessages.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "usablescriptobject.h"
 #include "../cl_intersect.h"
 #include "ExtendedGeom.h"

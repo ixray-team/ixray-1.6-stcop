@@ -5,7 +5,7 @@
 #include "inventory.h"
 #include "hudmanager.h"
 #include "character_info.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "UsableScriptObject.h"
 #include "customzone.h"
 #include "../GameMtlLib.h"

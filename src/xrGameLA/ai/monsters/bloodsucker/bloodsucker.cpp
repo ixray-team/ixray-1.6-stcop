@@ -19,7 +19,7 @@
 
 #include "../../../sound_player.h"
 #include "../../../../xrEngine/camerabase.h"
-#include "../../../xr_level_controller.h"
+#include "../../../../xrEngine/xr_level_controller.h"
 #include "../../../ActorCondition.h"
 
 #include "../../../PHDestroyable.h"

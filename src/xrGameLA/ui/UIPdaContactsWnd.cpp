@@ -9,7 +9,7 @@
 #include "UIAnimatedStatic.h"
 #include "UIScrollView.h"
 #include "../actor.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #define PDA_CONTACT_HEIGHT 70
 
@@ -125,7 +125,7 @@ void CUIPdaContactsWnd::RemoveContact(CPda* pda)
 	}
 }
 
-//óäàëèòü âñå êîíòàêòû èç ñïèñêà
+//ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð²ÑÐµ ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ñ‹ Ð¸Ð· ÑÐ¿Ð¸ÑÐºÐ°
 void CUIPdaContactsWnd::RemoveAll()
 {
 	UIListWnd->Clear		();

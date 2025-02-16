@@ -3,7 +3,7 @@
 
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #include "../actor.h"
 #include "../uigamesp.h"
@@ -576,7 +576,7 @@ void CUIInventoryWnd::BindDragDropListEvents(CUIDragDropListEx* lst)
 }
 
 
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include <dinput.h>
 
 bool CUIInventoryWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

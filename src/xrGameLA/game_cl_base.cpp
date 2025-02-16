@@ -5,11 +5,11 @@
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
 #include "script_engine.h"
-#include "xr_Level_controller.h"
+#include "../xrEngine/xr_Level_controller.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UI/UIGameTutorial.h"
 #include "UI/UIMessagesWindow.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 
 game_cl_GameState::game_cl_GameState()

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Fireball.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 CFireball::CFireball() : CWeaponKnife()
 {
@@ -108,8 +108,8 @@ void CFireball::UpdateCL			()
 
 	
 
-	//когда происходит апдейт состояния оружия
-	//ничего другого не делать
+	//РєРѕРіРґР° РїСЂРѕРёСЃС…РѕРґРёС‚ Р°РїРґРµР№С‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕСЂСѓР¶РёСЏ
+	//РЅРёС‡РµРіРѕ РґСЂСѓРіРѕРіРѕ РЅРµ РґРµР»Р°С‚СЊ
 	if(GetNextState() == GetState())
 	{
 		switch (GetState())

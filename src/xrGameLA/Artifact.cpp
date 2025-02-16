@@ -260,7 +260,7 @@ void CArtefact::StartLights()
 	VERIFY(!ph_world->Processing());
 	if(!m_bLightsEnabled) return;
 
-	//âêëþ÷èòü ñâåòîâóþ ïîäñâåòêó îò äâèãàòåëÿ
+	//Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ ÑÐ²ÐµÑ‚Ð¾Ð²ÑƒÑŽ Ð¿Ð¾Ð´ÑÐ²ÐµÑ‚ÐºÑƒ Ð¾Ñ‚ Ð´Ð²Ð¸Ð³Ð°Ñ‚ÐµÐ»Ñ
 	m_pTrailLight->set_color(m_TrailLightColor.r, 
 		m_TrailLightColor.g, 
 		m_TrailLightColor.b);
@@ -360,7 +360,7 @@ void CArtefact::UpdateXForm()
 		XFORM().mul			(mRes,offset());
 	}
 }
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 bool CArtefact::Action(u16 cmd, u32 flags) 
 {
 	switch (cmd)

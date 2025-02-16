@@ -134,7 +134,7 @@ void   CHUDManager::RenderActiveItemUI()
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
 //отрисовка элементов интерфейса
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 void  CHUDManager::RenderUI()
 {
 	if (!psHUD_Flags.is(HUD_DRAW_RT2))	

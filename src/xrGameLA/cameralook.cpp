@@ -3,7 +3,7 @@
 
 #include "CameraLook.h"
 #include "../Cameramanager.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "actor.h"
 
 CCameraLook::CCameraLook(CObject* p, u32 flags ) 

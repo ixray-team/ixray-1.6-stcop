@@ -11,7 +11,7 @@
 #include "../ai_space.h"
 #include "../script_engine.h"
 #include "../script_game_object.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../Inventory_Item.h"
 #include "UIInventoryUtilities.h"
 #include "../PhysicsShellHolder.h"
@@ -209,7 +209,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	}
 	if(UIItemImage)
 	{
-		// Çàãðóæàåì êàðòèíêó
+		// Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÑƒ
 		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
 
 		Irect item_grid_rect				= pInvItem->GetInvGridRect();

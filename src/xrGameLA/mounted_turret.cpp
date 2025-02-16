@@ -9,7 +9,7 @@
 #include "effectorshot.h"
 #include "ai_sounds.h"
 #include "level.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 #include "PhysicsShell.h"

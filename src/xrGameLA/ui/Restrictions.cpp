@@ -5,7 +5,7 @@
 #include "../../xr_ioconsole.h"
 #include "../../xr_ioc_cmd.h"
 #endif //#ifdef DEBUG
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 CRestrictions g_mp_restrictions;
 
 shared_str	g_ranks[_RANK_COUNT];

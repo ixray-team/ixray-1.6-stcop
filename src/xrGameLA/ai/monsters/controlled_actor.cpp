@@ -2,7 +2,7 @@
 #include "controlled_actor.h"
 #include "../../actor.h"
 #include "../../../xrEngine/CameraBase.h"
-#include "../../xr_level_controller.h"
+#include "../../../xrEngine/xr_level_controller.h"
 #include "../../level.h"
 #include "ai_monster_utils.h"
 #include "../../inventory.h"

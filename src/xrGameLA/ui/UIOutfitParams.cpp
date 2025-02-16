@@ -80,7 +80,7 @@ bool CUIOutfitParams::Check(CInventoryItem& outfit)
 	return !!pSettings->line_exist(*outfit.object().cNameSect(), "burn_protection");
 }
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 void CUIOutfitParams::SetInfo(CInventoryItem& itm)
 {

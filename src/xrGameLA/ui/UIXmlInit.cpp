@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIXmlInit.h"
 #include "../level.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "UIFrameWindow.h"
 #include "UIStatic.h"
 #include "UICheckButton.h"

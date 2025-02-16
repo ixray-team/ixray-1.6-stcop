@@ -109,7 +109,15 @@ ENGINE_API _action  actions[]		= {
 	{ "custom14",			kCUSTOM14				,_sp},
 	{ "custom15",			kCUSTOM15				,_sp},
 	{ "cam_autoaim",		kCAM_AUTOAIM			,_sp},
-																
+					
+	{ "turn_engine",		kENGINE					,_sp},
+	{ "use_bandage",		kUSE_BANDAGE			,_sp},
+	{ "use_medkit",			kUSE_MEDKIT				,_sp},
+	{ "map",				kMAP					,_both },
+	{ "contacts",			kCONTACTS				,_sp },
+	{ "wpn_3b",				kWPN_3b					,_both },
+	{ "crouch_toggle",		kCROUCH_TOGGLE			,_both },
+
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
 

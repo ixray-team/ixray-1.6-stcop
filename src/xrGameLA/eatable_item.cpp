@@ -18,7 +18,7 @@
 #include "actor.h"
 #include "UIGameCustom.h"
 #include "UI/UIInventoryWnd.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 CEatableItem::CEatableItem()
 {

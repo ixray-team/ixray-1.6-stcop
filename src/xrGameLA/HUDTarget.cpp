@@ -21,7 +21,7 @@
 #include "relation_registry.h"
 #include "character_info.h"
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "entity_alive.h"
 
 #include "inventory_item.h"

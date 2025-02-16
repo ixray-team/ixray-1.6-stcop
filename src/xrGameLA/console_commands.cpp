@@ -25,7 +25,7 @@
 #include "ui/UIMainIngameWnd.h"
 #include "PhysicsGamePars.h"
 #include "phworld.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "autosave_manager.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -1077,8 +1077,8 @@ struct CCC_ChangeLanguage : public IConsole_Command {
 
 		g_language = args;
 
-		if (g_pGamePersistent && !MainMenu()->IsActive())
-			CStringTable().ReloadLanguage();
+//		if (g_pGamePersistent && !MainMenu()->IsActive())
+//			CStringTable().ReloadLanguage();
 	}
 
 	virtual void	Save				(IWriter *F)

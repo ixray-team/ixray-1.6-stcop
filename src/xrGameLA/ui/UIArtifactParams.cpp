@@ -84,7 +84,7 @@ bool CUIArtefactParams::Check(CInventoryItem& itm)
 	return !!pSettings->line_exist(itm.object().cNameSect_str(), "af_actor_properties");
 }
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 void CUIArtefactParams::SetInfo(CInventoryItem& itm)
 {
 	LPCSTR						af_section = itm.object().cNameSect_str();

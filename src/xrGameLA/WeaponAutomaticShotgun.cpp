@@ -2,7 +2,7 @@
 #include "WeaponAutomaticShotgun.h"
 #include "entity.h"
 #include "ParticlesObject.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "inventory.h"
 #include "level.h"
 #include "actor.h"
@@ -40,7 +40,7 @@ bool CWeaponAutomaticShotgun::Action(u16 cmd, u32 flags)
 
 	if(	m_bTriStateReload && GetState()==eReload &&
 		cmd==kWPN_FIRE && flags&CMD_START &&
-		m_sub_state==eSubstateReloadInProcess		)//остановить перезагрузку
+		m_sub_state==eSubstateReloadInProcess		)//РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРµР·Р°РіСЂСѓР·РєСѓ
 	{
 		AddCartridge(1);
 		m_sub_state = eSubstateReloadEnd;
@@ -165,14 +165,14 @@ bool CWeaponAutomaticShotgun::HaveCartridgeInInventory(u8 cnt)
 	m_pAmmo = NULL;
 	if (m_pCurrentInventory)
 	{
-		//попытаться найти в инвентаре патроны текущего типа 
+		//РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РЅР°Р№С‚Рё РІ РёРЅРІРµРЅС‚Р°СЂРµ РїР°С‚СЂРѕРЅС‹ С‚РµРєСѓС‰РµРіРѕ С‚РёРїР° 
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[m_ammoType]));
 
 		if (!m_pAmmo)
 		{
 			for (u32 i = 0; i < m_ammoTypes.size(); ++i)
 			{
-				//проверить патроны всех подходящих типов
+				//РїСЂРѕРІРµСЂРёС‚СЊ РїР°С‚СЂРѕРЅС‹ РІСЃРµС… РїРѕРґС…РѕРґСЏС‰РёС… С‚РёРїРѕРІ
 				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(*m_ammoTypes[i]));
 				if (m_pAmmo)
 				{
@@ -221,7 +221,7 @@ u8 CWeaponAutomaticShotgun::AddCartridge		(u8 cnt)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//выкинуть коробку патронов, если она пустая
+	//РІС‹РєРёРЅСѓС‚СЊ РєРѕСЂРѕР±РєСѓ РїР°С‚СЂРѕРЅРѕРІ, РµСЃР»Рё РѕРЅР° РїСѓСЃС‚Р°СЏ
 	if (m_pAmmo && !m_pAmmo->m_boxCurr && OnServer())
 		m_pAmmo->SetDropManual(TRUE);
 

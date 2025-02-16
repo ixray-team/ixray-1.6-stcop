@@ -5,12 +5,12 @@
 #include "../xr_IOConsole.h"
 #include "../xrEngine/igame_level.h"
 #include "../CameraManager.h"
-#include "xr_Level_controller.h"
+#include "../xrEngine/xr_Level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
 #include "ui\UIBtnHint.h"
 #include "UICursor.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #include "../xrCore/object_broker.h"
 

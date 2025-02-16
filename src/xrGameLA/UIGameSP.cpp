@@ -6,7 +6,7 @@
 
 #include "game_cl_Single.h"
 #include "ui/UIPdaAux.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "actorcondition.h"
 #include "../xr_ioconsole.h"
 #include "../xrCore/object_broker.h"

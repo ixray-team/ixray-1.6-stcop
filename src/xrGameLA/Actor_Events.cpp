@@ -10,7 +10,7 @@
 #include "grenadelauncher.h"
 #include "inventory.h"
 #include "level.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "FoodItem.h"
 #include "ActorCondition.h"
 #include "Grenade.h"
@@ -73,7 +73,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 							CurrentGameUI()->ReInitShownUI();
 				};
 				
-				//äîáàâèòü îòñîåäèíåííûé àääîí â èíâåíòàðü
+				//Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð½Ñ‹Ð¹ Ð°Ð´Ð´Ð¾Ð½ Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ
 				if(pGameSP)
 				{
 					if(pGameSP->TopInputReceiver() == pGameSP->m_InventoryMenu)

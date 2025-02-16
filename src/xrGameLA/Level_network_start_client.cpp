@@ -16,7 +16,7 @@ BOOL CLevel::net_Start_client	( LPCSTR options )
 {
 	return FALSE;
 }
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 bool	CLevel::net_start_client1				()
 {
 	pApp->LoadBegin	();

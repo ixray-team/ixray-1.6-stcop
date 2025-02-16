@@ -6,7 +6,7 @@
 #include "../actor.h"
 #include "../actorcondition.h"
 #include "../CustomOutfit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../CHelmet.h"
 
 UIActorProtectionInfo::UIActorProtectionInfo()

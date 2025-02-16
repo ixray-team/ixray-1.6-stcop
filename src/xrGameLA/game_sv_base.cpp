@@ -11,7 +11,7 @@
 #include "game_sv_event_queue.h"
 #include "../XR_IOConsole.h"
 #include "../xr_ioc_cmd.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #include "debug_renderer.h"
 

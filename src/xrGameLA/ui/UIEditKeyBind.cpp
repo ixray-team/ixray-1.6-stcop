@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "UIEditKeyBind.h"
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "../xrCore/object_broker.h"
 #include "../UIFontDefines.h"
 

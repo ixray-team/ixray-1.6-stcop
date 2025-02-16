@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-// script_game_object_inventory_owner.сpp :	функции для inventory owner
+// script_game_object_inventory_owner.СЃpp :	С„СѓРЅРєС†РёРё РґР»СЏ inventory owner
 //////////////////////////////////////////////////////////////////////////
 
 #include "pch_script.h"
@@ -19,7 +19,7 @@
 #include "script_engine.h"
 #include "attachable_item.h"
 #include "script_entity.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "alife_registry_wrappers.h"
 #include "relation_registry.h"
 #include "custommonster.h"
@@ -378,7 +378,7 @@ void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, Fvector p
 	CGameObject::u_EventSend		(PP);
 }
 
-//передаче вещи из своего инвентаря в инвентарь партнера
+//РїРµСЂРµРґР°С‡Рµ РІРµС‰Рё РёР· СЃРІРѕРµРіРѕ РёРЅРІРµРЅС‚Р°СЂСЏ РІ РёРЅРІРµРЅС‚Р°СЂСЊ РїР°СЂС‚РЅРµСЂР°
 void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho)
 {
 	if (!pItem || !pForWho) {
@@ -393,14 +393,14 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 		return ;
 	}
 
-	// выбросить у себя 
+	// РІС‹Р±СЂРѕСЃРёС‚СЊ Сѓ СЃРµР±СЏ 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, object().ID());
 	P.w_u16							(pIItem->object().ID());
 	P.w_u8							(1); // send just_before_destroy flag, so physical shell does not activates and disrupts nearby objects
 	CGameObject::u_EventSend		(P);
 
-	// отдать партнеру
+	// РѕС‚РґР°С‚СЊ РїР°СЂС‚РЅРµСЂСѓ
 	CGameObject::u_EventGen			(P,GE_OWNERSHIP_TAKE, pForWho->object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
@@ -688,7 +688,7 @@ void  CScriptGameObject::SwitchToTrade		()
 {
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
-	//только если находимся в режиме single
+	//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if(!pGameSP) return;
 

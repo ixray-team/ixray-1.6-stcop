@@ -19,7 +19,7 @@
 #include "relation_registry.h"
 #include "InventoryOwner.h"
 #include "../xrCore/object_broker.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "level_changer.h"
 #include "actor_memory.h"
 #include "visual_memory_manager.h"

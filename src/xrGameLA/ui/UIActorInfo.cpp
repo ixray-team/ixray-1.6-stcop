@@ -17,7 +17,7 @@
 #include "../character_community.h"
 #include "../character_reputation.h"
 #include "../relation_registry.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #define				ACTOR_STATISTIC_XML		"actor_statistic.xml"
 #define				ACTOR_CHARACTER_XML		"pda_dialog_character.xml"

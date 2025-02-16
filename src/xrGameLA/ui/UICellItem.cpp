@@ -3,7 +3,7 @@
 #include "../uicursor.h"
 #include "../inventory_item.h"
 #include "UIDragDropListEx.h"
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "../../xrEngine/xr_input.h"
 #include "../HUDManager.h"
 #include "../level.h"

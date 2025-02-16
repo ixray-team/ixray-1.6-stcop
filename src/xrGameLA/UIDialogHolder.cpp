@@ -5,7 +5,7 @@
 #include "UICursor.h"
 #include "level.h"
 #include "actor.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "../CustomHud.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd)
@@ -293,8 +293,8 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 			if (IR)
 			{
 				EGameActions action = get_binded_action(dik);
-#pragma todo("tatarinrafa:Может закомнетить эту хрень?|May be we dont even need this?")
-				//if (action != kDETECTOR) // Не могу понять почему вылетает именно детектор и зачем вообще этот вторичный вызов нужен
+#pragma todo("tatarinrafa:РњРѕР¶РµС‚ Р·Р°РєРѕРјРЅРµС‚РёС‚СЊ СЌС‚Сѓ С…СЂРµРЅСЊ?|May be we dont even need this?")
+				//if (action != kDETECTOR) // РќРµ РјРѕРіСѓ РїРѕРЅСЏС‚СЊ РїРѕС‡РµРјСѓ РІС‹Р»РµС‚Р°РµС‚ РёРјРµРЅРЅРѕ РґРµС‚РµРєС‚РѕСЂ Рё Р·Р°С‡РµРј РІРѕРѕР±С‰Рµ СЌС‚РѕС‚ РІС‚РѕСЂРёС‡РЅС‹Р№ РІС‹Р·РѕРІ РЅСѓР¶РµРЅ
 					//IR->IR_OnKeyboardPress(action);
 			}
 			return			(false);

@@ -7,7 +7,7 @@
 #include "../xrCore/object_broker.h"
 #include "actor.h"
 #include "../xrEngine/CameraBase.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 void AddEffector		(CActor* A, int type, const shared_str& sect_name)
 {

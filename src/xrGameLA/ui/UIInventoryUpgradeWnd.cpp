@@ -12,7 +12,7 @@
 
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #include "../actor.h"
 #include "../script_process.h"

@@ -10,7 +10,7 @@
 #include "game_cl_base.h"
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrCore/object_broker.h"
 
 #include "../XR_IOConsole.h"

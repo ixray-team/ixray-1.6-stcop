@@ -21,7 +21,7 @@
 #include "level.h"
 #include "../x_ray.h"
 #include "saved_game_wrapper.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../igame_persistent.h"
 
 using namespace ALife;
