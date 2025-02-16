@@ -361,6 +361,9 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	trees_rotation = 10.0f;
 	trees_wave.set(.1f, .01f, .11f);
 }
+#define kostil(sec, _type, _def) config.line_exist(m_identifier.c_str(), sec) ? config._type(m_identifier.c_str(), sec) : _def
+#define kostil_float(sec) kostil(sec, r_float, 0.f)
+#define kostil_vec3(sec) kostil(sec, r_fvector3,Fvector().set(0.f, 0.f, 0.f))
 
 #define	C_CHECK(C)	if (C.x<0 || C.x>2 || C.y<0 || C.y>2 || C.z<0 || C.z>2)	{ Msg("! Invalid '%s' in env-section '%s'",#C,identifier);}
 void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr section)
@@ -395,18 +398,18 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr se
 	
 	if (config.line_exist(identifier,"sky_rotation"))	sky_rotation	= deg2rad(config.r_float(identifier,"sky_rotation"));
 	else											sky_rotation	= 0;
-	far_plane				= config.r_float	(m_identifier.c_str(),"far_plane");
-	fog_color				= config.r_fvector3	(m_identifier.c_str(),"fog_color");
-	fog_density				= config.r_float	(m_identifier.c_str(),"fog_density");
-	fog_distance			= config.r_float	(m_identifier.c_str(),"fog_distance");
+	far_plane = kostil_float("far_plane");
+	fog_color = kostil_vec3("fog_color");
+		
+	fog_density = kostil_float("fog_density");
+	fog_distance = kostil_float("fog_distance");
 
-	rain_type				= 
-		config.line_exist(m_identifier.c_str(), "rain_type") ? config.r_string(m_identifier.c_str(), "rain_type") : "default";
+	rain_type				= kostil("rain_type", r_string, "default");
 
-	rain_density			= config.r_float	(m_identifier.c_str(),"rain_density");		clamp(rain_density,0.f,1.f);
-	rain_color				= config.r_fvector3	(m_identifier.c_str(),"rain_color");      
+	rain_density			= kostil_float("rain_density");		clamp(rain_density, 0.f, 1.f);
+	rain_color				= kostil_vec3("rain_color");
 
-	rain_angle = config.line_exist(identifier, "rain_angle") ? config.r_float(identifier, "rain_angle") : 0.0f;
+	rain_angle = kostil_float("rain_angle");
 	clampr(-30.0f, 30.0f, rain_angle);
 
 	rain_length = config.line_exist(identifier, "rain_length") ? config.r_float(identifier, "rain_length") : 5.0f;
@@ -418,17 +421,18 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr se
 	rain_angle_rotation = deg2rad(config.line_exist(identifier, "rain_angle_rotation") ? config.r_float(identifier, "rain_angle_rotation") : 0.0f);
 	clampr(0.0f, 360.f, rain_angle_rotation);
 
-	wind_velocity			= config.r_float	(m_identifier.c_str(),"wind_velocity");
-	wind_direction			= deg2rad(config.r_float(m_identifier.c_str(),"wind_direction"));
-	ambient					= config.r_fvector3	(m_identifier.c_str(),"ambient_color");
-	hemi_color				= config.r_fvector4	(m_identifier.c_str(),"hemisphere_color");
-	sun_color				= config.r_fvector3	(m_identifier.c_str(),"sun_color");
+	wind_velocity			= kostil_float("wind_velocity");
+	wind_direction			= deg2rad(kostil_float("wind_direction"));
+	ambient					= kostil_vec3("ambient_color");
+	hemi_color = kostil("hemisphere_color", r_fvector4, Fvector4().set(0.f, 0.f, 0.f, 0.f));
+
+	sun_color				= kostil_vec3("sun_color");
 	
 	if (config.line_exist(m_identifier.c_str(), "tree_amplitude_intensity"))
 		trees_amplitude = config.r_float(m_identifier.c_str(), "tree_amplitude_intensity");
 //	if (config.line_exist(m_identifier.c_str(),"sun_altitude"))
-		float sun_altitude = config.r_float(m_identifier.c_str(), "sun_altitude");
-		float sun_longitude = config.r_float(m_identifier.c_str(), "sun_longitude");
+		float sun_altitude = kostil_float("sun_altitude");
+		float sun_longitude = kostil_float("sun_longitude");
 		sun_dir.setHP			(
 			deg2rad(sun_altitude),
 			deg2rad(sun_longitude)
@@ -458,10 +462,10 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr se
 			sun_altitude, sun_longitude,
 			sun_dir.x, sun_dir.y, sun_dir.z));
 	
-	lens_flare_id			= environment.eff_LensFlare->AppendDef(environment, environment.m_suns_config, config.r_string(m_identifier.c_str(),"sun"));
-	tb_id					= environment.eff_Thunderbolt->AppendDef(environment, environment.m_thunderbolt_collections_config, environment.m_thunderbolts_config, config.r_string(m_identifier.c_str(),"thunderbolt_collection"));
-	bolt_period				= (tb_id.size())?config.r_float	(m_identifier.c_str(),"thunderbolt_period"):0.f;
-	bolt_duration			= (tb_id.size())?config.r_float	(m_identifier.c_str(),"thunderbolt_duration"):0.f;
+	lens_flare_id			= environment.eff_LensFlare->AppendDef(environment, environment.m_suns_config, kostil("sun", r_string, ""));
+	tb_id					= environment.eff_Thunderbolt->AppendDef(environment, environment.m_thunderbolt_collections_config, environment.m_thunderbolts_config, kostil("thunderbolt_collection", r_string, ""));
+	bolt_period				= (tb_id.size())? kostil_float("thunderbolt_period"):0.f;
+	bolt_duration			= (tb_id.size())? kostil_float("thunderbolt_duration"):0.f;
 	env_ambient				= config.line_exist(m_identifier.c_str(),"ambient")?environment.AppendEnvAmb	(config.r_string(m_identifier.c_str(),"ambient")):0;
 
 	if (tb_id.size())
