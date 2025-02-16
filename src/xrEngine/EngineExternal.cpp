@@ -16,6 +16,10 @@ CEngineExternal::CEngineExternal()
 			ShadersOptions[*Line.first] = *Line.second;
 		}
 	}
+	if (!ClearSkyMode() && !CallOfPripyatMode())
+	{
+		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
+	}
 }
 
 CEngineExternal::~CEngineExternal() 
