@@ -7,6 +7,8 @@ ENGINE_API CStringTable* g_pStringTable = nullptr;
 STRING_TABLE_DATA* CStringTable::pData = nullptr;
 BOOL CStringTable::m_bWriteErrorsToLog = FALSE;
 
+ENGINE_API shared_str			g_language;
+
 CStringTable::CStringTable	()
 {
 	Init();
@@ -31,7 +33,28 @@ void CStringTable::Init		()
 	pData = new STRING_TABLE_DATA();
 	
 	//имя языка, если не задано (nullptr), то первый <text> в <string> в XML
-	pData->m_sLanguage	= pSettings->r_string("string_table", "language");
+	if (!EngineExternal().LostAlphaMode())
+	{
+		pData->m_sLanguage = pSettings->r_string("string_table", "language");
+	}
+	else
+	{
+		R_ASSERT2(pSettings->section_exist("languages"), "Section [languages] is not exist!");
+		R_ASSERT2(pSettings->line_count("languages"), "Can't find languages in the section [languages]!");
+
+		if (*g_language && pSettings->line_exist("languages", *g_language))
+		{
+			pData->m_sLanguage = g_language;
+		}
+		else 
+		{
+			LPCSTR name;
+			LPCSTR value;
+			pSettings->r_line("languages", 0, &name, &value);
+
+			pData->m_sLanguage = g_language = name;
+		}
+	}
 
 	FS_FileSet fset;
 	FS_FileSet efset;

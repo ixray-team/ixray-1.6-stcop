@@ -15,9 +15,9 @@
 #include "UIInventoryWnd.h"
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
+#include "../../xrEngine/string_table.h"
 
 extern ENGINE_API BOOL bShowPauseString;
-extern shared_str	g_language;
 
 void CallFunction(shared_str const& func)
 {

@@ -84,7 +84,6 @@ BOOL				useInverseKinematics_ = 1; // CPU Intensive, asspecialy, if not using mt
 //---Gameplay
 extern ESingleGameDifficulty	g_SingleGameDifficulty;
 ENGINE_API extern float			psHUD_FOV;
-shared_str			g_language;
 extern u32			crosshairAnimationType = 0;
 xr_token			qcrosshair_type_token[] =
 {

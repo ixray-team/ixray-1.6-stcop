@@ -36,3 +36,4 @@ private:
 };
 
 extern ENGINE_API CStringTable* g_pStringTable;
+ENGINE_API extern shared_str g_language;
