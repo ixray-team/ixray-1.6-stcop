@@ -165,7 +165,10 @@ const CScriptEntityAction *CScriptGameObject::GetActionByIndex(u32 action_index)
 CPhysicsShell* CScriptGameObject::get_physics_shell() const
 {
 	CPhysicsShellHolder* ph_shell_holder =smart_cast<CPhysicsShellHolder*>(&object());
-	if(! ph_shell_holder) return nullptr;
+	if(! ph_shell_holder)
+		return nullptr;
+	if (!ph_shell_holder->PPhysicsShell())
+		return nullptr;
 	return ph_shell_holder->PPhysicsShell();
 }
 
