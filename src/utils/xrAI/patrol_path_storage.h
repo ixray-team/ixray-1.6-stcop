@@ -14,7 +14,7 @@ class CLevelGraph;
 class CGameLevelCrossTable;
 class CGameGraph;
 
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 #include "../xrCore/associative_vector.h"
 
 class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter> {

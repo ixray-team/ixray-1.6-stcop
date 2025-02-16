@@ -18,7 +18,7 @@
 #include "game_spawn_constructor.h"
 #include "patrol_path_storage.h"
 #include "space_restrictor_wrapper.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "restriction_space.h"
 #include <random>
 

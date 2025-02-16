@@ -8,7 +8,7 @@
 #include <conio.h>
 #include "iostreams_proxy.h"
 #include "tools.hpp"
-#include "../../xrServerEntities/object_broker.h"
+#include "../../xrCore/object_broker.h"
 #include "../../xrCore/associative_vector.h"
 
 #include <winnls.h>
