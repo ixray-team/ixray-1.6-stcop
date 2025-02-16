@@ -39,6 +39,22 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 	if (EngineExternal().LostAlphaMode()) {
 		xml.Load(CONFIG_PATH, "ui", xml_file);
 		files_num = xml.GetNodesNum("", 0, "file_name");
+		shared_str file = xml.Read("file_name", 0, "");
+		int num = xml.GetNodesNum("", 0, "texture");
+		for (int i = 0; i < num; i++)
+		{
+			TEX_INFO info;
+
+			info.file = file;
+
+			info.rect.x1 = xml.ReadAttribFlt("texture", i, "x");
+			info.rect.x2 = xml.ReadAttribFlt("texture", i, "width") + info.rect.x1;
+			info.rect.y1 = xml.ReadAttribFlt("texture", i, "y");
+			info.rect.y2 = xml.ReadAttribFlt("texture", i, "height") + info.rect.y1;
+			shared_str id = xml.ReadAttrib("texture", i, "id");
+
+			m_textures.insert(std::make_pair(id, info));
+		}
 	}
 	else 
 	{
