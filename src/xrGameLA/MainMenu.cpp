@@ -14,6 +14,10 @@
 
 #include "../xrCore/object_broker.h"
 
+#include "../xrCore/discord/discord.h"
+#include <Level.h>
+#include <GamePersistent.h>
+
 //#define DEMO_BUILD
 
 string128	ErrMsgBoxTemplate	[]	= {
@@ -122,6 +126,7 @@ void CMainMenu::ReadTextureInfo()
 
 extern ENGINE_API BOOL	bShowPauseString;
 extern bool				IsGameTypeSingle();
+static xr_string StrMainMenu = g_pStringTable->translate("st_discord_menu").c_str();
 
 void CMainMenu::Activate	(bool bActivate)
 {
@@ -171,6 +176,8 @@ void CMainMenu::Activate	(bool bActivate)
 		Device.seqRender.Add				(this, 4); // 1-console 2-cursor 3-tutorial
 
 		Console->Execute					("stat_memory");
+
+		g_Discord.SetPhase(StrMainMenu);
 	}else{
 		m_deactivated_frame					= Device.dwFrame;
 		m_Flags.set							(flActive,				FALSE);
@@ -221,6 +228,8 @@ void CMainMenu::Activate	(bool bActivate)
 			m_Flags.set			(flNeedVidRestart, FALSE);
 			Console->Execute	("vid_restart");
 		}
+
+		GamePersistent().SetDiscordStatus();
 	}
 }
 

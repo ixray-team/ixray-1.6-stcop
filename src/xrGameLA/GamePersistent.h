@@ -90,6 +90,7 @@ public:
 
 	virtual void		GetCurrentDof			(Fvector3& dof);
 	virtual void		SetBaseDof				(const Fvector3& dof);
+	void				SetDiscordStatus() const;
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}

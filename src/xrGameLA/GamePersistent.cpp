@@ -36,6 +36,9 @@
 
 #include "../x_ray.h"
 
+#include "../xrCore/discord/discord.h"
+#include "../xrEngine/string_table.h"
+
 #ifdef DEBUG_MEMORY_MANAGER
 	static	void *	ode_alloc	(size_t size)								{ return Memory.mem_alloc(size,"ODE");			}
 	static	void *	ode_realloc	(void *ptr, size_t oldsize, size_t newsize)	{ return Memory.mem_realloc(ptr,newsize,"ODE");	}
@@ -102,6 +105,8 @@ CGamePersistent::CGamePersistent(void)
 
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	SetBaseDof				(*DofValue);
+
+	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -442,6 +447,7 @@ void CGamePersistent::game_loaded()
 {
 	if(Device.dwPrecacheFrame<=2)
 	{
+		SetDiscordStatus();
 		if(	g_pGameLevel							&&
 			g_pGameLevel->bReady					&&
 			load_screen_renderer.b_need_user_input	&& 
@@ -752,7 +758,6 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "../xrEngine/string_table.h"
 
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
@@ -832,4 +837,17 @@ void CGamePersistent::UpdateDof()
 	(m_dof[0].x<m_dof[2].x)?clamp(m_dof[1].x,m_dof[0].x,m_dof[2].x):clamp(m_dof[1].x,m_dof[2].x,m_dof[0].x);
 	(m_dof[0].y<m_dof[2].y)?clamp(m_dof[1].y,m_dof[0].y,m_dof[2].y):clamp(m_dof[1].y,m_dof[2].y,m_dof[0].y);
 	(m_dof[0].z<m_dof[2].z)?clamp(m_dof[1].z,m_dof[0].z,m_dof[2].z):clamp(m_dof[1].z,m_dof[2].z,m_dof[0].z);
+}
+
+void CGamePersistent::SetDiscordStatus() const {
+	if (g_pGameLevel != nullptr)
+	{
+		// Get level name
+		xr_string LevelName = g_pStringTable->translate("st_discord_level").c_str();
+
+		LevelName += '\t';
+		LevelName += g_pStringTable->translate(Level().name().c_str()).c_str();
+
+		g_Discord.SetPhase(LevelName);
+	}
 }
