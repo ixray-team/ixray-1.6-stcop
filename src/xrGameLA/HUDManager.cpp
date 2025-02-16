@@ -237,16 +237,16 @@ void CHUDManager::OnDisconnected()
 {
 
 	b_online				= false;
-	if(pUIGame)
-		Device.seqFrame.Remove	(pUIGame);
+	//if(pUIGame)
+	//	Device.seqFrame.Remove	(pUIGame);
 }
 
 void CHUDManager::OnConnected()
 {
 	if(b_online)			return;
 	b_online				= true;
-	if(pUIGame)
-		Device.seqFrame.Add	(pUIGame,REG_PRIORITY_LOW-1000);
+	//if(pUIGame)
+	//	Device.seqFrame.Add	(pUIGame,REG_PRIORITY_LOW-1000);
 }
 
 void CHUDManager::net_Relcase	(CObject *object)
