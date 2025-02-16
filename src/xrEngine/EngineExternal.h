@@ -52,6 +52,7 @@ public:
 	~CEngineExternal();
 
 	xr_string GetTitle() const;
+	xr_string GetEngineMode() const;
 	const char* GetPlayerHudOmfAdditional() const;
 	const xr_vector<shared_str> StepWallmarksMaterials() const;
 	const xr_string WallmarkLeft() const;

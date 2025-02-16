@@ -11,12 +11,12 @@
 
 using namespace luabind;
 
-bool r_eof(IReader *self)
+bool r_eof_semi(IReader *self)
 {
 	return			(!!self->eof());
 }
 
-LPCSTR r_stringZ(IReader *self)
+LPCSTR r_stringZ_semi(IReader *self)
 {
 	shared_str		temp;
 	self->r_stringZ	(temp);
@@ -67,9 +67,9 @@ void CScriptReader::script_register(lua_State *L)
 			.def("r_angle8",		&IReader::r_angle8		)
 			.def("r_dir",			&IReader::r_dir			)
 			.def("r_sdir",			&IReader::r_sdir		)
-			.def("r_stringZ",		&r_stringZ				)
+			.def("r_stringZ",		&r_stringZ_semi			)
 			.def("r_elapsed",		&IReader::elapsed		)
 			.def("r_advance",		&IReader::advance		)
-			.def("r_eof",			&r_eof					)
+			.def("r_eof",			&r_eof_semi				)
 	];
 }

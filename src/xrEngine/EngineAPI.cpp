@@ -127,6 +127,10 @@ void CEngineAPI::Initialize(void)
 	// game
 	{
 		LPCSTR			g_name	= "xrGame.dll";
+		if (EngineExternal().GetEngineMode() == "la")
+		{
+			g_name = "xrGameLA.dll";
+		}
 		Msg("Loading DLL: %s",g_name);
 		hGame			= LoadLibraryA	(g_name);
 		if (0==hGame)	R_CHK			(GetLastError());
