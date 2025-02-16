@@ -327,7 +327,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						ObjectToRootForm							(const Fmatrix& form)							    										= 0;
 	virtual			void						SetPrefereExactIntegration					()																							= 0;
 	virtual										~CPhysicsShell								()	;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+	static void script_register(lua_State*);
 	};
 void	get_box(CPhysicsShell*	shell,const	Fmatrix& form,	Fvector&	sz,Fvector&	c);
 

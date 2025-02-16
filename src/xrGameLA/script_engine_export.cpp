@@ -25,6 +25,7 @@
 #	include "ui/UIListBox.h"
 #	include "ai/crow/ai_crow.h"
 #endif
+#include <PHShell.h>
 
 void export_classes	(lua_State *L)
 {
@@ -233,5 +234,9 @@ void export_classes	(lua_State *L)
 	CInventoryItemObject::script_register(L);
 	CWeaponZoomable::script_register(L);
 	game_sv_GameState::script_register(L);
+
+	CPhysicsShell::script_register(L);
+	CPhysicsJoint::script_register(L);
+	CPhysicsElement::script_register(L);
 #endif
 }

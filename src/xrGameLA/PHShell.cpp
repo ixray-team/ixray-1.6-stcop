@@ -618,6 +618,20 @@ void CPHShell::ClearBreakInfo()
 	}	
 	xr_delete(m_spliter_holder);
 }
+
+#include <luabind.hpp>
+using namespace luabind;
+
+void CPHShell::script_register(lua_State* L)
+{
+	module(L)
+		[
+			class_<CPHShell, CPhysicsShell>("physics_shell_try")
+				.def(constructor<>())
+				//.def(constructor<CPhysicsShell*>())
+		];
+}
+
 ICF bool no_physics_shape(const SBoneShape& shape)
 {
 	return shape.type==SBoneShape::stNone||shape.flags.test(SBoneShape::sfNoPhysics);
