@@ -75,7 +75,7 @@ public:
 
 inline HANDLE CreateMailSlotByName(LPSTR slotName)
 {
-  HANDLE  hSlot = CreateMailslot(slotName, 
+  HANDLE  hSlot = CreateMailslotA(slotName, 
         0,                             // no maximum message size 
         MAILSLOT_WAIT_FOREVER,         // no time-out for operations 
         (LPSECURITY_ATTRIBUTES) NULL); // no security attributes 
@@ -86,7 +86,7 @@ inline BOOL CheckExisting(LPSTR slotName)
 {
 	HANDLE hFile; 
 	BOOL res;
-hFile = CreateFile(slotName, 
+hFile = CreateFileA(slotName, 
     GENERIC_WRITE, 
     FILE_SHARE_READ,  // required to write to a mailslot 
     (LPSECURITY_ATTRIBUTES) NULL, 
@@ -106,7 +106,7 @@ inline BOOL SendMailslotMessage(LPSTR slotName, CMailSlotMsg& msg){
 	HANDLE hFile; 
 	DWORD cbWritten; 
  
-hFile = CreateFile(slotName, 
+hFile = CreateFileA(slotName, 
     GENERIC_WRITE, 
     FILE_SHARE_READ,  // required to write to a mailslot 
     (LPSECURITY_ATTRIBUTES) NULL, 
@@ -140,7 +140,7 @@ inline BOOL CheckMailslotMessage(HANDLE hSlot, CMailSlotMsg& msg){
  
     cbMessage = cMessage = cbRead = 0; 
 
-    hEvent = CreateEvent(NULL, FALSE, FALSE, "__Slot");
+    hEvent = CreateEventA(NULL, FALSE, FALSE, "__Slot");
     if( NULL == hEvent )
         return FALSE;
     ov.Offset = 0;

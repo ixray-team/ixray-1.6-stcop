@@ -46,20 +46,20 @@ IC	void CGameLocationSelector::reinit			(const CGameGraph *graph)
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CGameLocationSelector::select_location	(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id)
+IC	void CGameLocationSelector::select_location	(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id_)
 {
 	switch (m_selection_type) {
 		case eSelectionTypeMask : {
-			if (used())
-				perform_search	(start_vertex_id);
+			if (this->used())
+				this->perform_search	(start_vertex_id);
 			else
-				m_failed		= false;
+				this->m_failed		= false;
 			break;
 		}
 		case eSelectionTypeRandomBranching : {
-			if (m_graph)
-				select_random_location(start_vertex_id,dest_vertex_id);
-			m_failed			= m_failed && (start_vertex_id == dest_vertex_id);
+			if (this->m_graph)
+				select_random_location(start_vertex_id,dest_vertex_id_);
+			this->m_failed			= this->m_failed && (start_vertex_id == dest_vertex_id_);
 			break;
 		}
 		default :				NODEFAULT;
@@ -67,12 +67,12 @@ IC	void CGameLocationSelector::select_location	(const _vertex_id_type start_vert
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CGameLocationSelector::select_random_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id)
+IC	void CGameLocationSelector::select_random_location(const _vertex_id_type start_vertex_id, _vertex_id_type &dest_vertex_id_)
 {
-	VERIFY						(m_graph);
-	VERIFY						(m_graph->valid_vertex_id(start_vertex_id));
+	VERIFY						(this->m_graph);
+	VERIFY						(this->m_graph->valid_vertex_id(start_vertex_id));
 
-	if (!m_graph->valid_vertex_id(m_previous_vertex_id))
+	if (!this->m_graph->valid_vertex_id(m_previous_vertex_id))
 		m_previous_vertex_id	= GameGraph::_GRAPH_ID(start_vertex_id);
 
 	u32							branch_factor = 0;
@@ -82,63 +82,63 @@ IC	void CGameLocationSelector::select_random_location(const _vertex_id_type star
 	GameGraph::TERRAIN_VECTOR::const_iterator	E = vertex_types.end();
 
 	_Graph::const_iterator		i,e;
-	m_graph->begin				(start_vertex_id,i,e);
+	this->m_graph->begin				(start_vertex_id,i,e);
 	for ( ; i != e; ++i) {
-		// * íå ñîîòâåòñòâóåò ïðåäûäåùåé âåðøèíå
-		if ((*i).vertex_id() == m_previous_vertex_id)
+		// * Ð½Ðµ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÐµÑ‰ÐµÐ¹ Ð²ÐµÑ€ÑˆÐ¸Ð½Ðµ
+		if ((*i).vertex_id() == this->m_previous_vertex_id)
 			continue;
 
-		// * âåðøèíà íà òåêóùåì óðîâíå?
-		if ((m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
+		// * Ð²ÐµÑ€ÑˆÐ¸Ð½Ð° Ð½Ð° Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ ÑƒÑ€Ð¾Ð²Ð½Ðµ?
+		if ((this->m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
 			continue;
 
 		// * accessible
 		if (!accessible((*i).vertex_id()))
 			continue;
 
-		const u8				*curr_types = m_graph->vertex((*i).vertex_id())->vertex_type();
+		const u8				*curr_types = this->m_graph->vertex((*i).vertex_id())->vertex_type();
 
-		// * ïîäõîäèò ïî ìàñêå
+		// * Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¿Ð¾ Ð¼Ð°ÑÐºÐµ
 		for (I = B; I != E; ++I)
-			if (m_graph->mask((*I).tMask,curr_types))
+			if (this->m_graph->mask((*I).tMask,curr_types))
 				++branch_factor;
 	}
 
 	if (!branch_factor) {
-		if ((start_vertex_id != m_previous_vertex_id) && accessible(m_previous_vertex_id))
-			dest_vertex_id		= m_previous_vertex_id;
+		if ((start_vertex_id != this->m_previous_vertex_id) && accessible(this->m_previous_vertex_id))
+			dest_vertex_id_		= this->m_previous_vertex_id;
 		else
-			dest_vertex_id		= start_vertex_id;
+			dest_vertex_id_		= start_vertex_id;
 	}
 	else {
 		u32						choice = ::Random.randI(0,branch_factor);
 		branch_factor			= 0;
 		bool					found = false;
-		m_graph->begin			(start_vertex_id,i,e);
+		this->m_graph->begin			(start_vertex_id,i,e);
 		for ( ; i != e; ++i) {
-			// * íå ñîîòâåòñòâóåò ïðåäûäåùåé âåðøèíå
+			// * Ð½Ðµ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÐµÑ‚ Ð¿Ñ€ÐµÐ´Ñ‹Ð´ÐµÑ‰ÐµÐ¹ Ð²ÐµÑ€ÑˆÐ¸Ð½Ðµ
 			if ((*i).vertex_id() == m_previous_vertex_id)
 				continue;
 
-			// * âåðøèíà íà òåêóùåì óðîâíå?
-			if ((m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
+			// * Ð²ÐµÑ€ÑˆÐ¸Ð½Ð° Ð½Ð° Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼ ÑƒÑ€Ð¾Ð²Ð½Ðµ?
+			if ((this->m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
 				continue;
 
 			// * accessible 
 			if (!accessible((*i).vertex_id()))
 				continue;
 
-			const u8			*curr_types = m_graph->vertex((*i).vertex_id())->vertex_type();
+			const u8			*curr_types = this->m_graph->vertex((*i).vertex_id())->vertex_type();
 
-			// * ïîäõîäèò ïî ìàñêå
+			// * Ð¿Ð¾Ð´Ñ…Ð¾Ð´Ð¸Ñ‚ Ð¿Ð¾ Ð¼Ð°ÑÐºÐµ
 			for (I = B; I != E; ++I)
-				if (m_graph->mask((*I).tMask,curr_types)) {
+				if (this->m_graph->mask((*I).tMask,curr_types)) {
 					if (choice != branch_factor) {
 						++branch_factor;
 						continue;
 					}
 
-					dest_vertex_id	= (*i).vertex_id();
+					dest_vertex_id_	= (*i).vertex_id();
 					found		= true;
 					break;
 				}
@@ -167,7 +167,7 @@ IC	bool CGameLocationSelector::actual				(const _vertex_id_type start_vertex_id,
 TEMPLATE_SPECIALIZATION
 IC	bool CGameLocationSelector::accessible			(const _vertex_id_type vertex_id) const
 {
-	return					(m_restricted_object ? m_restricted_object->accessible(m_graph->vertex(vertex_id)->level_vertex_id()) : true);
+	return					(this->m_restricted_object ? this->m_restricted_object->accessible(this->m_graph->vertex(vertex_id)->level_vertex_id()) : true);
 }
 
 #undef TEMPLATE_SPECIALIZATION

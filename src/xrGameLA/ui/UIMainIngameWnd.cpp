@@ -44,7 +44,7 @@
 #include "UIArtefactPanel.h"
 
 #include "../attachable_item.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/xr_input.h"
 
 #include "UIScrollView.h"
 #include "map_hint.h"
@@ -450,7 +450,7 @@ void CUIMainIngameWnd::Update()
 
 			// Если его нет, то берем последнее меньшее значение ()
 			if (rit == m_Thresholds[i].rend())
-				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind2nd(std::less<float>(), value));
+				rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(std::less<float>(), std::placeholders::_1, value));
 
 			// Минимальное и максимальное значения границы
 			float min = m_Thresholds[i].front();
@@ -486,7 +486,7 @@ void CUIMainIngameWnd::Update()
 	UIMotionIcon.SetPower			(m_pActor->conditions().GetPower()*100.0f);
 
 	// lost alpha start 
-	if (psHUD_Flags.test(HUD_SHOW_CLOCK))
+	if (true/*psHUD_Flags.test(HUD_SHOW_CLOCK)*/)
 	{
 		if (!UIStaticTime.IsShown())
 			UIStaticTime.Show(true);

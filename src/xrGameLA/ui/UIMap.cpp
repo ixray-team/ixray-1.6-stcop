@@ -5,7 +5,7 @@
 #include "../map_spot.h"
 #include "UIMap.h"
 #include "UIMapWnd.h"
-#include "../../xr_input.h"		//remove me !!!
+#include "../../xrEngine/xr_input.h"		//remove me !!!
 
 const u32			activeLocalMapColor			= 0xffffffff;//0xffc80000;
 const u32			inactiveLocalMapColor		= 0xffffffff;//0xff438cd1;

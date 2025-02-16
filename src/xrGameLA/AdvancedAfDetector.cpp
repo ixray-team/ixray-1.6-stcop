@@ -82,11 +82,11 @@ void CAdvancedDetector::UpdateAf()
 {
 	ui().SetValue(0.0f, Fvector().set(0, 0, 0));
 
-	//------------Находим ближайший арт из списка feeltouch
-	CArtefact* pCurrentAf;
+	//------------РќР°С…РѕРґРёРј Р±Р»РёР¶Р°Р№С€РёР№ Р°СЂС‚ РёР· СЃРїРёСЃРєР° feeltouch
+	CArtefact* pCurrentAf = nullptr;
 	LPCSTR closest_art = "null";
 	feel_touch_update_delay = feel_touch_update_delay + 1;
-	if (feel_touch_update_delay >= 5)//Как то снизить нагрузку на кадр поможет
+	if (feel_touch_update_delay >= 5)//РљР°Рє С‚Рѕ СЃРЅРёР·РёС‚СЊ РЅР°РіСЂСѓР·РєСѓ РЅР° РєР°РґСЂ РїРѕРјРѕР¶РµС‚
 	{
 		feel_touch_update_delay = 0;
 		Fvector						P;
@@ -101,14 +101,14 @@ void CAdvancedDetector::UpdateAf()
 		float disttoart = DetectorFeel(*it);
 		if (disttoart != -10.0)
 		{
-			//Если переменная досих пор не заданаа(первый проход цикла), то даем ей значение
+			//Р•СЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ РґРѕСЃРёС… РїРѕСЂ РЅРµ Р·Р°РґР°РЅР°Р°(РїРµСЂРІС‹Р№ РїСЂРѕС…РѕРґ С†РёРєР»Р°), С‚Рѕ РґР°РµРј РµР№ Р·РЅР°С‡РµРЅРёРµ
 			if (disttoclosestart <= 0.0)
 			{
 				disttoclosestart = disttoart;
 				closest_art = closestart;
 				pCurrentAf = smart_cast<CArtefact*>(*it);
 			}
-			//нашли более близкий арт...
+			//РЅР°С€Р»Рё Р±РѕР»РµРµ Р±Р»РёР·РєРёР№ Р°СЂС‚...
 			if (disttoclosestart > disttoart)
 			{
 				disttoclosestart = disttoart;
@@ -120,7 +120,7 @@ void CAdvancedDetector::UpdateAf()
 
 	if (!reaction_sound_off)
 	{
-		//определить текущую частоту срабатывания сигнала
+		//РѕРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ СЃРёРіРЅР°Р»Р°
 		if (disttoclosestart == 0.0)
 		{
 			return;
@@ -130,7 +130,7 @@ void CAdvancedDetector::UpdateAf()
 			cur_periodperiod = disttoclosestart / (fdetect_radius * pCurrentAf->detect_radius_koef);
 		}
 
-		//Чтобы не перегружать звук. движок
+		//Р§С‚РѕР±С‹ РЅРµ РїРµСЂРµРіСЂСѓР¶Р°С‚СЊ Р·РІСѓРє. РґРІРёР¶РѕРє
 		if (cur_periodperiod < 0.11)
 		{
 			cur_periodperiod = 0.11;
@@ -138,7 +138,7 @@ void CAdvancedDetector::UpdateAf()
 
 		if (snd_timetime > cur_periodperiod && detect_sndsnd_line || pCurrentAf->custom_detect_sound_string)
 		{
-			//Добавил врзможность задать разные звуки для различных артов
+			//Р”РѕР±Р°РІРёР» РІСЂР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РґР°С‚СЊ СЂР°Р·РЅС‹Рµ Р·РІСѓРєРё РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… Р°СЂС‚РѕРІ
 			freqq = 1.8 - cur_periodperiod;
 
 			if (freqq < 0.8)
@@ -161,9 +161,9 @@ void CAdvancedDetector::UpdateAf()
 			snd_timetime += Device.fTimeDelta;
 	}
 
-	if (!pCurrentAf) return; //на всякий случай
+	if (!pCurrentAf) return; //РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 
-	//Находим направление и передаем его в УИ экрана
+	//РќР°С…РѕРґРёРј РЅР°РїСЂР°РІР»РµРЅРёРµ Рё РїРµСЂРµРґР°РµРј РµРіРѕ РІ РЈР СЌРєСЂР°РЅР°
 	Fvector					dir_to_artefact;
 	dir_to_artefact.sub(pCurrentAf->Position(), Device.vCameraPosition);
 	dir_to_artefact.normalize();
@@ -175,7 +175,7 @@ void CAdvancedDetector::UpdateAf()
 	ui().SetValue(_diff, dir_to_artefact);
 }
 
-//Просто для удобства вынес в отдельную функцию, а то и так месево там
+//РџСЂРѕСЃС‚Рѕ РґР»СЏ СѓРґРѕР±СЃС‚РІР° РІС‹РЅРµСЃ РІ РѕС‚РґРµР»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ, Р° С‚Рѕ Рё С‚Р°Рє РјРµСЃРµРІРѕ С‚Р°Рј
 float CAdvancedDetector::DetectorFeel(CObject* item)
 {
 	Fvector dir, to;
@@ -195,7 +195,7 @@ float CAdvancedDetector::DetectorFeel(CObject* item)
 	return -10.0;
 }
 
-//---------------UI(Экранчик направления)------------------
+//---------------UI(Р­РєСЂР°РЅС‡РёРє РЅР°РїСЂР°РІР»РµРЅРёСЏ)------------------
 CUIArtefactDetectorAdv&  CAdvancedDetector::ui()
 {
 	return *((CUIArtefactDetectorAdv*)m_ui);

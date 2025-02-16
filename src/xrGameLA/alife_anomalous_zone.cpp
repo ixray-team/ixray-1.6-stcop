@@ -105,7 +105,7 @@ R_ASSERT2(!(m_wItemCount & 1), "Invalid number of parameters in string 'artefact
 	if (total_probability == 0.f) total_probability = 1.0;
 R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", name());
 
-	for (i = 0; i<m_ArtefactSpawn.size(); ++i)	//нормализировать вероятности
+	for (u16 i = 0; i<m_ArtefactSpawn.size(); ++i)	//нормализировать вероятности
 	{
 		m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability / total_probability;
 	}

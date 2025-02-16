@@ -42,26 +42,26 @@ IC	void CSolverPathManager::setup					(
 		const _Parameters		&params
 	)
 {
-	graph					= _graph;
-	data_storage			= _data_storage;
+	this->graph					= _graph;
+	this->data_storage			= _data_storage;
 	m_edge_path				= _path;
-	start_node_index		= _start_node_index;
-	goal_node_index			= _goal_node_index;
-	max_visited_node_count	= params.max_visited_node_count;
-	max_range				= (_solver_dist_type)params.max_range;
-	max_iteration_count		= params.max_iteration_count;
+	this->start_node_index		= _start_node_index;
+	this->goal_node_index			= _goal_node_index;
+	this->max_visited_node_count	= params.max_visited_node_count;
+	this->max_range				= decltype(this->max_range)(params.max_range);
+	this->max_iteration_count		= params.max_iteration_count;
 }
 
 TEMPLATE_SPECIALIZATION
 IC	bool CSolverPathManager::is_goal_reached		(const _index_type &vertex_id) const
 {
-	return					(graph->is_goal_reached(vertex_id));
+	return					(this->graph->is_goal_reached(vertex_id));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	const _index_type &CSolverPathManager::get_value(const_iterator &i, bool reverse_search) const
 {
-	return					(graph->value(*best_node_index,i,reverse_search));
+	return					(this->graph->value(*this->best_node_index,i,reverse_search));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -73,16 +73,16 @@ IC	const typename CSolverPathManager::_edge_type &CSolverPathManager::edge		(con
 TEMPLATE_SPECIALIZATION
 IC	_dist_type CSolverPathManager::evaluate			(const _index_type &node_index1, const _index_type &node_index2, const const_iterator &i) const
 {
-	VERIFY					(graph);
-	return					(graph->get_edge_weight(node_index1,node_index2,i));
+	VERIFY					(this->graph);
+	return					(this->graph->get_edge_weight(node_index1,node_index2,i));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	_dist_type CSolverPathManager::estimate			(const _index_type &vertex_id) const
 {
-	VERIFY					(graph);
+	VERIFY					(this->graph);
 //	return					((_dist_type)graph->get_edge_weight(vertex_id,start_node_index,m_iterator));
-	return					(1*(_dist_type)graph->estimate_edge_weight(vertex_id));
+	return					(1*(_dist_type)this->graph->estimate_edge_weight(vertex_id));
 //	return					((_dist_type)0);
 }
 
@@ -108,7 +108,7 @@ IC	void CSolverPathManager::create_path			(T &vertex)
 {
 	VERIFY					(this->data_storage);
 	if (m_edge_path)
-		data_storage->get_edge_path	(*m_edge_path,&vertex,typename _Graph::reverse_search);
+		this->data_storage->get_edge_path	(*m_edge_path,&vertex, _Graph::reverse_search);
 }
 
 #undef TEMPLATE_SPECIALIZATION

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../Include/xrRender/KinematicsAnimated.h"
-#include "../../../../Include/xrRender/animation_motion.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../Include/xrRender/animation_motion.h"
 
 
 class CAI_Trader;

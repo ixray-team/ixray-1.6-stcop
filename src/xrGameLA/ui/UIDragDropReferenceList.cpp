@@ -8,7 +8,7 @@
 #include "../actor.h"
 #include "../actor_defs.h"
 #include "UIInventoryUtilities.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/xr_input.h"
 #include "../UICursor.h"
 #include "UICellItemFactory.h"
 

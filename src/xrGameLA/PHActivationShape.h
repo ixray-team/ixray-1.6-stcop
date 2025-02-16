@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PH_ACTIVATION_SHAPE
 #define PH_ACTIVATION_SHAPE
 #endif

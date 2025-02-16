@@ -38,9 +38,9 @@ void CSE_ALifeTraderAbstract::spawn_supplies	()
 
 	if(m_SpecificCharacter.size())
 	{
-		//åñëè â custom data îáúåêòà åñòü
-		//ñåêöèÿ [dont_spawn_character_supplies]
-		//òî íå âûçûâàòü spawn èç selected_char.SupplySpawn()
+		//ÐµÑÐ»Ð¸ Ð² custom data Ð¾Ð±ÑŠÐµÐºÑ‚Ð° ÐµÑÑ‚ÑŒ
+		//ÑÐµÐºÑ†Ð¸Ñ [dont_spawn_character_supplies]
+		//Ñ‚Ð¾ Ð½Ðµ Ð²Ñ‹Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ spawn Ð¸Ð· selected_char.SupplySpawn()
 		bool specific_character_supply = true;	
 
 		if (xr_strlen(dynamic_object->m_ini_string))
@@ -303,7 +303,7 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = ai().alife().objects().object(*I);
 		CSE_ALifeInventoryItem	*l_tpALifeInventoryItem = smart_cast<CSE_ALifeInventoryItem*>(l_tpALifeDynamicObject);
 		R_ASSERT2				(l_tpALifeInventoryItem,"Non inventory item object has parent?!");
-		l_tpALifeInventoryItem->base()->s_flags.or(M_SPAWN_UPDATE);
+		l_tpALifeInventoryItem->base()->s_flags.bor(M_SPAWN_UPDATE);
 		CSE_Abstract			*l_tpAbstract = smart_cast<CSE_Abstract*>(l_tpALifeInventoryItem);
 		object->alife().server().entity_Destroy(l_tpAbstract);
 
@@ -327,7 +327,7 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 		l_tpALifeDynamicObject->o_Position		= object->o_Position;
 		l_tpALifeDynamicObject->m_tNodeID		= object->m_tNodeID;
 		object->alife().server().Process_spawn	(tNetPacket,clientID,FALSE,l_tpALifeInventoryItem->base());
-		l_tpALifeDynamicObject->s_flags.and		(u16(-1) ^ M_SPAWN_UPDATE);
+		l_tpALifeDynamicObject->s_flags.band		(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline		= true;
 	}
 

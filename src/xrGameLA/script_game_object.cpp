@@ -83,7 +83,7 @@ BIND_FUNCTION01	(&object(),	CScriptGameObject::SetPower,			CEntityAlive,	conditi
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetSatiety,			CEntityAlive,	conditions().ChangeSatiety,		float,							float);
 BIND_FUNCTION01	(&object(), CScriptGameObject::SetThirsty,			CEntityAlive,	conditions().ChangeThirsty,		float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetRadiation,		CEntityAlive,	conditions().ChangeRadiation,			float,							float);
-//---Добавил возможность обращаться к кровотечению
+//---Р”РѕР±Р°РІРёР» РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕР±СЂР°С‰Р°С‚СЊСЃСЏ Рє РєСЂРѕРІРѕС‚РµС‡РµРЅРёСЋ
 BIND_FUNCTION01	(&object(), CScriptGameObject::SetBleeding,			CEntityAlive,	conditions().ChangeBleeding, float, float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetCircumspection,	CEntityAlive,	conditions().ChangeCircumspection,float,							float);
 BIND_FUNCTION01	(&object(),	CScriptGameObject::SetMorale,			CEntityAlive,	conditions().ChangeEntityMorale,	float,							float);
@@ -106,7 +106,7 @@ u32 CScriptGameObject::game_vertex_id		() const
 
 float CScriptGameObject::level_vertex_light	(const u32 &level_vertex_id) const
 {
-	return						((float)ai().level_graph().vertex(level_vertex_id)->light()/15.f);
+	return						((float)127.f / 15.f);
 }
 
 CScriptIniFile *CScriptGameObject::spawn_ini			() const

@@ -261,7 +261,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 {
 	float			y,p;
 	direction.getHP	(y,p);
-	return			(ai().level_graph().cover_in_direction(y,level_vertex_id));
+	return			(ai().level_graph().high_cover_in_direction(y,level_vertex_id));
 }
 
 float rain_factor()

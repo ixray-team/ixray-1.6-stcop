@@ -5,7 +5,7 @@
 #include "UINewsWnd.h"
 #include "UIAnimatedStatic.h"
 #include "UIXmlInit.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UITabControl.h"
 #include "UIScrollView.h"
 #include "UITreeViewBoxItem.h"
@@ -251,7 +251,7 @@ void CUIDiaryWnd::OnSrcListItemClicked	(CUIWindow* w,void* p)
 		article_info->SetArticle	(m_ArticlesDB[pSelItem->GetArticleValue()]);
 		m_DescrView->AddWindow		(article_info, true);
 
-		// Пометим как прочитанную
+		// РџРѕРјРµС‚РёРј РєР°Рє РїСЂРѕС‡РёС‚Р°РЅРЅСѓСЋ
 		if (!pSelItem->IsArticleReaded())
 		{
 			if(Actor()->encyclopedia_registry->registry().objects_ptr())

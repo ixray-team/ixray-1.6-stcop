@@ -81,7 +81,7 @@ IC void	play_cycle( IKinematicsAnimated* CA, const MotionID &m, u8 channel, CBle
 {
 	const BOOL	mixin	= TRUE;
 		  float	power	= base_power;
-		  if( blend_block &&  blend_block->blend != CBlend::eFREE_SLOT  )
+		  if( blend_block &&  blend_block->blend_state() != CBlend::eFREE_SLOT  )
 	{
 		float blend_pecent = blend_block->timeCurrent / blend_block->timeTotal;
 		if( blend_pecent < g_params.block_blend )

@@ -49,7 +49,7 @@ void ErrorLog(LPCSTR caMessage)
 
 void FlushLogs()
 {
-		FlushLog();
+		xrLogger::FlushLog();
 #ifdef DEBUG
 	ai().script_engine().flush_log();
 #endif // DEBUG
@@ -117,14 +117,13 @@ void prefetch_module(LPCSTR file_name)
 }
 
 struct profile_timer_script {
-	u64							m_start_cpu_tick_count;
+	CTimer						measure;
 	u64							m_accumulator;
 	u64							m_count;
 	int							m_recurse_mark;
 	
 	IC								profile_timer_script	()
 	{
-		m_start_cpu_tick_count	= 0;
 		m_accumulator			= 0;
 		m_count					= 0;
 		m_recurse_mark			= 0;
@@ -137,7 +136,7 @@ struct profile_timer_script {
 
 	IC		profile_timer_script&	operator=				(const profile_timer_script &profile_timer)
 	{
-		m_start_cpu_tick_count	= profile_timer.m_start_cpu_tick_count;
+		measure					= profile_timer.measure;
 		m_accumulator			= profile_timer.m_accumulator;
 		m_count					= profile_timer.m_count;
 		m_recurse_mark			= profile_timer.m_recurse_mark;
@@ -158,7 +157,7 @@ struct profile_timer_script {
 
 		++m_recurse_mark;
 		++m_count;
-		m_start_cpu_tick_count	= CPU::GetCLK();
+		measure.Start();
 	}
 
 	IC		void					stop					()
@@ -169,17 +168,13 @@ struct profile_timer_script {
 		if (m_recurse_mark)
 			return;
 		
-		u64						finish = CPU::GetCLK();
-		if (finish > m_start_cpu_tick_count)
-			m_accumulator		+= finish - m_start_cpu_tick_count;
+		m_accumulator += measure.GetElapsed_mcs();
 	}
 
 	IC		float					time					() const
 	{
-		FPU::m64r				();
-		float					result = (float(double(m_accumulator)/double(CPU::clk_per_second))*1000000.f);
-		FPU::m24r				();
-		return					(result);
+		float result = float(double(m_accumulator));
+		return (result);
 	}
 };
 

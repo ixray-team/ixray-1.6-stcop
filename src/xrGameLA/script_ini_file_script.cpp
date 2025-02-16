@@ -79,7 +79,7 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_float",			&CScriptIniFile::r_float)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
 			.def("section_count",	&CScriptIniFile::section_count)
-			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
+			.def("r_line",			&::r_line, out_value<4>() + out_value<5>()),
 
 		def("system_ini",			&get_system_ini),
 #ifdef XRGAME_EXPORTS
