@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "..\XrEngine\level_graph.h"
+#include "..\XrEngine\AI\level_graph.h"
 #include "DebugShader.h"
 
 class CLevelGraph:public ILevelGraph

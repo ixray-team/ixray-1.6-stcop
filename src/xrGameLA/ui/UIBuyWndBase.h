@@ -25,8 +25,9 @@ struct _preset_item
 		return (sect_name==what);
 	}
 };
-DEF_VECTOR			(preset_items,_preset_item);
 
+using preset_items = xr_vector<_preset_item>;
+using preset_items_it = preset_items::iterator;
 
 class IBuyWnd:			public CUIDialogWnd
 {

@@ -76,7 +76,7 @@ CCar::CCar()
 	m_exhaust_particles	="vehiclefx\\exhaust_1";
 	m_car_sound			= new SCarSound(this);
 
-	//у машины слотов в инвентаре нет
+	//Сѓ РјР°С€РёРЅС‹ СЃР»РѕС‚РѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ РЅРµС‚
 	inventory().SetSlotsUseful(false);
 	m_doors_torque_factor = 2.f;
 	m_power_increment_factor=0.5f;
@@ -835,7 +835,7 @@ void CCar::ParseDefinitions()
 	bone_map.clear();
 
 	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
-	bone_map.insert(mk_pair(pKinematics->LL_GetBoneRoot(),physicsBone()));
+	bone_map.insert(std::make_pair(pKinematics->LL_GetBoneRoot(),physicsBone()));
 	CInifile* ini = pKinematics->LL_UserData();
 	R_ASSERT2(ini,"Car has no description !!! See ActorEditor Object - UserData");
 	CExplosive::Load(ini,"explosion");
@@ -856,11 +856,11 @@ void CCar::ParseDefinitions()
 		u16 bone_id	=				pKinematics->LL_BoneID(ini->r_string("car_definition","trunk_bone"));
 		SDoor						door(this);
 		door.bone_id=				bone_id;
-		m_doors.insert				(mk_pair(bone_id,door));
+		m_doors.insert				(std::make_pair(bone_id,door));
 		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
-			bone_map.insert(mk_pair(bone_id,physicsBone()));
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
 		}
 	}
 
@@ -1832,7 +1832,7 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 	inherited::OnEvent		(P,type);
 	CExplosive::OnEvent		(P,type);
 
-	//обработка сообщений, нужных для работы с багажником машины
+	//РѕР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёР№, РЅСѓР¶РЅС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р±Р°РіР°Р¶РЅРёРєРѕРј РјР°С€РёРЅС‹
 	u16 id;
 	switch (type)
 	{
@@ -2029,10 +2029,10 @@ template <class T> IC void CCar::fill_wheel_vector(LPCSTR S,xr_vector<T>& type_w
 		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
-			bone_map.insert(mk_pair(bone_id,physicsBone()));
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
 
 
-			SWheel& wheel			=	(m_wheels_map.insert(mk_pair(bone_id,SWheel(this)))).first->second;
+			SWheel& wheel			=	(m_wheels_map.insert(std::make_pair(bone_id,SWheel(this)))).first->second;
 			wheel.bone_id			=	bone_id;
 			twheel.pwheel			=	&wheel;
 			wheel						.Load(S1);
@@ -2064,7 +2064,7 @@ IC void CCar::fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts)
 		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
-			bone_map.insert(mk_pair(bone_id,physicsBone()));
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
 		}
 
 	}
@@ -2082,11 +2082,11 @@ IC void CCar::fill_doors_map(LPCSTR S,xr_map<u16,SDoor>& doors)
 		u16 bone_id	=				pKinematics->LL_BoneID(S1);
 		SDoor						door(this);
 		door.bone_id=				bone_id;
-		doors.insert				(mk_pair(bone_id,door));
+		doors.insert				(std::make_pair(bone_id,door));
 		BONE_P_PAIR_IT J		= bone_map.find(bone_id);
 		if (J == bone_map.end()) 
 		{
-			bone_map.insert(mk_pair(bone_id,physicsBone()));
+			bone_map.insert(std::make_pair(bone_id,physicsBone()));
 		}
 
 	}

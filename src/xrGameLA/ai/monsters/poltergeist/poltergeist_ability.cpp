@@ -78,7 +78,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 	if (m_object->g_Alive() && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != m_last_hit_frame)) {
 		if(BI_NONE != pHDS->bone()) {
 
-			//вычислить координаты попадания
+			//РІС‹С‡РёСЃР»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕРїР°РґР°РЅРёСЏ
 			IKinematics* V = smart_cast<IKinematics*>(m_object->Visual());
 
 			Fvector start_pos = pHDS->bone_space_position();
@@ -106,7 +106,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 
 void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 {
-	m_nearest.clear_not_free		();
+	m_nearest.clear		();
 	Level().ObjectSpace.GetNearest	(m_nearest,position, IMPULSE_RADIUS, NULL); 
 	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 	if (m_nearest.empty())			return;
@@ -137,12 +137,12 @@ void CPoltergeist::StrangeSounds(const Fvector &position)
 		if (Level().ObjectSpace.RayPick(position, dir, TRACE_DISTANCE, collide::rqtStatic, l_rq, NULL)) {
 			if (l_rq.range < TRACE_DISTANCE) {
 
-				// Получить пару материалов
+				// РџРѕР»СѓС‡РёС‚СЊ РїР°СЂСѓ РјР°С‚РµСЂРёР°Р»РѕРІ
 				CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris() + l_rq.element;
 				SGameMtlPair* mtl_pair = GMLib.GetMaterialPair(material().self_material_idx(),pTri->material);
 				if (!mtl_pair) continue;
 
-				// Играть звук
+				// РРіСЂР°С‚СЊ Р·РІСѓРє
 				if (!mtl_pair->CollideSounds.empty()) {
 					CLONE_MTL_SOUND(m_strange_sound, mtl_pair, CollideSounds);
 					Fvector pos;

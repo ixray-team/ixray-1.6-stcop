@@ -411,7 +411,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 		xr_string subset			= m_character_name.c_str()+xr_strlen(gen_name);
 
 		string_path					t1;
-		strconcat					(sizeof(t1),t1,"stalker_names_",subset.c_str());
+		xr_strconcat				(t1,"stalker_names_",subset.c_str());
 		u32 name_cnt				= pSettings->r_u32(t1, "name_cnt");
 		u32 last_name_cnt			= pSettings->r_u32(t1, "last_name_cnt");
 		

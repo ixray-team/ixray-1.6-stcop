@@ -44,7 +44,9 @@ protected:
 	virtual		void				ConsoleCommands_Create	();
 	virtual		void				ConsoleCommands_Clear	();
 
-	DEF_DEQUE(MAP_ROTATION_LIST,	xr_string);
+	using MAP_ROTATION_LIST = xr_deque<xr_string>;
+	using MAP_ROTATION_LIST_it = MAP_ROTATION_LIST::iterator;
+
 	bool							m_bMapRotation;
 	bool							m_bMapNeedRotation;
 	bool							m_bMapSwitched;
@@ -62,7 +64,10 @@ public:
 	BOOL							sv_force_sync;
 	float							rpoints_MinDist [TEAM_COUNT];
 	xr_vector<RPoint>				rpoints	[TEAM_COUNT];
-	DEF_VECTOR(RPRef, RPoint*);
+
+	using RPRef = xr_vector<RPoint*>;
+	using RPRef_it = RPRef::iterator;
+
 	RPRef							rpointsBlocked;
 
 	ERoundEnd_Result				round_end_reason;

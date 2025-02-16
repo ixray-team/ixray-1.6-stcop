@@ -7,6 +7,7 @@
 
 #include "PropertiesListTypes.h"
 #include "ItemListTypes.h"
+#include "../Editors/Public/xrEPropsTypes.h"
 
 typedef fastdelegate::FastDelegate<void(LPCSTR, LPCSTR)>	    TOnItemClone;
 typedef fastdelegate::FastDelegate<void(LPCSTR)>	            TOnItemCreate;

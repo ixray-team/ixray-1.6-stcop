@@ -2,7 +2,7 @@
 #include "uistatic.h"
 #include "UIXmlInit.h"
 #include "UITextureMaster.h"
-#include "../../LightAnimLibrary.h"
+#include "../../xrEngine/LightAnimLibrary.h"
 #include "uilines.h"
 #include "../ui_base.h"
 

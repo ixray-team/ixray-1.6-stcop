@@ -1,7 +1,9 @@
 #pragma once
 
+#include "../xrCore/object_destroyer.h"
+
 #ifdef XRGAME_EXPORTS
-#	include "ui/xrUIXmlParser.h"
+#	include "../../xrGameLA/ui/xrUIXmlParser.h"
 #else // XRGAME_EXPORTS
 #	include "xrUIXmlParser.h"
 #	include "../xrCore/object_broker.h"
@@ -29,7 +31,6 @@ void _destroy_item_data_vector_cont(T_VECTOR* vec);
 #define TEMPLATE_SPECIALIZATION template<typename T_INIT>
 #define CSXML_IdToIndex CXML_IdToIndex<T_INIT>
 
-
 TEMPLATE_SPECIALIZATION
 class CXML_IdToIndex
 {
@@ -53,7 +54,7 @@ public:
 	static const ITEM_DATA*			GetById		(const shared_str& str_id, bool no_assert = false);
 	static const ITEM_DATA*			GetByIndex	(int index, bool no_assert = false);
 
-	static const int			IdToIndex	(const shared_str& str_id, int default_index = T_INDEX(-1), bool no_assert = false)
+	static const int			IdToIndex(const shared_str& str_id, int default_index = -1, bool no_assert = false)
 {
 		const ITEM_DATA* item = GetById(str_id, no_assert);
 		return item?item->index:default_index;
@@ -64,11 +65,10 @@ public:
 		return item?item->id:default_id;
 	}
 
-	static const int		GetMaxIndex	()					 {return m_pItemDataVector->size()-1;}
+	static const int		GetMaxIndex	()					 {return (int)m_pItemDataVector->size()-1;}
 
 	//удаление статичекого массива
-	static void				DeleteIdToIndexData		();
-
+	static void					DeleteIdToIndexData		();
 };
 
 
@@ -97,9 +97,9 @@ TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bool no_assert)
 {
 	T_INIT::InitXmlIdToIndex();
-		
-	for(T_VECTOR::iterator it = m_pItemDataVector->begin();
-		m_pItemDataVector->end() != it; it++)
+	T_VECTOR::iterator it = m_pItemDataVector->begin();
+
+	for(;m_pItemDataVector->end() != it; it++)
 	{
 		if( (*it).id == str_id)
 			break;
@@ -107,14 +107,11 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bo
 
 	if(m_pItemDataVector->end() == it)
 	{
-		/*
 		int i=0;
-		for (T_VECTOR::iterator it = m_pItemDataVector->begin(), last = m_pItemDataVector->end(); last != it; it++, i++)
-			Msg("[%d]=[%s]",i,*(*it).id );
-		
-		R_ASSERT2(no_assert, make_string("item [%s] not found!!", *str_id));
-		*/
-		Msg("! item [%s] not found!!", *str_id);
+		for(T_VECTOR::iterator it_ = m_pItemDataVector->begin();	m_pItemDataVector->end() != it_; it_++,i++)
+			Msg("[%d]=[%s]",i,*(*it_).id );
+
+		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;
 	}
 		
@@ -126,7 +123,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 {
 	if((size_t)index>=m_pItemDataVector->size())
 	{
-		R_ASSERT2(no_assert, make_string("[%s] item by index not found in files", file_str));
+		R_ASSERT3(no_assert, "item by index not found in files", file_str);
 		return NULL;
 	}
 	return &(*m_pItemDataVector)[index];
@@ -163,7 +160,7 @@ typename void	CSXML_IdToIndex::InitInternal ()
 		xr_string				xml_file_full;
 		xml_file_full			= xml_file;
 		xml_file_full			+= ".xml";
-		uiXml->Load(CONFIG_PATH, GAME_PATH, xml_file_full.c_str());
+		uiXml->Load				(CONFIG_PATH, "gameplay", xml_file_full.c_str());
 
 		//общий список
 		int items_num			= uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
@@ -173,7 +170,7 @@ typename void	CSXML_IdToIndex::InitInternal ()
 			LPCSTR item_name	= uiXml->ReadAttrib(uiXml->GetRoot(), tag_name, i, "id", NULL);
 
 			string256			buf;
-			xr_sprintf			(buf, "id for item don't set, number %d in %s", i, xml_file);
+			xr_sprintf				(buf, "id for item don't set, number %d in %s", i, xml_file);
 			R_ASSERT2			(item_name, buf);
 
 
@@ -201,7 +198,6 @@ typename void	CSXML_IdToIndex::InitInternal ()
 			delete_data(uiXml);
 	}
 }
-
 
 #undef TEMPLATE_SPECIALIZATION
 

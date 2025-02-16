@@ -254,19 +254,19 @@ void CGhostBoss::UpdateGraviObject()
 	// draw particle
 	CParticlesObject* ps = CParticlesObject::Create(particle_gravi_wave,TRUE);
 
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix pos; 
 	pos.identity();
 	pos.k.set(dir);
 	Fvector::generate_orthonormal_basis_normalized(pos.k,pos.j,pos.i);
-	// установить позицию
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ
 	pos.translate_over(m_gravi_object.cur_pos);
 
 	ps->UpdateParent(pos, zero_vel);
 	ps->Play(false);
 	
 	// hit objects
-	m_nearest.clear_not_free		();
+	m_nearest.clear		();
 	Level().ObjectSpace.GetNearest	(m_nearest,m_gravi_object.cur_pos, m_gravi_radius, NULL); 
 	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
@@ -280,7 +280,7 @@ void CGhostBoss::UpdateGraviObject()
 		obj->m_pPhysicsShell->applyImpulse(dir,m_gravi_impulse_to_objects * obj->m_pPhysicsShell->getMass());
 	}
 
-	// играть звук
+	// РёРіСЂР°С‚СЊ Р·РІСѓРє
 	Fvector snd_pos = m_gravi_object.cur_pos;
 	snd_pos.y += 0.5f;
 	if (sound_gravi_wave._feedback())		{
@@ -321,7 +321,7 @@ bool CGhostBoss::GetTeleportPosition(Fvector &position)
 
 	position.mad				(Actor()->Position(), dir, distance);
 
-	// проверить позицию на accessible
+	// РїСЂРѕРІРµСЂРёС‚СЊ РїРѕР·РёС†РёСЋ РЅР° accessible
 	if(!movement().restrictions().accessible(position)) {
 		//node = movement().restrictions().accessible_nearest(Fvector().set(position), position);
 	} else node = 1;
@@ -399,12 +399,12 @@ void	CGhostBoss::Hit								(SHit* pHDS)
 {
 	if (m_shield_active && (pHDS->hit_type == ALife::eHitTypeFireWound) && (Device.dwFrame != last_hit_frame)) {
 
-		// вычислить позицию и направленность партикла
+		// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 		Fmatrix pos; 
 		//CParticlesPlayer::MakeXFORM(this,element,Fvector().set(0.f,0.f,1.f),p_in_object_space,pos);
 		CParticlesPlayer::MakeXFORM(this,pHDS->bone(),pHDS->dir,pHDS->p_in_bone_space,pos);
 
-		// установить particles
+		// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ particles
 		CParticlesObject* ps = CParticlesObject::Create(particle_fire_shield,TRUE);
 		
 		ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));

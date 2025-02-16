@@ -39,7 +39,9 @@ struct net_updateData{
 	float			SCoeff[3][4];
 
 #ifdef DEBUG
-	DEF_VECTOR		(VIS_POSITION, Fvector);
+	using VIS_POSITION = xr_vector<Fvector>;
+	using VIS_POSITION_it = VIS_POSITION::iterator;
+
 	VIS_POSITION	LastVisPos;
 #endif
 

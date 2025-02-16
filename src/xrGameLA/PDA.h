@@ -13,7 +13,8 @@
 class CInventoryOwner;
 class CPda;
 
-DEF_VECTOR (PDA_LIST, CPda*);
+using PDA_LIST = xr_vector<CPda*>;
+using PDA_LIST_it = PDA_LIST::iterator;
 
 class CPda :
 	public CInventoryItemObject,

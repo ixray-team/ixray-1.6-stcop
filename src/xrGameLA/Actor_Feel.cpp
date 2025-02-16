@@ -80,7 +80,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 	BOOL& bOverlaped	= *(BOOL*)params;
 	if(result.O){
 		if (Level().CurrentEntity()!=result.O){	
-			bOverlaped		= TRUE; //tatarinrafa: раскоментил, чтобы нельзя было подбирать и видеть предметы через двери и тд. Надо тестить.| Uncomented so that actor cant pick up through dynamic objects. Needs tests
+			bOverlaped		= TRUE; //tatarinrafa: СЂР°СЃРєРѕРјРµРЅС‚РёР», С‡С‚РѕР±С‹ РЅРµР»СЊР·СЏ Р±С‹Р»Рѕ РїРѕРґР±РёСЂР°С‚СЊ Рё РІРёРґРµС‚СЊ РїСЂРµРґРјРµС‚С‹ С‡РµСЂРµР· РґРІРµСЂРё Рё С‚Рґ. РќР°РґРѕ С‚РµСЃС‚РёС‚СЊ.| Uncomented so that actor cant pick up through dynamic objects. Needs tests
 			return			TRUE;//FALSE;
 		}else{
 
@@ -88,7 +88,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 		}
 	}
 	else{
-		//получить треугольник и узнать его материал
+		//РїРѕР»СѓС‡РёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє Рё СѓР·РЅР°С‚СЊ РµРіРѕ РјР°С‚РµСЂРёР°Р»
 		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
 		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable) && !GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flDynamic)){
 			return TRUE;
@@ -126,7 +126,7 @@ void CActor::PickupModeUpdate()
 	if(!m_bPickupMode) return;
 	if (GameID() != GAME_SINGLE) return;
 
-	//подбирание объекта
+	//РїРѕРґР±РёСЂР°РЅРёРµ РѕР±СЉРµРєС‚Р°
 	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
 		m_pUsableObject && m_pUsableObject->nonscript_usable() &&
 		!Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)) )
@@ -166,7 +166,7 @@ void	CActor::PickupModeUpdate_COD	()
 	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
 	//---------------------------------------------------------------------------
-	ISpatialResult.clear_not_free	();
+	ISpatialResult.clear	();
 	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 	//---------------------------------------------------------------------------
 
@@ -223,7 +223,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if (pNearestItem && m_bPickupMode)
 	{
-		//подбирание объекта
+		//РїРѕРґР±РёСЂР°РЅРёРµ РѕР±СЉРµРєС‚Р°
 		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
 		
 		PickupModeOff();
@@ -232,7 +232,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 void CActor::PickupInfoDraw(CObject* object)
 {
-	//tatarinrafa: Немного изменил то, как рабоатет подсвечивание/Added some changes to how highlighting works
+	//tatarinrafa: РќРµРјРЅРѕРіРѕ РёР·РјРµРЅРёР» С‚Рѕ, РєР°Рє СЂР°Р±РѕР°С‚РµС‚ РїРѕРґСЃРІРµС‡РёРІР°РЅРёРµ/Added some changes to how highlighting works
 	CInventoryItem* item = smart_cast<CInventoryItem*>(object);
 	if(!item || !item->IsPickUpVisible())		return;
 

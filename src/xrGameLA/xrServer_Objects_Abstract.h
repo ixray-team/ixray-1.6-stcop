@@ -87,10 +87,6 @@ public:
 add_to_type_list(CSE_Motion)
 #define script_type_list save_type_list(CSE_Motion)
 
-struct ISE_AbstractLEOwner{
-	virtual void		__stdcall	get_bone_xform	(LPCSTR name, Fmatrix& xform) = 0;
-};
-
 struct ISE_Abstract {
 public:
 	enum {

@@ -5,15 +5,13 @@
 
 
 #include "InfoPortionDefs.h"
+#include "../xrCore/XmlParser/xrXMLParser.h"
 
 #pragma once
 
 class CGameObject;
 class CInventoryOwner;
-class TiXmlNode;
 class CUIXml;
-
-typedef TiXmlNode		XML_NODE;
 
 class CPhraseScript
 {

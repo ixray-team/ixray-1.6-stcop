@@ -129,9 +129,9 @@ public:
 	bool				bExernalImpulse;
 	BOOL				bSleep;
 
-	BOOL				gcontact_Was;			// Ïðèçåìëåíèå
-	float				gcontact_Power;			// Íàñêîëüêî ñèëüíî óäàðèëèñü
-	float				gcontact_HealthLost;	// Ñêîêî çäîðîâüÿ ïîòåðÿëè
+	BOOL				gcontact_Was;			// ÐŸÑ€Ð¸Ð·ÐµÐ¼Ð»ÐµÐ½Ð¸Ðµ
+	float				gcontact_Power;			// ÐÐ°ÑÐºÐ¾Ð»ÑŒÐºÐ¾ ÑÐ¸Ð»ÑŒÐ½Ð¾ ÑƒÐ´Ð°Ñ€Ð¸Ð»Ð¸ÑÑŒ
+	float				gcontact_HealthLost;	// Ð¡ÐºÐ¾ÐºÐ¾ Ð·Ð´Ð¾Ñ€Ð¾Ð²ÑŒÑ Ð¿Ð¾Ñ‚ÐµÑ€ÑÐ»Ð¸
 
 public:
 	void				AllocateCharacterObject			(CharacterType type)									;
@@ -261,7 +261,7 @@ public:
 	void				EnableCharacter			()																		{if(m_character&&m_character->b_exist)m_character->Enable();}
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback){if(m_character)m_character->SetObjectContactCallback(callback);}
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback){VERIFY(m_character);m_character->SetWheelContactCallback(callback);}
-	static BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params);
+	static BOOL			BorderTraceCallback(collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return NULL; }
 	u16					ContactBone				(){return m_character->ContactBone();}
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const {VERIFY(m_character);return m_character->CollisionDamageInfo ();}

@@ -57,7 +57,7 @@ Weapon_Statistic::Weapon_Statistic(LPCSTR Name)
 };
 Weapon_Statistic::~Weapon_Statistic()
 {
-	m_Hits.clear_and_free();
+	m_Hits.clear();
 	ZeroMemory(m_Basket, sizeof(m_Basket));
 };
 
@@ -118,7 +118,7 @@ Player_Statistic::Player_Statistic(LPCSTR Name)
 
 Player_Statistic::~Player_Statistic()
 {
-	aWeaponStats.clear_and_free();
+	aWeaponStats.clear();
 };
 
 void Player_Statistic::net_save(NET_Packet* P)
@@ -170,9 +170,9 @@ void WeaponUsageStatistic::Clear()
 
 WeaponUsageStatistic::~WeaponUsageStatistic()
 {
-	ActiveBullets.clear_and_free	();
-	aPlayersStatistic.clear_and_free();
-	m_Requests.clear_and_free		();
+	ActiveBullets.clear	();
+	aPlayersStatistic.clear();
+	m_Requests.clear		();
 	m_dwLastRequestSenderID			= 0;
 };
 

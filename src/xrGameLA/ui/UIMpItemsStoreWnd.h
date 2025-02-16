@@ -1,5 +1,5 @@
 #pragma once
-#include "../object_interfaces.h"
+#include "../../xrCore/object_interfaces.h"
 #include "UIBuyWndShared.h"
 
 class CUIXml;

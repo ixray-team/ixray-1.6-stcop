@@ -110,7 +110,7 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 				OnPlayerVoted(IP);
 			//***********************************************
 
-			players_new.insert(mk_pair(ID,IP));
+			players_new.insert(std::make_pair(ID,IP));
 			players.erase(I);
 		}else{
 			IP = createPlayerState();
@@ -118,7 +118,7 @@ void	game_cl_GameState::net_import_state	(NET_Packet& P)
 
 			if (Type() != GAME_SINGLE) OnPlayerFlagsChanged(IP);
 
-			players_new.insert(mk_pair(ID,IP));
+			players_new.insert(std::make_pair(ID,IP));
 		}
 		if (IP->testFlag(GAME_PLAYER_FLAG_LOCAL) ) local_player = IP;
 	}

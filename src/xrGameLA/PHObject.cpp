@@ -138,7 +138,7 @@ void	CPHObject::reinit_single()
 		CPHObject* obj=static_cast<CPHObject*>(*i);
 		obj->IslandReinit();
 	}
-	result.clear_not_free();
+	result.clear();
 	dJointGroupEmpty(ContactGroup);
 	ContactFeedBacks.empty();
 	ContactEffectors.empty();
@@ -172,7 +172,7 @@ bool	CPHObject::step_single(dReal	step)
 
 void		CPHObject::	step( float time ) //it is still not a true step for object because it collide the object only not subsequent collision is doing
 {
-	ph_world->r_spatial.clear_not_free	();
+	ph_world->r_spatial.clear	();
 	reinit_single						();
 	Collide								();
 	IslandStep						( time );

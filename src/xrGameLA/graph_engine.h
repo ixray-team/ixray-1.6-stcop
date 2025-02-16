@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "../XrEngine/a_star.h"
-#include "../XrEngine/edge_path.h"
-#include "../XrEngine/vertex_manager_fixed.h"
-#include "../XrEngine/vertex_manager_hash_fixed.h"
-#include "../XrEngine/vertex_allocator_fixed.h"
-#include "../XrEngine/data_storage_bucket_list.h"
-#include "../XrEngine/data_storage_binary_heap.h"
+#include "a_star.h"
+#include "edge_path.h"
+#include "vertex_manager_fixed.h"
+#include "vertex_manager_hash_fixed.h"
+#include "vertex_allocator_fixed.h"
+#include "data_storage_bucket_list.h"
+#include "data_storage_binary_heap.h"
 #include "path_manager.h"
 #include "graph_engine_space.h"
 #include "profiler.h"
