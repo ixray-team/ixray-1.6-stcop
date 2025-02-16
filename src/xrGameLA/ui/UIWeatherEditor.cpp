@@ -602,105 +602,105 @@ void CUIWeatherEditor::InitVars()
 {
 	CEnvDescriptor* TargetWeather = g_pGamePersistent->Environment().Current[0];
 
-	UI_f_ambient_r.f_controlledfloat = &TargetWeather->ambient.x;
-	UI_f_ambient_g.f_controlledfloat = &TargetWeather->ambient.y;
-	UI_f_ambient_b.f_controlledfloat = &TargetWeather->ambient.z;
+	//UI_f_ambient_r.f_controlledfloat = &TargetWeather->ambient.x;
+	//UI_f_ambient_g.f_controlledfloat = &TargetWeather->ambient.y;
+	//UI_f_ambient_b.f_controlledfloat = &TargetWeather->ambient.z;
 
-	UI_f_sun_r.f_controlledfloat = &TargetWeather->sun_color.x;
-	UI_f_sun_g.f_controlledfloat = &TargetWeather->sun_color.y;
-	UI_f_sun_b.f_controlledfloat = &TargetWeather->sun_color.z;
+	//UI_f_sun_r.f_controlledfloat = &TargetWeather->sun_color.x;
+	//UI_f_sun_g.f_controlledfloat = &TargetWeather->sun_color.y;
+	//UI_f_sun_b.f_controlledfloat = &TargetWeather->sun_color.z;
 
-	UI_f_hemi_color_r.f_controlledfloat = &TargetWeather->hemi_color.x;
-	UI_f_hemi_color_g.f_controlledfloat = &TargetWeather->hemi_color.y;
-	UI_f_hemi_color_b.f_controlledfloat = &TargetWeather->hemi_color.z;
-	//UI_f_hemi_color_a.f_controlledfloat = &TargetWeather->hemi_color.w;
+	//UI_f_hemi_color_r.f_controlledfloat = &TargetWeather->hemi_color.x;
+	//UI_f_hemi_color_g.f_controlledfloat = &TargetWeather->hemi_color.y;
+	//UI_f_hemi_color_b.f_controlledfloat = &TargetWeather->hemi_color.z;
+	////UI_f_hemi_color_a.f_controlledfloat = &TargetWeather->hemi_color.w;
 
-	UI_f_rain_color_r.f_controlledfloat = &TargetWeather->rain_color.x;
-	UI_f_rain_color_g.f_controlledfloat = &TargetWeather->rain_color.y;
-	UI_f_rain_color_b.f_controlledfloat = &TargetWeather->rain_color.z;
+	//UI_f_rain_color_r.f_controlledfloat = &TargetWeather->rain_color.x;
+	//UI_f_rain_color_g.f_controlledfloat = &TargetWeather->rain_color.y;
+	//UI_f_rain_color_b.f_controlledfloat = &TargetWeather->rain_color.z;
 
-	UI_f_fog_color_r.f_controlledfloat = &TargetWeather->fog_color.x;
-	UI_f_fog_color_g.f_controlledfloat = &TargetWeather->fog_color.y;
-	UI_f_fog_color_b.f_controlledfloat = &TargetWeather->fog_color.z;
+	//UI_f_fog_color_r.f_controlledfloat = &TargetWeather->fog_color.x;
+	//UI_f_fog_color_g.f_controlledfloat = &TargetWeather->fog_color.y;
+	//UI_f_fog_color_b.f_controlledfloat = &TargetWeather->fog_color.z;
 
-	//Значения цвета облаков считываются задом наперед b/g/r/a
-	UI_f_clouds_color_r.f_controlledfloat = &TargetWeather->clouds_color.z;
-	UI_f_clouds_color_g.f_controlledfloat = &TargetWeather->clouds_color.y;
-	UI_f_clouds_color_b.f_controlledfloat = &TargetWeather->clouds_color.x;
-	UI_f_clouds_color_x.f_controlledfloat = &TargetWeather->clouds_color.w;
+	////Значения цвета облаков считываются задом наперед b/g/r/a
+	//UI_f_clouds_color_r.f_controlledfloat = &TargetWeather->clouds_color.z;
+	//UI_f_clouds_color_g.f_controlledfloat = &TargetWeather->clouds_color.y;
+	//UI_f_clouds_color_b.f_controlledfloat = &TargetWeather->clouds_color.x;
+	//UI_f_clouds_color_x.f_controlledfloat = &TargetWeather->clouds_color.w;
 
-	//Значения цвета неба считываются задом наперед b/g/r/a
-	UI_f_sky_color_r.f_controlledfloat = &TargetWeather->sky_color.z;
-	UI_f_sky_color_g.f_controlledfloat = &TargetWeather->sky_color.y;
-	UI_f_sky_color_b.f_controlledfloat = &TargetWeather->sky_color.x;
+	////Значения цвета неба считываются задом наперед b/g/r/a
+	//UI_f_sky_color_r.f_controlledfloat = &TargetWeather->sky_color.z;
+	//UI_f_sky_color_g.f_controlledfloat = &TargetWeather->sky_color.y;
+	//UI_f_sky_color_b.f_controlledfloat = &TargetWeather->sky_color.x;
 
 
-	UI_f_dof_x.f_controlledfloat = 0;// &TargetWeather->dof_value.x;
-	UI_f_dof_y.f_controlledfloat = 0;//&TargetWeather->dof_value.y;
-	UI_f_dof_z.f_controlledfloat = 0;//&TargetWeather->dof_value.z;
+	//UI_f_dof_x.f_controlledfloat = 0;// &TargetWeather->dof_value.x;
+	//UI_f_dof_y.f_controlledfloat = 0;//&TargetWeather->dof_value.y;
+	//UI_f_dof_z.f_controlledfloat = 0;//&TargetWeather->dof_value.z;
 
-	UI_f_dof_kernel.f_controlledfloat = 0;//&TargetWeather->dof_kernel;
+	//UI_f_dof_kernel.f_controlledfloat = 0;//&TargetWeather->dof_kernel;
 
-	UI_f_dof_sky.f_controlledfloat = 0;//&TargetWeather->dof_sky;
+	//UI_f_dof_sky.f_controlledfloat = 0;//&TargetWeather->dof_sky;
 
-	UI_f_sun_shafts_intensity.f_controlledfloat = &TargetWeather->m_fSunShaftsIntensity;
+	//UI_f_sun_shafts_intensity.f_controlledfloat = &TargetWeather->m_fSunShaftsIntensity;
 
-	UI_f_sun_lumscale.f_controlledfloat = 0;//&TargetWeather->sun_lumscale;
+	//UI_f_sun_lumscale.f_controlledfloat = 0;//&TargetWeather->sun_lumscale;
 
-	if (pSettings->line_exist(TargetWeather->m_identifier.c_str(), "sun_dir")) sun_pos = pSettings->r_fvector2(TargetWeather->m_identifier.c_str(), "sun_dir");
-	UI_f_sun_dir_a.f_controlledfloat = &sun_pos.x;
-	UI_f_sun_dir_b.f_controlledfloat = &sun_pos.y;
-	TargetWeather->sun_dir.setHP(deg2rad(sun_pos.y), deg2rad(sun_pos.x));
+	//if (pSettings->line_exist(TargetWeather->m_identifier.c_str(), "sun_dir")) sun_pos = pSettings->r_fvector2(TargetWeather->m_identifier.c_str(), "sun_dir");
+	//UI_f_sun_dir_a.f_controlledfloat = &sun_pos.x;
+	//UI_f_sun_dir_b.f_controlledfloat = &sun_pos.y;
+	//TargetWeather->sun_dir.setHP(deg2rad(sun_pos.y), deg2rad(sun_pos.x));
 
-	if (pSettings->line_exist(TargetWeather->m_identifier.c_str(), "sky_rotation")) sky_rotation = pSettings->r_float(TargetWeather->m_identifier.c_str(), "sky_rotation");
-	UI_f_sky_rotation.f_controlledfloat = &sky_rotation;
-	TargetWeather->sky_rotation = deg2rad(sky_rotation);
+	//if (pSettings->line_exist(TargetWeather->m_identifier.c_str(), "sky_rotation")) sky_rotation = pSettings->r_float(TargetWeather->m_identifier.c_str(), "sky_rotation");
+	//UI_f_sky_rotation.f_controlledfloat = &sky_rotation;
+	//TargetWeather->sky_rotation = deg2rad(sky_rotation);
 
-	UI_f_bolt_period.f_controlledfloat = &TargetWeather->bolt_period;
+	//UI_f_bolt_period.f_controlledfloat = &TargetWeather->bolt_period;
 
-	UI_f_bolt_duration.f_controlledfloat = &TargetWeather->bolt_duration;
+	//UI_f_bolt_duration.f_controlledfloat = &TargetWeather->bolt_duration;
 
-	UI_f_rain_density.f_controlledfloat = &TargetWeather->rain_density;
+	//UI_f_rain_density.f_controlledfloat = &TargetWeather->rain_density;
 
-	UI_f_fog_density.f_controlledfloat = &TargetWeather->fog_density;
+	//UI_f_fog_density.f_controlledfloat = &TargetWeather->fog_density;
 
-	UI_f_fog_distance.f_controlledfloat = &TargetWeather->fog_distance;
+	//UI_f_fog_distance.f_controlledfloat = &TargetWeather->fog_distance;
 
-	UI_f_far_plane.f_controlledfloat = &TargetWeather->far_plane;
+	//UI_f_far_plane.f_controlledfloat = &TargetWeather->far_plane;
 
-	UI_f_clouds_velocity_0.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_0;
+	//UI_f_clouds_velocity_0.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_0;
 
-	UI_f_clouds_velocity_1.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_1;
+	//UI_f_clouds_velocity_1.f_controlledfloat = 0;//&TargetWeather->clouds_velocity_1;
 
-	UI_f_water_intensity.f_controlledfloat = 0;//&TargetWeather->m_fWaterIntensity;
+	//UI_f_water_intensity.f_controlledfloat = 0;//&TargetWeather->m_fWaterIntensity;
 
-	UI_f_trees_amplitude.f_controlledfloat = 0;//&TargetWeather->m_fTreeAmplitude;
+	//UI_f_trees_amplitude.f_controlledfloat = 0;//&TargetWeather->m_fTreeAmplitude;
 
-	UI_f_swing_fast_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].speed;
+	//UI_f_swing_fast_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].speed;
 
-	UI_f_swing_normal_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].speed;
+	//UI_f_swing_normal_speed.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].speed;
 
-	UI_f_swing_fast_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot1;
+	//UI_f_swing_fast_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot1;
 
-	UI_f_swing_fast_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot2;
+	//UI_f_swing_fast_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].rot2;
 
-	UI_f_swing_fast_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp1;
+	//UI_f_swing_fast_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp1;
 
-	UI_f_swing_fast_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp2;
+	//UI_f_swing_fast_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[1].amp2;
 
-	UI_f_swing_normal_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot1;
+	//UI_f_swing_normal_rot1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot1;
 
-	UI_f_swing_normal_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot2;
+	//UI_f_swing_normal_rot2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].rot2;
 
-	UI_f_swing_normal_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp1;
+	//UI_f_swing_normal_amp1.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp1;
 
-	UI_f_swing_normal_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp2;
+	//UI_f_swing_normal_amp2.f_controlledfloat = 0;//&TargetWeather->m_cSwingDesc[0].amp2;
 
-	UI_f_wind_velocity.f_controlledfloat = &TargetWeather->wind_velocity;
+	//UI_f_wind_velocity.f_controlledfloat = &TargetWeather->wind_velocity;
 
-	UI_f_wind_direction.f_controlledfloat = &TargetWeather->wind_direction;
+	//UI_f_wind_direction.f_controlledfloat = &TargetWeather->wind_direction;
 
-	UI_f_wind_sound_volume.f_controlledfloat = 0;//&TargetWeather->wind_volume;
+	//UI_f_wind_sound_volume.f_controlledfloat = 0;//&TargetWeather->wind_volume;
 
 	UpdateTracksPositions();
 }
@@ -1046,100 +1046,100 @@ void CUIWeatherEditor::UpdateTracksPositions()
 	//Msg("---WeatherEditor UpdateTracksPositions:");
 
 
-	UI_f_ambient_r.SetCurenntValue();
-	UI_f_ambient_g.SetCurenntValue();
-	UI_f_ambient_b.SetCurenntValue();
+	//UI_f_ambient_r.SetCurenntValue();
+	//UI_f_ambient_g.SetCurenntValue();
+	//UI_f_ambient_b.SetCurenntValue();
 
-	UI_f_sun_r.SetCurenntValue();
-	UI_f_sun_g.SetCurenntValue();
-	UI_f_sun_b.SetCurenntValue();
+	//UI_f_sun_r.SetCurenntValue();
+	//UI_f_sun_g.SetCurenntValue();
+	//UI_f_sun_b.SetCurenntValue();
 
-	UI_f_hemi_color_r.SetCurenntValue();
-	UI_f_hemi_color_g.SetCurenntValue();
-	UI_f_hemi_color_b.SetCurenntValue();
-	//UI_f_hemi_color_a.SetCurenntValue();
+	//UI_f_hemi_color_r.SetCurenntValue();
+	//UI_f_hemi_color_g.SetCurenntValue();
+	//UI_f_hemi_color_b.SetCurenntValue();
+	////UI_f_hemi_color_a.SetCurenntValue();
 
-	UI_f_rain_color_r.SetCurenntValue();
-	UI_f_rain_color_g.SetCurenntValue();
-	UI_f_rain_color_b.SetCurenntValue();
+	//UI_f_rain_color_r.SetCurenntValue();
+	//UI_f_rain_color_g.SetCurenntValue();
+	//UI_f_rain_color_b.SetCurenntValue();
 
-	UI_f_fog_color_r.SetCurenntValue();
-	UI_f_fog_color_g.SetCurenntValue();
-	UI_f_fog_color_b.SetCurenntValue();
+	//UI_f_fog_color_r.SetCurenntValue();
+	//UI_f_fog_color_g.SetCurenntValue();
+	//UI_f_fog_color_b.SetCurenntValue();
 
-	UI_f_clouds_color_r.SetCurenntValue();
-	UI_f_clouds_color_g.SetCurenntValue();
-	UI_f_clouds_color_b.SetCurenntValue();
-	UI_f_clouds_color_x.SetCurenntValue();
+	//UI_f_clouds_color_r.SetCurenntValue();
+	//UI_f_clouds_color_g.SetCurenntValue();
+	//UI_f_clouds_color_b.SetCurenntValue();
+	//UI_f_clouds_color_x.SetCurenntValue();
 
 
-	UI_f_sky_color_r.SetCurenntValue();
-	UI_f_sky_color_g.SetCurenntValue();
-	UI_f_sky_color_b.SetCurenntValue();
+	//UI_f_sky_color_r.SetCurenntValue();
+	//UI_f_sky_color_g.SetCurenntValue();
+	//UI_f_sky_color_b.SetCurenntValue();
 
-	UI_f_dof_x.SetCurenntValue();
-	UI_f_dof_y.SetCurenntValue();
-	UI_f_dof_z.SetCurenntValue();
+	//UI_f_dof_x.SetCurenntValue();
+	//UI_f_dof_y.SetCurenntValue();
+	//UI_f_dof_z.SetCurenntValue();
 
-	UI_f_dof_kernel.SetCurenntValue();
+	//UI_f_dof_kernel.SetCurenntValue();
 
-	UI_f_dof_sky.SetCurenntValue();
+	//UI_f_dof_sky.SetCurenntValue();
 
-	UI_f_sun_shafts_intensity.SetCurenntValue();
+	//UI_f_sun_shafts_intensity.SetCurenntValue();
 
-	UI_f_sun_lumscale.SetCurenntValue();
+	//UI_f_sun_lumscale.SetCurenntValue();
 
-	UI_f_sun_dir_a.SetCurenntValue();
+	//UI_f_sun_dir_a.SetCurenntValue();
 
-	UI_f_sun_dir_b.SetCurenntValue();
+	//UI_f_sun_dir_b.SetCurenntValue();
 
-	UI_f_sky_rotation.SetCurenntValue();
+	//UI_f_sky_rotation.SetCurenntValue();
 
-	UI_f_bolt_period.SetCurenntValue();
+	//UI_f_bolt_period.SetCurenntValue();
 
-	UI_f_bolt_duration.SetCurenntValue();
+	//UI_f_bolt_duration.SetCurenntValue();
 
-	UI_f_rain_density.SetCurenntValue();
+	//UI_f_rain_density.SetCurenntValue();
 
-	UI_f_fog_density.SetCurenntValue();
+	//UI_f_fog_density.SetCurenntValue();
 
-	UI_f_fog_distance.SetCurenntValue();
+	//UI_f_fog_distance.SetCurenntValue();
 
-	UI_f_far_plane.SetCurenntValue();
+	//UI_f_far_plane.SetCurenntValue();
 
-	UI_f_clouds_velocity_0.SetCurenntValue();
+	//UI_f_clouds_velocity_0.SetCurenntValue();
 
-	UI_f_clouds_velocity_1.SetCurenntValue();
+	//UI_f_clouds_velocity_1.SetCurenntValue();
 
-	UI_f_water_intensity.SetCurenntValue();
+	//UI_f_water_intensity.SetCurenntValue();
 
-	UI_f_trees_amplitude.SetCurenntValue();
+	//UI_f_trees_amplitude.SetCurenntValue();
 
-	UI_f_swing_fast_speed.SetCurenntValue();
+	//UI_f_swing_fast_speed.SetCurenntValue();
 
-	UI_f_swing_normal_speed.SetCurenntValue();
+	//UI_f_swing_normal_speed.SetCurenntValue();
 
-	UI_f_swing_fast_rot1.SetCurenntValue();
+	//UI_f_swing_fast_rot1.SetCurenntValue();
 
-	UI_f_swing_fast_rot2.SetCurenntValue();
+	//UI_f_swing_fast_rot2.SetCurenntValue();
 
-	UI_f_swing_fast_amp1.SetCurenntValue();
+	//UI_f_swing_fast_amp1.SetCurenntValue();
 
-	UI_f_swing_fast_amp2.SetCurenntValue();
+	//UI_f_swing_fast_amp2.SetCurenntValue();
 
-	UI_f_swing_normal_rot1.SetCurenntValue();
+	//UI_f_swing_normal_rot1.SetCurenntValue();
 
-	UI_f_swing_normal_rot2.SetCurenntValue();
+	//UI_f_swing_normal_rot2.SetCurenntValue();
 
-	UI_f_swing_normal_amp1.SetCurenntValue();
+	//UI_f_swing_normal_amp1.SetCurenntValue();
 
-	UI_f_swing_normal_amp2.SetCurenntValue();
+	//UI_f_swing_normal_amp2.SetCurenntValue();
 
-	UI_f_wind_velocity.SetCurenntValue();
+	//UI_f_wind_velocity.SetCurenntValue();
 
-	UI_f_wind_direction.SetCurenntValue();
+	//UI_f_wind_direction.SetCurenntValue();
 
-	UI_f_wind_sound_volume.SetCurenntValue();
+	//UI_f_wind_sound_volume.SetCurenntValue();
 }
 
 void CUIWeatherEditor::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)

@@ -79,9 +79,9 @@ CGamePersistent::CGamePersistent(void)
 	m_last_stats_frame			= u32(-2);
 #endif
 	// 
-	dSetAllocHandler			(ode_alloc		);
-	dSetReallocHandler			(ode_realloc	);
-	dSetFreeHandler				(ode_free		);
+	//dSetAllocHandler			(ode_alloc		);
+	//dSetReallocHandler			(ode_realloc	);
+	//dSetFreeHandler				(ode_free		);
 
 	// 
 	BOOL	bDemoMode	= (0!=strstr(Core.Params,"-demomode "));
@@ -119,7 +119,7 @@ CGamePersistent::~CGamePersistent(void)
 
 void CGamePersistent::PreStart(LPCSTR op) {
 	pApp->SetLoadingScreen(new UILoadingScreen());
-	__super::PreStart(op);
+	inherited::PreStart(op);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)
@@ -153,7 +153,7 @@ void CGamePersistent::OnAppStart()
 	// load game materials
 	GMLib.Load					();
 	init_game_globals			();
-	__super::OnAppStart			();
+	inherited::OnAppStart			();
 	m_pUI_core					= new ui_core();
 	m_pMainMenu					= new CMainMenu();
 }
@@ -167,7 +167,7 @@ void CGamePersistent::OnAppEnd	()
 	xr_delete					(m_pMainMenu);
 	xr_delete					(m_pUI_core);
 
-	__super::OnAppEnd			();
+	inherited::OnAppEnd			();
 
 	clean_game_globals			();
 
@@ -177,7 +177,7 @@ void CGamePersistent::OnAppEnd	()
 
 void CGamePersistent::Start		(LPCSTR op)
 {
-	__super::Start				(op);
+	inherited::Start				(op);
 }
 
 void CGamePersistent::Disconnect()
@@ -185,7 +185,7 @@ void CGamePersistent::Disconnect()
 	// destroy ambient particles
 	Particles::Details::Destroy(ambient_particles);
 
-	__super::Disconnect			();
+	inherited::Disconnect			();
 	// stop all played emitters
 	::Sound->stop_emitters		();
 	m_game_params.m_e_game_type	= eGameIDNoGame;
@@ -195,7 +195,7 @@ void CGamePersistent::Disconnect()
 
 void CGamePersistent::OnGameStart()
 {
-	__super::OnGameStart		();
+	inherited::OnGameStart		();
 	
 	UpdateGameType				();
 
@@ -206,7 +206,7 @@ void CGamePersistent::OnGameStart()
 
 void CGamePersistent::UpdateGameType			()
 {
-	__super::UpdateGameType		();
+	inherited::UpdateGameType		();
 	//  [7/11/2005]
 	if (!xr_strcmp(m_game_params.m_game_type, "single")) m_game_params.m_e_game_type = eGameIDSingle;
 	else m_game_params.m_e_game_type = eGameIDNoGame;
@@ -217,7 +217,7 @@ void CGamePersistent::UpdateGameType			()
 
 void CGamePersistent::OnGameEnd	()
 {
-	__super::OnGameEnd					();
+	inherited::OnGameEnd					();
 
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
@@ -438,6 +438,7 @@ void CGamePersistent::game_loaded()
 
 			m_intro				= new CUISequencer();
 			m_intro->Start		("game_loaded");
+			Msg("intro_start game_loaded");
 			m_intro->m_on_destroy_event.bind(this, &CGamePersistent::update_game_loaded);
 		}
 		m_intro_event			= 0;
@@ -529,8 +530,9 @@ void CGamePersistent::OnFrame	()
 	if(!g_dedicated_server && Device.dwPrecacheFrame==0 && !m_intro && m_intro_event.empty())
 		load_screen_renderer.stop();
 
-	if( !m_pMainMenu->IsActive() )
+	if (!m_pMainMenu->IsActive()) {
 		m_pMainMenu->DestroyInternal(false);
+	}
 
 	if(!g_pGameLevel)			return;
 	if(!g_pGameLevel->bReady)	return;
@@ -572,14 +574,22 @@ void CGamePersistent::OnFrame	()
 		}
 #endif // MASTER_GOLD
 	}
-	__super::OnFrame			();
+	inherited::OnFrame			();
 
 	//if(!Device.Paused())
 	//	Engine.Sheduler.Update		();
 
 	// update weathers ambient
-	if(!Device.Paused())
-		WeathersUpdate				();
+	if (!Device.Paused())
+	{
+		if (Device.IsEditorMode())
+		{
+			Engine.Sheduler.Update();
+		}
+
+		// update weathers ambient
+		WeathersUpdate();
+	}
 
 	if (m_bCamReady == false) {
 		m_bCamReady = true;
@@ -621,51 +631,45 @@ void CGamePersistent::OnFrame	()
 
 void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 {
-	if(E==eQuickLoad)
+	if (E == eQuickLoad)
 	{
 		loading_save_timer.Start();
-		pApp->LoadBegin();
+		loading_save_timer_started = true;
+		Msg("* Game Loading Timer: Started from Save Reloading");
+
 		if (Device.Paused())
-			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
+			Device.Pause(FALSE, TRUE, TRUE, "eQuickLoad");
 
-		CUIGameCustom* ui_game_custom = nullptr;
-		if ((ui_game_custom = CurrentGameUI()) != nullptr)
+		if (CurrentGameUI())
 		{
-			ui_game_custom->HideShownDialogs();
-			ui_game_custom->UIMainIngameWnd->reset_ui();
-
-			//CurrentGameUI()->PdaMenu().Reset();
-			// resetting pda is not enough...
-
-			xr_delete(ui_game_custom->m_PdaMenu);
-			ui_game_custom->m_PdaMenu = new CUIPdaWnd();
+			CurrentGameUI()->HideShownDialogs();
+			CurrentGameUI()->UIMainIngameWnd->reset_ui();
+			CurrentGameUI()->PdaMenu().Reset();
 		}
 
-		if(g_tutorial)
+		if (g_tutorial)
 			g_tutorial->Stop();
 
-		if(g_tutorial2)
+		if (g_tutorial2)
 			g_tutorial2->Stop();
 
-		
-		LPSTR		saved_name	= (LPSTR)(P1);
+		LPSTR saved_name = (LPSTR)(P1);
 
-		Level().remove_objects	();
-		game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-		R_ASSERT				(game);
-		game->restart_simulator	(saved_name);
-		xr_free					(saved_name);
-		pApp->LoadEnd();
+		Level().remove_objects();
+		game_sv_Single* game = smart_cast<game_sv_Single*>(Level().Server->game);
+		R_ASSERT(game);
+		game->restart_simulator(saved_name);
+		xr_free(saved_name);
 		return;
-	}else
-	if(E==eDemoStart)
+	}
+	else if (E == eDemoStart)
 	{
 		string256			cmd;
-		LPCSTR				demo	= LPCSTR(P1);
-		xr_sprintf				(cmd,"demo_play %s",demo);
-		Console->Execute	(cmd);
-		xr_free				(demo);
-		uTime2Change		= Device.TimerAsync() + u32(P2)*1000;
+		LPCSTR				demo = LPCSTR(P1);
+		xr_sprintf(cmd, "demo_play %s", demo);
+		Console->Execute(cmd);
+		xr_free(demo);
+		uTime2Change = Device.TimerAsync() + u32(P2) * 1000;
 	}
 }
 
@@ -727,10 +731,15 @@ bool CGamePersistent::OnRenderPPUI_query()
 	// enable PP or not
 }
 
+extern UI_API void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
+	if (g_pGameLevel != nullptr) {
+		//Level().BulletManager().Render();
+	}
 	// always
 	MainMenu()->OnRenderPPUI_main();
+	draw_wnds_rects();
 }
 
 void CGamePersistent::OnRenderPPUI_PP()

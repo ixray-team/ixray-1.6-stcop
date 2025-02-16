@@ -36,7 +36,10 @@ void CUIPropertiesBox::InitPropertiesBox(Fvector2 pos, Fvector2 size)
 	AttachChild				(&m_UIListWnd);
 
 	CUIXml					xml_doc;
-	xml_doc.Load			(CONFIG_PATH, UI_PATH, "actor_menu.xml");
+	if (EngineExternal().LostAlphaMode())
+		xml_doc.Load			(CONFIG_PATH, UI_PATH, "ui_actor_menu.xml");
+	else
+		xml_doc.Load			(CONFIG_PATH, UI_PATH, "actor_menu.xml");
 
 	LPCSTR t = xml_doc.Read	("properties_box:texture", 0, "");
 	R_ASSERT				(t);

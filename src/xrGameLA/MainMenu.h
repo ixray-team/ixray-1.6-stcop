@@ -52,6 +52,7 @@ class CMainMenu :
 
 	xr_vector<CUIWindow*>		m_pp_draw_wnds;
 
+	CGameFont* pCGameFont;
 public:
 	enum	EErrorDlg 
 	{

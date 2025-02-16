@@ -17,7 +17,7 @@
 #include "../xrCore/discord/discord.h"
 #include <Level.h>
 #include <GamePersistent.h>
-
+#include "../xrCore/git_version.h"
 //#define DEMO_BUILD
 
 string128	ErrMsgBoxTemplate	[]	= {
@@ -49,6 +49,8 @@ CMainMenu*	MainMenu()	{return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
 
 CMainMenu::CMainMenu	()
 {
+	pCGameFont = g_FontManager->GetFont("ui_font_console");
+
 	m_Flags.zero					();
 	m_startDialog					= nullptr;
 	m_screenshotFrame				= u32(-1);
@@ -379,6 +381,13 @@ void CMainMenu::OnRenderPPUI_main	()
 	}
 
 	UI().pp_stop();
+
+	pCGameFont->SetAligment(CGameFont::alRight);
+	pCGameFont->SetHeight(0.022f);
+	pCGameFont->SetColor(0xFFF5F5DC);
+
+	pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight(), (psCurrentVidMode[1] - pCGameFont->GetHeight()), "%s " _VER " Branch[" _BRANCH "] Hash[" _HASH "] Platform [%s]", "IX-Ray", EngineExternal().PlatformMode());
+	pCGameFont->OnRender();
 }
 
 void CMainMenu::OnRenderPPUI_PP	()
