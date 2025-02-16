@@ -10,6 +10,7 @@
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
+extern void CCC_RegisterCommands();
 
 #ifdef NDEBUG
 //namespace std {
@@ -21,6 +22,14 @@
 #endif // #ifdef NDEBUG
 
 extern "C" {
+	DLL_API void __cdecl xrGameInitialize()
+	{
+		// register console commands
+		CCC_RegisterCommands();
+		// keyboard binding
+		CCC_RegisterInput			();
+
+	}
 	DLL_API DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid)
 	{
 		DLL_Pure			*object = object_factory().client_object(clsid);
@@ -38,22 +47,5 @@ extern "C" {
 	}
 };
 
-extern void CCC_RegisterCommands();
 
-BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
-{
-	switch (ul_reason_for_call) {
-		case DLL_PROCESS_ATTACH: {
-			// register console commands
-			CCC_RegisterCommands();
-			// keyboard binding
-			CCC_RegisterInput			();
-			break;
-		}
 
-		case DLL_PROCESS_DETACH: {
-			break;
-		}
-	}
-    return								(TRUE);
-}
