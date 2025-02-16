@@ -130,18 +130,25 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 				CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
 				if (pGO) pGO->On_B_NotCurrentEntity();
 			}
-			SetEntity			(O);
 			SetControlEntity	(O);
+			SetEntity			(O);
 //			if (net_Syncronised)net_Syncronize	();	// start sync-thread again
 		}
 
 		if (0xffff != E->ID_Parent)	
 		{
+			/*
 			NET_Packet	GEN;
 			GEN.write_start();
 			GEN.read_start();
 			GEN.w_u16			(u16(O->ID()));
 			GEN.w_u8			(1);
+			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
+			*/
+			NET_Packet	GEN;
+			GEN.write_start();
+			GEN.read_start();
+			GEN.w_u16(u16(O->ID()));
 			cl_Process_Event(E->ID_Parent, GE_OWNERSHIP_TAKE, GEN);
 		}
 	}
