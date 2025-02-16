@@ -70,6 +70,8 @@ public:
 	static bool 	InitHintWindow			(CUIXml& xml_doc, LPCSTR path, int index, UIHintWindow* pWnd);
 	static Frect	GetFRect				(CUIXml& xml_doc, LPCSTR path, int index);
 	static u32		GetColor				(CUIXml& xml_doc, LPCSTR path, int index, u32 def_clr);
+
+	static xr_vector<CUIStatic*> InitAutoStatic(CUIXml& xml_doc, LPCSTR tag_name, CUIWindow* pParentWnd); //ladc
 public:
 
 	static bool		InitAlignment(CUIXml &xml_doc, const char *path,

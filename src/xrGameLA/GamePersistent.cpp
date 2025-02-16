@@ -22,7 +22,7 @@
 #include "ActorEffector.h"
 #include "actor.h"
 #include "../xrScripts/script_engine.h"
-#include "ui/UITextureMaster.h"
+#include "../xrUI/UITextureMaster.h"
 #include "../xrEngine/Application.h"
 #include "ui/UILoadingScreen.h"
 

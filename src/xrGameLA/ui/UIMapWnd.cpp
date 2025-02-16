@@ -10,7 +10,7 @@
 #include "../xrUI/Widgets/UIScrollBar.h"
 #include "../xrUI/Widgets/UIFrameWindow.h"
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
-#include "UITabControl.h"
+#include "../xrUI/Widgets/UITabControl.h"
 #include "../xrUI/Widgets/UI3tButton.h"
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"

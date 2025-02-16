@@ -13,7 +13,7 @@
 
 #include "../xrUI/Widgets/UIStatic.h"
 #include "../xrUI/Widgets/UIFrameWindow.h"
-#include "UITabControl.h"
+#include "../xrUI/Widgets/UITabControl.h"
 //#include "UIPdaCommunication.h"
 #include "UIPdaContactsWnd.h"
 #include "UIMapWnd.h"
@@ -28,7 +28,7 @@
 #include "UIMainIngameWnd.h"
 #include "../xrUI/Widgets/UIDialogWnd.h"
 #include "uiscriptwnd.h"
-#include "UITabButton.h"
+#include "../xrUI/Widgets/UITabButton.h"
 #include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 

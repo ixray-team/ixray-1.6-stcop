@@ -125,7 +125,7 @@ void CUIUpgradeWnd::Init()
 
 	//Списки Drag&Drop
 	m_uidata->UIOurBagWnd.AttachChild(&m_uidata->UIOurBagList);
-	xml_init.InitDragDropListEx(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
+	//xml_init.InitDragDropListEx(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
 
 	AttachChild(&m_uidata->UIDescWnd);
 	xml_init.InitStatic(uiXml, "desc_static", 0, &m_uidata->UIDescWnd);

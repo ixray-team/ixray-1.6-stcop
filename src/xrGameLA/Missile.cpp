@@ -24,7 +24,7 @@
 #define PLAYING_ANIM_TIME 15000
 
 
-#include "ui/UIProgressShape.h"
+#include "../xrUI/Widgets/UIProgressShape.h"
 #include "../xrUI/UIXmlInit.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;

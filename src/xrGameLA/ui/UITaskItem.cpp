@@ -5,7 +5,7 @@
 #include "../gametask.h"
 #include "../../xrEngine/string_table.h"
 #include "UIEventsWnd.h"
-#include "UIEditBoxEx.h"
+#include "../xrUI/Widgets/UIEditBoxEx.h"
 #include "../xrUI/Widgets/UIEditBox.h"
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"

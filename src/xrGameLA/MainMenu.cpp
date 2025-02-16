@@ -8,7 +8,7 @@
 #include "../xrEngine/xr_Level_controller.h"
 #include "../xrUI/UITextureMaster.h"
 #include "../xrUI/UIXmlInit.h"
-#include "ui\UIBtnHint.h"
+#include "../xrUI/Widgets/UIBtnHint.h"
 #include "../xrUI/UICursor.h"
 #include "../xrEngine/string_table.h"
 

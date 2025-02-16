@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
-#include "UILines.h"
+#include "../xrUI/Widgets/UILines.h"
 
 class CLAItem;
 class CUIStatic;

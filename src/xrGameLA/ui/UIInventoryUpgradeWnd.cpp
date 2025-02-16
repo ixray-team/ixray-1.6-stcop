@@ -28,7 +28,7 @@
 #include "UIItemInfo.h"
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../xrUI/Widgets/UI3tButton.h"
-#include "UIHelper.h"
+#include "../xrUI/UIHelper.h"
 #include "../../xrUI/ui_defs.h"
 #include "../Weapon.h"
 #include "../WeaponRPG7.h"

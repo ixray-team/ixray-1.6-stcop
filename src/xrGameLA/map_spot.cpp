@@ -7,7 +7,7 @@
 #include "level.h"
 #include "../xrEngine/xr_object.h"
 #include "../xrCore/object_broker.h"
-#include "ui/UITextureMaster.h"
+#include "../xrUI/UITextureMaster.h"
 
 CMapSpot::CMapSpot(CMapLocation* ml)
 :m_map_location(ml)

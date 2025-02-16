@@ -17,7 +17,7 @@ class CUIZoneMap
 	CUIStatic					m_center;
 	CUIStatic					m_compass;
 	CUIStatic					m_clipFrame;
-	CUITextWnd*					m_pointerDistanceText;
+	CUIStatic					m_pointerDistanceText;
 
 public:
 								CUIZoneMap		();

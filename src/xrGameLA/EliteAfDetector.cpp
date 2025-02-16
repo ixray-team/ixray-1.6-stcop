@@ -9,7 +9,7 @@
 //#include "../Include/xrRender/UIRender.h"
 #include "../xrUI/UIXmlInit.h"
 //#include "../xrUI/xrUIXmlParser.h"
-//#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 CEliteDetector::CEliteDetector()
 {

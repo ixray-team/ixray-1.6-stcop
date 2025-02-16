@@ -2,8 +2,8 @@
 #include "../HudSound.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
-class CUIStatic;
 class CSimpleDetector;
 class CAdvancedDetector;
 class CEliteDetector;

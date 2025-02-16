@@ -123,6 +123,12 @@ protected:
 	Fvector2		m_TextureOffset;
 
 public:
+
+	//ladc
+	void			SetText(LPCSTR txt) { TextItemControl()->SetText(txt); }
+	void			SetTextST(LPCSTR txt) { TextItemControl()->SetTextST(txt); }
+	virtual void		SetColor(u32 color) { m_UIStaticItem.SetTextureColor(color); }
+
 	CUILines*		TextItemControl						();
 	shared_str		m_stat_hint_text;
 

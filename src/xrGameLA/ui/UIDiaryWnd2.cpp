@@ -6,7 +6,7 @@
 #include "../xrUI/Widgets/UIAnimatedStatic.h"
 #include "../xrUI/UIXmlInit.h"
 #include "../xrCore/object_broker.h"
-#include "UITabControl.h"
+#include "../xrUI/Widgets/UITabControl.h"
 #include "../xrUI/Widgets/UIScrollView.h"
 #include "UITreeViewBoxItem.h"
 #include "UIEncyclopediaArticleWnd.h"

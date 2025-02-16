@@ -6,14 +6,14 @@
 #include "../xrUI/Widgets/UI3tButton.h"
 #include "UIMessageBox.h"
 #include "../xrUI/Widgets/UIPropertiesBox.h"
-#include "UICheckButton.h"
-#include "UIRadioButton.h"
+#include "../xrUI/Widgets/UICheckButton.h"
+#include "../xrUI/Widgets/UIRadioButton.h"
 #include "../xrUI/Widgets/UIStatic.h"
 #include "../xrUI/Widgets/UIEditBox.h"
 #include "../xrUI/Widgets/UIFrameWindow.h"
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../xrUI/Widgets/UIProgressBar.h"
-#include "UITabControl.h"
+#include "../xrUI/Widgets/UITabControl.h"
 
 #include "uiscriptwnd_script.h"
 

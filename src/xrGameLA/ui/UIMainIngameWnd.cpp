@@ -87,7 +87,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	m_pMPLogWnd					= nullptr;	
 }
 
-#include "UIProgressShape.h"
+#include "../xrUI/Widgets/UIProgressShape.h"
 extern CUIProgressShape* g_MissileForceShape;
 
 CUIMainIngameWnd::~CUIMainIngameWnd()

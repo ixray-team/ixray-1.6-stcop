@@ -22,7 +22,6 @@
 
 CUIZoneMap::CUIZoneMap()
 {
-	m_pointerDistanceText = nullptr;
 }
 
 CUIZoneMap::~CUIZoneMap()
@@ -47,8 +46,8 @@ void CUIZoneMap::Init()
 	xml_init.InitStatic			(uiXml, "minimap:background", 0, &m_background);
 
 	if(IsGameTypeSingle()){
-		//xml_init.InitStatic			(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
-		m_pointerDistanceText = UIHelper::CreateTextWnd(uiXml, "minimap:background:dist_text", &m_background);
+		xml_init.InitStatic			(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
+		m_background.AttachChild	(&m_pointerDistanceText);
 	}
 
 	xml_init.InitStatic(uiXml, "minimap:level_frame", 0, &m_clipFrame);
@@ -92,9 +91,9 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 		if(m_activeMap->GetPointerDistance()>0.5f){
 			string64	str;
 			xr_sprintf		(str,"%.1f m.",m_activeMap->GetPointerDistance());
-			m_pointerDistanceText->SetText(str);
+			m_pointerDistanceText.SetText(str);
 		}else{
-			m_pointerDistanceText->SetText("");
+			m_pointerDistanceText.SetText("");
 		}
 	}
 }

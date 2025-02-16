@@ -84,7 +84,7 @@ void CUIActorInfoWnd::Show(bool status)
 	if (!status) return;
 	
 	UICharacterInfo->InitCharacter			(Actor()->ID());
-	UICharIconHeader->UITitleText.SetText	(Actor()->Name());
+	//UICharIconHeader->UITitleText.SetText	(Actor()->Name());
 	FillPointsInfo							();
 }
 

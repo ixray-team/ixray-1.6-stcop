@@ -8,7 +8,7 @@
 #include "UIDragDropListEx.h"
 #include "../xrUI/Widgets/UIFrameWindow.h"
 #include "UIItemInfo.h"
-#include "UIPropertiesBox.h"
+#include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../ai/monsters/BaseMonster/base_monster.h"
 #include "../inventory.h"
 #include "UIInventoryUtilities.h"

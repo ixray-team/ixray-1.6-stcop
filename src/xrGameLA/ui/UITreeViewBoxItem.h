@@ -84,7 +84,7 @@ public:
 	
 	void	SetItemColor()
 	{
-		m_bArticleRead ? SetTextColor(m_uReadedColor, m_uReadedColor) : SetTextColor(m_uUnreadedColor, m_uUnreadedColor);
+		m_bArticleRead ? SetTextColor(m_uReadedColor/*, m_uReadedColor*/) : SetTextColor(m_uUnreadedColor/*, m_uUnreadedColor*/);
 	}
 
 	void SetListParent(CUIListBox* p)

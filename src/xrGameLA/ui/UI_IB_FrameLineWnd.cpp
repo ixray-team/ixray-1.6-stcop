@@ -5,14 +5,14 @@
 // Author:		SkyLoader
 // Mail:		nope
 
-// Copyright 2014 Lost Alpha, вот так нах
+// Copyright 2014 Lost Alpha, ГўГ®ГІ ГІГ ГЄ Г­Г Гµ
 
 #include "StdAfx.h"
 #include "UI_IB_FrameLineWnd.h"
 
-void CUI_IB_FrameLineWnd::SetStretchBETextures(bool stretch)
-{
-	for(int i=0; i<S_Total; ++i)
-		if(m_states[i])
-			m_states[i]->SetStretchBETextures(stretch);
-}
+//void CUI_IB_FrameLineWnd::SetStretchBETextures(bool stretch)
+//{
+//	for(int i=0; i<S_Total; ++i)
+//		if(m_states[i])
+//			m_states[i]->SetStretchBETextures(stretch);
+//}

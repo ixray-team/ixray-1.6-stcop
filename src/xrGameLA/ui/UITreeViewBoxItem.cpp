@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "UITreeViewBoxItem.h"
-#include "UIListBox.h"
+#include "../xrUI/Widgets/UIListBox.h"
 #include "../../xrEngine/string_table.h"
 
 

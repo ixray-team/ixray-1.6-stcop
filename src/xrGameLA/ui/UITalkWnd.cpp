@@ -385,7 +385,7 @@ void CUITalkWnd::SwitchToTrade()
 		UITradeWnd->InitTrade		(m_pOurInvOwner, m_pOthersInvOwner);
 		UITradeWnd->Show				();
 		UITradeWnd->StartTrade		();
-		UITradeWnd->BringAllToTop	();
+		//UITradeWnd->BringAllToTop	();
 		StopSnd						();
 	}
 }
@@ -398,9 +398,9 @@ void CUITalkWnd::SwitchToUpgrade()
 		UITalkDialogWnd->Hide();
 		UIUpgradeWnd->InitUpgrade(m_pOurInvOwner, m_pOthersInvOwner);
 		UIUpgradeWnd->Show();
-		UIUpgradeWnd->BringAllToTop();
+		//UIUpgradeWnd->BringAllToTop();
 		UITradeWnd->StartTrade();
-		UITradeWnd->BringAllToTop();
+		//UITradeWnd->BringAllToTop();
 		StopSnd();
 	}
 }

@@ -20,7 +20,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../actor.h"
 #include "../xrCore/object_broker.h"
-#include "UIListBox.h"
+#include "../xrUI/Widgets/UIListBox.h"
 
 #define				ENCYCLOPEDIA_DIALOG_XML		"encyclopedia.xml"
 

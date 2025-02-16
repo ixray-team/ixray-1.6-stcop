@@ -1319,3 +1319,24 @@ bool CUIXmlInit::InitHintWindow(CUIXml& xml_doc, LPCSTR path, int index, UIHintW
 	pWnd->set_hint_delay( (u32)xml_doc.ReadAttribInt( path, index, "delay" ) );
 	return true;
 }
+
+//ladc
+xr_vector<CUIStatic*> CUIXmlInit::InitAutoStatic(CUIXml& xml_doc, LPCSTR tag_name, CUIWindow* pParentWnd)
+{
+	int items_num = xml_doc.GetNodesNum(xml_doc.GetRoot(), tag_name);
+	// tmp statics vector
+	xr_vector<CUIStatic*>	tmpVec;
+
+	CUIStatic* pUIStatic = NULL;
+	for (int i = 0; i < items_num; i++)
+	{
+		pUIStatic = new CUIStatic();
+		InitStatic(xml_doc, tag_name, i, pUIStatic);
+		pUIStatic->SetAutoDelete(true);
+		pParentWnd->AttachChild(pUIStatic);
+		tmpVec.push_back(pUIStatic);
+		pUIStatic = NULL;
+	}
+
+	return tmpVec;
+}

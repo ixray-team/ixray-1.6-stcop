@@ -5,7 +5,7 @@
 #include "../xrUI/Widgets/UIAnimatedStatic.h"
 #include "UIMapWnd.h"
 #include "../xrUI/Widgets/UIScrollView.h"
-#include "UITabControl.h"
+#include "../xrUI/Widgets/UITabControl.h"
 #include "UITaskDescrWnd.h"
 #include "../xrUI/Widgets/UI3tButton.h"
 #include "../HUDManager.h"

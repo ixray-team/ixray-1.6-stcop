@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIWindow.h"
+#include "UIStatic.h"
 
 class UI_API CUIFrameLineWnd: 
 	public CUIWindow
@@ -18,6 +19,10 @@ public:
 			void SetTextureColor	(u32 cl)						{m_texture_color=cl;}
 			bool IsHorizontal		()								{return bHorizontal;}
 			void SetHorizontal		(bool horiz)					{bHorizontal = horiz;}
+
+			//ladc
+			CUIStatic		UITitleText; //SkyLoader: dont change class to CUITextWnd because it is needed for scripts
+			CUIStatic* GetTitleStatic() { return &UITitleText; };
 protected:
 	bool			bHorizontal;
 			bool					inc_pos(Frect& rect, int counter, int i, Fvector2& LTp, Fvector2& RBp, Fvector2& LTt, Fvector2& RBt);

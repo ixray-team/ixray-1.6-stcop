@@ -961,7 +961,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 
 ENGINE_API	bool	g_dedicated_server;
 
-#include "UIStaticItem.h"
+#include "../xrUI/Widgets/UIStaticItem.h"
 void CWeaponMagazined::InitAddons()
 {
 	if (IsScopeAttached())
