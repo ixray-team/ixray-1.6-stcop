@@ -7,7 +7,7 @@
 
 CUIDialogWndEx::CUIDialogWndEx() 
 {
-	inherited::SetCenterCursor(false);
+//	inherited::SetCenterCursor(false);
 }
 
 CUIDialogWndEx::~CUIDialogWndEx()

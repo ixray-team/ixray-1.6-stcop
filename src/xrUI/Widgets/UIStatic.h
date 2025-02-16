@@ -64,6 +64,7 @@ public:
 			Fvector2		GetTextureOffeset		() const					{ return m_TextureOffset; }
 			void			TextureOn				()							{ m_bTextureEnable = true; }
 			void			TextureOff				()							{ m_bTextureEnable = false; }
+			bool			IsTextureOn				() const					{ return m_bTextureEnable; }
 			void			SetTextOffset			(float x, float y)			{ TextItemControl()->m_TextOffset.x = x; TextItemControl()->m_TextOffset.y = y; }
 			void			HighlightText			(bool bHighlight)			{ m_bEnableTextHighlighting = bHighlight; }
 	virtual bool			IsHighlightText			();

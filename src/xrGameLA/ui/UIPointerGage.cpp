@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// UIPointerGage.cpp:			цифровой прибор
+// UIPointerGage.cpp:			С†РёС„СЂРѕРІРѕР№ РїСЂРёР±РѕСЂ
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -21,7 +21,7 @@ void CUIPointerGage::Init    (LPCSTR tex_name,
 {
 //	inherited::Init(tex_name, x , y, width, height);
 	inherited::SetWindowName(tex_name);
-	inherited::SetWndRect(x , y, width, height);
+	inherited::SetWndRect(Frect().set(x , y, width, height));
 }
 
 

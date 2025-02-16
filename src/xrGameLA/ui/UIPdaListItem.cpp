@@ -46,7 +46,7 @@ void CUIPdaListItem::Init(float x, float y, float width, float height)
 		UIMask = new CUIFrameWindow				();
 		UIMask->SetAutoDelete					(true);
 		xml_init.InitFrameWindow				(uiXml, "mask_frame_window", 0, UIMask);
-		UIInfo->UIIcon().SetMask				(UIMask);
+//		UIInfo->UIIcon().SetMask				(UIMask);
 	}
 
 	xml_init.InitAutoStaticGroup				(uiXml,"pda_char_auto_statics", 0, this);

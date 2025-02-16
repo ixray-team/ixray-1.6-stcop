@@ -17,14 +17,8 @@ class CUIListBox;
 class CUIDiaryWnd: public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow inherited;
-	enum EDiaryFilter{
-//			eInfo,
-			eJournal=0,
-			eNews,
-			eNone
-	};
 protected:
-	EDiaryFilter		m_currFilter;
+	shared_str		m_currFilter;
 
 	CUINewsWnd*			m_UINewsWnd;
 
@@ -59,7 +53,7 @@ protected:
 			void		LoadInfoTab				();
 			void		UnloadNewsTab			();
 			void		LoadNewsTab				();
-			void		Reload					(EDiaryFilter new_filter);
+			void		Reload					(shared_str new_filter);
 public:
 						CUIDiaryWnd				();
 	virtual				~CUIDiaryWnd			();

@@ -17,18 +17,12 @@ class CUITaskItem;
 class CUIEventsWnd	:public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow			inherited;
-	enum ETaskFilters{	eActiveTask			=	0,
-						eAccomplishedTask,
-						eFailedTask,
-						eSkipedTask,
-//.						eOwnTask,
-						eMaxTask};
 	enum EEventWndFlags{
 						flNeedReload	=(1<<0),
 						flMapMode		=(1<<1),
 	};
 	Flags16						m_flags;
-	ETaskFilters				m_currFilter;
+	shared_str					m_currFilter;
 	CUIFrameWindow*				m_UILeftFrame;
 	CUIWindow*					m_UIRightWnd;
 	CUIFrameLineWnd*			m_UILeftHeader;

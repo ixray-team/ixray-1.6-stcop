@@ -153,7 +153,7 @@ void CUICustomMap::FitToWidth	(float width)
 	float k			= m_BoundRect.width()/m_BoundRect.height();
 	float w			= width;
 	float h			= width/k;
-	SetWndRect		(0.0f,0.0f,w,h);
+	SetWndRect		(Frect().set(0.0f,0.0f,w,h));
 	
 }
 
@@ -162,7 +162,7 @@ void CUICustomMap::FitToHeight	(float height)
 	float k			= m_BoundRect.width()/m_BoundRect.height();
 	float h			= height;
 	float w			= k*height;
-	SetWndRect		(0.0f,0.0f,w,h);
+	SetWndRect		(Frect().set(0.0f,0.0f,w,h));
 	
 }
 

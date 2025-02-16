@@ -62,7 +62,7 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		wnd_rect.x2		= uiXml.ReadAttribFlt("main_frame", 0, "width", 0);
 		wnd_rect.y2		= uiXml.ReadAttribFlt("main_frame", 0, "height", 0);
 		
-		inherited::SetWndRect(wnd_rect.x1, wnd_rect.y1, wnd_rect.x2, wnd_rect.y2);
+		inherited::SetWndRect(Frect().set(wnd_rect.x1, wnd_rect.y1, wnd_rect.x2, wnd_rect.y2));
 	}
 
 	if(uiXml.NavigateToNode("static_name",0))

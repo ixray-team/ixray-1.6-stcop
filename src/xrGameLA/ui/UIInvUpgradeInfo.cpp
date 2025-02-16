@@ -54,7 +54,7 @@ void UIInvUpgradeInfo::init_from_xml( LPCSTR xml_name )
 
 	xml_init.InitWindow( ui_xml, "main_frame", 0, this );
 	
-	m_background = new CUIFrameWindow(false);
+	m_background = new CUIFrameWindow();
 	AttachChild( m_background );
 	m_background->SetAutoDelete( true );
 	xml_init.InitFrameWindow( ui_xml, "background_frame", 0, m_background );

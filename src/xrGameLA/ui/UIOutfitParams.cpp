@@ -163,7 +163,7 @@ void CUIOutfitParams::DisplayValue(InfoType t, LPCSTR text, u32 color, float & h
 		CUIStatic* el = m_info_items[t];
 		el->SetTextureColor(color);
 		el->TextItemControl()->SetText(text);
-		el->SetWndPos(el->GetWndPos().x, height);
+		el->SetWndPos(Fvector2().set(el->GetWndPos().x, height));
 		height += el->GetWndSize().y;
 		AttachChild(el);
 	}

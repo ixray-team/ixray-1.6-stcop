@@ -85,7 +85,7 @@ void CUIEventsWnd::Init				()
 	m_primary_or_all_filter_btn->	SetWindowName("btn_primary_or_all");
     AddCallback						("btn_primary_or_all",BUTTON_CLICKED,boost::bind(&CUIEventsWnd::OnFilterChanged,this,_1,_2));
 */
-	m_currFilter						= eActiveTask;
+	m_currFilter					= "eActiveTask";
 
 	m_UIRightWnd->AttachChild		(m_UIMapWnd);
 	m_flags.set(flMapMode, TRUE);
@@ -115,7 +115,7 @@ void	CUIEventsWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIEventsWnd::OnFilterChanged			(CUIWindow* w, void*)
 {
-	m_currFilter			=(ETaskFilters)m_TaskFilter->GetActiveIndex();
+	m_currFilter			= m_TaskFilter->GetActiveId();
 	ReloadList				(false);
 	if(!GetDescriptionMode())
 		SetDescriptionMode		(true);
@@ -191,10 +191,10 @@ bool CUIEventsWnd::Filter(CGameTask* t)
 			( 
 			  ( true/*!bprimary_only || (bprimary_only && t->m_is_task_general)*/ )	&&
 				(
-					(m_currFilter==eAccomplishedTask	&& task_state==eTaskStateCompleted )||
-					(m_currFilter==eFailedTask			&& task_state==eTaskStateFail )||
-					(m_currFilter==eActiveTask			&& task_state==eTaskStateInProgress )||
-					(m_currFilter == eSkipedTask			&& task_state == eTaskStateSkiped)
+					(m_currFilter == "eAccomplishedTask" && task_state == eTaskStateCompleted) ||
+					(m_currFilter == "eFailedTask" && task_state == eTaskStateFail) ||
+					(m_currFilter == "eActiveTask" && task_state == eTaskStateInProgress) ||
+					(m_currFilter == "eSkipedTask" && task_state == eTaskStateSkiped)
 				)
 			);
 }

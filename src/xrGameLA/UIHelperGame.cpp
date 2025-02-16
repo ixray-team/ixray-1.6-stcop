@@ -12,6 +12,8 @@
 #include "ui/UIDragDropReferenceList.h"
 #include "ui/uilistwnd.h"
 #include "ui/UILabel.h"
+#include "ui/UIMultiTextStatic.h"
+#include "../xrEngine/string_table.h"
 
 CUIDragDropListEx* UIHelperGame::CreateDragDropListEx(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
 {
@@ -154,4 +156,45 @@ bool CUIXmlInitGame::InitLabel(CUIXml& xml_doc, LPCSTR path, int index, CUILabel
 	InitText(xml_doc, buf, index, &pWnd->m_text);
 
 	return true;
+}
+
+bool CUIXmlInitGame::InitMultiTextStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIMultiTextStatic *pWnd)
+{
+	R_ASSERT4(xml_doc.NavigateToNode(path,index), "XML node not found", path, xml_doc.m_xml_file_name);
+
+	bool status = true;
+	string128	buf;
+
+	status &= InitStatic(xml_doc, path, index, pWnd);
+	int phrasesCount = xml_doc.GetNodesNum(path, index, "phrase");
+
+	xr_strconcat(buf, path, ":phrase");
+	XML_NODE* tab_node = xml_doc.NavigateToNode(path,index);
+	xml_doc.SetLocalRoot(tab_node);
+
+	CUIMultiTextStatic::SinglePhrase * p;
+	u32	argb = 0;
+	const char * const ph = "phrase";
+
+	for (int i = 0; i < phrasesCount; ++i)
+	{
+		p = pWnd->AddPhrase();
+
+		status			&= InitTextBanner(xml_doc, ph, i, &p->effect);
+		p->outX			= (xml_doc.ReadAttribFlt(ph, i, "x", 0));
+		p->outY			= (xml_doc.ReadAttribFlt(ph, i, "y", 0));
+		p->maxWidth		= xml_doc.ReadAttribFlt(ph, i, "width", -1);
+
+		CGameFont *pFont;
+		InitFont(xml_doc, ph, i, argb, pFont);
+        p->effect.SetFont(pFont);
+		p->effect.SetTextColor(argb);
+
+
+		p->str =  g_pStringTable->translate(xml_doc.Read(ph, i, ""));
+	}
+
+	xml_doc.SetLocalRoot(xml_doc.GetRoot());
+
+	return status;
 }

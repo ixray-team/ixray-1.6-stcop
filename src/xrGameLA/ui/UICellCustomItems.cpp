@@ -378,7 +378,7 @@ void CUIWeaponCellItem::InitAddonForDrag(CUIDragItem* i, const SAddon& addon, in
 	s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 	InitAddon		(s, *addon.section, addon.offset, Heading());
 	s->SetTextureColor(i->wnd()->GetTextureColor());
-	i->AttachChild	(s, pos);
+	i->AttachChild	(s);
 }
 
 void CUIWeaponCellItem::InitAddonsForDrag(CUIDragItem* drag, bool behind)

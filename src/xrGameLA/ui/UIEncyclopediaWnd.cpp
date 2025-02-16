@@ -182,7 +182,7 @@ bool CUIEncyclopediaWnd::HasArticle(shared_str id)
 
 void CUIEncyclopediaWnd::DeleteArticles()
 {
-	UIIdxList->RemoveAll();
+	UIIdxList->Clear();
 	delete_data			(m_ArticlesDB);
 }
 

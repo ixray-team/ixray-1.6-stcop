@@ -22,7 +22,7 @@ extern u32			g_pda_info_state;
 
 CUIDiaryWnd::CUIDiaryWnd()
 {
-	m_currFilter	= eNone;
+	m_currFilter = "eNone";
 }
 
 CUIDiaryWnd::~CUIDiaryWnd()
@@ -39,7 +39,7 @@ void CUIDiaryWnd::Show(bool status)
 {
 	inherited::Show		(status);
 	if(status)
-		Reload( (EDiaryFilter)m_FilterTab->GetActiveIndex() );
+		Reload( m_FilterTab->GetActiveId() );
 }
 
 
@@ -123,38 +123,24 @@ void	CUIDiaryWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIDiaryWnd::OnFilterChanged			(CUIWindow* w, void*)
 {
-	Reload( (EDiaryFilter)m_FilterTab->GetActiveIndex() );
+	Reload( m_FilterTab->GetActiveId() );
 }
 
-void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
+void CUIDiaryWnd::Reload	(shared_str new_filter)
 {
 //.	if(m_currFilter==new_filter) return;
 
-	switch (m_currFilter){
-		case eJournal:
+	if (m_currFilter == "eJournal")
 			UnloadJournalTab	();
-			break;
-//		case eInfo:
-//			UnloadInfoTab	();
-//			break;
-		case eNews:
-			UnloadNewsTab	();
-			break;
-	};
+	else if (m_currFilter == "eNews")
+		UnloadNewsTab();
 
 	m_currFilter = new_filter;
 
-	switch (m_currFilter){
-		case eJournal:
-			LoadJournalTab	(ARTICLE_DATA::eJournalArticle);
-			break;
-//		case eInfo:
-//			LoadInfoTab		();
-//			break;
-		case eNews:
-			LoadNewsTab	();
-			break;
-	};
+	if (m_currFilter == "eJournal")
+		LoadJournalTab(ARTICLE_DATA::eJournalArticle);
+	else if (m_currFilter == "eNews")
+		LoadNewsTab();
 }
 
 void CUIDiaryWnd::AddNews	()
@@ -283,7 +269,7 @@ void CUIDiaryWnd::Draw()
 
 	Fvector2 pos;
 
-	pos		= m_sign_places[eNews];
+	pos		= m_FilterTab->GetButtonById("eNews")->GetWndSize();
 	pos.add(tab_pos);
 	if(g_pda_info_state&pda_section::news)
 		draw_sign								(m_updatedSectionImage, pos);
@@ -291,7 +277,7 @@ void CUIDiaryWnd::Draw()
 		draw_sign								(m_oldSectionImage, pos);
 	
 
-	pos		= m_sign_places[eJournal];
+	pos		= m_FilterTab->GetButtonById("eJournal")->GetWndSize();
 	pos.add(tab_pos);
 	if(g_pda_info_state&pda_section::journal)
 		draw_sign								(m_updatedSectionImage, pos);
