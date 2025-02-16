@@ -67,6 +67,7 @@ CLocatorAPI::~CLocatorAPI()
 
 void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
 {
+#if 0 // ladc !!!!!
 	xr_string TempPath = name;
 	xr_strlwr(TempPath);
 
@@ -129,6 +130,68 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
 		xr_strcpy					(temp,sizeof(temp),folder);
 		if (xr_strlen(temp))		temp[xr_strlen(temp)-1]=0;
 	}
+#else
+	string_path			temp_file_name;
+	xr_strcpy(temp_file_name, sizeof(temp_file_name), name);
+	xr_strlwr(temp_file_name);
+
+	// Register file
+	file				desc;
+	//	desc.name			= xr_strlwr(xr_strdup(name));
+	desc.name = temp_file_name;
+	desc.vfs = vfs;
+	desc.crc = crc;
+	desc.ptr = ptr;
+	desc.size_real = size_real;
+	desc.size_compressed = size_compressed;
+	desc.modif = modif & (~u32(0x3));
+	//	Msg("registering file %s - %d", name, size_real);
+	//	if file already exist - update info
+
+	//xrRecursiveMutexGuard guard(LockGuard);
+
+	files_it			I = m_files.find(desc);
+	if (I != m_files.end()) {
+		desc.name = I->name;
+
+		// sad but true, performance option
+		// correct way is to erase and then insert new record:
+		const_cast<file&>(*I) = desc;
+		return;
+	}
+	else {
+		desc.name = xr_strdup(desc.name);
+	}
+
+	// otherwise insert file
+	m_files.insert(desc);
+
+	// Try to register folder(s)
+	string_path			temp;
+	xr_strcpy(temp, sizeof(temp), desc.name);
+	string_path			path;
+	string_path			folder;
+	while (temp[0])
+	{
+		_splitpath(temp, path, folder, 0, 0);
+		if (!folder[0]) break;
+		xr_strcat(path, folder);
+		if (!exist(path))
+		{
+			desc.name = xr_strdup(path);
+			desc.vfs = 0xffffffff;
+			desc.ptr = 0;
+			desc.size_real = 0;
+			desc.size_compressed = 0;
+			desc.modif = u32(-1);
+			std::pair<files_it, bool> I = m_files.insert(desc);
+
+			R_ASSERT(I.second);
+		}
+		xr_strcpy(temp, sizeof(temp), path);
+		if (xr_strlen(temp))		temp[xr_strlen(temp) - 1] = 0;
+	}
+#endif
 }
 
 IReader* open_chunk(FileHandle ptr, u32 ID, pcstr archiveName, u32 archiveSize, bool shouldDecrypt = false)
