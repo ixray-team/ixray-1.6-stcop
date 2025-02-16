@@ -453,7 +453,7 @@ void CGamePersistent::game_loaded()
 			load_screen_renderer.b_need_user_input	&& 
 			m_game_params.m_e_game_type == GAME_SINGLE)
 		{
-	//		pApp->ClearTitle();
+			pApp->SetLoadStageTitle("");
 
 			if (nullptr!=m_intro)	return;
 
