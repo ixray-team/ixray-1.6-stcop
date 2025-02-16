@@ -52,7 +52,6 @@ public:
 	~CEngineExternal();
 
 	xr_string GetTitle() const;
-	xr_string GetEngineMode() const;
 	const char* GetPlayerHudOmfAdditional() const;
 	const xr_vector<shared_str> StepWallmarksMaterials() const;
 	const xr_string WallmarkLeft() const;
@@ -61,6 +60,7 @@ public:
 	const char* PlatformMode() const;
 	bool ClearSkyMode() const;
 	bool CallOfPripyatMode() const;
+	bool LostAlphaMode() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;

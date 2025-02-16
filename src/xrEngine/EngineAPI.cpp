@@ -127,7 +127,7 @@ void CEngineAPI::Initialize(void)
 	// game
 	{
 		LPCSTR			g_name	= "xrGame.dll";
-		if (EngineExternal().GetEngineMode() == "la")
+		if (EngineExternal().LostAlphaMode())
 		{
 			g_name = "xrGameLA.dll";
 		}

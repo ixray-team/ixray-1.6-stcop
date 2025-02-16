@@ -473,7 +473,7 @@ void CTextureDescrMngr::Load()
 
 	LoadTHM					("$game_textures$");
 	LoadTHM					("$level$");
-	if (!xr_strcmp(EngineExternal().GetEngineMode().c_str(), "la"))
+	if (EngineExternal().LostAlphaMode())
 	{
 		LoadLTX();
 		LoadMiniLTX();
