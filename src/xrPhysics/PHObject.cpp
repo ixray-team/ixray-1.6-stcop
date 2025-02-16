@@ -13,10 +13,9 @@ extern CPHWorld* ph_world;
 
 CPHObject::CPHObject()
 {
-	SpatialComponent = xr_make_shared<ISpatial>(g_SpatialSpacePhysic, this);
+	ISpatialOwner::spatial_create(g_SpatialSpacePhysic, this, STYPE_PHYSIC);
 
 	m_flags.flags	=	0;
-	SpatialComponent->spatial.type	|=	STYPE_PHYSIC;
 	m_island.Init	();
 	m_check_count	=0;
 	m_flags.set(fl_collision_disable,FALSE);

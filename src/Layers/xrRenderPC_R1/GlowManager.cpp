@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////
 CGlow::CGlow()// : ISpatial(g_SpatialSpace)
 {
-	SpatialComponent = xr_make_shared<ISpatial>(g_SpatialSpace, this);
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
 	flags.bActive = false;
 	position.set(0, 0, 0);
 	direction.set(0, 0, 0);
@@ -28,7 +28,6 @@ CGlow::CGlow()// : ISpatial(g_SpatialSpace)
 	bTestResult = FALSE;
 	fade = 1.f;
 	dwFrame = 0;
-	SpatialComponent->spatial.type = STYPE_RENDERABLE;
 }
 
 CGlow::~CGlow()

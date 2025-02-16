@@ -150,6 +150,7 @@ public:
 	ISpatialShared SpatialComponent;
 
 public:
+	virtual void spatial_create(ISpatial_DB* db, ISpatialOwner* owner, u32 type) { SpatialComponent = xr_make_shared<ISpatial>(db, owner); SpatialComponent->spatial.type = type; }
 	virtual void spatial_register() { SpatialComponent->Register(); };
 	virtual void spatial_unregister() { SpatialComponent->Unregister(); };
 

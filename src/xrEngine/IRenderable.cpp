@@ -5,8 +5,7 @@
 
 IRenderable::IRenderable()
 {
-	SpatialComponent = xr_make_shared<ISpatial>(g_SpatialSpace, this);
-	SpatialComponent->spatial.type |= STYPE_RENDERABLE;
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
 
 	renderable.xform.identity			();
 	renderable.visual					= nullptr;

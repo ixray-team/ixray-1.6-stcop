@@ -6,9 +6,7 @@ static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
 
 light::light()
 {
-	SpatialComponent = xr_make_shared<ISpatial>(g_SpatialSpace, this);
-
-	SpatialComponent->spatial.type	= STYPE_LIGHTSOURCE;
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_LIGHTSOURCE);
 	flags.type		= POINT;
 	flags.bStatic	= false;
 	flags.bActive	= false;
