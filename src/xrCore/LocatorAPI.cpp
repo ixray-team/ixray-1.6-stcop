@@ -67,7 +67,7 @@ CLocatorAPI::~CLocatorAPI()
 
 void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif)
 {
-#if 0 // ladc !!!!!
+#if 1 // ladc is #if 0, cop #if 1 !!!!!
 	xr_string TempPath = name;
 	xr_strlwr(TempPath);
 
