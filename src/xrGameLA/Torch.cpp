@@ -98,7 +98,7 @@ void CTorch::Load(LPCSTR section)
 
 	Settings_from_ltx = READ_IF_EXISTS(pSettings, r_u8, section, "settings_from_ltx", 0);
 
-	//tatarinrafa: Добавил возможность прописать это в конфиге
+	//tatarinrafa: Р”РѕР±Р°РІРёР» РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїСЂРѕРїРёСЃР°С‚СЊ СЌС‚Рѕ РІ РєРѕРЅС„РёРіРµ
 	if (Settings_from_ltx == 1)
 	{
 		LoadLightSettings(pSettings, section);
@@ -112,7 +112,7 @@ void CTorch::Load(LPCSTR section)
 
 void CTorch::LoadLightSettings(CInifile* ini, LPCSTR section)
 {
-	bool isR2 = !!psDeviceFlags.test(rsR2) || !!psDeviceFlags.test(rsR3) || !!psDeviceFlags.test(rsR4);
+	bool isR2 = !!psDeviceFlags.test(rsR2) || !!psDeviceFlags.test(rsR4);
 
 	IKinematics* K = smart_cast<IKinematics*>(Visual());
 	lanim = LALib.FindItem(READ_IF_EXISTS(ini, r_string, section, "color_animator", "nill"));
@@ -286,7 +286,7 @@ void CTorch::SwitchNightVision(bool vision_on, bool use_sounds)
 				return;
 			}
 
-		//tatarinrafa: Добавил пнв для шлемов и слота ПНВ(набудущее)
+		//tatarinrafa: Р”РѕР±Р°РІРёР» РїРЅРІ РґР»СЏ С€Р»РµРјРѕРІ Рё СЃР»РѕС‚Р° РџРќР’(РЅР°Р±СѓРґСѓС‰РµРµ)
 			else if (itemfromhelmetslot && itemfromhelmetslot->m_SectNightVision.size())
 			{
 				m_night_vision->Start(itemfromhelmetslot->m_SectNightVision, pA, use_sounds);
@@ -332,7 +332,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return				(FALSE);
 	
-	//tatarinrafa: Добавил возможность прописать это в конфиге
+	//tatarinrafa: Р”РѕР±Р°РІРёР» РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїСЂРѕРїРёСЃР°С‚СЊ СЌС‚Рѕ РІ РєРѕРЅС„РёРіРµ
 	if (Settings_from_ltx == 0)
 	{
 		IKinematics* K = smart_cast<IKinematics*>(Visual());
@@ -342,7 +342,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 		LoadLightSettings(pUserData, "torch_definition");
 	}
 
-	//включить/выключить фонарик
+	//РІРєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ С„РѕРЅР°СЂРёРє
 	Switch					(torch->m_active);
 	VERIFY					(!torch->m_active || (torch->ID_Parent != 0xffff));
 	
@@ -535,7 +535,7 @@ void CTorch::UpdateCL()
 	if (!lanim)							return;
 
 	int						frame;
-	// возвращает в формате BGR
+	// РІРѕР·РІСЂР°С‰Р°РµС‚ РІ С„РѕСЂРјР°С‚Рµ BGR
 	u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); 
 
 	Fcolor					fclr;

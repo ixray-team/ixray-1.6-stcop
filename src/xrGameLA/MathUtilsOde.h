@@ -2,13 +2,13 @@
 
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../../xrODE/include/ode/common.h"
-#include "../../xrODE/include/ode/odemath.h"
-#include "../../xrODE/include/ode/objects.h"
-#include "../../xrODE/include/ode/rotation.h"
-#include "../../xrODE/include/ode/compatibility.h"
-#include "../../xrODE/include/ode/collision.h"
-#include "../../xrODE/include/ode/matrix.h"
+#include "../3rd party/ode/include/ode/common.h"
+#include "../3rd party/ode/include/ode/odemath.h"
+#include "../3rd party/ode/include/ode/objects.h"
+#include "../3rd party/ode/include/ode/rotation.h"
+#include "../3rd party/ode/include/ode/compatibility.h"
+#include "../3rd party/ode/include/ode/collision.h"
+#include "../3rd party/ode/include/ode/matrix.h"
 
 #include "mathutils.h"
 #include "ode_redefine.h"

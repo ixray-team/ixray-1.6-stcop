@@ -36,10 +36,7 @@ void CSE_ALifeHelicopter::script_register(lua_State *L)
 		)
 		.def("set_engine_sound",		&CSE_ALifeHelicopter::set_engine_sound)
 		.def("get_engine_sound",		&CSE_ALifeHelicopter::get_engine_sound)
-		.scope
-		[
-			def("cast_helicopter",		&CSE_ALifeHelicopter::cast_helicopter)
-		]
+		.def("cast_helicopter",			&CSE_ALifeHelicopter::cast_helicopter)
 	];
 }
 

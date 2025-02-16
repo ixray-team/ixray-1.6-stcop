@@ -11,6 +11,7 @@
 #include "UIFrameLineWnd.h"
 #include "UILines.h"
 #include "UICustomSpin.h"
+#include "../uifontdefines.h"
 
 #define SPIN_HEIGHT 20.0f
 #define BTN_SIZE_X 11.0f
@@ -32,7 +33,7 @@ CUICustomSpin::CUICustomSpin()
 	AttachChild					(m_pBtnDown);
 	m_pLines->SetTextAlignment	(CGameFont::alLeft);
 	m_pLines->SetVTextAlignment	(valCenter);
-	m_pLines->SetFont			(UI().Font().pFontLetterica16Russian);
+	m_pLines->SetFont			(UI().Font().GetFont(LETTERICA16_FONT_NAME));
 	m_pLines->SetTextColor		(color_argb(255,235,219,185));
 
 	m_time_begin				= 0;

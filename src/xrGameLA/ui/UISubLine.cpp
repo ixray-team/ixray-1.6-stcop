@@ -83,7 +83,7 @@ CUISubLine::~CUISubLine(){
 
 const CUISubLine* CUISubLine::Cut2Pos(int i)
 {
-	R_ASSERT2(i < (int)m_text.size(), make_string<const char*>("CUISubLine::Cut2Pos - invalid parameter [%d][%d]",i,m_text.size()).c_str());
+	R_ASSERT2(i < (int)m_text.size(), make_string<const char*>("CUISubLine::Cut2Pos - invalid parameter [%d][%d]",i,m_text.size()));
 
 //	xr_delete(m_pTempLine);
 	if (!m_pTempLine) m_pTempLine = new CUISubLine();

@@ -2,6 +2,7 @@
 
 #include "UIWindow.h"
 #include "UIWndCallback.h"
+#include "../uifontdefines.h"
 
 class CUIScrollBar;
 class CUIListBoxItem;
@@ -76,7 +77,7 @@ IC			bool	NeedShowScrollBar	();		// no comment
 };
 
 #define ADD_TEXT_TO_VIEW3(txt,st,view)		st = new CUITextWnd();						\
-											st->SetFont(UI().Font().pFontLetterica16Russian); \
+											st->SetFont(UI().Font().GetFont(LETTERICA16_FONT_NAME)); \
 											st->SetText(txt);								\
 											st->SetTextComplexMode(true);					\
 											st->SetWidth(view->GetDesiredChildWidth());		\

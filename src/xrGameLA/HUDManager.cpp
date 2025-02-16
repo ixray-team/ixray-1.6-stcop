@@ -11,6 +11,7 @@
 #include "MainMenu.h"
 #include "game_cl_base.h"
 #include "Car.h"
+#include "UIFontDefines.h"
 
 u32	ui_hud_type;
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
@@ -157,7 +158,7 @@ void  CHUDManager::RenderUI()
 	draw_wnds_rects		();
 
 	if( Device.Paused() && bShowPauseString){
-		CGameFont* pFont	= UI().Font().pFontGraffiti50Russian;
+		CGameFont* pFont	= UI().Font().GetFont(GRAFFITI50_FONT_NAME);
 		pFont->SetColor		(0x80FF0000	);
 		LPCSTR _str			= CStringTable().translate("st_game_paused").c_str();
 		

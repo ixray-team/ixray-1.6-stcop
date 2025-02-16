@@ -15,7 +15,7 @@
 #include "game_cl_base.h"
 #include "../igame_persistent.h"
 #include "ai/stalker/ai_stalker.h"
-
+#include "uifontdefines.h"
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"
@@ -28,12 +28,12 @@
 #include "inventory.h"
 #include "ui_base.h"
 
-u32 C_ON_ENEMY		D3DCOLOR_XRGB(0xff,0,0);
-u32 C_ON_NEUTRAL	D3DCOLOR_XRGB(0xff,0xff,0x80);
-u32 C_ON_FRIEND		D3DCOLOR_XRGB(0,0xff,0);
+u32 C_ON_ENEMY		= color_xrgb(0xff,0,0);
+u32 C_ON_NEUTRAL	= color_xrgb(0xff,0xff,0x80);
+u32 C_ON_FRIEND		= color_xrgb(0,0xff,0);
 
 
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
+#define C_DEFAULT	color_xrgb(0xff,0xff,0xff)
 #define C_SIZE		0.025f
 #define NEAR_LIM	0.5f
 
@@ -94,7 +94,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 		*RQ				= result;
 		return FALSE;
 	}else{
-		//получить треугольник и узнать его материал
+		//РїРѕР»СѓС‡РёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє Рё СѓР·РЅР°С‚СЊ РµРіРѕ РјР°С‚РµСЂРёР°Р»
 		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
 		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
 			return TRUE;
@@ -153,7 +153,7 @@ void CHUDTarget::Render()
 	pt.y = -pt.y;
 	float				di_size = C_SIZE/powf(pt.w,.2f);
 
-	CGameFont* F		= UI().Font().pFontGraffiti19Russian;
+	CGameFont* F		= UI().Font().GetFont(GRAFFITI19_FONT_NAME);
 	F->SetAligment		(CGameFont::alCenter);
 	F->OutSetI			(0.f,0.05f);
 
@@ -252,14 +252,14 @@ void CHUDTarget::Render()
 		clamp(fuzzyShowInfo,0.f,1.f);
 	}
 
-	//отрендерить кружочек или крестик
+	//РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РєСЂСѓР¶РѕС‡РµРє РёР»Рё РєСЂРµСЃС‚РёРє
 	if(!m_bShowCrosshair){
 		// actual rendering
 		UIRender->StartPrimitive	(6, IUIRender::ptTriList, UI().m_currentPointType);
 		
 		Fvector2		scr_size;
 //.		scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-		scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
+		scr_size.set	(float(Device.TargetWidth) ,float(Device.TargetHeight));
 		float			size_x = scr_size.x	* di_size;
 		float			size_y = scr_size.y * di_size;
 
@@ -286,7 +286,7 @@ void CHUDTarget::Render()
 		UIRender->SetShader(*hShader);
 		UIRender->FlushPrimitive();
 	}else{
-		//отрендерить прицел
+		//РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РїСЂРёС†РµР»
 		HUDCrosshair.cross_color	= C;
 		HUDCrosshair.OnRender		();
 	}

@@ -22,9 +22,9 @@ using namespace luabind;
 
 #pragma optimize("s",on)
 
-export_class &script_register_ui_window2(export_class &instance)
+export_class &script_register_ui_window2(export_class &&instance)
 {
-	instance
+	return std::move(instance)
 		.def("GetStatic",		(CUIStatic* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIStatic>)
 		.def("GetEditBox",		(CUIEditBox* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIEditBox>)
 		.def("GetDialogWnd",	(CUIDialogWnd* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIDialogWnd>)
@@ -39,5 +39,5 @@ export_class &script_register_ui_window2(export_class &instance)
 		.def("Update",			&BaseType::Update, &WrapType::Update_static)
 		.def("Dispatch",		&BaseType::Dispatch, &WrapType::Dispatch_static)
 
-	;return	(instance);
+	;
 }

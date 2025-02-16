@@ -77,7 +77,7 @@
 TEMPLATE_SPECIALIZATION
 IC	CSDijkstra::CDijkstra			(const u32 max_vertex_count)
 {
-	m_data_storage		= new CDataStorage(max_vertex_count);
+	m_data_storage		= xr_new<CDataStorage>(max_vertex_count);
 	m_search_started	= false;
 }
 
@@ -155,8 +155,8 @@ IC	bool CSDijkstra::step				(_PathManager &path_manager)
 	data_storage().remove_best_opened();
 
 	// iterating on the best node neighbours
-	_PathManager::const_iterator	i;
-	_PathManager::const_iterator	e;
+	typename _PathManager::const_iterator	i;
+	typename _PathManager::const_iterator	e;
 	path_manager.begin				(best.index(),i,e);
 	for (  ; i != e; ++i) {
 		const _index_type			&neighbour_index = path_manager.get_value(i);

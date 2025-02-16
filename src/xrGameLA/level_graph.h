@@ -8,7 +8,7 @@
 
 #pragma once
 #include "..\XrEngine\AI\level_graph.h"
-#include "DebugShader.h"
+#include "../Include/xrRender/DebugShader.h"
 
 class CLevelGraph:public ILevelGraph
 {

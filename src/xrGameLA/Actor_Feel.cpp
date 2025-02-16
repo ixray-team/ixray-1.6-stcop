@@ -15,6 +15,7 @@
 #include "clsid_game.h"
 #include "game_cl_base.h"
 #include "Level.h"
+#include "uifontdefines.h"
 
 //B77B40
 #define PICKUP_INFO_COLOR_FAREST 0xFF686054//895555//DDDDDD
@@ -253,11 +254,11 @@ void CActor::PickupInfoDraw(CObject* object)
 	if (v_res.z < 0 || v_res.w < 0)	return;
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
-	float convertedX = (x  / Device.dwWidth);
-	float convertedY = (y  / Device.dwHeight);
+	float convertedX = (x  / Device.TargetWidth);
+	float convertedY = (y  / Device.TargetHeight);
 	convertedX = 1280 * convertedX;
 	convertedY = 720 * convertedY;
 	//Msg("x = %f, y = %f, convertedX = %f, convertedY = %f", x, y, convertedX, convertedY);
@@ -265,19 +266,19 @@ void CActor::PickupInfoDraw(CObject* object)
 	if (draw_str && convertedX > 380 && convertedX < 900 && convertedY > 200 && convertedY <660)
 	{
 		if (range < 2.f){
-			UI().Font().pFontGraffiti22Russian->SetAligment(CGameFont::alCenter);
-			UI().Font().pFontGraffiti22Russian->SetColor(PICKUP_INFO_COLOR_NEAREST);
-			UI().Font().pFontGraffiti22Russian->Out(x, y, draw_str);
+			UI().Font().GetFont(GRAFFITI22_FONT_NAME)->SetAligment(CGameFont::alCenter);
+			UI().Font().GetFont(GRAFFITI22_FONT_NAME)->SetColor(PICKUP_INFO_COLOR_NEAREST);
+			UI().Font().GetFont(GRAFFITI22_FONT_NAME)->Out(x, y, draw_str);
 		}
 		else if(range < 4.f){
-			UI().Font().pFontLetterica18Russian->SetAligment(CGameFont::alCenter);
-			UI().Font().pFontLetterica18Russian->SetColor(PICKUP_INFO_COLOR_MIDLE);
-			UI().Font().pFontLetterica18Russian->Out(x, y, draw_str);
+			UI().Font().GetFont(LETTERICA18_FONT_NAME)->SetAligment(CGameFont::alCenter);
+			UI().Font().GetFont(LETTERICA18_FONT_NAME)->SetColor(PICKUP_INFO_COLOR_MIDLE);
+			UI().Font().GetFont(LETTERICA18_FONT_NAME)->Out(x, y, draw_str);
 		}else
 		{
-			UI().Font().pFontLetterica16Russian->SetAligment(CGameFont::alCenter);
-			UI().Font().pFontLetterica16Russian->SetColor(PICKUP_INFO_COLOR_FAREST);
-			UI().Font().pFontLetterica16Russian->Out(x, y, draw_str);
+			UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
+			UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor(PICKUP_INFO_COLOR_FAREST);
+			UI().Font().GetFont(LETTERICA16_FONT_NAME)->Out(x, y, draw_str);
 		}
 
 

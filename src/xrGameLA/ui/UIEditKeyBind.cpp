@@ -2,7 +2,8 @@
 
 #include "UIEditKeyBind.h"
 #include "../xr_level_controller.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
+#include "../UIFontDefines.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
@@ -61,7 +62,7 @@ void CUIEditKeyBind::InitKeyBind(Fvector2 pos, Fvector2 size)
 	CUIStatic::SetWndPos	(pos);
 	CUIStatic::SetWndSize	(size);
 	InitTexture				("ui_options_string");
-	TextItemControl()->SetFont	(UI().Font().pFontLetterica16Russian);
+	TextItemControl()->SetFont	(UI().Font().GetFont(LETTERICA16_FONT_NAME));
 	SetStretchTexture		(true);
 	SetEditMode				(false);
 }
@@ -196,7 +197,7 @@ bool CUIEditKeyBind::IsChangedOptValue() const
 {
 	return m_keyboard != m_opt_backup_value;
 }
-#include "../../xr_ioconsole.h"
+#include "../xrEngine/xr_ioconsole.h"
 void CUIEditKeyBind::BindAction2Key()
 {
 	xr_string comm_unbind	= (m_bPrimary)?"unbind ":"unbind_sec ";

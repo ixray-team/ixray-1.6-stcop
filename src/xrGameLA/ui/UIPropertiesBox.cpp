@@ -4,6 +4,7 @@
 #include "UIListBoxItem.h"
 #include "UIXmlInit.h"
 #include "../HUDManager.h"
+#include "../uifontdefines.h"
 
 #define OFFSET_X (5.0f)
 #define OFFSET_Y (5.0f)
@@ -11,7 +12,7 @@
 
 CUIPropertiesBox::CUIPropertiesBox()
 {
-	m_UIListWnd.SetFont					(UI().Font().pFontArial14);
+	m_UIListWnd.SetFont					(UI().Font().GetFont(ARIAL14_FONT_NAME));
 	m_UIListWnd.SetImmediateSelection	(true);
 }
 

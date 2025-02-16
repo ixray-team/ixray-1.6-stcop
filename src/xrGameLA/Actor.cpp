@@ -24,6 +24,7 @@
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "UIFontDefines.h"
 
 // breakpoints
 #include "../xr_input.h"
@@ -376,10 +377,10 @@ if(!g_dedicated_server)
 		}
 		char buf[256];
 
-		::Sound->create		(sndDie[0],			strconcat(sizeof(buf),buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[1],			strconcat(sizeof(buf),buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[2],			strconcat(sizeof(buf),buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[3],			strconcat(sizeof(buf),buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[0],			xr_strconcat(buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[1],			xr_strconcat(buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[2],			xr_strconcat(buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[3],			xr_strconcat(buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
 
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
@@ -1181,7 +1182,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	//если в режиме HUD, то сама модель актера не рисуется
 	if(!character_physics_support()->IsRemoved())
-		if (m_bDrawLegs && ((!psDeviceFlags.test(rsR2) && !psDeviceFlags.test(rsR3) && !psDeviceFlags.test(rsR4) && !m_bActorShadows) || ((psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4)) && m_bActorShadows)))
+		if (m_bDrawLegs && ((!psDeviceFlags.test(rsR2) && !psDeviceFlags.test(rsR4) && !m_bActorShadows) || ((psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR4)) && m_bActorShadows)))
 			setVisible				(TRUE);
 		else
 			setVisible				(!HUDview	());
@@ -1417,7 +1418,7 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	Device.mFullTransform.transform(v0r,v0);
 	Device.mFullTransform.transform(v1r,v1);
 	float size = v1r.distance_to(v0r);
-	CGameFont* pFont = UI().Font().pFontArial14;
+	CGameFont* pFont = UI().Font().GetFont(ARIAL14_FONT_NAME);
 	if (!pFont) return;
 //	float OldFontSize = pFont->GetHeight	();	
 	float delta_up = 0.0f;
@@ -1435,8 +1436,8 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	if (v_res.z < 0 || v_res.w < 0)	return;
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
 	pFont->SetAligment	(CGameFont::alCenter);
 	pFont->SetColor		(color);
@@ -1843,10 +1844,10 @@ void CActor::OnDifficultyChanged	()
 	VERIFY(g_SingleGameDifficulty>=egdNovice && g_SingleGameDifficulty<=egdMaster); 
 	LPCSTR diff_name				= get_token_name(difficulty_type_token, g_SingleGameDifficulty);
 	string128						tmp;
-	strconcat						(sizeof(tmp),tmp,"actor_immunities_",diff_name);
+	xr_strconcat					(tmp,"actor_immunities_",diff_name);
 	conditions().LoadImmunities		(tmp,pSettings);
 	// hit probability
-	strconcat						(sizeof(tmp),tmp,"hit_probability_",diff_name);
+	xr_strconcat					(tmp,"hit_probability_",diff_name);
 	hit_probability					= pSettings->r_float(*cNameSect(),tmp);
 }
 
