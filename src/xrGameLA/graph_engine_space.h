@@ -147,4 +147,3 @@ namespace GraphEngineSpace {
 				_iteration_type
 			>		CGameVertexParams;
 };
-

@@ -9,3 +9,6 @@
 #include "stdafx.h"
 #include "alife_online_offline_group_brain.h"
 
+void CALifeOnlineOfflineGroupBrain::on_location_change()
+{
+}

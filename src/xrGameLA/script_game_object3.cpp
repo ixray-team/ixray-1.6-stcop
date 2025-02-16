@@ -6,9 +6,9 @@
 //	Description : Script game object class script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
 #include "cover_evaluators.h"
@@ -16,13 +16,10 @@
 #include "cover_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "stalker_animation_manager.h"
-#include "stalker_planner.h"
 #include "weapon.h"
 #include "inventory.h"
 #include "customzone.h"
 #include "patrol_path_manager.h"
-#include "object_handler_planner.h"
-#include "object_handler_space.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
 #include "sound_memory_manager.h"
@@ -32,12 +29,14 @@
 #include "movement_manager_space.h"
 #include "detail_path_manager_space.h"
 #include "level_debug.h"
-#include "ai/monsters/BaseMonster/base_monster.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "trade_parameters.h"
 #include "purchase_list.h"
 #include "../xrScripts/exports/script_ini_file.h"
 #include "sound_player.h"
-#include "stalker_decision_space.h"
+#include "space_restriction_manager.h"
+#include "eatable_item.h"
+#include "stalker_planner.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;

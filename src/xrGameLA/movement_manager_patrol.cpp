@@ -7,6 +7,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "pch_script.h"
+
+#include "game_graph.h"
+#include "level_graph.h"
+
 #include "movement_manager.h"
 #include "patrol_path_manager.h"
 #include "level_path_manager.h"

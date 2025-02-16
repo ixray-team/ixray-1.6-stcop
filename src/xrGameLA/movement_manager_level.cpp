@@ -6,13 +6,16 @@
 //	Description : Movement manager for level paths
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "movement_manager.h"
+
+#include "game_graph.h"
+
 #include "level_location_selector.h"
 #include "level_path_manager.h"
 #include "detail_path_manager.h"
 #include "ai_object_location.h"
-#include "custommonster.h"
+#include "CustomMonster.h"
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
 #include "mt_config.h"

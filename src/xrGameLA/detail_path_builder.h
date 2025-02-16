@@ -15,46 +15,60 @@ class CDetailPathBuilder {
 private:
 	typedef CMovementManager::CLevelPathManager CLevelPathManager;
 	typedef CLevelPathManager::PATH				PATH;
+protected:
+	CMovementManager* m_object;
+
 private:
-	CMovementManager		*m_object;
-	const PATH				*m_level_path;
+	const PATH* m_level_path;
 	u32						m_path_vertex_index;
 
 public:
-	IC						CDetailPathBuilder	(CMovementManager *object)
+	IC						CDetailPathBuilder(CMovementManager* object)
 	{
-		VERIFY				(object);
-		m_object			= object;
-	}
-	
-	IC		void			setup			(const PATH &level_path, const u32 &path_vertex_index)
-	{
-		m_object->m_wait_for_distributed_computation	= true;
-		m_level_path		= &level_path;
-		m_path_vertex_index	= path_vertex_index;
-		Device.seqParallel.push_back	(xr_delegate<void()>(this, &CDetailPathBuilder::process));
+		VERIFY(object);
+		m_object = object;
 	}
 
-			void __stdcall	process			()
+	IC		void			setup(const PATH& level_path, const u32& path_vertex_index)
 	{
-		m_object->m_wait_for_distributed_computation	= false;
-		m_object->detail().build_path	(*m_level_path,m_path_vertex_index);
+		m_level_path = &level_path;
+		m_path_vertex_index = path_vertex_index;
+	}
 
-		m_object->on_build_path			();
+	void			register_to_process()
+	{
+		m_object->m_wait_for_distributed_computation = true;
+		Device.seqParallel.push_back(xr_make_delegate(this, &CDetailPathBuilder::process));
+	}
+
+	void			process_impl(bool separate_computing = true)
+	{
+		PROF_EVENT("CDetailPathBuilder::process_impl");
+		if (separate_computing)
+			m_object->m_wait_for_distributed_computation = false;
+
+		m_object->detail().build_path(*m_level_path, m_path_vertex_index);
+
+		m_object->on_build_path();
 
 		if (m_object->detail().failed())
-			m_object->m_path_state		= CMovementManager::ePathStateBuildLevelPath;
+			m_object->m_path_state = CMovementManager::ePathStateBuildLevelPath;
 		else
-			m_object->m_path_state		= CMovementManager::ePathStatePathVerification;
+			m_object->m_path_state = CMovementManager::ePathStatePathVerification;
 	}
 
-	IC		void			remove			()
+	void 	process()
+	{
+		process_impl();
+	}
+
+	IC		void			remove()
 	{
 		if (m_object->m_wait_for_distributed_computation)
-			m_object->m_wait_for_distributed_computation	= false;
+			m_object->m_wait_for_distributed_computation = false;
 
-		Device.remove_from_seq_parallel	(
-			xr_delegate<void()>(
+		Device.remove_from_seq_parallel(
+			xr_make_delegate(
 				this,
 				&CDetailPathBuilder::process
 			)

@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include "game_graph.h"
+
 #include "stalker_movement_manager.h"
 #include "stalker_movement_manager_space.h"
 #include "script_entity_action.h"
@@ -22,10 +25,13 @@
 #include "stalker_velocity_holder.h"
 #include "stalker_velocity_collection.h"
 
+#include "stalker_animation_manager.h"
+#include "stalker_planner.h"
+
 #ifdef DEBUG
 #	include "ai_debug.h"
 #	include "stalker_decision_space.h"
-#	include "stalker_planner.h"
+//#	include "stalker_planner.h"
 #	include "script_game_object.h"
 #	include "stalker_combat_planner.h"
 #endif // DEBUG

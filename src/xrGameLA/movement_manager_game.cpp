@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "level_graph.h"
 #include "movement_manager.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"
@@ -21,6 +22,7 @@
 #include "level_path_builder.h"
 #include "detail_path_builder.h"
 #include "mt_config.h"
+
 
 void CMovementManager::process_game_path()
 {

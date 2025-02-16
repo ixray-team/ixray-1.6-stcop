@@ -16,6 +16,8 @@ private:
 
 public:
 	IC							CALifeOnlineOfflineGroupBrain	(CSE_ALifeOnlineOfflineGroup *object);
+
+	void						on_location_change();
 };
 
 #include "alife_online_offline_group_brain_inline.h"

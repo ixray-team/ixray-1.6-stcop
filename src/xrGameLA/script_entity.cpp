@@ -6,16 +6,18 @@
 //	Description : Script entity class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "StdAfx.h"
+
+#include "level_graph.h"
+
 #include "pch_script.h"
 #include "script_entity.h"
-#include "script_entity_space.h"
 #include "CustomMonster.h"
-#include "../feel_vision.h"
-#include "../motion.h"
+#include "../xrEngine/Feel_Vision.h"
+#include "../xrEngine/motion.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "script_entity_action.h"
-#include "weapon.h"
-#include "../xrParticles/ParticlesObject.h"
+#include "Weapon.h"
 #include "script_game_object.h"
 #include "../xrScripts/script_engine.h"
 #include "movement_manager_space.h"
@@ -28,7 +30,6 @@
 #include "visual_memory_manager.h"
 #include "ai_object_location.h"
 #include "movement_manager.h"
-#include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
 
 void __stdcall ActionCallback(IKinematics *tpKinematics);

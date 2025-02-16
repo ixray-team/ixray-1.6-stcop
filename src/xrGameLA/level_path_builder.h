@@ -10,6 +10,7 @@
 
 #include "movement_manager.h"
 #include "level_path_manager.h"
+#include "detail_path_builder.h"
 
 class CLevelPathBuilder {
 private:

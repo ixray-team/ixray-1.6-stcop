@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "abstract_path_manager.h"
 #include "ai_space.h"
 #include "graph_engine.h"
 #include "path_manager_params.h"
@@ -48,34 +47,41 @@ IC	void CPathManagerTemplate::reinit			(const _Graph *graph)
 	m_failed_dest_vertex_id	= _vertex_id_type(-1);
 }
 
-TEMPLATE_SPECIALIZATION
-IC	void CPathManagerTemplate::build_path	(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
-{
-	VERIFY					(m_graph && m_evaluator && m_graph->valid_vertex_id(start_vertex_id) && m_graph->valid_vertex_id(dest_vertex_id));
+////////////nie razkomenchivat
+//TEMPLATE_SPECIALIZATION
+//IC	void CPathManagerTemplate::build_path	(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
+//{
+//	VERIFY					(m_graph && m_evaluator && m_graph->valid_vertex_id(start_vertex_id) && m_graph->valid_vertex_id(dest_vertex_id));
+//
+//	if ((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id)) {
+//		before_search		(start_vertex_id,dest_vertex_id);
+//		m_failed			= true;
+//		after_search		();
+//		m_current_index		= _index_type(-1);
+//		m_intermediate_index= _index_type(-1);
+//		m_actuality			= !failed();
+//		return;
+//	}
+//
+//	before_search			(start_vertex_id,dest_vertex_id);
+//	m_failed				= !ai().graph_engine().search(*m_graph,start_vertex_id,dest_vertex_id,&m_path,*m_evaluator);
+//	after_search			();
+//	m_current_index			= _index_type(-1);
+//	m_intermediate_index	= _index_type(-1);
+//	m_actuality				= !failed();
+//
+//	if (!m_failed)
+//		return;
+//
+//	m_failed_start_vertex_id= start_vertex_id;
+//	m_failed_dest_vertex_id	= dest_vertex_id;
+//}
+//////////////////////////////////////////
 
-	if ((m_failed_start_vertex_id == start_vertex_id) && (m_failed_dest_vertex_id == dest_vertex_id)) {
-		before_search		(start_vertex_id,dest_vertex_id);
-		m_failed			= true;
-		after_search		();
-		m_current_index		= _index_type(-1);
-		m_intermediate_index= _index_type(-1);
-		m_actuality			= !failed();
-		return;
-	}
 
-	before_search			(start_vertex_id,dest_vertex_id);
-	m_failed				= !ai().graph_engine().search(*m_graph,start_vertex_id,dest_vertex_id,&m_path,*m_evaluator);
-	after_search			();
-	m_current_index			= _index_type(-1);
-	m_intermediate_index	= _index_type(-1);
-	m_actuality				= !failed();
 
-	if (!m_failed)
-		return;
 
-	m_failed_start_vertex_id= start_vertex_id;
-	m_failed_dest_vertex_id	= dest_vertex_id;
-}
+
 
 template < >
 IC	void CAbstractPathManager<IGameGraph, SGameVertex<float, u32, u32>, u32, u32>::build_path(const u32 start_vertex_id, const u32 dest_vertex_id)

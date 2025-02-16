@@ -6,15 +6,18 @@
 //	Description : ALife Online Offline Group class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
 #include "alife_schedule_registry.h"
-#include "game_level_cross_table.h"
+#include "../game_level_cross_table.h"
+#include "alife_online_offline_group_brain.h"
 #include "level_graph.h"
+#include "alife_monster_movement_manager.h"
+#include "alife_monster_detail_path_manager.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -77,11 +80,6 @@ void CSE_ALifeOnlineOfflineGroup::register_member						(ALife::_OBJECT_ID member
 		VERIFY							(object->ID_Parent == 0xffff);
 		alife().graph().level().remove	(object);
 	}
-}
-
-void CSE_ALifeOnlineOfflineGroup::on_location_change() const
-{
-	brain().on_location_change();
 }
 
 void CSE_ALifeOnlineOfflineGroup::unregister_member						(ALife::_OBJECT_ID member_id)
@@ -249,6 +247,11 @@ void CSE_ALifeOnlineOfflineGroup::switch_offline		()
 bool CSE_ALifeOnlineOfflineGroup::redundant				() const
 {
 	return						(m_members.empty());
+}
+
+void CSE_ALifeOnlineOfflineGroup::on_location_change() const
+{
+	brain().on_location_change();
 }
 
 void CSE_ALifeOnlineOfflineGroup::notify_on_member_death(MEMBER *member)
