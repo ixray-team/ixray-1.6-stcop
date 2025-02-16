@@ -111,7 +111,7 @@ extern void			release_smart_cast_stats();
 
 extern BOOL			g_bShowHitSectors;
 extern BOOL			g_bDebugDumpPhysicsStep	;
-extern BOOL			g_show_wnd_rect2;
+extern	UI_API BOOL	g_show_wnd_rect2;
 
 #ifdef DEBUG
 extern BOOL			g_ShowAnimationInfo		;
