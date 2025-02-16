@@ -96,116 +96,67 @@ CEnvironment::CEnvironment	() :
 //	tsky0					= Device.Resources->_CreateTexture("$user$sky0");
 //	tsky1					= Device.Resources->_CreateTexture("$user$sky1");
 
-	string_path				file_name;
-	m_ambients_config		=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\ambients.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_sound_channels_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\sound_channels.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_effects_config		=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\effects.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_suns_config			=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\suns.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_thunderbolt_collections_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\thunderbolt_collections.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
-	m_thunderbolts_config	=
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\thunderbolts.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
+	m_ambients_config = nullptr;
+	m_sound_channels_config = nullptr;
+	m_effects_config = nullptr;
+	m_suns_config = nullptr;
+	m_thunderbolt_collections_config = nullptr;
+	m_thunderbolts_config = nullptr;
 
-	CInifile*		config =
-		new CInifile(
-			FS.update_path(
-				file_name,
-				"$game_config$",
-				"environment\\environment.ltx"
-			),
-			TRUE,
-			TRUE,
-			FALSE
-		);
+    string_path filePath;
+    const bool environmentFolderExist = FS.exist("$game_config$", "environment\\");
+
+    CInifile const* config = pSettings;
+    pcstr section = "thunderbolt_common";
+
+    if (environmentFolderExist)
+    {
+        config = new CInifile(FS.update_path(filePath, "$game_config$", "environment\\environment.ltx"),
+            TRUE, TRUE, FALSE);
+        section = "environment";
+    }
+    else
+    {
+        R_ASSERT4(config->section_exist(section),
+            "Path (which is [Argument 1]) doesn't exist and section (which is [Argument 2]) is missing. "
+            "Please, use either COP or SOC weather config", filePath, section);
+    }
+
     // params
-	p_var_alt		= deg2rad(config->r_float					( "environment","altitude" ));  
-	p_var_long		= deg2rad	(config->r_float				( "environment","delta_longitude" ));
-	p_min_dist		= _min		(.95f,config->r_float			( "environment","min_dist_factor" ));
-	p_tilt			= deg2rad	(config->r_float				( "environment","tilt" ));
-	p_second_prop	= config->r_float							( "environment","second_propability" );
-	clamp			(p_second_prop,0.f,1.f);
-	p_sky_color		= config->r_float							( "environment","sky_color" );
-	p_sun_color		= config->r_float							( "environment","sun_color" );
-	p_fog_color		= config->r_float							( "environment","fog_color" );
+    if (!config->try_read(p_var_alt, section, "altitude"))
+    {
+        p_var_alt.x = config->r_float(section, "altitude");
+        p_var_alt.y = p_var_alt.x;
+    }
+    p_var_alt.x = deg2rad(p_var_alt.x);
+    p_var_alt.y = deg2rad(p_var_alt.y);
+    p_var_long = deg2rad(config->r_float(section, "delta_longitude"));
+    p_min_dist = std::min(MAX_DIST_FACTOR, config->r_float(section, "min_dist_factor"));
+    p_tilt = deg2rad(config->r_float(section, "tilt"));
+    p_second_prop = config->r_float(section, "second_propability");
+    clamp(p_second_prop, 0.f, 1.f);
+    p_sky_color = config->r_float(section, "sky_color");
+    p_sun_color = config->r_float(section, "sun_color");
+    p_fog_color = config->r_float(section, "fog_color");
 
-	max_desired_items = READ_IF_EXISTS(config, r_u32, "rain", "max_desired_items", 2500);
-	source_offset = READ_IF_EXISTS(config, r_float, "rain", "source_offset", 40.0f);
-	max_distance = source_offset * 1.25f;
-	sink_offset = -(max_distance - source_offset);
+    if (environmentFolderExist)
+        xr_delete(config);
+    else
+        return;
 
-	drop_angle = READ_IF_EXISTS(config, r_float, "rain", "drop_angle", 3.0f);
-	drop_max_angle = deg2rad(READ_IF_EXISTS(config, r_float, "rain", "drop_max_angle", 10.0f));
-	drop_max_wind_vel = READ_IF_EXISTS(config, r_float, "rain", "drop_max_wind_vel", 20.0f);
-
-	max_particles = READ_IF_EXISTS(config, r_u32, "rain", "max_particles", 1000);
-	particles_cache = READ_IF_EXISTS(config, r_u32, "rain", "particles_cache", 400);
-	particles_time = READ_IF_EXISTS(config, r_float, "rain", "particles_time", 0.3f);
-
-	source_rain_radius_render = READ_IF_EXISTS(config, r_float, "rain", "source_rain_radius_render", 12.5f);
-	add_const_dist_coefficient = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient", 30);
-	add_const_dist_coefficient_render = READ_IF_EXISTS(config, r_u32, "rain", "add_const_dist_coefficient_render", 40);
-
-	xr_delete		(config);
+    m_ambients_config =
+        new CInifile(FS.update_path(filePath, "$game_config$", "environment\\ambients.ltx"), TRUE, TRUE, FALSE);
+    m_sound_channels_config =
+        new CInifile(FS.update_path(filePath, "$game_config$", "environment\\sound_channels.ltx"), TRUE, TRUE, FALSE);
+    m_effects_config =
+        new CInifile(FS.update_path(filePath, "$game_config$", "environment\\effects.ltx"), TRUE, TRUE, FALSE);
+    m_suns_config =
+        new CInifile(FS.update_path(filePath, "$game_config$", "environment\\suns.ltx"), TRUE, TRUE, FALSE);
+    m_thunderbolt_collections_config = new CInifile(
+        FS.update_path(filePath, "$game_config$", "environment\\thunderbolt_collections.ltx"), TRUE, TRUE, FALSE);
+    m_thunderbolts_config =
+        new CInifile(FS.update_path(filePath, "$game_config$", "environment\\thunderbolts.ltx"), TRUE, TRUE, FALSE);
 }
-
 CEnvironment::~CEnvironment	()
 {
 	xr_delete				(PerlinNoise1D);
@@ -558,7 +509,7 @@ void CEnvironment::OnFrame()
 
 	// Igor. Dynamic sun position. 
 	const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
-	if (!isReadSunConfig && !::Render->is_sun_static()) {
+	if (!isReadSunConfig && !::Render->is_sun_static() && !CurrentEnv->old_style) {
 		calculate_dynamic_sun_dir();
 	}
 
@@ -697,7 +648,7 @@ SThunderboltCollection* CEnvironment::thunderbolt_collection	(xr_vector<SThunder
 #endif // #ifdef DEBUG
 }
 
-CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id)
+CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescriptor*>& collection, shared_str const& id, CInifile * pIni)
 {
 	typedef xr_vector<CLensFlareDescriptor*>	Flares;
 
@@ -709,7 +660,7 @@ CLensFlareDescriptor* CEnvironment::add_flare					(xr_vector<CLensFlareDescripto
 	}
 
 	CLensFlareDescriptor*	result = new CLensFlareDescriptor();
-	result->load			(m_suns_config, id.c_str());
+	result->load			(pIni, id.c_str());
 	collection.push_back	(result);	
 	return					(result);
 }

@@ -59,8 +59,8 @@ CGamePersistent::CGamePersistent(void)
 	ambient_effect_wind_out_time= 0.f;
 	ambient_effect_wind_on		= false;
 
-	ZeroMemory					(ambient_sound_next_time, sizeof(ambient_sound_next_time));
-	
+	ambient_sound_next_time.reserve(32);
+
 
 	m_pUI_core					= nullptr;
 	m_pMainMenu					= nullptr;
@@ -281,23 +281,20 @@ void CGamePersistent::WeathersUpdate()
 			if (actor) bIndoor			= actor->renderable_ROS()->get_luminocity_hemi()<0.05f;
 		}
 
-		int data_set				= (Random.randF()<(1.f-Environment().CurrentEnv->weight))?0:1; 
-		
-		CEnvDescriptor* const current_env	= Environment().Current[0]; 
-		VERIFY						(current_env);
+		const size_t data_set = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
 
 		CEnvDescriptor* const _env	= Environment().Current[data_set]; 
 		VERIFY						(_env);
 
 		CEnvAmbient* env_amb		= _env->env_ambient;
 		if (env_amb) {
-			CEnvAmbient::SSndChannelVec& vec	= current_env->env_ambient->get_snd_channels();
-			CEnvAmbient::SSndChannelVecIt I		= vec.begin();
-			CEnvAmbient::SSndChannelVecIt E		= vec.end();
-			
-			for (u32 idx=0; I!=E; ++I,++idx) {
+			CEnvAmbient::SSndChannelVec& vec = env_amb->get_snd_channels();
+
+			auto I = vec.cbegin();
+			const auto E = vec.cend();
+
+			for (size_t idx=0; I!=E; ++I,++idx) {
 				CEnvAmbient::SSndChannel& ch	= **I;
-				R_ASSERT						(idx<20);
 				if(ambient_sound_next_time[idx]==0)//first
 				{
 					ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
@@ -319,29 +316,11 @@ void CGamePersistent::WeathersUpdate()
 						continue;
 
 					VERIFY							(snd._handle());
-					u32 _length_ms					= iFloor(snd.get_length_sec()*1000.0f);
+					const u32 _length_ms					= iFloor(snd.get_length_sec()*1000.0f);
 					ambient_sound_next_time[idx]	= Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
 //					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
 				}
 			}
-/*
-			if (Device.dwTimeGlobal > ambient_sound_next_time)
-			{
-				ref_sound* snd			= env_amb->get_rnd_sound();
-				ambient_sound_next_time	= Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
-				if (snd)
-				{
-					Fvector	pos;
-					float	angle		= ::Random.randF(PI_MUL_2);
-					pos.x				= _cos(angle);
-					pos.y				= 0;
-					pos.z				= _sin(angle);
-					pos.normalize		().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
-					pos.y				+= 10.f;
-					snd->play_at_pos	(0,pos);
-				}
-			}
-*/
 			// start effect
 			if ((FALSE==bIndoor) && (0==ambient_particles) && Device.dwTimeGlobal>ambient_effect_next_time){
 				CEnvAmbient::SEffect* eff			= env_amb->get_rnd_effect(); 
