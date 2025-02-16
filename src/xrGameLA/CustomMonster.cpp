@@ -726,7 +726,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	return TRUE;
 }
 
-#ifdef DEBUG
+#if 0
 void CCustomMonster::OnHUDDraw(CCustomHUD *hud)
 {
 }

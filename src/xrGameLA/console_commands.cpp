@@ -103,9 +103,12 @@ int					max_quick_saves = 16;
 
 //---Debug
 extern int			psLUA_GCSTEP;
+
+#if 0
 extern void			show_smart_cast_stats();
 extern void			clear_smart_cast_stats();
 extern void			release_smart_cast_stats();
+#endif
 
 extern BOOL			g_bShowHitSectors;
 extern BOOL			g_bDebugDumpPhysicsStep	;
@@ -1400,7 +1403,7 @@ public:
 
 
 
-#ifdef DEBUG
+#if 0
 
 struct CCC_ShowSmartCastStats : public IConsole_Command {
 	CCC_ShowSmartCastStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1797,8 +1800,10 @@ void CCC_RegisterCommands()
 	//CMD1(CCC_ScriptDbg,				"script_debug_stop");
 	//CMD1(CCC_ScriptDbg,				"script_debug_restart");
 
-	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
-	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");
+#if 0
+	CMD1(CCC_ShowSmartCastStats, "show_smart_cast_stats");
+	CMD1(CCC_ClearSmartCastStats, "clear_smart_cast_stats");
+#endif // 0
 
 	CMD1(CCC_DumpModelBones,		"debug_dump_model_bones");
 	CMD1(CCC_DebugFonts,			"debug_fonts");

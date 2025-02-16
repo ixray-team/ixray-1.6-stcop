@@ -130,7 +130,7 @@ void CHUDTarget::ShowCrosshair(bool b)
 	m_bShowCrosshair = b;
 }
 
-extern ENGINE_API BOOL g_bRendering; 
+extern ENGINE_API xr_atomic_bool g_bRendering;
 void CHUDTarget::Render()
 {
 	VERIFY		(g_bRendering);
