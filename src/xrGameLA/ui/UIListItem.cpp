@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-// UIListItem.cpp: ýëåìåíò îêíà ñïèñêà CListWnd
+// UIListItem.cpp: ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ð¾ÐºÐ½Ð° ÑÐ¿Ð¸ÑÐºÐ° CListWnd
 //////////////////////////////////////////////////////////////////////
 
 #include"stdafx.h"
@@ -17,7 +17,7 @@ CUIListItem::CUIListItem(void)
 	m_bHighlightText = false;
 	m_iGroupID = -1;
 	SetAutoDelete(true);
-	SetTextAlignment(CGameFont::alLeft);
+	TextItemControl()->SetTextAlignment(CGameFont::alLeft);
 }
 
 CUIListItem::~CUIListItem(void)
@@ -29,7 +29,6 @@ void CUIListItem::Init(float x, float y, float width, float height)
 	inherited::SetWndPos(Fvector2().set(x, y));
 	inherited::SetWndSize(Fvector2().set(width, height));
 	SetButtonState(BUTTON_PUSHED);
-	SetPushOffset(Fvector2().set(0.0f,0.0f));
 }
 
 void CUIListItem::InitTexture(LPCSTR tex_name)
@@ -42,13 +41,6 @@ bool CUIListItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 
 	if( CUIStatic::OnMouseAction(x, y, mouse_action) ) return true;
-
-	if ( (	WINDOW_LBUTTON_DOWN==mouse_action	||
-			WINDOW_LBUTTON_UP==mouse_action		||
-			WINDOW_RBUTTON_DOWN==mouse_action	||
-			WINDOW_RBUTTON_UP==mouse_action)	&& 
-			HasChildMouseHandler())
-		return false;
 
 	if(mouse_action == WINDOW_MOUSE_MOVE)
 	{

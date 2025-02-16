@@ -280,7 +280,7 @@ void CUIMapWnd::AddMapToRender			(CUICustomMap* m)
 	Register							( m );
 	m_UILevelFrame->AttachChild			( m );
 	m->Show								( true );
-	m_UILevelFrame->BringToTop			( m );
+//	m_UILevelFrame->BringToTop			( m );
 	m->WorkingArea().set				( ActiveMapRect() );
 }
 
@@ -589,7 +589,7 @@ void CUIMapWnd::OnScrollV(CUIWindow*, void*)
 	if (GlobalMap()){
 		int s_pos					= m_UIMainScrollV->GetScrollPos();
 		Fvector2 w_pos				= GlobalMap()->GetWndPos();
-		GlobalMap()->SetWndPos	(w_pos.x,float(-s_pos));
+		GlobalMap()->SetWndPos	(Fvector2().set(w_pos.x,float(-s_pos)));
 	}
 }
 
@@ -598,7 +598,7 @@ void CUIMapWnd::OnScrollH(CUIWindow*, void*)
 	if (GlobalMap()){
 		int s_pos					= m_UIMainScrollH->GetScrollPos();
 		Fvector2 w_pos				= GlobalMap()->GetWndPos();
-		GlobalMap()->SetWndPos	(float(-s_pos),w_pos.y);
+		GlobalMap()->SetWndPos	(Fvector2().set(float(-s_pos), w_pos.y));
 	}
 }
 
@@ -688,7 +688,7 @@ void CUIMapWnd::OnToolRemoveSpotClicked	(CUIWindow* w, void*)
 {
 	m_flags.zero		();
 	CUI3tButton* btn = smart_cast<CUI3tButton*>(w);
-	bool bPushed = btn->GetCheck		();
+	bool bPushed = (CUIButton::BUTTON_PUSHED == btn->GetButtonState		());
 	m_flags.set							(lmUserSpotRemove,bPushed);
 	ValidateToolBar						();
 }
@@ -733,21 +733,40 @@ void CUIMapWnd::HighlightSpot			(CMapLocation* ml, bool state)
 void CUIMapWnd::ValidateToolBar			()
 {
 	CUI3tButton* btn	= nullptr;
-	btn					= m_ToolBar[eZoomIn];
+	btn					= m_ToolBar[eZoomIn]; // костыли?
 	if (btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomIn));
+	{
+		if (!!m_flags.test(lmZoomIn))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 
 	btn					= m_ToolBar[eZoomOut];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomOut));
-
+	if (btn)
+	{
+		if (!!m_flags.test(lmZoomOut))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 	btn					= m_ToolBar[eAddSpot];
 	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmUserSpotAdd));
+	{
+		if (!!m_flags.test(lmUserSpotAdd))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 
 	btn					= m_ToolBar[eRemoveSpot];
 	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmUserSpotRemove));
+	{
+		if (!!m_flags.test(lmUserSpotRemove))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 
 /*	btn					= m_ToolBar[eHighlightSpot];
 	if(btn)

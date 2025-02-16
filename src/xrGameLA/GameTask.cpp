@@ -133,7 +133,7 @@ void CGameTask::Load(const TASK_ID& id)
 			{
 				objective.icon_rect = CUITextureMaster::GetTextureRect(*objective.icon_texture_node_name);
 				objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
-				objective.icon_texture_file_name = CUITextureMaster::GetTextureFileName(*objective.icon_texture_node_name);
+				objective.icon_texture_file_name = *objective.icon_texture_node_name;
 			}
 			else 
 				if (objective.icon_texture_node_name.size())
@@ -465,7 +465,7 @@ void SGameTaskObjective::SetIconName_script(LPCSTR _str)
 
 	icon_rect			= CUITextureMaster::GetTextureRect(icon_texture_node_name.c_str());
 	icon_rect.rb.sub	(icon_rect.rb, icon_rect.lt);
-	icon_texture_file_name = CUITextureMaster::GetTextureFileName(icon_texture_node_name.c_str());
+	icon_texture_file_name = icon_texture_node_name.c_str();
 }
 
 void SGameTaskObjective::SetArticleKey_script(LPCSTR _str)
@@ -616,7 +616,7 @@ void SGameTaskObjective::load(IReader &stream)
 		load_data(m_infos_on_skiped,	stream);
 		load_data(visible_subtask,		stream);
 
-		icon_texture_file_name = CUITextureMaster::GetTextureFileName(icon_texture_node_name.c_str());
+		icon_texture_file_name = icon_texture_node_name.c_str();
 
 		bool b_script;
 		load_data(b_script,				stream);

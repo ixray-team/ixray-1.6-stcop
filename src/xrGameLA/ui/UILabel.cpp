@@ -16,8 +16,8 @@ void CUILabel::InitLabel(Fvector2 pos, Fvector2 size)
 {
 	CUIFrameLineWnd::SetWndPos	(pos);
 	CUIFrameLineWnd::SetWndSize	(size);
-	m_text.TextItemControl()->SetWndPos			(pos);
-	m_text.TextItemControl()->SetWndSize			(size);
+//	m_text.TextItemControl()->SetWndPos			(pos);
+//	m_text.TextItemControl()->SetWndSize			(size);
 }
 
 void CUILabel::Draw()
@@ -30,13 +30,13 @@ void CUILabel::Draw()
 
 void CUILabel::SetWidth(float width)
 {
-	m_text.TextItemControl()->SetWidth(width);
+//	m_text.TextItemControl()->SetWidth(width);
 	CUIFrameLineWnd::SetWidth(width);
 }
 
 void CUILabel::SetHeight(float height)
 {
-	m_text.TextItemControl()->SetHeight(height);
+//	m_text.TextItemControl()->SetHeight(height);
 	CUIFrameLineWnd::SetHeight(height);
 }
 

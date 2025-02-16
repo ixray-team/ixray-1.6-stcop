@@ -233,37 +233,37 @@ void CUISequenceSimpleItem::Start()
 		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(!stricmp(m_pda_section,"pda_contacts"))
 		{
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptContacts);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptContacts");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_map")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptMap);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptMap");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_quests")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptQuests);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptQuests");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_diary")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptDiary);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptDiary");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_ranking")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptRanking);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptRanking");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_statistics")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptActorStatistic);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptActorStatistic");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_encyclopedia")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptEncyclopedia);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptEncyclopedia");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_skills")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptSkills);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptSkills");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_downloads")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptDownloads);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptDownloads");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_games")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptGames);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptGames");
 			bShowPda = true;
 		}else if(!stricmp(m_pda_section,"pda_mplayer")){
-			ui_game_sp->m_PdaMenu->SetActiveSubdialog(eptMPlayer);
+			ui_game_sp->m_PdaMenu->SetActiveSubdialog("eptMPlayer");
 			bShowPda = true;
 		}
 

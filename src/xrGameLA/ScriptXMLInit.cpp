@@ -17,6 +17,7 @@
 #include "../xrUI/Widgets/UIScrollView.h"
 #include "../xrUI/Widgets/UIProgressBar.h"
 #include "ui\UIListWnd.h"
+#include "UIHelperGame.h"
 
 using namespace luabind;
 
@@ -75,7 +76,7 @@ void CScriptXmlInit::InitAutoStaticGroup(LPCSTR path, CUIWindow* pWnd)
 CUILabel* CScriptXmlInit::InitLabel(LPCSTR path, CUIWindow* parent)
 {
 	CUILabel* pWnd = new CUILabel();
-	CUIXmlInit::InitLabel(m_xml, path, 0, pWnd);
+	CUIXmlInitGame::InitLabel(m_xml, path, 0, pWnd);
 	_attach_child(pWnd, parent);
 	return pWnd;
 }
@@ -131,7 +132,7 @@ CUIListBox*	CScriptXmlInit::InitListBox(LPCSTR path, CUIWindow* parent)
 CUIListWnd*	CScriptXmlInit::InitListWnd(LPCSTR path, CUIWindow* parent)
 {
 	CUIListWnd* pWnd = new CUIListWnd();
-	CUIXmlInit::InitListWnd(m_xml, path, 0, pWnd);
+	CUIXmlInitGame::InitListWnd(m_xml, path, 0, pWnd);
 	_attach_child(pWnd, parent);
 	return pWnd;
 }
@@ -175,15 +176,6 @@ CUIComboBox* CScriptXmlInit::InitComboBox(LPCSTR path, CUIWindow* parent)
 	_attach_child(pWnd, parent);
 	return pWnd;
 }
-
-CUIButton* CScriptXmlInit::InitButton(LPCSTR path, CUIWindow* parent)
-{
-	CUIButton* pWnd = new CUIButton();
-	CUIXmlInit::InitButton(m_xml, path, 0, pWnd);
-	_attach_child(pWnd, parent);
-	return pWnd;
-}
-
 
 CUI3tButton* CScriptXmlInit::Init3tButton(LPCSTR path, CUIWindow* parent)
 {
@@ -261,7 +253,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitSpinFlt",				&CScriptXmlInit::InitSpinFlt)
 		.def("InitSpinText",			&CScriptXmlInit::InitSpinText)
 		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)	
-		.def("InitButton",				&CScriptXmlInit::InitButton)
+		.def("InitButton",				&CScriptXmlInit::Init3tButton)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)	
 		.def("InitTab",					&CScriptXmlInit::InitTab)
 		.def("InitTrackBar",			&CScriptXmlInit::InitTrackBar)

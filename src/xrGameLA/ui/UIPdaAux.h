@@ -3,26 +3,10 @@
 //	Created by Roman E. Marchenko, vortex@gsc-game.kiev.ua
 //	Copyright 2004. GSC Game World
 //	---------------------------------------------------------------------------
-//  Некоторые определения которые общие для всех диалогов ПДА
+//  РќРµРєРѕС‚РѕСЂС‹Рµ РѕРїСЂРµРґРµР»РµРЅРёСЏ РєРѕС‚РѕСЂС‹Рµ РѕР±С‰РёРµ РґР»СЏ РІСЃРµС… РґРёР°Р»РѕРіРѕРІ РџР”Рђ
 //=============================================================================
 
 #pragma once
-
-enum EPdaTabs
-{
-	eptQuests			= 0,
-	eptMap,
-	eptDiary,
-	eptContacts,
-	eptRanking,
-	eptActorStatistic,
-	eptEncyclopedia,
-	eptSkills,
-	eptDownloads,
-	eptGames,
-	eptMPlayer,
-	eptNoActiveTab		= u16(-1)
-};
 
 
 extern const char * const ALL_PDA_HEADER_PREFIX;

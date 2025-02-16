@@ -15,8 +15,8 @@
 #include "../alife_registry_wrappers.h"
 #include "../encyclopedia_article.h"
 #include "UIPdaAux.h"
-#include "UIListBox.h"
-#include "UITabButton.h"
+#include "../../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UITabButton.h"
 
 extern u32			g_pda_info_state;
 
@@ -170,7 +170,7 @@ void CUIDiaryWnd::MarkNewsAsRead (bool status)
 void CUIDiaryWnd::UnloadJournalTab		()
 {
 	m_UILeftWnd->DetachChild	(m_SrcListWnd);
-	m_SrcListWnd->RemoveAll		();
+	m_SrcListWnd->Clear		();
 	m_SrcListWnd->Show			(false);
 
 	m_UIRightWnd->DetachChild	(m_DescrView);

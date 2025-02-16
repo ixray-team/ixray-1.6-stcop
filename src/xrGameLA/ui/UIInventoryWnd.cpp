@@ -8,7 +8,7 @@
 #include "../actor.h"
 #include "../uigamesp.h"
 #include "../hudmanager.h"
-
+#include "../uihelpergame.h"
 #include "../CustomOutfit.h"
 
 #include "../weapon.h"
@@ -208,7 +208,7 @@ CUIDragDropListEx* CUIInventoryWnd::InitDragDropList(CUIXml& uiXml, LPCSTR name,
 	if (!parent) parent = this;
 	parent->AttachChild(list);
 	list->SetAutoDelete(true);
-	CUIXmlInit::InitDragDropListEx		(uiXml, name, index, list);
+	CUIXmlInitGame::InitDragDropListEx	(uiXml, name, index, list);
 	BindDragDropListEvents				(list);
 	return list;
 }

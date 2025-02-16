@@ -419,7 +419,7 @@ int CUIDragDropListEx::ScrollPos()
 void CUIDragDropListEx::SetScrollPos(int pos)
 {
 	m_vScrollBar->SetScrollPos(pos);
-	m_container->SetWndPos		(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos()));
+	m_container->SetWndPos		(Fvector2().set(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())));
 }
 
 void CUIDragDropListEx::SetItem(CUICellItem* itm) //auto

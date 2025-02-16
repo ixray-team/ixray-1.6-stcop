@@ -66,7 +66,7 @@ void CUIListWnd::InitListWnd(float x, float y, float width, float height, float 
 		m_ScrollBar->InitScrollBar(Fvector2().set(width,0.0f), height, false);
 
 
-	m_ScrollBar->SetWndPos(m_ScrollBar->GetWndPos().x - m_ScrollBar->GetWidth(), m_ScrollBar->GetWndPos().y);
+	m_ScrollBar->SetWndPos(Fvector2().set(m_ScrollBar->GetWndPos().x - m_ScrollBar->GetWidth(), m_ScrollBar->GetWndPos().y));
 
 	SetItemWidth(width - m_ScrollBar->GetWidth());
 	
@@ -215,8 +215,8 @@ void CUIListWnd::UpdateList()
 	{
 		CUIListItem* item = (*it);
 		
-		item->SetWndRect(item->GetWndRect().left, m_bVertFlip?GetHeight()-(i-m_iFirstShownIndex)* m_iItemHeight-m_iItemHeight:(i-m_iFirstShownIndex)* m_iItemHeight, 
-							m_iItemWidth, m_iItemHeight);
+		item->SetWndRect(Frect().set(item->GetWndRect().left, m_bVertFlip?GetHeight()-(i-m_iFirstShownIndex)* m_iItemHeight-m_iItemHeight:(i-m_iFirstShownIndex)* m_iItemHeight, 
+							m_iItemWidth, m_iItemHeight));
 		
 /*		
 		item->SetWndPos(Fvector2().set(item->GetWndRect().left, 

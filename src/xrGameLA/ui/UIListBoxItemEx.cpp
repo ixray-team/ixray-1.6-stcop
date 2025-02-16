@@ -11,7 +11,8 @@
 #include "stdafx.h"
 #include ".\uilistboxitemex.h"
 
-CUIListBoxItemEx::CUIListBoxItemEx(void)
+CUIListBoxItemEx::CUIListBoxItemEx(void) :
+	CUIListBoxItem(GetHeight())
 {
 	this->m_dwSelectionColor = color_argb(200, 95, 82, 74);
 	this->SetTextColor(color_argb(0, 0, 0, 0));

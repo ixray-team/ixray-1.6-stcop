@@ -1,9 +1,9 @@
 #include "pch_script.h"
 #include "UIListWnd.h"
 #include "UIListItemEx.h"
-#include "UISpinText.h"
+#include "../../xrUI/Widgets/UISpinText.h"
 #include "UIMapInfo.h"
-#include "UIComboBox.h"
+#include "../../xrUI/Widgets/UIComboBox.h"
 
 using namespace luabind;
 

@@ -43,7 +43,7 @@ protected:
 
 	// Òåêóùèé àêòèâíûé äèàëîã
 	CUIWindow*				m_pActiveDialog;
-	EPdaTabs				m_pActiveSection;
+	shared_str				m_pActiveSection;
 	bool					bUpgraded;
 private:
 	bool					m_initialized;
@@ -76,7 +76,7 @@ public:
 
 	virtual void 			Update						();
 	virtual void 			ShowDialog					(bool bDoHideIndicators);
-	virtual void 			ShowDialog					(bool bDoHideIndicators, EPdaTabs section);
+	virtual void 			ShowDialog					(bool bDoHideIndicators, shared_str section);
 	virtual void 			HideDialog					();
 	
 	virtual void 			EnableSkills				(bool val);
@@ -84,7 +84,7 @@ public:
 
 	virtual bool			OnMouseAction				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouseAction(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
 	
-	void					SetActiveSubdialog			(EPdaTabs section);
+	void					SetActiveSubdialog			(shared_str section);
 	virtual bool			StopAnyMove					(){return false;}
 
 			void			PdaContentsChanged			(pda_section::part type);

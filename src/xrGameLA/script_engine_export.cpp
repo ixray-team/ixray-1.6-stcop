@@ -22,7 +22,7 @@
 #	include "RadioactiveZone.h"
 #	include "ZoneCampfire.h"
 #	include "alife_online_offline_group_brain.h"
-#	include "ui/UIListBox.h"
+#	include "../xrUI/Widgets/UIListBox.h"
 #	include "ai/crow/ai_crow.h"
 #endif
 #include <PHShell.h>

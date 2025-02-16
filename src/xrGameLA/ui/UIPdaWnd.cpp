@@ -170,7 +170,7 @@ void CUIPdaWnd::Init()
 		}
 	}
 
-	m_pActiveSection				= eptNoActiveTab;
+	m_pActiveSection = "eptNoActiveTab";
 
 	//On\off button
 	m_pUIClose					= new CUI3tButton(); m_pUIClose->SetAutoDelete(true);
@@ -182,8 +182,8 @@ void CUIPdaWnd::Init()
 		bool enable_pda_skills = InventoryUtilities::HasActorInfo("pda_skills_enabled");
 		bool enable_pda_downloads = InventoryUtilities::HasActorInfo("pda_downloads_enabled");
 		
-		UITabControl->GetButtonsVector()->at(eptSkills)->Enable(enable_pda_skills);	
-		UITabControl->GetButtonsVector()->at(eptDownloads)->Enable(enable_pda_downloads);
+		UITabControl->GetButtonById("eptSkills")->Enable(enable_pda_skills);
+		UITabControl->GetButtonById("eptDownloads")->Enable(enable_pda_downloads);
 	}
 
 	m_initialized = true;
@@ -196,7 +196,7 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 	if(pWnd == UITabControl){
 		if (TAB_CHANGED == msg){
-			SetActiveSubdialog	((EPdaTabs)UITabControl->GetActiveIndex());
+			SetActiveSubdialog	(UITabControl->GetActiveId());
 		}
 	} else {
 		R_ASSERT(m_pActiveDialog);
@@ -214,7 +214,7 @@ void CUIPdaWnd::ShowDialog(bool bDoHideIndicators)
 	//BringToTop(UITabControl);
 }
 
-void CUIPdaWnd::ShowDialog(bool bDoHideIndicators, EPdaTabs section)
+void CUIPdaWnd::ShowDialog(bool bDoHideIndicators, shared_str section)
 {
 	if (!m_initialized)
 		Init								();
@@ -228,7 +228,7 @@ void CUIPdaWnd::HideDialog()
 {
 	inherited::HideDialog();
 
-	UITabControl->SetNewActiveTab	(eptMap); //skyloader: hack for contacts wnd
+	UITabControl->SetActiveTab("eptMap"); //skyloader: hack for contacts wnd
 
 	InventoryUtilities::SendInfoToActor("ui_pda_hide");
 	CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
@@ -256,12 +256,12 @@ void CUIPdaWnd::Update()
 }
 
 
-void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
+void CUIPdaWnd::SetActiveSubdialog(shared_str section)
 {
-	if (!m_initialized)		
+	if (!m_initialized)
 		Init();
-	if(	m_pActiveSection == section) return;
-	
+	if (m_pActiveSection == section) return;
+
 	CUIDialogWnd* dlg = 0;
 
 	if (m_pActiveDialog)
@@ -273,69 +273,79 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 		m_pActiveDialog->Show(false);
 	}
 
-	m_pActiveDialog				= nullptr;
+	m_pActiveDialog = nullptr;
 
-	switch (section) 
+
+	if (section == "eptDiary")
 	{
-	case eptDiary:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIDiaryWnd);
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIDiaryWnd);
 		InventoryUtilities::SendInfoToActor("ui_pda_events");
-		g_pda_info_state		&= ~pda_section::diary;
-		break;
-	case eptContacts:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIChatWnd);
+		g_pda_info_state &= ~pda_section::diary;
+	}
+	else if (section == "eptContacts")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIChatWnd);
 		InventoryUtilities::SendInfoToActor("ui_pda_contacts");
-		g_pda_info_state		&= ~pda_section::contacts;
-		break;
-	case eptMap:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIMapWnd);
-		g_pda_info_state		&= ~pda_section::map;
+		g_pda_info_state &= ~pda_section::contacts;
+	}
+	else if (section == "eptMap")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIMapWnd);
+		g_pda_info_state &= ~pda_section::map;
 		InventoryUtilities::SendInfoToActor("ui_pda_map");
-		break;
-	case eptEncyclopedia:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIEncyclopediaWnd);
+	}
+	else if (section == "eptEncyclopedia")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIEncyclopediaWnd);
 		InventoryUtilities::SendInfoToActor("ui_pda_encyclopedia");
-		g_pda_info_state		&= ~pda_section::encyclopedia;
-		break;
-	case eptActorStatistic:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIActorInfo);
+		g_pda_info_state &= ~pda_section::encyclopedia;
+	}
+	else if (section == "eptActorStatistic")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIActorInfo);
 		InventoryUtilities::SendInfoToActor("ui_pda_actor_info");
-		g_pda_info_state		&= ~pda_section::statistics;
-		break;
-	case eptRanking:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIStalkersRanking);
-		g_pda_info_state		&= ~pda_section::ranking;
+		g_pda_info_state &= ~pda_section::statistics;
+	}
+	else if (section == "eptRanking")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIStalkersRanking);
+		g_pda_info_state &= ~pda_section::ranking;
 		InventoryUtilities::SendInfoToActor("ui_pda_ranking");
-		break;
-	case eptQuests:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIEventsWnd);
-		g_pda_info_state		&= ~pda_section::quests;
+	}
+	else if (section == "eptQuests")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIEventsWnd);
+		g_pda_info_state &= ~pda_section::quests;
 		InventoryUtilities::SendInfoToActor("ui_pda_quests");
-		break;
-	case eptSkills:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UISkillsWnd);
-		g_pda_info_state		&= ~pda_section::skills;
+	}
+	else if (section == "eptSkills")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UISkillsWnd);
+		g_pda_info_state &= ~pda_section::skills;
 		InventoryUtilities::SendInfoToActor("ui_pda_skills");
-		break;
-	case eptDownloads:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIDownloadsWnd);
-		g_pda_info_state		&= ~pda_section::downloads;
+	}
+	else if (section == "eptDownloads")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIDownloadsWnd);
+		g_pda_info_state &= ~pda_section::downloads;
 		InventoryUtilities::SendInfoToActor("ui_pda_downloads");
-		break;
-	case eptGames:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIGamesWnd);
-		g_pda_info_state		&= ~pda_section::games;
+	}
+	else if (section == "eptGames")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIGamesWnd);
+		g_pda_info_state &= ~pda_section::games;
 		InventoryUtilities::SendInfoToActor("ui_pda_games");
-		break;
-	case eptMPlayer:
-		m_pActiveDialog			= smart_cast<CUIWindow*>(UIMPlayerWnd);
-		g_pda_info_state		&= ~pda_section::mplayer;
+	}
+	else if (section == "eptMPlayer")
+	{
+		m_pActiveDialog = smart_cast<CUIWindow*>(UIMPlayerWnd);
+		g_pda_info_state &= ~pda_section::mplayer;
 		InventoryUtilities::SendInfoToActor("ui_pda_mplayer");
-		break;
-	default:
-		Msg("not registered button identifier [%d]",UITabControl->GetActiveIndex());
+	}
+	else
+	{
+		Msg("not registered button identifier [%d]",UITabControl->GetActiveId());
 		m_pActiveDialog = nullptr;
-		break;
 	}
 
 	R_ASSERT(m_pActiveDialog && m_pActiveDialog->GetWidth());
@@ -348,8 +358,8 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 	UIMainPdaFrame->AttachChild		(m_pActiveDialog);
 	m_pActiveDialog->Show			(true);
 
-	if(UITabControl->GetActiveIndex()!=section)
-		UITabControl->SetNewActiveTab	(section);
+	if(UITabControl->GetActiveId()!=section)
+		UITabControl->SetActiveTab	(section);
 
 	m_pActiveSection = section;
 
@@ -421,7 +431,7 @@ void CUIPdaWnd::EnableSkills(bool val)
 	InventoryUtilities::SendInfoToActor(val ? "pda_skills_enabled" : "pda_skills_disabled");
 	if (m_initialized)
 	{
-		UITabControl->GetButtonsVector()->at(eptSkills)->Enable(val);
+		UITabControl->GetButtonById("eptSkills")->Enable(val);
 	}
 }
 
@@ -430,6 +440,6 @@ void CUIPdaWnd::EnableDownloads(bool val)
 	InventoryUtilities::SendInfoToActor(val ? "pda_downloads_enabled" : "pda_downloads_disabled");
 	if (m_initialized)
 	{
-		UITabControl->GetButtonsVector()->at(eptDownloads)->Enable(val);
+		UITabControl->GetButtonById("eptDownloads")->Enable(val);
 	}
 }

@@ -28,6 +28,7 @@
 #include "../Car.h"
 #include "../xrUI/UICursor.h"
 #include "../../xrEngine/string_table.h"
+#include "../uihelpergame.h"
 
 void move_item (u16 from_id, u16 to_id, u16 what_id);
 
@@ -95,21 +96,21 @@ void CUICarBodyWnd::Init()
 	m_pUIOurBagWnd					= new CUIStatic(); m_pUIOurBagWnd->SetAutoDelete(true);
 	AttachChild						(m_pUIOurBagWnd);
 	xml_init.InitStatic				(uiXml, "our_bag_static", 0, m_pUIOurBagWnd);
-	m_pUIOurBagWnd->SetTextComplexMode(true);
+	m_pUIOurBagWnd->TextItemControl()->SetTextComplexMode(true);
 
 	m_pUIOthersBagWnd				= new CUIStatic(); m_pUIOthersBagWnd->SetAutoDelete(true);
 	AttachChild						(m_pUIOthersBagWnd);
 	xml_init.InitStatic				(uiXml, "others_bag_static", 0, m_pUIOthersBagWnd);
-	m_othersBagWndPrefix			= m_pUIOthersBagWnd->GetText();
-	m_pUIOthersBagWnd->SetTextComplexMode(true);
+	m_othersBagWndPrefix			= m_pUIOthersBagWnd->TextItemControl()->GetText();
+	m_pUIOthersBagWnd->TextItemControl()->SetTextComplexMode(true);
 
 	m_pUIOurBagList					= new CUIDragDropListEx(); m_pUIOurBagList->SetAutoDelete(true);
 	m_pUIOurBagWnd->AttachChild		(m_pUIOurBagList);	
-	xml_init.InitDragDropListEx		(uiXml, "dragdrop_list_our", 0, m_pUIOurBagList);
+	CUIXmlInitGame::InitDragDropListEx		(uiXml, "dragdrop_list_our", 0, m_pUIOurBagList);
 
 	m_pUIOthersBagList				= new CUIDragDropListEx(); m_pUIOthersBagList->SetAutoDelete(true);
 	m_pUIOthersBagWnd->AttachChild	(m_pUIOthersBagList);	
-	xml_init.InitDragDropListEx		(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
+	CUIXmlInitGame::InitDragDropListEx		(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
 
 
 	//информация о предмете
@@ -505,7 +506,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 
 	if(b_show){
 		m_pUIPropertiesBox->AutoUpdateSize	();
-		m_pUIPropertiesBox->BringAllToTop	();
+//		m_pUIPropertiesBox->BringAllToTop	();
 
 		Fvector2						cursor_pos;
 		Frect							vis_rect;

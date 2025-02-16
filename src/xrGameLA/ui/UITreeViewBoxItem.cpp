@@ -33,7 +33,8 @@ CUITreeViewBoxItem::CUITreeViewBoxItem()
 		m_uUnreadedColor	(UNREAD_COLOR),
 		m_uReadedColor		(READ_COLOR),
 		m_value				(-1),
-		m_real_parent		(nullptr)
+		m_real_parent		(nullptr),
+	CUIListBoxItem(GetHeight())
 {
 	AttachChild(&UIBkg);
 	UIBkg.InitTexture(treeItemBackgroundTexture);
@@ -141,11 +142,9 @@ void CUITreeViewBoxItem::Open()
 	
 	R_ASSERT(pList);
 
-	int pos = GetIndex();
-
 	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
-		pList->AddExistingItem(*it, ++pos);
+		pList->AddExistingItem(*it);
 		(*it)->m_bAutoDelete = true;
 	}
 }
@@ -176,7 +175,7 @@ void CUITreeViewBoxItem::Close()
 	for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
 	{
 		(*it)->m_bAutoDelete = false;
-		pList->Remove(*it);
+		pList->RemoveWindow(*it);
 	}
 }
 
@@ -204,7 +203,7 @@ void CUITreeViewBoxItem::DeleteAllSubItems()
 		VERIFY(*it);
 		CUIListBox *list = (*it)->m_real_parent;
 		if (list)
-			list->Remove(*it);
+			list->RemoveWindow(*it);
 
 		//xr_delete(*it); // auto delete 
 	}

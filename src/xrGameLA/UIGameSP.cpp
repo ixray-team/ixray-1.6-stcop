@@ -105,7 +105,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu)
 		{
 			if (!m_PdaMenu->IsShown())
-				m_PdaMenu->ShowDialog		(true, eptQuests);
+				m_PdaMenu->ShowDialog		(true, "eptQuests");
 			else
 				m_PdaMenu->HideDialog		();
 		}break;
@@ -114,7 +114,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu)
 		{
 			if (!m_PdaMenu->IsShown())
-				m_PdaMenu->ShowDialog		(true, eptMap);
+				m_PdaMenu->ShowDialog		(true, "eptMap");
 			else
 				m_PdaMenu->HideDialog		();
 		}break;
@@ -123,7 +123,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu)
 		{
 			if (!m_PdaMenu->IsShown())
-				m_PdaMenu->ShowDialog		(true, eptContacts);
+				m_PdaMenu->ShowDialog		(true, "eptContacts");
 			else
 				m_PdaMenu->HideDialog		();
 			break;

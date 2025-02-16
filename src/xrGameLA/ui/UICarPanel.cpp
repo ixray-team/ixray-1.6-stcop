@@ -57,7 +57,7 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	Show(false);
 	Enable(false);
 
-	inherited::SetWndRect(Frect(x, y, width, height));
+	inherited::SetWndRect(Frect().set(x, y, width, height));
 }
 
 //////////////////////////////////////////////////////////////////////////
