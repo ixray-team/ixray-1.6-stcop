@@ -58,16 +58,16 @@ void CStringTable::Load	(LPCSTR xml_file)
 {
 	CUIXml						uiXml;
 	string_path					xml_file_full;
-	strconcat					(sizeof(xml_file_full),xml_file_full, xml_file, ".xml");
+	xr_strconcat				(xml_file_full, xml_file, ".xml");
 	string_path					_s;
-	strconcat					(sizeof(_s),_s, STRING_TABLE_PATH, "\\", *(pData->m_sLanguage) );
+	xr_strconcat				("text", "\\", *(pData->m_sLanguage));
 
 	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
 
 	//if xml is not founded
 	//Debug.fatal(DEBUG_INFO,"string table xml file not found %s, for language %s", xml_file_full, *(pData->m_sLanguage));
 
-	//общий список всех записей таблицы в файле
+	//РѕР±С‰РёР№ СЃРїРёСЃРѕРє РІСЃРµС… Р·Р°РїРёСЃРµР№ С‚Р°Р±Р»РёС†С‹ РІ С„Р°Р№Р»Рµ
 	int string_num = uiXml.GetNodesNum		(uiXml.GetRoot(), "string");
 
 	for(int i=0; i<string_num; ++i)

@@ -108,7 +108,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		m_flags.set( ePosToActor, TRUE);
 
 
-	strconcat(sizeof(path),path,path_base,":level_map");
+	xr_strconcat(path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if(node){
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
@@ -130,7 +130,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		}
 	};
 
-	strconcat(sizeof(path),path,path_base,":mini_map");
+	xr_strconcat(path,path_base,":mini_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if(node){
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");

@@ -5,7 +5,7 @@
 #include "StdAfx.h"
 #include "UIOptionsManager.h"
 #include "UIOptionsItem.h"
-#include "../../xr_ioconsole.h"
+#include "../xrEngine/xr_ioconsole.h"
 
 CUIOptionsManager::CUIOptionsManager()
 :m_restart_flags(0)

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../xrCore/object_manager.h"
+#include "object_manager.h"
 #include "entity_alive.h"
 #include "custommonster.h"
 #include "script_callback_ex.h"

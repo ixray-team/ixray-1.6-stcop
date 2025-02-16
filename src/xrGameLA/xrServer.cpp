@@ -145,8 +145,10 @@ void		xrServer::client_Destroy	(IClient* C)
 	// Delete assosiated entity
 	// xrClientData*	D = (xrClientData*)C;
 	// CSE_Abstract* E = D->owner;
-	IClient* alife_client = net_players.FindAndEraseClient(
-		std::bind1st(std::equal_to<IClient*>(), C)
+	auto alife_client = net_players.FindAndEraseClient(
+		[C](const IClient* client) {
+			return client == C;
+		}
 	);
 	//VERIFY(alife_client);
 	if (alife_client)
@@ -348,7 +350,7 @@ void xrServer::SendUpdatesToAll()
 
 
 	//sending game_update 
-	fastdelegate::FastDelegate1<IClient*,void> sendtofd;
+	xr_delegate<void(IClient*)> sendtofd;
 	sendtofd.bind(this, &xrServer::SendGameUpdateTo);
 	ForEachClientDoSender(sendtofd);
 
@@ -405,14 +407,14 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 				string1024			buff;
 				P.r_stringZ			(buff);
 				Msg("* Radmin [%s] is running command: %s", CL->ps->getName(), buff);
-				SetLogCB			(console_log_cb);
+				xrLogger::AddLogCallback			(console_log_cb);
 				_tmp_log.clear		();
 				LPSTR		result_command;
 				string64	tmp_number_str;
 				xr_sprintf(tmp_number_str, " raid:%u", CL->ID.value());
-				STRCONCAT(result_command, buff, tmp_number_str);
+				xr_strconcat(result_command, buff, tmp_number_str);
 				Console->Execute	(result_command);
-				SetLogCB			(NULL);
+				xrLogger::RemoveLogCallback			(console_log_cb);
 
 				NET_Packet			P_answ;			
 				for(u32 i=0; i<_tmp_log.size(); ++i)
@@ -1022,7 +1024,7 @@ void xrServer::PerformCheckClientsForMaxPing()
 				if(Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
 				{  //kick
 					LPSTR	reason;
-					STRCONCAT( reason, CStringTable().translate("st_kicked_by_server").c_str() );
+					xr_strconcat( reason, CStringTable().translate("st_kicked_by_server").c_str() );
 					Level().Server->DisconnectClient( Client, reason );
 				}
 				else

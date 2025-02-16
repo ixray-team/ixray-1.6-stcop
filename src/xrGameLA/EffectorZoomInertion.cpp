@@ -1,5 +1,5 @@
-// EffectorZoomInertion.cpp: инерция(покачивания) оружия в режиме
-//							 приближения
+// EffectorZoomInertion.cpp: РёРЅРµСЂС†РёСЏ(РїРѕРєР°С‡РёРІР°РЅРёСЏ) РѕСЂСѓР¶РёСЏ РІ СЂРµР¶РёРјРµ
+//							 РїСЂРёР±Р»РёР¶РµРЅРёСЏ
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -32,7 +32,7 @@ template <class T>
 IC T LoadParamInternal(LPCSTR section, LPCSTR prefix, LPCSTR param, T (CInifile::*method)(LPCSTR, LPCSTR)const, T defVal)
 {
 	static string256 full_name;
-	strconcat(sizeof(full_name), full_name, prefix, param);
+	xr_strconcat(full_name, prefix, param);
 	if (pSettings->line_exist(section, full_name))
 	{
 		return (pSettings->*method)(section, full_name);
@@ -151,7 +151,7 @@ static float SmoothStep(float from, float to, float t)
 	return to * t + from * (1.f - t);
 }
 
-//определяем двигал ли прицелом актер
+//РѕРїСЂРµРґРµР»СЏРµРј РґРІРёРіР°Р» Р»Рё РїСЂРёС†РµР»РѕРј Р°РєС‚РµСЂ
 bool CEffectorZoomInertion::UpdateCameraMoved(const Fvector& camDir, bool& justStopped)
 {
 	justStopped = false;

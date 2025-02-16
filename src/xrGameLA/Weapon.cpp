@@ -576,7 +576,7 @@ void CWeapon::Load		(LPCSTR section)
 	string256						temp;
 	for (int i=egdNovice; i<egdCount; ++i) 
 	{
-		strconcat					(sizeof(temp),temp,"hit_probability_",get_token_name(difficulty_type_token,i));
+		xr_strconcat				(temp,"hit_probability_",get_token_name(difficulty_type_token,i));
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 
@@ -636,7 +636,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
 
-	R_ASSERT2(m_cur_scope <= m_scopes.size(), make_string("m_scopes.size = %u, m_cur_scope = %u", m_scopes.size(), m_cur_scope));
+	R_ASSERT2(m_cur_scope <= m_scopes.size(), make_string<const char*>("m_scopes.size = %u, m_cur_scope = %u", m_scopes.size(), m_cur_scope));
 
 	if (m_ammoType >= m_ammoTypes.size())
 	{
@@ -719,7 +719,7 @@ void CWeapon::net_Import(NET_Packet& P)
 	P.r_u8					(wstate);
 
 	u8 Zoom;
-	P.r_u8					((u8)Zoom);
+	P.r_u8					(Zoom);
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
@@ -1936,13 +1936,13 @@ void CWeapon::debug_draw_firedeps()
 		CDebugRenderer			&render = Level().debug_renderer();
 
 		if(hud_adj_mode==5)
-			render.draw_aabb(get_LastFP(),	0.005f,0.005f,0.005f,D3DCOLOR_XRGB(255,0,0));
+			render.draw_aabb(get_LastFP(),	0.005f,0.005f,0.005f,color_xrgb(255,0,0));
 
 		if(hud_adj_mode==6)
-			render.draw_aabb(get_LastFP2(),	0.005f,0.005f,0.005f,D3DCOLOR_XRGB(0,0,255));
+			render.draw_aabb(get_LastFP2(),	0.005f,0.005f,0.005f,color_xrgb(0,0,255));
 
 		if(hud_adj_mode==7)
-			render.draw_aabb(get_LastSP(),		0.005f,0.005f,0.005f,D3DCOLOR_XRGB(0,255,0));
+			render.draw_aabb(get_LastSP(),		0.005f,0.005f,0.005f,color_xrgb(0,255,0));
 	}
 #endif // DEBUG
 }

@@ -39,9 +39,9 @@ void CUIDialogWndEx::script_register(lua_State *L)
 	];
 }
 
-export_class &script_register_ui_window1(export_class &instance)
+export_class &script_register_ui_window1(export_class &&instance)
 {
-	instance
+	return std::move(instance)
 		.def(					constructor<>())
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
@@ -57,5 +57,5 @@ export_class &script_register_ui_window1(export_class &instance)
 		.def("GetCheckButton",	(CUICheckButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUICheckButton>)
 		.def("GetRadioButton",	(CUIRadioButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIRadioButton>)
 
-	;return	(instance);
+	;;
 }

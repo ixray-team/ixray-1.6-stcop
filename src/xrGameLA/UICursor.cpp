@@ -5,7 +5,7 @@
 #include "ui/UIBtnHint.h"
 
 
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
+#define C_DEFAULT	color_xrgb(0xff,0xff,0xff)
 
 CUICursor::CUICursor()
 :m_static(NULL),m_b_use_win_cursor(false)
@@ -66,7 +66,7 @@ void CUICursor::OnRender	()
 	{
 	CGameFont* F		= UI().Font().pFontDI;
 	F->SetAligment		(CGameFont::alCenter);
-	F->SetHeightI		(0.02f);
+	F->SetHeight		(0.02f);
 	F->OutSetI			(0.f,-0.9f);
 	F->SetColor			(0xffffffff);
 	Fvector2			pt = GetCursorPosition();

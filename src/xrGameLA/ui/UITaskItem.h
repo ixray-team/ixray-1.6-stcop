@@ -11,7 +11,7 @@ class CUIEventsWnd;
 class CUIEditBoxEx;
 class CUIEditBox;
 
-class XR_ABSTRACT CUITaskItem : public CUIWindow, public CUIWndCallback
+class CUITaskItem : public CUIWindow, public CUIWndCallback
 {
 	typedef		CUIWindow	inherited;
 protected:

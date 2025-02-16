@@ -35,7 +35,7 @@ void CUIActorInfoWnd::Init()
 
 	xml_init.InitWindow						(uiXml, "main_wnd", 0, this);
 
-	// Äåêîðàòèâíîå îôîðìëåíèå
+	// Ð”ÐµÐºÐ¾Ñ€Ð°Ñ‚Ð¸Ð²Ð½Ð¾Ðµ Ð¾Ñ„Ð¾Ñ€Ð¼Ð»ÐµÐ½Ð¸Ðµ
 	UICharIconFrame							= new CUIFrameWindow();	UICharIconFrame->SetAutoDelete	(true);
 	xml_init.InitFrameWindow				(uiXml, "chicon_frame_window", 0, UICharIconFrame);
 	AttachChild								(UICharIconFrame);
@@ -72,7 +72,7 @@ void CUIActorInfoWnd::Init()
 	UICharacterWindow->AttachChild			(UICharacterInfo);
 	UICharacterInfo->Init					(0,0,UICharacterWindow->GetWidth(), UICharacterWindow->GetHeight(), ACTOR_CHARACTER_XML);
 
-	//Ýëåìåíòû àâòîìàòè÷åñêîãî äîáàâëåíèÿ
+	//Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	xml_init.InitAutoStatic					(uiXml, "right_auto_static", UICharIconFrame);
 	xml_init.InitAutoStatic					(uiXml, "left_auto_static",  UIInfoFrame);
 
@@ -149,7 +149,7 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 {
 	CUIActorStaticticHeader* itm		= new CUIActorStaticticHeader(this);
 	string128							buff;
-	strconcat							(sizeof(buff), buff, "actor_stats_wnd:master_part_", key_name.c_str() );
+	xr_strconcat						(buff, "actor_stats_wnd:master_part_", key_name.c_str() );
 	itm->Init							(xml, buff, 0);
 
 	if(key_name!="foo")

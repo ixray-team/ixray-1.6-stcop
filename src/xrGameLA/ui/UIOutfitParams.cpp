@@ -70,7 +70,7 @@ void CUIOutfitParams::InitFromXml(CUIXml& xml_doc)
 	{
 		CUIStatic* st = m_info_items[i] = new CUIStatic();
 		st->SetAutoDelete(false);
-		strconcat(sizeof(buff), buff, base, ":static_", infoLines[i].staticName);
+		xr_strconcat(buff, base, ":static_", infoLines[i].staticName);
 		CUIXmlInit::InitStatic(xml_doc, buff, 0, st);
 	}
 }

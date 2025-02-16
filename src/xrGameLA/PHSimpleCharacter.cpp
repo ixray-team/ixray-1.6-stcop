@@ -549,7 +549,7 @@ void CPHSimpleCharacter::PhTune(dReal step){
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgCharacterControl))
 	{
-		if(b_air_contact_state)DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)),m_radius,D3DCOLOR_XRGB(255,0,0));
+		if(b_air_contact_state)DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)),m_radius,color_xrgb(255,0,0));
 		
 	}
 #endif
@@ -698,9 +698,9 @@ void CPHSimpleCharacter::PhTune(dReal step){
 #ifdef DEBUG
 		if(ph_dbg_draw_mask.test(phDbgCharacterControl))
 		{
-			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(sidedir),1.f)),D3DCOLOR_XRGB(0,0,255));
-			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(m_control_force),1.f/19.6f)),D3DCOLOR_XRGB(0,0,255));
-			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(dBodyGetForce(m_body)),1.f/19.6f)),D3DCOLOR_XRGB(255,0,0));
+			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(sidedir),1.f)),color_xrgb(0,0,255));
+			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(m_control_force),1.f/19.6f)),color_xrgb(0,0,255));
+			DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(dBodyGetForce(m_body)),1.f/19.6f)),color_xrgb(255,0,0));
 		}
 #endif
 		//if(b_clamb_jump){
@@ -744,7 +744,7 @@ void CPHSimpleCharacter::PhTune(dReal step){
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgCharacterControl))
 	{
-		DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(dBodyGetForce(m_body)),1.f/19.6f)),D3DCOLOR_XRGB(255,0,128));
+		DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),Fvector().add(cast_fv(dBodyGetPosition(m_body)),Fvector().mul(cast_fv(dBodyGetForce(m_body)),1.f/19.6f)),color_xrgb(255,0,128));
 	}
 #endif
 }
@@ -856,9 +856,9 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 		m.i.set(sd_dir);
 		m.k.set(accel);
 		m.c.set(center);
-		DBG_DrawOBB(m,obb,D3DCOLOR_XRGB(0,255,0));
+		DBG_DrawOBB(m,obb,color_xrgb(0,255,0));
 		m.c.set(center_forbid);
-		DBG_DrawOBB(m,obb_fb,D3DCOLOR_XRGB(255,0,0));
+		DBG_DrawOBB(m,obb_fb,color_xrgb(255,0,0));
 	}
 #endif
 
@@ -880,7 +880,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 #ifdef DEBUG
 					if(ph_dbg_draw_mask.test(phDbgCharacterControl))
 					{
-						DBG_DrawTri(Res,D3DCOLOR_XRGB(255,0,0));
+						DBG_DrawTri(Res,color_xrgb(255,0,0));
 					}
 #endif
 					b_side_contact=true;
@@ -909,7 +909,7 @@ bool CPHSimpleCharacter::ValidateWalkOnMesh()
 #ifdef DEBUG
 				if(ph_dbg_draw_mask.test(phDbgCharacterControl))
 				{
-					DBG_DrawTri(Res,D3DCOLOR_XRGB(0,255,0));
+					DBG_DrawTri(Res,color_xrgb(0,255,0));
 				}
 #endif
 				return true;
@@ -1121,8 +1121,8 @@ void CPHSimpleCharacter::OnRender(){
 	Level().debug_renderer().draw_ellipse(M, 0xffffffff);
 
 #ifdef DRAW_BOXES
-	Level().debug_renderer().draw_aabb			(m_bcenter,m_AABB.x,m_AABB.y,m_AABB.z,D3DCOLOR_XRGB(0,0,255));
-	Level().debug_renderer().draw_aabb			(m_bcenter_forbid,m_AABB_forbid.x,m_AABB_forbid.y,m_AABB_forbid.z,D3DCOLOR_XRGB(255,0,0));
+	Level().debug_renderer().draw_aabb			(m_bcenter,m_AABB.x,m_AABB.y,m_AABB.z,color_xrgb(0,0,255));
+	Level().debug_renderer().draw_aabb			(m_bcenter_forbid,m_AABB_forbid.x,m_AABB_forbid.y,m_AABB_forbid.z,color_xrgb(255,0,0));
 #endif
 	///M.c.set(0.f,1.f,0.f);
 	//Level().debug_renderer().draw_ellipse(M, 0xffffffff);
@@ -1443,7 +1443,7 @@ void CPHSimpleCharacter::InitContact(dContact* c,bool	&do_collide,u16 material_i
 	b_on_object=b_on_object||object;
 	
 	
-////////////////////////нужно сместить колижен!!
+////////////////////////РЅСѓР¶РЅРѕ СЃРјРµСЃС‚РёС‚СЊ РєРѕР»РёР¶РµРЅ!!
 //////////////
 	FootProcess(c,do_collide,bo1);
 	if(!do_collide) return;

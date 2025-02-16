@@ -23,22 +23,22 @@ void CUINewsItemWnd::Init				(LPCSTR xml_name, LPCSTR start_from)
 	xr_strcpy(str,start_from);
 	xml_init.InitWindow			(uiXml,str,0,this);
 
-	strconcat(sizeof(str),str,start_from,":image");
+	xr_strconcat(str,start_from,":image");
 	m_UIImage					= new CUIStatic();	m_UIImage->SetAutoDelete(true);
 	xml_init.InitStatic			(uiXml,str,0,m_UIImage);
 	AttachChild					(m_UIImage);
 
-	strconcat(sizeof(str),str,start_from,":text_cont");
+	xr_strconcat(str,start_from,":text_cont");
 	m_UIText					= new CUIStatic();	m_UIText->SetAutoDelete(true);
 	xml_init.InitStatic			(uiXml,str,0,m_UIText);
 	AttachChild					(m_UIText);
 
-	strconcat(sizeof(str),str,start_from,":date_text_cont");
+	xr_strconcat(str,start_from,":date_text_cont");
 	m_UITextDate				= new CUIStatic();	m_UITextDate->SetAutoDelete(true);
 	xml_init.InitStatic			(uiXml,str,0,m_UITextDate);
 	AttachChild					(m_UITextDate);
 
-	strconcat(sizeof(str),str,start_from,":auto");
+	xr_strconcat(str,start_from,":auto");
 	xml_init.InitAutoStaticGroup(uiXml, str, 0, this);
 
 }

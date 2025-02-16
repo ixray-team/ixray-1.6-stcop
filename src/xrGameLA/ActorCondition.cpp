@@ -169,7 +169,7 @@ void CActorCondition::UpdateCondition()
 		
 		string64			pp_sect_name;
 		shared_str ln		= Level().name();
-		strconcat			(sizeof(pp_sect_name),pp_sect_name, "effector_psy_health", "_", *ln);
+		xr_strconcat		(pp_sect_name, "effector_psy_health", "_", *ln);
 		if(!pSettings->section_exist(pp_sect_name))
 			xr_strcpy			(pp_sect_name, "effector_psy_health");
 

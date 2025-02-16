@@ -191,7 +191,7 @@ bool CControllerPsyHit::check_conditions_final()
 
 	//
 	//trace_to.mad(trace_from,trace_dir,l_rq.range);
-	//DBG().level_info(this).add_item	(trace_from,trace_to,D3DCOLOR_XRGB(0,150,150));
+	//DBG().level_info(this).add_item	(trace_from,trace_to,color_xrgb(0,150,150));
 
 	return true;
 }

@@ -131,11 +131,11 @@ bool CLevel::net_start1				()
 
 			m_name					= l_name;
 
-			int						id = pApp->Level_ID(l_name);
+			int						id = pApp->Level_ID(l_name, "1.0", true);
 
 			if (id<0) {
 				pApp->LoadEnd				();
-				Log							("Can't find level: ",l_name);
+				Msg							("Can't find level: ",l_name);
 				net_start_result_total		= FALSE;
 				return true;
 			}
@@ -252,15 +252,10 @@ bool  net_start_finalizer()
 		DEL_INSTANCE	(g_pGameLevel);
 		Console->Execute("main_menu on");
 
-		if (g_connect_server_err==xrServer::ErrBELoad)
-		{
-			MainMenu()->OnLoadError("BattlEye/BEServer.dll");
-		}else
 		if(g_connect_server_err==xrServer::ErrConnect && !psNET_direct_connect && !g_dedicated_server) 
 		{
 			MainMenu()->SwitchToMultiplayerMenu();
 		}else
-		if(g_connect_server_err==xrServer::ErrNoLevel)
 		{
 			MainMenu()->SwitchToMultiplayerMenu();
 			MainMenu()->OnLoadError(ln.c_str());
@@ -290,7 +285,7 @@ bool CLevel::net_start6()
 		{
 			string256				buf,cmd,param;
 			sscanf					(strstr(Core.Params,"-$")+2,"%[^ ] %[^ ] ",cmd,param);
-			strconcat				(sizeof(buf),buf,cmd," ",param);
+			xr_strconcat			(buf,cmd," ",param);
 			Console->Execute		(buf);
 		}
 

@@ -66,13 +66,12 @@ bool	CLevel::net_start_client3				()
 		    level_ver   = 0;
 
 		// Determine internal level-ID
-		int						level_id = pApp->Level_ID(level_name);
+		int						level_id = pApp->Level_ID(level_name, "1.0", true);
 		if (level_id<0)	{
 			Disconnect			();
 			pApp->LoadEnd		();
 			connected_to_server = FALSE;
 			m_name				= level_name;
-			m_connect_server_err = xrServer::ErrNoLevel;
 			return				false;
 		}
 		pApp->Level_Set			(level_id);
@@ -145,11 +144,11 @@ bool	CLevel::net_start_client5				()
 		// HUD
 
 		// Textures
-		if (!g_dedicated_server && !g_uCommonFlags.test(CF_SkipTextureLoading))
+		if (!g_dedicated_server/* && !g_uCommonFlags.test(CF_SkipTextureLoading)*/)
 		{
 			g_pGamePersistent->LoadTitle				("st_loading_textures");
 			Device.m_pRender->DeferredLoad		(FALSE);
-			Device.m_pRender->ResourcesDeferredUpload(mt_texture_loading);
+			Device.m_pRender->ResourcesDeferredUpload(/*mt_texture_loading*/);
 			LL_CheckTextures					();
 		}
 	}

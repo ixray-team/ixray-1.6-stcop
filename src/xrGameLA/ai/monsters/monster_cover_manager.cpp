@@ -110,7 +110,7 @@ void CCoverEvaluator::initialize(const Fvector &start_position)
 void CCoverEvaluator::evaluate(const CCoverPoint *cover_point, float weight)
 {
 #ifdef DEBUG
-	//DBG().level_info(this).add_item(cover_point->position(), D3DCOLOR_XRGB(0,255,0));
+	//DBG().level_info(this).add_item(cover_point->position(), color_xrgb(0,255,0));
 #endif
 	CMonsterSquad *squad = monster_squad().get_squad(m_object);
 	if (squad->is_locked_cover(cover_point->level_vertex_id())) return;
@@ -172,7 +172,7 @@ const CCoverPoint *CMonsterCoverManager::find_cover(const Fvector &position, flo
 	return				point;
 }
 
-// íàéòè ëó÷øèé êîâåð îòíîñèòåëüíî "position"
+// Ð½Ð°Ð¹Ñ‚Ð¸ Ð»ÑƒÑ‡ÑˆÐ¸Ð¹ ÐºÐ¾Ð²ÐµÑ€ Ð¾Ñ‚Ð½Ð¾ÑÐ¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ "position"
 const CCoverPoint *CMonsterCoverManager::find_cover(const Fvector &src_pos, const Fvector &dest_pos, float min_pos_distance, float	max_pos_distance, float deviation)
 {
 	m_ce_best->setup	(m_object, dest_pos, min_pos_distance,max_pos_distance,deviation);

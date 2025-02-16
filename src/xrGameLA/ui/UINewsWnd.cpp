@@ -29,7 +29,7 @@ void CUINewsWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, xml_name);
 
-	strconcat					(sizeof(pth),pth,start_from,"list");
+	xr_strconcat				(pth,start_from,"list");
 	CUIXmlInit::InitWindow			(uiXml, pth, 0, this);
 	UIScrollWnd					= new CUIScrollView();UIScrollWnd->SetAutoDelete(true);
 	AttachChild					(UIScrollWnd);
@@ -49,7 +49,7 @@ void CUINewsWnd::LoadNews()
 	{
 		GAME_NEWS_VECTOR& news_vector = Actor()->game_news_registry->registry().objects();
 		
-		// Показать только NEWS_TO_SHOW последних ньюсов
+		// РџРѕРєР°Р·Р°С‚СЊ С‚РѕР»СЊРєРѕ NEWS_TO_SHOW РїРѕСЃР»РµРґРЅРёС… РЅСЊСЋСЃРѕРІ
 		int currentNews = 0;
 
 		for (GAME_NEWS_VECTOR::reverse_iterator it = news_vector.rbegin(); it != news_vector.rend() && currentNews < NEWS_TO_SHOW ; ++it)

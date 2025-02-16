@@ -70,7 +70,10 @@ extern float		hud_adj_delta_rot;
 
 
 //---Development cheats
-
+Flags32 g_uCommonFlags;
+enum E_COMMON_FLAGS {
+	flAiUseTorchDynamicLights = 1
+};
 
 //---Features
 int					ps_intro = 0;
@@ -145,7 +148,7 @@ class CCC_FlushLog : public IConsole_Command {
 public:
 	CCC_FlushLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR /**args/**/) {
-		FlushLog();
+		xrLogger::FlushLog();
 		Msg		("* Log file has been saved successfully!");
 	}
 };
@@ -162,7 +165,7 @@ class CCC_LogPrint : public IConsole_Command
 			if (!xr_strlen(text))
 				return;
 			Msg("$ LA_DBG: %s", text);
-			FlushLog();
+			xrLogger::FlushLog();
 		}
 };
 
@@ -170,8 +173,8 @@ class CCC_ClearLog : public IConsole_Command {
 public:
 	CCC_ClearLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR) {
-		LogFile->clear	();
-		FlushLog				();
+		Console->ClearLog	();
+		xrLogger::FlushLog				();
 		Msg						("* Log file has been cleaned successfully!");
 	}
 };
@@ -405,7 +408,7 @@ public:
 			if (ai().script_engine().functor<void>(S, lua_function))
 				lua_function();
 			else
-				Log("* Can't find function: ", S);
+				Msg("* Can't find function: ", S);
 		}
 	}
 };
@@ -498,7 +501,7 @@ public:
 			CActor			*actor = Actor();
 			Console->Hide();
 			string_path		fn_;
-			strconcat(sizeof(fn_), fn_, args, ".xrdemo");
+			xr_strconcat(fn_, args, ".xrdemo");
 			string_path		fn;
 			FS.update_path(fn, "$game_saves$", fn_);
 			if (actor && actor->CanBeDrawLegs() && actor->IsFirstEye() && !actor->IsActorShadowsOn())
@@ -506,7 +509,7 @@ public:
 				actor->setVisible(false);
 				actor->SetDrawLegs(false);
 			}
-			g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord(fn, &DemoRecordCallback));
+			g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord(fn/*, &DemoRecordCallback*/));
 		}
 	}
 };
@@ -532,7 +535,7 @@ public:
 				loops = atoi(comma + 1);
 				*comma = 0;	//. :)
 			}
-			strconcat(sizeof(fn), fn, args, ".xrdemo");
+			xr_strconcat(fn, args, ".xrdemo");
 			FS.update_path(fn, "$game_saves$", fn);
 			g_pGameLevel->Cameras().AddCamEffector(new CDemoPlay(fn, 1.0f, loops));
 		}
@@ -669,7 +672,7 @@ public:
 		timer.Start();
 
 		if (!xr_strlen(S)){
-			strconcat(sizeof(S), S, Core.UserName, "_", "quicksave");
+			xr_strconcat(S, Core.UserName, "_", "quicksave");
 			NET_Packet			net_packet;
 			net_packet.w_begin(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
@@ -694,7 +697,7 @@ public:
 		SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("game_saved", true);
 		_s->m_endTime = Device.fTimeGlobal + 3.0f;// 3sec
 		string_path					save_name;
-		strconcat(sizeof(save_name), save_name, *CStringTable().translate("st_game_saved"), ": ", S);
+		xr_strconcat(save_name, *CStringTable().translate("st_game_saved"), ": ", S);
 		_s->wnd()->TextItemControl()->SetText(save_name);
 
 		xr_strcat(S, ".dds");
@@ -771,12 +774,12 @@ public:
 
 		string512				command;
 		if (ai().get_alife()) {
-			strconcat(sizeof(command), command, "load ", g_last_saved_game);
+			xr_strconcat(command, "load ", g_last_saved_game);
 			Console->Execute(command);
 			return;
 		}
 
-		strconcat(sizeof(command), command, "start server(", g_last_saved_game, "/single/alife/load)");
+		xr_strconcat(command, "start server(", g_last_saved_game, "/single/alife/load)");
 		Console->Execute(command);
 	}
 
@@ -970,7 +973,7 @@ struct CCC_ReloadSystemLtx : public IConsole_Command {
 		FS.update_path (fname,"$game_config$","system.ltx");
 		CInifile::Destroy(pSettings);
 		pSettings = new CInifile(fname,TRUE);
-		CHECK_OR_EXIT(0!=pSettings->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
+		CHECK_OR_EXIT(0!=pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 		Msg("system.ltx was reloaded.");
 	}
 };
@@ -1144,40 +1147,47 @@ public:
 
 };
 
+typedef void (*full_memory_stats_callback_type) ();
+XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback;
+
+static void full_memory_stats()
+{
+	Memory.mem_compact();
+	u32		_process_heap = mem_usage_impl(nullptr, nullptr);
+#ifdef SEVERAL_ALLOCATORS
+	u32		_render = ::Render->memory_usage();
+#endif // SEVERAL_ALLOCATORS
+	int		_eco_strings = (int)g_pStringContainer->stat_economy();
+	int		_eco_smem = (int)g_pSharedMemoryContainer->stat_economy();
+	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+
+
+	//if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
+	//	Resource check moved to m_pRender
+	if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+	log_vminfo();
+
+	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
+
+#ifndef SEVERAL_ALLOCATORS
+	Msg("* [x-ray]: process heap[%d K]", _process_heap / 1024);
+#else // SEVERAL_ALLOCATORS
+	Msg("* [x-ray]: process heap[%d K], render[%d K]", _process_heap / 1024, _render / 1024);
+#endif // SEVERAL_ALLOCATORS
+
+	Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
+}
+
 class CCC_MemStats : public IConsole_Command
 {
 public:
-	CCC_MemStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_MemStats(LPCSTR N) : IConsole_Command(N) {
+		bEmptyArgsHandled = TRUE;
+		g_full_memory_stats_callback = &full_memory_stats;
+	};
 	virtual void Execute(LPCSTR args) {
-		Memory.mem_compact		();
-		u32		_crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
-		u32		_process_heap	= mem_usage_impl(GetProcessHeap(),0,0);
-#ifdef SEVERAL_ALLOCATORS
-		u32		_game_lua		= game_lua_memory_usage();
-		u32		_render			= ::Render->memory_usage();
-#endif
-		int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
-		int		_eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
-		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
-
-		if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base,c_base,m_lmaps,c_lmaps);
-
-		log_vminfo	();
-
-		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
-
-#ifndef SEVERAL_ALLOCATORS
-		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K]",_crt_heap/1024,_process_heap/1024);
-#else 
-		Msg		("* [x-ray]: crt heap[%d K], process heap[%d K], game lua[%d K], render[%d K]",_crt_heap/1024,_process_heap/1024,_game_lua/1024,_render/1024);
-#endif 
-
-		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
-
-#ifdef FS_DEBUG
-		Msg		("* [x-ray]: file mapping: memory[%d K], count[%d]",g_file_mapped_memory/1024,g_file_mapped_count);
-		dump_file_mappings	();
-#endif 
+		full_memory_stats();
 	}
 };
 
@@ -1574,7 +1584,7 @@ public:
 		string_path				fn;
 
 		if (0==strext(arguments))
-			strconcat			(sizeof(name),name,arguments,".ogf");
+			xr_strconcat		(name,arguments,".ogf");
 		else
 			xr_strcpy			(name,sizeof(name),arguments);
 
@@ -1626,10 +1636,10 @@ static void LoadTokensFromIni(xr_vector<xr_token>& tokens, LPCSTR section)
 
 void CCC_RegisterCommands()
 {
-	g_uCommonFlags = {0};
-	g_uCommonFlags.set		(CF_AiUseTorchDynamicLights, true);
-	g_uCommonFlags.set		(CF_SkipTextureLoading, false);
-	g_uCommonFlags.set		(CF_Prefetch_UI, false);
+//	g_uCommonFlags = {0};
+//	g_uCommonFlags.set		(CF_AiUseTorchDynamicLights, true);
+//	g_uCommonFlags.set		(CF_SkipTextureLoading, false);
+//	g_uCommonFlags.set		(CF_Prefetch_UI, false);
 	psActorFlags.set		(AF_ALWAYSRUN, true);
 	psActorFlags.set		(AF_WPN_BOBBING, true);
 	psActorFlags.set		(AF_HEAD_BOBBING, true);
@@ -1663,7 +1673,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_LuaHelp,				"lua_help");
 
 	CMD1(DumpTxrsForPrefetching,	"ui_textures_for_prefetching");//Prints the list of UI textures, which caused stutterings during game
-	CMD3(CCC_Mask,					"prefetch_ui_textures", &g_uCommonFlags, CF_Prefetch_UI); //Lowers lagging when ui windows are opened the first time
+//	CMD3(CCC_Mask,					"prefetch_ui_textures", &g_uCommonFlags, CF_Prefetch_UI); //Lowers lagging when ui windows are opened the first time
 
 	CMD4(CCC_Integer,				"hud_adjust_mode", &hud_adj_mode, 0, 9);
 	CMD4(CCC_Integer,				"hud_adjust_item_index",	&hud_adj_item_idx,	0, 1);
@@ -1673,7 +1683,7 @@ void CCC_RegisterCommands()
 	CMD1(CCC_TuneAttachableItem,	"adjust_attachable_item");
 
 	CMD1(CCC_MainMenu,				"main_menu");
-	CMD3(CCC_Mask,					"g_skip_texture_load", &g_uCommonFlags, CF_SkipTextureLoading); //useful for faster r2 3 4 debugging
+//	CMD3(CCC_Mask,					"g_skip_texture_load", &g_uCommonFlags, CF_SkipTextureLoading); //useful for faster r2 3 4 debugging
 
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor");			// set time factor
 	CMD1(CCC_ALifeSwitchDistance,	"al_switch_distance");		// set switch distance
@@ -1693,8 +1703,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,				"string_table_error_msg", &CStringTable::m_bWriteErrorsToLog, 0, 1);
 
 	//---Development cheats
-	if (CApplication::isDeveloperMode)
-	{
+#ifndef MASTER_GOLD
 		CMD3(CCC_Mask,					"ai_ignore_actor", &psActorFlags, AF_INVISIBLE);
 		CMD3(CCC_Mask,					"g_god", &psActorFlags, AF_GODMODE);
 		CMD1(CCC_Spawn,					"g_spawn");
@@ -1702,7 +1711,7 @@ void CCC_RegisterCommands()
 		CMD1(CCC_Script,				"run_script");
 		CMD1(CCC_ScriptCommand,			"run_string");
 		CMD1(CCC_ClearActorEffects,		"clear_actor_effects");
-	}
+#endif
 	CMD1(CCC_JumpToLevel,			"jump_to_level");
 	CMD1(CCC_ReloadSystemLtx,		"reload_system_ltx");
 
@@ -1712,7 +1721,11 @@ void CCC_RegisterCommands()
 	CMD1(CCC_PHFps,					"ph_frequency");
 	CMD1(CCC_PHIterations,			"ph_iterations");
 
-	CMD3(CCC_Mask,					"ai_use_torch_dynamic_lights", &g_uCommonFlags, CF_AiUseTorchDynamicLights);
+	g_uCommonFlags.zero();
+	g_uCommonFlags.set(flAiUseTorchDynamicLights, TRUE);
+
+	CMD3(CCC_Mask,					"ai_use_torch_dynamic_lights", &g_uCommonFlags, flAiUseTorchDynamicLights);
+
 	CMD4(CCC_Integer,				"g_intro", &ps_intro, 0, 1);
 
 	CMD3(CCC_Mask,					"mt_ai_vision", &g_mt_config, mtAiVision);
@@ -1751,7 +1764,7 @@ void CCC_RegisterCommands()
 	LoadTokensFromIni				(qhud_type_token, "ui_hud_types");
 	CMD3(CCC_UiHud_Mode,			"ui_hud_type", &ui_hud_type, qhud_type_token.data());
 	CMD3(CCC_Mask,					"cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
-	CMD3(CCC_Mask,					"show_clock", &psHUD_Flags, HUD_SHOW_CLOCK);
+//	CMD3(CCC_Mask,					"show_clock", &psHUD_Flags, HUD_SHOW_CLOCK);
 	CMD1(CCC_ChangeLanguage,		"language");
 
 	CMD4(CCC_Integer,				"quick_save_counter", &quick_save_counter, 0, 128);

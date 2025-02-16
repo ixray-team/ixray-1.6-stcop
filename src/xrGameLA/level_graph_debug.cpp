@@ -165,7 +165,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		Fvector4				temp;
 		Device->mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 		
 		if (temp.z < 0.f) {
 			show_text			= false;
@@ -287,7 +287,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		if (temp.x > 1.f)
 			continue;
 
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 	}
 }
 
@@ -309,7 +309,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		Fvector4				temp;
 		Device->mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 		
 		if (temp.z < 0.f) {
 			show_text			= false;
@@ -431,7 +431,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		if (temp.x > 1.f)
 			continue;
 
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 	}
 }
 

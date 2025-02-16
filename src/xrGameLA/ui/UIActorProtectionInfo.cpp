@@ -53,7 +53,7 @@ void UIActorProtectionInfo::InitFromXml(CUIXml& xml_doc)
 
 	m_listWnd					= new CUIScrollView(); m_listWnd->SetAutoDelete(true);
 	AttachChild					(m_listWnd);
-	strconcat					(sizeof(buff),buff, base, ":scroll_view");
+	xr_strconcat				(buff, base, ":scroll_view");
 	CUIXmlInit::InitScrollView	(xml_doc, buff, 0, m_listWnd);
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
@@ -61,7 +61,7 @@ void UIActorProtectionInfo::InitFromXml(CUIXml& xml_doc)
 		m_items[i]				= new CUIStatic();
 		CUIStatic* st			= m_items[i];
 		st->SetAutoDelete		(false);
-		strconcat				(sizeof(buff),buff, base, ":static_", infoLines[i].staticName);
+		xr_strconcat			(buff, base, ":static_", infoLines[i].staticName);
 		CUIXmlInit::InitStatic	(xml_doc, buff,	0, st);
 	}
 

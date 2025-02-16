@@ -61,10 +61,10 @@ extern int g_AI_inactive_time;
 void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
 	char	buf[128];
-	fwd		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_fwd"));
-	back	= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_back"));
-	ls		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_ls"));
-	rs		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_rs"));
+	fwd		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_fwd"));
+	back	= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_back"));
+	ls		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_ls"));
+	rs		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_rs"));
 }
 
 //void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
@@ -310,11 +310,11 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	if (g_Alive()) {
 		if (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.seqParallel.push_back	(xr_delegate<void()>(this, &CCustomMonster::Exec_Visibility));
 #else // DEBUG
 		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+				Device.seqParallel.push_back(xr_delegate<void()>(this, &CCustomMonster::Exec_Visibility));
 			else
 				Exec_Visibility				();
 		}
@@ -424,7 +424,7 @@ void CCustomMonster::UpdateCL	()
 	*/
 
 	if (g_mt_config.test(mtSoundPlayer))
-		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::update_sound_player));
+		Device.seqParallel.push_back	(xr_delegate<void()>(this, &CCustomMonster::update_sound_player));
 	else {
 		START_PROFILE("CustomMonster/client_update/sound_player")
 		update_sound_player	();
@@ -756,13 +756,13 @@ void CCustomMonster::net_Destroy()
 	movement().net_Destroy		();
 	
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_delegate<void()>(
 			this,
 			&CCustomMonster::update_sound_player
 		)
 	);
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_delegate<void()>(
 			this,
 			&CCustomMonster::Exec_Visibility
 		)
@@ -1055,10 +1055,10 @@ void CCustomMonster::OnRender()
 	for (int i=0; i<1; ++i) {
 		const xr_vector<CDetailPathManager::STravelPoint>		&keys	= !i ? movement().detail().m_key_points					: movement().detail().m_key_points;
 		const xr_vector<DetailPathManager::STravelPathPoint>	&path	= !i ? movement().detail().path()	: movement().detail().path();
-		u32									color0	= !i ? D3DCOLOR_XRGB(0,255,0)		: D3DCOLOR_XRGB(0,0,255);
-		u32									color1	= !i ? D3DCOLOR_XRGB(255,0,0)		: D3DCOLOR_XRGB(255,255,0);
-		u32									color2	= !i ? D3DCOLOR_XRGB(0,0,255)		: D3DCOLOR_XRGB(0,255,255);
-		u32									color3	= !i ? D3DCOLOR_XRGB(255,255,255)	: D3DCOLOR_XRGB(255,0,255);
+		u32									color0	= !i ? color_xrgb(0,255,0)		: color_xrgb(0,0,255);
+		u32									color1	= !i ? color_xrgb(255,0,0)		: color_xrgb(255,255,0);
+		u32									color2	= !i ? color_xrgb(0,0,255)		: color_xrgb(0,255,255);
+		u32									color3	= !i ? color_xrgb(255,255,255)	: color_xrgb(255,0,255);
 		float								radius0 = !i ? .1f : .15f;
 		float								radius1 = !i ? .2f : .3f;
 		{
@@ -1097,19 +1097,19 @@ void CCustomMonster::OnRender()
 
 		Fvector				P1 = ai().level_graph().vertex_position(node);
 		P1.y				+= 1.f;
-		Level().debug_renderer().draw_aabb	(P1,.5f,1.f,.5f,D3DCOLOR_XRGB(255,0,0));
+		Level().debug_renderer().draw_aabb	(P1,.5f,1.f,.5f,color_xrgb(255,0,0));
 	}
 	if (g_Alive()) {
 		if (memory().enemy().selected()) {
 			Fvector				P1 = memory().memory(memory().enemy().selected()).m_object_params.m_position;
 			P1.y				+= 1.f;
-			Level().debug_renderer().draw_aabb	(P1,1.f,1.f,1.f,D3DCOLOR_XRGB(0,0,0));
+			Level().debug_renderer().draw_aabb	(P1,1.f,1.f,1.f,color_xrgb(0,0,0));
 		}
 
 		if (memory().danger().selected()) {
 			Fvector				P1 = memory().danger().selected()->position();
 			P1.y				+= 1.f;
-			Level().debug_renderer().draw_aabb	(P1,1.f,1.f,1.f,D3DCOLOR_XRGB(0,0,0));
+			Level().debug_renderer().draw_aabb	(P1,1.f,1.f,1.f,color_xrgb(0,0,0));
 		}
 	}
 

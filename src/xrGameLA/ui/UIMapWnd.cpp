@@ -21,13 +21,12 @@
 #include "../script_engine.h"
 #include "../uicursor.h"
 
-#include <dinput.h>				//remove me !!!
-#include "../../xr_input.h"		//remove me !!!
+#include "../../xrEngine/xr_input.h"		//remove me !!!
 class	game_cl_GameState;
 
 const	int			SCROLLBARS_SHIFT			= 5;
-const	int			VSCROLLBAR_STEP				= 20; // В пикселях
-const	int			HSCROLLBAR_STEP				= 20; // В пикселях
+const	int			VSCROLLBAR_STEP				= 20; // Р’ РїРёРєСЃРµР»СЏС…
+const	int			HSCROLLBAR_STEP				= 20; // Р’ РїРёРєСЃРµР»СЏС…
 
 static bool			MAP_FLY_MODE				= true;
 
@@ -60,17 +59,17 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	string512	pth;
 	// load map background
 	CUIXmlInit xml_init;
-	strconcat(sizeof(pth),pth,start_from,":main_wnd");
+	xr_strconcat(pth,start_from,":main_wnd");
 	xml_init.InitWindow				(uiXml, pth, 0, this);
 
 
 	m_UIMainFrame					= new CUIFrameWindow(); m_UIMainFrame->SetAutoDelete(true);
 	AttachChild						(m_UIMainFrame);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:main_map_frame");
+	xr_strconcat(pth,start_from,":main_wnd:main_map_frame");
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
 
 	m_UILevelFrame					= new CUIWindow(); m_UILevelFrame->SetAutoDelete(true);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:main_map_frame:level_frame");
+	xr_strconcat(pth,start_from,":main_wnd:main_map_frame:level_frame");
 	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
 	m_UIMainFrame->AttachChild		(m_UILevelFrame);
 
@@ -96,7 +95,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	UIMainMapHeader					= new CUIFrameLineWnd(); UIMainMapHeader->SetAutoDelete(true);
 	m_UIMainFrame->AttachChild		(UIMainMapHeader);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:map_header_frame_line");
+	xr_strconcat(pth,start_from,":main_wnd:map_header_frame_line");
 	xml_init.InitFrameLine			(uiXml, pth, 0, UIMainMapHeader);
 
 	ZeroMemory						(m_ToolBar,sizeof(m_ToolBar));
@@ -105,7 +104,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	EMapToolBtn		btnIndex;
 	btnIndex		= eGlobalMap;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":global_map_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":global_map_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -115,7 +114,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	btnIndex		= eActor;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":actor_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":actor_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -126,7 +125,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 
 	btnIndex		= eZoomIn;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":zoom_in_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":zoom_in_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -135,7 +134,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		AddCallbackStr						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
 	}
 	btnIndex		= eZoomOut;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":zoom_out_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":zoom_out_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -145,7 +144,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	btnIndex		= eAddSpot;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":add_spot_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":add_spot_btn");
 	if(uiXml.NavigateToNode(pth,0) && IsGameTypeSingle() ){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -174,8 +173,8 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}*/
 
 	m_text_hint							= new CUITextWnd();
-	strconcat							(sizeof(pth),pth,start_from,":main_wnd:text_hint");
-	xml_init.InitTextWnd					(uiXml, pth, 0, m_text_hint);
+	xr_strconcat						(pth,start_from,":main_wnd:text_hint");
+	xml_init.InitTextWnd				(uiXml, pth, 0, m_text_hint);
 
 	m_hint								= new CUIMapHint();
 	m_hint->Init						();
@@ -497,7 +496,7 @@ void CUIMapWnd::ShowSettingsWindow(LPCSTR type, u16 id, Fvector pos, shared_str 
 	luabind::functor<void>	lua_function;
 	string256		fn;
 	xr_strcpy		(fn, pSettings->r_string("lost_alpha_cfg", "on_init_settings_pda_spot"));
-	R_ASSERT2 (ai().script_engine().functor<void>(fn,lua_function),make_string("Can't find function %s",fn));
+	R_ASSERT2 (ai().script_engine().functor<void>(fn,lua_function),make_string<const char*>("Can't find function %s",fn));
 	
 	string256 MapName;
 	xr_strcpy(MapName, levelName._get()->value);
@@ -546,7 +545,7 @@ void CUIMapWnd::CreateSpotWindow(Fvector RealPosition)
 	luabind::functor<void>	lua_function;
 	string256		fn;
 	xr_strcpy		(fn, pSettings->r_string("lost_alpha_cfg", "on_init_pda_spot"));
-	R_ASSERT2 (ai().script_engine().functor<void>(fn,lua_function),make_string("Can't find function %s",fn));
+	R_ASSERT2 (ai().script_engine().functor<void>(fn,lua_function),make_string<const char*>("Can't find function %s",fn));
 	lua_function								(MapName, RealPosition);
 
 }
@@ -797,7 +796,7 @@ bool CUIMapWnd::ConvertCursorPosToMap(Fvector* return_position)
 	Position.abs(Position);
 	Position.sub(PosOnMap.lt);
 	
-	//Где находимся от левого верхнего угла
+	//Р“РґРµ РЅР°С…РѕРґРёРјСЃСЏ РѕС‚ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р°
 	//Add cursor position
 	Fvector2 CursorPos = GetUICursor().GetCursorPosition();
 	CursorPos.sub(ActiveMapRect().lt);
@@ -806,11 +805,11 @@ bool CUIMapWnd::ConvertCursorPosToMap(Fvector* return_position)
 
 	//Ratio: Meters to Pixels
 	Fvector2 Ratio;
-	Ratio.x = PosReal.width() /PosOnMap.width();														//Отношение пикселей к реальным метрам
+	Ratio.x = PosReal.width() /PosOnMap.width();														//РћС‚РЅРѕС€РµРЅРёРµ РїРёРєСЃРµР»РµР№ Рє СЂРµР°Р»СЊРЅС‹Рј РјРµС‚СЂР°Рј
 	Ratio.y = PosReal.height() /PosOnMap.height();
 
 	//Location center isn't usually in the map location center
-	//Центр локации не всегда там где центр локации на карте
+	//Р¦РµРЅС‚СЂ Р»РѕРєР°С†РёРё РЅРµ РІСЃРµРіРґР° С‚Р°Рј РіРґРµ С†РµРЅС‚СЂ Р»РѕРєР°С†РёРё РЅР° РєР°СЂС‚Рµ
 	Fvector2 OffsetPosition;
 	OffsetPosition.set( PosReal.rb.x + PosReal.lt.x,PosReal.rb.y + PosReal.lt.y);
 	OffsetPosition.div(2.0f);

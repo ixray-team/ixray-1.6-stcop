@@ -563,19 +563,19 @@ void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 	string256				str;
 	m_fV_Circumspection		= 0.01f;
 
-	strconcat				(sizeof(str),str,"radiation_v",prefix);
+	xr_strconcat			(str,"radiation_v",prefix);
 	m_fV_Radiation			= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"radiation_health_v",prefix);
+	xr_strconcat			(str,"radiation_health_v",prefix);
 	m_fV_RadiationHealth	= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"morale_v",prefix);
+	xr_strconcat			(str,"morale_v",prefix);
 	m_fV_EntityMorale		= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"psy_health_v",prefix);
+	xr_strconcat			(str,"psy_health_v",prefix);
 	m_fV_PsyHealth			= pSettings->r_float(sect,str);	
-	strconcat				(sizeof(str),str,"bleeding_v",prefix);
+	xr_strconcat			(str,"bleeding_v",prefix);
 	m_fV_Bleeding			= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"wound_incarnation_v",prefix);
+	xr_strconcat			(str,"wound_incarnation_v",prefix);
 	m_fV_WoundIncarnation	= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"health_restore_v",prefix);
+	xr_strconcat			(str,"health_restore_v",prefix);
 	m_fV_HealthRestore		= READ_IF_EXISTS(pSettings,r_float,sect, str,0.0f);
 }
 

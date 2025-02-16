@@ -46,7 +46,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	AttachChild					(&UIStaticBottom);
 	CUIXmlInit::InitStatic		(*m_uiXml, "bottom_background", 0, &UIStaticBottom);
 
-	//èêîíêè ñ èçîáðàæåíèå íàñ è ïàðòíåðà ïî òîðãîâëå
+	//Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ñ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð½Ð°Ñ Ð¸ Ð¿Ð°Ñ€Ñ‚Ð½ÐµÑ€Ð° Ð¿Ð¾ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ðµ
 	AttachChild					(&UIOurIcon);
 	CUIXmlInit::InitStatic		(*m_uiXml, "left_character_icon", 0, &UIOurIcon);
 	AttachChild					(&UIOthersIcon);
@@ -56,23 +56,23 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	UIOthersIcon.AttachChild	(&UICharacterInfoRight);
 	UICharacterInfoRight.Init	(0.0f, 0.0f, UIOthersIcon.GetWidth(), UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
 
-	//îñíîâíîé ôðåéì äèàëîãà
+	//Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ñ„Ñ€ÐµÐ¹Ð¼ Ð´Ð¸Ð°Ð»Ð¾Ð³Ð°
 	AttachChild					(&UIDialogFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
 //	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
-	// Ôðåéì ñ íàùèìè ôðàçàìè
+	// Ð¤Ñ€ÐµÐ¹Ð¼ Ñ Ð½Ð°Ñ‰Ð¸Ð¼Ð¸ Ñ„Ñ€Ð°Ð·Ð°Ð¼Ð¸
 	AttachChild					(&UIOurPhrasesFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
 //	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 
-	//Îòâåòû
+	//ÐžÑ‚Ð²ÐµÑ‚Ñ‹
 	UIAnswersList				= new CUIScrollView();
 	UIAnswersList->SetAutoDelete(true);
 	UIDialogFrame.AttachChild	(UIAnswersList);
 	CUIXmlInit::InitScrollView	(*m_uiXml, "answers_list", 0, UIAnswersList);
 	UIAnswersList->SetWindowName("---UIAnswersList");
 
-	//Âîïðîñû
+	//Ð’Ð¾Ð¿Ñ€Ð¾ÑÑ‹
 	UIQuestionsList				= new CUIScrollView();
 	UIQuestionsList->SetAutoDelete(true);
 	UIOurPhrasesFrame.AttachChild(UIQuestionsList);
@@ -80,15 +80,15 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	UIQuestionsList->SetWindowName("---UIQuestionsList");
 
 
-	//êíîïêà ïåðåõîäà â ðåæèì òîðãîâëè
+	//ÐºÐ½Ð¾Ð¿ÐºÐ° Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð° Ð² Ñ€ÐµÐ¶Ð¸Ð¼ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ð¸
 	AttachChild					(&UIToTradeButton);
 	CUIXmlInit::Init3tButton	(*m_uiXml, "button", 0, &UIToTradeButton);
 	UIToTradeButton.SetWindowName("trade_btn");
 
-	//Ýëåìåíòû àâòîìàòè÷åñêîãî äîáàâëåíèÿ
+	//Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¾Ð³Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	CUIXmlInit::InitAutoStatic	(*m_uiXml, "auto_static", this);
 
-	// øðèôò äëÿ èíäèêàöèè èìåíè ïåðñîíàæà â îêíå ðàçãîâîðà
+	// ÑˆÑ€Ð¸Ñ„Ñ‚ Ð´Ð»Ñ Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ†Ð¸Ð¸ Ð¸Ð¼ÐµÐ½Ð¸ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð° Ð² Ð¾ÐºÐ½Ðµ Ñ€Ð°Ð·Ð³Ð¾Ð²Ð¾Ñ€Ð°
 	CUIXmlInit::InitFont		(*m_uiXml, "font", 0, m_iNameTextColor, m_pNameTextFont);
 
 	CGameFont * pFont			= NULL;
@@ -131,8 +131,8 @@ void CUITalkDialogWnd::OnTradeClicked(CUIWindow* w, void*)
 		GetTop()->SendMessage(this, TALK_DIALOG_TRADE_BUTTON_CLICKED);
 }
 
-//ïåðåñûëàåì ñîîáùåíèå ðîäèòåëüñêîìó îêíó äëÿ îáðàáîòêè
-//è ôèëüòðóåì åñëè îíî ïðèøëî îò íàøåãî äî÷åðíåãî îêíà
+//Ð¿ÐµÑ€ÐµÑÑ‹Ð»Ð°ÐµÐ¼ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð¼Ñƒ Ð¾ÐºÐ½Ñƒ Ð´Ð»Ñ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ¸
+//Ð¸ Ñ„Ð¸Ð»ÑŒÑ‚Ñ€ÑƒÐµÐ¼ ÐµÑÐ»Ð¸ Ð¾Ð½Ð¾ Ð¿Ñ€Ð¸ÑˆÐ»Ð¾ Ð¾Ñ‚ Ð½Ð°ÑˆÐµÐ³Ð¾ Ð´Ð¾Ñ‡ÐµÑ€Ð½ÐµÐ³Ð¾ Ð¾ÐºÐ½Ð°
 void CUITalkDialogWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
@@ -238,7 +238,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 
-	strconcat						(sizeof(str),str,path,":content_text");
+	xr_strconcat					(str,path,":content_text");
 	xml_init.Init3tButton			(*xml_doc, str, 0, m_text);
 
 	Register						(m_text);
@@ -248,7 +248,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 	m_num_text						= new CUITextWnd();
 	m_num_text->SetAutoDelete		(true);
 	AttachChild						(m_num_text);
-	strconcat						(sizeof(str),str,path,":number_phrase");
+	xr_strconcat					(str,path,":number_phrase");
 	xml_init.InitTextWnd			(*xml_doc, str, 0, m_num_text);
 }
 
@@ -277,16 +277,16 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 	string512						str;
 	CUIXmlInit						xml_init;
 
-	xr_strcpy							(str,path);
+	xr_strcpy						(str,path);
 	xml_init.InitWindow				(*xml_doc, str, 0, this);
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 	m_bottom_footer					= xml_doc->ReadAttribFlt(path,0,"bottom_footer",0.0f);
-	strconcat						(sizeof(str),str,path,":content_text");
-	xml_init.InitTextWnd				(*xml_doc, str, 0, m_text);
+	xr_strconcat					(str,path,":content_text");
+	xml_init.InitTextWnd			(*xml_doc, str, 0, m_text);
 
-	strconcat						(sizeof(str),str,path,":name_caption");
-	xml_init.InitTextWnd				(*xml_doc, str, 0, m_name);
+	xr_strconcat					(str,path,":name_caption");
+	xml_init.InitTextWnd			(*xml_doc, str, 0, m_name);
 	SetAutoDelete					(true);
 }
 
@@ -309,7 +309,7 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 	string512						str;
 	CUIXmlInit						xml_init;
 
-	strconcat						(sizeof(str),str,path,":msg_icon");
+	xr_strconcat					(str,path,":msg_icon");
 	xml_init.InitStatic				(*xml_doc, str, 0, m_icon);
 }
 

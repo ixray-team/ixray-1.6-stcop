@@ -274,7 +274,7 @@ bool CIKFoot::make_shift( Fmatrix &xm,const Fvector &cl_point, bool collide, con
 	if(shift_m > 0.f)
 	{
 		DBG_OpenCashedDraw();
-		DBG_DrawLine( toe, Fvector().add( toe, shift ), D3DCOLOR_XRGB( 255, 255, 255 )  );
+		DBG_DrawLine( toe, Fvector().add( toe, shift ), color_xrgb( 255, 255, 255 )  );
 		DBG_ClosedCashedDraw( 1000 );
 	}
 #endif
@@ -321,7 +321,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 #ifdef DEBUG
 		//if( ph_dbg_draw_mask.test( phDbgDrawIKGoal ) )
 		//{
-		//	DBG_DrawLine( global_point, Fvector().add( global_point, foot_normal ), D3DCOLOR_XRGB( 0, 255, 255) );
+		//	DBG_DrawLine( global_point, Fvector().add( global_point, foot_normal ), color_xrgb( 0, 255, 255) );
 		//}
 #endif
 	if( cld.m_collide_point == ik_foot_geom::heel || cld.m_collide_point == ik_foot_geom::side )
@@ -332,7 +332,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 		foot.transform_tiny(global_point, heel );
 #ifdef DEBUG
 		if( ph_dbg_draw_mask.test( phDbgDrawIKGoal ) )
-			DBG_DrawPoint( global_point, 0.01, D3DCOLOR_XRGB( 0, 255, 255));
+			DBG_DrawPoint( global_point, 0.01, color_xrgb( 0, 255, 255));
 #endif
 		Fmatrix foot_to_ref;
 		ref_bone_to_foot_transform(foot_to_ref).transform_tiny(local_point, heel );
@@ -372,7 +372,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test( phDbgDrawIKGoal ))
 	{
-		DBG_DrawPoint( global_point, 0.03f, D3DCOLOR_RGBA( 255, 0, 0, 255 ) );
+		DBG_DrawPoint( global_point, 0.03f, color_rgba( 255, 0, 0, 255 ) );
 	}
 	if(!fsimilar( _abs( DET( g_anim ) - 1.f ), _abs( DET( m.get() ) - 1.f ), 0.001f ) )
 		Msg("scale g_anim: %f scale m: %f ",  DET( g_anim ) ,  DET( m.get() ) );

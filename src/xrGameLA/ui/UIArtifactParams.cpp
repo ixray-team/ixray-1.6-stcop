@@ -2,7 +2,7 @@
 #include "UIArtifactParams.h"
 #include "UIStatic.h"
 #include "../inventory_item.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UIXmlInit.h"
 
 CUIArtefactParams::CUIArtefactParams()
@@ -74,7 +74,7 @@ void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 		m_info_items[i]			= new CUIStatic();
 		CUIStatic* _s			= m_info_items[i];
 		_s->SetAutoDelete		(false);
-		strconcat				(sizeof(_buff),_buff, _base, ":static_", af_item_sect_names[i]);
+		xr_strconcat			(_buff, _base, ":static_", af_item_sect_names[i]);
 		CUIXmlInit::InitStatic	(xml_doc, _buff,	0, _s);
 	}
 }

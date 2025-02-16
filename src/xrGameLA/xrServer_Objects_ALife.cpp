@@ -82,11 +82,7 @@ struct SFillPropData{
 		for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i){
             VERIFY				(locations[i].empty());
             string256			caSection, T;
-#ifdef XRSE_FACTORY_EXPORTS
-            strconcat			(sizeof(caSection),caSection,SECTION_HEADER,itoa(i,T,10));
-#else // XRSE_FACTORY_EXPORTS
-            strconcat			(caSection,SECTION_HEADER,itoa(i,T,10));
-#endif // XRSE_FACTORY_EXPORTS
+            xr_strconcat			(caSection,SECTION_HEADER,itoa(i,T,10));
             R_ASSERT			(Ini->section_exist(caSection));
             for (k = 0; Ini->r_line(caSection,k,&N,&V); ++k)
                 locations[i].push_back	(xr_rtoken(V,atoi(N)));

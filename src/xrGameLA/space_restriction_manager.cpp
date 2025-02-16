@@ -172,7 +172,7 @@ CSpaceRestrictionManager::CRestrictionPtr	CSpaceRestrictionManager::restriction	
 	out_restrictors				= normalize_string(out_restrictors);
 	in_restrictors				= normalize_string(in_restrictors);
 
-	strconcat					(sizeof(m_temp),m_temp,*out_restrictors,"\x01",*in_restrictors);
+	xr_strconcat				(m_temp,*out_restrictors,"\x01",*in_restrictors);
 	shared_str					space_restrictions = m_temp;
 	
 	SPACE_RESTRICTIONS::const_iterator	I = m_space_restrictions.find(space_restrictions);

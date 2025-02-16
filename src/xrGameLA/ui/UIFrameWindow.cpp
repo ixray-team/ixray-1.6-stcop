@@ -88,15 +88,15 @@ void  CUIFrameWindow::InitTextureEx(LPCSTR texture, LPCSTR sh_name)
 		CInifile::Destroy(ini);
 	}
 
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[fmBK]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_l"),	sh_name, m_shader, m_tex_rect[fmL]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_r"),	sh_name, m_shader, m_tex_rect[fmR]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_t"),	sh_name, m_shader, m_tex_rect[fmT]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[fmB]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_lt"),	sh_name, m_shader, m_tex_rect[fmLT]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_rb"),	sh_name, m_shader, m_tex_rect[fmRB]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_rt"),	sh_name, m_shader, m_tex_rect[fmRT]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf), buf, texture,"_lb"),	sh_name, m_shader, m_tex_rect[fmLB]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[fmBK]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_l"),	sh_name, m_shader, m_tex_rect[fmL]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_r"),	sh_name, m_shader, m_tex_rect[fmR]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_t"),	sh_name, m_shader, m_tex_rect[fmT]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[fmB]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_lt"),	sh_name, m_shader, m_tex_rect[fmLT]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_rb"),	sh_name, m_shader, m_tex_rect[fmRB]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_rt"),	sh_name, m_shader, m_tex_rect[fmRT]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf, texture,"_lb"),	sh_name, m_shader, m_tex_rect[fmLB]);
 
 	R_ASSERT2(fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmT].height()),texture );
 	R_ASSERT2(fsimilar(m_tex_rect[fmLT].height(), m_tex_rect[fmRT].height()),texture );

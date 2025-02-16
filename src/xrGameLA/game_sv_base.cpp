@@ -42,21 +42,21 @@ xr_token	round_end_result_str[]=
 // Main
 game_PlayerState*	game_sv_GameState::get_it					(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get			(it);
+	xrClientData*	C	= (xrClientData*)m_server->GetClientByID			(it);
 	if (0==C)			return 0;
 	else				return C->ps;
 }
 
 game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
 {
-	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
+	xrClientData*	C	= (xrClientData*)m_server->GetClientByID	(id);
 	if (0==C)			return NULL;
 	else				return C->ps;
 }
 
 ClientID				game_sv_GameState::get_it_2_id				(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
+	xrClientData*	C	= (xrClientData*)m_server->GetClientByID		(it);
 	if (0==C){
 		ClientID clientID;clientID.set(0);
 		return clientID;
@@ -66,7 +66,7 @@ ClientID				game_sv_GameState::get_it_2_id				(u32 it)
 
 LPCSTR				game_sv_GameState::get_name_it				(u32 it)
 {
-	xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
+	xrClientData*	C	= (xrClientData*)m_server->GetClientByID		(it);
 	if (0==C)			return 0;
 	else				return *C->name;
 }
@@ -137,7 +137,7 @@ void* game_sv_GameState::get_client (u16 id) //if exist
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData*	C	= (xrClientData*)m_server->client_Get		(it);
+		xrClientData*	C	= (xrClientData*)m_server->GetClientByID		(it);
 		if (!C || !C->ps) continue;
 //		game_PlayerState*	ps	=	get_it	(it);
 		if (C->ps->HasOldID(id)) return C;
@@ -177,7 +177,7 @@ xr_vector<u16>*		game_sv_GameState::get_children				(ClientID id)
 s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
 {
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat	(op,"/",name,"=");
 	if (strstr(lst,op))	return atoi	(strstr(lst,op)+xr_strlen(op));
 	else				return def;
 }
@@ -185,7 +185,7 @@ s32					game_sv_GameState::get_option_i				(LPCSTR lst, LPCSTR name, s32 def)
 float					game_sv_GameState::get_option_f				(LPCSTR lst, LPCSTR name, float def)
 {
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat	(op,"/",name,"=");
 	LPCSTR			found =	strstr(lst,op);
 
 	if (found)
@@ -204,7 +204,7 @@ string64&			game_sv_GameState::get_option_s				(LPCSTR lst, LPCSTR name, LPCSTR 
 	static string64	ret;
 
 	string64		op;
-	strconcat		(sizeof(op),op,"/",name,"=");
+	xr_strconcat	(op,"/",name,"=");
 	LPCSTR			start	= strstr(lst,op);
 	if (start)		
 	{
@@ -241,7 +241,7 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 	u32 p_count = 0;
 	for (u32 p_it=0; p_it<get_players_count(); ++p_it)
 	{
-		xrClientData*	C		=	(xrClientData*)	m_server->client_Get	(p_it);		
+		xrClientData*	C		=	(xrClientData*)	m_server->GetClientByID	(p_it);		
 		if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to)) continue;
 		p_count++;
 	};
@@ -251,7 +251,7 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 	for (u32 p_it=0; p_it<get_players_count(); ++p_it)
 	{
 		string64	p_name;
-		xrClientData*	C		=	(xrClientData*)	m_server->client_Get	(p_it);
+		xrClientData*	C		=	(xrClientData*)	m_server->GetClientByID	(p_it);
 		game_PlayerState* A		=	get_it			(p_it);
 		if (!C->net_Ready || (A->IsSkip() && C->ID != to)) continue;
 		if (0==C)	xr_strcpy(p_name,"Unknown");
@@ -684,7 +684,7 @@ bool game_sv_GameState::NewPlayerName_Exists( void* pClient, LPCSTR NewName )
 	u32	cnt	= get_players_count();
 	for ( u32 it = 0; it < cnt; ++it )	
 	{
-		IClient*	pIC	= m_server->client_Get(it);
+		IClient*	pIC	= m_server->GetClientByID(it);
 		if ( !pIC || pIC == CL ) continue;
 		string64 xName;
 		xr_strcpy( xName, pIC->name.c_str() );
@@ -908,7 +908,7 @@ void		game_sv_GameState::OnRender				()
 {
 	Fmatrix T; T.identity();
 	Fvector V0, V1;
-	u32 TeamColors[TEAM_COUNT] = {D3DCOLOR_XRGB(255, 0, 0), D3DCOLOR_XRGB(0, 255, 0), D3DCOLOR_XRGB(0, 0, 255), D3DCOLOR_XRGB(255, 255, 0)};
+	u32 TeamColors[TEAM_COUNT] = {color_xrgb(255, 0, 0), color_xrgb(0, 255, 0), color_xrgb(0, 0, 255), color_xrgb(255, 255, 0)};
 //	u32 TeamColorsDist[TEAM_COUNT] = {color_argb(128, 255, 0, 0), color_argb(128, 0, 255, 0), color_argb(128, 0, 0, 255), color_argb(128, 255, 255, 0)};
 
 	if (dbg_net_Draw_Flags.test(1<<9))

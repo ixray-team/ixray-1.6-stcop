@@ -20,12 +20,12 @@ void CUIKeyBinding::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 	CUIXmlInit::InitWindow		(xml_doc, path, 0, this);
 	string256					buf;
 	m_scroll_wnd				= new CUIScrollView(); m_scroll_wnd->SetAutoDelete(true); AttachChild(m_scroll_wnd);
-	CUIXmlInit::InitScrollView	(xml_doc, strconcat(sizeof(buf),buf,path,":scroll_view"),0, m_scroll_wnd);
+	CUIXmlInit::InitScrollView	(xml_doc, xr_strconcat(buf,path,":scroll_view"),0, m_scroll_wnd);
 
-	CUIXmlInit::InitFrameWindow	(xml_doc, strconcat(sizeof(buf),buf,path,":frame"),		0, &m_frame);
-	CUIXmlInit::InitFrameLine		(xml_doc, strconcat(sizeof(buf),buf,path,":header_1"),	0, &m_header[0]);
-	CUIXmlInit::InitFrameLine		(xml_doc, strconcat(sizeof(buf),buf,path,":header_2"),	0, &m_header[1]);
-	CUIXmlInit::InitFrameLine		(xml_doc, strconcat(sizeof(buf),buf,path,":header_3"),	0, &m_header[2]);
+	CUIXmlInit::InitFrameWindow	(xml_doc, xr_strconcat(buf,path,":frame"),		0, &m_frame);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":header_1"),	0, &m_header[0]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":header_2"),	0, &m_header[1]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":header_3"),	0, &m_header[2]);
 
 	FillUpList					(xml_doc, path);
 }
@@ -46,7 +46,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 		R_ASSERT							(xr_strlen(grp_name));
 
 		CUIStatic* pItem					= new CUIStatic();
-		CUIXmlInit::InitStatic				(xml_doc_ui, strconcat(sizeof(buf),buf,path_ui,":scroll_view:item_group"),	0, pItem);
+		CUIXmlInit::InitStatic				(xml_doc_ui, xr_strconcat(buf,path_ui,":scroll_view:item_group"),	0, pItem);
 		pItem->TextItemControl()->SetTextST		(grp_name.c_str());
 		m_scroll_wnd->AddWindow				(pItem, true);
 
@@ -61,7 +61,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 			shared_str command_id			= xml_doc.ReadAttrib("command",j,"id");
 
 			pItem							= new CUIStatic();
-			CUIXmlInit::InitStatic			(xml_doc_ui, strconcat(sizeof(buf),buf,path_ui,":scroll_view:item_key"),	0, pItem);
+			CUIXmlInit::InitStatic			(xml_doc_ui, xr_strconcat(buf,path_ui,":scroll_view:item_key"),	0, pItem);
 			pItem->TextItemControl()->SetTextST				(command_id.c_str());
 			m_scroll_wnd->AddWindow			(pItem, true);
 

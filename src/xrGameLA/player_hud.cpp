@@ -87,7 +87,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 #endif // #ifdef DEBUG
 				}
 			}
-			R_ASSERT2(pm->m_animations.size(),make_string("motion not found [%s]", pm->m_base_name.c_str()).c_str());
+			R_ASSERT2(pm->m_animations.size(),make_string<const char*>("motion not found [%s]", pm->m_base_name.c_str()));
 		}
 	}
 }
@@ -122,7 +122,7 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 	if(bone_id==BI_NONE)
 	{
 		if(bSilent)	return;
-		R_ASSERT2	(0,			make_string("model [%s] has no bone [%s]",pSettings->r_string(m_sect_name, "item_visual"), bone_name.c_str()).c_str());
+		R_ASSERT2	(0,			make_string<const char*>("model [%s] has no bone [%s]",pSettings->r_string(m_sect_name, "item_visual"), bone_name.c_str()));
 	}
 	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
 	if(bVisibleNow!=bVisibility)
@@ -234,9 +234,9 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	xr_sprintf	(_prefix,"%s",is_16x9?"_16x9":"");
 	string128	val_name;
 
-	strconcat					(sizeof(val_name),val_name,"hands_position",_prefix);
+	xr_strconcat				(val_name,"hands_position",_prefix);
 	m_hands_attach[0]			= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"hands_orientation",_prefix);
+	xr_strconcat				(val_name,"hands_orientation",_prefix);
 	m_hands_attach[1]			= pSettings->r_fvector3(sect_name, val_name);
 
 	m_item_attach[0]			= pSettings->r_fvector3(sect_name, "item_position");
@@ -273,14 +273,14 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_hands_offset[0][0].set	(0,0,0);
 	m_hands_offset[1][0].set	(0,0,0);
 
-	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_pos",_prefix);
+	xr_strconcat				(val_name,"aim_hud_offset_pos",_prefix);
 	m_hands_offset[0][1]		= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"aim_hud_offset_rot",_prefix);
+	xr_strconcat				(val_name,"aim_hud_offset_rot",_prefix);
 	m_hands_offset[1][1]		= pSettings->r_fvector3(sect_name, val_name);
 
-	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_pos",_prefix);
+	xr_strconcat				(val_name,"gl_hud_offset_pos",_prefix);
 	m_hands_offset[0][2]		= pSettings->r_fvector3(sect_name, val_name);
-	strconcat					(sizeof(val_name),val_name,"gl_hud_offset_rot",_prefix);
+	xr_strconcat				(val_name,"gl_hud_offset_rot",_prefix);
 	m_hands_offset[1][2]		= pSettings->r_fvector3(sect_name, val_name);
 
 
@@ -318,8 +318,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	xr_sprintf				(anim_name_r,"%s%s",anm_name_b.c_str(),((m_attach_place_idx==1)&&is_16x9)?"_16x9":"");
 
 	player_hud_motion* anm	= m_hand_motions.find_motion(anim_name_r);
-	R_ASSERT2				(anm, make_string("model [%s] has no motion alias defined [%s]", m_sect_name.c_str(), anim_name_r).c_str());
-	R_ASSERT2				(anm->m_animations.size(), make_string("model [%s] has no motion defined in motion_alias [%s]", pSettings->r_string(m_sect_name, "item_visual"), anim_name_r).c_str());
+	R_ASSERT2				(anm, make_string<const char*>("model [%s] has no motion alias defined [%s]", m_sect_name, anim_name_r));
+	R_ASSERT2				(anm->m_animations.size(), make_string<const char*>("model [%s] has no motion defined in motion_alias [%s]", pSettings->r_string(m_sect_name, "item_visual"), anim_name_r));
 	
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
@@ -380,7 +380,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 			string_path			ce_path;
 			string_path			anm_name;
-			strconcat			(sizeof(anm_name),anm_name,"camera_effects\\weapon\\", M.name.c_str(),".anm");
+			xr_strconcat		(anm_name,"camera_effects\\weapon\\", M.name.c_str(),".anm");
 			if (FS.exist( ce_path, "$game_anims$", anm_name))
 			{
 				CAnimatorCamEffector* e		= new CAnimatorCamEffector();
@@ -518,7 +518,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	if(!pm)
 		return						100; // ms TEMPORARY
 	R_ASSERT2						(pm, 
-		make_string	("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str() ).c_str() 
+		make_string	<const char*>("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str() ) 
 		);
 	return motion_length			(pm->m_animations[0].mid, md, pm->m_anim_speed);
 }

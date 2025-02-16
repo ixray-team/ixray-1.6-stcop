@@ -34,7 +34,7 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	AttachChild(&UISpeedometer);
 	xml_init.InitStatic(uiXml, "speedometer", 0, &UISpeedometer);
 	string256 buf;
-	strconcat(sizeof(buf),buf,"speedometer", ":pointer");
+	xr_strconcat(buf,"speedometer", ":pointer");
 	float offset_x = uiXml.ReadAttribFlt(buf, 0, "offset_x", 0);
 	float offset_y = uiXml.ReadAttribFlt(buf, 0, "offset_y", 0);
 	float angle_min = uiXml.ReadAttribFlt(buf, 0, "angle_min", -60);
@@ -45,7 +45,7 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 
 	AttachChild(&UITachometer);
 	xml_init.InitStatic(uiXml, "tachometer", 0, &UITachometer);
-	strconcat(sizeof(buf),buf,"tachometer", ":pointer");
+	xr_strconcat(buf,"tachometer", ":pointer");
 	offset_x = uiXml.ReadAttribFlt(buf, 0, "offset_x", 0);
 	offset_y = uiXml.ReadAttribFlt(buf, 0, "offset_y", 0);
 	angle_min = uiXml.ReadAttribFlt(buf, 0, "angle_min", -60);

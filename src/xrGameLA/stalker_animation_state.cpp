@@ -30,7 +30,7 @@ void CStalkerAnimationState::Load				(IKinematicsAnimated *kinematics, LPCSTR ba
 {
 	string256			S;
 	m_global.Load		(kinematics,base_name);
-	m_torso.Load		(kinematics,strconcat(sizeof(S),S,base_name,"torso_"));
+	m_torso.Load		(kinematics,xr_strconcat(S,base_name,"torso_"));
 	m_movement.Load		(kinematics,base_name);
 	m_in_place->Load	(kinematics,base_name);
 }

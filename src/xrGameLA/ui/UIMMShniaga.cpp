@@ -8,7 +8,7 @@
 #include "MMsound.h"
 #include "../game_base_space.h"
 #include "../level.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include <math.h>
 #include "../Actor.h"
 #include "../saved_game_wrapper.h"
@@ -60,22 +60,22 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 	string256 _path;
 
 	CUIXmlInit::InitWindow(xml_doc, path, 0, this);
-	strconcat				(sizeof(_path),_path,path,":shniaga:magnifire");
+	xr_strconcat			(_path,path,":shniaga:magnifire");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_magnifier); 
 	m_mag_pos				= m_magnifier->GetWndPos().x;
-	strconcat				(sizeof(_path),_path,path,":shniaga");
+	xr_strconcat			(_path,path,":shniaga");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_shniaga);
-	strconcat				(sizeof(_path),_path,path,":shniaga:left_anim");
+	xr_strconcat			(_path,path,":shniaga:left_anim");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_anims[0]);
-	strconcat				(sizeof(_path),_path,path,":shniaga:right_anim");
+	xr_strconcat			(_path,path,":shniaga:right_anim");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_anims[1]);
-	strconcat				(sizeof(_path),_path,path,":shniaga:left_grating");
+	xr_strconcat			(_path,path,":shniaga:left_grating");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_gratings[0]);
-	strconcat				(sizeof(_path),_path,path,":shniaga:right_grating");
+	xr_strconcat			(_path,path,":shniaga:right_grating");
 	CUIXmlInit::InitStatic(xml_doc, _path,0,m_gratings[1]);
-	strconcat				(sizeof(_path),_path,path,":buttons_region");
+	xr_strconcat			(_path,path,":buttons_region");
 	CUIXmlInit::InitScrollView(xml_doc, _path,0,m_view);
-	strconcat				(sizeof(_path),_path,path,":shniaga:magnifire:y_offset");
+	xr_strconcat			(_path,path,":shniaga:magnifire:y_offset");
 	m_offset = xml_doc.ReadFlt(_path,0,0);
 
 	if (!g_pGameLevel) {

@@ -27,11 +27,11 @@ void CContextMenu::Load(CInifile* INI, LPCSTR SECT){
 }
 void CContextMenu::Render(CGameFont* F, u32 cT, u32 cI, float s)
 {
-	F->SetHeightI	(0.05f);
+	F->SetHeight	(0.05f);
 	F->SetColor		(cT);
 	F->OutNext		("%s",Name);
 	F->SetColor		(cI);
-	F->SetHeightI	(0.03f);
+	F->SetHeight	(0.03f);
 
 	for (u32 i=0; i<Items.size(); ++i)
 		F->OutNext("%d. %s", i, (char*)Items[i].Name);

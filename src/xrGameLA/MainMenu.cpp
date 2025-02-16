@@ -83,17 +83,17 @@ CMainMenu::CMainMenu	()
 	
 	Device.seqFrame.Add		(this,REG_PRIORITY_LOW-1000);
 
-	if (g_uCommonFlags.test(CF_Prefetch_UI)){
+/*	if (g_uCommonFlags.test(CF_Prefetch_UI)) {
 		Msg("*Start prefetching UI textures");
 		Device.m_pRender->RenderPrefetchUITextures();
-	}
+	}*/
 }
 
 CMainMenu::~CMainMenu	()
 {
-	if (g_uCommonFlags.test(CF_Prefetch_UI)){
+/*	if (g_uCommonFlags.test(CF_Prefetch_UI)) {
 		ReportTxrsForPrefetching();
-	}
+	}*/
 	Device.seqFrame.Remove			(this);
 	xr_delete						(g_btnHint);
 	xr_delete						(g_statHint);
@@ -245,7 +245,7 @@ bool CMainMenu::ReloadUI()
 	m_startDialog->m_bWorkInPause= true;
 	m_startDialog->ShowDialog	(true);
 
-	m_activatedScreenRatio		= (float)Device.dwWidth/(float)Device.dwHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
+	m_activatedScreenRatio		= (float)Device.TargetWidth/(float)Device.TargetHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
 	return true;
 }
 
@@ -427,7 +427,7 @@ void CMainMenu::OnFrame()
 	if(IsActive())
 	{
 		CheckForErrorDlg();
-		bool b_is_16_9	= (float)Device.dwWidth/(float)Device.dwHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
+		bool b_is_16_9	= (float)Device.TargetWidth/(float)Device.TargetHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
 		if(b_is_16_9 !=m_activatedScreenRatio)
 		{
 			ReloadUI();
@@ -538,11 +538,11 @@ void CMainMenu::OnSessionTerminate(LPCSTR reason)
 
 	if ( reason && xr_strlen(reason) && reason[0] == '@' )
 	{
-		STRCONCAT( text, reason + 1 );
+		xr_strconcat( text, reason + 1 );
 	}
 	else
 	{
-		STRCONCAT( text, str, " ", reason );
+		xr_strconcat( text, str, " ", reason );
 	}
 	
 	m_pMB_ErrDlgs[SessionTerminate]->SetText(st.translate(text).c_str());
@@ -553,7 +553,7 @@ void	CMainMenu::OnLoadError(LPCSTR module)
 {
 	LPCSTR str=CStringTable().translate("ui_st_error_loading").c_str();
 	string1024 Text;
-	strconcat(sizeof(Text),Text,str," ");
+	xr_strconcat(Text,str," ");
 	xr_strcat(Text,sizeof(Text),module);
 	m_pMB_ErrDlgs[LoadingError]->SetText(Text);
 	SetErrorDialog(CMainMenu::LoadingError);

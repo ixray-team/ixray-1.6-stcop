@@ -261,7 +261,7 @@ bool CInventoryItem::process_if_exists(LPCSTR section, LPCSTR name, float& value
 	bool result = false;
 	float delta = 0.f;
 	string128 name_mult;
-	strconcat(sizeof(name_mult), name_mult, name, "@mult");
+	xr_strconcat(name_mult, name, "@mult");
 	if (pSettings->line_exist(section, name_mult) && pSettings->line_exist(m_section_id, name))
 	{
 		if (!test)

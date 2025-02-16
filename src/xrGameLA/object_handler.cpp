@@ -283,7 +283,7 @@ void CObjectHandler::detach				(CInventoryItem *inventory_item)
 
 bool CObjectHandler::can_use_dynamic_lights	()
 {	
-	return						(!!g_uCommonFlags.test(CF_AiUseTorchDynamicLights));
+	return						(!!g_uCommonFlags.test(flAiUseTorchDynamicLights));
 }
 
 bool CObjectHandler::is_weapon_going_to_be_strapped	(CGameObject const *object) const

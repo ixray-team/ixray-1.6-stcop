@@ -39,21 +39,21 @@ void CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 	{
 		inherited::SetWndSize		(Fvector2().set(length, height));
 
-		strconcat					(sizeof(_path),_path, profile, ":left_arrow");
+		xr_strconcat				(_path, profile, ":left_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_DecButton);
 		m_DecButton->SetWndPos		(Fvector2().set(0,0));
 
-		strconcat					(sizeof(_path),_path, profile, ":right_arrow");
+		xr_strconcat				(_path, profile, ":right_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_IncButton);
 		m_IncButton->SetWndPos		(Fvector2().set(length - m_IncButton->GetWidth(), 0.0f));
 
 		m_ScrollBox->SetHorizontal	(true);
 
-		strconcat					(sizeof(_path),_path, profile, ":box");
+		xr_strconcat				(_path, profile, ":box");
 		CUIXmlInit::InitFrameLine	(xml_doc, _path, 0, m_ScrollBox);
 		m_IncButton->SetWndPos		(0.0f, length/2);
 
-		strconcat					(sizeof(_path),_path, profile, ":back:texture");
+		xr_strconcat				(_path, profile, ":back:texture");
 		LPCSTR texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 		CUITextureMaster::InitTexture(texture, m_StaticBackground);
@@ -61,19 +61,19 @@ void CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 	} else {
 		inherited::SetWndSize		(Fvector2().set(height, length));
 
-		strconcat					(sizeof(_path),_path, profile, ":up_arrow");
+		xr_strconcat				(_path, profile, ":up_arrow");
 		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_DecButton);
 		m_DecButton->SetWndPos		(Fvector2().set(0,0));
 
-		strconcat					(sizeof(_path),_path, profile, ":down_arrow");
+		xr_strconcat				(_path, profile, ":down_arrow");
  		CUIXmlInit::Init3tButton	(xml_doc, _path, 0, m_IncButton);
 		m_IncButton->SetWndPos		(Fvector2().set(0.0f, length - m_IncButton->GetHeight()));
 
 		m_ScrollBox->SetHorizontal	(false);
 
-		strconcat					(sizeof(_path),_path, profile, ":box_v");
+		xr_strconcat				(_path, profile, ":box_v");
 		CUIXmlInit::InitFrameLine	(xml_doc, _path, 0, m_ScrollBox);
-		strconcat					(sizeof(_path),_path, profile, ":back_v:texture");
+		xr_strconcat				(_path, profile, ":back_v:texture");
 		LPCSTR texture				= xml_doc.Read(_path, 0, "");
 		R_ASSERT					(texture);
 
@@ -85,7 +85,7 @@ void CUIScrollBar::InitScrollBar(Fvector2 pos, float length, bool bIsHorizontal,
 }
 
 
-//корректировка размеров скроллера
+//РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєР° СЂР°Р·РјРµСЂРѕРІ СЃРєСЂРѕР»Р»РµСЂР°
 void CUIScrollBar::SetWidth(float width)
 {
 	if(width<=0.0f) width = 1.0f;
@@ -129,7 +129,7 @@ void CUIScrollBar::Enable(bool b)
 void CUIScrollBar::UpdateScrollBar()
 {
 	if (IsShown()){
-		//уcтановить размер и положение каретки
+		//СѓcС‚Р°РЅРѕРІРёС‚СЊ СЂР°Р·РјРµСЂ Рё РїРѕР»РѕР¶РµРЅРёРµ РєР°СЂРµС‚РєРё
 		if(m_iMaxPos==m_iMinPos)	m_iMaxPos++;
 		float box_sz				= float(m_ScrollWorkArea)*float(m_iPageSize ? m_iPageSize : 1)/float(m_iMaxPos-m_iMinPos);
 		if(m_bIsHorizontal){	
@@ -250,7 +250,7 @@ void CUIScrollBar::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		}
 	}else if(pWnd == m_ScrollBox){
 		if(msg == SCROLLBOX_MOVE){
-			//вычислить новое положение прокрутки
+			//РІС‹С‡РёСЃР»РёС‚СЊ РЅРѕРІРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РїСЂРѕРєСЂСѓС‚РєРё
 			ClampByViewRect		();
 			if(m_bIsHorizontal)
 			{
@@ -328,7 +328,7 @@ void CUIScrollBar::Reset()
 
 void CUIScrollBar::Draw()
 {
-	//нарисовать фоновую подложку
+	//РЅР°СЂРёСЃРѕРІР°С‚СЊ С„РѕРЅРѕРІСѓСЋ РїРѕРґР»РѕР¶РєСѓ
 	Frect rect;
 	GetAbsoluteRect(rect);
 

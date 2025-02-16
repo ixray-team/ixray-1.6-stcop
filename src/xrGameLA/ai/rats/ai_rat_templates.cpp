@@ -281,12 +281,12 @@ Fvector CAI_Rat::calc_position()
 	Fvector position_on_plane;
 	P.project(position_on_plane,Position());
 
-	// íàõîäèì ïðîåêöèþ òî÷êè, ëåæàùåé íà âåêòîðå òåêóùåãî íàïðàâëåíèÿ
+	// Ð½Ð°Ñ…Ð¾Ð´Ð¸Ð¼ Ð¿Ñ€Ð¾ÐµÐºÑ†Ð¸ÑŽ Ñ‚Ð¾Ñ‡ÐºÐ¸, Ð»ÐµÐ¶Ð°Ñ‰ÐµÐ¹ Ð½Ð° Ð²ÐµÐºÑ‚Ð¾Ñ€Ðµ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ³Ð¾ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	Fvector dir_point, proj_point;
 	dir_point.mad(position_on_plane, Direction(), 1.f);
 	P.project(proj_point,dir_point);
 	
-	// ïîëó÷àåì èñêîìûé âåêòîð íàïðàâëåíèÿ
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¸ÑÐºÐ¾Ð¼Ñ‹Ð¹ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	Fvector target_dir;
 	target_dir.sub(proj_point,position_on_plane);
 
@@ -529,12 +529,12 @@ void CAI_Rat::draw_way()
 		vertex = m_path->vertex(i);
 		P2 = ai().level_graph().vertex_position(vertex->data().level_vertex_id());
 		if (!fis_zero(P1.distance_to_sqr(P2),EPS_L))
-			Level().debug_renderer().draw_line			(Fidentity,P1,P2,D3DCOLOR_XRGB(0,0,255));
+			Level().debug_renderer().draw_line			(Fidentity,P1,P2,color_xrgb(0,0,255));
 		m_sphere.identity();
 		m_sphere.scale(0.25, 0.25, 0.25);
 		m_sphere.translate_add(P2);
-		Level().debug_renderer().draw_ellipse(m_sphere, D3DCOLOR_XRGB(0,255,255));
-		//Level().debug_renderer().draw_aabb			(P1,0.5f,0.5f,0.5f,D3DCOLOR_XRGB(0,255,255));
+		Level().debug_renderer().draw_ellipse(m_sphere, color_xrgb(0,255,255));
+		//Level().debug_renderer().draw_aabb			(P1,0.5f,0.5f,0.5f,color_xrgb(0,255,255));
 	}
 
 	vertex = m_path->vertex(0);
@@ -542,11 +542,11 @@ void CAI_Rat::draw_way()
 	vertex = m_path->vertex(m_path->vertex_count() - 1);
 	P2 = ai().level_graph().vertex_position(vertex->data().level_vertex_id());
 	if (!fis_zero(P1.distance_to_sqr(P2),EPS_L))
-		Level().debug_renderer().draw_line			(Fidentity,P1,P2,D3DCOLOR_XRGB(0,0,255));
+		Level().debug_renderer().draw_line			(Fidentity,P1,P2,color_xrgb(0,0,255));
 	m_sphere.identity();
 	m_sphere.scale(0.25, 0.25, 0.25);
 	m_sphere.translate_add(P2);
-	Level().debug_renderer().draw_ellipse(m_sphere, D3DCOLOR_XRGB(0,255,255));
-	//Level().debug_renderer().draw_aabb			(P1,0.5f,0.5f,0.5f,D3DCOLOR_XRGB(0,255,255));
+	Level().debug_renderer().draw_ellipse(m_sphere, color_xrgb(0,255,255));
+	//Level().debug_renderer().draw_aabb			(P1,0.5f,0.5f,0.5f,color_xrgb(0,255,255));
 }
 #endif

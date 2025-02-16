@@ -16,7 +16,7 @@ template <
 	typename _index_type,
 	typename _iteration_type
 >	class CPathManager <
-		CLevelGraph,
+		ILevelGraph,
 		_DataStorage,
 		SBaseParameters<
 			_dist_type,
@@ -27,7 +27,7 @@ template <
 		_index_type,
 		_iteration_type
 	> : public CPathManagerGeneric <
-			CLevelGraph,
+			ILevelGraph,
 			_DataStorage,
 			SBaseParameters<
 				_dist_type,
@@ -40,7 +40,7 @@ template <
 		>
 {
 protected:
-	typedef CLevelGraph _Graph;
+	typedef ILevelGraph _Graph;
 	typedef SBaseParameters<
 		_dist_type,
 		_index_type,
@@ -54,7 +54,7 @@ protected:
 				_index_type,
 				_iteration_type
 			> inherited;
-
+	
 protected:
 	int					x1;
 //	float				y1;
@@ -80,8 +80,8 @@ public:
 	IC		bool		is_goal_reached	(const _index_type &node_index);
 	IC		bool		is_limit_reached(const _iteration_type iteration_count) const;
 	IC		bool		is_accessible	(const _index_type &vertex_id) const;
-	IC		void		begin			(const _index_type &vertex_id, const_iterator &begin, const_iterator &end);
-	IC		const _index_type get_value	(const_iterator &i) const;
+	IC		void		begin			(const _index_type &vertex_id, _Graph::const_iterator &begin, _Graph::const_iterator &end);
+	IC		const _index_type get_value	(_Graph::const_iterator &i) const;
 };
 
 #include "path_manager_level_inline.h"

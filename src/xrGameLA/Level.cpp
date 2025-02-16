@@ -486,16 +486,16 @@ void CLevel::OnFrame	()
 			if ( IsServer() )
 			{
 				const IServerStatistic* S = Server->GetStatistic();
-				F->SetHeightI	(0.015f);
+				F->SetHeight	(0.015f);
 				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
+				F->SetColor	(color_xrgb(0,255,0));
 				F->OutNext	("IN:  %4d/%4d (%2.1f%%)",	S->bytes_in_real,	S->bytes_in,	100.f*float(S->bytes_in_real)/float(S->bytes_in));
 				F->OutNext	("OUT: %4d/%4d (%2.1f%%)",	S->bytes_out_real,	S->bytes_out,	100.f*float(S->bytes_out_real)/float(S->bytes_out));
 				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
 				F->OutNext	("SPS/Sended : %4d/%4d", S->dwBytesPerSec, S->dwBytesSended);
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
+				F->SetColor	(color_xrgb(255,255,255));
 				for (u32 I=0; I<Server->GetClientsCount(); ++I)	
 				{
 					IClient*	C = Server->client_Get(I);
@@ -516,13 +516,13 @@ void CLevel::OnFrame	()
 			{
 				IPureClient::UpdateStatistic();
 
-				F->SetHeightI(0.015f);
+				F->SetHeight(0.015f);
 				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
+				F->SetColor	(color_xrgb(0,255,0));
 				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
+				F->SetColor	(color_xrgb(255,255,255));
 				F->OutNext("P(%d), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d), Sended(%2d), SPS(%2d)", // BPS(%2.1fK),
 					//Server->game->get_option_s(C->Name,"name",C->Name),
 					//					C->Name,
@@ -1174,7 +1174,7 @@ void CLevel::ReloadEnvironment()
 	Msg("---Updated path to system.ltx is %s", fname);
 
 	pSettings = new CInifile(fname, TRUE);
-	CHECK_OR_EXIT(0 != pSettings->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+	CHECK_OR_EXIT(0 != pSettings->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
 	xr_auth_strings_t			tmp_ignore_pathes;
 	xr_auth_strings_t			tmp_check_pathes;
@@ -1194,7 +1194,7 @@ void CLevel::ReloadEnvironment()
 
 	FS.update_path(fname, "$game_config$", "game.ltx");
 	pGameIni = new CInifile(fname, TRUE);
-	CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+	CHECK_OR_EXIT(0 != pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
 	Msg("---Create environment");
 	g_pGamePersistent->CreateEnvironment();
@@ -1203,7 +1203,7 @@ void CLevel::ReloadEnvironment()
 	luabind::functor<void>	lua_function;
 	string256		fn;
 	xr_strcpy(fn, "level_weathers.restart_weather_manager");
-	R_ASSERT2(ai().script_engine().functor<void>(fn, lua_function), make_string("Can't find function %s", fn));
+	R_ASSERT2(ai().script_engine().functor<void>(fn, lua_function), make_string<const char*>("Can't find function %s", fn));
 	lua_function();
 	Msg("---Done");
 }

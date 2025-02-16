@@ -311,8 +311,8 @@ void CActor::cam_Update(float dt, float fFOV)
 	Fvector						vbox;
 	vbox.set					(oobox_size, oobox_size, oobox_size);
 
-		Level().debug_renderer().draw_aabb  (C->vPosition, 0.05f, 0.051f, 0.05f, D3DCOLOR_XRGB(0,255,0));
-		Level().debug_renderer().draw_obb  (_rot, Fvector().div(vbox,2.0f), D3DCOLOR_XRGB(255,0,0));
+		Level().debug_renderer().draw_aabb  (C->vPosition, 0.05f, 0.051f, 0.05f, color_xrgb(0,255,0));
+		Level().debug_renderer().draw_obb  (_rot, Fvector().div(vbox,2.0f), color_xrgb(255,0,0));
 
 		dMatrix3					d_rot;
 		PHDynamicData::FMXtoDMX		(_rot, d_rot);

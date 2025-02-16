@@ -391,7 +391,7 @@ void CPHElement::PhDataUpdate(dReal step){
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgDrawMassCenters))
 	{
-		DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)),0.03f,D3DCOLOR_XRGB(255,0,0));
+		DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)),0.03f,color_xrgb(255,0,0));
 	}
 #endif
 	
@@ -638,9 +638,9 @@ void	CPHElement::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, fl
 		Fvector dbg_position;dbg_position.set(body_pos);
 		dMULTIPLY0_331 (cast_fp(dbg_position),dBodyGetRotation(m_body),cast_fp(body_pos));
 		dbg_position.add(cast_fv(dBodyGetPosition(m_body)));
-		DBG_DrawPoint(dbg_position,0.01f,D3DCOLOR_XRGB(255,255,255));
-		DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),dbg_position,D3DCOLOR_XRGB(255,255,255));
-		DBG_DrawLine(dbg_position,Fvector().add(dbg_position,Fvector().mul(dir,0.4f)),D3DCOLOR_XRGB(255,0,255));
+		DBG_DrawPoint(dbg_position,0.01f,color_xrgb(255,255,255));
+		DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)),dbg_position,color_xrgb(255,255,255));
+		DBG_DrawLine(dbg_position,Fvector().add(dbg_position,Fvector().mul(dir,0.4f)),color_xrgb(255,0,255));
 		DBG_ClosedCashedDraw(10000);
 	}
 #endif	
