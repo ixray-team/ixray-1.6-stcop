@@ -21,10 +21,10 @@ public:
 
 
 	template<xr_ssnt_t Size>
-	IC bool GetOpenName(xr_stack_wstring<Size>& path_to_file, LPCWSTR mask, bool many_picking = false)
+	IC bool GetOpenName(xr_stack_tstring<Size>& path_to_file, const xr_char_t* mask, bool many_picking = false)
 	{
 #ifdef IXR_WINDOWS
-		OPENFILENAMEW ofn;       // common dialog box structure
+		OPENFILENAME ofn;       // common dialog box structure
 
 		// Initialize OPENFILENAME
 		ZeroMemory(&ofn, sizeof(ofn));
@@ -39,19 +39,12 @@ public:
 		ofn.lpstrInitialDir = NULL;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-		bool result = GetOpenFileNameW(&ofn) == TRUE;
+		bool result = GetOpenFileName(&ofn) == TRUE;
 
 		return result;
 #else
 		return false;
 #endif
-	}
-
-	template<xr_ssnt_t Size>
-	IC bool GetOpenName(xr_stack_string<Size>& path_to_file, LPCSTR mask, bool many_picking = false)
-	{
-		assert(false && "not implemented!");
-		return false;
 	}
 
 
