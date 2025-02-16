@@ -33,18 +33,41 @@ CHUDManager::~CHUDManager()
 	xr_delete		(m_pHUDTarget);
 }
 
+#include "GametaskManager.h"
 //--------------------------------------------------------------------
 void CHUDManager::OnFrame()
 {
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return;
+
 	if(!b_online)						
 		return;
 
-	if (pUIGame) 
-		pUIGame->OnFrame();
-
 	m_pHUDTarget->CursorOnFrame();
+
+	if (Device.IsEditorMode())
+	{
+		OnFrameMT();
+	}
 }
+
 xrCriticalSection ui_lock;
+void CHUDManager::OnFrameMT()
+{
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return;
+
+	if (!b_online)
+		return;
+	PROF_EVENT("CHUDManager::OnFrameMT");
+
+	if (Device.dwPrecacheFrame == 0)
+		Level().GameTaskManager().UpdateTasks();
+
+	xrCriticalSectionGuard guard(&ui_lock);
+	if (pUIGame)
+		pUIGame->OnFrame();
+}
 //--------------------------------------------------------------------
 
 ENGINE_API extern float psHUD_FOV;
@@ -144,7 +167,6 @@ void  CHUDManager::RenderUI()
 
 	if(!b_online)					return;
 
-	BOOL bAlready					= FALSE;
 	if (true /*|| psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
 	{
 		HitMarker.Render			();
@@ -156,8 +178,7 @@ void  CHUDManager::RenderUI()
 		UI().RenderFont				();
 	}
 
-	if (psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && !bAlready)	
-		m_pHUDTarget->Render();
+	m_pHUDTarget->Render();
 
 	draw_wnds_rects		();
 

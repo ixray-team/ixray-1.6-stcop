@@ -481,13 +481,13 @@ void CLevel::OnFrame	()
 		else								
 			MapManager().Update		();
 
-		if (Device.dwPrecacheFrame == 0)
+/*		if (Device.dwPrecacheFrame == 0)
 		{
 				if (g_mt_config.test(mtMap))
 					Device.seqParallel.emplace_back(xr_delegate<void()>(m_game_task_manager, &CGameTaskManager::UpdateTasks));
 				else
 					GameTaskManager().UpdateTasks();
-		}
+		}*/
 	}
 	// Inherited update
 	inherited::OnFrame		();
