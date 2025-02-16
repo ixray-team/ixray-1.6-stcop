@@ -10,7 +10,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../gamemtllib.h"
 #include "level_bullet_manager.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "game_cl_single.h"
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"

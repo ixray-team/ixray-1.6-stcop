@@ -1,13 +1,13 @@
 ///////////////////////////////////////////////////////////////
 // StalkerOutfit.cpp
-// StalkerOutfit - защитный костюм сталкера
+// StalkerOutfit - Р·Р°С‰РёС‚РЅС‹Р№ РєРѕСЃС‚СЋРј СЃС‚Р°Р»РєРµСЂР°
 ///////////////////////////////////////////////////////////////
 
 
 #pragma once
 
 #include "customoutfit.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CStalkerOutfit : public CCustomOutfit {
 private:
@@ -18,6 +18,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CStalkerOutfit)
-#undef script_type_list
-#define script_type_list save_type_list(CStalkerOutfit)

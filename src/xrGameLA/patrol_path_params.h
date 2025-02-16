@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "patrol_path_manager_space.h"
 #include "game_graph_space.h"
 #include "../xrEngine/IGame_Patrol.h"
@@ -42,8 +42,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CPatrolPathParams)
-#undef script_type_list
-#define script_type_list save_type_list(CPatrolPathParams)
-
 #include "patrol_path_params_inline.h"

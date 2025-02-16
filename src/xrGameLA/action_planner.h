@@ -12,7 +12,7 @@
 #include "action_base.h"
 #include "property_evaluator.h"
 #include "property_storage.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "ai_debug.h"
 
 class CScriptGameObject;
@@ -119,8 +119,4 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 typedef CActionPlanner<CScriptGameObject> CScriptActionPlanner;
-add_to_type_list(CScriptActionPlanner)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptActionPlanner)
-
 #include "action_planner_inline.h"

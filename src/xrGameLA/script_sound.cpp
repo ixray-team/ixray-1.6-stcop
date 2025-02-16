@@ -11,7 +11,7 @@
 #include "script_game_object.h"
 #include "gameobject.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 CScriptSound::CScriptSound				(LPCSTR caSoundName, ESoundTypes sound_type)
 {

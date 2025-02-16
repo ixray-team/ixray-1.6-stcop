@@ -9,8 +9,8 @@
 #pragma once
 
 #include "script_abstract_action.h"
-#include "script_export_space.h"
-#include "ai_sounds.h"
+#include "../xrScripts/script_export_space.h"
+#include "../xrSound/ai_sounds.h"
 #include "ai_monster_space.h"
 #include "script_sound.h"
 #include "AI/monsters/monster_sound_defs.h"
@@ -62,8 +62,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptSoundAction)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptSoundAction)
-
 #include "script_sound_action_inline.h"

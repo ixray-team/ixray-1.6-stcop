@@ -10,6 +10,6 @@
 
 #include "gameobject.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 

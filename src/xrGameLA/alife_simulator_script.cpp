@@ -11,7 +11,7 @@
 #include "ai_space.h"
 #include "alife_object_registry.h"
 #include "alife_story_registry.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "restriction_space.h"
 #include "alife_graph_registry.h"
@@ -22,6 +22,9 @@
 #include "level.h"
 #include "restriction_space.h"
 #include "Store.h"
+
+#include <luabind/iterator_policy.hpp>
+#include <luabind/iterator_pair_policy.hpp>
 
 using namespace luabind;
 

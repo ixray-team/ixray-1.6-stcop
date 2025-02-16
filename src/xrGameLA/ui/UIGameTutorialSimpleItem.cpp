@@ -14,7 +14,7 @@
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
 #include "../MainMenu.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 
 extern ENGINE_API BOOL bShowPauseString;

@@ -22,7 +22,7 @@
 
 #include "ActorEffector.h"
 #include "actor.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "ui/UITextureMaster.h"
 #include "../xrEngine/Application.h"
 #include "ui/UILoadingScreen.h"
@@ -491,7 +491,6 @@ void CGamePersistent::start_game_intro		()
 			
 	}
 }
-#include "script_engine.h"
 void synchronization_callback()
 {
 	string256					fn;

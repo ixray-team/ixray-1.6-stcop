@@ -3,7 +3,7 @@
 #define __DYNAMIC_PATROL_PATH_H__
 
 #include "patrol_path.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CDynamicPatrolPoint;
 
@@ -33,12 +33,6 @@ class CDynamicPatrolPath : public CPatrolPath
 		DECLARE_SCRIPT_REGISTER_FUNCTION;
 };
 
-add_to_type_list(CDynamicPatrolPath)
-#undef script_type_list
-#define script_type_list save_type_list(CDynamicPatrolPath)
-
-
 #include "dynamic_patrol_path_inline.h"
 
 #endif
-

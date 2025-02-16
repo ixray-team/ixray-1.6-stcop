@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "script_export_macroses.h"
+#include "../xrScripts/script_export_macroses.h"
 #include "xrEProps.h"
 #include "../../xrCore/net_utils.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 //#define USE_WRITER_READER
 class CSE_Abstract;

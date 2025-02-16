@@ -2,7 +2,7 @@
 #ifndef __FAST_ENTITY_UPDATE__
 #define __FAST_ENTITY_UPDATE__
 
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 
 class CGameObject;
 

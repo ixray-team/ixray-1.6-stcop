@@ -15,8 +15,8 @@ gr1ph note:
 #pragma once
 
 #include "alife_space.h"
-#include "script_export_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_export_space.h"
+#include "../xrScripts/script_callback_ex.h"
 
 class CGameObject;
 
@@ -61,8 +61,4 @@ public:
 #endif // DEBUG
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CClientSpawnManager)
-#undef script_type_list
-#define script_type_list save_type_list(CClientSpawnManager)
-
 #include "client_spawn_manager_inline.h"

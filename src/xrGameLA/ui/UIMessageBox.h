@@ -2,7 +2,7 @@
 
 
 #include "UIStatic.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CUI3tButton;
 class CUIEditBox;
@@ -15,7 +15,7 @@ public:
 				CUIMessageBox		();
 	virtual		~CUIMessageBox		();
 
-	//разновидности MessageBox
+	//СЂР°Р·РЅРѕРІРёРґРЅРѕСЃС‚Рё MessageBox
 	typedef enum {		
 		MESSAGEBOX_OK, 
 		MESSAGEBOX_INFO,

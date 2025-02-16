@@ -15,7 +15,7 @@
 #include "ai_space.h"
 #include "cover_manager.h"
 #include "cover_point.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 
@@ -35,7 +35,7 @@ CAI_Space::CAI_Space				()
 #endif // PRIQUEL
 	m_alife_simulator		= 0;
 	m_patrol_path_storage	= 0;
-	m_script_engine			= 0;
+	g_pScriptEngine = 0;
 }
 
 void CAI_Space::init				()
@@ -63,18 +63,24 @@ void CAI_Space::init				()
 	VERIFY					(!m_patrol_path_storage);
 	m_patrol_path_storage	= new CPatrolPathStorage();
 
-	VERIFY					(!m_script_engine);
-	m_script_engine			= new CScriptEngine();
-	script_engine().init	();
+	VERIFY(!g_pScriptEngine);
+	g_pScriptEngine = new CScriptEngine();
+	script_engine().init();
 
-	extern string4096		g_ca_stdout;
+	extern SCRIPTS_API string4096		g_ca_stdout;
 	setvbuf					(stderr,g_ca_stdout,_IOFBF,sizeof(g_ca_stdout));
 }
 
 CAI_Space::~CAI_Space				()
 {
 	unload					();
-	
+
+	try {
+		xr_delete(g_pScriptEngine);
+	}
+	catch (...) {
+	}
+
 	xr_delete				(m_patrol_path_storage);
 	xr_delete				(m_ef_storage);
 
@@ -84,12 +90,6 @@ CAI_Space::~CAI_Space				()
 	xr_delete				(m_game_graph);
 #endif // PRIQUEL
 	
-	try {
-		xr_delete			(m_script_engine);
-	}
-	catch(...) {
-	}
-
 	xr_delete				(m_cover_manager);
 	xr_delete				(m_graph_engine);
 }

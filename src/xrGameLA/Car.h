@@ -654,6 +654,3 @@ public:
 public:
 	void RemoveDamangeParticles()	{ m_damage_particles.Stop1(this); m_damage_particles.Stop2(this); }
 };
-add_to_type_list(CCar)
-#undef script_type_list
-#define script_type_list save_type_list(CCar)

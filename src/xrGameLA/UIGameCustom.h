@@ -2,7 +2,7 @@
 #define __XR_UIGAMECUSTOM_H__
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../xrCore/object_interfaces.h"
 #include "inventory_space.h"
 #include "UIDialogHolder.h"

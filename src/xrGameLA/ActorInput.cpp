@@ -27,7 +27,7 @@
 #include "InventoryBox.h"
 #include "WeaponMagazined.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 #include "../xr_input.h"
 #include "player_hud.h"

@@ -5,7 +5,7 @@
 #include "PHDefs.h"
 #include "PhysicsCommon.h"
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../xrEngine/VisMask.h"
 
 class CPhysicsJoint;
@@ -149,10 +149,6 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-add_to_type_list(CPhysicsElement)
-#undef script_type_list
-#define script_type_list save_type_list(CPhysicsElement)
-
 //ABSTRACT:
 // Joint between two elements 
 
@@ -224,9 +220,6 @@ public:
 	virtual		void 					GetAnchorDynamic			(Fvector& anchor)												  				=0;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CPhysicsJoint)
-#undef script_type_list
-#define script_type_list save_type_list(CPhysicsJoint)
 // ABSTRACT: 
 class CPHIsland;
 
@@ -336,10 +329,6 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual										~CPhysicsShell								()	;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 	};
-add_to_type_list(CPhysicsShell)
-#undef script_type_list
-#define script_type_list save_type_list(CPhysicsShell)
-
 void	get_box(CPhysicsShell*	shell,const	Fmatrix& form,	Fvector&	sz,Fvector&	c);
 
 // Implementation creator

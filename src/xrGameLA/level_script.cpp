@@ -22,7 +22,7 @@
 #include "PHCommander.h"
 #include "PHScriptCall.h"
 #include "HUDManager.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "game_cl_single.h"
 #include "../xr_input.h"
 #include "UIGameSP.h"

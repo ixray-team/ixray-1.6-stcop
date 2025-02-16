@@ -42,7 +42,7 @@
 #include "../../ai_object_location.h"
 #include "../../stalker_movement_manager.h"
 #include "../../entitycondition.h"
-#include "../../script_engine.h"
+#include "../../../xrScripts/script_engine.h"
 #include "ai_stalker_impl.h"
 #include "../../sound_player.h"
 #include "../../stalker_sound_data.h"

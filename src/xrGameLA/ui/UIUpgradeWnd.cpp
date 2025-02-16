@@ -28,10 +28,10 @@
 
 #include "UIInventoryUpgradeWnd.h"
 
-#include "../script_process.h"
+#include "../../xrScripts/script_process.h"
 #include "../ai_space.h"
 #include "../alife_simulator.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../script_game_object.h"
 #include "../inventory_upgrade_manager.h"
 #include "../inventory_upgrade.h"

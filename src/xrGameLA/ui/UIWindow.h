@@ -65,7 +65,7 @@ template<class _Ty, class _Other>	inline	bool operator!=(const uialloc<_Ty>&, co
 //////////////////////////////////////////////////////////////////////////
 
 #include "UIMessages.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "uiabstract.h"
 
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "UIOptionsItem.h"
 #include "UICustomEdit.h"
 class CUIFrameLineWnd;

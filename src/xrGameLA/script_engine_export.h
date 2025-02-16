@@ -8,18 +8,18 @@
 
 #pragma once
 
-#include "script_fvector.h"
-#include "script_fcolor.h"
-#include "script_fmatrix.h"
-#include "script_flags.h"
-#include "script_engine.h"
-#include "script_token_list.h"
-#include "script_rtoken_list.h"
-#include "script_ini_file.h"
-#include "script_reader.h"
-#include "script_net_packet.h"
+#include "../xrScripts/exports/script_fvector.h"
+#include "../xrScripts/exports/script_fcolor.h"
+#include "../xrScripts/exports/script_fmatrix.h"
+#include "../xrScripts/exports/script_flags.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/exports/script_token_list.h"
+#include "../xrScripts/exports/script_rtoken_list.h"
+#include "../xrScripts/exports/script_ini_file.h"
+#include "../xrScripts/exports/script_reader.h"
+#include "../xrScripts/exports/script_net_packet.h"
 #include "object_factory.h"
-#include "script_sound_type.h"
+#include "../xrScripts/exports/script_sound_type.h"
 #include "xrServer_Objects_ALife_All.h"
 
 #ifndef XRGAME_EXPORTS
@@ -167,4 +167,8 @@
 #	include "physicobject.h"
 #	include "dynamic_patrol_path.h"
 #	include "inventory_item_object.h"
+#	include "zonemine.h"
+#	include "acidfog.h"
+#	include "zonegalantine.h"
+#	include "store.h"
 #endif

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game_base_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "alife_space.h"
 
 #pragma pack(push,1)
@@ -21,10 +21,6 @@ struct		RPoint
 	bool	operator ==		(const u32& ID)	const			{ return (Blocked && BlockedByID == ID);		}
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
-
-add_to_type_list(RPoint)
-#undef script_type_list
-#define script_type_list save_type_list(RPoint)
 
 struct Bonus_Money_Struct {
 	s32		Money;
@@ -115,11 +111,6 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
 
-add_to_type_list(game_PlayerState)
-#undef script_type_list
-#define script_type_list save_type_list(game_PlayerState)
-
-
 struct	game_TeamState
 {
 	int			score;
@@ -202,6 +193,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(game_GameState)
-#undef script_type_list
-#define script_type_list save_type_list(game_GameState)

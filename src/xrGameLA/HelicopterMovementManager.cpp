@@ -6,7 +6,7 @@
 #include "patrol_path_storage.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 
 
 SHeliMovementState::~SHeliMovementState()

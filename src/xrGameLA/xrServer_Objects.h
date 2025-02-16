@@ -48,7 +48,7 @@
 //		and CSE_ALifeHumanAbstract		appended with known_traders property
 //		and CSE_ALifeTask				appended with try count property
 //		and CSE_ALifePersonalTask		no more exists
-// 37 - бинокль имеет ServerEntity не CSE_ALifeItemWeapon, а CSE_ALifeItem
+// 37 - Р±РёРЅРѕРєР»СЊ РёРјРµРµС‚ ServerEntity РЅРµ CSE_ALifeItemWeapon, Р° CSE_ALifeItem
 // 38 - CSE_ALifeHumanAbstract			appended with the equipment and weapon preferences
 // 39 - CSE_ALifeAnomalousZone			appended with the start power property
 // 40 - CSE_ALifeObjectPhysic			appended with activate flag
@@ -165,16 +165,12 @@ public:
 	virtual ISE_Shape*  __stdcall	shape			() = 0;
 	virtual void __stdcall			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
 };
-add_to_type_list(CSE_Shape)
-#define script_type_list save_type_list(CSE_Shape)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
 	u32								m_tNodeID;
 									CSE_Temporary	(LPCSTR caSection);
 	virtual							~CSE_Temporary	();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_Temporary)
-#define script_type_list save_type_list(CSE_Temporary)
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
 								CSE_PHSkeleton(LPCSTR caSection);
@@ -199,8 +195,6 @@ protected:
 	virtual void					data_save				(NET_Packet &tNetPacket);
 public:
 SERVER_ENTITY_DECLARE_END
-		add_to_type_list(CSE_PHSkeleton)
-#define script_type_list save_type_list(CSE_PHSkeleton)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
 	typedef CSE_Abstract			inherited1;
@@ -211,8 +205,6 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
 	virtual CSE_Visual* __stdcall	visual					();
 	LPCSTR							getStartupAnimation		();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_AbstractVisual)
-#define script_type_list save_type_list(CSE_AbstractVisual)
 
 #ifndef AI_COMPILER
 extern CSE_Abstract	*F_entity_Create	(LPCSTR caSection);
@@ -224,8 +216,6 @@ public:
 									CSE_SpawnGroup	(LPCSTR caSection);
 	virtual							~CSE_SpawnGroup	();
 SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_SpawnGroup)
-#define script_type_list save_type_list(CSE_SpawnGroup)
 /**/
 
 #pragma warning(pop)

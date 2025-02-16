@@ -4,8 +4,8 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_space.h"
-#include "script_engine_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine_space.h"
+#include "../xrScripts/script_engine.h"
 
 CStoreHouse::CStoreHouse()
 {

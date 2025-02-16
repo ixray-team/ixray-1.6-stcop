@@ -9,8 +9,8 @@
 #include "../Render.h"
 #include "../feel_touch.h"
 #include "inventory_item.h"
-#include "ai_sounds.h"
-#include "script_export_space.h"
+#include "../xrSound/ai_sounds.h"
+#include "../xrScripts/script_export_space.h"
 #include "DamageSource.h"
 #include "wallmark_manager.h"
 #include "ParticlesObject.h"
@@ -172,10 +172,6 @@ protected:
 	} effector;
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CExplosive)
-#undef script_type_list
-#define script_type_list save_type_list(CExplosive)
 
 IC void random_point_in_object_box(Fvector &out_pos,CObject* obj)
 {

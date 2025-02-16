@@ -9,9 +9,9 @@
 #include "pch_script.h"
 #include "stalker_animation_manager.h"
 #include "ai/stalker/ai_stalker.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "ai_space.h"
 #include "../Include/xrRender/animation_blend.h"
 

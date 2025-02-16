@@ -13,7 +13,7 @@
 #include "../../script_entity.h"
 #include "../../sound_player.h"
 #include "../../AI_PhraseDialogManager.h"
-#include "../../script_export_space.h"
+#include "../../../xrScripts/script_export_space.h"
 
 class CInventoryItem;
 class CArtefact;
@@ -92,7 +92,7 @@ static	void	__stdcall		BoneCallback			(CBoneInstance *B);
 	void			OnStartTrade			();
 	void			OnStopTrade				();
 
-	//игровое имя 
+	//РёРіСЂРѕРІРѕРµ РёРјСЏ 
 	virtual LPCSTR			Name					() const {return CInventoryOwner::Name();}
 
 	virtual	bool			can_attach				(const CInventoryItem *inventory_item) const;
@@ -105,11 +105,11 @@ static	void	__stdcall		BoneCallback			(CBoneInstance *B);
 	virtual	ALife::ERelationType tfGetRelationType	(const CEntityAlive *tpEntityAlive) const;
 
 	//////////////////////////////////////////////////////////////////////////
-	//генерируемые задания
+	//РіРµРЅРµСЂРёСЂСѓРµРјС‹Рµ Р·Р°РґР°РЅРёСЏ
 public:
-	//проверяет список артефактов в заказах
+	//РїСЂРѕРІРµСЂСЏРµС‚ СЃРїРёСЃРѕРє Р°СЂС‚РµС„Р°РєС‚РѕРІ РІ Р·Р°РєР°Р·Р°С…
 	virtual	u32				ArtefactPrice			(CArtefact* pArtefact);
-	//продажа артефакта, с последуещим изменением списка заказов  (true - если артефакт был в списке)
+	//РїСЂРѕРґР°Р¶Р° Р°СЂС‚РµС„Р°РєС‚Р°, СЃ РїРѕСЃР»РµРґСѓРµС‰РёРј РёР·РјРµРЅРµРЅРёРµРј СЃРїРёСЃРєР° Р·Р°РєР°Р·РѕРІ  (true - РµСЃР»Рё Р°СЂС‚РµС„Р°РєС‚ Р±С‹Р» РІ СЃРїРёСЃРєРµ)
 	virtual	bool			BuyArtefact				(CArtefact* pArtefact);
 
 public:
@@ -140,6 +140,3 @@ public:
 	CTraderAnimation	&animation					() {return (*AnimMan);}
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CAI_Trader)
-#undef script_type_list
-#define script_type_list save_type_list(CAI_Trader)

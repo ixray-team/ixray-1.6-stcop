@@ -15,7 +15,7 @@
 #include "../../weapon.h"
 #include "../../weaponmagazined.h"
 #include "../../../Include/xrRender/Kinematics.h"
-#include "../../script_engine.h"
+#include "../../../xrScripts/script_engine.h"
 #include "../../sight_manager.h"
 #include "../../stalker_movement_manager.h"
 #include "../../ai_space.h"

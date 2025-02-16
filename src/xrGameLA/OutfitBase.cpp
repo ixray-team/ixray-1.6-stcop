@@ -10,7 +10,7 @@
 #include "BoneProtections.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "../../Include/xrRender/RenderVisual.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "actorEffector.h"
 #include "player_hud.h"
 #include "OutfitBase.h"

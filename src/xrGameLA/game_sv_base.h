@@ -2,7 +2,7 @@
 
 #include "game_base.h"
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../../xrCore/client_id.h"
 #include "game_sv_base_console_vars.h"
 #include "../xrNetServer/net_deprecatedconstants.h"
@@ -189,7 +189,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(game_sv_GameState)
-#undef script_type_list
-#define script_type_list save_type_list(game_sv_GameState)

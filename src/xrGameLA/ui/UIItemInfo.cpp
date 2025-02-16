@@ -9,7 +9,7 @@
 #include "UIScrollView.h"
 
 #include "../ai_space.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../script_game_object.h"
 #include "../../xrEngine/string_table.h"
 #include "../Inventory_Item.h"

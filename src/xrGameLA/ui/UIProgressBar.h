@@ -2,7 +2,7 @@
 
 #include "uiwindow.h"
 #include "uibutton.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CUIProgressBar : public CUIWindow
 {

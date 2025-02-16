@@ -1,5 +1,6 @@
 #pragma once
 #include "MosquitoBald.h"
+#include "../xrScripts/script_export_space.h"
 
 class CZoneCampfire : public CMosquitoBald
 {
@@ -29,6 +30,3 @@ public:
 	virtual		void		shedule_Update				(u32	dt	);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CZoneCampfire)
-#undef script_type_list
-#define script_type_list save_type_list(CZoneCampfire)

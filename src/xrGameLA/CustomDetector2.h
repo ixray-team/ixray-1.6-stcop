@@ -1,8 +1,7 @@
 #pragma once
 
 #include "hud_item_object.h"
-#include "ai_sounds.h"
-//#include "script_export_space.h"
+#include "../xrSound/ai_sounds.h"
 
 class CUIArtefactDetectorBase;
 
@@ -75,8 +74,4 @@ public:
 
 	virtual bool			install_upgrade_impl(LPCSTR section, bool test);
 
-	//DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-//add_to_type_list(CCustomDetectorR)
-//#undef script_type_list
-//#define script_type_list save_type_list(CCustomDetectorR)

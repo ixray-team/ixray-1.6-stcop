@@ -4,7 +4,7 @@
 #include "../../Include/xrRender/KinematicsAnimated.h"
 #include "ZoneVisual.h"
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CHairsZone : public CVisualZone {
 typedef				CVisualZone		inherited;		
@@ -25,6 +25,3 @@ protected:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CHairsZone)
-#undef script_type_list
-#define script_type_list save_type_list(CHairsZone)

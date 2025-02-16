@@ -1,6 +1,6 @@
 #pragma once
 #include "pseudodog.h"
-#include "../../../script_export_space.h"
+#include "../../../../xrScripts/script_export_space.h"
 
 class CPsyDogPhantom;
 
@@ -10,7 +10,7 @@ class CPsyDog : public CAI_PseudoDog {
 	friend class CPsyDogPhantom;
 	friend class CPsyDogAura;
 
-	// эффектор у актера при нахождении в поле
+	// СЌС„С„РµРєС‚РѕСЂ Сѓ Р°РєС‚РµСЂР° РїСЂРё РЅР°С…РѕР¶РґРµРЅРёРё РІ РїРѕР»Рµ
 	CPsyDogAura		*m_aura;
 
 	// enemy transfered from phantom
@@ -56,10 +56,6 @@ private:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-add_to_type_list(CPsyDog)
-#undef script_type_list
-#define script_type_list save_type_list(CPsyDog)
-
 //////////////////////////////////////////////////////////////////////////
 // Phantom Psy Dog
 //////////////////////////////////////////////////////////////////////////
@@ -101,9 +97,4 @@ private:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CPsyDogPhantom)
-#undef script_type_list
-#define script_type_list save_type_list(CPsyDogPhantom)
-
 

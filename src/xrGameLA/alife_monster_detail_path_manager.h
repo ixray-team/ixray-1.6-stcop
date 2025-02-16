@@ -10,7 +10,7 @@
 
 #include "game_graph_space.h"
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CSE_ALifeMonsterAbstract;
 class CALifeSmartTerrainTask;
@@ -78,8 +78,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CALifeMonsterDetailPathManager)
-#undef script_type_list
-#define script_type_list save_type_list(CALifeMonsterDetailPathManager)
-
 #include "alife_monster_detail_path_manager_inline.h"

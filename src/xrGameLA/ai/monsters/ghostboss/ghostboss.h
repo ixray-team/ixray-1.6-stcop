@@ -3,7 +3,7 @@
 #include "../telekinesis.h"
 #include "../anim_triple.h"
 #include "../scanning_ability.h"
-#include "../../../script_export_space.h"
+#include "../../../../xrScripts/script_export_space.h"
 #include "../../../ai_space.h"
 #include "../../../alife_simulator.h"
 #include "../../../alife_object_registry.h"
@@ -165,7 +165,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CGhostBoss)
-#undef script_type_list
-#define script_type_list save_type_list(CGhostBoss)

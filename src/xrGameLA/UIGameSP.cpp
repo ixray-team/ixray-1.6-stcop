@@ -290,7 +290,7 @@ bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 }
 
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 bool g_block_pause	= false;
 void CChangeLevelWnd::ShowDialog(bool bDoHideIndicators)

@@ -18,7 +18,7 @@
 #include "../game_cl_base.h"
 
 #include "../HUDManager.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../uicursor.h"
 
 #include "../../xrEngine/xr_input.h"		//remove me !!!

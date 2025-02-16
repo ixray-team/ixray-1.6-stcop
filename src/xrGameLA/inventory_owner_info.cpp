@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////
-// inventory_owner_info.h:	для работы с сюжетной информацией
+// inventory_owner_info.h:	РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЃСЋР¶РµС‚РЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРµР№
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -15,7 +15,7 @@
 #include "level.h"
 #include "infoportion.h"
 #include "alife_registry_wrappers.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
 
 void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
@@ -28,9 +28,9 @@ void  CInventoryOwner::OnEvent (NET_Packet& P, u16 type)
 			shared_str		info_id;
 			u8				add_info;
 
-			P.r_u16			(id);				//отправитель
-			P.r_stringZ		(info_id);		//номер полученной информации
-			P.r_u8			(add_info);			//добавление или убирание информации
+			P.r_u16			(id);				//РѕС‚РїСЂР°РІРёС‚РµР»СЊ
+			P.r_stringZ		(info_id);		//РЅРѕРјРµСЂ РїРѕР»СѓС‡РµРЅРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
+			P.r_u8			(add_info);			//РґРѕР±Р°РІР»РµРЅРёРµ РёР»Рё СѓР±РёСЂР°РЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё
 
 			if(add_info)
 				OnReceiveInfo	(info_id);
@@ -54,7 +54,7 @@ private:
 bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 {
 	VERIFY( info_id.size() );
-	//добавить запись в реестр
+	//РґРѕР±Р°РІРёС‚СЊ Р·Р°РїРёСЃСЊ РІ СЂРµРµСЃС‚СЂ
 	KNOWN_INFO_VECTOR& known_info = m_known_info_registry->registry().objects();
 	KNOWN_INFO_VECTOR_IT it = std::find_if(known_info.begin(), known_info.end(), CFindByIDPred(info_id));
 	if( known_info.end() == it)
@@ -70,7 +70,7 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 	if (!CInfoPortion::ValidInfoPortion(*info_id)) 
 		return true;
 
-	//Запустить скриптовый callback
+	//Р—Р°РїСѓСЃС‚РёС‚СЊ СЃРєСЂРёРїС‚РѕРІС‹Р№ callback
 	const CGameObject* pThisGameObject = smart_cast<const CGameObject*>(this);
 	VERIFY(pThisGameObject);
 
@@ -80,10 +80,10 @@ bool CInventoryOwner::OnReceiveInfo(shared_str info_id) const
 	CInfoPortion info_portion;
 	info_portion.Load(info_id);
 
-	//запустить скриптовые функции
+	//Р·Р°РїСѓСЃС‚РёС‚СЊ СЃРєСЂРёРїС‚РѕРІС‹Рµ С„СѓРЅРєС†РёРё
 	info_portion.RunScriptActions(pThisGameObject);
 
-	//выкинуть те info portions которые стали неактуальными
+	//РІС‹РєРёРЅСѓС‚СЊ С‚Рµ info portions РєРѕС‚РѕСЂС‹Рµ СЃС‚Р°Р»Рё РЅРµР°РєС‚СѓР°Р»СЊРЅС‹РјРё
 	for(u32 i=0; i<info_portion.DisableInfos().size(); i++)
 		TransferInfo(info_portion.DisableInfos()[i], false);
 
@@ -108,7 +108,7 @@ void CInventoryOwner::DumpInfo() const
 void CInventoryOwner::OnDisableInfo(shared_str info_id) const
 {
 	VERIFY( info_id.size() );
-	//удалить запись из реестра
+	//СѓРґР°Р»РёС‚СЊ Р·Р°РїРёСЃСЊ РёР· СЂРµРµСЃС‚СЂР°
 	
 #ifdef DEBUG
 	if(psAI_Flags.test(aiInfoPortion))
@@ -127,12 +127,12 @@ void CInventoryOwner::TransferInfo(shared_str info_id, bool add_info) const
 	VERIFY( info_id.size() );
 	const CObject* pThisObject = smart_cast<const CObject*>(this); VERIFY(pThisObject);
 
-	//отправляем от нашему PDA пакет информации с номером
+	//РѕС‚РїСЂР°РІР»СЏРµРј РѕС‚ РЅР°С€РµРјСѓ PDA РїР°РєРµС‚ РёРЅС„РѕСЂРјР°С†РёРё СЃ РЅРѕРјРµСЂРѕРј
 	NET_Packet		P;
 	CGameObject::u_EventGen(P, GE_INFO_TRANSFER, pThisObject->ID());
-	P.w_u16			(pThisObject->ID());					//отправитель
-	P.w_stringZ		(info_id);							//сообщение
-	P.w_u8			(add_info?1:0);							//добавить/удалить информацию
+	P.w_u16			(pThisObject->ID());					//РѕС‚РїСЂР°РІРёС‚РµР»СЊ
+	P.w_stringZ		(info_id);							//СЃРѕРѕР±С‰РµРЅРёРµ
+	P.w_u8			(add_info?1:0);							//РґРѕР±Р°РІРёС‚СЊ/СѓРґР°Р»РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ
 	CGameObject::u_EventSend(P);
 /*
 	CInfoPortion info_portion;

@@ -4,7 +4,7 @@
 #include "../level.h"
 #include "../game_base_space.h"
 #include "../ai_space.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../inventory_item.h"
 #include "../Silencer.h"
 #include "../WeaponBinoculars.h"

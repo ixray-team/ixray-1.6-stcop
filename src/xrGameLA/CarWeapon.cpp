@@ -5,7 +5,7 @@
 //#include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrCore/object_broker.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "weaponAmmo.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_object_space.h"

@@ -16,7 +16,7 @@
 #include "cover_point.h"
 #include "script_hit.h"
 #include "script_binder_object.h"
-#include "script_ini_file.h"
+#include "../xrScripts/exports/script_ini_file.h"
 #include "script_sound_info.h"
 #include "script_monster_hit_info.h"
 #include "script_entity_action.h"

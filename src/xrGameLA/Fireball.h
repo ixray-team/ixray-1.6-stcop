@@ -1,7 +1,7 @@
 #pragma once
 #include "bolt.h"
 #include "WeaponKnife.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "../gamemtllib.h"
 #include "level.h"
 
@@ -23,7 +23,3 @@ public:
 public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CFireball)
-#undef script_type_list
-#define script_type_list save_type_list(CFireball)

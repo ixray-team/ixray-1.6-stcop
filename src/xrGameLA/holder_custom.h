@@ -2,7 +2,7 @@
 
 //#include "gameobject.h"
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CInventory;
 class CGameObject;
@@ -46,7 +46,3 @@ public:
 	virtual void			SetNpcOwner			(CGameObject *obj)				{m_owner=obj;}
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CHolderCustom)
-#undef script_type_list
-#define script_type_list save_type_list(CHolderCustom)

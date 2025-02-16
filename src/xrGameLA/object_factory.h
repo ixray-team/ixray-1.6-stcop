@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../xrEngine/IGame_ObjectFactory.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "object_item_abstract.h"
 #include "xrServer_Objects.h"
 

@@ -2,7 +2,7 @@
 #include "HudItem.h"
 #include "script_game_object.h"
 #include "pch_script.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "actor.h"
 
 void CHudItem::OnAnimationEnd(u32 state)

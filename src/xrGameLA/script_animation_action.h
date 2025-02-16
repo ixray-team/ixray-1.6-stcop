@@ -9,7 +9,7 @@
 #pragma once
 
 #include "script_abstract_action.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "ai_monster_space.h"
 
 class CScriptAnimationAction : public CScriptAbstractAction {
@@ -43,8 +43,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptAnimationAction)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptAnimationAction)
-
 #include "script_animation_action_inline.h"

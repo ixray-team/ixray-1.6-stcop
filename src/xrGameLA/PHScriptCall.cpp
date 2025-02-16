@@ -1,7 +1,8 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "PHCommander.h"
-#include "script_space_forward.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_space_forward.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "../xrEngine/xr_object.h"
 #include "PHScriptCall.h"
 

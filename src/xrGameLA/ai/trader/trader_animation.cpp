@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "trader_animation.h"
 #include "ai_trader.h"
-#include "../../script_callback_ex.h"
+#include "../../../xrScripts/script_callback_ex.h"
 #include "../../game_object_space.h"
 
 
@@ -51,7 +51,7 @@ void CTraderAnimation::set_head_animation(LPCSTR anim)
 {
 	m_anim_head = anim;
 
-	// назначить анимацию головы
+	// РЅР°Р·РЅР°С‡РёС‚СЊ Р°РЅРёРјР°С†РёСЋ РіРѕР»РѕРІС‹
 	IKinematicsAnimated	*kinematics_animated	= smart_cast<IKinematicsAnimated*>(m_trader->Visual());
 	m_motion_head								= kinematics_animated->ID_Cycle(m_anim_head);
 	kinematics_animated->PlayCycle				(m_motion_head,TRUE,head_callback,this);	
@@ -101,7 +101,7 @@ void CTraderAnimation::update_frame()
 		if (m_anim_global) m_motion_head.invalidate();
 	}
 
-	// назначить анимацию головы
+	// РЅР°Р·РЅР°С‡РёС‚СЊ Р°РЅРёРјР°С†РёСЋ РіРѕР»РѕРІС‹
 	if (!m_motion_head) {
 		if (m_sound && m_sound->_feedback()) {
 			m_trader->callback(GameObject::eTraderHeadAnimationRequest)();

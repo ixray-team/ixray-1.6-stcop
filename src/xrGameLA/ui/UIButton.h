@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIStatic.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 
 class CUIButton : public CUIStatic

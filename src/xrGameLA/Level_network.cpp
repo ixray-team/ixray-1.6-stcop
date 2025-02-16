@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
@@ -9,7 +10,7 @@
 #include "MainMenu.h"
 #include "space_restriction_manager.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "stalker_animation_data_storage.h"
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"

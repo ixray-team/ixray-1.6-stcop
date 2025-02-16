@@ -9,7 +9,7 @@
 #pragma once
 
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CScriptGameObject;
 
@@ -29,8 +29,4 @@ public:
 	IC		void		set_bone_name	(LPCSTR bone_name);
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptHit)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptHit)
-
 #include "script_hit_inline.h"

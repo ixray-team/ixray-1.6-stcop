@@ -22,7 +22,7 @@
 #include "ui/UIDiaryWnd.h"
 #include "ui/UITalkWnd.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "encyclopedia_article.h"
 #include "GameTaskManager.h"
 #include "GameTaskdefs.h"

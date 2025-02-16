@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "script_space_forward.h"
+#include "../xrScripts/script_space_forward.h"
 #include "script_bind_macroses.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "game_graph_space.h"
@@ -671,10 +671,6 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptGameObject)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptGameObject)
-
 extern void sell_condition	(luabind::object);
 extern void sell_condition	(CScriptIniFile *ini_file, LPCSTR section);
 extern void sell_condition	(float friend_factor, float enemy_factor);

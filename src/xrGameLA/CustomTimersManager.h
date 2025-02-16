@@ -1,6 +1,6 @@
 #pragma once
 #ifdef USE_TIMERS_MANAGER
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "CustomTimer.h"
 #include "UIGameSP.h"
 
@@ -61,8 +61,4 @@ class CTimersManager : public IPureSerializeObject<IReader, IWriter>
 		bool					b_HUDTimerActive;
 		bool					b_GameLoaded;
 };
-add_to_type_list(CTimersManager)
-#undef script_type_list
-#define script_type_list save_type_list(CTimersManager)
-
 #endif

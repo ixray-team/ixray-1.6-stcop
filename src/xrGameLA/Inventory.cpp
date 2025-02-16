@@ -8,7 +8,7 @@
 #include "ui/UIInventoryUtilities.h"
 
 #include "eatable_item.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "xrmessages.h"
 //#include "game_cl_base.h"
 #include "../xrEngine/xr_level_controller.h"
@@ -20,7 +20,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "weaponmagazined.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 #include "player_hud.h"
 #include "CustomOutfit.h"

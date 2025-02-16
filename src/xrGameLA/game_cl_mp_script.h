@@ -1,7 +1,7 @@
 #pragma once
 
 //#include "game_cl_mp.h"
-//#include "script_export_space.h"
+//#include "../xrScripts/script_export_space.h"
 //class CScriptGameObject;
 //
 //class game_cl_mp_script : public game_cl_mp
@@ -23,6 +23,3 @@
 //				LPCSTR				GetRoundTime			();
 //	DECLARE_SCRIPT_REGISTER_FUNCTION
 //};
-//add_to_type_list(game_cl_mp_script)
-//#undef script_type_list
-//#define script_type_list save_type_list(game_cl_mp_script)

@@ -3,7 +3,7 @@
 #include "uilistitem.h"
 #include "uiscrollbar.h"
 
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 #define DEFAULT_ITEM_HEIGHT 30
 

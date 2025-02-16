@@ -10,7 +10,7 @@
 
 #include "ai_space.h"
 #include "alife_simulator.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "car.h"

@@ -6,7 +6,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -154,7 +154,7 @@ void CProjector::UpdateCL	()
 		// calc color animator
 		if (lanim){
 			int frame;
-			// âîçâðàùàåò â ôîðìàòå BGR
+			// Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ BGR
 			u32 clr			= lanim->CalculateBGR(Device.fTimeGlobal,frame); 
 
 			Fcolor			fclr;

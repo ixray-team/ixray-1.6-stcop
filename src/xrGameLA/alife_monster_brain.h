@@ -11,7 +11,7 @@
 #include "game_graph_space.h"
 #include "xrserver_space.h"
 #include "alife_space.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 class CSE_ALifeMonsterAbstract;
 class CALifeMonsterMovementManager;
@@ -68,8 +68,5 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CALifeMonsterBrain)
-#undef script_type_list
-#define script_type_list save_type_list(CALifeMonsterBrain)
 
 #include "alife_monster_brain_inline.h"

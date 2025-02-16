@@ -8,7 +8,7 @@
 #include "alife_simulator.h"
 #include "alife_story_registry.h"
 #include "xrServer_Objects_ALife.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "ui\uixmlinit.h"
 #include "../xrCore/object_broker.h"
 

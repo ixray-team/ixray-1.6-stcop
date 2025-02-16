@@ -63,8 +63,6 @@ public:
 
 	virtual CSE_Visual* __stdcall	visual			() = 0;
 };
-add_to_type_list(CSE_Visual)
-#define script_type_list save_type_list(CSE_Visual)
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion)
 	void __stdcall	OnChangeMotion	(PropValue* sender);  
@@ -84,8 +82,6 @@ public:
 
 	virtual CSE_Motion* __stdcall	motion			() = 0;
 };
-add_to_type_list(CSE_Motion)
-#define script_type_list save_type_list(CSE_Motion)
 
 struct ISE_Abstract {
 public:

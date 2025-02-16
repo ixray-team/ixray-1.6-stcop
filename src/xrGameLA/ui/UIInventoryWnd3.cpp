@@ -15,11 +15,12 @@
 #include "UICellItem.h"
 #include "UIListBoxItem.h"
 #include "../CustomOutfit.h"
-#include "../script_callback_ex.h"
+#include "../../xrScripts/script_callback_ex.h"
 #include "../Medkit.h"
 #include "../Antirad.h"
 #include "../battery.h"
 #include "../UICursor.h"
+#include "../ai_space.h"
 
 void CUIInventoryWnd::EatItem(PIItem itm)
 {

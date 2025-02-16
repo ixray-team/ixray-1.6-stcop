@@ -17,9 +17,6 @@ struct SZoneMapEntityData{
 	SZoneMapEntityData(){pos.set(.0f,.0f,.0f);color = 0xff00ff00;}
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
-add_to_type_list(SZoneMapEntityData)
-#undef script_type_list
-#define script_type_list save_type_list(SZoneMapEntityData)
 
 //#include "game_cl_base_weapon_usage_statistic.h"
 

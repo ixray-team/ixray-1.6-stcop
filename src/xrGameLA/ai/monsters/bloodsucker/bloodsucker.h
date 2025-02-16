@@ -4,7 +4,7 @@
 #include "../ai_monster_bones.h"
 #include "../controlled_actor.h"
 #include "../anim_triple.h"
-#include "../../../script_export_space.h"
+#include "../../../../xrScripts/script_export_space.h"
 #include "bloodsucker_alien.h"
 
 class CAI_Bloodsucker : public CBaseMonster, 
@@ -159,7 +159,3 @@ public:
 	
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-add_to_type_list(CAI_Bloodsucker)
-#undef script_type_list
-#define script_type_list save_type_list(CAI_Bloodsucker)

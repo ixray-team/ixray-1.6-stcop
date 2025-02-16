@@ -10,7 +10,7 @@
 
 #include "actoreffector.h"
 #include "effectorshot.h"
-#include "ai_sounds.h"
+#include "../xrSound/ai_sounds.h"
 #include "level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../Include/xrRender/Kinematics.h"

@@ -1,16 +1,16 @@
 #pragma once
 #ifdef USE_TIMERS_MANAGER
 #include "pch_script.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "xr_time.h"
 #include "date_time.h"
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
 #include "level.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "../xrCore/object_broker.h"
-#include "script_space_forward.h"
+#include "../xrScripts/script_space_forward.h"
 
 
 class CTimersManager;
@@ -111,10 +111,4 @@ class CTimerCustomWrapper : public CTimerCustom, public luabind::wrap_base
 	
 
 };
-
-
-add_to_type_list(CTimerCustom)
-#undef script_type_list
-#define script_type_list save_type_list(CTimerCustom)
-
 #endif

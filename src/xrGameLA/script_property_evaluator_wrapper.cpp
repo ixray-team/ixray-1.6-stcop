@@ -10,7 +10,7 @@
 #include "script_property_evaluator_wrapper.h"
 #include "script_game_object.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 void CScriptPropertyEvaluatorWrapper::setup			(CScriptGameObject *object, CPropertyStorage *storage)
 {

@@ -25,7 +25,7 @@
 #include "../xr_input.h"
 #include "saved_game_wrapper.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "UI/UIinventoryutilities.h"
 
 #ifdef DEBUG

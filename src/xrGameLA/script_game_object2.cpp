@@ -10,7 +10,7 @@
 #include "script_game_object.h"
 #include "script_game_object_impl.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "explosive.h"
 #include "script_zone.h"
 #include "object_handler.h"

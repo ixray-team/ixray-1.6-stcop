@@ -2,7 +2,7 @@
 #ifndef __STORE_H__
 #define __STORE_H__
 #include "../xrCore/object_interfaces.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "alife_space.h"
 //#include "..\xrCore\net_utils.h"
 //#include "xr_time.h"
@@ -97,9 +97,5 @@ class CStoreHouse : public IPureSerializeObject<IReader, IWriter>
 };
 											
 
-
-add_to_type_list(CStoreHouse)
-#undef script_type_list
-#define script_type_list save_type_list(CStoreHouse)
 
 #endif

@@ -9,11 +9,11 @@
 #pragma once
 
 #include "level.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "patrol_path_storage.h"
 #include "patrol_path.h"
 #include "patrol_path_manager_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 
 template <typename _return_type>
 class CScriptCallbackEx;

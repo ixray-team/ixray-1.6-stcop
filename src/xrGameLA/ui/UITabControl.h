@@ -1,7 +1,7 @@
 #pragma once
 
 #include "uiwindow.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "UIOptionsItem.h"
 
 class CUITabButton;

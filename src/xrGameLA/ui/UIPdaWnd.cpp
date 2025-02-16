@@ -29,7 +29,7 @@
 #include "uidialogwnd.h"
 #include "uiscriptwnd.h"
 #include "UITabButton.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 
 u32			g_pda_info_state		= 0;

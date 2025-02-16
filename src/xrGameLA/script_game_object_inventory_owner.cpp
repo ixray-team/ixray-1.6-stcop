@@ -16,7 +16,7 @@
 #include "uigamesp.h"
 #include "hudmanager.h"
 #include "restricted_object.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "attachable_item.h"
 #include "script_entity.h"
 #include "../xrEngine/string_table.h"

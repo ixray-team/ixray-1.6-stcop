@@ -9,7 +9,7 @@
 #pragma once
 
 #include "script_abstract_action.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "particle_params.h"
 
 class CParticlesObject;
@@ -47,8 +47,4 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptParticleAction)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptParticleAction)
-
 #include "script_particle_action_inline.h"

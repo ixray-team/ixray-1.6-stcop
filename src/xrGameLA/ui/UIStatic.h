@@ -2,7 +2,7 @@
 
 #include "UILanimController.h"
 #include "../uistaticitem.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 #include "uilines.h"
 
 class CUIFrameWindow;
@@ -96,8 +96,8 @@ public:
 			void			SetStretchTexture		(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 			bool			GetStretchTexture		()						{return m_bStretchTexture;}
 
-	// Анализируем текст на помещаемость его по длинне в заданную ширину, и если нет, то всталяем 
-	// "\n" реализуем таким образом wordwrap
+	// РђРЅР°Р»РёР·РёСЂСѓРµРј С‚РµРєСЃС‚ РЅР° РїРѕРјРµС‰Р°РµРјРѕСЃС‚СЊ РµРіРѕ РїРѕ РґР»РёРЅРЅРµ РІ Р·Р°РґР°РЅРЅСѓСЋ С€РёСЂРёРЅСѓ, Рё РµСЃР»Рё РЅРµС‚, С‚Рѕ РІСЃС‚Р°Р»СЏРµРј 
+	// "\n" СЂРµР°Р»РёР·СѓРµРј С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј wordwrap
 	enum EElipsisPosition
 	{
 		eepNone,
@@ -147,9 +147,9 @@ public:
 			void			SetMask							(CUIFrameWindow* mask);
 
 protected:
-	// возможность подсветки
+	// РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРґСЃРІРµС‚РєРё
 	bool			m_bEnableTextHighlighting;
-	// Цвет подсветки
+	// Р¦РІРµС‚ РїРѕРґСЃРІРµС‚РєРё
 	u32			m_HighlightColor;
 
 	CUILines*		m_pTextControl;
@@ -165,7 +165,7 @@ protected:
 	Fvector2		m_TextureOffset;
 
 public:
-	// Обрезка надписи
+	// РћР±СЂРµР·РєР° РЅР°РґРїРёСЃРё
 	EElipsisPosition	m_ElipsisPos;
 
 	int			m_iElipsisIndent;

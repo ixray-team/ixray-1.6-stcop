@@ -6,7 +6,7 @@
 #include "../xrCore/object_broker.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/xr_level_controller.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "../HUDManager.h"

@@ -4,7 +4,7 @@
 #include "level.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "../xrEngine/xr_Level_controller.h"
 #include "ui/UIMainIngameWnd.h"
 #include "UI/UIGameTutorial.h"

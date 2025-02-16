@@ -145,10 +145,6 @@ target_compile_definitions(xrGameLA PRIVATE _USRDLL)
 target_compile_definitions(xrGameLA PRIVATE XRGAME_EXPORTS)
 target_compile_definitions(xrGameLA PRIVATE dSINGLE)
 
-if (IXRAY_MP)
-	target_compile_definitions(xrGameLA PRIVATE XR_MP_BUILD)
-endif()
-
 add_compile_options(/fp:fast)
 add_compile_options(/FS)
 target_compile_definitions(xrGameLA PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
@@ -160,12 +156,9 @@ target_link_libraries(xrGameLA PUBLIC xrParticles)
 target_link_libraries(xrGameLA PUBLIC luabind)
 target_link_libraries(xrGameLA PUBLIC crypto)
 target_link_libraries(xrGameLA PUBLIC ODE)
+target_link_libraries(xrGameLA PUBLIC xrScripts)
 
 target_link_libraries(xrGameLA PRIVATE "shlwapi.lib")
-
-if(IXRAY_MP)
-    target_link_libraries(xrGameLA PUBLIC CxImage)
-endif()
 
 # Move precompiled header
 set_target_properties(xrGameLA PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

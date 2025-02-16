@@ -10,7 +10,7 @@
 #include "script_game_object.h"
 #include "script_game_object_impl.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "cover_evaluators.h"
 #include "cover_point.h"
 #include "cover_manager.h"
@@ -35,7 +35,7 @@
 #include "ai/monsters/BaseMonster/base_monster.h"
 #include "trade_parameters.h"
 #include "purchase_list.h"
-#include "script_ini_file.h"
+#include "../xrScripts/exports/script_ini_file.h"
 #include "sound_player.h"
 #include "stalker_decision_space.h"
 
