@@ -37,6 +37,7 @@
 #include "space_restriction_manager.h"
 #include "eatable_item.h"
 #include "stalker_planner.h"
+#include "stalker_decision_space.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;

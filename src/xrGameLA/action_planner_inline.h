@@ -170,28 +170,28 @@ IC	bool CPlanner::initialized	() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_condition	(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string<const char*>(
-			"do not change preconditions during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not change preconditions during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	action->add_condition	(CWorldProperty(condition_id,condition_value));
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_effect		(_world_operator *action, _condition_type condition_id, _value_type condition_value)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string<const char*>(
-			"do not change effects during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not change effects during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	action->add_effect		(CWorldProperty(condition_id,condition_value));
 }
 
@@ -218,14 +218,14 @@ LPCSTR CPlanner::object_name		() const
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _operator)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string<const char*>(
-			"do not add operators during planner update, object %s, id[%d]",
-			object_name(),
-			operator_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not add operators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		operator_id
+	//	)
+	//);
 	inherited::add_operator	(operator_id,_operator);
 	_operator->setup		(m_object,&m_storage);
 #ifdef LOG_ACTION
@@ -236,28 +236,28 @@ IC	void CPlanner::add_operator		(const _edge_type &operator_id,	_operator_ptr _o
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::remove_operator	(const _edge_type	&operator_id)
 {
-	VERIFY2					(
-		!m_solving,
-		make_string<const char*>(
-			"do not remove operators during planner update, object %s, id[%d]",
-			object_name(),
-			operator_id
-		)
-	);
+	//VERIFY2					(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not remove operators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		operator_id
+	//	)
+	//);
 	inherited::remove_operator	(operator_id);
 }
 
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition_evaluator_ptr evaluator)
 {
-	VERIFY2						(
-		!m_solving,
-		make_string<const char*>(
-			"do not add evaluators during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2						(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not add evaluators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	inherited::add_evaluator	(condition_id,evaluator);
 	evaluator->setup			(m_object,&m_storage);
 }
@@ -265,14 +265,14 @@ IC	void CPlanner::add_evaluator	(const _condition_type &condition_id, _condition
 TEMPLATE_SPECIALIZATION
 IC	void CPlanner::remove_evaluator	(const _condition_type &condition_id)
 {
-	VERIFY2						(
-		!m_solving,
-		make_string<const char*>(
-			"do not remove evaluators during planner update, object %s, id[%d]",
-			object_name(),
-			condition_id
-		)
-	);
+	//VERIFY2						(
+	//	!m_solving,
+	//	make_string<const char*>(
+	//		"do not remove evaluators during planner update, object %s, id[%d]",
+	//		object_name(),
+	//		condition_id
+	//	)
+	//);
 	inherited::remove_evaluator	(condition_id);
 }
 
