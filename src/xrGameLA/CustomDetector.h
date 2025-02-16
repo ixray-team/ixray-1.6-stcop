@@ -24,7 +24,7 @@ struct ZONE_INFO
 	//текущая частота работы датчика
 	float							cur_freq;
 	//particle for night-vision mode
-	CParticlesObject*				pParticle;
+	xr_shared_ptr<CParticlesObject>				pParticle;
 
 	ZONE_INFO	();
 	~ZONE_INFO	();

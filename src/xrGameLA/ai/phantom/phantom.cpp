@@ -116,7 +116,7 @@ void CPhantom::net_Destroy	()
 	// stop looped
 	SStateData& sdata			= m_state_data[stFly];
 	sdata.sound.stop			();
-	CParticlesObject::Destroy	(m_fly_particles);
+	Particles::Details::Destroy	(m_fly_particles);
 }
 
 //---------------------------------------------------------------------
@@ -192,7 +192,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 			UpdateEvent.bind	(this,&CPhantom::OnIdleState);	
 			SStateData& sdata	= m_state_data[m_CurState];
 			sdata.sound.stop	();
-			CParticlesObject::Destroy(m_fly_particles);
+			Particles::Details::Destroy(m_fly_particles);
 		}break;
 		}
 		m_CurState				= new_state;
@@ -281,7 +281,7 @@ Fmatrix	CPhantom::XFORM_center()
 
 CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemove, const Fmatrix& xform)
 {
-	CParticlesObject* ps = CParticlesObject::Create(name.c_str(),bAutoRemove);
+	CParticlesObject* ps = Particles::Details::Create(name.c_str(), bAutoRemove).get();
 	ps->UpdateParent	(xform, zero_vel);
 	ps->Play			(false);
 	return bAutoRemove?0:ps;

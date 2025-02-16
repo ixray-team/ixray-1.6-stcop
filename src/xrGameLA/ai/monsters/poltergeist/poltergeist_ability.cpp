@@ -17,8 +17,8 @@ CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist *polter)
 
 CPolterSpecialAbility::~CPolterSpecialAbility()
 {
-	CParticlesObject::Destroy	(m_particles_object);
-	CParticlesObject::Destroy	(m_particles_object_electro);
+	Particles::Details::Destroy(m_particles_object);
+	Particles::Details::Destroy(m_particles_object_electro);
 }
 
 void CPolterSpecialAbility::load(LPCSTR section)
@@ -52,8 +52,8 @@ void CPolterSpecialAbility::on_hide()
 
 void CPolterSpecialAbility::on_show()
 {
-	if (m_particles_object)			CParticlesObject::Destroy(m_particles_object);
-	if (m_particles_object_electro) CParticlesObject::Destroy(m_particles_object_electro);
+	Particles::Details::Destroy(m_particles_object);
+	Particles::Details::Destroy(m_particles_object_electro);
 }
 
 void CPolterSpecialAbility::update_frame()
@@ -69,8 +69,8 @@ void CPolterSpecialAbility::on_die()
 
 	m_object->PlayParticles			(m_particles_death, particles_position, Fvector().set(0.0f,1.0f,0.0f), TRUE, FALSE);
 
-	CParticlesObject::Destroy		(m_particles_object_electro);
-	CParticlesObject::Destroy		(m_particles_object);
+	Particles::Details::Destroy(m_particles_object_electro);
+	Particles::Details::Destroy(m_particles_object);
 }
 
 void CPolterSpecialAbility::on_hit(SHit* pHDS)

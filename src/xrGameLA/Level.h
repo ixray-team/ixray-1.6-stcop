@@ -170,7 +170,7 @@ public:
 public:
 	//////////////////////////////////////////////	
 	// static particles
-	using POVec = xr_vector<CParticlesObject*>;
+	using POVec = xr_vector<xr_shared_ptr<CParticlesObject>>;
 	using POIt = POVec::iterator;
 	POVec						m_StaticParticles;
 

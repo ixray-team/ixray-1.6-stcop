@@ -1874,11 +1874,9 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	Fmatrix pos; 	
 	CParticlesPlayer::MakeXFORM(this,element,HitDir,HitPos,pos);
 	// установить particles
-	CParticlesObject* ps = nullptr;
-	
-	ps = CParticlesObject::Create(m_sHeadShotParticle.c_str(),TRUE);
+	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(m_sHeadShotParticle.c_str(), TRUE);
 
-	ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
+	ps->UpdateParent(pos, Fvector().set(0.f, 0.f, 0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);
 };
 

@@ -20,7 +20,7 @@ ZONE_INFO::ZONE_INFO	()
 ZONE_INFO::~ZONE_INFO	()
 {
 	if(pParticle)
-		CParticlesObject::Destroy(pParticle);
+		Particles::Details::Destroy(pParticle);
 }
 
 CCustomDetector::CCustomDetector(void) 
@@ -310,7 +310,7 @@ void CCustomDetector::UpdateNightVisionMode()
 			zero_vector.set(0.f,0.f,0.f);
 
 			if(!zone_info.pParticle)
-				zone_info.pParticle = CParticlesObject::Create(*m_nightvision_particle,FALSE);
+				zone_info.pParticle = Particles::Details::Create(*m_nightvision_particle,FALSE);
 			
 			zone_info.pParticle->UpdateParent(pZone->XFORM(),zero_vector);
 			if(!zone_info.pParticle->IsPlaying())
@@ -318,7 +318,7 @@ void CCustomDetector::UpdateNightVisionMode()
 		}else{
 			if(zone_info.pParticle){
 				zone_info.pParticle->Stop			();
-				CParticlesObject::Destroy(zone_info.pParticle);
+				Particles::Details::Destroy(zone_info.pParticle);
 			}
 		}
 	}

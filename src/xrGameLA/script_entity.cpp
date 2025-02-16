@@ -210,7 +210,7 @@ void CScriptEntity::vfUpdateParticles()
 {
 	CScriptParticleAction	&l_tParticleAction = GetCurrentAction()->m_tParticleAction;
 	if (xr_strlen(l_tParticleAction.m_caBoneName)) {
-		CParticlesObject	*l_tpParticlesObject = l_tParticleAction.m_tpParticleSystem;
+		xr_shared_ptr<CParticlesObject> l_tpParticlesObject = l_tParticleAction.m_tpParticleSystem;
 		l_tpParticlesObject->UpdateParent(GetUpdatedMatrix(l_tParticleAction.m_caBoneName,l_tParticleAction.m_tParticlePosition,l_tParticleAction.m_tParticleAngles),l_tParticleAction.m_tParticleVelocity);
 	}
 }
@@ -229,7 +229,7 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
 		xr_delete					(m_current_sound);
 	}
 	if (!tpEntityAction->m_tParticleAction.m_bAutoRemove)
-		CParticlesObject::Destroy(tpEntityAction->m_tParticleAction.m_tpParticleSystem);
+		Particles::Details::Destroy(tpEntityAction->m_tParticleAction.m_tpParticleSystem);
 }
 
 void CScriptEntity::ProcessScripts()

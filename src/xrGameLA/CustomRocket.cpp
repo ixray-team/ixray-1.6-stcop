@@ -576,7 +576,7 @@ void CCustomRocket::StartEngineParticles()
 {
 	VERIFY(m_pEngineParticles == nullptr);
 	if(!m_sEngineParticles) return;
-	m_pEngineParticles = CParticlesObject::Create(*m_sEngineParticles,FALSE);
+	m_pEngineParticles = Particles::Details::Create(*m_sEngineParticles, FALSE);
 
 	UpdateParticles();
 	m_pEngineParticles->Play(false);
@@ -598,8 +598,8 @@ void CCustomRocket::StartFlyParticles()
 	VERIFY(m_pFlyParticles == nullptr);
 
 	if(!m_sFlyParticles) return;
-	m_pFlyParticles = CParticlesObject::Create(*m_sFlyParticles,FALSE);
-	
+	m_pFlyParticles = Particles::Details::Create(*m_sFlyParticles, FALSE);
+
 	UpdateParticles();
 	m_pFlyParticles->Play(false);
 	

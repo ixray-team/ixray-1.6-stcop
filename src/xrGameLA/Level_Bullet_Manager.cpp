@@ -167,7 +167,7 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 		return;
 
 	shared_str const& ps_name	= m_ExplodeParticles[Random.randI(0, m_ExplodeParticles.size())];
-	CParticlesObject* const	ps	= CParticlesObject::Create(*ps_name,TRUE);
+	xr_shared_ptr<CParticlesObject> const	ps = Particles::Details::Create(*ps_name, TRUE);
 	ps->UpdateParent			(xf,zero_vel);
 	GamePersistent().ps_needtoplay.push_back(ps);
 }

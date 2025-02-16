@@ -405,7 +405,7 @@ void CCustomZone::net_Destroy()
 	m_pLight.destroy		();
 	m_pIdleLight.destroy	();
 
-	CParticlesObject::Destroy(m_pIdleParticles);
+	Particles::Details::Destroy(m_pIdleParticles);
 
 	if(m_effector)			m_effector->Stop		();
 	//---------------------------------------------
@@ -716,7 +716,7 @@ void CCustomZone::PlayIdleParticles()
 	{
 		if (!m_pIdleParticles)
 		{
-			m_pIdleParticles = CParticlesObject::Create(m_sIdleParticles.c_str(), FALSE);
+			m_pIdleParticles = Particles::Details::Create(m_sIdleParticles.c_str(), FALSE);
 			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
 		}
 		m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
@@ -733,7 +733,7 @@ void CCustomZone::StopIdleParticles()
 	if(m_pIdleParticles)
 	{
 		m_pIdleParticles->Stop(FALSE);
-		CParticlesObject::Destroy(m_pIdleParticles);
+		Particles::Details::Destroy(m_pIdleParticles);
 	}
 
 	StopIdleLight();
@@ -783,8 +783,7 @@ void CCustomZone::PlayBlowoutParticles()
 {
 	if(!m_sBlowoutParticles) return;
 
-	CParticlesObject* pParticles;
-	pParticles	= CParticlesObject::Create(*m_sBlowoutParticles,TRUE);
+	CParticlesObject* pParticles = Particles::Details::Create(*m_sBlowoutParticles, TRUE).get();
 	pParticles->UpdateParent(XFORM(),zero_vel);
 	pParticles->Play(false);
 }
@@ -848,7 +847,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	if (PP){
 		u16 play_bone = PP->GetRandomBone(); 
 		if (play_bone!=BI_NONE){
-			CParticlesObject* pParticles = CParticlesObject::Create(*particle_str,TRUE);
+			CParticlesObject* pParticles = Particles::Details::Create(particle_str.c_str(), TRUE).get();
 			Fmatrix xform;
 
 			Fvector dir;
@@ -878,9 +877,8 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
 
 	if(!m_sEntranceParticlesSmall) return;
 	
-	CParticlesObject* pParticles;
-	pParticles = CParticlesObject::Create(*m_sEntranceParticlesSmall,TRUE);
-	
+	CParticlesObject* pParticles = Particles::Details::Create(*m_sEntranceParticlesSmall, TRUE).get();
+
 	Fmatrix M;
 	M = XFORM();
 	M.c.set(pos);
@@ -1313,8 +1311,8 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
 
 	if(*m_sArtefactSpawnParticles)
 	{
-		CParticlesObject* pParticles;
-		pParticles = CParticlesObject::Create(*m_sArtefactSpawnParticles,TRUE);
+		CParticlesObject* pParticles = Particles::Details::Create(*m_sArtefactSpawnParticles, TRUE).get();
+
 		pParticles->UpdateParent(pArtefact->XFORM(),zero_vel);
 		pParticles->Play(false);
 	}
@@ -1440,8 +1438,7 @@ void CCustomZone::exit_Zone	(SZoneObjectInfo& io)
 void CCustomZone::PlayAccumParticles()
 {
 	if(m_sAccumParticles.size()){
-		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAccumParticles,TRUE);
+		CParticlesObject* pParticles = Particles::Details::Create(*m_sAccumParticles, TRUE).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
 		pParticles->Play(false);
 	}
@@ -1454,7 +1451,7 @@ void CCustomZone::PlayAwakingParticles()
 {
 	if(m_sAwakingParticles.size()){
 		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAwakingParticles,TRUE);
+		pParticles = Particles::Details::Create(*m_sAwakingParticles, TRUE).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
 		pParticles->Play(false);
 	}

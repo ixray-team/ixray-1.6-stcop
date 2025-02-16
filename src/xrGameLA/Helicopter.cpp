@@ -259,7 +259,7 @@ void CHelicopter::net_Destroy()
 	CPHDestroyable::RespawnInit			();
 	m_engineSound.stop					();
 	m_brokenSound.stop					();
-	CParticlesObject::Destroy			(m_pParticle);
+	Particles::Details::Destroy(m_pParticle);
 	m_light_render.destroy				();
 	m_movement.net_Destroy				();
 #ifdef DEBUG

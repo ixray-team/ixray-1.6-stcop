@@ -6,8 +6,8 @@ class CZoneCampfire : public CMosquitoBald
 {
 	typedef CMosquitoBald	inherited;
 protected:
-	CParticlesObject*		m_pEnablingParticles;
-	CParticlesObject*		m_pDisabledParticles;
+	xr_shared_ptr<CParticlesObject> m_pEnablingParticles;
+	xr_shared_ptr<CParticlesObject> m_pDisabledParticles;
 	ref_sound				m_disabled_sound;
 	bool					m_turned_on;
 	u32						m_turn_time;

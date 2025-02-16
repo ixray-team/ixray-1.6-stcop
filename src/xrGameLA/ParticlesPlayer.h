@@ -23,7 +23,7 @@ public:
 	//структура с внутренней информацией о партикле
 	struct SParticlesInfo
 	{
-		CParticlesObject*	ps;
+		xr_shared_ptr<CParticlesObject>	ps;
 		//Fvector				dir;
 		//Fmatrix				x_form;
 		Fvector				angles;
