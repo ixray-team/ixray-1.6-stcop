@@ -355,9 +355,8 @@ void CALifeUpdateManager::set_interactive		(ALife::_OBJECT_ID id, bool value)
 void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 {
 	const IGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
-	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
-	GraphEngineSpace::CGameLevelParams	evaluator(level.id());
-	bool								failed = !ai().graph_engine().search(ai().game_graph(),graph().actor()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
+	u32 dest = u32(-1);
+	bool								failed = !ai().game_graph().SearchNearestVertex(graph().actor()->m_tGraphID, level.id(), dest);
 	if (failed) {
 		Msg								("! Cannot build path via game graph from the current level to the level %s!",level_name);
 		float							min_dist = flt_max;
@@ -376,11 +375,10 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 			return;
 		}
 	}
-	else
-		dest							= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
+
 	NET_Packet							net_packet;
 	net_packet.w_begin					(M_CHANGE_LEVEL);
-	net_packet.w						(&dest,sizeof(dest));
+	net_packet.w_u16(dest);
 	
 	u32									vertex_id = ai().game_graph().vertex(dest)->level_vertex_id();
 	net_packet.w						(&vertex_id,sizeof(vertex_id));

@@ -14,7 +14,7 @@ class CAgentExplosiveManager;
 class CAgentLocationManager;
 class CAgentMemberManager;
 class CAgentMemoryManager;
-class CAgentManagerPlanner;
+class FRbmkAgentManagerPlanner;
 
 //#define USE_SCHEDULER_IN_AGENT_MANAGER
 
@@ -31,7 +31,7 @@ private:
 	CAgentLocationManager			*m_location;
 	CAgentMemberManager				*m_member;
 	CAgentMemoryManager				*m_memory;
-	CAgentManagerPlanner			*m_brain;
+	FRbmkAgentManagerPlanner		*m_brain;
 
 #ifndef USE_SCHEDULER_IN_AGENT_MANAGER
 private:
@@ -72,7 +72,6 @@ public:
 	IC		CAgentLocationManager	&location			() const;
 	IC		CAgentMemberManager		&member				() const;
 	IC		CAgentMemoryManager		&memory				() const;
-	IC		CAgentManagerPlanner	&brain				() const;
 };
 
 #include "agent_manager_inline.h"

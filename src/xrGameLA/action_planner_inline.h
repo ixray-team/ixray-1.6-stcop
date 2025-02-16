@@ -72,7 +72,7 @@ void CPlanner::update				()
 		if (this->m_solution_changed) {
 			show_current_world_state();
 			show_target_world_state	();
-			Msg						("%6d : Solution for object %s [%d vertices searched]",Device.dwTimeGlobal,object_name(),ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
+			//Msg						("%6d : Solution for object %s [%d vertices searched]",Device.dwTimeGlobal,object_name(),ai().graph_engine().solver_algorithm().data_storage().get_visited_node_count());
 			for (int i=0; i<(int)this->solution().size(); ++i)
 				Msg					("%s",action2string(this->solution()[i]));
 		}

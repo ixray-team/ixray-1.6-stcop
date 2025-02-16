@@ -50,12 +50,6 @@ IC	CEF_Storage					&CAI_Space::ef_storage				() const
 	return					(*m_ef_storage);
 }
 
-IC	CGraphEngine				&CAI_Space::graph_engine			() const
-{
-	VERIFY					(m_graph_engine);
-	return					(*m_graph_engine);
-}
-
 IC	const CALifeSimulator		&CAI_Space::alife					() const
 {
 	VERIFY					(m_alife_simulator);

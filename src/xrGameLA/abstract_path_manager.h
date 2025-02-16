@@ -78,10 +78,21 @@ template <
 >
 class CBasePathManager :
 	public CAbstractPathManager<
+	_Graph,
+	_VertexEvaluator,
+	_vertex_id_type,
+	_index_type
+	>
+{
+private:
+	typedef CAbstractPathManager<
 		_Graph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
-	> 
-{
+	>					inherited;
+
+
+public:
+	IC					CBasePathManager(CRestrictedObject* object) : inherited(object) {}
 };

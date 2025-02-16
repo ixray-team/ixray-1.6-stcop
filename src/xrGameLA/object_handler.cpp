@@ -291,9 +291,7 @@ bool CObjectHandler::is_weapon_going_to_be_strapped	(CGameObject const *object) 
 {
 	CObjectHandlerPlanner const&					planner			= this->planner			();
 	typedef xr_vector<typename GraphEngineSpace::CWorldProperty>	properties_type;
-	CWorldProperty const							strap_property							(planner.uid(object->ID(),
-																							 ObjectHandlerSpace::eWorldPropertyIdleStrap),
-																							 true);
+	GraphEngineSpace::CWorldProperty const strap_property(planner.uid(object->ID(), ObjectHandlerSpace::eWorldPropertyIdleStrap), true);
 	properties_type const&							properties		= planner.target_state	().conditions	();
 	properties_type::const_iterator const			properties_end	= properties.end		();
 	properties_type::const_iterator const			found			= std::lower_bound		(properties.begin(), properties_end, strap_property);

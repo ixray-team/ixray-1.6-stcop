@@ -18,7 +18,7 @@
 #include "alife_smart_terrain_task.h"
 #include "alife_graph_registry.h"
 #include "graph_engine.h"
-#include "alife_monster_brain.h"
+#include "path_manager_params.h"
 
 CALifeMonsterDetailPathManager::CALifeMonsterDetailPathManager	(object_type *object)
 {
@@ -110,14 +110,7 @@ void CALifeMonsterDetailPathManager::actualize				()
 
 	typedef GraphEngineSpace::CGameVertexParams	CGameVertexParams;
 	CGameVertexParams				temp = CGameVertexParams(object().m_tpaTerrain);
-	bool							failed = 
-		!ai().graph_engine().search	(
-			ai().game_graph(),
-			object().m_tGraphID,
-			m_destination.m_game_vertex_id,
-			&m_path,
-			temp
-		);
+	bool							failed = !ai().game_graph().Search(object().get_object().m_tGraphID, m_destination.m_game_vertex_id, m_path, temp.m_vertex_types, temp.max_range, temp.max_iteration_count, temp.max_visited_node_count);
 
 #ifdef DEBUG
 	if (failed) {
@@ -233,9 +226,9 @@ void CALifeMonsterDetailPathManager::follow_path				(const ALife::_TIME_ID &time
 		m_walked_distance				= 0.f;
 		m_path.pop_back					();
 //		Msg									("%6d %s changes graph point from %d to %d",Device.dwTimeGlobal,object().name_replace(),object().m_tGraphID,(GameGraph::_GRAPH_ID)m_path.back());
-		object().alife().graph().change		(&object(),object().m_tGraphID,(GameGraph::_GRAPH_ID)m_path.back());
+		object().get_object().alife().graph().change(&object(), object().m_tGraphID, (GameGraph::_GRAPH_ID)m_path.back());
 		VERIFY								(m_path.back() == object().m_tGraphID);
-		object().brain().on_location_change	();
+		object().on_location_change	();
 		VERIFY								(m_path.back() == object().m_tGraphID);
 	}
 }

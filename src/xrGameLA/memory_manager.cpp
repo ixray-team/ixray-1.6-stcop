@@ -168,6 +168,14 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 		if (m_stalker && !(*I).m_squad_mask.test(mask))
 			continue;
 
+		if (!(*I).m_object) {
+			continue;
+		}
+
+		if ((*I).m_object->getDestroy()) {
+			continue;
+		}
+
 		danger().add				(*I);
 		
 		if (add_enemies) {

@@ -79,6 +79,11 @@ void CSE_ALifeOnlineOfflineGroup::register_member						(ALife::_OBJECT_ID member
 	}
 }
 
+void CSE_ALifeOnlineOfflineGroup::on_location_change() const
+{
+	brain().on_location_change();
+}
+
 void CSE_ALifeOnlineOfflineGroup::unregister_member						(ALife::_OBJECT_ID member_id)
 {
 	CALifeGraphRegistry			&graph = alife().graph();

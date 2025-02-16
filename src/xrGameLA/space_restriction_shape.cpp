@@ -153,7 +153,7 @@ void CSpaceRestrictionShape::test_correctness	()
 	ai().level_graph().set_mask		(border());
 
 	xr_vector<u32>					nodes;
-	ai().graph_engine().search		(ai().level_graph(), m_test_storage.back(), m_test_storage.back(), &nodes, GraphEngineSpace::CFlooder());
+	ai().level_graph().Search(m_test_storage.back(), m_test_storage.back(), nodes, 6000, 0xFFFFFFFF, 65530);
 
 	ai().level_graph().clear_mask	(border());
 	

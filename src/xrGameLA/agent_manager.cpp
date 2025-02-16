@@ -14,7 +14,7 @@
 #include "agent_location_manager.h"
 #include "agent_member_manager.h"
 #include "agent_memory_manager.h"
-#include "agent_manager_planner.h"
+#include "FRbmkAgentManagerPlanner.h"
 
 CAgentManager::CAgentManager			()
 {
@@ -45,14 +45,13 @@ void CAgentManager::init_scheduler		()
 
 void CAgentManager::init_components		()
 {
-	m_corpse					= new CAgentCorpseManager(this);
-	m_enemy						= new CAgentEnemyManager(this);
-	m_explosive					= new CAgentExplosiveManager(this);
-	m_location					= new CAgentLocationManager(this);
-	m_member					= new CAgentMemberManager(this);
-	m_memory					= new CAgentMemoryManager(this);
-	m_brain						= new CAgentManagerPlanner();
-	brain().setup				(this);
+	m_corpse					= new CAgentCorpseManager		(this);
+	m_enemy						= new CAgentEnemyManager		(this);
+	m_explosive					= new CAgentExplosiveManager	(this);
+	m_location					= new CAgentLocationManager		(this);
+	m_member					= new CAgentMemberManager		(this);
+	m_memory					= new CAgentMemoryManager		(this);
+	m_brain						= new FRbmkAgentManagerPlanner	(this);
 }
 
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
@@ -81,7 +80,6 @@ void CAgentManager::remove_links		(CObject *object)
 	location().remove_links		(object);
 	member().remove_links		(object);
 	memory().remove_links		(object);
-	brain().remove_links		(object);
 }
 
 void CAgentManager::update_impl			()
@@ -94,7 +92,7 @@ void CAgentManager::update_impl			()
 	explosive().update			();
 	location().update			();
 	member().update				();
-	brain().update				();
+	m_brain->Update				();
 }
 
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER

@@ -75,7 +75,7 @@ void CControlPathBuilder::update_schedule()
 	if (m_data.enable) {
 		detail().set_path_type				(eDetailPathTypeSmooth);
 
-		// установить direction
+		// ГіГ±ГІГ Г­Г®ГўГЁГІГј direction
 		detail().set_use_dest_orientation	(m_data.use_dest_orientation);
 		if (m_data.use_dest_orientation)	detail().set_dest_direction	(m_data.dest_orientation);
 
@@ -133,7 +133,7 @@ bool CControlPathBuilder::build_special(const Fvector &target, u32 node, u32 vel
 	if (!accessible(target)) return false;
 	
 	if (node == u32(-1)) {
-		// нода в прямой видимости?
+		// Г­Г®Г¤Г  Гў ГЇГ°ГїГ¬Г®Г© ГўГЁГ¤ГЁГ¬Г®Г±ГІГЁ?
 		restrictions().add_border(object().Position(), target);
 		node = ai().level_graph().check_position_in_direction(object().ai_location().level_vertex_id(),object().Position(),target);
 		restrictions().remove_border();
@@ -272,22 +272,7 @@ bool CControlPathBuilder::can_use_distributed_computations (u32 option) const
 
 u32	 CControlPathBuilder::find_nearest_vertex				(const u32 &level_vertex_id, const Fvector &target_position, const float &range)
 {
-	xr_vector<u32>	temp;
-
-	ai().graph_engine().search	(
-		ai().level_graph(),
-		level_vertex_id,
-		level_vertex_id,
-		&temp,
-		GraphEngineSpace::CNearestVertexParameters(
-			target_position,
-			range
-		)
-	);
-
-	VERIFY			(!temp.empty());
-	VERIFY			(temp.size() == 1);
-	return			(temp.front());
+	return ai().level_graph().SearchNearestVertex(level_vertex_id, target_position, range);
 }
 
 bool CControlPathBuilder::is_path_built()

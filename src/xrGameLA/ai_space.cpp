@@ -27,7 +27,6 @@ CAI_Space::CAI_Space				()
 {
 	m_ef_storage			= 0;
 	m_game_graph			= 0;
-	m_graph_engine			= 0;
 	m_cover_manager			= 0;
 	m_level_graph			= 0;
 #ifndef PRIQUEL
@@ -50,11 +49,8 @@ void CAI_Space::init				()
 	VERIFY					(!m_game_graph);
 	m_game_graph			= new CGameGraph();
 
-	VERIFY					(!m_graph_engine);
-	m_graph_engine			= new CGraphEngine(game_graph().header().vertex_count());
 #else // PRIQUEL
-	VERIFY					(!m_graph_engine);
-	m_graph_engine			= new CGraphEngine(1024);
+
 #endif // PRIQUEL
 
 	VERIFY					(!m_cover_manager);
@@ -85,13 +81,13 @@ CAI_Space::~CAI_Space				()
 	xr_delete				(m_ef_storage);
 
 #ifdef PRIQUEL
-	VERIFY					(!m_game_graph);
+	//VERIFY					(!m_game_graph);
 #else // PRIQUEL
-	xr_delete				(m_game_graph);
+	//xr_delete				(m_game_graph);
 #endif // PRIQUEL
 	
 	xr_delete				(m_cover_manager);
-	xr_delete				(m_graph_engine);
+	//xr_delete				(m_graph_engine);
 }
 
 void CAI_Space::load				(LPCSTR level_name)
@@ -119,12 +115,6 @@ void CAI_Space::load				(LPCSTR level_name)
 #endif // PRIQUEL
 	R_ASSERT2				(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
 	R_ASSERT2				(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
-	m_graph_engine			= new CGraphEngine(
-		_max(
-			game_graph().header().vertex_count(),
-			level_graph().header().vertex_count()
-		)
-	);
 	
 	R_ASSERT2				(current_level.guid() == level_graph().header().guid(), "graph doesn't correspond to the AI-map");
 	
@@ -151,18 +141,11 @@ void CAI_Space::unload				(bool reload)
 		return;
 
 	script_engine().unload	();
-	xr_delete				(m_graph_engine);
 	xr_delete				(m_level_graph);
 #ifndef PRIQUEL
 	xr_delete				(m_cross_table);
 #endif // PRIQUEL
-	if (
-		!reload
-#ifdef PRIQUEL
-		&& m_game_graph
-#endif // PRIQUEL
-		)
-		m_graph_engine		= new CGraphEngine(game_graph().header().vertex_count());
+
 }
 
 #ifdef DEBUG
@@ -226,7 +209,6 @@ void CAI_Space::set_alife				(CALifeSimulator *alife_simulator)
 	if (!alife_simulator) {
 		VERIFY				(m_game_graph);
 		m_game_graph		= 0;
-		xr_delete			(m_graph_engine);
 	}
 	else
 		VERIFY				(!m_game_graph);
@@ -242,8 +224,6 @@ void CAI_Space::game_graph				(IGameGraph *game_graph)
 	m_game_graph			= game_graph;
 
 //	VERIFY					(!m_graph_engine);
-	xr_delete				(m_graph_engine);
-	m_graph_engine			= new CGraphEngine(this->game_graph().header().vertex_count());
 }
 
 const IGameLevelCrossTable &CAI_Space::cross_table		() const

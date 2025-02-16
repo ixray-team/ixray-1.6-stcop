@@ -122,6 +122,10 @@ void CSE_ALifeMonsterAbstract::update								()
 	m_tTimeID					= ai().alife().time_manager().game_time();
 /**/
 }
+void CSE_ALifeMonsterAbstract::on_location_change() const
+{
+	brain().on_location_change();
+}
 
 CSE_ALifeItemWeapon	*CSE_ALifeMonsterAbstract::tpfGetBestWeapon(ALife::EHitType &tHitType, float &fHitPower)
 {

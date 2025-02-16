@@ -101,8 +101,8 @@ TEMPLATE_SPECIALIZATION
 IC	void CSelectorTemplate::perform_search		(const _vertex_id_type vertex_id)
 {
 	START_PROFILE("Build Path/Selector Path");
-	
-	VERIFY						(m_evaluator && m_graph);
+	R_ASSERT(!"Not Used");
+	/*VERIFY(m_evaluator && m_graph);
 
 	_vertex_id_type				start_vertex_id = vertex_id;
 	before_search				(start_vertex_id);
@@ -118,7 +118,7 @@ IC	void CSelectorTemplate::perform_search		(const _vertex_id_type vertex_id)
 	if (!failed())
 		m_selected_vertex_id	= m_evaluator->selected_vertex_id();
 
-	after_search				();
+	after_search				();*/
 
 	STOP_PROFILE;
 }

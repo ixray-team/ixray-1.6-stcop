@@ -293,6 +293,9 @@ public:
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
 	virtual Fvector					draw_level_position		() const;
 	virtual	bool					redundant				() const;
+	virtual void					on_location_change		() const;
+	virtual	CSE_ALifeDynamicObject const&	get_object		() const	{ return *this; }
+	virtual	CSE_ALifeDynamicObject&			get_object		()			{ return *this; }
 #endif
 	virtual bool					need_update				(CSE_ALifeDynamicObject *object);
 
@@ -468,7 +471,7 @@ private:
 	CALifeOnlineOfflineGroupBrain	*m_brain;
 
 public:
-	IC		CALifeOnlineOfflineGroupBrain	&brain	() const;
+	IC		CALifeOnlineOfflineGroupBrain	&brain	() const {VERIFY(m_brain); return(*m_brain);}
 
 public:
 	virtual	CSE_ALifeItemWeapon		*tpfGetBestWeapon		(ALife::EHitType &tHitType, float &fHitPower);
@@ -488,6 +491,9 @@ public:
 	virtual	void					switch_online			();
 	virtual	void					switch_offline			();
 	virtual	bool					redundant				() const;
+	virtual void					on_location_change() const;
+	virtual	CSE_ALifeDynamicObject const& get_object() const { return *this; }
+	virtual	CSE_ALifeDynamicObject& get_object() { return *this; }
 #else
 	virtual void					update					() {};
 #endif

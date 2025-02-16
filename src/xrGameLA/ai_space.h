@@ -32,7 +32,6 @@ private:
 	IGameLevelCrossTable				*m_cross_table;
 #endif // PRIQUEL
 	ILevelGraph							*m_level_graph;
-	CGraphEngine						*m_graph_engine;
 	CEF_Storage							*m_ef_storage;
 	CALifeSimulator						*m_alife_simulator;
 	CCoverManager						*m_cover_manager;
@@ -67,7 +66,6 @@ public:
 #endif // PRIQUEL
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
 	IC		CEF_Storage					&ef_storage				() const;
-	IC		CGraphEngine				&graph_engine			() const;
 	IC		const CALifeSimulator		&alife					() const;
 //	IC		CALifeSimulator				*get_alife_nonconst		();
 	IC		const CALifeSimulator		*get_alife				() const;

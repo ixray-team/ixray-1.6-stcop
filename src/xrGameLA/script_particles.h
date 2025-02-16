@@ -16,11 +16,13 @@
 class CObjectAnimator;
 class CScriptParticles;
 
-class CScriptParticlesCustom: public CParticlesObject{
+class CScriptParticlesCustom: 
+	public CParticlesObject
+{
+public:
 	CObjectAnimator*			m_animator;
 	virtual						~CScriptParticlesCustom();
 	CScriptParticles*			m_owner;
-public:
 								CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
 	virtual void				shedule_Update		(u32 dt);
 
@@ -34,7 +36,7 @@ public:
 
 class CScriptParticles{
 public:
-	CScriptParticlesCustom*		m_particles;
+	xr_shared_ptr<CScriptParticlesCustom>		m_particles;
 								CScriptParticles	(LPCSTR caParticlesName);
 	virtual						~CScriptParticles	();
 

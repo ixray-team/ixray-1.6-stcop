@@ -16,6 +16,7 @@
 u32	ui_hud_type;
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}
 
+
 //--------------------------------------------------------------------
 CHUDManager::CHUDManager() : pUIGame(nullptr), m_pHUDTarget(new CHUDTarget())
 { 
@@ -43,6 +44,7 @@ void CHUDManager::OnFrame()
 
 	m_pHUDTarget->CursorOnFrame();
 }
+xrCriticalSection ui_lock;
 //--------------------------------------------------------------------
 
 ENGINE_API extern float psHUD_FOV;
@@ -146,9 +148,11 @@ void  CHUDManager::RenderUI()
 	if (true /*|| psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
 	{
 		HitMarker.Render			();
-		if(pUIGame)
-			pUIGame->Render			();
-
+		if (pUIGame)
+		{
+			xrCriticalSectionGuard guard(&ui_lock);
+			pUIGame->Render();
+		}
 		UI().RenderFont				();
 	}
 

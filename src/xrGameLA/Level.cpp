@@ -603,6 +603,13 @@ void CLevel::OnFrame	()
 
 void	CLevel::script_gc				()
 {
+	/* KTO: хз для чего это, потом включите
+	{
+		PROF_EVENT("m_ph_commander");
+		ai().script_engine().script_process(ScriptEngine::eScriptProcessorLevel)->update();
+		m_ph_commander->update();
+		m_ph_commander_scripts->update();
+	}*/
 	lua_gc	(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
 }
 

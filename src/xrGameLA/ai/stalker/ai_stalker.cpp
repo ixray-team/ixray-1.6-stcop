@@ -868,7 +868,7 @@ void CAI_Stalker::Think			()
 	START_PROFILE("stalker/schedule_update/think/brain")
 //	try {
 //		try {
-			brain().update			(update_delta);
+			try{brain().update(update_delta);}catch(...){}
 //		}
 #ifdef DEBUG
 //		catch (luabind::cast_failed &message) {
