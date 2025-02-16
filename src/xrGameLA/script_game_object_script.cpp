@@ -14,9 +14,9 @@
 
 using namespace luabind;
 
-extern class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject> &);
-extern class_<CScriptGameObject> &script_register_game_object_trader(class_<CScriptGameObject> &);
+extern class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject> &&);
+extern class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject> &&);
+extern class_<CScriptGameObject> script_register_game_object_trader(class_<CScriptGameObject> &&);
 
 #pragma optimize("s",on)
 void CScriptGameObject::script_register(lua_State *L)
@@ -49,7 +49,7 @@ void CScriptGameObject::script_register(lua_State *L)
 		
 		script_register_game_object2(
 			script_register_game_object1(
-				script_register_game_object_trader(instance)
+				script_register_game_object_trader(std::move(instance))
 			)
 		),
 
@@ -108,7 +108,7 @@ void CScriptGameObject::script_register(lua_State *L)
 		def("sell_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::sell_condition)),
 		def("sell_condition",				(void (*)(float,float))(&::sell_condition)),
 		def("show_condition",				(void (*)(luabind::object))(&::show_condition)),
-		def("show_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::show_condition)),
-		def("show_condition",				(void (*)(float,float))(&::show_condition))
+		def("show_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::show_condition))
+//		def("show_condition",				(void (*)(float,float))(&::show_condition))
 	];
 }

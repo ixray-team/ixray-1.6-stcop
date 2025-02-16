@@ -48,7 +48,7 @@ IC bool b_is_blending( const CBlend* current_blend, const CBlend* b )
 {
 	
 	return	current_blend								&&
-			current_blend->blend != CBlend::eFREE_SLOT	&&
+			current_blend->blend_state() != CBlend::eFREE_SLOT	&&
 			current_blend != b							&&
 			b->blendAmount <  b->blendPower - EPS_L;
 

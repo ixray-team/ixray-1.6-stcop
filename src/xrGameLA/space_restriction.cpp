@@ -182,28 +182,19 @@ void CSpaceRestriction::merge_in_out_restrictions	()
 	STOP_PROFILE;
 }
 
-CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge	(CBaseRestrictionPtr bridge, const RESTRICTIONS &temp_restrictions) const
+CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestrictionPtr bridge, const RESTRICTIONS& temp_restrictions) const
 {
-	u32								acc_length = xr_strlen(*bridge->name()) + 1;
-	{
-		RESTRICTIONS::const_iterator	I = temp_restrictions.begin();
-		RESTRICTIONS::const_iterator	E = temp_restrictions.end();
-		for ( ; I != E; ++I)
-			acc_length					+= xr_strlen(*(*I)->name()) + 1;
-	}
-	
-	LPSTR							S = xr_alloc<char>(acc_length);
-	S[0]							= 0;
+	string2048 tempBuffer;
 	shared_str						temp = bridge->name();
-	RESTRICTIONS::const_iterator	I = temp_restrictions.begin();
-	RESTRICTIONS::const_iterator	E = temp_restrictions.end();
-	for ( ; I != E; ++I)
-		temp						= xr_strconcat(S,*temp,",",*(*I)->name());
 
-	xr_free							(S);
+	for (const SpaceRestrictionHolder::CBaseRestrictionPtr& it : temp_restrictions)
+	{
+		temp = xr_strconcat(tempBuffer, *temp, ",", it->name().c_str());
+	}
 
-	return							(m_space_restriction_manager->restriction(temp));
+	return (m_space_restriction_manager->restriction(temp));
 }
+
 
 #ifdef USE_FREE_IN_RESTRICTIONS
 void CSpaceRestriction::merge_free_in_retrictions	()

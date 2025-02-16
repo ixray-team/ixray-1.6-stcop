@@ -53,7 +53,7 @@ bool m_bCamReady = false;
 CGamePersistent::CGamePersistent(void)
 {
 	m_bPickableDOF				= false;
-	m_game_params.m_e_game_type	= GAME_ANY;
+	m_game_params.m_e_game_type	= eGameIDNoGame;
 	ambient_sound_next_time		= 0;
 	ambient_effect_next_time	= 0;
 	ambient_effect_stop_time	= 0;
@@ -170,7 +170,7 @@ void CGamePersistent::Disconnect()
 	__super::Disconnect			();
 	// stop all played emitters
 	::Sound->stop_emitters		();
-	m_game_params.m_e_game_type	= GAME_ANY;
+	m_game_params.m_e_game_type	= eGameIDNoGame;
 }
 
 #include "xr_level_controller.h"
@@ -190,8 +190,8 @@ void CGamePersistent::UpdateGameType			()
 {
 	__super::UpdateGameType		();
 	//  [7/11/2005]
-	if (!xr_strcmp(m_game_params.m_game_type, "single")) m_game_params.m_e_game_type = GAME_SINGLE;
-	else m_game_params.m_e_game_type = GAME_ANY;
+	if (!xr_strcmp(m_game_params.m_game_type, "single")) m_game_params.m_e_game_type = eGameIDSingle;
+	else m_game_params.m_e_game_type = eGameIDNoGame;
 	//  [7/11/2005]
 
 	g_current_keygroup = _sp;
@@ -487,9 +487,9 @@ void CGamePersistent::OnFrame	()
 			sscanf				(params,"%[^,],%[^,],%[^,],%d",o_server,o_client,o_demo,&o_time);
 
 			// Start _new level + demo
-			Engine.Event.Defer	("KERNEL:disconnect");
-			Engine.Event.Defer	("KERNEL:start",size_t(xr_strdup(_Trim(o_server))),size_t(xr_strdup(_Trim(o_client))));
-			Engine.Event.Defer	("GAME:demo",	size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
+			g_pEventManager->Event.Defer	("KERNEL:disconnect");
+			g_pEventManager->Event.Defer	("KERNEL:start",size_t(xr_strdup(_Trim(o_server))),size_t(xr_strdup(_Trim(o_client))));
+			g_pEventManager->Event.Defer	("GAME:demo",	size_t(xr_strdup(_Trim(o_demo))), u64(o_time));
 			uTime2Change		= 0xffffffff;	// Block changer until Event received
 		}
 	}

@@ -11,9 +11,9 @@
 #include "ai_crow.h"
 //#include "../../hudmanager.h"
 #include "../../level.h"
-#include "../../../../Include/xrRender/KinematicsAnimated.h"
-#include "../../../../Include/xrRender/Kinematics.h"
-#include "../../../../Include/xrRender/animation_blend.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../Include/xrRender/Kinematics.h"
+#include "../../../Include/xrRender/RenderVisual.h"
 #include "../../actor.h"
 
 

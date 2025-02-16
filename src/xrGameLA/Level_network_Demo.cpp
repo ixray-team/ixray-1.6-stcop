@@ -114,7 +114,7 @@ void						CLevel::Demo_PrepareToStore			()
 	//---------------------------------------------------------------
 	string1024 CName = "";
 	u32 CNameSize = 1024;
-	GetComputerName(CName, (DWORD*)&CNameSize);
+	GetComputerNameA(CName, (DWORD*)&CNameSize);
 	SYSTEMTIME Time;
 	GetLocalTime(&Time);
 	xr_sprintf(m_sDemoName, "xray_%s_%02d-%02d-%02d_%02d-%02d-%02d.tdemo", CName, Time.wMonth, Time.wDay, Time.wYear, Time.wHour, Time.wMinute, Time.wSecond);
@@ -156,7 +156,7 @@ void						CLevel::Demo_Clear				()
 
 	if (!g_bLeaveTDemo)
 	{
-		DeleteFile(m_sDemoName);
+		DeleteFileA(m_sDemoName);
 	};
 };
 
@@ -165,7 +165,7 @@ void						CLevel::Demo_Load				(LPCSTR DemoName)
 	string_path			DemoFileName;
 	FS.update_path      (DemoFileName,"$logs$",DemoName);
 	//-----------------------------------------------------
-	HANDLE hDemoFile = CreateFile(DemoFileName, FILE_ALL_ACCESS, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hDemoFile = CreateFileA(DemoFileName, FILE_ALL_ACCESS, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hDemoFile == NULL) return;
 
 	u32	FileSize = GetFileSize(hDemoFile, NULL);

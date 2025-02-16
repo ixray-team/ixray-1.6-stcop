@@ -123,6 +123,7 @@ public:
 
 	virtual bool	UseIndicators					()						{return false;}
 
+	virtual CDialogHolder* GetDialogHolder() override { return this; }
 	void			OnDeviceCreate					();
 
 	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0);

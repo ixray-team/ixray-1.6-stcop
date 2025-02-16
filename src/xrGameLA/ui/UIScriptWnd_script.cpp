@@ -25,8 +25,7 @@ extern export_class &script_register_ui_window2(export_class &);
 #pragma optimize("s",on)
 void CUIDialogWndEx::script_register(lua_State *L)
 {
-
-	export_class				instance("CUIScriptWnd"); 
+	export_class				instance("CUIScriptWnd");
 
 	module(L)
 	[

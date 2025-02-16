@@ -46,13 +46,15 @@ bool r_line(CScriptIniFile *self, LPCSTR S, int L,	xr_string &N, xr_string &V)
 #pragma warning(disable:4238)
 CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 {
+	IReader temp(
+		(void*)ini_string,
+		xr_strlen(ini_string)
+	);
+
 	return			(
 		(CScriptIniFile*)
 		new CInifile(
-			&IReader			(
-				(void*)ini_string,
-				xr_strlen(ini_string)
-			),
+			&temp,
 			FS.get_path("$game_config$")->m_Path
 		)
 	);
@@ -85,6 +87,6 @@ void CScriptIniFile::script_register(lua_State *L)
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
 #endif // XRGAME_EXPORTS
-		def("create_ini_file",		&create_ini_file,	adopt(result))
+		def("create_ini_file",		&create_ini_file,	adopt<0>())
 	];
 }

@@ -85,7 +85,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 		SStateDataMoveToPointEx data;
 
 		data.vertex				= m_target_node;
-		data.point				= ai().level_graph().vertex_position(data.vertex);
+		data.point				= this->ai().level_graph().vertex_position(data.vertex);
 		data.action.action		= ACT_WALK_FWD;
 		data.action.time_out	= 0;		// do not use time out
 		data.completion_dist	= 0.f;		// get exactly to the point

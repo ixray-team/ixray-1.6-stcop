@@ -11,7 +11,7 @@
 //#include "../skeletoncustom.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
-#include <../../xrODE/ode/src/util.h>
+#include <../3rd party/ode/ode/src/util.h>
 #ifdef DEBUG
 #include	"PHDebug.h"
 #endif
@@ -20,7 +20,7 @@
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
 
-#include "../../xrODE/ode/src/collision_kernel.h"
+#include "../3rd party/ode/ode/src/collision_kernel.h"
 
 
 #pragma warning(default:4267)

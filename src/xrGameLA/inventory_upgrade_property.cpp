@@ -41,7 +41,7 @@ void Property::construct( shared_str const& property_id, Manager& manager_r )
 	m_desc.parameter2 = id_str();
 	R_ASSERT2(
 		ai().script_engine().functor( functor_str, m_desc.functr ),
-		make_string( "Failed to get upgrade property functor in section[%s], functor[%s]",
+		make_string<const char*>( "Failed to get upgrade property functor in section[%s], functor[%s]",
 		id_str(), functor_str
 		)
 	);

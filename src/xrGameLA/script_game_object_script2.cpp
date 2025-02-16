@@ -31,9 +31,9 @@ using namespace luabind;
 
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
 
-class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &instance)
+class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject> &&instance)
 {
-	instance
+	return std::move(instance)
 		.enum_("relation")
 		[
 			value("friend",					int(ALife::eRelationTypeFriend)),
@@ -69,7 +69,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.property("satiety",				&CScriptGameObject::GetSatiety,			&CScriptGameObject::SetSatiety)
 		.property("thirst",					&CScriptGameObject::GetThirsty,			&CScriptGameObject::SetThirsty)
 		.property("radiation",				&CScriptGameObject::GetRadiation,		&CScriptGameObject::SetRadiation)
-		//---Добавил возможность обращаться к кровотечению
+		//---Р”РѕР±Р°РІРёР» РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕР±СЂР°С‰Р°С‚СЊСЃСЏ Рє РєСЂРѕРІРѕС‚РµС‡РµРЅРёСЋ
 		.property("bleeding",				&CScriptGameObject::GetBleeding,		&CScriptGameObject::SetBleeding)
 		.property("morale",					&CScriptGameObject::GetMorale,			&CScriptGameObject::SetMorale)
 
@@ -123,7 +123,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		
 		.def("rank",						&CScriptGameObject::GetRank)
 		.def("command",						&CScriptGameObject::AddAction)
-		.def("action",						&CScriptGameObject::GetCurrentAction, adopt(result))
+		.def("action",						&CScriptGameObject::GetCurrentAction, adopt<0>())
 		
 		.def("object_count",				&CScriptGameObject::GetInventoryObjectCount)
 		.def("object",						(CScriptGameObject *(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::GetObjectByName))
@@ -185,7 +185,7 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("get_enemy_strength",			&CScriptGameObject::GetEnemyStrength)
 		.def("get_sound_info",				&CScriptGameObject::GetSoundInfo)
 		.def("get_monster_hit_info",		&CScriptGameObject::GetMonsterHitInfo)
-		.def("bind_object",					&CScriptGameObject::bind_object,adopt(_2))
+		.def("bind_object",					&CScriptGameObject::bind_object,adopt<2>())
 		.def("motivation_action_manager",	&script_action_planner)
 
 		// bloodsucker
@@ -316,5 +316,5 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 		.def("invulnerable",				(void (CScriptGameObject::*)(bool))&CScriptGameObject::invulnerable)
 		.def("teleport_entity",				&CScriptGameObject::TeleportEntity)
 		
-	;return	(instance);
+	;
 }

@@ -6,7 +6,7 @@
 #include "ExtendedGeom.h"
 #include "../cl_intersect.h"
 #include "tri-colliderKNoOPC\__aabb_tri.h"
-#include "../../xrODE/ode/src/util.h"
+#include "../3rd party/ode/ode/src/util.h"
 #include "mathutilsode.h"
 
 CPHCharacter::CPHCharacter(void):
