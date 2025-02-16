@@ -730,7 +730,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	if(!curr_root)
 			curr_root					= xml_doc.GetRoot();
 	
-	XML_NODE* node						= curr_root->FirstChild();
+	const XML_NODE* node						= curr_root->FirstChild();
 	int cnt_static						= 0;
 	int cnt_frameline					= 0;
 	int cnt_text						= 0;
@@ -739,7 +739,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	while(node)
 	{
 		LPCSTR node_name			= node->Value();
-		if(0==stricmp(node_name,"auto_static"))
+		if(0==_stricmp(node_name,"auto_static"))
 		{
 			CUIStatic* pUIStatic		= new CUIStatic();
 			InitStatic					(xml_doc, "auto_static", cnt_static, pUIStatic);
@@ -750,7 +750,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 
 			++cnt_static;
 		}else
-		if(0==stricmp(node_name,"auto_frameline"))
+		if(0==_stricmp(node_name,"auto_frameline"))
 		{
 			CUIFrameLineWnd* pUIFrameline = new CUIFrameLineWnd();
 			InitFrameLine				(xml_doc, "auto_frameline", cnt_frameline, pUIFrameline);
@@ -761,14 +761,14 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 
 			++cnt_frameline;
 		}else
-		if(0==stricmp(node_name,"auto_text"))
+		if(0==_stricmp(node_name,"auto_text"))
 		{
 			++cnt_text;
 		}
-		node						= curr_root->NextSibling();
+		node = node->NextSibling();
 	}
 /*
-	CUIStatic* pUIStatic				= NULL;
+	CUIStatic* pUIStatic				= nullptr;
 	string64							sname;
 	for(int i=0; i<items_num; i++)
 	{
@@ -778,7 +778,7 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 		pUIStatic->SetWindowName		(sname);
 		pUIStatic->SetAutoDelete		(true);
 		pParentWnd->AttachChild			(pUIStatic);
-		pUIStatic						= NULL;
+		pUIStatic						= nullptr;
 	}
 */
 	xml_doc.SetLocalRoot				(_stored_root);
