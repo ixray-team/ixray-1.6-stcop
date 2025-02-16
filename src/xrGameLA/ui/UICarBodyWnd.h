@@ -70,7 +70,7 @@ protected:
 	CUIStatic*				m_pUIOthersBagWnd;
 	LPCSTR					m_othersBagWndPrefix;
 
-	//информация о персонажах 
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Р°С… 
 	CUIStatic*				m_pUIOurIcon;
 	CUIStatic*				m_pUIOthersIcon;
 	CUICharacterInfo*		m_pUICharacterInfoLeft;
@@ -92,15 +92,15 @@ protected:
 	CUICellItem*			CurrentItem					();
 	PIItem					CurrentIItem				();
 
-	// Взять все
+	// Р’Р·СЏС‚СЊ РІСЃРµ
 	void					TakeAll						();
 
 
-	bool		xr_stdcall	OnItemDrop					(CUICellItem* itm);
-	bool		xr_stdcall	OnItemStartDrag				(CUICellItem* itm);
-	bool		xr_stdcall	OnItemDbClick				(CUICellItem* itm);
-	bool		xr_stdcall	OnItemSelected				(CUICellItem* itm);
-	bool		xr_stdcall	OnItemRButtonClick			(CUICellItem* itm);
+	bool			OnItemDrop					(CUICellItem* itm);
+	bool			OnItemStartDrag				(CUICellItem* itm);
+	bool			OnItemDbClick				(CUICellItem* itm);
+	bool			OnItemSelected				(CUICellItem* itm);
+	bool			OnItemRButtonClick			(CUICellItem* itm);
 
 	bool					TransferItem				(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check);
 	void					BindDragDropListEvents		(CUIDragDropListEx* lst);

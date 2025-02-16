@@ -6,7 +6,7 @@
 #include "../Inventory.h"
 #include "../inventory_item.h"
 #include "../InventoryBox.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "UIInventoryUtilities.h"
 #include "game_cl_base.h"

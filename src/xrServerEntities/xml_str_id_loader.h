@@ -1,12 +1,12 @@
 #pragma once
 
-#include "object_destroyer.h"
+#include "../xrCore/object_destroyer.h"
 
 #ifdef XRGAME_EXPORTS
 #	include "../../xrUI/xrUIXmlParser.h"
 #else // XRGAME_EXPORTS
 #	include "xrUIXmlParser.h"
-#	include "object_broker.h"
+#	include "../xrCore/object_broker.h"
 #endif // XRGAME_EXPORTS
 
 

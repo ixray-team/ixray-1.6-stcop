@@ -1,7 +1,7 @@
 #pragma once
 
 #include "alife_space.h"
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 
 #define DEFAULT_NEWS_SHOW_TIME	5000
 

@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../xrEngine/xr_object.h"
+#include "../xrNetServer/NET_DeprecatedConstants.h"
 #include "xrServer_Space.h"
 #include "alife_space.h"
 #include "UsableScriptObject.h"

@@ -12,7 +12,7 @@
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../../xrEngine/string_table.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "game_base.h"
 
 #include "ui/UICDkey.h"

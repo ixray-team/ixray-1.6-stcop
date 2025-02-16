@@ -14,7 +14,7 @@
 #include "memory_manager.h"
 #include "enemy_manager.h"
 #include "Actor.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 struct CDangerPredicate {
 	const CObject	*m_object;

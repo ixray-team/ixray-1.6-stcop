@@ -13,7 +13,7 @@
 #include "profiler.h"
 
 #pragma comment(lib,"ode.lib")
-#pragma comment(lib,"xr_3da.lib")
+#pragma comment(lib,"xrEngine.lib")
 
 #ifdef NDEBUG
 //namespace std {

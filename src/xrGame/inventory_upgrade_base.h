@@ -9,7 +9,7 @@
 #ifndef INVENTORY_UPGRADE_BASE_H_INCLUDED
 #define INVENTORY_UPGRADE_BASE_H_INCLUDED
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 class CInventoryItem;
 

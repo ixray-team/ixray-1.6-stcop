@@ -12,7 +12,7 @@
 #include "game_cl_single.h"
 #include "ActorCondition.h"
 #include "../xrEngine/XR_IOConsole.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "GametaskManager.h"
 #include "GameTask.h"
 

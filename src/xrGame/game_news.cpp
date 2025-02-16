@@ -5,7 +5,7 @@
 
 #include "StdAfx.h"
 #include "game_news.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "ai_space.h"
 #include "alife_simulator.h"

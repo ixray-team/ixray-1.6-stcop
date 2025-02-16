@@ -11,7 +11,7 @@
 #include "ai_space.h"
 #include "../IGame_Persistent.h"
 #include "string_table.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "../XR_IOConsole.h"
 #include "ui/UIInventoryUtilities.h"

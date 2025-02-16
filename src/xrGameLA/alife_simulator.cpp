@@ -10,10 +10,10 @@
 #include "alife_simulator.h"
 #include "xrServer_Objects_ALife.h"
 #include "ai_space.h"
-#include "../IGame_Persistent.h"
+#include "../xrEngine/IGame_Persistent.h"
 #include "script_engine.h"
 #include "mainmenu.h"
-#include "object_factory.h"
+#include "../xrCore/object_factory.h"
 #include "alife_object_registry.h"
 
 LPCSTR alife_section = "alife";

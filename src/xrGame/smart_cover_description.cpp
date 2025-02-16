@@ -10,7 +10,7 @@
 #include "smart_cover_description.h"
 #include "ai_space.h"
 #include "../xrScripts/script_engine.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "smart_cover_loophole.h"
 #include "smart_cover_object.h"
 #include "ai_monster_space.h"

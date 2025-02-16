@@ -8,7 +8,7 @@
 #include "MMSound.h"
 #include "game_base_space.h"
 #include "../Level.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../Actor.h"
 #include "../saved_game_wrapper.h"
 #include "../login_manager.h"

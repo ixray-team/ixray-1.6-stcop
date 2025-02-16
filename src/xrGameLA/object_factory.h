@@ -10,22 +10,22 @@
 #define object_factoryH
 
 #pragma once
-
-#include "script_export_space.h"
+#include "../xrEngine/IGame_ObjectFactory.h"
+#include "../xrScripts/script_export_space.h"
 #include "object_item_abstract.h"
 #include "xrServer_Objects.h"
 
-class CObjectFactory {
+class CObjectFactory:
+	public IGame_ObjectFactory
+{
 public:
 #ifndef NO_XR_GAME
-	typedef ObjectFactory::CLIENT_BASE_CLASS			CLIENT_BASE_CLASS;
+	using CLIENT_BASE_CLASS = ObjectFactory::CLIENT_BASE_CLASS ;
+	using CLIENT_SCRIPT_BASE_CLASS = ObjectFactory::CLIENT_SCRIPT_BASE_CLASS;
 #endif
-	typedef ObjectFactory::SERVER_BASE_CLASS			SERVER_BASE_CLASS;
 
-#ifndef NO_XR_GAME
-	typedef ObjectFactory::CLIENT_SCRIPT_BASE_CLASS	CLIENT_SCRIPT_BASE_CLASS;
-#endif
-	typedef ObjectFactory::SERVER_SCRIPT_BASE_CLASS	SERVER_SCRIPT_BASE_CLASS;
+	using SERVER_BASE_CLASS = ObjectFactory::SERVER_BASE_CLASS ;
+	using SERVER_SCRIPT_BASE_CLASS = ObjectFactory::SERVER_SCRIPT_BASE_CLASS;
 
 protected:
 	struct CObjectItemPredicate {
@@ -75,7 +75,7 @@ protected:
 public:
 										CObjectFactory					();
 	virtual								~CObjectFactory					();
-			void						init							();
+	virtual	void						init							();
 #ifndef NO_XR_GAME
 	IC		CLIENT_BASE_CLASS			*client_object					(const CLASS_ID &clsid) const;
 	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, LPCSTR section) const;
@@ -83,18 +83,17 @@ public:
 	IC		SERVER_BASE_CLASS			*server_object					(const CLASS_ID &clsid, LPCSTR section) const;
 #endif
 
-	IC		int							script_clsid					(const CLASS_ID &clsid) const;
-			void						register_script					() const;
+	IC virtual int						script_clsid					(const CLASS_ID &clsid) const;
+	virtual	void						register_script					() const;
 			void						register_script_class			(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid);
 			void						register_script_class			(LPCSTR unknown_class, LPCSTR clsid, LPCSTR script_clsid);
 			void						register_script_classes			();
-	DECLARE_SCRIPT_REGISTER_FUNCTION
-};
-add_to_type_list(CObjectFactory)
-#undef script_type_list
-#define script_type_list save_type_list(CObjectFactory)
 
-extern CObjectFactory *g_object_factory;
+	virtual	void						init_script(const char* str);
+	virtual	void						export_classes(lua_State* L);
+
+		DECLARE_SCRIPT_REGISTER_FUNCTION
+	};
 
 IC	const CObjectFactory &object_factory();
 

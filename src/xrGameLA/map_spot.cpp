@@ -6,7 +6,7 @@
 #include "ui/UIMApWnd.h"
 #include "level.h"
 #include "../xrEngine/xr_object.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "ui/UITextureMaster.h"
 
 CMapSpot::CMapSpot(CMapLocation* ml)

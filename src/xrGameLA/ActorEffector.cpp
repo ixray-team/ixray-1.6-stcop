@@ -2,11 +2,11 @@
 
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
-#include "../effectorPP.h"
-#include "../ObjectAnimator.h"
-#include "object_broker.h"
+#include "../xrEngine/effectorPP.h"
+#include "../xrEngine/ObjectAnimator.h"
+#include "../xrCore/object_broker.h"
 #include "actor.h"
-#include "../CameraBase.h"
+#include "../xrEngine/CameraBase.h"
 #include "xr_level_controller.h"
 
 void AddEffector		(CActor* A, int type, const shared_str& sect_name)
@@ -393,7 +393,7 @@ BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 	
 	//////////////////////////////////////////////////////////////////////////
 
-	// Óñòàíîâèòü óãëû ñìåùåíèÿ
+	// Ð£ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ ÑƒÐ³Ð»Ñ‹ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ
 	Fmatrix		R;
 	if (m_time_current > m_time_total) 
 		R.identity	();

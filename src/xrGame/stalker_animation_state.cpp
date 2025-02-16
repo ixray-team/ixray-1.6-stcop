@@ -8,7 +8,7 @@
 
 #include "StdAfx.h"
 #include "stalker_animation_state.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../Include/xrRender/Kinematics.h"
 
 CStalkerAnimationState::CStalkerAnimationState	()

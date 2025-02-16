@@ -6,7 +6,7 @@
 #include "Level.h"
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "WeaponBinocularsVision.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "Inventory.h"
 
 CWeaponBinoculars::CWeaponBinoculars()

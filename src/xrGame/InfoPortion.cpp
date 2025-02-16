@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "xml_str_id_loader.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 /*
 #include "InfoPortion.h"
 #include "GameObject.h"

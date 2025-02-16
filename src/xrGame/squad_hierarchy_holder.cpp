@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "seniority_hierarchy_space.h"
 #include "memory_space.h"
 

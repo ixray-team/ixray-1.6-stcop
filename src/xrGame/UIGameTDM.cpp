@@ -7,7 +7,7 @@
 
 #include "ui/TeamInfo.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "UITeamPanels.h"
 #include "ui/UIMoneyIndicator.h"

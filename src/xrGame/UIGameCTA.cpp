@@ -17,7 +17,7 @@
 #include "WeaponKnife.h"
 #include "../xrEngine/xr_level_controller.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "WeaponKnife.h"
 
 #include "ui/UISkinSelector.h"

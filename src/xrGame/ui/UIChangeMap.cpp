@@ -10,7 +10,7 @@
 #include "../../xrEngine/XR_IOConsole.h"
 #include "UIMapList.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../UIGameCustom.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
 

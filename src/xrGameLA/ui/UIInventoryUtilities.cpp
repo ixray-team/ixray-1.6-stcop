@@ -39,7 +39,9 @@ ui_shader	*g_tmpWMShader				= NULL;
 static CUIStatic*	GetUIStatic				();
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
-DEF_MAP				(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);
+
+using CharInfoStrings = xr_map<CHARACTER_RANK_VALUE, shared_str>;
+using CharInfoStrings_it = CharInfoStrings::iterator;
 
 CharInfoStrings		*charInfoReputationStrings	= NULL;
 CharInfoStrings		*charInfoRankStrings		= NULL;
@@ -175,8 +177,8 @@ bool InventoryUtilities::FreeRoom_inBelt	(const TIItemContainer& src_item_list, 
 		PIItem pItem = *it;
 		int iWidth	= pItem->GetGridWidth(); 
 		int iHeight = pItem->GetGridHeight();
-		//проверить можно ли разместить элемент,
-		//проверяем последовательно каждую клеточку
+		//РїСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РЅРѕ Р»Рё СЂР°Р·РјРµСЃС‚РёС‚СЊ СЌР»РµРјРµРЅС‚,
+		//РїСЂРѕРІРµСЂСЏРµРј РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РєР°Р¶РґСѓСЋ РєР»РµС‚РѕС‡РєСѓ
 		found_place = false;
 	
 		for(i=0; (i<height - iHeight +1) && !found_place; ++i)
@@ -204,7 +206,7 @@ bool InventoryUtilities::FreeRoom_inBelt	(const TIItemContainer& src_item_list, 
 			}
 		}
 
-		//разместить элемент на найденном месте
+		//СЂР°Р·РјРµСЃС‚РёС‚СЊ СЌР»РµРјРµРЅС‚ РЅР° РЅР°Р№РґРµРЅРЅРѕРј РјРµСЃС‚Рµ
 		if(found_place)
 		{
 			for(k=0; k<iHeight; ++k)
@@ -578,8 +580,8 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 
 
 //////////////////////////////////////////////////////////////////////////
-// специальная функция для передачи info_portions при нажатии кнопок UI 
-// (для tutorial)
+// СЃРїРµС†РёР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё info_portions РїСЂРё РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРѕРє UI 
+// (РґР»СЏ tutorial)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
 	if (GameID() != GAME_SINGLE) return;
@@ -592,8 +594,8 @@ void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// skyloader: специальная функция для получения info_portions при нажатии кнопок UI 
-// (для tutorial)
+// skyloader: СЃРїРµС†РёР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ info_portions РїСЂРё РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРѕРє UI 
+// (РґР»СЏ tutorial)
 bool InventoryUtilities::HasActorInfo(LPCSTR info_id)
 {
 	if (GameID() != GAME_SINGLE) return false;

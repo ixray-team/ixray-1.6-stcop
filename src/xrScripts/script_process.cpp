@@ -11,7 +11,7 @@
 #include "script_engine.h"
 #include "script_process.h"
 #include "script_thread.h"
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 SCRIPTS_API string4096 g_ca_stdout;
 

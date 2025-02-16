@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "actorcondition.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 bool debug_effects = false;
 extern BOOL GodMode();

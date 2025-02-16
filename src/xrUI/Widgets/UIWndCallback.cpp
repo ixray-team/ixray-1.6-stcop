@@ -2,7 +2,7 @@
 #include <luabind/luabind.hpp>
 #include "UIWndCallback.h"
 #include "UIWindow.h"
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrGame/callback_info.h"
 
 bool event_comparer::operator ()(SCallbackInfo* i)

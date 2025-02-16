@@ -26,7 +26,7 @@
 
 #include "../../../rat_state_manager.h"
 #include "../../../rat_states.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../ai_monster_squad_manager.h"
 #include "../ai_monster_squad.h"
 #include "../../../patrol_path_storage.h"

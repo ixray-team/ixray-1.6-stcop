@@ -11,7 +11,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "cl_intersect.h"
 
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #ifdef _EDITOR
     #include "ui_toolscustom.h"

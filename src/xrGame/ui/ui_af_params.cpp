@@ -6,7 +6,7 @@
 #include "../ActorCondition.h"
 #include "../inventory_item.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"

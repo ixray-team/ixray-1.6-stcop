@@ -9,7 +9,7 @@
 #include "xr_level_controller.h"
 #include "actorcondition.h"
 #include "../xr_ioconsole.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
 #include "inventory.h"
@@ -167,7 +167,7 @@ void CUIGameSP::StartTalk(bool disable_break)
 	TalkMenu->ShowDialog		(true);
 }
 
-void CUIGameSP::StartStashUI(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //Труп, богажник ...
+void CUIGameSP::StartStashUI(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner) //РўСЂСѓРї, Р±РѕРіР°Р¶РЅРёРє ...
 {
 	if( TopInputReceiver() )		return;
 
@@ -175,14 +175,14 @@ void CUIGameSP::StartStashUI(CInventoryOwner* pActorInv, CInventoryOwner* pOther
 	m_UICarBodyMenu->ShowDialog				(true);
 }
 
-void CUIGameSP::StartStashUI(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Ящик, Сэйф
+void CUIGameSP::StartStashUI(CInventoryOwner* pActorInv, CInventoryBox* pBox) //РЇС‰РёРє, РЎСЌР№С„
 {
 	if( TopInputReceiver() )		return;
 	
 	m_UICarBodyMenu->InitInventoryBox		(pActorInv, pBox);
 	m_UICarBodyMenu->ShowDialog				(true);
 }
-//Нужно проверить что будет, если гг убьют
+//РќСѓР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ С‡С‚Рѕ Р±СѓРґРµС‚, РµСЃР»Рё РіРі СѓР±СЊСЋС‚
 void CUIGameSP::OpenSafe()
 {
 	if (TopInputReceiver())		return;

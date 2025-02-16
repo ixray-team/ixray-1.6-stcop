@@ -5,7 +5,7 @@
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "Actor.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "../xrEngine/GameMtlLib.h"
 #include "CustomRocket.h"

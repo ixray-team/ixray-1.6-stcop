@@ -39,7 +39,8 @@ private:
 	bool					m_bInited;
 	
 	DEF_VECTOR(group_items, shared_str);
-	DEF_MAP(Groups, shared_str, group_items);
+	using Groups = xr_map<shared_str, group_items>;
+	using Groups_it = Groups::iterator;
 	Groups											m_goups;
 
 

@@ -6,6 +6,7 @@
 //	Description : Object item script class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "object_item_script.h"
 #include "object_factory.h"
@@ -17,7 +18,7 @@ ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 {
 	ObjectFactory::CLIENT_SCRIPT_BASE_CLASS	*object;
 	try {
-		object	= luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(m_client_creator(),luabind::adopt(luabind::result));
+		object	= luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(m_client_creator(),luabind::adopt<0>());
 	}
 	catch(...) {
 		return	(0);
@@ -39,7 +40,7 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR secti
 		try {
 			instance	= new luabind::object((luabind::object)(m_server_creator(section)));
 		}
-		catch(std::exception& e) {
+		catch(std::exception e) {
 			Msg			("Exception [%s] raised while creating server object from section [%s]", e.what(),section);
 			return		(0);
 		}
@@ -47,10 +48,10 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR secti
 			Msg			("Exception raised while creating server object from section [%s]",section);
 			return		(0);
 		}
-		object			= luabind::object_cast<ObjectFactory::SERVER_SCRIPT_BASE_CLASS*>(*instance,luabind::adopt(luabind::result));
+		object			= luabind::object_cast<ObjectFactory::SERVER_SCRIPT_BASE_CLASS*>(*instance,luabind::adopt<0>());
 		xr_delete		(instance);
 	}
-	catch(std::exception& e) {
+	catch(std::exception e) {
 		Msg				("Exception [%s] raised while casting and adopting script server object from section [%s]", e.what(),section);
 		return			(0);
 	}
@@ -59,9 +60,9 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR secti
 		return			(0);
 	}
 
-	R_ASSERT2			(object, section);
+	R_ASSERT			(object);
 	SERVER_BASE_CLASS	*o = object->init();
-	R_ASSERT2			(o, section);
+	R_ASSERT			(o);
 	return				(o);
 }
 

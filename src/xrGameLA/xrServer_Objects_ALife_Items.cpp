@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "xrMessages.h"
 #include "../../xrCore/net_utils.h"
 #include "clsid_game.h"

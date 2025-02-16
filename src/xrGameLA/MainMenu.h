@@ -135,14 +135,14 @@ public:
 	void			SwitchToMultiplayerMenu			();
 	void			OnNewPatchFound					(LPCSTR VersionName, LPCSTR URL);
 	void			OnNoNewPatchFound				();
-	void xr_stdcall OnDownloadPatch					(CUIWindow*, void*);
-	void xr_stdcall OnConnectToMasterServerOkClicked(CUIWindow*, void*);
+	void  OnDownloadPatch					(CUIWindow*, void*);
+	void  OnConnectToMasterServerOkClicked(CUIWindow*, void*);
 	void			OnSessionTerminate				(LPCSTR reason);
 	void			OnLoadError						(LPCSTR module);
 	void			OnDownloadPatchError			();
 	void			OnDownloadPatchSuccess			();
 	void			OnDownloadPatchProgress			(u64 bytesReceived, u64 totalSize);
-	void xr_stdcall OnRunDownloadedPatch			(CUIWindow*, void*);
+	void  OnRunDownloadedPatch			(CUIWindow*, void*);
 	void			Show_CTMS_Dialog				();
 	void			Hide_CTMS_Dialog				();
 

@@ -13,7 +13,7 @@
 #include "EffectorZoomInertion.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "UIGameCustom.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
 #include "MPPlayersBag.h"
 #include "../../xrUI/UIXmlInit.h"

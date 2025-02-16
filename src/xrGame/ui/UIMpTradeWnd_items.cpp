@@ -2,7 +2,7 @@
 #include "UIMpTradeWnd.h"
 #include "../inventory_item.h"
 #include "../PhysicsShellHolder.h"
-#include "object_broker.h"
+#include "../../xrCore/object_broker.h"
 #include "UICellItem.h"
 #include "UIDragDropListEx.h"
 #include "../../xrEngine/string_table.h"

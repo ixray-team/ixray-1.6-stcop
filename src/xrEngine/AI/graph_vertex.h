@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 template <
 	typename _data_type,

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "script_export_space.h"
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 #include "inventory_space.h"
 #include "UIDialogHolder.h"
 #include "../CustomHUD.h"

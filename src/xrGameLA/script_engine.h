@@ -11,7 +11,7 @@
 #include "script_storage.h"
 #include "script_export_space.h"
 #include "script_space_forward.h"
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 extern "C" {
 	#include <lua.h>

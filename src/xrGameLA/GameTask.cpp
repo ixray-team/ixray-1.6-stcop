@@ -15,7 +15,7 @@
 #include "alife_simulator.h"
 #include "alife_story_registry.h"
 #include "game_object_space.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "ui/uitexturemaster.h"
 
 ALife::_STORY_ID	story_id		(LPCSTR story_id);

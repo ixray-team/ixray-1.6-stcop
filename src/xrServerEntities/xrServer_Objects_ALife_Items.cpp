@@ -10,7 +10,7 @@
 #include "xrMessages.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "clsid_game.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #ifndef XRGAME_EXPORTS
 #	include "bone.h"

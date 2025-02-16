@@ -4,7 +4,7 @@
 #include "Level.h"
 #include "UIHelperGame.h"
 #include "../xrUI/Widgets/UIStatic.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
 
 #include "InventoryOwner.h"

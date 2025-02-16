@@ -17,7 +17,7 @@
 #include "../../Artefact.h"
 #include "../../xrServer.h"
 #include "../../relation_registry.h"
-#include "../../../xrServerEntities/object_broker.h"
+#include "../../../xrCore/object_broker.h"
 #include "../../sound_player.h"
 #include "../../Level.h"
 #include "../../game_object_space.h"

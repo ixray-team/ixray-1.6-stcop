@@ -12,7 +12,7 @@
 #include "ai_space.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "Weapon.h"
 
 #include "PDA.h"

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "kills_store.h"
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 namespace award_system
 {

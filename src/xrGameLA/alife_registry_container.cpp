@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "alife_registry_container.h"
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 #include "alife_space.h"
 #include "../xrCore/object_type_traits.h"
 

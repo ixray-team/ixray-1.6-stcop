@@ -4,7 +4,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UICursor.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrEngine/xr_input.h"
 #include "../UIGameSP.h"
 #include "../Level.h"

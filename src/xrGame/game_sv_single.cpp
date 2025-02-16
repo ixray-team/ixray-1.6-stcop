@@ -5,7 +5,7 @@
 #include "alife_object_registry.h"
 #include "alife_graph_registry.h"
 #include "alife_time_manager.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "GamePersistent.h"
 #include "xrServer.h"
 #include "../xrEngine/x_ray.h"

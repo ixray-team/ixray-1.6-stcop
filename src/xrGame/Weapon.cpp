@@ -12,7 +12,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "../xrPhysics/MathUtils.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "player_hud.h"
 #include "GamePersistent.h"
 #include "EffectorFall.h"

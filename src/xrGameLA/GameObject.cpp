@@ -15,12 +15,12 @@
 #include "xrserver_objects_alife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "game_cl_base.h"
-#include "object_factory.h"
+#include "../xrCore/object_factory.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location_impl.h"
 #include "game_graph.h"
 #include "ai_debug.h"
-#include "../xr_3da/igame_level.h"
+#include "../xrEngine/igame_level.h"
 #include "level.h"
 #include "../../xrCore/net_utils.h"
 #include "script_callback_ex.h"
@@ -31,7 +31,7 @@
 //#include "ai_obstacle.h"
 #include "magic_box3.h"
 #include "animation_movement_controller.h"
-#include "../xr_3da/xr_collide_form.h"
+#include "../xrEngine/xr_collide_form.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"

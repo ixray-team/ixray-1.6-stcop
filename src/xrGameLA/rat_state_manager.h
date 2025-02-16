@@ -9,7 +9,7 @@
 #ifndef RAT_STATE_MANAGER_H_INCLUDED
 #define RAT_STATE_MANAGER_H_INCLUDED
 
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 
 class rat_state_base;
 class CAI_Rat;

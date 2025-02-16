@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIBoosterInfo.h"
 #include "../../xrUI/Widgets/UIStatic.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../EntityCondition.h"
 #include "../Actor.h"
 #include "../ActorCondition.h"

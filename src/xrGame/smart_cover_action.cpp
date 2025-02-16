@@ -11,7 +11,7 @@
 #include "ai_monster_space.h"
 #include "ai_space.h"
 #include "level_graph.h"
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 using smart_cover::detail::parse_string;
 using smart_cover::detail::parse_int;

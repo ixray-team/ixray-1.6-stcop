@@ -10,7 +10,7 @@
 #include "../../xrNetServer/net_server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
-#include "../xr_3da/mp_logging.h"
+#include "../xrEngine/mp_logging.h"
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"

@@ -1,7 +1,7 @@
 #pragma once
 #include "UIWindow.h"
 #include "UIWndCallback.h"
-#include "../../xrServerEntities/associative_vector.h"
+#include "../../xrCore/associative_vector.h"
 #include "../GameTaskDefs.h"
 #include "UICheckButton.h"
 
@@ -85,13 +85,13 @@ private:
 
 	void						OnNextTaskClicked		();
 	void 						OnPrevTaskClicked		();
-	void xr_stdcall				OnShowTaskListWnd		(CUIWindow* w, void* d);
-	void xr_stdcall				OnTask1DbClicked		(CUIWindow*, void*);
+	void 				OnShowTaskListWnd		(CUIWindow* w, void* d);
+	void 				OnTask1DbClicked		(CUIWindow*, void*);
 
-	void xr_stdcall				OnShowTreasures			(CUIWindow*, void*);
-	void xr_stdcall				OnShowPrimaryObjects	(CUIWindow*, void*);
-	void xr_stdcall				OnShowSecondaryTasks	(CUIWindow*, void*);
-	void xr_stdcall				OnShowQuestNpcs			(CUIWindow*, void*);
+	void 				OnShowTreasures			(CUIWindow*, void*);
+	void 				OnShowPrimaryObjects	(CUIWindow*, void*);
+	void 				OnShowSecondaryTasks	(CUIWindow*, void*);
+	void 				OnShowQuestNpcs			(CUIWindow*, void*);
 };
 
 class CUITaskItem : public CUIWindow

@@ -9,7 +9,7 @@
 #include "alife_time_manager.h"
 #include "level.h"
 #include "script_engine.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "script_space_forward.h"
 
 

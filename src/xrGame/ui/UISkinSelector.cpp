@@ -9,7 +9,7 @@
 #include "../game_cl_deathmatch.h"
 #include "../Level.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 {	

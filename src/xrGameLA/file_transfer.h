@@ -1,7 +1,7 @@
 #ifndef FILETRANSFER
 #define FILETRANSFER
 
-#include "associative_vector.h"
+#include "../xrCore/associative_vector.h"
 #include "..\StatGraph.h"
 #include "filetransfer_node.h"
 #include "filereceiver_node.h"

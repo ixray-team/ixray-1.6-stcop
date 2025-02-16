@@ -243,7 +243,7 @@ xrServer::EConnect	g_connect_server_err	= xrServer::ErrConnect;
 
 struct LevelLoadFinalizer
 {
-bool xr_stdcall net_start_finalizer()
+bool  net_start_finalizer()
 {
 	if(g_pGameLevel && !g_start_total_res)
 	{

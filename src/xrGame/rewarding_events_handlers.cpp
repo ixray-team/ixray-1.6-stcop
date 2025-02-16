@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "rewarding_events_handlers.h"
 #include "reward_event_handler.h"
-#include "../xrServerEntities/object_broker.h"
+#include "../xrCore/object_broker.h"
 
 namespace award_system
 {

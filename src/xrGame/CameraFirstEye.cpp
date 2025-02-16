@@ -4,7 +4,7 @@
 #include "CameraFirstEye.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "../xrEngine/xr_object.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

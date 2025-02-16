@@ -4,7 +4,7 @@
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
 #include "ui/UIMultiTextStatic.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "string_table.h"
 
 #include "InventoryOwner.h"

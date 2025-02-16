@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __STORE_H__
 #define __STORE_H__
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 #include "script_export_space.h"
 #include "alife_space.h"
 //#include "..\xrCore\net_utils.h"

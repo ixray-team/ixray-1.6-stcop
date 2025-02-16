@@ -1145,7 +1145,7 @@ struct path_excluder_predicate
 		m_ignore(ignore)
 	{
 	}
-	bool xr_stdcall is_allow_include(LPCSTR path)
+	bool  is_allow_include(LPCSTR path)
 	{
 		if (!m_ignore)
 			return true;

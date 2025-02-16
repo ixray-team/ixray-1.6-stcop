@@ -61,8 +61,8 @@ public:
 	bool				CanUpgradeItem(PIItem item);
 	void				SetupUpgradeItem();
 
-	void		xr_stdcall		OnMesBoxYes(CUIWindow*, void*);
-	void		xr_stdcall		OnMesBoxNo(CUIWindow*, void*);
+	void				OnMesBoxYes(CUIWindow*, void*);
+	void				OnMesBoxNo(CUIWindow*, void*);
 protected:
 
 	CUIUpgradeInternal*	m_uidata;
@@ -99,11 +99,11 @@ protected:
 	CUIMessageBoxEx*			m_message_box_ok;
 	CUICellItem*				m_upgrade_selected;
 
-	bool		xr_stdcall		OnItemDrop(CUICellItem* itm);
-	bool		xr_stdcall		OnItemStartDrag(CUICellItem* itm);
-	bool		xr_stdcall		OnItemDbClick(CUICellItem* itm);
-	bool		xr_stdcall		OnItemSelected(CUICellItem* itm);
-	bool		xr_stdcall		OnItemRButtonClick(CUICellItem* itm);
+	bool				OnItemDrop(CUICellItem* itm);
+	bool				OnItemStartDrag(CUICellItem* itm);
+	bool				OnItemDbClick(CUICellItem* itm);
+	bool				OnItemSelected(CUICellItem* itm);
+	bool				OnItemRButtonClick(CUICellItem* itm);
 
 	void						TryRepairItem();
 

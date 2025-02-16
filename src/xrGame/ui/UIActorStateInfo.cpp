@@ -13,7 +13,7 @@
 #include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "UIHelperGame.h"
 #include "../../xrUI/Widgets/ui_arrow.h"

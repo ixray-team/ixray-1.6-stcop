@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "UIListBoxItem.h"
 #include "UIScrollView.h"
-#include "../../xrServerEntities/object_broker.h"
+#include "../../xrCore/object_broker.h"
 #include "UIStatic.h"
 
 CUIListBoxItem::CUIListBoxItem(float height)

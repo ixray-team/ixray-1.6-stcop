@@ -2,7 +2,7 @@
 #include "level.h"
 #include "xrServer_updates_compressor.h"
 #include "../xrCore/ppmd_compressor.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "xrMessages.h"
 
 BOOL		g_sv_write_updates_bin	= FALSE;

@@ -11,7 +11,7 @@
 #include "xr_level_controller.h"
 #include "level.h"
 #include "../../Include/xrRender/Kinematics.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "game_base_space.h"
 #include "MathUtils.h"
 #include "clsid_game.h"
@@ -92,9 +92,9 @@ void CWeaponMagazinedWGrenade::OnShot		()
 	} 
 	else inherited::OnShot();
 }
-//переход в режим подствольника или выход из него
-//если мы в режиме стрельбы очередями, переключиться
-//на одиночные, а уже потом на подствольник
+//РїРµСЂРµС…РѕРґ РІ СЂРµР¶РёРј РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР° РёР»Рё РІС‹С…РѕРґ РёР· РЅРµРіРѕ
+//РµСЃР»Рё РјС‹ РІ СЂРµР¶РёРјРµ СЃС‚СЂРµР»СЊР±С‹ РѕС‡РµСЂРµРґСЏРјРё, РїРµСЂРµРєР»СЋС‡РёС‚СЊСЃСЏ
+//РЅР° РѕРґРёРЅРѕС‡РЅС‹Рµ, Р° СѓР¶Рµ РїРѕС‚РѕРј РЅР° РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє
 bool CWeaponMagazinedWGrenade::SwitchMode() 
 {
 	bool bUsefulStateToSwitch = ((eIdle==GetState())||(eHidden==GetState())||(eMisfire==GetState())||(eMagEmpty==GetState())) && (!IsPending());
@@ -331,7 +331,7 @@ void CWeaponMagazinedWGrenade::ReloadMagazine()
 {
 	inherited::ReloadMagazine();
 
-	//перезарядка подствольного гранатомета
+	//РїРµСЂРµР·Р°СЂСЏРґРєР° РїРѕРґСЃС‚РІРѕР»СЊРЅРѕРіРѕ РіСЂР°РЅР°С‚РѕРјРµС‚Р°
 	if (iAmmoElapsed && !getRocketCount() && grenadeMode_)
 	{
 		shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
@@ -425,7 +425,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
- 		//уничтожить подствольник из инвентаря
+ 		//СѓРЅРёС‡С‚РѕР¶РёС‚СЊ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
 		if(b_send_event)
 		{
 			if (OnServer()) 
@@ -497,7 +497,7 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor	()
 	return inherited::CurrentZoomFactor();
 }
 
-//виртуальные функции для проигрывания анимации HUD
+//РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё HUD
 void CWeaponMagazinedWGrenade::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
@@ -649,13 +649,13 @@ void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 
 BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* server_entity)
 {
-	BOOL bResult = CHudItemObject::net_Spawn(server_entity); // обходим нет спавн базового оружия(чтобы не перетолковать одни и те же переменные) отрабатываем нетспавн худ итема и нетспавним этот класс по собственному алгоритму
+	BOOL bResult = CHudItemObject::net_Spawn(server_entity); // РѕР±С…РѕРґРёРј РЅРµС‚ СЃРїР°РІРЅ Р±Р°Р·РѕРІРѕРіРѕ РѕСЂСѓР¶РёСЏ(С‡С‚РѕР±С‹ РЅРµ РїРµСЂРµС‚РѕР»РєРѕРІР°С‚СЊ РѕРґРЅРё Рё С‚Рµ Р¶Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ) РѕС‚СЂР°Р±Р°С‚С‹РІР°РµРј РЅРµС‚СЃРїР°РІРЅ С…СѓРґ РёС‚РµРјР° Рё РЅРµС‚СЃРїР°РІРЅРёРј СЌС‚РѕС‚ РєР»Р°СЃСЃ РїРѕ СЃРѕР±СЃС‚РІРµРЅРЅРѕРјСѓ Р°Р»РіРѕСЂРёС‚РјСѓ
 
 	CSE_ALifeItemWeaponMagazinedWGL* const weapon_gl = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>(server_entity);
 
 	R_ASSERT(weapon_gl);
 
-	// Загрузить с сервера то, что мы экспортировали через ::net_export
+	// Р—Р°РіСЂСѓР·РёС‚СЊ СЃ СЃРµСЂРІРµСЂР° С‚Рѕ, С‡С‚Рѕ РјС‹ СЌРєСЃРїРѕСЂС‚РёСЂРѕРІР°Р»Рё С‡РµСЂРµР· ::net_export
 	m_iCurFireMode		= weapon_gl->m_u8CurFireMode;
 
 	m_flagsAddOnState	= weapon_gl->m_addon_flags.get();
@@ -669,17 +669,17 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* server_entity)
 	m_magazine.clear();
 	inactiveMagazine_.clear();
 
-	// Тут немного сложно, но пока по другому никак. В зависимости от того, включен ли режим гранатомета, для магазина патронов и магазина подствола выберается активный или неактивный магазины для хранения зарядов
-	xr_vector<CCartridge>& grenade_mag = grenadeMode_ ? m_magazine : inactiveMagazine_; // указатель на переменную хронящую заряды для подствольника
-	xr_vector<CCartridge>& regular_ammo_mag = grenadeMode_ ? inactiveMagazine_ : m_magazine; // указатель на переменную хронящую заряды для обычного магазина
+	// РўСѓС‚ РЅРµРјРЅРѕРіРѕ СЃР»РѕР¶РЅРѕ, РЅРѕ РїРѕРєР° РїРѕ РґСЂСѓРіРѕРјСѓ РЅРёРєР°Рє. Р’ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РѕРіРѕ, РІРєР»СЋС‡РµРЅ Р»Рё СЂРµР¶РёРј РіСЂР°РЅР°С‚РѕРјРµС‚Р°, РґР»СЏ РјР°РіР°Р·РёРЅР° РїР°С‚СЂРѕРЅРѕРІ Рё РјР°РіР°Р·РёРЅР° РїРѕРґСЃС‚РІРѕР»Р° РІС‹Р±РµСЂР°РµС‚СЃСЏ Р°РєС‚РёРІРЅС‹Р№ РёР»Рё РЅРµР°РєС‚РёРІРЅС‹Р№ РјР°РіР°Р·РёРЅС‹ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р·Р°СЂСЏРґРѕРІ
+	xr_vector<CCartridge>& grenade_mag = grenadeMode_ ? m_magazine : inactiveMagazine_; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ С…СЂРѕРЅСЏС‰СѓСЋ Р·Р°СЂСЏРґС‹ РґР»СЏ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
+	xr_vector<CCartridge>& regular_ammo_mag = grenadeMode_ ? inactiveMagazine_ : m_magazine; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ С…СЂРѕРЅСЏС‰СѓСЋ Р·Р°СЂСЏРґС‹ РґР»СЏ РѕР±С‹С‡РЅРѕРіРѕ РјР°РіР°Р·РёРЅР°
 
-	u8& grenade_ammo_index = grenadeMode_ ? m_ammoType : inactiveAmmoIndex_; // указатель на переменную хронящую тип гранат
-	u8& regular_ammo_index = grenadeMode_ ? inactiveAmmoIndex_ : m_ammoType; // указатель на переменную хронящую тип патронов
+	u8& grenade_ammo_index = grenadeMode_ ? m_ammoType : inactiveAmmoIndex_; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ С…СЂРѕРЅСЏС‰СѓСЋ С‚РёРї РіСЂР°РЅР°С‚
+	u8& regular_ammo_index = grenadeMode_ ? inactiveAmmoIndex_ : m_ammoType; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ С…СЂРѕРЅСЏС‰СѓСЋ С‚РёРї РїР°С‚СЂРѕРЅРѕРІ
 
 	if (grenadeMode_)
 		maxMagazineSize_ = 1;
 
-	// Загрузить подствольник
+	// Р—Р°РіСЂСѓР·РёС‚СЊ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє
 	grenade_ammo_index = weapon_gl->grndID_;
 
 	if (grenade_ammo_index >= ammoList2_.size())
@@ -695,7 +695,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* server_entity)
 	}
 
 
-	// Загрузить обычный магазин
+	// Р—Р°РіСЂСѓР·РёС‚СЊ РѕР±С‹С‡РЅС‹Р№ РјР°РіР°Р·РёРЅ
 	regular_ammo_index = weapon_gl->ammo_type;
 	if (regular_ammo_index >= m_ammoTypes.size())
 	{

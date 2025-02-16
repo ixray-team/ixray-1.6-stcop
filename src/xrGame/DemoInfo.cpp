@@ -4,7 +4,7 @@
 #include "Level.h"
 #include "DemoInfo.h"
 #include "../xrCore/stream_reader.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 LPCSTR GameTypeToString(EGameIDs gt, bool bShort);
 

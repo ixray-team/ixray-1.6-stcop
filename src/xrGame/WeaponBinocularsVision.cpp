@@ -6,7 +6,7 @@
 #include "Actor.h"
 #include "actor_memory.h"
 #include "relation_registry.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #include "game_base_space.h"
 #include "Level.h"

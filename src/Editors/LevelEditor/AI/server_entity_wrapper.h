@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../xrServerEntities/object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 
 class CSE_Abstract;
 

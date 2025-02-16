@@ -2,7 +2,7 @@
 #include "UIMpItemsStoreWnd.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UITabButtonMP.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "Restrictions.h"
 
 void CStoreHierarchy::item::destroy()

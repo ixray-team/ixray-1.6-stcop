@@ -1,12 +1,7 @@
-//---------------------------------------------------------------------------
-#ifndef PropertiesListTypesH
-#define PropertiesListTypesH
+#pragma once
 
-#include "WaveForm.H"
+#include "WaveForm.h"
 
-#ifdef __BORLANDC__            
-#	include "ElTree.hpp"
-#endif
 
 #pragma pack( push,1 )
 
@@ -37,7 +32,9 @@ enum EPropType{
 	PROP_CLIST,
     PROP_SH_TOKEN,
 	PROP_TEXTURE2,
+    PROP_GAMETYPE,
 };
+
 // refs
 struct 	xr_token;        
 class PropValue;
@@ -45,12 +42,21 @@ class PropItem;
 using PropItemVec = xr_vector<PropItem*>;
 using PropItemIt = PropItemVec::iterator;
 
+
 //------------------------------------------------------------------------------
-#include "ChooseTypes.H"     
-#include "fastdelegate.h"                         
+#ifdef _EDITOR
+#ifndef ImTextureID
+#include "../xrEUI/stdafx.h"
+#endif
+#include "../xrEProps/ChooseTypes.H"
+#else
+#include "../Editors/xrEProps/ChooseTypesHelper.H"
+class UIPropertiesForm;
+class ChooseItemVec;
+#endif
 //------------------------------------------------------------------------------
-typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> 	TOnDrawTextEvent; 
-typedef fastdelegate::FastDelegate1<PropItem*> 					TOnClick;
+typedef fastdelegate::FastDelegate<void(PropValue*, xr_string&)> 	TOnDrawTextEvent; 
+typedef fastdelegate::FastDelegate<void(PropItem*)> 					TOnClick;
 //------------------------------------------------------------------------------
 
 class PropValue
@@ -60,10 +66,10 @@ class PropValue
 protected:
 	PropItem*			m_Owner;
 public:
-	u32					tag;
+	size_t					tag;
 public:
 	// base events
-	typedef fastdelegate::FastDelegate1<PropValue*> TOnChange;
+	typedef fastdelegate::FastDelegate<void(PropValue*)> TOnChange;
     TOnChange			OnChangeEvent;
 public:
 						PropValue		():tag(0),m_Owner(0),OnChangeEvent(0){;}
@@ -85,13 +91,13 @@ template <class T>
 class CustomValue: public PropValue
 {
 public:
-	typedef T			TYPE;
+	using TYPE = T;
 public:
 	TYPE				init_value;            
 	TYPE*				value;
 public:
-	typedef fastdelegate::FastDelegate2<PropValue*, T&> 		TOnBeforeEditEvent;
-	typedef fastdelegate::FastDelegate2<PropValue*, T&, bool> 	TOnAfterEditEvent;
+	typedef fastdelegate::FastDelegate<void(PropValue*, T&)>	TOnBeforeEditEvent;
+	typedef fastdelegate::FastDelegate<bool(PropValue*, T&)> 	TOnAfterEditEvent;
     TOnBeforeEditEvent	OnBeforeEditEvent;
     TOnAfterEditEvent	OnAfterEditEvent;
 public:
@@ -105,7 +111,7 @@ public:
     virtual xr_string	GetDrawText		(TOnDrawTextEvent OnDrawText){return "";}
     virtual bool		Equal			(PropValue* val)
     {
-    	CustomValue<T>* prop = (CustomValue<T>*)val;
+    	CustomValue<TYPE>* prop = (CustomValue<TYPE>*)val;
         return (*value==*prop->value);
     }
     virtual const T&	GetValue		(){return *value; }
@@ -123,19 +129,20 @@ public:
 class PropItem
 {
 	friend class		CPropHelper;
-    friend class		TProperties;
+    friend class		UIPropertiesForm;
     shared_str			key;
     EPropType			type;
 	void*				item;
 public:
     using PropValueVec = xr_vector<PropValue*>;
     using PropValueIt = PropValueVec::iterator;
+
 private:
     PropValueVec		values;
-    TProperties* 		m_Owner;
+    UIPropertiesForm* 		m_Owner;
 // events
 public:
-	typedef fastdelegate::FastDelegate1<PropItem*> 	TOnPropItemFocused;
+	typedef fastdelegate::FastDelegate<void(PropItem*)> 	TOnPropItemFocused;
     TOnDrawTextEvent	OnDrawTextEvent;
     TOnPropItemFocused	OnItemFocused;
     TOnClick			OnClickEvent;
@@ -151,6 +158,7 @@ public:
         flMixed			= (1<<3),
         flDrawThumbnail	= (1<<4),
         flSorted		= (1<<5),
+        flIgnoreMixed   = (1<<6),
     };
     Flags32				m_Flags;
 public:
@@ -160,7 +168,7 @@ public:
     	for (PropValueIt it=values.begin(); values.end() != it; ++it)
         	xr_delete	(*it);
     };
-    IC TProperties*		Owner			(){return m_Owner;}
+    IC UIPropertiesForm*		Owner			(){return m_Owner;}
     void				SetName			(const shared_str& name)
     {
     	key=name;
@@ -180,7 +188,11 @@ public:
     IC xr_string		GetDrawText		()
     {
     	VERIFY(!values.empty()); 
-        return m_Flags.is(flMixed)?xr_string("(mixed)"):values.front()->GetDrawText(OnDrawTextEvent);
+        if (values.empty())
+        {
+            return "";
+        }
+        return (m_Flags.is(flMixed) && !m_Flags.is(flIgnoreMixed) )? xr_string("(mixed)") : values.front()->GetDrawText(OnDrawTextEvent);
     }
 	IC void				CheckMixed		()
     {
@@ -222,12 +234,15 @@ public:
                 if (!CV->OnChangeEvent.empty()) CV->OnChangeEvent(*it);
             }
             if (!CV->Equal(values.front()))
-                m_Flags.set	(flMixed,TRUE);
+            {
+                m_Flags.set(flMixed, TRUE);
+                m_Flags.set(flIgnoreMixed, FALSE);
+            }
         }
         return bChanged;
     }
     IC PropValueVec&	Values			(){return values;}
-    IC PropValue*		GetFrontValue	(){VERIFY(!values.empty()); return values.front(); };
+    IC PropValue*       GetFrontValue   (){return (values.empty()) ? nullptr : values.front(); };
     IC EPropType		Type			(){return type;}
 #ifdef __BORLANDC__    
 	IC TElTreeItem*		Item			(){return (TElTreeItem*)item;}
@@ -269,8 +284,8 @@ public:
 class CanvasValue: public PropValue{
 	shared_str			value;
 public:
-	typedef fastdelegate::FastDelegate3<CanvasValue*,CanvasValue*,bool&>					TOnTestEqual;
-	typedef fastdelegate::FastDelegate3<CanvasValue*,void* /* TCanvas* */, const Irect&>	TOnDrawCanvasEvent;
+	typedef fastdelegate::FastDelegate<void(CanvasValue*,CanvasValue*,bool&)> TOnTestEqual;
+	typedef fastdelegate::FastDelegate<void(CanvasValue*)>	TOnDrawCanvasEvent;
 public:
     int					height;
     TOnTestEqual		OnTestEqual;
@@ -290,7 +305,7 @@ class ButtonValue: public PropValue{
 public:
 	RStringVec			value;
     int					btn_num;
-	typedef fastdelegate::FastDelegate3<ButtonValue*, bool&, bool&> 	TOnBtnClick;
+	typedef fastdelegate::FastDelegate<void(ButtonValue*, bool&, bool&)> 	TOnBtnClick;
     TOnBtnClick			OnBtnClickEvent;
     enum{
     	flFirstOnly		= (1<<0)
@@ -321,7 +336,7 @@ public:
 IC bool operator == (const xr_shortcut& A, const xr_shortcut& B){return !!A.similar(B);}
 class ShortcutValue: public CustomValue<xr_shortcut>{
 public:
-	typedef fastdelegate::FastDelegate3<ShortcutValue*,const xr_shortcut&,bool&>	TOnValidateResult;
+	typedef fastdelegate::FastDelegate<void(ShortcutValue*,const xr_shortcut&,bool&)>	TOnValidateResult;
     TOnValidateResult	OnValidateResultEvent;
 public:
 						ShortcutValue	(TYPE* val):CustomValue<xr_shortcut>(val){}
@@ -366,8 +381,8 @@ class CTextValue: public PropValue{
 public:
 	LPSTR				value;
 public:
-	typedef fastdelegate::FastDelegate2<PropValue*, xr_string&> 		TOnBeforeEditEvent;
-	typedef fastdelegate::FastDelegate2<PropValue*, xr_string&, bool> 	TOnAfterEditEvent;
+	typedef fastdelegate::FastDelegate<void(PropValue*, xr_string&)> 		TOnBeforeEditEvent;
+	typedef fastdelegate::FastDelegate<bool(PropValue*, xr_string&)> 	TOnAfterEditEvent;
     TOnBeforeEditEvent	OnBeforeEditEvent;
     TOnAfterEditEvent	OnAfterEditEvent;
 public:
@@ -391,13 +406,13 @@ public:
     bool				ApplyValue		(LPCSTR val)
     {
         if (0!=xr_strcmp(value,val)){
-			xr_strcpy	(value,xr_strlen(val)+1,val);
+            xr_strcpy	(value,xr_strlen(val)+1,val);
             return		true;
         }
         return 			false;
     }
     LPSTR				GetValue		(){return value;}
-	virtual void		ResetValue		(){xr_strcpy(value,init_value.size()+1,init_value.c_str());}
+    virtual void		ResetValue		(){xr_strcpy(value,init_value.size()+1,init_value.c_str());}
 };
 //------------------------------------------------------------------------------
 
@@ -408,14 +423,20 @@ public:
     u32 				m_ChooseFlags;
     shared_str	 		m_StartPath;
     ChooseItemVec*		m_Items;
-	typedef fastdelegate::FastDelegate1<ChooseValue*>	TOnChooseValueFill;
+	typedef fastdelegate::FastDelegate<void(ChooseValue*)>	TOnChooseValueFill;
     TOnChooseValueFill	OnChooseFillEvent;
-    TOnDrawThumbnail	OnDrawThumbnailEvent;
+    //TOnDrawThumbnail	OnDrawThumbnailEvent;
     void*				m_FillParam;
 // utils
-    void				AppendChooseItem	(LPCSTR name, LPCSTR hint){VERIFY(m_Items); m_Items->push_back(SChooseItem(name,hint));}
+    void				AppendChooseItem	(LPCSTR name, LPCSTR hint)
+    {
+#ifdef _EDITOR
+        VERIFY(m_Items); 
+        m_Items->push_back(SChooseItem(name,hint));
+#endif
+}
 public:
-						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),OnDrawThumbnailEvent(0),m_ChooseFlags(choose_flags){}
+						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
 };
 
 typedef CustomValue<BOOL>		BOOLValue;
@@ -445,15 +466,15 @@ public:
 public:
 						NumericValue	(T* val):CustomValue<T>(val)
 	{
-        value			= val;
-        init_value		= *value;
+        this->value			= val;
+        this->init_value		= *this->value;
         dec				= 0;
     };
 						NumericValue	(T* val, T mn, T mx, T increm, int decim):CustomValue<T>(val),lim_mn(mn),lim_mx(mx),inc(increm),dec(decim)
 	{
     	clamp			(*val,lim_mn,lim_mx);
-        value			= val;
-        init_value		= *value;
+        this->value			= val;
+        this->init_value		= *this->value;
     };
     bool				ApplyValue		(const T& _val)
     {
@@ -465,7 +486,7 @@ public:
 	{
         xr_string		draw_val;
         if (!OnDrawText.empty())	OnDrawText(this, draw_val);
-        else			draw_sprintf	(draw_val,*value,dec);
+        else			draw_sprintf	(draw_val,*this->value,dec);
         return draw_val;
     }
 };
@@ -473,12 +494,12 @@ public:
 //------------------------------------------------------------------------------
 template <class T>
 IC xr_string draw_sprintf(xr_string& s, const T& V, int tag)
-{  string256 tmp; xr_sprintf(tmp,"%d",V); s=tmp; return s;}
+{  string256 tmp; xr_sprintf(tmp,sizeof(tmp),"%d",V); s=tmp; return s;}
 //------------------------------------------------------------------------------
 IC xr_string draw_sprintf(xr_string& s, const float& V, int dec)
 {
-    string32 	fmt; xr_sprintf(fmt,"%%.%df",dec);
-	string256 	tmp; xr_sprintf(tmp,fmt,V); 
+    string32 	fmt; xr_sprintf(fmt, sizeof(fmt), "%%.%df",dec);
+	string256 	tmp; xr_sprintf(tmp, sizeof(tmp), fmt,V);
     s			= tmp; 
     return s;
 }
@@ -493,8 +514,8 @@ IC void clamp(Fvector& V, const Fvector& mn, const Fvector& mx)
 }
 IC xr_string draw_sprintf(xr_string& s, const Fvector& V, int dec)
 {
-	string128 fmt;	xr_sprintf(fmt,"{%%.%df, %%.%df, %%.%df}",dec,dec,dec);
-    string256 tmp;	xr_sprintf(tmp,fmt,V.x,V.y,V.z);
+	string128 fmt;	xr_sprintf(fmt,sizeof(fmt),"{%%.%df, %%.%df, %%.%df}",dec,dec,dec);
+    string256 tmp;	xr_sprintf(tmp,sizeof(tmp),fmt,V.x,V.y,V.z);
     s 				= tmp;
     return s;
 }
@@ -554,14 +575,14 @@ public:
         else 			return HaveCaption()?caption[GetValueEx()?1:0].c_str():"";
         return			draw_val;
     }
-    virtual bool		Equal			(PropValue* val){return !!value->equal(*((FlagValue<T>*)val)->value,mask);}
-    virtual const T&	GetValue		()				{return *value; }
-    virtual void		ResetValue		()				{value->set(mask,init_value.is(mask));}
-    virtual bool		GetValueEx		()				{return !!value->is(mask);}
+    virtual bool		Equal			(PropValue* val){return !!this->value->equal(*((FlagValue<T>*)val)->value,mask);}
+    virtual const T&	GetValue		()				{return *this->value; }
+    virtual void		ResetValue		()				{ this->value->set(mask, this->init_value.is(mask));}
+    virtual bool		GetValueEx		()				{return !!this->value->is(mask);}
     bool				ApplyValue		(const T& val)
     {
-        if (!val.equal(*value,mask)){
-            value->set	(mask,val.is(mask));
+        if (!val.equal(*this->value,mask)){
+            this->value->set	(mask,val.is(mask));
             return		true;
         }
         return 			false;
@@ -572,11 +593,8 @@ typedef FlagValue<Flags8>	Flag8Value;
 typedef FlagValue<Flags16>	Flag16Value;
 typedef FlagValue<Flags32>	Flag32Value;
 //------------------------------------------------------------------------------
-template <class T>
-bool operator == (_flags<T> const & A, _flags<T>  const & B){return A.flags==B.flags;}
-//------------------------------------------------------------------------------
-
-class TokenValueCustom{
+class TokenValueCustom
+{
 public:                                          
 	xr_token* 			token;
     					TokenValueCustom(xr_token* _token):token(_token){;}
@@ -590,7 +608,7 @@ public:
     {
         xr_string		draw_val;
         if (!OnDrawText.empty())	OnDrawText(this, draw_val);
-        else			for(int i=0; token[i].name; i++) if (token[i].id==(int)GetValue()) return token[i].name;
+        else			for(int i=0; token[i].name; i++) if (token[i].id==(int)this->GetValue()) return token[i].name;
         return draw_val;
     }
 };
@@ -615,7 +633,7 @@ public:
     {
         xr_string draw_val;
         if (!OnDrawText.empty())	OnDrawText(this, draw_val);
-        else			for(u32 k=0; k<token_count; k++) if ((T)token[k].id==GetValue()) return *token[k].name;
+        else			for(u32 k=0; k<token_count; k++) if ((T)token[k].id== this->GetValue()) return *token[k].name;
         return draw_val;
     }
 };
@@ -676,9 +694,3 @@ public:
 };
 //------------------------------------------------------------------------------
 #pragma pack( pop )
-
-#endif
-
-
-
-

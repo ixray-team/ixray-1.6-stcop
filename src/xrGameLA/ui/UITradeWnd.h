@@ -77,7 +77,7 @@ protected:
 
 	void				ShowCantDealMsg				(LPCSTR text, float time = 2.0f);
 
-	//указатели игрока и того с кем торгуем
+	//СѓРєР°Р·Р°С‚РµР»Рё РёРіСЂРѕРєР° Рё С‚РѕРіРѕ СЃ РєРµРј С‚РѕСЂРіСѓРµРј
 	CInventory*			m_pInv;
 	CInventory*			m_pOthersInv;
 	CInventoryOwner*	m_pInvOwner;
@@ -97,11 +97,11 @@ protected:
 	CUICellItem*		CurrentItem					();
 	PIItem				CurrentIItem				();
 
-	bool		xr_stdcall		OnItemDrop			(CUICellItem* itm);
-	bool		xr_stdcall		OnItemStartDrag		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemDbClick		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemSelected		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemRButtonClick	(CUICellItem* itm);
+	bool				OnItemDrop			(CUICellItem* itm);
+	bool				OnItemStartDrag		(CUICellItem* itm);
+	bool				OnItemDbClick		(CUICellItem* itm);
+	bool				OnItemSelected		(CUICellItem* itm);
+	bool				OnItemRButtonClick	(CUICellItem* itm);
 
 	void				BindDragDropListEvents		(CUIDragDropListEx* lst);
 

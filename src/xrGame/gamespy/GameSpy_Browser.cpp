@@ -9,7 +9,7 @@
 #include "GameSpy_Available.h"
 #include "GameSpy_QR2.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrEngine/string_table.h"
 
 void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer server, void *instance);

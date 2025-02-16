@@ -1,4 +1,4 @@
-// ActorCondition.h: класс состояния игрока
+// ActorCondition.h: РєР»Р°СЃСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂРѕРєР°
 //
 #pragma once
 
@@ -11,11 +11,11 @@ template <typename _return_type>
 class CScriptCallbackEx;
 class CActor;
 
-struct Eat_Effect //Эффект от съедаемых предметов
+struct Eat_Effect //Р­С„С„РµРєС‚ РѕС‚ СЃСЉРµРґР°РµРјС‹С… РїСЂРµРґРјРµС‚РѕРІ
 {
-	float			DurationExpiration; // Должно хранить движковое время + неободмый отступ из конфига предмета
+	float			DurationExpiration; // Р”РѕР»Р¶РЅРѕ С…СЂР°РЅРёС‚СЊ РґРІРёР¶РєРѕРІРѕРµ РІСЂРµРјСЏ + РЅРµРѕР±РѕРґРјС‹Р№ РѕС‚СЃС‚СѓРї РёР· РєРѕРЅС„РёРіР° РїСЂРµРґРјРµС‚Р°
 	float			Rate;
-	float			UseTimeExpiration;  // Время блокировки рук: Должно хранить движковое время + неободмый отступ из конфига предмета
+	float			UseTimeExpiration;  // Р’СЂРµРјСЏ Р±Р»РѕРєРёСЂРѕРІРєРё СЂСѓРє: Р”РѕР»Р¶РЅРѕ С…СЂР°РЅРёС‚СЊ РґРІРёР¶РєРѕРІРѕРµ РІСЂРµРјСЏ + РЅРµРѕР±РѕРґРјС‹Р№ РѕС‚СЃС‚СѓРї РёР· РєРѕРЅС„РёРіР° РїСЂРµРґРјРµС‚Р°
 	u8				AffectedStat;
 	u8				BlockingGroup;
 	BoosterParams	BoosterParam;
@@ -74,7 +74,7 @@ public:
 	virtual void 		ChangeThirsty				(const float value);
 	virtual void 		ChangeWalkWeight			(const float value) { m_MaxWalkWeight = value;}
 
-	// хромание при потере сил и здоровья
+	// С…СЂРѕРјР°РЅРёРµ РїСЂРё РїРѕС‚РµСЂРµ СЃРёР» Рё Р·РґРѕСЂРѕРІСЊСЏ
 	virtual	bool		IsLimping					() const;
 	virtual bool		IsCantWalk					() const;
 	virtual bool		IsCantWalkWeight			();
@@ -84,15 +84,15 @@ public:
 			void		ConditionWalk				(float weight, bool accel, bool sprint);
 			void		ConditionStand				(float weight);
 			
-			float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
-			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
+			float			GetAlcohol			()	{return m_fAlcohol;}
+			float			GetPsy				()	{return 1.0f-GetPsyHealth();}
 			float			GetSatiety			() 	{return m_fSatiety;}
 			float			GetThirsty			() 	{ return m_fThirsty; }
 			float			MaxWalkWeight			() 	{return m_MaxWalkWeight;}
 
 			float			m_fBoostersAddWeight;
 
-			xr_vector<Eat_Effect>	Eat_Effects; //список эффектов от съеденных предметов
+			xr_vector<Eat_Effect>	Eat_Effects; //СЃРїРёСЃРѕРє СЌС„С„РµРєС‚РѕРІ РѕС‚ СЃСЉРµРґРµРЅРЅС‹С… РїСЂРµРґРјРµС‚РѕРІ
 			float					fHandsHideTime;
 public:
 	IC		CActor		&object						() const
@@ -135,7 +135,7 @@ protected:
 	mutable bool m_bCantWalk;
 	mutable bool m_bCantSprint;
 
-	//порог силы и здоровья меньше которого актер начинает хромать
+	//РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	float m_fLimpingPowerBegin;
 	float m_fLimpingPowerEnd;
 	float m_fCantWalkPowerBegin;

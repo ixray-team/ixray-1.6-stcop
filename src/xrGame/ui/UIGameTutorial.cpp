@@ -4,7 +4,7 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"

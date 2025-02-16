@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 
 
 //структура, описывающая отношение одного персонажа к другому или к группировке

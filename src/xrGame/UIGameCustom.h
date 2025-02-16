@@ -1,6 +1,6 @@
 #pragma once
 #include "../xrScripts/script_export_space.h"
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 #include "inventory_space.h"
 #include "gametype_chooser.h"
 #include "../xrUI/Widgets/UIDialogHolder.h"

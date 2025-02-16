@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "event_conditions_collection.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "game_state_accumulator.h"
 #include "Level.h"
 #include "game_cl_base.h"

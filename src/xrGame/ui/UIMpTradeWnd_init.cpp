@@ -11,7 +11,7 @@
 #include "../../xrUI/UIHelper.h"
 #include "UIBuyWeaponTab.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 
 LPCSTR _list_names[]= {

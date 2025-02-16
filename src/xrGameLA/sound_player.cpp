@@ -13,10 +13,10 @@
 #include "ai_space.h"
 #include "../xrEngine/xr_object.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../bone.h"
+#include "../xrEngine/bone.h"
 #include "profiler.h"
 #include "sound_collection_storage.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 CSoundPlayer::CSoundPlayer			(CObject *object)
 {

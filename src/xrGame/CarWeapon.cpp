@@ -3,7 +3,7 @@
 #include "../xrPhysics/PhysicsShell.h"
 #include "PhysicsShellHolder.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrSound/ai_sounds.h"
 #include "WeaponAmmo.h"
 #include "../xrEngine/xr_level_controller.h"

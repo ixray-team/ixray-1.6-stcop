@@ -6,10 +6,12 @@
 //	Description : Object factory script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
+
 #include "object_factory.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "object_item_script.h"
 
 void CObjectFactory::register_script_class	(LPCSTR client_class, LPCSTR server_class, LPCSTR clsid, LPCSTR script_clsid)
@@ -58,12 +60,28 @@ void CObjectFactory::register_script_class			(LPCSTR unknown_class, LPCSTR clsid
 	);
 }
 
-ENGINE_API	bool g_dedicated_server;
-
 void CObjectFactory::register_script_classes()
 {
-	if (!g_dedicated_server)
-		ai();
+	ai();
+}
+
+void CObjectFactory::init_script(const char* str)
+{
+	luabind::functor<void>	result;
+
+	if (!ai().script_engine().functor(str, result)) 
+	{
+		ai().script_engine().script_log(eLuaMessageTypeError, "Cannot load class registrator %s!", str);
+		return;
+	}
+
+	result(const_cast<CObjectFactory*>(&object_factory()));
+}
+
+void CObjectFactory::export_classes(lua_State* L)
+{
+	extern void export_classes(lua_State * L);
+	export_classes(L);
 }
 
 using namespace luabind;
@@ -75,20 +93,22 @@ void CObjectFactory::register_script	() const
 	actualize					();
 
 	luabind::class_<CInternal>	instance("clsid");
+	const_iterator I = clsids().begin(), B = I;
+	const_iterator E = clsids().end();
+	for (; I != E; ++I)
+		instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(), int(I - B))];
 
-	const_iterator				I = clsids().begin(), B = I;
-	const_iterator				E = clsids().end();
-#ifdef DEBUG
-//	Msg("~ Exporting clsid......");
-#endif
-	for ( ; I != E; ++I)
+	lua_State* L = ai().script_engine().lua();
+	luabind::module(L)[std::move(instance)]; // это представление нельзя обработать как таблицу
+
+	lua_newtable(L);
+	I = B;
+	for (; I != E; ++I)
 	{
-		instance.enum_			("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
-#ifdef DEBUG
-//		Msg						("# %s = %d", *(*I)->script_clsid(), int(I - B));
-#endif
+		lua_pushinteger(L, int(I - B));
+		lua_setfield(L, -2, *(*I)->script_clsid());
 	}
-	luabind::module				(ai().script_engine().lua())[instance];
+	lua_setglobal(L, "clsid_table"); // это представление можно обработать как таблицу :)
 }
 
 #pragma optimize("s",on)

@@ -17,7 +17,7 @@
 
 #include "ai_space.h"
 #include "alife_simulator.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "../UIHelperGame.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"

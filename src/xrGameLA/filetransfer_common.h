@@ -1,4 +1,4 @@
-#include "../../xrNetServer/client_id.h"
+#include "../../xrCore/client_id.h"
 #include "../../xrCore/net_utils.h"
 
 #ifndef FILETRANSFER_COMMON

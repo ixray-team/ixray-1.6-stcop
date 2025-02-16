@@ -4,7 +4,7 @@
 #include "UIMPServerAdm.h"
 #include "UIMPChangeMapAdm.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"

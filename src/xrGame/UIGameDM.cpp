@@ -20,7 +20,7 @@
 #include "ui/UIActorMenu.h"
 #include "UIHelperGame.h"
 #include "UITeamPanels.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #define MSGS_OFFS 510
 

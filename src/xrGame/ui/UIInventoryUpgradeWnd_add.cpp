@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UIInventoryUpgradeWnd.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"

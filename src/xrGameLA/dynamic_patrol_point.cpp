@@ -5,7 +5,7 @@
 #include "level_graph.h"
 #include "game_level_cross_table.h"
 #include "game_graph.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 CDynamicPatrolPoint::CDynamicPatrolPoint(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name) :
 	inherited(level_graph, cross, game_graph, path, position, level_vertex_id, flags, name)

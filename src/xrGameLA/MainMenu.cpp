@@ -13,7 +13,7 @@
 #include "UICursor.h"
 #include "string_table.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 //#define DEMO_BUILD
 

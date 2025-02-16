@@ -7,7 +7,7 @@
 #include "Level.h"
 #include "ui/UIInventoryUtilities.h"
 #include "../xrEngine/xr_object.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/UIHelper.h"
 

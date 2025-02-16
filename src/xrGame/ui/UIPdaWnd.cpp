@@ -14,7 +14,7 @@
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "UIMapWnd.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "UIMessagesWindow.h"
 #include "UIMainIngameWnd.h"
 #include "../../xrUI/Widgets/UITabButton.h"
