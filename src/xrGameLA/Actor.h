@@ -734,7 +734,7 @@ protected:
 		shared_str				m_sHeadShotParticle;
 		u32						last_hit_frame;
 #ifdef DEBUG
-		friend class CLevelGraph;
+		friend class ILevelGraph;
 #endif
 		Fvector							m_AutoPickUp_AABB;
 		Fvector							m_AutoPickUp_AABB_Offset;

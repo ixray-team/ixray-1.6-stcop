@@ -4,7 +4,6 @@
 #include "../xr_ioconsole.h"
 #include "../gamemtllib.h"
 #include "../../Include/xrRender/Kinematics.h"
-#include "profiler.h"
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"

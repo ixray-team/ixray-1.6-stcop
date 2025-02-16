@@ -61,7 +61,7 @@ void CSE_ALifeMonsterAbstract::update								()
 		}
 		if (move_offline() && (m_tNextGraphID == m_tGraphID)) {
 			GameGraph::_GRAPH_ID tGraphID = m_tNextGraphID;
-			CGameGraph::const_iterator	i,e;
+			IGameGraph::const_iterator	i,e;
 			GameGraph::TERRAIN_VECTOR	&tpaTerrain = m_tpaTerrain;
 			int							iPointCount = (int)tpaTerrain.size();
 			int							iBranches = 0;

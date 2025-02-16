@@ -145,7 +145,7 @@ bool CPhraseDialog::SayPhrase (DIALOG_SHARED_PTR& phrase_dialog, const shared_st
 			}
 			R_ASSERT2	(
 				0,
-				make_string(
+				make_string<const char*>(
 					"No available phrase to say, dialog[%s]",
 					*phrase_dialog->m_DialogId
 				)

@@ -1,4 +1,6 @@
 #pragma once
+#include "../Include/xrRender/KinematicsAnimated.h"
+
 class CBlend;
 class IKinematics;
 class animation_movement_controller

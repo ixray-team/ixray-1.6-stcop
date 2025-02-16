@@ -8,9 +8,9 @@
 
 #pragma once
 
-class CGameGraph;
-class CGameLevelCrossTable;
-class CLevelGraph;
+class IGameGraph;
+class IGameLevelCrossTable;
+class ILevelGraph;
 class CGraphEngine;
 class CEF_Storage;
 class CALifeSimulator;
@@ -27,11 +27,11 @@ private:
 	friend class CLevel;
 
 private:
-	CGameGraph							*m_game_graph;
+	IGameGraph							*m_game_graph;
 #ifndef PRIQUEL
-	CGameLevelCrossTable				*m_cross_table;
+	IGameLevelCrossTable				*m_cross_table;
 #endif // PRIQUEL
-	CLevelGraph							*m_level_graph;
+	ILevelGraph							*m_level_graph;
 	CGraphEngine						*m_graph_engine;
 	CEF_Storage							*m_ef_storage;
 	CALifeSimulator						*m_alife_simulator;
@@ -48,23 +48,23 @@ private:
 
 #ifdef PRIQUEL
 private:
-			void						game_graph				(CGameGraph *game_graph);
+			void						game_graph				(IGameGraph *game_graph);
 #endif // PRIQUEL
 
 public:
 										CAI_Space				();
 	virtual								~CAI_Space				();
 			void						init					();
-	IC		CGameGraph					&game_graph				() const;
-	IC		CGameGraph					*get_game_graph			() const;
-	IC		CLevelGraph					&level_graph			() const;
-	IC		const CLevelGraph			*get_level_graph		() const;
+	IC		IGameGraph					&game_graph				() const;
+	IC		IGameGraph					*get_game_graph			() const;
+	IC		ILevelGraph					&level_graph			() const;
+	IC		const ILevelGraph			*get_level_graph		() const;
 #ifdef PRIQUEL
-			const CGameLevelCrossTable	&cross_table			() const;
-			const CGameLevelCrossTable	*get_cross_table		() const;
+			const IGameLevelCrossTable	&cross_table			() const;
+			const IGameLevelCrossTable	*get_cross_table		() const;
 #else // PRIQUEL
-	IC		const CGameLevelCrossTable	&cross_table			() const;
-	IC		const CGameLevelCrossTable	*get_cross_table		() const;
+	IC		const IGameLevelCrossTable	&cross_table			() const;
+	IC		const IGameLevelCrossTable	*get_cross_table		() const;
 #endif // PRIQUEL
 	IC		const CPatrolPathStorage	&patrol_paths			() const;
 	IC		CEF_Storage					&ef_storage				() const;

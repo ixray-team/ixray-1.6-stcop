@@ -9,7 +9,6 @@
 #pragma once
 
 #include "xrServer_Objects_ALife.h"
-#include "profiler.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)

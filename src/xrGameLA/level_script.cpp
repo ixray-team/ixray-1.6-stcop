@@ -792,7 +792,7 @@ bool is_mixed_mode()
 
 u32 get_build_id() 
 {
-	return Core.BuildId;
+	return 0;
 }
 #include "dynamic_patrol_path.h"
 void add_patrol(CDynamicPatrolPath *patrol) 

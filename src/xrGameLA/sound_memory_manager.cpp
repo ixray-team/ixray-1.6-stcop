@@ -20,7 +20,6 @@
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
-#include "profiler.h"
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "../IGame_Persistent.h"

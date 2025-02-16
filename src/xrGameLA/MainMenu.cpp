@@ -533,7 +533,7 @@ void CMainMenu::OnSessionTerminate(LPCSTR reason)
 	m_start_time = Device.dwTimeGlobal;
 	CStringTable	st;
 	LPCSTR str = st.translate("ui_st_kicked_by_server").c_str();
-	LPSTR		text;
+	string256		text;
 
 	if ( reason && xr_strlen(reason) && reason[0] == '@' )
 	{

@@ -314,23 +314,24 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	IKinematics *newKinematics=smart_cast<IKinematics*>(O->Visual());
 	IKinematics *pKinematics  =smart_cast<IKinematics*>(obj->Visual());
 
-	Flags64 mask0,mask1;
+	VisMask mask0, mask1;
+
 	u16 split_bone=m_unsplited_shels.front().second;
-	mask1.assign(pKinematics->LL_GetBonesVisible());//source bones mask
+	mask1 = pKinematics->LL_GetBonesVisible();//source bones mask
 	pKinematics->LL_SetBoneVisible(split_bone,FALSE,TRUE);
 
 	pKinematics->CalculateBones_Invalidate	();
 	pKinematics->CalculateBones				(TRUE);
 
-	mask0.assign(pKinematics->LL_GetBonesVisible());//first part mask
+	mask0 = pKinematics->LL_GetBonesVisible();//first part mask
 	VERIFY2(mask0.flags,"mask0 -Zero");
 	mask0.invert();
-	mask1.and(mask0.flags);//second part mask
+	mask1.band(mask0);//second part mask
 
 
 	newKinematics->LL_SetBoneRoot		(split_bone);
 	VERIFY2(mask1.flags,"mask1 -Zero");
-	newKinematics->LL_SetBonesVisible	(mask1.flags);
+	newKinematics->LL_SetBonesVisible	(mask1);
 
 	newKinematics->CalculateBones_Invalidate	();
 	newKinematics->CalculateBones				(TRUE);
@@ -382,20 +383,18 @@ void CPHSkeleton::RecursiveBonesCheck(u16 id)
 	IKinematics* K		= smart_cast<IKinematics*>(obj->Visual());
 	CBoneData& BD		= K->LL_GetData(u16(id));
 	//////////////////////////////////////////
-	Flags64 mask;
-	mask.assign(K->LL_GetBonesVisible());
+	VisMask mask = K->LL_GetBonesVisible();
 	///////////////////////////////////////////
-	if(
-		mask.is(1ui64<<(u64)id)&& 
-		!(BD.shape.flags.is(SBoneShape::sfRemoveAfterBreak))
-		) {
-			removable = false;
-			return;
-		}
-		///////////////////////////////////////////////
-		for (vecBonesIt it=BD.children.begin(); BD.children.end() != it; ++it){
-			RecursiveBonesCheck		((*it)->GetSelfID());
-		}
+	if(mask.is(id) && !(BD.shape.flags.is(SBoneShape::sfRemoveAfterBreak)))
+	{
+		removable = false;
+		return;
+	}
+	///////////////////////////////////////////////
+	for(vecBonesIt it = BD.children.begin(); BD.children.end() != it; ++it)
+	{
+		RecursiveBonesCheck((*it)->GetSelfID());
+	}
 }
 bool CPHSkeleton::ReadyForRemove()
 {

@@ -65,7 +65,7 @@ void CSE_ALifeGroupAbstract::switch_offline	()
 			tpGroup->m_fDistanceToPoint = ai().cross_table().vertex(dwNodeID).distance();
 			tpGroup->m_tNextGraphID		= tpGroup->m_tGraphID;
 			u16	wNeighbourCount			= ai().game_graph().vertex(tpGroup->m_tGraphID)->edge_count();
-			CGameGraph::const_iterator	i,e;
+			IGameGraph::const_iterator	i,e;
 			ai().game_graph().begin		(tpGroup->m_tGraphID,i,e);
 			tpGroup->m_tPrevGraphID		= (*(i + object->randI(0,wNeighbourCount))).vertex_id();
 		}
@@ -131,7 +131,8 @@ void CSE_ALifeGroupAbstract::try_switch_offline		()
 	VERIFY								(I);
 	
 	// iterating on group members
-	for (u32 i=0, N = (u32)m_tpMembers.size(); i<N; ++i) {
+	u32 i, N = 0;
+	for (i=0, N = (u32)m_tpMembers.size(); i<N; ++i) {
 		// casting group member to the abstract monster to get access to the Health property
 		CSE_ALifeMonsterAbstract		*tpGroupMember = smart_cast<CSE_ALifeMonsterAbstract*>(ai().alife().objects().object(m_tpMembers[i]));
 		if (!tpGroupMember)

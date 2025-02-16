@@ -17,7 +17,7 @@ template <
 	typename _index_type,
 	typename _iteration_type
 >	class CPathManager <
-		CGameGraph,
+		IGameGraph,
 		_DataStorage,
 		SGameLevel<
 			_dist_type,
@@ -28,7 +28,7 @@ template <
 		_index_type,
 		_iteration_type
 	> : public CPathManager <
-			CGameGraph,
+			IGameGraph,
 			_DataStorage,
 			SBaseParameters<
 				_dist_type,
@@ -41,7 +41,7 @@ template <
 		>
 {
 protected:
-	typedef CGameGraph _Graph;
+	typedef IGameGraph _Graph;
 	typedef SGameLevel<
 		_dist_type,
 		_index_type,

@@ -7,7 +7,7 @@
 #include "game_graph.h"
 #include "../xrCore/object_broker.h"
 
-CDynamicPatrolPoint::CDynamicPatrolPoint(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name) :
+CDynamicPatrolPoint::CDynamicPatrolPoint(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name) :
 	inherited(level_graph, cross, game_graph, path, position, level_vertex_id, flags, name)
 {
 }
@@ -32,7 +32,7 @@ CDynamicPatrolPoint::~CDynamicPatrolPoint()
 {
 }
 
-CPatrolPoint &CDynamicPatrolPoint::load_raw(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream)
+CPatrolPoint &CDynamicPatrolPoint::load_raw(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream)
 {
 	if (!(level_graph && level_graph->valid_vertex_position(m_position)))
 		m_level_vertex_id	= u32(-1);

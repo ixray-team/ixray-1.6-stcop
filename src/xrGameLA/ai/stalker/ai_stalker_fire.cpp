@@ -71,7 +71,7 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 {
 	float				base = PI/180.f;
 	
-	//âëèÿíèå ðàíãà íà ìåòêîñòü
+	//Ð²Ð»Ð¸ÑÐ½Ð¸Ðµ Ñ€Ð°Ð½Ð³Ð° Ð½Ð° Ð¼ÐµÑ‚ÐºÐ¾ÑÑ‚ÑŒ
 	base				*= m_fRankDisperison;
 
 	if (!movement().path_completed()) {
@@ -205,7 +205,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 	if (m_bIsGhost) return;
 
-	//õèò ìîæåò ìåíÿòüñÿ â çàâèñèìîñòè îò ðàíãà (íîâè÷êè ïîëó÷àþò áîëüøå õèòà, ÷åì âåòåðàíû)
+	//Ñ…Ð¸Ñ‚ Ð¼Ð¾Ð¶ÐµÑ‚ Ð¼ÐµÐ½ÑÑ‚ÑŒÑÑ Ð² Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ð¾ÑÑ‚Ð¸ Ð¾Ñ‚ Ñ€Ð°Ð½Ð³Ð° (Ð½Ð¾Ð²Ð¸Ñ‡ÐºÐ¸ Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÑŽÑ‚ Ð±Ð¾Ð»ÑŒÑˆÐµ Ñ…Ð¸Ñ‚Ð°, Ñ‡ÐµÐ¼ Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ñ‹)
 	SHit							HDS = *pHDS;
 	HDS.add_wound	= true;
 	float hit_power = HDS.power * m_fRankImmunity;
@@ -232,7 +232,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 			}
 		}
 
-		if ( wounded() ) //óæå ëåæèò => äîáèâàíèå
+		if ( wounded() ) //ÑƒÐ¶Ðµ Ð»ÐµÐ¶Ð¸Ñ‚ => Ð´Ð¾Ð±Ð¸Ð²Ð°Ð½Ð¸Ðµ
 		{
 			hit_power = 1000.f;
 			#ifdef DEBUG
@@ -920,7 +920,7 @@ void CAI_Stalker::compute_throw_miss		( u32 const vertex_id )
 	float const throw_miss_radius		= ::Random.randF(2.f,5.f);
 	u32 const try_count					= 6;
 
-	CLevelGraph const& level_graph		= ai().level_graph();
+	ILevelGraph const& level_graph		= ai().level_graph();
 	for (u32 i = 0; i < try_count; ++i) {
 		Fvector const direction			= Fvector().random_dir();
 		Fvector const check_position	= Fvector().mad( m_throw_target_position, direction, throw_miss_radius );

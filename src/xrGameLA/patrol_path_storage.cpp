@@ -19,7 +19,7 @@ CPatrolPathStorage::~CPatrolPathStorage		()
 	delete_data					(m_registry);
 }
 
-void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream)
+void CPatrolPathStorage::load_raw			(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream)
 {
 	IReader						*chunk = stream.open_chunk(WAY_PATROLPATH_CHUNK);
 

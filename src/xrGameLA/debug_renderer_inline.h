@@ -16,7 +16,7 @@ IC	void CDebugRenderer::render		()
 IC	void CDebugRenderer::draw_line	(const Fmatrix &matrix, const Fvector &vertex0, const Fvector &vertex1, const u32 &color)
 {
 	Fvector				vertices[2] = { vertex0, vertex1};
-	u16					indices[2] = { 0, 1};
+	u32					indices[2] = { 0, 1};
 	add_lines			(&vertices[0], sizeof(vertices)/sizeof(Fvector), &indices[0], sizeof(indices)/(2*sizeof(u16)), color);
 }
 

@@ -24,19 +24,19 @@ template <
 >
 class 
 	CBaseLocationSelector<
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type
 	> :
 	public CAbstractLocationSelector <
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type
 	>
 {
-	typedef CGameGraph _Graph;
+	typedef IGameGraph _Graph;
 	typedef CAbstractLocationSelector <
-		CGameGraph,
+		IGameGraph,
 		_VertexEvaluator,
 		_vertex_id_type
 	> inherited;

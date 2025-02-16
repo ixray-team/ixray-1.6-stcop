@@ -28,8 +28,8 @@
 IC bool CAI_Rat::bfCheckIfOutsideAIMap(Fvector &tTemp1)
 {
 	u32 dwNewNode = ai_location().level_vertex_id();
-	const CLevelGraph::CVertex *tpNewNode = ai_location().level_vertex();
-	CLevelGraph::CPosition	QueryPos;
+	const ILevelGraph::CVertex *tpNewNode = ai_location().level_vertex();
+	ILevelGraph::CPosition	QueryPos;
 	if (!ai().level_graph().valid_vertex_position(tTemp1))
 		return	(false);
 	ai().level_graph().vertex_position(QueryPos,tTemp1);
@@ -184,8 +184,8 @@ void CAI_Rat::set_firing(bool b_val)
 bool CAI_Rat::calc_node(Fvector const &next_position)
 {
 	u32 dwNewNode = ai_location().level_vertex_id();
-	const CLevelGraph::CVertex *tpNewNode = ai_location().level_vertex();
-	CLevelGraph::CPosition	QueryPos;
+	const ILevelGraph::CVertex *tpNewNode = ai_location().level_vertex();
+	ILevelGraph::CPosition	QueryPos;
 	bool					a = !ai().level_graph().valid_vertex_id(dwNewNode) || !ai().level_graph().valid_vertex_position(next_position);
 	if (!a) {
 		ai().level_graph().vertex_position	(QueryPos,next_position);
@@ -272,7 +272,7 @@ Fvector CAI_Rat::calc_position()
 
 
 	m_tHPB.x  +=  m_fDHeading;
-		CLevelGraph::SContour	contour;
+		ILevelGraph::SContour	contour;
 	ai().level_graph().contour(contour, ai_location().level_vertex_id());
 	
 	Fplane  P;
@@ -382,7 +382,7 @@ void CAI_Rat::move	(bool bCanAdjustSpeed, bool bStraightForward)
 void CAI_Rat::select_next_home_position	()
 {
 	GameGraph::_GRAPH_ID	tGraphID		= m_next_graph_point;
-	CGameGraph::const_iterator	i,e;
+	IGameGraph::const_iterator	i,e;
 	ai().game_graph().begin		(tGraphID,i,e);
 	int					iPointCount		= (int)movement().locations().vertex_types().size();
 	int					iBranches		= 0;

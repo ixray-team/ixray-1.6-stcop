@@ -26,7 +26,7 @@ IC	void CAI_ObjectLocation::init()
 		m_game_vertex_id						= GameGraph::_GRAPH_ID(-1);
 }
 
-IC	void CAI_ObjectLocation::game_vertex(const CGameGraph::CVertex *game_vertex)
+IC	void CAI_ObjectLocation::game_vertex(const IGameGraph::CVertex *game_vertex)
 {
 	VERIFY				(ai().game_graph().valid_vertex_id(ai().game_graph().vertex_id(game_vertex)));
 	m_game_vertex_id	= ai().game_graph().vertex_id(game_vertex);
@@ -38,13 +38,13 @@ IC	void CAI_ObjectLocation::game_vertex(const GameGraph::_GRAPH_ID	game_vertex_i
 	m_game_vertex_id	= game_vertex_id;
 }
 
-IC	const CGameGraph::CVertex *CAI_ObjectLocation::game_vertex() const
+IC	const IGameGraph::CVertex *CAI_ObjectLocation::game_vertex() const
 {
 	VERIFY				(ai().game_graph().valid_vertex_id(m_game_vertex_id));
 	return				(ai().game_graph().vertex(m_game_vertex_id));
 }
 
-IC	void CAI_ObjectLocation::level_vertex(const CLevelGraph::CVertex *level_vertex)
+IC	void CAI_ObjectLocation::level_vertex(const ILevelGraph::CVertex *level_vertex)
 {
 	VERIFY				(ai().level_graph().valid_vertex_id(ai().level_graph().vertex_id(level_vertex)));
 	m_level_vertex_id	= ai().level_graph().vertex_id(level_vertex);
@@ -56,7 +56,7 @@ IC	void CAI_ObjectLocation::level_vertex(const u32 level_vertex_id)
 	m_level_vertex_id	= level_vertex_id;
 }
 
-IC	const CLevelGraph::CVertex *CAI_ObjectLocation::level_vertex() const
+IC	const ILevelGraph::CVertex *CAI_ObjectLocation::level_vertex() const
 {
 	VERIFY				(ai().level_graph().valid_vertex_id(m_level_vertex_id));
 	return				(ai().level_graph().vertex(m_level_vertex_id));

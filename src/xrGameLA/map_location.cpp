@@ -721,7 +721,7 @@ void CUserDefinedMapLocation::InitExternal(const shared_str& level_name, const F
 	m_graph_id			= GameGraph::_GRAPH_ID(-1);
 
 	if(ai().get_alife()){
-	const CGameGraph::SLevel& level		= ai().game_graph().header().level(*level_name);
+	const IGameGraph::SLevel& level		= ai().game_graph().header().level(*level_name);
 		float min_dist					= flt_max;
 
 		GameGraph::_GRAPH_ID n			= ai().game_graph().header().vertex_count();

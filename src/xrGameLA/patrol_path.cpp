@@ -19,7 +19,7 @@ CPatrolPath::CPatrolPath			(shared_str name)
 #endif
 }
 
-CPatrolPath	&CPatrolPath::load_raw	(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream)
+CPatrolPath	&CPatrolPath::load_raw	(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream)
 {
 	R_ASSERT		(stream.find_chunk(WAYOBJECT_CHUNK_POINTS));
 	u32				vertex_count = stream.r_u16();

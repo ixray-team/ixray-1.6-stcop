@@ -22,7 +22,6 @@
 #include "memory_manager.h"
 #include "enemy_manager.h"
 #include "ai_object_location.h"
-#include "profiler.h"
 #include "stalker_animation_manager.h"
 #include "object_handler_planner_impl.h"
 #include "effectorshot.h"
@@ -281,9 +280,11 @@ void CObjectHandler::detach				(CInventoryItem *inventory_item)
 	inherited::detach			(inventory_item);
 }
 
+extern Flags32 g_uCommonFlags;
+
 bool CObjectHandler::can_use_dynamic_lights	()
 {	
-	return						(!!g_uCommonFlags.test(flAiUseTorchDynamicLights));
+	return						(!!g_uCommonFlags.test(1));
 }
 
 bool CObjectHandler::is_weapon_going_to_be_strapped	(CGameObject const *object) const

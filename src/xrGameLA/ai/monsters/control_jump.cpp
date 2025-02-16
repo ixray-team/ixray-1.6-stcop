@@ -18,7 +18,7 @@
 #ifdef DEBUG
 #include "../../level_debug.h"
 #endif
-#include "../../../../xrCore/_vector3d_ext.h"
+#include "../../../xrCore/_vector3d_ext.h"
 
 void CControlJump::reinit()
 {

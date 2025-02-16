@@ -10,7 +10,7 @@ enum EActiveComAction {
 
 
 // DEBUG purpose only
-char *dbg_control_name_table[] = {
+const char *dbg_control_name_table[] = {
 		"Control_Movement",
 		"Control_Path",
 		"Control_Dir",

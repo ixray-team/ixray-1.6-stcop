@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 #include "level_graph.h"
-#include "profiler.h"
 #pragma pack(push,1)
 struct SOCNodeCompressed {
 public:

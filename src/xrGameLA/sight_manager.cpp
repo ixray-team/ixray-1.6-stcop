@@ -15,7 +15,6 @@
 #include "stalker_movement_manager.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
-#include "profiler.h"
 
 using namespace StalkerSpace;
 
@@ -111,7 +110,7 @@ void CSightManager::SetDirectionLook()
 	object().movement().m_body.target		= object().movement().m_head.target;
 }
 
-void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex *tpNode, bool bDifferenceLook)
+void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, bool bDifferenceLook)
 {
 	SetDirectionLook	();
 
@@ -121,17 +120,17 @@ void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex *tpNode, bool bD
 	SetLessCoverLook	(tpNode,MAX_HEAD_TURN_ANGLE,bDifferenceLook);
 }
 
-void CSightManager::SetLessCoverLook(const CLevelGraph::CVertex *tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook)
+void CSightManager::SetLessCoverLook(const ILevelGraph::CVertex *tpNode, float fMaxHeadTurnAngle, bool bDifferenceLook)
 {
 	float					fAngleOfView, range, fMaxSquare = -1.f, fBestAngle = object().movement().m_head.target.yaw;
 	m_object->update_range_fov(range,fAngleOfView,m_object->eye_range,m_object->eye_fov);
 	fAngleOfView			= (fAngleOfView/180.f*PI)/2.f;
 
-	CLevelGraph::CVertex	*tpNextNode = 0;
+	ILevelGraph::CVertex	*tpNextNode = 0;
 	u32						node_id;
 	bool bOk = false;
 	if (bDifferenceLook && !m_object->movement().detail().path().empty() && (m_object->movement().detail().path().size() - 1 > m_object->movement().detail().curr_travel_point_index())) {
-		CLevelGraph::const_iterator	i, e;
+		ILevelGraph::const_iterator	i, e;
 		ai().level_graph().begin(tpNode,i,e);
 		for ( ; i != e; ++i) {
 			node_id			= ai().level_graph().value(tpNode,i);

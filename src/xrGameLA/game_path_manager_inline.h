@@ -14,7 +14,7 @@
 	typename _index_type\
 >
 
-#define CGameManagerTemplate CBasePathManager<CGameGraph,_VertexEvaluator,_vertex_id_type,_index_type>
+#define CGameManagerTemplate CBasePathManager<IGameGraph,_VertexEvaluator,_vertex_id_type,_index_type>
 
 TEMPLATE_SPECIALIZATION
 IC	CGameManagerTemplate::CBasePathManager	(CRestrictedObject *object) :
@@ -23,7 +23,7 @@ IC	CGameManagerTemplate::CBasePathManager	(CRestrictedObject *object) :
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CGameManagerTemplate::reinit(const CGameGraph *graph)
+IC	void CGameManagerTemplate::reinit(const IGameGraph *graph)
 {
 	inherited::reinit			(graph);
 }

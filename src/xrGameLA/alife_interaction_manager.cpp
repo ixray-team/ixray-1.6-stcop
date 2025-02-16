@@ -43,7 +43,7 @@ void CALifeInteractionManager::check_for_interaction(CSE_ALifeSchedulable *tpALi
 	GameGraph::_GRAPH_ID		l_tGraphID = l_tpALifeDynamicObject->m_tGraphID;
 	check_for_interaction		(tpALifeSchedulable,l_tGraphID);
 	
-	CGameGraph::const_iterator	I, E;
+	IGameGraph::const_iterator	I, E;
 	ai().game_graph().begin		(l_tGraphID,I,E);
 	for ( ; I != E; ++I)
 		check_for_interaction	(tpALifeSchedulable,(*I).vertex_id());
@@ -161,9 +161,9 @@ public:
 				break;
 			}
 			case eMeetActionTypeInteract : {
-				R_ASSERT2				(l_tpALifeHumanAbstract,"Non-human objects Òannot communicate with each other");
+				R_ASSERT2				(l_tpALifeHumanAbstract,"Non-human objects —Åannot communicate with each other");
 				CSE_ALifeHumanAbstract	*l_tpALifeHumanAbstract2 = smart_cast<CSE_ALifeHumanAbstract*>(l_tpALifeSchedulable);
-				R_ASSERT2				(l_tpALifeHumanAbstract2,"Non-human objects Òannot communicate with each other");
+				R_ASSERT2				(l_tpALifeHumanAbstract2,"Non-human objects —Åannot communicate with each other");
 #ifdef DEBUG
 				if (psAI_Flags.test(aiALife)) {
 					Msg					("[LSS] %s interacted with %s",manager->m_tpaCombatObjects[l_iGroupIndex]->base()->name_replace(),manager->m_tpaCombatObjects[l_iGroupIndex ^ 1]->base()->name_replace());

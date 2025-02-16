@@ -64,7 +64,11 @@ bool is_r2_active()
 
 bool developer_mode()
 {
-	return CApplication::isDeveloperMode;
+#ifndef MASTER_GOLD
+	return true;
+#else
+	return false;
+#endif
 }
 
 #pragma optimize("s",on)
@@ -106,7 +110,7 @@ void game_sv_GameState::script_register(lua_State *L)
 		.def("setHMSms"				,&xrTime::setHMSms)
 		.def("set"					,(void (xrTime::*)(int,int,int,int,int,int,int))(&xrTime::set))
 //		.def("get"					,&xrTime::get, out_value(_2) + out_value(_3) + out_value(_4) + out_value(_5) + out_value(_6) + out_value(_7) + out_value(_8))
-		.def("get"					,(void (xrTime::*) (u32&,u32&,u32&,u32&,u32&,u32&,u32&))(&xrTime::get), out_value(_2) + out_value(_3) + out_value(_4) + out_value(_5) + out_value(_6) + out_value(_7) + out_value(_8))
+		.def("get"					,(void (xrTime::*) (u32&,u32&,u32&,u32&,u32&,u32&,u32&))(&xrTime::get), out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
 		.def("dateToString"			,&xrTime::dateToString)
 		.def("timeToString"			,&xrTime::timeToString),
 		// declarations

@@ -408,11 +408,11 @@ void CMissile::setup_throw_params()
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 		if(NULL == io->inventory().ActiveItem())
 		{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("state_time", m_dwStateTime);
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+				Msg("current_state %d", GetState() );
+				Msg("next_state %d", GetNextState());
+				Msg("state_time %d", m_dwStateTime);
+				Msg("item_sect %s", cNameSect().c_str());
+				Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 		}
 
 		entity->g_fireParams(this, FirePos, FireDir);

@@ -9,7 +9,6 @@
 #include "stdafx.h"
 #include "detail_path_manager.h"
 #include "ai_space.h"
-#include "profiler.h"
 #include "level_graph.h"
 
 #ifdef DEBUG
@@ -460,7 +459,7 @@ void CDetailPathManager::validate_vertex_position(STrajectoryPoint &point) const
 	if (ai().level_graph().valid_vertex_position(ai().level_graph().v3d(point.position)) && ai().level_graph().inside(point.vertex_id,point.position))
 		return;
 
-	CLevelGraph::SContour	contour;
+	ILevelGraph::SContour	contour;
 	Fvector					position, center;
 	ai().level_graph().contour(contour,point.vertex_id);
 	ai().level_graph().nearest(position,ai().level_graph().v3d(point.position),contour);

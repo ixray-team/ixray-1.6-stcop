@@ -9,13 +9,13 @@ class CDynamicPatrolPoint : public CPatrolPoint
 	private:
 		typedef CPatrolPoint inherited;
 	public:
-										CDynamicPatrolPoint		(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name);
+										CDynamicPatrolPoint		(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, const CPatrolPath *path, const Fvector &position, u32 level_vertex_id, u32 flags, shared_str name);
 										CDynamicPatrolPoint		(const CPatrolPath *path, CDynamicPatrolPoint *old);
 										CDynamicPatrolPoint		() { };
 		virtual							~CDynamicPatrolPoint	();
 
 		
-		virtual	CPatrolPoint			&load_raw				(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph, IReader &stream);
+		virtual	CPatrolPoint			&load_raw				(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, const IGameGraph *game_graph, IReader &stream);
 #ifdef DEBUG
 		IC		void					initialized				(bool value);
 #endif

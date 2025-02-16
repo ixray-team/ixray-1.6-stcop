@@ -6,7 +6,6 @@
 #include "level.h"
 #include "gamepersistent.h"
 #include "material_manager.h"
-#include "profiler.h"
 #include "IKLimbsController.h"
 
 CStepManager::CStepManager()

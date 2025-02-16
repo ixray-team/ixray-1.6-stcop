@@ -21,8 +21,8 @@ CDynamicPatrolPath::~CDynamicPatrolPath()
 	
 }
 
-CPatrolPath	&CDynamicPatrolPath::load_raw(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross,
-												const CGameGraph *game_graph, IReader &stream)
+CPatrolPath	&CDynamicPatrolPath::load_raw(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross,
+												const IGameGraph *game_graph, IReader &stream)
 {
 	R_ASSERT(m_dvertices.size());
 	

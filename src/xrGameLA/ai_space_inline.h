@@ -8,36 +8,36 @@
 
 #pragma once
 
-IC	CGameGraph					&CAI_Space::game_graph				() const
+IC	IGameGraph					&CAI_Space::game_graph				() const
 {
 	VERIFY					(m_game_graph);
 	return					(*m_game_graph);
 }
 
-IC	CGameGraph					*CAI_Space::get_game_graph			() const
+IC	IGameGraph					*CAI_Space::get_game_graph			() const
 {
 	return					(m_game_graph);
 }
 
-IC	CLevelGraph		&CAI_Space::level_graph							() const
+IC	ILevelGraph		&CAI_Space::level_graph							() const
 {
 	VERIFY					(m_level_graph);
 	return					(*m_level_graph);
 }
 
-IC	const CLevelGraph	*CAI_Space::get_level_graph					() const
+IC	const ILevelGraph	*CAI_Space::get_level_graph					() const
 {
 	return					(m_level_graph);
 }
 
 #ifndef PRIQUEL
-IC	const CGameLevelCrossTable	&CAI_Space::cross_table				() const
+IC	const IGameLevelCrossTable	&CAI_Space::cross_table				() const
 {
 	VERIFY					(m_cross_table);
 	return					(*m_cross_table);
 }
 
-IC	const CGameLevelCrossTable	*CAI_Space::get_cross_table			() const
+IC	const IGameLevelCrossTable	*CAI_Space::get_cross_table			() const
 {
 	return					(m_cross_table);
 }

@@ -18,8 +18,8 @@ class CDynamicPatrolPath : public CPatrolPath
 									CDynamicPatrolPath		(shared_str name = "");
 									CDynamicPatrolPath		(CDynamicPatrolPath *old);
 		virtual						~CDynamicPatrolPath		();
-		virtual		CPatrolPath		&load_raw				(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, 
-																const CGameGraph *game_graph, IReader &stream);
+		virtual		CPatrolPath		&load_raw				(const ILevelGraph *level_graph, const IGameLevelCrossTable *cross, 
+																const IGameGraph *game_graph, IReader &stream);
 		
 		IC			void			AddPoint				(CDynamicPatrolPoint *point);
 		IC			void			AddLink					(CDynamicPatrolPoint *p0, CDynamicPatrolPoint *p1);

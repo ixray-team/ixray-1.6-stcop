@@ -35,7 +35,6 @@
 #include "sound_user_data_visitor.h"
 #include "mt_config.h"
 #include "PHMovementControl.h"
-#include "profiler.h"
 #include "date_time.h"
 #include "characterphysicssupport.h"
 #include "ai/monsters/snork/snork.h"
@@ -780,7 +779,7 @@ BOOL CCustomMonster::UsedAI_Locations()
 
 void CCustomMonster::PitchCorrection() 
 {
-	CLevelGraph::SContour	contour;
+	ILevelGraph::SContour	contour;
 	ai().level_graph().contour(contour, ai_location().level_vertex_id());
 	
 	Fplane  P;

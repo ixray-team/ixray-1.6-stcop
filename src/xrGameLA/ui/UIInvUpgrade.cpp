@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "pch_script.h"
-#include "../object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../string_table.h"
 
 #include "UIInvUpgrade.h"
@@ -248,8 +248,8 @@ void UIUpgrade::OnClick()
 {
 	if ( m_state == STATE_ENABLED || m_state == STATE_FOCUSED || m_state == STATE_TOUCHED )
 	{
-		m_parent_wnd->AskUsing( make_string( "%s %s", CStringTable().translate( "st_upgrade_install" ).c_str(),
-			get_upgrade()->name() ).c_str(), get_upgrade()->id_str() );
+		m_parent_wnd->AskUsing( make_string<const char*>( "%s %s", CStringTable().translate( "st_upgrade_install" ),
+			get_upgrade()->name() ), get_upgrade()->id_str() );
 	}
 	m_parent_wnd->set_info_cur_upgrade( NULL );
 	highlight_relation( true );

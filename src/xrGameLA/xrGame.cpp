@@ -10,7 +10,6 @@
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "xr_level_controller.h"
-#include "profiler.h"
 
 #pragma comment(lib,"ode.lib")
 #pragma comment(lib,"xrEngine.lib")
@@ -52,9 +51,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
 			CCC_RegisterCommands();
 			// keyboard binding
 			CCC_RegisterInput			();
-#ifdef DEBUG
-			g_profiler			= new CProfiler();
-#endif
 			break;
 		}
 

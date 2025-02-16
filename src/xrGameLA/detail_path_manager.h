@@ -160,7 +160,7 @@ protected:
 	friend class CPoltergeisMovementManager;
 	friend class CDetailPathBuilder;
 #ifdef DEBUG
-	friend class CLevelGraph;
+	friend class ILevelGraph;
 	friend class CCustomMonster;
 #endif
 

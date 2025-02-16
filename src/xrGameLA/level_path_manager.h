@@ -17,20 +17,20 @@ template <
 >
 class 
 	CBasePathManager<
-		CLevelGraph,
+		ILevelGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
 	> :
 	public CAbstractPathManager<
-		CLevelGraph,
+		ILevelGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
 	>
 {
 	typedef CAbstractPathManager<
-		CLevelGraph,
+		ILevelGraph,
 		_VertexEvaluator,
 		_vertex_id_type,
 		_index_type
@@ -47,7 +47,7 @@ protected:
 
 public:
 	IC					CBasePathManager			(CRestrictedObject *object);
-	IC			void	reinit						(const CLevelGraph *graph = 0);
+	IC			void	reinit						(const ILevelGraph *graph = 0);
 	IC			bool	actual						() const;
 	IC			void	on_restrictions_change		();
 };

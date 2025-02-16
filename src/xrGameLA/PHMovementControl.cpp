@@ -344,7 +344,8 @@ void CPHMovementControl::PathNearestPoint(const xr_vector<DetailPathManager::STr
 	Fvector path_point,vtemp;
 	float temp;
 
-	for(int i=0;i<m_path_size-1;++i)
+	int i = 0;
+	for(;i<m_path_size-1;++i)
 	{
 		const Fvector &first=path[i].position, &second=path[i+1].position;
 		from_first.sub(new_position,first);
@@ -436,6 +437,7 @@ void CPHMovementControl::PathNearestPointFindUp(const xr_vector<DetailPathManage
 	float temp;
 	dir.set		(0,0,1);
 
+	int i = 0;
 	for(int i=m_start_index;i<m_path_size-1;++i)
 	{
 		const Fvector &first=path[i].position, &second=path[i+1].position;
@@ -524,7 +526,9 @@ void CPHMovementControl::PathNearestPointFindDown(const xr_vector<DetailPathMana
 	float temp;
 	//(going down)
 	dir.set(0,0,1);
-	for(int i=m_start_index;i>1;--i)
+
+	int i = 0;
+	for(i=m_start_index;i>1;--i)
 	{
 		const Fvector &first=path[i-1].position, &second=path[i].position;
 		from_first.sub(new_position,first);
@@ -1097,7 +1101,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if(result.O){
 		return true;
 	}else{
-		//ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
+		//Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð¸ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ ÐµÐ³Ð¾ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»
 		T				= Level().ObjectSpace.GetStaticTris()+result.element;
 		mtl_idx			= T->material;
 	}

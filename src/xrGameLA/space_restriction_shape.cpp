@@ -21,7 +21,7 @@ struct CBorderMergePredicate {
 		m_restriction				= restriction;
 	}
 
-	IC	void	operator()				(const CLevelGraph::CVertex &vertex) const
+	IC	void	operator()				(const ILevelGraph::CVertex &vertex) const
 	{
 		if (m_restriction->inside(ai().level_graph().vertex_id(&vertex),true) && !m_restriction->inside(ai().level_graph().vertex_id(&vertex),false))
 			m_restriction->m_border.push_back	(ai().level_graph().vertex_id(&vertex));
@@ -43,7 +43,7 @@ struct CShapeTestPredicate {
 		m_restriction				= restriction;
 	}
 
-	IC	void	operator()				(const CLevelGraph::CVertex &vertex) const
+	IC	void	operator()				(const ILevelGraph::CVertex &vertex) const
 	{
 		if (m_restriction->inside(ai().level_graph().vertex_id(&vertex),false))
 			m_restriction->m_test_storage.push_back(ai().level_graph().vertex_id(&vertex));

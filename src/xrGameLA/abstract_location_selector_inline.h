@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "profiler.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Graph,\

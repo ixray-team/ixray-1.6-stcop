@@ -101,7 +101,7 @@ float COutfitBase::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 	return fBase*bone;
 }
 
-//tatarinrafa: Берем ситсему из ЗП
+//tatarinrafa: Р‘РµСЂРµРј СЃРёС‚СЃРµРјСѓ РёР· Р—Рџ
 
 float COutfitBase::GetBoneArmor(s16 element)
 {
@@ -120,7 +120,7 @@ float COutfitBase::HitThroughArmor(float hit_power, s16 element, float ap, bool&
 		float BoneArmor = ba*GetCondition();
 		if (/*!fis_zero(ba, EPS) && */(ap > BoneArmor))
 		{
-			//пуля пробила бронь
+			//РїСѓР»СЏ РїСЂРѕР±РёР»Р° Р±СЂРѕРЅСЊ
 			float d_hit_power = (ap - BoneArmor) / ap;
 			if (d_hit_power < m_boneProtection->m_fHitFracActor)
 			{
@@ -132,9 +132,9 @@ float COutfitBase::HitThroughArmor(float hit_power, s16 element, float ap, bool&
 		}
 		else
 		{
-			//пуля НЕ пробила бронь
+			//РїСѓР»СЏ РќР• РїСЂРѕР±РёР»Р° Р±СЂРѕРЅСЊ
 			NewHitPower *= m_boneProtection->m_fHitFracActor;
-			add_wound = false; 	//раны нет
+			add_wound = false; 	//СЂР°РЅС‹ РЅРµС‚
 		}
 	}
 	else if (hit_type == ALife::eHitTypeWound)
@@ -142,11 +142,11 @@ float COutfitBase::HitThroughArmor(float hit_power, s16 element, float ap, bool&
 		float protect = GetDefHitTypeProtection(hit_type);
 		float minimumHit = fmax(hit_power * m_boneProtection->m_fHitFracActor, 0.f);
 		NewHitPower -= protect;
-		// Костюм не прокушен
+		// РљРѕСЃС‚СЋРј РЅРµ РїСЂРѕРєСѓС€РµРЅ
 		if (NewHitPower < minimumHit)
 		{
 			NewHitPower = minimumHit;
-			add_wound = false; 	//раны нет
+			add_wound = false; 	//СЂР°РЅС‹ РЅРµС‚
 		}
 	}
 	else
@@ -163,7 +163,7 @@ float COutfitBase::HitThroughArmor(float hit_power, s16 element, float ap, bool&
 		if (NewHitPower < 0.f)
 			NewHitPower = 0.f;
 	}
-	//увеличить изношенность костюма
+	//СѓРІРµР»РёС‡РёС‚СЊ РёР·РЅРѕС€РµРЅРЅРѕСЃС‚СЊ РєРѕСЃС‚СЋРјР°
 	Hit(hit_power, hit_type);
 	//Msg("Hit Through Outfit: new hit power = %f; old hit power = %f; hit_type = %u, ammopiercing = %f; element = %i, bonearmor = %f", NewHitPower, hit_power, hit_type, element, GetBoneArmor(element));
 	return NewHitPower;
@@ -267,11 +267,11 @@ void COutfitBase::OnMoveToRuck()
 {
 	if (m_pCurrentInventory)
 	{
-		visorWetness_1_ = 0.f; // как буд-то гг протер перед убиранием
-		visorWetness_2_ = 0.f; // как буд-то гг протер перед убиранием
+		visorWetness_1_ = 0.f; // РєР°Рє Р±СѓРґ-С‚Рѕ РіРі РїСЂРѕС‚РµСЂ РїРµСЂРµРґ СѓР±РёСЂР°РЅРёРµРј
+		visorWetness_2_ = 0.f; // РєР°Рє Р±СѓРґ-С‚Рѕ РіРі РїСЂРѕС‚РµСЂ РїРµСЂРµРґ СѓР±РёСЂР°РЅРёРµРј
 
-		g_pGamePersistent->Environment().SetActorHudWetness1(visorWetness_1_);
-		g_pGamePersistent->Environment().SetActorHudWetness2(visorWetness_2_);
+//		g_pGamePersistent->Environment().SetActorHudWetness1(visorWetness_1_);
+//		g_pGamePersistent->Environment().SetActorHudWetness2(visorWetness_2_);
 	}
 
 };
@@ -283,8 +283,8 @@ void COutfitBase::OnMoveToSlot()
 		visorWetnessSpreadValue_1_ = Random.randF(MIN_RDROOPS_SPREAD_VALUE, MAX_RDROOPS_SPREAD_VALUE);
 		visorWetnessSpreadValue_2_ = Random.randF(MIN_RDROOPS_SPREAD_VALUE, MAX_RDROOPS_SPREAD_VALUE);
 
-		g_pGamePersistent->Environment().SetActorHudWetnessRand1(visorWetnessSpreadValue_1_);
-		g_pGamePersistent->Environment().SetActorHudWetnessRand2(visorWetnessSpreadValue_2_);
+//		g_pGamePersistent->Environment().SetActorHudWetnessRand1(visorWetnessSpreadValue_1_);
+//		g_pGamePersistent->Environment().SetActorHudWetnessRand2(visorWetnessSpreadValue_2_);
 	}
 };
 
@@ -304,6 +304,6 @@ void COutfitBase::load(IReader &packet)
 	visorWetness_1_			= packet.r_float();
 	visorWetness_2_			= packet.r_float();
 
-	g_pGamePersistent->Environment().SetActorHudWetness1(visorWetness_1_);
-	g_pGamePersistent->Environment().SetActorHudWetness2(visorWetness_2_);
+//	g_pGamePersistent->Environment().SetActorHudWetness1(visorWetness_1_);
+//	g_pGamePersistent->Environment().SetActorHudWetness2(visorWetness_2_);
 }

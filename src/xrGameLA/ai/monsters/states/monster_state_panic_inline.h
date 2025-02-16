@@ -35,28 +35,28 @@ void CStateMonsterPanicAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::reselect_state()
 {
-	if (get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
-		select_state(eStatePanic_MoveToHomePoint);
+	if (this->get_state(eStatePanic_MoveToHomePoint)->check_start_conditions()) {
+		this->select_state(eStatePanic_MoveToHomePoint);
 		return;
 	}
 
-	if (prev_substate == eStatePanic_Run) select_state(eStatePanic_FaceUnprotectedArea);
-	else select_state(eStatePanic_Run);
+	if (this->prev_substate == eStatePanic_Run) this->select_state(eStatePanic_FaceUnprotectedArea);
+	else this->select_state(eStatePanic_Run);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::setup_substates()
 {
-	state_ptr state = get_state_current();
+	state_ptr state = this->get_state_current();
 
-	if (current_substate == eStatePanic_FaceUnprotectedArea) {
+	if (this->current_substate == eStatePanic_FaceUnprotectedArea) {
 		SStateDataAction data;
 		
 		data.action			= ACT_STAND_IDLE;
 		data.spec_params	= ASP_STAND_SCARED;
 		data.time_out		= 3000;		
 		data.sound_type		= MonsterSound::eMonsterSoundPanic;
-		data.sound_delay	= object->db().m_dwAttackSndDelay;
+		data.sound_delay	= this->object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with(&data, sizeof(SStateDataAction));
 
@@ -68,15 +68,15 @@ void CStateMonsterPanicAbstract::setup_substates()
 TEMPLATE_SPECIALIZATION
 void CStateMonsterPanicAbstract::check_force_state()
 {
-	if ((current_substate == eStatePanic_FaceUnprotectedArea)){
-		// åñëè âèäèò âðàãà
-		if (object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
-			select_state(eStatePanic_Run);
+	if ((this->current_substate == eStatePanic_FaceUnprotectedArea)){
+		// ÐµÑÐ»Ð¸ Ð²Ð¸Ð´Ð¸Ñ‚ Ð²Ñ€Ð°Ð³Ð°
+		if (this->object->EnemyMan.get_enemy_time_last_seen() == Device.dwTimeGlobal) {
+			this->select_state(eStatePanic_Run);
 			return;
 		}
-		// åñëè ïîëó÷èë hit
-		if (object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
-			select_state(eStatePanic_Run);
+		// ÐµÑÐ»Ð¸ Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð» hit
+		if (this->object->HitMemory.get_last_hit_time() + 5000 > Device.dwTimeGlobal) {
+			this->select_state(eStatePanic_Run);
 			return;
 		}
 	}

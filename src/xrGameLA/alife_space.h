@@ -32,7 +32,7 @@ class CSE_ALifeTrader;
 class CSE_ALifeInventoryItem;
 class CSE_ALifeItemWeapon;
 class CSE_ALifeSchedulable;
-class CGameGraph;
+class IGameGraph;
 
 namespace ALife {
 	typedef u64	_CLASS_ID;									// Class ID

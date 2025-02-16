@@ -17,7 +17,6 @@
 #include "data_storage_binary_heap.h"
 #include "path_manager.h"
 #include "graph_engine_space.h"
-#include "profiler.h"
 
 #ifndef AI_COMPILER
 #	include "operator_condition.h"
