@@ -77,7 +77,8 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name)
 	}*/
 #endif // BATTLEYE
 	
-	return IPureServer::Connect(*session_name);
+	GameDescriptionData DD;
+	return IPureServer::Connect(*session_name,DD);
 }
 
 

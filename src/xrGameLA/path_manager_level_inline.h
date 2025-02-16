@@ -17,7 +17,7 @@
 	>
 
 #define CLevelPathManager CPathManager<\
-	CLevelGraph,\
+	ILevelGraph,\
 	_DataStorage,\
 	SBaseParameters<\
 		_dist_type,\
@@ -54,8 +54,8 @@ IC	void CLevelPathManager::setup			(
 	);
 	m_distance_xz			= this->graph->header().cell_size();
 	m_sqr_distance_xz		= _sqr(this->graph->header().cell_size());
-//		square_size_y			= _sqr((float)(graph->header().factor_y()/32767.0));
-//		size_y					= (float)(graph->header().factor_y()/32767.0);
+//		square_size_y			= _sqr((float)(this->graph->header().factor_y()/32767.0));
+//		size_y					= (float)(this->graph->header().factor_y()/32767.0);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -76,9 +76,9 @@ IC	void CLevelPathManager::init			()
 TEMPLATE_SPECIALIZATION
 IC	_dist_type CLevelPathManager::evaluate	(const _index_type &node_index1, const _index_type &node_index2, const _Graph::const_iterator &/**i/**/)
 {
-	VERIFY					(graph);
+	VERIFY					(this->graph);
 	
-//		const _Graph::CVertex	&tNode1 = *graph->vertex(node_index2);
+//		const _Graph::CVertex	&tNode1 = *this->graph->vertex(node_index2);
 
 //		y2						= (float)(tNode1.position().y());
 
@@ -89,7 +89,7 @@ IC	_dist_type CLevelPathManager::evaluate	(const _index_type &node_index1, const
 TEMPLATE_SPECIALIZATION
 IC	_dist_type CLevelPathManager::estimate	(const _index_type &node_index) const
 {
-	VERIFY					(graph);
+	VERIFY					(this->graph);
 //		return					(_sqrt((float)(m_sqr_distance_xz*float(_sqr(x3 - x1) + _sqr(z3 - z1)) + square_size_y*(float)_sqr(y3 - y1))));
 	return					(2*m_distance_xz*_dist_type(_abs(x3 - x1) + _abs(z3 - z1)));// + _abs(y3 - y1)*size_y);
 //		int						x = _abs(x3 - x1);
@@ -121,12 +121,12 @@ TEMPLATE_SPECIALIZATION
 IC	bool CLevelPathManager::is_accessible	(const _index_type &vertex_id) const
 {
 	VERIFY					(this->graph);
-//	return					(graph->valid_vertex_id(vertex_id));
+//	return					(this->graph->valid_vertex_id(vertex_id));
 	return					(this->graph->is_accessible(vertex_id));
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CLevelPathManager::begin			(const _index_type &vertex_id, _Graph::const_iterator &begin, _Graph::const_iterator &end)
+IC	void CLevelPathManager::begin			(const _index_type &vertex_id,_Graph:: const_iterator &begin, _Graph::const_iterator &end)
 {
 	this->graph->begin			(best_node,begin,end);
 }

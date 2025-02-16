@@ -8,7 +8,7 @@
 #include "UISpinText.h"
 #include "UIMapInfo.h"
 #include "UIComboBox.h"
-#include "../../device.h"
+#include "../../xrEngine/device.h"
 
 using namespace luabind;
 
@@ -30,7 +30,7 @@ struct CUIListBoxItemMsgChainWrapper : public CUIListBoxItemMsgChain, public lua
 
 bool xrRender_test_hw_script()
 {
-	return !!Device.m_pRender->Render_test_hw();
+	return true /*!!Device.m_pRender->Render_test_hw()*/;
 }
 
 void add_existing_item_script(CUIListBox* self, CUIListBoxItem* item)
@@ -74,7 +74,7 @@ void CUIListBox::script_register(lua_State *L)
 		.def("SetTextAlignment",			&CUIListBox::SetTextAlignment)
 		.def("GetTextAlignment",			&CUIListBox::GetTextAlignment)
 
-		.def("AddItem",         &add_existing_item_script, adopt(_2)),
+		.def("AddItem",         &add_existing_item_script, adopt<2>()),
 
 		class_<CUIListBoxItem, CUIFrameLineWnd, CUIListBoxItemWrapper>("CUIListBoxItem")
 		.def(							constructor<>())

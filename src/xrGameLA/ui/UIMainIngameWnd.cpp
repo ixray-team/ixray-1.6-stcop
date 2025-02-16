@@ -26,7 +26,7 @@
 #include "../torch.h"
 #include "../date_time.h"
 #include "../xrServer_Objects_ALife_Monsters.h"
-#include "../../LightAnimLibrary.h"
+#include "../../xrEngine/LightAnimLibrary.h"
 #include "../debug_renderer.h"
 #include "../ActorState.h"
 

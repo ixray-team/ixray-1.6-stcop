@@ -16,7 +16,10 @@ class CSpaceRestrictionHolder;
 
 extern int g_restriction_checker;
 
-class CSpaceRestrictionComposition : public CSpaceRestrictionBase {
+class CSpaceRestrictionComposition :
+	public CSpaceRestrictionBase
+{
+	friend class CSpaceRestrictionHolder;
 public:
 	using CSpaceRestrictionBase::inside;
 

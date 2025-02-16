@@ -315,9 +315,17 @@ bool CScriptEngine::function_object(LPCSTR function_to_call, luabind::object &ob
 
 	string256				name_space, function;
 
-	parse_script_namespace	(function_to_call, name_space, 256, function, 256);
-	if (xr_strcmp(name_space,"_G"))
-		process_file		(name_space);
+	parse_script_namespace	(function_to_call,name_space,sizeof(name_space),function,sizeof(function));
+	if (xr_strcmp(name_space,"_G")) {
+		LPSTR				file_name = strchr(name_space,'.');
+		if (!file_name)
+			process_file	(name_space);
+		else {
+			*file_name		= 0;
+			process_file	(name_space);
+			*file_name		= '.';
+		}
+	}
 
 	if (!this->object(name_space,function,type))
 		return				(false);

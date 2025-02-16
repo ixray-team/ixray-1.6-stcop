@@ -32,14 +32,14 @@ void CUIDialogWndEx::script_register(lua_State *L)
 	[
 		script_register_ui_window2(
 			script_register_ui_window1(
-				instance
+				std::move(instance)
 			)
 		)
 		.def("Load",			&BaseType::Load)
 	];
 }
 
-export_class &script_register_ui_window1(export_class &&instance)
+export_class script_register_ui_window1(export_class &&instance)
 {
 	return std::move(instance)
 		.def(					constructor<>())
@@ -57,5 +57,5 @@ export_class &script_register_ui_window1(export_class &&instance)
 		.def("GetCheckButton",	(CUICheckButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUICheckButton>)
 		.def("GetRadioButton",	(CUIRadioButton* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIRadioButton>)
 
-	;;
+	;
 }

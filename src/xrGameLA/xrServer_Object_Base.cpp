@@ -157,16 +157,19 @@ CSE_Motion* CSE_Abstract::motion			()
 
 CInifile &CSE_Abstract::spawn_ini			()
 {
-	if (!m_ini_file) 
-#pragma warning(push)
-#pragma warning(disable:4238)
-		m_ini_file			= new CInifile(
-			&IReader			(
-				(void*)(*(m_ini_string)),
-				m_ini_string.size()
-			),
+	if (!m_ini_file) {
+		IReader temp(
+			(void*) (*(m_ini_string)),
+			m_ini_string.size()
+		);
+
+		m_ini_file = new CInifile(
+			&temp,
 			FS.get_path("$game_config$")->m_Path
 		);
+	}
+#pragma warning(push)
+#pragma warning(disable:4238)
 #pragma warning(pop)
 	return						(*m_ini_file);
 }
@@ -213,7 +216,7 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, BOOL bLocal)
 
 
 	//client object custom data serialization SAVE
-	u16 client_data_size		= (u16)client_data.size(); //íå ìîæåò áûòü áîëüøå 256 áàéò
+	u16 client_data_size		= (u16)client_data.size(); //Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð±Ð¾Ð»ÑŒÑˆÐµ 256 Ð±Ð°Ð¹Ñ‚
 	tNetPacket.w_u16			(client_data_size);
 //	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 	if (client_data_size > 0) {
@@ -282,7 +285,7 @@ BOOL CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 
 	//client object custom data serialization LOAD
 	if (m_wVersion > 70) {
-		u16 client_data_size	= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //íå ìîæåò áûòü áîëüøå 256 áàéò
+		u16 client_data_size	= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð±Ð¾Ð»ÑŒÑˆÐµ 256 Ð±Ð°Ð¹Ñ‚
 		if (client_data_size > 0) {
 //			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 			client_data.resize	(client_data_size);
@@ -327,7 +330,7 @@ BOOL CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 void	CSE_Abstract::load			(NET_Packet	&tNetPacket)
 {
 	CPureServerObject::load		(tNetPacket);
-	u16 client_data_size		= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //íå ìîæåò áûòü áîëüøå 256 áàéò
+	u16 client_data_size		= (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð±Ð¾Ð»ÑŒÑˆÐµ 256 Ð±Ð°Ð¹Ñ‚
 	if (client_data_size > 0) {
 #ifdef DEBUG
 //		Msg						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");

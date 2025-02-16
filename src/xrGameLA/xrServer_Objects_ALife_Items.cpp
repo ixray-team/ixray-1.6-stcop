@@ -179,7 +179,7 @@ void CSE_ALifeInventoryItem::add_upgrade( const shared_str& upgrade_id )
 		m_upgrades.push_back( upgrade_id );
 		return;
 	}
-	FATAL( make_string( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ).c_str() );
+	FATAL( make_string<const char*>( "Can`t add existent upgrade (%s)!", upgrade_id.c_str() ) );
 }
 
 

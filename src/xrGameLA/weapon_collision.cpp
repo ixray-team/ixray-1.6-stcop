@@ -41,7 +41,7 @@ void CWeaponCollision::CheckState()
 	is_zoom			= Actor()->IsZoomAimingMode();
 }
 
-static float SPEED_REMINDER = 1.f;
+static const float COLLISION_SPEED_REMINDER = 1.f;
 static const u16 TIME_REMINDER_STRAFE = 300;
 static const float STRAFE_ANGLE = 0.1f;
 
@@ -62,11 +62,11 @@ void CWeaponCollision::UpdateCollision(Fmatrix &o, float range)
 
 	if (!fsimilar(fReminderDist, fReminderNeedDist)) {
 		if (fReminderDist < fReminderNeedDist) {
-			fReminderDist += SPEED_REMINDER * Device.fTimeDelta;
+			fReminderDist += COLLISION_SPEED_REMINDER * Device.fTimeDelta;
 			if (fReminderDist > fReminderNeedDist)
 				fReminderDist = fReminderNeedDist;
 		} else if (fReminderDist > fReminderNeedDist) {
-			fReminderDist -= SPEED_REMINDER * Device.fTimeDelta;
+			fReminderDist -= COLLISION_SPEED_REMINDER * Device.fTimeDelta;
 			if (fReminderDist < fReminderNeedDist)
 				fReminderDist = fReminderNeedDist;
 		}
