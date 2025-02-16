@@ -33,9 +33,19 @@ void CUITextureMaster::FreeCachedShaders()
 void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 {
 	CUIXml						xml;
-	xml.Load					(CONFIG_PATH, "ui\\textures_descr", xml_file);
 
-	int files_num				= xml.GetNodesNum("",0,"file");
+	int files_num = 0;
+
+	if (EngineExternal().LostAlphaMode()) {
+		xml.Load(CONFIG_PATH, "ui", xml_file);
+		files_num = xml.GetNodesNum("", 0, "file_name");
+	}
+	else 
+	{
+		xml.Load(CONFIG_PATH, "ui\\textures_descr", xml_file);
+		files_num = xml.GetNodesNum("", 0, "file");
+	}
+	
 
 
 	for(int fi=0; fi<files_num; ++fi)
