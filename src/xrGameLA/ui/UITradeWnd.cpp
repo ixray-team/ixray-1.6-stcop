@@ -139,25 +139,25 @@ void CUITradeWnd::Init()
 	xml_init.InitStatic					(uiXml, "static", 1, &m_uidata->UIOthersTradeWnd);
 
 	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurPriceCaption);
-	xml_init.InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOurPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic	(uiXml, "price_mt_static", 0, &m_uidata->UIOurPriceCaption);
 	
 
 	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersPriceCaption);
-	xml_init.InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic	(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
 	
 
 	//Списки Drag&Drop
 	m_uidata->UIOurBagWnd.AttachChild	(&m_uidata->UIOurBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
+	CUIXmlInitGame::InitDragDropListEx	(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
 
 	m_uidata->UIOthersBagWnd.AttachChild(&m_uidata->UIOthersBagList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &m_uidata->UIOthersBagList);
+	CUIXmlInitGame::InitDragDropListEx	(uiXml, "dragdrop_list", 1, &m_uidata->UIOthersBagList);
 
 	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurTradeList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 2, &m_uidata->UIOurTradeList);
+	CUIXmlInitGame::InitDragDropListEx	(uiXml, "dragdrop_list", 2, &m_uidata->UIOurTradeList);
 
 	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersTradeList);	
-	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 3, &m_uidata->UIOthersTradeList);
+	CUIXmlInitGame::InitDragDropListEx	(uiXml, "dragdrop_list", 3, &m_uidata->UIOthersTradeList);
 
 	
 	AttachChild							(&m_uidata->UIDescWnd);

@@ -14,6 +14,7 @@
 #include "ui/UILabel.h"
 #include "ui/UIMultiTextStatic.h"
 #include "../xrEngine/string_table.h"
+#include "ui/UITextBanner.h"
 
 CUIDragDropListEx* UIHelperGame::CreateDragDropListEx(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
 {
@@ -197,4 +198,37 @@ bool CUIXmlInitGame::InitMultiTextStatic(CUIXml& xml_doc, LPCSTR path, int index
 	xml_doc.SetLocalRoot(xml_doc.GetRoot());
 
 	return status;
+}
+
+bool CUIXmlInitGame::InitTextBanner(CUIXml& xml_doc, LPCSTR path, int index, CUITextBanner* pBnr)
+{
+	R_ASSERT4(xml_doc.NavigateToNode(path, index), "XML node not found", path, xml_doc.m_xml_file_name);
+
+	xr_map<shared_str, CUITextBanner::TextBannerStyles> conformityTable;
+	conformityTable["none"] = CUITextBanner::tbsNone;
+	conformityTable["fade"] = CUITextBanner::tbsFade;
+	conformityTable["flicker"] = CUITextBanner::tbsFlicker;
+
+	int animationsCount = xml_doc.GetNodesNum(path, index, "animation");
+
+	XML_NODE* tab_node = xml_doc.NavigateToNode(path, index);
+	XML_NODE* old_node = xml_doc.GetLocalRoot();
+	xml_doc.SetLocalRoot(tab_node);
+
+	shared_str a;
+
+	for (int i = 0; i < animationsCount; ++i)
+	{
+		a = xml_doc.ReadAttrib("animation", i, "anim", "none");
+		EffectParams* param = pBnr->SetStyleParams(conformityTable[a]);
+
+		param->bCyclic = !!xml_doc.ReadAttribInt("animation", i, "cyclic", 1);
+		param->bOn = !!xml_doc.ReadAttribInt("animation", i, "on", 1);
+		param->fPeriod = static_cast<float>(atof(xml_doc.ReadAttrib("animation", i, "period", "1")));
+		param->iEffectStage = xml_doc.ReadAttribInt("animation", i, "stage", 0);
+	}
+
+	xml_doc.SetLocalRoot(old_node);
+
+	return true;
 }

@@ -2,6 +2,7 @@
 
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
+#include "UIPointerGage.h"
 
 class CUICarPanel : public CUIWindow
 {
@@ -12,8 +13,8 @@ private:
 	CUIProgressBar		UICarHealthBar;
 	CUIStatic			UIStaticCarFuel;
 	CUIProgressBar		UICarFuelBar;
-	//CUIPointerGage		UISpeedometer;
-	//CUIPointerGage		UITachometer;
+	CUIPointerGage		UISpeedometer;
+	CUIPointerGage		UITachometer;
 public: 
 
 	// Óñòàíîâèòü 

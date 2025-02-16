@@ -11,6 +11,7 @@
 class CUILabel;
 class CUIListWnd;
 class CUIMultiTextStatic;
+class CUITextBanner;
 
 class UIHelperGame: 
 	public UIHelper
@@ -30,4 +31,5 @@ public:
 	static bool InitListWnd(CUIXml& xml_doc, LPCSTR path, int index, CUIListWnd* pWnd);
 	static bool InitLabel(CUIXml& xml_doc, LPCSTR path, int index, CUILabel* pWnd);
 	static bool InitMultiTextStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIMultiTextStatic* pWnd);
+	static bool InitTextBanner(CUIXml& xml_doc, LPCSTR path, int index, CUITextBanner *pBnr);
 };

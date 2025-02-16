@@ -31,7 +31,7 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	xml_init.InitAutoStaticGroup(uiXml,"car_fuel_static", 0, &UIStaticCarFuel);
 	xml_init.InitProgressBar(uiXml, "car_fuel_progress_bar", 0, &UICarFuelBar);
 
-	/*AttachChild(&UISpeedometer);
+	AttachChild(&UISpeedometer);
 	xml_init.InitStatic(uiXml, "speedometer", 0, &UISpeedometer);
 	string256 buf;
 	xr_strconcat(buf,"speedometer", ":pointer");
@@ -40,10 +40,10 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	float angle_min = uiXml.ReadAttribFlt(buf, 0, "angle_min", -60);
 	float angle_max = uiXml.ReadAttribFlt(buf, 0, "angle_max", 60);
 	LPCSTR pointer_tex = uiXml.ReadAttrib(buf, 0, "arrow", POINTER_ARROW_TEX);
-	UISpeedometer.InitPointer(pointer_tex, offset_x, offset_y, -angle_min * M_PI / 180.0f, -angle_max * M_PI / 180.0f);*/
+	UISpeedometer.InitPointer(pointer_tex, offset_x, offset_y, -angle_min * M_PI / 180.0f, -angle_max * M_PI / 180.0f);
 	SetSpeed(0.3f);
 
-	/*AttachChild(&UITachometer);
+	AttachChild(&UITachometer);
 	xml_init.InitStatic(uiXml, "tachometer", 0, &UITachometer);
 	xr_strconcat(buf,"tachometer", ":pointer");
 	offset_x = uiXml.ReadAttribFlt(buf, 0, "offset_x", 0);
@@ -51,7 +51,7 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	angle_min = uiXml.ReadAttribFlt(buf, 0, "angle_min", -60);
 	angle_max = uiXml.ReadAttribFlt(buf, 0, "angle_max", 60);
 	pointer_tex = uiXml.ReadAttrib(buf, 0, "arrow", POINTER_ARROW_TEX);
-	UITachometer.InitPointer(pointer_tex, offset_x, offset_y, -angle_min * M_PI / 180.0f, -angle_max * M_PI / 180.0f);*/
+	UITachometer.InitPointer(pointer_tex, offset_x, offset_y, -angle_min * M_PI / 180.0f, -angle_max * M_PI / 180.0f);
 	SetSpeed(0.3f);
 
 	Show(false);
@@ -74,7 +74,7 @@ void CUICarPanel::SetCarHealth(float value)
 void CUICarPanel::SetSpeed(float speed)
 {
 	clamp(speed,0.f,1.f);
-	//UISpeedometer.SetValue(speed);
+	UISpeedometer.SetValue(speed);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ void CUICarPanel::SetSpeed(float speed)
 void CUICarPanel::SetRPM(float rpm)
 {
 	clamp(rpm,0.f,1.f);
-	//UITachometer.SetValue(rpm);
+	UITachometer.SetValue(rpm);
 }
 
 //////////////////////////////////////////////////////////////////////////
