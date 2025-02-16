@@ -132,7 +132,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	case kSCORES:
 		{
 			SDrawStaticStruct* ss	= AddCustomStatic("main_task", true);
-			SGameTaskObjective* o	= pActor->GameTaskManager().ActiveObjective();
+			SGameTaskObjective* o	= Level().GameTaskManager().ActiveObjective();
 			if(!o)
 				ss->m_static->TextItemControl()->SetTextST	("st_no_active_task");
 			else

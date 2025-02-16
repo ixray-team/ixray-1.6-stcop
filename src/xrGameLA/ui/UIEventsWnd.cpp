@@ -132,8 +132,8 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 	if(bClearOnly)				return;
 
 	if(!g_actor)				return;
-	GameTasks& tasks			= Actor()->GameTaskManager().GameTasks();
-	GameTasks::iterator it		= tasks.begin();
+	GameTasksVec& tasks = Level().GameTaskManager().GetGameTasks();
+	auto it = tasks.begin();
 	CGameTask* task				= nullptr;
 	
 	for(;it!=tasks.end();++it)

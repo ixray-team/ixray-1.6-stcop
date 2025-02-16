@@ -21,7 +21,7 @@ public:
 							~CGameTaskManager				();
 
 	void					initialize						(u16 id);
-	GameTasks&				GameTasks						();
+	GameTasksVec&			GetGameTasks();
 	CGameTask*				HasGameTask						(const TASK_ID& id);
 	CGameTask*				HasGameTask						(const CMapLocation* ml, bool only_inprocess);
 	CGameTask*				GiveGameTaskToActor				(const TASK_ID& id, u32 timeToComplete, bool bCheckExisting=true);
@@ -29,7 +29,7 @@ public:
 	void					SetTaskState					(const TASK_ID& id, u16 objective_num, ETaskState state);
 	void					SetTaskState					(CGameTask* t, u16 objective_num, ETaskState state);
 
-	void					UpdateTasks						();
+	void	__stdcall		UpdateTasks						();
 //.	void					RemoveUserTask					(CMapLocation* ml);
 
 	CGameTask*				ActiveTask						();

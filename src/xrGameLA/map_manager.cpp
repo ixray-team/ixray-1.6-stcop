@@ -7,7 +7,6 @@
 #include "relation_registry.h"
 #include "GameObject.h"
 #include "map_location.h"
-#include "GameTaskManager.h"
 #include "xrServer.h"
 #include "game_object_space.h"
 #include "../xrScripts/script_callback_ex.h"
@@ -264,16 +263,6 @@ void CMapManager::OnObjectDestroyNotify(u16 id)
 {
 	RemoveMapLocationByObjectID(id);
 }
-
-/*
-void CheckUserLocation		(CMapLocation* ml)
-{
-	if(false == ml->IsUserDefined()) return;
-	Level().Server->FreeID(ml->ObjectID(),Device.TimerAsync());
-
-	Actor()->GameTaskManager().RemoveUserTask(ml);
-}
-*/
 
 void CMapManager::PrintMapLocationsInfo()
 {

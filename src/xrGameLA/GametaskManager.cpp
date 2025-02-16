@@ -53,7 +53,7 @@ void CGameTaskManager::initialize(u16 id)
 	m_gametasks->registry().init(id);// actor's id
 }
 
-GameTasks&	CGameTaskManager::GameTasks	() 
+GameTasksVec& CGameTaskManager::GetGameTasks()
 {
 	return m_gametasks->registry().objects();
 }
@@ -61,8 +61,8 @@ GameTasks&	CGameTaskManager::GameTasks	()
 CGameTask* CGameTaskManager::HasGameTask(const TASK_ID& id)
 {
 	FindTaskByID key(id);
-	GameTasks_it it = std::find_if(GameTasks().begin(),GameTasks().end(),key);
-	if( it!=GameTasks().end() )
+	GameTasks_it it = std::find_if(GetGameTasks().begin(), GetGameTasks().end(), key);
+	if (it != GetGameTasks().end())
 		return (*it).game_task;
 	
 	return 0;
@@ -70,8 +70,8 @@ CGameTask* CGameTaskManager::HasGameTask(const TASK_ID& id)
 
 CGameTask* CGameTaskManager::HasGameTask(const CMapLocation* ml, bool only_inprocess)
 {
-	GameTasks_it it			= GameTasks().begin();
-	GameTasks_it it_e		= GameTasks().end();
+	GameTasks_it it = GetGameTasks().begin();
+	GameTasks_it it_e = GetGameTasks().end();
 
 	for(; it!=it_e; ++it)
 	{
@@ -105,13 +105,13 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	if(bCheckExisting && HasGameTask(t->m_ID)) return nullptr;
 	m_flags.set					(eChanged, TRUE);
 
-	GameTasks().push_back				(SGameTaskKey(t->m_ID) );
-	GameTasks().back().game_task			= t;
+	GetGameTasks().emplace_back(SGameTaskKey(t->m_ID));
+	GetGameTasks().back().game_task = t;
 	t->m_ReceiveTime				= Level().GetGameTime();
 	t->m_TimeToComplete				= t->m_ReceiveTime + timeToComplete;
 
 	
-	std::sort						(GameTasks().begin(), GameTasks().end(), task_prio_pred);
+	std::sort(GetGameTasks().begin(), GetGameTasks().end(), task_prio_pred);
 
 	ARTICLE_VECTOR& article_vector = Actor()->encyclopedia_registry->registry().objects();
 
@@ -208,13 +208,13 @@ void CGameTaskManager::SetTaskState(const TASK_ID& id, u16 objective_num, ETaskS
 
 void CGameTaskManager::UpdateTasks						()
 {
-	u32					task_count = GameTasks().size();
+	u32					task_count = GetGameTasks().size();
 	if(0==task_count)	return;
 
 	SGameTaskKey		*tasks = (SGameTaskKey*)_alloca(task_count*sizeof(SGameTaskKey));
 	SGameTaskKey		*I = tasks;
 	SGameTaskKey		*E = tasks + task_count;
-	GameTasks_it		i = GameTasks().begin();
+	GameTasks_it		i = GetGameTasks().begin();
 	
 	for ( ; I != E; ++I, ++i)
 		new	(I)	SGameTaskKey(*i);
@@ -254,8 +254,8 @@ void CGameTaskManager::UpdateTasks						()
 
 void CGameTaskManager::UpdateActiveTask				()
 {
-	GameTasks_it it								= GameTasks().begin();
-	GameTasks_it it_e							= GameTasks().end();
+	GameTasks_it it = GetGameTasks().begin();
+	GameTasks_it it_e = GetGameTasks().end();
 	bool bHasSpotPointer						= false;
 
 	for( ;it!=it_e; ++it )
@@ -290,8 +290,8 @@ void CGameTaskManager::UpdateActiveTask				()
 	if( !bHasSpotPointer )
 	{
 		bool bDone								=false;
-		GameTasks::iterator it			= GameTasks().begin();
-		GameTasks::iterator it_e		= GameTasks().end();
+		auto it = GameTasksVec().begin();
+		auto it_e = GameTasksVec().end();
 
 		for( ;(it!=it_e)&&(!bDone); ++it )
 		{

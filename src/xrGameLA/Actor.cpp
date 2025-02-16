@@ -59,7 +59,6 @@
 #include "ui/UIMainIngameWnd.h"
 #include "ui/UIArtefactPanel.h"
 #include "map_manager.h"
-#include "GameTaskManager.h"
 #include "actor_memory.h"
 #include "Script_Game_Object.h"
 #include "Game_Object_Space.h"
@@ -182,7 +181,6 @@ CActor::CActor() : CEntityAlive()
 	m_entity_condition		= nullptr;
 	m_iLastHitterID			= u16(-1);
 	m_iLastHittingWeaponID	= u16(-1);
-	m_game_task_manager		= nullptr;
 	m_statistic_manager		= nullptr;
 	//-----------------------------------------------------------------------------------
 	m_memory				= g_dedicated_server ? 0 : new CActorMemory(this);
@@ -996,9 +994,6 @@ void CActor::shedule_Update	(u32 DT)
 
 	//обновление инвентаря
 	UpdateInventoryOwner			(DT);
-	if (GameID() == GAME_SINGLE)
-		GameTaskManager().UpdateTasks	();
-	else Msg("Remove GameID == GAME_SINGLE if i never apear in console");
 
 	if(m_holder || !getEnabled() || !Ready())
 	{

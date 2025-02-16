@@ -31,10 +31,10 @@ class	CPHCommander;
 class	CLevelDebug;
 class	CLevelSoundManager;
 class	CFastEntityUpdater;
+class	CGameTaskManager;
 #ifdef DEBUG_DRAW
 class	CDebugRenderer;
 #endif
-
 extern float g_fov;
 
 const int maxRP					= 64;
@@ -341,8 +341,10 @@ protected:
 //	CFogOfWarMngr		*m_pFogOfWarMngr;
 protected:	
 	CMapManager *			m_map_manager;
+	CGameTaskManager*		m_game_task_manager;
 public:
 	CMapManager&			MapManager					()	{return *m_map_manager;}
+	CGameTaskManager&		GameTaskManager() const { return *m_game_task_manager; }
 //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
 	//работа с пулями

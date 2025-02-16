@@ -63,7 +63,7 @@ public:
 	u16						object_id;
 	shared_str				article_key;
 	CMapLocation*			LinkedMapLocation	();
-	ETaskState				TaskState			()	{return task_state;};
+	ETaskState				TaskState() const { return task_state; };
 	ETaskState				UpdateState			();
 
 	shared_str							icon_texture_file_name;

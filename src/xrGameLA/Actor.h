@@ -55,7 +55,6 @@ class  CActorCondition;
 class SndShockEffector;
 class CScriptCameraDirection;
 class CActorFollowerMngr;
-class CGameTaskManager;
 
 class CCameraShotEffector;
 class CActorInputHandler;
@@ -148,12 +147,10 @@ public:
 	void			AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay);
 	virtual void	AddGameNews				 (GAME_NEWS_DATA& news_data);
 protected:
-	CGameTaskManager*				m_game_task_manager;
 	CActorStatisticMgr*				m_statistic_manager;
 public:
 	virtual void StartTalk			(CInventoryOwner* talk_partner);
 	virtual	void RunTalkDialog		(CInventoryOwner* talk_partner);
-	CGameTaskManager&				GameTaskManager() const {return *m_game_task_manager;}
 	CActorStatisticMgr&				StatisticMgr()	{return *m_statistic_manager;}
 	CEncyclopediaRegistryWrapper	*encyclopedia_registry;
 	CGameNewsRegistryWrapper		*game_news_registry;

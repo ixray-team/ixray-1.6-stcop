@@ -670,8 +670,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		Level().MapManager().AddMapLocation("actor_location",ID());
 		Level().MapManager().AddMapLocation("actor_location_p",ID());
 
-		m_game_task_manager	= new CGameTaskManager();
-		GameTaskManager().initialize(ID());
+		Level().GameTaskManager().initialize(ID());
 
 		m_statistic_manager = new CActorStatisticMgr();
 	}
@@ -695,7 +694,6 @@ void CActor::net_Destroy	()
 		if(!g_dedicated_server)
 			Level().client_spawn_manager().remove	(m_holder_id,ID());
 
-	delete_data				(m_game_task_manager);
 	delete_data				(m_statistic_manager);
 	
 	if(!g_dedicated_server)

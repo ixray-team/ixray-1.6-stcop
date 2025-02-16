@@ -297,7 +297,7 @@ void CUITaskSubItem::Update					()
 	{
 		Show									(true);
 		m_descriptionStatic->Show				(true);
-		bool bIsActive							= (Actor()->GameTaskManager().ActiveObjective() == obj); 
+		bool bIsActive							= (Level().GameTaskManager().ActiveObjective() == obj);
 		m_ActiveObjectiveStatic->Show			(bIsActive);
 		m_showDescriptionBtn->Show				(m_EventsWnd->ItemHasDescription(this));
 	}
@@ -308,8 +308,8 @@ bool CUITaskSubItem::OnDbClick()
 	SGameTaskObjective	*obj					= &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
 	if(obj->TaskState()!=eTaskStateInProgress)	return true;
 
-	bool bIsActive								= (Actor()->GameTaskManager().ActiveObjective() == obj); 
-	Actor()->GameTaskManager().SetActiveTask((!bIsActive)?m_GameTask->m_ID:"", m_TaskObjectiveIdx);
+	bool bIsActive = (Level().GameTaskManager().ActiveObjective() == obj);
+	Level().GameTaskManager().SetActiveTask((!bIsActive) ? m_GameTask->m_ID : "", m_TaskObjectiveIdx);
 	return										true;
 }
 

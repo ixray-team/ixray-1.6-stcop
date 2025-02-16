@@ -658,14 +658,8 @@ LPCSTR CScriptGameObject::sound_voice_prefix () const
 #include "GameTaskManager.h"
 ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, int objective_num)
 {
-/*	CActor* pActor = smart_cast<CActor*>(&object());
-	if (!pActor) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"GetGameTaskState available only for actor");
-		return eTaskStateDummy;
-	}
-*/
 	shared_str shared_name = task_id;
-	CGameTask* t= Actor()->GameTaskManager().HasGameTask(shared_name);
+	CGameTask* t= Level().GameTaskManager().HasGameTask(shared_name);
 	if(nullptr==t) return eTaskStateDummy;
 
 	if ((std::size_t)objective_num >= t->m_Objectives.size()) {
@@ -679,7 +673,7 @@ ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, int objective_nu
 void CScriptGameObject::SetGameTaskState	(ETaskState state, LPCSTR task_id, int objective_num)
 {
 	shared_str shared_name = task_id;
-	Actor()->GameTaskManager().SetTaskState(shared_name, (u16)objective_num, state);
+	Level().GameTaskManager().SetTaskState(shared_name, (u16)objective_num, state);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -952,7 +946,7 @@ CScriptGameObject *CScriptGameObject::item_in_slot	(u32 slot) const
 
 void CScriptGameObject::GiveTaskToActor(CGameTask* t, u32 dt, bool bCheckExisting)
 {
-	Actor()->GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting);
+	Level().GameTaskManager().GiveGameTaskToActor(t, dt, bCheckExisting);
 }
 
 void CScriptGameObject::deactivate_slot()

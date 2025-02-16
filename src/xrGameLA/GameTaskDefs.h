@@ -33,17 +33,22 @@ struct SGameTaskKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 	virtual void destroy							();
 };
 
-using GameTasks = xr_vector<SGameTaskKey>;
-using GameTasks_it = GameTasks::iterator;
+//#define DEFINE_VECTOR(T,N,I)		typedef xr_vector< T > N;		typedef N::iterator I;
 
-struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, GameTasks> {
+//DEFINE_VECTOR(SGameTaskKey, GameTasksVec, GameTasks_it);
+
+
+typedef xr_vector<SGameTaskKey> GameTasksVec; 
+typedef GameTasksVec::iterator GameTasks_it;
+
+struct CGameTaskRegistry : public CALifeAbstractRegistry<u16, GameTasksVec> {
 	virtual void save(IWriter &stream){
-		CALifeAbstractRegistry<u16, GameTasks>::save(stream);
+		CALifeAbstractRegistry::save(stream);
 		save_data		(g_active_task_id,				stream);
 		save_data		(g_active_task_objective_id,	stream);
 	};
 	virtual void load(IReader &stream){
-		CALifeAbstractRegistry<u16, GameTasks>::load(stream);
+		CALifeAbstractRegistry::load(stream);
 		load_data		(g_active_task_id,				stream);
 		load_data		(g_active_task_objective_id,	stream);
 	};

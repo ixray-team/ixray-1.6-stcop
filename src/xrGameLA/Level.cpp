@@ -49,6 +49,8 @@
 #include "alife_simulator.h"
 #include "CustomTimersManager.h"
 
+#include "GameTaskManager.h"
+
 #ifdef DEBUG
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
@@ -99,6 +101,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_map_manager				= new CMapManager();
 	else
 		m_map_manager				= nullptr;
+
+	m_game_task_manager = new CGameTaskManager();
 
 //	m_pFogOfWarMngr				= new CFogOfWarMngr();
 //----------------------------------------------------
@@ -259,6 +263,7 @@ CLevel::~CLevel()
 #endif
 	//-----------------------------------------------------------
 	xr_delete					(m_map_manager);
+	delete_data					(m_game_task_manager);
 //	xr_delete					(m_pFogOfWarMngr);
 	//-----------------------------------------------------------
 	Demo_Clear					();
@@ -475,6 +480,14 @@ void CLevel::OnFrame	()
 			Device.seqParallel.push_back(xr_make_delegate(m_map_manager, &CMapManager::Update));
 		else								
 			MapManager().Update		();
+
+		if (Device.dwPrecacheFrame == 0)
+		{
+				if (g_mt_config.test(mtMap))
+					Device.seqParallel.emplace_back(xr_delegate<void()>(m_game_task_manager, &CGameTaskManager::UpdateTasks));
+				else
+					GameTaskManager().UpdateTasks();
+		}
 	}
 	// Inherited update
 	inherited::OnFrame		();

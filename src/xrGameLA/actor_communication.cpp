@@ -41,26 +41,24 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 	ARTICLE_VECTOR::iterator B = article_vector.begin();
 	ARTICLE_VECTOR::iterator E = last_end;
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->ArticlesDisable().begin();
-									it != info_portion->ArticlesDisable().end(); it++)
+	for (const auto& it : info_portion->ArticlesDisable())
 	{
-		FindArticleByIDPred pred(*it);
+		FindArticleByIDPred pred(it);
 		last_end = std::remove_if(B, last_end, pred);
 	}
 	article_vector.erase(last_end, E);
 
 
-	for(ARTICLE_ID_VECTOR::const_iterator it = info_portion->Articles().begin();
-									it != info_portion->Articles().end(); it++)
+	for (const auto& it : info_portion->Articles())
 	{
-		FindArticleByIDPred pred(*it);
+		FindArticleByIDPred pred(it);
 		if( std::find_if(article_vector.begin(), article_vector.end(), pred) != article_vector.end() ) continue;
 
 		CEncyclopediaArticle article;
 
-		article.Load(*it);
+		article.Load(it);
 
-		article_vector.push_back(ARTICLE_DATA(*it, Level().GetGameTime(), article.data()->articleType));
+		article_vector.push_back(ARTICLE_DATA(it, Level().GetGameTime(), article.data()->articleType));
 		LPCSTR g,n;
 		int _atype = article.data()->articleType;
 		g = *(article.data()->group);
@@ -75,8 +73,7 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 				case ARTICLE_DATA::eJournalArticle:			p = pda_section::journal;		break;
 				case ARTICLE_DATA::eInfoArticle:			p = pda_section::info;			break;
 				case ARTICLE_DATA::eTaskArticle:			p = pda_section::quests;		break;
-				default: NODEFAULT;
-			};
+			}
 			pGameSP->m_PdaMenu->PdaContentsChanged			(p);
 		}
 
@@ -90,10 +87,9 @@ void CActor::AddGameTask			 (const CInfoPortion* info_portion) const
 	VERIFY(info_portion);
 
 	if(info_portion->GameTasks().empty()) return;
-	for(TASK_ID_VECTOR::const_iterator it = info_portion->GameTasks().begin();
-		it != info_portion->GameTasks().end(); it++)
+	for (const auto& it : info_portion->GameTasks())
 	{
-		GameTaskManager().GiveGameTaskToActor(*it, 0);
+		Level().GameTaskManager().GiveGameTaskToActor(it, 0);
 	}
 }
 
@@ -178,15 +174,14 @@ void   CActor::UpdateAvailableDialogs	(CPhraseDialogManager* partner)
 
 	if(CInventoryOwner::m_known_info_registry->registry().objects_ptr())
 	{
-		for(KNOWN_INFO_VECTOR::const_iterator it = CInventoryOwner::m_known_info_registry->registry().objects_ptr()->begin();
-			CInventoryOwner::m_known_info_registry->registry().objects_ptr()->end() != it; ++it)
+		for (const auto& it : *CInventoryOwner::m_known_info_registry->registry().objects_ptr())
 		{
 			CInfoPortion info_portion;
 
-			if (!CInfoPortion::ValidInfoPortion(*((*it).info_id))) 
+			if (!CInfoPortion::ValidInfoPortion(*(it.info_id)))
 				continue;
 			
-			info_portion.Load((*it).info_id);
+			info_portion.Load(it.info_id);
 
 			for(u32 i = 0; i<info_portion.DialogNames().size(); i++)
 				AddAvailableDialog(*info_portion.DialogNames()[i], partner);
