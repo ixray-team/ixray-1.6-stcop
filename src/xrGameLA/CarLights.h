@@ -26,7 +26,9 @@ struct SCarLight
 
 };
 
-DEFINE_VECTOR(SCarLight*,LIGHTS_STORAGE,LIGHTS_I)
+using LIGHTS_STORAGE = xr_vector<SCarLight*>;
+using LIGHTS_I = LIGHTS_STORAGE::iterator;
+
 class CCarLights
 {
 public:

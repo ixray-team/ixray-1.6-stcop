@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "a_star.h"
-#include "edge_path.h"
-#include "vertex_manager_fixed.h"
-#include "vertex_manager_hash_fixed.h"
-#include "vertex_allocator_fixed.h"
-#include "data_storage_bucket_list.h"
-#include "data_storage_binary_heap.h"
+#include "../XrEngine/a_star.h"
+#include "../XrEngine/edge_path.h"
+#include "../XrEngine/vertex_manager_fixed.h"
+#include "../XrEngine/vertex_manager_hash_fixed.h"
+#include "../XrEngine/vertex_allocator_fixed.h"
+#include "../XrEngine/data_storage_bucket_list.h"
+#include "../XrEngine/data_storage_binary_heap.h"
 #include "path_manager.h"
 #include "graph_engine_space.h"
 #include "profiler.h"
@@ -26,6 +26,16 @@
 #endif // AI_COMPILER
 
 using namespace GraphEngineSpace;
+
+
+namespace hash_fixed_vertex_manager {
+	
+IC	u32 to_u32	(GraphEngineSpace::CWorldState const &other)
+{
+	return	(other.hash_value());
+}
+
+} // namespace hash_fixed_vertex_manager
 
 class CGraphEngine {
 public:

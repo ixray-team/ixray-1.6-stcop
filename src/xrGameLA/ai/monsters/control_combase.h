@@ -82,7 +82,9 @@ public:
 	virtual void	on_event				(ControlCom::EEventType, ControlCom::IEventData*)	{}
 
 protected:
-	DEFINE_VECTOR			(CControl_Com*, CONTROLLERS_VECTOR, CONTROLLERS_VECTOR_IT);
+	using CONTROLLERS_VECTOR = xr_vector<CControl_Com*>;
+	using CONTROLLERS_VECTOR_IT = CONTROLLERS_VECTOR::iterator;
+
 	CONTROLLERS_VECTOR		m_controlled;
 };
 

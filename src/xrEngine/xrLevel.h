@@ -342,5 +342,5 @@ const u32 XRCL_PRODUCTION_VERSION = 14; // output
 const u32 CFORM_CURRENT_VERSION = 4;
 const u32 MAX_NODE_BIT_COUNT = 23;
 const u32 XRAI_CURRENT_VERSION = 10;
-
+const u32 XRAI_SOC_CURRENT_VERSION = 8;
 #endif // xrLevelH

@@ -14,7 +14,7 @@
 #include "level_graph.h"
 #include "level.h"
 #include "game_base_space.h"
-//#include "hudmanager.h"
+#include "hudmanager.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"
@@ -22,7 +22,7 @@
 #include "alife_human_brain.h"
 #include "alife_monster_movement_manager.h"
 #include "alife_monster_detail_path_manager.h"
-#include "ui_base.h"
+
 #include "debug_renderer.h"
 
 void CLevelGraph::setup_current_level	(const int &level_id)
@@ -52,8 +52,8 @@ void CLevelGraph::render	()
 	if (psAI_Flags.test(aiCover))
 		draw_covers			();
 
-	//if (!psHUD_Flags.test(HUD_DRAW))
-	//	return;
+	if (!psHUD_Flags.test(HUD_DRAW))
+		return;
 
 	if (psAI_Flags.test(aiMotion))
 		draw_objects		();
@@ -65,10 +65,10 @@ void CLevelGraph::render	()
 
 void modify							(const int &vertex_id, Fbox &bounding_box)
 {
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	bounding_box.modify		(graph.vertex(vertex_id)->game_point());
 
-	CGameGraph::const_iterator	I,E;
+	IGameGraph::const_iterator	I,E;
 	graph.begin				(vertex_id,I,E);
 	for ( ; I != E; ++I)
 		bounding_box.modify	(graph.vertex(graph.value(vertex_id,I))->game_point());
@@ -83,7 +83,7 @@ void CLevelGraph::update_current_info	()
 
 	bool					found = false;
 	bool					all = (m_current_level_id == -1);
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	for (int i=0, n = (int)graph.header().vertex_count(); i<n; ++i) {
 		if (!all) {
 			if (graph.vertex(i)->level_id() != m_current_level_id) {
@@ -119,10 +119,10 @@ Fvector CLevelGraph::convert_position	(const Fvector &position)
 void CLevelGraph::draw_edge			(const int &vertex_id0, const int &vertex_id1)
 {
 	const float				radius = .005f;
-	const u32				vertex_color = D3DCOLOR_XRGB(0,255,255);
-	const u32				edge_color = D3DCOLOR_XRGB(0,255,0);
+	const u32				vertex_color = color_xrgb(0,255,255);
+	const u32				edge_color = color_xrgb(0,255,0);
 	
-	const CGameGraph		&graph = ai().game_graph();
+	const IGameGraph		&graph = ai().game_graph();
 	Fvector					position0 = convert_position(graph.vertex(vertex_id0)->game_point());
 	Fvector					position1 = convert_position(graph.vertex(vertex_id1)->game_point());
 
@@ -137,8 +137,8 @@ void CLevelGraph::draw_edge			(const int &vertex_id0, const int &vertex_id1)
 
 void CLevelGraph::draw_vertex		(const int &vertex_id)
 {
-	CGameGraph::const_iterator	I,E;
-	const CGameGraph			&graph = ai().game_graph();
+	IGameGraph::const_iterator	I,E;
+	const IGameGraph			&graph = ai().game_graph();
 	graph.begin					(vertex_id,I,E);
 	for ( ; I != E; ++I) {
 		int						neighbour_id = graph.value(vertex_id,I);
@@ -153,17 +153,17 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		return;
 
 	const float					radius = .0105f;
-	const u32					color = D3DCOLOR_XRGB(255,0,0);
-	const CGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *UI().Font().pFontDI;
+	const u32					color = color_xrgb(255,0,0);
+	const IGameGraph			&graph = ai().game_graph();
+	CGameFont					&font = *HUD().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
-	font.SetColor				(D3DCOLOR_XRGB(255,255,0));
+	font.SetColor				(color_xrgb(255,255,0));
 
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device.mFullTransform.transform (temp,position);
+		Device->mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
 		font.SetHeightI			(.05f/_sqrt(temp.w));
 		
@@ -267,7 +267,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device.mFullTransform.transform (temp,direction);
+		Device->mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;
@@ -297,17 +297,17 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		return;
 
 	const float					radius = .0105f;
-	const u32					color = D3DCOLOR_XRGB(255,0,0);
-	const CGameGraph			&graph = ai().game_graph();
-	CGameFont					&font = *UI().Font().pFontDI;
+	const u32					color = color_xrgb(255,0,0);
+	const IGameGraph			&graph = ai().game_graph();
+	CGameFont					&font = *HUD().Font().pFontDI;
 	Fvector						position = convert_position(graph.vertex(vertex_id)->game_point());
 
-	font.SetColor				(D3DCOLOR_XRGB(255,255,0));
+	font.SetColor				(color_xrgb(255,255,0));
 
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device.mFullTransform.transform (temp,position);
+		Device->mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
 		font.SetHeightI			(.05f/_sqrt(temp.w));
 		
@@ -411,7 +411,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device.mFullTransform.transform (temp,direction);
+		Device->mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;
@@ -441,7 +441,7 @@ void CLevelGraph::draw_game_graph	()
 		return;
 
 //	Fvector					camera_position = Level().CurrentEntity()->Position();
-//	CGameFont				*font = UI().Font().pFontDI;
+//	CGameFont				*font = HUD().Font().pFontDI;
 
 	const Fmatrix			&xform = Level().CurrentEntity()->XFORM();
 	Fvector					center = Fvector().set(0.f,5.f,0.f);
@@ -454,12 +454,12 @@ void CLevelGraph::draw_game_graph	()
 	xform.transform_tiny	(vertices[2], Fvector().set(center.x - bounds.x, center.y - bounds.y, center.z - bounds.z));
 	xform.transform_tiny	(vertices[3], Fvector().set(center.x + bounds.x, center.y - bounds.y, center.z - bounds.z));
 
-//	u32						back_color = D3DCOLOR_XRGB(0,0,0);
+//	u32						back_color = color_xrgb(0,0,0);
 //	RCache.dbg_DrawTRI		(Fidentity,vertices[0],vertices[2],vertices[1],back_color);
 //	RCache.dbg_DrawTRI		(Fidentity,vertices[1],vertices[2],vertices[3],back_color);
 
 	// draw vertices
-	CGameGraph				&graph = ai().game_graph();
+	IGameGraph				&graph = ai().game_graph();
 	update_current_info		();
 
 	bool					found = false;
@@ -490,21 +490,21 @@ void CLevelGraph::draw_game_graph	()
 		Fvector t1 = ai().game_graph().vertex(i)->game_point();
 		t1.y += .6f;
 		NORMALIZE_VECTOR(t1);
-		Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,255));
-		CGameGraph::const_iterator	I, E;
+		Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(0,0,255));
+		IGameGraph::const_iterator	I, E;
 		ai().game_graph().begin		(i,I,E);
 		for ( ; I != E; ++I) {
 			Fvector t2 = ai().game_graph().vertex((*I).vertex_id())->game_point();
 			t2.y += .6f;
 			NORMALIZE_VECTOR(t2);
-			Level().debug_renderer().draw_line(Fidentity,t1,t2,D3DCOLOR_XRGB(0,255,0));
+			Level().debug_renderer().draw_line(Fidentity,t1,t2,color_xrgb(0,255,0));
 		}
 		Fvector         T;
 		Fvector4        S;
 		T.set			(t1);
 		//T.y+= 1.5f;
 		T.y+= 1.5f/10.f;
-		Device.mFullTransform.transform (S,T);
+		Device->mFullTransform.transform (S,T);
 		//out of screen
 		if (S.z < 0 || S.w < 0)												continue;
 		if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;
@@ -518,13 +518,13 @@ void CLevelGraph::draw_game_graph	()
 			Fvector t1 = ai().game_graph().vertex(path.back())->game_point();
 			t1.y += .6f;
 			NORMALIZE_VECTOR(t1);
-			Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,255));
+			Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(0,0,255));
 			for (int i=(int)path.size() - 2; i>=0;--i) {
 				Fvector t2 = ai().game_graph().vertex(path[i])->game_point();
 				t2.y += .6f;
 				NORMALIZE_VECTOR(t2);
-				Level().debug_renderer().draw_aabb(t2,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,255));
-				Level().debug_renderer().draw_line(Fidentity,t1,t2,D3DCOLOR_XRGB(0,0,255));
+				Level().debug_renderer().draw_aabb(t2,.05f,.05f,.05f,color_xrgb(0,0,255));
+				Level().debug_renderer().draw_line(Fidentity,t1,t2,color_xrgb(0,0,255));
 				t1 = t2;
 			}
 		}
@@ -540,14 +540,14 @@ void CLevelGraph::draw_game_graph	()
 				t1.y += .6f;
 				t2.y += .6f;
 				NORMALIZE_VECTOR(t2);
-				Level().debug_renderer().draw_aabb(t1,.5f,.5f,.5f,D3DCOLOR_XRGB(255,255,255));
-				//Level().debug_renderer().draw_line(Fidentity,t1,t2,D3DCOLOR_XRGB(255,255,255));
+				Level().debug_renderer().draw_aabb(t1,.5f,.5f,.5f,color_xrgb(255,255,255));
+				//Level().debug_renderer().draw_line(Fidentity,t1,t2,color_xrgb(255,255,255));
 				Fvector         T;
 				Fvector4        S;
 				T.set			(t1);
 				//T.y+= 1.5f;
 				T.y+= 1.5f;
-				Device.mFullTransform.transform (S,T);
+				Device->mFullTransform.transform (S,T);
 				//out of screen
 				if (S.z < 0 || S.w < 0)												continue;
 				if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;
@@ -568,13 +568,13 @@ void CLevelGraph::draw_game_graph	()
 						Fvector t1 = ai().game_graph().vertex(tpALifeHuman->brain().movement().detail().path().back())->game_point();
 						t1.y += .6f;
 						NORMALIZE_VECTOR(t1);
-						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,255));
+						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(0,0,255));
 						for (int i=(int)tpALifeHuman->brain().movement().detail().path().size() - 2; i>=0;--i) {
 							Fvector t2 = ai().game_graph().vertex(tpALifeHuman->brain().movement().detail().path()[i])->game_point();
 							t2.y += .6f;
 							NORMALIZE_VECTOR(t2);
-							Level().debug_renderer().draw_aabb(t2,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,255));
-							Level().debug_renderer().draw_line(Fidentity,t1,t2,D3DCOLOR_XRGB(0,0,255));
+							Level().debug_renderer().draw_aabb(t2,.05f,.05f,.05f,color_xrgb(0,0,255));
+							Level().debug_renderer().draw_line(Fidentity,t1,t2,color_xrgb(0,0,255));
 							t1 = t2;
 						}
 					}
@@ -586,13 +586,13 @@ void CLevelGraph::draw_game_graph	()
 						t1.add(t2);
 						t1.y += .6f;
 						NORMALIZE_VECTOR(t1);
-						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(255,0,0));
+						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(255,0,0));
 					}
 					else {
 						Fvector t1 = ai().game_graph().vertex((*I).second->m_tGraphID)->game_point();
 						t1.y += .6f;
 						NORMALIZE_VECTOR(t1);
-						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(255,0,0));
+						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(255,0,0));
 					}
 				}
 				else {
@@ -601,7 +601,7 @@ void CLevelGraph::draw_game_graph	()
 						Fvector t1 = ai().game_graph().vertex((*I).second->m_tGraphID)->game_point();
 						t1.y += .6f;
 						NORMALIZE_VECTOR(t1);
-						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(255,255,0));
+						Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(255,255,0));
 					}
 					else {
 						CSE_ALifeCreatureActor *tpALifeCreatureActor = smart_cast<CSE_ALifeCreatureActor*>((*I).second);
@@ -609,7 +609,7 @@ void CLevelGraph::draw_game_graph	()
 							Fvector t1 = ai().game_graph().vertex((*I).second->m_tGraphID)->game_point();
 							t1.y += .6f;
 							NORMALIZE_VECTOR(t1);
-							Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(255,255,255));
+							Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(255,255,255));
 						}
 						else {
 							CSE_ALifeTrader *tpALifeTrader = smart_cast<CSE_ALifeTrader*>((*I).second);
@@ -617,7 +617,7 @@ void CLevelGraph::draw_game_graph	()
 								Fvector t1 = ai().game_graph().vertex((*I).second->m_tGraphID)->game_point();
 								t1.y += .6f;
 								NORMALIZE_VECTOR(t1);
-								Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(0,0,0));
+								Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(0,0,0));
 							}
 							else {
 								CSE_ALifeSmartZone *smart_zone = smart_cast<CSE_ALifeSmartZone*>((*I).second);
@@ -625,7 +625,7 @@ void CLevelGraph::draw_game_graph	()
 									Fvector t1 = ai().game_graph().vertex((*I).second->m_tGraphID)->game_point();
 									t1.y += .6f;
 									NORMALIZE_VECTOR(t1);
-									Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,D3DCOLOR_XRGB(255,0,0));
+									Level().debug_renderer().draw_aabb(t1,.05f,.05f,.05f,color_xrgb(255,0,0));
 								}
 							}
 						}

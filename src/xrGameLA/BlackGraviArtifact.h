@@ -1,14 +1,16 @@
 ///////////////////////////////////////////////////////////////
 // BlackGraviArtifact.h
-// BlackGraviArtefact - гравитационный артефакт, 
-// такой же как и обычный, но при получении хита
+// BlackGraviArtefact - РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ Р°СЂС‚РµС„Р°РєС‚, 
+// С‚Р°РєРѕР№ Р¶Рµ РєР°Рє Рё РѕР±С‹С‡РЅС‹Р№, РЅРѕ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё С…РёС‚Р°
 ///////////////////////////////////////////////////////////////
 
 #pragma once
 #include "GraviArtifact.h"
 #include "../feel_touch.h"
 #include "PhysicsShellHolder.h"
-DEFINE_VECTOR (CPhysicsShellHolder*, GAME_OBJECT_LIST, GAME_OBJECT_LIST_it);
+
+using GAME_OBJECT_LIST = xr_vector<CPhysicsShellHolder*>;
+using GAME_OBJECT_LIST_it = GAME_OBJECT_LIST::iterator;
 
 class CBlackGraviArtefact: public CGraviArtefact,
 						   public Feel::Touch
@@ -36,21 +38,21 @@ protected:
 	virtual void	net_Relcase		(CObject* O );
 	virtual void	UpdateCLChild	();
 
-	//гравитационный удар по всем объектам в зоне досягаемости
+	//РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ СѓРґР°СЂ РїРѕ РІСЃРµРј РѕР±СЉРµРєС‚Р°Рј РІ Р·РѕРЅРµ РґРѕСЃСЏРіР°РµРјРѕСЃС‚Рё
 	void GraviStrike();
 
 	GAME_OBJECT_LIST m_GameObjectList;
 
 
-	//которого артефакт активизируется
+	//РєРѕС‚РѕСЂРѕРіРѕ Р°СЂС‚РµС„Р°РєС‚ Р°РєС‚РёРІРёР·РёСЂСѓРµС‚СЃСЏ
 	float m_fImpulseThreshold;
-	//радиус действия артефакта
+	//СЂР°РґРёСѓСЃ РґРµР№СЃС‚РІРёСЏ Р°СЂС‚РµС„Р°РєС‚Р°
 	float m_fRadius;
-	//импульс передаваемый окружающим предметам
+	//РёРјРїСѓР»СЊСЃ РїРµСЂРµРґР°РІР°РµРјС‹Р№ РѕРєСЂСѓР¶Р°СЋС‰РёРј РїСЂРµРґРјРµС‚Р°Рј
 	float m_fStrikeImpulse;
 
-	//флаг, того что артефакт получил хит 
-	//и теперь может совершить бросок
+	//С„Р»Р°Рі, С‚РѕРіРѕ С‡С‚Рѕ Р°СЂС‚РµС„Р°РєС‚ РїРѕР»СѓС‡РёР» С…РёС‚ 
+	//Рё С‚РµРїРµСЂСЊ РјРѕР¶РµС‚ СЃРѕРІРµСЂС€РёС‚СЊ Р±СЂРѕСЃРѕРє
 	bool m_bStrike;	
 
 	shared_str	m_sParticleName;

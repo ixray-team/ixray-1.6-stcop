@@ -10,7 +10,8 @@ typedef intrusive_ptr<CPhraseDialog>		DIALOG_SHARED_PTR;
 
 //. typedef shared_str	PHRASE_DIALOG_ID;
 
- DEFINE_VECTOR(shared_str,		DIALOG_ID_VECTOR,		DIALOG_ID_IT);
+using DIALOG_ID_VECTOR = xr_vector<shared_str>;
+using DIALOG_ID_IT = DIALOG_ID_VECTOR::iterator;
 //. #define  NO_PHRASE				-1
 //. #define  START_PHRASE			0
 //. #define  START_PHRASE_STR		"0"

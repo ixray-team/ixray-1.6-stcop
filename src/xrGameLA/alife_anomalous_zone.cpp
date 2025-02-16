@@ -60,7 +60,7 @@ void CSE_ALifeAnomalousZone::add_shape_size		(float zone_radius)
 
 void CSE_ALifeAnomalousZone::spawn_artefacts				()
 {
-//---- Можно ли спавнить из-за аи сетки?
+//---- РњРѕР¶РЅРѕ Р»Рё СЃРїР°РІРЅРёС‚СЊ РёР·-Р·Р° Р°Рё СЃРµС‚РєРё?
 	VERIFY2					(!m_bOnline,"Cannot spawn artefacts in online!");
 
 	if (this->m_flags.is(flUsedAI_Locations) == FALSE) {
@@ -69,18 +69,21 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 	#endif
 		return;
 	}
-//---- Инит
+//---- РРЅРёС‚
 	BOOL m_bSpawnArtefact				= !!READ_IF_EXISTS(pSettings, r_bool, name(),	"art_onstart_spawn", FALSE);
 	if (!m_bSpawnArtefact) return;
 	float m_fArtefactSpawnProbability	= READ_IF_EXISTS(pSettings, r_float, name(),	"art_onstart_spawn_prob", 0.0);
 	u8 m_iArtSpawnCicles				= READ_IF_EXISTS(pSettings, r_u8, name(),		"art_onstart_spawn_cicles", 2);
-//---- Инит списка артифактов
+//---- РРЅРёС‚ СЃРїРёСЃРєР° Р°СЂС‚РёС„Р°РєС‚РѕРІ
 	struct ARTEFACT_SPAWN
 	{
 		shared_str	section;
 		float		probability;
 	};
-	DEFINE_VECTOR(ARTEFACT_SPAWN, ARTEFACT_SPAWN_VECTOR, ARTEFACT_SPAWN_IT);
+
+	using ARTEFACT_SPAWN_VECTOR = xr_vector<ARTEFACT_SPAWN>;
+	using ARTEFACT_SPAWN_IT = ARTEFACT_SPAWN_VECTOR::iterator;
+
 	ARTEFACT_SPAWN_VECTOR	m_ArtefactSpawn;
 
 	LPCSTR l_caParameters				= READ_IF_EXISTS(pSettings, r_string, name(),	"artefacts", "");
@@ -102,16 +105,16 @@ R_ASSERT2(!(m_wItemCount & 1), "Invalid number of parameters in string 'artefact
 	if (total_probability == 0.f) total_probability = 1.0;
 R_ASSERT3(!fis_zero(total_probability), "The probability of artefact spawn is zero!", name());
 
-	for (i = 0; i<m_ArtefactSpawn.size(); ++i)	//нормализировать вероятности
+	for (i = 0; i<m_ArtefactSpawn.size(); ++i)	//РЅРѕСЂРјР°Р»РёР·РёСЂРѕРІР°С‚СЊ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё
 	{
 		m_ArtefactSpawn[i].probability = m_ArtefactSpawn[i].probability / total_probability;
 	}
 	if (m_ArtefactSpawn.empty()) return;
-//---- Случайное число
+//---- РЎР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ
 	for (int i = 0; i < m_iArtSpawnCicles; ++i){//tatarinrafa:Lets add an oportunity of spawning several arts
 		if (::Random.randF(0.f, 1.f) < m_fArtefactSpawnProbability) {
 
-//---- Выбор арта из списка артифактов (вычислить согласно распределению вероятностей)
+//---- Р’С‹Р±РѕСЂ Р°СЂС‚Р° РёР· СЃРїРёСЃРєР° Р°СЂС‚РёС„Р°РєС‚РѕРІ (РІС‹С‡РёСЃР»РёС‚СЊ СЃРѕРіР»Р°СЃРЅРѕ СЂР°СЃРїСЂРµРґРµР»РµРЅРёСЋ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№)
 
 			float rnd = ::Random.randF(.0f, 1.f - EPS_L);
 			float prob_threshold = 0.f;

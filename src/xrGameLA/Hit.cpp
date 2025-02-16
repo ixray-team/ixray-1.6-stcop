@@ -3,7 +3,7 @@
 #include "hit.h"
 #include "ode_include.h"
 #include "..\bone.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "xrMessages.h"
 #include "Level.h"
 

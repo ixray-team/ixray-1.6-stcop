@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "actor_mp_state.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 
 #define USE_LOGIC_ACCELERATION
 

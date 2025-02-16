@@ -8,7 +8,7 @@
 
 #include "stdafx.h"
 #include "eatable_item.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "physic_item.h"
 #include "Level.h"
 #include "entity_alive.h"
@@ -73,14 +73,14 @@ void CEatableItem::Load(LPCSTR section)
 	notForQSlot_				= READ_IF_EXISTS(pSettings, r_bool, section, "not_for_quick_slot", FALSE);
 
 
-	//iEffectsAffectedStat 1 = Здоровье
-	//iEffectsAffectedStat 2 = Кровиеотечен
-	//iEffectsAffectedStat 3 = Радиация
-	//iEffectsAffectedStat 4 = Пси-здоровье
-	//iEffectsAffectedStat 5 = Еда
-	//iEffectsAffectedStat 6 = Вода
-	//iEffectsAffectedStat 7 = Энергия
-	//iEffectsAffectedStat 8 = Опьянение
+	//iEffectsAffectedStat 1 = Р—РґРѕСЂРѕРІСЊРµ
+	//iEffectsAffectedStat 2 = РљСЂРѕРІРёРµРѕС‚РµС‡РµРЅ
+	//iEffectsAffectedStat 3 = Р Р°РґРёР°С†РёСЏ
+	//iEffectsAffectedStat 4 = РџСЃРё-Р·РґРѕСЂРѕРІСЊРµ
+	//iEffectsAffectedStat 5 = Р•РґР°
+	//iEffectsAffectedStat 6 = Р’РѕРґР°
+	//iEffectsAffectedStat 7 = Р­РЅРµСЂРіРёСЏ
+	//iEffectsAffectedStat 8 = РћРїСЊСЏРЅРµРЅРёРµ
 
 	bProlongedEffect = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_prolonged_effect", FALSE);
 
@@ -185,7 +185,7 @@ bool CEatableItem::Useful() const
 {
 	if(!inherited::Useful()) return false;
 
-	//проверить не все ли еще съедено
+	//РїСЂРѕРІРµСЂРёС‚СЊ РЅРµ РІСЃРµ Р»Рё РµС‰Рµ СЃСЉРµРґРµРЅРѕ
 	if(Empty()) return false;
 
 	return true;
@@ -222,7 +222,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 	R_ASSERT(object().H_Parent()->ID() == entity_alive->ID());
 
 
-	if (bProlongedEffect) // Если параметр задан, то использовать ситстему эффектов. Если нет - Мгновенное примененеие
+	if (bProlongedEffect) // Р•СЃР»Рё РїР°СЂР°РјРµС‚СЂ Р·Р°РґР°РЅ, С‚Рѕ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЃРёС‚СЃС‚РµРјСѓ СЌС„С„РµРєС‚РѕРІ. Р•СЃР»Рё РЅРµС‚ - РњРіРЅРѕРІРµРЅРЅРѕРµ РїСЂРёРјРµРЅРµРЅРµРёРµ
 	{ 
 
 		CActor* ActorEntity = smart_cast<CActor*>(entity_alive);
@@ -234,19 +234,19 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 			{
 				Eat_Effect effector = ActorEntity->conditions().Eat_Effects[i];
 
-				if (ActorEntity->conditions().fHandsHideTime > Device.fTimeGlobal) // Проверяем не заняты ли руки другим применяемым предметом
+				if (ActorEntity->conditions().fHandsHideTime > Device.fTimeGlobal) // РџСЂРѕРІРµСЂСЏРµРј РЅРµ Р·Р°РЅСЏС‚С‹ Р»Рё СЂСѓРєРё РґСЂСѓРіРёРј РїСЂРёРјРµРЅСЏРµРјС‹Рј РїСЂРµРґРјРµС‚РѕРј
 				{	
 					hands_are_blocked = true;
 				}
-				if (iEffectorBlockingGroup != 0 && iEffectorBlockingGroup == effector.BlockingGroup) //0 - нету группы блока. Проверяем блокируется ли использование уже действующими эффектами
+				if (iEffectorBlockingGroup != 0 && iEffectorBlockingGroup == effector.BlockingGroup) //0 - РЅРµС‚Сѓ РіСЂСѓРїРїС‹ Р±Р»РѕРєР°. РџСЂРѕРІРµСЂСЏРµРј Р±Р»РѕРєРёСЂСѓРµС‚СЃСЏ Р»Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СѓР¶Рµ РґРµР№СЃС‚РІСѓСЋС‰РёРјРё СЌС„С„РµРєС‚Р°РјРё
 				{	
 					same_blockin_ggroup = true;
 				}
 			}
 
-			if (!hands_are_blocked && !same_blockin_ggroup) // Если все норм, вешаем эффекты предмета
+			if (!hands_are_blocked && !same_blockin_ggroup) // Р•СЃР»Рё РІСЃРµ РЅРѕСЂРј, РІРµС€Р°РµРј СЌС„С„РµРєС‚С‹ РїСЂРµРґРјРµС‚Р°
 			{	
-				ActorEntity->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);	//Прячем руки
+				ActorEntity->SetWeaponHideState(INV_STATE_BLOCK_ALL, true);	//РџСЂСЏС‡РµРј СЂСѓРєРё
 				ActorEntity->conditions().fHandsHideTime = fItemUseTime + Device.fTimeGlobal;
 
 				for (u16 i = 0; i < sEffectList.size(); ++i)
@@ -255,7 +255,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 					eat_effect.DurationExpiration = Device.fTimeGlobal + fEffectsDur[i] + fItemUseTime;
 					eat_effect.Rate = fEffectsRate[i];
 					eat_effect.UseTimeExpiration = Device.fTimeGlobal + fItemUseTime;
-					eat_effect.BlockingGroup = iEffectorBlockingGroup; //Так как у эффектов разное время действия, нужно давайть им всем этот параметр
+					eat_effect.BlockingGroup = iEffectorBlockingGroup; //РўР°Рє РєР°Рє Сѓ СЌС„С„РµРєС‚РѕРІ СЂР°Р·РЅРѕРµ РІСЂРµРјСЏ РґРµР№СЃС‚РІРёСЏ, РЅСѓР¶РЅРѕ РґР°РІР°Р№С‚СЊ РёРј РІСЃРµРј СЌС‚РѕС‚ РїР°СЂР°РјРµС‚СЂ
 					eat_effect.AffectedStat = iEffectsAffectedStat[i];
 					eat_effect.BoosterParam = VectorBoosterParam[i];
 
@@ -272,10 +272,10 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 					ActorEntity->conditions().Eat_Effects.push_back(eat_effect);
 				}
 
-				//(Удаление произходит в след. кадр)
+				//(РЈРґР°Р»РµРЅРёРµ РїСЂРѕРёР·С…РѕРґРёС‚ РІ СЃР»РµРґ. РєР°РґСЂ)
 				if (m_iPortionsNum != -1)
 				{
-					//уменьшить количество порций
+					//СѓРјРµРЅСЊС€РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕСЂС†РёР№
 					if (m_iPortionsNum > 0)
 						--(m_iPortionsNum);
 					else
@@ -303,7 +303,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 			return false;
 		}
 		else
-		{	// Для НПС
+		{	// Р”Р»СЏ РќРџРЎ
 			entity_alive->conditions().ChangeHealth(m_fHealthInfluence);
 			entity_alive->conditions().ChangePower(m_fPowerInfluence);
 			entity_alive->conditions().ChangeSatiety(m_fSatietyInfluence);
@@ -314,7 +314,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 			entity_alive->conditions().SetMaxPower(entity_alive->conditions().GetMaxPower() + m_fMaxPowerUpInfluence);
 			if (m_iPortionsNum != -1)
 			{
-				//уменьшить количество порций
+				//СѓРјРµРЅСЊС€РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕСЂС†РёР№
 				if (m_iPortionsNum > 0)
 					--(m_iPortionsNum);
 				else
@@ -336,7 +336,7 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 		entity_alive->conditions().ChangeAlcohol(m_falcohol);
 		if (m_iPortionsNum != -1)
 		{
-			//уменьшить количество порций
+			//СѓРјРµРЅСЊС€РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕСЂС†РёР№
 			if (m_iPortionsNum > 0)
 				--(m_iPortionsNum);
 			else

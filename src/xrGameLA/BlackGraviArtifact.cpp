@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////
 // BlackGraviArtifact.cpp
-// BlackGraviArtefact - гравитационный артефакт, 
-// такой же как и обычный, но при получении хита
+// BlackGraviArtefact - РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ Р°СЂС‚РµС„Р°РєС‚, 
+// С‚Р°РєРѕР№ Р¶Рµ РєР°Рє Рё РѕР±С‹С‡РЅС‹Р№, РЅРѕ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё С…РёС‚Р°
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -13,7 +13,7 @@
 #include "xrmessages.h"
 #include "physicsshellholder.h"
 #include "explosive.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "PHWorld.h"
 #include "CharacterPhysicsSupport.h"
 extern CPHWorld*	ph_world;
@@ -127,7 +127,7 @@ void	CBlackGraviArtefact::Hit					(SHit* pHDS)
 	if(HDS.impulse>m_fImpulseThreshold)
 	{
 		m_bStrike = true;
-		//чтоб выстрел не повлиял на траекторию полета артефакта
+		//С‡С‚РѕР± РІС‹СЃС‚СЂРµР» РЅРµ РїРѕРІР»РёСЏР» РЅР° С‚СЂР°РµРєС‚РѕСЂРёСЋ РїРѕР»РµС‚Р° Р°СЂС‚РµС„Р°РєС‚Р°
 		HDS.impulse = 0;
 	}
 	

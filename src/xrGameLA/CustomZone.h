@@ -337,7 +337,8 @@ protected:
 	virtual BOOL		AlwaysTheCrow		();
 
 protected:
-	DEFINE_VECTOR(CArtefact*, ARTEFACT_VECTOR, ARTEFACT_VECTOR_IT);
+	using ARTEFACT_VECTOR = xr_vector<CArtefact*>;
+	using ARTEFACT_VECTOR_IT = ARTEFACT_VECTOR::iterator;
 	ARTEFACT_VECTOR			m_SpawnedArtefacts;
 
 	//есть ли вообще функция выбрасывания артефактов во время срабатывания
@@ -366,7 +367,9 @@ protected:
 		float		probability;
 	};
 
-	DEFINE_VECTOR(ARTEFACT_SPAWN, ARTEFACT_SPAWN_VECTOR, ARTEFACT_SPAWN_IT);
+	using ARTEFACT_SPAWN_VECTOR = xr_vector<ARTEFACT_SPAWN>;
+	using ARTEFACT_SPAWN_IT = ARTEFACT_SPAWN_VECTOR::iterator;
+
 	ARTEFACT_SPAWN_VECTOR	m_ArtefactSpawn;
 
 	//расстояние от зоны до текущего актера

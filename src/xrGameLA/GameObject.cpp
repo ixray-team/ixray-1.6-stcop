@@ -22,7 +22,7 @@
 #include "ai_debug.h"
 #include "../xr_3da/igame_level.h"
 #include "level.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "script_callback_ex.h"
 #include "MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -797,7 +797,7 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update	(u32 dt)
 {
-	//уничтожить
+	//СѓРЅРёС‡С‚РѕР¶РёС‚СЊ
 	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
@@ -819,7 +819,7 @@ BOOL CGameObject::net_SaveRelevant	()
 	return	(CScriptBinder::net_SaveRelevant());
 }
 
-//игровое имя объекта
+//РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 LPCSTR CGameObject::Name () const
 {
 	return	(*cName());

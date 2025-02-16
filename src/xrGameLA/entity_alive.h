@@ -2,7 +2,8 @@
 
 #include "entity.h"
 
-DEFINE_VECTOR(shared_str, STR_VECTOR, STR_VECTOR_IT);
+using STR_VECTOR = xr_vector<shared_str>;
+using STR_VECTOR_IT = STR_VECTOR::iterator;
 
 class MONSTER_COMMUNITY;
 class CEntityCondition;
@@ -90,7 +91,9 @@ public:
 	virtual SCollisionHitCallback			*get_collision_hit_callback	()						;
 	virtual bool							set_collision_hit_callback	(SCollisionHitCallback *cc);
 protected:
-	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
+	using WOUND_VECTOR = xr_vector<CWound*>;
+	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
+
 	WOUND_VECTOR				m_ParticleWounds;
 
 
@@ -117,31 +120,32 @@ protected:
 														float trace_dist, float wallmark_size,
 														IWallMarkArray *pwallmarks_vector);
 
-	//информация о кровавых отметках на стенах, общая для всех CEntityAlive
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєСЂРѕРІР°РІС‹С… РѕС‚РјРµС‚РєР°С… РЅР° СЃС‚РµРЅР°С…, РѕР±С‰Р°СЏ РґР»СЏ РІСЃРµС… CEntityAlive
 	static FactoryPtr<IWallMarkArray>	*m_pBloodMarksVector;
 	static float				m_fBloodMarkSizeMax;
 	static float				m_fBloodMarkSizeMin;
 	static float				m_fBloodMarkDistance;
 	static float				m_fNominalHit;
 
-	//текстурки капель крови
+	//С‚РµРєСЃС‚СѓСЂРєРё РєР°РїРµР»СЊ РєСЂРѕРІРё
 	static FactoryPtr<IWallMarkArray>		*m_pBloodDropsVector;
-	//список ран с которых капает кровь
+	//СЃРїРёСЃРѕРє СЂР°РЅ СЃ РєРѕС‚РѕСЂС‹С… РєР°РїР°РµС‚ РєСЂРѕРІСЊ
 	
-	DEFINE_VECTOR				(CWound*, WOUND_VECTOR, WOUND_VECTOR_IT);
+	using WOUND_VECTOR = xr_vector<CWound*>;
+	using WOUND_VECTOR_IT = WOUND_VECTOR::iterator;
 	WOUND_VECTOR				m_BloodWounds;
-	//размер раны, чтоб начала капать кровь
+	//СЂР°Р·РјРµСЂ СЂР°РЅС‹, С‡С‚РѕР± РЅР°С‡Р°Р»Р° РєР°РїР°С‚СЊ РєСЂРѕРІСЊ
 	static float				m_fStartBloodWoundSize;
-	//размер раны, чтоб остановить кровь
+	//СЂР°Р·РјРµСЂ СЂР°РЅС‹, С‡С‚РѕР± РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РєСЂРѕРІСЊ
 	static float				m_fStopBloodWoundSize;
 	static float				m_fBloodDropSize;
 
-	//обновление ран, и рисование отметок от капающей крови
+	//РѕР±РЅРѕРІР»РµРЅРёРµ СЂР°РЅ, Рё СЂРёСЃРѕРІР°РЅРёРµ РѕС‚РјРµС‚РѕРє РѕС‚ РєР°РїР°СЋС‰РµР№ РєСЂРѕРІРё
 	virtual void				StartBloodDrops			(CWound* pWound);
 	virtual void				UpdateBloodDrops		();
 
 
-	//отношения между существами и персонажами в зоне
+	//РѕС‚РЅРѕС€РµРЅРёСЏ РјРµР¶РґСѓ СЃСѓС‰РµСЃС‚РІР°РјРё Рё РїРµСЂСЃРѕРЅР°Р¶Р°РјРё РІ Р·РѕРЅРµ
 public:
 	virtual	ALife::ERelationType tfGetRelationType	(const CEntityAlive *tpEntityAlive) const;
 	virtual	bool				 is_relation_enemy	(const CEntityAlive *tpEntityAlive) const;	
@@ -172,10 +176,10 @@ public:
 	virtual u32					ef_detector_type			() const;
 
 public:
-	virtual	void				OnHitHealthLoss				(float NewHealth) {};	//вызывается если entity теряет здоровье
-	virtual	void				OnCriticalHitHealthLoss		() {};	//вызывается если entity умрет от хита 
-	virtual	void				OnCriticalWoundHealthLoss	() {};	//вызывается если entity умрет от потери крови 
-	virtual void				OnCriticalRadiationHealthLoss() {};	//вызывается если entity умрет от радиации 
+	virtual	void				OnHitHealthLoss				(float NewHealth) {};	//РІС‹Р·С‹РІР°РµС‚СЃСЏ РµСЃР»Рё entity С‚РµСЂСЏРµС‚ Р·РґРѕСЂРѕРІСЊРµ
+	virtual	void				OnCriticalHitHealthLoss		() {};	//РІС‹Р·С‹РІР°РµС‚СЃСЏ РµСЃР»Рё entity СѓРјСЂРµС‚ РѕС‚ С…РёС‚Р° 
+	virtual	void				OnCriticalWoundHealthLoss	() {};	//РІС‹Р·С‹РІР°РµС‚СЃСЏ РµСЃР»Рё entity СѓРјСЂРµС‚ РѕС‚ РїРѕС‚РµСЂРё РєСЂРѕРІРё 
+	virtual void				OnCriticalRadiationHealthLoss() {};	//РІС‹Р·С‹РІР°РµС‚СЃСЏ РµСЃР»Рё entity СѓРјСЂРµС‚ РѕС‚ СЂР°РґРёР°С†РёРё 
 
 	virtual	CVisualMemoryManager*visual_memory				() const {return(0);}
 	virtual	void				net_Relcase					(CObject *O);

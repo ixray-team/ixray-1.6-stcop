@@ -7,7 +7,9 @@
 class CTimersManager : public IPureSerializeObject<IReader, IWriter>
 {
 	private:
-		DEFINE_VECTOR(CTimerCustom*, TIMERS_STORAGE, TIMERS_IT);
+		using TIMERS_STORAGE = xr_vector<CTimerCustom*>;
+		using TIMERS_IT = TIMERS_STORAGE::iterator;
+
 	public:
 						CTimersManager			();
 		virtual			~CTimersManager			();

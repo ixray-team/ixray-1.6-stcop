@@ -7,7 +7,10 @@ struct SGameMtl;
 class CPHCollisionDamageReceiver
 {
 typedef std::pair<u16,float> SControledBone;
-DEFINE_VECTOR(SControledBone,DAMAGE_CONTROLED_BONES_V,DAMAGE_BONES_I);
+
+using DAMAGE_CONTROLED_BONES_V = xr_vector<SControledBone>;
+using DAMAGE_BONES_I = DAMAGE_CONTROLED_BONES_V::iterator;
+
 struct SFind{u16 id;SFind(u16 _id){id=_id;};bool operator () (const SControledBone& cb){return cb.first==id;}};
 DAMAGE_CONTROLED_BONES_V m_controled_bones;
 float m_hit_threshold = 5.f;

@@ -28,7 +28,9 @@ class CControlManagerCustom : public CControl_ComBase {
 	CControlMeleeJump		*m_melee_jump;
 	CControlCriticalWound	*m_critical_wound;
 
-	DEFINE_VECTOR			(SControlRotationJumpData, ROT_JUMP_DATA_VEC, ROT_JUMP_DATA_VEC_IT);
+	using ROT_JUMP_DATA_VEC = xr_vector<SControlRotationJumpData>;
+	using ROT_JUMP_DATA_VEC_IT = ROT_JUMP_DATA_VEC::iterator;
+
 	ROT_JUMP_DATA_VEC		m_rot_jump_data;
 	
 	SControlMeleeJumpData	m_melee_jump_data;
@@ -53,7 +55,7 @@ public:
 	// Sequencer
 	void		seq_init				();
 	void		seq_add					(MotionID motion);
-	void		seq_switch				();					// Перейти в следующее состояние, если такового не имеется - завершить
+	void		seq_switch				();					// РџРµСЂРµР№С‚Рё РІ СЃР»РµРґСѓСЋС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, РµСЃР»Рё С‚Р°РєРѕРІРѕРіРѕ РЅРµ РёРјРµРµС‚СЃСЏ - Р·Р°РІРµСЂС€РёС‚СЊ
 	void		seq_run					(MotionID motion);
 
 	//-------------------------------------------------------------------------------

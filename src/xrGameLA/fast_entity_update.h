@@ -31,7 +31,8 @@ class CFastEntityUpdater
 				bool						operator()							(SEntityCall* call);	
 		};
 
-		DEFINE_VECTOR(SEntityCall*, ENTITIES_CALLS, ENTITIES_CALLS_IT);
+		using ENTITIES_CALLS = xr_vector<SEntityCall*>;
+		using ENTITIES_CALLS_IT = ENTITIES_CALLS::iterator;
 
 	private:
 		ENTITIES_CALLS						m_calls;

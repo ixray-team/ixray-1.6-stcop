@@ -12,7 +12,7 @@
 #include "../feel_sound.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "ai/stalker/ai_stalker.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "../../Include/xrRender/animation_blend.h"
 #include "../../Include/xrRender/KinematicsAnimated.h"
 

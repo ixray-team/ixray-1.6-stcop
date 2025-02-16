@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ParticlesPlayer.h
-// интерфейс для проигрывания партиклов на объекте
+// РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ РЅР° РѕР±СЉРµРєС‚Рµ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -9,7 +9,8 @@
 #include "../bone.h"
 
 
-DEFINE_VECTOR(CParticlesObject*, PARTICLES_PTR_VECTOR, PARTICLES_PTR_VECTOR_IT);
+using PARTICLES_PTR_VECTOR = xr_vector<CParticlesObject*>;
+using PARTICLES_PTR_VECTOR_IT = PARTICLES_PTR_VECTOR::iterator;
 
 class CObject;
 class IKinematics;
@@ -18,22 +19,23 @@ class CParticlesPlayer
 {
 
 public:
-	//структура с внутренней информацией о партикле
+	//СЃС‚СЂСѓРєС‚СѓСЂР° СЃ РІРЅСѓС‚СЂРµРЅРЅРµР№ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РїР°СЂС‚РёРєР»Рµ
 	struct SParticlesInfo
 	{
 		CParticlesObject*	ps;
 		//Fvector				dir;
 		//Fmatrix				x_form;
 		Fvector				angles;
-		u16					sender_id;	//id - объекта, который запустил партиклы
-		u32					life_time;	//время жизни партикла (-1) - бесконечно
+		u16					sender_id;	//id - РѕР±СЉРµРєС‚Р°, РєРѕС‚РѕСЂС‹Р№ Р·Р°РїСѓСЃС‚РёР» РїР°СЂС‚РёРєР»С‹
+		u32					life_time;	//РІСЂРµРјСЏ Р¶РёР·РЅРё РїР°СЂС‚РёРєР»Р° (-1) - Р±РµСЃРєРѕРЅРµС‡РЅРѕ
 		
-		//int					cur_time;	//текущее время существования партикла
-		//bool				auto_stop;	//автоматическая остановка партиклов, когда закончится время
+		//int					cur_time;	//С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РїР°СЂС‚РёРєР»Р°
+		//bool				auto_stop;	//Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РѕСЃС‚Р°РЅРѕРІРєР° РїР°СЂС‚РёРєР»РѕРІ, РєРѕРіРґР° Р·Р°РєРѕРЅС‡РёС‚СЃСЏ РІСЂРµРјСЏ
 	};
-	DEFINE_VECTOR			(SParticlesInfo,ParticlesInfoList,ParticlesInfoListIt);
+	using ParticlesInfoList = xr_vector<SParticlesInfo>;
+	using ParticlesInfoListIt = ParticlesInfoList::iterator;
 
-	//структура для косточки с списком запущенных партиклов
+	//СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РєРѕСЃС‚РѕС‡РєРё СЃ СЃРїРёСЃРєРѕРј Р·Р°РїСѓС‰РµРЅРЅС‹С… РїР°СЂС‚РёРєР»РѕРІ
 	struct SBoneInfo
 	{
 		u16					index;
@@ -46,16 +48,17 @@ public:
 		void				StopParticles			(const shared_str& ps_name, bool bDestroy);
 		void				StopParticles			(u16 sender_id, bool bDestroy);
 	};
-	DEFINE_VECTOR			(SBoneInfo,BoneInfoVec,BoneInfoVecIt);
+	using BoneInfoVec = xr_vector<SBoneInfo>;
+	using BoneInfoVecIt = BoneInfoVec::iterator;
 
 private:
-	// список костей
-	u64						bone_mask; // используемые кости
+	// СЃРїРёСЃРѕРє РєРѕСЃС‚РµР№
+	u64						bone_mask; // РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РєРѕСЃС‚Рё
 	BoneInfoVec				m_Bones;	
 	CObject					*m_self_object;
 
 protected :
-	bool					m_bActiveBones;	//есть ли косточки на которых играются партиклы
+	bool					m_bActiveBones;	//РµСЃС‚СЊ Р»Рё РєРѕСЃС‚РѕС‡РєРё РЅР° РєРѕС‚РѕСЂС‹С… РёРіСЂР°СЋС‚СЃСЏ РїР°СЂС‚РёРєР»С‹
 
 public:
 	IC SBoneInfo*			get_bone_info			(u16 bone_index)

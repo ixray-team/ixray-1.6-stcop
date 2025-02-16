@@ -9,15 +9,102 @@
 #include "stdafx.h"
 #include "level_graph.h"
 #include "profiler.h"
+#pragma pack(push,1)
+struct SOCNodeCompressed {
+public:
+	u8				data[12];
+private:
+
+	ICF	void link(u8 link_index, u32 value)
+	{
+		value &= 0x007fffff;
+		switch (link_index) {
+		case 0: {
+			value |= (*(u32*)data) & 0xff800000;
+			CopyMemory(data, &value, sizeof(u32));
+			break;
+		}
+		case 1: {
+			value <<= 7;
+			value |= (*(u32*)(data + 2)) & 0xc000007f;
+			CopyMemory(data + 2, &value, sizeof(u32));
+			break;
+		}
+		case 2: {
+			value <<= 6;
+			value |= (*(u32*)(data + 5)) & 0xe000003f;
+			CopyMemory(data + 5, &value, sizeof(u32));
+			break;
+		}
+		case 3: {
+			value <<= 5;
+			value |= (*(u32*)(data + 8)) & 0xf000001f;
+			CopyMemory(data + 8, &value, sizeof(u32));
+			break;
+		}
+		}
+	}
+
+	ICF	void light(u8 value)
+	{
+		data[11] &= 0x0f;
+		data[11] |= value << 4;
+	}
+
+public:
+	u16				cover0 : 4;
+	u16				cover1 : 4;
+	u16				cover2 : 4;
+	u16				cover3 : 4;
+	u16				plane;
+	NodePosition	p;
+	// 4 + 4 + 4 + 4 + 16 + 40 + 96 = 168 bits = 21 byte
+
+	ICF	u32	link(u8 index) const
+	{
+		switch (index) {
+		case 0:	return	((*(u32*)data) & 0x007fffff);
+		case 1:	return	(((*(u32*)(data + 2)) >> 7) & 0x007fffff);
+		case 2:	return	(((*(u32*)(data + 5)) >> 6) & 0x007fffff);
+		case 3:	return	(((*(u32*)(data + 8)) >> 5) & 0x007fffff);
+		default:	NODEFAULT;
+		}
+#ifdef DEBUG
+		return			(0);
+#endif
+	}
+
+	ICF	u8	light() const
+	{
+		return			(data[11] >> 4);
+	}
+
+	ICF	u16	cover(u8 index) const
+	{
+		switch (index) {
+		case 0: return(cover0);
+		case 1: return(cover1);
+		case 2: return(cover2);
+		case 3: return(cover3);
+		default: NODEFAULT;
+		}
+#ifdef DEBUG
+		return				(u8(-1));
+#endif
+	}
+
+	friend class	CLevelGraph;
+	friend struct	CNodeCompressed;
+	friend class	CNodeRenumberer;
+	friend class	CRenumbererConverter;
+};
+#pragma pack(pop)
 
 LPCSTR LEVEL_GRAPH_NAME = "level.ai";
 
-#ifdef AI_COMPILER
-CLevelGraph::CLevelGraph		(LPCSTR filename)
-#else
-CLevelGraph::CLevelGraph		()
-#endif
+CLevelGraph::CLevelGraph()
 {
+		VERIFY(Device->IsEditorMode() == false);
 #ifndef AI_COMPILER
 #ifdef DEBUG
 	sh_debug->create				("debug\\ai_nodes","$null");
@@ -32,9 +119,27 @@ CLevelGraph::CLevelGraph		()
 
 	// m_header & data
 	m_header					= (CHeader*)m_reader->pointer();
-	R_ASSERT					(header().version() == XRAI_CURRENT_VERSION);
+	R_ASSERT					(header().version() == XRAI_SOC_CURRENT_VERSION);
 	m_reader->advance			(sizeof(CHeader));
-	m_nodes						= (CVertex*)m_reader->pointer();
+	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
+	{
+		NodeCompressed* Dst = (NodeCompressed*)m_nodes;
+		SOCNodeCompressed* Src = (SOCNodeCompressed*)m_reader->pointer();
+		for (size_t i =0;i< m_header->vertex_count(); i++)
+		{
+			NodeCompressed Temp;
+			memcpy(Temp.data ,Src[i].data,12);
+			Temp.high.cover0 = Src[i].cover0;
+			Temp.high.cover1 = Src[i].cover1;
+			Temp.high.cover2 = Src[i].cover2;
+			Temp.high.cover3 = Src[i].cover3;
+			Temp.low = Temp.high;
+			Temp.p = Src[i].p;
+			Temp.plane = Src[i].plane;
+			Dst[i] = Temp;
+		}
+	}
+
 	m_row_length				= iFloor((header().box().max.z - header().box().min.z)/header().cell_size() + EPS_L + 1.5f);
 	m_column_length				= iFloor((header().box().max.x - header().box().min.x)/header().cell_size() + EPS_L + 1.5f);
 	m_access_mask.assign		(header().vertex_count(),true);
@@ -50,179 +155,9 @@ CLevelGraph::CLevelGraph		()
 #endif
 }
 
-CLevelGraph::~CLevelGraph		()
+CLevelGraph::~CLevelGraph()
 {
-	FS.r_close					(m_reader);
-}
-
-u32	CLevelGraph::vertex		(const Fvector &position) const
-{
-	CLevelGraph::CPosition	_node_position;
-	vertex_position			(_node_position,position);
-	float					min_dist = flt_max;
-	u32						selected;
-	set_invalid_vertex		(selected);
-	for (u32 i=0; i<header().vertex_count(); ++i) {
-		float				dist = distance(i,position);
-		if (dist < min_dist) {
-			min_dist		= dist;
-			selected		= i;
-		}
-	}
-
-	VERIFY					(valid_vertex_id(selected));
-	return					(selected);
-}
-
-u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
-{
-	START_PROFILE("Level_Graph::find vertex")
-#ifndef AI_COMPILER
-	Device.Statistic->AI_Node.Begin	();
-#endif
-
-	u32						id;
-
-	if (valid_vertex_position(position)) {
-		// so, our position is inside the level graph bounding box
-		if (valid_vertex_id(current_node_id) && inside(vertex(current_node_id),position)) {
-			// so, our node corresponds to the position
-#ifndef AI_COMPILER
-			Device.Statistic->AI_Node.End();
-#endif
-			return				(current_node_id);
-		}
-
-		// so, our node doesn't correspond to the position
-		// try to search it with O(logN) time algorithm
-		u32						_vertex_id = vertex_id(position);
-		if (valid_vertex_id(_vertex_id)) {
-			// so, there is a node which corresponds with x and z to the position
-			bool				ok = true;
-			if (valid_vertex_id(current_node_id)) {
-				float				y0 = vertex_plane_y(current_node_id,position.x,position.z);
-				float				y1 = vertex_plane_y(_vertex_id,position.x,position.z);
-				bool				over0 = position.y > y0;
-				bool				over1 = position.y > y1;
-				float				y_dist0 = position.y - y0;
-				float				y_dist1 = position.y - y1;
-				if (over0) {
-					if (over1) {
-						if (y_dist1 - y_dist0 > 1.f)
-							ok		= false;
-						else
-							ok		= true;
-					}
-					else {
-						ok			= false;
-					}
-				}
-				else {
-					if (over1) {
-						ok			= true;
-					}
-					else {
-						ok			= false;
-					}
-				}
-			}
-			if (ok) {
-#ifndef AI_COMPILER
-				Device.Statistic->AI_Node.End();
-#endif
-				return			(_vertex_id);
-			}
-		}
-	}
-
-	if (!valid_vertex_id(current_node_id)) {
-		// so, we do not have a correct current node
-		// performing very slow full search
-		id					= vertex(position);
-		VERIFY				(valid_vertex_id(id));
-#ifndef AI_COMPILER
-		Device.Statistic->AI_Node.End();
-#endif
-		return				(id);
-	}
-
-	// so, our position is outside the level graph bounding box
-	// or
-	// there is no node for the current position
-	// try to search the nearest one iteratively
-	SContour			_contour;
-	Fvector				point;
-	u32					best_vertex_id = current_node_id;
-	contour				(_contour,current_node_id);
-	nearest				(point,position,_contour);
-	float				best_distance_sqr = position.distance_to_sqr(point);
-	const_iterator		i,e;
-	begin				(current_node_id,i,e);
-	for ( ; i != e; ++i) {
-		u32				level_vertex_id = value(current_node_id,i);
-		if (!valid_vertex_id(level_vertex_id))
-			continue;
-
-		contour			(_contour,level_vertex_id);
-		nearest			(point,position,_contour);
-		float			distance_sqr = position.distance_to_sqr(point);
-		if (best_distance_sqr > distance_sqr) {
-			best_distance_sqr	= distance_sqr;
-			best_vertex_id		= level_vertex_id;
-		}
-	}
-
-#ifndef AI_COMPILER
-	Device.Statistic->AI_Node.End();
-#endif
-	return					(best_vertex_id);
-
-	STOP_PROFILE
-}
-
-u32	CLevelGraph::vertex_id				(const Fvector &position) const
-{
-	CPosition			_vertex_position = vertex_position(position);
-	CVertex				*B = m_nodes;
-	CVertex				*E = m_nodes + header().vertex_count();
-	CVertex				*I = std::lower_bound	(B,E,_vertex_position.xz());
-	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
-		return			(u32(-1));
-
-	u32					best_vertex_id = u32(I - B);
-	float				y = vertex_plane_y(best_vertex_id,position.x,position.z);
-	for (++I; I != E; ++I) {
-		if ((*I).position().xz() != _vertex_position.xz())
-			break;
-
-		u32				new_vertex_id = u32(I - B);
-		float			_y = vertex_plane_y(new_vertex_id,position.x,position.z);
-		if (y <= position.y) {
-			// so, current node is under the specified position
-			if (_y <= position.y) {
-				// so, new node is under the specified position
-				if (position.y - _y < position.y - y) {
-					// so, new node is closer to the specified position
-					y				= _y;
-					best_vertex_id	= new_vertex_id;
-				}
-			}
-		}
-		else
-			// so, current node is over the specified position
-			if (_y <= position.y) {
-				// so, new node is under the specified position
-				y				= _y;
-				best_vertex_id	= new_vertex_id;
-			}
-			else
-				// so, new node is over the specified position
-				if (_y - position.y  < y - position.y) {
-					// so, new node is closer to the specified position
-					y				= _y;
-					best_vertex_id	= new_vertex_id;
-				}
-	}
-
-	return			(best_vertex_id);
+		VERIFY(Device->IsEditorMode() == false);
+	FS.r_close(m_reader);
+	xr_free(m_nodes);
 }

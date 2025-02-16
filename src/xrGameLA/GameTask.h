@@ -119,7 +119,8 @@ public:
 	void					ShowSubtask			(bool show);
 };
 
-DEFINE_VECTOR(SGameTaskObjective, OBJECTIVE_VECTOR, OBJECTIVE_VECTOR_IT);
+using OBJECTIVE_VECTOR = xr_vector<SGameTaskObjective>;
+using OBJECTIVE_VECTOR_IT = OBJECTIVE_VECTOR::iterator;
 
 class CGameTask
 {

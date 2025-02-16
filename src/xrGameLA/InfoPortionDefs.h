@@ -12,8 +12,9 @@ struct INFO_DATA : public IPureSerializeObject<IReader,IWriter>
 	virtual void		save			(IWriter&);
 
 	shared_str			info_id;
-	//время получения нужно порции информации
+	//РІСЂРµРјСЏ РїРѕР»СѓС‡РµРЅРёСЏ РЅСѓР¶РЅРѕ РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё
 	ALife::_TIME_ID		receive_time;
 };
 
-DEFINE_VECTOR		(INFO_DATA, KNOWN_INFO_VECTOR, KNOWN_INFO_VECTOR_IT);
+using KNOWN_INFO_VECTOR = xr_vector<INFO_DATA>;
+using KNOWN_INFO_VECTOR_IT = KNOWN_INFO_VECTOR::iterator;

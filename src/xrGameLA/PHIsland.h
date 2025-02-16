@@ -3,8 +3,8 @@
 
 #pragma warning(disable:4995)
 #pragma warning(disable:4267)
-#include "../../xrODE/ode/src/objects.h"
-#include "../../xrODE/ode/src/joint.h"
+#include "../3rd party/ode/ode/src/objects.h"
+#include "../3rd party/ode/ode/src/joint.h"
 #pragma warning(default:4995)
 #pragma warning(default:4267)
 #include "PhysicsCommon.h"

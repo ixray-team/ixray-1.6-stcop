@@ -7,7 +7,7 @@
 #include "PhysicsShell.h"
 #include "../GameMtlLib.h"
 #include "Physics.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "xrMessages.h"
 #include "CharacterPhysicsSupport.h"
 

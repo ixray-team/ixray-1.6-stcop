@@ -4,7 +4,7 @@
 #include "object_interfaces.h"
 #include "script_export_space.h"
 #include "alife_space.h"
-//#include "..\xrNETServer\NET_utils.h"
+//#include "..\xrCore\net_utils.h"
 //#include "xr_time.h"
 /*
 enum TypeOfData 

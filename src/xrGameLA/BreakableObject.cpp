@@ -7,7 +7,7 @@
 #include "PhysicsShell.h"
 #include "Physics.h"
 #include "../xr_collide_form.h"
-#include "../../xrNetServer/net_utils.h"
+#include "../../xrCore/net_utils.h"
 #include "clsid_game.h"
 #include "../../Include/xrRender/Kinematics.h"
 

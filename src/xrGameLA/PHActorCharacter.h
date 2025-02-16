@@ -68,7 +68,9 @@ static	void RestrictorCallBack	(bool& do_colide,bool bo1,dContact& c,SGameMtl* m
 			}
 		}
 	};
-DEFINE_VECTOR(SPHCharacterRestrictor*,RESRICTORS_V,RESTRICTOR_I);
+using RESRICTORS_V = xr_vector<SPHCharacterRestrictor*>;
+using RESTRICTOR_I = RESRICTORS_V::iterator;
+
 //typedef SPHCharacterRestrictor*		RESRICTORS_V[2];
 //typedef SPHCharacterRestrictor**	RESTRICTOR_I;
 IC RESTRICTOR_I begin(RESRICTORS_V& v)
