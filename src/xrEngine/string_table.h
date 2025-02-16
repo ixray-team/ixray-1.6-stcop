@@ -29,6 +29,7 @@ public:
 	static	void				ReparseKeyBindings		();
 	static	xr_string			LangName				();
 	void						ReloadLanguage			();
+	STRING_VALUE				ReturnLanguage() { return (translate(pData->m_sLanguage)); }
 private:
 			void				Init					();
 			void				Load					(LPCSTR xml_file);

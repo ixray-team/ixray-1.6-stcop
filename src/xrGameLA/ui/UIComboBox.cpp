@@ -156,11 +156,11 @@ void CUIComboBox::SetCurrentOptValue()
 
 	xr_string cur_val;
 	if (IsLanguangeItem())
-		cur_val = CStringTable().LangName();
+		cur_val = *CStringTable().ReturnLanguage();
 	else if (*CStringTable().translate(GetOptTokenValue()))
 		cur_val = *CStringTable().translate(GetOptTokenValue());
 	else
-		cur_val = "rus";
+		cur_val = CStringTable().LangName();
 
 	m_text.SetText		( cur_val.c_str() );
 	m_list_box.SetSelectedText( cur_val.c_str() );
