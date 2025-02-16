@@ -1078,8 +1078,8 @@ struct CCC_ChangeLanguage : public IConsole_Command {
 
 		g_language = args;
 
-//		if (g_pGamePersistent && !MainMenu()->IsActive())
-//			CStringTable().ReloadLanguage();
+		if (g_pGamePersistent && !MainMenu()->IsActive())
+			CStringTable().ReloadLanguage();
 	}
 
 	virtual void	Save				(IWriter *F)

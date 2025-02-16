@@ -49,7 +49,7 @@ LPCSTR translate_string(LPCSTR str)
 
 void reload_language()
 {
-//	CStringTable().ReloadLanguage();
+	CStringTable().ReloadLanguage();
 }
 
 bool has_active_tutotial()

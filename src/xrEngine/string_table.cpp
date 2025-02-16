@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "string_table.h"
 #include "xr_level_controller.h"
+#include "IGame_Persistent.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
@@ -190,4 +191,32 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 		return  pData->m_StringTable[str_id];
 	else
 		return str_id;
+}
+
+void CStringTable::ReloadLanguage()
+{
+	if (!xr_strcmp(g_language.c_str(), *(pData->m_sLanguage)))
+	{
+		return;
+	}
+
+	IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : nullptr;
+
+	if (!pMainMenu)
+	{
+		return;
+	}
+
+	if (pMainMenu->IsActive())
+	{
+		pMainMenu->Activate(FALSE);
+
+		//destroy
+		xr_delete(pData);
+
+		//init
+		Init();
+
+		pMainMenu->Activate(TRUE);
+	}
 }
