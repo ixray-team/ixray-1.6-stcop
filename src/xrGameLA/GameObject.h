@@ -229,7 +229,7 @@ public:
 			CScriptGameObject	*lua_game_object() const;
 			int				clsid			() const
 	{
-		THROW				(m_script_clsid >= 0);
+				VERIFY(m_script_clsid >= 0);
 		return				(m_script_clsid);
 	}
 public:

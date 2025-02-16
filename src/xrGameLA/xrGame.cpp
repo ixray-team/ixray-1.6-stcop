@@ -10,6 +10,8 @@
 #include "object_factory.h"
 #include "ui/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
+#include <luabind_memory.h>
+
 extern void CCC_RegisterCommands();
 static LPVOID __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,
