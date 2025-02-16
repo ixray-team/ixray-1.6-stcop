@@ -17,7 +17,7 @@ TEMPLATE_SPECIALIZATION
 
 CStateZombieChokeAbstract::CStateZombieChoke(_Object *obj) : inherited(obj)
 {
-	add_state	(eStateChoke_Execute, new CStateZombieChokeExecute<_Object>(obj));
+	this->add_state	(eStateChoke_Execute, new CStateZombieChokeExecute<_Object>(obj));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -33,14 +33,14 @@ void CStateZombieChokeAbstract::initialize()
 {
 	inherited::initialize						();
 
-	m_enemy	= object->EnemyMan.get_enemy		();
+	m_enemy	= this->object->EnemyMan.get_enemy		();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeAbstract::reselect_state()
 {
-	if (get_state(eStateChoke_Execute)->check_start_conditions())
-		select_state(eStateChoke_Execute);
+	if (this->get_state(eStateChoke_Execute)->check_start_conditions())
+		this->select_state(eStateChoke_Execute);
 	
 	//ctd. here !!!!
 }
@@ -49,10 +49,10 @@ TEMPLATE_SPECIALIZATION
 void CStateZombieChokeAbstract::check_force_state()
 {
 	// check if we can start execute
-	if (prev_substate == eStateChoke_Execute)
+	if (this->prev_substate == eStateChoke_Execute)
 	{
-		if (get_state(eStateChoke_Execute)->check_start_conditions())
-			current_substate = u32(-1);
+		if (this->get_state(eStateChoke_Execute)->check_start_conditions())
+			this->current_substate = u32(-1);
 	}
 }
 
@@ -75,12 +75,12 @@ void CStateZombieChokeAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateZombieChokeAbstract::check_start_conditions()
 {
-	if (!object->WantChoke()) return false;
+	if (!this->object->WantChoke()) return false;
 
-	const CEntityAlive *m_enemy = object->EnemyMan.get_enemy();
-	if (!object->EnemyMan.see_enemy_now())								return false;
+	const CEntityAlive *m_enemy = this->object->EnemyMan.get_enemy();
+	if (!this->object->EnemyMan.see_enemy_now())								return false;
 
-	if (!get_state(eStateChoke_Execute)->check_start_conditions())					return false;
+	if (!this->get_state(eStateChoke_Execute)->check_start_conditions())					return false;
 
 	return true;
   }
@@ -88,14 +88,14 @@ bool CStateZombieChokeAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateZombieChokeAbstract::check_completion()
 {
-	// åñëè âðàã èçìåíèëñÿ
-	if (m_enemy != object->EnemyMan.get_enemy())		return true;
+	// ÐµÑÐ»Ð¸ Ð²Ñ€Ð°Ð³ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð»ÑÑ
+	if (m_enemy != this->object->EnemyMan.get_enemy())		return true;
 	
-	// åñëè àêòåðà óæå äóøèò âòîðîé çîìáè
-	if ((current_substate != eStateChoke_Execute) && 
-		object->CControlledActor::is_controlling())	return true;
+	// ÐµÑÐ»Ð¸ Ð°ÐºÑ‚ÐµÑ€Ð° ÑƒÐ¶Ðµ Ð´ÑƒÑˆÐ¸Ñ‚ Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð·Ð¾Ð¼Ð±Ð¸
+	if ((this->current_substate != eStateChoke_Execute) &&
+		this->object->CControlledActor::is_controlling())	return true;
 
-	if (current_substate == eStateChoke_Execute && get_state(eStateChoke_Execute)->check_completion())	return true;
+	if (this->current_substate == eStateChoke_Execute && this->get_state(eStateChoke_Execute)->check_completion())	return true;
 
 	return false;
 }

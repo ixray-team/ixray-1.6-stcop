@@ -17,8 +17,24 @@ static float min_deficit_factor = .3f;
 
 void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner &owner)
 {
-	CInifile::Sect			&S = ini_file.r_section(section);
-	process(S.Data, owner);
+	const CGameObject& game_object = smart_cast<const CGameObject&>(owner);
+	owner.sell_useless_items();
+	m_deficits.clear();
+
+	for (auto I = cnt.begin(); I != cnt.end(); ++I) {
+		int					count = _GetItemCount(*(*I).second);
+		THROW3(count <= 2, "Invalid parameters for item", *(*I).first);
+		if (count > 0)
+		{
+			string256			temp0, temp1;
+			process(
+				game_object,
+				(*I).first,
+				atoi(_GetItem(*(*I).second, 0, temp0)),
+				(float)atof(_GetItem(*(*I).second, 1, temp1))
+			);
+		}
+	}
 }
 
 void CPurchaseList::process	(const CGameObject &owner, const shared_str &name, const u32 &count, const float &probability)

@@ -1,6 +1,6 @@
-// WeaponHUD.cpp:	HUD для оружия и прочих предметов, которые
-//					могут держать в руках персонажи, также используется
-//					для синхронизации анимаций с видом от 3-го лица
+// WeaponHUD.cpp:	HUD РґР»СЏ РѕСЂСѓР¶РёСЏ Рё РїСЂРѕС‡РёС… РїСЂРµРґРјРµС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+//					РјРѕРіСѓС‚ РґРµСЂР¶Р°С‚СЊ РІ СЂСѓРєР°С… РїРµСЂСЃРѕРЅР°Р¶Рё, С‚Р°РєР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+//					РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё Р°РЅРёРјР°С†РёР№ СЃ РІРёРґРѕРј РѕС‚ 3-РіРѕ Р»РёС†Р°
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "WeaponHUD.h"
@@ -139,7 +139,7 @@ void CWeaponHUD::UpdatePosition(const Fmatrix& trans)
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	CActor* pActor = smart_cast<CActor*>(m_pParentWeapon->object().H_Parent());
 	if (m_bCollideHud && pActor) 
-		m_collision->Update(offset, RQ.range, pActor->IsZoomAimingMode());
+		m_collision->UpdateCollision(offset, RQ.range);
 
 	m_Transform.mul				(xform,offset);
 	VERIFY						(!fis_zero(DET(m_Transform)));

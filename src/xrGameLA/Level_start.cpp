@@ -11,17 +11,18 @@
 #include "MainMenu.h"
 #include "UIGameCustom.h"
 
-/*
+
 shared_str CLevel::OpenDemoFile(LPCSTR demo_file_name)
 {
-	PrepareToPlayDemo(demo_file_name);
-	return m_demo_server_options;
+//	PrepareToPlayDemo(demo_file_name);
+//	return m_demo_server_options;
+	return "";
 }
 void CLevel::net_StartPlayDemo()
 {
-	net_Start(m_demo_server_options.c_str(), "localhost");
+//	net_Start(m_demo_server_options.c_str(), "localhost");
 }
-*/
+
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {

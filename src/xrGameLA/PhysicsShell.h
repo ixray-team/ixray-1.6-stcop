@@ -6,6 +6,7 @@
 #include "PhysicsCommon.h"
 #include "alife_space.h"
 #include "script_export_space.h"
+#include "../xrEngine/VisMask.h"
 
 class CPhysicsJoint;
 class CPhysicsElement;
@@ -323,7 +324,7 @@ virtual				void						GetGlobalTransformDynamic					(Fmatrix* m) 																
 	virtual			void						RunSimulation								(bool place_current_forms=true)																= 0;
 	virtual			void						UpdateRoot									()																							= 0;
 	virtual			void            		    ZeroCallbacks								()																							= 0;
-	virtual			void						ResetCallbacks								(u16 id,Flags64 &mask)																		= 0;
+	virtual			void						ResetCallbacks								(u16 id,VisMask &mask)																		= 0;
 	virtual			void						SetCallbacks								(BoneCallbackFun* callback)																	= 0;
 	virtual			void						EnabledCallbacks							(BOOL val)																					= 0;
 	virtual			void						ToAnimBonesPositions						()																							= 0;

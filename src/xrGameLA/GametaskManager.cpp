@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "GameTaskManager.h"
 #include "alife_registry_wrappers.h"
@@ -141,7 +142,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	}
 
 
-	//установить флажок необходимости прочтения тасков в PDA
+	//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Р¶РѕРє РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїСЂРѕС‡С‚РµРЅРёСЏ С‚Р°СЃРєРѕРІ РІ PDA
 	if(CurrentGameUI()){
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) 

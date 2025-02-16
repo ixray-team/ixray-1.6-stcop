@@ -32,8 +32,8 @@ void CStateGhostBossAttackTeleportAbstract::finalize()
 {
 	inherited::finalize();
 
-	object->DeactiveTeleport();
-	object->set_script_capture(true);
+	this->object->DeactiveTeleport();
+	this->object->set_script_capture(true);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -41,8 +41,8 @@ void CStateGhostBossAttackTeleportAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	object->DeactiveTeleport();
-	object->set_script_capture(false);
+	this->object->DeactiveTeleport();
+	this->object->set_script_capture(false);
 	
 }
 
@@ -52,14 +52,14 @@ void CStateGhostBossAttackTeleportAbstract::execute()
 	switch (m_action)
 	{
 	case ACTION_IDLE:
-		object->ActivateTeleport();
+		this->object->ActivateTeleport();
 		//object->com_man().ta_activate(object->anim_triple_shield);
 		m_action = ACTION_COMPLETED;
 		break;
 	case ACTION_COMPLETED:
 		break;
 	}
-	object->set_action(ACT_STAND_IDLE);
+	this->object->set_action(ACT_STAND_IDLE);
 /*
 	if (object->EnemyMan.get_enemy())
 		object->dir().face_target(object->EnemyMan.get_enemy(), 500);
@@ -75,13 +75,13 @@ void CStateGhostBossAttackTeleportAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateGhostBossAttackTeleportAbstract::check_start_conditions()
 {
-	if (Device.dwTimeGlobal > m_last_teleport_started + object->m_teleport_length) {
-		if (object->EnemyMan.get_enemy() && !object->EnemyMan.enemy_see_me_now()) return false; 
+	if (Device.dwTimeGlobal > m_last_teleport_started + this->object->m_teleport_length) {
+		if (this->object->EnemyMan.get_enemy() && !this->object->EnemyMan.enemy_see_me_now()) return false;
 	} else {
 		return false;
 	}
 
-	if (!object->CanTeleport()) return false;
+	if (!this->object->CanTeleport()) return false;
 
 	return true;
 }
@@ -89,9 +89,9 @@ bool CStateGhostBossAttackTeleportAbstract::check_start_conditions()
 TEMPLATE_SPECIALIZATION
 bool CStateGhostBossAttackTeleportAbstract::check_completion()
 {
-	if (Device.dwTimeGlobal <= m_last_teleport_started + object->m_teleport_length)
+	if (Device.dwTimeGlobal <= m_last_teleport_started + this->object->m_teleport_length)
 	{
-		const CEntityAlive* enemy = object->EnemyMan.get_enemy();
+		const CEntityAlive* enemy = this->object->EnemyMan.get_enemy();
 		if ((enemy && enemy != Actor()) || !Actor()->IsReloadingWeapon())
 			return enemy == 0;
 	}

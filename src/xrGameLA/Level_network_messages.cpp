@@ -37,7 +37,7 @@ void CLevel::ClientReceive()
 		{
 		case M_MAP_SYNC:
 			{
-				shared_str map_name;
+		/*		shared_str map_name;
 				P->r_stringZ(map_name);
 
 				shared_str _name		= net_Hosts.size() ? net_Hosts.front().dpSessionName:"";
@@ -47,7 +47,7 @@ void CLevel::ClientReceive()
 					Msg("!!! map sync failed. current is[%s] server is[%s]",m_name.c_str(), map_name.c_str());
 					g_pEventManager->Event.Defer	("KERNEL:disconnect");
 					g_pEventManager->Event.Defer	("KERNEL:start",m_caServerOptions.size() ? size_t( xr_strdup(*m_caServerOptions)) : 0, m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
-				}
+				}*/
 			}break;
 		case M_SPAWN:			
 			{

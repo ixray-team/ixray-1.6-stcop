@@ -13,7 +13,7 @@
 #include "../ai_monster_effector.h"
 #include "../../../hudmanager.h"
 #include "../../../clsid_game.h"
-#include "../../../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
 #include "../../../script_callback_ex.h"
@@ -25,7 +25,7 @@
 #include "../../../UI/UIStatic.h"
 #include "../../../ai_object_location.h"
 #include "../../../ActorEffector.h"
-#include "../../../../CameraBase.h"
+#include "../../../../xrEngine/CameraBase.h"
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {

@@ -21,14 +21,14 @@
 TEMPLATE_SPECIALIZATION
 CStateBurerAttackAbstract::CStateBurerAttack(_Object *obj) : inherited(obj)
 {
-	add_state(eStateBurerAttack_Tele, new CStateBurerAttackTele<_Object>(obj));
-	add_state(eStateBurerAttack_Gravi, new CStateBurerAttackGravi<_Object>(obj));
-	add_state(eStateBurerAttack_Melee, new CStateBurerAttackMelee<_Object>(obj));
+	this->add_state(eStateBurerAttack_Tele, new CStateBurerAttackTele<_Object>(obj));
+	this->add_state(eStateBurerAttack_Gravi, new CStateBurerAttackGravi<_Object>(obj));
+	this->add_state(eStateBurerAttack_Melee, new CStateBurerAttackMelee<_Object>(obj));
 	
-	add_state(eStateBurerAttack_FaceEnemy, new CStateMonsterLookToPoint<_Object>(obj));
-	add_state(eStateBurerAttack_RunAround, new CStateBurerAttackRunAround<_Object>(obj));
+	this->add_state(eStateBurerAttack_FaceEnemy, new CStateMonsterLookToPoint<_Object>(obj));
+	this->add_state(eStateBurerAttack_RunAround, new CStateBurerAttackRunAround<_Object>(obj));
 
-	add_state(eStateCustomMoveToRestrictor, new CStateMonsterMoveToRestrictor<_Object>(obj));
+	this->add_state(eStateCustomMoveToRestrictor, new CStateMonsterMoveToRestrictor<_Object>(obj));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -41,33 +41,33 @@ void CStateBurerAttackAbstract::initialize()
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackAbstract::reselect_state()
 {
-	if (get_state(eStateBurerAttack_Melee)->check_start_conditions()) {
-		select_state(eStateBurerAttack_Melee);
+	if (this->get_state(eStateBurerAttack_Melee)->check_start_conditions()) {
+		this->select_state(eStateBurerAttack_Melee);
 		return;
 	}
 
 	if (m_force_gravi) {
 		m_force_gravi = false;
 
-		if (get_state(eStateBurerAttack_Gravi)->check_start_conditions()) {
-			select_state		(eStateBurerAttack_Gravi);
+		if (this->get_state(eStateBurerAttack_Gravi)->check_start_conditions()) {
+			this->select_state		(eStateBurerAttack_Gravi);
 			return;
 		}
 	}
 
-	if (get_state(eStateCustomMoveToRestrictor)->check_start_conditions()) {
-		select_state(eStateCustomMoveToRestrictor);
+	if (this->get_state(eStateCustomMoveToRestrictor)->check_start_conditions()) {
+		this->select_state(eStateCustomMoveToRestrictor);
 		return;
 	}
 
 	bool enable_gravi	= false;//get_state(eStateBurerAttack_Gravi)->check_start_conditions	();
-	bool enable_tele	= get_state(eStateBurerAttack_Tele)->check_start_conditions		();
+	bool enable_tele	= this->get_state(eStateBurerAttack_Tele)->check_start_conditions		();
 
 	if (!enable_gravi && !enable_tele) {
-		if (prev_substate == eStateBurerAttack_RunAround) 
-			select_state(eStateBurerAttack_FaceEnemy);
+		if (this->prev_substate == eStateBurerAttack_RunAround)
+			this->select_state(eStateBurerAttack_FaceEnemy);
 		else 	
-			select_state(eStateBurerAttack_RunAround);
+			this->select_state(eStateBurerAttack_RunAround);
 		return;
 	}
 
@@ -77,40 +77,40 @@ void CStateBurerAttackAbstract::reselect_state()
 		u32 cur_val = GRAVI_PERCENT;
 
 		if (rnd_val < cur_val) {
-			select_state(eStateBurerAttack_Gravi);
+			this->select_state(eStateBurerAttack_Gravi);
 			return;
 		}
 
 		cur_val += TELE_PERCENT;
 		if (rnd_val < cur_val) {
-			select_state(eStateBurerAttack_Tele);
+			this->select_state(eStateBurerAttack_Tele);
 			return;
 		}
 
-		select_state(eStateBurerAttack_RunAround);
+		this->select_state(eStateBurerAttack_RunAround);
 		return;
 	}
 
-	if ((prev_substate == eStateBurerAttack_RunAround) || (prev_substate == eStateBurerAttack_FaceEnemy)) {
-		if (enable_gravi) select_state(eStateBurerAttack_Gravi);
-		else select_state(eStateBurerAttack_Tele);
+	if ((this->prev_substate == eStateBurerAttack_RunAround) || (this->prev_substate == eStateBurerAttack_FaceEnemy)) {
+		if (enable_gravi) this->select_state(eStateBurerAttack_Gravi);
+		else this->select_state(eStateBurerAttack_Tele);
 	} else {
-		select_state(eStateBurerAttack_RunAround);
+		this->select_state(eStateBurerAttack_RunAround);
 	}
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateBurerAttackAbstract::setup_substates()
 {
-	state_ptr state = get_state_current();
+	state_ptr state = this->get_state_current();
 
-	if (current_substate == eStateBurerAttack_FaceEnemy) {
+	if (this->current_substate == eStateBurerAttack_FaceEnemy) {
 		SStateDataLookToPoint data;
 		
-		data.point				= object->EnemyMan.get_enemy()->Position(); 
+		data.point				= this->object->EnemyMan.get_enemy()->Position();
 		data.action.action		= ACT_STAND_IDLE;
 		data.action.sound_type	= MonsterSound::eMonsterSoundAggressive;
-		data.action.sound_delay = object->db().m_dwAttackSndDelay;
+		data.action.sound_delay = this->object->db().m_dwAttackSndDelay;
 
 		state->fill_data_with	(&data, sizeof(SStateDataLookToPoint));
 		return;
@@ -122,9 +122,9 @@ TEMPLATE_SPECIALIZATION
 void CStateBurerAttackAbstract::check_force_state()
 {
 	// check if we can start execute
-	if ((current_substate == eStateCustomMoveToRestrictor) || (prev_substate == eStateBurerAttack_RunAround)) {
-		if (get_state(eStateBurerAttack_Gravi)->check_start_conditions()) {
-			current_substate	= u32(-1);
+	if ((this->current_substate == eStateCustomMoveToRestrictor) || (this->prev_substate == eStateBurerAttack_RunAround)) {
+		if (this->get_state(eStateBurerAttack_Gravi)->check_start_conditions()) {
+			this->current_substate	= u32(-1);
 			m_force_gravi		= true;
 		}
 	}

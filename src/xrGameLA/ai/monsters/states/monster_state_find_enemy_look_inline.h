@@ -13,9 +13,9 @@
 TEMPLATE_SPECIALIZATION
 CStateMonsterFindEnemyLookAbstract::CStateMonsterFindEnemyLook(_Object *obj) : inherited(obj)
 {
-	add_state	(eStateFindEnemy_LookAround_MoveToPoint,	new CStateMonsterMoveToPoint<_Object>(obj));
-	add_state	(eStateFindEnemy_LookAround_LookAround,		new CStateMonsterCustomAction<_Object>(obj));
-	add_state	(eStateFindEnemy_LookAround_TurnToPoint,	new CStateMonsterLookToPoint<_Object>(obj));
+	this->add_state	(eStateFindEnemy_LookAround_MoveToPoint,	new CStateMonsterMoveToPoint<_Object>(obj));
+	this->add_state	(eStateFindEnemy_LookAround_LookAround,		new CStateMonsterCustomAction<_Object>(obj));
+	this->add_state	(eStateFindEnemy_LookAround_TurnToPoint,	new CStateMonsterLookToPoint<_Object>(obj));
 }
 
 TEMPLATE_SPECIALIZATION

@@ -8,10 +8,10 @@
 #include "../../../level.h"
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
-#include "../../../../CameraBase.h"
+#include "../../../../xrEngine/CameraBase.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../level_debug.h"
-#include "../../../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 
 void CControllerPsyHit::load(LPCSTR section)
 {

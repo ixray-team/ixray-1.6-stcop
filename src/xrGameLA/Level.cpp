@@ -547,8 +547,7 @@ void CLevel::OnFrame	()
 		}
 	}
 	
-//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
 	//Device.Statistic->cripting.Begin	();
 	if (!g_dedicated_server)
@@ -997,6 +996,27 @@ u32 CLevel::GetGameDayTimeMS()
 	return	(u32(s64(GetGameTime() % (24*60*60*1000))));
 }
 
+float CLevel::GetEnvironmentTimeFactor() const
+{
+	if (!game)
+		return 0.0f;
+	return game->GetEnvironmentGameTimeFactor();
+}
+
+u64 CLevel::GetEnvironmentGameTime() const
+{
+	if (!game)
+		return 0;
+	return game->GetEnvironmentGameTime();
+}
+
+void CLevel::SetEnvironmentTimeFactor(const float fTimeFactor)
+{
+	if (!game)
+		return;
+	game->SetEnvironmentGameTimeFactor(fTimeFactor);
+}
+
 float CLevel::GetEnvironmentGameDayTimeSec()
 {
 	return	(float(s64(GetEnvironmentGameTime() % (24*60*60*1000)))/1000.f);
@@ -1022,19 +1042,16 @@ void CLevel::GetGameTimeMinute(u32& minute)
 float CLevel::GetGameTimeFactor()
 {
 	return			(game->GetGameTimeFactor());
-//	return			(Server->game->GetGameTimeFactor());
 }
 
 void CLevel::SetGameTimeFactor(const float fTimeFactor)
 {
 	game->SetGameTimeFactor(fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
 }
 
 void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
 {
 	game->SetGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
 }
 void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor)
 {
@@ -1163,7 +1180,8 @@ struct path_excluder_predicate
 
 void CLevel::ReloadEnvironment()
 {
-	g_pGamePersistent->DestroyEnvironment();
+	Msg("! Not implemented");
+/*	g_pGamePersistent->DestroyEnvironment();
 	Msg("---Environment destroyed");
 	Msg("---Start to destroy configs");
 	CInifile** s = (CInifile**)(&pSettings);
@@ -1211,6 +1229,6 @@ void CLevel::ReloadEnvironment()
 	xr_strcpy(fn, "level_weathers.restart_weather_manager");
 	R_ASSERT2(ai().script_engine().functor<void>(fn, lua_function), make_string<const char*>("Can't find function %s", fn));
 	lua_function();
-	Msg("---Done");
+	Msg("---Done");*/
 }
 

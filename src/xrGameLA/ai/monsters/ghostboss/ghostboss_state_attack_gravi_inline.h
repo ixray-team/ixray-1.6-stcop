@@ -22,7 +22,7 @@ void CStateGhostBossAttackGraviAbstract::initialize()
 
 	time_gravi_started				= 0;
 
-	object->set_script_capture		(false);
+	this->object->set_script_capture		(false);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -56,7 +56,7 @@ void CStateGhostBossAttackGraviAbstract::execute()
 			/***************************/
 		case ACTION_WAIT_TRIPLE_END:
 			/***************************/
-			if (!object->com_man().ta_is_active()) {
+			if (!this->object->com_man().ta_is_active()) {
 				m_action = ACTION_COMPLETED; 
 			}
 
@@ -67,17 +67,17 @@ void CStateGhostBossAttackGraviAbstract::execute()
 			break;
 	}
 
-	object->anim().m_tAction	= ACT_STAND_IDLE;	
-	object->dir().face_target	(object->EnemyMan.get_enemy(), 500);
+	this->object->anim().m_tAction	= ACT_STAND_IDLE;
+	this->object->dir().face_target	(this->object->EnemyMan.get_enemy(), 500);
 }
 TEMPLATE_SPECIALIZATION
 void CStateGhostBossAttackGraviAbstract::finalize()
 {
 	inherited::finalize();
 
-	object->com_man().ta_pointbreak	();
+	this->object->com_man().ta_pointbreak	();
 //	object->DeactivateShield		();
-	object->set_script_capture		(true);
+	this->object->set_script_capture		(true);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -85,23 +85,23 @@ void CStateGhostBossAttackGraviAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 	
-	object->com_man().ta_pointbreak	();
+	this->object->com_man().ta_pointbreak	();
 //	object->DeactivateShield		();
-	object->StopGraviPrepare		();
-	object->set_script_capture		(false);
+	this->object->StopGraviPrepare		();
+	this->object->set_script_capture		(false);
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateGhostBossAttackGraviAbstract::check_start_conditions()
 {
-	// îáðàáîòàòü îáúåêòû
-	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
+	// Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹
+	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 	if (dist < GOOD_DISTANCE_FOR_GRAVI) return false;
-	if (!object->EnemyMan.see_enemy_now()) return false; 
-	if (!object->control().direction().is_face_target(object->EnemyMan.get_enemy(), deg(45))) return false;
-	if (object->com_man().ta_is_active()) return false;
+	if (!this->object->EnemyMan.see_enemy_now()) return false;
+	if (!this->object->control().direction().is_face_target(this->object->EnemyMan.get_enemy(), deg(45))) return false;
+	if (this->object->com_man().ta_is_active()) return false;
 
-	// âñ¸ îê, ìîæíî íà÷àòü ãðàâè àòàêó
+	// Ð²ÑÑ‘ Ð¾Ðº, Ð¼Ð¾Ð¶Ð½Ð¾ Ð½Ð°Ñ‡Ð°Ñ‚ÑŒ Ð³Ñ€Ð°Ð²Ð¸ Ð°Ñ‚Ð°ÐºÑƒ
 	return true;
 }
 
@@ -116,23 +116,23 @@ bool CStateGhostBossAttackGraviAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateGhostBossAttackGraviAbstract::ExecuteGraviStart()
 {
-	object->com_man().ta_activate(object->anim_triple_gravi);
+	this->object->com_man().ta_activate(this->object->anim_triple_gravi);
 
 	time_gravi_started			= Device.dwTimeGlobal;
 
-	object->StartGraviPrepare();
+	this->object->StartGraviPrepare();
 //	object->ActivateShield();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateGhostBossAttackGraviAbstract::ExecuteGraviContinue()
 {
-	// ïðîâåðèòü íà ãðàâè óäàð
+	// Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ð½Ð° Ð³Ñ€Ð°Ð²Ð¸ ÑƒÐ´Ð°Ñ€
 
-	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
+	float dist = this->object->Position().distance_to(this->object->EnemyMan.get_enemy()->Position());
 	float time_to_hold = (abs(dist - GOOD_DISTANCE_FOR_GRAVI)/GOOD_DISTANCE_FOR_GRAVI);
 	clamp(time_to_hold, 0.f, 1.f);
-	time_to_hold *= float(object->m_gravi_time_to_hold);
+	time_to_hold *= float(this->object->m_gravi_time_to_hold);
 
 	if (time_gravi_started + u32(time_to_hold) < Device.dwTimeGlobal) {
 		m_action = ACTION_GRAVI_FIRE;
@@ -142,17 +142,17 @@ void CStateGhostBossAttackGraviAbstract::ExecuteGraviContinue()
 TEMPLATE_SPECIALIZATION
 void CStateGhostBossAttackGraviAbstract::ExecuteGraviFire()
 {
-	object->com_man().ta_pointbreak();
+	this->object->com_man().ta_pointbreak();
 
 	Fvector from_pos;
 	Fvector target_pos;
-	from_pos	= object->Position();	from_pos.y		+= 0.5f;
-	target_pos	= object->EnemyMan.get_enemy()->Position();	target_pos.y	+= 0.5f;
+	from_pos	= this->object->Position();	from_pos.y		+= 0.5f;
+	target_pos	= this->object->EnemyMan.get_enemy()->Position();	target_pos.y	+= 0.5f;
 
-	object->m_gravi_object.activate(object->EnemyMan.get_enemy(), from_pos, target_pos);
+	this->object->m_gravi_object.activate(this->object->EnemyMan.get_enemy(), from_pos, target_pos);
 
-	object->StopGraviPrepare	();
-	object->sound().play		(CGhostBoss::eMonsterSoundGraviAttack);
+	this->object->StopGraviPrepare	();
+	this->object->sound().play		(CGhostBoss::eMonsterSoundGraviAttack);
 //	object->DeactivateShield	();
 }
 

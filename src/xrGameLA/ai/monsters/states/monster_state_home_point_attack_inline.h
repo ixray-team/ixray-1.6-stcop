@@ -21,9 +21,9 @@
 TEMPLATE_SPECIALIZATION
 CStateMonsterAttackMoveToHomePointAbstract::CStateMonsterAttackMoveToHomePoint(_Object *obj) : inherited(obj) 
 {
-	add_state	(eStateAttack_HomePoint_Hide,			new CStateMonsterMoveToPointEx<_Object>(obj));
-	add_state	(eStateAttack_HomePoint_LookOpenPlace,	new CStateMonsterLookToPoint<_Object>(obj));
-	add_state	(eStateAttack_HomePoint_Camp,			new CStateMonsterCustomAction<_Object>(obj));
+	this->add_state	(eStateAttack_HomePoint_Hide,			new CStateMonsterMoveToPointEx<_Object>(obj));
+	this->add_state	(eStateAttack_HomePoint_LookOpenPlace,	new CStateMonsterLookToPoint<_Object>(obj));
+	this->add_state	(eStateAttack_HomePoint_Camp,			new CStateMonsterCustomAction<_Object>(obj));
 }
 
 //////////////////////////////////////////////////////////////////////////

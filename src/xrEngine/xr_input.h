@@ -84,6 +84,11 @@ public:
 
 	IInputReceiver*				CurrentIR					();
 
+	// lost alpha start
+	int GetLastKeyPressed(void) { return (int)m_last_key_pressed; }
+	int GetLastKeyReleased(void) { return (int)m_last_key_released; }
+	int GetButtonCount(void) { return COUNT_KB_BUTTONS; }
+
 public:
 	bool IsAcquire = false;
 
@@ -92,6 +97,10 @@ public:
 	bool						get_dik_name				(int dik, LPSTR dest, int dest_sz);
 
 	void						feedback					(u16 s1, u16 s2, float time);
+	//lost alpha start
+private:
+	u32 m_last_key_pressed;
+	u32 m_last_key_released;
 };
 
 extern ENGINE_API CInput *		pInput;

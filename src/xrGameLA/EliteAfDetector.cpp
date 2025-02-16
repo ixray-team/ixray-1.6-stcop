@@ -81,10 +81,10 @@ BOOL CEliteDetector::feel_touch_contact(CObject *O)
 void CEliteDetector::UpdateAf()
 {
 	ui().Clear();
-	CArtefact* pCurrentAf;
+	CArtefact* pCurrentAf = nullptr;
 	LPCSTR closest_art = "null";
 	feel_touch_update_delay = feel_touch_update_delay + 1;
-	if (feel_touch_update_delay >= 5) //Как то снизить нагрузку на кадр поможет
+	if (feel_touch_update_delay >= 5) //РљР°Рє С‚Рѕ СЃРЅРёР·РёС‚СЊ РЅР°РіСЂСѓР·РєСѓ РЅР° РєР°РґСЂ РїРѕРјРѕР¶РµС‚
 	{
 		feel_touch_update_delay = 0;
 		Fvector						P;
@@ -101,18 +101,18 @@ void CEliteDetector::UpdateAf()
 		float disttoart = DetectorFeel(*it);
 		if (disttoart != -10.0)
 		{
-			//-----------Все арты, в рудиусе действия, из списка фил тач - идут на экран
+			//-----------Р’СЃРµ Р°СЂС‚С‹, РІ СЂСѓРґРёСѓСЃРµ РґРµР№СЃС‚РІРёСЏ, РёР· СЃРїРёСЃРєР° С„РёР» С‚Р°С‡ - РёРґСѓС‚ РЅР° СЌРєСЂР°РЅ
 			arttemp = smart_cast<CArtefact*>(*it);
 			ui().RegisterItemToDraw(arttemp->Position(), "af_sign");
 
-			//Если переменная досих пор не заданаа(первый проход цикла), то даем ей значение
+			//Р•СЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ РґРѕСЃРёС… РїРѕСЂ РЅРµ Р·Р°РґР°РЅР°Р°(РїРµСЂРІС‹Р№ РїСЂРѕС…РѕРґ С†РёРєР»Р°), С‚Рѕ РґР°РµРј РµР№ Р·РЅР°С‡РµРЅРёРµ
 			if (disttoclosestart <= 0.0)
 			{
 				disttoclosestart = disttoart;
 				closest_art = closestart;
 				pCurrentAf = arttemp;
 			}
-			//нашли более близкий арт...
+			//РЅР°С€Р»Рё Р±РѕР»РµРµ Р±Р»РёР·РєРёР№ Р°СЂС‚...
 			if (disttoclosestart > disttoart)
 			{
 				disttoclosestart = disttoart;
@@ -124,7 +124,7 @@ void CEliteDetector::UpdateAf()
 	
 	if (!reaction_sound_off)
 	{
-		//определить текущую частоту срабатывания сигнала
+		//РѕРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ СЃРёРіРЅР°Р»Р°
 		if (disttoclosestart == 0.0)
 		{
 			return;
@@ -134,7 +134,7 @@ void CEliteDetector::UpdateAf()
 			cur_periodperiod = disttoclosestart / (fdetect_radius * pCurrentAf->detect_radius_koef);
 		}
 
-		//Чтобы не перегружать звук. движок
+		//Р§С‚РѕР±С‹ РЅРµ РїРµСЂРµРіСЂСѓР¶Р°С‚СЊ Р·РІСѓРє. РґРІРёР¶РѕРє
 		if (cur_periodperiod < 0.11)
 		{
 			cur_periodperiod = 0.11;
@@ -142,7 +142,7 @@ void CEliteDetector::UpdateAf()
 
 		if (snd_timetime > cur_periodperiod && detect_sndsnd_line || pCurrentAf->custom_detect_sound_string)
 		{
-			//Добавил врзможность задать разные звуки для различных артов
+			//Р”РѕР±Р°РІРёР» РІСЂР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РґР°С‚СЊ СЂР°Р·РЅС‹Рµ Р·РІСѓРєРё РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… Р°СЂС‚РѕРІ
 			freqq = 1.8 - cur_periodperiod;
 
 			if (freqq < 0.8)
@@ -166,7 +166,7 @@ void CEliteDetector::UpdateAf()
 	}
 }
 
-//Просто для удобства вынес в отдельную функцию, а то и так месево там
+//РџСЂРѕСЃС‚Рѕ РґР»СЏ СѓРґРѕР±СЃС‚РІР° РІС‹РЅРµСЃ РІ РѕС‚РґРµР»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ, Р° С‚Рѕ Рё С‚Р°Рє РјРµСЃРµРІРѕ С‚Р°Рј
 
 float CEliteDetector::DetectorFeel(CObject* item)
 {
@@ -187,7 +187,7 @@ float CEliteDetector::DetectorFeel(CObject* item)
 	return -10.0;
 }
 
-//---------------UI(Экранчик артов)------------------
+//---------------UI(Р­РєСЂР°РЅС‡РёРє Р°СЂС‚РѕРІ)------------------
 
 bool  CEliteDetector::render_item_3d_ui_query()
 {

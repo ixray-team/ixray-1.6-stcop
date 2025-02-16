@@ -247,8 +247,8 @@ public:
 	virtual void	_BCL		OnFrame					( void );
 	virtual void				OnRender				( );
 
-	//virtual	shared_str		OpenDemoFile			(LPCSTR demo_file_name);
-	//virtual void				net_StartPlayDemo		();
+	virtual	shared_str			OpenDemoFile			(LPCSTR demo_file_name);
+	virtual void				net_StartPlayDemo		();
 
 	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
@@ -333,6 +333,10 @@ public:
 	float				GetGameDayTimeSec		();
 	float				GetEnvironmentGameDayTimeSec();
 
+	virtual float		GetEnvironmentTimeFactor() const override;
+	virtual void		SetEnvironmentTimeFactor(const float fTimeFactor) override;
+	virtual u64			GetEnvironmentGameTime() const override;
+
 protected:
 //	CFogOfWarMngr		*m_pFogOfWarMngr;
 protected:	
@@ -351,7 +355,9 @@ public:
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
-			
+	virtual	void			SpawnItem(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id) override;
+	virtual IGame_Patrol*	CreatePatrol(const char* patrol) override;
+
 protected:
 	u32		m_dwCL_PingDeltaSend;
 	u32		m_dwCL_PingLastSendTime;

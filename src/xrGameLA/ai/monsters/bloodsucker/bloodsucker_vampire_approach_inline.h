@@ -20,20 +20,20 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireApproachAbstract::initialize()
 {
 	inherited::initialize();
-	object->path().prepare_builder	();	
+	this->object->path().prepare_builder	();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireApproachAbstract::execute()
 {
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
-	object->set_action								(ACT_RUN);
-	object->anim().accel_activate					(eAT_Aggressive);
-	object->anim().accel_set_braking				(false);
-	object->path().set_target_point					(object->EnemyMan.get_enemy()->Position(), object->EnemyMan.get_enemy()->ai_location().level_vertex_id());
-	object->path().set_rebuild_time					(object->get_attack_rebuild_time());
-	object->path().set_use_covers					(false);
-	object->path().set_distance_to_end				(0.1f);
-	object->set_state_sound							(MonsterSound::eMonsterSoundAggressive);
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
+	this->object->set_action								(ACT_RUN);
+	this->object->anim().accel_activate					(eAT_Aggressive);
+	this->object->anim().accel_set_braking				(false);
+	this->object->path().set_target_point					(this->object->EnemyMan.get_enemy()->Position(), this->object->EnemyMan.get_enemy()->ai_location().level_vertex_id());
+	this->object->path().set_rebuild_time					(this->object->get_attack_rebuild_time());
+	this->object->path().set_use_covers					(false);
+	this->object->path().set_distance_to_end				(0.1f);
+	this->object->set_state_sound							(MonsterSound::eMonsterSoundAggressive);
 }
 

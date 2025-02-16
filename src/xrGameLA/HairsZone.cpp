@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "HairsZone.h"
 #include "hudmanager.h"
@@ -118,7 +119,7 @@ void CHairsZone::Affect(SZoneObjectInfo* O)
 
 		m_dwDeltaTime = 0;
 
-		//ñòàòèñòèêà ïî îáúåêòó
+		//ÑÑ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ° Ğ¿Ğ¾ Ğ¾Ğ±ÑŠĞµĞºÑ‚Ñƒ
 		O->total_damage += power;
 		O->hit_num++;
 

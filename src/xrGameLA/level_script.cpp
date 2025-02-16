@@ -34,6 +34,8 @@
 #include "map_location.h"
 #include "phworld.h"
 #include "Weapon.h"
+#include "alife_simulator.h"
+#include "alife_time_manager.h"
 
 using namespace luabind;
 
@@ -239,21 +241,21 @@ ESingleGameDifficulty get_game_difficulty()
 u32 get_time_days()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			day;
 }
 
 u32 get_time_hours()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			hours;
 }
 
 u32 get_time_minutes()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
 }
 
@@ -787,7 +789,11 @@ bool level_sound_enabled()
 
 bool is_mixed_mode() 
 {
-	return Core.isDebugMode;
+#ifdef DEBUG
+	return true;
+#else
+	return false;
+#endif
 }
 
 u32 get_build_id() 

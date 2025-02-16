@@ -9,7 +9,7 @@
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
 #include "zombie_choke_effector.h"
-#include "../../../../camerabase.h"
+#include "../../../../xrEngine/camerabase.h"
 
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"

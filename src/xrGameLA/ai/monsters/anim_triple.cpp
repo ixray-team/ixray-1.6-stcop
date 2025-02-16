@@ -2,7 +2,7 @@
 #include "anim_triple.h"
 #include "control_manager.h"
 
-char *dbg_states[] = {
+const char *dbg_states[] = {
 	"eStatePrepare", 
 	"eStateExecute", 
 	"eStateFinalize", 

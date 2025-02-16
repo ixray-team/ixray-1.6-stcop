@@ -21,9 +21,9 @@
 TEMPLATE_SPECIALIZATION
 CStateMonsterDangerMoveToHomePointAbstract::CStateMonsterDangerMoveToHomePoint(_Object *obj) : inherited(obj) 
 {
-	add_state	(eStatePanic_HomePoint_Hide,			new CStateMonsterMoveToPointEx<_Object>(obj));
-	add_state	(eStatePanic_HomePoint_LookOpenPlace,	new CStateMonsterLookToPoint<_Object>(obj));
-	add_state	(eStatePanic_HomePoint_Camp,			new CStateMonsterCustomAction<_Object>(obj));
+	this->add_state	(eStatePanic_HomePoint_Hide,			new CStateMonsterMoveToPointEx<_Object>(obj));
+	this->add_state	(eStatePanic_HomePoint_LookOpenPlace,	new CStateMonsterLookToPoint<_Object>(obj));
+	this->add_state	(eStatePanic_HomePoint_Camp,			new CStateMonsterCustomAction<_Object>(obj));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,15 +38,15 @@ void CStateMonsterDangerMoveToHomePointAbstract::initialize()
 	// get the most danger position
 	get_most_danger_pos		();
 
-	m_target_node			= object->Home->get_place_in_cover();
+	m_target_node			= this->object->Home->get_place_in_cover();
 	m_skip_camp				= false;
 
 	if (m_target_node == u32(-1)) {
-		m_target_node	= object->Home->get_place();
+		m_target_node	= this->object->Home->get_place();
 		m_skip_camp		= true;
 	}
 
-	CMonsterSquad *squad = monster_squad().get_squad(object);
+	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->lock_cover(m_target_node);
 }
 
@@ -54,7 +54,7 @@ TEMPLATE_SPECIALIZATION
 void CStateMonsterDangerMoveToHomePointAbstract::finalize()
 {
 	inherited::finalize();
-	CMonsterSquad *squad = monster_squad().get_squad(object);
+	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 
@@ -63,7 +63,7 @@ void CStateMonsterDangerMoveToHomePointAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
 
-	CMonsterSquad *squad = monster_squad().get_squad(object);
+	CMonsterSquad *squad = monster_squad().get_squad(this->object);
 	squad->unlock_cover(m_target_node);
 }
 

@@ -24,7 +24,7 @@ TEMPLATE_SPECIALIZATION
 void CStatePoltergeistAttackHiddenAbstract::execute()
 {
 	// проверить на завершение пути
-	if (this->object->control().path_builder().detail().time_path_built() > time_state_started) {
+	if (this->object->control().path_builder().detail().time_path_built() > this->time_state_started) {
 		if (this->object->control().path_builder().is_path_end(DIST_TO_PATH_END)) select_target_point();
 	}
 	

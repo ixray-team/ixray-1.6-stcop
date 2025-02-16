@@ -76,13 +76,13 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::check_force_state() 
 {
 	float dist_to_enemy = -1.f;
-	if (current_substate == eStateAttack_Run) 
+	if (this->current_substate == eStateAttack_Run)
 	{
-		dist_to_enemy = object->Position().distance_to(object->EnemyMan.get_enemy_position());
+		dist_to_enemy = this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position());
 		if (dist_to_enemy > 10.f) 
 		{
-			get_state_current()->critical_finalize();
-			current_substate = u32(-1);
+			this->get_state_current()->critical_finalize();
+			this->current_substate = u32(-1);
 		}
 	}
 }
@@ -91,30 +91,30 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::initialize()
 {
 	inherited::initialize				();
-	object->set_mental_state			(CController::eStateDanger);
+	this->object->set_mental_state			(CController::eStateDanger);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::finalize()
 {
 	inherited::finalize();
-	object->set_mental_state(CController::eStateIdle);
+	this->object->set_mental_state(CController::eStateIdle);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	object->set_mental_state(CController::eStateIdle);
+	this->object->set_mental_state(CController::eStateIdle);
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateControllerAttackAbstract::check_state(u32 state_id) 
 {
-	if (prev_substate == state_id) {
-		if (!get_state_current()->check_completion())		return true;
+	if (this->prev_substate == state_id) {
+		if (!this->get_state_current()->check_completion())		return true;
 	} else {
-		if (get_state(state_id)->check_start_conditions())	return true;
+		if (this->get_state(state_id)->check_start_conditions())	return true;
 	}
 
 	return false;

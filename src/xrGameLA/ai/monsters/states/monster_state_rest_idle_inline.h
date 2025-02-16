@@ -7,6 +7,7 @@
 #include "../monster_cover_manager.h"
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
+#include "../ai_space.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -17,9 +18,9 @@
 TEMPLATE_SPECIALIZATION
 CStateMonsterRestIdleAbstract::CStateMonsterRestIdle(_Object *obj) : inherited(obj)
 {
-	this->add_state	(eStateRest_WalkToCover,	xr_new<CStateMonsterMoveToPointEx<_Object> >	(obj));
-	this->add_state	(eStateRest_LookOpenPlace,	xr_new<CStateMonsterLookToPoint<_Object> >		(obj));
-	this->add_state	(eStateRest_Idle,			xr_new<CStateMonsterCustomAction<_Object> >		(obj));
+	this->add_state	(eStateRest_WalkToCover,	new CStateMonsterMoveToPointEx<_Object>		(obj));
+	this->add_state	(eStateRest_LookOpenPlace,	new CStateMonsterLookToPoint<_Object>		(obj));
+	this->add_state	(eStateRest_Idle,			new CStateMonsterCustomAction<_Object>		(obj));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -85,7 +86,7 @@ void CStateMonsterRestIdleAbstract::setup_substates()
 		SStateDataMoveToPointEx data;
 
 		data.vertex				= m_target_node;
-		data.point				= this->ai().level_graph().vertex_position(data.vertex);
+		data.point				= ai().level_graph().vertex_position(data.vertex);
 		data.action.action		= ACT_WALK_FWD;
 		data.action.time_out	= 0;		// do not use time out
 		data.completion_dist	= 0.f;		// get exactly to the point

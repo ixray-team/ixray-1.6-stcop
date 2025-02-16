@@ -7,7 +7,7 @@
 #include "../control_path_builder_base.h"
 #include "controller_direction.h"
 #include "../monster_velocity_space.h"
-#include "../../../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 
 const float	_pmt_psy_attack_time  = 0.5f;
 

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "melee_checker.h"
 #include "basemonster/base_monster.h"
-#include "../../../../Include/xrRender/KinematicsAnimated.h"
-#include "../../../xr_collide_form.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../xrEngine/xr_collide_form.h"
 
 #define MAX_TRACE_ENEMY_RANGE	6.f
 
@@ -33,17 +33,17 @@ float CMeleeChecker::distance_to_enemy(const CEntity *enemy)
 
 void CMeleeChecker::on_hit_attempt(bool hit_success) 
 {
-	// добавить новый элемент в стек
+	// РґРѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚ РІ СЃС‚РµРє
 	for (u32 i=HIT_STACK_SIZE-1; i > 0; i--) m_hit_stack[i] = m_hit_stack[i-1];
 	m_hit_stack[0] = hit_success;
 
-	// проверить однородность стека
+	// РїСЂРѕРІРµСЂРёС‚СЊ РѕРґРЅРѕСЂРѕРґРЅРѕСЃС‚СЊ СЃС‚РµРєР°
 	bool stack_similar = true;	
 	for (u32 i=1; i < HIT_STACK_SIZE; i++) if (m_hit_stack[i] != hit_success) {stack_similar = false; break;}
 
 	if (!stack_similar) return;
 
-	// обновить m_current_min_distance
+	// РѕР±РЅРѕРІРёС‚СЊ m_current_min_distance
 	if (hit_success) {
 		if (m_current_min_distance + m_as_step < m_min_attack_distance)	m_current_min_distance += m_as_step;
 		else m_current_min_distance = m_min_attack_distance;

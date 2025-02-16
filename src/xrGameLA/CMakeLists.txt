@@ -169,9 +169,9 @@ endif()
 set_target_properties(xrGameLA PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 if (NOT IXRAY_UNITYBUILD)
-	set_target_properties(xrGameLA PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
-	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
-	target_precompile_headers(xrGameLA PUBLIC "stdafx.h")
+#	set_target_properties(xrGameLA PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+#	set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+#	target_precompile_headers(xrGameLA PUBLIC "stdafx.h")
 
 	file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")
 	set_source_files_properties(${GAME_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)

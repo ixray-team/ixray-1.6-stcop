@@ -1,4 +1,5 @@
 #pragma once
+#include "../ai_space.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -40,7 +41,7 @@ bool CStateMonsterMoveToPointAbstract::check_completion()
 		if (this->time_state_started + data.action.time_out < Device.dwTimeGlobal) return true;
 	} 
 	
-	bool real_path_end = ((fis_zero(data.completion_dist)) ? (data.point.distance_to_xz(this->object->Position()) < this->ai().level_graph().header().cell_size()) : true);
+	bool real_path_end = ((fis_zero(data.completion_dist)) ? (data.point.distance_to_xz(this->object->Position()) < ai().level_graph().header().cell_size()) : true);
 	if (this->object->control().path_builder().is_path_end(data.completion_dist) && real_path_end) return true;
 
 	return false;
@@ -93,7 +94,7 @@ bool CStateMonsterMoveToPointExAbstract::check_completion()
 
 	Fvector const self_pos		= this->object->Position();
 	float const dist_to_target	=	data.point.distance_to_xz(self_pos);
-	float const completion_dist	=	_max(data.completion_dist, this->ai().level_graph().header().cell_size());
+	float const completion_dist	=	_max(data.completion_dist, ai().level_graph().header().cell_size());
 
 	if ( Device.dwTimeGlobal < this->time_state_started + 200 )
 	{
@@ -102,7 +103,7 @@ bool CStateMonsterMoveToPointExAbstract::check_completion()
 	}
 
 	bool const real_path_end	=	fis_zero(data.completion_dist) ? 
-									dist_to_target < this->ai().level_graph().header().cell_size() 
+									dist_to_target < ai().level_graph().header().cell_size() 
 									: true;
 
 	if (this->object->control().path_builder().is_path_end(data.completion_dist) && real_path_end )

@@ -13,6 +13,11 @@
 #include "script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
+#include "game_graph_space.h"
+#include "game_location_selector.h"
+#include "detail_path_manager.h"
+#include "patrol_path_manager.h"
+#include "sight_manager.h"
 
 enum EPdaMsg; 
 enum ESoundTypes;
@@ -177,7 +182,7 @@ public:
 	_DECLARE_FUNCTION10	(GetMorale			,			float);
 
 	_DECLARE_FUNCTION11	(SetHealth,			void, float);
-	//---Добавил возможность обращаться к кровотечению
+	//---Р”РѕР±Р°РІРёР» РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕР±СЂР°С‰Р°С‚СЊСЃСЏ Рє РєСЂРѕРІРѕС‚РµС‡РµРЅРёСЋ
 	_DECLARE_FUNCTION11	(SetBleeding,		void, float);
 	_DECLARE_FUNCTION11	(SetPsyHealth,		void, float);
 	_DECLARE_FUNCTION11	(SetPower,			void, float);
@@ -282,7 +287,7 @@ public:
 	// CProjector
 			Fvector				GetCurrentDirection		();
 			bool				IsInvBoxEmpty			();
-	//передача порции информации InventoryOwner
+	//РїРµСЂРµРґР°С‡Р° РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё InventoryOwner
 			bool				GiveInfoPortion		(LPCSTR info_id);
 			bool				DisableInfoPortion	(LPCSTR info_id);
 			bool				GiveGameNews		(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time);
@@ -290,11 +295,11 @@ public:
 			LPCSTR				GetNpcIcon			();
 
 			void				AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name);
-	//предикаты наличия/отсутствия порции информации у персонажа
+	//РїСЂРµРґРёРєР°С‚С‹ РЅР°Р»РёС‡РёСЏ/РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 			bool				HasInfo				(LPCSTR info_id);
 			bool				DontHasInfo			(LPCSTR info_id);
 			xrTime				GetInfoTime			(LPCSTR info_id);
-	//работа с заданиями
+	//СЂР°Р±РѕС‚Р° СЃ Р·Р°РґР°РЅРёСЏРјРё
 			ETaskState			GetGameTaskState	(LPCSTR task_id, int objective_num);
 			void				SetGameTaskState	(ETaskState state, LPCSTR task_id, int objective_num);
 			void				GiveTaskToActor		(CGameTask* t, u32 dt, bool bCheckExisting);

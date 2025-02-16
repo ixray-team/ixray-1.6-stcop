@@ -25,56 +25,56 @@ void CStateZombieAttackRunAbstract::initialize()
 	m_time_action_change			= 0;
 	action							= ACT_WALK_FWD;
 
-	object->path().prepare_builder	();
+	this->object->path().prepare_builder	();
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateZombieAttackRunAbstract::execute()
 {
-	float dist = object->EnemyMan.get_enemy()->Position().distance_to(object->Position());
+	float dist = this->object->EnemyMan.get_enemy()->Position().distance_to(this->object->Position());
 	
-	object->path().set_try_min_time	(false);
+	this->object->path().set_try_min_time	(false);
 	
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
-	object->path().set_target_point			(object->EnemyMan.get_enemy_position(), object->EnemyMan.get_enemy_vertex());
-	object->path().set_rebuild_time			(100 + u32(50.f * dist));
-	object->path().set_distance_to_end		(2.5f);
-	object->path().set_use_covers			(false);
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
+	this->object->path().set_target_point			(this->object->EnemyMan.get_enemy_position(), this->object->EnemyMan.get_enemy_vertex());
+	this->object->path().set_rebuild_time			(100 + u32(50.f * dist));
+	this->object->path().set_distance_to_end		(2.5f);
+	this->object->path().set_use_covers			(false);
 
 	//////////////////////////////////////////////////////////////////////////
-	// îáðàáîòàòü squad-äàííûå
+	// Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ñ‚ÑŒ squad-Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	//////////////////////////////////////////////////////////////////////////
-	CMonsterSquad *squad	= monster_squad().get_squad(object);
+	CMonsterSquad *squad	= monster_squad().get_squad(this->object);
 	bool squad_active		= squad && squad->SquadActive();
 	
-	// Ïîëó÷èòü êîìàíäó
+	// ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñƒ
 	SSquadCommand command;
-	squad->GetCommand(object, command);
+	squad->GetCommand(this->object, command);
 	if (!squad_active || (command.type != SC_ATTACK)) squad_active = false;
 	//////////////////////////////////////////////////////////////////////////
 
 	if (squad_active) {
-		object->path().set_use_dest_orient	(true);
-		object->path().set_dest_direction	(command.direction);
+		this->object->path().set_use_dest_orient	(true);
+		this->object->path().set_dest_direction	(command.direction);
 	} else 
-		object->path().set_use_dest_orient	(false);
+		this->object->path().set_use_dest_orient	(false);
 	
 	choose_action								();
-	object->anim().m_tAction					= action;	
+	this->object->anim().m_tAction					= action;
 
 	if (action == ACT_RUN) 
-		object->path().set_try_min_time	(true);
+		this->object->path().set_try_min_time	(true);
 	
 	//object->sound().play						(MonsterSound::eMonsterSoundAggressive, 0,0,object->db().m_dwAttackSndDelay);
-	object->anim().accel_activate				(eAT_Aggressive);
-	object->anim().accel_set_braking			(false);
+	this->object->anim().accel_activate				(eAT_Aggressive);
+	this->object->anim().accel_set_braking			(false);
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateZombieAttackRunAbstract::check_completion()
 {
-	float m_fDistMin	= object->MeleeChecker.get_min_distance		();
-	float dist			= object->MeleeChecker.distance_to_enemy	(object->EnemyMan.get_enemy());
+	float m_fDistMin	= this->object->MeleeChecker.get_min_distance		();
+	float dist			= this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
 
 	if (dist < m_fDistMin)	return true;
 
@@ -84,8 +84,8 @@ bool CStateZombieAttackRunAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 bool CStateZombieAttackRunAbstract::check_start_conditions()
 {
-	float m_fDistMax	= object->MeleeChecker.get_max_distance		();
-	float dist			= object->MeleeChecker.distance_to_enemy	(object->EnemyMan.get_enemy());
+	float m_fDistMax	= this->object->MeleeChecker.get_max_distance		();
+	float dist			= this->object->MeleeChecker.distance_to_enemy	(this->object->EnemyMan.get_enemy());
 	
 	if (dist > m_fDistMax)	return true;
 
@@ -108,8 +108,8 @@ void CStateZombieAttackRunAbstract::choose_action()
 	//
 	if ((action == ACT_RUN) && (m_time_action_change + CHANGE_ACTION_FROM_RUN > time())) return;
 
-	// óñòàíîâêà ïàðàìåòðîâ ôóíêöèîíàëüíûõ áëîêîâ
-	if (object->HitMemory.is_hit() && (object->conditions().GetHealth() < 0.5f)) 
+	// ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ñ… Ð±Ð»Ð¾ÐºÐ¾Ð²
+	if (this->object->HitMemory.is_hit() && (this->object->conditions().GetHealth() < 0.5f))
 		action = ACT_RUN;
 	else 
 		action = ACT_WALK_FWD;

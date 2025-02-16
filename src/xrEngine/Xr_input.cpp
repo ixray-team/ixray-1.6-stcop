@@ -149,6 +149,8 @@ CInput::CInput						( BOOL bExclusive, int deviceForInit)
 	Device.seqAppDeactivate.Add		(this, REG_PRIORITY_HIGH);
 	Device.seqFrame.Add				(this, REG_PRIORITY_HIGH);
 #endif
+	m_last_key_pressed = COUNT_KB_BUTTONS + 1;
+	m_last_key_released = COUNT_KB_BUTTONS + 1;
 }
 
 CInput::~CInput()
@@ -246,10 +248,14 @@ void CInput::KeyboardUpdate()
 			if (Pressed)
 			{
 				cbStack.back()->IR_OnKeyboardPress((int)i);
+				m_last_key_pressed = (int)i;
+				m_last_key_released = COUNT_KB_BUTTONS + 1;
 			}
 			else
 			{
 				cbStack.back()->IR_OnKeyboardRelease((int)i);
+				m_last_key_pressed = COUNT_KB_BUTTONS + 1;
+				m_last_key_released = (int)i;
 			}
 		}
 	}

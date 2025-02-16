@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "gamepersistent.h"
 #include "../fmesh.h"
@@ -23,6 +24,8 @@
 #include "actor.h"
 #include "script_engine.h"
 #include "ui/UITextureMaster.h"
+#include "../xrEngine/Application.h"
+#include "ui/UILoadingScreen.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -53,10 +56,17 @@ CGamePersistent::CGamePersistent(void)
 {
 	m_bPickableDOF				= false;
 	m_game_params.m_e_game_type	= eGameIDNoGame;
-	ambient_sound_next_time		= 0;
 	ambient_effect_next_time	= 0;
 	ambient_effect_stop_time	= 0;
 	ambient_particles			= 0;
+
+	ambient_effect_wind_start = 0.f;
+	ambient_effect_wind_in_time = 0.f;
+	ambient_effect_wind_end = 0.f;
+	ambient_effect_wind_out_time = 0.f;
+	ambient_effect_wind_on = false;
+
+	ZeroMemory(ambient_sound_next_time, sizeof(ambient_sound_next_time));
 
 	m_pUI_core					= NULL;
 	m_pMainMenu					= NULL;
@@ -101,6 +111,11 @@ CGamePersistent::~CGamePersistent(void)
 	Device.seqFrame.Remove		(this);
 	g_pEventManager->Event.Handler_Detach	(eDemoStart,this);
 	g_pEventManager->Event.Handler_Detach	(eQuickLoad,this);
+}
+
+void CGamePersistent::PreStart(LPCSTR op) {
+	pApp->SetLoadingScreen(new UILoadingScreen());
+	__super::PreStart(op);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)
@@ -206,62 +221,176 @@ void CGamePersistent::OnGameEnd	()
 
 void CGamePersistent::WeathersUpdate()
 {
-	if (g_pGameLevel && !g_dedicated_server)
-	{
-		CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
-		BOOL bIndoor				= TRUE;
-		if (actor) bIndoor			= actor->renderable_ROS()->get_luminocity_hemi()<0.05f;
+    if (g_pGameLevel && !g_dedicated_server)
+    {
+        CActor* actor   = smart_cast<CActor*>(Level().CurrentViewEntity());
+        BOOL    bIndoor = TRUE;
+        if (actor)
+            bIndoor = actor->renderable_ROS()->get_luminocity_hemi() < 0.05f;
 
-		int data_set				= (Random.randF()<(1.f-Environment().CurrentEnv->weight))?0:1; 
+        int                   data_set    = (Random.randF() < (1.f - Environment().CurrentEnv->weight)) ? 0 : 1;
 
-		CEnvDescriptor* const _env	= Environment().Current[data_set]; 
-		VERIFY						(_env);
+        CEnvDescriptor* const current_env = Environment().Current[0];
+        VERIFY(current_env);
 
-		CEnvAmbient* env_amb		= _env->env_ambient;
+        CEnvDescriptor* const _env = Environment().Current[data_set];
+        VERIFY(_env);
 
-		// start sound
-		if (env_amb)
-		{
-			if (Device.dwTimeGlobal > ambient_sound_next_time)
-			{
-				ref_sound* snd			= env_amb->get_rnd_sound();
-				ambient_sound_next_time	= Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
-				if (snd)
-				{
-					Fvector	pos;
-					float	angle		= ::Random.randF(PI_MUL_2);
-					pos.x				= _cos(angle);
-					pos.y				= 0;
-					pos.z				= _sin(angle);
-					pos.normalize		().mul(env_amb->get_rnd_sound_dist()).add(Device.vCameraPosition);
-					pos.y				+= 10.f;
-					snd->play_at_pos	(0,pos);
-				}
-			}
+        CEnvAmbient* env_amb = _env->env_ambient;
+        if (env_amb)
+        {
+            CEnvAmbient::SSndChannelVec&  vec = current_env->env_ambient->get_snd_channels();
+            CEnvAmbient::SSndChannelVecIt I   = vec.begin();
+            CEnvAmbient::SSndChannelVecIt E   = vec.end();
 
-			// start effect
-			if ((FALSE==bIndoor) && (0==ambient_particles) && Device.dwTimeGlobal>ambient_effect_next_time){
-				CEnvAmbient::SEffect* eff			= env_amb->get_rnd_effect(); 
-				if (eff){
-					Environment().wind_gust_factor	= eff->wind_gust_factor;
-					ambient_effect_next_time		= Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
-					ambient_effect_stop_time		= Device.dwTimeGlobal + eff->life_time;
-					ambient_particles				= CParticlesObject::Create(eff->particles.c_str(),FALSE,false);
-					Fvector pos; pos.add			(Device.vCameraPosition,eff->offset); 
-					ambient_particles->play_at_pos	(pos);
-					if (eff->sound._handle())		eff->sound.play_at_pos(0,pos);
-				}
-			}
-		}
-		// stop if time exceed or indoor
-		if (bIndoor || Device.dwTimeGlobal>=ambient_effect_stop_time){
-			if (ambient_particles)					ambient_particles->Stop();
-			Environment().wind_gust_factor			= 0.f;
-		}
-		// if particles not playing - destroy
-		if (ambient_particles&&!ambient_particles->IsPlaying())
-			CParticlesObject::Destroy(ambient_particles);
-	}
+            // start sound
+            for (u32 idx = 0; I != E; ++I, ++idx)
+            {
+                CEnvAmbient::SSndChannel& ch = **I;
+                R_ASSERT(idx < 20);
+                if (ambient_sound_next_time[idx] == 0)   // first
+                {
+                    ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
+                }
+                else if (Device.dwTimeGlobal > ambient_sound_next_time[idx])
+                {
+                    ref_sound& snd = ch.get_rnd_sound();
+
+                    Fvector    pos;
+                    float      angle = ::Random.randF(PI_MUL_2);
+                    pos.x            = _cos(angle);
+                    pos.y            = 0;
+                    pos.z            = _sin(angle);
+                    pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
+                    pos.y += 10.f;
+                    snd.play_at_pos(0, pos);
+
+#ifdef DEBUG
+                    if (!snd._handle() && strstr(Core.Params, "-nosound"))
+                        continue;
+#endif   // DEBUG
+
+                    VERIFY(snd._handle());
+                    u32 _length_ms               = iFloor(snd.get_length_sec() * 1000.0f);
+                    ambient_sound_next_time[idx] = Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
+                    // Msg("- Playing ambient sound channel [%s] file[%s]", ch.m_load_section.c_str(), snd._handle()->file_name());
+                }
+            }
+            /*
+            if (Device->dwTimeGlobal > ambient_sound_next_time)
+            {
+                ref_sound* snd          = env_amb->get_rnd_sound();
+                ambient_sound_next_time = Device->dwTimeGlobal + env_amb->get_rnd_sound_time();
+                if (snd)
+                {
+                    Fvector pos;
+                    float   angle = ::Random.randF(PI_MUL_2);
+                    pos.x         = _cos(angle);
+                    pos.y         = 0;
+                    pos.z         = _sin(angle);
+                    pos.normalize().mul(env_amb->get_rnd_sound_dist()).add(Device->vCameraPosition);
+                    pos.y += 10.f;
+                    snd->play_at_pos(0, pos);
+                }
+            }
+            */
+            // start effect
+            if ((FALSE == bIndoor) && (0 == ambient_particles) && Device.dwTimeGlobal > ambient_effect_next_time)
+            {
+                CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
+                if (eff)
+                {
+                    Environment().wind_gust_factor = eff->wind_gust_factor;
+                    ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+                    ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
+                    ambient_effect_wind_start = Device.fTimeGlobal;
+                    ambient_effect_wind_in_time = Device.fTimeGlobal + eff->wind_blast_in_time;
+                    ambient_effect_wind_end = Device.fTimeGlobal + eff->life_time / 1000.f;
+                    ambient_effect_wind_out_time = Device.fTimeGlobal + eff->life_time / 1000.f + eff->wind_blast_out_time;
+                    ambient_effect_wind_on = true;
+
+                    ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
+                    Fvector pos;
+                    pos.add(Device.vCameraPosition, eff->offset);
+                    ambient_particles->play_at_pos(pos);
+                    if (eff->sound._handle())
+                        eff->sound.play_at_pos(0, pos);
+
+                    Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
+                    Environment().wind_blast_strength_stop_value = eff->wind_blast_strength;
+
+                    if (Environment().wind_blast_strength_start_value == 0.f)
+                    {
+                        Environment().wind_blast_start_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
+                    }
+                    else
+                    {
+                        Environment().wind_blast_start_time.set(0.f, Environment().wind_blast_direction.x, Environment().wind_blast_direction.y, Environment().wind_blast_direction.z);
+                    }
+                    Environment().wind_blast_stop_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
+                }
+            }
+        }
+        if (Device.fTimeGlobal >= ambient_effect_wind_start && Device.fTimeGlobal <= ambient_effect_wind_in_time && ambient_effect_wind_on)
+        {
+            float delta = ambient_effect_wind_in_time - ambient_effect_wind_start;
+            float t;
+            if (delta != 0.f)
+            {
+                float cur_in = Device.fTimeGlobal - ambient_effect_wind_start;
+                t = cur_in / delta;
+            }
+            else
+            {
+                t = 0.f;
+            }
+            Environment().wind_blast_current.slerp(Environment().wind_blast_start_time, Environment().wind_blast_stop_time, t);
+
+            Environment().wind_blast_direction.set(Environment().wind_blast_current.x, Environment().wind_blast_current.y, Environment().wind_blast_current.z);
+            Environment().wind_strength_factor = Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+        }
+
+        // stop if time exceed or indoor
+        if (bIndoor || Device.dwTimeGlobal >= ambient_effect_stop_time)
+        {
+            if (ambient_particles)
+                ambient_particles->Stop();
+
+            Environment().wind_gust_factor = 0.f;
+        }
+
+        if (Device.fTimeGlobal >= ambient_effect_wind_end && ambient_effect_wind_on)
+        {
+            Environment().wind_blast_strength_start_value = Environment().wind_strength_factor;
+            Environment().wind_blast_strength_stop_value = 0.f;
+
+            ambient_effect_wind_on = false;
+        }
+
+        if (Device.fTimeGlobal >= ambient_effect_wind_end && Device.fTimeGlobal <= ambient_effect_wind_out_time)
+        {
+            float delta = ambient_effect_wind_out_time - ambient_effect_wind_end;
+            float t;
+            if (delta != 0.f)
+            {
+                float cur_in = Device.fTimeGlobal - ambient_effect_wind_end;
+                t = cur_in / delta;
+            }
+            else
+            {
+                t = 0.f;
+            }
+            Environment().wind_strength_factor = Environment().wind_blast_strength_start_value + t * (Environment().wind_blast_strength_stop_value - Environment().wind_blast_strength_start_value);
+        }
+        if (Device.fTimeGlobal > ambient_effect_wind_out_time && ambient_effect_wind_out_time != 0.f)
+        {
+            Environment().wind_strength_factor = 0.0;
+        }
+
+        // if particles not playing - destroy
+        if (ambient_particles && !ambient_particles->IsPlaying())
+            CParticlesObject::Destroy(ambient_particles);
+    }
 }
 
 bool allow_intro ()
@@ -319,7 +448,7 @@ void CGamePersistent::game_loaded()
 			load_screen_renderer.b_need_user_input	&& 
 			m_game_params.m_e_game_type == GAME_SINGLE)
 		{
-			pApp->ClearTitle();
+	//		pApp->ClearTitle();
 
 			if (NULL!=m_intro)	return;
 
@@ -631,7 +760,7 @@ void CGamePersistent::LoadTitle(LPCSTR str)
 {
 	string512			buff;
 	xr_sprintf				(buff, "%s...", CStringTable().translate(str).c_str());
-	pApp->LoadTitleInt	(buff);
+//	pApp->LoadTitleInt	(buff);
 }
 
 bool CGamePersistent::CanBePaused()

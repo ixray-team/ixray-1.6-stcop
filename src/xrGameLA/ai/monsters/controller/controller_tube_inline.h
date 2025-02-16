@@ -15,12 +15,12 @@ void CStateControllerTubeAbstract::execute()
 {
 //	object->control().activate	(ControlCom::eComCustom1);
 //	object->set_action			(ACT_STAND_IDLE);
-	object->m_time_last_tube	= time();
+	this->object->m_time_last_tube	= time();
 
 	// missed
 	//if (!object->tube_at_once() && (Random.randI(100) > TUBE_PROBABILITY)) return;
 
-	object->control().activate	(ControlCom::eComCustom1);
+	this->object->control().activate	(ControlCom::eComCustom1);
 }
 
 #define SEE_ENEMY_DURATION 1000
@@ -34,13 +34,13 @@ bool CStateControllerTubeAbstract::check_start_conditions()
 
 	return true;
 	*/
-	return object->can_tube_fire();
+	return this->object->can_tube_fire();
 }
 
 TEMPLATE_SPECIALIZATION
 bool CStateControllerTubeAbstract::check_completion()
 {
-	return (!object->m_psy_hit->is_active());
+	return (!this->object->m_psy_hit->is_active());
 }
 
 #undef TEMPLATE_SPECIALIZATION

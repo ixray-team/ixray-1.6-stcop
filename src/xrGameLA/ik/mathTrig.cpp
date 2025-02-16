@@ -97,7 +97,7 @@ int solve_trig1(float a, float b, float c, float theta[2])
     }
 
     temp  = (float) atan2((float)_sqrt(temp),(float) c);//.(float) c
-    int num =  (!iszero(temp)) ? 2 : 1;
+    int num =  (!t_iszero(temp)) ? 2 : 1;
 
     // Calculate answer in radians
     theta[0] = (float) atan2(b,a);
@@ -138,7 +138,7 @@ int myacos(float x, float solns[2])
 
     solns[0] = angle_normalize_signed(acos(x));
 
-    if (iszero(solns[0]))
+    if (t_iszero(solns[0]))
 	return 1;
     
     solns[1] = -solns[0];
@@ -156,7 +156,7 @@ int myasin(float x, float solns[2])
 
     solns[0] = (float)angle_normalize_signed(asin(x));
 
-    if (iszero(solns[0]))
+    if (t_iszero(solns[0]))
 	return 1;
     
     if (solns[0] > 0)

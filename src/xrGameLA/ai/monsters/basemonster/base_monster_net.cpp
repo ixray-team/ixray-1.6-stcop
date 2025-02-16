@@ -3,7 +3,7 @@
 
 #include "../../../ai_object_location.h"
 #include "../../../game_graph.h"
-#include "../../../../../xrCore/net_utils.h"
+#include "../../../../xrCore/net_utils.h"
 #include "../../../ai_space.h"
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"

@@ -11,6 +11,7 @@
 #include "xrServer.h"
 #include "../xrEngine/x_ray.h"
 #include "xrServer_Objects_ALife_Items.h"
+#include "ui/UILoadingScreen.h"
 
 game_sv_Single::game_sv_Single			()
 {
@@ -209,7 +210,7 @@ float game_sv_Single::GetEnvironmentGameTimeFactor		()
 
 void game_sv_Single::SetEnvironmentGameTimeFactor		(const float fTimeFactor)
 {
-//	return(inherited::SetGameTimeFactor(fTimeFactor));
+	return(inherited::SetGameTimeFactor(fTimeFactor));
 }
 
 void game_sv_Single::SetGameTimeFactor	(ALife::_TIME_ID GameTime, const float fTimeFactor)
@@ -362,9 +363,11 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	xr_strcpy				(g_pGamePersistent->m_game_params.m_game_or_spawn,saved_game_name);
 	xr_strcpy				(g_pGamePersistent->m_game_params.m_new_or_load,"load");
 
+	pApp->SetLoadingScreen(new UILoadingScreen());
 	pApp->LoadBegin			();
 	m_alife_simulator		= new CALifeSimulator(&server(),&options);
 	g_pGamePersistent->LoadTitle		("st_loading_data");
+	pApp->LoadForceFinish();
 	Device.PreCache			(30, true, true);
 	pApp->LoadEnd			();
 }

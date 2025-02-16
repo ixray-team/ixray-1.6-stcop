@@ -5,7 +5,7 @@
 #include "../../../level.h"
 #include "../../../CameraEffector.h"
 #include "../../../ActorEffector.h"
-#include "../../../../xr_ioconsole.h"
+#include "../../../xrEngine/xr_ioconsole.h"
 
 CPPEffectorControllerAura::CPPEffectorControllerAura(const SPPInfo &ppi, u32 time_to_fade, const ref_sound &snd_left, const ref_sound &snd_right)
 : inherited(ppi)

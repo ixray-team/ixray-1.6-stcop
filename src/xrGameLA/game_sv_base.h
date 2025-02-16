@@ -5,6 +5,7 @@
 #include "script_export_space.h"
 #include "../../xrCore/client_id.h"
 #include "game_sv_base_console_vars.h"
+#include "../xrNetServer/net_deprecatedconstants.h"
 
 #define MAX_PLAYERS_COUNT 32
 

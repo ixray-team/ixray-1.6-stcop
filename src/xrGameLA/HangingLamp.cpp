@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "HangingLamp.h"
 #include "../LightAnimLibrary.h"

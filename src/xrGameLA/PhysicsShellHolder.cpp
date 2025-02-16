@@ -23,7 +23,7 @@ void CPhysicsShellHolder::net_Destroy()
 	//remove calls
 	CPHSriptReqGObjComparer cmpr(this);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
-	//удалить партиклы из ParticlePlayer
+	//СѓРґР°Р»РёС‚СЊ РїР°СЂС‚РёРєР»С‹ РёР· ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
 	inherited::net_Destroy						();
 	b_sheduled									=	false;
@@ -261,7 +261,7 @@ void CPhysicsShellHolder::OnChangeVisual()
 void CPhysicsShellHolder::UpdateCL	()
 {
 	inherited::UpdateCL	();
-	//обновить присоединенные партиклы
+	//РѕР±РЅРѕРІРёС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	UpdateParticles		();
 }
 float CPhysicsShellHolder::EffectiveGravity()
@@ -292,13 +292,15 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 
 	//CPhysicsShell* pPhysicsShell=PPhysicsShell();
 	IKinematics* K	=smart_cast<IKinematics*>(Visual());
+	VisMask _vm;
 	//Flags8 lflags;
 	//if(pPhysicsShell&&pPhysicsShell->isActive())			lflags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
 
 //	P.w_u8 (lflags.get());
 	if(K)
 	{
-		P.w_u64(K->LL_GetBonesVisible());
+		_vm = K->LL_GetBonesVisible();
+		P.w_u64(_vm._visimask.flags);
 		P.w_u16(K->LL_GetBoneRoot());
 	}
 	else
@@ -344,33 +346,39 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 		state.net_Save(P,min,max);
 	}
 }
-void
-CPhysicsShellHolder::PHLoadState(IReader &P)
-{
-	
-//	Flags8 lflags;
-	IKinematics* K=smart_cast<IKinematics*>(Visual());
-//	P.r_u8 (lflags.flags);
-	if(K)
+
+void CPhysicsShellHolder::PHLoadState(IReader& P) {
+	u64 _low = 0;
+	u64 _high = 0;
+
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K)
 	{
-		K->LL_SetBonesVisible(P.r_u64());
+		_low = P.r_u64();
 		K->LL_SetBoneRoot(P.r_u16());
 	}
 
-	Fvector min=P.r_vec3();
-	Fvector max=P.r_vec3();
-	
+	Fvector min = P.r_vec3();
+	Fvector max = P.r_vec3();
+
 	VERIFY(!min.similar(max));
 
-	u16 bones_number=P.r_u16();
-	for(u16 i=0;i<bones_number;i++)
+	u16 bones_number = P.r_u16();
+	if (bones_number > 64) {
+		Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+
+	VisMask _vm(_low, _high);
+	K->LL_SetBonesVisible(_vm);
+
+	for (u16 i = 0; i < bones_number; i++)
 	{
 		SPHNetState state;
-		state.net_Load(P,min,max);
+		state.net_Load(P, min, max);
 		PHGetSyncItem(i)->set_State(state);
 	}
 }
-
 bool CPhysicsShellHolder::register_schedule	() const
 {
 	return					(b_sheduled);

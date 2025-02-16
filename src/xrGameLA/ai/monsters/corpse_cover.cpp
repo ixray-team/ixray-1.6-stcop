@@ -19,7 +19,7 @@ void CMonsterCorpseCoverEvaluator::evaluate			(const CCoverPoint *cover_point, f
 	direction.sub			(m_start_position,cover_point->position());
 	direction.getHP			(y,p);
 	
-	float					cover_value = ai().level_graph().cover_in_direction(y,cover_point->level_vertex_id());
+	float					cover_value = ai().level_graph().high_cover_in_direction(y,cover_point->level_vertex_id());
 	if (cover_value >= 2.f*m_best_value)
 		return;
 

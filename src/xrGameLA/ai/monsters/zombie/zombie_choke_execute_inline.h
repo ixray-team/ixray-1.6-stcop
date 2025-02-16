@@ -2,9 +2,9 @@
 
 //#include "../../../../xrRender/skeletoncustom.h"
 #include "../../../actor.h"
-#include "../../../../CameraBase.h"
-#include "../../../../CustomHUD.h"
-#include "../../../../../xrCore/_vector3d_ext.h"
+#include "../../../../xrEngine/CameraBase.h"
+#include "../../../../xrEngine/CustomHUD.h"
+#include "../../../../xrCore/_vector3d_ext.h"
 #include "../../../hudmanager.h"
 #include "../../../UIGameCustom.h"
 #include "../../../UI/UIStatic.h"
@@ -24,13 +24,13 @@ extern bool g_bDisableAllInput;
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::initialize()
 {
-	controlling_value = 1;
+	this->controlling_value = 1;
 
 	inherited::initialize					();
 
-	object->CControlledActor::install		();
-	object->CControlledActor::set_min_speed	(3.f);
-	object->CControlledActor::set_max_speed	(5.f);
+	this->object->CControlledActor::install		();
+	this->object->CControlledActor::set_min_speed	(3.f);
+	this->object->CControlledActor::set_max_speed	(5.f);
 
 	look_head				();
 
@@ -49,7 +49,7 @@ TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::execute()
 {
 	if (/*!object->CControlledActor::is_turning() &&*/ !m_effector_activated) {
-		object->ActivateChokeEffector	();
+		this->object->ActivateChokeEffector	();
 		m_effector_activated			= true;
 	}
 	
@@ -71,16 +71,16 @@ void CStateZombieChokeExecuteAbstract::execute()
 			break;
 
 		case eActionWaitTripleEnd:
-			if (!object->com_man().ta_is_active()) {
+			if (!this->object->com_man().ta_is_active()) {
 				m_action = eActionCompleted; 
 			}
 
 		case eActionCompleted:
-			controlling_value = 0;
+			this->controlling_value = 0;
 			break;
 	}
-	object->set_action						(ACT_STAND_IDLE);
-	object->dir().face_target	(object->EnemyMan.get_enemy());	
+	this->object->set_action						(ACT_STAND_IDLE);
+	this->object->dir().face_target	(this->object->EnemyMan.get_enemy());
 }
 
 TEMPLATE_SPECIALIZATION
@@ -95,11 +95,11 @@ void CStateZombieChokeExecuteAbstract::show_hud()
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::cleanup()
 {	
-	if ( object->com_man().ta_is_active() )
-		object->com_man().ta_deactivate();
+	if (this->object->com_man().ta_is_active() )
+		this->object->com_man().ta_deactivate();
 
-	if (object->CControlledActor::is_controlling())
-		object->CControlledActor::release		();
+	if (this->object->CControlledActor::is_controlling())
+		this->object->CControlledActor::release		();
 
 	show_hud();
 }
@@ -121,24 +121,24 @@ void CStateZombieChokeExecuteAbstract::critical_finalize()
 TEMPLATE_SPECIALIZATION
 bool CStateZombieChokeExecuteAbstract::check_start_conditions()
 {
-	const CEntityAlive	*enemy = object->EnemyMan.get_enemy();
+	const CEntityAlive	*enemy = this->object->EnemyMan.get_enemy();
 
 	if (enemy->CLS_ID != CLSID_OBJECT_ACTOR)							return false;
 	
-	// проверить дистанцию
-	float dist		= object->MeleeChecker.distance_to_enemy(enemy);
+	// РїСЂРѕРІРµСЂРёС‚СЊ РґРёСЃС‚Р°РЅС†РёСЋ
+	float dist		= this->object->MeleeChecker.distance_to_enemy(enemy);
 	if ((dist > CHOKE_MAX_DIST) || (dist < CHOKE_MIN_DIST))					return false;
 
-	if (object->CControlledActor::is_controlling())							return false;
+	if (this->object->CControlledActor::is_controlling())							return false;
 
 	const CActor *m_actor = smart_cast<const CActor*>(enemy);
 	VERIFY(m_actor);
 	if (m_actor->input_external_handler_installed())						return false;
 
-	if (controlling_value == 1)									return false;
+	if (this->controlling_value == 1)									return false;
 
-	// проверить направление на врага
-	if (!object->control().direction().is_face_target(enemy, PI_DIV_6))				return false;
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РЅР° РІСЂР°РіР°
+	if (!this->object->control().direction().is_face_target(enemy, PI_DIV_6))				return false;
 
 	return true;
 }
@@ -154,20 +154,20 @@ bool CStateZombieChokeExecuteAbstract::check_completion()
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::execute_choke_prepare()
 {
-	object->com_man().ta_activate		(object->anim_triple_choke);
+	this->object->com_man().ta_activate		(this->object->anim_triple_choke);
 	time_choke_started				= Device.dwTimeGlobal;
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::execute_choke_continue()
 {
-	if (object->Position().distance_to(Actor()->Position()) > 2.f) {
-		object->com_man().ta_deactivate();
+	if (this->object->Position().distance_to(Actor()->Position()) > 2.f) {
+		this->object->com_man().ta_deactivate();
 		m_action = eActionCompleted;
 		return;
 	}
 
-	// проверить на грави удар
+	// РїСЂРѕРІРµСЂРёС‚СЊ РЅР° РіСЂР°РІРё СѓРґР°СЂ
 	if (time_choke_started + CHOKE_TIME_HOLD < Device.dwTimeGlobal) {
 		m_action = eActionFire;
 	}
@@ -176,8 +176,8 @@ void CStateZombieChokeExecuteAbstract::execute_choke_continue()
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::execute_choke_hit()
 {
-	object->com_man().ta_pointbreak				();
-	object->ChokeCompleted						();
+	this->object->com_man().ta_pointbreak				();
+	this->object->ChokeCompleted						();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,14 +185,14 @@ void CStateZombieChokeExecuteAbstract::execute_choke_hit()
 TEMPLATE_SPECIALIZATION
 void CStateZombieChokeExecuteAbstract::look_head()
 {
-	IKinematics *pK = smart_cast<IKinematics*>(object->Visual());
+	IKinematics *pK = smart_cast<IKinematics*>(this->object->Visual());
 	Fmatrix bone_transform;
 	bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));	
 
 	Fmatrix global_transform;
-	global_transform.mul_43(object->XFORM(),bone_transform);
+	global_transform.mul_43(this->object->XFORM(),bone_transform);
 
-	object->CControlledActor::look_point	(global_transform.c);
+	this->object->CControlledActor::look_point	(global_transform.c);
 }
 
 #undef TEMPLATE_SPECIALIZATION

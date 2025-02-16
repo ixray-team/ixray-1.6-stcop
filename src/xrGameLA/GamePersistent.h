@@ -18,9 +18,15 @@ class CGamePersistent:
 
 	// ambient particles
 	CParticlesObject*	ambient_particles; 
-	u32					ambient_sound_next_time;
+	u32					ambient_sound_next_time		[20]; //max snd channels
 	u32					ambient_effect_next_time;
 	u32					ambient_effect_stop_time;
+
+	float                         ambient_effect_wind_start;
+	float                         ambient_effect_wind_in_time;
+	float                         ambient_effect_wind_end;
+	float                         ambient_effect_wind_out_time;
+	bool                          ambient_effect_wind_on;
 
 	bool				m_bPickableDOF;
 	CUISequencer*		m_intro;
@@ -53,6 +59,7 @@ public:
 						CGamePersistent			();
 	virtual				~CGamePersistent		();
 
+	void PreStart(LPCSTR op) override;
 	virtual void		Start					(LPCSTR op);
 	virtual void		Disconnect				();
 

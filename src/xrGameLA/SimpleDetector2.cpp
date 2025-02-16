@@ -79,9 +79,9 @@ BOOL CSimpleDetector::feel_touch_contact		(CObject *O)
 void CSimpleDetector::UpdateAf()
 {
 	LPCSTR closest_art = "null";
-	CArtefact* pCurrentAf;
+	CArtefact* pCurrentAf = nullptr;
 	feel_touch_update_delay = feel_touch_update_delay + 1; 
-	if (feel_touch_update_delay >= 5)//Как то снизить нагрузку на кадр поможет
+	if (feel_touch_update_delay >= 5)//РљР°Рє С‚Рѕ СЃРЅРёР·РёС‚СЊ РЅР°РіСЂСѓР·РєСѓ РЅР° РєР°РґСЂ РїРѕРјРѕР¶РµС‚
 	{
 		feel_touch_update_delay = 0;
 		Fvector						P;
@@ -97,14 +97,14 @@ void CSimpleDetector::UpdateAf()
 			if (disttoart != -10.0)
 			{
 
-				//Если переменная досих пор не заданаа(первый проход цикла), то даем ей значение
+				//Р•СЃР»Рё РїРµСЂРµРјРµРЅРЅР°СЏ РґРѕСЃРёС… РїРѕСЂ РЅРµ Р·Р°РґР°РЅР°Р°(РїРµСЂРІС‹Р№ РїСЂРѕС…РѕРґ С†РёРєР»Р°), С‚Рѕ РґР°РµРј РµР№ Р·РЅР°С‡РµРЅРёРµ
 				if (disttoclosestart <= 0.0)
 				{ 
 					disttoclosestart = disttoart;
 					closest_art = closestart;
 					pCurrentAf = smart_cast<CArtefact*>(*it);
 				}
-				//нашли более близкий арт...
+				//РЅР°С€Р»Рё Р±РѕР»РµРµ Р±Р»РёР·РєРёР№ Р°СЂС‚...
 				if (disttoclosestart > disttoart)
 				{
 					disttoclosestart = disttoart;
@@ -114,7 +114,7 @@ void CSimpleDetector::UpdateAf()
 			}
 		}
 
-	//определить текущую частоту срабатывания сигнала
+	//РѕРїСЂРµРґРµР»РёС‚СЊ С‚РµРєСѓС‰СѓСЋ С‡Р°СЃС‚РѕС‚Сѓ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ СЃРёРіРЅР°Р»Р°
 	if (disttoclosestart == 0.0)
 	{
 		return;
@@ -124,7 +124,7 @@ void CSimpleDetector::UpdateAf()
 		cur_periodperiod = disttoclosestart / (fdetect_radius * pCurrentAf->detect_radius_koef);
 	}
 
-	//чтобы не перегружать звук. движок
+	//С‡С‚РѕР±С‹ РЅРµ РїРµСЂРµРіСЂСѓР¶Р°С‚СЊ Р·РІСѓРє. РґРІРёР¶РѕРє
 	if (cur_periodperiod < 0.11)
 	{
 		cur_periodperiod = 0.11;
@@ -136,7 +136,7 @@ void CSimpleDetector::UpdateAf()
 		{
 			if (detect_sndsnd_line || pCurrentAf->custom_detect_sound_string)
 			{
-				//Добавил врзможность задать разные звуки для различных артов
+				//Р”РѕР±Р°РІРёР» РІСЂР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РґР°С‚СЊ СЂР°Р·РЅС‹Рµ Р·РІСѓРєРё РґР»СЏ СЂР°Р·Р»РёС‡РЅС‹С… Р°СЂС‚РѕРІ
 				freqq = 1.8 - cur_periodperiod;
 
 				if (freqq < 0.8)
@@ -162,7 +162,7 @@ void CSimpleDetector::UpdateAf()
 		snd_timetime += Device.fTimeDelta;
 }
 
-//Просто для удобства вынес в отдельную функцию, а то и так месево там
+//РџСЂРѕСЃС‚Рѕ РґР»СЏ СѓРґРѕР±СЃС‚РІР° РІС‹РЅРµСЃ РІ РѕС‚РґРµР»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ, Р° С‚Рѕ Рё С‚Р°Рє РјРµСЃРµРІРѕ С‚Р°Рј
 
 float CSimpleDetector::DetectorFeel(CObject* item)
 {
@@ -183,7 +183,7 @@ float CSimpleDetector::DetectorFeel(CObject* item)
 	return -10.0;
 }
 
-//---------------UI(Лампочки)------------------
+//---------------UI(Р›Р°РјРїРѕС‡РєРё)------------------
 CUIArtefactDetectorSimple&  CSimpleDetector::ui()
 {
 	return *((CUIArtefactDetectorSimple*)m_ui);
@@ -204,7 +204,7 @@ CUIArtefactDetectorSimple::~CUIArtefactDetectorSimple()
 	//Svet_Dosviduli					(m_on_off_light);
 }
 
-// Функция срытия показа кости у модели, берется название кости в виде строки и модель.
+// Р¤СѓРЅРєС†РёСЏ СЃСЂС‹С‚РёСЏ РїРѕРєР°Р·Р° РєРѕСЃС‚Рё Сѓ РјРѕРґРµР»Рё, Р±РµСЂРµС‚СЃСЏ РЅР°Р·РІР°РЅРёРµ РєРѕСЃС‚Рё РІ РІРёРґРµ СЃС‚СЂРѕРєРё Рё РјРѕРґРµР»СЊ.
 void CUIArtefactDetectorSimple::SetBoneVisible(IKinematics* model, CSimpleDetector* parent, LPCSTR bonename, bool visible, bool someshit)
 {
 	if(!parent->HudItemData())	return;
@@ -224,17 +224,17 @@ void CUIArtefactDetectorSimple::SetBoneVisible(IKinematics* model, CSimpleDetect
 	}
 }
 
-// Функция звукового сигнала
+// Р¤СѓРЅРєС†РёСЏ Р·РІСѓРєРѕРІРѕРіРѕ СЃРёРіРЅР°Р»Р°
 //void CUIArtefactDetectorSimple::ZvukovojSignal(HUD_SOUND_ITEM sound, float fvector1, float fvector2, float fvector3, CSimpleDetector* parent, bool bool1, bool bool2)
 //{
 //}
 
-// Функция смены частоты звука
+// Р¤СѓРЅРєС†РёСЏ СЃРјРµРЅС‹ С‡Р°СЃС‚РѕС‚С‹ Р·РІСѓРєР°
 //void CUIArtefactDetectorSimple::ZvukovojSignalChastota(HUD_SOUND_ITEM sound, float freq)
 //{
 //}
 
-// Функция создания света
+// Р¤СѓРЅРєС†РёСЏ СЃРѕР·РґР°РЅРёСЏ СЃРІРµС‚Р°
 ref_light CUIArtefactDetectorSimple::Svet_Sozdat()
 {
 	ref_light lightvar;
@@ -244,7 +244,7 @@ ref_light CUIArtefactDetectorSimple::Svet_Sozdat()
 	return (lightvar);
 }
 
-// Функция тень света
+// Р¤СѓРЅРєС†РёСЏ С‚РµРЅСЊ СЃРІРµС‚Р°
 void CUIArtefactDetectorSimple::Svet_Ten(ref_light light, bool danet)
 {
 	if(danet == true)
@@ -256,13 +256,13 @@ void CUIArtefactDetectorSimple::Svet_Ten(ref_light light, bool danet)
 	}
 }
 
-// Функция область света
+// Р¤СѓРЅРєС†РёСЏ РѕР±Р»Р°СЃС‚СЊ СЃРІРµС‚Р°
 void CUIArtefactDetectorSimple::Svet_Dalnost(ref_light light, float range)
 {
 	light->set_range		(range);
 }
 
-// Функция худ-мод света
+// Р¤СѓРЅРєС†РёСЏ С…СѓРґ-РјРѕРґ СЃРІРµС‚Р°
 void CUIArtefactDetectorSimple::Svet_HUDmode(ref_light light, bool danet)
 {
 	if(danet == true)
@@ -274,21 +274,21 @@ void CUIArtefactDetectorSimple::Svet_HUDmode(ref_light light, bool danet)
 	}
 }
 
-// Функция вкл/выкл свет
+// Р¤СѓРЅРєС†РёСЏ РІРєР»/РІС‹РєР» СЃРІРµС‚
 
 void CUIArtefactDetectorSimple::Svet_VklVykl(ref_light light, bool danet)
 {
 	light->set_active(danet);
 }
 
-// Получалка get вкл/выкл свет
+// РџРѕР»СѓС‡Р°Р»РєР° get РІРєР»/РІС‹РєР» СЃРІРµС‚
 bool CUIArtefactDetectorSimple::Svet_Get_VklVykl(ref_light light)
 {
 	bool danet = light->get_active();
 	return (danet);
 }
 
-// Функция цвет света
+// Р¤СѓРЅРєС†РёСЏ С†РІРµС‚ СЃРІРµС‚Р°
 void CUIArtefactDetectorSimple::Svet_Cvet(ref_light light, float alfa, float k, float z, float s, bool useU32, u32 clr)
 {
 
@@ -306,19 +306,19 @@ void CUIArtefactDetectorSimple::Svet_Cvet(ref_light light, float alfa, float k, 
 	light->set_color(fclr);
 }
 
-// Функция задать позицию света
+// Р¤СѓРЅРєС†РёСЏ Р·Р°РґР°С‚СЊ РїРѕР·РёС†РёСЋ СЃРІРµС‚Р°
 void CUIArtefactDetectorSimple::Svet_Position(ref_light light, Fvector pos)
 {
 	light->set_position(pos);
 }
 
-// Функция разрушить свет
+// Р¤СѓРЅРєС†РёСЏ СЂР°Р·СЂСѓС€РёС‚СЊ СЃРІРµС‚
 void CUIArtefactDetectorSimple::Svet_Dosviduli(ref_light light)
 {
 	light.destroy();
 }
 
-#pragma todo("Свет спавнится не в том месте + вызывает падение фпс на статике при стрельбе и использовании ножа. Возможно проблемма с точками огня, которые используются как позииции для спавна света| пока отключил свет")
+#pragma todo("РЎРІРµС‚ СЃРїР°РІРЅРёС‚СЃСЏ РЅРµ РІ С‚РѕРј РјРµСЃС‚Рµ + РІС‹Р·С‹РІР°РµС‚ РїР°РґРµРЅРёРµ С„РїСЃ РЅР° СЃС‚Р°С‚РёРєРµ РїСЂРё СЃС‚СЂРµР»СЊР±Рµ Рё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё РЅРѕР¶Р°. Р’РѕР·РјРѕР¶РЅРѕ РїСЂРѕР±Р»РµРјРјР° СЃ С‚РѕС‡РєР°РјРё РѕРіРЅСЏ, РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РєР°Рє РїРѕР·РёРёС†РёРё РґР»СЏ СЃРїР°РІРЅР° СЃРІРµС‚Р°| РїРѕРєР° РѕС‚РєР»СЋС‡РёР» СЃРІРµС‚")
 #pragma todo("Lights spawn in incorrect points, also causes fps drop on static renderer. might be fire poits, that are used to position the light| disabled light til fixed")
 void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 {
@@ -338,7 +338,7 @@ void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
 		m_turn_off_flash_time	= 0;
 	}
 //if (bOn != Svet_Get_VklVykl(m_flash_light)){
-//#pragma todo("Свет спавнится не в том месте|Lights spawn in incorrect points")
+//#pragma todo("РЎРІРµС‚ СЃРїР°РІРЅРёС‚СЃСЏ РЅРµ РІ С‚РѕРј РјРµСЃС‚Рµ|Lights spawn in incorrect points")
 //		Svet_VklVykl(m_flash_light, bOn);
 	//}
 }

@@ -48,7 +48,7 @@ void CPHSkeleton::RespawnInit()
 	if(K)
 	{
 		K->LL_SetBoneRoot(0);
-		K->LL_SetBonesVisible(0xffffffffffffffffL);
+		K->LL_SetBonesVisibleAll();
 		K->CalculateBones_Invalidate();
 		K->CalculateBones(TRUE);
 	}
@@ -164,9 +164,11 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 	if(pPhysicsShell&&pPhysicsShell->isActive())			m_flags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
 
 	P.w_u8 (m_flags.get());
+	VisMask _vm;
 	if(K)
 	{
-		P.w_u64(K->LL_GetBonesVisible());
+		_vm = K->LL_GetBonesVisible();
+		P.w_u64(_vm._visimask.flags);
 		P.w_u16(K->LL_GetBoneRoot());
 	}
 	else
@@ -204,6 +206,11 @@ void CPHSkeleton::SaveNetState(NET_Packet& P)
 
 	P.w_u16(bones_number);
 
+	if (bones_number > 64) {
+		Msg("!![CPhysicsShellHolder::PHSaveState] bones_number is [%u]!", bones_number);
+		P.w_u64(K ? _vm._visimask_ex.flags : u64(-1));
+	}
+
 	for(u16 i=0;i<bones_number;i++)
 	{
 		SPHNetState state;
@@ -217,13 +224,24 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	IKinematics* K=smart_cast<IKinematics*>(obj->Visual());
 	P.r_u8 (m_flags.flags);
+
+	u64 _low = 0;
+	u64 _high = 0;
+
 	if(K)
 	{
-		K->LL_SetBonesVisible(P.r_u64());
+		_low = P.r_u64();
 		K->LL_SetBoneRoot(P.r_u16());
 	}
+	
+	u16 bones_number = P.r_u16();
+	if(bones_number > 64) {
+		Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+	VisMask _vm(_low, _high);
+	K->LL_SetBonesVisible(_vm);
 
-	u16 bones_number=P.r_u16();
 	for(u16 i=0;i<bones_number;i++)
 	{
 		SPHNetState state;
