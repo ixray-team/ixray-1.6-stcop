@@ -35,7 +35,7 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
-	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
+	// Р¤Р»Р°Рі-РїСЂРёР·РЅР°Рє РґР»СЏ РЅРµРІР»СЋС‡РµРЅРёСЏ РїСѓРЅРєС‚Р° РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ: Dreess Outfit, РµСЃР»Рё РєРѕСЃС‚СЋРј СѓР¶Рµ РЅР°РґРµС‚
 	bool bAlreadyDressed = false; 
 
 		
@@ -68,7 +68,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 			PIItem	itemformoutfitslot = GetInventory()->ItemFromSlot(OUTFIT_SLOT);
 			if (itemformoutfitslot)
 			{
-				CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//на всякий случай проверим если это броня в слоте брони, а то..
+				CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РїСЂРѕРІРµСЂРёРј РµСЃР»Рё СЌС‚Рѕ Р±СЂРѕРЅСЏ РІ СЃР»РѕС‚Рµ Р±СЂРѕРЅРё, Р° С‚Рѕ..
 				if (outfit)
 				{
 					if ((baseSlot == HELMET_SLOT && outfit->block_helmet_slot == 1) || (baseSlot == PNV_SLOT && outfit->block_pnv_slot == 1))
@@ -102,14 +102,14 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		b_show			= true;
 	}
 	
-	//отсоединение аддонов от вещи
+	//РѕС‚СЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ РѕС‚ РІРµС‰Рё
 	if(pWeapon)
 	{
 		
 		luabind::functor<bool>	lua_function;
 		string256		fn;
 		xr_strcpy		(fn, pSettings->r_string("lost_alpha_cfg", "on_checking_repair_wpn"));
-		R_ASSERT2 (ai().script_engine().functor<bool>(fn,lua_function),make_string("Can't find function %s",fn));
+		R_ASSERT2 (ai().script_engine().functor<bool>(fn,lua_function),make_string<const char*>("Can't find function %s",fn));
 	
 		if (lua_function(CurrentIItem()->object().ID())) {				//isRepairable?
 			UIPropertiesBox.AddItem("st_repair_weapon",  NULL, INVENTORY_REPAIR);
@@ -154,7 +154,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		}
 	}
 	
-	//присоединение аддонов к активному слоту (2 или 3)
+	//РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ Рє Р°РєС‚РёРІРЅРѕРјСѓ СЃР»РѕС‚Сѓ (2 РёР»Рё 3)
 	if(pScope)
 	{
 		AttachActionToPropertyBox(PISTOL_SLOT,  pScope, "st_attach_scope_to_pistol");
@@ -275,7 +275,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 				luabind::functor<void>	repair;
 				string256		fn;
 				xr_strcpy		(fn, pSettings->r_string("lost_alpha_cfg", "on_repair_wpn_clicked"));
-				R_ASSERT2 (ai().script_engine().functor<void>(fn,repair),make_string("Can't find function %s",fn));
+				R_ASSERT2 (ai().script_engine().functor<void>(fn,repair),make_string<const char*>("Can't find function %s",fn));
 
 				repair(CurrentIItem()->object().ID());																			//Repair
 			}break;

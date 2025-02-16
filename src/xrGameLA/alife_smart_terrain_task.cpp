@@ -47,7 +47,7 @@ u32	CALifeSmartTerrainTask::level_vertex_id						() const
 	}
 	else {
 
-		VERIFY2(ai().game_graph().valid_vertex_id(m_game_vertex_id), make_string("Vertex [%d] is not valid!!!", m_game_vertex_id));
+		VERIFY2(ai().game_graph().valid_vertex_id(m_game_vertex_id), make_string<const char*>("Vertex [%d] is not valid!!!", m_game_vertex_id));
 		return m_level_vertex_id;
 	}
 }

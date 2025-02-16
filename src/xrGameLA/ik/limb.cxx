@@ -452,7 +452,7 @@ int Limb::SetGoal(const Matrix  G, int limits)
     return success;
 }
 
-static void init_error(char *msg)
+static void init_error(const char *msg)
 {
     fprintf(stderr, "You forgot to call SetGoal or SetGoalPos in %s\n", msg);
     exit(0);
@@ -985,16 +985,17 @@ float roundup(float x)
 void dump_file(char *file, int euler_type, float min[], float max[], 
 	       Matrix c, Matrix s, Matrix o)
 {
-    FILE *fp = fopen(file, "w");
+    FILE *fp;
+    fopen_s(&fp, file, "w");
 
     fprintf(fp, "%d\n", euler_type);
     fprintf(fp, "%f %f %f \n", roundup(min[2]), roundup(min[1]), roundup(min[0]));
     fprintf(fp, "%f %f %f \n", max[2], max[1], max[0]);
     for (int i = 0; i < 4; i++)
 	fprintf(fp, "%f %f %f %f\n", c[i][0],c[i][1],c[i][2],c[i][3]);
-    for (i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
 	fprintf(fp, "%f %f %f %f\n", s[i][0],s[i][1],s[i][2],s[i][3]);
-    for (i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
 	    fprintf(fp, "%f %f %f %f\n", o[i][0],o[i][1],o[i][2],o[i][3]);
    
     fclose(fp);

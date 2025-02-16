@@ -24,13 +24,13 @@ BOOL CVisualZone::	net_Spawn						(CSE_Abstract* DC)
 
 	IKinematicsAnimated* animated = smart_cast<IKinematicsAnimated*>(Visual());
 
-	R_ASSERT2(animated, make_string("object is not animated %s", cNameVisual().c_str()));
+	R_ASSERT2(animated, make_string<const char*>("object is not animated %s", cNameVisual()));
 
 	m_attack_animation = animated->ID_Cycle(attack_anim_name);
 	m_idle_animation = animated->ID_Cycle(idle_anim_name);
 
-	R_ASSERT2(m_attack_animation.valid(), make_string("! Can't find anim cycle: %s %s %s", DC->s_name.c_str(), cNameVisual().c_str(), attack_anim_name));
-	R_ASSERT2(m_idle_animation.valid(), make_string("! Can't find anim cycle: %s %s %s", DC->s_name.c_str(), cNameVisual().c_str(), idle_anim_name));
+	R_ASSERT2(m_attack_animation.valid(), make_string<const char*>("! Can't find anim cycle: %s %s %s", DC->s_name, cNameVisual(), attack_anim_name));
+	R_ASSERT2(m_idle_animation.valid(), make_string<const char*>("! Can't find anim cycle: %s %s %s", DC->s_name, cNameVisual(), idle_anim_name));
 
 	animated->PlayCycle(m_idle_animation);
 

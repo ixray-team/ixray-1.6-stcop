@@ -85,8 +85,6 @@ void CUIPdaWnd::Init()
 	else
 		xr_strcpy				(PDA_XML, "pda.xml");
 
-	bool xml_result			= uiXml.Load(CONFIG_PATH, UI_PATH,PDA_XML);
-	R_ASSERT3				(xml_result, "xml file not found", PDA_XML);
 	uiXml.Load(CONFIG_PATH, UI_PATH,PDA_XML);
 
 	CUIXmlInit xml_init;
@@ -148,7 +146,7 @@ void CUIPdaWnd::Init()
 		string256							fn;
 		xr_strcpy							(fn, pSettings->r_string("lost_alpha_cfg", "get_script_pda_window"));
 		R_ASSERT2							(ai().script_engine().functor<CUIDialogWndEx*>(fn, lua_pda_wnd_factory), 
-																			make_string("Can't find function '%s'", fn));
+																			make_string<const char*>("Can't find function '%s'", fn));
 		UIChatWnd				= lua_pda_wnd_factory("comm");
 		UISkillsWnd				= lua_pda_wnd_factory("skills");
 		UIDownloadsWnd			= lua_pda_wnd_factory("downs");

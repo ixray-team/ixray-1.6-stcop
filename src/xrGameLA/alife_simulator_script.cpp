@@ -465,7 +465,7 @@ void force_entity_update(const CALifeSimulator *self, u16 id)
 	CSE_ALifeDynamicObject *dsobj = 0;
 	VERIFY(self);
 	dsobj = self->objects().object(id, true);
-	R_ASSERT2(dsobj, make_string("can't find entity [%d]", id));
+	R_ASSERT2(dsobj, make_string<const char*>("can't find entity [%d]", id));
 	sobj = smart_cast<CSE_Abstract*>(dsobj);
 	p.w_begin(M_UPDATE);
 	sobj->UPDATE_Write(p);

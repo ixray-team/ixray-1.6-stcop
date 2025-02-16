@@ -852,7 +852,7 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 		hit_bones_surface_area			+= (*i).second;
 	}
 
-	VERIFY2								( hit_bones_surface_area > 0.f, make_string("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
+	VERIFY2								( hit_bones_surface_area > 0.f, make_string<const char*>("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
 	float const selected_area			= m_hit_bones_random.randF( hit_bones_surface_area );
 
 	i									= m_hit_bone_surface_areas.begin( );
@@ -869,7 +869,7 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 			break;
 	}
 
-	VERIFY2								( i != e, make_string("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
+	VERIFY2								( i != e, make_string<const char*>("m_hit_bone_surface_areas[%d]", m_hit_bone_surface_areas.size()) );
 	SBoneShape const& shape				= kinematics->LL_GetData((*i).first).shape;
 	bone_id								= (*i).first;
 	Fvector result						= Fvector().set( flt_max, flt_max, flt_max );

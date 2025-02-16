@@ -17,7 +17,7 @@ namespace RestrictionSpace {
 
 template <typename _1, typename _2> class intrusive_ptr;
 
-class CSpaceRestriction;
+#include "space_restriction.h"
 
 class CSpaceRestrictionManager : public CSpaceRestrictionHolder {
 #ifdef DEBUG

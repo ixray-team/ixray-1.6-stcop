@@ -3,7 +3,7 @@
 #include "UITrackBarVariable.h"
 #include "UI3tButton.h"
 #include "UITextureMaster.h"
-#include "../../xr_input.h"
+#include "../../xrEngine/xr_input.h"
 
 #define DEF_CONTROL_HEIGHT		21.0f
 

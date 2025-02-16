@@ -94,7 +94,7 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P
 			string64					fixed_bone							;
 			_GetItem					(fixed_bones,i,fixed_bone)			;
 			u16 fixed_bone_id=pKinematics->LL_BoneID(fixed_bone)			;
-			R_ASSERT2(BI_NONE!=fixed_bone_id,make_string("[%s] wrong fixed bone [%d]", obj->Name(), fixed_bone_id));
+			R_ASSERT2(BI_NONE!=fixed_bone_id,make_string<const char*>("[%s] wrong fixed bone [%d]", obj->Name(), fixed_bone_id));
 			p_bone_map->insert(std::make_pair(fixed_bone_id,physicsBone()))			;
 		}
 
@@ -128,7 +128,7 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,LPCSTR
 			string64		fixed_bone;
 			_GetItem		(fixed_bones,i,fixed_bone);
 			f_bones.push_back(K->LL_BoneID(fixed_bone));
-			R_ASSERT2(BI_NONE!=f_bones.back(),make_string("[%s] wrong fixed bone %d", obj->cName().c_str(), f_bones.back()));
+			R_ASSERT2(BI_NONE!=f_bones.back(),make_string<const char*>("[%s] wrong fixed bone %d", obj->cName(), f_bones.back()));
 		}
 	}
 	return P_build_Shell	(obj,not_active_state,f_bones);

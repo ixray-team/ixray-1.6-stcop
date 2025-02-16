@@ -177,7 +177,7 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 				tempposition = l_tpALifeCreatureAbstract->o_Position;
 			}
 
-		VERIFY2(!l_tpALifeCreatureAbstract || (l_tpALifeCreatureAbstract->fHealth >= EPS_L), make_string("Variable l_tpALifeCreatureAbstract is not null OR Health of alifecreture is less than %f. Health = %f, pos = [x %f, y %f, z %f]",
+		VERIFY2(!l_tpALifeCreatureAbstract || (l_tpALifeCreatureAbstract->fHealth >= EPS_L), make_string<const char*>("Variable l_tpALifeCreatureAbstract is not null OR Health of alifecreture is less than %f. Health = %f, pos = [x %f, y %f, z %f]",
 			EPS_L, l_tpALifeCreatureAbstract->fHealth, tempposition.x, tempposition.y, tempposition.z));
 	}
 
@@ -196,7 +196,7 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 
 		VERIFY2
 		(
-			!objects().object(I->ID_Parent)->m_bOnline, make_string("Parent online, item offline... ID = [%d] ID_Parent = [%d] NameParent = [%s], Name = [%s], posParent = [x %f, y %f, z %f], pos = [x %f, y %f, z %f]",
+			!objects().object(I->ID_Parent)->m_bOnline, make_string<const char*>("Parent online, item offline... ID = [%d] ID_Parent = [%d] NameParent = [%s], Name = [%s], posParent = [x %f, y %f, z %f], pos = [x %f, y %f, z %f]",
 			I->ID, I->ID_Parent, objects().object(I->ID_Parent)->name_replace(), objects().object(I->ID)->name_replace(), tempposition.x, tempposition.y, tempposition.z, tempposition2.x, tempposition2.y, tempposition2.z)
 		);
 #endif
@@ -210,7 +210,7 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 		!Level().Objects.net_Find(I->ID)
 		||
 		Level().Objects.dump_all_objects(),
-		make_string("frame [%d] time [%d] object [%s] with id [%d] is offline, but is on the level",Device.dwFrame,Device.dwTimeGlobal,I->name_replace(),I->ID)
+		make_string<const char*>("frame [%d] time [%d] object [%s] with id [%d] is offline, but is on the level",Device.dwFrame,Device.dwTimeGlobal,I->name_replace(),I->ID)
 	);
 
 	I->try_switch_online		();
@@ -254,7 +254,7 @@ void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject	*I)
 
 		VERIFY2
 		(
-			objects().object(I->ID_Parent)->m_bOnline, make_string("Parent offline, item online... ID = [%d] ID_Parent = [%d] NameParent = [%s], Name = [%s], posParent = [x %f, y %f, z %f], pos = [x %f, y %f, z %f]",
+			objects().object(I->ID_Parent)->m_bOnline, make_string<const char*>("Parent offline, item online... ID = [%d] ID_Parent = [%d] NameParent = [%s], Name = [%s], posParent = [x %f, y %f, z %f], pos = [x %f, y %f, z %f]",
 			I->ID, I->ID_Parent, objects().object(I->ID_Parent)->name_replace(), objects().object(I->ID)->name_replace(), tempposition.x, tempposition.y, tempposition.z, tempposition2.x, tempposition2.y, tempposition2.z)
 		);
 #endif

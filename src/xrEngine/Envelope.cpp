@@ -246,3 +246,16 @@ void CEnvelope::Optimize()
 }
 
 
+
+void CEnvelope::DeleteLastKeys(float t)
+{
+    for (KeyIt k_it = keys.begin(); k_it != keys.end(); k_it++)
+    {
+        if ((*k_it)->time > t)
+        {
+            xr_delete(*k_it);
+            keys.erase(k_it);
+            return;
+        }
+    }
+}

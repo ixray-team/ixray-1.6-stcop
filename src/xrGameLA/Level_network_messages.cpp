@@ -71,6 +71,7 @@ void CLevel::ClientReceive()
 			if (g_bDebugEvents)		ProcessGameEvents();
 			break;
 		case M_EVENT_PACK:
+		{
 			NET_Packet	tmpP;
 			while (!P->r_eof())
 			{
@@ -78,18 +79,19 @@ void CLevel::ClientReceive()
 				P->r(&tmpP.B.data, tmpP.B.count);
 				tmpP.timeReceive = P->timeReceive;
 
-				game_events->insert		(tmpP);
+				game_events->insert(tmpP);
 				if (g_bDebugEvents)		ProcessGameEvents();
-			};			
+			};
 			break;
+		}
 		case M_UPDATE:
 			{
 				game->net_import_update	(*P);
 				//-------------------------------------------
 				if (OnServer()) break;
 				//-------------------------------------------
-			};	// íè â êîåì ñëó÷àå íåëüçÿ çäåñü ñòàâèòü break, ò.ê. â ñëó÷àå åñëè âñå îáúåêòû íå âëàçÿò â ïàêåò M_UPDATE,
-				// îíè äîñûëàþòñÿ ÷åðåç M_UPDATE_OBJECTS
+			};	// Ð½Ð¸ Ð² ÐºÐ¾ÐµÐ¼ ÑÐ»ÑƒÑ‡Ð°Ðµ Ð½ÐµÐ»ÑŒÐ·Ñ Ð·Ð´ÐµÑÑŒ ÑÑ‚Ð°Ð²Ð¸Ñ‚ÑŒ break, Ñ‚.Ðº. Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ ÐµÑÐ»Ð¸ Ð²ÑÐµ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð½Ðµ Ð²Ð»Ð°Ð·ÑÑ‚ Ð² Ð¿Ð°ÐºÐµÑ‚ M_UPDATE,
+				// Ð¾Ð½Ð¸ Ð´Ð¾ÑÑ‹Ð»Ð°ÑŽÑ‚ÑÑ Ñ‡ÐµÑ€ÐµÐ· M_UPDATE_OBJECTS
 		case M_UPDATE_OBJECTS:
 			{
 				Objects.net_Import		(P);
@@ -189,7 +191,7 @@ void CLevel::ClientReceive()
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
 				O->net_MigrateInactive	(*P);
-				if (bDebug)		Log("! MIGRATE_DEACTIVATE",*O->cName());
+				if (bDebug)		Msg("! MIGRATE_DEACTIVATE",*O->cName());
 			}
 			break;
 		case M_MIGRATE_ACTIVATE:	// TO:   Changing server, full state
@@ -198,7 +200,7 @@ void CLevel::ClientReceive()
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
 				O->net_MigrateActive	(*P);
-				if (bDebug)		Log("! MIGRATE_ACTIVATE",*O->cName());
+				if (bDebug)		Msg("! MIGRATE_ACTIVATE",*O->cName());
 			}
 			break;
 		case M_CHAT:

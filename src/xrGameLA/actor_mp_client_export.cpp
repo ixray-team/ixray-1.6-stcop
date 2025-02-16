@@ -40,7 +40,7 @@ void CActorMP::fill_state	(actor_mp_state &state)
 	if (OnClient())
 	{
 		R_ASSERT						(g_Alive());
-		R_ASSERT2						(PHGetSyncItemsNumber() == 1,make_string("PHGetSyncItemsNumber() returned %d, health = %.2f",PHGetSyncItemsNumber(),GetfHealth()));
+		R_ASSERT2						(PHGetSyncItemsNumber() == 1,make_string<const char*>("PHGetSyncItemsNumber() returned %d, health = %.2f",PHGetSyncItemsNumber(),GetfHealth()));
 	}
 
 	SPHNetState						State;

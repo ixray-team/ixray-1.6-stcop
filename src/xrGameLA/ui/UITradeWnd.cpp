@@ -46,17 +46,17 @@ struct CUITradeInternal{
 	CUIDragDropListEx	UIOurTradeList;
 	CUIDragDropListEx	UIOthersTradeList;
 
-	//êíîïêè
+	//ÐºÐ½Ð¾Ð¿ÐºÐ¸
 	CUI3tButton			UIPerformTradeButton;
 	CUI3tButton			UIToTalkButton;
 
-	//èíôîðìàöèÿ î ïåðñîíàæàõ 
+	//Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾ Ð¿ÐµÑ€ÑÐ¾Ð½Ð°Ð¶Ð°Ñ… 
 	CUIStatic			UIOurIcon;
 	CUIStatic			UIOthersIcon;
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
 
-	//èíôîðìàöèÿ î ïåðåòàñêèâàåìîì ïðåäìåòå
+	//Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾ Ð¿ÐµÑ€ÐµÑ‚Ð°ÑÐºÐ¸Ð²Ð°ÐµÐ¼Ð¾Ð¼ Ð¿Ñ€ÐµÐ´Ð¼ÐµÑ‚Ðµ
 	CUIStatic			UIDescWnd;
 	CUIItemInfo			UIItemInfo;
 
@@ -99,19 +99,18 @@ void CUITradeWnd::Init()
 	string128		TRADE_ITEM_XML;
 	xr_sprintf		(TRADE_ITEM_XML, "trade_item_%d.xml", ui_hud_type);
 
-	bool xml_result						= uiXml.Load(CONFIG_PATH, UI_PATH, TRADE_XML);
-	R_ASSERT3							(xml_result, "xml file not found", TRADE_XML);
+	uiXml.Load(CONFIG_PATH, UI_PATH, TRADE_XML);
 	CUIXmlInit							xml_init;
 
 	xml_init.InitWindow					(uiXml, "main", 0, this);
 
-	//ñòàòè÷åñêèå ýëåìåíòû èíòåðôåéñà
+	//ÑÑ‚Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ°
 	AttachChild							(&m_uidata->UIStaticTop);
 	xml_init.InitStatic					(uiXml, "top_background", 0, &m_uidata->UIStaticTop);
 	AttachChild							(&m_uidata->UIStaticBottom);
 	xml_init.InitStatic					(uiXml, "bottom_background", 0, &m_uidata->UIStaticBottom);
 
-	//èêîíêè ñ èçîáðàæåíèå íàñ è ïàðòíåðà ïî òîðãîâëå
+	//Ð¸ÐºÐ¾Ð½ÐºÐ¸ Ñ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ Ð½Ð°Ñ Ð¸ Ð¿Ð°Ñ€Ñ‚Ð½ÐµÑ€Ð° Ð¿Ð¾ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ðµ
 	AttachChild							(&m_uidata->UIOurIcon);
 	xml_init.InitStatic					(uiXml, "static_icon", 0, &m_uidata->UIOurIcon);
 	AttachChild							(&m_uidata->UIOthersIcon);
@@ -122,7 +121,7 @@ void CUITradeWnd::Init()
 	m_uidata->UICharacterInfoRight.Init	(0,0, m_uidata->UIOthersIcon.GetWidth(), m_uidata->UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
 
 
-	//Ñïèñêè òîðãîâëè
+	//Ð¡Ð¿Ð¸ÑÐºÐ¸ Ñ‚Ð¾Ñ€Ð³Ð¾Ð²Ð»Ð¸
 	AttachChild							(&m_uidata->UIOurBagWnd);
 	xml_init.InitStatic					(uiXml, "our_bag_static", 0, &m_uidata->UIOurBagWnd);
 	AttachChild							(&m_uidata->UIOthersBagWnd);
@@ -147,7 +146,7 @@ void CUITradeWnd::Init()
 	xml_init.InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
 	
 
-	//Ñïèñêè Drag&Drop
+	//Ð¡Ð¿Ð¸ÑÐºÐ¸ Drag&Drop
 	m_uidata->UIOurBagWnd.AttachChild	(&m_uidata->UIOurBagList);	
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
 
@@ -254,7 +253,7 @@ void CUITradeWnd::Update()
 			m_uidata->UIDealMsg			= NULL;
 		}
 	}
-	//îáíîâëåíèå âåñà
+	//Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð²ÐµÑÐ°
 	InventoryUtilities::UpdateWeight(m_uidata->UIOurBagWnd, true);
 }
 

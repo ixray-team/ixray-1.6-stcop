@@ -41,7 +41,7 @@ void CWeaponCollision::CheckState()
 	is_zoom			= Actor()->IsZoomAimingMode();
 }
 
-static const float SPEED_REMINDER = 1.f;
+static float SPEED_REMINDER = 1.f;
 static const u16 TIME_REMINDER_STRAFE = 300;
 static const float STRAFE_ANGLE = 0.1f;
 

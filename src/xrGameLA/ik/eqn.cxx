@@ -95,7 +95,7 @@ static int solve_trig1_aux(float c,
  *  Also sort the answers in increasing order.
  */
 
-static int solve_trig1(float a, float b, float c, float theta[2])
+static int local_solve_trig1(float a, float b, float c, float theta[2])
 {
     return solve_trig1_aux(c, a*a+b*b, atan2(b,a), theta);
 }
@@ -133,7 +133,7 @@ int PsiEquation::crit_points(float *t) const
     if (!(*status_ptr & GOT_CRITS))
     {
 	// CANNOT use solve_trig1_aux here 
-	*num_crits_ptr = (u8)solve_trig1(beta, -alpha, 0, (float *) crit_pts);
+	*num_crits_ptr = (u8)local_solve_trig1(beta, -alpha, 0, (float *) crit_pts);
 	*status_ptr |= GOT_CRITS;
     }
 

@@ -161,7 +161,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 
 	if ( _our != _him )
 	{
-		SendConnectResult( CL, 0, 0, "Data verification failed. Cheater? [3]" );
+		SendConnectResult( CL, 0, 0, (char*)"Data verification failed. Cheater? [3]" );
 	}
 	else
 	{				
@@ -192,5 +192,5 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 void xrServer::Check_BuildVersion_Success			( IClient* CL )
 {
 	CL->flags.bVerified = TRUE;
-	SendConnectResult(CL, 1, 0, "All Ok");
+	SendConnectResult(CL, 1, 0, (char*)"All Ok");
 };

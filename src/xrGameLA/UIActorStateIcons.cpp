@@ -25,8 +25,7 @@ void CUIActorStateIcons::Init()
 	string128		STATE_ICONS_XML;
 	xr_sprintf		(STATE_ICONS_XML, "actor_state_icon_%d.xml", ui_hud_type);
 
-	bool		result			= xml.Load			(CONFIG_PATH, UI_PATH, STATE_ICONS_XML);
-	R_ASSERT3										(result, "xml file not found", STATE_ICONS_XML);
+	xml.Load			(CONFIG_PATH, UI_PATH, STATE_ICONS_XML);
 
 	CUIXmlInit	xml_init;
 	

@@ -11,7 +11,7 @@
 
 class CAI_Rat;
 
-class rat_state_base : private boost::noncopyable {
+class rat_state_base {
 private:
 	CAI_Rat	*m_object;
 

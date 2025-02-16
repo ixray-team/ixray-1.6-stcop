@@ -637,7 +637,7 @@ float CScriptGameObject::max_ignore_monster_distance	() const
 CMountedTurret* CScriptGameObject::get_turret()
 {
 	CMountedTurret *turret = smart_cast<CMountedTurret*>(&object());
-	R_ASSERT2(turret, make_string("CMountedTurret: can't cast '%s'", object().cName().c_str()));
+	R_ASSERT2(turret, make_string<const char*>("CMountedTurret: can't cast '%s'", object().cName()));
 	return turret;
 }
 

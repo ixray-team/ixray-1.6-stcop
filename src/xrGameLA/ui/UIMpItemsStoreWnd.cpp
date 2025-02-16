@@ -79,7 +79,7 @@ void CStoreHierarchy::InitItemsInGroup(const shared_str& sect, item* _itm)
 {
 	if(!_itm){
 		_itm			= m_root;
-		VERIFY2(!pSettings->line_exist(sect, "team_name"), make_string("there is no line [team_name] in section [%s]",sect.c_str()) );
+		VERIFY2(!pSettings->line_exist(sect, "team_name"), make_string<const char*>("there is no line [team_name] in section [%s]",sect.c_str()) );
 		m_team_idx		= pSettings->r_s32(sect, "team_idx");
 	}
 	u32 cnt				= _itm->ChildCount();

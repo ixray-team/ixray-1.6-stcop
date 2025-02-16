@@ -77,34 +77,34 @@ u32	 CScriptIniFile::line_count			(LPCSTR S)
 LPCSTR CScriptIniFile::r_string			(LPCSTR S, LPCSTR L)
 {
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
-	R_ASSERT2	(inherited::line_exist(S,L), make_string("Cannot find line %s %s", S, L));
+	R_ASSERT2	(inherited::line_exist(S,L), make_string<const char*>("Cannot find line %s %s", S, L));
 	return		(inherited::r_string(S,L));
 }
 
 u32	 CScriptIniFile::r_u32				(LPCSTR S, LPCSTR L)
 {
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
-	R_ASSERT2	(inherited::line_exist(S, L), make_string("Cannot find line %s %s", S, L));
+	R_ASSERT2	(inherited::line_exist(S, L), make_string<const char*>("Cannot find line %s %s", S, L));
 	return		(inherited::r_u32(S,L));
 }
 
 int	 CScriptIniFile::r_s32				(LPCSTR S, LPCSTR L)
 {
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
-	R_ASSERT2	(inherited::line_exist(S, L), make_string("Cannot find line %s %s", S, L));
+	R_ASSERT2	(inherited::line_exist(S, L), make_string<const char*>("Cannot find line %s %s", S, L));
 	return		(inherited::r_s32(S,L));
 }
 
 float CScriptIniFile::r_float			(LPCSTR S, LPCSTR L)
 {
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
-	R_ASSERT2	(inherited::line_exist(S, L), make_string("Cannot find line %s %s", S, L));
+	R_ASSERT2	(inherited::line_exist(S, L), make_string<const char*>("Cannot find line %s %s", S, L));
 	return		(inherited::r_float(S,L));
 }
 
 Fvector CScriptIniFile::r_fvector3		(LPCSTR S, LPCSTR L)
 {
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
-	R_ASSERT2	(inherited::line_exist(S, L), make_string("Cannot find line %s %s", S, L));
+	R_ASSERT2	(inherited::line_exist(S, L), make_string<const char*>("Cannot find line %s %s", S, L));
 	return		(inherited::r_fvector3(S,L));
 }

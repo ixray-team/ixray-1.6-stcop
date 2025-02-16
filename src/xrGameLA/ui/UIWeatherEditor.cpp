@@ -8,10 +8,10 @@
 
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
-#include "../../IGame_Persistent.h"
-#include "../../Environment.h"
+#include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/Environment.h"
 #include "../Level.h"
-#include "../../XR_IOConsole.h"
+#include "../../xrEngine/XR_IOConsole.h"
 
 #include "UI3tButton.h"
 
@@ -38,8 +38,7 @@ void CUIWeatherEditor::Init()
 	string128		WeatherEditor_XML;
 	xr_sprintf(WeatherEditor_XML, "CUIWeatherEditor_16_9.xml");
 
-	bool xml_result = uiXml.Load(CONFIG_PATH, UI_PATH, WeatherEditor_XML);
-	R_ASSERT3(xml_result, "file parsing error ", uiXml.m_xml_file_name);
+	uiXml.Load(CONFIG_PATH, UI_PATH, WeatherEditor_XML);
 
 	CUIXmlInit							xml_init;
 
@@ -518,7 +517,7 @@ void CUIWeatherEditor::Init()
 	UI_wind_sound_volume_Title.AttachChild(&UI_f_wind_sound_volume);
 	xml_init.InitTrackBarVariable(uiXml, "wind_sound_volume_track", 0, &UI_f_wind_sound_volume);
 
-	//Ïîäðàçäåëåíèå 1
+	//ÐŸÐ¾Ð´Ñ€Ð°Ð·Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ 1
 	ScrollView->AddWindow(&UI_ambient_rTitle, false);
 	ScrollView->AddWindow(&UI_ambient_gTitle, false);
 	ScrollView->AddWindow(&UI_ambient_bTitle, false);
@@ -550,7 +549,7 @@ void CUIWeatherEditor::Init()
 	ScrollView->AddWindow(&UI_sky_color_bTitle, false);
 
 
-	//Ïîäðàçäåëåíèå 2
+	//ÐŸÐ¾Ð´Ñ€Ð°Ð·Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ 2
 	ScrollView2->AddWindow(&UI_dof_xTitle, false);
 	ScrollView2->AddWindow(&UI_dof_yTitle, false);
 	ScrollView2->AddWindow(&UI_dof_zTitle, false);
@@ -559,7 +558,7 @@ void CUIWeatherEditor::Init()
 	ScrollView2->AddWindow(&UI_dof_skyTitle, false);
 
 
-	//Ïîäðàçäåëåíèå 3
+	//ÐŸÐ¾Ð´Ñ€Ð°Ð·Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ 3
 	ScrollView3->AddWindow(&UI_sun_dir_a_Title, false);
 	ScrollView3->AddWindow(&UI_sun_dir_b_Title, false);
 	ScrollView3->AddWindow(&UI_sky_rotation_Title, false);
@@ -573,7 +572,7 @@ void CUIWeatherEditor::Init()
 	ScrollView3->AddWindow(&UI_far_plane_Title, false);
 
 
-	//Ïîäðàçäåëåíèå 4
+	//ÐŸÐ¾Ð´Ñ€Ð°Ð·Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ 4
 	ScrollView4->AddWindow(&UI_clouds_velocity_0_Title, false);
 	ScrollView4->AddWindow(&UI_clouds_velocity_1_Title, false);
 	ScrollView4->AddWindow(&UI_water_intensity_Title, false);
@@ -624,13 +623,13 @@ void CUIWeatherEditor::InitVars()
 	UI_f_fog_color_g.f_controlledfloat = &TargetWeather->fog_color.y;
 	UI_f_fog_color_b.f_controlledfloat = &TargetWeather->fog_color.z;
 
-	//Çíà÷åíèÿ öâåòà îáëàêîâ ñ÷èòûâàþòñÿ çàäîì íàïåðåä b/g/r/a
+	//Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ñ†Ð²ÐµÑ‚Ð° Ð¾Ð±Ð»Ð°ÐºÐ¾Ð² ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÑŽÑ‚ÑÑ Ð·Ð°Ð´Ð¾Ð¼ Ð½Ð°Ð¿ÐµÑ€ÐµÐ´ b/g/r/a
 	UI_f_clouds_color_r.f_controlledfloat = &TargetWeather->clouds_color.z;
 	UI_f_clouds_color_g.f_controlledfloat = &TargetWeather->clouds_color.y;
 	UI_f_clouds_color_b.f_controlledfloat = &TargetWeather->clouds_color.x;
 	UI_f_clouds_color_x.f_controlledfloat = &TargetWeather->clouds_color.w;
 
-	//Çíà÷åíèÿ öâåòà íåáà ñ÷èòûâàþòñÿ çàäîì íàïåðåä b/g/r/a
+	//Ð—Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ñ†Ð²ÐµÑ‚Ð° Ð½ÐµÐ±Ð° ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÑŽÑ‚ÑÑ Ð·Ð°Ð´Ð¾Ð¼ Ð½Ð°Ð¿ÐµÑ€ÐµÐ´ b/g/r/a
 	UI_f_sky_color_r.f_controlledfloat = &TargetWeather->sky_color.z;
 	UI_f_sky_color_g.f_controlledfloat = &TargetWeather->sky_color.y;
 	UI_f_sky_color_b.f_controlledfloat = &TargetWeather->sky_color.x;
