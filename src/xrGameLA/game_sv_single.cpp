@@ -366,7 +366,7 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	pApp->SetLoadingScreen(new UILoadingScreen());
 	pApp->LoadBegin			();
 	m_alife_simulator		= new CALifeSimulator(&server(),&options);
-	g_pGamePersistent->LoadTitle		("st_loading_data");
+	g_pGamePersistent->SetLoadStageTitle("st_loading_data");
 	pApp->LoadForceFinish();
 	Device.PreCache			(30, true, true);
 	pApp->LoadEnd			();

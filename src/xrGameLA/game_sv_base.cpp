@@ -239,44 +239,8 @@ void game_sv_GameState::net_Export_State						(NET_Packet& P, ClientID to)
 	// Players
 //	u32	p_count			= get_players_count() - ((g_dedicated_server)? 1 : 0);
 	u32 p_count = 0;
-	for (u32 p_it=0; p_it<get_players_count(); ++p_it)
-	{
-		xrClientData*	C		=	(xrClientData*)	m_server->GetClientByID	(p_it);		
-		if (!C->net_Ready || (C->ps->IsSkip() && C->ID != to)) continue;
-		p_count++;
-	};
 
 	P.w_u16				(u16(p_count));
-	game_PlayerState*	Base	= get_id(to);
-	for (u32 p_it=0; p_it<get_players_count(); ++p_it)
-	{
-		string64	p_name;
-		xrClientData*	C		=	(xrClientData*)	m_server->GetClientByID	(p_it);
-		game_PlayerState* A		=	get_it			(p_it);
-		if (!C->net_Ready || (A->IsSkip() && C->ID != to)) continue;
-		if (0==C)	xr_strcpy(p_name,"Unknown");
-		else 
-		{
-			CSE_Abstract* C_e		= C->owner;
-			if (0==C_e)		xr_strcpy(p_name,"Unknown");
-			else 
-			{
-				xr_strcpy	(p_name,C_e->name_replace());
-			}
-		}
-
-		A->setName(p_name);
-		u16 tmp_flags = A->flags__;
-
-		if (Base==A)	
-			A->setFlag(GAME_PLAYER_FLAG_LOCAL);
-
-		ClientID clientID = get_it_2_id	(p_it);
-		P.w_clientID			(clientID);
-		A->net_Export			(P, TRUE);
-		
-		A->flags__ = tmp_flags;
-	}
 
 	net_Export_GameTime(P);
 }

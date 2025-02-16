@@ -33,7 +33,7 @@ bool	CLevel::net_start_client1				()
 	xr_sprintf						(temp,"%s %s",
 								CStringTable().translate("st_client_connecting_to").c_str(), name_of_server);
 
-	g_pGamePersistent->LoadTitle				(temp);
+	g_pGamePersistent->SetLoadStageTitle(temp);
 	return true;
 }
 
@@ -87,7 +87,7 @@ bool	CLevel::net_start_client4				()
 {
 	if(connected_to_server){
 		// Begin spawn
-		g_pGamePersistent->LoadTitle		("st_client_spawning");
+		g_pGamePersistent->SetLoadStageTitle("st_client_spawning");
 
 		// Send physics to single or multithreaded mode
 		LoadPhysicsGameParams				();
@@ -146,7 +146,7 @@ bool	CLevel::net_start_client5				()
 		// Textures
 		if (!g_dedicated_server/* && !g_uCommonFlags.test(CF_SkipTextureLoading)*/)
 		{
-			g_pGamePersistent->LoadTitle				("st_loading_textures");
+			g_pGamePersistent->SetLoadStageTitle("st_loading_textures");
 			Device.m_pRender->DeferredLoad		(FALSE);
 			Device.m_pRender->ResourcesDeferredUpload(/*mt_texture_loading*/);
 			LL_CheckTextures					();
@@ -159,14 +159,14 @@ bool	CLevel::net_start_client6				()
 {
 	if(connected_to_server){
 		// Sync
-		g_pGamePersistent->LoadTitle		("st_loading_hud");
+		g_pGamePersistent->SetLoadStageTitle("st_loading_hud");
 		if (!g_dedicated_server)
 		{
 			g_hud->Load						();
 			g_hud->OnConnected				();
 		}
 
-		g_pGamePersistent->LoadTitle		("st_client_synchronising");
+		g_pGamePersistent->SetLoadStageTitle("st_client_synchronising");
 		pApp->LoadForceFinish();
 		Device.PreCache						(30, true, true);
 		net_start_result_total				= TRUE;
