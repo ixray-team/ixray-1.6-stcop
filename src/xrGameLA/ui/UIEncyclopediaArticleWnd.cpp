@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIEncyclopediaArticleWnd.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "../encyclopedia_article.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
 CUIEncyclopediaArticleWnd::CUIEncyclopediaArticleWnd	()

@@ -1,8 +1,8 @@
 #include "pch_script.h"
 #include "UIInventoryWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
 #include "../actor.h"
@@ -31,7 +31,7 @@ using namespace InventoryUtilities;
 #include "../ActorCondition.h"
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 
 
 CUIInventoryWnd*	g_pInvWnd = nullptr;

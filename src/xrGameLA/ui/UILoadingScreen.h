@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../../xrEngine/ILoadingScreen.h"
-#include "UIStatic.h"
-#include "UIWindow.h"
-#include "UIProgressBar.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
 
 class CApplication;
 

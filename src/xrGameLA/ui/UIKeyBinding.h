@@ -1,8 +1,8 @@
 #pragma once
-#include "UIWindow.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIEditBox.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIEditBox.h"
 
 class CUIXml;
 class CUIScrollView;

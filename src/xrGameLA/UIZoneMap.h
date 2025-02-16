@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "ui/UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 class CActor;
 class CUICustomMap;
@@ -17,7 +17,7 @@ class CUIZoneMap
 	CUIStatic					m_center;
 	CUIStatic					m_compass;
 	CUIStatic					m_clipFrame;
-	CUIStatic					m_pointerDistanceText;
+	CUITextWnd*					m_pointerDistanceText;
 
 public:
 								CUIZoneMap		();

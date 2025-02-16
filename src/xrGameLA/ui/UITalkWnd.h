@@ -1,10 +1,10 @@
 #pragma once
 
-#include "UIDialogWnd.h"
-#include "UIStatic.h"
-#include "UIButton.h"
-#include "UIEditBox.h"
-#include "UIFrameWindow.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UIButton.h"
+#include "../xrUI/Widgets/UIEditBox.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
 
 
 #include "../PhraseDialogDefs.h"
@@ -48,7 +48,7 @@ public:
 
 	void				UpdateQuestions();
 	void				NeedUpdateQuestions();
-	//инициализации начального диалога собеседника
+	//ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ Г­Г Г·Г Г«ГјГ­Г®ГЈГ® Г¤ГЁГ Г«Г®ГЈГ  Г±Г®ГЎГҐГ±ГҐГ¤Г­ГЁГЄГ 
 	void				InitOthersStartDialog	();
 	virtual bool		OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 	void				SwitchToTrade			();
@@ -56,19 +56,19 @@ public:
 	void				AddIconedMessage		(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
 
 protected:
-	//диалог
+	//Г¤ГЁГ Г«Г®ГЈ
 	void				InitTalkDialog			();
 	void				AskQuestion				();
 
 	void				SayPhrase				(const shared_str& phrase_id);
 
-	// Функции добавления строк в листы вопросов и ответов
+	// Г”ГіГ­ГЄГ¶ГЁГЁ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї Г±ГІГ°Г®ГЄ Гў Г«ГЁГ±ГІГ» ГўГ®ГЇГ°Г®Г±Г®Гў ГЁ Г®ГІГўГҐГІГ®Гў
 public:
 	void				AddQuestion				(const shared_str& text, const shared_str& id, int number);
 	void				AddAnswer				(const shared_str& text, LPCSTR SpeakerName);
 	bool				b_disable_break;
 protected:
-	//для режима торговли
+	//Г¤Г«Гї Г°ГҐГ¦ГЁГ¬Г  ГІГ®Г°ГЈГ®ГўГ«ГЁ
 	CUITradeWnd*			UITradeWnd;
 	CUIUpgradeWnd*			UIUpgradeWnd;
 	CUITalkDialogWnd*		UITalkDialogWnd;
@@ -82,7 +82,7 @@ protected:
 
 	bool				m_bNeedToUpdateQuestions;
 
-	//текущий диалог, если nullptr, то переходим в режим выбора темы
+	//ГІГҐГЄГіГ№ГЁГ© Г¤ГЁГ Г«Г®ГЈ, ГҐГ±Г«ГЁ nullptr, ГІГ® ГЇГҐГ°ГҐГµГ®Г¤ГЁГ¬ Гў Г°ГҐГ¦ГЁГ¬ ГўГ»ГЎГ®Г°Г  ГІГҐГ¬Г»
 	DIALOG_SHARED_PTR	m_pCurrentDialog;
 	bool				TopicMode				();
 	void				ToTopicMode				();

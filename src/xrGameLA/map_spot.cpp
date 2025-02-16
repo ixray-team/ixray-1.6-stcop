@@ -2,7 +2,7 @@
 #include "map_spot.h"
 #include "map_location.h"
 
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "ui/UIMApWnd.h"
 #include "level.h"
 #include "../xrEngine/xr_object.h"

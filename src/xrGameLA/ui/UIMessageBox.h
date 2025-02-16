@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "../../xrScripts/script_export_space.h"
 
 class CUI3tButton;

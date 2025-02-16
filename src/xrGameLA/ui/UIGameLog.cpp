@@ -7,7 +7,7 @@
 //=============================================================================
 #include "stdafx.h"
 #include "UIGameLog.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "UIPdaMsgListItem.h"
 #include "UIPdaKillMessage.h"
 #include "UILines.h"

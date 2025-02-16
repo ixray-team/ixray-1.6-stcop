@@ -3,7 +3,7 @@
 // Created:		16.02.2011
 // Author:		Gr1ph00n
 
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 class CUIGameClock 
 {

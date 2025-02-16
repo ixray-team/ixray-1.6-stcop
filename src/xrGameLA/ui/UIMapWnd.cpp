@@ -1,17 +1,17 @@
 #include "pch_script.h"
 #include "UIMapWnd.h"
 #include "UIMap.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 
 #include "../map_manager.h"
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"
 
-#include "UIScrollBar.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIScrollBar.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UITabControl.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"
 #include "map_hint.h"
@@ -19,7 +19,7 @@
 
 #include "../HUDManager.h"
 #include "../../xrScripts/script_engine.h"
-#include "../uicursor.h"
+#include "../xrUI/UICursor.h"
 
 #include "../../xrEngine/xr_input.h"		//remove me !!!
 class	game_cl_GameState;

@@ -6,7 +6,7 @@
 
 #include "entity_alive.h"
 #include "ui/UIInventoryUtilities.h"
-#include "UI/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "UI/UItextureMaster.h"
 
 #include "InfoPortion.h"

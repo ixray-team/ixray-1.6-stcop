@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // encyclopedia_article.h
-// структура, хранящая и загружающая статьи в энциклопедию
+// Г±ГІГ°ГіГЄГІГіГ°Г , ГµГ°Г Г­ГїГ№Г Гї ГЁ Г§Г ГЈГ°ГіГ¦Г ГѕГ№Г Гї Г±ГІГ ГІГјГЁ Гў ГЅГ­Г¶ГЁГЄГ«Г®ГЇГҐГ¤ГЁГѕ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -9,26 +9,25 @@
 #include "xml_str_id_loader.h"
 #include "shared_data.h"
 
-#include "ui\uistatic.h"
-
+#include "../xrUI/Widgets/UIStatic.h"
 //////////////////////////////////////////////////////////////////////////
-// SInfoPortionData: данные для InfoProtion
+// SInfoPortionData: Г¤Г Г­Г­Г»ГҐ Г¤Г«Гї InfoProtion
 //////////////////////////////////////////////////////////////////////////
 struct SArticleData : CSharedResource
 {
 	shared_str name;
 	shared_str group;
 	
-	//картинка
+	//ГЄГ Г°ГІГЁГ­ГЄГ 
 	CUIStatic image;
 
-	//текст статьи
+	//ГІГҐГЄГ±ГІ Г±ГІГ ГІГјГЁ
 	xr_string	text;
 	
-	//секция ltx, откуда читать данные
+	//Г±ГҐГЄГ¶ГЁГї ltx, Г®ГІГЄГіГ¤Г  Г·ГЁГІГ ГІГј Г¤Г Г­Г­Г»ГҐ
 //	shared_str ltx;
 
-	// Тип статьи
+	// Г’ГЁГЇ Г±ГІГ ГІГјГЁ
 	ARTICLE_DATA::EArticleType	articleType;
 	shared_str					ui_template_name;
 };

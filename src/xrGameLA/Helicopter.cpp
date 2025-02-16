@@ -13,7 +13,7 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "../LightAnimLibrary.h"
-#include "ui_base.h"
+#include "../xrUI/ui_base.h"
 #include "physicscommon.h"
 //50fps fixed
 float STEP=0.02f;

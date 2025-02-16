@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UIWindow.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "KillMessageStruct.h"
 
 class CUIXml;

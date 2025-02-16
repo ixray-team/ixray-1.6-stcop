@@ -10,7 +10,7 @@
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 #include "UIDragDropListEx.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 #include "../customoutfit.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
@@ -171,7 +171,7 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place, TSlotId slot_id
 			PIItem	itemformoutfitslot = GetInventory()->ItemFromSlot(OUTFIT_SLOT);
 			if (itemformoutfitslot)
 			{
-				CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//на всякий случай проверим если это броня в слоте брони, а то..
+				CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(itemformoutfitslot);//Г­Г  ГўГ±ГїГЄГЁГ© Г±Г«ГіГ·Г Г© ГЇГ°Г®ГўГҐГ°ГЁГ¬ ГҐГ±Г«ГЁ ГЅГІГ® ГЎГ°Г®Г­Гї Гў Г±Г«Г®ГІГҐ ГЎГ°Г®Г­ГЁ, Г  ГІГ®..
 				if (outfit)
 				{
 

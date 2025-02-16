@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "UIArtifactParams.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "../inventory_item.h"
 #include "../xrCore/object_broker.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 
 CUIArtefactParams::CUIArtefactParams()
 {
@@ -111,7 +111,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& itm)
 					xr_sprintf(_buff, "%s%s", _color, CStringTable().translate(af_item_param_names[i]).c_str());
 
 					_s->TextItemControl()->SetText(_buff);
-					_s->SetWndPos(_s->GetWndPos().x, _h);
+					_s->SetWndPos(Fvector2{ _s->GetWndPos().x , _h });
 					_h += _s->GetWndSize().y;
 					AttachChild(_s);
 				}
@@ -128,7 +128,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& itm)
 					xr_sprintf(_buff, "%s %s %+.0f", CStringTable().translate(af_item_param_names[i]).c_str(), _color, _val);
 
 					_s->TextItemControl()->SetText(_buff);
-					_s->SetWndPos(_s->GetWndPos().x, _h);
+					_s->SetWndPos(Fvector2{ _s->GetWndPos().x, _h });
 					_h += _s->GetWndSize().y;
 					AttachChild(_s);
 				}
@@ -193,7 +193,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& itm)
 				_val,
 				_sn);
 			_s->TextItemControl()->SetText(_buff);
-			_s->SetWndPos(_s->GetWndPos().x, _h);
+			_s->SetWndPos(Fvector2{ _s->GetWndPos().x, _h });
 			_h += _s->GetWndSize().y;
 			AttachChild(_s);
 		}

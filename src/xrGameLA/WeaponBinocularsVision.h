@@ -1,5 +1,5 @@
 #pragma once
-#include "ui\uistatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "HudSound.h"
 
 class CObject;

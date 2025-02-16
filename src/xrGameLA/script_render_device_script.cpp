@@ -32,7 +32,7 @@ u32 time_global(const CRenderDevice *self)
 	THROW		(self);
 	return		(self->dwTimeGlobal);
 }
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 bool is_widescreen(const CRenderDevice *self)
 {
 	return (self->TargetWidth)/float(self->TargetHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT +0.01f);

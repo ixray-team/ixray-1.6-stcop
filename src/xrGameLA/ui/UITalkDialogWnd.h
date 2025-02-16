@@ -1,16 +1,15 @@
 #pragma once
 
 
-#include "UIStatic.h"
-#include "UI3tButton.h"
-#include "UIFrameLineWnd.h"
-
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UI3tButton.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../InfoPortion.h"
 
 #include "UICharacterInfo.h"
 #include "UIItemInfo.h"
 
-#include "UIWndCallback.h"
+#include "../xrUI/Widgets/UIWndCallback.h"
 
 class CUIScrollView;
 class CUIXml;
@@ -38,9 +37,9 @@ public:
 
 	shared_str			m_ClickedQuestionID;
 
-	//список вопросов, которые мы можем задавать персонажу
+	//Г±ГЇГЁГ±Г®ГЄ ГўГ®ГЇГ°Г®Г±Г®Гў, ГЄГ®ГІГ®Г°Г»ГҐ Г¬Г» Г¬Г®Г¦ГҐГ¬ Г§Г Г¤Г ГўГ ГІГј ГЇГҐГ°Г±Г®Г­Г Г¦Гі
 
-	//элементы интерфейса диалога
+	//ГЅГ«ГҐГ¬ГҐГ­ГІГ» ГЁГ­ГІГҐГ°ГґГҐГ©Г±Г  Г¤ГЁГ Г«Г®ГЈГ 
 	CUIFrameLineWnd		UIDialogFrame;
 	CUIFrameLineWnd		UIOurPhrasesFrame;
 
@@ -49,7 +48,7 @@ public:
 
 	CUI3tButton			UIToTradeButton;
 
-	//информация о персонажах 
+	//ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГї Г® ГЇГҐГ°Г±Г®Г­Г Г¦Г Гµ 
 	CUIStatic			UIOurIcon;
 	CUIStatic			UIOthersIcon;
 	CUICharacterInfo	UICharacterInfoLeft;
@@ -67,10 +66,10 @@ private:
 	CUIScrollView*			UIQuestionsList;
 	CUIScrollView*			UIAnswersList;
 
-	// Шрифт и цвет текста с именем персонажа
+	// ГГ°ГЁГґГІ ГЁ Г¶ГўГҐГІ ГІГҐГЄГ±ГІГ  Г± ГЁГ¬ГҐГ­ГҐГ¬ ГЇГҐГ°Г±Г®Г­Г Г¦Г 
 	CGameFont			*m_pNameTextFont;
 	u32					m_iNameTextColor;
-	// Цвет тeкста и шрифт наших реплик
+	// Г–ГўГҐГІ ГІeГЄГ±ГІГ  ГЁ ГёГ°ГЁГґГІ Г­Г ГёГЁГµ Г°ГҐГЇГ«ГЁГЄ
 	u32					m_uOurReplicsColor;
 
 	void __stdcall		OnTradeClicked			(CUIWindow* w, void*);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIWindow.h"
+#include "../xrUI/Widgets/UIWindow.h"
 
 class CUIScrollView;
 struct GAME_NEWS_DATA;

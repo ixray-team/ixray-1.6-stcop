@@ -26,8 +26,8 @@
 #include "../xrCore/object_broker.h"
 #include "../igame_persistent.h"
 #include "weaponBinocularsVision.h"
-#include "ui/UIWindow.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/UIXmlInit.h"
 
 #include "debug_renderer.h"
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "UIWindow.h"
+#include "../xrUI/Widgets/UIWindow.h"
 #include "../inventory_space.h"
-#include "../ui_base.h"
+#include "../xrUI/ui_base.h"
 #include "../WeaponMagazined.h"
 
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "../HudSound.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 
 class CUIStatic;
 class CSimpleDetector;

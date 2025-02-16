@@ -3,7 +3,7 @@
 #define __UIACTORSTATEICONS_H__
 
 #include "ActorState.h"
-#include "UI\UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 class CUIActorStateIcons : public CUIStatic
 {		

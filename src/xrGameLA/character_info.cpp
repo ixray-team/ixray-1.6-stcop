@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// character_info.cpp			игровая информация для персонажей в игре
+// character_info.cpp			ГЁГЈГ°Г®ГўГ Гї ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГї Г¤Г«Гї ГЇГҐГ°Г±Г®Г­Г Г¦ГҐГ© Гў ГЁГЈГ°ГҐ
 // 
 //////////////////////////////////////////////////////////////////////////
 
@@ -7,7 +7,7 @@
 #include "character_info.h"
 
 #ifdef XRGAME_EXPORTS
-#	include "ui/xrUIXmlParser.h"
+#	include "../xrUI/xrUIXmlParser.h"
 #	include "PhraseDialog.h"
 #	include "xrServer_Objects_ALife_Monsters.h"
 #else // XRGAME_EXPORTS

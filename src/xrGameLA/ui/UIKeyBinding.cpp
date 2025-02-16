@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "UIKeyBinding.h"
-#include "UIXmlInit.h"
-#include "xrUIXmlParser.h"
-#include "UIEditKeyBind.h"
-#include "UIScrollView.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/Widgets/UIEditKeyBind.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 #include "../../xrEngine/xr_level_controller.h"
 #include "../../xrEngine/string_table.h"
 

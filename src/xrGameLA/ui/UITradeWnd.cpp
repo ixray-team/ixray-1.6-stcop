@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UITradeWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 
 #include "../Entity.h"
 #include "../HUDManager.h"
@@ -18,7 +18,7 @@
 #include "../../xrEngine/string_table.h"
 #include "../character_info.h"
 #include "UIMultiTextStatic.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 #include "UIItemInfo.h"
 
 #include "UICharacterInfo.h"

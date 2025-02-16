@@ -1,10 +1,10 @@
-// HUDCrosshair.h:  крестик прицела, отображающий текущую дисперсию
+// HUDCrosshair.h:  ГЄГ°ГҐГ±ГІГЁГЄ ГЇГ°ГЁГ¶ГҐГ«Г , Г®ГІГ®ГЎГ°Г Г¦Г ГѕГ№ГЁГ© ГІГҐГЄГіГ№ГіГѕ Г¤ГЁГ±ГЇГҐГ°Г±ГЁГѕ
 // 
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
 
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 #define HUD_CURSOR_SECTION "hud_cursor"
 
@@ -15,7 +15,7 @@ private:
 	float			min_radius_perc;
 	float			max_radius_perc;
 
-	//текущий радиус прицела
+	//ГІГҐГЄГіГ№ГЁГ© Г°Г Г¤ГЁГіГ± ГЇГ°ГЁГ¶ГҐГ«Г 
 	float			radius;
 	float			target_radius;
 	float			radius_speed_perc; 

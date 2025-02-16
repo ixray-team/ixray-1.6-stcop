@@ -3,7 +3,7 @@
 
 #include "../../xrEngine/GameFont.h"
 #include "UIHelper.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 
 UILoadingScreen::UILoadingScreen()
     : loadingProgressBackground(nullptr), loadingProgress(nullptr), loadingProgressPercent(nullptr),

@@ -5,15 +5,15 @@
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/string_table.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 
 #include "../character_info.h"
 
-#include "UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
 #include "..\InventoryOwner.h"
 #include "UICharacterInfo.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 #define			PDA_CONTACT_CHAR		"pda_character.xml"
 

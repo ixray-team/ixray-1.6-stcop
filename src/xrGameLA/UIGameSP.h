@@ -1,6 +1,6 @@
 #pragma once
 #include "uigamecustom.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrCore/net_utils.h"
 #include "game_graph_space.h"
 

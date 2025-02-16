@@ -2,11 +2,11 @@
 #include "pch_script.h"
 
 #include "uiiteminfo.h"
-#include "uistatic.h"
-#include "UIXmlInit.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/UIXmlInit.h"
 
-#include "UIProgressBar.h"
-#include "UIScrollView.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 
 #include "../ai_space.h"
 #include "../../xrScripts/script_engine.h"
@@ -250,7 +250,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		x += UIItemImageRect.x2/2-width/2;
 		y += UIItemImageRect.y2/2-height/2;
 
-		UIItemImage->SetWndPos					(x, y);
+		UIItemImage->SetWndPos					(Fvector2{ x, y });
 		UIItemImage->SetWidth					(width);
 		UIItemImage->SetHeight					(height);
 	}

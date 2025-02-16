@@ -6,9 +6,9 @@ class CUICursor;
 class CUIMessageBoxEx;
 #include "../IInputReceiver.h"
 #include "../IGame_Persistent.h"
-#include "UIDialogHolder.h"
-#include "ui/UIWndCallback.h"
-#include "ui_base.h"
+#include "../xrUI/Widgets/UIDialogHolder.h"
+#include "../xrUI/Widgets/UIWndCallback.h"
+#include "../xrUI/ui_base.h"
 
 struct  Patch_Dawnload_Progress{
 	bool		IsInProgress;

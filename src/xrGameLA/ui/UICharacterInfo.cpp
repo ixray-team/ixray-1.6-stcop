@@ -9,11 +9,11 @@
 #include "../../xrEngine/string_table.h"
 #include "../relation_registry.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 
-#include "uistatic.h"
-#include "UIScrollView.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 
 
 #include "../alife_simulator.h"
@@ -57,7 +57,8 @@ CUICharacterInfo::~CUICharacterInfo()
 void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml* xml_doc)
 {
 //	inherited::Init(x, y, width, height);
-	inherited::SetWndRect(x, y, width, height);
+	inherited::SetWndPos(Fvector2{ x,y });
+	inherited::SetWndSize(Fvector2{ width,height });
 
 	CUIXmlInit xml_init;
 	CUIStatic*	pItem = nullptr;
@@ -76,7 +77,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	if(xml_doc->NavigateToNode("name_static", 0)){
 		pItem = m_icons[eUIName] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "name_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 0);
+		//pItem->SetElipsis(CUIStatic::eepEnd, 0);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -86,7 +87,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIRank] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "rank_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
+		//pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -104,7 +105,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUICommunity] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "community_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
+		//pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -122,7 +123,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIReputation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "reputation_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
+		//pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -140,7 +141,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIRelation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "relation_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
+		//pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}

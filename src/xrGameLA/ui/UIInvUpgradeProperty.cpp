@@ -10,9 +10,9 @@
 #include "UIInvUpgradeProperty.h"
 #include "UIInvUpgradeInfo.h"
 
-#include "UIStatic.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 
 #include "../ai_space.h"
 #include "../alife_simulator.h"

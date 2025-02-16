@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UICellItem.h"
-#include "../uicursor.h"
+#include "../../xrUI/UICursor.h"
 #include "../inventory_item.h"
 #include "UIDragDropListEx.h"
 #include "../../xrEngine/xr_level_controller.h"
@@ -8,7 +8,7 @@
 #include "../HUDManager.h"
 #include "../level.h"
 #include "../xrCore/object_broker.h"
-#include "UIProgressBar.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 
 #include "../Weapon.h"
 #include "../CustomOutfit.h"

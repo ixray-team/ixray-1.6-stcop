@@ -1,9 +1,9 @@
 #pragma once
 
-#include "UIDialogWnd.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "UITrackBarVariable.h"
-#include "UIScrollView.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 
 class CUI3tButton;
 class CUIWeatherEditor : public CUIDialogWnd
@@ -13,7 +13,7 @@ private:
 public:
 	CUIWeatherEditor();
 	virtual					~CUIWeatherEditor();
-	//Функции УИ окна
+	//Г”ГіГ­ГЄГ¶ГЁГЁ Г“Г€ Г®ГЄГ­Г 
 	virtual void			Init();
 	virtual void			Update();
 	virtual void			Draw();
@@ -22,23 +22,23 @@ public:
 	virtual void			SendMessage(CUIWindow *pWnd, s16 msg, void *pData);
 	virtual bool			OnMouseAction(float x, float y, EUIMessages mouse_action);
 
-	//Внутренняя механика
+	//Г‚Г­ГіГІГ°ГҐГ­Г­ГїГї Г¬ГҐГµГ Г­ГЁГЄГ 
 	u32						HoursAtStartUp;
 	u32						MinsAtStartUp;
 	virtual void			KeepTimeAsWasAtStart();
-	//Вывести в лог значения параметров
+	//Г‚Г»ГўГҐГ±ГІГЁ Гў Г«Г®ГЈ Г§Г­Г Г·ГҐГ­ГЁГї ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў
 	virtual void			PrintToLog();
 
 	virtual void			InitVars();
-	//Обновить позиции полосок
+	//ГЋГЎГ­Г®ГўГЁГІГј ГЇГ®Г§ГЁГ¶ГЁГЁ ГЇГ®Г«Г®Г±Г®ГЄ
 	virtual void			UpdateTracksPositions();
 
-	//позиция солнца
+	//ГЇГ®Г§ГЁГ¶ГЁГї Г±Г®Г«Г­Г¶Г 
 	Fvector2 sun_pos;
-	//поворот неба
+	//ГЇГ®ГўГ®Г°Г®ГІ Г­ГҐГЎГ 
 	float sky_rotation;
 
-	//Возможность временного сохранения параметров
+	//Г‚Г®Г§Г¬Г®Г¦Г­Г®Г±ГІГј ГўГ°ГҐГ¬ГҐГ­Г­Г®ГЈГ® Г±Г®ГµГ°Г Г­ГҐГ­ГЁГї ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў
 	struct SavedData{
 		bool is_empty;
 		Fvector3 Saved_ambient_color;
@@ -80,14 +80,14 @@ public:
 		float Saved_dof_sky;
 	};
 
-	//Дефолтные значения при запуске
+	//Г„ГҐГґГ®Г«ГІГ­Г»ГҐ Г§Г­Г Г·ГҐГ­ГЁГї ГЇГ°ГЁ Г§Г ГЇГіГ±ГЄГҐ
 	SavedData DefaultParams;
-	//Сохраненые значения разработчиком
+	//Г‘Г®ГµГ°Г Г­ГҐГ­Г»ГҐ Г§Г­Г Г·ГҐГ­ГЁГї Г°Г Г§Г°Г ГЎГ®ГІГ·ГЁГЄГ®Г¬
 	SavedData UserSavedParams;
 
-	//Сохраненить значения
+	//Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГІГј Г§Г­Г Г·ГҐГ­ГЁГї
 	virtual void			SaveParams(SavedData* saveid);
-	//Загрузить значения
+	//Г‡Г ГЈГ°ГіГ§ГЁГІГј Г§Г­Г Г·ГҐГ­ГЁГї
 	virtual void			LoadParams(SavedData* saveid);
 
 	CUI3tButton*				UILoadDefaultParams;
@@ -95,17 +95,17 @@ public:
 	CUI3tButton*				UISaveUserParams;
 	CUI3tButton*				UIPrinToLogBTN;
 
-	//Основыне окна
+	//ГЋГ±Г­Г®ГўГ»Г­ГҐ Г®ГЄГ­Г 
 	CUIStatic					UIBack;
 	CUIStatic					UITitle;
 
-	//Подразделения
+	//ГЏГ®Г¤Г°Г Г§Г¤ГҐГ«ГҐГ­ГЁГї
 	CUIScrollView*				ScrollView;
 	CUIScrollView*				ScrollView2;
 	CUIScrollView*				ScrollView3;
 	CUIScrollView*				ScrollView4;
 
-	//Дочки подразделений
+	//Г„Г®Г·ГЄГЁ ГЇГ®Г¤Г°Г Г§Г¤ГҐГ«ГҐГ­ГЁГ©
 
 	// ambient
 	CUITrackBarVariable			UI_f_ambient_r;

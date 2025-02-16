@@ -13,13 +13,13 @@
 #include "../game_cl_base.h"
 #include "../../xrEngine/xr_level_controller.h"
 #include "UICellItem.h"
-#include "UIListBoxItem.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 #include "../CustomOutfit.h"
 #include "../../xrScripts/script_callback_ex.h"
 #include "../Medkit.h"
 #include "../Antirad.h"
 #include "../battery.h"
-#include "../UICursor.h"
+#include "../xrUI/UICursor.h"
 #include "../ai_space.h"
 
 void CUIInventoryWnd::EatItem(PIItem itm)

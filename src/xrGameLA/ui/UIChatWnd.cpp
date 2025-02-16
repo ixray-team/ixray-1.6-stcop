@@ -1,10 +1,10 @@
 #include <stdafx.h>
 #include "UIChatWnd.h"
 #include "UIGameLog.h"
-#include "UIEditBox.h"
-#include "UIXmlInit.h"
+#include "../xrUI/Widgets/UIEditBox.h"
+#include "../xrUI/UIXmlInit.h"
 #include "UIHelper.h"
-#include "xrUIXmlParser.h"
+#include "../xrUI/xrUIXmlParser.h"
 #include "../UIDialogHolder.h"
 #include "../game_cl_base.h"
 #include "../../xrEngine/xr_level_controller.h"

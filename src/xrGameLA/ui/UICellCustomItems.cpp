@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UICellCustomItems.h"
 #include "UIInventoryUtilities.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../eatable_item.h"
 #include "../UIGameCustom.h"
 #include "../Weapon.h"

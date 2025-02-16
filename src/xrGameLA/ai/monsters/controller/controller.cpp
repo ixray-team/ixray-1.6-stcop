@@ -11,7 +11,7 @@
 #include "../../../ai_monster_space.h"
 //#include "../../../ui/UIMainIngameWnd.h"
 #include "../../../UIGameCustom.h"
-#include "../../../ui/UIStatic.h"
+#include "../../../../xrUI/Widgets/UIStatic.h"
 
 #include "../monster_velocity_space.h"
 #include "../../../level_debug.h"

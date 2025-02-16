@@ -15,7 +15,7 @@
 #include "torch.h"
 #include "step_manager.h"
 #include "ActorState.h"
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 using namespace ACTOR_DEFS;
 

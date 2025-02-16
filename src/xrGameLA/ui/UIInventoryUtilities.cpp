@@ -3,7 +3,7 @@
 #include "../WeaponAmmo.h"
 #include "../WeaponMagazined.h"
 #include "../UIStaticItem.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "../eatable_item.h"
 #include "../Level.h"
 #include "../HUDManager.h"

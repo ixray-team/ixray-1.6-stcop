@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "UINewsWnd.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../HUDManager.h"
 #include "../level.h"
 #include "../game_news.h"
@@ -10,7 +10,7 @@
 #include "../alife_registry_wrappers.h"
 #include "UIInventoryUtilities.h"
 #include "UINewsItemWnd.h"
-#include "UIScrollView.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 
 #define				NEWS_XML			"news.xml"
 

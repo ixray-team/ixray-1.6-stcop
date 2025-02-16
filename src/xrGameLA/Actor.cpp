@@ -25,7 +25,7 @@
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "UIFontDefines.h"
+#include "../xrUI/UIFontDefines.h"
 
 // breakpoints
 #include "../xr_input.h"

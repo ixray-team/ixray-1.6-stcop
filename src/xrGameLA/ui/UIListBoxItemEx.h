@@ -7,7 +7,7 @@
 // Copyright:   2004 GSC Game World
 
 #pragma once
-#include "uilistboxitem.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 
 class CUIListBoxItemEx :
 	public CUIListBoxItem

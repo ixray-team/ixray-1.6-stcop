@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////
-// UIPointerGage.h:			цифровой прибор
+// UIPointerGage.h:			Г¶ГЁГґГ°Г®ГўГ®Г© ГЇГ°ГЁГЎГ®Г°
 //////////////////////////////////////////////////////////////////////////
 
 
 #pragma once
 
 
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 class CUIPointerGage: public CUIStatic
 {
@@ -27,14 +27,14 @@ public:
 	virtual void Update		();
 	virtual void Draw		();
 
-	//value - от 0 до 1
+	//value - Г®ГІ 0 Г¤Г® 1
 	virtual void SetValue	(float value);
 
 protected:
 	float m_fAngleMin, m_fAngleMax;
 	float m_fAngle;
 
-	//текстура стрелки
+	//ГІГҐГЄГ±ГІГіГ°Г  Г±ГІГ°ГҐГ«ГЄГЁ
     CUIStaticItem	m_ArrowPointer;
 	float m_iArrowOffsetX, m_iArrowOffsetY;
 };

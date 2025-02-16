@@ -3,7 +3,7 @@
 #include "../xrCore/object_destroyer.h"
 
 #ifdef XRGAME_EXPORTS
-#	include "../../xrGameLA/ui/xrUIXmlParser.h"
+#	include "../../xrUI/xrUIXmlParser.h"
 #else // XRGAME_EXPORTS
 #	include "xrUIXmlParser.h"
 #	include "../xrCore/object_broker.h"

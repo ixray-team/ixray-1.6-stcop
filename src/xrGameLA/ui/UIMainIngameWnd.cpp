@@ -33,7 +33,7 @@
 #include "UIInventoryUtilities.h"
 
 
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "UIPdaMsgListItem.h"
 #include "../alife_registry_wrappers.h"
 #include "../actorcondition.h"
@@ -46,7 +46,7 @@
 #include "../attachable_item.h"
 #include "../../xrEngine/xr_input.h"
 
-#include "UIScrollView.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 #include "map_hint.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../game_news.h"
@@ -938,7 +938,7 @@ CUIGameTutorial* g_tut = nullptr;
 //#include "UIVotingCategory.h"
 
 //CUIVotingCategory* v = nullptr;
-#include "UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
 CUIFrameWindow*		pUIFrame = nullptr;
 
 void test_update()

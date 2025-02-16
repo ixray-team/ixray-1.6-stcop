@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "UIWindow.h"
+#include "../xrUI/Widgets/UIWindow.h"
 #include "../encyclopedia_article_defs.h"
 
 class CEncyclopediaArticle;
@@ -44,7 +44,7 @@ public:
 	virtual void		Reset						();
 protected:
 	u32					prevArticlesCount;
-	// Элементы графического оформления
+	// ГќГ«ГҐГ¬ГҐГ­ГІГ» ГЈГ°Г ГґГЁГ·ГҐГ±ГЄГ®ГЈГ® Г®ГґГ®Г°Г¬Г«ГҐГ­ГЁГї
 	CUIFrameWindow*		UIEncyclopediaIdxBkg;
 	CUIFrameWindow*		UIEncyclopediaInfoBkg;
 	CUIFrameLineWnd*	UIEncyclopediaIdxHeader;
@@ -52,7 +52,7 @@ protected:
 	CUIAnimatedStatic*	UIAnimation;
 	CUIStatic*			UIArticleHeader;
 
-	// Хранилище статей
+	// Г•Г°Г Г­ГЁГ«ГЁГ№ГҐ Г±ГІГ ГІГҐГ©
 	typedef xr_vector<CEncyclopediaArticle*>			ArticlesDB;
 	typedef ArticlesDB::iterator						ArticlesDB_it;
 

@@ -2,7 +2,7 @@
 #define __UIPDAWND_H__
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "UIPdaAux.h"
 #include "../encyclopedia_article_defs.h"
 
@@ -28,20 +28,20 @@ class CUIPdaWnd: public CUIDialogWnd
 private:
 	typedef CUIDialogWnd	inherited;
 protected:
-	//элементы декоративного интерфейса
+	//ГЅГ«ГҐГ¬ГҐГ­ГІГ» Г¤ГҐГЄГ®Г°Г ГІГЁГўГ­Г®ГЈГ® ГЁГ­ГІГҐГ°ГґГҐГ©Г±Г 
 	CUIFrameLineWnd*		UIMainButtonsBackground;
 	CUIFrameLineWnd*		UITimerBackground;
 
-	// кнопки PDA
+	// ГЄГ­Г®ГЇГЄГЁ PDA
 	CUITabControl*			UITabControl;
 
-	// Установить игровое время
+	// Г“Г±ГІГ Г­Г®ГўГЁГІГј ГЁГЈГ°Г®ГўГ®ГҐ ГўГ°ГҐГ¬Гї
 	void					UpdateDateTime				();
 protected:
-	// Бэкграунд
+	// ГЃГЅГЄГЈГ°Г ГіГ­Г¤
 	CUIStatic*				UIMainPdaFrame;
 
-	// Текущий активный диалог
+	// Г’ГҐГЄГіГ№ГЁГ© Г ГЄГІГЁГўГ­Г»Г© Г¤ГЁГ Г«Г®ГЈ
 	CUIWindow*				m_pActiveDialog;
 	EPdaTabs				m_pActiveSection;
 	bool					bUpgraded;
@@ -49,7 +49,7 @@ private:
 	bool					m_initialized;
 
 public:
-	// Поддиалоги PDA
+	// ГЏГ®Г¤Г¤ГЁГ Г«Г®ГЈГЁ PDA
 	CUIMapWnd*				UIMapWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
 	CUIEncyclopediaWnd*		UIEncyclopediaWnd;

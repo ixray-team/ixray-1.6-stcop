@@ -1,7 +1,7 @@
 #include"stdafx.h"
 #include "uilistwnd.h"
 
-#include "UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 
 //#include "../../Include/xrRender/DebugRender.h"
 //#include "../../Include/xrRender/UIRender.h"

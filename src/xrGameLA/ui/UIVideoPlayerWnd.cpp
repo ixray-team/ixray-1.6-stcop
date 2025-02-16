@@ -3,8 +3,8 @@
 
 /*
 #include "UITabControl.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../level.h"
 #include "../hudmanager.h"
 #include <dinput.h>

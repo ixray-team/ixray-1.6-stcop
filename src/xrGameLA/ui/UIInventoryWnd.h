@@ -2,12 +2,12 @@
 
 class CInventory;
 
-#include "UIDialogWnd.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
-#include "UIProgressBar.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
 
-#include "UIPropertiesBox.h"
+#include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "UIOutfitSlot.h"
 
 #include "UIActorProtectionInfo.h"

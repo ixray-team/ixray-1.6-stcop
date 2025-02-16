@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIActorStateIcons.h"
-#include "UI/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "hudmanager.h"
 
 CUIActorStateIcons::CUIActorStateIcons()

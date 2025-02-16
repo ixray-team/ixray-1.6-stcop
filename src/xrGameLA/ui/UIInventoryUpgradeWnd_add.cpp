@@ -9,8 +9,8 @@
 #include "pch_script.h"
 #include "../xrCore/object_broker.h"
 #include "UIInventoryUpgradeWnd.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
 void CUIInventoryUpgradeWnd::LoadCellsBacks( CUIXml& uiXml )

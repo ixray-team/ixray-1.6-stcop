@@ -2,7 +2,7 @@
 #include "UIGameCustom.h"
 #include "level.h"
 #include "hudmanager.h"
-#include "ui/uistatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 using namespace luabind;
 

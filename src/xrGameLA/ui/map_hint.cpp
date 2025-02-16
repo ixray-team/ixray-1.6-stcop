@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "map_hint.h"
-#include "UIStatic.h"
-#include "UIFrameWindow.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 
 CUIMapHint::~CUIMapHint	()
 {}

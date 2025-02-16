@@ -15,7 +15,7 @@
 #include "game_cl_base.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "ai/stalker/ai_stalker.h"
-#include "uifontdefines.h"
+#include "../xrUI/uifontdefines.h"
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"
@@ -26,7 +26,7 @@
 
 #include "inventory_item.h"
 #include "inventory.h"
-#include "ui_base.h"
+#include "../xrUI/ui_base.h"
 
 u32 C_ON_ENEMY		= color_xrgb(0xff,0,0);
 u32 C_ON_NEUTRAL	= color_xrgb(0xff,0xff,0x80);

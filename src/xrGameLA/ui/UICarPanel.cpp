@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIMainIngameWnd.h"
-#include "UICarPanel.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UICarPanel.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../hudmanager.h"
 
 const LPCSTR POINTER_ARROW_TEX = "ui\\ui_car_arrow";

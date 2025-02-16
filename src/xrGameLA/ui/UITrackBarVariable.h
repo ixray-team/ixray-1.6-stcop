@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UI_IB_Static.h"
+#include "../../xrUI/Widgets/UI_IB_Static.h"
 #include "UI_IB_FrameLineWnd.h"
 
 class CUI3tButton;

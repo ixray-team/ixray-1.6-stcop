@@ -18,7 +18,7 @@
 #include "actor.h"
 #include "huditem.h"
 #include "UIGameCustom.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "pch_script.h"
 #include "ui/UIGameTutorial.h"
 #include "clsid_game.h"

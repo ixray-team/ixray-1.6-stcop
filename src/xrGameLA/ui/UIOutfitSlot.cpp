@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIOutfitSlot.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "UICellItem.h"
 #include "../CustomOutfit.h"
 #include "../actor.h"

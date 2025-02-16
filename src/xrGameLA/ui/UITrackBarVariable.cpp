@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 
 #include "UITrackBarVariable.h"
-#include "UI3tButton.h"
-#include "UITextureMaster.h"
+#include "../xrUI/Widgets/UI3tButton.h"
+#include "../xrUI/UITextureMaster.h"
 #include "../../xrEngine/xr_input.h"
 
 #define DEF_CONTROL_HEIGHT		21.0f

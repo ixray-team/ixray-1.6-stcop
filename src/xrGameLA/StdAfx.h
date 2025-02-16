@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma warning(disable:4995)
-#include "../xrEngine/stdafx.h"
+#include "../xrUI/stdafx.h"
 #include "../xrScripts/stdafx.h"
 #pragma warning(default:4995)
 #pragma warning( 4 : 4018 )

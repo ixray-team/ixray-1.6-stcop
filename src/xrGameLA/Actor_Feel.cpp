@@ -15,7 +15,7 @@
 #include "clsid_game.h"
 #include "game_cl_base.h"
 #include "Level.h"
-#include "uifontdefines.h"
+#include "../xrUI/UIFontDefines.h"
 
 //B77B40
 #define PICKUP_INFO_COLOR_FAREST 0xFF686054//895555//DDDDDD

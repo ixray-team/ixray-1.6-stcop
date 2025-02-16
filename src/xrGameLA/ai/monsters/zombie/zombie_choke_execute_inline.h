@@ -7,7 +7,7 @@
 #include "../../../../xrCore/_vector3d_ext.h"
 #include "../../../hudmanager.h"
 #include "../../../UIGameCustom.h"
-#include "../../../UI/UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

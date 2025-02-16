@@ -6,14 +6,14 @@
 #include "../pch_script.h"
 #include "UIWeatherEditor.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 #include "../Level.h"
 #include "../../xrEngine/XR_IOConsole.h"
 
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 
 CUIWeatherEditor::CUIWeatherEditor()
 {
@@ -82,7 +82,7 @@ void CUIWeatherEditor::Init()
 	AttachChild(&UIBack);
 	xml_init.InitStatic(uiXml, "back", 0, &UIBack);
 
-
+	/*
 	//param ambient
 	xml_init.InitStatic(uiXml, "ambient_r_title", 0, &UI_ambient_rTitle);
 	UI_ambient_rTitle.AttachChild(&UI_ambient_rValue);
@@ -590,7 +590,7 @@ void CUIWeatherEditor::Init()
 	ScrollView4->AddWindow(&UI_wind_velocity_Title, false);
 	ScrollView4->AddWindow(&UI_wind_direction_Title, false);
 	ScrollView4->AddWindow(&UI_wind_sound_volume_Title, false);
-
+	*/
 }
 
 void CUIWeatherEditor::Draw()
@@ -709,6 +709,8 @@ void CUIWeatherEditor::Update()
 {
 	CUIWindow::Update();
 	CEnvDescriptor* TargetWeather = g_pGamePersistent->Environment().Current[0];
+	
+	/*
 	string64						value;
 	xr_sprintf(value, "%f", TargetWeather->ambient.x);
 	UI_ambient_rValue.SetText(value);
@@ -782,7 +784,7 @@ void CUIWeatherEditor::Update()
 	
 	xr_sprintf(value, "%f", TargetWeather->sun_lumscale);
 	UI_sun_lumscale_Value.SetText(value);
-	*/
+	* /
 	xr_sprintf(value, "%f", sun_pos.x);
 	UI_sun_dir_a_Value.SetText(value);
 	xr_sprintf(value, "%f", sun_pos.y);
@@ -816,7 +818,7 @@ void CUIWeatherEditor::Update()
 
 	xr_sprintf(value, "%f", TargetWeather->clouds_velocity_1);
 	UI_clouds_velocity_1_Value.SetText(value);
-	*/
+	* /
 	xr_sprintf(value, "%f", TargetWeather->m_fWaterIntensity);
 	UI_water_intensity_Value.SetText(value);
 	/*
@@ -852,7 +854,7 @@ void CUIWeatherEditor::Update()
 
 	xr_sprintf(value, "%f", TargetWeather->m_cSwingDesc[0].amp2);
 	UI_swing_normal_amp2_Value.SetText(value);
-	*/
+	* /
 	xr_sprintf(value, "%f", TargetWeather->wind_velocity);
 	UI_wind_velocity_Value.SetText(value);
 
@@ -862,7 +864,7 @@ void CUIWeatherEditor::Update()
 	//xr_sprintf(value, "%f", TargetWeather->wind_volume);
 	//UI_wind_sound_volume_Value.SetText(value);
 
-
+	*/
 }
 
 void CUIWeatherEditor::KeepTimeAsWasAtStart()

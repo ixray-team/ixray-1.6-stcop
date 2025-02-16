@@ -7,7 +7,7 @@
 // Copyright 2005 GSC GameWorld
 
 #include "KillMessageStruct.h"
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 class CUIPdaKillMessage : public CUIColorAnimConrollerContainer 
 {

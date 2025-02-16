@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "UITaskDescrWnd.h"
-#include "UIXmlInit.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIScrollView.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIScrollView.h"
 #include "UIEncyclopediaArticleWnd.h"
 #include "../encyclopedia_article.h"
 

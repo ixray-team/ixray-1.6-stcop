@@ -25,7 +25,7 @@
 
 
 #include "ui/UIProgressShape.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;
 

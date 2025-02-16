@@ -15,7 +15,7 @@
 #include "client_spawn_manager.h"
 #include "../igame_persistent.h"
 #include "game_cl_base.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "date_time.h"
 #include "ai_space.h"
 #include "level_graph.h"

@@ -9,7 +9,7 @@
 #include "alife_story_registry.h"
 #include "xrServer_Objects_ALife.h"
 #include "../xrScripts/script_engine.h"
-#include "ui\uixmlinit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../xrCore/object_broker.h"
 
 void INFO_DATA::load (IReader& stream) 

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "UIProgressBar.h"
+#include "../xrUI/Widgets/UIProgressBar.h"
 #include "UIGameLog.h"
 
 #include "../alife_space.h"

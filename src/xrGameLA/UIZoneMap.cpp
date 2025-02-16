@@ -16,11 +16,14 @@
 #include "game_graph.h"
 
 #include "ui/UIMap.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
 //////////////////////////////////////////////////////////////////////////
 
 CUIZoneMap::CUIZoneMap()
-{}
+{
+	m_pointerDistanceText = nullptr;
+}
 
 CUIZoneMap::~CUIZoneMap()
 {
@@ -44,8 +47,8 @@ void CUIZoneMap::Init()
 	xml_init.InitStatic			(uiXml, "minimap:background", 0, &m_background);
 
 	if(IsGameTypeSingle()){
-		xml_init.InitStatic			(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
-		m_background.AttachChild	(&m_pointerDistanceText);
+		//xml_init.InitStatic			(uiXml, "minimap:background:dist_text", 0, &m_pointerDistanceText);
+		m_pointerDistanceText = UIHelper::CreateTextWnd(uiXml, "minimap:background:dist_text", &m_background);
 	}
 
 	xml_init.InitStatic(uiXml, "minimap:level_frame", 0, &m_clipFrame);
@@ -63,7 +66,7 @@ void CUIZoneMap::Init()
 //	m_background.AttachChild(&m_compass);
 
 	m_clipFrame.AttachChild			(&m_center);
-	m_center.SetWndPos				(m_clipFrame.GetWidth()/2,m_clipFrame.GetHeight()/2);
+	m_center.SetWndPos				(Fvector2{ m_clipFrame.GetWidth()/2,m_clipFrame.GetHeight()/2 });
 }
 
 void CUIZoneMap::Render			()
@@ -89,9 +92,9 @@ void CUIZoneMap::UpdateRadar		(Fvector pos)
 		if(m_activeMap->GetPointerDistance()>0.5f){
 			string64	str;
 			xr_sprintf		(str,"%.1f m.",m_activeMap->GetPointerDistance());
-			m_pointerDistanceText.SetText(str);
+			m_pointerDistanceText->SetText(str);
 		}else{
-			m_pointerDistanceText.SetText("");
+			m_pointerDistanceText->SetText("");
 		}
 	}
 }

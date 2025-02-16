@@ -281,7 +281,7 @@ void CUIGlobalMap::ClipByVisRect()
 	if (r.y2<clip.height())	r.y1 += clip.height()-r.y2;
 	if (r.x1>0.0f)			r.x1 = 0.0f;
 	if (r.y1>0.0f)			r.y1 = 0.0f;
-	SetWndPos				(r.x1,r.y1);
+	SetWndPos				(r.lt);
 }
 
 Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src)// pixels->pixels (relatively own left-top pos)

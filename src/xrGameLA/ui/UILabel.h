@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UILines.h"
 
 class CLAItem;

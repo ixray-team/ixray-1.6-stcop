@@ -16,7 +16,7 @@
 #include "level_graph.h"
 #include "../XrEngine/customhud.h"
 #include "ai_space.h"
-#include "ui_base.h"
+#include "../xrUI/ui_base.h"
 #include "hudmanager.h"
 #include "game_graph.h"
 #include "game_sv_single.h"

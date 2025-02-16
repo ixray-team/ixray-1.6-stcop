@@ -2,24 +2,24 @@
 
 #include "../inventory_item.h"
 #include "../character_info_defs.h"
-#include "../ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 #include "UICellItem.h"
 
 class CUIStatic;
 class CInventory;
 
-//размеры сетки в текстуре инвентаря
+//Г°Г Г§Г¬ГҐГ°Г» Г±ГҐГІГЄГЁ Гў ГІГҐГЄГ±ГІГіГ°ГҐ ГЁГ­ГўГҐГ­ГІГ Г°Гї
 #define INV_GRID_WIDTH			50.0f
 #define INV_GRID_HEIGHT			50.0f
 
-//размеры сетки в текстуре иконок персонажей
+//Г°Г Г§Г¬ГҐГ°Г» Г±ГҐГІГЄГЁ Гў ГІГҐГЄГ±ГІГіГ°ГҐ ГЁГЄГ®Г­Г®ГЄ ГЇГҐГ°Г±Г®Г­Г Г¦ГҐГ©
 #define ICON_GRID_WIDTH			64.0f
 #define ICON_GRID_HEIGHT		64.0f
-//размер иконки персонажа для инвенторя и торговли
+//Г°Г Г§Г¬ГҐГ° ГЁГЄГ®Г­ГЄГЁ ГЇГҐГ°Г±Г®Г­Г Г¦Г  Г¤Г«Гї ГЁГ­ГўГҐГ­ГІГ®Г°Гї ГЁ ГІГ®Г°ГЈГ®ГўГ«ГЁ
 #define CHAR_ICON_WIDTH			2
 #define CHAR_ICON_HEIGHT		2	
 
-//размер иконки персонажа в полный рост
+//Г°Г Г§Г¬ГҐГ° ГЁГЄГ®Г­ГЄГЁ ГЇГҐГ°Г±Г®Г­Г Г¦Г  Гў ГЇГ®Г«Г­Г»Г© Г°Г®Г±ГІ
 #define CHAR_ICON_FULL_WIDTH	2
 #define CHAR_ICON_FULL_HEIGHT	5
 
@@ -28,33 +28,33 @@ class CInventory;
 namespace InventoryUtilities
 {
 
-//сравнивает элементы по пространству занимаемому ими в рюкзаке
-//для сортировки
+//Г±Г°Г ГўГ­ГЁГўГ ГҐГІ ГЅГ«ГҐГ¬ГҐГ­ГІГ» ГЇГ® ГЇГ°Г®Г±ГІГ°Г Г­Г±ГІГўГі Г§Г Г­ГЁГ¬Г ГҐГ¬Г®Г¬Гі ГЁГ¬ГЁ Гў Г°ГѕГЄГ§Г ГЄГҐ
+//Г¤Г«Гї Г±Г®Г°ГІГЁГ°Г®ГўГЄГЁ
 bool GreaterRoomInRuck			(PIItem item1, PIItem item2);
 bool GreaterRoomInRuckCellItem	(CUICellItem* cell1, CUICellItem* cell12);
-//для проверки свободного места
+//Г¤Г«Гї ГЇГ°Г®ГўГҐГ°ГЄГЁ Г±ГўГ®ГЎГ®Г¤Г­Г®ГЈГ® Г¬ГҐГ±ГІГ 
 bool FreeRoom_inBelt	(const TIItemContainer& item_list, PIItem item, int width, int height);
 
 // get shader for BuyWeaponWnd
 const ui_shader&	GetBuyMenuShader();
-//получить shader на иконки инвенторя
+//ГЇГ®Г«ГіГ·ГЁГІГј shader Г­Г  ГЁГЄГ®Г­ГЄГЁ ГЁГ­ГўГҐГ­ГІГ®Г°Гї
 const ui_shader& GetEquipmentIconsShader();
-// shader на иконки персонажей в мультиплеере
+// shader Г­Г  ГЁГЄГ®Г­ГЄГЁ ГЇГҐГ°Г±Г®Г­Г Г¦ГҐГ© Гў Г¬ГіГ«ГјГІГЁГЇГ«ГҐГҐГ°ГҐ
 const ui_shader&	GetMPCharIconsShader();
 //get shader for outfit icons in upgrade menu
 const ui_shader& GetOutfitUpgradeIconsShader();
 //get shader for weapon icons in upgrade menu
 const ui_shader& GetWeaponUpgradeIconsShader();
-//удаляем все шейдеры
+//ГіГ¤Г Г«ГїГҐГ¬ ГўГ±ГҐ ГёГҐГ©Г¤ГҐГ°Г»
 void DestroyShaders();
 void CreateShaders();
 
 void UpdateWeaponUpgradeIconsShader(CUIStatic* item);
 void UpdateOutfitUpgradeIconsShader(CUIStatic* item);
 
-// Получить значение времени в текстовом виде
+// ГЏГ®Г«ГіГ·ГЁГІГј Г§Г­Г Г·ГҐГ­ГЁГҐ ГўГ°ГҐГ¬ГҐГ­ГЁ Гў ГІГҐГЄГ±ГІГ®ГўГ®Г¬ ГўГЁГ¤ГҐ
 
-// Точность возвращаемого функцией GetGameDateTimeAsString значения: до часов, до минут, до секунд
+// Г’Г®Г·Г­Г®Г±ГІГј ГўГ®Г§ГўГ°Г Г№Г ГҐГ¬Г®ГЈГ® ГґГіГ­ГЄГ¶ГЁГҐГ© GetGameDateTimeAsString Г§Г­Г Г·ГҐГ­ГЁГї: Г¤Г® Г·Г Г±Г®Гў, Г¤Г® Г¬ГЁГ­ГіГІ, Г¤Г® Г±ГҐГЄГіГ­Г¤
 enum ETimePrecision
 {
 	etpTimeToHours = 0,
@@ -64,7 +64,7 @@ enum ETimePrecision
 	etpTimeToSecondsAndDay
 };
 
-// Точность возвращаемого функцией GetGameDateTimeAsString значения: до года, до месяца, до дня
+// Г’Г®Г·Г­Г®Г±ГІГј ГўГ®Г§ГўГ°Г Г№Г ГҐГ¬Г®ГЈГ® ГґГіГ­ГЄГ¶ГЁГҐГ© GetGameDateTimeAsString Г§Г­Г Г·ГҐГ­ГЁГї: Г¤Г® ГЈГ®Г¤Г , Г¤Г® Г¬ГҐГ±ГїГ¶Г , Г¤Г® Г¤Г­Гї
 enum EDatePrecision
 {
 	edpDateToDay,
@@ -78,12 +78,12 @@ const shared_str GetGameTimeAsString(ETimePrecision timePrec, char timeSeparator
 const shared_str GetDateAsString(ALife::_TIME_ID time, EDatePrecision datePrec, char dateSeparator = '/');
 const shared_str GetTimeAsString(ALife::_TIME_ID time, ETimePrecision timePrec, char timeSeparator = ':');
 LPCSTR GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
-// Отобразить вес контейнера
+// ГЋГІГ®ГЎГ°Г Г§ГЁГІГј ГўГҐГ± ГЄГ®Г­ГІГҐГ©Г­ГҐГ°Г 
 void UpdateWeightContainer(CUIStatic &wnd, CInventory *pInventory, LPCSTR prefixStr = nullptr);
-// Отобразить вес, который несет актер
+// ГЋГІГ®ГЎГ°Г Г§ГЁГІГј ГўГҐГ±, ГЄГ®ГІГ®Г°Г»Г© Г­ГҐГ±ГҐГІ Г ГЄГІГҐГ°
 void UpdateWeight(CUIStatic &wnd, bool withPrefix = false);
 
-// Функции получения строки-идентификатора ранга и отношения по их числовому идентификатору
+// Г”ГіГ­ГЄГ¶ГЁГЁ ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г±ГІГ°Г®ГЄГЁ-ГЁГ¤ГҐГ­ГІГЁГґГЁГЄГ ГІГ®Г°Г  Г°Г Г­ГЈГ  ГЁ Г®ГІГ­Г®ГёГҐГ­ГЁГї ГЇГ® ГЁГµ Г·ГЁГ±Г«Г®ГўГ®Г¬Гі ГЁГ¤ГҐГ­ГІГЁГґГЁГЄГ ГІГ®Г°Гі
 LPCSTR	GetRankAsText				(CHARACTER_RANK_VALUE		rankID);
 LPCSTR	GetReputationAsText			(CHARACTER_REPUTATION_VALUE rankID);
 LPCSTR	GetGoodwillAsText			(CHARACTER_GOODWILL			goodwill);

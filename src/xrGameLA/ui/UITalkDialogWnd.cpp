@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "UITalkDialogWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
-#include "UIScrollView.h"
-#include "UI3tButton.h"
-#include "../ui_base.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/Widgets/UIScrollView.h"
+#include "../xrUI/Widgets/UI3tButton.h"
+#include "../xrUI/ui_base.h"
 #include "../HUDManager.h"
 #include <dinput.h>
 

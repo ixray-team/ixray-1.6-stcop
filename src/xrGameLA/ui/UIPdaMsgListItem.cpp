@@ -8,8 +8,8 @@
 #include "../Entity.h"
 #include "../character_info.h"
 #include "UIInventoryUtilities.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "uicoloranimatorwrapper.h"
 #include "../xrCore/object_broker.h"
 

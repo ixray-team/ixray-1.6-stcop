@@ -6,7 +6,7 @@
 #define AFX_TRACER_H__AC263474_060A_489E_B84A_E879CD630A1E__INCLUDED_
 #pragma once
 
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 class CBulletManager;
 

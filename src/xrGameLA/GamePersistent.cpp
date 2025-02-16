@@ -6,7 +6,7 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "../../Include/xrRender/Kinematics.h"
 #include "MainMenu.h"
-#include "UICursor.h"
+#include "../xrUI/UICursor.h"
 #include "game_base_space.h"
 #include "level.h"
 #include "actor.h"

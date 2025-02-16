@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
-// UIPdaMsgListItem.h: элемент окна списка в основном 
-// экране для сообщений PDA
+// UIPdaMsgListItem.h: ГЅГ«ГҐГ¬ГҐГ­ГІ Г®ГЄГ­Г  Г±ГЇГЁГ±ГЄГ  Гў Г®Г±Г­Г®ГўГ­Г®Г¬ 
+// ГЅГЄГ°Г Г­ГҐ Г¤Г«Гї Г±Г®Г®ГЎГ№ГҐГ­ГЁГ© PDA
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "..\InventoryOwner.h"
 
 class CUIPdaMsgListItem : public CUIColorAnimConrollerContainer
@@ -17,7 +17,7 @@ public:
 	virtual void		SetFont							(CGameFont* pFont);
 	virtual void		SetColor						(u32 color);
 	
-	//информация о персонаже
+	//ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГї Г® ГЇГҐГ°Г±Г®Г­Г Г¦ГҐ
 	CUIStatic			UIIcon;
 	CUITextWnd			UIName;
 	CUITextWnd			UIMsgText;

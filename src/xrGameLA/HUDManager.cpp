@@ -7,11 +7,11 @@
 #include "clsid_game.h"
 #include "GamePersistent.h"
 #include "UIGameCustom.h"
-#include "UICursor.h"
+#include "../xrUI/UICursor.h"
 #include "MainMenu.h"
 #include "game_cl_base.h"
 #include "Car.h"
-#include "UIFontDefines.h"
+#include "../xrUI/UIFontDefines.h"
 
 u32	ui_hud_type;
 extern CUIGameCustom*	CurrentGameUI()	{return HUD().GetGameUI();}

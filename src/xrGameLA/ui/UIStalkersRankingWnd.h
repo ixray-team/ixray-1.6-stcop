@@ -1,5 +1,5 @@
 #pragma once
-#include "UIWindow.h"
+#include "../xrUI/Widgets/UIWindow.h"
 
 class CUIFrameWindow;
 class CUIFrameLineWnd;
@@ -23,7 +23,7 @@ protected:
 	CUIFrameLineWnd*		UIInfoHeader;
 	CUIFrameLineWnd*		UICharIconHeader;
 	CUIAnimatedStatic*		UIAnimatedIcon;
-	// информация о персонаже
+	// ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГї Г® ГЇГҐГ°Г±Г®Г­Г Г¦ГҐ
 	CUIWindow*				UICharacterWindow;
 	CUICharacterInfo*		UICharacterInfo;
 	void					FillList			();

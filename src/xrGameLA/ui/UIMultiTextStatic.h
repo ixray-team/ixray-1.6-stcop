@@ -3,8 +3,8 @@
 //	Created by Roman E. Marchenko, vortex@gsc-game.kiev.ua
 //	Copyright 2004. GSC Game World
 //	---------------------------------------------------------------------------
-//  Статик контрол на котором можно выводить множество надписей различными
-//	шрифтами, цветами и даже с анимацией
+//  Г‘ГІГ ГІГЁГЄ ГЄГ®Г­ГІГ°Г®Г« Г­Г  ГЄГ®ГІГ®Г°Г®Г¬ Г¬Г®Г¦Г­Г® ГўГ»ГўГ®Г¤ГЁГІГј Г¬Г­Г®Г¦ГҐГ±ГІГўГ® Г­Г Г¤ГЇГЁГ±ГҐГ© Г°Г Г§Г«ГЁГ·Г­Г»Г¬ГЁ
+//	ГёГ°ГЁГґГІГ Г¬ГЁ, Г¶ГўГҐГІГ Г¬ГЁ ГЁ Г¤Г Г¦ГҐ Г± Г Г­ГЁГ¬Г Г¶ГЁГҐГ©
 //=============================================================================
 
 #ifndef UI_MULTITEXT_STATIC_H_
@@ -23,7 +23,7 @@ public:
 		float						outX;
 		float						outY;
 		float						maxWidth;
-		CUIStatic::EElipsisPosition elipsisPos;
+		//CUIStatic::EElipsisPosition elipsisPos;
 		CUITextBanner				effect;
 		shared_str						str;
 
@@ -45,10 +45,10 @@ public:
 
 	virtual void Draw();
 	virtual void Update();
-	// Добавить надпись
-	// Return:	Указатель на добавленную запись
+	// Г„Г®ГЎГ ГўГЁГІГј Г­Г Г¤ГЇГЁГ±Гј
+	// Return:	Г“ГЄГ Г§Г ГІГҐГ«Гј Г­Г  Г¤Г®ГЎГ ГўГ«ГҐГ­Г­ГіГѕ Г§Г ГЇГЁГ±Гј
 	SinglePhrase * AddPhrase();
-	// Получить запись по номеру
+	// ГЏГ®Г«ГіГ·ГЁГІГј Г§Г ГЇГЁГ±Гј ГЇГ® Г­Г®Г¬ГҐГ°Гі
 	SinglePhrase * GetPhraseByIndex(u32 idx);
 	void			RemovePhraseByIndex(u32 idx);
 };

@@ -5,9 +5,9 @@
 #include "../xrScripts/script_export_space.h"
 #include "../xrCore/object_interfaces.h"
 #include "inventory_space.h"
-#include "UIDialogHolder.h"
+#include "../xrUI/Widgets/UIDialogHolder.h"
 #include "../CustomHUD.h"
-#include "ui/UIMessages.h"
+#include "../xrUI/Widgets/UIMessages.h"
 #include "ui/UIWeatherEditor.h"
 
 // refs

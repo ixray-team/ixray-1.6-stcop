@@ -1,5 +1,5 @@
 #pragma once
-#include "UIbutton.h"
+#include "../xrUI/Widgets/UIButton.h"
 
 class CUIListItem :	public CUIButton
 {
@@ -28,25 +28,25 @@ public:
 			void SetGroupID(int ID) { m_iGroupID = ID; }
 
 	virtual void	MarkSelected				(bool b){};
-	// переопределяем критерий подсвечивания текста
+	// ГЇГҐГ°ГҐГ®ГЇГ°ГҐГ¤ГҐГ«ГїГҐГ¬ ГЄГ°ГЁГІГҐГ°ГЁГ© ГЇГ®Г¤Г±ГўГҐГ·ГЁГўГ Г­ГЁГї ГІГҐГЄГ±ГІГ 
 	virtual bool IsHighlightText();
 	virtual void SetHighlightText(bool Highlight)		{ m_bHighlightText = Highlight; }
 
 protected:
-	//указатель на произвольные данные, которые могут
-	//присоедениены к элементу
+	//ГіГЄГ Г§Г ГІГҐГ«Гј Г­Г  ГЇГ°Г®ГЁГ§ГўГ®Г«ГјГ­Г»ГҐ Г¤Г Г­Г­Г»ГҐ, ГЄГ®ГІГ®Г°Г»ГҐ Г¬Г®ГЈГіГІ
+	//ГЇГ°ГЁГ±Г®ГҐГ¤ГҐГ­ГЁГҐГ­Г» ГЄ ГЅГ«ГҐГ¬ГҐГ­ГІГі
 	void* m_pData;
 	
-	//произвольное число, приписанное объекту
+	//ГЇГ°Г®ГЁГ§ГўГ®Г«ГјГ­Г®ГҐ Г·ГЁГ±Г«Г®, ГЇГ°ГЁГЇГЁГ±Г Г­Г­Г®ГҐ Г®ГЎГєГҐГЄГІГі
 	int m_iValue;
 	
-	//индекс в списке
+	//ГЁГ­Г¤ГҐГЄГ± Гў Г±ГЇГЁГ±ГЄГҐ
 	int m_iIndex;
 
-	// идентификатор группы
+	// ГЁГ¤ГҐГ­ГІГЁГґГЁГЄГ ГІГ®Г° ГЈГ°ГіГЇГЇГ»
 	int m_iGroupID;
 
-	// подсвечивается кнопка или нет?
+	// ГЇГ®Г¤Г±ГўГҐГ·ГЁГўГ ГҐГІГ±Гї ГЄГ­Г®ГЇГЄГ  ГЁГ«ГЁ Г­ГҐГІ?
 	bool m_bHighlightText;
 
 };

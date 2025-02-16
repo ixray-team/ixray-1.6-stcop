@@ -10,8 +10,8 @@
 #include "../xrCore/object_broker.h"
 #include "UIInventoryUpgradeWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
 #include "../actor.h"
@@ -26,10 +26,10 @@
 
 #include "UIInventoryUtilities.h"
 #include "UIItemInfo.h"
-#include "UIFrameLineWnd.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UI3tButton.h"
 #include "UIHelper.h"
-#include "../ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 #include "../Weapon.h"
 #include "../WeaponRPG7.h"
 #include "../CustomOutfit.h"

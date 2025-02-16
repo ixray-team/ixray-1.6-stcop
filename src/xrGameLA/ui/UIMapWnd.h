@@ -1,9 +1,9 @@
 #pragma once
 
-#include "UIWindow.h"
-#include "UIWndCallback.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIWndCallback.h"
 #include "../map_spot.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 
 class CUICustomMap;
 class CUIGlobalMap;

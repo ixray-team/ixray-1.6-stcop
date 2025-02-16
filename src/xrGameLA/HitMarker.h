@@ -2,7 +2,7 @@
 #define __XR_HITMARKER_H__
 #pragma once
 
-#include "ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 class CUIStaticItem;
 class CLAItem;

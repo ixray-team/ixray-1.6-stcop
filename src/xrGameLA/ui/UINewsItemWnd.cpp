@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UINewsItemWnd.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "../game_news.h"
 #include "../date_time.h"
 

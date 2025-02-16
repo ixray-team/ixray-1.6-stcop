@@ -5,15 +5,15 @@
 // Author:		SkyLoader
 // Mail:		nope
 
-// Copyright 2014 Lost Alpha, вот так нах
+// Copyright 2014 Lost Alpha, ГўГ®ГІ ГІГ ГЄ Г­Г Гµ
 
 #pragma once
 
-#include "UIInteractiveBackground.h"
-#include "UIFrameLineWnd.h"
+#include "../xrUI/Widgets/UIInteractiveBackground.h"
+#include "../xrUI/Widgets/UIFrameLineWnd.h"
 
-class CUI_IB_FrameLineWnd : public CUIInteractiveBackground<CUIFrameLineWnd> 
-{
-public:
-	virtual void SetStretchBETextures	(bool stretch);
-};
+//class CUI_IB_FrameLineWnd : public CUIInteractiveBackground<CUIFrameLineWnd> 
+//{
+//public:
+//	virtual void SetStretchBETextures	(bool stretch);
+//};
