@@ -647,7 +647,7 @@ void CCar::detach_Actor()
 {
 	if(!Owner()) return;
 	Owner()->setVisible(1);
-	if (OwnerActor()) OwnerActor()->SetActorShadows(!psActorFlags.test(AF_ACTOR_BODY));
+	//if (OwnerActor()) OwnerActor()->SetActorShadows(!psActorFlags.test(AF_ACTOR_BODY));
 	CHolderCustom::detach_Actor();
 	PPhysicsShell()->remove_ObjectContactCallback(ActorObstacleCallback);
 	NeutralDrive();
@@ -688,7 +688,7 @@ bool CCar::attach_Actor(CGameObject* actor)
 	}
 
 	Owner()->setVisible(0);
-	if (OwnerActor()) OwnerActor()->SetActorShadows(true);
+	//if (OwnerActor()) OwnerActor()->SetActorShadows(true);
 	m_sits_transforms.set(driver_xform);
 	actor->XFORM().mul_43	(XFORM(),m_sits_transforms);
 

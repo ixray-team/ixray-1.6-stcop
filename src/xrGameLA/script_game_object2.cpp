@@ -414,12 +414,12 @@ void CScriptGameObject::SetActorDirectionSlowly		(Fvector pos, float time)
 
 void CScriptGameObject::SetActorLegsVisible			(bool val)
 {
-	CActor* actor = smart_cast<CActor*>(&object());
-	if(actor){
-		actor->setVisible(val);
-		actor->SetDrawLegs(val);
-	}else
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"ScriptGameObject : attempt to call SetActorLegsVisible method for non-actor object");
+//	CActor* actor = smart_cast<CActor*>(&object());
+//	if(actor){
+//		actor->setVisible(val);
+//		actor->SetDrawLegs(val);
+//	}else
+//		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"ScriptGameObject : attempt to call SetActorLegsVisible method for non-actor object");
 }
 
 void CScriptGameObject::SetActorCam			(u8 val)
@@ -438,8 +438,9 @@ void CScriptGameObject::SetActorCam			(u8 val)
 
 bool CScriptGameObject::IsFirstEyeCam			()
 {
-	CActor* actor = smart_cast<CActor*>(&object());
-	return			(actor && actor->IsFirstEye());
+// 	CActor* actor = smart_cast<CActor*>(&object());
+// 	return			(actor && actor->IsFirstEye());
+	return true;
 }
 
 void CScriptGameObject::SetHandsOnly			(bool val)

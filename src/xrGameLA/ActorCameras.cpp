@@ -26,7 +26,7 @@
 
 void CActor::cam_Set(EActorCameras style)
 {
-	if (style != cam_active)
+	/*if (style != cam_active)
 	{
 		if (eacFirstEye == cam_active)
 		{
@@ -46,7 +46,7 @@ void CActor::cam_Set(EActorCameras style)
 			else
 				ChangeVisual(m_DefaultVisualOutfit_legs);
 		}
-	}
+	}*/
 	CCameraBase* old_cam = cam_Active();
 	cam_active = style;
 	old_cam->OnDeactivate();
@@ -55,11 +55,11 @@ void CActor::cam_Set(EActorCameras style)
 float CActor::f_Ladder_cam_limit = 1.f;
 void CActor::cam_SetLadder()
 {
-	if (CanBeDrawLegs() && !m_bActorShadows)
+	/*if (CanBeDrawLegs() && !m_bActorShadows)
 	{
 		setVisible(FALSE);
 		m_bDrawLegs = false;
-	}
+	}*/
 
 	CCameraBase* C = cameras[eacFirstEye];
 	g_LadderOrient();
@@ -114,11 +114,11 @@ void CActor::camUpdateLadder(float dt)
 
 void CActor::cam_UnsetLadder()
 {
-	if (CanBeDrawLegs() && !m_bActorShadows)
+	/*if (CanBeDrawLegs() && !m_bActorShadows)
 	{
 		setVisible(TRUE);
 		m_bDrawLegs = true;
-	}
+	}*/
 
 	CCameraBase* C = cameras[eacFirstEye];
 	C->lim_yaw[0] = 0;

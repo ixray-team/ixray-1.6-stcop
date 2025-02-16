@@ -381,6 +381,11 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	else if (mstate_rl&mcRStrafe)	M_legs	= AS->legs_rs;
 	else is_standing = true;
 
+	if (g_player_hud && is_standing && IsFocused() && g_player_hud->m_legs_model) {
+		is_standing = false;
+	}
+
+
 	if(mstate_rl&mcSprint){
 		g_SetSprintAnimation			(mstate_rl,M_head,M_torso,M_legs);
 		moving_idx						= STorsoWpn::eSprint;
@@ -439,14 +444,14 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 							case CWeapon::eIdle:		M_torso	= TW->moving[moving_idx];		break;
 							
 							case CWeapon::eFire:	
-								if(is_standing && IsActorShadowsOn())
+								if(is_standing)
 														M_torso = M_legs = M_head = TW->all_attack_0;
 								else
 														M_torso	= TW->attack_zoom;
 								break;
 
 							case CWeapon::eFire2:
-								if(is_standing && IsActorShadowsOn())
+								if(is_standing)
 														M_torso = M_legs = M_head = TW->all_attack_1;
 								else
 														M_torso	= TW->fire_idle;
@@ -484,7 +489,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 						}
 					}
 					else if (M) {
-						if(is_standing && IsActorShadowsOn())
+						if(is_standing)
 						{
 							switch (M->GetState()){
 							case CMissile::eShowing	   :		M_torso	= TW->draw;			break;

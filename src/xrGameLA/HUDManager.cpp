@@ -58,18 +58,18 @@ void CHUDManager::Render_First()
 	CActor*		A					= smart_cast<CActor*> (O);
 	if (!A)							return;
 
-	if (A->HUDview() && !A->IsActorShadowsOn() && !A->DrawLegs())
-		return;
+	//if (A->HUDview() && !A->IsActorShadowsOn() && !A->DrawLegs())
+	//	return;
 
 	if (A->UsingTurret())
 		return;
 
-	if ((!A->HUDview() && A->IsActorShadowsOn()) || !A->IsActorShadowsOn())
+	/*if ((!A->HUDview() && A->IsActorShadowsOn()) || !A->IsActorShadowsOn())
 	{
 		::Render->set_Object			(O->H_Root());
 		O->renderable_Render			();
 		return;
-	}
+	}*/
 
 	// only shadow 
 	::Render->set_Invisible			(TRUE);

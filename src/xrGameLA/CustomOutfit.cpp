@@ -51,10 +51,10 @@ void CCustomOutfit::Load(LPCSTR section)
 	else
 		m_ActorVisual = nullptr;
 
-	if (pSettings->line_exist(section, "actor_visual_legs"))
-		m_ActorVisual_legs = pSettings->r_string(section, "actor_visual_legs");
-	else
-		m_ActorVisual_legs = nullptr;
+	//if (pSettings->line_exist(section, "actor_visual_legs"))
+	//	m_ActorVisual_legs = pSettings->r_string(section, "actor_visual_legs");
+	//else
+	//	m_ActorVisual_legs = nullptr;
 
 	m_ef_equipment_type		= pSettings->r_u32(section,"ef_equipment_type");
 
@@ -171,6 +171,7 @@ void CCustomOutfit::OnH_B_Independent	(bool just_before_destroy)
 	HUD_SOUND_ITEM::StopSound		(m_NightVisionIdleSnd);*/
 }
 
+#include "Torch.h"
 void	CCustomOutfit::OnMoveToSlot		()
 {
 	inherited::OnMoveToSlot();
@@ -182,7 +183,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 		{
 			//SwitchNightVision(false);
 
-			if (pActor->IsFirstEye() && IsGameTypeSingle() && !pActor->IsActorShadowsOn())
+			/*if (pActor->IsFirstEye() && IsGameTypeSingle() && !pActor->IsActorShadowsOn())
 			{
 				if (m_ActorVisual_legs.size())
 				{
@@ -199,7 +200,7 @@ void	CCustomOutfit::OnMoveToSlot		()
 						if (pActor == Level().CurrentViewEntity())
 							g_player_hud->load_default();
 				}
-			} else {
+			} else {*/
 				if (m_ActorVisual.size())
 				{
 					shared_str NewVisual = nullptr;
@@ -226,13 +227,13 @@ void	CCustomOutfit::OnMoveToSlot		()
 						g_player_hud->load(pSettings->r_string(cNameSect(),"player_hud_section"));
 
 				} else {
-					shared_str NewVisual = pActor->GetDefaultVisualOutfit();
-					pActor->ChangeVisual(NewVisual);
+					//shared_str NewVisual = pActor->GetDefaultVisualOutfit();
+					//pActor->ChangeVisual(NewVisual);
 
 					if (pActor == Level().CurrentViewEntity())	
 						g_player_hud->load_default();
 				}
-			}
+			//}
 		}
 	}
 };
@@ -252,7 +253,7 @@ void	CCustomOutfit::OnMoveToRuck		()
 			{
 				//pActor->SwitchNightVision();
 
-				if (pActor->IsFirstEye() && IsGameTypeSingle())
+				/*if (pActor->IsFirstEye() && IsGameTypeSingle())
 				{
 					shared_str DefVisual = pActor->GetDefaultVisualOutfit_legs();
 					if (DefVisual.size())
@@ -265,7 +266,7 @@ void	CCustomOutfit::OnMoveToRuck		()
 					{
 						pActor->ChangeVisual(DefVisual);
 					}
-				}
+				}*/
 
 				if (pActor == Level().CurrentViewEntity())
 					g_player_hud->load_default();

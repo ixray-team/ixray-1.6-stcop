@@ -183,6 +183,7 @@ public:
 	virtual void OnItemDropUpdate ();
 
 	virtual	void OnPlayHeadShotParticle (NET_Packet P);
+	void legs_shift_callback(CBoneInstance* K);
 
 
 	virtual void						Die				(CObject* who);
@@ -267,6 +268,7 @@ private:
 	void					SwitchOutBorder(bool new_border_state);
 public:
 	bool					m_bAllowDeathRemove;
+	float					m_fLegs_shift;
 //	u32						m_u32RespawnTime;
 	
 	////////////////////////////////////////////////////////
@@ -357,7 +359,7 @@ public:
 	CActorCameraManager&		Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
 	IC CCameraBase*			cam_Active			()	{return cameras[cam_active];}
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
-
+	IC EActorCameras active_cam() { return cam_active; }
 protected:
 	void					cam_Update				(float dt, float fFOV);
 	void					camUpdateLadder		(float dt);
@@ -451,6 +453,9 @@ public:
 	void					g_Orientate				(u32 mstate_rl, float dt);
 	bool					g_LadderOrient			() ;
 	void					UpdateMotionIcon		(u32 mstate_rl);
+
+	void					SetMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, bool status);
+	u32						GetMovementState(const ACTOR_DEFS::EMovementStates& state) const;
 
 	bool					CanAccelerate			();
 	bool					CanJump					();
@@ -676,19 +681,14 @@ public:
 		return				(true);
 	}
 
-	virtual	shared_str		GetDefaultVisualOutfit	() const	{return m_DefaultVisualOutfit;};
-	virtual	void			SetDefaultVisualOutfit	(shared_str DefaultOutfit) {m_DefaultVisualOutfit = DefaultOutfit;};
-
 	//Functions for actor legs and actor shadows 			#+# SkyLoader
-	virtual	shared_str		GetDefaultVisualOutfit_legs	() const	{return m_DefaultVisualOutfit_legs;};
-	virtual	void			SetDefaultVisualOutfit_legs	(shared_str DefaultOutfit) {m_DefaultVisualOutfit_legs = DefaultOutfit;};
-	virtual	void			SetDrawLegs	(bool DrawLegs) {m_bDrawLegs = DrawLegs;};
-	virtual bool			DrawLegs	() const {return m_bDrawLegs;}
-	virtual	void			SetActorShadows	(bool ActorShadows) {m_bActorShadows = ActorShadows;};
-	virtual bool			IsActorShadowsOn	() const {return m_bActorShadows;}
-	virtual bool			IsFirstEye	() const {return (m_bFirstEye);}
+	//virtual	void			SetDrawLegs	(bool DrawLegs) {m_bDrawLegs = DrawLegs;};
+	//virtual bool			DrawLegs	() const {return m_bDrawLegs;}
+	//virtual	void			SetActorShadows	(bool ActorShadows) {m_bActorShadows = ActorShadows;};
+	//virtual bool			IsActorShadowsOn	() const {return m_bActorShadows;}
+	//virtual bool			IsFirstEye	() const {return (m_bFirstEye);}
 	virtual bool			IsLookAt	() const {return (eacLookAt==cam_active);}
-	virtual bool			CanBeDrawLegs	() const {return (m_bCanBeDrawLegs);}
+	//virtual bool			CanBeDrawLegs	() const {return (m_bCanBeDrawLegs);}
 	//
 
 	virtual u16			HolderID 	() const {return m_holderID;}
@@ -722,12 +722,12 @@ private:
 protected:
 		CStatGraph				*pStatGraph;
 
-		shared_str				m_DefaultVisualOutfit;
-		shared_str				m_DefaultVisualOutfit_legs;
-		bool					m_bDrawLegs;
-		bool					m_bFirstEye;
-		bool					m_bCanBeDrawLegs;
-		bool					m_bActorShadows;
+		//shared_str				m_DefaultVisualOutfit;
+		//shared_str				m_DefaultVisualOutfit_legs;
+		//bool					m_bDrawLegs;
+		//bool					m_bFirstEye;
+		//bool					m_bCanBeDrawLegs;
+		//bool					m_bActorShadows;
 
 		LPCSTR					invincibility_fire_shield_3rd;
 		LPCSTR					invincibility_fire_shield_1st;

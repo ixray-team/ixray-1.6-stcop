@@ -404,7 +404,7 @@ if(!g_dedicated_server)
 	m_fDispCrouchFactor			= pSettings->r_float		(section,"disp_crouch_factor");
 	m_fDispCrouchNoAccelFactor	= pSettings->r_float		(section,"disp_crouch_no_acc_factor");
 
-	m_bActorShadows = (psActorFlags.test(AF_ACTOR_BODY)) ? false : true;
+	/*m_bActorShadows = (psActorFlags.test(AF_ACTOR_BODY)) ? false : true;
 
 	LPCSTR							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
 	SetDefaultVisualOutfit			(default_outfit);
@@ -413,7 +413,7 @@ if(!g_dedicated_server)
 		SetDefaultVisualOutfit_legs		(default_outfit);
 	else
 		SetDefaultVisualOutfit_legs		(default_outfit_legs);
-
+		
 	m_bCanBeDrawLegs 			= true;
 	//if (pSettings->section_exist("lost_alpha_cfg") && pSettings->line_exist("lost_alpha_cfg","actor_legs_visible"))
 	//	m_bCanBeDrawLegs = !!pSettings->r_bool("lost_alpha_cfg","actor_legs_visible"); //#x# SkyLoader: added console command for this
@@ -422,7 +422,7 @@ if(!g_dedicated_server)
 		m_bDrawLegs						= true;
 	else
 		m_bDrawLegs						= false;
-
+		*/
 	invincibility_fire_shield_1st	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_1st",0);
 	invincibility_fire_shield_3rd	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_3rd",0);
 //-----------------------------------------
@@ -441,11 +441,20 @@ if(!g_dedicated_server)
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 	m_secondRifleSlotAllowed		= READ_IF_EXISTS(pSettings,r_bool,section,"allow_second_rifle_slot",false) != 0;
 
+	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
 
 	maxHudWetness_					= READ_IF_EXISTS(pSettings, r_float, section, "hud_wetness_max", 0.7f);
 	wetnessAccmBase_				= READ_IF_EXISTS(pSettings, r_float, section, "hud_wetness_accm_base", 0.023f);
 	wetnessDecreaseF_				= READ_IF_EXISTS(pSettings, r_float, section, "hud_wetness_decreese_base", 0.01f);
 }
+
+void CActor::legs_shift_callback(CBoneInstance* B) {
+	if (cam_active == eacFirstEye) {
+		if (g_player_hud && g_player_hud->m_legs_model) {
+			B->mTransform.c.mad(B->mTransform.k, m_fLegs_shift);
+		}
+	}
+};
 
 void CActor::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */)
 {
@@ -709,7 +718,7 @@ void CActor::Die(CObject* who)
 	if (psActorFlags.test(AF_FST_PSN_DEATH))
 	{
 		cam_Set					(eacFirstEye);
-		m_bActorShadows 			= true;
+		//m_bActorShadows 			= true;
 	} else
 		cam_Set					(eacFreeLook);
 
@@ -1165,28 +1174,28 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	ComputeHudWetness();
 	
-	if (((BOOL)m_bActorShadows == psActorFlags.test(AF_ACTOR_BODY)) && g_Alive() && !m_holder)
-	{
-		if (m_bActorShadows)
-			SetDefaultVisualOutfit_legs		(pSettings->r_string(*cNameSect(),"default_outfit_legs"));
-		else
-			SetDefaultVisualOutfit_legs		(GetDefaultVisualOutfit());
+	//if (((BOOL)m_bActorShadows == psActorFlags.test(AF_ACTOR_BODY)) && g_Alive() && !m_holder)
+	//{
+	//	if (m_bActorShadows)
+	//		SetDefaultVisualOutfit_legs		(pSettings->r_string(*cNameSect(),"default_outfit_legs"));
+	//	else
+	//		SetDefaultVisualOutfit_legs		(GetDefaultVisualOutfit());
 
-		m_bActorShadows = (psActorFlags.test(AF_ACTOR_BODY)) ? false : true;
+	//	m_bActorShadows = (psActorFlags.test(AF_ACTOR_BODY)) ? false : true;
 
-		if (eacFirstEye == cam_active) //reset visual
-		{
-			cam_Set(eacLookAt);
-			cam_Set(eacFirstEye);
-		}
-	}
+	//	if (eacFirstEye == cam_active) //reset visual
+	//	{
+	//		cam_Set(eacLookAt);
+	//		cam_Set(eacFirstEye);
+	//	}
+	//}
 
 	//если в режиме HUD, то сама модель актера не рисуется
-	if(!character_physics_support()->IsRemoved())
+	/*if(!character_physics_support()->IsRemoved())
 		if (m_bDrawLegs && ((!psDeviceFlags.test(rsR2) && !psDeviceFlags.test(rsR4) && !m_bActorShadows) || ((psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR4)) && m_bActorShadows)))
 			setVisible				(TRUE);
 		else
-			setVisible				(!HUDview	());
+			setVisible				(!HUDview	());*/
 	//что актер видит перед собой
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	
@@ -1269,14 +1278,14 @@ void CActor::shedule_Update	(u32 DT)
 void CActor::renderable_Render	()
 {
 	inherited::renderable_Render			();
-	if (!HUDview() || (m_bActorShadows && m_bFirstEye)){
+	if (1/*!HUDview()*/){
 		CInventoryOwner::renderable_Render	();
 	}
 }
 
 BOOL CActor::renderable_ShadowGenerate	() 
 {
-	if(m_holder || (!m_bActorShadows && m_bFirstEye))
+	if(m_holder)
 		return FALSE;
 	
 	return inherited::renderable_ShadowGenerate();
@@ -1516,7 +1525,7 @@ void CActor::OnItemDrop			(CInventoryItem *inventory_item)
 
 	if (!outfit && pOutfit)
 	{
-		if (this->IsFirstEye())
+		/*if (this->IsFirstEye())
 		{
 			shared_str DefVisual = this->GetDefaultVisualOutfit_legs();
 			if (DefVisual.size())
@@ -1529,7 +1538,7 @@ void CActor::OnItemDrop			(CInventoryItem *inventory_item)
 			{
 				this->ChangeVisual(DefVisual);
 			}
-		}
+		}*/
 
 		if (this == Level().CurrentViewEntity())
 			g_player_hud->load_default();

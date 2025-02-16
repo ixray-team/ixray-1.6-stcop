@@ -24,7 +24,7 @@ public:
 	*/
 protected:
 	shared_str						m_ActorVisual;
-	shared_str						m_ActorVisual_legs;
+	//shared_str						m_ActorVisual_legs;
 	shared_str						m_full_icon_name;
 
 protected:

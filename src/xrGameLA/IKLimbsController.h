@@ -22,6 +22,8 @@ public:
 public:
 			void	PlayLegs					( CBlend *b );
 			void	Update						( );
+
+			int ik_shift_object = 1;
 private:
 			void	Calculate					( );
 			void	LimbCalculate				(  SCalculateData &cd );

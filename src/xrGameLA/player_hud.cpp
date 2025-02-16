@@ -402,8 +402,11 @@ player_hud::player_hud()
 	m_attached_items[0]		= nullptr;
 	m_attached_items[1]		= nullptr;
 	m_transform.identity	();
+	m_transformL.identity();
 	m_bobbing			= new CWeaponBobbing();
 	m_collision			= new CWeaponCollision();
+	m_bhands_visible = false;
+	m_legs_model = nullptr;
 }
 
 
@@ -435,37 +438,80 @@ void player_hud::load(const shared_str& player_hud_sect)
 		::Render->model_Delete		(v);
 	}
 
-	m_sect_name					= player_hud_sect;
-	const shared_str& model_name= pSettings->r_string(player_hud_sect, "visual");
-	m_model						= smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
-
-	CInifile::Sect& _sect		= pSettings->r_section(player_hud_sect);
-	CInifile::SectCIt _b		= _sect.Data.begin();
-	CInifile::SectCIt _e		= _sect.Data.end();
-	for(;_b!=_e;++_b)
+	if (m_legs_model)
 	{
-		if(strstr(_b->first.c_str(), "ancor_")==_b->first.c_str())
+		IRenderVisual* v = m_legs_model->dcast_RenderVisual();
+		::Render->model_Delete(v);
+
+		m_legs_model = nullptr;
+	}
+	m_sect_name = player_hud_sect;
+
+	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
+	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+
+	auto pathOmfs = EngineExternal().GetPlayerHudOmfAdditional();
+	if (pathOmfs && pathOmfs[0])
+	{
+		string_path nm = {};
+		for (int i = 0, n = _GetItemCount(pathOmfs); i < n; ++i)
 		{
-			const shared_str& _bone	= _b->second;
-			m_ancors.push_back		(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+			auto path = _GetItem(pathOmfs, i, nm);
+			m_model->append_motion_from_path(model_name.c_str(), path);
 		}
 	}
-	
-//	Msg("hands visual changed to[%s] [%s] [%s]", model_name.c_str(), b_reload?"R":"", m_attached_items[0]?"Y":"");
 
-	if(!b_reload)
-	{
-		m_model->PlayCycle("hand_idle_doun");
-	}else
-	{
-		if(m_attached_items[1])
-			m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
 
-		if(m_attached_items[0])
-			m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
+	if (pSettings->line_exist(player_hud_sect, "legs_visual")) {
+		auto model_name = pSettings->r_string(player_hud_sect, "legs_visual");
+		m_legs_model = PKinematics(::Render->model_Create(model_name));
 	}
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
+
+	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
+	if (l_arm != BI_NONE) {
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
+	}
+
+	auto& _sect = pSettings->r_section(player_hud_sect);
+	auto _b = _sect.Data.begin();
+	auto _e = _sect.Data.end();
+
+	m_ancors.clear();
+
+	for (; _b != _e; ++_b)
+	{
+		if (strstr(_b->first.c_str(), "ancor_") == _b->first.c_str())
+		{
+			const shared_str& _bone = _b->second;
+			m_ancors.push_back(m_model->dcast_PKinematics()->LL_BoneID(_bone));
+		}
+	}
+
+	if (!b_reload) {
+		m_model->PlayCycle("hand_idle_doun");
+	}
+	else {
+		if (m_attached_items[1]) {
+			m_attached_items[1]->m_parent_hud_item->on_a_hud_attach();
+		}
+
+		if (m_attached_items[0]) {
+			m_attached_items[0]->m_parent_hud_item->on_a_hud_attach();
+		}
+	}
+
+	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
+
+	if (m_legs_model) {
+		m_legs_model->CalculateBones_Invalidate();
+		m_legs_model->CalculateBones(TRUE);
+	}
+
+	if (Actor()) {
+		float m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
+		Actor()->m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, player_hud_sect, "legs_shift_delta", m_fLegs_shift);
+	}
 }
 
 bool player_hud::render_item_ui_query()
@@ -491,21 +537,73 @@ void player_hud::render_item_ui()
 
 void player_hud::render_hud()
 {
-	if(!m_attached_items[0] && !m_attached_items[1])	return;
-
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
 
-	if(!b_r0 && !b_r1)									return;
+	if (b_r0 || b_r1 || m_bhands_visible) {
+		::Render->set_Transform(&m_transform);
+		::Render->add_Visual(m_model->dcast_RenderVisual(), true);
+	}
 
-	::Render->set_Transform		(&m_transform);
-	::Render->add_Visual		(m_model->dcast_RenderVisual());
-	
-	if(m_attached_items[0])
+	if (b_r0) {
 		m_attached_items[0]->render();
-	
-	if(m_attached_items[1])
+	}
+
+	if (b_r1) {
 		m_attached_items[1]->render();
+	}
+
+	if (m_show_legs && Actor() && m_legs_model)
+	{
+		bool isClimb = Actor()->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcClimb;
+		if (!isClimb) {
+			auto bHud = ::Render->get_HUD();
+			IKinematics* actor_model = Actor()->Visual()->dcast_PKinematics();
+
+			actor_model->CalculateBones(TRUE);
+
+			m_legs_model->CalculateBones_Invalidate();
+			m_legs_model->CalculateBones(TRUE);
+
+			if (m_legs_model->LL_BoneCount() == actor_model->LL_BoneCount()) {
+				for (u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
+					auto& BoneInstance = m_legs_model->LL_GetBoneInstance(i);
+					BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(i).mTransform);
+					BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(i).m2b_transform);
+				}
+			}
+			else {
+				auto setBoneTransform = [actor_model, this](u16 ID, shared_str bonename) {
+					auto BoneID = actor_model->LL_BoneID(bonename);
+					if (BoneID != BI_NONE) {
+						auto& BoneInstance = m_legs_model->LL_GetBoneInstance(ID);
+						BoneInstance.mTransform.set(actor_model->LL_GetBoneInstance(BoneID).mTransform);
+						BoneInstance.mRenderTransform.mul_43(BoneInstance.mTransform, m_legs_model->LL_GetData(ID).m2b_transform);
+					}
+					};
+
+				setBoneTransform(0, "root_stalker");
+				setBoneTransform(1, "bip01");
+
+				shared_str bonename;
+				for (u16 i = 0; i < m_legs_model->LL_BoneCount(); ++i) {
+					bonename = m_legs_model->LL_BoneName_dbg(i);
+					setBoneTransform(i, bonename);
+				}
+			}
+
+			const u16 BoneID = m_legs_model->LL_BoneID("bip01_spine");
+			auto& BoneInstance = m_legs_model->LL_GetData(BoneID);
+			m_legs_model->Bone_Calculate(&BoneInstance, &m_legs_model->LL_GetTransform(BoneInstance.GetParentID()));
+
+			::Render->set_HUD(FALSE);
+
+			::Render->set_Transform(&Actor()->XFORM());
+			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
+
+			::Render->set_HUD(bHud);
+		}
+	}
 }
 
 
@@ -556,11 +654,29 @@ const Fvector& player_hud::attach_pos() const
 		return Fvector().set(0,0,0);
 }
 
+void player_hud::LeftArmCallback(CBoneInstance* B)
+{
+	if (!m_attached_items[1])
+		return;
+
+	B->mTransform.mulA_44(m_attached_items[1] ? m_transformL : m_transform);
+	B->mTransform.mulA_44(Fmatrix(m_transform).invert());
+}
+
 #include "hudmanager.h"
 extern Flags32 psActorFlags;
 
+#include "Missile.h"
+
 void player_hud::update(const Fmatrix& cam_trans)
 {
+	if (!m_attached_items[0] && !m_attached_items[1])
+	{
+		m_transform.set(cam_trans);
+		m_transformL.set(cam_trans);
+		return;
+	}
+
 	Fmatrix	trans					= cam_trans;
 	update_inertion					(trans);
 	update_additional				(trans);
@@ -589,6 +705,17 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	m_transform.mul					(trans, m_attach_offset);
 	// insert inertion here
+
+	{
+		CMissile* pMiss = m_attached_items[0] ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
+		bool throwing_missile = pMiss && (pMiss->GetState() >= CMissile::EMissileStates::eThrowStart && pMiss->GetState() <= CMissile::EMissileStates::eThrow);
+		bool left_hand_active = !throwing_missile && m_attached_items[1];
+
+		Fmatrix attach_offset;
+		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
+		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
+		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1 - Device.fTimeDelta * 10.f));
+	}
 
 	m_model->UpdateTracks				();
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();

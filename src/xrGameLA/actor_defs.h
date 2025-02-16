@@ -24,6 +24,12 @@ enum EActorCameras {
 };
 enum EDamages {DAMAGE_FX_COUNT = 12};
 
+enum EMovementStates
+{
+	eOld = 0,
+	eWishful,
+	eReal,
+};
 
 enum EMoveCommand
 {
@@ -48,8 +54,8 @@ enum EMoveCommand
 	mcLookout	= (mcLLookout|mcRLookout),
 };
 
-// enum для определения действия над вещью на которую наведен в текущее время прицел.
-// Используется для показа всплывающих динамических подсказок
+// enum Г¤Г«Гї Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­ГЁГї Г¤ГҐГ©Г±ГІГўГЁГї Г­Г Г¤ ГўГҐГ№ГјГѕ Г­Г  ГЄГ®ГІГ®Г°ГіГѕ Г­Г ГўГҐГ¤ГҐГ­ Гў ГІГҐГЄГіГ№ГҐГҐ ГўГ°ГҐГ¬Гї ГЇГ°ГЁГ¶ГҐГ«.
+// Г€Г±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Г¤Г«Гї ГЇГ®ГЄГ Г§Г  ГўГ±ГЇГ«Г»ГўГ ГѕГ№ГЁГµ Г¤ГЁГ­Г Г¬ГЁГ·ГҐГ±ГЄГЁГµ ГЇГ®Г¤Г±ГЄГ Г§Г®ГЄ
 enum EActorAction
 {
 	eaaNoAction			= 0,
@@ -62,7 +68,7 @@ enum EActorAction
 typedef const char*		EActorSleep;
 extern EActorSleep		easCanSleepResult;
 /*
-//результат функции GoSleep у актера
+//Г°ГҐГ§ГіГ«ГјГІГ ГІ ГґГіГ­ГЄГ¶ГЁГЁ GoSleep Гі Г ГЄГІГҐГ°Г 
 enum EActorSleep
 {
 	easCanSleep			= 0,
@@ -72,7 +78,7 @@ enum EActorSleep
 */
 
 //---------------------------------------------
-// ввод с клавиатуры и мыши
+// ГўГўГ®Г¤ Г± ГЄГ«Г ГўГЁГ ГІГіГ°Г» ГЁ Г¬Г»ГёГЁ
 struct					net_input
 {
 	u32					m_dwTimeStamp;
@@ -115,7 +121,7 @@ struct				net_update
 };
 
 ///////////////////////////////////////////////////////
-// апдайт с данными физики
+// Г ГЇГ¤Г Г©ГІ Г± Г¤Г Г­Г­Г»Г¬ГЁ ГґГЁГ§ГЁГЄГЁ
 struct					net_update_A
 {
 	u32					dwTimeStamp;
@@ -125,7 +131,7 @@ struct					net_update_A
 };
 
 ///////////////////////////////////////////////////////
-// данные для интерполяции
+// Г¤Г Г­Г­Г»ГҐ Г¤Г«Гї ГЁГ­ГІГҐГ°ГЇГ®Г«ГїГ¶ГЁГЁ
 struct					InterpData
 {
 	Fvector				Pos;

@@ -103,7 +103,7 @@ public:
 					player_hud			();
 					~player_hud			();
 	void			load				(const shared_str& model_name);
-	void			load_default		(){load("actor_hud_05");};
+	void			load_default		(){load("actor_hud");};
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
@@ -125,6 +125,12 @@ public:
 	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
+
+	void			SetHandsVisible(bool val) { m_bhands_visible = val; };
+	bool			GetHandsVisible() { return m_bhands_visible; };
+
+	IKinematics*	m_legs_model;
+	bool			m_show_legs = true;
 private:
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
@@ -139,8 +145,11 @@ private:
 
 	shared_str							m_sect_name;
 	Fmatrix								m_attach_offset;
+	Fmatrix								m_attach_offsetr, m_attach_offsetl;
 
 	Fmatrix								m_transform;
+	Fmatrix								m_transformL;
+
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
@@ -149,6 +158,10 @@ private:
 private:
 		CWeaponBobbing 			*m_bobbing;
 		CWeaponCollision 		*m_collision;
+
+		bool					m_bhands_visible;
+
+		void  LeftArmCallback(CBoneInstance* B);
 };
 
 extern player_hud* g_player_hud;

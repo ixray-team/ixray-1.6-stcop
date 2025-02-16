@@ -477,7 +477,7 @@ public:
 
 void DemoRecordCallback()
 {
-	CLevel* level = &Level();
+	/*CLevel* level = &Level();
 	if (level){
 		CActor *actor = Actor();
 		if (actor && actor->CanBeDrawLegs() && !actor->IsActorShadowsOn())
@@ -485,7 +485,7 @@ void DemoRecordCallback()
 			actor->setVisible(true);
 			actor->SetDrawLegs(true);
 		}
-	}
+	}*/
 }
 
 class CCC_DemoRecord : public IConsole_Command
@@ -505,11 +505,11 @@ public:
 			xr_strconcat(fn_, args, ".xrdemo");
 			string_path		fn;
 			FS.update_path(fn, "$game_saves$", fn_);
-			if (actor && actor->CanBeDrawLegs() && actor->IsFirstEye() && !actor->IsActorShadowsOn())
+			/*if (actor && actor->CanBeDrawLegs() && actor->IsFirstEye() && !actor->IsActorShadowsOn())
 			{
 				actor->setVisible(false);
 				actor->SetDrawLegs(false);
-			}
+			}*/
 			g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord(fn/*, &DemoRecordCallback*/));
 		}
 	}

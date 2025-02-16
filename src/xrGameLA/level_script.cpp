@@ -36,8 +36,15 @@
 #include "Weapon.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
+#include "player_hud.h"
 
 using namespace luabind;
+
+
+void show_legs(bool val)
+{
+	g_player_hud->m_show_legs = val;
+}
 
 
 LPCSTR command_line	()
@@ -939,7 +946,10 @@ void CLevel::script_register(lua_State *L)
 		
 		def("game_id",							&GameID)
 	],
-	
+	module(L, "player_hud")
+	[
+		def("show_legs", &show_legs)
+	];
 	module(L,"actor_stats")
 	[
 		def("add_points",						&add_actor_points),

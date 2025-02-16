@@ -56,10 +56,18 @@ CActor*		g_actor						= nullptr;
 
 CActor*			Actor()	
 {	
-	VERIFY		(g_actor); 
-	if (GameID() != GAME_SINGLE) 
-		VERIFY	(g_actor == Level().CurrentControlEntity());
-	return		(g_actor); 
+	if (GameID() == GAME_SINGLE)
+	{
+		VERIFY(g_actor);
+		return g_actor;
+	}
+
+	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (pActor) {
+		return pActor;
+	}
+
+	return g_actor;
 };
 
 //--------------------------------------------------------------------
@@ -618,9 +626,9 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		}
 	}
 */	
-	SetDefaultVisualOutfit(cNameVisual());
-	ChangeVisual(m_DefaultVisualOutfit_legs);
-	m_bFirstEye = true;
+	//SetDefaultVisualOutfit(cNameVisual());
+	//ChangeVisual(m_DefaultVisualOutfit_legs);
+	//m_bFirstEye = true;
 
 	smart_cast<IKinematics*>(Visual())->CalculateBones();
 
@@ -722,8 +730,8 @@ void CActor::net_Destroy	()
 	if (Level().CurrentViewEntity() == this)
 		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);	
 
-	SetDefaultVisualOutfit(nullptr);
-	SetDefaultVisualOutfit_legs(nullptr);
+	//SetDefaultVisualOutfit(nullptr);
+	//SetDefaultVisualOutfit_legs(nullptr);
 	
 
 	if(g_actor == this) g_actor= nullptr;
@@ -769,7 +777,7 @@ BOOL	CActor::net_Relevant		()				// relevant for export to server
 
 void	CActor::SetCallbacks()
 {
-	IKinematics* V		= smart_cast<IKinematics*>(Visual());
+	IKinematics* V		= Visual()->dcast_PKinematics();
 	VERIFY				(V);
 	u16 spine0_bone		= V->LL_BoneID("bip01_spine");
 	u16 spine1_bone		= V->LL_BoneID("bip01_spine1");
@@ -779,6 +787,9 @@ void	CActor::SetCallbacks()
 	V->LL_GetBoneInstance(u16(spine1_bone)).set_callback	(bctCustom,Spin1Callback,this);
 	V->LL_GetBoneInstance(u16(shoulder_bone)).set_callback	(bctCustom,ShoulderCallback,this);
 	V->LL_GetBoneInstance(u16(head_bone)).set_callback		(bctCustom,HeadCallback,this);
+
+	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).set_callback(bctCustom,
+		[](CBoneInstance* B) {static_cast<CActor*>(B->callback_param())->legs_shift_callback(B); }, this);
 }
 void	CActor::ResetCallbacks()
 {
@@ -792,6 +803,7 @@ void	CActor::ResetCallbacks()
 	V->LL_GetBoneInstance(u16(spine1_bone)).reset_callback	();
 	V->LL_GetBoneInstance(u16(shoulder_bone)).reset_callback();
 	V->LL_GetBoneInstance(u16(head_bone)).reset_callback	();
+	V->LL_GetBoneInstance(V->LL_GetBoneRoot()).reset_callback();
 }
 
 void	CActor::OnChangeVisual()

@@ -144,7 +144,7 @@ void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 	}
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
-	if (pActor && pActor->IsFirstEye())
+	if (pActor)
 		Level().BulletManager().AddBullet(	pos, 
 											dir, 
 											m_fStartBulletSpeed, 

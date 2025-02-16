@@ -15,6 +15,8 @@
 #include "game_cl_base.h"
 #include "WeaponMagazined.h"
 #include "CharacterPhysicsSupport.h"
+#include "player_hud.h"
+
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
@@ -349,8 +351,14 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 		break;
 	}
 
+	float scale_yaw_offset = 1.0f;
+
+	if (cam_active == eacFirstEye && g_player_hud && g_player_hud->m_legs_model) {
+		scale_yaw_offset = 0.15f;
+	}
+
 	// lerp angle for "effect" and capture torso data from camera
-	angle_lerp		(r_model_yaw_delta,calc_yaw,PI_MUL_4,dt);
+	angle_lerp(r_model_yaw_delta, calc_yaw * scale_yaw_offset, PI_MUL_4 * scale_yaw_offset, dt);
 
 	// build matrix
 	Fmatrix mXFORM;
@@ -425,7 +433,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		r_torso.yaw		=	cam_Active()->GetWorldYaw();
 		r_torso.pitch		=	cam_Active()->GetWorldPitch();
 	}
-	else if (eacFreeLook==cam_active || m_bActorShadows)
+	else if (eacFreeLook==cam_active)
 	{
 		r_torso.yaw		=	cam_FirstEye()->GetWorldYaw();
 		r_torso.pitch		=	cam_FirstEye()->GetWorldPitch();
@@ -450,7 +458,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 	}
 	
 	// если есть движение - выровнять модель по камере
-	if (mstate_rl&mcAnyMove)	{
+	if (mstate_rl & mcAnyMove || (g_player_hud && g_player_hud->m_legs_model)) {
 		r_model_yaw		= angle_normalize(r_torso.yaw);
 		mstate_real		&=~mcTurn;
 	} else {
@@ -641,4 +649,51 @@ float CActor::GetAdditionalWeight() const
 	res += conditions().m_fBoostersAddWeight;
 
 	return res;
+}
+
+void CActor::SetMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, bool status)
+{
+	switch (state)
+	{
+	case ACTOR_DEFS::EMovementStates::eReal:
+	{
+		if (status)
+			mstate_real |= mask;
+		else
+			mstate_real &= ~mask;
+	}break;
+	case ACTOR_DEFS::EMovementStates::eWishful:
+	{
+		if (status)
+			mstate_wishful |= mask;
+		else
+			mstate_wishful &= ~mask;
+	}break;
+	case ACTOR_DEFS::EMovementStates::eOld:
+	{
+		if (status)
+			mstate_old |= mask;
+		else
+			mstate_old &= ~mask;
+	}break;
+	}
+}
+
+u32 CActor::GetMovementState(const ACTOR_DEFS::EMovementStates& state) const
+{
+	u32 result = 0;
+	switch (state)
+	{
+	case ACTOR_DEFS::EMovementStates::eReal:
+		result = mstate_real;
+		break;
+	case ACTOR_DEFS::EMovementStates::eWishful:
+		result = mstate_wishful;
+		break;
+	case ACTOR_DEFS::EMovementStates::eOld:
+		result = mstate_old;
+		break;
+	}
+
+	return result;
 }
