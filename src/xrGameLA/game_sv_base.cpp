@@ -395,7 +395,7 @@ void game_sv_GameState::Create					(shared_str &options)
 	//---------------------------------------------------------------------
 	ConsoleCommands_Create();
 	//---------------------------------------------------------------------
-//	CCC_LoadCFG_custom*	pTmp = xr_new<CCC_LoadCFG_custom>("sv_");
+//	CCC_LoadCFG_custom*	pTmp = new CCC_LoadCFG_custom("sv_");
 //	pTmp->Execute				(Console->ConfigFile);
 //	xr_delete					(pTmp);
 	//---------------------------------------------------------------------
@@ -820,7 +820,7 @@ void game_sv_GameState::OnRoundStart			()
 		}
 	};
 	rpointsBlocked.clear();
-}// старт раунда
+}// СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 
 void game_sv_GameState::OnRoundEnd()
 { 
@@ -838,7 +838,7 @@ void game_sv_GameState::OnRoundEnd()
 	{
 		m_bFastRestart = true;
 	}
-}// конец раунда
+}// РєРѕРЅРµС† СЂР°СѓРЅРґР°
 
 void game_sv_GameState::SaveMapList				()
 {

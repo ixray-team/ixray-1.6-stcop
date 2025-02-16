@@ -284,7 +284,7 @@ BOOL CController::net_Spawn(CSE_Abstract *DC)
 
 void CController::UpdateControlled()
 {
-	// если есть враг, проверить может ли быть враг взят под контроль
+	// РµСЃР»Рё РµСЃС‚СЊ РІСЂР°Рі, РїСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РІСЂР°Рі РІР·СЏС‚ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 	if (EnemyMan.get_enemy()) {
 		CBaseMonster *Monster = smart_cast<CBaseMonster*>((const_cast<CEntityAlive *>(EnemyMan.get_enemy())));
 
@@ -292,7 +292,7 @@ void CController::UpdateControlled()
 			CControlledEntityBase* ControlLogic = Monster->m_controlled;
 			if (ControlLogic) {
 				if (!ControlLogic->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number)) {
-					// взять под контроль
+					// РІР·СЏС‚СЊ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 					ControlLogic->set_under_control(this);
 					ControlLogic->set_task_follow(this);
 					m_controlled_objects.push_back(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
@@ -512,7 +512,7 @@ void CController::draw_fire_particles()
 	CEntityAlive *enemy	= const_cast<CEntityAlive*>(EnemyMan.get_enemy());
 	if (!EnemyMan.see_enemy_now()) return;
 
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fvector my_head_pos;
 	my_head_pos.set	(get_head_position(this));
 	
@@ -535,7 +535,7 @@ void CController::draw_fire_particles()
 
 	//m_sound_hit_fx.set_volume(10.0f);
 	//if(!m_sndShockEffector)
-	//	m_sndShockEffector = xr_new<SndShockEffector>();
+	//	m_sndShockEffector = new SndShockEffector();
 
 	//m_sndShockEffector->Start(m_sound_hit_fx._handle()->length_sec()  *1000, 10.f );
 	//m_sound_hit_fx.play_at_pos(this, Level().CurrentEntity()->Position());

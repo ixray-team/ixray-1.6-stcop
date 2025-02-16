@@ -17,7 +17,8 @@ struct CShapeData
 		u8			type;
 		shape_data	data;
 	};
-    DEFINE_VECTOR					(shape_def,ShapeVec,ShapeIt);
+	using ShapeVec = xr_vector<shape_def>;
+	using ShapeIt = ShapeVec::iterator;
 	ShapeVec						shapes;
 };
 

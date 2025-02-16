@@ -1,12 +1,13 @@
 //////////////////////////////////////////////////////////////////////////
-// string_table.h:		таблица строк используемых в игре
+// string_table.h:		С‚Р°Р±Р»РёС†Р° СЃС‚СЂРѕРє РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РІ РёРіСЂРµ
 //////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include "string_table_defs.h"
 
-DEFINE_MAP		(STRING_ID, STRING_VALUE, STRING_TABLE_MAP, STRING_TABLE_MAP_IT);
+using STRING_TABLE_MAP = xr_map<STRING_ID, STRING_VALUE>;
+using STRING_TABLE_MAP_IT = STRING_TABLE_MAP::iterator;
 
 struct STRING_TABLE_DATA
 {

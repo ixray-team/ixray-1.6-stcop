@@ -21,7 +21,7 @@ CUISpawnWnd::CUISpawnWnd()
 
 	m_pFrames[0]	= new CUIStatic();	AttachChild(m_pFrames[0]);
 	m_pFrames[1]	= new CUIStatic();	AttachChild(m_pFrames[1]);
-//	m_pFrames[2]	= xr_new<CUIStatic>();	AttachChild(m_pFrames[2]);
+//	m_pFrames[2]	= new CUIStatic();	AttachChild(m_pFrames[2]);
 
 	m_pTextDesc		= new CUIScrollView();	AttachChild(m_pTextDesc);
 

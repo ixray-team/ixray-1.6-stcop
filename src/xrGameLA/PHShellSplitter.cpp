@@ -267,7 +267,8 @@ if(spl_inf.m_end_jt_num!=u16(-1))
 }
 
 static ELEMENT_PAIR_VECTOR new_elements;
-DEFINE_VECTOR(Fmatrix,TRANSFORM_VECTOR,TRANSFORM_I)
+using TRANSFORM_VECTOR = xr_vector<Fmatrix>;
+using TRANSFORM_I = TRANSFORM_VECTOR::iterator; 
 static TRANSFORM_VECTOR bones_bind_forms;
 shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &split_elem,const CPHElement* source_element)
 {

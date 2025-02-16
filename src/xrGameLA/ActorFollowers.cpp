@@ -13,7 +13,7 @@ CActorFollowerMngr::CActorFollowerMngr()
 	CUIXml uiXml;
 	uiXml.Init(CONFIG_PATH, UI_PATH, "follower_panel.xml");
 
-	m_uiPanel = xr_new<CUIFollowerPanel>	();
+	m_uiPanel = new CUIFollowerPanel	();
 	m_uiPanel->Init							(&uiXml,"followers_panel",0);
 	CurrentGameUI()->AddDialogToRender(m_uiPanel);
 	m_uiPanel->Show							(false);
@@ -66,7 +66,7 @@ void CActorFollowerMngr::SendCommand(int cmd)
 CActorFollowerMngr& CActor::Followers()
 {
 	if(!m_followers)
-		m_followers = xr_new<CActorFollowerMngr>();
+		m_followers = new CActorFollowerMngr();
 
 	return *m_followers;
 }

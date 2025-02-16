@@ -18,15 +18,16 @@ public:
 			void LaunchRocket	(const Fmatrix& xform,  const Fvector& vel, const Fvector& angular_vel);
 
 protected:			   
-	DEFINE_VECTOR(CCustomRocket*, ROCKET_VECTOR, ROCKETIT);
+	using ROCKET_VECTOR = xr_vector<CCustomRocket*>;
+	using ROCKETIT = ROCKET_VECTOR::iterator;
 	ROCKET_VECTOR		m_rockets;
 	ROCKET_VECTOR		m_launched_rockets;
 	
 	CCustomRocket*	getCurrentRocket();
 	void			dropCurrentRocket();
 	u32				getRocketCount();
-	//начальная скорость, придаваемая ракете во время
-	//старта
+	//РЅР°С‡Р°Р»СЊРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊ, РїСЂРёРґР°РІР°РµРјР°СЏ СЂР°РєРµС‚Рµ РІРѕ РІСЂРµРјСЏ
+	//СЃС‚Р°СЂС‚Р°
 	float			m_fLaunchSpeed;
 
 };

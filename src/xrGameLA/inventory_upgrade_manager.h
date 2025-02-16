@@ -9,7 +9,6 @@
 #ifndef INVENTORY_UPGRADE_MANAGER_H_INCLUDED
 #define INVENTORY_UPGRADE_MANAGER_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "associative_vector.h"
 #include "inventory_item_object.h"
 
@@ -34,7 +33,7 @@ struct shared_str_predicate
 	}
 };
 
-class Manager :	private boost::noncopyable
+class Manager
 {
 public:
 	typedef associative_vector<shared_str, Property*, shared_str_predicate>  Properties_type;

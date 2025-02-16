@@ -409,7 +409,7 @@ void CActor::LoadShootingEffector (LPCSTR section)
 {
 
 if(!m_pShootingEffector)
-m_pShootingEffector = xr_new<SShootingEffector>();
+m_pShootingEffector = new SShootingEffector();
 
 
 m_pShootingEffector->ppi.duality.h		= pSettings->r_float(section,"duality_h");

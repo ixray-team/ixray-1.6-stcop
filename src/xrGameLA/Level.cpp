@@ -98,7 +98,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	else
 		m_map_manager				= NULL;
 
-//	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
+//	m_pFogOfWarMngr				= new CFogOfWarMngr();
 //----------------------------------------------------
 	m_bNeed_CrPr				= false;
 	m_bIn_CrPr					= false;
@@ -557,7 +557,7 @@ void CLevel::OnFrame	()
 	m_fast_updater->Update				();
 //	autosave_manager().update			();
 
-	//просчитать полет пуль
+	//РїСЂРѕСЃС‡РёС‚Р°С‚СЊ РїРѕР»РµС‚ РїСѓР»СЊ
 	Device.Statistic->TEST0.Begin		();
 	BulletManager().CommitRenderSet		();
 	Device.Statistic->TEST0.End			();
@@ -613,11 +613,11 @@ void CLevel::OnRender()
 		return;
 
 	Game().OnRender();
-	//отрисовать трассы пуль
+	//РѕС‚СЂРёСЃРѕРІР°С‚СЊ С‚СЂР°СЃСЃС‹ РїСѓР»СЊ
 	//Device.Statistic->TEST1.Begin();
 	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
-	//отрисовать интерфейc пользователя
+	//РѕС‚СЂРёСЃРѕРІР°С‚СЊ РёРЅС‚РµСЂС„РµР№c РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	HUD().RenderUI();
 
 	draw_wnds_rects();

@@ -119,7 +119,8 @@ class CUISequenceSimpleItem: public CUISequenceItem
 		virtual void		Start				();
 		virtual void		Stop				();
 	};
-	DEFINE_VECTOR			(SSubItem,SubItemVec,SubItemVecIt);
+	using SubItemVec = xr_vector<SSubItem>;
+	using SubItemVecIt = SubItemVec::iterator;
 	SubItemVec				m_subitems;
 	struct SActionItem{
 		EGameActions			m_action;

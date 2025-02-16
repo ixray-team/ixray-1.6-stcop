@@ -9,7 +9,6 @@
 #ifndef RAT_STATE_MANAGER_H_INCLUDED
 #define RAT_STATE_MANAGER_H_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "associative_vector.h"
 
 class rat_state_base;

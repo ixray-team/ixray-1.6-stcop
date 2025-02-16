@@ -108,7 +108,7 @@ CActor::CActor() : CEntityAlive()
 	fPrevCamPos				= 0.0f;
 	vPrevCamDir.set			(0.f,0.f,1.f);
 	fCurAVelocity			= 0.0f;
-	// ýôôåêòîðû
+	// ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ñ€Ñ‹
 	pCamBobbing				= 0;
 	m_pSleepEffector		= NULL;
 	m_pSleepEffectorPP		= NULL;
@@ -147,7 +147,7 @@ CActor::CActor() : CEntityAlive()
 	Device.seqRender.Add	(this,REG_PRIORITY_LOW);
 #endif
 
-	//ðàçðåøèòü èñïîëüçîâàíèå ïîÿñà â inventory
+	//Ñ€Ð°Ð·Ñ€ÐµÑˆÐ¸Ñ‚ÑŒ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¿Ð¾ÑÑÐ° Ð² inventory
 	inventory().SetBeltUseful(true);
 
 	m_pPersonWeLookingAt	= NULL;
@@ -350,14 +350,14 @@ void CActor::Load	(LPCSTR section )
 
 	character_physics_support()->in_Load		(section);
 	
-	//çàãðóçèòü ïàðàìåòðû ýôôåêòîðà
+	//Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ñ€Ð°
 //	LoadShootingEffector	("shooting_effector");
 	LoadSleepEffector		("sleep_effector");
 
-	//çàãðóçèòü ïàðàìåòðû ñìåùåíèÿ firepoint
+	//Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ ÑÐ¼ÐµÑ‰ÐµÐ½Ð¸Ñ firepoint
 	m_vMissileOffset	= pSettings->r_fvector3(section,"missile_throw_offset");
 
-	//Weapons				= xr_new<CWeaponList> (this);
+	//Weapons				= new CWeaponList (this);
 
 if(!g_dedicated_server)
 {
@@ -390,7 +390,7 @@ if(!g_dedicated_server)
 	// sheduler
 	shedule.t_min				= shedule.t_max = 1;
 
-	// íàñòðîéêè äèñïåðñèè ñòðåëüáû
+	// Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð´Ð¸ÑÐ¿ÐµÑ€ÑÐ¸Ð¸ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹
 	m_fDispBase					= pSettings->r_float		(section,"disp_base"		 );
 	m_fDispBase					= deg2rad(m_fDispBase);
 
@@ -697,7 +697,7 @@ void CActor::Die(CObject* who)
 		};
 
 
-		///!!! ÷èñòêà ïîÿñà
+		///!!! Ñ‡Ð¸ÑÑ‚ÐºÐ° Ð¿Ð¾ÑÑÐ°
 		TIItemContainer &l_blist = inventory().m_belt;
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
@@ -983,7 +983,7 @@ void CActor::shedule_Update	(u32 DT)
 			
 	}
 
-	//îáíîâëåíèå èíâåíòàðÿ
+	//Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ñ
 	UpdateInventoryOwner			(DT);
 	if (GameID() == GAME_SINGLE)
 		GameTaskManager().UpdateTasks	();
@@ -1061,7 +1061,7 @@ void CActor::shedule_Update	(u32 DT)
 				g_bAutoApplySprint += 1;
 			}
 		}
-		if (g_bAutoApplySprint == 10)//ïðèìåíèò áåã íà 10é êàäð
+		if (g_bAutoApplySprint == 10)//Ð¿Ñ€Ð¸Ð¼ÐµÐ½Ð¸Ñ‚ Ð±ÐµÐ³ Ð½Ð° 10Ð¹ ÐºÐ°Ð´Ñ€
 		{
 			mstate_wishful |= mcSprint;
 			g_bAutoApplySprint = 0;
@@ -1109,7 +1109,7 @@ void CActor::shedule_Update	(u32 DT)
 
 	inherited::shedule_Update	(DT);
 
-	//ýôôåêòîð âêëþ÷àåìûé ïðè õîäüáå
+	//ÑÑ„Ñ„ÐµÐºÑ‚Ð¾Ñ€ Ð²ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼Ñ‹Ð¹ Ð¿Ñ€Ð¸ Ñ…Ð¾Ð´ÑŒÐ±Ðµ
 	if (psActorFlags.test(AF_HEAD_BOBBING))
 	{
 		if (!pCamBobbing)
@@ -1125,7 +1125,7 @@ void CActor::shedule_Update	(u32 DT)
 		pCamBobbing = nullptr;
 	}
 
-	//çâóê òÿæåëîãî äûõàíèÿ ïðè óòàëîñòè è õðîìàíèè
+	//Ð·Ð²ÑƒÐº Ñ‚ÑÐ¶ÐµÐ»Ð¾Ð³Ð¾ Ð´Ñ‹Ñ…Ð°Ð½Ð¸Ñ Ð¿Ñ€Ð¸ ÑƒÑ‚Ð°Ð»Ð¾ÑÑ‚Ð¸ Ð¸ Ñ…Ñ€Ð¾Ð¼Ð°Ð½Ð¸Ð¸
 	if(this==Level().CurrentControlEntity() && !g_dedicated_server )
 	{
 		if(conditions().IsLimping() && g_Alive())
@@ -1179,13 +1179,13 @@ void CActor::shedule_Update	(u32 DT)
 		}
 	}
 
-	//åñëè â ðåæèìå HUD, òî ñàìà ìîäåëü àêòåðà íå ðèñóåòñÿ
+	//ÐµÑÐ»Ð¸ Ð² Ñ€ÐµÐ¶Ð¸Ð¼Ðµ HUD, Ñ‚Ð¾ ÑÐ°Ð¼Ð° Ð¼Ð¾Ð´ÐµÐ»ÑŒ Ð°ÐºÑ‚ÐµÑ€Ð° Ð½Ðµ Ñ€Ð¸ÑÑƒÐµÑ‚ÑÑ
 	if(!character_physics_support()->IsRemoved())
 		if (m_bDrawLegs && ((!psDeviceFlags.test(rsR2) && !psDeviceFlags.test(rsR3) && !psDeviceFlags.test(rsR4) && !m_bActorShadows) || ((psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4)) && m_bActorShadows)))
 			setVisible				(TRUE);
 		else
 			setVisible				(!HUDview	());
-	//÷òî àêòåð âèäèò ïåðåä ñîáîé
+	//Ñ‡Ñ‚Ð¾ Ð°ÐºÑ‚ÐµÑ€ Ð²Ð¸Ð´Ð¸Ñ‚ Ð¿ÐµÑ€ÐµÐ´ ÑÐ¾Ð±Ð¾Ð¹
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	
 	float dist_to_obj = RQ.range;
@@ -1258,7 +1258,7 @@ void CActor::shedule_Update	(u32 DT)
 
 //	UpdateSleep									();
 
-	//äëÿ ñâîéñò àðòåôàêòîâ, íàõîäÿùèõñÿ íà ïîÿñå
+	//Ð´Ð»Ñ ÑÐ²Ð¾Ð¹ÑÑ‚ Ð°Ñ€Ñ‚ÐµÑ„Ð°ÐºÑ‚Ð¾Ð², Ð½Ð°Ñ…Ð¾Ð´ÑÑ‰Ð¸Ñ…ÑÑ Ð½Ð° Ð¿Ð¾ÑÑÐµ
 	UpdateArtefactsOnBeltAndOutfit						();
 	m_pPhysics_support->in_shedule_Update		(DT);
 	Check_for_AutoPickUp						();
@@ -1584,7 +1584,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 {
 	VERIFY(artefact);
 
-	//ïîâåñèòü àðòåôàêò íà ïîÿñ
+	//Ð¿Ð¾Ð²ÐµÑÐ¸Ñ‚ÑŒ Ð°Ñ€Ñ‚ÐµÑ„Ð°ÐºÑ‚ Ð½Ð° Ð¿Ð¾ÑÑ
 	if(on_belt)
 	{
 		VERIFY(m_ArtefactsOnBelt.end() == std::find(m_ArtefactsOnBelt.begin(), m_ArtefactsOnBelt.end(), artefact));
@@ -1637,14 +1637,14 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 			conditions().ChangeRadiation		(artefact->m_fRadiationRestoreSpeed*f_update_time);
 			conditions().ChangePsyHealth		(artefact->m_fPsyhealthRestoreSpeed*f_update_time);
 
-			//ñëîæèì áîíóñû ñêîðîñòè îò àðòèôàêòîâ íà ïîÿñå
+			//ÑÐ»Ð¾Ð¶Ð¸Ð¼ Ð±Ð¾Ð½ÑƒÑÑ‹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸ Ð¾Ñ‚ Ð°Ñ€Ñ‚Ð¸Ñ„Ð°ÐºÑ‚Ð¾Ð² Ð½Ð° Ð¿Ð¾ÑÑÐµ
 			run_koef_additional		 += artefact->m_additional_run_coef;
 			sprint_koef_additional	 += artefact->m_additional_sprint_koef;
 			jump_koef_additional	 += artefact->m_additional_jump_speed;
 		}
 	}
 
-	//ïðîâåðèì íå ïðåâûñèëè ëè ëèìèò óêàçàíûé â àêòîð ëòõ. òîëüêî äëÿ àðòîâ. äëÿ êîñòþìîâ íå ïðîâåðÿåì
+	//Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ Ð½Ðµ Ð¿Ñ€ÐµÐ²Ñ‹ÑÐ¸Ð»Ð¸ Ð»Ð¸ Ð»Ð¸Ð¼Ð¸Ñ‚ ÑƒÐºÐ°Ð·Ð°Ð½Ñ‹Ð¹ Ð² Ð°ÐºÑ‚Ð¾Ñ€ Ð»Ñ‚Ñ…. Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ Ð°Ñ€Ñ‚Ð¾Ð². Ð´Ð»Ñ ÐºÐ¾ÑÑ‚ÑŽÐ¼Ð¾Ð² Ð½Ðµ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼
 	
 	if (run_koef_additional > m_fRunFactorAdditionalLimit)
 	run_koef_additional = m_fRunFactorAdditionalLimit;
@@ -1662,7 +1662,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		conditions().ChangeSatiety	(outfit->GetSatietyRestoreSpeed()   * f_update_time);
 		conditions().ChangeRadiation(outfit->GetRadiationRestoreSpeed() * f_update_time);
 
-		//äîáàâèì áîíóñû îò êîñòþìà
+		//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð¼ Ð±Ð¾Ð½ÑƒÑÑ‹ Ð¾Ñ‚ ÐºÐ¾ÑÑ‚ÑŽÐ¼Ð°
 		run_koef_additional		+= outfit->m_additional_run_coef;
 		sprint_koef_additional	+= outfit->m_additional_sprint_koef;
 		jump_koef_additional	+= outfit->m_additional_jump_speed;
@@ -1670,7 +1670,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 
 	m_fSprintFactorAdditional	= sprint_koef_additional;
 	m_fRunFactorAdditional		= run_koef_additional;
-	//äëÿ ïðûæêà íåìíîãî ïîäðóãîìó
+	//Ð´Ð»Ñ Ð¿Ñ€Ñ‹Ð¶ÐºÐ° Ð½ÐµÐ¼Ð½Ð¾Ð³Ð¾ Ð¿Ð¾Ð´Ñ€ÑƒÐ³Ð¾Ð¼Ñƒ
 	character_physics_support()->movement()->SetJumpUpVelocity(m_fJumpSpeed + jump_koef_additional);
 }
 
@@ -1826,11 +1826,11 @@ bool CActor::can_attach(const CInventoryItem *inventory_item) const
 	if (!item || (item && !item->can_be_attached()))/*(!item->enabled() || !item->can_be_attached()))*/
 		return			(false);
 
-	//ìîæíî ëè ïðèñîåäèíÿòü îáúåêòû òàêîãî òèïà
+	//Ð¼Ð¾Ð¶Ð½Ð¾ Ð»Ð¸ Ð¿Ñ€Ð¸ÑÐ¾ÐµÐ´Ð¸Ð½ÑÑ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ñ‚Ð¸Ð¿Ð°
 	if( m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(),m_attach_item_sections.end(),inventory_item->object().cNameSect()) )
 		return false;
 
-	//åñëè óæå åñòü ïðèñîåäèííåíûé îáúåò òàêîãî òèïà 
+	//ÐµÑÐ»Ð¸ ÑƒÐ¶Ðµ ÐµÑÑ‚ÑŒ Ð¿Ñ€Ð¸ÑÐ¾ÐµÐ´Ð¸Ð½Ð½ÐµÐ½Ñ‹Ð¹ Ð¾Ð±ÑŠÐµÑ‚ Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ñ‚Ð¸Ð¿Ð° 
 	if(attached(inventory_item->object().cNameSect()))
 		return false;
 

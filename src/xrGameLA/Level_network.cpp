@@ -102,7 +102,7 @@ void CLevel::remove_objects	()
 	g_pGamePersistent->destroy_particles		(false);
 
 //.	xr_delete									(m_seniority_hierarchy_holder);
-//.	m_seniority_hierarchy_holder				= xr_new<CSeniorityHierarchyHolder>();
+//.	m_seniority_hierarchy_holder				= new CSeniorityHierarchyHolder();
 	if (!IsGameTypeSingle()) Msg("CLevel::remove_objects - End");
 }
 

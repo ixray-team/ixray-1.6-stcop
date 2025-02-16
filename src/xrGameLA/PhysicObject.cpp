@@ -139,8 +139,8 @@ void CPhysicObject::UpdateCL()
 	inherited::UpdateCL();
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-	//Åñëè íàø ôèçè÷åñêèé îáúåêò àíèìèðîâàííûé, òî 
-	//äâèãàåì îáúåêò çà àíèìàöèåé
+	//Ð•ÑÐ»Ð¸ Ð½Ð°Ñˆ Ñ„Ð¸Ð·Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð°Ð½Ð¸Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹, Ñ‚Ð¾ 
+	//Ð´Ð²Ð¸Ð³Ð°ÐµÐ¼ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð·Ð° Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÐµÐ¹
 	if (m_pPhysicsShell->PPhysicsShellAnimator())
 	{
 		m_pPhysicsShell->PPhysicsShellAnimator()->OnFrame();
@@ -298,7 +298,7 @@ bool					CPhysicObject::	set_collision_hit_callback	(SCollisionHitCallback *cc)
 /*
 DEFINE_MAP_PRED	(LPCSTR,	CPhysicsJoint*,	JOINT_P_MAP,	JOINT_P_PAIR_IT,	pred_str);
 
-JOINT_P_MAP			*l_tpJointMap = xr_new<JOINT_P_MAP>();
+JOINT_P_MAP			*l_tpJointMap = new JOINT_P_MAP();
 
 l_tpJointMap->insert(mk_pair(bone_name,joint*));
 JOINT_P_PAIR_IT		I = l_tpJointMap->find(bone_name);

@@ -6,8 +6,6 @@
 CUICursor&	GetUICursor		()	{return UI().GetUICursor();};
 ui_core&	UI				()	{return *GamePersistent().m_pUI_core;};
 
-extern ENGINE_API Fvector2		g_current_font_scale;
-
 void S2DVert::rotate_pt(const Fvector2& pivot, const float cosA, const float sinA, const float kx)
 {
 	Fvector2 t		= pt;
@@ -99,12 +97,12 @@ sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
 
 void ui_core::OnDeviceReset()
 {
-	m_scale_.set		( float(Device.dwWidth)/UI_BASE_WIDTH, float(Device.dwHeight)/UI_BASE_HEIGHT );
+	m_scale_.set		( float(Device.TargetWidth)/UI_BASE_WIDTH, float(Device.TargetHeight)/UI_BASE_HEIGHT );
 
 	m_2DFrustum.CreateFromRect	(Frect().set(	0.0f,
 												0.0f,
-												float(Device.dwWidth),
-												float(Device.dwHeight)
+												float(Device.TargetWidth),
+												float(Device.TargetHeight)
 												));
 }
 
@@ -201,18 +199,15 @@ ui_core::ui_core()
 	if(!g_dedicated_server)
 	{
 		m_pUICursor					= new CUICursor();
-		m_pFontManager				= new CFontManager();
 	}else
 	{
 		m_pUICursor					= NULL;
-		m_pFontManager				= NULL;
 	}
 	m_bPostprocess				= false;
 	
 	OnDeviceReset				();
 
 	m_current_scale				= &m_scale_;
-	g_current_font_scale.set	(1.0f,1.0f);
 	m_currentPointType			= IUIRender::pttTL;
 }
 
@@ -235,8 +230,6 @@ void ui_core::pp_start()
 
 	m_current_scale			= &m_pp_scale_;
 	
-	g_current_font_scale.set(	float(::Render->getTarget()->get_width())/float(Device.dwWidth),	
-								float(::Render->getTarget()->get_height())/float(Device.dwHeight) );
 
 }
 
@@ -245,7 +238,6 @@ void ui_core::pp_stop()
 	m_bPostprocess			= false;
 	m_current_scale			= &m_scale_;
 //.	g_current_font_scale	= m_scale_;
-	g_current_font_scale.set	(1.0f,1.0f);
 }
 
 void ui_core::RenderFont()
@@ -255,13 +247,13 @@ void ui_core::RenderFont()
 
 bool ui_core::is_widescreen()
 {
-	return (Device.dwWidth)/float(Device.dwHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT +0.01f);
+	return (Device.TargetWidth)/float(Device.TargetHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT +0.01f);
 }
 
 float ui_core::get_current_kx()
 {
-	float h		= float(Device.dwHeight);
-	float w		= float(Device.dwWidth);
+	float h		= float(Device.TargetHeight);
+	float w		= float(Device.TargetWidth);
 
 	float res = (h/w)/(UI_BASE_HEIGHT/UI_BASE_WIDTH);
 	return res;

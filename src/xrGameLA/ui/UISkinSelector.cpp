@@ -28,10 +28,10 @@ CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 		m_pImage[i] = new CUIStatix();
 		AttachChild(m_pImage[i]);
 	}
-//	m_pAnims[0]		= xr_new<CUIAnimatedStatic>(); m_pFrames->AttachChild(m_pAnims[0]);
-//	m_pAnims[1]		= xr_new<CUIAnimatedStatic>(); m_pFrames->AttachChild(m_pAnims[1]);
-//	m_pButtons[0]	= xr_new<CUI3tButton>();	m_pFrames->AttachChild(m_pButtons[0]); m_pButtons[0]->SetMessageTarget(this);
-//	m_pButtons[1]	= xr_new<CUI3tButton>();	m_pFrames->AttachChild(m_pButtons[1]); m_pButtons[1]->SetMessageTarget(this);
+//	m_pAnims[0]		= new CUIAnimatedStatic(); m_pFrames->AttachChild(m_pAnims[0]);
+//	m_pAnims[1]		= new CUIAnimatedStatic(); m_pFrames->AttachChild(m_pAnims[1]);
+//	m_pButtons[0]	= new CUI3tButton();	m_pFrames->AttachChild(m_pButtons[0]); m_pButtons[0]->SetMessageTarget(this);
+//	m_pButtons[1]	= new CUI3tButton();	m_pFrames->AttachChild(m_pButtons[1]); m_pButtons[1]->SetMessageTarget(this);
 
 	m_pBtnAutoSelect= new CUI3tButton();	AttachChild(m_pBtnAutoSelect);
 	m_pBtnSpectator	= new CUI3tButton();	AttachChild(m_pBtnSpectator);

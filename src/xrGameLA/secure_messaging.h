@@ -1,14 +1,13 @@
 #ifndef SECRET_KEY_GENERATOR_INCLUDED
 #define SECRET_KEY_GENERATOR_INCLUDED
 
-#include <boost/noncopyable.hpp>
 #include "../xrCore/_random.h"
 
 namespace secure_messaging
 {
 
 
-class seed_generator : private boost::noncopyable
+class seed_generator
 {
 public:
 			seed_generator	();

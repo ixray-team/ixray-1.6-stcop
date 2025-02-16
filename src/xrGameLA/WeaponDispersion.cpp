@@ -1,4 +1,4 @@
-// WeaponDispersion.cpp: разбос при стрельбе
+// WeaponDispersion.cpp: СЂР°Р·Р±РѕСЃ РїСЂРё СЃС‚СЂРµР»СЊР±Рµ
 // 
 //////////////////////////////////////////////////////////////////////
 
@@ -14,7 +14,7 @@
 #include "EffectorShotX.h"
 
 
-//возвращает 1, если оружие в отличном состоянии и >1 если повреждено
+//РІРѕР·РІСЂР°С‰Р°РµС‚ 1, РµСЃР»Рё РѕСЂСѓР¶РёРµ РІ РѕС‚Р»РёС‡РЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё Рё >1 РµСЃР»Рё РїРѕРІСЂРµР¶РґРµРЅРѕ
 float CWeapon::GetConditionDispersionFactor() const
 {
 	return (1.f + fireDispersionConditionFactor*(1.f-GetCondition()));
@@ -27,14 +27,14 @@ float CWeapon::GetFireDispersion	(bool with_cartridge)
 	return GetFireDispersion	(m_fCurrentCartirdgeDisp);
 }
 
-// Разброс оружия зажатого в тисках с учетом глушителя, патрона и износа
+// Р Р°Р·Р±СЂРѕСЃ РѕСЂСѓР¶РёСЏ Р·Р°Р¶Р°С‚РѕРіРѕ РІ С‚РёСЃРєР°С… СЃ СѓС‡РµС‚РѕРј РіР»СѓС€РёС‚РµР»СЏ, РїР°С‚СЂРѕРЅР° Рё РёР·РЅРѕСЃР°
 float CWeapon::GetFireDispersion(float cartridge_k)
 {
 	return fireDispersionBase * cur_silencer_koef.fire_dispersion * cartridge_k * GetConditionDispersionFactor();
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Для эффекта отдачи оружия
+// Р”Р»СЏ СЌС„С„РµРєС‚Р° РѕС‚РґР°С‡Рё РѕСЂСѓР¶РёСЏ
 void CWeapon::AddShotEffector		()
 {
 	inventory_owner().on_weapon_shot_start	(this);
@@ -42,7 +42,7 @@ void CWeapon::AddShotEffector		()
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if(pActor){
 		CCameraShotEffector* S	= smart_cast<CCameraShotEffector*>	(pActor->EffectorManager().GetEffector(eCEShot)); 
-		if (!S)	S				= (CCameraShotEffector*)pActor->EffectorManager().AddEffector(xr_new<CCameraShotEffectorX> (camMaxAngleVert,camRelaxSpeed, camMaxAngleHorz, camStepAngleHorz, camDispertionFrac));
+		if (!S)	S				= (CCameraShotEffector*)pActor->EffectorManager().AddEffector(new CCameraShotEffectorX (camMaxAngleVert,camRelaxSpeed, camMaxAngleHorz, camStepAngleHorz, camDispertionFrac));
 		R_ASSERT				(S);
 		S->SetRndSeed(pActor->GetShotRndSeed());
 		S->SetActor(pActor);

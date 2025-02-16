@@ -45,7 +45,7 @@ void CPatrolPathStorage::load_raw			(const CLevelGraph *level_graph, const CGame
 					game_graph,
 					*sub_chunk
 				)
-				/* &xr_new<CPatrolPath>(patrol_name)->load_raw(
+				/* &new CPatrolPath(patrol_name)->load_raw(
 						level_graph,
 						cross,
 						game_graph,

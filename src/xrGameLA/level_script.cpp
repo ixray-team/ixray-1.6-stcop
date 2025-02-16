@@ -440,8 +440,8 @@ void remove_call(const luabind::functor<bool> &condition,const luabind::functor<
 void add_call(const luabind::object &lua_object, LPCSTR condition,LPCSTR action)
 {
 //	try{	
-//		CPHScriptObjectCondition	*c=xr_new<CPHScriptObjectCondition>(lua_object,condition);
-//		CPHScriptObjectAction		*a=xr_new<CPHScriptObjectAction>(lua_object,action);
+//		CPHScriptObjectCondition	*c=new CPHScriptObjectCondition(lua_object,condition);
+//		CPHScriptObjectAction		*a=new CPHScriptObjectAction(lua_object,action);
 		luabind::functor<bool>		_condition = object_cast<luabind::functor<bool> >(lua_object[condition]);
 		luabind::functor<void>		_action = object_cast<luabind::functor<void> >(lua_object[action]);
 		CPHScriptObjectConditionN	*c=new CPHScriptObjectConditionN(lua_object,_condition);

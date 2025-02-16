@@ -520,7 +520,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_current_torso.invalidate	();
 	m_current_head.invalidate	();
 	//-------------------------------------
-	// инициализация реестров, используемых актером
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂРµРµСЃС‚СЂРѕРІ, РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р°РєС‚РµСЂРѕРј
 	encyclopedia_registry->registry().init(ID());
 	game_news_registry->registry().init(ID());
 
@@ -531,7 +531,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	CSE_ALifeTraderAbstract	 *pTA	= smart_cast<CSE_ALifeTraderAbstract*>(e);
 	set_money				(pTA->m_dwMoney, false);
 
-	//убрать все артефакты с пояса
+	//СѓР±СЂР°С‚СЊ РІСЃРµ Р°СЂС‚РµС„Р°РєС‚С‹ СЃ РїРѕСЏСЃР°
 	m_ArtefactsOnBelt.clear();
 //.	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 //.		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
@@ -605,7 +605,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		if (!pStatGraph)
 		{
 			static g_Y = 0;
-			pStatGraph = xr_new<CStatGraph>();
+			pStatGraph = new CStatGraph();
 			pStatGraph->SetRect(0, g_Y, Device.dwWidth, 100, 0xff000000, 0xff000000);
 			g_Y += 110;
 			if (g_Y > 700) g_Y = 100;
@@ -638,7 +638,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		K->PlayCycle("death_init");
 
 		
-		//остановить звук тяжелого дыхания
+		//РѕСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РІСѓРє С‚СЏР¶РµР»РѕРіРѕ РґС‹С…Р°РЅРёСЏ
 		m_HeavyBreathSnd.stop();
 	}
 	
@@ -1052,10 +1052,10 @@ void	CActor::CalculateInterpolationParams()
 		for (u32 k=0; k<3; k++)
 		{
 			SP0[k] = c*(c*(c*SCoeff[k][0]+SCoeff[k][1])+SCoeff[k][2])+SCoeff[k][3];
-			SP1[k] = (c*c*SCoeff[k][0]*3+c*SCoeff[k][1]*2+SCoeff[k][2])/3; // сокрость из формулы в 3 раза превышает скорость при расчете коэффициентов !!!!
+			SP1[k] = (c*c*SCoeff[k][0]*3+c*SCoeff[k][1]*2+SCoeff[k][2])/3; // СЃРѕРєСЂРѕСЃС‚СЊ РёР· С„РѕСЂРјСѓР»С‹ РІ 3 СЂР°Р·Р° РїСЂРµРІС‹С€Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРё СЂР°СЃС‡РµС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ !!!!
 
 			HP0[k] = c*(c*(c*HCoeff[k][0]+HCoeff[k][1])+HCoeff[k][2])+HCoeff[k][3];
-			HP1[k] = (c*c*HCoeff[k][0]*3+c*HCoeff[k][1]*2+HCoeff[k][2]); // сокрость из формулы в 3 раза превышает скорость при расчете коэффициентов !!!!
+			HP1[k] = (c*c*HCoeff[k][0]*3+c*HCoeff[k][1]*2+HCoeff[k][2]); // СЃРѕРєСЂРѕСЃС‚СЊ РёР· С„РѕСЂРјСѓР»С‹ РІ 3 СЂР°Р·Р° РїСЂРµРІС‹С€Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРё СЂР°СЃС‡РµС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ !!!!
 		};
 
 		SP1.add(SP0);
@@ -1227,7 +1227,7 @@ void CActor::make_Interpolation	()
 			case 1: 
 				{
 					for (int k=0; k<3; k++)
-						SpeedVector[k] = (factor*factor*SCoeff[k][0]*3+factor*SCoeff[k][1]*2+SCoeff[k][2])/3; // сокрость из формулы в 3 раза превышает скорость при расчете коэффициентов !!!!
+						SpeedVector[k] = (factor*factor*SCoeff[k][0]*3+factor*SCoeff[k][1]*2+SCoeff[k][2])/3; // СЃРѕРєСЂРѕСЃС‚СЊ РёР· С„РѕСЂРјСѓР»С‹ РІ 3 СЂР°Р·Р° РїСЂРµРІС‹С€Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРё СЂР°СЃС‡РµС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ !!!!
 					
 					ResPosition.set(IPosS); 
 				}break;
@@ -1515,7 +1515,7 @@ void	CActor::OnRender_Network()
 				point1S[k] = c*(c*(c*SCoeff[k][0]+SCoeff[k][1])+SCoeff[k][2])+SCoeff[k][3];
 				point1H[k] = c*(c*(c*HCoeff[k][0]+HCoeff[k][1])+HCoeff[k][2])+HCoeff[k][3];
 
-				tS[k] = (c*c*SCoeff[k][0]*3+c*SCoeff[k][1]*2+SCoeff[k][2])/3; // сокрость из формулы в 3 раза превышает скорость при расчете коэффициентов !!!!
+				tS[k] = (c*c*SCoeff[k][0]*3+c*SCoeff[k][1]*2+SCoeff[k][2])/3; // СЃРѕРєСЂРѕСЃС‚СЊ РёР· С„РѕСЂРјСѓР»С‹ РІ 3 СЂР°Р·Р° РїСЂРµРІС‹С€Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРё СЂР°СЃС‡РµС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ !!!!
 				tH[k] = (c*c*HCoeff[k][0]*3+c*HCoeff[k][1]*2+HCoeff[k][2]); 
 			};
 
@@ -1872,7 +1872,7 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	if (!m_sHeadShotParticle.size()) return;
 	Fmatrix pos; 	
 	CParticlesPlayer::MakeXFORM(this,element,HitDir,HitPos,pos);
-	// установить particles
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ particles
 	CParticlesObject* ps = NULL;
 	
 	ps = CParticlesObject::Create(m_sHeadShotParticle.c_str(),TRUE);

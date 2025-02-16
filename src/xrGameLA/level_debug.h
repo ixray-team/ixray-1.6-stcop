@@ -217,11 +217,18 @@ private:
 
 	};
 
-	DEFINE_MAP			(LPCSTR,	CObjectInfo*,	CLASS_INFO_MAP,		CLASS_INFO_MAP_IT);	
-	DEFINE_MAP			(CObject*,	CLASS_INFO_MAP,	OBJECT_INFO_MAP,	OBJECT_INFO_MAP_IT);
-	DEFINE_MAP			(SKey,		CTextInfo*,		TEXT_INFO_MAP,		TEXT_INFO_MAP_IT);
-	DEFINE_MAP			(SKey,		CLevelInfo*,	LEVEL_INFO_MAP,		LEVEL_INFO_MAP_IT);
-	
+	using CLASS_INFO_MAP = xr_map<LPCSTR, CObjectInfo*>;
+	using CLASS_INFO_MAP_IT = CLASS_INFO_MAP::iterator;
+
+	using OBJECT_INFO_MAP = xr_map<CObject*, CLASS_INFO_MAP>;
+	using OBJECT_INFO_MAP_IT = OBJECT_INFO_MAP::iterator;
+
+	using TEXT_INFO_MAP = xr_map<SKey, CTextInfo*>;
+	using TEXT_INFO_MAP_IT = TEXT_INFO_MAP::iterator;
+
+	using LEVEL_INFO_MAP = xr_map<SKey, CLevelInfo*>;
+	using LEVEL_INFO_MAP_IT = LEVEL_INFO_MAP::iterator;
+
 	OBJECT_INFO_MAP		m_objects_info;
 	TEXT_INFO_MAP		m_text_info;
 	LEVEL_INFO_MAP		m_level_info;

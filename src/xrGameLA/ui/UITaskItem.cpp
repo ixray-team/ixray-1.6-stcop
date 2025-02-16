@@ -350,30 +350,30 @@ void  CUIUserTaskItem::Init					()
 	inherited::Init					();
 	CUIXml&							uiXml = m_EventsWnd->m_ui_task_item_xml;
 
-	m_image							= xr_new<CUIStatic>();		m_image->SetAutoDelete(true);				AttachChild(m_image);
+	m_image							= new CUIStatic();		m_image->SetAutoDelete(true);				AttachChild(m_image);
 
-	m_descriptionStatic				= xr_new<CUIStatic>();		m_descriptionStatic->SetAutoDelete(true);	AttachChild(m_descriptionStatic);
+	m_descriptionStatic				= new CUIStatic();		m_descriptionStatic->SetAutoDelete(true);	AttachChild(m_descriptionStatic);
 
-	m_captionStatic					= xr_new<CUIStatic>();		m_captionStatic->SetAutoDelete(true);	AttachChild(m_captionStatic);
+	m_captionStatic					= new CUIStatic();		m_captionStatic->SetAutoDelete(true);	AttachChild(m_captionStatic);
 	
 
-	m_showLocationBtn				= xr_new<CUI3tButton>();	m_showLocationBtn->SetAutoDelete(true);		AttachChild(m_showLocationBtn);
+	m_showLocationBtn				= new CUI3tButton();	m_showLocationBtn->SetAutoDelete(true);		AttachChild(m_showLocationBtn);
 	m_showLocationBtn->				SetWindowName("m_showLocationBtn");
 	Register						(m_showLocationBtn);
 	AddCallback						(m_showLocationBtn->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnShowLocationClicked,this));
 
-	m_showPointerBtn				= xr_new<CUI3tButton>();	m_showPointerBtn->SetAutoDelete(true);		AttachChild(m_showPointerBtn);
+	m_showPointerBtn				= new CUI3tButton();	m_showPointerBtn->SetAutoDelete(true);		AttachChild(m_showPointerBtn);
 	m_showPointerBtn->				SetWindowName("m_showPointerBtn");
 	Register						(m_showPointerBtn);
 	AddCallback						(m_showPointerBtn->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnShowPointerClicked,this));
 
 
-	m_editTextBtn					= xr_new<CUI3tButton>();	m_editTextBtn->SetAutoDelete(true);		AttachChild(m_editTextBtn);
+	m_editTextBtn					= new CUI3tButton();	m_editTextBtn->SetAutoDelete(true);		AttachChild(m_editTextBtn);
 	m_editTextBtn->					SetWindowName("m_editTextBtn");
 	Register						(m_editTextBtn);
 	AddCallback						(m_editTextBtn->WindowName(), BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnEditTextClicked,this));
 
-	m_removeBtn						= xr_new<CUI3tButton>();	m_removeBtn->SetAutoDelete(true);		AttachChild(m_removeBtn);
+	m_removeBtn						= new CUI3tButton();	m_removeBtn->SetAutoDelete(true);		AttachChild(m_removeBtn);
 	m_removeBtn->					SetWindowName("m_removeBtn");
 	Register						(m_removeBtn);
 	AddCallback						(m_removeBtn->WindowName(), BUTTON_CLICKED,boost::bind(&CUIUserTaskItem::OnRemoveClicked,this));
@@ -467,7 +467,7 @@ void CUIUserTaskItem::OnDescriptionChanged		()
 void CUIUserTaskItem::OnEditTextClicked		()
 {
 	delete_data			(m_edtWnd);
-	m_edtWnd			= xr_new<CUIUserTaskEditWnd>(this);
+	m_edtWnd			= new CUIUserTaskEditWnd(this);
 	m_edtWnd->Start		();
 }
 
@@ -518,21 +518,21 @@ void CUIUserTaskEditWnd::Init					()
 	Hide					();
 	CUIXml&					uiXml = m_userTask->m_EventsWnd->m_ui_task_item_xml;
 
-	m_background		= xr_new<CUIFrameWindow>();		m_background->SetAutoDelete(true);
+	m_background		= new CUIFrameWindow();		m_background->SetAutoDelete(true);
 	AttachChild			(m_background);
 	
-	m_btnOk				= xr_new<CUI3tButton>();	m_btnOk->SetAutoDelete(true);		m_background->AttachChild(m_btnOk);
+	m_btnOk				= new CUI3tButton();	m_btnOk->SetAutoDelete(true);		m_background->AttachChild(m_btnOk);
 	m_btnOk->SetWindowName("m_btnOk");
 	Register			(m_btnOk);
 	AddCallback			(m_btnOk->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskEditWnd::OnOk,this));
 
-	m_btnCancel			= xr_new<CUI3tButton>();	m_btnCancel->SetAutoDelete(true);	m_background->AttachChild(m_btnCancel);
+	m_btnCancel			= new CUI3tButton();	m_btnCancel->SetAutoDelete(true);	m_background->AttachChild(m_btnCancel);
 	m_btnCancel->SetWindowName("m_btnCancel");
 	Register			(m_btnCancel);
 	AddCallback			(m_btnCancel->WindowName(),BUTTON_CLICKED,boost::bind(&CUIUserTaskEditWnd::OnCancel,this));
 
-	m_editCaption		= xr_new<CUIEditBox>();			m_editCaption->SetAutoDelete(true);		m_background->AttachChild(m_editCaption);
-	m_editDescription	= xr_new<CUIEditBoxEx>();		m_editDescription->SetAutoDelete(true); m_background->AttachChild(m_editDescription);
+	m_editCaption		= new CUIEditBox();			m_editCaption->SetAutoDelete(true);		m_background->AttachChild(m_editCaption);
+	m_editDescription	= new CUIEditBoxEx();		m_editDescription->SetAutoDelete(true); m_background->AttachChild(m_editDescription);
 
 
 	CUIXmlInit xml_init;

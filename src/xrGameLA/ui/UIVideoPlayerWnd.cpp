@@ -32,12 +32,12 @@ void CUIVideoPlayerWnd::Init			(CUIXml* doc, LPCSTR start_from)
 	
 
 	strconcat						(sizeof(str),str,start_from,":surface");
-	m_surface						= xr_new<CUIStatic>(); m_surface->SetAutoDelete(true);
+	m_surface						= new CUIStatic(); m_surface->SetAutoDelete(true);
 	AttachChild						(m_surface);
 	xml_init.InitStatic				(*doc, str, 0, m_surface);
 
 	strconcat						(sizeof(str),str,start_from,":buttons_tab");
-	m_tabControl					= xr_new<CUITabControl>(); m_tabControl->SetAutoDelete(true);
+	m_tabControl					= new CUITabControl(); m_tabControl->SetAutoDelete(true);
 	AttachChild						(m_tabControl);
 	xml_init.InitTabControl			(*doc, str, 0, m_tabControl);
 	m_tabControl->SetWindowName		("buttons_tab");

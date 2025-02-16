@@ -1125,7 +1125,7 @@ void xrServer::initialize_screenshot_proxies()
 {
 	for (int i = 0; i < sizeof(m_screenshot_proxies)/sizeof(clientdata_proxy*); ++i)
 	{
-		m_screenshot_proxies[i] = xr_new<clientdata_proxy>(m_file_transfers);
+		m_screenshot_proxies[i] = new clientdata_proxy(m_file_transfers);
 	}
 }
 void xrServer::deinitialize_screenshot_proxies()

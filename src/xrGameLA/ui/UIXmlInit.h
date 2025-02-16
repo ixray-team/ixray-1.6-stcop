@@ -108,4 +108,14 @@ public:
 	static void		AssignColor					(LPCSTR name, u32 clr);
 private:
 	static	ColorDefs			*m_pColorDefs;    
+
+	static shared_str m_Graffiti19RussiaFontName;
+	static shared_str m_Graffiti22RussiaFontName;
+	static shared_str m_Graff32FontName;
+	static shared_str m_Graff50FontName;
+	static shared_str m_Arial14FontName;
+	static shared_str m_Arial21FontName;
+	static shared_str m_Letterica16FontName;
+	static shared_str m_Letterica18FontName;
+	static shared_str m_Letter25FontName;
 };

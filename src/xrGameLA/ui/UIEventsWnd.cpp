@@ -77,7 +77,7 @@ void CUIEventsWnd::Init				()
 	Register						(m_TaskFilter);
     AddCallbackStr						("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
 /*
-    m_primary_or_all_filter_btn		= xr_new<CUI3tButton>(); m_primary_or_all_filter_btn->SetAutoDelete(true);
+    m_primary_or_all_filter_btn		= new CUI3tButton(); m_primary_or_all_filter_btn->SetAutoDelete(true);
 	m_UILeftFrame->AttachChild		(m_primary_or_all_filter_btn);
 	xml_init.Init3tButton			(uiXml, "main_wnd:left_frame:primary_or_all", 0, m_primary_or_all_filter_btn);
 
@@ -148,7 +148,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 		if(task->m_Objectives[0].TaskState()==eTaskUserDefined)
 		{
 			VERIFY				(task->m_Objectives.size()==1);
-			pTaskItem			= xr_new<CUIUserTaskItem>(this);
+			pTaskItem			= new CUIUserTaskItem(this);
 			pTaskItem->SetGameTask			(task, 0);
 			m_ListWnd->AddWindow			(pTaskItem,true);
 		}else

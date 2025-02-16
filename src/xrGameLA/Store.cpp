@@ -9,7 +9,7 @@
 
 CStoreHouse::CStoreHouse()
 {
-//	m_buffer = xr_new<NET_Packet>		();
+//	m_buffer = new NET_Packet		();
 //	m_buffer->write_start				();
 }
 
