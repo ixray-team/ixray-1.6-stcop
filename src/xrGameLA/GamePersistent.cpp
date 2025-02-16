@@ -757,9 +757,19 @@ void CGamePersistent::OnRenderPPUI_PP()
 
 void CGamePersistent::LoadTitle(LPCSTR str)
 {
-	string512			buff;
-	xr_sprintf				(buff, "%s...", CStringTable().translate(str).c_str());
-//	pApp->LoadTitleInt	(buff);
+	SetLoadStageTitle(str);
+}
+
+void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
+{
+	string256 buff;
+	if (ls_title)
+	{
+		xr_sprintf(buff, "%s%s", g_pStringTable->translate(ls_title).c_str(), "...");
+		pApp->SetLoadStageTitle(buff);
+	}
+	else
+		pApp->SetLoadStageTitle("");
 }
 
 bool CGamePersistent::CanBePaused()
