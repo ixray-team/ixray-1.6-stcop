@@ -39,7 +39,8 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 	if(C.bDetail_Bump) {
 		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
-		if(detail_bump_texture) {
+		if(detail_bump_texture && detail_bump_texture[0])
+		{
 			bHasDetailBump = true;
 			xr_strcpy(texDetailBump, sizeof(texDetailBump), detail_bump_texture);
 			xr_strcpy(texDetailBumpX, sizeof(texDetailBumpX), detail_bump_texture);
