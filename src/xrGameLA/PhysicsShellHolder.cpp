@@ -32,7 +32,7 @@ void CPhysicsShellHolder::net_Destroy()
 	xr_delete									(m_pPhysicsShell);
 }
 
-static enum EEnableState
+enum EEnableState
 {
 	stEnable			=0	,
 	stDisable				,

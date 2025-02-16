@@ -342,13 +342,13 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	pKinematics->CalculateBones				(TRUE);
 
 	mask0 = pKinematics->LL_GetBonesVisible();//first part mask
-	VERIFY2(mask0.flags,"mask0 -Zero");
+	VERIFY2(mask0._visimask.flags,"mask0 -Zero");
 	mask0.invert();
 	mask1.band(mask0);//second part mask
 
 
 	newKinematics->LL_SetBoneRoot		(split_bone);
-	VERIFY2(mask1.flags,"mask1 -Zero");
+	VERIFY2(mask1._visimask.flags,"mask1 -Zero");
 	newKinematics->LL_SetBonesVisible	(mask1);
 
 	newKinematics->CalculateBones_Invalidate	();

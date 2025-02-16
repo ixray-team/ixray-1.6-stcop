@@ -154,7 +154,7 @@ void inverthomomatrix(Matrix N,Matrix M)
  * n = inverse of m
  */
 {
-    register float *n,*m,*nmax,*C,*m3;
+    float *n,*m,*nmax,*C,*m3;
     
     nmax = &N[2][3];
     n = &N[0][0];
@@ -190,7 +190,7 @@ void vecmult0(float y[],float x[],Matrix M)
  * y = x * M, with y[3] = 0
  */
 {
-    register int	i,j;
+    int	i,j;
     float   	Y[3];
     
     for (i=0; i<3; i++) {
@@ -210,7 +210,7 @@ void vecmult(float y[],float x[],Matrix M)
  * y = x * M, with y[3] = 1
  */
 {
-    register	int i,j;
+    int i,j;
     float   	Y[3];
     
     for (i=0; i<3; i++) {
@@ -580,9 +580,9 @@ void rmatmult(Matrix A, Matrix B, Matrix C)
     Matrix Temp1;
     Matrix Temp2;
 
-    register float *a = (float *) A; 
-    register float *b;
-    register float *c; 
+    float *a = (float *) A; 
+    float *b;
+    float *c; 
 
     if (A == B)
     {
@@ -640,7 +640,7 @@ void invertrmatrix(Matrix N,Matrix M)
  * n = inverse of m
  */
 {
-    register float *n,*m,*nmax,*C;
+    float *n,*m,*nmax,*C;
     
     nmax = &N[2][3];
     n = &N[0][0];

@@ -11,6 +11,7 @@
 #include "../render.h"
 #include "../IGame_Persistent.h"
 #include "GamePersistent.h"
+#include "../xrEngine/ISheduled.h"
 
 const Fvector zero_vel		= {0.f,0.f,0.f};
 
@@ -62,9 +63,9 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	spatial.sector			= S;
 	
 	// sheduled
-	shedule.t_min			= 20;
-	shedule.t_max			= 50;
-	shedule_register		();
+	//shedule.t_min			= 20;
+	//shedule.t_max			= 50;
+	//shedule_register		();
 
 	dwLastTime				= Device.dwTimeGlobal;
 	mt_dt					= 0;
