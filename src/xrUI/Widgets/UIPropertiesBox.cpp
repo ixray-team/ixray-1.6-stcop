@@ -36,8 +36,14 @@ void CUIPropertiesBox::InitPropertiesBox(Fvector2 pos, Fvector2 size)
 	AttachChild				(&m_UIListWnd);
 
 	CUIXml					xml_doc;
-	if (EngineExternal().LostAlphaMode())
-		xml_doc.Load			(CONFIG_PATH, UI_PATH, "ui_actor_menu.xml");
+	if (EngineExternal().LostAlphaMode()) 
+	{
+		string128		INVENTORY_XML;
+		//xr_sprintf(INVENTORY_XML, "inventory_new_%d.xml", ui_hud_type);
+		xr_sprintf(INVENTORY_XML, "inventory_new_3.xml");
+
+		xml_doc.Load(CONFIG_PATH, UI_PATH, INVENTORY_XML);
+	}
 	else
 		xml_doc.Load			(CONFIG_PATH, UI_PATH, "actor_menu.xml");
 

@@ -147,13 +147,14 @@ void CUIPdaWnd::Init()
 		xr_strcpy							(fn, pSettings->r_string("lost_alpha_cfg", "get_script_pda_window"));
 		R_ASSERT2							(ai().script_engine().functor<CUIDialogWndEx*>(fn, lua_pda_wnd_factory), 
 																			make_string<const char*>("Can't find function '%s'", fn));
-		UIChatWnd				= lua_pda_wnd_factory("comm");
-		UISkillsWnd				= lua_pda_wnd_factory("skills");
-		UIDownloadsWnd			= lua_pda_wnd_factory("downs");
+		// LADC !!!!!
+		//UIChatWnd				= lua_pda_wnd_factory("comm");
+		//UISkillsWnd				= lua_pda_wnd_factory("skills");
+		//UIDownloadsWnd			= lua_pda_wnd_factory("downs");
 		if (bUpgraded)
 		{
-			UIGamesWnd			= lua_pda_wnd_factory("games");
-			UIMPlayerWnd			= lua_pda_wnd_factory("mplayer");
+			//UIGamesWnd			= lua_pda_wnd_factory("games");
+			//UIMPlayerWnd			= lua_pda_wnd_factory("mplayer");
 		}
 	}
 	// Tab control
@@ -182,8 +183,9 @@ void CUIPdaWnd::Init()
 		bool enable_pda_skills = InventoryUtilities::HasActorInfo("pda_skills_enabled");
 		bool enable_pda_downloads = InventoryUtilities::HasActorInfo("pda_downloads_enabled");
 		
-		UITabControl->GetButtonById("eptSkills")->Enable(enable_pda_skills);
-		UITabControl->GetButtonById("eptDownloads")->Enable(enable_pda_downloads);
+		//LADC !!!!!
+		//UITabControl->GetButtonById("eptSkills")->Enable(enable_pda_skills);
+		//UITabControl->GetButtonById("eptDownloads")->Enable(enable_pda_downloads);
 	}
 
 	m_initialized = true;
