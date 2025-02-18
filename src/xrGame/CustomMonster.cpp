@@ -327,6 +327,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
+	CScriptEntity::process_sound_callbacks();
 	if (g_Alive()) {
 		if (g_mt_config.test(mtAiVision) )
 #ifndef DEBUG
@@ -442,8 +443,6 @@ void CCustomMonster::UpdateCL	()
 	if( animation_movement() )
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
-
-	CScriptEntity::process_sound_callbacks();
 
 	/*	//. hack just to skip 'CalculateBones'
 	if (sound().need_bone_data()) {
