@@ -10,14 +10,125 @@
 #include "ai_space.h"
 
 #include "ImUtils.h"
+#include <fstream>
+
+enum class _eMessageBoxStatus
+{
+	kSuccess,
+	kWarning,
+	kError
+};
+
+void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::string_view message)
+{
+	const SDL_MessageBoxButtonData buttons[] =
+	{
+		{ 0, 0, "Ok" }
+	};
+
+	int type = SDL_MESSAGEBOX_INFORMATION;
+
+	switch (status)
+	{
+	case _eMessageBoxStatus::kWarning:
+	{
+		type = SDL_MESSAGEBOX_WARNING;
+		break;
+	}
+	case _eMessageBoxStatus::kError:
+	{
+		type = SDL_MESSAGEBOX_ERROR;
+		break;
+	}
+	}
+
+	const SDL_MessageBoxData messageboxdata =
+	{
+		type | SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,		/* .flags */
+		nullptr,					/* .window */
+		title.data(),				/* .title */
+		message.data(),			/* .message */
+		std::size(buttons),			/* .numbuttons */
+		buttons,					/* .buttons */
+		nullptr						/* .colorScheme */
+	};
+
+	int button_id = -1;
+
+	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
+}
+
+struct OMFData
+{
+	struct AnimVector
+	{
+		int32_t section_id;
+		uint32_t section_size;
+		// dynamically allocated
+		char* data;
+		xr_stack_string<32> name;
+	};
+
+	int32_t section_id;
+	uint32_t section_size;
+
+	int32_t section_id2;
+	uint32_t section_size2;
+
+	int32_t animations_count;
+	short animations_params_count;
+
+	std::array<AnimVector, 256> anims;
+};
 
 struct OMFEditorState
 {
 	bool is_file_loaded;
+	OMFData omf;
 	xr_stack_string<sizeof(string_path) * 2> path;
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
+
+void OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
+{
+	R_ASSERT(file.good() && "lol, pass valid file here please");
+	R_ASSERT(file.is_open() && "obviously file must be opened before reading");
+
+	if (file.is_open() && file.good())
+	{
+		file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
+		file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
+		file.read(reinterpret_cast<char*>(&data.section_id2), sizeof(data.section_id2));
+		file.read(reinterpret_cast<char*>(&data.section_size2), sizeof(data.section_size2));
+		file.read(reinterpret_cast<char*>(&data.animations_count), sizeof(data.animations_count));
+
+		for (int i = 0; i < data.animations_count; ++i)
+		{
+			OMFData::AnimVector& av = data.anims[i];
+
+			file.read(reinterpret_cast<char*>(&av.section_id), sizeof(av.section_id));
+			file.read(reinterpret_cast<char*>(&av.section_size), sizeof(av.section_size));
+
+			// GSC style of reading data refering to r_stringZ implementation
+			char symbol = -1;
+			uint32_t str_length = 0;
+			do
+			{
+				R_ASSERT(!(str_length > av.name.max_size()) && "report to developers you have too long serialized string");
+
+				file.read(&symbol, 1);
+				av.name += symbol;
+				++str_length;
+			} while (symbol != '\0');
+
+			uint32_t data_size = av.section_size - (av.name.size() + 1);
+			av.data = new char[data_size];
+
+			file.read(&av.data[0], data_size);
+		}
+	}
+}
 
 void OMFEditor_LoadFile(OMFEditorState* p_state)
 {
@@ -33,6 +144,20 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 			{
 				status = Platform::WCHAR_TO_CHAR(local_path, p_state->path);
 				R_ASSERT2(status, "report to developers! Unable to convert your path to multibyte string");
+
+
+				std::ifstream file_omf(p_state->path.c_str(), std::ios::binary);
+
+				if (file_omf.is_open())
+				{
+					OMFEditor_LoadOMF(p_state->omf, file_omf);
+				}
+				else
+				{
+					ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", "failed to load file!");
+				}
+
+				file_omf.close();
 
 				p_state->is_file_loaded = status;
 			}
