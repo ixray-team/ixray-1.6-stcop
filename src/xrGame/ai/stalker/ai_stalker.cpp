@@ -1032,13 +1032,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		agent_manager().update			();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
-		if (g_mt_config.test(mtAiVision) )
-			Device.seqParallel.push_back(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
-		else {
-			START_PROFILE("vision")
-			Exec_Visibility				();
-			STOP_PROFILE
-		}
+		Exec_Visibility();
 
 		START_PROFILE("memory")
 
