@@ -1435,3 +1435,10 @@ void player_hud::animator_fx_play(const shared_str& anim_name, u16 place_idx, u1
 		}
 	}
 }
+
+void player_hud::load_default()
+{
+	static auto actorHudDefault = READ_IF_EXISTS(pSettings, r_string, 
+		"actor", "player_hud_default", "actor_hud");
+	load(actorHudDefault);
+}

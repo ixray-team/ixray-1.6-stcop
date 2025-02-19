@@ -119,7 +119,7 @@ public:
 					player_hud			(bool invert = false);
 					~player_hud			();
 	void			load				(const shared_str& model_name);
-	void			load_default		(){load("actor_hud");};
+	void			load_default		();
 	void			update				(const Fmatrix& trans);
 	void			render_hud			();	
 	void			render_item_ui		();
