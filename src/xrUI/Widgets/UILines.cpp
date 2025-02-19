@@ -490,7 +490,9 @@ u32 CUILines::GetColorFromText(const xr_string& str)const
 
 	if (begin == npos || end == npos || npos != str.find("%c[default]", begin))
 	{
+#ifdef _DEBUG
 		Msg("CUISubLine::GetColorFromText stopped");
+#endif // _DEBUG
 		return m_dwTextColor;
 	}
 
