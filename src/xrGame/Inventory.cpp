@@ -579,7 +579,7 @@ void CInventory::Activate(u16 slot, bool bForce)
 			CHudItem* tempItem = active_item->cast_hud_item();
 			R_ASSERT2(tempItem, active_item->object().cNameSect().c_str());
 			
-			if (!tempItem->SendDeactivateItem())
+			if (tempItem == nullptr || !tempItem->SendDeactivateItem())
 				return;
 
 		} else //in case where weapon is going to destroy
@@ -798,7 +798,7 @@ void CInventory::Update()
 			
 			m_iActiveSlot			= GetNextActiveSlot();
 		}
-		if((GetNextActiveSlot()!=NO_ACTIVE_SLOT) && ActiveItem() && ActiveItem()->cast_hud_item()->IsHidden())
+		if((GetNextActiveSlot()!=NO_ACTIVE_SLOT) && ActiveItem() && ActiveItem()->cast_hud_item() && ActiveItem()->cast_hud_item()->IsHidden())
 				ActiveItem()->ActivateItem();
 	}
 	UpdateDropTasks	();
