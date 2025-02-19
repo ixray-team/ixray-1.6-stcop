@@ -241,11 +241,14 @@ RDEVICE.Statistic->TEST0.End		();
 					continue;
 
 				//Detect sector
-				CSector* sector = (CSector*)RImplementation.getSector(T.sector);
-				if(sector != RImplementation.pOutdoorSector)
+				if(RImplementation.pOutdoorSector)
 				{
-					no_push = true;
-					continue;
+					CSector* sector = (CSector*)RImplementation.getSector(T.sector);
+					if (sector != RImplementation.pOutdoorSector)
+					{
+						no_push = true;
+						break;
+					}
 				}
 
 				Fvector		Tv[3]	= { verts[T.verts[0]],verts[T.verts[1]],verts[T.verts[2]] };
@@ -256,6 +259,7 @@ RDEVICE.Statistic->TEST0.End		();
 						if (y_test>y)	y = y_test;
 					}
 					normal.mknormal(verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]]);
+					break;
 				}
 #endif
 			}
@@ -273,16 +277,16 @@ RDEVICE.Statistic->TEST0.End		();
 			// X-Form BBox
 			Fmatrix		mScale,mXform;
 			Fbox		ItemBB;
-
+			Fmatrix mRotY;
 #ifndef		DBG_SWITCHOFF_RANDOMIZE
-			Item.mRotY.rotateY				(r_yaw.randF	(0,PI_MUL_2));
+			mRotY.rotateY				(r_yaw.randF	(0,PI_MUL_2));
 #else
-			Item.mRotY.rotateY				(0);
+			mRotY.rotateY				(0);
 #endif
-
-			Item.mRotY.translate_over		(Item_P);
+			Item.pos = Item_P;
+			mRotY.translate_over		(Item_P);
 			mScale.scale					(Item.scale,Item.scale,Item.scale);
-			mXform.mul_43					(Item.mRotY,mScale);
+			mXform.mul_43					(mRotY,mScale);
 			ItemBB.xform					(Dobj.bv_bb,mXform);
 			Bounds.merge					(ItemBB);
 
@@ -293,29 +297,8 @@ RDEVICE.Statistic->TEST0.End		();
 #endif
 #endif
 
-			// Color
-			/*
-			DetailPalette*	c_pal			= (DetailPalette*)&DS.color;
-			float gray255	[4];
-			gray255[0]						=	255.f*float(c_pal->a0)/15.f;
-			gray255[1]						=	255.f*float(c_pal->a1)/15.f;
-			gray255[2]						=	255.f*float(c_pal->a2)/15.f;
-			gray255[3]						=	255.f*float(c_pal->a3)/15.f;
-			*/
-			//float c_f						=	1.f;	//Interpolate		(gray255,x,z,d_size)+.5f;
-			//int c_dw						=	255;	//iFloor			(c_f);
-			//clamp							(c_dw,0,255);
-			//Item.C_dw						=	color_rgba		(c_dw,c_dw,c_dw,255);
-#if RENDER==R_R1
-			Item.c_rgb.x					=	DS.r_qclr	(DS.c_r,	15);
-			Item.c_rgb.y					=	DS.r_qclr	(DS.c_g,	15);
-			Item.c_rgb.z					=	DS.r_qclr	(DS.c_b,	15);
-			Item.c_sun						=	DS.r_qclr	(DS.c_dir,	15);
-#endif
-			Item.c_hemi						=	DS.r_qclr	(DS.c_hemi,	15);
-
-			//? hack: RGB = hemi
-			//? Item.c_rgb.add					(ps_r__Detail_rainbow_hemi*Item.c_hemi);
+			Item.c_hemi = DS.r_qclr(DS.c_hemi, 15)+EPS;
+			Item.c_hemi = DS.r_qclr(DS.c_dir, 15)>0.07f ? Item.c_hemi : -Item.c_hemi;
 
 			// Vis-sorting
 #ifndef		DBG_SWITCHOFF_RANDOMIZE
@@ -331,8 +314,11 @@ RDEVICE.Statistic->TEST0.End		();
 			//чтобы (только) листики травы ложились на поверхность террейна
 			//	if (Item.vis_ID == 0)
 
-			ground_correction(Item.mRotY, normal);
+			ground_correction(mRotY, normal);
 			// Save it
+
+			mRotY.getHPB(Item.hpb);
+
 			D.G[index].items.emplace_back(xr_make_shared<CDetail::SlotItem>(Item));
 		}
 	}

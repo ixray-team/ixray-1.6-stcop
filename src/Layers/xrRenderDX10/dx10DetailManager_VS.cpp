@@ -91,6 +91,14 @@ void CDetailManager::hw_Render(light*L)
 	RCache.set_CullMode		(CULL_CCW);
 }
 
+struct InstanceData
+{
+	Fvector hpb;
+	float scale;
+	Fvector pos;
+	float hemi;
+};
+
 void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L)
 {
 	if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
@@ -139,22 +147,17 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 				if (RImplementation.phase == CRender::PHASE_SMAP && L)
 				{
-					if(L->position.distance_to_sqr(Instance.mRotY.c) >= _sqr(L->range))
+					if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 						continue;
 				}
-				static Fmatrix* c_storage = NULL;
+				static InstanceData* c_storage = NULL;
 				if (dwBatch == 0)
-					RCache.get_ConstantDirect(strArray, hw_BatchSize*sizeof(Fmatrix), (void**)&c_storage, 0, 0);
+					RCache.get_ConstantDirect(strArray, hw_BatchSize*sizeof(InstanceData), (void**)&c_storage, 0, 0);
 
 
 				if(!c_storage) continue;
 
-				// Build matrix ( 3x4 matrix, last row - color )
-				Fmatrix& M = Instance.mRotY_calculated;
-				c_storage[dwBatch] = {M._11, M._21, M._31, M._41,
-									  M._12, M._22, M._32, M._42,
-									  M._13, M._23, M._33, M._43,
-									  1.f, 1.f, 1.f, Instance.c_hemi};
+				c_storage[dwBatch] = {Instance.hpb, Instance.scale_calculated, Instance.pos, Instance.c_hemi};
 				dwBatch++;
 
 				if (dwBatch >= hw_BatchSize)

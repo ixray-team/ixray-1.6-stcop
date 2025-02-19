@@ -11,7 +11,6 @@
 #endif // USE_DX11
 
 const int quant = 16384;
-const int c_size = 4;
 
 static D3DVERTEXELEMENT9 dwDecl[] =
 {
@@ -95,7 +94,7 @@ void CDetailManager::hw_Load_Geom()
 #endif
 			for (u32 batch=0; batch<hw_BatchSize; batch++)
 			{
-				u32 mid	=	batch*c_size;
+				u32 mid	=	batch;
 				for (u32 v=0; v<D.number_vertices; v++)
 				{
 					const Fvector&	vP = D.vertices[v].P;
@@ -220,6 +219,14 @@ void CDetailManager::hw_Render(light*L)
 	RCache.set_CullMode		(CULL_CCW);
 }
 
+struct InstanceData
+{
+	Fvector hpb;
+	float scale;
+	Fvector pos;
+	float hemi;
+};
+
 void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_id, light*L)
 {
 #if RENDER==R_R2
@@ -230,20 +237,6 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 	// Matrices and offsets
 	u32		vOffset	=	0;
 	u32		iOffset	=	0;
-
-	Fvector					c_sun,c_ambient,c_hemi;
-#ifndef _EDITOR
-#if RENDER==R_R1
-	CEnvDescriptor&	desc	= *g_pGamePersistent->Environment().CurrentEnv;
-	c_sun.set				(desc.sun_color.x,	desc.sun_color.y,	desc.sun_color.z);	c_sun.mul(.5f);
-	c_ambient.set			(desc.ambient.x,	desc.ambient.y,		desc.ambient.z);
-	c_hemi.set				(desc.hemi_color.x, desc.hemi_color.y,	desc.hemi_color.z);
-#endif
-#else
-	c_sun.set				(1,1,1);	c_sun.mul(.5f);
-	c_ambient.set			(1,1,1);
-	c_hemi.set				(1,1,1);
-#endif    
 
 	// Iterate
 #ifndef _EDITOR 
@@ -258,7 +251,7 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 		RCache.set_Element(Object.shader->E[lod_id]);
 		RImplementation.apply_lmaterial();
 		u32 c_base = x_array->vs.index;
-		Fvector4* c_storage = RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
+		InstanceData* c_storage = (InstanceData*)RCache.get_ConstantCache_Vertex().get_array_f().access(c_base);
 
 		u32 dwBatch	= 0;
 
@@ -273,28 +266,13 @@ void	CDetailManager::hw_Render_dump		(ref_constant x_array, u32 var_id, u32 lod_
 #if RENDER==R_R2
 			if (RImplementation.phase == CRender::PHASE_SMAP && L)
 			{
-				if(L->position.distance_to_sqr(Instance.mRotY.c) >= _sqr(L->range))
+				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 					continue;
 			}
 #endif
 
 #endif  
-			u32 base = dwBatch*c_size;
-
-			// Build matrix ( 3x4 matrix, last row - color )
-			Fmatrix& M = Instance.mRotY_calculated;
-			c_storage[base+0].set(M._11, M._21, M._31, M._41);
-			c_storage[base+1].set(M._12, M._22, M._32, M._42);
-			c_storage[base+2].set(M._13, M._23, M._33, M._43);
-
-			// Build color
-#if RENDER==R_R1
-			Fvector C; C.set(c_ambient);C.mad(c_hemi,Instance.c_hemi);C.mad(c_sun,Instance.c_sun);
-			c_storage[base+3].set(C.x, C.y, C.z, 1.f);
-#else
-			// R2 only needs hemisphere
-			c_storage[base+3].set(1.f, 1.f, 1.f, Instance.c_hemi);
-#endif
+			c_storage[dwBatch] = {Instance.hpb, Instance.scale_calculated, Instance.pos, Instance.c_hemi};
 			dwBatch++;
 
 			if (dwBatch >= hw_BatchSize)

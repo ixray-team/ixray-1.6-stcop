@@ -5,15 +5,36 @@ uniform float4 consts;
 uniform float4 wave;
 uniform float4 dir2D;
 
-uniform float4 array[200];
+uniform float2x4 array[50];
+
+float3x3 setMatrix (float3 hpb)
+{
+        
+    float _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
+
+    sincos(hpb.x, _sh, _ch);
+    sincos(hpb.y, _sp, _cp);
+    sincos(hpb.z, _sb, _cb);
+    
+    _cc = _ch*_cb; _cs = _ch*_sb; _sc = _sh*_cb; _ss = _sh*_sb;
+	
+    return float3x3(_cc-_sp*_ss, _sp*_sc+_cs, -_cp*_sh,
+					-_cp*_sb, 	 _cp*_cb,	  _sp,
+					_sp*_cs+_sc, _ss-_sp*_cc, _cp*_ch);
+};
 
 void main(in v_detail I, out p_bumped_new O)
 {
     int i = I.misc.w;
-    float4 m0 = array[i + 0];
-    float4 m1 = array[i + 1];
-    float4 m2 = array[i + 2];
-    float4 c0 = array[i + 3];
+	float2x4 mm = array[i];
+	
+	float3x3 mmhpb = setMatrix(mm[0].xyz);
+	float3 posi = float3(mm[1].xyz);
+	
+	float scale = mm[0].w;
+    float4 m0 = float4(mmhpb[0]*scale, posi.x);
+    float4 m1 = float4(mmhpb[1]*scale, posi.y);
+    float4 m2 = float4(mmhpb[2]*scale, posi.z);
 
     float4 pos;
     pos.x = dot(m0, I.pos);
