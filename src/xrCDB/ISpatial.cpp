@@ -162,9 +162,9 @@ ISpatial_DB::~ISpatial_DB()
 		_node_destroy(m_root);
 	}
 
-	while (!allocator_pool.empty()){
-		allocator.destroy		(allocator_pool.back());
-		allocator_pool.pop_back	();
+	while (!nodes.empty())
+	{
+		nodes.pop_back();
 	}
 }
 
@@ -179,7 +179,7 @@ void ISpatial_DB::initialize(Fbox& BB)
 	if (m_root == nullptr)
 	{
 		// initialize
-		allocator_pool.reserve(512);
+		nodes.reserve(512);
 		rt_insert_object = nullptr;
 		m_root = _node_create();
 		m_root->_init(nullptr);
@@ -189,22 +189,23 @@ void ISpatial_DB::initialize(Fbox& BB)
 ISpatial_NODE* ISpatial_DB::_node_create()
 {
 	stat_nodes++;
-	if (allocator_pool.empty())			
-		return allocator.create();
-	else
-	{
-		ISpatial_NODE* N = allocator_pool.back();
-		allocator_pool.pop_back();
-		return			N;
-	}
+	
+	return nodes.emplace_back(new ISpatial_NODE);
 }
 
 void ISpatial_DB::_node_destroy(ISpatial_NODE* &P)
 {
 	//VERIFY						(P->_empty());
 	stat_nodes--;
-	allocator_pool.push_back(P);
-	P = nullptr;
+
+	auto it = std::find(nodes.begin(), nodes.end(), P);
+
+	if (it != nodes.end())
+	{
+		nodes.erase(it);
+	}
+
+	xr_delete(P);
 }
 
 void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)

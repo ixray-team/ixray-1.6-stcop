@@ -154,9 +154,7 @@ public:
 class XRCDB_API	ISpatial_DB
 {
 private:
-	poolSS< ISpatial_NODE, 128 >	allocator;
-
-	xr_vector<ISpatial_NODE*>		allocator_pool;
+	xr_vector<ISpatial_NODE*>		nodes;
 	ISpatial*						rt_insert_object;
 public:
 	xrSRWLock						db_lock;
