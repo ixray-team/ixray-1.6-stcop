@@ -242,7 +242,12 @@ void CUIActorMenu::Construct()
 	m_trade_buy_button	= UIHelper::Create3tButton(uiXml, "trade_buy_button", this);
 	m_trade_sell_button	= UIHelper::Create3tButton(uiXml, "trade_sell_button", this);
 	m_takeall_button	= UIHelper::Create3tButton(uiXml, "takeall_button", this);
-	m_putall_button		= UIHelper::Create3tButton(uiXml, "putall_button", this);
+
+	if (uiXml.NavigateToNode("putall_button", 0))
+	{
+		m_putall_button = UIHelper::Create3tButton(uiXml, "putall_button", this);
+	}
+	
 	m_exit_button		= UIHelper::Create3tButton(uiXml, "exit_button", this);
 
 //	m_clock_value						= UIHelper::CreateStatic(uiXml, "clock_value", this);
@@ -392,7 +397,12 @@ void CUIActorMenu::InitCallbacks()
 	Register						(m_trade_buy_button);
 	Register						(m_trade_sell_button);
 	Register						(m_takeall_button);
-	Register						(m_putall_button);
+
+	if (m_putall_button != nullptr)
+	{
+		Register(m_putall_button);
+	}
+
 	Register						(m_exit_button);
 	Register						(m_UIPropertiesBox);
 	VERIFY							(m_pUpgradeWnd);
@@ -401,7 +411,12 @@ void CUIActorMenu::InitCallbacks()
 	AddCallback(m_trade_buy_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeBuy));
 	AddCallback(m_trade_sell_button,BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnPerformTradeSell));
 	AddCallback(m_takeall_button,  BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TakeAllFromPartner));
-	AddCallback(m_putall_button,  BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::PutAllToPartner));
+
+	if (m_putall_button != nullptr)
+	{
+		AddCallback(m_putall_button, BUTTON_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::PutAllToPartner));
+	}
+
 	AddCallback(m_exit_button,     BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::OnBtnExitClicked));
 	AddCallback(m_UIPropertiesBox, PROPERTY_CLICKED, CUIWndCallback::void_function(this, &CUIActorMenu::ProcessPropertiesBoxClicked));
 	AddCallback(m_pUpgradeWnd->m_btn_repair, BUTTON_CLICKED,   CUIWndCallback::void_function(this, &CUIActorMenu::TryRepairItem));

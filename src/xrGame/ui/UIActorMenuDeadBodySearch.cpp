@@ -57,7 +57,11 @@ void CUIActorMenu::InitDeadBodySearchMode()
 	m_PartnerBottomInfo->Show		(true);
 	m_PartnerWeight->Show			(true);
 	m_takeall_button->Show			(true);
-	m_putall_button->Show			(true);
+
+	if (m_putall_button != nullptr)
+	{
+		m_putall_button->Show(true);
+	}
 
 	if ( m_pPartnerInvOwner )
 	{
@@ -126,7 +130,11 @@ void CUIActorMenu::DeInitDeadBodySearchMode()
 	m_PartnerBottomInfo->Show		(false);
 	m_PartnerWeight->Show			(false);
 	m_takeall_button->Show			(false);
-	m_putall_button->Show			(false);
+
+	if (m_putall_button != nullptr)
+	{
+		m_putall_button->Show(false);
+	}
 
 	if ( m_pInvBox )
 	{
