@@ -13,6 +13,11 @@ IC	const CVisualMemoryManager::VISIBLES &CVisualMemoryManager::objects() const
 	return							(*m_objects);
 }
 
+IC	const CVisualMemoryManager::VISIBLES* CVisualMemoryManager::objectsPtr() const
+{
+	return m_objects;
+}
+
 IC	const CVisualMemoryManager::RAW_VISIBLES &CVisualMemoryManager::raw_objects() const
 {
 	return							(m_visible_objects);

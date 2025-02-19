@@ -11,10 +11,16 @@
 #include "enemy_manager.h"
 
 template <typename T, typename _predicate>
-IC	void CMemoryManager::fill_enemies	(const xr_vector<T> &objects, const _predicate &predicate) const
+IC	void CMemoryManager::fill_enemies	(const xr_vector<T>* objects, const _predicate &predicate) const
 {
-	typename xr_vector<T>::const_iterator	I = objects.begin();
-	typename xr_vector<T>::const_iterator	E = objects.end();
+	if (objects == nullptr)
+	{
+		return;
+	}
+
+	typename xr_vector<T>::const_iterator	I = objects->begin();
+	typename xr_vector<T>::const_iterator	E = objects->end();
+	
 	for ( ; I != E; ++I) {
 		if (!(*I).m_enabled)
 			continue;
@@ -29,9 +35,9 @@ IC	void CMemoryManager::fill_enemies	(const xr_vector<T> &objects, const _predic
 template <typename _predicate>
 IC	void CMemoryManager::fill_enemies	(const _predicate &predicate) const
 {
-	fill_enemies			(visual().objects(),predicate);
-//	fill_enemies			(sound().objects(),predicate);
-//	fill_enemies			(hit().objects(),predicate);
+	fill_enemies(visual().objectsPtr(), predicate);
+	//	fill_enemies			(sound().objects(),predicate);
+	//	fill_enemies			(hit().objects(),predicate);
 }
 
 IC	CVisualMemoryManager	&CMemoryManager::visual		() const
