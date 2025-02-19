@@ -196,7 +196,7 @@ CCommandVar CommandLoad(CCommandVar p1, CCommandVar p2)
 		if (!p1.IsString())
 		{
 			xr_string temp_fn = LTools->m_LastFileName.c_str();
-			if (EFS.GetOpenName(_maps_, temp_fn))
+			if (EFS.GetOpenName(_maps_, temp_fn, false, 0, -1, "*.level;*.tmp"))
 				return 			ExecCommand(COMMAND_LOAD, temp_fn);
 		}
 		else
