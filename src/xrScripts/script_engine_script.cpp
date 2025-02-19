@@ -172,8 +172,9 @@ bool IsEditorMode()
 	return Device.IsEditorMode();
 }
 
-void SemiLog(const char* Msg) {
-	Log(Msg);
+void SemiLog(const char* message)
+{
+	Msg(message);
 }
 
 namespace ixray::save
