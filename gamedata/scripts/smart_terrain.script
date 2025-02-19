@@ -352,6 +352,9 @@ function se_smart_terrain:unregister_npc(obj)
 
 	if self.npc_info[obj.id] ~= nil then
 		-- TODO: Тут надо выгнать чувака с занимаемой им работы
+        if self.npc_info[obj.id].job_link == nil then
+            return
+        end
 		self.npc_info[obj.id].job_link.npc_id = nil
 		self.npc_info[obj.id] = nil
 		obj:clear_smart_terrain()
@@ -380,6 +383,10 @@ function se_smart_terrain:clear_dead(obj)
 		-- Устанавливаем таймер смерти на работе
 		self.dead_time[self.npc_info[obj.id].job_id] = game.get_game_time()
 
+        if self.npc_info[obj.id].job_link == nil then
+            return
+        end
+        
 		self.npc_info[obj.id].job_link.npc_id = nil
 		self.npc_info[obj.id] = nil
 		obj:clear_smart_terrain()
@@ -582,6 +589,9 @@ function se_smart_terrain:select_npc_job(npc_info)
 	if npc_info.begin_job ~= true then
 		-- Проверяем, дошел ли персонаж до работы (то есть может ли он начать ее выполнение)
 		local job_data = self.job_data[npc_info.job_id]
+        if job_data == nil then
+            return
+        end
 		-- Начинаем выполнять работу
 		printf("[smart_terrain %s] gulag: beginJob: obj=%s job= %s", self:name(), npc_info.se_obj:name(), job_data.section)
 		-- Смена работы, очищаем память для оффлайнового обьекта.
@@ -599,6 +609,11 @@ function se_smart_terrain:setup_logic(obj)
 	--printf("setup npc logic %s", obj:name())
 --	callstack()
 	local npc_data = self.npc_info[obj:id()]
+
+    if npc_data == nil then
+        return
+    end
+
 	local job = self.job_data[npc_data.job_id]
 	local ltx = job.ini_file or self.ltx
 	local ltx_name = job.ini_path or self.ltx_name
