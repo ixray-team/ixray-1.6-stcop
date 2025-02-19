@@ -109,17 +109,26 @@ void CWeapon::UpdateXForm	()
 		return;
 
 	// Get access to entity and its visual
-	CEntityAlive*			E = smart_cast<CEntityAlive*>(H_Parent());
-	
-	if (!E) {
+	CGameObject* go = smart_cast<CGameObject*>(H_Parent());
+	if (go == nullptr)
+	{
+		return;
+	}
+
+	if (go->cast_trader())
+	{
+		return;
+	}
+
+	if (!go->cast_entity_alive()) {
 		if (!IsGameTypeSingle()) {
 			UpdatePosition(H_Parent()->XFORM());
 			UpdatePosition_alt(H_Parent()->XFORM());
 		}
 		return;
-	}
+	} 
 
-	const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
+	const CInventoryOwner* parent = go->cast_inventory_owner(); //smart_cast<const CInventoryOwner*>(go);
 	if (!parent || (parent && parent->use_simplified_visual()))
 		return;
 
@@ -128,7 +137,7 @@ void CWeapon::UpdateXForm	()
 			return;
 	}
 
-	IKinematics*			V = smart_cast<IKinematics*>	(E->Visual());
+	IKinematics*			V = PKinematics(go->Visual());
 	VERIFY					(V);
 
 	// Get matrices
@@ -150,7 +159,7 @@ void CWeapon::UpdateXForm	()
 			m_strapped_mode_rifle = true;
 	}
 	else {
-		E->g_WeaponBones(boneL, boneR, boneR2);
+		go->cast_entity_alive()->g_WeaponBones(boneL, boneR, boneR2);
 
 		if (m_strapped_mode_rifle)
 			m_strapped_mode_rifle = false;
@@ -158,11 +167,11 @@ void CWeapon::UpdateXForm	()
 
 	if (boneR == -1)		return;
 
-	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
+	if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!go->cast_entity_alive()->g_Alive()))
 		boneL				= boneR2;
 
 	Fmatrix mL, mR;
-	if (smart_cast<CActor*>(H_Parent())) {
+	if (go->cast_actor()) {
 		V->Bone_GetAnimPos(mL, boneL, u8(-1), false);
 		V->Bone_GetAnimPos(mR, boneR, u8(-1), false);
 	}
@@ -178,7 +187,7 @@ void CWeapon::UpdateXForm	()
 	D.sub					(mL.c,mR.c);	
 
 	if(fis_zero(D.magnitude())) {
-		mRes.set			(E->XFORM());
+		mRes.set			(go->XFORM());
 		mRes.c.set			(mR.c);
 	}
 	else {		
@@ -191,7 +200,7 @@ void CWeapon::UpdateXForm	()
 		N.normalize			();
 
 		mRes.set			(R,N,D,mR.c);
-		mRes.mulA_43		(E->XFORM());
+		mRes.mulA_43		(go->XFORM());
 	}
 
 	if (CurrSlot() == INV_SLOT_2)
