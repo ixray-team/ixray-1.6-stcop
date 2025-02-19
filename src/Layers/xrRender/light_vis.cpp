@@ -36,7 +36,7 @@ void	light::vis_prepare			()
 	//	TODO: DX10: Remove this pessimization
 	//skiptest	= true;
 
-	if (skiptest || Device.vCameraPosition.distance_to(spatial.sphere.P)<=(spatial.sphere.R*1.01f+safe_area))	{	// small error
+	if (skiptest || Device.vCameraPosition.distance_to(spatial.sphere.P)<=(spatial.sphere.R*1.01f+safe_area + (spatial.sphere.R * 0.1f)))	{	// small error
 		vis.visible		=	true;
 		vis.pending		=	false;
 		vis.frame2test	=	frame	+ ::Random.randI(delay_small_min,delay_small_max);
@@ -72,12 +72,7 @@ void	light::vis_update			()
 
 	u32	frame			= Device.dwFrame;
 
-
-#if USE_DX11
-	u64 fragments		= RImplementation.occq_get	(vis.query_id);
-#else
-	u32 fragments		= RImplementation.occq_get	(vis.query_id);
-#endif
+	R_occlusion::occq_result fragments = RImplementation.occq_get(vis.query_id);
 
 	//Log					("",fragments);
 	vis.visible			= (fragments > cullfragments);
