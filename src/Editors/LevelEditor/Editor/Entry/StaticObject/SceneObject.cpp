@@ -174,7 +174,7 @@ bool CSceneObject::SpherePick(const Fvector& center, float radius)
 
 bool CSceneObject::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPickInfo* pinf)
 {
-    if (!IsLoaded)
+    if (!IsLoaded && !pinf->IsForcePickup)
         return false;
 
 	if (!m_pReference) return false;

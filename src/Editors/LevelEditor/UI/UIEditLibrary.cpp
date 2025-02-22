@@ -47,8 +47,8 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		}
 		else
 		{
-			PHelper().CreateCaption(Info, "Face Count", "THM not found");
-			PHelper().CreateCaption(Info, "Vertex Count", "THM not found");
+			PHelper().CreateCaption(Info, "Faces", "THM not found");
+			PHelper().CreateCaption(Info, "Vertexes", "THM not found");
 			m_Props->AssignItems(Info);
 		}
 
@@ -357,12 +357,17 @@ void UIEditLibrary::DrawRightBar()
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-			if (ImGui::Button("Make LOD (High Quality)", ImVec2(-1, 0)))
+			ImGui::Text("Make LOD:");
+			ImGui::SameLine();
+
+			if (ImGui::Button("HQ", ImVec2(25, 0)))
 				MakeLOD(true);
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
-			if (ImGui::Button("Make LOD (Low Quality)", ImVec2(-1, 0)))
+			ImGui::SameLine();
+
+			if (ImGui::Button("LQ", ImVec2(25, 0)))
 				MakeLOD(false);
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
@@ -541,6 +546,8 @@ void UIEditLibrary::PickCallback()
 	{
 		float dis = UI->ZFar();
 		SRayPickInfo pinf;
+		pinf.IsForcePickup = true;
+
 		Obj->RayPick(dis, StartPos, StartDir, &pinf);
 
 		if (pinf.e_mesh == nullptr)
@@ -787,7 +794,7 @@ void UIEditLibrary::Draw()
 	{
 		ImGui::BeginGroup();
 
-		if (ImGui::BeginChild("Left", ImVec2(-200, -ImGui::GetFrameHeight() - 4), true))
+		if (ImGui::BeginChild("Left", ImVec2(-220, -ImGui::GetFrameHeight() - 4), true))
 			DrawObjects();
 
 		ImGui::EndChild();

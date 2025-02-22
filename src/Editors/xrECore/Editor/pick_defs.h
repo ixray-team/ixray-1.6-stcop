@@ -138,13 +138,17 @@ class CCustomObject;
         u16				bone_id;
         Fvector			normal;
     };
-	struct SRayPickInfo{
+
+	struct SRayPickInfo
+    {
 		CDB::RESULT 			inf;
         SRayPickObjVisualInfo   visual_inf;
 		CCustomObject*			s_obj;
 		CEditableObject*		e_obj;
 		CEditableMesh*			e_mesh;
 		Fvector     			pt;
+        bool IsForcePickup = false;
+
 		SRayPickInfo			(){ Reset(); visual_inf.bone_id = u16(-1); }
 		IC void Reset			(){ ZeroMemory(this,sizeof(SRayPickInfo));inf.range = 5000;}
 		IC void SetRESULT		(CDB::MODEL* M, CDB::RESULT* R){inf=*R;inf.id=(M->get_tris()+inf.id)->dummy;}
