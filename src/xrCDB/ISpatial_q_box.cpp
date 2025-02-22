@@ -2,7 +2,6 @@
 #include "ISpatial.h"
 
 extern Fvector	c_spatial_offset[8];
-thread_local xr_vector<ISpatial*>* qb_result;
 template <bool b_first>
 class	walker
 {
@@ -21,7 +20,7 @@ public:
 		box.setb(center,size);
 		space	= _space;
 	}
-	void		walk		(ISpatial_NODE* N, Fvector& n_C, float n_R)
+	void		walk		(xr_vector<ISpatial*>& R, ISpatial_NODE* N, Fvector& n_C, float n_R)
 	{
 		// box
 		float	n_vR	=		2*n_R;
@@ -29,11 +28,8 @@ public:
 		if		(!BB.intersect(box))			return;
 
 		// test items
-		xr_vector<ISpatial*>::iterator _it	=	N->items.begin	();
-		xr_vector<ISpatial*>::iterator _end	=	N->items.end	();
-		for (; _it!=_end; _it++)
+		for (ISpatial* S : N->items)
 		{
-			ISpatial*		S	= *_it;
 			if (0==(S->spatial.type&mask))	continue;
 
 			Fvector&		sC		= S->spatial.sphere.P;
@@ -41,7 +37,7 @@ public:
 			Fbox			sB;		sB.set	(sC.x-sR, sC.y-sR, sC.z-sR, sC.x+sR, sC.y+sR, sC.z+sR);
 			if (!sB.intersect(box))	continue;
 
-			qb_result->push_back	(S);
+			R.push_back(S);
 			if (b_first)			return;
 		}
 
@@ -51,8 +47,8 @@ public:
 		{
 			if (0==N->children[octant])	continue;
 			Fvector		c_C;			c_C.mad	(n_C,c_spatial_offset[octant],c_R);
-			walk						(N->children[octant],c_C,c_R);
-			if (b_first && !qb_result->empty())	return;
+			walk						(R,N->children[octant],c_C,c_R);
+			if (b_first && !R.empty())	return;
 		}
 	}
 };
@@ -61,10 +57,9 @@ void	ISpatial_DB::q_box			(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fve
 {
 	PROF_EVENT("ISpatial_DB::q_frustum")
 	xrSRWLockGuard guard(&db_lock, true);
-	qb_result			= &R;
-	qb_result->resize(0);
-	if (_o & O_ONLYFIRST)			{ walker<true>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
-	else							{ walker<false>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
+	R.resize(0);
+	if (_o & O_ONLYFIRST)			{ walker<true>	W(this,_mask,_center,_size);	W.walk(R, m_root,m_center,m_bounds); } 
+	else							{ walker<false>	W(this,_mask,_center,_size);	W.walk(R, m_root,m_center,m_bounds); } 
 }
 
 void	ISpatial_DB::q_sphere		(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)
