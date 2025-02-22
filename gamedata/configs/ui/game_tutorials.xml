@@ -646,7 +646,6 @@
     <item>
       <length_sec>1</length_sec>
       <guard_key>any</guard_key>
-      <function_on_start>ixray_effects.start_game_effect</function_on_start>
       <grab_input>1</grab_input>
       <main_wnd>
 
