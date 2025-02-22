@@ -14,16 +14,6 @@
 struct lua_State;
 class CScriptThread;
 
-#ifdef XRGAME_EXPORTS
-#	ifndef MASTER_GOLD
-#		define PRINT_CALL_STACK
-#	endif // #ifndef MASTER_GOLD
-#else // #ifdef XRGAME_EXPORTS
-#	ifndef NDEBUG
-#		define PRINT_CALL_STACK
-#	endif // #ifndef NDEBUG
-#endif // #ifdef XRGAME_EXPORTS
-
 using namespace ScriptStorage;
 
 class SCRIPTS_API CScriptStorage 

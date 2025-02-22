@@ -108,27 +108,21 @@ bool CScriptThread::update()
 		{
 			g_pScriptEngine->print_output(lua(), *script_name(), l_iErrorCode);
 			g_pScriptEngine->on_error(g_pScriptEngine->lua());
-#ifdef DEBUG
 			print_stack(lua());
-#endif
 			m_active = false;
 		}
 		else 
 		{
 			if (l_iErrorCode != LUA_YIELD) 
 			{
-#ifdef DEBUG
 				if (m_current_stack_level) 
 				{
 					g_pScriptEngine->print_output	(lua(),*script_name(),l_iErrorCode);
 					g_pScriptEngine->on_error		(g_pScriptEngine->lua());
 //					print_stack		(lua());
 				}
-#endif // DEBUG
 				m_active	= false;
-#ifdef DEBUG
 				g_pScriptEngine->script_log	(ScriptStorage::eLuaMessageTypeInfo,"Script %s is finished!",*m_script_name);
-#endif // DEBUG
 			}
 			else {
 				VERIFY2		(!lua_gettop(lua()),"Do not pass any value to coroutine.yield()!");

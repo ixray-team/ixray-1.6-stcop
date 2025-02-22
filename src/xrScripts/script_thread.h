@@ -8,17 +8,12 @@
 
 #pragma once
 
-#ifdef DEBUG
-#	include "script_stack_tracker.h"
-#endif
+#include "script_stack_tracker.h"
 
 struct lua_State;
 
-#ifdef DEBUG
-	class CScriptThread : public CScriptStackTracker
-#else
-	class CScriptThread
-#endif
+
+class CScriptThread : public CScriptStackTracker
 {
 private:
 	shared_str				m_script_name;

@@ -22,9 +22,7 @@ void LuaLog(LPCSTR caMessage)
 void ErrorLog(LPCSTR caMessage)
 {
 	g_pScriptEngine->error_log("%s",caMessage);
-#ifdef PRINT_CALL_STACK
 	g_pScriptEngine->print_stack();
-#endif // #ifdef PRINT_CALL_STACK
 	
 	R_ASSERT2(0, caMessage);
 }
