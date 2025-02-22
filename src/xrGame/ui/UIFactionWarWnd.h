@@ -26,8 +26,11 @@ private:
 
 	bool m_initialized;
 
-	CUIFrameLineWnd*	m_background;
-	CUIStatic*			m_center_background;
+	CUIFrameWindow*		m_background;
+	CUIFrameWindow*		m_center_background;
+
+	CUIFrameLineWnd*	m_background2;
+	CUIStatic*			m_center_background2;
 
 	CUIStatic*			m_target_static;
 	CUITextWnd*			m_target_caption;       // our

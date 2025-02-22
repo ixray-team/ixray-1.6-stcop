@@ -44,6 +44,12 @@ void CUIFactionWarWnd::Reset()
 	hint_wnd           = nullptr;
 	m_tc_pos.set       ( 0.0f, 0.0f );
 	m_td_pos.set       ( 0.0f, 0.0f );
+
+	m_background = nullptr;
+	m_center_background = nullptr;
+
+	m_background2 = nullptr;
+	m_center_background2 = nullptr;
 }
 
 void CUIFactionWarWnd::Init()
@@ -53,9 +59,14 @@ void CUIFactionWarWnd::Init()
 
 	CUIXmlInit::InitWindow( xml, "main_wnd", 0, this );
 
-	m_background			= UIHelper::CreateFrameLine( xml, "background", this );
+    m_background = UIHelper::CreateFrameWindow(xml, "background", this, false);
+    m_center_background = UIHelper::CreateFrameWindow(xml, "center_background", this, false);
 
-	m_center_background		= UIHelper::CreateStatic( xml, "center_background", this );
+    if (!m_background)
+        m_background2 = UIHelper::CreateFrameLine(xml, "background", this, false);
+
+    if (!m_center_background)
+        m_center_background2 = UIHelper::CreateStatic(xml, "center_background", this);
 
 	m_target_static			= UIHelper::CreateStatic( xml, "target_static", this );
 	m_target_caption		= UIHelper::CreateTextWnd( xml, "target_caption", this );
