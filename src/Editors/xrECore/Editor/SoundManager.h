@@ -26,7 +26,7 @@ public:
 	void		SynchronizeSounds	(bool sync_thm, bool sync_game, bool bForceGame, FS_FileSet* source_map, AStringVec* sync_list_without_extention, FS_FileSet* modif_map=0);
 //	void 		ChangeFileAgeTo		(FS_FileSet* tgt_map, int age);
     void		CreateSoundThumbnail(ESoundThumbnail* THM, const xr_string& src_name, LPCSTR path=0, bool bSetDefParam=true);
-	void		CleanupSounds		();
+	void		CleanupSounds		(bool IsSoft);
 
     bool		OnCreate			();
     void		OnDestroy			();
@@ -37,7 +37,7 @@ public:
 
     void		MuteSounds			(BOOL bVal);
 
-    void 		RefreshSounds		(bool bSync);
+    void 		RefreshSounds		(bool bSync, bool IsSoft);
 
 	xr_string	UpdateFileName		(xr_string& fn);
 };

@@ -404,13 +404,20 @@ CCommandVar 	CommandSoundEditor(CCommandVar p1, CCommandVar p2)
   //  TfrmSoundLib::EditLib(xr_string("Sound Editor"));
 	return				TRUE;
 }
-CCommandVar 	CommandSyncSounds(CCommandVar p1, CCommandVar p2)
+CCommandVar CommandSyncSounds(CCommandVar p1, CCommandVar p2)
 {
-   
-	if (ELog.DlgMsg(mtConfirmation,mbYes|mbNo,"Are you sure to synchronize sounds?")==mrYes)
-		SndLib->RefreshSounds(true);
-	return				TRUE;
+	if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to synchronize sounds?") == mrYes)
+		SndLib->RefreshSounds(true, true);
+	return TRUE;
 }
+
+CCommandVar CommandSyncSoundsHard(CCommandVar p1, CCommandVar p2)
+{
+	if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to synchronize sounds?") == mrYes)
+		SndLib->RefreshSounds(true, false);
+	return TRUE;
+}
+
 CCommandVar 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
 {
 	UIImageEditorForm::Show(false);
@@ -723,6 +730,7 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_SET_SETTINGS,			CommandSetSettings);
 	REGISTER_CMD_S	    (COMMAND_SOUND_EDITOR,   		CommandSoundEditor);
 	REGISTER_CMD_S	    (COMMAND_SYNC_SOUNDS,    		CommandSyncSounds);
+	REGISTER_CMD_S	    (COMMAND_SYNC_SOUNDS_HARD, 		CommandSyncSoundsHard);
 	REGISTER_CMD_S	    (COMMAND_IMAGE_EDITOR,   		CommandImageEditor); 
 	REGISTER_CMD_S	    (COMMAND_IMAGE_EDITOR_SELECT,	CommandImageEditorSelect);
 	REGISTER_CMD_S      (COMMAND_LIGHTANIM_EDITOR,      CommandLightAnimEditor);
