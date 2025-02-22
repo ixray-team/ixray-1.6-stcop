@@ -183,7 +183,15 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
                 }
                 else if (OverrideMode == EOverrideMode::add)
                 {
-                    ApplyNewNode(MyParent, ChildElement);
+                    if (IterateElement != nullptr)
+                    {
+                        tinyxml2::XMLElement* ChildToAdd = ChildElement->FirstChildElement();
+                        while (ChildToAdd != nullptr)
+                        {
+                            ApplyNewNode(IterateElement, ChildToAdd);
+                            ChildToAdd = ChildToAdd->NextSiblingElement();
+                        }
+                    }
                 }
             }
         }
