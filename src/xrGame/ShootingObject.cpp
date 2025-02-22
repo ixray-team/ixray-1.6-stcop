@@ -333,7 +333,7 @@ void CShootingObject::StartFlameParticles	()
 	}
 
 	StopFlameParticles();
-	m_pFlameParticles = Particles::Details::Create(*m_sFlameParticlesCurrent,FALSE).get();
+	m_pFlameParticles = Particles::Details::Create(*m_sFlameParticlesCurrent,FALSE);
 	m_pFlameParticles->SetLiveUpdate(TRUE);
 
 	UpdateFlameParticles();
@@ -346,7 +346,8 @@ void CShootingObject::StartFlameParticles	()
 	{
 		in_hud_mode = false;
 	}
-	m_pFlameParticles->Play(in_hud_mode);
+	if(m_pFlameParticles)
+		m_pFlameParticles->Play(in_hud_mode);
 		
 
 }
