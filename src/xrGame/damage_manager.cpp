@@ -65,7 +65,14 @@ void CDamageManager::reload(LPCSTR section, LPCSTR line, CInifile const * ini)
 void CDamageManager::init_bones(LPCSTR section, CInifile const * ini)
 {
 	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
-	VERIFY					(kinematics);
+
+	if (Device.IsEditorMode() && kinematics == nullptr)
+	{
+		Msg("! Not found kinematic!");
+		return;
+	}
+	VERIFY(kinematics);
+
 	for(u16 i = 0; i<kinematics->LL_BoneCount(); i++)
 	{
 		CBoneInstance			&bone_instance = kinematics->LL_GetBoneInstance(i);
