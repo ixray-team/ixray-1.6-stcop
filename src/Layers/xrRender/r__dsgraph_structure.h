@@ -25,13 +25,13 @@ public:
 	BOOL														val_bHUD;
 	BOOL														val_bInvisible;
 	BOOL														val_bRecordMP;		// record nearest for multi-pass
+
 	R_feedback*													val_feedback;		// feedback for geometry being rendered
 	u32															val_feedback_breakp;// breakpoint
-	xr_vector<Fbox3,render_alloc<Fbox3> >*						val_recorder;		// coarse structure recorder
+
 	u32															phase;
 	u32															marker;
-	bool														pmask		[2]		;
-	bool														pmask_wmark			;
+	bool														pmask[3];
 public:
 	// Dynamic scene graph
 	//R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
@@ -40,7 +40,6 @@ public:
 	R_dsgraph::mapMatrixPasses_T								mapMatrixPasses	[2]	;
 	R_dsgraph::mapSorted_T										mapSorted;
 	R_dsgraph::mapHUD_T											mapHUD;
-	R_dsgraph::mapLandscape_T									mapLandscape;
 	R_dsgraph::mapLOD_T											mapLOD;
 	R_dsgraph::mapSorted_T										mapDistort;
 	R_dsgraph::mapHUD_T											mapHUDSorted;
@@ -50,27 +49,6 @@ public:
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
-
-	// Runtime structures 
-	xr_vector<R_dsgraph::mapNormalVS::TNode*,render_alloc<R_dsgraph::mapNormalVS::TNode*> >				nrmVS;
-#ifdef USE_DX11
-	xr_vector<R_dsgraph::mapNormalGS::TNode*,render_alloc<R_dsgraph::mapNormalGS::TNode*> >				nrmGS;
-#endif //USE_DX11
-	xr_vector<R_dsgraph::mapNormalPS::TNode*,render_alloc<R_dsgraph::mapNormalPS::TNode*> >				nrmPS;
-	xr_vector<R_dsgraph::mapNormalCS::TNode*,render_alloc<R_dsgraph::mapNormalCS::TNode*> >				nrmCS;
-	xr_vector<R_dsgraph::mapNormalStates::TNode*,render_alloc<R_dsgraph::mapNormalStates::TNode*> >		nrmStates;
-	xr_vector<R_dsgraph::mapNormalTextures::TNode*,render_alloc<R_dsgraph::mapNormalTextures::TNode*> >	nrmTextures;
-	xr_vector<R_dsgraph::mapNormalTextures::TNode*,render_alloc<R_dsgraph::mapNormalTextures::TNode*> >	nrmTexturesTemp;
-
-	xr_vector<R_dsgraph::mapMatrixVS::TNode*,render_alloc<R_dsgraph::mapMatrixVS::TNode*> >				matVS;
-#ifdef USE_DX11
-	xr_vector<R_dsgraph::mapMatrixGS::TNode*,render_alloc<R_dsgraph::mapMatrixGS::TNode*> >				matGS;
-#endif //USE_DX11
-	xr_vector<R_dsgraph::mapMatrixPS::TNode*,render_alloc<R_dsgraph::mapMatrixPS::TNode*> >				matPS;
-	xr_vector<R_dsgraph::mapMatrixCS::TNode*,render_alloc<R_dsgraph::mapMatrixCS::TNode*> >				matCS;
-	xr_vector<R_dsgraph::mapMatrixStates::TNode*,render_alloc<R_dsgraph::mapMatrixStates::TNode*> >		matStates;
-	xr_vector<R_dsgraph::mapMatrixTextures::TNode*,render_alloc<R_dsgraph::mapMatrixTextures::TNode*> >	matTextures;
-	xr_vector<R_dsgraph::mapMatrixTextures::TNode*,render_alloc<R_dsgraph::mapMatrixTextures::TNode*> >	matTexturesTemp;
 
 	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
@@ -90,7 +68,6 @@ public:
 	virtual		BOOL					get_HUD					()								{ return		val_bHUD;			}
 	virtual		void					set_Invisible			(BOOL 		V	)				{ val_bInvisible= V;				}
 				void					set_Feedback			(R_feedback*V, u32	id)			{ val_feedback_breakp = id; val_feedback = V;		}
-				void					set_Recorder			(xr_vector<Fbox3,render_alloc<Fbox3> >* dest)		{ val_recorder	= dest;	if (dest) dest->clear();	}
 				void					get_Counters			(u32&	s,	u32& d)				{ s=counter_S; d=counter_D;			}
 				void					clear_Counters			()								{ counter_S=counter_D=0; 			}
 public:
@@ -103,7 +80,6 @@ public:
 		val_bRecordMP		= FALSE	;
 		val_feedback		= 0;
 		val_feedback_breakp	= 0;
-		val_recorder		= 0;
 		marker				= 0;
 		r_pmask				(true,true);
 		b_loaded			= FALSE	;
@@ -111,20 +87,6 @@ public:
 
 	void		r_dsgraph_destroy()
 	{
-		nrmVS.clear				();
-		nrmPS.clear				();
-		nrmCS.clear				();
-		nrmStates.clear			();
-		nrmTextures.clear		();
-		nrmTexturesTemp.clear	();
-
-		matVS.clear				();
-		matPS.clear				();
-		matCS.clear				();
-		matStates.clear			();
-		matTextures.clear		();
-		matTexturesTemp.clear	();
-
 		lstLODs.clear			();
 		lstLODgroups.clear		();
 		lstRenderables.clear	();
@@ -157,12 +119,11 @@ public:
 #endif
 	}
 
-	void		r_pmask											(bool _1, bool _2, bool _wm=false)				{ pmask[0]=_1; pmask[1]=_2;	pmask_wmark = _wm; }
+	void		r_pmask											(bool deffered = false, bool forward = false, bool wallmarks = false) { pmask[0] = deffered; pmask[1] = forward; pmask[2] = wallmarks; }
 
 	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
 	void		r_dsgraph_insert_static							(dxRender_Visual	*pVisual);
 
-	void		r_dsgraph_render_landscape						(u32 pass, bool bClear);
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);
 	void		r_dsgraph_render_hud							();
 	void		r_dsgraph_render_hud_ui							();

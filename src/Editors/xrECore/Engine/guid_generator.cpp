@@ -41,5 +41,5 @@ ECORE_API xrGUID generate_guid()
 
 u32 GetGpuNum()
 {
-	return 1;
+	return 2;
 }

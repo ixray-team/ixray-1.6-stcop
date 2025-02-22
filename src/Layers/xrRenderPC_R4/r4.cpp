@@ -218,18 +218,6 @@ void CRender::create()
 	rmNormal();
 	marker = 0;
 
-	D3D_QUERY_DESC qdesc{};
-	qdesc.MiscFlags = 0;
-	qdesc.Query = D3D_QUERY_EVENT;
-
-	ZeroMemory(q_sync_point, sizeof(q_sync_point));
-
-	for(u32 i = 0; i < 2; ++i) {
-		R_CHK(RDevice->CreateQuery(&qdesc, &q_sync_point[i]));
-	}
-
-	RContext->End(q_sync_point[0]);
-
 	xrRender_apply_tf();
 	::PortalTraverser.initialize();
 
@@ -241,10 +229,6 @@ void CRender::destroy() {
 	m_bMakeAsyncSS = false;
 	FluidManager.Destroy();
 	::PortalTraverser.destroy();
-
-	for(u32 i = 0; i < 2; ++i) {
-		_RELEASE(q_sync_point[i]);
-	}
 
 	HWOCC.occq_destroy();
 	xr_delete(Models);
@@ -278,22 +262,10 @@ void CRender::reset_begin() {
 	}
 	xr_delete(Target);
 	HWOCC.occq_destroy();
-
-	for(u32 i = 0; i < 2; ++i) {
-		_RELEASE(q_sync_point[i]);
-	}
 }
 
 void CRender::reset_end() {
-	D3D_QUERY_DESC			qdesc{};
-	qdesc.MiscFlags = 0;
-	qdesc.Query = D3D_QUERY_EVENT;
-
-	for(u32 i = 0; i < 2; ++i) {
-		R_CHK(RDevice->CreateQuery(&qdesc, &q_sync_point[i]));
-	}
 	//	Prevent error on first get data
-	RContext->End(q_sync_point[0]);
 
 	HWOCC.occq_create(occq_size);
 
@@ -482,8 +454,8 @@ BOOL CRender::occ_visible(Fbox& P) {
 	return HOM.visible(P);
 }
 
-void CRender::add_Visual(IRenderVisual* V, bool ignore_opt) {
-	add_leafs_Dynamic((dxRender_Visual*)V, ignore_opt);
+void CRender::add_Visual(IRenderVisual* V) {
+	add_leafs_Dynamic((dxRender_Visual*)V);
 }
 void CRender::add_Geometry(IRenderVisual* V) {
 	add_Static((dxRender_Visual*)V, View->getMask());
@@ -564,8 +536,8 @@ CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 	auto texture = DEV->_CreateTexture(nameTexture);
 	SurfaceParams surface = {};
 	surface.Surface = texture->get_SRView();
-	surface.w = texture->get_Width();
-	surface.h = texture->get_Height();
+	surface.w = (float)texture->get_Width();
+	surface.h = (float)texture->get_Height();
 
 	return surface;
 }
@@ -828,7 +800,6 @@ HRESULT	CRender::shader_compile(
 
 	char c_smapsize[32];
 	char c_sun_shafts[32];
-	char c_ssao[32];
 	char c_sun_quality[32];
 
 	char sh_name[MAX_PATH] = "";

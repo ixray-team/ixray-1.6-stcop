@@ -22,6 +22,6 @@ u32 GetGpuNum()
 #else
 u32 GetGpuNum()
 {
-	return 1;
+	return 2;
 }
 #endif

@@ -4,6 +4,8 @@
 #include "../xrRender/HWCaps.h"
 #include "../xrRender/HW.h"
 
+ECORE_API CHWCaps Caps;
+
 extern u32 GetGpuNum();
 
 void CHWCaps::Update()

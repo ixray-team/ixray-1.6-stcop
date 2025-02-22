@@ -4,9 +4,7 @@
 #include "../xrRender/HWCaps.h"
 #include "../xrRender/HW.h"
 
-#ifndef USE_DX11
 ECORE_API CHWCaps Caps;
-#endif
 
 extern u32 GetGpuNum();
 

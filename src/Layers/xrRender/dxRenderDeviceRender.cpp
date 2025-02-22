@@ -117,6 +117,8 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 void dxRenderDeviceRender::SetupStates()
 {
+	Caps.Update();
+
 #ifndef _EDITOR
 #ifdef USE_DX11
 	//	TODO: DX10: Implement Resetting of render states into default mode
@@ -166,9 +168,9 @@ void dxRenderDeviceRender::SetupStates()
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 #ifndef _EDITOR
-#ifndef USE_DX11
-	Caps.Update();
-#endif
+//#ifndef USE_DX11
+//	Caps.Update();
+//#endif
 
 	// Signal everyone - device created
 	RCache.OnDeviceCreate		();
