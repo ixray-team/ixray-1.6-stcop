@@ -8,6 +8,7 @@ class CHUDAnimItem :
 	shared_str CurrentMotion;
 	u16 OldSlot = 0;
 	bool DetectorActive = false;
+	bool NeedRestoreInventory = false;
 
 public:
 	CHUDAnimItem() = default;
@@ -29,5 +30,5 @@ protected:
 	virtual void PlayAnimIdleSprint() override {};
 
 public:
-	static void PlayHudAnim(const char* Section, const char* Anim);
+	static void PlayHudAnim(const char* Section, const char* Anim, bool disable_inventory = false);
 };

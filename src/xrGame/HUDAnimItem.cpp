@@ -4,6 +4,7 @@
 #include "Inventory.h"
 #include "player_hud.h"
 #include "CustomDetector.h"
+#include "UIGameCustom.h"
 
 void CHUDAnimItem::Load(LPCSTR section)
 {
@@ -64,6 +65,11 @@ void CHUDAnimItem::UpdateCL()
 			SetState(eHidden);
 			Actor()->inventory().Activate(NO_ACTIVE_SLOT);
 			Actor()->inventory().Activate(OldSlot);
+			if (NeedRestoreInventory)
+			{
+				NeedRestoreInventory = false;
+				Actor()->set_inventory_disabled(false);
+			}
 
 			if (DetectorActive)
 			{
@@ -97,7 +103,7 @@ bool CHUDAnimItem::need_renderable()
 	return (m_dwMotionStartTm != u32(-1)) && m_dwMotionStartTm + 15 < Device.dwTimeGlobal;
 }
 
-void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim)
+void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim, bool disable_inventory)
 {
 	auto& Inventory = Actor()->inventory();
 	CHUDAnimItem* ThisItem = (CHUDAnimItem*)Inventory.ItemFromSlot(ANIM_SLOT);
@@ -116,6 +122,12 @@ void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim)
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
 	ThisItem->hud_sect = Section;
 	ThisItem->CurrentMotion = Anim;
+	if (disable_inventory)
+	{
+		CurrentGameUI()->HideActorMenu();
+		Actor()->set_inventory_disabled(true);
+		ThisItem->NeedRestoreInventory = true;
+	}
 
 	Actor()->inventory().Activate(ANIM_SLOT);
 }
