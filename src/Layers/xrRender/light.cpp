@@ -265,7 +265,6 @@ void	light::spatial_move			()
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	svis.invalidate();
-	xform_calc();
 	get_sectors();
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
@@ -420,6 +419,7 @@ static	Fvector cmDir[6]	= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.
 
 void light::export_(light_Package& package)
 {
+	xform_calc();
 	if (flags.bShadow)
 	{
 		switch (flags.type)
@@ -455,6 +455,7 @@ void light::export_(light_Package& package)
 					
 					L->set_hud_mode(flags.bHudMode);
 					L->set_occq_mode(flags.bOccq);
+					L->xform_calc();
 					package.v_shadowed.push_back(L);
 				}
 			}
