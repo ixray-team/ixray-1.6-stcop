@@ -1198,7 +1198,7 @@ void CScriptGameObject::activate_slot	(u32 slot_id)
 	inventory_owner->inventory().Activate((u16)slot_id);
 }
 
-bool CScriptGameObject::IsBoosterInfluence(const EBoostParams& param)
+bool CScriptGameObject::IsBoosterInfluence(EBoostParams param)
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
 	if (!pActor)
@@ -1217,7 +1217,7 @@ bool CScriptGameObject::IsBoosterInfluence(const EBoostParams& param)
 	return false;
 }
 
-float CScriptGameObject::GetBoosterInfluenceTime(const EBoostParams& param)
+float CScriptGameObject::GetBoosterInfluenceTime(EBoostParams param)
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
 	if (!pActor)
@@ -1257,7 +1257,7 @@ void CScriptGameObject::ApplyBooster(LPCSTR sect)
 	}
 }
 
-void CScriptGameObject::SetBoosterTime(float time, const EBoostParams& param)
+void CScriptGameObject::SetBoosterTime(float time, EBoostParams param)
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
 	if (!pActor)
@@ -1275,7 +1275,7 @@ void CScriptGameObject::SetBoosterTime(float time, const EBoostParams& param)
 	}
 }
 
-bool CScriptGameObject::GetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const
+bool CScriptGameObject::GetActorMovementState(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask)
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
 	if (!pActor)
@@ -1288,7 +1288,7 @@ bool CScriptGameObject::GetActorMovementState(const ACTOR_DEFS::EMovementStates&
 	return !!((pActor->GetMovementState(state) & mask) > 0);
 }
 
-void CScriptGameObject::SetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const
+void CScriptGameObject::SetActorMovementState(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask, bool status)
 {
 	CActor* pActor = smart_cast<CActor*>(&object());
 	if (!pActor)

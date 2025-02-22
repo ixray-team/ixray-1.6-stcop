@@ -646,15 +646,15 @@ public:
 			void				set_level_changer_invitation		(LPCSTR str);
 
 			//Boosters
-			bool				IsBoosterInfluence					(const EBoostParams& param);
+			bool				IsBoosterInfluence					(EBoostParams param);
 
-			float				GetBoosterInfluenceTime				(const EBoostParams& param);
+			float				GetBoosterInfluenceTime				(EBoostParams param);
 
 			void				ApplyBooster						(LPCSTR sect);
-			void				SetBoosterTime						(float time, const EBoostParams& param);
+			void				SetBoosterTime						(float time, EBoostParams param);
 
-			bool				GetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const;
-			void				SetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const;
+			bool				GetActorMovementState				(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask);
+			void				SetActorMovementState				(ACTOR_DEFS::EMovementStates state, ACTOR_DEFS::EMoveCommand mask, bool status);
 
 
 #ifdef DEBUG
