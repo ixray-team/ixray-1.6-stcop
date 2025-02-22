@@ -243,14 +243,23 @@ void CEntity::net_Destroy()
 	set_ready_to_save		();
 }
 
+extern bool isGodMode();
+
 void CEntity::KillEntity(u16 whoID)
 {
 	if (ID() == Actor()->ID())
 	{
-		if (GodMode())
+#ifndef MASTER_GOLD
+		if (isGodMode())
 		{
-			return;
+			luabind::functor<void> functor;
+			if (ai().script_engine().functor("xr_effects.enable_ui", functor))
+			{
+				functor(Actor(), NULL);
+				return;
+			}
 		}
+#endif // MASTER_GOLD
 
 		Actor()->detach_Vehicle();
 		Actor()->use_MountedWeapon(nullptr);
