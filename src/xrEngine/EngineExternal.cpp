@@ -53,3 +53,8 @@ ENGINE_API CEngineExternal& EngineExternal() {
 	}
 	return *g_pEngineExternal;
 }
+
+u32 CEngineExternal::GetFontAltasSize() const
+{
+	return READ_IF_EXISTS(pOptions, r_u32, "render", "FontAtlasSize", 4096);
+}
