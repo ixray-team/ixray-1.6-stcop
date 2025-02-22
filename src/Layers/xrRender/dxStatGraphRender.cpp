@@ -49,7 +49,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		};
 	};
 
-	u32			dwOffsetTri = 0, dwOffsetLine = 0,dwCount;
+	u32 dwOffsetTri = 0, dwOffsetLine = 0,dwCount;
 	FVF::TL0uv* pv_Tri_start	= nullptr;
 	FVF::TL0uv* pv_Tri;
 	FVF::TL0uv* pv_Line_start	= nullptr;
@@ -60,7 +60,6 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		pv_Tri_start = (FVF::TL0uv*)RCache.Vertex.Lock(TriElem,hGeomTri->vb_stride,dwOffsetTri);
 		pv_Tri = pv_Tri_start;
 
-		pv_Tri = pv_Tri_start;
 		for (CStatGraph::SubGraphVecIt it=owner.subgraphs.begin(); it!=owner.subgraphs.end(); it++)
 		{
 			switch(it->style)

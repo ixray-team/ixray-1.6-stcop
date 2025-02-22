@@ -71,27 +71,30 @@ void CSoundManager::MuteSounds(BOOL bVal)
 
 void CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)
 {
-	if (TYPE_FOLDER==type){
-    	FS.dir_delete			(_sounds_,nm0,FALSE);
-    	FS.dir_delete			(_game_sounds_,nm0,FALSE);
-    }else if (TYPE_OBJECT==type){
-        string_path fn0,fn1,temp;
+    if (TYPE_FOLDER == type)
+    {
+        FS.dir_delete(_sounds_, nm0, FALSE);
+        FS.dir_delete(_game_sounds_, nm0, FALSE);
+    }
+    else if (TYPE_OBJECT == type)
+    {
+        string_path fn0, fn1;
         // rename base file
-        FS.update_path(fn0,_sounds_,nm0); 	strcat(fn0,".wav");
-        FS.update_path(fn1,_sounds_,nm1);	strcat(fn1,".wav");
-        FS.file_rename(fn0,fn1,false);
+        FS.update_path(fn0, _sounds_, nm0); strcat(fn0, ".wav");
+        FS.update_path(fn1, _sounds_, nm1);	strcat(fn1, ".wav");
+        FS.file_rename(fn0, fn1, false);
 
         // rename thm
-        FS.update_path(fn0,_sounds_,nm0);	strcat(fn0,".thm");
-        FS.update_path(fn1,_sounds_,nm1);	strcat(fn1,".thm");
-        FS.file_rename(fn0,fn1,false);
+        FS.update_path(fn0, _sounds_, nm0);	strcat(fn0, ".thm");
+        FS.update_path(fn1, _sounds_, nm1);	strcat(fn1, ".thm");
+        FS.file_rename(fn0, fn1, false);
 
         // rename ogg
-        FS.update_path(fn0,_game_sounds_,nm0);	strcat(fn0,".ogg");
-        FS.update_path(fn1,_game_sounds_,nm1);	strcat(fn1,".ogg");
-        FS.file_rename(fn0,fn1,false);
-	    Sound->refresh_sources();
-	}
+        FS.update_path(fn0, _game_sounds_, nm0); strcat(fn0, ".ogg");
+        FS.update_path(fn1, _game_sounds_, nm1); strcat(fn1, ".ogg");
+        FS.file_rename(fn0, fn1, false);
+        Sound->refresh_sources();
+    }
 }
 
 BOOL CSoundManager::RemoveSound(LPCSTR fname, EItemType type)
