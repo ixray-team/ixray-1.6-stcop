@@ -94,20 +94,19 @@ void EScene::Render( const Fmatrix& camera )
     }
 
     // insert objects
+    for (auto SceneTool : object_tools)
     {
-	    SceneOToolsIt t_it	= object_tools.begin();
-	    SceneOToolsIt t_end	= object_tools.end();
-        for (; t_it!=t_end; t_it++)
-        {
-            ObjectList& lst = (*t_it)->GetObjects();
+        if (!SceneTool->IsLoaded)
+            continue;
 
-            for (CCustomObject* Obj : lst)
+        ObjectList& lst = SceneTool->GetObjects();
+
+        for (CCustomObject* Obj : lst)
+        {
+            if (Obj->Visible() && Obj->IsRender())
             {
-                if (Obj->Visible() && Obj->IsRender())
-                {
-                    float distSQ = EDevice->vCameraPosition.distance_to_sqr(Obj->FPosition);
-                    mapRenderObjects.insertInAnyWay(distSQ, Obj);
-                }
+                float distSQ = EDevice->vCameraPosition.distance_to_sqr(Obj->FPosition);
+                mapRenderObjects.insertInAnyWay(distSQ, Obj);
             }
         }
     }

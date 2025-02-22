@@ -13,6 +13,9 @@ protected:
 	bool 				OnLoadSelectionAppendObject(CCustomObject* obj);
 	bool 				OnLoadAppendObject		(CCustomObject* obj);
 public:
+	xr_atomic_bool IsLoaded = false;
+
+public:
 						ESceneCustomOTool		(ObjClassID cls);
 	virtual				~ESceneCustomOTool		();
 											   

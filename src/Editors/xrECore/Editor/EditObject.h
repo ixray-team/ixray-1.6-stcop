@@ -86,8 +86,8 @@ public:
 #if 1
 					~CSurface		(){R_ASSERT(!m_Shader);xr_delete(m_ImageData);}
 	IC void			CopyFrom		(CSurface* surf){*this = *surf; m_Shader=0; m_RTFlags.set(rtValidShader, FALSE);}
-	IC int			_Priority		()	{return _Shader()?_Shader()->E[0]->flags.iPriority:1;}
-	IC bool			_StrictB2F		()	{return _Shader()?_Shader()->E[0]->flags.bStrictB2F:false;}
+	IC int			_Priority		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.iPriority:1;}
+	IC bool			_StrictB2F		()	{return (_Shader() && _Shader()->E[0]) ?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
 #endif
 	IC LPCSTR		_Name			()const {return *m_Name;}
