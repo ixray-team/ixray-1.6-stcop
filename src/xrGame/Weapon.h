@@ -526,6 +526,7 @@ public:
 	float					m_fCurrentCartirdgeDisp;
 
 		bool				unlimited_ammo				();
+		bool				infinite_fire();
 	IC	bool				can_be_strapped				() const {return m_can_be_strapped;};
 
 	float GetMagazineWeight(const decltype(m_magazine)& mag) const;

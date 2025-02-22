@@ -660,7 +660,8 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			fShotTimeCounter		+=	fOneShotTime;
 			
-			++m_iShotNum;
+			if (!infinite_fire())
+				++m_iShotNum;
 			
 			OnShot					();
 

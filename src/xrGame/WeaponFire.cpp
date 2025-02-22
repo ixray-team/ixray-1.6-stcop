@@ -120,8 +120,11 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 	
 	// Ammo
-	m_magazine.pop_back	();
-	--iAmmoElapsed;
+	if (!infinite_fire())
+	{
+		m_magazine.pop_back();
+		--iAmmoElapsed;
+	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
