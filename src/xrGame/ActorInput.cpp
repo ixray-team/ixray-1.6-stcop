@@ -171,27 +171,31 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
 			if(item_name.size())
 			{
-				PIItem itm = inventory().GetAny(item_name.c_str());
+				PIItem best_itm = nullptr;
 
-				if(itm)
+				for (auto& it : inventory().m_ruck)
 				{
-					if (IsGameTypeSingle())
+					if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
 					{
-						inventory().Eat				(itm);
-					} else
-					{
-						inventory().ClientEat		(itm);
+						best_itm = it;
 					}
+				}
+
+				if (best_itm != nullptr)
+				{
+					IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
 					
-					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
-					string1024					str;
-					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", itm->NameItem());
+					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+					string1024 str = {};
+
+					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", best_itm->NameItem());
 					_s->wnd()->TextItemControl()->SetText(str);
 					
 					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
 				}
 			}
-		}break;
+		}
+		break;
 	}
 }
 
