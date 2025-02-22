@@ -47,7 +47,7 @@ namespace luabind
 				if (e) e(L, LUABIND_TYPEID(T));
 
 				assert(0 && "object_cast failed. If you want to handle this error use luabind::set_error_callback()");
-				std::terminate();
+				
 #endif
 			}
 
@@ -70,7 +70,7 @@ namespace luabind
 				if (e) e(L, LUABIND_TYPEID(T));
 
 				assert(0 && "object_cast failed. If you want to handle this error use luabind::set_error_callback()");
-				std::terminate();
+				
 #endif
 			}
 #endif

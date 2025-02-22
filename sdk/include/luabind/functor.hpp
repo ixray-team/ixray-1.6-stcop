@@ -92,7 +92,7 @@ namespace luabind
 	
 						assert(0 && "the lua function threw an error and exceptions are disabled."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 				}
@@ -114,7 +114,7 @@ namespace luabind
 	
 						assert(0 && "tried to call uninitialized functor object."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 	#endif
 					}
 #endif
@@ -135,7 +135,7 @@ namespace luabind
 	
 						assert(0 && "the lua function threw an error and exceptions are disabled."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 
@@ -151,7 +151,7 @@ namespace luabind
 
 						assert(0 && "the lua function's return value could not be converted."
 								"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 #endif
@@ -177,7 +177,7 @@ namespace luabind
 	
 						assert(0 && "tried to call uninitialized functor object."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 	#endif
 					}
 #endif
@@ -198,7 +198,7 @@ namespace luabind
 	
 						assert(0 && "the lua function threw an error and exceptions are disabled."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 
@@ -214,7 +214,7 @@ namespace luabind
 
 						assert(0 && "the lua function's return value could not be converted."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 #endif
@@ -282,7 +282,7 @@ namespace luabind
 	
 						assert(0 && "tried to call uninitialized functor object."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 	#endif
 					}
 #endif
@@ -300,7 +300,7 @@ namespace luabind
 	
 						assert(0 && "the lua function threw an error and exceptions are disabled."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 				}
@@ -321,7 +321,7 @@ namespace luabind
 	
 						assert(0 && "tried to call uninitialized functor object."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 	#endif
 					}
 #endif
@@ -339,7 +339,7 @@ namespace luabind
 	
 						assert(0 && "the lua function threw an error and exceptions are disabled."
 							"if you want to handle this error use luabind::set_error_callback()");
-						std::terminate();
+						
 #endif
 					}
 				}
