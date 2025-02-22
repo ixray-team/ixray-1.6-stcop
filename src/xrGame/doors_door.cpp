@@ -22,7 +22,7 @@ static bool valid				( door_state const state )
 	return						(state == doors::door_state_open) || (state == doors::door_state_closed);
 }
 
-door::door						( CPhysicObject* object ) :
+door::door( CPhysicObject* object ) :
 	m_object					( *object ),
 	m_state						( door_state_open ),
 	m_previous_state			( door_state_open ),
@@ -45,12 +45,12 @@ door::door						( CPhysicObject* object ) :
 	m_open_vector.mul			( length );
 	m_closed_vector.mul			( length );
 
-	m_object.spatial.type		|=	STYPE_VISIBLEFORAI;
+	m_object.SpatialComponent->spatial.type		|=	STYPE_VISIBLEFORAI;
 }
 
-door::~door						( )
+door::~door( )
 {
-	m_object.spatial.type		&=	~STYPE_VISIBLEFORAI;
+	m_object.SpatialComponent->spatial.type		&=	~STYPE_VISIBLEFORAI;
 
 	if ( m_initiators.empty() )
 		return;

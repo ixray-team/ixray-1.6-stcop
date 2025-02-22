@@ -74,9 +74,9 @@ public:
 
 	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
-	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstRenderables;
-	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstRenderablesMain;
-	xr_vector<ISpatial* /**,render_alloc<ISpatial*>/**/>				lstSpatial	;
+	xr_vector<ISpatialShared>				lstRenderables;
+	xr_vector<ISpatialShared>				lstRenderablesMain;
+	xr_vector<ISpatialShared>				lstSpatial	;
 	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstVisuals	;
 
 	xr_vector<dxRender_Visual*,render_alloc<dxRender_Visual*> >			lstRecorded	;

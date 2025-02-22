@@ -70,7 +70,7 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 		}
 		else
 		{ //check obstacle flag
-			if (result.O->spatial.type & STYPE_OBSTACLE)
+			if (result.O->SpatialComponent->spatial.type & STYPE_OBSTACLE)
 				bOverlaped = true;
 
 			return TRUE;

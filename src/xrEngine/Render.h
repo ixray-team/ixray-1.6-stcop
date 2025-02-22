@@ -2,6 +2,7 @@
 #define _RENDER_H_
 
 #include "../xrCDB/Frustum.h"
+#include "../xrCDB/ISpatial.h"
 #include "vis_common.h"
 //#include "IRenderDetailModel.h"
 
@@ -26,7 +27,10 @@ const	float		fLightSmoothFactor = 4.f;
 #endif
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
-class	ENGINE_API	IRender_Light	: public xr_resource									{
+class ENGINE_API IRender_Light: 
+	public xr_resource,
+	public ISpatialOwner
+{
 public:
 	enum LT
 	{

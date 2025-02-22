@@ -34,33 +34,45 @@ CObjectSpace::~CObjectSpace	( )
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-int CObjectSpace::GetNearest		( xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>&	q_nearest, const Fvector &point, float range, CObject* ignore_object )
+int CObjectSpace::GetNearest(xr_vector<ISpatialShared>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
 {
 	q_spatial.resize(0);
 	// Query objects
 	q_nearest.resize(0);
-	Fsphere				Q;	Q.set	(point,range);
-	Fvector				B;	B.set	(range,range,range);
-	g_SpatialSpace->q_box(q_spatial,0,STYPE_COLLIDEABLE,point,B);
+
+	Fsphere Q;	
+	Q.set(point, range);
+
+	Fvector B;	
+	B.set(range, range, range);
+
+	g_SpatialSpace->q_box(q_spatial, 0, STYPE_COLLIDEABLE, point, B);
 
 	// Iterate
-	xr_vector<ISpatial*>::iterator	it	= q_spatial.begin	();
-	xr_vector<ISpatial*>::iterator	end	= q_spatial.end		();
-	for (; it!=end; it++)		{
-		CObject* O				= (*it)->dcast_CObject		();
-		if (0==O)				continue;
-		if (O==ignore_object)	continue;
-		Fsphere mS				= { O->spatial.sphere.P, O->spatial.sphere.R	};
-		if (Q.intersect(mS))	q_nearest.push_back(O);
+	auto it = q_spatial.begin();
+	auto end = q_spatial.end();
+	for (; it != end; it++)
+	{
+		CObject* O = (*it)->dcast_CObject();
+		if (0 == O)
+			continue;
+
+		if (O == ignore_object)	
+			continue;
+
+		Fsphere mS = { O->SpatialComponent->spatial.sphere.P, O->SpatialComponent->spatial.sphere.R };
+		if (Q.intersect(mS))
+			q_nearest.push_back(O);
 	}
 
 	return (int)q_nearest.size();
 }
+
 //----------------------------------------------------------------------
 IC int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range)
 {
 	CObject* O = obj->Owner();
-	return GetNearest(q_nearest, O->spatial.sphere.P, range + O->spatial.sphere.R, O);
+	return GetNearest(q_nearest, O->SpatialComponent->spatial.sphere.P, range + O->SpatialComponent->spatial.sphere.R, O);
 }
 
 //----------------------------------------------------------------------

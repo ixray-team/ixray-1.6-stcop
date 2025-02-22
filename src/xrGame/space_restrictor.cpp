@@ -72,7 +72,7 @@ BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
 	CCustomZone* zone = smart_cast<CCustomZone*>(this);
 	const static bool isAiDieInAnomaly = EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly];
 	if (!isAiDieInAnomaly || !zone || smart_cast<CRadioactiveZone*>(zone))
-		spatial.type &= ~STYPE_VISIBLEFORAI;
+		SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
 
 	setEnabled						(FALSE);
 	setVisible						(FALSE);

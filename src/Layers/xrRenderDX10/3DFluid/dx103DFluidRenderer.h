@@ -108,7 +108,7 @@ private:
 
 	//	Cache vectors to avoid memory reallocations
 	//	TODO: DX10: Reserve memory on object creation
-	xr_vector<ISpatial*>		m_lstRenderables;
+	xr_vector<ISpatialShared>		m_lstRenderables;
 };
 
 #endif	//	dx103DFluidRenderer_included

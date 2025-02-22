@@ -198,7 +198,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles( const dx103DFluidData &Fluid
 	// Determine visibility for dynamic part of scene
 	for (u32 i=0; i<m_lstRenderables.size(); ++i)
 	{
-		ISpatial*	spatial		= m_lstRenderables[i];
+		ISpatial* spatial = m_lstRenderables[i].get();
 		//	Can use to optimize invisible dynamic objects if necessary
 		//CSector*	sector		= (CSector*)spatial->spatial.sector;
 		//if	(0==sector)										continue;	// disassociated from S/P structure

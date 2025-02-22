@@ -21,12 +21,12 @@ class	CSE_Abstract;
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
-class	IPhysicsShell;
+class IPhysicsShell;
 class IObjectPhysicsCollision;
 #pragma pack(push,4)
-class	ENGINE_API						CObject :	
+
+class ENGINE_API CObject :	
 	public DLL_Pure,
-	public ISpatial,
 	public ISheduled,
 	public IRenderable,
 	public ICollidable
@@ -54,6 +54,7 @@ public:
 		};
 		u32	storage;
 	};
+
 private:
 	// Some property variables
 	ObjectProperties					Props;
@@ -120,7 +121,7 @@ public:
 	virtual float						Radius				()			const;
 	virtual const Fbox&					BoundingBox			()			const;
 	
-	IC IRender_Sector*					Sector				()					{ return H_Root()->spatial.sector;	}
+	IC IRender_Sector*					Sector				()					{ return H_Root()->SpatialComponent->spatial.sector;	}
 	IC IRender_ObjectSpecific*			ROS					()					{ return renderable_ROS();			}
 	virtual BOOL						renderable_ShadowGenerate	()			{ return TRUE;						}
 	virtual BOOL						renderable_ShadowReceive	()			{ return TRUE;						}
@@ -128,8 +129,10 @@ public:
 	// Accessors and converters
 	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
 	ICF ICollisionForm*					CFORM				() const			{ return collidable.model;			}
-	virtual		CObject*				dcast_CObject		()					{ return this;						}
-	virtual		IRenderable*			dcast_Renderable	()					{ return this;						}
+	virtual		CObject*				dcast_CObject		() override			{ return this;						}
+	virtual		IRenderable*			dcast_Renderable	() override			{ return this;						}
+	virtual		Feel::Sound*			dcast_FeelSound		() override			{ return nullptr;					}
+
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }
 

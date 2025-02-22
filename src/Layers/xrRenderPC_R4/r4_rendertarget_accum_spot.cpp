@@ -262,9 +262,9 @@ void CRenderTarget::accum_volumetric(light* L) {
 	Fbox	aabb;
 
 	//float	scaledRadius = L->spatial.sphere.R * (1+L->m_volumetric_distance)*0.5f;
-	float	scaledRadius = L->spatial.sphere.R * L->m_volumetric_distance;
+	float	scaledRadius = L->SpatialComponent->spatial.sphere.R * L->m_volumetric_distance;
 	Fvector	rr = Fvector().set(scaledRadius, scaledRadius, scaledRadius);
-	Fvector pt = L->spatial.sphere.P;
+	Fvector pt = L->SpatialComponent->spatial.sphere.P;
 	pt.sub(L->position);
 	pt.mul(L->m_volumetric_distance);
 	pt.add(L->position);

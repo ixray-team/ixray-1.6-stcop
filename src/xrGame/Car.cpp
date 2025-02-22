@@ -138,8 +138,7 @@ void CCar::cb_Steer(CBoneInstance* B)
 void	CCar::Load(LPCSTR section)
 {
 	inherited::Load(section);
-	ISpatial* self = smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type |= STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type |= STYPE_VISIBLEFORAI;
 
 	CInventoryOwner::Load(section);
 	inventory().m_pOwner = this;

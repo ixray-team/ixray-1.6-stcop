@@ -5,7 +5,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 // definition ("Renderable")
-class	ENGINE_API	IRenderable			{
+class ENGINE_API IRenderable:
+	public ISpatialOwner
+{
 public:
 	struct 
 	{
@@ -14,6 +16,7 @@ public:
 		IRender_ObjectSpecific*			pROS						;
 		BOOL							pROS_Allowed				;
 	}	renderable;
+
 public:
 										IRenderable					();
 	virtual								~IRenderable				();
@@ -22,6 +25,9 @@ public:
 	virtual	void						renderable_Render			()	= 0;
 	virtual	BOOL						renderable_ShadowGenerate	()	{ return FALSE; };
 	virtual	BOOL						renderable_ShadowReceive	()	{ return FALSE; };
+
+
+	virtual IRenderable* dcast_Renderable() override { return this; }
 };
 
 #endif // IRENDERABLE_H_INCLUDED

@@ -337,7 +337,7 @@ protected:
 		void*& result
 	) override;
 	private:
-		xr_vector<ISpatial*> lstRenderables;
+		xr_vector<ISpatialShared> lstRenderables;
 };
 #ifdef REDITOR
 #include "ui_main.h"

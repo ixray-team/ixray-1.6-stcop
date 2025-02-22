@@ -48,7 +48,7 @@ private:
 
 	//	Cache vectors to avoid memory reallocations
 	//	TODO: DX10: Reserve memory on object creation
-	xr_vector<ISpatial*>		m_lstRenderables;
+	xr_vector<ISpatialShared>		m_lstRenderables;
 	xr_vector<const IPhysicsShell*>	m_lstShells;
 	xr_vector<const IPhysicsElement*>	m_lstElements;
 };

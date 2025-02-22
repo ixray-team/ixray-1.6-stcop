@@ -4,9 +4,9 @@
 static const float	SQRT2		=	1.4142135623730950488016887242097f;
 static const float	RSQRTDIV2	=	0.70710678118654752440084436210485f;
 
-light::light		(void)	: ISpatial(g_SpatialSpace)
+light::light()
 {
-	spatial.type	= STYPE_LIGHTSOURCE;
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_LIGHTSOURCE);
 	flags.type		= POINT;
 	flags.bStatic	= false;
 	flags.bActive	= false;
@@ -141,29 +141,31 @@ void light::set_shadow				(bool b)
 #endif
 }
 
-void light::set_active		(bool a)
+void light::set_active(bool a)
 {
 	if (a)
 	{
-		if (flags.bActive)					return;
-		flags.bActive						= true;
-		spatial_register					();
+		if (flags.bActive)
+			return;
+
+		flags.bActive = true;
+		spatial_register();
 		b_spatial_move = true;
-		//Msg								("!!! L-register: %X",u32(this));
 
 #ifdef DEBUG
-		Fvector	zero = {0,-1000,0}			;
-		if (position.similar(zero))			{
-			Msg	("- Uninitialized light position.");
+		Fvector	zero = { 0,-1000,0 };
+		if (position.similar(zero)) {
+			Msg("- Uninitialized light position.");
 		}
 #endif // DEBUG
 	}
 	else
 	{
-		if (!flags.bActive)					return;
-		flags.bActive						= false;
-		spatial_unregister					();
-		//Msg								("!!! L-unregister: %X",u32(this));
+		if (!flags.bActive)
+			return;
+
+		flags.bActive = false;
+		spatial_unregister();
 	}
 }
 
@@ -198,10 +200,10 @@ void	light::set_rotation		(const Fvector& D, const Fvector& R)	{
 #if RENDER!=R_R1
 void light::get_sectors()
 {
-	if(0==spatial.sector)
-		spatial_updatesector();
+	if(0== SpatialComponent->spatial.sector)
+		SpatialComponent->spatial_updatesector();
 
-	CSector* sector = (CSector*)spatial.sector;
+	CSector* sector = (CSector*)SpatialComponent->spatial.sector;
 	if(0==sector) return;
 
 	if(flags.type == IRender_Light::SPOT || flags.type == IRender_Light::OMNIPART)
@@ -227,7 +229,7 @@ void	light::spatial_move			()
 	case IRender_Light::REFLECTED	:	
 	case IRender_Light::POINT		:	
 		{
-			spatial.sphere.set		(position, range);
+		SpatialComponent->spatial.sphere.set		(position, range);
 		} 
 		break;
 	case IRender_Light::SPOT		:	
@@ -236,12 +238,12 @@ void	light::spatial_move			()
 			VERIFY2						(cone < deg2rad(121.f), "Too large light-cone angle. Maybe you have passed it in 'degrees'?");
 			if (cone>=PI_DIV_2)			{
 				// obtused-angled
-				spatial.sphere.P.mad	(position,direction,range);
-				spatial.sphere.R		= range * tanf(cone/2.f);
+				SpatialComponent->spatial.sphere.P.mad	(position,direction,range);
+				SpatialComponent->spatial.sphere.R		= range * tanf(cone/2.f);
 			} else {
 				// acute-angled
-				spatial.sphere.R		= range / (2.f * _sqr(_cos(cone/2.f)));
-				spatial.sphere.P.mad	(position,direction,spatial.sphere.R);
+				SpatialComponent->spatial.sphere.R		= range / (2.f * _sqr(_cos(cone/2.f)));
+				SpatialComponent->spatial.sphere.P.mad	(position,direction, SpatialComponent->spatial.sphere.R);
 			}
 		}
 		break;
@@ -252,14 +254,14 @@ void	light::spatial_move			()
 			//spatial.sphere.R			= range;
 			// This is optimal.
 			const float fSphereR		= range*RSQRTDIV2;
-			spatial.sphere.P.mad		(position,direction,fSphereR);
-			spatial.sphere.R			= fSphereR;
+			SpatialComponent->spatial.sphere.P.mad		(position,direction,fSphereR);
+			SpatialComponent->spatial.sphere.R			= fSphereR;
 		}
 		break;
 	}
 
 	// update spatial DB
-	ISpatial::spatial_move			();
+	ISpatialOwner::spatial_move();
 
 #if (RENDER==R_R2) || (RENDER==R_R4)
 	svis.invalidate();
@@ -270,19 +272,19 @@ void	light::spatial_move			()
 
 void light::spatial_updatesector_internal()
 {
-	ISpatial::spatial_updatesector_internal();
+	SpatialComponent->spatial_updatesector_internal();
 }
 
-vis_data&	light::get_homdata		()
+vis_data& light::get_homdata()
 {
 	// commit vis-data
-	hom.sphere.set	(spatial.sphere.P,spatial.sphere.R);
-	hom.box.set		(spatial.sphere.P,spatial.sphere.P);
-	hom.box.grow	(spatial.sphere.R);
+	hom.sphere.set	(SpatialComponent->spatial.sphere.P, SpatialComponent->spatial.sphere.R);
+	hom.box.set		(SpatialComponent->spatial.sphere.P, SpatialComponent->spatial.sphere.P);
+	hom.box.grow	(SpatialComponent->spatial.sphere.R);
 	return			hom;
 };
 
-Fvector	light::spatial_sector_point	()	
+Fvector	light::spatial_sector_point()	
 { 
 	return position; 
 }
@@ -377,7 +379,7 @@ void	light::optimize_smap_size()
 	X.S.transluent = FALSE;
 	// Compute approximate screen area (treating it as an point light) - R*R/dist_sq
 	// Note: we clamp screen space area to ONE, although it is not correct at all
-	float	dist				= Device.vCameraPosition.distance_to(spatial.sphere.P)-spatial.sphere.R;
+	float	dist = Device.vCameraPosition.distance_to(SpatialComponent->spatial.sphere.P) - SpatialComponent->spatial.sphere.R;
 			if (dist<0)	dist	= 0;
 	float	ssa					= clampr	(range*range / (1.f+dist*dist),0.f,1.f);
 
@@ -416,7 +418,7 @@ void	light::optimize_smap_size()
 static	Fvector cmNorm[6]	= {{0.f,1.f,0.f}, {0.f,1.f,0.f}, {0.f,0.f,-1.f},{0.f,0.f,1.f}, {0.f,1.f,0.f}, {0.f,1.f,0.f}};
 static	Fvector cmDir[6]	= {{1.f,0.f,0.f}, {-1.f,0.f,0.f},{0.f,1.f,0.f}, {0.f,-1.f,0.f},{0.f,0.f,1.f}, {0.f,0.f,-1.f}};
 
-void	light::export_		(light_Package& package)
+void light::export_(light_Package& package)
 {
 	if (flags.bShadow)
 	{
@@ -437,7 +439,7 @@ void	light::export_		(light_Package& package)
 					L->set_range		(range);
 					L->set_virtual_size(virtual_size);
 					L->set_color		(color);
-					L->spatial.sector	= spatial.sector;	//. dangerous?
+					L->SpatialComponent->spatial.sector	= SpatialComponent->spatial.sector;	//. dangerous?
 					L->s_spot			= s_spot	;
 					L->s_point			= s_point	;
 
@@ -461,15 +463,18 @@ void	light::export_		(light_Package& package)
 				package.v_shadowed.push_back			(this);
 			break;
 		}
-	}	else	{
-		switch (flags.type)	{
+	}	
+	else	
+	{
+		switch (flags.type)
+		{
 			case IRender_Light::POINT:		package.v_point.push_back	(this);	break;
 			case IRender_Light::SPOT:		package.v_spot.push_back	(this);	break;
 		}
 	}
 }
 
-void	light::set_attenuation_params	(float a0, float a1, float a2, float fo)
+void light::set_attenuation_params	(float a0, float a1, float a2, float fo)
 {
 	attenuation0 = a0;
 	attenuation1 = a1;
@@ -477,18 +482,18 @@ void	light::set_attenuation_params	(float a0, float a1, float a2, float fo)
 	falloff      = fo;
 }
 
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 
 float	light::get_LOD					()
 {
 #ifndef _EDITOR
 	if	(!flags.bShadow)	return 1;
-	extern float		r_ssaGLOD_start, r_ssaGLOD_end;
-	extern float		ps_r2_slight_fade;
-	float	distSQ			= Device.vCameraPosition.distance_to_sqr(spatial.sphere.P)+EPS;
-	float	ssa				= ps_r2_slight_fade * spatial.sphere.R/distSQ;
-	float	lod				= _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
-	return	lod	;
+	extern float r_ssaGLOD_start, r_ssaGLOD_end;
+	extern float ps_r2_slight_fade;
+	float	distSQ = Device.vCameraPosition.distance_to_sqr(SpatialComponent->spatial.sphere.P) + EPS;
+	float	ssa = ps_r2_slight_fade * SpatialComponent->spatial.sphere.R/distSQ;
+	float	lod = _sqrt(clampr((ssa - r_ssaGLOD_end)/(r_ssaGLOD_start-r_ssaGLOD_end),0.f,1.f));
+	return lod;
 #else
 	return 1.0f;
 #endif

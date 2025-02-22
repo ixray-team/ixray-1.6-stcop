@@ -71,7 +71,7 @@ void try_change_current_entity()
 	CFrustum							frustum;
 	frustum.CreateFromMatrix			(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
-	typedef xr_vector<ISpatial*>		OBJECTS;
+	typedef xr_vector<ISpatialShared>		OBJECTS;
 	OBJECTS								ISpatialResult;
 	g_SpatialSpace->q_frustum			(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 
@@ -81,7 +81,7 @@ void try_change_current_entity()
 	OBJECTS::const_iterator				I = ISpatialResult.begin();
 	OBJECTS::const_iterator				E = ISpatialResult.end();
 	for ( ; I != E; ++I) {
-		CCustomMonster					*current = smart_cast<CCustomMonster*>(*I);
+		CCustomMonster					*current = smart_cast<CCustomMonster*>((*I)->dcast_CObject());
 		if (!current)					continue;
 		if (Level().CurrentEntity()==current) continue;
 

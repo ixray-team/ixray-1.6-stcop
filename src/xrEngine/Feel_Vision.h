@@ -15,14 +15,15 @@ namespace Feel
 	const float fuzzy_guaranteed	= 0.001f;		// distance which is supposed 100% visible
 	const float lr_granularity		= 0.1f;			// assume similar positions
 
-	class ENGINE_API Vision: private pure_relcase
+	class ENGINE_API Vision:
+		private pure_relcase
 	{
 	private:
 		xr_vector<CObject*>			seen;
 		xr_vector<CObject*>			query;
 		xr_vector<CObject*>			diff;
 		collide::rq_results			RQR;
-		xr_vector<ISpatial*>		r_spatial;
+		xr_vector<ISpatialShared>	r_spatial;
 		CObject const*				m_owner;
 
 		void						o_new		(CObject* E);

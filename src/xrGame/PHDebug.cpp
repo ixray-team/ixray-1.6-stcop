@@ -184,7 +184,7 @@ struct SPHObjDBGDraw:public SPHDBGDrawAbsract
 	SPHObjDBGDraw(const CPHObject* obj)
 	{
 		AABB.set(obj->AABB);
-		AABB_center.set(obj->spatial.sphere.P);
+		AABB_center.set(obj->SpatialComponent->spatial.sphere.P);
 	}
 	void render		( )
 	{

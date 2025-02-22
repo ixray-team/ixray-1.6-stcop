@@ -202,7 +202,8 @@ BOOL  CBaseMonster::feel_vision_isRelevant(CObject* O)
 	if (!g_Alive())					return FALSE;
 	if (0==smart_cast<CEntity*>(O))	return FALSE;
 	
-	if ((O->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI) return FALSE;
+	if ((O->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI) 
+		return FALSE;
 	
 	// если спит, то ничего не видит
 	if (m_bSleep) return FALSE;

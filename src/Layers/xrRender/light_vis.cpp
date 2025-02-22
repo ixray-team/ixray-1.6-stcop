@@ -36,7 +36,9 @@ void	light::vis_prepare			()
 	//	TODO: DX10: Remove this pessimization
 	//skiptest	= true;
 
-	if (skiptest || Device.vCameraPosition.distance_to(spatial.sphere.P)<=(spatial.sphere.R*1.01f+safe_area + (spatial.sphere.R * 0.1f)))	{	// small error
+	if (skiptest || Device.vCameraPosition.distance_to(SpatialComponent->spatial.sphere.P)<=(SpatialComponent->spatial.sphere.R*1.01f+safe_area + (SpatialComponent->spatial.sphere.R * 0.1f)))	
+	{	
+		// small error
 		vis.visible		=	true;
 		vis.pending		=	false;
 		vis.frame2test	=	frame	+ ::Random.randI(delay_small_min,delay_small_max);

@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "../xrCDB/ISpatial.h"
 #include "IRenderable.h"
+#include "ICollidable.h"
 
 IRenderable::IRenderable()
 {
+	ISpatialOwner::spatial_create(g_SpatialSpace, this, STYPE_RENDERABLE);
+
 	renderable.xform.identity			();
 	renderable.visual					= nullptr;
 	renderable.pROS						= nullptr;
 	renderable.pROS_Allowed				= TRUE;
-	ISpatial*		self				= dynamic_cast<ISpatial*> (this);
-	if (self)		self->spatial.type	|= STYPE_RENDERABLE;
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering; 

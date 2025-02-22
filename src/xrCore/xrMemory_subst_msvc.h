@@ -41,6 +41,9 @@ IC void xr_delete(T* const& ptr)
 #include <memory>
 
 template<typename T>
+using xr_weak_ptr = std::weak_ptr<T>;
+
+template<typename T>
 using xr_shared_ptr = std::shared_ptr<T>;
 
 template<typename T>

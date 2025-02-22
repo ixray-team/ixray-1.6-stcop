@@ -321,11 +321,10 @@ void CActor::Load	(LPCSTR section )
 	if (IsGameTypeSingle())
 		OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
-	ISpatial*		self			=	smart_cast<ISpatial*> (this);
-	if (self)	{
-		self->spatial.type	|=	STYPE_VISIBLEFORAI;
-		self->spatial.type	&= ~STYPE_REACTTOSOUND;
-	}
+	
+	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type	&= ~STYPE_REACTTOSOUND;
+	
 	//////////////////////////////////////////////////////////////////////////
 
 	// m_PhysicMovementControl: General
@@ -1116,7 +1115,7 @@ void CActor::UpdateCL	()
 	if (g_Alive()) 
 		CStepManager::update(this==Level().CurrentViewEntity());
 
-	spatial.type |=STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type |=STYPE_REACTTOSOUND;
 
 	if(m_sndShockEffector)
 	{

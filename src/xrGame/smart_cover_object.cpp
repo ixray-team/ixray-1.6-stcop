@@ -58,9 +58,9 @@ BOOL smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	shape->ComputeBounds			();
 
 	if (!inherited::net_Spawn(server_entity))
-		return						(FALSE);
+		return (FALSE);
 
-	spatial.type					&= ~STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
 
 	if (ai().get_alife() && smart_cover->m_description.size())
 		m_cover						= ai().cover_manager().add_smart_cover(smart_cover->m_description.c_str(), *this, smart_cover->m_is_combat_cover ? true : false, smart_cover->m_can_fire ? true : false, smart_cover->m_available_loopholes);
@@ -72,7 +72,7 @@ BOOL smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 	setEnabled						(FALSE);
 	setVisible						(FALSE);
 
-	return							(TRUE);
+	return (TRUE);
 }
 
 void smart_cover::object::Center			(Fvector &result) const
