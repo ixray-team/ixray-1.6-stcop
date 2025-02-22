@@ -29,13 +29,45 @@ void CUIStatic::script_register(lua_State *L)
 		.def("AdjustWidthToText", 	&CUIStatic::AdjustWidthToText)
 		.def("GetStretchTexture", 	&CUIStatic::GetStretchTexture)														  
 		.def("TextControl",			&CUIStatic::TextItemControl)
+			
+       .def("SetText",				(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetText))
+       .def("SetTextST",			(void (CUIStatic::*)(LPCSTR)) (&CUIStatic::SetTextST))
+
+       .def("GetText",				&CUIStatic::GetText)
+
+       .def("SetTextX",				&CUIStatic::SetTextX)
+       .def("SetTextY",				&CUIStatic::SetTextY)
+	   .def("GetTextX",				&CUIStatic::GetTextX)
+       .def("GetTextY",				&CUIStatic::GetTextY)
+
+       .def("SetColor",				&CUIStatic::SetTextureColor)
+       .def("GetColor",				&CUIStatic::GetTextureColor)
+
+        .def("SetTextColor",		&CUIStatic::SetTextColor_script)
+
         .def("InitTexture",			&CUIStatic::InitTexture)
         .def("InitTexture",			+[](CUIStatic* self, pcstr texture) { self->InitTexture(texture); })
         .def("InitTextureEx",		&CUIStatic::InitTextureEx)
         .def("InitTextureEx",		+[](CUIStatic* self, pcstr texture, pcstr shader) { self->InitTextureEx(texture, shader); })
+
+		.def("SetTextureOffset",	&CUIStatic::SetTextureOffset)
+
 		.def("SetTextureRect",		&CUIStatic::SetTextureRect_script)
+		.def("GetTextureRect",		&CUIStatic::GetTextureRect_script)
+
+        .def("SetOriginalRect",		&CUIStatic::SetTextureRect_script)
+        .def("GetOriginalRect",		&CUIStatic::GetTextureRect_script)
+
 		.def("SetStretchTexture",	&CUIStatic::SetStretchTexture)
-		.def("GetTextureRect",		&CUIStatic::GetTextureRect_script),
+        .def("GetStretchTexture",	&CUIStatic::GetStretchTexture)
+
+        .def("SetTextAlign",		&CUIStatic::SetTextAlign_script)
+        .def("GetTextAlign",		&CUIStatic::GetTextAlign_script)
+
+        .def("SetHeading",			&CUIStatic::SetHeading)
+        .def("GetHeading",			&CUIStatic::GetHeading)
+
+        .def("SetElipsis",			&CUIStatic::SetEllipsis),
 
 		class_<CUITextWnd, CUIWindow>("CUITextWnd")
 		.def(						constructor<>())
