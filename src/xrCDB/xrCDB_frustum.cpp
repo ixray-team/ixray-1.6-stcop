@@ -9,9 +9,10 @@
 using namespace CDB;
 using namespace Opcode;
 
-class CFrustumCollider {
-	template <class T>
-	inline void SetByVerts(T& Val, DWORD prim) {
+class _MM_ALIGN16 cform_frustum_collider {
+
+	IC void SetByVerts(Fvector* Val, DWORD prim)
+	{
 		Val[0] = verts[tris[prim].verts[0]];
 		Val[1] = verts[tris[prim].verts[1]];
 		Val[2] = verts[tris[prim].verts[2]];
@@ -22,11 +23,17 @@ public:
 	TRI* tris;
 	Fvector* verts;
 	const CFrustum* F;
-	bool bClass3;
-	bool bFirst;
+	Fvector mM[2];
+	sPoly Src, Dst;
 
-	CFrustumCollider(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F, bool bClass, bool bFrst)
-		: bClass3(bClass), bFirst(bFrst) {
+	bool bClass3 = false;
+	bool bFirst = false;
+
+	cform_frustum_collider(bool bClass, bool bFrst)
+		:bClass3(bClass), bFirst(bFrst) {}
+
+	void _init(COLLIDER* CL, Fvector* V, TRI* T, const CFrustum* _F)
+	{
 		dest = CL;
 		tris = T;
 		verts = V;
@@ -34,17 +41,16 @@ public:
 	}
 
 	IC EFC_Visible Box(const Fvector& C, const Fvector& E, u32& mask) {
-		Fvector mM[2];
 		mM[0].sub(C, E);
 		mM[1].add(C, E);
 		return F->testAABB(&mM[0].x, mask);
 	}
 
 	void Prim(DWORD InPrim) {
-		if (bClass3) {
-			sPoly Src, Dst;
+		if (bClass3)
+		{
 			Src.resize(3);
-			SetByVerts(Src, InPrim);
+			SetByVerts(Src.begin(), InPrim);
 
 			if (F->ClipPoly(Src, Dst)) {
 				RESULT& R = dest->r_add();
@@ -100,14 +106,18 @@ public:
 void COLLIDER::frustum_query(const MODEL* m_def, const CFrustum& F)
 {
 	PROF_EVENT("COLLIDER::frustum_query")
+	if (!m_def)
+		return;
+
 	m_def->syncronize();
 
 	// Get nodes
 	const AABBNoLeafNode* pNodes = ((AABBNoLeafTree*)m_def->tree->GetTree())->GetNodes();
-	const DWORD				mask = F.getMask();
+	const DWORD mask = F.getMask();
 	r_clear();
 
 	// Binary dispatcher
-	CFrustumCollider BC(this, m_def->verts, m_def->tris, &F, frustum_mode & OPT_FULL_TEST, frustum_mode & OPT_ONLYFIRST);
+	cform_frustum_collider BC(!!(frustum_mode&OPT_FULL_TEST), !!(frustum_mode&OPT_ONLYFIRST));
+	BC._init(this, m_def->verts, m_def->tris, &F);
 	BC.Stab(pNodes, mask);
 }

@@ -374,13 +374,6 @@ extern float		r_ssaLOD_A,			r_ssaLOD_B;
 extern float		r_ssaGLOD_start,	r_ssaGLOD_end;
 extern float		r_ssaHZBvsTEX;
 
-ICF bool pred_sp_sort(ISpatialShared _1, ISpatialShared _2)
-{
-	float	d1		= _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-	float	d2		= _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-	return	d1<d2;
-}
-
 void CRender::Calculate				()
 {
 	Device.Statistic->RenderCALC.Begin();
@@ -471,15 +464,12 @@ void CRender::Calculate				()
 		// Traverse object database
 		if  (psDeviceFlags.test(rsDrawDynamic))	{
 			g_SpatialSpace->q_frustum
-				(
-				lstRenderables,
-				ISpatial_DB::O_ORDERED,
-				STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
-				ViewBase
-				);
-
-			// Exact sorting order (front-to-back)
-			std::sort							(lstRenderables.begin(),lstRenderables.end(),pred_sp_sort);
+			(
+			lstRenderables,
+			ISpatial_DB::O_ORDERED,
+			STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
+			ViewBase,
+			Device.vCameraPosition);//nearest sorting
 
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);

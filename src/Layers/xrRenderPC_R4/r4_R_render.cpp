@@ -68,22 +68,12 @@ void CRender::render_main	(bool deffered, bool zfill)
 		{
 			// Traverse object database
 			g_SpatialSpace->q_frustum
-				(
-				lstRenderablesMain,
-				ISpatial_DB::O_ORDERED,
-				STYPE_RENDERABLE + STYPE_RENDERABLESHADOW + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
-				ViewBase
-				);
-
-			// (almost) Exact sorting order (front-to-back)
-			std::sort(lstRenderablesMain.begin(), lstRenderablesMain.end(),
-				[](ISpatialShared _1, ISpatialShared _2)
-				{
-					float d1 = _1->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-					float d2 = _2->spatial.sphere.P.distance_to_sqr(Device.vCameraPosition);
-					return d1 < d2;
-				}
-			);
+			(
+			lstRenderablesMain,
+			ISpatial_DB::O_ORDERED,
+			STYPE_RENDERABLE + STYPE_RENDERABLESHADOW + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
+			ViewBase,
+			Device.vCameraPosition);//nearest sorting
 
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);

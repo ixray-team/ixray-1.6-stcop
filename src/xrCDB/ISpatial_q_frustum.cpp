@@ -3,15 +3,16 @@
 #include "Frustum.h"
 
 extern Fvector	c_spatial_offset[8];
-class	walker
+class _MM_ALIGN16 spatial_frustum_walker
 {
 public:
 	u32				mask;
 	CFrustum*		F;
 	ISpatial_DB*	space;
+	Fbox BB;
 
 public:
-	walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F)
+	spatial_frustum_walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F)
 	{
 		mask = _mask;
 		F = (CFrustum*)_F;
@@ -22,7 +23,6 @@ public:
 	{
 		// box
 		float n_vR = 2 * n_R;
-		Fbox BB;
 		BB.set(n_C.x - n_vR, n_C.y - n_vR, n_C.z - n_vR, n_C.x + n_vR, n_C.y + n_vR, n_C.z + n_vR);
 
 		if (fcvNone == F->testAABB(BB.data(), fmask))
@@ -31,6 +31,7 @@ public:
 		// test items
 		for (ISpatialShared& S : N->items)
 		{
+			if (!S.get()) continue;
 			if (0 == (S->spatial.type & mask))
 				continue;
 
@@ -58,15 +59,26 @@ public:
 	}
 };
 
-void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const CFrustum& _frustum)
+void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const CFrustum& _frustum, const Fvector& near_sort_origin)
 {
 	PROF_EVENT("ISpatial_DB::q_frustum")
 	xrSRWLockGuard guard(&db_lock, true);
 	if (!m_root)
-	{
 		return;
-	}
 
 	R.resize(0);
-	walker W(this,_mask,&_frustum); W.walk(R,m_root,m_center,m_bounds,_frustum.getMask());
+
+	spatial_frustum_walker W(this,_mask,&_frustum);
+	W.walk(R,m_root,m_center,m_bounds,_frustum.getMask());
+
+	if (&near_sort_origin != &zero_fvector3)//nearest sorting
+	{
+		std::sort(R.begin(), R.end(),
+		[&near_sort_origin](ISpatialShared& _1, ISpatialShared& _2)
+		{
+			float d1 = _1.get() ? _1->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS_L;
+			float d2 = _1.get() ? _2->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS;
+			return d1 < d2;
+		});
+	}
 }
