@@ -99,22 +99,9 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
-	HWND g_hWndSplash = NULL;
-	std::thread splash_thread;
-	//SetThreadAffinityMask(GetCurrentThread(), 1);
 	CreateGameWindow();
 
-	{
-		HANDLE g_hEventSplashReady = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		splash_thread = std::thread(ShowSplash, GetModuleHandle(NULL), nCmdShow, &g_hEventSplashReady, &g_hWndSplash);
-		WaitForSingleObject(g_hEventSplashReady, INFINITE);
-
-		if (g_hWndSplash != NULL) {
-			PostMessage(g_hWndSplash, WM_FADIN, 0, 0);
-		}
-
-	}
+	splash::show();
 
 	EngineLoadStage1(lpCmdLine);
 
@@ -155,27 +142,18 @@ int APIENTRY WinMain
 
 	EngineLoadStage4();
 
+	splash::hide();
 	SDL_ShowWindow(g_AppInfo.Window);
-	SDL_RaiseWindow(g_AppInfo.Window);
-
 	// Show main wnd
 	Console->Execute("vid_restart");
 #ifdef DEBUG_DRAW
 	RenderUI();
 	EditorLuaInit();
 #endif
-	if (g_hWndSplash != NULL)
-	{
-		PostMessage(g_hWndSplash, WM_FADEOUT, 0, 0);
-	}
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);
 	xr_delete(g_pGPU);
-
-	{
-		splash_thread.join();
-	}
 
 	Core._destroy();
 
