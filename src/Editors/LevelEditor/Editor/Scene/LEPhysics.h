@@ -3,15 +3,15 @@
 #include "../../xrphysics/xrphysics.h"
 
 class CObjectSpace;
-class CScenePhyscs
+class CScenePhysics
 {
 	 CObjectSpace *m_object_space ;
      bool		   b_update_level_collision;
  public:
- 	CScenePhyscs			() : m_object_space(0), b_update_level_collision(false)	{}
-	~CScenePhyscs			() ;
+ 	CScenePhysics			() : m_object_space(0), b_update_level_collision(false)	{}
+	~CScenePhysics			() ;
  public:
-     void	GenerateCFrom(CObjectSpace*To, CDB::build_callback cb);
+     void	GenerateCForm(CObjectSpace*To, CDB::build_callback cb);
     void	CreateWorld			();
     void 	DestroyWorld		();
     void	CreateShellsSelected();
@@ -25,4 +25,4 @@ private:
     void 	DestroyObjectSpace	();
 };
 
-  extern 	CScenePhyscs	g_scene_physics;
+  extern 	CScenePhysics	g_scene_physics;

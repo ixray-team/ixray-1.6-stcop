@@ -3,7 +3,7 @@
 
 bool EScene::BuildSpawn()
 {
-	if (m_cfrom_builder.empty())
+	if (m_cform_builder.empty())
 	{
 		if (!BuildCForm())
 		{
@@ -61,7 +61,7 @@ bool EScene::BuildForPCPlay()
 		return false;
 	}
 
-	if (m_cfrom_builder.empty())
+	if (m_cform_builder.empty())
 	{
 		if (!BuildCForm())
 		{

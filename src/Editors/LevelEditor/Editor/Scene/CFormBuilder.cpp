@@ -3,16 +3,16 @@
 #include "../../xrphysics/iphworld.h"
 #include "../../xrcdb/xr_area.h"
 
-CFromBuilder::CFromBuilder()
+CFormBuilder::CFormBuilder()
 {
 	m_Box.invalidate();
 }
 
-CFromBuilder::~CFromBuilder()
+CFormBuilder::~CFormBuilder()
 {
 }
 
-bool CFromBuilder::build()
+bool CFormBuilder::build()
 {
 	clear();
 	auto GetBox = [](Fbox& box, const Fvector* verts, u32 cnt)
@@ -69,19 +69,19 @@ bool CFromBuilder::build()
 	return true;
 }
 
-bool CFromBuilder::empty() const
+bool CFormBuilder::empty() const
 {
     return m_Faces.empty();
 }
 
-void CFromBuilder::clear()
+void CFormBuilder::clear()
 {
 	m_Box.invalidate();
 	m_Vertex.clear();
 	m_Faces.clear();
 }
 
-void CFromBuilder::Load(CObjectSpace* To, CDB::build_callback cb)
+void CFormBuilder::Load(CObjectSpace* To, CDB::build_callback cb)
 {
 	hdrCFORM H = {};
 	H.vertcount = m_Vertex.size();
