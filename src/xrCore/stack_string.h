@@ -239,6 +239,9 @@ public:
 		if (current_index <= _kStringLength - 1)
 			this->m_buffer[current_index] = symbol;
 
+		if (current_index + 1 < _kStringLength)
+			this->m_buffer[current_index + 1] = char_t(0);
+
 		return *this;
 	}
 
