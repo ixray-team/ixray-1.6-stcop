@@ -9,8 +9,8 @@ CUICellItem*	create_cell_item(CInventoryItem* itm)
 	VERIFY( itm );
 	CUICellItem* cell_item;
 	
-	CWeaponAmmo* pAmmo   = itm->cast_weapon_ammo();
-	CWeapon*     pWeapon = itm->cast_weapon();
+	CWeaponAmmo* pAmmo   = smart_cast<CWeaponAmmo*>(itm);
+	CWeapon*     pWeapon = smart_cast<CWeapon*>(itm);
 	if ( pAmmo )
 	{
 		cell_item = new CUIAmmoCellItem(pAmmo);

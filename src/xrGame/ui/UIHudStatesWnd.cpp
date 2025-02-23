@@ -412,7 +412,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
                 m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
         }
 
-        CWeaponMagazined* wpnm = item->cast_weapon()->cast_weapon_magazined();
+        CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
         if (wpnm)
         {
             if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)

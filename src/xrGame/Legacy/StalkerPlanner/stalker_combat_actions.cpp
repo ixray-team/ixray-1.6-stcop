@@ -870,7 +870,7 @@ void CStalkerActionPostCombatWait::initialize		()
 		object().set_goal	(action,object().best_weapon());
 	else {
 		if (object().inventory().ItemFromSlot(INV_SLOT_2)) {
-			CWeaponMagazined				*temp = object().inventory().ItemFromSlot(INV_SLOT_2)->cast_weapon()->cast_weapon_magazined();
+			CWeaponMagazined				*temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(INV_SLOT_2));
 			if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
 				object().set_goal			(action,object().inventory().ItemFromSlot(INV_SLOT_2));
 		}

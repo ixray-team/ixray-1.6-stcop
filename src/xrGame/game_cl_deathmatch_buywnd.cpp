@@ -169,11 +169,11 @@ void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, BOOL OnlyPreset
 			if(pSettings->line_exist(GetBaseCostSect(), pItem->object().cNameSect()))
 			{
 				u8 Addons = 0;
-				CWeapon* pWeapon = pItem->cast_weapon();
+				CWeapon* pWeapon = smart_cast<CWeapon*> (pItem);
 				{
 					if (pWeapon) Addons = pWeapon->GetAddonsState();
 				}
-				CWeaponAmmo* pAmmo = pItem->cast_weapon_ammo();
+				CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*> (pItem);
 				if (pAmmo)
 				{
 					if (pAmmo->m_boxCurr != pAmmo->m_boxSize) continue;
@@ -198,7 +198,7 @@ void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, BOOL OnlyPreset
 
 			if(pSettings->line_exist(GetBaseCostSect(), pItem->object().cNameSect()))
 			{
-				CWeaponAmmo* pAmmo = pItem->cast_weapon_ammo();
+				CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*> (pItem);
 				if (pAmmo)
 				{
 					if (pAmmo->m_boxCurr != pAmmo->m_boxSize) continue;
@@ -224,11 +224,11 @@ void game_cl_Deathmatch::SetBuyMenuItems		(PRESET_ITEMS* pItems, BOOL OnlyPreset
 			if(pSettings->line_exist(GetBaseCostSect(), pItem->object().cNameSect()))
 			{
 				u8 Addons = 0;
-				CWeapon* pWeapon = pItem->cast_weapon();
+				CWeapon* pWeapon = smart_cast<CWeapon*> (pItem);
 				{
 					if (pWeapon) Addons = pWeapon->GetAddonsState();
 				}
-				CWeaponAmmo* pAmmo = pItem->cast_weapon_ammo();
+				CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*> (pItem);
 				if (pAmmo)
 				{
 					if (pAmmo->m_boxCurr != pAmmo->m_boxSize) continue;
@@ -275,7 +275,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 	pCurBuyMenu->GetWeaponIndexByName(*pItem->object().cNameSect(), SlotID, ItemID);
 	if (SlotID == 0xff || ItemID == 0xff) return;
 	s16 BigID = GetBuyMenuItemIndex(SlotID, ItemID);
-	CWeaponAmmo* pAmmo = pItem->cast_weapon_ammo();
+	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*> (pItem);
 	if (pAmmo)
 	{
 		if (pAmmo->m_boxCurr != pAmmo->m_boxSize) return;
@@ -302,7 +302,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 		pPresetItems->erase(PresetItemIt);
 	}
 	//-----------------------------------------------------
-	CWeapon* pWeapon = pItem->cast_weapon();
+	CWeapon* pWeapon = smart_cast<CWeapon*> (pItem);
 	if (pWeapon)
 	{
 		if (pWeapon->ScopeAttachable())
@@ -521,7 +521,7 @@ struct AmmoSearcherPredicate
 
 	bool operator()(PIItem const & item)
 	{
-		CWeaponAmmo* temp_ammo = item->cast_weapon_ammo();
+		CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(item);
 		if (!temp_ammo)
 			return false;
 		

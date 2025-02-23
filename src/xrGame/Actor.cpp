@@ -1017,7 +1017,7 @@ float CActor::currentFOV()
 	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
 		return g_fov;
 
-	CWeapon* pWeapon = inventory().ActiveItem()->cast_weapon();	
+	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 
 	if (eacFreeLook != cam_active && pWeapon &&
 		pWeapon->IsZoomed() && 
@@ -1083,7 +1083,7 @@ void CActor::UpdateCL	()
 	PickupModeUpdate_COD();
 
 	SetZoomAimingMode		(false);
-	CWeapon* pWeapon		= inventory().ActiveItem()->cast_weapon();	
+	CWeapon* pWeapon		= smart_cast<CWeapon*>(inventory().ActiveItem());	
 
 	cam_Update(float(Device.dwTimeDelta)/1000.0f, currentFOV());
 
@@ -1204,7 +1204,7 @@ void CActor::UpdatePlayerView()
 	{
 		Fvector cent;
 		Center(cent);
-		CWeapon* pWeapon = inventory().ActiveItem()->cast_weapon();
+		CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 		CCameraLook* pCam = smart_cast<CCameraLook*>(cam_Active());
 		has_visible = pCam && pCam->GetDist() >= 0.43f && (!pWeapon || !pWeapon->render_item_ui_query());
 		has_shadow_only = psGameFlags.test(rsActorShadow) && Render->get_generation() != IRender_interface::GENERATION_R1;
@@ -1925,7 +1925,7 @@ ENGINE_API extern float		psHUD_FOV;
 float CActor::Radius()const
 { 
 	float R		= inherited::Radius();
-	CWeapon* W	= inventory().ActiveItem()->cast_weapon();
+	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
 	if (W) R	+= W->Radius();
 	//	if (HUDview()) R *= 1.f/psHUD_FOV;
 	return R;
@@ -1990,7 +1990,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 			torch->SwitchNightVision(false);
 	}
 
-	CWeapon* weapon	= inventory_item->cast_weapon();
+	CWeapon* weapon	= smart_cast<CWeapon*>(inventory_item);
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
 		weapon->bReloadKeyPressed = false;

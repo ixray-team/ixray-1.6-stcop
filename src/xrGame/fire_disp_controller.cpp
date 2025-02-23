@@ -37,7 +37,7 @@ void	CFireDispertionController::Update()
 	CActor* tmp_actor = smart_cast<CActor*>(Level().CurrentEntity());
 	if (tmp_actor)
 	{
-		CWeapon* tmp_weapon = tmp_actor->inventory().ActiveItem()->cast_weapon();
+		CWeapon* tmp_weapon = smart_cast<CWeapon*>(tmp_actor->inventory().ActiveItem());
 		if (tmp_weapon)
 		{
 			tmp_inertion = tmp_weapon->GetCrosshairInertion();

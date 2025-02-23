@@ -469,7 +469,7 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 				}
 				else {
 					if (!m_bAnimTorsoPlayed) {
-						CWeapon* W = _i->cast_weapon();
+						CWeapon* W = smart_cast<CWeapon*>(_i);
 						CMissile* M = smart_cast<CMissile*>(_i);
 						CArtefact* A = smart_cast<CArtefact*>(_i);
 						if (W) {

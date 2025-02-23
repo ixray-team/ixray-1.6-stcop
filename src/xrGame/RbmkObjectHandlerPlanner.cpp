@@ -68,7 +68,7 @@ class FRbmkObjectPropertyQueue final : public FRbmkGoapProperty
 public:
 	virtual bool GetProperty() const override
 	{
-		if (CWeaponMagazined* WeaponMagazined = ItemObject->cast_weapon()->cast_weapon_magazined())
+		if (CWeaponMagazined* WeaponMagazined = smart_cast<CWeaponMagazined*>(ItemObject))
 		{
 			return !WeaponMagazined->StopedAfterQueueFired();
 		}
@@ -506,7 +506,7 @@ public:
 		}
 		if (ItemObject && bCompleted)
 		{
-			if (CWeaponMagazined* WeaponMagazined = ItemObject->cast_weapon()->cast_weapon_magazined())
+			if (CWeaponMagazined* WeaponMagazined = smart_cast<CWeaponMagazined*>(ItemObject))
 			{
 				WeaponMagazined->StopedAfterQueueFired(false);
 			}
@@ -546,7 +546,7 @@ public:
 		bool bCompleted = Device.dwTimeGlobal - Timer > *QueueInterval;
 		if (ItemObject && bCompleted)
 		{
-			if (CWeaponMagazined* WeaponMagazined = ItemObject->cast_weapon()->cast_weapon_magazined())
+			if (CWeaponMagazined* WeaponMagazined = smart_cast<CWeaponMagazined*>(ItemObject))
 			{
 				WeaponMagazined->StopedAfterQueueFired(false);
 			}
@@ -579,7 +579,7 @@ public:
 		VERIFY(StalkerOwner->inventory().ActiveItem()->object().ID() == ItemObject->ID());
 		if (!StalkerOwner->can_kill_member())
 		{
-			CWeapon* weapon = StalkerOwner->inventory().ActiveItem()->cast_weapon();
+			CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
 			if (!weapon || (weapon->GetState() != CWeapon::eFire)) StalkerOwner->inventory().Action(kWPN_FIRE, CMD_START);
 		}
 		else
@@ -613,7 +613,7 @@ public:
 		else StalkerOwner->inventory().Action(kWPN_FIRE, CMD_STOP);
 
 
-		CWeapon* weapon = StalkerOwner->inventory().ActiveItem()->cast_weapon();
+		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
 		if (weapon && (weapon->GetState() == CWeapon::eFire)) bFired = true;
 		else bFired = false;
 	}
@@ -633,7 +633,7 @@ public:
 
 		if (StalkerOwner->can_kill_member()) return;
 
-		CWeapon* weapon = StalkerOwner->inventory().ActiveItem()->cast_weapon();
+		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
 		if (!weapon || (weapon->GetState() != CWeapon::eFire)) StalkerOwner->inventory().Action(kWPN_FIRE, CMD_START);
 		if (weapon && (weapon->GetState() == CWeapon::eFire)) bFired = true;
 	}
@@ -701,7 +701,7 @@ public:
 				return (false);
 			};
 
-			TryAdvanceAmmo(*ItemObject->cast_weapon());
+			TryAdvanceAmmo(*smart_cast<CWeapon*>(ItemObject));
 		}
 
 		StalkerOwner->inventory().Action(kWPN_RELOAD, CMD_START);
@@ -712,7 +712,7 @@ public:
 
 		CAI_Stalker* StalkerOwner = GetOwner();
 
-		CWeapon* weapon = StalkerOwner->inventory().ActiveItem()->cast_weapon();
+		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
 		VERIFY(weapon);
 		if (weapon->IsPending()) return;
 
@@ -1349,7 +1349,7 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 	CGameObject* LastTargetObject = TargetObject;
 	if (InGameObject && (MonsterSpace::eObjectActionDeactivate != ObjectAction))
 	{
-		CWeapon* Weapon = InGameObject->cast_weapon();
+		CWeapon* Weapon = smart_cast<CWeapon*>(InGameObject);
 		if (Weapon && (ObjectAction == MonsterSpace::eObjectActionStrapped) && !Weapon->can_be_strapped())
 		{
 			ObjectAction = MonsterSpace::eObjectActionIdle;
@@ -1431,7 +1431,7 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 	if (!InGameObject || (InMinQueueSize < 0))
 		return;
 
-	CWeaponMagazined *WeaponMagazined = InGameObject->cast_weapon()->cast_weapon_magazined();
+	CWeaponMagazined *WeaponMagazined = smart_cast<CWeaponMagazined*>(InGameObject);
 	if (!WeaponMagazined)
 		return;
 
@@ -1541,7 +1541,7 @@ void FRbmkObjectHandlerPlanner::Initialize()
 void FRbmkObjectHandlerPlanner::AddObject(CInventoryItem* InventoryItem)
 {
 	CGameObject* GameActor = InventoryItem->cast_game_object();
-	if(CWeapon* Weapon = GameActor->cast_weapon())
+	if(CWeapon* Weapon = smart_cast<CWeapon*>(GameActor))
 	{
 		AddObject(Weapon);
 	}
