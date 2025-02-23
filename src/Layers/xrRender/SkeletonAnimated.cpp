@@ -967,3 +967,11 @@ MotionID CKinematicsAnimated::ID_Motion(LPCSTR  N, u16 slot)
     return motion_ID;
 }
 #endif
+
+CBlend* CKinematicsAnimated::PlayFX_Safe(LPCSTR N, float power_scale)
+{
+	MotionID motion_ID = ID_FX_Safe(N);
+	if (motion_ID.valid())
+		return PlayFX(motion_ID, power_scale);
+	return nullptr;
+}
