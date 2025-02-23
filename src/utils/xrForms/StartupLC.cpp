@@ -51,8 +51,22 @@ void StartupLC(LPSTR lpCmdLine)
 	// Se7kills
 	lc_global_data()->SetIsIntelUse(strstr(cmd, "-use_intel") != nullptr);
 	lc_global_data()->SetSkipWeld(strstr(cmd, "-skip_weld") != nullptr);
-	lc_global_data()->SetLMapsAlt(strstr(cmd, "-lmaps_alt") != nullptr);
- 
+	
+	if (strstr(cmd, "-lmaps_1k") != nullptr)
+		lc_global_data()->SetLmapsSize(1024);
+	else 
+	if (strstr(cmd, "-lmaps_2k") != nullptr)
+		lc_global_data()->SetLmapsSize(1024 * 2);
+	else 
+	if (strstr(cmd, "-lmaps_4k") != nullptr)
+		lc_global_data()->SetLmapsSize(1024 * 4);
+	else
+	if (strstr(cmd, "-lmaps_8k") != nullptr)
+		lc_global_data()->SetLmapsSize(1024 * 8);
+	else
+		lc_global_data()->SetLmapsSize(1024 * 4); // 4k Default
+
+
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
