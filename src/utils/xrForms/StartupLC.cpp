@@ -34,7 +34,6 @@ extern CompilersMode gCompilerMode;;
 
 void StartupLC()
 {
-	create_global_data();
 	// 	xr_strcpy(cmd, lpCmdLine);
 	//	_strlwr(cmd);
 
@@ -42,19 +41,6 @@ void StartupLC()
 	g_build_options.b_radiosity = gCompilerMode.LC_GI;
 	g_build_options.b_noise = gCompilerMode.LC_Noise;
 	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
-
-	VERIFY(lc_global_data());
-
-	lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
-	lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
-	lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
-	lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
-	lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
-
-	// Se7kills
-	lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
-	lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
-	lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
 
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
@@ -65,7 +51,20 @@ void StartupLC()
 		if (!Selected)
 			continue;
 
+		create_global_data();
+		lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
+		lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
+		lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
+		lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
+		lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
+
+		// Se7kills
+		lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
+		lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
+		lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
+
 		lc_global_data()->SetLevelName(Name.data());
+
 		extern HWND logWindow;
 		string256 temp;
 		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
