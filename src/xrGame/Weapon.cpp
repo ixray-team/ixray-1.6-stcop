@@ -64,7 +64,7 @@ CWeapon::CWeapon()
 	m_pFlameParticles2		= nullptr;
 	m_sFlameParticles2		= nullptr;
 
-
+	m_bIAmWeaponRPG7 = false;
 	m_fCurrentCartirdgeDisp = 1.f;
 
 	m_strap_bone0			= 0;

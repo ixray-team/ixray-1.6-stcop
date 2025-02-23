@@ -245,7 +245,7 @@ protected:
 
 	InertionData	m_base_inertion;
 	InertionData	m_zoom_inertion;
-
+	bool m_bIAmWeaponRPG7;
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
