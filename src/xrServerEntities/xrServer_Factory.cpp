@@ -11,7 +11,7 @@
 
 CSE_Abstract* F_entity_Create(LPCSTR section)
 {
-	if (Device.IsEditorMode())
+	if (DevicePtr != nullptr && Device.IsEditorMode())
 	{
 		if (pSettings->section_exist(section))
 		{

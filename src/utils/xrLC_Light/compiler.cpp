@@ -6,7 +6,7 @@
 #include "global_calculation_data.h"
 #include "LightThread.h"
 
-#define NUM_THREADS		CPU::ID.n_threads - 1
+#define NUM_THREADS		CPU::ID.n_threads
 
 void xrLight()
 {

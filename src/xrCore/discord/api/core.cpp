@@ -44,10 +44,10 @@ Result Core::Create(ClientId clientId, std::uint64_t flags, Core** instance)
 
 Core::~Core()
 {
-    if (internal_) {
-        internal_->destroy(internal_);
-        internal_ = nullptr;
-    }
+  //if (internal_) {
+  //    internal_->destroy(internal_);
+  //    internal_ = nullptr;
+  //}
 }
 
 Result Core::RunCallbacks()

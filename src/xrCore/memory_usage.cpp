@@ -27,10 +27,10 @@ XRCORE_API void log_vminfo	()
 	size_t  w_free, w_reserved, w_committed;
 	vminfo	(&w_free, &w_reserved, &w_committed);
 	Msg		(
-		"* [win32]: free[%d K], reserved[%d K], committed[%d K]",
-		w_free/1024,
-		w_reserved/1024,
-		w_committed/1024
+		"* [win32]: free[%llu Mb], reserved[%llu Mb], committed[%llu Mb]",
+		w_free/1024/1024,
+		w_reserved/1024/1024,
+		w_committed/1024/1024
 	);
 }
 
