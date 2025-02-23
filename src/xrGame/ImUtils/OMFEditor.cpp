@@ -16,7 +16,7 @@ struct OMFEditorState
 	bool is_file_loaded;
 
 
-	char path[1024];
+	string_path path;
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
@@ -25,6 +25,13 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 {
 	if (p_state)
 	{
+		if (xr_EFS)
+		{
+			wstring_path p_fa = { 0 };
+			
+		}
+
+
 #ifdef IXR_WINDOWS
 		OPENFILENAME ofn;       // common dialog box structure
 		TCHAR szFile[1024] = { 0 };       // if using TCHAR macros
@@ -117,9 +124,6 @@ void RenderToolsOMFEditorWindow()
 
 			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path);
 			ImGui::Separator();
-
-
-
 		}
 
 		ImGui::End();
