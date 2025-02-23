@@ -107,6 +107,7 @@ public:
 	{}
 #endif
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
+	virtual void					SetLoadStageTitle	(pcstr /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
 };
 
