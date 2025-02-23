@@ -527,7 +527,7 @@ void CCustomZone::shedule_Update(u32 dt)
 		{
 			CGameObject* pObject		= (*it).object;
 			if (!pObject)				continue;
-			CEntityAlive* pEntityAlive	= smart_cast<CEntityAlive*>(pObject);
+			CEntityAlive* pEntityAlive	= pObject->cast_entity_alive();
 			SZoneObjectInfo& info		= (*it);
 
 			info.dw_time_in_zone += dt;
@@ -585,12 +585,11 @@ void CCustomZone::CheckForAwaking()
 
 void CCustomZone::feel_touch_new	(CObject* O) 
 {
-//	if(smart_cast<CActor*>(O) && O == Level().CurrentEntity())
-//					m_pLocalActor	= smart_cast<CActor*>(O);
-
+	if (!O || O->getDestroy()) return;
 	CGameObject*	pGameObject		= smart_cast<CGameObject*>(O);
-	CEntityAlive*	pEntityAlive	= smart_cast<CEntityAlive*>(pGameObject);
-	CArtefact*		pArtefact		= smart_cast<CArtefact*>(pGameObject);
+	if (!pGameObject) return;
+	CEntityAlive*	pEntityAlive	= pGameObject->cast_entity_alive();
+	CArtefact*		pArtefact		= pGameObject->cast_artefact();
 	
 	SZoneObjectInfo object_info		;
 	object_info.object = pGameObject;
@@ -623,7 +622,8 @@ void CCustomZone::feel_touch_new	(CObject* O)
 
 void CCustomZone::feel_touch_delete(CObject* O) 
 {
-	CGameObject* pGameObject =smart_cast<CGameObject*>(O);
+	if (!O || O->getDestroy()) return;
+	CGameObject* pGameObject = O->cast_game_object();
 	if(!pGameObject->getDestroy())
 	{
 		StopObjectIdleParticles(pGameObject);
@@ -639,21 +639,23 @@ void CCustomZone::feel_touch_delete(CObject* O)
 
 BOOL CCustomZone::feel_touch_contact(CObject* O) 
 {
-	if (smart_cast<CCustomZone*>(O))				return FALSE;
-	if (smart_cast<CBreakableObject*>(O))			return FALSE;
-	if (0==smart_cast<IKinematics*>(O->Visual()))	return FALSE;
+	if (!O || O->getDestroy()) return FALSE;
+	CGameObject* pGameObject = O->cast_game_object();
+	if (!pGameObject)							return FALSE;
+	if (pGameObject->cast_custom_zone())		return FALSE;
+	if (pGameObject->cast_breakable_object())	return FALSE;
+	if (0==PKinematics(O->Visual()))			return FALSE;
 
 	if (O->ID() == ID())
 		return		(FALSE);
 
-	CGameObject *object = smart_cast<CGameObject*>(O);
-    if (!object || !object->IsVisibleForZones())
+    if (!pGameObject->IsVisibleForZones())
 		return		(FALSE);
 
 	if (!((CCF_Shape*)CFORM())->Contact(O))
 		return		(FALSE);
 
-	return			(object->feel_touch_on_contact(this));
+	return			(pGameObject->feel_touch_on_contact(this));
 }
 
 
@@ -760,6 +762,7 @@ void CCustomZone::PlayBlowoutParticles()
 
 void CCustomZone::PlayHitParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	m_hit_sound.play_at_pos(0, pObject->Position());
 
 	shared_str particle_str = nullptr;
@@ -777,8 +780,9 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 
 	if( particle_str.size() )
 	{
-		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
-		if (PP){
+		CParticlesPlayer* PP = pObject->cast_particles_player();
+		if (PP)
+		{
 			u16 play_bone = PP->GetRandomBone(); 
 			if (play_bone!=BI_NONE)
 				PP->StartParticles	(particle_str,play_bone,Fvector().set(0,1,0), ID());
@@ -788,6 +792,7 @@ void CCustomZone::PlayHitParticles(CGameObject* pObject)
 #include "Bolt.h"
 void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	m_entrance_sound.play_at_pos		(0, pObject->Position());
 
 	LPCSTR particle_str				= nullptr;
@@ -808,14 +813,14 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	}
 
 	Fvector							vel;
-	CPhysicsShellHolder* shell_holder=smart_cast<CPhysicsShellHolder*>(pObject);
+	CPhysicsShellHolder* shell_holder= pObject->cast_physics_shell_holder();
 	if(shell_holder)
 		shell_holder->PHGetLinearVell(vel);
 	else 
 		vel.set						(0,0,0);
 	
 	//выбрать случайную косточку на объекте
-	CParticlesPlayer* PP			= smart_cast<CParticlesPlayer*>(pObject);
+	CParticlesPlayer* PP			= pObject->cast_particles_player();
 	if (PP)
 	{
 		u16 play_bone				= PP->GetRandomBone(); 
@@ -838,7 +843,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 			pParticles->Play		(false);
 		}
 	}
-	if(m_zone_flags.test(eBoltEntranceParticles) && smart_cast<CBolt*>(pObject))
+	if(m_zone_flags.test(eBoltEntranceParticles) && pObject->cast_missile() && smart_cast<CBolt*>(pObject->cast_missile()))
 		PlayBoltEntranceParticles();
 }
 
@@ -921,7 +926,8 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
 
 void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 {
-	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
+	if (!pObject || pObject->getDestroy()) return;
+	CParticlesPlayer* PP = pObject->cast_particles_player();
 	if(!PP) return;
 
 	shared_str particle_str = nullptr;
@@ -950,10 +956,11 @@ void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
 
 void CCustomZone::StopObjectIdleParticles(CGameObject* pObject)
 {
+	if (!pObject || pObject->getDestroy()) return;
 	if (m_zone_flags.test(eIdleObjectParticlesDontStop) && !pObject->cast_actor())
 		return;
 
-	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(pObject);
+	CParticlesPlayer* PP = pObject->cast_particles_player();
 	if(!PP) return;
 
 
@@ -1289,7 +1296,8 @@ void CCustomZone::CreateHit	(	u16 id_to,
 
 void CCustomZone::net_Relcase(CObject* O)
 {
-	CGameObject* GO				= smart_cast<CGameObject*>(O);
+	if (!O || O->getDestroy()) return;
+	CGameObject* GO				= O->cast_game_object();
 	OBJECT_INFO_VEC_IT it		= std::find(m_ObjectInfoMap.begin(),m_ObjectInfoMap.end(), GO);
 	if(it!=m_ObjectInfoMap.end())
 	{

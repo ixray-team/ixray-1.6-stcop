@@ -125,8 +125,9 @@ struct pred_remove_nonactual_sounds {
 		if (x.time < new_time)	return true;
 
 		// удалить звуки от неживых объектов
-		if (x.who) {
-			const CEntityAlive *pE = smart_cast<const CEntityAlive*> (x.who);
+		if (x.who)
+		{
+			const CEntityAlive *pE = const_cast<CObject*>(x.who)->cast_entity_alive();
 			if (pE && !pE->g_Alive()) return true;
 		}
 
