@@ -80,131 +80,205 @@ void MT_FindAttached(CDeflector* defl, vecFace& affected, int SP, int start, int
 
 void CBuild::xrPhase_UVmap()
 {
-	// Main loop
-	Status("Processing...");
-	lc_global_data()->g_deflectors().reserve(64 * 1024);
-	float		p_cost = 1.f / float(g_XSplit.size());
-	float		p_total = 0.f;
-	vecFace		faces_affected;
-	u32			remove_count = 0;
+	size_t used, rel, free;
+	vminfo(&free, &rel, &used);
 
-	orig_size = g_XSplit.size();
-	bool use_fast_method = true;
-	u64 LastSP = 0;
-	u64 LastXSplit = g_XSplit.size();
+	clMsg("xrPhase_UVmap: Start %u used", size_t(used / 1024 / 1024));
 
-	for (int SP = 0; SP<int(g_XSplit.size()); SP++)
 	{
-		if (LastSP != SP && LastSP < LastXSplit)
-			LastSP = SP;
+		/***
 
-		Progress(p_total += p_cost);
-
-		// Detect vertex-lighting and avoid this subdivision
-		R_ASSERT(!g_XSplit[SP]->empty());
-		Face* Fvl = g_XSplit[SP]->front();
-		if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
-		if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
-
-		if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
-
-		//   find first poly that doesn't has mapping and start recursion
-
-		int id_face = 0;
-		vecFace* faces_selected = g_XSplit[SP];
-		vecFaceIt last_checked_id = faces_selected->begin();
-
-		if (use_fast_method)
-		{
-			remove_count = 0;
-			std::sort(faces_selected->begin(), faces_selected->end(), sort_faces);
-		}
-
-		while (TRUE)
-		{
-			// Select maximal sized poly
-			Face* msF = NULL;
-			float	msA = 0;
-			for (vecFaceIt it = last_checked_id; it != faces_selected->end(); it++)
+			Face *	msF		= NULL;
+			float	msA		= 0;
+			for (vecFaceIt it = g_XSplit[SP]->begin(); it!=g_XSplit[SP]->end(); it++)
 			{
-				if ((*it)->pDeflector == NULL)
-				{
-					msF = (*it);
-					if (!use_fast_method)
-					{
-						float a = (*it)->CalcArea();
-						if (a > msA)
-						{
-							msF = (*it);
-							msA = a;
-						}
-					}
-					else
-					{
-						id_face++;
-						last_checked_id = it;
-						break;
+				if ( (*it)->pDeflector == NULL ) {
+					float a = (*it)->CalcArea();
+					if (a>msA) {
+						msF = (*it);
+						msA = a;
 					}
 				}
 			}
+			if (msF) {
 
-			if (!msF && use_fast_method)
-			{
-				if (remove_count == g_XSplit[SP]->size())
-				{
-					xr_delete(g_XSplit[SP]);
-					g_XSplit.erase(g_XSplit.begin() + SP);
-					SP--;
-					break;
-				}
-				else
-					if (remove_count > 0)
-					{
-						clMsg("CHECK ERROR SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
-					}
-					else if (SP < orig_size)
-					{
-					}
-			}
-
-			if (msF)
-			{
-				CDeflector* D = new CDeflector();
-				lc_global_data()->g_deflectors().push_back(D);
-				faces_affected.clear();
-
+				CDeflector *D = xr_new<CDeflector>();
+				lc_global_data()->g_deflectors().push_back	(D);
 				// Start recursion from this face
 				start_unwarp_recursion();
-				D->OA_SetNormal(msF->N);
-				msF->OA_Unwarp(D, faces_affected);
-				remove_count += faces_affected.size();
+				D->OA_SetNormal	(msF->N);
 
+				msF->OA_Unwarp			(D);
+				//Deflector  = D;
 				// break the cycle to startup again
-				D->OA_Export();
+				D->OA_Export	();
 
 				// Detach affected faces
-				// detaching itself
-				Detach(&faces_affected);
-				g_XSplit.push_back(new vecFace(faces_affected));
-			}
-			else
-			{
-				if (g_XSplit[SP]->empty() && SP >= 1)
-				{
-					xr_delete(g_XSplit[SP]);
-					g_XSplit.erase(g_XSplit.begin() + SP);
-					SP--;
+				faces_affected.clear	();
+				for (int i=0; i<int(g_XSplit[SP]->size()); i++) {
+					Face *F = (*g_XSplit[SP])[i];
+					if ( F->pDeflector == D ) {
+						faces_affected.push_back(F);
+						g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i);
+						i--;
+					}
 				}
-				break;
+
+				// detaching itself
+				Detach				(&faces_affected);
+				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
 			}
 
+		***/
+
+		// Main loop
+		Status("Processing...");
+		lc_global_data()->g_deflectors().reserve(64 * 1024);
+		float		p_cost = 1.f / float(g_XSplit.size());
+		float		p_total = 0.f;
+		vecFace		faces_affected;
+
+		int StartPoint = g_XSplit.size();
+		u32 TotalMerged = 0;
+		int DeflectorsAllocated = 0;
+
+		for (int SP = 0; SP < int(StartPoint); SP++)
+		{
+			Progress(p_total += p_cost);
+			TotalMerged = 0;
+
+			// Detect vertex-lighting and avoid this subdivision
+			if (g_XSplit[SP]->empty())
+			{
+				//Msg("Strage Empty SP: %d", SP);
+				continue;
+			}
+			// R_ASSERT(!g_XSplit[SP]->empty());
+			Face* Fvl = g_XSplit[SP]->front();
+			if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
+			if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
+			if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
+
+			// Слишком дорого
+			// size_t AllocatedDeflectors = 0;// size_t(size_t(DeflectorsAllocated * sizeof(CDeflector)) / 1024 / 1024);
+			// 
+			// for (auto D : lc_global_data()->g_deflectors())
+			// {
+			// 	AllocatedDeflectors += D->size_deflector();
+			// }
+			// 
+			// AllocatedDeflectors /= (1024 * 1024); // MB
+
+			// , Deflectors Allocated[%llu] MB
+			Status("SP[%d/%d], all[%d]", SP, StartPoint, g_XSplit.size()); //AllocatedDeflectors
+
+			vecFace* faces_selected = g_XSplit[SP];
+			while (TRUE)
+			{
+				// Сортировка списка в перед с больщими зонами.
+				std::sort(faces_selected->begin(), faces_selected->end(), sort_faces);
+
+				if (faces_selected == nullptr)
+					break;
+
+				// Select maximal sized poly
+				Face* msF = NULL;
+				for (auto FACEIT = faces_selected->begin(); FACEIT < faces_selected->end(); FACEIT++)
+				{
+					// last_selected = FACEIT;
+					auto FACE = *FACEIT;
+					if (FACE && FACE->pDeflector == nullptr)
+					{
+						msF = FACE;
+
+						CDeflector* D = new CDeflector();
+						lc_global_data()->g_deflectors().push_back(D);
+						// Start recursion from this face
+						start_unwarp_recursion();
+						D->OA_SetNormal(FACE->N);
+
+						faces_affected.clear();
+						FACE->OA_Unwarp(D, faces_affected);
+						// break the cycle to startup again
+						D->OA_Export();
+
+						// detaching itself
+						Detach(&faces_affected);
+						g_XSplit.push_back(new vecFace(faces_affected));
+
+						TotalMerged += faces_affected.size();
+						DeflectorsAllocated++;
+					}
+				}
+
+				if (!faces_selected->empty())
+				{
+					// clMsg("Memory Alloc for ( Deflectors %llu )", 
+					// 	size_t ( size_t( DeflectorsAllocated * sizeof(CDeflector) ) / 1024 / 1024 )
+					// ); 
+					// 
+					// clMsg("g_XSplit[SP] Size: %u, Deflectors created: %u, ", g_XSplit[SP]->size(), DeflectorsAllocated);
+
+					auto IT = std::remove_if(
+						faces_selected->begin(),
+						faces_selected->end(),
+						[&](Face* F)
+						{
+							return F->pDeflector != nullptr;
+						}
+					);
+
+					if (IT != faces_selected->end())
+					{
+						faces_selected->erase(IT, faces_selected->end());
+					}
+
+				}
+
+				// Cancel infine loop (while)
+				if (msF == nullptr)
+				{
+					// Msg("[While Exit] g_XSplit Size: %u, Deflectors: %u", g_XSplit[SP]->size(), DeflectorsAllocated);
+					break;
+				}
+			}
 		}
+
+		size_t AllocatedDeflectors = 0;
+
+		for (auto D : lc_global_data()->g_deflectors())
+		{
+			AllocatedDeflectors += D->size_deflector();
+		}
+
+		AllocatedDeflectors /= (1024 * 1024); // MB
+		clMsg("UV Map is Ended generation[%d], Deflectors Allocated[%llu] MB", g_XSplit.size(), AllocatedDeflectors);
+
+		// clMsg("NEW (CLEAR NEED == 0) AFFECTED: %d, (FOR DEFLECTORS LMAP) XSplit: %d", temp_faces.size(), g_XSplit.size());
+		clMsg("%d subdivisions...", g_XSplit.size());
+		err_save();
+
+		// VALIDATION
+		for (int SP = 0; SP < StartPoint; SP++)
+		{
+			if (g_XSplit[SP]->size() != 0)
+				Msg("Checking SP[%u]: size (%u)", SP, g_XSplit[SP]->size());
+		}
+
+		// VALIDATION
+		for (auto SP = 0; SP < g_XSplit[SP]->size(); SP++)
+		{
+			if (g_XSplit[SP]->size() == 0)
+			{
+				g_XSplit.erase(g_XSplit.begin() + SP);
+				SP--;
+			}
+		}
+
+		vminfo(&free, &rel, &used);
+		clMsg("xrPhase_UVmap: Ended %u used", size_t(used / 1024 / 1024));
 	}
 
-	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { return ptr->empty(); }), g_XSplit.end());
-
-	clMsg("%d subdivisions...", g_XSplit.size());
-	err_save();
 }
 
 
