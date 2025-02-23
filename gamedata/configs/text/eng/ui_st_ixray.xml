@@ -294,4 +294,53 @@
     <string id="SM_DOG_F">
         <text>PsyDog (Phantom)</text>
     </string>
+    <string id="SCRPTART">
+        <text>Artefact</text>
+    </string>
+    <string id="SCRPTCAR">
+        <text>Car</text>
+    </string>
+    <string id="SMRTTRRN">
+        <text>Smart terrain</text>
+    </string>
+    <string id="LVL_CHNG">
+        <text>Level changer</text>
+    </string>
+    <string id="S_ACTOR">
+        <text>Actor (player)</text>
+    </string>
+    <string id="AI_STL_S">
+        <text>Stalker</text>
+    </string>
+    <string id="C_HLCP_S">
+        <text>Helicopter</text>
+    </string>
+    <string id="SPC_RS_S">
+        <text>Space restrictor</text>
+    </string>
+    <string id="O_PHYS_S">
+        <text>Physics Object</text>
+    </string>
+    <string id="SMRT_C_S">
+        <text>Smart cover</text>
+    </string>
+    <string id="O_DSTR_S">
+        <text>Destroyable object</text>
+    </string>
+    <string id="SO_HLAMP">
+        <text>Hanging lamp</text>
+    </string>
+
+    <string id="ui_mm_screenshot_format">
+        <text>Screenshot format</text>
+    </string>
+    <string id="ss_jpg">
+        <text>.jpg</text>
+    </string>
+    <string id="ss_tga">
+        <text>.tga</text>
+    </string>
+    <string id="ss_png">
+        <text>.png</text>
+    </string>
 </string_table>
