@@ -20,7 +20,7 @@
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
 int LastGeometryIDTransp = RTC_INVALID_GEOMETRY_ID;
 
-RTCSceneFlags scene_flags = RTC_SCENE_FLAG_COMPACT;
+RTCSceneFlags scene_flags = RTC_SCENE_FLAG_NONE;
 RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
 
 RTCDevice device	= 0;
@@ -158,6 +158,9 @@ size_t GetMemory()
 	return used;
 }
 
+#include <../xrForms/CompilersUI.h>
+extern CompilersMode gCompilerMode;
+
 GeomInfo InitializeGeometryAttach(bool useForOthers)
 {
 	GeomInfo geomInfoData;
@@ -178,6 +181,10 @@ GeomInfo InitializeGeometryAttach(bool useForOthers)
 	
 	// RtcIntilize Geoms
 	RtcGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+
+	if (gCompilerMode.EmbreeBVHCompact)
+		scene_flags = RTC_SCENE_FLAG_COMPACT;
+
 	rtcSetGeometryBuildQuality(RtcGeometry, scene_quality);
 
 	// GET TRIANGLE (COLLECTORs Data) 
