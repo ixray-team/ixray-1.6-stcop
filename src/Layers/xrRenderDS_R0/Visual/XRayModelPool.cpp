@@ -11,6 +11,7 @@
 #include "XRayTreeVisual.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/fmesh.h"
+
 XRayModelPool* GModelPool;
 XRayRenderVisual* XRayModelPool::Instance_Create(u32 type)
 {
@@ -19,16 +20,16 @@ XRayRenderVisual* XRayModelPool::Instance_Create(u32 type)
 	// Check types
 	switch (type) {
 	case MT_NORMAL:				// our base visual
-		V = XRayFVisual;
+		V = new XRayFVisual;
 		break;
 	case MT_HIERRARHY:
-		V = XRayFHierrarhyVisual;
+		V = new XRayFHierrarhyVisual;
 		break;
 	case MT_PROGRESSIVE:		// dynamic-resolution visual
-		V = XRayFProgressive;
+		V = new XRayFProgressive;
 		break;
 	case MT_SKELETON_ANIM:
-		V = XRayKinematicsAnimated;
+		V = new XRayKinematicsAnimated;
 		break;
 	case MT_SKELETON_RIGID:
 		V = new XRayKinematics;
@@ -52,7 +53,7 @@ XRayRenderVisual* XRayModelPool::Instance_Create(u32 type)
 		V = new XRayTreeVisual_ST;
 		break;
 	case MT_TREE_PM:
-		V = new XRayTreeVisual_PM(;
+		V = new XRayTreeVisual_PM;
 		break;
 #endif
 	default:
@@ -261,8 +262,8 @@ XRayRenderVisual* XRayModelPool::CreateChild(LPCSTR name, IReader* data)
 	return					Model;
 }
 
-extern  BOOL ENGINE_API g_bRendering;
-void	XRayModelPool::DeleteInternal(XRayRenderVisual*& V, BOOL bDiscard)
+extern ENGINE_API xr_atomic_bool g_bRendering;
+void XRayModelPool::DeleteInternal(XRayRenderVisual*& V, BOOL bDiscard)
 {
 	VERIFY(!g_bRendering);
 	if (!V)					return;
@@ -384,6 +385,13 @@ void XRayModelPool::ClearPool(BOOL b_complete)
 }
 void XRayModelPool::Render()
 {
+	for (auto [_, Obj] : Pool)
+	{
+		if (auto Kinematic = Obj->dcast_PKinematics())
+		{
+			Kinematic->CalculateBones(true);
+		}
+	}
 }
 /*
 XRayRenderVisual* XRayModelPool::CreatePE(PS::CPEDef* source)

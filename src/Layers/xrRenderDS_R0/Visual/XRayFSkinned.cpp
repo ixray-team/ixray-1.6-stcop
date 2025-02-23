@@ -1,4 +1,7 @@
-#include "pch.h"
+#include "stdafx.h"
+#include "XRayFSkinned.h"
+#include "XRayKinematics.h"
+#include "XRaySkeletonX.h"
 static shared_str sbones_array;
 
 #pragma pack(push, 1)
@@ -367,7 +370,7 @@ void XRaySkeletonX_ST::Copy(XRayRenderVisual* P)
 	_Copy((XRaySkeletonX*)X);
 }
 
-
+#if 0
 bool XRaySkeletonX_PM::Render(float LOD, EShaderElement SEType, XRayObjectRender& Item)
 {
 	if (RenderMode == RM_SINGLE)
@@ -456,7 +459,7 @@ bool XRaySkeletonX_ST::Render(float LOD, EShaderElement SEType, XRayObjectRender
 	Item.Visual = this;
 	return Item.GraphicsPipelineResource.CountIndex;
 }
-
+#endif
 
 #define VLOAD_NOVERTICES 1<<0
 void XRaySkeletonX_PM::Load(const char* N, IReader* data, u32 dwFlags)
@@ -466,7 +469,7 @@ void XRaySkeletonX_PM::Load(const char* N, IReader* data, u32 dwFlags)
 
 	inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
 
-	::Render->shader_option_skinning(-1);
+	Engine.External.SetSkinningMode(-1);
 
 	_DuplicateIndices(N, data);
 	_Load_hw(*this, _verts_);
@@ -480,7 +483,7 @@ void XRaySkeletonX_ST::Load(const char* N, IReader* data, u32 dwFlags)
 
 	inherited1::Load(N, data, dwFlags | VLOAD_NOVERTICES);
 
-	::Render->shader_option_skinning(-1);
+	Engine.External.SetSkinningMode(-1);
 
 	_DuplicateIndices(N, data);
 
@@ -498,7 +501,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 		//V.rm_geom.create(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
 		break;
 	case RM_SINGLE:
-		V.FVF = FVF::F_0W;
+		//V.FVF = FVF::F_0W;
 	case RM_SKINNING_1B:
 	{
 		{ //	Back up vertex data since we can't read vertex buffer in DX10
@@ -506,6 +509,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 			u32 crc = crc32(_verts_, size);
 			Vertices1W.create(crc, V.CountVertex, (vertBoned1W*)_verts_);
 		}
+#if 0
 		if(!V.FVF)
 		V.FVF = FVF::F_1W;
 		u32 vStride = sizeof(vertHW_1W);
@@ -530,8 +534,8 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 		V.VertexBuffer->Create( vStride, V.CountVertex,false, dstOriginal);
 
 		//HW.stats_manager.increment_stats_vb(V.p_rm_Vertices);
-
 		xr_free(dstOriginal);
+#endif
 
 	}
 	break;
@@ -544,6 +548,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 			Vertices2W.create(crc, V.CountVertex, (vertBoned2W*)_verts_);
 		}
 
+#if 0
 		V.FVF = FVF::F_2W;
 		u32 vStride = sizeof(vertHW_2W);
 
@@ -569,7 +574,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 
 
 		xr_free(dstOriginal);
-
+#endif
 	}
 	break;
 
@@ -582,6 +587,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 		}
 
 
+#if 0
 		V.FVF = FVF::F_3W;
 		u32 vStride = sizeof(vertHW_3W);
 
@@ -607,7 +613,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 		//HW.stats_manager.increment_stats_vb(V.p_rm_Vertices);
 
 		xr_free(dstOriginal);
-
+#endif
 	}
 	break;
 
@@ -619,7 +625,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 			Vertices4W.create(crc, V.CountVertex, (vertBoned4W*)_verts_);
 		}
 
-
+#if 0
 		V.FVF = FVF::F_4W;
 		u32 vStride = sizeof(vertHW_4W);
 
@@ -645,7 +651,7 @@ void XRaySkeletonXExt::_Load_hw(XRayFVisual& V, void* _verts_)
 		//HW.stats_manager.increment_stats_vb(V.p_rm_Vertices);
 
 		xr_free(dstOriginal);
-
+#endif
 	}
 	break;
 	}
@@ -863,6 +869,7 @@ BOOL XRaySkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const F
 	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, OffsetIndex, CountIndex);
 }
 
+#if 0
 void XRaySkeletonX_ST::UpdateUniform(XRayUniformAllocator::EUniformType Type, void* ptr)
 {
 	if (Type == XRayUniformAllocator::EUniformType::UT_Skinned)
@@ -871,18 +878,19 @@ void XRaySkeletonX_ST::UpdateUniform(XRayUniformAllocator::EUniformType Type, vo
 	}
 }
 
-BOOL XRaySkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
-{
-	FSlideWindow& SW = nSWI.sw[0];
-	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, OffsetIndex + SW.offset, SW.num_tris * 3);
-}
-
 void XRaySkeletonX_PM::UpdateUniform(XRayUniformAllocator::EUniformType Type, void* ptr)
 {
 	if (Type == XRayUniformAllocator::EUniformType::UT_Skinned)
 	{
 		XRaySkeletonXExt::UpdateUniform(ptr);
 	}
+}
+#endif
+
+BOOL XRaySkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+{
+	FSlideWindow& SW = nSWI.sw[0];
+	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, OffsetIndex + SW.offset, SW.num_tris * 3);
 }
 
 void XRaySkeletonX_ST::EnumBoneVertices(SEnumVerticesCallback& C, u16 bone_id)

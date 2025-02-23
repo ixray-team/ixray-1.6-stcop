@@ -36,6 +36,7 @@ void XRayRenderDeviceRender::updateGamma()
 
 void XRayRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
+	GRenderInterface.destroy();
 
 }
 
@@ -60,7 +61,7 @@ void XRayRenderDeviceRender::SetupStates()
 
 void XRayRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
-
+	GRenderInterface.create();
 
 }
 
@@ -123,7 +124,6 @@ u32 XRayRenderDeviceRender::GetCacheStatPolys()
 
 void XRayRenderDeviceRender::Begin()
 {
-	
 }
 
 void XRayRenderDeviceRender::Clear()

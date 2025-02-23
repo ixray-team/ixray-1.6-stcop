@@ -1,5 +1,7 @@
-#include "pch.h"
- 
+#include "stdafx.h"
+#include "XRayKinematics.h"
+#include "XRaySkeletonX.h"
+
 bool	pred_sort_N(const std::pair<shared_str, u32>& A, const std::pair<shared_str, u32>& B) {
 	return xr_strcmp(A.first, B.first) < 0;
 }
@@ -117,14 +119,14 @@ void XRayKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 #ifndef _EDITOR    
 	// User data
 	IReader* UD = data->open_chunk(OGF_S_USERDATA);
-	pUserData = UD ? xr_new<CInifile>(UD, FS.get_path("$game_config$")->m_Path) : 0;
+	pUserData = UD ? new CInifile(UD, FS.get_path("$game_config$")->m_Path) : 0;
 	if (UD)			UD->close();
 #endif
 
 	// Globals
-	bone_map_N = xr_new<accel>();
-	bone_map_P = xr_new<accel>();
-	bones = xr_new<vecBones>();
+	bone_map_N = new accel();
+	bone_map_P = new accel();
+	bones = new vecBones();
 	bone_instances = NULL;
 
 	// Load bones
@@ -133,30 +135,28 @@ void XRayKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 
 	R_ASSERT(data->find_chunk(OGF_S_BONE_NAMES));
 
-	bonesvisible.zero();
+	visimask.zero();
 	int dwCount = data->r_u32();
-	// Msg				("!!! %d bones",dwCount);
-	// if (dwCount >= 64)	Msg			("!!! More than 64 bones is a crazy thing! (%d), %s",dwCount,N);
-	VERIFY3(dwCount <= MAX_BONE, "More than 64 bones is a crazy thing!", N);
+
 	for (; dwCount; dwCount--) {
 		string256	buf;
 
 		// Bone
 		u16			ID = u16(bones->size());
-		data->r_stringZ(buf, sizeof(buf));	BearString::ToLower(buf);
+		data->r_stringZ(buf, sizeof(buf));	_strlwr(buf);
 		CBoneData* pBone = CreateBoneData(ID);
 		pBone->name = shared_str(buf);
 		pBone->child_faces.resize(children.size());
 		bones->push_back(pBone);
-		bone_map_N->push_back(mk_pair(pBone->name, ID));
-		bone_map_P->push_back(mk_pair(pBone->name, ID));
+		bone_map_N->push_back(std::make_pair(pBone->name, ID));
+		bone_map_P->push_back(std::make_pair(pBone->name, ID));
 
 		// It's parent
-		data->r_stringZ(buf, sizeof(buf));	BearString::ToLower(buf);
+		data->r_stringZ(buf, sizeof(buf));	_strlwr(buf);
 		L_parents.push_back(buf);
 
 		data->r(&pBone->obb, sizeof(Fobb));
-		bonesvisible.set(ID, TRUE);
+		visimask.set(ID, TRUE);
 	}
 	std::sort(bone_map_N->begin(), bone_map_N->end(), pred_sort_N);
 	std::sort(bone_map_P->begin(), bone_map_P->end(), pred_sort_P);
@@ -222,7 +222,7 @@ void XRayKinematics::Load(const char* N, IReader* data, u32 dwFlags)
 				std::sort(faces.begin(), faces.end());
 				CBoneData::FacesVecIt new_end = std::unique(faces.begin(), faces.end());
 				faces.erase(new_end, faces.end());
-				B->child_faces[child_idx].clear_and_free();
+				B->child_faces[child_idx].clear();
 				B->child_faces[child_idx] = faces;
 			}
 		}
@@ -246,7 +246,7 @@ void XRayKinematics::Copy(XRayRenderVisual* from)
 	iRoot = pFrom->iRoot;
 	bone_map_N = pFrom->bone_map_N;
 	bone_map_P = pFrom->bone_map_P;
-	bonesvisible = pFrom->bonesvisible;
+	visimask = pFrom->visimask;
 
 	IBoneInstances_Create();
 
@@ -279,15 +279,15 @@ void XRayKinematics::Depart()
 	//ClearWallmarks();
 
 	// unmask all bones
-	bonesvisible.zero();
+	visimask.zero();
 	if (bones)
 	{
-		bsize count = bones->size();
+		size_t count = bones->size();
 #ifdef DEBUG
 		if (count > 64)
 			Msg("ahtung !!! %d", count);
 #endif // #ifdef DEBUG
-		for (bsize b = 0; b < count; b++) bonesvisible.set(b, TRUE);
+		for (size_t b = 0; b < count; b++) visimask.set(b, TRUE);
 	}
 	// visibility
 	children.insert(children.end(), children_invisible.begin(), children_invisible.end());
@@ -296,24 +296,20 @@ void XRayKinematics::Depart()
 
 void XRayKinematics::CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask)
 {
-	u16							SelfID = bd->GetSelfID();
+	u16 SelfID = bd->GetSelfID();
 
-	if (LL_GetBoneVisible(SelfID)) {
-		if (bi.callback_overwrite()) {
+	if (LL_GetBoneVisible(SelfID)) 
+	{
+		if (bi.callback_overwrite()) 
+		{
 			if (bi.callback())	bi.callback()(&bi);
 		}
-		else {
-
+		else 
+		{
 			BuildBoneMatrix(bd, bi, parent, channel_mask);
-#ifndef MASTER_GOLD
-			R_ASSERT2(_valid(bi.mTransform), "anim kils bone matrix");
-#endif // #ifndef MASTER_GOLD
 			if (bi.callback())
 			{
 				bi.callback()(&bi);
-#ifndef MASTER_GOLD
-				R_ASSERT2(_valid(bi.mTransform), make_string("callback kils bone matrix bone: %s ", bd->name.c_str()));
-#endif // #ifndef MASTER_GOLD
 			}
 		}
 		bi.mRenderTransform.mul_43(bi.mTransform, bd->m2b_transform);
@@ -390,9 +386,9 @@ void XRayKinematics::Visibility_Update()
 void	XRayKinematics::IBoneInstances_Create()
 {
 	// VERIFY2				(bones->size() < 64, "More than 64 bones is a crazy thing!");
-	bsize				size = bones->size();
+	size_t size = bones->size();
 	bone_instances = xr_alloc<CBoneInstance>(size);
-	for (bsize i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 		bone_instances[i].construct();
 }
 
@@ -539,27 +535,33 @@ int XRayKinematics::LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups)
 
 void XRayKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
-	VERIFY(bone_id < LL_BoneCount());
-	bonesvisible.set(bone_id, val);
-	if (!bonesvisible.is(bone_id)) {
+	//VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
+	visimask.set(bone_id, val);
+
+	if (!visimask.is(bone_id)) {
 		bone_instances[bone_id].mTransform.scale(0.f, 0.f, 0.f);
 	}
 	else {
 		CalculateBones_Invalidate();
 	}
+
 	bone_instances[bone_id].mRenderTransform.mul_43(bone_instances[bone_id].mTransform, (*bones)[bone_id]->m2b_transform);
-	if (bRecursive) {
-		for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++)
+	if (bRecursive) 
+	{
+		for (xr_vector<CBoneData*>::iterator C = (*bones)[bone_id]->children.begin(); C != (*bones)[bone_id]->children.end(); C++) 
+		{
 			LL_SetBoneVisible((*C)->GetSelfID(), val, bRecursive);
+		}
 	}
 	Visibility_Invalidate();
 }
-void XRayKinematics::LL_SetBonesVisible(BonesVisible mask)
+
+void XRayKinematics::LL_SetBonesVisible(VisMask mask)
 {
-	bonesvisible.zero();
+	visimask.zero();
 	for (u32 b = 0; b < bones->size(); b++) {
-		if (mask .is(b)) {
-			bonesvisible.set(b, TRUE);
+		if (mask.is(b)) {
+			visimask.set(b, true);
 		}
 		else {
 			Fmatrix& A = bone_instances[b].mTransform;
@@ -571,32 +573,32 @@ void XRayKinematics::LL_SetBonesVisible(BonesVisible mask)
 	CalculateBones_Invalidate();
 	Visibility_Invalidate();
 }
-static BearMutex CalculateBonesMutex;
+
+static xrCriticalSection CalculateBonesMutex;
 void XRayKinematics::CalculateBones(BOOL bForceExact)
 {
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
-	if (Device->dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
-	BearMutexLock Lock(CalculateBonesMutex);
+	if (Device.dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
+	xrCriticalSectionGuard Lock(CalculateBonesMutex);
 	OnCalculateBones();
-	if (!bForceExact && (Device->dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
+	if (!bForceExact && (Device.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
 	if (Update_Visibility)									Visibility_Update();
 
 	// here we have either:
 	//	1:	timeout elapsed
 	//	2:	exact computation required
-	UCalc_Time = Device->dwTimeGlobal;
+	UCalc_Time = Device.dwTimeGlobal;
 
 	// exact computation
 	// Calculate bones
 #ifdef DEBUG
-	Device->Statistic->Animation.Begin();
+	Device.Statistic->Animation.Begin();
 #endif
 
 	Bone_Calculate(bones->at(iRoot), &Fidentity);
 
-	VERIFY(LL_GetBonesVisible() != 0);
 	// Calculate BOXes/Spheres if needed
 	UCalc_Visibox++;
 	if (UCalc_Visibox >= psSkeletonUpdate)
@@ -632,21 +634,6 @@ void XRayKinematics::CalculateBones(BOOL bForceExact)
 			Vis.box.max = (Box.max);
 			Vis.box.getsphere(Vis.sphere.P, Vis.sphere.R);
 		}
-#ifdef DEBUG
-		// Validate
-		VERIFY3(_valid(Vis.box.min) && _valid(Vis.box.max), "Invalid bones-xform in model", DebugName.c_str());
-		if (Vis.sphere.R > 1000.f)
-		{
-			for (u16 ii = 0; ii < LL_BoneCount(); ++ii) {
-				Fmatrix tr;
-				tr = LL_GetTransform(ii);
-				Log("bone ", LL_BoneName_dbg(ii));
-				Log("bone_matrix", tr);
-			}
-			Log("end-------");
-		}
-		VERIFY3(Vis.sphere.R < 1000.f, "Invalid bones-xform in model", DebugName.c_str());
-#endif
 	}
 
 	//

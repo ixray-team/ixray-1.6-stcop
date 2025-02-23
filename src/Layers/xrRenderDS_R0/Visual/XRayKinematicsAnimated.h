@@ -12,6 +12,7 @@ public:
 private:
 	BlendSVec			Blend;
 public:
+	xrSRWLock								blend_lock;
 
 	// methods
 	IC	BlendSVec& blend_vector() { return Blend; }
@@ -108,9 +109,9 @@ public:
 	//	LPCSTR						LL_MotionDefName_dbg	(LPVOID		ptr);
 
 #ifdef _EDITOR
-	bsize							LL_CycleCount() { bsize cnt = 0; for (bsize k = 0; k < m_Motions.size(); k++) cnt += m_Motions[k].motions.cycle()->size(); return cnt; }
-	bsize							LL_FXCount() { bsize cnt = 0; for (bsize k = 0; k < m_Motions.size(); k++) cnt += m_Motions[k].motions.fx()->size(); return cnt; }
-	accel_map* LL_Motions(bsize slot) { return m_Motions[slot].motions.motion_map(); }
+	size_t							LL_CycleCount() { size_t cnt = 0; for (size_t k = 0; k < m_Motions.size(); k++) cnt += m_Motions[k].motions.cycle()->size(); return cnt; }
+	size_t							LL_FXCount() { size_t cnt = 0; for (size_t k = 0; k < m_Motions.size(); k++) cnt += m_Motions[k].motions.fx()->size(); return cnt; }
+	accel_map* LL_Motions(size_t slot) { return m_Motions[slot].motions.motion_map(); }
 	MotionID					ID_Motion(LPCSTR  N, u16 slot);
 #endif
 	u16							LL_MotionsSlotCount() { return (u16)m_Motions.size(); }
@@ -136,6 +137,7 @@ public:
 
 	// Main functionality
 	void						UpdateTracks();								// Update motions
+	void LoadOmf(const char* path, const char* name);
 	void						LL_UpdateTracks(float dt, bool b_force, bool leave_blends);						// Update motions
 	void						LL_UpdateFxTracks(float dt);
 	void						DestroyCycle(CBlend& B);
@@ -154,6 +156,7 @@ public:
 	CBlend* PlayFX(LPCSTR  N, float power_scale);
 	CBlend* PlayFX(MotionID M, float power_scale);
 
+	CBlend* PlayFX_Safe(LPCSTR N, float power_scale) override;
 	const CPartition& partitions() const { return *m_Partition; };
 
 	// General "Visual" stuff
@@ -163,17 +166,22 @@ public:
 	virtual	IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
 	virtual IRenderVisual* _BCL	dcast_RenderVisual() { return this; }
 	virtual IKinematics* _BCL 	dcast_PKinematics() { return this; }
+	virtual void				LL_SetBonesVisibleAll() override { visimask.set_all(); };
+
+	void ProcessOmfFiles(const char* pathOmf, const char* nameOgf);
+
+	void append_motion_from_path(const char* nameOgf, const char* pathOmf) override;
 
 	virtual						~XRayKinematicsAnimated();
 	XRayKinematicsAnimated();
 
-	virtual u32					mem_usage(bool bInstance) override
-	{
-		/*bsize sz = CKinematics::mem_usage(bInstance) + sizeof(*this) + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);*/
-		return 0;
-	}
+	//virtual u32					mem_usage(bool bInstance) override
+	//{
+	//	/*size_t sz = CKinematics::mem_usage(bInstance) + sizeof(*this) + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);*/
+	//	return 0;
+	//}
 
-	IC	const BlendSVec& blend_cycle(const bsize& bone_part_id) const
+	IC	const BlendSVec& blend_cycle(const size_t& bone_part_id) const
 	{
 		VERIFY(bone_part_id < MAX_PARTS);
 		return					(blend_cycles[bone_part_id]);
