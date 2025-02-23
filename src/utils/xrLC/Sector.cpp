@@ -60,12 +60,31 @@ void CSector::BuildHierrarhy	()
 	if		(SizeLimit<4.f)			SizeLimit=4.f;
 	if		(delimiter<=SizeLimit)	delimiter*=2;		// just very small level
 
+	struct OGF_Data{ 
+		OGF_Base* node;
+		u32 ID; 
+	};
+
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
 		int iSize			= (int)g_tree.size();
 
-		for (int I=0; I<iSize; I++)
+		xr_vector<OGF_Data> data;
+
+		u32 IDx = 0;
+		for (auto O : g_tree)
 		{
+			if (!O->bConnected && O->Sector == SelfID)
+			{
+				data.push_back(OGF_Data{O, IDx});
+			}
+			IDx++;
+		}
+
+
+		for (auto Ogf : data)
+		{
+			int I = Ogf.ID;
 			if (g_tree[I]->bConnected)		 continue;
 			if (g_tree[I]->Sector != SelfID) continue;
 
@@ -78,40 +97,16 @@ void CSector::BuildHierrarhy	()
 				// Find best object to connect with
 				int		best_id		= -1;
 				float	best_volume	= flt_max;
-
-
-				//xr_atomic_bool isFinded;
- 				//xr_parallel_for
-				//(
-				//	size_t(0), size_t(iSize),
-				//	[&](size_t J)
-				//	{
-				//		if (isFinded.load())
-				//			return;
-				//
-				//		OGF_Base* candidate = g_tree[J];
-				//		if (candidate->bConnected)			return;
-				//		if (candidate->Sector != SelfID)	return;
-				//
-				//		float V;
-				//		if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
-				//		{
-				//			if (V < best_volume)
-				//			{
-				//				isFinded = true;
-				//				best_volume = V;
-				//				best_id = J;
-				//			}
-				//		}
-				//	}
-				//);
-				//
-				//// se7kills MT STYLE FIND
-				for (int J=0; J<iSize; J++)
+				 
+				// se7kills MT STYLE FIND
+				for (auto O : data)
 				{
+					int J = O.ID;
 					OGF_Base* candidate = g_tree[J];
-					if ( candidate->bConnected)			continue;
-					if ( candidate->Sector != SelfID)	continue;
+					if ( candidate->bConnected)		
+						continue;
+					if ( candidate->Sector != SelfID)
+						continue;
 				
 					float V;
 					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
@@ -124,15 +119,19 @@ void CSector::BuildHierrarhy	()
 				}
 
 				// Analyze
-				if (best_id<0)		break;
+				if (best_id<0)	
+					break;
 				pNode->AddChield	(best_id);
 			}
 
-			if (pNode->chields.size()>1)	{
+			if (pNode->chields.size()>1)	
+			{
 				pNode->CalcBounds		();
 				g_tree.push_back		(pNode);
 				bAnyNode				= TRUE;
-			} else {
+			}
+			else
+			{
 				g_tree[I]->bConnected	= false;
 				xr_delete				(pNode);
 			}
