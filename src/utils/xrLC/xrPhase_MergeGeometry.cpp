@@ -525,7 +525,7 @@ void CBuild::xrPhase_MergeGeometry()
 	u16 max_threads = CPU::ID.n_threads;
 
 	// se7kills (Возврат на старую версию мерджа геометрии)
-	bool use_fast_way = true;
+	bool use_fast_way = false;
 
 	CTimer t;
 	t.Start();
