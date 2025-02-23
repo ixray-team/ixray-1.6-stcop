@@ -21,10 +21,10 @@
 
 #include "../Include/xrRender/UIShader.h"
 
-#define BUY_MENU_TEXTURE "ui\\ui_mp_buy_menu"
-#define CHAR_ICONS		 "ui\\ui_icons_npc"
-#define MAP_ICONS		 "ui\\ui_icons_map"
-#define MP_CHAR_ICONS	 "ui\\ui_models_multiplayer"
+constexpr const char* BUY_MENU_TEXTURE = "ui\\ui_mp_buy_menu";
+constexpr const char* CHAR_ICONS = "ui\\ui_icons_npc";
+constexpr const char* MAP_ICONS = "ui\\ui_icons_map";
+constexpr const char* MP_CHAR_ICONS = "ui\\ui_models_multiplayer";
 
 const LPCSTR relationsLtxSection	= "game_relations";
 const LPCSTR ratingField			= "rating_names";
@@ -48,11 +48,13 @@ const LPCSTR st_months[12]= // StringTable for GetDateAsString()
 };
 
 ui_shader	*g_BuyMenuShader			= nullptr;
-ui_shader	*g_EquipmentIconsShader		= nullptr;
 ui_shader	*g_MPCharIconsShader		= nullptr;
-ui_shader	*g_OutfitUpgradeIconsShader	= nullptr;
-ui_shader	*g_WeaponUpgradeIconsShader	= nullptr;
 ui_shader	*g_tmpWMShader				= nullptr;
+
+xr_hash_map<xr_string, ui_shader*> _iconsShaders;
+xr_hash_map<xr_string, ui_shader*> _outfitUpgradeIconsShaders;
+xr_hash_map<xr_string, ui_shader*> _weaponUpgradeIconsShaders;
+
 static CUIStatic*	GetUIStatic				();
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
@@ -76,20 +78,29 @@ void InventoryUtilities::DestroyShaders()
 	xr_delete(g_BuyMenuShader);
 	g_BuyMenuShader = 0;
 
-	xr_delete(g_EquipmentIconsShader);
-	g_EquipmentIconsShader = 0;
-
 	xr_delete(g_MPCharIconsShader);
 	g_MPCharIconsShader = 0;
 
-	xr_delete(g_OutfitUpgradeIconsShader);
-	g_OutfitUpgradeIconsShader = 0;
-
-	xr_delete(g_WeaponUpgradeIconsShader);
-	g_WeaponUpgradeIconsShader = 0;
-
 	xr_delete(g_tmpWMShader);
 	g_tmpWMShader = 0;
+
+	for (auto& [name, shader] : _iconsShaders)
+	{
+		xr_delete(shader);
+	}
+	_iconsShaders.clear();
+
+	for (auto& [name, shader] : _outfitUpgradeIconsShaders)
+	{
+		xr_delete(shader);
+	}
+	_outfitUpgradeIconsShaders.clear();
+
+	for (auto& [name, shader] : _weaponUpgradeIconsShaders)
+	{
+		xr_delete(shader);
+	}
+	_weaponUpgradeIconsShaders.clear();
 }
 
 bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
@@ -202,48 +213,52 @@ const ui_shader& InventoryUtilities::GetBuyMenuShader()
 	return *g_BuyMenuShader;
 }
 
-const ui_shader& InventoryUtilities::GetEquipmentIconsShader()
-{	
-	if(!g_EquipmentIconsShader)
-	{
-		g_EquipmentIconsShader = new ui_shader();
-		(*g_EquipmentIconsShader)->create("hud\\default", "ui\\ui_icon_equipment");
-	}
-
-	return *g_EquipmentIconsShader;
-}
-
-const ui_shader&	InventoryUtilities::GetMPCharIconsShader()
+const ui_shader& InventoryUtilities::GetMPCharIconsShader()
 {
-	if(!g_MPCharIconsShader)
+	if (!g_MPCharIconsShader)
 	{
 		g_MPCharIconsShader = new ui_shader();
-		(*g_MPCharIconsShader)->create("hud\\default",  MP_CHAR_ICONS);
+		(*g_MPCharIconsShader)->create("hud\\default", MP_CHAR_ICONS);
 	}
 
 	return *g_MPCharIconsShader;
 }
 
-const ui_shader& InventoryUtilities::GetOutfitUpgradeIconsShader()
-{	
-	if(!g_OutfitUpgradeIconsShader)
+const ui_shader& InventoryUtilities::GetIconsShader(const char* name,
+	const char* defaultName,
+	xr_hash_map<xr_string, ui_shader*> shaders)
+{
+	if (name == nullptr)
 	{
-		g_OutfitUpgradeIconsShader = new ui_shader();
-		(*g_OutfitUpgradeIconsShader)->create("hud\\default", "ui\\ui_actor_armor");
+		name = defaultName;
 	}
 
-	return *g_OutfitUpgradeIconsShader;
+	auto it = shaders.find(name);
+	if (it != shaders.end())
+	{
+		return *(it->second);
+	}
+
+	auto shader = new ui_shader();
+	(*shader)->create("hud\\default", name);
+	shaders[name] = shader;
+
+	return *shader;
 }
 
-const ui_shader& InventoryUtilities::GetWeaponUpgradeIconsShader()
-{	
-	if(!g_WeaponUpgradeIconsShader)
-	{
-		g_WeaponUpgradeIconsShader = new ui_shader();
-		(*g_WeaponUpgradeIconsShader)->create("hud\\default", "ui\\ui_actor_weapons");
-	}
+const ui_shader& InventoryUtilities::GetEquipmentIconsShader(const char* name)
+{
+	return GetIconsShader(name, "ui\\ui_icon_equipment", _iconsShaders);
+}
 
-	return *g_WeaponUpgradeIconsShader;
+const ui_shader& InventoryUtilities::GetOutfitUpgradeIconsShader(const char* name)
+{
+	return GetIconsShader(name, "ui\\ui_actor_armor", _outfitUpgradeIconsShaders);
+}
+
+const ui_shader& InventoryUtilities::GetWeaponUpgradeIconsShader(const char* name)
+{
+	return GetIconsShader(name, "ui\\ui_actor_weapons", _weaponUpgradeIconsShaders);
 }
 
 //////////////////////////////////////////////////////////////////////////
