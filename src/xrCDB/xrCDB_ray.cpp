@@ -241,7 +241,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 
 ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 {
-	MODEL* MDL = const_cast<MODEL*>((MODEL*)context->result->MDL);
+	MODEL* MDL = static_cast<MODEL*>(context->result->MDL);
 
 	MDL->syncronize();
 
@@ -250,7 +250,7 @@ ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 	const AABBNoLeafNode* N = T->GetNodes();
 	r_clear();
 
- 	ray_collider RC(true, false, false);
+	cform_ray_collider RC(CPU::ID.hasFeature(CPUFeature::SSE), true, false, false);
 	RC.ctxt = context;
 	RC._init_intersection(this, MDL, context->r_start, context->r_dir, context->r_range);
 	RC._stab(N);
