@@ -8,6 +8,8 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
+#include "CompilerIcons.h"
+
 static LPVOID __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,
 	void const* const pointer,
@@ -267,6 +269,14 @@ void SDL_Application()
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+	ImFont* defaultFont = io.Fonts->AddFontDefault(); 
+
+	ImFontConfig config;
+	config.FontDataOwnedByAtlas = false;
+
+	gCompilerMode.CompilerIconsFont = io.Fonts->AddFontFromMemoryTTF(IconsFont, sizeof(IconsFont), 16.f, &config, io.Fonts->GetGlyphRangesDefault());
+
 	bool done = false;
 	while (!done)
 	{

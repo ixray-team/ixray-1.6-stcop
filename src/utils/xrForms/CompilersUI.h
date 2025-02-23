@@ -1,5 +1,7 @@
 #pragma once
 
+struct ImFont;
+
 struct LevelFileData
 {
 	xr_string Name;
@@ -49,8 +51,8 @@ struct CompilersMode
 	bool AI_Verbose = false;
 
 	xr_vector<LevelFileData> Files;
+	ImFont* CompilerIconsFont;
 };
-
 void RenderMainUI();
 void RenderCompilerUI();
 void InitializeUIData();
