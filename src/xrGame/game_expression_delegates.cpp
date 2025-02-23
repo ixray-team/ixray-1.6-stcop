@@ -123,7 +123,18 @@ float GetPlayerSatiety()		            { return GetActor() == nullptr ? 0.f : Get
 float GetPlayerBleedingSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->conditions().BleedingSpeed();				}
 float GetPlayerRestoreSpeed()	            { return GetActor() == nullptr ? 0.f : GetActor()->GetRestoreSpeed(ALife::ePowerRestoreSpeed) / GetActor()->conditions().GetMaxPowerRestoreSpeed();}
 float GetOutfiteMaxFireWoundProtection()    { return GetActor() == nullptr ? 0.f : GetActor()->conditions().GetMaxFireWoundProtection();	}
-float GetPlayerArmor()                      { return GetActor()->GetOutfit() == nullptr ? 0.f : GetActor()->GetOutfit()->GetCondition(); }
+float GetPlayerArmor()                      
+{
+    // P.S. да, знаю что это лютая васня, но что поделать
+    if (GetActor()->GetOutfit() != nullptr && GetActor()->GetHelmet() != nullptr)
+        return (GetActor()->GetOutfit()->GetCondition() * 0.5f) + (GetActor()->GetHelmet()->GetCondition() * 0.5f);
+    else if (GetActor()->GetOutfit() != nullptr)
+        return GetActor()->GetOutfit()->GetCondition();
+    else if (GetActor()->GetHelmet() != nullptr)
+        return GetActor()->GetHelmet()->GetCondition();
+    else
+        return 0.f;
+}
 
 void RegisterExpressionDelegates ()
 {
