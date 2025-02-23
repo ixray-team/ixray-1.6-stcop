@@ -329,6 +329,38 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 	}
 }
 
+const ImVec4 getLogColor_new(char* text)
+{
+	if (strstr(text, "~"))
+	  return ImVec4(RGBAColor(248, 248, 49, 255));
+	if (strstr(text, "!"))
+		return ImVec4(RGBAColor(204, 102, 102, 255));
+	if (strstr(text, "@"))
+		return ImVec4(RGBAColor(125, 125, 241, 255));
+	if (strstr(text, "#"))
+		return ImVec4(RGBAColor(0, 222, 205, 155));
+	if (strstr(text, "$"))
+		return ImVec4(RGBAColor(172, 172, 255, 255));
+	if (strstr(text, "%"))
+		return ImVec4(RGBAColor(202, 85, 219, 155));
+	if (strstr(text, "*"))
+		return ImVec4(RGBAColor(248, 248, 49, 255));
+	if (strstr(text, "^"))
+		return ImVec4(RGBAColor(100, 246, 121, 255));
+	if (strstr(text, "&"))
+		return ImVec4(RGBAColor(255, 255, 0, 255));
+ 	if (strstr(text, "-"))
+		return ImVec4(RGBAColor(0, 255, 0, 255));
+	if (strstr(text, "+"))
+		return ImVec4(RGBAColor(84, 255, 255, 255));
+	if (strstr(text, "="))
+		return ImVec4(RGBAColor(205, 205, 105, 255));
+	if (strstr(text, "/"))
+		return ImVec4(RGBAColor(146, 146, 252, 255));
+	 
+	return ImVec4(RGBAColor(230, 230, 230, 255));
+}
+
 const ImVec4 getLogColor(const char& c)
 {
 	switch (c)
@@ -551,8 +583,7 @@ void RenderCompilerUI(int X, int Y)
 			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 			{
 				auto& line = GetLogVector()[i];
-				char cLine = (line.size() > 0 ? line[0] : ' ');
-				ImGui::TextColored(getLogColor(cLine), "%s", line.c_str());
+				ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
 			}
 		}
 
