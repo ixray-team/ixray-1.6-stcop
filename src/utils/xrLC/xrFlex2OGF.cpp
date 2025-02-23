@@ -73,13 +73,16 @@ void CBuild::Flex2OGF()
 	g_tree.reserve	(4096);
 
 	int MODEL_ID = 0;
-	for (auto& faces : g_XSplit)
+	for (auto faces : g_XSplit)
 	{
 		OGF*		pOGF	= new OGF ();
 		Face*		F		= *(faces->begin());			// first face
 		b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
 		R_ASSERT	(F && M);
 		
+		if (faces->size() < 3)
+			clMsg("* Warning Small Faces ! | OGF[%u] : Faces: %u", MODEL_ID, faces->size());
+
 		try 
 		{
 			// Common data
@@ -145,13 +148,14 @@ void CBuild::Flex2OGF()
 		
 		try
 		{
-			clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
+			// clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
 			pOGF->Optimize						();
-			clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
+			// clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
 			pOGF->CalcBounds					();
 			
 			// clMsg		("%3d: prog: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
-			// if (!g_build_options.b_noise) pOGF->MakeProgressive	(c_PM_MetricLimit_static);
+			// if (!g_build_options.b_noise)
+			// pOGF->MakeProgressive	(c_PM_MetricLimit_static);
 			// clMsg		("%3d: strp: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
 			// pOGF->Stripify						();
 		}
@@ -162,6 +166,7 @@ void CBuild::Flex2OGF()
 		
 		g_tree.push_back	(pOGF);
 		// xr_delete			(*it);
+
 		MODEL_ID++;
 		Progress			(p_total+=p_cost);
 	}
