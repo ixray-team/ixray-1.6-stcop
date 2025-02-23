@@ -32,112 +32,119 @@ void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
 
 bool SaveCForm = false;
 
+struct face_props 
+{
+    u16 material;
+    u16 sector;
+    u32 flags;
+    Fvector norm;
+    void set(u16 mtl, u16 sect, const Fvector& n, u32 _flags) 
+    {
+        material = mtl;
+        sector = sect;
+        norm.set(n);
+        flags = _flags;
+    }
+};
+
+using FPVec = xr_vector<face_props>;
+using FPVecIt = FPVec::iterator;
+
 void SimplifyCFORM(CDB::CollectorPacked& CL)
 {
-#pragma todo(FX to ALL: Fix me)
 #if 0
-	// Подготовка данных исходной модели
-	u32 base_verts_cnt = u32(CL.getVS());
-	u32 base_faces_cnt = u32(CL.getTS());
+    FPVec FPs;
 
-	// Сохранение исходной модели (если требуется)
-	const bool keep_temp_files = SaveCForm;
-	if (keep_temp_files) 
-	{
-		string_path fn;
-		SaveAsSMF(xr_strconcat(fn, pBuild->path, "cform_source.obj"), CL);
-	}
+    u32 base_verts_cnt = u32(CL.getVS());
+    u32 base_faces_cnt = u32(CL.getTS());
 
-	// Копирование вершин
-	xr_vector<float> vertices;
-	vertices.reserve(base_verts_cnt * 3);
-	for (u32 v_idx = 0; v_idx < base_verts_cnt; v_idx++) 
-	{
-		Fvector* v = CL.getV() + v_idx;
-		vertices.push_back(v->x);
-		vertices.push_back(v->y);
-		vertices.push_back(v->z);
-	}
+    bool keep_temp_files = SaveCForm;
+    if (keep_temp_files) 
+    {
+        string_path fn;
+        SaveAsSMF(xr_strconcat(fn, pBuild->path, "cform_source.obj"), CL);
+    }
 
-	// Копирование индексов
-	xr_vector<unsigned int> indices;
-	indices.reserve(base_faces_cnt * 3);
-	for (u32 f_idx = 0; f_idx < base_faces_cnt; f_idx++) 
-	{
-		CDB::TRI& t = CL.getT(f_idx);
-		indices.push_back(t.verts[0]);
-		indices.push_back(t.verts[1]);
-		indices.push_back(t.verts[2]);
-	}
+    xr_vector<float> vertices(base_verts_cnt * 3);
+    xr_vector<u32> indices(base_faces_cnt * 3);
+    xr_vector<float> attributes(base_verts_cnt);
+    FPs.resize(base_faces_cnt);
 
-	// Оптимизация порядка индексов для кэш-эффективности
-	meshopt_optimizeVertexCache(indices.data(), indices.data(), indices.size(), base_verts_cnt);
+    // Переносим вершины и атрибуты
+    for (u32 v_idx = 0; v_idx < base_verts_cnt; v_idx++)
+    {
+        Fvector* v = CL.getV() + v_idx;
+        vertices[v_idx * 3 + 0] = v->x;
+        vertices[v_idx * 3 + 1] = v->y;
+        vertices[v_idx * 3 + 2] = v->z;
 
-	// Упрощение модели с использованием MeshOptimizer
-	float target_error = MAX_DECIMATE_ERROR; // Максимальная ошибка упрощения
-	size_t target_index_count = indices.size() / 2; // Целевое количество индексов (примерно половина)
+        for (u32 f_idx = 0; f_idx < base_faces_cnt; f_idx++) 
+        {
+            const CDB::TRI& t = CL.getT(f_idx);
+            if (t.verts[0] == v_idx || t.verts[1] == v_idx || t.verts[2] == v_idx)
+            {
+                attributes[v_idx] = (t.material << 16) | t.sector;
+                break;
+            }
+        }
+    }
 
-	xr_vector<unsigned int> simplified_indices(indices.size());
-	size_t simplified_index_count = meshopt_simplify
-	(
-		simplified_indices.data(),
-		indices.data(),
-		indices.size(),
-		&vertices[0],
-		base_verts_cnt,
-		sizeof(float) * 3,
-		target_index_count,
-		target_error
-	);
+    for (u32 f_idx = 0; f_idx < base_faces_cnt; f_idx++) 
+    {
+        const CDB::TRI& t = CL.getT(f_idx);
+        indices[f_idx * 3 + 0] = t.verts[0];
+        indices[f_idx * 3 + 1] = t.verts[1];
+        indices[f_idx * 3 + 2] = t.verts[2];
+        FPs[f_idx].set(t.material, t.sector, Fvector().mknormal(*(CL.getV() + t.verts[0]), *(CL.getV() + t.verts[1]), *(CL.getV() + t.verts[2])), CL.getfFlags(f_idx));
+    }
+    CL.clear();
 
-	simplified_indices.resize(simplified_index_count);
+    // Буфер для упрощенных индексов
+    xr_vector<u32> lod_indices(indices.size()); 
 
-	// Уплотнение данных (удаление неиспользуемых вершин)
-	xr_vector<unsigned int> remap(base_verts_cnt);
-	size_t simplified_vertex_count = meshopt_optimizeVertexFetchRemap
-	(
-		remap.data(),
-		simplified_indices.data(),
-		simplified_index_count,
-		base_verts_cnt
-	);
+    size_t lod_index_count = meshopt_simplifyWithAttributes
+    (
+        lod_indices.data(),        
+        indices.data(),            
+        indices.size(),            
+        vertices.data(),           
+        base_verts_cnt,            
+        sizeof(float) * 3,         
+        attributes.data(),         
+        sizeof(u32),               
+        nullptr,                   
+        0,                         
+        nullptr,                   
+        0,                         
+        MAX_DECIMATE_ERROR,        
+        base_faces_cnt * 3,        
+        nullptr                    
+    );
 
-	xr_vector<float> simplified_vertices(simplified_vertex_count * 3);
-	meshopt_remapVertexBuffer
-	(
-		simplified_vertices.data(),
-		vertices.data(),
-		base_verts_cnt,
-		sizeof(float) * 3,
-		remap.data()
-	);
+    lod_indices.resize(lod_index_count);
 
-	meshopt_remapIndexBuffer
-	(
-		simplified_indices.data(),
-		simplified_indices.data(),
-		simplified_index_count,
-		remap.data()
-	);
+    for (u32 f_idx = 0; f_idx < lod_indices.size() / 3; f_idx++) 
+    {
+        u32 i0 = lod_indices[f_idx * 3 + 0];
+        u32 i1 = lod_indices[f_idx * 3 + 1];
+        u32 i2 = lod_indices[f_idx * 3 + 2];
 
-	// Очистка старых данных
-	CL.clear();
+        Fvector v0 = { vertices[i0 * 3 + 0], vertices[i0 * 3 + 1], vertices[i0 * 3 + 2] };
+        Fvector v1 = { vertices[i1 * 3 + 0], vertices[i1 * 3 + 1], vertices[i1 * 3 + 2] };
+        Fvector v2 = { vertices[i2 * 3 + 0], vertices[i2 * 3 + 1], vertices[i2 * 3 + 2] };
 
-	// Перенос упрощённой модели в CDB
-	for (size_t i = 0; i < simplified_indices.size(); i += 3)
-	{
-		Fvector v0 = *((Fvector*)&simplified_vertices[simplified_indices[i + 0] * 3]);
-		Fvector v1 = *((Fvector*)&simplified_vertices[simplified_indices[i + 1] * 3]);
-		Fvector v2 = *((Fvector*)&simplified_vertices[simplified_indices[i + 2] * 3]);
+        u32 attr = attributes[i0];
+        u16 material = (attr >> 16) & 0xFFFF;
+        u16 sector = attr & 0xFFFF;
 
-		CL.add_face(v0, v1, v2, 0, 0, 0); // Замените материал, сектор и флаги на нужные значения
-	}
+        face_props& FP = FPs[f_idx];
+        CL.add_face(v0, v1, v2, material, sector, FP.flags);
+    }
 
-	// Сохранение оптимизированной модели (если требуется)
-	if (keep_temp_files) 
-	{
-		string_path fn;
-		SaveAsSMF(xr_strconcat(fn, pBuild->path, "cform_optimized.obj"), CL);
-	}
+    if (keep_temp_files)
+    {
+        string_path fn;
+        SaveAsSMF(xr_strconcat(fn, pBuild->path, "cform_optimized.obj"), CL);
+    }
 #endif
 }
