@@ -18,6 +18,11 @@ CUIButton:: CUIButton()
 	m_uAccelerator[1]			= 0;
 	m_uAccelerator[2]			= -1;
 	m_uAccelerator[3]			= -1;
+	m_HighlightColor = 0xFFFFFFFF;
+	m_bEnableTextHighlighting = true;
+
+	m_iShadowOffsetX = 0.0f;
+	m_iShadowOffsetY = 0.0f;
 
 	TextItemControl()->SetTextComplexMode			(false);
 	TextItemControl()->SetTextAlignment			(CGameFont::alCenter); // this will create class instance for m_pLines
@@ -112,6 +117,34 @@ void CUIButton::DrawTexture()
 		else
 			m_UIStaticItem.Render();		
 	}
+}
+
+void CUIButton::DrawHighlightedText() {
+	float right_offset;
+	float down_offset;
+
+	if (m_eButtonState == BUTTON_UP || m_eButtonState == BUTTON_NORMAL)
+		//|| !m_bAvailableTexture)
+	{
+		right_offset = 0.0f;
+		down_offset = 0.0f;
+	}
+	else
+	{
+		right_offset = PUSH_OFFSET_RIGHT;
+		down_offset = PUSH_OFFSET_DOWN;
+	}
+
+	Frect rect;
+	GetAbsoluteRect(rect);
+	u32 def_col = TextItemControl()->GetTextColor();
+	TextItemControl()->SetTextColor(m_HighlightColor);
+
+	TextItemControl()->Draw(rect.left + right_offset + 0 + TextItemControl()->m_TextOffset.x  + m_iShadowOffsetX,
+		rect.top + down_offset - 0 + TextItemControl()->m_TextOffset.y + m_iShadowOffsetY);
+
+	TextItemControl()->SetTextColor(def_col);
+
 }
 
 void CUIButton::DrawText()
