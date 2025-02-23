@@ -116,3 +116,9 @@ if(LUAJIT_ENABLE_CLI)
         COMPONENT luajit-cli
     )
 endif()
+
+if (MSVC)
+    set_target_properties(luajit PROPERTIES LINK_FLAGS "/BASE:0x28000000 /FIXED /DYNAMICBASE:NO")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set_target_properties(luajit PROPERTIES LINK_FLAGS "-Wl,--image-base=0x28000000")
+endif()
