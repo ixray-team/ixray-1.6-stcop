@@ -1,5 +1,19 @@
 #include "stdafx.h"
 
+namespace detail
+{
+	float RoundToTwoDecimals(float value)
+	{
+		return std::round(value * 100.0f) / 100.0f;
+	}
+
+	bool compareFloat(float a, float b, int precision = 2)
+	{
+		float scale = std::pow(10, precision);
+		return std::round(a * scale) == std::round(b * scale);
+	}
+}
+
 UIKeyForm::UIKeyForm():m_AutoChange(true), m_TimeFactor(1), m_Position(0), m_currentEditMotion(nullptr)
 {
 }
@@ -35,6 +49,8 @@ void UIKeyForm::Draw()
 			ImGui::Text("Right1");
 			ImGui::Text("Left2");
 			ImGui::Text("Right2");
+			ImGui::Text("Notify");
+			ImGui::Separator();
 			ImGui::EndChild();
 		}ImGui::SameLine();
 		ImGui::BeginChild("Midle", ImVec2(-120, 0));
@@ -72,6 +88,51 @@ void UIKeyForm::Draw()
 				DrawMark(3);
 			ImGui::PlotHistogram("##right2", Mark4 ? m_TempForPlotHistogram.data() : &Zero, Mark4 ? m_TempForPlotHistogram.size() : 1, 0, NULL, 0.0f, 1.0f, size);
 			if (!Mark4) ImGui::EndDisabled();
+
+			DrawNotify();
+			ImGui::PlotHistogram("##animnotify", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
+
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			{
+				float a, b, c;
+				ATools->GetStatTime(a, b, c);
+				float motion_length = b - a;
+
+				ImVec2 MousePos = ImGui::GetMousePos();
+				ImVec2 ItemPos = ImGui::GetItemRectMin();
+				ImVec2 ItemSize = ImGui::GetItemRectSize();
+				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+
+				m_currentEditMotion->notify[TimeOffset] = {};
+			}
+			else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+			{
+				float a, b, c;
+				ATools->GetStatTime(a, b, c);
+				float motion_length = b - a;
+
+				ImVec2 MousePos = ImGui::GetMousePos();
+				ImVec2 ItemPos = ImGui::GetItemRectMin();
+				ImVec2 ItemSize = ImGui::GetItemRectSize();
+				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+				float Step = detail::RoundToTwoDecimals(motion_length / 100);
+
+
+				for (auto& [Time, _] : m_currentEditMotion->notify)
+				{
+					for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
+					{
+						if (detail::compareFloat(Time, StartKey))
+						{
+							m_currentEditMotion->notify.erase(Time);
+						}
+					}
+				}
+			}
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
@@ -191,13 +252,39 @@ void UIKeyForm::SetMark(int id, int action)
 	std::sort(M.intervals.begin(), M.intervals.end(), interval_comparer);
 }
 
+void UIKeyForm::DrawNotify()
+{
+	std::memset(m_TempForPlotHistogram.data(), 0, sizeof(float) * m_TempForPlotHistogram.size());
+
+	float a, b, c;
+	ATools->GetStatTime(a, b, c);
+	float motion_length = b - a;
+
+	if (motion_length == 0)
+		return;
+
+	float k_len = m_TempForPlotHistogram.size() / motion_length;
+	for (auto [Time, Notify] : m_currentEditMotion->notify)
+	{
+		float Key = Time * k_len;
+
+		for (int KeyStart = int(Key) - 5; KeyStart < int(Key + 5); KeyStart++)
+		{
+			if (KeyStart < 0)
+				continue;
+
+			m_TempForPlotHistogram[KeyStart] = 1;
+		}
+	}
+}
+
 void UIKeyForm::DrawMark(int id)
 {
-	for (int i = 0; i < m_TempForPlotHistogram.size(); i++)
-	{
-		m_TempForPlotHistogram[i] = 0;
-	}
-	if (!m_currentEditMotion)return;
+	std::memset(m_TempForPlotHistogram.data(), 0, sizeof(float) * m_TempForPlotHistogram.size());
+
+	if (!m_currentEditMotion)
+		return;
+
 	motion_marks& M = m_currentEditMotion->marks[id];
 
 	float a, b, c;
