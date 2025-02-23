@@ -3,22 +3,31 @@
 
 #include "common.hlsli"
 
-float DistributionGGX(float SqrNdotH, float Roughness)
+float DistributionGGX(float NdotH, float Roughness)
 {
     float Alpha = Roughness * Roughness;
     float AlphaTwo = Alpha * Alpha;
 
     float AlphaTwoInv = AlphaTwo - 1.0f;
 
-    float Divider = SqrNdotH * AlphaTwoInv + 1.0f;
-    return AlphaTwo * rcp(/*PI **/ Divider * Divider);
+    float Divider = NdotH * NdotH * AlphaTwoInv + 1.0f;
+    return AlphaTwo * rcp(Divider * Divider);
 }
 
+#ifndef USE_LEGACY_LIGHT
 // Simple PBR - like attention
+float ComputeLightAttention(float3 PointToLight, float MinAttention)
+{
+    float Attention = saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
+    return Attention * Attention;
+}
+#else
+// Simple GSC - like attention
 float ComputeLightAttention(float3 PointToLight, float MinAttention)
 {
     return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
 }
+#endif
 
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
 {
@@ -37,7 +46,7 @@ float3 FresnelSchlick(float3 F, float NdotV)
     return F + (1.0f - F) * pow(1.0f - NdotV, 5.0f);
 }
 
-float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Metalness, float Roughness)
+float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, float3 Color, float Metalness, float Roughness, float3 F0 = 0.04f)
 {
     float3 Half = normalize(Light + View);
 
@@ -56,11 +65,23 @@ float3 DirectLight(float4 Radiance, float3 Light, float3 Normal, float3 View, fl
     float3 Diffuse = Color * (1.0f - Metalness) * (1.0f - F);
 
     float3 BRDF = Specular + Diffuse;
-    return Radiance.xyz * NdotL * BRDF;
+    return PushGamma(Radiance.xyz) * NdotL * BRDF;
 #else
     float2 Material = s_material.SampleLevel(smp_material, float3(NdotL, NdotH, Metalness), 0).xy;
     return Radiance.xyz * (Material.x * Color.xyz + Material.y * Roughness.x * Radiance.w);
 #endif
+}
+
+float3 SimpleTranslucency(float3 Radiance, float3 Light, float3 Normal)
+{
+	float NdotL = dot(Light, Normal);
+	float Scale = 0.36f * NdotL;
+
+	float Attention = Scale + 0.0769f; Attention *= Attention * 1.171f;	
+	float Factor = 1.0f - saturate(abs(Scale) * 13.0f - 1.0f);
+
+	float SSS = lerp(saturate(NdotL), Attention, Factor * Factor);
+	return PushGamma(Radiance) * saturate(3.5f * SSS + 0.1f);
 }
 
 #endif
