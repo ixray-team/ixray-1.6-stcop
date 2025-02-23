@@ -332,7 +332,7 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 	{
 		constexpr int16_t _kSize = sizeof(p_state->combo_animation_params_data) / sizeof(p_state->combo_animation_params_data[0]);
 
-		R_ASSERT(_kSize <= data.data_animparams.count && "report to developers!");
+		R_ASSERT(_kSize >= data.data_animparams.count && "report to developers!");
 
 		for (int16_t i = 0; i < data.data_animparams.count; ++i)
 		{
@@ -493,7 +493,7 @@ void RenderToolsOMFEditorWindow()
 
 				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data, g_omf_editor.omf.data_animparams.count))
 				{
-
+					bool changed = false;
 				}
 
 				ImGui::TableSetColumnIndex(1);
