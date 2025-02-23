@@ -253,10 +253,10 @@ bool Script::bfLoadBuffer(CLuaVirtualMachine *tpLuaVM, LPCSTR caBuffer, size_t t
 		l_iErrorCode	= luaL_loadbuffer(tpLuaVM,caBuffer,tSize,caScriptName);
 
 	if (l_iErrorCode) {
-#ifdef DEBUG
+//#ifdef DEBUG
 		if (!bfPrintOutput	(tpLuaVM,caScriptName,l_iErrorCode))
 			vfPrintError(tpLuaVM,l_iErrorCode);
-#endif
+//#endif
 		return			(false);
 	}
 	return			(true);
