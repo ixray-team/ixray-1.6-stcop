@@ -5,6 +5,57 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrface.h"
 
+extern bool CheckInfinity_FBOX(Fbox& box)
+{
+	constexpr float inf = std::numeric_limits<float>::infinity();
+
+	if (box.min.x == -inf || box.min.x == inf)
+		return true;
+	if (box.min.y == -inf || box.min.y == inf)
+		return true;
+	if (box.min.z == -inf || box.min.z == inf)
+		return true;
+
+	if (box.max.x == -inf || box.max.x == inf)
+		return true;
+	if (box.max.y == -inf || box.max.y == inf)
+		return true;
+	if (box.max.z == -inf || box.max.z == inf)
+		return true;
+
+
+	return false;
+}
+
+extern void Validate_gXsplit()
+{
+	int IDX_Bbox = 0;
+	for (auto& SP : g_XSplit)
+	{
+		Fbox bbox;
+		bbox.invalidate();
+
+		for (auto K : *SP)
+		{
+			bbox.modify(K->v[0]->P);
+			bbox.modify(K->v[1]->P);
+			bbox.modify(K->v[2]->P);
+		}
+		bbox.grow(EPS_L);
+
+		if (CheckInfinity_FBOX(bbox))
+		{
+			Msg("SP[%u] is Infinity min{%.2f, %.2f, %.2f} max{%.2f, %.2f, %.2f} ", IDX_Bbox, VPUSH(bbox.min), VPUSH(bbox.max));
+		}
+		else
+		{
+		//	Msg("SP[%u] is FBOX:  min{%.2f, %.2f, %.2f} max{%.2f, %.2f, %.2f}", IDX_Bbox, VPUSH(bbox.min), VPUSH(bbox.max));
+		}
+		IDX_Bbox++;
+	}
+}
+
+
 void Detach(vecFace* S)
 {
 	map_v2v			verts;
@@ -76,7 +127,9 @@ void MT_FindAttached(CDeflector* defl, vecFace& affected, int SP, int start, int
 #include <thread>
 #include <algorithm>
 #include <execution>
- 
+
+
+extern bool CheckInfinity_FBOX(Fbox& bbox);
 
 void CBuild::xrPhase_UVmap()
 {
@@ -150,24 +203,13 @@ void CBuild::xrPhase_UVmap()
 			// Detect vertex-lighting and avoid this subdivision
 			if (g_XSplit[SP]->empty())
 			{
-				//Msg("Strage Empty SP: %d", SP);
-				continue;
+ 				continue;
 			}
-			// R_ASSERT(!g_XSplit[SP]->empty());
-			Face* Fvl = g_XSplit[SP]->front();
+
+ 			Face* Fvl = g_XSplit[SP]->front();
 			if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
 			if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
 			if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
-
-			// Слишком дорого
-			// size_t AllocatedDeflectors = 0;// size_t(size_t(DeflectorsAllocated * sizeof(CDeflector)) / 1024 / 1024);
-			// 
-			// for (auto D : lc_global_data()->g_deflectors())
-			// {
-			// 	AllocatedDeflectors += D->size_deflector();
-			// }
-			// 
-			// AllocatedDeflectors /= (1024 * 1024); // MB
 
 			// , Deflectors Allocated[%llu] MB
 			Status("SP[%d/%d], all[%d]", SP, StartPoint, g_XSplit.size()); //AllocatedDeflectors
@@ -213,13 +255,7 @@ void CBuild::xrPhase_UVmap()
 
 				if (!faces_selected->empty())
 				{
-					// clMsg("Memory Alloc for ( Deflectors %llu )", 
-					// 	size_t ( size_t( DeflectorsAllocated * sizeof(CDeflector) ) / 1024 / 1024 )
-					// ); 
-					// 
-					// clMsg("g_XSplit[SP] Size: %u, Deflectors created: %u, ", g_XSplit[SP]->size(), DeflectorsAllocated);
-
-					auto IT = std::remove_if(
+ 					auto IT = std::remove_if(
 						faces_selected->begin(),
 						faces_selected->end(),
 						[&](Face* F)
@@ -238,8 +274,7 @@ void CBuild::xrPhase_UVmap()
 				// Cancel infine loop (while)
 				if (msF == nullptr)
 				{
-					// Msg("[While Exit] g_XSplit Size: %u, Deflectors: %u", g_XSplit[SP]->size(), DeflectorsAllocated);
-					break;
+ 					break;
 				}
 			}
 		}
@@ -279,6 +314,8 @@ void CBuild::xrPhase_UVmap()
 		clMsg("xrPhase_UVmap: Ended %u used", size_t(used / 1024 / 1024));
 	}
 
+	
+	Validate_gXsplit();
 }
 
 
