@@ -43,7 +43,6 @@ public:
 
 		return result;
 #else
-#error unknown platform
 		return false;
 #endif
 	}
