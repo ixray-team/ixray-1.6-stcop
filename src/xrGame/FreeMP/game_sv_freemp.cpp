@@ -313,6 +313,11 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		OnTransferMoney(P, sender);
 	}
 	break;
+	case GAME_EVENT_MP_TRADE:
+	{
+		OnPlayerTrade(P, sender);
+	}
+	break;
 	default:
 		inherited::OnEvent(P, type, time, sender);
 	};
