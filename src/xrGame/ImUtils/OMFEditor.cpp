@@ -129,7 +129,7 @@ struct OMFData
 			int32_t marks_count;
 			float speed;
 			float power;
-			float accue;
+			float accrue;
 			float falloff;
 			xr_stack_string<32> name;
 			std::array<MotionMark, 32> marks;
@@ -168,8 +168,23 @@ void OMFEditor_ReadString(xr_stack_string<Size>& str, std::ifstream& file)
 	} while (symbol != '\0');
 }
 
+template<std::size_t Size>
+void OMFEditor_ReadStringMotionMark(xr_stack_string<Size>& str, std::ifstream& file)
+{
+	char symbol = -1;
+	uint32_t str_length = 0;
+	do
+	{
+		R_ASSERT(!(str_length > str.max_size()) && "report to developers you have too long serialized string");
 
-void OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
+		file.read(&symbol, 1);
+		str += symbol;
+		++str_length;
+	} while (symbol != 0xA);
+}
+
+
+bool OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 {
 	file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
 	file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
@@ -192,9 +207,11 @@ void OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 
 		file.read(&av.data[0], data_size);
 	}
+
+	return true;
 }
 
-void OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
+bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 {
 	file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
 	file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
@@ -220,30 +237,112 @@ void OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 			file.read(reinterpret_cast<char*>(&bone.id), sizeof(bone.id));
 		}
 	}
+
+	return true;
 }
 
-void OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimParams::MotionMark& mark, std::ifstream& file)
+bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimParams::MotionMark& mark, std::ifstream& file)
 {
+	bool status = true;
 
+	OMFEditor_ReadStringMotionMark(mark.name, file);
+	file.read(reinterpret_cast<char*>(&mark.count), sizeof(mark.count));
+
+	for (int32_t i = 0; i < mark.count; ++i)
+	{
+		OMFData::AnimParamsData::AnimParams::MotionMark::Params& mark_param = mark.params[i];
+
+		file.read(reinterpret_cast<char*>(&mark_param.t0), sizeof(mark_param.t0));
+		file.read(reinterpret_cast<char*>(&mark_param.t1), sizeof(mark_param.t1));
+	}
+
+	return status;
 }
 
-void OMFEditor_LoadOMF_AnimParamsData(OMFData::AnimParamsData& data, std::ifstream& file)
+bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_count, OMFData::AnimParamsData& data, std::ifstream& file)
 {
+	file.read(reinterpret_cast<char*>(&data.count), sizeof(data.count));
 
+	if (animation_count != data.count)
+	{
+		ShowMessageBox(_eMessageBoxStatus::kWarning, "Invalid OMF", "Animation count IS NOT equal to anim params count!");
+		return false;
+	}
+
+	constexpr int16_t _kSize = sizeof(data.params) / sizeof(data.params[0]);
+
+	if (_kSize <= data.count)
+	{
+		R_ASSERT(false && "report to developers!");
+		ShowMessageBox(_eMessageBoxStatus::kWarning, "Report to developers", "too many anim params!");
+		return false;
+	}
+
+	for (int16_t i = 0; i < data.count; ++i)
+	{
+		OMFData::AnimParamsData::AnimParams& param = data.params[i];
+		OMFEditor_ReadString(param.name, file);
+
+		file.read(reinterpret_cast<char*>(&param.flags), sizeof(param.flags));
+		file.read(reinterpret_cast<char*>(&param.bone_or_part), sizeof(param.bone_or_part));
+		file.read(reinterpret_cast<char*>(&param.motion_id), sizeof(param.motion_id));
+		file.read(reinterpret_cast<char*>(&param.speed), sizeof(param.speed));
+		file.read(reinterpret_cast<char*>(&param.power), sizeof(param.power));
+		file.read(reinterpret_cast<char*>(&param.accrue), sizeof(param.accrue));
+		file.read(reinterpret_cast<char*>(&param.falloff), sizeof(param.falloff));
+
+		if (ogf_version == 4)
+		{
+			file.read(reinterpret_cast<char*>(&param.marks_count), sizeof(param.marks_count));
+
+			if (param.marks_count>0)
+			{
+				for (int16_t mark_id = 0; mark_id < param.marks_count; ++mark_id)
+				{
+					OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[mark_id];
+
+					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, file);
+
+					if (!status_mark)
+					{
+						char msg[64]{};
+						std::sprintf(msg, "failed to load motion mark: %d", mark_id);
+						ShowMessageBox(_eMessageBoxStatus::kWarning, "Warning", msg);
+					}
+				}
+			}
+		}
+	}
+	
+
+	return true;
 }
 
-void OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
+bool OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
 {
 	R_ASSERT(file.good() && "lol, pass valid file here please");
 	R_ASSERT(file.is_open() && "obviously file must be opened before reading");
 
+	bool status = false;
 	if (file.is_open() && file.good())
 	{
-		OMFEditor_LoadOMF_AnimData(data.data_anim, file);
-		OMFEditor_LoadOMF_BoneData(data.data_bone, file);
+		status = OMFEditor_LoadOMF_AnimData(data.data_anim, file);
 
+		if (!status)
+			return status;
 
+		status = OMFEditor_LoadOMF_BoneData(data.data_bone, file);
+
+		if (!status)
+			return status;
+
+		status = OMFEditor_LoadOMF_AnimParamsData(data.data_bone.ogf_version, data.data_anim.animations_count, data.data_animparams, file);
+
+		if (!status)
+			return status;
 	}
+
+	return status;
 }
 
 void OMFEditor_LoadFile(OMFEditorState* p_state)
