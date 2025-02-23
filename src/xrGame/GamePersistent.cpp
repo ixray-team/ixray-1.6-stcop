@@ -839,7 +839,8 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
-	if(change_tip && EngineExternal().CallOfPripyatMode())
+	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
+	if(change_tip && !disableLoadScreenTips)
 	{
 		string512				buff;
 		u8						tip_num;
