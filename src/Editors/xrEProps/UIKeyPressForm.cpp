@@ -14,7 +14,7 @@ void UIKeyPressForm::Draw()
 	if (!bOpen)
 		return;
 
-	if (!ImGui::BeginPopupModal("PressKey", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove, true))
+	if (!ImGui::BeginPopupModal("Press any key", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove, true))
 	{
 		ImGui::EndPopup();
 		return;
@@ -22,11 +22,11 @@ void UIKeyPressForm::Draw()
 
 	if (fmod(m_TimeGlobal*1000, 1000.f) >500.f)
 	{
-		ImGui::TextColored(ImVec4(1,0,0,1),"PRESS ANY KEY!!!");
+		ImGui::TextColored(ImVec4(1,0,0,1),"Press any key to continue.");
 	}
 	else
 	{
-		ImGui::Text("PRESS ANY KEY!!!");
+		ImGui::Text("Press any key to continue.");
 	}
 	if (ImGui::Button("Cancel", ImVec2(-1, 0)))
 	{
