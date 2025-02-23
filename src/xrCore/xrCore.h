@@ -93,7 +93,7 @@
 #include "clsid.h"
 #include "xrSyncronize.h"
 #include "RingBuffer.h"
-#include "xrMemory.h"
+#include "memory/xrMemory.h"
 #include "xrDebug.h"
 
 #include "_stl_extensions.h"

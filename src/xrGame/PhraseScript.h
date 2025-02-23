@@ -5,7 +5,7 @@
 
 
 #include "InfoPortionDefs.h"
-#include "../xrCore/XmlParser/xrXMLParser.h"
+#include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 #pragma once
 
