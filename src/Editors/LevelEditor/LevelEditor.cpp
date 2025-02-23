@@ -73,6 +73,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	splash::update(65, "Setting Up Console");
 
 	Console->Execute("default_controls");
+
+	xr_strcpy(Console->ConfigFile, "user.ltx");
+
+	if (strstr(Core.Params, "-ltx ")) {
+		string64 c_name;
+		sscanf(strstr(Core.Params, "-ltx ") + 5, "%[^ ] ", c_name);
+		xr_strcpy(Console->ConfigFile, c_name);
+	}
+
+	Console->ExecuteScript(Console->ConfigFile);
+
 	Console->Hide();
 
 	splash::update(75, "Performing Final UI Setup");
