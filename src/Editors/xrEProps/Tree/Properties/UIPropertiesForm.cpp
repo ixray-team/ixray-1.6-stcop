@@ -92,7 +92,7 @@ void UIPropertiesForm::Draw()
 		}
 	}
 
-	static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+    static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
 	if (ImGui::BeginTable("props", 2, flags))
 	{
 		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
