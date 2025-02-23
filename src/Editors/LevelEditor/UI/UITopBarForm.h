@@ -5,7 +5,8 @@ public:
 	UITopBarForm();
 	virtual ~UITopBarForm();
 	virtual void Draw();
-	bool VerifySpaceRestrictors()const {return m_VerifySpaceRestrictors;}
+	bool VerifySpaceRestrictors()const { return m_VerifySpaceRestrictors; }
+	bool UseCameraPosForActor = false;
 private:
 
 	void ClickUndo(); ref_texture m_tUndo; u32 m_timeUndo;

@@ -144,7 +144,7 @@ void UIObjectTool::Draw()
 			}
 			ImGui::SameLine();
 
-			if (ImGui::Button("Custom..."))
+			if (ImGui::Button("Custom.."))
 			{
 				m_PropRandom = true;
 				ParentTools->FillAppendRandomPropertiesBegin();
@@ -190,16 +190,21 @@ void UIObjectTool::Draw()
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+
+	float XSize = ImGui::GetWindowSize().x - 25;
+	XSize /= 2;
+
 	if (ImGui::TreeNode("Surface"))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if (ImGui::Button("Clear Surface in select", ImVec2(-1, 0)))
+			if (ImGui::Button("Clear Select", ImVec2(XSize, 0)))
 			{
 				Scene->UndoSave();
 				ClearSurface(true);
 			}
-			if (ImGui::Button("Clear Surface in level", ImVec2(-1, 0)))
+			ImGui::SameLine();
+			if (ImGui::Button("Clear Level", ImVec2(XSize, 0)))
 			{
 				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset surface in level?") == mrYes) 
 				{
@@ -219,12 +224,13 @@ void UIObjectTool::Draw()
 
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if (ImGui::Button("Select ...", ImVec2(-1, 0)))
+			if (ImGui::Button("Select", ImVec2(XSize, 0)))
 			{
 				UIChooseForm::SelectItem(smObject,1, m_Current,0,0,0,0,0);
 				m_Selection = true;
 			}
-			if (ImGui::Button("Refresh List", ImVec2(-1, 0)))
+			ImGui::SameLine();
+			if (ImGui::Button("Refresh", ImVec2(XSize, 0)))
 			{
 				RefreshList();
 			}
