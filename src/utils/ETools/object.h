@@ -10,7 +10,7 @@
 #ifndef objectH
 #define objectH
 
-//#include "quad.h"
+#include "QMath.h"
 
 // Incremented by the draw routs. Display + zero whenever you want.
 extern int g_iMaxNumTrisDrawn;
@@ -62,7 +62,6 @@ struct MyTri
 #include "../../xrCore/xrCore.h"
 
 #include "mesh.h"
-#include "../xrQSlim/src/MxQMetric.h"
 
 struct GeneralTriInfo
 {
