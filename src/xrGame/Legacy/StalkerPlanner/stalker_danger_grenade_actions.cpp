@@ -68,7 +68,7 @@ void CStalkerActionDangerGrenadeTakeCover::execute							()
 			temp										= eMentalStatePanic;
 		}
 		else {
-			CWeapon					*weapon = smart_cast<CWeapon*>(&object().inventory().ActiveItem()->object());
+			CWeapon					*weapon = object().inventory().ActiveItem()->object().cast_weapon();
 			if (weapon && weapon->can_be_strapped() && object().best_weapon() && (object().best_weapon()->object().ID() == weapon->ID())) {
 				object().CObjectHandler::set_goal			(eObjectActionStrapped,object().inventory().ActiveItem());
 				if (weapon->strapped_mode())

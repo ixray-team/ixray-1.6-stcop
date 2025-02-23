@@ -81,7 +81,7 @@ void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)
 		m_ammo_in_box_to_spawn	= 0;
 	}
 
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory_item);
+	CWeapon						*weapon = inventory_item->cast_weapon();
 	if (weapon)
 	{
 		CameraRecoil cam_recoil_copy;
@@ -98,7 +98,7 @@ void CObjectHandler::OnItemDrop		(CInventoryItem *inventory_item, bool just_befo
 	m_inventory_actual		= false;
 	
 	if (m_infinite_ammo && m_planner->GetOwner()->g_Alive() && !inventory_item->useful_for_NPC()) {
-		CWeaponAmmo				*weapon_ammo = smart_cast<CWeaponAmmo*>(inventory_item);
+		CWeaponAmmo				*weapon_ammo = inventory_item->cast_weapon_ammo();
 		if (weapon_ammo) {
 			Level().spawn_item		(*weapon_ammo->cNameSect(),m_planner->GetOwner()->Position(),m_planner->GetOwner()->ai_location().level_vertex_id(),m_planner->GetOwner()->ID());
 			m_item_to_spawn			= weapon_ammo->cNameSect();
@@ -144,7 +144,7 @@ bool CObjectHandler::goal_reached	()
 
 void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem()->cast_weapon();
 	if (!weapon || !m_planner->bStrapped) {
 		if (weapon)
 			weapon->strapped_mode	(false);
@@ -171,7 +171,7 @@ void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 
 bool CObjectHandler::weapon_strapped	() const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem()->cast_weapon();
 	if (!weapon)
 		return					(false);
 
@@ -225,7 +225,7 @@ bool CObjectHandler::weapon_strapped	(CWeapon *weapon) const
 
 bool CObjectHandler::weapon_unstrapped	() const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem()->cast_weapon();
 	if (!weapon) {
 //		Msg						( "[%6d][%s] no active item!!(%d)(%s)", Device.dwTimeGlobal, m_planner->GetOwner()->cName().c_str(), inventory().GetActiveSlot(), inventory().ItemFromSlot(3) ? inventory().ItemFromSlot(3)->object().cName().c_str() : "<no_item>" );
 		return					(true);

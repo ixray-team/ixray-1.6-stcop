@@ -114,7 +114,7 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 		return;
 	}
 
-	CWeapon				*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon				*weapon = inventory().ActiveItem()->cast_weapon();
 	if (!weapon) {
 		CMissile		*missile = smart_cast<CMissile*>(inventory().ActiveItem());
 		if (missile) {
@@ -572,7 +572,7 @@ bool CAI_Stalker::ready_to_detour		()
 	if (!ready_to_kill())
 		return			(false);
 
-	CWeapon				*weapon = smart_cast<CWeapon*>(m_best_item_to_kill);
+	CWeapon				*weapon = m_best_item_to_kill->cast_weapon();
 	if (!weapon)
 		return			(false);
 
@@ -1141,7 +1141,7 @@ bool CAI_Stalker::critical_wound_external_conditions_suitable()
 	if (animation().non_script_need_update())
 		return						(false);
 
-	CWeapon							*active_weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon							*active_weapon = inventory().ActiveItem()->cast_weapon();
 	if (!active_weapon)
 		return						(false);
 

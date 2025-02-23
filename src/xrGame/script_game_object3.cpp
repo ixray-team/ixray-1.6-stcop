@@ -61,7 +61,7 @@ void CScriptGameObject::IterateFeelTouch(const luabind::functor<bool>& functor)
 
 int CScriptGameObject::GetAmmoCount(u8 type)
 {
-	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	CWeapon* weapon = object().cast_weapon();
 	if (!weapon) return 0;
 
 	if (type < weapon->m_ammoTypes.size())
@@ -72,7 +72,7 @@ int CScriptGameObject::GetAmmoCount(u8 type)
 
 u8 CScriptGameObject::GetWeaponSubstate()
 {
-	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	CWeapon* weapon = object().cast_weapon();
 	if (!weapon) return 255;
 
 	return weapon->m_sub_state;
@@ -80,7 +80,7 @@ u8 CScriptGameObject::GetWeaponSubstate()
 
 u32 CScriptGameObject::GetMainWeaponType()
 {
-	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	CWeapon* weapon = object().cast_weapon();
 	if (!weapon) return 255;
 
 	return weapon->ef_main_weapon_type();
@@ -240,7 +240,7 @@ void CScriptGameObject::IterateInstalledUpgrades(const luabind::functor<bool>& f
 }
 void CScriptGameObject::Weapon_AddonAttach(CScriptGameObject* item)
 {
-	CWeaponMagazined* weapon = smart_cast<CWeaponMagazined*>(&object());
+	CWeaponMagazined* weapon = object().cast_weapon()->cast_weapon_magazined();
 	if (!weapon)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazined : cannot access class member Weapon_AddonAttach!");
@@ -275,7 +275,7 @@ void CScriptGameObject::Weapon_AddonDetach(LPCSTR item_section, bool b_spawn_ite
 
 LPCSTR CScriptGameObject::Weapon_GetAmmoSection(u8 ammo_type)
 {
-	CWeaponMagazined* weapon = smart_cast<CWeaponMagazined*>(&object());
+	CWeaponMagazined* weapon = object().cast_weapon()->cast_weapon_magazined();
 	if (!weapon)
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazined : cannot access class member Weapon_GetAmmoSection!");
@@ -354,7 +354,7 @@ CScriptGameObject* CScriptGameObject::ItemOnBelt(u32 item_id) const
 
 u32 CScriptGameObject::GetWeaponType()
 {
-	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	CWeapon* weapon = object().cast_weapon();
 	if (!weapon) return 255;
 
 	return weapon->ef_weapon_type();

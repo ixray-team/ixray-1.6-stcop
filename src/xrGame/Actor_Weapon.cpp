@@ -26,7 +26,7 @@ static const float VEL_A_MAX	= 10.f;
 //возвращает текуший разброс стрельбы (в радианах)с учетом движения
 float CActor::GetWeaponAccuracy() const
 {
-	CWeapon* W	= smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon* W	= inventory().ActiveItem()->cast_weapon();
 	
 	if ( IsZoomAimingMode() && W && !GetWeaponParam(W, IsRotatingToZoom(), false) )
 	{
@@ -317,7 +317,7 @@ void	CActor::SpawnAmmoForWeapon	(CInventoryItem *pIItem)
 	if (OnClient()) return;
 	if (!pIItem) return;
 
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
+	CWeaponMagazined* pWM = pIItem->cast_weapon()->cast_weapon_magazined();
 	if (!pWM || !pWM->AutoSpawnAmmo()) return;
 
 	///	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( (pWM->m_ammoTypes[0].c_str()) ));
@@ -330,7 +330,7 @@ void	CActor::RemoveAmmoForWeapon	(CInventoryItem *pIItem)
 	if (OnClient()) return;
 	if (!pIItem) return;
 
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
+	CWeaponMagazined* pWM = pIItem->cast_weapon()->cast_weapon_magazined();
 	if (!pWM || !pWM->AutoSpawnAmmo()) return;
 
 	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( pWM->m_ammoTypes[0].c_str() ));

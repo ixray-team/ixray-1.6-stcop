@@ -119,7 +119,7 @@ const CCoverPoint *CAI_Stalker::find_best_cover		(const Fvector &position_to_cov
 	if (!best_weapon())
 		m_ce_best->can_use_smart_covers	(false);
 	else {
-		CWeapon* weapon					= smart_cast<CWeapon*>(best_weapon());
+		CWeapon* weapon					= best_weapon()->cast_weapon();
 		if (!weapon)
 			m_ce_best->can_use_smart_covers	(false);
 		else {

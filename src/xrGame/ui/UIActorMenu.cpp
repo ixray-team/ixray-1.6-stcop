@@ -441,7 +441,7 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 		//if(item_price>500)
 		//	item_price = iFloor(item_price/10+0.5f)*10;
 
-		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(current_item);
+		CWeaponAmmo* ammo = current_item->cast_weapon_ammo();
 		if(ammo)
 		{
 			for( u32 j = 0; j < cell_item->ChildsCount(); ++j )
@@ -648,7 +648,7 @@ void CUIActorMenu::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropLis
 	static xr_vector<shared_str>	ammo_types;
 	ammo_types.resize(0);
 
-	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
+	CWeapon* weapon = weapon_item->cast_weapon();
 	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
 	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
 	if ( !weapon || binoc || knife)
@@ -681,7 +681,7 @@ void CUIActorMenu::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropLis
 		{
 			continue;
 		}
-		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* ammo = item->cast_weapon_ammo();
 		if ( !ammo )
 		{
 			highlight_addons_for_weapon( weapon_item, ci );
@@ -706,7 +706,7 @@ void CUIActorMenu::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropList
 {
 	VERIFY( ammo_item );
 	VERIFY( ddlist );
-	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
+	CWeaponAmmo* ammo = ammo_item->cast_weapon_ammo();
 	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
 	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
 	if ( !ammo  )
@@ -725,7 +725,7 @@ void CUIActorMenu::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropList
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if (!weapon || binoc || knife)
 		{
 			continue;
@@ -815,7 +815,7 @@ void CUIActorMenu::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropLi
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if ( !weapon )
 		{
 			continue;
