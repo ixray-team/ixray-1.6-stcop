@@ -28,6 +28,10 @@ void main(in v_tree I, out p_bumped_new O)
     float sun = I.Nh.w * c_sun.x + c_sun.y;
     float hemi = I.Nh.w * c_scale.w + c_bias.w;
 
+#ifdef USE_LENGTH_BUFFER
+	O.lmap = I.Nh.w * c_scale.xyz + c_bias.xyz;
+#endif
+
 #ifdef USE_TREEWAVE
     float base = m_xform._24;
     float H = pos.y - base;
