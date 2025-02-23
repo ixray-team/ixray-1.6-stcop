@@ -17,7 +17,7 @@ private:
 	u32		m_last_autosave_time;
 	u32		m_delay_autosave_interval;
 	u32		m_not_ready_count;
-
+	shared_str save_str;
 public:
 						CAutosaveManager		();
 	virtual				~CAutosaveManager		();
