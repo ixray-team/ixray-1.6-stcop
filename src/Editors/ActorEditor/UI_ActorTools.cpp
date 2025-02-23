@@ -134,7 +134,14 @@ void CActorTools::OnFrame()
 		m_AVTransform.mulB_43(mScale);
 
 		if (!MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
+		{
 			m_pEditObject->OnFrame();
+
+			if (m_PreviewObject.m_pObject != nullptr)
+			{
+				m_PreviewObject.m_pObject->OnFrame();
+			}
+		}
 
 		if (!MainForm->GetKeyForm()->AutoChange())
 		{
@@ -904,6 +911,15 @@ void CActorTools::SetCurrentMotion(LPCSTR name, u16 slot)
 			{
 				m_pEditObject->SetActiveSMotion(M);
 			}
+
+			if (m_PreviewObject.m_pObject != nullptr)
+			{
+				if (CSMotion* PM = m_PreviewObject.m_pObject->FindSMotionByName(name))
+				{
+					m_PreviewObject.m_pObject->SetActiveSMotion(PM);
+				}
+			}
+
 			PlayMotion();
 		}
 	}
