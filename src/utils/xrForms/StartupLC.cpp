@@ -56,7 +56,8 @@ void StartupLC()
 	lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
 	lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
 	lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
-	  
+	lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
+
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
