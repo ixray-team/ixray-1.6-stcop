@@ -51,6 +51,20 @@ public:
 	virtual void			SetWndSize			(const Fvector2& size)						{m_wndSize = size;}
 	IC const Fvector2&		GetWndSize			()						const				{return m_wndSize;}
 	virtual void			SetWndRect			(const Frect& rect)							{m_wndPos.set(rect.lt); rect.getsize(m_wndSize);}
+	virtual bool WndPosIsProbablyRelative()
+	{
+		return m_wndPos.x <= 1.0f && m_wndPos.y <= 1.0f;
+	}
+
+	virtual bool WndSizeIsProbablyRelative()
+	{
+		return m_wndSize.x <= 1.0f && m_wndSize.y <= 1.0f;
+	}
+
+	virtual bool WndRectIsProbablyRelative()
+	{
+		return WndPosIsProbablyRelative() && WndSizeIsProbablyRelative();
+	}
 
 	virtual void			SetHeight			(float height)								{m_wndSize.y = height;}
 	IC		float			GetHeight			()						const				{return m_wndSize.y;}
