@@ -143,9 +143,8 @@ target_include_directories(xrLC_Light PUBLIC "${FREEIMAGE}/native/include/")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE}/native/bin/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/embree4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXRAY_SDK_BIN}/meshoptimizer.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 target_link_libraries(xrLC_Light PUBLIC ${FREEIMAGE}/native/lib/${NUGET_PACKAGE_PLATFORM}/Release/FreeImage.lib)
 
@@ -155,3 +154,7 @@ target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/direc
 # Zlib
 target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/include/")
 target_link_libraries(xrLC_Light PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Zlib.1.2.13.1/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/zlib.lib)
+
+# Intel Embree
+target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/build/native/include/")
+target_link_libraries(xrLC_Light PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.lib)
