@@ -105,6 +105,16 @@
 		</value>
 	</chemical_burn_immunity>
 
+	<af_slots x="0" y="0" width="257" height="20" >
+		<caption x="0" y="0" width="257" height="20" complex_mode="0">
+			<texture>ui_am_prop_artefact</texture>
+			<text color="ui_3" font="letterica16" vert_align="c" x="22" y="0"/>
+		</caption>
+		<value x="140" y="0" width="30" height="20" magnitude="1">
+			<text font="letterica16" vert_align="c"/>
+		</value>
+	</af_slots>
+
 	<additional_weight x="0" y="0" width="257" height="20" >
 		<caption x="0" y="0" width="257" height="20" complex_mode="0">
 			<texture>ui_am_propery_08</texture>
