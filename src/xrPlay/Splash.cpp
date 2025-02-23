@@ -8,6 +8,7 @@
 
 #define ErrorMsg(fmt,...) Msg("[Game Splash]<%s ~ line %d>" fmt, __FUNCTION__, __LINE__, __VA_ARGS__)
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #pragma warning(disable: 4047)
 HINSTANCE hInstanceG = (HINSTANCE)&__ImageBase;
 #pragma warning(default: 4047)
@@ -114,7 +115,7 @@ namespace splash
 
 		unsigned char* imageData = nullptr;
 
-		SDL_Surface* surface = LoadSplashSurface(imageData, MAKEINTRESOURCE(IDB_PNG1), _T("PNG"));
+		SDL_Surface* surface = LoadSplashSurface(imageData, MAKEINTRESOURCE(IDB_PNG1), TEXT("PNG"));
 
 		if (!surface)
 		{
