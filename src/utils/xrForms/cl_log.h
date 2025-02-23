@@ -26,6 +26,7 @@ struct IterationPhase
 	IterationStatus status = InProgress;
 	float PhasePersent = 0;
 	size_t used_memory = 0;
+	xr_string AdditionalData;
 };
 
 struct IterationData 
@@ -51,6 +52,10 @@ void Status(const char* format, ...);
 void StatusNoMsg(const char* format, ...);
 void Progress(const float F);
 void Phase(const char* phase_name);
+
+void AditionalData(const char* text, ...);
+
+
 void logThread	    (void *dummy);
 void logCallback	(LPCSTR c);
 
