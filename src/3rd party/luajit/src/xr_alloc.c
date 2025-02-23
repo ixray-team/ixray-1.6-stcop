@@ -112,6 +112,10 @@ char* find_free(int size, int* poolIndex)
     for (int i = 0; i < g_poolCount; i++)
     {
         char* p = g_firstFreeChunks[i];
+
+        if (p == NULL)
+            continue;
+
         int count = 0;
         while (*p != '\0')
         {
