@@ -114,16 +114,13 @@ void CSector::BuildHierrarhy	()
 				int cell_z = static_cast<int>(std::floor(O->bbox.min.z / ChunkSize));
 				GridKey key = { cell_x, cell_z };
  				OGF_Data OData = { O, IDx, cell_x, cell_z, key };
-		//		OGF_Data OData = { O, IDx };
-				data.push_back(OData);
+ 				data.push_back(OData);
  				grid_map[key].push_back(OData);
 			}
 			IDx++;
 		}
-		  
-		CTimer timer;
-		u32 SizeCalculation = 0;
-		for (auto& Ogf : data)
+
+   		for (auto& Ogf : data)
 		{
  			Progress( float( ProgressID ) / float(data.size()));
 			ProgressID++; 
@@ -160,8 +157,7 @@ void CSector::BuildHierrarhy	()
 				  
  				std::atomic<int>	best_id = -1;
 				std::atomic<float>	best_volume = flt_max;
-			 
-				if (use_grid)
+ 				if (use_grid)
 				{
 					for (auto& FOgf : grid_map[selected_grid])
 					{
@@ -200,7 +196,6 @@ void CSector::BuildHierrarhy	()
 					);
 				}
 
-
 				// Analyze
 				if (best_id < 0)
 					break;
@@ -209,8 +204,7 @@ void CSector::BuildHierrarhy	()
 				count_finded += 1;
 			}
 		 
-			timer.Start();
-  			if (pNode->chields.size()>1)	
+   			if (pNode->chields.size()>1)	
 			{
    				pNode->CalcBounds		(true);
  				g_tree.push_back		(pNode);
@@ -221,19 +215,19 @@ void CSector::BuildHierrarhy	()
 				g_tree[I]->bConnected	= false;
 				xr_delete				(pNode);
 			}
-			SizeCalculation += timer.GetElapsed_ms();
-
-			//if (ProgressID%256 == 0)
-			//	Msg("Selected[%u][%.0f] data: %u|chunk %u boundsMS[%u]", ProgressID, SizeLimit, data.size(), grid_map[selected_grid].size(), SizeCalculation);
- 		}
+  		}
 	
 		if (iSize != (int)g_tree.size())
 			iLevel++;
 	}
  
 	TreeRoot = 0;
-	if (bAnyNode) TreeRoot = g_tree.back();
-	else {
+	if (bAnyNode)
+	{
+		TreeRoot = g_tree.back();
+	}
+	else 
+	{
 		for (u32 I=0; I<g_tree.size(); I++)
 		{
 			if (g_tree[I]->bConnected)		 continue;

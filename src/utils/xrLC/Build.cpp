@@ -305,13 +305,7 @@ extern CompilersMode gCompilerMode;
 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
- 	//****************************************** Merge geometry
-	FPU::m64r					();
-	Phase						("Merging geometry...");
-	mem_Compact					();
-	xrPhase_MergeGeometry		();
-
-	//****************************************** Convert to OGF
+  	//****************************************** Convert to OGF
 	FPU::m64r					();
 	Phase						("Converting to OGFs...");
 	mem_Compact					();
@@ -332,9 +326,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		Status			("MU : References...");
 		for (m=0; m<mu_refs().size(); m++)
 			export_ogf(*mu_refs()[m]);
-
-//		lc_global_data()->clear_mu_models();
-	}
+  	}
 
 	Status			("MU : References...");
 	xr_atomic_u32 index = 0; 
@@ -348,7 +340,6 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		index.fetch_add(1);
 	}
 
-//	SaveOGF();
  
 	//****************************************** Build sectors
 	FPU::m64r		();
