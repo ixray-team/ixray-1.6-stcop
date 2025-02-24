@@ -2571,9 +2571,9 @@ bool CWeapon::infinite_fire()
 		{
 			return inventory_owner().infinite_fire();
 		}
-		else
-			return false;
 	}
+
+	return false;
 }
 ;
 
