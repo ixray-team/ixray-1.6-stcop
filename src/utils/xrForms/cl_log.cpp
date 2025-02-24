@@ -99,6 +99,7 @@ void SetActiveIteration(IterationData* i)
 	ActiveIteration = i;
 }
 
+extern void GetMemoryUsedStorage();
 void Phase(const char* phase_name)
 {
 	csLog.Enter();
@@ -113,6 +114,8 @@ void Phase(const char* phase_name)
 
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+
+		GetMemoryUsedStorage();
 	}
 
 	ActiveIteration->phases.push_back({ phase_name });
