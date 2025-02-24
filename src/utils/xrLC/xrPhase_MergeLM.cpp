@@ -126,7 +126,7 @@ void CBuild::xrPhase_MergeLM()
 		
 		// Save
 
- 		AditionalData("Merged:%u/%u|ToMerge:%u", MERGED, TotalMerged, Layer.size());
+ 		AditionalData("Lmaps: %u, Merging:[%u/%u]|%u", lc_global_data()->lightmaps().size(), MERGED, TotalMerged, Layer.size());
 
 		Progress(float(float(MERGED) / float(StartSize)));
 	}
