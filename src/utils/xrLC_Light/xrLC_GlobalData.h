@@ -86,6 +86,9 @@ public:
 		Vertex						*create_vertex	()		;
 		void						destroy_vertex	(Vertex* &f );
 
+		void						vertexes_allocated(size_t& mem, size_t& VertexCount);
+		void						faces_allocated(size_t& mem, size_t& FacesCount);
+
 		void						vertices_isolate_and_pool_reload();
 
 		vecVertex					&g_vertices		()		{	return	_g_vertices; }

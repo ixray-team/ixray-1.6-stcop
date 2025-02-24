@@ -17,7 +17,8 @@ const Shader_xrLC&	base_Face::Shader		()const
 	VERIFY( inlc_global_data() );
 	return shader( dwMaterial, inlc_global_data()->shaders(), inlc_global_data()->materials() );
 }
-void			base_Face::CacheOpacity	()
+
+void base_Face::CacheOpacity	()
 {
 	flags.bOpaque				= true;
 	VERIFY ( inlc_global_data() );
@@ -36,25 +37,9 @@ void			base_Face::CacheOpacity	()
 	}
 }
 static bool do_not_add_to_vector_in_global_data = false;
- 
-
-
-//
-//const int	edge2idx	[3][2]	= { {0,1},		{1,2},		{2,0}	};
-//const int	edge2idx3	[3][3]	= { {0,1,2},	{1,2,0},	{2,0,1}	};
-//const int	idx2edge	[3][3]  = {
-//	{-1,  0,  2},
-//	{ 0, -1,  1},
-//	{ 2,  1, -1}
-//};
-
-
-
-//extern CBuild*	pBuild;
 
 bool			g_bUnregister = true;
 
-//template<>
 void destroy_vertex( Vertex* &v, bool unregister )
 {
 	bool tmp_unregister = g_bUnregister;
@@ -62,6 +47,7 @@ void destroy_vertex( Vertex* &v, bool unregister )
 	inlc_global_data()->destroy_vertex( v );
 	g_bUnregister = tmp_unregister;
 }
+
 void destroy_face( Face* &v, bool unregister )
 {
 	bool tmp_unregister = g_bUnregister;
@@ -73,19 +59,19 @@ void destroy_face( Face* &v, bool unregister )
 
 Tvertex<DataVertex>::Tvertex()
 {
-	
-	VERIFY( inlc_global_data() );
+ 	R_ASSERT( inlc_global_data() );
 	if( inlc_global_data()->vert_construct_register() )
 	{	
  		inlc_global_data()->g_vertices().push_back(this);
 	}
-	m_adjacents.reserve	(4);
+	
+	// m_adjacents.reserve	(4);
 }
 
-template <>
+template<>
 Tvertex<DataVertex>::~Tvertex()
 {
-	if (g_bUnregister) 
+ 	if (g_bUnregister) 
 	{
 		vecVertexIt F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), this);
 		if (F!=inlc_global_data()->g_vertices().end())
@@ -100,7 +86,8 @@ Tvertex<DataVertex>::~Tvertex()
 
 Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 {
-	VERIFY( &vertises_storage == &inlc_global_data()->g_vertices() );
+	R_ASSERT( &vertises_storage == &inlc_global_data()->g_vertices() );
+
 	Vertex* V	= inlc_global_data()->create_vertex();
 	V->P.set	(P);
 	V->N.set	(N);
@@ -117,14 +104,11 @@ Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 template<>
 Tface<DataVertex>::Tface()
 {
-	
-	pDeflector				= 0;
+ 	pDeflector				= 0;
 	flags.bSplitted			= false;
-	VERIFY( inlc_global_data() );
-	if( !do_not_add_to_vector_in_global_data )
+ 	if( !do_not_add_to_vector_in_global_data )
 	{
-		//set_index( inlc_global_data()->g_faces().size() );
-		inlc_global_data()->g_faces().push_back		(this);
+ 		inlc_global_data()->g_faces().push_back		(this);
 	}
 	sm_group				= u32(-1);
 	lmap_layer				= NULL;
@@ -235,9 +219,9 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 
 BOOL	DataFace::RenderEqualTo	(Face *F)
 {
-	if (F->dwMaterial	!= dwMaterial		)	return FALSE;
-	//if (F->tc.size()	!= F->tc.size()		)	return FALSE;	// redundant???
-	return TRUE;
+	if (F->dwMaterial	!= dwMaterial		)	
+		return FALSE;
+ 	return TRUE;
 }
 
 
@@ -259,4 +243,3 @@ BOOL	DataFace::hasImplicitLighting()
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
 
-///////////////////////////////////////////////////////////////
