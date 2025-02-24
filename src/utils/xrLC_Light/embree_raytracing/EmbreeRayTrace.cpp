@@ -21,7 +21,7 @@ extern CompilersMode gCompilerMode;
 // Инициализация Основных Фишек Embree
 
 // INTEL DATA STRUCTURE
-RTCSceneFlags scene_flags = RTC_SCENE_FLAG_ROBUST;
+RTCSceneFlags scene_flags = RTC_SCENE_FLAG_NONE;
 RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
 
 RTCDevice device	= 0;
@@ -108,7 +108,7 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 
 	// Собрать все
 	Face* F = hit->geomID == 2 ? EmbreeMain.static_geom_transp.dummy[hit->primID] : EmbreeMain.murefs_geom_transp.dummy[hit->primID];
- 	if (F != ctxt->skip && !CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v))
+ 	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v) && F != ctxt->skip)
 	{
  		ctxt->energy = 0;
 		args->valid[0] = -1;
