@@ -106,16 +106,23 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
-	Face* F = hit->geomID == 2 ? EmbreeMain.static_geom_transp.dummy[hit->primID] : EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+	Face* F = nullptr; 
+	
+	if (hit->geomID == 2)
+		F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
+	else 
+		F = EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+	 
  	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v) && F != ctxt->skip)
 	{
  		ctxt->energy = 0;
 		args->valid[0] = -1;
  		return;
 	}
-	ctxt->Hits++;
- 	if (ctxt->Hits > 16)
-		return;
+	
+	// ctxt->Hits++;
+ 	// if (ctxt->Hits > 16)
+	// 	return;
 
 	args->valid[0] = 0;
 }
