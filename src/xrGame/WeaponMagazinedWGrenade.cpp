@@ -877,7 +877,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 
 	if (infinite_fire())
 	{
-		info.cur_ammo = "--";
+		info.cur_ammo = "∞";
 	}
 
 	if (HasFireModes())
