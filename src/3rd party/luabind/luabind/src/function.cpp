@@ -88,6 +88,13 @@ namespace luabind { namespace detail { namespace free_functions {
                   , rep->overloads().end()
                   , rep->name()
                 );
+                
+                // log the callstack
+                luabind::object debug_space = luabind::get_globals(L)["debug"];
+                luabind::object traceback = debug_space["traceback"];
+                string_class tracebackstr = luabind::call_function<string_class>(traceback);
+                msg += "\n traceback: \n";
+                msg += tracebackstr;
 
                 lua_pushstring(L, msg.c_str());
             }
