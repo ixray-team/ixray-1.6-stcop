@@ -14,8 +14,13 @@ void CPluginUIRun::Draw()
 	{
 		for (auto& [Arg, Desc] : InputPlugin->InputArgsName)
 		{
+			if (InputPlugin->Type == EPluginType::Lua && Arg == "level")
+			{
+				memset(InputPlugin->InputArgsValues[Arg], 0, sizeof(InputPlugin->InputArgsValues[Arg]));
+				continue;
+			}
+
 			ImGui::Text(Desc.c_str());
-			//ImGui::SameLine();
 			ImGui::InputText(("##" + Arg).c_str(), InputPlugin->InputArgsValues[Arg], 256);
 		}
 
