@@ -29,6 +29,11 @@ extern void destroy_lua_knife_params();
 
 void restart_all				()
 {
+	if (Core.ParamsData.test(ECoreParams::keep_lua))
+	{
+		return;
+	}
+
 	destroy_lua_wpn_params		();
 	destroy_lua_knife_params	();
 	MainMenu()->DestroyInternal	(true);
