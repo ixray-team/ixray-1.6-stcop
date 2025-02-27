@@ -301,7 +301,12 @@ int out_of_memory_handler	(size_t size)
 	else {
 		Memory.mem_compact	();
 
-		u32					process_heap	= mem_usage_impl(nullptr, nullptr);
+#ifdef IXR_WINDOWS
+		u32 process_heap = mem_usage_impl((void*)_get_heap_handle(), 0, 0);
+#else
+		u32 process_heap = mem_usage_impl(0, 0, 0);
+#endif // IXR_WINDOWS
+
 		int					eco_strings		= (int)g_pStringContainer->stat_economy			();
 		int					eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
 		Msg					("* [x-ray]: process heap[%d K]", process_heap / 1024);
