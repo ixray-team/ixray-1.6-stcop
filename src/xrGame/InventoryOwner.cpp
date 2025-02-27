@@ -198,7 +198,7 @@ void	CInventoryOwner::load	(IReader &input_packet)
 	CharacterInfo().load(input_packet);
 	load_data		(m_game_name_str, input_packet);
 	load_data		(m_money,	input_packet);
-	if (this->object_id() != Actor()->object_id())
+	if (Actor() != nullptr && this->object_id() != Actor()->object_id())
 		m_game_name = TranslateName(m_game_name_str.c_str());
 }
 
@@ -437,7 +437,8 @@ void CInventoryOwner::LostPdaContact	(CInventoryOwner* pInvOwner)
 //для работы с relation system
 u16 CInventoryOwner::object_id	()  const
 {
-	return smart_cast<const CGameObject*>(this)->ID();
+	CInventoryOwner* This = const_cast<CInventoryOwner*>(this);
+	return This->cast_game_object()->ID();
 }
 
 
