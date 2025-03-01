@@ -94,7 +94,7 @@ static bool FindAndValidateChunk(IReader& F, u32 ID, bool& IncorrectChunk)
 			}
 			else
 			{
-				if (ID == THM_CHUNK_FADE_DELAY)
+				//if (ID == THM_CHUNK_FADE_DELAY)
 				{
 					const u32 pos = F.tell();
 					const u32 size = F.length();
@@ -106,7 +106,7 @@ static bool FindAndValidateChunk(IReader& F, u32 ID, bool& IncorrectChunk)
 						if (TestSize)
 						{
 							F.seek(pos + length);
-							TestSize = F.r_u32() == THM_CHUNK_FADE_DELAY;
+							TestSize = F.r_u32() == ID;
 						}
 
 						if (!TestSize)
@@ -116,12 +116,13 @@ static bool FindAndValidateChunk(IReader& F, u32 ID, bool& IncorrectChunk)
 							{
 								F.seek(pos + length);
 
-								if (pos + length <= size - 8 && F.r_u32() == THM_CHUNK_FADE_DELAY)
+								if (pos + length <= size - 8 && F.r_u32() == ID)
 									break;
 
 								length++;
 							}
-							Msg("! THM chunk THM_CHUNK_FADE_DELAY fixed, wrong size = %d, correct size = %d", dwSize, length);
+							
+							Msg("! THM chunk THM_CHUNK_... fixed, wrong size = %d, correct size = %d", dwSize, length);
 							IncorrectChunk = true;
 						}
 					}
@@ -194,10 +195,10 @@ bool STextureParams::Load(IReader& F)
 		F.r_stringZ(bump_name);
 	}
 
-	if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
+	bool IncorrectChunk = false;
+	if (FindAndValidateChunk(F, THM_CHUNK_EXT_NORMALMAP, IncorrectChunk))
 		F.r_stringZ(ext_normal_map_name);
 
-	bool IncorrectChunk = false;
 	if (FindAndValidateChunk(F, THM_CHUNK_FADE_DELAY, IncorrectChunk))
 		fade_delay = F.r_u8();
 
