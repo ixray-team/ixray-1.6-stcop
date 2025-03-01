@@ -150,6 +150,14 @@ struct OMFData
 
 struct OMFEditorState
 {
+	~OMFEditorState()
+	{
+		if (omf)
+		{
+			delete omf;
+		}
+	}
+
 	bool is_file_loaded{};
 	bool animation_param_was_changed{};
 	bool stop_at_end_selected{};
@@ -160,6 +168,9 @@ struct OMFEditorState
 	bool idle_selected{};
 	bool use_weapon_bone_selected{};
 	bool has_motion_marks_selected{};
+	bool is_motion_time_format_seconds_selected{};
+	bool is_motion_time_format_keys_selected{};
+	bool is_motion_time_format_radiobutton_changed{};
 	int current_selected_animation_param{};
 	float speed{};
 	float power{};
@@ -379,6 +390,7 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 	p_state->current_selected_animation_param = 0;
 	p_state->animation_param_was_changed = false;
 	p_state->combo_animation_params_data.clear();
+	p_state->is_motion_time_format_seconds_selected = true;
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 
 	if (data.data_animparams.count > 0)
@@ -469,7 +481,7 @@ void RenderToolsOMFEditorWindow()
 
 	if (ImGui::Begin("Editor - [OMF]##ToolsInGameImGui", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)]))
 	{
-		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 5))
+		if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MainTable", 10))
 		{
 			ImGui::TableNextRow();
 
@@ -486,12 +498,6 @@ void RenderToolsOMFEditorWindow()
 				if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
 				{
 					g_omf_editor.is_file_loaded = false;
-					R_ASSERT(g_omf_editor.omf && "memory leak from outside modules and you got memory corruption? It is not OK if it is null here");
-					if (g_omf_editor.omf)
-					{
-						delete g_omf_editor.omf;
-						g_omf_editor.omf = nullptr;
-					}
 					pEditor->path[0] = 0;
 				}
 
@@ -506,6 +512,41 @@ void RenderToolsOMFEditorWindow()
 				{
 
 				}
+
+				ImGui::TableSetColumnIndex(4);
+				if (ImGui::Button("Merge with##ToolsInGameImGui_OMFEditor"))
+				{
+
+				}
+
+				ImGui::TableSetColumnIndex(5);
+				if (ImGui::Button("Add anims from##ToolsInGameImGui_OMFEditor"))
+				{
+				}
+
+				ImGui::TableSetColumnIndex(6);
+				if (ImGui::Button("Try repair##ToolsInGameImGui_OMFEditor"))
+				{
+
+				}
+
+				ImGui::TableSetColumnIndex(7);
+				if (ImGui::Button("Swap anim marks##ToolsInGameImGui_OMFEditor"))
+				{
+
+				}
+
+				ImGui::TableSetColumnIndex(8);
+				if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
+				{
+
+				}
+
+				ImGui::TableSetColumnIndex(9);
+				if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
+				{
+				}
+
 			}
 
 			ImGui::EndTable();
@@ -578,6 +619,104 @@ void RenderToolsOMFEditorWindow()
 			}
 
 			ImGui::Separator();
+
+			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body2", 2))
+			{
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+
+				ImGui::TableSetColumnIndex(1);
+
+				ImGui::SeparatorText("Motion time format");
+
+				if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionTimeFormat", 2))
+				{
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+
+					ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
+					if (ImGui::RadioButton("Keys##ToolsInGameImGui_OMFEditor_KeysRB", g_omf_editor.is_motion_time_format_keys_selected))
+					{
+						g_omf_editor.is_motion_time_format_radiobutton_changed = true;
+						g_omf_editor.is_motion_time_format_seconds_selected = false;
+						g_omf_editor.is_motion_time_format_keys_selected = !g_omf_editor.is_motion_time_format_keys_selected;
+					}
+					ImGui::EndDisabled();
+
+					ImGui::TableSetColumnIndex(1);
+
+					ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
+					if (ImGui::RadioButton("Seconds##ToolsInGameImGui_OMFEditor_SecondsRB", g_omf_editor.is_motion_time_format_seconds_selected))
+					{
+						g_omf_editor.is_motion_time_format_radiobutton_changed = true;
+						g_omf_editor.is_motion_time_format_keys_selected = false;
+						g_omf_editor.is_motion_time_format_seconds_selected = !g_omf_editor.is_motion_time_format_seconds_selected;
+					}
+					ImGui::EndDisabled();
+
+					if (g_omf_editor.is_motion_time_format_radiobutton_changed)
+					{
+						R_ASSERT(!(g_omf_editor.is_motion_time_format_keys_selected && g_omf_editor.is_motion_time_format_seconds_selected) && "can't be both selected at same time!");
+
+						// todo: add implemenetation here
+
+						g_omf_editor.is_motion_time_format_radiobutton_changed = false;
+					}
+
+					ImGui::EndTable();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Body3", 2))
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+
+				ImGui::TableSetColumnIndex(1);
+
+				ImGui::SeparatorText("Motion marks");
+
+				if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+
+					ImGui::SeparatorText("Mark Group");
+					ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarkGroupLB", 0, 0, 0);
+
+					ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
+					ImGui::SameLine();
+					ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksGroup");
+
+					ImGui::TableSetColumnIndex(1);
+
+					ImGui::SeparatorText("Marks");
+					ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
+
+					ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
+					ImGui::SameLine();
+					ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
+
+					ImGui::TableSetColumnIndex(2);
+
+					float fStart{};
+					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
+
+
+					float fEnd{};
+					ImGui::DragFloat("End##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fEnd);
+
+					ImGui::EndTable();
+				}
+
+				ImGui::EndTable();
+			}
 
 		}
 
