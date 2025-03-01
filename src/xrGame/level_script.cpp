@@ -1037,8 +1037,8 @@ void RefreshNamesNPC()
 			continue;
 		}
 
-		CObject* obj = g_pGameLevel->Objects.net_Find(id);
-		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj->cast_inventory_owner());
+		auto obj = g_pGameLevel->Objects.net_Find(id);
+		CInventoryOwner* owner = obj->cast_inventory_owner();
 		if (owner)
 		{
 			owner->RefreshNamesNPC();
