@@ -62,6 +62,9 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 constexpr unsigned int _kMaxStringFieldNameLength = sizeof(string128);
 constexpr const char* _kOMFEditorModalWindow_RenameAnimationParam = "Rename##ToolsInGameImGui_OMGEditor_AnimationParam";
 constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warning##ToolsInGameImGui_OMFEditor_AnimationParamFailedRenaming";
+constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful = "Successful!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
+constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed = "Failed!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
+
 
 struct OMFData
 {
@@ -482,6 +485,38 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 	}
 }
 
+bool OMFEditor_CopyBonePartsToClipboard(OMFEditorState* p_state)
+{
+	bool result{};
+	if (p_state)
+	{
+		xr_stack_string<1024 * 64> output;
+		for (const auto& bone_part : p_state->omf->data_bone.parts)
+		{
+			output += "[";
+			output += bone_part.name;
+			output += "]";
+			output += "\n";
+
+			for (const auto& bone : bone_part.bones)
+			{
+				output += bone.name;
+				output += "\n";
+			}
+
+			output += "\n";
+			output += "\n";
+		}
+
+		if (xr_EFS)
+		{
+			result = xr_EFS->CopyTextToClipboard(output);
+		}
+	}
+
+	return result;
+}
+
 void RenderToolsOMFEditorWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
@@ -551,10 +586,10 @@ void RenderToolsOMFEditorWindow()
 
 				}
 
-				ImGui::TableSetColumnIndex(9);
-				if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
-				{
-				}
+				//	ImGui::TableSetColumnIndex(9);
+				//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
+				//	{
+				//	}
 
 			}
 
@@ -589,7 +624,7 @@ void RenderToolsOMFEditorWindow()
 
 				ImGui::Text("Selected: [%s]", g_omf_editor.combo_animation_params_data[g_omf_editor.current_selected_animation_param]);
 				ImGui::SameLine();
-				
+
 				if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
 				{
 					ImGui::OpenPopup(_kOMFEditorModalWindow_RenameAnimationParam);
@@ -626,7 +661,7 @@ void RenderToolsOMFEditorWindow()
 					}
 
 					ImGui::SameLine();
-					
+
 					if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
 					{
 						ImGui::CloseCurrentPopup();
@@ -649,6 +684,66 @@ void RenderToolsOMFEditorWindow()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
+
+				if (ImGui::CollapsingHeader("Show bone parts##ToolsInGameImGui_OMFEditor_Data_Body"))
+				{
+					if (ImGui::Button("copy to clipboard##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
+					{
+						bool status = OMFEditor_CopyBonePartsToClipboard(&g_omf_editor);
+						
+						if (status)
+							ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful);
+						else
+							ImGui::OpenPopup(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed);
+					}
+
+					ImGui::SameLine();
+
+					if (ImGui::Button("save as file##ToolsInGameImGui_OMFEditor_ShowBoneParts"))
+					{
+
+					}
+
+					ImGui::SeparatorText("Bones");
+					for (const auto& bone_part : g_omf_editor.omf->data_bone.parts)
+					{
+						if (ImGui::TreeNode(bone_part.name.c_str()))
+						{
+							ImGui::Text("bone count: %d", bone_part.bones.size());
+							ImGui::Separator();
+							for (const auto& bone : bone_part.bones)
+							{
+								ImGui::Text(bone.name.c_str());
+							}
+
+							ImGui::TreePop();
+						}
+					}
+
+					if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+					{
+						ImGui::Text("Text wasn't copied to your clipboard! Try again or report to developers!");
+
+						if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
+						{
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::EndPopup();
+					}
+
+					if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+					{
+						ImGui::Text("Text was successfully copied to your clipboard!");
+
+						if (ImGui::Button("OK##ToolsInGameImGui_OMFEditor_ClipBoard"))
+						{
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::EndPopup();
+					}
+				}
 
 				ImGui::TableSetColumnIndex(1);
 
@@ -760,7 +855,7 @@ void RenderToolsOMFEditorWindow()
 
 					ImGui::SeparatorText("Marks");
 					ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
-					
+
 					ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
 					ImGui::SameLine();
 					ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");

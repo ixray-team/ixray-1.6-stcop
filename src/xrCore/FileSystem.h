@@ -47,6 +47,53 @@ public:
 #endif
 	}
 
+	template<xr_ssnt_t Size>
+	IC bool CopyTextToClipboard(xr_stack_string<Size>& buffer)
+	{
+		if (buffer.empty())
+			return false;
+
+#ifdef IXR_WINDOWS
+		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, buffer.size());
+
+		std::memcpy(GlobalLock(hMem), buffer.c_str(), buffer.size());
+		GlobalUnlock(hMem);
+
+		BOOL nStatus = OpenClipboard(NULL);
+
+		if (!nStatus)
+		{
+			Msg("[win32]: Failed to OpenClipboard!");
+			return false;
+		}
+			
+		nStatus = EmptyClipboard();
+		if (!nStatus)
+		{
+			Msg("[win32]: Failed to EmptyClipboard!");
+			return false;
+		}
+
+		HANDLE hStatus = SetClipboardData(CF_TEXT, hMem);
+
+		if (!hStatus)
+		{
+			Msg("[win32]: Failed to SetClipboardData");
+			return false;
+		}
+
+		nStatus = CloseClipboard();
+		if (!nStatus)
+		{
+			Msg("[win32]: Failed to CloseClipboard!");
+			return false;
+		}
+
+		return true;
+#else
+		return false;
+#endif
+	}
 
 	bool 		GetSaveName(LPCSTR initial, string_path& buffer, LPCSTR offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
 	bool 		GetSaveName(LPCSTR initial, xr_string& buf, LPCSTR offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
