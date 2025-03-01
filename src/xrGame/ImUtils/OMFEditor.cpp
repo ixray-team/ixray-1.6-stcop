@@ -58,19 +58,15 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 	int ret = SDL_ShowMessageBox(&messageboxdata, &button_id);
 }
 
-
-constexpr unsigned int _kMaxStringFieldNameLength = sizeof(string128);
 struct OMFData
 {
-	using omf_name_t = xr_stack_string<_kMaxStringFieldNameLength>;
-
 	struct AnimVector
 	{
 		int32_t section_id;
 		uint32_t section_size;
 		// dynamically allocated
 		char* data;
-		omf_name_t name;
+		xr_stack_string<32> name;
 	};
 
 	struct BoneParts
@@ -78,13 +74,13 @@ struct OMFData
 		struct Bone
 		{
 			uint32_t id;
-			omf_name_t name;
+			xr_stack_string<32> name;
 		};
 
 		int16_t count;
-		omf_name_t name;
+		xr_stack_string<32> name;
 
-		xr_vector<Bone> bones;
+		std::array<Bone, 32> bones;
 	};
 
 	struct BoneData
@@ -93,7 +89,7 @@ struct OMFData
 		int16_t count;
 		int32_t section_id;
 		uint32_t section_size;
-		xr_vector<BoneParts> parts;
+		std::array<BoneParts, 64> parts;
 	};
 
 	struct AnimData
@@ -107,7 +103,7 @@ struct OMFData
 		int32_t animations_count;
 		short animations_params_count;
 
-		xr_vector<AnimVector> anims;
+		std::array<AnimVector, 128> anims;
 	};
 
 	struct AnimParamsData
@@ -123,8 +119,8 @@ struct OMFData
 				};
 
 				int32_t count;
-				omf_name_t name;
-				xr_vector<Params> params;
+				xr_stack_string<32> name;
+				std::array<Params, 64> params;
 			};
 
 			int16_t bone_or_part;
@@ -135,12 +131,12 @@ struct OMFData
 			float power;
 			float accrue;
 			float falloff;
-			omf_name_t name;
-			xr_vector<MotionMark> marks;
+			xr_stack_string<32> name;
+			std::array<MotionMark, 32> marks;
 		};
 
 		int16_t count;
-		xr_vector<AnimParams> params;
+		std::array<AnimParams, 16> params;
 	};
 
 	AnimData data_anim;
@@ -152,14 +148,6 @@ struct OMFEditorState
 {
 	bool is_file_loaded;
 	bool animation_param_was_changed;
-	bool stop_at_end_selected;
-	bool no_mix_selected;
-	bool sync_part_selected;
-	bool use_foot_steps_selected;
-	bool move_xform_selected;
-	bool idle_selected;
-	bool use_weapon_bone_selected;
-	bool has_motion_marks_selected;
 	int current_selected_animation_param;
 	float speed;
 	float power;
@@ -214,8 +202,7 @@ bool OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
 
 	for (int i = 0; i < data.animations_count; ++i)
 	{
-		data.anims.push_back({});
-		OMFData::AnimVector& av = data.anims.back();
+		OMFData::AnimVector& av = data.anims[i];
 
 		file.read(reinterpret_cast<char*>(&av.section_id), sizeof(av.section_id));
 		file.read(reinterpret_cast<char*>(&av.section_size), sizeof(av.section_size));
@@ -252,8 +239,7 @@ bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 
 		for (int j = 0; j < bp.count; ++j)
 		{
-			bp.bones.push_back({});
-			OMFData::BoneParts::Bone& bone = bp.bones.back();
+			OMFData::BoneParts::Bone& bone = bp.bones[j];
 
 			OMFEditor_ReadString(bone.name, file);
 			file.read(reinterpret_cast<char*>(&bone.id), sizeof(bone.id));
@@ -272,8 +258,7 @@ bool OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimPa
 
 	for (int32_t i = 0; i < mark.count; ++i)
 	{
-		mark.params.push_back({});
-		OMFData::AnimParamsData::AnimParams::MotionMark::Params& mark_param = mark.params.back();
+		OMFData::AnimParamsData::AnimParams::MotionMark::Params& mark_param = mark.params[i];
 
 		file.read(reinterpret_cast<char*>(&mark_param.t0), sizeof(mark_param.t0));
 		file.read(reinterpret_cast<char*>(&mark_param.t1), sizeof(mark_param.t1));
@@ -303,8 +288,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 	for (int16_t i = 0; i < data.count; ++i)
 	{
-		data.params.push_back({});
-		OMFData::AnimParamsData::AnimParams& param = data.params.back();
+		OMFData::AnimParamsData::AnimParams& param = data.params[i];
 		OMFEditor_ReadString(param.name, file);
 
 		file.read(reinterpret_cast<char*>(&param.flags), sizeof(param.flags));
@@ -323,8 +307,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 			{
 				for (int16_t mark_id = 0; mark_id < param.marks_count; ++mark_id)
 				{
-					param.marks.push_back({});
-					OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks.back();
+					OMFData::AnimParamsData::AnimParams::MotionMark& mark = param.marks[mark_id];
 
 					bool status_mark = OMFEditor_LoadOMF_AnimParamsData_MotionMark(mark, file);
 
@@ -367,19 +350,6 @@ void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data
 		p_state->accrue = param.accrue;
 		p_state->falloff = param.falloff;
 		p_state->power = param.power;
-
-		// probably you could replace with for-loop but for now it is just for simplicity
-		p_state->stop_at_end_selected = (param.flags & (1 << 1)) == (1 << 1);
-		p_state->no_mix_selected = (param.flags & (1 << 2)) == (1 << 2);
-		p_state->sync_part_selected = (param.flags & (1 << 3)) == (1 << 3);
-		p_state->use_foot_steps_selected = (param.flags & (1 << 4)) == (1 << 4);
-		p_state->move_xform_selected = (param.flags & (1 << 5)) == (1 << 5);
-		p_state->idle_selected = (param.flags & (1 << 6)) == (1 << 6);
-		p_state->use_weapon_bone_selected = (param.flags & (1 << 7)) == (1 << 7);
-		p_state->has_motion_marks_selected = (data.data_bone.ogf_version == 4 && param.marks_count > 0);
-
-
-
 	}
 }
 
@@ -523,10 +493,7 @@ void RenderToolsOMFEditorWindow()
 
 				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data, g_omf_editor.omf.data_animparams.count))
 				{
-					if (g_omf_editor.current_selected_animation_param > -1)
-					{
-						OMFEditor_Init_CurrentAnimationParams(g_omf_editor.current_selected_animation_param, g_omf_editor.omf, &g_omf_editor);
-					}
+					bool changed = false;
 				}
 
 				ImGui::TableSetColumnIndex(1);
@@ -556,14 +523,15 @@ void RenderToolsOMFEditorWindow()
 
 					ImGui::TableSetColumnIndex(1);
 
-					ImGui::Checkbox("Stop at end", &g_omf_editor.stop_at_end_selected);
-					ImGui::Checkbox("No mix", &g_omf_editor.no_mix_selected);
-					ImGui::Checkbox("Sync part", &g_omf_editor.sync_part_selected);
-					ImGui::Checkbox("Use foot steps", &g_omf_editor.use_foot_steps_selected);
-					ImGui::Checkbox("Move XForm", &g_omf_editor.move_xform_selected);
-					ImGui::Checkbox("Idle", &g_omf_editor.idle_selected);
-					ImGui::Checkbox("Use weapon bone", &g_omf_editor.use_weapon_bone_selected);
-					ImGui::Checkbox("Has motion marks", &g_omf_editor.has_motion_marks_selected);
+					bool temp = false;
+					ImGui::Checkbox("Stop at end", &temp);
+					ImGui::Checkbox("No mix", &temp);
+					ImGui::Checkbox("Sync part", &temp);
+					ImGui::Checkbox("Use foot steps", &temp);
+					ImGui::Checkbox("Move XForm", &temp);
+					ImGui::Checkbox("Idle", &temp);
+					ImGui::Checkbox("Use weapon bone", &temp);
+					ImGui::Checkbox("Has motion marks", &temp);
 
 					ImGui::EndTable();
 				}
