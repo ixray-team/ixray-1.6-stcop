@@ -295,6 +295,28 @@ public:
 		return *this;
 	}
 
+	inline stack_string<char_t, _kStringLength>& operator=(const char_t* p_str)
+	{
+		if (p_str)
+		{
+			if constexpr (std::is_same_v<char_t, char>)
+			{
+				number_type arg_len = std::clamp(number_type(strlen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, p_str, arg_len);
+				this->m_buffer[arg_len] = '\0';
+			}
+
+			if constexpr (std::is_same_v<char_t, wchar_t>)
+			{
+				number_type arg_len = std::clamp(number_type(wcslen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, p_str, arg_len * sizeof(wchar_t));
+				this->m_buffer[arg_len] = '\0';
+			}
+		}
+
+		return *this;
+	}
+
 	inline reference operator[](size_t pos) { return this->m_buffer[pos]; }
 	inline const_reference operator[](size_t pos) const { return this->m_buffer[pos]; }
 
