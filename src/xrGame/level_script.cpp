@@ -47,6 +47,7 @@
 #include "raypick.h"
 #include "ai_object_location.h"
 
+#include "ActorHelmet.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
 
