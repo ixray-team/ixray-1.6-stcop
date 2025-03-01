@@ -150,25 +150,25 @@ struct OMFData
 
 struct OMFEditorState
 {
-	bool is_file_loaded;
-	bool animation_param_was_changed;
-	bool stop_at_end_selected;
-	bool no_mix_selected;
-	bool sync_part_selected;
-	bool use_foot_steps_selected;
-	bool move_xform_selected;
-	bool idle_selected;
-	bool use_weapon_bone_selected;
-	bool has_motion_marks_selected;
-	int current_selected_animation_param;
-	float speed;
-	float power;
-	float accrue;
-	float falloff;
-	float length;
-	const char* combo_animation_params_data[256];
+	bool is_file_loaded{};
+	bool animation_param_was_changed{};
+	bool stop_at_end_selected{};
+	bool no_mix_selected{};
+	bool sync_part_selected{};
+	bool use_foot_steps_selected{};
+	bool move_xform_selected{};
+	bool idle_selected{};
+	bool use_weapon_bone_selected{};
+	bool has_motion_marks_selected{};
+	int current_selected_animation_param{};
+	float speed{};
+	float power{};
+	float accrue{};
+	float falloff{};
+	float length{};
+	xr_vector<const char*> combo_animation_params_data;
 	xr_stack_string<sizeof(string_path) * 2> path;
-	OMFData omf;
+	OMFData* omf{};
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
@@ -243,7 +243,8 @@ bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 
 	for (int16_t i = 0; i < data.count; ++i)
 	{
-		OMFData::BoneParts& bp = data.parts[i];
+		data.parts.push_back({});
+		OMFData::BoneParts& bp = data.parts.back();
 
 		OMFEditor_ReadString(bp.name, file);
 		file.read(reinterpret_cast<char*>(&bp.count), sizeof(bp.count));
@@ -289,15 +290,6 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 	if (animation_count != data.count)
 	{
 		ShowMessageBox(_eMessageBoxStatus::kWarning, "Invalid OMF", "Animation count IS NOT equal to anim params count!");
-		return false;
-	}
-
-	constexpr int16_t _kSize = sizeof(data.params) / sizeof(data.params[0]);
-
-	if (_kSize <= data.count)
-	{
-		R_ASSERT(false && "report to developers!");
-		ShowMessageBox(_eMessageBoxStatus::kWarning, "Report to developers", "too many anim params!");
 		return false;
 	}
 
@@ -347,13 +339,9 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 {
 	if (data.data_animparams.count > 0)
 	{
-		constexpr int16_t _kSize = sizeof(p_state->combo_animation_params_data) / sizeof(p_state->combo_animation_params_data[0]);
-
-		R_ASSERT(_kSize >= data.data_animparams.count && "report to developers!");
-
 		for (int16_t i = 0; i < data.data_animparams.count; ++i)
 		{
-			p_state->combo_animation_params_data[i] = data.data_animparams.params[i].name.c_str();
+			p_state->combo_animation_params_data.push_back(data.data_animparams.params[i].name.c_str());
 		}
 	}
 }
@@ -390,6 +378,7 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 
 	p_state->current_selected_animation_param = 0;
 	p_state->animation_param_was_changed = false;
+	p_state->combo_animation_params_data.clear();
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 
 	if (data.data_animparams.count > 0)
@@ -445,7 +434,17 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 
 				if (file_omf.is_open())
 				{
-					OMFEditor_LoadOMF(p_state->omf, file_omf);
+					if (p_state->omf)
+					{
+						delete p_state->omf;
+						p_state->omf = new OMFData();
+					}
+					else
+					{
+						p_state->omf = new OMFData();
+					}
+
+					OMFEditor_LoadOMF(*p_state->omf, file_omf);
 				}
 				else
 				{
@@ -456,7 +455,7 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 
 				p_state->is_file_loaded = status;
 
-				OMFEditor_Init(p_state, p_state->omf);
+				OMFEditor_Init(p_state, *p_state->omf);
 			}
 		}
 	}
@@ -487,6 +486,12 @@ void RenderToolsOMFEditorWindow()
 				if (ImGui::Button("Close##ToolsInGameImGui_OMFEditor"))
 				{
 					g_omf_editor.is_file_loaded = false;
+					R_ASSERT(g_omf_editor.omf && "memory leak from outside modules and you got memory corruption? It is not OK if it is null here");
+					if (g_omf_editor.omf)
+					{
+						delete g_omf_editor.omf;
+						g_omf_editor.omf = nullptr;
+					}
 					pEditor->path[0] = 0;
 				}
 
@@ -509,6 +514,7 @@ void RenderToolsOMFEditorWindow()
 
 		if (g_omf_editor.is_file_loaded)
 		{
+			R_ASSERT(g_omf_editor.omf && "must be initialized");
 			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path);
 			ImGui::Separator();
 
@@ -519,13 +525,13 @@ void RenderToolsOMFEditorWindow()
 
 				constexpr const char* _kEmptyAnimationParams = "";
 
-				bool is_empty = g_omf_editor.omf.data_animparams.count > 0;
+				bool is_empty = g_omf_editor.omf->data_animparams.count > 0;
 
-				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data, g_omf_editor.omf.data_animparams.count))
+				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data.data(), g_omf_editor.omf->data_animparams.count))
 				{
 					if (g_omf_editor.current_selected_animation_param > -1)
 					{
-						OMFEditor_Init_CurrentAnimationParams(g_omf_editor.current_selected_animation_param, g_omf_editor.omf, &g_omf_editor);
+						OMFEditor_Init_CurrentAnimationParams(g_omf_editor.current_selected_animation_param, *g_omf_editor.omf, &g_omf_editor);
 					}
 				}
 
