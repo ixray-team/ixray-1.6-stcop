@@ -60,6 +60,9 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 
 
 constexpr unsigned int _kMaxStringFieldNameLength = sizeof(string128);
+constexpr const char* _kOMFEditorModalWindow_RenameAnimationParam = "Rename##ToolsInGameImGui_OMGEditor_AnimationParam";
+constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warning##ToolsInGameImGui_OMFEditor_AnimationParamFailedRenaming";
+
 struct OMFData
 {
 	using omf_name_t = xr_stack_string<_kMaxStringFieldNameLength>;
@@ -154,7 +157,7 @@ struct OMFEditorState
 	{
 		if (omf)
 		{
-			delete omf;
+			xr_delete(omf);
 		}
 	}
 
@@ -177,9 +180,11 @@ struct OMFEditorState
 	float accrue{};
 	float falloff{};
 	float length{};
-	xr_vector<const char*> combo_animation_params_data;
-	xr_stack_string<sizeof(string_path) * 2> path;
 	OMFData* omf{};
+	OMFData::omf_name_t rename_temp;
+	xr_vector<const char*> combo_animation_params_data;
+	xr_set<size_t> combo_animation_params;
+	xr_stack_string<sizeof(string_path) * 2> path;
 } g_omf_editor;
 
 OMFEditorState* pEditor = &g_omf_editor;
@@ -352,7 +357,9 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 	{
 		for (int16_t i = 0; i < data.data_animparams.count; ++i)
 		{
+			std::string_view view = data.data_animparams.params[i].name.c_str();
 			p_state->combo_animation_params_data.push_back(data.data_animparams.params[i].name.c_str());
+			p_state->combo_animation_params.insert(std::hash<std::string_view>()(data.data_animparams.params[i].name.c_str()));
 		}
 	}
 }
@@ -391,6 +398,8 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 	p_state->animation_param_was_changed = false;
 	p_state->combo_animation_params_data.clear();
 	p_state->is_motion_time_format_seconds_selected = true;
+	p_state->is_motion_time_format_radiobutton_changed = true;
+	p_state->combo_animation_params.clear();
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
 
 	if (data.data_animparams.count > 0)
@@ -579,7 +588,59 @@ void RenderToolsOMFEditorWindow()
 				ImGui::TableSetColumnIndex(1);
 
 				ImGui::Text("Selected: [%s]", g_omf_editor.combo_animation_params_data[g_omf_editor.current_selected_animation_param]);
+				ImGui::SameLine();
+				
+				if (ImGui::Button("Rename##ToolsInGameImGui_OMFEditor"))
+				{
+					ImGui::OpenPopup(_kOMFEditorModalWindow_RenameAnimationParam);
+					g_omf_editor.rename_temp = g_omf_editor.omf->data_animparams.params[g_omf_editor.current_selected_animation_param].name;
+				}
 
+				if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_RenameAnimationParam, nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					auto& current_param = g_omf_editor.omf->data_animparams.params[g_omf_editor.current_selected_animation_param];
+					ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameAnimationParamInputText", g_omf_editor.rename_temp.data(), g_omf_editor.rename_temp.max_size());
+
+					ImGui::SetItemDefaultFocus();
+					if (ImGui::Button("Save##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+					{
+						size_t hash_temp = std::hash<std::string_view>()(g_omf_editor.rename_temp.c_str());
+
+						if (g_omf_editor.combo_animation_params.find(hash_temp) != g_omf_editor.combo_animation_params.end() && g_omf_editor.rename_temp != current_param.name)
+						{
+							ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
+						}
+						else
+						{
+							OMFData::omf_name_t previous = current_param.name;
+							size_t previous_temp = std::hash<std::string_view>()(previous.c_str());
+							if (g_omf_editor.combo_animation_params.find(previous_temp) != g_omf_editor.combo_animation_params.end())
+							{
+								g_omf_editor.combo_animation_params.erase(previous_temp);
+							}
+
+							current_param.name = g_omf_editor.rename_temp;
+							g_omf_editor.combo_animation_params.insert(std::hash<std::string_view>()(current_param.name.c_str()));
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					ImGui::SameLine();
+					
+					if (ImGui::Button("Cancel##ToolsInGameImGui_OMFEditor_RenameAnimationParam"))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+
+					bool cross = true;
+					if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_WarningRenameHasCollision, &cross, ImGuiWindowFlags_AlwaysAutoResize))
+					{
+						ImGui::Text("Failed to rename because you have already same name!");
+						ImGui::EndPopup();
+					}
+
+					ImGui::EndPopup();
+				}
 
 				ImGui::EndTable();
 			}
@@ -654,7 +715,7 @@ void RenderToolsOMFEditorWindow()
 					}
 					ImGui::EndDisabled();
 
-					if (g_omf_editor.is_motion_time_format_radiobutton_changed)
+					if (g_omf_editor.has_motion_marks_selected && g_omf_editor.is_motion_time_format_radiobutton_changed)
 					{
 						R_ASSERT(!(g_omf_editor.is_motion_time_format_keys_selected && g_omf_editor.is_motion_time_format_seconds_selected) && "can't be both selected at same time!");
 
@@ -681,6 +742,7 @@ void RenderToolsOMFEditorWindow()
 
 				ImGui::SeparatorText("Motion marks");
 
+				ImGui::BeginDisabled(!g_omf_editor.has_motion_marks_selected);
 				if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_MotionMarksTable", 3))
 				{
 					ImGui::TableNextRow();
@@ -698,12 +760,14 @@ void RenderToolsOMFEditorWindow()
 
 					ImGui::SeparatorText("Marks");
 					ImGui::ListBox("##ToolsInGameImGui_OMFEditor_MarksLB", 0, 0, 0);
-
+					
 					ImGui::Button("Add##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
 					ImGui::SameLine();
 					ImGui::Button("Delete##ToolsInGameImGui_OMFEditor_MotionMarksMarks");
 
 					ImGui::TableSetColumnIndex(2);
+
+					ImGui::SeparatorText("Mark settings");
 
 					float fStart{};
 					ImGui::DragFloat("Start##ToolsInGameImGui_OMFEditor_MotionMarksMark", &fStart);
@@ -716,6 +780,7 @@ void RenderToolsOMFEditorWindow()
 				}
 
 				ImGui::EndTable();
+				ImGui::EndDisabled();
 			}
 
 		}
