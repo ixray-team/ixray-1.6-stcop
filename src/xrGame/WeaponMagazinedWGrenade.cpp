@@ -134,6 +134,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	VERIFY(GetState()==eReload);
 	if(m_bGrenadeMode) 
 	{
+		IsReloaded = false;
 		if (m_sounds.FindSoundItem("sndChangeGrenade", false) && iAmmoElapsed != 0)
 			PlaySound("sndChangeGrenade", get_LastFP2());
 		else
@@ -208,10 +209,15 @@ void CWeaponMagazinedWGrenade::FireStart()
 		return;
 	}
 
-	if (GetState() != eIdle)
-		return;
+	if (!OnActWhileReload_CanActNow())
+	{
+		if (GetState() != eIdle)
+			return;
 
-	if (IsPending())
+		if (IsPending())
+			return;
+	}
+	else if (!Action_PrepareEarlyShotInReload())
 		return;
 
 	if (!iAmmoElapsed)

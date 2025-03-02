@@ -61,7 +61,7 @@ protected:
 
 protected:
 	virtual void	ReloadMagazine();
-	void			DoReload();
+	virtual void	DoReload();
 	bool			HaveCartridgeInInventory(u8 cnt);
 	virtual u8		AddCartridge(u8 cnt);
 			void	ApplySilencerKoeffs();
