@@ -164,7 +164,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 
 		if (m_iPortionsMarker > 0)
 		{
-			--m_iPortionsMarker;
+			m_iPortionsMarker -= m_eat_condition;
 			bNeedUpdateIcon = true;
 		}
 		else
