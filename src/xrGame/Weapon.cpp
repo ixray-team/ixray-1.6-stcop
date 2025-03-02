@@ -2297,7 +2297,7 @@ bool CWeapon::CanAimNow() const
 	return result;
 }
 
-bool CWeapon::CanLeaveAimNow() const
+bool CWeapon::CanLeaveAimNow()
 {
 	if (!ParentIsActor())
 		return true;
@@ -2318,14 +2318,21 @@ bool CWeapon::CanLeaveAimNow() const
 		{
 			if (IsScopeAttached())
 			{
-				sect = GetCurrentScopeSection();
-
-				if (!pSettings->line_exist(sect, "allow_halfaimstate") || !pSettings->r_bool(sect, "allow_halfaimstate"))
+				if (!READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "allow_halfaimstate", false))
+				{
 					return false;
+				}
 			}
-		}
-		else
+
+			if(GetNextState() != eIdle) {
+				SwitchState(eIdle);
+			}
+
 			return false;
+		}
+		else {
+			return false;
+		}
 	}
 
 	return true;

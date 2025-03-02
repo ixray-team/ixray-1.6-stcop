@@ -343,7 +343,7 @@ public:
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
 	bool CanAimNow() const;
-	bool CanLeaveAimNow() const;
+	bool CanLeaveAimNow();
 	bool IsCollimatorInstalled() const;
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
