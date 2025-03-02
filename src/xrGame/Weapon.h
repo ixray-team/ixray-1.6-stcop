@@ -228,7 +228,17 @@ public:
 
 	stepped_params _lens_night_brightness;
 
+	struct conditional_breaking_params
+	{
+		float start_condition = 0.0f;     // при каком состоянии начнутся проблемы
+		float end_condition = 0.0f;       // при каком состоянии отрубится вообще
+		float start_probability = 0.0f;   // вероятность проблем в стартовом состоянии
+	};
+
+	conditional_breaking_params CollimatorBreakingParams;
+
 	float lock_time;
+	float m_fCollimatorLevelsProblem;
 
 	xr_string curr_anim;
 
@@ -269,6 +279,7 @@ public:
 	bool bBlockQKScp;
 	bool bBlockQKGL;
 	bool bBlockQKGLM;
+	bool m_bHideColimSightInAlter;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -276,7 +287,7 @@ public:
 
 	RStringVec m_bDefHideBones, m_bDefShowBones, m_bHideBonesOverride, m_bDefHideBonesGLAttached,
 	m_bHideBonesGLAttached, m_bHideBonesSilAttached, m_bHideBonesScopeAttached,
-	m_bHideBonesUpgrade, m_bScopeShowBones, m_bScopeHideBones, m_bShowBonesUpgToHide, m_bShowBonesUpgToShow;
+	m_bHideBonesUpgrade, m_bScopeShowBones, m_bScopeHideBones, m_bShowBonesUpgToHide, m_bShowBonesUpgToShow, m_sCollimatorSightsBones;
 
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
@@ -297,6 +308,7 @@ public:
 	void UpdateZoomCrosshairUI();
 	void SetLensParams(lens_zoom_params& params);
 	void UpdateLensFactor(u32 timedelta);
+	void UpdateCollimatorSight();
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
