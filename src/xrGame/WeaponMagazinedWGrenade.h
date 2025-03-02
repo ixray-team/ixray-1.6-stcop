@@ -34,7 +34,7 @@ public:
 	virtual void	InitAddons				();
 	virtual void	FireStart				();
 	virtual void	FireEnd					();
-			void	LaunchGrenade_Correct	(Fvector3& v);
+	static  void	LaunchGrenade_Correct	(Fvector3& v);
 	
 	virtual void	OnStateSwitch	(u32 S);
 	
