@@ -1181,7 +1181,7 @@ void CWeapon::ModUpdate()
 
 			if (lock_time_callback != nullptr)
 			{
-				lock_time_callback(this);
+				lock_time_callback();
 				SetAnimationCallback(nullptr);
 			}
 		}

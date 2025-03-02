@@ -710,8 +710,8 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
-	static  void				HeadlampCallback				(CHudItem* item);
-	static  void				NVCallback						(CHudItem* item);
+			void				HeadlampCallback				();
+			void				NVCallback						();
 			bool				OnActorSwitchesSmth				(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device = 0, bool sup_det = false);
 	CCustomDetector*			GetDetector						(bool in_slot = false);
 #ifndef MASTER_GOLD

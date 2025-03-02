@@ -780,7 +780,7 @@ void CActor::SwitchNightVision()
 		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
 		{
 			auto sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
-			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, NVCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION, true);
+			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, { CHudItem::TAnimationEffector(this, &CActor::NVCallback) }, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION, true);
 		}
 		else
 		{
@@ -830,21 +830,21 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 	return false;
 }
 
-void CActor::HeadlampCallback(CHudItem* item)
+void CActor::HeadlampCallback()
 {
 	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
 		torch->Switch();
 
-	if (CWeapon* wpn = smart_cast<CWeapon*>(item))
+	if (CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
 		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim());
 }
 
-void CActor::NVCallback(CHudItem* item)
+void CActor::NVCallback()
 {
 	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
 		torch->SwitchNightVision();
 
-	if (CWeapon* wpn = smart_cast<CWeapon*>(item))
+	if (CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
 		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim());
 }
 
@@ -865,7 +865,7 @@ void CActor::SwitchTorch()
 		if (isGuns)
 		{
 			auto sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
-			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, HeadlampCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP, true);
+			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, { CHudItem::TAnimationEffector(this, &CActor::HeadlampCallback) }, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP, true);
 		}
 		else
 			torch->Switch();
