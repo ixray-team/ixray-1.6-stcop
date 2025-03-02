@@ -39,6 +39,9 @@ void main(in v_in I, out p_bumped_new O)
 #ifdef USE_LM_HEMI
     O.tcdh.zw = unpack_tc_lmap(I.lmh);
 #else
+	#ifdef USE_LENGTH_BUFFER
+		O.lmap = unpack_D3DCOLOR(I.color.xyz);
+	#endif
     O.tcdh.w = I.color.w;
 #endif
 	
