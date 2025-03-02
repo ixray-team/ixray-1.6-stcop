@@ -550,7 +550,17 @@ void CInventory::Activate(u16 slot, bool bForce)
 					return;
 				}
 				else if (det->IsShowing())
-					det->ForceHide();
+				{
+					if (ActiveItem())
+					{
+						CHudItem* old_item = smart_cast<CHudItem*>(ActiveItem());
+						if (old_item)
+						{
+							if (!det->CheckCompatibility(old_item))
+								det->ForceHide();
+						}
+					}
+				}
 			}
 		}
 	}
