@@ -18,8 +18,8 @@ float DistributionGGX(float NdotH, float Roughness)
 // Simple PBR - like attention
 float ComputeLightAttention(float3 PointToLight, float MinAttention)
 {
-	float lightDistSqr = dot(PointToLight, PointToLight);
-    return saturate(1.0f - pow(lightDistSqr * MinAttention, 2.0f)) * rcp(lightDistSqr + 1.0f);
+    float Attention = saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
+    return Attention * Attention;
 }
 #else
 // Simple GSC - like attention

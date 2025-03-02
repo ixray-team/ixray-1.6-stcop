@@ -24,9 +24,9 @@ struct IXrayMaterial
 
 struct IXrayGbufferPack
 {
-	float4 Color : SV_Target1;
+	float4 Color : SV_Target0;
 
-	float4 Normal : SV_Target0;
+	float4 Normal : SV_Target1;
 	float4 Material : SV_Target2;
 
 	float2 Velocity : SV_Target3;
