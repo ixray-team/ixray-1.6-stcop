@@ -313,7 +313,7 @@ void CMissile::shedule_Update(u32 dt)
 #include "player_hud.h"
 void CMissile::State(u32 state) 
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	switch(GetState()) 
 	{
@@ -488,13 +488,13 @@ void CMissile::OnAnimationEnd(u32 state)
 
 bool CMissile::NeedBlockSprint() const
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	return isGuns && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
 }
 
 bool CMissile::SendDeactivateItem()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
 	if (!isGuns)
 	{

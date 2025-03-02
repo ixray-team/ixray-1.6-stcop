@@ -39,6 +39,8 @@ CHudItem::CHudItem()
 	mark						= 0;
 	fDeviceFlags.zero();
 	_action_ppe					= -1;
+	m_fLookOutSpeedKoef = 0.0f;
+	m_fLookOutAmplK = 0.0f;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -74,7 +76,7 @@ void CHudItem::Load(LPCSTR section)
 	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
 	m_current_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_n", PITCH_OFFSET_N);
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	if (isGuns)
 	{
@@ -92,8 +94,19 @@ void CHudItem::Load(LPCSTR section)
 
 	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
 
+	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_speed_koef", 1.0f);
+	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_ampl_k", 1.0f);
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", isGuns);
 
+	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
+	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
+
+	if (hud_sect.size())
+	{
+		m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", m_jitter_params.pos_amplitude);
+		m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", m_jitter_params.rot_amplitude);
+	}
+	
 	if (!m_bDisableBore)
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
 
@@ -865,7 +878,7 @@ bool CHudItem::TryPlayAnimIdle()
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);
-			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			bool isGuns = EngineExternal().isModificationGunslinger();
 			if(state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
 				if (!SwitchSprint && isGuns)
@@ -1051,7 +1064,7 @@ bool CHudItem::CanStartAction(bool allow_aim_state) const
 
 bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE) const
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (!isGuns)
 		return true;
@@ -1082,14 +1095,17 @@ bool CHudItem::WpnCanShoot() const
 	return !!(smart_cast<CWeaponMagazined*>(this) != nullptr && smart_cast<CWeaponBinoculars*>(this) == nullptr);
 }
 
-CHudItem::jitter_params CHudItem::GetCurJitterParams(const char* hud_sect)
+const CHudItem::jitter_params& CHudItem::GetCurJitterParams() const
 {
-	jitter_params result;
+	return m_jitter_params;
+}
 
-	result.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
-	result.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
+float CHudItem::getLookOutSpeedKoef(void) const
+{
+	return m_fLookOutSpeedKoef;
+}
 
-	result.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_pos_amplitude", result.pos_amplitude);
-	result.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_rot_amplitude", result.rot_amplitude);
-	return result;
+float CHudItem::getLookOutAmplK(void) const
+{
+	return m_fLookOutAmplK;
 }

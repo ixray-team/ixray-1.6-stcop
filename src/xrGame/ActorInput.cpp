@@ -899,7 +899,7 @@ void CActor::SwitchNightVision()
 
 	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 	{
-		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		bool isGuns = EngineExternal().isModificationGunslinger();
 		if (isGuns)
 		{
 			CHudItemObject* itm = smart_cast<CHudItemObject*>(inventory().ActiveItem());
@@ -918,9 +918,14 @@ void CActor::SwitchNightVision()
 
 			if (itm == nullptr && GetDetector() == nullptr)
 			{
-				shared_str sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
+				VERIFY(m_pActorNightVisionDisableAnimatorName && m_pActorNightVisionEnableAnimatorName && "must be initialized strings!");
+
+				VERIFY(m_pActorNightVisionHUDDisableAnimationName && m_pActorNightVisionHUDEnableAnimationName && "must be initialized strings!");
+
+				shared_str sect = torch->GetNightVisionStatus() ? m_pActorNightVisionDisableAnimatorName : m_pActorNightVisionEnableAnimatorName;
+				shared_str animation_name = torch->GetNightVisionStatus() ? m_pActorNightVisionHUDDisableAnimationName : m_pActorNightVisionHUDEnableAnimationName;
 				CHUDAnimItem::LoadSound(sect.c_str(), "snd_draw", false);
-				CHUDAnimItem::PlayHudAnim(pSettings->r_string(sect, "hud"), "anm_show", "", { CHudItem::TAnimationEffector(this, &CActor::NVCallback) });
+				CHUDAnimItem::PlayHudAnim(animation_name.c_str(), "anm_show", "", {CHudItem::TAnimationEffector(this, &CActor::NVCallback)});
 			}
 		}
 		else
@@ -956,7 +961,7 @@ void CActor::NVCallback()
 
 void CActor::SwitchTorch()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (isGuns)
 	{
 		CHelmet* pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
@@ -986,9 +991,12 @@ void CActor::SwitchTorch()
 
 			if (itm == nullptr && GetDetector() == nullptr)
 			{
-				shared_str sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
+				shared_str sect = torch->IsSwitched() ? m_pActorHeadLampDisableAnimatorSectionName : m_pActorHeadLampEnableAnimatorSectionName;
+
+				shared_str animation_name = torch->IsSwitched() ? m_pActorHeadLampDisableHUDAnimationName : m_pActorHeadLampEnableHUDAnimationName;
+
 				CHUDAnimItem::LoadSound(sect.c_str(), "snd_draw", false);
-				CHUDAnimItem::PlayHudAnim(pSettings->r_string(sect, "hud"), "anm_show", "", { CHudItem::TAnimationEffector(this, &CActor::HeadlampCallback) });
+				CHUDAnimItem::PlayHudAnim(animation_name.c_str(), "anm_show", "", {CHudItem::TAnimationEffector(this, &CActor::HeadlampCallback)});
 			}
 		}
 		else

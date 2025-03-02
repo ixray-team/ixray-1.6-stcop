@@ -868,7 +868,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 	}
 
 	{
-		const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		bool isGuns = EngineExternal().isModificationGunslinger();
 		CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
 		bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow);
 		bool left_hand_active = !throwing_missile && m_attached_items[1];
@@ -905,7 +905,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 		part_id = m_model->partitions().part_id((part==0)?"right_hand":"left_hand");
 	}
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
 	bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow) && attached_item(1);
@@ -1896,7 +1896,7 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 
 		if (Actor()->IsHandJitter(itm))
 		{
-			jitter = itm->GetCurJitterParams(section.c_str());
+			jitter = itm->GetCurJitterParams();
 
 			pos.x = ::Random.randF(0.f, 1000.f) - 500.f;
 			pos.y = ::Random.randF(0.f, 500.f) - 250.f;
@@ -1925,7 +1925,7 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 
 	if (Actor()->IsActorSuicideNow() && Actor()->CheckActorVisibilityForController() && !(READ_IF_EXISTS(pSettings, r_bool, section, "prohibit_suicide", false) || READ_IF_EXISTS(pSettings, r_bool, section, "suicide_by_animation", false)))
 	{
-		jitter = itm->GetCurJitterParams(section.c_str());
+		jitter = itm->GetCurJitterParams();
 		pos = HID->hands_attach_pos();
 		rot = HID->hands_attach_rot();
 

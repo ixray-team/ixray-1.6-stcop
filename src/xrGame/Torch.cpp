@@ -174,7 +174,7 @@ void CTorch::Switch()
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	if (!isGuns && H_Parent() == Actor())
 	{

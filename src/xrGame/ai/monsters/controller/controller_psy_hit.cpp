@@ -177,7 +177,7 @@ void CControllerPsyHit::activate()
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
 	}
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	if (isGuns)
 		OnPsyHitActivate(static_cast<CController*>(m_object));
@@ -574,7 +574,7 @@ bool CControllerPsyHit::check_conditions_final()
 
 void CControllerPsyHit::death_glide_start()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (isGuns)
 	{

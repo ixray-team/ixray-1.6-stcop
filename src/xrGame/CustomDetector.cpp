@@ -39,7 +39,7 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	CInventoryItem& iitm			= itm->item();
 	u32 slot						= iitm.BaseSlot();
 	
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || !isGuns && (slot==BINOCULAR_SLOT || slot==GRENADE_SLOT) || slot==ANIM_SLOT);
 	if(!bres && slot_to_activate)
@@ -109,7 +109,7 @@ void CCustomDetector::HideDetector(bool bFastMode)
 
 void CCustomDetector::ShowDetector(bool bFastMode)
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (GetState()==eHidden || !isGuns && GetState()==eHiding)
 		ToggleDetector(bFastMode);
@@ -124,7 +124,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
 	CWeapon* wpn = smart_cast<CWeapon*>(itm);
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	if (GetState() == eHidden || !isGuns && GetState() == eHiding)
 	{
@@ -185,7 +185,7 @@ void CCustomDetector::ShowingCallback(CBlend*B)
 
 void CCustomDetector::switch_detector()
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (!isGuns && GetState() == eHidden && g_player_hud->attached_item(0) && m_pInventory->ActiveItem() && m_pInventory->ActiveItem()->BaseSlot() == INV_SLOT_2)
 	{
 		if(g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend*B){static_cast<CCustomDetector*>(B->CallbackParam)->ShowingCallback(B);}, this, 0))
@@ -279,7 +279,7 @@ void CCustomDetector::PlayAnimIdle()
 {
 	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	if (wpn && wpn->IsZoomed() && isGuns)
 		PlayAnimAim();
@@ -314,7 +314,7 @@ void CCustomDetector::PlayAnimAim()
 
 void CCustomDetector::SetHideDetStateInWeapon() const
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (!isGuns)
 		return;
@@ -475,7 +475,7 @@ void CCustomDetector::UpdateVisibility()
 			if (wpn)
 			{
 				u32 state = wpn->GetState();
-				const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+				bool isGuns = EngineExternal().isModificationGunslinger();
 				if (!isGuns && wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
 				{
 					HideDetector(true);
@@ -596,13 +596,13 @@ void CCustomDetector::UpdateNightVisionMode(bool b_on)
 
 bool CCustomDetector::NeedBlockSprint() const
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	return isGuns && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
 }
 
 void CCustomDetector::StartDetectorAction(u32 state)
 {
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	if (!isGuns)
 		return;
 

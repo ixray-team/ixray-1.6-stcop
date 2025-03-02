@@ -165,7 +165,7 @@ public:
 	bool WpnCanShoot() const;
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
-	jitter_params GetCurJitterParams(const char* hud_sect);
+	const jitter_params& GetCurJitterParams() const;
 	using TAnimationEffector = fastdelegate::FastDelegate<void()>;
 
 	enum EDeviceFlags
@@ -176,6 +176,8 @@ public:
 
 	Flags32 fDeviceFlags;
 
+	float getLookOutSpeedKoef(void) const;
+	float getLookOutAmplK(void) const;
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
@@ -196,7 +198,8 @@ protected:
 	float						m_nearwall_target_hud_fov;
 	float						m_nearwall_speed_mod;
 	float						m_fHudFov;
-
+	float						m_fLookOutSpeedKoef;
+	float						m_fLookOutAmplK;
 	float m_fLR_CameraFactor; // Фактор бокового наклона худа при ходьбе [-1; +1]
 	float m_fLR_MovingFactor; // Фактор бокового наклона худа при движении камеры [-1; +1]
 	float m_fLR_InertiaFactor; // Фактор горизонтальной инерции худа при движении камеры [-1; +1]
@@ -207,7 +210,7 @@ protected:
 	TAnimationEffector			lock_time_callback;
 	u32							mark;
 	int							_action_ppe;
-
+	jitter_params  m_jitter_params;
 private:
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;

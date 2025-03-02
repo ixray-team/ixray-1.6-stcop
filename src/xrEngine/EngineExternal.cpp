@@ -3,19 +3,30 @@
 
 ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
 
-CEngineExternal::CEngineExternal()
+CEngineExternal::CEngineExternal() : m_is_modification_gunslinger{}, pOptions{}, m_pTitle{}
 {
-	string_path fname;
+	string_path fname{};
 	FS.update_path(fname, "$game_config$", "engine_external.ltx");
 	pOptions = new CInifile(fname);
+
+	if (pOptions)
+	{
+		m_pTitle = READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
+		m_is_modification_gunslinger = pOptions->r_bool("gunslinger", magic_enum::enum_name(EEngineExternalGunslinger::EnableGunslingerMode).data());
+	}
 }
 
 CEngineExternal::~CEngineExternal() {
 	xr_delete(pOptions);
 }
 
-xr_string CEngineExternal::GetTitle() const {
-	return READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
+const char* CEngineExternal::GetTitle() const {
+	return m_pTitle;
+}
+
+bool CEngineExternal::isModificationGunslinger(void) const
+{
+	return m_is_modification_gunslinger;
 }
 
 const char* CEngineExternal::GetPlayerHudOmfAdditional() const

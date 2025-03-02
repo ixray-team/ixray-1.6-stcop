@@ -44,7 +44,7 @@ void CHelmet::Load(LPCSTR section)
 	else
 		m_NightVisionSect = "";
 
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 
 	bIsTorchAvaliable = READ_IF_EXISTS(pSettings, r_bool, section, "torch_available", !isGuns);
 
@@ -129,7 +129,7 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 			if(pTorch)
 				pTorch->SwitchNightVision(false);
 
-			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			bool isGuns = EngineExternal().isModificationGunslinger();
 			if (isGuns)
 			{
 				if (pTorch && pTorch->IsSwitched())

@@ -115,19 +115,19 @@ void CActor::CorrectActorCameraHeight(float& h)
 
 	if (mstate_real & mcLanding2)
 	{
-		_landing2_effect_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_time", 0.5f) * 1000.f);
+		_landing2_effect_time_remains = floor(m_fActorCameraLanding2Time * 1000.f);
 		_landing_effect_time_remains = 0;
 		_landing_effect_finish_time_remains = 0;
 	}
 	else if (mstate_real & mcLanding)
 	{
 		_landing2_effect_time_remains = 0;
-		_landing_effect_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_time", 0.5f) * 1000.f);
+		_landing_effect_time_remains = floor(m_fActorCameraLandingTime * 1000.f);
 		_landing_effect_finish_time_remains = 0;
 	}
 
-	float dh_pow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_speed_pow", 1.f);
-	float speed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "default_actor_camera_speed", 10.f);
+	float dh_pow = m_fActorCameraSpeedPow;
+	float speed = m_fDefaultActorCameraSpeed;
 
 	CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
 	if (wpn)
@@ -136,20 +136,20 @@ void CActor::CorrectActorCameraHeight(float& h)
 	float max_offset = 0.f;
 	if (_landing_effect_time_remains > 0)
 	{
-		max_offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_offset", 0.f);
-		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_factor", 1.f);
-		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_pow_factor", 1.f);
+		max_offset = m_fActorCameraLandingOffset;
+		speed *= m_fActorCameraLandingSpeedFactor;
+		dh_pow *= m_fActorCameraLandingSpeedPowFactor;
 	}
 	else if (_landing2_effect_time_remains > 0)
 	{
-		max_offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_offset", 0.f);
-		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_factor", 1.f);
-		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_pow_factor", 1.f);
+		max_offset = m_fActorCameraLanding2Offset;
+		speed *= m_fActorCameraLanding2SpeedFactor;
+		dh_pow *= m_fActorCameraLanding2SpeedPowFactor;
 	}
 	else if (_landing_effect_finish_time_remains > 0)
 	{
-		speed *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_factor", 1.f);
-		dh_pow *= READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_pow_factor", 1.f);
+		speed *= m_fActorCameraFinishLandingSpeedFactor;
+		dh_pow *= m_fActorCameraFinishLandingSpeedPowFactor;
 		max_offset = 0.f;
 	}
 
@@ -173,7 +173,7 @@ void CActor::CorrectActorCameraHeight(float& h)
 		_landing_effect_time_remains -= dt;
 	else if (_landing_effect_time_remains > 0)
 	{
-		_landing_effect_finish_time_remains = floor(READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_time", 0.5f) * 1000.f);
+		_landing_effect_finish_time_remains = floor(m_fActorCameraFinishLandingTime * 1000.f);
 		_landing_effect_time_remains = 0;
 	}
 
@@ -371,7 +371,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	// HUD FOV Update
 	
-	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (!isGuns && this == Level().CurrentControlEntity())
 	{

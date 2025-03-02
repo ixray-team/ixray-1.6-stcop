@@ -326,7 +326,33 @@ protected:
 	// Dropping
 	BOOL					b_DropActivated;
 	float					f_DropPower;
-
+	float					m_fControllerPrepareTime;
+	float					m_fControlledActorSpeedKoef;
+	float					m_fActorShockTime;
+	float					m_fActorCameraLanding2Time;
+	float					m_fActorCameraLandingTime;
+	float					m_fActorCameraSpeedPow;
+	float					m_fDefaultActorCameraSpeed;
+	float					m_fActorCameraLandingOffset;
+	float					m_fActorCameraLandingSpeedFactor;
+	float					m_fActorCameraLandingSpeedPowFactor;
+	float					m_fActorCameraLanding2Offset;
+	float					m_fActorCameraLanding2SpeedFactor;
+	float					m_fActorCameraLanding2SpeedPowFactor;
+	float					m_fActorCameraFinishLandingSpeedFactor;
+	float					m_fActorCameraFinishLandingSpeedPowFactor;
+	float					m_fActorCameraFinishLandingTime;
+	float					m_fLookOutSpeed;
+	float					m_fLookOutAmplK;
+	float					m_fLookOutSpeedAmplDXPow;
+	const char*					m_pActorNightVisionDisableAnimatorName;
+	const char*					m_pActorNightVisionEnableAnimatorName;
+	const char* m_pActorNightVisionHUDDisableAnimationName;
+	const char* m_pActorNightVisionHUDEnableAnimationName;
+	const char* m_pActorHeadLampDisableAnimatorSectionName;
+	const char* m_pActorHeadLampEnableAnimatorSectionName;
+	const char* m_pActorHeadLampDisableHUDAnimationName;
+	const char* m_pActorHeadLampEnableHUDAnimationName;
 	//random seed для Zoom mode
 	s32						m_ZoomRndSeed;
 	//random seed для Weapon Effector Shot
