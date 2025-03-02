@@ -506,7 +506,7 @@ bool actor_is_reloading_weapon() {
 	}
 
 	CWeapon* const active_weapon = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
-	if(active_weapon && active_weapon->GetState() == CWeapon::eReload) {
+	if(active_weapon && (active_weapon->GetState() == CWeapon::eReload || active_weapon->GetState() == CWeapon::eUnjam)) {
 		return true;
 	}
 
