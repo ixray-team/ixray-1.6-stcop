@@ -48,6 +48,7 @@ class ENGINE_API CEngineExternal final
 	bool m_is_modification_gunslinger;
 	CInifile* pOptions;
 	const char* m_pTitle;
+
 public:
 	CEngineExternal();
 	~CEngineExternal();
@@ -63,6 +64,8 @@ public:
 	bool operator[](const EEngineExternalRender& ID) const;
 	bool operator[](const EEngineExternalEnvironment& ID) const;
 	bool operator[](const EEngineExternalGunslinger& ID) const;
+
+	xr_string_map<xr_string, xr_string> ShadersOptions;
 };
 
 ENGINE_API CEngineExternal& EngineExternal();

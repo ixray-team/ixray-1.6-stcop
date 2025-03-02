@@ -14,6 +14,14 @@ CEngineExternal::CEngineExternal() : m_is_modification_gunslinger{}, pOptions{},
 		m_pTitle = READ_IF_EXISTS(pOptions, r_string_wb, "general", "title", "IX-Ray Platform").c_str();
 		m_is_modification_gunslinger = READ_IF_EXISTS(pOptions, r_bool, "gunslinger", magic_enum::enum_name(EEngineExternalGunslinger::EnableGunslingerMode).data(), false);
 	}
+
+	if(pOptions->section_exist("shaders_options"))
+	{
+		for(auto& Line : pOptions->r_section("shaders_options").Data)
+		{
+			ShadersOptions[*Line.first] = *Line.second;
+		}
+	}
 }
 
 CEngineExternal::~CEngineExternal() {

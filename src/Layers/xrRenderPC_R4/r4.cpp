@@ -833,17 +833,26 @@ HRESULT	CRender::shader_compile(
 
 	char sh_name[MAX_PATH] = "";
 
-	for(auto& [Name, Value] : m_ShaderOptions) {
+	for(auto& [Name, Value] : EngineExternal().ShadersOptions) {
 		defines[def_it++] = {
 			Name.c_str(),
 			Value.c_str()
 		};
 	}
 
+	// options
 	u32 len = xr_strlen(sh_name);
 
 	// options
 	const int m_skinning = Engine.External.GetSkinningMode();
+	for(auto& [Name, Value] : m_ShaderOptions) 
+	{
+		defines[def_it++] = {
+			Name.c_str(),
+			Value.c_str()
+		};
+	}
+
 	{
 		xr_sprintf(c_smapsize, "%04d", u32(o.smapsize));
 
