@@ -366,14 +366,12 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 
 void CWeaponMagazinedWGrenade::ReloadMagazine() 
 {
-	auto last_bMisfire = bMisfire;
 	inherited::ReloadMagazine();
 	
 	//РїРµСЂРµР·Р°СЂСЏРґРєР° РїРѕРґСЃС‚РІРѕР»СЊРЅРѕРіРѕ РіСЂР°РЅР°С‚РѕРјРµС‚Р°
 	if (m_bGrenadeMode)
 	{
-		bMisfire = last_bMisfire;
-		if (!getRocketCount())
+		if(iAmmoElapsed && !getRocketCount()) 
 		{
 			shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
 			CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
@@ -472,7 +470,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 		if (m_bRestGL_and_Sil && IsSilencerAttached())
 			Detach(GetSilencerName().c_str(), true);
 
- 		//уничтожить подствольник из инвентаря
+ 		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		if(b_send_event)
 		{
 			if (OnServer()) 
