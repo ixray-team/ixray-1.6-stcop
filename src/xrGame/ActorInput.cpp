@@ -605,6 +605,18 @@ void CActor::ProcessKeys()
 		wpn->Action(kWPN_FIREMODE_PREV, CMD_START);
 		SetActorKeyRepeatFlag(kfPREVFIREMODE, false);
 	}
+
+	if ((_keyflags & kfRELOAD) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kWPN_RELOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfRELOAD, false);
+	}
+
+	if ((_keyflags & kfNEXTAMMO) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kWPN_NEXT, CMD_START);
+		SetActorKeyRepeatFlag(kfNEXTAMMO, false);
+	}
 }
 
 #include "HudItem.h"
