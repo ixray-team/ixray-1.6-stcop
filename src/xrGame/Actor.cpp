@@ -2293,6 +2293,11 @@ void CActor::spawn_supplies()
 	}
 
 	Level().spawn_item(pGameGlobals->r_string("actor_item", "anim_fake_item"), Position(), ai_location().level_vertex_id(), ID());
+
+	if (pGameGlobals->line_exist("actor_item", "pda_show_animator_item"))
+	{
+		Level().spawn_item(pGameGlobals->r_string("actor_item", "pda_show_animator_item"), Position(), ai_location().level_vertex_id(), ID());
+	}
 }
 
 
