@@ -21,63 +21,10 @@ void CWeaponBM16::PlayReloadSound()
 
 void CWeaponBM16::PlayAnimShoot()
 {
-	switch( m_magazine.size() )
-	{
-	case 1:
-		PlayHUDMotion("anm_shot_1",FALSE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_shot_2",FALSE,this,GetState());
-		break;
-	}
-}
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	std::string anm_name = isGuns ? "anm_shoot" : "anm_shot";
 
-void CWeaponBM16::PlayAnimShow()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_show_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_show_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_show_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimHide()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_hide_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_hide_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_hide_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimBore()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_bore_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_bore_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_bore_2",TRUE,this,GetState());
-		break;
-	}
+	PlayHUDMotion(anm_name, FALSE, this, GetState());
 }
 
 void CWeaponBM16::PlayAnimReload()
@@ -85,78 +32,103 @@ void CWeaponBM16::PlayAnimReload()
 	bool b_both = HaveCartridgeInInventory(2);
 
 	VERIFY(GetState()==eReload);
-	
 
-	if((m_magazine.size()==1 || !b_both) && 
-		(m_set_next_ammoType_on_reload == undefined_ammo_type || 
-		 m_ammoType == m_set_next_ammoType_on_reload))
-		PlayHUDMotion("anm_reload_1",TRUE,this,GetState());
-	else
-		PlayHUDMotion("anm_reload_2",TRUE,this,GetState());
-}
-
-void  CWeaponBM16::PlayAnimIdleMoving()
-{
-	switch( m_magazine.size() )
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	std::string anm_name = "anm_reload";
+	if (!isGuns)
 	{
-	case 0:
-		PlayHUDMotion("anm_idle_moving_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_moving_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_moving_2",TRUE,this,GetState());
-		break;
+		if ((m_magazine.size() == 1 || !b_both) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+			anm_name += "_1";
+		else
+			anm_name += "_2";
 	}
+
+	PlayHUDMotion(anm_name, TRUE, this, GetState(), isGuns);
 }
 
-void  CWeaponBM16::PlayAnimIdleSprint()
+std::string CWeaponBM16::NeedAddSuffix(std::string M)
 {
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_idle_sprint_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_sprint_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_sprint_2",TRUE,this,GetState());
-		break;
-	}
-}
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-void CWeaponBM16::PlayAnimIdle()
-{
-	if(TryPlayAnimIdle())	return;
+	std::string new_name = M;
 
-	if(IsZoomed())
+	if (IsChangeAmmoType() && m_magazine.size() != 0)
 	{
 		switch (m_magazine.size())
 		{
-		case 0:{
-			PlayHUDMotion("anm_idle_aim_0", TRUE, nullptr, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_aim_1", TRUE, nullptr, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_aim_2", TRUE, nullptr, GetState());
-		}break;
-		};
-	}else{
+			case 1:
+				new_name = AddSuffixName(new_name, "_ammochange_1");
+			break;
+			case 2:
+				new_name = AddSuffixName(new_name, "_ammochange_2");
+			break;
+		}
+	}
+
+	if (IsZoomed())
+	{
 		switch (m_magazine.size())
 		{
-		case 0:{
-			PlayHUDMotion("anm_idle_0", TRUE, nullptr, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_1", TRUE, nullptr, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_2", TRUE, nullptr, GetState());
-		}break;
-		};
+		case 0:
+			new_name = AddSuffixName(new_name, "_aim_0");
+			break;
+		case 1:
+			new_name = AddSuffixName(new_name, "_aim_1");
+			break;
+		case 2:
+			new_name = AddSuffixName(new_name, "_aim_2");
+			break;
+		}
 	}
+
+	if (IsMisfire())
+	{
+		if (isGuns)
+		{
+			switch (m_magazine.size())
+			{
+				case 0:
+					new_name = AddSuffixName(new_name, "_jammed_0");
+				break;
+				case 1:
+					new_name = AddSuffixName(new_name, "_jammed_1");
+				break;
+				case 2:
+					new_name = AddSuffixName(new_name, "_jammed_2");
+				break;
+			}
+		}
+		else
+		{
+			switch (m_magazine.size())
+			{
+				case 0:
+					new_name = AddSuffixName(new_name, "_misfire_0");
+				break;
+				case 1:
+					new_name = AddSuffixName(new_name, "_misfire_1");
+				break;
+				case 2:
+					new_name = AddSuffixName(new_name, "_misfire_2");
+				break;
+			}
+		}
+
+		bMisfireReload = true;
+	}
+
+	switch (m_magazine.size())
+	{
+		case 0:
+			new_name = AddSuffixName(new_name, "_0");
+		break;
+		case 1:
+			new_name = AddSuffixName(new_name, "_1");
+		break;
+		case 2:
+			new_name = AddSuffixName(new_name, "_2");
+		break;
+	}
+
+	return new_name;
 }

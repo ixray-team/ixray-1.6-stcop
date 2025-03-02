@@ -156,12 +156,6 @@ void CWeaponRPG7::FireStart()
 	inherited::FireStart();
 }
 
-void CWeaponRPG7::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_reload", FALSE, this, GetState());
-}
-
 void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type) 
 {
 	inherited::OnEvent(P,type);

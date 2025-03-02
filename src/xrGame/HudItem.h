@@ -124,9 +124,11 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	u32							PlayHUDMotion		(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state);
+	u32							PlayHUDMotion		(std::string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix = true);
 	u32							PlayHUDMotion_noCB	(const shared_str& M, BOOL bMixIn);
 	void						StopCurrentAnimWithoutCallback();
+	virtual std::string					NeedAddSuffix(std::string M) { return M; }
+	std::string					AddSuffixName(std::string M, std::string suffix);
 
 	IC void						RenderHud				(BOOL B)	{ m_huditem_flags.set(fl_renderhud, B);}
 	IC BOOL						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
