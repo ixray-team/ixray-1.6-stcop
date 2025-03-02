@@ -258,7 +258,8 @@ void CHudItem::OnStateSwitch(u32 S)
 	}break;
 	case eShowing:
 	{
-		g_player_hud->attach_item(this);
+		if (Actor() && object().H_Parent() == Actor())
+			g_player_hud->attach_item(this);
 	}break;
 	}
 
