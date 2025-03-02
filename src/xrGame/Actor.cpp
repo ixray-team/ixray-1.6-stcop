@@ -2452,6 +2452,7 @@ void CActor::UpdatePsiBlockFailedState(CController* monster_controller)
 
 bool CActor::IsPsiBlocked() const
 {
+	//TODO: Ravlik to All, replace the search with a better one.
 	for (auto& booster : Actor()->conditions().GetCurBoosterInfluences())
 	{
 		if (booster.second.m_type == eBoostTelepaticProtection)
