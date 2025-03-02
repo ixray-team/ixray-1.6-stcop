@@ -343,7 +343,7 @@ void CUITalkWnd::SwitchToTrade()
 
 void CUITalkWnd::SwitchToUpgrade()
 {
-	//if ( m_pOurInvOwner->IsInvUpgradeEnabled() && m_pOthersInvOwner->IsInvUpgradeEnabled() )
+	if (m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled())
 	{
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if ( pGameSP )
