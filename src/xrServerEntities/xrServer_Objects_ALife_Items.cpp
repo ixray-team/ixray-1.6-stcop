@@ -511,6 +511,7 @@ CSE_ALifeItemWeapon::CSE_ALifeItemWeapon	(LPCSTR caSection) : CSE_ALifeItem(caSe
 
 CSE_ALifeItemWeapon::~CSE_ALifeItemWeapon	()
 {
+	m_AmmoIDs.clear();
 }
 
 u32	CSE_ALifeItemWeapon::ef_main_weapon_type() const
@@ -542,6 +543,13 @@ void CSE_ALifeItemWeapon::UPDATE_Read(NET_Packet	&tNetPacket)
 		tNetPacket.r_u8(misfire);
 		tNetPacket.r_float(rt_zoom_factor);
 		tNetPacket.r_u8(cur_scope);
+
+		m_AmmoIDs.clear();
+		u8 AmmoCount = tNetPacket.r_u8();
+		for (u8 i = 0; i < AmmoCount; i++)
+		{
+			m_AmmoIDs.push_back(tNetPacket.r_u8());
+		}
 	}
 }
 
@@ -564,6 +572,12 @@ void CSE_ALifeItemWeapon::UPDATE_Write(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(misfire);
 	tNetPacket.w_float			(rt_zoom_factor);
 	tNetPacket.w_u8				(cur_scope);
+
+	tNetPacket.w_u8(u8(m_AmmoIDs.size()));
+	for (u32 i = 0; i < m_AmmoIDs.size(); i++)
+	{
+		tNetPacket.w_u8(u8(m_AmmoIDs[i]));
+	}
 }
 
 void CSE_ALifeItemWeapon::STATE_Read(NET_Packet	&tNetPacket, u16 size)
@@ -681,9 +695,7 @@ void CSE_ALifeItemWeapon::FillProps			(LPCSTR pref, PropItemVec& items)
 // CSE_ALifeItemWeaponShotGun
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeItemWeaponShotGun::CSE_ALifeItemWeaponShotGun	(LPCSTR caSection) : CSE_ALifeItemWeaponMagazined(caSection)
-{
-	m_AmmoIDs.clear();
-}
+{}
 
 CSE_ALifeItemWeaponShotGun::~CSE_ALifeItemWeaponShotGun	()
 {
@@ -692,23 +704,10 @@ CSE_ALifeItemWeaponShotGun::~CSE_ALifeItemWeaponShotGun	()
 void CSE_ALifeItemWeaponShotGun::UPDATE_Read		(NET_Packet& P)
 {
 	inherited::UPDATE_Read(P);
-
-	m_AmmoIDs.clear();
-	u8 AmmoCount = P.r_u8();
-	for (u8 i=0; i<AmmoCount; i++)
-	{
-		m_AmmoIDs.push_back(P.r_u8());
-	}
 }
 void CSE_ALifeItemWeaponShotGun::UPDATE_Write	(NET_Packet& P)
 {
 	inherited::UPDATE_Write(P);
-
-	P.w_u8(u8(m_AmmoIDs.size()));
-	for (u32 i=0; i<m_AmmoIDs.size(); i++)
-	{
-		P.w_u8(u8(m_AmmoIDs[i]));
-	}
 }
 void CSE_ALifeItemWeaponShotGun::STATE_Read		(NET_Packet& P, u16 size)
 {

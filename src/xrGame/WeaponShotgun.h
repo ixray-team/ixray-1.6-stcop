@@ -13,8 +13,6 @@ public:
 	virtual void	Load				(LPCSTR section);
 	
 	virtual void	net_Destroy			();
-	virtual void	net_Export			(NET_Packet& P);
-	virtual void	net_Import			(NET_Packet& P);
 
 	virtual bool	TryReload			();
 	virtual void	switch2_Fire		();
