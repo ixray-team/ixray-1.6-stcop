@@ -153,6 +153,8 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 				d = res[0];
 			else
 				CWeaponMagazinedWGrenade::LaunchGrenade_Correct(d);
+
+			CWeaponMagazinedWGrenade::LaunchGrenade_controller_Correct(this, d);
 		}
 	};
 
