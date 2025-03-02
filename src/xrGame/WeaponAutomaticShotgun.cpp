@@ -73,11 +73,19 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 
 	switch (m_sub_state)
 	{
-		case eSubstateReloadBegin:
+	case eSubstateReloadBegin:
+	{
+		if (bStopReloadSignal || iAmmoElapsed == iMagazineSize)
+		{
+			m_sub_state = eSubstateReloadEnd;
+			SwitchState(eReload);
+		}
+		else
 		{
 			m_sub_state = eSubstateReloadInProcess;
 			SwitchState(eReload);
-		}break;
+		}
+	}break;
 		case eSubstateReloadInProcess:
 		{
 			if (bStopReloadSignal || 0 != AddCartridge(1))
