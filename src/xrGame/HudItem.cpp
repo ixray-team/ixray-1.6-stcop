@@ -71,10 +71,24 @@ void CHudItem::Load(LPCSTR section)
 	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
 	m_current_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_n", PITCH_OFFSET_N);
 
-	m_current_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (isGuns)
+	{
+		float origin_offset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", -1.f);
+
+		if (origin_offset < 0.0f)
+			origin_offset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
+		else
+			origin_offset = -READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", -1.f);
+
+		m_current_inertion.OriginOffset = origin_offset;
+	}
+	else
+		m_current_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
+
 	m_current_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", isGuns);
 
 	if (!m_bDisableBore)
