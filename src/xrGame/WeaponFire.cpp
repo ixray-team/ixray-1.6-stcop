@@ -118,7 +118,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	if(m_bLightShotEnabled) 
 		Light_Start			();
 
-	
+	_last_shot_ammotype = GetCartridgeType(GetCartridgeFromMagVector(m_magazine.size() - 1));
+
 	// Ammo
 	m_magazine.pop_back	();
 	--iAmmoElapsed;
