@@ -33,10 +33,11 @@ enum EMovementStates
 
 enum EActorKeyflags
 {
-	kfFIRE = 1,
-	kfUNZOOM = 2,
-	kfHEADLAMP = 3,
-	kfNIGHTVISION = 4,
+	kfFIRE = (1ul << 0ul),
+	kfUNZOOM = (1ul << 1ul),
+	kfHEADLAMP = (1ul << 2ul),
+	kfNIGHTVISION = (1ul << 3ul),
+	kfQUICKKICK = (1ul << 4ul),
 };
 
 enum EMoveCommand
