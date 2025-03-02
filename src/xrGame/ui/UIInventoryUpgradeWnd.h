@@ -85,9 +85,11 @@ private:
 			void			LoadSchemes( CUIXml& uiXml );
 			void			SetCurScheme( const shared_str& id );
 			bool			install_item( CInventoryItem& inv_item, bool can_upgrade );
+			bool			CheckEnableDisassembleButton(CInventoryItem& inv_item);
 			Manager_type&	get_manager();
 public:
 	CUI3tButton*			m_btn_repair;
+	CUI3tButton*			m_btn_disassemble;
 
 protected:
 	CUIStatic*				m_background;

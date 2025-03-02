@@ -396,7 +396,7 @@ PIItem CUIActorMenu::CurrentIItem()
 
 void CUIActorMenu::SetCurrentItem(CUICellItem* itm)
 {
-	m_repair_mode = false;
+	m_repair_mode = 0;
 	m_pCurrentCellItem = itm;
 	if ( !itm )
 	{

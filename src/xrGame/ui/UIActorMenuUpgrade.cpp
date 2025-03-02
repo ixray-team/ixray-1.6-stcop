@@ -39,6 +39,8 @@ void CUIActorMenu::DeInitUpgradeMode()
 	m_pUpgradeWnd->Show( false );
 	m_pUpgradeWnd->set_info_cur_upgrade( nullptr );
 	m_pUpgradeWnd->m_btn_repair->Enable( false );
+	if (EngineExternal().isModificationGunslinger())
+		m_pUpgradeWnd->m_btn_disassemble->Enable(false);
 
 	if ( m_upgrade_selected )
 	{
