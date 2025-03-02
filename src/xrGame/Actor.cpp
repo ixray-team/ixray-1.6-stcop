@@ -1138,6 +1138,7 @@ void CActor::UpdateCL()
 		ProcessKeys();
 		UpdateSuicide(dt);
 		UpdateFOV();
+		UpdateElectronicsProblemsCnt(dt);
 
 		if (g_player_hud != nullptr)
 			g_player_hud->UpdateWeaponOffset(dt);
