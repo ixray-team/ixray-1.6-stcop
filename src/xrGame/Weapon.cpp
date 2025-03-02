@@ -1576,10 +1576,7 @@ int CWeapon::GetMagCapacity() const
 	int ammotype = -1;
 
 	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
-	{
-		CWeaponMagazinedWGrenade* w_gl = smart_cast<CWeaponMagazinedWGrenade*>(this);
-		result = w_gl->iMagazineSize2;
-	}
+		result = iMagazineSize;
 	else
 	{
 		result = iMagazineSize;
