@@ -190,6 +190,7 @@ public:
 	float getControllerTime(void) const;
 	float getControllerShootExplMinDist(void) const;
 	bool isSuicideByAnimation(void) const;
+	void StartSprintCallback();
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}

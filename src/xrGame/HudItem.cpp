@@ -221,10 +221,18 @@ void CHudItem::OnStateSwitch(u32 S)
 		}break;
 		case eSprintStart:
 		{
+			bool isGuns = EngineExternal().isModificationGunslinger();
+			if (Actor() && object().H_Parent() == Actor() && WpnCanShoot() && isGuns)
+			{
+				Actor()->SetMovementState(eWishful, mcSprint, false);
+			}
+
 			SetPending(FALSE);
 			SwitchSprint = true;
 
 			PlayHUDMotion("anm_idle_sprint_start", true, this, GetState());
+			if (WpnCanShoot() && isGuns)
+				SetAnimationCallback({ CHudItem::TAnimationEffector(this, &CHudItem::StartSprintCallback) });
 			PlaySound("sndSprintStart", object().XFORM().c);
 		}break;
 		case eSprintEnd:
@@ -261,6 +269,14 @@ void CHudItem::OnStateSwitch(u32 S)
 
 	if(S != eIdle && S != eSprintStart && S != eSprintEnd) {
 		SwitchSprint = false;
+	}
+}
+
+void CHudItem::StartSprintCallback()
+{
+	if (Actor() && object().H_Parent() == Actor() && !psActorFlags.test(AF_SPRINT_TOGGLE))
+	{
+		Actor()->SetMovementState(eWishful, mcSprint, true);
 	}
 }
 

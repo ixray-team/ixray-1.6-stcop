@@ -102,7 +102,11 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}break;
 	case kSPRINT_TOGGLE:	
 		{
-			mstate_wishful ^= mcSprint;
+			CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+			if (!psActorFlags.test(AF_SPRINT_TOGGLE) && (wpn == nullptr || wpn != nullptr && !wpn->lock_time))
+			{
+				mstate_wishful ^= mcSprint;
+			}
 		}break;
 	case kCROUCH:	
 		{
@@ -241,6 +245,13 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 		{
 		case kJUMP:		mstate_wishful &=~mcJump;		break;
 		case kDROP:		if(GAME_PHASE_INPROGRESS == Game().Phase()) g_PerformDrop();				break;
+		case kSPRINT_TOGGLE:
+		{
+			if (psActorFlags.test(AF_SPRINT_TOGGLE))
+			{
+				mstate_wishful &= ~mcSprint;
+			}
+		}break;
 		}
 	}
 }
@@ -303,6 +314,14 @@ void CActor::IR_OnKeyboardHold(int cmd)
 					mstate_wishful |= mcCrouch;
 
 		}break;
+	case kSPRINT_TOGGLE:
+	{
+		CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem());
+		if (psActorFlags.test(AF_SPRINT_TOGGLE) && (wpn == nullptr || wpn != nullptr && !wpn->lock_time))
+		{
+			mstate_wishful |= mcSprint;
+		}
+	}break;
 	}
 }
 
