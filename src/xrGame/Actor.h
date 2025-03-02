@@ -440,6 +440,7 @@ public:
 	float					m_fRun_StrafeFactor;
 
 	bool					bBlockSprint;
+	u32						_keyflags;
 
 public:
 	Fvector					GetMovementSpeed		() {return NET_SavedAccel;};
@@ -455,6 +456,8 @@ public:
 	virtual void			IR_OnKeyboardHold		(int dik);
 	virtual void			IR_OnMouseWheel			(int direction);
 	virtual	float			GetLookFactor			();
+	void					SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide = false);
+	void					ProcessKeys				();
 
 public:
 	virtual void						g_WeaponBones		(int &L, int &R1, int &R2);
