@@ -2090,6 +2090,9 @@ void CWeaponMagazined::PlayAnimShoot()
 
 void CWeaponMagazined::OnZoomIn			()
 {
+	if (!CanAimNow())
+		return;
+
 	inherited::OnZoomIn();
 
 	if(GetState() == eIdle)
@@ -2120,6 +2123,12 @@ void CWeaponMagazined::OnZoomOut()
 {
 	if(!IsZoomed())	 
 		return;
+
+	if (!CanLeaveAimNow())
+	{
+		Actor()->SetActorKeyRepeatFlag(kfUNZOOM, true);
+		return;
+	}
 
 	inherited::OnZoomOut	();
 
