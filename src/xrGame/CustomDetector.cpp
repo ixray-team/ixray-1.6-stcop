@@ -11,6 +11,7 @@
 #include "player_hud.h"
 #include "weapon.h"
 #include "WeaponKnife.h"
+#include "HUDAnimItem.h"
 
 ITEM_INFO::ITEM_INFO()
 {
@@ -29,9 +30,15 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	if(itm==nullptr)
 		return true;
 
+	if (CHUDAnimItem* ha = smart_cast<CHUDAnimItem*>(itm))
+	{
+		if (!ha->SupportsDetector)
+			return false;
+	}
+
 	CInventoryItem& iitm			= itm->item();
 	u32 slot						= iitm.BaseSlot();
-	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || slot==BINOCULAR_SLOT || slot==GRENADE_SLOT);
+	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || slot==BINOCULAR_SLOT || slot==GRENADE_SLOT || slot==ANIM_SLOT);
 	if(!bres && slot_to_activate)
 	{
 		*slot_to_activate = NO_ACTIVE_SLOT;

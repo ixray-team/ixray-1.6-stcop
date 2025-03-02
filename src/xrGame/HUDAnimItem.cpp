@@ -73,7 +73,7 @@ void CHUDAnimItem::UpdateCL()
 			Actor()->inventory().Activate(NO_ACTIVE_SLOT);
 			Actor()->inventory().Activate(OldSlot);
 
-			if (DetectorActive)
+			if (!SupportsDetector && DetectorActive)
 			{
 				if (CCustomDetector* Detector = (CCustomDetector*)Actor()->inventory().ItemFromSlot(DETECTOR_SLOT))
 				{
@@ -122,7 +122,7 @@ void CHUDAnimItem::LoadSound(const xr_string Section, const xr_string snd, bool 
 	ThisItem->m_sounds.LoadSound(Section.c_str(), snd.c_str(), "sndByMotion", exclusive);
 }
 
-void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd, TAnimationEffector fun)
+void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd, TAnimationEffector fun, bool supports_detector)
 {
 	auto& Inventory = Actor()->inventory();
 	CHUDAnimItem* ThisItem = (CHUDAnimItem*)Inventory.ItemFromSlot(ANIM_SLOT);
@@ -133,9 +133,12 @@ void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, co
 	if (ThisItem == Inventory.ActiveItem())
 		return;
 
-	if (CCustomDetector* Detector = (CCustomDetector*)Inventory.ItemFromSlot(DETECTOR_SLOT))
+	if (!supports_detector)
 	{
-		ThisItem->DetectorActive = Detector->IsActive();
+		if (CCustomDetector* Detector = (CCustomDetector*)Inventory.ItemFromSlot(DETECTOR_SLOT))
+		{
+			ThisItem->DetectorActive = Detector->IsActive();
+		}
 	}
 
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
@@ -147,6 +150,7 @@ void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, co
 		ThisItem->mark = floor(pSettings->r_float(Section.c_str(), ("mark_" + Anim).c_str()) * 1000.f);
 		ThisItem->callback = fun;
 	}
+	ThisItem->SupportsDetector = supports_detector;
 
 	if (snd.length() > 0)
 		LoadSound(Section, snd);

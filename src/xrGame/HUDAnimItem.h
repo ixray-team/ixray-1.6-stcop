@@ -16,6 +16,7 @@ public:
 	~CHUDAnimItem() = default;
 
 	virtual void Load(LPCSTR section) override;
+	bool SupportsDetector = false;
 
 protected:
 	virtual void UpdateXForm() override {}
@@ -32,5 +33,5 @@ protected:
 
 public:
 	static void LoadSound(const xr_string Section, const xr_string snd, bool exclusive = false);
-	static void PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd = "", TAnimationEffector fun = nullptr);
+	static void PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd = "", TAnimationEffector fun = nullptr, bool supports_detector = false);
 };
