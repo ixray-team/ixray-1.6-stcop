@@ -33,6 +33,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_silencer(section, test);
 	result |= install_upgrade_hud_sect_scope(section, test);
 	result |= install_upgrade_hud_sect_gl(section, test);
+	result |= install_upgrade_smoke_particles(section, test);
+	result |= install_upgrade_flame_particles(section, test);
 
 	ProcessUpgrade();
 	ProcessScope();
@@ -359,6 +361,36 @@ bool CWeapon::install_upgrade_hud_sect_gl(LPCSTR section, bool test)
 	}
 
 	InitAddons();
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_smoke_particles(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "smoke_particles", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		m_sSmokeParticles = pSettings->r_string(section, "smoke_particles");
+		m_sSmokeParticlesCurrent = m_sSmokeParticles;
+	}
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_flame_particles(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "flame_particles", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		m_sFlameParticles = pSettings->r_string(section, "flame_particles");
+		m_sFlameParticlesCurrent = m_sFlameParticles;
+	}
 
 	return result;
 }
