@@ -2688,7 +2688,8 @@ void CActor::DoSuicideShot()
 	if (_lastshot_done_time > 0)
 		return;
 
-	//SetDisableInputStatus(true);
+	extern bool g_bDisableAllInput;
+	g_bDisableAllInput = true;
 	_lastshot_done_time = Device.dwTimeGlobal;
 	_death_action_started = true;
 
