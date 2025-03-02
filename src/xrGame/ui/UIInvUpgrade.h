@@ -100,6 +100,7 @@ public:
 	virtual	void		Reset();
 
 			void		update_upgrade_state();
+			bool		OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state);
 			void		update_mask();
 			void		update_item( CInventoryItem* inv_item );
 
