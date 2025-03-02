@@ -303,6 +303,8 @@ public:
 	bool m_bDisableLightMisDet;
 	bool bIsTorchEnabled;
 	bool bIsLaserEnabled;
+	bool bIsNeedFirstShootAnims;
+	bool bIsNeedFinalCloseAnims;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;

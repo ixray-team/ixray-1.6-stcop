@@ -118,6 +118,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	if(m_bLightShotEnabled) 
 		Light_Start			();
 
+	_is_just_after_reload = false;
 	_last_shot_ammotype = GetCartridgeType(GetCartridgeFromMagVector(m_magazine.size() - 1));
 
 	// Ammo

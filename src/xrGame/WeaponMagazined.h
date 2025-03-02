@@ -185,6 +185,8 @@ protected:
 	void			KickCallback();
 	void			TacticalTorchSwitch();
 	void			LaserSwitch();
+	void			OnAddCartridgeInOpen();
+	void			OnAnimationEnd_OnAddCartridge();
 	void			ModifierMoving(xr_string& anim_name, const xr_string config_enabler_directions, const xr_string config_enabler_main = "") const;
 	bool			NeedShootMix() const;
 	void			TriStateReload();
