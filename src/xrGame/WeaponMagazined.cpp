@@ -989,6 +989,29 @@ void CWeaponMagazined::OnEmptyClick	()
 	PlaySound	("sndEmptyClick",get_LastFP());
 }
 
+void CWeaponMagazined::DoReload()
+{
+	if (IsReloaded)
+	{
+		IsReloaded = false;
+		return;
+	}
+
+	if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+	{
+		ReloadMagazine();
+		return;
+	}
+
+	int def_magsize = iMagazineSize;
+	int mod_magsize = def_magsize;
+
+
+	iMagazineSize = mod_magsize;
+	ReloadMagazine();
+	iMagazineSize = def_magsize;
+}
+
 void CWeaponMagazined::OnAnimationEnd(u32 state) 
 {
 	switch(state) 
@@ -1000,7 +1023,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				bReloadKeyPressed = false;
 				bAmmotypeKeyPressed = false;
 			}
-			ReloadMagazine();
+			DoReload();
 			GiveAmmoFromMagToChamber();
 			SwitchState(eIdle);
 		} break;
@@ -1016,8 +1039,6 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eIdle:
 			switch2_Idle();
 		break;
-		case eFire:
-		case eFire2:
 		case eSwitchMode:
 			bNextModeKeyPressed = false;
 			bPrevModeKeyPressed = false;
@@ -1026,6 +1047,8 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eEmptyClick:
 		case eShowing:
 		case eCheckMisfire:
+		case eFire2:
+		case eFire:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1151,7 +1174,7 @@ void CWeaponMagazined::PlayAnimFakeshoot()
 	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 		anm_name += m_sFireModeMask_3.c_str();
 
-	PlayHUDMotion(anm_name, TRUE, this, GetState());
+	PlayHUDMotion(anm_name, TRUE, GetState());
 }
 
 void CWeaponMagazined::PlayReloadSound()
@@ -1630,21 +1653,36 @@ void CWeaponMagazined::PlayAnimFireMode()
 	else
 		bIsNeedCallDet = false;
 
-	PlayHUDMotion(anm_name, TRUE, this, eSwitchMode);
+	PlayHUDMotion(anm_name, TRUE, eSwitchMode);
 }
 
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
 
-	PlayHUDMotion("anm_show", FALSE, this, GetState());
+	PlayHUDMotion("anm_show", FALSE, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
 
-	PlayHUDMotion("anm_hide", TRUE, this, GetState());
+	PlayHUDMotion("anm_hide", TRUE, GetState());
+}
+
+void CWeaponMagazined::OnAmmoTimer(CWeapon* wpn, int param)
+{
+	if (!wpn->ParentIsActor())
+		return;
+
+	CWeaponMagazined* wpnmag = smart_cast<CWeaponMagazined*>(wpn);
+	if (wpnmag)
+	{
+		wpn->IsReloaded = false;
+		wpnmag->DoReload();
+		wpn->IsReloaded = true;
+		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim(), false);
+	}
 }
 
 void CWeaponMagazined::PlayAnimReload()
@@ -1663,7 +1701,9 @@ void CWeaponMagazined::PlayAnimReload()
 	else
 		bIsNeedCallDet = false;
 
-	PlayHUDMotion(anm_name, TRUE, this, GetState());
+	PlayHUDMotion(anm_name, TRUE, GetState());
+
+	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
 }
 
 void CWeaponMagazined::PlayAnimAim()
@@ -1689,10 +1729,10 @@ void CWeaponMagazined::PlayAnimAim()
 				anm_name += "_right";
 		}
 
-		PlayHUDMotion(anm_name, TRUE, nullptr, GetState());
+		PlayHUDMotion(anm_name, TRUE, GetState());
 	}
 	else
-		PlayHUDMotion("anm_idle_aim", TRUE, nullptr, GetState());
+		PlayHUDMotion("anm_idle_aim", TRUE, GetState());
 }
 
 void CWeaponMagazined::PlaySoundAim(bool in)
@@ -1722,7 +1762,9 @@ void CWeaponMagazined::PlayAnimShoot()
 	VERIFY(GetState() == eFire);
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", FALSE, this, GetState());
+	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", FALSE, GetState());
+	ProcessAmmo(true);
+	MakeLockByConfigParam("lock_time_" + GetActualCurrentAnim(), true);
 }
 
 void CWeaponMagazined::OnZoomIn			()

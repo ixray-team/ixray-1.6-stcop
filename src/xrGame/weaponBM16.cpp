@@ -62,7 +62,7 @@ void CWeaponBM16::PlayAnimShoot()
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	xr_string anm_name = isGuns ? "anm_shoot" : "anm_shot";
 
-	PlayHUDMotion(anm_name, FALSE, this, GetState());
+	PlayHUDMotion(anm_name, FALSE, GetState());
 }
 
 void CWeaponBM16::PlayAnimReload()
