@@ -592,7 +592,6 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 				new_name = AddSuffixName(new_name, "_ammochange", "_g");
 
 			new_name = AddSuffixName(new_name, "_g");
-
 		}
 		else
 		{
@@ -613,8 +612,8 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 
 			TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 1 : iAmmoElapsed == 1;
 
-			if (!IsMisfire() && iAmmoElapsed == 1)
-				new_name = AddSuffixName(new_name, "_last", "_w_gl");
+			if (!IsMisfire() && TempTest)
+				new_name = AddSuffixName(new_name, isGuns ? "_last" : "_l", "_w_gl");
 
 			TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
 
