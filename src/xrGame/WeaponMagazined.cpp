@@ -864,7 +864,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
-	if (Actor()->GetDetector())
+	if (ParentIsActor() && Actor()->GetDetector())
 		new_name = AddSuffixName(new_name, "_detector");
 
 	if (IsSilencerAttached())
@@ -1661,7 +1661,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				else
 					return false;
 
-				if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+				if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 					return false;
 			}
 			else if ((iAmmoElapsed != GetMagCapacity() || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
@@ -1996,7 +1996,7 @@ void CWeaponMagazined::PlayAnimFireMode()
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
 
-	if (Actor()->GetDetector() && isGuns)
+	if (ParentIsActor() && Actor()->GetDetector() && isGuns)
 	{
 		if (iAmmoElapsed == 0)
 			bIsNeedCallDet = true;
@@ -2051,7 +2051,7 @@ void CWeaponMagazined::PlayAnimReload()
 	bool isGuns = EngineExternal().isModificationGunslinger();
 
 
-	bIsNeedCallDet = Actor()->GetDetector() && isGuns;
+	bIsNeedCallDet = ParentIsActor() && Actor()->GetDetector() && isGuns;
 
 	PlayHUDMotion(anm_name, TRUE, current_state);
 
@@ -2291,7 +2291,7 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 			else
 				bPrevModeKeyPressed = true;
 
-			if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+			if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 				return false;
 		}
 	}
