@@ -82,6 +82,12 @@ void CMissile::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "snd_holster"))
 		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
 
+	if (pSettings->line_exist(section, "snd_throw_begin"))
+		m_sounds.LoadSound(section, "snd_throw_begin", "sndThrowBegin", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+
+	if (pSettings->line_exist(section, "snd_throw"))
+		m_sounds.LoadSound(section, "snd_throw", "sndThrow", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
 	if (pSettings->line_exist(section, "checkout_bones"))
 	{
 		m_sCheckoutBones.clear();
@@ -273,6 +279,12 @@ void CMissile::UpdateCL()
 
 	if (m_sounds.FindSoundItem("SndHide", false))
 		m_sounds.SetPosition("SndHide", P);
+
+	if (m_sounds.FindSoundItem("sndThrow", false))
+		m_sounds.SetPosition("sndThrow", P);
+
+	if (m_sounds.FindSoundItem("sndThrowBegin", false))
+		m_sounds.SetPosition("sndThrowBegin", P);
 }
 
 void CMissile::shedule_Update(u32 dt)
@@ -335,6 +347,8 @@ void CMissile::State(u32 state)
 		{
 			SetPending			(TRUE);
 			m_fThrowForce		= m_fMinForce;
+			if (m_sounds.FindSoundItem("sndThrowBegin", false))
+				PlaySound("sndThrowBegin", Position());
 			PlayHUDMotion		("anm_throw_begin", TRUE, this, GetState());
 		} break;
 	case eReady:
@@ -345,6 +359,8 @@ void CMissile::State(u32 state)
 		{
 			SetPending			(TRUE);
 			m_throw				= false;
+			if (m_sounds.FindSoundItem("sndThrow", false))
+				PlaySound("sndThrow", Position());
 			PlayHUDMotion		("anm_throw", TRUE, this, GetState());
 		} break;
 	case eThrowEnd:
