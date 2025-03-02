@@ -25,7 +25,8 @@ enum EHudStates {
 		eBore,
 		eSprintStart,
 		eSprintEnd,
-		eLastBaseState = eSprintEnd,
+		eSwitchDevice,
+		eLastBaseState = eSwitchDevice,
 };
 
 private:
@@ -155,6 +156,14 @@ public:
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
 	using TAnimationEffector = void(*)(CHudItem*);
+
+	enum EDeviceFlags
+	{
+		DF_HEADLAMP = (1 << 0),
+		DF_NIGHTVISION = (1 << 1),
+	};
+
+	Flags32 fDeviceFlags;
 
 protected:
 
