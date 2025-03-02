@@ -142,7 +142,7 @@ void CHudItem::Load(LPCSTR section)
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
 {
-	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false , allowOverlap);
+	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
 
 void CHudItem::renderable_Render()
@@ -205,65 +205,63 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 
 void CHudItem::OnStateSwitch(u32 S)
 {
-	SetState			(S);
+	SetState(S);
 	
-	if(object().Remote()) 
-		SetNextState	(S);
-
-	switch (S)
-	{
-	case eBore:
-	{
-		SetPending(FALSE);
-
-		PlayAnimBore();
-		if (HudItemData())
-		{
-			Fvector P = HudItemData()->m_item_transform.c;
-			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDmode(), false, m_started_rnd_anim_idx);
-		}
-
-	}break;
-	case eSprintStart:
-	{
-		SetPending(FALSE);
-		SwitchSprint = true;
-		PlayHUDMotion("anm_idle_sprint_start", true, this, GetState());
-		if (HudItemData() && m_sounds.FindSoundItem("sndSprintStart", false));
-			PlaySound("sndSprintStart", HudItemData()->m_item_transform.c);
-	}break;
-	case eSprintEnd:
-	{
-		SetPending(FALSE);
-		SwitchSprint = false;
-		PlayHUDMotion("anm_idle_sprint_end", true, this, GetState());
-		if (HudItemData() && m_sounds.FindSoundItem("sndSprintEnd", false));
-			PlaySound("sndSprintEnd", HudItemData()->m_item_transform.c);
-	}break;
-	case eSwitchDevice:
-	{
-		PlayAnimDevice();
-	}break;
-	case eShowing:
-	{
-		if (Actor() && object().H_Parent() == Actor())
-		{
-			g_player_hud->attach_item(this);
-			g_player_hud->ResetItmHudOffset(this);
-			Actor()->ClearActorKeyRepeatFlags();
-			if (Actor()->GetDetector())
-				Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetShowHand);
-		}
-	}break;
-	case eHiding:
-	{
-		if (Actor() && object().H_Parent() == Actor() && Actor()->GetDetector())
-			Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetHideHand);
-	}break;
+	if(object().Remote()) {
+		SetNextState(S);
 	}
 
-	if (S != eIdle && S != eSprintStart && S != eSprintEnd)
+	switch(S) {
+		case eBore:
+		{
+			SetPending(FALSE);
+
+			PlayAnimBore();
+			PlaySound("sndBore", object().XFORM().c);
+		}break;
+		case eSprintStart:
+		{
+			SetPending(FALSE);
+			SwitchSprint = true;
+
+			PlayHUDMotion("anm_idle_sprint_start", true, this, GetState());
+			PlaySound("sndSprintStart", object().XFORM().c);
+		}break;
+		case eSprintEnd:
+		{
+			SetPending(FALSE);
+			SwitchSprint = false;
+
+			PlayHUDMotion("anm_idle_sprint_end", true, this, GetState());
+			PlaySound("sndSprintEnd", object().XFORM().c);
+		}break;
+		case eSwitchDevice:
+		{
+			PlayAnimDevice();
+		}break;
+		case eShowing:
+		{
+			if(Actor() && object().H_Parent() == Actor()) {
+				g_player_hud->attach_item(this);
+				g_player_hud->ResetItmHudOffset(this);
+				Actor()->ClearActorKeyRepeatFlags();
+
+				if(Actor()->GetDetector()) {
+					Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetShowHand);
+				}
+			}
+		}break;
+		case eHiding:
+		{
+			if(Actor() && object().H_Parent() == Actor() && Actor()->GetDetector()) {
+				Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetHideHand);
+			}
+		}break;
+	}
+
+	if(S != eIdle && S != eSprintStart && S != eSprintEnd) {
 		SwitchSprint = false;
+	}
 }
 
 void CHudItem::OnAnimationEnd(u32 state)
@@ -661,24 +659,10 @@ void CHudItem::OnH_B_Chield		()
 	StopCurrentAnimWithoutCallback();
 }
 
-void CHudItem::OnH_B_Independent	(bool just_before_destroy)
+void CHudItem::OnH_B_Independent(bool just_before_destroy)
 {
-	m_sounds.StopAllSounds	();
-	UpdateXForm				();
-	
-	// next code was commented 
-	/*
-	if(HudItemData() && !just_before_destroy)
-	{
-		object().XFORM().set( HudItemData()->m_item_transform );
-	}
-	
-	if (HudItemData())
-	{
-		g_player_hud->detach_item(this);
-		Msg("---Detaching hud item [%s][%d]", this->HudSection().c_str(), this->object().ID());
-	}*/
-	//SetHudItemData			(nullptr);
+	m_sounds.StopAllSounds();
+	UpdateXForm();
 }
 
 void CHudItem::OnH_A_Independent	()
@@ -927,7 +911,7 @@ void CHudItem::PlayAnimDevice()
 			if (test)
 			{
 				xr_sprintf(anm, "sndHeadlamp%s", torch->IsSwitched() ? "Off" : "On");
-				PlaySound(anm, HudItemData()->m_item_transform.c);
+				PlaySound(anm, object().XFORM().c);
 			}
 
 			test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
@@ -955,7 +939,7 @@ void CHudItem::PlayAnimDevice()
 			if (test)
 			{
 				xr_sprintf(anm, "sndNV%s", torch->GetNightVisionStatus() ? "Off" : "On");
-				PlaySound(anm, HudItemData()->m_item_transform.c);
+				PlaySound(anm, object().XFORM().c);
 			}
 
 			test = (Actor()->GetDetector() != nullptr && g_player_hud->attached_item(0) == nullptr ||
