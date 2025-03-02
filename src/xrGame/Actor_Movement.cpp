@@ -178,6 +178,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	if (mstate_wf&mcLStrafe)	vControlAccel.x += -1;
 	if (mstate_wf&mcRStrafe)	vControlAccel.x +=  1;
 
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
 	CPHMovementControl::EEnvironment curr_env = character_physics_support()->movement()->Environment();
 	if(curr_env==CPHMovementControl::peOnGround || curr_env==CPHMovementControl::peAtWall)
 	{
@@ -297,7 +299,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 						scale *= m_fWalk_StrafeFactor;
 				}
 
-				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+				if (isGuns)
 					scale *= GetCurrentSuicideWalkKoef();
 
 				vControlAccel.mul			(scale);
@@ -306,7 +308,6 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		}//(mstate_real&mcAnyMove)
 	}//peOnGround || peAtWall
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (IsGameTypeSingle() && (!isGuns && cam_eff_factor > EPS || isGuns))
 	{
 		ECamEffectorType anm_id = eCEActorMoving;
@@ -461,7 +462,7 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 			tgt_roll	= 0.0f;
 	}
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	if (isGuns)
 	{
 		LookoutFunctionReplace(r_torso_tgt_roll, tgt_roll, dt);

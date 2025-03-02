@@ -74,7 +74,7 @@ void CHudItem::Load(LPCSTR section)
 	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
 	m_current_inertion.PitchOffsetN = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_n", PITCH_OFFSET_N);
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (isGuns)
 	{
@@ -865,7 +865,7 @@ bool CHudItem::TryPlayAnimIdle()
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);
-			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+			const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 			if(state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
 				if (!SwitchSprint && isGuns)
@@ -1051,7 +1051,9 @@ bool CHudItem::CanStartAction(bool allow_aim_state)
 
 bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
 {
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	if (!isGuns)
 		return true;
 
 	if (object().H_Parent() != Actor())

@@ -174,7 +174,9 @@ void CTorch::Switch()
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
 
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && H_Parent() == Actor())
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (!isGuns && H_Parent() == Actor())
 	{
 		if (m_switch_sound._feedback())
 			m_switch_sound.stop();

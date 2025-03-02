@@ -313,6 +313,8 @@ void CMissile::shedule_Update(u32 dt)
 #include "player_hud.h"
 void CMissile::State(u32 state) 
 {
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
 	switch(GetState()) 
 	{
 	case eShowing:
@@ -370,7 +372,7 @@ void CMissile::State(u32 state)
 
 				PlayHUDMotion("anm_throw_begin", TRUE, this, GetState());
 
-				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
+				if (isGuns && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
 					Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetThrowStart);
 			}
 		} break;
@@ -414,13 +416,13 @@ void CMissile::State(u32 state)
 
 				PlayHUDMotion("anm_throw", TRUE, this, GetState());
 
-				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
+				if (isGuns && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
 					Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetThrowEnd);
 			}
 		} break;
 	case eThrowEnd:
 		{
-			if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item)
+			if (!isGuns && g_player_hud->attached_item(1) && g_player_hud->attached_item(1)->m_parent_hud_item)
 				g_player_hud->attached_item(1)->m_parent_hud_item->PlayAnimIdle();
 			SwitchState			(eShowing); 
 		} break;
@@ -486,12 +488,13 @@ void CMissile::OnAnimationEnd(u32 state)
 
 bool CMissile::NeedBlockSprint() const
 {
-	return EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	return isGuns && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
 }
 
 bool CMissile::SendDeactivateItem()
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	CActor* pActor = smart_cast<CActor*>(m_pInventory->GetOwner());
 	if (!isGuns)
 	{

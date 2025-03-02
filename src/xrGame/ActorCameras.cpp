@@ -370,7 +370,10 @@ void CActor::cam_Update(float dt, float fFOV)
 		return;
 
 	// HUD FOV Update
-	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && this == Level().CurrentControlEntity())
+	
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	if (!isGuns && this == Level().CurrentControlEntity())
 	{
 		if (eacFirstEye == cam_active)
 		{
@@ -413,7 +416,6 @@ void CActor::cam_Update(float dt, float fFOV)
 	} else
 		current_ik_cam_shift = 0;
 
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	float camera_h = CameraHeight();
 	if (!isGuns)
 	{

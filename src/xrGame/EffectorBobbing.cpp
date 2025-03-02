@@ -103,7 +103,7 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 
 		float A = 0.f, ST = 0.f;
 
-        bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+        const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
         if (!isGuns)
         {

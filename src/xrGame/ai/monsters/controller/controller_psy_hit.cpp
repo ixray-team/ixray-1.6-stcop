@@ -177,7 +177,9 @@ void CControllerPsyHit::activate()
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
 	}
 
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (isGuns)
 		OnPsyHitActivate(static_cast<CController*>(m_object));
 
 	set_sound_state					(ePrepare);
@@ -572,7 +574,9 @@ bool CControllerPsyHit::check_conditions_final()
 
 void CControllerPsyHit::death_glide_start()
 {
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	const static bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	
+	if (isGuns)
 	{
 		if (!check_conditions_final() && PsiStart(static_cast<CController*>(m_object)))
 		{
@@ -589,7 +593,7 @@ void CControllerPsyHit::death_glide_start()
 		}
 	}
 	
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	if (isGuns)
 		return;
 
 	CActor* pActor = Actor();
