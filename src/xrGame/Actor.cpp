@@ -2454,14 +2454,8 @@ void CActor::UpdatePsiBlockFailedState(CController* monster_controller)
 
 bool CActor::IsPsiBlocked() const
 {
-	//TODO: Ravlik to All, replace the search with a better one.
-	for (auto& booster : Actor()->conditions().GetCurBoosterInfluences())
-	{
-		if (booster.second.m_type == eBoostTelepaticProtection)
-			return booster.second.fBoostTime > 0.0f;
-	}
-
-	return false;
+	auto booster = conditions().GetCurBoosterInfluences().find(eBoostTelepaticProtection);
+	return booster->second.fBoostTime > 0.0f;
 }
 
 CActor::controller_mouse_control_params CActor::GetControllerMouseControlParams()

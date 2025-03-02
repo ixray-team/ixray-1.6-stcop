@@ -674,18 +674,14 @@ bool CActor::CanJump()
 
 bool CActor::CanMove()
 {
-	bool IgnoreLimp = true;
+	bool CanLimp = true;
 	if (EngineExternal().isModificationGunslinger())
 	{
-		//TODO: Ravlik to All, replace the search with a better one.
-		for (auto& booster : Actor()->conditions().GetCurBoosterInfluences())
-		{
-			if (booster.second.m_type == eBoostPowerRestore)
-				IgnoreLimp = booster.second.fBoostTime > 0.0f;
-		}
+		auto booster = conditions().GetCurBoosterInfluences().find(eBoostPowerRestore);
+		CanLimp = booster->second.fBoostTime <= 0.0f;
 	}
 
-	if (conditions().IsCantWalk() && !IgnoreLimp)
+	if (conditions().IsCantWalk() && CanLimp)
 	{
 		if (mstate_wishful & mcAnyMove)
 			CurrentGameUI()->AddCustomStatic("cant_walk", true);
