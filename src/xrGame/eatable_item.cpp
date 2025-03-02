@@ -22,6 +22,8 @@
 #include "Inventory.h"
 #include "CustomOutfit.h"
 #include "ai_object_location.h"
+#include "game_object_space.h"
+#include "script_game_object.h"
 
 CEatableItem::CEatableItem()
 {
@@ -270,6 +272,9 @@ void CEatableItem::UpdateEatable()
 			if (ai().script_engine().functor("anabiotic.anabiotic", funct))
 				funct("");
 		}
+
+		if (IsGameTypeSingle())
+			Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(this))->lua_game_object());
 
 		Actor()->set_inventory_disabled(false);
 		m_bIsEated = true;
