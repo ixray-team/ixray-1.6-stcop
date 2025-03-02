@@ -134,14 +134,16 @@ xr_string CWeaponBM16::NeedAddSuffix(const xr_string& M)
 	if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
 		new_name = AddSuffixName(new_name, "_suicide", "_" + xr_string::ToString(iAmmoElapsed));
 
+	bool isGuns = EngineExternal().isModificationGunslinger();
+
+	if (IsMisfire() && IsZoomed())
+		new_name = AddSuffixName(new_name, isGuns ? "_aim_jammed" : "_aim_misfire", "_" + xr_string::ToString(iAmmoElapsed));
+
 	if (IsZoomed())
 		new_name = AddSuffixName(new_name, "_aim", "_" + xr_string::ToString(iAmmoElapsed));
 
 	if (IsMisfire())
-	{
-		bool isGuns = EngineExternal().isModificationGunslinger();
 		new_name = AddSuffixName(new_name, isGuns ? "_jammed" : "_misfire", "_" + xr_string::ToString(iAmmoElapsed));
-	}
 
 	new_name = AddSuffixName(new_name, "_" + xr_string::ToString(iAmmoElapsed));
 

@@ -50,9 +50,10 @@ protected:
 	virtual void	switch2_FireMode();
 	virtual void	switch2_CheckMisfire();
 	virtual void	switch2_Kick();
+	virtual void	switch2_LightMis();
 	
 	virtual void	OnShot			();	
-	virtual void	OnShotJammed	();
+			void	OnShotJammed	() override;
 	
 	virtual void	OnEmptyClick	();
 

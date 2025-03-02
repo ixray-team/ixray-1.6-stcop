@@ -38,6 +38,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_quick_kick(section, test);
 	result |= install_upgrade_bones(section, test);
 
+	result |= process_if_exists_set(section, "misfire_after_problems_level", &CInifile::r_float, m_fMisfireAfterProblemsLevel, test) && !test;
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
 	ProcessScope();
