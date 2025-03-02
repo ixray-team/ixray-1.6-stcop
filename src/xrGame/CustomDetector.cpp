@@ -199,7 +199,8 @@ void  CCustomDetector::ShowingCallback(CBlend*B)
 }
 void CCustomDetector::switch_detector()
 {
-	if (!m_bDetectorActive&&GetState()==eHidden && g_player_hud->attached_item(0)&&m_pInventory->ActiveItem()&&m_pInventory->ActiveItem()->BaseSlot()==INV_SLOT_2)
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns && !m_bDetectorActive&&GetState()==eHidden && g_player_hud->attached_item(0)&&m_pInventory->ActiveItem()&&m_pInventory->ActiveItem()->BaseSlot()==INV_SLOT_2)
 	{
 		if(g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend*B){static_cast<CCustomDetector*>(B->CallbackParam)->ShowingCallback(B);}, this, 0))
 			g_player_hud->animator_fx_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 2, 0, 3.f, 1.f, 1.f, 0.5f);
@@ -210,7 +211,7 @@ void CCustomDetector::switch_detector()
 
 bool  CCustomDetector::need_renderable()
 {
-	return m_pInventory && (!m_pInventory->ActiveItem() || (m_pInventory->ActiveItem() && m_pInventory->ActiveItem()->cast_hud_item() && m_pInventory->ActiveItem()->cast_hud_item()->need_renderable()));
+	return m_pInventory && m_pInventory->ItemFromSlot(DETECTOR_SLOT) && m_pInventory->ItemFromSlot(DETECTOR_SLOT)->object().cast_inventory_item() == cast_inventory_item();
 }
 
 void CCustomDetector::OnStateSwitch(u32 S)
