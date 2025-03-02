@@ -4005,29 +4005,51 @@ const bool CWeapon::ParentIsActor() const
 	return Parent != nullptr && smart_cast<CActor*>(Parent) != nullptr;
 }
 
-void CWeapon::debug_draw_firedeps()
-{
-#ifdef DEBUG
-	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7)
+extern void TransformToHudTemp(Fvector&);
+
+void CWeapon::debug_draw_firedeps() {
+	inherited::debug_draw_firedeps();
+
+#ifdef DEBUG_DRAW
+	Fmatrix xf = GetHUDmode() ? HudItemData()->m_item_transform : XFORM();
+	u32 color = 0;
+
+	switch(hud_adj_mode) 
 	{
-		CDebugRenderer			&render = Level().debug_renderer();
-
-		if (hud_adj_mode == 5)
-			render.draw_aabb(get_LastFP(), 0.005f, 0.005f, 0.005f, color_xrgb(255, 0, 0));
-
-		if (hud_adj_mode == 6)
-			render.draw_aabb(get_LastFP2(), 0.005f, 0.005f, 0.005f, color_xrgb(0, 0, 255));
-
-		if (hud_adj_mode == 7)
-			render.draw_aabb(get_LastSP(), 0.005f, 0.005f, 0.005f, color_xrgb(0, 255, 0));
+		case 3:
+		case 4:
+		case 5:
+		{
+			xf.c = get_LastFP();
+			color = color_xrgb(255, 0, 0);
+		}
+		break;
+		case 6:
+		{
+			xf.c = get_LastFP2();
+			color = color_xrgb(0, 0, 255);
+		}
+		break;
+		case 7:
+		{
+			xf.c = get_LastSP();
+			color = color_xrgb(0, 255, 0);
+		}
+		break;
+		default:
+		{
+			return;
+		}
 	}
-#endif // DEBUG
+
+	Level().debug_renderer().draw_obb(xf, {0.008f, 0.008f, 0.008f}, color);
+#endif
 }
 
-const float &CWeapon::hit_probability	() const
-{
-	VERIFY					((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster)); 
-	return					(m_hit_probability[egdNovice]);
+
+const float& CWeapon::hit_probability() const {
+	VERIFY((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster));
+	return (m_hit_probability[egdNovice]);
 }
 
 BOOL EnableDof = true;

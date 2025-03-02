@@ -171,8 +171,7 @@ public:
 	void			SetHandsVisible(bool val){m_bhands_visible=val;};
 	bool			GetHandsVisible(){return m_bhands_visible;};
 	void			UpdateWeaponOffset(u32 delta);
-	default_hud_coords_params GetDefaultHudCoords(shared_str hud_sect);
-	default_hud_coords_params _last_default_hud_params;
+	default_hud_coords_params GetDefaultHudCoords(shared_str hud_sect, u16 idx = 0, bool forse = false);
 	static float GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def);
 	void GetCurrentTargetOffset_aim(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
 	void GetCurrentTargetOffset(shared_str section, Fvector3& pos, Fvector3& rot, float& factor);
@@ -226,6 +225,7 @@ private:
 	IKinematicsAnimated*				m_model;
 	xr_vector<u16>						m_ancors;
 	attachable_hud_item*				m_attached_items[2];
+	default_hud_coords_params			last_default_hud_params[2];
 	xr_vector<attachable_hud_item*>		m_pool;
 
 	u16									m_blocked_part_idx;

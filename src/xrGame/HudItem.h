@@ -239,7 +239,7 @@ public:
 	void						SetAnimationCallback(TAnimationEffector callback) { lock_time_callback = callback; }
 
 	virtual void				on_renderable_Render	() = 0;
-	virtual void				debug_draw_firedeps		() {};
+	virtual void				debug_draw_firedeps		();
 
 	virtual CHudItem*			cast_hud_item			()				{ return this; }
 };

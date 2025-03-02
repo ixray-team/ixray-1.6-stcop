@@ -21,6 +21,11 @@
 #include "HUDAnimItem.h"
 #include "ActorEffector.h"
 
+#ifdef DEBUG_DRAW
+extern u32 hud_adj_mode;
+#include "debug_renderer.h"
+#endif
+
 ENGINE_API extern float psHUD_FOV_def;
 
 CHudItem::CHudItem()
@@ -145,29 +150,24 @@ void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverla
 	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
 
-void CHudItem::renderable_Render()
+void CHudItem::renderable_Render() 
 {
-	UpdateXForm					();
-	BOOL _hud_render			= ::Render->get_HUD() && GetHUDmode();
-	
-	if(_hud_render  && !IsHidden())
-	{ 
+	UpdateXForm();
+	BOOL _hud_render = ::Render->get_HUD() && GetHUDmode();
+
+	if(_hud_render && !IsHidden()) {
 	}
-	else 
-	{
-		if (!object().H_Parent() || (!_hud_render && !IsHidden()))
-		{
-			on_renderable_Render		();
-			debug_draw_firedeps			();
-		}else
-		if (object().H_Parent()) 
-		{
-			CInventoryOwner	*owner = smart_cast<CInventoryOwner*>(object().H_Parent());
-			VERIFY			(owner);
-			CInventoryItem	*self = smart_cast<CInventoryItem*>(this);
-			if (owner->attached(self) ||
-				(item().BaseSlot() == INV_SLOT_3 /*|| item().BaseSlot() == INV_SLOT_2*/))
+	else {
+		if(!object().H_Parent() || (!_hud_render && !IsHidden())) {
+			on_renderable_Render();
+		}
+		else if(object().H_Parent()) {
+			CInventoryOwner* owner = smart_cast<CInventoryOwner*>(object().H_Parent());
+			VERIFY(owner);
+			CInventoryItem* self = smart_cast<CInventoryItem*>(this);
+			if(owner->attached(self) || item().BaseSlot() == INV_SLOT_3) {
 				on_renderable_Render();
+			}
 		}
 	}
 }
@@ -1124,6 +1124,31 @@ float CHudItem::getControllerShootExplMinDist(void) const
 bool CHudItem::isSuicideByAnimation(void) const
 {
 	return m_bSuicideByAnimation;
+}
+
+void CHudItem::debug_draw_firedeps() {
+#if 0 //def DEBUG_DRAW
+	if(hud_adj_mode != 3 && hud_adj_mode != 4) {
+		return;
+	}
+
+	auto xf = object().XFORM();
+	auto model = object().Visual();
+
+	if(GetHUDmode()) {
+		xf = HudItemData()->m_item_transform;
+		model = HudItemData()->m_model->dcast_RenderVisual();
+	}
+
+	vis_data data = model->getVisData();
+	Fvector center = {}, halfsize = {};
+	
+	data.box.get_CD(center, halfsize);
+	xf.transform_tiny(center);
+	xf.c.set(center);
+
+	Level().debug_renderer().draw_obb(xf, halfsize, color_xrgb(255, 0, 255));
+#endif
 }
 
 void CHudItem::SetModelBoneStatus(const char* bone, BOOL show) const {

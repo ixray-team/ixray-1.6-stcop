@@ -11,7 +11,7 @@
 #include "WeaponBinoculars.h"
 
 player_hud* g_player_hud = nullptr;
-player_hud* g_player_hud2 = nullptr;
+
 Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 
@@ -322,7 +322,9 @@ void attachable_hud_item::render()
 {
 	::Render->set_Transform		(&m_item_transform);
 	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
+
 	debug_draw_firedeps			();
+
 	m_parent_hud_item->render_hud_mode();
 }
 
@@ -638,7 +640,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 
 	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
 	if(l_arm != BI_NONE) {
-		m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) {g_player_hud->LeftArmCallback(B); }, NULL);
+		m_model->dcast_PKinematics()->LL_GetBoneInstance(l_arm).set_callback(bctCustom, [](CBoneInstance* B) { g_player_hud->LeftArmCallback(B); }, NULL);
 	}
 
 	auto& _sect = pSettings->r_section(player_hud_sect);
@@ -806,36 +808,42 @@ u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float sp
 const Fvector& player_hud::attach_rot() const
 {
 	static Fvector m_last_rot = zero_vel;
-	if (m_attached_items[0])
-		return m_last_rot=m_attached_items[0]->hands_attach_rot();
-	else
-	{
-		if (m_attached_items[1])
-			return m_last_rot=m_attached_items[1]->hands_attach_rot();
+
+	if(m_attached_items[0]) {
+		m_last_rot = m_attached_items[0]->hands_attach_rot();
 	}
+	else if(m_attached_items[1]) {
+		m_last_rot = m_attached_items[1]->hands_attach_rot();
+	}
+
 	return m_last_rot;
 }
 
 const Fvector& player_hud::attach_pos() const
 {
 	static Fvector m_last_pos = zero_vel;
-	if (m_attached_items[0])
-		return m_last_pos=m_attached_items[0]->hands_attach_pos();
-	else
-	{
-		if (m_attached_items[1])
-			return m_last_pos=m_attached_items[1]->hands_attach_pos();
+
+	if(m_attached_items[0]) {
+		m_last_pos = m_attached_items[0]->hands_attach_pos();
 	}
+	else if(m_attached_items[1]) {
+		m_last_pos = m_attached_items[1]->hands_attach_pos();
+	}
+
 	return m_last_pos;
 }
 
 void player_hud::LeftArmCallback(CBoneInstance* B)
 {
-	if(!m_attached_items[1])
+	if(!m_attached_items[1]) {
 		return;
+	}
 
-	B->mTransform.mulA_44(m_attached_items[1]?m_transformL:m_transform);
-	B->mTransform.mulA_44(Fmatrix(m_transform).invert());
+	static Fmatrix inv_transform;
+	inv_transform.invert(m_transform);
+
+	B->mTransform.mulA_44(m_transformL);
+	B->mTransform.mulA_44(inv_transform);
 }
 
 void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
@@ -845,109 +853,83 @@ void angle_inertion(Fvector& c_hpb, const Fvector& t_hpb, float speed)
 	c_hpb.x = angle_inertion(c_hpb.x, t_hpb.x, speed, PI, Device.fTimeDelta);
 }
 
-#include "Missile.h"
-
-void player_hud::update(const Fmatrix& cam_trans)
+void player_hud::update(const Fmatrix& trans)
 {
-	if(!m_attached_items[0] && !m_attached_items[1])
-	{
-		m_transform.set(cam_trans);
-		m_transformL.set(cam_trans);
+	Fmatrix cam_trans = trans;
+	update_inertion(cam_trans);
+
+	m_transform.set(cam_trans);
+	m_transformL.set(cam_trans);
+
+	if(!m_attached_items[0] && !m_attached_items[1]) {
 		return;
 	}
 
-	Fmatrix	trans					= cam_trans;
-	update_inertion					(trans);
-	update_additional				(trans);
+	update_additional(m_transform);
 
+	Fvector ypr = attach_rot();
+	ypr.mul(PI / 180.f);
 
+	m_attach_offsetr.setHPB(ypr.x, ypr.y, ypr.z);
+	m_attach_offsetr.translate_over(attach_pos());
+
+	m_transform.mulB_44(m_attach_offsetr);
+
+	if(m_attached_items[1])
 	{
-		m_attach_offsetr.setHPB(VPUSH(Fvector(attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
-		m_attach_offsetr.c.set(attach_pos());
-		m_transform.mul(trans, m_attach_offsetr);
+		ypr = m_attached_items[1]->hands_attach_rot();
+		ypr.mul(PI / 180.f);
+
+		m_attach_offsetl.setHPB(ypr.x, ypr.y, ypr.z);
+		m_attach_offsetl.translate_over(m_attached_items[1]->hands_attach_pos());
+
+		m_transformL.mulB_44(m_attach_offsetl);
+	}
+	else {
+		m_transformL.set(m_transform);
 	}
 
-	{
-		bool isGuns = EngineExternal().isModificationGunslinger();
-		CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
-		bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow);
-		bool left_hand_active = !throwing_missile && m_attached_items[1];
-
-		Fmatrix attach_offset;
-		attach_offset.setHPB(VPUSH(Fvector(left_hand_active ? m_attached_items[1]->hands_attach_rot() : attach_rot()).mul(PI / 180.f)));//generate and set Euler angles
-		attach_offset.c.set(left_hand_active ? m_attached_items[1]->hands_attach_pos() : attach_pos());
-		m_transformL.mul(trans, left_hand_active ? m_attach_offsetl.set(attach_offset) : m_attach_offsetl.inertion(attach_offset, 1-Device.fTimeDelta*10.f));
-	}
-
-	m_model->UpdateTracks();
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
 
-	if(m_attached_items[0])
+	if(m_attached_items[0]) {
 		m_attached_items[0]->update(true);
+	}
 
-	if(m_attached_items[1])
+	if(m_attached_items[1]) {
 		m_attached_items[1]->update(true);
+	}
 }
 
 u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed)
 {
-	///partitions info
-	// 0==default (root_bone)
-	// 1==left_hand (left hand bone hierarchy)
-	// 2==right_hand (right hand bone hierarchy)
-	// please append new bone parts for more realistic behavior of animations
-	bool disable_root_part = false;
-	u16 part_id							= u16(-1);
-	if(attached_item(0) && attached_item(1))
-	{
-		disable_root_part = part==1;//if we run the animation for the left hand, we don't include the animation for the root bone (only if attached_item 1 active).
-		part_id = m_model->partitions().part_id((part==0)?"right_hand":"left_hand");
+	u16 part_id = u16(-1);
+
+	if(attached_item(0) && attached_item(1)) {
+		part_id = m_model->partitions().part_id(part == 0 ? "right_hand" : "left_hand");
 	}
 
-	bool isGuns = EngineExternal().isModificationGunslinger();
+	u16 pc = m_model->partitions().count();
+	for(u16 pid = 0; pid < pc; ++pid) {
+		if(pid == 0 || pid == part_id || part_id == u16(-1)) {
+			if(m_blocked_part_idx == pid) continue;
 
-	CMissile* pMiss = m_attached_items[0] && !isGuns ? smart_cast<CMissile*>(m_attached_items[0]->m_parent_hud_item) : NULL;
-	bool throwing_missile = pMiss && (pMiss->GetState()>=CMissile::EMissileStates::eThrowStart&&pMiss->GetState()<=CMissile::EMissileStates::eThrow) && attached_item(1);
-	if (throwing_missile)//is the only when attached_item 1 is active and we have started throwing the item
-	{
-		if(part==0)
-		{
-			CBlend* B = NULL;
-			B	= m_model->PlayCycle(0, M, bMixIn);
-			B	= m_model->PlayCycle(1, M, bMixIn);
-			B	= m_model->PlayCycle(2, M, bMixIn);
+			CBlend* B = m_model->PlayCycle(pid, M, part == 0 && pid == 0 && attached_item(1) ? TRUE : bMixIn);
 			B->speed *= speed;
 		}
 	}
-	else
-	{
-		u16 pc					= m_model->partitions().count();
-		for(u16 pid=0; pid<pc; ++pid)
-		{
-			if(pid==0 && disable_root_part)continue;
 
-			if(pid==0 || pid==part_id || part_id==u16(-1))
-			{
-				if(m_blocked_part_idx==pid) continue;
-				CBlend* B = m_model->PlayCycle(pid, M, part==0&&pid==0&&attached_item(1)?TRUE:bMixIn);
-				B->speed *= speed;
-			}
-		}
-	}
-	m_model->dcast_PKinematics()->CalculateBones_Invalidate	();
-
-	return				motion_length(M, md, speed);
+	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+	return motion_length(M, md, speed);
 }
 
-void player_hud::update_additional	(Fmatrix& trans)
+void player_hud::update_additional(Fmatrix& trans)
 {
-	if(m_attached_items[0] || m_attached_items[0]&&m_attached_items[1])
-		m_attached_items[0]->update_hud_additional(trans);
-	else
-	{
-		if(m_attached_items[1])
-			m_attached_items[1]->update_hud_additional(trans);
+	if(m_attached_items[0]) {
+		m_attached_items[0]->update_hud_additional(m_transform);
+	}
+	if(m_attached_items[1]) {
+		m_attached_items[1]->update_hud_additional(m_transformL);
 	}
 }
 
@@ -955,39 +937,40 @@ void player_hud::update_inertion(Fmatrix& trans)
 {
 	auto hi = m_attached_items[0] ? m_attached_items[0] : m_attached_items[1];
 
-	if (hi)
-	{
+	if(hi) {
 		auto& inertion = hi->m_parent_hud_item->CurrentInertionData();
 
-		Fmatrix								xform;
-		Fvector& origin						= trans.c; 
-		xform								= trans;
+		Fmatrix xform;
+		Fvector& origin = trans.c;
+		xform = trans;
 
-		static Fvector						st_last_dir={0,0,0};
+		static Fvector st_last_dir = {0,0,0};
 
 		// calc difference
-		Fvector								diff_dir;
-		diff_dir.sub						(xform.k, st_last_dir);
+		Fvector diff_dir;
+		diff_dir.sub(xform.k, st_last_dir);
 
 		// clamp by PI_DIV_2
-		Fvector last;						last.normalize_safe(st_last_dir);
-		float dot							= last.dotproduct(xform.k);
-		if (dot<EPS){
+		Fvector last; last.normalize_safe(st_last_dir);
+		float dot = last.dotproduct(xform.k);
+
+		if(dot < EPS) {
 			Fvector v0;
-			v0.crossproduct					(st_last_dir,xform.k);
-			st_last_dir.crossproduct		(xform.k,v0);
-			diff_dir.sub					(xform.k, st_last_dir);
+			v0.crossproduct(st_last_dir, xform.k);
+			st_last_dir.crossproduct(xform.k, v0);
+			diff_dir.sub(xform.k, st_last_dir);
 		}
 
 		// tend to forward
-		st_last_dir.mad						(diff_dir, inertion.TendtoSpeed*Device.fTimeDelta);
-		origin.mad							(diff_dir, inertion.OriginOffset);
+		st_last_dir.mad(diff_dir, inertion.TendtoSpeed * Device.fTimeDelta);
+		origin.mad(diff_dir, inertion.OriginOffset);
 
 		// pitch compensation
-		float pitch							= angle_normalize_signed(xform.k.getP());
-		origin.mad							(xform.k,	-pitch * inertion.PitchOffsetD);
-		origin.mad							(xform.i,	-pitch * inertion.PitchOffsetR);
-		origin.mad							(xform.j,	-pitch * inertion.PitchOffsetN);
+		float pitch = angle_normalize_signed(xform.k.getP());
+
+		origin.mad(xform.k, -pitch * inertion.PitchOffsetD);
+		origin.mad(xform.i, -pitch * inertion.PitchOffsetR);
+		origin.mad(xform.j, -pitch * inertion.PitchOffsetN);
 	}
 }
 
@@ -996,16 +979,18 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 {
 	xr_vector<attachable_hud_item*>::iterator it = m_pool.begin();
 	xr_vector<attachable_hud_item*>::iterator it_e = m_pool.end();
-	for(;it!=it_e;++it)
-	{
+
+	for(; it != it_e; ++it) {
 		attachable_hud_item* itm = *it;
-		if(itm->m_sect_name==sect)
+		if(itm->m_sect_name == sect)
 			return itm;
 	}
-	attachable_hud_item* res	= new attachable_hud_item(this);
-	res->load					(sect);
-	res->m_hand_motions.load	(m_model, sect);
-	m_pool.push_back			(res);
+
+	attachable_hud_item* res = new attachable_hud_item(this);
+
+	res->load(sect);
+	res->m_hand_motions.load(m_model, sect);
+	m_pool.push_back(res);
 
 	return	res;
 }
@@ -1468,27 +1453,26 @@ void player_hud::load_default()
 	load(actorHudDefault);
 }
 
-player_hud::default_hud_coords_params player_hud::GetDefaultHudCoords(shared_str hud_sect)
+player_hud::default_hud_coords_params player_hud::GetDefaultHudCoords(shared_str hud_sect, u16 idx, bool forse)
 {
-	if (_last_default_hud_params.hud_sect != hud_sect || UI().is_widescreen() != _last_default_hud_params.is16x9)
+	if (last_default_hud_params[idx].hud_sect != hud_sect || UI().is_widescreen() != last_default_hud_params[idx].is16x9 || forse)
 	{
-		Fvector3 zerovec = { 0,0,0 };
-		_last_default_hud_params.hud_sect = hud_sect;
-		_last_default_hud_params.is16x9 = UI().is_widescreen();
+		last_default_hud_params[idx].hud_sect = hud_sect;
+		last_default_hud_params[idx].is16x9 = UI().is_widescreen();
 
-		if (_last_default_hud_params.is16x9)
+		if (last_default_hud_params[idx].is16x9)
 		{
-			_last_default_hud_params.hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position_16x9", zerovec);
-			_last_default_hud_params.hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation_16x9", zerovec);
+			last_default_hud_params[idx].hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position_16x9", zero_vel);
+			last_default_hud_params[idx].hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation_16x9", zero_vel);
 		}
 		else
 		{
-			_last_default_hud_params.hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position", zerovec);
-			_last_default_hud_params.hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation", zerovec);
+			last_default_hud_params[idx].hands_position = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_position", zero_vel);
+			last_default_hud_params[idx].hands_orientation = READ_IF_EXISTS(pSettings, r_fvector3, hud_sect, "hands_orientation", zero_vel);
 		}
 	}
 
-	return _last_default_hud_params;
+	return last_default_hud_params[idx];
 }
 
 float player_hud::GetCachedCfgParamFloatDef(cached_cfg_param_float& cached, const shared_str section, const shared_str key, float def)
@@ -1916,8 +1900,14 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 
 		if (det != nullptr)
 		{
-			attached_item(1)->set_hands_offset_pos(cur_pos);
-			attached_item(1)->set_hands_offset_rot(cur_rot);
+			auto detector_hud = attached_item(1);
+			auto det_hud_params = GetDefaultHudCoords(det->HudSection(), 1);
+
+			cur_pos.sub(def_hud_params.hands_position).add(det_hud_params.hands_position);
+			cur_rot.sub(def_hud_params.hands_orientation).add(det_hud_params.hands_orientation);
+
+			detector_hud->set_hands_offset_pos(cur_pos);
+			detector_hud->set_hands_offset_rot(cur_rot);
 		}
 
 		time_accumulator -= 8;
@@ -1954,7 +1944,7 @@ void player_hud::ResetItmHudOffset(CHudItem* itm)
 	if (hid == nullptr)
 		return;
 
-	default_hud_coords_params def_hud_params = GetDefaultHudCoords(itm->HudSection());
+	default_hud_coords_params def_hud_params = GetDefaultHudCoords(itm->HudSection(), hid->m_attach_place_idx);
 
 	hid->set_hands_offset_pos(def_hud_params.hands_position);
 	hid->set_hands_offset_rot(def_hud_params.hands_orientation);
