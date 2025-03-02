@@ -232,19 +232,14 @@ void CWeaponMagazined::FireStart()
 
 				inherited::FireStart();
 				
-				if (iAmmoElapsed == 0) 
-					switch2_Empty();
-				else
-				{
-					R_ASSERT(H_Parent());
-					SwitchState(eFire);
-				}
+				R_ASSERT(H_Parent());
+				SwitchState(eFire);
 			}
 		}
 		else 
 		{
 			if (GetState() == eIdle) 
-				switch2_Empty();
+				SwitchState(eEmptyClick);
 		}
 	}
 	else
@@ -593,6 +588,9 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eSwitchMode:
 		switch2_FireMode();
 		break;
+	case eEmptyClick:
+		switch2_Empty();
+		break;
 	}
 }
 
@@ -663,6 +661,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eHiding:
 		case eReload:
 		case eSwitchMode:
+		case eEmptyClick:
 		case eIdle:
 			{
 				fShotTimeCounter	-=	dt;
@@ -886,6 +885,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eFire:
 		case eFire2:
 		case eSwitchMode:
+		case eEmptyClick:
 		case eShowing:
 			SwitchState(eIdle);
 		break;
@@ -955,14 +955,13 @@ void CWeaponMagazined::switch2_Fire	()
 
 void CWeaponMagazined::switch2_Empty()
 {
-	OnZoomOut();
-	
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
-	if (!isAutoreload)
-	{
-		OnEmptyClick();
-	}
-	else
+
+	if (isAutoreload && !isGuns)
+		OnZoomOut();
+
+	if (isAutoreload)
 	{
 		if (!IsTriStateReload())
 		{
@@ -982,6 +981,30 @@ void CWeaponMagazined::switch2_Empty()
 			}
 		}
 	}
+	else
+	{
+		OnEmptyClick();
+		if (isGuns)
+			PlayAnimFakeshoot();
+	}
+}
+
+void CWeaponMagazined::PlayAnimFakeshoot()
+{
+	std::string anm_name = "anm_fakeshoot";
+	int firemode = GetQueueSize();
+
+	if (IsZoomed())
+		anm_name += "_aim";
+
+	if (firemode == -1 && m_sFireModeMask_a != nullptr)
+		anm_name += m_sFireModeMask_a.c_str();
+	else if (firemode == 1 && m_sFireModeMask_1 != nullptr)
+		anm_name += m_sFireModeMask_1.c_str();
+	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
+		anm_name += m_sFireModeMask_3.c_str();
+
+	PlayHUDMotion(anm_name, TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayReloadSound()
