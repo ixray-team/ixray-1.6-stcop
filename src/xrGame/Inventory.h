@@ -159,6 +159,7 @@ protected:
 	u16 				m_iNextActiveSlot;
 	u16 				m_iPrevActiveSlot;
 	u16 				m_last_slot = 0;
+	u16					m_iDeferredSlot;
 
 	CInventoryOwner*	m_pOwner;
 
