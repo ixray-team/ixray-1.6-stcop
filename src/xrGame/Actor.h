@@ -325,6 +325,7 @@ public:
 	virtual void cam_Set(EActorCameras style);
 
 protected:
+	void					CorrectActorCameraHeight(float* h);
 	void					cam_Update				(float dt, float fFOV);
 	void					cam_Lookout				( const Fmatrix &xform, float camera_height );
 	void					camUpdateLadder			(float dt);
@@ -341,6 +342,11 @@ protected:
 	float					fCurAVelocity;
 	CEffectorBobbing*		pCamBobbing;
 
+	float _last_camera_height;
+	u32 _last_cam_update_time;
+	u32 _landing_effect_time_remains;
+	u32 _landing2_effect_time_remains;
+	u32 _landing_effect_finish_time_remains;
 
 	//менеджер эффекторов, есть у каждого актрера
 	CActorCameraManager*	m_pActorEffector;
