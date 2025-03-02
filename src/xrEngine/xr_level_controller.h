@@ -48,6 +48,7 @@ enum EGameActions
 	kBRIGHTNESS_PLUS,
 	kBRIGHTNESS_MINUS,
 	kTACTICALTORCH,
+	kLASER,
 						
 	kPAUSE,
 	kDROP,

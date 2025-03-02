@@ -302,6 +302,7 @@ public:
 	bool m_bUseLightMis;
 	bool m_bDisableLightMisDet;
 	bool bIsTorchEnabled;
+	bool bIsLaserEnabled;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;

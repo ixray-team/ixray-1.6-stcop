@@ -44,6 +44,7 @@ enum EActorKeyflags
 	kfRELOAD = (1ul << 8ul),
 	kfNEXTAMMO = (1ul << 9ul),
 	kfTACTICALTORCH = (1ul << 10ul),
+	kfLASER = (1ul << 11ul),
 };
 
 enum EMoveCommand

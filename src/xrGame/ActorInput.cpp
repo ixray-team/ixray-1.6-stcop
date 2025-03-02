@@ -638,6 +638,12 @@ void CActor::ProcessKeys()
 		wpn->Action(kTACTICALTORCH, CMD_START);
 		SetActorKeyRepeatFlag(kfTACTICALTORCH, false);
 	}
+
+	if ((_keyflags & kfLASER) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kfLASER, CMD_START);
+		SetActorKeyRepeatFlag(kfLASER, false);
+	}
 }
 
 #include "HudItem.h"

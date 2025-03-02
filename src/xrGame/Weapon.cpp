@@ -131,6 +131,7 @@ CWeapon::CWeapon()
 	_last_shot_time = 0;
 
 	bIsTorchEnabled = false;
+	bIsLaserEnabled = false;
 }
 
 CWeapon::~CWeapon		()
@@ -2393,12 +2394,21 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 				return true;
 			}
-		}break;
+		}break; 
 		case kTACTICALTORCH:
 		{
 			if (flags & CMD_START && m_HudLight.GetTorchInstalled() && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfTACTICALTORCH))
 			{
 				fDeviceFlags.set(EDeviceFlags::DF_TACTICALTORCH, true);
+				SwitchState(eSwitchDevice);
+			}
+		}break;
+		case kLASER:
+		{
+			//Ravlik 2 Hozar: Add laser testing
+			if (flags & CMD_START && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfLASER))
+			{
+				fDeviceFlags.set(EDeviceFlags::DF_TACTICALLASER, true);
 				SwitchState(eSwitchDevice);
 			}
 		}break;

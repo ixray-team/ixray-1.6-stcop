@@ -56,6 +56,7 @@ ENGINE_API _action  actions[]		= {
 	{ "scope_brightness_plus",kBRIGHTNESS_PLUS		,_both},
 	{ "scope_brightness_minus",kBRIGHTNESS_MINUS	,_both},
 	{ "wpn_torch",			kTACTICALTORCH			,_both},
+	{ "wpn_laser",			kLASER					,_both},
 															
 	{ "pause",				kPAUSE					,_both},	
 	{ "drop",				kDROP					,_both},	
