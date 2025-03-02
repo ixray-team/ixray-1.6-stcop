@@ -92,7 +92,7 @@ void CHUDAnimItem::UpdateCL()
 		PlaySound("sndByMotion", { 0,0,0 });
 
 	StartCompanionAnimIfNeeded("draw");
-	PlayHUDMotion(CurrentMotion.c_str(), true, this, eIdle);
+	PlayHUDMotion(CurrentMotion.c_str(), false, this, eIdle);
 	CurrentMotion = "";
 }
 
