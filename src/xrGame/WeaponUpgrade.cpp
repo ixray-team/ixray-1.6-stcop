@@ -30,6 +30,9 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hit       ( section, test );
 	result |= install_upgrade_addon     ( section, test );
 	result |= install_upgrade_hud_sect	(section, test);
+	result |= install_upgrade_hud_sect_silencer(section, test);
+	result |= install_upgrade_hud_sect_scope(section, test);
+	result |= install_upgrade_hud_sect_gl(section, test);
 	result |= install_upgrade_show_bones (section, test);
 	result |= install_upgrade_hide_bones(section, test);
 	result |= install_upgrade_hide_bones_override(section, test);
@@ -291,12 +294,71 @@ bool CWeapon::install_upgrade_hud_sect(LPCSTR section, bool test)
 {
 	LPCSTR str;
 
+	shared_str old_hud = hud_sect_cache;
+
 	bool result = process_if_exists_set(section, "hud", &CInifile::r_string, str, test);
 
 	if (result && !test)
 	{
-		hud_sect = pSettings->r_string(section, "hud");
+		shared_str new_hud_sect = pSettings->r_string(section, "hud");
+
+		if (new_hud_sect == "skip_reassign")
+			hud_sect = old_hud;
+		else
+			hud_sect = new_hud_sect;
+
 		hud_sect_cache = hud_sect;
+	}
+
+	InitAddons();
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_hud_sect_silencer(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "hud_silencer", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		hud_silencer = pSettings->r_string(section, "hud_silencer");
+		m_bUseSilHud = pSettings->r_bool(section, "hud_when_silencer_is_attached");
+	}
+
+	InitAddons();
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_hud_sect_scope(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "hud_scope", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		hud_scope = pSettings->r_string(section, "hud_scope");
+		m_bUseScopeHud = pSettings->r_bool(section, "hud_when_scope_is_attached");
+	}
+
+	InitAddons();
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_hud_sect_gl(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "hud_gl", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		hud_scope = pSettings->r_string(section, "hud_gl");
+		m_bUseGLHud = pSettings->r_bool(section, "hud_when_gl_is_attached");
 	}
 
 	InitAddons();
