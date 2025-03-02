@@ -58,7 +58,7 @@ void CWeaponRG6::FireStart()
 		if (GetState() != eIdle)
 			return;
 
-		if (IsValid())
+		if (iAmmoElapsed)
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
