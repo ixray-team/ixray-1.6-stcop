@@ -33,12 +33,6 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_silencer(section, test);
 	result |= install_upgrade_hud_sect_scope(section, test);
 	result |= install_upgrade_hud_sect_gl(section, test);
-	result |= install_upgrade_show_bones (section, test);
-	result |= install_upgrade_hide_bones(section, test);
-	result |= install_upgrade_hide_bones_override(section, test);
-	result |= install_upgrade_hide_bones_override_silencer(section, test);
-	result |= install_upgrade_hide_bones_override_scope(section, test);
-	result |= install_upgrade_hide_bones_override_gl(section, test);
 	return result;
 }
 
@@ -362,126 +356,6 @@ bool CWeapon::install_upgrade_hud_sect_gl(LPCSTR section, bool test)
 	}
 
 	InitAddons();
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_show_bones(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "show_bones", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int ShowCount = _GetItemCount(str);
-		for (int i = 0; i < ShowCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vShowBonesUpg.push_back(bone_name);
-		}
-	}
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_hide_bones(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "hide_bones", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int HideCount = _GetItemCount(str);
-		for (int i = 0; i < HideCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vHideBonesUpg.push_back(bone_name);
-		}
-	}
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_hide_bones_override(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "hide_bones_override", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int ShowCount = _GetItemCount(str);
-		for (int i = 0; i < ShowCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vHideBonesOverrideUpg.push_back(bone_name);
-		}
-	}
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_hide_bones_override_silencer(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "hide_bones_override_when_silencer_attached", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int ShowCount = _GetItemCount(str);
-		for (int i = 0; i < ShowCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vHideBonesOverrideSilUpg.push_back(bone_name);
-		}
-	}
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_hide_bones_override_scope(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "hide_bones_override_when_scope_attached", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int ShowCount = _GetItemCount(str);
-		for (int i = 0; i < ShowCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vHideBonesOverrideScopeUpg.push_back(bone_name);
-		}
-	}
-
-	return result;
-}
-
-bool CWeapon::install_upgrade_hide_bones_override_gl(LPCSTR section, bool test)
-{
-	LPCSTR str;
-
-	bool result = process_if_exists_set(section, "hide_bones_override_when_gl_attached", &CInifile::r_string, str, test);
-
-	if (result && !test)
-	{
-		int ShowCount = _GetItemCount(str);
-		for (int i = 0; i < ShowCount; ++i)
-		{
-			string128 bone_name;
-			_GetItem(str, i, bone_name);
-			m_vHideBonesOverrideGLUpg.push_back(bone_name);
-		}
-	}
 
 	return result;
 }
