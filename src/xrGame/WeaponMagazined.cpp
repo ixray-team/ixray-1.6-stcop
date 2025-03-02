@@ -1120,6 +1120,9 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			if (IsZoomed())
 				return false;
 
+			if (iAmmoElapsed == iMagazineSize)
+				return false;
+
 			if (!bUnjamKeyPressed && !bReloadKeyPressed && !bAmmotypeKeyPressed)
 			{
 				if (IsMisfire())
@@ -1139,8 +1142,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				return true;
 			}
 
-			if (iAmmoElapsed < iMagazineSize)
-				return TryReload();
+			return TryReload();
 
 		}break;
 	case kWPN_FIREMODE_PREV:
