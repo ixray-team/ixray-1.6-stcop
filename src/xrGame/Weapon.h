@@ -118,6 +118,9 @@ public:
 		eEmptyClick,
 		eUnjam,
 		eCheckMisfire,
+		eShowingDet,
+		eShowingEndDet,
+		eHideDet,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
