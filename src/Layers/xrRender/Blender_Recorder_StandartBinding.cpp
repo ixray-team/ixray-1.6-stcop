@@ -515,6 +515,19 @@ static class cl_m_hud_params : public R_constant_setup
 	}
 }    binder_m_hud_params;
 
+static class cl_affects : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		float decr = 0.0f;
+
+		if (RDEVICE.hudViewportData.IsElectronicsProblemsDecreasing)
+			decr = 1.0f;
+
+		RCache.set_c(C, RDEVICE.hudViewportData.CurrentElectronicsProblemsCnt/10.0f, ::Random.randF(0.0f, 1.0f), RDEVICE.hudViewportData.TargetElectronicsProblemsCnt/10.0f, decr);
+	}
+} binder_affects;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -601,6 +614,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant				("rain_params",		&binder_rain_params);
 
 	r_Constant("m_hud_params", &binder_m_hud_params);
+	r_Constant("m_affects", &binder_affects);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

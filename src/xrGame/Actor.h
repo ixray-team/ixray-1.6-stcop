@@ -306,6 +306,22 @@ public:
 	SEaterEffect eater_manager;
 	CEatableItem* eateable_to_delete;
 
+	float previous_electronics_problems_counter = 0.0f;
+	float current_electronics_problems_counter = 0.0f;
+	float target_electronics_problems_counter = 0.0f;
+	bool last_problems_update_was_decrease = false;
+
+	void ResetElectronicsProblems();
+	void ResetElectronicsProblems_Full();
+	const float PreviousElectronicsProblemsCnt() const;
+	bool ElectronicsProblemsImmediateApply();
+	bool ElectronicsProblemsInc();
+	const float TargetElectronicsProblemsCnt() const;
+	const float CurrentElectronicsProblemsCnt() const;
+	bool ElectronicsProblemsDec();
+	const bool IsElectronicsProblemsDecreasing() const;
+	void UpdateElectronicsProblemsCnt(u32 dt);
+
 public:
 
 	//свойства артефактов

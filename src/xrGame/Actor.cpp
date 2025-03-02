@@ -2948,3 +2948,82 @@ void CActor::UpdateFOV()
 
 	psHUD_FOV = fov;
 }
+
+void CActor::ResetElectronicsProblems()
+{
+	target_electronics_problems_counter = 0.0f;
+}
+
+void CActor::ResetElectronicsProblems_Full()
+{
+	ResetElectronicsProblems();
+	current_electronics_problems_counter = 0.0f;
+	previous_electronics_problems_counter = 0.0f;
+	last_problems_update_was_decrease = false;
+}
+
+const float CActor::PreviousElectronicsProblemsCnt() const
+{
+	return previous_electronics_problems_counter;
+}
+
+bool CActor::ElectronicsProblemsImmediateApply()
+{
+	current_electronics_problems_counter = target_electronics_problems_counter;
+	return true;
+}
+
+bool CActor::ElectronicsProblemsInc()
+{
+	target_electronics_problems_counter += 1.0f;
+	return true;
+}
+
+const float CActor::TargetElectronicsProblemsCnt() const
+{
+	return target_electronics_problems_counter;
+}
+
+const float CActor::CurrentElectronicsProblemsCnt() const
+{
+	return current_electronics_problems_counter;
+}
+
+bool CActor::ElectronicsProblemsDec()
+{
+	if (target_electronics_problems_counter > 0.0f)
+	{
+		target_electronics_problems_counter -= 1.0f;
+		return true;
+	}
+	else
+		return false;
+}
+
+const bool CActor::IsElectronicsProblemsDecreasing() const
+{
+	return last_problems_update_was_decrease;
+}
+
+void CActor::UpdateElectronicsProblemsCnt(u32 dt)
+{
+	float max_delta = static_cast<float>(dt) / 2000.0f;
+	float delta = target_electronics_problems_counter - current_electronics_problems_counter;
+
+	previous_electronics_problems_counter = current_electronics_problems_counter;
+
+	if (target_electronics_problems_counter == current_electronics_problems_counter)
+	{
+		return;
+	}
+
+	if (abs(delta) <= abs(max_delta))
+	{
+		current_electronics_problems_counter = target_electronics_problems_counter;
+	}
+	else
+	{
+		current_electronics_problems_counter += copysign(max_delta, delta);
+		last_problems_update_was_decrease = (delta < 0.0f);
+	}
+}
