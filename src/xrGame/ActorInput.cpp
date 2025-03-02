@@ -559,7 +559,7 @@ void CActor::ProcessKeys()
 	if (wpn == nullptr)
 		return;
 
-	if (IsActionKeyPressedInGame(kWPN_ZOOM))
+	if (IsActionKeyPressedInGame(kWPN_ZOOM) && wpn->GetState() == CWeapon::eIdle)
 	{
 		if (!b_toggle_weapon_aim && wpn->CanAimNow() && !wpn->IsZoomed())
 		{
