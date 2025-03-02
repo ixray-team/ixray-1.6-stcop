@@ -234,6 +234,9 @@ void CInventoryItem::pre_install_upgrade()
 		{
 			weapon->Detach( weapon->GetGrenadeLauncherName().c_str(), true );
 		}
+
+		if (weapon->m_bAmmoInChamber)
+			weapon->UnloadChamber();
 	}
 
 
