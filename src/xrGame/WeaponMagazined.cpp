@@ -22,6 +22,7 @@
 #include "script_game_object.h"
 #include "Actor_Flags.h"
 #include "player_hud.h"
+#include "weaponBM16.h"
 
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
@@ -1006,6 +1007,10 @@ void CWeaponMagazined::DoReload()
 	int def_magsize = iMagazineSize;
 	int mod_magsize = def_magsize;
 
+	CWeaponBM16* bm = smart_cast<CWeaponBM16*>(this);
+
+	if (bm)
+		mod_magsize = ammo_cnt_to_reload;
 
 	iMagazineSize = mod_magsize;
 	ReloadMagazine();
