@@ -98,7 +98,6 @@ CWeapon::CWeapon()
 	bIsNeedCallDet = false;
 
 	lock_time = 0.f;
-	lock_time_callback = nullptr;
 	_last_update_time = Device.dwTimeGlobal;
 	ammo_cnt_to_reload = -1;
 	IsReloaded = false;

@@ -57,14 +57,6 @@ void CHUDAnimItem::UpdateCL()
 	if (GetState() == eHidden)
 		return;
 
-	u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
-
-	if (callback != nullptr && mark < anim_time)
-	{
-		callback(this);
-		callback = nullptr;
-	}
-
 	if (CurrentMotion.size() == 0)
 	{
 		if (Device.dwTimeGlobal >= m_dwMotionEndTm)
@@ -144,12 +136,7 @@ void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, co
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
 	ThisItem->hud_sect = Section.c_str();
 	ThisItem->CurrentMotion = Anim.c_str();
-
-	if (pSettings->line_exist(Section.c_str(), ("mark_" + Anim).c_str()))
-	{
-		ThisItem->mark = floor(pSettings->r_float(Section.c_str(), ("mark_" + Anim).c_str()) * 1000.f);
-		ThisItem->callback = fun;
-	}
+	ThisItem->lock_time_callback = fun;
 	ThisItem->SupportsDetector = supports_detector;
 
 	if (snd.length() > 0)
