@@ -127,12 +127,7 @@ void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, co
 		return;
 
 	if (!supports_detector)
-	{
-		if (CCustomDetector* Detector = (CCustomDetector*)Inventory.ItemFromSlot(DETECTOR_SLOT))
-		{
-			ThisItem->DetectorActive = Detector->IsActive();
-		}
-	}
+		ThisItem->DetectorActive = !!(Actor()->GetDetector() != nullptr);
 
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
 	ThisItem->hud_sect = Section.c_str();
