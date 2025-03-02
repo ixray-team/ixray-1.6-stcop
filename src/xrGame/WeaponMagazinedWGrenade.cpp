@@ -463,16 +463,16 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 {
 	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(pIItem);
 	
-	if(pGrenadeLauncher &&
-	   ALife::eAddonAttachable == m_eGrenadeLauncherStatus &&
-	   0 == (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) &&
-	   !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
+	if(pGrenadeLauncher && ALife::eAddonAttachable == m_eGrenadeLauncherStatus && 0 == (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher) && !xr_strcmp(*m_sGrenadeLauncherName, pIItem->object().cNameSect()))
 	{
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
 		CRocketLauncher::m_fLaunchSpeed = pGrenadeLauncher->GetGrenadeVel();
 
- 		//СѓРЅРёС‡С‚РѕР¶РёС‚СЊ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРє РёР· РёРЅРІРµРЅС‚Р°СЂСЏ
+		if (m_bRestGL_and_Sil && IsSilencerAttached())
+			Detach(GetSilencerName().c_str(), true);
+
+ 		//уничтожить подствольник из инвентаря
 		if(b_send_event)
 		{
 			if (OnServer()) 
