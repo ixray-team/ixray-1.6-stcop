@@ -560,7 +560,13 @@ void CActor::ProcessKeys()
 		return;
 
 	if (IsActionKeyPressedInGame(kWPN_ZOOM))
-		wpn->Action(kWPN_ZOOM, CMD_START);
+	{
+		if (!b_toggle_weapon_aim && wpn->CanAimNow() && !wpn->IsZoomed())
+		{
+			wpn->Action(kWPN_ZOOM, CMD_START);
+			SetActorKeyRepeatFlag(kfUNZOOM, false);
+		}
+	}
 
 	if ((_keyflags & kfUNZOOM) != 0)
 	{
