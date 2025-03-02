@@ -486,3 +486,51 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 	return res;
 }
 
+#include "Weapon.h"
+#include "Inventory.h"
+void CActorCameraManager::Update_Lens_FOV_manipulation(float& value)
+{
+	//if (!IsLensEnabled())
+	{
+		CWeapon* wpn = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
+		if (wpn != nullptr && wpn->GetAimFactor() > 0.999f && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled())
+		{
+			//if (!IsAlterZoomMode())
+			value = wpn->GetLensFOV(value);
+		}
+		return;
+	}
+
+	/*if (GetDevicedwFrame() == _last_fov_changed_frame)
+	{
+		value = GetLensFOV(&value);
+		return;
+	}
+
+	bool need_lens_frame_now = NeedLensFrameNow();
+
+	if (_restore_fov_after_lens_frame == 0)
+	{
+		if (need_lens_frame_now)
+		{
+			_restore_fov_after_lens_frame = *value;
+			_last_fov_changed_frame = GetDevicedwFrame();
+			value = GetLensFOV(*value);
+			_is_lens_frame = true;
+		}
+	}
+	else
+	{
+		if (need_lens_frame_now)
+		{
+			value = GetLensFOV(&value);
+			_last_fov_changed_frame = GetDevicedwFrame();
+			_is_lens_frame = true;
+		}
+		else
+		{
+			value = _restore_fov_after_lens_frame;
+			_restore_fov_after_lens_frame = 0;
+		}
+	}*/
+}

@@ -121,6 +121,7 @@ public:
 
 	IC void					camera_Matrix			(Fmatrix& M){M.set(m_cam_info.r,m_cam_info.n,m_cam_info.d,m_cam_info.p);}
 	void					Update					(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
+	virtual	void			Update_Lens_FOV_manipulation(float& value) {};
 	void					UpdateFromCamera		(const CCameraBase* C);
 	
 	void					ApplyDevice				(float _viewport_near);
