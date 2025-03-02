@@ -121,6 +121,7 @@ public:
 		eShowingDet,
 		eShowingEndDet,
 		eHideDet,
+		eKick,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
