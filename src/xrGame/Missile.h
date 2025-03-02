@@ -51,6 +51,7 @@ public:
 	virtual void 			OnStateSwitch				(u32 S);
 	virtual bool			GetBriefInfo				(II_BriefInfo& info);
 	virtual bool			SendDeactivateItem			();
+			bool			NeedBlockSprint				() const;
 
 protected:
 	virtual void			UpdateFireDependencies_internal	();
