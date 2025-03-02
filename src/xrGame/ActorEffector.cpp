@@ -490,6 +490,9 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 #include "Inventory.h"
 void CActorCameraManager::Update_Lens_FOV_manipulation(float& value)
 {
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return;
+
 	//if (!IsLensEnabled())
 	{
 		CWeapon* wpn = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
