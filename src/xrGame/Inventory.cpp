@@ -808,14 +808,22 @@ void CInventory::Update()
 				   )
 				   return;
 			}
-			if( ActiveItem() )
+			if (ActiveItem())
 			{
 				CHudItem* hi = ActiveItem()->cast_hud_item();
 				
-				if(!hi->IsHidden())
+				if (!hi->IsHidden())
 				{
-					if(hi->GetState()==CHUDState::eIdle && hi->GetNextState()==CHUDState::eIdle)
-						hi->SendDeactivateItem();
+					if (hi->GetState() == CHUDState::eIdle && hi->GetNextState() == CHUDState::eIdle)
+					{
+						bool is_sprint = false;
+						CActor* actor = smart_cast<CActor*>(pActor_owner);
+						if (actor && actor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+							is_sprint = true;
+						
+						if (!is_sprint)
+							hi->SendDeactivateItem();
+					}
 
 					UpdateDropTasks	();
 					return;
