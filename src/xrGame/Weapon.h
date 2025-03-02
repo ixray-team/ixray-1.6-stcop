@@ -235,6 +235,7 @@ public:
 	bool m_bAddCartridgeOpen;
 	bool m_bEmptyPreloadMode;
 	bool bPreloadAnimAdapter;
+	bool bUpdateHUDBonesVisibility;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;

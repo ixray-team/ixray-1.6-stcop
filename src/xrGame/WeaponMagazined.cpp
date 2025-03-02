@@ -1260,6 +1260,7 @@ void CWeaponMagazined::switch2_Kick()
 	SetPending(TRUE);
 	PlaySound("sndKick", get_LastFP());
 	PlayHUDMotion("anm_kick", TRUE, eKick);
+	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazined::KickCallback) });
 }
 
 void CWeaponMagazined::PlayAnimFakeshoot()
@@ -1652,6 +1653,8 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 			pIItem->object().DestroyObject	();
 		};
 
+		ProcessUpgrade();
+		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 
@@ -1689,6 +1692,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
+		ProcessUpgrade();
+		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 
@@ -1704,6 +1709,8 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonSilencer;
 
+		ProcessUpgrade();
+		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
@@ -1718,20 +1725,16 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher;
 
+		ProcessUpgrade();
+		ProcessScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
 	else
-		return inherited::Detach(item_section_name, b_spawn_item);;
+		return inherited::Detach(item_section_name, b_spawn_item);
 }
-/*
-void CWeaponMagazined::LoadAddons()
-{
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
 
-}
-*/
 void CWeaponMagazined::InitAddons()
 {
 	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
@@ -1740,10 +1743,6 @@ void CWeaponMagazined::InitAddons()
 		shared_str scope_tex_name;
 		if ( m_eScopeStatus == ALife::eAddonAttachable )
 		{
-			//m_scopes[cur_scope]->m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
-			//m_scopes[cur_scope]->m_iScopeX	 = pSettings->r_s32(cNameSect(),"scope_x");
-			//m_scopes[cur_scope]->m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
-
 			scope_tex_name						= pSettings->r_string(GetScopeName(), "scope_texture");
 			m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float( GetScopeName(), "scope_zoom_factor");
 			m_zoom_params.m_sUseZoomPostprocess	= READ_IF_EXISTS(pSettings,r_string,GetScopeName(), "scope_nightvision", 0);
@@ -1776,7 +1775,7 @@ void CWeaponMagazined::InitAddons()
 		}
 	}
 
-	if ( IsSilencerAttached()/* && SilencerAttachable() */)
+	if ( IsSilencerAttached())
 	{		
 		m_sFlameParticlesCurrent	= m_sSilencerFlameParticles;
 		m_sSmokeParticlesCurrent	= m_sSilencerSmokeParticles;
