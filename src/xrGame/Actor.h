@@ -20,6 +20,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "HudItem.h"
 #include "CustomDetector.h"
+#include "player_hud.h"
 
 using namespace ACTOR_DEFS;
 
@@ -283,6 +284,14 @@ public:
 	void OnSuicideAnimEnd();
 	void NotifySuicideShotCallbackIfNeeded() const;
 	void NotifySuicideStopCallbackIfNeeded() const;
+	void UpdateFOV();
+
+	cached_cfg_param_float cached_fov_factor;
+	cached_cfg_param_float cached_hud_fov_factor_wpn;
+	cached_cfg_param_float cached_hud_fov_factor_scope;
+	cached_cfg_param_float cached_hud_fov_gl_zoom_factor;
+	cached_cfg_param_float cached_hud_fov_zoom_factor;
+	//player_hud::cached_cfg_param_float cached_hud_fov_alter_zoom_factor;
 
 public:
 

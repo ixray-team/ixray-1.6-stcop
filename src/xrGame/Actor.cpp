@@ -1029,6 +1029,7 @@ void CActor::UpdateCL	()
 
 		ProcessKeys();
 		UpdateSuicide(dt);
+		UpdateFOV();
 
 		if (g_player_hud != nullptr)
 			g_player_hud->UpdateWeaponOffset(dt);
@@ -2764,4 +2765,79 @@ float CActor::GetHandJitterScale(CHudItemObject* itm) const
 		return 0.0f;
 	else
 		return static_cast<float>(_jitter_time_remains) / restore_time;
+}
+
+ENGINE_API extern float psHUD_FOV_def;
+
+void CActor::UpdateFOV()
+{
+	float hud_fov = 0.f;
+
+	CHudItemObject* wpn = smart_cast<CHudItemObject*>(inventory().ActiveItem());
+	CCustomDetector* det = GetDetector();
+
+    float fov = g_fov;
+
+    if (wpn != nullptr)
+        fov *= player_hud::GetCachedCfgParamFloatDef(cached_fov_factor, wpn->m_section_id, "fov_factor", 1.0f);
+	else if (det != nullptr)
+        fov *= player_hud::GetCachedCfgParamFloatDef(cached_fov_factor, det->m_section_id, "fov_factor", 1.0f);
+
+	g_fov = fov;
+
+    fov = psHUD_FOV_def;
+    if (wpn != nullptr)
+	{
+		fov = wpn->GetHudFov();
+        hud_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_factor_wpn, wpn->HudSection(), "hud_fov_factor", 1.0f);
+        if (wpn->WpnCanShoot() && static_cast<CWeapon*>(wpn)->get_ScopeStatus() == 2 && static_cast<CWeapon*>(wpn)->IsScopeAttached())
+            hud_fov *= player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_factor_scope, static_cast<CWeapon*>(wpn)->GetCurrentScopeSection(), "hud_fov_factor", 1.0f);
+
+        if (wpn->WpnCanShoot() && static_cast<CWeapon*>(wpn)->IsZoomed())
+		{
+			/*alter_zoom_factor = GetAlterZoomDirectSwitchMixupFactor();
+			if (CanUseAlterScope(wpn) && (buf->IsAlterZoomMode() || (GetAimFactor(wpn) > 0.f && buf->IsLastZoomAlter())))
+			    alter_zoom_factor = 1.f - alter_zoom_factor;*/
+
+			float zoom_fov = 0.f;
+
+			shared_str zoom_fov_section = nullptr;
+
+            if (static_cast<CWeapon*>(wpn)->IsGrenadeMode())
+                zoom_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_gl_zoom_factor, wpn->HudSection(), "hud_fov_gl_zoom_factor", hud_fov);
+			else if (static_cast<CWeapon*>(wpn)->get_ScopeStatus() == 2 && static_cast<CWeapon*>(wpn)->IsScopeAttached())
+                zoom_fov_section = static_cast<CWeapon*>(wpn)->GetCurrentScopeSection();
+			else
+                zoom_fov_section = wpn->HudSection();
+
+			//float alter_zoom_fov = alter_zoom_factor = 0.f;
+
+            if (zoom_fov_section != nullptr)
+			{
+                //if (alter_zoom_factor < EPS)
+                    zoom_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_zoom_factor, zoom_fov_section, "hud_fov_zoom_factor", hud_fov);
+				/*else if (alter_zoom_factor > 1.f - EPS)
+                    zoom_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_alter_zoom_factor, zoom_fov_section, "hud_fov_alter_zoom_factor", zoom_fov);
+				else
+				{
+                    zoom_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_zoom_factor, zoom_fov_section, "hud_fov_zoom_factor", hud_fov);
+                    alter_zoom_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_alter_zoom_factor, zoom_fov_section, "hud_fov_alter_zoom_factor", zoom_fov);
+                    zoom_fov = zoom_fov + (alter_zoom_fov - zoom_fov) * alter_zoom_factor;
+                }*/
+            }
+
+            float af = static_cast<CWeapon*>(wpn)->GetAimFactor();
+            hud_fov = hud_fov - (hud_fov - zoom_fov) * af;
+        }
+
+        fov *= hud_fov;
+    }
+	else if (det != nullptr)
+	{
+		fov = det->GetHudFov();
+        hud_fov = player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_factor_wpn, det->HudSection(), "hud_fov_factor", 1.0f);
+        fov *= hud_fov;
+    }
+
+	psHUD_FOV = fov;
 }
