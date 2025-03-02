@@ -663,6 +663,9 @@ void CCustomDetector::StartDetectorAction(u32 state)
 	if (!isGuns)
 		return;
 
+	if (GetState() == eDetThrowEnd && state == eDetShowHand)
+		return;
+
 	if (GetState() == eHidden || GetState() == eHiding || GetState() == eShowing)
 		return;
 
