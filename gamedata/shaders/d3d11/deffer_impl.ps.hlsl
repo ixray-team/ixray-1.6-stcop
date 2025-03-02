@@ -41,9 +41,6 @@ void main(p_bumped_new I, out OutStructure O)
     float4 Normal_G = s_dn_g.Sample(smp_base, tcdbump) * Mask.y;
     float4 Normal_B = s_dn_b.Sample(smp_base, tcdbump) * Mask.z;
     float4 Normal_A = s_dn_a.Sample(smp_base, tcdbump) * Mask.w;
-	
-	M.Metalness = Mask.y * 0.3f;
-	Normal_G.x = Mask.y;
 
     M.Normal = Normal_R.wzy + Normal_G.wzy + Normal_B.wzy + Normal_A.wzy - 0.5;
     M.Roughness = min(1.0f, Normal_R.x + Normal_G.x + Normal_B.x + Normal_A.x);
