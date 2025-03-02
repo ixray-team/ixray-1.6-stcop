@@ -285,6 +285,7 @@ public:
 	void NotifySuicideShotCallbackIfNeeded() const;
 	void NotifySuicideStopCallbackIfNeeded() const;
 	void UpdateFOV();
+	void SpawnTrash();
 
 	cached_cfg_param_float cached_fov_factor;
 	cached_cfg_param_float cached_hud_fov_factor_wpn;
@@ -294,6 +295,17 @@ public:
 	//player_hud::cached_cfg_param_float cached_hud_fov_alter_zoom_factor;
 
 	CPickUpManager* GetPickupManager() { return pPickup; }
+
+	struct SEaterEffect
+	{
+		s32 start_time = 0;
+		s32 trash_time = 0;
+		const char* trash_sect = {};
+	};
+
+	SEaterEffect eater_manager;
+	CEatableItem* eateable_to_delete;
+
 public:
 
 	//свойства артефактов

@@ -172,9 +172,9 @@ void CInventoryOwner::net_Destroy()
 }
 
 
-void	CInventoryOwner::save	(NET_Packet &output_packet)
+void CInventoryOwner::save(NET_Packet &output_packet)
 {
-	if(inventory().GetActiveSlot() == NO_ACTIVE_SLOT)
+	if (inventory().GetActiveSlot() == NO_ACTIVE_SLOT || inventory().GetActiveSlot() == ANIM_SLOT)
 		output_packet.w_u8((u8)NO_ACTIVE_SLOT);
 	else
 		output_packet.w_u8((u8)inventory().GetActiveSlot());
@@ -183,15 +183,17 @@ void	CInventoryOwner::save	(NET_Packet &output_packet)
 	save_data	(m_game_name, output_packet);
 	save_data	(m_money,	output_packet);
 }
-void	CInventoryOwner::load	(IReader &input_packet)
+
+void CInventoryOwner::load(IReader &input_packet)
 {
 	u8 active_slot = input_packet.r_u8();
-	if(active_slot == NO_ACTIVE_SLOT)
+	if (active_slot == NO_ACTIVE_SLOT || active_slot == ANIM_SLOT)
 		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-	//else
-		//inventory().Activate_deffered(active_slot, Device.dwFrame);
 
-	m_tmp_active_slot_num		 = active_slot;
+	if (active_slot == ANIM_SLOT)
+		active_slot = NO_ACTIVE_SLOT;
+
+	m_tmp_active_slot_num = active_slot;
 
 	CharacterInfo().load(input_packet);
 	load_data		(m_game_name, input_packet);
@@ -234,7 +236,7 @@ void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
 }
 
 
-//достать PDA из специального слота инвентар€
+//достать PDA из специального слота инвентаря
 CPda* CInventoryOwner::GetPDA() const
 {
 	return (CPda*)(m_inventory->ItemFromSlot(PDA_SLOT));
@@ -247,10 +249,10 @@ CTrade* CInventoryOwner::GetTrade()
 }
 
 
-//состо€ние диалога
+//состояние диалога
 
 //нам предлагают поговорить,
-//провер€ем наше отношение 
+//проверяем наше отношение 
 //и если не враг начинаем разговор
 bool CInventoryOwner::OfferTalk(CInventoryOwner* talk_partner)
 {
@@ -357,7 +359,7 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 	}
 }
 
-//возвращает текуший разброс стрельбы с учетом движени€ (в радианах)
+//возвращает текуший разброс стрельбы с учетом движения (в радианах)
 float CInventoryOwner::GetWeaponAccuracy	() const
 {
 	return 0.f;
@@ -400,7 +402,7 @@ void CInventoryOwner::spawn_supplies()
 	}
 }
 
-//игровое им€ 
+//игровое имя 
 LPCSTR	CInventoryOwner::Name () const
 {
 //	return CharacterInfo().Name();
@@ -426,7 +428,7 @@ void CInventoryOwner::LostPdaContact	(CInventoryOwner* pInvOwner)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//дл€ работы с relation system
+//для работы с relation system
 u16 CInventoryOwner::object_id	()  const
 {
 	return smart_cast<const CGameObject*>(this)->ID();

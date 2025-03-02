@@ -37,6 +37,7 @@
 #include "../actor_defs.h"
 #include "../InventoryBox.h"
 
+#include "HUDAnimItem.h"
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
@@ -759,6 +760,13 @@ bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )
 	{
 		return false;
 	}
+
+	if (CActor* actor = smart_cast<CActor*>(m_pActorInvOwner))
+	{
+		if (smart_cast<CHUDAnimItem*>(actor->inventory().ActiveItem()) != nullptr)
+			return false;
+	}
+
 	PIItem item	= (PIItem)cell_itm->m_pData;
 
 	CBottleItem*	pBottleItem		= smart_cast<CBottleItem*>	(item);
@@ -1078,6 +1086,12 @@ void CUIActorMenu::PropertiesBoxForAddon(PIItem item, bool& b_show)
 
 void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 {
+	if (CActor* actor = smart_cast<CActor*>(m_pActorInvOwner))
+	{
+		if (smart_cast<CHUDAnimItem*>(actor->inventory().ActiveItem()) != nullptr)
+			return;
+	}
+
 	CMedkit*		pMedkit			= smart_cast<CMedkit*>		(item);
 	CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
 	CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);

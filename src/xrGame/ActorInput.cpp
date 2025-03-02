@@ -163,24 +163,33 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			if (is_suicide)
 				break;
 
+			if (eateable_to_delete != nullptr)
+				break;
+
+			if (smart_cast<CHUDAnimItem*>(inventory().ActiveItem()) != nullptr)
+				break;
+
 			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
 			if(item_name.size())
 			{
-				PIItem itm = inventory().GetAny(item_name.c_str());
+				PIItem best_itm = nullptr;
 
-				if(itm)
+				for (auto& it : inventory().m_ruck)
+				{
+					if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
+						best_itm = it;
+				}
+
+				if (best_itm != nullptr)
 				{
 					if (IsGameTypeSingle())
-					{
-						inventory().Eat				(itm);
-					} else
-					{
-						inventory().ClientEat		(itm);
-					}
+						inventory().Eat(best_itm);
+					else
+						inventory().ClientEat(best_itm);
 					
-					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
-					string1024					str;
-					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", itm->NameItem());
+					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+					string1024 str = {};
+					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", best_itm->NameItem());
 					_s->wnd()->TextItemControl()->SetText(str);
 					
 					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
@@ -692,7 +701,7 @@ void CActor::ActorUse()
 		m_pUsableObject->use(this);
 	}
 	
-	if (m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
+	if (eateable_to_delete == nullptr && m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
 	{
 		if (IsGameTypeSingleCompatible())
 		{
@@ -704,7 +713,7 @@ void CActor::ActorUse()
 		return;
 	}
 
-	if(!m_pUsableObject||m_pUsableObject->nonscript_usable())
+	if (eateable_to_delete == nullptr && (!m_pUsableObject||m_pUsableObject->nonscript_usable()))
 	{
 		if(m_pPersonWeLookingAt)
 		{

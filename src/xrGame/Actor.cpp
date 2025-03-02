@@ -78,6 +78,7 @@
 #include "ai/monsters/controller/controller.h"
 #include "WeaponKnife.h"
 #include "WeaponBinoculars.h"
+#include "eatable_item.h"
 
 const u32		patch_frames = 50;
 const float		respawn_delay = 1.f;
@@ -247,6 +248,7 @@ CActor::CActor() : CEntityAlive(), current_ik_cam_shift(0)
 	m_pActorHeadLampEnableAnimatorSectionName = nullptr;
 	m_pActorHeadLampDisableHUDAnimationName = nullptr;
 	m_pActorHeadLampEnableHUDAnimationName = nullptr;
+	eateable_to_delete = nullptr;
 }
 
 
@@ -1067,6 +1069,36 @@ void CActor::g_Physics(Fvector& _accel, float jump, float dt)
 		}
 	}
 }
+
+void CActor::SpawnTrash()
+{
+	Fvector pos = Device.vCameraPosition;
+
+	float throw_offset_x = -0.1f;
+	float throw_offset_y = 0.2f;
+	float throw_offset_z = 0.0f;
+
+	if (pSettings->line_exist(eater_manager.trash_sect, "throw_offset_x"))
+		throw_offset_x = pSettings->r_float(eater_manager.trash_sect, "throw_offset_x");
+
+	if (pSettings->line_exist(eater_manager.trash_sect, "throw_offset_y"))
+		throw_offset_y = pSettings->r_float(eater_manager.trash_sect, "throw_offset_y");
+
+	if (pSettings->line_exist(eater_manager.trash_sect, "throw_offset_z"))
+		throw_offset_z = pSettings->r_float(eater_manager.trash_sect, "throw_offset_z");
+
+	Fvector top = Device.vCameraTop;
+	Fvector dir = Device.vCameraDirection;
+	Fvector right = Device.vCameraRight;
+
+	pos.add(top.mul(throw_offset_y));
+	pos.add(dir.mul(throw_offset_x));
+	pos.add(right.mul(throw_offset_z));
+
+	Level().spawn_item(eater_manager.trash_sect, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id());
+	eater_manager.start_time = 0;
+}
+
 float g_fov = 67.5f;
 
 float CActor::currentFOV()
@@ -1260,6 +1292,12 @@ void CActor::UpdateCL()
 			}
 		}
 	}
+
+	if (eateable_to_delete != nullptr)
+		eateable_to_delete->UpdateEatable();
+
+	if (eater_manager.start_time > 0 && Device.dwTimeGlobal - eater_manager.start_time > eater_manager.trash_time)
+		SpawnTrash();
 
 	UpdateDefferedMessages();
 

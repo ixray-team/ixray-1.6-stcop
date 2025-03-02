@@ -18,7 +18,17 @@ protected:
 	BOOL m_bConsumeChargeOnUse;
 	float m_fWeightFull;
 	float m_fWeightEmpty;
-	bool bUseHUDAnim = false;
+	bool m_bUseHUDAnim = false;
+	bool m_bIsEated = false;
+	bool m_bNoTrash = false;
+	bool m_bTrashSpawned = false;
+
+	s32 m_siTiming = 0;
+	s32 m_siTimingEarly = 0;
+	s32 m_siTimingTrash = 0;
+	s32 m_siStartTime = 0;
+	const char* HudSect = {};
+	const char* m_sTrashSect = {};
 
 public:
 	shared_str UseText;
@@ -42,6 +52,8 @@ public:
 	virtual void			OnH_A_Independent();
 	virtual	bool			UseBy(CEntityAlive* npc);
 	virtual float			Weight() const;
+			void			UpdateEatable();
+			Irect			GetInvGridRect() const override;
 
 	IC bool Empty() const { return GetRemainingUses() == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };

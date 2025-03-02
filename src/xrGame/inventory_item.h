@@ -166,7 +166,7 @@ public:
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToRuck		(const SInvItemPlace& prev) {};
 					
-			Irect				GetInvGridRect		() const;
+	virtual	Irect				GetInvGridRect		() const;
 			void SetInvGridRect(const Irect& rect);
 			void SetInvGridRect(u32 x, u32 y, u32 w, u32 h);
 			Irect				GetUpgrIconRect		() const;
