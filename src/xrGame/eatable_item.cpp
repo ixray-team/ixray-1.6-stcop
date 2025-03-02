@@ -112,7 +112,7 @@ bool CEatableItem::Useful() const
 	if (!inherited::Useful()) return false;
 
 	//проверить не все ли еще съедено
-	if (GetRemainingUses() == 0)
+	if (GetRemainingUses() == 0 && CanDelete())
 		return false;
 
 	return true;
@@ -281,7 +281,7 @@ void CEatableItem::UpdateEatable()
 		Actor()->eateable_to_delete = nullptr;
 
 		if (m_iPortionsMarker == 0)
-			SetDropManual(TRUE);
+			object().DestroyObject();
 	};
 
 	if (m_siStartTime == 0)
@@ -361,6 +361,8 @@ void CEatableItem::script_register(lua_State* L)
 	module(L)
 		[
 			class_<CEatableItem>("CEatableItem")
+				.def("Empty", &CEatableItem::Empty)
+				.def("CanDelete", &CEatableItem::CanDelete)
 				.def("GetMaxUses", &CEatableItem::GetMaxUses)
 				.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
 				.def("SetRemainingUses", &CEatableItem::SetRemainingUses)

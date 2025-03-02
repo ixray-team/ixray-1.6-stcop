@@ -55,6 +55,8 @@ public:
 			void			UpdateEatable();
 			Irect			GetInvGridRect() const override;
 
+	IC bool Empty() const { return GetRemainingUses() == 0; };
+	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
 	IC bool CanConsumeCharge() const { return m_bConsumeChargeOnUse == 1; };
 	IC u8 GetMaxUses() { return m_iMaxUses; };
 	IC u8 GetRemainingUses() const { return m_iPortionsMarker / m_eat_condition; };

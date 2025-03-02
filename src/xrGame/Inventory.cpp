@@ -1125,7 +1125,7 @@ bool CInventory::Eat(PIItem pIItem)
 	if (!pSettings->line_exist(pIItem->m_section_id, "hud") && IsGameTypeSingle() && Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
 
-	if (!pSettings->line_exist(pIItem->m_section_id, "hud") && pItemToEat->GetRemainingUses() == 1)
+	if(pItemToEat->Empty())
 	{
 		pIItem->SetDropManual(TRUE);
 		return		false;
