@@ -689,9 +689,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
 	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
 
-	bIsNeedFirstShootAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_first_shoot_anims", false);
-	bIsNeedFinalCloseAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_final_close_anims", false);
-
 	light_misfire.startcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_condition", 1.0f);
 	light_misfire.endcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_condition", 0.0f);
 	light_misfire.startprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_probability", 1.0f);
@@ -807,6 +804,8 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 		l_cartridge.Load(*m_ammoTypes[LocalAmmoType], LocalAmmoType);
 	}
 
+	ProcessAmmo();
+	ProcessAmmoGL();
 	UpdateHUDAddonsVisibility();
 	UpdateAddonsVisibility();
 	ProcessScope();
@@ -818,9 +817,6 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 		scope_sect = pSettings->r_string(GetCurrentScopeSection(), "scope_name");
 
 	LoadNightBrightnessParamsFromSection(scope_sect.c_str());
-
-	if (iAmmoElapsed == iMagazineSize)
-		_is_just_after_reload = true;
 
 	m_dwWeaponIndependencyTime = 0;
 
@@ -972,7 +968,6 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(_lens_zoom_params.target_position,output_packet);
 	save_data		(_lens_night_brightness.cur_step,output_packet);
 	save_data		(bIsTorchEnabled, output_packet);
-	save_data		(_is_just_after_reload, output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -994,8 +989,6 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(_lens_night_brightness_saved_step,input_packet);
 	load_data		(bIsTorchEnabled, input_packet);
 	SwitchTorch(bIsTorchEnabled);
-
-	load_data(_is_just_after_reload, input_packet);
 }
 
 
@@ -1220,6 +1213,8 @@ void CWeapon::UpdateCL		()
 
 	if (need_update_hud)
 	{
+		ProcessAmmo();
+		ProcessAmmoGL();
 		UpdateHUDAddonsVisibility();
 		ProcessScope();
 	}
@@ -1399,9 +1394,6 @@ void CWeapon::ModUpdate()
 		SetLastRechargeTime(fOneShotTime);
 
 	UpdateLensFactor(delta);
-
-	ProcessAmmo();
-	ProcessAmmoGL();
 
 	_last_update_time = Device.dwTimeGlobal;
 }
@@ -1774,12 +1766,12 @@ void CWeapon::ProcessAmmoAdv(bool forced)
 	{
 		if (IsTriStateReload())
 		{
-            if (GetActualCurrentAnim().find("anm_open") == 0)
+            if (strncmp(GetActualCurrentAnim().c_str(), "anm_open", strlen("anm_open")) == 0)
 			{
                 xr_string param = "ejection_delay_" + GetActualCurrentAnim();
-				u32 ejection_delay = READ_IF_EXISTS(pSettings, r_u32, HudSection(), param.c_str(), 0);
-				if (ejection_delay > 0 && Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm) < ejection_delay)
-					return;
+				u32 ejection_delay = READ_IF_EXISTS(pSettings, r_u32, hud_sect, param.c_str(), 0);
+                if (ejection_delay > 0 && Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm) < ejection_delay)
+                    return;
             }
 
             ammotype = GetAmmoTypeToReload();
@@ -4080,6 +4072,14 @@ void CWeapon::OnStateSwitch	(u32 S)
 		case eSuicideStop:
 			switch2_SuicideStop();
 			break;
+		case eReload:
+		case eUnjam:
+		case eBore:
+		case eMisfire:
+		{
+			ProcessAmmo();
+			ProcessAmmoGL();
+		}break;
 	}
 
 	switch (S)
