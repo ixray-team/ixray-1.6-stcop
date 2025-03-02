@@ -139,7 +139,7 @@ public:
 
 	IC void						RenderHud				(BOOL B)	{ m_huditem_flags.set(fl_renderhud, B);}
 	IC BOOL						RenderHud				()			{ return m_huditem_flags.test(fl_renderhud);}
-	attachable_hud_item*		HudItemData				();
+	attachable_hud_item*		HudItemData				() const;
 	virtual void				on_a_hud_attach			();
 			bool				HudAnimationExist		(LPCSTR anim_name);
 	virtual void				on_b_hud_detach			();
@@ -157,15 +157,15 @@ public:
 	};
 
 	virtual float GetHudFov();
-	virtual bool AllowBore() { return !m_bDisableBore; }
+	virtual const bool AllowBore() const { return !m_bDisableBore; }
 	virtual xr_string GetActualCurrentAnim() const;
-	bool CanStartAction(bool allow_aim_state = false);
-	bool Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE);
+	bool CanStartAction(bool allow_aim_state = false) const;
+	bool Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE) const;
 	bool IsSuicideAnimPlaying() const;
 	bool WpnCanShoot() const;
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
-	jitter_params GetCurJitterParams(shared_str hud_sect);
+	jitter_params GetCurJitterParams(const char* hud_sect);
 	using TAnimationEffector = fastdelegate::FastDelegate<void()>;
 
 	enum EDeviceFlags

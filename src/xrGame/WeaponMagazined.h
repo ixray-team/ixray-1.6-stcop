@@ -86,7 +86,7 @@ public:
 	virtual CWeaponMagazined*cast_weapon_magazined	()		 {return this;}
 
 	virtual void	SetDefaults		();
-			bool	OnShoot_CanShootNow();
+			bool	OnShoot_CanShootNow() const;
 	virtual void	FireStart		();
 	virtual void	FireEnd			();
 	
@@ -117,10 +117,10 @@ public:
 
 public:
 	virtual bool	SwitchMode				();
-	virtual bool	SingleShotMode			()			{return 1 == m_iQueueSize;}
+	virtual bool	SingleShotMode			() const {return 1 == m_iQueueSize;}
 	virtual void	SetQueueSize			(int size);
-	IC		int		GetQueueSize			() const	{return m_iQueueSize;};
-	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
+	IC		int		GetQueueSize			() const {return m_iQueueSize;}
+	virtual bool	StopedAfterQueueFired	() const {return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
 	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false);
 
@@ -165,8 +165,8 @@ public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 			bool	ChangeFiremode		(u16 cmd, u32 flags);
-			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
-	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
+			bool	HasFireModes		() const { return m_aFireModes.size() > 1; }
+	virtual	int		GetCurrentFireMode	() const { return m_aFireModes[m_iCurFireMode]; }
 	xr_string		GetFiremodeSuffix() const;
 
 	virtual void	save				(NET_Packet &output_packet);
@@ -179,7 +179,7 @@ protected:
 	virtual void UpdateHUDAddonsVisibility();
 
 protected:
-	virtual bool	AllowFireWhileWorking() {return false;}
+	virtual bool	AllowFireWhileWorking() const {return false;}
 
 	void			OnAmmoTimer();
 	void			KickCallback();
@@ -206,7 +206,7 @@ protected:
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon();
 
-	virtual	int		ShotsFired			() { return m_iShotNum; }
+	virtual	int		ShotsFired() const { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
 
 	virtual void	FireBullet			(const Fvector& pos, 

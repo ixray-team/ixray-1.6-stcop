@@ -63,7 +63,7 @@ public:
 	virtual void	PlayAnimModeSwitch	();
 	virtual xr_string	NeedAddSuffix(const xr_string& M);
 
-	virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
+	const virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
 	
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );

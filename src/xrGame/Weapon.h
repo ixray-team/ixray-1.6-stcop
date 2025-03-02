@@ -41,7 +41,7 @@ public:
 	// Generic
 	virtual void			Load				(LPCSTR section);
 
-	virtual bool			WeaponSoundExist	(LPCSTR section, LPCSTR sound_name);
+	virtual bool			WeaponSoundExist	(const char* section, const char* sound_name);
 
 	virtual BOOL			net_Spawn			(CSE_Abstract* DC);
 	virtual void			net_Destroy			();
@@ -59,7 +59,7 @@ public:
 
 	virtual void			UpdateCL			();
 	virtual void			shedule_Update		(u32 dt);
-	virtual bool			register_schedule() const {return false;};
+	virtual bool			register_schedule() const {return false;}
 	virtual void			renderable_Render	();
 	virtual void			render_hud_mode		();
 	virtual bool			need_renderable		();
@@ -88,7 +88,7 @@ public:
 	virtual bool			SendDeactivateItem	();
 	virtual void			SendHiddenItem		();	//same as OnHiddenItem but for client... (sends message to a server)...
 
-			bool			ScopeFit			(CScope*);
+		const bool			ScopeFit			(CScope*) const;
 
 public:
 	virtual bool			can_kill			() const;
@@ -137,8 +137,8 @@ public:
 	BOOL					IsUpdating			();
 
 
-	BOOL					IsMisfire			() const;
-	BOOL					CheckForMisfire		();
+	const bool				IsMisfire			() const;
+	bool					CheckForMisfire		();
 
 
 	BOOL					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
@@ -152,19 +152,19 @@ protected:
 
 	BOOL					m_bAutoSpawnAmmo;
 public:
-			bool IsGrenadeLauncherAttached	() const;
-			bool IsScopeAttached			() const;
-			bool IsSilencerAttached			() const;
+	const bool IsGrenadeLauncherAttached() const;
+	const bool IsScopeAttached() const;
+	const bool IsSilencerAttached() const;
 
-	virtual bool GrenadeLauncherAttachable();
-	virtual bool ScopeAttachable();
-	virtual bool SilencerAttachable();
+	const bool GrenadeLauncherAttachable() const;
+	const bool ScopeAttachable() const;
+	const bool SilencerAttachable() const;
 			
-	ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
-	ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
-	ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
+	const ALife::EWeaponAddonStatus	get_GrenadeLauncherStatus	() const { return m_eGrenadeLauncherStatus; }
+	const ALife::EWeaponAddonStatus	get_ScopeStatus				() const { return m_eScopeStatus; }
+	const ALife::EWeaponAddonStatus	get_SilencerStatus			() const { return m_eSilencerStatus; }
 
-	virtual bool UseScopeTexture() const {return !IsGrenadeMode();}
+	const bool UseScopeTexture() const {return !IsGrenadeMode();}
 
 	//обновление видимости для косточек аддонов
 	virtual void UpdateAddonsVisibility();
@@ -172,28 +172,28 @@ public:
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 
-	//для отоброажения иконок апгрейдов в интерфейсе
+	//для отображения иконок апгрейдов в интерфейсе
 
-	int	GetScopeX()
+	const int GetScopeX() const
 	{ 
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + isHQIcons);
 	}
 
-	int	GetScopeY()
+	const int GetScopeY() const
 	{
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + isHQIcons);
 	}
 
-	int	GetSilencerX() {return m_iSilencerX;}
-	int	GetSilencerY() {return m_iSilencerY;}
+	const int GetSilencerX() {return m_iSilencerX;}
+	const int GetSilencerY() {return m_iSilencerY;}
 	void SetSilencerX(int value);
 	void SetSilencerY(int value);
-	int	GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
-	int	GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
+	const int GetGrenadeLauncherX() {return m_iGrenadeLauncherX;}
+	const int GetGrenadeLauncherY() {return m_iGrenadeLauncherY;}
 
-	const shared_str& GetGrenadeLauncherName	() const{return m_sGrenadeLauncherName;}
-	const shared_str GetScopeName				() const{return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}
-	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
+	const shared_str& GetGrenadeLauncherName	() const {return m_sGrenadeLauncherName;}
+	const shared_str GetScopeName				() const {return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");}
+	const shared_str& GetSilencerName			() const {return m_sSilencerName;}
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -277,45 +277,44 @@ public:
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
 
-	void HideOneUpgradeLevel(std::string section);
+	void HideOneUpgradeLevel(const char* section);
 	void ModUpdate();
 	void ProcessUpgrade();
 	void ProcessScope();
-	void SetWeaponModelBoneStatus(std::string bone, BOOL show);
-	void SetWeaponMultipleBonesStatus(std::string section, std::string line, BOOL show);
+	void SetWeaponModelBoneStatus(const xr_string bone, BOOL show) const;
+	void SetWeaponMultipleBonesStatus(const xr_string section, const xr_string line, BOOL show) const;
 	void SelectCurrentOffset(Fvector& pos, Fvector& rot);
 	void MakeWeaponKick(Fvector3& pos, Fvector3& dir);
 	void ReassignWorldAnims();
 	void switch2_Suicide();
 	void switch2_SuicideStop();
 	void ReloadNightBrightnessParams();
-	void LoadNightBrightnessParamsFromSection(shared_str sect);
+	void LoadNightBrightnessParamsFromSection(const char* sect);
 	void ChangeNightBrightness(int steps);
 	void SetNightBrightness(int steps, bool use_sound);
 	void UpdateZoomCrosshairUI();
 	void SetLensParams(lens_zoom_params& params);
 	void UpdateLensFactor(u32 timedelta);
 
-
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	bool OnActWhileReload_CanActNow() const;
 	bool Action_PrepareEarlyShotInReload();
-	bool CanAimNow();
-	bool CanLeaveAimNow();
+	bool CanAimNow() const;
+	bool CanLeaveAimNow() const;
 	bool IsCollimatorInstalled() const;
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
 	bool IsUIForceHiding() const;
-	bool FindBoolValueInUpgradesDef(shared_str key, bool def, bool scan_after_nodefault = false) const;
-	bool IsActionProcessing();
+	bool FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_after_nodefault = false) const;
+	bool IsActionProcessing() const;
 	bool IsLensedScopeInstalled() const;
 
-	virtual bool IsGrenadeMode() const { return false; }
+	const virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }
 
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
-	shared_str FindStrValueInUpgradesDef(shared_str key, shared_str def) const;
+	shared_str FindStrValueInUpgradesDef(const char* key, const char* def) const;
 
 	void MakeLockByConfigParam(xr_string key, bool lock_shooting = false, TAnimationEffector fun = nullptr);
 	virtual u32	PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooting = false, bool need_suffix = true, TAnimationEffector fun = nullptr);
@@ -323,27 +322,27 @@ public:
 	virtual xr_string GetActualCurrentAnim() const;
 	xr_string GetFiremodeSuffix() const { return ""; }
 
-	u8 GetAmmoTypeIndex(bool second = false);
-	u8 GetAmmoTypeToReload();
+	u8 GetAmmoTypeIndex(bool second = false) const;
+	u8 GetAmmoTypeToReload() const;
 	u8 GetOrdinalAmmoType();
-	u8 GetGlAmmotype();
-	u8 GetCartridgeType(CCartridge* c);
+	u8 GetGlAmmotype() const;
+	u8 GetCartridgeType(CCartridge* c) const;
 	CCartridge* GetCartridgeFromMagVector(u32 index);
-	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index);
-	u32 GetAmmoInGLCount();
-	u32 GetAmmoInMagCount();
-	int GetMagCapacity();
+	CCartridge* GetGrenadeCartridgeFromGLVector(u32 index) const;
+	u32 GetAmmoInGLCount() const;
+	u32 GetAmmoInMagCount() const;
+	int GetMagCapacity() const;
 
 	void ProcessAmmo(bool forced = false);
 	void ProcessAmmoAdv(bool forced = false);
 	void ProcessAmmoGL(bool forced = false);
 
-	int FindIntValueInUpgradesDef(shared_str key, int def);
+	int FindIntValueInUpgradesDef(const char* key, int def) const;
 
-	float ModifyFloatUpgradedValue(shared_str key, float def);
+	float ModifyFloatUpgradedValue(const char* key, float def) const;
 	float GetLensFOV(float default_value) const;
-	float GetNightPPEFactor();
-
+	float GetNightPPEFactor() const;
+	 
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
@@ -404,9 +403,9 @@ public:
 	virtual void			OnZoomOut			();
 	IC		bool			IsZoomed			()	const		{return m_zoom_params.m_bIsZoomModeNow;};
 	float					GetAimFactor		() const {return m_zoom_params.m_fZoomRotationFactor;}
-	CUIWindow*				ZoomTexture			();	
+	CUIWindow*				ZoomTexture			() const;	
 
-	bool ZoomHideCrosshair() {
+	bool ZoomHideCrosshair() const {
 		CActor* pA = smart_cast<CActor*>(H_Parent());
 		if (pA && pA->active_cam() == eacLookAt && !ZoomTexture())
 			return false;
@@ -416,7 +415,7 @@ public:
 	IC float				GetZoomFactor		() const		{return m_zoom_params.m_fCurrentZoomFactor;}
 	IC void					SetZoomFactor		(float f) 		{m_zoom_params.m_fCurrentZoomFactor = f;}
 
-	virtual	float			CurrentZoomFactor	();
+	virtual	float			CurrentZoomFactor	() const;
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_zoom_params.m_fZoomRotationFactor<1.f);}
 
@@ -515,8 +514,8 @@ public:
 
 
 	virtual float			GetFireDispersion	(float cartridge_k, bool for_crosshair = false);
-	virtual	int				ShotsFired			() { return 0; }
-	virtual	int				GetCurrentFireMode	() { return 1; }
+	virtual	int				ShotsFired			() const { return 0; }
+	virtual	int				GetCurrentFireMode	() const { return 1; }
 
 	//параметы оружия в зависимоти от его состояния исправности
 	float					GetConditionDispersionFactor	() const;
@@ -667,8 +666,7 @@ public:
 	virtual bool			use_crosshair				()	const {return true;}
 			bool			show_crosshair				();
 			bool			show_indicators				();
-	virtual BOOL			ParentMayHaveAimBullet		();
-	virtual BOOL			ParentIsActor				();
+	  const bool			ParentIsActor				() const override;
 	
 private:
 	virtual	bool			install_upgrade_ammo_class	( LPCSTR section, bool test );
