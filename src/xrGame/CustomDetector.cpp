@@ -38,7 +38,7 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 
 	CInventoryItem& iitm			= itm->item();
 	u32 slot						= iitm.BaseSlot();
-	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || slot==BINOCULAR_SLOT || slot==GRENADE_SLOT || slot==ANIM_SLOT);
+	bool bres = (slot==INV_SLOT_2 || slot==KNIFE_SLOT || slot==BOLT_SLOT || !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && (slot==BINOCULAR_SLOT || slot==GRENADE_SLOT) || slot==ANIM_SLOT);
 	if(!bres && slot_to_activate)
 	{
 		*slot_to_activate = NO_ACTIVE_SLOT;
@@ -107,7 +107,7 @@ void CCustomDetector::HideDetector(bool bFastMode)
 
 void CCustomDetector::ShowDetector(bool bFastMode)
 {
-	if(GetState()==eHidden||GetState()==eHiding)
+	if (GetState()==eHidden || !EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState()==eHiding)
 		ToggleDetector(bFastMode);
 }
 
@@ -125,7 +125,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	if (GetState() == eHidden || GetState() == eHiding)
+	if (GetState() == eHidden || !isGuns && GetState() == eHiding)
 	{
 		if(switching)
 			m_bDetectorActive = true;
@@ -166,7 +166,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 			}
 		}
 	}
-	else if(GetState()==eIdle||GetState()==eShowing)
+	else if (GetState()==eIdle || GetState()==eShowing)
 	{
 		if (GetState() == eShowing)
 			bNeedHideDet = true;
@@ -179,7 +179,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 				return;
 		}
 
-		if (GetState() == eIdle || GetState() == eShowing)
+		if (GetState() == eIdle || !isGuns && GetState() == eShowing)
 		{
 			isTryToToggle = false;
 			SwitchState(eHiding);
