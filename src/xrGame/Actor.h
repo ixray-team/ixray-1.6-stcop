@@ -18,6 +18,7 @@
 
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
+#include "HudItem.h"
 #include "CustomDetector.h"
 
 using namespace ACTOR_DEFS;
@@ -708,6 +709,7 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
+			bool				OnActorSwitchesSmth				(const shared_str& restrictor_config_param, const shared_str& animator_item_section, const ACTOR_DEFS::EActorKeyflags& key_repeat, const CHudItem::TAnimationEffector& callback, u32 state, u32 device = 0);
 	CCustomDetector*			GetDetector						(bool in_slot = false);
 #ifndef MASTER_GOLD
 			void				NoClipFly						(int cmd);
