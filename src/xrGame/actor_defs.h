@@ -31,6 +31,12 @@ enum EMovementStates
 	eReal,
 };
 
+enum EActorKeyflags
+{
+	kfFIRE = 1,
+	kfUNZOOM = 2,
+};
+
 enum EMoveCommand
 {
 	mcFwd		= (1ul<<0ul),
@@ -55,8 +61,8 @@ enum EMoveCommand
 	mcJumpSeq = (mcJump | mcFall | mcLanding | mcLanding2),
 };
 
-// enum дл€ определени€ действи€ над вещью на которую наведен в текущее врем€ прицел.
-// »спользуетс€ дл€ показа всплывающих динамических подсказок
+// enum для определения действия над вещью на которую наведен в текущее время прицел.
+// Используется для показа всплывающих динамических подсказок
 enum EActorAction
 {
 	eaaNoAction			= 0,
@@ -134,7 +140,7 @@ struct					net_update_A
 };
 
 ///////////////////////////////////////////////////////
-// данные дл€ интерпол€ции
+// данные для интерполяции
 struct					InterpData
 {
 	Fvector				Pos;
