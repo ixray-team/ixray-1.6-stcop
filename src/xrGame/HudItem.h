@@ -148,6 +148,7 @@ protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
 	shared_str					hud_sect;
+	shared_str					hud_sect_cache;
 
 	//кадры момента пересчета XFORM и FirePos
 	u32							dwFP_Frame;
