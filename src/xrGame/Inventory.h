@@ -5,6 +5,7 @@ class CInventory;
 class CInventoryItem;
 class CHudItem;
 class CInventoryOwner;
+class CGrenade;
 
 class CInventorySlot
 {									
@@ -64,6 +65,7 @@ public:
 
 
 	void					Activate			(u16 slot, /*EActivationReason reason=eGeneral, */bool bForce=false);
+	void					PutGrenade			(CGrenade* new_grenade);
 	
 	static u32 const		qs_priorities_count = 5;
 	PIItem					GetNextItemInActiveSlot		(u8 const priority_value, bool ignore_ammo);
@@ -77,15 +79,15 @@ public:
 	bool					Action				(u16 cmd, u32 flags);
 	void					ActiveWeapon		(u16 slot);
 	void					Update				();
-	// »щет на по€се аналогичный IItem
+	// Ищет на поясе аналогичный IItem
 	PIItem					Same				(const PIItem pIItem, bool bSearchRuck) const;
-	// »щет на по€се IItem дл€ указанного слота
+	// Ищет на поясе IItem для указанного слота
 	PIItem					SameSlot			(const u16 slot, PIItem pIItem, bool bSearchRuck) const;
-	// »щет на по€се или в рюкзаке IItem с указанным именем (cName())
+	// Ищет на поясе или в рюкзаке IItem с указанным именем (cName())
 	PIItem					Get					(LPCSTR name, bool bSearchRuck) const;
-	// »щет на по€се или в рюкзаке IItem с указанным именем (id)
+	// Ищет на поясе или в рюкзаке IItem с указанным именем (id)
 	PIItem					Get					(const u16  id,	 bool bSearchRuck) const;
-	// »щет на по€се или в рюкзаке IItem с указанным CLS_ID
+	// Ищет на поясе или в рюкзаке IItem с указанным CLS_ID
 	PIItem					Get					(CLASS_ID cls_id,  bool bSearchRuck) const;
 	PIItem					GetAny				(LPCSTR name) const;//search both (ruck and belt)
 	PIItem					item				(CLASS_ID cls_id) const;
@@ -153,8 +155,8 @@ protected:
 	void					UpdateDropTasks		();
 	void					UpdateDropItem		(PIItem pIItem);
 
-	// јктивный слот и слот который станет активным после смены
-    //значени€ совпадают в обычном состо€нии (нет смены слотов)
+	// Активный слот и слот который станет активным после смены
+    //значения совпадают в обычном состоянии (нет смены слотов)
 	u16 				m_iActiveSlot;
 	u16 				m_iNextActiveSlot;
 	u16 				m_iPrevActiveSlot;
@@ -162,13 +164,14 @@ protected:
 	u16					m_iDeferredSlot;
 
 	CInventoryOwner*	m_pOwner;
+	CGrenade*			new_grenade;
 
-	//флаг, показывающий наличие по€са в инвенторе
+	//флаг, показывающий наличие пояса в инвенторе
 	bool				m_bBeltUseful;
 	//флаг, допускающий использование слотов
 	bool				m_bSlotsUseful;
 
-	// максимальный вес инвентар€
+	// максимальный вес инвентаря
 	float				m_fMaxWeight;
 	// текущий вес в инвентаре
 	float				m_fTotalWeight;
