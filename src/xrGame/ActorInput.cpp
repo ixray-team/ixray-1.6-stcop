@@ -484,6 +484,8 @@ void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, 
 		_keyflags &= ~mask;
 }
 
+extern BOOL b_toggle_weapon_aim;
+
 void CActor::ProcessKeys()
 {
 	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
@@ -500,6 +502,39 @@ void CActor::ProcessKeys()
 	{
 		SwitchNightVision();
 		SetActorKeyRepeatFlag(kfNIGHTVISION, false);
+	}
+
+	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+	if (wpn == nullptr)
+		return;
+
+	if (IsActionKeyPressedInGame(kWPN_ZOOM))
+		wpn->Action(kWPN_ZOOM, CMD_START);
+
+	if ((_keyflags & kfUNZOOM) != 0)
+	{
+		if (wpn->IsZoomed())
+		{
+			if (wpn->CanLeaveAimNow())
+			{
+				if (b_toggle_weapon_aim)
+					wpn->Action(kWPN_ZOOM, CMD_START);
+				else
+					wpn->Action(kWPN_ZOOM, CMD_STOP);
+			}
+		}
+		else
+			SetActorKeyRepeatFlag(kfUNZOOM, false);
+	}
+
+	if (!wpn->IsActionProcessing() && (_keyflags & kfFIRE) != 0)
+	{
+		wpn->Action(kWPN_FIRE, CMD_START);
+
+		if (!IsActionKeyPressed(kWPN_FIRE))
+			wpn->Action(kWPN_FIRE, CMD_STOP);
+
+		SetActorKeyRepeatFlag(kfFIRE, false);
 	}
 }
 
