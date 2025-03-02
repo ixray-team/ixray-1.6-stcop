@@ -200,6 +200,16 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 			OnStateSwitch	(u32(S));
 		}
 		break;
+	case GE_SWITCH_WEAPON_LIGHT:
+	{
+		//	Msg("Try GE_SWITCH_WEAPON_LIGHT");
+		bool laser_active = !!P.r_u8();
+		if (object().cast_weapon()) {
+			laserdot_params* laser = object().cast_weapon()->laser_data;
+			if (laser) laser->SwitchLaserActive(laser_active);
+		}
+	}
+	break;
 	}
 }
 

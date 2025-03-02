@@ -31,6 +31,49 @@ struct player_hud_motion_container
 	void		load				(IKinematicsAnimated* model, const shared_str& sect);
 };
 
+
+struct dist_switch
+{
+	std::string Name;
+	float startdist;
+};
+
+struct dist_koef
+{
+	float startdist;
+	float multiplier;
+};
+
+class CParticlesObject;
+class CWeapon;
+
+struct laserdot_params
+{
+	CParticlesObject* particle;
+	xr_vector<dist_switch> dist_switches;
+	xr_vector<dist_koef> dist_koefs;
+	bool is_laser_active;
+	std::string particles_cur;
+	std::string bone_name;
+	std::string m_section;
+	Fvector3 world_offset;
+	Fvector3 offset;
+	bool always_hud;
+	bool always_world;
+	float hud_treshold;
+	Fcolor color;
+	bool is_laser_instaled;
+	laserdot_params();
+	~laserdot_params();
+	void InstallLaser(std::string section, std::string hud_section);
+	void SwitchLaserActive(bool is_active);
+	void UpdateLaserFromObject(CWeapon* item);
+	bool GetLaserActive() { return is_laser_active; };
+	bool GetLaserInstalled() { return is_laser_instaled; };
+};
+
+
+
 struct hud_item_measures
 {
 	enum{e_fire_point=(1<<0), e_fire_point2=(1<<1), e_shell_point=(1<<2), e_16x9_mode_now=(1<<3)};

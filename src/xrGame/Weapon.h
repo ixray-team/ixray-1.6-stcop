@@ -50,6 +50,7 @@ public:
 	
 	virtual CWeapon			*cast_weapon			()					{return this;}
 	virtual CWeaponMagazined*cast_weapon_magazined	()					{return 0;}
+	laserdot_params* laser_data = nullptr;
 
 
 	//serialization
@@ -389,7 +390,9 @@ public:
 	float ModifyFloatUpgradedValue(const char* key, float def) const;
 	float GetLensFOV(float default_value) const;
 	float GetNightPPEFactor() const;
-	 
+
+	IC float GetRotateFactor() const { return m_zoom_params.m_fZoomRotationFactor; }
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;

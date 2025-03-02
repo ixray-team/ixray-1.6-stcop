@@ -132,12 +132,16 @@ CWeapon::CWeapon()
 
 	bIsTorchEnabled = false;
 	bIsLaserEnabled = false;
+
+	laser_data = new laserdot_params();
 }
 
 CWeapon::~CWeapon		()
 {
 	xr_delete				(m_UIScope);
 	delete_data				(m_scopes);
+
+	xr_delete(laser_data);
 }
 
 void CWeapon::Hit					(SHit* pHDS)
@@ -493,8 +497,7 @@ void CWeapon::Load		(LPCSTR section)
 	conditionDecreasePerShot		= pSettings->r_float(section,"condition_shot_dec"); 
 	conditionDecreasePerQueueShot	= READ_IF_EXISTS(pSettings, r_float, section, "condition_queue_shot_dec", conditionDecreasePerShot); 
 
-
-
+	laser_data->InstallLaser(section, HudSection().c_str());
 
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
 	
@@ -1181,6 +1184,10 @@ void CWeapon::UpdateTorch()
 		SwitchTorch(false);
 	}
 
+	if (laser_data->GetLaserInstalled()) {
+		SetMultipleBonesStatus(laser_data->m_section.c_str(), "laser_ray_bones", laser_data->GetLaserActive());
+	}
+
 	bool is_broken = false;
 	float current_condition = GetCondition();
 
@@ -1224,6 +1231,8 @@ void CWeapon::UpdateCL		()
 
 	UpdateCollimatorSight();
 	UpdateTorch();
+
+	laser_data->UpdateLaserFromObject(this);
 
 	inherited::UpdateCL		();
 	//подсветка от выстрела
@@ -2431,7 +2440,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 		case kLASER:
 		{
 			//Ravlik 2 Hozar: Add laser testing
-			if (flags & CMD_START && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfLASER))
+			if (flags & CMD_START && laser_data->GetLaserInstalled() && !IsZoomed() && Weapon_SetKeyRepeatFlagIfNeeded(kfLASER))
 			{
 				fDeviceFlags.set(EDeviceFlags::DF_TACTICALLASER, true);
 				SwitchState(eSwitchDevice);

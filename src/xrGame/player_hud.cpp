@@ -10,6 +10,251 @@
 #include "Inventory.h"
 #include "WeaponBinoculars.h"
 
+void transform_to_hud_temp(Fvector& pos) {
+	extern ENGINE_API float psHUD_FOV;
+	Fmatrix inv_v = Fmatrix().set(Device.mView).invert();
+	Fmatrix inv_p = Fmatrix().set(Device.mProject).invert();
+
+	Fmatrix hud_p; hud_p.build_projection(deg2rad(psHUD_FOV),
+		Device.fASPECT, VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mView.transform_tiny(pos);
+	hud_p.transform_tiny(pos);
+
+	inv_p.transform_tiny(pos);
+	inv_v.transform_tiny(pos);
+}
+
+
+void transform_from_hud_temp(Fvector& pos) {
+	extern ENGINE_API float psHUD_FOV;
+	Fmatrix inv_v = Fmatrix().set(Device.mView).invert();
+
+	Fmatrix hud_p; hud_p.build_projection(deg2rad(psHUD_FOV),
+		Device.fASPECT, VIEWPORT_NEAR, g_pGamePersistent->Environment().CurrentEnv->far_plane).invert();
+
+	Device.mView.transform_tiny(pos);
+	Device.mProject.transform_tiny(pos);
+
+	hud_p.transform_tiny(pos);
+	inv_v.transform_tiny(pos);
+}
+
+void transform_to_hud(Fvector& pos, Fvector& dir) {
+	dir.add(pos); transform_to_hud_temp(dir); transform_to_hud_temp(pos);
+	dir = dir.sub(pos).normalize();
+}
+
+laserdot_params::laserdot_params()
+{
+	always_hud = false;
+	always_world = false;
+	color = { 0,0,0,0 };
+	hud_treshold = 0.0f;
+	is_laser_active = false;
+	is_laser_instaled = false;
+	offset = { 0,0,0 };
+	world_offset = { 0,0,0 };
+	particles_cur = "";
+	particle = NULL;
+}
+
+laserdot_params::~laserdot_params()
+{
+	dist_switches.clear();
+	dist_koefs.clear();
+	if (particle != NULL) {
+		particle->Stop();
+		CParticlesObject::Destroy(particle);
+		particle = NULL;
+	}
+}
+
+void laserdot_params::InstallLaser(std::string section, std::string hud_section)
+{
+	if (is_laser_instaled) return;
+
+	if (!READ_IF_EXISTS(pSettings, r_bool, section.c_str(), "laser_installed", FALSE))
+		return;
+
+	size_t size = READ_IF_EXISTS(pSettings, r_u32, section.c_str(), "particles_count", 1u);
+	dist_switches.resize(size);
+
+	dist_switches[0].Name = pSettings->r_string(section.c_str(), "laserdot_particle_0");
+	dist_switches[0].startdist = 0.0f;
+
+	m_section = section;
+
+	std::string temp;
+	for (size_t i = 1; i < size; ++i) {
+		temp = std::to_string(i);
+		dist_switches[i].Name = pSettings->r_string(section.c_str(), ("laserdot_particle_" + temp).c_str());
+		dist_switches[i].startdist = READ_IF_EXISTS(pSettings, r_float, section.c_str(), ("laserdot_dist_" + temp).c_str(), -1.0f);
+		dist_switches[i].startdist = _max(dist_switches[i].startdist, dist_switches[i - 1u].startdist);
+	}
+
+	size = READ_IF_EXISTS(pSettings, r_u32, section.c_str(), "laserdot_dists_count", 0u) + 1u;
+	dist_koefs.resize(size);
+
+	dist_koefs[0].multiplier = 1.0f;
+	dist_koefs[0].startdist = 0.0f;
+
+	for (size_t i = 1; i < size; ++i) {
+		temp = std::to_string(i);
+		dist_koefs[i].multiplier = pSettings->r_float(section.c_str(), ("laserdot_dist_scale_" + temp).c_str());
+		dist_koefs[i].startdist = READ_IF_EXISTS(pSettings, r_float, section.c_str(), ("laserdot_dist_treshold_" + temp).c_str(), .0f);
+		dist_koefs[i].startdist = _max(dist_switches[i].startdist, dist_switches[i - 1u].startdist);
+	}
+
+	bone_name = pSettings->r_string(section.c_str(), "laserdot_attach_bone");
+
+	offset.x = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_attach_offset_x", .0f);
+	offset.y = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_attach_offset_y", .0f);
+	offset.z = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_attach_offset_z", .0f);
+
+	world_offset.x = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_world_attach_offset_x", .0f);
+	world_offset.y = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_world_attach_offset_y", .0f);
+	world_offset.z = READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_world_attach_offset_z", .0f);
+
+	always_hud = !!READ_IF_EXISTS(pSettings, r_bool, hud_section.c_str(), "laserdot_always_hud", FALSE);
+	always_world = !!READ_IF_EXISTS(pSettings, r_bool, hud_section.c_str(), "laserdot_always_world", FALSE);
+
+	hud_treshold = cos(deg2rad(READ_IF_EXISTS(pSettings, r_float, section.c_str(), "laserdot_hud_treshold", 10.0f)));
+
+	is_laser_instaled = true;
+}
+
+void laserdot_params::UpdateLaserFromObject(CWeapon* item)
+{
+	if (!item || !item->Visual())
+		return;
+
+	if (!is_laser_instaled)
+		return;
+
+	Fvector3 invisible_pos; invisible_pos.mad(Device.vCameraPosition, Device.vCameraDirection, -1.0f);
+
+	if (item->GetState() == item->eHidden && item->H_Parent()) {
+		if (particle != NULL) {
+			item->CShootingObject::StartParticles(particle, particles_cur.c_str(), invisible_pos);
+			item->CShootingObject::StopParticles(particle);
+		}
+		return;
+	}
+
+	IKinematics* kin; Fmatrix xform;
+	if (!is_laser_active) {
+		if (particle != NULL) {
+			item->CShootingObject::StartParticles(particle, particles_cur.c_str(), invisible_pos);
+			item->CShootingObject::StopParticles(particle);
+		}
+		return;
+	}
+
+	Fvector ray_pos = { 0, 0, 0 };
+	Fvector ray_dir = { 0, 0, 1 };
+	bool is_hud_mode = item->GetHUDmode();
+	u16 bone_id = BI_NONE;
+	Fvector up, right;
+
+	if (is_hud_mode) {
+		xform = item->HudItemData()->m_item_transform;
+		kin = item->HudItemData()->m_model;
+		bone_id = kin->LL_BoneID(bone_name.c_str());
+		kin->LL_GetTransform(bone_id).transform_tiny(ray_pos, offset);
+	}
+	else {
+		xform = item->XFORM();
+		kin = item->Visual()->dcast_PKinematics();
+		bone_id = kin->LL_BoneID(bone_name.c_str());
+		kin->LL_GetTransform(bone_id).transform_tiny(ray_pos, world_offset);
+	}
+
+	xform.transform_tiny(ray_pos);
+	xform.transform_dir(ray_dir);
+
+	if (is_hud_mode) {
+		if (!item->IsGrenadeMode()) {
+			ray_pos.lerp(ray_pos, Device.vCameraPosition, item->GetRotateFactor());
+			//	ray_dir.lerp(ray_dir, Device.vCameraDirection, item->GetRotateFactor()).normalize();
+		}
+		transform_to_hud(ray_pos, ray_dir);
+	}
+
+	collide::rq_result RQ;
+	bool is_picked = g_pGameLevel->ObjectSpace.RayPick(ray_pos, ray_dir, 300.0f, collide::rqtBoth, RQ, item->H_Root());
+
+	if (!is_picked) {
+		if (particle != NULL) {
+			item->CShootingObject::StartParticles(particle, particles_cur.c_str(), invisible_pos);
+			item->CShootingObject::StopParticles(particle);
+		}
+	}
+	else {
+		float distance = RQ.range * .98f;  Fvector final_position; final_position.mad(ray_pos, ray_dir, distance);
+		if (is_hud_mode)
+			transform_from_hud_temp(final_position);
+
+		u32 index = 0u;
+
+		if (!is_hud_mode) {
+			if (dist_switches.size() > 1) {
+				index = dist_switches.size() - 1u;
+				for (u32 i = 0; i < index; ++i) {
+					if (distance >= dist_switches[i].startdist && distance <= dist_switches[i + 1].startdist) {
+						index = i; break;
+					}
+				}
+			}
+		}
+		else {
+			Fvector local_final = Device.vCameraPosition;
+			local_final.sub(final_position);
+
+			float tmp_dist = distance = std::max(EPS, local_final.magnitude());
+			local_final.div(tmp_dist);
+
+			u32 len = dist_koefs.size() - 1;
+			float new_dist = 0.0f;
+
+			for (int i = 1; i <= len; ++i) {
+				float delta_dist = dist_koefs[i].startdist - dist_koefs[i - 1].startdist;
+				if (tmp_dist > delta_dist) {
+					tmp_dist -= delta_dist;
+					new_dist += delta_dist * dist_koefs[i - 1].multiplier;
+				}
+				else {
+					new_dist += tmp_dist * dist_koefs[i - 1].multiplier;
+					tmp_dist = 0.0f;
+					break;
+				}
+			}
+			new_dist += tmp_dist * dist_koefs[len].multiplier;
+			tmp_dist = distance - new_dist;
+
+			final_position.mad(local_final, tmp_dist);
+		}
+
+		if (is_hud_mode) {
+			transform_to_hud_temp(final_position);
+		}
+
+		if (particles_cur != dist_switches[index].Name && particle != NULL) {
+			item->CShootingObject::StartParticles(particle, particles_cur.c_str(), invisible_pos, zero_vel, false, true);
+			item->CShootingObject::StopParticles(particle);
+		}
+
+		particles_cur = dist_switches[index].Name;
+		item->CShootingObject::StartParticles(particle, dist_switches[index].Name.c_str(), final_position, zero_vel, false, true);
+	}
+}
+
+void laserdot_params::SwitchLaserActive(bool is_active)
+{
+	is_laser_active = is_active;
+}
+
+
 player_hud* g_player_hud = nullptr;
 
 Fvector _ancor_pos;

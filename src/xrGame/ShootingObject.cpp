@@ -198,8 +198,9 @@ void CShootingObject::Light_Render	(const Fvector& P)
 // Particles
 //////////////////////////////////////////////////////////////////////////
 
-void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR particles_name, 
-									 const Fvector& pos, const  Fvector& vel, bool auto_remove_flag)
+void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, 
+									const Fvector& pos, const  Fvector& vel, bool auto_remove_flag,
+									bool permanent_world)
 {
 	if(!particles_name) return;
 
@@ -220,7 +221,7 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 	{
 		in_hud_mode = false;
 	}
-	pParticles->Play(in_hud_mode);
+	pParticles->Play(in_hud_mode && !permanent_world);
 }
 void CShootingObject::StopParticles (CParticlesObject*&	pParticles)
 {

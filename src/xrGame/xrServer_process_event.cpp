@@ -64,6 +64,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:
 	case GE_GRENADE_EXPLODE:
+	case GE_SWITCH_WEAPON_LIGHT:
 		{
 		SendBroadcast			(BroadcastCID,P,MODE);
 		}break;

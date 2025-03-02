@@ -165,8 +165,11 @@ protected:
 	
 	////////////////////////////////////////////////
 	//общие функции для работы с партиклами оружия
-			void			StartParticles		(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel = zero_vel, bool auto_remove_flag = false);
+public:
+			void			StartParticles		(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel = zero_vel,
+				bool auto_remove_flag = false, bool permanent_world = false);
 			void			StopParticles		(CParticlesObject*& pParticles);
+protected:
 			void			UpdateParticles		(CParticlesObject*& pParticles, const Fvector& pos, const  Fvector& vel = zero_vel);
 
 			void			LoadShellParticles	(LPCSTR section, LPCSTR prefix);

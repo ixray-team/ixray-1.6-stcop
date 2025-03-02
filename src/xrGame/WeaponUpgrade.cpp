@@ -55,6 +55,14 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 		TorchBreakingParams.end_condition = tmp_vector.y;
 		TorchBreakingParams.start_probability = tmp_vector.z;
 	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "laser_installed", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		laser_data->InstallLaser(section, HudSection().c_str());
+		laser_data->SwitchLaserActive(false);
+	}
 
 	result |= result2;
 

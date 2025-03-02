@@ -1609,7 +1609,8 @@ void CWeaponMagazined::TacticalTorchSwitch()
 
 void CWeaponMagazined::LaserSwitch()
 {
-	bIsLaserEnabled = !bIsLaserEnabled;
+	laser_data->is_laser_active = !laser_data->is_laser_active;
+
 	MakeLockByConfigParam("lock_time_end_" + GetActualCurrentAnim());
 }
 
@@ -1634,7 +1635,7 @@ void CWeaponMagazined::PlayAnimDevice()
 	}
 	else if (fDeviceFlags.test(EDeviceFlags::DF_TACTICALLASER))
 	{
-		bool laser_enabled = bIsLaserEnabled;
+		bool laser_enabled = laser_data->GetLaserActive();
 		string256 string = {};
 		xr_sprintf(string, "anm_laser_%s", laser_enabled ? "on" : "off");
 		PlayHUDMotion(string, true, eSwitchDevice);
