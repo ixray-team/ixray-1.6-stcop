@@ -137,7 +137,7 @@ void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, co
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
 	ThisItem->hud_sect = Section.c_str();
 	ThisItem->CurrentMotion = Anim.c_str();
-	ThisItem->lock_time_callback = fun;
+	ThisItem->SetAnimationCallback(fun);
 	ThisItem->SupportsDetector = supports_detector;
 
 	if (snd.length() > 0)

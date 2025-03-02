@@ -804,7 +804,6 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 	{
 		item->fDeviceFlags.zero();
 		item->fDeviceFlags.set(device, true);
-		item->SetAnimationCallback(callback);
 		item->SwitchState(state);
 		return true;
 	}
