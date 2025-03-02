@@ -77,6 +77,8 @@ void CEatableItem::Load(LPCSTR section)
 		if (pSettings->line_exist(HudSect, "timing_trash"))
 			m_siTimingTrash = pSettings->r_s32(HudSect, "timing_trash");
 
+		m_bNoTrash = !EngineExternal().isModificationGunslinger();
+
 		if (pSettings->line_exist(HudSect, "no_trash"))
 			m_bNoTrash = pSettings->r_bool(HudSect, "no_trash");
 	}
