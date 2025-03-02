@@ -1107,6 +1107,12 @@ void CWeaponMagazined::DoReload()
 		return;
 	}
 
+	if (IsMisfire())
+	{
+		SetMisfireStatus(false);
+		return;
+	}
+
 	int def_magsize = GetMagCapacity();
 	int mod_magsize = def_magsize;
 
