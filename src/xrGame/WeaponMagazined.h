@@ -164,7 +164,7 @@ protected:
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
-			bool	ChangeFiremode		(u16 cmd);
+			bool	ChangeFiremode		(u16 cmd, u32 flags);
 			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 	xr_string		GetFiremodeSuffix() const;
