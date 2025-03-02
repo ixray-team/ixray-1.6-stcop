@@ -989,6 +989,40 @@ namespace level_nearest
 	}
 }
 
+bool is_ui_shown() {
+	return true;
+}
+bool indicators_shown() {
+	return true;
+}
+bool inventory_shown() {
+	return true;
+}
+bool electronics_break() {
+	return false;
+}
+bool pickup_mode() {
+	return false;
+}
+bool is_actor_burned() {
+	return false;
+}
+bool electronics_restore() {
+	return true;
+}
+bool electronics_reset() {
+	return true;
+}
+bool electronics_apply() {
+	return true;
+}
+int get_parameter_upgraded_int() {
+	return 0;
+}
+int valid_saved_game_int() {
+	return 0;
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1128,9 +1162,21 @@ void CLevel::script_register(lua_State *L)
 		def("get_active_cam", &get_active_cam),
 		def("set_active_cam", &set_active_cam),
 		def("get_start_time", &get_start_time),
-		def("valid_vertex", &valid_vertex)
+		def("valid_vertex", &valid_vertex),
+		// TODO Guns: Drombeys to all: not impl
+		def("is_ui_shown", &is_ui_shown),
+		def("is_actor_burned", &is_actor_burned),
+		def("indicators_shown", &indicators_shown),
+		def("inventory_shown", &inventory_shown),
+		def("electronics_break", &electronics_break),
+		def("pickup_mode", &pickup_mode),
+		def("electronics_restore", &electronics_restore),
+		def("electronics_reset", &electronics_reset),
+		def("electronics_apply", &electronics_apply),
+		def("get_parameter_upgraded_int", &get_parameter_upgraded_int),
+		def("valid_saved_game_int", &valid_saved_game_int)
 	],
-	
+
 	module(L,"nearest")
 	[
 		def("set",						&level_nearest::Set),
