@@ -103,7 +103,7 @@ public:
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
-	virtual std::string	NeedAddSuffix(std::string M);
+	virtual xr_string	NeedAddSuffix(xr_string M);
 
 public:
 	virtual bool	SwitchMode				();
