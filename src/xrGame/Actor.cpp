@@ -1148,6 +1148,53 @@ void CActor::UpdateCL()
 		else
 			_jitter_time_remains = 0;
 
+		CTorch* itm_torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+		bool is_nv_enabled = false;
+
+		if (CTorch* itm_torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
+		{
+			is_nv_enabled = itm_torch->GetNightVisionStatus();
+
+			auto& torch_blowout = itm_torch->GetBlowoutProblemsLevel();
+
+			float blowout_disabling_level = torch_blowout.m_fBlowoutDisablingLevel;
+
+			if (blowout_disabling_level <= CurrentElectronicsProblemsCnt())
+			{
+				float disabling_probability = torch_blowout.m_fBlowoutDisablingProbability;
+
+				if (is_nv_enabled && disabling_probability > ::Random.randF(0.0f, 1.0f))
+				{
+					if (torch_blowout.m_bBlowoutDisableOnlyNvEffector)
+					{
+						if (itm_torch->GetNightVision() != nullptr)
+							itm_torch->GetNightVision()->Stop(torch_blowout.m_fBlowoutDisablingSpeed, torch_blowout.m_fBlowoutDisablingSound);
+					}
+					else
+						itm_torch->SwitchNightVision(false, true);
+				}
+			}
+		}
+
+		auto AddNVMask = [&](bool status)
+		{
+			if (CurrentGameUI() != nullptr)
+			{
+				if (g_Alive() && CurrentGameUI()->GameIndicatorsShown() && status)
+				{
+					if (CurrentGameUI()->GetCustomStatic("gunsl_nv_screen_mask") == nullptr)
+						CurrentGameUI()->AddCustomStatic("gunsl_nv_screen_mask", true);
+				}
+				else
+				{
+					if (CurrentGameUI()->GetCustomStatic("gunsl_nv_screen_mask") != nullptr)
+						CurrentGameUI()->RemoveCustomStatic("gunsl_nv_screen_mask");
+				}
+			}
+		};
+
+		AddNVMask(is_nv_enabled);
+
 		if (GetCurrentControllerInputCorrectionParams().active)
 		{
 			controller_mouse_control_params contr_k = GetControllerMouseControlParams();

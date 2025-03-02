@@ -90,6 +90,12 @@ void CTorch::Load(LPCSTR section)
 		const char* SoundName = pSettings->r_string(section, "snd_click");
 		m_switch_sound.create(SoundName, st_Effect, sg_SourceType);
 	}
+
+	m_TorchProblemsLevel.m_fBlowoutDisablingLevel = READ_IF_EXISTS(pSettings, r_float, section, "blowout_disabling_level", 10.0f);
+	m_TorchProblemsLevel.m_fBlowoutDisablingProbability = READ_IF_EXISTS(pSettings, r_float, section, "blowout_disabling_probability", 1.0f);
+	m_TorchProblemsLevel.m_bBlowoutDisableOnlyNvEffector = READ_IF_EXISTS(pSettings, r_bool, section, "blowout_disable_only_nv_effector", true);
+	m_TorchProblemsLevel.m_fBlowoutDisablingSpeed = READ_IF_EXISTS(pSettings, r_float, section, "blowout_disabling_speed", 100000.0f);
+	m_TorchProblemsLevel.m_fBlowoutDisablingSound = READ_IF_EXISTS(pSettings, r_bool, section, "blowout_disabling_sound", false);
 }
 
 void CTorch::SwitchNightVision()
