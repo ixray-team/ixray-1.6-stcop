@@ -27,38 +27,38 @@ CEffectorBobbing::CEffectorBobbing() : CEffectorCam(eCEBobbing,10000.f)
     fOldFreq = 0.f;
     fOldAmp = 0.f;
 
-    m_fAmplitudeSprint = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_amplitude", 0.f);
-    m_fSpeedSprint = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_speed", 0.f);
+    Sprint.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_amplitude", 0.f);
+    Sprint.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "sprint_speed", 0.f);
 
-    m_fAmplitudeZoomLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_amplitude", 0.f);
-    m_fSpeedZoomLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_speed", 0.f);
+    Limp.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_amplitude", 0.f);
+    Limp.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_speed", 0.f);
 
-    m_fAmplitudeLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_amplitude", 0.f);
-    m_fSpeedLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_speed", 0.f);
+    Limp.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_amplitude", 0.f);
+    Limp.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_limp_speed", 0.f);
 
-    m_fAmplitudeZoomSlowCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_amplitude", 0.f);
-    m_fSpeedZoomSlowCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_speed", 0.f);
+    SlowCrouch.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_amplitude", 0.f);
+    SlowCrouch.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_speed", 0.f);
 
-    m_fAmplitudeSlowCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_amplitude", 0.f);
-    m_fSpeedSlowCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "slow_crouch_speed", 0.f);
+    SlowCrouch.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_amplitude", 0.f);
+    SlowCrouch.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_slow_crouch_speed", 0.f);
 
-    m_fAmplitudeZoomCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_amplitude", 0.f);
-    m_fSpeedZoomCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_speed", 0.f);
+    Crouch.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_amplitude", 0.f);
+    Crouch.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_speed", 0.f);
 
-    m_fAmplitudeCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_amplitude", 0.f);
-    m_fSpeedCrouch = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_speed", 0.f);
+    Crouch.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_amplitude", 0.f);
+    Crouch.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_crouch_speed", 0.f);
 
-    m_fAmplitudeZoomWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_amplitude", 0.f);
-    m_fSpeedZoomWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_speed", 0.f);
+    Walk.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_amplitude", 0.f);
+    Walk.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_speed", 0.f);
 
-    m_fAmplitudeWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_amplitude", 0.f);
-    m_fSpeedWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_speed", 0.f);
+    Walk.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_amplitude", 0.f);
+    Walk.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_walk_speed", 0.f);
 
-    m_fAmplitudeZoomRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_amplitude", 0.f);
-    m_fSpeedZoomRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_speed", 0.f);
+    Run.Amplitude.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_amplitude", 0.f);
+    Run.Speed.Default = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_speed", 0.f);
 
-    m_fAmplitudeRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_amplitude", 0.f);
-    m_fSpeedRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_speed", 0.f);
+    Run.Amplitude.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_amplitude", 0.f);
+    Run.Speed.Zoom = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_run_speed", 0.f);
 
     m_fAmplitudeDelta = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "amplitude_delta", 1.f);
 }
@@ -101,7 +101,7 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 		M.i.crossproduct(info.n, info.d);
 		M.c.set		(info.p);
 
-		float A, ST;
+		float A = 0.f, ST = 0.f;
 
         bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
@@ -111,22 +111,22 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 			
             if (isActorAccelerated(dwMState, m_bZoomMode))
             {
-                A = m_fAmplitudeRun * k;
-                ST = m_fSpeedRun * fTime * k;
+                A = Run.Amplitude.Default * k;
+                ST = Run.Speed.Default * fTime * k;
             }
             else if (is_limping)
             {
-                A = m_fAmplitudeLimp * k;
-                ST = m_fSpeedLimp * fTime * k;
+                A = Limp.Amplitude.Default * k;
+                ST = Limp.Speed.Default * fTime * k;
             }
             else
             {
-                A = m_fAmplitudeWalk * k;
-                ST = m_fSpeedWalk * fTime * k;
+                A = Walk.Amplitude.Default * k;
+                ST = Walk.Speed.Default * fTime * k;
             }
         }
         else
-            SelectBobbingParams(m_bZoomMode, is_limping, &fOldPhase, &fOldFreq, &fOldAmp, dwMState, fTime, &A, &ST);
+            SelectBobbingParams(m_bZoomMode, is_limping, fOldPhase, fOldFreq, fOldAmp, dwMState, fTime, A, ST);
 
 		float _sinA	= _abs(_sin(ST)*A)*fReminderFactor;
 		float _cosA	= _cos(ST)*A*fReminderFactor;
@@ -152,112 +152,112 @@ BOOL CEffectorBobbing::ProcessCam(SCamEffectorInfo& info)
 	return TRUE;
 }
 
-void CEffectorBobbing::SelectBobbingParams(bool zoom_mode, bool is_limping, float* old_phase, float* old_freq, float* old_amp, u32 mstate, float time, float* amp, float* st)
+void CEffectorBobbing::SelectBobbingParams(bool zoom_mode, bool is_limping, float& old_phase, float& old_freq, float& old_amp, u32 mstate, float time, float& amp, float& st)
 {
-    float amp_tmp, freq_tmp, phase_tmp, dt;
+    float amp_tmp = 0.f, freq_tmp = 0.f;
 
     if ((mstate & mcSprint) > 0)
     {
-        amp_tmp = m_fAmplitudeSprint;
-        freq_tmp = m_fSpeedSprint;
+        amp_tmp = Sprint.Amplitude.Default;
+        freq_tmp = Sprint.Speed.Default;
     }
     else if (is_limping)
     {
         if (zoom_mode)
         {
-            amp_tmp = m_fAmplitudeZoomLimp;
-            freq_tmp = m_fSpeedZoomLimp;
+            amp_tmp = Limp.Amplitude.Zoom;
+            freq_tmp = Limp.Speed.Zoom;
         }
         else
         {
-            amp_tmp = m_fAmplitudeLimp;
-            freq_tmp = m_fSpeedLimp;
+            amp_tmp = Limp.Amplitude.Default;
+            freq_tmp = Limp.Speed.Default;
         }
     }
     else if (((mstate & mcCrouch) > 0) && ((mstate & mcAccel) > 0))
     {
         if (zoom_mode)
         {
-            amp_tmp = m_fAmplitudeZoomSlowCrouch;
-            freq_tmp = m_fSpeedZoomSlowCrouch;
+            amp_tmp = SlowCrouch.Amplitude.Zoom;
+            freq_tmp = SlowCrouch.Speed.Zoom;
         }
         else
         {
-            amp_tmp = m_fAmplitudeSlowCrouch;
-            freq_tmp = m_fSpeedSlowCrouch;
+            amp_tmp = SlowCrouch.Amplitude.Default;
+            freq_tmp = SlowCrouch.Speed.Default;
         }
     }
     else if ((mstate & mcCrouch) > 0)
     {
         if (zoom_mode)
         {
-            amp_tmp = m_fAmplitudeZoomCrouch;
-            freq_tmp = m_fSpeedZoomCrouch;
+            amp_tmp = Crouch.Amplitude.Zoom;
+            freq_tmp = Crouch.Speed.Zoom;
         }
         else
         {
-            amp_tmp = m_fAmplitudeCrouch;
-            freq_tmp = m_fSpeedCrouch;
+            amp_tmp = Crouch.Amplitude.Default;
+            freq_tmp = Crouch.Speed.Default;
         }
     }
     else if ((mstate & mcAccel) > 0)
     {
         if (zoom_mode)
         {
-            amp_tmp = m_fAmplitudeZoomWalk;
-            freq_tmp = m_fSpeedZoomWalk;
+            amp_tmp = Walk.Amplitude.Zoom;
+            freq_tmp = Walk.Speed.Zoom;
         }
         else
         {
-            amp_tmp = m_fAmplitudeWalk;
-            freq_tmp = m_fSpeedWalk;
+            amp_tmp = Walk.Amplitude.Default;
+            freq_tmp = Walk.Speed.Default;
         }
     }
     else
     {
         if (zoom_mode)
         {
-            amp_tmp = m_fAmplitudeZoomRun;
-            freq_tmp = m_fSpeedZoomRun;
+            amp_tmp = Run.Amplitude.Zoom;
+            freq_tmp = Run.Speed.Zoom;
         }
         else
         {
-            amp_tmp = m_fAmplitudeRun;
-            freq_tmp = m_fSpeedRun;
+            amp_tmp = Run.Amplitude.Default;
+            freq_tmp = Run.Speed.Default;
         }
     }
 
-    phase_tmp = *old_phase;
+    float phase_tmp = old_phase;
 
-    if (freq_tmp != *old_freq)
+    if (freq_tmp != old_freq)
     {
-        phase_tmp = (*old_freq - freq_tmp) * time + *old_phase;
+        phase_tmp = (old_freq - freq_tmp) * time + old_phase;
         if (phase_tmp > 2.f * PI)
             phase_tmp -= floor(phase_tmp / (2.f * PI)) * 2.f * PI;
         else if (phase_tmp < 0.f)
             phase_tmp += ceil(abs(phase_tmp) / (2.f * PI)) * 2.f * PI;
 
-        *old_freq = freq_tmp;
-        *old_phase = phase_tmp;
+        old_freq = freq_tmp;
+        old_phase = phase_tmp;
     }
 
-    if (amp_tmp != *old_amp)
+    if (amp_tmp != old_amp)
     {
-        dt = m_fAmplitudeDelta * Device.fTimeDelta;
-        if (amp_tmp > *old_amp)
+        float dt = m_fAmplitudeDelta * Device.fTimeDelta;
+        if (amp_tmp > old_amp)
         {
-            if (amp_tmp - *old_amp > dt)
-                amp_tmp = *old_amp + dt;
+            if (amp_tmp - old_amp > dt)
+                amp_tmp = old_amp + dt;
         }
         else
         {
-            if (*old_amp - amp_tmp > dt)
-                amp_tmp = *old_amp - dt;
+            if (old_amp - amp_tmp > dt)
+                amp_tmp = old_amp - dt;
         }
 
-        *old_amp = amp_tmp;
+        old_amp = amp_tmp;
     }
 
-    *amp = amp_tmp;
-    *st = time * freq_tmp + phase_tmp;
+    amp = amp_tmp;
+    st = time * freq_tmp + phase_tmp;
 }

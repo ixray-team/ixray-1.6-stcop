@@ -427,7 +427,12 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 
 	if (this == Level().CurrentViewEntity())
 	{	
-		if (((mstate_rl&mcSprint) != (mstate_old&mcSprint)) || ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove)) || ((mstate_rl & mcAccel) != (mstate_old & mcAccel)) || ((mstate_rl & mcCrouch) != (mstate_old & mcCrouch)))
+		auto TestState = [&](u32 State)
+		{
+			return ((mstate_rl & State) != (mstate_old & State));
+		};
+
+		if (TestState(mcSprint) || TestState(mcAnyMove) || TestState(mcAccel) || TestState(mcCrouch))
 			g_player_hud->OnMovementChanged(ACTOR_DEFS::EMoveCommand(mstate_rl));
 	};
 

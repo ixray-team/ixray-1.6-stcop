@@ -300,7 +300,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 				if (canfire0 != 0)
 					d = res[0];
 				else
-					LaunchGrenade_Correct(&d);
+					LaunchGrenade_Correct(d);
 			}
 		};
 		
@@ -331,7 +331,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		inherited::state_Fire(dt);
 }
 
-void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
+void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3& v)
 {
 	Fvector3 camdir = Device.vCameraDirection;
 
@@ -341,7 +341,7 @@ void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
 	camdir.y = 1.0f;
 	camdir.normalize();
 
-	*v = camdir;
+	v = camdir;
 }
 
 void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type) 
@@ -540,19 +540,6 @@ void CWeaponMagazinedWGrenade::InitAddons()
 	}
 }
 
-bool	CWeaponMagazinedWGrenade::UseScopeTexture()
-{
-	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return false;
-	
-	return true;
-};
-
-float	CWeaponMagazinedWGrenade::CurrentZoomFactor	()
-{
-	if (IsGrenadeLauncherAttached() && m_bGrenadeMode) return m_zoom_params.m_fIronSightZoomFactor;
-	return inherited::CurrentZoomFactor();
-}
-
 //����������� ������� ��� ������������ �������� HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
@@ -561,7 +548,7 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 	PlayHUDMotion("anm_switch", TRUE, eSwitch);
 }
 
-xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
+xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(const xr_string& M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
@@ -569,8 +556,6 @@ xr_string CWeaponMagazinedWGrenade::NeedAddSuffix(xr_string M)
 
 	if (IsGrenadeLauncherAttached())
 	{
-		bool TempTest;
-
 		if (m_bGrenadeMode)
 		{
 			if (IsZoomed())
@@ -730,20 +715,6 @@ bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 	return (	std::find(m_ammoTypes.begin(), m_ammoTypes.end(), item_sect) != m_ammoTypes.end() ||
 				std::find(m_ammoTypes2.begin(), m_ammoTypes2.end(), item_sect) != m_ammoTypes2.end() 
 			);
-}
-
-u8 CWeaponMagazinedWGrenade::GetCurrentHudOffsetIdx()
-{
-	bool b_aiming		= 	((IsZoomed() && m_zoom_params.m_fZoomRotationFactor<=1.f) ||
-							(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f));
-	
-	if(!b_aiming)
-		return		0;
-	else
-	if(m_bGrenadeMode)
-		return		2;
-	else
-		return		1;
 }
 
 bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class	( LPCSTR section, bool test )

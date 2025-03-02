@@ -109,12 +109,14 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 	isTryToToggle = true;
 	bNeedHideDet = false;
 
-	m_bNeedActivation		= false;
-	m_bFastAnimMode			= bFastMode;
+	m_bNeedActivation = false;
+	m_bFastAnimMode	= bFastMode;
 
 	PIItem iitem = m_pInventory->ActiveItem();
 	CHudItem* itm = (iitem) ? iitem->cast_hud_item() : nullptr;
 	CWeapon* wpn = smart_cast<CWeapon*>(itm);
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
 	if (GetState() == eHidden || GetState() == eHiding)
 	{
@@ -123,32 +125,29 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 
 		u16 slot_to_activate = NO_ACTIVE_SLOT;
 
-		if(CheckCompatibilityInt(itm, &slot_to_activate))
+		if (CheckCompatibilityInt(itm, &slot_to_activate))
 		{
-			if(slot_to_activate!=NO_ACTIVE_SLOT)
+			if (slot_to_activate != NO_ACTIVE_SLOT)
 			{
-				m_pInventory->Activate(slot_to_activate);
-				m_bNeedActivation		= true;
+				m_pInventory->Activate(isGuns ? BOLT_SLOT : slot_to_activate);
+				m_bNeedActivation = true;
 			}
 			else
 			{
 				CWeaponKnife* knf = smart_cast<CWeaponKnife*>(wpn);
 				if (wpn)
 				{
-					if (knf || wpn->bIsNeedCallDet)
+					if (knf || wpn->bIsNeedCallDet || !isGuns)
 					{
 						isTryToToggle = false;
 						SwitchState(eShowing);
 						TurnDetectorInternal(true);
 						wpn->bIsNeedCallDet = false;
 					}
-					else
+					else if (isGuns && wpn->GetState() == CWeapon::eIdle)
 					{
-						if (wpn->GetState() == CWeapon::eIdle)
-						{
-							isTryToToggle = false;
-							wpn->SwitchState(CWeapon::eShowingDet);
-						}
+						isTryToToggle = false;
+						wpn->SwitchState(CWeapon::eShowingDet);
 					}
 				}
 				else
@@ -169,7 +168,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode, bool switching)
 		{
 			u32 state = wpn->GetState();
 
-			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && !wpn->GetAmmoElapsed() == 0))
+			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() != 0))
 				return;
 		}
 

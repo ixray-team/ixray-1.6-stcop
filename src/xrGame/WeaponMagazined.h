@@ -109,7 +109,7 @@ public:
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
-	virtual xr_string	NeedAddSuffix(xr_string M);
+	virtual xr_string	NeedAddSuffix(const xr_string& M);
 
 public:
 	virtual bool	SwitchMode				();
@@ -139,7 +139,6 @@ protected:
 	//(даже если очень быстро нажали на курок и вызвалось FireEnd)
 	bool			m_bFireSingleShot;
 	//режимы стрельбы
-	bool			m_bHasDifferentFireModes;
 	xr_vector<s8>	m_aFireModes;
 	int				m_iCurFireMode;
 	int				m_iOldFireMode;
@@ -161,9 +160,8 @@ protected:
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
-			void	OnNextFireMode		();
-			void	OnPrevFireMode		();
-			bool	HasFireModes		() { return m_bHasDifferentFireModes; };
+			bool	ChangeFiremode		(u16 cmd);
+			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 	xr_string		GetFiremodeSuffix() const;
 

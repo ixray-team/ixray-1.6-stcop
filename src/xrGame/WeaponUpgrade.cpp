@@ -288,13 +288,12 @@ bool CWeapon::install_upgrade_hud_sect(LPCSTR section, bool test)
 {
 	LPCSTR str;
 
-	shared_str old_hud = hud_sect_cache;
-
 	bool result = process_if_exists_set(section, "hud", &CInifile::r_string, str, test);
 
 	if (result && !test)
 	{
 		shared_str new_hud_sect = pSettings->r_string(section, "hud");
+		shared_str old_hud = hud_sect_cache;
 
 		if (new_hud_sect == "skip_reassign")
 			hud_sect = old_hud;

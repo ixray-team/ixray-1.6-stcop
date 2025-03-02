@@ -32,12 +32,9 @@ public:
 	virtual bool	CanAttach				(PIItem pIItem);
 	virtual bool	CanDetach				(const char* item_section_name);
 	virtual void	InitAddons				();
-	virtual bool	UseScopeTexture			();
-	virtual	float	CurrentZoomFactor		();
-	virtual	u8		GetCurrentHudOffsetIdx	();
 	virtual void	FireStart				();
 	virtual void	FireEnd					();
-			void	LaunchGrenade_Correct	(Fvector3* v);
+			void	LaunchGrenade_Correct	(Fvector3& v);
 	
 	virtual void	OnStateSwitch	(u32 S);
 	
@@ -52,7 +49,7 @@ public:
 
 	virtual void	UpdateSounds	();
 
-	//РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІ СЂРµР¶РёРј РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
+	//переключение в режим подствольника
 	virtual bool	SwitchMode		();
 	void			PerformSwitchGL	();
 	void			OnAnimationEnd	(u32 state);
@@ -63,9 +60,9 @@ public:
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimModeSwitch	();
-	virtual xr_string	NeedAddSuffix(xr_string M);
+	virtual xr_string	NeedAddSuffix(const xr_string& M);
 
-	virtual bool	IsGrenadeMode() { return m_bGrenadeMode; }
+	virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
 	
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );
@@ -75,8 +72,8 @@ private:
 			int		GetAmmoCount2				( u8 ammo2_type ) const;
 
 public:
-	//РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РїР°С‚СЂРѕРЅРѕРІ 
-	//РґР»СЏ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
+	//дополнительные параметры патронов 
+	//для подствольника
 //-	CWeaponAmmo*			m_pAmmo2;
 	xr_vector<shared_str>	m_ammoTypes2;
 	u8						m_ammoType2;

@@ -127,74 +127,20 @@ void CWeaponBM16::PlayAnimReload()
 	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, OnAmmoTimer);
 }
 
-xr_string CWeaponBM16::NeedAddSuffix(xr_string M)
+xr_string CWeaponBM16::NeedAddSuffix(const xr_string& M)
 {
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-
 	xr_string new_name = M;
 
 	if (IsZoomed())
-	{
-		switch (m_magazine.size())
-		{
-		case 0:
-			new_name = AddSuffixName(new_name, "_aim", "_0");
-			break;
-		case 1:
-			new_name = AddSuffixName(new_name, "_aim", "_1");
-			break;
-		case 2:
-			new_name = AddSuffixName(new_name, "_aim", "_2");
-			break;
-		}
-	}
+		new_name = AddSuffixName(new_name, "_aim", "_" + xr_string::ToString(iAmmoElapsed));
 
 	if (IsMisfire())
 	{
-		if (isGuns)
-		{
-			switch (m_magazine.size())
-			{
-				case 0:
-					new_name = AddSuffixName(new_name, "_jammed", "_0");
-				break;
-				case 1:
-					new_name = AddSuffixName(new_name, "_jammed", "_1");
-				break;
-				case 2:
-					new_name = AddSuffixName(new_name, "_jammed", "_2");
-				break;
-			}
-		}
-		else
-		{
-			switch (m_magazine.size())
-			{
-				case 0:
-					new_name = AddSuffixName(new_name, "_misfire", "_0");
-				break;
-				case 1:
-					new_name = AddSuffixName(new_name, "_misfire", "_1");
-				break;
-				case 2:
-					new_name = AddSuffixName(new_name, "_misfire", "_2");
-				break;
-			}
-		}
+		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		new_name = AddSuffixName(new_name, isGuns ? "_jammed" : "_misfire", "_" + xr_string::ToString(iAmmoElapsed));
 	}
 
-	switch (m_magazine.size())
-	{
-		case 0:
-			new_name = AddSuffixName(new_name, "_0");
-		break;
-		case 1:
-			new_name = AddSuffixName(new_name, "_1");
-		break;
-		case 2:
-			new_name = AddSuffixName(new_name, "_2");
-		break;
-	}
+	new_name = AddSuffixName(new_name, "_" + xr_string::ToString(iAmmoElapsed));
 
 	return new_name;
 }

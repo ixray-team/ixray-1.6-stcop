@@ -325,7 +325,7 @@ public:
 	virtual void cam_Set(EActorCameras style);
 
 protected:
-	void					CorrectActorCameraHeight(float* h);
+	void					CorrectActorCameraHeight(float& h);
 	void					cam_Update				(float dt, float fFOV);
 	void					cam_Lookout				( const Fmatrix &xform, float camera_height );
 	void					camUpdateLadder			(float dt);
@@ -400,7 +400,7 @@ public:
 	void					g_cl_Orientate			(u32 mstate_rl, float dt);
 	void					g_sv_Orientate			(u32 mstate_rl, float dt);
 	void					g_Orientate				(u32 mstate_rl, float dt);
-	void					LookoutFunctionReplace	(float* cur_roll, float tgt_roll, float dt);
+	void					LookoutFunctionReplace	(float& cur_roll, float tgt_roll, float dt);
 	bool					g_LadderOrient			() ;
 //	void					UpdateMotionIcon		(u32 mstate_rl);
 

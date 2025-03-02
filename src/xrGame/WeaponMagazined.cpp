@@ -61,10 +61,6 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_fOldBulletSpeed			= 0;
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
-
-	m_sFireModeMask_1 = nullptr;
-	m_sFireModeMask_3 = nullptr;
-	m_sFireModeMask_a = nullptr;
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -162,7 +158,6 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
-		m_bHasDifferentFireModes = true;
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
 		int ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
@@ -177,10 +172,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		m_iCurFireMode = ModesCount - 1;
 		m_iPrefferedFireMode = READ_IF_EXISTS(pSettings, r_s16,section,"preffered_fire_mode",-1);
 	}
-	else
-	{
-		m_bHasDifferentFireModes = false;
-	}
+
 	LoadSilencerKoeffs();
 
 	if (WeaponSoundExist(section, "snd_changefiremode") && m_bUseChangeFireModeAnim)
@@ -731,7 +723,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
-xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
+xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
@@ -1362,14 +1354,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	case kWPN_FIREMODE_PREV:
 	case kWPN_FIREMODE_NEXT:
 	{
-		if (flags & CMD_START) 
-		{
-				if (cmd == kWPN_FIREMODE_PREV)
-					OnPrevFireMode();
-				else
-					OnNextFireMode();
-				return true;
-		};
+		return ChangeFiremode(cmd);
 	}break;
 	}
 	return false;
@@ -1911,76 +1896,49 @@ xr_string CWeaponMagazined::GetFiremodeSuffix() const
 	if (GetQueueSize() < 0)
 		return "a";
 	else
-		return xr_string().ToString(GetQueueSize());
+		return xr_string::ToString(GetQueueSize());
 }
 
-void CWeaponMagazined::OnNextFireMode()
+bool CWeaponMagazined::ChangeFiremode(u16 cmd)
 {
-	if (!m_bHasDifferentFireModes)
-		return;
-
-	if (bNextModeKeyPressed || bPrevModeKeyPressed)
-		return;
-
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (isGuns)
-	{
-		if (IsZoomed())
-			return;
-	}
+
+	if (!HasFireModes())
+		return false;
+	else if (bPrevModeKeyPressed || bNextModeKeyPressed)
+		return false;
+	else if (isGuns && IsZoomed())
+		return false;
 
 	if (m_bUseChangeFireModeAnim)
 	{
-		bNextModeKeyPressed = true;
+		if (cmd == kWPN_FIREMODE_NEXT)
+			bNextModeKeyPressed = true;
+		else
+			bPrevModeKeyPressed = true;
+
 		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
+			return false;
 	}
 
 	m_iOldFireMode = m_iQueueSize;
 
-	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % (int)m_aFireModes.size();
+	if (cmd == kWPN_FIREMODE_NEXT)
+		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (int)m_aFireModes.size();
+	else
+		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (int)m_aFireModes.size();
 
 	SetQueueSize(GetCurrentFireMode());
 
 	if (m_bUseChangeFireModeAnim)
 		SwitchState(eSwitchMode);
-};
 
-void CWeaponMagazined::OnPrevFireMode()
-{
-	if (!m_bHasDifferentFireModes)
-		return;
-
-	if (bPrevModeKeyPressed || bNextModeKeyPressed)
-		return;
-
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	if (isGuns)
-	{
-		if (IsZoomed())
-			return;
-	}
-
-	if (m_bUseChangeFireModeAnim)
-	{
-		bPrevModeKeyPressed = true;
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
-			return;
-	}
-
-	m_iOldFireMode = m_iQueueSize;
-
-	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % (int)m_aFireModes.size();
-
-	SetQueueSize(GetCurrentFireMode());
-
-	if (m_bUseChangeFireModeAnim)
-		SwitchState(eSwitchMode);
-};
+	return true;
+}
 
 void	CWeaponMagazined::OnH_A_Chield		()
 {
-	if (m_bHasDifferentFireModes)
+	if (HasFireModes())
 	{
 		CActor	*actor = smart_cast<CActor*>(H_Parent());
 		if (!actor) SetQueueSize(-1);
@@ -2106,54 +2064,31 @@ bool CWeaponMagazined::GetBriefInfo(II_BriefInfo& info)
 	return true;
 }
 
-
 void CWeaponMagazined::UpdateAddonsVisibility()
 {
 	inherited::UpdateAddonsVisibility();
 
-	IKinematics* pWeaponVisual = dynamic_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	R_ASSERT(pWeaponVisual);
 
-	u16 bone_id;
-
-	UpdateHUDAddonsVisibility();
 	pWeaponVisual->CalculateBones_Invalidate();
 
-	auto firemode = GetQueueSize();
+	auto ChangeBonesVisible = [&](const RStringVec& bones, bool status)
+	{
+		for (const shared_str& bone : bones)
+		{
+			u16 bone_id = pWeaponVisual->LL_BoneID(bone);
 
-	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
-	{
-		bone_id = pWeaponVisual->LL_BoneID(boneNameTotal);
-		if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-			pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-	}
+			if (bone_id != BI_NONE)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, status, TRUE);
+		}
+	};
 
-	if (firemode == 1)
-	{
-		for (shared_str boneName1 : m_sFireModeBone_1)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneName1);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
-	if (firemode == 3)
-	{
-		for (shared_str boneName3 : m_sFireModeBone_3)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneName3);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
-	if (firemode == -1)
-	{
-		for (shared_str boneNameAuto : m_sFireModeBone_a)
-		{
-			bone_id = pWeaponVisual->LL_BoneID(boneNameAuto);
-			if (bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-		}
-	}
+	int firemode = GetQueueSize();
+	ChangeBonesVisible(m_sFireModeBonesTotal, false);
+	ChangeBonesVisible(m_sFireModeBone_1, !!(firemode == 1));
+	ChangeBonesVisible(m_sFireModeBone_3, !!(firemode == 3));
+	ChangeBonesVisible(m_sFireModeBone_a, !!(firemode == -1));
 
 	pWeaponVisual->CalculateBones_Invalidate();
 	pWeaponVisual->CalculateBones(TRUE);
@@ -2166,36 +2101,19 @@ void CWeaponMagazined::UpdateHUDAddonsVisibility()
 
 	inherited::UpdateHUDAddonsVisibility();
 
-	auto firemode = GetQueueSize();
-
-	for (shared_str boneNameTotal : m_sFireModeBonesTotal)
+	auto ChangeBonesVisible = [&](const RStringVec& bones, bool status)
 	{
-		HudItemData()->set_bone_visible(boneNameTotal, FALSE, TRUE);
-	}
-
-	if (firemode == 1)
-	{
-		for (shared_str boneName1 : m_sFireModeBone_1)
+		for (const shared_str& bone : bones)
 		{
-			HudItemData()->set_bone_visible(boneName1, TRUE, TRUE);
+			HudItemData()->set_bone_visible(bone, status, TRUE);
 		}
-	}
+	};
 
-	if (firemode == 3)
-	{
-		for (shared_str boneName3 : m_sFireModeBone_3)
-		{
-			HudItemData()->set_bone_visible(boneName3, TRUE, TRUE);
-		}
-	}
-
-	if (firemode == -1)
-	{
-		for (shared_str boneNameAuto : m_sFireModeBone_a)
-		{
-			HudItemData()->set_bone_visible(boneNameAuto, TRUE, TRUE);
-		}
-	}
+	int firemode = GetQueueSize();
+	ChangeBonesVisible(m_sFireModeBonesTotal, false);
+	ChangeBonesVisible(m_sFireModeBone_1, !!(firemode == 1));
+	ChangeBonesVisible(m_sFireModeBone_3, !!(firemode == 3));
+	ChangeBonesVisible(m_sFireModeBone_a, !!(firemode == -1));
 }
 
 bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
