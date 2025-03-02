@@ -80,6 +80,8 @@ void CWeaponRG6::FireStart()
 	else
 	{
 		//misfire
+		if (GetState() != eIdle)
+			return;
 
 		CGameObject* object = smart_cast<CGameObject*>(H_Parent());
 		if (object)
@@ -87,6 +89,14 @@ void CWeaponRG6::FireStart()
 
 		if (smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity() == H_Parent()))
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
+
+		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+		if (isGuns)
+		{
+			SwitchState(eCheckMisfire);
+			return;
+		}
 
 		OnEmptyClick();
 	}
@@ -190,14 +200,14 @@ void CWeaponRG6::ReloadMagazine()
 		if (!tmp_sect_name)
 			return;
 
-		//попытаться найти в инвентаре патроны текущего типа 
+		//РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РЅР°Р№С‚Рё РІ РёРЅРІРµРЅС‚Р°СЂРµ РїР°С‚СЂРѕРЅС‹ С‚РµРєСѓС‰РµРіРѕ С‚РёРїР° 
 		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
 
 		if (!m_pCurrentAmmo && !m_bLockType)
 		{
 			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 			{
-				//проверить патроны всех подходящих типов
+				//РїСЂРѕРІРµСЂРёС‚СЊ РїР°С‚СЂРѕРЅС‹ РІСЃРµС… РїРѕРґС…РѕРґСЏС‰РёС… С‚РёРїРѕРІ
 				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
 				if (m_pCurrentAmmo)
 				{
@@ -208,10 +218,10 @@ void CWeaponRG6::ReloadMagazine()
 		}
 	}
 
-	//нет патронов для перезарядки
+	//РЅРµС‚ РїР°С‚СЂРѕРЅРѕРІ РґР»СЏ РїРµСЂРµР·Р°СЂСЏРґРєРё
 	if (!m_pCurrentAmmo && !unlimited_ammo()) return;
 
-	//разрядить магазин, если загружаем патронами другого типа
+	//СЂР°Р·СЂСЏРґРёС‚СЊ РјР°РіР°Р·РёРЅ, РµСЃР»Рё Р·Р°РіСЂСѓР¶Р°РµРј РїР°С‚СЂРѕРЅР°РјРё РґСЂСѓРіРѕРіРѕ С‚РёРїР°
 	if (!m_bLockType && !m_magazine.empty() &&
 		(!m_pCurrentAmmo || xr_strcmp(m_pCurrentAmmo->cNameSect(),
 			*m_magazine.back().m_ammoSect)))
@@ -239,7 +249,7 @@ void CWeaponRG6::ReloadMagazine()
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//выкинуть коробку патронов, если она пустая
+	//РІС‹РєРёРЅСѓС‚СЊ РєРѕСЂРѕР±РєСѓ РїР°С‚СЂРѕРЅРѕРІ, РµСЃР»Рё РѕРЅР° РїСѓСЃС‚Р°СЏ
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(TRUE);
 
