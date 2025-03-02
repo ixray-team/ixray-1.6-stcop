@@ -333,6 +333,9 @@ void CWeaponMagazined::FireStart()
 	}
 	else
 	{
+		if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(_last_shot_time) < floor(m_fRechargeTime * 1000.0f))
+			return;
+
 		if (GetState() != eIdle)
 			return;
 
@@ -760,9 +763,20 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Fire	();
 		break;
 	case eMisfire:
-		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
+	{
+		if (smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity() == H_Parent()))
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
-		break;
+
+		bMisfire = true;
+
+		if (EngineExternal().isModificationGunslinger())
+			OnShotJammed();
+		else
+		{
+			OnEmptyClick();
+			SwitchState(eIdle);
+		}
+	}break;
 	case eUnjam:
 	case eReload:
 		if(owner)
@@ -895,7 +909,6 @@ void CWeaponMagazined::UpdateCL			()
 				ProcessAmmo();
 				ProcessAmmoGL();
 			}break;
-		case eMisfire:		state_Misfire	(dt);	break;
 		case eHidden:		break;
 		}
 	}
@@ -979,7 +992,6 @@ void CWeaponMagazined::state_Fire(float dt)
 			if (CheckForMisfire())
 			{
 				StopShooting();
-				SwitchState(eIdle);
 				return;
 			}
 
@@ -1012,17 +1024,6 @@ void CWeaponMagazined::state_Fire(float dt)
 	{
 		fShotTimeCounter -= dt;
 	}
-}
-
-
-void CWeaponMagazined::state_Misfire	(float dt)
-{
-	OnEmptyClick			();
-	SwitchState				(eIdle);
-	
-	bMisfire				= true;
-
-	UpdateSounds			();
 }
 
 void CWeaponMagazined::SetDefaults	()
@@ -1187,6 +1188,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eFire:
 		case eKick:
 		case eLightMis:
+		case eMisfire:
 			SwitchState(eIdle);
 		break;
 	}
