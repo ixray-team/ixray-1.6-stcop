@@ -1527,7 +1527,7 @@ u32 CWeapon::PlayHUDMotion(xr_string M, BOOL bMixIn, u32 state, bool lock_shooti
 	if (need_suffix)
 		M = NeedAddSuffix(M);
 
-	u32 result = CHudItem::PlayHUDMotion(M, bMixIn, this, state, need_suffix);
+	u32 result = CHudItem::PlayHUDMotion(M, bMixIn, this, state, /*need_suffix*/false);
 
 	MakeLockByConfigParam("lock_time_" + M, lock_shooting, fun);
 

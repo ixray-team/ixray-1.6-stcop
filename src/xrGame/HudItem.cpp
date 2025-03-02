@@ -612,9 +612,9 @@ void CHudItem::UpdateCL()
 	{
 		u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
 
-		if (smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr || smart_cast<CHUDAnimItem*>(this) != nullptr || Actor()->GetDetector() != nullptr)
+		if (mark > 0)
 		{
-			if (lock_time_callback != nullptr && mark > 0 && mark < anim_time)
+			if (lock_time_callback != nullptr && mark < anim_time)
 			{
 				lock_time_callback();
 				SetAnimationCallback(nullptr);
@@ -714,19 +714,27 @@ bool CHudItem::HudAnimationExist(LPCSTR anim_name)
 {
 	if (HudItemData()) // First person
 	{
-		string256 anim_name_r;
-		bool is_16x9 = UI().is_widescreen();
-		u16 attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, HudItemData()->m_sect_name, "attach_place_idx", 0);
-		xr_sprintf(anim_name_r, "%s%s", anim_name, ((attach_place_idx == 1) && is_16x9) ? "_16x9" : "");
-		player_hud_motion* anm = HudItemData()->m_hand_motions.find_motion(anim_name_r);
-		if (anm)
-			return true;
+		if(HudItemData()->m_attach_place_idx == 1) {
+			string256 anim_name_r;
+
+			bool is_16x9 = UI().is_widescreen();
+			xr_sprintf(anim_name_r, "%s%s", anim_name, is_16x9 ? "_16x9" : "");
+
+			if(HudItemData()->m_hand_motions.find_motion(anim_name_r)) {
+				return true;
+			}
+		}
+		else {
+			if(HudItemData()->m_hand_motions.find_motion(anim_name)) {
+				return true;
+			}
+		}
 	}
 	else // Third person
 	{
-		if (g_player_hud->motion_length(anim_name, HudSection(), m_current_motion_def) > 100)
+		if(g_player_hud->motion_length(anim_name, HudSection(), m_current_motion_def) > 100) {
 			return true;
-
+		}
 	}
 #ifdef DEBUG
 	Msg("~ [WARNING] ------ Animation [%s] does not exist in [%s]", anim_name, HudSection().c_str());
@@ -753,10 +761,11 @@ u32 CHudItem::PlayHUDMotion(xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, b
 		PlaySound("sndByMotion", object().Position());
 	}
 
-	if (smart_cast<CWeaponBinoculars*>(this) != nullptr || smart_cast<CWeaponKnife*>(this) != nullptr || smart_cast<CMissile*>(this) != nullptr || smart_cast<CHUDAnimItem*>(this) != nullptr || Actor()->GetDetector() != nullptr)
-	{
-		if (pSettings->line_exist(hud_sect, ("mark_" + M).c_str()))
-			mark = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ("mark_" + M).c_str(), 100.f) * 1000.f);
+	mark = 0;
+
+	xr_string pMark = "mark_" + M;
+	if(pSettings->line_exist(hud_sect, pMark.c_str())) {
+		mark = floor(pSettings->r_float(hud_sect, pMark.c_str()) * 1000.f);
 	}
 
 	u32 anim_time = PlayHUDMotion_noCB(M.c_str(), bMixIn);
@@ -1081,7 +1090,7 @@ void CHudItem::AssignDetectorAnim(const xr_string anm_alias, bool bMixIn, bool u
 
 bool CHudItem::CanStartAction(bool allow_aim_state) const
 {
-	if (GetState() != eIdle || GetActualCurrentAnim().find("anm_idle_sprint") == 0 || Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+	if (!(GetState() == eIdle || GetState() == CWeapon::eFire) || GetActualCurrentAnim().find("anm_idle_sprint") == 0 || Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 		return false;
 
 	CWeapon* wpn = smart_cast<CWeapon*>(this);
@@ -1179,20 +1188,24 @@ void CHudItem::debug_draw_firedeps() {
 #endif
 }
 
-void CHudItem::SetModelBoneStatus(const char* bone, BOOL show) const {
+void CHudItem::SetModelBoneStatus(const char* bone, BOOL show) const
+{
 	if (HudItemData())
 	{
 		HudItemData()->set_bone_visible(bone, show, TRUE);
 	}
 
-	IKinematics* pWeaponVisual = object().Visual()->dcast_PKinematics();
-	if (pWeaponVisual != nullptr && pWeaponVisual->LL_BoneID(bone) != BI_NONE)
+	if(IKinematics* pWeaponVisual = object().Visual()->dcast_PKinematics())
 	{
-		pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(bone), show, FALSE);
+		if(auto BoneID = pWeaponVisual->LL_BoneID(bone); BoneID != BI_NONE)
+		{
+			pWeaponVisual->LL_SetBoneVisible(BoneID, show, FALSE);
+		}
 	}
 }
 
-void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOOL show) const {
+void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOOL show) const
+{
 	if (!pSettings->section_exist(section))
 	{
 		return;

@@ -34,25 +34,8 @@ void CInventoryItemObject::Load				(LPCSTR section)
 	CPhysicItem::Load			(section);
 	CInventoryItem::Load		(section);
 }
-/* remove
-LPCSTR CInventoryItemObject::Name			()
-{
-	return						(CInventoryItem::Name());
-}
 
-LPCSTR CInventoryItemObject::NameShort		()
-{
-	return						(CInventoryItem::NameShort());
-}
-*/
-/*
-LPCSTR CInventoryItemObject::NameComplex	()
-{
-	return						(CInventoryItem::NameComplex());
-}
-*/
-
-void				CInventoryItemObject::Hit					(SHit* pHDS)
+void CInventoryItemObject::Hit(SHit* pHDS)
 {
 	CPhysicItem::Hit(pHDS);
 	CInventoryItem::Hit(pHDS);
@@ -91,14 +74,14 @@ void CInventoryItemObject::UpdateCL			()
 
 void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
 {
-	CPhysicItem::OnEvent				(P, type);
-	CInventoryItem::OnEvent				(P, type);
+	CPhysicItem::OnEvent(P, type);
+	CInventoryItem::OnEvent(P, type);
 }
 
 BOOL CInventoryItemObject::net_Spawn		(CSE_Abstract* DC)
 {
-	BOOL								res = CPhysicItem::net_Spawn(DC);
-	CInventoryItem::net_Spawn			(DC);
+	BOOL res = CPhysicItem::net_Spawn(DC);
+	CInventoryItem::net_Spawn (DC);
 	auto pKA = Visual()->dcast_PKinematicsAnimated();
 	if (pKA != nullptr)
 	{
@@ -145,6 +128,11 @@ void CInventoryItemObject::renderable_Render()
 {
 	CPhysicItem::renderable_Render		();
 	CInventoryItem::renderable_Render	();
+
+	for(auto& pItem : m_items_inv) {
+		pItem->object().XFORM().set(XFORM());
+		pItem->object().renderable_Render();
+	}
 }
 
 void CInventoryItemObject::reload			(LPCSTR section)

@@ -161,6 +161,11 @@ public:
 	bool						bNeedUpdateIcon;
 	SInvItemPlace				m_ItemCurrPlace;
 
+	xr_vector<u16>				m_items;
+	xr_vector<CInventoryItem*>	m_items_inv;
+
+	u16 m_current_attach_bone = BI_NONE;
+
 	bool isCanTakeWhenControlled(void) const;
 	virtual void				OnMoveToSlot		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};

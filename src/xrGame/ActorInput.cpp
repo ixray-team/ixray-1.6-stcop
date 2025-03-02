@@ -569,7 +569,9 @@ void CActor::ProcessKeys()
 {
 	CHudItem* itm = smart_cast<CHudItem*>(inventory().ActiveItem());
 	if (itm == nullptr)
+	{
 		return;
+	}
 
 	if ((_keyflags & kfHEADLAMP) != 0 && itm->CanStartAction())
 	{
@@ -585,9 +587,11 @@ void CActor::ProcessKeys()
 
 	CWeapon* wpn = smart_cast<CWeapon*>(itm);
 	if (wpn == nullptr)
+	{
 		return;
+	}
 
-	if (IsActionKeyPressedInGame(kWPN_ZOOM) && wpn->GetState() == CWeapon::eIdle)
+	if (IsActionKeyPressedInGame(kWPN_ZOOM) && (wpn->GetState() == CWeapon::eIdle || wpn->GetState() == CWeapon::eFire))
 	{
 		if (!b_toggle_weapon_aim && wpn->CanAimNow() && !wpn->IsZoomed())
 		{
@@ -603,13 +607,19 @@ void CActor::ProcessKeys()
 			if (wpn->CanLeaveAimNow())
 			{
 				if (b_toggle_weapon_aim)
+				{
 					wpn->Action(kWPN_ZOOM, CMD_START);
+				}
 				else
+				{
 					wpn->Action(kWPN_ZOOM, CMD_STOP);
+				}
 			}
 		}
 		else
+		{
 			SetActorKeyRepeatFlag(kfUNZOOM, false);
+		}
 	}
 
 	if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (GetMovementState(eReal) & mcSprint) == 0 && (_keyflags & kfFIRE) != 0)
@@ -617,7 +627,9 @@ void CActor::ProcessKeys()
 		wpn->Action(kWPN_FIRE, CMD_START);
 
 		if (!IsActionKeyPressed(kWPN_FIRE))
+		{
 			wpn->Action(kWPN_FIRE, CMD_STOP);
+		}
 
 		SetActorKeyRepeatFlag(kfFIRE, false);
 	}

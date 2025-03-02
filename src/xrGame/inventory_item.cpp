@@ -315,6 +315,48 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 			pSyncObj->set_State(state);
 
 		}break;
+		case GE_TRADE_BUY:
+		case GE_OWNERSHIP_TAKE:
+		{
+			u16 id;
+			P.r_u16(id);
+			CObject* itm = Level().Objects.net_Find(id);  VERIFY(itm);
+			m_items.push_back(id);
+			itm->H_SetParent(&object());
+			itm->setVisible(FALSE);
+			itm->setEnabled(FALSE);
+
+			if(auto pIItem = smart_cast<CInventoryItem*>(itm))
+			{
+				m_items_inv.push_back(pIItem);
+			}
+
+			break;
+		}
+		case GE_TRADE_SELL:
+		case GE_OWNERSHIP_REJECT:
+		{
+			u16 id;
+			P.r_u16(id);
+			CObject* itm = Level().Objects.net_Find(id); VERIFY(itm);
+
+			if(auto pIItem = smart_cast<CInventoryItem*>(itm)) {
+				auto it = std::find(m_items_inv.begin(), m_items_inv.end(), pIItem);
+				if(it != m_items_inv.end()) {
+					m_items_inv.erase(it);
+				}
+			}
+
+			auto it = std::find(m_items.begin(), m_items.end(), id); VERIFY(it != m_items.end());
+			m_items.erase(it);
+
+			bool just_before_destroy = !P.r_eof() && P.r_u8();
+			bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
+
+			itm->H_SetParent(nullptr, dont_create_shell);
+			
+			break;
+		}
 	}
 }
 
