@@ -32,7 +32,7 @@ void CWeaponBM16::PlayReloadSound()
 		if (m_magazine.size() == 0)
 			sound = "sndReloadEmpty";
 
-		if (GetAmmoCount(GetAmmoTypeToReload()) < 2)
+		if (GetAmmoCount(GetAmmoTypeToReload()) < 2 && !unlimited_ammo())
 		{
 			if (m_set_next_ammoType_on_reload == undefined_ammo_type)
 				sound = "sndReloadOnly";
@@ -42,7 +42,7 @@ void CWeaponBM16::PlayReloadSound()
 
 		if (m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
-			if (GetAmmoCount(GetAmmoTypeToReload()) < 2)
+			if (GetAmmoCount(GetAmmoTypeToReload()) < 2 && !unlimited_ammo())
 			{
 				if (iAmmoElapsed == 1)
 					sound = "sndChangeCartridgeTypeOneOnly";
@@ -101,7 +101,7 @@ void CWeaponBM16::PlayAnimReload()
 
 			if (m_magazine.size() <= 0)
 			{
-				if (GetAmmoCount(GetAmmoTypeToReload()) < 2)
+				if (GetAmmoCount(GetAmmoTypeToReload()) < 2 && !unlimited_ammo())
 				{
 					if (m_set_next_ammoType_on_reload == undefined_ammo_type)
 						anm_name += "_only";
@@ -114,7 +114,7 @@ void CWeaponBM16::PlayAnimReload()
 			else if (m_set_next_ammoType_on_reload != undefined_ammo_type)
 			{
 				anm_name += "_ammochange";
-				if (GetAmmoCount(GetAmmoTypeToReload()) < 2)
+				if (GetAmmoCount(GetAmmoTypeToReload()) < 2 && !unlimited_ammo())
 				{
 					anm_name += "_only";
 					ammo_cnt_to_reload = 1;
