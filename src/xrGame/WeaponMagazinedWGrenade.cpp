@@ -556,6 +556,15 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 			if (IsZoomed())
 				new_name = AddSuffixName(new_name, "_aim", "_g");
 
+			int firemode = GetQueueSize();
+
+			if (firemode == -1 && m_sFireModeMask_a != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_a.c_str(), "_g");
+			else if (firemode == 1 && m_sFireModeMask_1 != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_1.c_str(), "_g");
+			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_g");
+
 			if (!IsMisfire() && iAmmoElapsed2 == 0)
 				new_name = AddSuffixName(new_name, "_empty", "_g");
 
@@ -581,6 +590,15 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 
 			if (IsScopeAttached())
 				new_name = AddSuffixName(new_name, "_scope", "_w_gl");
+
+			int firemode = GetQueueSize();
+
+			if (firemode == -1 && m_sFireModeMask_a != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_a.c_str(), "_w_gl");
+			else if (firemode == 1 && m_sFireModeMask_1 != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_1.c_str(), "_w_gl");
+			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
+				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_w_gl");
 
 			if (iAmmoElapsed == 1)
 				new_name = AddSuffixName(new_name, "_last", "_w_gl");
