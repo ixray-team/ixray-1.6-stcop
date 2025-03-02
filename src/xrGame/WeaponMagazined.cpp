@@ -271,8 +271,10 @@ bool CWeaponMagazined::OnShoot_CanShootNow() const
 	if (!isGuns)
 		return true;
 
-	if (ParentIsActor() && (Actor()->IsActorPlanningSuicide() || Actor()->IsActorSuicideNow()))
-		return Actor()->IsSuicideInreversible();
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor && (pActor->IsActorPlanningSuicide() || pActor->IsActorSuicideNow()))
+		return pActor->IsSuicideInreversible();
 
 	if (IsActionProcessing())
 	{
@@ -282,7 +284,7 @@ bool CWeaponMagazined::OnShoot_CanShootNow() const
 		xr_string cur_param = "autoshoot_" + GetActualCurrentAnim();
 		if (lock_time > 0 && pSettings->line_exist(HudSection(), cur_param.c_str()) && pSettings->r_bool(HudSection(), cur_param.c_str()))
 		{
-			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
+			pActor->SetActorKeyRepeatFlag(kfFIRE, true);
 			return false;
 		}
 		else
@@ -293,10 +295,10 @@ bool CWeaponMagazined::OnShoot_CanShootNow() const
 		if (m_fRechargeTime > 0.0f && Device.GetTimeDeltaSafe(_last_shot_time) < floor(m_fRechargeTime * 1000.0f))
 			return false;
 
-		if (ParentIsActor() && GetActualCurrentAnim().find("anm_idle_sprint") == 0)
+		if (pActor && GetActualCurrentAnim().find("anm_idle_sprint") == 0)
 		{
-			Actor()->SetMovementState(eWishful, mcSprint, false);
-			Actor()->SetActorKeyRepeatFlag(kfFIRE, true);
+			pActor->SetMovementState(eWishful, mcSprint, false);
+			pActor->SetActorKeyRepeatFlag(kfFIRE, true);
 			return false;
 		}
 	}
@@ -468,7 +470,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	if (ParentIsActor())
+	if (IsGameTypeSingle() && ParentIsActor())
 	{
 		int	AC = GetSuitableAmmoTotal();
 		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
@@ -843,8 +845,12 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 	else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 		new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str());
 
-	if ((Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
-		new_name = AddSuffixName(new_name, "_suicide");
+
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		if (pActor && (pActor->IsActorSuicideNow() || pActor->IsSuicideInreversible()) && READ_IF_EXISTS(pSettings, r_bool, HudSection(), "custom_suicide_shot", false))
+			new_name = AddSuffixName(new_name, "_suicide");
+	
 
 	if (!IsMisfire() && iAmmoElapsed == 1)
 		new_name = AddSuffixName(new_name, isGuns ? "_last" : "_l");
@@ -866,7 +872,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
-	if (ParentIsActor() && Actor()->GetDetector())
+	if (pActor && pActor->GetDetector())
 		new_name = AddSuffixName(new_name, "_detector");
 
 	if (IsSilencerAttached())
@@ -1677,7 +1683,9 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 				else
 					return false;
 
-				if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+				auto pActor = smart_cast<CActor*>(H_Parent());
+
+				if (pActor && pActor->GetDetector() && pActor->GetDetector()->GetState() != CCustomDetector::eIdle)
 					return false;
 			}
 			else if ((iAmmoElapsed != GetMagCapacity() || IsMisfire()) && !Weapon_SetKeyRepeatFlagIfNeeded(kfRELOAD))
@@ -2012,7 +2020,9 @@ void CWeaponMagazined::PlayAnimFireMode()
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
 
-	if (ParentIsActor() && Actor()->GetDetector() && isGuns)
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor && pActor->GetDetector() && isGuns)
 	{
 		if (iAmmoElapsed == 0)
 			bIsNeedCallDet = true;
@@ -2066,8 +2076,9 @@ void CWeaponMagazined::PlayAnimReload()
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
 
+	auto pActor = smart_cast<CActor*>(H_Parent());
 
-	bIsNeedCallDet = ParentIsActor() && Actor()->GetDetector() && isGuns;
+	bIsNeedCallDet = pActor && pActor->GetDetector() && isGuns;
 
 	PlayHUDMotion(anm_name, TRUE, current_state);
 
@@ -2087,7 +2098,9 @@ void CWeaponMagazined::ModifierMoving(xr_string& anim_name, const xr_string conf
 	if (!pSettings->line_exist(hud_sect, config_enabler_directions.c_str()) || !pSettings->r_bool(hud_sect, config_enabler_directions.c_str()))
 		return;
 
-	u32 state = Actor()->GetMovementState(eReal);
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	u32 state = pActor->GetMovementState(eReal);
 
 	if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
 		anim_name += "_forward";
@@ -2139,8 +2152,11 @@ void CWeaponMagazined::PlayAnimIdle()
 		{
 			IsAimStarted = true;
 			PlayHUDMotion("anm_idle_aim_start", TRUE, GetState());
-			if (ParentIsActor() && Actor()->GetDetector())
-				Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimStart);
+
+			auto pActor = smart_cast<CActor*>(H_Parent());
+
+			if (pActor && pActor->GetDetector())
+				pActor->GetDetector()->SwitchState(CCustomDetector::eDetAimStart);
 
 			return;
 		}
@@ -2152,8 +2168,11 @@ void CWeaponMagazined::PlayAnimIdle()
 		{
 			IsAimStarted = false;
 			PlayHUDMotion("anm_idle_aim_end", TRUE, GetState());
-			if (ParentIsActor() && Actor()->GetDetector())
-				Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimEnd);
+
+			auto pActor = smart_cast<CActor*>(H_Parent());
+
+			if (pActor && pActor->GetDetector())
+				pActor->GetDetector()->SwitchState(CCustomDetector::eDetAimEnd);
 
 			return;
 		}
@@ -2189,8 +2208,11 @@ void CWeaponMagazined::OnZoomIn			()
 {
 	if (!CanAimNow())
 	{
-		if (ParentIsActor() && !b_toggle_weapon_aim && Actor()->GetMovementState(eReal) & mcSprint)
-			Actor()->SetMovementState(eWishful, mcSprint, false);
+
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
+			pActor->SetMovementState(eWishful, mcSprint, false);
 
 		return;
 	}
@@ -2228,7 +2250,10 @@ void CWeaponMagazined::OnZoomOut()
 
 	if (!CanLeaveAimNow())
 	{
-		Actor()->SetActorKeyRepeatFlag(kfUNZOOM, true);
+
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
 		return;
 	}
 
@@ -2297,7 +2322,9 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd, u32 flags)
 			else
 				bPrevModeKeyPressed = true;
 
-			if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+			auto pActor = smart_cast<CActor*>(H_Parent());
+
+			if (pActor && pActor->GetDetector() && pActor->GetDetector()->GetState() != CCustomDetector::eIdle)
 				return false;
 		}
 	}

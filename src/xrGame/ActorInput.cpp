@@ -612,7 +612,7 @@ void CActor::ProcessKeys()
 			SetActorKeyRepeatFlag(kfUNZOOM, false);
 	}
 
-	if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (Actor()->GetMovementState(eReal) & mcSprint) == 0 && (_keyflags & kfFIRE) != 0)
+	if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (GetMovementState(eReal) & mcSprint) == 0 && (_keyflags & kfFIRE) != 0)
 	{
 		wpn->Action(kWPN_FIRE, CMD_START);
 
@@ -983,7 +983,7 @@ void CActor::SwitchNightVision()
 
 void CActor::HeadlampCallback()
 {
-	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 		torch->Switch();
 
 	if (CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
@@ -992,7 +992,7 @@ void CActor::HeadlampCallback()
 
 void CActor::NVCallback()
 {
-	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 		torch->SwitchNightVision();
 
 	if (CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))

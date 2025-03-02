@@ -490,6 +490,11 @@ bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 #include "Inventory.h"
 void CActorCameraManager::Update_Lens_FOV_manipulation(float& value)
 {
+	if (!Actor())
+	{
+		return;
+	}
+
 	bool isGuns = EngineExternal().isModificationGunslinger();
 	
 	if (!isGuns)

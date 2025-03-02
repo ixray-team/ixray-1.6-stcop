@@ -1711,6 +1711,11 @@ void player_hud::GetCurrentTargetOffset(shared_str section, Fvector3& pos, Fvect
 
 void player_hud::UpdateWeaponOffset(u32 delta)
 {
+	if (!Actor())
+	{
+		return;
+	}
+
 	CHudItemObject* itm = smart_cast<CHudItemObject*>(Actor()->inventory().ActiveItem());
 	CCustomDetector* det = nullptr;
 

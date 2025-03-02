@@ -1107,10 +1107,13 @@ void CWeapon::OnHiddenItem()
 bool CWeapon::SendDeactivateItem()
 {
 	bool isGuns = EngineExternal().isModificationGunslinger();
-	if (isGuns && ParentIsActor() && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || IsActionProcessing()))
+
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (isGuns && pActor && (pActor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || IsZoomed() || IsActionProcessing()))
 	{
-		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
-			Actor()->SetMovementState(eWishful, mcSprint, false);
+		if (pActor->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+			pActor->SetMovementState(eWishful, mcSprint, false);
 		return false;
 	}
 
@@ -1233,9 +1236,11 @@ void CWeapon::UpdateCL		()
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
 
-	if (ParentIsActor())
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor)
 	{
-		if (Actor()->GetDetector() && (Actor()->GetDetector()->GetState() == CCustomDetector::eIdle || !Actor()->GetDetector()->NeedActivation()))
+		if (pActor->GetDetector() && (pActor->GetDetector()->GetState() == CCustomDetector::eIdle || !pActor->GetDetector()->NeedActivation()))
 		{
 			if (bUnjamKeyPressed)
 			{
@@ -1977,7 +1982,8 @@ bool CWeapon::FindBoolValueInUpgradesDef(const char* key, bool def, bool scan_af
 
 bool CWeapon::IsActionProcessing() const
 {
-	return H_Parent() && (lock_time > 0.0f || ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide()));
+	auto pActor = smart_cast<CActor*>(H_Parent());
+	return H_Parent() && (lock_time > 0.0f || pActor && (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide()));
 }
 
 void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
@@ -2010,7 +2016,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 	float disp_hor = ModifyFloatUpgradedValue("kick_disp_hor", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_hor", 0.0f));
 	float disp_ver = ModifyFloatUpgradedValue("kick_disp_ver", READ_IF_EXISTS(pSettings, r_float, sect, "kick_disp_ver", 0.0f));
 
-	Level().BulletManager().AddBullet(pos, dir, 10000.f, 0.f, 0.f, Actor()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+	Level().BulletManager().AddBullet(pos, dir, 10000.f, 0.f, 0.f, H_Parent()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
 
 	c.bullet_material_idx = GMLib.GetMaterialIdx("objects\\clothes");
 	c.param_s.fWallmarkSize = 0.0001f;
@@ -2033,7 +2039,7 @@ void CWeapon::MakeWeaponKick(Fvector3& pos, Fvector3& dir)
 		tmpdir.add(up);
 		tmpdir.add(right);
 
-		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, Actor()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
+		Level().BulletManager().AddBullet(pos, tmpdir, 10000.f, hp, imp, H_Parent()->ID(), ID(), ALife::EHitType(htype), hdist, c, 1.0f, true, false);
 	}
 }
 
@@ -2103,7 +2109,10 @@ void CWeapon::ReassignWorldAnims()
 
 void CWeapon::UpdateCollimatorSight()
 {
-	if (!ParentIsActor())
+
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (!pActor)
 		return;
 
 	if (HudItemData() == nullptr)
@@ -2113,7 +2122,10 @@ void CWeapon::UpdateCollimatorSight()
 		return;
 
 	conditional_breaking_params bp = CollimatorBreakingParams;
-	float current_problems_cnt = Actor()->CurrentElectronicsProblemsCnt();
+
+	
+
+	float current_problems_cnt = pActor->CurrentElectronicsProblemsCnt();
 
 	if (/*GetAimFactor() > 0.0f && (IsLastZoomAlter() || GetAlterZoomDirectSwitchMixupFactor() > EPS) && m_bHideColimSightInAlter) || */ GetCondition() < bp.end_condition)
 	{
@@ -2256,7 +2268,9 @@ bool CWeapon::OnActWhileReload_CanActNow() const
 
 bool CWeapon::CanAimNow() const
 {
-	if (!ParentIsActor())
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (!pActor)
 		return true;
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
@@ -2266,7 +2280,7 @@ bool CWeapon::CanAimNow() const
 
 	bool result = true;
 
-	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
+	if (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide() || pActor->IsControllerPreparing())
 		result = false;
 	else if (GetActualCurrentAnim().find("anm_idle_aim") == 0)
 		result = true;
@@ -2276,8 +2290,8 @@ bool CWeapon::CanAimNow() const
 		result = false;
 	else
 	{
-		if (ParentIsActor() && Actor()->GetDetector() != nullptr)
-			result = !!(Actor()->GetDetector()->GetState() == CCustomDetector::eIdle);
+		if (pActor && pActor->GetDetector() != nullptr)
+			result = !!(pActor->GetDetector()->GetState() == CCustomDetector::eIdle);
 
 		if (result)
 		{
@@ -2299,7 +2313,9 @@ bool CWeapon::CanAimNow() const
 
 bool CWeapon::CanLeaveAimNow()
 {
-	if (!ParentIsActor())
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (!pActor)
 		return true;
 
 	bool isGuns = EngineExternal().isModificationGunslinger();
@@ -2307,7 +2323,7 @@ bool CWeapon::CanLeaveAimNow()
 	if (!isGuns)
 		return true;
 
-	if (Actor()->IsActorSuicideNow() || Actor()->IsActorPlanningSuicide() || Actor()->IsControllerPreparing())
+	if (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide() || pActor->IsControllerPreparing())
 		return true;
 
 	if ((IsActionProcessing() && GetActualCurrentAnim().find("anm_idle_aim_start") == -1 || GetState() != eIdle))
@@ -2552,7 +2568,9 @@ bool CWeapon::SwitchAmmoType(u32 flags)
 		else
 			return false;
 
-		if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		if (pActor && pActor->GetDetector() && pActor->GetDetector()->GetState() != CCustomDetector::eIdle)
 			return false;
 	}
 	else if (!Weapon_SetKeyRepeatFlagIfNeeded(kfNEXTAMMO))
@@ -2801,19 +2819,21 @@ bool CWeapon::IsJamProhibited()
 
 bool CWeapon::OnWeaponJam()
 {
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
 	SetMisfireStatus(true);
 	_wanim_force_assign = true;
 
-	if (!ParentIsActor())
+	if (!pActor)
 		return false;
 
-	if (Actor()->IsActorSuicideNow())
+	if (pActor->IsActorSuicideNow())
 	{
 		SetMisfireStatus(false);
 		return false;
 	}
 
-	if (m_bUseLightMis && !(Actor()->GetDetector() != nullptr && m_bDisableLightMisDet))
+	if (m_bUseLightMis && !(pActor->GetDetector() != nullptr && m_bDisableLightMisDet))
 	{
 		float curcond = GetCondition();
 		float startcond = light_misfire.startcond;
@@ -2852,10 +2872,12 @@ bool CWeapon::CheckForMisfire_validate_NoMisfire()
 {
 	float problems_lvl = m_fMisfireAfterProblemsLevel;
 
-	if (problems_lvl > 0.0f && Actor()->CurrentElectronicsProblemsCnt() >= problems_lvl)
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (problems_lvl > 0.0f && pActor && pActor->CurrentElectronicsProblemsCnt() >= problems_lvl)
 		return OnWeaponJam();
 
-	if (ParentIsActor() && !m_bActorCanShoot)
+	if (pActor && !m_bActorCanShoot)
 		return true;
 
 	return false;
@@ -3175,8 +3197,10 @@ void CWeapon::OnZoomIn()
 {
 	if (!CanAimNow())
 	{
-		if (ParentIsActor() && !b_toggle_weapon_aim && Actor()->GetMovementState(eReal) & mcSprint)
-			Actor()->SetMovementState(eWishful, mcSprint, false);
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
+			pActor->SetMovementState(eWishful, mcSprint, false);
 
 		return;
 	}
@@ -3248,7 +3272,9 @@ void CWeapon::OnZoomOut()
 {
 	if (!CanLeaveAimNow())
 	{
-		Actor()->SetActorKeyRepeatFlag(kfUNZOOM, true);
+		auto pActor = smart_cast<CActor*>(H_Parent());
+
+		pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
 		return;
 	}
 
@@ -3307,10 +3333,12 @@ void CWeapon::OnMagazineEmpty()
 {
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	if (ParentIsActor())
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor)
 	{
 		int	AC = GetSuitableAmmoTotal();
-		Actor()->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
+		pActor->callback(GameObject::eOnWeaponMagazineEmpty)(lua_game_object(), AC);
 	}
 }
 
@@ -4139,10 +4167,12 @@ void CWeapon::OnAnimationEnd(u32 state)
 	{
 		case eShowingDet:
 		{
-			if (Actor()->GetDetector(true))
+			auto pActor = smart_cast<CActor*>(H_Parent());
+
+			if (pActor->GetDetector(true))
 			{
-				Actor()->GetDetector(true)->SwitchState(CCustomDetector::eShowing);
-				Actor()->GetDetector(true)->TurnDetectorInternal(true);
+				pActor->GetDetector(true)->SwitchState(CCustomDetector::eShowing);
+				pActor->GetDetector(true)->TurnDetectorInternal(true);
 				SwitchState(eShowingEndDet);
 			}
 		}break;
@@ -4526,6 +4556,8 @@ void CWeapon::LaunchGrenade_Correct(Fvector3& v)
 
 void CWeapon::LaunchGrenade_controller_Correct(Fvector3& v)
 {
-	if (ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()))
+	auto pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor && (pActor->IsActorSuicideNow() || pActor->IsSuicideInreversible()))
 		v.set(0, -2, 0);
 }
