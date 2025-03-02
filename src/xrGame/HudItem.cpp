@@ -16,6 +16,7 @@
 #include "HUDManager.h"
 #include "Torch.h"
 #include "Weapon.h"
+#include "ActorEffector.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -34,6 +35,7 @@ CHudItem::CHudItem()
 	lock_time_callback			= nullptr;
 	mark						= 0;
 	fDeviceFlags.zero();
+	_action_ppe					= -1;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -579,6 +581,48 @@ void CHudItem::UpdateCL()
 		lock_time_callback(this);
 		lock_time_callback = nullptr;
 		mark = 0;
+	}
+
+	xr_string use_ppe_key = "use_ppe_effector_" + GetActualCurrentAnim();
+
+	if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, use_ppe_key.c_str(), false))
+	{
+		xr_string ppe_key = "ppe_effector_" + GetActualCurrentAnim();
+		xr_string ppe = pSettings->r_string(hud_sect, ppe_key.c_str());
+		xr_string ppe_start_key = "ppe_start_" + GetActualCurrentAnim();
+		xr_string ppe_end_key = "ppe_end_" + GetActualCurrentAnim();
+		int ppe_start = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_start_key.c_str(), 0.f) * 1000.f);
+		int ppe_end = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, ppe_end_key.c_str(), 100.f) * 1000.f);
+
+		if (anim_time > ppe_start && anim_time < ppe_end)
+		{
+			// Включим PPE, если он выключен
+			if (_action_ppe < 0)
+			{
+				_action_ppe = 2014;
+				add_pp_effector(ppe.c_str(), _action_ppe, false);
+				set_pp_effector_factor2(_action_ppe, 1.f);
+			}
+		}
+		else
+		{
+			// Выключим PPE, если он включен
+			if (_action_ppe >= 0)
+			{
+				set_pp_effector_factor2(_action_ppe, 0.001f);
+				remove_pp_effector(_action_ppe);
+				_action_ppe = -1;
+			}
+		}
+	}
+	else
+	{
+		if (_action_ppe >= 0)
+		{
+			set_pp_effector_factor2(_action_ppe, 0.001f);
+			remove_pp_effector(_action_ppe);
+			_action_ppe = -1;
+		}
 	}
 }
 
