@@ -70,7 +70,7 @@ protected:
 	virtual void	UpfateWork					();
 	virtual void 	UpdateAf					()				{};
 	virtual void 	CreateUI					()				{};
-	void SetHideDetStateInWeapon();
+	void SetHideDetStateInWeapon() const;
 
 	bool			m_bWorking;
 	float			m_fAfVisRadius;
