@@ -537,6 +537,8 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 		PerformSwitchGL();
 
 		UpdateAddonsVisibility();
+		ProcessUpgrade();
+		ProcessScope();
 
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
@@ -546,9 +548,6 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 	else
 		return inherited::Detach(item_section_name, b_spawn_item);
 }
-
-
-
 
 void CWeaponMagazinedWGrenade::InitAddons()
 {	
