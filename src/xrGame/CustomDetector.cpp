@@ -9,10 +9,9 @@
 #include "Actor.h"
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "player_hud.h"
-#include "weapon.h"
+#include "Weapon.h"
 #include "WeaponKnife.h"
 #include "HUDAnimItem.h"
-#include "Missile.h"
 
 ITEM_INFO::ITEM_INFO()
 {
@@ -157,11 +156,11 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 	}
 	else if (GetState()==eIdle || GetState()==eShowing)
 	{
-		if (wpn)
+		if (wpn && isGuns)
 		{
 			u32 state = wpn->GetState();
 
-			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() != 0))
+			if (state == CWeapon::eEmptyClick || state == CWeapon::eShowing || state == CWeapon::eCheckMisfire || state == CWeapon::eFire || state == CWeapon::eFire2 || (state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() != 0) || wpn->IsZoomed())
 				return;
 		}
 
@@ -171,7 +170,7 @@ void CCustomDetector::ToggleDetector(bool bFastMode)
 
 }
 
-void  CCustomDetector::ShowingCallback(CBlend*B)
+void CCustomDetector::ShowingCallback(CBlend*B)
 {
 	ToggleDetector(g_player_hud->attached_item(0)!=nullptr);
 	g_player_hud->ResetBlockedPartID();
@@ -200,24 +199,71 @@ void CCustomDetector::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
 
+	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
+
 	switch(S)
 	{
-	case eShowing:
+		case eShowing:
 		{
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion				(m_bFastAnimMode?"anm_show_fast":"anm_show", !!(m_old_state != eHidden), this, S);
 			SetPending					(TRUE);
 		}break;
-	case eHiding:
+		case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion				(m_bFastAnimMode?"anm_hide_fast":"anm_hide", TRUE, this, S);
 			SetPending					(TRUE);
 			SetHideDetStateInWeapon();
 		}break;
-	case eIdle:
+		case eIdle:
 		{
 			PlayAnimIdle();
+			SetPending(FALSE);
+		}break;
+		case eDetThrowStart:
+		{
+			PlayHUDMotion("anm_throw_start", true, this, eDetThrowStart);
+			SetPending(FALSE);
+		}break;
+		case eDetThrowIdle:
+		{
+			PlayHUDMotion("anm_throw_idle", true, this, eDetThrowIdle);
+			SetPending(FALSE);
+		}break;
+		case eDetThrowEnd:
+		{
+			PlayHUDMotion("anm_throw_end", true, this, eDetThrowEnd);
+			SetPending(FALSE);
+		}break;
+		case eDetAimStart:
+		{
+			PlayHUDMotion("anm_idle_aim_start", true, this, eDetAimStart);
+			SetPending(FALSE);
+		}break;
+		case eDetAimEnd:
+		{
+			PlayHUDMotion("anm_idle_aim_end", true, this, eDetAimEnd);
+			SetPending(FALSE);
+		}break;
+		case eDetKick:
+		{
+			PlayHUDMotion("anm_kick", true, this, eDetKick);
+			SetPending(FALSE);
+		}break;
+		case eDetKick2:
+		{
+			PlayHUDMotion("anm_kick2", true, this, eDetKick2);
+			SetPending(FALSE);
+		}break;
+		case eDetHideHand:
+		{
+			PlayHUDMotion("anm_hide_hand", true, this, eDetHideHand);
+			SetPending(FALSE);
+		}break;
+		case eDetShowHand:
+		{
+			PlayHUDMotion("anm_show_hand", true, this, eDetShowHand);
 			SetPending(FALSE);
 		}break;
 	}
@@ -226,18 +272,37 @@ void CCustomDetector::OnStateSwitch(u32 S)
 
 void CCustomDetector::PlayAnimIdle()
 {
-	CMissile* mis = smart_cast<CMissile*>(m_pInventory->ActiveItem());
-	if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && mis && (mis->GetState() == CMissile::eThrowStart || mis->GetState() == CMissile::eReady))
-	{
-		string128 det_anm = "";
-		xr_sprintf(det_anm, "anm_lefthand_%s_wpn_throw_idle", m_section_id.c_str());
-		AssignDetectorAnim(det_anm, true, true);
-		return;
-	}
-	else if (TryPlayAnimIdle())
-		return;
+	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
 
-	PlayHUDMotion("anm_idle", TRUE, nullptr, GetState());
+	if (wpn && wpn->IsZoomed() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		PlayAnimAim();
+	else
+	{
+		if (TryPlayAnimIdle())
+			return;
+
+		PlayHUDMotion("anm_idle", true, this, eIdle);
+	}
+}
+
+void CCustomDetector::PlayAnimAim()
+{
+	u32 state = Actor()->GetMovementState(eReal);
+	xr_string anim_name = "anm_idle_aim";
+
+	if (state & ACTOR_DEFS::EMoveCommand::mcAnyMove)
+		anim_name += "_moving";
+
+	if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
+		anim_name += "_forward";
+	else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
+		anim_name += "_back";
+	else if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
+		anim_name += "_left";
+	else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
+		anim_name += "_right";
+
+	PlayHUDMotion(anim_name, TRUE, this, eIdle);
 }
 
 void CCustomDetector::SetHideDetStateInWeapon() const
@@ -264,10 +329,21 @@ void CCustomDetector::OnAnimationEnd(u32 state)
 	inherited::OnAnimationEnd	(state);
 	switch(state)
 	{
+	case eDetThrowEnd:
+	case eDetAimStart:
+	case eDetAimEnd:
+	case eDetKick:
+	case eDetKick2:
+	case eDetHideHand:
+	case eDetShowHand:
 	case eIdle:
 	{
 		SwitchState(eIdle);
 	}break;
+	case eDetThrowStart:
+	case eDetThrowIdle:
+		SwitchState(eDetThrowIdle);
+	break;
 	case eShowing:
 		{
 			SwitchState					(eIdle);
@@ -391,7 +467,7 @@ void CCustomDetector::UpdateVisibility()
 			{
 				u32 state = wpn->GetState();
 				bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-				if (wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
+				if (!isGuns && wpn->IsZoomed() || state == CWeapon::eReload || state == CWeapon::eUnjam || state == CWeapon::eSwitch || (isGuns && state == CWeapon::eSwitchMode && wpn->GetAmmoElapsed() == 0))
 				{
 					HideDetector(true);
 					m_bNeedActivation = true;
@@ -507,4 +583,20 @@ void CCustomDetector::TurnDetectorInternal(bool b)
 #include "game_base_space.h"
 void CCustomDetector::UpdateNightVisionMode(bool b_on)
 {
+}
+
+bool CCustomDetector::NeedBlockSprint() const
+{
+	return EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle && GetState() != eSprintStart && GetState() != eHidden;
+}
+
+void CCustomDetector::StartDetectorAction(u32 state)
+{
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		return;
+
+	if (GetState() == eHidden || GetState() == eHiding || GetState() == eShowing)
+		return;
+
+	SwitchState(state);
 }

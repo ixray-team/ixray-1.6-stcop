@@ -1114,7 +1114,7 @@ void CActor::UpdateCL	()
 	CMissile* pMissile = smart_cast<CMissile*>(inventory().ActiveItem());
 	CHUDAnimItem* pAnimator = smart_cast<CHUDAnimItem*>(inventory().ActiveItem());
 
-	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint() || pAnimator != nullptr;
+	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint() || pAnimator != nullptr || GetDetector() != nullptr && GetDetector()->NeedBlockSprint();
 
 	if (pWeapon)
 	{

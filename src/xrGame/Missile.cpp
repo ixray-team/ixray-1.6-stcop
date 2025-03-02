@@ -333,7 +333,6 @@ void CMissile::State(u32 state)
 			{
 				SetPending			(TRUE);
 				PlayHUDMotion		("anm_hide", TRUE, this, GetState());
-				StartCompanionAnimIfNeeded("hide");
 				if (m_sounds.FindSoundItem("SndHide", false))
 					PlaySound("SndHide", Position());
 			}
@@ -371,8 +370,8 @@ void CMissile::State(u32 state)
 
 				PlayHUDMotion("anm_throw_begin", TRUE, this, GetState());
 
-				//if (Actor() && Actor() == H_Parent() && Actor()->GetDetector() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
-					//Actor()->GetDetector()->SwitchState(CCustomDetector::eDetThrowStart);
+				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
+					Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetThrowStart);
 			}
 		} break;
 	case eReady:
@@ -415,8 +414,8 @@ void CMissile::State(u32 state)
 
 				PlayHUDMotion("anm_throw", TRUE, this, GetState());
 
-				//if (Actor() && Actor() == H_Parent() && Actor()->GetDetector() && EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
-					//Actor()->GetDetector()->SwitchState(CCustomDetector::eDetThrowEnd);
+				if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && Actor() && Actor() == H_Parent() && Actor()->GetDetector())
+					Actor()->GetDetector()->StartDetectorAction(CCustomDetector::eDetThrowEnd);
 			}
 		} break;
 	case eThrowEnd:
