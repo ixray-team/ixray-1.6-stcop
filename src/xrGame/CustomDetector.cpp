@@ -204,8 +204,6 @@ void CCustomDetector::OnStateSwitch(u32 S)
 {
 	inherited::OnStateSwitch(S);
 
-	CWeapon* wpn = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
-
 	switch(S)
 	{
 		case eShowing:
