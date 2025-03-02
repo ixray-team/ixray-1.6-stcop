@@ -433,7 +433,7 @@ void CCustomDetector::UpdateCL()
 			if (bNeedHideDet && GetState() == eIdle)
 			{
 				bNeedHideDet = false;
-				HideDetector(false);
+				HideDetector(g_player_hud->attached_item(0) != nullptr);
 			}
 		}
 
