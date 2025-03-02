@@ -549,6 +549,8 @@ void CInventory::Activate(u16 slot, bool bForce)
 					m_iDeferredSlot = slot;
 					return;
 				}
+				else if (det->IsShowing())
+					det->ForceHide();
 			}
 		}
 	}
