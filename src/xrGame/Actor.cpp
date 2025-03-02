@@ -971,13 +971,20 @@ float CActor::currentFOV()
 
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 
-	if (eacFreeLook != cam_active && pWeapon &&
-		pWeapon->IsZoomed() && 
-		( !pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()) )
-		 )
+	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
-		return pWeapon->GetZoomFactor() * (0.75f);
-	}else
+		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+		if (isGuns)
+		{
+			float fov = (g_fov / 2.f) * PI / 180.f;
+			float result = (2.f * atan(tan(fov) / pWeapon->GetZoomFactor()) * 180.f / PI);
+
+			return result * (0.75f);
+		}
+		else
+			return pWeapon->GetZoomFactor() * (0.75f);
+	}
+	else
 	{
 		return g_fov;
 	}
