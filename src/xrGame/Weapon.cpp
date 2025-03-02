@@ -2257,7 +2257,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							if (!IsPending())
 							{
-								if (GetState() != eIdle)
+								if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle)
 									SwitchState(eIdle);
 
 								OnZoomIn();
@@ -2273,7 +2273,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						if (!IsZoomed() && !IsPending())
 						{
-							if (GetState() != eIdle)
+							if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode] && GetState() != eIdle)
 								SwitchState(eIdle);
 
 							OnZoomIn();
@@ -2702,7 +2702,12 @@ float LastZoomFactor = 0.f;
 void CWeapon::OnZoomIn()
 {
 	if (!CanAimNow())
+	{
+		if (ParentIsActor() && !b_toggle_weapon_aim && Actor()->GetMovementState(eReal) & mcSprint)
+			Actor()->SetMovementState(eWishful, mcSprint, false);
+
 		return;
+	}
 
 	m_zoom_params.m_bIsZoomModeNow		= true;
 	if (m_zoom_params.m_bUseDynamicZoom && IsScopeAttached())
