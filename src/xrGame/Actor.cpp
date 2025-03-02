@@ -987,7 +987,7 @@ float CActor::currentFOV()
 			float fov = (g_fov / 2.f) * PI / 180.f;
 			float result = (2.f * atan(tan(fov) / pWeapon->GetZoomFactor()) * 180.f / PI);
 
-			return result * (0.75f);
+			return result;
 		}
 		else
 			return pWeapon->GetZoomFactor() * (0.75f);
