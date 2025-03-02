@@ -154,6 +154,11 @@ void add_online_impl						(CSE_ALifeDynamicObject *object, const bool &update_re
 		object->alife().server().Process_spawn	(tNetPacket,clientID,FALSE,l_tpALifeInventoryItem->base());
 		l_tpALifeDynamicObject->s_flags.band		(u16(-1) ^ M_SPAWN_UPDATE);
 		l_tpALifeDynamicObject->m_bOnline		= true;
+
+		if(!l_tpALifeDynamicObject->children.empty())
+		{
+			l_tpALifeDynamicObject->add_online(update_registries);
+		}
 	}
 
 	if (!update_registries)
@@ -194,6 +199,10 @@ void add_offline_impl						(CSE_ALifeDynamicObject *object, const xr_vector<ALif
 			"*SERVER*"
 		);
 #endif
+		if(!child->children.empty())
+		{
+			child->add_offline(child->children, update_registries);
+		}
 		
 		ALife::_OBJECT_ID				item_id = inventory_item->base()->ID;
 		inventory_item->base()->ID		= object->alife().server().PerformIDgen(item_id);
