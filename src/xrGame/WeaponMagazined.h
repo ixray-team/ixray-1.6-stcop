@@ -61,6 +61,10 @@ protected:
 	virtual bool	TryReload		();
 
 protected:
+	void CopyCartridge(CCartridge& src, CCartridge& dst);
+	void			SwapFirstLastAmmo();
+	void			SwapLastPrevAmmo();
+	void			PerformUnloadAmmo();
 	virtual void	ReloadMagazine();
 	virtual void	DoReload();
 	bool			HaveCartridgeInInventory(u8 cnt);
