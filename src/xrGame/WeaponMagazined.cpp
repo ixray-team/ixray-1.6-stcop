@@ -1279,6 +1279,11 @@ void CWeaponMagazined::PlayAnimFakeshoot()
 		anm_name += m_sFireModeMask_3.c_str();
 
 	PlayHUDMotion(anm_name, TRUE, GetState());
+
+	anm_name = GetActualCurrentAnim();
+	anm_name.erase(0, 4);
+
+	StartCompanionAnimIfNeeded(anm_name);
 }
 
 void CWeaponMagazined::PlayReloadSound()
@@ -1876,6 +1881,11 @@ void CWeaponMagazined::PlayAnimFireMode()
 		bIsNeedCallDet = false;
 
 	PlayHUDMotion(anm_name, TRUE, eSwitchMode);
+
+	anm_name = GetActualCurrentAnim();
+	anm_name.erase(0, 4);
+
+	StartCompanionAnimIfNeeded(anm_name);
 }
 
 void CWeaponMagazined::PlayAnimShow()
@@ -1883,6 +1893,7 @@ void CWeaponMagazined::PlayAnimShow()
 	VERIFY(GetState()==eShowing);
 
 	PlayHUDMotion("anm_show", FALSE, GetState());
+	StartCompanionAnimIfNeeded("draw");
 }
 
 void CWeaponMagazined::PlayAnimHide()
@@ -1890,6 +1901,7 @@ void CWeaponMagazined::PlayAnimHide()
 	VERIFY(GetState()==eHiding);
 
 	PlayHUDMotion("anm_hide", TRUE, GetState());
+	StartCompanionAnimIfNeeded("hide");
 }
 
 void CWeaponMagazined::OnAmmoTimer()
@@ -2025,6 +2037,11 @@ void CWeaponMagazined::PlayAnimShoot()
 	PlayHUDMotion(isGuns ? "anm_shoot" : "anm_shots", NeedShootMix(), GetState());
 	ProcessAmmo(true);
 	MakeLockByConfigParam("lock_time_" + GetActualCurrentAnim(), true);
+
+	xr_string anm_name = GetActualCurrentAnim();
+	anm_name.erase(0, 4);
+
+	StartCompanionAnimIfNeeded(anm_name);
 }
 
 void CWeaponMagazined::OnZoomIn			()
