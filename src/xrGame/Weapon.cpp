@@ -4209,16 +4209,6 @@ float CWeapon::GetHudFov()
 	return base;
 }
 
-const CameraRecoil& CWeapon::getCameraRecoil(void) const
-{
-	return cam_recoil;
-}
-
-const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
-{
-	return zoom_cam_recoil;
-}
-
 const bool CWeapon::ScopeFit(CScope* pIItem) const
 {
 	for (auto& scope : m_scopes) {
@@ -4468,4 +4458,33 @@ float CWeapon::GetNightPPEFactor() const
 	}
 
 	return val;
+}
+
+const CameraRecoil& CWeapon::getCameraRecoil(void) const
+{
+	return cam_recoil;
+}
+
+const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
+{
+	return zoom_cam_recoil;
+}
+ 
+void CWeapon::LaunchGrenade_Correct(Fvector3& v)
+{
+	Fvector3 camdir = Device.vCameraDirection;
+
+	camdir.y = 0.0f;
+	camdir.normalize();
+
+	camdir.y = 1.0f;
+	camdir.normalize();
+
+	v = camdir;
+}
+
+void CWeapon::LaunchGrenade_controller_Correct(Fvector3& v)
+{
+	if (ParentIsActor() && (Actor()->IsActorSuicideNow() || Actor()->IsSuicideInreversible()))
+		v.set(0, -2, 0);
 }
