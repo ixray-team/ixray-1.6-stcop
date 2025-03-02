@@ -303,6 +303,7 @@ public:
 	bool m_bDisableLightMisDet;
 	bool bIsTorchEnabled;
 	bool bIsLaserEnabled;
+	bool bBlockStopShooting = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;

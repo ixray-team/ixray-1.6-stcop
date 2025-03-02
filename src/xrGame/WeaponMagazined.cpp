@@ -999,6 +999,7 @@ void CWeaponMagazined::state_Fire(float dt)
 		{
 			if (CheckForMisfire())
 			{
+				bBlockStopShooting = false;
 				StopShooting();
 				return;
 			}
@@ -1024,12 +1025,16 @@ void CWeaponMagazined::state_Fire(float dt)
 
 		if (m_iShotNum == m_iQueueSize)
 			m_bStopedAfterQueueFired = true;
+		else
+			bBlockStopShooting = m_iQueueSize > 0;
 	}
 
 	if (fShotTimeCounter < 0)
 	{
 		if (iAmmoElapsed == 0)
 			OnMagazineEmpty();
+
+		bBlockStopShooting = false;
 
 		StopShooting();
 	}
@@ -1201,11 +1206,15 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			bPrevModeKeyPressed = false;
 			SwitchState(eIdle);
 		break;
+		case eFire:
+		{
+			bBlockStopShooting = false;
+			SwitchState(eIdle);
+		}break;
 		case eEmptyClick:
 		case eShowing:
 		case eCheckMisfire:
 		case eFire2:
-		case eFire:
 		case eKick:
 		case eLightMis:
 		case eMisfire:

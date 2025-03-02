@@ -2272,6 +2272,8 @@ bool CWeapon::CanAimNow() const
 		result = true;
 	else if (IsActionProcessing() || GetActualCurrentAnim().find("anm_idle_sprint") == 0 || READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_aim_with_detector", false))
 		result = false;
+	else if (bBlockStopShooting)
+		result = false;
 	else
 	{
 		if (ParentIsActor() && Actor()->GetDetector() != nullptr)
@@ -2428,7 +2430,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 						{
 							if (!IsPending())
 							{
-								if (GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
+								if (!bBlockStopShooting && GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
 									SwitchState(eIdle);
 
 								OnZoomIn();
@@ -2444,7 +2446,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 					{
 						if (!IsZoomed() && !IsPending())
 						{
-							if (GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
+							if (!bBlockStopShooting && GetState() != eIdle && GetState() != eSprintStart && GetState() != eSprintEnd)
 								SwitchState(eIdle);
 
 							OnZoomIn();

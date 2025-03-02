@@ -129,7 +129,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 void CWeapon::StopShooting()
 {
-//	SetPending			(TRUE);
+	if (ParentIsActor() && bBlockStopShooting)
+		return;
 
 	//принудительно останавливать зацикленные партиклы
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
@@ -140,6 +141,9 @@ void CWeapon::StopShooting()
 
 void CWeapon::FireEnd() 
 {
+	if (ParentIsActor() && bBlockStopShooting)
+		return;
+
 	CShootingObject::FireEnd();
 	StopShotEffector();
 }
