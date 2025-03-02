@@ -540,32 +540,7 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
 	VERIFY(GetState() == eSwitch);
 
-	std::string anm_name = "anm_switch";
-
-	if (m_bGrenadeMode)
-	{
-		if (IsMisfire())
-			anm_name += "_jammed";
-		else if (iAmmoElapsed2 == 0)
-			anm_name += "_empty";
-		else
-			anm_name += "";
-
-		anm_name += "_g";
-	}
-	else
-	{
-		if (IsMisfire())
-			anm_name += "_jammed";
-		else if (iAmmoElapsed == 0)
-			anm_name += "_empty";
-		else
-			anm_name += "";
-
-		anm_name += "_w_gl";
-	}
-
-	PlayHUDMotion(anm_name, TRUE, this, eSwitch, false);
+	PlayHUDMotion("anm_switch", TRUE, this, eSwitch);
 }
 
 void CWeaponMagazinedWGrenade::PlayAnimShoot()
@@ -642,52 +617,55 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 		if (m_bGrenadeMode)
 		{
 			if (IsZoomed())
-				new_name = AddSuffixName(new_name, "_aim");
+				new_name = AddSuffixName(new_name, "_aim", "_g");
 
 			if (!IsMisfire() && iAmmoElapsed2 == 0)
-				new_name = AddSuffixName(new_name, "_empty");
+				new_name = AddSuffixName(new_name, "_empty", "_g");
 
 			if (IsMisfire())
 			{
 				if (isGuns)
-					new_name = AddSuffixName(new_name, "_jammed");
+					new_name = AddSuffixName(new_name, "_jammed", "_g");
 				else
-					new_name = AddSuffixName(new_name, "_misfire");
+					new_name = AddSuffixName(new_name, "_misfire", "_g");
 			}
 
 			std::string temp_name = new_name;
 
 			if (IsChangeAmmoType() && iAmmoElapsed != 0)
-				new_name = AddSuffixName(new_name, "_ammochange");
-
-			if (temp_name == new_name && !IsMisfire() && iAmmoElapsed2 == 0 && IsChangeAmmoType() && iAmmoElapsed != 0) //������� ��� ������� SIG 550, ����� �����
-				new_name += "_ammochange";
+				new_name = AddSuffixName(new_name, "_ammochange", "_g");
 
 			new_name = AddSuffixName(new_name, "_g");
 		}
 		else
 		{
 			if (IsZoomed())
-				new_name = AddSuffixName(new_name, "_aim");
+				new_name = AddSuffixName(new_name, "_aim", "_w_gl");
+
+			if (IsScopeAttached())
+				new_name += AddSuffixName(new_name, "_scope", "_w_gl");
 
 			if (iAmmoElapsed == 1)
-				new_name = AddSuffixName(new_name, "_last");
+				new_name = AddSuffixName(new_name, "_last", "_w_gl");
+
+			if (IsSilencerAttached())
+				new_name = AddSuffixName(new_name, "_sil", "_w_gl");
 
 			if (!IsMisfire() && iAmmoElapsed == 0)
-				new_name = AddSuffixName(new_name, "_empty");
+				new_name = AddSuffixName(new_name, "_empty", "_w_gl");
 
 			if (IsChangeAmmoType())
-				new_name = AddSuffixName(new_name, "_ammochange");
+				new_name = AddSuffixName(new_name, "_ammochange", "_w_gl");
 
 			if (IsMisfire())
 			{
 				if (isGuns)
-					new_name = AddSuffixName(new_name, "_jammed");
+					new_name = AddSuffixName(new_name, "_jammed", "_w_gl");
 				else
-					new_name = AddSuffixName(new_name, "_misfire");
+					new_name = AddSuffixName(new_name, "_misfire", "_w_gl");
 
 				if (iAmmoElapsed == 1)
-					new_name = AddSuffixName(new_name, "_last");
+					new_name = AddSuffixName(new_name, "_last", "_w_gl");
 
 				bMisfireReload = true;
 			}
