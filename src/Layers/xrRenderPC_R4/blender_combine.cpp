@@ -34,6 +34,8 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Sampler		("smp_nofilter");
 		C.r_dx10Sampler		("smp_material");
 		C.r_dx10Sampler		("smp_rtlinear");
+		C.r_dx10Sampler		("smp_linear");
+
 		C.r_End				();
 		break;
 	case 1:

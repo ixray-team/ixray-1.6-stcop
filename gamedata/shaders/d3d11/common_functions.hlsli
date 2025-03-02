@@ -12,14 +12,35 @@ float Contrast(float Input, float ContrastPower)
     return Output;
 }
 
+#ifndef SRGB_GAMMA
+#define SRGB_GAMMA 2.2
+#endif
+
+#ifndef USE_LEGACY_LIGHT
+	#define PushGamma(x) pow(abs(x), SRGB_GAMMA)
+	#define PopGamma(x) pow(abs(x), rcp(SRGB_GAMMA))
+#else
+	#define PushGamma(x) abs(x)
+	#define PopGamma(x) abs(x)
+#endif
+
 float3 tonemap(float3 rgb, float scale)
 {
+#ifndef USE_LEGACY_LIGHT
+	scale *= 1.3f;
+#endif
+	
     rgb = rgb * scale;
+	return PopGamma(rgb * (1.0f + rgb * 0.34602f) * rcp(rgb + 1.0f));
+}
 
-    const float fWhiteIntensity = 1.7f;
-    const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
+void RemapVector(inout float3 View)
+{
+    float3 ViewPos = abs(View);
+    float ViewPosMax = max(ViewPos.x, max(ViewPos.y, ViewPos.z));
 
-    return rgb * (1.0f + rgb / fWhiteIntensitySQR) / (rgb + 1.0f);
+    View *= rcp(ViewPosMax);
+    View.y = View.y * 2.0 - 1.0;
 }
 
 // Функции генерации случайных чисел [0, 1]
