@@ -10,10 +10,10 @@ class CController;
 class CControllerPsyHit : public CControl_ComCustom<> {
 	typedef CControl_ComCustom<> inherited;
 
-	MotionID			m_stage[4];
-	u8					m_current_index;
+	MotionID			m_stage[4]{};
+	u8					m_current_index{};
 
-	CPsyHitEffectorCam	*m_effector_cam;
+	CPsyHitEffectorCam* m_effector_cam{};
 	CPsyHitEffectorPP	*m_effector_pp;
 	u16						m_curent_actor_id = u16(-1);
 
@@ -26,13 +26,23 @@ class CControllerPsyHit : public CControl_ComCustom<> {
 		eNone
 	} m_sound_state;
 
+	struct controller_feel_params
+	{
+		float min_dist = 0.0f;
+		float max_dist = 0.0f;
+	};
 
-	float				m_min_tube_dist;
 
+	float				m_min_tube_dist{};
+	float				m_controller_prepare_time{};
+	float				m_controller_psyblocked_time{};
+	float				m_controller_time{};
+	float				m_controller_queue_stop_prob{};
 	// internal flag if weapon was hidden
-	bool				m_blocked;
+	bool				m_blocked{};
 
-	u32					m_time_last_tube;
+	u32					m_time_last_tube{};
+	controller_feel_params m_feel_params{};
 
 public:
 	virtual void	load					(LPCSTR section);

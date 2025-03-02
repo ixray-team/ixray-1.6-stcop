@@ -293,6 +293,7 @@ public:
 	cached_cfg_param_float cached_hud_fov_zoom_factor;
 	//player_hud::cached_cfg_param_float cached_hud_fov_alter_zoom_factor;
 
+	CPickUpManager* GetPickupManager() { return pPickup; }
 public:
 
 	//свойства артефактов

@@ -178,6 +178,9 @@ public:
 
 	float getLookOutSpeedKoef(void) const;
 	float getLookOutAmplK(void) const;
+	float getControllerTime(void) const;
+	float getControllerShootExplMinDist(void) const;
+	bool isSuicideByAnimation(void) const;
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
@@ -200,6 +203,8 @@ protected:
 	float						m_fHudFov;
 	float						m_fLookOutSpeedKoef;
 	float						m_fLookOutAmplK;
+	float						m_fControllerTime;
+	float						m_fControllerShootExplMinDist;
 	float m_fLR_CameraFactor; // Фактор бокового наклона худа при ходьбе [-1; +1]
 	float m_fLR_MovingFactor; // Фактор бокового наклона худа при движении камеры [-1; +1]
 	float m_fLR_InertiaFactor; // Фактор горизонтальной инерции худа при движении камеры [-1; +1]
@@ -207,6 +212,7 @@ protected:
 
 	bool						m_bDisableBore;
 	bool						SwitchSprint;
+	bool						m_bSuicideByAnimation;
 	TAnimationEffector			lock_time_callback;
 	u32							mark;
 	int							_action_ppe;
