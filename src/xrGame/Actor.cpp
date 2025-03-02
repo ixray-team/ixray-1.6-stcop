@@ -74,6 +74,7 @@
 #include "ui/UIDragDropReferenceList.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
+#include "HUDAnimItem.h"
 
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
@@ -1059,8 +1060,9 @@ void CActor::UpdateCL	()
 	}
 
 	CMissile* pMissile = smart_cast<CMissile*>(inventory().ActiveItem());
+	CHUDAnimItem* pAnimator = smart_cast<CHUDAnimItem*>(inventory().ActiveItem());
 
-	bBlockSprint = (pWeapon != nullptr && pWeapon->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint());
+	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint() || pAnimator != nullptr;
 
 	if (pWeapon)
 	{

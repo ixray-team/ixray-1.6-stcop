@@ -179,7 +179,7 @@ protected:
 	bool						m_bDisableBore;
 	bool						SwitchSprint;
 
-	typedef void (*TAnimationEffector)(CHudItem* item);
+	using TAnimationEffector = void(*)(CHudItem*);
 
 private:
 	CPhysicItem					*m_object;
