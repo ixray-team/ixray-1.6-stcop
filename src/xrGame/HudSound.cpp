@@ -204,18 +204,23 @@ void HUD_SOUND_COLLECTION::StopAllSounds()
 	}
 }
 
-void HUD_SOUND_COLLECTION::LoadSound(	LPCSTR section, 
-										LPCSTR line,
-										LPCSTR alias,
-										bool exclusive,
-										int type)
+void HUD_SOUND_COLLECTION::LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
 {
-	R_ASSERT					(nullptr==FindSoundItem(alias, false));
-	m_sound_items.resize		(m_sound_items.size()+1);
-	HUD_SOUND_ITEM& snd_item	= m_sound_items.back();
-	HUD_SOUND_ITEM::LoadSound	(section, line, snd_item, type);
-	snd_item.m_alias			= alias;
-	snd_item.m_b_exclusive		= exclusive;
+	HUD_SOUND_ITEM& snd_item = *FindSoundItem(alias, false);
+	if (&snd_item)
+	{
+		HUD_SOUND_ITEM::LoadSound(section, line, snd_item, type);
+		snd_item.m_alias = alias;
+		snd_item.m_b_exclusive = exclusive;
+	}
+	else
+	{
+		m_sound_items.resize(m_sound_items.size() + 1);
+		HUD_SOUND_ITEM& snd_item_new = m_sound_items.back();
+		HUD_SOUND_ITEM::LoadSound(section, line, snd_item_new, type);
+		snd_item_new.m_alias = alias;
+		snd_item_new.m_b_exclusive = exclusive;
+	}
 }
 
 //Alundaio:
