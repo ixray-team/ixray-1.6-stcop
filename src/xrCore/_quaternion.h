@@ -140,7 +140,8 @@
 #define QEPSILON				0.00001f
 
 template <class T>
-struct _quaternion {
+struct _quaternion 
+{
 public:
 	typedef T				TYPE;
 	typedef _quaternion<T>	Self;
@@ -164,7 +165,10 @@ private:
 		return PI_DIV_2 - _asin_(x_);
 	}
 public:
-	T x,y,z,w;
+	T x = 0;
+	T y = 0;
+	T z = 0;
+	T w = 0;
 
 	IC	SelfRef	set(T W, T X, T Y, T Z)	// don't normalize
 	{	x=X; y=Y; z=Z; w=W;			return *this; }
@@ -173,16 +177,6 @@ public:
 
 	IC SelfRef	set(const _matrix<T>& m);
 
-	// multiplies q1 * q2, and places the result in *this.
-	// no failure. 	renormalization not automatic
-
-/*
-	q1*q2 = q3 =
-		(w1*w2 - x1*x2 - y1*y2 - z1*z2)     {w3}
-		(w1*x2 + x1*w2 + y1*z2 - z1*y2)i	{x3}
-		(w1*y2 - x1*z2 + y1*w2 + z1*x2)j    {y3}
-		(w1*z2 + x1*y2 - y1*x2 + z1*w2)k	{z3}
-*/
 	IC	SelfRef	mul(SelfCRef q1l, SelfCRef q2l)
 	{
 		VERIFY( q1l.isValid() );

@@ -1,5 +1,4 @@
-#ifndef __FBOX2
-#define __FBOX2
+#pragma once
 
 template <class T>
 class _box2 {
@@ -10,16 +9,24 @@ public:
 	typedef const Self&	SelfCRef;
 	typedef _vector2<T>	Tvector;
 public:
-	union{
-		struct{
+	union
+	{
+		struct
+		{
 			Tvector min;
 			Tvector max;
 		};
-		struct{
+		struct
+		{
 			T x1, y1;
 			T x2, y2;
 		};
 	};
+
+	IC _box2()
+	{
+		x1 = y1 = x2 = y2 = static_cast<T>(0);
+	}
 
 	IC 	SelfRef	set			(const Tvector &_min, const Tvector &_max)	{ min.set(_min);	max.set(_max);	return *this;	};
 	IC	SelfRef	set			(T x1_, T y1_, T x2_, T y2_)	{ min.set(x1_,y1_);	max.set(x2_,y2_);					return *this;	};
@@ -213,10 +220,8 @@ public:
 	};
 };
 
-typedef _box2<float>	Fbox2;
-typedef _box2<double>	Dbox2;
+using Fbox2 = _box2<float>;
+using Dbox2 = _box2<double>;
 
 template <class T>
 BOOL	_valid			(const _box2<T>& c)	{ return _valid(c.min) && _valid(c.max); }
-
-#endif

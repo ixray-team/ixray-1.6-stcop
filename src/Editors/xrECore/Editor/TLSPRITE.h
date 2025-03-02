@@ -1,12 +1,13 @@
-#ifndef TLSpriteH
-#define TLSpriteH
-
+#pragma once
 #define TO_REAL(_X_, _S_)	((_X_)+1.f)*float(_S_/2)
 
-typedef struct _TLpolygon {
+struct FTLpolygon
+{
 public:
-	union{
-		struct{
+	union
+	{
+		struct
+		{
 			FVF::TL 	lb, lt, rb, rt;
 		};
 		FVF::TL			m[4];
@@ -55,11 +56,11 @@ public:
 		lb.p.x=r.x1-dx;	lb.p.y=r.y2-dy;	lt.p.x=r.x1-dx;	lt.p.y=r.y1-dy;
 		rb.p.x=r.x2-dx;	rb.p.y=r.y2-dy;	rt.p.x=r.x2-dx;	rt.p.y=r.y1-dy;
 	}
-} FTLpolygon;
+} ;
 
 class	ECORE_API CTLSprite
 {
-	FTLpolygon		mesh;
+	FTLpolygon		mesh = {};
 public:
 					CTLSprite	( );
 	virtual			~CTLSprite	( );
@@ -75,5 +76,3 @@ public:
     }
 	void			Render		( Fvector &pos, float radius, bool bFixedSize, u32 clr=0xffffffff );
 };
-
-#endif //__TLSPRITE_H__

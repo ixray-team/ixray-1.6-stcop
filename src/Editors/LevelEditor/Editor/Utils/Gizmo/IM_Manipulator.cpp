@@ -187,10 +187,6 @@ void IM_Manipulator::CommandRotate(Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, 
 	if (PtrRotateSnap)
 		RotateSnap = rad2deg(Tools->m_RotateSnapAngle);
 
-	Fvector OriginalRotation;
-
-	ObjectMatrix.getXYZ(OriginalRotation);
-
 	ImGuizmo::OPERATION Flags = ImGuizmo::ROTATE;
 
 	if (LTools->CurrentClassID() == OBJCLASS_PUDDLES)

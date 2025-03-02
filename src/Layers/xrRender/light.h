@@ -60,7 +60,8 @@ public:
 	u32				m_xform_frame;
 	Fmatrix			m_xform;
 
-	struct _vis		{
+	struct _vis		
+	{
 		u32			frame2test;		// frame the test is sheduled to
 		u32			query_id;		// ID of occlusion query
 		u32			query_order;	// order of occlusion query
@@ -69,29 +70,38 @@ public:
 		u16			smap_ID;
 	}				vis;
 
-	union			_xform	{
-		struct		_D		{
-			Fmatrix						combine	;
-			s32							minX,maxX	;
-			s32							minY,maxY	;
-			BOOL						transluent	;
+	union _xform
+	{
+		struct _D
+		{
+			Fmatrix						combine = {};
+			s32							minX, maxX;
+			s32							minY, maxY;
+			BOOL						transluent;
 		}	D;
-		struct		_P		{
-			Fmatrix						world		;
-			Fmatrix						view		;
-			Fmatrix						project		;
-			Fmatrix						combine		;
+
+		struct _P
+		{
+			Fmatrix						world = {};
+			Fmatrix						view = {};
+			Fmatrix						project = {};
+			Fmatrix						combine = {};
 		}	P;
-		struct		_S		{
-			Fmatrix						view		;
-			Fmatrix						project		;
-			Fmatrix						combine		;
-			u32							size		;
-			u32							posX		;
-			u32							posY		;
-			BOOL						transluent	;
+
+		struct _S
+		{
+			Fmatrix						view = {};
+			Fmatrix						project = {};
+			Fmatrix						combine = {};
+			u32							size;
+			u32							posX;
+			u32							posY;
+			BOOL						transluent;
 		}	S;
-	}	X;
+
+	};
+
+	_xform X = {};
 #endif	//	(RENDER==R_R2) || (RENDER==R_R4)
 
 public:

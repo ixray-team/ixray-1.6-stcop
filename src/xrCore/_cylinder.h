@@ -13,8 +13,8 @@ public:
 public:
 	_vector3<T>	m_center;
 	_vector3<T>	m_direction;
-	T			m_height;
-	T			m_radius;
+	T			m_height = 0;
+	T			m_radius = 0;
 
 
 public:

@@ -7,14 +7,17 @@
 #endif
 
 template <class T>
-struct _vector3 {
+struct _vector3 
+{
 public:
 	typedef T			TYPE;
 	typedef _vector3<T>	Self;
 	typedef Self&		SelfRef;
 	typedef const Self&	SelfCRef;
 public:
-	T	x,y,z;
+	T x = 0;
+	T y = 0;
+	T z = 0;
 
 	// access operators
 	ICF	T&			operator[] (int i)					{ return *((T*)this + i); }

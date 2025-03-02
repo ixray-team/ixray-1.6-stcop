@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/ShapeData.h"
+#include "../../xrServerEntities/ShapeData.h"
 
 enum eShapeUsage{eShapeCommon=0, eShapeLevelBound};
 

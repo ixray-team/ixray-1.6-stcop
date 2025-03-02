@@ -26,7 +26,8 @@
 // NOTE_4: The rotation sequence is ZXY
 
 template <class T>
-struct _matrix {
+struct _matrix 
+{
 public:
 	typedef T			TYPE;
 	typedef _matrix<T>	Self;
@@ -34,14 +35,17 @@ public:
 	typedef const Self&	SelfCRef;
 	typedef _vector3<T>	Tvector;
 public:
-	union {
-		struct {						// Direct definition
+	union 
+	{
+		struct 
+		{						// Direct definition
             T _11, _12, _13, _14;
             T _21, _22, _23, _24;
             T _31, _32, _33, _34;
             T _41, _42, _43, _44;
 		};
-    	struct{
+    	struct
+		{
     		Tvector i;	T	_14_;
     		Tvector j;	T	_24_;
     		Tvector k;	T	_34_;
@@ -49,6 +53,22 @@ public:
         };
 		T m[4][4];					// Array
 	};
+
+	IC _matrix()
+	{
+		for (int row = 0; row < 4; ++row)
+			for (int col = 0; col < 4; ++col)
+				m[row][col] = static_cast<T>(0);
+	}
+	
+	IC _matrix(const std::initializer_list<T>& list)
+	{
+		R_ASSERT2(list.size() == 16, "Initializer list must contain exactly 16 elements.");
+		auto it = list.begin();
+		for (auto row = 0; row < 4; ++row)
+			for (auto col = 0; col < 4; ++col)
+				m[row][col] = *it++;
+	}
 
 	// Class members
 	IC	bool	has_inited	()	{
