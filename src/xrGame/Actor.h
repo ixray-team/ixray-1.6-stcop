@@ -18,6 +18,7 @@
 
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
+#include "CustomDetector.h"
 
 using namespace ACTOR_DEFS;
 
@@ -61,6 +62,7 @@ class CActorStatisticMgr;
 
 class CLocationManager;
 class CPickUpManager;
+class CCustomDetector;
 
 class CActor: 
 	public IGame_Actor, 
@@ -706,6 +708,7 @@ public:
 	virtual void				OnPrevWeaponSlot				();
 			void				SwitchNightVision				();
 			void				SwitchTorch						();
+	CCustomDetector*			GetDetector						(bool in_slot = false);
 #ifndef MASTER_GOLD
 			void				NoClipFly						(int cmd);
 #endif //DEBUG

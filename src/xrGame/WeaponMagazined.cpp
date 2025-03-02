@@ -785,7 +785,7 @@ xr_string CWeaponMagazined::NeedAddSuffix(const xr_string& M)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
-	if (GetDetector())
+	if (Actor()->GetDetector())
 		new_name = AddSuffixName(new_name, "_detector");
 
 	if (IsSilencerAttached())
@@ -1524,7 +1524,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 			else
 				return false;
 
-			if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
+			if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 				return false;
 
 			if (IsMisfire() && !IsGrenadeMode())
@@ -1867,7 +1867,7 @@ void CWeaponMagazined::PlayAnimFireMode()
 
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
 
-	if (GetDetector() && isGuns)
+	if (Actor()->GetDetector() && isGuns)
 	{
 		if (iAmmoElapsed == 0)
 			bIsNeedCallDet = true;
@@ -1920,7 +1920,7 @@ void CWeaponMagazined::PlayAnimReload()
 	if (IsMisfire() && isGuns)
 		anm_name += "_jammed";
 
-	bIsNeedCallDet = GetDetector() && isGuns;
+	bIsNeedCallDet = Actor()->GetDetector() && isGuns;
 
 	PlayHUDMotion(anm_name, TRUE, GetState());
 
@@ -2119,7 +2119,7 @@ bool CWeaponMagazined::ChangeFiremode(u16 cmd)
 		else
 			bPrevModeKeyPressed = true;
 
-		if (GetDetector() && GetDetector()->GetState() != CCustomDetector::eIdle)
+		if (Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
 			return false;
 	}
 

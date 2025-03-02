@@ -2233,3 +2233,19 @@ bool CActor::unlimited_ammo()
 {
 	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
 }
+
+CCustomDetector* CActor::GetDetector(bool in_slot)
+{
+	if (in_slot)
+		return smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT));
+	else
+	{
+		if (g_player_hud != nullptr && g_player_hud->attached_item(1) != nullptr)
+		{
+			attachable_hud_item* i1 = g_player_hud->attached_item(1);
+			return smart_cast<CCustomDetector*>(i1->m_parent_hud_item);
+		}
+	}
+
+	return nullptr;
+}
