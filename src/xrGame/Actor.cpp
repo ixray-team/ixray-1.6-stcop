@@ -1125,6 +1125,8 @@ float CActor::currentFOV()
 float	NET_Jump = 0;
 static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
+u16 old_slot = 0;
+bool need_restore_detector = false;
 void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
@@ -1207,6 +1209,53 @@ void CActor::UpdateCL()
 				IR_OnMouseMove(static_cast<int>(floor(contr_k.keyboard_move_k * contr_k.min_offset)), static_cast<int>(floor(contr_k.keyboard_move_k * contr_k.max_offset)));
 			else if (GetMovementState(eReal) & mcBack)
 				IR_OnMouseMove(static_cast<int>(floor(contr_k.keyboard_move_k * contr_k.min_offset)), static_cast<int>(floor(contr_k.keyboard_move_k * contr_k.min_offset)));
+		}
+	}
+
+	if (!g_player_hud->m_need_reload)
+	{
+		CHudItemObject* item = smart_cast<CHudItemObject*>(inventory().ActiveItem());
+		CCustomDetector* det = GetDetector();
+
+		if (item != nullptr || det != nullptr)
+		{
+			if (det != nullptr)
+			{
+				need_restore_detector = true;
+				if (det->GetState() == CHUDState::eIdle)
+					det->HideDetector(true, true);
+			}
+
+			if (item != nullptr)
+			{
+				if (old_slot == 0)
+					old_slot = inventory().GetActiveSlot();
+
+				if (item->GetState() == CHUDState::eIdle)
+					inventory().Activate(0);
+			}
+		}
+		else if (item == nullptr && det == nullptr)
+		{
+			g_player_hud->m_need_reload = true;
+			CCustomOutfit* outfit = GetOutfit();
+			if (outfit != nullptr)
+				g_player_hud->load(pSettings->r_string(outfit->m_section_id.c_str(), "player_hud_section"));
+			else
+				g_player_hud->load_default();
+
+			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
+			{
+				inventory().Activate(old_slot);
+				old_slot = 0;
+			}
+
+			if (need_restore_detector && GetDetector(true) != nullptr)
+			{
+				need_restore_detector = false;
+				GetDetector(true)->switch_detector();
+			}
+
 		}
 	}
 
@@ -2472,7 +2521,10 @@ void CActor::On_SetEntity()
 {
 	CCustomOutfit* pOutfit = GetOutfit();
 	if (!pOutfit)
-		g_player_hud->load_default();
+	{
+		//g_player_hud->load_default();
+		g_player_hud->m_need_reload = false;
+	}
 	else
 		pOutfit->ApplySkinModel(this, true, true);
 }

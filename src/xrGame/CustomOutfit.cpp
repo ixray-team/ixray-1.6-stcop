@@ -266,8 +266,11 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 		}
 
 
-		if (pActor == Level().CurrentViewEntity())	
-			g_player_hud->load(pSettings->r_string(cNameSect(),"player_hud_section"));
+		if (pActor == Level().CurrentViewEntity())
+		{
+			//g_player_hud->load(pSettings->r_string(cNameSect(),"player_hud_section"));
+			g_player_hud->m_need_reload = false;
+		}
 	}else
 	{
 		if (!bHUDOnly && m_ActorVisual.size())
@@ -279,8 +282,11 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 			};
 		}
 
-		if (pActor == Level().CurrentViewEntity())	
-			g_player_hud->load_default();
+		if (pActor == Level().CurrentViewEntity())
+		{
+			//g_player_hud->load_default();
+			g_player_hud->m_need_reload = false;
+		}
 	}
 
 }

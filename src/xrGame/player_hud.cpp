@@ -596,9 +596,13 @@ player_hud::~player_hud()
 
 void player_hud::load(const shared_str& player_hud_sect)
 {
-	if(player_hud_sect == m_sect_name) {
+	if (player_hud_sect == m_sect_name)
+	{
 		return;
 	}
+
+	if (!m_need_reload)
+		return;
 
 	bool b_reload = (m_model != nullptr);
 
