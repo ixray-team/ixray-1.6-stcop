@@ -123,8 +123,16 @@ void CWeaponBM16::PlayAnimReload()
 		}
 	}
 
-	PlayHUDMotion(anm_name, TRUE, GetState(), false, isGuns);
-	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, {CHudItem::TAnimationEffector(this, &CWeaponBM16::OnAmmoTimer)});
+	u32 animTime = PlayHUDMotion(anm_name, TRUE, GetState(), false, isGuns);
+	if (isGuns)
+	{
+		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponBM16::OnAmmoTimer) });
+	}
+	else
+	{
+		lock_time = animTime * 0.5f;
+		SetAnimationCallback({ CHudItem::TAnimationEffector(this, &CWeaponBM16::OnAmmoTimer) });
+	}
 }
 
 xr_string CWeaponBM16::NeedAddSuffix(const xr_string& M)
