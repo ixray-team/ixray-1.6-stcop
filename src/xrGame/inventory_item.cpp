@@ -77,6 +77,7 @@ CInventoryItem::CInventoryItem()
 	m_custom_mark_offset.set		(0.f ,0.f);
 	m_custom_mark_size.set			(0.f ,0.f);
 	m_custom_mark_clr				= 0;
+	bNeedUpdateIcon					= false;
 }
 
 CInventoryItem::~CInventoryItem() 
