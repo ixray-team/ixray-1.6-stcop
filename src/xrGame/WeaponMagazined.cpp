@@ -639,6 +639,9 @@ xr_string CWeaponMagazined::NeedAddSuffix(xr_string M)
 			new_name = AddSuffixName(new_name, "_last");
 	}
 
+	if (GetDetector() && isGuns)
+		new_name = AddSuffixName(new_name, "_detector");
+
 	if (IsSilencerAttached())
 		new_name = AddSuffixName(new_name, "_sil");
 
@@ -1594,6 +1597,21 @@ void CWeaponMagazined::PlayAnimFireMode()
 	else
 		anm_name += std::to_string(cur_mode);
 
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (GetDetector() && isGuns)
+	{
+		bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
+
+		if (TempTest)
+			bIsNeedCallDet = true;
+		else
+			bIsNeedCallDet = false;
+	}
+	else
+		bIsNeedCallDet = false;
+
 	PlayHUDMotion(anm_name, TRUE, this, eSwitchMode);
 }
 
@@ -1619,6 +1637,13 @@ void CWeaponMagazined::PlayAnimReload()
 
 	if (IsMisfire())
 		anm_name += "_jammed";
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+
+	if (GetDetector() && isGuns)
+		bIsNeedCallDet = true;
+	else
+		bIsNeedCallDet = false;
 
 	PlayHUDMotion(anm_name, TRUE, this, GetState());
 }
