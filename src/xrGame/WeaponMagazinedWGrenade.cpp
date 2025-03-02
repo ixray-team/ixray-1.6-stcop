@@ -609,7 +609,7 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 			else if (firemode == 3 && m_sFireModeMask_3 != nullptr)
 				new_name = AddSuffixName(new_name, m_sFireModeMask_3.c_str(), "_w_gl");
 
-			if (iAmmoElapsed == 1)
+			if (!IsMisfire() && iAmmoElapsed == 1)
 				new_name = AddSuffixName(new_name, "_last", "_w_gl");
 
 			if (!IsMisfire() && iAmmoElapsed == 0)
