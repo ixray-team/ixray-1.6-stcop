@@ -624,7 +624,7 @@ void CHudItem::UpdateCL()
 
 		xr_string use_ppe_key = "use_ppe_effector_" + GetActualCurrentAnim();
 
-		if (READ_IF_EXISTS(pSettings, r_bool, hud_sect, use_ppe_key.c_str(), false))
+		if (hud_sect != "" && hud_sect[0] != '\0'  && READ_IF_EXISTS(pSettings, r_bool, hud_sect, use_ppe_key.c_str(), false))
 		{
 			xr_string ppe_key = "ppe_effector_" + GetActualCurrentAnim();
 			xr_string ppe = pSettings->r_string(hud_sect, ppe_key.c_str());
@@ -898,6 +898,19 @@ void CHudItem::PlayAnimIdleMovingCrouchSlow()
 void CHudItem::PlayAnimIdleSprint()
 {
 	PlayHUDMotion("anm_idle_sprint", TRUE, nullptr,GetState());
+}
+
+const bool CHudItem::ParentIsActor() const
+{
+	if (CObject* O = object().H_Parent())
+	{
+		if (CEntityAlive* EA = smart_cast<CEntityAlive*>(O))
+		{
+			return !!EA->cast_actor();
+		}
+	}
+
+	return false;
 }
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)

@@ -713,7 +713,8 @@ public:
 	virtual bool			use_crosshair				()	const {return true;}
 			bool			show_crosshair				();
 			bool			show_indicators				();
-	  const bool			ParentIsActor				() const override;
+	virtual const bool		ParentIsActor				() const override;
+	virtual BOOL			ParentMayHaveAimBullet		();
 	
 private:
 	virtual	bool			install_upgrade_ammo_class	( LPCSTR section, bool test );

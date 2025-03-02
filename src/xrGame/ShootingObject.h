@@ -61,6 +61,7 @@ public:
 	IC bool					IsWorking			() const {return bWorking;}
 	IC void					SetWorkingState		(bool status) { bWorking = status;}
 	const virtual bool		ParentIsActor() const {return false;}
+	virtual BOOL			ParentMayHaveAimBullet()		{return FALSE;}
 
 	float getFireDistance(void) const { return fireDistance; }
 	void setFireDistance(float value);

@@ -109,6 +109,7 @@ public:
 	bool						IsHidden			()	const		{	return GetState() == eHidden;}						// Does weapon is in hidden state
 	bool						IsHiding			()	const		{	return GetState() == eHiding;}
 	bool						IsShowing			()	const		{	return GetState() == eShowing;}
+	virtual const bool			ParentIsActor		()	const;
 
 	virtual void				SwitchState			(u32 S);
 	virtual void				OnStateSwitch		(u32 S);

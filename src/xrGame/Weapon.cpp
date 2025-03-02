@@ -4028,10 +4028,24 @@ float CWeapon::GetConditionToShow() const
 	return GetCondition();
 }
 
+BOOL CWeapon::ParentMayHaveAimBullet()
+{
+	CObject* O = H_Parent();
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
+	return EA->cast_actor() != 0;
+}
+
 const bool CWeapon::ParentIsActor() const
 {
-	const CObject* Parent = H_Parent();
-	return Parent != nullptr && smart_cast<CActor*>(Parent) != nullptr;
+	CObject* O = Parent;
+	if (!O)
+		return FALSE;
+
+	CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
+	if (!EA)
+		return FALSE;
+
+	return EA->cast_actor()!=0;
 }
 
 extern void TransformToHudTemp(Fvector&);

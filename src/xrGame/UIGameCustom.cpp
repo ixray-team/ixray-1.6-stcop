@@ -243,7 +243,8 @@ void CUIGameCustom::ShowMessagesWindow()
 bool CUIGameCustom::ShowPdaMenu()
 {
 	HideActorMenu();
-	m_PdaMenu->ShowDialog(true);
+	static bool Use3DPDA = EngineExternal()[EEngineExternalGame::Enable3DPDA];
+	m_PdaMenu->ShowDialog(!Use3DPDA);
 	return true;
 }
 
