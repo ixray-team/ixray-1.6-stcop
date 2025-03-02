@@ -127,66 +127,6 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
-void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
-{
-	VERIFY(m_chamber.size());
-
-	CCartridge& l_cartridge = m_chamber.back();
-
-	VERIFY		(u16(-1) != l_cartridge.bullet_material_idx);
-	//-------------------------------------------------------------	
-	l_cartridge.m_flags.set				(CCartridge::cfTracer,(m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
-	if (m_u8TracerColorID != u8(-1))
-		l_cartridge.param_s.u8ColorID	= m_u8TracerColorID;
-	//-------------------------------------------------------------
-
-	ChangeCondition(-GetWeaponDeterioration()*l_cartridge.param_s.impair);
-	
-	float fire_disp = 0.f;
-	CActor* tmp_actor = NULL;
-	if (!IsGameTypeSingle())
-	{
-		tmp_actor = dynamic_cast<CActor*>(Level().CurrentControlEntity());
-		if (tmp_actor)
-		{
-			CEntity::SEntityState state;
-			tmp_actor->g_State(state);
-			if (m_first_bullet_controller.is_bullet_first(state.fVelocity))
-			{
-				fire_disp = m_first_bullet_controller.get_fire_dispertion();
-				m_first_bullet_controller.make_shot();
-			}
-		}
-	}
-
-	if (fsimilar(fire_disp, 0.f))
-	{
-		if (H_Parent() && (H_Parent() == tmp_actor))
-			fire_disp = tmp_actor->GetFireDispertion();
-		else
-			fire_disp = GetFireDispersion(true);
-	}
-	
-	bool SendHit = SendHitAllowed(H_Parent());
-	for(int i = 0; i < l_cartridge.param_s.buckShot; ++i) 
-	{
-		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
-	}
-
-	StartShotParticles		();
-	
-	if(m_bLightShotEnabled) 
-		Light_Start			();
-
-	
-	// Ammo
-	DeleteAmmoInChamber();
-	if (!IsMisfire())
-		GiveAmmoFromMagToChamber();
-
-	VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
-}
-
 void CWeapon::StopShooting()
 {
 //	SetPending			(TRUE);

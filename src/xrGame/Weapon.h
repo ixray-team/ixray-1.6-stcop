@@ -207,7 +207,6 @@ public:
 
 	xr_string curr_anim;
 
-	int iAmmoInChamberElapsed;
 	int ammo_cnt_to_reload;
 	int _last_shot_ammotype;
 	int lock_time_param;
@@ -238,9 +237,6 @@ public:
 	shared_str hud_scope;
 	shared_str hud_gl;
 
-	virtual void GiveAmmoFromMagToChamber();
-	virtual void DeleteAmmoInChamber();
-	virtual void UnloadChamber(bool spawn_ammo = true);
 	virtual void DoReload() {}
 	void SetMisfireStatus(bool status) { bMisfire = status; }
 
@@ -445,7 +441,6 @@ protected:
 
 	//трассирование полета пули
 	virtual	void			FireTrace			(const Fvector& P, const Fvector& D);
-	virtual	void			FireTraceChamber	(const Fvector& P, const Fvector& D);
 	virtual float			GetWeaponDeterioration	();
 
 	virtual void			FireStart			() {CShootingObject::FireStart();}
@@ -571,7 +566,6 @@ public:
 protected:
 	int iAmmoElapsed;
 	int iMagazineSize;
-	int iChamberSize;
 
 	//для подсчета в GetSuitableAmmoTotal
 	mutable int				m_iAmmoCurrentTotal;
@@ -592,15 +586,12 @@ public:
 
 	CWeaponAmmo*			m_pCurrentAmmo;
 	u8						m_ammoType;
-	u32						m_ammoTypeInChamber;
 	bool					m_bHasTracers;
 	u8						m_u8TracerColorID;
 	u8						m_set_next_ammoType_on_reload;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
-	xr_vector<CCartridge>	m_chamber;
 	CCartridge				m_DefaultCartridge;
-	CCartridge				m_DefaultCartridgeInChamber;
 	float					m_fCurrentCartirdgeDisp;
 
 		bool				unlimited_ammo				();

@@ -148,8 +148,7 @@ void CWeaponAutomaticShotgun::OnStateSwitch(u32 S)
 		if (HaveCartridgeInInventory(1))
 		{
 			switch2_StartReload();
-			bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-			if (TempTest && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
+			if (iAmmoElapsed == 0 && m_bAddCartridgeOpen || !bPreloadAnimAdapter)
 				AddCartridge(1);
 		}
 	}break;
@@ -169,9 +168,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	PlayAnimOpenWeapon();
 	SetPending(TRUE);
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
-	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && m_bAddCartridgeOpen && TempTest)
+	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && m_bAddCartridgeOpen && iAmmoElapsed == 0)
 		PlaySound("sndOpenEmpty", get_LastFP());
 	else
 		PlaySound("sndOpen", get_LastFP());
@@ -182,9 +179,7 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 	PlayAnimAddOneCartridgeWeapon();
 	SetPending(TRUE);
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
-	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && !m_bAddCartridgeOpen && TempTest)
+	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && !m_bAddCartridgeOpen && iAmmoElapsed == 0)
 		PlaySound("sndAddCartridgeEmpty", get_LastFP());
 	else if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 		PlaySound("sndAddCartridgePreloaded", get_LastFP());
@@ -197,9 +192,7 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 	SetPending(TRUE);
 	PlayAnimCloseWeapon();
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
-	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && !m_bAddCartridgeOpen && TempTest)
+	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && !m_bAddCartridgeOpen && iAmmoElapsed == 0)
 		PlaySound("sndCloseEmpty", get_LastFP());
 	else if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 		PlaySound("sndClosePreloaded", get_LastFP());
@@ -213,9 +206,7 @@ void CWeaponAutomaticShotgun::PlayAnimOpenWeapon()
 
 	xr_string anm_name = "anm_open";
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
-	if (m_bEmptyPreloadMode && TempTest)
+	if (m_bEmptyPreloadMode && iAmmoElapsed == 0)
 	{
 		anm_name += "_empty";
 		bPreloadAnimAdapter = true;
@@ -230,18 +221,16 @@ void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
 
 	xr_string anm_name = "anm_add_cartridge";
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
-		if (TempTest)
+		if (iAmmoElapsed == 0)
 			anm_name += "_empty_preloaded";
 		else
 			anm_name += "_preloaded";
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && TempTest)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
 		anm_name += "_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
@@ -253,18 +242,16 @@ void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 
 	xr_string anm_name = "anm_close";
 
-	bool TempTest = m_bAmmoInChamber ? iAmmoElapsed == 0 && iAmmoInChamberElapsed == 0 : iAmmoElapsed == 0;
-
 	if (m_bEmptyPreloadMode && bPreloadAnimAdapter)
 	{
-		if (TempTest)
+		if (iAmmoElapsed == 0)
 			anm_name = "anm_add_cartridge_empty_preloaded";
 		else
 			anm_name += "_preloaded";
 
 		bPreloadAnimAdapter = false;
 	}
-	else if (!m_bAddCartridgeOpen && TempTest)
+	else if (!m_bAddCartridgeOpen && iAmmoElapsed == 0)
 		anm_name = "anm_add_cartridge_empty";
 
 	PlayHUDMotion(anm_name, false, GetState(), false, false);
