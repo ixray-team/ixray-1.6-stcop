@@ -85,8 +85,12 @@ void CWeaponBinoculars::OnZoomOut		()
 		m_sounds.StopSound("sndZoomIn");
 		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());	
 		m_sounds.PlaySound("sndZoomOut", H_Parent()->Position(), H_Parent(), b_hud_mode);
-		VERIFY			(m_binoc_vision);
-		xr_delete		(m_binoc_vision);
+
+		if (m_bVision)
+		{
+			VERIFY(m_binoc_vision);
+			xr_delete(m_binoc_vision);
+		}
 	}
 
 
