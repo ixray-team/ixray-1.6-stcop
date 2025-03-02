@@ -60,44 +60,41 @@ float CActor::GetWeaponAccuracy() const
 	return dispersion;
 }
 
+void transform_to_hud(Fvector& pos, Fvector& dir);
 
-void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_dir)
+void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& fire_dir)
 {
-	CWeapon* pWeap = smart_cast<CWeapon*>(pHudItem);
-	if(HUDview() || (pWeap && pWeap->render_item_ui_query()))
+	const CWeapon* pWeapon = smart_cast<const CWeapon*>(pHudItem);
+	if (pWeapon && !pWeapon->IsGrenadeMode())
 	{
-		fire_pos		= Cameras().Position();
-		fire_dir		= Cameras().Direction();
+		//	fire_pos = pWeapon->get_LastFP();
+		//	fire_dir = pWeapon->get_LastFD();
 
-		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
-		if (pMissile)
-		{
-			Fvector offset;
-			XFORM().transform_dir(offset, pMissile->throw_point_offset());
-			fire_pos.add(offset);
+		fire_pos.lerp(fire_pos, Cameras().Position(), pWeapon->GetRotateFactor());
+
+		if (IsFocused())
+			transform_to_hud(fire_pos, fire_dir);
+
+		if (!pWeapon->IsZoomed()) {
+			collide::rq_result RQ;
+			Fvector ray_trace_dir = Fvector().set(fire_pos).sub(Cameras().Position());
+			float ray_trace_len = ray_trace_dir.magnitude();
+			ray_trace_dir.normalize();
+			if (g_pGameLevel->ObjectSpace.RayPick(Cameras().Position(), ray_trace_dir, ray_trace_len, collide::rqtBoth, RQ, this))
+				fire_pos.sub(ray_trace_dir.mul(ray_trace_len - RQ.range + 0.01f));
 		}
 	}
-	else
-	{
-		const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
-		if (pMissile)
-		{
-			fire_pos = pMissile->Position();
-			fire_dir = Cameras().Direction();
-		}
-		if (pWeap)
-		{
-			fire_pos		= pWeap->get_LastFP();
-			fire_dir		= Cameras().Direction();
+	else {
+		fire_pos = Cameras().Position();
+		fire_dir = Cameras().Direction();
+	}
 
-			if(pWeap->get_LastFD().dotproduct(Cameras().Direction()) >= 0.7f)
-			{
-				float pick_dist = HUD().GetCurrentRayQuery().range;
-				clamp(pick_dist, 10.f, 1000.f);
-				Fvector picked_pos = Fvector(Cameras().Position()).mad(Cameras().Direction(), pick_dist);
-				fire_dir		= Fvector().sub(picked_pos, fire_pos).normalize_safe();
-			}
-		}
+	const CMissile* pMissile = smart_cast <const CMissile*> (pHudItem);
+	if (pMissile)
+	{
+		Fvector offset;
+		XFORM().transform_dir(offset, pMissile->throw_point_offset());
+		fire_pos.add(offset);
 	}
 }
 
