@@ -43,7 +43,7 @@ public:
 	virtual	void	UpdateXForm			();
 	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
 	void			ToggleDetector		(bool bFastMode);
-	void			HideDetector		(bool bFastMode);
+	void			HideDetector		(bool bFastMode, bool force = false);
 	void			ShowDetector		(bool bFastMode);
 	float			m_fAfDetectRadius;
 	virtual bool	CheckCompatibility	(CHudItem* itm);
@@ -56,7 +56,6 @@ public:
 
 	virtual bool	can_be_attached		() const;
 	void 	TurnDetectorInternal(bool b);
-	void	ForceHide					() { SwitchState(eHiding);}
 	virtual void PlayAnimIdle();
 	virtual void PlayAnimAim();
 
