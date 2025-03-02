@@ -36,6 +36,8 @@ public:
 	virtual bool	use_crosshair		()	const {return false;}
 	virtual bool	GetBriefInfo		(II_BriefInfo& info);
 	virtual void	net_Relcase			(CObject *object);
+
+	virtual void	PlayAnimAim			();
 protected:
 	CBinocularsVision*					m_binoc_vision;
 
