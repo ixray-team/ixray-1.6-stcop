@@ -26,7 +26,9 @@ enum EHudStates {
 		eSprintStart,
 		eSprintEnd,
 		eSwitchDevice,
-		eLastBaseState = eSwitchDevice,
+		eSuicide,
+		eSuicideStop,
+		eLastBaseState = eSuicideStop,
 };
 
 private:
@@ -148,13 +150,22 @@ public:
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
+	struct jitter_params
+	{
+		float pos_amplitude = 0.0f;
+		float rot_amplitude = 0.0f;
+	};
+
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 	virtual xr_string GetActualCurrentAnim() const;
 	bool CanStartAction(bool allow_aim_state = false);
 	bool Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE);
+	bool IsSuicideAnimPlaying() const;
+	bool WpnCanShoot() const;
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
+	jitter_params GetCurJitterParams(shared_str hud_sect);
 	using TAnimationEffector = fastdelegate::FastDelegate<void()>;
 
 	enum EDeviceFlags

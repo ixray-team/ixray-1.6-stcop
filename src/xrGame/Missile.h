@@ -104,6 +104,11 @@ public:
 	IC		void			set_destroy_time		(u32 delta_destroy_time) {m_dwDestroyTime = delta_destroy_time + Device.dwTimeGlobal;}
 	virtual void			PH_A_CrPr				();
 
+	void			SetConstPowerStatus(bool status) { m_constpower = status; }
+	void			SetImmediateThrowStatus(bool status) { m_throw = status; }
+	void			PrepareGrenadeForSuicideThrow(float force);
+	bool			IsMissileInSuicideState() const;
+
 protected:
 	u32						m_ef_weapon_type;
 
@@ -112,6 +117,7 @@ public:
 	IC		u32				destroy_time			() const { return m_dwDestroyTime; }
 	IC		u32				destroy_time_max		() const { return m_dwDestroyTimeMax; }
 	IC		void			set_destroy_time_now	(u32 time) { m_dwDestroyTime = time; }
+	IC		void			set_destroy_time_max	(u32 time) { m_dwDestroyTimeMax = time; }
 	IC		int				time_from_begin_throw	() const { return (Device.dwTimeGlobal + m_dwDestroyTimeMax - m_dwDestroyTime); }
 	static	void			ExitContactCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 	static	void			ExitContactCallback_Patch(dGeomID dxGeom);

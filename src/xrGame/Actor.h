@@ -64,6 +64,7 @@ class CActorStatisticMgr;
 class CLocationManager;
 class CPickUpManager;
 class CCustomDetector;
+class CController;
 
 class CActor: 
 	public IGame_Actor, 
@@ -201,6 +202,87 @@ public:
 	virtual bool						NeedToDestroyObject()  const;
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
 
+	struct controller_input_correction_params
+	{
+		bool active = false;
+		float rotate_angle = 0.0f;
+		float sense_scaler_x = 1.0f;
+		float sense_scaler_y = 1.0f;
+		bool reverse_axis_y = false;
+	};
+
+	struct controller_input_random_offset
+	{
+		int offset_x = 0;
+		int offset_y = 0;
+	};
+
+	struct controller_psiunblock_params
+	{
+		float min_dist = 0.0f;
+		float min_dist_prob = 0.0f;
+		float max_dist = 0.0f;
+		float max_dist_prob = 0.0f;
+
+	};
+
+	struct controller_mouse_control_params
+	{
+		float min_sense_scale = 0.0f;
+		float max_sense_scale = 0.0f;
+		int min_offset = 0;
+		int max_offset = 0;
+		float keyboard_move_k = 0.0f;
+	};
+
+	u32 _controlled_time_remains;
+	bool _suicide_now;
+	bool _planning_suicide;
+	u32 _lastshot_done_time;
+	bool _death_action_started;
+	bool _inventory_disabled_set;
+	u32 _controller_preparing_starttime;
+	xr_vector<CController*> _active_controllers;
+	u32 _last_update_time;
+	u32 _jitter_time_remains;
+
+	bool _psi_block_failed;
+	controller_input_correction_params _input_correction;
+
+	controller_psiunblock_params _controller_psiunblock_params;
+	controller_mouse_control_params _controller_mouse_control_params;
+
+	float DistToSelectedContr(CController* controller);
+	float DistToContr();
+	void UpdatePsiBlockFailedState(CController* monster_controller);
+	controller_psiunblock_params GetControllerPsiUnblockProb();
+	controller_mouse_control_params GetControllerMouseControlParams();
+	void ChangeInputRotateAngle();
+	controller_input_correction_params GetCurrentControllerInputCorrectionParams();
+	controller_input_random_offset GetControllerInputRandomOffset();
+	bool IsControllerPreparing() const;
+	float GetCurrentSuicideWalkKoef() const;
+	void AddActiveController(CController* monster_controller);
+	void ClearActiveControllers();
+
+	bool IsPsiBlockFailed() const { return _psi_block_failed; }
+	bool IsPsiBlocked() const;
+	bool IsActorPlanningSuicide() const { return _planning_suicide; }
+	bool IsActorSuicideNow() const { return _suicide_now; }
+	bool IsActorControlled() const { return _controlled_time_remains > 0; }
+	bool IsSuicideInreversible() const { return _lastshot_done_time > 0 || _death_action_started; }
+	bool IsHandJitter(CHudItemObject* itm) const;
+	float GetHandJitterScale(CHudItemObject* itm) const;
+	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
+	void ResetActorControl();
+	bool IsControllerSeeActor(CController* monster_controller);
+	bool CanUseItemForSuicide(CHudItemObject* item);
+	void UpdateSuicide(u32 dt);
+	void DoSuicideShot();
+	bool CheckActorVisibilityForController();
+	void OnSuicideAnimEnd();
+	void NotifySuicideShotCallbackIfNeeded() const;
+	void NotifySuicideStopCallbackIfNeeded() const;
 
 public:
 
@@ -451,6 +533,7 @@ public:
 	// User input/output
 	//////////////////////////////////////////////////////////////////////////
 public:
+			void			IR_OnMouseMove_CorrectMouseSense(int& p_dx, int& p_dy, float& sense);
 	virtual void			IR_OnMouseMove			(int x, int y);
 	virtual void			IR_GamepadUpdateStick	(int id, Fvector2 value);
 	virtual void			IR_GamepadKeyPress(int id);

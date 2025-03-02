@@ -5,6 +5,7 @@
 class CPsyHitEffectorCam;
 class CPsyHitEffectorPP;	
 class CActor;
+class CController;
 
 class CControllerPsyHit : public CControl_ComCustom<> {
 	typedef CControl_ComCustom<> inherited;
@@ -57,6 +58,10 @@ private:
 			void	set_sound_state			(ESoundState state);
 			void	hit						();
 			bool	check_conditions_final	();
+			bool	PsiStart				(CController* monster_controller);
+			bool	PsiEffects				(CController* monster_controller);
+			void	OnPsyHitActivate		(CController* monster_controller);
+			bool	IsNeedPsiHitOverride	();
 
 			bool	see_enemy(CActor* pA);
 
