@@ -17,6 +17,7 @@
 #include "script_game_object.h"
 
 #include "CustomDetector.h"
+#include "Scope.h"
 
 class CEntity;
 class ENGINE_API CMotionDef;
@@ -86,6 +87,8 @@ public:
 	virtual void			OnHiddenItem		();
 	virtual bool			SendDeactivateItem	();
 	virtual void			SendHiddenItem		();	//same as OnHiddenItem but for client... (sends message to a server)...
+
+			bool			ScopeFit			(CScope*);
 
 public:
 	virtual bool			can_kill			() const;

@@ -280,20 +280,19 @@ void CUIWeaponCellItem::Update()
 		}
 	}
 
-	if (object()->ScopeAttachable()){
+	if (object()->ScopeAttachable())
+	{
+		if (m_addons[eScope])
+			DestroyIcon(eScope);
+
 		if (object()->IsScopeAttached())
 		{
 			if (!GetIcon(eScope) || bForceReInitAddons)
 			{
-				CreateIcon	(eScope);
+				CreateIcon(eScope);
 				RefreshOffset();
-				InitAddon	(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope], Heading());
+				InitAddon(GetIcon(eScope), *object()->GetScopeName(), m_addon_offset[eScope], Heading());
 			}
-		}
-		else
-		{
-			if (m_addons[eScope])
-				DestroyIcon(eScope);
 		}
 	}
 
