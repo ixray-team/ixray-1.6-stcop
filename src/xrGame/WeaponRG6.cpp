@@ -55,28 +55,26 @@ void CWeaponRG6::FireStart()
 {
 	if (!IsMisfire())
 	{
-		if (GetState() != eIdle)
-			return;
-
 		if (iAmmoElapsed)
 		{
+			if (!OnActWhileReload_CanActNow())
+			{
+				if (GetState() != eIdle) return;
+				if (lock_time) return;
+			}
+			else if (!Action_PrepareEarlyShotInReload())
+				return;
+
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
 				CWeapon::FireStart();
-
-				if (iAmmoElapsed == 0)
-					switch2_Empty();
-				else
-				{
-					R_ASSERT(H_Parent());
-					SwitchState(eFire);
-				}
+				SwitchState(eFire);
 			}
 		}
 		else
 		{
-			if (GetState() == eIdle)
-				switch2_Empty();
+			if (GetState() == eEmptyClick && !lock_time || GetState() == eIdle)
+				SwitchState(eEmptyClick);
 		}
 	}
 	else

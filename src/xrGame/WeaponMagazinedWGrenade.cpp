@@ -216,13 +216,16 @@ void CWeaponMagazinedWGrenade::FireStart()
 
 		if (IsPending())
 			return;
+
+		if (lock_time)
+			return;
 	}
 	else if (!Action_PrepareEarlyShotInReload())
 		return;
 
-	if (!iAmmoElapsed)
+	if (!iAmmoElapsed && (GetState() == eEmptyClick && !lock_time || GetState() == eIdle))
 	{
-		switch2_Empty();
+		SwitchState(eEmptyClick);
 		return;
 	}
 
