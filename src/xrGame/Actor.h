@@ -551,7 +551,8 @@ public:
 	virtual void			IR_OnKeyboardHold		(int dik);
 	virtual void			IR_OnMouseWheel			(int direction);
 	virtual	float			GetLookFactor			();
-	void					SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide = false);
+	void					SetActorKeyRepeatFlag	(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide = false);
+	void					ClearActorKeyRepeatFlags() { _keyflags = 0; }
 	u32						GetActorKeyRepeatFlag() const { return _keyflags; }
 	void					ProcessKeys				();
 

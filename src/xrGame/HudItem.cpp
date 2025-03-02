@@ -265,6 +265,7 @@ void CHudItem::OnStateSwitch(u32 S)
 		{
 			g_player_hud->attach_item(this);
 			g_player_hud->ResetItmHudOffset(this);
+			Actor()->ClearActorKeyRepeatFlags();
 		}
 	}break;
 	}
@@ -1022,6 +1023,9 @@ bool CHudItem::CanStartAction(bool allow_aim_state)
 
 bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
 {
+	if (object().H_Parent() != Actor())
+		return true;
+
 	bool result = CanStartAction();
 	if (!result)
 	{
