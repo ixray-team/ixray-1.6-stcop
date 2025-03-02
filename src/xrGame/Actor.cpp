@@ -2793,7 +2793,7 @@ void CActor::UpdateFOV()
         if (wpn->WpnCanShoot() && static_cast<CWeapon*>(wpn)->get_ScopeStatus() == 2 && static_cast<CWeapon*>(wpn)->IsScopeAttached())
             hud_fov *= player_hud::GetCachedCfgParamFloatDef(cached_hud_fov_factor_scope, static_cast<CWeapon*>(wpn)->GetCurrentScopeSection(), "hud_fov_factor", 1.0f);
 
-        if (wpn->WpnCanShoot() && static_cast<CWeapon*>(wpn)->IsZoomed())
+        if (wpn->WpnCanShoot() && (static_cast<CWeapon*>(wpn)->IsZoomed() || wpn->GetActualCurrentAnim().find("anm_idle_aim") == 0))
 		{
 			/*alter_zoom_factor = GetAlterZoomDirectSwitchMixupFactor();
 			if (CanUseAlterScope(wpn) && (buf->IsAlterZoomMode() || (GetAimFactor(wpn) > 0.f && buf->IsLastZoomAlter())))
