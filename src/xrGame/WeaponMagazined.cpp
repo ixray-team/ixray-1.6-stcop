@@ -181,6 +181,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
 	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
+	m_fBaseDispersionedBulletsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_time_delta", 0.0f);
+	m_fSingleShootsTimeDelta = READ_IF_EXISTS(pSettings, r_float, section, "singleshoots_time_delta", 0.0f);
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
@@ -1003,7 +1005,12 @@ void CWeaponMagazined::state_Fire(float dt)
 
 			m_bFireSingleShot = false;
 
-			fShotTimeCounter += fOneShotTime;
+			if (m_iQueueSize == 1 && m_fSingleShootsTimeDelta > 0.0f)
+				fShotTimeCounter += m_fSingleShootsTimeDelta;
+			else if (m_fBaseDispersionedBulletsTimeDelta > 0.0f && m_iShotNum < m_iBaseDispersionedBulletsCount)
+				fShotTimeCounter += m_fBaseDispersionedBulletsTimeDelta;
+			else
+				fShotTimeCounter += fOneShotTime;
 
 			++m_iShotNum;
 
