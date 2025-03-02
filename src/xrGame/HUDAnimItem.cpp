@@ -57,6 +57,14 @@ void CHUDAnimItem::UpdateCL()
 	if (GetState() == eHidden)
 		return;
 
+	u32 anim_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+
+	if (callback != nullptr && mark < anim_time)
+	{
+		callback(this);
+		callback = nullptr;
+	}
+
 	if (CurrentMotion.size() == 0)
 	{
 		if (Device.dwTimeGlobal >= m_dwMotionEndTm)
@@ -89,6 +97,9 @@ void CHUDAnimItem::UpdateCL()
 	}
 
 	PlayHUDMotion(CurrentMotion.c_str(), true, this, eIdle);
+	if (!m_sounds.FindSoundItem("sndByMotion", false)->sounds.empty())
+		PlaySound("sndByMotion", { 0,0,0 });
+
 	CurrentMotion = "";
 }
 
@@ -97,7 +108,21 @@ bool CHUDAnimItem::need_renderable()
 	return (m_dwMotionStartTm != u32(-1)) && m_dwMotionStartTm + 15 < Device.dwTimeGlobal;
 }
 
-void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim)
+void CHUDAnimItem::LoadSound(const xr_string Section, const xr_string snd, bool exclusive)
+{
+	auto& Inventory = Actor()->inventory();
+	CHUDAnimItem* ThisItem = (CHUDAnimItem*)Inventory.ItemFromSlot(ANIM_SLOT);
+
+	if (ThisItem == nullptr)
+		return;
+
+	if (ThisItem == Inventory.ActiveItem())
+		return;
+
+	ThisItem->m_sounds.LoadSound(Section.c_str(), snd.c_str(), "sndByMotion", exclusive);
+}
+
+void CHUDAnimItem::PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd, TAnimationEffector fun)
 {
 	auto& Inventory = Actor()->inventory();
 	CHUDAnimItem* ThisItem = (CHUDAnimItem*)Inventory.ItemFromSlot(ANIM_SLOT);
@@ -114,8 +139,17 @@ void CHUDAnimItem::PlayHudAnim(const char* Section, const char* Anim)
 	}
 
 	ThisItem->OldSlot = Inventory.GetActiveSlot();
-	ThisItem->hud_sect = Section;
-	ThisItem->CurrentMotion = Anim;
+	ThisItem->hud_sect = Section.c_str();
+	ThisItem->CurrentMotion = Anim.c_str();
+
+	if (pSettings->line_exist(Section.c_str(), ("mark_" + Anim).c_str()))
+	{
+		ThisItem->mark = floor(pSettings->r_float(Section.c_str(), ("mark_" + Anim).c_str()) * 1000.f);
+		ThisItem->callback = fun;
+	}
+
+	if (snd.length() > 0)
+		LoadSound(Section, snd);
 
 	Actor()->inventory().Activate(ANIM_SLOT);
 }

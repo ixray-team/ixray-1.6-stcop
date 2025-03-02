@@ -8,6 +8,8 @@ class CHUDAnimItem :
 	shared_str CurrentMotion;
 	u16 OldSlot = 0;
 	bool DetectorActive = false;
+	TAnimationEffector callback = nullptr;
+	u32 mark = 0;
 
 public:
 	CHUDAnimItem() = default;
@@ -29,5 +31,6 @@ protected:
 	virtual void PlayAnimIdleSprint() override {};
 
 public:
-	static void PlayHudAnim(const char* Section, const char* Anim);
+	static void LoadSound(const xr_string Section, const xr_string snd, bool exclusive = false);
+	static void PlayHudAnim(const xr_string Section, const xr_string Anim, const xr_string snd = "", TAnimationEffector fun = nullptr);
 };
