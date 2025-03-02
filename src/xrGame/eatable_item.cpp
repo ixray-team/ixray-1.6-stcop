@@ -287,7 +287,7 @@ void CEatableItem::UpdateEatable()
 	if (m_siStartTime == 0)
 		m_siStartTime = Device.dwTimeGlobal;
 
-	if (!m_bTrashSpawned && m_siTimingTrash > 0 && !m_bNoTrash)
+	if (!m_bNoTrash && !m_bTrashSpawned && m_siTimingTrash > 0)
 	{
 		m_bTrashSpawned = true;
 		Actor()->eater_manager.trash_sect = m_sTrashSect;
