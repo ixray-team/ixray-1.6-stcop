@@ -81,7 +81,6 @@ void CActor::PickupModeUpdate()
 		m_pObjectWeLookingAt->cast_inventory_item()				&& 
 		m_pObjectWeLookingAt->cast_inventory_item()->Useful()	&&
 		m_pUsableObject											&& 
-		!m_pUsableObject->nonscript_usable()					&&
 		!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) )
 	{
 		m_pUsableObject->use(this);
