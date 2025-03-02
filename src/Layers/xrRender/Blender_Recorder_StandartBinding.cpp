@@ -528,6 +528,14 @@ static class cl_affects : public R_constant_setup
 	}
 } binder_affects;
 
+static class cl_actor_params : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		RCache.set_c(C, RDEVICE.hudViewportData.ActorHealth, RDEVICE.hudViewportData.ActorOutfitCondition, RDEVICE.hudViewportData.ActorWeaponCondition, RDEVICE.hudViewportData.ActorWeaponLoading);
+	}
+} binder_actor_states;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -615,6 +623,7 @@ void	CBlender_Compile::SetMapping()
 
 	r_Constant("m_hud_params", &binder_m_hud_params);
 	r_Constant("m_affects", &binder_affects);
+	r_Constant("m_actor_params", &binder_actor_states);
 
 	// detail
 	//if (bDetail	&& detail_scaler)
