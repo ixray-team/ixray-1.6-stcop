@@ -227,6 +227,7 @@ public:
 	bool m_bAmmoInChamber;
 	bool bIsNeedCallDet;
 	bool IsReloaded;
+	bool IsAimStarted;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
