@@ -171,6 +171,7 @@ public:
 	bool StartCompanionAnimIfNeeded(const xr_string anim_name);
 	void AssignDetectorAnim(const xr_string anm_alias, bool bMixIn = true, bool use_companion_section = false);
 	const jitter_params& GetCurJitterParams() const;
+	HudLightTorch GetLight() { return m_HudLight; }
 	using TAnimationEffector = fastdelegate::FastDelegate<void()>;
 
 	enum EDeviceFlags
