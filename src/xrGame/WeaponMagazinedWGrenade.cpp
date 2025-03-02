@@ -131,7 +131,9 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 
 void CWeaponMagazinedWGrenade::switch2_Reload()
 {
-	VERIFY(GetState()==eReload);
+	u32 current_state = GetState();
+	VERIFY(current_state==eReload || current_state==eUnjam);
+
 	if(m_bGrenadeMode) 
 	{
 		IsReloaded = false;
@@ -140,7 +142,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 		else
 			PlaySound("sndReloadG", get_LastFP2());
 
-		PlayHUDMotion("anm_reload", FALSE, GetState());
+		PlayHUDMotion("anm_reload", FALSE, current_state);
 		MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazinedWGrenade::OnAmmoTimer) });
 		SetPending(TRUE);
 	}

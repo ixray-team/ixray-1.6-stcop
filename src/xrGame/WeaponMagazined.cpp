@@ -1966,7 +1966,8 @@ void CWeaponMagazined::OnAmmoTimer()
 
 void CWeaponMagazined::PlayAnimReload()
 {
-	VERIFY(GetState() == eReload);
+	u32 current_state = GetState();
+	VERIFY(current_state == eReload || current_state == eUnjam);
 
 	xr_string anm_name = "anm_reload";
 
@@ -1975,7 +1976,7 @@ void CWeaponMagazined::PlayAnimReload()
 
 	bIsNeedCallDet = Actor()->GetDetector() && isGuns;
 
-	PlayHUDMotion(anm_name, TRUE, GetState());
+	PlayHUDMotion(anm_name, TRUE, current_state);
 
 	MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, { CHudItem::TAnimationEffector(this, &CWeaponMagazined::OnAmmoTimer) });
 }
