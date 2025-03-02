@@ -543,69 +543,6 @@ void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 	PlayHUDMotion("anm_switch", TRUE, this, eSwitch);
 }
 
-void CWeaponMagazinedWGrenade::PlayAnimShoot()
-{
-	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-	std::string anm_name = isGuns ? "anm_shoot" : "anm_shots";
-	//anm_shoot_aim_scope_jammed_sil, anm_shoot_aim_scope_last_sil
-	if (isGuns)
-	{
-		if (IsGrenadeLauncherAttached())
-		{
-			if (m_bGrenadeMode)
-			{
-				if (IsZoomed())
-					anm_name += "_aim";
-
-				if (iAmmoElapsed2 == 0 && !IsMisfire())
-					anm_name += "_empty";
-
-				if (IsMisfire())
-					anm_name += "_jammed";
-
-				anm_name += "_g";
-			}
-			else
-			{
-				if (IsZoomed())
-					anm_name += "_aim";
-
-				if (IsScopeAttached() && HudAnimationExist("anm_shoot_aim_scope_w_gl"))
-					anm_name += "_scope";
-
-				if (IsMisfire())
-					anm_name += "_jammed";
-
-				if (!IsMisfire() && iAmmoElapsed == 1)
-					anm_name += "_last";
-
-				if (IsSilencerAttached())
-					anm_name += "_sil";
-
-				anm_name += "_w_gl";
-			}
-
-			PlayHUDMotion(anm_name, FALSE, this, eFire, false);
-		}
-		else
-			inherited::PlayAnimShoot();
-	}
-	else
-	{
-		if (IsGrenadeLauncherAttached())
-		{
-			if (m_bGrenadeMode)
-				anm_name += "_g";
-			else
-				anm_name += "_w_gl";
-
-			PlayHUDMotion(anm_name, FALSE, this, eFire, false);
-		}
-		else
-			inherited::PlayAnimShoot();
-	}
-}
-
 std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 {
 	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
