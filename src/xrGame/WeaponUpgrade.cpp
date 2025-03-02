@@ -288,6 +288,19 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 		}
 	}
 	result |= result2;
+
+	lens_zoom_params params = _lens_zoom_params;
+	float t_dt = READ_IF_EXISTS(pSettings, r_float, section, "lens_factor_levels_count", 0.0f);
+
+	if (t_dt != 0.0f)
+		params.delta = 1.0f / t_dt;
+
+	params.factor_min = READ_IF_EXISTS(pSettings, r_float, section, "min_lens_factor", params.factor_min);
+	params.factor_max = READ_IF_EXISTS(pSettings, r_float, section, "max_lens_factor", params.factor_max);
+	params.speed = READ_IF_EXISTS(pSettings, r_float, section, "lens_speed", params.speed);
+	params.gyro_period = READ_IF_EXISTS(pSettings, r_float, section, "lens_gyro_sound_period", params.gyro_period);
+	SetLensParams(params);
+
 	return result;
 }
 
