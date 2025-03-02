@@ -193,6 +193,19 @@ void CTorch::Switch()
 
 void CTorch::Switch(bool light_on)
 {
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	
+	if (actor != nullptr && actor == H_Parent())
+	{
+		CHelmet* pHelmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT));
+		CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(actor->inventory().ItemFromSlot(OUTFIT_SLOT));
+
+		bool has_torch = pHelmet != nullptr && pHelmet->bIsTorchAvaliable || pOutfit != nullptr && pOutfit->bIsTorchAvaliable;
+
+		if (!has_torch)
+			return;
+	}
+
 	m_switched_on			= light_on;
 	if (can_use_dynamic_lights())
 	{
