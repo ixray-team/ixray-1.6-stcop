@@ -147,6 +147,14 @@ public:
 	u16						GetWhoHitLastTimeID		() {return m_iWhoID;}
 
 	CWound*					AddWound				(float hit_power, ALife::EHitType hit_type, u16 element);
+	float					CorrectBleedingForHitType(ALife::EHitType hit_type, float bleeding);
+	float					GetWoundComponentByHitType(CWound* wound, ALife::EHitType hit_type);
+	void					SetWoundComponentByHitType(CWound* wound, float value, ALife::EHitType hit_type);
+	float					CalcModifiedWoundTotalSize(CWound* wound, int hit_type_mask = -1);
+	float					BleedingSpeed_reimpl(int hit_type_mask = -1);
+	bool					ChangeBleedingForWound(CWound* wound, float percent, float min_wound_size, int hit_type_mask = -1);
+	void					ChangeBleeding_custom(float percent, int hit_type_mask = -1);
+	void					ChangeBleeding_reimpl(float percent);
 
 	IC void 				SetCanBeHarmedState		(bool CanBeHarmed) 			{m_bCanBeHarmed = CanBeHarmed;}
 	IC bool					CanBeHarmed				() const					{return OnServer() && m_bCanBeHarmed;};

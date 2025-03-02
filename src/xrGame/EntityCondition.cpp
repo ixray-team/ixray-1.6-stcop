@@ -197,6 +197,12 @@ void CEntityCondition::ChangeEntityMorale(const float value)
 
 void CEntityCondition::ChangeBleeding(const float percent)
 {
+	if (EngineExternal().isModificationGunslinger())
+	{
+		ChangeBleeding_reimpl(percent);
+		return;
+	}
+
 	//затянуть раны
 	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)
 	{
@@ -378,8 +384,22 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 		if((*it)->GetBoneNum() == element)
 			break;
 	}
-	
+
 	CWound* pWound = nullptr;
+
+	if (EngineExternal().isModificationGunslinger())
+	{
+		const char* sect = m_object->cNameSect().c_str();
+		sect = READ_IF_EXISTS(pSettings, r_string, sect, "condition_sect", sect);
+
+		string32 hit_type_str;
+		xr_sprintf(hit_type_str, "wound_factor_for_hit_type_%u", hit_type);
+
+		float factor1 = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", hit_type_str, 1.0f);
+		float factor2 = READ_IF_EXISTS(pSettings, r_float, sect, hit_type_str, 1.0f);
+
+		hit_power *= factor1 * factor2;
+	}
 
 	//новая рана
 	if (it == m_WoundVector.end())
@@ -397,6 +417,121 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 
 	VERIFY(pWound);
 	return pWound;
+}
+
+float CEntityCondition::CorrectBleedingForHitType(ALife::EHitType hit_type, float bleeding)
+{
+	const char* sect = m_object->cNameSect().c_str();
+	sect = READ_IF_EXISTS(pSettings, r_string, sect, "condition_sect", sect);
+
+	string32 hit_type_str;
+	xr_sprintf(hit_type_str, "bleeding_factor_for_hit_type_%u", hit_type);
+
+	float factor1 = READ_IF_EXISTS(pSettings, r_float, "gunslinger_wound_factors", hit_type_str, 1.0f);
+	float factor2 = READ_IF_EXISTS(pSettings, r_float, sect, hit_type_str, 1.0f);
+
+	return bleeding * factor1 * factor2;
+}
+
+float CEntityCondition::GetWoundComponentByHitType(CWound* wound, ALife::EHitType hit_type)
+{
+	if (hit_type >= ALife::EHitType::eHitTypeMax)
+		return 0.0f;
+
+	return wound->TypeSize(hit_type);
+}
+
+void CEntityCondition::SetWoundComponentByHitType(CWound* wound, float value, ALife::EHitType hit_type)
+{
+	wound->SetHit(value, hit_type);
+}
+
+float CEntityCondition::CalcModifiedWoundTotalSize(CWound* wound, int hit_type_mask)
+{
+	float result = 0.0f;
+
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (hit_type_mask > 0 && ((1 << i) & hit_type_mask) == 0)
+			continue;
+
+		float bleeding = GetWoundComponentByHitType(wound, (ALife::EHitType)i);
+		if (bleeding > 0)
+			result += CorrectBleedingForHitType((ALife::EHitType)i, bleeding);
+	}
+
+	return result;
+}
+
+float CEntityCondition::BleedingSpeed_reimpl(int hit_type_mask)
+{
+	float result = 0.0f;
+
+	for (auto& wound : wounds())
+	{
+		result += CalcModifiedWoundTotalSize(wound, hit_type_mask);
+	}
+
+	return result;
+}
+
+bool CEntityCondition::ChangeBleedingForWound(CWound* wound, float percent, float min_wound_size, int hit_type_mask)
+{
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (hit_type_mask > 0 && ((1 << i) & hit_type_mask) == 0)
+			continue;
+
+		float wound_size = GetWoundComponentByHitType(wound, (ALife::EHitType)i);
+		wound_size -= percent;
+		if (wound_size < min_wound_size)
+		{
+			wound_size = 0.0f;
+		}
+
+		SetWoundComponentByHitType(wound, wound_size, (ALife::EHitType)i);
+	}
+
+	bool result = true;
+	for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+	{
+		if (GetWoundComponentByHitType(wound, (ALife::EHitType)i) > EPS_S)
+		{
+			result = false;
+			break;
+		}
+	}
+
+	if (result)
+	{
+		for (int i = 0; i < ALife::EHitType::eHitTypeMax; ++i)
+		{
+			SetWoundComponentByHitType(wound, 0.0f, (ALife::EHitType)i);
+		}
+	}
+
+	return result;
+}
+
+void CEntityCondition::ChangeBleeding_custom(float percent, int hit_type_mask)
+{
+	for (auto& wound : wounds())
+	{
+		if (ChangeBleedingForWound(wound, percent, m_fMinWoundSize, hit_type_mask))
+			wound->SetDestroy(true);
+	}
+}
+
+
+void CEntityCondition::ChangeBleeding_reimpl(float percent)
+{
+	if (m_object->cast_actor() != nullptr)
+	{
+		int mask = ~static_cast<int>(1 << ALife::EHitType::eHitTypeBurn);
+		ChangeBleeding_custom(percent, mask);
+	}
+	else
+		ChangeBleeding_custom(percent);
 }
 
 CWound* CEntityCondition::ConditionHit(SHit* pHDS)
@@ -432,8 +567,8 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-//		bAddWound		=  is_special_hit_2_self;
-		bAddWound		=  false;
+		if (!EngineExternal().isModificationGunslinger())
+			bAddWound = false;
 		break;
 	case ALife::eHitTypeChemicalBurn:
 		hit_power -= m_fBoostChemicalBurnProtection;
@@ -510,6 +645,9 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
 float CEntityCondition::BleedingSpeed()
 {
+	if (EngineExternal().isModificationGunslinger())
+		return BleedingSpeed_reimpl();
+
 	float bleeding_speed		=0;
 
 	for(WOUND_VECTOR_IT it = m_WoundVector.begin(); m_WoundVector.end() != it; ++it)

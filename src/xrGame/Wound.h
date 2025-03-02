@@ -24,6 +24,7 @@ public:
 	float	BloodSize	();
 
 	void	AddHit		(float hit_power, ALife::EHitType hit_type);
+	void	SetHit		(float hit_power, ALife::EHitType hit_type) {m_Wounds[hit_type] = hit_power; }
 	
 	//заживление раны
 	void	Incarnation	(float percent, float min_wound_size);
