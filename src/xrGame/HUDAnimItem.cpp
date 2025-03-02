@@ -88,10 +88,11 @@ void CHUDAnimItem::UpdateCL()
 			return;
 	}
 
-	PlayHUDMotion(CurrentMotion.c_str(), true, this, eIdle);
 	if (!m_sounds.FindSoundItem("sndByMotion", false)->sounds.empty())
 		PlaySound("sndByMotion", { 0,0,0 });
 
+	StartCompanionAnimIfNeeded("draw");
+	PlayHUDMotion(CurrentMotion.c_str(), true, this, eIdle);
 	CurrentMotion = "";
 }
 
