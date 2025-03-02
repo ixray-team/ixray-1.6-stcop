@@ -295,7 +295,7 @@ void	CCustomOutfit::OnMoveToRuck		(const SInvItemPlace& prev)
 				pTorch->SwitchNightVision(false);
 
 			bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-			if (isGuns)
+			if (isGuns && !bIsHelmetAvaliable)
 			{
 				if (pTorch && pTorch->IsSwitched())
 					pTorch->Switch(false);

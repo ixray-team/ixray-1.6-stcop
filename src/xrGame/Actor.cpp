@@ -1806,7 +1806,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 		outfit->ApplySkinModel	(this, false, false);
 
 		bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
-		if (isGuns)
+		if (isGuns && !outfit->bIsHelmetAvaliable)
 		{
 			CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
 			if (torch && torch->IsSwitched())
