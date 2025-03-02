@@ -65,7 +65,7 @@ laserdot_params::~laserdot_params()
 	dist_koefs.clear();
 	if (particle != NULL) {
 		particle->Stop();
-		CParticlesObject::Destroy(particle);
+		Particles::Details::Destroy(particle);
 		particle = NULL;
 	}
 }
