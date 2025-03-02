@@ -1030,6 +1030,8 @@ void CActor::UpdateCL	()
 		ProcessKeys();
 		UpdateSuicide(dt);
 
+		if (g_player_hud != nullptr)
+			g_player_hud->UpdateWeaponOffset(dt);
 
 		if (_jitter_time_remains > dt)
 			_jitter_time_remains = _jitter_time_remains - dt;

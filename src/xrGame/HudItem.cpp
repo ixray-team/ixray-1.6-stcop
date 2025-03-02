@@ -262,7 +262,10 @@ void CHudItem::OnStateSwitch(u32 S)
 	case eShowing:
 	{
 		if (Actor() && object().H_Parent() == Actor())
+		{
 			g_player_hud->attach_item(this);
+			g_player_hud->ResetItmHudOffset(this);
+		}
 	}break;
 	}
 
