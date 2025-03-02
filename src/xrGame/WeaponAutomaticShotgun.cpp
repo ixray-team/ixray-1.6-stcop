@@ -95,22 +95,22 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 	};
 }
 
-void CWeaponAutomaticShotgun::Reload() 
+bool CWeaponAutomaticShotgun::TryReload() 
 {
-	if(m_bTriStateReload)
-		TriStateReload();
-	else
-		inherited::Reload();
+	if (m_bTriStateReload)
+		return TriStateReload();
+
+	return inherited::TryReload();
 }
 
-void CWeaponAutomaticShotgun::TriStateReload()
+bool CWeaponAutomaticShotgun::TriStateReload()
 {
 	if(m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1))
-		return;
+		return false;
 
-	CWeapon::Reload();
 	m_sub_state = eSubstateReloadBegin;
-	SwitchState	(eReload);
+	SwitchState(eReload);
+	return true;
 }
 
 void CWeaponAutomaticShotgun::OnStateSwitch(u32 S)

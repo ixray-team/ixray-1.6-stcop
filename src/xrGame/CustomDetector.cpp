@@ -51,16 +51,11 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 	if(!bres && itm->GetState()!=CHUDState::eShowing)
 		bres = bres && !itm->IsPending();
 
-	if(bres)
+	if (bres)
 	{
 		CWeapon* W = smart_cast<CWeapon*>(itm);
-		if(W && !smart_cast<CWeaponBinoculars*>(W))
-			bres =	bres							  &&
-					!m_bHideAndRestore				  &&
-					(W->GetState()!=CHUDState::eBore) &&
-					(W->GetState()!=CWeapon::eReload) &&
-					(W->GetState()!=CWeapon::eSwitch) &&
-					!W->IsZoomed();
+		if (W && !smart_cast<CWeaponBinoculars*>(W))
+			bres =	bres && !m_bHideAndRestore && W->GetState() != CHUDState::eBore && W->GetState() != CWeapon::eReload && W->GetState() != CWeapon::eSwitch && W->GetState() != CWeapon::eUnjam && !W->IsZoomed();
 	}
 	return bres;
 }
@@ -323,8 +318,20 @@ void CCustomDetector::UpdateVisibility()
 		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
 		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn) && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
 		{
-			HideDetector(true);
-			m_bNeedActivation = true;
+			HideDetector		(true);
+			m_bNeedActivation	= true;
+		}else
+		{
+			CWeapon* wpn			= smart_cast<CWeapon*>(i0->m_parent_hud_item);
+			if(wpn)
+			{
+				u32 state			= wpn->GetState();
+				if(wpn->IsZoomed() || state==CWeapon::eReload || state == CWeapon::eUnjam || state==CWeapon::eSwitch)
+				{
+					HideDetector		(true);
+					m_bNeedActivation	= true;
+				}
+			}
 		}
 	}
 

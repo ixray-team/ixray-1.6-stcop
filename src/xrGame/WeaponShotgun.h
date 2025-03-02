@@ -16,7 +16,7 @@ public:
 	virtual void	net_Export			(NET_Packet& P);
 	virtual void	net_Import			(NET_Packet& P);
 
-	virtual void	Reload				();
+	virtual bool	TryReload			();
 	virtual void	switch2_Fire		();
 	void			switch2_StartReload ();
 	void			switch2_AddCartgidge();
@@ -32,7 +32,7 @@ public:
 
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
-	void			TriStateReload		();
+	bool			TriStateReload		();
 	virtual void	OnStateSwitch		(u32 S);
 
 	ESoundTypes		m_eSoundOpen;
