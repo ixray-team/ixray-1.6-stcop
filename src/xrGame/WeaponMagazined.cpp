@@ -2105,9 +2105,7 @@ void CWeaponMagazined::PlayAnimAim()
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	xr_string anm_name = "anm_idle_aim";
 
-	bool isGuns = EngineExternal().isModificationGunslinger();
-
-	if (actor && actor->AnyMove() && isGuns)
+	if (actor && actor->AnyMove() && READ_IF_EXISTS(pSettings, r_bool, hud_sect, ("enable_directions_" + anm_name).c_str(), false))
 	{
 		bool use_scope_anims = ScopeAttachable() && IsScopeAttached() && READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "use_scope_anims", false);
 		if (m_bAimScopeAnims && use_scope_anims)
@@ -2135,37 +2133,29 @@ void CWeaponMagazined::PlayAnimIdle()
 	if (GetState() != eIdle)
 		return;
 
-	bool isGuns = EngineExternal().isModificationGunslinger();
-
 	if (IsZoomed())
 	{
-		if (isGuns)
+		if (HudAnimationExist("anm_idle_aim_start") && !IsAimStarted)
 		{
-			if (!IsAimStarted)
-			{
-				IsAimStarted = true;
-				PlayHUDMotion("anm_idle_aim_start", TRUE, GetState());
-				if (ParentIsActor() && Actor()->GetDetector())
-					Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimStart);
+			IsAimStarted = true;
+			PlayHUDMotion("anm_idle_aim_start", TRUE, GetState());
+			if (ParentIsActor() && Actor()->GetDetector())
+				Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimStart);
 
-				return;
-			}
+			return;
 		}
 		PlayAnimAim();
 	}
 	else
 	{
-		if (isGuns)
+		if (HudAnimationExist("anm_idle_aim_end") && IsAimStarted)
 		{
-			if (IsAimStarted)
-			{
-				IsAimStarted = false;
-				PlayHUDMotion("anm_idle_aim_end", TRUE, GetState());
-				if (ParentIsActor() && Actor()->GetDetector())
-					Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimEnd);
+			IsAimStarted = false;
+			PlayHUDMotion("anm_idle_aim_end", TRUE, GetState());
+			if (ParentIsActor() && Actor()->GetDetector())
+				Actor()->GetDetector()->SwitchState(CCustomDetector::eDetAimEnd);
 
-				return;
-			}
+			return;
 		}
 		inherited::PlayAnimIdle();
 	}

@@ -832,10 +832,9 @@ bool CHudItem::TryPlayAnimIdle()
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);
-			bool isGuns = EngineExternal().isModificationGunslinger();
 			if(state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
-				if (!SwitchSprint && isGuns)
+				if (!SwitchSprint && HudAnimationExist("anm_idle_sprint_start"))
 				{
 					SwitchState(eSprintStart);
 					return true;
@@ -845,16 +844,16 @@ bool CHudItem::TryPlayAnimIdle()
 
 				return true;
 			}
-			else if (SwitchSprint && isGuns)
+			else if (SwitchSprint && HudAnimationExist("anm_idle_sprint_end"))
 			{
 				SwitchState(eSprintEnd);
 				return true;
 			}
 			else if (pActor->AnyMove())
 			{
-				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && isGuns)
+				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && (HudAnimationExist("anm_idle_moving_crouch_slow") || HudAnimationExist("anm_idle_moving_crouch")))
 				{
-					if (state & ACTOR_DEFS::EMoveCommand::mcAccel)
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_crouch_slow"))
 						PlayAnimIdleMovingCrouchSlow();
 					else
 						PlayAnimIdleMovingCrouch();
@@ -863,7 +862,7 @@ bool CHudItem::TryPlayAnimIdle()
 				}
 				else
 				{
-					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && isGuns)
+					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_slow"))
 						PlayAnimIdleMovingSlow();
 					else
 						PlayAnimIdleMoving();
