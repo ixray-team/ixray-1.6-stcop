@@ -421,6 +421,7 @@ public:
 protected:
 	void					CorrectActorCameraHeight(float& h);
 	void					cam_Update				(float dt, float fFOV);
+	void					Update_Lens_FOV_manipulation(float& value);
 	void					cam_Lookout				( const Fmatrix &xform, float camera_height );
 	void					camUpdateLadder			(float dt);
 	void					cam_SetLadder			();
