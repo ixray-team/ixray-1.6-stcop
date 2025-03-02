@@ -208,12 +208,8 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
   	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
 	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 2); 
 	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
-
-	if (addMU)
-	{
-		rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
-	}
-
+	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
+ 
 	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
 	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
 	size_t start = GetMemory();
