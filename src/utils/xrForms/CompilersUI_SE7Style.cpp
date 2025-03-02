@@ -72,7 +72,7 @@ void RenderMainUI()
 			ImGui::TableHeadersRow();
 
 			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
+			ImGui::TableNextColumn();
 			
 			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 115) };
 			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
@@ -100,19 +100,19 @@ void RenderMainUI()
 				ImGui::EndTable();
 			}
 
-			ImGui::TableSetColumnIndex(1);
+			ImGui::TableNextColumn();
 			
 			DrawCompilerConfig();
 			
-			ImGui::TableSetColumnIndex(2);
+			ImGui::TableNextColumn();
 			
 			DrawLCConfig();
 
-			ImGui::TableSetColumnIndex(3);
+			ImGui::TableNextColumn();
 
 			DrawAIConfig();
 
-			ImGui::TableSetColumnIndex(4);
+			ImGui::TableNextColumn();
 
 			DrawDOConfig();
 
@@ -162,6 +162,74 @@ void RenderMainUI()
 	}
 
 	ImGui::End();
+
+	/*
+		Якорный переход просчитывается по порядку.
+			Первый yButton будет связан с первым yRow
+
+		yButton - может иметь любое название.
+	*/
+
+	// для включения
+	//    \/
+	if (false && ImGui::Begin("DemoWindow##dw02", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
+	{
+///////////////////////////////////////////////
+#define yButton(text) ++yStep; if (ImGui::Button(text)) colClick = yStep;
+#define yRow()   ++yStep; ImGui::TableNextRow(); ImGui::TableNextColumn(); if (yStep == colClick) { ImGui::SetScrollHereY(0.0f); colClick = 0; }
+///////////////////////////////////////////////
+
+		ImVec2 winSize = ImGui::GetWindowSize();
+		//
+		int yStep = 0;
+		int colClick = 0;
+
+		ImGui::BeginGroup();
+			yButton("Compiler");
+			yButton("xrLC");
+			yButton("xrAI");
+			yButton("xrDO");
+		ImGui::EndGroup();
+
+		ImGui::SameLine();
+		
+		yStep = 0;
+		ImVec2 ListBoxSize = { -1, -1 };
+		if (ImGui::BeginTable("##DemoContent", 1, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders| ImGuiTableFlags_ScrollY, ListBoxSize))
+		{
+			ImGui::TableSetupColumn("c1");
+			
+			yRow();
+
+			ImGui::Text("Compiler");
+			ImGui::Separator();
+			DrawCompilerConfig();
+
+			yRow();
+
+			ImGui::Text("xrLC");
+			ImGui::Separator();
+			DrawLCConfig();
+
+			yRow();
+
+			ImGui::Text("xrAI");
+			ImGui::Separator();
+			DrawAIConfig();
+
+			yRow();
+
+			ImGui::Text("xrDO");
+			ImGui::Separator();
+			DrawDOConfig();
+
+			//Заглушка
+			ImGui::Dummy({ 0,winSize.y -123});
+
+			ImGui::EndTable();
+		}
+		ImGui::End();
+	}
 }
 
 int item_current_selected = 2;
@@ -174,7 +242,7 @@ const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	//if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
@@ -218,7 +286,7 @@ void DrawLCConfig()
 		ImGui::EndDisabled();
 		
 		
-		ImGui::EndChild();
+		//ImGui::EndChild();
 	}
 
 
@@ -226,7 +294,7 @@ void DrawLCConfig()
 
 void DrawDOConfig()
 {
-	if (ImGui::BeginChild("DO", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	//if (ImGui::BeginChild("DO", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
 		ImGui::Separator();
@@ -234,14 +302,14 @@ void DrawDOConfig()
 		ImGui::BeginDisabled(!gCompilerMode.DO);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::EndDisabled();
-		ImGui::EndChild();
+		//ImGui::EndChild();
 	}
 	
 }
 
 void DrawAIConfig()
 {
-	if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	//if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 			ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
 		
@@ -275,15 +343,15 @@ void DrawAIConfig()
 				ImGui::EndDisabled();
 
 			ImGui::EndDisabled();
+			//ImGui::EndChild();
 	}
-	ImGui::EndChild();
 }
 
 extern bool SaveCForm;
 
 void DrawCompilerConfig()
 {
-	if (ImGui::BeginChild("Settings", { 170, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	//if (ImGui::BeginChild("Settings", { 170, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
@@ -295,7 +363,7 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::Checkbox("ShowMain", &ShowMainUI);
 
-		ImGui::EndChild();
+		//ImGui::EndChild();
 	}
 	
 }
