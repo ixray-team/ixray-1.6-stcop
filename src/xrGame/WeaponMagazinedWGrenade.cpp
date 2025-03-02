@@ -502,10 +502,10 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 				pIItem->object().DestroyObject	();
 		}
 
-		ProcessUpgrade();
-		ProcessScope();
 		InitAddons				();
 		UpdateAddonsVisibility	();
+		ProcessUpgrade();
+		ProcessScope();
 
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
