@@ -209,13 +209,13 @@ void CCustomDetector::OnStateSwitch(u32 S)
 		case eShowing:
 		{
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode?"anm_show_fast":"anm_show", !!(m_old_state != eHidden), this, S);
+			PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", !!(m_old_state != eHidden), this, S);
 			SetPending					(TRUE);
 		}break;
 		case eHiding:
 		{
 			m_sounds.PlaySound			("sndHide", Fvector().set(0,0,0), this, true, false);
-			PlayHUDMotion				(m_bFastAnimMode?"anm_hide_fast":"anm_hide", TRUE, this, S);
+			PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, this, S);
 			SetPending					(TRUE);
 			SetHideDetStateInWeapon();
 		}break;
@@ -270,6 +270,7 @@ void CCustomDetector::OnStateSwitch(u32 S)
 			SetPending(FALSE);
 		}break;
 	}
+
 	m_old_state=S;
 }
 
@@ -502,6 +503,62 @@ extern u32 hud_adj_mode;
 void CCustomDetector::UpdateCL() 
 {
 	PROF_EVENT("CCustomDetector::UpdateCL")
+	if (m_HudLight.GetTorchInstalled())
+	{
+		if (Actor() != nullptr && Actor()->GetDetector() != nullptr && m_HudLight.GetTorchInstalled())
+		{
+			if (!psHUD_Flags.test(HUD_WEAPON_RT2))
+			{
+				// Hud рендера оружия отключен - возможно, сценка
+				m_HudLight.SwitchTorchlight(false);
+			}
+			else
+			{
+				float light_time_treshold_f = 0.0f;
+				u32 light_cur_time = 0;
+
+				if (GetState() == eShowing)
+				{
+					light_time_treshold_f = READ_IF_EXISTS(pSettings, r_float, HudSection(), ("torch_enable_time_" + GetActualCurrentAnim()).c_str(), 0.0f) * 1000.0f;
+
+					if (light_time_treshold_f >= 0.0f)
+					{
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+						m_HudLight.SwitchTorchlight(light_cur_time >= light_time_treshold_f);
+					}
+					else
+					{
+						light_time_treshold_f *= -1.0f;
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionCurrTm, m_dwMotionEndTm);
+						m_HudLight.SwitchTorchlight(light_cur_time <= light_time_treshold_f);
+					}
+				}
+				else if (GetState() == eHiding)
+				{
+					light_time_treshold_f = READ_IF_EXISTS(pSettings, r_float, HudSection(), ("torch_disable_time_" + GetActualCurrentAnim()).c_str(), 0.0f) * 1000.0f;
+
+					if (light_time_treshold_f >= 0.0f)
+					{
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionStartTm, m_dwMotionCurrTm);
+						m_HudLight.SwitchTorchlight(!(light_cur_time >= light_time_treshold_f));
+					}
+					else
+					{
+						light_time_treshold_f *= -1.0f;
+						light_cur_time = Device.GetTimeDeltaSafe(m_dwMotionCurrTm, m_dwMotionEndTm);
+						m_HudLight.SwitchTorchlight(!(light_cur_time <= light_time_treshold_f));
+					}
+				}
+				else
+					m_HudLight.SwitchTorchlight(true);
+			}
+		}
+		else if (m_HudLight.RenderLight != nullptr)
+			m_HudLight.SwitchTorchlight(false);
+
+		SetMultipleBonesStatus(m_HudLight.Section, "torch_cone_bones", m_HudLight.GetTorchActive());
+	}
+
 	inherited::UpdateCL();
 
 	if (H_Parent() != Level().CurrentEntity())
@@ -530,7 +587,9 @@ void CCustomDetector::UpdateCL()
 	UpdateVisibility();
 
 	if (!IsWorking())
+	{
 		return;
+	}
 
 	UpfateWork();
 }

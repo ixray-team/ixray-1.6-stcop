@@ -5,11 +5,14 @@ class CPhysicItem;
 class NET_Packet;
 class CInventoryItem;
 class CMotionDef;
+class HudLightTorch;
 
 #include "actor_defs.h"
 #include "inventory_space.h"
 #include "HudSound.h"
 #include "InertionData.h"
+
+#include "HudLightTorch.h"
 
 struct attachable_hud_item;
 class motion_marks;
@@ -73,6 +76,7 @@ protected:
 		u8						m_started_rnd_anim_idx;
 		bool					m_bStopAtEndAnimIsRunning;
 	};
+	HudLightTorch m_HudLight;
 public:
 	virtual void				Load				(LPCSTR section);
 	virtual	BOOL				net_Spawn			(CSE_Abstract* DC)				{return TRUE;};
@@ -125,7 +129,8 @@ public:
 
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
-
+	virtual void				SetModelBoneStatus(const char* bone, BOOL show) const;
+	virtual void				SetMultipleBonesStatus(const char* section, const char* line, BOOL show) const;
 
 	virtual void				UpdateHudAdditonal	(Fmatrix&);
 
