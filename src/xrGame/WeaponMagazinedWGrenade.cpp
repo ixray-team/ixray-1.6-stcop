@@ -153,10 +153,15 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 	if (!IsGrenadeLauncherAttached())
 		return false;
 
-	bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
+	if (!EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+	{
+		bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
 
-	if(!bUsefulStateToSwitch)
-		return false;
+		if (!bUsefulStateToSwitch)
+			return false;
+	}
+	else if (!Weapon_SetKeyRepeatFlagIfNeeded(kfGLAUNCHSWITCH))
+			return false;
 
 	SwitchState(eSwitch);
 

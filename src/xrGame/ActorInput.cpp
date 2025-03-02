@@ -578,7 +578,7 @@ void CActor::ProcessKeys()
 			SetActorKeyRepeatFlag(kfUNZOOM, false);
 	}
 
-	if (!wpn->IsActionProcessing() && (_keyflags & kfFIRE) != 0)
+	if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (Actor()->GetMovementState(eReal) & mcSprint) == 0 && (_keyflags & kfFIRE) != 0)
 	{
 		wpn->Action(kWPN_FIRE, CMD_START);
 
@@ -586,6 +586,24 @@ void CActor::ProcessKeys()
 			wpn->Action(kWPN_FIRE, CMD_STOP);
 
 		SetActorKeyRepeatFlag(kfFIRE, false);
+	}
+
+	if ((_keyflags & kfGLAUNCHSWITCH) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kWPN_FUNC, CMD_START);
+		SetActorKeyRepeatFlag(kfGLAUNCHSWITCH, false);
+	}
+
+	if ((_keyflags & kfNEXTFIREMODE) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kWPN_FIREMODE_NEXT, CMD_START);
+		SetActorKeyRepeatFlag(kfNEXTFIREMODE, false);
+	}
+
+	if ((_keyflags & kfPREVFIREMODE) != 0 && itm->CanStartAction())
+	{
+		wpn->Action(kWPN_FIREMODE_PREV, CMD_START);
+		SetActorKeyRepeatFlag(kfPREVFIREMODE, false);
 	}
 }
 
