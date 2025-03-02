@@ -51,7 +51,9 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	{
 	case kWPN_FIRE:
 		{
-			if( (mstate_wishful & mcLookout) && !IsGameTypeSingle() ) return;
+			if( (mstate_wishful & mcLookout) && !IsGameTypeSingle() )
+				return;
+
 			//-----------------------------
 			if (OnServer())
 			{
