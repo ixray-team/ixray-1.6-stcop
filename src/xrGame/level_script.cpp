@@ -40,6 +40,10 @@
 #include "HUDAnimItem.h"
 #include "ActorCondition.h"
 #include "player_hud.h"
+#include "PickupManager.h"
+#include "UIActorMenu.h"
+#include "Inventory.h"
+#include "Weapon.h"
 
 using namespace luabind;
 
@@ -990,18 +994,44 @@ namespace level_nearest
 }
 
 bool is_ui_shown() {
-	return true;
+	return CurrentGameUI()->GameIndicatorsShown();
 }
 bool indicators_shown() {
-	return true;
+	bool res = is_ui_shown();
+	if (res)
+	{
+		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+		
+		if (actor == nullptr)
+			return false;
+
+		CWeapon* wpn = smart_cast<CWeapon*>(actor->inventory().ActiveItem());
+		if (wpn == nullptr)
+			res = true;
+		else if (wpn->IsUIForceHiding())
+			res = false;
+		else if (wpn->IsUIForceUnhiding())
+			res = true;
+		else if (wpn->IsGrenadeMode())
+			res = true;
+		else if (wpn->IsZoomed() && (wpn->get_ScopeStatus() == 1 || wpn->get_ScopeStatus() == 2 && wpn->IsScopeAttached()))
+			res = false;
+		else
+			res = true;
+	}
+	return res;
 }
 bool inventory_shown() {
-	return true;
+	return CurrentGameUI()->ActorMenu().IsShown();
 }
 bool electronics_break() {
 	return false;
 }
 bool pickup_mode() {
+	CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	if (actor != nullptr)
+		return actor->GetPickupManager()->GetPickupMode();
+
 	return false;
 }
 bool is_actor_burned() {
