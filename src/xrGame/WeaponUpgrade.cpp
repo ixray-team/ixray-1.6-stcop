@@ -29,6 +29,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_disp      ( section, test );
 	result |= install_upgrade_hit       ( section, test );
 	result |= install_upgrade_addon     ( section, test );
+	result |= install_upgrade_hud_sect	(section, test);
 	result |= install_upgrade_show_bones (section, test);
 	result |= install_upgrade_hide_bones(section, test);
 	result |= install_upgrade_hide_bones_override(section, test);
@@ -285,6 +286,24 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 	result |= result2;
 	return result;
 }
+
+bool CWeapon::install_upgrade_hud_sect(LPCSTR section, bool test)
+{
+	LPCSTR str;
+
+	bool result = process_if_exists_set(section, "hud", &CInifile::r_string, str, test);
+
+	if (result && !test)
+	{
+		hud_sect = pSettings->r_string(section, "hud");
+		hud_sect_cache = hud_sect;
+	}
+
+	InitAddons();
+
+	return result;
+}
+
 bool CWeapon::install_upgrade_show_bones(LPCSTR section, bool test)
 {
 	LPCSTR str;
