@@ -14,6 +14,7 @@
 #include "script_game_object.h"
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
+#include "Weapon.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -872,4 +873,31 @@ void CHudItem::AssignDetectorAnim(const xr_string anm_alias, bool bMixIn, bool u
 		Actor()->GetDetector()->PlayHUDMotion(anm_alias, true, Actor()->GetDetector(), eIdle);
 		swap(this->HudItemData()->m_hand_motions, Actor()->GetDetector()->HudItemData()->m_hand_motions);
 	}
+}
+
+bool CHudItem::CanStartAction(bool allow_aim_state)
+{
+	if (GetState() != eIdle || Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || Actor()->GetDetector() && Actor()->GetDetector()->GetState() == CCustomDetector::eShowing)
+		return false;
+
+	CWeapon* wpn = smart_cast<CWeapon*>(this);
+	if (wpn && (wpn->IsActionProcessing() || !allow_aim_state && (wpn->IsAimStarted || wpn->IsZoomed())))
+		return false;
+
+	return true;
+}
+
+bool CHudItem::Weapon_SetKeyRepeatFlagIfNeeded(u32 kfACTTYPE)
+{
+	bool result = CanStartAction();
+	if (!result)
+	{
+		if (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint)
+		{
+			Actor()->SetMovementState(eWishful, mcSprint, false);
+			Actor()->SetActorKeyRepeatFlag((ACTOR_DEFS::EActorKeyflags)kfACTTYPE, true);
+		}
+	}
+
+	return result;
 }
