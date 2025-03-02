@@ -249,6 +249,8 @@ public:
 	light_misfire_params light_misfire;
 
 	float lock_time;
+	float _last_recharge_time;
+	float m_fRechargeTime;
 	float m_fCollimatorLevelsProblem;
 	float m_fMisfireAfterProblemsLevel;
 
@@ -258,6 +260,7 @@ public:
 	int _last_shot_ammotype;
 	u32 _last_update_time;
 	s32 _lens_night_brightness_saved_step;
+	u32 _last_shot_time;
 
 	bool bReloadKeyPressed;
 	bool bAmmotypeKeyPressed;
@@ -325,6 +328,7 @@ public:
 	void UpdateZoomCrosshairUI();
 	void SetLensParams(lens_zoom_params& params);
 	void UpdateLensFactor(u32 timedelta);
+	void SetLastRechargeTime(float time) { _last_recharge_time = time; }
 	void UpdateCollimatorSight();
 	virtual void OnShotJammed() {}
 
