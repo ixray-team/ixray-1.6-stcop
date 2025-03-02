@@ -14,6 +14,7 @@
 #include "script_game_object.h"
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
+#include "Torch.h"
 #include "Weapon.h"
 
 ENGINE_API extern float psHUD_FOV_def;
@@ -83,6 +84,18 @@ void CHudItem::Load(LPCSTR section)
 
 	if (pSettings->line_exist(section, "snd_sprint_end"))
 		m_sounds.LoadSound(section, "snd_sprint_end", "sndSprintEnd", true);
+
+	if (pSettings->line_exist(section, "snd_headlamp_on"))
+		m_sounds.LoadSound(section, "snd_headlamp_on", "sndHeadlampOn", true);
+
+	if (pSettings->line_exist(section, "snd_headlamp_off"))
+		m_sounds.LoadSound(section, "snd_headlamp_off", "sndHeadlampOff", true);
+
+	if (pSettings->line_exist(section, "snd_nv_on"))
+		m_sounds.LoadSound(section, "snd_nv_on", "sndNVOn", true);
+
+	if (pSettings->line_exist(section, "snd_nv_off"))
+		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", true);
 }
 
 
@@ -185,6 +198,47 @@ void CHudItem::OnStateSwitch(u32 S)
 		PlayHUDMotion("anm_idle_sprint_end", true, this, GetState());
 		if (HudItemData() && m_sounds.FindSoundItem("sndSprintEnd", false));
 			PlaySound("sndSprintEnd", HudItemData()->m_item_transform.c);
+	}break;
+	case eSwitchDevice:
+	{
+		SetPending(TRUE);
+		if (fDeviceFlags.test(DF_HEADLAMP))
+		{
+			if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+			{
+				string64 anm = "";
+				xr_sprintf(anm, "anm_headlamp_%s", torch->IsSwitched() ? "off" : "on");
+				PlayHUDMotion(anm, true, this, eSwitchDevice);
+
+				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
+				{
+					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, Actor()->HeadlampCallback);
+				}
+
+				StartCompanionAnimIfNeeded(GetActualCurrentAnim());
+				xr_sprintf(anm, "sndHeadlamp%s", torch->IsSwitched() ? "Off" : "On");
+				PlaySound(anm, HudItemData()->m_item_transform.c);
+			}
+		}
+		else if (fDeviceFlags.test(DF_NIGHTVISION))
+		{
+			if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+			{
+				string64 anm = "";
+				xr_sprintf(anm, "anm_nv_%s", torch->GetNightVisionStatus() ? "off" : "on");
+				PlayHUDMotion(anm, true, this, eSwitchDevice);
+
+				if (CWeapon* wpn = smart_cast<CWeapon*>(this))
+				{
+					wpn->MakeLockByConfigParam("lock_time_start_" + GetActualCurrentAnim(), false, Actor()->NVCallback);
+				}
+
+				StartCompanionAnimIfNeeded(GetActualCurrentAnim());
+				xr_sprintf(anm, "sndNV%s", torch->GetNightVisionStatus() ? "Off" : "On");
+				PlaySound(anm, HudItemData()->m_item_transform.c);
+			}
+		}
+		fDeviceFlags.zero();
 	}break;
 	}
 

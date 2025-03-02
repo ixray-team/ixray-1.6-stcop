@@ -55,6 +55,7 @@ public:
 
 	bool					bIsHelmetAvaliable;
 	bool					isDisableChangeSkin = true;
+	bool					bIsTorchAvaliable;
 
 	virtual u32				ef_equipment_type		() const;
 	virtual	BOOL			BonePassBullet			(int boneID);

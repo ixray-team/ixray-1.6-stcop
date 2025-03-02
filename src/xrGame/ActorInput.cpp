@@ -34,6 +34,8 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "../xrEngine/XR_IOConsole.h"
 #include "HUDAnimItem.h"
+#include "CustomOutfit.h"
+#include "ActorHelmet.h"
 
 extern u32 hud_adj_mode;
 
@@ -752,30 +754,28 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 
 void CActor::SwitchNightVision()
 {
-	CWeapon* wpn1 = nullptr;
-	CWeapon* wpn2 = nullptr;
-	if(inventory().ItemFromSlot(INV_SLOT_2))
-		wpn1 = smart_cast<CWeapon*>(inventory().ItemFromSlot(INV_SLOT_2));
+	CHelmet* pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
+	bool condition = pHelmet != nullptr && pHelmet->m_NightVisionSect.size() > 0 || GetOutfit() != nullptr && GetOutfit()->m_NightVisionSect.size() > 0;
 
-	if(inventory().ItemFromSlot(INV_SLOT_3))
-		wpn2 = smart_cast<CWeapon*>(inventory().ItemFromSlot(INV_SLOT_3));
+	if (!condition)
+		return;
 
-	xr_vector<CAttachableItem*> const& all = CAttachmentOwner::attached_objects();
-	xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-	xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-	for ( ; it != it_e; ++it )
+	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
 	{
-		CTorch* torch = smart_cast<CTorch*>(*it);
-		if ( torch )
-		{	
-			if(wpn1 && wpn1->IsZoomed())
-				return;
-
-			if(wpn2 && wpn2->IsZoomed())
-				return;
+		if (EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode])
+		{
+			auto sect = pSettings->r_string("gunslinger_base", torch->GetNightVisionStatus() ? "nv_disable_animator" : "nv_enable_animator");
+			OnActorSwitchesSmth("disable_nv_anim", sect, kfNIGHTVISION, NVCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_NIGHTVISION);
+		}
+		else
+		{
+			if (CWeapon* wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
+			{
+				if (wpn->IsZoomed())
+					return;
+			}
 
 			torch->SwitchNightVision();
-			return;
 		}
 	}
 }
@@ -812,19 +812,45 @@ bool CActor::OnActorSwitchesSmth(const shared_str& restrictor_config_param, cons
 	return false;
 }
 
+void CActor::HeadlampCallback(CHudItem* item)
+{
+	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+		torch->Switch();
+
+	if (CWeapon* wpn = smart_cast<CWeapon*>(item))
+		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim());
+}
+
+void CActor::NVCallback(CHudItem* item)
+{
+	if (CTorch* torch = smart_cast<CTorch*>(Actor()->inventory().ItemFromSlot(TORCH_SLOT)))
+		torch->SwitchNightVision();
+
+	if (CWeapon* wpn = smart_cast<CWeapon*>(item))
+		wpn->MakeLockByConfigParam("lock_time_end_" + wpn->GetActualCurrentAnim());
+}
+
 void CActor::SwitchTorch()
-{ 
-	xr_vector<CAttachableItem*> const& all = CAttachmentOwner::attached_objects();
-	xr_vector<CAttachableItem*>::const_iterator it = all.begin();
-	xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
-	for ( ; it != it_e; ++it )
+{
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
 	{
-		CTorch* torch = smart_cast<CTorch*>(*it);
-		if ( torch )
-		{		
-			torch->Switch();
+		CHelmet* pHelmet = smart_cast<CHelmet*>(inventory().ItemFromSlot(HELMET_SLOT));
+		bool condition = pHelmet != nullptr && pHelmet->bIsTorchAvaliable || GetOutfit() != nullptr && GetOutfit()->bIsTorchAvaliable;
+
+		if (!condition)
 			return;
+	}
+
+	if (CTorch* torch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT)))
+	{
+		if (isGuns)
+		{
+			auto sect = pSettings->r_string("gunslinger_base", torch->IsSwitched() ? "headlamp_disable_animator" : "headlamp_enable_animator");
+			OnActorSwitchesSmth("disable_headlamp_anim", sect, kfHEADLAMP, HeadlampCallback, CHudItem::EHudStates::eSwitchDevice, CHudItem::EDeviceFlags::DF_HEADLAMP);
 		}
+		else
+			torch->Switch();
 	}
 }
 
