@@ -47,6 +47,7 @@ protected:
 	virtual void	switch2_FireMode();
 	
 	virtual void	OnShot			();	
+	virtual void	OnShotJammed	();
 	
 	virtual void	OnEmptyClick	();
 
@@ -101,8 +102,6 @@ public:
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
-
-	bool			bMisfireReload;
 
 	virtual std::string	NeedAddSuffix(std::string M);
 

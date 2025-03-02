@@ -8,15 +8,47 @@ CWeaponBM16::~CWeaponBM16()
 void CWeaponBM16::Load	(LPCSTR section)
 {
 	inherited::Load		(section);
-	m_sounds.LoadSound	(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
+
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (!isGuns)
+		m_sounds.LoadSound	(section, "snd_reload_1", "sndReload1", true, m_eSoundShot);
 }
 
 void CWeaponBM16::PlayReloadSound()
 {
-	if(m_magazine.size()==1)	
-		PlaySound	("sndReload1",get_LastFP());
-	else						
-		PlaySound	("sndReload",get_LastFP());
+	bool isGuns = EngineExternal()[EEngineExternalGunslinger::EnableGunslingerMode];
+	if (isGuns)
+	{
+		switch (m_magazine.size())
+		{
+		case 0:
+			PlaySound("sndReloadEmpty", get_LastFP());
+			break;
+		case 1:
+		{
+			if (IsMisfire())
+				PlaySound("sndReloadJammed", get_LastFP());
+			/*else if (IsChangeAmmoType())
+				PlaySound("sndChangeCartridgeOne", get_LastFP());*/
+			else
+				PlaySound("sndReload", get_LastFP());
+		}break;
+		case 2:
+		{
+			if (IsMisfire())
+				PlaySound("sndReloadJammed", get_LastFP());
+			/*else
+				PlaySound("sndChangeCartridgeFull", get_LastFP());*/
+		}break;
+		}
+	}
+	else
+	{
+		if (m_magazine.size() == 1)
+			PlaySound("sndReload1", get_LastFP());
+		else
+			PlaySound("sndReload", get_LastFP());
+	}
 }
 
 void CWeaponBM16::PlayAnimShoot()
@@ -113,8 +145,6 @@ std::string CWeaponBM16::NeedAddSuffix(std::string M)
 				break;
 			}
 		}
-
-		bMisfireReload = true;
 	}
 
 	switch (m_magazine.size())

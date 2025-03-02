@@ -627,8 +627,6 @@ std::string CWeaponMagazinedWGrenade::NeedAddSuffix(std::string M)
 
 				if (iAmmoElapsed == 1)
 					new_name = AddSuffixName(new_name, "_last", "_w_gl");
-
-				bMisfireReload = true;
 			}
 
 			if (IsSilencerAttached())
