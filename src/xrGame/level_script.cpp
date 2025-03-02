@@ -44,6 +44,7 @@
 #include "UIActorMenu.h"
 #include "Inventory.h"
 #include "Weapon.h"
+#include "ActorHelmet.h"
 
 using namespace luabind;
 
@@ -1028,7 +1029,7 @@ bool electronics_break() {
 	return false;
 }
 bool pickup_mode() {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
 	if (actor != nullptr)
 		return actor->GetPickupManager()->GetPickupMode();
 
@@ -1051,6 +1052,17 @@ int get_parameter_upgraded_int() {
 }
 int valid_saved_game_int(int number, const char* name) {
 	return 1;
+}
+bool is_tactical_hud()
+{
+	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (actor != nullptr)
+	{
+		if (CHelmet* helmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT)))
+			return helmet->m_fShowNearestEnemiesDistance > 0.0f;
+	}
+
+	return false;
 }
 
 #pragma optimize("s",on)
@@ -1204,7 +1216,8 @@ void CLevel::script_register(lua_State *L)
 		def("electronics_reset", &electronics_reset),
 		def("electronics_apply", &electronics_apply),
 		def("get_parameter_upgraded_int", &get_parameter_upgraded_int),
-		def("valid_saved_game_int", &valid_saved_game_int)
+		def("valid_saved_game_int", &valid_saved_game_int),
+		def("is_tactical_hud", &is_tactical_hud)
 	],
 
 	module(L,"nearest")
