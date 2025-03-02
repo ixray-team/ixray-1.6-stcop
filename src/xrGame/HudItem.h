@@ -126,6 +126,7 @@ public:
 	virtual void				PlayAnimIdleMovingCrouchSlow();
 	virtual void				PlayAnimIdleMovingCrouch();
 	virtual void				PlayAnimIdleSprint	();
+	virtual void				PlayAnimDevice		();
 
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
@@ -178,6 +179,8 @@ public:
 	{
 		DF_HEADLAMP = (1 << 0),
 		DF_NIGHTVISION = (1 << 1),
+		DF_TACTICALTORCH = (1 << 2),
+		DF_TACTICALLASER = (1 << 3)
 	};
 
 	Flags32 fDeviceFlags;

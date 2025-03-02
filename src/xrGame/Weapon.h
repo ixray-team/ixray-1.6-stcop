@@ -237,6 +237,7 @@ public:
 	};
 
 	conditional_breaking_params CollimatorBreakingParams;
+	conditional_breaking_params TorchBreakingParams;
 
 	struct light_misfire_params
 	{
@@ -300,6 +301,7 @@ public:
 	bool m_bActorCanShoot;
 	bool m_bUseLightMis;
 	bool m_bDisableLightMisDet;
+	bool bIsTorchEnabled;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -330,6 +332,7 @@ public:
 	void UpdateLensFactor(u32 timedelta);
 	void SetLastRechargeTime(float time) { _last_recharge_time = time; }
 	void UpdateCollimatorSight();
+	void UpdateTorch();
 	virtual void OnShotJammed() {}
 
 	bool IsChangeAmmoType() const { return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
@@ -347,6 +350,7 @@ public:
 	bool IsJamProhibited();
 	bool OnWeaponJam();
 	bool CheckForMisfire_validate_NoMisfire();
+	void SwitchTorch(bool status, bool forced = false);
 
 	const virtual bool IsGrenadeMode() const { return false; }
 	virtual bool TryReload() { return false; }

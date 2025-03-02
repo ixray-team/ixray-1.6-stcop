@@ -622,8 +622,6 @@ void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 	inherited::OnMoveToRuck	(prev);
 	if(prev.type==eItemPlaceSlot)
 	{
-		m_HudLight.SwitchTorchlight(false);
-		m_HudLight.UpdateTorchFromObject(this);
 		SwitchState					(eHidden);
 		g_player_hud->detach_item	(this);
 	}

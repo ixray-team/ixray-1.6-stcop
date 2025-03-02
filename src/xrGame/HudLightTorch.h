@@ -30,6 +30,7 @@ public:
 public:
 	void NewTorchlight(const char* section);
 	void SwitchTorchlight(bool isActive);
+	void SetInstalled(bool install) { IsTorchInstalled = install; }
 	void UpdateTorchFromObject(CHudItem* item) const;
 	bool GetTorchActive() const { return IsRenderLight; }
 	bool GetTorchInstalled() const { return IsTorchInstalled; }

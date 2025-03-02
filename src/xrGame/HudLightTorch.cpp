@@ -42,12 +42,8 @@ HudLightTorch::~HudLightTorch() {
 }
 
 void HudLightTorch::NewTorchlight(const char* section) {
-	if (!READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", FALSE))
-	{
+	if (!IsTorchInstalled)
 		return;
-	}
-
-	IsTorchInstalled = true;
 
 	if (RenderLight)
 	{

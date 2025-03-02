@@ -42,6 +42,22 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= process_if_exists_set(section, "misfire_after_problems_level", &CInifile::r_float, m_fMisfireAfterProblemsLevel, test) && !test;
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
+	BOOL value = false;
+	bool result2 = process_if_exists_set(section, "torch_installed", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		m_HudLight.SetInstalled(value);
+		m_HudLight.NewTorchlight(section);
+
+		Fvector3 tmp_vector = { -1.0f, -1.0f, 0.0f };
+		tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+		TorchBreakingParams.start_condition = tmp_vector.x;
+		TorchBreakingParams.end_condition = tmp_vector.y;
+		TorchBreakingParams.start_probability = tmp_vector.z;
+	}
+
+	result |= result2;
+
 	ProcessScope();
 
 	return result;
