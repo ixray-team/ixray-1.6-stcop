@@ -11,7 +11,6 @@ class PARTICLES_API CParticlesObject :
 	friend class CParticlesAsync;
 	using inherited =  CPS_Instance;
 
-	u32					dwLastTime;
 	void				Init				(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove);
 	void				UpdateSpatial		();
 
@@ -32,7 +31,7 @@ public:
 	Fvector&			Position			();
 	void				SetXFORM			(const Fmatrix& m);
 	IC	Fmatrix&		XFORM				()	{return renderable.xform;}
-	void				Update				(u32 dt);
+	virtual void		Update				(u32 dt) override;
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
 	void				SetLiveUpdate		(BOOL b);
 	BOOL				GetLiveUpdate		();

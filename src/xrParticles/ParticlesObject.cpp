@@ -60,7 +60,7 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	SpatialComponent->spatial.type			= 0;
 	SpatialComponent->spatial.sector			= S;
 	
-	NeedUpdate = CParticlesAsync::Push(this);
+	NeedUpdate = CParticlesAsync::NeedForceUpdate();
 
 	dwLastTime = Device.dwTimeGlobal;
 }
@@ -68,7 +68,6 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 //----------------------------------------------------
 CParticlesObject::~CParticlesObject()
 {
-	CParticlesAsync::Pop(this);
 }
 
 void CParticlesObject::UpdateSpatial()
