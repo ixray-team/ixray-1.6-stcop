@@ -104,7 +104,7 @@ void CHudItem::Load(LPCSTR section)
 
 	m_fLookOutSpeedKoef = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_speed_koef", 1.0f);
 	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, HudSection(), "lookout_ampl_k", 1.0f);
-	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", isGuns);
+	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
 	m_jitter_params.pos_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_pos_amplitude", 0.001f);
 	m_jitter_params.rot_amplitude = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "base_jitter_rot_amplitude", 0.1f);
