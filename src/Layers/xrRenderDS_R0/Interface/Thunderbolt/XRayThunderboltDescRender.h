@@ -1,9 +1,9 @@
 #pragma once
 
-class XRayThunderboltDescRender:public IThunderboltDescRender
+class CDS0_ThunderboltDescRender:public IThunderboltDescRender
 {
 public:
-	XRayThunderboltDescRender();
+	CDS0_ThunderboltDescRender();
 	virtual void Copy(IThunderboltDescRender &_in) ;
 
 	virtual void CreateModel(LPCSTR m_name) ;

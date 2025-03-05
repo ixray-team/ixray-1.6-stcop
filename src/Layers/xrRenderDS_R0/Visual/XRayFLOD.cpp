@@ -1,23 +1,22 @@
-
+#include "stdafx.h"
 #include "XRayFLOD.h"
-
 #include "XRayRenderVisual.h"
 
-XRayFLOD::XRayFLOD()
+CDS0_FLOD::CDS0_FLOD()
 {
 }
 
-XRayFLOD::~XRayFLOD()
+CDS0_FLOD::~CDS0_FLOD()
 {
 }
 
-void XRayFLOD::Render(float LOD)
+void CDS0_FLOD::Render(float LOD)
 {
 }
 
-void XRayFLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
+void CDS0_FLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 {
-	XRayFHierrarhyVisual::Load(N, data, dwFlags);
+	CDS0_FHierrarhyVisual::Load(N, data, dwFlags);
 
 	// LOD-def
 	R_ASSERT(data->find_chunk(OGF_LODDEF2));
@@ -46,11 +45,11 @@ void XRayFLOD::Load(LPCSTR N, IReader* data, u32 dwFlags)
 	lod_factor = Sf / Ss;
 }
 
-void XRayFLOD::Copy(XRayRenderVisual* pFrom)
+void CDS0_FLOD::Copy(CDS0_RenderVisual* pFrom)
 {
-	XRayFHierrarhyVisual::Copy(pFrom);
+	CDS0_FHierrarhyVisual::Copy(pFrom);
 
-	XRayFLOD* F = (XRayFLOD*)pFrom;
+	CDS0_FLOD* F = (CDS0_FLOD*)pFrom;
 	lod_factor = F->lod_factor;
 	std::memcpy(facets, F->facets, sizeof(facets));
 }

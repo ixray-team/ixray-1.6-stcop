@@ -1,11 +1,11 @@
 #pragma once
 #ifdef DEBUG_DRAW
-class XRayDebugRender :public IDebugRender
+class CDS0_DebugRender :public IDebugRender
 {
 public:
 
 public:
-	XRayDebugRender();
+	CDS0_DebugRender();
 	virtual void	Render();
 
 	// routed to RCache

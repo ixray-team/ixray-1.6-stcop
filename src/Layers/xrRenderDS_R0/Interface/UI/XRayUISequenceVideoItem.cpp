@@ -1,38 +1,38 @@
 #include "stdafx.h"
 
-XRayUISequenceVideoItem::XRayUISequenceVideoItem()
+CDS0_UISequenceVideoItem::CDS0_UISequenceVideoItem()
 {
 }
 
-void XRayUISequenceVideoItem::Copy(IUISequenceVideoItem & _in)
+void CDS0_UISequenceVideoItem::Copy(IUISequenceVideoItem & _in)
 {
 }
 
-bool XRayUISequenceVideoItem::HasTexture()
+bool CDS0_UISequenceVideoItem::HasTexture()
 {
 	return false;
 }
-void XRayUISequenceVideoItem::CaptureTexture()
+void CDS0_UISequenceVideoItem::CaptureTexture()
 {
 }
 
-void XRayUISequenceVideoItem::ResetTexture()
+void CDS0_UISequenceVideoItem::ResetTexture()
 {
 }
 
-BOOL XRayUISequenceVideoItem::video_IsPlaying()
+BOOL CDS0_UISequenceVideoItem::video_IsPlaying()
 {
 	return FALSE;
 }
 
-void XRayUISequenceVideoItem::video_Sync(u32 _time)
+void CDS0_UISequenceVideoItem::video_Sync(u32 _time)
 {
 }
 
-void XRayUISequenceVideoItem::video_Play(BOOL looped, u32 _time)
+void CDS0_UISequenceVideoItem::video_Play(BOOL looped, u32 _time)
 {
 }
 
-void XRayUISequenceVideoItem::video_Stop()
+void CDS0_UISequenceVideoItem::video_Stop()
 {
 }
