@@ -5,6 +5,9 @@ struct xr_special_free
 {
 	IC void operator()(T*& ptr)
 	{
+		if (ptr == nullptr)
+			return;
+
 		if constexpr (_is_pm)
 		{
 			void* _real_ptr = smart_cast<void*>(ptr);

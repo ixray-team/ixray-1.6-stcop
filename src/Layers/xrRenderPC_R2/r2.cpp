@@ -249,9 +249,11 @@ void CRender::create()
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
+
+	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueue);
 }
 
-void					CRender::destroy				()
+void CRender::destroy()
 {
 	m_bMakeAsyncSS				= false;
 	::PortalTraverser.destroy	();
@@ -261,7 +263,8 @@ void					CRender::destroy				()
 	xr_delete					(Target);
 	PSLibrary.OnDestroy			();
 	Device.seqFrame.Remove		(this);
-	r_dsgraph_destroy			();
+	r_dsgraph_destroy();
+	Device.ModelDefferClear = nullptr;
 }
 
 void CRender::reset_begin()
@@ -310,19 +313,9 @@ void CRender::reset_end()
 	// that some data is not ready in the first frame (for example device camera position)
 	m_bFirstFrameAfterReset = true;
 }
-/*
-void CRender::OnFrame()
-{
-	Models->DeleteQueue			();
-	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
-	}
-}*/
-void CRender::OnFrame()
-{
-	Models->DeleteQueue();
 
+void CRender::OnFrame()
+{
 	{
 		//Lights Delete queue
 		for (light*L:v_all_lights_dque)

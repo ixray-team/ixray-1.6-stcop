@@ -3,12 +3,14 @@
 #ifdef IXR_WINDOWS
 #	include <ppl.h>
 #	include <concurrent_unordered_map.h>
+#	include <concurrent_vector.h>
 #else
 #	include <tbb/task_group.h>
 #	include <tbb/parallel_for.h>
 #	include <tbb/blocked_range.h>
 #	include <tbb/parallel_for_each.h>
 #	include <tbb/concurrent_unordered_map.h>
+#	include <tbb/concurrent_vector.h>
 #endif
 #include <atomic>
 
@@ -23,11 +25,16 @@ using xr_task_group = concurrency::task_group;
 
 template <typename T, typename U>
 using xr_concurrent_unordered_map = concurrency::concurrent_unordered_map<T, U>;
+
+template <typename T>
+using xr_concurrent_vector = concurrency::concurrent_vector<T>;
 #else
 using xr_task_group = tbb::task_group;
 
 template <typename T, typename U>
 using xr_concurrent_unordered_map = tbb::concurrent_unordered_map<T, U>;
+template <typename T>
+using xr_concurrent_vector = tbb::concurrent_vector<T>;
 #endif
 
 template<typename BlockRangeType, typename Body>

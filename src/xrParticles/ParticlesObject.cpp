@@ -114,7 +114,7 @@ const shared_str CParticlesObject::Name()
 xr_shared_ptr<CParticlesObject> Particles::Details::Create(LPCSTR p_name, BOOL bAutoRemove, bool remove_on_game_load)
 {
 	auto Particle = xr_make_shared<CParticlesObject>(p_name, bAutoRemove, remove_on_game_load);
-	g_pGamePersistent->ps_active.push_back(Particle);
+	g_pGamePersistent->ps_active_deffer.push_back(Particle);
 
 	return Particle;
 }
