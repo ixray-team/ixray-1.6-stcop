@@ -341,7 +341,7 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 	}
 }
 
-void OMFEditor_Init_AnimationParams(int animation_param_id, OMFData& data, OMFEditorState* p_state)
+void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data, OMFEditorState* p_state)
 {
 	if (p_state)
 	{
@@ -364,7 +364,7 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 
 	if (data.data_animparams.count > 0)
 	{
-		OMFEditor_Init_AnimationParams(p_state->current_selected_animation_param, data, p_state);
+		OMFEditor_Init_CurrentAnimationParams(p_state->current_selected_animation_param, data, p_state);
 	}
 }
 
