@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Include/xrRender/animation_motion.h"
-#include "movement_manager.h"
+//#include "../../movement_manager.h"
 
 template<typename T>
 IC	void write_bits(const u32& bit_count, const u32& value, u32& current, T& output)
