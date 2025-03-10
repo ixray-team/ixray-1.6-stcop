@@ -2228,16 +2228,37 @@ void CSE_ALifeHumanStalker::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 
 void CSE_ALifeHumanStalker::UPDATE_Write	(NET_Packet &tNetPacket)
 {
-	inherited1::UPDATE_Write	(tNetPacket);
-	inherited2::UPDATE_Write	(tNetPacket);
-	tNetPacket.w_stringZ		(m_start_dialog);
+	if (g_pGamePersistent->GameType() == eGameIDSingle)
+	{
+		inherited1::UPDATE_Write(tNetPacket);
+		inherited2::UPDATE_Write(tNetPacket);
+		tNetPacket.w_stringZ(m_start_dialog);
+	}
+	else
+	{
+		m_state_mngr.FillStateCSE(this);
+		m_state_mngr.CSE_StateWrite(tNetPacket);
+	}
 }
 
 void CSE_ALifeHumanStalker::UPDATE_Read		(NET_Packet &tNetPacket)
 {
-	inherited1::UPDATE_Read		(tNetPacket);
-	inherited2::UPDATE_Read		(tNetPacket);
-	tNetPacket.r_stringZ		(m_start_dialog);
+	if (g_pGamePersistent->GameType() == eGameIDSingle)
+	{
+		inherited1::UPDATE_Read(tNetPacket);
+		inherited2::UPDATE_Read(tNetPacket);
+		tNetPacket.r_stringZ(m_start_dialog);
+	}
+	else
+	{
+		m_state_mngr.CSE_StateRead(tNetPacket);
+		m_state_mngr.GetStateCSE(this);
+	}
+}
+
+BOOL CSE_ALifeHumanStalker::Net_Relevant()
+{
+	return g_Alive();
 }
 
 void CSE_ALifeHumanStalker::load			(NET_Packet &tNetPacket)
