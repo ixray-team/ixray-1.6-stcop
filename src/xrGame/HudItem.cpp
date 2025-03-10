@@ -561,7 +561,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 
 {
 	if (HudItemData() && !HudAnimationExist(M.c_str()))
 	{
-		Msg("! model [%s] has no motion alias defined [%s]", hud_sect.c_str(), M);
+		Msg("! model [%s] has no motion alias defined [%s]", hud_sect.c_str(), M.c_str());
 		return 0;
 	}
 
