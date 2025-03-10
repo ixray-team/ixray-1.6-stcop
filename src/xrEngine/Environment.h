@@ -147,6 +147,7 @@ public:
 	float				fog_distance;
 
 	float				rain_density;
+	shared_str			rain_type;
 	Fvector3			rain_color;
 
 	float				rain_angle;

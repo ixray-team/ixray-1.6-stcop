@@ -87,15 +87,14 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
 		f.w_float(el->m_identifier.c_str(), "fog_density", el->fog_density);
 		f.w_fvector3(el->m_identifier.c_str(), "fog_color", el->fog_color);
 		f.w_fvector3(el->m_identifier.c_str(), "rain_color", el->rain_color);
+		f.w_string(el->m_identifier.c_str(), "rain_type", el->rain_type.c_str());
 		f.w_float(el->m_identifier.c_str(), "rain_density", el->rain_density);
-
 		f.w_float(el->m_identifier.c_str(), "rain_angle", el->rain_angle);
 		f.w_float(el->m_identifier.c_str(), "rain_length", el->rain_length);
 		f.w_float(el->m_identifier.c_str(), "rain_width", el->rain_width);
 		f.w_float(el->m_identifier.c_str(), "rain_speed_min", el->rain_speed_min);
 		f.w_float(el->m_identifier.c_str(), "rain_speed_max", el->rain_speed_max);
 		f.w_float(el->m_identifier.c_str(), "rain_angle_rotation", el->rain_angle_rotation);
-
 		f.w_fvector3(el->m_identifier.c_str(), "sky_color", el->sky_color);
 		f.w_float(el->m_identifier.c_str(), "sky_rotation", rad2deg(el->sky_rotation));
 		f.w_string(el->m_identifier.c_str(), "sky_texture", el->sky_texture_name.c_str());
@@ -374,6 +373,38 @@ void RenderUIWeather() {
 	if (ImGui::ColorEdit4("hemisphere_color", (float*)&cur->hemi_color, ImGuiColorEditFlags_AlphaBar)) {
 		changed = true;
 	}
+
+	const std::unordered_set<xr_string> validRainTypes =
+	{
+		"default", 
+		"drizzle",
+		"dense", 
+		"spherical" 
+	};
+
+	xr_string previousRainType = cur->rain_type.c_str();
+
+	char rainTypeBuffer[100];
+	strcpy_s(rainTypeBuffer, previousRainType.c_str());
+
+	if (ImGui::InputText("rain_type", rainTypeBuffer, sizeof(rainTypeBuffer))) 
+	{
+		xr_string newRainType = rainTypeBuffer;
+
+		if (validRainTypes.find(newRainType) != validRainTypes.end()) 
+		{
+			if (newRainType != previousRainType) 
+			{
+				cur->rain_type = newRainType.c_str();
+				changed = true;
+			}
+		}
+		else 
+		{
+			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Invalid rain_type. Allowed values: default, drizzle, dense, spherical");
+		}
+	}
+
 	if (ImGui::SliderFloat("rain_density", &cur->rain_density, 0.0f, 1.0f)) {
 		changed = true;
 	}
@@ -387,9 +418,9 @@ void RenderUIWeather() {
 		changed = true;
 	if (ImGui::SliderFloat("rain_width", &cur->rain_width, 0.0f, 1.0f))
 		changed = true;
-	if (ImGui::SliderFloat("rain_speed_min", &cur->rain_speed_min, 0.0f, 100.0f))
+	if (ImGui::SliderFloat("rain_speed_min", &cur->rain_speed_min, 20.0f, 50.0f))
 		changed = true;
-	if (ImGui::SliderFloat("rain_speed_max", &cur->rain_speed_max, 0.0f, 100.0f))
+	if (ImGui::SliderFloat("rain_speed_max", &cur->rain_speed_max, 50.0f, 100.0f))
 		changed = true;
 
 	if (cur->rain_speed_min > cur->rain_speed_max) {
