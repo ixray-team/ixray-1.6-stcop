@@ -10,12 +10,13 @@ static const char* h_str =
 "-? or -h	== this help\n"
 "-f<NAME>	== compile level in gamedata\\levels\\<NAME>\\\n"
 "-o			== modify build options\n"
+"-use_intel == включить Embree"
 "\n"
 "NOTE: The last key is required for any functionality\n";
 
 void Help(const char*);
 
-void xrLight();
+void xrLight_Details();
  
 void StartupDO(LPSTR lpCmdLine) {
 	bClose = FALSE;
@@ -26,12 +27,14 @@ void StartupDO(LPSTR lpCmdLine) {
 	xr_strcpy(cmd, lpCmdLine);
 	_strlwr(cmd);
 
-	if (strstr(cmd, "-?") || strstr(cmd, "-h")) {
+	if (strstr(cmd, "-?") || strstr(cmd, "-h")) 
+	{
 		Help(h_str); 
 		return; 
 	}
 
-	if (strstr(cmd, "-f") == 0) {
+	if (strstr(cmd, "-f") == 0) 
+	{
 		Help(h_str); 
 		return; 
 	}
@@ -48,10 +51,13 @@ void StartupDO(LPSTR lpCmdLine) {
 	FS.get_path("$level$")->_set(name);
 
 	Phase("Loading level...");
+	// gl_data.slots_data.Load();
 	gl_data.xrLoad();
 
+	gl_data.use_intel = strstr(cmd, "-use_intel");
+
 	Phase("Lighting nodes...");
- 	xrLight();
+	xrLight_Details();
 
 	gl_data.slots_data.Free();
 }
