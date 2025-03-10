@@ -531,7 +531,15 @@ CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos)
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList		= parent;
-	hShader->create				( "hud\\fog_of_war", "ui\\ui_grid" );
+	const static bool isGridDisabled = EngineExternal()[EEngineExternalUI::DisableInventoryGrid];
+	if (isGridDisabled)
+	{
+		hShader->create("hud\\fog_of_war", "ui\\ui_grid_alt");
+	}
+	else
+	{
+		hShader->create("hud\\fog_of_war", "ui\\ui_grid");
+	}
 //	hShader_selected->create	( "hud\\fog_of_war", "ui_grid_selected" );
 	m_cellSpacing.set			( 0, 0 );
 }
