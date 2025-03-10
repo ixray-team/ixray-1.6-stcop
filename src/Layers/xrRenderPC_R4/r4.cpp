@@ -223,9 +223,12 @@ void CRender::create()
 
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
+
+	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueue);
 }
 
-void CRender::destroy() {
+void CRender::destroy() 
+{
 	m_bMakeAsyncSS = false;
 	FluidManager.Destroy();
 	::PortalTraverser.destroy();
@@ -236,6 +239,7 @@ void CRender::destroy() {
 	PSLibrary.OnDestroy();
 	Device.seqFrame.Remove(this);
 	r_dsgraph_destroy();
+	Device.ModelDefferClear = nullptr;
 }
 
 void CRender::reset_begin() {
@@ -284,16 +288,12 @@ void CRender::reset_end() {
 	m_bFirstFrameAfterReset = true;
 }
 
-void CRender::OnFrame() 
+void CRender::OnFrame()
 {
-	Models->DeleteQueue();
-
-	{
-		//Lights Delete queue
-		for (light*L:v_all_lights_dque)
-			xr_delete(L);
-		v_all_lights_dque.clear();
-	}
+	//Lights Delete queue
+	for (light* L : v_all_lights_dque)
+		xr_delete(L);
+	v_all_lights_dque.clear();
 }
 
 // Implementation

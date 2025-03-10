@@ -6,7 +6,7 @@ using str_c = const char*;
 #pragma warning(disable : 4200)
 struct XRCORE_API str_value
 {
-	u32 dwReference;
+	xr_atomic_u32 dwReference;
 	u32 dwLength;
 	u32 dwCRC;
 

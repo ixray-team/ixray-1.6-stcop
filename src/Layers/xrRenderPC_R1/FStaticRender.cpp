@@ -100,6 +100,7 @@ void					CRender::create					()
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
+	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueue);
 }
 
 void CRender::destroy()
@@ -117,6 +118,7 @@ void CRender::destroy()
 	Device.seqFrame.Remove(this);
 
 	r_dsgraph_destroy();
+	Device.ModelDefferClear = nullptr;
 }
 
 void CRender::reset_begin()
@@ -149,16 +151,12 @@ void CRender::reset_end()
 	m_bFirstFrameAfterReset = true;
 }
 
-void					CRender::OnFrame				()
+void CRender::OnFrame()
 {
-	Models->DeleteQueue	();
-
-	{
-		//Lights Delete queue
-		for (light*L:v_all_lights_dque)
-			xr_delete(L);
-		v_all_lights_dque.clear();
-	}
+	//Lights Delete queue
+	for (light* L : v_all_lights_dque)
+		xr_delete(L);
+	v_all_lights_dque.clear();
 }
 
 // Implementation

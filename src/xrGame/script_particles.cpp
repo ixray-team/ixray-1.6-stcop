@@ -97,7 +97,7 @@ void CScriptParticlesCustom::remove_owner	()
 CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 {
 	m_particles = xr_make_shared<CScriptParticlesCustom>(this, caParticlesName);
-	g_pGamePersistent->ps_active.push_back(m_particles);
+	g_pGamePersistent->ps_active_deffer.push_back(m_particles);
 }
 
 CScriptParticles::~CScriptParticles()

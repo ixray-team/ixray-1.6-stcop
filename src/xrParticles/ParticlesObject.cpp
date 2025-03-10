@@ -60,7 +60,7 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 	SpatialComponent->spatial.type			= 0;
 	SpatialComponent->spatial.sector			= S;
 	
-	NeedUpdate = CParticlesAsync::Push(this);
+	NeedUpdate = CParticlesAsync::NeedForceUpdate();
 
 	dwLastTime = Device.dwTimeGlobal;
 }
@@ -68,7 +68,6 @@ void CParticlesObject::Init	(LPCSTR p_name, IRender_Sector* S, BOOL bAutoRemove)
 //----------------------------------------------------
 CParticlesObject::~CParticlesObject()
 {
-	CParticlesAsync::Pop(this);
 }
 
 void CParticlesObject::UpdateSpatial()
@@ -115,7 +114,7 @@ const shared_str CParticlesObject::Name()
 xr_shared_ptr<CParticlesObject> Particles::Details::Create(LPCSTR p_name, BOOL bAutoRemove, bool remove_on_game_load)
 {
 	auto Particle = xr_make_shared<CParticlesObject>(p_name, bAutoRemove, remove_on_game_load);
-	g_pGamePersistent->ps_active.push_back(Particle);
+	g_pGamePersistent->ps_active_deffer.push_back(Particle);
 
 	return Particle;
 }

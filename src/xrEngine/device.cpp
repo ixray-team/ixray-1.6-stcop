@@ -31,7 +31,9 @@ ENGINE_API CTimer loading_save_timer;
 ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
-static HANDLE Event3rdFirstStep = nullptr;
+
+static xrCriticalSection Enter3rdCs;
+static xrCriticalSection Leave3rdCs;
 
 BOOL		g_bLoaded = FALSE;
 ref_light	precache_light = 0;
@@ -131,7 +133,7 @@ static void mt_3rdThread(void* ptr)
 	PROF_THREAD("3rd Thread");
 	while (FALSE == Device.mt_bMustExit)
 	{
-		WaitForSingleObject(Event3rdFirstStep, INFINITE);
+		Enter3rdCs.Enter();
 		PROF_EVENT("CPU Frame: Render");
 
 		{
@@ -147,9 +149,13 @@ static void mt_3rdThread(void* ptr)
 		{
 			PROF_EVENT("Process Particles");
 			if (Device.ParticleWorkerCallback)
+			{
 				Device.ParticleWorkerCallback();
+			}
 		}
-		ResetEvent(Event3rdFirstStep);
+		Enter3rdCs.Leave();
+
+		xrCriticalSectionGuard sync(&Leave3rdCs);
 	}
 }
 #include "CustomHUD.h"
@@ -267,7 +273,14 @@ void CRenderDevice::on_idle		()
 		if (g_pGamePersistent)
 			g_pGamePersistent->UpdateParticles();
 	}
-	SetEvent(Event3rdFirstStep);
+
+	if (Device.ModelDefferClear)
+	{
+		Device.ModelDefferClear();
+	}
+
+	Leave3rdCs.Enter();
+	Enter3rdCs.Leave();
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
@@ -283,6 +296,10 @@ void CRenderDevice::on_idle		()
 			g_loading_events.pop_front();
 
 		pApp->LoadDraw();
+
+		Enter3rdCs.Enter();
+		Leave3rdCs.Leave();
+
 		return;
 	}
 	else 
@@ -385,6 +402,9 @@ void CRenderDevice::on_idle		()
 		seqFrameMT.Process(rp_Frame);
 	}
 
+	Enter3rdCs.Enter();
+	Leave3rdCs.Leave();
+
 	Device.EndRender();
 	if (!b_is_Active)
 	{
@@ -436,10 +456,10 @@ void CRenderDevice::Run()
 	}
 
 	mt_csEnter.Enter();
+	Enter3rdCs.Enter();
 	mt_bMustExit = FALSE;
 
 	g_AppInfo.MainThread = GetCurrentThread();
-	Event3rdFirstStep = CreateEventA(nullptr, true, false, "3rd thread Helper Event");
 	// Start Balance-Threads
 	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
 	thread_spawn(mt_3rdThread, "X-RAY 3rd thread", 0, 0);
@@ -454,7 +474,7 @@ void CRenderDevice::Run()
 
 	// Stop Balance-Threads
 	mt_bMustExit = TRUE;
-	SetEvent(Event3rdFirstStep); // Important for correct thread closing!!!
+	Enter3rdCs.Leave(); // Important for correct thread closing!!!
 	mt_csEnter.Leave();
 	while (mt_bMustExit)	Sleep(0);
 	ParticleWorkerCallback = nullptr;

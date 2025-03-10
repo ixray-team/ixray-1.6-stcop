@@ -178,6 +178,12 @@ void IGame_Persistent::UpdateParticles()
 		pInstance->Play(false);
 	}
 
+	for (xr_shared_ptr<CPS_Instance> Part : ps_active_deffer)
+	{
+		ps_active.push_back(Part);
+	}
+	ps_active_deffer.clear();
+
 	ps_active.erase(std::remove_if
 	(
 		ps_active.begin(), ps_active.end(),

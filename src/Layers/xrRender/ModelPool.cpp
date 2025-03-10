@@ -326,12 +326,12 @@ void	CModelPool::Delete		(dxRender_Visual* &V, BOOL bDiscard)
 	V							=	nullptr;
 }
 
-void	CModelPool::DeleteQueue		()
+void CModelPool::DeleteQueue()
 {
 	xrCriticalSectionGuard guard(&deffered_del_lock);
-	for (u32 it=0; it<ModelsToDelete.size(); it++)
+	for (u32 it = 0; it < ModelsToDelete.size(); it++)
 		DeleteInternal(ModelsToDelete[it]);
-	ModelsToDelete.clear			();
+	ModelsToDelete.clear();
 }
 
 void	CModelPool::Discard	(dxRender_Visual* &V, BOOL b_complete)

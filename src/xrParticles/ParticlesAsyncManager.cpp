@@ -4,9 +4,9 @@
 
 #include "../Include/xrRender/ParticleCustom.h"
 #include "../Include/xrRender/RenderVisual.h"
+#include "../xrEngine/IGame_Persistent.h"
 
 static CParticlesAsync Instance;
-//static xr_task_group ParticleObjectTasks;
 
 void CParticlesAsync::Play()
 {
@@ -22,17 +22,17 @@ void CParticlesAsync::Start()
 
 	{
 		PROF_EVENT("Particle Update");
-		for (CParticlesObject* particle : Instance.Particles)
+		for (xr_shared_ptr<CPS_Instance> particle : g_pGamePersistent->ps_active)
 		{
 			if (particle->m_bDead)
 				continue;
 
-			Instance.UpdateParticle(particle);
+			Instance.UpdateParticle(particle.get());
 		}
 	}
 
 	PROF_EVENT("Particle Shedule");
-	for (CParticlesObject* particle : Instance.Particles)
+	for (xr_shared_ptr<CPS_Instance> particle : g_pGamePersistent->ps_active)
 	{
 		particle->Update(Device.dwTimeDelta);
 	}
@@ -49,25 +49,10 @@ void CParticlesAsync::Wait()
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(0));
 		}
-		//ParticleObjectTasks.wait();
 	}
 }
 
-bool CParticlesAsync::Push(CParticlesObject* Obj)
-{
-	Instance.Particles.push_back(Obj);
-
-	return Instance.IsStarted;
-}
-
-void CParticlesAsync::Pop(CParticlesObject* Obj)
-{
-	Wait();
-
-	Instance.Particles.remove(Obj);
-}
-
-void CParticlesAsync::ForceUpdate(CParticlesObject* Obj)
+void CParticlesAsync::ForceUpdate(CPS_Instance* Obj)
 {
 	if (!Instance.IsStarted)
 		return;
@@ -75,15 +60,23 @@ void CParticlesAsync::ForceUpdate(CParticlesObject* Obj)
 	Instance.UpdateParticle(Obj);
 }
 
+bool CParticlesAsync::NeedForceUpdate()
+{
+	return Instance.IsStarted;
+}
+
 CParticlesAsync::CParticlesAsync()
 {
 	if (!DevicePtr || Device.IsEditorMode())
 		return;
 
+	if (g_dedicated_server)
+		return;
+
 	Device.ParticleWorkerCallback = Start;
 }
 
-void CParticlesAsync::UpdateParticle(CParticlesObject* particle) const
+void CParticlesAsync::UpdateParticle(CPS_Instance* particle) const
 {
 	u32 dt = Device.dwTimeGlobal - particle->dwLastTime;
 	IParticleCustom* V = smart_cast<IParticleCustom*>(particle->renderable.visual);
