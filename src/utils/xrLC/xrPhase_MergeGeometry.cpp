@@ -162,8 +162,10 @@ typedef xr_hash_map<int, xr_hash_map<int, xr_vector<data_vec>> > VectorSplited;
 
 typedef xr_hash_map<int, xr_vector<data_vec>> MergingVector;
 
-void BasicMerge(MergingVector& thread_faces)
+void BasicMerge()
 {
+	MergingVector thread_faces;
+
 	// Generate Materials
 	for (int split = 0; split < g_XSplit.size(); split++)
 	{
@@ -176,6 +178,10 @@ void BasicMerge(MergingVector& thread_faces)
 	{
 		int IDX = 0;
 		int Merged = 0;
+		
+		xr_atomic_u32 progress__ = 0;
+		int SIZE = thread_faces.size();
+
 		concurrency::parallel_for(size_t(0), size_t(thread_faces.size()), [&](size_t IDX)
 			{
 				auto& mapMAT = thread_faces[IDX];
@@ -236,6 +242,10 @@ void BasicMerge(MergingVector& thread_faces)
 						thread_faces[IDX].end()
 					);
 				}
+			
+				progress__.fetch_add(1);
+
+				Progress( float (progress__ / SIZE) );
 			});
 	}
 
@@ -247,13 +257,8 @@ void BasicMerge(MergingVector& thread_faces)
 			return ptr->empty();
 		}),
 		g_XSplit.end());
-
-
-	for (auto& SP : thread_faces)
-	{
-		if (SP.second.size() > 4096)
-			Msg("SP[%u] > 4096 : %u", SP.first, SP.second.size());
-	}
+	
+	thread_faces.clear();
 
 	clMsg("Merging OGFs size [%u], time (%u)", g_XSplit.size(), t.GetElapsed_ms());
 }
@@ -418,7 +423,6 @@ void CBuild::xrPhase_MergeGeometry()
 	u32 LastGXSplits = 0;
 	u32 FirstGXSplits = -1;
 	u32 idX = 0;
-	MergingVector thread_faces;
 
 	// Крутим в while пока нечего будет приклеить
 	while (LastGXSplits != FirstGXSplits)
@@ -427,12 +431,8 @@ void CBuild::xrPhase_MergeGeometry()
 		FirstGXSplits = g_XSplit.size();
 		// SECONDARY MERGER
 
-		BasicMerge(thread_faces);
-
-		for (auto K : thread_faces)
-			K.second.clear();
-		thread_faces.erase(thread_faces.begin(), thread_faces.end());
-
+		BasicMerge();
+ 
 		LastGXSplits = g_XSplit.size();
 		idX++;
 	}

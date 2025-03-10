@@ -54,6 +54,31 @@ void CSector::BuildHierrarhy	()
 
 	scene_bb.grow(EPS_L);
 
+	if (CheckInfinity_FBOX(scene_bb))
+	{
+		clMsg("Scene Fbox is corupted !!! What is Brocken: ");
+		
+		int index_tree = 0;
+		for (auto tree : g_tree)
+		{
+			if ( CheckInfinity_FBOX( tree->bbox ) )
+			{
+				clMsg("Tree [%u] is dead min {%.2f,%.2f,%.2f} max {%.2f,%.2f,%.2f}", index_tree, VPUSH(tree->bbox.min), VPUSH(tree->bbox.max));
+
+				xr_vector<Fvector> V; 
+				tree->GetGeometry(V);
+
+				int IDX_V = 0;
+				for (auto Vert : V)
+				{
+					Msg("V[%u] is pos {%.2f,%.2f,%.2f}", IDX_V, VPUSH(Vert));
+					IDX_V++;
+				}
+			}
+			index_tree++;
+		}
+	}
+
 	// 
 	scene_bb.getsize(scene_size);
 	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
@@ -90,7 +115,7 @@ void CSector::BuildHierrarhy	()
 			IDx++;
 		}
 
-		StatusNoMsg("Sector (%d/%d) noconn[%d]", (u32) SizeLimit, (u32) delimiter, data.size());
+		Status("Sector (%d/%d) noconn[%d]", (u32) SizeLimit, (u32) delimiter, data.size());
 		  
 		for (auto& Ogf : data)
 		{
