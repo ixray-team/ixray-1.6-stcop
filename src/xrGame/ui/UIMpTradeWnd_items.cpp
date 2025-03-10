@@ -310,7 +310,7 @@ void CUIMpTradeWnd::CreateHelperItems (CUIDragDropListEx* list)
 	}
 
 	CInventoryItem* parent_item					=	(CInventoryItem*)parent_list->GetItemIdx(0)->m_pData;
-	CWeapon*		wpn							=	parent_item->cast_weapon();
+	CWeapon*		wpn							=	smart_cast<CWeapon*>(parent_item);
 	R_ASSERT	   (wpn);
 
 	CreateHelperItems								(wpn->m_ammoTypes);

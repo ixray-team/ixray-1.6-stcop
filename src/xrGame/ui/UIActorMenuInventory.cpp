@@ -950,7 +950,7 @@ void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
 void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, bool& b_show )
 {
 	//отсоединение аддонов от вещи
-	CWeapon*	pWeapon = item->cast_weapon();
+	CWeapon*	pWeapon = smart_cast<CWeapon*>( item );
 	if ( !pWeapon )
 	{
 		return;
@@ -989,7 +989,7 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 		{
 		}
 	}
-	if ( pWeapon->cast_weapon_magazined() && IsGameTypeSingle())
+	if ( smart_cast<CWeaponMagazined*>(pWeapon) && IsGameTypeSingle() )
 	{
 		bool b = ( pWeapon->GetAmmoElapsed() !=0 );
 		if ( !b )
@@ -1163,7 +1163,7 @@ void CUIActorMenu::PropertiesBoxForDrop(CUICellItem* cell_item, PIItem item, boo
 void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
 {
 	CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>( item );
-	CWeapon*       pWeapon = item->cast_weapon();
+	CWeapon*       pWeapon = smart_cast<CWeapon*>( item );
 	CHelmet*       pHelmet = smart_cast<CHelmet*>( item );
 
 	if ( (pOutfit || pWeapon || pHelmet) && item->GetCondition() < 0.99f )
@@ -1190,7 +1190,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	{
 		return;
 	}
-	CWeapon* weapon = item->cast_weapon();
+	CWeapon* weapon = smart_cast<CWeapon*>( item );
 
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
@@ -1258,7 +1258,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = child_iitm->cast_weapon();
+				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetScopeName().c_str(), child_iitm);
@@ -1274,7 +1274,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = child_iitm->cast_weapon();
+				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetSilencerName().c_str(), child_iitm);
@@ -1290,7 +1290,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = child_iitm->cast_weapon();
+				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetGrenadeLauncherName().c_str(), child_iitm);

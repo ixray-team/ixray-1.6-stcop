@@ -331,7 +331,7 @@ u32 CScriptGameObject::GetAmmoElapsed()
 
 void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 {
-	CWeapon	*weapon = object().cast_weapon();
+	CWeapon	*weapon = smart_cast<CWeapon*>(&object());
 	if (!weapon) return;
 	weapon->SetAmmoElapsed(ammo_elapsed);
 }
@@ -350,7 +350,7 @@ u32 CScriptGameObject::GetSuitableAmmoTotal() const
 
 void CScriptGameObject::SetQueueSize(u32 queue_size)
 {
-	CWeaponMagazined		*weapon = object().cast_weapon()->cast_weapon_magazined();
+	CWeaponMagazined		*weapon = smart_cast<CWeaponMagazined*>(&object());
 	if (!weapon) {
 		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CWeaponMagazined : cannot access class member SetQueueSize!");
 		return;

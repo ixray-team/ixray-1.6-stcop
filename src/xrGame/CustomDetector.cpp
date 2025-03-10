@@ -292,7 +292,7 @@ void CCustomDetector::UpdateHudAdditonal(Fmatrix& trans)
 {
 	if (m_pInventory)
 	{
-		CWeapon* pWeap = m_pInventory->ActiveItem()->cast_weapon();
+		CWeapon* pWeap = smart_cast<CWeapon*>(m_pInventory->ActiveItem());
 		if(pWeap)
 		{
 			if(pWeap->IsZoomed())
@@ -320,7 +320,7 @@ void CCustomDetector::UpdateVisibility()
 	}
 	else
 	{
-		CWeapon* wpn = pItem->cast_weapon();
+		CWeapon* wpn = smart_cast<CWeapon*>(pItem);
 		if (wpn && !smart_cast<CWeaponBinoculars*>(wpn) && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
 		{
 			HideDetector(true);
