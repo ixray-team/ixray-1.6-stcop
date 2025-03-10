@@ -45,8 +45,11 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	if (lc_global_data()->GetIsIntelUse())
 	{
 		IntelEmbereLOAD(bSaveForOtherCompilers);
-		return;
+		
+		if (!bSaveForOtherCompilers)
+			return;
 	};
+
 
 	float	p_total			= 0;
 	float	p_cost			= 1.f/(lc_global_data()->g_faces().size());
@@ -64,65 +67,68 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	adjacent_vec.reserve		(6*2*3);
 	 
 	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+	{
+		const Shader_xrLC& SH = F->Shader();
+
+		if (!SH.flags.bLIGHT_CastShadow)
+			return;
+
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
 		{
-			const Shader_xrLC& SH = F->Shader();
-
-			if (!SH.flags.bLIGHT_CastShadow)
-				return;
-
-			b_material& M = lc_global_data()->materials()[F->dwMaterial];
-
-			// Collect
-			adjacent_vec.clear();
-			for (int vit = 0; vit < 3; ++vit)
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
 			{
-				Vertex* V = F->v[vit];
-				for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-				{
-					adjacent_vec.push_back(V->m_adjacents[adj]);
-				}
+				adjacent_vec.push_back(V->m_adjacents[adj]);
 			}
+		}
 
-			std::sort(adjacent_vec.begin(), adjacent_vec.end());
-			adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
 
-			// Unique
-			BOOL			bAlready = FALSE;
+		// Unique
+		BOOL			bAlready = FALSE;
 
-			for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F)
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
+			if (FaceEqual(*F, *Test))
 			{
-				Face* Test = adjacent_vec[ait];
-				if (Test == F)
-					continue;
-				if (!Test->flags.bProcessed)
-					continue;
-				if (FaceEqual(*F, *Test))
-				{
-					bAlready = TRUE;
-					break;
-				}
+				bAlready = TRUE;
+				break;
 			}
+		}
 
-			//
-			if (!bAlready)
-			{
-				F->flags.bProcessed = true;
-				CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), F->sm_group); //ThreadID
-			}
+		//
+		if (!bAlready)
+		{
+			F->flags.bProcessed = true;
+			CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), F->sm_group); //ThreadID
+		}
 
-		});
+	});
 
 	Status("Models...");
 	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref) 
-		{
-			ref->export_cform_rcast(CL);
-		});
+	{
+		ref->export_cform_rcast(CL);
+	});
  
 
 
 	// "Building tree..
 	Status					("Building search tree...");
-	lc_global_data()->create_rcmodel(CL);
+
+	// se7kills не строим модель для Embree
+	if (!lc_global_data()->GetIsIntelUse())
+		lc_global_data()->create_rcmodel(CL);
 
 	extern void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL);
 	
@@ -135,6 +141,9 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		if (keep_temp_files)
 			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}
+
+	// se7kills Пока сделал тут генерацию влом было в EmbreeRayTrace_data доделывать  
+	
 
 	// Saving for AI/DO usage
 	if (bSaveForOtherCompilers)
