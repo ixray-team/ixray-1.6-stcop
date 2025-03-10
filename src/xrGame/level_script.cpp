@@ -1061,19 +1061,34 @@ bool IndicatorsShown()
 	if (actor == nullptr)
 		return false;
 
+	if (actor->inventory().ActiveItem() == nullptr)
+	{
+		return false;
+	}
+
 	auto wpn = actor->inventory().ActiveItem()->cast_weapon();
 	if (wpn == nullptr)
+	{
 		return true;
+	}
 	
 	if (wpn->IsUIForceHiding())
+	{
 		return false;
+	}
 	else if (wpn->IsUIForceUnhiding())
+	{
 		return true;
+	}
 	else if (wpn->IsGrenadeMode())
+	{
 		return true;
+	}
 
 	if (wpn->IsZoomed() && (wpn->get_ScopeStatus() == 1 || (wpn->get_ScopeStatus() == 2 && wpn->IsScopeAttached())))
+	{
 		return false;
+	}
 
 	return true;
 }
