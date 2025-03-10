@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 
 #include "EmbreeRayTrace.h"
 #include "../../xrcdb/xrcdb.h"
@@ -12,11 +12,11 @@
 //Intel Code Start
 #include <atomic>
 
-// Важные параметры
+// Р’Р°Р¶РЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
 // INTIALIZE GEOMETRY, SCENE QUALITY TYPE
-// Инициализация Основных Фишек Embree
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РћСЃРЅРѕРІРЅС‹С… Р¤РёС€РµРє Embree
 
-// #define USE_TRANSPARENT_GEOM
+#define USE_TRANSPARENT_GEOM
  
 // INTEL DATA STRUCTURE
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
@@ -38,9 +38,9 @@ Embree::VertexEmbree* verticesTransp = 0;
 Embree::TriEmbree* trianglesTransp = 0;
 xr_vector<void*> TriTransp_Dummys;
 
-// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
-// Влияет на яркость на выходе (если близко к 0 будет занулятся)
-// можно и 0.10f Было раньше так
+// РЎРёР»СЊРЅРѕ СѓСЃРєРѕСЂСЏРµС‚ РќРѕ РЅРµ РЅСѓР¶РЅРѕ СЃРёР»СЊРЅРѕ Р·Р°РІС‹С€Р°С‚СЊ РІРѕРѕР±С‰Рµ 0.01f Р¶РµР»Р°РµС‚РµР»СЊРЅРѕ 
+// Р’Р»РёСЏРµС‚ РЅР° СЏСЂРєРѕСЃС‚СЊ РЅР° РІС‹С…РѕРґРµ (РµСЃР»Рё Р±Р»РёР·РєРѕ Рє 0 Р±СѓРґРµС‚ Р·Р°РЅСѓР»СЏС‚СЃСЏ)
+// РјРѕР¶РЅРѕ Рё 0.10f Р‘С‹Р»Рѕ СЂР°РЅСЊС€Рµ С‚Р°Рє
 float EmbreeEnergyMAX = 0.01f;
 
 struct RayQueryContext
@@ -54,7 +54,7 @@ struct RayQueryContext
 	u32 Hits = 0;
 };
 
-// Сделать потом переключалку
+// РЎРґРµР»Р°С‚СЊ РїРѕС‚РѕРј РїРµСЂРµРєР»СЋС‡Р°Р»РєСѓ
 
 ICF void* GetGeomBuff(int GeomID, int Prim)
 {
@@ -68,7 +68,7 @@ ICF void* GetGeomBuff(int GeomID, int Prim)
 
 ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float v)
 {
-	// Перемещаем начало луча немного дальше пересечения
+	// РџРµСЂРµРјРµС‰Р°РµРј РЅР°С‡Р°Р»Рѕ Р»СѓС‡Р° РЅРµРјРЅРѕРіРѕ РґР°Р»СЊС€Рµ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
@@ -92,7 +92,7 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
-	// Дополнение Контекста
+	// Р”РѕРїРѕР»РЅРµРЅРёРµ РљРѕРЅС‚РµРєСЃС‚Р°
 	energy *= opac;
 	if (energy < EmbreeEnergyMAX)
 		return false;
@@ -100,7 +100,11 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	return true;
 }
 
-extern XRLC_LIGHT_API int StageMAXHits = 128;
+// 27.01.2025 (РґР»СЏ С‚РµСЃС‚РѕРІ 16 С…РёС‚РѕРІ С‚РѕР»СЊРєРѕ СЃРґРµР»Р°Р»)
+// Р’РѕРѕР±С‰Рµ СЂРµРєРѕРјРµРЅРґРѕРІР°РЅРѕ РґР»СЏ РїРµСЂРµСЃРµС‡РЅРёСЏ СЃ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЏРјРё 4-8
+// Р•СЃР»Рё РЅРµРїСЂРѕР·СЂР°С‡РЅС‹Рµ 1
+// LMAP СЃС‚Р°РґРёСЏ РІСЂРѕРґРµ Р±С‹СЃС‚СЂРµРµ РµСЃР»Рё С‡РёСЃС‚Рѕ РёСЃРєР°С‚СЊ Opacue (Р’РЅСѓС‚СЂРё РїРѕРјРµС‰РµРЅРёР№ РІСЂРѕРґРµ РґРµР»Р°РµС‚ СЂР°СЃС‰РµС‚)
+extern XRLC_LIGHT_API int StageMAXHits = 16;
 
 ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
@@ -108,7 +112,7 @@ ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-	// Собрать все
+	// РЎРѕР±СЂР°С‚СЊ РІСЃРµ
 	base_Face* F = (base_Face*)GetGeomBuff(hit->geomID, hit->primID);
 
 	if (F->flags.bOpaque)
@@ -123,7 +127,7 @@ ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 
 	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
-		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		// РџСЂРё РЅР°С…РѕР¶РґРµРЅРёРё Р»СЋР±РѕРіРѕ С…РёС‚Р° СЃСЂР°Р·Сѓ РІСЃРµ РїРѕРїР°Р»Рё РІ РЅРµРїСЂРѕР·СЂР°С‡РЅС‹Р№ Face.
 		ctxt->energy = 0;
 		ctxt->Hits += 1;
 		return;
@@ -133,22 +137,24 @@ ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	if (ctxt->Hits > StageMAXHits)
 		return;
 
-	args->valid[0] = 0; // Задаем чтобы продолжил поиск
+	args->valid[0] = 0; // Р—Р°РґР°РµРј С‡С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёР» РїРѕРёСЃРє
 }
 
 float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
 {
-	// Структура для RayTracing
+	// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ RayTracing
 	RayQueryContext data_hits;
 	data_hits.Light = &L;
 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
 	data_hits.Hits = 0;
 
-	/// Непрозрачные чекаем
+	/// РќРµРїСЂРѕР·СЂР°С‡РЅС‹Рµ С‡РµРєР°РµРј
 
+	// se7kills : 27.01.2025 0.001 -> 0.1
+	// Р§СѓС‚СЊ СЃРµР»РЅРµРµ СЃРґРІРёРЅСѓР» near
 	RTCRay ray;
-	Embree::SetRay1(ray, P, N, 0.001f, range);
+	Embree::SetRay1(ray, P, N, 0.1f, range);
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
@@ -296,7 +302,7 @@ void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
 		Status(phase);
 		Embree::IntelEmbreeSettings(device, avx_test, sse);
 
-		// Создание сцены и добавление геометрии
+		// РЎРѕР·РґР°РЅРёРµ СЃС†РµРЅС‹ Рё РґРѕР±Р°РІР»РµРЅРёРµ РіРµРѕРјРµС‚СЂРёРё
 		// Scene
 		IntelScene = rtcNewScene(device);
 
