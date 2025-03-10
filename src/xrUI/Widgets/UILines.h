@@ -18,6 +18,8 @@ public:
 	//--
 			void			SetTextColor(u32 color);
 			u32				GetTextColor()								{return m_dwTextColor;}
+			void			SetTextGradientColor(u32 color);
+			u32				GetTextGradientColor()						{return m_dwTextGradientColor;}
 			void			SetFont(CGameFont* pFont);
 			void			SetTextGradient(bool val);
 			CGameFont*		GetFont()									{return m_pFont;}
@@ -70,6 +72,7 @@ protected:
 	ETextAlignment			m_eTextAlign;
 	EVTextAlignment			m_eVTextAlign;
 	u32						m_dwTextColor;
+	u32						m_dwTextGradientColor;
 
 	CGameFont*				m_pFont;
 
