@@ -97,21 +97,6 @@ public:
 	}
 };
 //-----------------------------------------------------------------------
-class CCC_DbgStrCheck : public IConsole_Command
-{
-public:
-	CCC_DbgStrCheck(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) { g_pStringContainer->verify(); }
-};
-
-class CCC_DbgStrDump : public IConsole_Command
-{
-public:
-	CCC_DbgStrDump(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) { g_pStringContainer->dump();}
-};
-
-//-----------------------------------------------------------------------
 class CCC_MotionsStat : public IConsole_Command
 {
 public:
@@ -126,11 +111,9 @@ class CCC_TexturesStat : public IConsole_Command
 {
 public:
 	CCC_TexturesStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
+	virtual void Execute(LPCSTR args) 
+	{
 		Device.DumpResourcesMemoryUsage();
-		//Device.Resources->_DumpMemoryUsage();
-		//	TODO: move this console commant into renderer
-		//VERIFY(0);
 	}
 };
 //-----------------------------------------------------------------------
@@ -688,9 +671,6 @@ void CCC_Register()
 #endif // DEBUG
 
 #ifdef DEBUG
-
-	CMD1(CCC_DbgStrCheck,	"dbg_str_check"		);
-	CMD1(CCC_DbgStrDump,	"dbg_str_dump"		);
 
 	CMD3(CCC_Mask,		"mt_sound",				&psDeviceFlags,			mtSound);
 	CMD3(CCC_Mask,		"mt_physics",			&psDeviceFlags,			mtPhysics);
