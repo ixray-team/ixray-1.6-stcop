@@ -22,8 +22,9 @@ public:
 protected:
 	CUIStatic				m_name; // texture + name
 	CUIDoubleProgressBar	m_progress;
-	CUITextWnd				m_value; // 100%
+	CUITextWnd*				m_value; // 100%
 	float					m_magnitude;
+	shared_str				m_unit_str;
 
 }; // class CUIOutfitImmunity
 
