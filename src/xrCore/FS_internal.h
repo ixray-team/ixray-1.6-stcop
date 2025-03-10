@@ -59,7 +59,7 @@ public:
     { 
 		if ((0!=hf) && (0!=count))
 		{
-			//x64 size_t Везде важно (se7kills Fix)
+			//x64 size_t Р’РµР·РґРµ РІР°Р¶РЅРѕ (se7kills Fix)
 			const size_t mb_sz = 0x1000000;
 			u8* ptr 		= (u8*)_ptr;
 			size_t req_size;
@@ -82,8 +82,8 @@ public:
     };
 	// virtual void	seek		(u32 pos)	{	if (0!=hf) fseek(hf,pos,SEEK_SET);		};
 	// virtual u32		tell		()			{	return (0!=hf)?ftell(hf):0;				};
-	virtual void	seek(size_t pos) { if (0 != hf) _fseeki64(hf, pos, SEEK_SET); };
-	virtual size_t	tell() { return (0 != hf) ? _ftelli64(hf) : 0; };
+	virtual void	seek(size_t pos) { if (0 != hf) xr_fseek(hf, pos, SEEK_SET); };
+	virtual size_t	tell() { return (0 != hf) ? xr_ftell(hf) : 0; };
 	virtual bool	valid() { return (0 != hf); }
 	virtual	void	flush() { if (hf)	fflush(hf); };
 };
