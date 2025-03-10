@@ -2,7 +2,6 @@
 
 #include "xrLight_Implicit.h"
 #include "xrLight_ImplicitDeflector.h"
-#include "xrLight_ImplicitRun.h"
 
 #include "tga.h"
 
