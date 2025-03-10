@@ -17,14 +17,14 @@ void	light::vis_prepare			()
 	u32	frame	= Device.dwFrame;
 	if (frame	<	vis.frame2test)		return;
 
-	float	safe_area					= VIEWPORT_NEAR;
+	float	safe_area					= Device.fViewportNear;
 	{
 		float	a0	= deg2rad(Device.fFOV*Device.fASPECT/2.f);
 		float	a1	= deg2rad(Device.fFOV/2.f);
-		float	x0	= VIEWPORT_NEAR/_cos	(a0);
-		float	x1	= VIEWPORT_NEAR/_cos	(a1);
+		float	x0	= Device.fViewportNear /_cos	(a0);
+		float	x1	= Device.fViewportNear /_cos	(a1);
 		float	c	= _sqrt					(x0*x0 + x1*x1);
-		safe_area	= _max(_max(VIEWPORT_NEAR,_max(x0,x1)),c);
+		safe_area	= _max(_max(Device.fViewportNear,_max(x0,x1)),c);
 	}
 
 	//Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);

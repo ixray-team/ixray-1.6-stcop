@@ -384,7 +384,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	UpdatePPEffectors			();
 
 	if (false==m_cam_info.dont_apply && m_bAutoApply)
-			ApplyDevice		(VIEWPORT_NEAR);
+			ApplyDevice		(Device.fViewportNear);
 
 	UpdateDeffered			();
 }

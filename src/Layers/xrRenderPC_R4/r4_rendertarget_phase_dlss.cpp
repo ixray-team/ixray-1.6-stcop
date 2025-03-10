@@ -42,7 +42,7 @@ bool CRenderTarget::phase_dlss() {
 
 	dlssParams.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 
-	dlssParams.nearPlane = VIEWPORT_NEAR;
+	dlssParams.nearPlane = Device.fViewportNear;
 	dlssParams.farPlane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
 	dlssParams.fovH = deg2rad(Device.fFOV);
 
