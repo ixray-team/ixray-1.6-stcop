@@ -124,7 +124,7 @@ IC void PrintLoadTextureError(HRESULT hr, TexMetadata& imageInfo, const char* fn
 		sizeIssue
 	);
 
-	R_ASSERT3(false, errorDetails, "Texture creation failed");
+	//R_ASSERT3(false, errorDetails, "Texture creation failed");
 	Msg("! TEXTURE CREATION ERROR: %s", errorDetails);
 }
 
@@ -199,7 +199,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			xr_sprintf(errMsg, "Texture dimensions exceed hardware limits: %dx%d (Max: %d)",
 				imageInfo.width, imageInfo.height,
 				D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
-			R_ASSERT3(false, errMsg, fname);
+			//R_ASSERT3(false, errMsg, fname);
 		}
 
 		if (FAILED(hr))
@@ -241,7 +241,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
 				Msg("! TEXTURE FORMAT ERROR: %s", errorMsg);
 				textureFlag = DDS_FLAGS::DDS_FLAGS_NO_16BPP;
-				R_ASSERT3(false, errorMsg, fname);
+				//R_ASSERT3(false, errorMsg, fname);
 			}
 		}
 
@@ -339,7 +339,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 				"Original texture: %s",
 				bumpType, fname);
 
-			R_ASSERT2(FileExist, errorMsg);
+			//R_ASSERT2(FileExist, errorMsg);
 			Msg("! CRITICAL TEXTURE ERROR: %s", errorMsg);
 			return nullptr;
 		}
