@@ -441,7 +441,7 @@ void CBuild::xrPhase_MergeGeometry()
 
 	// SPLIT FOR FASTER MERGING
 	// Сплитим очень большие буфера по 4096 и обрабатываем в MT
-	SplittedMerge();
+  	SplittedMerge();
 
 
 	u32 LastGXSplits = 0;
