@@ -251,6 +251,44 @@ public:
 		return *this;
 	}
 
+	template<number_type Size>
+	inline stack_string<char_t, _kStringLength>& operator+=(const char_t (&str)[Size])
+	{
+		if (Size > _kStringLength)
+		{
+			assert(false && "too big string!");
+			return *this;
+		}
+
+		if (Size + this->size() > _kStringLength)
+		{
+			assert(false && "overflow!");
+			return *this;
+		}
+
+		this->append(&str[0]);
+		return *this;
+	}
+
+	template<number_type Size>
+	inline stack_string<char_t, _kStringLength>& operator+=(const stack_string<char_t, Size>& str)
+	{
+		if (str.size() > _kStringLength)
+		{
+			assert(false && "too big string!");
+			return *this;
+		}
+			
+		if (str.size() + this->size() > _kStringLength)
+		{
+			assert(false && "overflow!");
+			return *this;
+		}
+
+		this->append(str.c_str());
+		return *this;
+	}
+
 	inline stack_string<char_t, _kStringLength>& operator=(const stack_string<char_t, _kStringLength>& data)
 	{
 		memcpy(this->m_buffer, data.m_buffer, sizeof(data.m_buffer));
