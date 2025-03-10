@@ -17,10 +17,15 @@
 #include "MainMenu.h"
 #include "../xrEngine/string_table.h"
 
+#include "../xrEngine/XR_IOConsole.h"
+extern void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
+
 extern LPCSTR alife_section;
 
 CAutosaveManager::CAutosaveManager			()
 {
+	save_str.printf("save %s - %s", Core.UserName, g_pStringTable->translate("autosave").c_str());
+
 	u32							hours,minutes,seconds;
 	LPCSTR						section = alife_section;
 
@@ -70,24 +75,7 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 	}
 		
 	update_autosave_time		();
-
-	string_path					temp;
-	xr_strconcat(temp,Core.UserName," - ", g_pStringTable->translate("autosave").c_str());
-	NET_Packet					net_packet;
-	net_packet.w_begin			(M_SAVE_GAME);
-	net_packet.w_stringZ		(temp);
-	net_packet.w_u8				(0);
-	Level().Send				(net_packet,net_flags(TRUE));
-
-	string_path					S1;
-	xr_strcat					(temp,sizeof(temp),".dds");
-	FS.update_path				(S1,"$game_saves$",temp);
-
-	MainMenu()->Screenshot		(IRender_interface::SM_FOR_GAMESAVE,S1);
-
-	SetFileAttributes			(Platform::ANSI_TO_TCHAR(S1), FILE_ATTRIBUTE_HIDDEN );
-	
-	CurrentGameUI()->AddCustomStatic("autosave", true);
+	execute_console_command_deferred(Console, save_str.c_str());
 }
 
 void CAutosaveManager::on_game_loaded	()
