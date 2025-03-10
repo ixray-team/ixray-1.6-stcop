@@ -70,7 +70,7 @@ static int collect_reloc(BuildCtx *ctx, uint8_t *addr, int idx, int type);
 #endif
 
 /* Embed generated architecture-specific backend. */
-#include "buildvm_arch.h"
+#include "src/host/buildvm_arch.h"
 
 /* ------------------------------------------------------------------------ */
 
