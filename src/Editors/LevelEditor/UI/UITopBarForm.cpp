@@ -40,20 +40,6 @@ UITopBarForm::~UITopBarForm() {}
 			} \
 			ImGui::SameLine()
 
-#define IMGUI_HINT_BUTTON_EX(Name, Ptr, Timer, Hint, Callback) \
-			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->pSurface, ImVec2(20, 20), ImVec2(Timer > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_timeUndo > EDevice->TimerAsync() ? 1 : 0.5, 1))) \
-			{ \
-				Callback(); \
-				Timer = EDevice->TimerAsync() + 130;\
-			} \
-			if (ImGui::IsItemHovered()) \
-			{ \
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
-				ImGui::SetTooltip(Hint); \
-			} \
-			ImGui::SameLine()
-
 void UITopBarForm::Draw()
 {
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -94,10 +80,9 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON_EX("Undo", m_tUndo, m_timeUndo, "Undo the last action", ClickUndo);
-				IMGUI_HINT_BUTTON_EX("Redo", m_tRedo, m_timeRedo, "Repeat the last action", ClickRedo);
+				IMGUI_HINT_BUTTON("Undo", m_tUndo, "Undo last action", ClickUndo);
+				IMGUI_HINT_BUTTON("Redo", m_tRedo, "Repeat last action", ClickRedo);
 			}
-
 
 			if (ImGui::TableNextColumn())
 			{
