@@ -1038,7 +1038,7 @@ void RefreshNamesNPC()
 		}
 
 		CObject* obj = g_pGameLevel->Objects.net_Find(id);
-		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj);
+		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj->cast_inventory_owner());
 		if (owner)
 		{
 			owner->RefreshNamesNPC();
@@ -1053,29 +1053,28 @@ bool IsUIShown()
 
 bool IndicatorsShown()
 {
-	bool res = IsUIShown();
-	if (res)
-	{
-		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
+	if (!IsUIShown())
+		return false;
 
-		if (actor == nullptr)
-			return false;
+	auto actor = Level().CurrentViewEntity()->cast_actor();
+	if (actor == nullptr)
+		return false;
 
-		CWeapon* wpn = smart_cast<CWeapon*>(actor->inventory().ActiveItem());
-		if (wpn == nullptr)
-			res = true;
-		else if (wpn->IsUIForceHiding())
-			res = false;
-		else if (wpn->IsUIForceUnhiding())
-			res = true;
-		else if (wpn->IsGrenadeMode())
-			res = true;
-		else if (wpn->IsZoomed() && (wpn->get_ScopeStatus() == 1 || wpn->get_ScopeStatus() == 2 && wpn->IsScopeAttached()))
-			res = false;
-		else
-			res = true;
-	}
-	return res;
+	auto wpn = actor->inventory().ActiveItem()->cast_weapon();
+	if (wpn == nullptr)
+		return true;
+	
+	if (wpn->IsUIForceHiding())
+		return false;
+	else if (wpn->IsUIForceUnhiding())
+		return true;
+	else if (wpn->IsGrenadeMode())
+		return true;
+
+	if (wpn->IsZoomed() && (wpn->get_ScopeStatus() == 1 || (wpn->get_ScopeStatus() == 2 && wpn->IsScopeAttached())))
+		return false;
+
+	return true;
 }
 
 bool InventoryShown()
@@ -1085,7 +1084,7 @@ bool InventoryShown()
 
 bool ElectronicsBreak()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 		return false; // TODO: IMPL actor->ElectronicsProblemsInc();
 
@@ -1094,7 +1093,7 @@ bool ElectronicsBreak()
 
 bool IsPickupMode()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 		return actor->GetPickupManager()->GetPickupMode();
 
@@ -1108,7 +1107,7 @@ bool IsActorBurned()
 
 bool IsElectronicsRestore()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 		return false; //actor->ElectronicsProblemsDec();
 
@@ -1117,7 +1116,7 @@ bool IsElectronicsRestore()
 
 bool electronics_reset()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 	{
 		// IMPL: actor->ResetElectronicsProblems();
@@ -1129,7 +1128,7 @@ bool electronics_reset()
 
 bool IsElectronicsApply()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 		return false; // IMPL: actor->ElectronicsProblemsImmediateApply();
 
@@ -1148,7 +1147,7 @@ int ValidSavedGameInt(int number, const char* name)
 
 bool IsTacticalHud()
 {
-	CActor* actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	auto actor = Level().CurrentControlEntity()->cast_actor();
 	if (actor != nullptr)
 	{
 		if (CHelmet* helmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT)))
@@ -1313,7 +1312,7 @@ void CLevel::script_register(lua_State *L)
 		def("electronics_apply", &IsElectronicsApply),
 		def("get_parameter_upgraded_int", &GetParameterUpgradedInt),
 		def("valid_saved_game_int", &ValidSavedGameInt),
-		def("is_tactical_hud", &is_tactical_hud)
+		def("is_tactical_hud", &IsTacticalHud)
 	],
 	
 	module(L,"nearest")
