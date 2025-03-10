@@ -30,14 +30,11 @@ namespace Embree
 
 
 	// ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
-	void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float range);
-	void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float range);
+	void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
+	void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
 
 
 	void errorFunction(void* userPtr, enum RTCError error, const char* str);
 	void IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse);
 
-}
-
-extern float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
-extern void LightPointEmbree(base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, void* skip);
+} 
