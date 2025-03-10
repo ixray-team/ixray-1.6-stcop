@@ -601,8 +601,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 //.	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 //.		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 		
-
-	ROS()->force_mode	(IRender_ObjectSpecific::TRACE_ALL);
+	if (ROS())
+	{
+		ROS()->force_mode(IRender_ObjectSpecific::TRACE_ALL);
+	}
 
 	//mstate_wishful = E->mstate;
 	mstate_wishful=0;

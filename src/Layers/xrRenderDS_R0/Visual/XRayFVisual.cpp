@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #define VLOAD_NOVERTICES 1<<0
 #include "XRayFVisual.h"
@@ -78,7 +77,7 @@ void XRayFVisual::Load(const char* N, IReader* data, u32 dwFlags)
 			// VertexBuffer->Create(GResourcesManager->GetStride(FVF), CountVertex, true);
 			// memcpy(VertexBuffer->Lock(), data->pointer(), CountVertex * GResourcesManager->GetStride(FVF));
 			// VertexBuffer->Unlock();
-			R_ASSERT(!MeshPipeline);
+			//R_ASSERT(!MeshPipeline);
 		}
 	}
 
@@ -104,7 +103,7 @@ void XRayFVisual::Load(const char* N, IReader* data, u32 dwFlags)
 			// 	dst[i] = src[i];
 			// }
 			// IndexBuffer->Unlock();
-			R_ASSERT(!MeshPipeline);
+			//R_ASSERT(!MeshPipeline);
 		}
 
 	}
@@ -117,25 +116,25 @@ void XRayFVisual::Copy(XRayRenderVisual* from)
 	XRayFVisual* pFrom = dynamic_cast<XRayFVisual*> (from);
 
 	PCOPY(FVF);
-	if (Shader.MeshPipeline)
-	{
-		// PCOPY(VertexBufferAsStructured);
-		// PCOPY(MeshBuffer);
-		// PCOPY(MeshletSubsets);
-		PCOPY(CountMeshlet);
-		PCOPY(OffsetUniqueVertexIndices);
-		PCOPY(OffsetPrimitiveIndices);
-	}
-	else
-	{
-	//	PCOPY(VertexBuffer);
-		PCOPY(OffsetVertex);
-		PCOPY(CountVertex);
-
-	//	PCOPY(IndexBuffer);
-		PCOPY(OffsetIndex);
-		PCOPY(CountIndex);
-	}
+	//if (Shader.MeshPipeline)
+	//{
+	//	// PCOPY(VertexBufferAsStructured);
+	//	// PCOPY(MeshBuffer);
+	//	// PCOPY(MeshletSubsets);
+	//	PCOPY(CountMeshlet);
+	//	PCOPY(OffsetUniqueVertexIndices);
+	//	PCOPY(OffsetPrimitiveIndices);
+	//}
+	//else
+	//{
+	////	PCOPY(VertexBuffer);
+	//	PCOPY(OffsetVertex);
+	//	PCOPY(CountVertex);
+	//
+	////	PCOPY(IndexBuffer);
+	//	PCOPY(OffsetIndex);
+	//	PCOPY(CountIndex);
+	//}
 
 }
 

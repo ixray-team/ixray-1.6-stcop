@@ -22,7 +22,8 @@ void XRayFHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
 		for (u32 i = 0; i < count; i++) {
 
 			u32 ID = data->r_u32();
-			children[i] = GRenderInterface.GetVisual(ID);
+			children[i] = nullptr;// GRenderInterface.GetVisual(ID);
+			VERIFY(!"Check Me!");
 		}
 		m_DontDelete = TRUE;
 	}

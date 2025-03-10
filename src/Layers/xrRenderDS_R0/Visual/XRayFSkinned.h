@@ -1,6 +1,7 @@
 #pragma once
 #include "XRayFVisual.h"
 #include "XRaySkeletonX.h"
+#include "XRayFProgressive.h"
 
 struct SEnumVerticesCallback
 {
@@ -8,7 +9,7 @@ struct SEnumVerticesCallback
 };
 
 
-class		XRaySkeletonXExt : public XRaySkeletonX	// shared code for SkeletonX derivates
+class XRaySkeletonXExt : public XRaySkeletonX	// shared code for SkeletonX derivates
 {
 protected:
 	//BearFactoryPointer<BearRHI::BearRHIUniformBuffer> m_UniformBuffer;

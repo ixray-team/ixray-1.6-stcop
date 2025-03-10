@@ -1,12 +1,17 @@
 #pragma once
-class XRayKinematics : public XRayFHierrarhyVisual, public IKinematics
+#include "XRayFHierrarhyVisual.h"
+class XRaySkeletonX;
+
+class XRayKinematics : 
+	public XRayFHierrarhyVisual,
+	public IKinematics
 {
 public:
 #ifdef DEBUG
 	BOOL dbg_single_use_marker;
 #endif
 	void CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
-	virtual CBoneData* CreateBoneData(u16 ID) { return xr_new<CBoneData>(ID); }
+	virtual CBoneData* CreateBoneData(u16 ID) { return new CBoneData(ID); }
 	virtual void BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 mask_channel = (1 << 0));
 	void BoneChain_Calculate(const CBoneData* bd, CBoneInstance& bi, u8 channel_mask, bool ignore_callbacks);
 	XRaySkeletonX* LL_GetChild(u32 idx);
@@ -25,7 +30,7 @@ public:
 		return bd;
 	}
 
-	BonesVisible					bonesvisible;
+	VisMask						visimask;
 	IC void						Visibility_Invalidate() { Update_Visibility = TRUE; };
 	void						Visibility_Update();
 	virtual void				IBoneInstances_Create();
@@ -74,6 +79,7 @@ public:
 
 	virtual u16 LL_BoneCount() const { return u16(bones->size()); }
 
+	virtual void LL_SetBonesVisibleAll() override { visimask.set_all(); };
 private:
 	static IC u32 btwCount1(u32 v)
 	{
@@ -90,21 +96,7 @@ private:
 	}
 
 public:
-	u16 LL_VisibleBoneCount()
-	{
-		u32 Count = (LL_BoneCount() / 64) + 1;
-		u64 CountBone = 0;
-		for (u32 i = 0; i < Count - 1; i++)
-		{
-			CountBone += btwCount1(bonesvisible.visimask[i].flags);
-		}
-		{
-			u64 flags = bonesvisible.visimask[Count - 1].flags;
-			flags &= (u64(1) << (LL_BoneCount() % 64)) - 1;
-			CountBone += btwCount1(flags);
-		}
-		return (u16)CountBone;
-	}
+	u16     LL_VisibleBoneCount() { return visimask.count(); }
 	const	CBoneInstance& LL_GetBoneInstance(u16 bone_id) const { VERIFY(bone_id < LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id]; }
 
 	virtual  Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
@@ -128,10 +120,10 @@ public:
 		iRoot = bone_id;
 	}
 
-	BOOL					_BCL	LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return bonesvisible.is(bone_id); }
+	BOOL					_BCL	LL_GetBoneVisible(u16 bone_id) { VERIFY(bone_id < LL_BoneCount()); return visimask.is(bone_id); }
 	virtual void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
-	BonesVisible						_BCL	LL_GetBonesVisible() { return bonesvisible; }
-	void							LL_SetBonesVisible(BonesVisible mask);
+	VisMask					_BCL	LL_GetBonesVisible() { return visimask; }
+	void							LL_SetBonesVisible(VisMask mask);
 
 	virtual void				Release();
 	// Main functionality
@@ -168,7 +160,7 @@ protected:
 	//SkeletonWMVec				wallmarks;
 	u32 wm_frame;
 
-	BearVector<XRayRenderVisual *> children_invisible;
+	xr_vector<XRayRenderVisual *> children_invisible;
 
 	// Globals
 	CInifile *pUserData;
