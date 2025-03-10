@@ -7,6 +7,11 @@ void CThread::startup(void* P) {
 
 	if (T->thMessages)	clMsg("* THREAD #%d: Started.", T->thID);
 	FPU::m64r();
+
+	DWORD_PTR affinityMask = 1ull << T->thID;
+	HANDLE threadHandle = Platform::GetCurrentThread();
+	SetThreadAffinityMask(threadHandle, affinityMask);
+ 
 	T->Execute();
 	T->thCompleted = TRUE;
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.", T->thID);

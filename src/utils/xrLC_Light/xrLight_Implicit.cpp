@@ -43,7 +43,7 @@ void	ImplicitThread::Execute()
 }
 
 // 2 : Mainthread + UI thread
-#define	NUM_THREADS	 CPU::ID.n_threads - 1
+#define	NUM_THREADS	 CPU::ID.n_threads
 ImplicitCalcGlobs cl_globs;
 int ThreadTaskID_Implication = 0;
 
@@ -92,6 +92,9 @@ void	ImplicitExecute::	Execute	( )
 				break;
 			}
 			ThreadTaskID_Implication++;
+
+			Progress( float(V) / float(defl.Height()) );
+
 			csLockImplicit.Leave();
 
 
@@ -124,7 +127,11 @@ void	ImplicitExecute::	Execute	( )
 								wP.from_bary(V1->P,V2->P,V3->P,B);
 								wN.from_bary(V1->N,V2->N,V3->N,B);
 								wN.normalize();
-								LightPoint	(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_nosun()?LP_dont_sun:0), F);
+							
+								
+
+								u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+ 								LightPoint	(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
 								Fcount		++;
 							}
 						}
@@ -143,7 +150,10 @@ void	ImplicitExecute::	Execute	( )
 					defl.Marker(U,V)	= 0;
 				}
 			}
-	//		thProgress	= float(V - y_start) / float(y_end-y_start);
+
+			if (V % 64 == 0)
+				Status("CurrentV: %d", V);
+			
 		}
 }
 

@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "xrCDB.h"
+#include "execution"
 
 namespace CDB
 {
@@ -110,7 +111,6 @@ namespace CDB
 
 	void	Collector::calc_adjacency	(xr_vector<u32>& dest)
 	{
-#if 1
 		VERIFY							(faces.size() < 65536);
 		const u32						edge_count = (u32)faces.size()*3;
 		edge							*edges = (edge*)_alloca(edge_count*sizeof(edge));
@@ -169,81 +169,6 @@ namespace CDB
 				dest[(*J).face_id*3 + (*J).edge_id]	= (*I_).face_id;
 			}
 		}
-#	if 0
-		xr_vector<u32>	test = dest;
-
-		dest.assign		(faces.size()*3,0xffffffff);
-		// Dumb algorithm O(N^2) :)
-		for (u32 f=0; f<faces.size(); f++)
-		{
-			for (u32 t=0; t<faces.size(); t++)
-			{
-				if (t==f)	continue;
-
-				for (u32 f_e=0; f_e<3; f_e++)
-				{
-					u32 f1	= faces[f].verts[(f_e+0)%3];
-					u32 f2	= faces[f].verts[(f_e+1)%3];
-					if (f1>f2)	std::swap(f1,f2);
-
-					for (u32 t_e=0; t_e<3; t_e++)
-					{
-						u32 t1	= faces[t].verts[(t_e+0)%3];
-						u32 t2	= faces[t].verts[(t_e+1)%3];
-						if (t1>t2)	std::swap(t1,t2);
-
-						if (f1==t1 && f2==t2)
-						{
-							// f.edge[f_e] linked to t.edge[t_e]
-							dest[f*3+f_e]	= t;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		{
-			xr_vector<u32>::const_iterator	I = test.begin();
-			xr_vector<u32>::const_iterator	E = test.end();
-			xr_vector<u32>::const_iterator	J = dest.begin();
-			for ( ; I != E; ++I, ++J) {
-				VERIFY	(*I == *J);
-			}
-		}
-#	endif
-#else
-		dest.assign		(faces.size()*3,0xffffffff);
-		// Dumb algorithm O(N^2) :)
-		for (u32 f=0; f<faces.size(); f++)
-		{
-			for (u32 t=0; t<faces.size(); t++)
-			{
-				if (t==f)	continue;
-
-				for (u32 f_e=0; f_e<3; f_e++)
-				{
-					u32 f1	= faces[f].verts[(f_e+0)%3];
-					u32 f2	= faces[f].verts[(f_e+1)%3];
-					if (f1>f2)	std::swap(f1,f2);
-
-					for (u32 t_e=0; t_e<3; t_e++)
-					{
-						u32 t1	= faces[t].verts[(t_e+0)%3];
-						u32 t2	= faces[t].verts[(t_e+1)%3];
-						if (t1>t2)	std::swap(t1,t2);
-
-						if (f1==t1 && f2==t2)
-						{
-							// f.edge[f_e] linked to t.edge[t_e]
-							dest[f*3+f_e]	= t;
-							break;
-						}
-					}
-				}
-			}
-		}
-#endif
 	}
     IC BOOL similar(TRI& T1, TRI& T2)
     {
@@ -338,15 +263,26 @@ namespace CDB
 		//		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
 
-		{
-			DWORDList* vl;
-			vl = &(VM[ix][iy][iz]);
-			for(DWORDIt it=vl->begin();it!=vl->end(); it++)
-				if( verts[*it].similar(V) )	{
-					P = *it;
-					break;
-				}
-		}
+		int MAX_THREADS = CPU::ID.n_threads;
+
+		// Se7kills (для интела нельзя использовать сжатие) (будет при построении модели вылетать)
+		// if (strstr(Core.Params, "-use_intel") == 0)
+		// {
+ 		// 	// MT Method Finding Simular Verticies
+		// 	DWORDList* vl;
+		// 	vl = &(VM[ix][iy][iz]);
+		// 	
+		// 	auto IT = std::find_if(std::execution::par, vl->begin(), vl->end(), [&] (u32& VAL) 
+		// 	{
+		// 		return verts[VAL].similar(V);
+		// 	});
+		// 
+		// 	if (IT != vl->end())
+		// 	{
+		// 		P = *IT;
+		// 	} 
+		// }
+
 		if (0xffffffff==P)
 		{
 			P = (u32)verts.size();

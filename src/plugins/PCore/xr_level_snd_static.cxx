@@ -41,7 +41,8 @@ void xr_level_snd_static::load(const xr_ini_file& ini)
 		char snd_name[128];
 		float x, y, z;
 #if defined(_MSC_VER) && _MSC_VER >= 1400
-		if (4 == sscanf_s(value, "%s,%f,%f,%f", snd_name, sizeof(snd_name), &x, &y, &z)) {
+		if (4 == sscanf_s(value, "%s,%f,%f,%f", snd_name, (unsigned int)sizeof(snd_name), &x, &y, &z)) 
+		{
 #else
 		// FIXME!!!
 		if (4 == sscanf(value, "%s,%f,%f,%f", snd_name, &x, &y, &z)) {

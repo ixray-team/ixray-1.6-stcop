@@ -76,7 +76,8 @@ std::string make_time	(u32 sec) {
 	return std::string(buf);
 }
 
-void __cdecl Status(const char* format, ...) {
+void __cdecl Status(const char* format, ...) 
+{
 	csLog.Enter();
 	va_list				mark;
 	va_start(mark, format);
@@ -84,6 +85,16 @@ void __cdecl Status(const char* format, ...) {
 	bStatusChange = TRUE;
 	Msg("    | %s", status);
 	csLog.Leave();
+}
+
+void StatusNoMsg(const char* format, ...)
+{
+	csLog.Enter();
+	va_list				mark;
+	va_start(mark, format);
+	vsprintf(status, format, mark);
+	bStatusChange = TRUE;
+ 	csLog.Leave();
 }
 
 void Progress(const float F) {
@@ -154,8 +165,8 @@ void logThread(void* dummy) {
 	if ((0 == xr_strcmp(u_name, "oles")) || (0 == xr_strcmp(u_name, "alexmx")))	bHighPriority = TRUE;
 
 	// Main cycle
-	u32		LogSize = 0;
-	float	PrSave = 0;
+	size_t LogSize = 0;
+	float PrSave = 0;
 	xrLogger::AddLogCallback(MyLogCallback);
 
 	while (TRUE)
@@ -178,16 +189,21 @@ void logThread(void* dummy) {
 			if (LogSize != myLogQueue.size())
 			{
 				bWasChanges = TRUE;
-				for (size_t Iter = 0; Iter < myLogQueue.size(); Iter++)
+
+				while (!myLogQueue.empty())
 				{
 					string256 S = {};
 					xr_strcpy(S, myLogQueue.front().c_str());
 					
 					if (S[0])
+					{
 						SendMessageA(hwLog, LB_ADDSTRING, 0, (LPARAM)S);
+						LogSize++;
+					}
+
 					myLogQueue.pop();
 				}
-				SendMessageA(hwLog, LB_SETTOPINDEX, LogSize - 1, 0);
+				SendMessageA(hwLog, LB_SETTOPINDEX, (u32)LogSize - 1, 0);
 			}
 		}
 		if (_abs(PrSave - progress) > EPS_L) {

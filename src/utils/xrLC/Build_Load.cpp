@@ -320,77 +320,103 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 #endif
 			// load thumbnail
 			LPSTR N			= BT.name;
-			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
+			if (strchr(N,'.'))
+				*(strchr(N,'.')) = 0;
 			_strlwr			(N);
 
-			if (0==xr_strcmp(N,"level_lods")) {
+			if (0==xr_strcmp(N,"level_lods"))
+			{
 				// HACK for merged lod textures
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= TRUE;
 				BT.THM.SetHasSurface(FALSE);
 				BT.pSurface		= 0;
-
-			} else {
+ 			}
+			else
+			{
 				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$", xr_strconcat(th_name,N,".thm"));
 				clMsg			("processing: %s",th_name);
 				IReader* THM	= FS.r_open(th_name);
 
-				if (!THM) {
+				if (!THM) 
+				{
 					clMsg("cannot find thm: %s", th_name);
 					is_thm_missing = true;
-					continue;
-				}
 
-				// version
-				u32 version = 0;
-				R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION,&version),th_name);
-				// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
-
-				// analyze thumbnail information
-				R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM),th_name);
-				THM->r                  (&BT.THM.fmt,sizeof(STextureParams::ETFormat));
-				BT.THM.flags.assign		(THM->r_u32());
-				BT.THM.border_color		= THM->r_u32();
-				BT.THM.fade_color		= THM->r_u32();
-				BT.THM.fade_amount		= THM->r_u32();
-				BT.THM.mip_filter		= THM->r_u32();
-				BT.THM.width			= THM->r_u32();
-				BT.THM.height           = THM->r_u32();
-				BOOL			bLOD=FALSE;
-				if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = TRUE;
-
-				// load surface if it has an alpha channel or has "implicit lighting" flag
-				BT.dwWidth	= BT.THM.width;
-				BT.dwHeight	= BT.THM.height;
-				BT.bHasAlpha= BT.THM.HasAlphaChannel();
-				if (!bLOD) 
+					BT.dwWidth = 1024;
+					BT.dwHeight = 1024;
+					BT.bHasAlpha = FALSE;
+					BT.THM.SetHasSurface(FALSE);
+					BT.pSurface = 0;
+ 				}
+				else
 				{
-					if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
+					// version
+					u32 version = 0;
+					R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION, &version), th_name);
+					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
+
+					// analyze thumbnail information
+					R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM), th_name);
+					THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
+					BT.THM.flags.assign(THM->r_u32());
+					BT.THM.border_color = THM->r_u32();
+					BT.THM.fade_color = THM->r_u32();
+					BT.THM.fade_amount = THM->r_u32();
+					BT.THM.mip_filter = THM->r_u32();
+					BT.THM.width = THM->r_u32();
+					BT.THM.height = THM->r_u32();
+					BOOL			bLOD = FALSE;
+					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\')
+						bLOD = TRUE;
+
+
+					// load surface if it has an alpha channel or has "implicit lighting" flag
+					BT.dwWidth = BT.THM.width;
+					BT.dwHeight = BT.THM.height;
+					BT.bHasAlpha = BT.THM.HasAlphaChannel();
+					if (!bLOD)
 					{
-						clMsg		("- loading: %s",N);
-						u32			w=0, h=0;
-						BT.pSurface		=	Surface_Load(N,w,h);
-						BT.THM.SetHasSurface(TRUE);
-
-						if (!BT.pSurface) {
-							clMsg("cannot find tga texture: %s", N);
-							is_tga_missing = true;
-							continue;
-						}
-
-						if ((w != BT.dwWidth) || (h != BT.dwHeight))
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
 						{
-							Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
-							BT.dwWidth	= BT.THM.width = w;
-							BT.dwHeight	= BT.THM.height = h;
+							clMsg("- loading: %s", N);
+							u32			w = 0, h = 0;
+							BT.pSurface = Surface_Load(N, w, h);
+							BT.THM.SetHasSurface(TRUE);
+
+							if (!BT.pSurface)
+							{
+								clMsg("cannot find tga texture: %s", N);
+								is_tga_missing = true;
+
+								BT.dwWidth = 1024;
+								BT.dwHeight = 1024;
+								BT.bHasAlpha = FALSE;
+								BT.THM.SetHasSurface(FALSE);
+
+								continue;
+							}
+
+							if ((w != BT.dwWidth) || (h != BT.dwHeight))
+							{
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
+								BT.dwWidth = BT.THM.width = w;
+								BT.dwHeight = BT.THM.height = h;
+							}
+							BT.Vflip();
+ 							// clMsg("Loaded: %s, HasSurface: %d, ImplLight: %d, SurfaceData: %p",
+							// 	N, BT.THM.HasSurface(), BT.THM.flags.test(STextureParams::flImplicitLighted), BT.pSurface);
 						}
-						BT.Vflip	();
-					} else {
-						// Free surface memory
+						else 
+						{
+							// clMsg("Texture problem : %s, THM:HasAlpha: %d, IsImplicitLighting: %d", BT.name, BT.bHasAlpha, BT.THM.flags.test(STextureParams::flImplicitLighted));
+							// Free surface memory
+						}
 					}
 				}
+				
 			}
 
 			// save all the stuff we've created
