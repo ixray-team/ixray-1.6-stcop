@@ -137,7 +137,7 @@ void CImGuiManager::InitPlatform()
 	io.Fonts->Build();
 
 #ifdef DEBUG_DRAW
-	if (strstr(Core.Params, "-no_debug_panel"))
+	if (Core.ParamsData.test(ECoreParams::no_debug_panel))
 		DrawUIRender = false;
 #endif
 
