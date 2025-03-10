@@ -76,14 +76,16 @@ void CBuild::xrPhase_MergeLM()
 	// Merge this layer (which left unmerged)
 	u32 StartSize = Layer.size();
 	u32 TotalMerged = 0;
-	 
+	
+	string512	phase_name;
+	xr_sprintf(phase_name, "Building lightmaps...");
+	Phase(phase_name);
+
 	CTimer t;
 	while (Layer.size())
 	{
 		VERIFY( lc_global_data() );
-		string512	phase_name;
-		xr_sprintf		(phase_name,"Building lightmap %d...", lc_global_data()->lightmaps().size());
-		Phase		(phase_name);
+
 
 		// Sort layer by similarity (state changes)
 		// + calc material area
