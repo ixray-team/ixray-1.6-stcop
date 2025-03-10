@@ -1,312 +1,176 @@
-////////////////////////////////////////////////////////////////////////////
-//	Name		: Splash.cpp
-//	Created 	: 17.09.2024
-////////////////////////////////////////////////////////////////////////////
+#include "../xrEngine/stdafx.h"
 
-#include <windows.h>
-#include <atlimage.h>//обертки для HDC
-#include <string>
-#include <thread>
-#include <cmath>
-//#include <../xrCore/_types.h>
-#include"Splash.h"
-#include"resource.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <SDL_Ext/SDL_image.h>
+#include <SDL3/SDL.h>
+#include "resource.h"
+#include "Splash.h"
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#define ErrorMsg(fmt,...) Msg("[Game Splash]<%s ~ line %d>" fmt, __FUNCTION__, __LINE__, __VA_ARGS__)
+
 #pragma warning(disable: 4047)
 HINSTANCE hInstanceG = (HINSTANCE)&__ImageBase;
 #pragma warning(default: 4047)
 
-#pragma warning(disable:4715) //-' Значение возвращается не при всех путях выполнения
+SDL_Window* splashWindow = nullptr;
+SDL_Renderer* splashRenderer = nullptr;
+SDL_Texture* texture = nullptr;
+bool isInit = false;
 
-HANDLE g_hEventFadeInReady = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-//struct pData {
-//	u32 b_number;
-//};
-
-void FadeOutAndClose(HWND f_hWnd, HDC f_hdcScreen, HDC f_hDC, POINT f_ptPos, POINT f_ptSrc, SIZE f_sizeWnd, BLENDFUNCTION f_blend) {
-	
-	//Event чтобы не было конфликта с FadeIn()
-	// иначе будет мерцание (один добавляет прозрачность, другой убавляет...)
-	WaitForSingleObject(g_hEventFadeInReady, INFINITE);
-	std::this_thread::sleep_for(std::chrono::milliseconds(500)); //на всякий, чтобы не сразу начало пропадать (если быстро дойдёт до функции)
-
-	const int duration = 2000; // 
-	const int max_value = 255;
-	const int steps = 100; // Количество шагов
-	const double factor = 5.0; // Фактор для экспоненциального замедления
-
-	for (int i = 0; i <= steps; ++i) {
-		double t = static_cast<double>(i) / steps;
-		int value = static_cast<int>(max_value * std::exp(-factor * t));
-		
-		f_blend.SourceConstantAlpha = value;
-		UpdateLayeredWindow(f_hWnd, f_hdcScreen, &f_ptPos, &f_sizeWnd, f_hDC, &f_ptSrc, 0, &f_blend, ULW_ALPHA);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(duration / steps));
-	}
-
-	f_blend.SourceConstantAlpha = 0;
-	UpdateLayeredWindow(f_hWnd, f_hdcScreen, &f_ptPos, &f_sizeWnd, f_hDC, &f_ptSrc, 0, &f_blend, ULW_ALPHA);
-
-	DestroyWindow(f_hWnd);
-	PostMessage(f_hWnd, WM_CLOSE, 0, 0);
-}
-
-void FadeIn(HWND f_hWnd, HDC f_hdcScreen, HDC f_hDC, POINT &f_ptPos, POINT &f_ptSrc, SIZE &f_sizeWnd, BLENDFUNCTION &f_blend) {
-
-	const int duration = 3000; // 
-	const int max_value = 255;
-	const int steps = 200; // Количество шагов
-	const double factor = 7.0; // Фактор для экспоненциального замедления
-
-	for (int i = 0; i <= steps; ++i) {
-		double t = static_cast<double>(i) / steps;
-		int value = static_cast<int>(max_value * (1 - std::exp(-factor * t)));
-
-		f_blend.SourceConstantAlpha = value;
-		UpdateLayeredWindow(f_hWnd, f_hdcScreen, &f_ptPos, &f_sizeWnd, f_hDC, &f_ptSrc, 0, &f_blend, ULW_ALPHA);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(duration / steps));
-	}
-
-	//на всякий случай
-	f_blend.SourceConstantAlpha = 255;
-	UpdateLayeredWindow(f_hWnd, f_hdcScreen, &f_ptPos, &f_sizeWnd, f_hDC, &f_ptSrc, 0, &f_blend, ULW_ALPHA);
-
-	SetEvent(g_hEventFadeInReady);
-}
-
-IStream* CreateStreamOnResource(LPCTSTR lpName, LPCTSTR lpType)
-{
-	IStream* ipStream = NULL;
-	HRSRC hrsrc;
-	DWORD dwResourceSize;
-	LPVOID pvSourceResourceData;
-	HGLOBAL hgblResourceData;
-	LPVOID pvResourceData;
-	HGLOBAL hglbImage;
-
+SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName, LPCTSTR lpType) {
 	HMODULE hMODULE = hInstanceG;
 
-	hrsrc = FindResource(hMODULE, lpName, lpType);
-	if (hrsrc == NULL)
-		goto Return;
+	HRSRC hRes = FindResource(hMODULE, lpName, lpType);
+	if (!hRes) {
+		ErrorMsg("Failed to find resource (ID %d)", lpName);
+		return nullptr;
+	}
 
-	dwResourceSize = SizeofResource(hMODULE, hrsrc);
-	hglbImage = LoadResource(hMODULE, hrsrc);
-	if (hglbImage == NULL)
-		goto Return;
+	HGLOBAL hMem = LoadResource(hInstanceG, hRes);
+	if (!hMem) {
+		ErrorMsg("Failed to load resource (ID %d)", lpName);
+		return nullptr;
+	}
 
-	pvSourceResourceData = LockResource(hglbImage);
-	if (pvSourceResourceData == NULL)
-		goto Return;
+	void* pResData = LockResource(hMem);
+	if (!pResData) {
+		ErrorMsg("Failed to lock resource (ID %d)", lpName);
+		return nullptr;
+	}
 
-	hgblResourceData = GlobalAlloc(GMEM_MOVEABLE, dwResourceSize);
-	if (hgblResourceData == NULL)
-		goto Return;
+	DWORD resSize = SizeofResource(hInstanceG, hRes);
 
-	pvResourceData = GlobalLock(hgblResourceData);
+	int width, height, channels;
+	imageData = stbi_load_from_memory((unsigned char*)pResData, resSize, &width, &height, &channels, STBI_rgb_alpha);
+	if (!imageData) {
+		ErrorMsg("Failed to decode PNG (ID %d)", lpName);
+		return nullptr;
+	}
 
-	if (pvResourceData == NULL)
-		goto FreeData;
+	SDL_Surface* surface = SDL_CreateSurfaceFrom(
+		imageData,
+		width,
+		height,
+		width * 4,
+		SDL_PIXELFORMAT_RGBA32
+	);
 
-	CopyMemory(pvResourceData, pvSourceResourceData, dwResourceSize);
+	if (!surface) {
+		stbi_image_free(imageData);
+		ErrorMsg("Failed to create pixel format (ID %d). %s", lpName, SDL_GetError());
+		return nullptr;
+	}
 
-	GlobalUnlock(hgblResourceData);
+	return surface;
+}
 
-	if (SUCCEEDED(CreateStreamOnHGlobal(hgblResourceData, TRUE, &ipStream)))
-		goto Return;
+SDL_Surface* LoadSplashSurface(unsigned char* imageData, LPCTSTR lpName, LPCTSTR lpType)
+{
+	char path[MAX_PATH];
 
-FreeData:
-	GlobalFree(hgblResourceData);
+	GetModuleFileNameA(NULL, path, MAX_PATH);
+	xr_string splash_path = path;
 
-Return:
-	return ipStream;
+	splash_path = splash_path.erase(splash_path.find_last_of('\\'), splash_path.size() - 1);
+	splash_path += "\\splash.png";
+
+	int width, height, channels;
+	imageData = stbi_load(splash_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+
+	return !imageData ?
+		LoadPNGSurfaceFromResource(imageData, lpName, lpType)
+		:
+		SDL_CreateSurfaceFrom(
+			imageData,
+			width,
+			height,
+			width * 4,
+			SDL_PIXELFORMAT_RGBA32
+		);
+}
+
+void Destroy()
+{
+	SDL_DestroyRenderer(splashRenderer);
+	SDL_DestroyWindow(splashWindow);
+	SDL_DestroyTexture(texture);
+
+	splashRenderer = nullptr;
+	splashWindow = nullptr;
+	texture = nullptr;
 }
 
 
-BOOL RegClass(WNDPROC, LPCTSTR, UINT);
-LRESULT CALLBACK SplashProc(HWND, UINT, WPARAM, LPARAM);
-
-HINSTANCE hInstance;
-TCHAR szClass[] = TEXT("STKSPLASH");
-
-int WINAPI ShowSplash(HINSTANCE hInst, int nCmdShow, HANDLE* g_hEventSplashReady, HWND* g_hWndSplash/*, u32 BuildNumber*/)
+namespace splash
 {
-	MSG msg;
-	HWND s_hWnd;
-	hInstance = hInst;
-
-	if (!RegClass(SplashProc, szClass, COLOR_WINDOW)) return FALSE;
-
-	//pData data = { BuildNumber };
-
-
-	s_hWnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST, szClass, TEXT("Splash"), WS_POPUP | WS_VISIBLE, 0, 0, 0, 0, 0, 0, hInstance, 0/* &data*/);
-
-	if (!s_hWnd) {
-		SetEvent(g_hEventSplashReady);
-		return FALSE;
-	}
-	*g_hWndSplash = s_hWnd;
-	SetEvent(*g_hEventSplashReady);
-	
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
-	// FX: Если ты пробуждаешь древнее зло, то будь добр: УСЫПИ ЕГО ОБРАТНО!!1!
-	DestroyWindow(s_hWnd);
-}
-
-BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground)
-{
-	WNDCLASS wc{};
-
-	wc.style                    = 0;
-	wc.cbClsExtra               = 0;
-	wc.cbWndExtra               = 0;
-	wc.lpfnWndProc              = Proc;
-	wc.hInstance                = hInstance;
-	wc.hIcon                    = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	wc.hCursor                  = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground            = reinterpret_cast<HBRUSH>(static_cast<intptr_t>(brBackground + 1));
-	wc.lpszMenuName             = NULL;
-	wc.lpszClassName            = szName;
-
-	return (RegisterClass(&wc) != 0);
-}
-
-LRESULT CALLBACK SplashProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	static HDC hdcScreen, hDC;
-	static POINT ptPos, ptSrc;
-	static SIZE sizeWnd;
-	static BLENDFUNCTION blend{};
-	//static u32 BuildNumber;
-	switch (msg)
+	void show()
 	{
-	case WM_SIZE:
-		break;
-	case WM_CREATE:
-	{
-		//image
-		CImage img;                             //объект изображения
+		if (isInit) return;
 
-		char path[MAX_PATH];
-
-		GetModuleFileNameA(NULL, path, MAX_PATH);
-		std::string splash_path = path;
-
-		splash_path = splash_path.erase(splash_path.find_last_of('\\'), splash_path.size() - 1);
-		splash_path += "\\splash.png";
-
-		std::wstring splash_path_wide = std::wstring(splash_path.begin(), splash_path.end()); //ix
-
-		HRESULT ErrorHandle = img.Load(splash_path_wide.c_str());              //загрузка сплеша
-
-		int splashWidth = 0;
-		int splashHeight = 0;
-		if (ErrorHandle == E_FAIL)
-		{
-			img.Destroy();
-			img.Load(CreateStreamOnResource(MAKEINTRESOURCE(IDB_PNG1), _T("PNG")));//загружаем сплеш
+		if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+			ErrorMsg("SDL_Init Error: %s", SDL_GetError());
+			return;
 		}
 
-		splashWidth = img.GetWidth();
-		splashHeight = img.GetHeight();
+		unsigned char* imageData = nullptr;
 
-		int scr_x = GetSystemMetrics(SM_CXSCREEN);
-		int scr_y = GetSystemMetrics(SM_CYSCREEN);
+		SDL_Surface* surface = LoadSplashSurface(imageData, MAKEINTRESOURCE(IDB_PNG1), _T("PNG"));
 
-		int pos_x = (scr_x / 2) - (splashWidth / 2);
-		int pos_y = (scr_y / 2) - (splashHeight / 2);
-
-		//win size
-		SetWindowPos(hWnd, NULL, pos_x, pos_y, splashWidth, splashHeight, SWP_NOMOVE | SWP_NOZORDER);
-
-		hdcScreen = GetDC(NULL);
-		hDC = CreateCompatibleDC(hdcScreen);
-
-		HBITMAP hBmp = CreateCompatibleBitmap(hdcScreen, splashWidth, splashHeight);
-		HBITMAP hBmpOld = (HBITMAP)SelectObject(hDC, hBmp);
-
-		//рисуем картиночку
-		for (int i = 0; i < img.GetWidth(); i++)
+		if (!surface)
 		{
-			for (int j = 0; j < img.GetHeight(); j++)
-			{
-				BYTE* ptr = (BYTE*)img.GetPixelAddress(i, j);
-				ptr[0] = ((ptr[0] * ptr[3]) + 127) / 255;
-				ptr[1] = ((ptr[1] * ptr[3]) + 127) / 255;
-				ptr[2] = ((ptr[2] * ptr[3]) + 127) / 255;
-			}
+			ErrorMsg("Failed to create surface (ID %d)", IDB_PNG1);
+			return;
 		}
 
-		img.AlphaBlend(hDC, 0, 0, splashWidth, splashHeight, 0, 0, splashWidth, splashHeight);
+		int WinH = surface->h;
+		int WinW = surface->w;
 
-		ptPos = { 0, 0 };
-		sizeWnd = { splashWidth, splashHeight };
-		ptSrc = { 0, 0 };
-		HWND hDT = GetDesktopWindow();
+		splashWindow = SDL_CreateWindow(
+			"Loading...",
+			WinW,
+			WinH,
+			SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP |
+			SDL_WINDOW_NOT_FOCUSABLE | SDL_WINDOW_TRANSPARENT
+		);
 
-		if (hDT)
-		{
-			RECT rcDT;
-			GetWindowRect(hDT, &rcDT);
-			ptPos.x = (rcDT.right - splashWidth) / 2;
-			ptPos.y = (rcDT.bottom - splashHeight) / 2;
+		if (!splashWindow) {
+			Destroy();
+			ErrorMsg("SDL_CreateWindow Error: %s", SDL_GetError());
+			return;
 		}
 
-		//
-		blend.BlendOp = AC_SRC_OVER;
-		blend.SourceConstantAlpha = 0;
-		blend.AlphaFormat = AC_SRC_ALPHA;
+		splashRenderer = SDL_CreateRenderer(splashWindow, 0, SDL_RENDERER_SOFTWARE);
+		if (!splashRenderer) {
+			Destroy();
+			ErrorMsg("SDL_CreateRenderer Error: %s", SDL_GetError());
+			return;
+		}
 
-		/*
-		LPCREATESTRUCT pCreate = (LPCREATESTRUCT)lParam;
-		pData* data = (pData*)pCreate->lpCreateParams;
+		texture = SDL_CreateTextureFromSurface(splashRenderer, surface);
+		SDL_DestroySurface(surface);
+		stbi_image_free(imageData);
 
-		// Используем данные
-		BuildNumber = data->b_number;
+		if (!texture) {
+			Destroy();
+			ErrorMsg("Failed to create texture (ID %d)", IDB_PNG1);
+			return;
+		}
 
-		char printText[64];
-		snprintf(printText, sizeof(printText), "Build %u (%s %s)", BuildNumber, __DATE__, __TIME__);
+		{
+			SDL_QueryTexture(texture, nullptr, nullptr, &WinW, &WinH);
 
-		SetBkMode(hDC, TRANSPARENT);
-		SetTextColor(hDC, RGB(190, 190, 190));
+			SDL_FRect dstRect = { 0, 0, (float)WinW, (float)WinH };
+			SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
+			SDL_RenderPresent(splashRenderer);
+		}
 
-		SIZE textSize;
-		GetTextExtentPoint32(hDC, printText, strlen(printText), &textSize);
-
-		//nad lost aplha
-		//TextOutA(hDC, 197, 130, printText, strlen(printText)); //
-		
-		//pod gunslinger
-		int startX = 432 + (670 - 432 - textSize.cx) / 2;
-		TextOutA(hDC, startX, 308, printText, strlen(printText));
-		*/
-		
-
-		break;
+		isInit = true;
+		return;
 	}
-	case WM_FADEOUT:
+
+
+	void hide()
 	{
-		std::thread([=]() {FadeOutAndClose(hWnd, hdcScreen, hDC, ptPos, ptSrc, sizeWnd, blend); }).detach();
-		break;
+		Destroy();
 	}
-	case WM_FADIN:
-	{
-		std::thread([=]() { FadeIn(hWnd, hdcScreen, hDC, ptPos, ptSrc, sizeWnd, blend); }).detach();
-
-		break;
-	}
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	};
-	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
