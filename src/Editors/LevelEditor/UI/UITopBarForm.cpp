@@ -142,6 +142,7 @@ void UITopBarForm::Draw()
 				if (ImGui::BeginPopup("test"))
 				{
 					ImGui::Checkbox("Verify space restrictors", &m_VerifySpaceRestrictors);
+					ImGui::Checkbox("Apply camera pos to actor", &UseCameraPosForActor);
 					ImGui::Checkbox("Build artefact spawn positions", &((CLevelPreferences*)EPrefs)->PIEArtSpawnPos);
 					ImGui::EndPopup();
 				}
@@ -174,7 +175,7 @@ void UITopBarForm::Draw()
 				ImGui::SetNextItemWidth(150);
 				ImGui::SliderFloat("Volume", &psSoundVEffects, 0, 1, "%.2f");
 			}
-			
+
 			if (ImGui::TableNextColumn())
 			{
 				IMGUI_HINT_BUTTON("Preferences", m_PreferencesIcon, "Preferences", ClickPreferences);
