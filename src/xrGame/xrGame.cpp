@@ -60,6 +60,13 @@ void unit_test_stack_string()
 	assert(str.c_str());
 	assert(str.data());
 
+
+	str.append("test");
+
+	for (auto it : str)
+	{
+		char a = it;
+	}
 }
 #endif
 

@@ -108,14 +108,14 @@ public:
 		return m_buffer[index];
 	}
 
-	inline stack_string<char_t, _kStringLength>& append(const_pointer p_str)
+	inline stack_string<char_t, _kStringLength>& append(const char_t* p_str)
 	{
 		assert(p_str && "don't pass invalid pointer! (NULL)");
 
 		const number_type current_length = this->size();
 		const number_type available_length = _kStringLength - current_length;
 
-		if (p_str && current_length > 0)
+		if (p_str && available_length > 0)
 		{
 			if constexpr (std::is_same_v<char_t, char>)
 			{
