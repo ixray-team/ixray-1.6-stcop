@@ -466,8 +466,7 @@ void CRender::Calculate				()
 			lstRenderables,
 			ISpatial_DB::O_ORDERED,
 			STYPE_RENDERABLE + STYPE_PARTICLE + STYPE_LIGHTSOURCE,
-			ViewBase,
-			Device.vCameraPosition);//nearest sorting
+			ViewBase);//nearest sorting
 
 			// Determine visibility for dynamic part of scene
 			set_Object							(0);

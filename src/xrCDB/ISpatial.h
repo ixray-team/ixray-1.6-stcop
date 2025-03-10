@@ -25,7 +25,7 @@ Requirements:
 	* Should live inside spatial DB
 	* Should have at least "bounding-sphere" or "bounding-box"
 */
-const Fvector3 zero_fvector3 = {0.f,0.f,0.f};
+
 const float						c_spatial_min	= 8.f;
 //////////////////////////////////////////////////////////////////////////
 enum
@@ -259,10 +259,10 @@ public:
 	};
 
 	// query
-	void							q_ray			(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range, const Fvector& near_sort_origin = zero_fvector3);
-	void							q_box			(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const Fvector& _center, const Fvector& _size, const Fvector& near_sort_origin = zero_fvector3);
-	void							q_sphere		(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const Fvector& _center, const float _radius, const Fvector& near_sort_origin = zero_fvector3);
-	void							q_frustum		(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const CFrustum& _frustum, const Fvector& near_sort_origin = zero_fvector3);
+	void							q_ray			(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, const Fvector& _start, const Fvector& _dir, float _range);
+	void							q_box			(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const Fvector& _center, const Fvector& _size);
+	void							q_sphere		(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const Fvector& _center, const float _radius);
+	void							q_frustum		(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_or, const CFrustum& _frustum);
 };
 
 XRCDB_API extern ISpatial_DB*		g_SpatialSpace			;

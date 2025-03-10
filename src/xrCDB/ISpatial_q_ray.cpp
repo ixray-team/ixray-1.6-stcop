@@ -89,7 +89,7 @@ public:
 	}
 };
 
-void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, const Fvector&	_start,  const Fvector&	_dir, float _range, const Fvector& near_sort_origin)
+void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, const Fvector&	_start,  const Fvector&	_dir, float _range)
 {
 	PROF_EVENT("ISpatial_DB::q_ray")
 	xrSRWLockGuard guard(&db_lock, true);
@@ -101,15 +101,4 @@ void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, con
 	spatial_ray_walker W(CPU::ID.hasFeature(CPUFeature::SSE), !!(_o&O_ONLYFIRST), !!(_o&O_ONLYNEAREST));
 	W._init(this, _mask_and, _start, _dir, _range);
 	W.walk(R, m_root, m_center, m_bounds);
-
-	if (&near_sort_origin != &zero_fvector3)//nearest sorting
-	{
-		std::sort(R.begin(), R.end(),
-		[&near_sort_origin](ISpatialShared& _1, ISpatialShared& _2)
-		{
-			float d1 = _1.get() ? _1->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS_L;
-			float d2 = _1.get() ? _2->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS;
-			return d1 < d2;
-		});
-	}
 }

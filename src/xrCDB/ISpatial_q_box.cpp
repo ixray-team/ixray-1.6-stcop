@@ -57,7 +57,7 @@ public:
 	}
 };
 
-void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size, const Fvector& near_sort_origin)
+void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
 	PROF_EVENT("ISpatial_DB::q_frustum");
 	xrSRWLockGuard guard(&db_lock, true);
@@ -69,21 +69,10 @@ void ISpatial_DB::q_box(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const F
 	spatial_box_walker W(this, _mask, _center, _size);
 	W.bFirst = !!(_o&O_ONLYFIRST);
 	W.walk(R, m_root, m_center, m_bounds);
-
-	if (&near_sort_origin != &zero_fvector3)//nearest sorting
-	{
-		std::sort(R.begin(), R.end(),
-		[&near_sort_origin](ISpatialShared& _1, ISpatialShared& _2)
-		{
-			float d1 = _1.get() ? _1->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS_L;
-			float d2 = _1.get() ? _2->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS;
-			return d1 < d2;
-		});
-	}
 }
 
-void ISpatial_DB::q_sphere(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius, const Fvector& near_sort_origin)
+void ISpatial_DB::q_sphere(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)
 {
 	Fvector _size = { _radius,_radius,_radius };
-	q_box(R, _o, _mask, _center, _size, near_sort_origin);
+	q_box(R, _o, _mask, _center, _size);
 }

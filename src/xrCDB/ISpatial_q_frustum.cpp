@@ -59,7 +59,7 @@ public:
 	}
 };
 
-void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const CFrustum& _frustum, const Fvector& near_sort_origin)
+void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, const CFrustum& _frustum)
 {
 	PROF_EVENT("ISpatial_DB::q_frustum")
 	xrSRWLockGuard guard(&db_lock, true);
@@ -70,15 +70,4 @@ void ISpatial_DB::q_frustum(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask, con
 
 	spatial_frustum_walker W(this,_mask,&_frustum);
 	W.walk(R,m_root,m_center,m_bounds,_frustum.getMask());
-
-	if (&near_sort_origin != &zero_fvector3)//nearest sorting
-	{
-		std::sort(R.begin(), R.end(),
-		[&near_sort_origin](ISpatialShared& _1, ISpatialShared& _2)
-		{
-			float d1 = _1.get() ? _1->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS_L;
-			float d2 = _1.get() ? _2->spatial.sphere.P.distance_to_sqr(near_sort_origin) : EPS;
-			return d1 < d2;
-		});
-	}
 }
