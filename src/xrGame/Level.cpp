@@ -66,6 +66,8 @@
 #include "level_changer.h"
 #endif
 
+#include "inventory_upgrade_manager.h"
+
 ENGINE_API bool g_dedicated_server;
 
 //extern BOOL	g_bDebugDumpPhysicsStep;
@@ -279,8 +281,10 @@ CLevel::~CLevel()
 	xr_delete					(m_level_debug);
 #endif
 	//-----------------------------------------------------------
-	xr_delete					(m_map_manager);
-	delete_data					(m_game_task_manager);
+	xr_delete(m_map_manager);
+	delete_data(m_game_task_manager);
+
+	xr_delete(m_upgrade_manager);
 //	xr_delete					(m_pFogOfWarMngr);
 	
 	// here we clean default trade params
@@ -1174,11 +1178,10 @@ void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTim
 
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
 }
+
 bool CLevel::IsServer ()
 {
-	if (!Server || IsDemoPlayStarted()) return false;
-	//return (Server->GetClientsCount() != 0);
-	return true;
+	return Server != nullptr && !IsDemoPlayStarted();
 }
 
 bool CLevel::IsClient ()
@@ -1203,6 +1206,12 @@ void CLevel::OnAlifeSimulatorLoaded()
 {
 	MapManager().ResetStorage();
 	GameTaskManager().ResetStorage();
+
+	if (IsGameTypeSingle() || IsServer())
+	{
+		// moved from alife simulator for supporting in MP
+		m_upgrade_manager = new inventory::upgrade::Manager();
+	}
 }
 
 void CLevel::OnSessionTerminate		(LPCSTR reason)

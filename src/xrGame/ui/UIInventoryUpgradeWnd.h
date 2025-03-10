@@ -33,7 +33,6 @@ class CUIInventoryUpgradeWnd : public CUIWindow
 private:
 	typedef CUIWindow	inherited;
 	
-	typedef inventory::upgrade::Manager		Manager_type;
 	typedef inventory::upgrade::Upgrade 	Upgrade_type;
 	typedef inventory::upgrade::Property 	Property_type;
 	typedef xr_vector<UIUpgrade*>			UI_Upgrades_type;
@@ -86,7 +85,6 @@ private:
 			void			LoadSchemes( CUIXml& uiXml );
 			void			SetCurScheme( const shared_str& id );
 			bool			install_item( CInventoryItem& inv_item, bool can_upgrade );
-			Manager_type&	get_manager();
 public:
 	CUI3tButton*			m_btn_repair;
 
