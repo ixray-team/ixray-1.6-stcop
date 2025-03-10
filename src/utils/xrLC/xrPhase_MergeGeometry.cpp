@@ -9,40 +9,23 @@ extern void Detach(vecFace* S);
 
 IC BOOL	FaceEqual(Face* F1, Face* F2)
 {
-	if (F1->v[0]->P.distance_to(F2->v[0]->P) > 64) return FALSE;
-	if (F1->dwMaterial != F2->dwMaterial)		return FALSE;
+ 	if (F1->dwMaterial != F2->dwMaterial)		return FALSE;
 	if (F1->tc.size() != F2->tc.size())		return FALSE;
 	if (F1->lmap_layer != F2->lmap_layer)		return FALSE;
 	return TRUE;
 }
-
-#include <mutex>
-std::mutex lock;
-
-xr_map<u32, Fbox > bb_bases;
-
+ 
 ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
-	if (bb_bases.find(id) == bb_bases.end())
+	for (u32 it = 0; it < subdiv.size(); it++)
 	{
-		for (u32 it = 0; it < subdiv.size(); it++)
-		{
-			Face* F = subdiv[it];
-			bb_base.modify(F->v[0]->P);
-			bb_base.modify(F->v[1]->P);
-			bb_base.modify(F->v[2]->P);
-
-		}
-		lock.lock();
-		bb_bases[id] = bb_base;
-		lock.unlock();
-	}
-	else
-	{
-		bb_base = bb_bases[id];
-	}
+		Face* F = subdiv[it];
+		bb_base.modify(F->v[0]->P);
+		bb_base.modify(F->v[1]->P);
+		bb_base.modify(F->v[2]->P);
+ 	}
 }
-
+ 
 BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
 	// 1. Amount of polygons
@@ -186,9 +169,7 @@ void BasicMerge(MergingVector& thread_faces)
 	{
 		thread_faces[g_XSplit[split]->front()->dwMaterial].push_back(data_vec{ split });
 	}
-
-
-
+	 
 	CTimer t;
 	t.Start();
 	// se7kills (Возврат на старую версию мерджа геометрии)
@@ -241,11 +222,6 @@ void BasicMerge(MergingVector& thread_faces)
 						// **OK**. Perform merge
 						subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
 						g_XSplit[CurrentProcessedID]->clear();
-
-						lock.lock();
-						bb_bases.erase(CurrentProcessedID);
-						lock.unlock();
-
 						thread_faces[IDX][FaceMaterialID].merged = true;
 						Merged++;
 					}
@@ -383,12 +359,9 @@ void SplittedMerge()
 
 							// **OK**. Perform merge
 
-							lock.lock();
-							subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
+ 							subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
 							g_XSplit[CurrentProcessedID]->clear();
-							bb_bases.erase(CurrentProcessedID);
-							lock.unlock();
-
+ 
 							splited_faces[IDX_material][IDX_curent][FaceMaterialID].merged = true;
 							Merged++;
 						}
@@ -437,12 +410,10 @@ void CBuild::xrPhase_MergeGeometry()
 	string128 tmp;
 	sprintf(tmp, "Merge Started... [%d]", g_XSplit.size());
 	Phase(tmp);
-
-
+	
 	// SPLIT FOR FASTER MERGING
 	// Сплитим очень большие буфера по 4096 и обрабатываем в MT
   	SplittedMerge();
-
 
 	u32 LastGXSplits = 0;
 	u32 FirstGXSplits = -1;
@@ -452,9 +423,7 @@ void CBuild::xrPhase_MergeGeometry()
 	// Крутим в while пока нечего будет приклеить
 	while (LastGXSplits != FirstGXSplits)
 	{
-		bb_bases.clear();
-
-		clMsg("Procesing MergeID: %u", idX);
+ 		clMsg("Procesing MergeID: %u", idX);
 		FirstGXSplits = g_XSplit.size();
 		// SECONDARY MERGER
 
@@ -468,7 +437,8 @@ void CBuild::xrPhase_MergeGeometry()
 		idX++;
 	}
 
-
+	// Проверяем на INFINITY
+	Validate_gXsplit();
 
 	string128 tmp2;
 	sprintf_s(tmp2, "Merged %u", g_XSplit.size());
