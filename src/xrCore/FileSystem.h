@@ -20,7 +20,7 @@ public:
 	bool 		GetOpenName(LPCSTR initial, xr_string& buf, bool bMulti = false, LPCSTR offset = 0, int start_flt_ext = -1, const char* ext = nullptr);
 
 
-	template<stack_string<char, 1>::number_type Size>
+	template<xr_ssnt_t Size>
 	IC bool GetOpenName(xr_stack_wstring<Size>& path_to_file, LPCWSTR mask, bool many_picking = false)
 	{
 #ifdef IXR_WINDOWS
@@ -48,7 +48,7 @@ public:
 #endif
 	}
 
-	template<stack_string<char, 1>::number_type Size>
+	template<xr_ssnt_t Size>
 	IC bool GetOpenName(xr_stack_string<Size>& path_to_file, LPCSTR mask, bool many_picking = false)
 	{
 		assert(false && "not implemented!");
