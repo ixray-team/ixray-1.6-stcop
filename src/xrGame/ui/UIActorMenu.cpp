@@ -252,6 +252,9 @@ void CUIActorMenu::Update()
 	{ // all mode
 		m_last_time = Device.dwTimeGlobal;
 		m_ActorStateInfo->UpdateActorInfo( m_pActorInvOwner );
+
+		if (!IsGameTypeSingle())
+			UpdateActorMoneyMP();
 	}
 
 	switch ( m_currMenuMode )
