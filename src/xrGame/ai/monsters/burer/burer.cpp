@@ -234,7 +234,7 @@ void  CBurer::StaminaHit ()
 		return;
 	}
 
-	CWeapon* const active_weapon	=	smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
+	CWeapon* const active_weapon	=	Actor()->inventory().ActiveItem()->cast_weapon();
 	if ( !active_weapon )
 	{
 		return;
@@ -505,7 +505,7 @@ bool actor_is_reloading_weapon() {
 		return false;
 	}
 
-	CWeapon* const active_weapon = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
+	CWeapon* const active_weapon = pActor->inventory().ActiveItem()->cast_weapon();
 	if(active_weapon && active_weapon->GetState() == CWeapon::eReload) {
 		return true;
 	}

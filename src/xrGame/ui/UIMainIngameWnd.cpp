@@ -936,7 +936,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 		m_ind_weapon_broken->Show(false);
 		if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
 		{
-			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
+			CWeapon* weapon = pActor->inventory().ItemFromSlot(slot)->cast_weapon();
 			if (weapon)
 			{
 				float condition = weapon->GetCondition();

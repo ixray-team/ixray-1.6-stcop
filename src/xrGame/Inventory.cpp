@@ -136,7 +136,7 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 		if (GetOwner()->object_id() == actor_id &&
 			this->m_pOwner->object_id() == actor_id) // actors inventory
 		{
-			CWeaponMagazined* pWeapon = smart_cast<CWeaponMagazined*>(pIItem);
+			CWeaponMagazined* pWeapon = pIItem->cast_weapon()->cast_weapon_magazined();
 			if (pWeapon && pWeapon->strapped_mode()) {
 				pWeapon->strapped_mode(false);
 				Ruck(pWeapon);
@@ -1294,7 +1294,7 @@ void CInventory::Items_SetCurrentEntityHud(bool current_entity)
 	for(it = m_all.begin(); m_all.end() != it; ++it) 
 	{
 		PIItem pIItem = *it;
-		CWeapon* pWeapon = smart_cast<CWeapon*>(pIItem);
+		CWeapon* pWeapon = pIItem->cast_weapon();
 		if (pWeapon)
 		{
 			pWeapon->InitAddons();

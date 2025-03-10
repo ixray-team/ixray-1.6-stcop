@@ -19,7 +19,7 @@ IC	void CStalkerAnimationManager::fill_object_info								()
 {
 	CInventoryItem			*item = object().inventory().ActiveItem();
 	VERIFY					(item);
-	m_weapon				= smart_cast<CWeapon*>	(item);
+	m_weapon				= item->cast_weapon();
 	m_missile				= smart_cast<CMissile*>	(item);
 }
 

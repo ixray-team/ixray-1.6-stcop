@@ -361,7 +361,7 @@ void CUIActorMenu::UpdateActor()
 	CActor* actor = smart_cast<CActor*>( m_pActorInvOwner );
 	if ( actor )
 	{
-		CWeapon* wp = smart_cast<CWeapon*>( actor->inventory().ActiveItem() );
+		CWeapon* wp = actor->inventory().ActiveItem()->cast_weapon();
 		if ( wp ) 
 		{
 			wp->ForceUpdateAmmo();

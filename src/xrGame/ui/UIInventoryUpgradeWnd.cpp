@@ -148,7 +148,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 	if (m_item && m_inv_item)
 	{
 		bool is_shader = false;
-		if (smart_cast<CWeapon*>(m_inv_item))
+		if (m_inv_item->cast_weapon())
 	{
 		is_shader = true;
 		m_item->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));

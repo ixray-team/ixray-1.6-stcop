@@ -193,7 +193,7 @@ void CAI_Stalker::choose_weapon					(ALife::EWeaponPriorityType weapon_priority_
 	}
 	if (best_weapon) {
 		buy_item_virtual			(*best_weapon);
-		attach_available_ammo		(smart_cast<CWeapon*>(best_weapon->m_item));
+		attach_available_ammo		(best_weapon->m_item->cast_weapon());
 	}
 }
 
