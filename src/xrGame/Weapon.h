@@ -95,6 +95,10 @@ public:
 
 	const CameraRecoil& getCameraRecoil(void) const;
 	const CameraRecoil& getCameraZoomRecoil(void) const;
+	bool IsUIForceHiding() const;
+	bool IsCollimatorInstalled() const;
+	bool IsHudModelForceUnhide() const;
+	bool IsUIForceUnhiding() const;
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
@@ -261,6 +265,7 @@ private:
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
 
 public:
+	virtual bool IsGrenadeMode() const { return false; }
 
 	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
 	virtual	void			ZoomInc				();
