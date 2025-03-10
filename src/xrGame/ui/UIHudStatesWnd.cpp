@@ -8,6 +8,9 @@
 #include "../ActorHelmet.h"
 #include "../Inventory.h"
 #include "../RadioactiveZone.h"
+#include "../ActorHelmet.h"
+#include "../../xrUI/UIFontDefines.h"
+#include "../Grenade.h"
 
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
@@ -99,6 +102,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_back            = UIHelper::CreateStatic( xml, "back", this );
 	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", this );
 	m_ui_stamina_bar  = UIHelper::CreateProgressBar( xml, "progress_bar_stamina", this );
+
 //	m_back_v          = UIHelper::CreateStatic( xml, "back_v", this );
 	if (xml.NavigateToNode("static_armor", 0))
 	{
@@ -117,12 +121,29 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
 
 //	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
+	if (xml.NavigateToNode("static_ammo", 0))
+	{
+		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", this);
+	}
 
-	m_ui_weapon_cur_ammo		= UIHelper::CreateTextWnd( xml, "static_cur_ammo", this );
-	m_ui_weapon_fmj_ammo		= UIHelper::CreateTextWnd( xml, "static_fmj_ammo", this );
-	m_ui_weapon_ap_ammo			= UIHelper::CreateTextWnd( xml, "static_ap_ammo", this );
+	if (xml.NavigateToNode("static_cur_ammo", 0))
+	{
+		m_ui_weapon_cur_ammo = UIHelper::CreateTextWnd(xml, "static_cur_ammo", this);
+	}
+
+	if (xml.NavigateToNode("static_fmj_ammo", 0))
+	{
+		m_ui_weapon_fmj_ammo = UIHelper::CreateTextWnd(xml, "static_fmj_ammo", this);
+	}
+	if (xml.NavigateToNode("static_ap_ammo", 0))
+	{
+		m_ui_weapon_ap_ammo = UIHelper::CreateTextWnd(xml, "static_ap_ammo", this);
+	}
 	m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
-	m_ui_grenade				= UIHelper::CreateTextWnd( xml, "static_grenade", this );
+	if (xml.NavigateToNode("static_grenade", 0))
+	{
+		m_ui_grenade = UIHelper::CreateTextWnd(xml, "static_grenade", this);
+	}
 	
 	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", this );
 	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
@@ -238,7 +259,8 @@ void CUIHudStatesWnd::Update()
 void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 {
 	CCustomOutfit* outfit = actor->GetOutfit();
-	if (outfit && m_static_armor && m_ui_armor_bar)
+	CHelmet* helmet = actor->GetHelmet();
+	if ((outfit || helmet) && m_static_armor && m_ui_armor_bar)
 	{
 		m_static_armor->Show(true);
 		m_ui_armor_bar->Show(true);
@@ -250,58 +272,130 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 	}
 }
 
-void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
+void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 {
-	PIItem item = actor->inventory().ActiveItem();
-	if ( item )
-	{
-		if(m_b_force_update)
+    PIItem item = actor->inventory().ActiveItem();
+    if (item)
+    {
+        if (m_b_force_update)
+        {
+            if (item->cast_weapon())
+                item->cast_weapon()->ForceUpdateAmmo();
+            m_b_force_update = false;
+        }
+
+        item->GetBriefInfo(m_item_info);
+
+        //		UIWeaponBack.SetText		( str_name.c_str() );
+        m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+        SetAmmoIcon(m_item_info.icon.c_str());
+
+        if (m_ui_weapon_cur_ammo)
+        {
+            m_ui_weapon_cur_ammo->Show(true);
+            m_ui_weapon_cur_ammo->SetText(m_item_info.cur_ammo.c_str());
+        }
+
+        if (m_ui_weapon_fmj_ammo)
+        {
+            m_ui_weapon_fmj_ammo->Show(true);
+            m_ui_weapon_fmj_ammo->SetText(m_item_info.fmj_ammo.c_str());
+            m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238, 155, 23, 150));
+        }
+
+        if (m_ui_weapon_ap_ammo)
+        {
+            m_ui_weapon_ap_ammo->Show(true);
+            m_ui_weapon_ap_ammo->SetText(m_item_info.ap_ammo.c_str());
+            m_ui_weapon_ap_ammo->SetTextColor(color_rgba(238, 155, 23, 150));
+        }
+
+		if (m_ui_weapon_sign_ammo)
 		{
-			if(item->cast_weapon())
-				item->cast_weapon()->ForceUpdateAmmo();
-			m_b_force_update		= false;
-		}
+			if (m_item_info.cur_ammo.size())
+			{
+				string64 temp;
+				if (smart_cast<CGrenade*>(item))
+				{
+					xr_sprintf(temp, "%s", m_item_info.cur_ammo.c_str());
+				}
+				else
+				{
+					xr_sprintf(temp, "%s/%s", m_item_info.cur_ammo.c_str(), m_item_info.total_ammo.c_str());
+				}
 
-		item->GetBriefInfo			( m_item_info );
+				m_ui_weapon_sign_ammo->Show(true);
+				m_ui_weapon_sign_ammo->SetText(temp);
 
-//		UIWeaponBack.SetText		( str_name.c_str() );
-		m_fire_mode->SetText		( m_item_info.fire_mode.c_str() );
-		SetAmmoIcon					( m_item_info.icon.c_str() );
-		
-		m_ui_weapon_cur_ammo->Show	( true );
-		m_ui_weapon_fmj_ammo->Show	( true );
-		m_ui_weapon_ap_ammo->Show	( true );
-		m_fire_mode->Show			( true );
-		m_ui_grenade->Show			( true );
+				// hack ^ begin
+				CGameFont* pFont32 = UI().Font().GetFont(GRAFFITI32_FONT_NAME);
+				CGameFont* pFont22 = UI().Font().GetFont(GRAFFITI22_FONT_NAME);
+				CGameFont* pFont = pFont32;
 
-		m_ui_weapon_cur_ammo->SetText	( m_item_info.cur_ammo.c_str() );
-		m_ui_weapon_fmj_ammo->SetText	( m_item_info.fmj_ammo.c_str() );
-		m_ui_weapon_ap_ammo->SetText	( m_item_info.ap_ammo.c_str() );
-		
-		m_ui_grenade->SetText	( m_item_info.grenade.c_str() );
+				if (UI().is_widescreen())
+				{
+					pFont = pFont22;
+				}
+				else
+				{
+					if (xr_strlen(temp) > 5)
+					{
+						pFont = pFont22;
+					}
+				}
+				m_ui_weapon_sign_ammo->SetFont(pFont);
+			}
+			else
+			{
+				m_ui_weapon_sign_ammo->Show(false);
+			}
+        }
 
-		CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
-		if(wpn && wpn->m_bGrenadeMode)
-		{
-			m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238,155,23,150));
-			m_ui_grenade->SetTextColor(color_rgba(238,155,23,255));
-		}
-		else
-		{
-			m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238,155,23,255));
-			m_ui_grenade->SetTextColor(color_rgba(238,155,23,150));
-		}
-	}
-	else
-	{
-		m_ui_weapon_icon->Show		( false );
+        m_fire_mode->Show(true);
 
-		m_ui_weapon_cur_ammo->Show	( false );
-		m_ui_weapon_fmj_ammo->Show	( false );
-		m_ui_weapon_ap_ammo->Show	( false );
-		m_fire_mode->Show			( false );
-		m_ui_grenade->Show			( false );
-	}
+        if (m_ui_grenade)
+        {
+            m_ui_grenade->Show(true);
+
+            m_ui_grenade->SetText(m_item_info.grenade.c_str());
+            
+            CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
+            if (wpn && wpn->m_bGrenadeMode)
+                m_ui_grenade->SetTextColor(color_rgba(238, 155, 23, 255));
+            else
+                m_ui_grenade->SetTextColor(color_rgba(238, 155, 23, 150));
+        }
+
+        CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
+        if (wpnm)
+        {
+            if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
+                m_ui_weapon_fmj_ammo->SetTextColor(color_rgba(238, 155, 23, 255));
+            else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
+                m_ui_weapon_ap_ammo->SetTextColor(color_rgba(238, 155, 23, 255));
+        }
+    }
+    else
+    {
+        m_ui_weapon_icon->Show(false);
+
+        if (m_ui_weapon_cur_ammo)
+            m_ui_weapon_cur_ammo->Show(false);
+
+        if (m_ui_weapon_fmj_ammo)
+            m_ui_weapon_fmj_ammo->Show(false);
+
+        if (m_ui_weapon_ap_ammo)
+            m_ui_weapon_ap_ammo->Show(false);
+
+        if (m_ui_weapon_sign_ammo)
+            m_ui_weapon_sign_ammo->Show(false);
+
+        m_fire_mode->Show(false);
+
+        if (m_ui_grenade)
+            m_ui_grenade->Show(false);
+    }
 }
 
 void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
