@@ -25,7 +25,7 @@ extern void unregister_file_mapping(void* address, const size_t& size);
 class XRCORE_API IWriter
 {
 private:
-	xr_stack<u32>		chunk_pos;
+	xr_stack<size_t>		chunk_pos;
 public:
 	shared_str			fName;
 public:
@@ -38,8 +38,8 @@ public:
 	}
 
 	// kernel
-	virtual void	seek	(u32 pos)				= 0;
-	virtual u32		tell	()						= 0;
+	virtual void	seek	(size_t pos)				= 0;
+	virtual size_t	tell	()						= 0;
 
 	virtual void	w		(const void* ptr, u32 count)	= 0;
 
@@ -99,7 +99,7 @@ public:
 class XRCORE_API CMemoryWriter : public IWriter
 {
 	u8*				data;
-	u32				position;
+	size_t			position;
 	u32				mem_size;
 	u32				file_size;
 public:
@@ -114,8 +114,8 @@ public:
 	// kernel
 	virtual void	w			(const void* ptr, u32 count);
 
-	virtual void	seek		(u32 pos)	{	position = pos;				}
-	virtual u32		tell		() 			{	return position;			}
+	virtual void		seek		(size_t pos)	{	position = pos;				}
+	virtual size_t		tell		() 			{	return position;			}
 
 	// specific
 	IC u8*			pointer		()			{	return data;				}
@@ -227,8 +227,7 @@ public:
 	u32 m_last_pos;
 };
 
-class XRCORE_API IReader : 
-	public IReaderBase
+class XRCORE_API IReader :  public IReaderBase
 {
 protected:
 	char *			data	;

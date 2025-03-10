@@ -5,14 +5,14 @@
 #include "uv_tri.h"
 #include "../../xrCDB/xrCDB.h"
 #include "xrDeflectorDefs.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
 
 class  base_lighting;
  
 class CDeflector;
 
-XRLC_LIGHT_API void IntelEmbereLOAD(bool useForOthers);
-XRLC_LIGHT_API void IntelEmbereUNLOAD();
- 
+extern EmbreeData EmbreeMain;
+  
 class execute_statistics;
 class XRLC_LIGHT_API CDeflector
 {
@@ -70,10 +70,10 @@ static	CDeflector*		read_create					();
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
 
 	// se7kills Подсчитать Размер
-	u64		size_deflector()
+	size_t		size_deflector()
 	{
-		u32 STri = UVpolys.capacity() * sizeof(UVtri);
-		u32 SLMLayer = layer.memory_lmap();
+		size_t STri = UVpolys.capacity() * sizeof(UVtri);
+		size_t SLMLayer = layer.memory_lmap();
 
 		return sizeof(*this) + STri + SLMLayer;
 	}
@@ -88,9 +88,7 @@ extern XRLC_LIGHT_API void		blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer&
 extern void		blit_r			(u32* dest,		u32 ds_x, u32 ds_y, u32* src,		u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern XRLC_LIGHT_API void		blit_r			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
-
 extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
- 
 extern XRLC_LIGHT_API BOOL		ApplyBorders	(lm_layer &lm, u32 ref);
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 extern XRLC_LIGHT_API void		DumpDeflctor	( const CDeflector &d );
@@ -98,8 +96,12 @@ extern XRLC_LIGHT_API void		DeflectorsStats ();
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 
 
-extern XRLC_LIGHT_API u32		getLMSIZE();
-extern XRLC_LIGHT_API void		setLMSIZE(int size);
+extern XRLC_LIGHT_API u32 c_LMAP_size;			// pixels
+
+
+extern XRLC_LIGHT_API void setLMSIZE(int size);
+
+extern XRLC_LIGHT_API u32 getLMSIZE();
 
 #define rms_zero	((4+g_params().m_lm_rms_zero)/2)
 #define rms_shrink	((8+g_params().m_lm_rms)/2)
