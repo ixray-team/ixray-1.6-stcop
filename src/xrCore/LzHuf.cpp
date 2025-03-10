@@ -594,7 +594,7 @@ void Encode(void)  /* compression */
 	tim_size = textsize;
 }
 
-void Decode(void)  /* recover */
+bool Decode(int total_size) /* recover */
 {
     int  i, j, k, r, c;
     unsigned int  count;
@@ -603,7 +603,10 @@ void Decode(void)  /* recover */
     textsize |= (fs._getb() << 8);
     textsize |= (fs._getb() << 16);
     textsize |= (fs._getb() << 24);
-    if (textsize == 0) return;
+    if (textsize == 0)
+        return false;
+    if (total_size != -1 && textsize > total_size)
+        return false;
 	
 	fs.Init_Output(textsize);
 	
@@ -631,6 +634,7 @@ void Decode(void)  /* recover */
         }
     }
 	tim_size = count;
+	return true;
 }
 
 unsigned _writeLZ	(int hf, void* d, unsigned size)
@@ -656,13 +660,17 @@ void _compressLZ	(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
 	*dest_sz	= fs.OutSize();
 }
 
-void _decompressLZ	(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
+bool _decompressLZ	(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, int total_size /*= -1*/)
 {
 	u8*	start = (u8*) src;
 	fs.Init_Input(start,start+src_sz);
-    Decode();
+
+	if (!Decode(total_size))
+		return false;
+
 	*dest		= fs.OutPointer();
 	*dest_sz	= fs.OutSize();
+	return true;
 }
 
 unsigned _readLZ	(int hf, void* &d, unsigned size)
@@ -674,7 +682,7 @@ unsigned _readLZ	(int hf, void* &d, unsigned size)
 	fs.Init_Input(data,data+size);
 	
 	// Actual compression
-    Decode();
+    Decode(-1);
 	
 	// Flush cache
 	xr_free	(data);
