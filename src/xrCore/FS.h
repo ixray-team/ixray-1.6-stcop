@@ -132,11 +132,20 @@ public:
 //------------------------------------------------------------------------------------
 // Read
 //------------------------------------------------------------------------------------
+class CFileReader;
+class CVirtualFileReader;
+class IReader;
+
 class IReaderBase
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
 	virtual			~IReaderBase()			{}
+
+	virtual CFileReader* cast_file_reader() { return nullptr; }
+	virtual CVirtualFileReader* cast_virtual_file_reader() { return nullptr; }
+	virtual IReader* cast_reader() { return nullptr; }
+
 	virtual u32			elapsed()	const = 0;
 	IC BOOL			eof			()	const		{return elapsed() <= 0;	};
 
@@ -242,6 +251,7 @@ public:
 		Pos			= 0				;
 		iterpos		= _iterpos		;
 	}
+	virtual IReader* cast_reader() { return this; }
 
 protected:
 	IC u32			correction					(u32 p)
