@@ -81,7 +81,8 @@ void CSector::BuildHierrarhy	()
 			IDx++;
 		}
 
-
+		StatusNoMsg("Sector Process[%d] / [%d] gtree[%d] / noconn[%d]", (u32) SizeLimit, (u32) delimiter, g_tree.size(), data.size());
+		 
 		for (auto Ogf : data)
 		{
 			int I = Ogf.ID;
@@ -98,7 +99,7 @@ void CSector::BuildHierrarhy	()
 				int		best_id		= -1;
 				float	best_volume	= flt_max;
 				 
-				// se7kills MT STYLE FIND
+				// Fast Finding By No Connected
 				for (auto O : data)
 				{
 					int J = O.ID;
@@ -137,7 +138,8 @@ void CSector::BuildHierrarhy	()
 			}
 		}
 		
-		if (iSize != (int)g_tree.size()) iLevel++;
+		if (iSize != (int)g_tree.size())
+			iLevel++;
 	}
 	TreeRoot = 0;
 	if (bAnyNode) TreeRoot = g_tree.back();
