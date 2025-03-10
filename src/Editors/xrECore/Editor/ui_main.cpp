@@ -35,6 +35,28 @@ namespace ImGui
 
 TUI* UI = nullptr;
 
+void mt_Thread(void* ptr)
+{
+	while (true)
+	{
+		if (!UI->IsPlayInEditor())
+			continue;
+
+		Device.mt_csEnter.Enter();
+
+		Engine.Sheduler.Update();
+
+		for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
+			EDevice->seqParallel[pit]();
+
+		EDevice->seqParallel.clear();
+
+		EDevice->seqFrameMT.Process(rp_Frame);
+		Device.mt_csEnter.Leave();
+		xrCriticalSectionGuard sync(&Device.mt_csLeave);
+	}
+}
+
 TUI::TUI()
 {
 	m_HConsole = 0;
@@ -82,6 +104,14 @@ TUI::~TUI()
 
 void TUI::OnDeviceCreate()
 {
+	static bool IsThreadStarted = false;
+
+	if (!IsThreadStarted)
+	{
+		Device.mt_csEnter.Enter();
+		thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
+		IsThreadStarted = false;
+	}
 	DU_impl.OnDeviceCreate();
 }
 
@@ -617,11 +647,11 @@ void TUI::OnFrame()
 	// Progress
 	ProgressDraw		();
 }
-bool TUI::Idle()         
+
+bool TUI::Idle()
 {
 	VERIFY(m_bReady);
-   // EDevice->b_is_Active  = Application->Active;
-	// input
+
 	MSG msg;
 	do
 	{
@@ -638,23 +668,28 @@ bool TUI::Idle()
 		}
 
 	} while (msg.message);
-	if (m_Flags.is(flResetUI))RealResetUI();
+
+	if (m_Flags.is(flResetUI))
+		RealResetUI();
+
 	Sleep(1);
 
-	OnFrame			();
+	OnFrame();
+
+	xrCriticalSectionGuard sync(&Device.mt_csLeave);
+	Device.mt_csEnter.Leave();
+
 	if (EDevice->b_is_Active && !m_Flags.is(flNeedQuit) && !m_AppClosed)
 		RealRedrawScene();
 
-	{
-		for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
-			EDevice->seqParallel[pit]();
-		EDevice->seqParallel.clear();
-		EDevice->seqFrameMT.Process(rp_Frame);
-	}
 	// test quit
-	if (m_Flags.is(flNeedQuit))	RealQuit();
+	if (m_Flags.is(flNeedQuit))	
+		RealQuit();
+
+	Device.mt_csEnter.Enter();
 	return !m_AppClosed;
 }
+
 //---------------------------------------------------------------------------
 void ResetActionToSelect()
 {

@@ -26,7 +26,7 @@ void ShowMessageBox(_eMessageBoxStatus status, std::string_view title, std::stri
 		{ 0, 0, "Ok" }
 	};
 
-	int type = SDL_MESSAGEBOX_INFORMATION;
+	u32 type = SDL_MESSAGEBOX_INFORMATION;
 
 	switch (status)
 	{

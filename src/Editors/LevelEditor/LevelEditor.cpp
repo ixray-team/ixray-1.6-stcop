@@ -12,6 +12,7 @@
 #include "../../xrEngine/xr_input.h"
 #include "Editor/Utils/ContentView.h"
 #include "xrECore/Splash.h"
+#include "../../xrEngine/FPSCounter.h"
 
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
@@ -90,7 +91,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	::MainForm = MainForm;
 	UI->Push(MainForm, false);
-	
+
+	pFPSCounter = new FPS::FPSCounter();
 
 	bool NeedExit = false;
 	splash::update(85, "Performing Final Checks");

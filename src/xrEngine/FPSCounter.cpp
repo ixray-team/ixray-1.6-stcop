@@ -6,7 +6,7 @@
 #include "FPSCounter.h"
 #include "GameFont.h"
 
-FPS::FPSCounter* pFPSCounter = nullptr;
+ENGINE_API FPS::FPSCounter* pFPSCounter = nullptr;
 
 using xr_clock = std::chrono::high_resolution_clock;
 

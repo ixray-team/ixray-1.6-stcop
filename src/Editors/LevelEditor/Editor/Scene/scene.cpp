@@ -742,7 +742,7 @@ void EScene::Play()
 	g_pGameLevel->IR_Capture();
 	GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, false);
 
-	Device.seqFrame.Add(this);
+	Device.seqFrameMT.Add(this);
 
 	ShowCursor(FALSE);
 }
@@ -767,7 +767,7 @@ void EScene::Stop()
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
 
 	g_pGamePersistent->Environment().Invalidate();
-	Device.seqFrame.Remove(this);
+	Device.seqFrameMT.Remove(this);
 	IsAppliedPos = false;
 }
 
