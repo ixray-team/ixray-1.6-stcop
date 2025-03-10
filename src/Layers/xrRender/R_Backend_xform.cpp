@@ -101,7 +101,7 @@ void	R_xforms::apply_invw()
 
 void R_xforms::apply_invv()
 {
-	VERIFY(c_invw);
+	VERIFY(c_invv);
 
 	m_invv.invert(m_v);
 	RCache.set_c(c_invv, m_invv);
