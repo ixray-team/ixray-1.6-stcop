@@ -14,6 +14,7 @@
 
 #include "game_cl_mp.h"
 #include "reward_event_generator.h"
+#include "WeaponRPG7.h"
 
 #define FLAME_TIME 0.05f
 
@@ -120,7 +121,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 	
 	// Ammo
-	if (!infinite_fire())
+	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
 		m_magazine.pop_back();
 		--iAmmoElapsed;
