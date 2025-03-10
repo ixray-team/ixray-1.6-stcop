@@ -96,6 +96,7 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 
 	LPCSTR nodevalue_button = xml_doc.Read("button_texture_name", 0, "ui_inGame2_opt_slider_box");
 	LPCSTR nodevalue_track	= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
+	float size_custom		= xml_doc.ReadFlt("size", 0, 1.0f);
 
 	float					item_height;
 	float					item_width;
@@ -117,6 +118,9 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
     item_height				= CUITextureMaster::GetTextureHeight(name_button_e);
 
 	item_width				*= UI().get_current_kx();
+
+	item_width				*= size_custom;
+	item_height				*= size_custom;
 
 	m_pSlider->InitButton	(Fvector2().set(0.0f, 0.0f), Fvector2().set(item_width, item_height) );			//size
 	m_pSlider->InitTexture	(nodevalue_button);
