@@ -170,8 +170,6 @@ bool CScenePhysics::CreateObjectSpace	(bool b_selected_only)
 
 CScenePhysics::~CScenePhysics			()
 {
-   //	DestroyAll			()  ;
-    DestroyObjectSpace	()	;
     R_ASSERT( !m_object_space );
  }
 
