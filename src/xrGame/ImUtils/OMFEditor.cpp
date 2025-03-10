@@ -64,7 +64,7 @@ constexpr const char* _kOMFEditorModalWindow_RenameAnimationParam = "Rename##Too
 constexpr const char* _kOMFEditorModalWindow_WarningRenameHasCollision = "Warning##ToolsInGameImGui_OMFEditor_AnimationParamFailedRenaming";
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardSuccessful = "Successful!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
 constexpr const char* _kOMFEditorModalWindow_BonePartsWasCopiedToClipboardFailed = "Failed!##ToolsInGameImGui_OMFEditor_BonePartsToClipboard";
-
+constexpr const char* _kOMFEditorModalWindow_BoneRenameHasCollion = "Warning!##ToolsInGameImGui_OMFEditor_BoneRenameHasCollision";
 
 struct OMFData
 {
@@ -178,6 +178,7 @@ struct OMFEditorState
 	bool is_motion_time_format_keys_selected{};
 	bool is_motion_time_format_radiobutton_changed{};
 	int current_selected_animation_param{};
+	int current_selected_bone_rename{};
 	float speed{};
 	float power{};
 	float accrue{};
@@ -185,8 +186,12 @@ struct OMFEditorState
 	float length{};
 	OMFData* omf{};
 	OMFData::omf_name_t rename_temp;
+	OMFData::omf_name_t rename_temp_bone;
 	xr_vector<const char*> combo_animation_params_data;
-	xr_set<size_t> combo_animation_params;
+	xr_set<size_t> combo_animation_params_name_hashes;
+	xr_vector<const char*> combo_bones_data;
+	xr_set<size_t> combo_bones_name_hashes;
+
 	xr_stack_string<sizeof(string_path) * 2> path;
 } g_omf_editor;
 
@@ -356,13 +361,37 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 {
+	R_ASSERT(p_state->combo_animation_params_data.empty() && "did you clear data before init?");
+	R_ASSERT(p_state->combo_animation_params_name_hashes.empty() && "did you clear data before init?");
+
 	if (data.data_animparams.count > 0)
 	{
 		for (int16_t i = 0; i < data.data_animparams.count; ++i)
 		{
 			std::string_view view = data.data_animparams.params[i].name.c_str();
 			p_state->combo_animation_params_data.push_back(data.data_animparams.params[i].name.c_str());
-			p_state->combo_animation_params.insert(std::hash<std::string_view>()(data.data_animparams.params[i].name.c_str()));
+			p_state->combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(data.data_animparams.params[i].name.c_str()));
+		}
+	}
+}
+
+void OMFEditor_Init_ComboBones(OMFEditorState* p_state, OMFData& data)
+{
+	R_ASSERT(p_state->combo_bones_data.empty() && "did you clear data before init?");
+	R_ASSERT(p_state->combo_bones_name_hashes.empty() && "did you clear data before init?");
+
+	if (data.data_bone.count > 0)
+	{
+		for (int16_t i = 0; i < data.data_bone.count; ++i)
+		{
+			const auto& part = data.data_bone.parts[i];
+
+			for (int16_t j = 0; j < part.count; ++j)
+			{
+				std::string_view view = part.bones[j].name.c_str();
+				p_state->combo_bones_data.push_back(part.bones[j].name.c_str());
+				p_state->combo_bones_name_hashes.insert(std::hash<std::string_view>()(view));
+			}
 		}
 	}
 }
@@ -386,9 +415,6 @@ void OMFEditor_Init_CurrentAnimationParams(int animation_param_id, OMFData& data
 		p_state->idle_selected = (param.flags & (1 << 6)) == (1 << 6);
 		p_state->use_weapon_bone_selected = (param.flags & (1 << 7)) == (1 << 7);
 		p_state->has_motion_marks_selected = (data.data_bone.ogf_version == 4 && param.marks_count > 0);
-
-
-
 	}
 }
 
@@ -398,12 +424,24 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 		return;
 
 	p_state->current_selected_animation_param = 0;
+	p_state->current_selected_bone_rename = 0;
 	p_state->animation_param_was_changed = false;
-	p_state->combo_animation_params_data.clear();
+
 	p_state->is_motion_time_format_seconds_selected = true;
 	p_state->is_motion_time_format_radiobutton_changed = true;
-	p_state->combo_animation_params.clear();
+	p_state->combo_animation_params_data.clear();
+	p_state->combo_animation_params_name_hashes.clear();
+	p_state->combo_bones_data.clear();
+	p_state->combo_bones_name_hashes.clear();
+
 	OMFEditor_Init_ComboAnimationParams(p_state, data);
+	OMFEditor_Init_ComboBones(p_state, data);
+
+	if (data.data_bone.count > 0)
+	{
+		R_ASSERT(p_state->combo_bones_data.empty() == false && "can't be!");
+		p_state->rename_temp_bone = p_state->combo_bones_data[0];
+	}
 
 	if (data.data_animparams.count > 0)
 	{
@@ -517,6 +555,38 @@ bool OMFEditor_CopyBonePartsToClipboard(OMFEditorState* p_state)
 	return result;
 }
 
+void OMFEditor_RenameBone(int bone_id, const OMFData::omf_name_t& new_name, OMFData& data)
+{
+	if (data.data_bone.count > 0)
+	{
+		bool was_found = false;
+		int global_index = 0;
+		for (int16_t i = 0; i < data.data_bone.count; ++i)
+		{
+			auto& part = data.data_bone.parts[i];
+
+			for (int16_t j = 0; j < part.count; ++j)
+			{
+				auto& bone = part.bones[j];
+
+				if (global_index == bone_id)
+				{
+					was_found = true;
+					bone.name = new_name;
+					break;
+				}
+
+				++global_index;
+			}
+
+			if (was_found)
+				break;
+		}
+
+		R_ASSERT(was_found && "unable to find it means something is corrupted!");
+	}
+}
+
 void RenderToolsOMFEditorWindow()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_OMFEditor)])
@@ -580,11 +650,10 @@ void RenderToolsOMFEditorWindow()
 
 				}
 
-				ImGui::TableSetColumnIndex(8);
-				if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
-				{
-
-				}
+				//ImGui::TableSetColumnIndex(8);
+				//if (ImGui::Button("Rename bones##ToolsInGameImGui_OMFEditor"))
+				//{
+				//}
 
 				//	ImGui::TableSetColumnIndex(9);
 				//	if (ImGui::Button("Show bone parts##ToolsInGameImGui_OMFEditor"))
@@ -641,7 +710,7 @@ void RenderToolsOMFEditorWindow()
 					{
 						size_t hash_temp = std::hash<std::string_view>()(g_omf_editor.rename_temp.c_str());
 
-						if (g_omf_editor.combo_animation_params.find(hash_temp) != g_omf_editor.combo_animation_params.end() && g_omf_editor.rename_temp != current_param.name)
+						if (g_omf_editor.combo_animation_params_name_hashes.find(hash_temp) != g_omf_editor.combo_animation_params_name_hashes.end() && g_omf_editor.rename_temp != current_param.name)
 						{
 							ImGui::OpenPopup(_kOMFEditorModalWindow_WarningRenameHasCollision);
 						}
@@ -649,13 +718,13 @@ void RenderToolsOMFEditorWindow()
 						{
 							OMFData::omf_name_t previous = current_param.name;
 							size_t previous_temp = std::hash<std::string_view>()(previous.c_str());
-							if (g_omf_editor.combo_animation_params.find(previous_temp) != g_omf_editor.combo_animation_params.end())
+							if (g_omf_editor.combo_animation_params_name_hashes.find(previous_temp) != g_omf_editor.combo_animation_params_name_hashes.end())
 							{
-								g_omf_editor.combo_animation_params.erase(previous_temp);
+								g_omf_editor.combo_animation_params_name_hashes.erase(previous_temp);
 							}
 
 							current_param.name = g_omf_editor.rename_temp;
-							g_omf_editor.combo_animation_params.insert(std::hash<std::string_view>()(current_param.name.c_str()));
+							g_omf_editor.combo_animation_params_name_hashes.insert(std::hash<std::string_view>()(current_param.name.c_str()));
 							ImGui::CloseCurrentPopup();
 						}
 					}
@@ -684,6 +753,56 @@ void RenderToolsOMFEditorWindow()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
+
+				if (ImGui::CollapsingHeader("Rename bones##ToolsInGameImGui_OMFEditor_Data_Body"))
+				{
+					if (g_omf_editor.omf->data_bone.count > 0)
+					{
+						ImGui::SeparatorText("Select bone");
+
+						if (ImGui::Combo("Bones##ToolsInGameImGui_OMFEditor_RenameBones", &g_omf_editor.current_selected_bone_rename, g_omf_editor.combo_bones_data.data(), g_omf_editor.combo_bones_data.size()))
+						{
+							g_omf_editor.rename_temp_bone = g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename];
+						}
+
+						ImGui::SeparatorText("Edit");
+
+						ImGui::Text("bone id: %d", g_omf_editor.current_selected_bone_rename);
+						ImGui::InputText("##ToolsInGameImGui_OMFEditor_RenameBoneIT", g_omf_editor.rename_temp_bone.data(), g_omf_editor.rename_temp_bone.max_size());
+						ImGui::SameLine();
+						if (ImGui::Button("apply##ToolsInGameImGui_OMFEditor_RenameBone"))
+						{
+							size_t hash_temp = std::hash<std::string_view>()(std::string_view(g_omf_editor.rename_temp_bone.c_str()));
+
+							if (g_omf_editor.combo_bones_name_hashes.find(hash_temp) != g_omf_editor.combo_bones_name_hashes.end() && g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename] != g_omf_editor.rename_temp_bone)
+							{
+								ImGui::OpenPopup(_kOMFEditorModalWindow_BoneRenameHasCollion);
+							}
+							else
+							{
+								size_t hash_current = std::hash<std::string_view>()(g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename]);
+								if (g_omf_editor.combo_bones_name_hashes.find(hash_current) != g_omf_editor.combo_bones_name_hashes.end())
+								{
+									g_omf_editor.combo_bones_name_hashes.erase(hash_current);
+								}
+
+								g_omf_editor.combo_bones_name_hashes.insert(hash_temp);
+								OMFEditor_RenameBone(g_omf_editor.current_selected_bone_rename, g_omf_editor.rename_temp_bone, *g_omf_editor.omf);
+							}
+						}
+						
+						bool cross = true;
+						if (ImGui::BeginPopupModal(_kOMFEditorModalWindow_BoneRenameHasCollion, &cross, ImGuiWindowFlags_AlwaysAutoResize))
+						{
+							ImGui::Text("You have already same name, can't rename current bone!");
+							ImGui::EndPopup();
+						}
+					}
+					else
+					{
+						ImGui::Text("you don't have any bones for renaming!");
+					}
+				}
 
 				if (ImGui::CollapsingHeader("Show bone parts##ToolsInGameImGui_OMFEditor_Data_Body"))
 				{
