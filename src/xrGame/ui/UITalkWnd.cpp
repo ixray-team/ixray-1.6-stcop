@@ -173,6 +173,7 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 //////////////////////////////////////////////////////////////////////////
 void UpdateCameraDirection(CGameObject* pTo)
 {
+	if (!pTo) return;
 	CCameraBase* cam = Actor()->cam_Active();
 
 	Fvector des_dir; 
