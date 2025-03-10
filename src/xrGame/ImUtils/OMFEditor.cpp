@@ -154,7 +154,7 @@ struct OMFEditorState
 	float accrue;
 	float falloff;
 	float length;
-	const char* combo_animation_marks_data[256];
+	const char* combo_animation_params_data[256];
 	xr_stack_string<sizeof(string_path) * 2> path;
 	OMFData omf;
 } g_omf_editor;
@@ -303,7 +303,7 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 		{
 			file.read(reinterpret_cast<char*>(&param.marks_count), sizeof(param.marks_count));
 
-			if (param.marks_count>0)
+			if (param.marks_count > 0)
 			{
 				for (int16_t mark_id = 0; mark_id < param.marks_count; ++mark_id)
 				{
@@ -321,18 +321,22 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 			}
 		}
 	}
-	
+
 
 	return true;
 }
 
 void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 {
-	if (data.data_animparams.count>0)
+	if (data.data_animparams.count > 0)
 	{
+		constexpr int16_t _kSize = sizeof(p_state->combo_animation_params_data) / sizeof(p_state->combo_animation_params_data[0]);
+
+		R_ASSERT(_kSize <= data.data_animparams.count && "report to developers!");
+
 		for (int16_t i = 0; i < data.data_animparams.count; ++i)
 		{
-			p_state->combo_animation_marks_data[i] = data.data_animparams.params[i].name.c_str();
+			p_state->combo_animation_params_data[i] = data.data_animparams.params[i].name.c_str();
 		}
 	}
 }
@@ -487,14 +491,14 @@ void RenderToolsOMFEditorWindow()
 
 				bool is_empty = g_omf_editor.omf.data_animparams.count > 0;
 
-				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_marks_data, g_omf_editor.omf.data_animparams.count))
+				if (ImGui::Combo("Animation params##ToolsInGameImGui_OMFEditor_Data_Header_Combo", &g_omf_editor.current_selected_animation_param, g_omf_editor.combo_animation_params_data, g_omf_editor.omf.data_animparams.count))
 				{
 
 				}
 
 				ImGui::TableSetColumnIndex(1);
 
-				ImGui::Text("Selected: [%s]", g_omf_editor.combo_animation_marks_data[g_omf_editor.current_selected_animation_param]);
+				ImGui::Text("Selected: [%s]", g_omf_editor.combo_animation_params_data[g_omf_editor.current_selected_animation_param]);
 
 
 				ImGui::EndTable();
