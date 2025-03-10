@@ -80,48 +80,48 @@ void CSector::BuildHierrarhy	()
 				float	best_volume	= flt_max;
 
 
-				xr_atomic_bool isFinded;
- 				xr_parallel_for
-				(
-					size_t(0), size_t(iSize),
-					[&](size_t J)
-					{
-						if (isFinded.load())
-							return;
-
-						OGF_Base* candidate = g_tree[J];
-						if (candidate->bConnected)			return;
-						if (candidate->Sector != SelfID)	return;
-
-						float V;
-						if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
-						{
-							if (V < best_volume)
-							{
-								isFinded = true;
-								best_volume = V;
-								best_id = J;
-							}
-						}
-					}
-				);
-
-				// se7kills MT STYLE FIND
-				//for (int J=0; J<iSize; J++)
-				//{
-				//	OGF_Base* candidate = g_tree[J];
-				//	if ( candidate->bConnected)			continue;
-				//	if ( candidate->Sector != SelfID)	continue;
-				//
-				//	float V;
-				//	if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
+				//xr_atomic_bool isFinded;
+ 				//xr_parallel_for
+				//(
+				//	size_t(0), size_t(iSize),
+				//	[&](size_t J)
 				//	{
-				//		if (V<best_volume)	{
-				//			best_volume		= V;
-				//			best_id			= J;
+				//		if (isFinded.load())
+				//			return;
+				//
+				//		OGF_Base* candidate = g_tree[J];
+				//		if (candidate->bConnected)			return;
+				//		if (candidate->Sector != SelfID)	return;
+				//
+				//		float V;
+				//		if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
+				//		{
+				//			if (V < best_volume)
+				//			{
+				//				isFinded = true;
+				//				best_volume = V;
+				//				best_id = J;
+				//			}
 				//		}
 				//	}
-				//}
+				//);
+				//
+				//// se7kills MT STYLE FIND
+				for (int J=0; J<iSize; J++)
+				{
+					OGF_Base* candidate = g_tree[J];
+					if ( candidate->bConnected)			continue;
+					if ( candidate->Sector != SelfID)	continue;
+				
+					float V;
+					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
+					{
+						if (V<best_volume)	{
+							best_volume		= V;
+							best_id			= J;
+						}
+					}
+				}
 
 				// Analyze
 				if (best_id<0)		break;
