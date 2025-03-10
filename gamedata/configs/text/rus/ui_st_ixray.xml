@@ -335,4 +335,17 @@
     <string id="SO_HLAMP">
         <text>Hanging lamp</text>
     </string>
+
+    <string id="ui_mm_screenshot_format">
+        <text>Формат скриншотов</text>
+    </string>
+    <string id="ss_jpg">
+        <text>.jpg</text>
+    </string>
+    <string id="ss_tga">
+        <text>.tga</text>
+    </string>
+    <string id="ss_png">
+        <text>.png</text>
+    </string>
 </string_table>
