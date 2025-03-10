@@ -284,6 +284,7 @@ void DrawCompilerConfig()
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
+		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
  		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::EndChild();
