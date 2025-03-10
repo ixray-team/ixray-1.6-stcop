@@ -24,7 +24,7 @@ void CParticlesAsync::Start()
 		PROF_EVENT("Particle Update");
 		for (xr_shared_ptr<CPS_Instance> particle : g_pGamePersistent->ps_active)
 		{
-			if (particle == nullptr || particle->m_bDead)
+			if (particle->m_bDead)
 				continue;
 
 			Instance.UpdateParticle(particle.get());

@@ -1071,22 +1071,3 @@ void	CDS0_KinematicsAnimated::SetBlendDestroyCallback(IBlendDestroyCallback* cb)
 {
 	m_blend_destroy_callback = cb;
 }
-
-#ifdef _EDITOR
-MotionID CDS0_KinematicsAnimated::ID_Motion(LPCSTR  N, u16 slot)
-{
-	MotionID 				motion_ID;
-	if (slot < MAX_ANIM_SLOT) {
-		shared_motions* s_mots = &m_Motions[slot].motions;
-		// find in cycles
-		accel_map::iterator I = s_mots->cycle()->find(LPSTR(N));
-		if (I != s_mots->cycle()->end())	motion_ID.set(slot, I->second);
-		if (!motion_ID.valid()) {
-			// find in fx's
-			accel_map::iterator I = s_mots->fx()->find(LPSTR(N));
-			if (I != s_mots->fx()->end())	motion_ID.set(slot, I->second);
-		}
-	}
-	return motion_ID;
-}
-#endif
