@@ -220,7 +220,14 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t)
 	m_addons[t]					= new CUIStatic();	
 	m_addons[t]->SetAutoDelete	(true);
 	AttachChild					(m_addons[t]);
-	m_addons[t]->SetShader		(InventoryUtilities::GetEquipmentIconsShader());
+
+	const char* sect = nullptr;
+	if (t == eSilencer) sect = *object()->GetSilencerName();
+	else if (t == eScope) sect = *object()->GetScopeName();
+	else if (t == eLauncher) sect = *object()->GetGrenadeLauncherName();
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect, "icons_texture", nullptr);
+
+	m_addons[t]->SetShader		(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 	u32 color = GetTextureColor	();
 	m_addons[t]->SetTextureColor(color);
