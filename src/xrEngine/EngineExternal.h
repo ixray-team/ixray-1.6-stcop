@@ -4,6 +4,7 @@ enum class EEngineExternalUI {
 	HQIcons,
 	DisableCharacterInfo,
 	DisableInventoryGrid,
+	ShowLoadingStages,
 	None
 };
 

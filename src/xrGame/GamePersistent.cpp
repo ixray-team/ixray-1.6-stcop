@@ -838,7 +838,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
-	if(change_tip)
+	if(change_tip && EngineExternal().CallOfPripyatMode())
 	{
 		string512				buff;
 		u8						tip_num;
@@ -865,6 +865,18 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 
 		pApp->LoadTitleInt		(g_pStringTable->translate("ls_header").c_str(), tmp.c_str(), g_pStringTable->translate(buff).c_str());
 	}
+}
+
+void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
+{
+	string256 buff;
+	if (ls_title)
+	{
+		xr_sprintf(buff, "%s%s", g_pStringTable->translate(ls_title).c_str(), "...");
+		pApp->SetLoadStageTitle(buff);
+	}
+	else
+		pApp->SetLoadStageTitle("");
 }
 
 bool CGamePersistent::CanBePaused()
