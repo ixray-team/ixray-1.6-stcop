@@ -1,19 +1,14 @@
-﻿#include "CompilersUI.h"
-#include <imgui.h>
+﻿#include <imgui.h>
 
 #include "../../xrCore/xrCore.h"
+#include "CompilersUI.h"
 #include "cl_log.h"
 #include <timeapi.h>
 
 #define enumToText(enum)
 
-static bool ShowMainUI = true;
-struct LevelFileData
-{
-	xr_string Name;
-	bool Select = false;
-};
-static xr_vector<LevelFileData> Files;
+bool ShowMainUI = true;
+
 extern CompilersMode gCompilerMode;
 
 void InitializeUIData()
@@ -26,7 +21,7 @@ void InitializeUIData()
 		if (!std::filesystem::is_directory(Dir))
 			continue;
 
-		auto& LevelInfo = Files.emplace_back();
+		auto& LevelInfo = gCompilerMode.Files.emplace_back();
 		LevelInfo.Name = Dir.xfilename();
 
 	}
@@ -80,7 +75,7 @@ void RenderMainUI()
 				ImGui::TableHeadersRow();
 
 				size_t Iter = 1;
-				for (auto& [File, Selected] : Files)
+				for (auto& [File, Selected] : gCompilerMode.Files)
 				{
 					ImGui::TableNextColumn();
 					ImGui::Selectable(File.c_str());
@@ -89,7 +84,7 @@ void RenderMainUI()
 					ImGui::Checkbox(("##check" + File).c_str(), &Selected);
 					Iter++;
 
-					if (Iter < Files.size())
+					if (Iter < gCompilerMode.Files.size())
 					{
 						ImGui::TableNextRow();
 					}
@@ -121,69 +116,36 @@ void RenderMainUI()
 	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 	{
 		bool isReady = false;
-		if (gCompilerMode.LC)
+		if (gCompilerMode.LC || gCompilerMode.DO)
 		{
-			for (auto& FILE : Files)
-			{
-				if (FILE.Select)
-				{
-					strcpy(gCompilerMode.level_name, FILE.Name.c_str());
-					break;
-				}
-			}
 			isReady = true;
-			Msg("Level For Building : %s", gCompilerMode.level_name);
 		}
 
 		if (gCompilerMode.AI)
 		{
-			xr_string temp_maps;
-
-			int Size = 0;
-			for (auto& FILE : Files)
-			{
-				if (FILE.Select)
-				{
-					if (!temp_maps.empty())
-					{
-						temp_maps += ",";
-					}
-					
-					temp_maps += FILE.Name.c_str();
-					Size++;
-					//break;
-				}
-			}
-
-			if (Size > 1)
-				temp_maps.pop_back();
-
 
 			if (gCompilerMode.AI_BuildLevel)
 			{
-				if (Size > 1)
-				{
-					Msg("Dont Correct Level Size > 1");
-					return;
-				}
-
-				strcpy(gCompilerMode.level_name, temp_maps.c_str());
 				isReady = true;
 			}
 
 			if (gCompilerMode.AI_BuildSpawn)
 			{
-				strcpy(gCompilerMode.level_name, temp_maps.c_str());
 				isReady = true;
 			}
-
-
-
-			Msg("Level For Building : %s", temp_maps.c_str());
 		}
 
 		if (isReady)
 		{
+			for (auto& FILE : gCompilerMode.Files)
+			{
+				if (FILE.Select)
+				{
+					Msg("Level For Building : %s", FILE.Name);
+					break;
+				}
+			}
+
 			ShowMainUI = false;
 			extern void StartCompile();
 			StartCompile();
@@ -344,7 +306,13 @@ void RenderCompilerUI()
 	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
 
 	// Level name
-	ImGui::Text("%s", gCompilerMode.level_name);
+	xr_string Levels;
+
+	for (auto& [Name, _] : gCompilerMode.Files)
+	{
+		Levels += Name;
+	}
+	ImGui::Text("%s", Levels.c_str());
 	ImGui::Separator();
 	//ImGui::ProgressBar(0.00); надо бы сделать общий прогресс бар
 	//ImGui::Separator();

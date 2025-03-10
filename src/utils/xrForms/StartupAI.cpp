@@ -38,44 +38,66 @@ extern CompilersMode gCompilerMode;
 void StartupAI()
 {
 	// Load project
-	string4096 name;
-	strcpy(name, gCompilerMode.level_name);
 
-	if (xr_strlen(name))
-		xr_strcat(name, "\\");
-
-	string_path			prjName;
-	prjName[0] = 0;
-	bool				can_use_name = false;
-	
-	if (xr_strlen(name) < sizeof(string_path))
+	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		can_use_name = true;
-		FS.update_path(prjName, "$game_levels$", name);
+		if (!Selected)
+			continue;
+
+		string4096 name;
+		strcpy(name, Name.data());
+
+		if (xr_strlen(name))
+			xr_strcat(name, "\\");
+
+		string_path prjName;
+		prjName[0] = 0;
+		bool can_use_name = false;
+
+		if (xr_strlen(name) < sizeof(string_path))
+		{
+			can_use_name = true;
+			FS.update_path(prjName, "$game_levels$", name);
+		}
+
+		FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
+
+		if (gCompilerMode.AI_BuildLevel)
+		{
+			R_ASSERT3(can_use_name, "Too big level name", name);
+
+			char* output = (pstr)LEVEL_GRAPH_NAME;
+
+			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
+		}
+
+		if (gCompilerMode.AI_Verify)
+		{
+			R_ASSERT3(can_use_name, "Too big level name", name);
+			verify_level_graph(prjName, gCompilerMode.AI_Verbose);
+			return;
+		}
 	}
 
-	FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
-
-	if (gCompilerMode.AI_BuildLevel)
-	{
-		R_ASSERT3(can_use_name, "Too big level name", name);
-
-  		char* output = (pstr) LEVEL_GRAPH_NAME;
-
-		xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
-	}
-	 
-	if (gCompilerMode.AI_Verify)
-	{
-		R_ASSERT3(can_use_name, "Too big level name", name);
-		verify_level_graph(prjName, gCompilerMode.AI_Verbose);
-		return;
-	}
-	 
 	if (gCompilerMode.AI_BuildSpawn)
 	{
+		xr_string Levels;
+
+		for (auto& [Name, Selected] : gCompilerMode.Files)
+		{
+			if (!Selected)
+				continue;
+
+			if (!Levels.empty())
+				Levels += ",";
+
+			Levels += Name;
+		}
+
+		string512 name = {};
+		strcpy(name, Levels.data());
 		if (xr_strlen(name))
-			name[xr_strlen(name) - 1] = 0;
+			name[xr_strlen(name)] = 0;
 
 		xr_string output = gCompilerMode.AI_spawn_name;
 
@@ -90,7 +112,7 @@ void StartupAI()
 			start_level = nullptr;
 		}
 
- 		clear_temp_folder();
+		clear_temp_folder();
 		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
 	
