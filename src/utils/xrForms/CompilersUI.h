@@ -15,6 +15,7 @@ struct CompilersMode
 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
  	bool ClearTemp = false;
+	bool SkipTHM = false;
 
 	bool AI = false;
 	bool DO = false;

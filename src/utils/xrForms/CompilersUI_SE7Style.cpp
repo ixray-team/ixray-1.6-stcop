@@ -291,6 +291,7 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
 
   		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::Checkbox("ShowMain", &ShowMainUI);
 

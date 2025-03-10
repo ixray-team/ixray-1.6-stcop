@@ -245,8 +245,7 @@ void CBuild::Run	(LPCSTR P)
 		fs->w_chunk			(2,&*L_static().sun.begin(),L_static().sun.size()*sizeof(R_Light));
 		FS.w_close			(fs);
 	}
-
-
+	 
 	//****************************************** Optimizing + checking for T-junctions
 	mem_Compact();
 
@@ -270,11 +269,6 @@ void CBuild::Run	(LPCSTR P)
 	Phase						("Building collision database (CFORM)...");
 	mem_Compact					();
 	BuildCForm					();
-
-#ifdef CFORM_ONLY
-	return;
-#endif
-
 	BuildPortals				(*fs);
 
 	//****************************************** T-Basis
@@ -284,14 +278,7 @@ void CBuild::Run	(LPCSTR P)
 		xrPhase_TangentBasis		();
 		mem_Compact					();
 	}
-
-	//****************************************** GLOBAL-RayCast model
-	FPU::m64r					();
-	Phase						("Building rcast-CFORM model...");
-	mem_Compact					();
-	Light_prepare				();
-	BuildRapid					(TRUE);
-
+ 
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
 	{

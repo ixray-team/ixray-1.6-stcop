@@ -19,7 +19,7 @@ xrCriticalSection	task_CS
 
 static thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 xr_vector<int>		task_pool;
-
+xr_atomic_u32		ProgressData;
 class CLMThread		: public CThread
 {
 private:
@@ -41,6 +41,8 @@ public:
 		{
 			// Get task
 			task_CS.Enter		();
+			Progress(float(ProgressData.load()) / float (lc_global_data()->g_deflectors().size()) );
+
  			if (task_pool.empty())	
 			{
 				task_CS.Leave		();
@@ -51,6 +53,10 @@ public:
 			D					= lc_global_data()->g_deflectors()[ID];
 			task_pool.pop_back	();
 			task_CS.Leave		();
+
+			ProgressData.fetch_add(1);
+
+			
 
 			// Perform operation
 			try {
