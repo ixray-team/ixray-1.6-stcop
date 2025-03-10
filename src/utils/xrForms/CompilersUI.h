@@ -34,6 +34,7 @@ struct CompilersMode
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
 	float LC_Pixels  = 10;
+	float MergeDistance = 0.005f;
  
 	bool DO_NoSun = false;
 
@@ -54,5 +55,5 @@ struct CompilersMode
 	ImFont* CompilerIconsFont;
 };
 void RenderMainUI();
-void RenderCompilerUI();
+void RenderCompilerUI(int X, int Y);
 void InitializeUIData();

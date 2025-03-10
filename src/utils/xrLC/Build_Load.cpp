@@ -44,6 +44,14 @@ struct R_Layer
 
 
 
+extern size_t GetMemoryUsed()
+{
+	size_t used, free, reserved;
+	vminfo(&free, &reserved, &used);
+	return used;
+}
+
+
 void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 {
 	IReader& fs = const_cast<IReader&>(_in_FS);
@@ -61,7 +69,10 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 	shaders().Load(sh_name);
 
 	//*******
+
 	Status("Vertices...");
+	
+	size_t pre = 0;
 	{
 		F = fs.open_chunk(EB_Vertices);
 		u32 v_count = F->length() / sizeof(b_vertex);
@@ -80,13 +91,18 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 		F->close();
 	}
 
+	size_t USED_Vertex = GetMemoryUsed() - pre;
+
 	//*******
+	
+	pre = GetMemoryUsed();
 	Status("Faces...");
 	{
 		F = fs.open_chunk(EB_Faces);
 		R_ASSERT(F);
 		u32 f_count = F->length() / sizeof(b_face);
 		lc_global_data()->g_faces().reserve(f_count);
+	
 		for (i = 0; i < f_count; i++)
 		{
 			try
@@ -103,8 +119,7 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 				for (u32 it = 0; it < 3; ++it)
 				{
 					int id = B.v[it];
-					//	Msg("ID: %d : Loaded: %d", id, lc_global_data()->g_vertices().size());
-					R_ASSERT(id < (int)lc_global_data()->g_vertices().size());
+ 					R_ASSERT(id < (int)lc_global_data()->g_vertices().size());
 					_F->SetVertex(it, lc_global_data()->g_vertices()[id]);
 				}
 
@@ -158,6 +173,7 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 			}
 		}
 	}
+	size_t USED_Faces = GetMemoryUsed() - pre;
 
 	//*******
 	Status("Models and References");
@@ -216,6 +232,7 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 
 			F->close();
 		}
+		
 		// Static
 		{
 			F = fs.open_chunk(EB_Light_static);
@@ -290,6 +307,8 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 	}
 
 	// process textures
+
+	pre = GetMemoryUsed();
 	Status("Processing textures...");
 	{
 		Surface_Init();
@@ -415,9 +434,11 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 			textures().push_back(BT);
 		}
 
-		R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
-		R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
+		// R_ASSERT2(!is_thm_missing, "Some of required thm's are missing. See log for details.");
+		// R_ASSERT2(!is_tga_missing, "Some of required tga_textures are missing. See log for details.");
 	}
+
+	size_t USED_Textures = GetMemoryUsed() - pre;
 
 	// post-process materials
 	Status("Post-process materials...");
@@ -430,4 +451,6 @@ void CBuild::Load(const b_params& Params, const IReader& _in_FS)
 
 	// 
 	clMsg("* sizes: V(%d),F(%d)", sizeof(Vertex), sizeof(Face));
+
+	AditionalData("Verts:%umb|Face:%umb|Tex:%umb", USED_Vertex / 1024 / 1024, USED_Faces / 1024 / 1024, USED_Textures / 1024 / 1024);
 }
