@@ -2,7 +2,6 @@
 #include "dxRenderFactory.h"
 
 #include "dxStatGraphRender.h"
-#include "dxLensFlareRender.h"
 
 #include "dxThunderboltRender.h"
 #include "dxThunderboltDescRender.h"
