@@ -1,7 +1,8 @@
 #pragma once
-
 #include "XRayFHierrarhyVisual.h"
-class XRayFLOD : public XRayFHierrarhyVisual
+
+class CDS0_FLOD :
+	public CDS0_FHierrarhyVisual
 {
 public:
 	struct _vertex
@@ -31,10 +32,11 @@ public:
 
 	_face			facets[8];
 	float			lod_factor;
+
 public:
-	XRayFLOD();
-	virtual ~XRayFLOD();
+	CDS0_FLOD();
+	virtual ~CDS0_FLOD();
 	virtual void Render(float LOD);									// LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
 	virtual void Load(LPCSTR N, IReader* data, u32 dwFlags);
-	virtual void Copy(XRayRenderVisual* pFrom);
+	virtual void Copy(CDS0_RenderVisual* pFrom);
 };

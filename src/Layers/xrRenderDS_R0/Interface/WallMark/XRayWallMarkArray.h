@@ -1,8 +1,8 @@
 #pragma once
-class XRayWallMarkArray:public IWallMarkArray 
+class CDS0_WallMarkArray:public IWallMarkArray 
 {
 public:
-	XRayWallMarkArray();
+	CDS0_WallMarkArray();
 	virtual void Copy(IWallMarkArray &_in) ;
 
 	virtual void	AppendMark(LPCSTR s_textures);

@@ -1,9 +1,9 @@
 #pragma once
-class XRayFlareRender:public IFlareRender
+class CDS0_FlareRender:public IFlareRender
 {
 public:
-	XRayFlareRender();
-	virtual ~XRayFlareRender();
+	CDS0_FlareRender();
+	virtual ~CDS0_FlareRender();
 	virtual void Copy(IFlareRender &_in) ;
 
 	virtual void CreateShader(LPCSTR sh_name, LPCSTR tex_name);
