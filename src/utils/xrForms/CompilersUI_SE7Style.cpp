@@ -83,7 +83,8 @@ void RenderMainUI()
 				for (auto& [File, Selected] : gCompilerMode.Files)
 				{
 					ImGui::TableNextColumn();
-					ImGui::Selectable(File.c_str());
+					xr_string U8Str = Platform::ANSI_TO_UTF8(File);
+					ImGui::Selectable(U8Str.c_str());
 
 					ImGui::TableNextColumn();
 					ImGui::Checkbox(("##check" + File).c_str(), &Selected);
