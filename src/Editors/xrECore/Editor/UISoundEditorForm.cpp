@@ -59,7 +59,7 @@ void UISoundEditorForm::Update()
     {
         if (!Form->IsClosed())
         {
-            if (ImGui::BeginPopupModal("SoundEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize, true))
+            if (ImGui::BeginPopupModal("Sound Editor", nullptr, ImGuiWindowFlags_AlwaysAutoResize, true))
             {
                 Form->Draw();
                 ImGui::EndPopup();
