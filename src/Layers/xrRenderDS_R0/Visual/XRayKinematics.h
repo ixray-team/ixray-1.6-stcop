@@ -142,7 +142,7 @@ public:
 	virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
 	virtual IRenderVisual* dcast_RenderVisual() { return this; }
 	virtual IKinematics* dcast_PKinematics() { return this; }
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void						DebugRender(Fmatrix& XFORM);
 #endif
 public:
