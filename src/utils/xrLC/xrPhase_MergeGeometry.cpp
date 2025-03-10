@@ -122,9 +122,6 @@ ICF BOOL	ValidateMerge(u32 f1, u32 f2, float& volume, const Fbox& bb, const Fbox
 	return TRUE;
 }
  
-
-void FindBestMergeCandidate( u32* selected ,  float* selected_volume , u32 split , u32 split_size , vecFace* subdiv , Fbox* bb_base_orig , Fbox* bb_base );
-
 auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmaterial_subdiv, xr_vector<data_material>& data_vector,  Fbox bb_base, Fbox bb_base2)
 {
 	u32 SelectedStart = CurrentProcessedID;
@@ -200,9 +197,7 @@ void MergeCandidate()
 
 			grid_map[{cell_x, cell_y}].push_back(data);
 		}
-
-
-
+		 
 		for (auto& grid : grid_map)
 		{
 
@@ -266,7 +261,7 @@ void MergeCandidate()
 		}
 
 		if (MATERIAL_IDX % 256 == 0 || grid_map.size() > 128)
-  			Msg("MaterialID [%u]/[%u] Cells Size[%u]", MATERIAL_IDX, thread_faces, grid_map.size());
+  			Msg("MaterialID [%u]/[%u] Cells Size[%u]", MATERIAL_IDX, thread_faces.size(), grid_map.size());
 	}
 
 	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),

@@ -85,8 +85,7 @@ void CBuild::xrPhase_MergeLM()
 	while (Layer.size())
 	{
 		VERIFY( lc_global_data() );
-
-
+ 
 		// Sort layer by similarity (state changes)
 		// + calc material area
 		Status		("Selection...");
@@ -125,18 +124,13 @@ void CBuild::xrPhase_MergeLM()
 		clMsg("Erase Layer(Deflects) Time: %u ms", t.GetElapsed_ms()); t.Start();
 		
 		// Save
-
- 		AditionalData("Lmaps: %u, Merging:[%u/%u]|%u", lc_global_data()->lightmaps().size(), MERGED, TotalMerged, Layer.size());
-
-		Progress(float(float(MERGED) / float(StartSize)));
+  		AditionalData("Lmaps: %u, Merging:[%u/%u]|%u", lc_global_data()->lightmaps().size(), MERGED, TotalMerged, Layer.size());
+ 		Progress(float(float(MERGED) / float(StartSize)));
 	}
 
 	VERIFY(lc_global_data());
 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
 	Progress(1.f);
-
-	// Cleanup deflectors
-	// xrPhase_SaveLmaps();
 }
 
 

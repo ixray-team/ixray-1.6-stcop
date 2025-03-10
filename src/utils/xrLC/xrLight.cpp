@@ -165,12 +165,7 @@ void CBuild::Light()
 	// Save Lmaps
 	Phase("LIGHT: Save lightmaps...");
 	xrPhase_SaveLmaps();
-
-
-	for (auto D : lc_global_data()->g_deflectors())
-		xr_delete(D);
-	lc_global_data()->g_deflectors().clear();
-	 
+ 	 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
