@@ -38,10 +38,16 @@ void SaveUVM			(LPCSTR fname, xr_vector<b_rc_face>& vm)
 	FS.w_close	(W);
 }
 
-XRLC_LIGHT_API void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb);
+#include <../xrLC_Light/xrDeflector.h>
 
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
+	if (lc_global_data()->GetIsIntelUse())
+	{
+		IntelEmbereLOAD(bSaveForOtherCompilers);
+		return;
+	};
+
 	float	p_total			= 0;
 	float	p_cost			= 1.f/(lc_global_data()->g_faces().size());
 
@@ -116,11 +122,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	// "Building tree..
 	Status					("Building search tree...");
-	
-	if (lc_global_data()->GetIsIntelUse())
-		IntelEmbereLOAD(CL);
-	else 
-		lc_global_data()->create_rcmodel( CL );
+	lc_global_data()->create_rcmodel(CL);
 
 	extern void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL);
 	
@@ -128,7 +130,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	string_path				fn;
 
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
-	if (g_params().m_quality!=ebqDraft) {
+	if (g_params().m_quality!=ebqDraft)
+	{
 		if (keep_temp_files)
 			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}

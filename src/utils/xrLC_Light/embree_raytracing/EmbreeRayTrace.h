@@ -7,10 +7,16 @@
 
 #include <embree4/rtcore.h>
 
+struct FaceDataIntel
+{
+	Fvector v1, v2, v3;
+	void* ptr;
+};
 
 // Vertex, Tri Buffers
 namespace Embree
 {
+	
 
 	struct VertexEmbree
 	{
@@ -24,6 +30,8 @@ namespace Embree
 	{
 		u32 point1, point2, point3;
 		void SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* emb_verts, size_t& last_index);
+		// Для релизации без алокации лишней
+		void SetVertexes(Fvector* Vs, VertexEmbree* emb_verts, size_t& last_index);
 	};
 
 
@@ -34,5 +42,5 @@ namespace Embree
 
 	void errorFunction(void* userPtr, enum RTCError error, const char* str);
 	void IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse);
-
+	void GetGlobalData(size_t& counts_faces, Embree::VertexEmbree* verts_embree, Embree::TriEmbree* faces_embree, xr_vector<void*>* dummy, bool useForOthers = false);
 }
