@@ -199,8 +199,14 @@ void CAI_Stalker::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
 	}
 
 #ifdef DEBUG
-	P					= weapon->get_LastFP();
-	D					= weapon->get_LastFD();
+	if (inventory().ActiveItem())
+	{
+		if(CWeapon* weapon = inventory().ActiveItem()->cast_weapon())
+		{
+			P = weapon->get_LastFP();
+			D = weapon->get_LastFD();
+		}
+	}
 	VERIFY				(!fis_zero(D.square_magnitude()));
 #endif
 }
