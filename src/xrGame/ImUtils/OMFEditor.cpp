@@ -25,8 +25,8 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 	{
 		if (xr_EFS)
 		{
-			xr_stack_wstring<sizeof(string_path)> local_path;
-			bool status = xr_EFS->GetOpenName(local_path, L"OMF file\0*.omf\0");
+			xr_stack_tstring<sizeof(string_path)> local_path;
+			bool status = xr_EFS->GetOpenName(local_path, XR_TEXT("OMF file\0*.omf\0"));
 			p_state->is_file_loaded = status;
 
 			if (p_state->is_file_loaded)
