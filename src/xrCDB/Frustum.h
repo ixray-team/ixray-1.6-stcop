@@ -41,11 +41,11 @@ class XRCDB_API	CFrustum
 public:
 	struct fplane	: public Fplane
 	{
-		u32			aabb_overlap_id;	// [0..7]
+		u32			aabb_overlap_id = 0;	// [0..7]
 		void		cache	();	
 	};
-	fplane			planes	[FRUSTUM_MAXPLANES];
-	int				p_count;
+	fplane			planes[FRUSTUM_MAXPLANES] = {};
+	int				p_count = 0;
 
 public:
 	ICF EFC_Visible		AABB_OverlapPlane	(const fplane& P, const float* mM) const
