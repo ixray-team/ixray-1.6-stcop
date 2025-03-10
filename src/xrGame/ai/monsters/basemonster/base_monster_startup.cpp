@@ -97,15 +97,15 @@ void CBaseMonster::Load(LPCSTR section)
 
 	m_feel_enemy_who_just_hit_max_distance	=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"feel_enemy_who_just_hit_max_distance", 
-												detail::base_monster::feel_enemy_who_just_hit_max_distance);
+												::detail::base_monster::feel_enemy_who_just_hit_max_distance);
 
 	m_feel_enemy_max_distance				=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"feel_enemy_max_distance", 
-												detail::base_monster::feel_enemy_max_distance);
+												::detail::base_monster::feel_enemy_max_distance);
 
 	m_feel_enemy_who_made_sound_max_distance =	READ_IF_EXISTS(pSettings, r_float, section, 
 												"feel_enemy_who_made_sound_max_distance", 
-												detail::base_monster::feel_enemy_who_made_sound_max_distance);
+												::detail::base_monster::feel_enemy_who_made_sound_max_distance);
 	
 	//------------------------------------
 	// Steering Behaviour 
@@ -162,21 +162,21 @@ void CBaseMonster::PostLoad (LPCSTR section)
 	aom.enabled								=	(READ_IF_EXISTS(pSettings, r_bool, section, 
 												"aom_enabled", FALSE)) != 0;
 	aom.far_radius							=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_far_radius", detail::base_monster::aom_far_radius);
+												"aom_far_radius", ::detail::base_monster::aom_far_radius);
 	aom.attack_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
-												"aom_attack_radius", detail::base_monster::aom_attack_radius);
+												"aom_attack_radius", ::detail::base_monster::aom_attack_radius);
 	aom.update_side_period					=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_update_side_period", 
-												detail::base_monster::aom_update_side_period);
+												::detail::base_monster::aom_update_side_period);
 	aom.prediction_factor					=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_prediction_factor", 
-												detail::base_monster::aom_prediction_factor);
+												::detail::base_monster::aom_prediction_factor);
 	aom.prepare_time						=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_prepare_time", 
-												detail::base_monster::aom_prepare_time);
+												::detail::base_monster::aom_prepare_time);
 	aom.prepare_radius						=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_prepare_radius", 
-												detail::base_monster::aom_prepare_radius);
+												::detail::base_monster::aom_prepare_radius);
 	aom.max_go_close_time					=	READ_IF_EXISTS(pSettings, r_float, section, 
 												"aom_max_go_close_time", 8.f);
 
