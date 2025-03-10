@@ -968,7 +968,7 @@ bool xrServer::verify_entities				() const
 	for ( ; I != E; ++I) {
 		VERIFY2							((*I).first != 0xffff,"SERVER : Invalid entity id as a map key - 0xffff");
 		VERIFY2							((*I).second,"SERVER : Null entity object in the map");
-		VERIFY3							((*I).first == (*I).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*I).second->name_replace());
+		VERIFY3							((*I).first == (*I).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*I).second ? (*I).second->name_replace() : "");
 		verify_entity					((*I).second);
 	}
 	return								(true);
@@ -983,8 +983,8 @@ void xrServer::verify_entity				(const CSE_Abstract *entity) const
 			make_string<const char*>("SERVER : Cannot find parent in the map [%s][%s]",entity->name_replace(),
 			entity->name()));
 		VERIFY3							((*J).second,"SERVER : Null entity object in the map",entity->name_replace());
-		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*J).second->name_replace());
-		VERIFY3							(std::find((*J).second->children.begin(),(*J).second->children.end(),entity->ID) != (*J).second->children.end(),"SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children",(*J).second->name_replace());
+		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second ? (*J).second->name_replace() : "");
+		VERIFY3							(std::find((*J).second->children.begin(),(*J).second->children.end(),entity->ID) != (*J).second->children.end(),"SERVER : Parent/Children relationship mismatch - Object has parent, but corresponding parent doesn't have children", (*J).second ? (*J).second->name_replace() : "");
 	}
 
 	xr_vector<u16>::const_iterator		I = entity->children.begin();
@@ -994,8 +994,8 @@ void xrServer::verify_entity				(const CSE_Abstract *entity) const
 		xrS_entities::const_iterator	J = entities.find(*I);
 		VERIFY3							(J != entities.end(),"SERVER : Cannot find children in the map",entity->name_replace());
 		VERIFY3							((*J).second,"SERVER : Null entity object in the map",entity->name_replace());
-		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID",(*J).second->name_replace());
-		VERIFY3							((*J).second->ID_Parent == entity->ID,"SERVER : Parent/Children relationship mismatch - Object has children, but children doesn't have parent",(*J).second->name_replace());
+		VERIFY3							((*J).first == (*J).second->ID,"SERVER : ID mismatch - map key doesn't correspond to the real entity ID", (*J).second ? (*J).second->name_replace() : "");
+		VERIFY3							((*J).second->ID_Parent == entity->ID,"SERVER : Parent/Children relationship mismatch - Object has children, but children doesn't have parent", (*J).second ? (*J).second->name_replace() : "");
 	}
 }
 
