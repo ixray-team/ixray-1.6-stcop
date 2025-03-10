@@ -76,13 +76,65 @@ public:
 			return m_buffer[index];
 	}
 
+	inline stack_string<char_t, _kStringLength> substr(number_type pos = 0, number_type count = number_type(-1)) const
+	{
+		stack_string<char_t, _kStringLength> result;
+
+		const number_type len = this->length();
+
+		if (pos >= len)
+			return result;
+
+		count = (count == number_type(-1) || pos + count > len) ? len - pos : count;
+
+		result.append(this->m_buffer + pos, count);
+
+		return result;
+	}
+
+	inline void copy(char_t* p_dest, number_type pos, number_type count) const
+	{
+		assert(p_dest && "don't pass invalid string please");
+
+		if (!p_dest)
+			return;
+
+		const number_type len = this->length();
+
+		if (pos >= len)
+			return;
+
+		count = (pos + count > len) ? len - pos : count;
+		std::memcpy(p_dest, this->m_buffer + pos, count * sizeof(char_t));
+		p_dest[count] = char_t();
+	}
+
+	inline number_type find(const char_t* p_str, number_type pos = 0) const 
+	{
+		assert(p_str && "don't pass an invalid string please");
+
+		if constexpr (std::is_same_v<char_t, char>)
+		{
+			const char* found = std::strstr(this->m_buffer + pos, p_str);
+			return found ? found - this->m_buffer : number_type(-1);
+		}
+
+		if constexpr (std::is_same_v<char_t, wchar_t>)
+		{
+			const wchar_t* found = std::wcsstr(this->m_buffer + pos, p_str);
+			return found ? found - this->m_buffer : number_type(-1);
+		}
+
+		return number_type(-1);
+	}
+
 	// non-const
 	inline iterator begin() { return this->m_buffer; }
 	inline iterator end() { return this->m_buffer + this->size(); }
 
 	inline void clear(void) { m_buffer[0] = char_t(0); }
 	inline pointer data(void) { return &m_buffer[0]; }
-	inline number_type size(void)
+	inline number_type size(void) const
 	{
 		if constexpr (std::is_same<char, char_t>::value)
 		{
@@ -95,7 +147,7 @@ public:
 		}
 	}
 
-	inline number_type length(void) { return this->size(); }
+	inline number_type length(void) const { return this->size(); }
 
 	inline reference at(number_type index)
 	{
@@ -131,6 +183,37 @@ public:
 		return *this;
 	}
 
+	inline void swap(const stack_string<char_t, _kStringLength>& data)
+	{
+		char_t temp[_kStringLength];
+		constexpr number_type _kPrecalcSize = _kStringLength * sizeof(char_t);
+
+		std::memcpy(temp, this->m_buffer, _kPrecalcSize);
+		std::memcpy(this->m_buffer, data.m_buffer, _kPrecalcSize);
+		std::memcpy(data.m_buffer, temp, _kPrecalcSize);
+	}
+
+	inline void push_back(char_t c)
+	{
+		const number_type len = this->length();
+
+		if (len < _kStringLength)
+		{
+			this->m_buffer[len] = c;
+			this->m_buffer[len + 1] = char_t();
+		}
+	}
+
+	inline void pop_back()
+	{
+		const number_type len = this->length();
+
+		if (len > 0)
+		{
+			this->m_buffer[len - 1] = char_t();
+		}
+	}
+
 	// operators
 	inline stack_string<char_t, _kStringLength>& operator+=(char_t symbol)
 	{
@@ -159,6 +242,15 @@ public:
 	inline reference operator[](size_t pos) { return this->m_buffer[pos]; }
 	inline const_reference operator[](size_t pos) const { return this->m_buffer[pos]; }
 
+private:
+	void append(const char_t* str, size_t count) {
+		const size_t current_len = length();
+		const size_t available = _kStringLength - current_len;
+		count = (count > available) ? available : count;
+
+		std::memcpy(m_buffer + current_len, str, count * sizeof(char_t));
+		m_buffer[current_len + count] = char_t();
+	}
 
 
 private:
@@ -168,7 +260,18 @@ private:
 template<typename char_t, stack_string<char, 1>::number_type _kSize>
 inline bool operator==(const stack_string<char_t, _kSize>& left, const stack_string<char_t, _kSize>& right)
 {
-	return std::memcmp(left.c_str(), right.c_str(), _kSize * sizeof(char_t)) == 0;
+	if constexpr (std::is_same_v<char_t, char>)
+	{
+		return !strcmp(left.c_str(), right.c_str());
+	}
+
+	if constexpr (std::is_same_v<char_t, wchar_t>)
+	{
+		return !wcscmp(left.c_str(), right.c_str());
+	}
+
+	assert(false && "unsupported char type, report to developers");
+	return false;
 }
 
 template<typename char_t, stack_string<char, 1>::number_type _kSize>
