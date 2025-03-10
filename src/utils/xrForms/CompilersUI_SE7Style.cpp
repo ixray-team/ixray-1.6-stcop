@@ -100,7 +100,7 @@ void RenderMainUI()
 			ImGui::TableSetColumnIndex(1);
 			
 			DrawCompilerConfig();
- 			
+			
 			ImGui::TableSetColumnIndex(2);
 			
 			DrawLCConfig();
@@ -280,19 +280,19 @@ void DrawAIConfig()
 		 
 				ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
 
- 				ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
+				ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
 				ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
 				ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
 				ImGui::Checkbox("Verbose", &gCompilerMode.AI_Verbose);
- 	  
+	  
 				ImGui::EndDisabled();
 		
 			ImGui::Separator();
 
 			ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
 				ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
- 				
- 				ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
+				
+				ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
 
 				ImGui::Text("Name all.spawn :");
 				ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
@@ -327,8 +327,8 @@ void RenderCompilerUI()
 {
 	//static const char* levelName = "LevelTextName";
 
-
-	static std::vector<std::string> logMessages = {
+	static xr_vector<xr_string> logMessages =
+	{
 		"[INFO] log",
 		"[WARNING] log",
 	};
@@ -363,9 +363,6 @@ void RenderCompilerUI()
 		};
 
 	static bool autoScroll = true;
-
-
-
 
 		// Table
 	if (ImGui::BeginTable("IterationsTable", 8, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
