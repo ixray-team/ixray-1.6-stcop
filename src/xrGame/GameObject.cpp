@@ -768,6 +768,11 @@ void VisualCallback	(IKinematics *tpKinematics)
 	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY							(game_object);
 	
+	if (game_object == nullptr)
+	{
+		return;
+	}
+
 	CGameObject::CALLBACK_VECTOR_IT	I = game_object->visual_callbacks().begin();
 	CGameObject::CALLBACK_VECTOR_IT	E = game_object->visual_callbacks().end();
 	for ( ; I != E; ++I)
