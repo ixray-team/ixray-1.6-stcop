@@ -23,7 +23,12 @@ typedef void	tesscb_face			(Face*		F);	// new face
 typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 
 class  base_lighting;
- 
+
+
+
+extern bool CheckInfinity_FBOX(Fbox& box);
+extern void Validate_gXsplit();
+
 //////////////////////////////////////////////////////////////////////////
 class CBuild  
 {
