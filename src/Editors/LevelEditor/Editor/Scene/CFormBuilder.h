@@ -1,9 +1,9 @@
 #pragma once
-class CFromBuilder
+class CFormBuilder
 {
 public:
-	CFromBuilder();
-	virtual			~CFromBuilder();
+	CFormBuilder();
+	virtual			~CFormBuilder();
 	bool build();
 	bool empty()const;
 	void clear();
