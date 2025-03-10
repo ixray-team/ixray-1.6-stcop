@@ -88,25 +88,22 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 	}
 }
 
-
-
-
-void CRocketLauncher::LaunchRocket(const Fmatrix& xform,  
-								   const Fvector& vel, 
-								   const Fvector& angular_vel)
+void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
 {
 	VERIFY2(_valid(xform),"CRocketLauncher::LaunchRocket. Invalid xform argument!");
-	getCurrentRocket()->SetLaunchParams(xform, vel, angular_vel);
-
-	m_launched_rockets.push_back( getCurrentRocket() );
+	if (CCustomRocket* Rocket = getCurrentRocket())
+	{
+		Rocket->SetLaunchParams(xform, vel, angular_vel);
+		m_launched_rockets.push_back(Rocket);
+	}
 }
 
-CCustomRocket*	CRocketLauncher::getCurrentRocket()
+CCustomRocket* CRocketLauncher::getCurrentRocket()
 {
-	if( m_rockets.size() )
+	if (!m_rockets.empty())
 		return m_rockets.back();
-	else
-		return (CCustomRocket*)0;
+
+	return nullptr;
 }
 
 void CRocketLauncher::dropCurrentRocket()
