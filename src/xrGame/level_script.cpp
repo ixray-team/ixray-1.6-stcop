@@ -1014,6 +1014,37 @@ namespace level_nearest
 	}
 }
 
+void ReloadLanguage(const char* lang)
+{
+	g_pStringTable->ReloadLanguage(lang);
+}
+
+
+void RefreshNamesNPC()
+{
+	for (auto& [id, pointer] : ai().alife().objects().objects())
+	{
+		auto trader = pointer->cast_trader_abstract();
+		if (trader == nullptr)
+		{
+			continue;
+		}
+
+		trader->m_character_name = TranslateName(trader->m_character_name_raw.c_str());
+		if (g_pGameLevel == nullptr)
+		{
+			continue;
+		}
+
+		CObject* obj = g_pGameLevel->Objects.net_Find(id);
+		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj);
+		if (owner)
+		{
+			owner->RefreshNamesNPC();
+		}
+	}
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1283,9 +1314,10 @@ void CLevel::script_register(lua_State *L)
 //			def("get_surge_time",	Game::get_surge_time),
 //			def("get_object_by_name",Game::get_object_by_name),
 		
-		def("start_tutorial",		&start_tutorial),
-		def("stop_tutorial",		&stop_tutorial),
-		def("has_active_tutorial",	&has_active_tutotial),
-		def("translate_string",		&translate_string)
+			def("start_tutorial",		&start_tutorial),
+			def("stop_tutorial",		&stop_tutorial),
+			def("has_active_tutorial",	&has_active_tutotial),
+			def("translate_string",		&translate_string),
+			def("reload_language", &ReloadLanguage)
 	];
 }

@@ -106,8 +106,7 @@ void clean_game_globals()
 	//static shader for blood
 	CEntityAlive::UnloadBloodyWallmarks				();
 	CEntityAlive::UnloadFireParticles				();
-	//очищение памяти таблицы строк
-	CStringTable::Destroy							();
+
 	// Очищение таблицы цветов
 	CUIXmlInit::DeleteColorDefs						();
 	// Очищение таблицы идентификаторов рангов и отношений сталкеров

@@ -14,19 +14,17 @@
 
 using namespace luabind;
 
-LPCSTR profile_name_script (CSE_ALifeTraderAbstract* ta)
+#ifdef XRGAME_EXPORTS
+#include "InventoryOwner.h"
+
+LPCSTR profile_name_script(CSE_ALifeTraderAbstract* ta)
 {
 	return *ta->character_profile();
 }
-#ifdef XRGAME_EXPORTS
+
 void profile_name_set_script(CSE_ALifeTraderAbstract* ta, LPCSTR str)
 {
 	ta->set_character_profile(str);
-}
-
-void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR str)
-{
-	ta->m_character_name = str;
 }
 
 LPCSTR character_name_script(CSE_ALifeTraderAbstract* ta)
@@ -45,7 +43,24 @@ LPCSTR icon_name_script(CSE_ALifeTraderAbstract* ta)
 	}
 	return *ta->m_icon_name;
 }
+
+void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR str) {
+	ta->m_character_name_raw = str;
+	ta->m_character_name = TranslateName(ta->m_character_name_raw.c_str());
+
+	if (g_pGameLevel)
+	{
+		CObject* obj = g_pGameLevel->Objects.net_Find(ta->object_id());
+		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj);
+		if (owner)
+			owner->ChangeName(str);
+	}
+}
+LPCSTR character_name_str_script(CSE_ALifeTraderAbstract* ta) {
+	return ta->m_character_name_raw.c_str();
+}
 #endif
+
 #pragma optimize("s",on)
 void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 {
@@ -59,6 +74,7 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 			.def("set_profile_name", &profile_name_set_script)
 			.def("character_name", &character_name_script)
 			.def("set_character_name", &set_character_name_script)
+			.def("character_name_str", &character_name_str_script)
 			.def("rank",			&Rank)
 			.def("set_rank",		&SetRank)
 			.def("reputation",		&Reputation)
