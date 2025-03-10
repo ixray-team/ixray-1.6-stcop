@@ -1,0 +1,127 @@
+name: 'Build library'
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'dynasm/**'
+      - 'etc/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.ltx'
+      - '**/*.json'
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/**'
+      - 'gamedata/**'
+      - 'dynasm/**'
+      - 'etc/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '**/*.cmake'
+      - '**/*.ltx'
+      - '**/*.json'
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build-library:
+    name: 'Build library'
+
+    strategy:
+      matrix:
+        system:
+          - windows-2019
+          - windows-2022
+          - ubuntu-20.04
+          - ubuntu-22.04
+          - ubuntu-24.04
+        compiler:
+          - VS2019
+          - VS2022
+          - GCC
+          - Clang
+        platform:
+          - Win32
+          - x64
+        config:
+          - Debug
+          - RelWithDebInfo
+        exclude:
+          - system: windows-2019
+            compiler: VS2022
+          - system: windows-2019
+            compiler: GCC
+          - system: windows-2019
+            compiler: Clang
+          - system: windows-2022
+            compiler: VS2019
+          - system: windows-2022
+            compiler: GCC
+          - system: windows-2022
+            compiler: Clang
+          - system: ubuntu-20.04
+            compiler: VS2019
+          - system: ubuntu-20.04
+            compiler: VS2022
+          - system: ubuntu-22.04
+            compiler: VS2019
+          - system: ubuntu-22.04
+            compiler: VS2022
+          - system: ubuntu-24.04
+            compiler: VS2019
+          - system: ubuntu-24.04
+            compiler: VS2022
+          - system: ubuntu-20.04
+            platform: Win32
+          - system: ubuntu-22.04
+            platform: Win32
+          - system: ubuntu-24.04
+            platform: Win32
+
+    runs-on: ${{ matrix.system }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure library
+        run: |
+          if ($IsWindows)
+          {
+            cmake `
+              --preset VisualStudio-${{ matrix.compiler }}-${{ matrix.platform }}
+          }
+          elseif ($IsLinux)
+          {
+            cmake `
+              --preset UnixMakefiles-${{ matrix.compiler }}-${{ matrix.platform }}
+          }
+
+      - name: Build library
+        run: |
+          cmake `
+            --build ${{ github.workspace }}/build/${{ matrix.platform }} `
+            --config ${{ matrix.config }}
+
+      - name: Install library
+        run: |
+          cmake `
+            --install ${{ github.workspace }}/build/${{ matrix.platform }} `
+            --config ${{ matrix.config }}
+
+      - name: Upload library
+        uses: actions/upload-artifact@v4
+        with:
+          name: library-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ matrix.compiler }}-${{ github.sha }}
+          path: build/${{ matrix.platform }}/install
