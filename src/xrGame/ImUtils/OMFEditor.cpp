@@ -69,16 +69,79 @@ struct OMFData
 		xr_stack_string<32> name;
 	};
 
-	int32_t section_id;
-	uint32_t section_size;
+	struct BoneParts
+	{
+		struct Bone
+		{
+			uint32_t id;
+			xr_stack_string<32> name;
+		};
 
-	int32_t section_id2;
-	uint32_t section_size2;
+		int16_t count;
+		xr_stack_string<32> name;
 
-	int32_t animations_count;
-	short animations_params_count;
+		std::array<Bone, 32> bones;
+	};
 
-	std::array<AnimVector, 256> anims;
+	struct BoneData
+	{
+		int16_t ogf_version;
+		int16_t count;
+		int32_t section_id;
+		uint32_t section_size;
+		std::array<BoneParts, 64> parts;
+	};
+
+	struct AnimData
+	{
+		int32_t section_id;
+		uint32_t section_size;
+
+		int32_t section_id2;
+		uint32_t section_size2;
+
+		int32_t animations_count;
+		short animations_params_count;
+
+		std::array<AnimVector, 128> anims;
+	};
+
+	struct AnimParamsData
+	{
+		struct AnimParams
+		{
+			struct MotionMark
+			{
+				struct Params
+				{
+					float t0;
+					float t1;
+				};
+
+				int32_t count;
+				xr_stack_string<32> name;
+				std::array<Params, 64> params;
+			};
+
+			int16_t bone_or_part;
+			int16_t motion_id;
+			int32_t flags;
+			int32_t marks_count;
+			float speed;
+			float power;
+			float accue;
+			float falloff;
+			xr_stack_string<32> name;
+			std::array<MotionMark, 32> marks;
+		};
+
+		int16_t count;
+		std::array<AnimParams, 16> params;
+	};
+
+	AnimData data_anim;
+	BoneData data_bone;
+	AnimParamsData data_animparams;
 };
 
 struct OMFEditorState
@@ -90,6 +153,85 @@ struct OMFEditorState
 
 OMFEditorState* pEditor = &g_omf_editor;
 
+template<std::size_t Size>
+void OMFEditor_ReadString(xr_stack_string<Size>& str, std::ifstream& file)
+{
+	char symbol = -1;
+	uint32_t str_length = 0;
+	do
+	{
+		R_ASSERT(!(str_length > str.max_size()) && "report to developers you have too long serialized string");
+
+		file.read(&symbol, 1);
+		str += symbol;
+		++str_length;
+	} while (symbol != '\0');
+}
+
+
+void OMFEditor_LoadOMF_AnimData(OMFData::AnimData& data, std::ifstream& file)
+{
+	file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
+	file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
+	file.read(reinterpret_cast<char*>(&data.section_id2), sizeof(data.section_id2));
+	file.read(reinterpret_cast<char*>(&data.section_size2), sizeof(data.section_size2));
+	file.read(reinterpret_cast<char*>(&data.animations_count), sizeof(data.animations_count));
+
+	for (int i = 0; i < data.animations_count; ++i)
+	{
+		OMFData::AnimVector& av = data.anims[i];
+
+		file.read(reinterpret_cast<char*>(&av.section_id), sizeof(av.section_id));
+		file.read(reinterpret_cast<char*>(&av.section_size), sizeof(av.section_size));
+
+		// GSC style of reading data refering to r_stringZ implementation
+		OMFEditor_ReadString(av.name, file);
+
+		uint32_t data_size = av.section_size - (av.name.size() + 1);
+		av.data = new char[data_size];
+
+		file.read(&av.data[0], data_size);
+	}
+}
+
+void OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
+{
+	file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
+	file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
+	file.read(reinterpret_cast<char*>(&data.ogf_version), sizeof(data.ogf_version));
+	file.read(reinterpret_cast<char*>(&data.count), sizeof(data.count));
+
+	R_ASSERT(data.count <= data.parts.max_size() && "report to developers!");
+
+	for (int16_t i = 0; i < data.count; ++i)
+	{
+		OMFData::BoneParts& bp = data.parts[i];
+
+		OMFEditor_ReadString(bp.name, file);
+		file.read(reinterpret_cast<char*>(&bp.count), sizeof(bp.count));
+
+		R_ASSERT(bp.count <= bp.bones.max_size() && "report to developers!");
+
+		for (int j = 0; j < bp.count; ++j)
+		{
+			OMFData::BoneParts::Bone& bone = bp.bones[j];
+
+			OMFEditor_ReadString(bone.name, file);
+			file.read(reinterpret_cast<char*>(&bone.id), sizeof(bone.id));
+		}
+	}
+}
+
+void OMFEditor_LoadOMF_AnimParamsData_MotionMark(OMFData::AnimParamsData::AnimParams::MotionMark& mark, std::ifstream& file)
+{
+
+}
+
+void OMFEditor_LoadOMF_AnimParamsData(OMFData::AnimParamsData& data, std::ifstream& file)
+{
+
+}
+
 void OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
 {
 	R_ASSERT(file.good() && "lol, pass valid file here please");
@@ -97,36 +239,10 @@ void OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
 
 	if (file.is_open() && file.good())
 	{
-		file.read(reinterpret_cast<char*>(&data.section_id), sizeof(data.section_id));
-		file.read(reinterpret_cast<char*>(&data.section_size), sizeof(data.section_size));
-		file.read(reinterpret_cast<char*>(&data.section_id2), sizeof(data.section_id2));
-		file.read(reinterpret_cast<char*>(&data.section_size2), sizeof(data.section_size2));
-		file.read(reinterpret_cast<char*>(&data.animations_count), sizeof(data.animations_count));
+		OMFEditor_LoadOMF_AnimData(data.data_anim, file);
+		OMFEditor_LoadOMF_BoneData(data.data_bone, file);
 
-		for (int i = 0; i < data.animations_count; ++i)
-		{
-			OMFData::AnimVector& av = data.anims[i];
 
-			file.read(reinterpret_cast<char*>(&av.section_id), sizeof(av.section_id));
-			file.read(reinterpret_cast<char*>(&av.section_size), sizeof(av.section_size));
-
-			// GSC style of reading data refering to r_stringZ implementation
-			char symbol = -1;
-			uint32_t str_length = 0;
-			do
-			{
-				R_ASSERT(!(str_length > av.name.max_size()) && "report to developers you have too long serialized string");
-
-				file.read(&symbol, 1);
-				av.name += symbol;
-				++str_length;
-			} while (symbol != '\0');
-
-			uint32_t data_size = av.section_size - (av.name.size() + 1);
-			av.data = new char[data_size];
-
-			file.read(&av.data[0], data_size);
-		}
 	}
 }
 
