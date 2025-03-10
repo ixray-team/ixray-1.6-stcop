@@ -761,19 +761,19 @@ void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 }
 void CExplosive::net_Relcase(CObject* O)
 {
-	if (!O) return;
-	CGameObject* GO = O->cast_game_object();
-	if(!GO) return;
 	if (IsGameTypeSingle())
 	{
 		if(O->ID()==m_iCurrentParentID)
 			m_iCurrentParentID=u16(-1);
 	}
-	
-	BLASTED_OBJECTS_I I=std::find(m_blasted_objects.begin(),m_blasted_objects.end(), GO->cast_physics_shell_holder());
-	if(m_blasted_objects.end()!=I)
+
+	if (O && O->cast_game_object())
 	{
-		m_blasted_objects.erase(I);
+		BLASTED_OBJECTS_I I = std::find(m_blasted_objects.begin(), m_blasted_objects.end(), O->cast_game_object()->cast_physics_shell_holder());
+		if (m_blasted_objects.end() != I)
+		{
+			m_blasted_objects.erase(I);
+		}
 	}
 }
 
