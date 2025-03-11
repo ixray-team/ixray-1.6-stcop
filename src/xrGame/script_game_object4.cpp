@@ -25,6 +25,8 @@
 #include "stalker_sound_data.h"
 #include "torch.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "helicopter.h"
+#include "Car.h"
 
 class CWeapon;
 
