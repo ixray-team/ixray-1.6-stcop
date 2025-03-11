@@ -65,8 +65,8 @@ void CUIPdaWnd::Init()
 	CUIXmlInit::InitWindow	(uiXml, "main", 0, this);
 
 	UIMainPdaFrame			= UIHelper::CreateStatic	( uiXml, "background_static", this );
-	m_caption				= UIHelper::CreateTextWnd	( uiXml, "caption_static", this );
-	m_caption_const			= ( m_caption->GetText() );
+	m_caption				= UIHelper::CreateStatic	( uiXml, "caption_static", this );
+	m_caption_const			= ( m_caption->TextItemControl()->GetText() );
 	if (uiXml.NavigateToNode("clock_wnd"))
 	m_clock					= UIHelper::CreateTextWnd	( uiXml, "clock_wnd", this );
 
@@ -310,7 +310,7 @@ void CUIPdaWnd::Reset()
 
 void CUIPdaWnd::SetCaption( LPCSTR text )
 {
-	m_caption->SetText( text );
+	m_caption->TextItemControl()->SetText( text );
 }
 
 void RearrangeTabButtons(CUITabControl* pTab)
