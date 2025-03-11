@@ -43,13 +43,12 @@ struct predicate_find_stat
 CUIGameCustom::CUIGameCustom()
 	: m_msgs_xml(nullptr),		m_ActorMenu(nullptr), 
 	  m_PdaMenu(nullptr),		m_window(nullptr), 
-	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr)
+	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr), TalkMenu(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
 
 	g_pGameCustom = this;
-	TalkMenu = new CUITalkWnd();
 }
 
 bool g_b_ClearGameCaptions = false;
@@ -365,6 +364,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(m_pMessagesWnd);
+	xr_delete					(TalkMenu);
 }
 
 void CUIGameCustom::Load()
@@ -374,6 +374,9 @@ void CUIGameCustom::Load()
 		R_ASSERT				(nullptr==m_msgs_xml);
 		m_msgs_xml				= new CUIXml();
 		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT				(nullptr==TalkMenu);
+		TalkMenu				= new CUITalkWnd();
 
 		R_ASSERT				(nullptr==m_ActorMenu);
 		m_ActorMenu				= new CUIActorMenu		();
@@ -390,6 +393,7 @@ void CUIGameCustom::Load()
 
 		R_ASSERT				(nullptr==m_pMessagesWnd);
 		m_pMessagesWnd			= new CUIMessagesWindow();
+
 		
 		Init					(0);
 		Init					(1);
