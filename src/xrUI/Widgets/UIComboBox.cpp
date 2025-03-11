@@ -52,8 +52,8 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 
 	m_frameLine.InitIB					(Fvector2().set(0,0), Fvector2().set(width, comboBoxHeight));
 
-	m_frameLine.InitState				(S_Highlighted, frameLineHighlighted);
-	m_frameLine.InitState				(S_Enabled, frameLineDefault); // horizontal by default
+    m_frameLine.InitState(S_Highlighted, frameLineHighlighted);
+	m_frameLine.InitState(S_Enabled, frameLineDefault);
 
 	// Edit Box on left side of frame line
 	m_text.SetWndPos					(Fvector2().set(lb_text_offset,0.0f));
@@ -64,16 +64,19 @@ void CUIComboBox::InitComboBox(Fvector2 pos, float width)
 	m_text.Enable						(false);
 
 	// height of list equal to height of ONE element
-	float item_height					= CUITextureMaster::GetTextureHeight(listBoxTextureHeight);
+    float item_height = CUITextureMaster::GetTextureHeight(listBoxTextureHeight);
 
 	m_list_box.SetWndPos				(Fvector2().set(lb_text_offset,0.0f));
 	m_list_box.SetWndSize				(Fvector2().set(width-lb_text_offset, item_height*m_iListHeight));
 	m_list_box.InitScrollView			();
 	m_list_box.SetTextColor				(m_textColor[0]);
-	m_list_box.SetSelectionTexture		(listBoxTexture);
-	m_list_box.SetItemHeight			(CUITextureMaster::GetTextureHeight(listBoxTextureHeight));
+	m_list_box.SetItemHeight(item_height);
+
+	m_list_box.SetSelectionTexture(listBoxTexture);
+
 	// frame(texture) for list
-	m_list_frame.InitTexture			(listFrameTexture);
+	m_list_frame.InitTexture(listFrameTexture);
+
 	m_list_frame.SetWndSize				(Fvector2().set(width, m_list_box.GetItemHeight()*m_iListHeight) );
 	m_list_frame.SetWndPos				(Fvector2().set(0.0f, comboBoxHeight));
 
