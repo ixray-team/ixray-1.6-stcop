@@ -481,8 +481,8 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 		if(smart_cast<CCar*>(holderGO))
 			b = use_Vehicle(0);
 		else
-			if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN)
-				b = use_MountedWeapon(0);
+			if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID==CLSID_OBJECT_HOLDER_ENT)
+				b = use_HolderEx(0,false);
 
 		if(inventory().ActiveItem()){
 			CHudItem* hi = smart_cast<CHudItem*>(inventory().ActiveItem());
@@ -496,8 +496,8 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 		if(smart_cast<CCar*>(holder))
 			b = use_Vehicle(holder);
 
-		if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN)
-			b = use_MountedWeapon(holder);
+		if (holderGO->CLS_ID==CLSID_OBJECT_W_STATMGUN || holderGO->CLS_ID==CLSID_OBJECT_HOLDER_ENT)
+			b = use_HolderEx(holder,false);
 		
 		if(b){//used succesfully
 			// switch off torch...
