@@ -56,6 +56,7 @@ public:
 	virtual	void				reload				(LPCSTR section);
 	virtual void				update				();
 			void				remove_links		(CObject *object);
+			void				remove				(const MemorySpace::CHitObject *hit_object);
 
 public:
 			void				add					(const CEntityAlive	*who);
