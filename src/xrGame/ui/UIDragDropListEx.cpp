@@ -962,17 +962,9 @@ void CUICellContainer::Draw()
 				{
 					select_mode = 3;
 				}
-				else
+				else if (ui_cell.m_item->m_select_equipped)
 				{
-					//Alundaio: Highlight equipped items
-					PIItem	iitem = (PIItem)ui_cell.m_item->m_pData;
-					if (iitem)
-					{
-						u16 slot = iitem->BaseSlot();
-						if (iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(slot) == iitem)
-							select_mode = 3;
-					}
-					//-Alundaio:
+					select_mode = 2;
 				}
 			}
 			
