@@ -248,11 +248,12 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 	// use some script discounts
 	luabind::functor<float>	func;
 	if(b_buying)
-		R_ASSERT(ai().script_engine().functor("trade_manager.get_buy_discount", func));
+		ai().script_engine().functor("trade_manager.get_buy_discount", func);
 	else
-		R_ASSERT(ai().script_engine().functor("trade_manager.get_sell_discount", func));
+		ai().script_engine().functor("trade_manager.get_sell_discount", func);
 
-	result			= iFloor(result * func(smart_cast<const CGameObject*>(pThis.inv_owner)->ID()));
+	if (func)
+		result			= iFloor(result * func(smart_cast<const CGameObject*>(pThis.inv_owner)->ID()));
 	//if(result>500)
 	//	result		= iFloor(result/10+0.5f)*10;
 
