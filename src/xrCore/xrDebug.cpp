@@ -139,7 +139,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
-	if ( strstr(Core.Params, "-debug_msgs") != 0 &&  g_pEventManager == nullptr || g_pEventManager->IsEventThread())
+	if ( g_pEventManager == nullptr || g_pEventManager->IsEventThread())
 	{
 		show_dialog(assertion_info, ignore_always);
 	}
@@ -161,9 +161,6 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 {
-	return; 
-
-
 	if (handler)
 		handler();
 
