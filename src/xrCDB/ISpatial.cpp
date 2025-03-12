@@ -312,7 +312,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 
 void ISpatial_DB::insert(ISpatialShared S)
 {
-	if (verify_sp(S, m_center, m_bounds))
+	if (m_root != nullptr && verify_sp(S, m_center, m_bounds))
 	{
 		// Object inside our DB
 		rt_insert_object = S;
