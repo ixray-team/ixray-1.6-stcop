@@ -13,7 +13,6 @@ protected:
 	CPhysicItem* m_physic_item;
 
 	u8 m_iMaxUses;
-	float m_iPortionsMarker;
 	BOOL m_bRemoveAfterUse;
 	BOOL m_bConsumeChargeOnUse;
 	float m_fWeightFull;
