@@ -263,9 +263,32 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(xrCData->owner);
 	if (!pA) return;
 
+
 	SpawnItemToActor(pA->ID, "mp_players_rukzak");
 	SpawnItemToActor(pA->ID, "device_pda");
 
+	string_path fname = {};
+	FS.update_path(fname, "$game_config$", "mp\\fmp_respawn_items.ltx");
+	CInifile Ini(fname, TRUE);
+
+	const char* N = nullptr;
+	const char* V = nullptr;
+
+	for (u32 k = 0; Ini.r_line("spawn", k, &N, &V); k++)
+	{
+		u32 Value = 1;
+
+		if (V && xr_strlen(V))
+		{
+			string64 buf;
+			Value = atoi(_GetItem(V, 0, buf));
+		}
+
+		for (u32 Iter = 0; Iter < Value; Iter++)
+		{
+			SpawnItemToActor(pA->ID, N);
+		}
+	}
 }
 
 void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
