@@ -608,7 +608,7 @@ public:
 
 		if (RImplementation.b_loaded && (dm_current_size != dm_size))
 		{
-			RImplementation.Details->MT_CALC.cancel();
+			Device.details_task.cancel();
 
 			RImplementation.Details->cache_task.clear();
 

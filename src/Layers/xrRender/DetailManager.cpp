@@ -280,7 +280,7 @@ void CDetailManager::Render()
 	if (!psDeviceFlags.is(rsDetails))	return;
 #endif
 
-	MT_CALC.wait();
+	Device.details_task.wait();
 
 	int idx = calc_key;
 	render_key = idx;
@@ -289,9 +289,9 @@ void CDetailManager::Render()
 	static DWORD this_thread_id = 0;
 	this_thread_id = GetCurrentThreadId();
 
-	MT_CALC.run
+	Device.details_task.run
 	(
-		[&]()
+		[this]()
 		{
 #ifndef _EDITOR
 			if (0 == dtFS)						return;

@@ -182,9 +182,6 @@ public:
 	void							Unload			();
 	void							Render			();
 
-
-	xr_task_group MT_CALC;
-
 	void							cache_Alloc();
 	void							cache_Free();
 

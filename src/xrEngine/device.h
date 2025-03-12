@@ -272,9 +272,7 @@ public:
 	}
 
 	// Multi-threading
-	xrCriticalSection	mt_csEnter;
-	xrCriticalSection	mt_csLeave;
-	volatile BOOL		mt_bMustExit;
+	xr_task_group secondary_tasks, details_task;
 
 	ICF		void			remove_from_seq_parallel	(const xr_delegate<void()> &delegate)
 	{
