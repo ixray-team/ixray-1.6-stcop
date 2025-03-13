@@ -551,58 +551,32 @@ CUICellContainer::~CUICellContainer()
 
 bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
-	if(!m_pParentDragDropList->IsGrouping())	return false;
+	if (!m_pParentDragDropList->IsGrouping())	return false;
 
-	//Alundaio: Don't stack equipped items
-	PIItem	iitem = (PIItem)itm->m_pData;
-	if (iitem && iitem->m_pInventory)
+	CUICellItem* i = FindSimilar(itm);
+	R_ASSERT(i != itm);
+	R_ASSERT(0 == itm->ChildsCount());
+	if (i)
 	{
-		if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-			return false;
-
-		if (!iitem->CanStack())
-			return false;
+		i->PushChild(itm);
+		itm->SetOwnerList(m_pParentDragDropList);
 	}
-	//-Alundaio
 
-	CUICellItem* i		= FindSimilar(itm);
-	if (i == nullptr || i == itm || itm->ChildsCount() > 0)
-		return false;
-
-	i->PushChild(itm);
-	itm->SetOwnerList(m_pParentDragDropList);
-
-	return true;
+	return (i != nullptr);
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 {
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it)
+	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
 	{
 #ifdef DEBUG
 		CUICellItem* i = smart_cast<CUICellItem*>(*it);
 #else
 		CUICellItem* i = (CUICellItem*)(*it);
 #endif
-		if (i == itm)
-			continue;
-
-		if (!i->EqualTo(itm))
-			continue;
-
-		//Alundaio: Don't stack equipped items
-		PIItem	iitem = (PIItem)i->m_pData;
-		if (iitem && iitem->m_pInventory)
-		{
-			if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-				continue;
-
-			if (!iitem->CanStack())
-				continue;
-		}
-		//-Alundaio
-
-		return i;
+		R_ASSERT(i != itm);
+		if (i->EqualTo(itm))
+			return i;
 	}
 	return nullptr;
 }
