@@ -46,6 +46,11 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 		E->Spawn_Write	(P,TRUE	);
 		E->UPDATE_Write	(P);
 
+		if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+		{
+			E->SyncWrite(P);
+		}
+
 		CSE_ALifeObject*	object = smart_cast<CSE_ALifeObject*>(E);
 		VERIFY				(object);
 		if (!object->keep_saved_data_anyway())
@@ -55,9 +60,11 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	{
 		E->Spawn_Write	(P, FALSE);
 		E->UPDATE_Write	(P);
-//		CSE_ALifeObject*	object = smart_cast<CSE_ALifeObject*>(E);
-//		VERIFY				(object);
-//		VERIFY				(object->client_data.empty());
+
+		if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+		{
+			E->SyncWrite(P);
+		}
 	}
 	//-----------------------------------------------------
 	E->s_flags			= save;
