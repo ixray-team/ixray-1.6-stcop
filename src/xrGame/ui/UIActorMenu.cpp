@@ -242,7 +242,7 @@ void CUIActorMenu::Draw()
 	CurrentGameUI()->UIMainIngameWnd->DrawMainIndicatorsForInventory();
 
 	inherited::Draw	();
-	m_ActorStateInfo->Draw();
+	//m_ActorStateInfo->Draw();
 	m_ItemInfo->Draw();
 	m_hint_wnd->Draw();
 }
