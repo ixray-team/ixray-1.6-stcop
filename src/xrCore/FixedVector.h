@@ -14,7 +14,7 @@ public:
 	typedef const value_type&	const_reference;
 
 private:
-	value_type	array[dim] = {};
+	value_type	array[dim];
 	u32			count;
 
 public:
@@ -50,10 +50,8 @@ public:
 	IC void		erase(u32 id)				{
 		VERIFY(id<count);
 		count--;
-		for (u32 i = id; i < count; i++)
-		{
+		for (u32 i=id; i<count; i++)
 			array[i] = array[i+1];
-		}
 	}
 	IC void		erase(iterator it)				{ erase(u32(it-begin()));	}
 

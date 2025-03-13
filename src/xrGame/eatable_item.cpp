@@ -58,14 +58,13 @@ void CEatableItem::Load(LPCSTR section)
 
 	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
 
-	m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
-
 	if (m_iMaxUses < 1)
 		m_iMaxUses = 1;
 
-	m_iMaxUses /= m_eat_condition;
+	m_iPortionsMarker = m_iMaxUses;
 
 	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
+	m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
 	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
@@ -75,11 +74,13 @@ void CEatableItem::Load(LPCSTR section)
 void CEatableItem::load(IReader& packet)
 {
 	inherited::load(packet);
+	m_iPortionsMarker = packet.r_u8();
 }
 
 void CEatableItem::save(NET_Packet& packet)
 {
 	inherited::save(packet);
+	packet.w_u8((u8)m_iPortionsMarker);
 }
 
 BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
@@ -145,11 +146,11 @@ bool CEatableItem::UseBy (CEntityAlive* entity_alive)
 			entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect());
 		}
 	}
-	
-	float TempCondition = m_fCondition * m_iMaxUses;
-	TempCondition -= 1;
 
-	m_fCondition = TempCondition / m_iMaxUses;
+	if (m_iPortionsMarker > 0)
+		m_iPortionsMarker -= m_eat_condition;
+	else
+		m_iPortionsMarker = 0;
 
 	if (!g_dedicated_server)
 	{
