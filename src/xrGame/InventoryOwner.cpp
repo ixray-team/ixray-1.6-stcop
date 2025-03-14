@@ -164,7 +164,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 
 	return TRUE;
 }
-#include "map_manager.h"
+
 void CInventoryOwner::net_Destroy()
 {
 	CAttachmentOwner::net_Destroy();
@@ -172,12 +172,8 @@ void CInventoryOwner::net_Destroy()
 	inventory().Clear();
 	inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 
-	for (int t = ALife::eRelationTypeFriend; t < ALife::eRelationTypeLast; ++t)
-	{
-		ALife::ERelationType tt = (ALife::ERelationType)t;
-		Level().MapManager().RemoveMapLocation(RELATION_REGISTRY().GetSpotName(tt), object_id());
-	}
-	Level().MapManager().RemoveMapLocation("deadbody_location", object_id());
+	if(this!=Actor())
+		Actor()->LostPdaContact(this);
 }
 
 
