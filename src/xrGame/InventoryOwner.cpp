@@ -164,7 +164,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 
 	return TRUE;
 }
-
+#include "map_manager.h"
 void CInventoryOwner::net_Destroy()
 {
 	CAttachmentOwner::net_Destroy();
@@ -172,8 +172,7 @@ void CInventoryOwner::net_Destroy()
 	inventory().Clear();
 	inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 
-	if(this!=Actor())
-		Actor()->LostPdaContact(this);
+	Level().MapManager().RemoveRelationLocation(this);
 }
 
 
