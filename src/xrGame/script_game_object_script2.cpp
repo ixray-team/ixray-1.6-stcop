@@ -322,6 +322,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 
 		.def("get_smart_cover_description",	&CScriptGameObject::get_smart_cover_description)
 		.def("set_visual_name",				&CScriptGameObject::set_visual_name)
+		.def("set_visual_name",				&CScriptGameObject::set_visual_name_notForce)
 		.def("get_visual_name",				&CScriptGameObject::get_visual_name)
 
 		.def("can_throw_grenades",			(bool (CScriptGameObject::*)	() const)&CScriptGameObject::can_throw_grenades)
