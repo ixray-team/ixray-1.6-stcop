@@ -57,18 +57,13 @@ void EnumerateDisplayModes()
 
 void MigrateToGameWindow()
 {
-	EnumerateDisplayModes();
-
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
-	SDL_SetWindowSize(g_AppInfo.Window, psCurrentVidMode[0], psCurrentVidMode[1]);
-	SDL_SetWindowPosition(g_AppInfo.Window, 0, 0);
 
-	SDL_SetWindowBordered(g_AppInfo.Window, FALSE);
-	SDL_SetWindowAlwaysOnTop(g_AppInfo.Window, FALSE);
 	SDL_SetWindowFocusable(g_AppInfo.Window, TRUE);
 	SDL_SetWindowShape(g_AppInfo.Window, FALSE);
-
+	SDL_SetWindowBordered(g_AppInfo.Window, true);
 	SDL_RaiseWindow(g_AppInfo.Window);
+	Console->Execute("vid_restart");
 }
 
 int APIENTRY WinMain
@@ -104,6 +99,8 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
+	EnumerateDisplayModes();
+
 	splash::show((void*&)g_AppInfo.Window);
 
 	EngineLoadStage1(lpCmdLine);
