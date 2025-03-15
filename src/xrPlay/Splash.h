@@ -2,6 +2,6 @@
 
 namespace splash
 {
-	void show();
+	void show(void*&window);
 	void hide();
 }

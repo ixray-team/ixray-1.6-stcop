@@ -13,7 +13,6 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 HINSTANCE hInstanceG = (HINSTANCE)&__ImageBase;
 #pragma warning(default: 4047)
 
-SDL_Window* splashWindow = nullptr;
 SDL_Renderer* splashRenderer = nullptr;
 SDL_Texture* texture = nullptr;
 bool isInit = false;
@@ -93,25 +92,18 @@ SDL_Surface* LoadSplashSurface(unsigned char* imageData, LPCTSTR lpName, LPCTSTR
 void Destroy()
 {
 	SDL_DestroyRenderer(splashRenderer);
-	SDL_DestroyWindow(splashWindow);
 	SDL_DestroyTexture(texture);
 
 	splashRenderer = nullptr;
-	splashWindow = nullptr;
 	texture = nullptr;
 }
 
 
 namespace splash
 {
-	void show()
+	void show(void* &window)
 	{
 		if (isInit) return;
-
-		if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-			ErrorMsg("SDL_Init Error: %s", SDL_GetError());
-			return;
-		}
 
 		unsigned char* imageData = nullptr;
 
@@ -126,7 +118,7 @@ namespace splash
 		int WinH = surface->h;
 		int WinW = surface->w;
 
-		splashWindow = SDL_CreateWindow(
+		window = SDL_CreateWindow(
 			"Loading...",
 			WinW,
 			WinH,
@@ -134,13 +126,13 @@ namespace splash
 			SDL_WINDOW_NOT_FOCUSABLE | SDL_WINDOW_TRANSPARENT
 		);
 
-		if (!splashWindow) {
+		if (!window) {
 			Destroy();
 			ErrorMsg("SDL_CreateWindow Error: %s", SDL_GetError());
 			return;
 		}
 
-		splashRenderer = SDL_CreateRenderer(splashWindow, 0, SDL_RENDERER_SOFTWARE);
+		splashRenderer = SDL_CreateRenderer((SDL_Window*)window, 0, SDL_RENDERER_SOFTWARE);
 		if (!splashRenderer) {
 			Destroy();
 			ErrorMsg("SDL_CreateRenderer Error: %s", SDL_GetError());
@@ -172,6 +164,8 @@ namespace splash
 
 	void hide()
 	{
+		SDL_RenderClear(splashRenderer);
+		SDL_RenderPresent(splashRenderer);
 		Destroy();
 	}
 }
