@@ -239,10 +239,11 @@ void CGameTaskManager::UpdateActiveTask()
 
 CGameTask* CGameTaskManager::ActiveTask(ETaskType type)
 {
-    if (type != eTaskTypeStoryline && !m_flags.test(eMultipleTasks))
-        return nullptr;
+	ETaskType t = eTaskTypeStoryline;
+	if (m_flags.test(eMultipleTasks))
+		t = type;
 
-    shared_str& t_id = g_active_task_id[type];
+	shared_str& t_id = g_active_task_id[t];
 
 	if (!t_id.size())
 		t_id = g_active_task_no_task___internal;
