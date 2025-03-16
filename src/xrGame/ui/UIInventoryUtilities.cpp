@@ -226,7 +226,7 @@ const ui_shader& InventoryUtilities::GetMPCharIconsShader()
 
 const ui_shader& InventoryUtilities::GetIconsShader(const char* name,
 	const char* defaultName,
-	xr_hash_map<xr_string, ui_shader*> shaders)
+	xr_hash_map<xr_string, ui_shader*>& shaders)
 {
 	if (name == nullptr)
 	{
