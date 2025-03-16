@@ -408,23 +408,26 @@ local stalker_classes = {}
 local weapon_classes = {}
 local artefact_classes = {}
 
--- IX-Ray Refactor (Optional)
-IsMonster = function(object, class_id)
-    return monster_classes[class_id or get_clsid(object) or -1] ~= nil
+function IsMonster (object, class_id)
+		local id = class_id or get_clsid(object)
+		return monster_classes[id] == true
+end
+function IsStalker (object, class_id)
+		local id = class_id or get_clsid(object)
+		return stalker_classes[id] == true
 end
 
-IsStalker = function(object, class_id)
-    return stalker_classes[class_id or get_clsid(object) or -1] ~= nil
+function isWeapon(object, class_id)
+	local id = class_id or get_clsid(object)
+	return weapon_classes[id] == true
 end
 
-isWeapon = function(object, class_id)
-    return weapon_classes[class_id or get_clsid(object) or -1] ~= nil
+function isArtefact(object, class_id)
+		local id = class_id or get_clsid(object)
+	return artefact_classes[id] == true
 end
 
-isArtefact = function(object, class_id)
-    return artefact_classes[class_id or get_clsid(object) or -1] ~= nil
-end
--- END IX-Ray 
+
 -------------------------------------------------------------------------------------------
 function get_object_community(obj)
 	if type(obj.id) == "function" then
@@ -706,22 +709,11 @@ function get_param_string(src_string , obj)
 	end
 end
 
--- IX-Ray Hack: For backwards compatibility (Optional, for set_save_marker)
-if not IsEditor then 
-    IsEditor = function ()
-        return false
-	end
-end
-
 local save_markers = {}
 
 -- Функции для проверки корректности сейв лоад
 function set_save_marker(p, mode, check, prefix)
-    -- IX-Ray
-	if save and not IsEditor() then
-		save.set_stage(prefix)
-	end
-	-- END IX-Ray
+
 	-- определяем ключ маркера.
 	local result = ""
 --	if debug ~= nil then
@@ -747,13 +739,7 @@ function set_save_marker(p, mode, check, prefix)
 				printf("WARNING! may be this is problem save point")
 			end
 			if dif >= 10240 then
-                -- IX-Ray
-				callstack()
-
-				if save and not IsEditor() then
-					save.call_error()
-				end
-				-- END IX-Ray
+--				abort("You are saving too much")
 			end
 			p:w_u16(dif)
 		else
