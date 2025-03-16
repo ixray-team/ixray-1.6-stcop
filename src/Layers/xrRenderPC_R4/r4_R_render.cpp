@@ -192,7 +192,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 							for (u32 s_it = 0; s_it < L->m_sectors.size(); s_it++)
 							{
 								CSector* sector_ = (CSector*)L->m_sectors[s_it];
-								if(PortalTraverser.i_marker == sector_->r_marker)
+								if(sector_ != nullptr && PortalTraverser.i_marker == sector_->r_marker)
 								{
 									Lights.add_light(L);
 									break;
