@@ -169,25 +169,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 				if(light* L = (light*)(spatial->dcast_Light()))
 				{
 					if (L->get_LOD()>EPS_L&&!L->flags.bHudMode)
-					{
-						
-						if(dont_test_sectors)
-						{
-							Lights.add_light(L);
-						}
-						else
-						{
-							for (u32 s_it = 0; s_it < L->m_sectors.size(); s_it++)
-							{
-								CSector* sector_ = (CSector*)L->m_sectors[s_it];
-								if(sector_ != nullptr && PortalTraverser.i_marker == sector_->r_marker)
-								{
-									Lights.add_light(L);
-									break;
-								}
-							}
-						}
-					}
+						Lights.add_light(L);
 				}
 				continue;
 			}
@@ -420,11 +402,7 @@ void CRender::Render()
 	Device.Statistic->RenderCALC.Begin			();
 	r_pmask										(true,false,true);	// enable priority "0",+ capture wmarks
 	phase										= PHASE_NORMAL;
-	{
-		PROF_EVENT("lights_spatial_move");
-		for (light* L : v_all_lights)
-			L->spatial_move();
-	}
+
 	render_main									(true);
 	r_pmask										(true,false);	// disable priority "1"
 	Device.Statistic->RenderCALC.End			();
