@@ -38,7 +38,9 @@ void print_time(LPCSTR S, _TIME_ID tTimeID)
 }
 
 /**/
-CALifeCombatManager::CALifeCombatManager	(xrServer *server, LPCSTR section) {
+CALifeCombatManager::CALifeCombatManager	(xrServer *server, LPCSTR section) :
+	CALifeSimulatorBase	(server,section)
+{
 /**
 	seed						(u32(CPU::QPC() & 0xffffffff));
 	m_dwMaxCombatIterationCount	= pSettings->r_u32	(section,"max_combat_iteration_count");
