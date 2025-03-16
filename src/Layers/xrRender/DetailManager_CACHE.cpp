@@ -71,6 +71,8 @@ void CDetailManager::cache_Initialize	()
 
 	// Make dither matrix
 	bwdithermap		(2,dither);
+
+	cache_cx = cache_cz = dm_cache_line*2;
 }
 
 CDetailManager::Slot*	CDetailManager::cache_Query	(int r_x, int r_z)
