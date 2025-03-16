@@ -23,6 +23,13 @@ public:
 		float m[3][3];					// Array
 	};
 
+	IC _matrix33()
+	{
+		for (auto row = 0; row < 3; ++row)
+			for (auto col = 0; col < 3; ++col)
+				m[row][col] = static_cast<T>(0);
+	}
+
     IC bool operator==(SelfCRef Left)
     {
         return Left.i == i && Left.j == j && Left.k == k;

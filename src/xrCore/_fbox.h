@@ -1,5 +1,4 @@
-#ifndef __FBOX
-#define __FBOX
+#pragma once
 
 template <class T>
 class _box3
@@ -12,16 +11,36 @@ public:
 	typedef _vector3<T>	Tvector;
 	typedef _matrix<T>	Tmatrix;
 public:
-	union{
-		struct{
+	union
+	{
+		struct
+		{
 			Tvector	min;
 			Tvector	max;
 		};
-		struct{
+		struct
+		{
 			T x1, y1, z1;
 			T x2, y2, z2;
 		};
 	};
+
+	IC _box3()
+	{
+		x1 = y1 = z1 = x2 = y2 = z2 = static_cast<T>(0);
+	}
+
+	IC _box3(const std::initializer_list<T>& list)
+	{
+		R_ASSERT2(list.size() == 6, "Initializer list must contain exactly 6 elements.");
+		auto it = list.begin();
+		x1 = *it++;
+		y1 = *it++;
+		z1 = *it++;
+		x2 = *it++;
+		y2 = *it++;
+		z2 = *it++;
+	}
 
 	IC	BOOL	is_valid	()											{return (x2>=x1)&&(y2>=y1)&&(z2>=z1);}
 
@@ -328,5 +347,3 @@ typedef _box3<double>	Dbox3;
 
 template <class T>
 BOOL	_valid			(const _box3<T>& c)	{ return _valid(c.min) && _valid(c.max); }
-
-#endif

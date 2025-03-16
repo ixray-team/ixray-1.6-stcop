@@ -10,7 +10,7 @@ public:
 	typedef const Self&	SelfCRef;
 public:
 	_vector2<T>	n;
-	T			d;
+	T			d = 0;
 public:
 	IC	SelfRef	set		(Self &P)
 	{
