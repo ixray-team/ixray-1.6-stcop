@@ -47,7 +47,6 @@ light::light()
 	X.S.posY	= 0;
 	X.S.size	= SMAP_adapt_max;
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
-	RImplementation.v_all_lights.push_back(this);
 }
 
 light::~light	()
@@ -65,8 +64,6 @@ light::~light	()
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 	ignore_object	= nullptr;
 	for (int f=0; f<6; f++)decor_object[f] = nullptr;
-
-	RImplementation.v_all_lights.remove(this);
 }
 
 

@@ -431,11 +431,6 @@ void CRender::Calculate				()
 	marker	++;
 	if (pLastSector)
 	{
-		{
-			PROF_EVENT("lights_spatial_move");
-			for (light* L : v_all_lights)
-				L->spatial_move();
-		}
 		// Traverse sector/portal structure
 		PortalTraverser.traverse	
 			(
