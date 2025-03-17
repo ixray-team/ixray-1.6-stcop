@@ -234,38 +234,37 @@ void CRenderDevice::on_idle		()
 			else
 		       ++it;
 		}
+		secondary_tasks.run([]()
+		{
+			PROF_THREAD("Secondary Task 1")
+			{
+				PROF_EVENT("Discord Sync")
+					g_Discord.Update();
+			}
+
+			{
+				PROF_EVENT("seqParallelRender")
+					for (auto& it : Device.seqParallelRender)
+						it();
+			}
+
+			if (g_pGamePersistent &&
+				g_pGamePersistent->pEnvironment &&
+				g_pGamePersistent->pEnvironment->eff_Rain)
+			{
+				g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
+			}
+
+			{
+				PROF_EVENT("Process Particles")
+					if (Device.ParticleWorkerCallback)
+					{
+						Device.ParticleWorkerCallback();
+					}
+			}
+		});
 		FrameMove();
 	}
-
-	secondary_tasks.run([]()
-	{
-		PROF_THREAD("Secondary Task 1")
-		{
-			PROF_EVENT("Discord Sync")
-			g_Discord.Update();
-		}
-
-		{
-			PROF_EVENT("seqParallelRender")
-			for (auto& it : Device.seqParallelRender)
-				it();
-		}
-
-		if (g_pGamePersistent &&
-			g_pGamePersistent->pEnvironment && 
-			g_pGamePersistent->pEnvironment->eff_Rain)
-		{
-			g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
-		}
-
-		{
-			PROF_EVENT("Process Particles")
-			if (Device.ParticleWorkerCallback)
-			{
-				Device.ParticleWorkerCallback();
-			}
-		}
-	});
 
 	// Precache
 	if (dwPrecacheFrame)
