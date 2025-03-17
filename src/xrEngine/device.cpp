@@ -26,6 +26,9 @@ using namespace DirectX;
 #include "CustomHUD.h"
 #include "IGame_Level.h"
 #endif
+
+#include "Rain.h"
+
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 #ifndef _EDITOR
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -246,6 +249,13 @@ void CRenderDevice::on_idle		()
 			PROF_EVENT("seqParallelRender")
 			for (auto& it : Device.seqParallelRender)
 				it();
+		}
+
+		if (g_pGamePersistent &&
+			g_pGamePersistent->pEnvironment && 
+			g_pGamePersistent->pEnvironment->eff_Rain)
+		{
+			g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
 		}
 
 		{
