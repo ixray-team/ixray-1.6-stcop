@@ -335,4 +335,13 @@
     <string id="SO_HLAMP">
         <text>Hanging lamp</text>
     </string>
+    <string id="ui_mm_lights_details">
+        <text>Расширенные тени травы</text>
+    </string>
+    <string id="ui_mm_puddles">
+        <text>Объёмные лужи</text>
+    </string>
+    <string id="ui_mm_grass_distance">
+        <text>Дальность видимости травы</text>
+    </string>
 </string_table>

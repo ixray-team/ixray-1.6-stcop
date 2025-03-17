@@ -294,4 +294,13 @@
     <string id="SM_DOG_F">
         <text>PsyDog (Phantom)</text>
     </string>
+    <string id="ui_mm_lights_details">
+        <text>Extended grass shadows</text>
+    </string>
+    <string id="ui_mm_puddles">
+        <text>Volumetric puddles</text>
+    </string>
+    <string id="ui_mm_grass_distance">
+        <text>Grass distance</text>
+    </string>
 </string_table>
