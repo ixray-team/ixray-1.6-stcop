@@ -80,26 +80,28 @@ void CUIPdaWnd::Init()
 	m_btn_close				= UIHelper::Create3tButton( uiXml, "close_button", this );
 	m_hint_wnd				= UIHelper::CreateHint( uiXml, "hint_wnd" );
 
+	UITabControl					= new CUITabControl();
+	UITabControl->SetAutoDelete		(true);
+	AttachChild						(UITabControl);
+	CUIXmlInit::InitTabControl		(uiXml, "tab", 0, UITabControl);
+	UITabControl->SetMessageTarget	(this);
+
 	pUITaskWnd					= new CUITaskWnd();
 	pUITaskWnd->hint_wnd		= m_hint_wnd;
 	pUITaskWnd->Init			();
 
-	pUIFactionWarWnd				= new CUIFactionWarWnd();
-	pUIFactionWarWnd->hint_wnd		= m_hint_wnd;
-	pUIFactionWarWnd->Init			();
-
+	if (UITabControl->GetButtonById("eptFractionWar"))
+	{
+		pUIFactionWarWnd = new CUIFactionWarWnd();
+		pUIFactionWarWnd->hint_wnd = m_hint_wnd;
+		pUIFactionWarWnd->Init();
+	}
 	pUIRankingWnd					= new CUIRankingWnd();
 	pUIRankingWnd->Init				();
 
 	pUILogsWnd						= new CUILogsWnd();
 	pUILogsWnd->Init				();
 
-
-	UITabControl					= new CUITabControl();
-	UITabControl->SetAutoDelete		(true);
-	AttachChild						(UITabControl);
-	CUIXmlInit::InitTabControl		(uiXml, "tab", 0, UITabControl);
-	UITabControl->SetMessageTarget	(this);
 
 	UINoice					= new CUIStatic();
 	UINoice->SetAutoDelete	( true );
