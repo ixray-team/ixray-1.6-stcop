@@ -166,6 +166,10 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 								mapMatrixItems&				items	= Ntex.val;
 								for (_MatrixItem& Ni : items)
 								{
+									if (Ni.pVisual->shader == nullptr)
+									{
+										continue;
+									}
 									RCache.set_xform_world(Ni.Matrix);
 									RImplementation.apply_object(Ni.pObject);
 									RImplementation.apply_lmaterial();

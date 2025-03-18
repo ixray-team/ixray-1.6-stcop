@@ -146,13 +146,6 @@ static void mt_3rdThread(void* ptr)
 				it();
 		}
 
-		{
-			PROF_EVENT("Process Particles");
-			if (Device.ParticleWorkerCallback)
-			{
-				Device.ParticleWorkerCallback();
-			}
-		}
 		Enter3rdCs.Leave();
 
 		xrCriticalSectionGuard sync(&Leave3rdCs);
@@ -194,14 +187,19 @@ static void mt_Thread(void* ptr)
 				Device.seqFrameMT.Process(rp_Frame);
 			}
 
+			{
+				PROF_EVENT("Process Particles");
+				if (Device.ParticleWorkerCallback)
+				{
+					Device.ParticleWorkerCallback();
+				}
+			}
 			// now we give control to device - signals that we are ended our work
 		}
 		xrCriticalSectionGuard sync(&Device.mt_csLeave);
 	}
 	Device.mt_bMustExit = FALSE; // Important!!!
 }
-
-#include "IGame_Level.h"
 #endif
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
@@ -530,7 +528,6 @@ void ProcessLoading()
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;
-#include "IGame_Persistent.h"
 
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)
