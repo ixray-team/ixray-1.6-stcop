@@ -149,7 +149,10 @@ void CLightR_Manager::render_point	(u32 _priority)
 	for (xr_vector<light*>::iterator it=selected_point.begin(); it!=selected_point.end(); it++)
 	{
 		light*	L					= *it;
-		VERIFY						(L->SpatialComponent->spatial.sector && _valid(L->range));
+		if (L->SpatialComponent->spatial.sector == nullptr && _valid(L->range))
+		{
+			continue;
+		}
 
 		//		0. Dimm & Clip
 		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
@@ -230,7 +233,10 @@ void CLightR_Manager::render_spot	(u32 _priority)
 	for (xr_vector<light*>::iterator it=selected_spot.begin(); it!=selected_spot.end(); it++)
 	{
 		light*	L					= *it;
-
+		if (L->SpatialComponent->spatial.sector == nullptr)
+		{
+			continue;
+		}
 		//		0. Dimm & Clip
 		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
 		float	lc_scale			= 1 - lc_dist/lc_limit;
@@ -298,7 +304,6 @@ void CLightR_Manager::render_spot	(u32 _priority)
 		if (bHUD&&_priority == 0)	RImplementation.r_dsgraph_render_hud();	
 		//	RCache.set_ClipPlanes					(false,	&L_combine);
 	}
-	//		??? grass ???l
 }
 
 void CLightR_Manager::render		(u32 _priority)
@@ -324,7 +329,7 @@ void CLightR_Manager::add(light* L)
 	if (L->range < 0.1f)
 		return;
 
-	if (0 == L->SpatialComponent->spatial.sector)
+	if (L->SpatialComponent->spatial.sector == nullptr)
 		return;
 	if (IRender_Light::POINT == L->flags.type)
 	{
@@ -335,7 +340,6 @@ void CLightR_Manager::add(light* L)
 		// spot/flash
 		selected_spot.push_back(L);
 	}
-	VERIFY(L->SpatialComponent->spatial.sector);
 }
 
 CLightR_Manager::CLightR_Manager	()
