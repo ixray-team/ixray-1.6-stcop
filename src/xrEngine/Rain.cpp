@@ -39,7 +39,6 @@ CEffect_Rain::~CEffect_Rain()
 // Born
 void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 {
-	//static shared_str st_default = "default";
 	static shared_str st_drizzle = "drizzle";
 	static shared_str st_dense = "dense";
 	static shared_str st_spherical = "spherical";
@@ -57,7 +56,7 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	};
 
 	const Fvector& view = Device.vCameraPosition_saved;
-	bool defaultborn = true;
+
 	if (rainType.equal(st_drizzle))
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
@@ -73,9 +72,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 
 		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min * 0.5f,
 			g_pGamePersistent->Environment().CurrentEnv->rain_speed_max * 0.7f);
-		defaultborn = false;
 	}
-	if (rainType.equal(st_dense))
+	else if (rainType.equal(st_dense))
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * (radius * 0.5f);
@@ -90,9 +88,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 
 		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
 			g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
-		defaultborn = false;
 	}
-	if (rainType.equal(st_spherical))
+	else if (rainType.equal(st_spherical))
 	{
 		float theta = ::Random.randF(0.f, PI_MUL_2);
 		float phi = ::Random.randF(0.f, PI_DIV_2);
@@ -107,10 +104,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 		dest.P.set(x + view.x, y + view.y, z + view.z);
 		dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
 			g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
-		defaultborn = false;
 	}
-
-	if (defaultborn)//rainType.equal(st_default)
+	else//default
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * radius;
