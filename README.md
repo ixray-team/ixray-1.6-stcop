@@ -21,7 +21,7 @@
     <a href="./LICENSE.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
-    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/tag/r1.1.1">
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/latest">
       <img src="https://img.shields.io/github/v/release/ixray-team/ixray-1.6-stcop?include_prereleases&label=Release" alt="Latest release" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases">
@@ -31,14 +31,33 @@
       <img src="https://img.shields.io/github/contributors/ixray-team/ixray-1.6-stcop.svg?label=Contributors" alt="All Contributors" />
     </a>
     <br />
+    <a href="https://www.youtube.com/UC1FjS8KwKAHJhSoNkpQ9BvQ">
+      <img src="https://img.shields.io/youtube/channel/views/UC1FjS8KwKAHJhSoNkpQ9BvQ?label=Views&style=flat&logo=youtube" alt="YouTube" />
+    <a href="https://www.youtube.com/UC1FjS8KwKAHJhSoNkpQ9BvQ">
+      <img src="https://img.shields.io/youtube/channel/subscribers/UC1FjS8KwKAHJhSoNkpQ9BvQ?label=Subscribers&style=flat&logo=youtube" alt="YouTube" />
+    </a>
+    <a href="https://discord.gg/hWTbHxaYWz">
+      <img src="https://img.shields.io/discord/959159181053661244.svg?label=Server&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="Discord" />
+    </a>
+    <a href="https://t.me/ixray_platform">
+      <img src="https://img.shields.io/badge/Channel-view-blue?style=flat-squeare&logo=telegram&logoColor=white" alt="Telegram" />
+    </a>
+    <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-engine.yml/badge.svg" alt="Build engine" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-server.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-server.yml/badge.svg" alt="Build server" />
     </a>
+    <br />
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-editors.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-editors.yml/badge.svg" alt="Build editors" />
+    </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml">
       <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-utilities.yml/badge.svg" alt="Build utilities" />
+    </a>
+    <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-plugins.yml">
+      <img src="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/build-plugins.yml/badge.svg" alt="Build plugins" />
     </a>
     <br />
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/actions/workflows/nonunity-build.yml">
@@ -144,7 +163,7 @@ To generate `build` folder and solution:
 
 - Open CMake GUI
 - Press `Browse Source...` button and open folder with the project
-- Select necessary preset from drop-down list
+- Select required options in `IXRAY` category
 - Press `Configure` button and then `Generate` button
 
 To build the project after generating solution:
@@ -159,15 +178,11 @@ To build from the console follow steps below
 
 - Select one of preset from the list and configure project:
 
-  - `Engine-x86`
   - `Engine-x64`
-  - `Server-x86`
   - `Server-x64`
-  - `Utilities-x86`
   - `Utilities-x64`
   - `Plugins-3ds-Max-x64`
   - `Plugins-Lightwave-x64`
-  - `Compressor-x86`
   - `Compressor-x64`
 
   ```sh

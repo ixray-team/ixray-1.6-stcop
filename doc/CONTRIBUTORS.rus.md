@@ -15,7 +15,6 @@
   - Misery (Shtrecker)
   - johncurley
   - OldSerpskiStalker
-  - vadvalskiy
   - ForserX
   - v2v3v4
   - ggGhosTt
@@ -28,7 +27,9 @@
   - LVutner
   - VodkaNET
   - BigBro
-  - krairon
+  - St4lker0k765
+  - wh1t3lord
+  - GladiatorVS
 
 - IX-Ray Community:
   - _V_O_IN_
@@ -44,6 +45,9 @@
   - Oswald
   - MiX225
   - Romann
+  - krairon
+  - kola2451
+  - mnelenpridumivat
 
 - IX-Ray Testers:
   - Kystman
@@ -53,10 +57,11 @@
   - PastKNIGHT
   - mannewil_
   - YOUASSBEE
-  - mox.creative (ЛилЖма)
+  - mox.creative (Pitarda2007)
   - ROOZBAN
   - moof1x
   - MafiosiGhost
+  - Mawrak
 
 ## Помощники сообщества
 
@@ -75,3 +80,5 @@
 - StalkMen
 - KD87
 - ShokerStlk
+- vadvalskiy
+- Karlan

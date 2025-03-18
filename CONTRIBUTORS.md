@@ -15,7 +15,6 @@ Detail list of all contributors to IX-Ray project
   - Misery (Shtrecker)
   - johncurley
   - OldSerpskiStalker
-  - vadvalskiy
   - ForserX
   - v2v3v4
   - ggGhosTt
@@ -28,7 +27,9 @@ Detail list of all contributors to IX-Ray project
   - LVutner
   - VodkaNET
   - BigBro
-  - krairon
+  - St4lker0k765
+  - wh1t3lord
+  - GladiatorVS
 
 - IX-Ray Community:
   - _V_O_IN_
@@ -44,6 +45,9 @@ Detail list of all contributors to IX-Ray project
   - Oswald
   - MiX225
   - Romann
+  - krairon
+  - kola2451
+  - mnelenpridumivat
 
 - IX-Ray Testers:
   - Kystman
@@ -53,8 +57,11 @@ Detail list of all contributors to IX-Ray project
   - PastKNIGHT
   - mannewil_
   - YOUASSBEE
+  - mox.creative (Pitarda2007)
+  - ROOZBAN
   - moof1x
   - MafiosiGhost
+  - Mawrak
 
 ## Community helpers
 
@@ -73,3 +80,5 @@ Detail list of all contributors to IX-Ray project
 - StalkMen
 - KD87
 - ShokerStlk
+- vadvalskiy
+- Karlan
