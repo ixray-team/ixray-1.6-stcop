@@ -1,5 +1,5 @@
 --'******************************************************
---'*  Биндер объекта зоны аномалии .
+--'*  Р‘РёРЅРґРµСЂ РѕР±СЉРµРєС‚Р° Р·РѕРЅС‹ Р°РЅРѕРјР°Р»РёРё .
 --'******************************************************
 artefact_ways_by_id					= {}
 artefact_points_by_id				= {}
@@ -7,10 +7,7 @@ parent_zones_by_artefact_id			= {}
 ANOMAL_ZONE_SECT = "anomal_zone"
 
 function bind(obj)
-	-- IX-Ray: Added security check for multiplayer compatibility
-	if IsGameTypeSingle() or OnServer() then
-		obj:bind_object(anomaly_zone_binder(obj))
-	end
+	obj:bind_object(anomaly_zone_binder(obj))
 end
 
 class "anomaly_zone_binder" (object_binder)
@@ -190,13 +187,6 @@ end
 function anomaly_zone_binder:respawn_artefacts_and_replace_anomaly_zone()
 	local anom_fields = bind_anomaly_field.fields_by_names
 	self.respawn_artefacts = true
-	
-	-- START IX-Ray: Added security check for multiplayer compatibility
-	if not IsGameTypeSingle() then
-		return
-	end
-	-- END IX-Ray
-	
 	if(self.custom_placement) then
 		local layer = self.cur_layer
 		for k,v in pairs(self.fields_table[layer]) do
@@ -279,10 +269,7 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	self.artefact_points_by_id[artefact_obj.id] = rnd_path_point
 	parent_zones_by_artefact_id[artefact_obj.id] = self
 	self.spawned_count = self.spawned_count + 1
-	
-	-- START IX-Ray
-	pda.change_anomalies_names()
-	-- END IX-Ray
+
 end
 
 function anomaly_zone_binder:get_artefact_path()
