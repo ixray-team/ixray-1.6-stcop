@@ -771,6 +771,9 @@ void CActor::SwitchNightVision()
 
 void CActor::SwitchTorch()
 { 
+	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
+		return;
+
 	xr_vector<CAttachableItem*> const& all = CAttachmentOwner::attached_objects();
 	xr_vector<CAttachableItem*>::const_iterator it = all.begin();
 	xr_vector<CAttachableItem*>::const_iterator it_e = all.end();
