@@ -131,7 +131,7 @@ void CRenderDevice::End		(void)
 static void mt_3rdThread(void* ptr)
 {
 	PROF_THREAD("3rd Thread");
-	while (FALSE == Device.mt_bMustExit)
+	while (FALSE == Device.mt_bMustExit[1])
 	{
 		Enter3rdCs.Enter();
 		PROF_EVENT("CPU Frame: Render");
@@ -140,6 +140,7 @@ static void mt_3rdThread(void* ptr)
 			PROF_EVENT("Discord Sync");
 			g_Discord.Update();
 		}
+		
 		{
 			PROF_EVENT("Process Render");
 			for (auto& it : Device.seqParallelRender)
@@ -150,6 +151,8 @@ static void mt_3rdThread(void* ptr)
 
 		xrCriticalSectionGuard sync(&Leave3rdCs);
 	}
+
+	Device.mt_bMustExit[1] = FALSE;
 }
 #include "CustomHUD.h"
 #include "IGame_Level.h"
@@ -158,7 +161,7 @@ static void mt_Thread(void* ptr)
 {
 	PROF_THREAD("SecondaryThread");
 	g_AppInfo.SecondaryThread = GetCurrentThread();
-	while (FALSE==Device.mt_bMustExit)
+	while (FALSE==Device.mt_bMustExit[0])
 	{
 		// waiting for Device permission to execute
 		{
@@ -198,7 +201,7 @@ static void mt_Thread(void* ptr)
 		}
 		xrCriticalSectionGuard sync(&Device.mt_csLeave);
 	}
-	Device.mt_bMustExit = FALSE; // Important!!!
+	Device.mt_bMustExit[0] = FALSE; // Important!!!
 }
 #endif
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
@@ -455,7 +458,8 @@ void CRenderDevice::Run()
 
 	mt_csEnter.Enter();
 	Enter3rdCs.Enter();
-	mt_bMustExit = FALSE;
+	mt_bMustExit[0] = FALSE;
+	mt_bMustExit[1] = FALSE;
 
 	g_AppInfo.MainThread = GetCurrentThread();
 	// Start Balance-Threads
@@ -471,10 +475,14 @@ void CRenderDevice::Run()
 	seqAppEnd.Process(rp_AppEnd);
 
 	// Stop Balance-Threads
-	mt_bMustExit = TRUE;
+	mt_bMustExit[0] = TRUE;
+	mt_bMustExit[1] = TRUE;
 	Enter3rdCs.Leave(); // Important for correct thread closing!!!
 	mt_csEnter.Leave();
-	while (mt_bMustExit)	Sleep(0);
+	
+	while (mt_bMustExit[0])	Sleep(0);
+	while (mt_bMustExit[1])	Sleep(0);
+
 	ParticleWorkerCallback = nullptr;
 #endif
 }
