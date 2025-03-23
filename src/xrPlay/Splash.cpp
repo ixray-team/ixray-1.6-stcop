@@ -123,7 +123,7 @@ namespace splash
 			WinW,
 			WinH,
 			SDL_WINDOW_BORDERLESS |
-			SDL_WINDOW_NOT_FOCUSABLE | SDL_WINDOW_TRANSPARENT
+			SDL_WINDOW_NOT_FOCUSABLE
 		);
 
 		if (!window) {
