@@ -195,6 +195,8 @@ void CRenderDevice::on_idle		()
 
 	PROF_THREAD("MainThread");
 	PROF_FRAME("Main Thread");
+	Platform::SetThreadName("X-Ray Primary Thread");
+
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !CImGuiManager::Instance().IsCapturingInputs();
@@ -236,32 +238,31 @@ void CRenderDevice::on_idle		()
 		}
 		secondary_tasks.run([]()
 		{
+			Platform::SetThreadName("X-Ray Pre-Render");
+
 			PROF_THREAD("Secondary Task 1")
 			{
-				PROF_EVENT("Discord Sync")
-					g_Discord.Update();
+				PROF_EVENT("Discord Sync");
+				g_Discord.Update();
 			}
 
 			{
-				PROF_EVENT("seqParallelRender")
-					for (auto& it : Device.seqParallelRender)
-						it();
+				PROF_EVENT("seqParallelRender");
+				for (auto& it : Device.seqParallelRender)
+					it();
 			}
 
-			if (g_pGamePersistent &&
-				g_pGamePersistent->pEnvironment &&
-				g_pGamePersistent->pEnvironment->eff_Rain)
+			if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
 			{
 				g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
 			}
 
+			if (Device.ParticleWorkerCallback)
 			{
-				PROF_EVENT("Process Particles")
-					if (Device.ParticleWorkerCallback)
-					{
-						Device.ParticleWorkerCallback();
-					}
+				PROF_EVENT("Process Particles");
+				Device.ParticleWorkerCallback();
 			}
+			Platform::SetThreadName("X-Ray Empty Task");
 		});
 		FrameMove();
 	}
@@ -312,6 +313,8 @@ void CRenderDevice::on_idle		()
 
 	secondary_tasks.run([]()
 	{
+		Platform::SetThreadName("X-Ray Game Thread");
+
 		PROF_THREAD("Secondary Task 2")
 		// we has granted permission to execute
 		{
@@ -343,6 +346,8 @@ void CRenderDevice::on_idle		()
 			PROF_EVENT("seqFrameMT")
 			Device.seqFrameMT.Process(rp_Frame);
 		}
+
+		Platform::SetThreadName("X-Ray Empty Task");
 	});
 
 	if (!g_dedicated_server)
@@ -403,7 +408,7 @@ void CRenderDevice::Run()
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
 	Log("Starting engine...");
-	thread_name("X-RAY Primary thread");
+	thread_name("X-Ray Primary Thread");
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;

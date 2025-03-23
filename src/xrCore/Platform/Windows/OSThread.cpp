@@ -70,7 +70,7 @@ struct THREAD_NAME
 };
 #pragma pack(pop)
 
-void Platform::SetThreadName(const char* name)
+XRCORE_API void Platform::SetThreadName(const char* name)
 {
     using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
     auto Kernellib = GetModuleHandle(L"kernel32.dll");
