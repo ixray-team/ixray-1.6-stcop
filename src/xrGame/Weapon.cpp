@@ -2100,7 +2100,7 @@ bool CWeapon::can_kill	() const
 
 CInventoryItem *CWeapon::can_kill	(CInventory *inventory) const
 {
-	if (GetAmmoElapsed() || m_ammoTypes.empty())
+	if ((m_bAmmoInChamber && iAmmoChamberElapsed || GetAmmoElapsed()) || m_ammoTypes.empty())
 		return				(const_cast<CWeapon*>(this));
 
 	TIItemContainer::iterator I = inventory->m_all.begin();
@@ -2140,11 +2140,7 @@ const CInventoryItem *CWeapon::can_kill	(const xr_vector<const CGameObject*> &it
 
 bool CWeapon::ready_to_kill	() const
 {
-	return					(
-		!IsMisfire() && 
-		((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && 
-		GetAmmoElapsed()
-	);
+	return (!IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (m_bAmmoInChamber && iAmmoChamberElapsed || GetAmmoElapsed()));
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx() const {
