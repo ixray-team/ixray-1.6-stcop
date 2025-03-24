@@ -144,10 +144,6 @@ bool CLevel::net_start_client4()
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
 		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
 
-		VERIFY(physics_world());
-		physics_world()->set_step_time_callback((PhysicsStepTimeCallback*)&PhisStepsCallback);
-
-
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled
 		Device.seqFrameMT.Remove(g_pNetProcessor);

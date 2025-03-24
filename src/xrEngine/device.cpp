@@ -220,12 +220,13 @@ void CRenderDevice::on_idle		()
 			PROF_EVENT("Update Particles");
 			if (g_pGamePersistent)
 				g_pGamePersistent->UpdateParticles();
+
+			if (Device.ModelDefferClear)
+			{
+				Device.ModelDefferClear();
+			}
 		}
 
-		if (Device.ModelDefferClear)
-		{
-			Device.ModelDefferClear();
-		}
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
 		    if (Device.dwTimeGlobal >= it->first)
