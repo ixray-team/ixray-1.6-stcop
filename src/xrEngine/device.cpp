@@ -3,7 +3,6 @@
 using namespace DirectX;
 
 #include "../xrCDB/Frustum.h"
-#include "../xrCore/discord/discord.h"
 
 #pragma warning(disable:4995)
 // mmsystem.h
@@ -17,17 +16,11 @@ using namespace DirectX;
 
 #include "x_ray.h"
 #include "Render.h"
+#include "EngineThreading.h"
+#include "IGame_Level.h"
 
-// must be defined before include of FS_impl.h
-#define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
-#ifndef _EDITOR
-#include "CustomHUD.h"
-#include "IGame_Level.h"
-#endif
-
-#include "Rain.h"
 
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 #ifndef _EDITOR
@@ -38,12 +31,11 @@ ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
 
-BOOL		g_bLoaded = FALSE;
-ref_light	precache_light = 0;
+BOOL g_bLoaded = FALSE;
+ref_light precache_light = 0;
 
 BOOL CRenderDevice::Begin()
 {
-#ifndef _EDITOR
 	PROF_EVENT("Render: Begin");
 
 	if (g_dedicated_server)
@@ -75,23 +67,20 @@ BOOL CRenderDevice::Begin()
 
 	FPU::m24r();
 	g_bRendering = true;
-#endif
 
 	return TRUE;
 }
 
-void CRenderDevice::Clear	()
+void CRenderDevice::Clear()
 {
-#ifndef _EDITOR
 	m_pRender->Clear();
-#endif
 }
 
-void CRenderDevice::End		(void)
+void CRenderDevice::End(void)
 {
-#ifndef _EDITOR
 	PROF_EVENT("Render: End");
-	if (g_dedicated_server) {
+	if (g_dedicated_server)
+	{
 		return;
 	}
 
@@ -112,14 +101,11 @@ void CRenderDevice::End		(void)
 			Memory.mem_compact								();
 			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
 			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
-			if (loading_save_timer_started) {
+			if (loading_save_timer_started) 
+			{
 				Msg("* Game Loading Timer: Finished for %d ms", loading_save_timer.GetElapsed_ms());
 				loading_save_timer_started = false;
 			}
-
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-			g_find_chunk_counter.flush();
-#endif
 		}
 	}
 
@@ -127,19 +113,19 @@ void CRenderDevice::End		(void)
 	// end scene
 
 	m_pRender->End();
-#endif
 }
 
-void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
+void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
-#ifndef _EDITOR
-	if (m_pRender->GetForceGPU_REF() || g_dedicated_server) {
+	if (m_pRender->GetForceGPU_REF() || g_dedicated_server)
+	{
 		amount = 0;
 	}
 
 	dwPrecacheFrame = dwPrecacheTotal = amount;
 
-	if (amount && !precache_light && g_pGameLevel && g_loading_events.empty()) {
+	if (amount && !precache_light && g_pGameLevel && g_loading_events.empty())
+	{
 		precache_light					= ::Render->light_create();
 		precache_light->set_shadow		(false);
 		precache_light->set_position	(vCameraPosition);
@@ -152,13 +138,11 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 	{
 		load_screen_renderer.start	(b_wait_user_input);
 	}
-#endif
 }
-
 
 int g_svDedicateServerUpdateReate = 100;
 
-ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
+ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 int g_dwFPSlimit = 500;
 void CRenderDevice::time_factor(const float &time_factor)
 {
@@ -237,34 +221,8 @@ void CRenderDevice::on_idle		()
 			else
 		       ++it;
 		}
-		secondary_tasks.run([]()
-		{
-			Platform::SetThreadName("X-Ray Pre-Render");
 
-			PROF_THREAD("Secondary Task 1")
-			{
-				PROF_EVENT("Discord Sync");
-				g_Discord.Update();
-			}
-
-			{
-				PROF_EVENT("seqParallelRender");
-				for (auto& it : Device.seqParallelRender)
-					it();
-			}
-
-			if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
-			{
-				g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
-			}
-
-			if (Device.ParticleWorkerCallback)
-			{
-				PROF_EVENT("Process Particles");
-				Device.ParticleWorkerCallback();
-			}
-			Platform::SetThreadName("X-Ray Empty Task");
-		});
+		secondary_tasks.run(&XRay::Engine::PreRenderThread);
 		FrameMove();
 	}
 
@@ -312,44 +270,7 @@ void CRenderDevice::on_idle		()
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
 
-	secondary_tasks.run([]()
-	{
-		Platform::SetThreadName("X-Ray Game Thread");
-
-		PROF_THREAD("Secondary Task 2")
-		// we has granted permission to execute
-		{
-			PROF_EVENT("g_hud OnFrameMT")
-			if (g_hud)
-				g_hud->OnFrameMT();
-		}
-
-		{
-			PROF_EVENT("SoundEvent_Dispatch")
-			if (g_pGameLevel && g_pGameLevel->bReady)
-				g_pGameLevel->SoundEvent_Dispatch();
-		}
-
-		{
-			PROF_EVENT("Sheduler")
-			if (!Device.Paused())
-				Engine.Sheduler.Update();
-		}
-
-		{
-			PROF_EVENT("seqParallel")
-			for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-				Device.seqParallel[pit]();
-			Device.seqParallel.resize(0);
-		}
-
-		{
-			PROF_EVENT("seqFrameMT")
-			Device.seqFrameMT.Process(rp_Frame);
-		}
-
-		Platform::SetThreadName("X-Ray Empty Task");
-	});
+	secondary_tasks.run(&XRay::Engine::GameThread);
 
 	if (!g_dedicated_server)
 	{
@@ -487,7 +408,6 @@ void ProcessLoading()
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;
-#include "IGame_Persistent.h"
 
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)

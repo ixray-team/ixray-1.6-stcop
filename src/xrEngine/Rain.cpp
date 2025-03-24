@@ -229,7 +229,8 @@ void CEffect_Rain::OnFrame()
 
 void CEffect_Rain::UpdateItems()
 {
-	PROF_EVENT("CEffect_Rain::UpdateItems")
+	PROF_EVENT("CEffect_Rain::UpdateItems");
+	xrCriticalSectionGuard guard(&rainCS);
 
 	float	factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor < EPS_L)			return;
@@ -240,7 +241,6 @@ void CEffect_Rain::UpdateItems()
 	// owner.items.reserve		(desired_items);
 	while (items.size() < desired_items)
 	{
-		xrCriticalSectionGuard guard(&rainCS);
 		Born(items.emplace_back(), g_pGamePersistent->Environment().source_rain_radius_render +
 			g_pGamePersistent->Environment().add_const_dist_coefficient_render, g_pGamePersistent->Environment().CurrentEnv->rain_type);
 	}
@@ -338,9 +338,12 @@ void CEffect_Rain::Render()
 // startup _new_ particle system
 void CEffect_Rain::Hit(Fvector& pos)
 {
-	if (0!=::Random.randI(2))	return;
-	Particle*	P	= p_allocate();
-	if (0==P)	return;
+	if (0!=::Random.randI(2))
+		return;
+
+	Particle* P = p_allocate();
+	if (0==P)
+		return;
 
 	const Fsphere &bv_sphere = m_pRender->GetDropBounds();
 
@@ -349,7 +352,6 @@ void CEffect_Rain::Hit(Fvector& pos)
 	P->mXForm.translate_over	(pos);
 	P->mXForm.transform_tiny	(P->bounds.P, bv_sphere.P);
 	P->bounds.R					= bv_sphere.R;
-
 }
 
 // initialize particles pool

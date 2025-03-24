@@ -219,6 +219,7 @@ public:
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
 	xr_vector		<xr_delegate<void()>>	seqParallel;
 	xr_vector		<xr_delegate<void()>>	seqParallelRender;
+	xr_vector		<xr_delegate<void()>>	seqParallelBeforRender;
 
 	std::function<void()> ParticleWorkerCallback;
 	xr_delegate<void()> ModelDefferClear;

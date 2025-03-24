@@ -240,7 +240,7 @@ void CRender::create()
 	FluidManager.Initialize(70, 70, 70);
 	FluidManager.SetScreenSize((u32)RCache.get_width(), (u32)RCache.get_height());
 
-	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueue);
+	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 }
 
 void CRender::destroy() 
@@ -310,6 +310,8 @@ void CRender::reset_end() {
 
 void CRender::OnFrame()
 {
+	Models->DeleteQueue();
+
 	//Lights Delete queue
 	for (light* L : v_all_lights_dque)
 		xr_delete(L);
