@@ -128,14 +128,14 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	{
 		m_bHasDifferentFireModes = true;
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
-		int ModesCount = _GetItemCount(FireModesList.c_str());
+		s8 ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
 		
-		for (int i=0; i<ModesCount; i++)
+		for (s8 i = 0; i < ModesCount; i++)
 		{
-			string16 sItem;
+			string16 sItem = {};
 			_GetItem(FireModesList.c_str(), i, sItem);
-			m_aFireModes.push_back	((s8)atoi(sItem));
+			m_aFireModes.push_back(static_cast<s8>(atoi(sItem)));
 		}
 		
 		m_iCurFireMode = ModesCount - 1;
