@@ -312,7 +312,6 @@ void CModelPool::DeleteDeffered(dxRender_Visual* &V)
 
 	xrCriticalSectionGuard guard(&deffered_del_lock);
 	auto Iter = std::find(ModelsToDeleteDeffer.begin(), ModelsToDeleteDeffer.end(), V);
-	R_ASSERT(Iter == ModelsToDeleteDeffer.end());
 
 	ModelsToDeleteDeffer.push_back(V);
 	V = nullptr;
