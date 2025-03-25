@@ -1211,6 +1211,19 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 	dVectorSet(m_safe_position,dBodyGetPosition(m_body));
 	dVectorSet(m_safe_velocity,linear_velocity);
 
+	// FX: Нахер всякие e-37
+	if (fis_zero(m_safe_velocity[0]))
+	{
+		m_safe_velocity[0] = 0;
+	}
+	if (fis_zero(m_safe_velocity[1]))
+	{
+		m_safe_velocity[1] = 0;
+	}
+	if (fis_zero(m_safe_velocity[2]))
+	{
+		m_safe_velocity[2] = 0;
+	}
 }
 
 void CPHSimpleCharacter::SetObjectContactCallback(ObjectContactCallbackFun* callback)
