@@ -137,7 +137,6 @@ protected:
 	bool			m_bHasDifferentFireModes;
 	xr_vector<s8>	m_aFireModes;
 	int				m_iCurFireMode;
-	int				m_iPrefferedFireMode;
 
 	//переменная блокирует использование
 	//только разных типов патронов
