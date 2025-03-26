@@ -126,7 +126,6 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if (pSettings->line_exist(section, "fire_modes"))
 	{
-		m_bHasDifferentFireModes = true;
 		shared_str FireModesList = pSettings->r_string(section, "fire_modes");
 		s8 ModesCount = _GetItemCount(FireModesList.c_str());
 		m_aFireModes.clear();
@@ -140,10 +139,7 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		
 		m_iCurFireMode = ModesCount - 1;
 	}
-	else
-	{
-		m_bHasDifferentFireModes = false;
-	}
+
 	LoadSilencerKoeffs();
 }
 
@@ -1053,18 +1049,11 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		} 
 		return true;
 	case kWPN_FIREMODE_PREV:
-		{
-			if(flags&CMD_START) 
-			{
-				OnPrevFireMode();
-				return true;
-			};
-		}break;
 	case kWPN_FIREMODE_NEXT:
 		{
-			if(flags&CMD_START) 
+			if (flags & CMD_START) 
 			{
-				OnNextFireMode();
+				ChangeFireMode(cmd);
 				return true;
 			};
 		}break;
@@ -1507,49 +1496,45 @@ void CWeaponMagazined::OnZoomOut()
 }
 
 //переключение режимов стрельбы одиночными и очередями
-bool CWeaponMagazined::SwitchMode			()
+bool CWeaponMagazined::SwitchMode()
 {
-	if(eIdle != GetState() || IsPending()) return false;
+	if (GetState() != eIdle || IsPending())
+	{
+		return false;
+	}
 
-	if(SingleShotMode())
-		m_iQueueSize = WEAPON_ININITE_QUEUE;
-	else
-		m_iQueueSize = 1;
-	
-	PlaySound	("sndEmptyClick", get_LastFP());
+	m_iQueueSize = SingleShotMode() ? WEAPON_ININITE_QUEUE : 1;
 
 	return true;
 }
  
-void	CWeaponMagazined::OnNextFireMode		()
+void CWeaponMagazined::ChangeFireMode(u16 cmd)
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
-	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % (int)m_aFireModes.size();
+	if (!HasFireModes() || GetState() != eIdle)
+	{
+		return;
+	}
+
+	if (cmd == kWPN_NEXT)
+	{
+		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+	}
+	else
+	{
+		m_iCurFireMode = (m_iCurFireMode - 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
+	}
+
 	SetQueueSize(GetCurrentFireMode());
 };
 
-void	CWeaponMagazined::OnPrevFireMode		()
+void CWeaponMagazined::OnH_A_Chield()
 {
-	if (!m_bHasDifferentFireModes) return;
-	if (GetState() != eIdle) return;
-	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % (int)m_aFireModes.size();
-	SetQueueSize(GetCurrentFireMode());	
-};
-
-void	CWeaponMagazined::OnH_A_Chield		()
-{
-	if (m_bHasDifferentFireModes)
+	if (HasFireModes())
 	{
-		if (H_Parent() && !H_Parent()->cast_actor()) SetQueueSize(-1);
-		else SetQueueSize(GetCurrentFireMode());
-	};	
-	inherited::OnH_A_Chield();
-};
+		SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
+	}
 
-void	CWeaponMagazined::SetQueueSize			(int size)  
-{
-	m_iQueueSize = size; 
+	inherited::OnH_A_Chield();
 };
 
 float CWeaponMagazined::GetWeaponDeterioration()
