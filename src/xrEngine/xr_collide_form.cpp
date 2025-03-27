@@ -2,11 +2,11 @@
 #include "IGame_Level.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
-#include "../xrCDB/xr_area.h"
+#include "../xrCore/Collision/xr_area.h"
 #include "x_ray.h"
 #include "xrLevel.h"
 #include "Fmesh.h"
-#include "../xrCDB/Frustum.h"
+#include "../xrCore/Collision/Frustum.h"
 
 //#include "skeletoncustom.h"
 #include "../Include/xrRender/Kinematics.h"

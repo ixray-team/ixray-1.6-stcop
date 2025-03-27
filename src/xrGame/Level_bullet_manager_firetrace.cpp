@@ -16,7 +16,7 @@
 #include "ai/stalker/ai_stalker.h"
 #include "character_info.h"
 #include "game_cl_base_weapon_usage_statistic.h"
-#include "../xrCDB/xr_collide_defs.h"
+#include "../xrCore/Collision/xr_collide_defs.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Weapon.h"
 #include "ik/math3d.h"

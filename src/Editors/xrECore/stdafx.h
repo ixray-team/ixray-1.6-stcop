@@ -18,7 +18,7 @@
 #include "../../xrEngine/stdafx.h"
 #include "../../xrEngine/device.h"
 #include "../xrEProps/stdafx.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrSound/Sound.h"
 #include "../../xrParticles/psystem.h"
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EmbreeRayTrace.h"
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 // INTEL DATA STRUCTURE
 int LastGeometryDetailsID = RTC_INVALID_GEOMETRY_ID;

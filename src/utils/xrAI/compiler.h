@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"
