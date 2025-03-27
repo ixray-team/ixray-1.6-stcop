@@ -181,7 +181,6 @@ void CCustomDetector::OnStateSwitch(u32 S)
 	{
 	case eShowing:
 		{
-			g_player_hud->attach_item	(this);
 			m_sounds.PlaySound			("sndShow", Fvector().set(0,0,0), this, true, false);
 			PlayHUDMotion				(m_bFastAnimMode?"anm_show_fast":"anm_show", m_old_state==eHidden?FALSE:TRUE/*TRUE*/, this, S);
 			SetPending					(TRUE);
@@ -214,7 +213,6 @@ void CCustomDetector::OnAnimationEnd(u32 state)
 		{
 			SwitchState					(eHidden);
 			TurnDetectorInternal		(false);
-			g_player_hud->detach_item	(this);
 		} break;
 	}
 }
@@ -410,11 +408,6 @@ void CCustomDetector::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	inherited::OnMoveToRuck	(prev);
 	m_bDetectorActive			= false;
-	if(prev.type==eItemPlaceSlot)
-	{
-		SwitchState					(eHidden);
-		g_player_hud->detach_item	(this);
-	}
 	TurnDetectorInternal			(false);
 	StopCurrentAnimWithoutCallback	();
 }
