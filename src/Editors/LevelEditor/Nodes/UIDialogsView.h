@@ -16,7 +16,7 @@ private:
 	void OpenDialog(const shared_str& Str, XML_NODE* Node);
 
 	float IterateChild(Fvector2 Offset);
-
+	void SelectNodeEvent(INodeUnknown* Node);
 public:
 	static void OpenFile(const xr_path& Path);
 

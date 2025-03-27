@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "UIDialogsView.h"
+#include "../Editor/UI_LevelTools.h"
+#include "../../../xrEngine/string_table.h"
 
 CUIDialogView::CUIDialogView()
 {
+	NodeSelectCallback = xr_make_delegate(this, &CUIDialogView::SelectNodeEvent);
 }
 
 CUIDialogView::~CUIDialogView()
@@ -25,7 +28,7 @@ void CUIDialogView::Draw()
 			if (IsOpenList)
 			{
 				ImGui::SetNextItemWidth(300);
-				if (ImGui::BeginListBox("##ItemsInFile", { 0, ImGui::GetWindowSize().y - 10 }))
+				if (ImGui::BeginListBox("##ItemsInFile", { 0, ImGui::GetWindowSize().y - 30 }))
 				{
 					for (const auto& [ID, Node] : Dialogs)
 					{
@@ -36,8 +39,18 @@ void CUIDialogView::Draw()
 							IsOpenList = false;
 						}
 					}
-
+					ImGui::Separator();
 					ImGui::EndListBox();
+				}
+
+				ImGui::Button("Save");
+				ImGui::SameLine();
+
+				ImGui::SetCursorPosX(282);
+
+				if (ImGui::Button("<"))
+				{
+					IsOpenList = false;
 				}
 			}
 			else if (ImGui::Button(">"))
@@ -195,6 +208,29 @@ void CUIDialogView::OpenDialog(const shared_str& Str, XML_NODE* Node)
 float CUIDialogView::IterateChild(Fvector2 Offset)
 {
 	return 0;
+}
+
+void CUIDialogView::SelectNodeEvent(INodeUnknown* Node)
+{
+	CDialogNode* DialogNode = (CDialogNode*)Node;
+	UIPropertiesForm* Properties = LTools->GetProperties();
+	Properties->ClearProperties();
+
+	PropItemVec items;
+	PHelper().CreateRText(items, "Preconditions\\Has Info", &DialogNode->HasInfo);
+	PHelper().CreateRText(items, "Preconditions\\Don't Has Info", &DialogNode->DontHasInfo);
+	PHelper().CreateRText(items, "Preconditions\\Lua Precondition", &DialogNode->Precondition);
+
+	PHelper().CreateRText(items, "Actions\\Give Info", &DialogNode->GiveInfo);
+	PHelper().CreateRText(items, "Actions\\Lua Action", &DialogNode->Action);
+
+	PHelper().CreateRText(items, "Text\\String ID", &DialogNode->Text);
+
+	static shared_str TranslateStr;
+	TranslateStr = Platform::ANSI_TO_UTF8(*g_pStringTable->translate(*DialogNode->Text)).c_str();
+	PHelper().CreateCaption(items, "Text\\Translated", TranslateStr);
+
+	Properties->AssignItems(items);
 }
 
 void CUIDialogView::OpenFile(const xr_path& Path)

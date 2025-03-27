@@ -10,7 +10,6 @@ public:
 	void Draw() override;
 
 public:
-	shared_str DialogId;
 	shared_str HasInfo;
 	shared_str DontHasInfo;
 	shared_str GiveInfo;

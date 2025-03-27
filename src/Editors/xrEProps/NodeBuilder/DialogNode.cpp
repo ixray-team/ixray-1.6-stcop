@@ -14,11 +14,11 @@ void CDialogNode::Draw()
 
 	DrawHeader();
 
-	auto RenderItemString = [this](const char* Name, shared_str& Data)
+	auto RenderItemString = [this](const char* Name, shared_str& Data, size_t Size)
 	{
 		ImGui::Text(Name);
 		ImGui::SameLine();
-		ImGui::PushItemWidth(120);
+		ImGui::PushItemWidth(Size);
 		string256 Value1 = {};
 
 		if (Data.size() > 0)
@@ -33,16 +33,17 @@ void CDialogNode::Draw()
 		ImGui::PopItemWidth();
 	};
 
-	RenderItemString("Has Info:", HasInfo);
-	RenderItemString("Don't Has Info:", DontHasInfo);
-	RenderItemString("Precondition:", Precondition);
+	RenderItemString("Has Info:", HasInfo, 154);
+	RenderItemString("Don't Has Info:", DontHasInfo, 120);
+	RenderItemString("Precondition:", Precondition, 131);
+
 	ImGui::Separator();
 
-	RenderItemString("Text: ", Text);
+	RenderItemString("Text:", Text, 175);
 	ImGui::Separator();
 
-	RenderItemString("Action:", Action);
-	RenderItemString("Give Info:", GiveInfo);
+	RenderItemString("Action:", Action, 164);
+	RenderItemString("Give Info:", GiveInfo, 146);
 
 	DrawEnd();
 }
