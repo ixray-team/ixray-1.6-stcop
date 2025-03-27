@@ -956,7 +956,7 @@ extern u32 hud_adj_mode;
 void CWeapon::UpdateCL		()
 {
 	bool need_update_hud = false;
-	bool isHudItemData = HudItemData() != nullptr;
+	bool isHudItemData = HudItemData() != nullptr && GetHUDmode();
 
 	if (isHudItemData && bUseAltScope) {
 		need_update_hud = true;
