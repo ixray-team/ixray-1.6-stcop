@@ -637,6 +637,7 @@ void CContentView::Init()
 	Icons["dll"]	= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dll"),		true};
 	Icons["backup"] = {EDevice->Resources->_CreateTexture("ed\\content_browser\\backup"),	true};
 	Icons["env_mod"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\env_mod"),	true};
+	Icons["dialogs"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\dialogs"),	true};
 
 	Icons["search"]= {EDevice->Resources->_CreateTexture("ed\\content_browser\\search"),	false};
 
@@ -1289,6 +1290,18 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 	
 	if (IconPath.ends_with(".wav"))
 		return Icons["wav"];
+	
+	if (IconPath.ends_with(".xml"))
+	{
+		xr_string FileName = xr_path(IconPath).xfilename();
+		FileName = FileName.substr(0, FileName.size() - 4);
+
+		auto Iter = std::find(GameDialogs.begin(), GameDialogs.end(), FileName);
+		if (Iter != GameDialogs.end())
+		{
+			return Icons["dialogs"];
+		}
+	}
 
 	if (IconPath.ends_with(".seq"))
 		return Icons["seq"];

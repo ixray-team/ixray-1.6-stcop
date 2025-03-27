@@ -250,6 +250,12 @@ void CUIDialogView::OpenFile(const xr_path& Path)
 
 	while (ChildNode != nullptr)
 	{
+		if (ChildNode->ToElement() == nullptr)
+		{
+			ChildNode = ChildNode->NextSibling();
+			continue;
+		}
+
 		shared_str NodeID = ChildNode->ToElement()->Attribute("id");
 		if (NodeID.size() == 0)
 			continue;
