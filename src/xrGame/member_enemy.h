@@ -12,15 +12,13 @@
 
 class CEntityAlive;
 
-class CMemberEnemy {
-public:
-	typedef u64	u64;
-	typedef _flags<u64>			mask_type;
+class CMemberEnemy
+{
 
 public:
 	const CEntityAlive	*m_object;
-	mask_type			m_mask;
-	mask_type			m_distribute_mask;
+	Flags64				m_mask;
+	Flags64				m_distribute_mask;
 	float				m_probability;
 	Fvector				m_enemy_position;
 	u32					m_level_time;

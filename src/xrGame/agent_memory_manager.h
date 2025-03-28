@@ -22,8 +22,6 @@ public:
 	typedef xr_vector<CVisibleObject>		VISIBLES;
 	typedef xr_vector<CSoundObject>			SOUNDS;
 	typedef xr_vector<CHitObject>			HITS;
-	typedef u64	u64;
-
 
 protected:
 	CAgentManager			*m_object;
