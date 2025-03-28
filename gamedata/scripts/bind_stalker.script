@@ -131,7 +131,7 @@ end
 -- IMPORTANT: if you wish to kill actor you need to call db.actor:kill(level.object_by_id(whoID), true) in actor_before_death callback, to ensure all objects are properly destroyed.
 function actor_binder:on_actor_before_death(whoID)
 	local killer = level.object_by_id(whoID) or db.actor
-	killer:kill(db.actor, true)
+	db.actor:kill(killer, true)
 end
 -- END IX-Ray 
 ----------------------------------------------------------------------------------------------------------------------
