@@ -2900,9 +2900,7 @@ void CWeapon::UpdateAltScope()
 	if (m_eScopeStatus != ALife::eAddonAttachable || !bUseAltScope)
 		return;
 
-	shared_str sectionNeedLoad;
-
-	sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
+	shared_str sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
 
 	if (!pSettings->section_exist(sectionNeedLoad))
 		return;
@@ -2921,6 +2919,12 @@ void CWeapon::UpdateAltScope()
 	}
 
 	hud_sect_cache = hud_sect;
+
+	if (HudItemData() != nullptr)
+	{
+		g_player_hud->detach_item(this);
+		g_player_hud->attach_item(this);
+	}
 }
 
 shared_str CWeapon::GetNameWithAttachmentScope()
