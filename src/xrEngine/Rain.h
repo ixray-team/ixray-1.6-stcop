@@ -71,7 +71,7 @@ private:
 	ref_sound						snd_RoofDroplets;
 	ref_sound						snd_RoofDropletsHard;
 	xrCriticalSection				rainCS;
-	float m_rainVolume;
+	float m_rainVolume = 0.0f;
 
 	// Utilities
 	void							p_create		();
@@ -86,9 +86,9 @@ private:
 	// Some methods
 	void							Born			(Item& dest, float radius, shared_str& rainType);
 	void							Hit				(Fvector& pos);
-	BOOL							RayPick			(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
 	void							RenewItem		(Item& dest, float height, BOOL bHit);
 public:
+	BOOL							RayPick			(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
 									CEffect_Rain	();
 									~CEffect_Rain	();
 
