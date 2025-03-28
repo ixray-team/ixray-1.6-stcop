@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<frameline>ui_inGame2_edit_box</frameline>
+	<button_up>ui_inGame2_spin_box_button_horz_top</button_up>
+	<button_down>ui_inGame2_spin_box_button_horz_bottom</button_down>
+	<spin_height>20</spin_height>
+	<button_size_x>12</button_size_x>
+	<button_size_y>19</button_size_y>
+	<button_offset>1</button_offset>
+</w>
