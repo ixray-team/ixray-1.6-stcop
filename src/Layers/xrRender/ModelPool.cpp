@@ -6,24 +6,17 @@
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #ifndef _EDITOR
-#include "FHierrarhyVisual.h"
-    #include "SkeletonAnimated.h"
-#include "FVisual.h"
-#include "FProgressive.h"
-#include "FSkinned.h"
-#include "FLOD.h"
-#include "FTreeVisual.h"
-    #include "ParticleGroup.h"
-    #include "ParticleEffect.h"
-#else
-#include "FVisual.h"
-#include "FProgressive.h"
-    #include "ParticleEffect.h"
-    #include "ParticleGroup.h"
-#include "FSkinned.h"
-#include "FHierrarhyVisual.h"
-    #include "SkeletonAnimated.h"
+#	include "FLOD.h"
+#	include "FTreeVisual.h"
 #endif
+
+#include "FVisual.h"
+#include "FProgressive.h"
+#include "ParticleEffect.h"
+#include "ParticleGroup.h"
+#include "FSkinned.h"
+#include "FHierrarhyVisual.h"
+#include "SkeletonAnimated.h"
 
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {

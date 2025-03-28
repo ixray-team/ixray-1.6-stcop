@@ -22,7 +22,7 @@ public:
 	typedef xr_vector<CVisibleObject>		VISIBLES;
 	typedef xr_vector<CSoundObject>			SOUNDS;
 	typedef xr_vector<CHitObject>			HITS;
-	typedef MemorySpace::squad_mask_type	squad_mask_type;
+	typedef u64	u64;
 
 
 protected:
@@ -55,9 +55,9 @@ public:
 			void			reset_memory_masks	();
 
 	template <typename T>
-	IC		void			update_memory_masks	(const squad_mask_type &mask, T &objects);
-	IC		void			update_memory_mask	(const squad_mask_type &mask, squad_mask_type &current);
-			void			update_memory_masks	(const squad_mask_type &mask);
+	IC		void			update_memory_masks	(const u64 &mask, T &objects);
+	IC		void			update_memory_mask	(const u64 &mask, u64 &current);
+			void			update_memory_masks	(const u64 &mask);
 			void			object_information	(const CObject *object, u32 &level_time, Fvector &position);
 };
 

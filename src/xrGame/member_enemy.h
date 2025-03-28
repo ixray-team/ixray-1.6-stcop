@@ -14,8 +14,8 @@ class CEntityAlive;
 
 class CMemberEnemy {
 public:
-	typedef MemorySpace::squad_mask_type	squad_mask_type;
-	typedef _flags<squad_mask_type>			mask_type;
+	typedef u64	u64;
+	typedef _flags<u64>			mask_type;
 
 public:
 	const CEntityAlive	*m_object;
@@ -26,7 +26,7 @@ public:
 	u32					m_level_time;
 
 public:
-	IC					CMemberEnemy		(const CEntityAlive *object, squad_mask_type mask);
+	IC					CMemberEnemy		(const CEntityAlive *object, u64 mask);
 	IC		bool		operator==			(const CEntityAlive *object) const;
 	IC		bool		operator<			(const CMemberEnemy &enemy) const;
 };

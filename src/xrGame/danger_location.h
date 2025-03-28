@@ -14,8 +14,8 @@ class CObject;
 
 class CDangerLocation : public intrusive_base {
 public:
-	typedef MemorySpace::squad_mask_type		squad_mask_type;
-	typedef _flags<squad_mask_type>				flags;
+	typedef u64		u64;
+	typedef _flags<u64>				flags;
 
 public:
 	u32						m_level_time;
