@@ -50,6 +50,7 @@ public:
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
+	R_dsgraph::mapSorted_T										mapHUDDistort;
 
 	// Runtime structures 
 	xr_vector<R_dsgraph::mapNormalVS::TNode*,render_alloc<R_dsgraph::mapNormalVS::TNode*> >				nrmVS;
@@ -149,6 +150,7 @@ public:
 		mapLOD.destroy			();
 		mapDistort.destroy		();
 		mapHUDSorted.destroy();
+		mapHUDDistort.destroy();
 
 #if RENDER!=R_R1
 		mapWmark.destroy		();
