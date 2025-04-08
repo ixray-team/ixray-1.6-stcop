@@ -338,9 +338,9 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	monster_squad().register_member((u8)g_Team(), (u8)g_Squad(), (u8)g_Group(), this);
 	settings_overrides();
 
-	CHARACTER_COMMUNITY community;
-	community.set("monster");
-	CInventoryOwner::SetCommunity(community.index());
+	// CHARACTER_COMMUNITY community;
+	// community.set("monster");
+	// CInventoryOwner::SetCommunity(community.index());
 
 	if(GetScriptControl()) {
 		m_control_manager->animation().reset_data();
