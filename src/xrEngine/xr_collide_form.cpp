@@ -60,6 +60,7 @@ bool	pred_find_elem(const CCF_Skeleton::SElement& E, u16 elem){
 }
 bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 {
+	xrSRWLockGuard guard(&build_lock, true);
 	ElementVecIt it = std::lower_bound(elements.begin(),elements.end(),elem_id,pred_find_elem);
 	if (it->elem_id==elem_id){
 		it->center(e_center);
@@ -121,7 +122,7 @@ void CCF_Skeleton::BuildState()
 	IKinematics* K		= PKinematics(pVisual);
 	//K->CalculateBones();
 	const Fmatrix& L2W	= owner->XFORM();
-	
+	xrSRWLockGuard guard(&build_lock, false);
 	if (vis_mask!=K->LL_GetBonesVisible()){
 		vis_mask		= K->LL_GetBonesVisible();
 		elements.resize(0);
@@ -228,7 +229,7 @@ BOOL CCF_Skeleton::_RayQuery( const collide::ray_defs& Q, collide::rq_results& R
 			BuildState	();
 		}
 	}
-
+	xrSRWLockGuard guard(&build_lock, true);
 	BOOL bHIT			= FALSE;
 	for (ElementVecIt I=elements.begin(); I!=elements.end(); I++){
 		if (!I->valid())continue;

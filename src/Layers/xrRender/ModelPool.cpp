@@ -305,36 +305,54 @@ void	CModelPool::DeleteInternal	(dxRender_Visual* &V, BOOL bDiscard)
 	V	=	nullptr;
 }
 
-void	CModelPool::DeleteDeffered		(dxRender_Visual* &V)
+void CModelPool::DeleteDeffered(dxRender_Visual* &V)
 {
-	if (nullptr==V)				return;
+	if (nullptr==V)
+		return;
+
 	xrCriticalSectionGuard guard(&deffered_del_lock);
-	ModelsToDelete.push_back(V);
+	auto Iter = std::find(ModelsToDeleteDeffer.begin(), ModelsToDeleteDeffer.end(), V);
+
+	ModelsToDeleteDeffer.insert(V);
 	V = nullptr;
 }
 
-void	CModelPool::Delete		(dxRender_Visual* &V, BOOL bDiscard)
+void CModelPool::Delete(dxRender_Visual* &V, BOOL bDiscard)
 {
-	if (nullptr==V)				return;
-	if (g_bRendering){
-		VERIFY					(!bDiscard);
-		xrCriticalSectionGuard guard(&deffered_del_lock);
+	if (nullptr==V)
+		return;
+
+	if (g_bRendering)
+	{
+		VERIFY(!bDiscard);
 		ModelsToDelete.push_back(V);
-	} else {
-		DeleteInternal			(V,bDiscard);
-	}	
-	V							=	nullptr;
+	} 
+	else
+	{
+		DeleteInternal(V,bDiscard);
+	}
+
+	V =	nullptr;
 }
 
 void CModelPool::DeleteQueue()
 {
-	xrCriticalSectionGuard guard(&deffered_del_lock);
 	for (u32 it = 0; it < ModelsToDelete.size(); it++)
 		DeleteInternal(ModelsToDelete[it]);
 	ModelsToDelete.clear();
 }
 
-void	CModelPool::Discard	(dxRender_Visual* &V, BOOL b_complete)
+void CModelPool::DeleteQueuedDeffer()
+{
+	xrCriticalSectionGuard guard(&deffered_del_lock);
+
+	for (dxRender_Visual* Vis : ModelsToDeleteDeffer)
+		DeleteInternal(Vis);
+
+	ModelsToDeleteDeffer.clear();
+}
+
+void CModelPool::Discard(dxRender_Visual* &V, BOOL b_complete)
 {
 	//
 	REGISTRY_IT	it		= Registry.find	(V);

@@ -45,7 +45,7 @@ public:
 	IC		bool				enabled					() const;
 	virtual	void				enable					(bool value);
 protected:
-	virtual bool		use_parent_ai_locations	() const	=0
+	virtual bool		use_parent_ai_locations	() const
 	{
 		return !enabled();
 	}

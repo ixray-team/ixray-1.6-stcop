@@ -100,7 +100,7 @@ void					CRender::create					()
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
-	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueue);
+	Device.ModelDefferClear = xr_make_delegate(Models, &CModelPool::DeleteQueuedDeffer);
 }
 
 void CRender::destroy()
@@ -153,9 +153,12 @@ void CRender::reset_end()
 
 void CRender::OnFrame()
 {
+	Models->DeleteQueue();
+
 	//Lights Delete queue
 	for (light* L : v_all_lights_dque)
 		xr_delete(L);
+
 	v_all_lights_dque.clear();
 }
 
