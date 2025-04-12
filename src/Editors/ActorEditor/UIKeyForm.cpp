@@ -41,7 +41,7 @@ void UIKeyForm::Draw()
 		ATools->GetStatTime(a, b, c);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::BeginChild("Left", ImVec2(60, 0));
+		ImGui::BeginChild("Left", ImVec2(90, 0));
 		{
 		
 			ImGui::Checkbox("Auto", &m_AutoChange);
@@ -92,47 +92,57 @@ void UIKeyForm::Draw()
 			DrawNotify();
 			ImGui::PlotHistogram("##animnotify", m_TempForPlotHistogram.data(), m_TempForPlotHistogram.size(), 0, NULL, 0.0f, 1.0f, size);
 
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			if (m_currentEditMotion)
 			{
-				float a, b, c;
-				ATools->GetStatTime(a, b, c);
-				float motion_length = b - a;
-
-				ImVec2 MousePos = ImGui::GetMousePos();
-				ImVec2 ItemPos = ImGui::GetItemRectMin();
-				ImVec2 ItemSize = ImGui::GetItemRectSize();
-				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-
-				m_currentEditMotion->notify[TimeOffset] = {};
-			}
-			else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-			{
-				float a, b, c;
-				ATools->GetStatTime(a, b, c);
-				float motion_length = b - a;
-
-				ImVec2 MousePos = ImGui::GetMousePos();
-				ImVec2 ItemPos = ImGui::GetItemRectMin();
-				ImVec2 ItemSize = ImGui::GetItemRectSize();
-				float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
-
-				float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
-				float Step = detail::RoundToTwoDecimals(motion_length / 100);
-
-
-				for (auto& [Time, _] : m_currentEditMotion->notify)
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 				{
-					for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
+					float a, b, c;
+					ATools->GetStatTime(a, b, c);
+					float motion_length = b - a;
+
+					ImVec2 MousePos = ImGui::GetMousePos();
+					ImVec2 ItemPos = ImGui::GetItemRectMin();
+					ImVec2 ItemSize = ImGui::GetItemRectSize();
+					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+
+					if (!m_currentEditMotion->notify.contains(TimeOffset))
 					{
-						if (detail::compareFloat(Time, StartKey))
+						m_currentEditMotion->notify[TimeOffset] = {};
+					}
+					m_currentNotify = &m_currentEditMotion->notify[TimeOffset];
+				}
+				else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+				{
+					float a, b, c;
+					ATools->GetStatTime(a, b, c);
+					float motion_length = b - a;
+
+					ImVec2 MousePos = ImGui::GetMousePos();
+					ImVec2 ItemPos = ImGui::GetItemRectMin();
+					ImVec2 ItemSize = ImGui::GetItemRectSize();
+					float LocalPos = (MousePos.x - ItemPos.x) / ItemSize.x;
+
+					float TimeOffset = detail::RoundToTwoDecimals(LocalPos * b);
+					float Step = detail::RoundToTwoDecimals(motion_length / 100);
+
+
+					for (auto& [Time, _] : m_currentEditMotion->notify)
+					{
+						for (float StartKey = TimeOffset - Step; StartKey < (TimeOffset + Step * 2); StartKey += Step)
 						{
-							m_currentEditMotion->notify.erase(Time);
+							if (detail::compareFloat(Time, StartKey))
+							{
+								m_currentEditMotion->notify.erase(Time);
+							}
 						}
 					}
+					m_currentNotify = nullptr;
 				}
 			}
+			
+			ImGui::Separator();
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
@@ -180,10 +190,46 @@ void UIKeyForm::Draw()
 			ImGui::PopID();
 			if (!Mark4) ImGui::EndDisabled();
 
+			ImGui::Separator();
+			
 			ImGui::PopStyleVar();
 			ImGui::EndChild();
 		}
 		ImGui::PopStyleVar();
+
+		if (m_currentNotify)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+			ImGui::BeginChild("Left", ImVec2(90, 0));
+			{
+				ImGui::Text("Give Info");
+				ImGui::Text("Disable Info");
+				ImGui::Text("Functor");
+				ImGui::EndChild();
+			}ImGui::SameLine();
+			ImGui::BeginChild("Midle", ImVec2(-120, 0));
+			{
+				auto InputText = [&](LPCSTR Label, shared_str& str)
+				{
+					string256 buffer;
+					if (str.size())
+					{
+						std::copy(str.c_str(), str.c_str() + str.size(), buffer);
+					} else
+					{
+						buffer[0] = '\0';
+					}
+					ImGui::SetNextItemWidth(-1);
+					ImGui::InputText(Label, buffer, sizeof(buffer));
+					str = buffer;
+				};
+				InputText("Give Info", m_currentNotify->GiveInfo);
+				InputText("Disable Info", m_currentNotify->DisableInfo);
+				InputText("Functor", m_currentNotify->Functor);
+				ImGui::EndChild();
+			}
+			ImGui::PopStyleVar();
+		}
 	}
 	ImGui::End();
 }
