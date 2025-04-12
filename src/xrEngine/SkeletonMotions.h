@@ -93,9 +93,9 @@ public:
 
 struct ENGINE_API anim_notify
 {
-	shared_str GiveInfo;
-	shared_str DisableInfo;
-	shared_str Functor;
+	shared_str GiveInfo = "";
+	shared_str DisableInfo = "";
+	shared_str Functor = "";
 };
 
 class ENGINE_API motion_marks
@@ -194,6 +194,7 @@ struct 	ENGINE_API	motions_value
 	u32					m_dwReference;
 	BoneMotionMap		m_motions;
     MotionDefVec		m_mdefs;
+	xr_hash_map<float, anim_notify> notify;
 
 	shared_str			m_id;
 

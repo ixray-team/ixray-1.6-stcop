@@ -272,6 +272,21 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 				}
 			}
 		}
+		{
+			IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
+			if (notify_data)
+			{
+				u32 num = notify_data->r_u32();
+				for (u32 i = 0; i < num; i++)
+				{
+					float key = notify_data->r_float();
+					notify[key] = {};
+					notify_data->r_stringZ(notify[key].GiveInfo);
+					notify_data->r_stringZ(notify[key].DisableInfo);
+					notify_data->r_stringZ(notify[key].Functor);
+				}
+			}
+		}
 	}
 	//	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
 	MS->close();

@@ -211,7 +211,7 @@ void UIKeyForm::Draw()
 			{
 				auto InputText = [&](LPCSTR Label, shared_str& str)
 				{
-					string256 buffer;
+					string256 buffer = {};
 					if (str.size())
 					{
 						std::copy(str.c_str(), str.c_str() + str.size(), buffer);
