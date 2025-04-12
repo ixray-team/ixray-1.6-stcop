@@ -17,6 +17,8 @@ void  CActorTools::OnObjectItemsFocused(xr_vector<ListItem*>& items)
 		m_pEditObject->ResetSAnimation(false);
 		//.	    StopMotion					();     // ����� ��-�� ���� ��� �� �������� �������� � ������ ������
 		m_pEditObject->SelectBones(false);
+		m_CurrentMotion = "";
+		m_CurrentSlot = -1;
 	}
 	for (ListItem* prop : items)
 	{
