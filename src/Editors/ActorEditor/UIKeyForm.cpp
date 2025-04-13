@@ -227,7 +227,7 @@ void UIKeyForm::Draw()
 			{
 				keys.push_back(elem.first);
 			}
-			std::sort(keys.begin(), keys.end());
+			std::ranges::sort(keys);
 			for (auto key : keys)
 			{
 				ImGui::PushID(std::to_string(key).c_str());

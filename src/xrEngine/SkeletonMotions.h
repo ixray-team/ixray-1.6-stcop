@@ -163,7 +163,13 @@ using BoneMotionsVecIt = BoneMotionsVec::iterator;
 using BoneMotionMap = xr_map<shared_str, MotionVec>;
 using BoneMotionMapIt = BoneMotionMap::iterator;
 
-using NotifyVec = xr_vector<xr_hash_map<float, anim_notify>>;
+struct anim_notify_prefetched
+{
+	xr_hash_map<float, anim_notify> data;
+	xr_vector<float> order;
+};
+
+using NotifyVec = xr_vector<anim_notify_prefetched>;
 
 // partition
 class 	ENGINE_API	CPartDef
@@ -261,6 +267,7 @@ public:
 	CPartition*			partition		()							{	VERIFY(p_); return &p_->m_partition;			}
     MotionDefVec*		motion_defs		()							{	VERIFY(p_); return &p_->m_mdefs;				}
     CMotionDef*			motion_def		(u16 idx)					{	VERIFY(p_); return &p_->m_mdefs[idx];			}
+	anim_notify_prefetched& motion_notify	(u16 idx)				{	VERIFY(p_); return p_->m_notifies[idx];			}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}
 

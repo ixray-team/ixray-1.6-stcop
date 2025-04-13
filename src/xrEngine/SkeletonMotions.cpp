@@ -279,14 +279,17 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 		if (notify_data)
 		{
 			u32 num = notify_data->r_u32();
+			m_notifies[m_idx].order.reserve(num);
 			for (u32 i = 0; i < num; i++)
 			{
 				float key = notify_data->r_float();
-				m_notifies[m_idx][key] = {};
-				notify_data->r_stringZ(m_notifies[m_idx][key].GiveInfo);
-				notify_data->r_stringZ(m_notifies[m_idx][key].DisableInfo);
-				notify_data->r_stringZ(m_notifies[m_idx][key].Functor);
+				m_notifies[m_idx].data[key] = {};
+				notify_data->r_stringZ(m_notifies[m_idx].data[key].GiveInfo);
+				notify_data->r_stringZ(m_notifies[m_idx].data[key].DisableInfo);
+				notify_data->r_stringZ(m_notifies[m_idx].data[key].Functor);
+				m_notifies[m_idx].order.push_back(key);
 			}
+			std::ranges::sort(m_notifies[m_idx].order);
 		}
 	}
 	//	Msg("Motions %d/%d %4d/%4d/%d, %s",p_cnt,m_cnt, m_load,m_total,m_r,N);
