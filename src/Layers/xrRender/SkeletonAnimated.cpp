@@ -7,6 +7,7 @@
 #include	"AnimationKeyCalculate.h"
 #include	"SkeletonX.h"
 #include "../../xrEngine/Fmesh.h"
+#include "AnimNotify/AnimNotify.h"
 #ifdef DEBUG
 #include "../../xrCore/dump_string.h"
 #endif
@@ -535,18 +536,22 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 					if (CurrentNotify.GiveInfo.size())
 					{
 						Msg("AnimNotify: give info %s", CurrentNotify.GiveInfo.c_str());
+						IAnimNotifyHandler::Get().TriggerGiveInfo(CurrentNotify.GiveInfo);
 					}
 					if (CurrentNotify.DisableInfo.size())
 					{
 						Msg("AnimNotify: disable info %s", CurrentNotify.DisableInfo.c_str());
+						IAnimNotifyHandler::Get().TriggerDisableInfo(CurrentNotify.DisableInfo);
 					}
 					if (CurrentNotify.Functor.size())
 					{
 						Msg("AnimNotify: functor %s", CurrentNotify.Functor.c_str());
+						IAnimNotifyHandler::Get().TriggerFunctor(CurrentNotify.Functor);
 					}
 					if (CurrentNotify.ExternalRef.size())
 					{
 						Msg("AnimNotify: external ref %s", CurrentNotify.ExternalRef.c_str());
+						IAnimNotifyHandler::Get().TriggerNotify(CurrentNotify.ExternalRef);
 					}
 					++B.current_notify_index;
 				}
