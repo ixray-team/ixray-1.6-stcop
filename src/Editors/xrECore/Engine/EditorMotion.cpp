@@ -5,7 +5,7 @@
 #define EOBJ_OMOTION   			0x1100
 #define EOBJ_SMOTION   			0x1200
 #define EOBJ_OMOTION_VERSION   	0x0005
-#define EOBJ_SMOTION_VERSION   	0x0008
+#define EOBJ_SMOTION_VERSION   	0x0009
 
 CSMotion::CSMotion() :CCustomMotion()
 {
@@ -152,9 +152,16 @@ void CSMotion::Save(IWriter& F)
     for (auto elem : notify)
     {
         F.w_float(elem.first);
-        F.w_stringZ(elem.second.GiveInfo);
-        F.w_stringZ(elem.second.DisableInfo);
-        F.w_stringZ(elem.second.Functor);
+        F.w_u8(elem.second.IsExternalTrigger);
+        if (elem.second.IsExternalTrigger)
+        {
+            F.w_stringZ(elem.second.ExternalRef);
+        } else
+        {
+            F.w_stringZ(elem.second.GiveInfo);
+            F.w_stringZ(elem.second.DisableInfo);
+            F.w_stringZ(elem.second.Functor);
+        }
     }
     
 }
@@ -245,9 +252,20 @@ bool CSMotion::Load(IReader& F)
             {
                 float key = F.r_float();
                 notify[key] = {};
-                F.r_stringZ(notify[key].GiveInfo);
-                F.r_stringZ(notify[key].DisableInfo);
-                F.r_stringZ(notify[key].Functor);
+                notify[key].IsExternalTrigger = false;
+                if (vers >= 0x0009)
+                {
+                    notify[key].IsExternalTrigger = F.r_u8();
+                }
+                if (notify[key].IsExternalTrigger)
+                {
+                    F.r_stringZ(notify[key].ExternalRef);
+                } else
+                {
+                    F.r_stringZ(notify[key].GiveInfo);
+                    F.r_stringZ(notify[key].DisableInfo);
+                    F.r_stringZ(notify[key].Functor);
+                }
             }
         }
     }

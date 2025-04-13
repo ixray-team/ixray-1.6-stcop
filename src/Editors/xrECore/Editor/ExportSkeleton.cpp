@@ -1280,9 +1280,16 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 		for (auto& elem : cur_motion->notify)
 		{
 			F.w_float(elem.first);
-			F.w_stringZ(elem.second.GiveInfo);
-			F.w_stringZ(elem.second.DisableInfo);
-			F.w_stringZ(elem.second.Functor);
+			F.w_u8(elem.second.IsExternalTrigger);
+			if (elem.second.IsExternalTrigger)
+			{
+				F.w_stringZ(elem.second.ExternalRef);
+			} else
+			{
+				F.w_stringZ(elem.second.GiveInfo);
+				F.w_stringZ(elem.second.DisableInfo);
+				F.w_stringZ(elem.second.Functor);
+			}
 		}
 		F.close_chunk();
 #if 1

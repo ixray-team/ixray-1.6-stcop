@@ -284,9 +284,18 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 			{
 				float key = notify_data->r_float();
 				m_notifies[m_idx].data[key] = {};
-				notify_data->r_stringZ(m_notifies[m_idx].data[key].GiveInfo);
-				notify_data->r_stringZ(m_notifies[m_idx].data[key].DisableInfo);
-				notify_data->r_stringZ(m_notifies[m_idx].data[key].Functor);
+				auto& data = m_notifies[m_idx].data[key];
+				data.IsExternalTrigger = notify_data->r_u8();
+				if (data.IsExternalTrigger)
+				{
+					notify_data->r_stringZ(data.ExternalRef);
+				}
+				else
+				{
+					notify_data->r_stringZ(data.GiveInfo);
+					notify_data->r_stringZ(data.DisableInfo);
+					notify_data->r_stringZ(data.Functor);
+				}
 				m_notifies[m_idx].order.push_back(key);
 			}
 			std::ranges::sort(m_notifies[m_idx].order);
