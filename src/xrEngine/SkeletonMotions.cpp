@@ -184,6 +184,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 	for (u32 i = 0; i < bones->size(); i++)
 		m_motions[bones->at(i)->name].resize(dwCNT);
 
+	m_notifies.resize(dwCNT);
+	
 	// load motions
 	for (u16 m_idx = 0; m_idx < (u16)dwCNT; m_idx++)
 	{
@@ -272,19 +274,18 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 				}
 			}
 		}
+		
+		IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
+		if (notify_data)
 		{
-			IReader* notify_data = MS->open_chunk(dwCNT+2+m_idx);
-			if (notify_data)
+			u32 num = notify_data->r_u32();
+			for (u32 i = 0; i < num; i++)
 			{
-				u32 num = notify_data->r_u32();
-				for (u32 i = 0; i < num; i++)
-				{
-					float key = notify_data->r_float();
-					notify[key] = {};
-					notify_data->r_stringZ(notify[key].GiveInfo);
-					notify_data->r_stringZ(notify[key].DisableInfo);
-					notify_data->r_stringZ(notify[key].Functor);
-				}
+				float key = notify_data->r_float();
+				m_notifies[m_idx][key] = {};
+				notify_data->r_stringZ(m_notifies[m_idx][key].GiveInfo);
+				notify_data->r_stringZ(m_notifies[m_idx][key].DisableInfo);
+				notify_data->r_stringZ(m_notifies[m_idx][key].Functor);
 			}
 		}
 	}

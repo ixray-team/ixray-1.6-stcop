@@ -469,6 +469,20 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 
 			PHelper().CreateVector(items,PrepareKey(pref,"Motion\\RootEndTransform"), &EndMotionPoint,-10000,10000,0.001,4);
 		}
+
+		/*auto CurrentMotion = GetCurrentMotion();
+		if (CurrentMotion)
+		{
+			for (auto& elem : CurrentMotion->notify)
+			{
+				xr_string Name = std::to_string(elem.first).c_str();
+				LPCSTR Ptr = Name.c_str();
+				static string128 Receiver;
+				PHelper().CreateRText(items, PrepareKey(pref, xr_strconcat(Receiver, "Notify\\", Ptr, "\\Give Info")), &elem.second.GiveInfo);
+				PHelper().CreateRText(items, PrepareKey(pref, xr_strconcat(Receiver, "Notify\\", Ptr, "\\Disable Info")), &elem.second.DisableInfo);
+				PHelper().CreateRText(items, PrepareKey(pref, xr_strconcat(Receiver, "Notify\\", Ptr, "\\Functor")), &elem.second.Functor);
+			}
+		}*/
 		
 	}
 }

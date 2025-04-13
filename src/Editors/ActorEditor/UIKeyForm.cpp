@@ -94,6 +94,13 @@ void UIKeyForm::Draw()
 
 			if (m_currentEditMotion)
 			{
+				while (!m_currentEditMotion->notifies_to_remove.empty())
+				{
+					auto removed = m_currentEditMotion->notifies_to_remove.top();
+					m_currentEditMotion->notifies_to_remove.pop();
+					VERIFY(m_currentEditMotion->notify.contains(removed));
+					m_currentEditMotion->notify.erase(removed);
+				}
 				if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 				{
 					float a, b, c;
@@ -190,46 +197,76 @@ void UIKeyForm::Draw()
 			ImGui::PopID();
 			if (!Mark4) ImGui::EndDisabled();
 
+			ImGui::Text("");
+
 			ImGui::Separator();
 			
 			ImGui::PopStyleVar();
 			ImGui::EndChild();
 		}
-		ImGui::PopStyleVar();
 
-		if (m_currentNotify)
+		if (m_currentEditMotion)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-			ImGui::BeginChild("Left", ImVec2(90, 0));
+			auto InputText = [&](LPCSTR Label, shared_str& str)
 			{
-				ImGui::Text("Give Info");
-				ImGui::Text("Disable Info");
-				ImGui::Text("Functor");
-				ImGui::EndChild();
-			}ImGui::SameLine();
-			ImGui::BeginChild("Midle", ImVec2(-120, 0));
-			{
-				auto InputText = [&](LPCSTR Label, shared_str& str)
+				string256 buffer = {};
+				if (str.size())
 				{
-					string256 buffer = {};
-					if (str.size())
-					{
-						std::copy(str.c_str(), str.c_str() + str.size(), buffer);
-					} else
-					{
-						buffer[0] = '\0';
-					}
-					ImGui::SetNextItemWidth(-1);
-					ImGui::InputText(Label, buffer, sizeof(buffer));
-					str = buffer;
-				};
-				InputText("Give Info", m_currentNotify->GiveInfo);
-				InputText("Disable Info", m_currentNotify->DisableInfo);
-				InputText("Functor", m_currentNotify->Functor);
-				ImGui::EndChild();
+					std::copy(str.c_str(), str.c_str() + str.size(), buffer);
+				} else
+				{
+					buffer[0] = '\0';
+				}
+				ImGui::SetNextItemWidth(-1);
+				ImGui::InputText(Label, buffer, sizeof(buffer));
+				str = buffer;
+			};
+			xr_vector<float> keys;
+			keys.reserve(m_currentEditMotion->notify.size());
+			for (auto& elem : m_currentEditMotion->notify)
+			{
+				keys.push_back(elem.first);
 			}
-			ImGui::PopStyleVar();
+			std::sort(keys.begin(), keys.end());
+			for (auto key : keys)
+			{
+				ImGui::PushID(std::to_string(key).c_str());
+				auto& elem = m_currentEditMotion->notify[key];
+				ImGui::BeginChild("Notify", ImVec2(0, 0));
+				{
+					{
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("%f", key);
+						ImGui::SameLine(90);
+						if (ImGui::Button("Del")){
+							m_currentEditMotion->notifies_to_remove.push(key);
+						}
+					}
+					{
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Give Info");
+						ImGui::SameLine(90);
+						InputText("Give Info", elem.GiveInfo);
+					}
+					{
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Disable Info");
+						ImGui::SameLine(90);
+						InputText("Disable Info", elem.DisableInfo);
+					}
+					{
+						ImGui::SetNextItemWidth(90);
+						ImGui::Text("Functor");
+						ImGui::SameLine(90);
+						InputText("Functor", elem.Functor);
+					}
+					ImGui::Separator();
+					ImGui::EndChild();
+				}
+				ImGui::PopID();
+			}
 		}
+		ImGui::PopStyleVar();
 	}
 	ImGui::End();
 }

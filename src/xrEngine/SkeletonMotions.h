@@ -53,6 +53,13 @@ using CKeyQT32 = CKeyQTBase<float>;
 
 #pragma pack(pop)
 
+struct ENGINE_API anim_notify
+{
+	shared_str GiveInfo = "";
+	shared_str DisableInfo = "";
+	shared_str Functor = "";
+};
+
 //*** Motion Data *********************************************************************************
 class 	ENGINE_API	CMotion
 {
@@ -70,6 +77,7 @@ public:
 
 	Fvector				_initT;
     Fvector				_sizeT;
+	
 public:    
     void				set_flags			(u8 val)			{_flags=val;}
     void				set_flag			(u8 mask, u8 val)	{if (val)_flags|=mask; else _flags&=~mask;}
@@ -89,13 +97,6 @@ public:
 		if (_keysT32.size()) sz += _keysT32.size() * sizeof(CKeyQT32) / _keysT32.ref_count();
 		return			sz;
 	}
-};
-
-struct ENGINE_API anim_notify
-{
-	shared_str GiveInfo = "";
-	shared_str DisableInfo = "";
-	shared_str Functor = "";
 };
 
 class ENGINE_API motion_marks
@@ -162,6 +163,8 @@ using BoneMotionsVecIt = BoneMotionsVec::iterator;
 using BoneMotionMap = xr_map<shared_str, MotionVec>;
 using BoneMotionMapIt = BoneMotionMap::iterator;
 
+using NotifyVec = xr_vector<xr_hash_map<float, anim_notify>>;
+
 // partition
 class 	ENGINE_API	CPartDef
 {
@@ -194,7 +197,7 @@ struct 	ENGINE_API	motions_value
 	u32					m_dwReference;
 	BoneMotionMap		m_motions;
     MotionDefVec		m_mdefs;
-	xr_hash_map<float, anim_notify> notify;
+	NotifyVec			m_notifies;
 
 	shared_str			m_id;
 
