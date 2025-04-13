@@ -24,7 +24,7 @@ xr_token qsmapsize_token[] = {
 	{ nullptr, 0   }
 };
 
-u32			ps_r_ssao_mode			=	2;
+u32			ps_r_ssao_mode			=	1;
 xr_token							qssao_mode_token						[ ]={
 	{ "st_opt_off",					0											},
 	{ "ui_mm_ssao",					1											},

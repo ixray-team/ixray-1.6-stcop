@@ -168,7 +168,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			end
 			return true
 		end
-		return mode_1(id)
+		return false
 	end
 	
 	table.insert(handler.m_preconditions, {func=vidScalePrec, control=_st})
