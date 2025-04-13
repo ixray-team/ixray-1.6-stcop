@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include "AnimNotifyGame.h"
+#include "pch_script.h"
+#include "alife_object_registry.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "alife_spawn_registry.h"
+#include "alife_registry_container.h" // without this not compiles
 
 #include "ai_space.h"
 #include "alife_registry_container_composition.h"
