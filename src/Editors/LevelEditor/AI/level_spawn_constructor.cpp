@@ -804,11 +804,14 @@ bool CLevelSpawnConstructor::Execute()
 	}
 
 	correct_level_changers();
+
 	if (MainForm->GetTopBarForm()->VerifySpaceRestrictors())
+	{
 		if (!verify_space_restrictors())
 			return false;
 
-	//xr_delete							(m_level_graph);
+	}
+
 	m_cross_table = 0;
 	m_level_graph = 0;
 	Msg("Spawn build completed time %3.2f", Timer.GetElapsed_sec());

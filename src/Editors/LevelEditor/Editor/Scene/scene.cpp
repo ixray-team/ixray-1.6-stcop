@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "LEPhysics.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrEngine/xr_object.h"
+#include "../xrServerEntities/clsid_game.h"
 
 EScene* Scene;
 
@@ -715,6 +717,11 @@ void EScene::Play()
 	if (IsPlayInEditor())
 		return;
 
+	if (MainForm->GetTopBarForm()->UseCameraPosForActor)
+	{
+		ActorNewPos = UI->CurrentView().m_Camera.GetPosition();
+	}
+
 	if (!BuildSpawn())
 		return;
 
@@ -734,6 +741,9 @@ void EScene::Play()
 	g_pGameLevel->LoadEditor(m_LevelOp.m_FNLevelPath);
 	g_pGameLevel->IR_Capture();
 	GetTool(OBJCLASS_SPAWNPOINT)->m_EditFlags.set(ESceneToolBase::flVisible, false);
+
+	Device.seqFrame.Add(this);
+
 	ShowCursor(FALSE);
 }
 
@@ -757,6 +767,8 @@ void EScene::Stop()
 	m_RTFlags.set(flIsStopPlayInEditor, TRUE);
 
 	g_pGamePersistent->Environment().Invalidate();
+	Device.seqFrame.Remove(this);
+	IsAppliedPos = false;
 }
 
 void EScene::LoadCForm(CObjectSpace* Space, CDB::build_callback cb)
@@ -889,4 +901,25 @@ bool EScene::GetSubstObjectName(const xr_string& _from, xr_string& _to) const
 	}
 
 	return (It!=It_e);
+}
+
+void EScene::OnFrame()
+{
+	if (!IsAppliedPos)
+	{
+		if (MainForm->GetTopBarForm()->UseCameraPosForActor)
+		{
+			CLASS_ID CLS = TEXT2CLSID("S_ACTOR");
+			CObject* GameActor = g_pGameLevel->Objects.FindObjectByCLS_ID(CLS);
+
+			if (GameActor == nullptr)
+				return;
+
+			string128 Command = {};
+			xr_sprintf(Command, "set_actor_position %.3f, %.3f, %.3f", ActorNewPos.x, ActorNewPos.y, ActorNewPos.z);
+			Console->Execute(Command);
+
+			IsAppliedPos = true;
+		}
+	}
 }
