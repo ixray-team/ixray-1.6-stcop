@@ -670,11 +670,6 @@ if (!g_pGameLevel)
 
 	if (!Device.Paused())
 	{
-		if (Device.IsEditorMode())
-		{
-			Engine.Sheduler.Update();
-		}
-
 		// update weathers ambient
 		WeathersUpdate();
 	}

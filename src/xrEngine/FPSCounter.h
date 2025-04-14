@@ -2,7 +2,7 @@
 
 namespace FPS
 {
-	class FPSCounter final
+	class ENGINE_API FPSCounter final
 	{
 	public:
 		FPSCounter();
