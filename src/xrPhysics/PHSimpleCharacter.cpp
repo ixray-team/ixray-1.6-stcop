@@ -554,7 +554,7 @@ void CPHSimpleCharacter::PhDataUpdate(dReal /**step/**/)
 
 #ifdef DEBUG
 	if (!Device.IsEditorMode())
-		VERIFY2(dBodyStateValide(m_body), "WRONG BODYSTATE IN PhDataUpdate");
+		VERIFY2(dV_valid(dBodyGetPosition(m_body)), "WRONG BODYSTATE IN PhDataUpdate");
 #endif
 
 	if (PhOutOfBoundaries(cast_fv(dBodyGetPosition(m_body))))
@@ -575,10 +575,10 @@ void CPHSimpleCharacter::PhTune(dReal step)
 	{
 		if (b_air_contact_state)
 			debug_output().DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)), m_radius, color_xrgb(255, 0, 0));
-		
 	}
 #endif
-	bool b_good_graund=b_valide_ground_contact&&m_ground_contact_normal[1]>M_SQRT1_2;
+
+	const bool b_good_graund = b_valide_ground_contact && m_ground_contact_normal[1] > M_SQRT1_2;
 
 	dxGeomUserData	*ud=dGeomGetUserData(m_wheel);
 	if ((ud->pushing_neg || ud->pushing_b_neg) && !b_death_pos)
@@ -1211,6 +1211,19 @@ void CPHSimpleCharacter::SafeAndLimitVelocity()
 	dVectorSet(m_safe_position,dBodyGetPosition(m_body));
 	dVectorSet(m_safe_velocity,linear_velocity);
 
+	// FX: Нахер всякие e-37
+	if (fis_zero(m_safe_velocity[0]))
+	{
+		m_safe_velocity[0] = 0;
+	}
+	if (fis_zero(m_safe_velocity[1]))
+	{
+		m_safe_velocity[1] = 0;
+	}
+	if (fis_zero(m_safe_velocity[2]))
+	{
+		m_safe_velocity[2] = 0;
+	}
 }
 
 void CPHSimpleCharacter::SetObjectContactCallback(ObjectContactCallbackFun* callback)
