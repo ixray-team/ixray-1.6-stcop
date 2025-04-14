@@ -10,23 +10,29 @@ extern int	psSkeletonUpdate;
 void check_kinematics(CKinematics* _k, LPCSTR s);
 #endif
 
-void CKinematics::CalculateBones			(BOOL bForceExact)
+void CKinematics::CalculateBones(BOOL bForceExact)
 {
 	PROF_EVENT("CKinematics::CalculateBones");
 	// early out.
 	// check if the info is still relevant
 	// skip all the computations - assume nothing changes in a small period of time :)
-	if		(RDEVICE.dwTimeGlobal == UCalc_Time)										return;	// early out for "fast" update
-	xrCriticalSectionGuard guard(&UCalc_Mutex);
-	OnCalculateBones		();
-	if		(!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	return;	// early out for "slow" update
-	if		(Update_Visibility)									Visibility_Update	();
+	if (RDEVICE.dwTimeGlobal == UCalc_Time)
+		return;	// early out for "fast" update
 
-	_DBG_SINGLE_USE_MARKER;
+	xrCriticalSectionGuard guard(&UCalc_Mutex);
+	OnCalculateBones();
+
+	if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))	
+		return;	// early out for "slow" update
+
+	if (Update_Visibility)
+		Visibility_Update	();
+
+
 	// here we have either:
 	//	1:	timeout elapsed
 	//	2:	exact computation required
-	UCalc_Time			= RDEVICE.dwTimeGlobal;
+	UCalc_Time = RDEVICE.dwTimeGlobal;
 
 	// exact computation
 	// Calculate bones
