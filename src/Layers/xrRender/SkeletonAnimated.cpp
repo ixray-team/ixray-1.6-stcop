@@ -386,7 +386,11 @@ CBlend*	CKinematicsAnimated::PlayCycle		(LPCSTR  N, BOOL bMixIn, PlayCallback Ca
 }
 CBlend*	CKinematicsAnimated::PlayCycle		(MotionID motion_ID,  BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam,u8 channel /*= 0*/)
 {	
-	VERIFY					(motion_ID.valid()); 
+	VERIFY					(motion_ID.valid());
+	if (!motion_ID.valid())
+	{	
+		return nullptr;
+	}
     CMotionDef* m_def		= m_Motions[motion_ID.slot].motions.motion_def(motion_ID.idx);
     VERIFY					(m_def);
 	if (m_def == nullptr)
