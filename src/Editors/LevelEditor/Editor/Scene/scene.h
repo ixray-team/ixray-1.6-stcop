@@ -328,7 +328,7 @@ public:
 	bool IsPlayInEditor();
 	virtual void Stop();
 
-	virtual	void LoadCFrom(CObjectSpace* Space, CDB::build_callback cb);
+	virtual	void LoadCForm(CObjectSpace* Space, CDB::build_callback cb);
 	virtual IReader* LoadSpawn();
 	virtual IGameGraph* GetGameGraph();
 	virtual ILevelGraph* GetLevelGraph();
@@ -357,7 +357,7 @@ private:
 	CMemoryWriter	m_spawn_data;
 
 	CGameGraphBuilder m_graph_builder;
-	CFromBuilder m_cfrom_builder;
+	CFormBuilder m_cform_builder;
 };
 
 

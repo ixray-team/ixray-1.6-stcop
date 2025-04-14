@@ -4,10 +4,10 @@
 #include "../../xrphysics/iphworld.h"
 #include "../../xrcdb/xr_area.h"
 
-CScenePhyscs	g_scene_physics;
+CScenePhysics	g_scene_physics;
 
 
-bool	CScenePhyscs ::Simulating			()
+bool	CScenePhysics ::Simulating			()
 {
 	return !!physics_world();
 }
@@ -91,14 +91,14 @@ void GetBox( Fbox& box, const Fvector *verts, u32 cnt )
     	box.modify( verts[i] );  
 }
 
-void	CScenePhyscs::OnSceneModified()
+void	CScenePhysics::OnSceneModified()
 {
 	ObjClassID cls = LTools->CurrentClassID();
     if( cls == OBJCLASS_SCENEOBJECT ||  cls == OBJCLASS_GROUP )
     	UpdateLevelCollision();
 
 }
-bool CScenePhyscs::CreateObjectSpace	(bool b_selected_only)
+bool CScenePhysics::CreateObjectSpace	(bool b_selected_only)
 {
 
     ObjClassID cls = LTools->CurrentClassID();
@@ -168,25 +168,25 @@ bool CScenePhyscs::CreateObjectSpace	(bool b_selected_only)
     return    bResult;
 }
 
-CScenePhyscs::~CScenePhyscs			()
+CScenePhysics::~CScenePhysics			()
 {
    //	DestroyAll			()  ;
     DestroyObjectSpace	()	;
     R_ASSERT( !m_object_space );
  }
 
-void CScenePhyscs::DestroyObjectSpace	()
+void CScenePhysics::DestroyObjectSpace	()
 {
   destroy_object_space( m_object_space );
 }
- void  CScenePhyscs::DestroyWorld			()
+ void  CScenePhysics::DestroyWorld			()
  {
 	if(physics_world())
     	destroy_physics_world();
 
   }
 
- void CScenePhyscs::GenerateCFrom(CObjectSpace* To, CDB::build_callback cb)
+ void CScenePhysics::GenerateCForm(CObjectSpace* To, CDB::build_callback cb)
  {
 
      bool bResult = true;
@@ -236,7 +236,7 @@ void CScenePhyscs::DestroyObjectSpace	()
 
  }
 
- void  CScenePhyscs::CreateWorld			()
+ void  CScenePhysics::CreateWorld			()
 {
     VERIFY(!physics_world());
     VERIFY(m_object_space);
@@ -254,7 +254,7 @@ void CreatePhysicsShellsSelected()
         }
     }
 }
-void   CScenePhyscs::	UseSimulatePoses	()
+void   CScenePhysics::	UseSimulatePoses	()
 {
    ObjectList lst;
     if (Scene->GetQueryObjects(lst,OBJCLASS_SPAWNPOINT,1,1,0)){
@@ -278,7 +278,7 @@ void DestroyPhysicsShells()
 }
 
 
- void  CScenePhyscs::	CreateShellsSelected()
+ void  CScenePhysics::	CreateShellsSelected()
  {
     if(b_update_level_collision)
     	DestroyObjectSpace();
@@ -288,7 +288,7 @@ void DestroyPhysicsShells()
 	CreateWorld					();
     CreatePhysicsShellsSelected	();
  }
- void  CScenePhyscs::	DestroyAll			()
+ void  CScenePhysics::	DestroyAll			()
  {
  	DestroyPhysicsShells();
     DestroyWorld();

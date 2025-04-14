@@ -92,7 +92,7 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 		Device.seqFrame.Add(this);
 		R_ASSERT(Load_GameSpecific_Before());
 		Objects.Load();
-		EditorScene->LoadCFrom(&ObjectSpace, build_callback);
+		EditorScene->LoadCForm(&ObjectSpace, build_callback);
 		bReady = true;
 		map_data.m_level_geom_crc32 = 0;
 	}
