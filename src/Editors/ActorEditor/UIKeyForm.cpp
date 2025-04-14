@@ -41,7 +41,7 @@ void UIKeyForm::Draw()
 		ATools->GetStatTime(a, b, c);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::BeginChild("Left", ImVec2(90, 0));
+		ImGui::BeginChild("Left", ImVec2(90, 140));
 		{
 		
 			ImGui::Checkbox("Auto", &m_AutoChange);
@@ -53,7 +53,7 @@ void UIKeyForm::Draw()
 			ImGui::Separator();
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Midle", ImVec2(-120, 0));
+		ImGui::BeginChild("Midle", ImVec2(-120, 140));
 		{
 			ImGui::SetNextItemWidth(-1);
 			if (AutoChange())m_Position = c ;
@@ -153,7 +153,7 @@ void UIKeyForm::Draw()
 
 			ImGui::EndChild();
 		}ImGui::SameLine();
-		ImGui::BeginChild("Back", ImVec2(120, 0));
+		ImGui::BeginChild("Back", ImVec2(120, 140));
 		{
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 0));
@@ -232,7 +232,7 @@ void UIKeyForm::Draw()
 			{
 				ImGui::PushID(std::to_string(key).c_str());
 				auto& elem = m_currentEditMotion->notify[key];
-				ImGui::BeginChild("Notify", ImVec2(0, 0));
+				ImGui::BeginChild("Notify", ImVec2(0, 110));
 				{
 					{
 						ImGui::SetNextItemWidth(90);
@@ -303,9 +303,9 @@ void UIKeyForm::Draw()
 							ImGui::EndDisabled();
 						}
 					}
-					ImGui::Separator();
 					ImGui::EndChild();
 				}
+				ImGui::Separator();
 				ImGui::PopID();
 			}
 		}
