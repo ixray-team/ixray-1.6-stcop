@@ -11,6 +11,7 @@
 #include "alife_registry_container_space.h"
 #include "alife_simulator.h"
 #include "Level.h"
+#include "AnimNotify/AnimNotifyRegistry.h"
 
 void CAnimNotifyHandler::TriggerGiveInfo(shared_str Info)
 {
@@ -32,6 +33,9 @@ void CAnimNotifyHandler::TriggerFunctor(shared_str Func)
 
 void CAnimNotifyHandler::TriggerNotify(shared_str Name)
 {
+    xr_string buffer = Name.c_str();
+    std::ranges::transform(buffer, buffer.begin(), tolower);
+    Name = buffer.c_str();
     xrCriticalSectionGuard guard(NotifyQueue.Lock);
     NotifyQueue.Queue.push(Name);
 }
@@ -114,24 +118,23 @@ void CAnimNotifyHandler::ProcessFunctor(shared_str Func)
 
 void CAnimNotifyHandler::ProcessNotify(shared_str Name)
 {
-    VERIFY(pSettings);
-    if (!pSettings->section_exist(Name))
+    auto& registry = CAnimNotifyRegistry::GetInstance();
+    if (!registry.contains(Name)) // BROKEN, letters in registry only in lowercase
     {
         R_ASSERT3(false, "Unable to process AnimNotify", Name.c_str());
         return;
     }
-    const auto& Sect = pSettings->r_section(Name);
-    for (auto& elem : Sect.Data)
+    const auto& Sect = registry.get(Name);
+    if (Sect.GiveInfo.size())
     {
-        if (elem.first == "GiveInfo")
-        {
-            GiveInfo(elem.second);
-        } else if (elem.first == "DisableInfo")
-        {
-            DisableInfo(elem.second);
-        } else if (elem.first == "Functor")
-        {
-            ProcessFunctor(elem.second);
-        }
+        GiveInfo(Sect.GiveInfo);
+    }
+    if (Sect.DisableInfo.size())
+    {
+        DisableInfo(Sect.DisableInfo);
+    }
+    if (Sect.Functor.size())
+    {
+        ProcessFunctor(Sect.Functor);
     }
 }
