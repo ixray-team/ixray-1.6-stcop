@@ -35,28 +35,6 @@ namespace ImGui
 
 TUI* UI = nullptr;
 
-void mt_Thread(void* ptr)
-{
-	while (true)
-	{
-		if (!UI->IsPlayInEditor())
-			continue;
-
-		Device.mt_csEnter.Enter();
-
-		Engine.Sheduler.Update();
-
-		for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
-			EDevice->seqParallel[pit]();
-
-		EDevice->seqParallel.clear();
-
-		EDevice->seqFrameMT.Process(rp_Frame);
-		Device.mt_csEnter.Leave();
-		xrCriticalSectionGuard sync(&Device.mt_csLeave);
-	}
-}
-
 TUI::TUI()
 {
 	m_HConsole = 0;
@@ -104,14 +82,6 @@ TUI::~TUI()
 
 void TUI::OnDeviceCreate()
 {
-	static bool IsThreadStarted = false;
-
-	if (!IsThreadStarted)
-	{
-		Device.mt_csEnter.Enter();
-		thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
-		IsThreadStarted = false;
-	}
 	DU_impl.OnDeviceCreate();
 }
 
@@ -676,8 +646,26 @@ bool TUI::Idle()
 
 	OnFrame();
 
-	xrCriticalSectionGuard sync(&Device.mt_csLeave);
-	Device.mt_csEnter.Leave();
+	Device.secondary_tasks.run([]()
+	{
+		PROF_THREAD("Secondary async")
+		{
+			PROF_EVENT("Sheduler")
+			Engine.Sheduler.Update();
+		}
+
+		{
+			PROF_EVENT("seqParallel")
+			for (u32 pit = 0; pit < EDevice->seqParallel.size(); pit++)
+				EDevice->seqParallel[pit]();
+			EDevice->seqParallel.clear();
+		}
+
+		{
+			PROF_EVENT("seqFrameMT")
+			EDevice->seqFrameMT.Process(rp_Frame);
+		}
+	});
 
 	if (EDevice->b_is_Active && !m_Flags.is(flNeedQuit) && !m_AppClosed)
 		RealRedrawScene();
@@ -686,7 +674,8 @@ bool TUI::Idle()
 	if (m_Flags.is(flNeedQuit))	
 		RealQuit();
 
-	Device.mt_csEnter.Enter();
+	Device.secondary_tasks.wait();
+
 	return !m_AppClosed;
 }
 

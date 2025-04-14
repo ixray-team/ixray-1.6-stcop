@@ -215,6 +215,8 @@ public:
 	xr_vector		<xr_delegate<void()>>	seqParallel;
 	xr_vector		<xr_delegate<void()>>	seqParallelRender;
 
+	xr_vector<xr_delegate<void()>> seqParallelBeforRender;
+
 	std::function<void()> ParticleWorkerCallback;
 	xr_delegate<void()> ModelDefferClear;
 
@@ -267,9 +269,7 @@ public:
 	}
 
 	// Multi-threading
-	xrCriticalSection	mt_csEnter;
-	xrCriticalSection	mt_csLeave;
-	volatile BOOL		mt_bMustExit[2];
+	xr_task_group secondary_tasks, details_task;
 
 	ICF		void			remove_from_seq_parallel	(const xr_delegate<void()> &delegate)
 	{

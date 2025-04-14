@@ -3,7 +3,6 @@
 using namespace DirectX;
 
 #include "../xrCDB/Frustum.h"
-#include "../xrCore/discord/discord.h"
 
 #pragma warning(disable:4995)
 // mmsystem.h
@@ -17,12 +16,11 @@ using namespace DirectX;
 
 #include "x_ray.h"
 #include "Render.h"
+#include "EngineThreading.h"
+#include "IGame_Level.h"
 
-// must be defined before include of FS_impl.h
-#define INCLUDE_FROM_ENGINE
 #include "../xrCore/FS_impl.h"
 #include "IGame_Persistent.h"
-
 ENGINE_API CRenderDevice* DevicePtr = nullptr;
 #ifndef _EDITOR
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -32,15 +30,11 @@ ENGINE_API bool loading_save_timer_started = false;
 ENGINE_API xr_atomic_bool g_bRendering = false;
 extern ENGINE_API float psHUD_FOV;
 
-static xrCriticalSection Enter3rdCs;
-static xrCriticalSection Leave3rdCs;
-
-BOOL		g_bLoaded = FALSE;
-ref_light	precache_light = 0;
+BOOL g_bLoaded = FALSE;
+ref_light precache_light = 0;
 
 BOOL CRenderDevice::Begin()
 {
-#ifndef _EDITOR
 	PROF_EVENT("Render: Begin");
 
 	if (g_dedicated_server)
@@ -72,23 +66,20 @@ BOOL CRenderDevice::Begin()
 
 	FPU::m24r();
 	g_bRendering = true;
-#endif
 
 	return TRUE;
 }
 
-void CRenderDevice::Clear	()
+void CRenderDevice::Clear()
 {
-#ifndef _EDITOR
 	m_pRender->Clear();
-#endif
 }
 
-void CRenderDevice::End		(void)
+void CRenderDevice::End(void)
 {
-#ifndef _EDITOR
 	PROF_EVENT("Render: End");
-	if (g_dedicated_server) {
+	if (g_dedicated_server)
+	{
 		return;
 	}
 
@@ -109,14 +100,11 @@ void CRenderDevice::End		(void)
 			Memory.mem_compact								();
 			Msg												("* MEMORY USAGE: %d K",Memory.mem_usage()/1024);
 			Msg												("* End of synchronization A[%d] R[%d]",b_is_Active, b_is_Ready);
-			if (loading_save_timer_started) {
+			if (loading_save_timer_started) 
+			{
 				Msg("* Game Loading Timer: Finished for %d ms", loading_save_timer.GetElapsed_ms());
 				loading_save_timer_started = false;
 			}
-
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-			g_find_chunk_counter.flush();
-#endif
 		}
 	}
 
@@ -124,96 +112,19 @@ void CRenderDevice::End		(void)
 	// end scene
 
 	m_pRender->End();
-#endif
 }
 
-#ifndef _EDITOR
-static void mt_3rdThread(void* ptr)
+void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
-	PROF_THREAD("3rd Thread");
-	while (FALSE == Device.mt_bMustExit[1])
+	if (m_pRender->GetForceGPU_REF() || g_dedicated_server)
 	{
-		Enter3rdCs.Enter();
-		PROF_EVENT("CPU Frame: Render");
-
-		{
-			PROF_EVENT("Discord Sync");
-			g_Discord.Update();
-		}
-		
-		{
-			PROF_EVENT("Process Render");
-			for (auto& it : Device.seqParallelRender)
-				it();
-		}
-
-		Enter3rdCs.Leave();
-
-		xrCriticalSectionGuard sync(&Leave3rdCs);
-	}
-
-	Device.mt_bMustExit[1] = FALSE;
-}
-#include "CustomHUD.h"
-#include "IGame_Level.h"
-volatile u32 mt_Thread_marker = 0x12345678;
-static void mt_Thread(void* ptr)
-{
-	PROF_THREAD("SecondaryThread");
-	g_AppInfo.SecondaryThread = GetCurrentThread();
-	while (FALSE==Device.mt_bMustExit[0])
-	{
-		// waiting for Device permission to execute
-		{
-			xrCriticalSectionGuard guard(&Device.mt_csEnter);
-			PROF_EVENT("CPU Frame: Secondary");
-
-			// we has granted permission to execute
-			mt_Thread_marker = Device.dwFrame;
-			{
-				if(g_hud)
-					g_hud->OnFrameMT();
-				if (g_pGameLevel && g_pGameLevel->bReady)
-					g_pGameLevel->SoundEvent_Dispatch();
-
-				if (!Device.Paused())
-					Engine.Sheduler.Update();
-				PROF_EVENT("Parallel Sync");
-				for (u32 pit = 0; pit < Device.seqParallel.size(); pit++)
-					Device.seqParallel[pit]();
-
-				Device.seqParallel.resize(0);
-			}
-
-			{
-				PROF_EVENT("OnFrame");
-				Device.seqFrameMT.Process(rp_Frame);
-			}
-
-			{
-				PROF_EVENT("Process Particles");
-				if (Device.ParticleWorkerCallback)
-				{
-					Device.ParticleWorkerCallback();
-				}
-			}
-			// now we give control to device - signals that we are ended our work
-		}
-		xrCriticalSectionGuard sync(&Device.mt_csLeave);
-	}
-	Device.mt_bMustExit[0] = FALSE; // Important!!!
-}
-#endif
-void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
-{
-#ifndef _EDITOR
-	if (m_pRender->GetForceGPU_REF() || g_dedicated_server) {
 		amount = 0;
 	}
 
 	dwPrecacheFrame = dwPrecacheTotal = amount;
 
-	if (amount && !precache_light && g_pGameLevel && g_loading_events.empty()) {
+	if (amount && !precache_light && g_pGameLevel && g_loading_events.empty())
+	{
 		precache_light					= ::Render->light_create();
 		precache_light->set_shadow		(false);
 		precache_light->set_position	(vCameraPosition);
@@ -226,13 +137,11 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 	{
 		load_screen_renderer.start	(b_wait_user_input);
 	}
-#endif
 }
-
 
 int g_svDedicateServerUpdateReate = 100;
 
-ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
+ENGINE_API xr_list<LOADING_EVENT> g_loading_events;
 int g_dwFPSlimit = 500;
 void CRenderDevice::time_factor(const float &time_factor)
 {
@@ -269,19 +178,7 @@ void CRenderDevice::on_idle		()
 
 	PROF_THREAD("MainThread");
 	PROF_FRAME("Main Thread");
-	{
-		PROF_EVENT("Update Particles");
-		if (g_pGamePersistent)
-			g_pGamePersistent->UpdateParticles();
-	}
-
-	if (Device.ModelDefferClear)
-	{
-		Device.ModelDefferClear();
-	}
-
-	Leave3rdCs.Enter();
-	Enter3rdCs.Leave();
+	Platform::SetThreadName("X-Ray Primary Thread");
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
@@ -297,14 +194,21 @@ void CRenderDevice::on_idle		()
 			g_loading_events.pop_front();
 
 		pApp->LoadDraw();
-
-		Enter3rdCs.Enter();
-		Leave3rdCs.Leave();
-
 		return;
 	}
 	else 
 	{
+		{
+			PROF_EVENT("Update Particles");
+			if (g_pGamePersistent)
+				g_pGamePersistent->UpdateParticles();
+
+			if (Device.ModelDefferClear)
+			{
+				Device.ModelDefferClear();
+			}
+		}
+
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
 		    if (Device.dwTimeGlobal >= it->first)
@@ -315,6 +219,16 @@ void CRenderDevice::on_idle		()
 			else
 		       ++it;
 		}
+
+		{
+			PROF_EVENT("seqParallelBeforRender");
+			for (auto& it : Device.seqParallelBeforRender)
+				it();
+
+			Device.seqParallelBeforRender.clear();
+		}
+
+		secondary_tasks.run(&XRay::Engine::PreRenderThread);
 		FrameMove();
 	}
 
@@ -361,50 +275,29 @@ void CRenderDevice::on_idle		()
 	// *** Resume threads
 	// Capture end point - thread must run only ONE cycle
 	// Release start point - allow thread to run
+
+	secondary_tasks.run(&XRay::Engine::GameThread);
+
+	if (!g_dedicated_server)
 	{
-		xrCriticalSectionGuard guard(&mt_csLeave);
-		mt_csEnter.Leave			();
-		Sleep						(0);
+		Statistic->RenderTOTAL_Real.FrameStart();
+		Statistic->RenderTOTAL_Real.Begin();
+		if (b_is_Active)
+		{
+			if (Begin())
+			{
+				seqRender.Process(rp_Render);
+				if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
+					Statistic->Show();
 
-		if (!g_dedicated_server) {
-			Statistic->RenderTOTAL_Real.FrameStart();
-			Statistic->RenderTOTAL_Real.Begin();
-			if (b_is_Active) {
-				if (Begin()) {
-					seqRender.Process(rp_Render);
-					if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-						Statistic->Show();
-
-					End();
-				}
+				End();
 			}
-			Statistic->RenderTOTAL_Real.End();
-			Statistic->RenderTOTAL_Real.FrameEnd();
-			Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 		}
-
-		// *** Suspend threads
-		// Capture startup point
-		// Release end point - allow thread to wait for startup point
-		PROF_EVENT("Wait secondary thread");
-		mt_csEnter.Enter();
+		Statistic->RenderTOTAL_Real.End();
+		Statistic->RenderTOTAL_Real.FrameEnd();
+		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 	}
-
-	// Ensure, that second thread gets chance to execute anyway
-	if (dwFrame!=mt_Thread_marker)
-	{
-		if (!Device.Paused())
-			Engine.Sheduler.Update();
-
-		for (u32 pit=0; pit<seqParallel.size(); pit++)
-			seqParallel[pit]();
-		seqParallel.resize(0);
-
-		seqFrameMT.Process(rp_Frame);
-	}
-
-	Enter3rdCs.Enter();
-	Leave3rdCs.Leave();
+	secondary_tasks.wait();
 
 	Device.EndRender();
 	if (!b_is_Active)
@@ -443,7 +336,7 @@ void CRenderDevice::Run()
 	//	DUMP_PHASE;
 	g_bLoaded = FALSE;
 	Log("Starting engine...");
-	thread_name("X-RAY Primary thread");
+	thread_name("X-Ray Primary Thread");
 
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
@@ -456,16 +349,7 @@ void CRenderDevice::Run()
 		Timer_MM_Delta = time_system - time_local;
 	}
 
-	mt_csEnter.Enter();
-	Enter3rdCs.Enter();
-	mt_bMustExit[0] = FALSE;
-	mt_bMustExit[1] = FALSE;
-
 	g_AppInfo.MainThread = GetCurrentThread();
-	// Start Balance-Threads
-	thread_spawn(mt_Thread, "X-RAY Secondary thread", 0, 0);
-	thread_spawn(mt_3rdThread, "X-RAY 3rd thread", 0, 0);
-
 	// Message cycle
 	seqAppStart.Process(rp_AppStart);
 
@@ -475,14 +359,8 @@ void CRenderDevice::Run()
 	seqAppEnd.Process(rp_AppEnd);
 
 	// Stop Balance-Threads
-	mt_bMustExit[0] = TRUE;
-	mt_bMustExit[1] = TRUE;
-	Enter3rdCs.Leave(); // Important for correct thread closing!!!
-	mt_csEnter.Leave();
-	
-	while (mt_bMustExit[0])	Sleep(0);
-	while (mt_bMustExit[1])	Sleep(0);
-
+	secondary_tasks.wait();
+	details_task.wait();
 	ParticleWorkerCallback = nullptr;
 #endif
 }

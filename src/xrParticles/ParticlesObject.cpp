@@ -175,6 +175,10 @@ void CParticlesObject::Stop(BOOL bDefferedStop)
 
 void CParticlesObject::Update(u32 _dt)
 {
+	const bool WeCanWatch = Device.vCameraPosition.distance_to(this->Position()) < 500;
+	if (!WeCanWatch && Device.dwFrame % 3)
+		return;
+
 	inherited::shedule_Update(_dt);
 
 	if (g_dedicated_server)		
@@ -189,7 +193,6 @@ void CParticlesObject::Update(u32 _dt)
 void CParticlesObject::PerformAllTheWork()
 {
 	if(g_dedicated_server)		return;
-
 	// Update
 	UpdateSpatial					();
 }

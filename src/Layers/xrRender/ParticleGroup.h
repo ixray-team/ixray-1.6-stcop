@@ -78,38 +78,46 @@ namespace PS
 		using VisualVec = xr_vector<dxRender_Visual*>;
 		using VisualVecIt = VisualVec::iterator;
 
-    	struct SItem		{
-        	dxRender_Visual*	_effect;
-            VisualVec		_children_related;
-            VisualVec		_children_free;
-        public:
-        	void			Set				(dxRender_Visual* e);
-            void			Clear			();
+		struct SItem
+		{
+			dxRender_Visual* _effect;
+			VisualVec _children_related;
+			VisualVec _children_free;
+			xr_set<dxRender_Visual*> _children_destroy;
 
-            IC u32			GetVisuals		(xr_vector<dxRender_Visual*>& visuals)
-            {
-            	visuals.reserve				(_children_related.size()+_children_free.size()+1);
-                if (_effect)				visuals.push_back(_effect);
-                visuals.insert				(visuals.end(),_children_related.begin(),_children_related.end());
-                visuals.insert				(visuals.end(),_children_free.begin(),_children_free.end());
-                return u32(visuals.size());
-            }
-            
-            void			OnDeviceCreate	();
-            void			OnDeviceDestroy	();
+		public:
+			~SItem();
 
-            void			StartRelatedChild	(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
-            void			StopRelatedChild	(u32 idx);
-            void			StartFreeChild		(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
+			void Set(dxRender_Visual* e);
+			void Clear();
 
-            void 			UpdateParent	(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
-            void			OnFrame			(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
+			IC u32 GetVisuals(xr_vector<dxRender_Visual*>& visuals)
+			{
+				visuals.reserve(_children_related.size() + _children_free.size() + 1);
+				if (_effect)
+					visuals.push_back(_effect);
 
-            u32				ParticlesCount	();
-            BOOL			IsPlaying		();
-            void			Play			();
-            void			Stop			(BOOL def_stop);
-        };
+				visuals.insert(visuals.end(), _children_related.begin(), _children_related.end());
+				visuals.insert(visuals.end(), _children_free.begin(), _children_free.end());
+				return u32(visuals.size());
+			}
+
+			void OnDeviceCreate();
+			void OnDeviceDestroy();
+
+			void StartRelatedChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
+			void StopRelatedChild(u32 idx);
+			void StartFreeChild(CParticleEffect* emitter, LPCSTR eff_name, PAPI::Particle& m);
+
+			void UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM);
+			void OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& box, bool& bPlaying);
+			void DelayDeleteChilds();
+
+			u32 ParticlesCount();
+			BOOL IsPlaying() const;
+			void Play();
+			void Stop(BOOL def_stop);
+		};
 
 		using SItemVec = xr_vector<SItem>;
 		using SItemVecIt = SItemVec::iterator;
