@@ -27,7 +27,7 @@ m_data.game_object = {}
 -- PDA known contacts
 -- m_data.actor_contacts = {}
 
-saved_game_extension_ex	= ".scop_marshal"
+saved_game_extension_ex	= save_extension() .. "_data"
 
 local function on_pstor_load_all(obj,packet)
 	local id = obj:id()
