@@ -42,7 +42,7 @@ void OMFEditor_LoadFile(OMFEditorState* p_state)
 		ofn.hwndOwner = nullptr;
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = _T("OMF file\0*.omf\0");
+		ofn.lpstrFilter = TEXT("OMF file\0*.omf\0");
 		ofn.nFilterIndex = 1;
 		ofn.lpstrFileTitle = NULL;
 		ofn.nMaxFileTitle = 0;
