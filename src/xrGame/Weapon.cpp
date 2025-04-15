@@ -956,7 +956,7 @@ extern u32 hud_adj_mode;
 void CWeapon::UpdateCL		()
 {
 	bool need_update_hud = false;
-	bool isHudItemData = HudItemData() != nullptr;
+	bool isHudItemData = HudItemData() != nullptr && GetHUDmode();
 
 	if (isHudItemData && bUseAltScope) {
 		need_update_hud = true;
@@ -2721,7 +2721,7 @@ bool CWeapon::MovingAnimAllowedNow()
 
 bool CWeapon::IsHudModeNow()
 {
-	return (HudItemData()!=nullptr);
+	return GetHUDmode();
 }
 
 void CWeapon::ZoomInc()
@@ -2900,9 +2900,7 @@ void CWeapon::UpdateAltScope()
 	if (m_eScopeStatus != ALife::eAddonAttachable || !bUseAltScope)
 		return;
 
-	shared_str sectionNeedLoad;
-
-	sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
+	shared_str sectionNeedLoad = IsScopeAttached() ? GetNameWithAttachmentScope() : m_section_id;
 
 	if (!pSettings->section_exist(sectionNeedLoad))
 		return;
@@ -2921,6 +2919,12 @@ void CWeapon::UpdateAltScope()
 	}
 
 	hud_sect_cache = hud_sect;
+
+	if (HudItemData() != nullptr)
+	{
+		g_player_hud->detach_item(this);
+		g_player_hud->attach_item(this);
+	}
 }
 
 shared_str CWeapon::GetNameWithAttachmentScope()

@@ -96,8 +96,13 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 		switch2_Idle	();
 		break;
 	case eShowing:
-		switch2_Showing	();
-		break;
+	{
+		if (Level().CurrentControlEntity() == H_Parent())
+		{
+			g_player_hud->attach_item(this);
+		}
+		switch2_Showing();
+	} break;
 	case eHiding:
 		switch2_Hiding	();
 		break;
@@ -265,7 +270,14 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 {
 	switch (state)
 	{
-	case eHiding:	SwitchState(eHidden);	break;
+	case eHiding:
+	{
+		if (Level().CurrentControlEntity() == H_Parent() && HudItemData())
+		{
+			g_player_hud->detach_item(this);
+		}
+		SwitchState(eHidden);
+	}break;
 	
 	case eFire: 
 	case eFire2: 	SwitchState(eIdle);		break;

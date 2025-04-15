@@ -993,23 +993,22 @@ void player_hud::update_inertion(Fmatrix& trans)
 	}
 }
 
-
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 {
-	xr_vector<attachable_hud_item*>::iterator it = m_pool.begin();
-	xr_vector<attachable_hud_item*>::iterator it_e = m_pool.end();
-	for(;it!=it_e;++it)
+	for (auto& itm : m_pool)
 	{
-		attachable_hud_item* itm = *it;
-		if(itm->m_sect_name==sect)
+		if (itm->m_sect_name == sect)
+		{
 			return itm;
+		}
 	}
-	attachable_hud_item* res	= new attachable_hud_item(this);
-	res->load					(sect);
-	res->m_hand_motions.load	(m_model, sect);
-	m_pool.push_back			(res);
 
-	return	res;
+	attachable_hud_item* res = new attachable_hud_item(this);
+	res->load(sect);
+	res->m_hand_motions.load(m_model, sect);
+	m_pool.push_back(res);
+
+	return res;
 }
 
 void player_hud::RemoveHudItem(const shared_str& sect)
@@ -1053,23 +1052,30 @@ bool player_hud::allow_activation(CHudItem* item)
 
 void player_hud::attach_item(CHudItem* item)
 {
-	attachable_hud_item* pi			= create_hud_item(item->HudSection());
-	int item_idx					= pi->m_attach_place_idx;
+	attachable_hud_item* pi = create_hud_item(item->HudSection());
+	int item_idx = pi->m_attach_place_idx;
 	
-	if (m_attached_items[item_idx] != pi || pi->m_parent_hud_item != item) {
-		if(m_attached_items[item_idx])
+	if (m_attached_items[item_idx] != pi || pi->m_parent_hud_item != item)
+	{
+		if (m_attached_items[item_idx])
+		{
 			m_attached_items[item_idx]->m_parent_hud_item->on_b_hud_detach();
+		}
 
-		m_attached_items[item_idx]						= pi;
-		pi->m_parent_hud_item							= item;
+		m_attached_items[item_idx] = pi;
+		pi->m_parent_hud_item = item;
 
-		if(item_idx==0 && m_attached_items[1])
+		if (item_idx == 0 && m_attached_items[1])
+		{
 			m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
+		}
 
 		item->on_a_hud_attach();
 	}
-	pi->m_parent_hud_item							= item;
+
+	pi->m_parent_hud_item = item;
 }
+
 void player_hud::RestoreHandBlends(LPCSTR ignored_part)
 {
 	u16 part_id			= m_model->partitions().part_id(ignored_part);

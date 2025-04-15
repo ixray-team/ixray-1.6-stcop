@@ -1345,8 +1345,7 @@ void CActor::UpdatePlayerView()
 
 	if (IsFocused())
 	{
-		BOOL bHudView = HUDview();
-		if (bHudView)
+		if (!m_holder || m_holder->HUDView() && m_holder->allowWeapon())
 		{
 			CInventoryItem* pInvItem = inventory().ActiveItem();
 			if (pInvItem)
@@ -1358,7 +1357,7 @@ void CActor::UpdatePlayerView()
 					{
 						g_player_hud->detach_item(pHudItem);
 					}
-					else
+					else if (pHudItem->IsShowing())
 					{
 						g_player_hud->attach_item(pHudItem);
 					}

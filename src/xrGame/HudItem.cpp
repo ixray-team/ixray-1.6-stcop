@@ -145,22 +145,31 @@ void CHudItem::OnStateSwitch(u32 S)
 	switch (S)
 	{
 	case eBore:
-		SetPending		(FALSE);
+	{
+		SetPending(FALSE);
 
-		PlayAnimBore	();
-		if(HudItemData())
+		PlayAnimBore();
+		if (HudItemData())
 		{
-			Fvector P		= HudItemData()->m_item_transform.c;
+			Fvector P = HudItemData()->m_item_transform.c;
 			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDmode(), false, m_started_rnd_anim_idx);
 		}
-
 		break;
+	}
+	case eShowing:
+	{
+		if (Level().CurrentControlEntity() == object().H_Parent())
+		{
+			g_player_hud->attach_item(this);
+		}
+		break;
+	}
 	}
 }
 
 void CHudItem::OnAnimationEnd(u32 state)
 {
-	if (CActor* pActor = m_object&&m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : NULL)
+	if (CActor* pActor = m_object && m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 	{
 		pActor->callback(GameObject::eActorHudAnimationEnd)(smart_cast<CGameObject*>(this)->lua_game_object(), hud_sect.c_str(), m_current_motion.c_str(), state, animation_slot());
 	}
@@ -168,9 +177,19 @@ void CHudItem::OnAnimationEnd(u32 state)
 	switch(state)
 	{
 	case eBore:
+	{
+		SwitchState(eIdle);
+		break;
+	}
+	case eHiding:
+	{
+		if (Level().CurrentControlEntity() == object().H_Parent() && HudItemData())
 		{
-			SwitchState	(eIdle);
-		} break;
+			g_player_hud->detach_item(this);
+		}
+		SwitchState(eHidden);
+		break;
+	}
 	}
 }
 
@@ -192,6 +211,10 @@ void CHudItem::DeactivateItem()
 void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	SwitchState(eHidden);
+	if (Level().CurrentControlEntity() == object().H_Parent() && HudItemData())
+	{
+		g_player_hud->detach_item(this);
+	}
 }
 
 bool CHudItem::SendDeactivateItem()
@@ -484,30 +507,19 @@ void CHudItem::OnH_B_Chield		()
 	StopCurrentAnimWithoutCallback();
 }
 
-void CHudItem::OnH_B_Independent	(bool just_before_destroy)
+void CHudItem::OnH_B_Independent(bool just_before_destroy)
 {
 	m_sounds.StopAllSounds	();
 	UpdateXForm				();
-	
-	// next code was commented 
-	/*
-	if(HudItemData() && !just_before_destroy)
-	{
-		object().XFORM().set( HudItemData()->m_item_transform );
-	}
-	
+}
+
+void CHudItem::OnH_A_Independent()
+{
 	if (HudItemData())
 	{
 		g_player_hud->detach_item(this);
-		Msg("---Detaching hud item [%s][%d]", this->HudSection().c_str(), this->object().ID());
-	}*/
-	//SetHudItemData			(nullptr);
-}
+	}
 
-void CHudItem::OnH_A_Independent	()
-{
-	if(HudItemData())
-		g_player_hud->detach_item(this);
 	StopCurrentAnimWithoutCallback();
 }
 

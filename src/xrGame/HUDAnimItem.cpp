@@ -40,6 +40,7 @@ bool CHUDAnimItem::ActivateItem()
 	if (CurrentMotion.size() != 0)
 	{
 		SetState(eIdle);
+		g_player_hud->attach_item(this);
 		m_dwMotionStartTm = u32(-1);
 	}
 

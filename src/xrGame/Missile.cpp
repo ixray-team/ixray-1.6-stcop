@@ -307,6 +307,11 @@ void CMissile::State(u32 state)
 	{
 	case eShowing:
         {
+			if (Level().CurrentControlEntity() == H_Parent())
+			{
+				g_player_hud->attach_item(this);
+			}
+
 			SetPending			(TRUE);
 			PlayHUDMotion("anm_show", FALSE, this, GetState());
 			PlaySoundIfExist("SndShow", Position());
@@ -387,6 +392,10 @@ void CMissile::OnAnimationEnd(u32 state)
 	{
 	case eHiding:
 		{
+			if (Level().CurrentControlEntity() == H_Parent() && HudItemData())
+			{
+				g_player_hud->detach_item(this);
+			}
 			setVisible(FALSE);
 			SwitchState(eHidden);
 		} break;
