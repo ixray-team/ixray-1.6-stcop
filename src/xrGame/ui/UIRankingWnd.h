@@ -8,7 +8,7 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
-//#include "UIRankFaction.h"
+#include "UIRankFaction.h"
 #include "UIAchievements.h"
 
 class CUIStatic;
@@ -25,6 +25,8 @@ private:
 	typedef CUIWindow	inherited;
 
 	CUIFrameWindow*		m_background;
+	CUIFrameLineWnd*	m_background2;
+	CUIStatic*			m_center_background;
 	CUIFrameWindow*		m_down_background;
 	CUIFrameWindow*		m_icon_overlay;
 
@@ -34,6 +36,11 @@ private:
 	CUITextWnd*			m_money_value;
 
 	CUITextWnd*			m_center_caption;
+	CUIStatic*			m_faction_static;
+	CUIFrameLineWnd*	m_faction_line1;
+	CUIFrameLineWnd*	m_faction_line2;
+
+	CUIScrollView*		m_factions_list;
 
 	CUIScrollView*		m_achievements;
 	CUIFrameWindow*		m_achievements_background;
@@ -75,6 +82,11 @@ public:
 			void		update_info				();
 
 protected:
+			void		add_faction				(CUIXml& xml, shared_str const& faction_id);
+			void		clear_all_factions		();
+			bool		SortingLessFunction		(CUIWindow* left, CUIWindow* right);
+			void		get_value_from_script	();
+
 			void		add_achievement			(CUIXml& xml, shared_str const& faction_id);
 			void		get_statistic			();
 			void		get_best_monster		();
