@@ -3,6 +3,7 @@
 struct CompilersMode
 {
 	char level_name[128];
+	
 
 	bool Silent = false;
 	bool Embree = true;
@@ -30,10 +31,18 @@ struct CompilersMode
  
 	bool DO_NoSun = false;
 
-	bool AI_NoSeparatorCheck = true;
-	bool AI_Draft = false;
-	bool AI_BuildLevel = true;
+	// SPAWN COMPILER
 	bool AI_Spawn = false;
+	char AI_spawn_name[128];
+	char AI_StartActor[128];
+	bool AI_NoSeparatorCheck = true;
+
+
+	bool AI_BuildLevel = true;
+	bool AI_PureCovers = false;
+	bool AI_Draft = false;
+	bool AI_Verify = false; 
+	bool AI_Verbose = false;
 };
 
 void RenderMainUI();
