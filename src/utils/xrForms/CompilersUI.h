@@ -12,6 +12,7 @@ struct CompilersMode
 {
 	bool Silent = false;
 	bool Embree = true;
+	bool EmbreeBVHCompact = false;
 	bool ClearTemp = false;
 
 	bool AI = false;
