@@ -2,6 +2,8 @@
 #include "LevelPreferences.h"
 #include "ContentView.h"
 
+#include "../xrECore/Editor/UILogForm.h"
+
 void CLevelPreferences::Load()
 {
 	inherited::Load		();
@@ -38,6 +40,11 @@ void CLevelPreferences::Load()
 	if (JSONData["windows"].contains("snap_list"))
 	{
 		OpenSnapList = JSONData["windows"]["snap_list"];
+	}
+
+	if (JSONData["windows"].contains("log_clear_in_pie"))
+	{
+		UILogForm::bClearInPIE = JSONData["windows"]["log_clear_in_pie"];
 	}
 
 	if (JSONData["windows"].contains("light_anim"))
@@ -89,6 +96,7 @@ void CLevelPreferences::Save()
 	JSONData["windows"]["properties"] = OpenProperties;
 	JSONData["windows"]["world_properties"] = OpenWorldProperties;
 	JSONData["windows"]["snap_list"] = OpenSnapList;
+	JSONData["windows"]["log_clear_in_pie"] = UILogForm::bClearInPIE;
 	JSONData["windows"]["light_anim"] = OpenLightAnim;
 	
 	JSONData["LibaryEditor"]["Preview"] = PreviewRenderLibrary;
