@@ -29,6 +29,9 @@ public:
 	using reverse_iterator = char_t*;
 	using const_reverse_iterator = const char_t*;
 
+	inline static constexpr number_type Length = _kStringLength;
+	inline static constexpr number_type Size = _kStringLength * sizeof(value_type);
+
 	static_assert(std::is_same<char, char_t>::value || std::is_same<wchar_t, char_t>::value, "unsupported char format, report to developers (maybe you need it, but at least write your problem)");
 	static_assert(_kStringLength != number_type(-1), "you can't pass a negative value for instatiation!");
 	static_assert(_kStringLength > 0, "you can't make a arr as zero lol");
@@ -109,7 +112,7 @@ public:
 		p_dest[count] = char_t();
 	}
 
-	inline number_type find(const char_t* p_str, number_type pos = 0) const 
+	inline number_type find(const char_t* p_str, number_type pos = 0) const
 	{
 		assert(p_str && "don't pass an invalid string please");
 
@@ -291,3 +294,12 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const char_t* r
 }
 
 static_assert(sizeof(stack_string<char, 1>) == sizeof(char[1]), "you can't add any additional field to this class! pure buffer on stack... (there's no point in reducing counting operations and caching like size of buffer and etc)");
+
+template<stack_string<char, 1>::number_type StringLength>
+using xr_stack_string = stack_string<char, StringLength>;
+
+template<stack_string<char, 1>::number_type StringLength>
+using xr_stack_wstring = stack_string<wchar_t, StringLength>;
+
+// xr_stack_string_number_type_type
+using xr_ssnt_t = xr_stack_string<1>::number_type;
