@@ -68,15 +68,6 @@ void xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 	xrLoad(name, draft_mode);
 	mem_Optimize();
 
-	//	Phase("Building nodes...");
-	//	xrBuildNodes();
-	//	Msg("%d nodes created",int(g_nodes.size()));
-	//	mem_Optimize();
-	//	
-	//	Phase("Smoothing nodes...");
-	//	xrSmoothNodes();
-	//	mem_Optimize();
-
 	if (!draft_mode) 
 	{
 		Phase("Lighting nodes...");
@@ -88,14 +79,6 @@ void xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 		xrCover(pure_covers);
 		mem_Optimize();
 	}
-	/////////////////////////////////////
-
-//	Phase("Palettizing cover values...");
-//	xrPalettizeCovers();
-//	mem_Optimize();
-
-//	Phase("Visualizing nodes...");
-//	xrDisplay	();
 
 	Phase("Saving nodes...");
 	xrSaveNodes(name, out_name);
