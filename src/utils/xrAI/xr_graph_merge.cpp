@@ -145,15 +145,24 @@ public:
 		GRAPH_VERTEX_IT			B = m_tpVertices.begin();
 		GRAPH_VERTEX_IT			I = B;
 		GRAPH_VERTEX_IT			E = m_tpVertices.end();
-		for ( ; I != E; I++) {
-			(*I).tLocalPoint		= m_tpGraph->vertex(int(I - B))->level_point();
-			(*I).tGlobalPoint.add	(m_tpGraph->vertex(int(I - B))->game_point(),m_tLevel.offset());
+		for ( ; I != E; I++) 
+		{
+			int VertexID = int(I - B);
+
+			(*I).tLocalPoint		= m_tpGraph->vertex(VertexID)->level_point();
+			(*I).tGlobalPoint.add	(m_tpGraph->vertex(VertexID)->game_point(),m_tLevel.offset());
 			(*I).tLevelID			= dwLevelID;
-			(*I).tNodeID			= m_tpGraph->vertex(int(I - B))->level_vertex_id();
-			Memory.mem_copy			((*I).tVertexTypes,m_tpGraph->vertex(int(I - B))->vertex_type(),GameGraph::LOCATION_TYPE_COUNT*sizeof(GameGraph::_LOCATION_ID));
-			(*I).tNeighbourCount	= m_tpGraph->vertex(int(I - B))->edge_count();
+			(*I).tNodeID			= m_tpGraph->vertex(VertexID)->level_vertex_id();
+			Memory.mem_copy			((*I).tVertexTypes,m_tpGraph->vertex(VertexID)->vertex_type(),GameGraph::LOCATION_TYPE_COUNT*sizeof(GameGraph::_LOCATION_ID));
+			(*I).tNeighbourCount	= m_tpGraph->vertex(VertexID)->edge_count();
 			CGameGraph::const_iterator	b,i,e;
-			m_tpGraph->begin		(int(I - B),i,e);
+
+			if (!m_tpGraph->valid_vertex_id(VertexID))
+			{
+				Msg("! Invalid vertex id: %d. Skipped", VertexID);
+			}
+
+			m_tpGraph->begin		(VertexID,i,e);
 			(*I).tpaEdges			= (CGameGraph::CEdge*)xr_malloc((*I).tNeighbourCount*sizeof(CGameGraph::CEdge));
 			b						= i;
 			for ( ; i != e; ++i) {
@@ -163,7 +172,7 @@ public:
 				edge.m_vertex_id	= (GameGraph::_GRAPH_ID)(edge.m_vertex_id + dwOffset);
 			}
 			(*I).dwPointOffset		= 0;
-			vfGenerateDeathPoints	(int(I - B),l_tpCrossTable,l_tpAI_Map,(*I).tDeathPointCount);
+			vfGenerateDeathPoints	(VertexID,l_tpCrossTable,l_tpAI_Map,(*I).tDeathPointCount);
 		}
 
 		xr_delete					(l_tpCrossTable);
