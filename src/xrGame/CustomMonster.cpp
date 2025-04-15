@@ -323,26 +323,33 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	VERIFY				(_valid(Position()));
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
 
-	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
+	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL))
+		NET.pop_front();
 
 	float dt			= float(DT)/1000.f;
+	
 	// *** general stuff
 	CScriptEntity::process_sound_callbacks();
-	if (g_Alive())
+	if (g_Alive() && OnServer())
 	{
 		Exec_Visibility();
 		memory().update						(dt);
 	}
+
 	inherited::shedule_Update	(DT);
 
 	// Queue setup
-	if (dt > 3) return;
+	if (dt > 3) 
+		return;
 
 	m_dwCurrentTime	= Device.dwTimeGlobal;
 
 	VERIFY				(_valid(Position()));
-	if (Remote())		{
-	} else {
+	if (Remote())	
+	{
+	} 
+	else
+	{
 		// here is monster AI call
 		m_fTimeUpdateDelta				= dt;
 		Device.Statistic->AI_Think.Begin	();
@@ -359,23 +366,11 @@ void CCustomMonster::shedule_Update	( u32 DT )
 
 		// Look and action streams
 		float							temp = conditions().health();
-		if (temp > 0) {
+		if (temp > 0)
+		{
 			Exec_Action				(dt);
 			VERIFY					(_valid(Position()));
-			//Exec_Visibility		();
 			VERIFY					(_valid(Position()));
-			//////////////////////////////////////
-			//Fvector C; float R;
-			//////////////////////////////////////
-			// С Олеся - ПИВО!!!! (Диме :-))))
-			// m_PhysicMovementControl->GetBoundingSphere	(C,R);
-			//////////////////////////////////////
-			//Center(C);
-			//R = Radius();
-			//////////////////////////////////////
-			/// #pragma todo("Oles to all AI guys: perf/logical problem: Only few objects needs 'feel_touch' why to call update for everybody?")
-			///			feel_touch_update		(C,R);
-
 			net_update				uNext;
 			uNext.dwTimeStamp		= Level().timeServer();
 			uNext.o_model			= movement().m_body.current.yaw;
