@@ -34,7 +34,9 @@ public:
 			eWpnFire,
 			eWpnAutoFire,
 			eWpnToDefaultDir,
-	};	
+	};
+	HUD_SOUND_COLLECTION_LAYERED SoundsLayered;
+
 							CCarWeapon			(CPhysicsShellHolder* obj);
 				virtual		~CCarWeapon			();
 	static void _BCL		BoneCallbackX		(CBoneInstance *B);
@@ -66,5 +68,4 @@ private:
 	float					m_barrel_speed;
 	Fvector					m_destEnemyDir;
 	bool					m_allow_fire;
-	HUD_SOUND_ITEM			m_sndShot;
 };
