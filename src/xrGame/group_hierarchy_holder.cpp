@@ -29,16 +29,17 @@ CGroupHierarchyHolder::~CGroupHierarchyHolder			()
 }
 
 #ifdef SQUAD_HIERARCHY_HOLDER_USE_LEADER
-void CGroupHierarchyHolder::update_leader				()
+void CGroupHierarchyHolder::update_leader()
 {
-	m_leader					= 0;
-	MEMBER_REGISTRY::iterator	I = m_members.begin();
-	MEMBER_REGISTRY::iterator	E = m_members.end();
-	for ( ; I != E; ++I)
-		if ((*I)->g_Alive()) {
-			m_leader			= *I;
+	m_leader = nullptr;
+	for (CEntity* Member : m_members)
+	{
+		if (Member->m_entity_condition != nullptr && Member->g_Alive())
+		{
+			m_leader = Member;
 			break;
 		}
+	}
 }
 #endif // SQUAD_HIERARCHY_HOLDER_USE_LEADER
 
