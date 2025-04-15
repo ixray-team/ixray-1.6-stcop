@@ -106,11 +106,9 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 void CLightmap::Save( LPCSTR path )
 {
 	static int		lmapNameID = 0; ++lmapNameID;
-
-	Phase			("Saving...");
-
+ 
 	// Borders correction
-	Status			("Borders...");
+	// Status			("Saving...");
 	for (u32 _y=0; _y<getLMSIZE(); _y++)
 	{
 		for (u32 _x=0; _x<getLMSIZE(); _x++)
@@ -138,7 +136,7 @@ void CLightmap::Save( LPCSTR path )
 	lm.destroy					();
 	
 	// Saving			(DXT5.dds)
-	Status			("Compression base...");
+	// Status			("Compression base...");
 	{
 
 
