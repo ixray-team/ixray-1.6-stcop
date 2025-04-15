@@ -150,46 +150,51 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 				if (EnableAdjust)
 				{
-					float StartY = ImGui::GetCursorPosY();
-					float StartX = ImGui::GetCursorPosX();
-					if (ImGui::Button("Mode 1", { 60, 35 }))
-						hud_adj_mode = 1;
+				    float padding = 10.0f; // Отступ между кнопками
+				    float buttonHeight = 35.0f;
 
-					ImGui::SetCursorPos({ StartX + 75 , StartY });
-					if (ImGui::Button("Mode 2", { 60, 35 }))
-						hud_adj_mode = 2;
+				    float widthHudPosition = ImGui::CalcTextSize("Hud Position").x + 20.0f;
+				    float widthHudRotation = ImGui::CalcTextSize("Hud Rotation").x + 20.0f;
+				    float widthItemPosition = ImGui::CalcTextSize("Item Position").x + 20.0f;
+				    float widthItemRotation = ImGui::CalcTextSize("Item Rotation").x + 20.0f;
+				    float widthFirePoint = ImGui::CalcTextSize("Fire Point").x + 20.0f;
+				    float widthFire2Point = ImGui::CalcTextSize("Fire 2 Point").x + 20.0f;
+				    float widthShellPoint = ImGui::CalcTextSize("Shell Point").x + 20.0f;
+				    float widthPosStep = ImGui::CalcTextSize("pos STEP").x + 20.0f;
+				    float widthRotStep = ImGui::CalcTextSize("rot STEP").x + 20.0f;
+				    float widthCrosshair = ImGui::CalcTextSize("Crosshair").x + 20.0f;
 
-					ImGui::SetCursorPos({ StartX + 150 , StartY });
-					if (ImGui::Button("Mode 3", { 60, 35 }))
-						hud_adj_mode = 3;
+				    if (ImGui::Button("Hud Position", { widthHudPosition, buttonHeight }))
+				        hud_adj_mode = 1;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Hud Rotation", { widthHudRotation, buttonHeight }))
+				        hud_adj_mode = 2;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Item Position", { widthItemPosition, buttonHeight }))
+				        hud_adj_mode = 3;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Item Rotation", { widthItemRotation, buttonHeight }))
+				        hud_adj_mode = 4;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Fire Point", { widthFirePoint, buttonHeight }))
+				        hud_adj_mode = 5;
 
-					ImGui::SetCursorPos({ StartX + 225 , StartY });
-					if (ImGui::Button("Mode 4", { 60, 35 }))
-						hud_adj_mode = 4;
+				    ImGui::NewLine();
 
-					ImGui::SetCursorPos({ StartX + 300 , StartY });
-					if (ImGui::Button("Mode 5", { 60, 35 }))
-						hud_adj_mode = 5;
-
-					ImGui::SetCursorPos({ StartX , StartY + 45 });
-					if (ImGui::Button("Mode 6", { 60, 35 }))
-						hud_adj_mode = 6;
-
-					ImGui::SetCursorPos({ StartX + 75 , StartY + 45 });
-					if (ImGui::Button("Mode 7", { 60, 35 }))
-						hud_adj_mode = 7;
-
-					ImGui::SetCursorPos({ StartX + 150 , StartY + 45 });
-					if (ImGui::Button("Mode 8", { 60, 35 }))
-						hud_adj_mode = 8;
-
-					ImGui::SetCursorPos({ StartX + 225 , StartY + 45 });
-					if (ImGui::Button("Mode 9", { 60, 35 }))
-						hud_adj_mode = 9;
-
-					ImGui::SetCursorPos({ StartX + 300 , StartY + 45 });
-					if (ImGui::Button("Crosshair", { 100, 35 }))
-						hud_adj_crosshair = !hud_adj_crosshair;
+				    if (ImGui::Button("Fire 2 Point", { widthFire2Point, buttonHeight }))
+				        hud_adj_mode = 6;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Shell Point", { widthShellPoint, buttonHeight }))
+				        hud_adj_mode = 7;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("pos STEP", { widthPosStep, buttonHeight }))
+				        hud_adj_mode = 8;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("rot STEP", { widthRotStep, buttonHeight }))
+				        hud_adj_mode = 9;
+				    ImGui::SameLine(0, padding);
+				    if (ImGui::Button("Crosshair", { widthCrosshair, buttonHeight }))
+				        hud_adj_crosshair = !hud_adj_crosshair;
 				}
 				else
 				{
