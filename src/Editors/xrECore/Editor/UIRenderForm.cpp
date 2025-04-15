@@ -86,8 +86,14 @@ void UIRenderForm::DrawStatistics()
 		print(" DT_Render", "%2.2fms", s->RenderDUMP_DT_Render.result);
 		print(" DT_Cache", "%2.2fms", s->RenderDUMP_DT_Cache.result);
 	}
+    if (psDeviceFlags.test(rsEnvironment))
+    {
+        ImGui::NewLine();
+        // color(0xFFC8DCAF);
+        print("GAME TIME", "%02d:%02d:%02d", s->hours, s->minutes, s->seconds);
+    }
 
-	ImGui::NewLine();
+    ImGui::NewLine();
 	print("Camera Pos", "%2.2f, %2.2f, %2.2f", UI->CurrentView().m_Camera.GetPosition().x, UI->CurrentView().m_Camera.GetPosition().y, UI->CurrentView().m_Camera.GetPosition().z);
 
 	ImGui::EndTable();
