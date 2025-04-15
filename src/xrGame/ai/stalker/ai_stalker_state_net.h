@@ -8,21 +8,6 @@ class CSE_ALifeHumanStalker;
 class aistalker_state_net
 {
 public:
-	template<typename T>
-	IC	void write_bits(const u32& bit_count, const u32& value, u32& current, T& output)
-	{
-		output |= ((value & ((T(1) << bit_count) - 1)) << current);
-		current += bit_count;
-	}
-
-	template<typename T>
-	IC	u32 read_bits(const u32& bit_count, u32& current, const u8& output)
-	{
-		u32			result = (output >> current) & ((T(1) << bit_count) - 1);
-		current += bit_count;
-		return result;
-	}
-
 	u64 NextSyncronizeDialogs = 0;
 
 	// PHYSIC STATE
