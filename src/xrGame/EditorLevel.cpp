@@ -108,12 +108,8 @@ BOOL CLevelEditor::net_Start(LPCSTR op_server, LPCSTR op_client)
 
 		m_ph_commander_physics_worldstep = new CPHCommander();
 		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
-
 		physics_world()->set_default_contact_shotmark(ContactShotMark);
 		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
-
-		VERIFY(physics_world());
-		physics_world()->set_step_time_callback((PhysicsStepTimeCallback*)&PhisStepsCallback);
 
 
 		// Send network to single or multithreaded mode
