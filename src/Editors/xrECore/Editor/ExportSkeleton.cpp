@@ -1035,7 +1035,6 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 			Msg("! %s has moveXform flag - but skeleton root has more than one child or has mesh! add special root bone please!", cur_motion->Name() );
 			return false;
 		}
-//		if (motion->m_Flags.is(esmStopAtEnd)) Msg("%s - %d",motion->Name(),motion->m_Flags.is(esmStopAtEnd));
 
 		F.open_chunk		(smot);
 		F.w_stringZ			(cur_motion->Name());
