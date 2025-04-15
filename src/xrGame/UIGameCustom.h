@@ -6,6 +6,8 @@
 #include "../xrUI/Widgets/UIDialogHolder.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/IGame_UICustom.h"
+#include "script_game_object.h"
+
 // refs
 class CUI;
 class CTeamBaseZone;
@@ -147,6 +149,8 @@ public:
 	IC CUIPdaWnd&		PdaMenu					() const { return *m_PdaMenu;   }
 			bool		ShowActorMenu			();
 			void		HideActorMenu			();
+			void		UpdateActorMenu			(); //Alundaio
+			CScriptGameObject* CurrentItemAtCell(); //Alundaio
 			bool		ShowPdaMenu				();
 			void		HidePdaMenu				();
 			void		ShowMessagesWindow		();
