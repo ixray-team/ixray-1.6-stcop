@@ -246,6 +246,16 @@ void XrUIManager::Push(IEditorWnd* ui, bool need_deleted)
 	ui->Flags.set(!need_deleted, IEditorWnd::F_NoDelete);
 }
 
+void XrUIManager::Remove(IEditorWnd* ui)
+{
+	auto Iter = std::find(m_UIArray.begin(), m_UIArray.end(), ui);
+	
+	if (Iter != m_UIArray.end())
+	{
+		m_UIArray.erase(Iter);
+	}
+}
+
 void XrUIManager::PushBegin(IEditorWnd* ui, bool need_deleted)
 {
 	m_UIArray.insert(m_UIArray.begin(), ui);
