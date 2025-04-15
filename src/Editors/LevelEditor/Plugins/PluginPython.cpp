@@ -6,7 +6,8 @@
 bool CPluginPython::IsPythonInstalled() const
 {
 	int exitCode = std::system("python --version >nul 2>&1");
-	if (exitCode == 0) return true;
+	if (exitCode == 0) 
+		return true;
 
 	exitCode = std::system("python3 --version >nul 2>&1");
 	return exitCode == 0;
@@ -20,7 +21,8 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	// Создаем анонимный канал (pipe)
 	if (!CreatePipe(&hRead, &hWrite, &sa, 0))
 	{
-		throw std::runtime_error("Ошибка создания pipe");
+		Msg("! Error creating pipe...");
+		return "";
 	}
 
 	STARTUPINFOA si = { sizeof(STARTUPINFOA) };
@@ -29,17 +31,18 @@ xr_string CPluginPython::RunCommand(const xr_string& command)
 	si.hStdError = hWrite;
 
 	PROCESS_INFORMATION pi;
-	xr_string cmd = "cmd /C " + command; // Запускаем через cmd.exe
+	xr_string cmd = "cmd /C " + command;
 
 	// Создаем процесс
 	if (!CreateProcessA(nullptr, const_cast<char*>(cmd.c_str()), nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi))
 	{
 		CloseHandle(hRead);
 		CloseHandle(hWrite);
-		throw std::runtime_error("Ошибка запуска команды");
+		Msg("! Error starting process...");
+		return "";
 	}
 
-	CloseHandle(hWrite); // Закрываем ненужную сторону канала
+	CloseHandle(hWrite);
 
 	// Читаем вывод
 	string128 buffer;
@@ -78,6 +81,14 @@ void CPluginPython::Run()
 
 	if (IsSimple())
 	{
+		size_t ExtPos = Scene->full_name.find(".level");
+
+		if (ExtPos == xr_string::npos)
+		{
+			Msg("! Level is empty...");
+			return;
+		}
+		xr_string LevelDir = Scene->full_name.substr(0, ExtPos) + "\\";
 		Command += " -level=\"";
 		Command += Scene->full_name;
 		Command += "\"";
@@ -112,7 +123,7 @@ xr_string CPluginPython::ReadDesc() const
 		if (line.rfind(prefix, 0) == 0)
 		{
 			size_t pos = line.find(':');
-			if (pos != std::string::npos && pos + 1 < line.size())
+			if (pos != xr_string::npos && pos + 1 < line.size())
 			{
 				result = line.substr(pos + 1);
 			}
@@ -126,8 +137,6 @@ xr_string CPluginPython::ReadDesc() const
 
 			while (std::regex_search(searchStart, line.cend(), match, pattern))
 			{
-				std::string key = match[1];
-				std::string value = match[2];
 				InputArgsName[match[1].str().c_str()] = match[2].str().c_str();
 				searchStart = match.suffix().first;
 			}
