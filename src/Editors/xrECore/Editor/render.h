@@ -152,7 +152,6 @@ public:
 	CLight_Compute_XFORM_and_VIS LR;
 
 	xr_list<light*> v_all_lights_dque;
-	xr_list<light*> v_all_lights;
 
 public:
 	// Occlusion culling
