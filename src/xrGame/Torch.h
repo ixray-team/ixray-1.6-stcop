@@ -5,7 +5,6 @@
 #include "../xrScripts/script_export_space.h"
 
 class CLAItem;
-class CNightVisionEffector;
 
 class CTorch : public CInventoryItemObject {
 private:
@@ -52,24 +51,12 @@ public:
 
 	//CAttachableItem
 	virtual	void	enable					(bool value);
- 
-public:
-			void	SwitchNightVision		();
-			void	SwitchNightVision		(bool light_on, bool use_sounds=true);
 
-			bool	GetNightVisionStatus	() { return m_bNightVisionOn; }
-CNightVisionEffector* GetNightVision		() { return m_night_vision; }
-protected:
-	bool					m_bNightVisionEnabled;
-	bool					m_bNightVisionOn;
-
-	CNightVisionEffector*	m_night_vision;
 	HUD_SOUND_COLLECTION	m_sounds;
 
 	enum EStats{
 		eTorchActive				= (1<<0),
-		eNightVisionActive			= (1<<1),
-		eAttached					= (1<<2)
+		eAttached					= (1<<1)
 	};
 
 public:
@@ -86,23 +73,4 @@ public:
 	virtual void	renderable_Render		();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-};
-
-class CNightVisionEffector
-{
-	CActor*					m_pActor;
-	HUD_SOUND_COLLECTION	m_sounds;
-public:
-	enum EPlaySounds{
-		eStartSound	= 0,
-		eStopSound,
-		eIdleSound,
-		eBrokeSound
-	};
-				CNightVisionEffector(const shared_str& sect);
-	void		Start		(const shared_str& sect, CActor* pA, bool play_sound=true);
-	void		Stop		(const float factor, bool play_sound=true);
-	bool		IsActive	();
-	void		OnDisabled	(CActor* pA, bool play_sound=true);
-	void		PlaySounds	(EPlaySounds which);
 };
