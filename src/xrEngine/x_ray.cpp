@@ -254,9 +254,11 @@ ENGINE_API void EngineLoadStage5()
 	LALib.OnDestroy				( );
 	
 	destroyConsole();
+	
+	//очищение памяти таблицы строк
+	CStringTable::Destroy();
 
 	destroySound();
-
 	destroyEngine();
 }
 
