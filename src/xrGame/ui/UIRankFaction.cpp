@@ -156,6 +156,9 @@ void CUIRankFaction::rating( u8 new_sn, bool force )
 
 void CUIRankFaction::update_info( u8 sn )
 {
+	if (Device.IsEditorMode())
+		return;
+
 	m_faction_state.update_info();
 
 	string32 buf;
