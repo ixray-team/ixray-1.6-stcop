@@ -5,7 +5,8 @@
 #include "cl_log.h"
 #include <timeapi.h>
 
-#define enumToText(enum)
+//Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
+#define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
 
 bool ShowMainUI = true;
 
@@ -289,29 +290,76 @@ void DrawCompilerConfig()
 	
 }
 
+void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
+{
+	switch (status)
+	{
+	case Complited:
+		text = "Complited";
+		textCol = { 0, 0.9, 0, 1 };
 
+		icon = 'C';
+		break;
+	case InProgress:
+		text = "In Progress";
+		textCol = { 0.9, 0.9, 0, 1 };
+
+		icon = 'B';
+		break;
+	case Pending:
+		text = "Pending";
+		textCol = { 0.8, 0.8, 0.8, 0.8 };
+
+		icon = 'A';
+		break;
+	case Skip:
+		text = "Skip";
+		textCol = { 0.9, 0.9, 0.9, 0.6 };
+
+		icon = 'D';
+		break;
+	default:
+		text = "";
+		textCol = { 1,1,1,1 };
+
+		icon = 'A';
+		break;
+	}
+}
+
+const ImVec4 getLogColor(const char& c)
+{
+	switch (c)
+	{
+	case '~': return ImVec4(RGBAColor(248, 248,  49, 255));
+	case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
+	case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
+	case '#': return ImVec4(RGBAColor(  0, 222, 205, 155));
+	case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
+	case '%': return ImVec4(RGBAColor(202,  85, 219, 155));
+	case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
+	case '&': return ImVec4(RGBAColor(255, 255,   0, 255));
+	case '*': return ImVec4(RGBAColor(187, 187, 187, 255));
+	case '-': return ImVec4(RGBAColor(  0, 255,   0, 255));
+	case '+': return ImVec4(RGBAColor( 84, 255, 255, 255));
+	case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
+	case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
+	default: return ImVec4(RGBAColor(230, 230, 230, 255));
+	}
+}
 
 void RenderCompilerUI(int X, int Y)
 {
- 	static xr_vector<xr_string> logMessages =
-	{
-		"[INFO] log",
-		"[WARNING] log",
-	};
+	//static const char* levelName = "LevelTextName";
+	static bool autoScroll = true;
+	static bool hideLogSection = false;
 
 	// Set up the window
-	ImGui::Begin("Split Screen Example", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus); // ImGuiWindowFlags_NoResize |
-	 
-	if (X != 1300 || Y != 800)
-	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1300, 800);
-	}
-
-	static bool EnableLog = true;
+	ImGui::Begin("Compile Split Screen", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
 
 	// Calculate sizes for the top and bottom parts
 	ImVec2 windowSize = ImGui::GetContentRegionAvail();
-	float topHeight = EnableLog ? windowSize.y * 0.7f : windowSize.y - 35;
+	float topHeight = hideLogSection ? windowSize.y - 58.f : windowSize.y * 0.5f;
 
 	// Top section
 	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
@@ -326,45 +374,6 @@ void RenderCompilerUI(int X, int Y)
 	}
 	ImGui::Text("%s", Levels.c_str());
 	ImGui::Separator();
-
-	auto getStatusInfo = [](IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
-		{
-			switch (status)
-			{
-			case Complited:
-				text = "Complited";
-				textCol = { 0, 0.9, 0, 1 };
-
-				icon = 'C';
-				break;
-			case InProgress:
-				text = "In Progress";
-				textCol = { 0.9, 0.9, 0, 1 };
-
-				icon = 'B';
-				break;
-			case Pending:
-				text = "Pending";
-				textCol = { 0.8, 0.8, 0.8, 0.8 };	
-
-				icon = 'A';
-				break;
-			case Skip:
-				text = "Skip";
-				textCol = { 0.9, 0.9, 0.9, 0.6 };
-
-				icon = 'D';
-				break;
-			default:
-				text = "";
-				textCol = { 1,1,1,1 };
-
-				icon = ' ';
-				break;
-			}
-		};
-
-	static bool autoScroll = true;
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
@@ -396,13 +405,12 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::TableNextRow();
 
 			// Status icon
-			if (rowIcon != ' ') 
-			{
-				ImGui::TableSetColumnIndex(0);
-				ImGui::PushFont(gCompilerMode.CompilerIconsFont);
-				ImGui::TextColored(rowStatusColor, "%c", rowIcon);
-				ImGui::PopFont();
-			}
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::PushFont(gCompilerMode.CompilerIconsFont);
+			ImGui::TextColored(rowStatusColor, "%c", rowIcon);
+			ImGui::PopFont();
+
 			// TASK
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text("%s", row.iterationName.c_str());
@@ -492,39 +500,50 @@ void RenderCompilerUI(int X, int Y)
 	 
 
 	ImGui::Separator();
-	 
-	if (EnableLog)
-	{
-		// Bottom section (log)
-		if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - 35), true))
-		{
-			ImGuiListClipper clipper;
-
-			xrCriticalSectionGuard LogGuard(&csLog);
-
-			clipper.Begin(GetLogVector().size());
-
-			while (clipper.Step())
-			{
-				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
-				{
-					ImGui::TextWrapped("%s", GetLogVector()[i].c_str());
-				}
-			}
-
-			if (autoScroll)
-				ImGui::SetScrollY(ImGui::GetScrollMaxY());
-
-			ImGui::EndChild();
-		}
-	}
-	
-	if (ImGui::Button(EnableLog ? "Disable Log" : "Enable Log"))
-	{
-		EnableLog = !EnableLog;
-	}
+	ImGui::Text("Log");
 
 	ImGui::SameLine();
+
+	const char* buttonText = (hideLogSection) ? "+" : "-";
+	ImVec2 textSize = ImGui::CalcTextSize(buttonText);
+
+	ImVec2 buttonSize = ImVec2(textSize.x + ImGui::GetStyle().FramePadding.x * 2,
+		textSize.y + ImGui::GetStyle().FramePadding.y * 2);
+
+	auto ZSize = ImGui::GetContentRegionAvail();
+
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ZSize.x - buttonSize.x);
+
+	if (ImGui::Button(buttonText))
+		hideLogSection = !hideLogSection;
+
+	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - 
+		topHeight - (buttonSize.y * 2)-30), true))
+	{
+		ImGuiListClipper clipper;
+
+		xrCriticalSectionGuard LogGuard(&csLog);
+
+		clipper.Begin(GetLogVector().size());
+
+		while (clipper.Step())
+		{
+			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+			{
+				auto& line = GetLogVector()[i];
+				char cLine = (line.size() > 0 ? line[0] : ' ');
+				ImGui::TextColored(getLogColor(cLine), "%s", line.c_str());
+			}
+		}
+
+
+		if (autoScroll)
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+		ImGui::EndChild();
+	}
+
+	ImGui::Separator();
 
 	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
 	{
