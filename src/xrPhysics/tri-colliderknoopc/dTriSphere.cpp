@@ -4,7 +4,7 @@
 #include "dTriSphere.h"
 #include "dcTriListCollider.h"
 #include "../PHWorld.h"
-#include "../../xrCDB/xr_area.h"
+#include "../../xrCore/Collision/xr_area.h"
 ////////////////////////////////////////////////////////////////////////////
 IC dReal dcTriListCollider::PointSphereTest(const dReal* center, const dReal radius,
 							 const dReal* pt,dReal* norm)

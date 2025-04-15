@@ -4,7 +4,7 @@
 // Update : 20.04.2020 - Support for Hybrid Trees System 
 //////////////////////////////////////////////////////////
 #pragma once
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Tree.h"
 
 class CDB_Model : public Opcode::Model

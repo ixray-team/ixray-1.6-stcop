@@ -15,7 +15,7 @@
 #include "console_vars.h"
 #include "../xrEngine/device.h"
 #include "../xrEngine/defines.h"
-#include "../xrCDB/xr_area.h"
+#include "../xrCore/Collision/xr_area.h"
 #include "../xrCore/FS_internal.h"
 
 #ifdef DEBUG_DRAW
