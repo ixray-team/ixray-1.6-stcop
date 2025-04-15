@@ -321,17 +321,9 @@ public:
 	}
 };
 
-class CCC_ModelPoolStat : public IConsole_Command
-{
-public:
-	CCC_ModelPoolStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
-		RImplementation.Models->dump();
-	}
-};
-
 //-----------------------------------------------------------------------
-class	CCC_Preset		: public CCC_Token
+class CCC_Preset :
+	public CCC_Token
 {
 public:
 	CCC_Preset(LPCSTR N, u32* V, xr_token* T) : CCC_Token(N,V,T)	{}	;
@@ -572,8 +564,8 @@ class CCC_DumpResources : public IConsole_Command
 {
 public:
 	CCC_DumpResources(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) {
-		RImplementation.Models->dump();
+	virtual void Execute(LPCSTR args) 
+	{
 		dxRenderDeviceRender::Instance().Resources->Dump(false);
 	}
 };
@@ -792,7 +784,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
 	CMD4(CCC_Float, "r__wallmark_shift_pp", &ps_r__WallmarkSHIFT, 0.0f, 1.f);
 	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
-	CMD1(CCC_ModelPoolStat, "stat_models");
 
 #ifdef USE_DX11
 	CMD1(CCC_RenderDocCaptureStart, "rdoc_start");
