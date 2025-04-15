@@ -7,7 +7,9 @@ UIImageEditorForm::UIImageEditorForm()
 {
 	m_ItemProps = new UIPropertiesForm();
 	m_ItemList = new UIItemListForm();
-	m_ItemList->SetOnItemFocusedEvent(TOnILItemFocused(this,&UIImageEditorForm::OnItemsFocused));
+	m_ItemList->m_Flags.set(UIItemListForm::fMultiSelect, true);
+
+	m_ItemList->SetOnItemsFocusedEvent(TOnILItemsFocused(this,&UIImageEditorForm::OnItemsFocused));
 	m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
 	m_Texture = nullptr;
 	m_bFilterImage = true;
@@ -272,10 +274,10 @@ void UIImageEditorForm::UpdateProperties()
 	ListItemsVec vec;
 	m_ItemList->GetSelected(nullptr, vec, false);
 
-	if (vec.size() == 1)
+	//if (vec.size() == 1)
 	{
 		m_ItemProps->ClearProperties();
-		OnItemsFocused(vec[0]);
+		OnItemsFocused(vec);
 	}
 }
 
@@ -375,7 +377,7 @@ void UIImageEditorForm::UpdateSelected()
 	UpdateLib();
 }
 
-void UIImageEditorForm::OnItemsFocused(ListItem* item)
+void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 {
 	PropItemVec props;
 
@@ -384,11 +386,11 @@ void UIImageEditorForm::OnItemsFocused(ListItem* item)
 	m_TextureRemove = m_Texture;
 	m_Texture = nullptr;
 
-	if (ListItem* prop = item)
+	m_ItemProps->ClearProperties();
+	for (ListItem* prop : item)
 	{
 		ETextureThumbnail* thm = FindUsedTHM(prop->Key());
 		m_THM_Current.push_back(thm);
-		m_ItemProps->ClearProperties();
 
 		// fill prop
 		thm->FillProp(props, PropValue::TOnChange(this, &UIImageEditorForm::OnTypeChange));
