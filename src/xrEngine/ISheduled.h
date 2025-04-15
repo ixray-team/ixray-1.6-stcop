@@ -1,7 +1,6 @@
-#ifndef XRENGINE_ISHEDULED_H_INCLUDED
-#define XRENGINE_ISHEDULED_H_INCLUDED
+#pragma once
 
-class	ENGINE_API	ISheduled
+class ENGINE_API ISheduled
 {
 public:
 	struct {
@@ -28,5 +27,3 @@ public:
 	virtual bool						shedule_Needed		()			= 0;
 
 };
-
-#endif // #ifndef XRENGINE_ISHEDULED_H_INCLUDED

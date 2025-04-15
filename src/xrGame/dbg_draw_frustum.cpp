@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Level.h"
-#include "../xrCDB/Frustum.h"
+#include "../xrCore/Collision/Frustum.h"
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"

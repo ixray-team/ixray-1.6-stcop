@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
-#include "../../xrEngine/cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "SkeletonCustom.h"
 #include "SkeletonXVertRender.h"
 #include "FVisual.h"
