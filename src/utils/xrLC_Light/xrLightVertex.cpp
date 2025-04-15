@@ -9,12 +9,9 @@
 //-----------------------------------------------------------------------
 typedef	xr_multimap<float,vecVertex>	mapVert;
 typedef	mapVert::iterator				mapVertIt;
-mapVert*								g_trans;
-xrCriticalSection						g_trans_CS
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(g_trans_CS))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+mapVert* g_trans;
+xrCriticalSection g_trans_CS;
+
 extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
  
 void	g_trans_register_internal		(Vertex* V)
@@ -67,9 +64,6 @@ class CVertexLightTasker
 	volatile u32		index;	
 public:
 	CVertexLightTasker	() : index(0)
-#ifdef PROFILE_CRITICAL_SECTIONS
-		,cs(MUTEX_PROFILE_ID(CVertexLightTasker))
-#endif // PROFILE_CRITICAL_SECTIONS
 	{};
 	
 	void	init		()

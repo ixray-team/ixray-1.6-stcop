@@ -29,9 +29,6 @@ void steam_net_update_client(void* P)
 
 SteamNetClient::SteamNetClient(CTimer* tm)
 	: BaseClient(tm)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	, csConnection(MUTEX_PROFILE_ID(SteamNetClient::csConnection))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 }
 
