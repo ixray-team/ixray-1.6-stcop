@@ -131,7 +131,9 @@ enum ESMFlags{
 #if defined(_EDITOR) || defined(_MAX_EXPORT) || defined(_MAYA_EXPORT)
 	#include "SkeletonMotions.h"
 
-class ECORE_API CSMotion: public CCustomMotion{
+class ECORE_API CSMotion: 
+	public CCustomMotion
+{
 	BoneMotionVec	bone_mots;
 public:
     u16			           	        m_BoneOrPart;
@@ -142,6 +144,7 @@ public:
 	Flags8		           	        m_Flags;
 
 	xr_vector<motion_marks>			marks;
+	xr_hash_map<float, anim_notify> notify;
 
     void			Clear			();
 public:

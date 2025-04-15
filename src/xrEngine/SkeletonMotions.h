@@ -91,6 +91,13 @@ public:
 	}
 };
 
+struct ENGINE_API anim_notify
+{
+	shared_str GiveInfo;
+	shared_str DisableInfo;
+	shared_str Functor;
+};
+
 class ENGINE_API motion_marks
 {
 public:
