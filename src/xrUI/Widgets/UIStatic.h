@@ -75,6 +75,7 @@ public:
 	virtual bool			InitTexture				(LPCSTR tex_name, bool fatal = true);
 	virtual bool			InitTextureEx			(LPCSTR tex_name, LPCSTR sh_name="hud\\default", bool fatal = true);
 	CUIStaticItem*			GetStaticItem			()							{return &m_UIStaticItem;}
+	void ResetOriginalRect() { m_UIStaticItem.ResetOriginalRect(); }
 			void			SetTextureRect_script	(Frect* pr)					{m_UIStaticItem.SetTextureRect(*pr);}
 	const	Frect*			GetTextureRect_script	()							{return &m_UIStaticItem.GetTextureRect();}
 
