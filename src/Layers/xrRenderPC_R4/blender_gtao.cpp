@@ -47,7 +47,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_dx10Texture("sky_s1", r2_T_sky1);
         C.r_dx10Texture("env_s0", r2_T_envs0);
         C.r_dx10Texture("env_s1", r2_T_envs1);
-
+		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
         C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");
