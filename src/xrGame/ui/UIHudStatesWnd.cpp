@@ -11,7 +11,7 @@
 #include "../ActorHelmet.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "../Grenade.h"
-
+#include "../../xrUI/UITextureMaster.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
@@ -46,11 +46,13 @@ CUIHudStatesWnd::CUIHudStatesWnd()
 
 	m_zone_feel_radius_max = 0.0f;
 	
-	m_health_blink = pSettings->r_float( "actor_condition", "hud_health_blink" );
+	m_health_blink = READ_IF_EXISTS(pSettings, r_float, "actor_condition", "hud_health_blink", 0.f);
 	clamp( m_health_blink, 0.0f, 1.0f );
 
 	m_fake_indicators_update = false;
-//-	Load_section();
+	m_arrow = nullptr;
+	m_arrow_shadow = nullptr;
+	//-	Load_section();
 }
 
 CUIHudStatesWnd::~CUIHudStatesWnd()
@@ -103,24 +105,36 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", this );
 	m_ui_stamina_bar  = UIHelper::CreateProgressBar( xml, "progress_bar_stamina", this );
 
-//	m_back_v          = UIHelper::CreateStatic( xml, "back_v", this );
+	if (xml.NavigateToNode("back_v", 0))
+	{
+		m_back_v = UIHelper::CreateStatic(xml, "back_v", this);
+	}
 	if (xml.NavigateToNode("static_armor", 0))
 	{
 		m_static_armor = UIHelper::CreateStatic(xml, "static_armor", this);
 	}
-/*
-	m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
-	m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
-	m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
-	m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
-	// electra = no has CStatic!!
-*/
-	m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", this );
-	m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", this );
-	m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
-	m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
 
-//	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
+
+	if (xml.NavigateToNode("resist_back_rad", 0))
+		m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
+	if (xml.NavigateToNode("resist_back_fire", 0))
+		m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
+	if (xml.NavigateToNode("resist_back_acid", 0))
+		m_resist_back[ALife::infl_acid] = UIHelper::CreateStatic( xml, "resist_back_acid", this );
+	if (xml.NavigateToNode("resist_back_psi", 0))
+		m_resist_back[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "resist_back_psi", this );
+	// electra = no has CStatic!!
+
+	if (xml.NavigateToNode("indik_rad", 0))
+		m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", this );
+	if (xml.NavigateToNode("indik_fire", 0))
+		m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", this );
+	if (xml.NavigateToNode("indik_acid", 0))
+		m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
+	if (xml.NavigateToNode("indik_psi", 0))
+		m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
+
+	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
 	if (xml.NavigateToNode("static_ammo", 0))
 	{
 		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", this);
@@ -155,44 +169,41 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", this);
 	}
 
-//	m_progress_self = new CUIProgressShape();
-//	m_progress_self->SetAutoDelete(true);
-//	AttachChild( m_progress_self );
-//	CUIXmlInit::InitProgressShape( xml, "progress", 0, m_progress_self );
+	if (xml.NavigateToNode("progress", 0))
+	{
+		m_progress_self = new CUIProgressShape();
+		m_progress_self->SetAutoDelete(true);
+		AttachChild(m_progress_self);
+		CUIXmlInit::InitProgressShape(xml, "progress", 0, m_progress_self);
+	}
 
-//	m_arrow				= new UI_Arrow();
-//	m_arrow_shadow		= new UI_Arrow();
+	if (xml.NavigateToNode("arrow", 0))
+	{
+		m_arrow = new UI_Arrow();
+		m_arrow->init_from_xml(xml, "arrow", this);
+	}
 
-//	m_arrow->init_from_xml( xml, "arrow", this );
-//	m_arrow_shadow->init_from_xml( xml, "arrow_shadow", this );
+	if (xml.NavigateToNode("arrow_shadow", 0))
+	{
+		m_arrow_shadow = new UI_Arrow();
+		m_arrow_shadow->init_from_xml(xml, "arrow_shadow", this);
+	}
 
-//	m_back_over_arrow = UIHelper::CreateStatic( xml, "back_over_arrow", this );
+	if (xml.NavigateToNode("back_over_arrow", 0))
+	{
+		m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this);
+	}
 
-/*
-	m_bleeding_lev1 = UIHelper::CreateStatic( xml, "bleeding_level_1", this );
-	m_bleeding_lev1->Show( false );
-
-	m_bleeding_lev2 = UIHelper::CreateStatic( xml, "bleeding_level_2", this );
-	m_bleeding_lev2->Show( false );
-
-	m_bleeding_lev3 = UIHelper::CreateStatic( xml, "bleeding_level_3", this );
-	m_bleeding_lev3->Show( false );
-
-	m_radiation_lev1 = UIHelper::CreateStatic( xml, "radiation_level_1", this );
-	m_radiation_lev1->Show( false );
-
-	m_radiation_lev2 = UIHelper::CreateStatic( xml, "radiation_level_2", this );
-	m_radiation_lev2->Show( false );
-
-	m_radiation_lev3 = UIHelper::CreateStatic( xml, "radiation_level_3", this );
-	m_radiation_lev3->Show( false );
-
-	for ( int i = 0; i < it_max; ++i )
+	if (xml.NavigateToNode("bleeding", 0))
+	{
+		m_bleeding = UIHelper::CreateStatic(xml, "bleeding", this);
+		m_bleeding->Show(false);
+	}
+	for (int i = 0; i < it_max; ++i)
 	{
 		m_cur_state_LA[i] = true;
-		SwitchLA( false, (ALife::EInfluenceType)i );
+		SwitchLA(false, static_cast<ALife::EInfluenceType>(i));
 	}
-*/	
 	xml.SetLocalRoot( stored_root );
 }
 
@@ -270,6 +281,17 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 		m_static_armor->Show(false);
 		m_ui_armor_bar->Show(false);
 	}
+
+	if (actor->conditions().BleedingSpeed() > 0.01f && m_bleeding)
+	{
+		m_bleeding->Show(true);
+	}
+	else if (m_bleeding)
+	{
+		m_bleeding->Show(false);
+	}
+	if (m_progress_self)
+		m_progress_self->SetPos(m_radia_self);
 }
 
 void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
@@ -481,8 +503,10 @@ void CUIHudStatesWnd::UpdateZones()
 		Msg(" self = %.2f   hit = %.2f", m_radia_self, m_radia_hit );
 	}*/
 
-//	m_arrow->SetNewValue( m_radia_hit );
-//	m_arrow_shadow->SetPos( m_arrow->GetPos() );
+	if (m_arrow)
+		m_arrow->SetNewValue( m_radia_hit );
+	if (m_arrow_shadow)
+		m_arrow_shadow->SetPos( m_arrow->GetPos() );
 /*
 	power = actor->conditions().GetPsy();
 	clamp( power, 0.0f, 1.1f );
@@ -600,14 +624,14 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 		return;
 	}
 
-/*	
-	u32 c_white  = color_rgba( 255, 255, 255, 255 );
-	u32 c_green  = color_rgba( 0, 255, 0, 255 );
-	u32 c_yellow = color_rgba( 255, 255, 0, 255 );
-	u32 c_red    = color_rgba( 255, 0, 0, 255 );
-*/
+
+	constexpr u32 c_white  = color_rgba( 255, 255, 255, 255 );
+	constexpr u32 c_green  = color_rgba( 0, 255, 0, 255 );
+	constexpr u32 c_yellow = color_rgba( 255, 255, 0, 255 );
+	constexpr u32 c_red    = color_rgba( 255, 0, 0, 255 );
+
 	LPCSTR texture = "";
-	string128 str;
+	string256 str;
 	switch(type)
 	{
 		case ALife::infl_rad: texture = "ui_inGame2_triangle_Radiation_"; break;
@@ -648,46 +672,72 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 
 //	float max_power = actor->conditions().GetZoneMaxPower( hit_type );
 //	protect = protect / max_power; // = 0..1
+	m_indik[type]->Show(true);
 
-	if ( hit_power < EPS )
-	{
-		m_indik[type]->Show(false);
-//		m_indik[type]->SetTextureColor( c_white );
-//		SwitchLA( false, type );
-		actor->conditions().SetZoneDanger( 0.0f, type );
-		return;
-	}
+    if (hit_power < EPS)
+    {
+        string256 greenTexture;
+        // If we have green texture and white is missing
+        // Assume it's CoP and use it's standard scheme
+        xr_sprintf(greenTexture, sizeof(greenTexture), "%s%s", texture, "green");
+
+        SwitchLA(false, type);
+        xr_sprintf(str, sizeof(str), "%s%s", texture, "white");
+        texture = str;
+
+        if (CUITextureMaster::ItemExist(texture))
+            m_indik[type]->InitTexture(texture);
+        else if (CUITextureMaster::ItemExist(greenTexture))
+            m_indik[type]->Show(false); // Use standard CoP scheme
+        else
+            m_indik[type]->SetTextureColor(c_white);
+
+        actor->conditions().SetZoneDanger(0.0f, type);
+        return;
+    }
 
 	m_indik[type]->Show(true);
 	if ( hit_power <= protect )
 	{
-//		m_indik[type]->SetTextureColor( c_green );
-//		SwitchLA( false, type );
+		SwitchLA( false, type );
 		xr_sprintf(str, sizeof(str), "%s%s", texture, "green");
 		texture = str;
-		m_indik[type]->InitTexture(texture);
+
+		if (CUITextureMaster::ItemExist(texture))
+			m_indik[type]->InitTexture(texture);
+		else
+			m_indik[type]->SetTextureColor(c_green);
+
 		actor->conditions().SetZoneDanger( 0.0f, type );
 		return;
 	}
 	if ( hit_power - protect < m_zone_threshold[type] )
 	{
-//		m_indik[type]->SetTextureColor( c_yellow );
-//		SwitchLA( false, type );
+		SwitchLA( false, type );
 		xr_sprintf(str, sizeof(str), "%s%s", texture, "yellow");
 		texture = str;
-		m_indik[type]->InitTexture(texture);
+
+		if (CUITextureMaster::ItemExist(texture))
+			m_indik[type]->InitTexture(texture);
+		else
+			m_indik[type]->SetTextureColor(c_yellow);
+
 		actor->conditions().SetZoneDanger( 0.0f, type );
 		return;
 	}
-//	m_indik[type]->SetTextureColor( c_red );
-//	SwitchLA( true, type );
+	SwitchLA( true, type );
 	xr_sprintf(str, sizeof(str), "%s%s", texture, "red");
 	texture = str;
-	m_indik[type]->InitTexture(texture);
+
+	if (CUITextureMaster::ItemExist(texture))
+		m_indik[type]->InitTexture(texture);
+	else
+		m_indik[type]->SetTextureColor(c_red);
+
 	VERIFY(actor->conditions().GetZoneMaxPower(hit_type));
 	actor->conditions().SetZoneDanger((hit_power-protect)/actor->conditions().GetZoneMaxPower(hit_type), type);
 }
-/*
+
 void CUIHudStatesWnd::SwitchLA( bool state, ALife::EInfluenceType type )
 {
 	if ( state == m_cur_state_LA[type] )
@@ -706,7 +756,7 @@ void CUIHudStatesWnd::SwitchLA( bool state, ALife::EInfluenceType type )
 		m_cur_state_LA[type] = false;
 	}
 }
-*/
+
 float CUIHudStatesWnd::get_zone_cur_power( ALife::EHitType hit_type )
 {
 	ALife::EInfluenceType iz_type = get_indik_type( hit_type );
