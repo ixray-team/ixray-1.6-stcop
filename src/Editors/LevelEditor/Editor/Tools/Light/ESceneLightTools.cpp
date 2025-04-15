@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+extern ECORE_API bool bIsShowSun;
+extern ECORE_API bool bIsUseSunDir;
+extern ECORE_API bool bIsUseHemi;
+
 ESceneLightTool::ESceneLightTool():ESceneCustomOTool(OBJCLASS_LIGHT)
 {
 	Clear				();
@@ -83,10 +87,11 @@ void  ESceneLightTool::OnRender(int priority, bool strictB2F)
 			RCache.set_xform_world(Fidentity);
 			Fvector dir;
 
-			if (EngineExternal()[EEngineExternalEnvironment::ReadSunConfig])
-				dir = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
-			else
-				dir.setHP(m_SunShadowDir.y, m_SunShadowDir.x);
+            // if (EngineExternal()[EEngineExternalEnvironment::ReadSunConfig])
+            if (m_Flags.is(flWthrSunDir))
+                dir = g_pGamePersistent->Environment().CurrentEnv->sun_dir;
+            else
+                dir.setHP(m_SunShadowDir.y, m_SunShadowDir.x);
 
 			Fvector p;
 			float fd = UI->ZFar() * 0.95f;
@@ -106,7 +111,7 @@ void ESceneLightTool::OnControlAppendClick(ButtonValue* sender, bool& bDataModif
 
 void ESceneLightTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataModified, bool& bSafe)
 {
-	R_ASSERT(!"�������� �� �����������");
+    R_ASSERT(!"Сорян забыл релизовать(Red panda)");
   /*  xr_string item_name = V->Owner()->Item()->Text;
 	switch (V->btn_num){
 	case 0:{ 
@@ -129,14 +134,22 @@ void ESceneLightTool::OnControlRenameRemoveClick(ButtonValue* V, bool& bDataModi
 }
 void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
 {
-	ButtonValue*	B 	= 0;
-	// hemisphere
-//.	PHelper().CreateRToken32(items, PrepareKey(pref,"Common\\Hemisphere\\Light Control"),	&m_HemiControl, 	&*lcontrols.begin(), lcontrols.size());
+    ButtonValue *B = 0;
+    PropValue* V = 0;
+    // hemisphere
+    PHelper().CreateRToken32(items, PrepareKey(pref, "Common\\Hemisphere\\Light Control"), &m_HemiControl, &*lcontrols.begin(), lcontrols.size());
 	
 	// sun
-	PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Sun Shadow\\Visible"),			&m_Flags,			flShowSun);
-	PHelper().CreateAngle	(items,	PrepareKey(pref,"Common\\Sun Shadow\\Altitude"),			&m_SunShadowDir.x,	-PI_DIV_2,0);
-	PHelper().CreateAngle	(items,	PrepareKey(pref,"Common\\Sun Shadow\\Longitude"),		&m_SunShadowDir.y,	0,PI_MUL_2);
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Visible"), &m_Flags, flShowSun);
+    V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
+
+    PHelper().CreateAngle(items, PrepareKey(pref, "Common\\Sun Shadow\\Altitude"), &m_SunShadowDir.x, -PI_DIV_2, 0);
+    PHelper().CreateAngle(items, PrepareKey(pref, "Common\\Sun Shadow\\Longitude"), &m_SunShadowDir.y, 0, PI_MUL_2);
+    // weather simulation
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Weather Simulation\\Use Sun Dir"), &m_Flags, flWthrSunDir);
+    V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Weather Simulation\\Use Hemi"), &m_Flags, flWthrHemi);
+    V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 	// light controls
 	PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Controls\\Draw Name"),			&m_Flags,			flShowControlName);
 	PHelper().CreateCaption	(items,PrepareKey(pref,"Common\\Controls\\Count"),				shared_str().printf("%d",lcontrols.size()));
@@ -153,6 +166,24 @@ void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
 		}
 	}                              
 	inherited::FillProp(pref, items);
+}
+
+void ESceneLightTool::OnLightSunChanged(PropValue* sender)
+{
+    if (m_Flags.is(flShowSun))
+        bIsShowSun = true;
+    else
+        bIsShowSun = false;
+    // --------------------------------------------------
+    if (m_Flags.is(flWthrSunDir))
+        bIsUseSunDir = true;
+    else
+        bIsUseSunDir = false;
+    // --------------------------------------------------
+    if (m_Flags.is(flWthrHemi))
+        bIsUseHemi = true;
+    else
+        bIsUseHemi = false;
 }
 
 xr_string ESceneLightTool::GenLightControlName()
