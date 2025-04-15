@@ -9,9 +9,6 @@
 #include "../xrCore/FTimer.h"
 #include "Stats.h"
 
-#define VIEWPORT_NEAR  0.2f
-#define HUD_VIEWPORT_NEAR  0.01f
-
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
 #include "../Include/xrRender/FactoryPtr.h"
@@ -117,6 +114,8 @@ public:
 
 	float									fFOV;
 	float									fASPECT;
+	float									fViewportNear = 0.2f;
+	float									fHUDViewportNear = 0.01f;
 protected:
 
 	u32										Timer_MM_Delta;
