@@ -244,11 +244,13 @@ void CBuild::Run	(LPCSTR P)
 
 	RunAfterLight				( fs );
 }
+
 void	CBuild::StartMu	()
 {
   //mu_base.start				(new CMUThread (0));
   run_mu_light(  );
 }
+
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
  	//****************************************** Merge geometry
@@ -320,6 +322,9 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	SaveSectors		(*fs);
 
 	err_save		();
+
+	// Закрываем запись (а то бывает косяк что процесс закончился но файл не закрыло) 
+	FS.w_close(fs);
 }
 
 void CBuild::err_save	()
