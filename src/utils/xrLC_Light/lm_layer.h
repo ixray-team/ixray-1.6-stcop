@@ -2,10 +2,8 @@
 
 #include "base_color.h"
 
-#ifndef BORDER
-#define BORDER 1
-#endif
-
+#define BORDER 4
+ 
 
 struct XRLC_LIGHT_API  lm_layer
 {
