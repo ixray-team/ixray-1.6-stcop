@@ -487,6 +487,7 @@ void CAI_Stalker::Die				(CObject* who)
 	if (!weapon)
 		return;
 
+	if (OnServer())
 	{
 		TIItemContainer::iterator	I = inventory().m_all.begin();
 		TIItemContainer::iterator	E = inventory().m_all.end();
