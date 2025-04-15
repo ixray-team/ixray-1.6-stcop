@@ -130,8 +130,8 @@ function delete_save_game(filename)
     f:file_delete("$game_saves$", save_file)
     
     -- START IX-Ray
-	if (file_exist(filename..scop_marshal)) then
-		f:file_delete("$game_saves$",filename..scop_marshal)
+	if (file_exist(filename..saved_game_extension_ex)) then
+		f:file_delete("$game_saves$",filename..saved_game_extension_ex)
 	end
 	-- END IX-Ray
 	
