@@ -161,15 +161,9 @@ void CUICellItem::UpdateCustomMarksAndText() {
 			m_custom_text->SetWndPos(pos);
 			m_custom_text->TextItemControl()->SetTextST(*item->m_custom_text);
 
-			if (item->m_custom_text_clr_inv != 0) {
-				//CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-				//if (pGameSP && pGameSP->ActorMenu().IsShown())// Hrust: used for pick_up_item on CUICellItem class
-				{
-					m_custom_text->TextItemControl()->SetTextColor(item->m_custom_text_clr_inv);
-				}
-				/*else {
-					m_custom_text->SetTextColor(item->m_custom_text_clr_hud);
-				}*/
+			if (item->m_custom_text_clr_inv != 0) 
+			{
+				m_custom_text->TextItemControl()->SetTextColor(item->m_custom_text_clr_inv);
 			}
 			if (item->m_custom_text_font != nullptr) {
 				m_custom_text->TextItemControl()->SetFont(item->m_custom_text_font);
