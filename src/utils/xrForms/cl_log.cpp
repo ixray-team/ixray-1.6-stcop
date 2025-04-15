@@ -149,6 +149,7 @@ void logThread(void* dummy)
 
 	string128 cmd;
 	Startup(cmd);
+	xrLogger::RemoveLogCallback(MyLogCallback);
 }
 
 void clLog(LPCSTR msg) {
