@@ -75,9 +75,38 @@ public:
 };
 
 extern CMapListHelper	gMapListHelper;
+
+
 class CUITalkWnd;
 class CInventoryOwner;
 class CInventoryBox;
+class CUIMessageBox;
+#include "../../xrUI/Widgets/UIDialogWnd.h"
+
+class CChangeLevelWnd :	public CUIDialogWnd
+{
+	CUIMessageBox* m_messageBox;
+	typedef CUIDialogWnd	inherited;
+	void					OnCancel();
+	void					OnOk();
+public:
+	GameGraph::_GRAPH_ID	m_game_vertex_id;
+	u32						m_level_vertex_id;
+	Fvector					m_position;
+	Fvector					m_angles;
+	Fvector					m_position_cancel;
+	Fvector					m_angles_cancel;
+	bool					m_b_position_cancel;
+	bool					m_b_allow_change_level;
+	shared_str				m_message_str;
+
+	CChangeLevelWnd();
+	virtual				~CChangeLevelWnd() {};
+	virtual void		SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
+	virtual bool		WorkInPause()const { return true; }
+	virtual void		Show(bool status);
+	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
+};
 
 class CUIGameCustom :
 	public IGame_CustomUI, 
@@ -157,6 +186,13 @@ public:
 	void				UpdatePda				();
 	void				update_fake_indicators	(u8 type, float power);
 	void				enable_fake_indicators	(bool enable);
+
+
+	// Change Level
+public:
+	CChangeLevelWnd* UIChangeLevelWnd;
+	void				ChangeLevel	(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b, const shared_str& message, bool b_allow_change_level);
+
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIGameCustom
