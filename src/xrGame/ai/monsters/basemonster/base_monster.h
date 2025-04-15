@@ -122,6 +122,9 @@ public:
 	virtual void			net_Import						(NET_Packet& P);
 	virtual void			net_Relcase						(CObject *O);
 
+	virtual void			SyncRead(NET_Packet& Packet) override;
+	virtual void			SyncWrite(NET_Packet& Packet) override;
+
 	virtual void			net_Export_Sounds(NET_Packet& P);
 	virtual void			net_Import_Sounds(NET_Packet& P);
 
