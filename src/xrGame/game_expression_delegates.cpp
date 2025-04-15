@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "../xrCore/XmlParser/Expression.h"
+#include "../xrCore/FormatParsers/XML/Expression.h"
 #include "Actor.h"
 #include "CustomOutfit.h"
 #include "EntityCondition.h"

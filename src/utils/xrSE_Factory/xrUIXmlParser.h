@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../../xrCore/XmlParser/xrXMLParser.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
-class CUIXml :public CXml
+class CUIXml :
+	public CXml
 {
-	int						m_dbg_id;
+	int m_dbg_id;
 public:
-			CUIXml			();
-	virtual	~CUIXml			();
+	CUIXml();
+	virtual	~CUIXml();
 
-	virtual shared_str correct_file_name	(LPCSTR path, LPCSTR fn);
+	virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn);
 };

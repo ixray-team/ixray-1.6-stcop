@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "string_table.h"
 #include "xr_level_controller.h"
+#include "../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 ENGINE_API CStringTable* g_pStringTable = nullptr;
 
@@ -60,7 +61,6 @@ void CStringTable::Init		()
 	ReparseKeyBindings();
 }
 
-#include "../xrCore/XmlParser/xrXMLParser.h"
 void CStringTable::Load	(LPCSTR xml_file_full)
 {
 	CXml						uiXml;
