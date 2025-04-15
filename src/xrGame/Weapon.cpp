@@ -1008,6 +1008,9 @@ void CWeapon::UpdateCL		()
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
 
+	if (!IsZoomed() && m_bIsAimStarted)
+		m_bIsAimStarted = false;
+
 	if (ParentIsActor())
 	{
 		if (GetNightVision() && !GetNightVision()->IsActive() && !need_renderable())
