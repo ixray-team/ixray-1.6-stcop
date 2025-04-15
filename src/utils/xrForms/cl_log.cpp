@@ -62,7 +62,8 @@ void StatusNoMsg(const char* format, ...)
  	csLog.Leave();
 }
 
-void Progress(const float F) {
+void Progress(const float F)
+{
 	progress = F;
 
 	if (ActiveIteration->phases.size() > 0)
@@ -96,14 +97,21 @@ void SetActiveIteration(IterationData* i)
 	 ActiveIteration = i;
 }
 
-void Phase(const char* phase_name) {
+void Phase(const char* phase_name) 
+{
 	csLog.Enter();
 
 	phase_total_time = timeGetTime() - phase_start_time;
 
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
+	{
+		size_t  w_free, w_reserved, w_committed;
+		vminfo(&w_free, &w_reserved, &w_committed);
+
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+	}
 
 	ActiveIteration->phases.push_back({ phase_name });
 
@@ -143,7 +151,9 @@ void __cdecl clMsg(const char* format, ...) {
 	clLog(_out_);
 }
 
-class client_log_impl : public i_lc_log {
+class client_log_impl : public i_lc_log
+{
+	
 	virtual void clMsg(LPCSTR msg) override { ::clMsg(msg); }
 	virtual void clLog(LPCSTR msg) override { ::clLog(msg); }
 	virtual void Status(LPCSTR msg) override { ::Status(msg); }
