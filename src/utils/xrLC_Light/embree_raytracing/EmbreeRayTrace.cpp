@@ -25,7 +25,7 @@ int LastGeometryIDTransp = RTC_INVALID_GEOMETRY_ID;
 RTCSceneFlags scene_flags = RTC_SCENE_FLAG_ROBUST;
 RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
 
-RTCDevice device;
+RTCDevice device	= 0;
 RTCScene IntelScene = 0;
 
 RTCGeometry IntelGeometryNormal = 0;
@@ -107,7 +107,7 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 // Вообще рекомендовано для пересечния с прозрачностями 4-8
 // Если непрозрачные 1
 // LMAP стадия вроде быстрее если чисто искать Opacue (Внутри помещений вроде делает расщет)
-extern XRLC_LIGHT_API int StageMAXHits = 16;
+extern XRLC_LIGHT_API int StageMAXHits = 64;
 
 ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
@@ -155,9 +155,9 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	/// Непрозрачные чекаем
 
 	// se7kills : 27.01.2025 0.001 -> 0.1
-	// Чуть селнее сдвинул near
+	// Чуть сильнее сдвинул near
 	RTCRay ray;
-	Embree::SetRay1(ray, P, N, 0.1f, range);
+	Embree::SetRay1(ray, P, N, 0.001f, range);
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
@@ -200,9 +200,17 @@ xr_vector<CDB::TRI*> GetTrianglesByType(CDB::TRI* CDB_tris, u32 Size, bool Trans
 	return RETURN;
 }
 
-
-void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Size)
+struct GeomInfo
 {
+	u32 TriangleMemory;
+	u32 VertsMemory;
+	u32 DummyMemory;
+};
+
+GeomInfo InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Size)
+{
+	GeomInfo geomInfoData;
+
 	// Get Buffers By Type Geometry
 	xr_vector<void*>& dummy = isTransp ? TriTransp_Dummys : TriNormal_Dummys;
 
@@ -224,6 +232,9 @@ void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_t
 	vertex_embree = (Embree::VertexEmbree*)rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(Embree::VertexEmbree), TRIS.size() * 3);
 	tri_embree = (Embree::TriEmbree*)rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(Embree::TriEmbree), TRIS.size());
 
+	geomInfoData.TriangleMemory = TRIS.size() * sizeof(Embree::TriEmbree);
+	geomInfoData.VertsMemory    = (TRIS.size() * 3) * sizeof(Embree::VertexEmbree);
+
 	// FIX
 	dummy.clear();
 	dummy.resize(TRIS.size());
@@ -234,6 +245,9 @@ void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_t
 		tri_embree[i].SetVertexes(*TRIS[i], CDB_verts, vertex_embree, VertexIndexer);
 		dummy[i] = convert_nax (TRIS[i]->dummy);
 	}
+
+	geomInfoData.DummyMemory = sizeof(void*) * dummy.size();
+
 	rtcCommitGeometry(RtcGeometry);
 
 	if (isTransp)
@@ -241,13 +255,16 @@ void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_t
 	else
 		LastGeometryID = rtcAttachGeometry(IntelScene, RtcGeometry);
 
-
+	
 
 	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(%s) By ID: %d, Traingles: %u",
 		isTransp ? "Transparent" : "Normal",
 		isTransp ? LastGeometryIDTransp : LastGeometryID,
 		TRIS.size());
 	TRIS.clear();
+
+
+	return geomInfoData;
 }
 
 void RemoveGeoms()
@@ -277,8 +294,19 @@ void RemoveGeoms()
 	}
 }
 
+size_t GetMemory()
+{
+	size_t used, free, reserved;
+	vminfo(&free, &reserved, &used);
+	return used;
+}
+
 void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
 {
+	size_t used, free, reserv;
+	vminfo(&free, &reserv, &used);
+
+	clMsg("Intel Embree Loading| Memory: %u mb", u32(used/1024/1024) );
 	if (IntelScene != nullptr)
 	{
 		RemoveGeoms();
@@ -311,17 +339,44 @@ void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
 		rtcSetSceneFlags(IntelScene, scene_flags);
 	}
 
-	InitializeGeometryAttach(false, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS()); /// GeomID == 0
+	auto GeomNormal = InitializeGeometryAttach(false, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS()); /// GeomID == 0
 #ifdef USE_TRANSPARENT_GEOM
-	InitializeGeometryAttach(true, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS());	/// GeomID == 1
-#endif 
+	auto GeomTransp = InitializeGeometryAttach(true, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS());	/// GeomID == 1
 
-	rtcCommitScene(IntelScene);
+	
+#endif 
+ 
+	size_t prev_used = GetMemory();
+ 	rtcCommitScene(IntelScene);
+ 	size_t mem = GetMemory() - prev_used;
+
+#ifdef USE_TRANSPARENT_GEOM
+	AditionalData("BVH:%u mb|V:%u mb|T:%u mb|D:%u mb", 
+		mem / 1024 / 1024,
+		(GeomNormal.VertsMemory / 1024 / 1024) + (GeomTransp.VertsMemory / 1024 / 1024),
+		(GeomNormal.TriangleMemory / 1024 / 1024) + (GeomTransp.TriangleMemory / 1024 / 1024),
+		(GeomNormal.DummyMemory / 1024 / 1024) + (GeomTransp.DummyMemory / 1024 / 1024) 
+	);
+#else 
+	AditionalData("BVH:%u mb|V:%u mb|T:%u mb|D:%u mb", 
+		mem / 1024 / 1024,
+		GeomNormal.VertsMemory / 1024 / 1024,
+		GeomNormal.TriangleMemory / 1024 / 1024,
+		GeomNormal.DummyMemory / 1024 / 1024
+	);
+#endif 
 }
 
 void IntelEmbereUNLOAD()
 {
+	size_t used, reserv, free;
+	vminfo(&free, &reserv, &used);
+
+ 	clMsg("Intel Embree Releasing| Memory: %u mb", u32(used / 1024 / 1024));
+
 	RemoveGeoms();
 	rtcReleaseScene(IntelScene);
 	rtcReleaseDevice(device);
+	IntelScene = 0;
+	device = 0;
 }
