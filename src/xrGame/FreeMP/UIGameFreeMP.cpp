@@ -102,9 +102,9 @@ void CUIGameFMP::HideShownDialogs()
 void _BCL CUIGameFMP::OnFrame()
 {
 	inherited::OnFrame();
+	//g_cl_draw_mp_statistic &&
 
-
-	if (g_cl_draw_mp_statistic && Level().game->local_player)
+	if ( Level().game->local_player)
 	{
 		IClientStatistic& stats = Level().GetStatistic();
 
@@ -117,7 +117,9 @@ void _BCL CUIGameFMP::OnFrame()
 				"in/out: %.1f/%.2f KB/s\\n"
 				"packets dropped: %u\\n"
 				"packets retried: %u\\n",
+			
 				Level().game->local_player->ping,
+				
 				stats.getPing(),
 				stats.getReceivedPerSec() / 1000.0f,
 				stats.getSendedPerSec() / 1000.0f,
@@ -132,25 +134,16 @@ void _BCL CUIGameFMP::OnFrame()
 				"ping: %u/%u\\n"
 				"in/out: %.1f/%.2f KB/s\\n"
 				"packets in/out: %.0f/%.0f\\n"
-				//"queue time: %u\\n"
-				//"send rate: %u bps\\n"
-				//"pending reliable: %u\\n"
-				//"pending unreliable: %u\\n"
-				//"sent unacked reliable: %u\\n"
 				"quality local: %.2f\\n"
 				"quality remote: %.2f\\n",
 
 				Level().game->local_player->ping,
+
 				stats.getPing(),
 				stats.getReceivedPerSec() / 1000.0f,
 				stats.getSendedPerSec() / 1000.0f,
 				stats.getPacketsInPerSec(),
 				stats.getPacketsOutPerSec(),
-				//stats.getQueueTime(),
-				//stats.getSendRateBytesPerSecond(),
-				//stats.getPendingReliable(),
-				//stats.getPendingUnreliable(),
-				//stats.getSentUnackedReliable(),
 				stats.getQualityLocal(),
 				stats.getQualityRemote()
 			);
