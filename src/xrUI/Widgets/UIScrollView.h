@@ -39,7 +39,7 @@ virtual void		RecalcSize			();
 public:
 			
 					CUIScrollView		();
-					CUIScrollView		(CUIFixedScrollBar* scroll_bar);
+					CUIScrollView		(CUIScrollBar* scroll_bar);
 	virtual			~CUIScrollView		();
 			void	InitScrollView		();// need parent to be initialized
 	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
