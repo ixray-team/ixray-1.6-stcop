@@ -33,7 +33,7 @@ EDetail::EDetail(bool lib)
 	m_sRefs				= "";
 	vertices			= 0;
 	number_vertices		= 0;
-	indices				= 0;
+	indices				= 0;       
 	number_indices		= 0;
 	m_bLoadFromLibrary = lib;
 }
@@ -337,4 +337,3 @@ void EDetail::Export(LPCSTR name)
 		Log				("!Can't export detail:",name);
 	}
 }
-
