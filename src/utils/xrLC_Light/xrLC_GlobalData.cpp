@@ -19,7 +19,7 @@ xrLC_GlobalData*	lc_global_data()
 {
 	return data;
 }
-
+xr_vector<base_Face*> FacesStorage;
 void	create_global_data()
 {
 	VERIFY( !inlc_global_data() );
@@ -31,6 +31,7 @@ void	destroy_global_data()
 	if(data)
 		data->clear();
 	xr_delete(data);
+	FacesStorage.clear();
 }
 
 
@@ -88,7 +89,7 @@ void		xrLC_GlobalData	::				initialize		()
 	if (strstr(Core.Params,"-att"))	_gl_linear	= true;
 }
 
-xr_vector<base_Face*> FacesStorage;
+
 xrSRWLock NaxGuard;
 
 XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
