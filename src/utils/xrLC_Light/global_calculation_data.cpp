@@ -24,6 +24,9 @@ extern void		Surface_Init	();
 
 // 
 
+// INTEL SELECTION
+extern  void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI);
+
 void global_claculation_data::xrLoad()
 {
 	string_path					N;
@@ -43,6 +46,10 @@ void global_claculation_data::xrLoad()
 		
 		Fvector*	verts	= (Fvector*)fs->pointer();
 		CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
+		
+		
+		InitEmbreeDetails(verts, tris, H.facecount);
+
 		RCAST_Model.build	( verts, H.vertcount, tris, H.facecount );
 		Msg("* Level CFORM: %dK",RCAST_Model.memory()/1024);
 
@@ -53,10 +60,10 @@ void global_claculation_data::xrLoad()
 		LevelBB.set			(H.aabb);
 	}
 	
-	{
-		slots_data.Load( );
-	}
-	// Lights
+ 	slots_data.Load( );
+
+
+ 	// Lights
 	{
 		IReader*			fs = FS.r_open("$level$","build.lights");
 		IReader*			F;	u32 cnt; R_Light* L;

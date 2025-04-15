@@ -2,11 +2,9 @@
 #include "global_slots_data.h"
 
 void	global_slots_data::	Load			( )
-{
-	// Load .details
-	// copy
-	//if()
-	
+{	
+	Phase("global_slots_data :: Loading (build.details)");
+
 	IReader*	R		= FS.r_open	( "$level$", "build.details" );
 
 	R_ASSERT2(R != nullptr, "build.details not found!");
@@ -16,6 +14,8 @@ void	global_slots_data::	Load			( )
 	u32 check_sum		= crc32( R-> pointer(), R->length());
 
 	recalculation_data.load( check_sum );
+
+
 	if( !recalculation_data.recalculating() )
 	{
 		IWriter*	W		= FS.w_open	( "$level$", "level.details" );
