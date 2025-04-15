@@ -12,7 +12,11 @@ protected:
 
 	Frect			m_BoundRect_;// real map size (meters)
 	Flags16			m_flags;
-	enum EFlags{	eLocked	=(1<<0),};
+	enum EFlags
+	{	
+		eLocked	=(1<<0),
+        eRounded = (1 << 1)
+	};
 	float			m_pointer_dist;
 	Frect			m_workingArea;
 public:
@@ -49,6 +53,8 @@ public:
 	virtual	bool	NeedShowPointer					(Frect r);
 			bool	Locked							()				{return !!m_flags.test(eLocked);}
 			void	SetLocked						(bool b)		{m_flags.set(eLocked,b);}
+    bool IsRounded() { return m_flags.test(eRounded); }
+    void SetRounded(bool b) { m_flags.set(eRounded, b); }
 			void	SetPointerDistance				(float d)		{m_pointer_dist=d;};
 			float	GetPointerDistance				()				{return m_pointer_dist;};
 protected:

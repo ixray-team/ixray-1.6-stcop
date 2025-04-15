@@ -576,7 +576,9 @@ void CUILevelMap::OnFocusLost()
 }
 
 CUIMiniMap::CUIMiniMap()
-{}
+{
+	SetRounded(true);
+}
 
 CUIMiniMap::~CUIMiniMap()
 {}
@@ -597,6 +599,12 @@ void CUIMiniMap::UpdateSpots()
 
 void  CUIMiniMap::Draw()
 {
+	if (!IsRounded())
+	{
+		inherited::Draw();
+		return;
+	}
+
 	u32	segments_count			= 20;
 
 	UIRender->SetShader			(*m_UIStaticItem.GetShader());
@@ -661,6 +669,11 @@ void  CUIMiniMap::Draw()
 
 bool CUIMiniMap::GetPointerTo(const Fvector2& src, float item_radius, Fvector2& pos, float& heading)
 {
+	if (!IsRounded())
+	{
+		return inherited::GetPointerTo(src, item_radius, pos, heading);
+	}
+
 	Fvector2 clip_center = GetStaticItem()->GetHeadingPivot();
 	float map_radius	= WorkingArea().width()/2.0f;
 	Fvector2			direction;
@@ -679,6 +692,10 @@ bool CUIMiniMap::GetPointerTo(const Fvector2& src, float item_radius, Fvector2& 
 
 bool CUIMiniMap::NeedShowPointer(Frect r)
 {
+	if (!IsRounded())
+	{
+		return inherited::NeedShowPointer(r);
+	}
 	Fvector2 clip_center = GetStaticItem()->GetHeadingPivot();
 
 	Fvector2			spot_pos;
@@ -690,6 +707,10 @@ bool CUIMiniMap::NeedShowPointer(Frect r)
 
 bool CUIMiniMap::IsRectVisible(Frect r)
 {
+	if (!IsRounded())
+	{
+		return inherited::IsRectVisible(r);
+	}
 	Fvector2 clip_center	= GetStaticItem()->GetHeadingPivot();
 	float vis_radius		= WorkingArea().width() / 2.0f;
 	Fvector2				rect_center;
