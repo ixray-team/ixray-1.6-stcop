@@ -56,7 +56,10 @@ void CEatableItem::Load(LPCSTR section)
 	{
 		m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
 	}
-	m_iRemainingUses = m_iMaxUses = READ_IF_EXISTS(pSettings, r_u8, section, "max_uses", 1);
+
+	float m_eat_condition = READ_IF_EXISTS(pSettings, r_float, section, "eat_condition", 1);
+	m_iMaxUses /= m_eat_condition;
+	m_iRemainingUses = m_iMaxUses;
 
 	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
 
