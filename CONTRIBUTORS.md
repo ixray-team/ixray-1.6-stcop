@@ -62,6 +62,7 @@ Detail list of all contributors to IX-Ray project
   - moof1x
   - MafiosiGhost
   - Mawrak
+  - Georgiy-Timoshin
 
 ## Community helpers
 

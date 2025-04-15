@@ -62,6 +62,7 @@
   - moof1x
   - MafiosiGhost
   - Mawrak
+  - Georgiy-Timoshin
 
 ## Помощники сообщества
 
