@@ -215,8 +215,7 @@ public:
 		} else return FALSE;
 	}
 
-private:
-	u32					m_last_pos;
+	u32 m_last_pos;
 };
 
 class XRCORE_API IReader : 
