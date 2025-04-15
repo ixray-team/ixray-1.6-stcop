@@ -12,18 +12,14 @@
 #include "../xrEngine/SkeletonMotions.h"
 #include "../xrEngine/motion.h"
 
-//#include "library.h"
-
 #include "freemagic/MgcCont3DBox.h"         
 #include "freemagic/MgcCont3DMinBox.h"         
 
-#if 1
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
 #include "../Engine/XrGameMaterialLibraryEditors.h"
-#endif
-//#include "../../../Layers/xrRender/SkeletonAnimated.h"
-#include <d3dx9.h>
+
+#include <DirectXMesh.h>
 
 #define MAX_BONE 128
 
@@ -439,55 +435,94 @@ void CExportSkeleton::SSplit::MakeProgressive()
 
 void CExportSkeleton::SSplit::MakeStripify()
 {
-//	int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
-//	Log("SRC:",ccc);
-	// alternative stripification - faces
 	bool NeedSkip = false;
-	{
-		DWORD*		remap	= xr_alloc<DWORD>		(m_Faces.size());
-		HRESULT		rhr		= D3DXOptimizeFaces		(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-		
-		if (rhr == S_OK)
-		{
-			SkelFaceVec	_source = m_Faces;
-			for (u32 it = 0; it < _source.size(); it++)
-				m_Faces[it] = _source[remap[it]];
 
+	xr_vector<u32> adjacency(m_Faces.size() * 3);
+	xr_vector<u16> indices(m_Faces.size() * 3);
+	for (size_t i = 0; i < m_Faces.size(); ++i)
+	{
+		indices[i * 3 + 0] = m_Faces[i].v[0];
+		indices[i * 3 + 1] = m_Faces[i].v[1];
+		indices[i * 3 + 2] = m_Faces[i].v[2];
+	}
+
+	xr_vector<DirectX::XMFLOAT3> positions(m_Verts.size());
+	for (size_t i = 0; i < m_Verts.size(); ++i)
+	{
+		positions[i].x = m_Verts[i].offs.x;
+		positions[i].y = m_Verts[i].offs.y;
+		positions[i].z = m_Verts[i].offs.z;
+	}
+
+	HRESULT adjacencyResult = DirectX::ConvertPointRepsToAdjacency
+	(
+		indices.data(),
+		m_Faces.size(),
+		positions.data(),
+		m_Verts.size(),
+		nullptr,
+		adjacency.data()
+	);
+
+	if (FAILED(adjacencyResult))
+	{
+		NeedSkip = true;
+	}
+
+	if (!NeedSkip)
+	{
+		xr_vector<u32> faceRemap(m_Faces.size());
+		HRESULT rhr = DirectX::OptimizeFaces
+		(
+			indices.data(),
+			m_Faces.size(),
+			adjacency.data(),
+			faceRemap.data()
+		);
+
+		if (SUCCEEDED(rhr))
+		{
+			SkelFaceVec _source = m_Faces;
+			for (size_t it = 0; it < m_Faces.size(); ++it)
+			{
+				m_Faces[it] = _source[faceRemap[it]];
+			}
 		}
 		else
 		{
 			NeedSkip = true;
 		}
-		xr_free		(remap);
-
-//	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
-//		Log("X:",ccc);
 	}
-	// alternative stripification - vertices
+
 	if (!NeedSkip)
 	{
-		DWORD*		remap	= xr_alloc<DWORD>		(m_Verts.size());
-		HRESULT		rhr		= D3DXOptimizeVertices	(&m_Faces.front(),m_Faces.size(),m_Verts.size(),FALSE,remap);
-		
-		if (rhr == S_OK)
+		xr_vector<u32> vertexRemap(m_Verts.size());
+		HRESULT rhr = DirectX::OptimizeVertices
+		(
+			indices.data(),
+			m_Faces.size(),
+			m_Verts.size(),
+			vertexRemap.data()
+		);
+
+		if (SUCCEEDED(rhr))
 		{
-			SkelVertVec	_source = m_Verts;
+			SkelVertVec _source = m_Verts;
 
-			for (u32 vit = 0; vit < _source.size(); vit++)
-				m_Verts[remap[vit]] = _source[vit];
+			for (size_t vit = 0; vit < _source.size(); ++vit)
+			{
+				m_Verts[vertexRemap[vit]] = _source[vit];
+			}
 
-			for (u32 fit = 0; fit < (u32)m_Faces.size(); ++fit)
-				for (u32 j = 0; j < 3; j++)
-					m_Faces[fit].v[j] = remap[m_Faces[fit].v[j]];
+			for (size_t i = 0; i < m_Faces.size(); ++i)
+			{
+				m_Faces[i].v[0] = (WORD)(vertexRemap[indices[i * 3 + 0]]);
+				m_Faces[i].v[1] = (WORD)(vertexRemap[indices[i * 3 + 1]]);
+				m_Faces[i].v[2] = (WORD)(vertexRemap[indices[i * 3 + 2]]);
+			}
 		}
-
-		xr_free		(remap);
-
-//	    int ccc 	= xrSimulate	((u16*)&m_Faces.front(),m_Faces.size()*3,24);
-//		Log("Y:",ccc);
 	}
 }
-
 
 CExportSkeleton::CExportSkeleton(CEditableObject* object)
 {
