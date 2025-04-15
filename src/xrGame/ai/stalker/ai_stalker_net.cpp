@@ -20,15 +20,6 @@ BOOL CAI_Stalker::net_SaveRelevant()
 
 void CAI_Stalker::net_Export(NET_Packet& P)
 {
-	if (!IsGameTypeSingle())
-	{
-		state_manager.FillState(this);
-		state_manager.UpdateAIInternal(this);
-
-		state_manager.CSE_StateWrite(P);
-		return;
-	}
-
 	R_ASSERT(Local());
 
 	// export last known packet
@@ -54,15 +45,14 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
 	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
 
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) 
+	if (ai().game_graph().valid_vertex_id(l_game_vertex_id))
 	{
 		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w(&f1, sizeof(f1));
-
 		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w(&f1, sizeof(f1));
 	}
-	else 
+	else
 	{
 		P.w(&f1, sizeof(f1));
 		P.w(&f1, sizeof(f1));
@@ -70,13 +60,58 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 
 	P.w_stringZ(m_sStartDialog);
 }
- 
+
 void CAI_Stalker::net_Import(NET_Packet& P)
 {
-	state_manager.CSE_StateRead(P);
-	state_manager.GetState(this);
+	R_ASSERT(Remote());
+	u8 flags;
+
+	P.r_float();
+
+	P.r_u32();
+	P.r_u8();
+	P.r_vec3();
+	P.r_float();
+	P.r_float();
+	P.r_float();
+	P.r_float();
+	P.r_u8();
+	P.r_u8();
+	P.r_u8();
+
+	GameGraph::_GRAPH_ID graph_vertex_id = 0;
+	P.r(&graph_vertex_id, sizeof(GameGraph::_GRAPH_ID));
+	P.r(&graph_vertex_id, sizeof(GameGraph::_GRAPH_ID));
+
+	//net_update N;
+	//if (NET.empty() || (NET.back().dwTimeStamp < N.dwTimeStamp))
+	//{
+	//	NET.push_back(N);
+	//	NET_WasInterpolating = TRUE;
+	//}
+
+	P.r_float();
+	P.r_float();
+
+	shared_str temp;
+	P.r_stringZ(temp);
+
 	setVisible(TRUE);
 	setEnabled(TRUE);
+}
+
+void CAI_Stalker::SyncRead(NET_Packet& Packet)
+{
+	state_manager.CSE_StateRead(Packet);
+	state_manager.GetState(this);
+}
+
+void CAI_Stalker::SyncWrite(NET_Packet& Packet)
+{
+	state_manager.FillState(this);
+	state_manager.UpdateAIInternal(this);
+
+	state_manager.CSE_StateWrite(Packet);
 }
 
 #include "relation_registry.h"
@@ -426,6 +461,10 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 	auto& anims = state_manager.motions_data;
 	 
 	u32 TYPE = packet.r_u32();
+
+	if (TYPE == 0)
+		return;
+
 	Motions_NUM data;
 	data.id.idx		  = packet.r_u16();
 	data.id.slot	  = packet.r_u16();
