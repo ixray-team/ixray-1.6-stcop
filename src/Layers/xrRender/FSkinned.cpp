@@ -75,7 +75,13 @@ struct	vertHW_1W
 	}
 	u16 get_bone() const
 	{
-		return	(u16)color_get_A(_N_I);
+		u8 delimeter = 1;
+
+#ifndef USE_DX11
+		delimeter = 3;
+#endif
+
+		return	(u16)color_get_A(_N_I) / delimeter;
 	}
 	void get_pos_bones( Fvector& p, CKinematics* Parent ) const
 	{
@@ -129,7 +135,12 @@ struct	vertHW_2W
 	}
 	u16 get_bone(u16 w) const
 	{
-		return	(u16)_tc_i[w+2];
+		u8 delimeter = 1;
+#ifndef USE_DX11
+		delimeter = 3;
+#endif
+
+		return	(u16)_tc_i[w+2] / delimeter;
 	}
 	void get_pos(Fvector& p) const
 	{
@@ -190,13 +201,18 @@ struct	vertHW_3W
 	}
 	u16 get_bone(u16 w) const
 	{
+		u8 delimeter = 1;
+#ifndef USE_DX11
+		delimeter = 3;
+#endif
+
 		switch(w)
 		{
 		case 0:
 		case 1:
-			return	(u16)_tc_i[w+2];
+			return	(u16)_tc_i[w+2] / delimeter;
 		case 2:
-			return	(u16)color_get_A(_B_i);
+			return	(u16)color_get_A(_B_i) / delimeter;
 		}
 		R_ASSERT(0);
 		return 0;
@@ -275,16 +291,20 @@ struct	vertHW_4W
 	}
 	u16 get_bone(u16 w) const
 	{
+		u8 delimeter = 1;
+#ifndef USE_DX11
+		delimeter = 3;
+#endif
 		switch(w)
 		{
 		case 0:
-			return	(u16)color_get_R(_i);
+			return	(u16)color_get_R(_i) / delimeter;
 		case 1:
-			return	(u16)color_get_G(_i);
+			return	(u16)color_get_G(_i) / delimeter;
 		case 2:
-			return	(u16)color_get_B(_i);
+			return	(u16)color_get_B(_i) / delimeter;
 		case 3:
-			return	(u16)color_get_A(_i);
+			return	(u16)color_get_A(_i) / delimeter;
 		}
 		R_ASSERT(0);
 		return 0;
