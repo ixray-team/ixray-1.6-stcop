@@ -12,22 +12,11 @@ CWeaponPistol::~CWeaponPistol(void)
 {
 }
 
-void CWeaponPistol::net_Destroy()
-{
-	inherited::net_Destroy();
-}
-
-
 void CWeaponPistol::Load	(LPCSTR section)
 {
 	inherited::Load		(section);
 
 	m_sounds.LoadSound(section, "snd_close", "sndClose", false, m_eSoundClose);
-}
-
-void CWeaponPistol::OnH_B_Chield		()
-{
-	inherited::OnH_B_Chield		();
 }
 
 void CWeaponPistol::PlayAnimShow	()
@@ -129,11 +118,6 @@ void CWeaponPistol::switch2_Reload()
 void CWeaponPistol::OnAnimationEnd(u32 state)
 {
 	inherited::OnAnimationEnd(state);
-}
-
-void CWeaponPistol::OnShot		()
-{
-	inherited::OnShot(); //Alundaio: not changed from inherited, so instead of copying changes from weaponmagazined, we just do this
 }
 
 void CWeaponPistol::UpdateSounds()
