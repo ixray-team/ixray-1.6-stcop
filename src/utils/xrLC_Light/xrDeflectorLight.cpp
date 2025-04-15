@@ -398,35 +398,14 @@ extern float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float ran
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
 {
-
 	if (MDL)
 	{
-		//R_ASSERT(DB);
-		//
-		//// 1. Check cached polygon
-		//float _u, _v, range;
-		//bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
-		//if (res) {
-		//	if (range > 0 && range < R) return 0;
-		//}
-		//
-		//// 2. Polygon doesn't pick - real database query
-		//DB->ray_query(MDL, P, D, R);
-		//
-		//// 3. Analyze polygons and cache nearest if possible
-		//if (0 == DB->r_count())
-		//	return 1;
-		//else
-		//	return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
-
 		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
 	}
 	else
 	{
 		return RaytraceEmbreeProcess(L, P, D, R, skip);
 	}
-	
-	//
 }
 
 void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip)
@@ -911,8 +890,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 	} 
 	catch (...)
 	{
-		
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
-
 	}
 }

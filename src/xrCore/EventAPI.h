@@ -16,18 +16,16 @@ class XRCORE_API	CEventAPI
 {
 	struct Deferred
 	{
-		EVENT		E;
-		u64			P1;
-		u64			P2;
+		EVENT E;
+		u64 P1;
+		u64 P2;
 	};
-private:
+
 	xr_vector<EVENT>		Events;
 	xr_vector<Deferred>		Events_Deferred;
 	xrCriticalSection		CS;
+
 public:
-#ifdef PROFILE_CRITICAL_SECTIONS
-			CEventAPI		() : CS(MUTEX_PROFILE_ID(CEventAPI)) {}
-#endif // PROFILE_CRITICAL_SECTIONS
 	EVENT	Create			(const char* N);
 	void	Destroy			(EVENT& E);
 
