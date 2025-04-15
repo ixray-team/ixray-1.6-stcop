@@ -254,7 +254,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 	if (UICost != nullptr)
 	{
-		if (IsGameTypeSingle() && item_price != u32(-1))
+		if (IsGameTypeSingleCompatible() && item_price != u32(-1))
 		{
 			xr_sprintf(str, "%d RU", item_price);// will be owerwritten in multiplayer
 			UICost->SetText(str);
@@ -271,7 +271,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		}
 	}
 	
-	if ( UITradeTip && IsGameTypeSingle())
+	if ( UITradeTip && IsGameTypeSingleCompatible())
 	{
 		pos.y = UITradeTip->GetWndPos().y;
 		if ( UIWeight && m_complex_desc )
