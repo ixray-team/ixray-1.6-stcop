@@ -59,7 +59,7 @@ void xr_log::diagnostic(const char* format, va_list ap)
 		std::cerr << m_buf_p;
 #	endif
 #if defined(DEBUG) && defined(WIN32)
-		OutputDebugString(m_buf_p);
+		OutputDebugStringA(m_buf_p);
 #endif
 	}
 }
