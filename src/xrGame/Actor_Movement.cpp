@@ -69,6 +69,7 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		}
 
 		PlayRainStep(!!HUDview());
+		PlayExoStep(!!HUDview());
 
 		m_bJumpKeyPressed	=	TRUE;
 		m_fJumpTime			=	s_fJumpTime;
@@ -212,6 +213,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			m_fJumpTime			= s_fJumpTime;
 
 			PlayRainStep(!!HUDview());
+			PlayExoStep(!!HUDview());
 
 			//уменьшить силу игрока из-за выполненого прыжка
 			if (!GodMode())
