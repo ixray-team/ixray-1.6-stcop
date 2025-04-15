@@ -465,7 +465,9 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
 				pIItem->object().DestroyObject	();
 		}
 		InitAddons				();
-		UpdateAddonsVisibility	();
+		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
@@ -492,6 +494,8 @@ bool CWeaponMagazinedWGrenade::Detach(LPCSTR item_section_name, bool b_spawn_ite
 		PerformSwitchGL();
 
 		UpdateAddonsVisibility();
+		UpdateHUDAddonsVisibility();
+		ProcessScope();
 
 		if(GetState()==eIdle)
 			PlayAnimIdle		();
