@@ -9,16 +9,18 @@
 
 uniform float3 eye_direction;
 
-float4 wmark_shift(float3 pos, float3 norm)
+float4 wmark_shift(float3 P, float3 N)
 {
-    float3 P = pos;
-    float3 N = norm;
     float3 sd = eye_position - P;
     float d = length(sd);
+	
     float w = min(d / RANGE, 1.f);
     float s = lerp(MIN_SHIFT, MAX_SHIFT, d);
+	
     P += N.xyz * NORMAL_SHIFT;
-    P -= normalize(eye_direction + normalize(P - eye_position)) * s;
+    P -= normalize(eye_direction - sd * rcp(d)) * s;
+
     return float4(P, 1.f);
 }
 #endif
+

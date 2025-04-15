@@ -44,6 +44,8 @@ float4 main(p_filter I) : SV_Target
     final.w = dot(accum3, 0.25f);
 
     float result = dot(final, 0.25f);
+	
+	result = PushGamma(result);
 
     // OK
     float scale = MiddleGray.x / (result * MiddleGray.y + MiddleGray.z);

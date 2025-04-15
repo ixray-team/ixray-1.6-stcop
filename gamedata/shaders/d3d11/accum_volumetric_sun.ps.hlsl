@@ -86,7 +86,7 @@ float4 main(v2p_TL I) : SV_Target
     res = lerp(res, max_density, fog);
     res *= fSturation;
 
-    return res * Ldynamic_color;
+    return PushGamma(res * Ldynamic_color);
 #endif // SUN_SHAFTS_QUALITY
 }
 
