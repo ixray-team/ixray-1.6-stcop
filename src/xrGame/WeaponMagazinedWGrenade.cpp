@@ -35,11 +35,14 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 	CRocketLauncher::Load(section);
 
 
-	//// Sounds
-	m_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+	// Sounds
+	if (WeaponSoundExist(section, "snd_shoot_grenade"))
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+	if (WeaponSoundExist(section, "snd_shoot_grenade_actor"))
+		m_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
 	m_sounds.LoadSound(section, "snd_reload_grenade", "sndReloadG", true, m_eSoundReload);
 	m_sounds.LoadSound(section, "snd_switch", "sndSwitch", true, m_eSoundReload);
-
+	m_sounds.LoadSound(section, "snd_switch_g", "sndSwitchG", true, m_eSoundReload);
 
 	m_sFlameParticles2 = pSettings->r_string(section, "grenade_flame_particles");
 

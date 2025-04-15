@@ -35,6 +35,7 @@ protected:
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
+	bool			last_sound_exist[2];
 protected:
 
 	virtual void	switch2_Idle	();
