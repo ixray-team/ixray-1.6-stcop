@@ -287,6 +287,8 @@ void DXTUtils::Filter::Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 src
 					}
 					k = contrib[i].n++;
 					contrib[i].p[k].pixel = (n < src.xsize) ? n : (src.xsize - 1);
+					contrib[i].p[k].pixel = std::max(0, contrib[i].p[k].pixel);
+
 					contrib[i].p[k].weight = weight;
 				}
 			}
@@ -323,6 +325,8 @@ void DXTUtils::Filter::Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 src
 					}
 					k = contrib[i].n++;
 					contrib[i].p[k].pixel = (n < src.xsize) ? n : (src.xsize - 1);
+					contrib[i].p[k].pixel = std::max(0, contrib[i].p[k].pixel);
+
 					contrib[i].p[k].weight = weight;
 				}
 			}
@@ -423,6 +427,7 @@ void DXTUtils::Filter::Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 src
 					}
 					k = contrib[i].n++;
 					contrib[i].p[k].pixel = (n < tmp->ysize) ? n : (tmp->ysize - 1);
+					contrib[i].p[k].pixel = std::max(0, contrib[i].p[k].pixel);
 					contrib[i].p[k].weight = weight;
 				}
 			}
@@ -458,6 +463,7 @@ void DXTUtils::Filter::Process(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 src
 					}
 					k = contrib[i].n++;
 					contrib[i].p[k].pixel = (n < tmp->ysize) ? n : (tmp->ysize - 1);
+					contrib[i].p[k].pixel = std::max(0, contrib[i].p[k].pixel);
 					contrib[i].p[k].weight = weight;
 				}
 			}
