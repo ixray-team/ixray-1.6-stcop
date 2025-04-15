@@ -66,7 +66,7 @@ void CWeaponStatMgun::Load(LPCSTR section)
 	inheritedPH::Load(section);
 	inheritedShooting::Load	(section);
 
-	m_sounds.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
+	m_sounds_layered.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	m_Ammo->Load(pSettings->r_string(section, "ammo_class"), 0);
 	camMaxAngle			= pSettings->r_float		(section,"cam_max_angle"	); 
 	camMaxAngle			= _abs( deg2rad				(camMaxAngle) );
@@ -191,7 +191,7 @@ void	CWeaponStatMgun::Hit(SHit* pHDS)
 
 void CWeaponStatMgun::UpdateBarrelDir()
 {
-	IKinematics* K		= smart_cast<IKinematics*>(Visual());
+	IKinematics* K		= Visual()->dcast_PKinematics();
 	m_fire_bone_xform	= K->LL_GetTransform(m_fire_bone);
 
 	m_fire_bone_xform.mulA_43		(XFORM());
@@ -232,7 +232,7 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 	Fvector							P,Da;
 	Da.set							(0,0,0);
 
-	IKinematics* K					= smart_cast<IKinematics*>(Visual());
+	IKinematics* K					= Visual()->dcast_PKinematics();
 	K->CalculateBones_Invalidate	();
 	K->CalculateBones				(TRUE);
 	const Fmatrix& C				= K->LL_GetTransform(m_camera_bone);
