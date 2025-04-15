@@ -65,6 +65,10 @@ public:
 	ref_rt						rt_Surface;
 	ref_rt						rt_Velocity;
 
+	ref_rtc						rt_Reflection;
+	ref_rtc						rt_Reflection_temp;
+	ref_rt						rt_Depth;
+
 	// 
 	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -117,6 +121,10 @@ private:
 	// SMAA
 	ref_rt						rt_smaa_edgetex;
 	ref_rt						rt_smaa_blendtex;
+
+	ref_rt						rt_sslr;
+	ref_rt						rt_sslr_temp;
+	ref_rt						rt_sslr_old;
 
 	// SSAO
 	ref_rt						rt_ssao_temp;
@@ -244,6 +252,7 @@ public:
 
 	void						phase_cas				();
 	void						phase_gtao				();
+	void						phase_sslr				();
 
 	void						phase_puddles			();
 

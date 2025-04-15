@@ -183,6 +183,8 @@ int			ps_r2_wait_sleep			= 0;
 float		ps_r2_lt_smooth				= 1.f;				// 1.f
 float		ps_r2_slight_fade			= 0.6f;				// 1.f
 
+float		ps_r4_vslr_distance			= 0.7f;				// 1.f
+
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3	ps_r2_dof					= Fvector3().set(-1.25f, 1.4f, 600.f);
 float		ps_r2_dof_sky				= 30;				//	distance to sky
@@ -743,7 +745,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer,	"r3_dynamic_wet_surfaces_sm_res",&ps_r3_dyn_wet_surf_sm_res,64,	2048	);
 
 	CMD3(CCC_Mask,		"r3_volumetric_smoke",			&ps_r2_ls_flags,			R3FLAG_VOLUMETRIC_SMOKE);
-	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);//Need restart
+	CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION);
+
+	CMD3(CCC_Mask, "r4_enable_vslr", &ps_r2_ls_flags_ext, R4FLAG_OFFSCREEN_REFLECTIONS);
+	CMD4(CCC_Float, "r4_vslr_distance", &ps_r4_vslr_distance, 0.4f, 1.f);
 
 	// IX-Ray
 	CMD3(CCC_Mask, "r__fast_details_update",&ps_r2_ls_flags, R2FLAG_FAST_DETAILS_UPDATE);
@@ -770,6 +775,7 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r4_hud_shadows", &ps_r2_ls_flags_ext, R4FLAG_SCREEN_SPACE_HUD_SHADOWS);
 	CMD3(CCC_Mask, "r4_hashed_alpha_test", &ps_r2_ls_flags_ext, R4FLAG_HASHED_ALPHA_TEST);
 	CMD3(CCC_Mask, "r4_sslr_water", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WATER);
+	CMD3(CCC_Mask, "r4_sslr_reflections", &ps_r2_ls_flags_ext, R4FLAG_SSLR_ON_WORLD);
 	CMD4(CCC_Float, "r4_cas_sharpening", &ps_r4_cas_sharpening, 0.0f, 1.0f);
 
 	CMD3(CCC_Mask, "r4_puddles", &ps_r2_ls_flags_ext, R4FLAG_PUDDLES);

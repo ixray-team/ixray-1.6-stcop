@@ -75,6 +75,10 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
+	if(RImplementation.o.deffered_reflecitons) {
+		phase_sslr();
+	}
+
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
