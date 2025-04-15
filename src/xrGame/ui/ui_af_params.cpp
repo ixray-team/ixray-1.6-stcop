@@ -22,7 +22,9 @@ CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 	{
 		m_restore_item[i] = nullptr;
 	}
+
 	m_additional_weight = nullptr;
+	m_af_slots = nullptr;
 
 	object_type = type;
 }
@@ -32,6 +34,7 @@ CUIArtefactParams::~CUIArtefactParams()
 	delete_data	( m_immunity_item );
 	delete_data	( m_restore_item );
 	xr_delete	( m_additional_weight );
+	xr_delete	(m_af_slots);
 	xr_delete	( m_Prop_line );
 }
 
@@ -114,6 +117,16 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 	}
 	
 	{
+		m_af_slots = new UIArtefactParamItem();
+		m_af_slots->Init(xml, "af_slots");
+		m_af_slots->SetAutoDelete(false);
+
+		LPCSTR name = g_pStringTable->translate("st_prop_artefact").c_str();
+		m_af_slots->SetCaption(name);
+		xml.SetLocalRoot(base_node);
+	}
+
+	{
 		m_additional_weight = new UIArtefactParamItem();
 		m_additional_weight->Init( xml, "additional_weight" );
 		m_additional_weight->SetAutoDelete(false);
@@ -184,9 +197,24 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 			AttachChild(m_restore_item[i]);
 		}
 	}
+	else
+	{
+		u32 count = READ_IF_EXISTS(pSettings, r_u32, af_section, "artefact_count", 0);
+		if (count > 0)
+		{
+			m_af_slots->SetValue(count);
+
+			pos.set(m_af_slots->GetWndPos());
+			pos.y = h;
+			m_af_slots->SetWndPos(pos);
+
+			h += m_af_slots->GetWndSize().y;
+			AttachChild(m_af_slots);
+		}
+	}
 
 	{
-		val	= pSettings->r_float( af_section, "additional_inventory_weight" );
+		val	= READ_IF_EXISTS(pSettings, r_float, af_section, "additional_inventory_weight", 0.0f);
 		if ( !fis_zero(val) )
 		{
 			m_additional_weight->SetValue( val );
@@ -199,7 +227,7 @@ void CUIArtefactParams::SetInfo( shared_str const& af_section )
 			AttachChild( m_additional_weight );
 		}
 	}
-	
+
 	SetHeight( h );
 }
 
