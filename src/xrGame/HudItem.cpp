@@ -719,6 +719,15 @@ float CHudItem::GetHudFov()
 	return m_nearwall_last_hud_fov;
 }
 
+void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap)
+{
+	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
+	if (SndIter != nullptr)
+	{
+		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap);
+	}
+}
+
 void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
 {
 	if (HudItemData())
