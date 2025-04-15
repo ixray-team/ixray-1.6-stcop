@@ -3,11 +3,10 @@
 #include "Build.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
-#include "execution"
 
-const int	 HDIM_X = 512;
-const int	 HDIM_Y = 512;
-const int	 HDIM_Z = 512;
+const int	 HDIM_X = 1024;
+const int	 HDIM_Y = 1024;
+const int	 HDIM_Z = 1024;
 
 const int    FLOOR_VALUE = 1;
 
@@ -26,35 +25,22 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 	return false;
 }
 
-#include <unordered_map>
-
 void CBuild::PreOptimize()
 {
     if (lc_global_data()->GetSkipWeld())
         return;
 
-
     std::unordered_map<size_t, vecVertex> hashTable;
-    Fvector VMmin, VMscale, scale;
-
-    // Calculate offset, scale, epsilon
-    Fbox bb = scene_bb;
-    VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
-    VMmin.set(bb.min);
-     
-    scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
-    scale.div(VMscale);
- 
+  
     u32 Vcount = lc_global_data()->g_vertices().size();
     u32 Fcount = lc_global_data()->g_faces().size();
-     u32 Vremoved = 0;
+     
+    u32 Vremoved = 0;
     u32 Fremoved = 0;
 
     Status("Processing...");
     g_bUnregister = false;
-
-
-
+     
     for (int it = 0; it < (int)lc_global_data()->g_vertices().size(); it++)
     {
         if (it >= (int)lc_global_data()->g_vertices().size()) 
@@ -62,18 +48,16 @@ void CBuild::PreOptimize()
 
         if (Vremoved % 100000 == 0)
         {
-           /// clMsg("%u vertex removed. Size:  %u/%u", Vremoved, it, lc_global_data()->g_vertices().size());
-        
-            Progress(float ( it ) / float( lc_global_data()->g_vertices().size())  );
+           Progress(float ( it ) / float( lc_global_data()->g_vertices().size())  );
         }
 
         Vertex* pTest = lc_global_data()->g_vertices()[it];
         Fvector& V = pTest->P;
          
  
-        u32 ix = iFloor( (V.x - VMmin.x) * scale.x);
-        u32 iy = iFloor( (V.y - VMmin.y) * scale.y);
-        u32 iz = iFloor( (V.z - VMmin.z) * scale.z);
+        u32 ix = iFloor(V.x);
+        u32 iy = iFloor(V.y);
+        u32 iz = iFloor(V.z);
  
         // Generate hash key
         size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
@@ -105,58 +89,69 @@ void CBuild::PreOptimize()
         // Register new vertex
         hashTable[hashKey].push_back(pTest);
     }
-
+ 
+    clMsg("Removed vertexes count: %u", Vremoved);
+	 
 	Status("Removing degenerated/duplicated faces...");
-	g_bUnregister = false;
-	for (u32 it = 0; it < lc_global_data()->g_faces().size(); it++)
+	g_bUnregister	= false;
+	for (u32 it=0; it<lc_global_data()->g_faces().size(); it++)
 	{
-		R_ASSERT(it >= 0 && it < (int)lc_global_data()->g_faces().size());
-		Face* F = lc_global_data()->g_faces()[it];
-		if (F->isDegenerated()) {
-			lc_global_data()->destroy_face(lc_global_data()->g_faces()[it]);
-			Fremoved++;
-		}
-		else {
+		R_ASSERT		(it>=0 && it<(int)lc_global_data()->g_faces().size());
+		Face* F			= lc_global_data()->g_faces()[it];
+		if ( F->isDegenerated()) {
+			lc_global_data()->destroy_face	(lc_global_data()->g_faces()[it]);
+			Fremoved			++;
+		} else {
 			// Check validity
-			F->Verify();
+			F->Verify			( );
 		}
-		Progress(float(it) / float(lc_global_data()->g_faces().size()));
+		Progress	(float(it)/float(lc_global_data()->g_faces().size()));
 	}
-
-	if (InvalideFaces())
+	if (InvalideFaces())	
 	{
-		err_save();
-		if (lc_global_data()->GetSkipInvalid()) 
-        {
+		err_save		();
+		if (lc_global_data()->GetSkipInvalid()) {
 			clMsg("* Total %d invalid faces. Do something.", InvalideFaces());
-		}
-		else {
+		} else {
 			Debug.fatal(DEBUG_INFO, "* FATAL: %d invalid faces. Compilation aborted", InvalideFaces());
 		}
 	}
 
-	Status("Adjacency check...");
-	g_bUnregister = false;
+	Status				("Adjacency check...");
+	g_bUnregister		= false;
 
-	for (u32 it = 0; it < lc_global_data()->g_vertices().size(); ++it)
+	for (u32 it = 0; it<lc_global_data()->g_vertices().size(); ++it)
 	{
 		if (lc_global_data()->g_vertices()[it] && (lc_global_data()->g_vertices()[it]->m_adjacents.empty()))
 		{
-			lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
+			lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[it]);
 			++Vremoved;
 		}
 	}
-
-	Status("Cleanup...");
-	lc_global_data()->g_vertices().erase(std::remove(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end(), (Vertex*)0), lc_global_data()->g_vertices().end());
-	lc_global_data()->g_faces().erase(std::remove(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), (Face*)0), lc_global_data()->g_faces().end());
- 
-	mem_Compact();
-	clMsg("%d vertices removed. (%d left)", Vcount - lc_global_data()->g_vertices().size(), lc_global_data()->g_vertices().size());
-	clMsg("%d faces removed. (%d left)", Fcount - lc_global_data()->g_faces().size(), lc_global_data()->g_faces().size());
+	
+	Status				("Cleanup...");
+	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
+	lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
+	 
+	mem_Compact			();
+	clMsg("%d vertices removed. (%d left)",Vcount-lc_global_data()->g_vertices().size(),lc_global_data()->g_vertices().size());
+	clMsg("%d faces removed. (%d left)",   Fcount-lc_global_data()->g_faces().size(),   lc_global_data()->g_faces().size());
 }
 
+#include "../xrLC_Light/xrMU_Model.h"
+#include "../xrLC_Light/xrMU_Model_Reference.h"
 void CBuild::IsolateVertices	(BOOL bProgress)
 {
 	isolate_vertices<Vertex>( bProgress, lc_global_data()->g_vertices() );
+ 
+    size_t RealSize  = 0;
+    size_t AllocSize = 0;
+
+    for (auto K : lc_global_data()->mu_refs())
+    {
+        RealSize += K->model->m_vertices.size();
+        AllocSize += K->model->m_vertices.capacity();
+    }
+ 
+    Status("RealSize: %u/%u", RealSize, AllocSize);
 }

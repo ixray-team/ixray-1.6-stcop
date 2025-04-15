@@ -39,6 +39,8 @@ typedef vecOGF_V::const_iterator	citOGF_V;
 struct x_vertex						// "fast" geometry, 16b/vertex
 {
 	Fvector				P;
+	x_vertex() { }
+
 	x_vertex			(const OGF_Vertex& c)	{ P	= c.P; }
 	BOOL				similar		(OGF* p, x_vertex&	other);
 };
@@ -80,6 +82,7 @@ struct OGF;
 
 struct OGF_Base
 {
+
 	int					iLevel;
 	u16					Sector;
 	BOOL				bConnected;
@@ -100,55 +103,42 @@ struct OGF_Base
 	virtual void		PreSave		(u32 tree_id)				{};
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &RES)	= 0;
-	void				CalcBounds	(); 
+	void				CalcBounds	(bool useProgressBar=false); 
+
+	void				SaveForCompile(IWriter* W);
+	void				LoadForCompile(IReader* R);
 };
 extern xr_vector<OGF_Base *>		g_tree;
 
 struct OGF : public OGF_Base
-{
-	u32					material	;
-	vecOGF_T			textures	;
-/*
-	vecOGF_V			vertices	;
-	vecOGF_F			faces		;
-
-	// fast-vertices
-	vec_XV				x_vertices	;
-	vecOGF_F			x_faces		;
-
-	// Progressive
-	FSlideWindowItem	m_SWI		;		// The records of the collapses.
-	FSlideWindowItem	x_SWI		;		// The records of the collapses / fast-path
-*/
-	// for build only
-	u32					dwRelevantUV	;
-	u32					dwRelevantUVMASK;
-/*
-	u32					vb_id	,	xvb_id;
-	u32					vb_start,	xvb_start;
-	u32					ib_id	,	xib_id;
-	u32					ib_start,	xib_start;
-	u32					sw_id	,	xsw_id;
-*/
-	
+{	
 	template <typename t_vertices>
 	struct	ogf_container
 	{
 		t_vertices			vertices;
 		vecOGF_F			faces	;
-		FSlideWindowItem	m_SWI	;
+		FSlideWindowItem	m_SWI	;	// FAST, PROGRESSIVE
 		u32					vb_id	;
 		u32					vb_start;
 		u32					ib_id	;
 		u32					ib_start;
 		u32					sw_id	;
+
 		ogf_container(): vb_id(-1), vb_start(-1), ib_id(-1), ib_start(-1), sw_id(-1){}
 	};
+
+	u32					material;
+	vecOGF_T			textures;
+
+	// for build only
+	u32					dwRelevantUV;
+	u32					dwRelevantUVMASK;
 
 	ogf_container	<vecOGF_V>	data;
 	ogf_container	<vec_XV>	fast_path_data;
 
-	OGF() : OGF_Base(0) {
+	OGF() : OGF_Base(0) 
+	{
 		data.m_SWI.count			= 0;
 		data.m_SWI.sw			= 0;
 		data.m_SWI.reserved[0]	= 0;
@@ -157,10 +147,9 @@ struct OGF : public OGF_Base
 		data.m_SWI.reserved[3]	= 0;
 		dwRelevantUV		= 0;
 		dwRelevantUVMASK	= 0;
-
-		//vb_id=xvb_id=vb_start=xvb_start=ib_id=xib_id=ib_start=xib_start=sw_id=xsw_id=u32(-1);
 	};
-	~OGF(){
+	~OGF()
+	{
 		xr_free			(data.m_SWI.sw);
 	}
 
@@ -188,18 +177,33 @@ struct OGF : public OGF_Base
 	virtual void		PreSave			(u32 tree_id);
 	virtual void		Save			(IWriter &fs);
 
-//	void				Save_Cached		(IWriter &fs, ogf_header& H, BOOL bColors);
-
 	void				Save_Normal_PM	(IWriter &fs, ogf_header& H, BOOL bColors);
-	void				Load_Normal_PM	(IReader &fs, ogf_header& H, BOOL bColors);
-
-//	void				Save_Progressive(IWriter &fs, ogf_header& H, BOOL bColors);
-
+	 
 	virtual void		GetGeometry		(xr_vector<Fvector> &R)
 	{
 		for (xr_vector<OGF_Vertex>::iterator I=data.vertices.begin(); I!=data.vertices.end(); I++)
 			R.push_back(I->P);
 	}
+
+	void				SaveForCompile(IWriter* W);
+	void				LoadForCompile(IReader* R);
+
+	size_t Sizeof()
+	{
+		u32 SizeV = data.vertices.size() * sizeof(OGF_Vertex);
+		u32 SizeF = data.faces.size() * sizeof(OGF_Face);
+		u32 SizexV = fast_path_data.vertices.size() * sizeof(x_vertex);
+		u32 SizexF = fast_path_data.faces.size() * sizeof(OGF_Face);
+		u32 tex = 0;
+		for (auto& T : textures)
+		{
+			tex += T.name.size();
+			tex += sizeof(T.pBuildSurface);
+		}
+
+		return sizeof(*this) + SizeV + SizeF + SizexV + SizexF + tex;
+	}
+
 };
 
 struct OGF_Reference : public OGF_Base
@@ -234,6 +238,19 @@ struct OGF_Reference : public OGF_Base
 			R.push_back				(P);
 		}
 	}
+
+	size_t Sizeof() 
+	{
+		u32 tex = 0;
+		for (auto& T : textures)
+		{
+			tex += T.name.size();
+			tex += sizeof(T.pBuildSurface);
+		}
+		return sizeof(*this) + tex + model->Sizeof();
+	};
+	void SaveForCompile(IWriter* W);
+	void LoadForCompile(IReader* R);
 };
 
 struct OGF_Node : public OGF_Base
