@@ -28,5 +28,5 @@ target_compile_definitions(xrServer PRIVATE XRSERVER_EXPORT)
 
 # Linker list
 target_link_libraries(xrServer PUBLIC xrAbstractions)
-add_dependencies(xrServer xrRender_R1)
+add_dependencies(xrServer xrRender_DS0)
 add_dependencies(xrServer xrGame)
