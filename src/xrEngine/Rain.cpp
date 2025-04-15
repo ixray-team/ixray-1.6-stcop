@@ -21,19 +21,31 @@
 
 CEffect_Rain::CEffect_Rain()
 {
-	state							= stIdle;
-	
-	snd_Ambient.create				("ambient\\rain",st_Effect,sg_Undefined);
+	state = stIdle;
+	snd_Ambient.create("ambient\\rain", st_Effect, sg_Undefined);
+
+	string_path RainSounds = {};
+	FS.update_path(RainSounds, "$game_sounds$", "ambient\\rain_drops_roof.ogg");
+
+	if (FS.exist(RainSounds))
+	{
+		snd_RoofDroplets.create("ambient\\rain_drops_roof", st_Effect, sg_Undefined);
+		snd_RoofDropletsHard.create("ambient\\thunder_drops_roof", st_Effect, sg_Undefined);
+	}
+
 	m_rainVolume = 0.0f;
 	p_create();
 }
 
 CEffect_Rain::~CEffect_Rain()
 {
-	snd_Ambient.destroy				();
+	snd_Ambient.destroy();
+	snd_RoofDroplets.destroy();
+	snd_RoofDropletsHard.destroy();
 	m_rainVolume = 0.0f;
+
 	// Cleanup
-	p_destroy						();
+	p_destroy();
 }
 
 // Born
@@ -175,45 +187,49 @@ void CEffect_Rain::OnFrame()
     // Parse states
     float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     static float hemi_factor = 0.f;
-#ifndef _EDITOR
     CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
     if (E && E->renderable_ROS())
     {
-//		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
-		float* hemi_cube		= E->renderable_ROS()->get_luminocity_hemi_cube();
-		float hemi_val			= _max(hemi_cube[0],hemi_cube[1]);
-		hemi_val				= _max(hemi_val, hemi_cube[2]);
-		hemi_val				= _max(hemi_val, hemi_cube[3]);
-		hemi_val				= _max(hemi_val, hemi_cube[5]);
+		float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
+		float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
+		hemi_val = _max(hemi_val, hemi_cube[2]);
+		hemi_val = _max(hemi_val, hemi_cube[3]);
+		hemi_val = _max(hemi_val, hemi_cube[5]);
 
-//		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
-		float f					= hemi_val;
-		float t					= Device.fTimeDelta;
-		clamp					(t, 0.001f, 1.0f);
-		hemi_factor				= hemi_factor*(1.0f-t) + f*t;
+		//		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
+		float f = hemi_val;
+		float t = Device.fTimeDelta;
+		clamp(t, 0.001f, 1.0f);
+		hemi_factor = hemi_factor * (1.0f - t) + f * t;
 	}
-#endif
 
+	ref_sound& CurDropSnd = factor < 0.7f ? snd_RoofDroplets : snd_RoofDropletsHard;
 	switch (state)
 	{
-	case stIdle:		
+	case stIdle:
+	{
 		if (factor < EPS_L)
 		{
 			if (snd_Ambient._feedback())
 				snd_Ambient.stop();
 			return;
 		}
-		state					= stWorking;
-		snd_Ambient.play		(0,sm_Looped);
-		snd_Ambient.set_position(Fvector().set(0,0,0));
-		snd_Ambient.set_range	(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset*2.f);
-	break;
+
+		state = stWorking;
+		snd_Ambient.play(nullptr, sm_Looped);
+		CurDropSnd.play(nullptr, sm_Looped);
+		snd_Ambient.set_position(Fvector().set(0, 0, 0));
+		snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
+		break;
+	}
 	case stWorking:
 		if (factor<EPS_L)
 		{
 			state				= stIdle;
 			snd_Ambient.stop	();
 			m_rainVolume = 0.0f;
+			snd_RoofDroplets.stop();
+			snd_RoofDropletsHard.stop();
 			return;
 		}
 		break;
@@ -227,6 +243,25 @@ void CEffect_Rain::OnFrame()
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 
+	if (CurDropSnd._feedback())
+	{
+		float Distance = 35.f;
+		const Fvector Direction(0, 1, 0);
+		Fvector Position = Device.vCameraPosition;
+
+		if (RayPick(Position, Direction, Distance, collide::rqtBoth))
+		{
+			Fvector	sndP;
+			sndP.mad(Position, Direction, Distance);
+			CurDropSnd.set_position(sndP);
+			CurDropSnd.set_volume(1);
+		}
+		else
+		{
+			CurDropSnd.set_volume(0.f);
+		}
+	}
+	
 	if (Device.IsEditorMode())
 		UpdateItems();
 }
