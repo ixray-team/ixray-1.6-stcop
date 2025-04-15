@@ -29,7 +29,7 @@ namespace Embree
 	};
 
 
-	// ΒΐΖΝΫΙ ΟΐΠΐΜΕÒΠ TNEAR Δλÿ οεπερεχενθÿ ρ βξδξι
+	// Π’ΠΠ–ΠΠ«Π™ ΠΠΠ ΠΠΠ•ΠΆΠ  TNEAR Π”Π»Ρ ΠΏΠµΡ€ΠµΡΠµΡ‡ΠµΠ½ΠΈΡ Ρ Π²ΠΎΠ΄ΠΎΠΉ
 	void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
 	void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
 

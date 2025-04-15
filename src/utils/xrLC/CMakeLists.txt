@@ -54,7 +54,7 @@ source_group("res" FILES ${XLC_SOURCE_RES_FILES})
 source_group("build" FILES ${XLC_SOURCE_BUILD_FILES})
 source_group("nvidia" FILES ${XLC_SOURCE_NVIDIA_FILES})
 source_group("ogf" FILES ${XLC_SOURCE_OGF_FILES})
-source_group("ogf\\mumodels" FILES ${XLC_SOURCE_MUMODELS_FILES})
+source_group("ogf/mumodels" FILES ${XLC_SOURCE_MUMODELS_FILES})
 
 
 # Apply list
@@ -81,7 +81,7 @@ target_precompile_headers(xrLC PRIVATE "stdafx.h")
 target_link_libraries(xrLC PUBLIC xrCore)
 target_link_libraries(xrLC PUBLIC xrCDB)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
-target_link_libraries(xrLC PUBLIC QSlim)
 target_link_libraries(xrLC PUBLIC ETools)
 target_link_libraries(xrLC PUBLIC MagicFM)
 target_link_libraries(xrLC PUBLIC NvMender2003)
+target_link_libraries(xrLC PUBLIC "meshoptimizer.lib")
