@@ -36,6 +36,7 @@
 #include "Car.h"
 #include "movement_manager.h"
 #include "detail_path_manager.h"
+#include "CharacterPhysicsSupport.h"
 
 void CScriptGameObject::explode	(u32 level_time)
 {
@@ -522,4 +523,93 @@ bool CScriptGameObject::IsActorLadder() const
 	}
 
 	return actor->is_ladder();
+}
+void CScriptGameObject::ResetBoneProtections(LPCSTR imm_sect, LPCSTR bone_sect)
+{
+	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+	if (!stalker)
+		return;
+
+	stalker->ResetBoneProtections(imm_sect,bone_sect);
+}
+
+#include "stalker_animation_manager.h"
+void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
+{
+	if (strcmp(visual, object().cNameVisual().c_str()) == 0)
+		return;
+
+	if (!bForce)
+	{
+		object().cNameVisual_set(visual);
+		return;
+	}
+
+	CActor* actor = smart_cast<CActor*>(&object());
+	if (actor)
+	{
+		actor->ChangeVisual(visual);
+		actor->OnChangeVisual();
+		return;
+	}
+
+	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+	if (stalker)
+	{
+		NET_Packet P;
+		object().u_EventGen(P, GE_CHANGE_VISUAL, object().ID());
+		P.w_stringZ(visual);
+		object().u_EventSend(P);
+
+		stalker->ChangeVisual(visual);
+
+		CPhysicsShell* tmp_shell = stalker->PPhysicsShell();
+		stalker->PPhysicsShell() = NULL;
+		stalker->OnChangeVisual();
+		stalker->PPhysicsShell() = tmp_shell;
+		tmp_shell = NULL;
+
+		IKinematicsAnimated* V = smart_cast<IKinematicsAnimated*>(stalker->Visual());
+		if (V){
+			if (!stalker->already_dead())
+				stalker->CStepManager::reload(stalker->cNameSect().c_str());
+			stalker->CDamageManager::reload(*stalker->cNameSect(), "damage", pSettings);
+			stalker->ResetBoneProtections(NULL, NULL);
+			stalker->reattach_items();
+			stalker->m_pPhysics_support->in_ChangeVisual();
+			stalker->animation().reload();
+		}
+	}
+}
+
+LPCSTR CScriptGameObject::get_visual_name() const
+{
+	return object().cNameVisual().c_str();
+}
+
+void CScriptGameObject::RemoveMemorySoundObject(const MemorySpace::CSoundObject &memory_object)
+{
+	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+	if (!stalker)
+		return;
+
+	stalker->memory().sound().remove(&memory_object);
+}
+
+void CScriptGameObject::RemoveMemoryHitObject(const MemorySpace::CHitObject &memory_object)
+{
+	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+	if (!stalker)
+		return;
+
+	stalker->memory().hit().remove(&memory_object);
+}
+
+void CScriptGameObject::RemoveMemoryVisibleObject(const MemorySpace::CVisibleObject &memory_object)
+{
+	CAI_Stalker* stalker = smart_cast<CAI_Stalker*>(&object());
+	if (!stalker)
+		return;
+
+	stalker->memory().visual().remove(&memory_object);
 }

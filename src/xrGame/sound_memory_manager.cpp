@@ -395,6 +395,25 @@ void CSoundMemoryManager::remove_links	(CObject *object)
 #endif
 }
 
+struct CRemoveSoundObjectPredicate {
+	const MemorySpace::CSoundObject* m_object;
+
+	CRemoveSoundObjectPredicate(const MemorySpace::CSoundObject* object) : m_object(object)
+	{
+	}
+	bool operator() (const MemorySpace::CSoundObject& object) const
+	{
+		return (m_object == &object);
+	}
+};
+
+void CSoundMemoryManager::remove(const MemorySpace::CSoundObject* sound_object)
+{
+	SOUNDS::iterator I = std::find_if(m_sounds->begin(), m_sounds->end(), CRemoveSoundObjectPredicate(sound_object));
+	if (I != m_sounds->end())
+		m_sounds->erase(I);
+}
+
 void CSoundMemoryManager::save	(NET_Packet &packet) const
 {
 	if (!m_object->g_Alive())

@@ -264,6 +264,9 @@ public:
 	virtual	void						PHHit								(SHit &H);
 	virtual BOOL						feel_vision_isRelevant				(CObject* who);
 	virtual float						Radius								() const;
+
+	virtual void						ChangeVisual						( shared_str NewVisual );
+
 #ifdef DEBUG_DRAW
 	virtual void						OnHUDDraw							(CCustomHUD* hud);
 	virtual void						OnRender							();
@@ -321,6 +324,7 @@ public:
 			bool						ready_to_detour			();
 			void						update_best_item_info	();
 			void						update_best_item_info_impl();
+			void						ResetBoneProtections	(LPCSTR imm_sect, LPCSTR bone_sect);
 	virtual float						GetWeaponAccuracy		() const;
 	virtual bool						unlimited_ammo			();
 	virtual bool						infinite_fire() override;

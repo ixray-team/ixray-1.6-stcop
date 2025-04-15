@@ -4,6 +4,7 @@
 #include "object_broker.h"
 #include "UICellItem.h"
 #include "../../xrUI/UICursor.h"
+#include "../Inventory.h"
 
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = nullptr;
@@ -552,16 +553,26 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
 	if(!m_pParentDragDropList->IsGrouping())	return false;
 
-	CUICellItem* i		= FindSimilar(itm);
-	R_ASSERT			(i!=itm);
-	R_ASSERT			(0==itm->ChildsCount());
-	if(i)
-	{	
-		i->PushChild			(itm);
-		itm->SetOwnerList		(m_pParentDragDropList);
+	//Alundaio: Don't stack equipped items
+	PIItem	iitem = (PIItem)itm->m_pData;
+	if (iitem && iitem->m_pInventory)
+	{
+		if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
+			return false;
+
+		if (!iitem->CanStack())
+			return false;
 	}
-	
-	return (i!=nullptr);
+	//-Alundaio
+
+	CUICellItem* i		= FindSimilar(itm);
+	if (i == nullptr || i == itm || itm->ChildsCount() > 0)
+		return false;
+
+	i->PushChild(itm);
+	itm->SetOwnerList(m_pParentDragDropList);
+
+	return true;
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
@@ -573,9 +584,25 @@ CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 #else
 		CUICellItem* i = (CUICellItem*)(*it);
 #endif
-		R_ASSERT		(i!=itm);
-		if(i->EqualTo(itm))
-			return i;
+		if (i == itm)
+			continue;
+
+		if (!i->EqualTo(itm))
+			continue;
+
+		//Alundaio: Don't stack equipped items
+		PIItem	iitem = (PIItem)i->m_pData;
+		if (iitem && iitem->m_pInventory)
+		{
+			if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
+				continue;
+
+			if (!iitem->CanStack())
+				continue;
+		}
+		//-Alundaio
+
+		return i;
 	}
 	return nullptr;
 }
