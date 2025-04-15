@@ -6,5 +6,9 @@ public:
 	virtual ~UIMainMenuForm();
 	virtual void Draw();
 	void ExportLevelAsArchive();
+
+private:
+	ref_texture PlugPy;
+	ref_texture PlugLua;
 };
 
