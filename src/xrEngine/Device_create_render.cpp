@@ -202,103 +202,104 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 	ImManager.InitPlatform();
 
 	ImManager.ApplyMainViewport(DrawMainViewport);
-	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight,[]() 
-	{
-		auto& States = Engine.External.EditorStates;
-
-		if (ImGui::BeginMainMenuBar()) 
+	ImManager.Subscribe("Dockspace", CImGuiManager::ERenderPriority::eHight, []()
 		{
-			if (ImGui::BeginMenu("File"))
-			 {
-				if (ImGui::MenuItem("Exit", "")) 
-				{
-					g_pEventManager->Event.Defer("KERNEL:disconnect");
-					g_pEventManager->Event.Defer("KERNEL:quit");
-				}
+			auto& States = Engine.External.EditorStates;
 
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Edit")) {
-				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
-				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("View")) {
-				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
-				ImGui::MenuItem("Actor InfoPortions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
-				ImGui::MenuItem("Scenes Viewer", nullptr, &States[static_cast<u8>(EditorUI::ScenesViewer)]);
-				ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
-				ImGui::MenuItem("Effectors", nullptr, &States[static_cast<u8>(EditorUI::CameraEffectors)]);
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Game"))
+			if (ImGui::BeginMainMenuBar())
 			{
-				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
-				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
-				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
-				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
-				ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Tools")) 
-			{
-				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
-				ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
-				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
-				if (ImGui::MenuItem("Optick Start Capture"))
+				if (ImGui::BeginMenu("File"))
 				{
-					PROF_START_CAPTURE();
-				}
+					if (ImGui::MenuItem("Exit", ""))
+					{
+						g_pEventManager->Event.Defer("KERNEL:disconnect");
+						g_pEventManager->Event.Defer("KERNEL:quit");
+					}
 
-				if (ImGui::MenuItem("Optick Stop Capture"))
-				{
-					PROF_STOP_CAPTURE();
-					PROF_SAVE_CAPTURE("ixr.opt");
-				}
-				
-				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
-				{
-					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
 					ImGui::EndMenu();
 				}
 
+				if (ImGui::BeginMenu("Edit")) {
+					ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
+					ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+					ImGui::EndMenu();
+				}
 
-				ImGui::EndMenu();
+				if (ImGui::BeginMenu("View")) {
+					ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
+					ImGui::MenuItem("Actor InfoPortions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
+					ImGui::MenuItem("Scenes Viewer", nullptr, &States[static_cast<u8>(EditorUI::ScenesViewer)]);
+					ImGui::MenuItem("Console", nullptr, &States[static_cast<u8>(EditorUI::CmdConsole)]);
+					ImGui::MenuItem("Effectors", nullptr, &States[static_cast<u8>(EditorUI::CameraEffectors)]);
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Game"))
+				{
+					ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
+					ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
+					ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
+					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
+					ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
+					ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Tools"))
+				{
+					ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
+					ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
+					ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
+					if (ImGui::MenuItem("Optick Start Capture"))
+					{
+						PROF_START_CAPTURE();
+					}
+
+					if (ImGui::MenuItem("Optick Stop Capture"))
+					{
+						PROF_STOP_CAPTURE();
+						PROF_SAVE_CAPTURE("ixr.opt");
+					}
+
+					if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
+					{
+						ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+						ImGui::EndMenu();
+					}
+
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndMainMenuBar();
 			}
 
-			ImGui::EndMainMenuBar();
-		}
+			const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(Viewport->WorkPos);
+			ImGui::SetNextWindowSize(Viewport->WorkSize);
+			ImGui::SetNextWindowViewport(Viewport->ID);
+			ImGui::SetNextWindowBgAlpha(0);
 
-		const ImGuiViewport* Viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(Viewport->WorkPos);
-		ImGui::SetNextWindowSize(Viewport->WorkSize);
-		ImGui::SetNextWindowViewport(Viewport->ID);
-		ImGui::SetNextWindowBgAlpha(0);
-
-		constexpr ImGuiWindowFlags dockspace_window_flags = 0
-			| ImGuiWindowFlags_NoTitleBar
-			| ImGuiWindowFlags_NoCollapse
-			| ImGuiWindowFlags_NoResize
-			| ImGuiWindowFlags_NoMove
-			| ImGuiWindowFlags_NoDocking
-			| ImGuiWindowFlags_NoNavFocus;
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		if (ImGui::Begin("DockSpaceViewport_Main", nullptr, dockspace_window_flags)) 
-		{
-			ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-		}
-		ImGui::End();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-	});
+			constexpr ImGuiWindowFlags dockspace_window_flags = 0
+				| ImGuiWindowFlags_NoTitleBar
+				| ImGuiWindowFlags_NoCollapse
+				| ImGuiWindowFlags_NoResize
+				| ImGuiWindowFlags_NoMove
+				| ImGuiWindowFlags_NoDocking
+				| ImGuiWindowFlags_NoNavFocus;
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			if (ImGui::Begin("DockSpaceViewport_Main", nullptr, dockspace_window_flags))
+			{
+				ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+			}
+			ImGui::End();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
+		});
 #endif
 	switch (API) {
 
@@ -335,7 +336,7 @@ void CRenderDevice::DestroyRenderDevice()
 #ifndef _EDITOR
 	CImGuiManager::Instance().Destroy();
 #endif
-	switch (CurrentAPILevel) 
+	switch (CurrentAPILevel)
 	{
 
 	case APILevel::DX9:
@@ -428,7 +429,8 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 		displayMode.h = psCurrentVidMode[1];
 		SDL_SetWindowFullscreenMode(g_AppInfo.Window, &displayMode);
 		SDL_SetWindowFullscreen(g_AppInfo.Window, SDL_WINDOW_FULLSCREEN);
-	} else {
+	}
+	else {
 		SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
 		SDL_SetWindowSize(g_AppInfo.Window, width, height);
 
