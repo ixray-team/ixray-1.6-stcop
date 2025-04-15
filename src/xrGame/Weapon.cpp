@@ -2712,7 +2712,7 @@ bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
-	return GetState() == eFire || isBlockSprintInReload && GetState() == eReload;
+	return GetState() == eFire || GetState() == eSprintEnd || isBlockSprintInReload && GetState() == eReload;
 }
 
 u8 CWeapon::GetCurrentHudOffsetIdx()
