@@ -1,8 +1,8 @@
 #pragma once
-class XRayLensFlareRender:public ILensFlareRender
+class CDS0_LensFlareRender:public ILensFlareRender
 {
 public:
-	XRayLensFlareRender();
+	CDS0_LensFlareRender();
 	virtual void Copy(ILensFlareRender &_in);
 
 
