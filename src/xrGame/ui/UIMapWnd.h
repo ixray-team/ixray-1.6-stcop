@@ -7,7 +7,7 @@
 class CUICustomMap;
 class CUIGlobalMap;
 class CUIFrameWindow;
-class CUIFixedScrollBar;
+class CUIScrollBar;
 class CUIFrameLineWnd;
 class FRbmkMapActionPlanner;
 class CUITabControl;
@@ -42,8 +42,8 @@ private:
 	
 	CUIFrameWindow*				m_UIMainFrame;
 	bool						m_scroll_mode;
-	CUIFixedScrollBar*				m_UIMainScrollV;
-	CUIFixedScrollBar*				m_UIMainScrollH;
+	CUIScrollBar*				m_UIMainScrollV;
+	CUIScrollBar*				m_UIMainScrollH;
 	CUIWindow*					m_UILevelFrame;
 	FRbmkMapActionPlanner*		m_ActionPlanner;
 
