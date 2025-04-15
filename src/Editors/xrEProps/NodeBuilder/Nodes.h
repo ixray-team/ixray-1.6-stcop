@@ -65,6 +65,7 @@ public:
 	void CreateContactLink(int Parent, int Child);
 
 	INodeUnknown* GetNextNode();
+	virtual void MakeOutNode(INodeUnknown* Node);
 protected:
 	virtual void DrawHeader();
 	virtual void DrawEnd();

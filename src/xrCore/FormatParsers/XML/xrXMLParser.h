@@ -19,7 +19,7 @@ public:
 	void				ClearInternal			();
 
 	bool 				Load					(LPCSTR path_alias, LPCSTR path, LPCSTR  xml_filename);
-
+	void				Save					();
 
 	//чтение элементов
 	LPCSTR 				Read					(LPCSTR path, int index,  LPCSTR   default_str_val);
