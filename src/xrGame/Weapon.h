@@ -469,7 +469,8 @@ public:
 	IC int					GetAmmoElapsed		()	const		{ return iAmmoElapsed; }
 	int						GetAmmoChamberElapsed()	const		{ return iAmmoChamberElapsed; }
 	IC int					GetAmmoMagSize		()	const		{ return iMagazineSize; }
-	bool					IsChamber			()  const		{ return m_bAmmoInChamber ;}
+	bool					IsChamber			()  const		{ return m_bAmmoInChamber; }
+	bool					IsChangeAmmoType	()	const		{ return (m_set_next_ammoType_on_reload != undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload); }
 	void SetAmmoMagSize(int size);
 	int						GetSuitableAmmoTotal(bool use_item_to_spawn = false) const;
 
