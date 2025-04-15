@@ -1063,14 +1063,6 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
 {
-#if 0//def DEBUG
-	if (m_Events.size() > 1000) {
-		static bool breakpoint = true;
-		if (breakpoint)
-			__debugbreak();
-	}
-#endif // #ifdef DEBUG
-
 	m_Events.push_back	(_event())		;
 	_event&	E		= m_Events.back()	;
 	E.Type			= Type				;
