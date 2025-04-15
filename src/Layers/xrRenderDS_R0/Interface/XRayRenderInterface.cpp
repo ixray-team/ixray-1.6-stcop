@@ -134,8 +134,7 @@ void CDS0_RenderInterface::flush()
 
 IRender_ObjectSpecific* CDS0_RenderInterface::ros_create(IRenderable* parent)
 {
-	static CDS0_RenderObjectSpecific Fake;
-	return &Fake;
+	return new CDS0_RenderObjectSpecific;
 }
 
 void CDS0_RenderInterface::ros_destroy(IRender_ObjectSpecific*&)
@@ -144,14 +143,12 @@ void CDS0_RenderInterface::ros_destroy(IRender_ObjectSpecific*&)
 
 IRender_Light* CDS0_RenderInterface::light_create()
 {
-	static CDS0_RenderLight Fake;
-	return &Fake;
+	return new CDS0_RenderLight;
 }
 
 IRender_Glow* CDS0_RenderInterface::glow_create()
 {
-	static CDS0_RenderGlow Fake;
-	return &Fake;
+	return new CDS0_RenderGlow;
 }
 
 IRenderVisual* CDS0_RenderInterface::model_CreateParticles(LPCSTR name)
