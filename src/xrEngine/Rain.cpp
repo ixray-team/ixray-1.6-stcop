@@ -9,10 +9,10 @@
 #ifdef _EDITOR
     #include "ui_toolscustom.h"
 #else
-#include "Render.h"
-#include "IGame_Level.h"
-#include "../xrCDB/xr_area.h"
-	#include "xr_object.h"
+    #include "Render.h"
+    #include "IGame_Level.h"
+    #include "../xrCDB/xr_area.h"
+    #include "xr_object.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -152,10 +152,8 @@ BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, col
 	BOOL bRes 			= TRUE;
 	if (Device.IsEditorMode())
 	{
-#ifndef MASTER_GOLD
 		EditorScene->RayPick(s, d, range);
 			return true;
-#endif
 	}
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
@@ -178,31 +176,34 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 	}
 }
 
-void	CEffect_Rain::OnFrame	()
+void CEffect_Rain::OnFrame()
 {
 	PROF_EVENT("CEffect_Rain::OnFrame");
 #ifndef _EDITOR
-	if (!g_pGameLevel&&!Device.IsEditorMode())			return;
+    if (!g_pGameLevel && !Device.IsEditorMode())
+        return;
 #endif
 
-	if (g_dedicated_server) {
-		return;
-	}
+    if (g_dedicated_server)
+    {
+        return;
+    }
 
-	// Parse states
-	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	static float hemi_factor	= 0.f;
+    // Parse states
+    float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    static float hemi_factor = 0.f;
+
 #ifndef _EDITOR
-	CObject* E 					= g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
-	if (E&&E->renderable_ROS())
-	{
+    CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
+    if (E && E->renderable_ROS())
+    {
 //		hemi_factor				= 1.f-2.0f*(0.3f-_min(_min(1.f,E->renderable_ROS()->get_luminocity_hemi()),0.3f));
 		float* hemi_cube		= E->renderable_ROS()->get_luminocity_hemi_cube();
 		float hemi_val			= _max(hemi_cube[0],hemi_cube[1]);
 		hemi_val				= _max(hemi_val, hemi_cube[2]);
 		hemi_val				= _max(hemi_val, hemi_cube[3]);
 		hemi_val				= _max(hemi_val, hemi_cube[5]);
-		
+
 //		float f					= 0.9f*hemi_factor + 0.1f*hemi_val;
 		float f					= hemi_val;
 		float t					= Device.fTimeDelta;
@@ -240,14 +241,15 @@ void	CEffect_Rain::OnFrame	()
 	}
 }
 
-//#include "xr_input.h"
-void	CEffect_Rain::Render	()
+// #include "xr_input.h"
+void CEffect_Rain::Render()
 {
 #ifndef _EDITOR
-	if (!g_pGameLevel&&!Device.IsEditorMode())			return;
+    if (!g_pGameLevel && !Device.IsEditorMode())
+        return;
 #endif
 
-	m_pRender->Render(*this);
+    m_pRender->Render(*this);
 }
 
 // startup _new_ particle system
