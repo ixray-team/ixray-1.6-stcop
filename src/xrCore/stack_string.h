@@ -12,6 +12,18 @@
 #include <iterator>
 #include <cassert>
 
+#ifdef UNICODE
+#ifdef IXR_WINDOWS
+using xr_char_t = wchar_t;
+#elif defined(IXR_LINUX)
+using xr_char_t = char16_t;
+#endif
+#define XR_TEXT(text) L##text
+#else
+using xr_char_t = char;
+#define XR_TEXT(text) text
+#endif
+
 template<typename char_t, unsigned int _kStringLength>
 class stack_string
 {
@@ -227,6 +239,9 @@ public:
 		if (current_index <= _kStringLength - 1)
 			this->m_buffer[current_index] = symbol;
 
+		if (current_index + 1 < _kStringLength)
+			this->m_buffer[current_index + 1] = char_t(0);
+
 		return *this;
 	}
 
@@ -295,11 +310,19 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const char_t* r
 
 static_assert(sizeof(stack_string<char, 1>) == sizeof(char[1]), "you can't add any additional field to this class! pure buffer on stack... (there's no point in reducing counting operations and caching like size of buffer and etc)");
 
-template<stack_string<char, 1>::number_type StringLength>
+// xr_stack_string_number_type_type
+using xr_ssnt_t = stack_string<char, 1>::number_type;
+
+template<xr_ssnt_t StringLength>
 using xr_stack_string = stack_string<char, StringLength>;
 
-template<stack_string<char, 1>::number_type StringLength>
+#ifdef IXR_WINDOWS
+template<xr_ssnt_t StringLength>
 using xr_stack_wstring = stack_string<wchar_t, StringLength>;
+#elif defined(IXR_LINUX)
+template<xr_ssnt_t StringLength>
+using xr_stack_wstring = stack_string<char16_t, StringLength>;
+#endif
 
-// xr_stack_string_number_type_type
-using xr_ssnt_t = xr_stack_string<1>::number_type;
+template<xr_ssnt_t StringLength>
+using xr_stack_tstring = stack_string<xr_char_t, StringLength>;
