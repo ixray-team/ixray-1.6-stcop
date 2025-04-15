@@ -3,15 +3,13 @@
 
 #include "IGame_Persistent.h"
 
-#ifndef _EDITOR
 #include "Environment.h"
-#	include "x_ray.h"
-#	include "IGame_Level.h"
-#	include "XR_IOConsole.h"
-#	include "Render.h"
-#	include "ps_instance.h"
-#	include "CustomHUD.h"
-#endif
+#include "x_ray.h"
+#include "IGame_Level.h"
+#include "XR_IOConsole.h"
+#include "Render.h"
+#include "ps_instance.h"
+#include "CustomHUD.h"
 
 #ifdef _EDITOR
 	bool g_dedicated_server	= false;
@@ -159,13 +157,10 @@ void IGame_Persistent::OnGameEnd	()
 #endif
 }
 
-void IGame_Persistent::OnFrame		()
+void IGame_Persistent::OnFrame()
 {
-#ifndef _EDITOR
-
-	if(!Device.Paused() || Device.dwPrecacheFrame)
-		Environment().OnFrame	();
-#endif
+    if (!Device.Paused() || Device.dwPrecacheFrame)
+        Environment().OnFrame();
 }
 
 void IGame_Persistent::UpdateParticles()
