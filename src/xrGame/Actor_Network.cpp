@@ -532,6 +532,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 			if (!smart_cast<CActorMP*>(this))
 			{
 				E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+				E->s_flags.set(M_SPAWN_OBJECT_ASPLAYER, FALSE);
 				Msg("single_actor_spawn");
 				g_actor = this;
 				g_actor_single = this;
@@ -539,7 +540,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 			}
 		}
 
-		if (OnClient())
+		if (OnClient() || (OnServer() && !g_dedicated_server))
 		{
 			if (smart_cast<CActorMP*>(this)) 
 			{
