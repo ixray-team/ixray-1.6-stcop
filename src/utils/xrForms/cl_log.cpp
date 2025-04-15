@@ -20,14 +20,14 @@ xr_vector<xr_string>& GetLogVector()
 	return myLogVector;
 }
 
-volatile BOOL				bClose				= FALSE;
+volatile BOOL				bClose = FALSE;
 
 static char					status[1024] = "";
 static char					additional_data[1024] = "";
 
-static float				progress			= 0.0f;
-static u32					phase_start_time	= 0;
-static u32					phase_total_time	= 0;
+static float				progress = 0.0f;
+static u32					phase_start_time = 0;
+static u32					phase_total_time = 0;
 
 //static HWND hwPhaseTime	= 0;
 
@@ -43,13 +43,13 @@ xr_string make_time(u32 sec)
 	return buf;
 }
 
-void __cdecl Status(const char* format, ...) 
+void __cdecl Status(const char* format, ...)
 {
 	csLog.Enter();
 	va_list				mark;
 	va_start(mark, format);
 	vsprintf(status, format, mark);
-	
+
 	Msg("    | %s", status);
 	csLog.Leave();
 }
@@ -60,8 +60,8 @@ void StatusNoMsg(const char* format, ...)
 	va_list				mark;
 	va_start(mark, format);
 	vsprintf(status, format, mark);
-	
- 	csLog.Leave();
+
+	csLog.Leave();
 }
 
 void Progress(const float F)
@@ -92,14 +92,15 @@ IterationData* GetActiveIteration()
 }
 void SetActiveIteration(IterationData* i)
 {
-	if (auto* p = (ActiveIteration ? &ActiveIteration->phases : nullptr); 
+	if (auto* p = (ActiveIteration ? &ActiveIteration->phases : nullptr);
 		p && p->size() > 0 && (*p)[p->size() - 1].status != Complited)
 		(*p)[p->size() - 1].status = Complited;
 
-	 ActiveIteration = i;
+	ActiveIteration = i;
 }
 
-void Phase(const char* phase_name) 
+extern void GetMemoryUsedStorage();
+void Phase(const char* phase_name)
 {
 	csLog.Enter();
 
@@ -113,6 +114,8 @@ void Phase(const char* phase_name)
 
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+
+		GetMemoryUsedStorage();
 	}
 
 	ActiveIteration->phases.push_back({ phase_name });
@@ -133,18 +136,18 @@ void AditionalData(const char* format, ...)
 	vsprintf(additional_data, format, mark);
 
 
-	if(ActiveIteration->phases.size() > 0)
+	if (ActiveIteration->phases.size() > 0)
 	{
-  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
 	}
- 
+
 	csLog.Leave();
 }
 
-void logThread(void* dummy) 
+void logThread(void* dummy)
 {
 	extern void Startup(LPSTR lpCmdLine);
-	
+
 	xrLogger::AddLogCallback(MyLogCallback);
 
 	string128 cmd;
@@ -172,7 +175,7 @@ void __cdecl clMsg(const char* format, ...) {
 
 class client_log_impl : public i_lc_log
 {
-	
+
 	virtual void clMsg(LPCSTR msg) override { ::clMsg(msg); }
 	virtual void clLog(LPCSTR msg) override { ::clLog(msg); }
 	virtual void Status(LPCSTR msg) override { ::Status(msg); }
