@@ -48,7 +48,7 @@ void CWeaponShotgun::switch2_Fire()
 
 void CWeaponShotgun::OnAnimationEnd(u32 state) 
 {
-	if (!m_bTriStateReload || state != eReload)
+	if (!m_bTriStateReload || state != eReload || state == eReload && IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire")))
 	{
 		bStopReloadSignal = false;
 		return inherited::OnAnimationEnd(state);
@@ -86,7 +86,14 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 
 void CWeaponShotgun::Reload() 
 {
-	if(m_bTriStateReload)
+	bool is_misfire = IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire"));
+
+	if (is_misfire)
+	{
+		bMisfireReload = true;
+	}
+
+	if (m_bTriStateReload && !is_misfire)
 		TriStateReload();
 	else
 		inherited::Reload();
@@ -104,8 +111,9 @@ void CWeaponShotgun::TriStateReload()
 
 void CWeaponShotgun::OnStateSwitch(u32 S)
 {
-	if(!m_bTriStateReload || S != eReload) {
-	
+	bool is_misfire = S == eReload && IsMisfire() && (HudAnimationExist("anm_reload_jammed") || HudAnimationExist("anm_reload_misfire"));
+	if (!m_bTriStateReload || S != eReload || is_misfire)
+	{
 		bStopReloadSignal = false; 
 		inherited::OnStateSwitch(S);
 		return;
