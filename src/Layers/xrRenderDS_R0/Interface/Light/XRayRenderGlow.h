@@ -1,6 +1,6 @@
 #pragma once
 
-class XRayRenderGlow :
+class CDS0_RenderGlow :
     public IRender_Glow
 {
 
