@@ -42,6 +42,7 @@ private:
 		EAligment align;
 		bool gradient;
 		EGradientMode gradientMode;
+		u32 gradientColor;
 	};
 
 	struct BaseData
@@ -63,6 +64,7 @@ protected:
 
 	u32 uFlags;
 	u32 dwCurrentColor;
+	u32 dwGradientColor;
 
 	EAligment eCurrentAlignment;
 	xr_vector<String> strings;
@@ -87,6 +89,7 @@ public:
 
 	void ReInit();
 	inline void SetColor(u32 C) { dwCurrentColor = C; };
+	inline void SetGradientColor(u32 C) { dwGradientColor = C; };
 
 	//inline void SetHeightI(float S);
 	inline void SetHeight(float S);
