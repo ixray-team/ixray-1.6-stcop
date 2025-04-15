@@ -455,6 +455,10 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeMonsterBase,CSE_ALifeMonsterAbstract,CSE_P
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 	virtual void					spawn_supplies			(LPCSTR){}
 	virtual void					spawn_supplies			(){}
+
+	virtual void SyncRead(NET_Packet& Packet) override;
+	virtual void SyncWrite(NET_Packet& Packet) override;
+
 #ifdef XRGAME_EXPORTS
 	virtual void					on_spawn				();
 	virtual	void					add_online				(const bool &update_registries);

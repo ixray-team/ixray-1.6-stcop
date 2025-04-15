@@ -1,6 +1,6 @@
 <w>
     <global width="1024" height="768"></global>
-	<stats x="910" y="10" width="130" height="100" stretch="1">
-		<text font="letterica16" align="l" color="white" complex_mode="1" />
+	<stats x="910" y="40" width="130" height="100" stretch="1">
+		<text font="letterica16" align="l" color="yellow" complex_mode="1" />
 	</stats>
 </w>
