@@ -61,7 +61,6 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 	}
 }
 
-
 void CBuild::Flex2OGF()
 {
 	float p_total	= 0;
@@ -106,7 +105,9 @@ void CBuild::Flex2OGF()
 					T.pBuildSurface		= T.pBuildSurface;	// Leave surface intact
 					R_ASSERT		(pOGF);
 					pOGF->textures.push_back(T);
-				} else {
+				} 
+				else
+				{
 					// If lightmaps persist
 					CLightmap*	LM	= F->lmap_layer;
 					if (LM)		{
@@ -148,25 +149,24 @@ void CBuild::Flex2OGF()
 		
 		try
 		{
-			// clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->Optimize						();
-			// clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->CalcBounds					();
-			
-			// clMsg		("%3d: prog: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
-			// if (!g_build_options.b_noise)
-			// pOGF->MakeProgressive	(c_PM_MetricLimit_static);
-			// clMsg		("%3d: strp: v(%d)-f(%d)",	MODEL_ID, pOGF->data.vertices.size(),pOGF->data.faces.size());
-			// pOGF->Stripify						();
+ 			pOGF->Optimize						();
+ 			pOGF->CalcBounds					();
+ 			// pOGF->MakeProgressive	(c_PM_MetricLimit_static);
+ 			// pOGF->Stripify						();
 		}
 		catch (...)
 		{
 			clMsg("* ERROR: Flex2OGF, 2nd part, model# %d",MODEL_ID);
 		}
 		
-		g_tree.push_back	(pOGF);
-		// xr_delete			(*it);
+		if (CheckInfinity_FBOX(pOGF->bbox))
+		{
+			clMsg("! Corrupted OGF [%u] is INFINITY bbox", MODEL_ID);
+			clMsg("! Corrupted OGF min{%.2f, %.2f, %.2f} max{%.2f, %.2f, %.2f}", VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+		}
 
+		g_tree.push_back	(pOGF);
+ 
 		MODEL_ID++;
 		Progress			(p_total+=p_cost);
 	}
