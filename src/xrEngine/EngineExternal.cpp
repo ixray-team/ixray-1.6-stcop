@@ -3,7 +3,7 @@
 
 ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
 
-CEngineExternal::CEngineExternal()
+CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
 {
 	string_path fname;
 	FS.update_path(fname, "$game_config$", "engine_external.ltx");
@@ -23,7 +23,13 @@ CEngineExternal::CEngineExternal()
 			}
 		}
 	}
-	if (!ClearSkyMode() && !CallOfPripyatMode())
+
+	if (pOptions->section_exist("general"))
+	{
+		InitPlatform(READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop"));
+	}
+
+	if (!ClearSkyMode() && !CallOfPripyatMode() && !ShadowOfChernobylMode())
 	{
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
@@ -98,7 +104,53 @@ bool CEngineExternal::operator[](const EEngineExternalEnvironment& ID) const {
 	return READ_IF_EXISTS(pOptions, r_bool, "environment", magic_enum::enum_name(ID).data(), false);
 }
 
-ENGINE_API CEngineExternal& EngineExternal() 
+bool CEngineExternal::operator[](const EEngineExternalPlatform& ID) const {
+	if (static_cast<unsigned char>(ID) > (static_cast<unsigned char>(sizeof(g_Platforms) / sizeof(g_Platforms[0])) - 1))
+		return false;
+
+	return g_Platforms[static_cast<unsigned char>(ID)] == m_platform_type;
+}
+
+void CEngineExternal::InitPlatform(const char* pPlatformName)
+{
+	if (!pPlatformName)
+		return;
+
+	for (unsigned char i = 0; i < static_cast<unsigned char>(EEngineExternalPlatform::EnumSize); ++i)
+	{
+		if (!xr_strcmp(pPlatformName, g_PlatformNames[i]))
+		{
+			m_platform_type = g_Platforms[i];
+			break;
+		}
+	}
+}
+
+const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform platform)
+{
+	switch (platform)
+	{
+	case EEngineExternalPlatform::ShadowOfChernobyl:
+	{
+		return "Shadow Of Chernobyl";
+	}
+	case EEngineExternalPlatform::ClearSky:
+	{
+		return "Clear Sky";
+	}
+	case EEngineExternalPlatform::CallOfPripyat:
+	{
+		return "Call Of Pripyat";
+	}
+	default:
+	{
+		R_ASSERT(false && "unknown platform");
+		return "EENGINEXTERNALPLATFORM_UNKNOWN";
+	}
+	}
+}
+
+ENGINE_API CEngineExternal& EngineExternal()
 {
 	if (g_pEngineExternal == nullptr) {
 		g_pEngineExternal = new CEngineExternal;
@@ -123,10 +175,16 @@ const char* CEngineExternal::PlatformMode() const
 
 bool CEngineExternal::ClearSkyMode() const
 {
-	return !xr_strcmp(PlatformMode(), "cs");
+	return m_platform_type == EEngineExternalPlatform::ClearSky;
 }
 
 bool CEngineExternal::CallOfPripyatMode() const
 {
-	return !xr_strcmp(PlatformMode(), "cop");
+	return m_platform_type == EEngineExternalPlatform::CallOfPripyat;
 }
+
+bool CEngineExternal::ShadowOfChernobylMode() const
+{
+	return m_platform_type == EEngineExternalPlatform::ShadowOfChernobyl;
+}
+
