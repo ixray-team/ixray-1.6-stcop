@@ -95,7 +95,7 @@ void CHUDAnimItem::UpdateCL()
 			return;
 	}
 
-	PlayHUDMotion(CurrentMotion, true, this, eIdle);
+	PlayHUDMotion(CurrentMotion, true, eIdle);
 	CurrentMotion = "";
 }
 
