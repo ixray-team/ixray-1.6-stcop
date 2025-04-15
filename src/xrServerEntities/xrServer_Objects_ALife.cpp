@@ -1758,11 +1758,9 @@ void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet& tNetPacket)
 	inherited3::UPDATE_Read(tNetPacket);
 
 #if defined(XRGAME_EXPORTS)
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && m_wVersion > 128)
 	{
 		Pos = tNetPacket.r_vec3();
-		Rotate = tNetPacket.r_vec3();
-		BodyHPB = tNetPacket.r_vec3();
 	}
 #endif
 }

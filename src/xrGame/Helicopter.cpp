@@ -515,8 +515,6 @@ void CHelicopter::net_Import(NET_Packet& P)
 	inherited::net_Import(P);
 
 	Fvector Pos = P.r_vec3();
-	Fvector Rotate   = P.r_vec3();
-	Fvector BodyHPB  = P.r_vec3();
 
 	m_movement.SetDestPosition(&Pos);
 	SetMaxVelocity(150);
@@ -529,12 +527,6 @@ void CHelicopter::net_Export(NET_Packet& P)
 	inherited::net_Export(P);
 
 	P.w_vec3(m_movement.currP);
-
-	Fvector Rotate;
-	XFORM().getXYZ(Rotate);
-
-	P.w_vec3(Rotate);
-	P.w_vec3(m_body.currBodyHPB);
 }
 
 BOOL CHelicopter::net_Relevant()
