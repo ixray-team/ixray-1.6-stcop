@@ -271,6 +271,7 @@ public:
 	virtual float						Radius								() const;
 
 	virtual void						ChangeVisual						( shared_str NewVisual );
+	void OnChangeVisual() override;
 
 #ifdef DEBUG_DRAW
 	virtual void						OnHUDDraw							(CCustomHUD* hud);
