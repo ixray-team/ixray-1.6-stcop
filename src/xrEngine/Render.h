@@ -1,8 +1,8 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
 
-#include "../xrCDB/Frustum.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/Frustum.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "vis_common.h"
 //#include "IRenderDetailModel.h"
 
@@ -74,9 +74,16 @@ public:
 	virtual ~IRender_Light()		;
 	virtual void					destroy(bool deffered = true)							= 0;
 };
-struct ENGINE_API		resptrcode_light	: public resptr_base<IRender_Light>
+
+struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>
 {
-	void				destroy			()				{ if(p_){p_->destroy(); p_ = NULL;} }
+	void destroy()
+	{ 
+		if (p_) 
+		{ 
+			p_->destroy(); p_ = nullptr; 
+		} 
+	}
 };
 typedef	resptr_core<IRender_Light,resptrcode_light >	ref_light;
 

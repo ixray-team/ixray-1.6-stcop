@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PHMovementControl.h"
 
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/AI/alife_space.h"
 #include "../xrPhysics/PHCharacter.h"
 #include "../xrPhysics/IPHCapture.h"
