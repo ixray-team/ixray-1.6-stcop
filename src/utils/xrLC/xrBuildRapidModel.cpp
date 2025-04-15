@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+п»ї#include "StdAfx.h"
 //#include "cl_collector.h"
 #include "Build.h"
 #include "../xrLC_Light/xrMU_Model.h"
@@ -126,7 +126,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	// "Building tree..
 	Status					("Building search tree...");
 
-	// se7kills не строим модель для Embree
+	// se7kills РЅРµ СЃС‚СЂРѕРёРј РјРѕРґРµР»СЊ РґР»СЏ Embree
 	if (!lc_global_data()->GetIsIntelUse())
 		lc_global_data()->create_rcmodel(CL);
 
@@ -142,7 +142,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}
 
-	// se7kills Пока сделал тут генерацию влом было в EmbreeRayTrace_data доделывать  
+	// se7kills РџРѕРєР° СЃРґРµР»Р°Р» С‚СѓС‚ РіРµРЅРµСЂР°С†РёСЋ РІР»РѕРј Р±С‹Р»Рѕ РІ EmbreeRayTrace_data РґРѕРґРµР»С‹РІР°С‚СЊ  
 	
 
 	// Saving for AI/DO usage
