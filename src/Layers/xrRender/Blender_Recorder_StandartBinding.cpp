@@ -155,7 +155,7 @@ class cl_fog_plane	: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -189,7 +189,7 @@ class cl_fog_params	: public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -212,7 +212,7 @@ class cl_fog_color	: public R_constant_setup {
 	Fvector4	result;
 	virtual void setup	(R_constant* C)	{
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -297,7 +297,7 @@ class cl_sun0_color : public R_constant_setup {
 	Fvector4 result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -319,7 +319,7 @@ class cl_sun0_dir_w : public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -337,7 +337,7 @@ class cl_sun0_dir_e : public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -358,7 +358,7 @@ class cl_amb_color : public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -382,7 +382,7 @@ class cl_hemi_color : public R_constant_setup {
 	Fvector4	result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -406,7 +406,7 @@ class cl_sky_color : public R_constant_setup {
 	Fvector4 result;
 	virtual void setup(R_constant* C) {
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}
@@ -474,7 +474,7 @@ static class cl_rain_params : public R_constant_setup {
 	virtual void setup(R_constant* C)
 	{
 #ifdef _EDITOR
-		if(!g_pGamePersistent || !g_pGameLevel) {
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
 			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
 			return;
 		}

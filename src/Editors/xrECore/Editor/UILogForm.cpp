@@ -83,7 +83,7 @@ void UILogForm::Update()
 	
 
 		ImGui::Spacing();
-		if (ImGui::BeginChild("Log",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
+		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
 		{
 			xr_string CopyLog;
 			for (int i = 0; i < GetList()->size(); i++)
@@ -113,7 +113,7 @@ void UILogForm::Update()
 				}
 
 				ImGui::PushStyleColor(ImGuiCol_Text, Color);
-				if (ImGui::Selectable(Str))
+				if (strlen(Str) > 0 && ImGui::Selectable(Str))
 				{
 					os_clipboard::copy_to_clipboard(Str);
 				}
