@@ -23,10 +23,9 @@
 BOOL CAI_Stalker::feel_vision_isRelevant(CObject* O)
 {
 	if (!g_Alive())
-		return		FALSE;
-	CEntityAlive*	E = smart_cast<CEntityAlive*>		(O);
-	CInventoryItem*	I = smart_cast<CInventoryItem*>	(O);
-	if (!E && !I)	return	(FALSE);
+		return FALSE;
+
+	if (!O->cast_entity_alive() && !O->cast_inventory_item()) return (FALSE);
 //	if (E && (E->g_Team() == g_Team()))			return FALSE;
 	return(TRUE);
 }
@@ -58,7 +57,7 @@ bool CAI_Stalker::bfCheckForNodeVisibility(u32 dwNodeID, bool bIfRayPick)
 
 BOOL CAI_Stalker::feel_touch_contact	(CObject *O)
 {
-	if ( !m_take_items_enabled && smart_cast<CInventoryItem*>(O) )
+	if ( !m_take_items_enabled && O->cast_inventory_item())
 		return						(FALSE);
 
 	if (O == this)
@@ -67,7 +66,7 @@ BOOL CAI_Stalker::feel_touch_contact	(CObject *O)
 	if (!inherited::feel_touch_contact(O))
 		return						(FALSE);
 
-	CGameObject						*game_object = smart_cast<CGameObject*>(O);
+	CGameObject						*game_object = O->cast_game_object();
 	if (!game_object)
 		return						(FALSE);
 
