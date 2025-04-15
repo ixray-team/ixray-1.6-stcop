@@ -43,6 +43,9 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	if (lc_global_data()->GetIsIntelUse())
 	{
 		EmbreeMain.IntelEmbereLOAD();
+
+		if (bSaveForOtherCompilers)
+			EmbreeMain.BuildRcast();
   		return;
 	};
 
@@ -102,14 +105,11 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		}
 	}
 
-	/*
-	clMsg					("Faces: original(%d), model(%d), ratio(%f)",
-		g_faces.size(),CL.getTS(),float(CL.getTS())/float(g_faces.size()));
-	*/
-
 	// Export references
-	if (bSaveForOtherCompilers)		Phase	("Building rcast-CFORM-mu model...");
+	if (bSaveForOtherCompilers)		
+		Phase	("Building rcast-CFORM-mu model...");
 	Status					("Models...");
+
 	for (u32 ref=0; ref<mu_refs().size(); ref++)
 		mu_refs()[ref]->export_cform_rcast	(CL);
 
@@ -123,7 +123,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	string_path				fn;
 
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
-	if (g_params().m_quality!=ebqDraft) {
+	if (g_params().m_quality!=ebqDraft) 
+	{
 		if (keep_temp_files)
 			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}
