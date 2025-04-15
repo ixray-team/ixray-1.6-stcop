@@ -208,6 +208,23 @@ public:
 	virtual ALife::_TIME_ID				TimePassedAfterDeath() const;
 
 	CPickUpManager* GetPickupManager() { return pPickup; }
+
+	float previous_electronics_problems_counter = 0.0f;
+	float current_electronics_problems_counter = 0.0f;
+	float target_electronics_problems_counter = 0.0f;
+	bool last_problems_update_was_decrease = false;
+
+	void ResetElectronicsProblems();
+	void ResetElectronicsProblems_Full();
+	float PreviousElectronicsProblemsCnt() const;
+	bool ElectronicsProblemsImmediateApply();
+	bool ElectronicsProblemsInc();
+	float TargetElectronicsProblemsCnt() const;
+	float CurrentElectronicsProblemsCnt() const;
+	bool ElectronicsProblemsDec();
+	bool IsElectronicsProblemsDecreasing() const;
+	void UpdateElectronicsProblemsCnt(u32 dt);
+
 public:
 
 	//свойства артефактов
@@ -261,6 +278,7 @@ private:
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
+	u32 _last_update_time;
 
 	void					SetZoomRndSeed			(s32 Seed = 0);
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};
