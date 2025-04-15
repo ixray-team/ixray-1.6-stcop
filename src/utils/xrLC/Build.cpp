@@ -24,9 +24,6 @@ using namespace			std;
 struct OGF_Base;
 xr_vector<OGF_Base *>	g_tree;
 
-//BOOL					b_noise		= FALSE;
-//BOOL					b_radiosity	= FALSE;
-//BOOL					b_net_light	= FALSE;
 SBuildOptions			g_build_options;
 vec2Face				g_XSplit;
 
