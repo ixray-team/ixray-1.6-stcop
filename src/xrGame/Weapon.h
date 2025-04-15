@@ -273,12 +273,14 @@ protected:
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
-private:
+protected:
 
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
 		m_sCollimatorSightsBones{};
+
+	bool m_bIsAimStarted = false;
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
