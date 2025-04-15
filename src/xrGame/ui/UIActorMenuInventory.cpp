@@ -639,8 +639,15 @@ bool CUIActorMenu::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 	if(m_pActorInvOwner->inventory().CanPutInRuck(iitem) || (b_already && (new_owner!=old_owner)) )
 	{
-		bool result							= b_already || (!b_own_item || m_pActorInvOwner->inventory().Ruck(iitem) );
-		VERIFY								(result);
+		// Pavel: если предмет в iActorTrade, то он уже должен находиться в рюкзаке
+	    // Проверка нужна для того, чтобы не сбрасывалась граната в МП,
+     	// при перекладывании из iActorTrade
+		if (GetListType(old_owner) != iActorTrade)
+		{
+			bool result = b_already || (!b_own_item || m_pActorInvOwner->inventory().Ruck(iitem));
+			R_ASSERT(result);
+		}
+
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
 		if(!i)
 			return false;
