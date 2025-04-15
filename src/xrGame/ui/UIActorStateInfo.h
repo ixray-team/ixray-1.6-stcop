@@ -82,11 +82,11 @@ public:
 	virtual			~ui_actor_state_item	();
 			void	init_from_xml			( CUIXml& xml, LPCSTR path );
 	
-			void	set_text				( float value ); // 0..1
+			bool	set_text				( float value ); // 0..1
 			bool	set_progress			( float value ); // 0..1
-			void	set_progress_shape		( float value ); // 0..1
-			void	set_arrow				( float value ); // 0..1
-			void	show_static				( bool status, u8 number=1 );
+			bool	set_progress_shape		( float value ); // 0..1
+			int		set_arrow				( float value ); // 0..1
+			bool	show_static				( bool status, u8 number=1 );
 
 }; // class ui_actor_state_item
 
