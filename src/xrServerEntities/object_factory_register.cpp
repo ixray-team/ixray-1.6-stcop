@@ -184,6 +184,8 @@
 #	include "smart_cover_object.h"
 #	include "HUDAnimItem.h"
 #	include "EditorLevel.h"
+
+#include "..\xrGame\HolderEntityObject.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -420,6 +422,7 @@ void CObjectFactory::register_classes	()
 	ADD(CClimableObject			,CSE_ALifeObjectClimable		,CLSID_OBJECT_CLIMABLE			,"obj_climable");
 	ADD(CPhysicsSkeletonObject	,CSE_ALifePHSkeletonObject		,CLSID_PH_SKELETON_OBJECT		,"obj_phskeleton");
 	ADD(CDestroyablePhysicsObject,CSE_ALifeObjectPhysic			,CLSID_PHYSICS_DESTROYABLE		,"obj_phys_destroyable");
+	ADD(CHolderEntityObject		,CSE_ALifeDynamicObjectVisual	,CLSID_OBJECT_HOLDER_ENT		,"obj_holder_ent");
 
 	ADD(CInventoryBox			,CSE_ALifeInventoryBox			,CLSID_INVENTORY_BOX			,"inventory_box");
 #ifndef NO_SINGLE
