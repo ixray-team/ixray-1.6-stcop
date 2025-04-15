@@ -188,11 +188,11 @@ BOOL SceneBuilder::MakePuddles()
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
-        sprintf(buff, "max_height = %0.3f", Object->FScale.y);
+        sprintf(buff, "max_height = %0.3f", Object->FScale.y / 2);
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
-        sprintf(buff, "size_xz = %0.3f, %0.3f", Object->FScale.x, Object->FScale.z);
+        sprintf(buff, "size_xz = %0.3f, %0.3f", Object->FScale.x / 2, Object->FScale.z / 2);
         F->w_string(buff);
     }
 
