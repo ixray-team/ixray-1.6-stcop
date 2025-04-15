@@ -43,8 +43,6 @@ void setup_luabind_allocator()
 #include <commctrl.h>
 #pragma warning(default:4995)
 
-extern HWND logWindow;
-
 void StartupAI();
 void StartupLC();
 void StartupDO();
@@ -141,7 +139,7 @@ void Startup(LPSTR lpCmdLine)
 
 	if (!gCompilerMode.Silent)
 	{
-		MessageBoxA(logWindow, stats, "Congratulation!", MB_OK | MB_ICONINFORMATION);
+		MessageBoxA(nullptr, stats, "Congratulation!", MB_OK | MB_ICONINFORMATION);
 	}
 
 	extern volatile BOOL bClose;
@@ -330,45 +328,22 @@ void StartCompile()
 	InitCommonControls();
 	Sleep(150);
 	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
-
-	/*while (!logWindow)
-		Sleep(100);*/
-	
-	
 }
 
-int APIENTRY WinMain (
+int APIENTRY WinMain 
+(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR     lpCmdLine,
 	int       nCmdShow
-) {
+) 
+{
 	// Initialize debugging
 	Debug._initialize(false);
 	Core._initialize("IX-Ray Compilers");
 
-#if true
 	InitializeUIData();
 	SDL_Application();
-#else
-	// Read modes
-	bool SupportAll = strstr(lpCmdLine, "-all");
-	gCompilerMode.AI = SupportAll || strstr(lpCmdLine, "-ai");
-	gCompilerMode.LC = SupportAll || strstr(lpCmdLine, "-lc");
-	gCompilerMode.DO = SupportAll || strstr(lpCmdLine, "-do");
-
-	gCompilerMode.Silent = strstr(lpCmdLine, "-silent");
-
-	// Give a LOG-thread a chance to startup
-	InitCommonControls();
-	Sleep(150);
-	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
-
-	while (!logWindow)
-		Sleep(100);
-
-	Startup(lpCmdLine);
-#endif
 
 	return 0;
 }

@@ -165,7 +165,7 @@ auto Validate = [](u32& CurrentProcessedID, u32& FaceIndex, xr_vector<data_vec>&
 
 typedef xr_hash_map<int, xr_hash_map<int, xr_vector<data_vec>> > VectorSplited;
 
-typedef xr_hash_map<int, xr_vector<data_vec>> MergingVector;
+using MergingVector = xr_concurrent_unordered_map<int, xr_vector<data_vec>> ;
 
 
 xrCriticalSection csMerge;
@@ -190,7 +190,10 @@ void BasicMerge()
 		xr_atomic_u32 progress__ = 0;
 		int SIZE = thread_faces.size();
 
-			concurrency::parallel_for(size_t(0), size_t(thread_faces.size()), [&](size_t IDX)
+		xr_parallel_for
+		(
+			size_t(0),size_t(thread_faces.size()),
+			[&](size_t IDX)
 			{
 				auto& mapMAT = thread_faces[IDX];
 
@@ -205,9 +208,9 @@ void BasicMerge()
 					vecFace& subdiv = *(g_XSplit[faceID]);
 
 
-					bool		bb_base_orig_inited = false;
-					Fbox		bb_base_orig;
-					Fbox		bb_base;
+					bool bb_base_orig_inited = false;
+					Fbox bb_base_orig;
+					Fbox bb_base;
 
 					// int CountTryes = 0;
 
@@ -263,7 +266,8 @@ void BasicMerge()
 				progress__.fetch_add(1);
 
 				Progress( float (progress__ / SIZE) );
-			});
+			}
+		);
 	}
 
 	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),
