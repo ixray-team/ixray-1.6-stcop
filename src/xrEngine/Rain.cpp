@@ -24,14 +24,14 @@ CEffect_Rain::CEffect_Rain()
 	state							= stIdle;
 	
 	snd_Ambient.create				("ambient\\rain",st_Effect,sg_Undefined);
-
+	m_rainVolume = 0.0f;
 	p_create();
 }
 
 CEffect_Rain::~CEffect_Rain()
 {
 	snd_Ambient.destroy				();
-
+	m_rainVolume = 0.0f;
 	// Cleanup
 	p_destroy						();
 }
@@ -175,7 +175,6 @@ void CEffect_Rain::OnFrame()
     // Parse states
     float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     static float hemi_factor = 0.f;
-
 #ifndef _EDITOR
     CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
     if (E && E->renderable_ROS())
@@ -198,7 +197,8 @@ void CEffect_Rain::OnFrame()
 	switch (state)
 	{
 	case stIdle:		
-		if (factor < EPS_L) {
+		if (factor < EPS_L)
+		{
 			if (snd_Ambient._feedback())
 				snd_Ambient.stop();
 			return;
@@ -209,9 +209,11 @@ void CEffect_Rain::OnFrame()
 		snd_Ambient.set_range	(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset*2.f);
 	break;
 	case stWorking:
-		if (factor<EPS_L){
+		if (factor<EPS_L)
+		{
 			state				= stIdle;
 			snd_Ambient.stop	();
+			m_rainVolume = 0.0f;
 			return;
 		}
 		break;
@@ -220,7 +222,9 @@ void CEffect_Rain::OnFrame()
 	// ambient sound
 	if (snd_Ambient._feedback())
 	{
-		snd_Ambient.set_volume(_max(0.1f, factor) * hemi_factor);
+		m_rainVolume = factor * hemi_factor;
+		clamp(m_rainVolume, 0.1f, 1.0f);
+		snd_Ambient.set_volume(m_rainVolume);
 	}
 
 	if (Device.IsEditorMode())
@@ -321,6 +325,12 @@ void CEffect_Rain::UpdateItems()
 			}
 		}
 	}
+}
+
+void CEffect_Rain::InvalidateState()
+{
+	state = stIdle;
+	m_rainVolume = 0.0f;
 }
 
 
