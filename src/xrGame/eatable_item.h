@@ -41,6 +41,7 @@ public:
 	virtual void			OnH_A_Independent();
 	virtual	bool			UseBy(CEntityAlive* npc);
 	virtual float			Weight() const;
+	virtual void			EatableEffects();
 
 	bool Empty() const { return m_iRemainingUses == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
