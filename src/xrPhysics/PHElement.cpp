@@ -1152,11 +1152,12 @@ void	CPHElement::setTorque(const Fvector& torque)
 	VERIFY(dBodyStateValide(m_body));
 }
 
-void	CPHElement::applyForce(const Fvector& dir, float val)															//aux
+void CPHElement::applyForce(const Fvector& dir, float val)															//aux
 {
-	applyForce				(dir.x*val,dir.y*val,dir.z*val);
+	applyForce(dir.x * val, dir.y * val, dir.z * val);
 }
-void	CPHElement::applyForce(float x,float y,float z)																//called anywhere ph state influent
+
+void CPHElement::applyForce(float x,float y,float z)																//called anywhere ph state influent
 {
 	VERIFY(_valid(x)&&_valid(y)&&_valid(z));
 	if(!isActive())return;//hack??
