@@ -21,6 +21,22 @@ void CPluginUIRun::Draw()
 				continue;
 			}
 
+			xr_string TestPath = Desc;
+			TestPath = TestPath.RemoveWhitespaces();
+			if (FS.pathes.contains(TestPath.c_str()))
+			{
+				string_path FullPath = {};
+				FS.update_path(FullPath, TestPath.c_str(), "");
+				if (FullPath[strlen(FullPath) - 1] == '\\')
+				{
+					FullPath[strlen(FullPath) - 1] = '\0';
+				}
+
+				xr_string FixedPath = std::filesystem::absolute(FullPath).string().c_str();
+				xr_strcpy(InputPlugin->InputArgsValues[Arg], FixedPath.c_str());
+				continue;
+			}
+
 			ImGui::Text(Desc.c_str());
 			ImGui::InputText(("##" + Arg).c_str(), InputPlugin->InputArgsValues[Arg], 256);
 
