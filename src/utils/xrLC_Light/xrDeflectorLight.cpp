@@ -820,17 +820,17 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 	// Compression
 	try
 	{
-		// u32	w,h;
-		//	if (compress_Zero(layer,rms_zero))
-		//		return;		// already with borders
-		// 
-		// 
-		// else if (compress_RMS(layer,rms_shrink,w,h))	
-		// {
-		// 		// Reacalculate lightmap at lower resolution
-		// 		layer.create	(w,h);
-		// 		L_Calculate		(DB,LightsSelected,H);
- 		// }
+		u32	w,h;
+		if (compress_Zero(layer, rms_zero))
+		{
+			return;		// already with borders
+		}
+		else if (compress_RMS(layer,rms_shrink,w,h))	
+		{
+				// Reacalculate lightmap at lower resolution
+				layer.create	(w,h);
+				L_Calculate		(DB,LightsSelected,H);
+ 		}
 	} 
 	catch (...)
 	{

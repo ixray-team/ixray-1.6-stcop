@@ -106,6 +106,12 @@ void StartupLC()
 		{
 			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
 			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
+			
+			clMsg("Original Weld Distance: %f", g_params().m_weld_distance);
+			g_params().m_weld_distance = gCompilerMode.MergeDistance;
+
+			clMsg("Original m_sm_angle: %f", g_params().m_sm_angle);
+
 			lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
 		}
 

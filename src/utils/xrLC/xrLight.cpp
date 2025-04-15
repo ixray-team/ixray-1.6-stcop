@@ -109,6 +109,13 @@ void	CBuild::LMaps					()
  
 void CBuild::Light()
 {
+	//****************************************** GLOBAL-RayCast model
+	FPU::m64r();
+	Phase("Building rcast-CFORM model...");
+	mem_Compact();
+	Light_prepare();
+	BuildRapid(TRUE);
+
  	//****************************************** Implicit
 	{
 		FPU::m64r		();
@@ -138,6 +145,11 @@ void CBuild::Light()
 	}
 
 
+	//****************************************** Merge geometry
+	FPU::m64r();
+	Phase("Merging geometry...");
+	mem_Compact();
+	xrPhase_MergeGeometry();
 
 	//****************************************** Starting MU
 	FPU::m64r();
@@ -145,6 +157,14 @@ void CBuild::Light()
 	mem_Compact();
 	Light_prepare();
 	StartMu();
+	 
+	//****************************************** Destroy RCast-model
+ 	Phase("Destroying ray-trace model...");
+	mem_Compact();
+	lc_global_data()->destroy_rcmodel();
+
+	if (lc_global_data()->GetIsIntelUse())
+		IntelEmbereUNLOAD();
 
 }
 
