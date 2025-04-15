@@ -60,25 +60,34 @@ static void	SaveGEOMs		(LPCSTR fn, VBContainer& vb, IBContainer& ib, SWIContaine
 	Status				("Geometry '%s'...",	fn);
 	// geometry
 	string_path					lfn		;
+
 	IWriter*					file	;
 	file						= FS.w_open		(xr_strconcat(lfn,pBuild->path,fn));
-	hdrLEVEL H;	H.XRLC_version	= XRCL_PRODUCTION_VERSION;
+	
+	hdrLEVEL H;	
+	H.XRLC_version	= XRCL_PRODUCTION_VERSION;
 	file->w_chunk				(fsL_HEADER,&H,sizeof(H));
-
+ 	clMsg("Save Chunks: %umb", file->tell() / 1024 / 1024);
 	// verts
+	
 	file->open_chunk	(fsL_VB);
 	vb.Save				(*file);
 	file->close_chunk	();
+	clMsg("Save VB: %umb", file->tell() / 1024 / 1024);
 
+	
 	// indices
-	file->open_chunk	(fsL_IB);
+ 	file->open_chunk	(fsL_IB);
 	ib.Save				(*file);
 	file->close_chunk	();
+	clMsg("Save IB: %umb", file->tell() / 1024 / 1024);
 
 	// swis
-	file->open_chunk	(fsL_SWIS);
+ 	file->open_chunk	(fsL_SWIS);
 	swi.Save			(*file);
 	file->close_chunk	();
+
+	clMsg("Save SWIS: %umb", file->tell() / 1024 / 1024);
 
 	FS.w_close(file);
 }
@@ -87,7 +96,7 @@ void CBuild::SaveTREE	(IWriter &fs)
 {
 	CMemoryWriter		MFS;
 
-	Status				("Geometry buffers...");
+	clMsg				("Geometry buffers...");
 	xr_vector<u32>		remap;
 	remap.reserve		(g_tree.size());
 	for (u32 rid=0; rid<g_tree.size(); rid++)	{
@@ -96,13 +105,14 @@ void CBuild::SaveTREE	(IWriter &fs)
 	}
 	std::stable_sort	(remap.begin(),remap.end(),remap_order);
 	clMsg				("remap-size: %d / %d",remap.size(),g_tree.size());
-	for (u32 sid=0; sid<remap.size(); sid++)	{
+	for (u32 sid=0; sid<remap.size(); sid++)	
+	{
 		u32				id	= remap[sid];
 		//clMsg			("%3d: subdiv: %d",sid,id);
 		g_tree[id]->PreSave	(id);
 	}
 
-	Status				("Visuals...");
+	clMsg				("Visuals...");
 	fs.open_chunk		(fsL_VISUALS);
 	for (xr_vector<OGF_Base*>::iterator it = g_tree.begin(); it!=g_tree.end(); it++)	{
 		u32			idx = u32(it-g_tree.begin());
@@ -113,25 +123,22 @@ void CBuild::SaveTREE	(IWriter &fs)
 	}
 	fs.w				(MFS.pointer(),MFS.size());
 	fs.close_chunk		();
-	clMsg				("Average: %d verts/%d faces, 50(%2.1f), 100(%2.1f), 500(%2.1f), 1000(%2.1f), 5000(%2.1f)",
-		g_batch_verts/g_batch_count,
-		g_batch_faces/g_batch_count,
-		100.f * float(g_batch_50)/float(g_batch_count),
-		100.f * float(g_batch_100)/float(g_batch_count),
-		100.f * float(g_batch_500)/float(g_batch_count),
-		100.f * float(g_batch_1000)/float(g_batch_count),
-		100.f * float(g_batch_5000)/float(g_batch_count)
-		);
+	// clMsg				("Average: %d verts/%d faces, 50(%2.1f), 100(%2.1f), 500(%2.1f), 1000(%2.1f), 5000(%2.1f)",
+	// 	g_batch_verts/g_batch_count, g_batch_faces/g_batch_count, 100.f * float(g_batch_50)/float(g_batch_count),
+	// 	100.f * float(g_batch_100)/float(g_batch_count), 100.f * float(g_batch_500)/float(g_batch_count), 100.f * float(g_batch_1000)/float(g_batch_count),
+	// 	100.f * float(g_batch_5000)/float(g_batch_count) );
 	mem_Compact			();
 
 	SaveGEOMs			("level.geom",	g_VB,g_IB,g_SWI);	// Normal
 	SaveGEOMs			("level.geomx",	x_VB,x_IB,x_SWI);	// Fast-Path
 
-	Status				("Shader table...");
+	clMsg				("Shader table...");
 	fs.open_chunk		(fsL_SHADERS);
 	fs.w_u32			(g_Shaders.size());
 	for (xr_vector<LPCSTR>::iterator T=g_Shaders.begin(); T!=g_Shaders.end(); T++)
 		fs.w_stringZ	(*T);
 	fs.close_chunk		();
+
+	clMsg("Save OGF ENDED");
 	//mem_Compact			();
 }

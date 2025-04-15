@@ -1,4 +1,4 @@
-﻿#include "StdAfx.h"
+#include "StdAfx.h"
 //#include "cl_collector.h"
 #include "Build.h"
 #include "../xrLC_Light/xrMU_Model.h"
@@ -38,97 +38,84 @@ void SaveUVM			(LPCSTR fname, xr_vector<b_rc_face>& vm)
 	FS.w_close	(W);
 }
 
-#include <../xrLC_Light/xrDeflector.h>
-
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
 	if (lc_global_data()->GetIsIntelUse())
 	{
-		IntelEmbereLOAD(bSaveForOtherCompilers);
-		
-		if (!bSaveForOtherCompilers)
-			return;
+		EmbreeMain.IntelEmbereLOAD();
+  		return;
 	};
 
 
 	float	p_total			= 0;
 	float	p_cost			= 1.f/(lc_global_data()->g_faces().size());
-
-	
 	lc_global_data()->destroy_rcmodel();
-
 	Status			("Converting faces...");
+	Status			("Converting vertexs...");
+
 	for				(u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
-
-
-	CDB::CollectorPacked	CL(scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
 
 	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve		(6*2*3);
-	 
-	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+
+	CDB::CollectorPacked	CL(scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
+
+	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); it++)
 	{
-		const Shader_xrLC& SH = F->Shader();
-
-		if (!SH.flags.bLIGHT_CastShadow)
-			return;
-
+		Face*	F				= (*it);
+		const Shader_xrLC&	SH		= F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)					continue;
+ 
 		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-
-		// Collect
+ 		// Collect
 		adjacent_vec.clear();
 		for (int vit = 0; vit < 3; ++vit)
 		{
 			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
+			for (u32 adj=0; adj<V->m_adjacents.size(); adj++)
 			{
 				adjacent_vec.push_back(V->m_adjacents[adj]);
 			}
 		}
-
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		std::sort		(adjacent_vec.begin(),adjacent_vec.end());
+		adjacent_vec.erase	(std::unique(adjacent_vec.begin(),adjacent_vec.end()),adjacent_vec.end());
 
 		// Unique
-		BOOL			bAlready = FALSE;
-
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		BOOL			bAlready	= FALSE;
+		for (u32 ait=0; ait<adjacent_vec.size(); ++ait)
 		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)
-				continue;
-			if (!Test->flags.bProcessed)
-				continue;
-			if (FaceEqual(*F, *Test))
+			Face*	Test					= adjacent_vec[ait];
+			if (Test==F)					continue;
+			if (!Test->flags.bProcessed)	continue;
+			if (FaceEqual(*F,*Test))
 			{
-				bAlready = TRUE;
+				bAlready					= TRUE;
 				break;
 			}
 		}
 
 		//
-		if (!bAlready)
+		if (!bAlready) 
 		{
-			F->flags.bProcessed = true;
-			CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), F->sm_group); //ThreadID
+			F->flags.bProcessed	= true;
+			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, convert_nax(F), F->sm_group );
 		}
+	}
 
-	});
+	/*
+	clMsg					("Faces: original(%d), model(%d), ratio(%f)",
+		g_faces.size(),CL.getTS(),float(CL.getTS())/float(g_faces.size()));
+	*/
 
-	Status("Models...");
-	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref) 
-	{
-		ref->export_cform_rcast(CL);
-	});
- 
-
+	// Export references
+	if (bSaveForOtherCompilers)		Phase	("Building rcast-CFORM-mu model...");
+	Status					("Models...");
+	for (u32 ref=0; ref<mu_refs().size(); ref++)
+		mu_refs()[ref]->export_cform_rcast	(CL);
 
 	// "Building tree..
 	Status					("Building search tree...");
-
-	// se7kills не строим модель для Embree
-	if (!lc_global_data()->GetIsIntelUse())
-		lc_global_data()->create_rcmodel(CL);
+	lc_global_data()->create_rcmodel( CL );
 
 	extern void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL);
 	
@@ -136,14 +123,10 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	string_path				fn;
 
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
-	if (g_params().m_quality!=ebqDraft)
-	{
+	if (g_params().m_quality!=ebqDraft) {
 		if (keep_temp_files)
 			SaveAsSMF		(xr_strconcat(fn,pBuild->path,"build_cform_source.smf"),CL);
 	}
-
-	// se7kills Пока сделал тут генерацию влом было в EmbreeRayTrace_data доделывать  
-	
 
 	// Saving for AI/DO usage
 	if (bSaveForOtherCompilers)
