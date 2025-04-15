@@ -399,6 +399,16 @@ void CObject::renderable_Render	()
 	MakeMeCrow	();
 }
 
+#include "IGame_Persistent.h"
+extern float SheduleScaleDedicated = 1;
+float CObject::shedule_Scale()
+{
+	if (g_dedicated_server)
+		return SheduleScaleDedicated;
+
+	return Device.vCameraPosition.distance_to(Position()) / 200.f;
+}
+
 CObject* CObject::H_SetParent	(CObject* new_parent, bool just_before_destroy)
 {
 	if (new_parent==Parent)	return new_parent;
