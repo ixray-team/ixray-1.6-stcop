@@ -45,7 +45,6 @@ CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, LPCSTR section)
 	m_smart_terrains			= 0;
 	m_groups					= 0;
 	m_registry_container		= 0;
-	m_upgrade_manager			= 0;
 
 	random().seed				(u32(CPU::QPC() & 0xffffffff));
 	m_can_register_objects		= true;
@@ -73,7 +72,6 @@ void CALifeSimulatorBase::unload			()
 	xr_delete					(m_smart_terrains);
 	xr_delete					(m_groups);
 	xr_delete					(m_registry_container);
-	xr_delete					(m_upgrade_manager);
 	m_initialized				= false;
 
 	if(g_pGameLevel)
@@ -92,7 +90,6 @@ void CALifeSimulatorBase::reload			(LPCSTR section)
 	m_smart_terrains			= new CALifeSmartTerrainRegistry();
 	m_groups					= new CALifeGroupRegistry		();
 	m_registry_container		= new CALifeRegistryContainer	();
-	m_upgrade_manager			= new inventory::upgrade::Manager();
 	m_initialized				= true;
 }
 

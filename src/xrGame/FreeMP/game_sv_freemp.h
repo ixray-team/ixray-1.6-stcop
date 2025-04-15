@@ -30,7 +30,7 @@ public:
 	virtual		void				OnPlayerConnectFinished(ClientID id_who);
 	virtual		void				OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
 	virtual		void				OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
-
+	virtual		void				OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID);
 	virtual		void				OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, ClientID sender);
 
 	virtual		void				Update();
