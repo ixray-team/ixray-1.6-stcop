@@ -161,14 +161,41 @@ void CDialogNode::AddContactLink(const xr_string& Name, bool IsOut)
 	INodeUnknown::AddContactLink(Name, IsOut);
 }
 
-void CDialogNode::MakeOutNode(INodeUnknown* Node)
+void CDialogNode::MakeOutNode(INodeUnknown* Node, bool Silent)
 {
 	INodeUnknown::MakeOutNode(Node);
 	CDialogNode* TryNode = (CDialogNode*)Node;
 
-	if (ParentNode != nullptr)
+	if (!Silent && ParentNode != nullptr)
 	{
 		XML_NODE* NewNextNode = ParentNode->ToElement()->InsertNewChildElement("next");
 		NewNextNode->ToElement()->SetText(TryNode->NodeName.c_str());
+	}
+}
+
+void CDialogNode::DestroyContacts()
+{
+	for (INodeUnknown* Contact : InNodes)
+	{
+		CDialogNode* DialogContactNode = (CDialogNode*)Contact;
+		auto XMLElement = DialogContactNode->ParentNode->FirstChildElement();
+		
+		while (XMLElement != nullptr)
+		{
+			shared_str TextNode = XMLElement->Value();
+			if (TextNode == "next")
+			{
+				shared_str Value = XMLElement->GetText();
+				if (*Value == NodeName)
+				{
+					auto NextNode = XMLElement->NextSiblingElement();
+					XMLElement->Parent()->DeleteChild(XMLElement);
+					XMLElement = NextNode;
+					continue;
+				}
+			}
+
+			XMLElement = XMLElement->NextSiblingElement();
+		}
 	}
 }
