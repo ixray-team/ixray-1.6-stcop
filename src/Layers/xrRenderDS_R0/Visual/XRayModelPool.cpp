@@ -266,12 +266,16 @@ extern ENGINE_API xr_atomic_bool g_bRendering;
 void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard)
 {
 	VERIFY(!g_bRendering);
-	if (!V)					return;
+	if (!V)
+		return;
+
 	V->Depart();
-	if (bDiscard || bForceDiscard) {
+	if (bDiscard || bForceDiscard)
+	{
 		Discard(V, TRUE);
 	}
-	else {
+	else 
+	{
 		//
 		REGISTRY_IT	it = Registry.find(V);
 		if (it != Registry.end())
@@ -287,9 +291,11 @@ void CDS0_ModelPool::DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard)
 	V = NULL;
 }
 
-void	CDS0_ModelPool::Delete(CDS0_RenderVisual*& V, BOOL bDiscard)
+void CDS0_ModelPool::Delete(CDS0_RenderVisual*& V, BOOL bDiscard)
 {
-	if (NULL == V)				return;
+	if (NULL == V)
+		return;
+
 	if (g_bRendering) {
 		VERIFY(!bDiscard);
 		ModelsToDelete.push_back(V);
@@ -300,14 +306,14 @@ void	CDS0_ModelPool::Delete(CDS0_RenderVisual*& V, BOOL bDiscard)
 	V = NULL;
 }
 
-void	CDS0_ModelPool::DeleteQueue()
+void CDS0_ModelPool::DeleteQueue()
 {
 	for (u32 it = 0; it < ModelsToDelete.size(); it++)
 		DeleteInternal(ModelsToDelete[it]);
 	ModelsToDelete.clear();
 }
 
-void	CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, BOOL b_complete)
+void CDS0_ModelPool::Discard(CDS0_RenderVisual*& V, BOOL b_complete)
 {
 	//
 	REGISTRY_IT	it = Registry.find(V);
@@ -383,133 +389,16 @@ void CDS0_ModelPool::ClearPool(BOOL b_complete)
 	}
 	Pool.clear();
 }
+
 void CDS0_ModelPool::Render()
 {
-	for (auto [_, Obj] : Pool)
+#if 0
+	for (auto [Model, _] : Registry)
 	{
-		if (auto Kinematic = Obj->dcast_PKinematics())
+		if (IKinematics* IK = Model->dcast_PKinematics())
 		{
-			Kinematic->CalculateBones(true);
+			IK->CalculateBones(true);
 		}
 	}
-}
-/*
-CDS0_RenderVisual* CDS0_ModelPool::CreatePE(PS::CPEDef* source)
-{
-	PS::CParticleEffect* V = (PS::CParticleEffect*)Instance_Create(MT_PARTICLE_EFFECT);
-	V->Compile(source);
-	return V;
-}
-
-CDS0_RenderVisual* CDS0_ModelPool::CreatePG(PS::CPGDef* source)
-{
-	PS::CParticleGroup* V = (PS::CParticleGroup*)Instance_Create(MT_PARTICLE_GROUP);
-	V->Compile(source);
-	return V;
-}*/
-
-
-#ifdef _EDITOR
-IC bool	_IsBoxVisible(CDS0_RenderVisual* visual, const Fmatrix& transform)
-{
-	Fbox 		bb;
-	bb.xform(visual->vis.box, transform);
-	return 		::Render->occ_visible(bb);
-}
-IC bool	_IsValidShader(CDS0_RenderVisual* visual, u32 priority, bool strictB2F)
-{
-	if (visual->shader)
-		return (priority == visual->shader->E[0]->flags.iPriority) && (strictB2F == visual->shader->E[0]->flags.bStrictB2F);
-	return false;
-}
-
-void 	CDS0_ModelPool::Render(CDS0_RenderVisual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD)
-{
-	// render visual
-	xr_vector<CDS0_RenderVisual*>::iterator I, E;
-	switch (m_pVisual->Type) {
-	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID: {
-		if (_IsBoxVisible(m_pVisual, mTransform)) {
-			CKinematics* pV = dynamic_cast<CKinematics*>(m_pVisual); VERIFY(pV);
-			if (fis_zero(m_fLOD, EPS) && pV->m_lod) {
-				if (_IsValidShader(pV->m_lod, priority, strictB2F)) {
-					RCache.set_Shader(pV->m_lod->shader ? pV->m_lod->shader : EDevice->m_WireShader);
-					RCache.set_xform_world(mTransform);
-					pV->m_lod->Render(1.f);
-				}
-			}
-			else {
-				I = pV->children.begin();
-				E = pV->children.end();
-				for (; I != E; I++) {
-					if (_IsValidShader(*I, priority, strictB2F)) {
-						RCache.set_Shader((*I)->shader ? (*I)->shader : EDevice->m_WireShader);
-						RCache.set_xform_world(mTransform);
-						(*I)->Render(m_fLOD);
-					}
-				}
-			}
-		}
-	}break;
-	case MT_HIERRARHY: {
-		if (_IsBoxVisible(m_pVisual, mTransform)) {
-			FHierrarhyVisual* pV = dynamic_cast<FHierrarhyVisual*>(m_pVisual); VERIFY(pV);
-			I = pV->children.begin();
-			E = pV->children.end();
-			for (; I != E; I++) {
-				if (_IsValidShader(*I, priority, strictB2F)) {
-					RCache.set_Shader((*I)->shader ? (*I)->shader : EDevice->m_WireShader);
-					RCache.set_xform_world(mTransform);
-					(*I)->Render(m_fLOD);
-				}
-			}
-		}
-	}break;
-	case MT_PARTICLE_GROUP: {
-		PS::CParticleGroup* pG = dynamic_cast<PS::CParticleGroup*>(m_pVisual); VERIFY(pG);
-		//		if (_IsBoxVisible(m_pVisual,mTransform))
-		{
-			RCache.set_xform_world(mTransform);
-			for (PS::CParticleGroup::SItemVecIt i_it = pG->items.begin(); i_it != pG->items.end(); i_it++) {
-				xr_vector<CDS0_RenderVisual*>	visuals;
-				i_it->GetVisuals(visuals);
-				for (xr_vector<CDS0_RenderVisual*>::iterator it = visuals.begin(); it != visuals.end(); it++)
-					Render(*it, Fidentity, priority, strictB2F, m_fLOD);
-			}
-		}
-	}break;
-	case MT_PARTICLE_EFFECT: {
-		//		if (_IsBoxVisible(m_pVisual,mTransform))
-		{
-			if (_IsValidShader(m_pVisual, priority, strictB2F)) {
-				RCache.set_Shader(m_pVisual->shader ? m_pVisual->shader : EDevice->m_WireShader);
-				RCache.set_xform_world(mTransform);
-				m_pVisual->Render(m_fLOD);
-			}
-		}
-	}break;
-	default:
-		if (_IsBoxVisible(m_pVisual, mTransform)) {
-			if (_IsValidShader(m_pVisual, priority, strictB2F)) {
-				RCache.set_Shader(m_pVisual->shader ? m_pVisual->shader : EDevice->m_WireShader);
-				RCache.set_xform_world(mTransform);
-				m_pVisual->Render(m_fLOD);
-			}
-		}
-		break;
-	}
-}
-
-void 	CDS0_ModelPool::RenderSingle(CDS0_RenderVisual* m_pVisual, const Fmatrix& mTransform, float m_fLOD)
-{
-	for (int p = 0; p < 4; p++) {
-		Render(m_pVisual, mTransform, p, false, m_fLOD);
-		Render(m_pVisual, mTransform, p, true, m_fLOD);
-	}
-}
-void CDS0_ModelPool::OnDeviceDestroy()
-{
-	Destroy();
-}
 #endif
+}
