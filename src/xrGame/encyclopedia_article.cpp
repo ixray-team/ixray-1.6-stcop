@@ -75,7 +75,9 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 
 	if(ltx)
 	{
-		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ltx, "icons_texture", nullptr);
+		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+
 		Frect				tex_rect;
 		tex_rect.x1			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons));
 		tex_rect.y1			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons));
