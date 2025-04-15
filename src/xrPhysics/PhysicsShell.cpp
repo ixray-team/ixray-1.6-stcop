@@ -321,7 +321,7 @@ bool 	can_create_phys_shell( string1024 &reason, IPhysicsShellHolder& O )
 #ifdef	DEBUG
 		xr_strcpy( reason, dbg_valide_pos_string( O.ObjectXFORM().c, &O, "create physics shell" ).c_str() );
 #else
-		xr_strcpy( reason, make_string<const char*>( "create physics shell: object position is not valid" ));
+        xr_strcpy(reason, make_string<const char*>("~ create physics shell: object position is not valid, or missing 'level.cform', or the level is not loaded."));
 #endif
 		return false;
 	}
