@@ -54,6 +54,10 @@ float4 main(PSInput I) : SV_Target
 	
 	float3 Enviroment = reflect(O.View, O.Normal) * fog_params.z;
 	
+#ifdef USE_VASYAN_CUTOFF
+	O.Roughness = min(O.Roughness, 0.5f);
+#endif
+	
 #ifndef USE_JITTER_FOR_ENV
 	if(O.Depth > 0.02f && O.Roughness > 0.5f) {
 		return float4(Enviroment, 0.0f);
@@ -64,7 +68,7 @@ float4 main(PSInput I) : SV_Target
 	float3 ViewVec = O.View;
 	
 	float2 Jitter = Hash32(frac(ReflectPoint * timers.x) * 1234.56f);
-	Jitter.y *= 0.5f; // Bias like screen space stochastic reflections 2015
+	Jitter.y *= 0.3f; // Bias like screen space stochastic reflections 2015
 	
 	// O.Roughness = saturate(O.Roughness * 1.1f - 0.1f);
 	
