@@ -152,7 +152,9 @@ void CWeaponMagazined::FireStart()
 	{
 		u32 CurrentState = GetState();
 
-		if (IsValid())
+		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+
+		if (!is_empty)
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
@@ -160,14 +162,8 @@ void CWeaponMagazined::FireStart()
 					return;
 
 				inherited::FireStart();
-
-				if (iAmmoElapsed == 0)
-					switch2_Empty();
-				else
-				{
-					R_ASSERT(H_Parent());
-					SwitchState(eFire);
-				}
+				R_ASSERT(H_Parent());
+				SwitchState(eFire);
 			}
 		}
 		else if (CurrentState == eIdle)
@@ -199,7 +195,8 @@ void CWeaponMagazined::FireEnd()
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
 	if (isAutoreload && H_Parent())
 	{
-		if (m_pInventory && !iAmmoElapsed && H_Parent()->cast_actor() && GetState() != eReload)
+		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+		if (m_pInventory && is_empty && H_Parent()->cast_actor() && GetState() != eReload)
 		{
 			Reload();
 		}
@@ -476,6 +473,8 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
 		m_pCurrentAmmo->SetDropManual(TRUE);
 
+	GiveAmmoFromMagToChamber();
+
 	return cnt;
 }
 
@@ -537,7 +536,10 @@ void CWeaponMagazined::UpdateCL			()
 			}break;
 		case eFire:			
 			{
-				state_Fire		(dt);
+				if (m_bAmmoInChamber && !IsGrenadeMode())
+					state_FireChamber(dt);
+				else
+					state_Fire		(dt);
 			}break;
 		case eMisfire:		state_Misfire	(dt);	break;
 		case eHidden:		break;
@@ -678,6 +680,112 @@ void CWeaponMagazined::state_Fire(float dt)
 	}
 }
 
+void CWeaponMagazined::state_FireChamber(float dt)
+{
+	if (iAmmoChamberElapsed > 0)
+	{
+		VERIFY(fOneShotTime > 0.f);
+
+		Fvector					p1, d;
+		p1.set(get_LastFP());
+		d.set(get_LastFD());
+
+		if (!H_Parent())
+		{
+			StopShooting();
+			return;
+		}
+		CGameObject* GO = H_Parent()->cast_game_object();
+		if (!GO || GO->getDestroy())
+		{
+			StopShooting();
+			return;
+		}
+
+		if (!IsGameTypeSingle())
+		{
+			if (smart_cast<CMPPlayersBag*>(GO) != nullptr)
+			{
+				Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+				{
+					StopShooting();
+					return;
+				}
+			}
+		}
+
+		CEntity* entity = GO->cast_entity();
+		if (!entity)
+		{
+			StopShooting();
+			return;
+		}
+		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
+		if (!inventory_owner || !inventory_owner->m_inventory)
+		{
+			StopShooting();
+			return;
+		}
+
+		entity->g_fireParams(this, p1, d);
+
+		if (!entity->g_stateFire())
+			StopShooting();
+
+		if (m_iShotNum == 0)
+		{
+			m_vStartPos = p1;
+			m_vStartDir = d;
+		};
+
+		VERIFY(!m_chamber.empty());
+
+		while (!m_chamber.empty() &&
+			fShotTimeCounter < 0 &&
+			(IsWorking() || m_bFireSingleShot) &&
+			(m_iQueueSize < 0 || m_iShotNum < m_iQueueSize)
+			)
+		{
+			if (CheckForMisfire())
+			{
+				StopShooting();
+				return;
+			}
+
+			m_bFireSingleShot = false;
+
+			fShotTimeCounter += fOneShotTime;
+
+			if (!infinite_fire() || m_bIAmWeaponRPG7)
+				++m_iShotNum;
+
+			OnShot();
+
+			if (m_iShotNum > m_iBaseDispersionedBulletsCount)
+				FireTraceChamber(p1, d);
+			else
+				FireTraceChamber(m_vStartPos, m_vStartDir);
+		}
+
+		if (m_iShotNum == m_iQueueSize)
+			m_bStopedAfterQueueFired = true;
+
+		UpdateSounds();
+	}
+
+	if (fShotTimeCounter < 0)
+	{
+		if (iAmmoChamberElapsed == 0)
+			OnMagazineEmpty();
+
+		StopShooting();
+	}
+	else
+	{
+		fShotTimeCounter -= dt;
+	}
+}
+
 void CWeaponMagazined::state_Misfire	(float dt)
 {
 	OnEmptyClick			();
@@ -751,7 +859,10 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				bMisfireReload = false;
 			}
 			else
+			{
 				ReloadMagazine();
+				GiveAmmoFromMagToChamber();
+			}
 			SwitchState(eIdle);
 		} break;
 		case eHiding:
@@ -866,9 +977,11 @@ void CWeaponMagazined::PlayReloadSound()
 	if(!m_sounds_enabled)
 		return;
 
+	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
+
 	if (m_sounds.FindSoundItem("sndReloadMis", false) && IsMisfire() && bMisfireReload)
 		PlaySound("sndReloadMis", get_LastFP());
-	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && iAmmoElapsed == 0)
+	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && empty)
 		PlaySound("sndReloadEmpty", get_LastFP());
 	else
 		PlaySound("sndReload", get_LastFP());
@@ -1293,12 +1406,14 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
+	bool need_full_reload = HudAnimationExist("anm_reload_empty") && (m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0);
+
 	if (HudAnimationExist("anm_reload_misfire") && IsMisfire())
 	{
 		PlayHUDMotion("anm_reload_misfire", TRUE, this, GetState());
 		bMisfireReload = true;
 	}
-	else if (HudAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
+	else if (need_full_reload)
 		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
 	else
 		PlayHUDMotion("anm_reload", TRUE, this, GetState());
@@ -1479,7 +1594,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	VERIFY( m_pInventory );
 	string32	int_str;
 
-	const int	ae				= GetAmmoElapsed();
+	const int	ae				= GetAmmoElapsed() + iAmmoChamberElapsed;
 	xr_sprintf			( int_str, "%d", ae );
 
 
@@ -1507,7 +1622,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	{
 		return false;
 	}
-	const int at = GetSuitableAmmoTotal() - GetAmmoElapsed(); // update m_BriefInfo_CalcFrame
+	const int at = GetSuitableAmmoTotal() - (GetAmmoElapsed() + iAmmoChamberElapsed); // update m_BriefInfo_CalcFrame
 	xr_sprintf(int_str, "%d", at);
 	info.total_ammo = int_str;
 	info.grenade				= "";
@@ -1546,15 +1661,18 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 		//-Alundaio
     }
 	
-	if ( ae != 0 && m_magazine.size() != 0 )
+	auto& CurrVector = m_bAmmoInChamber ? m_chamber : m_magazine;
+	u8 CurrAmmoType = m_bAmmoInChamber ? m_ChamberAmmoType : m_ammoType;
+
+	if ( ae != 0 && CurrVector.size() != 0 )
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
+		LPCSTR ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
 		info.name		= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon		= ammo_type;
 	}
 	else
 	{
-		LPCSTR ammo_type	= m_ammoTypes[m_ammoType].c_str();
+		LPCSTR ammo_type	= m_ammoTypes[CurrAmmoType].c_str();
 		info.name			= g_pStringTable->translate( pSettings->r_string(ammo_type, "inv_name_short") );
 		info.icon			= ammo_type;
 	}
