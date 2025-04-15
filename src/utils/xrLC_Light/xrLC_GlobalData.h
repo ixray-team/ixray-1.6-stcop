@@ -62,6 +62,7 @@ private:
 	bool _lmapRGBA;
 	bool _skipSubdivide;
 	u32 JSampleMU;
+	bool _OverrideSettings;
 
 private:
 		bool							b_vert_not_register;
@@ -154,6 +155,14 @@ public:
 
 	void SetJitterMU(u32 size) { JSampleMU = size; }
 	u32 GetJitterMU() { return JSampleMU; }
+
+	void SetOverrideSettings(bool value) 
+	{ _OverrideSettings = value; }
+
+	bool GetOverrideSettings() 
+	{  return _OverrideSettings; }
+
+
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
