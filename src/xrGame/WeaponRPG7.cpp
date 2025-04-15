@@ -9,8 +9,9 @@
 #include "Inventory.h"
 #include "InventoryOwner.h"
 
-CWeaponRPG7::CWeaponRPG7()
+CWeaponRPG7::CWeaponRPG7() : inherited()
 {
+	CWeapon::m_bIAmWeaponRPG7 = true;
 }
 
 CWeaponRPG7::~CWeaponRPG7() 
@@ -153,6 +154,14 @@ void CWeaponRPG7::SwitchState(u32 S)
 
 void CWeaponRPG7::FireStart()
 {
+	if (!iAmmoElapsed)
+	{
+		if (infinite_fire())
+		{
+			ReloadMagazine();
+		}
+	}
+
 	inherited::FireStart();
 }
 
