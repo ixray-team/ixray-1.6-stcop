@@ -884,7 +884,7 @@ void CAI_Stalker::UpdateCL()
 		}
 		else
 		{
-			Exec_Look(Device.fTimeDelta); //
+			Exec_Look(client_update_fdelta());
 		}
 		STOP_PROFILE
 
