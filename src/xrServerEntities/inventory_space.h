@@ -76,6 +76,7 @@ struct II_BriefInfo
 	shared_str		cur_ammo;
 	shared_str		fmj_ammo;
 	shared_str		ap_ammo;
+    shared_str		total_ammo;
 	shared_str		fire_mode;
 
 	shared_str		grenade;
@@ -89,6 +90,7 @@ struct II_BriefInfo
 		cur_ammo	= "";
 		fmj_ammo	= "";
 		ap_ammo		= "";
+		total_ammo	= "";
 		fire_mode	= "";
 		grenade		= "";
 	}
