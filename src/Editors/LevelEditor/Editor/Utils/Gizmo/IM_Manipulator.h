@@ -13,6 +13,8 @@ public:
 
     void Render(float canvasX, float canvasY, float canvasWidth, float canvasHeight);
 
+    u32 MatrixMode = 0;
+
 private:
     void CommandScale(ObjectList& lst, Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, bool& retFlag);
     void CommandRotate(Fmatrix& ObjectMatrix, Fmatrix& DeltaMatrix, ObjectList& lst, const bool IsCSParent);
