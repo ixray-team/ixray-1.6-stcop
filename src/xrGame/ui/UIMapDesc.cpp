@@ -143,9 +143,6 @@ bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 			return true;
 			break;
 	}
-	if (int x = sizeof x)
-	{
-	}
 
     return false;
 }
