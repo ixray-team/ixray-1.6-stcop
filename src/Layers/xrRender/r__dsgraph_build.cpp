@@ -53,8 +53,17 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	// b) Should be rendered to special distort buffer in another pass
 	VERIFY						(pVisual->shader._get());
 	ShaderElement*		sh_d	= &*pVisual->shader->E[4];
-	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2])
-		mapDistort.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+	if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority/2]) {
+		mapSorted_T& test = RI.val_bHUD ? mapHUDDistort : mapDistort;
+
+		mapSorted_Node* N		= test.insertInAnyWay(distSQ);
+
+		N->val.ssa				= SSA;
+		N->val.pObject			= RI.val_pObject;
+		N->val.pVisual			= pVisual;
+		N->val.Matrix			= *RI.val_pTransform;
+		N->val.se				= sh_d;		// 4=L_special
+	}
 
 	// Select shader
 	ShaderElement*	sh		=	RImplementation.rimp_select_sh_dynamic	(pVisual,distSQ);

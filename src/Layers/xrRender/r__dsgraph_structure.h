@@ -49,6 +49,7 @@ public:
 	R_dsgraph::mapSorted_T										mapEmissive;
 	R_dsgraph::mapSorted_T										mapHUDEmissive;
 #endif
+	R_dsgraph::mapSorted_T										mapHUDDistort;
 
 	xr_vector<R_dsgraph::_LodItem,render_alloc<R_dsgraph::_LodItem> >	lstLODs		;
 	xr_vector<int,render_alloc<int> >									lstLODgroups;
@@ -111,6 +112,7 @@ public:
 		mapLOD.destroy			();
 		mapDistort.destroy		();
 		mapHUDSorted.destroy();
+		mapHUDDistort.destroy();
 
 #if RENDER!=R_R1
 		mapWmark.destroy		();
