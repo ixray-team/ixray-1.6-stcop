@@ -1269,6 +1269,11 @@ u32 get_size_client_events()
 	return Level().GetSizeClientScriptEvent();
 }
 
+u32 get_build_id()
+{
+	return Core.BuildId;
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1500,7 +1505,8 @@ void CLevel::script_register(lua_State *L)
 		def("IsImportantSave",					&IsImportantSave),
 		def("IsDedicated",						&is_dedicated),
 		def("OnClient",							&OnClient),
-		def("OnServer",							&OnServer)
+		def("OnServer",							&OnServer),
+		def("EngineBuildId", &get_build_id)
 	];
 
 	module(L,"relation_registry")
