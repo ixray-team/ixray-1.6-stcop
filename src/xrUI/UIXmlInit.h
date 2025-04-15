@@ -39,9 +39,9 @@ public:
 					CUIXmlInit				();
 	virtual			~CUIXmlInit				();
 		
-	static bool 	InitWindow				(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd);
-	static bool 	InitFrameWindow			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameWindow* pWnd);
-	static bool 	InitFrameLine			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameLineWnd* pWnd);
+	static bool 	InitWindow				(CUIXml& xml_doc, LPCSTR path, int index, CUIWindow* pWnd, bool fatal = true);
+	static bool 	InitFrameWindow			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameWindow* pWnd, bool fatal = true);
+	static bool 	InitFrameLine			(CUIXml& xml_doc, LPCSTR path, int index, CUIFrameLineWnd* pWnd, bool fatal = true);
 	static bool 	InitCustomEdit			(CUIXml& xml_doc, LPCSTR paht, int index, CUICustomEdit* pWnd);
 	static bool 	InitEditBox				(CUIXml& xml_doc, LPCSTR paht, int index, CUIEditBox* pWnd);
 	static bool 	InitStatic				(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
@@ -61,7 +61,7 @@ public:
 	static bool 	InitTextureOffset		(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
 	static bool 	InitSound				(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
 	static bool 	InitMultiTexture		(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButton* pWnd);
-	static bool 	InitTexture				(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd);
+	static bool 	InitTexture				(CUIXml& xml_doc, LPCSTR path, int index, ITextureOwner* pWnd, bool fatal = true);
 	static bool 	InitOptionsItem			(CUIXml& xml_doc, LPCSTR paht, int index, CUIOptionsItem* pWnd);
 	static bool 	InitScrollView			(CUIXml& xml_doc, LPCSTR path, int index, CUIScrollView* pWnd);
 	static bool 	InitListBox				(CUIXml& xml_doc, LPCSTR path, int index, CUIListBox* pWnd);
