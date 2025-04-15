@@ -84,6 +84,20 @@ void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 	}
 }
 
+void CDialogHolder::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
+{
+	if (pDialog->IsShown())
+		StopMenu(pDialog);
+	else
+	{
+		if (pDialog && pDialog->NeedCenterCursor())
+		{
+			GetUICursor().SetUICursorPosition(Fvector2().set(512.0f, 384.0f));
+		}
+		StartMenu(pDialog, bDoHideIndicators);
+	}
+
+}
 
 void CDialogHolder::StopMenu(CUIDialogWnd* pDialog)
 {
