@@ -212,10 +212,7 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	if (m_sounds.FindSoundItem("sndShot", false))
-	{
-		PlaySound("sndShot", pos);
-	}
+	PlaySoundIfExist("sndShot", pos);
 
 	CActor* actor = smart_cast<CActor*>(H_Parent());
 	if (actor->active_cam() != eacFirstEye) {
@@ -292,18 +289,12 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 	if (state == eFire)
 	{
 		PlayHUDMotion("anm_attack", FALSE, this, state);
-		if (m_sounds.FindSoundItem("sndKick1", false))
-		{
-			PlaySound("sndKick1", Position());
-		}
+		PlaySoundIfExist("sndKick1", Position());
 	}
 	else
-	{//eFire2
+	{
 		PlayHUDMotion("anm_attack2", FALSE, this, state);
-		if (m_sounds.FindSoundItem("sndKick2", false))
-		{
-			PlaySound("sndKick2", Position());
-		}
+		PlaySoundIfExist("sndKick2", Position());
 	}
 
 	SetPending			(TRUE);
@@ -322,8 +313,7 @@ void CWeaponKnife::switch2_Hiding	()
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
 	PlayHUDMotion("anm_hide", TRUE, this, GetState());
-	if (m_sounds.FindSoundItem("SndHide", false))
-		PlaySound("SndHide", get_LastFP());
+	PlaySoundIfExist("SndHide", get_LastFP());
 }
 
 void CWeaponKnife::switch2_Hidden()
@@ -336,8 +326,7 @@ void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
 	PlayHUDMotion("anm_show", FALSE, this, GetState());
-	if (m_sounds.FindSoundItem("SndShow", false))
-		PlaySound("SndShow", get_LastFP());
+	PlaySoundIfExist("SndShow", get_LastFP());
 }
 
 void CWeaponKnife::UpdateCL()
