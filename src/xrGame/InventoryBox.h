@@ -1,6 +1,7 @@
 #pragma once
 #include "inventory_space.h"
 #include "GameObject.h"
+#include "../xrScripts/script_export_space.h"
 
 class CInventoryBox :public CGameObject
 {
@@ -37,5 +38,6 @@ public:
 
 protected:
 				void	SE_update_status				();
+				DECLARE_SCRIPT_REGISTER_FUNCTION
 
 };
