@@ -13,7 +13,7 @@ f_deffer 	main	( p_flat I )
   f_deffer	O;
 
   // diffuse
-  float3 D	= tbase		(I.tcdh);	// IN:  rgb.a
+  float3 D = tex2D(s_base, I.tcdh);	// IN:  rgb.a
 
 #ifdef	USE_TDETAIL
 	D.rgb	= 2*D.rgb*tex2D	(s_detail, I.tcdbump).rgb;
@@ -36,7 +36,7 @@ f_deffer 	main	( p_flat I )
 # endif
 #endif
 
-	// Шум при выбросе	
+	// пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ	
 	float noise	= get_noise(I.tcdh*timers.z) *  m_affects.x * m_affects.x * 30;
 
 	D.r += noise+0.1;
@@ -44,9 +44,9 @@ f_deffer 	main	( p_flat I )
 	D.b += noise+0.1;
 
 	// 2. Standart output
-	O.Ne          = float4		(normalize((float3)I.N.xyz), 					h			);
-	O.position    = float4 	(I.position.xyz + O.Ne.xyz*def_virtualh/2.h, 	ms			);
-	O.C			= float4		(D.rgb,											def_gloss	);	// OUT: rgb.gloss
+	O.N             = float4(normalize((float3)I.N.xyz), h);
+	O.P             = float4(I.position.xyz + O.N.xyz*def_virtualh/2.0f, ms);
+	O.C             = float4(D.rgb, def_gloss);	// OUT: rgb.gloss
 
 	return O;
 }
