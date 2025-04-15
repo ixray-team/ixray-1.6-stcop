@@ -1050,8 +1050,23 @@ bool CInventory::Eat(PIItem pIItem)
 	Msg( "--- Actor [%d] use or eat [%d][%s]", entity_alive->ID(), pItemToEat->object().ID(), pItemToEat->object().cNameSect().c_str() );
 #endif // MP_LOGGING
 
-	if(IsGameTypeSingle() && Actor()->m_inventory == this)
-		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
+	luabind::functor<bool>	funct;
+	if (ai().script_engine().functor("_G.CInventory__eat", funct))
+	{
+		if (!funct(smart_cast<CGameObject*>(pItemToEat->object().H_Parent())->lua_game_object(), (smart_cast<CGameObject*>(pIItem))->lua_game_object()))
+			return false;
+	}
+
+	if (Actor()->m_inventory == this)
+	{
+		if (IsGameTypeSingle())
+			Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
+
+		if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->CanDelete())
+			CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+		
+		CurrentGameUI()->ActorMenu().SetCurrentItem(NULL);
+	}
 
 	if (pItemToEat->Empty())
 	{
@@ -1060,6 +1075,7 @@ bool CInventory::Eat(PIItem pIItem)
 
 		pIItem->SetDropManual(TRUE);
 	}
+
 	return			true;
 }
 
