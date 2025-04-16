@@ -1,5 +1,5 @@
 #pragma once
-#include <AnimNotify/AnimNotify.h>
+#include <../../xrCore/AnimNotify/AnimNotify.h>
 
 class CAnimNotifyHandler : public IAnimNotifyHandler
 {

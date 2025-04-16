@@ -19,7 +19,7 @@
 #include "alife_simulator.h"
 #include "moving_objects.h"
 #include "doors_manager.h"
-#include "AnimNotify/AnimNotify.h"
+#include "../../xrCore/AnimNotify/AnimNotify.h"
 #include "AnimNotify/AnimNotifyGame.h"
 
 ENGINE_API bool g_dedicated_server;
