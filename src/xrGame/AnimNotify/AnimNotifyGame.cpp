@@ -11,7 +11,7 @@
 #include "alife_registry_container_space.h"
 #include "alife_simulator.h"
 #include "Level.h"
-#include "AnimNotify/AnimNotifyRegistry.h"
+#include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
 void CAnimNotifyHandler::TriggerGiveInfo(shared_str Info)
 {
@@ -86,7 +86,7 @@ void CAnimNotifyHandler::GiveInfo(shared_str Info)
     VERIFY(known_info);
     if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info)) == known_info->end())
     {
-        known_info->push_back(INFO_DATA(Info, Level().GetGameTime()));
+        known_info->push_back(Info);
     }
 }
 
