@@ -175,11 +175,6 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 	{
 		PlaySound("sndReloadG", get_LastFP2());
 		PlayHUDMotion(SetCurrentReloadAnimation(), true, eReload);
-
-		if (ParentIsActor() && IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
-		{
-			bMisfireReload = true;
-		}
 	}
 	else
 	{
