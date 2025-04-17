@@ -260,7 +260,10 @@ void CEditableObject::CalculateBindPose()
 void CEditableObject::SetActiveSMotion(CSMotion* mot)
 {
 	m_ActiveSMotion=mot;
-	if (m_ActiveSMotion) m_SMParam.Set(m_ActiveSMotion);
+	if (m_ActiveSMotion)
+	{
+		m_SMParam.Set(m_ActiveSMotion);
+	}
 }
 
 bool CEditableObject::RemoveSMotion(const char* name)

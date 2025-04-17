@@ -32,6 +32,9 @@ public:
 	MotionID		motionID;
 	u16				bone_or_part;	// startup parameters
 	u8				channel;
+	xr_vector<float> notifyKeys;
+	size_t current_notify_index = 0;
+	bool trigger_notify = false;
 private:
 	ECurvature		blend;
 public:
