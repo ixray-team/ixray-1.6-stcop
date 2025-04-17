@@ -2,11 +2,6 @@
 
 class XRCORE_API CAnimNotifyRegistry
 {
-    struct SAnimNotifyInfo;
-    
-    xr_hash_map<shared_str, SAnimNotifyInfo> map;
-    
-    CAnimNotifyRegistry();
 public:
     
     struct SAnimNotifyInfo
@@ -25,4 +20,8 @@ public:
     CAnimNotifyRegistry( const CAnimNotifyRegistry& ) = delete;
     CAnimNotifyRegistry& operator=( CAnimNotifyRegistry&& ) = delete;
     CAnimNotifyRegistry(CAnimNotifyRegistry&& ) = delete;
+
+private:
+    xr_hash_map<shared_str, SAnimNotifyInfo> map;
+    CAnimNotifyRegistry();
 };
