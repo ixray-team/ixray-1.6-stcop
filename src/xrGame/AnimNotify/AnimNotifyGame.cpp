@@ -10,34 +10,19 @@
 #include "alife_registry_container_composition.h"
 #include "alife_registry_container_space.h"
 #include "alife_simulator.h"
+#include "AnimNotifyDisableInfo.h"
+#include "AnimNotifyGiveInfo.h"
+#include "AnimNotifyLuaFunctor.h"
 #include "Level.h"
 #include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
-void CAnimNotifyHandler::TriggerGiveInfo(shared_str Info)
+void CAnimNotifyHandler::TriggerNotify(IAnimNotifyMessage* notify)
 {
-    xrCriticalSectionGuard guard(GiveInfoQueue.Lock);
-    GiveInfoQueue.Queue.push(Info);
-}
-
-void CAnimNotifyHandler::TriggerDisableInfo(shared_str Info)
-{
-    xrCriticalSectionGuard guard(DisableInfoQueue.Lock);
-    DisableInfoQueue.Queue.push(Info);
-}
-
-void CAnimNotifyHandler::TriggerFunctor(shared_str Func)
-{
-    xrCriticalSectionGuard guard(FunctorQueue.Lock);
-    FunctorQueue.Queue.push(Func);
-}
-
-void CAnimNotifyHandler::TriggerNotify(shared_str Name)
-{
-    xr_string buffer = Name.c_str();
-    std::ranges::transform(buffer, buffer.begin(), tolower);
-    Name = buffer.c_str();
+    //xr_string buffer = Name.c_str();
+    //std::ranges::transform(buffer, buffer.begin(), tolower);
+    //Name = buffer.c_str();
     xrCriticalSectionGuard guard(NotifyQueue.Lock);
-    NotifyQueue.Queue.push(Name);
+    NotifyQueue.Queue.push(notify);
 }
 
 void CAnimNotifyHandler::Update()
@@ -73,68 +58,34 @@ void CAnimNotifyHandler::Update()
         xrCriticalSectionGuard guard(NotifyQueue.Lock);
         while (!NotifyQueue.Queue.empty())
         {
-            shared_str Name = NotifyQueue.Queue.front();
+            auto Name = NotifyQueue.Queue.front();
             NotifyQueue.Queue.pop();
             ProcessNotify(Name);
         }
     }
 }
 
-void CAnimNotifyHandler::GiveInfo(shared_str Info)
+void CAnimNotifyHandler::ProcessNotify(IAnimNotifyMessage* Message)
 {
-    KNOWN_INFO_VECTOR *known_info = ai().get_alife()->registry(info_portions).object(0, true);
-    VERIFY(known_info);
-    if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info)) == known_info->end())
-    {
-        known_info->push_back(Info);
-    }
+    Message->notify->Execute(Message->render_visual, Message->bone_id);
 }
 
-void CAnimNotifyHandler::DisableInfo(shared_str Info)
+IAnimNotify* CAnimNotifyHandler::ConstructNotify(const EAnimNotifyType type)
 {
-    KNOWN_INFO_VECTOR *known_info = ai().get_alife()->registry(info_portions).object(0, true);
-    VERIFY(known_info);
-    if (auto It = std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(Info));
-        It != known_info->end())
+    switch (type)
     {
-        known_info->erase(It);
-    }
-}
-
-void CAnimNotifyHandler::ProcessFunctor(shared_str Func)
-{
-    try
-    {
-        luabind::functor<void> funct;
-        if (ai().script_engine().functor(Func.c_str(), funct))
+    case EAnimNotifyType::give_info:
         {
-            funct();
+            return new CAnimNotifyGiveInfo();
         }
-    } catch (...)
-    {
-        R_ASSERT3(false, "Unable to process AnimNotify functor", Func.c_str());
+    case EAnimNotifyType::disable_info:
+        {
+            return new CAnimNotifyDisableInfo();
+        }
+    case EAnimNotifyType::lua_functor:
+        {
+            return new CAnimNotifyLuaFunctor();
+        }
     }
-}
-
-void CAnimNotifyHandler::ProcessNotify(shared_str Name)
-{
-    auto& registry = CAnimNotifyRegistry::GetInstance();
-    if (!registry.contains(Name)) // BROKEN, letters in registry only in lowercase
-    {
-        R_ASSERT3(false, "Unable to process AnimNotify", Name.c_str());
-        return;
-    }
-    const auto& Sect = registry.get(Name);
-    if (Sect.GiveInfo.size())
-    {
-        GiveInfo(Sect.GiveInfo);
-    }
-    if (Sect.DisableInfo.size())
-    {
-        DisableInfo(Sect.DisableInfo);
-    }
-    if (Sect.Functor.size())
-    {
-        ProcessFunctor(Sect.Functor);
-    }
+    return nullptr;
 }
