@@ -9,7 +9,7 @@
 #include "InfoPortionDefs.h"
 #include "Level.h"
 
-void CAnimNotifyDisableInfo::Construct(CInifile ini, LPCSTR sect)
+void CAnimNotifyDisableInfo::Construct(const CInifile& ini, LPCSTR sect)
 {
     Info = ini.r_string(sect, "Info");
 }

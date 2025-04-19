@@ -3,7 +3,7 @@
 
 #include "ai_space.h"
 
-void CAnimNotifyLuaFunctor::Construct(CInifile ini, LPCSTR sect)
+void CAnimNotifyLuaFunctor::Construct(const CInifile& ini, LPCSTR sect)
 {
     Func = ini.r_string(sect, "Func");
 }
