@@ -109,16 +109,13 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_Prop_line = UIHelper::CreateStatic(xml, "prop_line", this);
 		m_Prop_line->SetAutoDelete(false);
 	}
-	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
-	if (enableArtDegradation)
-	{
-		m_disp_condition = new UIArtefactParamItem();
-		m_disp_condition->Init(xml, "condition");
-		m_disp_condition->SetAutoDelete(false);
-		LPCSTR name = g_pStringTable->translate("st_condition").c_str();
-		m_disp_condition->SetCaption(name);
-		xml.SetLocalRoot(base_node);
-	}
+
+	m_disp_condition = new UIArtefactParamItem();
+	m_disp_condition->Init(xml, "condition");
+	m_disp_condition->SetAutoDelete(false);
+	LPCSTR name = g_pStringTable->translate("st_condition").c_str();
+	m_disp_condition->SetCaption(name);
+	xml.SetLocalRoot(base_node);
 
 	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
 	{
@@ -126,7 +123,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_immunity_item[i]->Init( xml, af_immunity_section_names[i] );
 		m_immunity_item[i]->SetAutoDelete(false);
 
-		LPCSTR name = g_pStringTable->translate(af_immunity_caption[i]).c_str();
+		name = g_pStringTable->translate(af_immunity_caption[i]).c_str();
 		m_immunity_item[i]->SetCaption( name );
 
 		xml.SetLocalRoot( base_node );
@@ -138,7 +135,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_restore_item[i]->Init( xml, af_restore_section_names[i] );
 		m_restore_item[i]->SetAutoDelete(false);
 
-		LPCSTR name = g_pStringTable->translate(af_restore_caption[i]).c_str();
+		name = g_pStringTable->translate(af_restore_caption[i]).c_str();
 		m_restore_item[i]->SetCaption( name );
 
 		xml.SetLocalRoot( base_node );
@@ -150,7 +147,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_af_slots->Init(xml, "af_slots");
 		m_af_slots->SetAutoDelete(false);
 
-		LPCSTR name = g_pStringTable->translate("st_prop_artefact").c_str();
+		name = g_pStringTable->translate("st_prop_artefact").c_str();
 		m_af_slots->SetCaption(name);
 		xml.SetLocalRoot(base_node);
 	}
@@ -162,7 +159,7 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 
 		// use either ui_inv_weight or ui_inv_outfit_additional_weight
 		// but set ui_inv_weight if both unavailable
-		LPCSTR name = g_pStringTable->translate("ui_inv_weight").c_str();
+		name = g_pStringTable->translate("ui_inv_weight").c_str();
 		LPCSTR add_name = g_pStringTable->translate("ui_inv_outfit_additional_weight").c_str();
 		if (0 == xr_strcmp(name, "ui_inv_weight") &&
 			0 != xr_strcmp(add_name, "ui_inv_outfit_additional_weight"))
@@ -198,9 +195,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 	if (m_Prop_line)
 		h = m_Prop_line->GetWndPos().y + m_Prop_line->GetWndSize().y;
 
-	const static bool enableArtDegradation = EngineExternal()[EEngineExternalGame::EnableArtefactDegradation];
-
-	if (is_artefact() && enableArtDegradation)
+	if (is_artefact() && static_cast<CArtefact*>(&pInvItem)->DegradationRate())
 	{
 		m_disp_condition->SetValue(pInvItem.GetCondition());
 		pos.set(m_disp_condition->GetWndPos());
