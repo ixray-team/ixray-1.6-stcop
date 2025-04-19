@@ -26,7 +26,6 @@ enum class EEngineExternalGame
 	EnableMonstersInventory,
 	EnableWeaponInertion,
 	EnableWeaponCollision,
-	EnableArtefactDegradation,
 	EnableActorStepWallmarks,
 	DisableSprintWhileOverweight,
 	EnableAlternateZoomFovCalc,
