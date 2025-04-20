@@ -560,7 +560,4 @@ void CInput::acquire()
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
 	stop_vibration_time = RDEVICE.fTimeGlobal + time;
-#ifndef _EDITOR
-//.	set_vibration (s1, s2);
-#endif
 }

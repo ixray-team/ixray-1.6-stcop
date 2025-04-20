@@ -85,29 +85,14 @@ public:
 	virtual void					OnSectorChanged		(int sector){};
 	virtual void					OnAssetsChanged		();
 
-	virtual void					RegisterModel		(IRenderVisual* V)
-#ifndef _EDITOR
-     = 0;
-#else
-	{}
-#endif
-	virtual	float					MtlTransparent		(u32 mtl_idx)
-#ifndef _EDITOR
-	= 0;
-#else
-	{return 1.f;}
-#endif
+	virtual void					RegisterModel		(IRenderVisual* V) {}
+	virtual	float					MtlTransparent		(u32 mtl_idx) { return 1;}
 
 	IGame_Persistent				();
 	virtual ~IGame_Persistent		();
 
 	ICF		u32						GameType			() {return m_game_params.m_e_game_type;};
-	virtual void					Statistics			(CGameFont* F)
-#ifndef _EDITOR
-     = 0;
-#else
-	{}
-#endif
+	virtual void					Statistics			(CGameFont* F) {}
 	virtual	void					LoadTitle			(bool change_tip=false, shared_str map_name=""){}
 	virtual void					SetLoadStageTitle	(pcstr /*ls_title*/) {}
 	virtual bool					CanBePaused			()		{ return true;}
