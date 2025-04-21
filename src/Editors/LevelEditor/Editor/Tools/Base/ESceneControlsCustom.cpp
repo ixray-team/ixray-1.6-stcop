@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../Terrain/ESceneTerrainTools.h"
 
 TUI_CustomControl::TUI_CustomControl(int st, int act, ESceneToolBase* parent)
 {
@@ -94,7 +95,24 @@ void DragDrop(const xr_string& Path, int Type)
 
 		string_path fn = {};
 
-		if (OBJCLASS_SCENEOBJECT == Type)
+		if (OBJCLASS_TERRAIN == Type)
+		{
+			FS.update_path(fn, "$server_data_root$", fn);
+			xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));
+			NewPath = NewPath.substr(0, NewPath.length() - 4);
+
+			string256 namebuffer;
+			Scene->GenObjectName(OBJCLASS_TERRAIN, namebuffer, NewPath.data());
+			CTerrain* obj = new CTerrain(nullptr, namebuffer);
+			if (!obj->Valid()) {
+				xr_delete(obj);
+			}
+
+			obj->SetLoadedState();
+			Scene->SelectObjects(false, Type);
+			Scene->AppendObject(obj);
+		}
+		else if (OBJCLASS_SCENEOBJECT == Type)
 		{
 			FS.update_path(fn, "$objects$", fn);
 			xr_string NewPath = Path.substr(Path.find(fn) + xr_strlen(fn));

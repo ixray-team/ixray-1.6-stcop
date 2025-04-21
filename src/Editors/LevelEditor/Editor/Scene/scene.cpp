@@ -118,7 +118,7 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
 		break;
 	}
 
-	ESceneCustomOTool* mt	= GetOTool(object->FClassID);
+	ESceneCustomOTool* mt = GetOTool(object->FClassID);
 	VERIFY3(mt,"Can't find Object Tools:",GetTool(object->FClassID)->ClassDesc());
 	mt->_AppendObject	(object);
 	UI->UpdateScene		();
