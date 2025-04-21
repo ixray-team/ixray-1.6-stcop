@@ -1,10 +1,13 @@
 #pragma once
 #include "../xrCore/AnimNotify/AnimNotifyTypes.h"
 
-class CAnimNotifyLuaFunctor : public IAnimNotify
+class CParticlesObject;
+
+class CAnimNotifyPlayParticle : public IAnimNotify
 {
-    shared_str Func;
+    shared_str m_particle_to_play;
 public:
     void Construct(const CInifile& ini, LPCSTR sect) override;
     void Execute(IRenderVisual* visual, u16 bone_id) override;
+    
 };
