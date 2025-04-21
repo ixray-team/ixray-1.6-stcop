@@ -183,6 +183,7 @@ public:
 	void						SetMenuMode					(EMenuMode mode);
 	EMenuMode					GetMenuMode					() {return m_currMenuMode;};
 	void						SetActor					(CInventoryOwner* io);
+	void						ReloadActorInfo				();
 	void						SetPartner					(CInventoryOwner* io);
 	CInventoryOwner*			GetPartner					() {return m_pPartnerInvOwner;};
 	void						SetInvBox					(CInventoryBox* box);
