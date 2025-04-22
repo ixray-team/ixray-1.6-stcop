@@ -49,6 +49,8 @@ public:
 
 	virtual bool	can_be_attached			() const;
 
+			bool	IsSwitched				() const {return m_switched_on;}
+
 	//CAttachableItem
 	virtual	void	enable					(bool value);
 
