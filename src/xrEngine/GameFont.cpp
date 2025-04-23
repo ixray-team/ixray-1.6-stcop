@@ -67,6 +67,8 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
 CGameFont::~CGameFont()
 {
 	// Shading
+	FT_Done_Face(OurFont);
+
 	RenderFactory->DestroyFontRender(pFontRender);
 	pFontRender = nullptr;
 
@@ -183,7 +185,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		R_ASSERT3(FontFile != nullptr, "Can't find default font: %s", DefPath);
 	}
 
-	FT_Face OurFont;
 	FT_Error FTError = FT_New_Memory_Face(FreetypeLib, (FT_Byte*)FontFile->pointer(), FontFile->length(), 0, &OurFont);
 	R_ASSERT3(FTError == 0, "FT_New_Memory_Face return error", FullPath);
 
@@ -326,7 +327,6 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		glyphID = FT_Get_Next_Char(OurFont, glyphID, &index);
 	}
 
-	FT_Done_Face(OurFont);
 	fCurrentHeight = FontSizeInPixels;
 
 	string128 textureName;
@@ -488,8 +488,14 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 
 int CGameFont::WidthOf(int ch)
 {
-	const Glyph* glyphInfo = GetGlyphInfo(ch);
-	return glyphInfo ? (glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC) : 5;
+	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
+	{
+		return glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC;
+	}
+	else
+	{
+		return OurFont->glyph->metrics.width / 64;
+	}
 }
 
 int CGameFont::WidthOf(const char* str)
