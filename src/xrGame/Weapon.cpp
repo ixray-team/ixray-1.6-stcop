@@ -546,6 +546,9 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
 
+	m_bFireModeConditions[0] = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_firemode_change_anim", false);
+	m_bFireModeConditions[1] = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "use_firemode_change_aim_anim", false);
+
 	auto LoadVector = [&](RStringVec& vec, const char* sect)
 		{
 			if (pSettings->line_exist(section, sect))
