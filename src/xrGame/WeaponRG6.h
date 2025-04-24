@@ -12,14 +12,14 @@ class CWeaponRG6 :  public CRocketLauncher,
 	
 public:
 	virtual			~CWeaponRG6				();
-	virtual BOOL	net_Spawn				(CSE_Abstract* DC);
-	virtual void	Load					(LPCSTR section);
-	virtual void	OnEvent					(NET_Packet& P, u16 type);
+	virtual BOOL	net_Spawn				(CSE_Abstract* DC) override;
+	virtual void	Load					(LPCSTR section) override;
+	virtual void	OnEvent					(NET_Packet& P, u16 type) override;
 protected:
-	virtual void	FireStart				();
-	virtual u8		AddCartridge			(u8 cnt);
-	virtual void	UnloadMagazine			(bool spawn_ammo);
-	virtual void	FireTrace				(const Fvector& P, const Fvector& D);
+	virtual u8		AddCartridge			(u8 cnt) override;
+	virtual void	UnloadMagazine			(bool spawn_ammo = true) override;
+	virtual void	ReloadMagazine			() override;
+	virtual void	FireTrace				(const Fvector& P, const Fvector& D) override;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
