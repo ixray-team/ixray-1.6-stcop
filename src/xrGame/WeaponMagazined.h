@@ -148,7 +148,7 @@ public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 			void	ChangeFireMode		(u16 cmd);
-			bool	HasFireModes		() { return m_aFireModes.size() > 0; };
+			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 
 	virtual void	save				(NET_Packet &output_packet);
