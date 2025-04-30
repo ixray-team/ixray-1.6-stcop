@@ -215,8 +215,6 @@ void CWeapon::StopShooting()
 	//принудительно останавливать зацикленные партиклы
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles	();	
-
-	SwitchState(eIdle);
 	
 	bWorking = false;
 }
