@@ -6,6 +6,7 @@
 #include "../xrEngine/CameraBase.h"
 #include "../xrServerEntities/clsid_game.h"
 #include "../xrECore/Editor/UILogForm.h"
+#include "Editor/Tools/Terrain/ESceneTerrainTools.h"
 
 EScene* Scene;
 
@@ -523,8 +524,9 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		ELog.Msg(mtError,"*ERROR: Can't find any Light Object.");
 		bRes = false;
 	}*/
-	if (ObjCount(OBJCLASS_SCENEOBJECT)==0){
-		ELog.Msg(mtError,"*ERROR: Can't find any Scene Object.");
+	if (ObjCount(OBJCLASS_SCENEOBJECT) == 0 && ObjCount(OBJCLASS_TERRAIN) == 0)
+	{
+		ELog.Msg(mtError,"*ERROR: Can't find any Scene Object or Terrain.");
 		bRes = false;
 	}
 /*	if (bTestGlow)
@@ -539,30 +541,50 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		bRes = false;
 	}
 	
-	if (bTestShaderCompatible){
+	if (bTestShaderCompatible)
+	{
 		bool res = true;
 		ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
 		using EOSet = xr_set<CEditableObject*>;
 		EOSet objects;
-		int static_obj = 0; 
-		for(ObjectIt it=lst.begin();it!=lst.end();it++)
+		int static_obj = 0;
+		for (ObjectIt it = lst.begin(); it != lst.end(); it++)
 		{
 			CSceneObject* S = (CSceneObject*)(*it);
-			if (S->IsStatic()||S->IsMUStatic()){
+			if (S->IsStatic() || S->IsMUStatic())
+			{
 				static_obj++;
 				CEditableObject* O = ((CSceneObject*)(*it))->GetReference(); R_ASSERT(O);
-				if (objects.find(O)==objects.end()){
+				if (objects.find(O) == objects.end())
+				{
 					if (!O->CheckShaderCompatible()) res = false;
 					objects.insert(O);
 				}
 			}
 		}
-		if (!res){ 
-			ELog.Msg	(mtError,"*ERROR: Scene has non compatible shaders. See log.");
+
+		ObjectList& lstHm = ListObj(OBJCLASS_TERRAIN);
+		for (ObjectIt it = lstHm.begin(); it != lstHm.end(); it++)
+		{
+			CTerrain* S = (CTerrain*)(*it);
+			static_obj++;
+			CEditableObject* O = ((CTerrain*)(*it))->GetReference(); R_ASSERT(O);
+			if (objects.find(O) == objects.end())
+			{
+				if (!O->CheckShaderCompatible()) res = false;
+				objects.insert(O);
+			}
+		}
+
+		if (!res)
+		{
+			ELog.Msg(mtError, "*ERROR: Scene has non compatible shaders. See log.");
 			bRes = false;
 		}
-		if (0==static_obj){ 
-			ELog.Msg	(mtError,"*ERROR: Can't find static geometry.");
+
+		if (0 == static_obj)
+		{
+			ELog.Msg(mtError, "*ERROR: Can't find static geometry.");
 			bRes = false;
 		}
 	}
