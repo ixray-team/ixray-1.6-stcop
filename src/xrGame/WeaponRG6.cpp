@@ -56,7 +56,9 @@ void CWeaponRG6::FireStart()
 	if (!IsMisfire())
 	{
 		if (GetState() != eIdle)
+		{
 			return;
+		}
 
 		if (IsValid())
 		{
@@ -65,7 +67,9 @@ void CWeaponRG6::FireStart()
 				CWeapon::FireStart();
 
 				if (iAmmoElapsed == 0)
+				{
 					switch2_Empty();
+				}
 				else
 				{
 					R_ASSERT(H_Parent());
@@ -162,10 +166,10 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 		u_EventSend(P);
 	}
 	
-	if (IsGameTypeSingle())
-	{
-		dropCurrentRocket();
-	}
+	//if (IsGameTypeSingle())
+	//{
+	//	dropCurrentRocket();
+	//}
 
 
 	if (infinite_fire())
@@ -175,12 +179,104 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 	}
 }
 
+void CWeaponRG6::ReloadMagazine()
+{
+	m_BriefInfo_CalcFrame = 0;
+
+	if (!m_bLockType)
+	{
+		m_pCurrentAmmo = nullptr;
+	}
+
+	if (!m_pInventory) return;
+
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
+	{
+		m_ammoType = m_set_next_ammoType_on_reload;
+		m_set_next_ammoType_on_reload = undefined_ammo_type;
+	}
+
+	if (!unlimited_ammo())
+	{
+		if (m_ammoTypes.size() <= m_ammoType)
+			return;
+
+		LPCSTR tmp_sect_name = m_ammoTypes[m_ammoType].c_str();
+
+		if (!tmp_sect_name)
+			return;
+
+		//попытаться найти в инвентаре патроны текущего типа 
+		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(tmp_sect_name));
+
+		if (!m_pCurrentAmmo && !m_bLockType)
+		{
+			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+			{
+				//проверить патроны всех подходящих типов
+				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+				if (m_pCurrentAmmo)
+				{
+					m_ammoType = i;
+					break;
+				}
+			}
+		}
+	}
+
+	//нет патронов для перезарядки
+	if (!m_pCurrentAmmo && !unlimited_ammo()) return;
+
+	//разрядить магазин, если загружаем патронами другого типа
+	if (!m_bLockType && !m_magazine.empty() &&
+		(!m_pCurrentAmmo || xr_strcmp(m_pCurrentAmmo->cNameSect(),
+			*m_magazine.back().m_ammoSect)))
+		UnloadMagazine();
+
+	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
+	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
+		m_DefaultCartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+	CCartridge l_cartridge = m_DefaultCartridge;
+
+	shared_str fake_grenade_name = pSettings->r_string(*m_ammoTypes[m_ammoType], "fake_grenade_name");
+
+	while (iAmmoElapsed < iMagazineSize)
+	{
+		if (!unlimited_ammo())
+		{
+			if (!m_pCurrentAmmo->Get(l_cartridge)) break;
+		}
+		++iAmmoElapsed;
+		l_cartridge.m_LocalAmmoType = m_ammoType;
+		m_magazine.push_back(l_cartridge);
+		inheritedRL::SpawnRocket(*fake_grenade_name, this);
+	}
+
+	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+
+	//выкинуть коробку патронов, если она пустая
+	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
+		m_pCurrentAmmo->SetDropManual(TRUE);
+
+	if (iMagazineSize > iAmmoElapsed)
+	{
+		m_bLockType = true;
+		ReloadMagazine();
+		m_bLockType = false;
+	}
+
+	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+}
+
 void CWeaponRG6::UnloadMagazine(bool spawn_ammo)
 {
 	inheritedSG::UnloadMagazine(spawn_ammo);
 
 	while (getRocketCount())
+	{
 		dropCurrentRocket();
+	}
 }
 
 u8 CWeaponRG6::AddCartridge		(u8 cnt)
