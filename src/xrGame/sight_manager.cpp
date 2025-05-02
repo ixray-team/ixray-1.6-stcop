@@ -71,9 +71,9 @@ void CSightManager::vfValidateAngleDependency(float x1, float &x2, float x3)
 BOOL g_ai_dbg_sight = 0;
 #endif // #ifdef DEBUG
 
-float g_ai_aim_min_speed = PI_DIV_8/2.f;
-float g_ai_aim_min_angle = PI_DIV_8/2.f;
-float g_ai_aim_max_angle = PI_DIV_4;
+float g_ai_aim_min_speed = 31;
+float g_ai_aim_min_angle = 0;
+float g_ai_aim_max_angle = 31;
 BOOL  g_ai_aim_use_smooth_aim = 1;
 
 static inline float	select_speed(float const distance, float const speed, float const min_speed, float const min_distance, float const max_distance)
@@ -134,26 +134,13 @@ void CSightManager::Exec_Look(float time_delta)
 
 	vfValidateAngleDependency(body.current.yaw, body.target.yaw, head.current.yaw);
 
-	if (g_dedicated_server || OnServer())
-	{
-		m_object->angle_lerp_bounds(body.current.yaw, body.target.yaw, select_speed(angle_difference(body.current.yaw, body.target.yaw), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-		m_object->angle_lerp_bounds(body.current.pitch, body.target.pitch, select_speed(angle_difference(body.current.pitch, body.target.pitch), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
+	
+	m_object->angle_lerp_bounds(body.current.yaw, body.target.yaw, select_speed(angle_difference(body.current.yaw, body.target.yaw), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
+	m_object->angle_lerp_bounds(body.current.pitch, body.target.pitch, select_speed(angle_difference(body.current.pitch, body.target.pitch), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
 
-		m_object->angle_lerp_bounds(head.current.yaw, head.target.yaw, select_speed(angle_difference(head.current.yaw, head.target.yaw), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-		m_object->angle_lerp_bounds(head.current.pitch, head.target.pitch, select_speed(angle_difference(head.current.pitch, head.target.pitch), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-	}
-	else
-	{
-		g_ai_aim_min_speed = 0;
-		g_ai_aim_min_angle = 31;
-		g_ai_aim_max_angle = 31;
-
-		m_object->angle_lerp_bounds(body.current.yaw, body.target.yaw, select_speed(angle_difference(body.current.yaw, body.target.yaw), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-		m_object->angle_lerp_bounds(body.current.pitch, body.target.pitch, select_speed(angle_difference(body.current.pitch, body.target.pitch), body_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-
-		m_object->angle_lerp_bounds(head.current.yaw, head.target.yaw, select_speed(angle_difference(head.current.yaw, head.target.yaw), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-		m_object->angle_lerp_bounds(head.current.pitch, head.target.pitch, select_speed(angle_difference(head.current.pitch, head.target.pitch), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
-	}
+	m_object->angle_lerp_bounds(head.current.yaw, head.target.yaw, select_speed(angle_difference(head.current.yaw, head.target.yaw), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
+	m_object->angle_lerp_bounds(head.current.pitch, head.target.pitch, select_speed(angle_difference(head.current.pitch, head.target.pitch), head_speed, g_ai_aim_min_speed, g_ai_aim_min_angle, g_ai_aim_max_angle), time_delta);
+	
 
 	if (enabled())
 	{
