@@ -94,14 +94,21 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
 
 		xr_strcpy				(message, m_action->action_name);
 		xr_strcat					(message, "=");
-		xr_strcat					(message, m_keyboard->key_name);		
+		xr_strcat					(message, m_keyboard->key_name);
 		SendMessage2Group		("key_binding",message);
 
 		return					true;
 	}
 
-	if (mouse_btn==MOUSE_1)
+	if (mouse_btn == MOUSE_1)
+	{
 		SetEditMode(m_bCursorOverWindow);
+	}
+	else if (mouse_btn == MOUSE_2 && m_bCursorOverWindow)
+	{
+		SetText(nullptr);
+		m_keyboard = nullptr;
+	}
 
 	return CUIStatic::OnMouseDown(mouse_btn);
 }
@@ -125,7 +132,7 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 		xr_strcpy			(message, m_action->action_name);
 		xr_strcat				(message, "=");
-		xr_strcat				(message, m_keyboard->key_name);		
+		xr_strcat				(message, m_keyboard->key_name);
 		OnFocusLost			();
 		SendMessage2Group	("key_binding",message);
 		return				true;
