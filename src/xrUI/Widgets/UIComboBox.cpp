@@ -270,6 +270,11 @@ void CUIComboBox::Update()
 		
 		if(m_list_frame.IsShown())
 		{
+			if (!m_pMouseCapturer)
+			{
+				GetParent()->SetCapture(this, true);
+			}
+
 			Device.seqRender.Remove		(this);
 			Device.seqRender.Add		(this, 3);
 		}
