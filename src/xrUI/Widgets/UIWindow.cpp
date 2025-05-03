@@ -389,7 +389,7 @@ void CUIWindow::OnMouseUp(int mouse_btn){
 
 void CUIWindow::OnFocusReceive()
 {
-	m_dwFocusReceiveTime	= Device.dwTimeGlobal;
+	m_dwFocusReceiveTime	= Device.dwTimeContinual;
 	m_bCursorOverWindow		= true;	
 
 	if (GetMessageTarget())
