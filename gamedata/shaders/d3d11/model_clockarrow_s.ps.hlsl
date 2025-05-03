@@ -39,6 +39,7 @@ float4 main( v2p I ) : SV_Target
 	float noise	= get_noise(I.tc0*timers.z) * m_affects.x * m_affects.x * 30;
 
 	t_base.rgb += t_noise.rgb*noise+0.1;
+	t_base.xyz = detonemap(t_base.xyz);
 
 	return  t_base;
 }
