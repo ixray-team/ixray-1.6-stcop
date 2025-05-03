@@ -449,7 +449,7 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 	UIUpgrade* uiu = FindUIUpgrade( upgrade );
 	if ( uiu )
 	{
-        if (Device.dwTimeGlobal < uiu->FocusReceiveTime() + (m_item_info ? m_item_info->delay : 0))
+        if (Device.dwTimeContinual < uiu->FocusReceiveTime() + (m_item_info ? m_item_info->delay : 0))
 		{
 			upgrade = nullptr; // visible = false
 		}
