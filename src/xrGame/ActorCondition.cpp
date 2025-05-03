@@ -46,8 +46,8 @@ CActorCondition::CActorCondition(CActor *object) :
 	m_fSprintK					= 0.f;
 	Satiety.Current				= 1.0f;
 	Alcohol.Current				= 0.0f;
-	Thirst.Current				= 0.0f;
-	Sleepiness.Current			= 0.0f;
+	Thirst.Current				= 1.0f;
+	Sleepiness.Current			= 1.0f;
 
 //	m_vecBoosts.clear();
 
