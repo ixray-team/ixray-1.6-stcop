@@ -564,6 +564,10 @@ void CRender::Render()
 	BOOL	split_the_scene_to_minimize_wait		= FALSE;
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_SPLIT_SCENE))	split_the_scene_to_minimize_wait=TRUE;
 
+	if (mapHUDScopeMask.size() > 0) {
+		split_the_scene_to_minimize_wait = FALSE;
+	}
+
 	rmNormal();
 
 	Target->u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), nullptr, nullptr, nullptr, RDepth);
@@ -575,6 +579,8 @@ void CRender::Render()
 		// level, DO NOT SPLIT
 		Target->phase_scene_begin				();
 		r_dsgraph_render_hud					();
+		r_dsgraph_render_scope					();
+		Target->phase_scene_begin				();
 		r_dsgraph_render_graph					(0);
 		r_dsgraph_render_lods					(true,true);
 		if(Details)	Details->Render				();
@@ -783,8 +789,11 @@ void CRender::render_forward				()
 		CParticlesAsync::Wait();
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
 		PortalTraverser.fade_render				()	;					// faded-portals
-		r_dsgraph_render_sorted					()	;					// strict-sorted geoms
+		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
+
+		RContext->CopyResource(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+		r_dsgraph_render_sorted_hud();
 	}
 
 	RImplementation.o.distortion				= FALSE;				// disable distorion
