@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 
 
@@ -184,7 +184,10 @@ BOOL SceneBuilder::MakePuddles()
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
-        sprintf(buff, "rotation = %0.3f", Object->FRotation.y);
+        float newRotation = Object->FRotation.y;
+        newRotation *= -1;
+
+        sprintf(buff, "rotation = %0.3f", newRotation);
         F->w_string(buff);
         RtlZeroMemory(buff, sizeof(buff));
 
