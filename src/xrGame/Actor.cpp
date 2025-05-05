@@ -1203,7 +1203,7 @@ void CActor::UpdateCL()
 	else
 		_jitter_time_remains = 0;
 
-	if (!g_player_hud->m_need_reload)
+	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
 		CHudItemObject* item = smart_cast<CHudItemObject*>(inventory().ActiveItem());
 		CCustomDetector* det = GetDetector();
