@@ -674,8 +674,6 @@ void CCustomZone::PlayIdleParticles(bool bIdleLight)
 		{
 			m_pIdleParticles = Particles::Details::Create(m_sIdleParticles.c_str(),FALSE);
 			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
-		
-			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
 			m_pIdleParticles->Play(false);
 		}
 	}
