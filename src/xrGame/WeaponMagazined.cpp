@@ -1657,7 +1657,7 @@ shared_str CWeaponMagazined::SetCurrentAimAnimation()
 	if (IsGrenadeLauncherAttached())
 	{
 		//Hack for original weapon configs
-		anim = IsGrenadeMode() && HudAnimationExist("anm_idle_g_aim") ? "anm_idle_g_aim" : (HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : "");
+		anim = IsGrenadeMode() && HudAnimationExist("anm_idle_g_aim") ? "anm_idle_g_aim" : (HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : anim);
 	}
 
 	if (CActor* actor = H_Parent()->cast_actor())
