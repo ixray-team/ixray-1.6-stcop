@@ -78,6 +78,7 @@
 #include <bitset>
 #include <chrono>
 #include <string>
+#include <optional>
 
 #pragma warning (pop)
 #pragma warning (disable : 4100 )		// unreferenced formal parameter
