@@ -5,6 +5,7 @@
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UIRender.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "UIBtnHint.h"
 
 // #define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
@@ -548,6 +549,9 @@ CUIWindow* CUIWindow::GetChildMouseHandler(){
 void CUIWindow::Reset()
 {
 	m_pMouseCapturer = nullptr;
+
+	g_btnHint->Discard();
+	g_statHint->Discard();
 }
 
 void CUIWindow::ResetAll()
