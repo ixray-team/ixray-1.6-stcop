@@ -685,8 +685,11 @@ void CScriptGameObject::ChangeCharacterReputation		(int char_rep)
 
 LPCSTR CScriptGameObject::CharacterCommunity	()
 {
+	if (object().cast_base_monster())
+	{
+		return nullptr;
+	}
 	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
-
 	if (!pInventoryOwner) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CharacterCommunity available only for InventoryOwner");
 		return nullptr;
