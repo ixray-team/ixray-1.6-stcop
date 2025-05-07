@@ -126,8 +126,10 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	// Ammo
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_LastShotAmmoType = m_magazine.back().m_LocalAmmoType;
 		m_magazine.pop_back();
 		--iAmmoElapsed;
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -201,8 +203,10 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 	if (!infinite_fire() || m_bIAmWeaponRPG7)
 	{
+		m_LastShotAmmoType = m_chamber.back().m_LocalAmmoType;
 		DeleteAmmoInChamber();
 		GiveAmmoFromMagToChamber();
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 	}
 
 	VERIFY((u32)iAmmoChamberElapsed == m_chamber.size());

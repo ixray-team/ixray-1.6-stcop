@@ -96,6 +96,24 @@ CWeapon::CWeapon()
 	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
 	_last_update_time = Device.dwTimeGlobal;
+
+	for (auto& it : m_ammo_bones_mag)
+	{
+		xr_delete(it);
+	}
+	m_ammo_bones_mag.clear();
+
+	for (auto& it : m_ammo_bones_gl)
+	{
+		xr_delete(it);
+	}
+	m_ammo_bones_gl.clear();
+
+	for (auto& it : m_shell_bones)
+	{
+		xr_delete(it);
+	}
+	m_shell_bones.clear();
 }
 
 CWeapon::~CWeapon		()
@@ -585,6 +603,98 @@ void CWeapon::Load		(LPCSTR section)
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
 
+	if (pSettings->line_exist(hud_sect, "shell_params_section"))
+	{
+		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
+		bone_params->Load(pSettings->r_string(hud_sect, "shell_params_section"), iMagazineSize + 1);
+		m_shell_bones.push_back(bone_params);
+	}
+	else for (int i = 0; i < m_ammoTypes.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("shell_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+			m_shell_bones.push_back(bone_params);
+		}
+	}
+
+	if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
+	{
+		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
+		bone_params->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize + 1);
+		m_ammo_bones_mag.push_back(bone_params);
+	}
+	else for (int i = 0; i < m_ammoTypes.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("ammo_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+			m_ammo_bones_mag.push_back(bone_params);
+		}
+	}
+}
+
+void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
+{
+	if (!AllBones.empty())
+	{
+		AllBones.clear();
+	}
+	if (pSettings->line_exist(section, "all_bones"))
+	{
+		LPCSTR S = pSettings->r_string(section, "all_bones");
+		if (S && S[0])
+		{
+			string128 Item = {};
+			u32 count = _GetItemCount(S);
+			for (u32 it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, Item);
+				AllBones.push_back(Item);
+			}
+		}
+	}
+
+	shared_str configuration;
+
+	if (ConfigurationMap.size() > 0)
+	{
+		for (auto& node : ConfigurationMap)
+		{
+			if (!node.val.second.empty())
+			{
+				node.val.second.clear();
+			}
+		}
+	}
+
+	ConfigurationMap.clear();
+
+	for (u32 i = 0; i < size; ++i)
+	{
+		auto ConfigNode = ConfigurationMap.insert(i);
+		configuration.printf("configuration_%d", i);
+		ConfigNode->val.first = configuration;
+		if (pSettings->line_exist(section, configuration))
+		{
+			LPCSTR S = pSettings->r_string(section, *configuration);
+			if (S && S[0])
+			{
+				string128 Item = {};
+				u32 count = _GetItemCount(S);
+				for (u32 it = 0; it < count; ++it)
+				{
+					ConfigNode->val.second.push_back(_GetItem(S, it, Item));
+				}
+			}
+		}
+	}
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section)
@@ -960,7 +1070,6 @@ void CWeapon::SendHiddenItem()
 	}
 }
 
-
 void CWeapon::OnH_B_Chield		()
 {
 	m_dwWeaponIndependencyTime = 0;
@@ -1083,6 +1192,8 @@ void CWeapon::ForceUpdateHUD()
 	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+	UpdateShellBones(iAmmoElapsed, m_ammoType);
 }
 
 void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
@@ -1277,7 +1388,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
-				if (IsTriStateReload() && GetState() == eReload && m_sub_state == eSubstateReloadInProcess && flags & CMD_START)
+				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
 				{
 					bStopReloadSignal = true;
 					return true;
@@ -1296,7 +1407,11 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 			{
 				return SwitchAmmoType(flags);
 			} 
-
+		case kWPN_FUNC:
+		{
+			if (GetState() == eIdle && !IsPending()) { SwitchState(eBore); }
+			break;
+		}
 		case kWPN_ZOOM:
 			if(IsZoomEnabled())
 			{
@@ -2454,6 +2569,11 @@ void CWeapon::OnStateSwitch	(u32 S)
 	inherited::OnStateSwitch(S);
 	m_BriefInfo_CalcFrame = 0;
 
+	if (S == eBore)
+	{
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+	}
+
 	if(EnableDof && GetState()==eReload)
 	{
 		if(H_Parent()==Level().CurrentEntity() && !fsimilar(m_zoom_params.m_ReloadDof.w,-1.0f))
@@ -3001,6 +3121,17 @@ void CWeapon::UpdateCollimatorSight()
 	}
 }
 
+u32 CWeapon::FakeReload()
+{
+	if (unlimited_ammo())
+	{
+		return iMagazineSize;
+	}
+
+	u32 in_box = GetAmmoCount(GetTargetAmmoType());
+	return clampr(in_box, (u32)0, (u32)iMagazineSize);
+}
+
 void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
@@ -3009,4 +3140,88 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 	{
 		m_bBlockEmptyClick = false;
 	}
+
+	if (state == eReload && mark.name == "Left")
+	{
+		u32 current_configuration = FakeReload();
+		UpdateAmmoBones(IsGrenadeMode() ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType());
+	}
+}
+
+void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type)
+{
+	attachable_hud_item* HID = HudItemData();
+	if (HID == nullptr)
+	{
+		return;
+	}
+
+	IKinematics* kin = HID->m_model;
+
+	for (const auto& bone_param : lVector)
+	{
+		for (const auto& bone_name : bone_param->AllBones)
+		{
+			kin->LL_SetBoneVisible(kin->LL_BoneID(bone_name), FALSE, FALSE);
+		}
+	}
+
+	for (const auto& bone_param : lVector)
+	{
+		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
+		{
+			auto& Node = bone_param->ConfigurationMap[idx];
+			for (const auto& configuration_bone : Node.val.second)
+			{
+				kin->LL_SetBoneVisible(kin->LL_BoneID(configuration_bone), TRUE, FALSE);
+			}
+		}
+	}
+
+	kin->CalculateBones_Invalidate();
+	kin->CalculateBones(TRUE);
+}
+
+void CWeapon::UpdateShellBones(u32 idx, u8 type)
+{
+	attachable_hud_item* HID = HudItemData();
+	if (HID == nullptr)
+	{
+		return;
+	}
+
+	IKinematics* kin = HID->m_model;
+
+	for (const auto& bone_param : m_shell_bones)
+	{
+		for (const auto& bone_name : bone_param->AllBones)
+		{
+			kin->LL_SetBoneVisible(kin->LL_BoneID(bone_name), FALSE, FALSE);
+		}
+	}
+
+	for (const auto& bone_param : m_shell_bones)
+	{
+		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
+		{
+			auto& Node = bone_param->ConfigurationMap[idx];
+			if (Node.val.second.empty())
+			{
+				for (const auto& bone_name : bone_param->AllBones)
+				{
+					kin->LL_SetBoneVisible(kin->LL_BoneID(bone_name), TRUE, FALSE);
+				}
+			}
+			else
+			{
+				for (const auto& configuration_bone : Node.val.second)
+				{
+					kin->LL_SetBoneVisible(kin->LL_BoneID(configuration_bone), TRUE, FALSE);
+				}
+			}
+		}
+	}
+
+	kin->CalculateBones_Invalidate();
+	kin->CalculateBones(TRUE);
 }

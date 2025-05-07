@@ -357,6 +357,8 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
+
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 }
 
 void CWeaponMagazined::ReloadMagazine() 
@@ -1647,6 +1649,9 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
+
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+
 	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
 	if (ParentIsActor() && IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
 	{
@@ -1780,6 +1785,16 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire);
+
+	if (m_bAmmoInChamber && !m_chamber.empty())
+	{
+		UpdateShellBones(iAmmoElapsed, m_chamber.back().m_LocalAmmoType);
+	}
+	else if (!m_magazine.empty())
+	{
+		UpdateShellBones(iAmmoElapsed, m_magazine.back().m_LocalAmmoType);
+	}
+
 	PlayHUDMotion(SetCurrentShootAnimation(), FALSE, GetState());
 }
 
