@@ -993,9 +993,7 @@ void CWeapon::UpdateCL		()
 
 	if (need_update_hud)
 	{
-		UpdateScopePosition();
-		UpdateHUDAddonsVisibility();
-		ProcessScope();
+		ForceUpdateHUD();
 	}
 
 	UpdateCollimatorSight();
@@ -1078,6 +1076,13 @@ void CWeapon::UpdateCL		()
 		m_zoom_params.m_pVision->Update();
 
 	_last_update_time = Device.dwTimeGlobal;
+}
+
+void CWeapon::ForceUpdateHUD()
+{
+	UpdateScopePosition();
+	UpdateHUDAddonsVisibility();
+	ProcessScope();
 }
 
 void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
