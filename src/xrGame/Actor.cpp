@@ -1129,6 +1129,10 @@ float CActor::currentFOV()
 		else
 			return pWeapon->GetZoomFactor() * (0.75f);
 	}
+	else if (IsTalking())
+	{
+		return g_fov * 0.75f;
+	}
 	else
 		return g_fov;
 }
