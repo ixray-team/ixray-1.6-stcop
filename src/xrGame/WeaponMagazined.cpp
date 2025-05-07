@@ -1674,6 +1674,14 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 			AddSuffixName(anim, "_ammochange");
 		}
 
+		CActor* actor = Level().CurrentControlEntity()->cast_actor();
+		bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+
+		if (detector)
+		{
+			AddSuffixName(anim, "_detector");
+		}
+
 		if (ScopeAttachable() && !IsScopeAttached())
 		{
 			AddSuffixName(anim, "_noscope");
@@ -1723,9 +1731,19 @@ void CWeaponMagazined::PlayAnimReload()
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 
 	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
-	if (ParentIsActor() && IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
+	if (ParentIsActor())
 	{
-		bMisfireReload = true;
+		if (IsMisfire() && (HudAnimationExist("anm_reload_misfire") || HudAnimationExist("anm_reload_jammed")))
+		{
+			bMisfireReload = true;
+		}
+
+		CActor* actor = Level().CurrentControlEntity()->cast_actor();
+		bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+		if (detector && HudAnimationExist("anm_reload_detector"))
+		{
+			bDisablePrepareAnimation = true;
+		}
 	}
 }
 
