@@ -167,12 +167,15 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
 		if (IsMisfire())
 		{
-			AddSuffixName(anim, "_misfire", end_suffix);
-			AddSuffixName(anim, "_jammed", end_suffix);
-
 			if (empty)
 			{
-				AddSuffixName(anim, "_last", end_suffix);
+				AddSuffixName(anim, "_misfire_last", end_suffix);
+				AddSuffixName(anim, "_jammed_last", end_suffix);
+			}
+			else
+			{
+				AddSuffixName(anim, "_misfire", end_suffix);
+				AddSuffixName(anim, "_jammed", end_suffix);
 			}
 		}
 		else if (empty)
@@ -183,6 +186,11 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
 		{
 			AddSuffixName(anim, "_ammochange", end_suffix);
+		}
+
+		if (ScopeAttachable() && !IsScopeAttached())
+		{
+			AddSuffixName(anim, "_noscope", end_suffix);
 		}
 
 		AddSuffixName(anim, end_suffix);
@@ -705,6 +713,11 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 		}
 
 		AddSuffixName(anim, end_suffix);
+
+		if (ScopeAttachable() && !IsScopeAttached())
+		{
+			AddSuffixName(anim, "_noscope");
+		}
 	}
 
 	return anim;
