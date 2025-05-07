@@ -179,6 +179,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 
 	if (IsGrenadeLauncherAttached() && m_bGrenadeMode)
 	{
+		m_bIsReloaded = false;
 		PlaySound("sndReloadG", get_LastFP2());
 		PlayHUDMotion(SetCurrentReloadAnimation(), true, eReload);
 	}
