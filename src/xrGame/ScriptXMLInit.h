@@ -35,6 +35,17 @@ class CScriptXmlInit
 {
 public:
 	void ParseFile		(LPCSTR xml_file);
+	void ParseDirFile(LPCSTR xml_dir, LPCSTR xml_file);
+
+	bool NodeExist(LPCSTR path, int index);
+	int GetNodesNum(LPCSTR path, int index, LPCSTR tag_name);
+	bool NavigateToNode(LPCSTR path, int index);
+	bool NavigateToNode_ByAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value);
+	bool NavigateToNode_ByPath(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern);
+	void NavigateToRoot();
+	LPCSTR ReadValue(LPCSTR path, int index);
+	LPCSTR ReadAttribute(LPCSTR path, int index, LPCSTR attrib);
+
 	void				InitWindow(LPCSTR path, int index, CUIWindow* pWnd);
 	CUIFrameWindow*		InitFrame(LPCSTR path, CUIWindow* parent);
 	CUIFrameLineWnd*	InitFrameLine(LPCSTR path, CUIWindow* parent);
