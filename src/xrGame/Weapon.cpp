@@ -661,7 +661,7 @@ void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
 		}
 	}
 
-	shared_str configuration;
+	static shared_str configuration;
 
 	if (ConfigurationMap.size() > 0)
 	{
@@ -3128,7 +3128,7 @@ u32 CWeapon::FakeReload()
 		return iMagazineSize;
 	}
 
-	u32 in_box = GetAmmoCount(GetTargetAmmoType());
+	u32 in_box = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode()));
 	return clampr(in_box, (u32)0, (u32)iMagazineSize);
 }
 
@@ -3144,7 +3144,8 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 	if (state == eReload && mark.name == "Left")
 	{
 		u32 current_configuration = FakeReload();
-		UpdateAmmoBones(IsGrenadeMode() ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType());
+		bool for_grenade = IsGrenadeMode();
+		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
 	}
 }
 

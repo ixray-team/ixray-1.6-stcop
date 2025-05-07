@@ -80,7 +80,7 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 		bone_params->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 2);
 		m_ammo_bones_gl.push_back(bone_params);
 	}
-	else for (int i = 0; i < m_ammoTypes.size(); i++)
+	else for (int i = 0; i < m_ammoTypes2.size(); i++)
 	{
 		static shared_str params_section;
 		params_section.printf("gl_ammo_params_section_%d", i);
@@ -887,6 +887,34 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	result2 = process_if_exists_set(section, "snd_switch", &CInifile::r_string, str, test);
 	if (result2 && !test) { m_sounds.LoadSound(section, "snd_switch", "sndSwitch", true, m_eSoundReload); }
 	result |= result2;
+
+	RStringVec& gl_types = m_bGrenadeMode ? m_ammoTypes : m_ammoTypes2;
+
+	if (pSettings->line_exist(hud_sect, "gl_ammo_params_section"))
+	{
+		for (auto& bone_param : m_ammo_bones_gl)
+		{
+			if (bone_param->AmmoType == undefined_ammo_type)
+			{
+				bone_param->Load(pSettings->r_string(hud_sect, "gl_ammo_params_section"), 2);
+			}
+		}
+	}
+	else for (int i = 0; i < gl_types.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("gl_ammo_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			for (auto& bone_param : m_ammo_bones_gl)
+			{
+				if (bone_param->AmmoType == i)
+				{
+					bone_param->Load(pSettings->r_string(hud_sect, *params_section), 2);
+				}
+			}
+		}
+	}
 
 	return result;
 }

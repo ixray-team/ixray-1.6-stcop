@@ -357,8 +357,6 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 
 	if (GetState() == eIdle)
 		SwitchState(eIdle);
-
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
 }
 
 void CWeaponMagazined::ReloadMagazine() 
