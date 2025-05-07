@@ -146,6 +146,7 @@ void CWeaponShotgun::OnStateSwitch(u32 S)
 
 void CWeaponShotgun::switch2_StartReload()
 {
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
 	PlaySound			("sndOpen",get_LastFP());
 	PlayAnimOpenWeapon	();
 	SetPending			(TRUE);
