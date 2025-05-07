@@ -154,6 +154,8 @@ public:
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
+	virtual void OnMotionMark(u32 state, const motion_marks&);
+
 protected:
 	virtual bool	install_upgrade_impl( LPCSTR section, bool test );
 
