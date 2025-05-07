@@ -74,6 +74,7 @@ void UITopBarForm::Draw()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2( 2,0));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(2, 2));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(-2, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 6));
 	ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 
@@ -219,7 +220,7 @@ void UITopBarForm::Draw()
 
 	ImGui::End();
 	ImGui::PopStyleColor();
-	ImGui::PopStyleVar(6);
+	ImGui::PopStyleVar(7);
 	
 }
 
