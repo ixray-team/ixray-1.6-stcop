@@ -1786,7 +1786,8 @@ public:
 
 extern bool	IsGameTypeSingle();
 
-static bool isValidSection(std::string_view section) {
+static bool isValidSection(std::string_view section)
+{
 	std::string_view visual = pSettings->r_string(section.data(), "visual");
 	shared_str full_path;
 
@@ -1797,6 +1798,8 @@ static bool isValidSection(std::string_view section) {
 	else {
 		full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
 	}
+
+	xr_strlwr(full_path);
 
 	return FS.exist(full_path.c_str());
 }
