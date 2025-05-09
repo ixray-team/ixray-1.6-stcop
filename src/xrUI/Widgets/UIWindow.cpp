@@ -153,6 +153,8 @@ CUIWindow::~CUIWindow()
 
 void CUIWindow::Draw()
 {
+	xrCriticalSectionGuard guard(csUi);
+
 	for(CUIWindow* W : m_ChildWndList)
 	{
 		if (!W)		continue;
@@ -210,7 +212,7 @@ void CUIWindow::Update()
 				OnFocusLost();			
 		}
 	}
-	
+	xrCriticalSectionGuard guard(csUi);
 	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it){
 		if(!(*it)->IsShown()) continue;
 			(*it)->Update();
@@ -224,6 +226,8 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 	
 	R_ASSERT( !IsChild(pChild) );
 	pChild->SetParent(this);
+
+	xrCriticalSectionGuard guard(csUi);
 	m_ChildWndList.push_back(pChild);
 }
 
@@ -236,10 +240,14 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 	if(m_pMouseCapturer == pChild)
 		SetCapture(pChild, false);
 
-//.	SafeRemoveChild			(pChild);
-	WINDOW_LIST_it it		= std::find(m_ChildWndList.begin(),m_ChildWndList.end(),pChild); 
-	R_ASSERT				(it!=m_ChildWndList.end());
-	m_ChildWndList.erase	(it);
+	{
+		xrCriticalSectionGuard guard(csUi);
+
+		//.	SafeRemoveChild			(pChild);
+		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild);
+		R_ASSERT(it != m_ChildWndList.end());
+		m_ChildWndList.erase(it);
+	}
 
 	pChild->SetParent		(nullptr);
 
@@ -249,6 +257,8 @@ void CUIWindow::DetachChild(CUIWindow* pChild)
 
 void CUIWindow::DetachAll()
 {
+	xrCriticalSectionGuard guard(csUi);
+
 	while( !m_ChildWndList.empty() ){
 		DetachChild( m_ChildWndList.back() );	
 	}
@@ -341,6 +351,7 @@ bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 	//Проверка на попадание мыши в окно,
 	//происходит в обратном порядке, чем рисование окон
 	//(последние в списке имеют высший приоритет)
+	xrCriticalSectionGuard guard(csUi);
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 
 	for(; it!=m_ChildWndList.rend(); ++it)
@@ -444,7 +455,7 @@ bool CUIWindow::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		
 		if(result) return true;
 	}
-
+	xrCriticalSectionGuard guard(csUi);
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 
 	for(; it!=m_ChildWndList.rend(); ++it)
@@ -469,7 +480,7 @@ bool CUIWindow::OnKeyboardHold(int dik)
 		
 		if(result) return true;
 	}
-
+	xrCriticalSectionGuard guard(csUi);
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 
 	for(; it!=m_ChildWndList.rend(); ++it)
@@ -506,6 +517,7 @@ void CUIWindow::SetKeyboardCapture(CUIWindow* pChildWindow, bool capture_status)
 //обработка сообщений 
 void CUIWindow::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
+	xrCriticalSectionGuard guard(csUi);
 	//оповестить дочерние окна
 	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it)
 	{
@@ -519,6 +531,8 @@ CUIWindow* CUIWindow::GetCurrentMouseHandler(){
 }
 
 CUIWindow* CUIWindow::GetChildMouseHandler(){
+	xrCriticalSectionGuard guard(csUi);
+
 	CUIWindow* pWndResult;
 	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
 
@@ -551,6 +565,8 @@ void CUIWindow::Reset()
 
 void CUIWindow::ResetAll()
 {
+	xrCriticalSectionGuard guard(csUi);
+
 	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it)
 	{
 		(*it)->Reset();
@@ -564,6 +580,7 @@ CUIWindow* CUIWindow::GetMessageTarget()
 
 bool CUIWindow::IsChild(CUIWindow *pPossibleChild) const
 {
+	xrCriticalSectionGuard guard(const_cast<xrCriticalSection&>(csUi));
 	WINDOW_LIST::const_iterator it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pPossibleChild);
 	return it != m_ChildWndList.end();
 }
@@ -574,6 +591,7 @@ CUIWindow*	CUIWindow::FindChild(const shared_str name)
 	if(WindowName()==name)
 		return this;
 
+	xrCriticalSectionGuard guard(csUi);
 	WINDOW_LIST::const_iterator it = m_ChildWndList.begin();
 	WINDOW_LIST::const_iterator it_e = m_ChildWndList.end();
 	for(;it!=it_e;++it){
@@ -591,7 +609,10 @@ void CUIWindow::SetParent(CUIWindow* pNewParent)
 	m_pParentWnd = pNewParent;
 }
 
-void CUIWindow::ShowChildren(bool show){
+void CUIWindow::ShowChildren(bool show)
+{
+	xrCriticalSectionGuard guard(csUi);
+
 	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it)		
 			(*it)->Show(show);
 }

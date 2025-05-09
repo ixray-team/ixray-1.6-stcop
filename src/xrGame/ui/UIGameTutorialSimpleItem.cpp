@@ -37,6 +37,8 @@ bool CUISequenceSimpleItem::IsPlaying()
 
 CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
 {
+	xrCriticalSectionGuard guard(parent->csUi);
+
 	CUIWindow::WINDOW_LIST& wl		= parent->GetChildWndList();
 	CUIWindow::WINDOW_LIST_it _I	= wl.begin();
 	CUIWindow::WINDOW_LIST_it _E	= wl.end();

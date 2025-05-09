@@ -140,6 +140,7 @@ void CUIScrollView::RecalcSize			()
 	pad_size.y			+= m_upIndent;
 	pad_size.y			+= m_downIndent;
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	if(m_sort_function)
 	{
 		//. m_pad->GetChildWndList().sort(m_sort_function);
@@ -213,6 +214,7 @@ void CUIScrollView::Draw				()
 	visible_rect.bottom					-= m_downIndent;
 	UI().PushScissor					(visible_rect);
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	WINDOW_LIST_it it					= m_pad->GetChildWndList().begin();
 //	WINDOW_LIST_it it_e					= m_pad->GetChildWndList().end();
 	
@@ -368,9 +370,10 @@ u32 CUIScrollView::GetSize				()
 
 CUIWindow* CUIScrollView::GetItem		(u32 idx)
 {
-	if(m_pad->GetChildWndList().size()<=idx)
+	if(m_pad->GetChildNum() <= idx)
 		return nullptr;
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	WINDOW_LIST_it it = m_pad->GetChildWndList().begin();
 	std::advance(it, idx);
 	return (*it);
@@ -396,6 +399,7 @@ void CUIScrollView::SetSelected			(CUIWindow* w)
 	if(!m_flags.test(eItemsSelectabe)) 
 		return;
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
 	{
 		smart_cast<CUISelectable*>(*it)->SetSelected(*it==w);
@@ -406,6 +410,7 @@ CUIWindow* CUIScrollView::GetSelected(){
 	if(!m_flags.test(eItemsSelectabe))
 		return nullptr;
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
 	{
 		if (smart_cast<CUISelectable*>(*it)->GetSelected())
@@ -417,6 +422,7 @@ CUIWindow* CUIScrollView::GetSelected(){
 
 void CUIScrollView::UpdateChildrenLenght(){
 	float len = GetDesiredChildWidth();
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
 	{
 		(*it)->SetWidth(len);

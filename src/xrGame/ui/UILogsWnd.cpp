@@ -181,6 +181,8 @@ void CUILogsWnd::ReLoadNews() {
 	m_need_reload = false;
 
 	if(!m_list->Empty()) {
+		xrCriticalSectionGuard guard(m_list->csUi);
+
 		m_items_cache.insert(m_items_cache.end(), m_list->Items().begin(), m_list->Items().end());
 		m_list->Items().clear();
 
