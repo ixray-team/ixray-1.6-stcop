@@ -86,6 +86,7 @@ void fix_ws_wnd_size(CUIWindow* w, float kx)
 	p.x				/= kx;
 	w->SetWndPos	(p);
 
+	xrCriticalSectionGuard guard(w->csUi);
 	CUIWindow::WINDOW_LIST::iterator it = w->GetChildWndList().begin();
 	CUIWindow::WINDOW_LIST::iterator it_e = w->GetChildWndList().end();
 

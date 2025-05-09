@@ -80,6 +80,7 @@ void CUIGameLog::Update()
 	CUIScrollView::Update	();
 	toDelList.clear			();	
 
+	xrCriticalSectionGuard guard(m_pad->csUi);
 	WINDOW_LIST_it it	= m_pad->GetChildWndList().begin();
 	WINDOW_LIST_it it_e	= m_pad->GetChildWndList().end();
 
@@ -104,7 +105,8 @@ void CUIGameLog::Update()
 	toDelList.clear();
 	Frect visible_rect;
 	GetAbsoluteRect	(visible_rect);
-	it_e			= m_pad->GetChildWndList().end();
+
+	it_e = m_pad->GetChildWndList().end();
 	for(it = m_pad->GetChildWndList().begin(); it!=it_e; ++it)
 	{
 		Frect					r;
