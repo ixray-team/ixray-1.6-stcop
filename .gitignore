@@ -78,3 +78,6 @@ changelog.txt
 
 # CLion cache
 cmake-build*/
+
+# Optick
+*.opt
