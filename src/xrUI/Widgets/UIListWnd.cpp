@@ -289,6 +289,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
             if (BUTTON_CLICKED == msg)
             {
+                xrCriticalSectionGuard guard(csUi);
                 for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
                 {
                     pListItem2 = smart_cast<CUIListItem*>(*it);
@@ -325,7 +326,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 
                 // prototype code
-
+                xrCriticalSectionGuard guard(csUi);
                 for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
                 {
                     pListItem2 = smart_cast<CUIListItem*>(*it);
@@ -347,7 +348,7 @@ void CUIListWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
             else if (WINDOW_FOCUS_LOST == msg)
             {
                 if (pListItem->GetIndex() == m_iFocusedItem && !m_bForceFocusedItem) m_iFocusedItem = -1;
-
+                xrCriticalSectionGuard guard(csUi);
                 for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
                 {
                     pListItem2 = smart_cast<CUIListItem*>(*it);
@@ -387,6 +388,7 @@ void CUIListWnd::Draw()
     {
         Frect rect;
         GetAbsoluteRect(rect);
+        xrCriticalSectionGuard guard(csUi);
         for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
         {
             CUIListItem* pListItem2 = smart_cast<CUIListItem*>(*it);
@@ -405,6 +407,7 @@ void CUIListWnd::Draw()
     {
         Frect rect;
         GetAbsoluteRect(rect);
+        xrCriticalSectionGuard guard(csUi);
         for (auto it = m_ChildWndList.begin(); it != m_ChildWndList.end(); ++it)
         {
             CUIListItem* pListItem2 = smart_cast<CUIListItem*>(*it);

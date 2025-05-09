@@ -262,7 +262,7 @@ bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd
 	xr_strconcat(buf,path,":texture");
 	R_ASSERT3( nullptr==xml_doc.NavigateToNode(buf,index), xml_doc.m_xml_file_name, buf );
 
-	R_ASSERT(pWnd->GetChildWndList().size()==0);
+	R_ASSERT(pWnd->GetChildNum() == 0);
 	return true;
 }
 
