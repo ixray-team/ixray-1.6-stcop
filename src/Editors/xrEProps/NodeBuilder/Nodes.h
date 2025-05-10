@@ -24,12 +24,12 @@ class XREPROPS_API INodeUnknown
 {
 protected:
 	/// <summary>
-	/// Выходные параметры для внутреннего блока ноды
+	/// Р’С‹С…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРµРіРѕ Р±Р»РѕРєР° РЅРѕРґС‹
 	/// </summary>
 	xr_vector<LinkData> OutLinks;
 
 	/// <summary>
-	/// Входные параметры для внутреннего блока ноды
+	/// Р’С…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅРµРіРѕ Р±Р»РѕРєР° РЅРѕРґС‹
 	/// </summary>
 	xr_vector<LinkData> InLinks;
 
@@ -47,11 +47,11 @@ public:
 
 	xr_vector<INodeUnknown*> Childs;
 	/// <summary>
-	/// Ноды - наследники
+	/// РќРѕРґС‹ - РЅР°СЃР»РµРґРЅРёРєРё
 	/// </summary>
 	xr_vector<INodeUnknown*> OutNodes;
 	/// <summary>
-	/// Ноды - родители
+	/// РќРѕРґС‹ - СЂРѕРґРёС‚РµР»Рё
 	/// </summary>
 	xr_vector<INodeUnknown*> InNodes;
 

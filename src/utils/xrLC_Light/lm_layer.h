@@ -35,11 +35,11 @@ public:
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
 							lm_layer()				{ width=height=0; }
 
-	// se7kills Подсчитать Размер
+	// se7kills РџРѕРґСЃС‡РёС‚Р°С‚СЊ Р Р°Р·РјРµСЂ
 	size_t					memory_lmap()
 	{
 		size_t lm_surface = surface.capacity() * sizeof(base_color);
 		size_t lm_marker = marker.capacity() * sizeof(u8);
- 		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
+ 		return lm_surface + lm_marker + sizeof(*this); // + РЎРѕР±СЃС‚РІРµРЅРЅС‹Р№ СЂР°Р·РјРµСЂ
 	}
 };

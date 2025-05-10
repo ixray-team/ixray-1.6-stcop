@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "date_time.h"
 
 u32 extra_day_count(u32 years)

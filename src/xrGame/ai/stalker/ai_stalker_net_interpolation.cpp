@@ -8,7 +8,7 @@
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/PhysicsCommon.h"
 
-// »Õ“≈–œŒÀﬂ÷»ﬂ
+// √à√ç√í√Ö√ê√è√é√ã√ü√ñ√à√ü
 extern int g_cl_InterpolationType;
 
 void CAI_Stalker::make_Interpolation()
