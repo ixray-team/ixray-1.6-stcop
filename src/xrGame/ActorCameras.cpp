@@ -282,6 +282,8 @@ void CActor::cam_Update(float dt, float fFOV)
 	if(m_holder)
 		return;
 
+	const float SprintFov = 7.0f * fSprintFactor;
+
 	// HUD FOV Update
 	if (this == Level().CurrentControlEntity())
 	{
@@ -302,8 +304,13 @@ void CActor::cam_Update(float dt, float fFOV)
 				psHUD_FOV = psHUD_FOV_def;
 		}
 		else
+		{
 			psHUD_FOV = psHUD_FOV_def;
+		}
+
+		psHUD_FOV += SprintFov;
 	}
+
 
 	if( (mstate_real & mcClimb) && (cam_active!=eacFreeLook) )
 		camUpdateLadder(dt);
