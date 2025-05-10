@@ -1,7 +1,7 @@
 #pragma once
 
 #include "holder_custom.h"
-#include "physicsshellholder.h"
+#include "PhysicsShellHolder.h"
 class CCameraBase;
 
 class CHolderEntityObject:	public CPhysicsShellHolder, 

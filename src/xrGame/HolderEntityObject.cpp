@@ -1,14 +1,14 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "HolderEntityObject.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrphysics/PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "object_broker.h"
-#include "actor.h"
-#include "actorEffector.h"
-#include "camerafirsteye.h"
+#include "Actor.h"
+#include "ActorEffector.h"
+#include "CameraFirstEye.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_object_space.h"
-#include "level.h"
+#include "Level.h"
 
 void CHolderEntityObject::BoneCallbackX(CBoneInstance *B)
 {
