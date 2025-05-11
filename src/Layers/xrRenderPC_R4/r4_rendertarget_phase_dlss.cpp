@@ -1,10 +1,11 @@
 #include "stdafx.h"
 
-#include "DLSSWrapper.h"
+#include "OverlayAPI\DLSSWrapper.h"
 
 extern Fvector3 ps_r_taa_jitter_full;
 
-void CRenderTarget::init_dlss() {
+void CRenderTarget::init_dlss()
+{
 	g_DLSSWrapper.Destroy();
 
 	DLSSWrapper::ContextParameters initParams;
@@ -14,7 +15,8 @@ void CRenderTarget::init_dlss() {
 	g_DLSSWrapper.Create(initParams);
 }
 
-bool CRenderTarget::phase_dlss() {
+bool CRenderTarget::phase_dlss()
+{
 	PIX_EVENT(DLSS);
 
 	DLSSWrapper::DrawParameters dlssParams = {};
