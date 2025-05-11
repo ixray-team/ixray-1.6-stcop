@@ -1,14 +1,15 @@
 #include "stdafx.h"
 
-void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType)
-{
+void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode) {
     u32 Offset = 0;
     float d_Z = EPS_S;
     float d_W = 1.0f;
     constexpr u32 color = color_rgba(0, 0, 0, 255);
 
     // Set render target
-    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+    if (postProcessMode) {
+        u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+    }
 
     // Configure rendering settings
     RCache.set_CullMode(CULL_NONE);
@@ -30,7 +31,9 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType)
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Copy resource
-    RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+    if (postProcessMode) {
+        RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+    }
 }
 
 void CRenderTarget::PhaseAberration() {
@@ -43,4 +46,10 @@ void CRenderTarget::PhaseVignette() {
 
 void CRenderTarget::PhaseSaturation() {
     RenderEffect(ScreenPostProcessType::Saturation);
+}
+
+void CRenderTarget::PhaseWinter() {
+    RCache.set_xform_world(Fidentity);
+    RCache.set_xform_world_old(Fidentity);
+    RenderEffect(ScreenPostProcessType::Winter, false);
 }
