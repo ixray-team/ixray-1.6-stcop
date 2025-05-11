@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "FSR2Wrapper.h"
+#include "OverlayAPI\FSR2Wrapper.h"
 
 extern Fvector3 ps_r_taa_jitter_full;
 
@@ -19,7 +19,8 @@ void CRenderTarget::init_fsr()
 	initParams.device = RDevice;
 
 #ifdef DEBUG_DRAW
-	initParams.fpMessage = [](FfxFsr2MsgType type, const wchar_t* message) {
+	initParams.fpMessage = [](FfxFsr2MsgType type, const wchar_t* message)
+	{
 		xr_string error_msg = Platform::TCHAR_TO_ANSI_U8(message);
 		Msg("[FSR]: %s", error_msg.c_str());
 	};
