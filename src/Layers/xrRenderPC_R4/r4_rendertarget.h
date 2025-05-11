@@ -272,10 +272,11 @@ public:
 
 	void						phase_puddles			();
 
-	void						RenderEffect			(ScreenPostProcessType postProcessType);
+	void						RenderEffect			(ScreenPostProcessType postProcessType, bool = true);
 	void						PhaseAberration			();
 	void						PhaseVignette			();
 	void						PhaseSaturation			();
+	void						PhaseWinter				();
 
 	void						phase_scene_forward		();
 	void						phase_scene_prepare		();

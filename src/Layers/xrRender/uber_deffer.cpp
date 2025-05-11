@@ -115,6 +115,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		R_ASSERT3(fnameA[0] && xr_strlen(fnameA), errorMsg,  "Missing bump texture\n");
 	}
 
+	string_path temp;
+	bool snow_texture = FS.exist(temp, "$textures$", C.L_textures[0].c_str(), "_snowmask.dds");
+	if (snow_texture)
+	{
+		RImplementation.addShaderOption("USE_SNOW_TEXTURE", "1");
+	}
+
 	if(bHasDetailBump)
 	{
 		string512 errorMsg;
@@ -184,6 +191,13 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if (lmap) {
 		C.r_dx10Texture("s_lmap", C.L_textures[1]);
 		C.r_dx10Texture("s_hemi", C.L_textures[2]);
+	}
+
+	if (snow_texture)
+	{
+		string256 Path = {};
+		xr_strconcat(Path, *C.L_textures[0], "_snowmask");
+		C.r_dx10Texture("s_snow", Path);
 	}
 
 	C.r_dx10Sampler("smp_base");
