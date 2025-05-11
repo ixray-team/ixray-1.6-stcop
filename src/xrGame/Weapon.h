@@ -241,6 +241,7 @@ public:
 	bool m_bUseGLHud = false;
 	bool m_bHideColimSightInAlter;
 	bool m_bIsAimStarted = false;
+	bool m_bRestGlSil;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
