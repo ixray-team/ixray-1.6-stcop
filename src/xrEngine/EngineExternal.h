@@ -35,6 +35,7 @@ enum class EEngineExternalGame
 enum class EEngineExternalRender 
 {
 	DisableLoadScreenTips,
+	UseDynamicSnowMask,
 	None
 };
 
