@@ -103,6 +103,7 @@ void main(p_bumped_new I, out OutStructure O)
 
     M.Sun = Lmap.w;
     M.Hemi = M.Color.w;
+    M.SnowMask = 1.0f;
 
 #ifdef USE_LEGACY_LIGHT
     M.Metalness = L_material.w;

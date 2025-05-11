@@ -55,8 +55,11 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     #endif
 #endif
 
-#if defined(USE_AREF) && defined(USE_TREEWAVE)
+#ifdef USE_AREF
+  #ifdef USE_TREEWAVE
     M.SSS = 1.0f;
+  #endif
+  M.SnowMask = 0.0f;
 #endif
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
