@@ -156,7 +156,7 @@ bool EScene::RemoveObject(CCustomObject* object, bool bUndo, bool bDeleting)
 	ESceneCustomOTool* mt = GetOTool(object->FClassID);
 	if (mt && mt->IsEditable())
 	{
-		xrSRWLockGuard lock(PickUpLock);
+		xrCriticalSectionGuard lock(PickUpLock);
 		mt->_RemoveObject(object);
 		// signal everyone "I'm deleting"
 //        if (object->ClassID==OBJCLASS_SCENEOBJECT)
