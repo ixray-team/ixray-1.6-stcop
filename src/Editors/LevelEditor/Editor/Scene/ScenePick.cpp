@@ -175,7 +175,7 @@ int EScene::RaySelect(int flag, ObjClassID classfilter)
 
 int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* lst)
 {
-	xrSRWLockGuard lock(PickUpLock, true);
+	xrCriticalSectionGuard lock(PickUpLock);
 
 	if (lst)
 	{
