@@ -39,7 +39,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 
 	if (T.pSurface == nullptr)
 	{
-		T.bHasAlpha = true;
+		T.bHasAlpha = false;
 		return false;
 	}
 
