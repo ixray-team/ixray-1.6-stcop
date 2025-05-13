@@ -698,6 +698,7 @@ void	CActor::Hit(SHit* pHDS)
 					HDS.boneID
 					);
 			}
+			HitArtefactsCondition(HDS);
 			inherited::Hit(&HDS);
 		}
 
