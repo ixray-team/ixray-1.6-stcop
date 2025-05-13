@@ -63,6 +63,7 @@ public:
 	void PlayWpnFinishDetector();
 	void 	TurnDetectorInternal(bool b);
 
+	bool NeedBlockSprint() const;
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
 	void 			UpdateNightVisionMode		(bool b_off);
