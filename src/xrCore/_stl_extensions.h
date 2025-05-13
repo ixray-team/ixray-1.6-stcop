@@ -113,6 +113,9 @@ using xr_hash_set = std::unordered_set<K, std::hash<K>, _Traits, allocator>;
 
 using xr_string_view = std::string_view;
 
+template<typename Type, size_t Size>
+using xr_array = std::array<Type, Size>;
+
 struct pred_str {
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
 };

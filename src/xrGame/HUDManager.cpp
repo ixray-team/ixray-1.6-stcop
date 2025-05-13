@@ -65,7 +65,7 @@ void CHUDManager::OnFrameMT()
 	PROF_EVENT("CHUDManager::OnFrameMT");
 
 	if (Device.dwPrecacheFrame == 0)
-		Level().GameTaskManager().UpdateTasks();
+		Level().GameTaskManager()->UpdateTasks();
 
 	xrCriticalSectionGuard guard(&ui_lock);
 	if (pUIGame) 
