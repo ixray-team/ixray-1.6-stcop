@@ -218,7 +218,7 @@ void UIKeyForm::Draw()
 							ImVec2 ItemSize = ImGui::GetItemRectSize();
 							if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 							{
-								float a, b, с; // motion start and end time 
+								float a, b, c; // motion start and end time 
 								ATools->GetStatTime(a, b, c);
 								float motion_length = b - a;
 

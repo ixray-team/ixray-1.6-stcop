@@ -35,7 +35,7 @@ void CAnimNotifyPlaySound::Execute(IRenderVisual* visual, u16 bone_id)
     }
     if (m_sounds_buffer.empty())
     {
-        R_ASSERT(false, "Too much calls of play sound notify", m_sound_to_play.c_str());
+        R_ASSERT3(false, "Too much calls of play sound notify", m_sound_to_play.c_str());
         return;
     }
     auto NewSound = new CScriptSound(m_sound_to_play.c_str());
