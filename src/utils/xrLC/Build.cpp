@@ -120,11 +120,13 @@ void CBuild::Light_prepare()
 
 size_t GetHeapMemory()
 {
-	PROCESS_MEMORY_COUNTERS_EX pmc;
+	PROCESS_MEMORY_COUNTERS_EX pmc{};
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
 	{
 		return pmc.PrivateUsage;
 	}
+
+	return 0;
 }
 
 size_t GetMemoryUsed()
