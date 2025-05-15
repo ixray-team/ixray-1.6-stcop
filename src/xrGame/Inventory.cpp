@@ -802,7 +802,7 @@ void CInventory::Update()
 				}
 			}
 			
-			if (!g_player_hud->attached_item(0) && m_pNewGrenade != nullptr && ItemFromSlot(m_pNewGrenade->BaseSlot()))
+			if (m_pNewGrenade != nullptr && ItemFromSlot(m_pNewGrenade->BaseSlot()))
 				m_iNextActiveSlot = m_pNewGrenade->BaseSlot();
 
 			if (GetNextActiveSlot() != NO_ACTIVE_SLOT)
@@ -810,7 +810,7 @@ void CInventory::Update()
 				PIItem tmp_next_active = ItemFromSlot(GetNextActiveSlot());
 				if (tmp_next_active)
 				{
-					if (!g_player_hud->attached_item(0) && m_pNewGrenade != nullptr && tmp_next_active == ItemFromSlot(m_pNewGrenade->BaseSlot()))
+					if (m_pNewGrenade != nullptr && tmp_next_active == ItemFromSlot(m_pNewGrenade->BaseSlot()))
 					{
 						Ruck(ItemFromSlot(m_pNewGrenade->BaseSlot()));
 						Slot(m_pNewGrenade->BaseSlot(), m_pNewGrenade);
