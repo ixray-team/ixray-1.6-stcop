@@ -26,7 +26,7 @@ UIKeyForm::~UIKeyForm()
 
 void UIKeyForm::Draw()
 {
-	static auto PrevCurrentMotion = m_currentEditMotion;
+	auto PrevCurrentMotion = m_currentEditMotion;
 	m_currentEditMotion = ATools->GetCurrentMotion();
 	if (!m_currentEditMotion || PrevCurrentMotion != m_currentEditMotion)
 	{
