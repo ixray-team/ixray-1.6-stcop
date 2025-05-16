@@ -10,15 +10,6 @@
 
 XRCORE_API void VerifyPath	(LPCSTR path);
 
-
-#ifdef _DEBUG
-XRCORE_API extern size_t g_file_mapped_memory;
-XRCORE_API extern size_t g_file_mapped_count;
-extern void register_file_mapping(void* address, const size_t& size, LPCSTR file_name);
-extern void unregister_file_mapping(void* address, const size_t& size);
-#endif // DEBUG
-
-
 //------------------------------------------------------------------------------------
 // Write
 //------------------------------------------------------------------------------------
