@@ -54,6 +54,8 @@ static void w_file_from_string(const char* path, const char* buffer)
 	{
 		lua_pushfstring(g_pScriptEngine->lua(), "Not found file: %s", path);
 		lua_error(g_pScriptEngine->lua());
+
+		return;
 	}
 
 	shared_str newPath = fileIter->wrap ? fileIter->wrap : fileIter->name;
