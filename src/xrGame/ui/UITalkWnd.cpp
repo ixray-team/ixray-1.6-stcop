@@ -180,7 +180,7 @@ void UpdateCameraDirection(CGameObject* pTo)
 
 	if (pk != nullptr)
 	{
-		auto bone = pk->LL_BoneID("jaw_1");
+		auto bone = pk->LL_BoneID("bip01_head");
 
 		Fmatrix headPos = pk->LL_GetTransform(bone);
 		headPos.mulA_43(pTo->XFORM());
