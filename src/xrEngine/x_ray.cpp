@@ -234,7 +234,7 @@ ENGINE_API void EngineLoadStage5()
 	g_SpatialSpacePhysic = new ISpatial_DB();
 
 	// Main cycle
-	Memory.mem_usage();
+	//Memory.mem_usage();
 	Device.Run					( );
 	// Destroy APP
 	xr_delete					( g_SpatialSpacePhysic	);

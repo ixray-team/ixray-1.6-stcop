@@ -140,7 +140,7 @@ int APIENTRY WinMain
 	}
 	Engine.External.Initialize();
 
-	Console->Execute("stat_memory");
+	//Console->Execute("stat_memory");
 	Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
 
 	EngineLoadStage4();
