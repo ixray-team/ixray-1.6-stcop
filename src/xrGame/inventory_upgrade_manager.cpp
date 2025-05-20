@@ -300,6 +300,10 @@ bool Manager::is_disabled_upgrade( CInventoryItem& item, shared_str const& upgra
 bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_id, bool loading )
 {
 	Upgrade* upgrade = upgrade_verify( item.m_section_id, upgrade_id );
+	if (upgrade == nullptr)
+	{
+		return false;
+	}
 	UpgradeStateResult res = upgrade->can_install( item, loading );
 	
 	if ( res == result_ok )
