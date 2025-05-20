@@ -39,6 +39,12 @@ CUIActorMenu::~CUIActorMenu()
 	xr_delete			(m_hint_wnd);
 	xr_delete			(m_ItemInfo);
 
+	for (size_t i = 0; i < m_ArtefactSlotsHighlight.size(); i++)
+	{
+		m_ArtefactSlotsHighlight[i] = nullptr;
+		m_belt_list_over[i] = nullptr;
+	}
+
 	ClearAllLists		();
 }
 
@@ -189,6 +195,12 @@ void CUIActorMenu::Construct()
 
 	int cols = m_pInventoryBeltList->CellsCapacity().x;
 	int rows = m_pInventoryBeltList->CellsCapacity().y;
+
+	m_ArtefactSlotsCount = cols * rows;
+
+	m_ArtefactSlotsHighlight.resize(m_ArtefactSlotsCount, nullptr);
+	m_belt_list_over.resize(m_ArtefactSlotsCount, nullptr);
+
 	int counter = 1;
 
 	if (m_ArtefactSlotsHighlight[0])
