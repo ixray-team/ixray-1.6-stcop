@@ -5,6 +5,7 @@ if (WIN32)
     add_compile_options(--Wno-microsoft-template-shadow)
 else()
     add_compile_options(-fms-extensions -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format)
+    add_compile_options(-msse4.2) # crc32
 endif()
 
 if (NOT WIN32)
