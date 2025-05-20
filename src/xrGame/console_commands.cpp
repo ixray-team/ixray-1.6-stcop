@@ -504,7 +504,7 @@ public:
 			return;
 		}
 
-		Console->Execute("stat_memory");
+//		Console->Execute("stat_memory");
 
 		string_path				S = {}, S1 = {};
 		strncpy_s(S, sizeof(S), args, _MAX_PATH - 1);
@@ -614,7 +614,7 @@ public:
 		if (MainMenu()->IsActive())
 			MainMenu()->Activate(false);
 
-		Console->Execute("stat_memory");
+//		Console->Execute("stat_memory");
 
 		if (Device.Paused())
 			Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
