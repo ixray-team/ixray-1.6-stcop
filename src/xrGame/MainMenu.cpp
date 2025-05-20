@@ -221,7 +221,7 @@ void CMainMenu::Activate	(bool bActivate)
 		};
 		Device.seqRender.Add				(this, 4); // 1-console 2-cursor 3-tutorial
 
-		Console->Execute					("stat_memory");
+		//Console->Execute					("stat_memory");
 
 		g_Discord.SetPhase(StrMainMenu);
 	}else{
