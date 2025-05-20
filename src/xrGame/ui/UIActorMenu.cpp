@@ -540,7 +540,7 @@ void CUIActorMenu::clear_highlight_lists()
 	}
 	if (m_ArtefactSlotsHighlight[0])
 	{
-		for (u8 i = 0; i < e_af_count; i++)
+		for (u8 i = 0; i < m_ArtefactSlotsCount; i++)
 			m_ArtefactSlotsHighlight[i]->Show(false);
 	}
 
