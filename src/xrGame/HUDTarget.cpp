@@ -165,6 +165,9 @@ void CHUDTarget::Render()
 	if(!b_do_rendering)
 		return;
 
+	if (load_screen_renderer.IsActive())
+		return;
+
 	VERIFY				(g_bRendering);
 
 	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
