@@ -482,7 +482,7 @@ void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
 	if (isHQIcons)
 	{
 		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(isHQIcons))
-			w = INV_GRID_WIDTH(isHQIcons) * 1.5f / 2;
+			w = INV_GRID_WIDTH(isHQIcons) * 1.5f;
 
 		m_ui_weapon_icon->SetWidth(w * UI().get_current_kx() / 2);
 		m_ui_weapon_icon->SetHeight(h / 2);
