@@ -55,10 +55,14 @@ void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 	{
 		m_border_static			= UIHelper::CreateStatic( *xml, str, this );
 		m_border_static->Show	( false );
-		if(!Heading())
-		{
-			m_border_static->SetWidth			(m_border_static->GetWidth()*UI().get_current_kx());
-			m_border_static->SetStretchTexture	(true);
+		if (!Heading()) {
+			m_border_static->SetWidth(m_border_static->GetWidth() * UI().get_current_kx());
+			if (!UI().is_widescreen()) {
+				m_border_static->SetHeight(m_border_static->GetHeight() * UI().get_current_kx());
+			} else {
+				m_border_static->SetTextureOffset(1, 0);
+			}
+			m_border_static->SetStretchTexture(true);
 		}
 	}
 	m_mark_focused = false;
@@ -294,6 +298,11 @@ void CComplexMapSpot::Load( CUIXml* xml, LPCSTR path ) // complex_spot_template
 	m_left_icon				= CreateStaticOrig(*xml, "left_icon");
 	m_right_icon			= CreateStaticOrig(*xml, "right_icon");
 	m_top_icon				= CreateStaticOrig(*xml, "top_icon");
+	m_top_icon->SetStretchTexture(true);
+	m_top_icon->SetWidth(m_top_icon->GetWidth() * UI().get_current_kx());
+	if (!UI().is_widescreen()) {
+		m_top_icon->SetHeight(m_top_icon->GetHeight() * UI().get_current_kx());
+	}
 	m_timer					= CreateStaticOrig(*xml, "timer");
 
 	xml->SetLocalRoot		(stored_root);
