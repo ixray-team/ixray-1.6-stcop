@@ -1867,7 +1867,7 @@ void CWeaponMagazined::PlayAnimIdle()
 shared_str CWeaponMagazined::SetCurrentShootAnimation()
 {
 	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && iAmmoElapsed == 0 : iAmmoElapsed == 1;
-	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot" : "anm_shots";
+	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot_l" : "anm_shots";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
