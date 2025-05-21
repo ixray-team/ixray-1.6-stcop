@@ -95,6 +95,9 @@
     <string id="ui_mm_dof_reload">
         <text>DoF при перезарядке</text>
     </string>
+    <string id="ui_mm_dof_talk">
+        <text>DoF при диалоге</text>
+    </string>
     <string id="ui_rs_fps_show">
         <text>Счетчик фпс</text>
     </string>
