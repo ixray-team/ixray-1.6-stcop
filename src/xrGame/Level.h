@@ -74,6 +74,12 @@ private:
 	bool						m_bSynchronization;
 	bool						m_bEnvPaused;
 #endif
+	// callbacks
+	bool m_isStartAttack = false;
+	const char* m_onStartAttack = {};
+
+	bool m_isKeyPress = false;
+	const char* m_onKeyPress = {};
 protected:
 	typedef IGame_Level			inherited;
 	
