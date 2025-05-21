@@ -16,6 +16,16 @@ void RegisterExpressionDelegates();
 
 CInifile* pGameGlobals = nullptr;
 
+void LoadCallbackGlobals(bool& flag, const char*& value, const char* section)
+{
+	flag = pGameGlobals->line_exist("callbacks", section);
+	if (flag)
+	{
+		value = pGameGlobals->r_string("callbacks", section);
+		flag = (value != nullptr && value[0] != '\0');
+	}
+};
+
 extern void RegisterImGuiInGame();
 static LPVOID __cdecl luabind_allocator(
 	luabind::memory_allocation_function_parameter const,

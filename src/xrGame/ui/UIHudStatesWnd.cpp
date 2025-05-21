@@ -31,6 +31,7 @@ CUIHudStatesWnd::CUIHudStatesWnd()
 	m_radia_self(0.0f),
 	m_radia_hit(0.0f)
 {
+	LoadCallbackGlobals(m_isZoneTouch, m_onZoneTouch, "OnZoneTouch");
 
 	for ( int i = 0; i < ALife::infl_max_count; ++i )
 	{
@@ -618,26 +619,30 @@ void CUIHudStatesWnd::UpdateZones()
 			{
 				fRelPow *= 0.3f;
 				fRelPow *= ( 2.5f - 2.0f * power ); // звук зависит от силы зоны
-			}
+			}	
 		}
 		clamp( fRelPow, 0.0f, 1.0f );
 
 		//определить текущую частоту срабатывания сигнала
 		zone_info.cur_period = zone_type->freq.x + (zone_type->freq.y - zone_type->freq.x) * (fRelPow * fRelPow);
 		
-		//string256	buff_z;
-		//xr_sprintf( buff_z, "zone %2.2f\n", zone_info.cur_period );
-		//xr_strcat( buff, buff_z );
-		if( zone_info.snd_time > zone_info.cur_period )
+		if (zone_info.snd_time > zone_info.cur_period)
 		{
-			zone_info.snd_time = 0.0f;
-			HUD_SOUND_ITEM::PlaySound( zone_type->detect_snds, Fvector().set(0,0,0), nullptr, true, false );
-		} 
+ 			zone_info.snd_time = 0.0f;
+			if (m_isZoneTouch) 
+			{
+				luabind::functor<bool> funct;
+				R_ASSERT2(ai().script_engine().functor(m_onZoneTouch, funct), "Not found callback: OnZoneTouch");
+				funct(pZone->lua_game_object());
+			}
+
+			HUD_SOUND_ITEM::PlaySound(zone_type->detect_snds, Fvector().set(0, 0, 0), nullptr, true, false);
+		}
 		else
 		{
 			zone_info.snd_time += Device.fTimeDelta;
 		}
-	} // for itb
+	}
 }
 
 void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
