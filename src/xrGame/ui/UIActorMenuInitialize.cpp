@@ -37,6 +37,7 @@ CUIActorMenu::CUIActorMenu()
 	LoadCallbackGlobals(m_isCanDisassembleItem, m_onCanDisassembleItem, "OnCanDisassembleItem");
 	LoadCallbackGlobals(m_isQuestionDisassembleItem, m_onQuestionDisassembleItem, "OnQuestionDisassembleItem");
 	LoadCallbackGlobals(m_isEffectDisassemble, m_onEffectDisassemble, "OnEffectDisassemble");
+	LoadCallbackGlobals(m_isDonateCurrentItem, m_onDonateCurrentItem, "OnDonateCurrentItem");
 
 	Construct						();
 }

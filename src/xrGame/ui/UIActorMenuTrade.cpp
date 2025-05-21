@@ -676,3 +676,39 @@ void CUIActorMenu::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropList
 
 	pPlayer->u_EventSend(P);
 }
+
+//Alundaio: Donate current item while in trade menu
+void CUIActorMenu::DonateCurrentItem(CUICellItem* cell_item)
+{
+	if (!m_partner_trade || !m_pTradePartnerList)
+		return;
+
+	CUIDragDropListEx* invlist = GetListByType(iActorBag);
+	if (!invlist->IsOwner(cell_item))
+		return;
+
+	PIItem item = (PIItem)cell_item->m_pData;
+	if (!item)
+		return;
+
+	//Alundaio: 
+	luabind::functor<bool> funct;
+
+	R_ASSERT2(
+		ai().script_engine().functor(m_onDonateCurrentItem, funct),
+		make_string<const char*>("Failed to get functor <onDonateCurrentItem>, item = %s", item->m_section_id.c_str())
+	);
+
+	funct(m_pPartnerInvOwner->cast_game_object()->lua_game_object(), item->object().lua_game_object());
+	//-Alundaio
+
+	CUICellItem* itm = invlist->RemoveItem(cell_item, false);
+
+	m_partner_trade->TransferItem(item, true, true);
+
+	m_pTradePartnerList->SetItem(itm);
+
+	SetCurrentItem(NULL);
+	UpdateItemsPlace();
+}
+//-Alundaio
