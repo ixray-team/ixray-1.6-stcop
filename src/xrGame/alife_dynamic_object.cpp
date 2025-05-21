@@ -45,9 +45,16 @@ void CSE_ALifeDynamicObject::on_before_register		()
 
 void CSE_ALifeDynamicObject::on_unregister()
 {
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("_G.CSE_ALifeDynamicObject_on_unregister", funct))
+	static bool isCallback = pGameGlobals->line_exist("callbacks", "OnUnregister");
+	if (isCallback)
+	{
+		static const char* m_onCallbackName = pGameGlobals->r_string("callbacks", "OnUnregister");
+		luabind::functor<void> funct;
+		R_ASSERT2(ai().script_engine().functor(m_onCallbackName, funct), "failed to get OnUnregister functor");
 		funct((u16)ID);
+	}
+
+
 	Level().MapManager().OnObjectDestroyNotify(ID);
 }
 
