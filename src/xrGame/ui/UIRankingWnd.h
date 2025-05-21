@@ -10,6 +10,7 @@
 #include "../../xrUI/Widgets/UIWndCallback.h"
 #include "UIRankFaction.h"
 #include "UIAchievements.h"
+#include "UIRankingsCoC.h"
 
 class CUIStatic;
 class CUIXml;
@@ -53,12 +54,26 @@ private:
 	CUIStatic*			m_favorite_weapon_bckgrnd;
 	CUIStatic*			m_favorite_weapon_icon;
 
+	//Alundaio: CoC Rankings
+	CUIScrollView*		m_coc_ranking;
+	CUIScrollView*		m_coc_ranking_actor_view;
+	CUIFrameWindow*		m_coc_ranking_background;
+	//-Alundaio 
+
 	using ACHIEVES_VEC = xr_vector<CUIAchievements*>;
 	using ACHIEVES_VEC_IT = ACHIEVES_VEC::iterator;
 
 	ACHIEVES_VEC		m_achieves_vec;
 
-	enum				{ max_stat_info = 15 };
+	//Alundaio: CoC Rankings
+	using RANKINGCOC_VEC = xr_vector<CUIRankingsCoC*>;
+	using RANKINGCOC_VEC_IT = RANKINGCOC_VEC::iterator;
+	RANKINGCOC_VEC		m_coc_ranking_vec;
+
+	CUIRankingsCoC* m_coc_ranking_actor;
+	//-Alundaio
+
+	enum { max_stat_info = 32 };
 	CUITextWnd*			m_stat_caption[max_stat_info];
 	CUITextWnd*			m_stat_info[max_stat_info];
 
