@@ -24,7 +24,7 @@ struct VertexEmbree
 
 	bool Simular(Self& v)
 	{
-		return _abs(x - v.x) < EPS_L && _abs(y - v.y) < EPS_L && _abs(z - v.z) < EPS_L;
+		return _abs(x - v.x) < EPS_S && _abs(y - v.y) < EPS_S && _abs(z - v.z) < EPS_S;
 	}
 };
 
@@ -56,33 +56,34 @@ void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float r
 struct TriangleContainer
 {
 	// HASH MAP VertexInumerate
-	std::unordered_map<size_t, u32> vertex_map;
 	struct Compare
 	{
 		VertexEmbree V;
 		u32 vertID;
 	};
-
 	std::unordered_map<size_t, xr_vector<Compare>> hashTable;
 	Fvector VMmin, VMscale, scale;
 
 	xr_vector<VertexEmbree> verts_v;
 	xr_vector<TriEmbree>	faces_v;
 	xr_vector<Face*>		dummy;
+   
+	xr_vector<VertexEmbree>& vertex() { return verts_v; }
+	xr_vector<TriEmbree>& faces() { return faces_v; }
+	u32 vertex_cnt() { return verts_v.size(); }
+	u32 faces_cnt() { return faces_v.size(); }
 
-	u32 find_or_add(Fvector& v);
-	xr_vector<VertexEmbree>& vertex()
-	{
-		return verts_v;
-	}
-
-	xr_vector<TriEmbree>& faces()
-	{
-		return faces_v;
-	}
+	u32 find_or_add(Fvector v);
+	u32 find_or_add(VertexEmbree v);
 
 	void AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3);
- 	void ClearAll();
+ 	void AddFaceCopy(int Index, TriangleContainer& container);
+
+	void AddOther(TriangleContainer& container);
+
+	void ClearAll();
+
+
 };
 
 // Vertex, Tri Buffers
