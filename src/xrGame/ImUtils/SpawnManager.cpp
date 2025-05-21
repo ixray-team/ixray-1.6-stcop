@@ -905,7 +905,7 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
 
 	ImGui::SeparatorText(name);
-	return ImGui::ImageButton(imname, surfaceParams.Surface, { w, h },
+	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isHQIcons), h / (1 + isHQIcons)},
 		{ x / surfaceParams.w, y / surfaceParams.h },
 		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
 
