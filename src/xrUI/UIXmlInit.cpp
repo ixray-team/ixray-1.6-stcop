@@ -407,7 +407,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 	bool ValidNode = xml_doc.NavigateToNode(path, index);
 	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
 
-	pWnd->m_frameline_mode = (xml_doc.ReadAttribInt(path, index, "frame_mode", 0) == 1)? true : false;
+	pWnd->m_frameline_mode = (CUI3tButton::EFrameMode)xml_doc.ReadAttribInt(path, index, "frame_mode", 0);
 
 	pWnd->vertical = (xml_doc.ReadAttribInt(path, index, "vertical", 0) == 1)? true : false;
 
@@ -1019,6 +1019,10 @@ bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3t
 			pWnd->m_back_frameline->InitState(S_Enabled, texture.c_str()); 
 			pWnd->m_back_frameline->Get(S_Enabled)->SetHorizontal(!(pWnd->vertical));
 		}
+		else if (pWnd->m_back_framewindow)
+		{
+			pWnd->m_back_framewindow->InitState(S_Enabled, texture.c_str());
+		}
 		success = true;
 	}
 
@@ -1034,6 +1038,10 @@ bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3t
 		{ 
 			pWnd->m_back_frameline->InitState(S_Touched, texture.c_str()); 
 			pWnd->m_back_frameline->Get(S_Touched)->SetHorizontal(!(pWnd->vertical));
+		}
+		else if (pWnd->m_back_framewindow)
+		{
+			pWnd->m_back_framewindow->InitState(S_Touched, texture.c_str());
 		}
 		success = true;
 	}
@@ -1051,6 +1059,10 @@ bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3t
 			pWnd->m_back_frameline->InitState(S_Disabled, texture.c_str()); 
 			pWnd->m_back_frameline->Get(S_Disabled)->SetHorizontal(!(pWnd->vertical));
 		}
+		else if (pWnd->m_back_framewindow)
+		{
+			pWnd->m_back_framewindow->InitState(S_Disabled, texture.c_str());
+		}
 		success = true;
 	}
 
@@ -1066,6 +1078,10 @@ bool CUIXmlInit::InitMultiTexture(CUIXml &xml_doc, LPCSTR path, int index, CUI3t
 		{ 
 			pWnd->m_back_frameline->InitState(S_Highlighted, texture.c_str()); 
 			pWnd->m_back_frameline->Get(S_Highlighted)->SetHorizontal(!(pWnd->vertical));
+		}
+		else if (pWnd->m_back_framewindow)
+		{
+			pWnd->m_back_framewindow->InitState(S_Highlighted, texture.c_str());
 		}
 		success = true;
 	}
