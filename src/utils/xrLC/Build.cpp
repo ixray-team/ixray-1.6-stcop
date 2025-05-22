@@ -136,6 +136,7 @@ size_t GetMemoryUsed()
 
 void GetMemoryUsedStorage()
 {
+#ifdef DEBUG
 	if (!lc_global_data())
 		return;
 
@@ -187,6 +188,7 @@ void GetMemoryUsedStorage()
 	SplitsMemory += g_XSplit.capacity() * sizeof(void*);
 
 	u32 MB = 1024 * 1024;
+
 	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 	Msg("- xSplits:		%u count, %u capacity, %u mb", g_XSplit.size(), g_XSplit.capacity(), SplitsMemory / 1024 / 1024);
 	
@@ -215,15 +217,13 @@ void GetMemoryUsedStorage()
 
 
 	Msg("!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+#endif
 }
 
 void CBuild::Run	(LPCSTR P)
 {
 	lc_global_data()->initialize();
-#ifdef LOAD_GL_DATA
-	net_light ();
-	return;
-#endif
+ 
 	//****************************************** Open Level
 	xr_strconcat(path,P,"\\")	;
 	string_path					lfn				;
