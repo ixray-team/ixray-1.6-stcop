@@ -2,14 +2,17 @@
 #include "StdAfx.h"
 #include "Build.h"
 
+#include "xrPhase_MergeLM_Surface.h"
 #include "xrPhase_MergeLM_Rect.h"
 #include "../xrLC_Light/xrDeflector.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/Lightmap.h"
 
-#define OFFSET_POS 4
 
-//define USE_NEW_WAY
+
+#define OFFSET_POS 1
+
+// #define USE_NEW_WAY
 
 #ifdef USE_NEW_WAY
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
@@ -31,8 +34,8 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 		lm_layer& L = Layer[it]->layer;
  
-		u32 WIDTH = L.width + (2 * BORDER);
-		u32 HEIGHT = L.height + (2 * BORDER);
+		u32 WIDTH   = L.width  + (2 * BORDER);
+		u32 HEIGHT  = L.height + (2 * BORDER);
 
 		if (_Max_y < HEIGHT)
 			_Max_y = HEIGHT;
@@ -45,16 +48,14 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 		}
 
  		L_rect		rT, rS;
-
-		rS.a.set(_X, _Y);
+ 		rS.a.set(_X, _Y);
 		rS.b.set(_X + WIDTH, _Y + HEIGHT);
 		rS.iArea = L.Area();  
 		rT = rS;
 
 		// Нужен только в оригенальной LMerge
 		BOOL		bRotated = false;  
-
-		if (_Y < getLMSIZE() - HEIGHT)
+ 		if (_Y < getLMSIZE() - HEIGHT)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
 			Layer[it]->bMerged = TRUE;
@@ -148,14 +149,6 @@ void CBuild::xrPhase_MergeLM()
  
 #else 
  
-
-// Surface access
-extern void _InitSurface();
-extern bool _rect_place(L_rect& r, lm_layer* D, bool& rotated);
-extern void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate);
-extern bool rectPlaceY(u32 y, L_rect& r, lm_layer* D, bool& rotated);
-extern bool checkFreeSpace(u32 minCell);
-
 IC int	compare_defl(CDeflector* D1, CDeflector* D2)
 {
 	// First  - by material
@@ -214,14 +207,9 @@ IC bool	sort_defl_complex(CDeflector* D1, CDeflector* D2)
 }
 
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) return TRUE; }; if (D->bMerged) { D->bMerged = FALSE; return TRUE; } else return FALSE; }; };
-
-bool rectPlaceTbb(L_rect& r, lm_layer* D, bool& rotated);
-
+ 
 void CBuild::xrPhase_MergeLM()
 {
-	using TRectPlace = bool(*)(L_rect&, lm_layer*, bool&);
-	TRectPlace rectPlace =  rectPlaceTbb ;
-
 	vecDefl			Layer;
 
 	// **** Select all deflectors, which contain this light-layer
@@ -244,53 +232,78 @@ void CBuild::xrPhase_MergeLM()
 		// Sort layer by similarity (state changes)
 		// + calc material area
 		Status("Selection...");
-		for (u32 it = 0; it < materials().size(); it++) materials()[it].internal_max_area = 0;
-		for (u32 it = 0; it < Layer.size(); it++) {
+		for (u32 it = 0; it < materials().size(); it++) 
+			materials()[it].internal_max_area = 0;
+
+		for (u32 it = 0; it < Layer.size(); it++) 
+		{
 			CDeflector* D = Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
 		std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);
 
-		// Select first deflectors which can fit
-		u32 maxarea = getLMSIZE() * getLMSIZE() * 8;	// Max up to 8 lm selected
+  		// Слишком много возьмет для помещения 
+ 	 	
+ 
+#define SCALE 2
+
+		u32 maxarea = getLMSIZE() * getLMSIZE() * SCALE;	// Max up to 8 lm selected
 		u32 curarea = 0;
 		u32 merge_count = 0;
-		for (u32 it = 0; it < (int)Layer.size(); it++) {
+
+		CTimer tMerge;
+		tMerge.Start();
+		Status("Select Area for merging");
+		for (u32 it = 0; it < (int)Layer.size(); it++) 
+		{
 			int		defl_area = Layer[it]->layer.Area();
 			if (curarea + defl_area > maxarea) break;
 			curarea += defl_area;
 			merge_count++;
 		}
 
+		Msg("Select Area Time : %u", tMerge.GetElapsed_ms() );
+
 		// Startup
 		Status("Processing...");
-		_InitSurface();
+		placer_perpixel._InitSurface_tbb();
 		CLightmap* lmap = new CLightmap();
 		VERIFY(lc_global_data());
 		lc_global_data()->lightmaps().push_back(lmap);
 
 		// Process 
+		u32 MergedSize = 0;
+		tMerge.Start();
+
 		for (u32 it = 0; it < merge_count; it++)
 		{
 			lm_layer& L = Layer[it]->layer;
+			
+			if (it % 4096 == 0)
+				placer_perpixel.RecalcY();
+
 			L_rect		rT, rS;
 			rS.a.set(0, 0);
 			rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
 			rS.iArea = L.Area();
 			rT = rS;
-			bool rotated;
-
-			if (rectPlace(rT, &L, rotated))
+			bool rotated = false;
+			if (placer_perpixel.rect_place_full(rT, &L))
 			{
-				_rect_register(rT, &L, rotated);
-				lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
+				if (it % 256 == 0)
+					AditionalData("IT: %u/%u | merged: %u | Y: %u", it, merge_count, MergedSize, placer_perpixel.StartYPos);
+
+				MergedSize++;
+
+ 				lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
 				Layer[it]->bMerged = TRUE;
 			}
-			else 
-			if (!checkFreeSpace(1 + 2 * BORDER))
-				break;
-			Progress(_sqrt(float(it) / float(merge_count)));
+ 
+			Progress( float(it) / float(merge_count) );
 		}
+
+		Msg("Process Area Time : %u", tMerge.GetElapsed_ms());
+
 		Progress(1.f);
 
 		// Remove merged lightmaps
@@ -301,57 +314,8 @@ void CBuild::xrPhase_MergeLM()
 	VERIFY(lc_global_data());
 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
 }
-
-#include "tbb/combinable.h"
-#include "tbb/parallel_for.h"
-
-struct Place {
-	L_rect rect;
-	bool rotated;
-};
-using PlaceResult = std::optional<Place>;
-void merge(PlaceResult& dest, const PlaceResult& x)
-{
-	if (!x)
-		return;
-	if (!dest || x.value().rect.a.y < dest.value().rect.a.y)
-		dest = x;
-}
-
-bool rectPlaceY(u32 y, L_rect& r, lm_layer* D, bool& rotated);
-
-bool rectPlaceTbb(L_rect& tr, lm_layer* D, bool& rotated)
-{
-	xr_combinable<PlaceResult> temp;
-	xr_parallel_for<u32>(0, getLMSIZE(), [&temp, tr, D](u32 y)
-	{
-		L_rect rect = tr;
-		bool rotated_local;
-		if (rectPlaceY(y, rect, D, rotated_local))
-		{
-			merge(temp.Local(), Place{ rect, rotated_local });
-		}
-	});
-
-	PlaceResult result;
-	temp.CombineEach
-	(
-		[&result](const PlaceResult& x)
-		{
-			merge(result, x); 
-		}
-	);
-
-	if (result)
-	{
-		tr = result.value().rect;
-		rotated = result.value().rotated;
-	}
-
-	return result.has_value();
-}
 #endif
-
+ 
 void CBuild::xrPhase_SaveLmaps()
 {
 	Status("Destroying deflectors...");
