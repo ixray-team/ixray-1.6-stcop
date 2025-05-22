@@ -1025,6 +1025,14 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			SwitchState(eIdle);
 			break;
 		}
+		case eFire:
+		{
+			if (ParentIsActor())
+			{
+				SwitchState(eIdle);
+			}
+			break;
+		}
 		case eFire2:
 		case eShowing:
 		case eSwitchMode:

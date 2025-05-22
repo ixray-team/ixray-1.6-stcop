@@ -220,7 +220,7 @@ void CWeapon::StopShooting()
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles	();	
 	
-	// if (!ParentIsActor())
+	if (!ParentIsActor())
 	{
 		SwitchState(eIdle);
 	}
