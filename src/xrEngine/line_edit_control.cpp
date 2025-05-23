@@ -265,6 +265,13 @@ void line_edit_control::assign_char_pairs(init_mode mode) {
 	create_char_pair(SDL_SCANCODE_8, '8', '*');
 	create_char_pair(SDL_SCANCODE_9, '9', '(');
 
+	create_char_pair(SDL_SCANCODE_COMMA, ',', ',', true);
+	create_char_pair(SDL_SCANCODE_PERIOD, '.', '.', true);
+	create_char_pair(SDL_SCANCODE_SEMICOLON, ';', ';', true);
+	create_char_pair(SDL_SCANCODE_APOSTROPHE, '\'', '\'', true);
+	create_char_pair(SDL_SCANCODE_LEFTBRACKET, '[', '{', true);
+	create_char_pair(SDL_SCANCODE_RIGHTBRACKET, ']', '}', true);
+
 	for (int i = 0; i < 26; ++i) {
 		create_char_pair(SDL_SCANCODE_A + i, 'a' + i, 'A' + i, true);
 	}
