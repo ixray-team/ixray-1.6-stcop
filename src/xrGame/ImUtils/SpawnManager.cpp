@@ -127,6 +127,7 @@ void InitSections()
 			else {
 				full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
 			}
+			xr_strlwr(full_path);
 			if (!FS.exist(full_path.c_str()))
 			{
 				Msg("! SpawnManager: failed to spawn [%s] visual not found: %s", name.data(), full_path.c_str());
