@@ -32,6 +32,15 @@ void	CSoundRender_Core::i_start		(CSoundRender_Emitter* E)
 	E->target			= T;
 	E->target->start	(E);
 	T->priority			= Ptest;
+
+	//v2v3v4 in
+	if (E->target->get_emitter())
+	{
+		float	dist = SoundRender->listener_position().distance_to(E->target->get_emitter()->p_source.position);
+		if (dist > E->target->get_emitter()->p_source.max_distance && !E->target->get_emitter()->b2D)
+			E->target->get_emitter()->cancel();
+	}
+	//v2v3v4 out
 }
 
 void	CSoundRender_Core::i_stop		(CSoundRender_Emitter* E)

@@ -221,7 +221,11 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
 
 BOOL CSoundRender_Emitter::update_culling(float dt)
 {
-	
+	//LostAlphaRus in
+	float min_max = 1.f;
+	float volume_att = 1.f;
+	//LostAlphaRus out
+
 	if (b2D)
 	{
 		occluder_volume		= 1.f;
@@ -232,9 +236,19 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		if (dist>p_source.max_distance)										{ smooth_volume = 0; return FALSE; }
 
 		// Calc attenuated volume
-		float att			= p_source.min_distance/(psSoundRolloff*dist);	clamp(att,0.f,1.f);
-		float fade_scale	= bStopping||(att*p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)<psSoundCull)?-1.f:1.f;
+		//LostAlphaRus in
+		min_max = p_source.max_distance - p_source.min_distance;
+		volume_att = (p_source.max_distance - dist) / min_max;
+		clamp(volume_att, 0.f, p_source.volume);
+
+		float fade_scale	= bStopping||(p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)<psSoundCull)?-1.f:1.f;
 		fade_volume			+=	dt*10.f*fade_scale;
+		//LostAlphaRus out
+	 
+		//v2v3v4 in
+		if (dist > p_source.max_distance)
+			volume_att -= 0.1f;
+		//v2v3v4 out
 
 		// Update occlusion
 		float occ			= (owner_data->g_type==SOUND_TYPE_WORLD_AMBIENT)?1.0f:SoundRender->get_occlusion	(p_source.position,.2f,occluder);
@@ -243,7 +257,9 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 	}
 	clamp				(fade_volume,0.f,1.f);
 	// Update smoothing
-	smooth_volume		= .9f*smooth_volume + .1f*(p_source.base_volume*p_source.volume*(owner_data->s_type==st_Effect?psSoundVEffects*psSoundVFactor:psSoundVMusic)*occluder_volume*fade_volume);
+	//LostAlphaRus in
+	smooth_volume = (p_source.base_volume * volume_att * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * occluder_volume * fade_volume);
+	//LostAlphaRus out
 	if (smooth_volume<psSoundCull)							return FALSE;	// allow volume to go up
 	// Here we has enought "PRIORITY" to be soundable
 	// If we are playing already, return OK
@@ -254,9 +270,16 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 
 float CSoundRender_Emitter::priority()
 {
-	float	dist		= SoundRender->listener_position().distance_to	(p_source.position);
-	float	att			= p_source.min_distance/(psSoundRolloff*dist);	clamp(att,0.f,1.f);
-	return	smooth_volume*att*priority_scale;
+	//LostAlphaRus in
+	float min_max = 1.f;
+	float volume_att = 1.f;
+	float dist = SoundRender->listener_position().distance_to(p_source.position);
+
+	min_max = p_source.max_distance - p_source.min_distance;
+	volume_att = (p_source.max_distance - dist) / min_max;
+	clamp(volume_att, 0.f, p_source.volume);
+	return	smooth_volume* volume_att *priority_scale;
+	//LostAlphaRus out
 }
 
 void CSoundRender_Emitter::update_environment(float dt)
