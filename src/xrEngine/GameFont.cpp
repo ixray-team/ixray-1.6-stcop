@@ -485,6 +485,10 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 
 int CGameFont::WidthOf(int ch)
 {
+	if (ch == '\t' || ch == '\n')
+	{
+		return 0;
+	}
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
 	{
 		return glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC;
