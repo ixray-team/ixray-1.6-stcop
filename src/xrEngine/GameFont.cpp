@@ -54,10 +54,10 @@ CGameFont::CGameFont(const char* section, u32 flags) : Name(section)
 		Data.OpenType = pSettings->r_bool(section, "opentype");
 
 	if (pSettings->line_exist(section, "letter_spacing"))
-		LetterSpacing = pSettings->r_float(section, "letter_spacing");
+		SetLetterSpacing(pSettings->r_float(section, "letter_spacing"));
 
 	if (pSettings->line_exist(section, "line_spacing"))
-		LineSpacing = pSettings->r_float(section, "line_spacing");
+		SetLineSpacing(pSettings->r_float(section, "line_spacing"));
 
 	// Init
 	pFontRender = RenderFactory->CreateFontRender();
@@ -317,7 +317,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		GlyphData[glyphID] = { region, widths, yOffset };
 
 		TargetX = TargetX2;
-		TargetX += 4;
+		TargetX += 4 + u32(GetLetterSpacing());
 	};
 
 	auto glyphID = FT_Get_First_Char(OurFont, &index);
@@ -486,44 +486,35 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 int CGameFont::WidthOf(int ch)
 {
 	if (ch == '\t' || ch == '\n')
-	{
 		return 0;
-	}
+
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
-	{
 		return glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC;
-	}
-	else
-	{
-		return OurFont->glyph->metrics.width / 64;
-	}
+
+	return OurFont->glyph->metrics.width / 64;
 }
 
 int CGameFont::WidthOf(const char* str)
 {
-	if (!str || !str[0])
-	{
-		return 0;
-	}
+	if (!str || !str[0]) return 0;
 
 	int size = 0;
+	int length = 0;
+	const float spacing = GetLetterSpacing();
 
-	if (IsUTF8(str))
-	{
-		auto asda = Platform::ANSI_TO_TCHAR(str);
-		int length = std::wcslen(asda);
-		for (int i = 0; i < length; i++)
-		{
-			size += WidthOf(asda[i]);
+	if (IsUTF8(str)) {
+		auto wideStr = Platform::ANSI_TO_TCHAR(str);
+		length = std::wcslen(wideStr);
+		for (int i = 0; i < length; i++) {
+			size += WidthOf(wideStr[i]);
+			if (i < length - 1) size += (int)spacing;
 		}
-
 	}
-	else
-	{
-		int length = xr_strlen(str);
-		for (int i = 0; i < length; i++)
-		{
+	else {
+		length = xr_strlen(str);
+		for (int i = 0; i < length; i++) {
 			size += WidthOf((u8)str[i]);
+			if (i < length - 1) size += (int)spacing;
 		}
 	}
 

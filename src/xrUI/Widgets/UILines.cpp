@@ -110,7 +110,7 @@ float get_str_width(CGameFont*pFont, int ch)
 		ch = (u8)ch;
 	}
 
-	float ll = pFont->SizeOf_(ch);
+	float ll = pFont->SizeOf_(ch) + pFont->GetLetterSpacing();
 	UI().ClientToScreenScaledWidth(ll);
 	return ll;
 }
@@ -227,7 +227,6 @@ void CUILines::ParseText(bool force)
 		CUILine									tmp_line;
 		string4096								buff;
 		float curr_width = 0.0f;
-		bool bnew_line = false;
 		float __eps = get_str_width(m_pFont, '1');//hack -(
 		for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
 		{
@@ -292,7 +291,6 @@ void CUILines::ParseText(bool force)
 					m_lines.push_back(tmp_line);
 					tmp_line.Clear();
 					curr_width = 0.0f;
-					bnew_line = false;
 				}
 			}
 			if (b_last_subl && !tmp_line.IsEmpty())
@@ -300,7 +298,6 @@ void CUILines::ParseText(bool force)
 				m_lines.push_back(tmp_line);
 				tmp_line.Clear();
 				curr_width = 0.0f;
-				bnew_line = false;
 			}
 		}
 	}
@@ -317,13 +314,13 @@ float CUILines::GetVisibleHeight()
 		if(uFlags.test(flNeedReparse))
 			ParseText	();
 
-		float _curr_h = m_pFont->CurrentHeight_();
+		float _curr_h = m_pFont->CurrentHeight_() + m_pFont->GetLineSpacing();
 		UI().ClientToScreenScaledHeight(_curr_h);
 		return _curr_h * m_lines.size();
 	}
 	else
 	{
-		float _curr_h = m_pFont->GetHeight();
+		float _curr_h = m_pFont->GetHeight() + m_pFont->GetLineSpacing();
 		UI().ClientToScreenScaledHeight(_curr_h);
 		return _curr_h;
 	}
@@ -434,7 +431,7 @@ void CUILines::Draw(float x, float y)
 		Fvector2 pos;
 		// get vertical indent
 		pos.y			= y + GetVIndentByAlign();
-		float height	= m_pFont->CurrentHeight_();
+		float height	= m_pFont->CurrentHeight_() + m_pFont->GetLineSpacing();
 		UI().ClientToScreenScaledHeight(height);
 
 		u32 size		= (u32)m_lines.size();

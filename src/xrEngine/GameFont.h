@@ -171,8 +171,8 @@ public:
 	int WidthOf(const char* str);
 
 private:
-	float LetterSpacing; //that must be in CUIText from new font system
-	float LineSpacing; //that must be in CUIText from new font system
+	float LetterSpacing = 0; //that must be in CUIText from new font system
+	float LineSpacing = 0; //that must be in CUIText from new font system
 
 	const char* Name; //#TODO change type
 
