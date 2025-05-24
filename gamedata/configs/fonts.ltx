@@ -12,6 +12,19 @@ name			= Letterica
 shader			= hud\font
 name 			= Graffiti1CTT
 
+[font_condensed]:font_default
+shader			= hud\font
+name 			= RobotoCondensed
+opentype = true
+
+[font_condensed_18]:font_condensed
+size = 18
+letter_spacing = 0.3
+
+[font_condensed_20]:font_condensed
+size = 20
+letter_spacing = 0.3
+
 [font_statistic]:font_default
 size			= 13
 interval		= 0.75,1
@@ -37,20 +50,24 @@ size			= 16
 
 [hud_font_medium]:ui_font_hud ;TODO deprecated
 
-[ui_font_letterica16]:font_letterica
-size			= 16
+[ui_font_letterica16]:font_condensed
+size = 18
+letter_spacing = 0.3
 
 [ui_font_letterica16_russian]:ui_font_letterica16 ;TODO deprecated
 
 [letterica16]:ui_font_letterica16 ;TODO deprecated
 
-[ui_font_letterica18]:font_letterica
-size			= 18
+[ui_font_letterica18]:font_condensed
+size = 20
+letter_spacing = 0.3
 
 [ui_font_letterica18_russian]:ui_font_letterica18 ;TODO deprecated
 
-[ui_font_letterica25]:font_letterica
-size			= 25
+[ui_font_letterica25]:font_condensed
+size = 28
+letter_spacing = 0.5
+
 
 [ui_font_letter_25]:ui_font_letterica25 ;TODO deprecated
 
