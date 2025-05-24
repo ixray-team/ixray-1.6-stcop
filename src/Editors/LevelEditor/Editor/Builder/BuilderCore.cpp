@@ -3,19 +3,19 @@
 
 bool SceneBuilder::PreparePath()
 {
-	if (Scene->m_LevelOp.m_FNLevelPath.size()==0) return false;
-    FS.update_path	(m_LevelPath,_game_levels_,Scene->m_LevelOp.m_FNLevelPath.c_str());
-    strcat(m_LevelPath,"\\");
-    return true;
-}
+	if (Scene->m_LevelOp.m_FNLevelPath.size() == 0)
+		return false;
 
-
-bool SceneBuilder::PrepareFolders()
-{
-	FS.dir_delete	(m_LevelPath,TRUE);
+	FS.update_path(m_LevelPath, _game_levels_, Scene->m_LevelOp.m_FNLevelPath.c_str());
+	strcat(m_LevelPath, "\\");
 	return true;
 }
 
+bool SceneBuilder::PrepareFolders()
+{
+	FS.dir_delete(m_LevelPath, TRUE);
+	return true;
+}
 
 bool SceneBuilder::EvictResource()
 {
@@ -53,7 +53,7 @@ bool SceneBuilder::GetBounding()
 
 bool SceneBuilder::RenumerateSectors()
 {
-	m_iDefaultSectorNum	= -1;
+	m_iDefaultSectorNum = -1;
 
 	SPBItem* pb = UI->ProgressStart(Scene->ObjCount(OBJCLASS_SECTOR), "Renumerate sectors...");
 
@@ -69,8 +69,6 @@ bool SceneBuilder::RenumerateSectors()
 
 	UI->ProgressEnd(pb);
 
-	if (m_iDefaultSectorNum<0) m_iDefaultSectorNum=Scene->ObjCount(OBJCLASS_SECTOR);
+	if (m_iDefaultSectorNum < 0) m_iDefaultSectorNum = Scene->ObjCount(OBJCLASS_SECTOR);
 	return true;
 }
-
-

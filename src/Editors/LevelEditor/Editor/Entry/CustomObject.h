@@ -33,14 +33,11 @@ struct SExportStreams
 	SExportStreamItem	fog_vol;
 };
 
-class  CCustomObject:private pureDrawUI
+class  CCustomObject:
+	private pureDrawUI
 {
 protected:
 	shared_str		EName;
-	// orientation
-	Fvector 		EPosition;
-	Fvector 		EScale;
-	Fvector 		ERotation;
 	SAnimParams*	m_MotionParams;
 	COMotion*		m_Motion;
 
@@ -93,6 +90,11 @@ public:
 	Fmatrix 		FTransform;
 	Fmatrix			FITransformRP;
 	Fmatrix 		FITransform;
+
+	// editor (raw) orientation
+	Fvector 		EPosition;
+	Fvector 		EScale;
+	Fvector 		ERotation;
 
 	CCustomObject*	m_pOwnerObject;
 	bool   OnObjectNameAfterEdit	(PropValue* sender, shared_str& edit_val);
