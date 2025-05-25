@@ -73,8 +73,8 @@ namespace PS
 		const CPGDef*		m_Def;
 		float				m_CurrentTime;
 		Fvector				m_InitialPosition;
-		xrCriticalSection	onframe_lock;
 	public:
+		xrCriticalSection	onframe_lock;
 		using VisualVec = xr_vector<dxRender_Visual*>;
 		using VisualVecIt = VisualVec::iterator;
 
