@@ -148,7 +148,6 @@ jobs:
           name: server-assets-${{ github.sha }}
           path: |
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fsgame.ltx
           include-hidden-files: true
@@ -200,7 +199,6 @@ jobs:
           path: |
             bin/
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fsgame.ltx
           include-hidden-files: true

@@ -227,7 +227,6 @@ jobs:
           name: utilities-assets-${{ github.sha }}
           path: |
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fs*.ltx
           include-hidden-files: true
@@ -279,7 +278,6 @@ jobs:
           path: |
             bin/
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fs*.ltx
           include-hidden-files: true
