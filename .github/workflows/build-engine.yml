@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
         preset:
           - Engine
         platform:
@@ -114,7 +114,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
 
     runs-on: ${{ matrix.system }}
 
@@ -148,7 +148,6 @@ jobs:
           name: engine-assets-${{ github.sha }}
           path: |
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fsgame.ltx
           include-hidden-files: true
@@ -162,7 +161,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2022
+          - windows-2025
         platform:
           - x64
         preset:
@@ -200,7 +199,6 @@ jobs:
           path: |
             bin/
             gamedata/
-            patches/xpatch_03.db
             .xrignore
             fsgame.ltx
           include-hidden-files: true
