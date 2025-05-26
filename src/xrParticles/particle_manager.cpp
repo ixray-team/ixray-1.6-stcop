@@ -302,6 +302,11 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     case PAVortexID:    		pa = new PAVortex();			break;
     case PATurbulenceID:		pa = new PATurbulence();		break;
     case PAScatterID:  			pa = new PAScatter();			break;
+    case PABindVelocityValueID:	pa = new PABindVelocityValue();	break;
+    case PABindRotationValueID:	pa = new PABindRotationValue();	break;
+    case PABindSizeValueID:		pa = new PABindSizeValue();		break;
+    case PABindColorValueID:	pa = new PABindColorValue();	break;
+    case PABindColorAlphaID:	pa = new PABindColorAlpha();	break;
     default: NODEFAULT;
     }
     pa->type					= type;
@@ -347,6 +352,15 @@ void CParticleManager::SaveActions(int alist_id, IWriter& W)
 void PAPI::CParticleManager::OnFrame()
 {
 	CParticlesAsync::Play();
+}
+
+ParticleAction* CParticleManager::FindAction(int alist_id, PActionEnum type)
+{
+	SharedParticleActions pa = GetActionListPtr(alist_id);
+	if (!pa)
+		return nullptr;
+
+	return pa->find(type);
 }
 
 
