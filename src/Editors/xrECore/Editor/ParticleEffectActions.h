@@ -352,6 +352,36 @@ public:
     virtual void 	Render		(const Fmatrix& parent);
 };
 
+struct EPABindColorValue: public EParticleAction
+{
+	EPABindColorValue();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPABindColorAlpha: public EParticleAction
+{
+	EPABindColorAlpha();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPABindSizeValue: public EParticleAction
+{
+	EPABindSizeValue();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPABindRotateValue: public EParticleAction
+{
+	EPABindRotateValue();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPABindVelocityValue: public EParticleAction
+{
+	EPABindVelocityValue();
+	virtual void Compile(IWriter& F);
+};
+
 extern ECORE_API xr_token2* actions_token;
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);

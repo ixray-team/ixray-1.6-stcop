@@ -83,6 +83,7 @@ namespace PS
         void				SetBirthDeadCB		(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p);		
 
 	    virtual u32			ParticlesCount		();
+		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 	};
     void OnEffectParticleBirth	(void* owner, u32 param, PAPI::Particle& m, u32 idx);
     void OnEffectParticleDead	(void* owner, u32 param, PAPI::Particle& m, u32 idx);

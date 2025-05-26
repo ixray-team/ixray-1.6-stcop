@@ -653,6 +653,16 @@ u32 CParticleGroup::ParticlesCount()
 	return p_count;
 }
 
+PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnum Action)
+{
+	auto it = std::find_if(items.begin(), items.end(), [&](SItem& elem)
+	{
+		return elem._effect->dcast_ParticleCustom()->Name() == PEName;
+	});
+	R_ASSERT(it != items.end(), "Unable to find PE in PG", PEName.c_str(), Name().c_str());
+	return it != items.end() ? it->_effect->dcast_ParticleCustom()->FindPA(PEName, Action) : nullptr;
+}
+
 void CParticleGroup::SetHudMode(BOOL b)
 {
 	xrCriticalSectionGuard guard(&onframe_lock);

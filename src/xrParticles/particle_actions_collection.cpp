@@ -347,6 +347,24 @@ void PAPI::PAAvoid::Transform(const Fmatrix& m)
 {
 	position.transform(positionL,m);
 }
+
+void* PAAvoid::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::position:
+		return &position;
+	case EVariable::look_ahead:
+		return &look_ahead;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	}
+	R_ASSERT3(false, "Particle action Avoid: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+
 //-------------------------------------------------------------------------------------------------
 
 void PABounce::Execute(ParticleEffect *effect, const float dt, float& tm_max)
@@ -669,6 +687,23 @@ void PABounce::Transform(const Fmatrix& m)
 {
 	position.transform(positionL,m);
 }
+
+void* PABounce::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::position:
+		return &position;
+	case EVariable::oneMinusFriction:
+		return &oneMinusFriction;
+	case EVariable::resilience:
+		return &resilience;
+	case EVariable::cutoffSqr:
+		return &cutoffSqr;
+	}
+	R_ASSERT3(false, "Particle action Bounce: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Set the secondary position of each particle to be its position.
@@ -696,6 +731,17 @@ void PACopyVertexB::Execute(ParticleEffect *effect, const float dt, float& tm_ma
 */
 }
 void PACopyVertexB::Transform(const Fmatrix&){;}
+
+void* PACopyVertexB::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::copy_pos:
+		return &copy_pos;
+	}
+	R_ASSERT3(false, "Particle action CopyVertexB: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Dampen velocities
@@ -719,6 +765,21 @@ void PADamping::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PADamping::Transform(const Fmatrix&){;}
+
+void* PADamping::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::damping:
+		return &damping;
+	case EVariable::vlowSqr:
+		return &vlowSqr;
+	case EVariable::vhighSqr:
+		return &vhighSqr;
+	}
+	R_ASSERT3(false, "Particle action Damping: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Exert force on each particle away from explosion center
@@ -750,6 +811,27 @@ void PAExplosion::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 void PAExplosion::Transform(const Fmatrix& m)
 {
 	m.transform_tiny(center,centerL);
+}
+
+void* PAExplosion::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::center:
+		return &center;
+	case EVariable::velocity:
+		return &velocity;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::stdev:
+		return &stdev;
+	case EVariable::age:
+		return &age;
+	case EVariable::epsilon:
+		return &epsilon;
+	}
+	R_ASSERT3(false, "Particle action Explosion: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -792,6 +874,21 @@ void PAFollow::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PAFollow::Transform(const Fmatrix&){;}
+
+void* PAFollow::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action Follow: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Inter-particle gravitation
@@ -849,6 +946,21 @@ void PAGravitate::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PAGravitate::Transform(const Fmatrix&){;}
+
+void* PAGravitate::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action Gravitate: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Acceleration in a constant direction
@@ -863,6 +975,17 @@ void PAGravity::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PAGravity::Transform(const Fmatrix&){;}
+
+void* PAGravity::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::direction:
+		return &direction;
+	}
+	R_ASSERT3(false, "Particle action Gravity: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles along a line
@@ -919,6 +1042,25 @@ void PAJet::Transform(const Fmatrix& m)
 {
 	m.transform_tiny	(center,centerL);
 	acc.transform_dir	(accL,m);
+}
+
+void* PAJet::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::center:
+		return &center;
+	case EVariable::acc:
+		return &acc;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action Jet: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -978,6 +1120,23 @@ void PAScatter::Transform(const Fmatrix& m)
 {
 	m.transform_tiny	(center,centerL);
 }
+
+void* PAScatter::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::center:
+		return &center;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action Scatter: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Get rid of older particles
@@ -994,6 +1153,19 @@ void PAKillOld::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PAKillOld::Transform(const Fmatrix&){;}
+
+void* PAKillOld::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::age_limit:
+		return &age_limit;
+	case EVariable::kill_less_than:
+		return &kill_less_than;
+	}
+	R_ASSERT3(false, "Particle action KillOld: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Match velocity to near neighbors
@@ -1051,6 +1223,21 @@ void PAMatchVelocity::Execute(ParticleEffect *effect, const float dt, float& tm_
 	}
 }
 void PAMatchVelocity::Transform(const Fmatrix&){;}
+
+void* PAMatchVelocity::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action MatchVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 void PAMove::Execute(ParticleEffect *effect, const float dt, float& tm_max)
@@ -1067,6 +1254,12 @@ void PAMove::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	}
 }
 void PAMove::Transform(const Fmatrix&){;}
+
+void* PAMove::GetVariableImpl(u8 VarID)
+{
+	R_ASSERT3(false, "Particle action Move: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a line
@@ -1127,6 +1320,25 @@ void PAOrbitLine::Transform(const Fmatrix& m)
 	m.transform_tiny(p,pL);
 	m.transform_dir(axis,axisL);
 }
+
+void* PAOrbitLine::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::p:
+		return &p;
+	case EVariable::axis:
+		return &axis;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action OrbitLine: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a point
@@ -1176,6 +1388,23 @@ void PAOrbitPoint::Transform(const Fmatrix& m)
 {
 	m.transform_tiny(center,centerL);
 }
+
+void* PAOrbitPoint::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::center:
+		return &center;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action OrbitPoint: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate in random direction each time step
@@ -1197,6 +1426,17 @@ void PARandomAccel::Execute(ParticleEffect *effect, const float dt, float& tm_ma
 void PARandomAccel::Transform(const Fmatrix& m)
 {
 	gen_acc.transform_dir(gen_accL,m);
+}
+
+void* PARandomAccel::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::gen_acc:
+		return &gen_acc;
+	}
+	R_ASSERT3(false, "Particle action RandomAccel: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -1220,6 +1460,17 @@ void PARandomDisplace::Transform(const Fmatrix& m)
 {
 	gen_disp.transform_dir(gen_dispL,m);
 }
+
+void* PARandomDisplace::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::gen_disp:
+		return &gen_disp;
+	}
+	R_ASSERT3(false, "Particle action RandomDisplace: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Immediately assign a random velocity
@@ -1240,6 +1491,17 @@ void PARandomVelocity::Execute(ParticleEffect *effect, const float dt, float& tm
 void PARandomVelocity::Transform(const Fmatrix& m)
 {
 	gen_vel.transform_dir(gen_velL,m);
+}
+
+void* PARandomVelocity::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::gen_vel:
+		return &gen_vel;
+	}
+	R_ASSERT3(false, "Particle action RandomVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -1339,6 +1601,18 @@ void PARestore::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	time_left -= dt;
 }
 void PARestore::Transform(const Fmatrix&){;}
+
+void* PARestore::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::time_left:
+		return &time_left;
+		break;
+	}
+	R_ASSERT3(false, "Particle action Restore: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with positions on wrong side of the specified domain
@@ -1358,6 +1632,19 @@ void PASink::Transform(const Fmatrix& m)
 {
 	position.transform(positionL,m);
 }
+
+void* PASink::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::kill_inside:
+		return &kill_inside;
+	case EVariable::position:
+		return &position;
+	}
+	R_ASSERT3(false, "Particle action Sink: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with velocities on wrong side of the specified domain
@@ -1376,6 +1663,19 @@ void PASinkVelocity::Execute(ParticleEffect *effect, const float dt, float& tm_m
 void PASinkVelocity::Transform(const Fmatrix& m)
 {
 	velocity.transform_dir(velocityL,m);
+}
+
+void* PASinkVelocity::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::kill_inside:
+		return &kill_inside;
+	case EVariable::velocity:
+		return &velocity;
+	}
+	R_ASSERT3(false, "Particle action SinkVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -1425,6 +1725,37 @@ void PASource::Transform(const Fmatrix& m)
 	position.transform(positionL,m);
 	velocity.transform_dir(velocityL,m);
 }
+
+void* PASource::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::position:
+		return &position;
+	case EVariable::velocity:
+		return &velocity;
+	case EVariable::rot:
+		return &rot;
+	case EVariable::size:
+		return &size;
+	case EVariable::color:
+		return &color;
+	case EVariable::alpha:
+		return &alpha;
+	case EVariable::particle_rate:
+		return &particle_rate;
+	case EVariable::age:
+		return &age;
+	case EVariable::age_sigma:
+		return &age_sigma;
+	case EVariable::parent_vel:
+		return &parent_vel;
+	case EVariable::parent_motion:
+		return &parent_motion;
+	}
+	R_ASSERT3(false, "Particle action Source: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 void PASpeedLimit::Execute(ParticleEffect *effect, const float dt, float& tm_max)
@@ -1449,6 +1780,19 @@ void PASpeedLimit::Execute(ParticleEffect *effect, const float dt, float& tm_max
 	}
 }
 void PASpeedLimit::Transform(const Fmatrix&){;}
+
+void* PASpeedLimit::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::min_speed:
+		return &min_speed;
+	case EVariable::max_speed:
+		return &max_speed;
+	}
+	R_ASSERT3(false, "Particle action SpeedLimit: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Change color of all particles toward the specified color
@@ -1468,6 +1812,25 @@ void PATargetColor::Execute(ParticleEffect *effect, const float dt, float& tm_ma
 	}
 }
 void PATargetColor::Transform(const Fmatrix&){;}
+
+void* PATargetColor::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::color:
+		return &color;
+	case EVariable::alpha:
+		return &alpha;
+	case EVariable::scale:
+		return &scale;
+	case EVariable::timeFrom:
+		return &timeFrom;
+	case EVariable::timeTo:
+		return &timeTo;
+	}
+	R_ASSERT3(false, "Particle action TargetColor: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Change sizes of all particles toward the specified size
@@ -1488,6 +1851,19 @@ void PATargetSize::Execute(ParticleEffect *effect, const float dt, float& tm_max
 	}
 }
 void PATargetSize::Transform(const Fmatrix&){;}
+
+void* PATargetSize::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::size:
+		return &size;
+	case EVariable::scale:
+		return &scale;
+	}
+	R_ASSERT3(false, "Particle action TargetSize: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Change rotation of all particles toward the specified velocity
@@ -1506,6 +1882,19 @@ void PATargetRotate::Execute(ParticleEffect *effect, const float dt, float& tm_m
 	}
 }
 void PATargetRotate::Transform(const Fmatrix&){;}
+
+void* PATargetRotate::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::rot:
+		return &rot;
+	case EVariable::scale:
+		return &scale;
+	}
+	R_ASSERT3(false, "Particle action TargetRotate: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Change velocity of all particles toward the specified velocity
@@ -1522,6 +1911,19 @@ void PATargetVelocity::Execute(ParticleEffect *effect, const float dt, float& tm
 void PATargetVelocity::Transform(const Fmatrix& m)
 {
 	m.transform_dir(velocity,velocityL);
+}
+
+void* PATargetVelocity::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::velocity:
+		return &velocity;
+	case EVariable::scale:
+		return &scale;
+	}
+	R_ASSERT3(false, "Particle action TargetVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
 
@@ -1623,6 +2025,25 @@ void PAVortex::Transform(const Fmatrix& m)
 	m.transform_tiny(center,centerL);
 	m.transform_dir(axis,axisL);
 }
+
+void* PAVortex::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::center:
+		return &center;
+	case EVariable::axis:
+		return &axis;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::max_radius:
+		return &max_radius;
+	}
+	R_ASSERT3(false, "Particle action Vortex: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 
 // Turbulence
@@ -1722,5 +2143,130 @@ void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max
 }
 
 void PATurbulence::Transform(const Fmatrix& m){}
+
+void* PATurbulence::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::frequency:
+		return &frequency;
+	case EVariable::octaves:
+		return &octaves;
+	case EVariable::magnitude:
+		return &magnitude;
+	case EVariable::epsilon:
+		return &epsilon;
+	case EVariable::offset:
+		return &offset;
+	case EVariable::age:
+		return &age;
+	}
+	R_ASSERT3(false, "Particle action Turbulence: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PABindVelocityValue::Transform(const Fmatrix& m) {}
+void PABindVelocityValue::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
+		m.vel = BindValue;
+	}
+}
+void* PABindVelocityValue::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::BindValue:
+		return &BindValue;
+	}
+	R_ASSERT3(false, "Particle action BindVelocityValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PABindRotationValue::Transform(const Fmatrix& m) {}
+void PABindRotationValue::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
+		m.rot.x = BindValue.x;
+	}
+}
+void* PABindRotationValue::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::BindValue:
+		return &BindValue;
+	}
+	R_ASSERT3(false, "Particle action BindRotationValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PABindSizeValue::Transform(const Fmatrix& m) {}
+void PABindSizeValue::Execute(ParticleEffect* effect, const float dt, float& tm_max)
+{
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
+
+		m.size = BindValue;
+	}
+}
+void* PABindSizeValue::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::BindValue:
+		return &BindValue;
+	case EVariable::Pivot:
+		return &Pivot;
+	}
+	R_ASSERT3(false, "Particle action BindSizeValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PABindColorValue::Transform(const Fmatrix& m) {}
+void PABindColorValue::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	Fcolor c_p, c_t;
+
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
+
+		c_p.set(m.color);
+		c_t.set(BindValue.x, BindValue.y, BindValue.z, c_p.a);
+		m.color = c_t.get();
+	}
+}
+void* PABindColorValue::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::BindValue:
+		return &BindValue;
+	}
+	R_ASSERT3(false, "Particle action BindColorValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PABindColorAlpha::Transform(const Fmatrix& m) {}
+void PABindColorAlpha::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	Fcolor c_p, c_t;
+
+	for (u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle& m = effect->particles[i];
+
+		c_p.set(m.color);
+		c_t.set(c_p.r, c_p.g, c_p.b, BindValue);
+		m.color = c_t.get();
+	}
+}
+void* PABindColorAlpha::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::BindValue:
+		return &BindValue;
+	}
+	R_ASSERT3(false, "Particle action BindColorAlpha: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
 //-------------------------------------------------------------------------------------------------
 

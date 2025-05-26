@@ -160,6 +160,7 @@ namespace PS
 		virtual const shared_str	Name		(){VERIFY(m_Def); return m_Def->m_Name;}
 
         virtual u32 		ParticlesCount	();
+		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 	};
 
 }

@@ -1,5 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
+#include <magic_enum/magic_enum.hpp>
+
 namespace PAPI
 {
 	// refs
@@ -20,6 +22,15 @@ namespace PAPI
 
 		virtual void 	Load		(IReader& F)=0;
 		virtual void 	Save		(IWriter& F)=0;
+
+		template<typename T, typename TEnum>
+		T* GetVariable(TEnum VarID)
+		{
+			return (T*)GetVariableImpl((u8)VarID);
+		}
+
+	protected:
+		virtual void* GetVariableImpl(u8 VarID) = 0;
 	};
 
 	using PAVec = xr_vector<ParticleAction*>;
@@ -42,6 +53,12 @@ namespace PAPI
 		IC PAVecIt		end		()						{return actions.end();	}
         IC int			size	()						{return (int)actions.size();	}		
 		IC void			resize	(int cnt)				{ actions.resize(cnt); }
+		IC ParticleAction* find (PActionEnum type)
+		{
+			auto it = std::find_if(actions.begin(), actions.end(), [&](ParticleAction* pa){return pa->type == type;});
+			R_ASSERT3(it != actions.end(), "Failed to find action", magic_enum::enum_name<PActionEnum>(type).data());
+			return it != actions.end() ? (*it) : nullptr;
+		}
 	};
 };
 
