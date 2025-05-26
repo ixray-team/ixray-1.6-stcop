@@ -4,6 +4,7 @@
 //---------------------------------------------------------------------------
 #include "particle_actions.h"
 #include <atomic>
+#include "psystem.h"
 
 namespace PAPI
 {
@@ -60,6 +61,8 @@ namespace PAPI
         virtual u32					LoadActions			(int alist_id, IReader& R);
         virtual void				SaveActions			(int alist_id, IWriter& W);
         virtual void                OnFrame             () override;
+    	
+    	virtual ParticleAction*		FindAction(int alist_id, PActionEnum type) override;
     };
 };
 //---------------------------------------------------------------------------

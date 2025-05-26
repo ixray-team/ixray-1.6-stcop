@@ -275,6 +275,12 @@ u32 CParticleEffect::ParticlesCount()
 	return ParticleManager()->GetParticlesCount(m_HandleEffect);
 }
 
+PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEnum Action)
+{
+	R_ASSERT(PEName == Name(), "Attempt to find PA in wrong PE", PEName.c_str(), Name().c_str());
+	return ParticleManager()->FindAction(m_HandleActionList,Action);
+}
+
 //------------------------------------------------------------------------------
 // Render
 //------------------------------------------------------------------------------

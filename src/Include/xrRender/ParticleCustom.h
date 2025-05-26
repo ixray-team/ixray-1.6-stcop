@@ -27,6 +27,8 @@ public:
 	virtual BOOL	GetHudMode			()=0;
 	virtual void	SetLiveUpdate		(BOOL b)=0;
 	virtual BOOL	GetLiveUpdate		()=0;
+
+	virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) = 0;
 };
 
 #endif	//	ParticleCustom_included
