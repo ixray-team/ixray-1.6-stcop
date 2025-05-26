@@ -20,6 +20,15 @@ namespace PAPI
 
 		virtual void 	Load		(IReader& F)=0;
 		virtual void 	Save		(IWriter& F)=0;
+
+		template<typename T, typename TEnum>
+		T* GetVariable(TEnum VarID)
+		{
+			return (T*)GetVariableImpl((u8)VarID);
+		}
+
+	protected:
+		virtual void* GetVariableImpl(u8 VarID) = 0;
 	};
 
 	using PAVec = xr_vector<ParticleAction*>;
