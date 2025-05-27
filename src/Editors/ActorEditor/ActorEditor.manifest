@@ -3,7 +3,7 @@
 <assemblyIdentity 
     version="1.0.0.0" 
     processorArchitecture="*" 
-    name="ImeSense.IXRay.ActorEditor"
+    name="IXRay.ActorEditor"
     type="win32" 
 /> 
 <description>Part of IX-Ray Engine SDK</description> 

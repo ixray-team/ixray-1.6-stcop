@@ -3,7 +3,7 @@
 <assemblyIdentity 
     version="1.6.0.2" 
     processorArchitecture="*" 
-    name="ImeSense.IXRay.xrEngine"
+    name="IXRay.xrEngine"
     type="win32" 
 /> 
 <description>IX-Ray Engine</description> 
