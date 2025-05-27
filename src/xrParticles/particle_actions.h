@@ -1,5 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
+#include <magic_enum/magic_enum.hpp>
+
 namespace PAPI
 {
 	// refs
@@ -51,6 +53,12 @@ namespace PAPI
 		IC PAVecIt		end		()						{return actions.end();	}
         IC int			size	()						{return (int)actions.size();	}		
 		IC void			resize	(int cnt)				{ actions.resize(cnt); }
+		IC ParticleAction* find (PActionEnum type)
+		{
+			auto it = std::find_if(actions.begin(), actions.end(), [&](ParticleAction* pa){return pa->type == type;});
+			R_ASSERT(it != actions.end(), "Failed to find action", magic_enum::enum_name<PActionEnum>(type).data());
+			return it != actions.end() ? (*it) : nullptr;
+		}
 	};
 };
 

@@ -109,6 +109,14 @@ const shared_str CParticlesObject::Name()
 	return (V) ? V->Name() : "";
 }
 
+PAPI::ParticleAction* CParticlesObject::FindAction(shared_str PEName, PAPI::PActionEnum type)
+{
+	if(g_dedicated_server)	return nullptr;
+
+	IParticleCustom* V	= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);
+	return (V) ? V->FindPA(PEName, type) : nullptr;
+}
+
 xr_shared_ptr<CParticlesObject> Particles::Details::Create(LPCSTR p_name, BOOL bAutoRemove, bool remove_on_game_load)
 {
 	auto Particle = xr_make_shared<CParticlesObject>(p_name, bAutoRemove, remove_on_game_load);
