@@ -14,7 +14,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAAvoid : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			position,
 			look_ahead,
@@ -32,7 +32,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PABounce : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			position,
 			oneMinusFriction,
@@ -50,7 +50,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PACopyVertexB : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			copy_pos
 		};
@@ -61,7 +61,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PADamping : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			damping,
 			vlowSqr,
@@ -76,7 +76,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAExplosion : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			center,
 			velocity,
@@ -98,7 +98,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAFollow : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			magnitude,
 			epsilon,
@@ -113,7 +113,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAGravitate : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			magnitude,
 			epsilon,
@@ -128,7 +128,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAGravity : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			direction
 		};
@@ -140,7 +140,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAJet : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			center,
 			acc,
@@ -161,7 +161,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAKillOld : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			age_limit,
 			kill_less_than
@@ -174,7 +174,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAMatchVelocity : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			magnitude,
 			epsilon,
@@ -194,7 +194,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAOrbitLine : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			p,
 			axis,
@@ -213,7 +213,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAOrbitPoint : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			center,
 			magnitude,
@@ -231,7 +231,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PARandomAccel : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			gen_acc
 		};
@@ -243,7 +243,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PARandomDisplace : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			gen_disp
 		};
@@ -255,7 +255,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PARandomVelocity : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			gen_vel
 		};
@@ -267,7 +267,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PARestore : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			time_left
 		};
@@ -278,7 +278,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAScatter : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			center,
 			magnitude,
@@ -296,7 +296,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PASink : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			kill_inside,
 			position
@@ -310,7 +310,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PASinkVelocity : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			kill_inside,
 			velocity
@@ -324,7 +324,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PASpeedLimit : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			min_speed,
 			max_speed
@@ -337,7 +337,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PASource : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			position,
 			velocity,
@@ -376,7 +376,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PATargetColor : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			color,
 			alpha,
@@ -396,7 +396,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PATargetSize : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			size,
 			scale
@@ -409,7 +409,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PATargetRotate : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			rot,
 			scale
@@ -422,7 +422,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PATargetVelocity : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			velocity,
 			scale
@@ -436,7 +436,7 @@ namespace PAPI{
 
 	struct PARTICLES_API PAVortex : public ParticleAction
 	{
-		enum class EVariable
+		enum class EVariable : u8
 		{
 			center,
 			axis,
@@ -457,7 +457,7 @@ namespace PAPI{
 
     struct PARTICLES_API PATurbulence : public ParticleAction
     {
-    	enum class EVariable
+    	enum class EVariable : u8
     	{
     		frequency,
 			octaves,
@@ -475,6 +475,63 @@ namespace PAPI{
 
         _METHODS;
     };
+
+	struct PARTICLES_API PABindVelocityValue : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			BindValue
+		};
+		pVector BindValue;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PABindRotationValue : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			BindValue
+		};
+		pVector BindValue;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PABindSizeValue : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			BindValue,
+			Pivot
+		};
+		pVector BindValue;
+		pVector Pivot;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PABindColorValue : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			BindValue
+		};
+		pVector BindValue;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PABindColorAlpha : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			BindValue
+		};
+		float BindValue;
+
+		_METHODS;
+	};
 };
 
 //---------------------------------------------------------------------------
