@@ -85,6 +85,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 	}
 	else if (E == g_pEventManager->eStart)
 	{
+		PROF_EVENT("eStart");
 		LPSTR		op_server = LPSTR(P1);
 		LPSTR		op_client = LPSTR(P2);
 		Level_Current = u32(-1);

@@ -62,6 +62,7 @@ extern ENGINE_API u32 ps_proxy_r_scale_mode;
 
 void CRenderDevice::Reset(bool precache)
 {
+	PROF_EVENT("CRenderDevice::Reset");
 	ps_r_scale_mode = ps_proxy_r_scale_mode;
 	u32 dwWidth_before = TargetWidth;
 	u32 dwHeight_before = TargetHeight;

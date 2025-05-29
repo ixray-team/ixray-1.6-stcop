@@ -22,6 +22,7 @@
 
 void EnumerateDisplayModes()
 {
+	PROF_EVENT("EnumerateDisplayModes");
 	SDL_DisplayID primaryDisplay = SDL_GetPrimaryDisplay();
 	if (!primaryDisplay)
 	{
@@ -57,6 +58,7 @@ void EnumerateDisplayModes()
 
 void MigrateToGameWindow()
 {
+	PROF_EVENT("MigrateToGameWindow");
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 
 	SDL_SetWindowFocusable(g_AppInfo.Window, TRUE);
@@ -70,6 +72,7 @@ void MigrateToGameWindow()
 
 static void LoadCustomSettings()
 {
+	PROF_EVENT("LoadCustomSettings");
 	FS_FileSet settingsFiles = {};
 	FS.file_list(settingsFiles, "$game_config$", FS_ListFiles, "ixray_settings\\default_settings*.ltx");
 
@@ -89,97 +92,111 @@ int APIENTRY WinMain
 	int nCmdShow
 )
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0) {
-		return -1;
-	}
+	//PROF_START_CAPTURE();
+	{
+		PROF_EVENT("START_ENGINE");
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0) {
+			return -1;
+		}
 
-	Debug._initialize(false);
+		Debug._initialize(false);
 
-	// Check for another instance
+		// Check for another instance
 #ifdef NO_MULTI_INSTANCES
 #define STALKER_PRESENCE_MUTEX TEXT("Local\\STALKER-COP")
 
-	HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
-	hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
-	if (hCheckPresenceMutex == nullptr) {
-		// New mutex
-		hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
-		if (hCheckPresenceMutex == nullptr)
-			// Shit happens
-			return 2;
-	}
-	else {
-		// Already running
-		CloseHandle(hCheckPresenceMutex);
-		return 1;
-	}
+		HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
+		hCheckPresenceMutex = OpenMutex(READ_CONTROL, FALSE, STALKER_PRESENCE_MUTEX);
+		if (hCheckPresenceMutex == nullptr) {
+			// New mutex
+			hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
+			if (hCheckPresenceMutex == nullptr)
+				// Shit happens
+				return 2;
+		}
+		else {
+			// Already running
+			CloseHandle(hCheckPresenceMutex);
+			return 1;
+		}
 #endif
-	EnumerateDisplayModes();
+		EnumerateDisplayModes();
 
-	splash::show((void*&)g_AppInfo.Window);
+		splash::show((void*&)g_AppInfo.Window);
 
-	EngineLoadStage1(lpCmdLine);
-
-	g_pGPU = new CNvReader();
-	g_pGPU->Initialize();
-	if (!((CNvReader*)(g_pGPU))->bSupport)
-	{
-		xr_delete(g_pGPU);
-		g_pGPU = new CAMDReader;
-		g_pGPU->Initialize();
-	}
+		EngineLoadStage1(lpCmdLine);
+		
+		{
+			PROF_EVENT("g_pGPU");
+			g_pGPU = new CNvReader();
+			g_pGPU->Initialize();
+			if (!((CNvReader*)(g_pGPU))->bSupport)
+			{
+				xr_delete(g_pGPU);
+				g_pGPU = new CAMDReader;
+				g_pGPU->Initialize();
+			}
+		}
 #ifdef DEBUG
-	xrLogger::EnableFastDebugLog();
+		xrLogger::EnableFastDebugLog();
 #endif
-	EngineLoadStage2();
+		EngineLoadStage2();
 
-	Engine.External.CreateRendererList();
+		Engine.External.CreateRendererList();
 
-	Console = new CConsole();
-	EngineLoadStage3();
+		{
+			PROF_EVENT("Console::Create");
+			Console = new CConsole();
+		}
+		EngineLoadStage3();
 
-	if (Core.ParamsData.test(ECoreParams::r4)) {
-		Console->Execute("renderer renderer_r4");
-	}
-	else if (Core.ParamsData.test(ECoreParams::r2)) {
-		Console->Execute("renderer renderer_r2");
-	} else {
-		CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
-		pTmp->Execute(Console->ConfigFile);
-		xr_delete(pTmp);
-		// В любом случае надо вызывать команду CCC_R2
-		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
-	}
+		{
+			PROF_EVENT("Select Render");
+			if (Core.ParamsData.test(ECoreParams::r4)) {
+				Console->Execute("renderer renderer_r4");
+			}
+			else if (Core.ParamsData.test(ECoreParams::r2)) {
+				Console->Execute("renderer renderer_r2");
+			}
+			else {
+				CCC_LoadCFG_custom* pTmp = new CCC_LoadCFG_custom("renderer ");
+				pTmp->Execute(Console->ConfigFile);
+				xr_delete(pTmp);
+				// В любом случае надо вызывать команду CCC_R2
+				Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
+			}
+		}
 
-	Engine.External.Initialize();
+		Engine.External.Initialize();
 
-	Console->Execute("stat_memory");
-	Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
+		Console->Execute("stat_memory");
+		Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
 
-	EngineLoadStage4();
+		EngineLoadStage4();
 
-	LoadCustomSettings();
+		LoadCustomSettings();
 
-	// Splash wnd => Game wnd
-	splash::hide();
-	MigrateToGameWindow();
+		// Splash wnd => Game wnd
+		splash::hide();
+		MigrateToGameWindow();
 
 #ifdef DEBUG_DRAW
-	RenderUI();
-	EditorLuaInit();
+		RenderUI();
+		EditorLuaInit();
 #endif
 
-	EngineLoadStage5();
+		EngineLoadStage5();
 
-	xr_delete(g_pStringTable);
-	xr_delete(g_pGPU);
+		xr_delete(g_pStringTable);
+		xr_delete(g_pGPU);
 
-	Core._destroy();
+		Core._destroy();
 
 #ifdef NO_MULTI_INSTANCES		
-	// Delete application presence mutex
-	CloseHandle(hCheckPresenceMutex);
+		// Delete application presence mutex
+		CloseHandle(hCheckPresenceMutex);
 #endif
+	}
 
 	return (0);
 }

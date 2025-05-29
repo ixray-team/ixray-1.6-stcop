@@ -8,6 +8,7 @@ bool DLSSInited = false;
 
 void DLSSWrapper::Create(const ContextParameters& Parameters)
 {
+	PROF_EVENT("DLSSWrapper::Create");
 	if (m_created)
 	{
 		Destroy();
