@@ -47,19 +47,19 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 
 	CUIXmlInit::InitWindow		(*m_uiXml, "main", 0, this);
 
-    if (m_uiXml->NavigateToNode("right_character_icon"))
-    {
+	if (m_uiXml->NavigateToNode("right_character_icon"))
+	{
 		UIOurIcon = UIHelper::CreateStatic(*m_uiXml, "right_character_icon", this);
-        UIOurIcon->AttachChild(&UICharacterInfoLeft);
-        UICharacterInfoLeft.InitCharacterInfo(Fvector2().set(0, 0), UIOurIcon->GetWndSize(), "talk_character.xml");
-    }
+		UIOurIcon->AttachChild(&UICharacterInfoLeft);
+		UICharacterInfoLeft.InitCharacterInfo(Fvector2().set(0, 0), UIOurIcon->GetWndSize(), "talk_character.xml");
+	}
 
-    if (m_uiXml->NavigateToNode("left_character_icon"))
-    {
+	if (m_uiXml->NavigateToNode("left_character_icon"))
+	{
 		UIOthersIcon = UIHelper::CreateStatic(*m_uiXml, "left_character_icon", this);
-        UIOthersIcon->AttachChild(&UICharacterInfoRight);
-        UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0, 0), UIOthersIcon->GetWndSize(), "talk_character.xml");
-    }
+		UIOthersIcon->AttachChild(&UICharacterInfoRight);
+		UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0, 0), UIOthersIcon->GetWndSize(), "talk_character.xml");
+	}
 
 	CUIWindow* answersParent = this;
 	CUIWindow* questionsParent = this;
@@ -209,7 +209,7 @@ void CUITalkDialogWnd::ClearQuestions()
 }
 
 
-void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, bool b_finalizer)
+void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo)
 {
 	CUIQuestionItem* itm			= new CUIQuestionItem(m_uiXml,"question_item");
 	itm->Init						(value, str);
@@ -217,21 +217,53 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, bool b_
 
 	string16 buff;
 	xr_sprintf(buff, "%d.", number);
+	float x_offset = 0.f;
 	if (itm->m_num_text)
 		itm->m_num_text->SetText(buff);
 	if (number > 9)
 	{
-		itm->m_text->SetTextX( itm->m_fOffset);
+		x_offset += itm->m_fOffset;
 	}
 	if (number < 10)
 	{
 		itm->m_text->SetAccelerator(SDL_SCANCODE_Z + number, 0);
 	}
-	if(b_finalizer)
+	if (phInfo.bFinalizer)
 	{
 		itm->m_text->SetAccelerator		(kQUIT, 2);
 		itm->m_text->SetAccelerator		(kUSE, 3);
 	}
+	if (&phInfo.sIconName && phInfo.sIconName.size() > 1)
+	{
+		Fvector2 icon_size = itm->m_icon_size;
+		itm->m_text->AddStatic();
+		CUIStatic* pBtnStatic = itm->m_text->GetBtnStatic();
+		pBtnStatic->SetWndPos(Fvector2().set(0.f, 0.f));
+		if (!phInfo.bUseIconLtx)
+		{
+			pBtnStatic->InitTextureEx(phInfo.sIconName.c_str(), "hud\\default");
+		}
+		else
+		{
+			const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, phInfo.sIconName, "icons_texture", nullptr);
+			pBtnStatic->GetUIStaticItem().SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+			float x = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons));
+			float y = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons));
+			float width = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_width") * INV_GRID_WIDTH(isHQIcons));
+			float height = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons));
+			Frect tex_rect{ x, y, width, height };
+			tex_rect.rb.add(tex_rect.lt);
+
+			pBtnStatic->GetUIStaticItem().SetTextureRect(tex_rect);
+
+			icon_size.x *= width / INV_GRID_WIDTH(isHQIcons);
+		}
+		pBtnStatic->SetWndPos(Fvector2().set(x_offset, 0.f));
+		x_offset += icon_size.x + itm->m_fOffsetAfterIcon;
+		pBtnStatic->SetWndSize(icon_size);
+		pBtnStatic->SetStretchTexture(true);
+	}
+	itm->m_text->SetTextX			(x_offset);
 
 	itm->SetWindowName				("question_item");
 	UIQuestionsList->AddWindow		(itm, true);
@@ -338,16 +370,20 @@ void CUIQuestionItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
 
 CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 {
-    CUIXmlInit::InitWindow(*xml_doc, path, 0, this);
+	CUIXmlInit::InitWindow(*xml_doc, path, 0, this);
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 
 	string512 str;
 
-	xr_strconcat(str,path,":content_text");
-	m_text = UIHelper::Create3tButton(*xml_doc, str, this);
+	m_icon_size.x					= xml_doc->ReadAttribFlt(path, 0, "icon_width", 15.0f);
+	m_icon_size.y					= xml_doc->ReadAttribFlt(path, 0, "icon_height", 15.0f);
+	m_fOffsetAfterIcon				= xml_doc->ReadAttribFlt(path, 0, "text_offset_after_icon", 3.0f);
 
-	m_fOffset						= xml_doc->ReadAttribFlt(str, 0, "offset", 0);
+	xr_strconcat					(str,path,":content_text");
+	m_text							= UIHelper::Create3tButton(*xml_doc, str, this);
+
+	m_fOffset						= xml_doc->ReadAttribFlt(str, 0, "offset", 0.f);
 
 	Register						(m_text);
 	AddCallback						(m_text,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));

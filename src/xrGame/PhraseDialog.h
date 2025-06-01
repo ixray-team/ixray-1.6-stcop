@@ -104,6 +104,8 @@ public:
 																							(SecondSpeaker()==dialog_manager && SecondIsSpeaking());}
 	CPhraseDialogManager*	OurPartner			(CPhraseDialogManager* dialog_manager) const;
 
+	size_t					GetPhraseCount		() const { return data()->m_PhraseGraph.vertex_count(); }
+
 protected:
 	//идентификатор диалога
 	shared_str				m_DialogId;
