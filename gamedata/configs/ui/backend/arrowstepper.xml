@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<w>
+	<left_btn_texture_name>ui_date_bt_left</left_btn_texture_name>
+	<right_btn_texture_name>ui_date_bt_right</right_btn_texture_name>
+	<track_texture_name>ui_inGame2_opt_slider_bar</track_texture_name>
+	<ib_pos>30</ib_pos>
+</w>
