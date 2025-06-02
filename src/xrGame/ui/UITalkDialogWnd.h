@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
@@ -9,7 +7,7 @@
 
 #include "UICharacterInfo.h"
 #include "UIItemInfo.h"
-
+#include "../Phrase.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUIScrollView;
