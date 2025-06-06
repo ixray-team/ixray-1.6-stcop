@@ -767,6 +767,8 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
     Fvector relative_pos;
     float distance;
     DSP_CalculateRelativePosition(mixer.P, mixer.D, mixer.N, pos, relative_pos, distance);
+    distance = std::max(distance, 0.1f);
+    relative_pos.normalize();
 
     // HRTF
     IPLBinauralEffectParams binaural_params = { 
