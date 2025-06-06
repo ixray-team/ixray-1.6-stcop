@@ -136,6 +136,7 @@ struct sound_zone_params
     float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
     u32 version;
     u32	environment;
+    u32 use_count;
     Fvector min;
     Fvector max;
     Fvector center;
