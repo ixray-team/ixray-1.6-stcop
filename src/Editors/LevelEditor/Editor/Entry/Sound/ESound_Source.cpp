@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\XrSound\SoundRender_Source.h"
+#include "..\XrSound\Sound.h"
 
 #define VIS_RADIUS 0.25f
 #define SOUND_SEL0_COLOR 	0x00A0A0F0
@@ -416,10 +416,9 @@ void ESoundSource::ResetSource()
 	m_Source.destroy();
 	if (m_WAVName.size()){ 
 		m_Source.create		(*m_WAVName,st_Effect,sg_Undefined);
-		CSoundRender_Source* src= (CSoundRender_Source*)m_Source._handle();
-		m_Params.min_distance	= src->m_fMinDist;
-		m_Params.max_distance	= src->m_fMaxDist;
-		m_Params.max_ai_distance= src->m_fMaxAIDist;
+		m_Params.min_distance	= m_Source.get_params().min_distance;
+		m_Params.max_distance	= m_Source.get_params().max_distance;
+		m_Params.max_ai_distance= m_Source.get_params().max_ai_distance;
 		ExecCommand			(COMMAND_UPDATE_PROPERTIES);
 	}
 	m_Source.set_params(&m_Params);

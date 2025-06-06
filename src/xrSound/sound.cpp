@@ -1,16 +1,16 @@
 #include "stdafx.h"
 
 
-#include "SoundRender_CoreA.h"
+#include "SoundRender_Core.h"
 
 XRSOUND_API xr_token*		snd_devices_token	= nullptr;
 XRSOUND_API u32				snd_device_id		= u32(-1);
+
 void CSound_manager_interface::_create(int stage)
 {
 	if(stage==0)
 	{
-		SoundRenderA	= new CSoundRender_CoreA();
-		SoundRender		= SoundRenderA;
+		SoundRender		= new CSoundRender_Core();
 		Sound			= SoundRender;
 
 		if (strstr			( Core.Params,"-nosound"))

@@ -6,9 +6,6 @@
 
 class CSoundRender_Core;
 class CSoundRender_Source;
-class CSoundRender_Emitter;
-class CSoundRender_EmitterParams;
-class CSoundRender_Target;
 class CSoundRender_Environment;
 class SoundEnvironment_LIB;
 

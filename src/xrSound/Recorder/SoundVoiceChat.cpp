@@ -1,9 +1,7 @@
 #include "stdafx.h"
-#include <AL/al.h>
 #include "SoundVoiceChat.h"
 
-SoundVoiceChat::SoundVoiceChat(ALCcontext* pContext)
-	: m_pContext(pContext)
+SoundVoiceChat::SoundVoiceChat()
 {
 }
 
@@ -33,7 +31,7 @@ ISoundRecorder* SoundVoiceChat::CreateRecorder(IVoicePacketSender* sender)
 	m_pVoicePacker = new CVoicePacketsPacker();
 	m_pVoicePacker->AddSender(sender);
 
-	m_pRecorder = new CSoundRecorderA(VOICE_SAMPLE_RATE, VOICE_FORMAT, VOICE_SAMPLES_PER_BUFFER);
+	m_pRecorder = new CSoundRecorderA(VOICE_SAMPLE_RATE, VOICE_SAMPLES_PER_BUFFER);
 
 	if (!m_pRecorder->Init(m_pVoicePacker))
 	{
@@ -46,7 +44,7 @@ ISoundRecorder* SoundVoiceChat::CreateRecorder(IVoicePacketSender* sender)
 
 IStreamPlayer* SoundVoiceChat::CreateStreamPlayer()
 {
-	IStreamPlayer* player = (IStreamPlayer*)new CStreamPlayerA(VOICE_SAMPLE_RATE, VOICE_FORMAT, m_pContext);
+	IStreamPlayer* player = (IStreamPlayer*)new CStreamPlayerA(VOICE_SAMPLE_RATE);
 	m_players.push_back(player);
 	return player;
 }
