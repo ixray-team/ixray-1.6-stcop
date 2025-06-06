@@ -111,21 +111,13 @@ void CMaterialManager::update		(float time_delta, float volume, float step_time,
 				m_step_id								= ::Random.randI(0, (u32)snd_array.size());
 				m_time_to_step							= step_time;
 
-				m_step_sound[m_step_id]					= snd_array[m_step_id];
-				m_step_sound[m_step_id].play_at_pos	(m_object,position);
+				snd_array[m_step_id].play_no_feedback(m_object, 0, 0.0f, &position, &volume);
 			}
 		}
 		m_time_to_step								-= time_delta;
 	}
 	else
 		m_time_to_step								= 0;
-
-
-	for(int i=0; i<4; i++)
-		if (m_step_sound[i]._feedback())		{
-			m_step_sound[i].set_position	(position    );
-			m_step_sound[i].set_volume		(1.f * volume);
-		}
 }
 
 void CMaterialManager::set_run_mode			(bool run_mode)

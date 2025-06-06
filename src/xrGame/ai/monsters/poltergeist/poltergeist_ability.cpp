@@ -36,7 +36,7 @@ void CPolterSpecialAbility::load(LPCSTR section)
 void CPolterSpecialAbility::update_schedule()
 {
 	if (m_object->g_Alive()) {
-		if (!m_sound_base._feedback()) m_sound_base.play_at_pos(m_object, m_object->Position());
+		if (!m_sound_base.is_playing()) m_sound_base.play_at_pos(m_object, m_object->Position());
 		else m_sound_base.set_position(m_object->Position());
 	}
 }
@@ -128,7 +128,7 @@ void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 
 void CPoltergeist::StrangeSounds(const Fvector &position)
 {
-	if (m_strange_sound._feedback()) return;
+	if (m_strange_sound.is_playing()) return;
 	
 	for (u32 i = 0; i < TRACE_ATTEMPT_COUNT; i++) {
 		Fvector dir;

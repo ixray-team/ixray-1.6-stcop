@@ -398,7 +398,7 @@ void CBurer::UpdateGraviObject()
 	// играть звук
 	Fvector snd_pos = m_gravi_object.cur_pos;
 	snd_pos.y += 0.5f;
-	if (sound_gravi_wave._feedback())		{
+	if (sound_gravi_wave.is_playing())		{
 		sound_gravi_wave.set_position	(snd_pos);
 	} else ::Sound->play_at_pos			(sound_gravi_wave,0,snd_pos);
 }
@@ -466,7 +466,8 @@ void CBurer::UpdateGraviObjectCL()
 	// играть звук
 	Fvector snd_pos = m_gravi_object.cur_pos;
 	snd_pos.y += 0.5f;
-	if (sound_gravi_wave._feedback()) {
+	if (sound_gravi_wave.is_playing())
+	{
 		sound_gravi_wave.set_position(snd_pos);
 	}
 	else ::Sound->play_at_pos(sound_gravi_wave, 0, snd_pos);
