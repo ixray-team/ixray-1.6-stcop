@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "Environment.h"
 #include "xr_efflensflare.h"
 #include "thunderbolt.h"
@@ -10,6 +8,7 @@
 #include "../xrServerEntities/object_broker.h"
 #include "../xrServerEntities/LevelGameDef.h"
 #include "../xrServerEntities/ShapeData.h"
+#include "../xrSound/ai_sounds.h"
 
 void CEnvModifier::load	(IReader* fs, u32 version)
 {
@@ -187,7 +186,7 @@ void CEnvAmbient::SSndChannel::load(CInifile& config, LPCSTR sect, pcstr section
 	for (size_t k=0; k<cnt; ++k)
 	{
 		_GetItem			(snds,k,tmp);
-		m_sounds[k].create	(tmp,st_Effect,sg_SourceType);
+		m_sounds[k].create	(tmp,st_Effect, ESoundTypes::SOUND_TYPE_WORLD_AMBIENT);
 	}
 }
 
@@ -201,7 +200,7 @@ CEnvAmbient::SEffect* CEnvAmbient::create_effect	(CInifile& config, LPCSTR id)
 	result->wind_gust_factor	= config.r_float(id,"wind_gust_factor");
 	
 	if (config.line_exist(id,"sound"))
-		result->sound.create	(config.r_string(id,"sound"),st_Effect,sg_SourceType);
+		result->sound.create	(config.r_string(id,"sound"),st_Effect, ESoundTypes::SOUND_TYPE_WORLD_AMBIENT);
 
 	if (config.line_exist(id,"wind_blast_strength")) {
 		result->wind_blast_strength		= config.r_float(id,"wind_blast_strength");

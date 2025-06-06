@@ -220,9 +220,9 @@ void CScriptEntity::vfUpdateSounds()
 		return;
 
 	CScriptSoundAction	&l_tSoundAction = currentAction->m_tSoundAction;
-	if (l_tSoundAction.m_caBoneName.size() && m_current_sound && m_current_sound->_feedback())
+	if (l_tSoundAction.m_caBoneName.size() && m_current_sound && m_current_sound->is_playing())
 	{
-		m_current_sound->_feedback()->set_position(GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,Fvector().set(0,0,0)).c);
+		m_current_sound->set_position(GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,Fvector().set(0,0,0)).c);
 	}
 }
 
@@ -368,7 +368,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 		return		(false);
 	
 	if (m_current_sound) {
-		if (!m_current_sound->_feedback())
+		if (!m_current_sound->is_playing())
 			if (!l_tSoundAction.m_bStartedToPlay) {
 #ifdef _DEBUG
 //				Msg									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);

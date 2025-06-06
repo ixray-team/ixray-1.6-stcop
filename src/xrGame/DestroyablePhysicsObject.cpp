@@ -125,8 +125,7 @@ void CDestroyablePhysicsObject::Destroy()
 	const CGameObject *who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
 	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
 	CPHDestroyable::Destroy(ID(),"physic_destroyable_object");
-	if(m_destroy_sound._handle())
-	{
+	if(m_destroy_sound.handle()) {
 		m_destroy_sound.play_at_pos(this,Position());
 	}
 	if(*m_destroy_particles)
@@ -172,7 +171,7 @@ void CDestroyablePhysicsObject::shedule_Update(u32 dt)
 
 bool CDestroyablePhysicsObject::CanRemoveObject()
 {
-	return !CParticlesPlayer::IsPlaying()&& !m_destroy_sound._feedback();//&& sound!
+	return !CParticlesPlayer::IsPlaying()&& !m_destroy_sound.is_playing();
 }
 DLL_Pure	*CDestroyablePhysicsObject::_construct()
 {

@@ -102,8 +102,8 @@ void		game_cl_mp::DestroyMessagesMenus	()
 				for (u32 t=0; t<pVar->size(); t++)
 				{
 					cl_Message_Sound* pTeamVar = &((*pVar)[t]);
-					if (pTeamVar->mSound_Radio._feedback()) pTeamVar->mSound_Radio.stop();
-					if (pTeamVar->mSound_Voice._feedback()) pTeamVar->mSound_Voice.stop();
+					if (pTeamVar->mSound_Radio.is_playing()) pTeamVar->mSound_Radio.stop();
+					if (pTeamVar->mSound_Voice.is_playing()) pTeamVar->mSound_Voice.stop();
 					pTeamVar->mSound_Radio.destroy();
 					pTeamVar->mSound_Voice.destroy();
 				}

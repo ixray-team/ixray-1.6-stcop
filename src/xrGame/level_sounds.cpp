@@ -1,8 +1,7 @@
 #include "StdAfx.h"
-
-
 #include "Level.h"
 #include "level_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 //-----------------------------------------------------------------------------
 // static level sounds
@@ -12,7 +11,7 @@ void SStaticSound::Load(IReader& F)
 	R_ASSERT				(F.find_chunk(0));
 	xr_string				wav_name;
 	F.r_stringZ				(wav_name);
-	m_Source.create			(wav_name.c_str(),st_Effect,sg_SourceType);
+	m_Source.create			(wav_name.c_str(),st_Effect, ESoundTypes::SOUND_TYPE_WORLD_AMBIENT);
 	F.r_fvector3			(m_Position);
 	m_Volume				= F.r_float();
 	m_Freq					= F.r_float();
@@ -29,7 +28,7 @@ void SStaticSound::Load(IReader& F)
 void SStaticSound::Update(u32 game_time, u32 global_time)
 {
 	if ((0==m_ActiveTime.x)&&(0==m_ActiveTime.y)||((int(game_time)>=m_ActiveTime.x)&&(int(game_time)<m_ActiveTime.y))){
-		if (0==m_Source._feedback()){
+		if (!m_Source.is_playing()){
 			if ((0==m_PauseTime.x)&&(0==m_PauseTime.y)){    
 				m_Source.play_at_pos	(0,m_Position,sm_Looped);
 				m_Source.set_volume		(m_Volume);
@@ -55,7 +54,7 @@ void SStaticSound::Update(u32 game_time, u32 global_time)
 				m_Source.stop_deffered();
 		}
 	}else{
-		if (0!=m_Source._feedback())
+		if (!m_Source.is_playing())
 			m_Source.stop_deffered();
 	}
 }
@@ -111,8 +110,7 @@ void SMusicTrack::Play()
 
 BOOL SMusicTrack::IsPlaying()
 {
-	BOOL  ret = (nullptr!=m_SourceStereo._feedback());
-	return ret;
+	return m_SourceStereo.is_playing();
 }
 
 void SMusicTrack::SetVolume(float volume)
@@ -209,18 +207,14 @@ void CLevelSoundManager::Update()
 				
 				if( T.in(game_time) )
 					indices.push_back	(k);
-/*
-				if ((0==T.m_ActiveTime.x) && (0==T.m_ActiveTime.y)||
-					((int(game_time)>=T.m_ActiveTime.x)&&(int(game_time)<T.m_ActiveTime.y)))
-					indices.push_back	(k);
-*/
 			}
 			if (!indices.empty())
 			{
 				u32 idx			= Random.randI((u32) indices.size());
 				m_CurrentTrack	= indices[idx];
 				SMusicTrack& T	= m_MusicTracks[m_CurrentTrack];
-				T.Play			();
+				if (!T.IsPlaying())
+					T.Play();
 #ifdef DEBUG
 				Msg("- Play music track: %s", T.m_DbgName.c_str());
 #endif

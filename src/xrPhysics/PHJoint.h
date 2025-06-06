@@ -10,41 +10,40 @@ class CPHJoint:
 	public CPhysicsJoint,
 	public cphysics_scripted
 {
-///////////////////////////////////////////////////////
-				u16									m_bone_id																								;
-				CPHElement							*pFirst_element																							;
-				CPHElement							*pSecond_element																						;
-				CODEGeom							*pFirstGeom																								;
-			/////////////////////////////////////////////////////////
-				CPHShell							*pShell																									;
-				dJointID							m_joint																									;
-				dJointID							m_joint1																								;
-				CPhysicsJoint						**m_back_ref																							;					
-				CPHJointDestroyInfo					*m_destroy_info																							;
-				float								m_erp																									;			//joint erp
-				float								m_cfm																									;			//joint cfm
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	struct SPHAxis {
-			float					high							;						//high limit
-			float					low								;						//law limit
-			float					zero							;						//zero angle position
-			float					erp								;						//limit erp
-			float					cfm								;						//limit cfm
-			eVs  					vs								;						//coordinate system 
-			float					force							;						//max force
-			float					velocity						;						//velocity to achieve
-			Fvector					direction						;						//axis direction
-		IC 	void 					set_limits						(float h, float l)												{high=h; low=l			;}
-		IC 	void 					set_direction					(const Fvector& v)												{direction.set(v)		;}
-		IC 	void 					set_direction					(const float x,const float y,const float z)						{direction.set(x,y,z)	;}
-		IC 	void 					set_param						(const float e,const float c)											{erp=e;cfm=c	;}	
-		   	void					set_sd_factors					(float sf,float df,enumType jt)															;
-									SPHAxis							();
+	struct SPHAxis 
+	{
+		float high;				//high limit
+		float low;				//law limit
+		float zero;				//zero angle position
+		float erp;				//limit erp
+		float cfm;				//limit cfm
+		float force;			//max force
+		float velocity;			//velocity to achieve
+		Fvector direction;		//axis direction
+		eVs vs;				//coordinate system 
+
+		IC 	void set_limits(float h, float l) { high = h; low = l; }
+		IC 	void set_direction(const Fvector& v) { direction.set(v); }
+		IC 	void set_direction(const float x, const float y, const float z) { direction.set(x, y, z); }
+		IC 	void set_param(const float e, const float c) { erp = e; cfm = c; }
+		    void set_sd_factors(float sf, float df, enumType jt);
+		SPHAxis();
 	};
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				xr_vector<SPHAxis>		axes																																																												;
-				Fvector					anchor																																																												;
-				eVs						vs_anchor																																																											;
+
+	CPHElement* pFirst_element;
+	CPHElement* pSecond_element;
+	CODEGeom* pFirstGeom;
+	CPHShell* pShell;
+	dJointID m_joint;
+	dJointID m_joint1;
+	CPhysicsJoint** m_back_ref;
+	CPHJointDestroyInfo* m_destroy_info;
+	float m_erp;			//joint erp
+	float m_cfm;			//joint cfm
+	xr_vector<SPHAxis>		axes;
+	Fvector					anchor;
+	eVs						vs_anchor;
+	u16 m_bone_id;
 	xrCriticalSection JointCS;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////																						
 				void 					CreateBall					()																																																						;
@@ -131,11 +130,6 @@ private:
 	virtual	iphysics_scripted			&get_scripted				() { return *this ;}
 public:
 };
-
-
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 IC void own_axis(const Fmatrix& m,Fvector& axis){

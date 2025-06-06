@@ -234,16 +234,10 @@ protected:
     GameMtlPairVec		material_pairs_rt;
 
 public:
-	CGameMtlLibrary		();
-	~CGameMtlLibrary	()
-	{
-		/*
-    	R_ASSERT		(0==material_pairs_rt.size());
-    	R_ASSERT		(0==material_pairs.size());
-    	R_ASSERT		(0==materials.size());
-		*/
-    }
-	IC void				Unload			()
+    CGameMtlLibrary();
+    ~CGameMtlLibrary() = default;
+
+    IC void Unload()
 	{
 		material_count	= 0;
 		material_pairs_rt.clear();
@@ -255,29 +249,30 @@ public:
 			xr_delete	(*p_it);
 		material_pairs.clear();
 	}
+
     // material routine
-    IC GameMtlIt 		GetMaterialIt	(LPCSTR name)
+    IC GameMtlIt GetMaterialIt(LPCSTR name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
-            if (0==_strcmpi(*(*it)->m_Name,name)) return it;
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+            if (0 == _strcmpi(*(*it)->m_Name, name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialIt	(shared_str& name)
+    IC GameMtlIt GetMaterialIt(shared_str& name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
             if (name.equal((*it)->m_Name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialItByID(int id)
+    IC GameMtlIt GetMaterialItByID(int id)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
-            if ((*it)->ID==id) return it;
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+            if ((*it)->ID == id) return it;
         return materials.end();
     }
-	IC u32				GetMaterialID	(LPCSTR name)
+    IC u32 GetMaterialID(LPCSTR name)
     {
-    	GameMtlIt it	= GetMaterialIt	(name);
-        return (it==materials.end())?GAMEMTL_NONE_ID:(*it)->ID;
+        GameMtlIt it = GetMaterialIt(name);
+        return (it == materials.end()) ? GAMEMTL_NONE_ID : (*it)->ID;
     }
 #ifdef _EDITOR
 	// editor

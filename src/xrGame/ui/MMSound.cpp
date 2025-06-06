@@ -41,23 +41,19 @@ bool CMMSound::check_file(LPCSTR fname){
 
 void CMMSound::whell_Play()
 {
-
-	if (m_whell._handle() && !m_whell._feedback())
+	if (m_whell.handle())
 		m_whell.play(nullptr, sm_Looped | sm_Intro);
-
 }
 
 void CMMSound::whell_Stop(){
-	if (m_whell._feedback())
+	if (m_whell.is_playing())
 		m_whell.stop();
 }
 
 void CMMSound::whell_Click()
 {
-
-   	if (m_whell_click._handle())
+   	if (m_whell_click.handle())
 		m_whell_click.play(nullptr, sm_Intro);
-
 }
 
 void CMMSound::whell_UpdateMoving(float frequency){
@@ -83,7 +79,7 @@ void CMMSound::music_Update()
 {
 	if (Device.Paused()) return;
 
-	if ( 0==m_music_stereo._feedback() )
+	if (!m_music_stereo.is_playing() )
 		music_Play();
 }
 

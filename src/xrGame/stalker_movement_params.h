@@ -32,7 +32,8 @@ namespace smart_cover {
 class CGameObject;
 class stalker_movement_manager_smart_cover;
 
-class stalker_movement_params {
+class stalker_movement_params
+{
 public:
 	typedef MonsterSpace::EBodyState					EBodyState;
 	typedef MonsterSpace::EMovementType					EMovementType;
@@ -93,12 +94,13 @@ public:
 	EDetailPathType				m_detail_path_type;
 
 private:
-	Fvector						m_desired_position_impl;
-	Fvector const*				m_desired_position;
-	Fvector						m_desired_direction_impl;
 	Fvector const*				m_desired_direction;
+	Fvector const*				m_desired_position;
+	Fvector const*				m_cover_fire_position;
+	Fvector						m_desired_position_impl;
+	Fvector						m_desired_direction_impl;
+	Fvector						m_cover_fire_position_impl;
 
-private:
 	shared_str					m_cover_id;
 	cover_type const*			m_cover;
 
@@ -106,14 +108,11 @@ private:
 	loophole_type const*		m_cover_loophole;
 
 	CGameObject const*			m_cover_fire_object;
-	Fvector						m_cover_fire_position_impl;
-	Fvector const*				m_cover_fire_position;
+	mutable u32					m_last_selection_time;
+	mutable bool				m_selected_loophole_actual;
 
-private:
 	stalker_movement_manager_smart_cover*	m_manager;
 	mutable loophole_type const*			m_cover_selected_loophole;
-	mutable u32								m_last_selection_time;
-	mutable bool							m_selected_loophole_actual;
 }; // class stalker_movement_params
 
 #include "stalker_movement_params_inline.h"

@@ -14,6 +14,7 @@ option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" OFF)
+option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 
 # CI trash
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
@@ -28,6 +29,7 @@ set(SDL_SHARED ON)
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
+option(DEVIXRAY_ENABLE_STEAMAUDIO "Enable HRTF and Reverb from SteamAudio library" OFF)
 
 # CXX options
 set(CMAKE_CXX_STANDARD 23)
