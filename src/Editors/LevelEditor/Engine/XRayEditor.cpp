@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "XRayEditor.h"
-
 XRayEditor::XRayEditor()
 {
 	Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);

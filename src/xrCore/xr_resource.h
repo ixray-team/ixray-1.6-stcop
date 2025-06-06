@@ -43,7 +43,7 @@ class resptr_base
 {
 protected:
 	T *					p_;
-protected:
+public:
 	// ref-counting
 	void				_inc	()									{	if (0==p_) return;	p_->dwReference++;														}
 	void				_dec	()									{	if (0==p_) return;	p_->dwReference--; if (0==p_->dwReference) xr_delete(p_);				}
