@@ -499,7 +499,7 @@ CRenderTarget::CRenderTarget()
 	{
 		// NOTE(vertver): no need for R16G16B16A16F since we already use gamma space which
 		// corrects float precision error for R11G11B10F 
-		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT);
+		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT);
 		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT);
 		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT);
