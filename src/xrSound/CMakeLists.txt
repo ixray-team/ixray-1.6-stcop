@@ -14,31 +14,22 @@ file(GLOB_RECURSE SND_SOURCE_CORE_FILES
     "SoundRender_Core*.cpp"
     "SoundRender_Core*.h"
 )
-file(GLOB_RECURSE SND_SOURCE_TRG_FILES
-    "SoundRender_Target*.cpp"
-    "SoundRender_Target*.h"
-)
-file(GLOB_RECURSE SND_SOURCE_EMIT_FILES
-    "SoundRender_Emitter*.cpp"
-    "SoundRender_Emitter*.h"
-)
-file(GLOB_RECURSE SND_SOURCE_REC_FILES
-    "Recorder/*.*"
-)
 file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
     "ogg_utils.*"
     "OpenALDeviceList.*"
     "guids.*"
     "cl_intersect.*"
+    "pffft.*"
 )
+file(GLOB_RECURSE SND_SOURCE_CORE_RECORD_FILES "Recorder/*.*")
+file(GLOB_RECURSE SND_SOURCE_CORE_NEW_FILES "New/*.*")
 
 # Source groups
 source_group("kernel" FILES ${SND_SOURCE_ALL_FILES})
 source_group("render" FILES ${SND_SOURCE_RENDER_FILES})
 source_group("core" FILES ${SND_SOURCE_CORE_FILES})
-source_group("target" FILES ${SND_SOURCE_TRG_FILES})
-source_group("emitter" FILES ${SND_SOURCE_EMIT_FILES})
-source_group("recorder" FILES ${SND_SOURCE_REC_FILES})
+source_group("recorder" FILES ${SND_SOURCE_CORE_RECORD_FILES})
+source_group("backend" FILES ${SND_SOURCE_CORE_NEW_FILES})
 source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 
 # Apply list
