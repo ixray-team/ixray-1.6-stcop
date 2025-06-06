@@ -1,5 +1,7 @@
 #pragma once
+#ifndef IMGUI_API
 #include <imgui.h>
+#endif
 
 class ENGINE_API CImGuiManager
 {
