@@ -69,7 +69,10 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
     DSP_CalculateRelativePosition(P, D, N, obj_pos, pos, distance);
 
     // Attenuation
-    float att = distances.x / (psSoundRolloff * distance);
+    distance = std::clamp(distance, distances.x, distances.y);
+    float att = distances.x / (distances.x + psSoundRolloff * (distance - distances.x));
+
+    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y-distances.x) * 2), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
 
     // Panning

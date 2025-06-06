@@ -324,7 +324,7 @@ IC void	ref_sound::set_range(float min, float max)
 IC void	ref_sound::set_volume(float vol)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::VolumePerChannel, Fvector(vol, vol, vol));
+		XRay::Sound::Mixer::SetVolume(slot(), vol);
 	}
 }
 

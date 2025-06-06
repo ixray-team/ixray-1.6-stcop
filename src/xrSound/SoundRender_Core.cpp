@@ -490,8 +490,6 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	}
 
 	Mixer::Play(S.slot(), mixer_flags, &S, delay);
-	Fvector volume = { 1.0f, 1.0f, 1.0f };
-	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::VolumePerChannel, volume);
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
 	S._p->g_type = (S._p->g_type == sg_SourceType) ? S._p->g_type : XRay::Sound::Mixer::GetGameType(S.slot());
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);

@@ -61,6 +61,7 @@ enum class sound_cmd_id : u16
     pause_all,
     resume_all,
     update_parameter,
+    set_volume
 };
 
 struct sound_command
@@ -490,12 +491,13 @@ Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
         return false;
     }
 
-    if (slot.flags & (u32)Mixer::Flags::Spatial) {
+    auto& source = mixer.sources.at(slot.sound_name.c_str());
+    if (source.pub.channels_count == 1 && slot.flags & (u32)Mixer::Flags::Spatial) {
         // Check range
         Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
         Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
         float dist = mixer.P.distance_to(pos);
-        if (dist > distances.y) {
+        if (dist > distances.y * 2) {
             if (occ_volume) *occ_volume = 0.0f;
             return false;
         }
@@ -779,7 +781,9 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
     R_ASSERT(iplBinauralEffectApply(hrtf_slot.effect, &binaural_params, &hrtf_slot.buf_desc, &out_buf) == IPL_STATUS_SUCCESS);
 
     // Attenuation
-    float att = distances.x / (psSoundRolloff * distance);
+    distance = std::clamp(distance, distances.x, distances.y);
+    float att = distances.x / (distances.x + psSoundRolloff * (distance - distances.x));
+    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x) * 2), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
         for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
@@ -857,12 +861,12 @@ Snd_MixerRenderCallback(float* buffer)
         }
 
         // Apply final volumes
-        float volume_final = occ_volume * volumes.x * (is_music ? mixer.music_volume : mixer.effect_volume);
+        float volume_final = occ_volume * volumes.x * volumes.y * (is_music ? mixer.music_volume : mixer.effect_volume);
         begin_factor *= volume_final;
         end_factor *= volume_final;
 
         // Spatial processing
-        if (slot.flags & (u32)Mixer::Flags::Spatial) {
+        if (slot.flags & (u32)Mixer::Flags::Spatial && source.pub.channels_count == 1) {
 #ifndef DISABLE_STEAM_AUDIO
             if (psSoundFlags.is(ss_HRTF) && mixer.ipl_hrtf_enabled) {
                 Snd_PhononSpatialProcess(process_buffer, i + 1);
@@ -918,12 +922,11 @@ Snd_MixerRenderCallback(float* buffer)
 
 #ifndef DISABLE_STEAM_AUDIO
     // Reverb mixing
-    if (psSoundFlags.is(ss_EFX))
-    {
-        for (auto& zone : mixer.zones)
-        {
+    if (psSoundFlags.is(ss_EFX)) {
+        for (auto& zone : mixer.zones) {
             float* reverb_buffer[SND_CHANNEL_COUNT] = {};
             float* bus_buffer[SND_CHANNEL_COUNT] = {};
+
             for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
                 reverb_buffer[ch] = zone.data[ch];
                 bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
@@ -1194,7 +1197,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
             auto& source = mixer.sources.at(cmd.string_storage.c_str());
             memset(mixer.slots[cmd.slot - 1].parameters, 0, sizeof(mixer.slots[cmd.slot - 1].parameters));
             memset(mixer.slots[cmd.slot - 1].history, 0, sizeof(mixer.slots[cmd.slot - 1].history));
-            mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, source.pub.volume, source.pub.volume);
+            mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
             mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
             mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Pitch] = Fvector(1.0f, 1.0f, 1.0f);
             mixer.slots[cmd.slot - 1].position = 0;
@@ -1274,6 +1277,9 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
         } break;
         case sound_cmd_id::update_parameter: {
             mixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector(*(double*)&cmd.param1, *(double*)&cmd.param2, *(double*)&cmd.param3);
+        } break;
+        case sound_cmd_id::set_volume: {
+            mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&cmd.param1;
         } break;
         }
     }
@@ -1380,9 +1386,9 @@ Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, f
     });
 
     if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector(*pitch));
-    if (volume) Mixer::UpdateParameter(slot_idx, ParameterId::VolumePerChannel, Fvector(*volume));
     if (distance) Mixer::UpdateParameter(slot_idx, ParameterId::DistanceRange, *distance);
     if (pos) Mixer::UpdateParameter(slot_idx, ParameterId::Position, *pos);
+    if (volume) Mixer::SetVolume(slot_idx, *volume);
 }
 
 void 
@@ -1418,6 +1424,16 @@ Mixer::UpdateParameter(u32 slot, ParameterId parameter, Fvector value)
 
     double p0 = value.x, p1 = value.y, p2 = value.z;
     mixer.cmd.emplace_back(sound_command{.slot=slot,.id=sound_cmd_id::update_parameter,.param0=(u16)parameter,.param1=*(u64*)&p0,.param2=*(u64*)&p1,.param3=*(u64*)&p2});
+}
+
+void 
+Mixer::SetVolume(u32 slot, double volume)
+{
+    if (slot == 0) {
+        return;
+    }
+
+    mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
 }
 
 xr_vector<sound_slot_state>&
