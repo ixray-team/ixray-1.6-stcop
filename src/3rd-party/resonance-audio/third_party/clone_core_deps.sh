@@ -38,5 +38,3 @@ git_clone_if_not_exist "googletest" "https://github.com/google/googletest.git" "
 # Install CMake Android/iOS toolchain support (optional for Android/iOS builds)
 git_clone_if_not_exist "android-cmake" "https://github.com/taka-no-me/android-cmake.git" "master"
 git_clone_if_not_exist "ios-cmake" "https://github.com/leetal/ios-cmake" "master"
-
-
