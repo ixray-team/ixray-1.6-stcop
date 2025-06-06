@@ -48,7 +48,7 @@
 
 using namespace XRay::Sound;
 
-#define DISABLE_STEAM_AUDIO
+//#define DISABLE_STEAM_AUDIO
 
 enum class sound_cmd_id : u16
 {
@@ -767,6 +767,8 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
     Fvector relative_pos;
     float distance;
     DSP_CalculateRelativePosition(mixer.P, mixer.D, mixer.N, pos, relative_pos, distance);
+    distance = std::max(distance, 0.1f);
+    relative_pos.normalize();
 
     // HRTF
     IPLBinauralEffectParams binaural_params = { 
@@ -862,7 +864,7 @@ Snd_MixerRenderCallback(float* buffer)
         // Spatial processing
         if (slot.flags & (u32)Mixer::Flags::Spatial) {
 #ifndef DISABLE_STEAM_AUDIO
-            if (mixer.ipl_hrtf_enabled) {
+            if (psSoundFlags.is(ss_HRTF) && mixer.ipl_hrtf_enabled) {
                 Snd_PhononSpatialProcess(process_buffer, i + 1);
             } else 
 #endif
@@ -916,21 +918,25 @@ Snd_MixerRenderCallback(float* buffer)
 
 #ifndef DISABLE_STEAM_AUDIO
     // Reverb mixing
-    for (auto& zone : mixer.zones) {
-        float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-        float* bus_buffer[SND_CHANNEL_COUNT] = {};
-        for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-            reverb_buffer[ch] = zone.data[ch];
-            bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
+    if (psSoundFlags.is(ss_EFX))
+    {
+        for (auto& zone : mixer.zones)
+        {
+            float* reverb_buffer[SND_CHANNEL_COUNT] = {};
+            float* bus_buffer[SND_CHANNEL_COUNT] = {};
+            for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+                reverb_buffer[ch] = zone.data[ch];
+                bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
 
-            IPLAudioBuffer reverb_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch] };
-            IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
-            IPLReflectionEffectParams params = Snd_EngineToIPLParams(zone.settings);
+                IPLAudioBuffer reverb_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch] };
+                IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
+                IPLReflectionEffectParams params = Snd_EngineToIPLParams(zone.settings);
 
-            iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
+                iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
+            }
+
+            DSP_MixBuffer(bus_buffer, process_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
         }
-
-        DSP_MixBuffer(bus_buffer, process_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
     }
 #endif
 

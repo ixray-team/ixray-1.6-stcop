@@ -39,6 +39,7 @@ struct sound_backend_state
     u64 read_position;
     u64 write_position;
     SDL_AudioStream* stream;
+    SDL_AudioDeviceID device;
     HANDLE sound_thread;
     float* buffer;
     float* output_buffer;
@@ -56,15 +57,18 @@ Snd_Initialize()
     spec.format = SDL_AUDIO_F32;
     spec.freq = SND_SAMPLERATE;
 
-    backend.stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
+    backend.device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+    backend.stream = SDL_CreateAudioStream(&spec, &spec);
+
     R_ASSERT2(backend.stream, make_string<const char*>("Couldn't create audio stream: %s", SDL_GetError()));
+    SDL_BindAudioStream(backend.device, backend.stream);
 
     backend.is_running = TRUE;
     backend.buffer_frame_count = std::max((u32)SND_BLOCKSIZE, (u32)MEM_ALIGN(backend.device_frame_count, SND_BLOCKSIZE));
     backend.buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
     backend.output_buffer = xr_alloc<float>(backend.buffer_frame_count * SND_CHANNEL_COUNT);
     memset(backend.buffer, 0, backend.buffer_frame_count * SND_CHANNEL_COUNT);
-    R_ASSERT2(SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(backend.stream)), 
+    R_ASSERT2(SDL_ResumeAudioDevice(backend.device),
         make_string<const char*>("Couldn't resume audio stream: %s", SDL_GetError()));
 }
 
@@ -73,6 +77,7 @@ Snd_Shutdown()
 {
     xr_free(backend.buffer);
     SDL_DestroyAudioStream(backend.stream);
+    SDL_CloseAudioDevice(backend.device);
 }
 
 static void
@@ -132,6 +137,37 @@ void XRay::Sound::Backend::Initialize(audio_render_callback render_callback, aud
     backend.render_callback = render_callback;
     backend.precache_callback = precache_callback;
     backend.sound_thread = thread_spawn(Snd_ThreadProc, "Sound Backend Thread", 0, NULL);
+}
+
+void XRay::Sound::Backend::ChangeDevice(u32 DeviceID)
+{
+    if (!backend.is_running) {
+        return;
+    }
+    
+    u32 OldDeviceID = SDL_GetAudioStreamDevice(backend.stream);
+    if (OldDeviceID == DeviceID)
+    {
+        return;
+    }
+
+    SDL_PauseAudioDevice(OldDeviceID);
+
+    SDL_AudioSpec spec = { };
+    spec.channels = SND_CHANNEL_COUNT;
+    spec.format = SDL_AUDIO_F32;
+    spec.freq = SND_SAMPLERATE;
+    SDL_AudioDeviceID NewDeviceLogicalID = SDL_OpenAudioDevice(DeviceID, &spec);
+
+    SDL_UnbindAudioStream(backend.stream);
+    if (!SDL_BindAudioStream(NewDeviceLogicalID, backend.stream))
+    {
+        Msg("!Error change device: %s", SDL_GetError());
+        SDL_BindAudioStream(OldDeviceID, backend.stream);
+        return;
+    }
+
+    SDL_CloseAudioDevice(OldDeviceID);
 }
 
 void XRay::Sound::Backend::Shutdown()

@@ -33,5 +33,6 @@
 namespace XRay::Sound::Backend
 {
     XRSOUND_API void Initialize(audio_render_callback render_callback, audio_precache_callback precache_callback);
+    XRSOUND_API void ChangeDevice(u32 DeviceID);
     XRSOUND_API void Shutdown();
 }
