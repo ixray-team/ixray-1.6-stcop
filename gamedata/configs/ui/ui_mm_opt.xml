@@ -599,6 +599,14 @@
             <options_item entry="snd_efx" group="mm_opt_sound" depend="snd"/>
         </check_eax>
 
+        <cap_check_hrtf x="26" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">HRTF</text>
+        </cap_check_hrtf>
+        <check_hrtf x="143" y="0.5" width="35" stretch="1" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="snd_hrtf" group="mm_opt_sound" depend="snd"/>
+        </check_hrtf>
+
         <cap_check_dynamic_music x="40" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_dynamic_music</text>
         </cap_check_dynamic_music>

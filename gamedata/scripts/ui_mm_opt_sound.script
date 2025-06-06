@@ -45,5 +45,10 @@ function opt_sound:InitControls(x, y, xml, handler)
     xml:InitCheck("tab_sound:check_eax", _st)
     addControl(_st)
 
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_sound:cap_check_hrtf", _st)
+    xml:InitCheck("tab_sound:check_hrtf", _st)
+    addControl(_st)
+
 
 end
