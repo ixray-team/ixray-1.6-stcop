@@ -147,10 +147,10 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Demo record", nullptr, &States[static_cast<u8>(EditorUI::Game_DemoRecord)]);
 				if (ImGui::BeginMenu("Editors##InGame"))
 				{
-				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
-				ImGui::MenuItem("Car Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_CarEditor)]);
-				ImGui::MenuItem("PPE Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_PostProcessEffectorEditor)]);
-				ImGui::SetItemTooltip("Post-Process Effector");
+					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
+					ImGui::MenuItem("Car Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_CarEditor)]);
+					ImGui::MenuItem("PPE Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_PostProcessEffectorEditor)]);
+					ImGui::SetItemTooltip("Post-Process Effector");
 
 					ImGui::MenuItem("Texture Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_TextureEditor)]);
 					ImGui::MenuItem("Quest Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_QuestEditor)]);
@@ -165,6 +165,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 
 			if (ImGui::BeginMenu("Debug"))
 			{
+				ImGui::MenuItem("Audio Debug", nullptr, &States[static_cast<u8>(EditorUI::Audio_General)]);
 				ImGui::MenuItem("UI Debug", nullptr, &States[static_cast<u8>(EditorUI::UI_General)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);

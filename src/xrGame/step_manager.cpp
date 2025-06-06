@@ -441,6 +441,8 @@ void CStepManager::PlayRainStep(const bool bHudView)
 		pos = zero_vel;
 	}
 	const int count = m_rain_steps.size();
+	rainVolume -= 0.33f;
+
 	m_rain_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
 }
 

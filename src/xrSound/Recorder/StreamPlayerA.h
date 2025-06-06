@@ -2,45 +2,38 @@
 #include "../xrCore/Containers/RingBufferEx.h"
 #include "IStreamPlayer.h"
 
-struct ALCcontext;
+struct SDL_AudioSpec;
+struct SDL_AudioDeviceStream;
 struct OpusDecoder;
 
 class CStreamPlayerA : public IStreamPlayer
 {
 public:
-	CStreamPlayerA(u32 sampleRate, int format, ALCcontext* context);
+	CStreamPlayerA(int sampleRate);
 	~CStreamPlayerA();
 
-	virtual void PushToPlay(const void* data, int count);
-	virtual bool IsPlaying();
+	virtual void PushToPlay(const void* data, int count) override;
+	virtual bool IsPlaying() override;
+	virtual void Update() override;
 
-	virtual void Update();
-
-	virtual void SetDistance(float value);
-	virtual void SetPosition(const Fvector& pos);
-private:
-	void UpdateVolume();
+	virtual void SetDistance(float value) override;
+	virtual void SetPosition(const Fvector& pos) override;
 
 private:
+	void UpdateVolume(float* buffer, int samples);
 
+private:
 	static constexpr int RING_BUFFER_SIZE = 262144;
-	CRingBuffer<s16, RING_BUFFER_SIZE> m_ringBuffer;
+	CRingBuffer<float, RING_BUFFER_SIZE> m_ringBuffer;
 
-	static constexpr int NUM_BUFFERS = 16;
-	u32 m_buffers[NUM_BUFFERS];
+	SDL_AudioStream* m_audioStream = nullptr;
+	SDL_AudioSpec m_spec{};
 
-	xr_deque<u32> m_freeBuffers;
+	int m_sampleRate = 48000;
 
-	u32 m_sampleRate;
-	int m_format;
-
-	ALCcontext* m_pContext;
-	u32 m_source;
-
-	OpusDecoder* m_pOpusDecoder;
+	OpusDecoder* m_pOpusDecoder = nullptr;
 
 	Fvector m_position{ 0, 0, 0 };
-
-	float m_distance = 0;
+	float m_distance = 0.f;
 	bool m_isRelative = false;
 };

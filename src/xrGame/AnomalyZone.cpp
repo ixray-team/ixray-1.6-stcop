@@ -121,8 +121,7 @@ void CAnomalyZone::UpdateSoundsPosition(xr_vector<ref_sound>& soundsArray, const
 	for (ref_sound& sound : soundsArray)
 	{
 		if (sound.is_playing()) {
-			// if (sound.slot())
-			if (sound._feedback())
+			if (sound.slot())
 			{
 				sound.set_position(pos);
 			}

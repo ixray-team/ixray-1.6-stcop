@@ -53,8 +53,7 @@ void CRandomSoundEmmiter::UpdatePosition(const Fvector& pos)
 {
 	for (ref_sound& sound : soundsArray)
 	{
-		if (sound.handle() && sound.is_playing() && sound._feedback())
-		{
+		if (sound.handle() &&sound.is_playing() && sound.slot()) {
 			sound.set_position(pos);
 		}
 	}
