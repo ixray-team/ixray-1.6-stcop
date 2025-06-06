@@ -81,24 +81,22 @@ private:
 	KEY_POINTS					m_detail_key_points;
 #endif // #ifdef DEBUG
 
-private:
 	bool						m_saved_state;
+	bool						m_failed_to_build_path;
 	xr_vector<u32>				m_level_path;
-	u32							m_detail_current_index;
 	xr_vector<STravelPathPoint>	m_detail_path;
+	u32							m_detail_current_index;
 	u32							m_detail_last_patrol_point;
 	obstacles_query				m_saved_current_iteration;
 	const CGameObject*			m_last_query_object;
 	doors::actor*				m_doors_actor;
 
-private:
 	CRestrictedObjectObstacle	*m_restricted_object;
 	static_obstacles_avoider	m_static_obstacles;
 	dynamic_obstacles_avoider	m_dynamic_obstacles;
 	u32							m_last_dest_vertex_id;
 	u32							m_last_fail_time;
 	xr_vector<u32>				m_temp_path;
-	bool						m_failed_to_build_path;
 }; // class stalker_movement_manager_obstacles
 
 #include "stalker_movement_manager_obstacles_inline.h"

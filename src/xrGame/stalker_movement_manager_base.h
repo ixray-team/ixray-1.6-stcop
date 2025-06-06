@@ -26,7 +26,9 @@ class CAI_Stalker;
 class CStalkerVelocityCollection;
 class CGameObject;
 
-class stalker_movement_manager_base : public CMovementManager {
+class stalker_movement_manager_base : 
+	public CMovementManager 
+{
 private:
 	typedef CMovementManager						inherited;
 

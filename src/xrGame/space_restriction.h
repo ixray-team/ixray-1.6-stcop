@@ -48,9 +48,9 @@ private:
 	typedef xr_vector<CFreeInRestriction>	FREE_IN_RESTRICTIONS;
 
 protected:
-	bool							m_applied;
 	shared_str						m_out_restrictions;
 	shared_str						m_in_restrictions;
+	bool							m_applied;
 	xr_vector<u32>					m_temp;
 	CSpaceRestrictionManager		*m_space_restriction_manager;
 	CBaseRestrictionPtr				m_out_space_restriction;
