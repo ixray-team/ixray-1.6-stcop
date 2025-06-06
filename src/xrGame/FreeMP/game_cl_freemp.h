@@ -9,7 +9,7 @@ class game_cl_freemp :public game_cl_mp
 private:
 	typedef game_cl_mp inherited;
 	CUIGameFMP* m_game_ui;
-	//CVoiceChat* m_pVoiceChat = nullptr;
+	CVoiceChat* m_pVoiceChat = nullptr;
 
 public:
 	game_cl_freemp();

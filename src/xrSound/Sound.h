@@ -275,8 +275,7 @@ public:
 
 	virtual void					objects_relcase			( CObject** objects, int count)															= 0;
 	virtual const Fvector&			listener_position		()																						= 0;
-	//virtual ISoundVoiceChat*		GetSoundVoiceChat		()																						= 0;
-//#ifdef __BORLANDC__
+	virtual ISoundVoiceChat*		GetSoundVoiceChat		()																						= 0;
 	virtual SoundEnvironment_LIB*	get_env_library			()																						= 0;
 	virtual void					refresh_env_library		()																						= 0;
 	virtual void					set_user_env			(CSound_environment* E)																	= 0;

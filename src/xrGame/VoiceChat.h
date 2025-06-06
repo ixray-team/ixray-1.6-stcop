@@ -1,6 +1,5 @@
 #pragma once
 #include "../../xrUI/ui_defs.h"
-#if 0
 #include "../xrSound/Recorder/SoundVoiceChat.h"
 #include "VoiceSender.h"
 
@@ -48,7 +47,7 @@ private:
 	void CheckAndClearPlayers(SOUND_PLAYERS& players);
 
 private:
-	u8 m_buffer[1024];
+	float m_buffer[1024];
 
 	ISoundVoiceChat* m_pSoundVoiceChat = nullptr;
 	ISoundRecorder* m_pRecorder = nullptr;
@@ -60,4 +59,3 @@ private:
 
 	ui_shader m_voiceIndicatorShader;
 };
-#endif
