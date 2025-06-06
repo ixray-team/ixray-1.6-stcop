@@ -3,7 +3,7 @@
 #include "UISoundEditorForm.h"
 #include "SoundManager.h"
 #include "../../../xrSound/stdafx.h"
-#include "../../../xrSound/SoundRender_Source.h"
+#include "../../../xrSound/Sound.h"
 
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>

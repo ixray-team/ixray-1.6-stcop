@@ -34,10 +34,8 @@ CScriptSound::~CScriptSound		() noexcept(false)
 
 Fvector CScriptSound::GetPosition() const
 {
-	VERIFY(m_sound._handle());
-	CSound_params l_tpSoundParams = m_sound.get_params();
+	CSound_params	l_tpSoundParams = m_sound.get_params();
 	return			(l_tpSoundParams.position);
-
 }
 
 void CScriptSound::Play			(CScriptGameObject *object, float delay, int flags)

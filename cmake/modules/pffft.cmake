@@ -2,8 +2,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     pffft
-    GIT_REPOSITORY https://bitbucket.org/jpommier/pffft.git
-    GIT_TAG master
+    URL https://bitbucket.org/jpommier/pffft/get/master.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 
 FetchContent_MakeAvailable(pffft)
