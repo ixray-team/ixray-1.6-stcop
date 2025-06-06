@@ -40,7 +40,7 @@
 #define ENGINE_API
 #include "../xrEngine/xr_object.h"
 
-#define SND_HRTF_SLOT_COUNT (256)
+#define SND_HRTF_SLOT_COUNT (512)
 #define DEFAULT_SLOT_COUNT (2048)
 #define CACHE_LINES_COUNT (2048)
 #define CACHE_LINE_WIDTH (9)
@@ -792,7 +792,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 
     // Attenuation
     distance = std::clamp(distance, distances.x, distances.y);
-    float att = 0.5f + ((distances.x / (distances.x + psSoundRolloff * (distance - distances.x)) * 0.5f));
+    float att = distances.x / (psSoundRolloff * distance);
     att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x) * 2), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -851,7 +851,11 @@ Snd_MixerRenderCallback(float* buffer)
 
         Snd_ProcessSlot(i + 1, process_buffer);
 
-        auto& source = mixer.sources.at(mixer.slots[i].sound_name.c_str());
+        if (!mixer.sources.contains(mixer.slots[i].sound_name)) {
+            continue;
+        }
+
+        auto& source = mixer.sources.at(mixer.slots[i].sound_name);
         auto& slot = mixer.slots[i];
         Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
         Fvector& volumes = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];

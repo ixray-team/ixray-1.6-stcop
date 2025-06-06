@@ -70,7 +70,7 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
 
     // Attenuation
     distance = std::clamp(distance, distances.x, distances.y);
-    float att = 0.5f + ((distances.x / (distances.x + psSoundRolloff * (distance - distances.x)) * 0.5f));
+    float att = distances.x / (psSoundRolloff * distance);
     att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / (distances.y-distances.x), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
 
