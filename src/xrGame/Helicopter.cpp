@@ -380,7 +380,7 @@ void CHelicopter::UpdateCL()
 		//smoke
 		UpdateHeliParticles();
 
-		if(m_brokenSound._feedback())
+		if(m_brokenSound.slot())
 			m_brokenSound.set_position(XFORM().c);
 
 
@@ -410,7 +410,7 @@ void CHelicopter::UpdateCL()
 	}
 #endif
 
-	if(m_engineSound._feedback())
+	if(m_engineSound.slot())
 		m_engineSound.set_position(XFORM().c);
 	
 
