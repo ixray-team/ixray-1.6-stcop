@@ -48,6 +48,8 @@
 
 using namespace XRay::Sound;
 
+#define DISABLE_STEAM_AUDIO
+
 enum class sound_cmd_id : u16
 {
     invalid,
@@ -756,6 +758,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
         return;
     }
 
+#ifndef DISABLE_STEAM_AUDIO
     auto& hrtf_slot = mixer.hrtf_slots[slot.hrtf_slot - 1];
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
         memcpy(hrtf_slot.process_buffer[ch], data[ch], SND_BLOCKSIZE * sizeof(float));
@@ -781,6 +784,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
             data[ch][i] *= att;
         }
     }
+#endif
 }
 
 static void
@@ -857,9 +861,12 @@ Snd_MixerRenderCallback(float* buffer)
 
         // Spatial processing
         if (slot.flags & (u32)Mixer::Flags::Spatial) {
+#ifndef DISABLE_STEAM_AUDIO
             if (mixer.ipl_hrtf_enabled) {
                 Snd_PhononSpatialProcess(process_buffer, i + 1);
-            } else {
+            } else 
+#endif
+            {
                 DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
             }
 
@@ -907,6 +914,7 @@ Snd_MixerRenderCallback(float* buffer)
         process_buffer[i] = _process_buffer[i];
     }
 
+#ifndef DISABLE_STEAM_AUDIO
     // Reverb mixing
     for (auto& zone : mixer.zones) {
         float* reverb_buffer[SND_CHANNEL_COUNT] = {};
@@ -924,6 +932,7 @@ Snd_MixerRenderCallback(float* buffer)
 
         DSP_MixBuffer(bus_buffer, process_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
     }
+#endif
 
     float* master_buffer[SND_CHANNEL_COUNT] = {};
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
