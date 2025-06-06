@@ -184,7 +184,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
 		if (strstr(data, "main_vs_4_0"))	{ c_target = "vs_4_0"; c_entry = "main_vs_4_0"; }
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug)) {
 			flags |= D3DCOMPILE_DEBUG;
@@ -283,7 +283,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
 		if (strstr(data,"main_ps_4_0"))			{ c_target = "ps_4_0"; c_entry = "main_ps_4_0"; }
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug))
 		{
@@ -359,7 +359,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
 		LPCSTR						c_target	= "gs_4_0";
 		LPCSTR						c_entry		= "main";
 
-		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+		DWORD flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 
 		if (Core.ParamsData.test(ECoreParams::renderdoc) || Core.ParamsData.test(ECoreParams::dxdebug))
 		{

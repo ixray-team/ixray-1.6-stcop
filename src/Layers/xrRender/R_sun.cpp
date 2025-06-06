@@ -73,7 +73,7 @@ void CRender::render_sun_cascades()
 
 void CRender::render_sun_cascade(u32 cascade_ind)
 {
-	PROF_EVENT("Render Cascade");
+	GPU_EVENT(render_sun_cascade);
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
 
 	CFrustum					cull_frustum;
@@ -292,7 +292,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	}
 
 	// Fill the database
-	r_dsgraph_render_subspace(pOutdoorSector, &cull_frustum, cull_xform, cull_COP, TRUE);
+	{
+		r_dsgraph_render_subspace(pOutdoorSector, &cull_frustum, cull_xform, cull_COP, TRUE);
+	}
 
 	// Finalize & Cleanup
 	fuckingsun->X.D.combine = cull_xform;
@@ -300,6 +302,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
 	{
+		GPU_EVENT(render_sun_cascade_render);
 		bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 		if (bNormal || bSpecial) {

@@ -471,8 +471,7 @@ void CRender::Render()
 		phase = PHASE_NORMAL;
 	}
 
-	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
-	{
+	if (ps_r_scale_mode > 1 || (ps_r2_aa_type == 3 && Target->rt_Generic_0_prev._get() != nullptr) ) {
 		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
@@ -481,9 +480,7 @@ void CRender::Render()
 		ps_r_taa_jitter.x = 2.0f * ps_r_taa_jitter_full.x / RCache.get_width();
 		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / RCache.get_height();
 		ps_r_taa_jitter.z = float(Device.dwFrame % jitterPhaseCount) / float(jitterPhaseCount) + EPS;
-	}
-	else
-	{
+	} else {
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}

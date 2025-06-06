@@ -69,7 +69,9 @@ void CRenderTarget::phase_combine()
 			}
 			case 2:
 			{
-				phase_gtao();
+				if (s_gtao._get() != nullptr) {
+					phase_gtao();
+				}
 				break;
 			}
 		}
@@ -258,17 +260,17 @@ void CRenderTarget::phase_combine()
 	}
 
 	if(ps_r_scale_mode < 2) {
-		if(ps_r2_aa_type == 1) {
+		if (ps_r2_aa_type == 1) {
 			GPU_EVENT(phase_fxaa);
 			phase_fxaa();
 			RCache.set_Stencil(FALSE);
 		}
-		else if(ps_r2_aa_type == 2) {
+		else if (ps_r2_aa_type == 2 && s_smaa._get() != nullptr) {
 			GPU_EVENT(phase_smaa);
 			phase_smaa();
 			RCache.set_Stencil(FALSE);
 		}
-		else if(ps_r2_aa_type == 3) {
+		else if (ps_r2_aa_type == 3 && s_taa._get() != nullptr) {
 			GPU_EVENT(phase_taa);
 			phase_taa();
 		}
