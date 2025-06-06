@@ -7,6 +7,8 @@
 #include "New/SoundMixer.h"
 #include "New/SoundMixerInternal.h"
 #include "../xrEngine/IRenderable.h"
+#include "Recorder/SoundVoiceChat.h"
+
 using namespace XRay::Sound;
 
 int		psSoundTargets = 256;
@@ -39,20 +41,19 @@ void CSoundRender_Core::debug_draw()
 
 void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N)
 {
-	u32 it;
-
-	if (0 == bReady) {
+	if (!bReady)
+	{
 		return;
 	}
 
 	// Events
 	listenerPos = P;
 	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, m_V, P, D, N);
-	//update_events();
+	pSoundVoiceChat->Update(P, D, N);
 }
 
-static	u32	g_saved_event_count = 0;
-void	CSoundRender_Core::update_events()
+static u32 g_saved_event_count = 0;
+void CSoundRender_Core::update_events()
 {
 	PROF_EVENT("Sound: Update Events");
 	g_saved_event_count = (u32)s_events.size();
@@ -64,7 +65,7 @@ void	CSoundRender_Core::update_events()
 	s_events.resize(0);
 }
 
-void	CSoundRender_Core::statistic(CSound_stats* dest, CSound_stats_ext* ext)
+void CSoundRender_Core::statistic(CSound_stats* dest, CSound_stats_ext* ext)
 {
 }
 
@@ -122,6 +123,7 @@ CSoundRender_Core::~CSoundRender_Core()
 {
 	xr_delete(geom_ENV);
 	xr_delete(geom_SOM);
+	xr_delete(pSoundVoiceChat);
 }
 
 void CSoundRender_Core::_initialize(int stage)
@@ -133,6 +135,9 @@ void CSoundRender_Core::_initialize(int stage)
 	env_load();
 	bPresent = TRUE;
 	bReady = TRUE;
+
+
+	pSoundVoiceChat = new SoundVoiceChat();
 }
 
 void CSoundRender_Core::_clear()
@@ -141,6 +146,7 @@ void CSoundRender_Core::_clear()
 
 	bReady = FALSE;
 	env_unload();
+	xr_delete(pSoundVoiceChat);
 }
 
 void CSoundRender_Core::stop_emitters()
@@ -358,33 +364,31 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	xr_free(_data);
 }	
 
-void	CSoundRender_Core::set_master_volume(float f)
+void CSoundRender_Core::set_master_volume(float f)
 {
 	master_volume = f;
 }
 
-void	CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type sound_type, int game_type)
+void CSoundRender_Core::create(ref_sound& S, const char* fName, esound_type sound_type, int game_type)
 {
-	if (!bPresent)		return;
-	//if (S._p) {
-	//	XRay::Sound::Mixer::Destroy(S._p->slot);
-	//	S._p->slot = 0;
-	//}
+	if (!bPresent)
+		return;
 
 	S._p = new ref_sound_data(fName, sound_type, game_type);
 }
 
-void	CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
+void CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 {
-	if (!bPresent)		return;
-	string_path			fn;
+	if (!bPresent)
+		return;
+	string_path fn;
 	xr_strcpy(fn, fName);
-	if (strext(fn))		*strext(fn) = 0;
+
+	if (strext(fn))
+		*strext(fn) = 0;
+
 	if (S._p->fn_attached[0].size() && S._p->fn_attached[1].size())
 	{
-#ifdef DEBUG
-		//Msg("! 2 file already in queue [%s][%s]", S._p->fn_attached[0].c_str(), S._p->fn_attached[1].c_str());
-#endif // #ifdef DEBUG
 		return;
 	}
 
@@ -392,7 +396,7 @@ void	CSoundRender_Core::attach_tail(ref_sound& S, const char* fName)
 	S._p->fn_attached[idx] = fn;
 }
 
-void	CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int	game_type)
+void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type sound_type, int	game_type)
 {
 	if (!bPresent)		return;
 
@@ -404,7 +408,7 @@ void	CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 	S._p->s_type = sound_type;
 }
 
-void	CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
+void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 {
 	if (!bPresent || !S.handle()) return;
 	S._p->g_object = O;
@@ -433,7 +437,7 @@ void	CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 	}
 }
 
-void	CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range)
+void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, float delay, Fvector* pos, float* vol, float* freq, Fvector2* range)
 {
 	Fvector range_vec;
 	Fvector* range_ptr = nullptr;
@@ -459,9 +463,11 @@ void	CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos);
 }
 
-void	CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
+void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos, u32 flags, float delay)
 {
-	if (!bPresent || !S.handle()) return;
+	if (!bPresent || !S.handle())
+		return;
+
 	S._p->g_object = O;
 
 	if (!S.slot()) {
@@ -481,7 +487,6 @@ void	CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 		mixer_flags |= (u32)Mixer::Flags::Spatial;
 	}
 
-
 	Mixer::Play(S.slot(), mixer_flags, &S, delay);
 	Fvector volume = { 1.0f, 1.0f, 1.0f };
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::VolumePerChannel, volume);
@@ -490,7 +495,8 @@ void	CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);
 
 }
-void	CSoundRender_Core::destroy(ref_sound& S)
+
+void CSoundRender_Core::destroy(ref_sound& S)
 {
 	Mixer::Destroy(S.slot());
 	if (S._p) S._p->slot = 0;
@@ -501,31 +507,38 @@ void CSoundRender_Core::_create_data(ref_sound_data& S, LPCSTR fName, esound_typ
 {
 	string_path fn;
 	xr_strcpy(fn, fName);
-	if (strext(fn))		*strext(fn) = 0;
-	//S.handle = (CSound_source*)SoundRender->i_create_source(fn);
+
+	if (strext(fn))
+		*strext(fn) = 0;
+
 	S.s_type = sound_type;
 	S.g_type = game_type;
 	S.slot = 0;
 	S.g_object = 0;
 	S.g_userdata = 0;
 	S.fn_attached[0] = fn;
-	//S.fTimeTotal = S.handle->length_sec();
 }
+
 void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 {
-	if (!S.dont_destroy_slot) {
+	if (!S.dont_destroy_slot)
+	{
 		Mixer::Destroy(S.slot);
 	}
-	//SoundRender->i_destroy_source((CSoundRender_Source*)S.handle);
+
 	S.slot = 0;
 	S.fn_attached[0].clear();
 	S.fn_attached[1].clear();
-	//S.handle = nullptr;
 }
 
 void CSoundRender_Core::env_apply()
 {
 	bListenerMoved = TRUE;
+}
+
+ISoundVoiceChat* CSoundRender_Core::GetSoundVoiceChat()
+{
+	return pSoundVoiceChat;
 }
 
 const Fvector& CSoundRender_Core::listener_position()
