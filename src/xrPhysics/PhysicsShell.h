@@ -212,13 +212,18 @@ class	XRPHYSICS_API CPhysicsJoint:
 {
 
 public:
-			bool			bActive																			;
-	enum	eVs {								//coordinate system 
-				vs_first	,			//in first local
-				vs_second	,			//in second local 
-				vs_global				//in global		
-		};
-	enum	enumType{							//joint type
+	bool bActive ;
+	//coordinate system 
+	enum eVs : u8
+	{								
+		vs_first	,			//in first local
+		vs_second	,			//in second local 
+		vs_global				//in global		
+	};
+
+	//joint type
+	enum enumType
+	{										
 		ball			,					// ball-socket
 		hinge			,					// standart hinge 1 - axis
 		hinge2			,					// for car wheels 2-axes 
