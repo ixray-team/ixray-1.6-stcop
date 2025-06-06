@@ -1,11 +1,5 @@
 #include "stdafx.h"
-
-#ifdef IXR_WINDOWS
-#	include <opus/opus.h>
-#else
-#	include <opus.h>
-#endif
-
+#include "opus/opus.h"
 #include "VoicePacketsPacker.h"
 #include "SoundVoiceChat.h"
 #include "VoicePacket.h"
@@ -59,14 +53,20 @@ void CVoicePacketsPacker::AddPacket(const void* data, const int length)
 		return;
 
 	VoicePacket* packet = m_voicePackets[m_packetsCount];
-	packet->length = opus_encode(m_pEncoder,
-		(opus_int16*)data,
-		length / sizeof(opus_int16),
+
+	// Длина в сэмплах, не в байтах
+	const int samples = length / sizeof(float);
+
+	packet->length = opus_encode_float
+	(
+		m_pEncoder,
+		reinterpret_cast<const float*>(data),
+		samples,
 		packet->data,
 		VoicePacket::MAX_DATA_SIZE
 	);
 
-	packet->time = SDL_GetTicks();
+	packet->time = GetTickCount();
 	++m_packetsCount;
 }
 
@@ -75,7 +75,7 @@ void CVoicePacketsPacker::Update()
 	if (m_packetsCount > 0)
 	{
 		VoicePacket* lastPacket = m_voicePackets[m_packetsCount - 1];
-		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < SDL_GetTicks())
+		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < GetTickCount())
 		{
 			for (auto it = m_senders.begin(); it != m_senders.end(); ++it)
 			{

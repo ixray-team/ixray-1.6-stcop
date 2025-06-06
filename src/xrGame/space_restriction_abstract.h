@@ -8,11 +8,12 @@
 
 #pragma once
 
-class CSpaceRestrictionAbstract {
+class CSpaceRestrictionAbstract 
+{
 protected:
 	xr_vector<u32>					m_border;
-	bool							m_initialized;
 	xr_vector<u32>					m_accessible_neighbour_border;
+	bool							m_initialized;
 	bool							m_accessible_neighbour_border_actual;
 
 private:
