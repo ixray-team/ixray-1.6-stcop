@@ -206,10 +206,10 @@ void CTelekineticObject::fire_t(const Fvector &target, float time)
 	TransferenceToThrowVel(transference,time,object->EffectiveGravity());
 	object->m_pPhysicsShell->set_LinearVel(transference);
 
-	if (sound_throw._handle()) 
+	if (sound_throw.handle()) 
 		sound_throw.play_at_pos(object,object->Position());
 
-	if (sound_hold._handle() && sound_hold._feedback()) 
+	if (sound_hold.is_playing()) 
 		sound_hold.stop();
 
 }
@@ -278,9 +278,8 @@ bool CTelekineticObject::can_activate(CPhysicsShellHolder *obj)
 
 void CTelekineticObject::update_hold_sound()
 {
-	if (!sound_hold._handle()) return;
-
-	if (sound_hold._feedback()) 
+	if (sound_hold.handle()) return;
+	if (sound_hold.is_playing()) 
 		sound_hold.set_position(object->Position());
 	else 
 		sound_hold.play_at_pos(object,object->Position());

@@ -276,7 +276,7 @@ namespace Platform
         return result;
     }
 
-    size_t Stat(const char* path, time_t& Time);
+    XRCORE_API size_t Stat(const char* path, time_t& Time);
 
     static constexpr size_t INVALID_READ_SIZE = (size_t)-1;
     IC std::uint32_t SetFilePointer(FileHandle hFile, std::uint32_t lDistanceToMove, std::uint32_t dwMoveMethod)

@@ -84,7 +84,7 @@ void IGame_Level::net_Stop			()
 //extern CStatTimer				tscreate;
 void  _sound_event		(ref_sound_data_ptr S, float range)
 {
-	if ( g_pGameLevel && S && S->feedback )	g_pGameLevel->SoundEvent_Register	(S,range);
+	if ( g_pGameLevel && S && S->slot )	g_pGameLevel->SoundEvent_Register	(S,range);
 }
 static void 	build_callback	(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params)
 {
@@ -179,6 +179,8 @@ void	IGame_Level::OnRender		( )
 			pFPSCounter->OnRender();
 		}
 	}
+
+	
 }
 
 void	IGame_Level::OnFrame		( ) 
@@ -260,21 +262,21 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 	if (!g_bLoaded)									return;
 	if (!S)											return;
 	if (S->g_object && S->g_object->getDestroy())	{S->g_object=0; return;}
-	if (0==S->feedback)								return;
+	if (0==S->slot)								return;
 
 	clamp					(range,0.1f,500.f);
 
-	const CSound_params* p	= S->feedback->get_params();
-	Fvector snd_position	= p->position;
-	if(S->feedback->is_2D()){
+	CSound_params p	= S->get_params();
+	Fvector snd_position	= p.position;
+	if(S->is_2d()){
 		snd_position.add	(Sound->listener_position());
 	}
 
-	VERIFY					(p && _valid(range) );
-	range					= _min(range,p->max_ai_distance);
+	VERIFY					(_valid(range) );
+	range					= _min(range,p.max_ai_distance);
 	VERIFY					(_valid(snd_position));
-	VERIFY					(_valid(p->max_ai_distance));
-	VERIFY					(_valid(p->volume));
+	VERIFY					(_valid(p.max_ai_distance));
+	VERIFY					(_valid(p.volume));
 
 	// Query objects
 	Fvector					bb_size	=	{range,range,range};
@@ -292,10 +294,9 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 		// Energy and signal
 		VERIFY				(_valid((*it)->spatial.sphere.P));
 		float dist			= snd_position.distance_to((*it)->spatial.sphere.P);
-		if (dist>p->max_ai_distance) continue;
+		if (dist>p.max_ai_distance) continue;
 		VERIFY				(_valid(dist));
-		VERIFY2				(!fis_zero(p->max_ai_distance), S->handle->file_name());
-		float Power			= (1.f-dist/p->max_ai_distance)*p->volume;
+		float Power			= (1.f-dist/p.max_ai_distance)*p.volume;
 		VERIFY				(_valid(Power));
 		if (Power>EPS_S)	{
 			float occ		= Sound->get_occlusion_to((*it)->spatial.sphere.P,snd_position);
@@ -316,16 +317,14 @@ void	IGame_Level::SoundEvent_Dispatch	( )
 	while	(!snd_Events.empty())	{
 		_esound_delegate&	D	= snd_Events.back	();
 		VERIFY				(D.dest && D.source);
-		if (D.source->feedback)	{
+		if (D.source->slot)	{
 			D.dest->feel_sound_new	(
 				D.source->g_object,
 				D.source->g_type,
 				D.source->g_userdata,
-
-				D.source->feedback->is_2D() ? Device.vCameraPosition : 
-					D.source->feedback->get_params()->position,
+				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position,
 				D.power
-				);
+			);
 		}
 		snd_Events.pop_back		();
 	}
