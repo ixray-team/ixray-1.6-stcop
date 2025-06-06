@@ -5,9 +5,6 @@
 #include "VoicePacketsPacker.h"
 #include "ISoundRecorder.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
-
 namespace
 {
 	union ShortByteUnion 
@@ -17,30 +14,16 @@ namespace
 	};
 }
 
-CSoundRecorderA::CSoundRecorderA(ALuint sampleRate, ALenum format, ALuint samplesPerBuffer)
-	: m_sampleRate(sampleRate), m_format(format), m_samplesPerBuffer(samplesPerBuffer)
+CSoundRecorderA::CSoundRecorderA(int sampleRate, int samplesPerBuffer)
+	: m_sampleRate(sampleRate), m_samplesPerBuffer(samplesPerBuffer)
 {
-	m_bytesPerSample = 1;
+	m_bytesPerSample = sizeof(float);
 
-	switch (format)
-	{
-	case AL_FORMAT_MONO16:
-		m_bytesPerSample = 2;
-		break;
-	case AL_FORMAT_STEREO8:
-		m_bytesPerSample = 2;
-		break;
-	case AL_FORMAT_STEREO16:
-		m_bytesPerSample = 4;
-		break;
-	default:
-		break;
-	}
-
-	m_buffer = new ALbyte[samplesPerBuffer * m_bytesPerSample];
+	m_buffer = new float[samplesPerBuffer];
 	m_speexPreprocess = new CSpeexPreprocess(sampleRate, samplesPerBuffer);
 	m_speexPreprocess->EnableAGC(psSoundRecorderMode);
 	m_speexPreprocess->EnableDenoise(psSoundRecorderDenoise);
+	m_accumBuffer.reserve(m_samplesPerBuffer * sizeof(float));
 }
 
 
@@ -48,38 +31,37 @@ CSoundRecorderA::~CSoundRecorderA()
 {
 	Destroy();
 
-	delete[] m_buffer;
-	m_buffer = nullptr;
-
+	xr_delete(m_buffer);
 	xr_delete(m_speexPreprocess);
-	m_speexPreprocess = nullptr;
 }
 
 bool CSoundRecorderA::Init(CVoicePacketsPacker* packetsPacker)
 {
 	m_packetsPacker = packetsPacker;
 
-	alGetError();
+	SDL_zero(m_captureSpec);
+	m_captureSpec.freq = m_sampleRate;
+	m_captureSpec.format = SDL_AUDIO_F32;
+	m_captureSpec.channels = 1;
 
-	m_pCaptureDevice = alcCaptureOpenDevice(0, m_sampleRate, m_format, m_samplesPerBuffer * 2);
-
-	ALenum error = alGetError();
-	if (error == AL_NO_ERROR)
+	m_captureStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_RECORDING, &m_captureSpec, nullptr, 0);
+	if (!m_captureStream)
 	{
-		alcCaptureStart(m_pCaptureDevice);
-		return true;
+		Msg("Failed to open capture stream: %s", SDL_GetError());
+		return false;
 	}
-	return false;
+
+	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(m_captureStream));
+	return true;
 }
 
 void CSoundRecorderA::Destroy()
 {
-	if (m_pCaptureDevice == nullptr)
-		return;
-
-	alcCaptureStop(m_pCaptureDevice);
-	alcCaptureCloseDevice(m_pCaptureDevice);
-	m_pCaptureDevice = nullptr;
+	if (m_captureStream)
+	{
+		SDL_DestroyAudioStream(m_captureStream);
+		m_captureStream = nullptr;
+	}
 }
 
 void CSoundRecorderA::Start()
@@ -96,21 +78,26 @@ void CSoundRecorderA::Update()
 {
 	PROF_EVENT("Sound: Recorder Core");
 
-	if (m_pCaptureDevice == nullptr)
+	if (!m_captureStream)
 		return;
 
-	ALint samples = 0;
-	alcGetIntegerv(m_pCaptureDevice, ALC_CAPTURE_SAMPLES, (ALCsizei)sizeof(ALint), &samples);
+	u8 tempBuffer[4096];
 
-	if (samples < m_samplesPerBuffer)
+	int bytesRead = SDL_GetAudioStreamData(m_captureStream, tempBuffer, sizeof(tempBuffer));
+	if (bytesRead <= 0)
 		return;
 
-	alcCaptureSamples(m_pCaptureDevice, m_buffer, m_samplesPerBuffer);
+	m_accumBuffer.insert(m_accumBuffer.end(), tempBuffer, tempBuffer + bytesRead);
+
+	const int requiredBytes = m_samplesPerBuffer * sizeof(float);
+	if ((int)m_accumBuffer.size() < requiredBytes)
+		return;
+
+	memcpy(m_buffer, m_accumBuffer.data(), requiredBytes);
+	m_accumBuffer.erase(m_accumBuffer.begin(), m_accumBuffer.begin() + requiredBytes);
 
 	if (m_started && m_packetsPacker)
 	{
-		ALuint availableBytes = m_samplesPerBuffer * m_bytesPerSample;
-
 		if (psSoundRecorderMode)
 		{
 			if (!m_speexPreprocess->IsAGCEnabled())
@@ -135,34 +122,37 @@ void CSoundRecorderA::Update()
 
 		if (psSoundRecorderMode == 0)
 		{
-			ChangeGain(m_buffer, availableBytes);
+			ChangeGain(m_buffer, m_samplesPerBuffer);
 		}
 
 		if (psSoundRecorderMode || psSoundRecorderDenoise)
 		{
-			m_speexPreprocess->RunPreprocess((short*)m_buffer);
+			// Speex всё ещё short*, поэтому нужен конверт
+			static xr_vector<short> tempShort(m_samplesPerBuffer);
+			for (int i = 0; i < m_samplesPerBuffer; ++i)
+				tempShort[i] = (short)(std::clamp(m_buffer[i], -1.0f, 1.0f) * 32767.0f);
+
+			m_speexPreprocess->RunPreprocess(tempShort.data());
+
+			for (int i = 0; i < m_samplesPerBuffer; ++i)
+				m_buffer[i] = tempShort[i] / 32767.0f;
 		}
 
-		m_packetsPacker->AddPacket(m_buffer, availableBytes);
+		m_packetsPacker->AddPacket(m_buffer, requiredBytes);
 	}
 }
 
-void CSoundRecorderA::ChangeGain(ALbyte* buffer, ALint length)
+void CSoundRecorderA::ChangeGain(float* buffer, size_t length)
 {
 	const float modifier = psSoundVRecorder;
 
-	for (int i = 0; i < length; i += 2)
+	for (int i = 0; i < length; ++i)
 	{
-		ShortByteUnion ab;
-		ab.asBytes[0] = buffer[i];
-		ab.asBytes[1] = buffer[i + 1];
+		buffer[i] *= modifier;
 
-		if ((float)ab.asShort >= 32676.f / modifier)
-			ab.asShort = 32676;
-		else
-			ab.asShort = (short)((float)ab.asShort * modifier);
-
-		buffer[i] = ab.asBytes[0];
-		buffer[i + 1] = ab.asBytes[1];
+		if (buffer[i] > 1.0f)
+			buffer[i] = 1.0f;
+		else if (buffer[i] < -1.0f)
+			buffer[i] = -1.0f;
 	}
 }
