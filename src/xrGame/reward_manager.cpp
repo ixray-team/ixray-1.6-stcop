@@ -118,8 +118,7 @@ void reward_manager::process_reward		(u32 const award_id)
 	for (rewards_map_t::iterator i = m_rewards_map.begin(),
 		ie = m_rewards_map.end(); i != ie; ++i)
 	{
-		if (i->second->m_play_sound._feedback())
-		{
+		if (i->second->m_play_sound.is_playing()) {
 			i->second->m_play_sound.stop();
 		}
 	}

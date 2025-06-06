@@ -313,10 +313,7 @@ void CGamePersistent::WeathersUpdate()
 					pos.y				+= 10.f;
 					snd.play_at_pos		(0,pos);
 
-					if (!snd._handle() || Core.ParamsData.test(ECoreParams::nosound))
-						continue;
-
-					VERIFY							(snd._handle());
+					// TODO: 
 					u32 _length_ms					= iFloor(snd.get_length_sec()*1000.0f);
 					ambient_sound_next_time[idx]	= Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
 //					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
@@ -356,7 +353,7 @@ void CGamePersistent::WeathersUpdate()
 					ambient_particles				= Particles::Details::Create(eff->particles.c_str(),FALSE,false);
 					Fvector pos; pos.add			(Device.vCameraPosition,eff->offset); 
 					ambient_particles->play_at_pos	(pos);
-					if (eff->sound._handle())		eff->sound.play_at_pos(0,pos);
+					if (eff->sound.handle())		eff->sound.play_at_pos(0,pos);
 
 
 					Environment().wind_blast_strength_start_value=Environment().wind_strength_factor;

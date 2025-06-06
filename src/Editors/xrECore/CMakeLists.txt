@@ -204,7 +204,7 @@ target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_des
 
 # Nuget
 set(SNDE_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
-set(SNDE_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
+#set(SNDE_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
 set(SNDE_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
 
 ## LibOGG
@@ -217,5 +217,5 @@ target_link_libraries(xrECore PRIVATE ${SNDE_VOB}/native/lib/${CMAKE_VS_PLATFORM
 target_include_directories(xrECore PRIVATE "${SNDE_VOB}/native/include/")
 
 ## OpenAL
-target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
-target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")
+#target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
+#target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")

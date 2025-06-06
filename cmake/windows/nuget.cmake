@@ -41,7 +41,7 @@ set(ENGINE_THRA ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibTheora.1.1.1.3
 set(SND_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
 
 # OpenAL
-set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
+#set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
 
 # Vorbis
 set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
@@ -109,3 +109,9 @@ set(YAML_INCL ${YAML_CORE}/build/native/include)
 set(YAML_LIB  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.lib)
 set(YAML_BIN  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.dll)
 set(YAML_LIB_NAME yaml-cpp.dll)
+
+# Steam Audio (Phonon)
+set(SA_CORE ${CMAKE_BINARY_DIR}/packages/IXRay.SteamAudio.4.6.1)
+set(SA_INCL ${SA_CORE}/include)
+set(SA_LIB  ${SA_CORE}/lib/phonon.lib)
+set(SA_BIN  ${SA_CORE}/bin/phonon.dll)

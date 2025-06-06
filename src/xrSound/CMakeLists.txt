@@ -22,12 +22,8 @@ file(GLOB_RECURSE SND_SOURCE_EMIT_FILES
     "SoundRender_Emitter*.cpp"
     "SoundRender_Emitter*.h"
 )
-file(GLOB_RECURSE SND_SOURCE_REC_FILES
-    "Recorder/*.*"
-)
 file(GLOB_RECURSE SND_SOURCE_3RDI_FILES
     "ogg_utils.*"
-    "OpenALDeviceList.*"
     "guids.*"
     "cl_intersect.*"
 )
@@ -60,11 +56,11 @@ target_link_libraries(xrSound PUBLIC xrCore)
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OGG}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OAL}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPEEXDSP}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/speexdsp.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/speexdsp.dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SA_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 ## LibOGG
@@ -76,10 +72,6 @@ target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_
 target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
 target_include_directories(xrSound PRIVATE "${SND_VOB}/native/include/")
 
-## OpenAL
-target_link_libraries(xrSound PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
-target_include_directories(xrSound PRIVATE "${SND_OAL}/native/include/")
-
 ## SpeexDSP
 target_link_libraries(xrSound PRIVATE ${SPEEXDSP}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/speexdsp.lib)
 target_include_directories(xrSound PRIVATE "${SPEEXDSP}/build/native/include/")
@@ -87,3 +79,7 @@ target_include_directories(xrSound PRIVATE "${SPEEXDSP}/build/native/include/")
 ## OPUS
 target_link_libraries(xrSound PRIVATE ${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.lib)
 target_include_directories(xrSound PRIVATE "${OPUS}/build/native/include/")
+
+## Phonon
+target_link_libraries(xrSound PRIVATE "${SA_LIB}")
+target_include_directories(xrSound PRIVATE "${SA_INCL}")

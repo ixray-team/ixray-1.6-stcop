@@ -46,5 +46,5 @@ target_link_libraries(ETools PRIVATE "${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_
 target_include_directories(ETools PRIVATE "${SND_VOB}/native/include/")
 
 ## OpenAL
-target_link_libraries(ETools PRIVATE "${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib")
-target_include_directories(ETools PRIVATE "${SND_OAL}/native/include/")
+#target_link_libraries(ETools PRIVATE "${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib")
+#target_include_directories(ETools PRIVATE "${SND_OAL}/native/include/")

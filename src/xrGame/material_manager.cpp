@@ -111,7 +111,8 @@ void CMaterialManager::update		(float time_delta, float volume, float step_time,
 				m_step_id								= ::Random.randI(0, (u32)snd_array.size());
 				m_time_to_step							= step_time;
 
-				m_step_sound[m_step_id]					= snd_array[m_step_id];
+				// TODO: 
+				m_step_sound[m_step_id].clone(snd_array[m_step_id], st_Effect, 0);
 				m_step_sound[m_step_id].play_at_pos	(m_object,position);
 			}
 		}
@@ -122,7 +123,7 @@ void CMaterialManager::update		(float time_delta, float volume, float step_time,
 
 
 	for(int i=0; i<4; i++)
-		if (m_step_sound[i]._feedback())		{
+		if (m_step_sound[i].is_playing())		{
 			m_step_sound[i].set_position	(position    );
 			m_step_sound[i].set_volume		(1.f * volume);
 		}

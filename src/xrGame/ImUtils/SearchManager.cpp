@@ -664,7 +664,7 @@ void InitImGuiHudAdjustInGame()
 	{
 		imgui_hud_adjust_manager.settings.p_file = fopen(path.operator xr_string().c_str(), "wb+");
 
-		assert(imgui_hud_adjust_manager.settings.p_file && "failed to open file are you sure that system can read and write files on specified path?");
+		//assert(imgui_hud_adjust_manager.settings.p_file && "failed to open file are you sure that system can read and write files on specified path?");
 
 		need_to_init_defaults = true;
 	}

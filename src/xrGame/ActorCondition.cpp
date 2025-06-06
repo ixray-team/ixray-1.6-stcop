@@ -962,7 +962,7 @@ bool CActorCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const sh
 	{
 		if (use_sound && pSettings->line_exist(sect, "use_sound"))
 		{
-			if(m_use_sound._feedback())
+			if(m_use_sound.is_playing())
 				m_use_sound.stop		();
 
 			shared_str snd_name			= pSettings->r_string(sect, "use_sound");
@@ -987,7 +987,7 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 		{
 			if (use_sound && pSettings->line_exist(sect, "use_sound"))
 			{
-				if(m_use_sound._feedback())
+				if(m_use_sound.is_playing())
 					m_use_sound.stop		();
 
 				shared_str snd_name			= pSettings->r_string(sect, "use_sound");

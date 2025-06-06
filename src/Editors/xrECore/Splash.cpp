@@ -138,11 +138,6 @@ namespace splash
 		
 		outText = true;
 		
-		if (SDL_Init(0) != 0) {
-			ErrorMsg("SDL_Init Error: %s", SDL_GetError());
-			return;
-		}
-		
 		unsigned char* imageData = nullptr;
 
 		SDL_Surface* surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(idb), TEXT("PNG"));

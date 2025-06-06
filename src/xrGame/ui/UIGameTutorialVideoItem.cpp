@@ -97,7 +97,6 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	if (snd_name && snd_name[0])
 	{
 		m_sound.create		(snd_name,st_Effect,sg_Undefined);	
-		VERIFY				(m_sound._handle());
 	}
 	xml->SetLocalRoot		(_stored_root);
 }
@@ -126,13 +125,14 @@ void CUISequenceVideoItem::Update()
 		}
 	}else return;
 
-	u32 sync_tm				= (0==m_sound._handle())?Device.dwTimeContinual:(m_sound._feedback()?m_sound._feedback()->play_time():m_sync_time);
+	//u32 sync_tm				= (0==m_sound._handle())?Device.dwTimeContinual:(m_sound._feedback()?m_sound._feedback()->play_time():m_sync_time);
+	u32 sync_tm				= Device.dwTimeContinual;
 	m_sync_time				= sync_tm;
 	// processing A&V
 
 	if (m_texture->HasTexture())
 	{
-		BOOL is_playing		= m_sound._handle() ? !!m_sound._feedback() : m_texture->video_IsPlaying();
+		BOOL is_playing		= m_sound.handle() ? m_sound.is_playing() : m_texture->video_IsPlaying();
 		if (is_playing)
 		{
 			m_texture->video_Sync(m_sync_time);

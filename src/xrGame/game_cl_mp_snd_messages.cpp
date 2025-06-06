@@ -53,13 +53,13 @@ void	game_cl_mp::PlaySndMessage			(u32 ID)
 	SND_Message* SndMsg = *it;
 	
 //	if (Level().timeServer()<pSndMgs->pSound._handle()->length_ms() + pSndMgs->LastStarted) return;
-	if (SndMsg->pSound._feedback()) return;
+	if (SndMsg->pSound.is_playing()) return;
 
 	u32 MaxDelay = 0;
 	for (u32 i=0; i<m_pSndMessagesInPlay.size(); i++)
 	{
 		SND_Message* pSndMsgIP = m_pSndMessagesInPlay[i];
-		if (!pSndMsgIP->pSound._feedback())		 continue;
+		if (!pSndMsgIP->pSound.is_playing())		 continue;
 		if (pSndMsgIP->priority > SndMsg->priority) return;
 		if (pSndMsgIP->priority < SndMsg->priority) 
 		{
@@ -94,8 +94,7 @@ void	game_cl_mp::UpdateSndMessages	()
 	for (u32 i=0; i<m_pSndMessagesInPlay.size();)
 	{
 		SND_Message* pSndMsg = m_pSndMessagesInPlay[i];
-		if (pSndMsg->pSound._feedback() == nullptr)
-		{
+		if (!pSndMsg->pSound.is_playing()) {
 			m_pSndMessagesInPlay.erase(m_pSndMessagesInPlay.begin() + i);			
 			continue;
 		}

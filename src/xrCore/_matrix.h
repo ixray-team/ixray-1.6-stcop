@@ -601,6 +601,12 @@ public:
 		}
 		return *this; 
 	}
+	ICF	void	transform_tiny_noadd(Tvector &dest, const Tvector &v)	const // preferred to use
+	{
+		dest.x = v.x*_11 + v.y*_21 + v.z*_31;
+		dest.y = v.x*_12 + v.y*_22 + v.z*_32;
+		dest.z = v.x*_13 + v.y*_23 + v.z*_33;
+	}
 	ICF	void	transform_tiny		(Tvector &dest, const Tvector &v)	const // preferred to use
 	{
 		dest.x = v.x*_11 + v.y*_21 + v.z*_31 + _41;

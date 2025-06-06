@@ -398,20 +398,22 @@ CRenderTarget::CRenderTarget()
 			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
 				const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
 				RContext->OMSetBlendState((ID3D11BlendState*)cmd->UserCallbackData, blend_factor, 0xffffffff);
-				}, State);
+			}, State);
+
 			ImGui::Image(
 				rt->pTexture->get_SRView(),
 				ImVec2(ImGui::GetContentRegionAvail().x, rt->dwHeight * scale),
 				ImVec2(0, 0), ImVec2(1, 1), ImVec4(ImagePower, ImagePower, ImagePower, 1.0f)
 			);
+
 			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
 				auto bd = ImGui_ImplDX11_GetBackendData();
 				if (bd != nullptr) {
 					const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
 					RContext->OMSetBlendState((ID3D11BlendState*)bd->pBlendState, blend_factor, 0xffffffff);
 				}
-				}, State);
-			};
+			}, State);
+		};
 
 		ID3D11BlendState* BlendState = nullptr;
 		if (!ImGui::Begin("GraphicDebug", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)], ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
