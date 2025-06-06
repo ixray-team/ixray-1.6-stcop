@@ -41,8 +41,8 @@ file(GLOB_RECURSE ESHE_SOURCE_PCH_FILES "stdafx.*")
 source_group("pch" FILES ${ESHE_SOURCE_PCH_FILES})
 
 ## OpenAL
-target_link_libraries(ShaderEditor PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
-target_include_directories(ShaderEditor PRIVATE "${SND_OAL}/native/include/")
+#target_link_libraries(ShaderEditor PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
+#target_include_directories(ShaderEditor PRIVATE "${SND_OAL}/native/include/")
 
 ## LibOGG
 target_link_libraries(ShaderEditor PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)

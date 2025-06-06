@@ -107,7 +107,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 		{
 			string_path			_l, _r;
 			xr_strconcat(_l, snd_name, "_l");
-				xr_strconcat(_r, snd_name, "_r");
+			xr_strconcat(_r, snd_name, "_r");
 			m_sound_mono[0].create(_l, st_Effect, sg_Undefined);
 			m_sound_mono[1].create(_r, st_Effect, sg_Undefined);
 		}

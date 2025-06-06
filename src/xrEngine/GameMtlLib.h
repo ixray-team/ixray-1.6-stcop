@@ -251,10 +251,10 @@ protected:
 
     EGameMtlVersion     m_version{};
 public:
-	CGameMtlLibrary		();
+    CGameMtlLibrary();
     ~CGameMtlLibrary() = default;
 
-	IC void				Unload			()
+    IC void Unload()
 	{
 		material_count	= 0;
 		material_pairs_rt.clear();
@@ -270,26 +270,26 @@ public:
     // material routine
     IC GameMtlIt GetMaterialIt(const char* name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
-            if (0==_strcmpi(*(*it)->m_Name,name)) return it;
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+            if (0 == _strcmpi(*(*it)->m_Name, name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialIt	(shared_str& name)
+    IC GameMtlIt GetMaterialIt(shared_str& name)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
             if (name.equal((*it)->m_Name)) return it;
         return materials.end();
     }
-    IC GameMtlIt 		GetMaterialItByID(int id)
+    IC GameMtlIt GetMaterialItByID(int id)
     {
-        for (GameMtlIt it=materials.begin(); materials.end() != it; ++it)
-            if ((*it)->ID==id) return it;
+        for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
+            if ((*it)->ID == id) return it;
         return materials.end();
     }
     IC u32 GetMaterialID(const char* name)
     {
-    	GameMtlIt it	= GetMaterialIt	(name);
-        return (it==materials.end())?GAMEMTL_NONE_ID:(*it)->ID;
+        GameMtlIt it = GetMaterialIt(name);
+        return (it == materials.end()) ? GAMEMTL_NONE_ID : (*it)->ID;
     }
 #ifdef _EDITOR
 	// editor

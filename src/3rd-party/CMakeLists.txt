@@ -7,8 +7,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("crypto")
     add_subdirectory("NvTriStrip")
     add_subdirectory("IKAN")
-
-     # resonance-audio
+    
     if (IXRAY_ENABLE_RESONANCEAUDIO)
         add_subdirectory("resonance-audio")
     endif()
@@ -24,9 +23,9 @@ endif()
 if(NOT IXRAY_COMPRESSOR_ONLY)
     if(IXRAY_UTILS OR IXRAY_EDITORS)
         add_subdirectory("MagicSoftware/FreeMagic/Source")
-		add_subdirectory("NvMender2003")
+        add_subdirectory("NvMender2003")
 		
-		set_target_properties(NvMender2003 PROPERTIES ${IXRAY_FOLDER_3RD})
+        set_target_properties(NvMender2003 PROPERTIES ${IXRAY_FOLDER_3RD})
         set_target_properties(MagicFM PROPERTIES ${IXRAY_FOLDER_3RD})
     endif()
 endif()
@@ -42,8 +41,9 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(NvTriStrip PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(lunasvg PROPERTIES ${IXRAY_FOLDER_3RD})
+    set_target_properties(pffft PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(plutovg PROPERTIES ${IXRAY_FOLDER_3RD})
-
+    
     if (IXRAY_ENABLE_RESONANCEAUDIO)
         set_target_properties(ResonanceAudioStatic PROPERTIES ${IXRAY_FOLDER_3RD})
         set_target_properties(SadieHrtfsObj PROPERTIES ${IXRAY_FOLDER_3RD})

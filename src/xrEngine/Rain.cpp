@@ -287,9 +287,9 @@ void CEffect_Rain::OnFrame()
 		state = stWorking;
 		if (snd_Ambient.handle())
 		{
-			snd_Ambient.play(nullptr, sm_Looped);
+			snd_Ambient.play(nullptr, sm_Looped | sm_2D);
 			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
-				CurDropSnd.play(nullptr, sm_Looped);
+				CurDropSnd.play(nullptr, sm_Looped | sm_2D);
 			else
 				CurDropSnd.stop();
 			snd_Ambient.set_position(Fvector().set(0, 0, 0));

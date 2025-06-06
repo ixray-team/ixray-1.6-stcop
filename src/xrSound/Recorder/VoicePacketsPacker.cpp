@@ -1,10 +1,9 @@
 #include "stdafx.h"
-
-#include <opus.h>
-
 #include "VoicePacketsPacker.h"
 #include "SoundVoiceChat.h"
 #include "VoicePacket.h"
+
+#include <opus.h>
 
 #define OPUS_BITRATE 16000
 

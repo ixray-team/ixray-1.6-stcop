@@ -17,6 +17,7 @@ option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" ON)
 option(IXRAY_PROFILER_TRACY "Enable Tracy for perf debug" OFF)
+option(IXRAY_ENABLE_RESONANCEAUDIO "Enable Reverb from ResonanceAudio library" ON)
 option(IXRAY_CROSS_COMPILATION "Enable cross-compilation" OFF)
 
 set(IXRAY_BUILD_BATCH_SIZE "32" CACHE STRING "UNITY_BUILD_BATCH_SIZE")
@@ -28,7 +29,7 @@ set(IXR_TEST_CI NOT IXRAY_UTILS OR NOT IXRAY_CI)
 
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
-option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
+option(DEVIXRAY_ENABLE_STEAMAUDIO "Enable HRTF and Reverb from SteamAudio library" OFF)
 
 # CXX options
 set(CMAKE_CXX_STANDARD 23)
