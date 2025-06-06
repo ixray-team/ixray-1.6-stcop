@@ -6,8 +6,9 @@
 
 void DestroySounds(SoundVec& lst)
 {
-	for (SoundIt it=lst.begin(); lst.end() != it; ++it)	
+	for (SoundIt it = lst.begin(); lst.end() != it; ++it) {
 		it->destroy();
+	}
 }
 /*
 void DestroyMarks(ShaderVec& lst)
@@ -30,8 +31,9 @@ void CreateSounds(SoundVec& lst, LPCSTR buf)
 	R_ASSERT(cnt <= GAMEMTL_STEPSOUND_SUBITEM_COUNT);
 
 	lst.resize		(cnt);
-	for (int k=0; k<cnt; ++k)
-		lst[k].create	(_GetItem(buf,k,tmp),st_Effect,sg_SourceType);
+	for (int k = 0; k < cnt; ++k) {
+		lst[k].create(_GetItem(buf, k, tmp), st_Effect, sg_SourceType);
+	}
 }
 /*
 void CreateMarks(ShaderVec& lst, LPCSTR buf)
