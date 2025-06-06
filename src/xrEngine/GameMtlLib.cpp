@@ -51,19 +51,19 @@ EGameMtlVersion SGameMtl::Load(IReader& fs)
     fVisTransparencyFactor	= fs.r_float();
     fSndOcclusionFactor		= fs.r_float();
 
-	if(fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
+    if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
     {
-	    fFlotationFactor	= fs.r_float();
+        fFlotationFactor = fs.r_float();
     }
 
-    if(fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
+    if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
     {
-    	fInjuriousSpeed		= fs.r_float();
+        fInjuriousSpeed = fs.r_float();
     }
     
-	if(fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
+    if (fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
     {
-    	fDensityFactor		= fs.r_float();
+        fDensityFactor = fs.r_float();
         vers = GAMEMTL_VERSION_CS;
     }
     else // St4lker0k765: for some reason, in SoC shoot factor is reversed
@@ -151,6 +151,12 @@ void CGameMtlLibrary::Load()
     }
 
 	FS.r_close		(F);
+
+	::Sound->OcclusionMaterialCallback = xr_delegate<float(u16)>(+[](u16 MtlID)->float
+	{
+		const SGameMtl* MtlIter = GMLib.GetMaterialByIdx((int)MtlID);
+		return MtlIter->fSndOcclusionFactor;
+	});
 }
 
 #ifdef DEBUG
