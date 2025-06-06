@@ -12,13 +12,13 @@ game_cl_freemp::game_cl_freemp()
 {
 	if (!g_dedicated_server)
 	{
-		//m_pVoiceChat = new CVoiceChat();
+		m_pVoiceChat = new CVoiceChat();
 	}
 }
 
 game_cl_freemp::~game_cl_freemp()
 {
-	//xr_delete(m_pVoiceChat);
+	xr_delete(m_pVoiceChat);
 }
 
 CUIGameCustom* game_cl_freemp::createGameUI()
@@ -41,9 +41,9 @@ void game_cl_freemp::SetGameUI(CUIGameCustom* uigame)
 	m_game_ui = smart_cast<CUIGameFMP*>(uigame);
 	R_ASSERT(m_game_ui);
 
-	//if (m_pVoiceChat)
+	if (m_pVoiceChat)
 	{
-		//m_game_ui->UIMainIngameWnd->SetVoiceDistance(m_pVoiceChat->GetDistance());
+		m_game_ui->UIMainIngameWnd->SetVoiceDistance(m_pVoiceChat->GetDistance());
 	}
 }
 
@@ -80,7 +80,6 @@ void game_cl_freemp::shedule_Update(u32 dt)
 	if (!local_player)
 		return;
 
-	/*
 	if (!g_dedicated_server && m_pVoiceChat)
 	{
 		const bool started = m_pVoiceChat->IsStarted();
@@ -93,7 +92,6 @@ void game_cl_freemp::shedule_Update(u32 dt)
 		}
 		m_pVoiceChat->Update();
 	}
-	*/
 
 	for (auto cl : players)
 	{
@@ -150,11 +148,11 @@ bool game_cl_freemp::OnKeyboardPress(int key)
 	{
 		if (local_player && !local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		{
-			//if (!m_pVoiceChat->IsStarted())
-			//{
-			//	m_pVoiceChat->Start();
-			//	CurrentGameUI()->UIMainIngameWnd->SetActiveVoiceIcon(true);
-			//}
+			if (!m_pVoiceChat->IsStarted())
+			{
+				m_pVoiceChat->Start();
+				CurrentGameUI()->UIMainIngameWnd->SetActiveVoiceIcon(true);
+			}
 		}
 		return true;
 	}break;
@@ -163,8 +161,8 @@ bool game_cl_freemp::OnKeyboardPress(int key)
 	{
 		if (local_player && !local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 		{
-			//u8 distance = m_pVoiceChat->SwitchDistance();
-			//CurrentGameUI()->UIMainIngameWnd->SetVoiceDistance(distance);
+			u8 distance = m_pVoiceChat->SwitchDistance();
+			CurrentGameUI()->UIMainIngameWnd->SetVoiceDistance(distance);
 		}
 		return true;
 	}break;
@@ -210,7 +208,7 @@ bool game_cl_freemp::OnKeyboardRelease(int key)
 	{
 	case kVOICE_CHAT:
 	{
-		//m_pVoiceChat->Stop();
+		m_pVoiceChat->Stop();
 		CurrentGameUI()->UIMainIngameWnd->SetActiveVoiceIcon(false);
 		return true;
 	}break;
@@ -232,13 +230,13 @@ void game_cl_freemp::OnRender()
 {
 	inherited::OnRender();
 
-	//if (m_pVoiceChat)
-	//	m_pVoiceChat->OnRender();
+	if (m_pVoiceChat)
+		m_pVoiceChat->OnRender();
 }
 
 void game_cl_freemp::OnVoiceMessage(NET_Packet* P)
 {
-	//m_pVoiceChat->ReceiveMessage(P);
+	m_pVoiceChat->ReceiveMessage(P);
 }
 
 bool IsGameTypeSingleCompatible()

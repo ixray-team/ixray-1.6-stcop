@@ -1,7 +1,7 @@
 #pragma once
-                                          
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
+class SoundVoiceChat;
 
 class CSoundRender_Core	: public CSound_manager_interface
 {
@@ -10,17 +10,20 @@ protected:
 	virtual void						_destroy_data			( ref_sound_data& S);
 protected:
 	Fvector								listenerPos;
-    BOOL								bListenerMoved;
+	BOOL								bListenerMoved;
 	float								master_volume;
 	CSoundRender_Environment			e_current;
 	CSoundRender_Environment			e_target;
+
 public:
 	typedef	std::pair<ref_sound_data_ptr,float>	event;                                               
 	xr_vector<event>					s_events;
-public:
+
 	BOOL								bPresent;
 	BOOL								bUserEnvironment;
-    BOOL								bReady;
+	BOOL								bReady;
+
+	SoundVoiceChat* pSoundVoiceChat = nullptr;
 
 	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
@@ -37,10 +40,6 @@ protected:
 	CSoundRender_Environment			s_user_environment;
 
 	int									m_iPauseCounter;
-public:
-	// Cache
-	//CSoundRender_Cache					cache;
-	//u32									cache_bytes_per_line;
 
 public:
 										CSoundRender_Core		();
@@ -96,5 +95,6 @@ public:
 	void								env_load				();
 	void								env_unload				();
 	void								env_apply				();
+	virtual ISoundVoiceChat*			GetSoundVoiceChat		() override;
 };
 extern CSoundRender_Core* SoundRender;
