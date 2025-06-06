@@ -2,39 +2,40 @@
 
 #include "ExtendedGeom.h"
 #include "PHSimpleCharacter.h"
-#include "PHActorCharacterInline.h"
 
 class CPhysicShellHolder;
 struct SPHCharacterRestrictor
 {
-							SPHCharacterRestrictor							(ERestrictionType Ttype)
-							{
-								m_type=Ttype;
-								m_character=NULL;
-								m_restrictor=NULL;
-								m_restrictor_transform=NULL;
-								m_restrictor_radius=0.1f;
-							}
-							~SPHCharacterRestrictor				()
-							{
-								Destroy();
-							};
-				CPHCharacter*			m_character;
-				ERestrictionType m_type;
+	SPHCharacterRestrictor(ERestrictionType Ttype)
+	{
+		m_type = Ttype;
+		m_character = NULL;
+		m_restrictor = NULL;
+		m_restrictor_transform = NULL;
+		m_restrictor_radius = 0.1f;
+	}
+	~SPHCharacterRestrictor()
+	{
+		Destroy();
+	};
+	CPHCharacter* m_character;
 
-				dGeomID					m_restrictor;
-				dGeomID					m_restrictor_transform;
-				float					m_restrictor_radius;
-				void					SetObjectContactCallback			(ObjectContactCallbackFun* callback);
-				void					SetMaterial							(u16 material);
-				void					Create								(CPHCharacter* ch,dVector3 sizes);
-				void					Destroy								(void);
-				void					SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
-				void					SetRadius							(float r);
+	dGeomID			 m_restrictor;
+	dGeomID			 m_restrictor_transform;
+	float			 m_restrictor_radius;
+	ERestrictionType m_type;
+
+	void SetObjectContactCallback(ObjectContactCallbackFun* callback);
+	void SetMaterial(u16 material);
+	void Create(CPHCharacter* ch, dVector3 sizes);
+	void Destroy(void);
+	void SetPhysicsRefObject(IPhysicsShellHolder* ref_object);
+	void SetRadius(float r);
 };
 
 template <ERestrictionType Ttype>
-struct TPHCharacterRestrictor : public SPHCharacterRestrictor
+struct TPHCharacterRestrictor :
+	public SPHCharacterRestrictor
 {
 		TPHCharacterRestrictor():SPHCharacterRestrictor(Ttype){}
 		void	Create(CPHCharacter* ch,dVector3 sizes)
