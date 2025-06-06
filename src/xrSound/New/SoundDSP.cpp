@@ -69,7 +69,9 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
     DSP_CalculateRelativePosition(P, D, N, obj_pos, pos, distance);
 
     // Attenuation
+    distance = std::clamp(distance, distances.x, distances.y);
     float att = distances.x / (psSoundRolloff * distance);
+    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / (distances.y-distances.x), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
 
     // Panning
@@ -122,4 +124,34 @@ DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_fa
             mix_buffer[ch][k] += sample * factor;
         }
     }
+}
+
+void 
+DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT])
+{
+    float lin_attack = attack_ms == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * attack_ms));
+    float lin_release = release_ms == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * release_ms));
+    ratio = (1.0f - 1.0f / (ratio));
+
+    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+        for (size_t k = 0; k < frames; k++) {
+            float& sample = data[ch][k];
+
+            float temp = lin2dB(sample + FLT_EPSILON);
+            float over_db = temp - threshold_db;
+            if (over_db < 0.0f) over_db = 0.0f;
+            over_db += FLT_EPSILON; 
+
+            float theta = (over_db > envelope[ch]) ? lin_attack : lin_release;
+            envelope[ch] = over_db + theta * (envelope[ch] - over_db);
+
+            float p_vart = envelope[ch] - FLT_EPSILON;
+            if (p_vart > 0.0f) p_vart -= envelope[ch] * envelope[ch] * 0.001f; // opto pseudo curve
+            float gain = 0.0f - p_vart * ratio;
+
+            float comp = lerp(1.0f, dB2lin(gain), drywet);
+            sample *= comp;
+        }
+    }
+
 }

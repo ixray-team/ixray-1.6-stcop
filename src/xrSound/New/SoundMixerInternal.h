@@ -38,6 +38,7 @@ struct sound_slot_state
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
     u16 flags;
+    u32 zone_idx;
     u32 position;
     u32 stopping_position;
     u32 hrtf_slot;
