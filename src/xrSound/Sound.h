@@ -20,6 +20,7 @@ class	XRSOUND_API					ISoundVoiceChat;
 XRSOUND_API extern u32				psSoundModel			;
 XRSOUND_API extern float			psSoundVEffects			;
 XRSOUND_API extern float			psSoundVFactor			;
+XRSOUND_API extern float            psSoundCompression      ;
 XRSOUND_API extern float			psSoundVMusic			;
 XRSOUND_API extern float			psSoundVRecorder		;
 XRSOUND_API extern int				psSoundRecorderMode		;
@@ -272,6 +273,7 @@ public:
 	virtual void					update					( const Fmatrix& m_V, const Fvector& P, const Fvector& D, const Fvector& N)				= 0;
 	virtual void					statistic				( CSound_stats*  s0, CSound_stats_ext* s1 )												= 0;
 	virtual void					time_factor				(float time_factor)																		= 0;
+	virtual float					get_occlusion(Fvector& P, float R, Fvector* occ)                                                                = 0;
 	virtual float					get_occlusion_to		( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion=0.2f)					= 0;
 
 	virtual void					objects_relcase			( CObject** objects, int count)															= 0;
@@ -324,7 +326,7 @@ IC void	ref_sound::set_range(float min, float max)
 IC void	ref_sound::set_volume(float vol)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::VolumePerChannel, Fvector(vol, vol, vol));
+		XRay::Sound::Mixer::SetVolume(slot(), vol);
 	}
 }
 

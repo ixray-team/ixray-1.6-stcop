@@ -397,6 +397,7 @@ public:
 public:
 	virtual void			OnHUDDraw			(CCustomHUD* hud);
 			BOOL			HUDview				( )const ;
+			BOOL			HUDviewSound		( )const ;
 
 	//visiblity 
 	virtual	float			ffGetFov			()	const	{ return 90.f;		}	
