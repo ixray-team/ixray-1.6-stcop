@@ -75,7 +75,7 @@ void CTraderAnimation::remove_sound()
 {
 	VERIFY				(m_sound);
 	
-	if (m_sound->_feedback()) 
+	if (m_sound->is_playing())
 						m_sound->stop();
 	
 	m_sound->destroy	();
@@ -89,7 +89,7 @@ void CTraderAnimation::update_frame()
 {
 	if (m_sound)
 	{
-		if (m_sound->_feedback())
+		if (m_sound->is_playing())
 			m_sound->set_position(m_trader->Position());
 		else
 		{
@@ -104,7 +104,7 @@ void CTraderAnimation::update_frame()
 	}
 
 	// назначить анимацию головы
-	if (!m_motion_head && m_sound && m_sound->_feedback())
+	if (!m_motion_head && m_sound && m_sound->is_playing())
 	{
 		m_trader->callback(GameObject::eTraderHeadAnimationRequest)();
 	}
