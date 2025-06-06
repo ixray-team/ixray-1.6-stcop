@@ -8,13 +8,13 @@ struct ALCcontext;
 
 #define VOICE_SAMPLE_RATE 24000
 #define VOICE_SAMPLES_PER_BUFFER 960
-#define VOICE_FORMAT AL_FORMAT_MONO16
 
-class SoundVoiceChat : ISoundVoiceChat
+class SoundVoiceChat : 
+	public ISoundVoiceChat
 {
 public:
-	SoundVoiceChat(ALCcontext* pContext);
-	virtual ~SoundVoiceChat();
+	SoundVoiceChat();
+	~SoundVoiceChat();
 
 	ISoundRecorder* CreateRecorder(IVoicePacketSender* sender);
 
@@ -27,8 +27,6 @@ private:
 	void Destroy();
 
 private:
-	ALCcontext* m_pContext;
-
 	CSoundRecorderA* m_pRecorder = nullptr;
 	CVoicePacketsPacker* m_pVoicePacker = nullptr;
 

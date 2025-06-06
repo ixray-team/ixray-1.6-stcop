@@ -48,6 +48,8 @@
 #include "Message_Filter.h"
 #include "DemoPlay_Control.h"
 #include "DemoInfo.h"
+#include "CustomDetector.h"
+#include "../xrSound/New/SoundMixerInternal.h"
 
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/console_vars.h"
@@ -814,6 +816,39 @@ void CLevel::OnRender()
 #endif // DEBUG
 
 #ifdef DEBUG_DRAW
+	CDB::MODEL* env_model = Sound->get_geometry_env();
+	if (bDebug && env_model) {
+		for (const auto& zone : XRay::Sound::Mixer::GetZones()) {
+			m_debug_renderer->draw_aabb(zone.min, zone.max, 0xFF00FFFF);
+		}
+	}
+
+	if (bDebug) {
+		for (const auto& slot : XRay::Sound::Mixer::GetSlots()) {
+			if ((slot.flags & (u16)XRay::Sound::Mixer::Flags::Spatial) == 0) {
+				continue;
+			}
+
+			const Fvector& pos = slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::Position];
+			const Fvector& distances = slot.parameters[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange];
+
+			u32 color = 0;
+			float dist = Device.vCameraPosition.distance_to(pos);
+			if (dist > distances.y) {
+				if (slot.state == XRay::Sound::Mixer::State::Playing) {
+					color = 0x752DA6FF;
+				} else {
+					color = 0xFC9D03FF;
+				}
+			} else {
+				color = 0x45A62DFF;
+			}
+
+			Fmatrix mtx; mtx.translate(pos);
+			m_debug_renderer->draw_ellipse(mtx, color);
+		}
+	}
+
 #ifdef DEBUG_PRECISE_PATH
 	test_precise_path		();
 #endif
