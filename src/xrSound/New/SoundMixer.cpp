@@ -251,6 +251,12 @@ Snd_GetTimestamp()
     return std::chrono::high_resolution_clock::now().time_since_epoch().count();
 }
 
+static u32
+Snd_Milliseconds()
+{
+    return (float)((Snd_GetTimestamp()) / 1000000);
+}
+
 static void
 Snd_PurgeCacheLine(u32 cache_idx, bool purge_from_entry)
 {
@@ -897,6 +903,7 @@ Snd_MixerRenderCallback(float* buffer)
             if (slot.zone_idx) {
                 sound_zone_params& zone = mixer.zones.at(slot.zone_idx - 1);
                 zone.use_count++;
+                zone.last_use_ms = Snd_Milliseconds();
 
                 float* reverb_buffer[SND_CHANNEL_COUNT] = {};
                 for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -927,7 +934,7 @@ Snd_MixerRenderCallback(float* buffer)
     // Reverb mixing
     if (psSoundFlags.is(ss_EFX)) {
         for (auto& zone : mixer.zones) {
-            if (zone.use_count == 0) {
+            if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds()) {
                 continue;
             }
 

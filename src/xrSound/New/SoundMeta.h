@@ -137,6 +137,7 @@ struct sound_zone_params
     u32 version;
     u32	environment;
     u32 use_count;
+    u64 last_use_ms;
     Fvector min;
     Fvector max;
     Fvector center;
