@@ -36,8 +36,8 @@ float2 gbuf_unpack_uv(float3 position)
     return saturate(position.xy * 0.5 + 0.5);
 }
 
-#define SSLR_STEPS 30
-#define MAX_FIND_STEP 5
+#define SSLR_STEPS 6
+#define MAX_FIND_STEP 2
 
 float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 {
@@ -46,14 +46,14 @@ float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 	[unroll(MAX_FIND_STEP)]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
+		HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
 		HitDepth *= HitDepth;
 		
 		Reflect *= 0.5f;
 		EndProj += dot(EndProj, EndProj) > HitDepth ? -Reflect : Reflect;
 	}
 	
-	HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
+	HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
 	HitDepth *= HitDepth;
 	
 	return HitDepth;
@@ -105,11 +105,12 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(SamplePoint.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
-		Step *= 1.25f;
+		//Step *= 1.25f;  // 30
+		Step *= 1.725f;   // 6
 		
 		SamplePoint.xyz = Point.xyz + Reflect * L;
 		
-		SampleHitPointLen = s_env.SampleLevel(smp_rtlinear, SamplePoint.xyz, 0).w;
+		SampleHitPointLen = s_env.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).w;
 		SampleHitPointLen *= SampleHitPointLen;
 		
 		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
@@ -163,8 +164,8 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	
 	float L = 0.001f;
 	
-	Step *= is_hud ? 0.2f : 1.0f;
-	float StepScale = is_hud ? 1.095f : 1.0f;
+	Step *= is_hud ? 0.09f : 1.0f;
+	float StepScale = is_hud ? 2.12f : 1.0f;
 	
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
