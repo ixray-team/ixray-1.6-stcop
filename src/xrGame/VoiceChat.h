@@ -1,5 +1,6 @@
 #pragma once
 #include "../../xrUI/ui_defs.h"
+#if 0
 #include "../xrSound/Recorder/SoundVoiceChat.h"
 #include "VoiceSender.h"
 
@@ -59,3 +60,4 @@ private:
 
 	ui_shader m_voiceIndicatorShader;
 };
+#endif

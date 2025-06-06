@@ -438,19 +438,19 @@ void CControllerPsyHit::set_sound_state(ESoundState state)
 		monster->m_sound_tube_prepare.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
 	} else 
 	if (state == eStart) {
-		if (monster->m_sound_tube_prepare._feedback())	monster->m_sound_tube_prepare.stop();
+		if (monster->m_sound_tube_prepare.is_playing())	monster->m_sound_tube_prepare.stop();
 
 		monster->m_sound_tube_start.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
 		monster->m_sound_tube_pull.play_at_pos(pActor, Fvector().set(0.f, 0.f, 0.f), sm_2D);
 	} else 
 	if (state == eHit) {
-		if (monster->m_sound_tube_start._feedback())	monster->m_sound_tube_start.stop();
-		if (monster->m_sound_tube_pull._feedback())		monster->m_sound_tube_pull.stop();
+		if (monster->m_sound_tube_start.is_playing())	monster->m_sound_tube_start.stop();
+		if (monster->m_sound_tube_pull.is_playing())		monster->m_sound_tube_pull.stop();
 	} else 
 	if (state == eNone) {
-		if (monster->m_sound_tube_start._feedback())	monster->m_sound_tube_start.stop();
-		if (monster->m_sound_tube_pull._feedback())		monster->m_sound_tube_pull.stop();
-		if (monster->m_sound_tube_prepare._feedback())	monster->m_sound_tube_prepare.stop();
+		if (monster->m_sound_tube_start.is_playing())	monster->m_sound_tube_start.stop();
+		if (monster->m_sound_tube_pull.is_playing())		monster->m_sound_tube_pull.stop();
+		if (monster->m_sound_tube_prepare.is_playing())	monster->m_sound_tube_prepare.stop();
 	}
 
 	m_sound_state = state;

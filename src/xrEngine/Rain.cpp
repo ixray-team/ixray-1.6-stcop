@@ -228,7 +228,7 @@ void CEffect_Rain::OnFrame()
 	{
 		if (factor < EPS_L)
 		{
-			if (snd_Ambient._feedback())
+			if (snd_Ambient.is_playing())
 			{
 				snd_Ambient.stop();
 				m_rainVolume = 0.0f;
@@ -264,13 +264,13 @@ void CEffect_Rain::OnFrame()
 	}
 
 	// ambient sound
-	if (snd_Ambient._feedback())
+	if (snd_Ambient.is_playing())
 	{
 		m_rainVolume = _max(0.1f, factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 
-	if (CurDropSnd._feedback())
+	if (CurDropSnd.is_playing())
 	{
 		float Distance = 35.f;
 		const Fvector Direction(0, 1, 0);

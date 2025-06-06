@@ -148,7 +148,7 @@ void CBulletManager::Load		()
 	xr_string tmp;
 	for (int k=0; k<cnt; ++k)
 	{
-		m_WhineSounds.push_back	(ref_sound());
+		m_WhineSounds.push_back(ref_sound());
 		m_WhineSounds.back().create(_GetItem(whine_sounds,k,tmp),st_Effect,sg_SourceType);
 	}
 
@@ -172,8 +172,8 @@ void CBulletManager::PlayExplodePS( const Fmatrix& xf )
 void CBulletManager::PlayWhineSound(SBullet* bullet, CObject* object, const Fvector& pos)
 {
 	if (m_WhineSounds.empty())						return;
-	if (bullet->m_whine_snd._feedback() != nullptr)	return;
-	if(bullet->hit_type!=ALife::eHitTypeFireWound ) return;
+	if (bullet->m_whine_snd.is_playing())	        return;
+	if (bullet->hit_type!=ALife::eHitTypeFireWound ) return;
 
 	bullet->m_whine_snd								= m_WhineSounds[Random.randI(0, (u32)m_WhineSounds.size())];
 	bullet->m_whine_snd.play_at_pos					(object,pos);

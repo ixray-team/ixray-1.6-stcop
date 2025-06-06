@@ -6,7 +6,7 @@
 
 #include "ui_shadermain.h"
 #include "../../xrSound/stdafx.h"
-#include "../../xrSound/SoundRender_Source.h"
+#include "../../xrSound/Sound.h"
 #include "../xrECore/Editor/D3DUtils.h"
 
 #include "SHSoundEnvTools.h"
@@ -124,13 +124,13 @@ CSHSoundEnvTools::~CSHSoundEnvTools()
 void CSHSoundEnvTools::OnChangeWAV	(PropValue* prop)
 {
 
-	BOOL bPlay 		= !!m_PreviewSnd._feedback();
+	BOOL bPlay 		= m_PreviewSnd.is_playing();
 	m_PreviewSnd.destroy();
 	if (m_SoundName.size()){
 		m_PreviewSnd.create				(*m_SoundName,st_Effect,sg_Undefined);
-		CSoundRender_Source* src= (CSoundRender_Source*)m_PreviewSnd._handle();
-		m_Params.min_distance	= src->m_fMinDist;
-		m_Params.max_distance	= src->m_fMaxDist;
+        m_Params.min_distance = m_PreviewSnd.get_params().min_distance;
+        m_Params.max_distance = m_PreviewSnd.get_params().max_distance;
+        m_Params.max_ai_distance = m_PreviewSnd.get_params().max_ai_distance;
 	}
 	if (bPlay) 		m_PreviewSnd.play	(0,sm_Looped);
 	
@@ -194,7 +194,7 @@ void CSHSoundEnvTools::OnFrame()
 
 void CSHSoundEnvTools::OnRender()
 {
-	if (m_PreviewSnd._handle()){	
+	if (m_PreviewSnd.is_playing()){	
 		RCache.set_xform_world	(Fidentity);
 		EDevice->SetShader	(EDevice->m_WireShader);
 		u32 clr0			= SOUND_SEL0_COLOR;
@@ -360,7 +360,7 @@ void  CSHSoundEnvTools::OnEnvSizeChange(PropValue* sender)
 	test_env.Reverb				= m_EnvSrc.Reverb;
 	test_env.ReverbDelay 		= m_EnvSrc.ReverbDelay;
 	CSound_environment* E		= m_Env;
-	Sound->set_environment_size	(&test_env,&E);
+	//Sound->set_environment_size	(&test_env,&E);
 	ExecCommand					(COMMAND_UPDATE_PROPERTIES);
 }
 
