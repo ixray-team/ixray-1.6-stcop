@@ -20,6 +20,7 @@ float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
 float	psSoundVEffects = 1.0f;
 float	psSoundVFactor = 1.0f;
+float	psSoundCompression = 0.5f;
 
 float	psSoundVMusic = 1.0f;
 int		psSoundCacheSizeMB = 256;
@@ -49,7 +50,7 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, m_V, P, D, N);
+	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundCompression, m_V, P, D, N);
 	pSoundVoiceChat->Update(P, D, N);
 }
 
@@ -73,6 +74,62 @@ void CSoundRender_Core::statistic(CSound_stats* dest, CSound_stats_ext* ext)
 void CSoundRender_Core::time_factor(float time_factor)
 {
 	psTimeFactor = time_factor;
+}
+
+float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
+{
+	float occ_value = 1.f;
+
+	// Calculate RAY params
+	Fvector base = listener_position();
+	Fvector	pos, dir;
+	float	range;
+	pos.random_dir();
+	pos.mul(R);
+	pos.add(P);
+	dir.sub(pos, base);
+	range = dir.magnitude();
+	dir.div(range);
+
+	if (0 != geom_MODEL) {
+		bool bNeedFullTest = true;
+		// 1. Check cached polygon
+		float _u, _v, _range;
+		if (CDB::TestRayTri(base, dir, occ, _u, _v, _range, true))
+			if (_range > 0 && _range < range) { occ_value = psSoundOcclusionScale; bNeedFullTest = false; }
+		// 2. Polygon doesn't picked up - real database query
+		if (bNeedFullTest)
+		{
+			geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
+			geom_DB.ray_query(geom_MODEL, base, dir, range);
+			if (0 != geom_DB.r_count())
+			{
+				// cache polygon
+				const CDB::RESULT* R_ = geom_DB.r_begin();
+				const CDB::TRI& T = geom_MODEL->get_tris()[R_->id];
+				const Fvector* V = geom_MODEL->get_verts();
+				occ[0].set(V[T.verts[0]]);
+				occ[1].set(V[T.verts[1]]);
+				occ[2].set(V[T.verts[2]]);
+				occ_value = psSoundOcclusionScale;
+			}
+		}
+	}
+	if (0 != geom_SOM)
+	{
+		geom_DB.ray_options(CDB::OPT_CULL);
+		geom_DB.ray_query(geom_SOM, base, dir, range);
+		u32 r_cnt = geom_DB.r_count();
+		CDB::RESULT* _B = geom_DB.r_begin();
+
+		if (0 != r_cnt) {
+			for (u32 k = 0; k < r_cnt; k++) {
+				CDB::RESULT* R_ = _B + k;
+				occ_value *= *(float*)&R_->dummy;
+			}
+		}
+	}
+	return occ_value;
 }
 
 float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion)
@@ -491,8 +548,6 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 	}
 
 	Mixer::Play(S.slot(), mixer_flags, &S, delay);
-	Fvector volume = { 1.0f, 1.0f, 1.0f };
-	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::VolumePerChannel, volume);
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
 	S._p->g_type = (S._p->g_type == sg_SourceType) ? S._p->g_type : XRay::Sound::Mixer::GetGameType(S.slot());
 	Mixer::UpdateParameter(S.slot(), Mixer::ParameterId::Position, pos);
