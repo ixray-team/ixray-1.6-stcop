@@ -44,6 +44,4 @@ function opt_sound:InitControls(x, y, xml, handler)
     xml:InitStatic("tab_sound:cap_check_eax", _st)
     xml:InitCheck("tab_sound:check_eax", _st)
     addControl(_st)
-
-
 end
