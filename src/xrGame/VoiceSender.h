@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 #include "../xrSound/Recorder/IVoicePacketSender.h"
 
 class CVoiceSender :
@@ -11,3 +12,4 @@ public:
 private:
 	u8 m_distance = 10;
 };
+#endif

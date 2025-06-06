@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "VoiceChat.h"
 #include "Level.h"
+#if 0
 #include "../xrSound/Recorder/SoundVoiceChat.h"
 #include "game_cl_mp.h"
 #include "Actor.h"
@@ -209,3 +210,4 @@ void CVoiceChat::CheckAndClearPlayers(SOUND_PLAYERS& players)
 		}
 	}
 }
+#endif 

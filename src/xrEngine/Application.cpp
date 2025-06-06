@@ -17,7 +17,7 @@ struct _SoundProcessor : public pureFrame
 	virtual void  OnFrame()
 	{
 		Device.Statistic->Sound.Begin();
-		::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		::Sound->update(Device.mView, Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
 		Device.Statistic->Sound.End();
 	}
 }	SoundProcessor;

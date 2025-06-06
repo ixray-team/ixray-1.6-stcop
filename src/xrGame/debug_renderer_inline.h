@@ -30,3 +30,17 @@ IC	void CDebugRenderer::draw_aabb	(const Fvector &center, const float &half_radi
 
 	draw_obb			(matrix,half_radius,color);	
 }
+
+IC	void CDebugRenderer::draw_aabb(const Fvector& min, const Fvector& max, const u32& color)
+{
+	Fvector center = max;
+	center.add(min); center.div(2);
+
+	Fvector half_radius = max;
+	half_radius.sub(min); half_radius.div(2);
+
+	Fmatrix	matrix;
+	matrix.translate(center);
+
+	draw_obb(matrix, half_radius, color);
+}
