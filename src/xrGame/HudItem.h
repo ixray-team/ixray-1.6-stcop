@@ -115,6 +115,7 @@ public:
 	virtual	u8					GetCurrentHudOffsetIdx () const {return 0;}
 
 	BOOL						GetHUDmode			();
+	BOOL						GetHUDSoundMode		();
 	IC BOOL						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
 
 	virtual bool				ActivateItem		();
