@@ -30,8 +30,8 @@ struct HUD_SOUND_ITEM
     {
         if (m_activeSnd)
         {
-            if (m_activeSnd->snd._feedback() && !m_activeSnd->snd._feedback()->is_2D())
-                m_activeSnd->snd.set_position(pos);
+			if (m_activeSnd->snd.slot()&&!m_activeSnd->snd._p->is_2d())	
+                m_activeSnd->snd.set_position	(pos);
             else
                 m_activeSnd = nullptr;
         }

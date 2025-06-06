@@ -83,7 +83,7 @@ void IGame_Level::net_Stop			()
 //extern CStatTimer				tscreate;
 void  _sound_event		(ref_sound_data_ptr S, float range)
 {
-	if ( g_pGameLevel && S && S->feedback )	g_pGameLevel->SoundEvent_Register	(S,range);
+	if ( g_pGameLevel && S && S->slot )	g_pGameLevel->SoundEvent_Register	(S,range);
 }
 
 void IGame_Level::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
@@ -204,7 +204,7 @@ bool IGame_Level::Load			(u32 dwNum)
 
 	// CForms
 	g_pGamePersistent->SetLoadStageTitle("st_loading_cform");
-	g_pGamePersistent->LoadTitle	();
+	g_pGamePersistent->LoadTitle();
 
 	ObjectSpace.Load
 	(
@@ -256,8 +256,7 @@ bool IGame_Level::Load			(u32 dwNum)
 int		psNET_DedicatedSleep	= 5;
 void	IGame_Level::OnRender		( ) 
 {
-	if (!g_dedicated_server)
-	{
+	if (!g_dedicated_server) {
 		{
 			PROF_EVENT("IGame_Level::OnRender: Calculate");
 			Render->Calculate();
@@ -268,7 +267,6 @@ void	IGame_Level::OnRender		( )
 		}
 	}
 }
-
 
 void	IGame_Level::OnFrame		( ) 
 {
@@ -343,26 +341,26 @@ void IGame_Level::SetViewEntity( CObject* O  )
 	pCurrentViewEntity=O;
 }
 
-void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
+void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 {
 	PROF_EVENT("IGame_Level::SoundEvent_Register");
-	if (!g_bLoaded)									return;
-	if (!S)											return;
-	if (S->g_object && S->g_object->getDestroy())	{S->g_object=nullptr; return;}
-	if (0==S->feedback)								return;
+	if (!g_bLoaded) return;
+	if (!S) return;
+	if (S->g_object && S->g_object->getDestroy()) {S->g_object=nullptr; return;}
+	if (0u==S->slot) return;
 
-	clamp					(range,0.1f,500.f);
+	clamp(range,0.1f,500.f);
 
-	CSound_params p	= S->feedback->get_params();
-	Fvector snd_position	= p.position;
-	if(S->feedback->is_2D()){
-		snd_position.add	(Sound->listener_position());
-	}
-	VERIFY					(_valid(range) );
+	CSound_params p = S->get_params();
+	Fvector snd_position = p.position;
+	if(S->is_2d())
+		snd_position.add(Sound->listener_position());
+
+	VERIFY(_valid(range) );
 	range = std::min(range,p.max_ai_distance);
-	VERIFY					(_valid(snd_position));
-	VERIFY					(_valid(p.max_ai_distance));
-	VERIFY					(_valid(p.volume));
+	VERIFY(_valid(snd_position));
+	VERIFY(_valid(p.max_ai_distance));
+	VERIFY(_valid(p.volume));
 
 	g_SpatialSpace->q_box(snd_ER, 0, ESPATIAL_TYPE::REACTTOSOUND, snd_position, { range,range,range });
 
@@ -370,7 +368,7 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 	for (auto& spatial : snd_ER)
 	{
 		Feel::Sound* L = spatial->dcast_FeelSound();
-		if (0==L)			continue;
+		if (0==L) continue;
 		CObject* CO = spatial->dcast_CObject();
 		VERIFY(CO);
 		if (CO->getDestroy()) continue;
@@ -379,10 +377,9 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 		VERIFY(_valid(spatial->sphere.P));
 		float dist = snd_position.distance_to(spatial->sphere.P);
 		if (dist>p.max_ai_distance) continue;
-		VERIFY				(_valid(dist));
-		VERIFY2				(!fis_zero(p.max_ai_distance), S->handle->file_name());
-		float Power			= (1.f-dist/p.max_ai_distance)*p.volume;
-		VERIFY				(_valid(Power));
+		VERIFY(_valid(dist));
+		float Power = (1.f-dist/p.max_ai_distance)*p.volume;
+		VERIFY(_valid(Power));
 		if (Power>EPS_S)
 		{
 			float occ = Sound->get_occlusion_to(spatial->sphere.P,snd_position);
@@ -390,26 +387,26 @@ void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
 			Power *= occ;
 			if (Power>EPS_S)
 				snd_Events.push_back({ L, S, Power });
-			}
 		}
 	}
+}
 
-void	IGame_Level::SoundEvent_Dispatch	( )
+void IGame_Level::SoundEvent_Dispatch()
 {
 	PROF_EVENT("IGame_Level::SoundEvent_Dispatch");
 	for(_esound_delegate& D : snd_Events)
 	{
-		VERIFY				(D.dest && D.source);
-		if (D.source->feedback)	{
-			D.dest->feel_sound_new	(
-				D.source->g_object,
-				D.source->g_type,
-				D.source->g_userdata,
-
-				D.source->feedback->is_2D() ? Device.vCameraPosition : 
-					(D.source->feedback->get_params()).position,
+		VERIFY(D.dest && D.source);
+		if (D.source->slot)
+		{
+			D.dest->feel_sound_new
+			(
+				D.source->g_object, 
+				D.source->g_type, 
+				D.source->g_userdata, 
+				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position, 
 				D.power
-				);
+			);
 		}
 	}
 
