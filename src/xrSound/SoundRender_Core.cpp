@@ -5,6 +5,7 @@
 #include "cl_intersect.h"
 #include "SoundRender_Core.h"
 #include "New/SoundMixer.h"
+#include "New/SoundBackend.h"
 #include "New/SoundMixerInternal.h"
 #include "../xrEngine/IRenderable.h"
 #include "Recorder/SoundVoiceChat.h"
@@ -128,7 +129,9 @@ CSoundRender_Core::~CSoundRender_Core()
 
 void CSoundRender_Core::_initialize(int stage)
 {
-	if (stage == 0) {
+	if (stage == 0) 
+	{
+		GenerateDevicesToken();
 		XRay::Sound::Mixer::Initialize();
 	}
 
@@ -529,6 +532,43 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 	S.slot = 0;
 	S.fn_attached[0].clear();
 	S.fn_attached[1].clear();
+}
+
+void CSoundRender_Core::GenerateDevicesToken()
+{
+	int DevicesCount = 0;
+	SDL_AudioDeviceID* Devices = SDL_GetAudioPlaybackDevices(&DevicesCount);
+
+	snd_devices_token = new xr_token[DevicesCount + 2];
+
+	snd_devices_token[0].id = 0;
+	snd_devices_token[0].name = "default device";
+
+	SoundDevices[snd_devices_token[0].name] = SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK;
+
+	for (int Iter = 0; Iter < DevicesCount; Iter++)
+	{
+		xr_string DeviceName = Platform::UTF8_to_CP1251(SDL_GetAudioDeviceName(Devices[Iter]));
+		snd_devices_token[Iter + 1].id = Iter + 1;
+		snd_devices_token[Iter + 1].name = xr_strdup(DeviceName.c_str());
+
+		xr_strlwr(DeviceName);
+		SoundDevices[DeviceName] = Devices[Iter];
+	}
+
+	snd_devices_token[DevicesCount + 1].id = -1;
+	snd_devices_token[DevicesCount + 1].name = nullptr;
+
+	SDL_free(Devices);
+}
+
+void CSoundRender_Core::SwitchAuidoDevice(const xr_string& Name)
+{
+	if (!SoundDevices.contains(Name))
+		return;
+
+	SDL_AudioDeviceID NewDevice = SoundDevices[Name];
+	XRay::Sound::Backend::ChangeDevice(NewDevice);
 }
 
 void CSoundRender_Core::env_apply()
