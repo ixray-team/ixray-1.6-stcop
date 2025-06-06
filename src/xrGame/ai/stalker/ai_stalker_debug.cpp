@@ -817,7 +817,7 @@ void CAI_Stalker::debug_text			()
 		xr_vector<CSoundPlayer::CSoundSingle>::const_iterator	E = sound().playing_sounds().end();
 		for ( ; I != E; ++I)
 			DBG_OutText(
-				"%s%s%s[%s]%s",
+				"%s%s%s[%s]",
 				indent,
 				indent,
 				indent,
@@ -826,13 +826,12 @@ void CAI_Stalker::debug_text			()
 				"not yet started"
 				:
 				(
-					(*I).m_sound->_feedback()
+					(*I).m_sound->is_playing()
 					?
 					"playing"
 					:
 					"already played"
-				),
-				(*I).m_sound->_handle() ? (*I).m_sound->_handle()->file_name() : "no source"
+				)
 			);
 	}
 

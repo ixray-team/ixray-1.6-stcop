@@ -236,7 +236,7 @@ void CPhantom::UpdateFlyMedia()
 		m_fly_particles->UpdateParent(xform,vel);
 	}
 	// update sound
-	if (m_state_data[stFly].sound._feedback()) m_state_data[stFly].sound.set_position(xform.c);
+	if (m_state_data[stFly].sound.is_playing()) m_state_data[stFly].sound.set_position(xform.c);
 }
 //---------------------------------------------------------------------
 
