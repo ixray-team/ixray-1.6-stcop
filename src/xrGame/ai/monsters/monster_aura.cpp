@@ -198,12 +198,12 @@ void   monster_aura::update_schedule ()
 
 	float const pp_factor			=	get_post_process_factor();
 
-	if ( !m_sound._feedback() )
+	if ( !m_sound.is_playing() )
 	{
 		m_sound.play_at_pos				(Actor(), Fvector().set(0.f, 1.f, 0.f), sm_Looped | sm_2D);
 	} 
 
-	if ( m_sound._feedback() )
+	if ( m_sound.is_playing() )
 	{
 		m_sound.set_volume				(pp_factor);
 	}

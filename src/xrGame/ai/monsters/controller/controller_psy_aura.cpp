@@ -41,21 +41,21 @@ BOOL CPPEffectorControllerAura::update()
 			m_effector_state	= eStatePermanent;
 			m_factor			= 1.f;
 		} else if (m_factor < 0) {
-			if (m_snd_left._feedback())		m_snd_left.stop();
-			if (m_snd_right._feedback())	m_snd_right.stop();
+			if (m_snd_left.is_playing())		m_snd_left.stop();
+			if (m_snd_right.is_playing())	m_snd_right.stop();
 		
 			return FALSE;
 		}
 	}
 
 	// start new or play again?
-	if (!m_snd_left._feedback() && !m_snd_right._feedback()) {
+	if (!m_snd_left.is_playing() && !m_snd_right.is_playing()) {
 		m_snd_left.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
 		m_snd_right.play_at_pos	(Actor(), Fvector().set(-1.f, 0.f, 1.f), sm_Looped | sm_2D);
 	} 
 
-	if (m_snd_left._feedback())		m_snd_left.set_volume	(m_factor);
-	if (m_snd_right._feedback())	m_snd_right.set_volume	(m_factor);
+	if (m_snd_left.is_playing())	m_snd_left.set_volume	(m_factor);
+	if (m_snd_right.is_playing())	m_snd_right.set_volume	(m_factor);
 
 	return TRUE;
 }
