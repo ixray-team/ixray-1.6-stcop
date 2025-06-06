@@ -3,11 +3,9 @@
 #include "SoundRender_Environment.h"
 class SoundVoiceChat;
 
-class CSoundRender_Core	: public CSound_manager_interface
+class CSoundRender_Core	: 
+	public CSound_manager_interface
 {
-protected:
-	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
-	virtual void						_destroy_data			( ref_sound_data& S);
 protected:
 	Fvector								listenerPos;
 	BOOL								bListenerMoved;
@@ -28,6 +26,8 @@ public:
 	bool m_is_supported; // Boolean variable to indicate presence of EFX Extension
 
 	sound_event*						Handler;
+
+	xr_string_map<xr_string, u32>		SoundDevices;
 protected:
 	// Collider
 	CDB::COLLIDER						geom_DB;
@@ -41,6 +41,11 @@ protected:
 
 	int									m_iPauseCounter;
 
+protected:
+	virtual void						_create_data			( ref_sound_data& S, LPCSTR fName,	esound_type sound_type, int game_type); 
+	virtual void						_destroy_data			( ref_sound_data& S);
+			void						GenerateDevicesToken	();
+	virtual void						SwitchAuidoDevice		(const xr_string& Name) override;
 public:
 										CSoundRender_Core		();
 	virtual								~CSoundRender_Core		();
@@ -51,7 +56,6 @@ public:
 	virtual void						_restart				( );
 
 	// Sound interface
-			void						verify_refsound			( ref_sound& S);
 	virtual void						create					( ref_sound& S, LPCSTR fName,			esound_type sound_type, int	game_type);
 	virtual void						attach_tail				( ref_sound& S, LPCSTR fName);
 

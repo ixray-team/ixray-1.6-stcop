@@ -552,6 +552,8 @@ public:
 		GetToken				();
 		if(!tokens)				return;
 		inherited::Execute		(args);
+
+		::Sound->SwitchAuidoDevice(args);
 	}
 
 	virtual void	Status	(TStatus& S)
