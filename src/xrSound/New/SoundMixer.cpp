@@ -119,7 +119,10 @@ struct sound_mixer_state
     float master_volume = 0.0f;
     float effect_volume = 0.0f;
     float music_volume = 0.0f;
-    Fvector P, D, N;
+    float compression = 0.0f;
+    float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
+    Fvector P, D, N;             
+    Fvector occ;
     Fmatrix m_V;
 
     xr_vector<u32> free_slots;
@@ -497,7 +500,7 @@ Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
         Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
         Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
         float dist = mixer.P.distance_to(pos);
-        if (dist > distances.y * 2) {
+        if (dist > distances.y) {
             if (occ_volume) *occ_volume = 0.0f;
             return false;
         }
@@ -602,9 +605,12 @@ Snd_UpdateCache(u32 slot_idx)
                 }
             }
 
-            R_ASSERT(cache_entry_idx != 0);
-            Snd_PurgeCacheLine(source.cache_lines[cache_entry_idx - 1], false);
-            source.cache_lines[cache_entry_idx - 1] = found_cache_idx;
+            if (cache_entry_idx != 0) {
+                Snd_PurgeCacheLine(source.cache_lines[cache_entry_idx - 1], false);
+                source.cache_lines[cache_entry_idx - 1] = found_cache_idx;
+            } else {
+                VERIFY2(false, "very bad bad bad");
+            }
         }
     }
 
@@ -630,7 +636,11 @@ Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
         if (found_cache_idx == 0) {
             Snd_UpdateCache(slot_idx);
             found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
-            R_ASSERT(found_cache_idx != 0);
+            VERIFY(found_cache_idx != 0);
+        }
+
+        if (found_cache_idx == 0) {
+            break;
         }
 
         auto& cache_line = mixer.cache_lines[found_cache_idx - 1];
@@ -782,7 +792,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 
     // Attenuation
     distance = std::clamp(distance, distances.x, distances.y);
-    float att = distances.x / (distances.x + psSoundRolloff * (distance - distances.x));
+    float att = 0.5f + ((distances.x / (distances.x + psSoundRolloff * (distance - distances.x)) * 0.5f));
     att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x) * 2), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -861,7 +871,8 @@ Snd_MixerRenderCallback(float* buffer)
         }
 
         // Apply final volumes
-        float volume_final = occ_volume * volumes.x * volumes.y * (is_music ? mixer.music_volume : mixer.effect_volume);
+        float slot_volume = volumes.x * volumes.y * volumes.z;
+        float volume_final = occ_volume * slot_volume * (is_music ? mixer.music_volume : mixer.effect_volume);
         begin_factor *= volume_final;
         end_factor *= volume_final;
 
@@ -876,32 +887,16 @@ Snd_MixerRenderCallback(float* buffer)
                 DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
             }
 
-            CDB::MODEL* env_model = Sound->get_geometry_env();
-            CDB::COLLIDER* collider = Sound->get_geometry_db();
-            if (env_model != nullptr) {
-                Fvector	dir = { 0,-1,0 };
-		        collider->ray_options(CDB::OPT_ONLYNEAREST);
-		        collider->ray_query(env_model, pos, dir, 1000.f);
-		        if (collider->r_count()) {
- 			        CDB::RESULT* r = collider->r_begin();
-			        CDB::TRI* T = env_model->get_tris() + r->id;
-			        Fvector* V = env_model->get_verts();
+            if (slot.zone_idx) {
+                sound_zone_params& zone = mixer.zones.at(slot.zone_idx - 1);
 
-			        Fvector tri_norm;
-			        tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+                float* reverb_buffer[SND_CHANNEL_COUNT] = {};
+                for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+                    reverb_buffer[ch] = zone.data[ch];
+                }
 
-			        float dot = dir.dotproduct(tri_norm);
-                    R_ASSERT(T->dummy < mixer.zones.size());
-                    sound_zone_params& zone = mixer.zones.at(T->dummy);
-
-                    float* reverb_buffer[SND_CHANNEL_COUNT] = {};
-                    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-                        reverb_buffer[ch] = zone.data[ch];
-                    }
-
-                    // TODO(vertver): better volume attenutation for reverb stuff
-                    DSP_MixBuffer(reverb_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
-		        }
+                // TODO(vertver): better volume attenutation for reverb stuff
+                DSP_MixBuffer(reverb_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
             }
         }
 
@@ -957,6 +952,8 @@ Snd_MixerRenderCallback(float* buffer)
 
         DSP_MixBuffer(master_buffer, bus_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
     }
+
+    DSP_Compressor(0.001f, 0.040f, -10.0f, 2.5f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
 
     // Clipping and master volume adjust
     for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
@@ -1125,16 +1122,28 @@ DestroyInternal(int slot)
     mixer.free_slots.push_back(slot);
 }
 
+IC void	volume_lerp(float& c, float t, float s, float dt)
+{
+    float diff = t - c;
+    float diff_a = _abs(diff);
+    if (diff_a < EPS_S) return;
+    float mot = s * dt;
+    if (mot > diff_a) mot = diff_a;
+    c += (diff / diff_a) * mot;
+}
+
 void 
-Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
+Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
 {
     PROF_EVENT("Sound: Update Stage");
     sound_event* handler = (sound_event*)event_handler;
 
     static u64 timestamp = Snd_GetTimestamp();
+    float dt = (float)((Snd_GetTimestamp() - timestamp) / 1000000) * 0.001f;
     timestamp = Snd_GetTimestamp();
 
     mixer.time_factor = std::clamp(time_factor, 0.1f, 10.0f);
+    mixer.compression = compression;
     mixer.master_volume = volume;
     mixer.effect_volume = eff_volume;
     mixer.music_volume = mus_volume;
@@ -1143,8 +1152,8 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
     mixer.D = D;
     mixer.N = N;
 
-    xrSRWLockGuard g0(mixer.update_lock);
-    xrSRWLockGuard g1(mixer.manage_lock);
+    mixer.update_lock.AcquireExclusive();
+    mixer.manage_lock.AcquireExclusive();
 
     for (auto sound : mixer.sounds) {
         if (sound == nullptr || !sound->unique_id() || !sound->slot() || sound->_g_object() == nullptr) {
@@ -1155,11 +1164,11 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
         if (slot.fake_state != State::Playing || slot.state != State::Playing) {
             continue;
         }
-
         CObject* object = sound->_g_object();
         if (slot.flags & (u16)Flags::Spatial && (slot.flags & (u16)Flags::NoPosUpdate) == 0) {
             if (object != nullptr) {
-                slot.parameters[(u32)Mixer::ParameterId::Position] = ((IRenderable*)object)->renderable.xform.c;
+                auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
+                pos = ((IRenderable*)object)->renderable.xform.c;
             }
         }
     }
@@ -1168,6 +1177,38 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
         auto& slot = mixer.slots[i];
         if (slot.flags & (u16)Flags::NoFeedback && slot.state == State::Stopped) {
             Destroy(i + 1);
+        } else if (slot.flags & (u16)Flags::Spatial && slot.state == State::Playing) {
+            auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
+            float dist = mixer.P.distance_to(pos);
+            if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y) {
+                float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
+                float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
+                volume_lerp(old_occ, out_occ, 1.0f, dt);
+
+                CDB::MODEL* env_model = ::Sound->get_geometry_env();
+                CDB::COLLIDER* collider = ::Sound->get_geometry_db();
+                if (env_model != nullptr) {
+                    Fvector	dir = { 0,-1,0 };
+                    collider->ray_options(CDB::OPT_ONLYNEAREST);
+                    collider->ray_query(env_model, pos, dir, 1000.f);
+                    if (collider->r_count()) {
+                        CDB::RESULT* r = collider->r_begin();
+                        CDB::TRI* T = env_model->get_tris() + r->id;
+                        Fvector* V = env_model->get_verts();
+
+                        Fvector tri_norm;
+                        tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+
+                        float dot = dir.dotproduct(tri_norm);
+                        R_ASSERT(T->dummy < mixer.zones.size());
+                        slot.zone_idx = T->dummy + 1;
+                    } else {
+                        slot.zone_idx = 0;
+                    }
+                } else {
+                    slot.zone_idx = 0;
+                }
+            }
         }
     }
 
@@ -1277,6 +1318,14 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
         } break;
         case sound_cmd_id::update_parameter: {
             mixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector(*(double*)&cmd.param1, *(double*)&cmd.param2, *(double*)&cmd.param3);
+
+            auto& slot = mixer.slots[cmd.slot - 1];
+            if (slot.flags & (u16)Flags::Spatial && cmd.param0 == (u16)ParameterId::Position) {
+                auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
+                float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
+                float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
+                volume_lerp(old_occ, out_occ, 1.0f, dt);
+            }
         } break;
         case sound_cmd_id::set_volume: {
             mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&cmd.param1;
@@ -1286,6 +1335,9 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 
     mixer.cmd.resize(0);
     mixer.stats.update_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
+
+    mixer.manage_lock.ReleaseExclusive();
+    mixer.update_lock.ReleaseExclusive();
 }
 
 void 
@@ -1597,8 +1649,8 @@ Mixer::GetZones()
 
 ref_sound::ref_sound()
 {
-    xrSRWLockGuard g(mixer.update_lock);
     xrSRWLockGuard g1(mixer.manage_lock);
+    xrSRWLockGuard g2(mixer.update_lock);
 
     if (!mixer.sounds.contains(this)) {
         mixer.sounds.emplace(this);
@@ -1607,8 +1659,8 @@ ref_sound::ref_sound()
 
 ref_sound::~ref_sound()
 {
-    xrSRWLockGuard g(mixer.update_lock);
     xrSRWLockGuard g1(mixer.manage_lock);
+    xrSRWLockGuard g2(mixer.update_lock);
 
     if (mixer.sounds.contains(this)) {
         mixer.sounds.erase(this);

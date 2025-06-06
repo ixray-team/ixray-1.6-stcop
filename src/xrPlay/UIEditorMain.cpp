@@ -236,6 +236,7 @@ void RenderUI()
 				static float max_volume = 0.0f;
 
 #ifdef DEBUG_DRAW
+				/*
 				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
 					ImGui::Text("Volume %i: %.2fdB", i, stats.channel_volumes[i]);
 				}
@@ -252,6 +253,7 @@ void RenderUI()
 				ImGui::SameLine();
 
 				ImGui::Separator();
+				*/
 #endif
 
 				ImGui::Text("Slots: %d", slots.size() - free_slots);
@@ -308,13 +310,14 @@ void RenderUI()
 					const char* state_name = magic_enum::enum_name(slot.state).data();
 					Fvector* parameters = XRay::Sound::Mixer::GetParameters(i + 1);
 					Fvector& pos = parameters[(u32)XRay::Sound::Mixer::ParameterId::Position];
-					float volume = parameters[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
+					Fvector& volumes = parameters[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel];
 					float playtime = XRay::Sound::Mixer::GetPlaytime(i + 1);
 					float duration = XRay::Sound::Mixer::GetDuration(i + 1);
 					if (slot.flags & (u32)XRay::Sound::Mixer::Flags::Spatial) {
-						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: %.1f%%, (%.3f,%.3f,%.3f), %s", i + 1, name, playtime, duration, volume * 100.0f, pos.x, pos.y, pos.z, state_name);
+						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: (%.1f%% %.1f%%, %.1f%%), (%.3f,%.3f,%.3f), %s", 
+							i + 1, name, playtime, duration, volumes.x * 100.0f, volumes.y * 100.0f, volumes.z * 100.0f, pos.x, pos.y, pos.z, state_name);
 					} else {
-						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: %.1f%%, 2D, %s", i + 1, name, playtime, duration, volume * 100.0f, state_name);
+						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: %.1f%%, 2D, %s", i + 1, name, playtime, duration, volumes.x * 100.0f, state_name);
 					}
 				}
 				ImGui::EndTabItem();
