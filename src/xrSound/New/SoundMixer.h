@@ -34,7 +34,7 @@ namespace XRay::Sound::Mixer
 {
     XRSOUND_API void Initialize();
     XRSOUND_API void Shutdown();
-    XRSOUND_API void Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N);
+    XRSOUND_API void Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N);
     XRSOUND_API void StopAll();
     XRSOUND_API void PauseAll();
     XRSOUND_API void ResumeAll();
@@ -53,6 +53,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void Pause(u32 slot);
     XRSOUND_API void Stop(u32 slot, bool deferred);
     XRSOUND_API void UpdateParameter(u32 slot, ParameterId parameter, Fvector value);
+    XRSOUND_API void SetVolume(u32 slot, double volume);
 
     XRSOUND_API bool SlotIsRelated(u32 slot);
     XRSOUND_API u32 GetGameType(u32 slot);

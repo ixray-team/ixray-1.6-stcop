@@ -746,6 +746,7 @@ void CCC_Register()
 	CMD1(CCC_VID_Reset, "vid_restart"			);
 	
 	// Sound
+	CMD4(CCC_Float,     "snd_compression",      &psSoundCompression, 0.0f, 1.0f);
 	CMD2(CCC_Float,		"snd_volume_eff",		&psSoundVEffects);
 	CMD2(CCC_Float,		"snd_volume_music",		&psSoundVMusic);
 	CMD1(CCC_SND_Restart,"snd_restart"			);

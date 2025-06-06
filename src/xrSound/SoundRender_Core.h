@@ -84,6 +84,7 @@ public:
 	virtual void						statistic				( CSound_stats*  dest, CSound_stats_ext*  ext );
 
 	virtual void						time_factor				(float time_factor);
+	virtual float						get_occlusion			(Fvector& P, float R, Fvector* occ);
 	virtual float						get_occlusion_to		( const Fvector& hear_pt, const Fvector& snd_pt, float dispersion=0.2f);
 
 	virtual SoundEnvironment_LIB*		get_env_library			()																{ return s_environment; }
