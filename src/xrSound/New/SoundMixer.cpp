@@ -1281,7 +1281,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
                             data_ptr->g_type = 0;
                             data_ptr->g_object = obj;
                             data_ptr->dont_destroy_slot = true;
-                            data_ptr->fn_attached[0] = source.pub.path.c_str();
+                            data_ptr->fn_attached[0] = source.pub.path;
                             handler(data_ptr, range);
                         }
                     } else {
@@ -1435,7 +1435,7 @@ Mixer::Destroy(u32 slot)
 void 
 Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
 {
-    if (slot == 0 || sound == nullptr || sound->_p == nullptr || sound->_p->fn_attached[0].empty()) {
+    if (slot == 0 || sound == nullptr || sound->_p == nullptr || sound->_p->fn_attached[0] == nullptr) {
         return;
     }
 
@@ -1457,7 +1457,7 @@ Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, f
     slot.fake_state = State::Playing;
     mixer.cmd.emplace_back(sound_command { 
         .slot = slot_idx, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound,
-        .param2 = *(u64*)&delay, .param3 = (u64)obj, .string_storage = sound->_p->fn_attached[0].c_str()
+        .param2 = *(u64*)&delay, .param3 = (u64)obj, .string_storage = sound->_p->fn_attached[0]
     });
 
     if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector(*pitch));
