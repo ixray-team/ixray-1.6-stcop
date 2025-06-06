@@ -70,38 +70,42 @@ enum esound_type{
 class CSound_UserDataVisitor;
 
 /// definition (Sound Params)
-class XRSOUND_API			CSound_params
+class XRSOUND_API CSound_params
 {
 public:
-	Fvector					position;
-	float					base_volume;
-	float					volume;
-	float					freq;
-	float					min_distance;
-	float					max_distance;
-	float					max_ai_distance;
+	Fvector position;
+	float	base_volume;
+	float	volume;
+	float	freq;
+	float	min_distance;
+	float	max_distance;
+	float	max_ai_distance;
 };
 
-class CSound_UserData	: public xr_resource		{
+class CSound_UserData :
+	public xr_resource
+{
 public:
-	virtual							~CSound_UserData()							{}
-	virtual void					accept			(CSound_UserDataVisitor*)	=0;
-	virtual void					invalidate		()							=0;
+	virtual							~CSound_UserData() {}
+	virtual void					accept(CSound_UserDataVisitor*) = 0;
+	virtual void					invalidate() = 0;
 };
 typedef resptr_core<CSound_UserData,resptr_base<CSound_UserData> >	CSound_UserDataPtr;
 
-class ref_sound_data	: public xr_resource		{
+class ref_sound_data : 
+	public xr_resource
+{
 public:
 //	shared_str						nm;
-	bool                            dont_destroy_slot = false;
 	u32                             slot;
 	esound_type						s_type;
 	int								g_type;			//!< Sound type, usually for AI
 	CObject*						g_object;		//!< Game object that emitts ref_sound
 	CSound_UserDataPtr				g_userdata;
-	xr_string						fn_attached		[2];
+	shared_str						fn_attached[2];
 
 	float							fTimeTotal;
+	bool                            dont_destroy_slot = false;
 public:
 
 	IC CSound_params get_params()

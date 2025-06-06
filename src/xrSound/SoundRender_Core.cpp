@@ -585,8 +585,8 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
 	}
 
 	S.slot = 0;
-	S.fn_attached[0].clear();
-	S.fn_attached[1].clear();
+	S.fn_attached[0] = nullptr;
+	S.fn_attached[1] = nullptr;
 }
 
 void CSoundRender_Core::GenerateDevicesToken()
