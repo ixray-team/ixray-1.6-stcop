@@ -222,7 +222,7 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 	{
 		CObject* O = Level().Objects.net_Find(bullet->parent_id);
 		bullet->m_mtl_snd = *pSound;
-		bullet->m_mtl_snd.play_at_pos(O, vEnd, 0);
+		bullet->m_mtl_snd.play_no_feedback(O, 0, 0.0f, (Fvector*)&vEnd, 0);
 	}
 
 	LPCSTR ps_name = ( !mtl_pair || mtl_pair->CollideParticles.empty() ) ? nullptr : 
