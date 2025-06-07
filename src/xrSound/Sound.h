@@ -114,7 +114,8 @@ public:
 		if (params) {
 			CSound_params out_params = { 0 };
 			out_params.position = params[(u32)XRay::Sound::Mixer::ParameterId::Position];
-			out_params.volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
+			out_params.base_volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
+			out_params.volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].y;
 			out_params.freq = params[(u32)XRay::Sound::Mixer::ParameterId::Pitch].x;
 			out_params.min_distance = params[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange].x;
 			out_params.max_distance = params[(u32)XRay::Sound::Mixer::ParameterId::DistanceRange].y;

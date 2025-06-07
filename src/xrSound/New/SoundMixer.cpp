@@ -413,6 +413,8 @@ Snd_LoadSource(sound_source& source, const char* name)
     } else {
         Msg("~ Missing ogg-comment, file: %s", source.pub.name.c_str());
     }
+
+    source.pub.volume = std::min(source.pub.volume, 1.0f);
 }
 
 static void
@@ -702,11 +704,13 @@ Snd_ReadSlot(u32 slot_idx, float** data, u32 frames_count)
 static void
 Snd_ProcessSlot(u32 slot_idx, float** data)
 {
+    auto& slot = mixer.slots[slot_idx - 1];
+    float pitch = slot.parameters[(u32)Mixer::ParameterId::Pitch].x;
+
     u32 output_frames = SND_BLOCKSIZE;
-    float scaled_frames = (float)output_frames * mixer.time_factor;
+    float scaled_frames = (float)output_frames * pitch * mixer.time_factor;
     u32 input_frames = (u32)scaled_frames;//ceilf(scaled_frames - 1e-6f);
 
-    auto& slot = mixer.slots[slot_idx-1];
     bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -799,7 +803,8 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
     // Attenuation
     distance = std::clamp(distance, distances.x, distances.y);
     float att = distances.x / (psSoundRolloff * distance);
-    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x) * 2), 0.0f, 1.0f);
+    att *= att;
+    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x)), 0.0f, 1.0f);
     att = std::clamp(att, 0.f, 1.f);
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
         for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
@@ -871,6 +876,7 @@ Snd_MixerRenderCallback(float* buffer)
 
         // Deferred stopping
         bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
+        
         if (slot.stopping_position != (u32)-1) {
             u32 stopping_total = source.pub.frames_total - slot.stopping_position;
             if (stopping_total != 0) {
@@ -975,7 +981,7 @@ Snd_MixerRenderCallback(float* buffer)
             DSP_MixBuffer(master_buffer, bus_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
         }
 
-        DSP_Compressor(0.001f, 0.040f, -10.0f, 2.5f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
+        DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
 
         // Clipping and master volume adjust
         for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
@@ -1451,6 +1457,10 @@ void
 Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos)
 {
     u32 slot_idx = Create();
+    if (slot_idx == 0) {
+        return;
+    }
+
     auto& slot = mixer.slots[slot_idx-1];
     slot.state = State::Paused;
 
@@ -1459,6 +1469,16 @@ Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, f
         .slot = slot_idx, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound,
         .param2 = *(u64*)&delay, .param3 = (u64)obj, .string_storage = sound->_p->fn_attached[0]
     });
+
+    auto params = sound->_p->get_params();
+    Fvector distances = { params.min_distance, params.max_distance, params.max_ai_distance };
+
+    if (sound->slot()) {
+        pitch = (pitch ? pitch : &params.freq);
+        distance = (distance ? distance : &distances);
+        pos = (pos ? pos : &params.position);
+        volume = (volume ? volume : &params.volume);
+    }
 
     if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector(*pitch));
     if (distance) Mixer::UpdateParameter(slot_idx, ParameterId::DistanceRange, *distance);
