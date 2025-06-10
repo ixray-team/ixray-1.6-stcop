@@ -297,6 +297,10 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 	if(m_measures.m_prop_flags.test(hud_item_measures::e_shell_point))
 	{
+		if (m_measures.m_shell_bone == BI_NONE)
+		{
+			return;
+		}
 		Fmatrix& fire_mat			= m_model->LL_GetTransform(m_measures.m_shell_bone);
 		fire_mat.transform_tiny		(fd.vLastSP,m_measures.m_shell_point_offset);
 		m_item_transform.transform_tiny	(fd.vLastSP);
