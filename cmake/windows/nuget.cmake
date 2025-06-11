@@ -109,3 +109,6 @@ set(YAML_INCL ${YAML_CORE}/build/native/include)
 set(YAML_LIB  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.lib)
 set(YAML_BIN  ${YAML_CORE}/runtimes/win-x64/native/Release/yaml-cpp.dll)
 set(YAML_LIB_NAME yaml-cpp.dll)
+
+# MySQL Connector
+set(MYSQLCONNECTOR ${CMAKE_BINARY_DIR}/packages/IXRay.MySQLConnector.8.0.33/)
