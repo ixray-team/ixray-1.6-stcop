@@ -8,14 +8,14 @@ SLoginInfo GLoginInfo;
 
 void RenderMainUI()
 {
-	// Ïîëó÷àåì îñíîâíîé viewport
+	// ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¾ÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ viewport
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 
-	// Óñòàíàâëèâàåì ïîçèöèþ è ðàçìåð îêíà ðàâíûìè viewport'ó
+	// Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸ÑŽ Ð¸ Ñ€Ð°Ð·Ð¼ÐµÑ€ Ð¾ÐºÐ½Ð° Ñ€Ð°Ð²Ð½Ñ‹Ð¼Ð¸ viewport'Ñƒ
 	ImGui::SetNextWindowPos(viewport->Pos);
 	ImGui::SetNextWindowSize(viewport->Size);
 
-	// Óáèðàåì äåêîðàöèè îêíà (çàãîëîâîê, ðàìêó è ò.ä.)
+	// Ð£Ð±Ð¸Ñ€Ð°ÐµÐ¼ Ð´ÐµÐºÐ¾Ñ€Ð°Ñ†Ð¸Ð¸ Ð¾ÐºÐ½Ð° (Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº, Ñ€Ð°Ð¼ÐºÑƒ Ð¸ Ñ‚.Ð´.)
 	ImGuiWindowFlags window_flags =
 		ImGuiWindowFlags_NoTitleBar |
 		ImGuiWindowFlags_NoCollapse |
@@ -26,12 +26,12 @@ void RenderMainUI()
 
 	if (ImGui::Begin("##MainWnd", nullptr, window_flags))
 	{
-		// Öåíòðèðóåì ïî âåðòèêàëè (ðàñïîëàãàåì ïðèìåðíî ïî öåíòðó ýêðàíà)
+		// Ð¦ÐµÐ½Ñ‚Ñ€Ð¸Ñ€ÑƒÐµÐ¼ Ð¿Ð¾ Ð²ÐµÑ€Ñ‚Ð¸ÐºÐ°Ð»Ð¸ (Ñ€Ð°ÑÐ¿Ð¾Ð»Ð°Ð³Ð°ÐµÐ¼ Ð¿Ñ€Ð¸Ð¼ÐµÑ€Ð½Ð¾ Ð¿Ð¾ Ñ†ÐµÐ½Ñ‚Ñ€Ñƒ ÑÐºÑ€Ð°Ð½Ð°)
 		float center_y = viewport->Size.y * 0.3f;
 		ImGui::SetCursorPosY(center_y);
 
-		// Öåíòðèðóåì êàæäûé ýëåìåíò ïî ãîðèçîíòàëè
-		float ItemWidth = 200.0f; // Øèðèíà ýëåìåíòîâ ââîäà
+		// Ð¦ÐµÐ½Ñ‚Ñ€Ð¸Ñ€ÑƒÐµÐ¼ ÐºÐ°Ð¶Ð´Ñ‹Ð¹ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ð¿Ð¾ Ð³Ð¾Ñ€Ð¸Ð·Ð¾Ð½Ñ‚Ð°Ð»Ð¸
+		float ItemWidth = 200.0f; // Ð¨Ð¸Ñ€Ð¸Ð½Ð° ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð² Ð²Ð²Ð¾Ð´Ð°
 		float WndWidth = viewport->Size.x;
 
 		// Login
