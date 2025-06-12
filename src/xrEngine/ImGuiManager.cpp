@@ -15,7 +15,7 @@ namespace ImGui
 	ImFont* BoldFont = nullptr;
 }
 
-void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font)
+void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font, const float scale)
 {
 	string_path FullPath;
 	FS.update_path(FullPath, _game_fonts_, Font);
@@ -26,7 +26,7 @@ void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font)
 	{
 		IReader* FontReader = FS.r_open(FullPath);
 
-		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+		FontHandle = ImGui::GetIO().Fonts->AddFontFromMemoryTTF(FontReader->pointer(), FontReader->length(), scale * 16.0f, &FontConfig, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 		R_ASSERT(FontHandle);
 
 		ImGuiFontsPtr.push_back(FontReader);
@@ -126,13 +126,14 @@ void CImGuiManager::InitPlatform()
 	colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 	colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
-	ImFontConfig FontConfig = {};
-	FontConfig.OversampleH = 2;
+	const HDC screen = GetDC(nullptr);
+	const float scale = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
+	ReleaseDC(nullptr, screen);
 
-	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf");
-	LoadImGuiFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf");
-	LoadImGuiFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf");
-	LoadImGuiFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf");
+	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf", scale);
+	LoadImGuiFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf", scale);
+	LoadImGuiFont(ImGui::MediumFont, "rus\\RobotoMono-Medium.ttf", scale);
+	LoadImGuiFont(ImGui::BoldFont, "rus\\RobotoMono-Bold.ttf", scale);
 
 	io.Fonts->Build();
 

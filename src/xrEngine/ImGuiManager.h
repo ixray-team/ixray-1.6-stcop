@@ -63,5 +63,5 @@ public:
 	};
 
 private:
-	void LoadImGuiFont(ImFont*& FontHandle, const char* Font);
+	void LoadImGuiFont(ImFont*& FontHandle, const char* Font, const float scale);
 };
