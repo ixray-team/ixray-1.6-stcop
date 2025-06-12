@@ -286,10 +286,24 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 		u32 TrueGlyph = glyphID;
 		if (Data.OpenType)
 		{
-			TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
+			// Если символ входит в CP1251 (0-255) — конвертируем
+			if (glyphID <= 0xFF)
+			{
+				TrueGlyph = TranslateSymbolUsingCP1251((char)glyphID);
+			}
+			// Иначе оставляем как есть (Unicode)
+			else
+			{
+				TrueGlyph = glyphID;
+			}
 		}
 
 		FT_UInt FreetypeCharacter = FT_Get_Char_Index(OurFont, TrueGlyph);
+		if (FreetypeCharacter == 0 && glyphID != 0)
+		{
+			Msg("! Glyph not found: %d, TrueGlyph: %d", glyphID, TrueGlyph);
+			return;
+		}
 
 		FTError = FT_Load_Glyph(OurFont, FreetypeCharacter, FT_LOAD_RENDER);
 		R_ASSERT3(FTError == 0, "FT_Load_Glyph return error", FullPath);
