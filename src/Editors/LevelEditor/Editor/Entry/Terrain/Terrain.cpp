@@ -36,12 +36,43 @@ void CTerrain::SaveStream(IWriter& F)
 void CTerrain::OnFrame()
 {
 	CCustomObject::OnFrame();
+
+	auto fequal = [](float a, float b, float eps = EPS)
+	{
+		return fabs(a - b) < eps;
+	};
+
+	if (!fequal(HMap.Pos.x, FPosition.x) || !fequal(HMap.Pos.y, FPosition.y) || !fequal(HMap.Pos.z, FPosition.z))
+	{
+		HMap.Pos = FPosition;
+		HMap.MarkDirty();
+	}
+
+	if (!fequal(HMap.Size.x, FScale.x) || !fequal(HMap.Size.y, FScale.y) || !fequal(HMap.Size.z, FScale.z))
+	{
+		HMap.Size = FScale;
+		HMap.MarkDirty();
+	}
 }
 
 void CTerrain::Render(int priority, bool strictB2F)
 {
 	if (priority == 1)
 	{
-		HMap.Draw();
+		HMap.Draw(100, 1, 0xffffff);
 	}
+}
+
+void CTerrain::Move(Fvector& amount)
+{
+	inherited::Move(amount);
+	HMap.MarkDirty();
+	HMap.Pos = FPosition;
+}
+
+void CTerrain::Scale(Fvector& amount)
+{
+	inherited::Scale(amount);
+	HMap.MarkDirty();
+	HMap.Size = FScale;
 }
