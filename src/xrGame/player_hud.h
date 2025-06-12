@@ -155,6 +155,7 @@ public:
 
 	IKinematics*	m_legs_model;
 	bool			m_show_legs = true;
+	bool			m_need_reload = true;
 
 private:
 	void			update_inertion		(Fmatrix& trans);
