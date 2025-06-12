@@ -2194,6 +2194,9 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
+	if (g_dedicated_server)
+		return;
+
 	CUIMotionIcon*	motion_icon=CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{
