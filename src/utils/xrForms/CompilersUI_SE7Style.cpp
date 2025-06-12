@@ -130,15 +130,19 @@ void RenderMainUI()
 
 		if (gCompilerMode.AI)
 		{
-			std::string temp_maps;
+			xr_string temp_maps;
 
 			int Size = 0;
 			for (auto& FILE : Files)
 			{
 				if (FILE.Select)
 				{
+					if (!temp_maps.empty())
+					{
+						temp_maps += ",";
+					}
+					
 					temp_maps += FILE.Name.c_str();
-					temp_maps += ",";
 					Size++;
 					//break;
 				}
@@ -256,10 +260,10 @@ void DrawDOConfig()
 
 void DrawAIConfig()
 {
-	if (gCompilerMode.AI_BuildSpawn && gCompilerMode.AI_BuildLevel)
-	{
-		gCompilerMode.AI_BuildSpawn = false;
-	}
+	//if (gCompilerMode.AI_BuildSpawn && gCompilerMode.AI_BuildLevel)
+	//{
+	//	gCompilerMode.AI_BuildSpawn = false;
+	//}
 
 
 	if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))

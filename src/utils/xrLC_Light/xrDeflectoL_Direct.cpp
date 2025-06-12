@@ -42,7 +42,7 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		base_color_c	C;
 		Fvector			P;	P.mad(v1,vdir,time);
 		VERIFY(inlc_global_data());
-		VERIFY(inlc_global_data()->RCAST_Model());
+
 		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
 
 		C.mul		(.5f);
