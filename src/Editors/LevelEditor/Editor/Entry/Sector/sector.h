@@ -12,23 +12,29 @@ enum EVisible
 // refs
 class CEditableMesh;
 
-class CSectorItem{
+class CSectorItem
+{
 	friend class CSector;
 	friend class SceneBuilder;
     friend class CPortalUtils;
 	CSceneObject* object;
 	CEditableMesh* mesh;
+    shared_str MeshName;
+
 public:
     CSectorItem		();
-    CSectorItem		(CSceneObject* o, CEditableMesh* m);
+    CSectorItem		(CSceneObject* o, CEditableMesh* m, shared_str MeshName);
     void GetTransform(Fmatrix& parent);
     bool IsItem		(const char* O, const char* M);
-    IC bool IsItem	(CSceneObject* o, CEditableMesh* m){ return (o==object)&&(m==mesh); }
+    IC bool IsItem(CSceneObject* o, CEditableMesh* m) const { return (o == object) && (m == mesh); }
+    IC bool IsItem(const CSectorItem& Item) const { return (Item.object == object) && (Item.mesh == mesh); }
 };
 using SItemVec = xr_vector<CSectorItem>;
 using SItemIt = SItemVec::iterator;
 
-class CSector : public CCustomObject {
+class CSector : 
+    public CCustomObject 
+{
 	friend class TfrmPropertiesSector;
 	friend class SceneBuilder;
     friend class CPortalUtils;
@@ -91,7 +97,8 @@ public:
     bool			Contains	(CSceneObject* O, CEditableMesh* M){SItemIt it; return FindSectorItem(O,M,it);}
 
     void 			SetColor 	(u32 clr){sector_color.set(subst_alpha(clr,0));}
-    
+
+    void            ReloadObjectsReferences();
     void			CaptureInsideVolume();
 	void 			DistributeInsideObjects	();
     void			CaptureAllUnusedMeshes	();
