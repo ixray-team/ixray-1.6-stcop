@@ -2,10 +2,17 @@
 
 #include "UIOptionsItem.h"
 #include "UI_IB_Static.h"
-#include "UIEditBox.h"
 
 class CUI3tButton;
 class CUITrackButton;
+
+enum ETrackBarMode
+{
+	eTrackBarModeInt,
+	eTrackBarModeFloat,
+	eTrackBarModeToken,
+	eTrackBarModeBool
+};
 
 class UI_API CUITrackBar : 
 	public CUI_IB_FrameLineWnd, 
@@ -32,27 +39,41 @@ public:
 			void	SetInvert				(bool v){m_b_invert=v;}
 			bool	GetInvert				() const	{return m_b_invert;};
 			void	SetStep					(float step);
-			void	SetType					(bool b_float){m_b_is_float=b_float;};
-			bool	GetCheck				();
+			bool	GetCheck				() const;
 			void	SetCheck				(bool b);
 			int		GetIValue				(){return m_i_val;}
 			float	GetFValue				(){return m_f_val;}
 			void	SetOptIBounds			(int imin, int imax);
 			void	SetOptFBounds			(float fmin, float fmax);
+			void	UpdateText				();
+	CUI3tButton*	GetSlider				() { return m_pSlider; }
+
+// modes code
+			void	SetNumOfSigns			(int num_of_signs) { m_i_num_of_signs = num_of_signs; }
+			void	SetTrackBarMode			(ETrackBarMode mode) { m_mode = mode; }
+ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
+			bool	IsIntMode				() const { return m_mode == eTrackBarModeInt; }
+			bool	IsFltMode				() const { return m_mode == eTrackBarModeFloat; }
+			bool	IsTokenMode				() const { return m_mode == eTrackBarModeToken; }
+			bool	IsBoolMode				() const { return m_mode == eTrackBarModeBool; }
+			void	SetTokenValues			(xr_token* tokens);
+			int		CurrentID				() const { return (m_i_val - 1); }
+			void	SetCurrentID			(int val_id) { m_i_val = val_id + 1;}
 
 public:
-		IC	void	SetupEditBox			(bool value) { m_b_use_editbox = value; }
+		IC	void	SetDrawingValue			(bool value) { m_bDrawValue = value; }
 
 protected:
 			void 	UpdatePos				();
 			void 	UpdatePosRelativeToMouse();
 
-    CUI3tButton*		m_pSlider;
-    CUIEditBox*			m_pEditBox = nullptr;
+	CUI3tButton*		m_pSlider;
 	bool				m_b_invert;
-	bool				m_b_is_float;
 	bool				m_b_mouse_capturer;
-	bool				m_b_use_editbox = false;
+	bool				m_bDrawValue;
+	int					m_i_num_of_signs;
+	xr_token*			m_tokens;
+	ETrackBarMode		m_mode;
 
 	union{
 		struct{
