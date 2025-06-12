@@ -83,18 +83,25 @@ bool XRay::Editor::HeightmapUtils::SHeightMap::LoadRAW(const char* filename)
 	}
 
 	IReader* F = FS.r_open(filename);
-	if (!F) return false;
+	LoadSteam(F);
+	FS.r_close(F);
+	return true;
+}
 
-	Width = Height = (u32)sqrt(F->length() / sizeof(u16));
-	if (Width * Height * sizeof(u16) != F->length())
+bool XRay::Editor::HeightmapUtils::SHeightMap::LoadSteam(IReader* Reader)
+{
+	if (!Reader) 
+		return false;
+
+	Width = Height = (u32)sqrt(Reader->length() / sizeof(u16));
+	if (Width * Height * sizeof(u16) != Reader->length())
 	{
-		FS.r_close(F);
 		return false;
 	}
 
 	Data = (float*)xr_malloc(Width * Height * sizeof(float));
 
-	u16* raw_data = (u16*)F->pointer();
+	u16* raw_data = (u16*)Reader->pointer();
 	for (u32 i = 0; i < Width * Height; ++i)
 	{
 		Data[i] = float(raw_data[i]) / 65535.f;
@@ -109,7 +116,6 @@ bool XRay::Editor::HeightmapUtils::SHeightMap::LoadRAW(const char* filename)
 		if (Data[i] > MaxH) MaxH = Data[i];
 	}
 
-	FS.r_close(F);
 	return true;
 }
 
@@ -119,12 +125,16 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 		return;
 
 	RenderData.Clear();
-	
+
 	float global_min_h = FLT_MAX;
 	float global_max_h = -FLT_MAX;
 
 	const u32 ChunkSize = SHeightMapRenderData::CHUNK_SIZE;
 	const float FlatThreshold = SHeightMapRenderData::FLAT_THRESHOLD;
+
+	// Calculate center offset
+	float centerX = (Width * cellSize) * 0.5f;
+	float centerZ = (Height * cellSize) * 0.5f;
 
 	u32 chunkCountX = (Width - 1) / ChunkSize + 1;
 	u32 chunkCountZ = (Height - 1) / ChunkSize + 1;
@@ -170,11 +180,11 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 		}
 	}
 
-	// 2. Строим геометрию с учётом соседей
+	// Height to color conversion
 	auto Height2Color = [&](float h) -> u32
 	{
 		float t = (h - global_min_h) / std::max(global_max_h - global_min_h, EPS_S);
-		t = std::clamp(t, 0.2f, 1.0f); // чтобы не было чёрного
+		t = std::clamp(t, 0.2f, 1.0f);
 		return color_rgba
 		(
 			u8(((baseColor >> 16) & 0xFF) * t),
@@ -190,7 +200,7 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 		{
 			const ChunkInfo& info = ChunkInfos[cz * chunkCountX + cx];
 
-			// Проверка соседей
+			// Check neighbors
 			bool neighbor_flat = true;
 			for (int dz = -1; dz <= 1 && neighbor_flat; ++dz)
 			{
@@ -237,10 +247,11 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 						if (h0 == 0.0f)
 							continue;
 
-						Fvector v0 = { x * cellSize, h0, z * cellSize };
-						Fvector v1 = { (x + 1) * cellSize, h1, z * cellSize };
-						Fvector v2 = { (x + 1) * cellSize, h2, (z + 1) * cellSize };
-						Fvector v3 = { x * cellSize, h3, (z + 1) * cellSize };
+						// Apply centering here
+						Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
+						Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
+						Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
+						Fvector v3 = { x * cellSize - centerX, h3, (z + 1) * cellSize - centerZ };
 
 						chunk.BBox.modify(v0); chunk.BBox.modify(v2);
 
@@ -257,11 +268,11 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 					}
 					else
 					{
-						// Строим как есть
-						Fvector v0 = { x * cellSize, h0, z * cellSize };
-						Fvector v1 = { (x + 1) * cellSize, h1, z * cellSize };
-						Fvector v2 = { (x + 1) * cellSize, h2, (z + 1) * cellSize };
-						Fvector v3 = { x * cellSize, h3, (z + 1) * cellSize };
+						// Apply centering here too
+						Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
+						Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
+						Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
+						Fvector v3 = { x * cellSize - centerX, h3, (z + 1) * cellSize - centerZ };
 
 						if (h0 == 0.0f && h1 == 0.0f && h2 == 0.0f && h3 == 0.0f)
 							continue;
@@ -291,7 +302,6 @@ void XRay::Editor::HeightmapUtils::SHeightMap::PrecacheRenderData(float scaleY, 
 
 	RenderData.IsDirty = false;
 }
-
 
 void XRay::Editor::HeightmapUtils::SHeightMap::Draw(float scaleY, float cellSize, u32 baseColor)
 {
