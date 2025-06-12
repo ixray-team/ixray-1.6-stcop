@@ -37,7 +37,6 @@
 #include "ui/UIInventoryUtilities.h"
 #include "alife_object_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "HUDAnimItem.h"
 #include "ActorCondition.h"
 #include "player_hud.h"
 #include "../xrEngine/XR_IOConsole.h"
@@ -1493,11 +1492,6 @@ void CLevel::script_register(lua_State *L)
 		def("set",						&level_nearest::Set),
 		def("size",						&level_nearest::Size),
 		def("get",						&level_nearest::Get)
-	];
-	
-	module(L, "animslot")
-	[
-		def("play", &CHUDAnimItem::PlayHudAnim)
 	];
 
 	module(L, "player_hud")
