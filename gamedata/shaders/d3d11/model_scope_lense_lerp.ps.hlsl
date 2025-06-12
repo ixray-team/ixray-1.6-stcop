@@ -5,52 +5,34 @@ uniform float4 m_zoom_deviation;
 
 struct v2p
 {
-    float2 tc0: TEXCOORD0;    // base
-    float3 tc1: TEXCOORD1;    // environment
-    float4 c0:  COLOR0;       // sun.(fog*fog)
+    float2 tc0: TEXCOORD0;
+    float3 tc1: TEXCOORD1;
+    float4 c0: COLOR0;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-float  resize(float input, float factor, float offset)
+float4 main(v2p I, float4 pos2d : SV_POSITION) : SV_Target
 {
-    return (input-0.5f+offset) / factor+0.5f-offset;
-}
+    if (m_hud_params.y * m_hud_params.a < 0.0001f) {
+		return 0.0f;
+	}
 
-// Pixel
-uniform float4 screen_res;
-Texture2D s_vp2;
-
-float4 main( v2p I ) : SV_Target
-{
-    if (m_hud_params.y * m_hud_params.a < 0.0001) return float4 (0,0,0,0);
-
-    // Производим выборку правой и левой половин текстуры с сеткой
     float2 coords = I.tc0;
-    coords.x *= 0.5;
+    coords.x *= 0.5f;
+	
     float4 base2 = s_base.Sample(smp_base, coords);
-    coords.x += 0.5;
+    coords.x += 0.5f;
+	
     float4 t_base = s_base.Sample(smp_base, coords);
-    // Миксуем половинки в соответствии с текущим уровнем подсветки
+	
     t_base = lerp(base2, t_base, m_zoom_deviation.z);
+	t_base.xyz = detonemap(t_base.xyz);
+	
+    float4 t_vp2 = s_image[pos2d.xy];
+	
+	float alpha = m_hud_params.y * m_hud_params.a;
+	t_vp2 *= saturate(alpha * 2.0f - 1.0f);
 
-    //сдвиг от состояния оружия
-    I.tc0.x = I.tc0.x+m_zoom_deviation.x;
-    I.tc0.y = I.tc0.y+m_zoom_deviation.y;
-
-    // Растягиваем картинку в линзе так, чтобы на любом разрешении экрана были правильные пропорции
-    I.tc0.x = resize(I.tc0.x, screen_res.x/screen_res.y, 0);
-
-    float4 t_vp2 = s_vp2.Sample( smp_base, I.tc0);
-
-    float2 offset = distance(I.tc0, float2( .5f, .5f ))*float2(m_hud_params.z, m_hud_params.z);
-
-    // Абберация
-	t_vp2.r = s_vp2.Sample( smp_base, I.tc0+offset).r;
-    t_vp2.b = s_vp2.Sample( smp_base, I.tc0-offset).b;
-
-    float3 final = lerp(t_vp2, t_base, t_base.a);
-
-    // out
-    return float4(final.r, final.g, final.b, min(m_hud_params.y, m_hud_params.a));
+    float3 final = lerp(t_vp2.xyz, t_base.xyz, t_base.a);
+    return float4(final.xyz, saturate(alpha * 2.0f));
 }
+
