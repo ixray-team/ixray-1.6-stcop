@@ -16,6 +16,6 @@ class CEffectorDOF : public CEffectorCam
 {
 	float			m_fPhase;
 public:
-					CEffectorDOF	(const Fvector4& dof);
+					CEffectorDOF	(const Fvector4& dof, float life_time = 100000.0f);
 	virtual BOOL	ProcessCam		(SCamEffectorInfo& info);
 };

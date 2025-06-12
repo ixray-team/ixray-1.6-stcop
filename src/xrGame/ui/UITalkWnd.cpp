@@ -19,6 +19,12 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 
+#include "EffectorFall.h"
+#include "ActorEffector.h"
+#include "GamePersistent.h"
+
+BOOL EnableTalkDof = true;
+
 CUITalkWnd::CUITalkWnd()
 {
 	m_pActor				= nullptr;
@@ -30,6 +36,13 @@ CUITalkWnd::CUITalkWnd()
 	m_pOthersDialogManager	= nullptr;
 
 	ToTopicMode				();
+
+	const static Fvector4 talkDof = EngineExternal().GetTalkDof();
+	m_TalkDof.set(talkDof);
+
+	const static float fovScale = EngineExternal().GetTalkFovScale();
+	m_talkFovScale = fovScale;
+	clamp(m_talkFovScale, 0.2f, 1.0f);
 
 	InitTalkWnd				();
 	m_bNeedToUpdateQuestions = false;
@@ -261,20 +274,29 @@ void CUITalkWnd::Show(bool status)
 
 		if (m_pOthersInvOwner->GetFocusingOnNpc())
 		{
-			g_fov = g_fov * 0.75f;
+			if (EnableTalkDof && !fsimilar(m_TalkDof.w, -1.0f))
+			{
+				m_pActor->Cameras().AddCamEffector(new CEffectorDOF(m_TalkDof, 0.0f));
+			}
+
+			g_fov = g_fov * m_talkFovScale;
 		}
 	}
 	else
 	{
 		StopSnd						();
 		UITalkDialogWnd->Hide		();
-		if (m_pOthersInvOwner->GetFocusingOnNpc())
-		{
-			g_fov = g_fov / 0.75f;
-		}
 
 		if(m_pActor)
 		{
+			if (m_pOthersInvOwner->GetFocusingOnNpc())
+			{
+				g_fov = g_fov / m_talkFovScale;
+
+				GamePersistent().RestoreEffectorDOF();
+				m_pActor->Cameras().RemoveCamEffector(eCEDOF);
+			}
+
 			ToTopicMode					();
 
 			if (m_pActor->IsTalking()) 
