@@ -357,6 +357,9 @@ public:
 private:
 	virtual void OnFrame() override;
 
+public:
+	xr_string full_name;
+
 private:
 	CLevelGraphEditor m_level_graph;
 	CGameGraphEditor m_game_graph;
