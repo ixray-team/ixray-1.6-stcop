@@ -69,6 +69,8 @@ FloatValue* 	CPropHelper::CreateFloat	(PropItemVec& items, shared_str key, float
 {   return		(FloatValue*)	AppendValue	(items,key,new FloatValue(val,mn,mx,inc,decim),PROP_NUMERIC);	}
 BOOLValue* 	  	CPropHelper::CreateBOOL		(PropItemVec& items, shared_str key, BOOL* val)
 {   return		(BOOLValue*)	AppendValue	(items,key,new BOOLValue(val),PROP_BOOLEAN);        			}
+BoolValue* 	  	CPropHelper::CreateBool		(PropItemVec& items, shared_str key, bool* val)
+{   return		(BoolValue*)	AppendValue	(items,key,new BoolValue(val),PROP_BOOLEAN);        			}
 VectorValue*   	CPropHelper::CreateVector	(PropItemVec& items, shared_str key, Fvector* val, float mn, float mx, float inc, int decim)
 {   return		(VectorValue*)	AppendValue	(items,key,new VectorValue(val,mn,mx,inc,decim),PROP_VECTOR);	}
 Flag8Value*		CPropHelper::CreateFlag8   	(PropItemVec& items, shared_str key, Flags8* val, u8 mask, LPCSTR c0, LPCSTR c1, u32 flags)

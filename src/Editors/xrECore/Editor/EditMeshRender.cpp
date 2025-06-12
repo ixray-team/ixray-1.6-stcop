@@ -119,7 +119,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 				st_VMap* vmap		= m_VMaps[vm_pt.vmap_index];
 				VERIFY2	(vm_pt.index<vmap->size(),"- VMap point index out of range");
 				CopyMemory(data,&vmap->getUV(vm_pt.index),sz); data+=sz;
-//                Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
+                //Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
 			}
 		}
 		if (surf->m_Flags.is(CSurface::sf2Sided)){

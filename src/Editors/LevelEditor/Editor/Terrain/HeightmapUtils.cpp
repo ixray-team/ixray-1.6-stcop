@@ -15,7 +15,7 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 	const u32 Width = Heightmap.Width;
 	const u32 Height = Heightmap.Height;
-	constexpr float SizeHM = 1024;
+	constexpr float SizeHM = 512;
 
 	xr_vector<Fvector> Vertices;
 	Vertices.reserve(Width * Height);
@@ -83,44 +83,39 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 		0
 	);
 
+	// 1. Создаём UV-карту с уникальными координатами
 	st_VMap* mainUvMap = new st_VMap("Texture", vmtUV, false);
 	const float uvStepX = 1.0f / (Width - 1);
 	const float uvStepZ = 1.0f / (Height - 1);
 
+	// Заполняем UV-координаты (аналогично оригиналу)
 	for (u32 z = 0; z < Height; z++) 
 	{
 		for (u32 x = 0; x < Width; x++) 
 		{
-			u32 idx = z * Width + x;
 			Fvector2 uv;
-			uv.x = 1.f - x * uvStepX;
-			uv.y = 1.f - z * uvStepZ;
-
+			uv.x = 1.f - float(x) * uvStepX;
+			uv.y = 1.f - float(z) * uvStepZ;
 			mainUvMap->appendUV(uv);
-			mainUvMap->appendVI(idx);
 		}
 	}
 	Mesh->m_VMaps.push_back(mainUvMap);
 
-	Mesh->m_VMRefs.resize(Faces.size());
-	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx)
-	{
-		st_VMapPtLst& vmref = Mesh->m_VMRefs[faceIdx];
-		vmref.count = 3;
-		vmref.pts = xr_alloc<st_VMapPt>(3);
-
-		for (u32 j = 0; j < 3; ++j) 
-		{
-			vmref.pts[j].vmap_index = 0; // Индекс UV-карты
-			vmref.pts[j].index = Faces[faceIdx].pv[j].pindex; // Индекс UV
-		}
+	// 2. Настраиваем VMRefs (как в оригинале)
+	Mesh->m_VMRefs.resize(Vertices.size()); // Один VMRef на каждую вершину!
+	for (u32 vertIdx = 0; vertIdx < Vertices.size(); ++vertIdx) {
+		st_VMapPtLst& vmref = Mesh->m_VMRefs[vertIdx];
+		vmref.count = 1; // Один UV-слой на вершину
+		vmref.pts = xr_alloc<st_VMapPt>(1);
+		vmref.pts[0].vmap_index = 0; // Индекс нашей UV-карты
+		vmref.pts[0].index = vertIdx; // UV = индексу вершины
 	}
 
-	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx) 
-	{
-		for (u32 j = 0; j < 3; ++j)
-		{
-			Mesh->m_Faces[faceIdx].pv[j].vmref = faceIdx;
+	// 3. Настраиваем ссылки в вершинах фейсов
+	for (u32 faceIdx = 0; faceIdx < Faces.size(); ++faceIdx) {
+		for (u32 j = 0; j < 3; ++j) {
+			// Ссылаемся на VMRef соответствующей вершины
+			Mesh->m_Faces[faceIdx].pv[j].vmref = Faces[faceIdx].pv[j].pindex;
 		}
 	}
 
@@ -135,7 +130,6 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 	Surface->SetFVF(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1);
 	Surface->OnDeviceCreate();
 	OutMesh->Surfaces().push_back(Surface);
-
 	IntVec FaceIndices(Faces.size());
 	for (u32 i = 0; i < Faces.size(); ++i)
 		FaceIndices[i] = i;
@@ -152,8 +146,8 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 
 void XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(CEditableObject* Mesh, const xr_string& OutputFile)
 {
-	size_t TextureSizeX = 1024;
-	size_t TextureSizeY = 1024;
+	size_t TextureSizeX = 512;
+	size_t TextureSizeY = 512;
 
 	size_t MaxTextureSize = TextureSizeY > TextureSizeY ? TextureSizeY : TextureSizeX;
 	RedImageTool::RedImage TestImage(TextureSizeX, TextureSizeY);
