@@ -217,7 +217,6 @@ public:
 	IC int 			ObjCount(ObjClassID cat) { return ListObj(cat).size(); }
 	int 			ObjCount();
 
-	void 			RenderSky(const Fmatrix& camera);
 	void 			Render(const Fmatrix& camera);
 	void 			OnFrame(float dT);
 
