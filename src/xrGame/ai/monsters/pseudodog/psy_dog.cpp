@@ -35,15 +35,22 @@ void CPsyDog::Load(LPCSTR section)
 	inherited::Load					(section);
 	
 	m_aura->load					(pSettings->r_string(section,"aura_effector"));
-	m_max_phantoms_count		=	pSettings->r_u8(section,"Phantoms_Count");
-	
+	m_min_phantoms_count = READ_IF_EXISTS(pSettings, r_u8, section, "Min_Phantoms_Count", 1);
+	if (pSettings->line_exist(section, "Phantoms_Count"))
+		m_max_phantoms_count		=	pSettings->r_u8(section,"Phantoms_Count");
+	else
+		m_max_phantoms_count		=	pSettings->r_u8(section,"Max_Phantoms_Count");
+
 	xr_free							(m_phantoms_die_time);
 	m_phantoms_die_time			=	xr_alloc<TTime>(m_max_phantoms_count);
 
 	for ( int i=0; i<m_max_phantoms_count; ++i )
 		m_phantoms_die_time[i]	=	s_phantom_immediate_respawn_flag;
 
-	m_time_phantom_respawn		=	pSettings->r_u32(section,"Time_Phantom_Respawn");
+	if (pSettings->line_exist(section, "Time_Phantom_Respawn"))
+		m_time_phantom_respawn		=	pSettings->r_u32(section,"Time_Phantom_Respawn");
+	else
+		m_time_phantom_respawn		=	pSettings->r_u32(section,"Time_Phantom_Appear");
 }
 
 BOOL CPsyDog::net_Spawn(CSE_Abstract *dc)
