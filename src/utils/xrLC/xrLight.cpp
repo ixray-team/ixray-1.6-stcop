@@ -147,7 +147,7 @@ void CBuild::Light()
 	Phase("LIGHT: Implicit...");
 	EmbreeMain.AttachGeometrys(true);
  	ImplicitLighting();
-#endif
+
 
 	//****************************************** LMAPS
  	Phase("LIGHT: LMaps...");
@@ -165,7 +165,7 @@ void CBuild::Light()
 	// Save Lmaps
 	Phase("LIGHT: Save lightmaps...");
 	xrPhase_SaveLmaps();
- 	 
+#endif 	 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
