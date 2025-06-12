@@ -128,7 +128,7 @@ void UIImageEditorForm::Update()
 		{
 			Form->BeginDraw();
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(600, 400));
-			if (ImGui::Begin("ImageEditor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
+			if (ImGui::Begin("Image Editor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar))
 			{
 				Form->Draw();
 			}
