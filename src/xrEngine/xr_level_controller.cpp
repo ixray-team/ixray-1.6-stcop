@@ -89,7 +89,10 @@ ENGINE_API _action  actions[]		= {
 
 	{ "quick_save",			kQUICK_SAVE				,_sp},		
 	{ "quick_load",			kQUICK_LOAD				,_sp},		
-//	{ "alife_command",		kALIFE_CMD				,_sp},		
+	{ "alife_command",		kALIFE_CMD				,_sp},		
+	{ "use_bandage",		kUSE_BANDAGE			,_sp},
+	{ "use_medkit",			kUSE_MEDKIT				,_sp},
+
 	{ "custom1",			kCUSTOM1				,_sp},
 	{ "custom2",			kCUSTOM2				,_sp},
 	{ "custom3",			kCUSTOM3				,_sp},
