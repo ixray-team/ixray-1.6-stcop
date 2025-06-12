@@ -27,7 +27,7 @@ void CRenderTarget::init_xess()
 
 bool CRenderTarget::phase_xess()
 {
-    PIX_EVENT(XESS);
+    GPU_EVENT(XESS);
 
     XeSSWrapper::DrawParameters xessParams = {};
     xessParams.deviceContext = RContext;
