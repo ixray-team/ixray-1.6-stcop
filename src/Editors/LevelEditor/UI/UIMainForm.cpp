@@ -644,6 +644,16 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PopStyleColor();
 			}
 		}
+		ImGui::SameLine();
+
+		ImGui::BeginDisabled(Action == etaScale || Action == etaSelect || Action == etaAdd);
+		bool UseLocal = !!imManipulator.MatrixMode;
+		if (ImGui::Checkbox("Local/World", &UseLocal))
+		{
+			imManipulator.MatrixMode = UseLocal;
+		}
+		ImGui::EndDisabled();
+
 		ImGui::EndGroup();
 	}
 	ImGui::SameLine(0, ImGui::GetFontSize() * 1.5);
