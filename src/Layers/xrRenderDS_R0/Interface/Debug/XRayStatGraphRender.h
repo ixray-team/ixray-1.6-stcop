@@ -1,9 +1,9 @@
 #pragma once
 
-class XRayStatGraphRender:public IStatGraphRender
+class CDS0_StatGraphRender:public IStatGraphRender
 {
 public:
-	XRayStatGraphRender();
+	CDS0_StatGraphRender();
 	virtual void Copy(IStatGraphRender &_in) ;
 
 	virtual void OnDeviceCreate() ;

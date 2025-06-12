@@ -1,8 +1,8 @@
 #pragma once
-class XRayUISequenceVideoItem:public IUISequenceVideoItem
+class CDS0_UISequenceVideoItem:public IUISequenceVideoItem
 {
 public:
-	XRayUISequenceVideoItem();
+	CDS0_UISequenceVideoItem();
 	virtual void Copy(IUISequenceVideoItem &_in);
 
 	virtual bool HasTexture();
