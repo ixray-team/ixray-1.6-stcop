@@ -332,7 +332,7 @@ CTimer tGlobalMerge;
 
 
 #define MAX_BIG_THREADS 2
-std::atomic<bool> stopped = false;
+xr_atomic_bool stopped = false;
 
 // Thread Pools
 xr_vector<int> reserved;

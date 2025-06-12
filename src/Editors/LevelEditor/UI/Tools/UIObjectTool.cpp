@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../Editor/Utils/TerrainGarbageGenerator.h"
 
-static std::atomic<bool> RefreshInProgress;
+static xr_atomic_bool RefreshInProgress;
 
 UIObjectTool::UIObjectTool()
 {
