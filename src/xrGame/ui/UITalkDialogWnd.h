@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
@@ -9,7 +7,7 @@
 
 #include "UICharacterInfo.h"
 #include "UIItemInfo.h"
-
+#include "../Phrase.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUIScrollView;
@@ -57,7 +55,7 @@ public:
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
 
-	void				AddQuestion			(LPCSTR str, LPCSTR value, int number, bool b_finalizer);
+	void				AddQuestion			(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo);
 	void				AddAnswer			(LPCSTR SpeakerName, const char* str, bool bActor);
 	void				AddIconedAnswer		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
 	void				ClearAll			();
@@ -93,6 +91,8 @@ public:
 	CUI3tButton*	m_text;
 	shared_str		m_s_value;
 	float			m_fOffset;
+	Fvector2		m_icon_size;
+	float			m_fOffsetAfterIcon;
 					CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path);
 	void			Init					(LPCSTR val, LPCSTR text);
 
