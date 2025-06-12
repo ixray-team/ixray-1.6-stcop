@@ -23,7 +23,7 @@ public:
 	virtual			~CUICustomSpin		();
 
 	// CUIWindow
-	virtual void	InitSpin			(Fvector2 pos, Fvector2 size);
+	virtual void	InitSpin			(Fvector2 pos, Fvector2 size, bool horizontal = false);
 	virtual void	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData  = NULL);
 	virtual void	Draw				();
 	virtual void	Update				();
@@ -47,6 +47,7 @@ protected:
 	CUI3tButton*		m_pBtnUp;
 	CUI3tButton*		m_pBtnDown;
 	CUILines*			m_pLines;
+	bool				bHorizontal;
 
 	u32					m_time_begin;
 	u32					m_p_delay;
