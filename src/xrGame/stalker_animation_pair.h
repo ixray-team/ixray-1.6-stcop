@@ -42,12 +42,12 @@ private:
 	MotionID				m_array_animation;
 	CALLBACKS				m_callbacks;
 	Fmatrix					*m_target_matrix;
-	Fmatrix					m_target_matrix_impl;
 	bool					m_callback_on_collision;
 	CAI_Stalker*			m_object;
 
 public:
 	bool					m_just_started;
+	Fmatrix					m_target_matrix_impl;
 
 #ifdef DEBUG
 private:

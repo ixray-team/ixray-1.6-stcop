@@ -15,6 +15,7 @@
 #include "../xrCore/associative_vector.h"
 #include "alife_movement_manager_holder.h"
 #include "../xrPhysics/net_physics_state.h"
+#include "../xrGame/ai/stalker/ai_stalker_state_net.h"
 
 class CALifeMonsterBrain;
 class CALifeHumanBrain;
@@ -507,10 +508,13 @@ SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeHumanStalker,CSE_ALifeHumanAbstract,CSE_PHSkeleton)
 	shared_str						m_start_dialog;
-
+#ifdef XRGAME_EXPORTS
+	aistalker_state_net				m_state_mngr;
+#endif
 									CSE_ALifeHumanStalker	(LPCSTR caSection);
 	virtual							~CSE_ALifeHumanStalker	();
 	virtual	void					load					(NET_Packet &tNetPacket);
+	virtual BOOL					Net_Relevant() override;
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
 SERVER_ENTITY_DECLARE_END
 
