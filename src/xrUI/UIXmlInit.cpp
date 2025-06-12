@@ -603,13 +603,23 @@ bool CUIXmlInit::InitProgressShape(CUIXml& xml_doc, LPCSTR path, int index, CUIP
 
 	string256 _path;
 
-	if (xml_doc.NavigateToNode(xr_strconcat(_path, path, ":back"),index))
-		{R_ASSERT2(0,"unused <back> node in progress shape ");}
+	xr_strconcat(_path, path, ":back");
+	if (xml_doc.NavigateToNode(_path, index))
+	{
+		pWnd->m_pBackground = new CUIStatic();
+		pWnd->m_pBackground->SetAutoDelete(true);
+		pWnd->AttachChild(pWnd->m_pBackground);
+		InitStatic(xml_doc, _path, index, pWnd->m_pBackground);
+	}
 
-
-	if (xml_doc.NavigateToNode(xr_strconcat(_path, path, ":front"),index))
-		{R_ASSERT2(0,"unused <front> node in progress shape ");}
-//    InitStatic(xml_doc, strconcat(sizeof(_path),_path, path, ":front"), index, pWnd->m_pTexture);
+	xr_strconcat(_path, path, ":front");
+	if (xml_doc.NavigateToNode(_path, index))
+	{
+		pWnd->m_pTexture = new CUIStatic();
+		pWnd->m_pTexture->SetAutoDelete(true);
+		pWnd->AttachChild(pWnd->m_pTexture);
+		InitStatic(xml_doc, _path, index, pWnd->m_pTexture);
+	}
 
 	pWnd->m_sectorCount	= xml_doc.ReadAttribInt(path, index, "sector_count", 8);
 	pWnd->m_bClockwise	= xml_doc.ReadAttribInt(path, index, "clockwise") ? true : false;
