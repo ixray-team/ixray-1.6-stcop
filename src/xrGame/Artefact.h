@@ -72,6 +72,7 @@ protected:
 	u8								m_af_rank;
 	bool							m_bLightsEnabled;
 	float							m_additional_weight;
+	float							m_fDegradationRate;
 
 	virtual void					UpdateLights					();
 public:
@@ -116,6 +117,8 @@ public:
 	virtual void					OnStateSwitch		(u32 S);
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
+	virtual u32						Cost				() const;
+	float							DegradationRate		() {return m_fDegradationRate;}
 
 	// optimization FAST/SLOW mode
 	u32						o_render_frame				;
