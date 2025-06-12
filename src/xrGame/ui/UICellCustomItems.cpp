@@ -186,13 +186,20 @@ CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm)
 	m_addons[eLauncher]		= nullptr;
 
 	if(itm->SilencerAttachable())
+	{
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
+	}
 
 	if(itm->ScopeAttachable())
+	{
 		m_addon_offset[eScope].set(object()->GetScopeX(), object()->GetScopeY());
+		mScopeBack = object()->GetScopeBack();
+	}
 
 	if(itm->GrenadeLauncherAttachable())
+	{
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
+	}
 }
 
 #include "../xrServerEntities/object_broker.h"
@@ -247,18 +254,39 @@ CUIStatic* CUIWeaponCellItem::GetIcon(eAddonType t)
 void CUIWeaponCellItem::RefreshOffset()
 {
 	if(object()->SilencerAttachable())
+	{
 		m_addon_offset[eSilencer].set(object()->GetSilencerX(), object()->GetSilencerY());
+	}
 
 	if(object()->ScopeAttachable())
+	{
 		m_addon_offset[eScope].set(object()->GetScopeX(), object()->GetScopeY());
+		mScopeBack = object()->GetScopeBack();
+	}
 
 	if(object()->GrenadeLauncherAttachable())
+	{
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
+	}
 }
 
 void CUIWeaponCellItem::Draw()
-{	
+{
+	if (GetIcon(eScope) && mScopeBack)
+	{
+		GetIcon(eScope)->Draw();
+		GetIcon(eScope)->SetAutoDelete(false);
+		DetachChild(GetIcon(eScope));
+	}
+
 	inherited::Draw();
+
+	if (GetIcon(eScope) && mScopeBack)
+	{
+		GetIcon(eScope)->SetAutoDelete(true);
+		AttachChild(GetIcon(eScope));
+	}
+
 
 	if(m_upgrade && m_upgrade->IsShown())
 		m_upgrade->Draw();
