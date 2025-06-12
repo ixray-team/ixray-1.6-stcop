@@ -162,7 +162,7 @@ xr_vector<shared_str> ParseGameItems(CInifile* File)
 		}
 		else
 		{
-			std::cout << "Not found class from section: " << *Sect->Name << std::endl;
+			Msg("Not found class from section: %s", *Sect->Name);
 		}
 	}
 
