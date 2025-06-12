@@ -23,7 +23,8 @@ void main(in v_in I, out p_bumped_new O)
     float3x3 xform = mul((float3x3)m_WV, float3x3(
         T.x, B.x, N.x,
         T.y, B.y, N.y,
-        T.z, B.z, N.z));
+        T.z, B.z, N.z)
+	);
 
     O.M1 = xform[0];
     O.M2 = xform[1];
