@@ -162,23 +162,27 @@ void UIImageEditorForm::Show(bool bImport)
 	Form->InitItemList();
 }
 
-void UIImageEditorForm::FindInEditor(xr_string fn, bool bImport) {
-	if(Form && (Form->bImportMode || bImport)) {
+void UIImageEditorForm::FindInEditor(xr_string fn, bool bImport)
+{
+	if (Form && (Form->bImportMode || bImport))
+	{
 		Form->HideLib();
-		Form = NULL;
-		//	xr_delete(Form);
+		Form = nullptr;
 	}
-	if(!Form) {
-		if(bImport) {
-			if(!Form) {
-				Form = new UIImageEditorForm();
-			}
+
+	if (!Form)
+	{
+		if (bImport)
+		{
+			Form = new UIImageEditorForm();
 			Form->texture_map.insert(fn);
 		}
 
 		Show(bImport);
 	}
-	if(Form) {
+
+	if (Form)
+	{
 		Form->m_ItemList->SelectItem(fn.data());
 	}
 }
