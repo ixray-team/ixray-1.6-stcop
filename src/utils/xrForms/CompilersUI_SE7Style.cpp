@@ -284,7 +284,7 @@ void DrawCompilerConfig()
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
-		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+ 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::EndChild();
 	}
@@ -518,8 +518,7 @@ void RenderCompilerUI(int X, int Y)
 	if (ImGui::Button(buttonText))
 		hideLogSection = !hideLogSection;
 
-	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - 
-		topHeight - (buttonSize.y * 2)-30), true))
+	if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2)-30), true))
 	{
 		ImGuiListClipper clipper;
 
@@ -551,6 +550,12 @@ void RenderCompilerUI(int X, int Y)
 		autoScroll = !autoScroll;
 	}
 
+	ImGui::SameLine();
+
+	size_t  w_free, w_reserved, w_committed;
+	vminfo(&w_free, &w_reserved, &w_committed);
+ 
+	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
 
 	ImGui::End();
 }
