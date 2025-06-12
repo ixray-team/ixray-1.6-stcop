@@ -10,6 +10,7 @@
 #include "UIXmlInit.h"
 
 #include "Widgets/UIProgressBar.h"
+#include "Widgets/UIProgressShape.h"
 #include "Widgets/UIFrameLineWnd.h"
 #include "Widgets/UIFrameWindow.h"
 #include "Widgets/UI3tButton.h"
@@ -59,6 +60,15 @@ CUIProgressBar* UIHelper::CreateProgressBar( CUIXml& xml, LPCSTR ui_path, CUIWin
 	parent->AttachChild			( ui );
 	ui->SetAutoDelete			( true );
 	CUIXmlInit::InitProgressBar ( xml, ui_path, 0, ui );
+	return ui;
+}
+
+CUIProgressShape* UIHelper::CreateProgressShape(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
+{
+	CUIProgressShape* ui = new CUIProgressShape();
+	parent->AttachChild(ui);
+	ui->SetAutoDelete(true);
+	CUIXmlInit::InitProgressShape(xml, ui_path, 0, ui);
 	return ui;
 }
 
