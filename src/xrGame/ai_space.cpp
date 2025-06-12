@@ -21,7 +21,7 @@
 #include "doors_manager.h"
 #include "../../xrCore/AnimNotify/AnimNotify.h"
 #include "AnimNotify/AnimNotifyGame.h"
-#include "AnimNotify/AnimNotifyRegistry.h"
+#include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
 ENGINE_API	bool g_dedicated_server;
 

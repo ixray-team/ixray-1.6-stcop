@@ -65,6 +65,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		{
 			xr_strconcat(N__, name, "build.cform");
 			IReader* fs = FS.r_open(N__);
+			R_ASSERT2(fs, "You need to have compiled geometry before make non-draft ai map!");
 			R_ASSERT(fs->find_chunk(0));
 
 			hdrCFORM			H;
