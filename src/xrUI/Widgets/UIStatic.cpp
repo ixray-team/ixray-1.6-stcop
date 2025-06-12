@@ -36,6 +36,7 @@ m_pTextControl(nullptr)
 {
 	m_TextureOffset.set		(0.0f,0.0f);
 	m_lanim_xform.set_defaults	();
+	m_bEnableTextHighlighting = false;
 }
 
 CUIStatic::~CUIStatic()
@@ -93,9 +94,14 @@ void CUIStatic::DrawText()
 			m_pTextControl->ParseText		(true);
 		}
 
-		Fvector2			p;
-		GetAbsolutePos		(p);
-		m_pTextControl->Draw(p.x, p.y);
+		if (IsHighlightText() && xr_strlen(TextItemControl()->GetText()) > 0 && m_bEnableTextHighlighting)
+			DrawHighlightedText();
+		else
+		{
+			Fvector2			p;
+			GetAbsolutePos(p);
+			m_pTextControl->Draw(p.x, p.y);
+		}
 	}
 	if(g_statHint->Owner()==this)
 		g_statHint->Draw_();
@@ -290,7 +296,9 @@ void CUIStatic::OnFocusLost()
 
 //-------------------------------------
 CUITextWnd::CUITextWnd()
-{}
+{
+	m_bEnableTextHighlighting = false;
+}
 
 void CUITextWnd::AdjustHeightToText()
 {
@@ -318,9 +326,14 @@ void CUITextWnd::Draw()
 		TextItemControl().ParseText		(true);
 	}
 
-	Fvector2			p;
-	GetAbsolutePos		(p);
-	TextItemControl().Draw		(p.x, p.y);
+	if (IsHighlightText() && xr_strlen(TextItemControl().GetText()) > 0 && m_bEnableTextHighlighting)
+		DrawHighlightedText();
+	else
+	{
+		Fvector2			p;
+		GetAbsolutePos(p);
+		TextItemControl().Draw(p.x, p.y);
+	}
 }
 
 void CUITextWnd::Update()
@@ -333,5 +346,54 @@ void CUITextWnd::Update()
 void CUITextWnd::ColorAnimationSetTextColor(u32 color, bool only_alpha)
 {
 	SetTextColor( (only_alpha)?subst_alpha(GetTextColor(),color) : color);
+}
+
+void CUIStatic::DrawHighlightedText() {
+	Frect rect;
+	GetAbsoluteRect(rect);
+	u32 def_col = TextItemControl()->GetTextColor();
+	TextItemControl()->SetTextColor(m_HighlightColor);
+	/*
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top + 0 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top - 0 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 0 + m_iTextOffsetX,	rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 0 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+	*/
+	TextItemControl()->Draw(rect.left + 0 + TextItemControl()->m_TextOffset.x, rect.top - 0 + TextItemControl()->m_TextOffset.y);
+	TextItemControl()->SetTextColor(def_col);
+}
+
+bool CUIStatic::IsHighlightText()
+{
+	return m_bCursorOverWindow;
+}
+
+
+void CUITextWnd::DrawHighlightedText() {
+	Frect rect;
+	GetAbsoluteRect(rect);
+	u32 def_col = TextItemControl().GetTextColor();
+	TextItemControl().SetTextColor(m_HighlightColor);
+	/*
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 1 + m_iTextOffsetX, rect.top + 0 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 1 + m_iTextOffsetX, rect.top - 0 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left - 0 + m_iTextOffsetX,	rect.top + 1 + m_iTextOffsetY);
+		m_pLines->Draw(	rect.left + 0 + m_iTextOffsetX, rect.top - 1 + m_iTextOffsetY);
+	*/
+	TextItemControl().Draw(rect.left + 0 + TextItemControl().m_TextOffset.x, rect.top - 0 + TextItemControl().m_TextOffset.y);
+	TextItemControl().SetTextColor(def_col);
+}
+
+bool CUITextWnd::IsHighlightText()
+{
+	return m_bCursorOverWindow;
 }
 

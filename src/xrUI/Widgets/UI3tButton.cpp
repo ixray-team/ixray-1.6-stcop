@@ -14,6 +14,7 @@ CUI3tButton::CUI3tButton()
 	m_dwTextColor[S_Disabled] 		= 0xFFAAAAAA;
 	m_dwTextColor[S_Highlighted]	= 0xFFFFFFFF;
 	m_dwTextColor[S_Touched] 		= 0xFFFFFFFF;
+	m_bEnableTextHighlighting = false;
 
 	m_background		= nullptr;
 	m_back_frameline	= nullptr;
