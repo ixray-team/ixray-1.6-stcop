@@ -5,7 +5,6 @@
 
 dxRainRender::dxRainRender()
 {
-#ifndef _EDITOR
 	IReader* F = FS.r_open("$game_meshes$","dm\\rain.dm"); 
 	VERIFY3(F,"Can't open file.","dm\\rain.dm");
 
@@ -17,14 +16,11 @@ dxRainRender::dxRainRender()
 	hGeom_Drops.create(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
 	
 	FS.r_close(F);
-#endif
 }
 
 dxRainRender::~dxRainRender()
 {
-#ifndef _EDITOR
 	::RImplementation.model_Delete(DM_Drop);
-#endif
 }
 
 void dxRainRender::Copy(IRainRender &_in)
@@ -36,7 +32,6 @@ void dxRainRender::Copy(IRainRender &_in)
 
 void dxRainRender::Render(CEffect_Rain &owner)
 {
-#ifndef _EDITOR
 	float	factor				= g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if (factor<EPS_L)			return;
 
@@ -253,14 +248,9 @@ void dxRainRender::Render(CEffect_Rain &owner)
 			RCache.Render			(D3DPT_TRIANGLELIST,v_offset,0,vCount_Lock,i_offset,dwNumPrimitives);
 		}
 	}
-#endif
 }
 
 const Fsphere& dxRainRender::GetDropBounds() const
 {
-#ifndef _EDITOR
 	return DM_Drop->bv_sphere;
-#else 
-	return {};
-#endif
 }
