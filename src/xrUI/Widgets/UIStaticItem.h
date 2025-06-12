@@ -31,6 +31,7 @@ public:
 	void			Init					(LPCSTR tex, LPCSTR sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);
+	void ResetOriginalRect() { uFlags.set(flValidTextureRect, FALSE); }
 
 	IC void			SetPos					(float left, float top)			{vPos.set(left,top);}
 	IC float		GetPosX					()								{return vPos.x;}
