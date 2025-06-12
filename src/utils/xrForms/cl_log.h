@@ -1,4 +1,4 @@
-#pragma	once
+﻿#pragma	once
 
 extern class i_lc_log {
 public:
@@ -17,17 +17,23 @@ enum IterationStatus
 	Complited,
 };
 
-struct IterationData {
-	std::string iterationName;
+struct IterationPhase {
 	std::string PhaseName = "";
-
 	u32 elapsed_time = 0;
 	u32 remain_time = 0;
+	IterationStatus status = InProgress;
+	float PhasePersent = 0;
+};
+
+struct IterationData {
+	std::string iterationName;
+	
+	u32 elapsed_time = 0; // Общее время работы итерации
 
 	int warnings = 0;
 	IterationStatus status = Pending;
-
-	float PhasePersent = 0;
+	std::vector<IterationPhase> phases;
+	float Persent = 0;
 };
 
 static xrCriticalSection	csLog
