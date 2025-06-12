@@ -55,9 +55,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	GContentView = new CContentView;
 
 	splash::update(30, "Creating Main UI Form");
+
 	UIMainForm* MainForm = new UIMainForm();
+
 	pApp = new XRayEditor();
-	g_pStringTable = new CStringTable();
 	g_XrGameManager = new XrGameManager();
 	g_SEFactoryManager = new XrSEFactoryManager();
 
@@ -216,10 +217,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	xr_delete(g_FontManager);
 	xr_delete(MainForm);
+	//очищение памяти таблицы строк
+	CStringTable::Destroy();
 	xr_delete(pApp);
 	xr_delete(g_XrGameManager);
 	xr_delete(g_SEFactoryManager);
-
 	Core._destroy();
 	return 0;
 }
