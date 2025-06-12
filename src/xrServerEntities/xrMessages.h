@@ -169,6 +169,7 @@ enum {
 	GE_BLOODSUCKER_VAMPIRE_START,
 	GE_BLOODSUCKER_VAMPIRE_STOP,
 	GE_CONTROLLER_PSY_FIRE,
+	GE_REPAIR_ITEM,
 
 	GE_FORCEDWORD				= u32(-1)
 };
@@ -239,6 +240,8 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 
 	//-----------------------------------------
 	GAME_EVENT_MP_TRADE,
+	GAME_EVENT_MP_REPAIR,
+	GAME_EVENT_MP_REPAIR_SUCCESS,
 	GAME_EVENT_TRANSFER_MONEY,
 
 	//-----------------------------------------
