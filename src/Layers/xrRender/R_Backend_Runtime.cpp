@@ -3,7 +3,7 @@
 
 using namespace DirectX;
 
-#include "../../xrCDB/Frustum.h"
+#include "../../xrCore/Collision/Frustum.h"
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"

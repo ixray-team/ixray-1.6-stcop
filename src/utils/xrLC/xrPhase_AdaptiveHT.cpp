@@ -7,7 +7,7 @@
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/face_smoth_flags.h"
 
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../xrForms/xrThread.h"
 
 const	float	aht_max_edge	= c_SS_maxsize/2.5f;	// 2.0f;			// 2 m

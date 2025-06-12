@@ -2,7 +2,7 @@
 #include "IGame_Level.h"
 
 #include "xr_object.h"
-#include "../xrCDB/xr_area.h"
+#include "../xrCore/Collision/xr_area.h"
 #include "Render.h"
 #include "xrLevel.h"
 //#include "fbasicvisual.h"

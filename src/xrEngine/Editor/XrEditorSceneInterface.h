@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "game_graph.h"
 class CObjectSpace;
 class XrEditorSceneInterface

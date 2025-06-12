@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../xrCDB/xr_collide_defs.h"
+#include "../xrCore/Collision/xr_collide_defs.h"
 #include "Render.h"
 #include "pure_relcase.h"
 
