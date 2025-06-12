@@ -2,6 +2,8 @@
 #include "UIButton.h"
 #include "UI_IB_Static.h"
 
+class CUIStatic;
+
 class UI_API CUI3tButton :
 	public CUIButton 
 {
@@ -24,6 +26,11 @@ public:
 			void 	InitSoundH					(LPCSTR sound_file);
 			void 	InitSoundT					(LPCSTR sound_file);
 
+	virtual void 	SetBtnStaticClrE			(u32 clr);
+	virtual void 	SetBtnStaticClrD			(u32 clr);
+	virtual void 	SetBtnStaticClrT			(u32 clr);
+	virtual void 	SetBtnStaticClrH			(u32 clr);
+
 	virtual void 	OnClick						();
 	virtual void 	OnFocusReceive				();
 	virtual void	OnFocusLost					();
@@ -32,6 +39,10 @@ public:
 	virtual void	Update						();
 	virtual void 	Draw						();
 	
+	virtual void	AddStatic					();
+	virtual void	SetStaticColorChanging		(bool status) { m_BtnStaticParams.m_bNeedClrChanging = status; }
+	CUIStatic*		GetBtnStatic				() { return m_BtnStatic; }
+
 	virtual bool 	OnMouseDown					(int mouse_btn);
 
 	void			SetStateTextColor				(u32 color, IBState state){m_dwTextColor[state] = color; m_bUseTextColor[state] = true;}
@@ -46,11 +57,23 @@ public:
 		Framemode_Window
 	};
 	EFrameMode				m_frameline_mode;
-	bool					vertical;
+	bool					m_bVertical;
 	CUI_IB_Static*			m_background;
 	CUI_IB_FrameLineWnd*	m_back_frameline;
 	CUI_IB_FrameWindow*		m_back_framewindow;
+
 private:
+	struct sBtnStaticParams
+	{
+		bool			m_bNeedClrChanging;
+		u32				m_ClrStateE;
+		u32				m_ClrStateD;
+		u32				m_ClrStateT;
+		u32				m_ClrStateH;
+	};
+	sBtnStaticParams	m_BtnStaticParams;
+	CUIStatic*			m_BtnStatic;
+
 			void		PlaySoundH					();
 			void		PlaySoundT					();
 
