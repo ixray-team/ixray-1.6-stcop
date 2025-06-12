@@ -235,20 +235,15 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		Fvector	p1, d; 
 		p1.set(get_LastFP2());
 		d.set(get_LastFD());
-		CEntity* E = smart_cast<CEntity*>(H_Parent());
+		if (!H_Parent()) return;
+		CGameObject* GO = H_Parent()->cast_game_object();
+		if (!GO || GO->getDestroy()) return;
+		CEntity* entity = GO->cast_entity();
+		if (!entity) return;
+		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
+		if (!inventory_owner || !inventory_owner->m_inventory) return;
 
-		if (E)
-		{
-			CInventoryOwner* io	= smart_cast<CInventoryOwner*>(H_Parent());
-			if(nullptr == io->inventory().ActiveItem())
-			{
-				Msg("current_state %d", GetState());
-				Msg("next_state %d", GetNextState());
-				Msg("item_sect %s", cNameSect().c_str());
-				Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
-			}
-			E->g_fireParams(this, p1,d);
-		}
+		entity->g_fireParams(this, p1,d);
 
 		if (IsGameTypeSingle())
 			p1.set(get_LastFP2());
@@ -260,7 +255,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 
 		launch_matrix.c.set(p1);
 
-		if (IsGameTypeSingle() && IsZoomed() && smart_cast<CActor*>(H_Parent()))
+		if (IsGameTypeSingle() && IsZoomed() && GO->cast_actor())
 		{
 			H_Parent()->setEnabled(FALSE);
 			setEnabled(FALSE);
