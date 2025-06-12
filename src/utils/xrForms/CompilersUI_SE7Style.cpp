@@ -354,7 +354,7 @@ void DrawCompilerConfig()
 	//if (ImGui::BeginChild("Settings", { 170, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
+		ImGui::Checkbox("Use Intel Embree", &gCompilerMode.Embree);
 		ImGui::Separator();
 
 		ImGui::TextColored(ImVec4(RGBAColor(204, 102, 102, 255)), "(Warning Disable MU in raycast)");
@@ -370,7 +370,7 @@ void DrawCompilerConfig()
   		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
-		ImGui::Checkbox("ShowMain", &ShowMainUI);
+		ImGui::Checkbox("Show Main", &ShowMainUI);
 
 		ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork);
 
@@ -383,8 +383,8 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 {
 	switch (status)
 	{
-	case Complited:
-		text = "Complited";
+	case Complete:
+		text = "Complete";
 		textCol = { 0, 0.9, 0, 1 };
 
 		icon = 'C';
@@ -530,8 +530,8 @@ void RenderCompilerUI(int X, int Y)
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Time Elapsed", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Remaining Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
 		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
@@ -602,7 +602,7 @@ void RenderCompilerUI(int X, int Y)
 				//PHASE %
 				auto pers = phase.PhasePersent;
 
-				if (phase.status != Complited) {
+				if (phase.status != Complete) {
 					u32 dwCurrentTime = timeGetTime();
 					u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
 					u32 secElapsed = dwTimeDiff / 1000;
@@ -614,7 +614,7 @@ void RenderCompilerUI(int X, int Y)
 				}
 
 				//
-				if (phase.status == Complited) pers = 1;
+				if (phase.status == Complete) pers = 1;
 				else if (pers > 1.f)	pers = 1;
 				else if (pers < 0.f)	pers = 0;
 
@@ -625,7 +625,7 @@ void RenderCompilerUI(int X, int Y)
 				ImGui::TextColored(phaseTextCol, "%s", make_time(phase.elapsed_time).c_str());
 
 				ImGui::TableSetColumnIndex(5);
-				if (phase.status != Complited)
+				if (phase.status != Complete)
 					ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
 
 				ImGui::TableSetColumnIndex(7);
@@ -712,11 +712,11 @@ void RenderCompilerUI(int X, int Y)
 	size_t  w_free, w_reserved, w_committed;
 	vminfo(&w_free, &w_reserved, &w_committed);
  
-	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
+	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", w_committed / 1024 / 1024);
 
 	ImGui::SameLine();
 
-	ImGui::Checkbox("ShowMain", &ShowMainUI);
+	ImGui::Checkbox("Show Main", &ShowMainUI);
 
 	ImGui::End();
 }
