@@ -18,6 +18,12 @@ CStreamPlayerA::CStreamPlayerA(ALuint sampleRate, ALenum format, ALCcontext* con
 
 	alGenSources(1, &m_source);
 
+	ALenum Aerror = alGetError();
+	if (Aerror != AL_NO_ERROR)
+	{
+		Msg("OpenAL error: %s", alGetString(Aerror));
+	}
+
 	alSourcef(m_source, AL_SOURCE_TYPE, AL_STREAMING);
 	alSourcei(m_source, AL_LOOPING, AL_FALSE);
 	alSourcef(m_source, AL_MIN_GAIN, 0.f);
