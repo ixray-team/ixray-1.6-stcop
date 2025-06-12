@@ -150,7 +150,6 @@ target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd par
 target_include_directories(xrCore PUBLIC ${IXRAY_SDK_INC})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 target_include_directories(xrCore PUBLIC ${CORE_DXMATH}/include/)
-target_include_directories(xrCore PUBLIC ${CORE_SDL3}build/native/include/)
 target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
 target_include_directories(xrCore PUBLIC ${YAML_INCL})
 target_include_directories(xrCore PUBLIC ${LZO}/build/native/include/)
@@ -178,7 +177,7 @@ if (IXRAY_PROFILER)
 endif()
 
 # Linker list
-target_link_libraries(xrCore PUBLIC ${CORE_SDL3}/runtimes/${CORE_SDL3_PLATFORM}/native/Release/${CORE_SDL3_LIBRARY})
+target_link_libraries(xrCore PUBLIC SDL3-shared)
 target_link_libraries(xrCore PUBLIC ${IXR_TBB_LIB})
 target_link_libraries(xrCore PUBLIC ${LZO_LIB})
 target_link_libraries(xrCore PUBLIC ${YAML_LIB})
@@ -208,14 +207,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 ## Platform specific (NEED REWORK!!!)
 if(WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/SDL3.dll ${IXRAY_OUTPUT}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${IXRAY_OUTPUT}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${IXRAY_OUTPUT}
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${IXRAY_OUTPUT}
 	)
 elseif(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CORE_SDL3}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libSDL3.so.0.0.0 ${IXRAY_OUTPUT}/libSDL3.so.0
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/libtbb.so.12.13 ${IXRAY_OUTPUT}/libtbb.so.12
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/linux-${NUGET_PACKAGE_PLATFORM}/native/Release/liblzo2.so.2.0.0 ${IXRAY_OUTPUT}/liblzo2.so.2
 	)
