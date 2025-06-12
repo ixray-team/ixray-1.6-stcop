@@ -31,7 +31,7 @@ class ButtonValue;
 #define GAMEMTLPAIR_CHUNK_COLLIDE	  	0x1005
 //----------------------------------------------------
 
-#define GAMEMTL_SUBITEM_COUNT			4
+#define GAMEMTL_SUBITEM_COUNT			24
 #define GAMEMTL_STEPSOUND_SUBITEM_COUNT 16
 
 #define GAMEMTL_NONE_ID					u32(-1)
