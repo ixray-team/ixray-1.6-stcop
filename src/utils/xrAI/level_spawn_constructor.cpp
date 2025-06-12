@@ -487,7 +487,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 					if (!NodeVisited.contains(NeighborID))
 					{
 						l_tpaStack.push_back(NeighborID);
-						CheckNodes.push_back(NeighborID);
+				//		CheckNodes.push_back(NeighborID);
 					}
 				}
 			}
