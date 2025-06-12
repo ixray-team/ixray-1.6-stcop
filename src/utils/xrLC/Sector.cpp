@@ -6,6 +6,7 @@
 #include "Build.h"
 #include "Sector.h"
 #include "OGF_Face.h"
+#include <execution>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -18,23 +19,12 @@ CSector::CSector(u32 ID)
 
 CSector::~CSector()
 {
+
 }
 
-IC BOOL	ValidateMerge	(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
-{
-	// Size
-	Fbox	merge;	merge.merge		(bb_base,bb);
-	Fvector sz;		merge.getsize	(sz);	sz.add	(EPS_L);
-	if (sz.x>SLimit)		return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (sz.y>SLimit)		return FALSE;
-	if (sz.z>SLimit)		return FALSE;
 
-	// Volume
-	volume		= merge.getvolume	();
-
-	// OK
-	return TRUE;
-}
+#include <../xrForms/CompilersUI.h>
+extern CompilersMode gCompilerMode;
 
 void CSector::BuildHierrarhy	()
 {
@@ -51,40 +41,15 @@ void CSector::BuildHierrarhy	()
 		Fbox& BoxBB = Tree->bbox;
 		scene_bb.merge(BoxBB);
 	}
-
-	scene_bb.grow(EPS_L);
-
-	if (CheckInfinity_FBOX(scene_bb))
-	{
-		clMsg("Scene Fbox is corupted !!! What is Brocken: ");
-		
-		int index_tree = 0;
-		for (auto tree : g_tree)
-		{
-			if ( CheckInfinity_FBOX( tree->bbox ) )
-			{
-				clMsg("Tree [%u] is dead min {%.2f,%.2f,%.2f} max {%.2f,%.2f,%.2f}", index_tree, VPUSH(tree->bbox.min), VPUSH(tree->bbox.max));
-
-				xr_vector<Fvector> V; 
-				tree->GetGeometry(V);
-
-				int IDX_V = 0;
-				for (auto Vert : V)
-				{
-					Msg("V[%u] is pos {%.2f,%.2f,%.2f}", IDX_V, VPUSH(Vert));
-					IDX_V++;
-				}
-			}
-			index_tree++;
-		}
-	}
-
+ 	scene_bb.grow(EPS_L);
+ 
 	// 
 	scene_bb.getsize(scene_size);
 	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
 	delimiter *= 2;
 
-	clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f", VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
+	clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
+		VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
 
 	int		iLevel					= 2;
 	float	SizeLimit				= c_SS_maxsize/4.f;
@@ -94,90 +59,175 @@ void CSector::BuildHierrarhy	()
 	if (delimiter <= SizeLimit)
 		delimiter *= 2;
 
-	struct OGF_Data{ 
-		OGF_Base* node;
-		u32 ID; 
+
+	int ProgressID = 0;
+
+	u64 ticks_find = 0;
+	u64 ticks_bounds = 0;
+	u64 count_finded = 0;
+
+
+	struct GridKey
+	{
+		int x, y;
+
+		bool operator==(const GridKey& other) const { return x == other.x && y == other.y; }
+
+		struct Hash
+		{
+			std::size_t operator()(const GridKey& k) const {
+				return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
+			}
+		};
 	};
+
+	struct OGF_Data {
+		OGF_Base* node;
+		u32 ID;
+		int cellX;
+		int cellZ;
+		GridKey key;
+	};
+
+
+	// Фикс гиганской сцены когда ловим Inf 256k макс  
+	if (delimiter > 256 * 1024)
+		delimiter = 256 * 1024;
+	
 
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
+		ProgressID = 0;
 		int iSize			= (int)g_tree.size();
-
 		xr_vector<OGF_Data> data;
 
+		std::unordered_map<GridKey, xr_vector<OGF_Data>, GridKey::Hash> grid_map;
+
 		u32 IDx = 0;
+
+		u32 ChunkSize = 128;
 		for (auto O : g_tree)
 		{
-			if (!O->bConnected && O->Sector == SelfID)
+			if (!O->bConnected && O->Sector == SelfID )
 			{
-				data.push_back(OGF_Data{O, IDx});
+				int cell_x = static_cast<int>(std::floor(O->bbox.min.x / ChunkSize));
+				int cell_z = static_cast<int>(std::floor(O->bbox.min.z / ChunkSize));
+				GridKey key = { cell_x, cell_z };
+ 				OGF_Data OData = { O, IDx, cell_x, cell_z, key };
+ 				data.push_back(OData);
+ 				grid_map[key].push_back(OData);
 			}
 			IDx++;
 		}
 
-		Status("Sector (%d/%d) noconn[%d]", (u32) SizeLimit, (u32) delimiter, data.size());
-		  
-		for (auto& Ogf : data)
+   		for (auto& Ogf : data)
 		{
-			int I = Ogf.ID;
-			if (g_tree[I]->bConnected)		 continue;
-			if (g_tree[I]->Sector != SelfID) continue;
+ 			Progress( float( ProgressID ) / float(data.size()));
+			ProgressID++; 
 
+ 			int I = Ogf.ID;
+			if (g_tree[I]->bConnected)	
+				continue;
+ 
 			OGF_Node* pNode					= new OGF_Node(iLevel,u16(SelfID));
 			pNode->AddChield				(I);
 
-			// Find best object to connect with
-			for (;;) 
-			{
-				// Find best object to connect with
-				int		best_id		= -1;
-				float	best_volume	= flt_max;
+			bool use_grid = SizeLimit <= ChunkSize ? true : false;
+  			GridKey selected_grid = Ogf.key;
 				 
-				// Fast Finding By No Connected
-				for (auto& O : data)
+ 			for (;;)
+			{
+				auto Validate = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 				{
-					int J = O.ID;
-					OGF_Base* candidate = g_tree[J];
-					if ( candidate->bConnected)		
-						continue;
-					if ( candidate->Sector != SelfID)
-						continue;
-				
-					float V;
-					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
+					// Size
+					Fbox	merge;
+					merge.merge(bb_base, bb);
+			
+					Fvector sz;
+					merge.getsize(sz);
+					sz.add(EPS_L);
+			
+					if (sz.x > SLimit || sz.y > SLimit || sz.z > SLimit)
+						return FALSE;
+ 
+					// Volume
+					volume = merge.getvolume();
+					return TRUE;
+				};
+				  
+ 				std::atomic<int>	best_id = -1;
+				std::atomic<float>	best_volume = flt_max;
+ 				if (use_grid)
+				{
+					for (auto& FOgf : grid_map[selected_grid])
 					{
-						if (V<best_volume)	{
-							best_volume		= V;
-							best_id			= J;
+						OGF_Base* candidate = g_tree[FOgf.ID];
+						if (candidate->bConnected || candidate->Sector != SelfID)
+							continue;
+						float V;
+						if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
+						{
+							if (V < best_volume.load())
+							{
+								best_volume.store(V);
+								best_id.store(FOgf.ID);
+ 							}
 						}
 					}
 				}
+				else
+				{
+					xr_parallel_for(
+					size_t(0), size_t(data.size()), [&](size_t dID)
+					{
+						OGF_Base* candidate = data[dID].node;
+						if (candidate->bConnected || candidate->Sector != SelfID)
+							return;
+						float V;
+						if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
+						{
+							if (V < best_volume.load())
+							{
+								best_volume.store(V);
+								best_id.store(data[dID].ID);
+							}
+						}
+					}
+					);
+				}
 
 				// Analyze
-				if (best_id<0)	
+				if (best_id < 0)
 					break;
-				pNode->AddChield	(best_id);
+  				
+				pNode->AddChield(best_id);
+				count_finded += 1;
 			}
-
-			if (pNode->chields.size()>1)	
+		 
+   			if (pNode->chields.size()>1)	
 			{
-				pNode->CalcBounds		();
-				g_tree.push_back		(pNode);
-				bAnyNode				= TRUE;
+   				pNode->CalcBounds		(true);
+ 				g_tree.push_back		(pNode);
+  				bAnyNode				= TRUE;
 			}
 			else
 			{
 				g_tree[I]->bConnected	= false;
 				xr_delete				(pNode);
 			}
-		}
-		
+  		}
+	
 		if (iSize != (int)g_tree.size())
 			iLevel++;
 	}
+ 
 	TreeRoot = 0;
-	if (bAnyNode) TreeRoot = g_tree.back();
-	else {
+	if (bAnyNode)
+	{
+		TreeRoot = g_tree.back();
+	}
+	else 
+	{
 		for (u32 I=0; I<g_tree.size(); I++)
 		{
 			if (g_tree[I]->bConnected)		 continue;
