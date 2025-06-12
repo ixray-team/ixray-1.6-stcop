@@ -34,6 +34,8 @@ bool SaveCForm = false;
 
 void SimplifyCFORM(CDB::CollectorPacked& CL)
 {
+#pragma todo(FX to ALL: Fix me)
+#if 0
 	// Подготовка данных исходной модели
 	u32 base_verts_cnt = u32(CL.getVS());
 	u32 base_faces_cnt = u32(CL.getTS());
@@ -137,4 +139,5 @@ void SimplifyCFORM(CDB::CollectorPacked& CL)
 		string_path fn;
 		SaveAsSMF(xr_strconcat(fn, pBuild->path, "cform_optimized.obj"), CL);
 	}
+#endif
 }
