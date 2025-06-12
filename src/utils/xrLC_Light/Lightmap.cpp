@@ -11,7 +11,7 @@
 #include "xrFace.h"
 #include "ETextureParams.h"
 #include <xrLC_GlobalData.h>
-
+#include <../xrLC/Build.h>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -107,25 +107,36 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 void CLightmap::Save( LPCSTR path )
 {
 	static int		lmapNameID = 0; ++lmapNameID;
- 
+	CTimer t;
+	t.Start();
+
 	// Borders correction
-	// Status			("Saving...");
-	for (u32 _y=0; _y<getLMSIZE(); _y++)
+ 	for (u32 _y=0; _y<getLMSIZE(); _y++)
 	{
 		for (u32 _x=0; _x<getLMSIZE(); _x++)
 		{
 			u32	offset	= _y*getLMSIZE()+_x;
-			if (lm.marker[offset]>=(254-BORDER))	lm.marker[offset]=255; else lm.marker[offset]=0;
+			if (lm.marker[offset]>=(254-BORDER))
+				lm.marker[offset]=255;
+			else 
+				lm.marker[offset]=0;
 		}
 	}
-	for (u32 ref=254; ref>(254-16); ref--) {
-		ApplyBorders	(lm,ref);
+	clMsg("[Lightmap] Borders correction: %u ms", t.GetElapsed_ms());
+	
+	t.Start();
+	for (u32 ref=254; ref>(254-16); ref--) 
+	{
+		ApplyBorders	(lm, ref);
 		Progress		(1.f - float(ref)/float(254-16));
 	}
+	clMsg("[Lightmap] Apply Borders: %u ms", t.GetElapsed_ms());
+
 	Progress			(1.f);
 
 	xr_vector<u32>			lm_packed;
 	lm.Pack					(lm_packed);
+
 	xr_vector<u32>			hemi_packed;
 	lm.Pack_hemi			(hemi_packed);
 
@@ -136,8 +147,7 @@ void CLightmap::Save( LPCSTR path )
 	
 	lm.destroy					();
 	
-	CTimer t;
-	t.Start();
+ 	t.Start();
 	Status			("Compression base...");
 	{
 
@@ -184,5 +194,7 @@ void CLightmap::Save( LPCSTR path )
 	}
 
 	clMsg("[Lightmap] Save Hemi: %u ms", t.GetElapsed_ms());
+
+	GetMemoryUsed();
 }
  
