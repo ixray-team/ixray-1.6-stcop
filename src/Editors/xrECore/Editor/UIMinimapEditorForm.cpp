@@ -1199,7 +1199,7 @@ void UIMinimapEditorForm::Update()
 		if (!Form->IsClosed())
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(500, 500));
-			if (ImGui::Begin("MinimapEditor", &Form->bOpen))
+			if (ImGui::Begin("Minimap Editor", &Form->bOpen))
 			{
 				Form->Draw();
 			}
