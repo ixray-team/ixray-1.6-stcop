@@ -231,6 +231,7 @@ private:
 	CTradeParameters			*m_trade_parameters;
 	CPurchaseList				*m_purchase_list;
 	BOOL						m_need_osoznanie_mode;
+	bool						m_isFocusingOnNpc;
 	bool						m_deadbody_can_take;
 	bool						m_deadbody_closed;
 
@@ -246,7 +247,8 @@ public:
 	virtual	bool				use_default_throw_force	();
 	virtual	float				missile_throw_force		(); 
 	virtual	bool				use_throw_randomness	();
-	virtual bool				NeedOsoznanieMode		() {return m_need_osoznanie_mode!=FALSE;}
+	virtual bool				NeedOsoznanieMode		() {return m_need_osoznanie_mode != FALSE;}
+	virtual bool				GetFocusingOnNpc		() {return m_isFocusingOnNpc;}
 
 			void				deadbody_can_take		(bool status);
 	IC		bool				deadbody_can_take_status() const { return m_deadbody_can_take; }
