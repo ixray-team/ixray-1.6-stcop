@@ -30,6 +30,13 @@ float3 tonemap(float3 rgb, float scale)
 	return PopGamma(rgb * (1.0f + rgb * 0.34602f) * rcp(rgb + 1.0f));
 }
 
+float3 detonemap(float3 rgb)
+{
+	rgb = PushGamma(rgb);
+	float3 r = rgb * rgb - 0.61592f * rgb + 1.0f;  
+	return (rgb + sqrt(r) - 1.0f) * 1.445f;  
+}
+
 void RemapVector(inout float3 View)
 {
     float3 ViewPos = abs(View);
