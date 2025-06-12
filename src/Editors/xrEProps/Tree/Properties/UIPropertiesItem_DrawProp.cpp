@@ -162,14 +162,22 @@ void UIPropertiesItem::DrawProp()
 	case PROP_NUMERIC:
 	{
 		bool change = false;
-		if (!DrawNumeric<u32>(PItem, change, PropertiesFrom->IsReadOnly()))
-			if (!DrawNumeric<float>(PItem, change, PropertiesFrom->IsReadOnly()))
-				if (!DrawNumeric<u8>(PItem, change, PropertiesFrom->IsReadOnly()))
-					if (!DrawNumeric<s8>(PItem, change, PropertiesFrom->IsReadOnly()))
-						if (!DrawNumeric<s16>(PItem, change, PropertiesFrom->IsReadOnly()))
-							if (!DrawNumeric<u16>(PItem, change, PropertiesFrom->IsReadOnly()))
-								if (!DrawNumeric<s32>(PItem, change, PropertiesFrom->IsReadOnly()))
-									R_ASSERT(false);
+		auto drawn = [&]<typename... T>(std::type_identity<T>...)
+		{
+			return (DrawNumeric<T>(PItem, change, PropertiesFrom->IsReadOnly()) || ...);
+		}
+		(
+			std::type_identity<u32>{},
+			std::type_identity<float>{},
+			std::type_identity<u8>{},
+			std::type_identity<s8>{},
+			std::type_identity<s16>{},
+			std::type_identity<u16>{},
+			std::type_identity<s32>{}
+		);
+
+		R_ASSERT(drawn);
+
 		if (change)
 		{
 			PropertiesFrom->Modified();
