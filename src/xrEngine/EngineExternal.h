@@ -6,6 +6,7 @@ enum class EEngineExternalUI {
 	DisableInventoryGrid,
 	ShowLoadingStages,
 	DisableMotionIcon,
+	PdaRearrangeTabButtons,
 	None
 };
 
