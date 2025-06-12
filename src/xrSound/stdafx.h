@@ -4,6 +4,8 @@
 
 #include "../xrCore/xrCore.h"
 #ifdef XRSOUND_EXPORTS
+
+#ifdef IXR_WINDOWS
 // mmsystem.h
 #define MMNOSOUND
 #define MMNOMIDI
@@ -19,8 +21,12 @@
 #define NONEWIC
 #define NOBITMAP
 #include <mmreg.h>
+#endif
 
 #include <vorbis/codec.h>
+#ifndef IXR_WINDOWS
+#   define NULL 0
+#endif
 #include <vorbis/vorbisfile.h>
 
 #include "../xrCore/Collision/xrCDB.h"
