@@ -42,6 +42,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 	{
 		XML_NODE* root_node			= xml.GetLocalRoot();
 		shared_str file				= xml.ReadAttrib("file", fi, "name"); 
+		float fileScale				= xml.ReadAttribFlt("file", fi, "scale", 1.f); 
 
 		XML_NODE* node				= xml.NavigateToNode("file", fi);
 
@@ -52,10 +53,10 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 
 			info.file = file;
 
-			info.rect.x1 = xml.ReadAttribFlt(node, "texture",i,"x");
-			info.rect.x2 = xml.ReadAttribFlt(node, "texture",i,"width") + info.rect.x1;
-			info.rect.y1 = xml.ReadAttribFlt(node, "texture",i,"y");
-			info.rect.y2 = xml.ReadAttribFlt(node, "texture",i,"height") + info.rect.y1;
+			info.rect.x1 = xml.ReadAttribFlt(node, "texture",i,"x") * fileScale;
+			info.rect.x2 = xml.ReadAttribFlt(node, "texture",i,"width") * fileScale + info.rect.x1;
+			info.rect.y1 = xml.ReadAttribFlt(node, "texture",i,"y") * fileScale;
+			info.rect.y2 = xml.ReadAttribFlt(node, "texture",i,"height") * fileScale + info.rect.y1;
 			shared_str id = xml.ReadAttrib	(node, "texture",i,"id");
 			m_textures.insert(std::make_pair(id,info));
 		}
