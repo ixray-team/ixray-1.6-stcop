@@ -9,7 +9,7 @@ XRNETSERVER_API int		psNET_ClientUpdate = 30; // FPS
 XRNETSERVER_API int		psNET_ClientPending = 2;
 XRNETSERVER_API char	psNET_Name[32] = "Player";
 
-static const int syncSamples = 256;
+static const int syncSamples = 0;
 
 //------------------------------------------------------------------------------
 BaseClient::BaseClient(CTimer * timer) : net_Statistic(timer)
