@@ -179,7 +179,7 @@ public:
 
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
-    virtual bool   		Export          		(LPCSTR path);
+    virtual bool   		Export          		(LPCSTR path, bool Legacy);
 
 	// device dependent funcs
 	virtual void		OnDeviceCreate			();

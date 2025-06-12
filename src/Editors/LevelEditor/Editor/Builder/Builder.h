@@ -131,7 +131,7 @@ protected:
     BOOL	BuildSceneStat			();
     bool 	BuildHOMModel			();
     bool 	BuildSOMModel			();
-    bool	BuildAIMap				();
+    bool	BuildAIMap				(bool Legacy);
     bool	BuildWallmarks			();
     BOOL 	CompileStatic		   	(bool b_selected_only);
 
@@ -147,7 +147,7 @@ public:
     BOOL 	MakeDetails				();
     BOOL 	MakeHOM					();
 	BOOL 	MakeSOM					();
-    BOOL	MakeAIMap				();
+    BOOL	MakeAIMap				(bool Legacy);
 
     void	OnRender				();
 };
