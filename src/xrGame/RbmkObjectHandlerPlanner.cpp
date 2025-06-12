@@ -35,7 +35,7 @@ class FRbmkObjectPropertyEmpty final : public FRbmkGoapProperty
 public:
 	virtual bool GetProperty() const override
 	{
-		return !ItemObject->GetAmmoElapsed();
+		return (ItemObject->GetAmmoElapsed() + ItemObject->GetAmmoChamberElapsed()) == 0;
 	}
 
 	CWeapon* ItemObject;
@@ -46,7 +46,7 @@ class FRbmkObjectPropertyReady final : public FRbmkGoapProperty
 public:
 	virtual bool GetProperty() const override
 	{
-		return !ItemObject->IsMisfire() && (ItemObject->GetAmmoElapsed() && (ItemObject->GetState() != CWeapon::eReload));
+		return !ItemObject->IsMisfire() && ((ItemObject->GetAmmoElapsed() + ItemObject->GetAmmoChamberElapsed()) > 0 && (ItemObject->GetState() != CWeapon::eReload));
 	}
 
 	CWeapon* ItemObject;
@@ -57,7 +57,7 @@ class FRbmkObjectPropertyFull final : public FRbmkGoapProperty
 public:
 	virtual bool GetProperty() const override
 	{
-		return ItemObject->GetAmmoElapsed() == ItemObject->GetAmmoMagSize();
+		return ItemObject->GetAmmoElapsed() + ItemObject->GetAmmoChamberElapsed() >= ItemObject->GetAmmoMagSize();
 	}
 
 	CWeapon* ItemObject;
@@ -714,15 +714,24 @@ public:
 
 		CWeapon* weapon = StalkerOwner->inventory().ActiveItem() ? StalkerOwner->inventory().ActiveItem()->cast_weapon() : NULL;
 		VERIFY(weapon);
-		if (weapon->IsPending()) return;
-
-		if (weapon->GetAmmoElapsed())
+		if (weapon->IsPending())
 		{
-			VERIFY(weapon->GetSuitableAmmoTotal() >= weapon->GetAmmoElapsed());
-			if (weapon->GetSuitableAmmoTotal() == weapon->GetAmmoElapsed()) return;
+			return;
+		}
 
-			VERIFY(weapon->GetAmmoMagSize() >= weapon->GetAmmoElapsed());
-			if (weapon->GetAmmoMagSize() == weapon->GetAmmoElapsed()) return;
+		if ((weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed()) > 0)
+		{
+			VERIFY(weapon->GetSuitableAmmoTotal() >= weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed());
+			if (weapon->GetSuitableAmmoTotal() >= weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed())
+			{
+				return;
+			}
+
+			VERIFY(weapon->GetAmmoMagSize() >= weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed());
+			if (weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed() >= weapon->GetAmmoMagSize())
+			{
+				return;
+			}
 		}
 
 		StalkerOwner->inventory().Action(kWPN_RELOAD,CMD_START);
