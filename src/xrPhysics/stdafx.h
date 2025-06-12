@@ -10,7 +10,6 @@
 
 #include "../xrCore/xrCore.h"
 #include "../xrCore/API/xrAPI.h"
-#include "../xrServerEntities/smart_cast.h"
 
 #include "../xrCore/Collision/xrCDB.h"
 #include "../xrSound/Sound.h"

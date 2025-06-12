@@ -321,10 +321,10 @@ CSE_ALifeCreatureActor *get_actor				(const CALifeSimulator *self_)
 	return								(self_->graph().actor());
 }
 
-KNOWN_INFO_VECTOR *registry						(const CALifeSimulator *self_, const ALife::_OBJECT_ID &id)
+KNOWN_INFO_VECTOR* registry(const CALifeSimulator* self_, const ALife::_OBJECT_ID& id)
 {
-	THROW								(self_);
-	return								(self_->registry(info_portions).object(id, true));
+	THROW(self_);
+	return (self_->registry().get<CInfoPortionRegistry>().object(id, true));
 }
 
 bool has_info									(const CALifeSimulator *self_, const ALife::_OBJECT_ID &id, LPCSTR info_id)
@@ -353,7 +353,7 @@ void set_objects_per_update(CALifeSimulator* self, u32 count)
 
 void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LPCSTR info_id)
 {
-	KNOWN_INFO_VECTOR *known_info = alife->registry(info_portions).object(id, true);
+	KNOWN_INFO_VECTOR *known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
 	if (!known_info)
 		return;
 
@@ -367,7 +367,7 @@ void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LP
 
 void AlifeRemoveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LPCSTR info_id)
 {
-	KNOWN_INFO_VECTOR	*known_info = alife->registry(info_portions).object(id, true);
+	KNOWN_INFO_VECTOR	*known_info = alife->registry().get<CInfoPortionRegistry>().object(id, true);
 	if (!known_info)
 		return;
 	known_info->erase(std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)),known_info->end());

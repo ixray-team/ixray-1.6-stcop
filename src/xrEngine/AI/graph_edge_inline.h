@@ -87,7 +87,7 @@ IC	_edge_data_type &CSGraphEdge::data		()
 #undef CSGraphEdge
 
 ////////////////////////////////////////////////////////////////////////////
-// class CEdge<..., Loki::EmptyType>
+// class CEdge<..., xr_empty>
 ////////////////////////////////////////////////////////////////////////////
 
 #define TEMPLATE_SPECIALIZATION template <\
@@ -95,7 +95,7 @@ IC	_edge_data_type &CSGraphEdge::data		()
 	typename _vertex_type\
 >
 
-#define CSGraphEdge CEdge<_edge_weight_type, _vertex_type, Loki::EmptyType>
+#define CSGraphEdge CEdge<_edge_weight_type, _vertex_type, xr_empty>
 
 TEMPLATE_SPECIALIZATION
 IC	CSGraphEdge::CEdge	(const _edge_weight_type &weight, _vertex_type *vertex) :

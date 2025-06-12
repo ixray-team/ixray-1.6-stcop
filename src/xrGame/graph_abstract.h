@@ -13,10 +13,10 @@
 #include "../xrServerEntities/object_broker.h"
 
 template <
-	typename _data_type = Loki::EmptyType,
+	typename _data_type = xr_empty,
 	typename _edge_weight_type = float,
 	typename _vertex_id_type = u32,
-	typename _edge_data_type = Loki::EmptyType
+	typename _edge_data_type = xr_empty
 >
 class CGraphAbstract {
 public:
@@ -76,7 +76,7 @@ public:
 };
 
 template <
-	typename _data_type = Loki::EmptyType,
+	typename _data_type = xr_empty,
 	typename _edge_weight_type = float,
 	typename _vertex_id_type = u32
 >

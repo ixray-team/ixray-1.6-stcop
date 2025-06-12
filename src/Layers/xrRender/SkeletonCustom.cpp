@@ -11,9 +11,7 @@
 int			psSkeletonUpdate	= 32;
 xrCriticalSection UCalc_Mutex;
 
-#ifndef _EDITOR
-#include "../../xrServerEntities/smart_cast.h"
-#else
+#ifdef _EDITOR
 #include "../../xrCore/API/xrAPI.h"
 #endif
 

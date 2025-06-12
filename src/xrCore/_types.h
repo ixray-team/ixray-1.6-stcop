@@ -21,6 +21,8 @@ using f64 = double;
 using pstr = char*;
 using pcstr = const char*;
 
+struct xr_empty {};
+
 // windoze stuff
 #ifndef _WINDOWS_
 typedef	int				BOOL;
