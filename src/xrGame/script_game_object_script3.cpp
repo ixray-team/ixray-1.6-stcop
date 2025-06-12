@@ -446,7 +446,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_actor_run_coef",		&CScriptGameObject::SetActorRunCoef) 
 		.def("get_actor_runback_coef",		&CScriptGameObject::GetActorRunBackCoef)
 		.def("set_actor_runback_coef",		&CScriptGameObject::SetActorRunBackCoef)   
-			
+		.def("get_actor_power_boost_time", &CScriptGameObject::GetActorPowerBoostTime)
+
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)
 		.def("weapon_addon_attach",			&CScriptGameObject::Weapon_AddonAttach)
