@@ -340,14 +340,24 @@ public:
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();
 
-	float GetGameTime() { return fGameTime; }
-
 	// editor-related
 public:
 	float					ed_from_time		;
 	float					ed_to_time			;
 public:
     void					ED_Reload			();
+
+    float GetGameTime()
+    {
+        return fGameTime;
+    }
+    void GetGameTime(u32& hours, u32& minutes, u32& seconds) const
+    {
+        SplitTime(fGameTime, hours, minutes, seconds);
+    }
+
+    void SplitTime(float time, u32& hours, u32& minutes, u32& seconds) const;
+
 	bool					m_paused;
 
 	CInifile*				m_ambients_config;
