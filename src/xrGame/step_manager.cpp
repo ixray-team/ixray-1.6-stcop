@@ -173,8 +173,10 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 	m_blend	= blend;
 	if (!m_blend) return;
 
-	if(m_object->character_ik_controller	())
-		m_object->character_ik_controller	()->PlayLegs(blend);
+	if (!g_dedicated_server && m_object->character_ik_controller())
+	{
+		m_object->character_ik_controller()->PlayLegs(blend);
+	}
 
 	m_time_anim_started = Device.dwTimeGlobal; 
 	
