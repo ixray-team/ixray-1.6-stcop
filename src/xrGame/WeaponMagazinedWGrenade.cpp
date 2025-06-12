@@ -911,6 +911,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 		info.fmj_ammo._set("");
 		info.ap_ammo._set("");
 		info.third_ammo._set("");
+		info.total_ammo._set("");
 
 		if (at_size >= 1)
 		{
