@@ -28,9 +28,6 @@ void steam_net_update_server(void* P)
 
 SteamNetServer::SteamNetServer(CTimer* timer, BOOL	dedicated)
 	: BaseServer(timer, dedicated)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	, csConnection(MUTEX_PROFILE_ID(SteamNetServer::csConnection))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	m_players.reserve((dedicated) ? GetMaxPlayers() + 1 : GetMaxPlayers()); // 
 	m_server_password.reserve(64);
