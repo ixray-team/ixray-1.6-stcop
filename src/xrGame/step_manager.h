@@ -5,24 +5,25 @@ class CEntityAlive;
 class CBlend;
 struct SGameMtlPair;
 class CStepManager {
-	u8					m_legs_count;
+	u8					m_legs_count = {};
 
-	STEPS_MAP			m_steps_map;
-	SStepInfo			m_step_info;
+	STEPS_MAP			m_steps_map = {};
+	SStepInfo			m_step_info = {};
 
-	CEntityAlive		*m_object;
+	CEntityAlive		*m_object = nullptr;
 
-	u16					m_foot_bones[MAX_LEGS_COUNT];
-	CBlend				*m_blend;
+	u16					m_foot_bones[MAX_LEGS_COUNT] = {};
+	CBlend*				m_blend = nullptr;
 	struct material_sound
 	{
 		u8				m_last_step_sound_played;
 		SGameMtlPair*	last_mtl_pair;
 						material_sound		():m_last_step_sound_played(u8(-1)), last_mtl_pair(0){}
 		void			play_next			(SGameMtlPair* mtl_pair, CEntityAlive* object, float volume, bool b_hud_mode);
-	}					m_step_sound;
+	} m_step_sound;
 
-	u32					m_time_anim_started;
+	u32					m_time_anim_started = {};
+	xr_vector<ref_sound> m_rain_steps = {};
 
 public: 
 						CStepManager			();
@@ -38,7 +39,8 @@ public:
 			void		update					(bool b_hud_view);
 	
 	// process event
-	virtual	void		event_on_step			() {}	
+	virtual	void		event_on_step			() {}
+	inline void PlayRainStep(bool bHudView);
 
 protected:
 			Fvector		get_foot_position		(ELegType leg_type);

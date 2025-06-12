@@ -6,6 +6,7 @@
 #include "GamePersistent.h"
 #include "material_manager.h"
 #include "IKLimbsController.h"
+#include "../xrEngine/Rain.h"
 
 #ifdef	DEBUG
 BOOL debug_step_info = FALSE;
@@ -16,16 +17,36 @@ extern float psHUDStepSoundVolume;
 
 CStepManager::CStepManager()
 {
+	static FS_FileSet stepRainSounds = {};
+	if (stepRainSounds.empty())
+	{
+		FS.file_list(stepRainSounds, "$game_sounds$", FS_ListFiles, R"(material\human\step\rain_*)");
+	}
+
+	if (m_rain_steps.empty())
+	{
+		for (auto& stepRainSound : stepRainSounds)
+		{
+			m_rain_steps.emplace_back().create(stepRainSound.name.c_str(), st_Effect, sg_SourceType);
+		}
+	}
 }
 
 CStepManager::~CStepManager()
 {
+	for (auto& rainStep : m_rain_steps)
+	{
+		rainStep.destroy();
+	}
+
+	m_rain_steps.clear();
 }
 
 DLL_Pure *CStepManager::_construct	()
 {
 	m_object			= smart_cast<CEntityAlive*>(this);
 	VERIFY				(m_object);
+
 	return				(m_object);
 }
 
@@ -104,7 +125,7 @@ void CStepManager::reload(LPCSTR section)
 
 	
 	m_time_anim_started	= 0;
-	m_blend				= 0;
+	m_blend				= nullptr;
 }
 
 void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
@@ -192,7 +213,10 @@ void CStepManager::update(bool b_hud_view)
 
 			// Играть звук
 			if(b_play && is_on_ground() )
+			{
 				m_step_sound.play_next(mtl_pair, m_object, m_step_info.params.step[i].power, b_hud_view);
+				PlayRainStep(b_hud_view);
+			}
 
 			CGameObject* object = smart_cast<CGameObject*>(m_object);
 			if (object)
@@ -338,4 +362,26 @@ void CStepManager::material_sound::play_next(SGameMtlPair* mtl_pair, CEntityAliv
 																	0, 
 																	&sound_pos, 
 																	&vol );
+}
+
+inline void CStepManager::PlayRainStep(const bool bHudView)
+{
+	if (m_rain_steps.empty())
+	{
+		return;
+	}
+
+	float rainVolume = g_pGamePersistent->Environment().eff_Rain->GetRainVolume();
+	if (rainVolume <= 0.1f)
+	{
+		return;
+	}
+
+	Fvector pos = m_object->Position();
+	if (bHudView)
+	{
+		pos = zero_vel;
+	}
+	const int count = m_rain_steps.size();
+	m_rain_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
 }
