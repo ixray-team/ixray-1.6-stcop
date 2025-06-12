@@ -15,6 +15,7 @@
 #include "blender_scale.h"
 #include "blender_cas.h"
 #include "blender_gtao.h"
+#include "blender_taa.h"
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
@@ -569,6 +570,14 @@ CRenderTarget::CRenderTarget()
 		s_puddles.create("effects_water_puddles");
 	}
 
+	//TAA
+	{
+		b_taa = new CBlender_taa();
+		s_taa.create(b_taa);
+
+		rt_Generic_0_prev.create(r2_RT_generic0_prev, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);	
+	}
+
 	// OCCLUSION
 	s_occq.create(b_occq, "r2\\occq");
 
@@ -926,6 +935,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_occq);
 	xr_delete(b_cas);
 	xr_delete(b_gtao);
+	xr_delete(b_taa);
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
