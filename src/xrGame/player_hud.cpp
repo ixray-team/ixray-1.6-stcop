@@ -227,13 +227,13 @@ Fvector& attachable_hud_item::hands_attach_rot()
 Fvector& attachable_hud_item::hands_offset_pos()
 {
 	u8 idx	= m_parent_hud_item->GetCurrentHudOffsetIdx();
-	return m_measures.m_hands_offset[0][idx];
+	return m_measures.m_hands_positions.hands_offsets[0][idx];
 }
 
 Fvector& attachable_hud_item::hands_offset_rot()
 {
 	u8 idx	= m_parent_hud_item->GetCurrentHudOffsetIdx();
-	return m_measures.m_hands_offset[1][idx];
+	return m_measures.m_hands_positions.hands_offsets[1][idx];
 }
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
@@ -330,6 +330,37 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 	}
 }
 
+void hud_item_measures::hud_hands_positions::Load(const shared_str& section, bool is_16x9)
+{
+	bool default_is_self = sSection.size() > 0;
+
+	if (sSection.size() == 0 || bIs16x9 == is_16x9)
+	{
+		sSection = section;
+	}
+
+	bIs16x9 = is_16x9;
+
+	string64 _prefix = {};
+	xr_sprintf(_prefix, "%s", bIs16x9 ? "_16x9" : "");
+	string128 val_name = {};
+
+	xr_strconcat(val_name, "hands_position", _prefix);
+	hands_offsets[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][0] : zero_vel);
+	xr_strconcat(val_name, "hands_orientation", _prefix);
+	hands_offsets[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][0] : zero_vel);
+
+	xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
+	hands_offsets[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][1] : zero_vel);
+	xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
+	hands_offsets[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][1] : zero_vel);
+
+	xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
+	hands_offsets[0][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][2] : zero_vel);
+	xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
+	hands_offsets[1][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][2] : zero_vel);
+}
+
 bool  attachable_hud_item::need_renderable()
 {
 	return m_parent_hud_item->need_renderable();
@@ -355,22 +386,8 @@ void attachable_hud_item::render_item_ui()
 
 void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 {
-	Fvector def = { 0.f, 0.f, 0.f };
-	bool is_16x9 = UI().is_widescreen();
-	string64	_prefix;
-	xr_sprintf	(_prefix,"%s",is_16x9?"_16x9":"");
-	string128	val_name;
-
-	xr_strconcat(val_name,"hands_position",_prefix);
-	m_hands_attach[0]			= pSettings->r_fvector3(sect_name, val_name);
-	xr_strconcat(val_name,"hands_orientation",_prefix);
-	m_hands_attach[1]			= pSettings->r_fvector3(sect_name, val_name);
-
-	m_hands_attach_real[0] = m_hands_attach[0];
-	m_hands_attach_real[1] = m_hands_attach[1];
-
-	m_item_attach[0]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", def);
-	m_item_attach[1]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", def);
+	m_item_attach[0]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", zero_vel);
+	m_item_attach[1]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", zero_vel);
 
 	shared_str					 bone_name;
 	m_prop_flags.set			 (e_fire_point,pSettings->line_exist(sect_name,"fire_bone"));
@@ -400,19 +417,6 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	}else
 		m_shell_point_offset.set(0,0,0);
 
-	m_hands_offset[0][0].set	(0,0,0);
-	m_hands_offset[1][0].set	(0,0,0);
-
-	xr_strconcat(val_name,"aim_hud_offset_pos",_prefix);
-	m_hands_offset[0][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
-	xr_strconcat(val_name,"aim_hud_offset_rot",_prefix);
-	m_hands_offset[1][1]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
-
-	xr_strconcat(val_name,"gl_hud_offset_pos",_prefix);
-	m_hands_offset[0][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
-	xr_strconcat(val_name,"gl_hud_offset_rot",_prefix);
-	m_hands_offset[1][2]		= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, def);
-
 	m_inertion_params.m_tendto_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_speed", 1.0f);
 	m_inertion_params.m_tendto_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_aim_speed", 1.0f);
 	m_inertion_params.m_tendto_ret_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_ret_speed", 5.0f);
@@ -421,6 +425,12 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point")==pSettings->line_exist(sect_name,"fire_bone"),		sect_name.c_str());
 	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point2")==pSettings->line_exist(sect_name,"fire_bone2"),	sect_name.c_str());
 	R_ASSERT2(pSettings->line_exist(sect_name,"shell_point")==pSettings->line_exist(sect_name,"shell_bone"),	sect_name.c_str());
+
+	bool is_16x9 = UI().is_widescreen();
+
+	m_hands_positions.Load(sect_name, is_16x9);
+	m_hands_attach_real[0] = m_hands_positions.hands_offsets[0][0];
+	m_hands_attach_real[1] = m_hands_positions.hands_offsets[1][0];
 
 	m_weapon_inertion.Load(sect_name, is_16x9);
 
@@ -927,8 +937,8 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		tollookout_time_remains = 0;
 	}
 
-	Fvector pos = m_measures.m_hands_attach[0];
-	Fvector rot = m_measures.m_hands_attach[1];
+	Fvector pos = m_measures.m_hands_positions.hands_offsets[0][0];
+	Fvector rot = m_measures.m_hands_positions.hands_offsets[1][0];
 
 	Fvector targetpos = zero_vel;
 	Fvector targetrot = zero_vel;
