@@ -554,28 +554,18 @@ CUICellContainer::~CUICellContainer()
 
 bool CUICellContainer::AddSimilar(CUICellItem* itm)
 {
-	if(!m_pParentDragDropList->IsGrouping())	return false;
+	if (!m_pParentDragDropList->IsGrouping())	return false;
 
-	//Alundaio: Don't stack equipped items
-	PIItem	iitem = (PIItem)itm->m_pData;
-	if (iitem && iitem->m_pInventory)
+	CUICellItem* i = FindSimilar(itm);
+	R_ASSERT(i != itm);
+	R_ASSERT(0 == itm->ChildsCount());
+	if (i)
 	{
-		if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-			return false;
-
-		if (!iitem->CanStack())
-			return false;
+		i->PushChild(itm);
+		itm->SetOwnerList(m_pParentDragDropList);
 	}
-	//-Alundaio
 
-	CUICellItem* i		= FindSimilar(itm);
-	if (i == nullptr || i == itm || itm->ChildsCount() > 0)
-		return false;
-
-	i->PushChild(itm);
-	itm->SetOwnerList(m_pParentDragDropList);
-
-	return true;
+	return (i != nullptr);
 }
 
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
@@ -588,25 +578,9 @@ CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 #else
 		CUICellItem* i = (CUICellItem*)(*it);
 #endif
-		if (i == itm)
-			continue;
-
-		if (!i->EqualTo(itm))
-			continue;
-
-		//Alundaio: Don't stack equipped items
-		PIItem	iitem = (PIItem)i->m_pData;
-		if (iitem && iitem->m_pInventory)
-		{
-			if (iitem->m_pInventory->ItemFromSlot(iitem->BaseSlot()) == iitem)
-				continue;
-
-			if (!iitem->CanStack())
-				continue;
-		}
-		//-Alundaio
-
-		return i;
+		R_ASSERT(i != itm);
+		if (i->EqualTo(itm))
+			return i;
 	}
 	return nullptr;
 }
@@ -970,6 +944,18 @@ void CUICellContainer::Draw()
 				else if ( ui_cell.m_item->m_select_armament )
 				{
 					select_mode = 3;
+				}
+				else
+				{
+					//Alundaio: Highlight equipped items
+					PIItem	iitem = (PIItem)ui_cell.m_item->m_pData;
+					if (iitem)
+					{
+						u16 slot = iitem->BaseSlot();
+						if (iitem->m_pInventory && iitem->m_pInventory->ItemFromSlot(slot) == iitem)
+							select_mode = 3;
+					}
+					//-Alundaio:
 				}
 			}
 			
