@@ -293,7 +293,7 @@ void CGlowManager::render_selected()
 			if (G.fade*scale<=1.f)		continue;
 
 			// near fade
-			float dist_np	= NP.distance(G.position)-VIEWPORT_NEAR;
+			float dist_np	= NP.distance(G.position)- Device.fViewportNear;
 			float snear		= dist_np/0.15f;	clamp	(snear,0.f,1.f);
 			scale			*=	snear;
 			if (G.fade*scale<=1.f)		continue;
