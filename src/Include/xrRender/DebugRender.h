@@ -17,6 +17,7 @@ public:
 	enum dbgShaderHandle
 	{
 		dbgShaderWindow = 0,
+		dbgShaderWorld,
 		dbgShaderCount
 	};
 
