@@ -312,7 +312,7 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	vertices.shrink_to_fit();
  	
 	
-	// 13080 (Ориг нормали) если capacity 12750mb
+	// 13080 (РћСЂРёРі РЅРѕСЂРјР°Р»Рё) РµСЃР»Рё capacity 12750mb
 	Memory.mem_compact	();
 	
 	if (bProgress)	
