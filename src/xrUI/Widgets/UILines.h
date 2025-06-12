@@ -26,6 +26,9 @@ public:
 			void			SetVTextAlignment(EVTextAlignment al)		{m_eVTextAlign = al;}
 			EVTextAlignment GetVTextAlignment()							{return m_eVTextAlign;}
 
+			void			SetTextGradientMode(CGameFont::EGradientMode gm)			{m_eTextGradientMode = gm;}
+CGameFont::EGradientMode	GetTextGradientMode()						{return m_eTextGradientMode;}
+
 			void			SetTextComplexMode							(bool mode = true);
 			void			SetPasswordMode								(bool mode = true);
 			bool			IsPasswordMode								() {return !!uFlags.test(flPasswordMode);};
@@ -63,6 +66,7 @@ protected:
 
 	shared_str				m_text;
 
+	CGameFont::EGradientMode m_eTextGradientMode;
 	ETextAlignment			m_eTextAlign;
 	EVTextAlignment			m_eVTextAlign;
 	u32						m_dwTextColor;
