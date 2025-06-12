@@ -61,6 +61,7 @@ private:
 	bool _skipTesselate;
 	bool _lmapRGBA;
 	bool _skipSubdivide;
+	u32 JSampleMU;
 
 private:
 		bool							b_vert_not_register;
@@ -151,6 +152,8 @@ public:
 	
 	void SetLmapsSize(u32 size) { setLMSIZE(size); }
 
+	void SetJitterMU(u32 size) { JSampleMU = size; }
+	u32 GetJitterMU() { return JSampleMU; }
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
