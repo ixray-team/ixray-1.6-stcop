@@ -28,7 +28,6 @@ private:
 	xr_vector<CDS0_RenderVisual*>	ModelsToDelete;		// 
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
-	BOOL						bLogging;
 	BOOL						bForceDiscard;
 	BOOL						bAllowChildrenDuplicate;
 
@@ -50,8 +49,6 @@ public:
 	void					Discard(CDS0_RenderVisual*& V, BOOL b_complete);
 	void					DeleteInternal(CDS0_RenderVisual*& V, BOOL bDiscard = FALSE);
 	void					DeleteQueue();
-
-	void					Logging(BOOL bEnable) { bLogging = bEnable; }
 
 	void					Prefetch();
 	void					ClearPool(BOOL b_complete);
