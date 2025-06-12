@@ -7,6 +7,10 @@
 
 #include "EmbreeRayTrace.h"
 
+// Для Загрузки Геометрии
+#include "xrface.h"
+#include "xrMU_Model_Reference.h"
+
 void Embree::VertexEmbree::Set(Fvector& vertex)
 {
 	x = vertex.x;
@@ -39,6 +43,17 @@ void Embree::TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEm
 	emb_verts[last_index + 2].Set(verts[v3]);
 
 	last_index += 3;
+}
+
+void Embree::TriEmbree::SetVertexes(Fvector* Vs, VertexEmbree* emb_verts, size_t& INDEX)
+{
+ 	point1 = INDEX;
+	point2 = INDEX + 1;
+	point3 = INDEX + 2;
+	emb_verts[INDEX].Set(Vs[0]);
+	emb_verts[INDEX + 1].Set(Vs[1]);
+	emb_verts[INDEX + 2].Set(Vs[2]);
+ 	INDEX += 3;
 }
 
 
@@ -95,4 +110,153 @@ void Embree::IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse)
 
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", device, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
 }
-  
+
+
+IC bool	FaceEqual__(Face& F1, Face& F2)
+{
+	// Test for 6 variations
+	if ((F1.v[0] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
+	if ((F1.v[0] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
+	if ((F1.v[2] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
+	if ((F1.v[2] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
+	if ((F1.v[1] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
+	if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
+	return false;
+}
+
+void Embree::GetGlobalData(
+	size_t& FaceIndex,
+	Embree::VertexEmbree* verts_embree, 
+	Embree::TriEmbree* faces_embree, 
+	xr_vector<void*>* dummy, bool useForOthers
+)
+{
+ 	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+
+	bool isCalculate = verts_embree == nullptr || faces_embree == nullptr || dummy == nullptr;
+
+	size_t count_verts = 0;
+	int FaceCurrent = 0;
+	for (auto F : lc_global_data()->g_faces())
+	{
+		FaceCurrent++;
+
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)
+			continue;
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
+		{
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
+			{
+				adjacent_vec.push_back(V->m_adjacents[adj]);
+			}
+		}
+		
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		
+		// Unique
+		BOOL			bAlready = FALSE;
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F) continue;
+			if (!Test->flags.bProcessed) continue;
+			if (FaceEqual__(*F, *Test))
+			{
+				bAlready = TRUE; break;
+			}
+		}
+
+		if (!bAlready)
+		{
+ 			if (!isCalculate)
+			{
+				F->flags.bProcessed = true;
+				Fvector verts[3];
+				verts[0] = F->v[0]->P; verts[1] = F->v[1]->P; verts[2] = F->v[2]->P;
+				faces_embree[FaceIndex].SetVertexes(verts, verts_embree, count_verts);
+				(*dummy)[FaceIndex] = F;
+			}
+			FaceIndex +=1;
+		}
+
+		Progress( float (FaceCurrent) / lc_global_data()->g_faces().size() );
+	}
+
+	auto& mu_refs = lc_global_data()->mu_refs();
+	xr_vector<FaceDataIntel> temp_buffer;
+
+	int RefID = 0;
+	for (auto ref : mu_refs)
+	{
+		RefID++;
+		temp_buffer.clear();
+		ref->export_cform_rcast_new(temp_buffer);
+
+		for (auto F : temp_buffer)
+		{
+			if (!isCalculate)
+			{
+				Fvector verts[3];
+				verts[0] = F.v1; verts[1] = F.v2; verts[2] = F.v3;
+				(*dummy)[FaceIndex] = F.ptr;
+				faces_embree[FaceIndex].SetVertexes(verts, verts_embree, count_verts);
+			}
+			FaceIndex += 1;
+		}
+
+		Progress(float(RefID) / mu_refs.size());
+	}
+
+	// if (useForOthers)
+	// {
+	// 	Status("Saving...");
+	// 	string_path				fn;
+	// 
+	// 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
+	// 	xr_vector<b_rc_face>	rc_faces;
+	// 	rc_faces.resize(FaceIndex);
+	// 	
+	// 	// Prepare faces
+	// 	for (u32 k = 0; k < FaceIndex; k++) 
+	// 	{
+	// 	  	base_Face* F = (base_Face*) (*dummy)[FaceIndex];;
+	// 		b_rc_face& cf = rc_faces[k];
+	// 		cf.dwMaterial = F->dwMaterial;
+	// 		cf.dwMaterialGame = F->dwMaterialGame;
+	// 		
+	// 		Fvector2* cuv = F->getTC0();
+	// 		cf.t[0].set(cuv[0]);
+	// 		cf.t[1].set(cuv[1]);
+	// 		cf.t[2].set(cuv[2]);
+	// 	}
+	// 	  
+	// 	MFS->open_chunk(0);
+	// 
+	// 	// Header
+	// 	hdrCFORM hdr;
+	// 	hdr.version = CFORM_CURRENT_VERSION;
+	// 	hdr.vertcount = (u32)CL.getVS();
+	// 	hdr.facecount = (u32)CL.getTS();
+	// 	hdr.aabb	  = scene_bb;
+	// 	MFS->w(&hdr, sizeof(hdr));
+	// 
+	// 	// Data
+	// 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
+	// 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
+	// 	MFS->close_chunk();
+	// 
+	// 	MFS->open_chunk(1);
+	// 	MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
+	// 	MFS->close_chunk();
+	// 
+	// 	FS.w_close(MFS);
+	// 
+	// }
+
+}
