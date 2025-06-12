@@ -7,13 +7,12 @@
 
 #include "stdafx.h"
 #include "pch_script.h"
-/*
 #include "UIFactionWarWnd.h"
 
-#include "UIXmlInit.h"
-#include "UIProgressBar.h"
-#include "UIFrameLineWnd.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/UIHelper.h"
 
 #include "FactionState.h"
 #include "UIPdaWnd.h"
@@ -21,7 +20,7 @@
 
 #include "../Actor.h"
 #include "../ai_space.h"
-#include "../../xrServerEntities/script_engine.h"
+#include "../../xrScripts/script_engine.h"
 
 #define PDA_FACTION_WAR_XML		"pda_fraction_war.xml"
 
@@ -45,6 +44,12 @@ void CUIFactionWarWnd::Reset()
 	hint_wnd           = nullptr;
 	m_tc_pos.set       ( 0.0f, 0.0f );
 	m_td_pos.set       ( 0.0f, 0.0f );
+
+	m_background = nullptr;
+	m_center_background = nullptr;
+
+	m_background2 = nullptr;
+	m_center_background2 = nullptr;
 }
 
 void CUIFactionWarWnd::Init()
@@ -54,23 +59,28 @@ void CUIFactionWarWnd::Init()
 
 	CUIXmlInit::InitWindow( xml, "main_wnd", 0, this );
 
-	m_background			= UIHelper::CreateFrameLine( xml, "background", this );
+    m_background = UIHelper::CreateFrameWindow(xml, "background", this, false);
+    m_center_background = UIHelper::CreateFrameWindow(xml, "center_background", this, false);
 
-	m_center_background		= UIHelper::CreateStatic( xml, "center_background", this );
+    if (!m_background)
+        m_background2 = UIHelper::CreateFrameLine(xml, "background", this, false);
+
+    if (!m_center_background)
+        m_center_background2 = UIHelper::CreateStatic(xml, "center_background", this);
 
 	m_target_static			= UIHelper::CreateStatic( xml, "target_static", this );
-	m_target_caption		= UIHelper::CreateStatic( xml, "target_caption", this );
+	m_target_caption		= UIHelper::CreateTextWnd( xml, "target_caption", this );
 	//m_target_caption->SetElipsis( 1, 0 );
 	m_tc_pos				= m_target_caption->GetWndPos();
 
-	m_target_desc			= UIHelper::CreateStatic( xml, "target_decs", this );
+	m_target_desc			= UIHelper::CreateTextWnd( xml, "target_decs", this );
 	m_td_pos				= m_target_desc->GetWndPos();
 
 	m_state_static			= UIHelper::CreateStatic( xml, "state_static", this );
 	
 	m_our_icon				= UIHelper::CreateStatic( xml, "static_our_icon", this );
 	m_our_icon_over			= UIHelper::CreateStatic( xml, "static_our_icon_over", this );
-	m_our_name				= UIHelper::CreateStatic( xml, "static_our_name", this );
+	m_our_name				= UIHelper::CreateTextWnd( xml, "static_our_name", this );
 	m_st_our_frac_info		= UIHelper::CreateStatic( xml, "static_our_frac_info", this );
 	m_st_our_mem_count		= UIHelper::CreateStatic( xml, "static_our_mem_count", this );
 	m_st_our_resource		= UIHelper::CreateStatic( xml, "static_our_resource", this );
@@ -81,7 +91,7 @@ void CUIFactionWarWnd::Init()
 
 	m_enemy_icon			= UIHelper::CreateStatic( xml, "static_enemy_icon", this );
 	m_enemy_icon_over		= UIHelper::CreateStatic( xml, "static_enemy_icon_over", this );
-	m_enemy_name			= UIHelper::CreateStatic( xml, "static_enemy_name", this );
+	m_enemy_name			= UIHelper::CreateTextWnd( xml, "static_enemy_name", this );
 	m_st_enemy_frac_info	= UIHelper::CreateStatic( xml, "static_enemy_frac_info", this );
 	m_st_enemy_mem_count	= UIHelper::CreateStatic( xml, "static_enemy_mem_count", this );
 	m_st_enemy_resource		= UIHelper::CreateStatic( xml, "static_enemy_resource", this );
@@ -255,7 +265,7 @@ bool CUIFactionWarWnd::InitFactions()
 	if ( xr_strlen(our_fract) == 0 || xr_strlen(enemy_fract) == 0 )
 	{
 		return false;
-	}*
+	}*/
 	m_our_faction.set_faction_id2( our );
 	m_enemy_faction.set_faction_id2( enemy );
 
@@ -358,12 +368,12 @@ void CUIFactionWarWnd::set_amount_our_bonus( int value )
 {
 	for ( u32 i = 0; i < max_bonuce; ++i )
 	{
-		m_our_bonuces[i]->SetColor( color_rgba( 255, 255, 255, 70) );
+		m_our_bonuces[i]->TextItemControl()->SetTextColor( color_rgba( 255, 255, 255, 70) );
 	}
 	u32 cr = color_rgba( 0, 255, 0, 255);
 	for ( int i = 0; i < value; ++i )
 	{
-		m_our_bonuces[i]->SetColor( cr );
+		m_our_bonuces[i]->TextItemControl()->SetTextColor( cr );
 	}
 }
 
@@ -371,12 +381,12 @@ void CUIFactionWarWnd::set_amount_enemy_bonus( int value )
 {
 	for ( u32 i = 0; i < max_bonuce; ++i )
 	{
-		m_enemy_bonuces[i]->SetColor( color_rgba( 255, 255, 255, 70) );
+		m_enemy_bonuces[i]->TextItemControl()->SetTextColor( color_rgba( 255, 255, 255, 70) );
 	}
 	u32 cr = color_rgba( 0, 255, 0, 255);
 	for ( int i = 0; i < value; ++i )
 	{
-		m_enemy_bonuces[i]->SetColor( cr );
+		m_enemy_bonuces[i]->TextItemControl()->SetTextColor( cr );
 	}
 }
 
@@ -401,4 +411,4 @@ float CUIFactionWarWnd::get_max_power()
 	R_ASSERT( ai().script_engine().functor( "pda.get_max_power", funct ) );
 	return funct();
 }
-*/
+
