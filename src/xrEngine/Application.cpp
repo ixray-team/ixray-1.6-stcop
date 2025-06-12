@@ -312,65 +312,62 @@ void CApplication::Level_Scan()
 	FS.file_list_close(folder);
 }
 
-void gen_logo_name(string_path& dest, LPCSTR level_name, int num = -1)
+void gen_logo_name(string_path& dest, LPCSTR level_name, int num)
 {
-	xr_strconcat(dest, "intro\\intro_", level_name);
+	xr_strconcat	(dest, "intro\\intro_", level_name);
 
 	u32 len = xr_strlen(dest);
-	if (dest[len - 1] == '\\')
-		dest[len - 1] = 0;
-
-	if (num < 0)
-		return;
+	if(dest[len-1]=='\\')
+		dest[len-1] = 0;
 
 	string16 buff;
 	xr_strcat(dest, sizeof(dest), "_");
-	xr_strcat(dest, sizeof(dest), itoa(num + 1, buff, 10));
+	xr_strcat(dest, sizeof(dest), _itoa(num + 1, buff, 10));
 }
 
-// Return true if logo exists
-// Always sets the path even if logo doesn't exist
-bool set_logo_path(string_path& path, pcstr levelName, int count = -1)
-{
-	gen_logo_name(path, levelName, count);
-	string_path temp2;
-	return FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds");
-}
-
-void CApplication::Level_Set(u32 L)
-{
-    if (L >= Levels.size())
-        return;
+void CApplication::Level_Set(u32 L) {
+	if (L >= Levels.size())	return;
 	FS.get_path("$level$")->_set(Levels[L].folder);
-    Level_Current = L;
 
 	static string_path			path;
+
+	if (Level_Current != L)
+	{
 		path[0] = 0;
+
+		Level_Current = L;
 
 		int count = 0;
 		while (true)
 		{
-        if (set_logo_path(path, Levels[L].folder, count))
+			string_path temp2;
+			gen_logo_name(path, Levels[L].folder, count);
+
+			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) {
 				count++;
-			else
+			} else {
+				string_path temp3;
+				xr_strconcat(path, "intro\\intro_", Levels[L].folder);
+				path[xr_strlen(path) - 1] = 0;
+
+				string_path nm;
+				xr_strconcat(nm, path, ".dds");
+				FS.update_path(temp3, "$game_textures$", nm);
+
 				break;
+		}
 		}
 
 		if (count)
 		{
-        const int num = ::Random.randI(count);
+			int num = ::Random.randI(count);
 			gen_logo_name(path, Levels[L].folder, num);
 		}
-    else if (!set_logo_path(path, Levels[L].folder))
-    {
-        if (!set_logo_path(path, "no_start_picture"))
-            path[0] = 0;
 	}
 
-	if (path[0] && loadingScreen)
+	if (path[0])
 		loadingScreen->SetLevelLogo(path);
 }
-
 int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 {
 	int result = -1;
