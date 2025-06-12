@@ -45,6 +45,11 @@ ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, floa
 	{
 		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
 	}
+	else if(CRender::PHASE_REFLECT == RImplementation.phase) {
+		Msg("! This is no implemented");
+		id = SE_R2_NORMAL_LQ;
+		//id = SE_R2_REFLECTIONS;
+	}
 	return pVisual->shader->E[id]._get();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -54,6 +59,9 @@ ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float
 	if	(CRender::PHASE_NORMAL == RImplementation.phase)
 	{
 		id = ((_sqrt(cdist_sq)-pVisual->vis.sphere.R)<r_dtex_range)?SE_R2_NORMAL_HQ:SE_R2_NORMAL_LQ;
+	}
+	else if(CRender::PHASE_REFLECT == RImplementation.phase) {
+		id = SE_R2_REFLECTIONS;
 	}
 	return pVisual->shader->E[id]._get();
 }
@@ -191,6 +199,14 @@ void CRender::create()
 	o.distortion = o.distortion_enabled;
 	o.disasm = Core.ParamsData.test(ECoreParams::disasm);
 
+	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) {
+		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
+	}
+	else {
+		o.deffered_reflecitons = o.offscreen_reflecitons = false;
+	}
+
 	o.dx11_enable_tessellation = RFeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
 	// constants
@@ -266,6 +282,10 @@ void CRender::reset_begin() {
 	}
 	xr_delete(Target);
 	HWOCC.occq_destroy();
+
+	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) {
+		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
+	}
 }
 
 void CRender::reset_end() {
@@ -903,6 +923,28 @@ HRESULT	CRender::shader_compile(
 	//	Igor: need restart options
 	if(ps_r2_ls_flags.test(R2FLAG_SOFT_WATER)) {
 		defines[def_it].Name = "USE_SOFT_WATER";
+		defines[def_it].Definition = "1";
+
+		def_it++;
+		sh_name[len] = '1'; ++len;
+	}
+	else {
+		sh_name[len] = '0';	++len;
+	}
+
+	if(!!o.offscreen_reflecitons) {
+		defines[def_it].Name = "USE_OFFSCREEN_REFLECTIONS";
+		defines[def_it].Definition = "1";
+
+		def_it++;
+		sh_name[len] = '1'; ++len;
+	}
+	else {
+		sh_name[len] = '0';	++len;
+	}
+
+	if(!!o.deffered_reflecitons) {
+		defines[def_it].Name = "USE_SSLR_REFLECTIONS";
 		defines[def_it].Definition = "1";
 
 		def_it++;

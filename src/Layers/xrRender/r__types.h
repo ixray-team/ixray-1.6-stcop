@@ -27,6 +27,14 @@
 #define		r2_RT_generic1		"$user$generic1"		// ---
 #define		r2_RT_generic2		"$user$generic2"		// ---	//	Igor: for volumetric lights
 
+#define		r2_RT_env			"$user$sky"
+#define		r2_RT_env_depth		"$user$sky_depth"
+#define		r2_RT_env_temp		"$user$sky_1temp"
+
+#define		r2_RT_sslr			"$user$sslr"
+#define		r2_RT_sslr_old		"$user$sslr_old"
+#define		r2_RT_sslr_temp		"$user$sslr_temp"
+
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
 #define		r2_RT_half_depth	"$user$half_depth"		//temporary rt for hbao calculation
 
@@ -84,6 +92,7 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_R2_NORMAL_HQ		0	// high quality/detail
 #define		SE_R2_NORMAL_LQ		1	// low quality
 #define		SE_R2_SHADOW		2	// shadow generation
+#define		SE_R2_REFLECTIONS	3	// reflections generation
 
 #if USE_DX11
 #define		SE_R2_DETAIL_SHADOW_HQ 2	 // shadow generation (Wind)
@@ -115,7 +124,21 @@ const		u32					LUMINANCE_size = 16;
 #define		SE_SUN_RAIN_SMAP	3
 #endif //USE_DX11
 
-extern		float	ps_r2_gloss_factor;
-IC	float	u_diffuse2s	(float x, float y, float z)	{ float	v = (x+y+z)/3.f;	return ps_r2_gloss_factor * ((v<1)?powf(v,2.f/3.f):v); }
-IC	float	u_diffuse2s	(Fvector3& c)				{ return u_diffuse2s(c.x,c.y,c.z);					}
+extern float ps_r2_gloss_factor;
+
+IC float u_diffuse2s(float x, float y, float z)
+{
+	float v = (x + y + z) * 0.33333f;
+	return ps_r2_gloss_factor * ((v < 1) ? powf(v, 0.666666f) : v);
+}
+
+IC float u_diffuse2s(Fvector3& c)
+{
+	return u_diffuse2s(c.x, c.y, c.z);
+}
+
+IC float u_diffuse2s(Fcolor& c)
+{
+	return u_diffuse2s(c.r, c.g, c.b);
+}
 
