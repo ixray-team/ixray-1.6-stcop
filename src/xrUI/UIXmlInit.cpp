@@ -374,8 +374,7 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	pLines->m_TextOffset.set(text_x, text_y);
 	
 	bool isGradient = xml_doc.ReadAttribInt(path, index, "gradient") ? true : false;
-	if (isGradient)
-		pLines->SetTextGradient();
+	pLines->SetTextGradient(isGradient);
 
 	shared_str text = xml_doc.Read(path, index, nullptr);
 	if (text.size())
