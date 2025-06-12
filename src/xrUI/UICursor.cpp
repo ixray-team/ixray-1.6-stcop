@@ -50,7 +50,7 @@ void CUICursor::Show()
 void CUICursor::InitInternal()
 {
 	CUIXml xml_doc;
-	xml_doc.Load(CONFIG_PATH, UI_PATH, "cursor.xml");
+	xml_doc.Load(CONFIG_PATH, UI_PATH, "backend\\cursor.xml");
 	m_static = UIHelper::CreateStatic(xml_doc, "cursor", nullptr);
 
 	bool native_scale = xml_doc.ReadAttribBool("cursor", 0, "native_scale", false);
