@@ -62,16 +62,10 @@ public:
 	virtual float Weight() const;
 
 	//виртуальные функции для проигрывания анимации HUD
-	virtual void	PlayAnimShow		();
-	virtual void	PlayAnimHide		();
-	virtual void	PlayAnimReload		();
-	virtual void	PlayAnimIdle		();
-	virtual void	PlayAnimShoot		();
-	virtual void	PlayAnimModeSwitch	();
-	virtual void	PlayAnimBore		();
-	virtual void	PlayAnimIdleMoving	();
-	virtual void	PlayAnimIdleSprint	();
-	virtual void	PlayAnimAim			();
+	virtual void	PlayAnimModeSwitch();
+	virtual shared_str SetCurrentReloadAnimation();
+	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
+	virtual shared_str SetCurrentShootAnimation();
 	
 	virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
 private:
