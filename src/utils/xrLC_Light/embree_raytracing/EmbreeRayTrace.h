@@ -109,7 +109,8 @@ public:
 	// Loading 
 	bool isInitialized = false;
 	void RemoveGeometry(bool isDealloc);
- 	void InitializeGeometry(size_t& geom_static, size_t& geom_murefs);
+	float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
+	void InitializeGeometry(size_t& geom_static, size_t& geom_murefs);
 
 	bool isAttached = false;
 	size_t AttachGeometrys(bool addMU);
