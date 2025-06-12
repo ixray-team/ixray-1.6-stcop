@@ -67,8 +67,8 @@ void CBuild::xrPhase_Subdivide()
 		if		(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit	= TRUE;
 		CDeflector*	defl_base	= (CDeflector*)g_XSplit[X]->front()->pDeflector;
 		if		(!bSplit && defl_base)	{
-			if (defl_base->layer.width  >=	(c_LMAP_size-2*BORDER))	bSplit	= TRUE;
-			if (defl_base->layer.height >=	(c_LMAP_size-2*BORDER))	bSplit	= TRUE;
+			if (defl_base->layer.width  >=	(getLMSIZE() - 2 * BORDER))	bSplit = TRUE;
+			if (defl_base->layer.height >=	(getLMSIZE() - 2 * BORDER))	bSplit	= TRUE;
 		}
 
 		// perform subdivide if needed
@@ -108,7 +108,7 @@ resplit:
 		if ((int(s1.size())<c_SS_LowVertLimit) || (int(s2.size())<c_SS_LowVertLimit))
 		{
 			// splitting failed
-			clMsg	("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d",X,g_XSplit[X]->size(),s1.size(),s2.size());
+			// clMsg	("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d",X,g_XSplit[X]->size(),s1.size(),s2.size());
 			if (iteration_per_edge<10)	{
 				if		(g_XSplit[X]->size() > c_SS_LowVertLimit*4)		
 				{

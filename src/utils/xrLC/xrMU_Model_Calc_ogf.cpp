@@ -76,12 +76,12 @@ void calc_ogf( xrMU_Model &	mu_model )
 		try {
 			pOGF->CalculateTB		();
 		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [calc_tb], model %s",*(mu_model.m_name)); }
-		try {
-			pOGF->MakeProgressive	(c_PM_MetricLimit_mu);
-		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [progressive], model %s",*(mu_model.m_name)); }
-		try {
-			pOGF->Stripify			();
-		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [stripify], model %s",*(mu_model.m_name)); }
+		// try {
+		// 	pOGF->MakeProgressive	(c_PM_MetricLimit_mu);
+		// } catch (...)	{ clMsg	("* ERROR: MU2OGF, [progressive], model %s",*(mu_model.m_name)); }
+		// try {
+		// 	pOGF->Stripify			();
+		// } catch (...)	{ clMsg	("* ERROR: MU2OGF, [stripify], model %s",*(mu_model.m_name)); }
 
 		it->ogf		=	pOGF;
 	}
