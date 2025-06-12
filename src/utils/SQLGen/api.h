@@ -9,10 +9,10 @@ void RunSQLRequest();
 
 struct SLoginInfo
 {
-	shared_str Login;
-	shared_str Pass;
-	shared_str DataBase;
-	shared_str Host;
+	string32 Login;
+	string32 Pass;
+	string32 DataBase;
+	string128 Host;
 };
 
 extern SLoginInfo GLoginInfo;
