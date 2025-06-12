@@ -67,6 +67,8 @@ public:
 	bool operator[](const EEngineExternalGame& ID) const;
 	bool operator[](const EEngineExternalRender& ID) const;
 	bool operator[](const EEngineExternalEnvironment& ID) const;
+
+	xr_string_map<xr_string, xr_string> ShadersOptions;
 };
 
 ENGINE_API CEngineExternal& EngineExternal();
