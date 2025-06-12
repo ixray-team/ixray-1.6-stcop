@@ -81,8 +81,15 @@ bool  CCustomDetector::CheckCompatibility(CHudItem* itm)
 	return true;
 }
 
-void CCustomDetector::HideDetector(bool bFastMode)
+void CCustomDetector::HideDetector(bool bFastMode, bool force)
 {
+	if (force)
+	{
+		m_bFastAnimMode = bFastMode;
+		SwitchState(eHiding);
+		return;
+	}
+
 	const CHUDState::EHudStates CurrentState = (CHUDState::EHudStates) GetState();
 	switch (CurrentState) {
 		case CHUDState::EHudStates::eIdle:
