@@ -37,6 +37,9 @@
 #include "../actor_defs.h"
 #include "../InventoryBox.h"
 
+#include "../game_sv_single.h"
+#include "ai_object_location.h"
+
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
@@ -854,6 +857,7 @@ void CUIActorMenu::ActivatePropertiesBox()
 		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
+		PropertiesBoxForParse(item, b_show);
 	}
 	else if(m_currMenuMode == mmUpgrade) {
 		PropertiesBoxForRepair(item, b_show);
@@ -1162,6 +1166,15 @@ void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
 	}
 }
 
+void CUIActorMenu::PropertiesBoxForParse(PIItem item, bool& b_show)
+{
+	if (pSettings->line_exist(item->m_section_id, "parse_spawn_items") && pSettings->line_exist(item->m_section_id, "parse_spawn_chances"))
+	{
+		m_UIPropertiesBox->AddItem("st_parse", nullptr, INVENTORY_PARSE_ITEM);
+		b_show = true;
+	}
+}
+
 void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 {
 	PIItem			item		= CurrentIItem();
@@ -1317,6 +1330,45 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			pPda->PlayScriptFunction();
 			break;
 		}
+	case INVENTORY_PARSE_ITEM:
+	{
+		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+		if (tpGame == nullptr) {
+			break;
+		}
+
+		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor == nullptr) {
+			break;
+		}
+
+		shared_str SpawnList = pSettings->r_string(item->m_section_id, "parse_spawn_items");
+		shared_str ChanceList = pSettings->r_string(item->m_section_id, "parse_spawn_chances");
+
+		int Count = _GetItemCount(SpawnList.c_str());
+		int Count2 = _GetItemCount(ChanceList.c_str());
+
+		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+
+		string128 sItem;
+		string16 sItem2;
+
+		for (int i = 0; i < Count; ++i)
+		{
+			_GetItem(SpawnList.c_str(), i, sItem);
+
+			if (i < Count2)
+				_GetItem(ChanceList.c_str(), i, sItem2);
+			else
+				_GetItem(ChanceList.c_str(), Count2 - 1, sItem2);
+
+			float chance = static_cast<float>(atof(sItem2));
+
+			if (chance >= ::Random.randF(0.0f, 1.0f))
+				CALifeSimulator__spawn_item2(&tpGame->alife(), sItem, actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
+		}
+		item->object().DestroyObject();
+	}break;
 	}//switch
 
 	SetCurrentItem( nullptr );
