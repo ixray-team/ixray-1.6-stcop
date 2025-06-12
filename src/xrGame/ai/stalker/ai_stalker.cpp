@@ -100,6 +100,8 @@ CObjectHandler(this),
 	savedOrientation = { 0.f, 0.f, 0.f };
 	dTimeFSeen = Device.dwTimeGlobal + 1000;
 	dTimeNfSeen = Device.dwTimeGlobal + 1000;
+	
+	LoadCallbackGlobals(m_isUpdateBestWeapon, m_onUpdateBestWeaponName, "OnUpdateBestWeapon");
 }
 
 CAI_Stalker::~CAI_Stalker			()

@@ -27,6 +27,7 @@
 CEntity::CEntity()
 {
 	m_registered_member		= false;
+	LoadCallbackGlobals(m_isSkipKillActor, m_onSkipKillActor, "OnSkipKillActor");
 }
 
 CEntity::~CEntity()
@@ -253,11 +254,9 @@ void CEntity::KillEntity(u16 whoID, bool bypass_actor_check /*AVO: added for act
 		if (isGodMode())
 		{
 			luabind::functor<void> functor;
-			if (ai().script_engine().functor("xr_effects.enable_ui", functor))
-			{
-				functor(Actor(), NULL);
-				return;
-			}
+			R_ASSERT2(ai().script_engine().functor(m_onSkipKillActor, functor), "failed to get OnSkipKillActor functor");
+			functor(Actor(), 0);
+			return;
 		}
 #endif // MASTER_GOLD
 
