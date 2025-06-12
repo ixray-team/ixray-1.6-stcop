@@ -43,9 +43,9 @@ void setup_luabind_allocator()
 
 extern HWND logWindow;
 
-void StartupAI(LPSTR lpCmdLine);
+void StartupAI();
 void StartupLC();
-void StartupDO(LPSTR lpCmdLine);
+void StartupDO();
 
 void InitialFactory();
 void DestroyFactory();
@@ -77,7 +77,7 @@ void Startup(LPSTR lpCmdLine)
 
 		setup_luabind_allocator();
 		InitialFactory();
-		StartupAI(lpCmdLine);
+		StartupAI();
 		DestroyFactory();
 		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
 	}
@@ -86,7 +86,7 @@ void Startup(LPSTR lpCmdLine)
 	if (gCompilerMode.DO) {
 		dwTimeDO = timeGetTime();
 		Phase("xrDO Startup");
-		StartupDO(lpCmdLine);
+		StartupDO();
 		dwTimeDO = (timeGetTime() - dwTimeDO) / 1000;
 	}
 
