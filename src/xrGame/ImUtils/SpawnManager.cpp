@@ -798,9 +798,8 @@ void RenderSpawnManagerWindow() {
 
 			ImGui::EndTabBar();
 		}
-
-		ImGui::End();
 	}
+	ImGui::End();
 	ImGui::PopStyleColor(1);
 }
 
