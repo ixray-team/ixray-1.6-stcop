@@ -7,7 +7,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CFrom is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\Check log.");
 			return false;
 		}
 	}
@@ -15,7 +15,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AIMap is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\Check log.");
 			return false;
 		}
 	}
@@ -23,7 +23,7 @@ bool EScene::BuildSpawn()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "GameGraph is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\Check log.");
 			return false;
 		}
 	}
@@ -65,7 +65,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildCForm())
 		{
-			ELog.DlgMsg(mtError, mbOK, "CFrom is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "CForm is empty!\Check log.");
 			return false;
 		}
 	}
@@ -73,7 +73,7 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildAIMap())
 		{
-			ELog.DlgMsg(mtError, mbOK, "AIMap is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "AI-Map is empty!\Check log.");
 			return false;
 		}
 	}
@@ -81,14 +81,14 @@ bool EScene::BuildForPCPlay()
 	{
 		if (!BuildGameGraph())
 		{
-			ELog.DlgMsg(mtError, mbOK, "GameGraph is empty!\nSee log.");
+			ELog.DlgMsg(mtError, mbOK, "Game Graph is empty!\Check log.");
 			return false;
 		}
 	}
 
 	if (!m_level_graph.save_temp())
 	{
-		ELog.DlgMsg(mtError, mbOK, "level.ai.temp can't save!\nSee log.");
+		ELog.DlgMsg(mtError, mbOK, "level.ai.temp can't be saved!\nSee log.");
 		return false;
 	}
 

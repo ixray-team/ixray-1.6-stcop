@@ -36,7 +36,7 @@ void UITextForm::Update()
 {
     if (Form && !Form->IsClosed())
     {
-        if (ImGui::BeginPopupModal("TextEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize))
+        if (ImGui::BeginPopupModal("Text Editor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize))
         {
             Form->Draw();
             ImGui::EndPopup();

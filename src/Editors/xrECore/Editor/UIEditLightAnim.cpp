@@ -266,7 +266,7 @@ void UIEditLightAnim::Update()
         {
             Form->BeginDraw();
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 600));
-            if (ImGui::Begin("LightAnim Editor", &Form->bOpen))
+            if (ImGui::Begin("Light Animations Editor", &Form->bOpen))
             {
                 Form->Draw();
             }

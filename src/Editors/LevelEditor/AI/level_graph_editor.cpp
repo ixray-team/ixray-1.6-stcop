@@ -132,7 +132,7 @@ bool CLevelGraphEditor::build()
 	g_params = AIMapTool->AIParams();
 	if (AIMapTool->Nodes().size() == 0)
 	{
-		Msg("! AIMap is empty!");
+		Msg("! AI-Map is empty!");
 		return false;
 	}
 
