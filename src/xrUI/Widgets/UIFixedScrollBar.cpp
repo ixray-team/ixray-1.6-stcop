@@ -16,7 +16,7 @@ CUIFixedScrollBar::~CUIFixedScrollBar(void)
 {
 }
 
-void CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR profile)
+bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR profile)
 {
 	string256 _path;
 	CUIXml xml_doc;
@@ -51,7 +51,10 @@ void CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
 
 		xr_strconcat(_path, profile, ":back");
-		CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
+		if (xml_doc.NavigateToNode(_path))
+			CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
+		else
+			return false;
 
 		m_ScrollWorkArea = _max(0,iFloor(GetWidth()-2*height));
 	}
@@ -69,11 +72,15 @@ void CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
 
 		xr_strconcat(_path, profile, ":back_v");
-		CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
+		if (xml_doc.NavigateToNode(_path))
+			CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
+		else
+			return false;
 
 		m_ScrollWorkArea = _max(0,iFloor(GetHeight()-2*width_v));
 	}	
 	UpdateScrollBar();
+	return true;
 }
 void CUIFixedScrollBar::UpdateScrollBar()
 {
