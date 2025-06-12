@@ -171,6 +171,9 @@ protected:
 
 	bool						m_bDisableBore;
 
+	virtual void				SetModelBoneStatus(const char* bone, BOOL show);
+	virtual void				SetMultipleBonesStatus(const char* section, const char* line, BOOL show);
+
 private:
 	CPhysicItem					*m_object;
 	CInventoryItem				*m_item;
