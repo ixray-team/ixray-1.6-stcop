@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "UIMPChangeMapAdm.h"
+#include "UIGameCustom.h"
+#include "Level.h"
+
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIListBox.h"
 #include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/Widgets/UIDialogWnd.h"
-#include "../Level.h"
 #include "../../xrEngine/XR_IOConsole.h"
-#include "../UIGameCustom.h"
 #include "../../xrEngine/string_table.h"
 
 CUIMpChangeMapAdm::CUIMpChangeMapAdm()

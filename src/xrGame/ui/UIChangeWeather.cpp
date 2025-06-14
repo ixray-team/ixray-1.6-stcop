@@ -3,9 +3,11 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../game_cl_teamdeathmatch.h"
+
 #include "UIKickPlayer.h"
 #include "UIChangeMap.h"
-//#include "UIMapList.h"
+#include "UIMapList.h"
+#include "UIGameCustom.h"
 
 CUIChangeWeather::CUIChangeWeather(){
 	bkgrnd = new CUIStatic(); 
@@ -99,9 +101,6 @@ void CUIChangeWeather::OnBtnCancel()
 {
 	HideDialog							();
 }
-
-#include "UIMapList.h"
-#include "../UIGameCustom.h"
 
 void CUIChangeWeather::ParseWeather()
 {

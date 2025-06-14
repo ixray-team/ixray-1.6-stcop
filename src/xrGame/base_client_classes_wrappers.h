@@ -21,6 +21,8 @@
 #include "../xrScripts/script_engine.h"
 #include "xrServer_Object_Base.h"
 
+#pragma warning(push)
+#pragma warning(disable: 4584)
 template <typename Base, typename LuabindBase = xr_empty>
 class DLL_PureWrapper : public Base, public LuabindBase
 {
@@ -67,16 +69,16 @@ public:
 	virtual ~IRenderableWrapper() = default;
 };
 
+using CDLL_PureWrapper = DLL_PureWrapper<DLL_Pure, luabind::wrap_base>;
+using CGameObjectDLL_Pure = DLL_PureWrapper<CGameObject, luabind::wrap_base>;
 
-typedef DLL_PureWrapper<DLL_Pure,luabind::wrap_base> CDLL_PureWrapper;
-typedef DLL_PureWrapper<CGameObject,luabind::wrap_base> CGameObjectDLL_Pure;
+using CISheduledWrapper = ISheduledWrapper<ISheduled, luabind::wrap_base>;
+using CGameObjectISheduled = ISheduledWrapper<CGameObjectDLL_Pure>;
 
-typedef ISheduledWrapper<ISheduled, luabind::wrap_base> CISheduledWrapper;
-typedef ISheduledWrapper<CGameObjectDLL_Pure>				CGameObjectISheduled;
+using CIRenderableWrapper = IRenderableWrapper<IRenderable, luabind::wrap_base>;
+using CGameObjectIRenderable = IRenderableWrapper<CGameObjectISheduled>;
 
-typedef IRenderableWrapper<IRenderable,luabind::wrap_base> CIRenderableWrapper;
-typedef IRenderableWrapper<CGameObjectISheduled>			CGameObjectIRenderable;
-
+#pragma warning(pop)
 
 class CGameObjectWrapper : 
 	public CGameObjectIRenderable

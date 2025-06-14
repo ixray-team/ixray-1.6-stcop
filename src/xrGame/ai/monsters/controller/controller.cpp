@@ -10,7 +10,7 @@
 #include "../../../Level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
-#include "../../../UIGameCustom.h"
+#include "ui/UIGameCustom.h"
 #include "../../../../xrUI/Widgets/UIStatic.h"
 
 #include "../monster_velocity_space.h"
