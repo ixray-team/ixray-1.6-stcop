@@ -1,13 +1,73 @@
 #include "stdafx.h"
 #include "SQLConnect.h"
 #include <mysql/jdbc.h>
-#pragma comment(lib, "mysqlcppconn.lib")
+
+#include <json/json.hpp>
+#include <fstream>
+
 XRNETSERVER_API DBService GSQLConnector;
+
+
+void DBService::SQLUpdateThread()
+{
+	PROF_THREAD("SQL Server Updater");
+	while (!GSQLConnector.Exit)
+	{
+		{
+			xrCriticalSectionGuard guard(GSQLConnector.DelayCS);
+			GSQLConnector.TasksActive = GSQLConnector.TasksDelay;
+			GSQLConnector.TasksDelay.clear();
+		}
+
+		for (const auto& Functor : GSQLConnector.TasksActive)
+		{
+			Functor();
+		}
+	}
+}
 
 DBService::~DBService()
 {
+	Exit = true;
+	SQLTask.wait();
+
 	delete driver;
 	delete con;
+}
+
+void DBService::Connect()
+{
+	string_path jfn;
+	nlohmann::json JSONData = {};
+	FS.update_path(jfn, "$app_data_root$", "sql_login.json");
+
+	if (std::filesystem::exists(jfn))
+	{
+		std::ifstream f(jfn);
+		f >> JSONData;
+	}
+
+	auto RestoreFromJSONLambda = [&JSONData](const char* Value, auto& Out)
+	{
+		if (JSONData.contains(Value))
+		{
+			xr_strcpy(Out, JSONData[Value].get<std::string>().c_str());
+		}
+	};
+
+	Msg("IX-Ray SQL Connector init...\r\nParse data from json...");
+
+	string64 Login;
+	string64 Password;
+	string128 Host;
+	RestoreFromJSONLambda("Host", Host);
+	RestoreFromJSONLambda("Login", Login);
+	RestoreFromJSONLambda("Password", Password);
+
+	driver = sql::mysql::get_mysql_driver_instance();
+	con = driver->connect(Host, Login, Password);
+
+	SQLTask.run(&DBService::SQLUpdateThread);
 }
 
 void DBService::Test()
@@ -15,8 +75,6 @@ void DBService::Test()
 	#pragma todo("hkuprin to hkuprin: rename method 'Test' to 'Connect' in SQLConnect.cpp/h")
 	try
 	{
-		driver = sql::mysql::get_mysql_driver_instance();
-		con = driver->connect("tcp://", "", "");
 
 		con->setSchema("ixray-test");
 		sql::Statement* stmt = con->createStatement();
@@ -45,24 +103,29 @@ void DBService::ErrorMsg(LPCSTR function_name, int code, LPCSTR what)
 
 void DBService::DeleteInventory(int user_id)
 {
-	try
+	auto DeleteInvLambda = [user_id, this]()
 	{
-		if (!con->isClosed())
+		try
 		{
-			sql::PreparedStatement* pstmt = con->prepareStatement("DELETE FROM users_items WHERE user_id = ?;");
-			pstmt->setInt(1, user_id);
-			pstmt->execute();
+			if (!con->isClosed())
+			{
+				sql::PreparedStatement* pstmt = con->prepareStatement("DELETE FROM users_items WHERE user_id = ?;");
+				pstmt->setInt(1, user_id);
+				pstmt->execute();
 
-			delete pstmt;
+				delete pstmt;
+			}
 		}
-	}
-	catch (sql::SQLException& e)
-	{
-		ErrorMsg("DeleteInventory", e.getErrorCode(), e.what());
-	}
+		catch (sql::SQLException& e)
+		{
+			ErrorMsg("DeleteInventory", e.getErrorCode(), e.what());
+		}
+	};
+
+	TasksDelay.push_back(DeleteInvLambda);
 }
 
-void DBService::SaveInventory(int user_id, int item_id, u64 state)
+void DBService::SaveInventoryInternal(int user_id, int item_id, u64 state)
 {
 #pragma todo("hkuprin to hkuprin: rename method 'SaveInventory' to 'InsertInventory' in SQLConnect.cpp/h")
 	try
@@ -70,23 +133,26 @@ void DBService::SaveInventory(int user_id, int item_id, u64 state)
 		if (!con->isClosed())
 		{
 			Msg("id: %d, state: %d", item_id, state);
+
 			sql::PreparedStatement* pstmt;
 			if (state > 0)
 			{
 				pstmt = con->prepareStatement("INSERT INTO users_items (user_id, item_id, item_state) VALUES (?, ?, ?)");
 			}
-			else {
+			else 
+			{
 				pstmt = con->prepareStatement("INSERT INTO users_items (user_id, item_id) VALUES (?, ?)");
 			}
-			
+
 			pstmt->setInt(1, user_id);
 			pstmt->setInt(2, item_id);
-			if (state > 0)
+
+			if (state > 0) 
 			{
 				pstmt->setInt(3, state);
 			}
-			pstmt->execute();
 
+			pstmt->execute();
 			delete pstmt;
 		}
 	}
@@ -126,7 +192,29 @@ xr_vector<int> DBService::LoadInventory(int user_id)
 	return std::move(items);
 }
 
+void DBService::SaveInventory(int user_id, int item_id, u64 state)
+{
+	auto SendSQLambda = [user_id, item_id, state, this]()
+	{
+		SaveInventoryInternal(user_id, item_id, state);
+	};
+
+	xrCriticalSectionGuard guard(DelayCS);
+	TasksDelay.push_back(SendSQLambda);
+}
+
 void DBService::UpdateInsertProperty(UserDBProperty data)
+{
+	auto SendSQLambda = [data, this]()
+	{
+		UpdateInsertPropertyInternal(data);
+	};
+
+	xrCriticalSectionGuard guard(DelayCS);
+	TasksDelay.push_back(SendSQLambda);
+}
+
+void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 {
 	try
 	{
@@ -142,7 +230,11 @@ void DBService::UpdateInsertProperty(UserDBProperty data)
 
 			if (exist)
 			{
-				pstmt = con->prepareStatement("UPDATE users_property SET health = ?, stamina = ?, radiation = ?, psy = ?, sleepiness = ?, hunger = ?, thirst = ?, wounds = ?, money = ?, community = ? WHERE user_id = ?");
+				pstmt = con->prepareStatement
+				(
+					"UPDATE users_property SET health = ?, stamina = ?, radiation = ?, psy = ?, sleepiness = ?, hunger = ?, thirst = ?, wounds = ?, money = ?, community = ? WHERE user_id = ?"
+				);
+
 				pstmt->setDouble	(1, data.health);
 				pstmt->setDouble	(2, data.stamina);
 				pstmt->setDouble	(3, data.radiation);
@@ -156,8 +248,13 @@ void DBService::UpdateInsertProperty(UserDBProperty data)
 				pstmt->setInt		(11, data.id);
 				pstmt->execute		();
 			}
-			else {
-				pstmt = con->prepareStatement("INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community, ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			else
+			{
+				pstmt = con->prepareStatement
+				(
+					"INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community, ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+				);
+
 				pstmt->setInt		(1, data.id);
 				pstmt->setDouble	(2, data.health);
 				pstmt->setDouble	(3, data.stamina);
@@ -214,7 +311,8 @@ int DBService::GetUserIdByName(LPCSTR name)
 	return -1;
 }
 
-DBService::UserDBProfile Logon(LPCSTR username, LPCSTR password) {
+DBService::UserDBProfile Logon(LPCSTR username, LPCSTR password)
+{
 	DBService::UserDBProfile res_data;
 	
 	return std::move(res_data);
