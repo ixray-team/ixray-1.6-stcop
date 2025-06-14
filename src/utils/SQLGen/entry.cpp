@@ -39,7 +39,7 @@ void RenderLoginUI(ImGuiViewport* viewport, bool connecting = false)
 	ImGui::SetCursorPosY(center_y);
 
 	// Центрируем каждый элемент по горизонтали
-	const float ItemWidth = 200.0f; // Ширина элементов ввода
+	const float ItemWidth = 250.0f; // Ширина элементов ввода
 	float WndWidth = viewport->Size.x;
 
 	auto x = ImGui::GetContentRegionAvail().x;
@@ -150,10 +150,9 @@ void RenderWorkForm(ImGuiViewport* viewport)
 
 	// Верхняя часть — чекбоксы и кнопка
 	ImGui::BeginChild("Top", ImVec2(0, 250), true);
-	ImGui::Checkbox("Sync Quest", &syncQuest);
-	ImGui::Checkbox("Sync Items", &syncItems);
-
-	if (!GLoginInfo.SubDB.empty() && ImGui::BeginCombo("Database", GLoginInfo.SubDB[selectedDBIndex].c_str()))
+	ImGui::Text("Active Database:");
+	ImGui::SameLine();
+	if (!GLoginInfo.SubDB.empty() && ImGui::BeginCombo("##Database", GLoginInfo.SubDB[selectedDBIndex].c_str()))
 	{
 		for (int i = 0; i < GLoginInfo.SubDB.size(); i++)
 		{
@@ -168,6 +167,27 @@ void RenderWorkForm(ImGuiViewport* viewport)
 		}
 		ImGui::EndCombo();
 	}
+
+	ImGui::SameLine();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4);
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 43);
+	if (ImGui::Button("Refresh", {65, 30}))
+	{
+		GLoginInfo.SubDB.clear();
+		sql::Statement* stmt = GSQLConnector->createStatement();
+		sql::ResultSet* res = stmt->executeQuery("SHOW DATABASES;");
+
+		// Выводим список схем
+		while (res->next())
+		{
+			GLoginInfo.SubDB.push_back(res->getString(1).c_str());
+		}
+	}
+
+	ImGui::Separator();
+
+	ImGui::Checkbox("Sync Quest", &syncQuest);
+	ImGui::Checkbox("Sync Items", &syncItems);
 
 	ImGui::EndChild();
 
