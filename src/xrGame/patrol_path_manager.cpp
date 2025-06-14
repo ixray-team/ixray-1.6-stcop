@@ -140,8 +140,10 @@ void CPatrolPathManager::select_point(const Fvector &position, u32 &dest_vertex_
 						vertex				= 0;
 				}
 				
-				if (!vertex)
-					vertex		= m_path->point(position, CAccessabilityEvaluator(this));
+				if (!vertex && m_path != nullptr)
+				{
+					vertex = m_path->point(position, CAccessabilityEvaluator(this));
+				}
 
 				VERIFY3		(accessible(vertex) || show_restrictions(m_object),*m_path_name,*m_game_object->cName());
 				break;
