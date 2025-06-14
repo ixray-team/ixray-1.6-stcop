@@ -300,21 +300,25 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy, bool dont
 
 	pIItem->m_pInventory = nullptr;
 
+	if (m_pOwner != nullptr) {
+		m_pOwner->OnItemDrop(smart_cast<CInventoryItem*>(pObj), just_before_destroy);
 
-	m_pOwner->OnItemDrop	(smart_cast<CInventoryItem*>(pObj), just_before_destroy);
+		CalcTotalWeight();
+		InvalidateState();
+		m_drop_last_frame = true;
 
-	CalcTotalWeight					();
-	InvalidateState					();
-	m_drop_last_frame				= true;
+		if (CurrentGameUI())
+		{
+			CObject* pActor_owner = smart_cast<CObject*>(m_pOwner);
 
-	if( CurrentGameUI() )
-	{
-		CObject* pActor_owner = smart_cast<CObject*>(m_pOwner);
-
-		if (Level().CurrentViewEntity() == pActor_owner)
-			CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_REJECT);
-	};
-	pObj->H_SetParent(0, dont_create_shell);
+			if (Level().CurrentViewEntity() == pActor_owner)
+				CurrentGameUI()->OnInventoryAction(pIItem, GE_OWNERSHIP_REJECT);
+		};
+		pObj->H_SetParent(0, dont_create_shell);
+	}
+	else {
+		return false;
+	}
 	return							true;
 }
 

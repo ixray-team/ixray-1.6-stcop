@@ -289,7 +289,7 @@ void CALifeSimulator__release					(CALifeSimulator *self_, CSE_Abstract *object,
 	THROW								(object);
 	CSE_ALifeObject						*alife_object = smart_cast<CSE_ALifeObject*>(object);
 	THROW								(alife_object);
-	if (!alife_object->m_bOnline) {
+	if (alife_object != nullptr && !alife_object->m_bOnline) {
 		self_->release					(object,true);
 		return;
 	}
