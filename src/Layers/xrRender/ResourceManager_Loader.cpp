@@ -48,7 +48,7 @@ void	CResourceManager::OnDeviceDestroy(BOOL )
 #endif
 }
 
-void	CResourceManager::OnDeviceCreate	(IReader* F)
+void	CResourceManager::OnDeviceCreate	(IReader* F, bool needReload)
 {
 	if (!RDEVICE.b_is_Ready) return;
 
@@ -114,10 +114,11 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 		fs->close();
 	}
 
-	m_textures_description.Load				();
+	if (needReload)
+		m_textures_description.Load();
 }
 
-void	CResourceManager::OnDeviceCreate	(LPCSTR shName)
+void	CResourceManager::OnDeviceCreate	(LPCSTR shName, bool needReload)
 {
 #ifdef _EDITOR
 	if (!FS.exist(shName)) return;
@@ -133,8 +134,32 @@ void	CResourceManager::OnDeviceCreate	(LPCSTR shName)
 	{
 		FATAL				("Unsupported blender library. Compressed?");
 	}
-	OnDeviceCreate			(F);
+	OnDeviceCreate			(F, false);
+
 	FS.r_close				(F);
+
+	if (needReload)
+		loadShaders();
+}
+
+void CResourceManager::loadShaders() 
+{
+	u8 i = 2;
+	string_path fname;
+	string_path fileName;
+
+	xr_sprintf(fileName, "shaders%d.xr", i);
+	FS.update_path(fname, "$game_data$", fileName);
+
+	while (FS.path_exist(fname))
+	{
+		OnDeviceCreate(fname, false);
+
+		xr_sprintf(fileName, "shaders%d.xr", i);
+		FS.update_path(fname, "$game_data$", fileName);
+	}
+
+	m_textures_description.Load();
 }
 
 void CResourceManager::StoreNecessaryTextures()

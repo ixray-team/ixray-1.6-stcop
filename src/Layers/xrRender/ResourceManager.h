@@ -222,9 +222,10 @@ public:
 	CResourceManager						()	: bDeferredLoad(TRUE){	}
 	~CResourceManager						()	;
 
-	void			OnDeviceCreate			(IReader* F);
-	void			OnDeviceCreate			(LPCSTR name);
+	void			OnDeviceCreate			(IReader* F, bool needReload = true);
+	void			OnDeviceCreate			(LPCSTR name, bool needReload = true);
 	void			OnDeviceDestroy			(BOOL   bKeepTextures);
+	void			loadShaders				();
 
 	void			reset_begin				();
 	void			reset_end				();

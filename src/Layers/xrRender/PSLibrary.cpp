@@ -31,8 +31,22 @@ void CPSLibrary::OnCreate()
 #endif
     {
     	string_path		fn;
+    	string_path		fileFn;
         FS.update_path	(fn,_game_data_,"particles.xr");
-        Load			(fn);
+        Load			(fn, false);
+
+        u8 i = 2;
+        xr_sprintf(fileFn, "particles%d.xr", i);
+        FS.update_path(fn, _game_data_, fileFn);
+
+        while (FS.path_exist(fn)) 
+        {
+            Load(fn, false);
+            xr_sprintf(fileFn, "particles%d.xr", i);
+            FS.update_path(fn, _game_data_, fileFn);
+        }
+
+        Loaded();
     }
 }
  
@@ -188,7 +202,7 @@ bool CPSLibrary::Load2()
 }
 
 
-bool CPSLibrary::Load(const char* nm)
+bool CPSLibrary::Load(const char* nm, bool needLoaded)
 {
     if (!FS.TryLoad(nm))
     {
@@ -248,10 +262,16 @@ bool CPSLibrary::Load(const char* nm)
 	std::sort			(m_PEDs.begin(),m_PEDs.end(),ped_sort_pred);
 	std::sort			(m_PGDs.begin(),m_PGDs.end(),pgd_sort_pred);
 
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
-    	(*e_it)->CreateShader();
+    if (needLoaded)
+        Loaded();
 
     return			bRes;
+}
+
+void CPSLibrary::Loaded()
+{
+    for (PS::PEDIt e_it = m_PEDs.begin(); e_it != m_PEDs.end(); e_it++)
+        (*e_it)->CreateShader();
 }
 //----------------------------------------------------
 void CPSLibrary::Reload()

@@ -29,11 +29,12 @@ public:
 #endif
 
 public:
-    bool 				Load			(LPCSTR nm);
+    bool 				Load			(LPCSTR nm, bool needLoad = true);
     bool				Save			(LPCSTR nm);
     
 	bool				Load2			();
 	bool				Save2			();
+	void				Loaded			();
 public:
 						CPSLibrary		(){;}
     		 			~CPSLibrary		(){;}
