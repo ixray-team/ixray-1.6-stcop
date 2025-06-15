@@ -35,7 +35,7 @@ namespace StalkerSpace {
 		eStalkerSoundFriendlyGrenadeAlarm,
 		eStalkerSoundNeedBackup,
 		eStalkerSoundRunningInDanger,
-//		eStalkerSoundWalkingInDanger,
+		eStalkerSoundWalkingInDanger,
 		eStalkerSoundKillWounded,
 		eStalkerSoundEnemyCriticallyWounded,
 		eStalkerSoundEnemyKilledOrWounded,

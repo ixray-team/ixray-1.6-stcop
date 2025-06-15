@@ -838,9 +838,8 @@ void CAI_Stalker::UpdateCL()
 				) {
 				sound().play(eStalkerSoundRunningInDanger);
 			}
-			else
-			{
-				//sound().play(eStalkerSoundWalkingInDanger);
+			else if (eMovementTypeWalk == movement().movement_type()) {
+				sound().play	(eStalkerSoundWalkingInDanger);
 			}
 		}
 	}
@@ -875,6 +874,7 @@ void CAI_Stalker::UpdateCL()
 		}
 
 		CStepManager::update(false);
+		Exec_Visibility				();
 
 		if (weapon_shot_effector().IsActive())
 		{
