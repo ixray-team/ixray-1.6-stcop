@@ -108,6 +108,9 @@ public:
 	xr_string_map<xr_string, xr_string> ShadersOptions;
 	Ivector2 gamesaveSize;
 
+	CInifile* getIni() { return pOptions; };
+
+
 private:
 	void InitPlatform(const char* pPlatformName);
 

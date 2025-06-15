@@ -608,6 +608,10 @@ void CUIMiniMap::Init_internal(const shared_str& name, CInifile& pLtx, const sha
 {
 	inherited::Init_internal	(name, pLtx, sect_name, sh_name);
 	CUIStatic::SetTextureColor	(0x7fffffff);
+
+	
+	if (LPCSTR texture = READ_IF_EXISTS(EngineExternal().getIni(), r_string, "ui", "minimap_texure", nullptr))
+		CUIStatic::InitTextureEx(texture);
 }
 
 void CUIMiniMap::UpdateSpots()
