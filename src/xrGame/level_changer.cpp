@@ -117,6 +117,30 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 	{
 		// FX: Отключаем переходы для PIE
 		Msg("~ Actor into Level Changer! Unsupported in PIE!");
+			return;
+	}
+
+
+	if (m_ini_file && m_ini_file->section_exist("cond"))
+	{
+		LPCSTR p_name = m_ini_file->r_string("cond", "infop");
+		
+		if (!Actor()->cast_inventory_owner()->HasInfo(p_name))
+		{
+			if (READ_IF_EXISTS(m_ini_file, r_bool, "cond", "move", false))
+			{
+				Fvector p, r;
+				if (get_reject_pos(p, r))
+					Actor()->MoveActor(p, r);
+			}
+			condWork = false;
+			return;
+		}
+	}
+
+	CActor*			l_tpActor = smart_cast<CActor*>(tpObject);
+	VERIFY			(l_tpActor);
+	if (!l_tpActor->g_Alive())
 		return;
 	}
 
