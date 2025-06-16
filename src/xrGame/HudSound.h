@@ -8,34 +8,29 @@ struct HUD_SOUND_ITEM
         m_alias = "";
     }
 
-    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType,
-        float* volume = NULL, float* delay = NULL);
+    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr);
 
     static void LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND_ITEM& hud_snd, int type = sg_SourceType);
 
-	static void		DestroySound	(	HUD_SOUND_ITEM& hud_snd);
+	static void DestroySound(HUD_SOUND_ITEM& hud_snd);
 
-    static void PlaySound(HUD_SOUND_ITEM& snd, const Fvector& position, const CObject* parent, bool hud_mode,
-        bool looped = false, u8 index = u8(-1));
+    static void PlaySound(HUD_SOUND_ITEM& snd, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
 
-	static void		StopSound		(	HUD_SOUND_ITEM& snd);
+	static void	StopSound(HUD_SOUND_ITEM& snd);
 
-	ICF BOOL		playing			()
+	ICF BOOL playing()
 	{
-        if (m_activeSnd)
-            return m_activeSnd->snd._feedback() ? TRUE : FALSE;
-        else
-            return FALSE;
+        return m_activeSnd != nullptr && m_activeSnd->snd._feedback() ? TRUE : FALSE;
 	}
 
-	ICF void		set_position	(	const Fvector& pos)
-	{
+    ICF void set_position(const Fvector& pos)
+    {
         if (m_activeSnd)
         {
-			if (m_activeSnd->snd._feedback()&&!m_activeSnd->snd._feedback()->is_2D())	
-									m_activeSnd->snd.set_position	(pos);
+            if (m_activeSnd->snd._feedback() && !m_activeSnd->snd._feedback()->is_2D())
+                m_activeSnd->snd.set_position(pos);
             else
-                m_activeSnd = NULL;
+                m_activeSnd = nullptr;
         }
     }
 
@@ -97,14 +92,12 @@ class HUD_SOUND_COLLECTION_LAYERED
 	xr_vector<HUD_SOUND_COLLECTION>	m_sound_items;
 public:
 	~HUD_SOUND_COLLECTION_LAYERED();
-	HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
-    void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false,
-        u8 index = u8(-1));
-	void						StopSound(LPCSTR alias);
-	void						StopAllSounds();
-	void						LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
-    void LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false,
-        int type = sg_SourceType);
-	void						SetPosition(LPCSTR alias, const Fvector& pos);
+    HUD_SOUND_ITEM* FindSoundItem(LPCSTR alias, bool b_assert);
+    void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
+    void StopSound(LPCSTR alias);
+    void StopAllSounds();
+    void LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+    void LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+    void SetPosition(LPCSTR alias, const Fvector& pos);
 };
 //-Alundaio

@@ -931,11 +931,13 @@ void CWeaponMagazined::OnShot()
 	//if (m_ammoElapsed.type1 == 1)
 	//{
 		if (IsSilencerAttached())
-			m_layered_sounds.PlaySound(last_sound_exist[1] ? (HudItemData() && m_layered_sounds.FindSoundItem("sndSilencerShotLastActor", false) ? "sndSilencerShotLastActor" : "sndSilencerShotLast") : m_sSndShotCurrent.c_str(),
-				get_LastFP(), H_Root(), !!GetHUDmode(), false, (u8)-1);
+		{
+			m_layered_sounds.PlaySound(last_sound_exist[1] ? (HudItemData() && m_layered_sounds.FindSoundItem("sndSilencerShotLastActor", false) ? "sndSilencerShotLastActor" : "sndSilencerShotLast") : m_sSndShotCurrent.c_str(), get_LastFP(), H_Root(), !!GetHUDmode(), false, true, (u8)-1);
+		}
 		else
-			m_layered_sounds.PlaySound(last_sound_exist[0] ? (HudItemData() && m_layered_sounds.FindSoundItem("sndShotLastActor", false) ? "sndShotLastActor" : "sndShotLast") : m_sSndShotCurrent.c_str(), get_LastFP(),
-				H_Root(), !!GetHUDmode(), false, (u8)-1);
+		{
+			m_layered_sounds.PlaySound(last_sound_exist[0] ? (HudItemData() && m_layered_sounds.FindSoundItem("sndShotLastActor", false) ? "sndShotLastActor" : "sndShotLast") : m_sSndShotCurrent.c_str(), get_LastFP(), H_Root(), !!GetHUDmode(), false, true, (u8)-1);
+		}
 	//}
 	//else
 	//	m_layered_sounds.PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), H_Root(), !!GetHUDmode(), false, (u8)-1);

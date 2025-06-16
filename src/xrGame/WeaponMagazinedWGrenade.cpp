@@ -497,11 +497,11 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 			PlayAnimShoot();
 			if (m_layered_sounds.FindSoundItem("sndShotGActor", false))
 			{
-				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), !!GetHUDmode());
+				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
 			}
 			else
 			{
-				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode());
+				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
 			}
 			AddShotEffector();
 			StartFlameParticles2();

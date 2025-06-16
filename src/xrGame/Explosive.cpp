@@ -332,7 +332,7 @@ void CExplosive::Explode()
 	if (Initiator() != ALife::_OBJECT_ID(-1)) {
 		who = Level().Objects.net_Find(Initiator());
 	}
-	m_layered_sounds.PlaySound("sndExplode", pos, who, false, false, (u8)-1);
+	m_layered_sounds.PlaySound("sndExplode", pos, who, false, false, true, (u8)-1);
 
 	//показываем эффекты
 
