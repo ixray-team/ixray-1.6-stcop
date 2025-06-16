@@ -230,8 +230,8 @@ void CScriptStorage::print_stack() {
 		//lua_pop(L, 1);
 	}
 
-	//if (!Core.ParamsData.test(ECoreParams::use_callstack))
-	//	return;
+	if (!Core.ParamsData.test(ECoreParams::use_callstack))
+		return;
 
 	lua_Debug LuaDebugInfo;
 	const char* LocalVarName;
