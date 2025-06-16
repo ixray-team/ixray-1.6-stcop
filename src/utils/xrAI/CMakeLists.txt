@@ -49,6 +49,10 @@ target_compile_definitions(xrAI PRIVATE AI_COMPILER)
 target_compile_definitions(xrAI PRIVATE dSINGLE)
 target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CHECKING>")
 
+if (IXRAY_OLD_AI_FORMAT)
+    target_compile_definitions(xrAI PRIVATE IXRAY_AI_OLD_FORMAT)
+endif()
+
 # Linker list
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)

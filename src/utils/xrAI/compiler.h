@@ -8,7 +8,13 @@
 #include "ETextureParams.h"
 
 // base patch used all the time up to merging
-constexpr u32 InvalidNode		= 0xffffffff;
+
+#ifdef IXRAY_AI_OLD_FORMAT
+constexpr u32 InvalidNode = 0x00ffffff;
+#else
+constexpr u32 InvalidNode = 0xffffffff;
+#endif
+
 constexpr u32 UnkonnectedNode	= 0xfffffff0;
 constexpr WORD	InvalidSector	= 0xff;
 
