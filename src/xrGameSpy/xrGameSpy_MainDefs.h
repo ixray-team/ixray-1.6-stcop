@@ -33,7 +33,7 @@
 #define START_PORT_LAN_CL					START_PORT_LAN + 2
 #define END_PORT_LAN						START_PORT_LAN + 250//GameSpy only process 500 ports
 
-#define REGISTRY_BASE						HKEY_LOCAL_MACHINE
+#define REGISTRY_BASE						HKEY_CURRENT_USER
 #define REGISTRY_VALUE_GSCDKEY				"InstallCDKEY"
 #define REGISTRY_VALUE_VERSION				"InstallVers"
 #define REGISTRY_VALUE_USERNAME				"InstallUserName"
