@@ -400,6 +400,7 @@ void CEditorRenderDevice::Reset(IReader* F, BOOL bKeepTextures)
 
 void CEditorRenderDevice::MaximizedWindow()
 {
+	auto hwnd = GetHWND();
 	if (IsZoomed(hwnd))
 		SendMessageW(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
 
@@ -429,7 +430,7 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 	if (EDevice->NormalWinSizeSaved)
 	{
 		auto& r = EDevice->NormalWinSize;
-		MoveWindow(hwnd, r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
+		MoveWindow(GetHWND(), r.left, r.top, r.right - r.left, r.bottom - r.top, TRUE);
 
 		if (moving)
 		{
@@ -439,9 +440,9 @@ void CEditorRenderDevice::ResoreWindow(bool moving)
 		}
 	}
 	{
-		LONG style = GetWindowLong(hwnd, GWL_STYLE);
+		LONG style = GetWindowLong(GetHWND(), GWL_STYLE);
 		style |= WS_THICKFRAME;
-		SetWindowLong(hwnd, GWL_STYLE, style);
+		SetWindowLong(GetHWND(), GWL_STYLE, style);
 	}
 	EDevice->isZoomed = false;
 
@@ -538,9 +539,9 @@ void CEditorRenderDevice::InitWindowStyle()
 	UI->InitWindowIcons();
 
 #if _WINDOWS
-	LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+	LONG_PTR style = GetWindowLongPtr(GetHWND(), GWL_STYLE);
 	style &= ~WS_CAPTION;
-	SetWindowLongPtr(hwnd, GWL_STYLE, style);
+	SetWindowLongPtr(GetHWND(), GWL_STYLE, style);
 #else
 	SDL_SetWindowResizable(g_AppInfo.Window, SDL_TRUE);
 	SDL_SetWindowHitTest(g_AppInfo.Window, HitTestCallback, 0);
@@ -588,6 +589,12 @@ void CEditorRenderDevice::time_factor(float v)
 {
 	 Timer.time_factor(v);
 	 TimerGlobal.time_factor(v);
+}
+
+HWND CEditorRenderDevice::GetHWND() const
+{
+	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+	return hwnd;
 }
 
 void CEditorRenderDevice::CreateWindow()
