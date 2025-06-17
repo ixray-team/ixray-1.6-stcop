@@ -306,11 +306,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 #ifdef IXRAY_AI_OLD_FORMAT
 		for (u32 i = 0; i < N_; i++)
 		{
-			NodeLink id;
-			u16 pl;
-			SNodePositionOld _np;
-			NodePosition np;
-
+			NodeLink id{};
 			for (int j = 0; j < 4; ++j)
 			{
 				F->r(&id, 3);
@@ -323,11 +319,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		constexpr u32 InvalidNode_v1 = 0x00ffffff;
 		for (u32 i = 0; i < N_; i++)
 		{
-			NodeLink id;
-			u16 pl;
-			SNodePositionOld _np;
-			NodePosition np;
-			E_AIMAP_VERSION
+			NodeLink id{};
 			if (version == 1)
 			{
 				for (int j = 0; j < 4; ++j)
@@ -349,12 +341,13 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			}
 #endif
 
-			pl = F->r_u16();
+			u16 pl = F->r_u16();
+			NodePosition np{};
+			SNodePositionOld _np;
 			pvDecompress(g_nodes[i].Plane.n, pl);
 			F->r(&_np, sizeof(_np));
 			CNodePositionConverter(_np, H, np);
 			g_nodes[i].Pos = vertex_position(np, LevelBB, g_params);
-
 			g_nodes[i].Plane.build(g_nodes[i].Pos, g_nodes[i].Plane.n);
 		}
 
