@@ -27,8 +27,12 @@ UIObjectTool::~UIObjectTool()
 	while (RefreshInProgress)
 		std::this_thread::yield();
 
-	if (m_RemoveTexture)m_RemoveTexture->Release();
-	if (m_RealTexture)m_RealTexture->Release();
+	if (m_RemoveTexture)
+		IM_TEXTURE_RELEASE(m_RemoveTexture);
+
+	if (m_RealTexture)
+		IM_TEXTURE_RELEASE(m_RealTexture);
+
 	xr_delete(m_Props);
 	m_TextureNull.destroy();
 	xr_delete(m_ObjectList);
@@ -65,7 +69,9 @@ void UIObjectTool::Draw()
 {
 	ImGui::Checkbox("Show lists", &bDrawList);
 
-	if (m_RemoveTexture)m_RemoveTexture->Release();
+	if (m_RemoveTexture)
+		IM_TEXTURE_RELEASE(m_RemoveTexture);
+
 	m_RemoveTexture = nullptr;
 
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
@@ -425,7 +431,7 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 		auto * m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
 		if (m_Thm)
 		{
-			m_Thm->Update(m_RealTexture);
+			m_Thm->Update((ID3DBaseTexture*&)m_RealTexture);
 			PropItemVec Info;
 			m_Thm->FillInfo(Info);
 			m_Props->AssignItems(Info);

@@ -1,4 +1,6 @@
 #pragma once
+#include <d3d9.h>
+
 enum TShiftState_
 {
 	ssNone = 0,
