@@ -16,6 +16,11 @@ namespace ImGui
     IMGUI_API void PopItemFlag();
 }
 
+namespace XRay::ImGui
+{
+    void IMGUI_API MakeEditorTheme();
+}
+
 enum ImGuiItemFlags_
 {
     // Controlled by user
