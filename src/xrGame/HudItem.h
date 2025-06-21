@@ -189,7 +189,7 @@ public:
 
 	bool bDisablePrepareAnimation = false;
 
-	bool WpnCanShoot() const;
+	virtual bool WpnCanShoot() const { return false; }
 
 	struct jitter_params
 	{

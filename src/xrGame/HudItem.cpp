@@ -884,11 +884,3 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 		m_eDevicesFlags.zero();
 	}
 }
-
-#include "WeaponMagazined.h"
-#include "WeaponBinoculars.h"
-
-bool CHudItem::WpnCanShoot() const
-{
-	return !!(smart_cast<CWeaponMagazined*>(this) != nullptr && smart_cast<CWeaponBinoculars*>(this) == nullptr);
-}
