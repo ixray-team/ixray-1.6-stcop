@@ -270,13 +270,13 @@ public:
 	bool				operator==		(shared_motions const &rhs)	const {return (p_ == rhs.p_);}
 
 	// misc func
-	MotionVec*			bone_motions	(shared_str bone_name)		{	VERIFY(p_); return p_->bone_motions(bone_name);	}
-	accel_map*			motion_map		()							{	VERIFY(p_); return &p_->m_motion_map;			}
-	accel_map*			cycle			()							{	VERIFY(p_); return &p_->m_cycle;				}
-	accel_map*			fx				()							{	VERIFY(p_); return &p_->m_fx;					}
-	CPartition*			partition		()							{	VERIFY(p_); return &p_->m_partition;			}
-    MotionDefVec*		motion_defs		()							{	VERIFY(p_); return &p_->m_mdefs;				}
-    CMotionDef*			motion_def		(u16 idx)					{	VERIFY(p_); return &p_->m_mdefs[idx];			}
+	MotionVec*			bone_motions	(shared_str bone_name)		{	if (p_ == nullptr) return nullptr; return p_->bone_motions(bone_name);	}
+	accel_map*			motion_map		()							{	if (p_ == nullptr) return nullptr; return &p_->m_motion_map;			}
+	accel_map*			cycle			()							{	if (p_ == nullptr) return nullptr; return &p_->m_cycle;				}
+	accel_map*			fx				()							{	if (p_ == nullptr) return nullptr; return &p_->m_fx;					}
+	CPartition*			partition		()							{	if (p_ == nullptr) return nullptr; return &p_->m_partition;			}
+    MotionDefVec*		motion_defs		()							{	if (p_ == nullptr) return nullptr; return &p_->m_mdefs;				}
+    CMotionDef*			motion_def		(u16 idx)					{	if (p_ == nullptr) return nullptr; return &p_->m_mdefs[idx];			}
 	anim_notify_prefetched& motion_notify	(u16 idx, u16 bone)		{	VERIFY(p_); return p_->m_notifies[idx][bone];			}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}
