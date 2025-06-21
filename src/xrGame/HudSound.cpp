@@ -317,52 +317,19 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(LPCSTR section, LPCSTR line, LPCSTR
 
 		while (pSettings->line_exist(buf_str, sound_line))
 		{
-			HUD_SOUND_COLLECTION* finded_collection = nullptr;
-			for (HUD_SOUND_COLLECTION& collection : m_sound_items)
-			{
-				if (collection.m_alias == alias)
-				{
-					finded_collection = &collection;
-				}
-			}
-
-			if (finded_collection != nullptr)
-			{
-				finded_collection->LoadSound(buf_str, sound_line, alias, exclusive, type);
-				finded_collection->m_alias = alias;
-			}
-			else
-			{
-				m_sound_items.resize(m_sound_items.size() + 1);
-				HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-				snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type);
-				snd_item.m_alias = alias;
-			}
+			m_sound_items.resize(m_sound_items.size() + 1);
+			HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
+			snd_item.LoadSound(buf_str, sound_line, alias, exclusive, type);
+			snd_item.m_alias = alias;
 			xr_sprintf(sound_line, "snd_%d_layer", ++k);
 		}
 	}
 	else //For compatibility with normal HUD_SOUND_COLLECTION sounds
 	{
-		HUD_SOUND_COLLECTION* finded_collection = nullptr;
-		for (HUD_SOUND_COLLECTION& collection : m_sound_items)
-		{
-			if (collection.m_alias == alias)
-			{
-				finded_collection = &collection;
-			}
-		}
-		if (finded_collection != nullptr)
-		{
-			finded_collection->LoadSound(section, line, alias, exclusive, type);
-			finded_collection->m_alias = alias;
-		}
-		else
-		{
-			m_sound_items.resize(m_sound_items.size() + 1);
-			HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
-			snd_item.LoadSound(section, line, alias, exclusive, type);
-			snd_item.m_alias = alias;
-		}
+		m_sound_items.resize(m_sound_items.size() + 1);
+		HUD_SOUND_COLLECTION& snd_item = m_sound_items.back();
+		snd_item.LoadSound(section, line, alias, exclusive, type);
+		snd_item.m_alias = alias;
 	}
 }
 
