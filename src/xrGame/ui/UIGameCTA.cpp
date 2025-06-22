@@ -87,21 +87,29 @@ void CUIGameCTA::Init(int stage)
 		m_pRankIndicator->SetAutoDelete	(true);
 		m_pRankIndicator->InitFromXml	(uiXml);
 
-		m_pReinforcementInidcator		= new CUITextWnd();
-		m_pReinforcementInidcator->SetAutoDelete(true);
-		CUIXmlInit::InitTextWnd			(uiXml, "reinforcement",	0, m_pReinforcementInidcator);
+		if (EngineExternal().CallOfPripyatMode())
+		{
+			m_pReinforcementInidcator = new CUITextWnd();
+			m_pReinforcementInidcator->SetAutoDelete(true);
+			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
+		}
+		else
+		{
+			m_pReinforcementInidcator_old = new CUIProgressShape();
+			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
+		}
 
 		m_team1_icon					= new CUIStatic();
 		m_team2_icon					= new CUIStatic();
 		CUIXmlInit::InitStatic			(uiXml, "team1_icon",		0,	m_team1_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team2_icon",		0,	m_team2_icon);
 
-		m_team1_score					= new CUITextWnd();
-		m_team2_score					= new CUITextWnd();
+		m_team1_score					= new CUIStatic();
+		m_team2_score					= new CUIStatic();
 		m_team1_score->SetAutoDelete	(true);
 		m_team2_score->SetAutoDelete	(true);
-		CUIXmlInit::InitTextWnd			(uiXml, "team1_score",		0,	m_team1_score);
-		CUIXmlInit::InitTextWnd			(uiXml, "team2_score",		0,	m_team2_score);
+		CUIXmlInit::InitStatic			(uiXml, "team1_score",		0,	m_team1_score);
+		CUIXmlInit::InitStatic			(uiXml, "team2_score",		0,	m_team2_score);
 
 		m_pFragLimitIndicator			= new CUIStatic();
 		m_pFragLimitIndicator->SetAutoDelete(true);
@@ -113,7 +121,8 @@ void CUIGameCTA::Init(int stage)
 		inherited::Init					(stage);
 		m_window->AttachChild			(m_pMoneyIndicator);
 		m_window->AttachChild			(m_pRankIndicator);
-		m_window->AttachChild			(m_pReinforcementInidcator);
+		if (m_pReinforcementInidcator)
+			m_window->AttachChild			(m_pReinforcementInidcator);
 		m_window->AttachChild			(m_pFragLimitIndicator);
 		m_window->AttachChild			(m_team1_score);
 		m_window->AttachChild			(m_team2_score);
@@ -135,6 +144,9 @@ CUIGameCTA::~CUIGameCTA()
 	xr_delete	(m_voteStatusWnd);
 	xr_delete	(m_pCurBuyMenu);
 	xr_delete	(m_pCurSkinMenu);
+
+	if (m_pReinforcementInidcator_old)
+		xr_delete	(m_pReinforcementInidcator_old);
 }
 
 bool CUIGameCTA::IsTeamPanelsShown()
@@ -693,8 +705,15 @@ s8 CUIGameCTA::GetSelectedSkinIndex	()
 
 void CUIGameCTA::SetReinforcementTimes(u32 curTime, u32 maxTime)
 {
-	string128 _buff;
-	m_pReinforcementInidcator->SetText(_itoa(curTime/1000,_buff,10));
+	if (m_pReinforcementInidcator)
+	{
+		string128 _buff;
+		m_pReinforcementInidcator->SetText(_itoa(curTime / 1000, _buff, 10));
+	}
+	else
+	{
+		m_pReinforcementInidcator_old->SetPos(curTime / 1000, maxTime / 1000);
+	}
 }
 
 void CUIGameCTA::DisplayMoneyChange(LPCSTR deltaMoney)
@@ -741,12 +760,17 @@ void CUIGameCTA::SetScore(s32 max_score, s32 greenTeamScore, s32 blueTeamScore)
 void CUIGameCTA::OnFrame()
 {
 	inherited::OnFrame();
+	if (m_pReinforcementInidcator_old)
+		m_pReinforcementInidcator_old->Update();
 	if (m_voteStatusWnd) 
 		m_voteStatusWnd->Update		();
 }
 
 void CUIGameCTA::Render()
 {
+	if (m_pReinforcementInidcator_old)
+		m_pReinforcementInidcator_old->Draw();
+
 	m_team1_icon->Draw();
 	m_team2_icon->Draw();
 
